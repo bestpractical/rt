@@ -47,7 +47,6 @@ sub SetRecipients {
     
     if ($arg =~ /\bAdminCc\b/) {
         push(@Bcc, $self->TicketObj->AdminCcAsString);
-        print STDERR "Admin CC for queue is :".  $self->TicketObj->QueueObj->AdminCcAsString . "\n";
 	    push(@Bcc, $self->TicketObj->QueueObj->AdminCcAsString);
     }
     
