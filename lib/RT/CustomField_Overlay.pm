@@ -245,7 +245,7 @@ sub LoadByName {
 
     # We only want one entry.
     $CFs->RowsPerPage(1);
-    unless ($CFs->First->id) {
+    unless ($CFs->First) {
         return(0, $self->loc('Custom field not found'));
     }
     return($self->Load($CFs->First->id));
