@@ -208,11 +208,14 @@ ok( $new_art->Id, " Created a testable article");
 my $arts = RT::FM::ArticleCollection->new($RT::SystemUser);
 ok($arts->isa('RT::FM::ArticleCollection'), "Got an article collection");
 $arts->LimitToCustomFieldValue( OPERATOR => 'LIKE', VALUE => 'est');
-ok ($arts->Count == '1', "Found 2 cf values matching 'est'");
+is ($arts->Count ,1, "Found 1 cf values matching 'est'");
+
  $arts = RT::FM::ArticleCollection->new($RT::SystemUser);
 ok($arts->isa('RT::FM::ArticleCollection'), "Got an article collection");
 $arts->LimitToCustomFieldValue( OPERATOR => 'LIKE', VALUE => 'est', FIELD => '1');
-ok ($arts->Count == '1', "Found 2 cf values matching 'est' for CF1 ");
+is ($arts->Count, 1, "Found 1 cf values matching 'est' for CF1 ");
+
+
  $arts = RT::FM::ArticleCollection->new($RT::SystemUser);
 ok($arts->isa('RT::FM::ArticleCollection'), "Got an article collection");
 $arts->LimitToCustomFieldValue( OPERATOR => 'LIKE', VALUE => 'est', FIELD => '6');

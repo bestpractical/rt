@@ -34,7 +34,7 @@ DB_DATABASEHOST		=  `${GETPARAM} DatabaseHost`
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
-TAG			= rtfm-2-0-beta-6
+TAG			= rtfm-2-0RC1
 
 
 upgrade: install-lib install-html install-lexicon
@@ -121,7 +121,8 @@ tag-and-release-never-by-hand:
 	cd /tmp/$(TAG); \
 			 aegis -cp -ind -delta $(TAG) . ;\
 			 chmod 600 Makefile;\
-			 aegis --report --project rtfm.2.0 \
+			 aegis --report --project rtfm.2 \
+				--change 1
 				--page_width 80 \
 				--page_length 9999 \
 				--output Changelog Change_Log;

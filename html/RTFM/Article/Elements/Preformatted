@@ -31,7 +31,7 @@
 <%$cf->Name%>:
 <%'-' x length($cf->Name) %>
 <%$content%>
-$ } else {
+% } else {
 % my $val = $values->Next;
 <%$cf->Name%>: <%$val%>
 % while ($val = $values->Next) { 
