@@ -287,6 +287,14 @@ CREATE TABLE Templates (
 
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Title VARCHAR(120),
+# Language INT(11), # Should point to some table of available languages.
+                    # A two character language code would also be an idea,
+		    # but after a recent discussion (trolling?) at
+		    # no.usenet.admin that some _norwegian_ documents at the web
+		    # should be translated into at least four different versions
+		    # of Norwegian + lappish, I'm uncertain a two character code
+		    # will be enough for all languages and sublanguages that might
+		    # be needed..
   Content BLOB,
   Creator INT(11),
   Created TIMESTAMP,
