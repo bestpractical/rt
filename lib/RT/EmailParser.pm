@@ -629,7 +629,6 @@ sub _SetupMIMEParser {
     my $self   = shift;
     my $parser = shift;
 	
-	$RT::Logger->crit($self->{'AttachmentDir'});
     #$RT::Logger->crit(  $self->{'AttachmentDir'} );
     # Set up output directory for files:
 
