@@ -28,17 +28,18 @@ my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 
 # Don't want to search for a null class when there is no class specced
 my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
+$customfields->LimitToLookupType(RT::FM::Article->new($session{'CurrentUser'})->CustomFieldLookupType);
 if ( $ARGS{'Class'} ) {
     my @Classes =
       ( ref $ARGS{'Class'} eq 'ARRAY' )
       ? @{ $ARGS{'Class'} }
       : ( $ARGS{'Class'} );
     foreach my $class (@Classes) {
-        $customfields->LimitToClass($class);
+        $customfields->LimitToGlobalOrObjectId($class);
     }
 }
 else {
-    $customfields->UnLimit();
+    $customfields->LimitToGlobalOrObjectId();
 
 }
 
