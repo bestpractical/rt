@@ -152,7 +152,7 @@ CGI::SpeedyCGI
 $deps{'MODPERL1'} = [ _( << '.') ];
 CGI
 Apache::Request
-Apache::DBI
+Apache::DBI 0.92
 .
 
 $deps{'MODPERL2'} = [ _( << '.') ];
