@@ -740,6 +740,7 @@ sub Keywords {
 # }}}
 
 # {{{ sub NewKeyword
+# TODO: keywords not implemented?
 sub NewKeyword {
   my $self = shift;
   my $keyid = shift;
@@ -767,7 +768,7 @@ sub Links {
   my $self= shift;
   
   if (! $self->{'pointer_to_links_object'}) {
-#    $self->{'pointer_to_links_object'} = new RT::Article::URLs;
+#    $self->{'pointer_to_links_object'} = new RT::Links;
 #    $self->{'pointer_to_links_object'}->Limit(FIELD => 'article',
 #					      VALUE => $self->id);
   }
@@ -775,23 +776,49 @@ sub Links {
 }
 # }}}
 
+sub URL {
+    my $self = shift;
+    return "fsck.com-rt://$rt::domain/$rt::rtname/ticket/$self->id";
+}
+
 # {{{ sub NewLink
 
 sub NewLink {
+    my $self = shift;
+    my %args = ( target => '',
+		 type => '',
+		 @_ );
+    $self->_NewLink(base=>$self->id, %args);
+}
+
+sub ReverseLink {
+    my $self = shift;
+    my %args = ( base => '',
+		 type => '',
+		 @_);
+    $self->_NewLink(target=>$self->id, %args);
+}
+
+sub _NewLink {
   my $self = shift;
-  my %args = ( url => '',
-	       title => '',
-	       comment => '',
+  my %args = ( target => '',
+	       base => '',
+	       type => '',
 	       @_ );
  
-  my $link = new RT::Article::URL;
-  my $id = $link->create( url => $args{'url'},
-		       title => $args{'title'},
-		       comment => $args{'comment'},
-		       article => $self->id()
-		     );
-    print STDERR "made new create\n";
- return ($id);
+  # TODO: fix Link.pm
+  my $link = new RT::Link;
+  my $linkid = $link->create(%args);
+
+  #Write the transaction
+  my $Trans = $self->_NewTransaction
+      (Type => 'Link',
+       Data => $args{type},
+       TimeTaken => 0 # Is this always true?
+       );
+  
+  return (0, "work stubbed");
+  return ($linkid, "Link created", $transactionid);
 }
 
 # }}}
