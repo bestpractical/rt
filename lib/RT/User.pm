@@ -370,19 +370,19 @@ sub HasQueueRight {
     
     #Check to make sure that the ticketobj is really a ticketobject	
     if (defined $args{'QueueObj'}) {
-        $QueueId = $args{'QueueObj'}->Id;
+	$QueueId = $args{'QueueObj'}->Id;
     } 
     elsif (defined $args{'TicketObj'}) {
-        $QueueId = $args{'TicketObj'}->QueueObj->Id,
+	$QueueId = $args{'TicketObj'}->QueueObj->Id,
     }
     else {
-	use Carp;
+    	use Carp;
 	Carp::Confess();
 	$RT::Logger->debug("$self ->HasQueueRight found no valid queue id.");
     }
     
     my $retval = $self->_HasRight(Scope => 'Queue',
-				  AppliesTo => $QueueId,
+				  AppliesTo => "$QueueId",
 				  Right => "$args{'Right'}");
     if (defined $retval) {
 	return ($retval);
@@ -395,8 +395,9 @@ sub HasQueueRight {
     
 }
 
+  
 # }}}
-
+  
 # {{{ sub HasSystemRight
 
 =head2 HasSystemRight ( Right => 'right')
@@ -415,7 +416,7 @@ sub HasSystemRight {
 	return(undef);
     }	
     return ( $self->_HasRight ( Scope => 'System',
-				AppliesTo => 0,
+				AppliesTo => '0',
 				Right => $args{'Right'})
 	   );
     

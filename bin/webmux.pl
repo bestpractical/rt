@@ -48,6 +48,8 @@ use DBIx::SearchBuilder::Handle;
     use RT::Groups;
     use RT::GroupMember;
     use RT::GroupMembers;
+    use RT::Watcher;
+    use RT::Watchers;
     use RT::Handle;
     use RT::Interface::Web;    
     use MIME::Entity;
