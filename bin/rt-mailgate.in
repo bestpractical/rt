@@ -109,12 +109,11 @@ $u->Load('doesnotexist@fsck.com');
 ok( $u->Id != 0, " user does not exist and was not created by failed ticket submission");
 
 
-
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
-To: rtemail\@mydomain.com
+To: rtemail\@example.com
 Subject: This is a test of I18N ticket creation
 Content-Type: text/plain; charset="utf-8"
 
@@ -139,6 +138,38 @@ my $unistring = "\303\241\303\251\303\255\303\263\303\272";
 Encode::_utf8_on($unistring);
 
 ok ($tick->Transactions->First->Content =~ /$unistring/, "It appears to be unicode - ".$tick->Transactions->First->Content);
+
+# supposedly I18N fails on the second message sent in.
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+                                                                         
+print MAIL <<EOF;
+From: root\@localhost
+To: rtemail\@example.com
+Subject: This is a test of I18N ticket creation
+Content-Type: text/plain; charset="utf-8"
+
+2 accented lines
+\303\242\303\252\303\256\303\264\303\273
+\303\241\303\251\303\255\303\263\303\272
+bye
+EOF
+close (MAIL);
+
+my $tickets2 = RT::Tickets->new($RT::SystemUser);
+$tickets2->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets2->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
+my $tick2 = $tickets2->First();
+ok (UNIVERSAL::isa($tick2,'RT::Ticket'));
+ok ($tick2->Id, "found ticket ".$tick2->Id);
+ok ($tick2->Subject eq 'This is a test of I18N ticket creation', "Created the ticket");
+
+
+
+my $unistring = "\303\241\303\251\303\255\303\263\303\272";
+Encode::_utf8_on($unistring);
+
+ok ($tick2->Transactions->First->Content =~ /$unistring/, "It appears to be unicode - ".$tick2->Transactions->First->Content);
 
 ($val,$msg) = $g->PrincipalObj->RevokeRight(Right => 'CreateTicket');
 ok ($val, $msg);
