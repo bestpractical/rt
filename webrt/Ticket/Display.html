@@ -53,7 +53,7 @@ my @Actions=();
       Requestors=>$ARGS{Requestors} || $session{CurrentUser}->EmailAddress,
       Subject=>$ARGS{Subject},
       Status=>$ARGS{Status}||'open',
-      MIMEEntity => MIME::Entity->build
+      MIMEObj => MIME::Entity->build
         ( 
 	  Subject => $ARGS{Subject},
 	  From => $ARGS{Requestors},

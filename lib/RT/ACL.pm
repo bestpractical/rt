@@ -6,7 +6,7 @@ package RT::ACL;
 use DBIx::EasySearch;
 @ISA= qw(DBIx::EasySearch);
 
-
+my @TicketRights = qw(Destroy Display Update Resolve
 
 
 # {{{ sub new 
@@ -38,13 +38,11 @@ sub LimitToQueueACL {
 # }}}
 
 
+# {{{ sub LimitPrincipals
 sub LimitPrincipals {
   my $self = shift;
   my $user = shift;
   my $ticket = shift;
-
-  
-  
   
   $self->LimitPrinicpalsToUser($user);
   $self->LimitPrincipalsToWatchers($user);
@@ -53,6 +51,7 @@ sub LimitPrincipals {
   }
   
 }
+# }}}
 
 # {{{ sub LimitPrinicpalsToUser 
 
@@ -80,10 +79,10 @@ sub LimitPrincipalsToOwner {
 sub LimitPrincipalsToWatchers {
   my $self = shift;
   my $user = shift;
-return ("( ACE.PrincipalScope = Watchers.Scope ) AND 
-         ( ACE.PrincipalType = Watchers.Type ) AND 
-         ( ACL.PrincipalId = Watchers.Value ) AND 
-	 ( Watchers.Owner = $User )");
+  return ("( ACE.PrincipalScope = Watchers.Scope ) AND 
+           ( ACE.PrincipalType = Watchers.Type ) AND 
+           ( ACL.PrincipalId = Watchers.Value ) AND 
+  	   ( Watchers.Owner = $User )");
 }
 
 # }}}
@@ -146,5 +145,70 @@ sub NewItem  {
 }
 # }}}
 
+
+#does this apply to a queue or something else
+sub Scope {
+  my $self = shift;
+  my $scope =shift;
+}
+		    
+
+#if you're concerned about queue level rights, specify the queue
+sub AppliesTo {
+  my $self = shift;
+  my $AppliesTo = shift;
+}
+
+#if you're concerned about ticket_level rights,  specify the ticket
+sub TicketIs {
+my $self = shift;
+my $TicketObj = shift;
+
+
+}
+
+sub PrincipalTypeIs {
+my $self = shift;
+#principal type is one of 
+#User,<userid>
+#Group,<groupip>
+#TicketOwner,NULL
+#TicketRequestor,NULL
+#TicketCc,NULL
+#TicketAdminCc,NULL
+#Everyone,NULL
+}
+sub PrincipalIdIs {
+my $self = shift;
+#principal is a userid.  
+my $PrincipalObj = shift;
+}
+
+sub RightIs {
+my $self = shift;
+#right is a textual identifier of a right;
+my $right = shift;
+
+
+
+}
+
+sub IsPermitted {
+my $self = shift;
+#this code will DTRT and figure out if  
+#the principal is a member of any relevant groups, such as ticket watchers
+# or rt's eventual groups system. 
+
+
+
+
+
+#return(1) if permitted;
+#return(undef) otherwise;
+}
+
+
 1;
+
+
 

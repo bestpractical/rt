@@ -86,7 +86,7 @@ sub activate  {
       $Ticket->Create ( QueueTag => $Queue,
 			Area => $Area,
 			Subject => $Subject,
-			MIMEEntity => $entity
+			MIMEObj => $entity
 		      );
    #print "id/trans/err:  $id $Transaction $ErrStr\n"; 
   }

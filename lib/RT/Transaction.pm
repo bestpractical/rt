@@ -35,7 +35,7 @@ sub Create  {
 		 Field => undef,
 		 OldValue => undef,
 		 NewValue => undef,
-		 MIMEEntity => undef,
+		 MIMEObj => undef,
 		 @_
 	       );
 
@@ -55,8 +55,8 @@ sub Create  {
 				  NewValue => $args{'NewValue'},
 				 );
     $self->Load($id);
-    $self->_Attach($args{'MIMEEntity'})
-      if defined $args{'MIMEEntity'};
+    $self->_Attach($args{'MIMEObj'})
+      if defined $args{'MIMEObj'};
         
     #We're really going to need a non-acled ticket for the scrips to work
     use RT::Ticket;

@@ -139,13 +139,11 @@ CREATE TABLE Links (
 
 # {{{ Table Users 
 
- # Actually I don't think this is a good way to do it; we
- # need it to be site-configurable what information we want to store
- # about our users.
-
  # Actually I think the best way is to only store only what is
  # essential for RT, and let
- # all other data be stored externally in any system of choise.  Hm.
+ # all other data be stored externally in any system of choise.  Hm.'
+
+ # nope. RT should be able to stand on its own.
 
  # ATOH, A Plugin authentication system which replaces this table
  # would clearly be the best and only right thing.  We have to fix that for RT 2.1
@@ -171,6 +169,9 @@ CREATE TABLE Users (
 
  # I'd daresay that those fields really shouldn't be in RT:
  # -- TobiX
+ 
+ # I disagree. They're needed. -jrv
+
   HomePhone VARCHAR(30),
   WorkPhone VARCHAR(30),
   Address1 VARCHAR(200),
@@ -196,6 +197,26 @@ CREATE TABLE Users (
 # );
 # }}}
 
+# {{{ Table Groups 
+
+CREATE TABLE Groups (
+	id int primary key auto_increment,
+	Name VARCHAR(16),
+	Description VARCHAR(64)
+);
+
+# }}}
+
+# {{{ Table GroupMembers
+CREATE TABLE GroupMembers (
+	id int primary key auto_increment,
+	GroupId INT,
+	UserId INT
+);
+
+# }}}
+
+
 # {{{ Values for Users
 INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
 	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
@@ -211,12 +232,12 @@ INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments
 
 CREATE TABLE ACL (
 	id int primary key auto_increment,
-	PrincipalId INT(11),
+	PrincipalId INT,
 	PrincipalType VARCHAR(16),
-	PrincipalScope VARCHAR(16),
-	ObjectType VARCHAR(16),
-	ObjectId  INT,
-	Right VARCHAR(16)
+	Right VARCHAR(16),
+	Scope VARCHAR(16),
+	AppliesTo INT
+
 );
 
 # }}}

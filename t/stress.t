@@ -55,7 +55,7 @@ for (my $i = 0; $i < 1000; $i++) {
 		Subject => "This is a subject",
 		Status => "Open",
 		Requestor => 'jesse+rttest\@fsck.com',
-		MIMEEntity => $Message);
+		MIMEObj => $Message);
 
 }
 $RT::Handle->Disconnect();

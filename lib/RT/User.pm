@@ -8,8 +8,6 @@ package RT::User;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-
-
 # {{{ sub new 
 sub new  {
   my $proto = shift;
@@ -52,7 +50,6 @@ sub _Accessible  {
   return($self->SUPER::_Accessible(@_, %Cols));
 }
 # }}}
-
 
 # {{{ sub Create 
 sub Create  {
@@ -107,23 +104,17 @@ sub Delete  {
 
   my ($query_string,$update_clause, $user_id);
   
-  
-  
+  #TODO Handle User->Delete
+  die "User->Delete not implemented";
   $user_id=$self->_Handle->quote($self->UserId);
   
   if ($self->CurrentUser->IsAdministrator) {
     
     if ($self->UserId  ne $self->CurrentUser) {
       $query_string = "DELETE FROM users WHERE UserId = $user_id";
-      $sth = $self->_Handle->prepare($query_string) or 
-	return ("[delete_user] prepare had some problem: $self->_Handle->errstr\n$query_string\n");
-      $sth->execute or 
-	return ("[delete_user] execute had some problem: $self->_Handle->errstr\n$query_string\n");
       $query_string = "DELETE FROM queue_acl WHERE UserId = $user_id";
-      $sth = $self->_Handle->prepare($query_string) or 
-	return ("[delete_user] Query had some problem: $self->_Handle->errstr\n$query_string\n");
-      $sth->execute or
-	return ("[delete_user] Query had some problem: $self->_Handle->errstr\n$query_string\n");  
+
+      
       return ("User deleted.");
       
     }
@@ -137,7 +128,6 @@ sub Delete  {
   
 }
 # }}}
-
 
 # {{{ sub Load 
 sub Load  {

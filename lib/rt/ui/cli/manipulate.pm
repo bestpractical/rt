@@ -36,6 +36,7 @@ sub GetCurrentUser  {
 # }}}
 
 # {{{ sub ParseArgs 
+
 sub ParseArgs  {
 
   for ($i=0;$i<=$#ARGV;$i++) {
@@ -49,7 +50,7 @@ sub ParseArgs  {
       $Ticket=&LoadTicket($id);
       if ($Ticket) {
 	  
-	  if ($Ticket->DisplayPermitted) {
+	  if ($Ticket->CurrentUserHasRight("ShowTicket")) {
 	    &ShowSummary($Ticket);
 	    &ShowHistory($Ticket);
 	  }
@@ -65,7 +66,7 @@ sub ParseArgs  {
       my $id=int($ARGV[++$i]);
       my $Ticket = &LoadTicket($id);
       
-      if ($Ticket->DisplayPermitted) {
+      if ($Ticket->CurrentUserHasRight("ShowTicket")) {
 	&ShowSummary($id);
 	&ShowRequestorHistory($id);
       }
@@ -252,7 +253,7 @@ sub ParseArgs  {
       elsif ($ARGV[$i] eq "-notify") {
 	my $id = int($ARGV[++$i]);
 	my $Ticket = &LoadTicket($id);
-	$Message .= $Ticket->Notify();
+	$Message .= $Ticket->UpdateTold();
 
       }
       
@@ -291,9 +292,11 @@ sub ParseArgs  {
   
 
 }
+
 # }}}
 
 # {{{ sub cli_create_req 
+
 sub cli_create_req  {	
     my ($queue_id,$owner,$Requestors,$status,$priority,$Subject,$final_prio,
 	$Cc, $Bcc, $date_due, $due_string, $Owner);
@@ -311,20 +314,20 @@ sub cli_create_req  {
       $queue_id=&rt::ui::cli::question_string("Place Request in queue",) || "general";
     }
     
-    if (!$Queue->CreatePermitted) {
+    if (!$Queue->CurrentUserHasRight("CreateTicket")) {
       print "You may not create a ticket in that queue";
     }
 
     
   
-    if ($Queue->ModifyPermitted($CurrentUser)) {
-
+    if ($Queue->CurrentUserHasRight("ModifyTicket")) {
+      
       require RT::User;
       $Owner = RT::User->new($CurrentUser);
       
       $owner=&rt::ui::cli::question_string( "Give request to");
       
-      while ($owner && (!$Owner->Load($owner) || !$Queue->ModifyPermitted($Owner))) {
+      while ($owner && (!$Owner->Load($owner) || !$Queue->HasRight("ModifyTicket",$Owner))) {
 	
 	print "That user doesn't exist or can't own tickets in that queue\n";
 	$owner=&rt::ui::cli::question_string( "Give request to")
@@ -374,11 +377,12 @@ sub cli_create_req  {
 			       FinalPriority => $final_priority,
 			       Status => 'open',
 			       Due => $date_due,
-	      		       MIMEEntity => $Message			
+	      		       MIMEObj => $Message			
 						      );
 
     printf("Request %s created\n",$id);
   }
+
 # }}}
   
 # {{{ sub cli_comment_req 
@@ -473,6 +477,7 @@ sub ShowRequestorHistory  {
 # }}}
   
 # {{{ sub ShowHelp 
+
 sub ShowHelp  {
     print <<EOFORM
     
@@ -508,6 +513,7 @@ sub ShowHelp  {
 EOFORM
     
   }
+
 # }}}
   
 # {{{ sub ShowSummary 

@@ -17,14 +17,15 @@ sub new  {
 # }}}
 
 # {{{ sub _Init 
+
 sub _Init  {
   my $self = shift;
-  $self->_MyHandle();
+  $self->_Handle();
   $self->_MyCurrentUser(@_);
   
 }
-# }}}
 
+# }}}
 
 # {{{ sub _MyCurrentUser 
 
@@ -41,11 +42,10 @@ sub _MyCurrentUser  {
 
 # }}}
 
-# {{{ sub _MyHandle 
-sub _MyHandle  {
+# {{{ sub _Handle 
+sub _Handle  {
   my $self = shift;
-  
-  $self->SUPER::_MyHandle( 'Handle' => $RT::Handle );
+  $self->SUPER::_Handle( $RT::Handle );
 }
 # }}}
 
@@ -63,38 +63,17 @@ sub Create  {
 # }}}
 
 
-# {{{ sub _Value 
-sub _Value  {
-
-  my $self = shift;
-  my $field = shift;
-  my ($package, $filename, $line) = caller;
-#  print STDERR "DBIx::Record->_Value called from $package, line $line with arguments (",@_,")\n";
-#  print STDERR "Determining value of $field\n";
-  #if the user is trying to display only {
-  if ($self->DisplayPermitted) {
-    #if the user doesn't have display permission, return an error
-    return($self->SUPER::_Value($field));
-  }
-  else {
-    return(0, "Permission Denied");
-  }
-}
-# }}}
 
 # {{{ sub _Set 
 sub _Set  {
   my $self = shift;
   my $field = shift;
   #if the user is trying to modify the record
-  if ($self->ModifyPermitted) {
-    $self->SUPER::_Set('LastUpdatedBy', $self->{'user'}->id)
-	if ($self->_Accessible('LastUpdatedBy','auto'));
-    $self->SUPER::_Set($field, @_);
-  }
-  else {
-    return (0, "Permission Denied");
-  }
+  
+  $self->SUPER::_Set('LastUpdatedBy', $self->{'user'}->id)
+    if ($self->_Accessible('LastUpdatedBy','auto'));
+  $self->SUPER::_Set($field, @_);
+  
   
 }
 # }}}
@@ -120,6 +99,3 @@ sub CurrentUser  {
 
 
 1;
-
-
-

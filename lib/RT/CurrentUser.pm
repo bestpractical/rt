@@ -30,7 +30,6 @@ sub new  {
 sub _Init  {
   my $self = shift;
   my $UserId = shift;
-  $self->_MyHandle;
   if (defined($UserId)) {
     $self->Load($UserId);
   }

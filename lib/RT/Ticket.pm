@@ -7,6 +7,7 @@ package RT::Ticket;
 use RT::Record;
 use RT::Link;
 use RT::Links;
+
 @ISA= qw(RT::Record);
 
 # {{{ POD
@@ -70,17 +71,17 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
     TimeWorked -- an integer
     Told -- a unix time or a Date::Kronos object. time of last contact (stubbed!)
     Due -- a unix time or a Date::Kronos object describing the due date (stubbed!)
-    MIMEEntity -- a MIME::Entity object with the content of the initial ticket request.
+    MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
 
 Returns: TICKETID, Transaction Object, Error Message
 
 =cut
 
 
-
 sub Create {
   my $self = shift;
   my $ErrStr;
+
   
   my %args = (id => undef,
 	      EffectiveId => undef,
@@ -96,16 +97,20 @@ sub Create {
 	      Status => 'open',
 	      TimeWorked => 0,
 	      Due => undef,
-	      MIMEEntity => undef,
+	      MIMEObj => undef,
 	     
 	      @_);
+
+  unless ($self->CurrentUserHasRight('CreateTicket')) {
+    return (0, "Permission Denied");
+  }
 
   #TODO Load queue defaults
 
   if (!$args{'Queue'} && $args{'QueueTag'}) {
-      $q=RT::Queue->new($self->{user});
-      $q->LoadByCol("QueueId", $args{'QueueTag'});
-      $args{'Queue'}=$q->id;
+    my $q=RT::Queue->new($self->CurrentUser);
+    $q->LoadByCol("QueueId", $args{'QueueTag'});
+    $args{'Queue'}=$q->id;
   }
 
   unless ($args{'Queue'}) {
@@ -136,8 +141,8 @@ sub Create {
     warn $message;
     return (0, 0, $message);
   }
-  if (defined $args{'MIMEEntity'}) {
-    my $head = $args{'MIMEEntity'}->head;
+  if (defined $args{'MIMEObj'}) {
+    my $head = $args{'MIMEObj'}->head;
     
     require Mail::Address;
 
@@ -155,15 +160,14 @@ sub Create {
       $self->AddWatcher ( Email => $Cc->address,
 			  Type => "Cc");
     }
-
+    
   }
   #Add a transaction for the create
   my $Trans;
   ($Trans,$ErrStr) = $self->_NewTransaction(Type => "Create",
-				     TimeTaken => 0, 
-				     MIMEEntity=>$args{'MIMEEntity'});
+					    TimeTaken => 0, 
+					    MIMEObj=>$args{'MIMEObj'});
   
-
   # Logging
   if ($self->Id && $Trans) {
       $ErrStr='New request #'.$self->Id." (".$self->Subject.") created in queue ".
@@ -184,6 +188,8 @@ sub Create {
 # }}}
 
 # {{{ Routines dealing with watchers.
+
+# {{{ Routines dealing with adding new watchers
 
 # {{{ sub AddWatcher
 
@@ -210,10 +216,13 @@ sub AddWatcher {
 	       Owner => 0,
 	       @_ );
 
+  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+    return (0, "Permission Denied");
+  }
+  
   #TODO: Look up the Email that's been passed in to find the watcher's
   # user id. Set Owner to that value.
   
-
   require RT::Watcher;
   my $Watcher = new RT::Watcher ($self->CurrentUser);
   $Watcher->Create(%args);
@@ -266,6 +275,8 @@ sub AddAdminCc {
   my $self = shift;
   return ($self->AddWatcher ( Type => 'AdminCc', @_));
 }
+# }}}1
+
 # }}}
 
 # {{{ sub DeleteWatcher
@@ -286,13 +297,13 @@ sub DeleteWatcher {
     my ($Watcher);
     
     while ($Watcher = $self->Watchers->Next) {
-	if ($Watcher->Email =~ /$email/) {
-	    $self->_NewTransaction ( Type => 'DelWatcher',
-				     OldValue => $Watcher->Email,
-				     Data => $Watcher->Type,
-				   );
-	    $Watcher->Delete();
-	}
+      if ($Watcher->Email =~ /$email/) {
+	$self->_NewTransaction ( Type => 'DelWatcher',
+				 OldValue => $Watcher->Email,
+				 Data => $Watcher->Type,
+			       );
+	$Watcher->Delete();
+      }
     }
 }
 
@@ -304,11 +315,6 @@ sub DeleteWatcher {
 
 Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 
-# TODO: Should this one only return the _ticket_ watchers or the queue
-# + ticket watchers?  I think the latter would make most sense, and
-# the current AdminCcAsString and CcAsString subs (which are used for
-# mail sending) is using this sub. -- TobiX
-
 # It should return only the ticket watchers. the actual FooAsString
 # methods capture the queue watchers too. I don't feel thrilled about this,
 # but we don't want the Cc Requestors and AdminCc objects to get filled up
@@ -319,6 +325,11 @@ Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 
 sub Watchers {
   my $self = shift;
+  
+  unless ($self->CurrentUserHasRight('ShowTicket')) {
+    return (0, "Permission Denied");
+  }
+
   if (! defined ($self->{'Watchers'}) 
       || $self->{'Watchers'}->{is_modified}) {
     require RT::Watchers;
@@ -428,9 +439,16 @@ sub _CleanAddressesAsString {
 
 # }}}
 
+# {{{ Routines that return RT::Watchers objects of Requestors, Ccs and AdminCcs
+
 # {{{ sub Requestors
 sub Requestors {
   my $self = shift;
+
+  unless ($self->CurrentUserHasRight('ShowTicket')) {
+    return (0, "Permission Denied");
+  }
+
   if (! defined ($self->{'Requestors'})) {
     require RT::Watchers;
     $self->{'Requestors'} = RT::Watchers->new($self->CurrentUser);
@@ -446,6 +464,12 @@ sub Requestors {
 # (see also AdminCc comments)
 sub Cc {
   my $self = shift;
+
+  
+  unless ($self->CurrentUserHasRight('ShowTicket')) {
+    return (0, "Permission Denied");
+  }
+
   if (! defined ($self->{'Cc'})) {
     require RT::Watchers;
     $self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
@@ -464,6 +488,12 @@ sub Cc {
 # -- TobiX
 sub AdminCc {
   my $self = shift;
+
+  
+  unless ($self->CurrentUserHasRight('ShowTicket')) {
+    return (0, "Permission Denied");
+  }
+
   if (! defined ($self->{'AdminCc'})) {
     require RT::Watchers;
     $self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
@@ -475,6 +505,65 @@ sub AdminCc {
 }
 # }}}
 
+# }}}
+
+# {{{ IsWatcher,IsRequestor,IsCc, IsAdminCc
+
+# {{{ sub IsWatcher
+# a generic routine to be called by IsRequestor, IsCc and IsAdminCc
+sub IsWatcher {
+my $self = shift;
+die "Ticket::IsWatcher unimplemented\n";
+#TODO Implement
+}
+# }}}
+
+# {{{ sub IsRequestor
+
+sub IsRequestor {
+  my $self = shift;
+  my $whom = shift;
+
+  my $mail;
+
+  #TODO this can be done _properly_ with a simple SQL query.
+
+  if (ref $whom eq "Mail::Address") {
+    $mail=$whom->Address;
+  } elsif (ref $whom eq "RT::User") {
+    $mail=$whom->EmailAddress;
+  } elsif (!ref $whom) {
+    $mail=$whom;
+  }
+  
+  #if the requestors string contains the username
+  if ($self->RequestorsAsString() =~ /$mail/) {
+    return(1);
+  }
+  else {
+    return(undef);
+  }
+};
+
+# }}}
+# {{{ sub IsCc
+#TODO Implement
+sub IsCc {
+  my $self = shift;
+  die "TicketIsAdminCc Stubbed";  
+  
+}
+# }}}
+# {{{ sub IsAdminCc
+#TODO Implement
+sub IsAdminCc {
+  my $self = shift;
+  die "TicketIsAdminCc Stubbed";
+
+}
+# }}}
+
+# }}}
 
 # }}}
 
@@ -507,6 +596,10 @@ sub ValidateQueue {
 sub SetQueue {
   my $self = shift;
   my ($NewQueue, $NewQueueObj);
+
+  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+    return (0, "Permission Denied");
+  }
   
   if ($NewQueue = shift) {
     #TODO Check to make sure this isn't the current queue.
@@ -537,8 +630,10 @@ sub SetQueue {
 # }}}
 
 # {{{ sub Queue
+
 sub Queue {
   my $self = shift;
+
   if (!$self->{'queue'})  {
     require RT::Queue;
     $self->{'queue'} = RT::Queue->new($self->CurrentUser);
@@ -546,6 +641,7 @@ sub Queue {
   }
   return ($self->{'queue'});
 }
+
 # }}}
 
 # }}}
@@ -568,6 +664,7 @@ sub DueAsString {
 # }}}
 
 # {{{ sub GraceTimeAsString 
+# This really means "time until due"
 sub GraceTimeAsString {
     my $self=shift;
     require Date::Kronos;
@@ -604,6 +701,7 @@ sub ToldObj {
 # }}}
 
 # {{{ sub LongSinceToldAsString
+# TODO This should be called SinceToldAsString
 sub LongSinceToldAsString {
     my $self=shift;
     require Date::Kronos;
@@ -646,42 +744,6 @@ sub LastUpdatedByObj {
 
 # }}}
 
-# {{{ Routines dealing with requestor metadata
-
-# {{{ sub Notify
-sub Notify {
-    my $self = shift;
-    return ($self->_Set("Told",time()));
-}
-# }}}
-
-# }}}
-
-# {{{ Routines dealing with ticket relations
-
-# {{{ sub Merge
-sub Merge {
-  my $self = shift;
-  my $MergeInto = shift;
-  
-  #Make sure this user can modify this ticket
-  #Load $MergeInto as Ticket $Target
-
-  #Make sure this user can modify $Target
-  #If I have an owner and the $Target doesn't, set them on the target
-  
-  #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
-  #Merge the requestor lists
-  #Set my effective_sn to the $Target's Effective SN.
-  #Set all my transactions Effective_SN to the $Target's Effective_Sn
-  
-  #Make sure this ticket object thinks its merged
-
-  return ($TransactionObj, "Merge Successful");
-}  
-# }}}
-
-# }}}
 
 # {{{ Routines dealing with correspondence/comments
 
@@ -691,28 +753,22 @@ sub Merge {
 sub Comment {
   my $self = shift;
   
-  # MIMEObj here ... and MIMEEntity somewhere else ... it would have been better
-  # to be consistant.  But hey - it works!  We'll just leave it here as for now.
-  # -- TobiX
   my %args = (BccMessageTo => undef,
 	      CcMessageTo => undef,
 	      MIMEObj => undef,
 	      TimeTaken => 0,
 	      @_ );
     
-
-  #For ease of processing
-  my $MIME = $args{'MIMEObj'};
-
+  unless ($self->CurrentUserHasRight('CommentOnTicket')) {
+    return (0, "Permission Denied");
+  }
   #Record the correspondence (write the transaction)
   my $Trans = $self->_NewTransaction( Type => 'Comment',
 				      Data => $MIME->head->get('subject'),
-				      # Wouldn't it be better to just add %args here?
-				      # -- TobiX
 				      TimeTaken => $args{'TimeTaken'},
-				      MIMEEntity => $MIME
+				      MIMEObj => $args{'MIMEObj'}
 				    );
-
+  
   if ($args{'CcMessageTo'} || 
       $args{'BccMessageTo'} ) {
       #send a copy of the correspondence to the CC list and BCC list
@@ -733,30 +789,29 @@ sub Correspond {
 	       MIMEObj => undef,
 	       TimeTaken => 0,
 	       @_ );
-  
-  #For ease of processing
-  my $MIME = $args{'MIMEObj'};
-  
-  if (! defined ($MIME)) {
+  unless ($self->CurrentUserHasRight('CorrespondOnTicket')) {
+    return (0, "Permission Denied");
+  }
+
+  if (! defined ($args{'MIMEObj'})) {
     return(0,"No correspondence attached");
   }
 
   #Record the correspondence (write the transaction)
-  my ($Trans,$msg) 
-      = $self->_NewTransaction
-	  (Type => 'Correspond',
-	   Data => $MIME->head->get('subject'),
+  my ($Trans,$msg) = $self->_NewTransaction
+          (Type => 'Correspond',
+	   Data => $args{'MIMEObj'}->head->get('subject'),
 	   TimeTaken => $args{'TimeTaken'},
-	   MIMEEntity=> $MIME     
+	   MIMEObj=> $args{'$MIMEObj'}     
 	   );
 
-  # Probably this ones will be a part of the MIMEEntity above, and not
-  # parts of %args.  In the Scrips, a new MIMEEntity is created, so
+  # Probably this ones will be a part of the MIMEObj above, and not
+  # parts of %args.  In the Scrips, a new MIMEObj is created, so
   # the (B)CCs won't be sent.  Maybe the SendEmail should be adjusted
   # to import those header fields?  At the other hand, with incoming
   # mail we can assume that Bccs and Ccs from the header is already
   # sent, so it's rather a bug in the cli that the ccs and bccs are in
-  # the MIMEEntity instead of %args..
+  # the MIMEObj instead of %args..
   
   # This is no longer true. -- jv
 
@@ -770,19 +825,19 @@ sub Correspond {
       # TODO ... check what errors might be catched here, and deal
       # better with it
       warn;
-      return ($Trans, "correspondence (probably) NOT sent", $MIME);
+      return ($Trans, "correspondence (probably) NOT sent", $args{'MIMEObj'});
   }
 
-  my $T=RT::Transaction->new($self->{'user'});
+  my $T=RT::Transaction->new($self->CurrentUser);
   $T->Load($Trans);
   unless ($T->IsInbound) {
-      # Should we record a transaction here or not?  I'll avoid it as
-      # for now - because the transaction will involve an extra email.
-      # -- TobiX
-      $self->_UpdateTold;
+    # TODO: Should we record a transaction here or not?  I'll avoid it as
+    # for now - because the transaction will involve an extra email.
+    # -- TobiX
+    $self->_UpdateTold;
   }
 
-  return ($Trans, "correspondence (probably) sent", $MIME);
+  return ($Trans, "correspondence (probably) sent", $args{'MIMEObj'});
 }
 
 # }}}
@@ -821,9 +876,16 @@ sub NewKeyword {
 }
 # }}}
 
+# {{{ sub HasKeyword
+sub HasKeyword {
+  my $self = shift;
+  
+  die "HasKeyword stubbed";
+}
+# }}}
 # }}}
 
-# {{{ Routines dealing with links
+# {{{ Routines dealing with Links and Relations between tickets
 
 #TODO: This is not done.
 #
@@ -843,31 +905,45 @@ sub NewKeyword {
 
 # - (all) parent(s)/group ticket ...
 
+# {{{ sub Children
 # Gets all (local) links where we're the TARGET
 sub Children {
     return $_[0]->_Links('Target');
 }
+# }}}
 
+# {{{ sub Parents
 # Gets all (local) links where we're the BASE
 sub Parents {
     return $_[0]->_Links('Base');
 }
+# }}}
 
+# {{{ sub _Links 
 sub _Links {
-    my ($self, $f, $t)=(shift, shift, shift||"");
-    unless (exists $self->{"$f$t"}) {
-	$self->{"$f$t"} = new RT::Links;
-	$self->{"$f$t"}->Limit(FIELD=>$f, VALUE=>$self->id);
-	$self->{"$f$t"}->Limit(FIELD=>'Type', VALUE=>$t)
-	    if ($t);
+  my $self = shift;
+  
+  #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic
+  #tobias meant by $f
+  my $field = shift;
+  my $type =shift || "";
+    unless (exists $self->{"$field$type"}) {
+	$self->{"$field$type"} = new RT::Links;
+	$self->{"$field$type"}->Limit(FIELD=>$field, VALUE=>$self->id);
+	$self->{"$field$type"}->Limit(FIELD=>'Type', VALUE=>$type) if ($type);
     }
-    return $self->{"$f$t"}
+    return ($self->{"$field$type"});
 }
 
-#
+# }}}
+
 # {{{ sub AllLinks
+# this should return a reference to an RT::Links object which contains
+# all links to or from the current ticket
+
 sub AllLinks {
   my $self= shift;
+  #TODO this should work
   die "Stub!";
   
 #  if (! $self->{'all_links'}) {
@@ -885,6 +961,31 @@ sub URI {
     my $self = shift;
     return "fsck.com-rt://$rt::domain/$rt::rtname/ticket/".$self->id;
 }
+
+# }}}
+
+# {{{ sub Merge
+
+sub Merge {
+  my $self = shift;
+  my $MergeInto = shift;
+  
+  die "Ticket::Merge stubbed";
+  #Make sure this user can modify this ticket
+  #Load $MergeInto as Ticket $Target
+
+  #Make sure this user can modify $Target
+  #If I have an owner and the $Target doesn't, set them on the target
+  
+  #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
+  #Merge the requestor lists
+  #Set my effective_sn to the $Target's Effective SN.
+  #Set all my transactions Effective_SN to the $Target's Effective_Sn
+  
+  #Make sure this ticket object thinks its merged
+
+  return ($TransactionObj, "Merge Successful");
+}  
 
 # }}}
 
@@ -910,7 +1011,7 @@ sub LinkFrom {
 		 Target => $self->id,
 		 Type => '',
 		 @_);
-    $self->_NewLink(target=>$self->id, %args);
+    $self->_NewLink(%args);
 }
 
 # }}}
@@ -1062,7 +1163,7 @@ sub SetOwner {
   # TODO: check this
   
   if ($Type ne 'Steal' and 
-      $self->Owner->Id!=$RT::Nobody and 
+      $self->Owner->Id != $RT::Nobody and 
       $self->CurrentUser->Id ne $self->Owner->Id()) {
     
     return(0, "You can only reassign tickets that you own or that are unowned");
@@ -1112,8 +1213,8 @@ sub SetStatus {
       $status eq 'open' ? 'Open' :
       $status eq 'stalled' ? 'Stall' :
       $status eq 'resolved' ? 'Resolve' :
-      $status eq 'dead' ? 'Kill' : 'huh?';
-
+	$status eq 'dead' ? 'Kill' : 'huh?';
+  
   if ($action eq 'huh?') {
     return (0,"That status is not valid.");
   }
@@ -1161,15 +1262,17 @@ sub Resolve {
 
 # {{{ sub UpdateTold and _UpdateTold
 
+#TODO: explain why there are two different subs here
+
 sub UpdateTold {
     my $self=shift;
     my $timetaken=shift || 0;
-    $self->_Set('Told','now()',$timetaken,{TransactionType=>'Told',IsSQL=>1});
+    return($self->_Set('Told','now()',$timetaken,{TransactionType=>'Told',IsSQL=>1}));
 }
 
 sub _UpdateTold {
     my $self=shift;
-    $self->SUPER::_Set('Told','now()',1);
+    return($self->SUPER::_Set('Told','now()',1));
 }
 
 # }}}
@@ -1179,6 +1282,11 @@ sub _UpdateTold {
 # Get the right transactions object. 
 sub Transactions {
   my $self = shift;
+
+  unless ($self->CurrentUserHasRight('ShowTicketHistory')) {
+    return (0, "Permission Denied");
+  }
+  
   if (!$self->{'transactions'}) {
     use RT::Transactions;
     $self->{'transactions'} = RT::Transactions->new($self->CurrentUser);
@@ -1200,7 +1308,7 @@ sub _NewTransaction {
 	     NewValue => undef,
 	     Data => undef,
 	     Field => undef,
-	     MIMEEntity => undef,
+	     MIMEObj => undef,
 	     @_);
   
   
@@ -1214,7 +1322,7 @@ sub _NewTransaction {
 		      Field => $args{'Field'},
 		      NewValue => $args{'NewValue'},
 		      OldValue => $args{'OldValue'},
-		      MIMEEntity => $args{'MIMEEntity'}
+		      MIMEObj => $args{'MIMEObj'}
 		      );
 
   warn $msg unless $transaction;
@@ -1231,40 +1339,7 @@ sub _NewTransaction {
 
 # }}}
 
-# {{{ UTILITY METHODS
-
-# {{{ sub IsRequestor
-
-sub IsRequestor {
-  my $self = shift;
-  my $whom = shift;
-
-  my $mail;
-
-  #Todo: more advanced checking ... this is not fail-safe
-
-  if (ref $whom eq "Mail::Address") {
-      $mail=$whom->Address;
-  } elsif (ref $whom eq "RT::User") {
-      $mail=$whom->EmailAddress;
-  } elsif (!ref $whom) {
-      $mail=$whom;
-  }
-  
-  #if the requestors string contains the username
-  
-  if ($self->RequestorsAsString() =~ /$mail/) {
-
-    return(1);
-  }
-  else {
-    return(undef);
-  }
-};
-
-# }}}
-
-# {{{ PRIVATE UTILITY METHODS
+# {{{ PRIVATE UTILITY METHODS. Mostly needed so Ticket can be a DBIx::Record
 
 # {{{ sub _Accessible
 
@@ -1296,6 +1371,76 @@ sub _Accessible {
 
 # }}}
 
+# {{{ sub _Set
+
+#This subclasses rt::record
+sub _Set {
+  my $self = shift;
+  
+  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+    return (0, "Permission Denied");
+  }
+  
+  #if the user is trying to modify the record
+  my $Field = shift;
+  my $Value = shift;
+  my $TimeTaken = shift || 0;
+  
+  # Generally, more options that are needed for doing the
+  # transaction correct.  I'm just using "TransactionType" which
+  # usually differs from "Set".  I'd agree "MoreOptions" seems a bit
+  # kludgy, the "new" calling style should have been used instead 
+  # -- 
+    # TobiX
+
+  #This feels hopelessly kludgy. can we figure out a nicer way to do it?
+
+  my $MoreOptions = shift if @_;
+  
+  unless (ref $MoreOptions) {
+    $MoreOptions={TransactionType=>$MoreOptions};
+  }
+  
+  #Take care of the old value
+  my $Old=$self->_Value("$Field") || undef;
+  
+  #Set the new value
+  my ($ret, $msg)=$self->SUPER::_Set($Field, $Value, $MoreOptions->{IsSQL}||undef);
+  
+  #record the transaction
+  $ret or return (0,$msg);
+  my $Trans =	$self->_NewTransaction 
+    (Type => $MoreOptions->{'TransactionType'}||"Set",
+     Field => $Field,
+     NewValue => $Value || undef,
+     OldValue =>  $Old,
+     TimeTaken => $TimeTaken || 0,
+    );
+  return ($Trans,"$Field changed from ".($Old||"(nothing)")." to ".($Value||"(nothing)"));
+  
+  
+}
+
+# }}}
+
+# {{{ sub _Value 
+
+sub _Value  {
+
+  my $self = shift;
+  my $field = shift;
+  my ($package, $filename, $line) = caller;
+  unless ($self->CurrentUserHasRight('ShowTicket')) {
+    return (0, "Permission Denied");
+  }
+  
+  
+  return($self->SUPER::_Value($field));
+  
+}
+
+# }}}
+
 # {{{ sub _UpdateTimeTaken
 
 #This routine will increment the timeworked counter. it should
@@ -1321,149 +1466,54 @@ sub _UpdateDateActed {
 }
 # }}}
 
-# {{{ sub _Set
-
-#This overrides RT::Record
-sub _Set {
-  my $self = shift;
-  if (!$self->ModifyPermitted) {
-    return (0, "Permission Denied");
-  }
-  else {
-    #if the user is trying to modify the record
-    my $Field = shift;
-    my $Value = shift;
-    my $TimeTaken = shift || 0;
-    
-    #TODO: what the hell are moreoptions?
-
-    # Generally, more options that are needed for doing the
-    # transaction correct.  I'm just using "TransactionType" which
-    # usually differs from "Set".  I'd agree "MoreOptions" seems a bit
-    # kludgy, the "new" calling style should have been used instead 
-    # -- 
-    # TobiX
-
-    my $MoreOptions = shift if @_;
-
-    unless (ref $MoreOptions) {
-	$MoreOptions={TransactionType=>$MoreOptions};
-    }
-    
-    #Take care of the old value
-    my $Old=$self->_Value("$Field") || undef;
-
-    #Set the new value
-    my ($ret, $msg)=$self->SUPER::_Set($Field, $Value, $MoreOptions->{IsSQL}||undef);
-
-    #record the transaction
-    $ret or return (0,$msg);
-    my $Trans=	$self->_NewTransaction 
-	(Type => $MoreOptions->{'TransactionType'}||"Set",
-	 Field => $Field,
-	 NewValue => $Value || undef,
-	 OldValue =>  $Old,
-	 TimeTaken => $TimeTaken || 0,
-	 );
-    return ($Trans,"$Field changed from ".($Old||"(nothing)")." to ".($Value||"(nothing)"));
-  }
-  
-}
-
-# }}}
-
-# }}}
-
 # }}}
 
 # {{{ Routines dealing with ACCESS CONTROL
 
-# {{{ sub _HasRight 
+# {{{ sub CurrentUserHasRight 
+sub CurrentUserHasRight {
+  my $self = shift;
+  my $right = shift;
+#  TODO this is is a stub
+  return 1;
+  return ($self->HasRight("$right",$self->CurrentUser->Id()));
+}
+
+# }}}
+
+# {{{ sub HasRight 
 
 # TAKES: Right and optional "Actor" which defaults to the current user
-sub _HasRight {
+sub HasRight {
     my $self = shift;
-    #TODO For now, they always do
-    return(1);
-
     my $right = shift;
-    # by default, the actor is the current user
-    if (!@_) {
-	my $actor = $self->CurrentUser->Id();
-    }
-    else {
-	my $actor = shift;   
-    }
-  
-    return ($self->Queue->_HasRight(@_));
-}
-
-# }}}
-
-# {{{ sub DisplayPermitted
-
-sub DisplayPermitted {
-  my $self = shift;
-  my $actor = shift;
-  
-  if (!$actor) {
-    #my $actor = $self->CurrentUser->Id();
-  }
-  if (1) {
-    #  if ($self->Queue->DisplayPermitted($actor)) {
-      return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-
-# }}}
-
-# {{{ sub ModifyPermitted
-
-sub ModifyPermitted {
-  my $self = shift;
-  my $actor = shift;
-  if (!$actor) {
-   # my $actor = $self->CurrentUser->Id();
-  }
-  if ($self->Queue->ModifyPermitted($actor)) {
+    my $actor = shift;   
     
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-
-# }}}
-
-# {{{ sub AdminPermitted
-
-sub AdminPermitted {
-  my $self = shift;
-  my $actor = shift;
-  if (!$actor) {
-   # my $actor = $self->CurrentUser->Id();
-  }
-
-
-  if ($self->Queue->AdminPermitted($actor)) {
+    my $RightClause = "Right = '$right'";
+    my $ScopeClause = "(Scope = 'Queue') AND ((AppliesTo = ".$self->Queue->id().") OR (AppliesTo = 0))";
+    my $PrincipalsClause =   "((PrincipalType = 'User') AND (PrincipalId = $actor)) OR 
+ ((PrinciaplType = 'Group') AND (PrincipalId = GroupMembers.Id) AND (GroupMembers.UserId = $actor)) OR
+  (PrincipalType = 'Everyone')";
     
-    return(1);
-  }
-  else {
-    #if it's not permitted,
+    $PrincipalsClause .= " OR (PrincipalType = 'Owner') "  if ($actor == $self->Owner->Id);
+    $PrincipalsClause .= "OR (PrincipalType = 'TicketRequestor') " if $self->IsRequestor->($actor);
+    $PrincipalsClause .= "OR (PrincipalType = 'TicketCc') " if  $self->IsCc($actor);
+    $PrincipalsClause .= "OR (PrincipalType = 'TicketAdminCc') " if $self->IsAdminCc($actor);
+        
+    my $query_string = "SELECT COUNT(*) FROM ACL, GroupMembers WHERE (($ScopeClause) AND ($RightClause) AND ($PrincipalsClause))";
+    
+    my $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string);
+    
+    #if there's a match, the right is granted
+    return (1) if ($hitcount);
+    
     return(0);
   }
-}
 
 # }}}
 
 # }}}
+
 1;
 
 

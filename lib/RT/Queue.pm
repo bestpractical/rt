@@ -242,7 +242,11 @@ sub ACL  {
  #
 #ACCESS CONTROL
 
-sub _HasRight {
+sub CurrentUserHasRight {
+  my $self = shift;
+  return 1;
+}
+sub HasRight {
   my $self = shift;
   my $right = shift;
 
