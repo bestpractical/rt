@@ -1,4 +1,5 @@
-  <FORM NAME="ModifyKeywordSelect" METHOD="get" ACTION="<%$RT::WebPath%>/Admin/KeywordSelects/Modify.html">
+  <FORM NAME="ModifyKeywordSelect" METHOD=POST ACTION="<%$RT::WebPath%>/Admin/KeywordSelects/Modify.html">
+
     [<%$title |n %>]
     <BR>
       

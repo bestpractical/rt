@@ -3,7 +3,7 @@
 
 
 <& /Elements/TitleBoxStart, title => %$title  &>
-<FORM METHOD="get" ACTION="<%$RT::WebPath%>/Admin/Keywords/Modify.html">
+<FORM METHOD="POST" ACTION="<%$RT::WebPath%>/Admin/Keywords/Modify.html">
 <INPUT TYPE="hidden" NAME="id" VALUE="<% $id %>">
 Keyword <INPUT NAME="Name" VALUE="<% $Keyword->Name %>"><BR>
 

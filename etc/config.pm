@@ -20,7 +20,7 @@ $Organization = "example.com";
 
 # $user_passwd_min defines the minimum length for user passwords. Setting
 # it to 0 disables this check
-$user_passwd_min = "5";
+$MinimumPasswordLength = "5";
 
 # What timezone is your RT server in? Currently used to process dates like
 # "Tomorrow at 4pm." Once we have per-user timezones, this will just be a 

@@ -2,9 +2,9 @@
 <& /Admin/Elements/Tabs, current_tab => 'Admin/Keywords/' &>
 
 <& /Elements/TitleBoxStart, title => 'Keywords' &>
-<a href="?RootId=<%$Root->Parent%>"><%$Root->Path%></a>
+<a href="<%$RT::WebPath%>/Admin/Keywords/?RootId=<%$Root->Parent%>"><%$Root->Path%></a>
 <UL>
-<FORM <METHOD=POST>
+<FORM METHOD=POST>
 <input type=hidden name=RootId value="<%$RootId%>">
 
 

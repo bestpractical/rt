@@ -102,17 +102,23 @@ sub _Accessible  {
 
 sub Create  {
     my $self = shift;
-    my %args = (
-		Privileged => 0,
+    my %args = (Privileged => 0,
 		@_ # get the real argumentlist
 	       );
-    
-    #TODO: insert argument list +++
-    ##TODO: unless defined $args{'Password'}, make a random password.
-    
-    #Todo we shouldn't do anything if we have no password to start.
-    #return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
-    
+
+    #TODO check for duplicate emails and userid +++
+
+    if (! $args{'Password'})  {
+        return(0, "No password set");
+    }
+    elsif (length($args{'Password'}) < $RT::MinimumPasswordLength) {
+        return(0,"Password too short");
+    }
+    else {
+        my $salt = join '', ('.','/',0..9,'A'..'Z','a'..'z')[rand 64, rand 64];
+        $args{'Password'} = crypt($args{'Password'}, $salt);     
+    }   
+        
     #TODO Specify some sensible defaults.
     #TODO check ACLs
     
@@ -121,11 +127,11 @@ sub Create  {
     #If the create failed.
     return (undef) if ($id == 0);
     
-    
-    if ($args{'SendWelcomeMessage'}) {
-	#TODO: Check if the email exists and looks valid
-	#TODO: Send the user a "welcome message"  see [fsck.com #290]
-    }
+    #TODO post 2.0
+    #if ($args{'SendWelcomeMessage'}) {
+    #	#TODO: Check if the email exists and looks valid
+    #	#TODO: Send the user a "welcome message"  see [fsck.com #290]
+    #}
     
     return ($id);
 }
@@ -219,7 +225,39 @@ sub LoadByEmail {
 # }}}
 
 
-# {{{ sub IsPassword
+# {{{ sub SetPassword
+
+=head2 SetPassword
+
+Takes a string. Checks the string's length and sets this user's password 
+to that string.
+
+=cut
+
+sub SetPassword {
+    my $self = shift;
+    my $password = shift;
+    
+    unless ($self->CurrentUserCanModify) {
+	return(0, 'Permission Denied');
+    }
+    
+    if (! $password)  {
+        return(0, "No password set");
+    }
+    elsif (length($password) < $RT::MinimumPasswordLength) {
+        return(0,"Password too short");
+    }
+    else {
+        my $salt = join '', ('.','/',0..9,'A'..'Z','a'..'z')[rand 64, rand 64];
+        return ( $self->SUPER::SetPassword(crypt($password, $salt)) );
+    }   
+    
+}
+
+# }}}
+
+# {{{ sub IsPassword 
 
 =head2 IsPassword
 
@@ -232,6 +270,8 @@ sub IsPassword {
     my $self = shift;
     my $value = shift;
     
+    #TODO +++ ACL this
+
     $RT::Logger->debug($self->UserId." attempting to authenticate with password '$value'\n");
     # RT does not allow null passwords 
     if ((!defined ($value)) or ($value eq '')) {
@@ -241,7 +281,7 @@ sub IsPassword {
   	$RT::Logger->info("Disabled user ".$self->UserId." tried to log in");
 	return(undef);
     }
-    if ($value eq $self->_Value('Password')) {
+    if ($self->__Value('Password') eq crypt($value, $self->__Value('Password'))) {
 	return (1);
     }
     else {
@@ -874,7 +914,6 @@ sub _Value  {
 }
   
 # }}}
-
 
 # }}}
 1;
