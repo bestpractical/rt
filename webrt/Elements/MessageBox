@@ -1,7 +1,6 @@
 <TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %>
--- 
-<%$session{'CurrentUser'}->UserObj->Signature%></TEXTAREA>
-
+<%$Signature%>
+</TEXTAREA>
 <%ARGS>
 $QuoteTransaction => undef
 $Name=>'Content'
@@ -12,6 +11,7 @@ $MessageURI=>undef
 </%ARGS>
 
 <%INIT>
+
 if ($MessageURI) {
 	my $code;
 	($code, $Default)=RT::Link->GetContent($MessageURI);
@@ -28,5 +28,11 @@ if ($QuoteTransaction) {
 	if $message;
     $Default=$$d;
 }
+
+my $Signature = '';
+if ($session{'CurrentUser'}->UserObj->Signature) {
+	$Signature = "--\n".$session{'CurrentUser'}->UserObj->Signature;
+}
+
 </%INIT>
 
