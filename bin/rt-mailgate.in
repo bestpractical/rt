@@ -31,6 +31,7 @@ rt-mailgate - Mail interface to RT3.
 
 use RT::I18N;
 
+# {{{ Test new ticket creation by root who is privileged and superuser
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
@@ -52,14 +53,15 @@ ok (UNIVERSAL::isa($tick,'RT::Ticket'));
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the ticket");
 
+# }}}
 
 
-
+# {{{This is a test of new ticket creation as an unknown user
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: doesnotexist\@fsck.com
-To: rt\@fsck.com
+From: doesnotexist\@example.com
+To: rt\@example.com
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
@@ -74,9 +76,13 @@ my $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 my $u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist@fsck.com');
+$u->Load('doesnotexist@example.com');
 ok( $u->Id == 0, " user does not exist and was not created by failed ticket submission");
 
+
+# }}}
+
+# {{{ now everybody can create tickets.  can a random unkown user create tickets?
 
 my $g = RT::Group->new($RT::SystemUser);
 $g->LoadSystemInternalGroup('Everyone');
@@ -89,14 +95,16 @@ sleep(60); # gotta sleep so the remote process' ACL cache times out
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: doesnotexist\@fsck.com
-To: rt\@fsck.com
+From: doesnotexist\@example.com
+To: rt\@example.com
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
 Foob!
 EOF
 close (MAIL);
+
+
 
 $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
@@ -105,9 +113,111 @@ my $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 my $u = RT::User->new($RT::SystemUser);
-$u->Load('doesnotexist@fsck.com');
-ok( $u->Id != 0, " user does not exist and was not created by failed ticket submission");
+$u->Load('doesnotexist@example.com');
+ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 
+# }}}
+
+
+# {{{  can another random reply to a ticket without being granted privs? answer should be no.
+
+
+#($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
+#ok ($val, "Granted everybody the right to create tickets - $msg");
+#sleep(60); # gotta sleep so the remote process' ACL cache times out
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: doesnotexist-2\@example.com
+To: rt\@example.com
+Subject: [example.com #@{[$tick->Id]}] This is a test of a reply as an unknown user
+
+Blah!
+Foob!
+EOF
+close (MAIL);
+
+$u = RT::User->new($RT::SystemUser);
+$u->Load('doesnotexist-2@example.com');
+ok( $u->Id == 0, " user does not exist and was not created by ticket correspondence submission");
+
+# }}}
+# {{{  can another random reply to a ticket after being granted privs? answer should be yes
+
+
+($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'ReplyToTicket');
+ok ($val, "Granted everybody the right to reply to  tickets - $msg");
+sleep(60); # gotta sleep so the remote process' ACL cache times out
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: doesnotexist-2\@example.com
+To: rt\@example.com
+Subject: [example.com #@{[$tick->Id]}] This is a test of a reply as an unknown user
+
+Blah!
+Foob!
+EOF
+close (MAIL);
+
+
+$u = RT::User->new($RT::SystemUser);
+$u->Load('doesnotexist-2@example.com');
+ok( $u->Id != 0, " user exists and was created by ticket correspondence submission");
+
+# }}}
+
+# {{{  can another random comment on a ticket without being granted privs? answer should be no.
+
+
+#($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
+#ok ($val, "Granted everybody the right to create tickets - $msg");
+#sleep(60); # gotta sleep so the remote process' ACL cache times out
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action comment"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: doesnotexist-3\@example.com
+To: rt\@example.com
+Subject: [example.com #@{[$tick->Id]}] This is a test of a comment as an unknown user
+
+Blah!
+Foob!
+EOF
+close (MAIL);
+
+$u = RT::User->new($RT::SystemUser);
+$u->Load('doesnotexist-3@example.com');
+ok( $u->Id == 0, " user does not exist and was not created by ticket comment submission");
+
+# }}}
+# {{{  can another random reply to a ticket after being granted privs? answer should be yes
+
+
+($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
+ok ($val, "Granted everybody the right to reply to  tickets - $msg");
+sleep(60); # gotta sleep so the remote process' ACL cache times out
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action comment"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: doesnotexist-3\@example.com
+To: rt\@example.com
+Subject: [example.com #@{[$tick->Id]}] This is a test of a comment as an unknown user
+
+Blah!
+Foob!
+EOF
+close (MAIL);
+
+
+$u = RT::User->new($RT::SystemUser);
+$u->Load('doesnotexist-3@example.com');
+ok( $u->Id != 0, " user exists and was created by ticket comment submission");
+
+# }}}
+
+
+
+# {{{ Simple I18N testing
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
@@ -170,6 +280,9 @@ my $unistring = "\303\241\303\251\303\255\303\263\303\272";
 Encode::_utf8_on($unistring);
 
 ok ($tick2->Transactions->First->Content =~ /$unistring/, "It appears to be unicode - ".$tick2->Transactions->First->Content);
+
+# }}}
+
 
 ($val,$msg) = $g->PrincipalObj->RevokeRight(Right => 'CreateTicket');
 ok ($val, $msg);

@@ -36,8 +36,7 @@ sub GetCurrentUser {
                  @_ );
 
     # We don't need to do any external lookups
-    my ( $Address, $Name ) =
-      ParseSenderAddressFromHead( $args{'Message'}->head );
+    my ( $Address, $Name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
     my $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByEmail($Address);
 
@@ -45,33 +44,32 @@ sub GetCurrentUser {
         $CurrentUser->LoadByName($Address);
     }
 
-    # If the user can't be loaded, we may need to create one.
     if ( $CurrentUser->Id ) {
-
         return ( $CurrentUser, 1 );
-
     }
+    
+
+
+    # If the user can't be loaded, we may need to create one. Figure out the acl situation.
     my $unpriv = RT::Group->new($RT::SystemUser);
     $unpriv->LoadSystemInternalGroup('Unprivileged');
     unless ( $unpriv->Id ) {
-        $RT::Logger->crit(
-             "Auth::MailFrom couldn't find the 'Unprivileged' internal group" );
+        $RT::Logger->crit( "Auth::MailFrom couldn't find the 'Unprivileged' internal group" );
         return ( $args{'CurrentUser'}, -1 );
     }
+
     my $everyone = RT::Group->new($RT::SystemUser);
     $everyone->LoadSystemInternalGroup('Everyone');
     unless ( $everyone->Id ) {
-        $RT::Logger->crit(
-                  "Auth::MailFrom couldn't find the 'Everyone' internal group");
+        $RT::Logger->crit( "Auth::MailFrom couldn't find the 'Everyone' internal group");
         return ( $args{'CurrentUser'}, -1 );
     }
 
     # but before we do that, we need to make sure that the created user would have the right
     # to do what we're doing.
     if ( $args{'Ticket'} && $args{'Ticket'}->Id ) {
-
         # We have a ticket. that means we're commenting or corresponding
-        if ( $args{'action'} =~ /^comment$/i ) {
+        if ( $args{'Action'} =~ /^comment$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can comment on tickets
             unless ( $everyone->PrincipalObj->HasRight(
@@ -86,7 +84,7 @@ sub GetCurrentUser {
                 return ( $args{'CurrentUser'}, 0 );
             }
         }
-        elsif ( $args{'action'} =~ /^correspond$/i ) {
+        elsif ( $args{'Action'} =~ /^correspond$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless ( $everyone->PrincipalObj->HasRight(Object => $args{'Queue'},
