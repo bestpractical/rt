@@ -4,6 +4,7 @@
 <OPTION VALUE="open" >open
 <OPTION VALUE="stalled" >stalled
 <OPTION VALUE="resolved" >resolved
+<OPTION VALUE="dead" >dead
 </SELECT>
 
 <%ARGS>
