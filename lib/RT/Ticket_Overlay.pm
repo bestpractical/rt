@@ -2996,61 +2996,75 @@ sub SetOwner {
     my $NewOwner = shift;
     my $Type     = shift || "Give";
 
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
+    # must have ModifyTicket rights
+    # or TakeTicket/StealTicket and $NewOwner is self
+    # see if it's a take
+    if ( $self->OwnerObj->Id == $RT::Nobody->Id ) {
+        unless (    $self->CurrentUserHasRight('ModifyTicket')
+                 || $self->CurrentUserHasRight('TakeTicket') ) {
+            return ( 0, $self->loc("Permission Denied") );
+        }
     }
 
+    # see if it's a steal
+    elsif (    $self->OwnerObj->Id != $RT::Nobody->Id
+            && $self->OwnerObj->Id != $self->CurrentUser->id ) {
+
+        unless (    $self->CurrentUserHasRight('ModifyTicket')
+                 || $self->CurrentUserHasRight('StealTicket') ) {
+            return ( 0, $self->loc("Permission Denied") );
+        }
+    }
+    else {
+        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+            return ( 0, $self->loc("Permission Denied") );
+        }
+    }
     my $NewOwnerObj = RT::User->new( $self->CurrentUser );
     my $OldOwnerObj = $self->OwnerObj;
 
     $NewOwnerObj->Load($NewOwner);
-    if (!$NewOwnerObj->Id) {
+    if ( !$NewOwnerObj->Id ) {
         return ( 0, $self->loc("That user does not exist") );
     }
 
     #If thie ticket has an owner and it's not the current user
 
-    if ( ( $Type ne 'Steal' )
+    if (    ( $Type ne 'Steal' )
         and ( $Type ne 'Force' )
         and    #If we're not stealing
         ( $self->OwnerObj->Id != $RT::Nobody->Id ) and    #and the owner is set
-        ( $self->CurrentUser->Id ne $self->OwnerObj->Id() ) )
-    {    #and it's not us
+        ( $self->CurrentUser->Id ne $self->OwnerObj->Id() )
+      ) {                                                 #and it's not us
         return ( 0,
-            $self->loc("You can only reassign tickets that you own or that are unowned") );
+                 $self->loc(
+"You can only reassign tickets that you own or that are unowned" ) );
     }
 
     #If we've specified a new owner and that user can't modify the ticket
-    elsif (
-        ($NewOwnerObj->Id)
-        and (
-            !$NewOwnerObj->HasRight(
-                Right     => 'OwnTicket',
-                Object => $self
-            )
-        )
-      )
-    {
+    elsif ( ( $NewOwnerObj->Id )
+            and ( !$NewOwnerObj->HasRight( Right  => 'OwnTicket',
+                                           Object => $self ) )
+      ) {
         return ( 0, $self->loc("That user may not own tickets in that queue") );
     }
 
     #If the ticket has an owner and it's the new owner, we don't need
     #To do anything
-    elsif ( ( $self->OwnerObj )
-        and ( $NewOwnerObj->Id eq $self->OwnerObj->Id ) )
-    {
+    elsif (     ( $self->OwnerObj )
+            and ( $NewOwnerObj->Id eq $self->OwnerObj->Id ) ) {
         return ( 0, $self->loc("That user already owns that ticket") );
     }
 
     $RT::Handle->BeginTransaction();
 
     # Delete the owner in the owner group, then add a new one
-    # TODO: is this safe? it's not how we really want the API to work 
+    # TODO: is this safe? it's not how we really want the API to work
     # for most things, but it's fast.
-    my ($del_id, $del_msg) = $self->OwnerGroup->MembersObj->First->Delete();
+    my ( $del_id, $del_msg ) = $self->OwnerGroup->MembersObj->First->Delete();
     unless ($del_id) {
         $RT::Handle->Rollback();
-        return(0, $self->loc("Could not change owner. "). $del_msg);
+        return ( 0, $self->loc("Could not change owner. ") . $del_msg );
     }
 
     my ( $add_id, $add_msg ) = $self->OwnerGroup->_AddMember(
@@ -3058,39 +3072,39 @@ sub SetOwner {
                                        InsideTransaction => 1 );
     unless ($add_id) {
         $RT::Handle->Rollback();
-        return(0, $self->loc("Could not change owner. "). $add_msg);
+        return ( 0, $self->loc("Could not change owner. ") . $add_msg );
     }
-   
-    # We call set twice with slightly different arguments, so 
+
+    # We call set twice with slightly different arguments, so
     # as to not have an SQL transaction span two RT transactions
 
     my ( $val, $msg ) = $self->_Set(
-        Field           => 'Owner',
-        RecordTransaction => 0,
-        Value           => $NewOwnerObj->Id,
-        TimeTaken       => 0,
-        TransactionType => $Type
+                      Field             => 'Owner',
+                      RecordTransaction => 0,
+                      Value             => $NewOwnerObj->Id,
+                      TimeTaken         => 0,
+                      TransactionType   => $Type,
+                      CheckACL          => 0,                  # don't check acl
     );
 
     unless ($val) {
         $RT::Handle->Rollback;
-        return(0, $self->loc("Could not change owner. "). $msg);
+        return ( 0, $self->loc("Could not change owner. ") . $msg );
     }
 
     $RT::Handle->Commit();
 
-
-
-     my   ( $trans, $msg, undef) = $self->_NewTransaction(
-                                               Type => $Type,
-                                               Field     => 'Owner',
-                                               NewValue  => $NewOwnerObj->Id,
-                                               OldValue  => $OldOwnerObj->Id,
-                                               TimeTaken => 0
-        );
+    my ( $trans, $msg, undef ) = $self->_NewTransaction(
+                                                   Type     => $Type,
+                                                   Field    => 'Owner',
+                                                   NewValue => $NewOwnerObj->Id,
+                                                   OldValue => $OldOwnerObj->Id,
+                                                   TimeTaken => 0 );
 
     if ($trans) {
-        $msg = $self->loc( "Owner changed from [_1] to [_2]", $OldOwnerObj->Name,  $NewOwnerObj->Name);
+        $msg = $self->loc( "Owner changed from [_1] to [_2]",
+                           $OldOwnerObj->Name, $NewOwnerObj->Name );
+
         # TODO: make sure the trans committed properly
     }
     return ( $trans, $msg );
@@ -3801,17 +3815,20 @@ sub _ClassAccessible {
 sub _Set {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-
     my %args = ( Field             => undef,
                  Value             => undef,
                  TimeTaken         => 0,
                  RecordTransaction => 1,
                  UpdateTicket      => 1,
+                 CheckACL          => 1,
                  TransactionType   => 'Set',
                  @_ );
+
+    if ($args{'CheckACL'}) {
+      unless ( $self->CurrentUserHasRight('ModifyTicket')) {
+          return ( 0, $self->loc("Permission Denied"));
+      }
+   }
 
     unless ($args{'UpdateTicket'} || $args{'RecordTransaction'}) {
         $RT::Logger->error("Ticket->_Set called without a mandate to record an update or update the ticket");

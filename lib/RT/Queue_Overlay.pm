@@ -85,7 +85,9 @@ $RIGHTS = {
     CommentOnTicket => 'Comment on tickets',                          # loc_pair
     OwnTicket       => 'Own tickets',                                 # loc_pair
     ModifyTicket    => 'Modify tickets',                              # loc_pair
-    DeleteTicket    => 'Delete tickets'                               # loc_pair
+    DeleteTicket    => 'Delete tickets',                              # loc_pair
+    TakeTicket      => 'Take tickets',                                # loc_pair
+    StealTicket     => 'Steal tickets',                               # loc_pair
 
 };
 

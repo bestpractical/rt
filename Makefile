@@ -129,7 +129,7 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
 # "mysql" is known to work.
 # "Pg" is known to work
 
-DB_TYPE			=	Pg
+DB_TYPE			=	mysql
 
 # Set DBA to the name of a unix account with the proper permissions and 
 # environment to run your commandline SQL sbin
@@ -140,7 +140,7 @@ DB_TYPE			=	Pg
 # For Pg, you probably want 'postgres' 
 # For oracle, you want 'system'
 
-DB_DBA			=	postgres
+DB_DBA			=	root
 
 DB_HOST			=	localhost
 
