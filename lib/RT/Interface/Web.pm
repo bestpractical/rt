@@ -1253,6 +1253,7 @@ sub ProcessObjectCustomFieldUpdates {
 	    }
 	    return (@results);
 	}
+    }
 }
 
 # {{{ sub ProcessTicketWatchers
@@ -1478,7 +1479,6 @@ sub ProcessRecordLinks {
     return (@results);
 }
 
-# {{{ sub _UploadedFile
 
 =head2 _UploadedFile ( $arg );
 
