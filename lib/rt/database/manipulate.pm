@@ -285,7 +285,9 @@ sub merge {
     }
     #&req_in($in_serial_num,$in_current_user);
     #&req_in($in_merge_into,$in_current_user);
-   
+  if ( $req[$in_merge_into]{'date_created'} == 0) {
+	return (0,"That request doesn't exist\n");
+	}
 
     $old_requestors=$req[$in_serial_num]{'requestors'};
     $new_requestors=$req[$in_merge_into]{'requestors'};
