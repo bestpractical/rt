@@ -2,7 +2,9 @@
 <TR>
 % if ($Reset) {
 <TD>
+<FONT COLOR=#ffd800 >
 <INPUT TYPE=RESET VALUE="<%$ResetLabel%>">
+</FONT>
 </TD>
 %}
 <TD>

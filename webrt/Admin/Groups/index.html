@@ -1,8 +1,8 @@
 
-<& /Admin/Elements/Header, Title => 'RT Admin/Groups' &>
+<& /Admin/Elements/Header, Title => 'Admin/Groups' &>
 <& /Admin/Elements/Tabs, current_tab => 'Admin/Groups/' &>
 
-<H1>Edit groups</h1>
+<& /Elements/TitleBoxStart, title => 'Select a group' &>
 
 Pseudogroups:<BR>
 <UL>
@@ -20,6 +20,7 @@ Groups:<BR>
 %}
 </UL>
 
+<& /Elements/TitleBoxEnd &>
 <%INIT>
 my ($Group);
 my $PseudoGroups = new RT::Groups($session{'CurrentUser'});

@@ -2,18 +2,18 @@
 <hr>
 <%INIT>
   my $subtabs = {
-	
-	       Scrips => { title => 'Scrips',
+		
+	       A => { title => 'Scrips',
 			   path => 'Admin/Global/Scrips.html',
 			 },
 
-	       Templates => { title => 'Templates',
+	       B => { title => 'Templates',
 			path => 'Admin/Global/Templates.html',
 		      },
-	        GroupRights => { title => 'Group Rights',
+	        C => { title => 'Group Rights',
 			        path => 'Admin/Global/GroupRights.html',
 		      },
-	        UserRights => { title => 'User Rights',
+	        D => { title => 'User Rights',
 			        path => 'Admin/Global/UserRights.html',
 		      }
 

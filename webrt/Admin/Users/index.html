@@ -1,9 +1,10 @@
 <& /Admin/Elements/Header, Title => 'Admin users' &>
 <& /Admin/Elements/Tabs, current_tab => 'Admin/Users/' &>
 
-<TABLE WIDTH=100% BORDER=0>
-<TR>
-<TD VALIGN=TOP>
+
+<& /Elements/TitleBoxStart, title => 'Select a user' &>
+
+
 <UL>
 
 <LI><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1">Create a new user</A><BR><BR></LI>
@@ -12,23 +13,12 @@
 <LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->UserId%></a></LI>
 %}
 
-
-
 </UL>
-<TD VALIGN=TOP>
-<& /Elements/TitleBoxStart, title => 'Search for users...' &>
-<FORM METHOD=GET ACTION="<% $RT::WebPath %>/Admin/Users/">
-<BR>
-Email like: <INPUT SIZE=8 NAME="EmailLike VALUE="<%$EmailLike%>"> (and)<BR>
-UserId like: <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"><BR>
-<BR>
-<& /Elements/TitleBoxEnd &>
-<& /Elements/Submit &>
-</FRONT>
-</TD>
-</TR>
-</TABLE>
 
+<FORM METHOD=GET ACTION="<% $RT::WebPath %>/Admin/Users/">
+Find users with email addresses like like: <INPUT SIZE=8 NAME="EmailLike VALUE="<%$EmailLike%>"> and UserIds like <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"> <INPUT TYPE="submit" Value="Go">
+
+<& /Elements/TitleBoxEnd &>
 
 <%INIT>
 my ($user);
