@@ -563,12 +563,16 @@ sub _HasRight {
     #TODO Security +++ check to make sure this is complete and right
     
     #Construct a hashkey to cache decisions in
-    my $hashkey = "Right:".$args{'Right'}."-".
-      "AppliesTo:".$args{'AppliesTo'} ."-".
-	"Scope:".$args{'Scope'};
-
+    my ($hashkey);
+    { #it's ugly, but we need to turn off warning, cuz we're joining nulls.
+	local $^W=0;
+	$hashkey =join(':',%args);
+	#    my $hashkey = "Right:".$args{'Right'}."-".
+	#      "AppliesTo:".$args{'AppliesTo'} ."-".
+	#	"Scope:".$args{'Scope'};
+    }	
     
-#    $RT::Logger->debug($hashkey."\n");
+  # $RT::Logger->debug($hashkey."\n");
     
     #Anything older than two minutes needs to be rechecked
     my $cache_timeout = (time - 120);
@@ -578,8 +582,8 @@ sub _HasRight {
 	 ($self->{'rights'}{"$hashkey"} == 1 ) and
 	 ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
 	#  $RT::Logger->debug("Got a cached positive ACL decision for ". 
-	#				       $args{'Right'}.$args{'Scope'}.
-	#				       $args{'AppliesTo'}."\n");	    
+	#			       $args{'Right'}.$args{'Scope'}.
+	#		       $args{'AppliesTo'}."\n");	    
 	return ($self->{'rights'}{"$hashkey"});
     }
     elsif ((defined ($self->{'rights'}{"$hashkey"})) and
