@@ -1,4 +1,4 @@
-<FORM ACTION="ShowListing?CompileRestriction=1" METHOD="POST">
+<FORM ACTION="ShowListing.html?CompileRestriction=1" METHOD="GET">
 
 <blockquote>
 <ul>
