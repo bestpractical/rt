@@ -22,8 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTFM/Admin/Elements/Header, Title => loc('Admin/Class/CustomFields') &>
-<& /RTFM/Admin/Elements/ClassTabs, id => $ClassObj->id &>
+<& /RTFM/Admin/Elements/ClassTabs, id => $ClassObj->id, Title => loc('Admin/Class/CustomFields') &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -37,18 +36,24 @@
 
 <TABLE>
 % while (my $cf = $CustomFields->Next) { 
+% my $class_cf = RT::FM::ClassCustomField->new($session{'CurrentUser'});
+% $class_cf->LoadByCols(Class => $ClassObj->Id, CustomField => $cf->Id);
 <tr>
 <td>
 <input type="checkbox"
 name="Class-<%$ClassObj->Id%>-CF-<%$cf->Id%>"
 value="1" 
-% if ($ClassCFs->HasEntry($cf->Id)) {
+% if ($class_cf->Id) {
 CHECKED
 % }
 >
 </td>
 <td><%loc($cf->Type)%> <%$cf->Name%><br>
 <i><%$cf->Description%></i>
+</td>
+<td>
+<input size="3" 
+name="Class-<%$ClassObj->Id%>-CF-<%$cf->Id%>-SortOrder" value="<%$class_cf->Id ? $class_cf->SortOrder : ''%>">
 </td>
 </tr>
 % }
@@ -92,6 +97,10 @@ while (my $cf = $CustomFields->Next) {
 
         }
 
+    }
+    if (defined $ARGS{"Class-".$ClassObj->Id."-CF-".$cf->Id}  ) {
+        
+        my ($val, $msg) =  $cf->SetSortOrderForClass(Class => $ClassObj->Id, SortOrder => $ARGS{"Class-".$ClassObj->Id."-CF-".$cf->Id."-SortOrder"});
     }
 }
 }

@@ -32,6 +32,9 @@ sub LimitToClass {
                  OPERATOR        => '=',
                  VALUE           => $class,
                  ENTRYAGGREGATOR => 'OR' );
+
+    $self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');
+
     }
 
 1;

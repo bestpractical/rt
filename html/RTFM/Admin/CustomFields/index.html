@@ -1,7 +1,4 @@
-<& /RTFM/Admin/Elements/Header &>
-
-<& /RTFM/Admin/Elements/CustomFieldTabs, current_tab => 'RTFM/Admin/CustomFields/',
-Title => loc("Select a Custom Fields") &>
+<& /RTFM/Admin/Elements/CustomFieldTabs, current_tab => 'RTFM/Admin/CustomFields/', Title => loc("Select a Custom Fields") &>
 
 <UL>
 %while  (my $CustomFieldObj = $CustomFields->Next) { 

@@ -35,6 +35,12 @@ sub _Init {
     $self->{'primary_key'} = 'id';
 
 
+
+  # By default, order by name
+  $self->OrderBy( ALIAS => 'main',
+                  FIELD => 'SortOrder',
+                  ORDER => 'ASC');
+
     return ( $self->SUPER::_Init(@_) );
 }
 

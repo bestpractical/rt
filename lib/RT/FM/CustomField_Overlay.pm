@@ -613,6 +613,13 @@ sub AddToClass {
         unless ( $class_obj->Id ) {
             return ( 0, $self->loc("Invalid value for class") );
         }
+    unless ( $class_obj->CurrentUserHasRight('AdminClass') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+
+
+
         $class = $class_obj->Id;
     my $ClassCF = RT::FM::ClassCustomField->new( $self->CurrentUser );
     $ClassCF->LoadByCols( Class => $class, CustomField => $self->Id );
@@ -666,6 +673,9 @@ sub RemoveFromClass {
     unless ( $class_obj->Id ) {
         return ( 0, $self->loc("Invalid value for class") );
     }
+    unless ( $class_obj->CurrentUserHasRight('AdminClass') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
     $class = $class_obj->Id;
     my $ClassCF = RT::FM::ClassCustomField->new( $self->CurrentUser );
     $ClassCF->LoadByCols( Class => $class, CustomField => $self->Id );
@@ -680,6 +690,39 @@ sub RemoveFromClass {
 }
 
 # }}}
+
+
+=head2 SetSortOrderForClass  {Class => ID, SortOrder =>INT }
+
+Takes a param hash of a class id and an integer sort order.
+Sets the sort order for the class to that SortOrder
+
+=cut
+
+sub SetSortOrderForClass {
+    my $self = shift;
+    my %args = (Class => undef,
+                SortOrder => undef,
+                @_);
+
+    my $class_obj = RT::FM::Class->new( $self->CurrentUser );
+    $class_obj->Load($args{'Class'});
+    unless ( $class_obj->Id ) {
+        return ( 0, $self->loc("Invalid value for class") );
+    }
+    unless ( $class_obj->CurrentUserHasRight('AdminClass') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+    my $ClassCF = RT::FM::ClassCustomField->new( $self->CurrentUser );
+    $ClassCF->LoadByCols( Class => $class_obj->Id, CustomField => $self->Id );
+    unless ( $ClassCF->Id ) {
+        return ( 0,
+                 $self->loc("This custom field does not apply to that class") );
+    }
+    $ClassCF->SetSortOrder($args{'SortOrder'} || '0');
+
+}
+
 
 
 sub CurrentUserHasRight {

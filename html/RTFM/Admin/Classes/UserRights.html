@@ -22,8 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
-<& /RTFM/Admin/Elements/ClassTabs, id => $id &>  
+<& /RTFM/Admin/Elements/ClassTabs, id => $id , Title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="UserRights.html">

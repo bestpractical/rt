@@ -45,6 +45,7 @@ Create takes a hash of values and creates a row in the database:
 
   int(11) 'Class'.
   int(11) 'CustomField'.
+  int(2) 'SortOrder'.
 
 =cut
 
@@ -56,11 +57,13 @@ sub Create {
     my %args = ( 
                 Class => '0',
                 CustomField => '0',
+                SortOrder => '0',
 
 		  @_);
     $self->SUPER::Create(
                          Class => $args{'Class'},
                          CustomField => $args{'CustomField'},
+                         SortOrder => $args{'SortOrder'},
 );
 
 }
@@ -144,6 +147,24 @@ Returns the current value of Created.
 =cut
 
 
+=item SortOrder
+
+Returns the current value of SortOrder. 
+(In the database, SortOrder is stored as int(2).)
+
+
+
+=item SetSortOrder VALUE
+
+
+Set SortOrder to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SortOrder will be stored as a int(2).)
+
+
+=cut
+
+
 =item LastUpdatedBy
 
 Returns the current value of LastUpdatedBy. 
@@ -176,6 +197,8 @@ sub _ClassAccessible {
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
+        SortOrder => 
+		{read => 1, write => 1, type => 'int(2)', default => '0'},
         LastUpdatedBy => 
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 

@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTFM/Elements/Header, Code => $Code, Why => $Why &>
 <& /RTFM/Elements/Tabs &>
 <& /Elements/TitleBoxStart, class=> "error",  title => $Title &>
 <%$Why%>
