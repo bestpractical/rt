@@ -247,10 +247,10 @@ PerlRequire /opt/rt/bin/webmux.pl
 </Location>
 </VirtualHost>
 
-	To get it up running even without mod_perl, you might do like
-	this:
-
-ScriptAlias /webrt/ "/path/to/your/webrt/cgi/dir"
+	To get it up running even without mod_perl, you will need to
+consult Tobix or the rt-devel mailinglist.  Tobix is actively working
+on a (Fast)CGI version, but as for now he has been too lazy to update
+the template for the cgi executable.
 
 
 THE CLI
