@@ -31,7 +31,15 @@ $MasonSessionDir = "/var/run/rtfm";
 # Where mason stores its cruft
 $MasonDataDir = "/var/run/rtfm/mason";
 
-$WebPath = "/fm";
+$InstanceName = "rtfm.fsck.com";
+
+$WebBaseURL = "http://fsck.com";
+
+$WebPath = "/rtfm";
+
+$WebURL = $WebBaseURL.$WebPath;
+
+$ArticleBaseURI = "fsck.com-rtfm://$InstanceName/Article/";
 
 # Where mason looks for local components
 $MasonLocalComponentRoot = "/home/jesse/projects/fm/local/html";

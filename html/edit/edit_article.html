@@ -7,6 +7,12 @@
 <input type=hidden name="DisplayRoot" value="<%$DisplayRoot%>">
 <input type=hidden name="EditArticle" value="<%$article->Id%>">
 <h1><%$article->Summary%></h1>
+
+<h2.Related Tickets</h2>
+
+<& /Elements/ListRelatedTickets, article => $article &> 
+
+
 <HR>
 Summary: <input size=70 name="RT::FM::Article-<%$article->Id%>-Summary" value="<%$article->Summary%>"><BR>
 
