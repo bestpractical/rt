@@ -107,12 +107,13 @@ sub Init {
 
     # Force UTF8 flag on if we're sure it's utf8 already
     foreach my $lang (@languages) {
-	my $pkg = __PACKAGE__ . "::$lang";
-	next unless $pkg->encoding eq 'utf-8';
+        my $pkg = __PACKAGE__ . "::$lang";
+        my $obj = RT::I18N->get_handle($lang);
+        next unless $obj->encoding eq 'utf-8';
 
-	no strict 'refs';
-	my $lexicon = \%{"$pkg\::Lexicon"};
-	Encode::_utf8_on($lexicon->{$_}) for keys %{$lexicon};
+        no strict 'refs';
+        my $lexicon = \%{"$pkg\::Lexicon"};
+        Encode::_utf8_on( $lexicon->{$_} ) for keys %{$lexicon};
     }
 
     return 1;
