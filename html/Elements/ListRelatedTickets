@@ -18,7 +18,7 @@ $ua->agent("RT/FM " . $ua->agent);
 
 # Create a request
 my $req = new HTTP::Request GET => $BaseRSSURL."RefersTo=".
-				$RT::FM::ArticleBaseURL.$article->Id;
+				$RT::FM::ArticleBaseURI.$article->Id;
 
 # Pass request to the user agent and get a response back
 my $res = $ua->request($req);
