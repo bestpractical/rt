@@ -1,6 +1,7 @@
 # $Header$
-# Copyright 2000  Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>
-# Released under the terms of the GNU Public License
+# Copyright 1996-2002  Jesse Vincent <jesse@bestpractical.com> 
+# Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
+# Released under the terms of version 2 of the GNU Public License
 
 package RT::Action::SendEmail;
 require RT::Action::Generic;
@@ -43,7 +44,7 @@ ok (require RT::Action::SendEmail);
 
 =head1 AUTHOR
 
-Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>
+Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
 
 =head1 SEE ALSO
 
@@ -197,7 +198,7 @@ sub SetRTSpecialHeaders {
     $self->SetHeader('X-RT-Loop-Prevention', $RT::rtname); 
     $self->SetHeader('RT-Ticket', $RT::rtname. " #".$self->TicketObj->id());
     $self->SetHeader
-      ('Managed-by',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt/)");
+      ('Managed-by',"RT $RT::VERSION (http://bestpractical.com/rt/)");
     
     $self->SetHeader('RT-Originator', $self->TransactionObj->CreatorObj->EmailAddress);
     return();
