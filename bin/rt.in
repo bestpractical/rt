@@ -752,7 +752,7 @@ sub submit {
         $text =~ s/\n*$/\n/;
 
         # "RT/3.0.1 401 Credentials required"
-        if ($status !~ m#^RT/\d+(?:\.\d+)+(?:-?\w+)? (\d+) ([\w\s]+)$#) {
+	if ($status !~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#) {
             warn "rt: Malformed RT response from $config{server}.\n";
             warn "(Rerun with RTDEBUG=3 for details.)\n" if $config{debug} < 3;
             exit -1;
