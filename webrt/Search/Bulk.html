@@ -1,7 +1,7 @@
 %# $Header$
 %# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
 <& /Elements/Header, Title => "Bulk ticket update" &>
-<& /Elements/Tabs, current_toptab => 'Search/Listing.html' &>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -37,7 +37,14 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
 %# The ticket view is controlled by config.pm, WebOptions
 %foreach my $col (@cols) {
-<TD><% eval "\$Ticket->$col()" %>&nbsp;</TD>
+<TD>
+% if ($col eq 'id') {
+<A HREF="<% $RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id()%></A>
+% }
+%else {
+<% eval "\$Ticket->$col()" %>&nbsp;
+%}
+</TD>
 %}
 </TR>
 %}
@@ -45,17 +52,6 @@ while (my $Ticket = $session{'tickets'}->Next) {
 
 
 </TABLE>
-
-<div align=center>
-<font size=2>
-<a href="Listing.html?GotoPage=1">First page</a>
-&nbsp;&nbsp;
-<a href="Listing.html?GotoPage=Prev">&lt;Previous page</a>
-&nbsp;&nbsp;
-<a href="Listing.html?GotoPage=Next">Next page&gt;</a>
-%#&nbsp;&nbsp;<form method=get action="Listing.html">Goto page <input name=GotoPage size=2></form>
-</font>
-</div>
 
 <HR>
 
@@ -116,12 +112,11 @@ while (my $Ticket = $session{'tickets'}->Next) {
 </FORM>
 <%INIT>
 
-
-  # Iterate through the ARGS hash and remove anything with a null value.
-  map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+# Iterate through the ARGS hash and remove anything with a null value.
+map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
 my ($bgcolor, @results);
-my @cols = qw(id Status Priority Subject Queue OwnerObj->Name RequestorsAsString DueAsString );
+my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorsAsString DueAsString );
 
 Abort("No search to operate on") unless ($session{'tickets'});
 
