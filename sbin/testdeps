@@ -155,7 +155,7 @@ DBD::mysql 2.0416
 $deps{'ORACLE'} = [ _( << '.') ];
 DBD::Oracle
 .
-$deps{'POSTGRESQL'} => [ _( << '.') ];
+$deps{'POSTGRESQL'} = [ _( << '.') ];
 DBD::Pg
 .
 
