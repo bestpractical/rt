@@ -29,7 +29,7 @@
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
 
-          <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', titleright => "<A HREF=\"$RT::WebPath/Ticket/Create?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>" &>
+          <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', titleright => "<A HREF=\"$RT::WebPath/Ticket/Create.html?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>" &>
 	SuperTickets:<BR>	
 	<& /Ticket/Elements/ShowMemberOf, Ticket => $Ticket &>	<BR>
 	SubTickets:<BR>
