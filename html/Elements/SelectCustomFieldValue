@@ -49,7 +49,7 @@
 % my $values = $CustomField->Values;
 <select name="<%$Name%>">
 <option value="" SELECTED>-</option>
-<option value="null"><&|/l&>(no value)</&></option>
+<option value="NULL"><&|/l&>(no value)</&></option>
 % while (my $value = $values->Next) {
 <option value="<%$value->Name%>"><%$value->Name%></option>
 % }
