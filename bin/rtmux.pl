@@ -50,7 +50,10 @@ use RT::CurrentUser;
 $SystemUser = RT::CurrentUser->new(1);
 
 
-my $program = $0; 
+# I don't think this works --TobiX
+#my $program = $0; 
+my $program=$ARGV[0];
+
 $program =~ s/(.*)\///;
 #shift @ARGV;
 
