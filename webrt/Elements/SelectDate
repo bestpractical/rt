@@ -1,4 +1,5 @@
 <INPUT NAME="<%$menu_prefix%>_Date" VALUE="<%$DefDate%><%$DefTime%>" size=10> 
+%if (0) { #TODO implement
 <SELECT NAME="<%$menu_prefix%>_DateSelect">
 <OPTION VALUE="-365">1 year ago</option>
 <OPTION VALUE="-90">90 days ago</OPTION>
@@ -16,7 +17,7 @@
 <OPTION>in 90 days</OPTION>
 <OPTION>in 1 year</OPTION>
 </SELECT>
-
+% }
 
 
 <%init>
