@@ -164,9 +164,9 @@ Set($SenderMustExistInExternalDatabase , undef);
 # and comment mail tracked by RT, unless overridden by a queue-specific
 # address.
 
-Set($CorrespondAddress , 'RT::CorrespondAddress.not.set');
+Set($CorrespondAddress , 'RT_CorrespondAddressNotSet');
 
-Set($CommentAddress , 'RT::CommentAddress.not.set');
+Set($CommentAddress , 'RT_CommentAddressNotSet');
 
 #Sendmail Configuration
 
