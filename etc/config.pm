@@ -42,12 +42,6 @@ $Logger->add(Log::Dispatch::File->new
 
 # }}}
 
-# {{{ Some weird stuff of tobias I don't get
-# Different "tunable" configuration options should be in those hashes:
-%SitePolicy=();
-
-# }}}
-
 # {{{ Options for the webui
 %WebOptions=
     (
@@ -123,7 +117,7 @@ my %URI2HTTP=
 
 # }}}
 
-# {{{ Base Configuration
+# {{{ Base Configuration (everything below should be set by the Makefile)
 
 # name of RT installation
 # Use a smart name, it's not smart changing this, unless you know
