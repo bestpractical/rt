@@ -5,8 +5,6 @@
 #
 package rt::ui::cli::manipulate;
 
-# TODO: Search for $Message->print and solve it as for ShowTransaction.
-
 # {{{ sub activate 
 sub activate  {
  &GetCurrentUser;
@@ -266,11 +264,9 @@ sub ParseArgs  {
     next;
   }
 
-  if (defined($Message)) {
-      print "======================================\n";
-      $Message->print ;
-      print "======================================\n";
-  }
+  # TODO: This is wrong.  Message should always be a scalar.
+  if (ref $Message) {$Message->print;}
+  else {print $Message;}
 }
 # }}}
 

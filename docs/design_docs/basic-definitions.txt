@@ -1,6 +1,7 @@
 (todo ... basically, those are untouched from 1.0)
 Ticket
 Queue
+(...more?)
 
 Requestor
 
@@ -43,9 +44,11 @@ Regular Watcher
 
 Internal Requestor
 
-  An Internal Requestor might be 1st line support sending matters to tech
-  support or similar. Might be an internal employee sending matters to tech
-  support (or even 1st line support if he's not sure where to send matters).
-  Might be just any user of an open source project sending in reports and
-  support requests.
-  
+  An Internal Requestor is usually internal to the company.  He might be 1st
+  line support sending matters to tech support or similar. Might be an
+  internal employee sending matters to tech support (or even 1st line
+  support if he's not sure where to send matters).  It might also be that
+  "ordinary" requestors actually might be treated as intelligent human
+  beeings rather than VIPs, i.e. in open source projects ... we'll still
+  call them "Internal Requestors" as they don't need the special VIP
+  treatment.
