@@ -32,7 +32,8 @@ BEGIN {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-    eval { require Apache2; require Apache::compat }
+    eval { require Apache2; require APR::Table; require MasonX::Apache2Handler; 1 } or
+    eval { require Apache2; require Apache::compat; 1 } or die $@
       if $ENV{'MOD_PERL'}
       and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:2|1\.9)};
 
@@ -46,30 +47,9 @@ package RT::Mason;
 use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
                                    #set private_tempfiles
 
-BEGIN {
-    if ( $mod_perl::VERSION && ( $mod_perl::VERSION >= 1.9908 ) ) {
-        require Apache::RequestUtil;
-        no warnings 'redefine';
-        my $sub = *Apache::request{CODE};
-        *Apache::request = sub {
-            my $r;
-            eval { $r = $sub->('Apache'); };
-
-            # warn $@ if $@;
-            return $r;
-        };
-    }
-    if ($CGI::MOD_PERL) {
-        require HTML::Mason::ApacheHandler;
-    }
-    else {
-        require HTML::Mason::CGIHandler;
-    }
-}
-
 use HTML::Mason;    # brings in subpackages: Parser, Interp, etc.
 
-use vars qw($Nobody $SystemUser $r);
+use vars qw($Nobody $SystemUser $Handler $r);
 
 #This drags in RT's config.pm
 RT::LoadConfig();
@@ -106,28 +86,7 @@ use Carp;
     use Text::Quoted;
 }
 
-# Activate the following if running httpd as root (the normal case).
-# Resets ownership of all files created by Mason at startup.
-# Note that mysql uses DB for sessions, so there's no need to do this.
-unless ( $RT::DatabaseType =~ /(mysql|Pg)/ ) {
-
-    # Clean up our umask to protect session files
-    umask(0077);
-
-    if ($CGI::MOD_PERL) {
-        chown( Apache->server->uid, Apache->server->gid,
-            [$RT::MasonSessionDir] )
-          if Apache->server->can('uid');
-    }
-
-    # Die if WebSessionDir doesn't exist or we can't write to it
-    stat($RT::MasonSessionDir);
-    die "Can't read and write $RT::MasonSessionDir"
-      unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
-}
-
-my $ah = &RT::Interface::Web::NewApacheHandler(@RT::MasonParameters)
-  if $CGI::MOD_PERL;
+$Handler = RT::Interface::Web::Handler->new(@RT::MasonParameters);
 
 sub handler {
     ($r) = @_;
@@ -142,7 +101,7 @@ sub handler {
 
     my %session;
     my $status;
-    eval { $status = $ah->handle_request($r) };
+    eval { $status = $Handler->handle_request($r) };
     if ($@) {
         $RT::Logger->crit($@);
     }

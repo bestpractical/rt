@@ -45,63 +45,6 @@ use strict;
 
 
 
-my @DefaultHandlerArgs = (
-
-    comp_root => [
-        [ local    => $RT::MasonLocalComponentRoot ],
-        [ standard => $RT::MasonComponentRoot ]
-    ],
-    default_escape_flags => 'h',
-    data_dir             => "$RT::MasonDataDir",
-    allow_globals        => [qw(%session)],
-    autoflush            => 1
-
-);
-
-# {{{ sub NewApacheHandler 
-
-=head2 NewApacheHandler
-
-  Takes extra options to pass to HTML::Mason::ApacheHandler->new
-  Returns a new Mason::ApacheHandler object
-
-=cut
-
-sub NewApacheHandler {
-    require HTML::Mason::ApacheHandler;
-    return RT::Interface::Web::NewHandler('HTML::Mason::ApacheHandler',
-                                            args_method => "CGI",
-                                            @_);
-}
-
-# }}}
-
-# {{{ sub NewCGIHandler 
-
-=head2 NewCGIHandler
-
-  Returns a new Mason::CGIHandler object
-
-=cut
-
-sub NewCGIHandler {
-    return RT::Interface::Web::NewHandler('HTML::Mason::CGIHandler',@_);
-}
-
-sub NewHandler {
-    my $class = shift;
-    my $handler = $class->new(
-        @DefaultHandlerArgs,
-        @_
-    );
-  
-    $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
-    return($handler);
-}
-
-# }}}
-
-
 # {{{ EscapeUTF8
 
 =head2 EscapeUTF8 SCALARREF
