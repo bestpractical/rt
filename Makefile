@@ -84,7 +84,8 @@ GLIMPSE_INDEX		=       /usr/local/bin/glimpseindex
 # running a version of sendmail < 8.8
 #
 
-MAIL_PROGRAM		= 	/usr/lib/sendmail -oi -t -ODeliveryMode=b -OErrorMode=m
+MAIL_PROGRAM		= 	/usr/lib/sendmail
+MAIL_OPTIONS		=	-oi -t -ODeliveryMode=b -OErrorMode=m
 
 #
 # Mysql related preferences
@@ -233,12 +234,13 @@ config-replace:
         s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
         s'!!MAIL_PROGRAM!!'$(MAIL_PROGRAM)'g;\
+	s'!!MAIL_OPTIONS!!'$(MAIL_OPTIONS)'g;\
 	s'!!MYSQL_VERISON!!'$(MYSQL_VERSION)'g;\
 	s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
 
 dist:
 	cvs commit
-	cvs tag -F rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
+	cvs tag -F -r rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 	rm -rf /tmp/rt-$(RT_VERSION)
 	cvs export -r rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERISON_PATCH) -d /tmp/rt-$(RT_VERSION) rt
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz rt-$(RT_VERSION)/
