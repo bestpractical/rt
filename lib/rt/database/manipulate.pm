@@ -191,7 +191,7 @@ sub comment {
     my ($transaction_num,$queue_id);
  
     if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
-	return (0,"You don't have permission to modify request \#$in_serial_num");
+	return (0,"You ($in_current_user) don't have permission to modify request \#$in_serial_num");
     }
     
    $queue_id =$rt::req[$in_serial_num]{queue_id}; 

@@ -1,3 +1,19 @@
+21 mar 99
+---------
+Updated readme:
+
+From Rich West:
+Here is the updated version of lib/rt/ui/mail/manipulate.pm which contains
+the following modifications:
+o  "%RT resolve" without a number assumes that you are trying to
+   resolve the current ticket number, if there is one.
+o  If "%RT user" is omitted, it attempts to use the sender name of the
+   originating email.
+o  "%RT resolve" actually resolves the ticket.. saving the resolution
+   until the very last step.  Otherwise, the ticket would be resolved, then
+   re-opened due to the correspondence.
+
+
 8 mar 99
 --------
 fixed make acls bogosity where it choked if you had a password 

@@ -24,14 +24,15 @@ REQUIRED PACKAGES:
 
 o   Perl5.x ( http://www.perl.com ) -- free
 
-o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.tcx.se ) -- free
+o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- free
         
-	FTP mysql from www.tcx.se and follow the INSTALL instructions
+	FTP mysql from www.mysql.com and follow the INSTALL instructions
         contained therein
 
-o   MysqlPerl ( http://www.tcx.se ) -- free
+o   Msql-Mysql-modules ( ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
 
-	Mysqlperl is included in the MySQL distribution
+	When installing MysqlPerl, it is imperative that you say yes when asked
+	"Do you want to install the MysqlPerl emulation?"
 
 
 INSTALL INSTRUCTIONS
@@ -45,7 +46,8 @@ For the sake of simplicity, we use /usr/local/rt in our example.
 GENERAL INSTALLATION
 --------------------
 
-0   Read README.FIRST before you touch ANYTHING
+0   If you are upgrading from .9.1 or earlier, Read README.91UPGRADE before 
+    you touch ANYTHING
 
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 
@@ -125,35 +127,46 @@ httpd.
 CERN:
 	It just works. We even include a sample config file for you
 
+	A sample config is in rt/etc/httpd/cern. Invoke it with the 
+	following command line:
 
-Apache 1.2:
+         /path/to/cern/httpd -r /path/to/rt/etc/httpd/cern/httpd.conf
+
+	o     you'll find rt-admin at http://host:8080/rt/nph-admin-webrt.cgi
+	o     you'll find rt at http://host:8080/rt/nph-webrt.cgi and
+	o                       http://host:8080/rt/nph-webrt.cgi/frames
+
+
+Apache 
+	To get Apache working, you'll need to compile a version of the server
+	that allows CGI scripts to perform their own authentication. 
+	Instructions to do so are below. Additionally, you'll want to add 
+	two lines to your httpd.conf:
+
+	Alias /webrt/ "/path/to/rt/lib/images/"
+	ScriptAlias /rt/ "/path/to/rt/bin/cgi/"
+
+        o     you'll find rt-admin at http://host/rt/nph-admin-webrt.cgi
+        o     you'll find rt at http://host/rt/nph-webrt.cgi and
+        o                       http://host/rt/nph-webrt.cgi/frames
+
+	1.2:
 	To pass authentication headers to cgi scripts, comment the following 
 	two lines in util_script.c. (look for them around line 180):
 
 	       else if (!strcasecmp (hdrs[i].key, "Authorization"))
 	           continue;
 
-Apache 1.3:
+	1.3:
 	You need to #define SECURITY_HOLE_PASS_AUTHORIZATION in the file 
 	<apache_src_dir>/src/main/util_script.c to allow for RT's 
 	authentication to work properly.
 
 
 Netscape:
-Netscape's servers don't allow nph-cgi scripts to perform their own 
-authentication so they don't really work with WebRT. If Netscape provided 
-source, you could fix this.  Besides, CERN and Apache are free.
-
-A sample config file for CERN httpd ( http://www.w3.org )
-is in rt/etc/httpd/cern.   Invoke it with the following command line:
-
-         /path/to/cern/httpd -r /path/to/rt/etc/httpd/cern/httpd.conf
-
-o     you'll find rt-admin at http://host:8080/rt/nph-admin-webrt.cgi
-o     you'll find rt at http://host:8080/rt/nph-webrt.cgi and
-o                       http://host:8080/rt/nph-webrt.cgi/frames
-
- 
+	Netscape's servers don't allow nph-cgi scripts to perform their own 
+	authentication so they don't really work with WebRT. If Netscape 
+	provided source, you could fix this.  Besides, CERN and Apache are free.
 
 THE CLI
 -------
@@ -199,13 +212,12 @@ thanks to Lauren Burka, who originally tasked me with writing this beast.
 She forced me to use a database backend.  I've thanked her for it every
 day since.  Rich West rewrote this readme and did some UI hacking.  Adam
 Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
-Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk 
-and Dave Walton have all contributed bug reports, code  or ideas that have 
-helped RT along.   If I've left you out, please drop me a line....it wasn't 
-intentional. 
+Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
+Gerald Abshez, Dave Hull, Dave Schenet and Dave Walton have all contributed 
+bug reports, code  or ideas that have helped RT along.   If I've left you out, 
+please drop me a line....it wasn't intentional. 
  
         Enjoy
 
         Jesse Vincent
-        jrvincent@wesleyan.edu
-
+	jesse@fsck.com

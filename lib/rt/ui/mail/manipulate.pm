@@ -30,7 +30,7 @@ sub activate {
   
   if ($debug) {print "Now at &parse_actions\n";}
   
-  $content=&parse_actions($current_user,$content);
+no  $content=&parse_actions($current_user,$content);
   
   #flip the content around..we should just MIME the sucker instead
   if ($debug) { print "Now at &munge_content\n";}
@@ -44,9 +44,10 @@ sub activate {
       #WE REALLY SHOULD PARSE THE TIME OUT OF THE DATE HEADER...BUT FOR NOW
       # THE CURRENT TIME IS GOOD ENOUGH
       if ($debug) { print "Adding a new transaction\n";}
+
       ($serial_num,$transaction_num, $message)=&rt::add_new_request($in_queue,$area,$current_user,'','',$subject,$queues{"$in_queue"}{'default_final_prio'},$queues{"$in_queue"}{'default_prio'},'open',$rt::time,0,0,$content,$current_user);
-      
-      
+
+        
     }   
     else {
       ($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",1,$current_user);
@@ -55,7 +56,7 @@ sub activate {
   }
   elsif ($in_action eq 'comment') {
     if ($debug) {print "Now commenting on request \# $serial_num\n";}
-    ($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject", , ,$current_user);
+    ($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject","" ,"" ,$current_user);
   }
   
   # if there's been an error, mail the user with the message
@@ -65,8 +66,12 @@ sub activate {
     &rt::template_mail('error', '_rt_system', "$current_user", '', '', "$serial_num", "$transaction_num", "RT Error: $subject", "$current_user", "$edited_content");
   }
   
-  
-  
+
+  if ($response)
+  {
+     &send_rt_response($current_user);
+  }
+
   
 }
 sub read_mail_from_stdin {
@@ -81,7 +86,9 @@ sub read_mail_from_stdin {
 
 sub munge_content {
     ($headers, $body) = split (/\n\n/, $content, 2);
+
     $content = $body . "\n\n--- Headers Follow ---\n\n" . $headers;
+
 }
 
 sub parse_headers {
@@ -91,7 +98,10 @@ sub parse_headers {
 	if (($line =~ /^Subject:(.*)\[$rt::rtname\s*\#(\d+)\]\s*(.*)/i) and (!$subject)){	
 	    $serial_num=$2;
 	    $subject=$3;
+
+  
 	    $subject =~ s/\($in_queue\)\s//i; 
+
 	}
 	elsif (($line =~ /^Subject: (.*)/) and (!$subject)){
 	    $subject=$1;
@@ -99,7 +109,10 @@ sub parse_headers {
 	
 	
 
-        $current_user = $1 if (($line =~ /^Reply-To: (.*)/) and (!$current_user));  
+
+	
+        $current_user = $1 if (($line =~ /^Reply-To: (.*)/));  
+
 	$current_user = $1 if (($line =~ /^From: (.*)/) and (!$current_user));
 	$current_user = $1 if (($line =~ /^Sender: (.*)/) and (!$current_user));
 	
@@ -133,6 +146,7 @@ sub parse_headers {
 	#TODO perform a magic warning here..(auto-submit a req?)
 	exit(0);
     }
+
    
     elsif ($current_user =~/^X-RT-Loop-Prevention: $rt::rtname/g) {
 
@@ -142,6 +156,7 @@ sub parse_headers {
        }
        exit(0);
     }
+
     
     elsif ($current_user =~/^$rt::mail_alias/g) {
 	
@@ -158,6 +173,9 @@ sub parse_headers {
 
 sub parse_actions {
     my ($real_current_user) = shift;
+
+    my ($real_serial_num) = shift;
+
     my ($body) = shift;
     my ($trans, $message, $serial_num, $line, $original_line, $current_user);
 
@@ -174,7 +192,12 @@ sub parse_actions {
 	    
 
 		while ($line) {
-		    
+
+                    foreach $count (0..$#arg)
+                    {
+                       $arg[$count]="";
+                    }
+
 		    #parse for doublequoted strings
 		    if ($line =~ /^\"(.?)\"\s?(.*)/) {
 			$arg[$count++]=$1;
@@ -286,6 +309,10 @@ statements in the order you enter them.
 	    #deal with PASS commands
 	    if ($arg[0] =~ /^pass/i) {
 		$password = $arg[1];
+
+                if (!$username) {      # If none is supplied, try the sender
+                    $username = (split(/\@/, $real_current_user))[0];
+                }
 		if ($username) {
 		    #check the authentication state
 		    if (!(&rt::is_password($username, $password))) {
@@ -320,8 +347,28 @@ statements in the order you enter them.
 	    #deal with RESOLV commands
 
 	    elsif ($arg[0] =~ /resolv/i)  {
-		$serial_num=$arg[1];
-		($trans,  $message)=&rt::resolve($serial_num, $current_user);
+
+#		$serial_num=$arg[1];
+#		($trans,  $message)=&rt::resolve($serial_num, $current_user);
+            #batch them up and do them at the very end.
+                if (!$arg[1]) { $arg[1] = $real_serial_num; }
+                if ($arg[1])
+                {
+                   if (!@resolve_nums)
+                   {
+                      $resolve_nums[$#resolve_nums++]=$arg[1];
+                   }
+                   else
+                   {
+                      $resolve_nums[$#resolve_nums]=$arg[1];
+                   }
+#                   $message = "Batching resolve of $resolve_nums[$#resolve_nums].";
+                }
+                else
+                {
+                   $message = "No ticket number found.";
+                }
+
 	    }
 	    
 	    
@@ -466,7 +513,10 @@ statements in the order you enter them.
 	    }
 	    #quote the command, not returning the password
 	
-	if ($arg[0] =~ /^pass/) {
+
+  
+	if ($arg[0] =~ /^pass/i) {
+  
 	    $response .= "> $arg[0] ***** ";
 	}
 	else {
@@ -489,6 +539,24 @@ statements in the order you enter them.
 	
     } #end of the foreach
 
+    return ($parsed_body);
+}
+
+sub send_rt_response
+{
+    my($real_current_user) = shift;
+
+    if ($#resolve_nums > -1)
+    {
+        foreach $count (0..$#resolve_nums)
+        {
+           print "Resolving $resolve_nums[$count]\n" if ($debug);
+           ($trans,  $message)=&rt::resolve($resolve_nums[$count], (split(/\@/, $current_user))[0]);
+           $response .= "RT: $message ($trans)\n";
+        }
+    }
+
+
     # RESPONSE HERE
     
     if ($debug) {print "$response\n";}
@@ -496,7 +564,8 @@ statements in the order you enter them.
 	($message)=&rt::template_mail ('act_response','_rt_system',$real_current_user,"","",0,0,"RT Actions Complete","$real_current_user","$response");
     }
     if ($debug) {print "$message\n";}
-    return ($parsed_body);
+
+    
 }
 1;
 
