@@ -1,5 +1,10 @@
 6 Jul 99
 --------
+
+Cleaned up the admin ui to make it slightly more understandable
+
+queue names with spaces in them should now work better, i hope. [fsck #76]
+
 Now, if you move a request to a new queue, it won't disown it if the same person can own reqs in the new queue. [fsck #75] (untested)
 
 Fixed a problem with cli create not properly handling due dates ([fsck #67])
@@ -17,6 +22,8 @@ Fixed [fsck #74], which was reported by charlie brady:
    two messages. This is easily fixed by using the conventional quoting
    mechanism...
 Fixed [fsck #71] WebRT: "User" should be "Requestor" 
+
+Released .99.8pre9
 
 29 Jun 99
 ---------
