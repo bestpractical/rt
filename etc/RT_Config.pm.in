@@ -203,6 +203,13 @@ Set($SendmailPath , "/usr/sbin/sendmail");
 
 Set($UseFriendlyToLine , 0);
 
+# By default RT doesn't notify the person who performs an update, as they
+# already know what they've done. If you'd like to change this behaviour,
+# Set $NotifyActor to 1
+
+Set($NotifyActor, 0);
+
+
 # }}}
 
 # {{{ Logging
