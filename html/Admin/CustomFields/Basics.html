@@ -35,7 +35,7 @@
 <&|/l&>Description</&>: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
 <&|/l&>Type</&>: <& /RTFM/Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
 <BR>
-% if ($CustomFieldObj->Id) {
+% if ($CustomFieldObj->Id && $CustomFieldObj->Type =~ /^Select/i) {
 <H2><&|/l&>Values</&></H2>
 <table width="100%">
 <& /RTFM/Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>

@@ -1,0 +1,49 @@
+
+<form action="Create.html" method="post">
+<input type="hidden" name="Class" value="<%$ARGS{'Class'}%>">
+<input type="hidden" name="new-RefersTo" value="<%$ticket->URI%>">
+<table width=100%>
+<tr>
+<td>Custom Field</td>
+<td>Ticket updates</td>
+</tr>
+% while ( my $trans = $transactions->Next ) { 
+% next unless $trans->Content;
+<td>
+<select name="Transaction-<%$trans->Id%>">
+<option value="">-</option>
+% while (my $cf = $CustomFields->Next) {
+<option value="<%$cf->Id%>"><%$cf->Name%></option>
+% }
+</select>
+</td>
+<td><%$trans->Description%><br>
+<pre>
+<%$trans->Content%>
+</pre>
+</td>
+</tr>
+% } 
+</table>
+      
+<& /Elements/Submit, Label => loc('Create'), color => "#993333" &>
+</form>
+<%INIT>
+
+my $ticket=LoadTicket($Ticket);
+my $transactions = $ticket->Transactions;
+
+my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
+$ClassObj->Load($Class);
+unless ($ClassObj->Id) {
+    Abort("'%1' isn't a valid class identifier", $Class);
+}
+my     $CustomFields = $ClassObj->CustomFields();
+$CustomFields->Limit(FIELD => 'Type', 
+                     OPERATOR => '=',
+                     VALUE => 'TextSingle');
+</%init>
+<%ARGS>
+$Class=>undef
+$Ticket => undef
+</%ARGS>

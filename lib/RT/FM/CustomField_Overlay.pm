@@ -98,7 +98,7 @@ ok ($user->Id, "Loaded the user");
 
 use_ok('RT::FM::CustomField');
 ok(my $cf= RT::FM::CustomField->new($user));
-my ($id, $msg) = $cf->Create(Name => '');
+my ($id, $msg) = $cf->Create(Name => '', SortOrder => '');
 ok(!$id, $msg);
 
 
@@ -117,6 +117,20 @@ ok(!$id, $msg);
 
 
 =cut
+
+sub Create {
+    my $self = shift;
+    my %args = (@_);
+
+
+    # This routine is just here so that SortOrder '' doesn't get passed up the chain
+
+    # TODO: generalize this all the way out for any not null field
+    delete $args{'SortOrder'} unless $args{'SortOrder'};
+
+    $self->SUPER::Create(%args);
+
+}
 
 
 # }}}

@@ -51,7 +51,7 @@
 %  elsif ($CustomField->Type eq 'TextSingle') {
 
 <textarea rows="10" cols="60"name="CustomField-<%$CustomField->Id%>">
-</textarea>
+<%exists $cfcontent{$CustomField->Id} && $cfcontent{$CustomField->Id}%></textarea>
 
 % } 
 % elsif ($CustomField->Type =~ /^Select/) {
@@ -70,8 +70,10 @@
 <h3><&|/l&>Relationships</&></h3>
 <i><&|/l&>Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces.</&></i><br>
 <TABLE>
-<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="new-RefersTo"></TD></TR>
-<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-new"></TD></TR>
+<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="new-RefersTo"
+value="<%$ARGS{'new-RefersTo'}%>"></TD></TR>
+<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-new"
+value="<%$ARGS{'RefersTo-new'}%>"></TD></TR>
 </TABLE>
 
       
@@ -81,6 +83,14 @@ $ArticleObj => undef
 <& /Elements/Submit, Label => loc('Create'), color => "#993333" &>
 </form>
 <%INIT>
+my %cfcontent;
+foreach my $arg (keys %ARGS) {
+        if ($arg =~ /^Transaction-(\d+)$/) {
+                my $trans = RT::Transaction->new($session{'CurrentUser'});
+                $trans->Load($1);
+                $cfcontent{$ARGS{$arg}} = $trans->Content;
+        }
+}
 
 
 my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});

@@ -6,10 +6,6 @@
                         path => "RTFM/Admin/CustomFields/Basics.html?id=".$id,
                            },
                  
-                 E => { title => loc('Values'),
-                        path => 'RTFM/Admin/CustomFields/Values.html?id='.$id,
-                        },
-
                  F => { title => loc('Group Rights'),
                           path => "RTFM/Admin/CustomFields/GroupRights.html?id=".$id,
                         },      
