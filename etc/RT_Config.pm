@@ -39,11 +39,11 @@ $BasePath = '/opt/rt3';
 
 $EtcPath = '/opt/rt3/etc';
 $VarPath = '/opt/rt3/var';
-$LocalLexiconPath = '@RT_LOCAL_PO_PATH@';
+$LocalLexiconPath = '/opt/rt3/local/po';
 
 
 # This directory should be writable by your rt group
-$LogDir = '@RT_LOG_DIR@';
+$LogDir = '/opt/rt3/var/log';
 
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
@@ -76,19 +76,17 @@ $MasonSessionDir = '/opt/rt3/var/session_data';
 # Database driver beeing used. Case matters
 # Valid types are "mysql" and "Pg" 
 
-#$DatabaseType="SQLite";
-$DatabaseType="mysql";
-#$DatabaseType="Pg";
+$DatabaseType='mysql';
 
 # The domain name of your database server
 # If you're running mysql and it's on localhost,
 # leave it blank for enhanced performance
-$DatabaseHost="";
-$DatabaseRTHost="localhost";
+$DatabaseHost='localhost';
+$DatabaseRTHost='localhost';
 
 # The port that your database server is running on.  Ignored unless it's 
 # a positive integer. It's usually safe to leave this blank
-$DatabasePort="";
+$DatabasePort='';
 
 
 #The name of the database user (inside the database) 

@@ -145,7 +145,7 @@ DB_HOST			=	localhost
 # specifiy the port the database server is running on below.
 # It's generally safe to leave this blank 
 
-DB_PORT			=	`
+DB_PORT			=	
 
 #
 # Set this to the canonical name of the interface RT will be talking to the 

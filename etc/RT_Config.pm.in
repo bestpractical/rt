@@ -39,11 +39,11 @@ $BasePath = '@RT_PATH@';
 
 $EtcPath = '@RT_ETC_PATH@';
 $VarPath = '@RT_VAR_PATH@';
-$LocalLexiconPath = '@RT_LOCAL_PO_PATH@';
+$LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
 
 
 # This directory should be writable by your rt group
-$LogDir = '@RT_LOG_DIR@';
+$LogDir = '@RT_LOG_PATH@';
 
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
@@ -76,30 +76,28 @@ $MasonSessionDir = '@MASON_SESSION_PATH@';
 # Database driver beeing used. Case matters
 # Valid types are "mysql" and "Pg" 
 
-#$DatabaseType="SQLite";
-$DatabaseType="mysql";
-#$DatabaseType="Pg";
+$DatabaseType='@DB_TYPE@';
 
 # The domain name of your database server
 # If you're running mysql and it's on localhost,
 # leave it blank for enhanced performance
-$DatabaseHost="";
-$DatabaseRTHost="localhost";
+$DatabaseHost='@DB_HOST@';
+$DatabaseRTHost='@DB_RT_HOST@';
 
 # The port that your database server is running on.  Ignored unless it's 
 # a positive integer. It's usually safe to leave this blank
-$DatabasePort="";
+$DatabasePort='@DB_PORT@';
 
 
 #The name of the database user (inside the database) 
-$DatabaseUser='rt_user';
+$DatabaseUser='@DB_RT_USER@';
 
 # Password the DatabaseUser should use to access the database
 $DatabasePassword='rt_pass';
 
 
 # The name of the RT's database on your database server
-$DatabaseName='rt3';
+$DatabaseName='@DB_DATABASE@';
 
 # If you're using Postgres and have compiled in SSL support, 
 # set DatabaseRequireSSL to 1 to turn on SSL communication
