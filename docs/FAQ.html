@@ -58,10 +58,10 @@ Last-modified: Wednesday October  6 16:31:20 EST 1999
     <p><strong>What's changed since last time?</strong>
 
     <ul>
-      <li>1. Minor updates for RT 1.0</li>
+      <li>1. Minor updates for RT 1.0.2</li>
     </ul>
     
-    <p>This file was last modified on Wednesday October  6 16:31:20 EST 1999
+    <p>This file was last modified on Wednesday December 15
     
     <hr>
 
@@ -84,6 +84,9 @@ Last-modified: Wednesday October  6 16:31:20 EST 1999
           <li>Q2.1 What other packages/modules are required?</li>
           <li>Q2.2 Upgrading from RT version 0.9.1 or lower.</li>
           <li>Q2.3 How do I get a clean RT installation?</li>
+	  <li>Q2.4 How do I deal with "Can't locate Mysql.pm in @INC"</li>
+	  <li>Q2.5 How do I install RT's components on seperate servers</li>
+	  <li>Q2.6 What do I do when RT can't locate CGI::Vars</li>
         </ul>
 
       <li><p>3. Request manipulation
@@ -110,6 +113,7 @@ Last-modified: Wednesday October  6 16:31:20 EST 1999
           <li>Q5.1 Sendmail won't let me run rt-mailgate</li>
           <li>Q5.2 Why are mail messages being split in two?</li>
           <li>Q5.3 Does RT have MIME support?</li>
+	  <li>Q5.4 Does RT work with exim</li>
         </ul>
       </li>
       
@@ -134,14 +138,7 @@ Last-modified: Wednesday October  6 16:31:20 EST 1999
 
     <h3>Q1.1 What is the latest version of RT?</h3>
 
-    <p>The latest stable version is 0.99.9 which was released on the
-    4th of August 1999.
-
-    <p>The latest alpha version of RT is 1.0.0pre2 which was released
-    on the 1st of October 1999
-
-    <p>This is a beta release leading up to the release of RT 1.0
-    which should come out any day now.
+    <p>The latest stable version is 1.0.1 which was released in November, 1999.
 
     <hr>
 
@@ -176,7 +173,7 @@ Last-modified: Wednesday October  6 16:31:20 EST 1999
     <a href="http://www.perl.com/CPAN/SITES.html">http://www.perl.com/CPAN/SITES.html</a>)
       </li>
 
-      <li>MySQL 3.20.x, 3.21.x or 3.22.x<br>
+      <li>MySQL 3.20.x, 3.21.x, 3.22.x or 3.23.x<br>
         General URL : <a href="http://www.mysql.com">http://www.mysql.com</a><br>
         Download URL: <a href="http://www.mysql.com/download.html">http://www.mysql.com/download.html</a><br>
         Mirrors     : <a href="http://www.mysql.com/mirrors.html">http://www.mysql.com/mirrors.html</a>
@@ -243,13 +240,6 @@ incompatible changes.  This version of the installation package
 does NOT come with an easy upgrade path from 0.9.1 or before.
 However, the instructions below should make the upgrade possible.
 
-This version of RT should be significantly more stable than
-0.9.1, but new buglets may have crept into my code when I wasn't
-looking.  As always, I look forward to any comments you may have.
-
-Jesse
-jrvincent@wesleyan.edu
-
 To upgrade from .9.1 to a post-.9.4 version :
 
 "mysqldump -c -t rt &gt; (YOUR_RT_DUMP_FILE)"  
@@ -282,7 +272,84 @@ copy rt/etc/templates/queues back into place
     <p>Then remove everything under the transactions directory
     wherever you installed RT (/usr/local/rt/transactions in my case).
 
+
     <hr>
+
+    <h3>Q2.4 How do I handle Can't locate Mysql.pm in @INC</h3>
+
+    <p>You either have not yet installed Msql-Mysql-Modules <b>or</b> you 
+    did not answer "Y"es when asked if you wanted to enable MysqlPerl 
+    emulation.
+
+
+    <hr>
+
+   <h3>Q2.5 How can I install RT's components on seperate servers</h3>
+
+    <p>There are several options.  It is possible to run all services on 
+    seperate servers by sharing the transaction directory via NFS or any other
+    networked file system connecting remotely to Mysql.  
+    <p> It's possible to use i.e. fetchmail or another POP/IMAP let RT suck 
+    mail from the mail server.  Clark Shishido explains:
+    <pre>
+
+How to install RT on a standalone/non-mailhub machine
+
+Overview: Use sendmail to send everything to a central mailhub, create rt 
+related aliases and mail accounts on the hub, use fetchmail to suck the mail 
+directly into RT.
+
+If you don't already send all outgoing email to a central mailhub, create a 
+sendmail.cf configuration that will give you this functionality. Add the 
+following line to the bottom of the generic-[your platform].mc file.
+
+FEATURE(`nullclient', `yourmailhub.yourdomain.com')  
+
+Then run it through m4 to generate your nullclient sendmail.cf. See 
+sendmail documentation for your UNIX flavor.
+
+Create rt aliases and email accounts on your central mailserver, with 
+real usernames and mailboxes for the user "rt" and each of your queues. 
+Make the login shell /nonexistent or /dev/null or whatever so  no one 
+can actually login with a shell. You do not need to modify /etc/aliases 
+on the machine with the RT installation.                          
+
+On the RT server, make sure fetchmail is installed. Also check to see 
+if you have a home directory and shell for RT. Create a .fetchmailrc 
+in RT's home directory. Here's the first two lines of a sample 
+.fetchmailrc with the password asterixed (normally this is stored in 
+clear text, but at least fetchmail forces you to 700 the file):  
+
+poll mail.yourdomain.com proto pop3:                             
+username rt password ***** mda "/usr/local/rt/bin/rt-mailgate rt correspond"
+
+subsequent lines would have each be 
+	username [queue-username] password [password] 
+	mda "path to rt-mailgate [queue] [correspond/comment]"  
+See RT's README for full details on mailgate options.
+
+As the rt user, run "fetchmail -d 300" to have fetchmail run every 300 
+seconds as a daemon to check for mail on the mail server. You may want to 
+put this into a startup script.
+          
+Caveats: time lag in processing email becuase of dependency on fetchmail
+Benefits: can place RT behind a firewall without increasing complexity 
+	  of mailhub
+
+	-clark
+</pre>
+
+
+
+    <hr>
+
+    <h3>Q2.6 What do I do when RT can't find CGI::Vars</h3>
+
+    <p>Your version of CGI.pm is out of date. Please upgrade to at least 
+    version 2.53.
+    <hr>
+
+
 
     <h2>3. Request Manipulation</h2>
     
@@ -368,6 +435,10 @@ mysql&gt;
       are sitting at - sites using IP masquerading and similar stuff
       might get the broken authentication.</li>
 
+	<li>You set a password directly through mysql and the users 
+	was unable to log in, because this password was shorter than
+	the minimum password length.</li>
+
     </ol>
 
     <hr>
@@ -417,6 +488,22 @@ should work better.
     upgrade to the latest version of RT.
 
     <hr>
+	
+   <h3>Q5.3 Does RT have MIME support?</h3>
+
+    <p>RT 1.0.x does not currently have support for MIME. However, 
+    stripmime, a program contributed by Dave Troy is available at
+    <a href="ftp://ftp.fsck.com/pub/rt/contrib/stripmime">ftp://ftp.fsck.com/pub/rt/contrib/stripmime</a> will help overcome this deficiency.
+
+    <hr>
+
+    <h3>Q5.4 Does RT work with exim?</h3>
+
+    <p>Peter Radcliffe has figured out how to get RT working with exim's native
+    command execution subsystem. Documentation can be found at  <a href="ftp://ftp.fsck.com/pub/rt/contrib/exim.README">ftp://ftp.fsck.com/pub/rt/contrib/exim.README</a>
+
+    <hr>
+
 
     <h2>9. Miscellaneous</h2>
     
