@@ -57,7 +57,7 @@ BEGIN {
 
 =head1 NAME
 
-  RT::Interface::CLI - helper functions for creating a commandline RT interface
+  RT::Interface::Email - helper functions for parsing email sent to RT
 
 =head1 SYNOPSIS
 
@@ -374,6 +374,9 @@ Takes parameters:
 This performs all the "guts" of the mail rt-mailgate program, and is
 designed to be called from the web interface with a message, user
 object, and so on.
+
+Can also take an optional 'ticket' parameter; this ticket id overrides
+any ticket id found in the subject.
 
 Returns:
 
