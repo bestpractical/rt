@@ -3,7 +3,7 @@
 
 <h1><%$article->Summary%></h1>
 <BR>
-<i><A HREF="<%$RT::FM::WebRoot%>/article.html?id=<%$article->ParentObj->Id%>">See this article in context.</A></i>
+<i><A HREF="<%$RT::FM::WebPath%>/article.html?id=<%$article->ParentObj->Id%>">See this article in context.</A></i>
 <BR>
 <& /Elements/ArticleCustomFields, ArticleObj => $article &>
 
