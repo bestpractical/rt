@@ -174,23 +174,8 @@ sub ParseMIMEEntityFromScalar {
     my $self = shift;
     my $message = shift;
 
-    # Create a new parser object:
+    $self->_DoParse('parse_data', $message);
 
-    my $parser = MIME::Parser->new();
-    $self->_SetupMIMEParser($parser);
-
-
-    # TODO: XXX 3.0 we really need to wrap this in an eval { }
-    unless ( $self->{'entity'} = $parser->parse_data($message) ) {
-        # Try again, this time without extracting nested messages
-        $parser->extract_nested_messages(0);
-        unless ( $self->{'entity'} = $parser->parse_data($message) ) {
-            $RT::Logger->crit("couldn't parse MIME stream");
-            return ( undef);
-        }
-    }
-    $self->_PostProcessNewEntity();
-    return (1);
 }
 
 # {{{ ParseMIMEEntityFromFilehandle *FH
@@ -205,25 +190,8 @@ sub ParseMIMEEntityFromFileHandle {
     my $self = shift;
     my $filehandle = shift;
 
-    # Create a new parser object:
+    $self->_DoParse('parse', $filehandle);
 
-    my $parser = MIME::Parser->new();
-    $self->_SetupMIMEParser($parser);
-
-
-    # TODO: XXX 3.0 we really need to wrap this in an eval { }
-
-    unless ( $self->{'entity'} = $parser->parse($filehandle) ) {
-
-        # Try again, this time without extracting nested messages
-        $parser->extract_nested_messages(0);
-        unless ( $self->{'entity'} = $parser->parse($filehandle) ) {
-            $RT::Logger->crit("couldn't parse MIME stream");
-            return ( undef);
-        }
-    }
-    $self->_PostProcessNewEntity();
-    return (1);
 }
 
 # }}}
@@ -238,6 +206,25 @@ Parses a mime entity from a filename passed in as an argument
 
 sub ParseMIMEEntityFromFile {
     my $self = shift;
+
+    my $file = shift;
+    $self->_DoParse('parse_open', $file);
+}
+
+# }}}
+
+# {{{ _DoParse 
+
+=head2 _DoParse PARSEMETHOD CONTENT
+
+
+A helper for the various parsers to turn around and do the dispatch to the actual parser
+
+=cut
+
+sub _DoParse {
+    my $self = shift;
+    my $method = shift;
     my $file = shift;
 
     # Create a new parser object:
@@ -248,11 +235,11 @@ sub ParseMIMEEntityFromFile {
 
     # TODO: XXX 3.0 we really need to wrap this in an eval { }
 
-    unless ( $self->{'entity'} = $parser->parse_open($file) ) {
+    unless ( $self->{'entity'} = $parser->$method($file) ) {
 
         # Try again, this time without extracting nested messages
         $parser->extract_nested_messages(0);
-        unless ( $self->{'entity'} = $parser->parse_open($file) ) {
+        unless ( $self->{'entity'} = $parser->$method($file) ) {
             $RT::Logger->crit("couldn't parse MIME stream");
             return ( undef);
         }
@@ -262,6 +249,7 @@ sub ParseMIMEEntityFromFile {
 }
 
 # }}}
+
 
 # {{{ _PostProcessNewEntity 
 
@@ -807,6 +795,8 @@ sub _SetupMIMEParser {
 
     # Set up output directory for files:
     $parser->output_dir("$AttachmentDir");
+    $parser->filer->ignore_filename(1);
+
 
     #If someone includes a message, extract it
     $parser->extract_nested_messages(1);

@@ -446,6 +446,36 @@ sub notes_redef_sendmessage {
 
 # }}}
 
+# {{{ test a multipart that crashes the file-based mime-parser works
+
+my $content =  `cat @RT_LIB_PATH@/t/data/crashes-file-based-parser` || die "couldn't find new content";
+
+$parser->ParseMIMEEntityFromScalar($content);
+
+
+# be as much like the mail gateway as possible.
+&crashes_redef_sendmessage;
+
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+
+ok ($tick->Transactions->First->Content =~ /FYI/, "We recorded the content right");
+is ($tick->Transactions->First->Attachments->Count , 5 , "Has three attachments");
+
+sub crashes_redef_sendmessage {
+    no warnings qw/redefine/;
+    eval 'sub RT::Action::SendEmail::SendMessage { }';
+}
+
+
+die;
+
+# }}}
 
 # Don't taint the environment
 $everyone->PrincipalObj->RevokeRight(Right =>'SuperUser');
