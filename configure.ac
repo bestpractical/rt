@@ -204,10 +204,6 @@ AC_CONFIG_FILES([
  		 bin/rt-commit-handler
  		 bin/rt-crontool
  		 bin/rt-mailgate
- 		 bin/webmux.pl],
-		[chmod +x configure
-                chmod +x sbin/rt-setup-database
-		chmod +x sbin/rt-test-dependencies
-		chmod +x bin/rt-mailgate]
+ 		 bin/webmux.pl]
                 )
 AC_OUTPUT

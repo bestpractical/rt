@@ -379,16 +379,21 @@ etc-install:
 
 sbin-install:
 	mkdir -p $(DESTDIR)/$(RT_SBIN_PATH)
+	chmod +x sbin/rt-setup-database \
+		sbin/rt-test-dependencies
 	-cp -rp \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
 		$(DESTDIR)/$(RT_SBIN_PATH)
+
 # }}}
 
 # {{{ bin-install
 
 bin-install:
 	mkdir -p $(DESTDIR)/$(RT_BIN_PATH)
+	chmod +x bin/rt-mailgate \
+		bin/rt-crontool
 	-cp -rp \
 		bin/rt-mailgate \
 		bin/mason_handler.fcgi \
