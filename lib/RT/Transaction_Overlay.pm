@@ -424,7 +424,7 @@ sub Attachments {
         }
 
         #if they ain't got rights to see, return an empty object
-        else {
+        elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
             unless ( $self->CurrentUserHasRight('ShowTicket') ) {
                 return ( $self->{'attachments'} );
             }
@@ -505,7 +505,7 @@ sub Description {
     }
 
     #if they ain't got rights to see, don't let em
-    else {
+    elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
             return ($self->loc("Permission Denied") );
         }
@@ -531,7 +531,6 @@ Returns a text string which briefly describes this transaction
 sub BriefDescription {
     my $self = shift;
 
-
     #If it's a comment or a comment email record,
     #  we need to be extra special careful
     if ( $self->__Value('Type') =~ /^Comment/ ) {
@@ -541,44 +540,67 @@ sub BriefDescription {
     }
 
     #if they ain't got rights to see, don't let em
-    else {
+    elsif ( $self->__Value('ObjectType') eq "RT::Ticket" ) {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
             return ( $self->loc("Permission Denied") );
         }
     }
 
-    my $type = $self->Type; #cache this, rather than calling it 30 times
+    my $type = $self->Type;    #cache this, rather than calling it 30 times
 
-    if ( !defined( $type ) ) {
+    if ( !defined($type) ) {
         return $self->loc("No transaction type specified");
     }
 
     my $obj_type = $self->FriendlyObjectType;
 
     if ( $type eq 'Create' ) {
-        return ($self->loc("[_1] created", $obj_type));
+        return ( $self->loc( "[_1] created", $obj_type ) );
     }
     elsif ( $type =~ /Status/ ) {
         if ( $self->Field eq 'Status' ) {
             if ( $self->NewValue eq 'deleted' ) {
-                return ($self->loc("[_1] deleted", $obj_type));
+                return ( $self->loc( "[_1] deleted", $obj_type ) );
             }
             else {
-                return ( $self->loc("Status changed from [_1] to [_2]", $self->loc($self->OldValue), $self->loc($self->NewValue) ));
+                return (
+                    $self->loc(
+                        "Status changed from [_1] to [_2]",
+                        "'" . $self->loc( $self->OldValue ) . "'",
+                        "'" . $self->loc( $self->NewValue ) . "'"
+                    )
+                );
 
             }
         }
 
         # Generic:
-       my $no_value = $self->loc("(no value)"); 
-        return ( $self->loc( "[_1] changed from [_2] to [_3]", $self->Field , ( $self->OldValue || $no_value ) ,  $self->NewValue ));
+        my $no_value = $self->loc("(no value)");
+        return (
+            $self->loc(
+                "[_1] changed from [_2] to [_3]",
+                $self->Field,
+                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),
+                "'" . $self->NewValue . "'"
+            )
+        );
     }
 
-    if (my $code = $_BriefDescriptions{$type}) {
+    if ( my $code = $_BriefDescriptions{$type} ) {
         return $code->($self);
     }
 
-    return $self->loc( "Default: [_1]/[_2] changed from [_3] to [_4]", $type, $self->Field, $self->OldValue, $self->NewValue );
+    return $self->loc(
+        "Default: [_1]/[_2] changed from [_3] to [_4]",
+        $type,
+        $self->Field,
+        (
+            $self->OldValue
+            ? "'" . $self->OldValue . "'"
+            : $self->loc("(no value)")
+        ),
+        "'" . $self->NewValue . "'"
+    );
 }
 
 %_BriefDescriptions = (
@@ -742,7 +764,10 @@ sub BriefDescription {
     },
     Set => sub {
         my $self = shift;
-        if ( $self->Field eq 'Queue' ) {
+        if ( $self->Field eq 'Password' ) {
+            return $self->loc('Password changed');
+        }
+        elsif ( $self->Field eq 'Queue' ) {
             my $q1 = new RT::Queue( $self->CurrentUser );
             $q1->Load( $self->OldValue );
             my $q2 = new RT::Queue( $self->CurrentUser );
@@ -759,7 +784,7 @@ sub BriefDescription {
             return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, $t2->AsString, $t1->AsString );
         }
         else {
-            return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, $self->OldValue, $self->NewValue );
+            return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
         }
     },
     PurgeTransaction => sub {
@@ -861,7 +886,7 @@ sub _Value {
 
 
     #if they ain't got rights to see, don't let em
-    else {
+    elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
             return (undef);
         }

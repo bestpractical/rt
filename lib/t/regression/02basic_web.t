@@ -146,26 +146,5 @@ is ($query, "Subject LIKE 'aaa' AND Subject LIKE 'bbb'");
 
 # }}}
 
-use File::Find;
-find ( \&wanted , 'html/');
-
-sub wanted {
-        -f  && /\.html$/ && $_ !~ /Logout.html$/  && test_get($File::Find::name);
-}       
-
-sub test_get {
-        my $file = shift;
-
-
-        $file =~ s#^html/##; 
-        ok ($agent->get("$url/$file", "GET $url/$file"));
-        is ($agent->{'status'}, 200, "Loaded $file");
-#        ok( $agent->{'content'} =~ /Logout/i, "Found a logout link on $file ");
-        ok( $agent->{'content'} !~ /Not logged in/i, "Still logged in for  $file");
-        ok( $agent->{'content'} !~ /System error/i, "Didn't get a Mason compilation error on $file");
-        
-}
-
-# }}}
 
 1;

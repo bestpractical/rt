@@ -48,13 +48,11 @@
     current_subtab => 'Admin/Users/',
     Title => loc('Select a user') &>
 
-
-
-
-<%$caption%>:<BR>
-<UL>
+<h1><%$caption%></h1>
+<p><&|/l&>Select a user</&>:</p>
+<ul>
 %if ($users->Count == 0) {
-<LI> <i><&|/l&>No users matching search criteria found.</&></i>
+<li><i><&|/l&>No users matching search criteria found.</&></i></li>
 % }
 %my @ids;
 %while ( $user = $users->Next) {

@@ -46,10 +46,10 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <FORM ACTION="<%$RT::WebPath%><% $m->request_comp->path |n %>" METHOD="POST" NAME="EditCustomFields">
-<INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>">
-<INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>">
-<INPUT TYPE=HIDDEN NAME="SubType" VALUE="<% $SubType %>">
-<INPUT TYPE=HIDDEN NAME="UpdateCFs" VALUE="1">
+<INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>"/>
+<INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>"/>
+<INPUT TYPE=HIDDEN NAME="SubType" VALUE="<% $SubType %>"/>
+<INPUT TYPE=HIDDEN NAME="UpdateCFs" VALUE="1"/>
 
 % if ($Object->Id) {
 <h2><&|/l&>Global Custom Fields</&></h2>

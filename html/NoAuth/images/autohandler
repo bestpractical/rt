@@ -15,7 +15,10 @@ if ($file =~ /\.(gif|png|jpe?g)$/i) {
 die unless (-f $file && -r $file);
 $r->content_type($type);
 open (FILE, "<$file") || die;
-$m->out($_) while (<FILE>);
-close(FILE);
+{
+    local $/ = \16384;
+    $m->out($_) while (<FILE>);
+    close(FILE);
+}
 $m->abort;
 </%init>

@@ -53,6 +53,9 @@ BEGIN {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
+    use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
+                                   #set private_tempfiles
+
     eval { require Apache2; require Apache::Request; 1 } or
     eval { require Apache2; require Apache::compat; 1 } or die $@
       if $ENV{'MOD_PERL'}
@@ -65,11 +68,6 @@ use RT;
 
 package RT::Mason;
 
-use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
-                                   #set private_tempfiles
-
-use HTML::Mason;    # brings in subpackages: Parser, Interp, etc.
-
 use vars qw($Nobody $SystemUser $Handler $r);
 
 #This drags in RT's config.pm
@@ -78,24 +76,14 @@ BEGIN {
     if ($RT::DevelMode) { require Module::Refresh; }
 }
 
-use Carp;
 
 {
 
     package HTML::Mason::Commands;
     use vars qw(%session);
-
-    use RT::Interface::Web;
-    use MIME::Entity;
-    use Text::Wrapper;
-    use CGI::Cookie;
-    use Time::ParseDate;
-    use Time::HiRes;
-    use HTML::Entities;
-    use HTML::Scrubber;
-    use Text::Quoted;
 }
 
+use RT::Interface::Web;
 use RT::Interface::Web::Handler;
 $Handler = RT::Interface::Web::Handler->new(@RT::MasonParameters);
 

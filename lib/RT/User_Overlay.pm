@@ -121,41 +121,41 @@ sub _OverlayAccessible {
 
 my $u1 = RT::User->new($RT::SystemUser);
 is(ref($u1), 'RT::User');
-my ($id, $msg) = $u1->Create(Name => 'CreateTest1', EmailAddress => 'create-test-1@example.com');
+my ($id, $msg) = $u1->Create(Name => 'CreateTest1'.$$, EmailAddress => $$.'create-test-1@example.com');
 ok ($id, "Creating user CreateTest1 - " . $msg );
 
 # Make sure we can't create a second user with the same name
 my $u2 = RT::User->new($RT::SystemUser);
-($id, $msg) = $u2->Create(Name => 'CreateTest1', EmailAddress => 'create-test-2@example.com');
+($id, $msg) = $u2->Create(Name => 'CreateTest1'.$$, EmailAddress => $$.'create-test-2@example.com');
 ok (!$id, $msg);
 
 
 # Make sure we can't create a second user with the same EmailAddress address
 my $u3 = RT::User->new($RT::SystemUser);
-($id, $msg) = $u3->Create(Name => 'CreateTest2', EmailAddress => 'create-test-1@example.com');
+($id, $msg) = $u3->Create(Name => 'CreateTest2'.$$, EmailAddress => $$.'create-test-1@example.com');
 ok (!$id, $msg);
 
 # Make sure we can create a user with no EmailAddress address
 my $u4 = RT::User->new($RT::SystemUser);
-($id, $msg) = $u4->Create(Name => 'CreateTest3');
+($id, $msg) = $u4->Create(Name => 'CreateTest3'.$$);
 ok ($id, $msg);
 
 # make sure we can create a second user with no EmailAddress address
 my $u5 = RT::User->new($RT::SystemUser);
-($id, $msg) = $u5->Create(Name => 'CreateTest4');
+($id, $msg) = $u5->Create(Name => 'CreateTest4'.$$);
 ok ($id, $msg);
 
 # make sure we can create a user with a blank EmailAddress address
 my $u6 = RT::User->new($RT::SystemUser);
-($id, $msg) = $u6->Create(Name => 'CreateTest6', EmailAddress => '');
+($id, $msg) = $u6->Create(Name => 'CreateTest6'.$$, EmailAddress => '');
 ok ($id, $msg);
 # make sure we can create a second user with a blankEmailAddress address
 my $u7 = RT::User->new($RT::SystemUser);
-($id, $msg) = $u7->Create(Name => 'CreateTest7', EmailAddress => '');
+($id, $msg) = $u7->Create(Name => 'CreateTest7'.$$, EmailAddress => '');
 ok ($id, $msg);
 
 # Can we change the email address away from from "";
-($id,$msg) = $u7->SetEmailAddress('foo@bar');
+($id,$msg) = $u7->SetEmailAddress('foo@bar'.$$);
 ok ($id, $msg);
 # can we change the address back to "";  
 ($id,$msg) = $u7->SetEmailAddress('');
@@ -211,7 +211,7 @@ sub Create {
         $args{'Password'} = '*NO-PASSWORD*';
     }
     elsif ( length( $args{'Password'} ) < $RT::MinimumPasswordLength ) {
-        return ( 0, $self->loc("Password too short") );
+        return ( 0, $self->loc("Password needs to be at least [_1] characters long",$RT::MinimumPasswordLength) );
     }
 
     else {
@@ -1032,7 +1032,7 @@ sub SetPassword {
         return ( 0, $self->loc("No password set") );
     }
     elsif ( length($password) < $RT::MinimumPasswordLength ) {
-        return ( 0, $self->loc("Password too short") );
+        return ( 0, $self->loc("Password needs to be at least [_1] characters long", $RT::MinimumPasswordLength) );
     }
     else {
         $password = $self->_GeneratePassword($password);
@@ -1282,7 +1282,7 @@ ok($rootq->Id, "Loaded the first queue");
 ok ($rootq->CurrentUser->HasRight(Right=> 'CreateTicket', Object => $rootq), "Root can create tickets");
 
 my $new_user = RT::User->new($RT::SystemUser);
-my ($id, $msg) = $new_user->Create(Name => 'ACLTest');
+my ($id, $msg) = $new_user->Create(Name => 'ACLTest'.$$);
 
 ok ($id, "Created a new user for acl test $msg");
 
@@ -1313,7 +1313,7 @@ ok($tickid, "Created ticket: $tickid");
 ok (!$new_user->HasRight( Object => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 # Create a new group
 my $group = RT::Group->new($RT::SystemUser);
-$group->CreateUserDefinedGroup(Name => 'ACLTest');
+$group->CreateUserDefinedGroup(Name => 'ACLTest'.$$);
 ok($group->Id, "Created a new group Ok");
 # Grant a group the right to modify tickets in a queue
 ok(my ($gv,$gm) = $group->PrincipalObj->GrantRight( Object => $q, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
@@ -1348,7 +1348,7 @@ ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User 
 
 # Create a subgroup
 my $subgroup = RT::Group->new($RT::SystemUser);
-$subgroup->CreateUserDefinedGroup(Name => 'Subgrouptest');
+$subgroup->CreateUserDefinedGroup(Name => 'Subgrouptest',$$);
 ok($subgroup->Id, "Created a new group ".$subgroup->Id."Ok");
 #Add the subgroup as a subgroup of the group
 my ($said, $samsg) =  $group->AddMember($subgroup->PrincipalId);
@@ -1363,8 +1363,8 @@ ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User c
 #  {{{ Deal with making sure that members of subgroups of a disabled group don't have rights
 
 my ($id, $msg);
- ($id, $msg) =  $group->SetDisabled(1);
- ok ($id,$msg);
+($id, $msg) =  $group->SetDisabled(1);
+ok ($id,$msg);
 ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket when the group ".$group->Id. " is disabled");
  ($id, $msg) =  $group->SetDisabled(0);
 ok($id,$msg);
@@ -1762,7 +1762,7 @@ sub _Set {
                                                OldValue  => $Old,
                                                TimeTaken => $args{'TimeTaken'},
         );
-        return ( $Trans, scalar $TransObj->Description );
+        return ( $Trans, scalar $TransObj->BriefDescription );
     }
     else {
         return ( $ret, $msg );

@@ -222,12 +222,12 @@
 <TR>
 <TD colspan="2">
 <& /Elements/TitleBoxStart, title => loc('Comments about this user') &>
-<TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL><%$UserObj->Comments%></TEXTAREA>
+<TEXTAREA class="comments" name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL><%$UserObj->Comments%></TEXTAREA>
 <& /Elements/TitleBoxEnd &>
 %if ($UserObj->Privileged) {
 <BR>
 <& /Elements/TitleBoxStart, title => loc('Signature') &>
-<TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD><%$UserObj->Signature%></TEXTAREA>
+<TEXTAREA class="signature" COLS=80 ROWS=5 name="Signature" WRAP=HARD><%$UserObj->Signature%></TEXTAREA>
 <& /Elements/TitleBoxEnd &>
 % }
 
