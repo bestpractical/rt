@@ -27,6 +27,7 @@
     Title => $title,
     Format => $Format,
     Query => $Query,
+    Order => $Order,
     OrderBy => $OrderBy,
     Rows => $RowsPerPage
 &>
@@ -68,7 +69,7 @@
 <td colspan=2 class="boxcontainer">
 
 <& Elements/DisplayOptions, %ARGS, Format=> $Format,
-AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPerPage => $RowsPerPage, OrderBy => $OrderBy &>
+AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPerPage => $RowsPerPage, OrderBy => $OrderBy, Order => $Order &>
 </td>
 </tr>
 </table>
@@ -83,12 +84,13 @@ my $title = loc("Query Builder");
 
 # {{{ Clear out unwanted data
 if ($NewQuery or $ARGS{'Delete'}) {
-    # Wipe all seven data-carrying variables clear if we want a new
+    # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
     $Query = '';
     $Format = '';
     $Description = '';
     $SearchId = '';
+    $Order = '';
     $OrderBy = '';
     $RowsPerPage = '';
     # ($search hasn't been set yet; no need to clear)
@@ -106,12 +108,13 @@ if ($NewQuery or $ARGS{'Delete'}) {
 # We don't read or write to the session again until the end
 $search_hash = $session{'CurrentSearchHash'};
 
-# These seven variables are what define a search_hash; this is also
+# These variables are what define a search_hash; this is also
 # where we give sane defaults.
 $Query ||= $search_hash->{'Query'};
 $Format ||= $search_hash->{'Format'};
 $Description ||= $search_hash->{'Description'};
 $SearchId ||= $search_hash->{'SearchId'} || 'new';
+$Order ||= $search_hash->{'Order'} || 'ASC';
 $OrderBy ||= $search_hash->{'OrderBy'} || 'id';
 $RowsPerPage ||= $search_hash->{'RowsPerPage'} || 50;
 $search ||= $search_hash->{'Object'};
@@ -183,11 +186,12 @@ if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         $search = $group->Attributes->WithId($search_id);
     }
 
-    # We have a $search and now; import the other 4
+    # We have a $search and now; import the others
     $SearchId    = $ARGS{'LoadSavedSearch'};
     $Description = $search->Description;
     $Format      = $search->SubValue('Format');
     $Query       = $search->SubValue('Query');
+    $Order       = $search->SubValue('Order');
     $OrderBy     = $search->SubValue('OrderBy');
     $RowsPerPage = $search->SubValue('RowsPerPage');
 }
@@ -660,6 +664,7 @@ if ( $ARGS{'Save'} ) {
         $search->SetSubValues(
             Format      => $Format,
             Query       => $Query,
+            Order       => $Order,
             OrderBy     => $OrderBy,
             RowsPerPage => $RowsPerPage,
         );
@@ -690,6 +695,7 @@ if ( $ARGS{'Save'} ) {
 									     Content     => {
 											     Format      => $Format,
 											     Query       => $Query,
+											     Order       => $Order,
 											     OrderBy     => $OrderBy,
 											     RowsPerPage => $RowsPerPage,
 											    }
@@ -716,6 +722,7 @@ my $dirty = 0;
 $dirty = 1 if defined $search and 
   ($search->SubValue('Format')      ne $Format      or
    $search->SubValue('Query')       ne $Query       or 
+   $search->SubValue('Order')       ne $Order       or
    $search->SubValue('OrderBy')     ne $OrderBy     or
    $search->SubValue('RowsPerPage') ne $RowsPerPage);
 # }}}
@@ -726,6 +733,7 @@ $search_hash->{'Format'} = $Format;
 $search_hash->{'Query'} = $Query;
 $search_hash->{'Description'} = $Description;
 $search_hash->{'Object'} = $search;
+$search_hash->{'Order'} = $Order;
 $search_hash->{'OrderBy'} = $OrderBy;
 $search_hash->{'RowsPerPage'} = $RowsPerPage;
 
@@ -734,7 +742,7 @@ $session{'CurrentSearchHash'} = $search_hash;
 
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
-    $m->comp("Results.html" , Query => $Query, Format => $Format, OrderBy => $OrderBy, Rows => $RowsPerPage);
+    $m->comp("Results.html" , Query => $Query, Format => $Format, Order => $Order, OrderBy => $OrderBy, Rows => $RowsPerPage);
     $m->abort();
 }
 # }}}
@@ -748,6 +756,7 @@ if ($NewQuery) {
     $QueryString = '?' . $m->comp('/Elements/QueryString', 
             Query => $Query,
             Format => $Format,
+            Order => $Order,
             OrderBy => $OrderBy,
             Rows => $RowsPerPage) if ($Query);
 }
@@ -761,6 +770,7 @@ $SearchId => undef
 $Query => undef
 $Format => undef 
 $Description => undef
+$Order => undef
 $OrderBy => undef
 $RowsPerPage => undef
 $HideResults => 0
