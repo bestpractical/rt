@@ -307,7 +307,7 @@ my @templates = (
 
        Greetings,
         This message has been automatically generated in response to your
-message regarding \"{$Ticket->Subject()}\", the content of which appears below.
+message regarding "{$Ticket->Subject()}", the content of which appears below.
 There is no need to reply to it now. The Support group has received
 your message and it has been assigned a ticket ID of [{$rtname} #{$Ticket->id()}].
 Please include the string
