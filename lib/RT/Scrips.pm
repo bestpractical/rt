@@ -27,7 +27,7 @@ ok (require RT::Scrips);
 
 package RT::Scrips;
 use RT::EasySearch;
-use RT::Scrip
+use RT::Scrip;
 @ISA= qw(RT::EasySearch);
 
 
