@@ -1,7 +1,7 @@
 %# if the custom field is a select, enumerate the options
 % if ($Field->Type =~ /^Select/) {
 % my $CustomFieldValues = $Field->ValuesObj();
-<select name="<%$Name%>-Values"
+<select name="<%$Name%>"
         size="5"
         multiple
         >

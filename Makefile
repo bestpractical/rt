@@ -118,4 +118,5 @@ clean:
 
 apachectl:
 	/usr/sbin/apachectl stop
+	sleep 1
 	/usr/sbin/apachectl start

@@ -12,6 +12,16 @@ sub LimitToClass {
     my $self = shift;
     my $class = shift;
 
+    unless ($class =~ /^\d+$/) {
+        my $class_obj = RT::FM::Class->new($RT::SystemUser);
+        $class_obj->Load($class);
+        unless ($class_obj->Id) {
+            $RT::Logger->debug($self->CurrentUser->Name ." asked to limit ".ref($self)." to unknown class ".$class);
+            return;
+        }
+        $class = $class_obj->Id;
+    }
+
     my $class_cfs = $self->NewAlias('FM_ClassCustomFields');
     $self->Join( ALIAS1 => 'main',
                 FIELD1 => 'id',

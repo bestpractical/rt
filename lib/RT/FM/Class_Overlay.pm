@@ -6,6 +6,27 @@ use RT::FM::System;
 use RT::FM::CustomFieldCollection;
 use RT::ACL;
 
+
+=head2 Load IDENTIFIER
+
+Loads a class, either by name or by id
+
+=cut
+
+sub Load {
+    my $self = shift;
+    my $id = shift;
+
+    if ($id =~/^\d+$/) {
+        $self->SUPER::Load($id);
+    }
+    else {
+        $self->LoadByCols(Name => $id);
+    }
+}
+
+
+
 # {{{ This object provides ACLs
 
 use vars qw/$RIGHTS/;

@@ -22,7 +22,7 @@ use strict;
 =head2 Limit { FIELD  => undef, OPERATOR => '=', VALUE => 'undef'} 
 
 Limit the result set. See DBIx::SearchBuilder docs
-
+In addition to the "normal" stuff, value can be an array.
 
 =cut
 
@@ -31,7 +31,17 @@ sub Limit {
     my %ARGS =( OPERATOR => '=', 
                 @_);
 
-    $self->SUPER::Limit(%ARGS);
+    if (ref( $ARGS{'VALUE'} )) {
+      my @values = $ARGS{'VALUE'};
+        delete $ARGS{'VALUE'};
+        foreach my $v (@values) {
+            $self->SUPER::Limit(%ARGS, VALUE => $v);
+        } 
+    }
+    else {
+    $RT::Logger->debug(ref($self). " Limit called :".join(" ",%ARGS));
+       $self->SUPER::Limit(%ARGS);
+    }
 }
 
 
@@ -225,7 +235,9 @@ ok ($arts->Count == 6, "Found 6 cf values matching 'est' for CF 6  -"  . $arts->
 
 =cut
 
-sub LimitToCustomFieldValue {
+*LimitToCustomFieldValue = \&LimitCustomField;
+
+sub LimitCustomField {
     my $self = shift;
     my %args = (
         FIELD           => undef,
@@ -258,6 +270,8 @@ sub LimitToCustomFieldValue {
             VALUE           => $args{'FIELD'},
             ENTRYAGGREGATOR => 'OR'
         );
+    
+
         $self->SUPER::Limit(
             ALIAS           => $ObjectValuesAlias,
             FIELD           => 'CustomField',

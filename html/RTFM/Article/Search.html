@@ -2,7 +2,7 @@
 <& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html",
 title => "Search for articles" &>
 
-% unless ($ARGS{'Action'} eq loc('Refine')) {
+
 <ul>
 % while (my $article = $articles->Next) {
 
@@ -11,33 +11,33 @@ title => "Search for articles" &>
 </li>
 % }
 </ul>
-% }
 <h2>Search</h2>
 
 <form target="Search.html" method="GET">
-<br>Class is <& ../Elements/SelectClass, Name => 'Class', Default =>
-$ARGS{'Class'} &>
-<br>Name
-<& /Elements/SelectMatch, Name => 'NameOp' , Default => $ARGS{'NameOp'} &>
-<input name="Name" value="<%$ARGS{'Name'}%>">
-
-<br>Summary
-<& /Elements/SelectMatch, Name => 'SummaryOp',  Default => $ARGS{'SummaryOp'}&>
-<input name="Summary" value="<%$ARGS{'Summary'}%>">
+<br>Class is <& ../Elements/SelectClass, Name => 'Class', Multiple =>1, Size =>
+5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
+<br>Class is not <& ../Elements/SelectClass, Name => 'Class!', Multiple =>1,
+Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
+<br>Name matches 
+<input name="Name~" value="<%$ARGS{'Name~'}%>">
+and does not match 
+<input name="Name!~" value="<%$ARGS{'Name!~'}%>">
+<br>Summary matches 
+<input Summary="Summary~" value="<%$ARGS{'Summary~'}%>">
+and does not match 
+<input Summary="Summary!~" value="<%$ARGS{'Summary!~'}%>">
 
 <br>Created between
-<& /Elements/SelectDate, Name=>"CreatedAfter", Default =>
-($dates{'CreatedAfter'} ? $dates{'CreatedAfter'}->AsString : '') &>
+<& /Elements/SelectDate, Name=>"Created>", Default => ($dates{'Created>'} ? $dates{'Created>'}->ISO : '') &>
 and 
-<& /Elements/SelectDate, Name=>"CreatedBefore", Default =>
-($dates{'CreatedBefore'} ? $dates{'CreatedBefore'}->AsString:'')&>
+<& /Elements/SelectDate, Name=>"Created<", Default => ($dates{'Created<'} ? $dates{'Created<'}->ISO:'')&>
 
 <br>Updated between
-<& /Elements/SelectDate, Name=>"LastUpdatedAfter", Default =>
-($dates{'LastUpdatedAfter'} ? $dates{'LastUpdatedAfter'}->AsString:'')&>
+<& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
+($dates{'LastUpdated>'} ? $dates{'LastUpdated>'}->AsString:'')&>
 and 
-<& /Elements/SelectDate, Name=>"LastUpdatedBefore", Default => 
-($dates{'LastUpdatedBefore'} ? $dates{'LastUpdatedBefore'}->AsString:'')&>
+<& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
+($dates{'LastUpdated<'} ? $dates{'LastUpdated<'}->AsString:'')&>
 <br>
 Which refer to <input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
 <i>Seperate multiple URLs with spaces</i>
@@ -48,23 +48,23 @@ Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$
 
 <table>
 %# for each custom field 
-% while (my $field = $cfs->Next ) {
+% while (my $field = $customfields->Next ) {
 
 <tr>
 <td><%$field->Name%> matches</td><td valign=top>
-% my $arg = $field->Id."-Matches-Values";
+% my $arg = $field->Name;
 <& Elements/SearchByCustomField, 
     Field => $field, 
-    Name => $field->Id."-Matches", 
+    Name => $field->Name, 
     Values => $ARGS{$arg} &>
     </td>
     <td>and doesn't match</td>
     <td valign="top">
-% $arg = $field->Id."-NoMatches-Values";
+% $arg = $field->Name;
 <& Elements/SearchByCustomField, 
     Field => $field, 
-    Name => $field->Id."-NoMatches", 
-    Values => $ARGS{$arg}
+    Name => $field->Name."!", 
+    Values => $ARGS{$arg."!"}
     &>
     </td>
     </tr>
@@ -72,74 +72,184 @@ Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$
 % }
 </table>
 
-<& /Elements/Submit, Label => loc('Show Results'), AlternateLabel => loc('Refine'), Name => 'Action'&>
-
+<div align="right"><input type="submit"></div>
 
 </form>
 <%init>
-my $cfs = RT::FM::CustomFieldCollection->new($session{'CurrentUser'});
-if ($ARGS{'Class'}) { 
-    $cfs->LimitToClass($ARGS{'Class'});
+my $user;
+my @results;
+if ( $session{'CurrentUser'} ) {
+    $user = $session{'CurrentUser'};
 }
-my $articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
+else {
+    $user = RT::CurrentUser->new('RTFM-Guest');
+}
+
+my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+
+
+my $customfields = RT::FM::CustomFieldCollection->new( $session{'CurrentUser'} );
+if ( $ARGS{'Class'} ) {
+    $customfields->LimitToClass( $ARGS{'Class'} );
+}
+else {
+    $customfields->UnLimit();
+
+}
+
 # Don't want to search for a null class when there is no class specced
-foreach my $arg qw(Class Name Summary) {
-    next unless (defined $ARGS{$arg} && $ARGS{$arg} ne ''); #ignore undef values
-    $articles->Limit(FIELD => $arg,
-                    OPERATOR => $ARGS{$arg."Op"} || '=',
-                    VALUE => $ARGS{$arg});
-}
-
-foreach my $arg ( keys %ARGS ) {
-    if ( $arg =~ /^(\d+)-Matches-Values$/ ) {
-	    my @values =ref( $ARGS{$arg} ) ? @{ $ARGS{$arg} } : ( $ARGS{$arg} ); 
-	    $articles->LimitToCustomFieldValue( FIELD=> $1,
-                                            OPERATOR => 'LIKE',
-                                            VALUE    => \@values );
-
-    }
-    if ( $arg =~ /^(\d+)-NoMatches-Values$/ ) {
-	    my @values =ref( $ARGS{$arg} ) ? @{ $ARGS{$arg} } : ( $ARGS{$arg} ); 
-        $articles->LimitToCustomFieldValue( FIELD    => $1,
-                                            OPERATOR => 'NOT LIKE',
-                                            VALUE    => \@values );
-
-    }
-}
-
 my %dates;
-foreach my $date qw(CreatedBefore CreatedAfter LastUpdatedBefore LastUpdatedAfter) {
-    next unless ($ARGS{$date});
-    my $seconds = parsedate ($ARGS{$date}, FUZZY => 1, PREFER_PAST => 1);
-    my $date_obj = RT::Date->new($session{'CurrentUser'});
-    $date_obj->Set( Format => 'unix', Value => $seconds);
+foreach my $date qw(Created< Created> LastUpdated< LastUpdated>) {
+    next unless ( $ARGS{$date} );
+    my $seconds = parsedate( $ARGS{$date}, FUZZY => 1, PREFER_PAST => 1 );
+    my $date_obj = RT::Date->new( $session{'CurrentUser'} );
+    $date_obj->Set( Format => 'unix', Value => $seconds );
     $dates{$date} = $date_obj;
 
-    if ($date =~ /^(.*?)Before$/i) {
-        $articles->Limit( FIELD => $1,
-                          OPERATOR => "<=",
-                          ENTRYAGGREGATOR => "AND",
-                          VALUE => $date_obj->ISO);
+    if ( $date =~ /^(.*?)<$/i ) {
+        $articles->Limit( FIELD           => $1, OPERATOR        => "<=", ENTRYAGGREGATOR => "AND", VALUE           => $date_obj->ISO );
     }
 
-    if ($date =~ /^(.*?)After$/i) {
-        $articles->Limit( FIELD => $1,
-                          OPERATOR => ">=",
-                          ENTRYAGGREGATOR => "AND",
-                          VALUE => $date_obj->ISO);
+    if ( $date =~ /^(.*?)>$/i ) {
+        $articles->Limit( FIELD           => $1, OPERATOR        => ">=", ENTRYAGGREGATOR => "AND", VALUE           => $date_obj->ISO );
     }
 
 }
-my $link;
-foreach $link (split (/\s+/,$RefersTo)) {
+foreach my $link ( split ( /\s+/, $RefersTo ) ) {
     next unless ($link);
     $articles->LimitRefersTo($link);
 }
 
-foreach $link (split(/\s+/,$ReferredToBy)) {
+foreach my $link ( split ( /\s+/, $ReferredToBy ) ) {
     next unless ($link);
     $articles->LimitReferredToBy($link);
 }
+
+my %cfs;
+my $all_cfs = RT::FM::CustomFieldCollection->new($user);
+$all_cfs->UnLimit();
+while ( my $cf = $all_cfs->Next ) {
+    $cfs{ $cf->Name } = $cf->Id;
+}
+
+foreach my $field ( keys %cfs ) {
+
+   my @Match = (ref $ARGS{ $field } eq 'ARRAY' ) ? @{ $ARGS{ $field } } : ( $ARGS{$field } );
+   my @NoMatch = (ref $ARGS{ $field."!" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!" } } : ( $ARGS{$field."!" } );
+
+    foreach my $value (@Match) {
+        next unless $value;
+        my $op;
+        if ( $value =~ /^~(.*)$/ ) {
+            $value = "%$1%";
+            $op    = 'LIKE';
+        }
+        else {
+            $op = '=';
+        }
+        $articles->LimitCustomField( FIELD           => $cfs{$field},
+                                     VALUE           => $value,
+                                     ENTRYAGGREGATOR => 'OR',
+                                     OPERATOR        => $op );
+    }
+    foreach my $value (@NoMatch) {
+        next unless $value;
+        my $op;
+        if ( $value =~ /^~(.*)$/ ) {
+            $value = "%$1%";
+            $op    = 'NOT LIKE';
+        }
+        else {
+            $op = '!=';
+        }
+        $articles->LimitCustomField( FIELD           => $cfs{$field},
+                                     VALUE           => $value,
+                                     ENTRYAGGREGATOR => 'OR',
+                                     OPERATOR        => $op );
+    }
+}
+
+
+foreach my $field qw(Name Summary Class) {
+    
+
+
+   my @MatchLike = (ref $ARGS{ $field."~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."~" } } : ( $ARGS{$field."~" } );
+   my @NoMatchLike = (ref $ARGS{ $field."!~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!~" } } : ( $ARGS{$field."!~" } );
+
+   my @Match = (ref $ARGS{ $field } eq 'ARRAY' ) ? @{ $ARGS{ $field } } : ( $ARGS{$field } );
+   my @NoMatch = (ref $ARGS{ $field."!" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!" } } : ( $ARGS{$field."!" } );
+
+    foreach my $val (@MatchLike) {
+        next unless $val;
+        push @Match, "~".$val;
+    }
+
+    foreach my $val (@NoMatchLike) {
+        next unless $val;
+        push @NoMatch, "~".$val;
+    }
+
+    my $op;
+    foreach my $value (@Match) {
+        if ( $value =~ /^~(.*)$/ ) {
+            $value = "%$1%";
+            $op    = 'LIKE';
+        }
+        else {
+            $op = '=';
+        }
+
+        # preprocess Classes, so we can search on class
+        if ( $field eq 'Class' ) {
+            my $class = RT::FM::Class->new($RT::SystemUser);
+            $class->Load($value);
+            $value = $class->Id;
+        }
+
+        # now that we've pruned the value, get out if it's different.
+        next unless $value;
+
+        $articles->Limit( SUBCLAUSE       => $field . 'Match',
+                          FIELD           => $field,
+                          OPERATOR        => $op,
+                          VALUE            => $value,
+                          ENTRYAGGREGATOR => 'OR' );
+
+    }
+    foreach my $value (@NoMatch) {
+        $RT::Logger->debug( "noMatch value is '$value' for $field");
+        
+
+        # preprocess Classes, so we can search on class
+        if ( $value =~ /^~(.*)/ ) {
+            $value = "%$1%";
+            $op    = 'NOT LIKE';
+        }
+        else {
+            $op = '!=';
+        }
+        if ( $field eq 'Class' ) {
+            my $class = RT::FM::Class->new($RT::SystemUser);
+            $class->Load($value);
+            $value = $class->Id;
+        }
+
+        # now that we've pruned the value, get out if it's different.
+        next unless $value;
+
+        $articles->Limit( SUBCLAUSE       => $field . 'NoMatch',
+                          OPERATOR        => $op,
+                          VALUE            => $value,
+                          FIELD           => $field,
+                          ENTRYAGGREGATOR => 'AND' );
+
+    }
+}
+
+
+
+</%init>
 
 
 </%init>

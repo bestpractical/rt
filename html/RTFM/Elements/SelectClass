@@ -22,16 +22,24 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<% join(":", @Default) %>
 % if ($Lite) {
 <INPUT NAME="<%$Name%>" size=25 DEFAULT="<%$d->Name%>">
 % } else {
-<SELECT NAME ="<%$Name%>">
+<SELECT NAME ="<%$Name%>"
+% if ($Multiple) {
+MULTIPLE
+% }
+% if ($Size) {
+SIZE=<%$Size%>
+% }
+>
 % if ($ShowNullOption) {
 <OPTION VALUE="">-</OPTION>
 % }
 % while (my $Class=$Classes->Next) {
 % if ($ShowAllClasses || $Class->CurrentUserHasRight('CreateArticle')) {
-<OPTION VALUE="<%$Class->Id%>" <%($Class->Id == $Default) && 'SELECTED'%>><%$Class->Name%>
+<OPTION VALUE="<%$Class->Id%>" <%(grep (( $Class->Id == $_ || $Class->Name eq $_ ), @Default)) && 'SELECTED'%>><%$Class->Name%>
 %   if (($Verbose) and ($Class->Description) ){
 (<%$Class->Description%>)
 %  }
@@ -41,6 +49,8 @@
 </SELECT>
 % }
 <%ARGS>
+$Multiple => undef
+$Size => undef
 $ShowNullOption => 1
 $ShowAllClasses => 1
 $Name => undef
@@ -50,6 +60,8 @@ $Lite => 0
 </%ARGS>
 
 <%INIT>
+
+my @Default = ref($Default) eq 'ARRAY' ? @$Default : ( $Default);
 
 my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
 $Classes->UnLimit;
