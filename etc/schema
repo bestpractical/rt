@@ -24,7 +24,7 @@ CREATE TABLE users (
   real_name CHAR(40),
   password CHAR(40), 			
   email CHAR(120),
-  phone CHAR(15),
+  phone CHAR(25),
   office CHAR(30),
   comments CHAR(120),
   admin_rt INT

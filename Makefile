@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	3
+RT_VERSION_PATCH	=	4pre1
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -237,27 +237,24 @@ nondestruct: mux-links fixperms
 all:
 	@echo "Read the README."
 fixperms:
-
-#  Main, read-only directories.
+	#  Main, read-only directories.
 	chown -R root $(RT_PATH)
 	chgrp -R root $(RT_PATH)
 	chmod -R a+r,a-w $(RT_PATH)
 	( cd $(RT_PATH) && find . -type d -exec chmod a+x {} \; )
-#  Restricted and special access areas.
+	#  Restricted and special access areas.
 	chown -R $(RTUSER) $(RT_ETC_PATH) $(RT_TRANSACTIONS_PATH)  
 	chgrp -R $(RTGROUP) $(RT_ETC_PATH) $(RT_TRANSACTIONS_PATH)  
-#  Some password & config info is sensitive.
+	#  Some password & config info is sensitive.
 	chmod -R a-w,o-r $(RT_ETC_PATH)
 	chmod ug+x,o-x $(RT_ETC_PATH)
-#  This covers RT_TRANSACTIONS_PATH
+	#  This covers RT_TRANSACTIONS_PATH
 	chmod -R a-w,o-r,u+rw,g+r $(RT_TRANSACTIONS_PATH)
 	( cd $(RT_TRANSACTIONS_PATH) && find . -type d -exec chmod ug+x,o-x {} \; )
-# Do the same for the templates
+	# Do the same for the templates
 	chmod -R a-w,o-r,u+rw,g+r $(RT_TEMPLATE_PATH)
 	( cd $(RT_TEMPLATE_PATH) && find . -type d -exec chmod ug+x,o-x {} \; )
-
-#  Individual executable files.
-
+	#  Individual executable files.
 	chmod 0755 $(RT_PERL_MUX)
 	chown $(RTUSER) $(RT_WRAPPER)
 	chmod 4111 $(RT_WRAPPER)
@@ -311,23 +308,15 @@ mux-install:
 mux-links: suid-wrapper
 	rm -f $(RT_BIN_PATH)/$(RT_ACTION_BIN)
 	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_ACTION_BIN)
-
 	rm -f $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
 	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
-
 	rm -f $(RT_BIN_PATH)/$(RT_QUERY_BIN)
 	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_QUERY_BIN)
-
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
-
-
-
-
 	rm -f $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
 	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
 	chmod 4755 $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
-
 	rm -f $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
 	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
 	chmod 4755 $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
