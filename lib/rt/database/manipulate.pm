@@ -1,4 +1,5 @@
 # $Header$
+
 package rt;
 
 require rt::database;
@@ -116,7 +117,16 @@ sub import_request {
     }
 
 sub add_correspondence {
-    my  ($in_serial_num, $in_content, $in_subject, $in_cc, $in_bcc, $in_current_user) = @_;
+    my  $in_serial_num = shift;
+    my $in_content = shift;
+    my $in_subject = shift;
+    my $in_cc = shift;
+    my $in_bcc = shift;
+    my $in_status = shift; # if we want to make the status something, set it here
+                           # otherwise leave it blank to not change anything;
+    my $in_notify = shift; # if we want to update the "user notified" field
+                           # make this a 1.
+    my $in_current_user = shift;
     my ($transaction_num,$requestors);
     
     # is there a reason we might want to restrict comment access? I'd just as soon let
@@ -133,33 +143,34 @@ sub add_correspondence {
     $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'correspond','',$in_content,$time,1,$in_current_user);
    
     
-   if ($rt::req[$in_serial_num]{'status'} ne 'open') {
-	($opentrans,$openmsg)=&rt::update_request($in_serial_num,'status','open', '_rt_system');
-	print "Reopening the request $opentrans\n$openmsg\n";
+    if (($in_status ne '') and ($rt::req[$in_serial_num]{'status'} ne $in_status)) {
+      ($opentrans,$openmsg)=&rt::update_request($in_serial_num,'status','$in_status', '$in_current_user');
+      #print "Reopening the request $opentrans\n$openmsg\n";
     }
     #if it's coming from somebody other than the user, send them a copy
- #   if ( (&is_not_a_requestor($in_current_user,$in_serial_num))) {
+    #   if ( (&is_not_a_requestor($in_current_user,$in_serial_num))) {
     # for now, always send a copy to the user.
-    ($notifytrans,$notifymsg)=&rt::update_request($in_serial_num,'date_told', $rt::time, $in_current_user);
+    &update_each_req($effective_sn, 'date_told', $rt::time);
+
     $tem=&rt::template_mail('correspondence', $queue_id, "$requestors", $in_cc, $in_bcc, "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
-#    }
+    #    }
     
     if ($queues{$queue_id}{m_members_correspond}) {
-	&rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}","","", "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
+      &rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}","","", "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
     }
-
-    return ($transaction_num,"This correspondence has been recorded.");
-}
-sub import_correspondence {
-    my  ($in_serial_num, $in_content, $in_subject, $in_current_user) = @_;
-    my ($transaction_num,$requestors);
     
-    &req_in($in_serial_num, '_rt_system');
-
-    $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'correspond','',$in_content,$time,1,$in_current_user);
-   
-    ($notifytrans,$notifymsg)=&rt::update_request($in_serial_num,'date_told', $rt::time, $in_current_user);
-    return ($transaction_num,"This correspondence on request ($in_serial_num) has been recorded.");
+    return ($transaction_num,"This correspondence has been recorded.");
+  }
+sub import_correspondence {
+  my  ($in_serial_num, $in_content, $in_subject, $in_current_user) = @_;
+  my ($transaction_num,$requestors);
+  
+  &req_in($in_serial_num, '_rt_system');
+  
+  $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'correspond','',$in_content,$time,1,$in_current_user);
+  
+  ($notifytrans,$notifymsg)=&rt::update_request($in_serial_num,'date_told', $rt::time, $in_current_user);
+  return ($transaction_num,"This correspondence on request ($in_serial_num) has been recorded.");
 }
 
 sub comment {

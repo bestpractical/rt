@@ -390,6 +390,9 @@ sub FormCreate{
 }
 sub FormCreate_Step2 {   
     my ($template,$actions,$user_id, $value);
+
+    require rt::support::mail;
+
     print "<form action=\"$ScriptURL\" method=\"post\"";
     if ($frames) { print "target=\"summary\" ";
 	       }
@@ -397,6 +400,7 @@ sub FormCreate_Step2 {
       print "<pre>
 Queue: $rt::ui::web::FORM{'queue_id'} * Created by: $current_user\n";
     $template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
+    $template=&rt::template_replace_tokens($template,0,0,"", $current_user);
     if ($current_user){
 
     print "Area:<select name=\"area\">
@@ -407,9 +411,9 @@ Queue: $rt::ui::web::FORM{'queue_id'} * Created by: $current_user\n";
 	    print "<option>$area\n";
 	}
     }
-    print "</select>";
+    print "</select>\n";
 
-print " * Status:<select name=\"status\">
+print "Status:<select name=\"status\">
 <option value=\"open\">open
 <option value=\"stalled\">stalled
 <option value=\"resolved\">resolved
@@ -430,7 +434,7 @@ print " * Owner:<select name=\"owner\">
     print"Priority:";
     
     &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
-    print " * Final priority:";
+    print "Final priority:";
     &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
     print "\n<input type=\"checkbox\" name=\"due\"> Set Date Due:";
     &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");

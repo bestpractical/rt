@@ -1,5 +1,4 @@
-
-#
+# $Header$
 # (c) 1997 Jesse Vincent
 # jesse@fsck.com
 #
@@ -364,7 +363,7 @@ sub takeaction {
 	    ($trans, $StatusMsg)=&rt::comment($serial_num, $rt::ui::web::FORM{'content'},$rt::ui::web::FORM{'subject'}, $rt::ui::web::FORM{'cc'} , $rt::ui::web::FORM{'bcc'}, $current_user);
 	}
 	if ($rt::ui::web::FORM{'do_req_respond'}){
-	    ($trans,$StatusMsg)=&rt::add_correspondence($serial_num,$rt::ui::web::FORM{'content'},$rt::ui::web::FORM{'subject'}, $rt::ui::web::FORM{'cc'}, $rt::ui::web::FORM{'bcc'}, $current_user);
+	    ($trans,$StatusMsg)=&rt::add_correspondence($serial_num,$rt::ui::web::FORM{'content'},$rt::ui::web::FORM{'subject'}, $rt::ui::web::FORM{'cc'}, $rt::ui::web::FORM{'bcc'},$rt::ui::web::FORM{'status'},1, $current_user);
 	}
 	if ($rt::ui::web::FORM{'do_req_date_due'}){
 	    $date_due=timelocal(0,0,0,$rt::ui::web::FORM{'due_mday'},$rt::ui::web::FORM{'due_month'},$rt::ui::web::FORM{'due_year'});
@@ -597,7 +596,7 @@ $query_string
 
                 &rt::ui::web::new_col("nowrap"); {
 #                   &rt::ui::web::table_label("Owner");
-                    print "<font size=-1><b>$rt::req[$temp]{'owner'}</b></font>";
+                    print "<font size=-1><b>$rt::req[$temp]{'owner'}</b>&nbsp;</font>";
                 } &rt::ui::web::end_col;
 
                 &rt::ui::web::new_col("nowrap"); {
@@ -645,7 +644,7 @@ $query_string
 
                 &rt::ui::web::new_col("nowrap"); {
 #                   &rt::ui::web::table_label("Sub");
-                    print "<font size=-1>$rt::req[$temp]{'subject'}</font>";
+                    print "<font size=-1>$rt::req[$temp]{'subject'}&nbsp;</font>";
                 } &rt::ui::web::end_col;
             } &rt::ui::web::end_row;
 
@@ -706,32 +705,45 @@ $time
 	    if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
 		&rt::ui::web::new_row(); {
 		    &rt::ui::web::new_col("valign=\"top\""); {
+		      
+		      print "<TABLE>";
+		      
 			if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
 			    ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'comments') or
 			    ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {	
-			    print &fdro_murl("display=SetComment","history","Comment");
-			    print "<br>\n";
+			  print "<TR><TD>";
+			  print &fdro_murl("display=SetComment","history","Comment");
+			    print "</TD></TR>";
 			}
 			if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
 			    ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-			    print &fdro_murl("display=SetReply","history","Reply");
-			    print "<br>\n";
+			  print "<TR><TD>";
+			  print &fdro_murl("display=SetReply","history","Reply");
+			  print "</TD></TR>";
+
 			}
 			
 			
 			if ($rt::req[$serial_num]{'owner'} eq '') {
+			  print "<TR><TD>";
+
 			    print &fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take");
-			    print "<br>\n";
+			    print "</TD></TR>";
 			}
 			if ($rt::req[$serial_num]{'status'} ne 'resolved') {
-			    print &fdro_murl("do_req_resolve=true","summary","Resolve");
-			    print "<br>\n";
+
+			  print "<TR><TD>";
+			  print &fdro_murl("do_req_resolve=true","summary","Resolve");
+			  print "</TD></TR>";
 			}
 			if ($rt::req[$serial_num]{'status'} ne 'open') {
-			    print &fdro_murl("do_req_open=true","summary","Open");
-			    print "<br>\n";
+
+			  print "<TR><TD>";
+			  print &fdro_murl("do_req_open=true","summary","Open");
+			  print "</TD></TR>";
 			}
-			
+		      print "</TABLE>\n";
+		      
 		    } &rt::ui::web::end_col();
 		    &rt::ui::web::new_col ("bgcolor=\"\#EEEEEE\""); {
 			print "<font size=\"$MESSAGE_FONT\">";

@@ -55,7 +55,7 @@ elsif ($in_action eq 'correspond') {
     }   
     else {
 	
-	($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject", , ,$current_user);
+	($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",1,$current_user);
 	
     }
 }

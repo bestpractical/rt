@@ -244,7 +244,7 @@ n";
                 }
         }
 
-    ($trans,  $message)=&rt::add_correspondence($serial_num,$content,$subject,$cc,$bcc,$current_user);
+    ($trans,  $message)=&rt::add_correspondence($serial_num,$content,$subject,$cc,$bcc,"",1,$current_user);
     print $message;
 }                   
 

@@ -100,37 +100,6 @@ sub is_owner{
 }
 
 
-sub get_req_num {
-    my $reqnum;
-    open(REQNUM, "$reqnum_path |"); 
-    while (<REQNUM>){
-	$reqnum=$_;
-    }
-    $reqnum =~ /(\d*)/;
-    $reqnum=$1;
-    close(REQNUM);
-    return ($reqnum);
-}
-
-
-#read in a transaction # from the locking counter file
-sub get_transaction_num {
-    my ($transaction_num);
-
-    open(TRANSACTNUM, "$transactnum_path |"); 
-    #read the one line of the file
-    while (<TRANSACTNUM>){
-	$transaction_num=$_;
-    }
-    close (TRANSACTNUM);
-    #grab the number
-    $transaction_num =~ /(\d*)/;
-    $transaction_num= $1;
-
-    #now give it back
-    return ($transaction_num);
-}
-
 #normalize_sn takes care of opersations on reqs which have been merged
 sub normalize_sn{
     my ($in_serial_num)=@_;
@@ -282,7 +251,7 @@ sub template_read {
     
     if (! (-f "$rt::template_dir/queues/$in_queue/$in_template")) 
     {
-       	return ("The specified template is missing or inaccessable.\n ($rt::template_dir/queues/$in_queue/$in_template)\n However, the custom content which was supposed to fill the template was:\nm,8%content%");
+       	return ("The specified template is missing or inaccessable.\n ($rt::template_dir/queues/$in_queue/$in_template)\n However, the custom content which was supposed to fill the template was:\n %content%");
     }
     open(CONTENT, "$rt::template_dir/queues/$in_queue/$in_template"); 
     while (<CONTENT>)

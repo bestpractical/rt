@@ -147,14 +147,18 @@ sub update_each_req {
 
 sub update_request
 {
-    my ($in_serial_num, $in_variable, $in_new_value, $in_current_user) = @_;
+    my $in_serial_num = shift;
+    my $in_variable = shift;
+    my $in_new_value = shift;
+    my $in_current_user = shift;
+
     $effective_sn=&normalize_sn($in_serial_num);
     if (($in_current_user eq '_rt_system') or (&can_manipulate_queue($req[$effective_sn]{queue_id},$in_current_user))) {
 	&update_each_req($effective_sn, $in_variable, $in_new_value);
 	&update_each_req($effective_sn, 'date_acted', $time);        #make now the last acted time
 	$transaction_num=&add_transaction($effective_sn, $in_current_user, $in_variable,$in_new_value,'',$time,1,$in_current_user);
 	return ($transaction_num);
-    }
+      }
     else {
 	return(0);
     }
