@@ -11,7 +11,7 @@
 # {{{ Table ACL {
 
 CREATE TABLE ACL (
-	id int not null primary_key autoincrement,
+	id int primary key auto_increment,
 	PrinicpalId INT(11),
 	PrincipalType VARCHAR(16),
 	PrincipalScope VARCHAR(16),
@@ -259,10 +259,10 @@ CREATE TABLE Tickets (
   Due INT, #TODO: Make a date type
 
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
+  LastUpdated TIMESTAMP,
 
   Creator INT(11),
-  Created TIMESTAMP,
+  Created TIMESTAMP
 ) \g
 
 # }}}
