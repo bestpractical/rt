@@ -559,7 +559,7 @@ sub LimitLinkedFrom {
 		  TARGET => undef,
 		  BASE => $args{'TICKET'},
 		  TYPE => $args{'TYPE'},
-		  DESCRIPTION => "Tickets " .$ARGS{'TICKET'} ." ".$args{'TYPE'}
+		  DESCRIPTION => "Tickets " .$args{'TICKET'} ." ".$args{'TYPE'}
 		);
 }
 
@@ -1098,31 +1098,49 @@ sub _ProcessRestrictions {
 	# }}}
 	# {{{ if it's a watcher that we're hunting for
 	elsif ($TYPES{$restriction->{'FIELD'}} eq 'WATCHERFIELD') {
+
 	    my $Watch = $self->NewAlias('Watchers');
 
-	    my $User = $self->NewAlias('Users');
-
 	    #Join watchers to users
-	    $self->Join( ALIAS1 => $Watch, FIELD1 => 'Owner',
-			 ALIAS2 => $User, FIELD2 => 'id');
+	    my $User = $self->Join( TYPE => 'left',
+				     ALIAS1 => $Watch, 
+				     FIELD1 => 'Owner',
+				     TABLE2 => 'Users', 
+				     FIELD2 => 'id',
+				   );
 
 	    #Join Ticket to watchers
 	    $self->Join( ALIAS1 => 'main', FIELD1 => 'id',
 			 ALIAS2 => $Watch, FIELD2 => 'Value');
+
 
 	    #Make sure we're only talking about ticket watchers
 	    $self->SUPER::Limit( ALIAS => $Watch,
 				 FIELD => 'Scope',
 				 VALUE => 'Ticket',
 				 OPERATOR => '=');
-	    
-	    #Limit it to the address we want
-	    $self->SUPER::Limit( ALIAS => $User,
-				 FIELD => 'EmailAddress',
+
+
+	    # Find email address watchers
+	    $self->SUPER::Limit( SUBCLAUSE => 'WatcherEmailAddress',
+				 ALIAS => $Watch,
+				 FIELD => 'Email',
 				 ENTRYAGGREGATOR => 'OR',
 				 VALUE => $restriction->{'VALUE'},
-				 OPERATOR => $restriction->{'OPERATOR'}
+				 OPERATOR => $restriction->{'OPERATOR'});
+
+
+
+	    #Find user watchers
+	    $self->SUPER::Limit(
+				SUBCLAUSE => 'WatcherEmailAddress',
+				ALIAS => $User,
+				FIELD => 'EmailAddress',
+				ENTRYAGGREGATOR => 'OR',
+				VALUE => $restriction->{'VALUE'},
+				OPERATOR => $restriction->{'OPERATOR'}
 			       );
+
 	    
 	    #If we only want a specific type of watchers, then limit it to that
 	    if ($restriction->{'TYPE'}) {

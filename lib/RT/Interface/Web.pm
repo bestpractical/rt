@@ -223,10 +223,11 @@ sub ProcessSearchQuery {
     # {{{ Limit requestor email
     
     if ($args{ARGS}->{'ValueOfRequestor'} ne '') {
-	my $alias=$session{'tickets'}->LimitRequestor (
-						       VALUE => $args{ARGS}->{'ValueOfRequestor'},
-						       OPERATOR =>  $args{ARGS}->{'RequestorOp'},
-						      );
+	my $alias=$session{'tickets'}->LimitRequestor 
+	  (
+	   VALUE => $args{ARGS}->{'ValueOfRequestor'},
+	   OPERATOR =>  $args{ARGS}->{'RequestorOp'},
+	  );
 	
     }
     # }}}
