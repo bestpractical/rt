@@ -1112,6 +1112,12 @@ sub _Set {
 	      @_
 	     );
 
+  # Nobody is allowed to futz with RT_System or Nobody unless they
+  # want to change an email address. For 2.2, neither should have an email address
+
+  if (($self->Privileged == 2) && ($args{'Field'} ne 'Email')) {
+    return (0, "Can not modify system users"); 
+  }
   unless ($self->CurrentUserCanModify($args{'Field'})) {
       return (0, "Permission Denied");
   }
