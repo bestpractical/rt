@@ -35,7 +35,7 @@
 %# TODO: We really should HTML'ify and/or HTML-escape the Content.
 <%$message->Content%>
 </pre>
-%    } 
+%    }  
 % else {
 	
 Attachment: <A HREF="Display.html?PickUpAttachment=<%$message->Id%>"><% $message->ContentType %></a>

@@ -1111,8 +1111,6 @@ sub _NewTransaction {
 
   warn $msg unless $transaction;
   
-  $self->_UpdateDateActed;
-  
   if (defined $args{'TimeTaken'} ) {
     $self->_UpdateTimeTaken($args{'TimeTaken'}); 
   }
@@ -1199,13 +1197,6 @@ sub _UpdateTimeTaken {
   $Total = ($Total || 0) + ($Minutes || 0);
   $self->SUPER::_Set("TimeWorked", $Total);
   return ($Total);
-}
-# }}}
-
-# {{{ sub _UpdateDateActed
-sub _UpdateDateActed {
-  my $self = shift;
-  $self->SUPER::_Set('LastUpdated',undef);
 }
 # }}}
 

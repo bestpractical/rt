@@ -314,7 +314,8 @@ sub _Accessible  {
 	      Data => 'read',
 	      EffectiveTicket => 'read',
 	      Creator => 'read',
-	      Created => 'read/auto'
+	      Created => 'read/auto',
+	      LastUpdated => 'read/auto'
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);
 }
