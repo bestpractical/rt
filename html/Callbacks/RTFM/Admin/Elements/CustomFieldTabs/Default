@@ -1,0 +1,16 @@
+<%args>
+$id => undef
+$tabs => undef
+</%args>
+<%init>
+    my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+    $cf->Load($id);
+    if ($cf->LookupType =~ /^RT::FM::Class/io) {
+        $tabs->{'this'}->{subtabs}->{RTFM_CLASS} = {
+        title => loc('Applies to'),
+            path  => "Admin/CustomFields/Objects.html?id=" . $id,
+        };
+    }
+
+</%init>
+$m->out("<h1>FOO</h1>", 'n');
