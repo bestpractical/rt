@@ -119,10 +119,10 @@ RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 default:
 	@echo "Read the readme"
 
-install: dirs mux-install libs-install initialize config-replace nondestruct instruct
+install: dirs mux-install mux-links libs-install initialize config-replace nondestruct instruct
 
-suidrt:
-	$(CC) etc/suidrt.c -DPERL=\"$(PERL)\" -D RT_PERL_MUX=\"$(RT_PERL_MUX)\" $(RT_BIN_PATH)/suidrt
+suid-wrapper:
+	$(CC) etc/suidrt.c -DPERL=\"$(PERL)\" -DRT_PERL_MUX=\"$(RT_PERL_MUX)\" -o $(RT_WRAPPER)
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
@@ -157,23 +157,6 @@ libs-install:
 	cp -rp ./lib/* $(RT_LIB_PATH)    
 	chmod -R 0755 $(RT_LIB_PATH)
 
-mux-links: 
-	rm -f $(RT_BIN_PATH)/rt
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt
-	rm -f $(RT_BIN_PATH)/rtadmin
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rtadmin
-	rm -f $(RT_BIN_PATH)/rtq
-	ln -s  $(RT_WRAPPER) $(RT_BIN_PATH)/rtq
-	rm -f $(RT_BIN_PATH)/rt-mailgate
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt-mailgate   
-	rm -f $(RT_CGI_PATH)/nph-webrt.cgi
-	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/nph-webrt.cgi
-	rm -f $(RT_CGI_PATH)/nph-admin-webrt.cgi
-	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/nph-admin-webrt.cgi
-	chmod 4755 $(RT_CGI_PATH)/nph-webrt.cgi
-	chmod 4755 $(RT_CGI_PATH)/nph-admin-webrt.cgi
-
-
 glimpse:
 	-$(GLIMPSE_INDEX) -H $(RT_GLIMPSE_PATH) $(RT_TRANSACTIONS_PATH)
 
@@ -194,7 +177,9 @@ acls:
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
 	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
-			      s'!!RT_VERSION!!'$(RT_VERSION)'g;"  $(RT_WRAPPER)
+			      s'!!RT_VERSION!!'$(RT_VERSION)'g;" $(RT_PERL_MUX)
+
+mux-links: suid-wrapper
 	rm -f $(RT_BIN_PATH)/rt
 	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt
 	rm -f $(RT_BIN_PATH)/rtadmin
