@@ -50,7 +50,8 @@ sub activate  {
   $head->decode;
 
   #Pull apart the subject line
-  my $Subject = $head->get('Subject') || "";
+  $Subject = $head->get('Subject') || "";
+  chomp $Subject;
 
   #Lets check for mail loops of various sorts.
   my ($IsALoop, $LoopMsg) = &CheckForLoops($head);
