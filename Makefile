@@ -50,8 +50,15 @@ RT_ACTION_BIN		=	rt
 RT_QUERY_BIN		=	rtq
 RT_ADMIN_BIN		=	rtadmin
 RT_MAILGATE_BIN		=	rt-mailgate
-RT_WEB_QUERY_BIN	=	nph-webrt.cgi
-RT_WEB_ADMIN_BIN	=	nph-admin-webrt.cgi
+
+#
+# The names of the web binaries. In older versions of RT, these were 
+# nph- scripts. which work just fine, except when you want to use them
+# with an SSL server.  If you want the scripts to work the old way, append 
+# nph- before "webrt.cgi" and "admin-webrt.cgi"
+#
+RT_WEB_QUERY_BIN	=	webrt.cgi
+RT_WEB_ADMIN_BIN	=	admin-webrt.cgi
 
 #
 # The location of your rt configuration file
