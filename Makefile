@@ -342,7 +342,7 @@ predist: commit
 	cvs tag -r rt-1-1 -F $(TAG)
 	rm -rf /tmp/$(TAG)
 	cvs co -D now -d /tmp/$(TAG) -r rt-1-1 rt
-	cd /tmp/$(TAG); /usr/local/bin/cvs2cl.pl \
+	cd /tmp/$(TAG); chmod 600 Makefile; /usr/local/bin/cvs2cl.pl \
 		--no-wrap --follow rt-1-1 --separate-header \
 		--window 120
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
