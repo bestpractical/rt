@@ -59,7 +59,7 @@ sub Create {
   #Load 'er up.
   $self->Load($id);
   #Now that we know the self
-  $Id->SUPER::_Set("EffectiveId",$id);
+  $self->SUPER::_Set("EffectiveId",$id);
   
   
   #Add the requestor to the list of watchers
