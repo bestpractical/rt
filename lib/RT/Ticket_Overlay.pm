@@ -478,11 +478,19 @@ sub Create {
 
 
     my $id = $self->SUPER::Create( %params);
+    unless ($id) {
+        $RT::Logger->crit( "Couldn't create a ticket");
+        $RT::Handle->Rollback();
+        return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error") );
+    }
+
     #Set the ticket's effective ID now that we've created it.
     my ( $val, $msg ) = $self->__Set( Field => 'EffectiveId', Value => $id );
 
     unless ($val) {
-        $RT::Logger->err("$self ->Create couldn't set EffectiveId: $msg\n");
+        $RT::Logger->crit("$self ->Create couldn't set EffectiveId: $msg\n");
+        $RT::Handle->Rollback();
+        return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error") );
     }
 
     my $create_groups_ret = $self->_CreateTicketGroups();
