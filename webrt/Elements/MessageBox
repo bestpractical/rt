@@ -16,7 +16,7 @@ if ($QuoteTransaction) {
     # and buried in an unmarked grave. 
     my $dumb="";
     my $d=\$dumb;
-    if $message {
+    if ($message) {
 	    ($d, $Width)=$message->Quote(Reply=>$Default);
     }
     $Default=$$d;
