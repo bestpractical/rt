@@ -87,7 +87,7 @@ CREATE TABLE ScripScope (
   Queue INT(11), #Queue Id 0 for global
 		 # (maybe there might be conditions where other
                  # Scopes apply, i.e. a ticket, keyword, owner, etc?)
-  Template INT(11), #Template Id or NULL for default template
+  Template INT(11), #Template Id or 0 for default template
 
   Creator INT(11),
   Created TIMESTAMP,

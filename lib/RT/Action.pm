@@ -18,18 +18,18 @@ sub new  {
 # {{{ sub _Init 
 sub _Init  {
   my $self = shift;
-  my %args = ( Transaction => undef,
-	       Ticket => undef,
-	       Template => undef,
+  my %args = ( TransactionObj => undef,
+	       TicketObj => undef,
+	       TemplateObj => undef,
 	       Argument => undef,
 	       Type => undef,
 	       @_ );
   
   
   $self->{'Argument'} = $args{'Argument'};
-  $self->{'Ticket'} = $args{'Ticket'};
-  $self->{'Transaction'} = $args{'Transaction'};
-  $self->{'Template'} = $args{'Template'};
+  $self->{'TicketObj'} = $args{'TicketObj'};
+  $self->{'TransactionObj'} = $args{'TransactionObj'};
+  $self->{'TemplateObj'} = $args{'TemplateObj'};
   $self->{'Type'} = $args{'Type'};
 }
 # }}}
@@ -46,21 +46,21 @@ sub Argument  {
 # }}}
 
 # {{{ sub Ticket 
-sub Ticket  {
+sub TicketObj  {
   my $self = shift;
-  return($self->{'Ticket'});
+  return($self->{'TicketObj'});
 }
 # }}}
 # {{{ sub Transaction 
-sub Transaction  {
+sub TransactionObj  {
   my $self = shift;
-  return($self->{'Transaction'});
+  return($self->{'TransactionObj'});
 }
 # }}}
 # {{{ sub Template 
-sub Template  {
+sub TemplateObj  {
   my $self = shift;
-  return($self->{'Template'});
+  return($self->{'TemplateObj'});
 }
 # }}}
 

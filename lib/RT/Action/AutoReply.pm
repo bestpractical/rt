@@ -47,13 +47,13 @@ sub SetSubject {
   my $self = shift;
   
   #If the template has a subject line already, we do nothing.
-  unless ($self->{'TemplateObj'}->{'Header'}->get(Subject)) {
+  unless ($self->TemplateObj->{'Header'}->get(Subject)) {
     
     # Make the subject the Ticket's subject.
-    $self->{Subject}=$self->{TicketObject}->Subject() || "(no subject)";
+    $self->{Subject}=$self->TicketObject->Subject() || "(no subject)";
     
     #Set the header object's notion of the subject.
-    $self->{'Header'}->add('Subject',"AutoReply ($$self{Subject})");
+    $self->TemplateObj->{'Header'}->add('Subject',"AutoReply ($$self{Subject})");
     
   }
 }
@@ -73,16 +73,16 @@ sub SetReturnAddress {
   # From and Reply-To
   # If we don't have a CorrespondAddress, we should RT's default 
   # correspond address
-  my $email_address = $self->{TicketObject}->Queue->CorrespondAddress ? 
-    $self->{TicketObject}->Queue->CorrespondAddress :
+  my $email_address = $self->TicketObj->Queue->CorrespondAddress ? 
+    $self->TicketObj->Queue->CorrespondAddress :
       $RT::CorrespondAddress
 	or warn "Can't find email address for queue?";
   
   
-  unless ($self->{'Header'}->get('From')) {
+  unless ($self->TemplateObj->{'Header'}->get('From')) {
     my $friendly_name=$self->{TransactionObject}->Creator->RealName;
-    $self->{'Header'}->add('From', "Request Tracker <$email_address>");
-    $self->{'Header'}->add('Reply-To', "<$email_address");
+    $self->TemplateObj->{'Header'}->add('From', "Request Tracker <$email_address>");
+    $self->TemplateObj->{'Header'}->add('Reply-To', "<$email_address");
   }
   
 

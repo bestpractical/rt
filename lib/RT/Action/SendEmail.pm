@@ -9,38 +9,19 @@ require RT::Action;
 @ISA = qw(RT::Action);
 
 
-# {{{ sub new 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = { @_ };
-  bless ($self, $class);
-  $self->_Init();
-  return $self;
-}
-# }}}
-
 # {{{ sub _Init 
-sub _Init  {
-  my $self = shift;
-  my $template = shift;
-  
-  # Load in whatever tempalte we've been called with.
-  # RT Templates are subclasses of MIME::Entity, which are subclasses of
-  # Mail::Internet.
-  require RT::Template;
-  $self->{'TemplateObj'}=RT::Template->new;
-  $self->{'TemplateObj'}->Load($template);
-  # This actually populates the MIME::Entity fields in the Template Object
-  $self->{'TemplateObj'}->Parse;
-
-
-  #TODO: Tobix: what does this do? -jesse
-  $self->{'TemplateObj'}->{'Header'}->fold(78);
-
-  return();
-}
+# We use _Init from RT::Action
 # }}}
+
+
+
+
+#
+# Scrip methods
+#
+
+
+#Do what we need to do and send it out.
 
 # {{{ sub Commit 
 sub Commit  {
@@ -56,7 +37,7 @@ sub Commit  {
   # will be.  I will probably mash it together myself some day.
   # -- TobiX
 
-  $self->{'TemplateObj'}->smtpsend || die "could not send email";
+  $self->TemplateObj->smtpsend || die "could not send email";
 
   #TODO: enable this once tobix' new Mail::Internet is out there.
   #$self->{'TemplateObj'}->send('sendmail'); || die "Could not send mail;
@@ -70,6 +51,14 @@ sub Commit  {
 
 sub Prepare  {
   my $self = shift;
+
+  # This actually populates the MIME::Entity fields in the Template Object
+  $self->TemplateObj->Parse;
+
+
+  #TODO: Tobix: what does this do? -jesse
+  $self->TemplateObj->{'Header'}->fold(78);
+
 
   # Header
   
@@ -110,21 +99,21 @@ sub Prepare  {
 sub SetRTSpecialHeaders {
   my $self = shift;
     
-  unless ($self->{'Header'}->get('RT-Action')) {
-    $self->{'Header'}->add('RT-Action', $self->Describe);
+  unless ($self->TemplateObj->{'Header'}->get('RT-Action')) {
+    $self->TemplateObj->{'Header'}->add('RT-Action', $self->Describe);
   }
   
-  unless ($self->{'Header'}->get('RT-Scrip')) {
-    $self->{'Header'}->add('RT-Scrip', $self->{'ScripObject'}->Description);
+  unless ($self->TemplateObj->{'Header'}->get('RT-Scrip')) {
+    $self->TemplateObj->{'Header'}->add('RT-Scrip', $self->{'ScripObject'}->Description);
   }
   
-  $self->{'Header'}->add('RT-Ticket-ID', $self->{'TicketObject'}->id());
-  $self->{'Header'}->add('RT-Loop-Prevention', $RT::rtname);
+  $self->TemplateObj->{'Header'}->add('RT-Ticket-ID', $self->{'TicketObject'}->id());
+  $self->TemplateObj->{'Header'}->add('RT-Loop-Prevention', $RT::rtname);
 
-  $self->{'Header'}->add
+  $self->TemplateObj->{'Header'}->add
     ('RT-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
 
-  $self->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
+  $self->TemplateObj->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
   return();
 
 }
@@ -138,7 +127,7 @@ sub SetRTSpecialHeaders {
 sub SetReferences {
   my $self = shift;
   
-  $self->{'Header'}->add
+  $self->TemplateObj->{'Header'}->add
     ('References', "<rt-ticket-".$self->{'TicketObject'}->id()."\@".$RT::rtname.">");
     #TODO We should always add References headers for previous messages
   # related to this ticket.
@@ -157,8 +146,8 @@ sub SetContentType {
   # stuff like that).
   # By default, the Template's Content-Type is used. 
 
-  unless ($self->{'Header'}->get('Content-Type')) {
-      $self->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
+  unless ($self->TemplateObj->{'Header'}->get('Content-Type')) {
+      $self->TemplateObj->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
   }
 return();
 }
@@ -179,10 +168,10 @@ my $self = shift;
 	  or warn "Can't find email address for queue?";
 
 
-  unless ($self->{'Header'}->get('From')) {
+  unless ($self->TemplateObj->{'Header'}->get('From')) {
       my $friendly_name=$self->{TransactionObject}->Creator->RealName;
-      $self->{'Header'}->add('From', "$friendly_name via RT <$email_address>");
-      $self->{'Header'}->add('Reply-To', "$email_address");
+      $self->TemplateObj->{'Header'}->add('From', "$friendly_name via RT <$email_address>");
+      $self->TemplateObj->{'Header'}->add('Reply-To', "$email_address");
   }
 
 }
@@ -232,7 +221,7 @@ sub SetBcc {
 sub SetPrecedence {
   
   my $self = shift;
-  $self->{'Header'}->add('Precedence', "Bulk");
+  $self->TemplateObj->{'Header'}->add('Precedence', "Bulk");
 }
 
 
@@ -244,7 +233,7 @@ sub SetPrecedence {
 
 sub SetSubject {
   my $self = shift;
-  unless ($self->{'TemplateObj'}->{'Header'}->get(Subject)) {
+  unless ($self->TemplateObj->{'Header'}->get(Subject)) {
       my $m=$self->{TransactionObject}->Message->First;
       my $ticket=$self->{TicketObject}->Id;
       ($self->{Subject})=$m->Headers =~ /^Subject: (.*)$/m
@@ -252,7 +241,7 @@ sub SetSubject {
       $self->{Subject}=$self->{TicketObject}->Subject()
 	  unless $self->{Subject};
       
-      $self->{'Header'}->add('Subject',"$$self{Subject}");
+      $self->TemplateObj->{'Header'}->add('Subject',"$$self{Subject}");
 
   }
 

@@ -65,8 +65,10 @@ sub create  {
 # {{{ sub Load 
 sub Load  {
   my $self = shift;
-  
   my $identifier = shift;
+
+  my $template = shift if (@_);
+
   if (!$identifier) {
     return (undef);
   }	    
@@ -75,10 +77,18 @@ sub Load  {
     $self->SUPER::LoadById($identifier);
   }
   else {
-  die "This code is never reached ;)";  
- 
+    die "This code is never reached ;)";  
+
   }
 
+  # Set the template Id to the passed in template
+  # or fall back to the default for this scrip
+  if (defined $template) {
+    $self->{'Template'} = $template;
+  }
+  else {
+    $self->{'Template'} = $self->DefaultTemplate();
+  }
  
 }
 # }}}
@@ -86,21 +96,36 @@ sub Load  {
 # {{{ sub LoadAction 
 sub LoadAction  {
   my $self = shift;
-  my %args = ( TransactionObject => undef,
-	       TicketObject => undef,
+  my %args = ( TransactionObj => undef,
+	       TicketObj => undef,
 	       @_ );
 
   #TODO: Put this in an eval  
   my $type = "RT::Action::". $self->Action;
   
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
-  $self->{'ScriptObject'}  = $type->new ( TicketObject => $args{'TicketObject'},
-					 TransactionObject => $args{'TransactionObject'},
-					  ScripObject => $self,
-					 Template => $self->Template,
-					 Argument => $self->Argument,
+  $self->{'ScriptObject'}  = $type->new ( TicketObj => $args{'TicketObj'},
+					 TransactionObj => $args{'TransactionObj'},
+					  TemplateObj => $self->TemplateObj,
+					  Argument => $self->Argument,
 					 Type => $self->Type,
 				       );
+}
+# }}}
+
+# {{{ sub TemplateObj
+sub TemplateObj {
+  my $self = shift;
+  if (!$self->{'TemplateObj'})  {
+    require RT::Scrip;
+    $self->{'TemplateObj'} = RT::TemplateObj->new($self->CurrentUser);
+    $self->{'TemplateObj'}->load($self->Template());
+  
+  }
+  
+}
+return ($self->{'TemplateObj'});
+
 }
 # }}}
 

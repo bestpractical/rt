@@ -61,14 +61,30 @@ sub Load  {
     $self->SUPER::LoadById($identifier);
   }
   else {
-  die "This code is never reached ;)";  
- 
+    die "This code is never reached ;)";  
   }
 
+  $self
+  
  
 }
 # }}}
 
+
+
+# {{{ sub ScripObj
+sub ScripObj {
+  my $self = shift;
+  if (!$self->{'ScripObj'})  {
+    require RT::Scrip;
+    $self->{'ScripObj'} = RT::ScripObj->new($self->CurrentUser);
+    $self->{'ScripObj'}->load($self->_Value('Scrip'), $self->_Value('Template'));
+  }
+  return ($self->{'ScripObj'});
+}
+}
+
+# }}}
 #
 # ACCESS CONTROL
 # 
