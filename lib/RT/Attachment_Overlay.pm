@@ -460,7 +460,7 @@ sub Headers {
     my $self = shift;
     my $hdrs="";
     for ($self->_SplitHeaders) {
-	    $hdrs.="$_\n" unless /^(RT-Send-Bcc): /i
+	    $hdrs.="$_\n" unless /^(RT-Send-Bcc):/i
     }
     return $hdrs;
 }
