@@ -48,7 +48,7 @@ around the world.
 
 %prep
 groupadd rt || true
-%setup -q -n %{name}-2-0-7
+%setup -q -n %{name}
 
 %build
 
@@ -65,7 +65,7 @@ make dirs libs-install html-install bin-install  DESTDIR=$RPM_BUILD_ROOT
 #
 # fixperms needs these, so make fake empty files
 touch $RPM_BUILD_ROOT/opt/rt2/etc/insertdata $RPM_BUILD_ROOT/opt/rt2/etc/config.pm
-make fixperms insert-install WEB_USER=wwwuser DESTDIR=$RPM_BUILD_ROOT
+make fixperms insert-install WEB_USER=www DESTDIR=$RPM_BUILD_ROOT
 
 #
 # Copy in the files needed again after install
@@ -76,7 +76,7 @@ cp -rp bin/initacls.* $RPM_BUILD_ROOT/opt/rt2/postinstall/bin
 
 # logging in /var/log/rt2
 mkdir -p $RPM_BUILD_ROOT/var/log/rt2
-chown wwwuser $RPM_BUILD_ROOT/var/log/rt2
+chown www $RPM_BUILD_ROOT/var/log/rt2
 chgrp rt $RPM_BUILD_ROOT/var/log/rt2
 chmod ug=rwx,o= $RPM_BUILD_ROOT/var/log/rt2
 

@@ -400,3 +400,8 @@ predist: commit
 dist: commit predist
 	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
 	ln -s ./$(TAG).tar.gz /home/ftp/pub/rt/devel/rt.tar.gz
+
+
+rpm:
+	(cd ..; tar czvf /usr/src/redhat/SOURCES/rt.tar.gz rt)
+	rpm -ba rt.spec
