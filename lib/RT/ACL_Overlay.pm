@@ -115,6 +115,42 @@ sub LimitToObject {
 
 # }}}
 
+# {{{ LimitNotObject
+
+=head2 LimitNotObject $object
+
+Limit the ACL to rights NOT on the object $object.  $object needs to be
+an RT::Record class.
+
+=cut
+
+sub LimitNotObject {
+    my $self = shift;
+    my $obj  = shift;
+    unless ( defined($obj)
+        && ref($obj)
+        && UNIVERSAL::can( $obj, 'id' )
+        && $obj->id )
+    {
+        return undef;
+    }
+    $self->Limit( FIELD => 'ObjectType',
+		  OPERATOR => '!=',
+		  VALUE => ref($obj),
+		  ENTRYAGGREGATOR => 'OR',
+		  SUBCLAUSE => $obj->id
+		);
+    $self->Limit( FIELD => 'ObjectId',
+		  OPERATOR => '!=',
+		  VALUE => $obj->id,
+		  ENTRYAGGREGATOR => 'OR',
+		  QUOTEVALUE => 0,
+		  SUBCLAUSE => $obj->id
+		);
+}
+
+# }}}
+
 # {{{ LimitToPrincipal 
 
 =head2 LimitToPrincipal { Type => undef, Id => undef, IncludeGroupMembership => undef }

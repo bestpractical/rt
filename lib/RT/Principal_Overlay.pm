@@ -228,7 +228,40 @@ sub RevokeRight {
 
 # }}}
 
+# {{{ sub _CleanupInvalidDelegations
 
+=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
+
+Revokes all ACE entries delegated by this principal which are
+inconsistent with this principal's current delegation rights.  Does
+not perform permission checks, but takes no action and returns success
+if this principal still retains DelegateRights.  Should only ever be
+called from inside the RT library.
+
+If this principal is a group, recursively calls this method on each
+cached user member of itself.
+
+If called from inside a transaction, specify a true value for the
+InsideTransaction parameter.
+
+Returns a true value if the deletion succeeded; returns a false value
+and logs an internal error if the deletion fails (should not happen).
+
+=cut
+
+# This is currently just a stub for the methods of the same name in
+# RT::User and RT::Group.
+
+sub _CleanupInvalidDelegations {
+    my $self = shift;
+    unless ( $self->Id ) {
+	$RT::Logger->warning("Principal not loaded.");
+	return (undef);
+    }
+    return ($self->Object->_CleanupInvalidDelegations(@_));
+}
+
+# }}}
 
 # {{{ sub HasRight
 
