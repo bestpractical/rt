@@ -15,9 +15,10 @@ All of these works are distributed under the GPL
 STATUS
 ------
 
-This is the README file for RT 1.1/2.0.  It's currently under
-development, expected release in June.  Some working prealpha version
-is expected any moment
+This is the README file for RT 1.1/2.0.  It's currently under development,
+expected stable release in June.  Some working prealpha version is expected
+any moment.  At the moment, the Action/Scrips stuff is broken, the web
+UI is missing, and a lot of other quite important features are missing.
 
 
 BUGS
