@@ -275,8 +275,8 @@ sub ParseArgs {
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
 			       Status => 'open',
-			       	Due => $date_due,
-	      			Attachment => $Message			
+			       Due => $date_due,
+	      		       Attachment => $Message			
 						      );
     printf("Request %s created",$id);
   }
@@ -414,17 +414,19 @@ print <<EOFORM;
 Date: @{[$transaction->CreatedAsString]} (@{[$transaction->TimeTaken]} minutes)
 @{[$transaction->Description]}
 EOFORM
-  
-  my $message = $transaction->Message->First;
-  if (!defined ($message) ) {
-    print "Um. no message\n";
-  return();
-  }
-print <<EOFORM;
+    ;
+  my $attachments=$transaction->Attachments();
+  while (my $message=$attachments->Next) {
+      print <<EOFORM;
 --------------------------------------------------------------------------
 @{[$message->Headers]}
-@{[$message->Content]}
 EOFORM
+    if ($message->ContentType =~ m{^(text/plain|message)}) {
+	print $message->Content;
+    } else {
+	print $message->ContentType, " not shown";
+    }
+  }
   return();
 }
   
