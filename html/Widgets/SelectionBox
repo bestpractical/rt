@@ -172,7 +172,7 @@ $self => undef
 </%method>
 
 <%method show>
-<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>" onSubmit="list_<% $name %>.selectAll();">
+<FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>" onSubmit="//list_<% $name %>.selectAll();">
 <input type="hidden" name="<% $self->{Name} %>-Submit" value="1">
 <& SelectionBox:current, self => $self &>
 <input type="hidden" name="fromjs" value="0">
@@ -206,7 +206,7 @@ SELECTED
 </form>
 
 <script type="text/javascript">
-var list_<%$name%> = new list(document.getElementById("SelectionBox-<% $name %>"), 0, "list_<%$name%>");
+//var list_<%$name%> = new list(document.getElementById("SelectionBox-<% $name %>"), 0, "list_<%$name%>");
 </script>
 <%ARGS>
 $self => undef
