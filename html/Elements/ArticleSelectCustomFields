@@ -3,9 +3,8 @@
 % my $values = $ArticleObj->CustomFieldValues($cf->Id);
 % my %selected = map { $_->Content => 1 } @{$values->ItemsArrayRef()};
 <INPUT TYPE="hidden" NAME="RT::FM::Article-<%$ArticleObj->Id%>-CustomField-<%$cf->Id%>-AllValues-Magic" VALUE=1">
-<& ArticleSelectCustomFieldValues,
-	cf => $cf, 
-	ArticleObj => $ArticleObj,
+<& SelectCustomFieldValues,
+	CustomField => $cf, 
 	Name => "RT::FM::Article-".$ArticleObj->Id. "-CustomField-".$cf->Id.'-AllValues', 
 	Selected => \%selected &>
 

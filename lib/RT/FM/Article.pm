@@ -347,7 +347,7 @@ sub AddCustomFieldValue {
 
 }	
 
-=head2 DeleteCustomFieldValue
+=item DeleteCustomFieldValue
   
   Takes a paramhash. Deletes the Keyword denoted by the I<Keyword> parameter from this
   ticket's object keywords.

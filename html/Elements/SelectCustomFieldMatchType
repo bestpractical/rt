@@ -1,0 +1,8 @@
+<select name="<%$Name%>">
+<option value="oneof">one of</option>
+<option value="allof">all of</option>
+<option value="noneof">none of</option>
+</select>
+<%ARGS>
+$Name => 'CustomFieldMatchType'
+</%ARGS>

@@ -1,0 +1,33 @@
+% if ($CustomField->Type =~ /^FreeformSingle$/) {
+% my @value = keys %{$Selected};
+<INPUT NAME="<%$Name%>" VALUE="<%$value[0]%>">
+% } elsif ($CustomField->Type =~ /^FreeformMultiple$/) {
+
+<TEXTAREA NAME="<%$Name%>"  ROWS=5 COLS=20>
+% foreach my $item (keys %{$Selected}) {
+<% $item %>
+% }
+</TEXTAREA>
+% } else { 
+<SELECT NAME="<%$Name%>"
+
+% if ($SelectMultiple || $CustomField->Type =~ /Multiple$/) {
+MULTIPLE SIZE="<%$Size%>"
+% }
+>
+% foreach my $item (@{$CustomField->ValuesObj->ItemsArrayRef}) {
+<OPTION VALUE="<%$item->id%>"
+% 	if ($Selected->{$item->Id}) {
+SELECTED
+% 	}
+><%$item->Name%></OPTION>
+% } 
+% }
+</SELECT>
+<%ARGS>
+$CustomField => undef
+$Name => 'Type'
+$Size => 5
+$SelectMultiple => undef
+$Selected => undef
+</%ARGS>

@@ -9,14 +9,32 @@
 % }
 
 <BR><BR>
-<form method="post" action="search.html">
+<form method="get" action="search.html">
 Find articles where<br> 
 the content matches <input name="LimitContent" value="<%$ARGS{'LimitContent'}%>"><br>
 the summary matches <input name="LimitSummary" value="<%$ARGS{'LimitSummary'}%>"><br>
+
+% while ( my $cf = $cfs->Next) {
+<%$cf->Name%>:
+<& Elements/SelectCustomFieldMatchType, 
+	Name => 'LimitCustomField-'.$cf->Id.'-SearchType' &>
+<& Elements/SelectCustomFieldValues,
+	Name => 'LimitCustomField-'.$cf->Id.'-Value', 
+	CustomField => $cf, 
+	SelectMultiple => 1 &>
+
+% }
 <div align=right><input type=submit value="Go!"></div>
+
+
+
 </form>
 
 <%INIT>
+
+my $cfs = new RT::FM::CustomFieldCollection($session{'CurrentUser'});
+$cfs->UnLimit();
+
 my $articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
 if ($ARGS{'LimitContent'}) {
 	$articles->LimitToContent(
@@ -25,11 +43,52 @@ if ($ARGS{'LimitContent'}) {
 				);
 }
 
+while ( my $cf = $cfs->Next) {
+    if ($ARGS{'LimitCustomField-'.$cf->Id.'-Value'}) {
+	my ($operator, $entryaggregator);	
+    	if ($ARGS{'LimitCustomField-'.$cf->Id.'-SearchType'} =~ /^allof$/i) {
+
+		$entryaggregator = "AND";
+
+		if ($cf->Type =~/^Freeform/) {
+			$operator = 'LIKE';
+		} else {	
+			$operator = "=";
+		}
+    	} elsif ($ARGS{'LimitCustomField-'.$cf->Id.'-SearchType'} =~ /^oneof$/i) {
+
+		$entryaggregator = 'OR';
+
+		if ($cf->Type =~/^Freeform/) {
+			$operator = 'LIKE';
+		} else {	
+			$operator = "=";
+		}
+
+    	} elsif ($ARGS{'LimitCustomField-'.$cf->Id.'-SearchType'} =~ /^noneof$/i) {
+
+		$entryaggregator = 'AND';
+		
+		if ($cf->Type =~/^Freeform/) {
+			$operator = 'NOT LIKE';
+		} else {	
+			$operator = "!=";
+		}
+	}
+	$articles->LimitToCustomFieldValue( FIELD => $cf->Id, 
+					  ENTRYAGGREGATOR => $entryaggregator, 
+					  OPERATOR => $operator, 
+					  VALUE => $ARGS{'LimitCustomField-'.$cf->Id.'-Value'} );
+    }
+	
+}
 if ($ARGS{'LimitSummary'}) {
 	$articles->Limit( FIELD => 'Summary',
 			  OPERATOR => 'LIKE',
 			  VALUE => $ARGS{'LimitSummary'}
 			);	
 }
+
+
 
 </%INIT>
