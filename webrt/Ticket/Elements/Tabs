@@ -91,6 +91,9 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 if (defined $session{'tickets'}) {
     my $items = $session{'tickets'}->ItemsArrayRef();
     my @indexs = grep(($items->[$_]->id == $Ticket->Id), 0 .. $#{$items});
+
+    if ($items->[0]) {
+
     if ($items->[$indexs[0]]->id == $Ticket->Id) {
 	# Don't display prev links if we're on the first ticket
  	if ( $items->[0]->id != $Ticket->id ) {
@@ -111,6 +114,7 @@ if (defined $session{'tickets'}) {
 		'">Last &gt;&gt</a>]';
 	}
 	$tabs_scalar .= "<BR><BR>";
+    }
     }
 }
 </%INIT>
