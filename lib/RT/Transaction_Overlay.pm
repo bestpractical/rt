@@ -144,6 +144,7 @@ sub Create {
 
                 #Load the scrip's Condition object
                 $Scrip->ConditionObj->LoadCondition(
+                    ScripObj        => $Scrip,
                     TicketObj      => $TicketAsSystem,
                     TransactionObj => $TransAsSystem
                 );
@@ -161,6 +162,7 @@ sub Create {
                     #TODO: handle some errors here
 
                     $Scrip->ActionObj->LoadAction(
+                        ScripObj        => $Scrip,
                         TicketObj      => $TicketAsSystem,
                         TransactionObj => $TransAsSystem
                     );

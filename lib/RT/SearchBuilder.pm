@@ -120,12 +120,12 @@ my $items = $queues->ItemsArrayRef();
 my @items = @{$items};
 
 ok($queues->NewItem->_Accessible('Name','read'));
-my @sorted = sort {$a->Name cmp $b->Name} @items;
+my @sorted = sort {uc($a->Name) cmp uc($b->Name)} @items;
 
 my @sorted_ids = map {$_->id } @sorted;
 my @items_ids = map {$_->id } @items;
 
-
+is ($#sorted, $#items);
 is ($sorted[0]->Name, $items[0]->Name);
 is ($sorted[-1]->Name, $items[-1]->Name);
 is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name");;

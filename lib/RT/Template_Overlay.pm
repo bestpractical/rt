@@ -26,7 +26,6 @@ ok(require RT::Template);
 
 no warnings qw(redefine);
 
-use Safe;
 use Text::Template;
 use MIME::Entity;
 use MIME::Parser;
@@ -328,8 +327,7 @@ sub _ParseContent {
         SOURCE => $content
     );
 
-    my $safe = Safe->new();
-    my $retval = $template->fill_in( SAFE => $safe, PACKAGE => T );
+    my $retval = $template->fill_in( PACKAGE => T );
     return ($retval);
 }
 

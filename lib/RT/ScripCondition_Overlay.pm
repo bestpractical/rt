@@ -135,6 +135,7 @@ sub LoadCondition  {
     
     $self->{'Condition'}  = $type->new ( 'ScripConditionObj' => $self, 
 					 'TicketObj' => $args{'TicketObj'},
+					 'ScripObj' => $args{'ScripObj'},
 					 'TransactionObj' => $args{'TransactionObj'},
 					 'Argument' => $self->Argument,
 					 'ApplicableTransTypes' => $self->ApplicableTransTypes,

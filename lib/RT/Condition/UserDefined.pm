@@ -2,7 +2,7 @@
 # Copyright 1996-2001 Jesse Vincent <jesse@fsck.com> 
 # Released under the terms of the GNU General Public License
 
-package RT::Condition::AnyTransaction;
+package RT::Condition::UserDefined;
 require RT::Condition::Generic;
 
 @ISA = qw(RT::Condition::Generic);
@@ -16,9 +16,9 @@ This happens on every transaction. it's always applicable
 
 sub IsApplicable {
     my $self = shift;
-    my $retval = eval {$self->Scrip->CustomIsApplicableCode};
-    if ($@_) {
-        RT:Logger->error("Scrip ".$self->ScripObj->Id. " IsApplicable failed: ".$@);
+    my $retval = eval $self->ScripObj->CustomIsApplicableCode;
+    if ($@) {
+        $RT::Logger->error("Scrip ".$self->ScripObj->Id. " IsApplicable failed: ".$@);
         return (undef);
     }
     return ($retval);

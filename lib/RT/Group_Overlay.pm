@@ -112,6 +112,7 @@ ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 has member 2 
 
 no warnings qw(redefine);
 
+use RT::Users;
 use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;

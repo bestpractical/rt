@@ -404,6 +404,12 @@ unless ($LastVersion) {
     @templates = (
         {
             Queue       => '0',
+            Name        => 'Blank',
+            Description => 'A blank template',
+            Content     => '',
+            },
+        {    
+            Queue       => '0',
             Name        => 'Autoreply',
             Description => 'Default Autoresponse Template',
             Content     => 'Subject: AutoReply: {$Ticket->Subject}

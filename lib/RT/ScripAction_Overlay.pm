@@ -126,6 +126,7 @@ sub LoadAction  {
     
     $self->{'Action'}  = $type->new ( 'ScripActionObj' => $self, 
 				      'TicketObj' => $args{'TicketObj'},
+				      'ScripObj' => $args{'ScripObj'},
 				      'TransactionObj' => $args{'TransactionObj'},
 				      'TemplateObj' => $self->TemplateObj,
 				      'Argument' => $self->Argument,
