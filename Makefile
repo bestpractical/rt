@@ -259,12 +259,12 @@ database:
 	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) $(RT_MYSQL_DATABASE) < etc/schema      
 
 acls:
-	-$(PERL) $(ROOT_MYSQL_PASS_STRING) -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
+	-$(PERL)  -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
 			else { s'!!RT_HOST!!'$(RT_HOST)'g }\
 		s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
 		s'!!RTUSER!!'$(RTUSER)'g;\
 		s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
-		" $(RT_MYSQL_ACL) | $(MYSQLDIR)/mysql mysql
+		" $(RT_MYSQL_ACL) | $(MYSQLDIR)/mysql $(ROOT_MYSQL_PASS_STRING) mysql
 	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) reload
 
 

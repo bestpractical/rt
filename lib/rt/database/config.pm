@@ -71,9 +71,9 @@ sub load_user_info {
 }
 
 sub is_password {
-    my ($user_id, $in_password) = @_;
+    my ($in_user_id, $in_password) = @_;
     my ($row, $password);
-    $user_id=$dbh->quote($user_id);
+    my $user_id=$dbh->quote($in_user_id);
     $query_string="SELECT user_id, password FROM users WHERE user_id = $user_id";
        
     $sth = $dbh->Query($query_string) or warn "[is_password] Query had some problem: $Mysql::db_errstr\n$query_string\n";

@@ -104,14 +104,14 @@
  
  sub add_modify_queue_conf {
    my  ( $in_queue_id, $in_mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio,$in_current_user) = @_;
-   my ($query_string,$update_clause,$queue_id);
+   my ($query_string,$mail_alias,$update_clause,$queue_id);
    
    $queue_id=$rt::dbh->quote($in_queue_id); # if we did in_queue_id, the test below would fail.
-   $in_mail_alias=$rt::dbh->quote($in_mail_alias);
+   $mail_alias=$rt::dbh->quote($in_mail_alias);
    if (!&is_a_queue($in_queue_id)){
      
      if ($users{$in_current_user}{admin_rt}) {
-       $query_string="INSERT INTO queues (queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio) VALUES ($queue_id, $in_mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio)";
+       $query_string="INSERT INTO queues (queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio) VALUES ($queue_id, $mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio)";
        $dbh->Query($query_string) or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
        $< = $>;			#set real to effective uid
        system("cp", "-rp", "$rt_dir/lib/generic_templates","$template_dir/queues/$in_queue_id");
@@ -123,7 +123,7 @@
      }
    }
    else {
-     if ($in_mail_alias ne $queues{$in_queue_id}{mail_alias}) {$update_clause = "mail_alias = $in_mail_alias, ";}
+     if ($in_mail_alias ne $queues{$in_queue_id}{mail_alias}) {$update_clause = "mail_alias = $mail_alias, ";}
      if ($in_m_owner_trans ne $queues{$in_queue_id}{m_owner_trans}) {$update_clause .= "m_owner_trans = $in_m_owner_trans, ";}
      if ($in_m_members_trans ne $queues{$in_queue_id}{m_members_trans}) {$update_clause .= "m_members_trans = $in_m_members_trans, ";}
      if ($in_m_user_trans ne $queues{$in_queue_id}{m_user_trans}) {$update_clause .= "m_user_trans = $in_m_user_trans, ";}
