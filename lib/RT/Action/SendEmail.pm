@@ -5,9 +5,42 @@
 package RT::Action::SendEmail;
 require RT::Action::Generic;
 
-@ISA = qw(RT::Action::Generic
-);
+@ISA = qw(RT::Action::Generic);
 
+
+=head1 NAME
+
+  RT::Action::SendEmail - An Action which users can use to send mail 
+  or can subclassed for more specialized mail sending behavior. 
+  RT::Action::AutoReply is a good example subclass.
+
+
+=head1 SYNOPSIS
+  require RT::Action::SendEmail;
+  @ISA  = qw(RT::Action::SendEmail);
+
+
+=head1 DESCRIPTION
+
+Basically, you create another module RT::Action::YourAction which ISA
+RT::Action::SendEmail.
+
+If you want to set the recipients of the mail to something other than
+the addresses mentioned in the To, Cc, Bcc and headers in
+the template, you should subclass RT::Action::SendEmail and override
+either the SetRecipients method or the SetTo, SetCc, etc methods (see
+the comments for the SetRecipients sub).
+
+
+=head1 AUTHOR
+
+Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>
+
+=head1 SEE ALSO
+
+perl(1).
+
+=cut
 
 # {{{ Scrip methods (_Init, Commit, Prepare, IsApplicable)
 
@@ -83,7 +116,7 @@ sub Prepare  {
   
   $self->SetSubject();
   $self->SetSubjectToken();
-  
+  $self->SetRecipients();  
   
   $self->SetReturnAddress();
   
@@ -96,30 +129,6 @@ sub Prepare  {
   
 }
 
-# }}}
-
-# {{{ sub IsApplicable 
-sub IsApplicable  {
-    my $self = shift;
-
-    # Loop check.  This header field might be added to the incoming mail
-    # by RT::Interfaces::Email.pm if it might be a loop or result in
-    # looping (typically a bounce) 
-    
-    #TODO: This code violates RT's abstraction six ways to sunday
-    # and needs to move into a subclass
-    if (0) {
-	my $m=$self->TransactionObj->Message->First ;
-	if ( $m && ($m->Headers =~ /^RT-Mailing-Loop-Alarm/m)) {
-	    warn "Aborting mailsending Scrip because of possible or potential mail loop";
-	    return 0;
-	}
-    }
-    # More work needs to be done here to avoid duplicates beeing sent,
-    # and to ensure that there actually are any receipients.
-    
-    return(1);
-}
 # }}}
 
 # }}}
@@ -212,30 +221,6 @@ sub SetMessageID {
 
 # }}}
 
-# {{{ sub SetContentType
-
-sub SetContentType {
-  my $self = shift;
-  
-  # TODO do we really need this with MIME::Entity? I think it autosets
-  # it -- jesse
-
-  # The Template's Content-Type is used when nothing else is set.
-
-  # TODO by default, we should peek at the Content-Type of the
-  # transaction message.  BTW, I think our (reply|comment) templates
-  # as of today will break if the incoming Message has a different
-  # content-type than text/plain.  Eventually we should fix the
-  # template system so the original message always will be a separate
-  # MIME part.
-  
-  unless ($self->TemplateObj->MIMEObj->head->get('Content-Type')) {
-      $self->TemplateObj->MIMEObj->head->add('Content-Type', 'text/plain; charset=ISO-8859-1');
-  }
-return();
-}
-
-# }}}
 
 # }}}
 
@@ -274,10 +259,10 @@ sub SetReturnAddress {
 sub SetHeader {
   my $self = shift;
   my $field = shift;
+  my $val = shift;
+
   my $cnt=0;
-  for my $val (@{$self->{$field}}) {
-      $self->TemplateObj->MIMEObj->head->add($field, $val);
-  }
+  $self->TemplateObj->MIMEObj->head->add($field, $val);
   return $self->TemplateObj->MIMEObj->head->get($field);
 }
 
@@ -385,40 +370,6 @@ sub SetSubjectToken {
 __END__
 
 # {{{ POD
-
-=head1 NAME
-
-  RT::Action::SendEmail - An Action which users can use to send mail 
-  or can subclassed for more specialized mail sending behavior. 
-  RT::Action::AutoReply is a good example subclass.
-
-
-=head1 SYNOPSIS
-  require RT::Action::SendEmail;
-  @ISA qw(RT::Action::SendEmail);
-
-
-=head1 DESCRIPTION
-
-Basically, you create another module RT::Action::YourAction which ISA
-RT::Action::SendEmail.
-
-If you want to set the recipients of the mail to something other than
-the addresses mentioned in the To, Cc, Bcc and headers in
-the template, you should subclass RT::Action::SendEmail and override
-either the SetRecipients method or the SetTo, SetCc, etc methods (see
-the comments for the SetRecipients sub).
-
-
-=head1 AUTHOR
-
-Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>
-
-=head1 SEE ALSO
-
-perl(1).
-
-=cut
 
 # }}}
 

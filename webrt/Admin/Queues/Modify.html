@@ -4,12 +4,57 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<& /Admin/Elements/ModifyQueue, QueueObj => $QueueObj &>
+
+<& /Elements/TitleBoxStart, title => 'Editing Configuration for queue '.$QueueObj->Id &>
+
+<FORM ACTION="<%$RT::WebPath%>/Admin/Queues/Modify.html" METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
+<TABLE>
+<TR><TD ALIGN=RIGHT>
+Queue Name: 
+</TD>
+<TD><INPUT name="QueueId" value="<%$QueueObj->QueueId%>"></TD>
+</TR><TR>
+<TD ALIGN=RIGHT>
+Description:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$QueueObj->Description%>" size=60></TD></TR>
+<TR>
+<TD ALIGN=RIGHT>
+Correspondence Address:
+</TD><TD>
+<INPUT name="CorrespondAddress" value="<%$QueueObj->CorrespondAddress%>">
+</TD>
+<TD ALIGN=RIGHT>
+
+Comment Address: </TD><TD>
+<INPUT NAME="CommentAddress" value="<%$QueueObj->CommentAddress%>">
+</TD>
+</TR><TR>
+
+<TD ALIGN=RIGHT>
+Priority starts at: 
+</TD><TD><INPUT NAME="InitialPriority" value="<%$QueueObj->InitialPriority %>">
+</TD>
+<TD ALIGN=RIGHT>
+Over time, priority moves toward:
+</TD><TD><INPUT NAME="FinalPriority" value="<%$QueueObj->FinalPriority %>">
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+Requests should be due in:
+</TD><TD>
+<INPUT NAME="DefaultDueIn" VALUE="<%$QueueObj->DefaultDueIn%>"> days.
+</TD>
+</TR>
+</TABLE>
+<& /Elements/Submit &>
+</form>
+<& /Elements/TitleBoxEnd &>
 
 <%INIT>
 use RT::Interface::Web;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($id) || $QueueObj->Load($QueueId) || $m->comp('/Elements/Error', Why => "Couldn't load queue '$QueueId'");
+$QueueObj->Load($id) || $QueueObj->Load($QueueId) || Abort('/Elements/Error', Why => "Couldn't load queue '$QueueId'");
 
 
 my @fields = qw(Description CorrespondAddress CommentAddress QueueId 

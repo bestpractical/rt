@@ -7,18 +7,28 @@
   
   <FORM METHOD=POST>
     <INPUT TYPE=HIDDEN NAME=Queue VALUE=<%$Queue%>>
-      
-      <UL>
-% while (my  $scrip  = $Scrips->Next ) {
-	
-<LI
-    >Condition: <& /Admin/Elements/SelectScripCondition,  Name => 'ConditionForScrip-'.$scrip->Id, Default => $scrip->ScripCondition &>>
-	  Action: <& /Admin/Elements/SelectScripAction,  Name => 'ActionForScrip-'.$scrip->Id, Default => $scrip->ScripAction &>
-	  Template: <& /Admin/Elements/SelectTemplate, Name => 'TemplateForScrip-'.$scrip->Id, Default => $scrip->Template &>
 
-</LI>
+<TABLE>
+<TR>
+<TD>Delete
+</TD>
+<TD>
+</TR>
+% while (my $scrip = $Scrips->Next ) {
+<TR>
+<TD>
+<INPUT TYPE="CHECKBOX" NAME="DeleteScrip-<%$scrip->Id%>">
+</TD>
+<TD>
+<% $scrip->ConditionObj->Name %> 
+<% $scrip->ActionObj->Name %> 
+<% $scrip->TemplateObj->Alias %>
+</TD>
+</TR>
 % }
-</ul>
+</TABLE>
+
+
 Add a scrip to this queue:
 <ul>
 <li>Condition: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
@@ -31,12 +41,10 @@ Add a scrip to this queue:
 <%init>
 my (@actions, $description);
 
-
 my $Scrips = new RT::Scrips ($session{'CurrentUser'});
 unless ($Queue =~ /^\d+$/) {
     Abort("$Queue isn't a valid Queue id.");
 }
-
 
 unless ($Scrips->LimitToQueue($Queue)) {
     Abort("Couldn't load Scrips.");
@@ -72,45 +80,16 @@ if ($NewScripAction and $NewScripCondition) {
 # {{{ deal with modifying and deleting existing scrips
 my ($key );
 foreach $key (keys %ARGS) {
-    if ($key =~ /^ActionForScrip-(\d*)$/) {
-	my $id = $1;
-	my $scrip = new RT::Scrip($session{'CurrentUser'});
-	$scrip->Load($id);
-	
-	
 	# {{{ if we're trying to delete the scrip
-	if ( ( $ARGS{"ActionForScrip-".$id} eq "") and
-	     ( $ARGS{"ConditionForScrip-".$id} eq "") ) {
-
+    if ($key =~ /^DeleteScrip-(\d+)/) {
+            my $id = $1;
+	        my $scrip = new RT::Scrip($session{'CurrentUser'});
+	        $scrip->Load($id);
             $scrip->Delete;
 	}
-
-	# }}}
-	# {{{ modify the scrip	
-        else {
-
-	    if ($ARGS{"ConditionForScrip-".$id} ne $scrip->ScripCondition) {
-		my ($code,$msg) = 
-		  $scrip->SetScripCondition($ARGS{"ConditionForScrip-".$id});
-		push @actions, $msg;
-	    }
-	    if ($ARGS{"ActionForScrip-".$id} ne $scrip->ScripAction) {
-		my ($code,$msg) = 
-		  $scrip->SetScripAction($ARGS{"ActionForScrip-".$id});
-		push @actions, $msg;
-	    }
-	    
-	    if ($ARGS{"STemplateForScrip-".$id} ne $scrip->Template) {
-		my ($code,$msg) = 
-		  $scrip->SetTemplate($ARGS{"TemplateForScrip-".$id});
-		push @actions, $msg;
-	    }
-	}	
-
 	# }}}
 
-
-    }
+    
 }
 # }}}
 </%init>

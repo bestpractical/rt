@@ -102,6 +102,7 @@ sub QueueObj {
 
 # {{{ sub ActionObj
 
+
 =head2 ActionObj
 
 Retuns an RT::Action object with this Scrip\'s Action
@@ -121,6 +122,28 @@ sub ActionObj {
 	$self->{'ScripActionObj'}->Load($self->ScripAction, $self->Template);
     }
     return ($self->{'ScripActionObj'});
+}
+
+# }}}
+
+
+# {{{ sub TemplateObj
+=head2 TemplateObj
+
+Retuns an RT::Template object with this Scrip\'s Template
+
+=cut
+
+sub TemplateObj {
+    my $self = shift;
+    
+    unless (defined $self->{'TemplateObj'})  {
+	require RT::Template;
+	
+	$self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
+	$self->{'TemplateObj'}->Load($self->Template);
+    }
+    return ($self->{'TemplateObj'});
 }
 
 # }}}

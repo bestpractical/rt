@@ -130,10 +130,17 @@ my @queues = (
 
 my @ScripActions = (
 		    {
-		     Name => 'Autoreply',
-		     Description =>       'Sends an automatic response to the requestor',
+		     Name => 'NotifyRequestor',
+		     Description =>       'Sends a message to the requestor',
 		     ExecModule =>        'Notify',
 		     Argument =>          'Requestor'
+		    },
+
+		    {
+		     Name =>	          'NotifyOwnerAsComment',
+		     Description =>       'Sends mail to owner',
+		     ExecModule =>        'NotifyAsComment',
+		     Argument =>          'Owner'
 		    },
 		    {
 		     Name =>	          'NotifyOwner',
@@ -142,20 +149,39 @@ my @ScripActions = (
 		     Argument =>          'Owner'
 		    },
 		    {
+		     Name =>	          'NotifyAdminWatchersAsComment',
+		     Description =>	  'Sends mail to administrative watchers as a comment',
+		     ExecModule =>	  'NotifyAsComment',
+		     Argument =>        'AdminCc'
+		    },
+		    {
 		     Name =>	          'NotifyAdminWatchers',
 		     Description =>	  'Sends mail to administrative watchers',
 		     ExecModule =>	  'Notify',
 		     Argument =>        'AdminCc'
 		    },
 		    
+                    {
+                     Name =>             'NotifyRequestorAndCcsAsComment',
+                     Description =>      'Send mail to requestors as a comment',
+                     ExecModule =>       'NotifyAsComment',
+                     Argument =>         'Requestor,Cc'
+                    },
 		    
 		    {
-		     Name =>             'NotifyWatchers',
+		     Name =>             'NotifyRequestorsAndCcs',
 		     Description =>      'Send mail to requestors',
 		     ExecModule =>       'Notify',
 		     Argument =>         'Requestor,Cc'
 		    },
 		    
+		    
+		    {
+		     Name =>	          'NotifyAllWatchersAsComment',
+		     Description =>	  'Send mail to all watchers',
+		     ExecModule =>	  'NotifyAsComment',
+		     Argument =>          'All'
+                    },
 		    {
 		     Name =>	          'NotifyAllWatchers',
 		     Description =>	  'Send mail to all watchers',
@@ -257,12 +283,7 @@ my @templates = (
                 Alias => 'Autoreply',
 				Title => 'Default Autoresponse Template', 
 				Content => 
-'To: {$Ticket->RequestorsAsString}
-Cc: {$Ticket->CcAsString}
-Bcc: {$Ticket->AdminCcAsString}
-From: Request Tracker <{$Ticket->QueueObj->CorrespondAddress}>
-Reply-To: {$Ticket->QueueObj->CorrespondAddress}
-Subject: AutoReply: {$Ticket->Subject}
+'Subject: AutoReply: {$Ticket->Subject}
 
 
        Greetings,
@@ -288,7 +309,8 @@ problem. To do so, you may reply to this message.
                 Queue   => '1',
                 Alias => 'Transaction', 
                   Title => 'Default transaction template',
-                  Content => 'Reply-To: <{$Ticket->QueueObj->CommentAddress}> Replies will be entered as comments
+                  Content => '
+
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
@@ -308,8 +330,6 @@ Transaction: {$Transaction->Description}
                   Alias => 'AdminCorrespondence',
                   Title => 'Default admin correspondence template',
                   Content => 'Subject: {$Transaction->Message()->First()->Subject}
-Content-Type: text/plain; charset=ISO-8859-1
-To: {$Ticket->AdminCcAsString}
 
 {$Transaction->IsInbound() ? "In" : "Out"}bound correspondence:
 
@@ -322,10 +342,7 @@ To: {$Ticket->AdminCcAsString}
                   Queue   => '1',
                   Alias => 'Correspondence',
                   Title => 'Default correspondence template',
-                  Content =>  'Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
-To: {$Ticket->RequestorsAsString}
-Cc: {$Ticket->CcAsString}
-Content-Type: text/plain; charset=ISO-8859-1
+                  Content =>  '
 
 {$Transaction->Message()->First()->Content()}'},
 
@@ -335,9 +352,7 @@ Content-Type: text/plain; charset=ISO-8859-1
                   Alias => 'AdminComment',
                   Title => 'Default admin comment template',
                   Content =>  'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
-Reply-To: {$Ticket->QueueObj->CommentAddress}
-Content-Type: text/plain; charset=ISO-8859-1
-To: {$Ticket->AdminCcAsString}
+
 
 {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
@@ -351,9 +366,7 @@ This is a comment.  It is not sent to the Requestor(s):
                   Alias => 'StatusChange',
                   Title => 'Ticket status changed',
                   Content =>  'Subject: Status Changed to: {$Transaction->NewValue}
-Reply-To: {$Ticket->QueueObj->CorrespondAddress}
-Content-Type: text/plain; charset=ISO-8859-1
-To: {$Ticket->WatchersAsString}
+
 
 {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
 
@@ -366,13 +379,9 @@ To: {$Ticket->WatchersAsString}
                  Alias => 'Resolved',
                   Title => 'Ticket Resolved',
                   Content => 'Subject: Ticket Resolved
-Reply-To: {$Ticket->QueueObj->CorrespondAddress}
-Content-Type: text/plain; charset=ISO-8859-1
-To: {$Ticket->RequestorsAsString}
-Cc: {$Ticket->CcAsString}
 
 According to our records, your request has been resolved. If you have any
-further questions or concerns, simply respond to this message.
+further questions or concerns, please respond to this message.
 '}
 );
 

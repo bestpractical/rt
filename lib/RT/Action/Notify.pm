@@ -1,3 +1,5 @@
+#$Header$
+
 package RT::Action::Notify;
 require RT::Action::SendEmail;
 @ISA = qw(RT::Action::SendEmail);
@@ -68,4 +70,4 @@ sub SetRecipients {
 }
 
 
-
+1;

@@ -41,6 +41,28 @@ my %args = ( ENTRYAGGREGATOR => 'AND',
 }
 # }}}
 
+# {{{ sub LimitToGroup
+
+=head2 LimitToGroup
+
+Takes a group id as its only argument.  Limits the current search to that
+group object
+
+=cut
+
+sub LimitToGroup {
+    my $self = shift;
+    my $group = shift;
+
+    return ($self->Limit( 
+                         VALUE => "$group",
+                         FIELD => 'GroupId',
+                         ENTRYAGGREGATOR => 'OR',
+                         ));
+
+}
+# }}}
+
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
@@ -52,4 +74,4 @@ sub NewItem  {
   return($item);
 }
 # }}}
-  1;
+1;
