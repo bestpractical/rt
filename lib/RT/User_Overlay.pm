@@ -1069,7 +1069,7 @@ sub _HasRight {
     );
 
 
-    warn "ACL checks don't work right now. Everyone is allowed to do everything.";
+    #warn "ACL checks don't work right now. Everyone is allowed to do everything.";
     return(1);
 
     if ( $self->Disabled ) {

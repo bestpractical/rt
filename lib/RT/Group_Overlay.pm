@@ -1,8 +1,6 @@
 # $Header: /raid/cvsroot/rt/lib/RT/Group.pm,v 1.3 2001/12/14 19:03:08 jesse Exp $
-# Copyright 2000 Jesse Vincent <jesse@fsck.com>
-# Released under the terms of the GNU Public License
-#
-#
+# Copyright 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# Released under the terms of version 2 of the GNU Public License
 
 =head1 NAME
 
@@ -19,7 +17,7 @@ An RT group object.
 
 =head1 AUTHOR
 
-Jesse Vincent, jesse@fsck.com
+Jesse Vincent, jesse@bestpractical.com
 
 =head1 SEE ALSO
 
@@ -44,6 +42,41 @@ ok(($ng->id == $group->id), "Loaded the right group");
 ok ($ng->AddMember('1' ), "Added a member to the group");
 ok ($ng->AddMember('2' ), "Added a member to the group");
 ok ($ng->AddMember('3' ), "Added a member to the group");
+
+my $group_2 = RT::Group->new($RT::SystemUser);
+ok (my ($id_2, $msg_2) = $group_2->Create( Name => 'TestGroup2', Description => 'A second test group',
+                    Domain => 'System', Instance => ''), 'Created a new group');
+ok ($id_2 != 0, "Created group 2 ok");
+ok ($group_2->AddMember($ng->PrincipalId), "Made TestGroup a member of testgroup2");
+ok ($group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
+
+my $group_3 = RT::Group->new($RT::SystemUser);
+ok (($id_3, $msg) = $group_3->Create( Name => 'TestGroup3', Description => 'A second test group',
+                    Domain => 'System', Instance => ''), 'Created a new group');
+ok ($id_3 != 0, "Created group 3 ok");
+ok ($group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
+
+my $principal_1 = RT::Principal->new($RT::SystemUser);
+$principal_1->Load('1');
+
+my $principal_2 = RT::Principal->new($RT::SystemUser);
+$principal_2->Load('2');
+
+ok ($group_3->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
+ok($group_3->HasMember($principal_2) eq undef, "group 3 doesn't have member 2");
+ok($group_3->HasMemberRecursively($principal_2) eq undef, "group 3 has member 2 recursively");
+
+
+ok($ng->HasMember($principal_2) , "group ".$ng->Id." has member 2");
+my ($delid , $delmsg) =$ng->DeleteMember($principal_2->Id);
+ok ($delid !=0, "Sucessfully deleted it-".$delid."-".$delmsg);
+
+
+ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 doesn't have member 2");
+ok($group_2->HasMemberRecursively($principal_2) == undef, "group 2 doesn't have member 2");
+ok($ng->HasMember($principal_2) == undef, "group 1 doesn't have member 2");;
+ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 has member 2 recursively");
+
 
 =end testing
 
@@ -190,17 +223,17 @@ sub Delete {
 
 =head2 MembersObj
 
-Returns an RT::GroupMembers object of this group's members.
+Returns an RT::Principals object of this group's members.
 
 =cut
 
 sub MembersObj {
     my $self = shift;
     unless ( defined $self->{'members_obj'} ) {
-        $self->{'members_obj'} = new RT::GroupMembers( $self->CurrentUser );
+        $self->{'members_obj'} = RT::GroupMembers->new( $self->CurrentUser );
 
         #If we don't have rights, don't include any results
-        $self->{'members_obj'}->LimitToGroup( $self->id );
+        $self->{'members_obj'}->LimitToMembersOfGroup( $self->PrincipalId );
 
     }
     return ( $self->{'members_obj'} );
@@ -240,7 +273,7 @@ sub AddMember {
         return ( 0, $self->loc("Couldn't find that principal") );
     }
 
-    if ( $self->HasMember( $new_member_obj->Id ) ) {
+    if ( $self->HasMember( $new_member_obj ) ) {
 
         #User is already a member of this group. no need to add it
         return ( 0, $self->loc("Group already has member") );
@@ -258,10 +291,10 @@ sub AddMember {
 
 # {{{ HasMember
 
-=head2 HasMember
+=head2 HasMember RT::Principal
 
-Takes a user Id and returns a GroupMember Id if that user is a member of 
-this group.
+Takes an RT::Principal object returns a GroupMember Id if that user is a 
+member of this group.
 Returns undef if the user isn't a member of the group or if the current
 user doesn't have permission to find out. Arguably, it should differentiate
 between ACL failure and non membership.
@@ -270,18 +303,58 @@ between ACL failure and non membership.
 
 sub HasMember {
     my $self    = shift;
-    my $user_id = shift;
+    my $principal = shift;
 
-    #Try to cons up a member object using "LoadByCols"
-    #TODO: port this to use a principal object directly. requires
-    # tracking down uses.
 
-    my $user = RT::User->new($RT::SystemUser);
-    $user->Load($user_id);
-    my $princ_id = $user->PrincipalId;
+    unless (UNIVERSAL::isa($principal,'RT::Principal')) {
+        $RT::Logger->crit("Group::HasMember was called with an argument that".
+                          "isn't an RT::Principal. It's $principal");
+        return(undef);
+    }
 
     my $member_obj = RT::GroupMember->new( $self->CurrentUser );
-    $member_obj->LoadByCols( MemberId => $princ_id, GroupId => $self->id );
+    $member_obj->LoadByCols( MemberId => $principal->id, 
+                             GroupId => $self->PrincipalId );
+
+    #If we have a member object
+    if ( defined $member_obj->id ) {
+        return ( $member_obj->id );
+    }
+
+    #If Load returns no objects, we have an undef id. 
+    else {
+        $RT::Logger->debug($self." does not contain principal ".$principal->id);
+        return (undef);
+    }
+}
+
+# }}}
+
+# {{{ HasMemberRecursively
+
+=head2 HasMemberRecursively RT::Principal
+
+Takes an RT::Principal object and returns a GroupMember Id if that user is a member of 
+this group.
+Returns undef if the user isn't a member of the group or if the current
+user doesn't have permission to find out. Arguably, it should differentiate
+between ACL failure and non membership.
+
+=cut
+
+sub HasMemberRecursively {
+    my $self    = shift;
+    my $principal = shift;
+
+    unless (UNIVERSAL::isa($principal,'RT::Principal')) {
+        $RT::Logger->crit("Group::HasMember was called with an argument that".
+                          "isn't an RT::Principal. It's $principal");
+        return(undef);
+    }
+
+    my $member_obj = RT::GroupMember->new( $self->CurrentUser );
+    $member_obj->LoadByCols( MemberId => $principal->Id,
+                             GroupId => $self->PrincipalId );
 
     #If we have a member object
     if ( defined $member_obj->id ) {
@@ -298,7 +371,7 @@ sub HasMember {
 
 # {{{ DeleteMember
 
-=head2 DeleteMember
+=head2 DeleteMember PRINCIPAL_ID
 
 Takes the user id of a member.
 If the current user has apropriate rights,
@@ -310,45 +383,39 @@ addition or 0 on failure.  The second value is a textual status msg.
 
 sub DeleteMember {
     my $self   = shift;
-    my $member = shift;
+    my $member_id = shift;
+
+    $RT::Logger->debug("About to try to delete principal $member_id  as a".
+                        "member of group ".$self->Id);
 
     unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
-
-        #User has no permission to be doing this
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied"));
     }
 
-    my $member_user_obj = RT::User->new( $self->CurrentUser );
-    $member_user_obj->Load($member);
+    my $member_obj =  RT::GroupMember->new( $self->CurrentUser );
+    
+    $member_obj->LoadByCols( MemberId  => $member_id,
+                             GroupId => $self->PrincipalId);
 
-    unless ( $member_user_obj->Id ) {
-        $RT::Logger->debug("Couldn't find user $member");
-        return ( 0, "User not found" );
-    }
-
-    my $member_obj = new RT::GroupMember( $self->CurrentUser );
-    unless (
-        $member_obj->LoadByCols(
-            MemberId  => $member_user_obj->PrincipalId,
-            GroupId => $self->Id
-        )
-      )
-    {
-        return ( 0, "Couldn\'t load member" );    #couldn\'t load member object
-    }
+    $RT::Logger->debug("Loaded the RT::GroupMember object ".$member_obj->id);
 
     #If we couldn't load it, return undef.
     unless ( $member_obj->Id() ) {
-        return ( 0, "Group has no such member" );
+        $RT::Logger->debug("Group has no member with that id");
+        return ( 0,$self->loc( "Group has no such member" ));
     }
 
     #Now that we've checked ACLs and sanity, delete the groupmember
     my $val = $member_obj->Delete();
+
     if ($val) {
-        return ( $val, "Member deleted" );
+        $RT::Logger->debug("Deleted group ".$self->Id." member ". $member_id);
+     
+        return ( $val, $self->loc("Member deleted") );
     }
     else {
-        return ( 0, "Member not deleted" );
+        $RT::Logger->debug("Failed to delete group ".$self->Id." member ". $member_id);
+        return ( 0, $self->loc("Member not deleted" ));
     }
 }
 

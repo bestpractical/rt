@@ -57,7 +57,7 @@ Add a Principal to the group Group.
 if the Principal is a group, automatically inserts all
 members of the principal into the cached members table recursively down.
 
-This routine expects a Group object and a Principal object
+Both Group and Member are expected to be RT::Principal objects
 
 =cut
 
@@ -69,6 +69,28 @@ sub Create {
         @_
     );
 
+    unless ($args{'Group'} &&
+            UNIVERSAL::isa($args{'Group'}, 'RT::Principal') &&
+            $args{'Group'}->Id
+            
+            ) {
+        $RT::Logger->warning("GroupMember::Create called with a bogus Group arg");
+        return (undef);
+    }
+
+    unless($args{'Group'}->IsGroup) {
+        $RT::Logger->warning("Someone tried to add a member to a user instead of a group");
+        $RT::Logger->debug("The principal id is ". $args{'Group'}->Id);
+        return (undef);
+    }
+
+    unless ($args{'Member'} && 
+            UNIVERSAL::isa($args{'Member'}, 'RT::Principal') &&
+            $args{'Member'}->Id
+            ) {
+        $RT::Logger->warning("GroupMember::Create called with a bogus Principal arg");
+        return (undef);
+    }
     $RT::Handle->BeginTransaction();
 
     my $id = $self->SUPER::Create(
@@ -128,9 +150,7 @@ group in question.
 
 sub Delete {
     my $self = shift;
-    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
-        return ( 0, $self->loc('Permission Denied') );
-    }
+
 
     # Find all occurrences of this member as a member of this group
     # in the cache and nuke them, recursively.
@@ -146,25 +166,28 @@ sub Delete {
     $cached_submembers->Limit(
         FIELD    => 'MemberId',
         OPERATOR => '=',
-        VALUE    => $self->PrincipalId
+        VALUE    => $self->MemberObj->Id
     );
 
     $cached_submembers->Limit(
         FIELD    => 'ImmediateParentId',
         OPERATOR => '=',
-        VALUE    => $self->GroupObj->PrincipalId
+        VALUE    => $self->GroupObj->Id
     );
 
     while ( my $item_to_del = $cached_submembers->Next() ) {
+        $RT::Logger->debug("About to delete a submember ".$item_to_del->MemberId);
         my $del_err = $item_to_del->Delete();
         unless ($del_err) {
             $RT::Handle->Rollback();
+            $RT::Logger->warning("Couldn't delete cached group submember ".$item_to_del->Id);
             return (undef);
         }
     }
 
     my $err = $self->SUPER::Delete();
     unless ($err) {
+            $RT::Logger->warning("Couldn't delete cached group submember ".$self->Id);
         $RT::Handle->Rollback();
         return (undef);
     }
@@ -175,9 +198,9 @@ sub Delete {
 
 # }}}
 
-# {{{ sub PrincipalObj
+# {{{ sub MemberObj
 
-=head2 PrincipalObj
+=head2 MemberObj
 
 Returns an RT::Principal object for the Principal specified by $self->PrincipalId
 
@@ -193,5 +216,27 @@ sub MemberObj {
 }
 
 # }}
+
+
+# {{{ sub GroupObj
+
+=head2 GroupObj
+
+Returns an RT::Principal object for the Group specified in $self->GroupId
+
+=cut
+
+sub GroupObj {
+    my $self = shift;
+    unless ( defined( $self->{'Group_obj'} ) ) {
+        $self->{'Group_obj'} = RT::Principal->new( $self->CurrentUser );
+        $self->{'Group_obj'}->Load( $self->GroupId );
+    }
+    return ( $self->{'Group_obj'} );
+}
+
+# }}
+
+1;
 
 1;

@@ -88,13 +88,15 @@ sub InitLogging {
 			 min_level=> $RT::LogToFile,
 			 filename=> $filename,
 			 mode=>'append',
-			 callback => sub {my %p=@_; return "$p{message}\n"}
+			 callbacks => sub {my %p=@_; return "[".gmtime(time)."] [".$p{level}."]: $p{message}\n"}
+             
 		       ));
     }
     if ($RT::LogToScreen) {
 	$RT::Logger->add(Log::Dispatch::Screen->new
 		     ( name => 'screen',
 		       min_level => $RT::LogToScreen,
+			 callbacks => sub {my %p=@_; return "[".$p{level}."]: $p{message}\n"},
 		       stderr => 1
 		     ));
     }

@@ -25,31 +25,22 @@ ok (require RT::GroupMembers);
 no warnings qw(redefine);
 
 
-# {{{ sub _Init  
-sub _Init   {
-  my $self = shift;
- 
-  $self->{'table'} = "GroupMembers";
-  $self->{'primary_key'} = "id";
-  return ( $self->SUPER::_Init(@_) );
-}
-# }}}
+# {{{ sub LimitToMembersOfGroup
 
-# {{{ sub LimitToGroup
+=head2 LimitToMembersOfGroup PRINCIPAL_ID
 
-=head2 LimitToGroup
-
-Takes a group id as its only argument.  Limits the current search to that
-group object
+Takes a Principal Id as its only argument. 
+Limits the current search principals which are _directly_ members
+of the group which has PRINCIPAL_ID as its principal id.
 
 =cut
 
-sub LimitToGroup {
+sub LimitToMembersOfGroup {
     my $self = shift;
     my $group = shift;
 
     return ($self->Limit( 
-                         VALUE => "$group",
+                         VALUE => $group,
                          FIELD => 'GroupId',
                          ENTRYAGGREGATOR => 'OR',
                          ));

@@ -62,13 +62,13 @@ sub Create {
     }
 
     if ( $args{'Member'}->IsGroup() ) {
-        my $GroupMembers = $args->{'Member'}->Object->MembersObj();
+        my $GroupMembers = $args{'Member'}->Object->MembersObj();
         while ( my $member = $GroupMembers->Next() ) {
             my $cached_member =
               RT::CachedGroupMember->new( $self->CurrentUser );
             my $c_id = $cached_member->Create(
                 Group           => $args{'Group'},
-                Member          => $member->PrincipalObj,
+                Member          => $member->MemberObj,
                 ImmediateParent => $args{'Member'},
                 Via             => $id
             );
