@@ -39,6 +39,7 @@ sub acl {
       Templates
       objectcustomfieldvalues_id_s
       ObjectCustomFieldValues
+      ObjectCustomFields
       customfields_id_seq
       CustomFields
       customfieldvalues_id_seq
