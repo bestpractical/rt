@@ -36,13 +36,13 @@ sub create {
 	      subject => undef,
 	      initial_priority => undef,
 	      final_priority => undef,
-	      priority => undef,
 	      status => 'open',
 	      time_worked => 0,
 	      date_created => time(),
 	      date_told => 0,
 	      date_acted => time(),
 	      date_due => 0,
+	      content => undef,
 	      @_);
 
   my $id = $self->SUPER::create(id => $args{'id'},
@@ -55,7 +55,7 @@ sub create {
 				subject => $args{'subject'},
 				initial_priority => $args{'initial_priority'},
 				final_priority => $args{'final_priority'},
-				priority => $args{'priority'},
+				priority => $args{'initial_priority'},
 				status => $args{'status'},
 				time_worked => $args{'time_worked'},
 				date_created => $args{'date_created'},
@@ -64,7 +64,9 @@ sub create {
 				date_due => $args{'date_due'}
 			       );
 
-  
+  #TODO: ADD A TRANSACTION
+  #TODO: DO SOMETHING WITH $args{'content'}
+
   return($id);
 
 }
@@ -283,9 +285,9 @@ sub DateCreated {
 
 sub Notify {
   my $self = shift;
-  return ($self->DateTold(@_));
+  return ($self->DateTold(time()));
 }
-
+  
 sub DateTold {
   my $self = shift;
   $self->_set_and_return('date_told',@_);
@@ -296,31 +298,42 @@ sub DateDue {
   $self->_set_and_return('date_due',@_);
 }
 
+sub SinceTold {
+  my $self = shift;
+  return ("Ticket->SinceTold unimplemented");
+}
+sub Age {
+  my $self = shift;
+  return("Ticket->Age unimplemented\n");
+}
+
 
 
 #takes a subject, a cc list, a bcc list
 
-sub NewComment {
+sub Comment {
   my $self = shift;
-
-  my $content = shift;
-  my $subject = shift;
-  my $sender = shift;
-  my $cc = shift;
-  my $bcc = shift;
-  my $time_taken = shift;
-
-  if ($subject !~ /\[(\s*)comment(\s*)\]/i) {
-    $subject .= ' [comment]';
+  
+  my %args = ( subject => $self->Subject,
+	       sender => $self->CurrentUser,
+	       cc => undef,
+	       bcc => undef,
+	       time_taken => 0,
+	       content => undef,
+	       @_ );
+  
+  if ($args{'subject'} !~ /\[(\s*)comment(\s*)\]/i) {
+    $args{'subject]} .= ' [comment]';
   }
   #Record the correspondence (write the transaction)
-  $self->_NewTransaction('comment',$subject,$time_taken,$content);
+  $self->_NewTransaction('comment',$args{'subject'},$args{'time_taken'},
+			 $args{'content'});
   
   #Send a copy to the queue members, if necessary
   
   #Send a copy to the owner if necesary
   
-  if ($cc || $bcc ) {
+  if ($args{'cc'} || $args{'bcc'} ) {
     #send a copy of the correspondence to the CC list and BCC list
   }
   
@@ -329,32 +342,33 @@ sub NewComment {
 
 sub NewCorrespondence {
   my $self = shift;
-  my $content = shift;
-  my $subject = shift;
-  my $sender = shift;
-  my $cc = shift;
-  my $bcc = shift;
-  my $time_taken = shift;
+    my %args = ( subject => $self->Subject,
+		 sender => $self->CurrentUser,
+		 cc => undef,
+		 bcc => undef,
+		 time_taken => 0,
+		 content => undef,
+		 @_ );
 
   
   #Record the correspondence (write the transaction)
-  $self->_NewTransaction('correspondence',$subject,$time_taken,$content);
+  $self->_NewTransaction('correspondence',$args{'subject'},$args{'time_taken'},$args{'content'});
   
   #Send a copy to the queue members, if necessary
   
   #Send a copy to the owner if necesary
   
-  if (!$self->IsRequestor($sender)) {
+  if (!$self->IsRequestor($args{'sender'})) {
     #Send a copy of the correspondence to the user
     #Flip the date_told to now
     #If we've sent the correspondence to the user, flip the note the date_told
   }
   
-  elsif ($cc || $bcc ) {
+  elsif ($args{'cc'} || $args{'bcc'} ) {
     #send a copy of the correspondence to the CC list and BCC list
   }
   
-  return ("This correspondence has been sent");
+  return ("This correspondence has been recorded.");
 }
 
 

@@ -85,6 +85,11 @@ sub Date {
   return($self->_set_and_return('date'));
 }
 
+sub DateAsString {
+  my $self = shift;
+  return($self->_set_and_return('date'));
+}
+
 sub Data {
   my $self = shift;
   return($self->_set_and_return('data'));

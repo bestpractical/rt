@@ -1,213 +1,229 @@
-package rt::ui::cli::manipulate;
+# Copyright 1999 Jesse Vincent <jesse@fsck.com>
+# Released under the terms of the GNU Public License
+# $Id$ 
+#
+#
+package RT::ui::cli::manipulate;
 
-
-sub activate {
-  
-  ($current_user,$tmp)=getpwuid($<);
-  $CurrentUser = new RT::User($current_user);
-  $CurrentUser->load($current_user);
-  
-  
-  ($value, $message)=&rt::initialize($CurrentUser->UserId);
-  if ($value == 0) {
-    print "$message\n";
-    exit(0);
-  } 
-  else {
-    print "$message\n";
-  }
-  &parse_args;
-}
-
-sub print_transaction
 {
-    my ($index, $in_serial_num) =@_;
-    print "==========================================================================\n";
-    print "Date: $rt::req[$in_serial_num]{'trans'}[$index]{'text_time'}\n";
-    print "$rt::req[$in_serial_num]{'trans'}[$index]{'text'}\n";
-    if ($rt::req[$in_serial_num]{'trans'}[$index]{'content'}) {
-	print "$rt::req[$in_serial_num]{'trans'}[$index]{'content'}\n";
-    }
-
-
+  sub activate {
+    require RT::User;
+    require RT::Ticket;
     
-}
-
-
-sub parse_args {
-  for ($i=0;$i<=$#ARGV;$i++) {
-    if ($ARGV[$i] eq "-create")   {
-      &cli_create_req;
-    }
-    elsif (($ARGV[$i] eq "-history") || ($ARGV[$i] eq "-show")){
-      $serial_num=int($ARGV[++$i]);
-      if (&rt::can_display_request($serial_num, $CurrentUser->UserId)) {
-	&cli_show_req($serial_num);
-	&cli_history_req($serial_num);
-      }
-      else {
-	print "You don't have permission to display request #$serial_num\n";
-      }
-    }
-   
-
-    elsif ($ARGV[$i] eq "-publichistory") {
-      $serial_num=int($ARGV[++$i]);
-      if (&rt::can_display_request($serial_num, $CurrentUser->UserId)) {
-        &cli_show_req($serial_num);
-        &cli_requestor_history_req($serial_num);
-      }
-      else {
-        print "You don't have permission to display request #$serial_num\n";
-      }
-    } 
- 
+    #Instantiate a user object
     
-	elsif ($ARGV[$i] eq "-trans") {
+    ($CurrentUid,$tmp)=getpwuid($<);
+    $CurrentUser = new RT::User($CurrentUid);
+    $CurrentUser->load($CurrentUid);
+    
+    &ParseArgs;
+  }
+  
 
-		$serial = int($ARGV[++$i]);
-		$trans = int($ARGV[++$i]);
-		&rt::req_in($serial,$CurrentUser->UserId);
-		&print_transaction($serial, $trans);	
-
-	}
+  
+  
+  sub parse_args {
+    for ($i=0;$i<=$#ARGV;$i++) {
+      if ($ARGV[$i] eq "-create")   {
+	&cli_create_req;
+      }
+      elsif (($ARGV[$i] eq "-history") || ($ARGV[$i] eq "-show")){
+	my $id=int($ARGV[++$i]);
+	my $Request = &LoadTicket($id);
 	
-	elsif ($ARGV[$i] eq "-comment")	{
-	    $arg=int($ARGV[++$i]);
-	    &cli_comment_req($arg);
+	if ($Request->DisplayPermitted) {
+	  &ShowSummary($Request);
+	  &ShowHistory($Request);
 	}
-
-        elsif ($ARGV[$i] eq "-respond") {
-            $arg=int($ARGV[++$i]);
-            &cli_respond_req($arg);
-        }      	
-	elsif ($ARGV[$i] eq "-take")	{
-	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::take($serial_num, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-	
-	elsif ($ARGV[$i] eq "-stall")	{
-	    $serial_num=int($ARGV[++$i]);
-	
-	    ($trans,$message)=&rt::stall ($serial_num, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-
-	elsif ($ARGV[$i] eq "-kill")	{
-	    $serial_num=int($ARGV[++$i]);
-	    $response=&rt::ui::cli::question_string("Type 'yes' if you REALLY want to KILL request \#$serial_num",);
-	    if ($response eq 'yes') { 
-		($trans,$message)=&rt::kill ($serial_num, $CurrentUser->UserId);
-		print "$message\n";
-	    }
-	    else {
-		print "Kill aborted.\n";
-		
-	    }
-	}
-	
-	elsif ($ARGV[$i] eq "-steal")	{
-	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::steal($serial_num, $CurrentUser->UserId);
-	    print "$message\n";
-	    
-	}
-	
-	elsif ($ARGV[$i] eq "-user")	{
-	    $serial_num=int($ARGV[++$i]);
-	    $new_user=$ARGV[++$i];
-	    ($trans,  $message)=&rt::change_requestors($serial_num, $new_user, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-	
-	elsif ($ARGV[$i] eq "-untake")	{
-	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::untake($serial_num, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-	
-	elsif ($ARGV[$i] eq "-subject")	{
-	    $serial_num=int($ARGV[++$i]);
-	    $subject=$ARGV[++$i];
-	    ($trans,  $message)=&rt::change_subject ($serial_num, $subject, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-	
-	elsif ($ARGV[$i] eq "-queue")	{
-	    $serial_num=int($ARGV[++$i]);
-	    $queue=$ARGV[++$i];
-	    ($trans,$message)=&rt::change_queue($serial_num, $queue, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-	elsif ($ARGV[$i] eq "-area")	{
-	    $serial_num=int($ARGV[++$i]);
-	    $area=$ARGV[++$i];
-	    ($trans,$message)=&rt::change_area($serial_num, $area, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-
-	elsif ($ARGV[$i] eq "-merge")	{
-	    $serial_num=int($ARGV[++$i]);
-	    $merge_into=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::merge($serial_num, $merge_into, $CurrentUser->UserId);
-	    print "$message\n";	}
-	elsif ($ARGV[$i] eq "-due")	{
-	    $due_string=$ARGV[++$i];
-	    $due_date = &rt::date_parse($due_string);
-	    ($trans,$message)=&rt::change_date_due($serial_num, $due_date, $CurrentUser->UserId);
-	    print "$message\n";	}
-	
-	elsif ($ARGV[$i] eq "-prio") {
-	    $serial_num=int($ARGV[++$i]);
-	    $priority=int($ARGV[++$i]);
-	    ($trans,  $message)=&rt::change_priority ($serial_num, $priority,$CurrentUser->UserId);
-	    print "$message\n";
-	}
-	
-	elsif ($ARGV[$i] eq "-finalprio") {
-	    $serial_num=int($ARGV[++$i]);
-	    $priority=int($ARGV[++$i]);
-	    ($trans,  $message)=&rt::change_final_priority ($serial_num, $priority,$CurrentUser->UserId);
-	    print "$message\n";
-	}
-	elsif ($ARGV[$i] eq "-notify") {
-	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::notify($serial_num, $rt::time, $CurrentUser->UserId);
-	    print "$message\n";	
-	}
-	
-	elsif ($ARGV[$i] eq "-give")	{
-	    $serial_num=int($ARGV[++$i]);
-	    $owner=$ARGV[++$i];
-	    ($trans,  $message)=&rt::give($serial_num, $owner, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-	
-	elsif ($ARGV[$i] eq "-resolve")	{
-	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::resolve($serial_num, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-	
-	elsif ($ARGV[$i] eq "-open")	{
-	    $serial_num=int($ARGV[++$i]);
-	    ($trans,$message)=&rt::open ($serial_num, $CurrentUser->UserId);
-	    print "$message\n";
-	}
-
 	else {
-	    &cli_help_req;
+	  print "You don't have permission to view that ticket.\n";
 	}
-	next
+      }
+      
+      
+      elsif ($ARGV[$i] eq "-publichistory") {
+	my $id=int($ARGV[++$i]);
+	my $Request = &LoadTicket($id);
+	
+	if ($Request->DisplayPermitted) {
+	  &ShowSummary($id);
+	  &ShowRequestorHistory($id);
+	}
+	else {
+	  print "You don't have permission to view that ticket\n";
+	}
+      } 
+      
+      
+      elsif ($ARGV[$i] eq "-trans") {
+	
+	my $tid = int($ARGV[++$i]);
+	my $Transaction = RT::Transaction->new($CurrentUser);
+	$Transaction->Load($tid);
+	&ShowTransaction($Transaction);	
+	
+      }
+      
+      elsif ($ARGV[$i] eq "-comment")	{
+	my $id = int($ARGV[++$i]);
+	my $Request=&LoadRequest($id);
+	&cli_comment_req($Request);
+      }
+      
+      elsif ($ARGV[$i] eq "-respond") {
+	my $id = int($ARGV[++$i]);
+	my $Request=&LoadRequest($id);
+	&cli_respond_req($Request);
+      }      	
+      elsif ($ARGV[$i] eq "-take")	{
+	my $id = int($ARGV[++$i]);
+       	my $Request = &LoadRequest($id);
+	$Message .= $Request->take($id, $CurrentUser->UserId);
+      }
+      
+      elsif ($ARGV[$i] eq "-stall")	{
+	my $id = int($ARGV[++$i]);
+	my $Request = &LoadRequest($id);
+	$Message .= $Request->stall ($id, $CurrentUser->UserId);
+	
+      }
+      
+      elsif ($ARGV[$i] eq "-kill")	{
+	$id=int($ARGV[++$i]);
+	my $Request=&LoadRequest($id);
+
+	$response=&rt::ui::cli::question_string("Type 'yes' if you REALLY want to KILL request \#$id",);
+	if ($response eq 'yes') { 
+	  $Message .= $Request->Kill();
+
+
+	}
+	else {
+	  $Message .= "Kill aborted.\n";
+	  
+	}
+      }
+      
+      elsif ($ARGV[$i] eq "-steal")	{
+	$id=int($ARGV[++$i]);
+	
+	my $Request=&LoadRequest($id);
+	$Message .= $Request->Steal();
+	
+      }
+      
+      elsif ($ARGV[$i] eq "-user")	{
+	my $id = int($ARGV[++$i]);
+	my $new_user = $ARGV[++$i];
+	my $Request = &LoadRequest($id);
+	
+	$Message .= $Request->Requestors($new_user);
+      }
+      
+      elsif ($ARGV[$i] eq "-untake")	{
+	my $id=int($ARGV[++$i]);
+	my $Request = &LoadRequest($id);
+
+	$Message .= $Request->untake();
+
+      }
+      
+      elsif ($ARGV[$i] eq "-subject")	{
+	my $id = int($ARGV[++$i]);
+	my $subject = $ARGV[++$i];
+	my $Request = &LoadRequest($id);
+        $Request->Subject ($subject);
+
+      }
+      
+      elsif ($ARGV[$i] eq "-queue")	{
+	my $id=int($ARGV[++$i]);
+	my $queue=$ARGV[++$i];
+	my $Request = &LoadRequest($id);
+	$Message .= $Request->Queue($queue);
+	
+      }
+      elsif ($ARGV[$i] eq "-area")	{
+	my $id=int($ARGV[++$i]);
+	my $area=$ARGV[++$i];
+	my $Request = &LoadRequest($id);
+	$Message .= $Request->Area($area);
+      }
+      
+      elsif ($ARGV[$i] eq "-merge")	{
+	my $id=int($ARGV[++$i]);
+	my $merge_into=int($ARGV[++$i]);
+	my $Request = &LoadRequest($id);
+
+	$Message .= $Request->Merge($merge_into);
+      }
+
+      elsif ($ARGV[$i] eq "-due")	{
+	my $id=int($ARGV[++$i]);
+	my $Request = &LoadRequest($id);
+	
+	my $due_string=$ARGV[++$i];
+	my $due_date = &rt::date_parse($due_string);
+	
+	$Message .= $Request->DateDue($id, $due_date, $CurrentUser->UserId);
+
+	}
+      
+      elsif ($ARGV[$i] eq "-prio") {
+	my $id=int($ARGV[++$i]);
+	my $Request = &LoadRequest($id);
+	my $priority=int($ARGV[++$i]);
+	$Message=$Request->Priority($priority);
+
+      }
+      
+      elsif ($ARGV[$i] eq "-finalprio") {
+	my $id = int($ARGV[++$i]);
+	my $priority = int($ARGV[++$i]);
+	my $Request = &LoadRequest($id);
+	$Message .= $Request->FinalPriority($priority);
+
+      }
+      elsif ($ARGV[$i] eq "-notify") {
+	my $id = int($ARGV[++$i]);
+	my $Request = &LoadRequest($id);
+	$Message .= $Request->Notify();
+
+      }
+      
+      elsif ($ARGV[$i] eq "-give")	{
+	my $id = int($ARGV[++$i]);
+	my $owner = $ARGV[++$i];
+	my $Request = &LoadRequest($id);
+	$Message .= $Request->Give($owner);
+      }
+      
+      elsif ($ARGV[$i] eq "-resolve")	{
+	my $id = int($ARGV[++$i]);
+	my $Request = &LoadRequest($id);
+	$Message .= $Request->Resolve();
+	
+      }
+      
+      elsif ($ARGV[$i] eq "-open")	{
+	$id=int($ARGV[++$i]);
+	$Request=&LoadTicket($id);
+	$Message .= $Request->Open; 
+      }
+      
+      else {
+	&ShowHelp;
+      }
+      next;
     }
-}
-
-   
- 
-
-
-sub cli_create_req {	
+    print "$Message\n";
+  }
+  
+  
+  
+  
+  
+  sub cli_create_req {	
     my ($queue_id,$owner,$requestors,$status,$priority,$subject,$final_prio,$date_due);
     $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     $area=&rt::ui::cli::question_string("Place Request in area",);
@@ -218,89 +234,101 @@ sub cli_create_req {
     $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
     $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
     if ($due_string ne '') {
-	 $date_due = &rt::date_parse($due_string);
-	}  
-  print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
+      $date_due = &rt::date_parse($due_string);
+    }  
+    print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
-	if(/^\.\n/) {
-	    last;
-	}
-	else {
-	    $content .= $_;
-	}
-  	}	  
-    ($serial_num,$trans,$message)=&rt::add_new_request($queue_id,$area,$requestors,$alias,$owner,$subject,$final_priority,$priority,'open', $rt::time, 0, $date_due, $content,$CurrentUser->UserId);
-    print "$message\n";
-}
-
-sub cli_comment_req {	
-    my ($serial_num)=@_;
+      if(/^\.\n/) {
+	last;
+      }
+      else {
+	$content .= $_;
+      }
+    }	 
+    my $Request = RT::Request->new($CurrentUser);
+    my $id = $Request->Create ( queue => $queue,
+				area => $area,
+				alias => $alias,
+				requestors => $requestors,
+				owner => $owner,
+				subject => $subject,
+				initial_priority => $priority,
+				final_priority => $final_priority,
+				status => 'open',
+				date_due => $date_due);
+    printf("Request %s created",$id);
+  }
+  
+  sub cli_comment_req {	
+    my ($id)=@_;
     my ($subject,$content,$trans,$message,$cc,$bcc );
-   
-#    if (&rt::can_manipulate_request($serial_num, $CurrentUser->UserId)) {
+    
     $subject=&rt::ui::cli::question_string("Subject",);
     $cc=&rt::ui::cli::question_string("Cc",);
     $bcc=&rt::ui::cli::question_string("Bcc",);   
     print "Please enter your comments this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
-	if(/^\.\n/) {
-	    last;
-	}
-	else {
-	    $content .= $_;
-		}
-  	}
+      if(/^\.\n/) {
+	last;
+      }
+      else {
+	$content .= $_;
+      }
+    }
     
-    ($trans,  $message)=&rt::comment($serial_num,$content,$subject,$cc,$bcc,$CurrentUser->UserId);
-    print $message;
-#	}
-#	else {
-#	print "You do not have permission to work with this request\n";
-#	}
-}
-sub cli_respond_req {
-    my ($serial_num)=@_;
+    my $Request = &LoadRequest($id);
+    $Message =$Request->Comment(subject => "$subject",
+				content => "$content",
+				cc => "$cc"
+				bcc => "$bcc",
+				sender => $CurrentUser->UserId);
+    print $Message;
+  }
+  
+  sub cli_respond_req {
+    my $id =  shift;
     my ($subject,$content,$trans,$message,$cc,$bcc );
-
+    
     $subject=&rt::ui::cli::question_string("Subject",);
     $cc=&rt::ui::cli::question_string("Cc",);
     $bcc=&rt::ui::cli::question_string("Bcc",);      
     print "Please enter your response to this request, terminated\nby a line containing only a period:\
 n";
     while (<STDIN>) {
-        if(/^\.\n/) {
-            last;
-        }
-        else {
-            $content .= $_;
-                }
-        }
-
-    ($trans,  $message)=&rt::add_correspondence($serial_num,$content,$subject,$cc,$bcc,"",1,$CurrentUser->UserId);
-    print $message;
-}                   
-
-sub cli_history_req {
-    my ($in_serial_num)=@_;
-    $total_transactions=&rt::transaction_history_in($in_serial_num,$CurrentUser->UserId);
-    for ($temp=0; $temp < $total_transactions; $temp++){
-	&print_transaction($temp, $in_serial_num);
-    }   
-}
-
-sub cli_requestor_history_req {
-    my ($in_serial_num)=@_;
-    $total_transactions=&rt::transaction_history_in($in_serial_num,$CurrentUser->UserId);
-    for ($temp=0; $temp < $total_transactions; $temp++){
-	if ($rt::req[$in_serial_num]{'trans'}[$temp]{'type'} ne 'comment') {
-	        &print_transaction($temp, $in_serial_num);
-	}
+      if(/^\.\n/) {
+	last;
+      }
+      else {
+	$content .= $_;
+      }
     }
-
-
-}
-
-sub cli_help_req {
+    my $Request = &LoadRequest($id);
+    $Message = $Request->NewCorrespondence(subject => "$subject",
+					   content => "$content",
+					   cc => "$cc"
+					   bcc => "$bcc",
+					   sender => $CurrentUser->UserId);
+    print $Message;
+  }                   
+  
+  sub ShowHistory {
+    my $Request = shift;
+    my $Transaction;
+    while ($Transaction = $Request->Transactions->Next) {
+      &ShowTransaction($Transaction);
+    }   
+  }
+  sub ShowRequestorHistory {
+    my $Request = shift;
+    my $Transaction;
+    while ($Transaction = $Request->Transactions->Next) {
+      if ($Transaction->Type ne 'comment') {
+	&ShowTransaction($Transaction);
+      }
+    }   
+  }
+  
+  sub ShowHelp {
     print "
     
     RT CLI Flags and their arguments
@@ -327,31 +355,50 @@ sub cli_help_req {
     -merge <num1> <num2>  Merge <num1> into <num2>
     -trans <ser> <trans>  Display ticket <ser> transaction <trans>
     -kill <num>           Permanently remove <num> from the database\n";
-
-}
-
-sub cli_show_req {
-    my ($in_serial_num)=@_;
-use Time::Local;
-
-    &rt::req_in($in_serial_num,$CurrentUser->UserId);
-    print "        Serial Number:$in_serial_num\n";
-    print "               Queue:$rt::req[$in_serial_num]{'queue_id'}\n";
-    print "                Area:$rt::req[$in_serial_num]{'area'}\n";
-    print "          Requestors:$rt::req[$in_serial_num]{'requestors'}\n";
-    print "               Owner:$rt::req[$in_serial_num]{'owner'} \n";
-    print "             Subject:$rt::req[$in_serial_num]{'subject'}\n";
-    print "      Final Priority:$rt::req[$in_serial_num]{'final_priority'}\n";
-    print "    Current Priority:$rt::req[$in_serial_num]{'priority'}\n";
-    print "              Status:$rt::req[$in_serial_num]{'status'}\n";
-    print "             Created:". localtime($rt::req[$in_serial_num]{'date_created'})."\n";
-    print "   Last User Contact:".localtime($rt::req[$in_serial_num]{'date_told'})."\n";
-    print "        Last Contact:$rt::req[$in_serial_num]{'since_told'}\n";
-    print "                 Due:".localtime($rt::req[$in_serial_num]{'date_due'})."\n";
-    print "                 Age:$rt::req[$in_serial_num]{'age'}\n";
     
+  }
+  
+  sub ShowSummary {
+    my $Request = shift;
+
+    use Time::Local;
+    
+
+print << EOFORM;    
+       Serial Number:@{[$Request->Id]}
+               Queue:@{[$Request->Queue->Id]}
+                Area:@{[$Request->Area]}
+          Requestors:@{[$Request->Requestors]}
+               Owner:@{[$Request->Owner]}
+             Subject:@{[$Request->Subject]}
+      Final Priority:@{[$Request->FinalPriority]}
+    Current Priority:@{[$Request->Priority]}
+              Status:@{[$Request->Status]}
+             Created:@{[localtime($Request->DateCreated]}) (@{[$Request->Age ago]})
+        Last Contact:@{[localtime($Request->DateTold]}) (@{[$Request->SinceTold ago]})
+	         Due:@{[localtime($Request->DateDue]})
+
+EOFORM
+    
+  }
+  sub ShowTransaction {
+    my $transaction = shift;
+    
+    print <<EOFORM;
+==========================================================================
+Date: @{[$transaction->DateAsString]} (@{[$transaction->TimeWorked]} minutes)
+@{[$transaction->Description]}
+@{[$transaction->Content]}
+EOFORM    
+  }
+
+sub LoadTicket {
+  my $id = shift;
+  my $Request;
+  $Request = RT::Ticket->new($CurrentUser->UserId);
+  $Request->Load($id);
+  return ($Request);
+  
 }
-
-
 
 1;

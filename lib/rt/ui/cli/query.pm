@@ -1,260 +1,242 @@
-$Header$
-package rt::ui::cli::query;
+# $Header$
+# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# This software is redistributable under the terms of the GNU GPL
+#
 
-sub activate {
-  
-  ($current_user,$tmp)=getpwuid($<);
-  $CurrentUser = new RT::User($current_user);
-  $CurrentUser->load($current_user);
-  
-  
-  ($value, $message)=&rt::initialize($CurrentUser->UserId);
-  if ($value == 0) {
-    print "$message\n";
-    exit(0);
-  } 
-  else {
-    print "$message\n";
-  }
-  &parse_args;
-}
-
-
-$criteria=&build_query();
-$count=&rt::get_queue($criteria,$CurrentUser->UserId);
-if (!$format_string) {
-    $format_string = "%n%p%o%g%l%t%r%s";
-}
-&print_header($format_string);
-for ($temp=0;$temp<$count;$temp++)
-{
-    #do this because we're redefining the format string internally each run.
-    my ($format_string) = $format_string;
-
-    while ($format_string) {
+  {
+    package rt::ui::cli::query;
+    
+    sub activate {
+      
+      ($current_user,$tmp)=getpwuid($<);
+      $CurrentUser = new RT::User($current_user);
+      $CurrentUser->load($current_user);
+      
+      &parse_args;
+    }
+    
+    
+    $criteria=&build_query();
+    $count=&rt::get_queue($criteria,$CurrentUser->UserId);
+    if (!$format_string) {
+      $format_string = "%n%p%o%g%l%t%r%s";
+    }
+    
+    &print_header($format_string);
+    
+    while ($Request = $Query->Next) {
+      #do this because we're redefining the format string internally each run.
+      my ($format_string) = $format_string;
+      
+      while ($format_string) {
 	($field, $format_string) = split (/\%/, $format_string,2);  
-
+	
 	if  ($field =~ /^n(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=6;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'serial_num'};
+	  $length = $1;
+	  if ($length < 1) {$length=6;}
+	  printf "%-${length}.${length}s ", $Request->Id;
 	}
-        elsif ($field =~ /^d(\d*)$/){
-            my $length = $1;
-		if ($rt::req[$temp]{'date_due'} > 0) {
-		my $date = localtime($rt::req[$temp]{'date_due'});
-		$date =~ s/\d*:\d*:\d*//;	
-                if ($length < 1) {$length=5;}
+	elsif ($field =~ /^d(\d*)$/){
+	  my $length = $1;
+	  if ($Request->DateDue > 0) {
+	    my $date = localtime($Request->DateDue);
+	    $date =~ s/\d*:\d*:\d*//;	
+	    if ($length < 1) {$length=5;}
             printf "%-${length}.${length}s ", $date;
-		}
-	else {
-	printf  "%-${length}.${length}s ", "none";
-	}
+	  }
+	  else {
+	    printf  "%-${length}.${length}s ", "none";
+	  }
         }
 	elsif ($field =~ /^p(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=2;}
-	    printf "%-${length}.${length}d ", $rt::req[$temp]{'priority'};
+	  $length = $1;
+	  if ($length < 1) {$length=2;}
+	  printf "%-${length}.${length}d ", $Request->Priority;
 	}
 	elsif ($field =~ /^r(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=9;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'requestors'};
+	  $length = $1;
+	  if ($length < 1) {$length=9;}
+	  printf "%-${length}.${length}s ", $Request->Requestors;
 	}
 	elsif ($field =~ /^o(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=8;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'owner'};
+	  $length = $1;
+	  if ($length < 1) {$length=8;}
+	  printf "%-${length}.${length}s ", $Request->Owner;
 	}
-
+	
 	elsif ($field =~ /^s(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=30;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'subject'};
+	  $length = $1;
+	  if ($length < 1) {$length=30;}
+	  printf "%-${length}.${length}s ", $Request->Subject;
 	}
 	elsif ($field =~ /^t(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=5;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'status'};
+	  $length = $1;
+	  if ($length < 1) {$length=5;}
+	  printf "%-${length}.${length}s ", $Request->Status;
 	}
 	elsif ($field =~ /^q(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=8;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'queue_id'};
+	  $length = $1;
+	  if ($length < 1) {$length=8;}
+	  printf "%-${length}.${length}s ", $Request->Queue->Id;
 	}
 	elsif ($field =~ /^a(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=7;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'area'};
+	  $length = $1;
+	  if ($length < 1) {$length=7;}
+	  printf "%-${length}.${length}s ", $Request->Area;
 	}
 	elsif ($field =~ /^g(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=6;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'age'};
+	  $length = $1;
+	  if ($length < 1) {$length=6;}
+	  printf "%-${length}.${length}s ", $Request->Age;
 	}
 	elsif ($field =~ /^l(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=6;}
-	    printf "%-${length}.${length}s ", $rt::req[$temp]{'since_told'};
+	  $length = $1;
+	  if ($length < 1) {$length=6;}
+	  printf "%-${length}.${length}s ", $Request->SinceTold;
 	}
 	elsif ($field =~ /^w(.)$/) {
-	    if ($1 eq 't') { print "\t";}
-	    if ($1 eq 's') { print " ";}
-	    if ($1 eq 'n') {print "\n";}
+	  if ($1 eq 't') { print "\t";}
+	  if ($1 eq 's') { print " ";}
+	  if ($1 eq 'n') {print "\n";}
 	}
 	else {
-	    print $field;
+	  print $field;
 	}
+      }
+      print "\n";
     }
-    print "\n";
-}
-}
-sub build_query {
+  }
+  sub build_query {
     local ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
     if (($ARGV[0] eq '-help')  or ($ARGV[0] eq '--help') or ($ARGV[0] eq '-h')) {
-     &usage();
-     exit(0);
+      &usage();
+      exit(0);
     }
+    
+    my $Requests = RT::Tickets->new($CurrentUser);
+    
     if (&rt::is_a_queue($ARGV[0])){
-	$queue_ops = "queue_id = \'$ARGV[0]\'";
+      $queue_ops = "queue_id = \'$ARGV[0]\'";
     }
-
+    
     for ($i=0;$i<=$#ARGV;$i++) {
-	if ($ARGV[$i] eq '-format') {
-	    $format_string = $ARGV[++$i];
+      if ($ARGV[$i] eq '-format') {
+	$format_string = $ARGV[++$i];
 	
+      }
+      
+      if ($ARGV[$i] eq '-queue') {
+	my $queue_id = $ARGV[++$i];
+	$Requests->Limit( FIELD => 'queue',
+			  VALUE => "$queue_id");
+	  
+
+      }
+
+      if ($ARGV[$i] eq '-owner') {
+	my $owner = $ARGV[++$i];
+	$Requests->Limit( FIELD => 'owner',
+			  VALUE => "$owner");
+	
+      }
+      
+      if ($ARGV[$i] eq '-unowned'){
+	$Requests->Limit( FIELD => 'owner',
+			  VALUE => "");
+
+      }
+      if ($ARGV[$i] =~ '-prio'){
+	my $operator = $ARGV[++$i];
+	my $priority = $ARGV[++$i];
+	$Requests->Limit( FIELD => 'priority',
+			  OPERATOR => "$operator",
+			  VALUE => "$priority");
+
+	$prio_ops .= " priority $ARGV[++$i] $ARGV[++$i] ";
+      }
+      
+      if ($ARGV[$i] =~ '-stat'){
+	my $status = $ARGV[++$i];
+	$Requests->Limit( FIELD => 'status',
+			  VALUE => "$status");
+      }
+      
+      if ($ARGV[$i] eq '-area'){
+	my $area = $ARGV[++$i];
+	$Requests->Limit( FIELD => 'area',
+			  VALUE => "$area");
+      }
+      
+      if ($ARGV[$i] eq '-open'){
+	$Requests->Limit( FIELD => 'status',
+			  VALUE => "open");
+      }
+      if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
+	$Requests->Limit( FIELD => 'status',
+			  VALUE => "resolved");
+
+	
+      }
+      if ($ARGV[$i] eq '-dead'){
+	$Requests->Limit( FIELD => 'status',
+			  VALUE => "dead");
+	
+      }    
+      
+      if ($ARGV[$i] eq '-stalled'){
+	$Requests->Limit( FIELD => 'status',
+			  VALUE => "stalled");
+      }
+      
+      if ($ARGV[$i] eq '-user') {
+	my $requestors = $ARGV[++$i];
+	$Requests->Limit( FIELD => 'requestors',
+			  VALUE => "%$requestors%",
+			  OPERATOR => 'LIKE');
+      }
+      
+
+      
+      #TODO: DEAL WITH ORDERING 
+      if ($ARGV[$i] eq '-orderby') {
+	if ($order_ops){
+	  $order_ops .= ", ";
 	}
-
-	if ($ARGV[$i] eq '-owner') {
-	    if ($owner_ops){
-		   $owner_ops .= " OR ";
-	       }
-	       $owner_ops .= " owner = \'" . $ARGV[++$i] . "\'";
-	   }
-	   
-	   if ($ARGV[$i] eq '-unowned'){
-	       if ($owner_ops){
-		   $owner_ops .= " OR ";
-	       }
-	       $owner_ops .= " owner =  \'\'" ;
-	   }
-	   if ($ARGV[$i] =~ '-prio'){
-	       if ($prio_ops){
-		   $prio_ops .= " AND ";
-	       }
-	       $prio_ops .= " priority $ARGV[++$i] $ARGV[++$i] ";
-	   }
-	   
-	   if ($ARGV[$i] =~ '-stat'){
-	       if ($status_ops){
-		   $status_ops .= " OR ";
-	       }
-	       $status_ops .= " status =  \'$ARGV[++$i]\'" ;
-	   }
-
-           if ($ARGV[$i] eq '-area'){
-               if ($area_ops){
-                   $area_ops .= " OR ";
-               }
-               $area_ops .= " area =  \'$ARGV[++$i]\'" ;
-           }
-
-	   if ($ARGV[$i] eq '-open'){
-	       if ($status_ops){
-		   $status_ops .= " OR ";
-	       }
-	       $status_ops .= " status =  \'open\'" ;
-	   }
-	   if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
-	       if ($status_ops){
-		   $status_ops .= " OR ";
-	       }
-	       $status_ops .= " status =  \'resolved\'" ;
-	   }
-	   if ($ARGV[$i] eq '-dead'){
-	       if ($status_ops){
-		   $status_ops .= " OR ";
-	       }
-	       $status_ops .= " status =  \'dead\'" ;
-	   }    
-	   
-	   if ($ARGV[$i] eq '-stalled'){
-	       if ($status_ops){
-		   $status_ops .= " OR ";
-	       }
-	       $status_ops .= " status =  \'stalled\'" ;
-	   }
-	   
-	   if ($ARGV[$i] eq '-user') {
-	       if ($user_ops){
-		   $user_ops .= " OR ";
-	       }
-	       $user_ops .= " requestors like \'%" . $ARGV[++$i] . "%\' ";
-	   }
-	   
-	   if ($ARGV[$i] eq '-orderby') {
-	       if ($order_ops){
-		   $order_ops .= ", ";
-	       }
-	       $order_ops .= $ARGV[++$i]; 
-	   }
-	   if ($ARGV[$i] eq '-r') {
-	       $reverse = ' DESC'; 
-	   }
-
-	   if ($ARGV[$i] eq '-t') {       
-	       if ($order_ops){
-		   $order_ops .= ", ";
-	       }
-	       $order_ops .= "date_acted"; 
-	   }
+	$order_ops .= $ARGV[++$i]; 
+      }
+      if ($ARGV[$i] eq '-r') {
+	$reverse = ' DESC'; 
+      }
+      
+      if ($ARGV[$i] eq '-t') {       
+	if ($order_ops){
+	  $order_ops .= ", ";
+	}
+	$order_ops .= "date_acted"; 
+      }
     }    
     
-    if ($queue_ops) {
-	if ($query_string) {$query_string .= " AND ";}
-	$query_string .= "$queue_ops";
-    }
-   
-    if ($area_ops) {
-	if ($query_string) {$query_string .= " AND ";}
-        $query_string .= "$area_ops";
-    }
- 
-    if ($prio_ops) {
-	if ($query_string) {$query_string .= " AND ";}
-	$query_string .= "$prio_ops";
-    }
-    
-    if ($status_ops) {
-	if ($query_string) {$query_string .= " AND ";}
-	$query_string .= "$status_ops";
-    }
-    
-    if ($user_ops) {
-	if ($query_string) {$query_string .= " AND ";}
-	$query_string .= "$user_ops";
-    }
-    if ($owner_ops) {
-	if ($query_string) {$query_string .= " AND ";}
-	$query_string .= "$owner_ops";
-    }
+
+    #DEAL WITH DEFAULTS
+
     if (!$query_string) {
-	$query_string = "status = \'open\'";
+      $query_string = "status = \'open\'";
     }
     if ($order_ops) {
-	$query_string .= "ORDER BY $order_ops";
+      $query_string .= "ORDER BY $order_ops";
     }
     else {
-	$query_string .= "ORDER BY serial_num";
+      $query_string .= "ORDER BY serial_num";
     }
     if ($reverse) {
-	$query_string .= " DESC";
+      $query_string .= " DESC";
     }
     
     return ($query_string);
-}
-sub usage {
-print"
+  }
+  sub usage {
+    print <<EOFORM;
+    
        usage: rtq <queue> <options>
        Where <options> are almost any combination of:
            -r                list requests in reverse order
@@ -294,14 +276,17 @@ print"
                              wt        tab
                              ws        space
                              wn        newline
-";
+
 
     #          <num>-<num>      print only requests in the number range\n
     #          <num>            print only request <num>\n";
     #          :<num>           print a total of <num> requests\n";
     
-print "                     Without options, rtq lists all open requests.
-";
+                     Without options, rtq lists all open requests.
+EOFORM
+
+
+
 }
 
 
@@ -380,7 +365,7 @@ sub print_header {
 	    printf "%-${length}.${length}s ", "Told";
 	}
 	elsif ($field =~ /^w(.)$/) {
-	    if ($1 eq 't') { print "\t";}
+	  if ($1 eq 't') { print "\t";}
 	    if ($1 eq 's') { print " ";}
 	    if ($1 eq 'n') {print "\n";}
 	}
@@ -388,13 +373,12 @@ sub print_header {
 	    print $field;
 	}
 
-    }
+      }
     print "\n";
     for ($temp=0;$temp<$total_length;$temp++){
-	print "-";
+      print "-";
     }
     print "\n";
+  }
 }
-
-
 1;
