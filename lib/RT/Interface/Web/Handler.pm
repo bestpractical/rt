@@ -100,14 +100,14 @@ sub InitSessionDir {
     # Activate the following if running httpd as root (the normal case).
     # Resets ownership of all files created by Mason at startup.
     # Note that mysql uses DB for sessions, so there's no need to do this.
-    unless ( $RT::DatabaseType =~ /(mysql|Pg)/ ) {
+    unless ( $RT::DatabaseType =~ /(?:mysql|Pg)/ ) {
 
         # Clean up our umask to protect session files
         umask(0077);
 
         if ($CGI::MOD_PERL) {
             chown( Apache->server->uid, Apache->server->gid,
-                [$RT::MasonSessionDir] )
+                $RT::MasonSessionDir )
             if Apache->server->can('uid');
         }
 
