@@ -71,13 +71,13 @@ is($Collection->Count,1, "We found only one result");
 # Now we find a collection of all the tickets which have no members. they should have no children.
 $Collection = RT::Tickets->new($CurrentUser);
 $Collection->LimitHasMember('');
-# must contain parent; must not contain child
+# must contain child; must not contain parent
 my %has;
 while (my $t = $Collection->Next) {
     ++$has{$t->id};
 }
-ok ($has{$parentid} , "The collection has our parent - $parentid");
-ok( !$has{$childid}, "The collection doesn't have our child - $childid");
+ok ($has{$childid} , "The collection has our child - $childid");
+ok( !$has{$parentid}, "The collection doesn't have our parent - $parentid");
 
 
 
@@ -85,13 +85,13 @@ ok( !$has{$childid}, "The collection doesn't have our child - $childid");
 # Now we find a collection of all the tickets which are not members of anything. they should have no parents.
 $Collection = RT::Tickets->new($CurrentUser);
 $Collection->LimitMemberOf('');
-# must not  contain parent; must contain parent
+# must contain parent; must not contain child
 %has = ();
 while (my $t = $Collection->Next) {
     ++$has{$t->id};
 }
-ok (!$has{$parentid} , "The collection has our parent - $parentid");
-ok( $has{$childid}, "The collection doesn't have our child - $childid");
+ok ($has{$parentid} , "The collection has our parent - $parentid");
+ok( !$has{$childid}, "The collection doesn't have our child - $childid");
 
 
 #  Do it all over with TicketSQL
@@ -107,8 +107,8 @@ $Collection->FromSQL ("HasMember IS NULL");
 while (my $t = $Collection->Next) {
     ++$has{$t->id};
 }
-ok ($has{$parentid} , "The collection has our parent - $parentid");
-ok( !$has{$childid}, "The collection doesn't have our child - $childid");
+ok (!$has{$parentid} , "The collection doesn't have our parent - $parentid");
+ok( $has{$childid}, "The collection has our child - $childid");
 
 
 # Now we find a collection of all the tickets which have no members. they should have no children.
@@ -120,8 +120,8 @@ $Collection->FromSQL ("HasMember = ''");
 while (my $t = $Collection->Next) {
     ++$has{$t->id};
 }
-ok ($has{$parentid} , "The collection has our parent - $parentid");
-ok( !$has{$childid}, "The collection doesn't have our child - $childid");
+ok (!$has{$parentid} , "The collection doesn't have our parent - $parentid");
+ok( $has{$childid}, "The collection has our child - $childid");
 
 
 
@@ -133,8 +133,8 @@ $Collection->FromSQL("MemberOf IS NULL");
 while (my $t = $Collection->Next) {
     ++$has{$t->id};
 }
-ok (!$has{$parentid} , "The collection has our parent - $parentid");
-ok( $has{$childid}, "The collection doesn't have our child - $childid");
+ok ($has{$parentid} , "The collection has our parent - $parentid");
+ok(!$has{$childid}, "The collection doesn't have our child - $childid");
 
 
 # Now we find a collection of all the tickets which are not members of anything. they should have no parents.
@@ -145,8 +145,8 @@ $Collection->FromSQL("MemberOf = ''");
 while (my $t = $Collection->Next) {
     ++$has{$t->id};
 }
-ok (!$has{$parentid} , "The collection has our parent - $parentid");
-ok( $has{$childid}, "The collection doesn't have our child - $childid");
+ok ($has{$parentid} , "The collection has our parent - $parentid");
+ok(!$has{$childid}, "The collection doesn't have our child - $childid");
 
 
 

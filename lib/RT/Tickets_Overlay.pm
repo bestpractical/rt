@@ -339,10 +339,6 @@ sub _LinkLimit {
     if ( $op eq '=' || $op =~ /^is/oi ) {
         if ( $value eq '' || $value =~ /^null$/io ) {
             $is_null = 1;
-            # When doing null searches, we need to turn everything around. WHY?
-            my $tmp = $linkfield;
-            $linkfield = $matchfield;
-            $matchfield = $tmp;
         }
         elsif ( $value =~ /\D/o ) {
             $is_local = 0;
