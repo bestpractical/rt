@@ -1,0 +1,22 @@
+%# $Header$
+%# Copyright 2000 Tobias Brox <tobix@fsck.com>
+%# Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+
+%# This template is for deleting and adding watchers to a ticket.
+
+<& /Elements/Header, Title => "Edit Ticket Watchers (#".$Ticket->Id.")" &>
+
+<%ARGS>
+$id => undef
+</%ARGS>
+<%INIT>
+
+my $Ticket = RT::Ticket->new($session{'CurrentUser'});
+# Can we load it?
+
+unless ($Ticket->Load($id)) {
+    &mc_comp("/Elements/Error" , Why => "Ticket couldn't be loaded");
+    $m->abort;
+}
+
+</%INIT>
