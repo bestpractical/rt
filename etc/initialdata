@@ -168,7 +168,7 @@
 
       Name                 => 'On Owner Change',                           # loc
       Description          => 'Whenever a ticket\'s owner changes',        # loc
-      ApplicableTransTypes => 'Set',
+      ApplicableTransTypes => 'Any',
       ExecModule           => 'OwnerChange',
 
     },
