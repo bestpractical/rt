@@ -37,7 +37,8 @@ foreach my $table (@tables) {
     $table =~ s/customfield/CustomField/gi;
     $table =~ s/value/Value/gi;
     $table =~ s/cfvalue/CFValue/gi;
-
+    $table =~ s/fm_/FM_/;
+    $table =~ s/_(.)/"_".uc($1)/e;
 
 
     $tablemap{$table}  = $table;

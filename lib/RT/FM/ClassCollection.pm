@@ -31,7 +31,7 @@ use base qw(RT::FM::SearchBuilder);
 
 sub _Init {
     my $self = shift;
-    $self->{'table'} = 'fm_classes';
+    $self->{'table'} = 'FM_Classes';
     $self->{'primary_key'} = 'id';
 
 

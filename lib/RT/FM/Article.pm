@@ -31,7 +31,7 @@ use base qw( RT::FM::Record );
 sub _Init {
   my $self = shift; 
 
-  $self->Table('fm_articles');
+  $self->Table('FM_Articles');
   $self->SUPER::_Init(@_);
 }
 

@@ -30,7 +30,7 @@ use base qw( RT::FM::Record );
 sub _Init {
   my $self = shift; 
 
-  $self->Table('fm_CustomFieldValues');
+  $self->Table('FM_CustomFieldValues');
   $self->SUPER::_Init(@_);
 }
 
