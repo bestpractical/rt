@@ -36,8 +36,7 @@
 <%PERL>
 
 unless ($Collapsed) {
- $attachments->GotoFirstItem;
- while (my $message=$attachments->Next) {
+ foreach my $message (@$Attachments) { 
 
   my ($headers, $quoted);
       if ($ShowHeaders && ($ShowHeaders == $Ticket->Id)) {
@@ -115,6 +114,7 @@ $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
+$Attachments => undef
 </%ARGS>
 
 <%INIT>
@@ -126,12 +126,7 @@ my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
 
 if ($Transaction->Type =~ /^(Create|Correspond|Comment$)/) {
-	if ($Transaction->IsInbound) {
 		$bgcolor="#336699";
-	}
-	else {
-		$bgcolor="#339999";
-	}
 } elsif (($Transaction->Field =~ /^Owner$/) or 
 	 ($Transaction->Type =~ /^(AddWatcher|DelWatcher)$/)) {
 	$bgcolor="#333399";
@@ -157,20 +152,24 @@ if ($Ticket->Id != $Transaction->Ticket) {
 if ($Transaction->TimeTaken > 0) {
 	$TimeTaken = $Transaction->TimeTaken." min"
 }
-my $attachments = $Transaction->Attachments;
-$attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
+
+unless ($Attachments) { 
+    my $attachments = $Transaction->Attachments;
+    $attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
+    $Attachments = $attachments->ItemsArrayRef();
+}
 
 my $titlebar_commands='&nbsp;';
 
 # If the transaction has anything attached to it at all
-if ($Transaction->Attachments->First && $ShowTitleBarCommands) {
-	if ($Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket')) {
+if ($Attachments->[0] && $ShowTitleBarCommands) {
+	if ($Ticket->CurrentUserHasRight('ReplyToTicket')) {
 		$titlebar_commands .= 
 	  	  "[<a href=\"Update.html?id=".
 		  $Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id.
 		  "&Action=Respond\">". loc('Reply') ."</a>]&nbsp;";
 	}
-	if ($Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket')) {
+	if ($Ticket->CurrentUserHasRight('CommentOnTicket')) {
 	     $titlebar_commands .= 
 	     "[<a href=\"Update.html?id=".$Transaction->Ticket. 
 	     "&QuoteTransaction=".$Transaction->Id.
