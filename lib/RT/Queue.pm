@@ -13,7 +13,17 @@
 
 =head1 METHODS
 
+=begin testing 
+use RT::TestHarness;
+
+use RT::Queue;
+my $q = new RT::Queue($RT::SystemUser);
+
+=end testing
+
 =cut
+
+
 
 package RT::Queue;
 use RT::Record;
@@ -23,6 +33,39 @@ use RT::Record;
 use vars (@STATUS);
 
 @STATUS = qw(new open stalled resolved dead); 
+
+=head2 StatusArray
+
+Returns an array of all statuses for this queue
+
+=cut
+
+sub StatusArray {
+    my $self = shift;
+    return (@STATUS);
+}
+
+
+=head2 IsValidStatus VALUE
+
+Returns true if VALUE is a valid status.  Otherwise, returns 0
+
+=for testing
+ok($q->IsValidStatus('new')== 1, 'New is a valid status');
+ok($q->IsValidStatus('f00')== 0, 'f00 is not a valid status');
+
+=cut
+
+sub IsValidStatus {
+	my $self = shift;
+	my $value = shift;
+
+	my $retval = grep (/^$value$/, $self->StatusArray);
+ 	return ($retval);	
+
+}
+	
+
 
 
 # {{{  sub _Init 

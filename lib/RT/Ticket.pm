@@ -23,6 +23,7 @@ This module lets you manipulate RT\'s ticket object.
 =cut
 
 
+
 package RT::Ticket;
 use RT::Queue;
 use RT::User;
@@ -35,6 +36,16 @@ use RT::Watcher;
 
 @ISA= qw(RT::Record);
 
+
+=begin testing
+
+use RT::TestHarness;
+
+ok(require RT::Ticket, "Loading the RT::Ticket library");
+
+=end testing
+
+=cut
 
 # {{{ sub _Init
 
@@ -134,13 +145,12 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Requestor -  A reference to a list of RT::User objects, email addresses or RT user Names
   Cc  - A reference to a list of RT::User objects, email addresses or Names
   AdminCc  - A reference to a  list of RT::User objects, email addresses or Names
-  
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
   InitialPriority -- an integer from 0 to 99
   FinalPriority -- an integer from 0 to 99
-  Status -- a textual tag. one of \'new\', \'open\' \'stalled\' \'resolved\' for now
+  Status -- any valid status (Defined in RT::Queue)
   TimeWorked -- an integer
   TimeLeft -- an integer
   Starts -- an ISO date describing the ticket\'s start date and time in GMT
@@ -152,8 +162,18 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
 Returns: TICKETID, Transaction Object, Error Message
 
-=cut
 
+=begin testing
+
+my $t = RT::Ticket->new($RT::SystemUser);
+
+ok( $t->Create(Queue => 'General', Subject => 'This is a subject'), "Ticket Created");
+
+ok ( my $id = $t->Id, "Got ticket id $id");
+
+=end testing
+
+=cut
 
 sub Create {
     my $self = shift;
@@ -345,7 +365,10 @@ sub Create {
 	next unless ($key =~ /^KeywordSelect-(.*)$/);
 	
 	my $ks = $1;
-	my @keywords = @{$args{$key}};
+
+
+	my @keywords = ref($args{$key}) eq 'ARRAY' ?
+	      @{$args{$key}} : ($args{$key});
 	
 	foreach my $keyword (@keywords) {  
 	    my ($kval, $kmsg) = $self->_AddKeyword(KeywordSelect => $ks,
@@ -2446,7 +2469,7 @@ sub ValidateStatus {
     my $status = shift;
 
     #Make sure the status passed in is valid
-    unless ($status =~ /^(new|open|stalled|resolved|dead)$/) {
+    unless ($self->QueueObj->IsValidStatus($status)) {
 	return (undef);
     }
     
