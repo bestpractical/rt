@@ -53,7 +53,7 @@ my @Actions=();
 #TODO in Create_Details.html: priorities and due-date      
       Queue=>$ARGS{queue},
       Owner=>$ARGS{ValueOfOwner},
-      Requestors=>$ARGS{Requestors} || $CurrentUser->EmailAddress,
+      Requestors=>$ARGS{Requestors} || $session{CurrentUser}->EmailAddress,
       Subject=>$ARGS{Subject},
       Status=>$ARGS{Status}||'open',
       MIMEEntity => MIME::Entity->build
