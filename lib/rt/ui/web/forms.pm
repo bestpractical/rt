@@ -24,10 +24,6 @@ sub FormQueueOptions{
     print ">Ticket Number";
 
     print "<OPTION";
-    print " selected" if ($rt::ui::web::FORM{'q_sort'} eq "Ticket Number");
-    print ">Ticket Number";
-
-    print "<OPTION";
     print " selected" if ($rt::ui::web::FORM{'q_sort'} eq "Timestamp");
     print ">Timestamp";
 
