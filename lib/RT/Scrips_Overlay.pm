@@ -129,9 +129,57 @@ sub Next {
 }
 # }}}
 
+=head2 Apply
+
+Run through the relevant scrips. 
+
+=cut
+
 sub Apply {
     my $self = shift;
 
+    my %args = ( TicketObj      => undef,
+                 Ticket         => undef,
+                 Transaction    => undef,
+                 TransactionObj => undef,
+                 Stage          => undef,
+                 Type           => undef,
+                 @_ );
+
+    my @scrips_to_commit = $self->Prepare(%args);
+
+    $self->Commit(@scrips_to_commit);
+
+}
+
+=head2 Commit ARRAY
+
+Expects an array of scrips. Iterate through them and commit each one in order
+
+=cut
+
+sub Commit {
+    my $self = shift;
+    my @scrips_to_commit = (@_);
+
+    
+    foreach my $scrip (@scrips_to_commit) {
+
+        $scrip->Commit( TicketObj      => $self->{'TicketObj'},
+                        TransactionObj => $self->{'TransactionObj'} );
+    }
+}
+
+
+=head2 Prepare
+
+Only prepare the scrips, returning an array of the scrips we're interested in
+in order of preparation, not execution
+
+=cut
+
+sub Prepare { 
+    my $self = shift;
     my %args = ( TicketObj      => undef,
                  Ticket         => undef,
                  Transaction    => undef,
@@ -146,7 +194,6 @@ sub Apply {
                                 TransactionObj => $args{'TransactionObj'},
                                 Transaction    => $args{'Transaction'} );
 
-    # {{{ Deal with Scrips
 
     $self->_FindScrips( Stage => $args{'Stage'}, Type => $args{'Type'} );
 
@@ -169,15 +216,10 @@ sub Apply {
         push @scrips_to_commit, $scrip;
 
     }
-    foreach my $scrip (@scrips_to_commit) {
 
-        $scrip->Commit( TicketObj      => $self->{'TicketObj'},
-                        TransactionObj => $self->{'TransactionObj'} );
-    }
+    return (@scrips_to_commit);
 
-
-    # }}}
-}
+};
 
 # {{{ sup _SetupSourceObjects
 =head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }

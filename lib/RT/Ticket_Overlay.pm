@@ -124,6 +124,7 @@ use RT::TicketCustomFieldValues;
 use RT::Tickets;
 use RT::URI::fsck_com_rt;
 use RT::URI;
+use MIME::Entity;
 
 =begin testing
 
@@ -2202,7 +2203,6 @@ MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content.
 
 =cut
 
-## Please see file perltidy.ERR
 sub Comment {
     my $self = shift;
 
@@ -2215,47 +2215,14 @@ sub Comment {
 
     unless (    ( $self->CurrentUserHasRight('CommentOnTicket') )
              or ( $self->CurrentUserHasRight('ModifyTicket') ) ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, $self->loc("Permission Denied"), undef );
     }
+    $args{'NoteType'} = 'Comment';
+    my @results = $self->_RecordNote(%args);
 
-    unless ( $args{'MIMEObj'} ) {
-        if ( $args{'Content'} ) {
-            use MIME::Entity;
-            $args{'MIMEObj'} = MIME::Entity->build(
-		Data => ( ref $args{'Content'} ? $args{'Content'} : [ $args{'Content'} ] )
-	    );
-        }
-        else {
 
-            return ( 0, $self->loc("No correspondence attached") );
-        }
-    }
-
-    RT::I18N::SetMIMEEntityToUTF8($args{'MIMEObj'}); # convert text parts into utf-8
-
-    # If we've been passed in CcMessageTo and BccMessageTo fields,
-    # add them to the mime object for passing on to the transaction handler
-    # The "NotifyOtherRecipients" scripAction will look for RT--Send-Cc: and
-    # RT-Send-Bcc: headers
-
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',
-        RT::User::CanonicalizeEmailAddress(undef, $args{'CcMessageTo'}) )
-	if defined $args{'CcMessageTo'};
-    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc',
-        RT::User::CanonicalizeEmailAddress(undef, $args{'BccMessageTo'}) )
-	if defined $args{'BccMessageTo'};
-
-    #Record the correspondence (write the transaction)
-    my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-        Type      => 'Comment',
-        Data      => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
-        TimeTaken => $args{'TimeTaken'},
-        MIMEObj   => $args{'MIMEObj'}
-    );
-
-    return ( $Trans, $self->loc("The comment has been recorded") );
+    return(@results);
 }
-
 # }}}
 
 # {{{ sub Correspond
@@ -2284,57 +2251,85 @@ sub Correspond {
 
     unless (    ( $self->CurrentUserHasRight('ReplyToTicket') )
              or ( $self->CurrentUserHasRight('ModifyTicket') ) ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, $self->loc("Permission Denied"), undef );
     }
 
+    $args{'NoteType'} = 'Correspond'; 
+    my @results = $self->_RecordNote(%args);
+    #Set the last told date to now if this isn't mail from the requestor.
+    #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
+    $self->_SetTold unless ( $self->IsRequestor($self->CurrentUser->id));
+    return (@results);
+
+}
+
+# }}}
+
+# {{{ sub _RecordNote
+
+=head2 _RecordNote
+
+the meat of both comment and correspond. 
+
+Performs no access control checks. hence, dangerous.
+
+=cut
+
+sub _RecordNote {
+
+    my $self = shift;
+    my %args = ( CcMessageTo  => undef,
+                 BccMessageTo => undef,
+                 MIMEObj      => undef,
+                 Content      => undef,
+                 TimeTaken    => 0,
+                 CommitScrips => 1,
+                 @_ );
+
+    unless ( $args{'MIMEObj'} || $args{'Content'} ) {
+            return ( 0, $self->loc("No message attached"), undef );
+    }
     unless ( $args{'MIMEObj'} ) {
-        if ( $args{'Content'} ) {
-            use MIME::Entity;
-            $args{'MIMEObj'} = MIME::Entity->build(
-		Data => ( ref $args{'Content'} ?  $args{'Content'} : [ $args{'Content'} ] )
-	    );
-
+            $args{'MIMEObj'} = MIME::Entity->build( Data => (
+                                                          ref $args{'Content'}
+                                                          ? $args{'Content'}
+                                                          : [ $args{'Content'} ]
+                                                    ) );
         }
-        else {
 
-            return ( 0, $self->loc("No correspondence attached") );
-        }
-    }
+    # convert text parts into utf-8
+    RT::I18N::SetMIMEEntityToUTF8( $args{'MIMEObj'} );
 
-    RT::I18N::SetMIMEEntityToUTF8($args{'MIMEObj'}); # convert text parts into utf-8
+# If we've been passed in CcMessageTo and BccMessageTo fields,
+# add them to the mime object for passing on to the transaction handler
+# The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
+# headers
 
-    # If we've been passed in CcMessageTo and BccMessageTo fields,
-    # add them to the mime object for passing on to the transaction handler
-    # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
-    # headers
-
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',
-        RT::User::CanonicalizeEmailAddress(undef, $args{'CcMessageTo'}) )
-	if defined $args{'CcMessageTo'};
+    $args{'MIMEObj'}->head->add( 'RT-Send-Cc', RT::User::CanonicalizeEmailAddress(
+                                                     undef, $args{'CcMessageTo'}
+                                 ) )
+      if defined $args{'CcMessageTo'};
     $args{'MIMEObj'}->head->add( 'RT-Send-Bcc',
-        RT::User::CanonicalizeEmailAddress(undef, $args{'BccMessageTo'}) )
-	if defined $args{'BccMessageTo'};
+                                 RT::User::CanonicalizeEmailAddress(
+                                                    undef, $args{'BccMessageTo'}
+                                 ) )
+      if defined $args{'BccMessageTo'};
 
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
-             Type => 'Correspond',
+             Type => $args{'NoteType'},
              Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
              TimeTaken => $args{'TimeTaken'},
-             MIMEObj   => $args{'MIMEObj'} );
+             MIMEObj   => $args{'MIMEObj'}, 
+             CommitScrips => $args{'CommitScrips'},
+    );
 
     unless ($Trans) {
-        $RT::Logger->err( "$self couldn't init a transaction $msg");
-        return ( $Trans, $self->loc("correspondence (probably) not sent"), $args{'MIMEObj'} );
+        $RT::Logger->err("$self couldn't init a transaction $msg");
+        return ( $Trans, $self->loc("Message could not be recorded"), undef );
     }
 
-    #Set the last told date to now if this isn't mail from the requestor.
-    #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
-
-    unless ( $TransObj->IsInbound ) {
-        $self->_SetTold;
-    }
-
-    return ( $Trans, $self->loc("correspondence sent") );
+    return ( $Trans, $self->loc("Message recorded"), $TransObj );
 }
 
 # }}}
@@ -3792,6 +3787,9 @@ sub _NewTransaction {
         Data      => undef,
         Field     => undef,
         MIMEObj   => undef,
+        ActivateScrips => 1,
+        PrepareScrips => 1,
+        CommitScrips => 1,
         @_
     );
 
@@ -3805,7 +3803,10 @@ sub _NewTransaction {
         Field     => $args{'Field'},
         NewValue  => $args{'NewValue'},
         OldValue  => $args{'OldValue'},
-        MIMEObj   => $args{'MIMEObj'}
+        MIMEObj   => $args{'MIMEObj'},
+        ActivateScrips => $args{'ActivateScrips'},
+        PrepareScrips => $args{'PrepareScrips'},
+        CommitScrips => $args{'CommitScrips'},
     );
 
 
@@ -3819,7 +3820,7 @@ sub _NewTransaction {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
     if ( $RT::UseTransactionBatch and $transaction ) {
-	push @{$self->{_TransactionBatch}}, $trans;
+	    push @{$self->{_TransactionBatch}}, $trans;
     }
     return ( $transaction, $msg, $trans );
 }

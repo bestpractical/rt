@@ -54,6 +54,7 @@ no warnings qw(redefine);
 use vars qw( %_BriefDescriptions );
 
 use RT::Attachments;
+use RT::Scrips;
 
 # {{{ sub Create 
 
@@ -82,6 +83,7 @@ sub Create {
         NewValue       => undef,
         MIMEObj        => undef,
         ActivateScrips => 1,
+        CommitScrips => 1,
         @_
     );
 
@@ -109,18 +111,29 @@ sub Create {
  
     my $id = $self->SUPER::Create(%params);
     $self->Load($id);
-    $self->_Attach( $args{'MIMEObj'} )
-      if defined $args{'MIMEObj'};
+    $self->_Attach( $args{'MIMEObj'} ) if defined $args{'MIMEObj'};
+
 
     #Provide a way to turn off scrips if we need to
+        $RT::Logger->debug('About to think about scrips for transaction' .$self->Id);            
     if ( $args{'ActivateScrips'} ) {
-        require RT::Scrips;
-        RT::Scrips->new($RT::SystemUser)->Apply(
+       $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
+
+        $RT::Logger->debug('About to prepare scrips for transaction' .$self->Id);            
+        use Data::Dumper;
+        $RT::Logger->debug(Dumper $self->{'scrips_to_commit'});
+
+        @{$self->{'scrips_to_commit'}} = $self->{'scrips'}->Prepare(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
             Ticket      => $args{'Ticket'},
             Transaction => $self->id,
         );
+        if ($args{'CommitScrips'} ) {
+        
+            $RT::Logger->debug('About to commit scrips for transaction' .$self->Id);
+            $self->{'scrips'}->Commit(@{$self->{'scrips_to_commit'}});
+        }
     }
 
     return ( $id, $self->loc("Transaction Created") );
