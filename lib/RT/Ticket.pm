@@ -24,9 +24,9 @@ sub Create {
   my %args = (id => undef,
 	      EffectiveId => undef,
 	      Queue => undef,
-	      Area => undef,
+	   
 	      Alias => undef,
-	      Requestors => undef,
+	      Type => undef,
 	      Owner => undef,
 	      Subject => undef,
 	      InitialPriority => undef,
@@ -45,7 +45,6 @@ sub Create {
 				EffectiveId => $args{'EffectiveId'},
 				Queue => $args{'Queue'},
 				Alias => $args{'Alias'},
-				Requestors => $args{'Requestors'},
 				Owner => $args{'Owner'},
 				Subject => $args{'Subject'},
 				InitialPriority => $args{'InitialPriority'},
@@ -80,6 +79,63 @@ sub Create {
   return($self->Id, $Trans, $ErrStr);
   
 }
+
+
+#
+# Routines dealing with interested parties.
+#
+
+
+sub InterestedParties {
+}
+
+sub Requestors {
+  my $self = shift;
+  if (! defined ($self->{'Requestors'})) {
+    require RT::InterestedParties;
+    $self->{'Requestors'} = new RT::InterestedParties->($self->CurrentUser);
+    $self->{'Requestors'}->LimitToRequestors();
+  }
+  return($self->{'Requestors'});
+  
+}
+sub RequestorsAsString {
+my $self = shift;
+if (!defined $self->{'RequestorsAsString'}) {
+  $self->{'RequestorsAsString'} = "";
+  foreach $requestor ($self->Requestors) {
+    $self->{'RequestorsAsString'} . = 
+
+}
+
+sub Cc {
+my $self = shift;
+  if (! defined ($self->{'Cc'})) {
+    require RT::InterestedParties;
+    $self->{'Cc'} = new RT::InterestedParties->($self->CurrentUser);
+    $self->{'Cc'}->LimitToCc();
+  }
+  return($self->{'Cc'});
+
+}
+
+sub CcAsString {
+  my $self = shift;
+}
+sub Bcc {
+  if (! defined ($self->{'Bcc'})) {
+    require RT::InterestedParties;
+    $self->{'Bcc'} = new RT::InterestedParties->($self->CurrentUser);
+    $self->{'Bcc'}->LimitToBcc();
+  }
+  return($self->{'Bcc'});
+
+}
+sub BccAsString {
+}
+
+#
+#
 
 sub SetQueue {
   my $self = shift;

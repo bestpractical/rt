@@ -114,7 +114,7 @@ CREATE TABLE Tickets (
   Type CHAR(16), #Ticket, Task, Bug
   IssueStatement INT, #Reference to Attachments
   Resolution INT, #Reference to Attachments
-  Requestors VARCHAR(200),
+ 
   Owner INT,
   Subject VARCHAR(200),
   InitialPriority INT,
@@ -193,19 +193,5 @@ CREATE TABLE Templates (
 )\g
 
 
-CREATE TABLE Actors (
-  id int(11) AUTO_INCREMENT PRIMARY KEY,
-  Email VARCHAR(255),
-  UserId VARCHAR(255), #(local users have a UserId)
-		       #Nobody without a userID will be able to have
-		       #ACLs other than to one's own tickets. which
-		       #will be covered with a meta-acl
-  Gecos VARCHAR(64),
-  Password VARCHAR(255),
-  Name VARCHAR(64),
-  Creator INT(11),
-  Created TIMESTAMP,
-  LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
-)\g
+
 
