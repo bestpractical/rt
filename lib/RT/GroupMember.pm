@@ -43,43 +43,71 @@ sub _Accessible  {
 # }}}
 
 # {{{ sub Create
+
+# a helper method for Add
+
 sub Create {
     my $self = shift;
-    if ( $self->CurrentUser->HasSystemRight('ModifyGroups')) {
-	$RT::Logger->crit( "RT::GroupMember::Create unimplemented");
+    my %args = ( GroupId => undef,
+		 UserId => undef,
+		 @_
+	       );
+    
+    unless( $self->CurrentUser->HasSystemRight('ModifyGroups')) {
 	return (undef);
     }
-    else {
-	return (0,'Permission Denied');
-    }
+
+    
+    return ($self->SUPER::Create(GroupId => $args{'GroupId'},
+				 UserId => $args{'UserId'}))
+      
     
 }
 # }}}
 
 # {{{ sub Add
+
+=head2 Add
+
+Takes a paramhash of UserId and GroupId.  makes that user a memeber
+of that group
+
+=cut
+
 sub Add {
+    my $self = shift;
     return ($self->Create(@_));
 }
 # }}}
 
 # {{{ sub Delete
-#TODO this routine should delete the currently loaded GroupMember
+
+=head2 Delete
+
+Takes no arguments. deletes the currently loaded member from the 
+group in question.
+
+=cut
 sub Delete {
     my $self = shift;
-    $RT::Logger->crit("RT::GroupMember::Delete unimplemented");
-    
+    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
+	return undef;
+    }
+    return($self->$SUPER::Delete(@_));
 }
+
+    
+
+
+
 # }}}
+
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
-    if ($self->CurrentUser->HasSystemRight('ModifyGroups')) {
-	
-	$self->$SUPER::_Set(@_);
+    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
+	return undef;
     }
-    else {
-	return (0, "Permission Denied");
-    }
-
+    return($self->$SUPER::_Set(@_));
 }
 # }}}

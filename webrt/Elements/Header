@@ -8,7 +8,7 @@
 <BODY BGCOLOR="<%$BgColor%>">
 <TABLE BORDER=0 WIDTH=100%>
 <TR VALIGN=TOP>
-<TD><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"><font size=+2>Request Tracker 2.0</font>
+<TD><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"><font size=+2>Request Tracker <%$RT::Version%></font>
 </TD>
 <TD ALIGN=RIGHT>
 % if ($session{'CurrentUser'} ) {
@@ -24,7 +24,7 @@ Not logged in.
 <BR>
 <%ARGS>
 $Title => 'WebRT'
-$BgColor => 'white'
+$BgColor => '#ffffff'
 </%ARGS>
 <%INIT>
 $Title = "WebRT/$RT::rtname: ".$Title;

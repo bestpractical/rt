@@ -257,7 +257,7 @@ sub Create {
     }	
 	    
 	    
-    unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTickets',
+    unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
 					       QueueObj => $Queue )) {
 	return (0,0,"Permission Denied");
     }
@@ -927,11 +927,11 @@ sub SetQueue {
     if (!$NewQueueObj->Load($NewQueue)) {
       return (0, "That queue does not exist");
     }
-    elsif (!$self->CurrentUser->HasQueueRight(Right =>'CreateTickets',
+    elsif (!$self->CurrentUser->HasQueueRight(Right =>'CreateTicket',
 					       QueueObj => $NewQueueObj )) {
       return (0, "You may not create requests in that queue.");
     }
-    elsif (!$NewOwnerObj->HasQueueRight(Right=> 'CreateTickets',  
+    elsif (!$NewOwnerObj->HasQueueRight(Right=> 'CreateTicket',  
                                          QueueObj => $NewQueueObj)) {
       $self->Untake();
     }

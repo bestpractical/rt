@@ -49,6 +49,37 @@ sub NewItem  {
 }
 # }}}
 
+# {{{ sub Next 
+
+=head2 Next
+
+Returns the next queue that this user can see.
+
+=cut
+  
+sub Next {
+    my $self = shift;
+    
+    
+    my $Queue = $self->SUPER::Next();
+    if ((defined($Queue)) and (ref($Queue))) {
+
+	if ($Queue->CurrentUserHasRight('SeeQueue')) {
+	    return($Queue);
+	}
+	
+	#If the user doesn't have the right to show this queue
+	else {	
+	    return($self->Next());
+	}
+    }
+    #if there never was any queue
+    else {
+	return(undef);
+    }	
+    
+}
+# }}}
 
 1;
 

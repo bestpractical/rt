@@ -20,10 +20,9 @@ package RT::ACE;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-use vars qw (%SCOPE 
+use vars qw (%SCOPES
    	     %QUEUERIGHTS
 	     %SYSTEMRIGHTS
-	     %METAPRINCIPALS
 	    ); 
 
 
@@ -39,7 +38,6 @@ use vars qw (%SCOPE
 %QUEUERIGHTS = ( 
 		SeeQueue => 'Can this principal see this queue',
 		ExploreQueue => 'Look at this queue\'s configuration, watchers, etc',
-		ListQueue => 'Display a listing of ticket',
 		AdminQueue => 'Create, delete and modify queues', 
 		
 		ModifyACL => 'Modify this queue\'s ACL',

@@ -90,13 +90,28 @@ my @groups = (
 # }}}
 
 # {{{ ACL
-my @acl = ( 
-	   { PrincipalId => '0', 
-	     PrincipalType => 'Everyone',
+my @acl = (  #TODO: make this actually take the serial # granted to root.
+	   { PrincipalId => '1', 
+	     PrincipalType => 'User',
 	     RightName => 'SuperUser',
 	     RightScope => 'System',
 	     RightAppliesTo => '0'
-	   } 
+	   }, 
+           { PrincipalId => '2',
+             PrincipalType => 'User',
+             RightName => 'SuperUser',
+             RightScope => 'System',
+             RightAppliesTo => '0'
+           },
+
+           { PrincipalId => '3',
+             PrincipalType => 'User',
+             RightName => 'SuperUser',
+             RightScope => 'System',
+             RightAppliesTo => '0'
+           }
+
+
 	  );
 # }}}
 

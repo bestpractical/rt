@@ -35,40 +35,40 @@ sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      # {{{ Core RT info
-	      UserId => 'read/write',
+	      UserId => 'public/read/write',
 	      Password => 'write',
 	      Comments => 'read/write',
 	      Signature => 'read/write',
-	      EmailAddress => 'read/write',
+	      EmailAddress => 'public/read/write',
 	      FreeformContactInfo => 'read/write',
-	      Organization => 'read/write',
-	      Disabled => 'read', #To modify this attribute, we have helper
+	      Organization => 'public/read/write',
+	      Disabled => 'public/read', #To modify this attribute, we have helper
 				  #methods
 	      Privileged => 'read/write',
 	      # }}}
 	      
 	      # {{{ Names
 	      
-	      RealName => 'read/write',
-	      NickName => 'read/write',
+	      RealName => 'public/read/write',
+	      NickName => 'public/read/write',
 	      # }}}
 	      	      
 	      # {{{ Localization and Internationalization
-	      Lang => 'read/write',
-	      EmailEncoding => 'read/write',
-	      WebEncoding => 'read/write',
+	      Lang => 'public/read/write',
+	      EmailEncoding => 'public/read/write',
+	      WebEncoding => 'public/read/write',
 	      # }}}
 	      
 	      # {{{ External ContactInfo Linkage
-	      ExternalContactInfoId => 'read/write',
-	      ContactInfoSystem => 'read/write',
+	      ExternalContactInfoId => 'public/read/write',
+	      ContactInfoSystem => 'public/read/write',
 	      # }}}
 	      
 	      # {{{ User Authentication identifier
-	      ExternalAuthId => 'read/write',
+	      ExternalAuthId => 'public/read/write',
 	      #Authentication system used for user 
-	      AuthSystem => 'read/write',
-	      Gecos => 'read/write', #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
+	      AuthSystem => 'public/read/write',
+	      Gecos => 'public/read/write', #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
 	      # }}}
 	      
 	      # {{{ Telephone numbers
@@ -436,6 +436,7 @@ sub HasQueueRight {
 				  IsRequestor => $IsRequestor
 				 );
     if (defined $retval) {
+	$RT::Logger->debug("Got a return value: $retval\n");
 	return ($retval);
     }
     #if they don't have the queue right, see if they have the system right.
@@ -484,7 +485,7 @@ sub HasSystemRight {
     return ( $self->_HasRight ( Scope => 'System',
 				AppliesTo => '0',
 				Right => $right,
-				IsOwner => $argS{'IsOwner'},
+				IsOwner => $args{'IsOwner'},
 				IsCc => $args{'IsCc'},
 				IsAdminCc => $args{'IsAdminCc'},
 				IsRequestor => $args{'IsRequestor'},
@@ -544,29 +545,38 @@ sub _HasRight {
     
     if (!defined $args{'Right'}) {
     	$RT::Logger->debug("_HasRight called without a right\n");
-    	return(0);
+    	return(undef);
     }
     elsif (!defined $args{'Scope'}) {
     	$RT::Logger->debug("_HasRight called without a scope\n");
-    	return(0)
+    	return(undef);
     }
     elsif (!defined $args{'AppliesTo'}) {
         use Carp;
         $RT::Lobber->debug(Carp::confess."\n");
     	$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
-    	return(0)
+    	return(undef);
     }
     
     #If we've cached a win or loss for this lookup say so
+
     #TODO Security +++ check to make sure this is complete and right
     
-    if (defined($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"})) {
-#	$RT::Logger->debug("Got a cached ACL decision for ". 
-#			   $args{'Right'}.$args{'Scope'}.
-#			   $args{'AppliesTo'}."\n");	    
-	return ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
-    }
-    
+
+	if ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}==1) {
+	    $RT::Logger->debug("Got a cached positive ACL decision for ". 
+			       $args{'Right'}.$args{'Scope'}.
+			       $args{'AppliesTo'}."\n");	    
+	    return ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
+	}
+	elsif ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}==-1) {
+	    $RT::Logger->debug("Got a cached negative ACL decision for ". 
+			       $args{'Right'}.$args{'Scope'}.
+			       $args{'AppliesTo'}."\n");	    
+	    
+	    return(undef);
+	}
+
     my $RightClause = "(RightName = '$args{'Right'}')";
     my $ScopeClause = "(RightScope = '$args{'Scope'}')";
     
@@ -638,7 +648,7 @@ sub _HasRight {
     
     # {{{ deal with checking if the user has a right as a member of a group
 
-#    $RT::Logger->debug("Now Trying $query_string_1\n");	
+    $RT::Logger->debug("Now Trying $query_string_1\n");	
     $hitcount = $self->_Handle->FetchResult($query_string_1);
     
     #if there's a match, the right is granted
@@ -647,7 +657,7 @@ sub _HasRight {
 	return (1);
     }
     
- #   $RT::Logger->debug("No ACL matched $query_string_1\n");	
+    $RT::Logger->debug("No ACL matched $query_string_1\n");	
     
     # }}}
 
@@ -665,19 +675,133 @@ sub _HasRight {
 	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
 	return (1);
     }
-    
-#    $RT::Logger->debug("No ACL matched $query_string_2\n");
-
     # }}}
-
-
-    #If nothing matched, return 0.
-    $self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}= 0;
-    
-    return (0);
+    else {
+	
+	$RT::Logger->debug("No ACL matched $query_string_2\n");
+	#If nothing matched, return 0.
+	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=-1;
+	
+	return (undef);
+    }
 }
 
 # }}}
+
+# {{{ sub CurrentUserCanModify
+
+=head2 CurrentUserCanModify
+
+If the user has rights for this object, either because
+he has 'AdminUsers' or (if he's trying to edit himself) 'ModifySelf',
+return 1. otherwise, return undef.
+
+=cut
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    my $right = shift;
+
+    if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
+	return (1);
+    }
+    #If the current user is trying to modify themselves
+    elsif ( ($self->id == $self->CurrentUser->id)  and
+	    ($self->CurrentUser->HasSystemRight('ModifySelf'))) {
+	
+
+	return(1);
+    }
+    else {
+	return(undef);
+    }	
+    
+}
+
+
+# }}}
+
+# {{{ sub CurrentUserHasSystemRight
+
+=head2
+  
+  Takes a single argument. returns 1 if $Self->CurrentUser
+  has the requested right. returns undef otherwise
+
+=cut
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    my $right = shift;
+    
+    return ($self->CurrentUser->HasSystemRight($right));
+}
+
+# }}}
+
+
+# {{{ sub _Set
+
+sub _Set {
+  my $self = shift;
+  
+  my %args = (Field => undef,
+	      Value => undef,
+	      @_
+	     );
+
+  unless ($self->CurrentUserCanModify) {
+      return (0, "Permission Denied");
+  }
+  
+  #Set the new value
+  my ($ret, $msg)=$self->SUPER::_Set(Field => $args{'Field'}, 
+				     Value=> $args{'Value'});
+  
+    return ($ret, $msg);
+}
+
+# }}}
+
+# {{{ sub _Value 
+
+=head2 _Value
+
+Takes the name of a table column.
+Returns its value as a string, if the user passes an ACL check
+
+=cut
+
+sub _Value  {
+
+  my $self = shift;
+  my $field = shift;
+  
+  #If the current user doesn't have ACLs, don't let em at it.  
+  
+  my @PublicFields = qw( UserId EmailAddress Organization Disabled
+			 RealName NickName Gecos ExternalAuthId 
+			 AuthSystem ExternalContactInfoId 
+			 ContactInfoSystem );
+
+  #if the field is public, return it.
+  if ($self->_Accessible($field, 'public')) {
+      return($self->SUPER::_Value($field));
+      
+  }
+  #If the user has admin users, return the field
+  elsif ($self->CurrentUserHasRight('AdminUsers')) {
+      return($self->SUPER::_Value($field));
+  }
+  #If the user wants to see their own values, let them
+  
+  elsif ($self->CurrentUser->Id == $self->Id) {	
+      return($self->SUPER::_Value($field));
+  }
+}
+  
+# }}}
+
 
 # }}}
 1;

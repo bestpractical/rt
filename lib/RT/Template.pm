@@ -35,7 +35,6 @@ sub _Init {
 # }}}
 
 
-
 # {{{ sub _Accessible 
 sub _Accessible  {
   my $self = shift;
@@ -55,8 +54,8 @@ sub _Accessible  {
 sub _Set {
   my $self = shift;
 
-  unless ($self->CurrentUserHasQueueRight('ModifyTemplates')) {
-    return (0, "Permission Denied");
+  unless ($self->CurrentUserHasQueueRight('ModifyTemplate')) {
+    return (undef);
   }
 
   return($self->SUPER::_Set(@_));
@@ -81,8 +80,8 @@ sub _Value  {
 
  #If the current user doesn't have ACLs, don't let em at it.  
 
- unless ($self->CurrentUserHasQueueRight('ShowTemplates')) {
-    return (0, "Permission Denied");
+ unless ($self->CurrentUserHasQueueRight('ShowTemplate')) {
+    return (undef);
   }
 
   return($self->SUPER::_Value($field));
@@ -117,12 +116,12 @@ sub Create {
                  Alias => undef,
                  @_
                 );
-
+    
     my $QueueObj = new RT::Queue($self->CurrentUser);
     $QueueObj->Load($args{'Queue'}) || return (0,'Invalid queue');
 
     unless ($QueueObj->CurrentUserHasRight('CreateTemplate')) {
-     return (0, "Permission Denied");
+     return (undef);
     }
    
     #TODO+++ check the queue for validity. check the alias for uniqueness.

@@ -21,28 +21,29 @@ use RT::Record;
 
 # {{{  sub _Init 
 sub _Init  {
-  my $self = shift;
-  $self->{'table'} = "Queues";
-  return ($self->SUPER::_Init(@_));
+    my $self = shift;
+    $self->{'table'} = "Queues";
+    return ($self->SUPER::_Init(@_));
 }
 # }}}
 
 # {{{ sub _Accessible 
 sub _Accessible  {
-  my $self = shift;
-  my %Cols = ( QueueId => 'read/write',
-	       CorrespondAddress => 'read/write',
-	       Description => 'read/write',
-	       CommentAddress =>  'read/write',
-	       InitialPriority =>  'read/write',
-	       FinalPriority =>  'read/write',
-	       DefaultDueIn =>  'read/write'
-	     );
-  return($self->SUPER::_Accessible(@_, %Cols));
+    my $self = shift;
+    my %Cols = ( QueueId => 'read/write',
+		 CorrespondAddress => 'read/write',
+		 Description => 'read/write',
+		 CommentAddress =>  'read/write',
+		 InitialPriority =>  'read/write',
+		 FinalPriority =>  'read/write',
+		 DefaultDueIn =>  'read/write'
+	       );
+    return($self->SUPER::_Accessible(@_, %Cols));
 }
 # }}}
 
 # {{{ sub Create
+
 =head2 Create
 
 Create takes the name of the new queue 
@@ -51,18 +52,20 @@ If you pass the ACL check, it creates the queue and returns its queue id.
 =cut
 
 sub Create  {
-  my $self = shift;
-  my %args = (@_); 
-  
-  #Check them ACLs
-  return (0, "No permission to create queues") unless ($self->CurrentUser->HasSystemRight('AdminQueue'));
-  
-  #TODO better input validation
-
-  my $id = $self->SUPER::Create(%args);
-  $self->LoadById($id);
-  return ($id);
+    my $self = shift;
+    my %args = (@_); 
+    
+    unless ($self->CurrentUser->HasSystemRight('AdminQueue')) {    #Check them ACLs
+	return (0, "No permission to create queues") 
+    }
+    
+    #TODO better input validation
+    
+    my $id = $self->SUPER::Create(%args);
+    $self->LoadById($id);
+    return ($id);
 }
+
 # }}}
 
 # {{{ sub Delete 
@@ -76,41 +79,50 @@ passed in
 =cut
 
 sub Delete  {
-  my $self = shift;
-  my $newqueue = shift;
- # this function needs to move all requests into some other queue!
-  my ($query_string,$update_clause);
-  
-  die ("Queue->Delete not implemented yet");
-  
-  return(0, "You do not have the privileges to delete queues")
-	unless ($self->CurrentUserHasRight('AdminQueue'));
-	  
-  #TODO:  DO ALL THESE
-  #Find all the tickets in this queue.
-  #Go through the tickets and change their queue to $newqueue
-  #Blow away all of the queue acls for this queue.
-  #Remove the queue object
-  return (1, "Queue $self->QueueId deleted.");
+    my $self = shift;
+    my $newqueue = shift;
+    # this function needs to move all requests into some other queue!
+    my ($query_string,$update_clause);
+    
+    $RT::Logger->crit("$self ->Delete not implemented\n");
+    return(0,"Queue->Delete not implemented yet");
+
+    unless ($self->CurrentUserHasRight('AdminQueue')) {
+	return(0, "You do not have the privileges to delete queues");
+    }
+    
+    #TODO:  DO ALL THESE +++ before 2.0
+    #Find all the tickets in this queue.
+    #Go through the tickets and change their queue to $newqueue
+    #Blow away all of the queue acls for this queue.
+    #Remove the queue object
+    return (1, "Queue $self->QueueId deleted.");
     
 }
 
 # }}}
 
 # {{{ sub Load 
-sub Load  {
-  my $self = shift;
-  
-  my $identifier = shift;
-  if (!$identifier) {
-    return (undef);
-  }	    
 
-  if ($identifier !~ /\D/) {
-    return($self->SUPER::LoadById($identifier));
-  }
-  else {
-    return($self->LoadByCol("QueueId", $identifier));
+=head2 Load
+
+Takes either a numerical id or a textual QueueId and loads the specified queue.
+  
+=cut
+
+sub Load  {
+    my $self = shift;
+    
+    my $identifier = shift;
+    if (!$identifier) {
+	return (undef);
+    }	    
+    
+    if ($identifier !~ /\D/) {
+	return($self->SUPER::LoadById($identifier));
+    }
+    else {
+	return($self->LoadByCol("QueueId", $identifier));
   }
 
 }
@@ -125,20 +137,20 @@ Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 =cut
 
 sub Watchers {
-  my $self = shift;
-  
-  unless ($self->CurrentUserHasRight('ExploreQueue')) {
-    return (0, "Permission Denied");
-  }
-
-  if (! defined ($self->{'Watchers'}) 
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ExploreQueue')) {
+	return (0, "Permission Denied");
+    }
+    
+    if (! defined ($self->{'Watchers'}) 
       || $self->{'Watchers'}->{is_modified}) {
-    require RT::Watchers;
-    $self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
-    $self->{'Watchers'}->LimitToTicket($self->id);
-
-  }
-  return($self->{'Watchers'});
+	require RT::Watchers;
+	$self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
+	$self->{'Watchers'}->LimitToTicket($self->id);
+	
+    }
+    return($self->{'Watchers'});
   
 }
 # }}}
@@ -165,21 +177,15 @@ sub WatchersAsString {
     return (0, "Permission Denied")
       unless ($self->CurrentUserHasRight('ExploreQueue'));
     
-    return _CleanAddressesAsString ($self->Watchers->EmailsAsString() . ", " .
-				    $self->QueueObj->Watchers->EmailsAsString());
+    return ($self->_CleanAddressesAsString ($self->Watchers->EmailsAsString() . ", " .
+				    $self->QueueObj->Watchers->EmailsAsString()));
 }
 
 # {{{ sub AdminCcAsString 
 
 =head2 AdminCcAsString
 
-=item B<Takes>
-
-=item I<nothing>
-
-=item B<Returns>
-
-=item String: All Ticket/Queue AdminCcs.
+Takes nothing. returns a string: All Ticket/Queue AdminCcs.
 
 =cut
 
@@ -190,8 +196,8 @@ sub AdminCcAsString {
     return (0, "Permission Denied")
       unless ($self->CurrentUserHasRight('ExploreQueue'));
         
-    return _CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
-		  $self->QueueObj->AdminCc->EmailsAsString());
+    return ($self->_CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
+		  $self->QueueObj->AdminCc->EmailsAsString()));
   }
 
 # }}}
@@ -248,22 +254,32 @@ Returns a watchers object which contains this ticket's Cc watchers
 =cut
 
 sub Cc {
-  my $self = shift;
-
-#If we ACL this, we lose on ACL checks
-#  return (0, "Permission Denied")
-#    unless ($self->CurrentUserHasRight('ExploreQueue'));
-
-
-  if (! defined ($self->{'Cc'})) {
-    require RT::Watchers;
-    $self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
-    $self->{'Cc'}->LimitToQueue($self->id);
-    $self->{'Cc'}->LimitToCc();
-  }
-  return($self->{'Cc'});
-  
+    my $self = shift;
+    
+    #If we ACL this, we lose on ACL checks
+    unless ($self->CurrentUserHasRight('ExploreQueue')) {
+	return (0, "Permission Denied")
+    }
+    
+    return ($self->_Cc);
 }
+
+# A helper function for Cc, so that we can call it from the ACL checks 
+# without going through acl checks.
+sub _Cc {
+    my $self = shift;
+    
+    
+    if (! defined ($self->{'Cc'})) {
+	require RT::Watchers;
+	$self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
+	$self->{'Cc'}->LimitToQueue($self->id);
+	$self->{'Cc'}->LimitToCc();
+    }
+    return($self->{'Cc'});
+    
+}
+
 
 # }}}
 
@@ -277,26 +293,32 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 =cut
 
 sub AdminCc {
-  my $self = shift;
-  
-#If we ACL this, we lose on ACL checks
-#  unless ($self->CurrentUserHasRight('ExploreQueue')) {
-#    return (0, "Permission Denied");
-#  }
-
-  if (! defined ($self->{'AdminCc'})) {
-    require RT::Watchers;
-    $self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
-    $self->{'AdminCc'}->LimitToQueue($self->id);
-    $self->{'AdminCc'}->LimitToAdminCc();
-  }
-  return($self->{'AdminCc'});
-  
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ExploreQueue')) {
+	return (0, "Permission Denied");
+    }
+    
+    return($self->_AdminCc());
 }
+
+#helper function for AdminCc so we can call it without ACLs
+sub _AdminCc {
+    my $self = shift;
+    
+    if (! defined ($self->{'AdminCc'})) {
+	require RT::Watchers;
+	$self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
+	$self->{'AdminCc'}->LimitToQueue($self->id);
+	$self->{'AdminCc'}->LimitToAdminCc();
+    }
+    return($self->{'AdminCc'});
+    
+}
+
 # }}}
 
 # {{{ IsWatcher, IsCc, IsAdminCc
-
 
 # {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
@@ -436,12 +458,14 @@ sub AddWatcher {
 	     );
 
   
-  return (0, "Permission Denied")
-    unless ($self->CurrentUserHasRight('ModifyQueueWatchers'));
+
+  unless ($self->CurrentUserHasRight('ModifyQueueWatchers')) {
+      return (0, "Permission Denied");
+  } 
   
-  #TODO: Look up the Email that's been passed in to find the watcher's
+  #TODO: Look up the Email that's been passed in to find the watcher's +++ before 2.0
   # user id. Set Owner to that value.
-    
+  
   require RT::Watcher;
   my $Watcher = new RT::Watcher ($self->CurrentUser);
   return ($Watcher->Create(Scope => 'Queue', 
@@ -505,16 +529,17 @@ sub DeleteWatcher {
     
     my ($Watcher);
    
-    #Check ACLs 
-    return (0, "Permission Denied")
-	  unless ($self->CurrentUserHasRight('ModifyQueueWatchers'));
+   
+    unless ($self->CurrentUserHasRight('ModifyQueueWatchers')) {
+	return (undef);
+    }
     
     
     #If it's a numeric watcherid
-   if ($id =~ /^(\d*)$/) { 
-       $Watcher = new RT::Watcher($self->CurrentUser);
-       $Watcher->Load($id);
-       if (($Watcher->Scope  ne 'Queue') or
+    if ($id =~ /^(\d*)$/) { 
+	$Watcher = new RT::Watcher($self->CurrentUser);
+	$Watcher->Load($id);
+	if (($Watcher->Scope  ne 'Queue') or
 	   ($Watcher->Value != $self->id) ) {
 	   return (0, "Not a watcher for this queue");
        }
@@ -547,6 +572,8 @@ Returns an RT::Templates object of all of this queue's templates.
 
 sub Templates {
     my $self = shift;
+ 
+    #TODO ACL: do we need to acl this?
     my $templates = RT::Templates->new($self->CurrentUser);
     $templates->LimitToQueue($self->id);
     return ($templates); 
@@ -568,7 +595,10 @@ sub AddScripScope {
     my %args = ( Scrip => undef,
                  Template => undef,
                  @_ );
-    
+ 
+
+    #TODO ACL: this needs to be acled
+   
     require RT::ScripScope;
     my $new_scope = new RT::ScripScope($self->CurrentUser);
     
@@ -604,6 +634,25 @@ sub ACL  {
 # }}}
 
 # {{{ ACCESS CONTROL
+
+
+# {{{ sub _Set
+sub _Set {
+    my $self = shift;
+    #TODO ACL Checks for 2.0 
+    return ($self->SUPER::_Set(@_));
+}
+# }}}
+
+# {{{ sub _Set
+sub _Value {
+    my $self = shift;
+    #TODO ACL Checks for 2.0 
+    return ($self->SUPER::_Value(@_));
+}
+# }}}
+
+
 
 # {{{ sub CurrentUserHasRight
 
