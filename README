@@ -21,6 +21,7 @@
 # 
 # 
 # END LICENSE BLOCK
+
 RT is an enterprise-grade issue tracking system. It allows
 organizations to keep track of their to-do lists, who is working
 on which tasks, what's already been done, and when tasks were
@@ -161,7 +162,7 @@ http://www.bestpractical.com/rt
         It may contain important instructions for updating your database
 
         As root, type: 
-                make install     (replace "make" with the local name for 
+                make upgrade     (replace "make" with the local name for 
                                   Make, if you need to)
 
         This will build new binaries, config files and libraries without

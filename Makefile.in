@@ -211,7 +211,7 @@ upgrade-instruct:
 	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action insert --datafile etc/upgrade/<version>"
 
 
-upgrade: dirs upgrade-noclobber upgrade-instruct
+upgrade: config-install dirs files-install fixperms upgrade-instruct
 
 upgrade-noclobber: config-install libs-install html-install bin-install local-install doc-install fixperms
 
@@ -321,7 +321,7 @@ regression-nosetgid-quiet: regression-install dirs files-install libs-install sb
 regression-nosetgid: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
 	$(PERL) lib/t/02regression.t
 
-regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods apachectl
+regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms apachectl
 	$(PERL) lib/t/02regression.t
 
 regression-quiet:
