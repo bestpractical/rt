@@ -72,6 +72,7 @@ $Ticket => undef
 $Transaction => undef
 $ShowHeaders => undef
 $Collapsed => undef
+$ShowTitleBarCommands => 1
 $RowNum => 1
 </%ARGS>
 
@@ -126,7 +127,7 @@ my $attachments = $Transaction->Attachments;
 my $titlebar_commands='&nbsp;';
 
 # If the transaction has anything attached to it at all
-if ($Transaction->Message->First) {
+if ($Transaction->Message->First && $ShowTitleBarCommands) {
 	if ($Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket')) {
 		$titlebar_commands .= 
 	  	  "[<a href=\"Update.html?id=".
