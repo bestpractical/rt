@@ -782,10 +782,10 @@ if ( $ARGS{'Save'} ) {
         my $container_object = _load_container_object ($obj_type, $obj_id);
 
         if ( $container_object->id ) {
-
+	    my $name = $obj_type eq 'RT::System' ? "Search - $Description" : 'SavedSearch';
             # If we got one or the other, add the saerch
             my ( $search_id, $search_msg ) = $container_object->AddAttribute(
-                Name        => 'SavedSearch',
+                Name        => $name,
                 Description => $Description,
                 Content     => {
                     Format      => $Format,
