@@ -1,10 +1,23 @@
 <& /Elements/Header &>
-%if  ((defined $cookies{ID}) && ($cookies{ID}->value == '123456')) {
-	<% $m->call_next %>
-% } else {
-<& /Login.html &>
-% }
+<%PERL>
+if (defined ($user) && defined ($pass) && ($user eq $pass) ){
+	my  $cookie1 = new CGI::Cookie(-name=>'ID',-value=>123456);
+	$r->headers_out->add("Set-Cookie" => "$cookie1");
+        $m->call_next;
+}
+elsif  ((defined $cookies{ID}) && ($cookies{ID}->value == '123456')) {
+	$m->call_next;
+}
+else {
+
+&mc_comp('/Login.html')
+ }
+</%PERL>
 <& /Elements/Footer &>
 <%INIT>
 my %cookies = fetch CGI::Cookie;
 </%INIT>
+<%ARGS>
+$user => undef
+$pass => undef
+</%ARGS>
