@@ -500,7 +500,7 @@ sub Create {
     # We denormalize it into the Ticket table too because doing otherwise would 
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
 
-    $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId , InsideTransaction => 1);
+    $self->OwnerGroup->_AddMember( PrincipalId => $Owner->MemberId , InsideTransaction => 1);
 
     # {{{ Deal with setting up watchers
 
@@ -2820,7 +2820,27 @@ sub MergeInto {
     );
 
     #add all of this ticket's watchers to that ticket.
-    # TODO: XXX when merging, we need to merge watchers
+    my $requestors = $self->Requestors->MembersObj;
+    while (my $watcher = $requestors->Next) { 
+        $NewTicket->_AddWatcher( Type => 'Requestor',
+                                  Silent => 1,
+                                  PrincipalId => $watcher->MemberId);
+    }
+
+    my $Ccs = $self->Cc->MembersObj;
+    while (my $watcher = $Ccs->Next) { 
+        $NewTicket->_AddWatcher( Type => 'Cc',
+                                  Silent => 1,
+                                  PrincipalId => $watcher->MemberId);
+    }
+
+    my $AdminCcs = $self->AdminCc->MembersObj;
+    while (my $watcher = $AdminCcs->Next) { 
+        $NewTicket->_AddWatcher( Type => 'AdminCc',
+                                  Silent => 1,
+                                  PrincipalId => $watcher->MemberId);
+    }
+
 
     #find all of the tickets that were merged into this ticket. 
     my $old_mergees = new RT::Tickets( $self->CurrentUser );
