@@ -69,7 +69,7 @@ CLASS="evenline"
 ><TD COLSPAN="4"><small>
 % my $Topics = $article->Topics;
 % while (my $t = $Topics->Next) {
-<& /RTFM/Article/Elements/ShowTopic, topic => $t->TopicObj &><br />
+<& /RTFM/Elements/ShowTopic, topic => $t->TopicObj &><br />
 % }
 </small></TD>
 </TR>

@@ -16,20 +16,18 @@
 %# 
 %# END LICENSE BLOCK
 
-Topics:
-% my $topics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
-% $topics->LimitToObject($article);
-% if ($topics->Count) {
-<ul>
-% my @topics;
-% while (my $t = $topics->Next) {
-<li><& /RTFM/Elements/ShowTopic, topic => $t->TopicObj &></li>
-% }
-</ul>
-% } else {
-<i>no topics</i>
+% for (@path) {
+<% $_->ParentObj->Id ? " > " : "" %><a href="<% $RT::WebPath %>/RTFM/Topics.html?class=<% $_->ObjectId %>&id=<% $_->Id %>"><% $_->Name %></a>
 % }
 
 <%args>
-$article => undef
+$topic
 </%args>
+
+<%init>
+my @path;
+while ($topic->Id) {
+    unshift @path, $topic;
+    $topic = $topic->ParentObj;
+}
+</%init>

@@ -27,7 +27,7 @@
 % if ($id != 0) {
 % my $t = RT::FM::Topic->new($session{'CurrentUser'});
 % $t->Load($id);
-&gt; <& /RTFM/Article/Elements/ShowTopic, topic => $t &>
+&gt; <& /RTFM/Elements/ShowTopic, topic => $t &>
 % }
 <br />
 
