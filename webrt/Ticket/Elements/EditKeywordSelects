@@ -9,7 +9,7 @@
 	<BR>
 	  <INPUT TYPE="hidden" NAME="KeywordSelectMagic<% $KeywordSelect->id %>" VALUE="1">
 	    <SELECT NAME="KeywordSelect<% $KeywordSelect->id %>"
-	      <% $KeywordSelect->Single ? "" : " MULTIPLE" %>>
+	      <% $KeywordSelect->Single ? "" : " MULTIPLE " %> SIZE=5>
 %   foreach my $kid ( keys %{$Descendents} ) {
 	      <OPTION VALUE="<% $kid %>" 
 		<% $CurrentKeywords->HasEntry($kid) && 'SELECTED'%>>

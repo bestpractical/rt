@@ -1887,7 +1887,7 @@ sub DeleteKeyword {
     
     $ObjectKeyword->Delete();
     
-    return ($TransactionId, "Keyword ".$ObjectKeyword->KeywordObj->Name ."deleted.");
+    return ($TransactionId, "Keyword ".$ObjectKeyword->KeywordObj->Name ." deleted.");
     
 }
 
