@@ -1,6 +1,11 @@
 BODY, TD {font-family: Helvetica, Arial, sans-serif}
 TD {border-color: #cccccc }
 
+TH { font-size: 80%;
+     font-weight: bold;
+     font-color: #336699; }
+    
+
 BLOCKQUOTE.message {
 	font-size: 80%;
 	font-family: "Helvetica", sans-serif;
@@ -63,7 +68,7 @@ A IMG { color: white } /* The only way to hide the border in NS 4.x */
 SPAN.date { font-size: 0.8em }
 
 SPAN.attribution {
-  font-weight: bold
+  font-weight: bold;
 }
 
 SPAN.label { font-size: 0.8em; 

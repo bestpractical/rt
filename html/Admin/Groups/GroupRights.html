@@ -1,0 +1,71 @@
+<& /Admin/Elements/Header, Title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
+<& /Admin/Elements/GroupTabs, GroupObj => $GroupObj &>
+<& /Elements/ListActions, actions => \@results &>
+
+  <FORM METHOD=POST ACTION="groupRights.html">
+    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $GroupObj->id %>">
+      
+<& /Elements/TitleBoxStart, title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
+      
+<h1><&|/l&>System groups</&></h1>
+<TABLE>
+% $Groups = RT::Groups->new($session{'CurrentUser'});
+% $Groups->LimitToSystemInternalGroups();
+%	while (my $Group = $Groups->Next()) {
+  <TR ALIGN=RIGHT> 
+	<TD VALIGN=TOP>
+	    <% loc($Group->Type) %>
+		  </TD>
+	  <TD>
+	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+        PrincipalType => 'Group',
+        ObjectType  => 'Group', 
+        ObjectId => $GroupObj->Id  &>
+	  </TD>
+	</TR>
+% }
+</TABLE>
+<h1><&|/l&>User defined groups</&></h1>
+<TABLE>
+% $Groups = RT::Groups->new($session{'CurrentUser'});
+% $Groups->LimitToUserDefinedGroups();    
+%	while (my $Group = $Groups->Next()) {
+  <TR ALIGN=RIGHT> 
+	<TD VALIGN=TOP>
+	    <% $Group->Name %>
+		  </TD>
+	  <TD>
+	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+        PrincipalType => 'Group',
+        ObjectType  => 'Group', 
+        ObjectId => $GroupObj->Id  &>
+	  </TD>
+	</TR>
+% }
+</TABLE>
+            
+      <& /Elements/TitleBoxEnd &>
+      <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+      
+  </FORM>
+  
+<%INIT>
+ 
+  #Update the acls.
+  my @results =  ProcessACLChanges(\%ARGS);
+
+
+if (!defined $id) {
+    Abort(loc("No Group defined"));
+}
+
+my $GroupObj = RT::Group->new($session{'CurrentUser'});
+$GroupObj->Load($id) || Abort(loc("Couldn't load group [_1]",$id));
+
+my $Groups;
+    
+</%INIT>
+
+<%ARGS>
+$id => undef
+</%ARGS>

@@ -24,7 +24,20 @@
 </TABLE>
 <%INIT>
     my ($right, $ACLDesc, $AppliesTo, %Rights);
-       
+
+    # if the principal id points to a user, we really want to point
+    # to their ACL equivalence group. The machinations we're going through
+    # lead me to start to suspect that we really want users and groups
+    # to just be the same table. or _maybe_ that we want an object db.
+    my $princ = RT::Principal->new($RT::SystemUser);
+    $princ->Load($PrincipalId);
+    if ($princ->PrincipalType eq 'User') {
+    my $group = RT::Group->new($RT::SystemUser);
+        $group->LoadACLEquivalenceGroup($princ);
+        $PrincipalId = $group->PrincipalId;
+    }
+
+
     my $ACLObj = new RT::ACL($session{'CurrentUser'});
     my $ACE = new RT::ACE($session{'CurrentUser'});
 

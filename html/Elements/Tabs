@@ -6,15 +6,12 @@
 % } else {
 % $class="class='othertab'";
 % } 
-% push @toptabs, "<TD ALIGN=CENTER><A HREF=\"$RT::WebPath/". $toptabs->{$tab}->{'path'}."\" $class><font size=\"+1\">". $toptabs->{$tab}->{'title'}."</font></A></TD>";
+% push @toptabs, "<A HREF=\"$RT::WebPath/". $toptabs->{$tab}->{'path'}."\" $class><font size=\"+1\">". $toptabs->{$tab}->{'title'}."</font></A>";
 % }
 <TABLE WIDTH=100% >
     <TR><TD VALIGN=TOP>
-        <TABLE cellspacing=1>
-        <TR> <% join('<TD><font size=+2>|</font></TD>', @toptabs) |n%>
-        </TR>
-	</TABLE>
-<BR>
+        <% join('<font size=+2>&nbsp;|&nbsp;</font>', @toptabs) |n%>
+<BR><BR>
 % if ($tabs_scalar) {
 <% $tabs_scalar |n%>
 % }
@@ -27,26 +24,27 @@
 % } else {
 % $class="class='othertab'";
 % } 
-% push @regulartabs, "<TD ALIGN=CENTER><A HREF=\"$RT::WebPath/". $tabs->{$tab}->{'path'}."\" $class>". $tabs->{$tab}->{'title'}."</A></TD>";
+% push @regulartabs, "<A HREF=\"$RT::WebPath/". $tabs->{$tab}->{'path'}."\" $class>". $tabs->{$tab}->{'title'}."</A>";
 % }
-        <TABLE cellspacing=1>
-        <TR> <% join('<TD><font size=+1>|</font></TD>', @regulartabs) |n%>
-        </TR>
-        </TABLE>
-<BR>
+        <% join('<font size=+1>&nbsp;|&nbsp;</font>', @regulartabs) |n%>
+<BR><BR>
 %  }
 % if ($subtabs_scalar) {
 <% $subtabs_scalar |n%>
 % }
 % if ($subtabs) {
-	  <TR>
+% my @subtabs;
 % foreach $tab (sort keys %{$subtabs}) {
-	    <TD ALIGN=CENTER>
-	      [<A HREF="<%$RT::WebPath%>/<% $subtabs->{$tab}->{'path'}%>"><% $subtabs->{$tab}->{'title'}%></A>]
-	    </TD>
-%}
-	  </TR>
-%}
+% my $class;
+% if ($current_tab eq $tabs->{$tab}->{'path'}) {
+% $class="class='currenttab'";
+% } else {
+% $class="class='othertab'";
+% } 
+% push @subtabs, "<A HREF=\"$RT::WebPath/".$subtabs->{$tab}->{'path'}."\" $class>".$subtabs->{$tab}->{'title'}."</A>";
+% }
+<font size=-1><% join('<font size=+1>&nbsp;|&nbsp;</font>', @subtabs) |n%></font>
+% }
       </TD>
       <TD VALIGN=TOP ALIGN=RIGHT>
 <TABLE>

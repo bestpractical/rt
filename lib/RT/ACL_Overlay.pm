@@ -57,30 +57,67 @@ sub LimitToObject {
 
 # {{{ LimitToPrincipal 
 
-=head2 LimitToPrincipal { Type => undef, Id => undef }
+=head2 LimitToPrincipal { Type => undef, Id => undef, IncludeGroupMembership => undef }
 
 Limit the ACL to the principal with PrincipalId Id and PrincipalType Type
 
 Id is not optional.
 Type is.
 
+if IncludeGroupMembership => 1 is specified, ACEs which apply to the principal due to group membership will be included in the resultset.
+
+
 =cut
 
 sub LimitToPrincipal {
     my $self = shift;
-    my %args = ( Type => undef,
-                 Id => undef,
-                 @_);
-    if (defined $args{'Type'} ){
-        $self->Limit(FIELD => 'PrincipalType', OPERATOR=> '=', VALUE => $args{'Type'}, ENTRYAGGREGATOR => 'OR');
+    my %args = ( Type                               => undef,
+                 Id                                 => undef,
+                 IncludeGroupMembership => undef,
+                 @_ );
+    if ( $args{'IncludeGroupMembership'} ) {
+        my $cgm = $self->NewAlias('CachedGroupMembers');
+        $self->Join( ALIAS1 => 'main',
+                     FIELD1 => 'PrincipalId',
+                     ALIAS2 => $cgm,
+                     FIELD2 => 'GroupId' );
+        $self->Limit( ALIAS           => $cgm,
+                      FIELD           => 'MemberId',
+                      OPERATOR        => '=',
+                      VALUE           => $args{'Id'},
+                      ENTRYAGGREGATOR => 'OR' );
     }
-    $self->Limit(FIELD => 'PrincipalId', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
-
+    else {
+        if ( defined $args{'Type'} ) {
+            $self->Limit( FIELD           => 'PrincipalType',
+                          OPERATOR        => '=',
+                          VALUE           => $args{'Type'},
+                          ENTRYAGGREGATOR => 'OR' );
+        }
+    # if the principal id points to a user, we really want to point
+    # to their ACL equivalence group. The machinations we're going through
+    # lead me to start to suspect that we really want users and groups
+    # to just be the same table. or _maybe_ that we want an object db.
+    my $princ = RT::Principal->new($RT::SystemUser);
+    $princ->Load($args{'PrincipalId'});
+    if ($princ->PrincipalType eq 'User') {
+    my $group = RT::Group->new($RT::SystemUser);
+        $group->LoadACLEquivalenceGroup($princ);
+        $args{'PrincipalId'} = $group->PrincipalId;
+    }
+        $self->Limit( FIELD           => 'PrincipalId',
+                      OPERATOR        => '=',
+                      VALUE           => $args{'Id'},
+                      ENTRYAGGREGATOR => 'OR' );
+    }
 }
 
 # }}}
 
-# {{{
+
+
+# {{{ ExcludeDelegatedRights
+
 =head2 ExcludeDelegatedRights 
 
 Don't list rights which have been delegated.

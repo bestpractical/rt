@@ -1,0 +1,56 @@
+<h2><%$sectionheading%></h2>
+<%perl>
+
+foreach my $object (keys %{$objects->{$ObjectType}}) {
+unless ($ObjectType eq 'System') {
+my $object_obj = @{$objects->{$ObjectType}{$object}}[0]->Object;
+
+</%perl>
+<h3><%$object_obj->Name%></h3>
+% }
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+        <th width=15%><&|/l&>Personal groups:</&></th>
+% while (my $pg = $personalgroups->Next) {
+<th><%$pg->Name%></th>
+<%perl>
+}
+
+my $i;
+foreach my $right (@{$objects->{$ObjectType}{$object}}) {
+my $delegations = RT::ACL->new($session{'CurrentUser'});
+$delegations->DelegatedBy( Id => $session{'CurrentUser'}->PrincipalId);
+$delegations->DelegatedFrom ( Id => $right->Id);
+
+my $del_hash = {};
+while ( my $delegation = $delegations->Next) {
+        $del_hash->{$delegation->PrincipalId} = $delegation;
+}
+</%perl>
+<tr <%(++$i%2) && 'class="oddline"'%>
+<td>
+<% $right->RightName%><br>
+<div align=right><font size="-2" color="#999999"><&|/l, $right->PrincipalObj->Object->SelfDescription &>as granted to [_1]</&></font></div>
+       </td>
+% while (my $pg = $personalgroups->Next) {
+<td align=center>
+        <input name="Delegate-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>" type=checkbox <%$ del_hash->{$pg->PrincipalId} && 'CHECKED' %>>
+% if ( $del_hash->{$pg->PrincipalId}) {
+<input type=hidden name="Delegate-Existing-ACE-<% $right->Id %>-to-<% $pg->PrincipalId%>-as-<%$del_hash->{$pg->PrincipalId}->Id%>">
+% }
+</td>
+% }
+<td>&nbsp;</td>
+</tr>
+%} }
+</table>
+<%init>
+my  $sectionheading = loc($ObjectType." rights");
+
+
+
+</%init>
+<%args>
+$ObjectType => undef
+$objects => undef
+$personalgroups => undef
+</%args>

@@ -129,17 +129,17 @@ Returns a user-readable description of what this group is for and what it's name
 sub SelfDescription {
 	my $self = shift;
 	if ($self->Domain eq 'ACLEquivalence') {
-		my $user = RT::User->new($self->CurrentUser);
+		my $user = RT::Principal->new($self->CurrentUser);
 		$user->Load($self->Instance);
-		return $self->loc("user [_1]",$user->Name);
+		return $self->loc("user [_1]",$user->Object->Name);
 	}
 	elsif ($self->Domain eq 'UserDefined') {
-		return $self->loc("group [_1]",$self->Name);
+		return $self->loc("group '[_1]'",$self->Name);
 	}
 	elsif ($self->Domain eq 'Personal') {
 		my $user = RT::User->new($self->CurrentUser);
 		$user->Load($self->Instance);
-		return $self->loc("personal group [_1] for user [_2]",$self->Name, $user->Name);
+		return $self->loc("personal group '[_1]' for user '[_2]'",$self->Name, $user->Name);
 	}
 	elsif ($self->Domain eq 'SystemRole') {
 		return $self->loc("system [_1]",$self->Type);
@@ -152,8 +152,11 @@ sub SelfDescription {
 	elsif ($self->Domain eq 'TicketRole') {
 		return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
 	}
+	elsif ($self->Domain eq 'SystemInternal') {
+		return $self->loc("system group '[_1]'",$self->Type);
+	}
 	else {
-		return $self->loc("Group [_1]",$self->Id);
+		return $self->loc("undescripbed group [_1]",$self->Id);
 	}
 }
 

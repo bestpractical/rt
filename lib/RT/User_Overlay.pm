@@ -307,7 +307,7 @@ sub SetPrivileged {
                 "unprivileged. something is drastically wrong.");
         }
         $unpriv->AddMember($self->PrincipalId);  
-        return (1, $self->loc("That user is now unprivilegedileged"));
+        return (1, $self->loc("That user is now unprivileged"));
     }
 }
 
