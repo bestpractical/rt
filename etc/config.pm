@@ -223,7 +223,10 @@ $LocalePath = "!!LOCALE_PATH!!";
 $Nobody=2;
 $SIG{__WARN__} = sub {$RT::Logger->log(level=>'warning',message=>$_[0])};
 $SIG{__DIE__}  = sub {
-    die @_ if $^S;
+    if ($^S) {
+	$RT::Logger->log(level=>'warn',message=>"died during an eval: $_[0]");
+	die @_;
+    }
     $RT::Logger->log(level=>'crit',message=>$_[0]); 
     exit(-1);
 };

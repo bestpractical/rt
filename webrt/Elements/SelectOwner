@@ -2,7 +2,7 @@
 
 %while ( my $User = $Users->Next()) {
 
-<OPTION VALUE="<%$User->Id()%>"><%$User->UserId() %></OPTION>
+<OPTION VALUE="<%$User->Id()%>" <% ($User->Id() == $Default) && "SELECTED" %>><%$User->UserId()%></OPTION>
 
 %}
 
@@ -11,6 +11,7 @@
 <%ARGS>
 $Queue => undef
 $Name => undef
+$Default => 2
 </%ARGS>
 
 <%INIT>

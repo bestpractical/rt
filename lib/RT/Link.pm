@@ -5,6 +5,7 @@
 
 package RT::Link;
 use RT::Record;
+use Carp;
 @ISA= qw(RT::Record);
 
 # {{{ sub new 
@@ -138,7 +139,7 @@ sub TargetIsLocal {
 # checks whether an URI is local or not
 sub _IsLocal {
   my $self = shift;
-  my $URI=shift;
+  my $URI=shift || carp "_IsLocal used without an URI";
   # TODO: More thorough check
   $URI =~ /^(\d+)$/;
   return $1;

@@ -1,15 +1,22 @@
 <HTML>
 <HEAD>
+% if ($Code) {
+<META NAME="HTTP-EQUIV" VALUE="<%$Code%>: <%$Why%>">
+% }
 <TITLE>
-Error
+<% $Title %>
 </TITLE>
 <BODY BGCOLOR=RED>
 This is an unfriendly error message.
 <hr>
 <h1><%$Why%></h1>
+$Details
 </body>
 </HTML>
 <%args>
+$Code => undef
+$Details => "(No details given)";
+$Title => "Some error";
 $Why => "the calling component did not specify why"
 </%args>
 <%INIT>

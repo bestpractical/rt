@@ -162,7 +162,7 @@ sub activate  {
 	  # dirty? yes. how to fix?
 	  $Ticket->_NewLink(dir=>$dir,Target=>$to,Base=>$from,Type=>$typ);
 	  $RT::Logger->log(level=>'info', 
-			   message=>$CurrentUser->UserId."did a linking action ($_)");
+			   message=>$CurrentUser->UserId." did a linking action by mail ($_)");
       } else {
 	  die "unknown command $command : $_";
       }

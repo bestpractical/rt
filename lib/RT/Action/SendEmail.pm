@@ -13,11 +13,11 @@ warn "Your Mail::Mailer might need patching" if ($Mail::Mailer::VERSION eq 1.19)
 @ISA = qw(RT::Action);
 
 
+# {{{ Scrip methods (_Init, Commit, Prepare, IsApplicable)
+
 # {{{ sub _Init 
 # We use _Init from RT::Action
 # }}}
-
-# Scrip methods
 
 # {{{ sub Commit 
 #Do what we need to do and send it out.
@@ -88,8 +88,11 @@ sub IsApplicable  {
   # Loop check.  This header field might be added to the incoming mail
   # by RT::Interfaces::Email.pm if it might be a loop or result in
   # looping (typically a bounce) 
-  $self->TransactionObj->Message->First->Headers =~ /^RT-Mailing-Loop-Alarm/mg
-      && return 0;
+  if ( my $m=$self->TransactionObj->Message->First 
+       and $m->Headers =~ /^RT-Mailing-Loop-Alarm/m) {
+      warn "Aborting mailsending Scrip because of possible or potential mail loop";
+      return 0;
+  }
 
   # More work needs to be done here to avoid duplicates beeing sent,
   # and to ensure that there actually are any receipients.
@@ -98,7 +101,9 @@ sub IsApplicable  {
 }
 # }}}
 
-# {{{ Deal with message headers 
+# }}}
+
+# {{{ Deal with message headers (Set* subs, many of them suited for overriding)
 
 # {{{ sub SetRTSpecialHeaders
 
@@ -380,8 +385,9 @@ sub SetSubjectToken {
 
 # }}}
 
-
 __END__
+
+# {{{ POD
 
 =head1 NAME
 
@@ -424,6 +430,7 @@ perl(1).
 
 =cut
 
+# }}}
 
 1;
 

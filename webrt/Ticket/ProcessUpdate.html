@@ -1,25 +1,19 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html>
-  <head>
-    <title>ProcessUpdate</title>
-  </head>
 
-  <body>
+<& /Elements/Header, Title => "Ticket #".$Ticket->Id." Updated" &>
 
-    <h1>ProcessUpdate</h1>
-    Ticket Updated.
-%# TODO: We should eventually fill out with _what_ has been done, as well.
- 
+<h1>Ticket Updates:</h1>
+% for (@Actions) {
+   <%$_%><br>
+% }
 
-<& /Ticket/Elements/ToolBar, Ticket => $Ticket&>
-
+<& /Ticket/Elements/TicketToolBox, Ticket => $Ticket&>
 <& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
-
-
+<& /Elements/TitleBoxEnd &>
+<h1>Ticket History</h1>
 <& /Ticket/Elements/ShowHistory , Ticket => $Ticket &> 
-
+<& /Elements/TitleBoxEnd &>
 <& /Elements/Footer &>
-
 
 <%args>
 $id => undef
@@ -32,6 +26,8 @@ $Description => undef
 </%args>
 
 <%init>
+
+my $Actions;
 
 
   if (!$ARGS{'id'}) {
@@ -59,21 +55,29 @@ if ($ARGS{'UpdateType'} eq 'private') {
 						     BccMessageTo => $ARGS{'UpdateBcc'},
 						     MIMEObj => $Message,
 						     TimeTaken => $ARGS{'UpdateTimeWorked'});
+    push(@Actions, $Description);
   }
 elsif ($ARGS{'UpdateType'} eq 'response') {
     ($Transaction, $Description) = $Ticket->Correspond( CcMessageTo => $ARGS{'UpdateCc'},
 						     BccMessageTo => $ARGS{'UpdateBcc'},
 						     MIMEObj => $Message,
 						     TimeTaken => $ARGS{'UpdateTimeWorked'});
+    push(@Actions, $Description);
   }
 
 if ($ARGS{'SetStatus'} and ($ARGS{'SetStatus'} ne $Ticket->Status())) {
-  $Ticket->SetStatus($ARGS{'SetStatus'});
+    ($Transaction, $Description)=$Ticket->SetStatus($ARGS{'SetStatus'});
+    push(@Actions, $Description);
 }
 
     if ($ARGS{'SetOwner'}
         and ($ARGS{'SetOwner'} ne $Ticket->Owner->Id())) {
-      $Ticket->SetOwner($ARGS{'SetOwner'});
+    ($Transaction, $Description)=$Ticket->SetOwner($ARGS{'SetOwner'});
+    push(@Actions, $Description);
 }
    
 </%init>
+
+
+
+

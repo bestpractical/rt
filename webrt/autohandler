@@ -1,3 +1,19 @@
 <& /Elements/Header &>
 <% $m->call_next %>
 <& /Elements/Footer &>
+
+<%INIT>
+warn "WebURL Configuration does not match incoming URL"
+    if $r->uri !~ /^\Q$WebURL\E/;
+my $a=exists $SIG{__DIE__} && $SIG{__DIE__};
+
+# "500 Internal error" would be fit ... anyway:
+$SIG{__DIE__}=sub {
+	$^S or &mc_comp("/Elements/Error", 
+		Why=>"Internal Error", 
+		Details=>"You might ask your local RT admin what <code>$_[0]</code> means.  If he has configured RT smartly, he will get that error message sent by mail or to his pager or something.  Anyway, you'll probably have to nag about it to get this problem fixed.", 
+		Code=>500); 
+	$a->(@_); 
+	$^S or $m->abort;
+}
+</%INIT>

@@ -49,10 +49,10 @@ request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
 
 Owner: <& /Elements/SelectOwner, Name => "ValueOfOwner", Queue=>$Queue->Id &><br><br>
 
-Requestors: <INPUT Name="Requestors" SIZE=20><br>
+Requestors: <INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=20><br>
 Cc: <INPUT NAME="Cc" SIZE=20><br>
 
-Subject: <INPUT Name="Subject" SIZE=20><br><br>
+Subject: <INPUT Name="Subject" value="<% $Ticket ? $Ticket->Subject : "REMEMBER TO FILL IN SOMETHING HERE!" %>" SIZE=20><br><br>
 Status:	<& /Elements/SelectStatus, Name => "Status", Default=> 'Open' &>
 
 %# TODO in Display.html or a more proper place:

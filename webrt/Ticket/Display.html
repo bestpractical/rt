@@ -8,10 +8,7 @@
 % }
 
 
-<& /Ticket/Elements/ToolBar, Ticket => $Ticket&>
-
-  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Ticket->Subject||"(No subject given)", titleright=> "<a href=\"../Search/Listing.html?keep=1\">Back to listing</a> / <a href=\"#last\">Last transaction</a> | <a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?id=".$Ticket->Id."\">Update</a> "&>
-
+<& /Ticket/Elements/TicketToolBox, Ticket => $Ticket&>
 
 <& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
 <& /Elements/TitleBoxEnd &>
@@ -113,6 +110,7 @@ unless ($Ticket->Load($id)) {
       # Eventually, take the ticket:
       if ($ARGS{Action} eq "Take") {
          $Ticket->Take;
+	 push(@Actions, "Ticket taken!");
       }
 
 </%INIT>

@@ -1042,7 +1042,7 @@ sub _NewLink {
   #Write the transaction
   my $b;
   my $t;
-  if ($args{dir} eq 'F') {
+  if ($args{dir} eq 'T') {
       $b=$args{Base};
       $t='THIS';
   } else {
@@ -1236,13 +1236,16 @@ sub _Set {
     $TimeTaken = 0 if (!defined $TimeTaken);
 
     #record what's being done in the transaction
-    $self->_NewTransaction (Type => $MoreOptions->{'TransactionType'}||"Set",
-			    Field => $Field,
-			    NewValue => $Value || undef,
-			    OldValue =>  $self->_Value("$Field") || undef,
-			    TimeTaken => $TimeTaken || 0
-			   );
+    my $Old=$self->_Value("$Field") || undef;
+    my $Trans=	$self->_NewTransaction 
+	(Type => $MoreOptions->{'TransactionType'}||"Set",
+	 Field => $Field,
+	 NewValue => $Value || undef,
+	 OldValue =>  $Old,
+	 TimeTaken => $TimeTaken || 0
+	 );
     $self->SUPER::_Set($Field, $Value);
+    return ($Trans,"$Field changed from ".($Old||"(nothing)")." to ".($Value||"(nothing)"));
   }
   
 }
