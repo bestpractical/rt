@@ -54,6 +54,8 @@ sub delete  {
   die ("Queue->Delete not implemented yet");
 
 #If the user is an RT admin      
+#TODO
+  if (1) {
 
       #TODO:  DO ALL THESE
       $query_string = "DELETE FROM queues WHERE id = $in_queue_id";
@@ -152,7 +154,7 @@ sub DeleteWatcher {
   my ($Watcher);
   
   while ($Watcher = $self->Watchers->Next) {
-    if ($Watcher->Email =~ /$email/) 
+    if ($Watcher->Email =~ /$email/) {
       $Watcher->Delete();
     }
   }
