@@ -61,6 +61,12 @@ $Logger->add(Log::Dispatch::File->new
 	 TicketAttribute => 'Id'
 	 },
 
+       { Header     => 'Take it!',
+	 TicketLink => 1,
+	 Constant   => 'Take',
+	 ExtraLinks => '&Action=Take'
+	 },
+
        { Header => 'Queue',
 	 TicketAttribute => 'Queue->QueueId'
 	 },

@@ -15,6 +15,9 @@
 
 %while (my $Ticket = $session{'tickets'}->Next) {
 <TR>
+
+%# The ticket view is controlled by config.pm, WebOptions
+
 %foreach (@{_cfg(\%ARGS, 'QueueListingCols')}) {
 	<TD>
 	<& TicketCell , Ticket=>$Ticket,  Column=>$_ &>

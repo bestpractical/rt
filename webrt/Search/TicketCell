@@ -1,7 +1,7 @@
 % my $l=$Column->{TicketLink}; if ($l) {
-<a href="<% $l!=1 ? $l : "../Ticket/Display.html?" %>id=<%$Ticket->Id%>">
+<a href="<% $l!=1 ? $l : "../Ticket/Display.html?" %>id=<%$Ticket->Id%><%$Column->{ExtraLinks}||""%>">
 %}
-<%eval("\$Ticket->$Column->{TicketAttribute}") || "-" %>
+<%$Column->{Constant} || eval("\$Ticket->$Column->{TicketAttribute}") || "-" %>
 % if ($l) {
 </a>
 % }

@@ -102,8 +102,21 @@ unless ($Ticket->Load($id)) {
         $m->abort;
       }
       warn $Message;
+
+
       
       push(@Actions, $Message);
     }
   }
+
+
+      # Eventually, take the ticket:
+      if ($ARGS{Action} eq "Take") {
+         $Ticket->Take;
+      }
+
 </%INIT>
+
+
+
+
