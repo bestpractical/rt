@@ -122,7 +122,7 @@ sub TransactionObj  {
 
 =cut
 
-sub ApplicalbeTransTypes  {
+sub ApplicableTransTypes  {
   my $self = shift;
   return($self->{'ApplicableTransTypes'});
 }

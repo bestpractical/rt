@@ -25,8 +25,8 @@ sub SetRecipients {
 
     if ($arg =~ /\bOtherRecipients\b/) {
         if ($self->TransactionObj->Message->First) {
-            push (@Cc, $self->TransactionObj->Message->First->GetHeader('RT-Also-Cc'));
-            push (@Bcc, $self->TransactionObj->Message->First->GetHeader('RT-Also-Bcc'));
+            push (@Cc, $self->TransactionObj->Message->First->GetHeader('RT-Send-Cc'));
+            push (@Bcc, $self->TransactionObj->Message->First->GetHeader('RT-Send-Bcc'));
         }
     }
 
