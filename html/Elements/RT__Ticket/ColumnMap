@@ -134,10 +134,12 @@ $COLUMN_MAP = {
     },
     InitialPriority => {
         attribute => 'InitialPriority',
+        name => 'Initial Priority',
         value     => sub { return $_[0]->InitialPriority }
     },
     FinalPriority => {
         attribute => 'FinalPriority',
+        name => 'Final Priority',
         value     => sub { return $_[0]->FinalPriority }
     },
     EffectiveId => {
