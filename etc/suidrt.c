@@ -45,7 +45,7 @@ const char* SAFE_ENV_VARS [] = {
    "REMOTE_IDENT",
    "AUTH_TYPE",
    "REMOTE_USER",
-   "PATH_INFO"
+   "PATH_INFO",
   "TZ",
   "HOST",
   "USERNAME",
