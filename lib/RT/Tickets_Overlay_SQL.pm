@@ -1,0 +1,294 @@
+use strict;
+use warnings;
+
+# Import configuration data from the lexcial scope of __PACKAGE__ (or
+# at least where those two Subroutines are defined.)
+
+my %FIELDS = %{FIELDS()};
+my %dispatch = %{dispatch()};
+
+sub _InitSQL {
+  my $self = shift;
+
+  # How many of these do we actually still use?
+
+  # Private Member Variales (which should get cleaned)
+  $self->{'_sql_linksc'}        = 0;
+  $self->{'_sql_watchersc'}     = 0;
+  $self->{'_sql_keywordsc'}     = 0;
+  $self->{'_sql_subclause'}     = "a";
+  $self->{'_sql_first'}         = 0;
+  $self->{'_sql_opstack'}       = [''];
+  $self->{'_sql_transalias'}    = undef;
+  $self->{'_sql_trattachalias'} = undef;
+  $self->{'_sql_keywordalias'}  = undef;
+  $self->{'_sql_depth'}         = 0;
+  $self->{'_sql_localdepth'}    = 0;
+  $self->{'_sql_query'}         = '';
+  $self->{'_sql_looking_at'}    = {};
+
+}
+
+sub _SQLLimit {
+  # All SQL stuff goes into one SB subclause so we can deal with all
+  # the aggregation
+  my $this = shift;
+  $this->SUPER::Limit(@_,
+                      SUBCLAUSE => 'ticketsql');
+}
+
+# Helpers
+sub _OpenParen {
+  $_[0]->SUPER::_OpenParen( 'ticketsql' );
+}
+sub _CloseParen {
+  $_[0]->SUPER::_CloseParen( 'ticketsql' );
+}
+
+=head1 SQL Functions
+
+=cut
+
+sub _match {
+  # Case insensitive equality
+  my ($y,$x) = @_;
+  return 1 if $x =~ /^$y$/i;
+  #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
+  return 0;
+}
+
+=head2 Robert's Simple SQL Parser
+
+Documentation In Progress
+
+The Parser/Tokenizer is a relatively simple state machine that scans through a SQL WHERE clause type string extracting a token at a time (where a token is:
+
+  VALUE -> quoted string or number
+  AGGREGator -> AND or OR
+  KEYWORD -> quoted string or single word
+  OPerator -> =,!=,LIKE,etc..
+  PARENthesis -> open or close.
+
+And that stream of tokens is passed through the "machine" in order to build up a structure that looks like:
+
+       KEY OP VALUE
+  AND  KEY OP VALUE
+  OR   KEY OP VALUE
+
+That also deals with parenthesis for nesting.  (The parentheses are
+just handed off the SearchBuilder)
+
+=cut
+
+use Regexp::Common qw /delimited/;
+
+# States
+use constant ({
+               VALUE => 1,
+               AGGREG => 2,
+               OP => 4,
+               PAREN => 8,
+               KEYWORD => 16,
+              });
+my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD];
+
+my $re_aggreg = qr[(?i:AND|OR)];
+my $re_value  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
+my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|\w+];
+my $re_op     = qr[=|!=|>=|<=|>|<|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
+my $re_paren  = qr'\(|\)';
+
+sub _parser {
+  my ($self,$string) = @_;
+  my $want = KEYWORD | PAREN;
+  my $last = undef;
+
+  my $depth = 0;
+
+  my ($ea,$key,$op,$value) = ("","","","");
+
+  while ($string =~ /(
+                      $re_aggreg
+                      |$re_keyword
+                      |$re_value
+                      |$re_op
+                      |$re_paren
+                     )/igx ) {
+    my $val = $1;
+    my $current = 0;
+
+    # Highest priority is last
+    $current = OP      if _match($re_op,$val);
+    $current = VALUE   if _match($re_value,$val);
+    $current = KEYWORD if _match($re_keyword,$val) && ($want & KEYWORD);
+    $current = AGGREG  if _match($re_aggreg,$val);
+    $current = PAREN   if _match($re_paren,$val);
+
+    unless ($current && $want & $current) {
+      # Error
+      die "Error near ->$val<- expecting a ", $tokens[((log $want)/(log 2))], "\n";
+    }
+
+    # State Machine:
+
+    # Parens are highest priority
+    if ($current & PAREN) {
+      if ($val eq "(") {
+        $depth++;
+        $self->_OpenParen;
+
+      } else {
+        $depth--;
+        $self->_CloseParen;
+      }
+
+      $want = KEYWORD | PAREN | AGGREG;
+    }
+    elsif ( $current & AGGREG ) {
+      $ea = $val;
+      $want = KEYWORD | PAREN;
+    }
+    elsif ( $current & KEYWORD ) {
+      $key = $val;
+      $want = OP;
+    }
+    elsif ( $current & OP ) {
+      $op = $val;
+      $want = VALUE;
+    }
+    elsif ( $current & VALUE ) {
+      $value = $val;
+
+      # Remove surrounding quotes from $key, $val
+      # (in future, simplify as for($key,$val) { action on $_ })
+      if ($key =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
+        substr($key,0,1) = "";
+        substr($key,-1,1) = "";
+      }
+      if ($val =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
+        substr($val,0,1) = "";
+        substr($val,-1,1) = "";
+      }
+
+      #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
+
+      my $class;
+      my ($stdkey) = grep { /^$key$/i } (keys %FIELDS);
+      if (exists $FIELDS{$stdkey}) {
+        $class = $FIELDS{$key}->[0];
+        $key = $stdkey;
+      }
+      # fixme: "default class" is not Generic.
+      $class ||= "CUSTOMFIELD";
+
+      $self->{_sql_localdepth} = 0;
+      die "No such dispatch method: $class"
+        unless exists $dispatch{$class};
+      my $sub = $dispatch{$class} || die;;
+      $sub->(
+             $self,
+             $key,
+             $op,
+             $val,
+             SUBCLAUSE =>  "",  # don't need anymore
+             ENTRYAGGREGATOR => $ea || "",
+            );
+
+      $self->{_sql_looking_at}{lc $key} = 1;
+
+      ($ea,$key,$op,$value) = ("","","","");
+
+      $want = PAREN | AGGREG;
+    } else {
+      die "I'm lost";
+    }
+
+    $last = $current;
+  } # while
+
+  die "Incomplete query"
+    unless ($want | PAREN || $want | KEYWORD );
+
+  die "Incomplete Query"
+    unless ($last | PAREN || $last || VALUE );
+
+  # This will never happen, because the parser will complain
+  die "Mismatched parentheses"
+    unless $depth == 0;
+
+}
+
+
+=head2 ClausesToSQL
+
+=cut
+
+sub ClausesToSQL {
+  my $self = shift;
+  my $clauses = shift;
+  my @sql;
+
+  for my $f (keys %{$clauses}) {
+    my $sql;
+    my $first = 1;
+
+    # Build SQL from the data hash
+    for my $data ( @{ $clauses->{$f} } ) {
+      $sql .= $data->[0] unless $first; $first=0;
+      $sql .= " '". $data->[2] . "' ";
+      $sql .= $data->[3] . " ";
+      $sql .= "'". $data->[4] . "' ";
+    }
+
+    push @sql, " ( " . $sql . " ) ";
+  }
+
+  return join("AND",@sql);
+}
+
+=head2 FromSQL
+
+=cut
+
+sub FromSQL {
+  my ($self,$query) = @_;
+
+  $self->CleanSlate;
+
+  $self->{_sql_query} = $query;
+  $self->_parser( $query );
+
+  # We only want to look at EffectiveId's (mostly) for these searches.
+  $self->SUPER::Limit( FIELD => 'EffectiveId',
+                ENTRYAGGREGATOR => 'aNd',
+                OPERATOR => '=',
+                QUOTEVALUE => 0,
+                VALUE => 'main.id');   #TODO, we shouldn't be hard
+                                       #coding the tablename to main.
+
+  # FIXME: Need to bring this logic back in
+
+  #      if ($self->_isLimited && (! $self->{'looking_at_effective_id'})) {
+  #         $self->SUPER::Limit( FIELD => 'EffectiveId',
+  #               OPERATOR => '=',
+  #               QUOTEVALUE => 0,
+  #               VALUE => 'main.id');   #TODO, we shouldn't be hard coding the tablename to main.
+  #       }
+  # --- This is hardcoded above.  This comment block can probably go.
+  # Or, we need to reimplement the looking_at_effective_id toggle.
+
+  # Unless we've explicitly asked to look at a specific Type, we need
+  # to limit to it.
+  unless (exists $self->{_sql_looking_at}{'type'}) {
+    $self->SUPER::Limit( FIELD => 'Type',
+                         OPERATOR => '=',
+                         VALUE => 'ticket');
+  }
+
+  # set SB's dirty flag
+  $self->{'must_redo_search'} = 1;
+
+}
+
+
+1;

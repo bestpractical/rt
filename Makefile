@@ -33,7 +33,7 @@ SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	58
+RT_VERSION_PATCH	=	59
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -257,6 +257,7 @@ fixperms-nosetgid: fixperms
 	@echo "You should never be running RT this way. it's unsafe"
 	chmod 0555 $(SETGID_BINARIES)
 	chmod 0555 $(DESTDIR)/$(CONFIG_FILE)
+	chmod 0555 $(DESTDIR)/$(SITE_CONFIG_FILE)
 
 # {{{ dirs
 dirs:

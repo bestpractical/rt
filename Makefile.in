@@ -257,6 +257,7 @@ fixperms-nosetgid: fixperms
 	@echo "You should never be running RT this way. it's unsafe"
 	chmod 0555 $(SETGID_BINARIES)
 	chmod 0555 $(DESTDIR)/$(CONFIG_FILE)
+	chmod 0555 $(DESTDIR)/$(SITE_CONFIG_FILE)
 
 # {{{ dirs
 dirs:
