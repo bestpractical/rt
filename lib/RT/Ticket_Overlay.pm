@@ -3472,7 +3472,7 @@ sub CustomFieldValues {
 
 =item AddCustomFieldValue { Field => FIELD, Value => VALUE }
 
-VALUE can either be a CustomFieldValue object or a string.
+VALUE should be a string.
 FIELD can be a CustomField object OR a CustomField ID.
 
 
