@@ -109,6 +109,7 @@ sub insert_schema {
     else {
 	my $schema_href = do "$SCHEMA_FILE" or die $@ || $!;
 	my $schema = DBIx::DBSchema->pretty_read($schema_href);
+
 	
 	foreach my $statement ( $schema->sql($dsn, $DB_DBA, $DB_DBA_PASSWORD ) ) {
 	    print STDERR $statement if $DEBUG;

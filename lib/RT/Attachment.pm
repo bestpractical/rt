@@ -166,11 +166,12 @@ sub Create  {
 	    $ContentEncoding = 'base64';
 	    
 	    #cut the max attchment size by 25% (for mime-encoding overhead.
+	    $RT::Logger->debug("Max size is $MaxSize\n");
 	    $MaxSize = $MaxSize * 3/4;	
 	}
 	
 	#if the attachment is larger than the maximum size
-	if (($MaxSize) and ($MaxSize < length($body))) {
+	if (($MaxSize) and ($MaxSize < length($Body))) {
 	    # if we're supposed to truncate large attachments
 	    if ($RT::TruncateLongAttachments) {
 		# truncate the attachment to that length.
@@ -187,7 +188,7 @@ sub Create  {
 	# if we need to mimencode the attachment
 	if ($ContentEncoding eq 'base64') {
 	    # base64 encode the attachment
-	    $Body = base64_encode($Body);
+	    $Body = MIME::Base64::encode_base64($Body);
 	    
 	}
 	
@@ -221,7 +222,7 @@ sub Content {
   if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
       return $self->_Value('Content');
   } elsif ( $self->ContentEncoding eq 'base64' ) {
-      return decode_base64($self->_Value('Content'));
+      return MIME::Base64::decode_base64($self->_Value('Content'));
   } else {
       return( "Unknown ContentEncoding ". $self->ContentEncoding);
   }

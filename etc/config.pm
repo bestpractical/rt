@@ -84,14 +84,14 @@ $StoreLoops = undef;
 $StoreBounces = undef;
 
 
-# $MaxAttachmentLength sets the maximum size (in bytes) of attachments stored
+# $MaxAttachmentSize sets the maximum size (in bytes) of attachments stored
 # in the database. 
 
 # For mysql and oracle, we set this size at 10 megabytes.
 # If you're running a postgres version earlier than 7.1, you will need
 # to drop this to 8192. (8k)
 
-$MaxAttachmentLength = 10000000;  
+$MaxAttachmentSize = 10000000;  
 
 # $TruncateLongAttachments: if this is set to a non-undef value,
 # RT will truncate attachments longer than MaxAttachmentLength. 

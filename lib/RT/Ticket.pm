@@ -156,7 +156,7 @@ Returns: TICKETID, Transaction Object, Error Message
 
 sub Create {
     my $self = shift;
-    my ( $ErrStr, $Queue, $Owner);
+    my ( $ErrStr, $QueueObj, $Owner);
     
     my %args = (id => undef,
 		Queue => undef,
@@ -176,26 +176,27 @@ sub Create {
     #TODO Load queue defaults +++ v2.0
     
     if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
-	$Queue=RT::Queue->new($self->CurrentUser);
-	$Queue->Load($args{'Queue'});
+	$QueueObj=RT::Queue->new($self->CurrentUser);
+	$QueueObj->Load($args{'Queue'});
 	#TODO error check this and return 0 if it\'s not loading properly +++
     }
     elsif (ref($args{'Queue'}) eq 'RT::Queue') {
-	$Queue = $args{'Queue'};
+	$QueueObj = $args{'Queue'};
     }
     else {
-	$RT::Logger->err($args{'Queue'} . " not a recognised queue object.");
+	$RT::Logger->err("$self ". $args{'Queue'} . 
+			 " not a recognised queue object.");
     }
   
     #Can't create a ticket without a queue.
-    unless (defined ($Queue)) {
-	$RT::Logger->err( "No queue given for ticket create request '".$args{'Subject'}."'");
+    unless (defined ($QueueObj)) {
+	$RT::Logger->err( "$self No queue given for ticket creation.");
 	return (0, 0,'Queue not set');
     }
     
     #Now that we have a queue, Check the ACLS
     unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
-					      QueueObj => $Queue )) {
+					      QueueObj => $QueueObj )) {
 	return (0,0,"No permission to create tickets in that queue");
     }
     
@@ -214,12 +215,12 @@ sub Create {
     #If we can't handle it, call it nobody
     else {
 	if (ref($args{'Owner'})) {
-	    $RT::Logger->warning("Ticket $ticket  ->Create called with an Owner of ".
-				 "type ".ref($args{'Owner'}) .". Defaulting to nobody.\n");
+	    $RT::Logger->warning("$ticket ->Create called with an Owner of ".
+		 "type ".ref($args{'Owner'}) .". Defaulting to nobody.\n");
 	}
 	else { 
-	    $RT::Logger->warning("Ticket $ticket ->Create called with an ".
-				 "unrecognised datatype for Owner: ".$args{'Owner'} .
+	    $RT::Logger->warning("$self ->Create called with an ".
+				 "unknown datatype for Owner: ".$args{'Owner'} .
 				 ". Defaulting to Nobody.\n");
 	}
     }
@@ -228,9 +229,11 @@ sub Create {
     #to own a ticket, scream about it and make them not the owner
     if ((defined ($Owner)) and
 	($Owner->Id != $RT::Nobody->Id) and 
-	(!$Owner->HasQueueRight( QueueObj => $Queue,  Right => 'OwnTicket'))) {
+	(!$Owner->HasQueueRight( QueueObj => $QueueObj, 
+				 Right => 'OwnTicket'))) {
 	
-	$RT::Logger->warning("$self user ".$Owner->Name . "(".$Owner->id .") was proposed ".
+	$RT::Logger->warning("$self user ".$Owner->Name . "(".$Owner->id .
+			     ") was proposed ".
 			     "as a ticket owner but has no rights to own ".
 			     "tickets in this queue\n");
 	
@@ -253,7 +256,7 @@ sub Create {
 	       Value => $args{'Due'});
     
     my $id = $self->SUPER::Create(
-				  Queue => $Queue->Id,
+				  Queue => $QueueObj->Id,
 				  Owner => $Owner->Id,
 				  Subject => $args{'Subject'},
 				  InitialPriority => $args{'InitialPriority'},
@@ -268,43 +271,37 @@ sub Create {
     my ($val, $msg) = $self->__Set(Field => 'EffectiveId', Value => $id);
     
     unless ($val) {
-	$RT::Logger->err("$self -> Create couldn't set EffectiveId: $msg\n");
+	$RT::Logger->err("$self ->Create couldn't set EffectiveId: $msg\n");
     }	
      
-    $RT::Logger->debug("Now adding watchers. ");
 
     my $watcher;
     foreach $watcher (@{$args{'Cc'}}) {
-	$RT::Logger->debug('Adding a watcher: $watcher');
 	$self->_AddWatcher( Type => 'Cc', Person => $watcher, Silent => 1);
     }	
     foreach $watcher (@{$args{'AdminCc'}}) {
-	$RT::Logger->debug('Adding a watcher: $watcher');
 	$self->_AddWatcher( Type => 'AdminCc', Person => $watcher, Silent => 1);
     }	
     foreach $watcher (@{$args{'Requestor'}}) {
-	$RT::Logger->debug('Adding a watcher: $watcher');
 	$self->_AddWatcher( Type => 'Requestor', Person => $watcher, Silent => 1);
    }
     
-
     #Add a transaction for the create
-    my ($Trans, $Msg, $TransObj) = $self->_NewTransaction(Type => "Create",
-							  TimeTaken => 0, 
-							  MIMEObj=>$args{'MIMEObj'});
+    my ($Trans, $Msg, $TransObj) = 
+	$self->_NewTransaction( Type => "Create",
+			  	TimeTaken => 0, 
+			  	MIMEObj=>$args{'MIMEObj'});
     
     # Logging
     if ($self->Id && $Trans) {
-	$ErrStr='Ticket #'.$self->Id . " created in queue ". $Queue->Name;
+	$ErrStr='Ticket '.$self->Id . " created in queue ". $QueueObj->Id;
 	
 	$RT::Logger->info($ErrStr);
     } 
     else {
+	# TODO where does this get errstr from?
 	$RT::Logger->warning("Ticket couldn't be created: $ErrStr");
     }
-    
-
-
     
     # Hmh ... shouldn't $ErrStr be the second return argument?
     # Eventually, are all the callers updated?
