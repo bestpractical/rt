@@ -286,8 +286,6 @@ sub Privileged {
 
 # }}}
 
-# {{{ Convenient ACL methods
-
 
 # {{{ sub HasRight
 
@@ -366,6 +364,8 @@ sub loc_fuzzy {
 }
 # }}}
 
+eval "require RT::CurrentUser_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Local.pm});
 
 1;
  

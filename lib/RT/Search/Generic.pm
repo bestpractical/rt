@@ -121,4 +121,7 @@ sub Prepare  {
 }
 # }}}
 
+eval "require RT::Search::Generic_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Generic_Local.pm});
+
 1;

@@ -467,5 +467,7 @@ sub DecodeUTF8 {
         }
 
 }
+eval "require RT::Record_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Local.pm});
 
 1;

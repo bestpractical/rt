@@ -132,7 +132,6 @@ If it has a SortOrder attribute, sort the array by SortOrder.
 Otherwise, if it has a "Name" attribute, sort alphabetically by Name
 Otherwise, just give up and return it in the order it came from the db.
 
-=cut
 
 =begin testing
 
@@ -144,6 +143,7 @@ my @items = @{$items};
 
 ok($queues->NewItem->_Accessible('Name','read'));
 my @sorted = sort {uc($a->Name) cmp uc($b->Name)} @items;
+ok (@sorted, "We have an array of queues, sorted");
 
 my @sorted_ids = map {$_->id } @sorted;
 my @items_ids = map {$_->id } @items;
@@ -155,25 +155,31 @@ is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name
 
 =end testing
 
+=cut
+
 sub ItemsArrayRef {
     my $self = shift;
-    my $items;
+    my @items;
     
     if ($self->NewItem()->_Accessible('SortOrder','read')) {
-        $items = sort { $a->SortOrder <=> $b->SortOrder } @{$self->SUPER::ItemsArrayRef()};
+        @items = sort { $a->SortOrder <=> $b->SortOrder } @{$self->SUPER::ItemsArrayRef()};
     }
     elsif ($self->NewItem()->_Accessible('name','read')) {
-        $items = sort { $a->Name cmp $b->Name } @{$self->SUPER::ItemsArrayRef()};
+        @items = sort { $a->Name cmp $b->Name } @{$self->SUPER::ItemsArrayRef()};
     }
     else {
-        $titems = $self->SUPER::ItemsArrayRef();
+        @items = @{$self->SUPER::ItemsArrayRef()};
     }
 
-    return($items);
+    return(\@items);
 
 }
 
 # }}}
+
+eval "require RT::SearchBuilder_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Local.pm});
+
 
 1;
 

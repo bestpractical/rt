@@ -89,4 +89,7 @@ sub SetReturnAddress {
   
 # }}}
 
+eval "require RT::Action::Autoreply_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Local.pm});
+
 1;

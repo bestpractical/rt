@@ -71,4 +71,7 @@ sub Prepare  {
 }
 # }}}
 
+eval "require RT::Search::ActiveTicketsInQueue_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/ActiveTicketsInQueue_Local.pm});
+
 1;

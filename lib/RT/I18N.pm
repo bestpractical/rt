@@ -372,5 +372,9 @@ sub DecodeMIMEWordsToUTF8 {
 
 # }}}
 
+eval "require RT::I18N_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Local.pm});
+
+
 1;  # End of module.
 

@@ -49,5 +49,9 @@ sub IsApplicable {
     }
 }
 
+eval "require RT::Condition::QueueChange_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/QueueChange_Local.pm});
+
+
 1;
 

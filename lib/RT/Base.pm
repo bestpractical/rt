@@ -89,4 +89,8 @@ sub loc {
     return($self->CurrentUser->loc(@_));
 }
 
+eval "require RT::Base_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Local.pm});
+
+
 1;

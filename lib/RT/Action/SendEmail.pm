@@ -570,11 +570,8 @@ sub SetHeaderAsEncoding {
 
 # }}}
 
-__END__
-
-# {{{ POD
-
-# }}}
+eval "require RT::Action::SendEmail_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm});
 
 1;
 

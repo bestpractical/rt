@@ -60,5 +60,8 @@ sub IsApplicable {
     }
 }
 
+eval "require RT::Condition::Overdue_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Overdue_Local.pm});
+
 1;
 

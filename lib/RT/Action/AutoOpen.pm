@@ -74,5 +74,8 @@ sub Commit {
 }
 
 
+eval "require RT::Action::AutoOpen_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Local.pm});
+
 
 1;

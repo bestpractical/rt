@@ -43,5 +43,9 @@ sub IsApplicable {
     return(1);
 }
 
+eval "require RT::Condition::AnyTransaction_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/AnyTransaction_Local.pm});
+
+
 1;
 

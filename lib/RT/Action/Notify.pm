@@ -117,4 +117,7 @@ sub SetRecipients {
 
 # }}}
 
+eval "require RT::Action::Notify_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Notify_Local.pm});
+
 1;

@@ -80,5 +80,9 @@ sub IsApplicable  {
 }
 # }}}
 
+eval "require RT::Action::ResolveMembers_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMembers_Local.pm});
+
+
 1;
 

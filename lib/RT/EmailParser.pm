@@ -216,6 +216,7 @@ sub ParseMIMEEntityFromFileHandle {
     return (1);
 }
 
+# }}}
 
 # {{{ _PostProcessNewEntity 
 
@@ -748,5 +749,7 @@ sub _SetupMIMEParser {
     $parser->output_to_core(50000);
 }
 # }}}
+eval "require RT::EmailParser_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Local.pm});
 
 1;

@@ -158,4 +158,7 @@ sub Load {
 	return (1);
 }
 
+eval "require RT::System_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Local.pm});
+
 1;

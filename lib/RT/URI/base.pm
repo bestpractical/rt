@@ -106,4 +106,8 @@ sub IsLocal {
     return undef;
 };
 
+eval "require RT::URI::base_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/base_Local.pm});
+
+
 1;

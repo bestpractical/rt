@@ -56,5 +56,7 @@ sub IsApplicable {
         return(undef);
     }
 }
+eval "require RT::Condition::BeforeDue_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/BeforeDue_Local.pm});
 
 1;

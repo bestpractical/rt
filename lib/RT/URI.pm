@@ -237,4 +237,7 @@ sub Resolver {
     return ($self->{'resolver'});
 }
 
+eval "require RT::URI_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI_Local.pm});
+
 1;
