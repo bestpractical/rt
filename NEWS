@@ -1,3 +1,12 @@
+18 Feb 99
+---------
+Cleaned up the web create template a bit
+
+Fixed a couple of bugs in the web ui which made dealing with queues with
+spaces in their names more difficult.
+
+
+
 16 Jan 99
 ---------
 
