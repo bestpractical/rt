@@ -1,3 +1,4 @@
+
 CREATE SEQUENCE FM_Classes_seq;
 CREATE TABLE FM_Classes (
 id NUMBER(11,0)
@@ -12,6 +13,7 @@ LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
 );
 
+
 CREATE SEQUENCE FM_ClassCustomFields_seq;
 CREATE TABLE FM_ClassCustomFields (
 id NUMBER(11,0)
@@ -24,6 +26,7 @@ SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
 );
+
 
 CREATE SEQUENCE FM_CustomFields_seq;
 CREATE TABLE FM_CustomFields (
@@ -38,6 +41,7 @@ Created DATE,
 LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
 );
+
 
 CREATE SEQUENCE FM_Articles_seq;
 CREATE TABLE FM_Articles (
@@ -55,6 +59,7 @@ LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
 );
 
+
 CREATE SEQUENCE FM_CustomFieldValues_seq;
 CREATE TABLE FM_CustomFieldValues (
 id NUMBER(11,0)
@@ -69,6 +74,7 @@ LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
 );
 
+
 CREATE SEQUENCE FM_ArticleCFValues_seq;
 CREATE TABLE FM_ArticleCFValues (
 id NUMBER(11,0)
@@ -82,6 +88,7 @@ LastUpdatedBy NUMBER(11,0) DEFAULT 0 NOT NULL,
 LastUpdated DATE
 );
 
+
 CREATE SEQUENCE FM_Transactions_seq;
 CREATE TABLE FM_Transactions (
 id NUMBER(11,0)
@@ -94,4 +101,26 @@ OldContent CLOB DEFAULT EMPTY_CLOB() NOT NULL,
 NewContent CLOB DEFAULT EMPTY_CLOB() NOT NULL,
 Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
 Created DATE
+);
+
+
+CREATE SEQUENCE FM_Topics_seq;
+CREATE TABLE FM_Topics (
+id NUMBER(11,0)
+  CONSTRAINT FM_Topics_key PRIMARY KEY,
+Parent NUMBER(11,0) DEFAULT 0 NOT NULL,
+Name varchar2(255) DEFAULT '' NOT NULL,
+Description varchar2(255) DEFAULT '' NOT NULL,
+ObjectType varchar2(64) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL
+);
+
+
+CREATE SEQUENCE FM_ObjectTopics_seq;
+CREATE TABLE FM_ObjectTopics (
+id NUMBER(11,0)
+  CONSTRAINT FM_ObjectTopics_key PRIMARY KEY,
+Topic NUMBER(11,0) NOT NULL,
+ObjectType varchar2(64) DEFAULT '' NOT NULL,
+ObjectId NUMBER(11,0) NOT NULL
 );

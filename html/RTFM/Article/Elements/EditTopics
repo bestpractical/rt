@@ -1,0 +1,109 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+
+<table>
+<tr>
+<td>Fields in this class:</td>
+<td>
+
+<input type="hidden" name="EditTopics" value="1" />
+<select multiple size="10" name="Topics">
+  <optgroup label="Current class (<% $ClassObj->Name%>)"> 
+% $inTree->traverse(sub {
+%   my $tree = shift;
+%   my $topic = $tree->getNodeValue;
+%   $m->print("<option value=\"".$topic->Id."\""
+%     .(exists $topics{$topic->Id} ? " selected" : "").">"
+%     .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+% });
+% my $class = $ClassObj->Id;
+% $otherTree->traverse(sub {
+%   my $tree = shift;
+%   my $topic = $tree->getNodeValue;
+%   if ($topic->ObjectId != $class) {
+%     $class = $topic->ObjectId;
+%     $m->print("</optgroup>\n");
+%     my $c = new RT::FM::Class($session{'CurrentUser'});
+%     $c->Load($topic->ObjectId);
+%     $m->print("<optgroup label=\"".$c->Name."\">\n");
+%   }
+%   $m->print("<option value=\"".$topic->Id."\""
+%     .(exists $topics{$topic->Id} ? " selected" : "").">"
+%     .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+% });
+</optgroup>
+</select>
+</td>
+</tr>
+
+<%INIT>
+use Tree::Simple;
+
+my $inClass = new RT::FM::TopicCollection($session{'CurrentUser'});
+$inClass->LimitToObject($ClassObj);
+$inClass->OrderByCols({FIELD => 'Name'});
+my $inTree = buildTree($inClass);
+
+my $otherClass = new RT::FM::TopicCollection($session{'CurrentUser'});
+$otherClass->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
+$otherClass->Limit(FIELD => 'ObjectId', OPERATOR => '!=', VALUE => $ClassObj->Id);
+my $otherTree = buildTree($otherClass);
+
+my $articleTopics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
+$articleTopics->LimitToObject($ArticleObj);
+my %topics;
+while (my $topicObj = $articleTopics->Next) {
+    $topics{$topicObj->Topic} = $topicObj;
+}
+
+
+sub buildTree {
+    my $query = shift;
+    
+    use Tree::Simple;
+    my $tree = Tree::Simple->new(Tree::Simple->ROOT);
+    my %lookup = (0 => $tree);
+
+    my @todo;
+    while (my $topic = $query->Next) {
+        push @todo, $topic;
+    }
+
+    {
+        my $changed = 0;
+        my @work = @todo;
+        @todo = ();
+        for my $topic (@work) {
+            if (defined $lookup{$topic->Parent}) {
+                $lookup{$topic->Id} = Tree::Simple->new($topic, $lookup{$topic->Parent});
+                $changed = 1;
+            } else {
+                push @todo, $topic;
+            }
+        }
+        redo unless $changed == 0;
+    }
+    return $tree;
+}
+
+</%INIT>
+<%ARGS>
+$id => undef
+$ArticleObj => undef
+$ClassObj => undef
+</%ARGS>

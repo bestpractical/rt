@@ -16,14 +16,13 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/PreCreate.html",
+<& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Topics.html",
 Title => loc('Create an article in class...') &>
 <ul>                                                                            
 % my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});          
 % $Classes->UnLimit;                                                            
 % while (my $Class = $Classes->Next) {                                          
-<li><a href="Edit.html?Class=<%$Class->Id%>"><&|/l, $Class->Name&>in class [_1]</&>
-</a></li>                                                                       
+<li><a href="Edit.html?Class=<%$Class->Id%>"><&|/l, $Class->Name&>in class [_1]</&></a></li>
 % }                                                                             
                                                                                 
 </ul>                                                                           

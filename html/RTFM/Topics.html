@@ -1,0 +1,89 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+
+<& /RTFM/Elements/Tabs, current_toptab => "RTFM/Topics.html", Title => loc('Topic hierarchy') &>
+
+% if (defined $class) {
+
+% if ($id != 0) {
+% my $t = RT::FM::Topic->new($session{'CurrentUser'});
+% $t->Load($id);
+<a href="Topics.html?class=<% $class %>&id=<% $t->Parent %>">Parent</a><br />
+% }
+
+<& /Elements/TitleBoxStart, title => loc('Topics') &>
+% my $Topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
+% $Topics->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
+% $Topics->Limit(FIELD => 'ObjectId',   VALUE => $class);
+% $Topics->Limit(FIELD => 'Parent',     VALUE => $id);
+% if ($Topics->Count) {
+<ul>
+% while (my $t = $Topics->Next) {
+<li><a href="Topics.html?class=<% $class %>&id=<% $t->Id %>"><% $t->Name %></a></li>
+% }
+</ul>
+% } else {
+<i>No sub-topics</i>
+% }
+<& /Elements/TitleBoxEnd &>
+
+<br />
+
+% if ($id != 0) {
+<& /Elements/TitleBoxStart, title => loc('Articles') &>
+% my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
+% $Articles->Limit(FIELD => 'Topic',      VALUE => $id);
+% $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
+% if ($Articles->Count) {
+<ul>
+% while (my $obj = $Articles->Next) {
+%   my $a = RT::FM::Article->new($session{'CurrentUser'});
+%   $a->Load($obj->ObjectId);
+<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name %></a></li>
+% }
+</ul>
+% } else {
+<i>No articles in this topic</i>
+% }
+<& /Elements/TitleBoxEnd &>
+% }
+
+% } else {
+Choose a class to examine:
+<ul>
+% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
+% $Classes->UnLimit;
+% while (my $c = $Classes->Next) {
+<li><a href="Topics.html?class=<%$c->Id%>"><% $c->Name %></li>
+% }
+</ul>
+
+% }
+
+<%init>
+my $Classes;
+if (defined $class) {
+    
+} else {
+}
+</%init>
+
+<%args>
+$id => 0
+$class => undef
+</%args>

@@ -33,14 +33,18 @@
 
 <& Elements/EditBasics, ArticleObj => $ArticleObj,
                         EditClass =>$EditClass,
-                        ClassObj =>$ClassObj,  
+                        ClassObj => $ClassObj,  
                         id => $id,
-                       %ARGS &>
+                        %ARGS &>
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj, 
                               CFContent => \%CFContent, 
                               ClassObj => $ClassObj, 
                               id =>$id,
                               %ARGS &>
+<& Elements/EditTopics, ArticleObj => $ArticleObj,
+                        ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
+                        id => $id,
+                        %ARGS &>
 <& Elements/EditLinks, ArticleObj => $ArticleObj, 
                         id => $id,
                        %ARGS &>
@@ -50,6 +54,10 @@
                      color => "#993333" &>
 </form>
 <%INIT>
+
+if (exists $ARGS{'Topics'}) {
+  $ARGS{'Topics'} = ref($ARGS{'Topics'}) ? $ARGS{'Topics'} : [$ARGS{'Topics'}]
+}
 
 my @results;
 my $title;
@@ -99,6 +107,7 @@ elsif ( $id eq 'new' ) {
     ( $id, $msg ) = $ArticleObj->Create( Summary => $ARGS{'Summary'},
                                          Name    => $ARGS{'Name'},
                                          Class   => $ARGS{'Class'},
+                                         Topics  => $ARGS{'Topics'},
                                          %create_args );
         push ( @results, $msg );
     if ($id ) {
@@ -260,6 +269,26 @@ elsif ( $id eq 'new' ) {
         }
 
     }
+
+    my %topics;
+    if ($ARGS{'EditTopics'}) {
+        $topics{$_}++ for @{$ARGS{'Topics'}};
+        my $objTopics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
+        $objTopics->LimitToObject($ArticleObj);
+        while (my $t = $objTopics->Next) {
+            $topics{$t->Topic}--;
+        }
+        for my $id (keys %topics) {
+            if ($topics{$id} > 0) {
+                my ($val, $msg) = $ArticleObj->AddTopic(Topic => $id);
+                push @results, $msg;
+            } elsif ($topics{$id} < 0) {
+                my ($val, $msg) = $ArticleObj->DeleteTopic(Topic => $id);
+                push @results, $msg;
+            }
+        }
+    }
+    
 
     $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
   }

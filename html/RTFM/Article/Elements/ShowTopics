@@ -16,13 +16,29 @@
 %# 
 %# END LICENSE BLOCK
 
-<%init>
-use RT::FM;
-use RT::FM::ArticleCollection;
-use RT::FM::ClassCollection;
-use RT::FM::CustomFieldCollection;
-use RT::FM::TopicCollection;
-use RT::FM::ObjectTopicCollection;
-use Time::ParseDate;
-return(1);
-</%init>
+Topics:
+% my $topics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
+% $topics->LimitToObject($article);
+% if ($topics->Count) {
+<ul>
+% my @topics;
+% while (my $t = $topics->Next) {
+%   my @path;
+%   my $t = $t->TopicObj;
+%   while ($t->Id) {
+%     unshift @path, $t->Name;
+%     $t = $t->ParentObj;
+%   }
+%   push @topics, join(" : ", @path);
+% }
+% for (sort @topics) {
+<li><% $_ %></li>
+% }
+</ul>
+% } else {
+<i>no topics</i>
+% }
+
+<%args>
+$article => undef
+</%args>

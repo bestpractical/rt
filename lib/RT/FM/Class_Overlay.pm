@@ -52,12 +52,14 @@ $RIGHTS = {
 
     SeeClass            => 'See that this class exists', #loc_pair
     CreateArticle       => 'Create articles in this class', #loc_pair
-    ShowArticle       => 'See articles in this class', #loc_pair
-    ShowArticleHistory       => 'See articles in this class', #loc_pair
+    ShowArticle         => 'See articles in this class', #loc_pair
+    ShowArticleHistory  => 'See articles in this class', #loc_pair
     ModifyArticle       => 'Modify or delete articles in this class', #loc_pair
+    ModifyArticleTopics => 'Modify topics for articles in this class', #loc_pair
     AdminClass          => 'Modify metadata and custom fields for this class', #loc_pair
-    ShowACL             => 'Display Access Control List',             # loc_pair
-    ModifyACL           => 'Modify Access Control List',              # loc_pair
+    AdminTopics         => 'Modify topic hierarchy associated with this class', #loc_pair
+    ShowACL             => 'Display Access Control List', # loc_pair
+    ModifyACL           => 'Modify Access Control List', # loc_pair
 };
 
 # TODO: This should be refactored out into an RT::ACLedObject or something

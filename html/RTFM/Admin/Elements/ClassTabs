@@ -28,22 +28,24 @@ if ($id) {
    $tabs = {
                  D => { title => loc('Basics'),
                         path => "RTFM/Admin/Classes/Modify.html?id=".$id,
-                           },
-                 
-                 E => { title => loc('Custom Fields'),
+                      },
+
+                 E => { title => loc('Topics'),
+                        path => "RTFM/Admin/Classes/Topics.html?id=".$id,
+                      },
+
+                 F => { title => loc('Custom Fields'),
                         path => 'RTFM/Admin/Classes/CustomFields.html?id='.$id,
-                        },
+                      },
 
-                 F => { title => loc('Group Rights'),
-                          path => "RTFM/Admin/Classes/GroupRights.html?id=".$id,
-                        },      
-                 G => { title => loc('User Rights'),
-                          path => "RTFM/Admin/Classes/UserRights.html?id=".$id,
-                        },
+                 G => { title => loc('Group Rights'),
+                        path => "RTFM/Admin/Classes/GroupRights.html?id=".$id,
+                      },      
 
-
-                 
-};
+                 H => { title => loc('User Rights'),
+                        path => "RTFM/Admin/Classes/UserRights.html?id=".$id,
+                      },
+           };
 }
 if ($session{'CurrentUser'}->HasRight( Object => $RT::FM::System, Right => 'AdminClass')) {
   $tabs->{"A"} = { title => loc('Select class'),

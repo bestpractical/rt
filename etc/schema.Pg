@@ -38,6 +38,8 @@ LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated TIMESTAMP NULL,
 PRIMARY KEY (id)
 );
+
+
 CREATE TABLE FM_Articles (
 id SERIAL,
 Name varchar(255) NOT NULL DEFAULT '',
@@ -52,6 +54,8 @@ LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated TIMESTAMP NULL,
 PRIMARY KEY (id)
 );
+
+
 CREATE TABLE FM_CustomFieldValues (
 id SERIAL,
 CustomField int NOT NULL,
@@ -64,6 +68,8 @@ LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated TIMESTAMP NULL,
 PRIMARY KEY (id)
 );
+
+
 CREATE TABLE FM_ArticleCFValues (
 id SERIAL,
 Article int NOT NULL,
@@ -74,8 +80,9 @@ Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated TIMESTAMP NULL,
 PRIMARY KEY (id)
-
 );
+
+
 CREATE TABLE FM_Transactions (
 id SERIAL,
 Article integer NOT NULL DEFAULT 0,
@@ -86,5 +93,25 @@ OldContent text NOT NULL DEFAULT '',
 NewContent text NOT NULL DEFAULT '',
 Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
+PRIMARY KEY (id)
+);
+
+
+CREATE TABLE FM_Topics (
+id SERIAL,
+Parent integer NOT NULL DEFAULT 0,
+Name varchar(255) NOT NULL DEFAULT '',
+Description varchar(255) NOT NULL DEFAULT '',
+ObjectType varchar(64) NOT NULL DEFAULT '',
+ObjectId integer NOT NULL,
+PRIMARY KEY (id)
+);
+
+
+CREATE TABLE FM_ObjectTopics (
+id SERIAL,
+Topic integer NOT NULL,
+ObjectType varchar(64) NOT NULL DEFAULT '',
+ObjectId integer NOT NULL,
 PRIMARY KEY (id)
 );

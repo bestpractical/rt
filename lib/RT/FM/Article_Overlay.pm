@@ -91,9 +91,6 @@ sub Create {
                  Links        => {},
                  @_ );
 
-    use Data::Dumper;
-    $RT::Logger->crit(Dumper \%args);
-
     my $class = RT::FM::Class->new($RT::SystemUser);
     $class->Load( $args{'Class'} );
     unless ( $class->Id ) {
@@ -136,6 +133,18 @@ sub Create {
             }
         }
 
+    }
+
+    # }}}
+    # {{{ Add topics
+
+    foreach my $topic (@{$args{Topics}}) {
+        my ( $cfid, $cfmsg ) = $self->AddTopic(Topic => $topic);
+        
+        unless ($cfid) {
+            $RT::Handle->Rollback();
+            return ( undef, $cfmsg );
+        }
     }
 
     # }}}
@@ -291,6 +300,7 @@ sub Delete {
     my $linksfrom = $self->_Links( Field => 'Base' );
     my $cfvalues = $self->CustomFieldValues;
     my $txns     = $self->Transactions;
+    my $topics   = $self->Topics;
 
     while ( my $item = $linksto->Next ) {
         my ( $val, $msg ) = $item->Delete();
@@ -309,6 +319,7 @@ sub Delete {
             return ( 0, $self->loc('Internal Error') );
         }
     }
+
     while ( my $item = $txns->Next ) {
         my ( $val, $msg ) = $item->Delete();
         unless ($val) {
@@ -320,6 +331,15 @@ sub Delete {
 
     while ( my $item = $cfvalues->Next ) {
         my ( $val, $msg ) = $item->Delete();
+        unless ($val) {
+            $RT::Logger->crit( ref($item) . ": $msg" );
+            $RT::Handle->Rollback();
+            return ( 0, $self->loc('Internal Error') );
+        }
+    }
+
+    while (my $item = $topics->Next) {
+        my ($val, $msg ) = $item->Delete();
         unless ($val) {
             $RT::Logger->crit( ref($item) . ": $msg" );
             $RT::Handle->Rollback();
@@ -1062,9 +1082,9 @@ sub _AddCustomFieldValue {
 # {{{ DeleteCustomFieldValue
 
 =item DeleteCustomFieldValue { CustomField => undef, Content => undef } 
-  
-  Takes a paramhash. Deletes the Keyword denoted by the I<Keyword> parameter from this
-  ticket's object keywords.
+
+Takes a paramhash. Deletes the Keyword denoted by the I<Keyword>
+parameter from this ticket's object keywords.
 
 =cut
 
@@ -1128,6 +1148,70 @@ sub DeleteCustomFieldValue {
 
 # }}}
 
+# }}}
+
+# {{{ Topics
+
+# {{{ Topics
+sub Topics {
+    my $self = shift;
+    
+    my $topics = new RT::FM::ObjectTopicCollection($self->CurrentUser);
+    if ($self->CurrentUserHasRight('ShowArticle')) {
+        $topics->LimitToObject($self);
+    }
+    return $topics;
+}
+# }}}
+
+# {{{ AddTopic
+sub AddTopic {
+    my $self = shift;
+    my %args = ( @_ );
+    
+    unless ( $self->CurrentUserHasRight('ModifyArticleTopics') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    my $t = new RT::FM::ObjectTopic($self->CurrentUser);
+    my ($tid) = $t->Create( Topic      => $args{'Topic'},
+                            ObjectType => ref($self),
+                            ObjectId   => $self->Id );
+    if ($tid) {
+        return ($tid, $self->loc("Topic membership added"));
+    } else {
+        return (0, $self->loc("Unable to add topic membership"));
+    } 
+}
+# }}}
+
+# {{{ DeleteTopic
+sub DeleteTopic {
+    my $self = shift;
+    my %args = ( @_ );
+
+    unless ( $self->CurrentUserHasRight('ModifyArticleTopics') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    my $t = new RT::FM::ObjectTopic($self->CurrentUser);
+    $t->LoadByCols(Topic => $args{'Topic'}, ObjectId => $self->Id, ObjectType => ref($self));
+    if ($t->Id) {
+        my $del = $t->Delete;
+        unless ($del) {
+            return ( undef, 
+                     $self->loc("Unable to delete topic membership in [_1]",
+                                $t->TopicObj->Name));
+        } else {
+            return ( 1,
+                     $self->loc("Topic membership removed"));
+        }
+    } else {
+        return ( undef,
+                 $self->loc("Couldn't load topic membership while trying to delete it"));
+    }
+}
+# }}}
 # }}}
 
 # {{{ CurrentUserHasRight
