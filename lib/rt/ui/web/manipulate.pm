@@ -205,7 +205,7 @@ sub frame_display_request {
     &rt::ui::web::content_header();
     print "
 <frameset rows=\"20,80\" name=\"body\" border=\"0\">
-<frameset cols=\"45,55\" name=\"reqtop\" border\"0\">
+<frameset cols=\"45,55\" name=\"reqtop\" border=\"0\">
 <frame src=\"$ScriptURL?display=ReqOptions&amp;serial_num=$serial_num\" name=\"req_buttons\" scrolling=\"no\">
 <frame src=\"$ScriptURL?display=Blank&serial_num=$serial_num\" name=\"summary\">
 </frameset>";
@@ -265,19 +265,18 @@ sub takeaction {
 	($trans, $StatusMsg)=&rt::change_final_priority ($serial_num, "$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}",$current_user);
       }
       
-      if ($rt::ui::web::FORM{'do_req_status'}){
-	if ($rt::ui::web::FORM{'do_req_status'} eq 'stall') {
+      if (my $status=$rt::ui::web::FORM{'do_req_status'}){
+	if ($status ne $rt::req[$serial_num]{status}) {
+	  if ($status eq 'stall') {
 	  ($trans, $StatusMsg)=&rt::stall ($serial_num, $current_user);
-	}
-	if ($rt::ui::web::FORM{'do_req_status'} eq 'open') {
+	  } elsif ($status eq 'open') {
 	  ($trans, $StatusMsg)=&rt::open ($serial_num, $current_user);
-	}
-	if ($rt::ui::web::FORM{'do_req_status'} eq 'resolve') {
+	  } elsif ($status eq 'resolve') {
 	  ($trans, $StatusMsg)=&rt::resolve ($serial_num, $current_user);
-	}
-	if ($rt::ui::web::FORM{'do_req_status'} eq 'kill') {
+	  } elsif ($status eq 'kill') {
 	  $rt::ui::web::FORM{'display'} = "SetKill";
 	}
+      }
       }
       
       
@@ -407,6 +406,12 @@ sub display_queue {
     } 
   }   
   
+  if ($rt::ui::web::FORM{'q_area'} && $rt::ui::web::FORM{'q_area'} ne "Any") {
+    $area_ops .= " area like \'%" . $rt::ui::web::FORM{'q_area'} . "%\' ";
+  }
+  if ($rt::ui::web::FORM{'q_area'} eq "None") {
+    $area_ops = !$area_ops;
+  }
   if ($rt::ui::web::FORM{'q_user'} eq 'other') {
     if ($user_ops){
       $user_ops .= " OR ";
@@ -542,6 +547,10 @@ sub display_queue {
     if ($query_string) {$query_string .= " AND ";}
     $query_string .= "( $owner_ops )";
   }
+  if ($area_ops) {
+    if ($query_string) {$query_string .= " AND ";}
+    $query_string .= "( $area_ops )";
+  }
   if (!$query_string) {
     $query_string = "(owner = \'$current_user\' or owner = \'\' ) and status = \'open\' ";
   }
@@ -557,12 +566,21 @@ sub display_queue {
     $query_string .= " DESC";
   }
   
+   if ($rt::ui::web::FORM{'q_limit'}) {
+     if ($rt::ui::web::FORM{'q_range'}) {
+        $start = $rt::ui::web::FORM{'q_range'};
+     }
+     else {
+        $start = 0;
+     }
+     $query_string .= " LIMIT $start,$rt::ui::web::FORM{'q_limit'}";
+   }
+
   
   $count=&rt::get_queue($query_string,$current_user);
 
   #we subtract 1 from the refresh rate so that the default value is -1..which 
   #means never refresh...as 0 should...but 0 means refresh now.
- 
   if ( ! $rt::ui::web::FORM{'refresh'} ) {
           $rt::ui::web::FORM{'refresh'} = -1;
 	}
@@ -748,12 +766,12 @@ print "
     if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'comments') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-      print &fdro_murl("display=SetComment","history","<img border=0 src=\"/webrt/comment.gif\" alt=\"[Comment]\">");
+      print &fdro_murl("display=SetComment","history","<img border=0 src=\"/webrt/comment.gif\" alt=\"[Comment this]\">");
       
       }
     if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-      print &fdro_murl("display=SetReply","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Reply]\">");
+      print &fdro_murl("display=SetReply","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Reply this]\">");
     }
   }
     
@@ -806,8 +824,8 @@ sub do_bar {
   
       print "
      <DIV ALIGN=\"CENTER\"> ".
-&fdro_murl("display=SetComment","history","Comment"). " | " .
-&fdro_murl("display=SetReply","history","Reply");
+&fdro_murl("display=SetComment","history","Generic Comment"). " | " .
+&fdro_murl("display=SetReply","history","Generic Reply");
       
       
       if ($rt::req[$serial_num]{'owner'} eq '') {
@@ -846,7 +864,248 @@ sub display_summary {
   else {
 	$target="";
       }
+  $qtarget="target=\"queue\"";
+  print "
+<font size=\"-1\">
+<font size=\"+1\">T</font>rack <font size=\"+1\">R</font>equestor\n<br>
+ <a href=\"$ScriptURL?display=Queue&amp;q_user=other&amp;q_user_other=$rt::req[$in_serial_num]{requestors}\" $qtarget>List all requests by this requestor</a>
 
+  if (&rt::can_manipulate_request ($serial_num, $current_user)) {
+
+  print "
+<hr>
+<font size=\"+1\">R</font>equest <font size=\"+1\">H</font>eader <font size=\"+1\">I</font>nfo\n<br>
+<font size=\"-1\">
+<form action=\"$ScriptURL\" method=\"post\">
+<font color=\"$fg_color\">
+<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
+
+<TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
+
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Serial Number:</b>
+</TD>
+
+<TD ALIGN=\"CENTER\" bgcolor=\"$bg_color\">
+<input size=5 name=\"req_merge_into\" value=\"$in_serial_num\">
+</TD>
+
+<TD bgcolor=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_merge\">Merge requests!
+</TD>
+
+</a>
+
+</TR>
+
+<TR VALIGN=\"TOP\">
+<TD align=\"right\">
+
+<b>Subject:</b>
+</TD>
+
+<TD ALIGN=\"CENTER\" bgcolor=\"$bg_color\" >
+<input size=25 name=\"subject\" value=\"$rt::req[$in_serial_num]{'subject'}\">
+</TD>
+
+<TD bgcolor=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_subject\">Change subject!
+</TD>
+
+</TR>
+<TR VALIGN=\"TOP\">
+<TD  align=\"right\">
+<b>Area:</b></a>
+</TD>
+<TD ALIGN=\"CENTER\" bgcolor=\"$bg_color\">";
+    print "<select name=\"area\"><option value=\"\">None ";
+    foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
+      print "<option ";
+      print "SELECTED" if ($area eq $rt::req[$serial_num]{area});
+      print ">$area\n";
+    }
+    print "</select>
+</TD>
+<TD bgcolor=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_area\">Change area!
+</TD>
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Queue:</b>
+
+<TD ALIGN=\"CENTER\" bgcolor=\"$bg_color\">
+<select name=\"queue\">";
+    foreach $queue (sort keys %rt::queues) {
+      if (&rt::can_create_request($queue, $current_user)) {
+	print "<option";
+	if ($rt::req[$serial_num]{queue_id} eq $queue) {
+	  print " SELECTED";
+	}
+	print ">$queue\n";
+      }
+    }
+    print "</select></TD>
+
+<TD bgcolor=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_queue\" value=\"true\">Change queue!
+</TD>
+</TR>
+	    
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Requestors:</b>
+</TD>
+<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">
+<input size=20 name=\"recipient\" VALUE=\"$rt::req[$serial_num]{'requestors'}\">
+</TD>
+<TD BGCOLOR=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_user\">Change requestor!
+</TD>
+</TR> 
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Owner:</b>
+</TD>
+<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">
+<select name=\"do_req_give_to\">
+<option value=\"\">Nobody ";	
+    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}} ) {
+      if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
+	print "<option ";
+	print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
+	print ">$user_id\n";
+      }
+    }
+    print "</select>
+</TD>
+<TD ALIGN=\"LEFT\">
+<input type=\"checkbox\" name=\"do_req_give\" value=\"true\">Set owner!
+</TD>
+</TR> 
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Status:</b>
+</TD>
+<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+    if ($rt::req[$serial_num]{status} eq 'dead') { 
+      print "<i>Dead</i>";
+    } else {
+      print "<select name=\"do_req_status\">\n";
+      print "<option value=\"open\" ";
+      if ($rt::req[$serial_num]{status} eq 'open') { print "SELECTED";}
+      print ">open\n";
+      print "<option value=\"stall\" ";
+      if ($rt::req[$serial_num]{status} eq 'stalled') { print "SELECTED";}
+      print ">stalled\n";
+      print "<option value=\"resolve\" ";
+      if ($rt::req[$serial_num]{status} eq 'resolved') { print "SELECTED";}
+      print ">resolved\n";
+      print "<option value =\"kill\">dead\n";
+      print "</select>\n";
+    }
+    print "
+</TD>
+<TD BGCOLOR=\"$bg_color\">";
+    if ($rt::req[$serial_num]{status} eq 'dead') { 
+      print "<i>Unchangeable</i>";
+    }
+    print "
+</TD>
+</TR> 
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>
+Last User Contact:</b>
+</TD>
+		    
+<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+			
+  if ($rt::req[$in_serial_num]{'date_told'}) {
+			    print scalar localtime($rt::req[$in_serial_num]{'date_told'});
+			    print " ($rt::req[$in_serial_num]{'since_told'} ago)";
+			}
+			else {
+			    print "<i>Never contacted</i>";
+			}
+    
+    print "
+</TD>
+<TD BGCOLOR=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_notify\" value=\"1\">Requestor has been touched!
+</TD>
+</TR>
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Current Priority:</b>
+</TD>
+<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+    &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
+    print "
+</TD>
+<TD BGCOLOR=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_prio\" value=\"true\">Set priority!
+</TD>
+</TR> 
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Final Priority:</b>
+</TD> 
+<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+    &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
+    print "
+</TD>
+<TD BGCOLOR=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_final_prio\" value=\"true\">Set final priority!
+</TD>
+</TR> 
+
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Due:</b>
+</TD>
+
+<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+  if ($rt::req[$in_serial_num]{'date_due'}) {
+      print "in $rt::req[$in_serial_num]{'till_due'}<br>";
+    } else {
+      print "<i>No date assigned</i><br>";
+  }
+    &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
+  print "
+</TD>
+<TD BGCOLOR=\"$bg_color\">
+<input type=\"checkbox\" name=\"do_req_date_due\" value=\"true\">Set new due date!
+</TD>
+</TR> 
+<TR VALIGN=\"TOP\">
+<TD ALIGN=\"RIGHT\">
+<b>Last Action:</b>
+		    
+</TD>
+<TD BGCOLOR=\"$bg_color\"> " .
+    scalar localtime($rt::req[$in_serial_num]{'date_acted'}) . 
+	"
+($rt::req[$in_serial_num]{'since_acted'} ago)
+    </TD>
+    </TR> 
+    
+    <TR valign=\"top\">
+    <TD align=\"right\">
+    <b>Created</b>
+    </TD>
+    <TD BGCOLOR=\"$bg_color\"> " .
+scalar localtime($rt::req[$in_serial_num]{'date_created'}) . "
+($rt::req[$in_serial_num]{'age'} ago)
+    </TD>
+    </TR>
+    </TABLE>
+    <input type=\"submit\" value=\"Change something\">
+    </font>
+    </form>
+    ";
+
+} else {
   if ($rt::req[$in_serial_num]{'owner'} eq '') {
     $rt::req[$in_serial_num]{'owner'} = "<i>none</i>";
   }
@@ -860,83 +1119,83 @@ sub display_summary {
   }
 
   print "
-<font color=\"$fg_color\">
-<TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
+    <font color=\"$fg_color\">
+    <TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
 
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<A href=\"$ScriptURL?display=SetMerge&amp;serial_num=$in_serial_num\" $target $color>
-<b>Serial Number</b></a>
-</TD>
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <A href=\"$ScriptURL?display=SetMerge&amp;serial_num=$in_serial_num\" $target $color>
+    <b>Serial Number</b></a>
+    </TD>
 
-<TD bgcolor=\"$bg_color\">
-$in_serial_num
-</TD>
-</TR>
+    <TD bgcolor=\"$bg_color\">
+    $in_serial_num
+    </TD>
+    </TR>
 
-<TR VALIGN=\"TOP\">
-<TD align=\"right\">
-<a href=\"$ScriptURL?display=SetSubject&amp;serial_num=$in_serial_num\" $target>
-<b>Subject</b></a>
-</TD>
+    <TR VALIGN=\"TOP\">
+    <TD align=\"right\">
+    <a href=\"$ScriptURL?display=SetSubject&amp;serial_num=$in_serial_num\" $target>
+    <b>Subject</b></a>
+    </TD>
 
-<TD bgcolor=\"$bg_color\" >
-$rt::req[$in_serial_num]{'subject'}
- </TD>
-</TR>
-<TR VALIGN=\"TOP\">
-<TD  align=\"right\">
-<a href=\"$ScriptURL?display=SetArea&amp;serial_num=$in_serial_num\" $target>
-<b>Area</b></a>
+    <TD bgcolor=\"$bg_color\" >
+    $rt::req[$in_serial_num]{'subject'}
 </TD>
-<TD bgcolor=\"$bg_color\">
-$rt::req[$in_serial_num]{'area'}
+    </TR>
+    <TR VALIGN=\"TOP\">
+    <TD  align=\"right\">
+    <a href=\"$ScriptURL?display=SetArea&amp;serial_num=$in_serial_num\" $target>
+    <b>Area</b></a>
+    </TD>
+    <TD bgcolor=\"$bg_color\">
+    $rt::req[$in_serial_num]{'area'}
 </TD>
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<a href=\"$ScriptURL?display=SetQueue&amp;serial_num=$in_serial_num\" $target>
-<b>Queue</b></a>
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <a href=\"$ScriptURL?display=SetQueue&amp;serial_num=$in_serial_num\" $target>
+    <b>Queue</b></a>
+    </TD>
+  
+    <TD bgcolor=\"$bg_color\">
+    $rt::req[$in_serial_num]{'queue_id'}
 </TD>
-
-<TD bgcolor=\"$bg_color\">
-$rt::req[$in_serial_num]{'queue_id'}
+    </TR>
+    
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <a href=\"$ScriptURL?display=SetUser&amp;serial_num=$in_serial_num\" $target>
+    <b>Requestors</b></a>
+    </TD>
+    <TD BGCOLOR=\"$bg_color\">
+    $rt::req[$in_serial_num]{'requestors'}
 </TD>
-</TR>
-	    
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<a href=\"$ScriptURL?display=SetUser&amp;serial_num=$in_serial_num\" $target>
-<b>Requestors</b></a>
+    </TR> 
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <a href=\"$ScriptURL?display=SetGive&amp;serial_num=$in_serial_num\" $target><b>Owner</b></a>
+    </TD>
+    
+    
+    <TD BGCOLOR=\"$bg_color\">
+    $rt::req[$in_serial_num]{'owner'} 
 </TD>
-<TD BGCOLOR=\"$bg_color\">
-$rt::req[$in_serial_num]{'requestors'}
+    </TR> 
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <b><a href=\"$ScriptURL?display=SetStatus&amp;serial_num=$in_serial_num\" $target>Status</a></b>
+    </TD>
+    
+    <TD BGCOLOR=\"$bg_color\">
+    $rt::req[$in_serial_num]{'status'}
 </TD>
-</TR> 
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<a href=\"$ScriptURL?display=SetGive&amp;serial_num=$in_serial_num\" $target><b>Owner</b></a>
-</TD>
-			  
-		    
-<TD BGCOLOR=\"$bg_color\">
-$rt::req[$in_serial_num]{'owner'} 
-</TD>
-</TR> 
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<b><a href=\"$ScriptURL?display=SetStatus&amp;serial_num=$in_serial_num\" $target>Status</a></b>
-</TD>
-      
-<TD BGCOLOR=\"$bg_color\">
-$rt::req[$in_serial_num]{'status'}
-</TD>
-</TR> 
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<b><a href=\"$ScriptURL?display=SetNotify&amp;do_req_notify=1&amp;serial_num=$in_serial_num\" $target>Last User Contact</a></b>
-</TD>
-		    
-<TD BGCOLOR=\"$bg_color\">";
+    </TR> 
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <b><a href=\"$ScriptURL?display=SetNotify&amp;do_req_notify=1&amp;serial_num=$in_serial_num\" $target>Last User Contact</a></b>
+    </TD>
+    
+    <TD BGCOLOR=\"$bg_color\">";
 			
   if ($rt::req[$in_serial_num]{'date_told'}) {
 			    print scalar localtime($rt::req[$in_serial_num]{'date_told'});
@@ -947,32 +1206,32 @@ $rt::req[$in_serial_num]{'status'}
 			}
     
     print "
+    </TD>
+    </TR>
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <b><a href=\"$ScriptURL?display=SetPrio&amp;serial_num=$in_serial_num\" $target>Current Priority</a></b>
+    </TD>
+    <TD BGCOLOR=\"$bg_color\">
+    $rt::req[$in_serial_num]{'priority'}
 </TD>
-</TR>
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<b><a href=\"$ScriptURL?display=SetPrio&amp;serial_num=$in_serial_num\" $target>Current Priority</a></b>
-</TD>
-<TD BGCOLOR=\"$bg_color\">
-$rt::req[$in_serial_num]{'priority'}
-</TD>
-</TR> 
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<b><a href=\"$ScriptURL?display=SetFinalPrio&amp;serial_num=$in_serial_num\" $target>Final Priority</a></b>
-</TD> 
+    </TR> 
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <b><a href=\"$ScriptURL?display=SetFinalPrio&amp;serial_num=$in_serial_num\" $target>Final Priority</a></b>
+    </TD> 
 
- <TD BGCOLOR=\"$bg_color\">
-$rt::req[$in_serial_num]{'final_priority'}
+    <TD BGCOLOR=\"$bg_color\">
+    $rt::req[$in_serial_num]{'final_priority'}
 </TD>
-</TR> 
+    </TR> 
 
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<b><a href=\"$ScriptURL?display=SetDateDue&amp;serial_num=$in_serial_num\" $target>Due</a></b>
-</TD>
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <b><a href=\"$ScriptURL?display=SetDateDue&amp;serial_num=$in_serial_num\" $target>Due</a></b>
+    </TD>
 
-<TD BGCOLOR=\"$bg_color\">";		
+    <TD BGCOLOR=\"$bg_color\">";		
   
   if ($rt::req[$in_serial_num]{'date_due'}) {
     print scalar localtime($rt::req[$in_serial_num]{'date_due'});
@@ -982,34 +1241,34 @@ $rt::req[$in_serial_num]{'final_priority'}
     print "<i>No date assigned</i>";
   }
   print "
-</TD>
-</TR> 
-<TR VALIGN=\"TOP\">
-<TD ALIGN=\"RIGHT\">
-<b>Last Action</b>
-		    
-</TD>
-<TD BGCOLOR=\"$bg_color\"> " .
+    </TD>
+    </TR> 
+    <TR VALIGN=\"TOP\">
+    <TD ALIGN=\"RIGHT\">
+    <b>Last Action</b>
+    
+    </TD>
+    <TD BGCOLOR=\"$bg_color\"> " .
 scalar localtime($rt::req[$in_serial_num]{'date_acted'}) . "
 ($rt::req[$in_serial_num]{'since_acted'} ago)
-</TD>
-</TR> 
-  
-<TR valign=\"top\">
-<TD align=\"right\">
-<b>Created</b>
-</TD>
-<TD BGCOLOR=\"$bg_color\"> " .
+    </TD>
+    </TR> 
+    
+    <TR valign=\"top\">
+    <TD align=\"right\">
+    <b>Created</b>
+    </TD>
+    <TD BGCOLOR=\"$bg_color\"> " .
 scalar localtime($rt::req[$in_serial_num]{'date_created'}) . "
 ($rt::req[$in_serial_num]{'age'} ago)
-</TD>
-</TR>
+    </TD>
+    </TR>
   </TABLE>
   </font>
-";
+    ";
 
 }
-  
+ }
 
 #display a column header for the queue
 
