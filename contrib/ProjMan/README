@@ -1,1 +1,47 @@
-Eventually, a project management system built over RT will appear here.
+ProjMan - a free project management system built on the top of RT
+(Request Tracker).
+
+RT is Copyright (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
+ProjMan is Copyright (c) 2000 Tobias Brox <tobix@fsck.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You've probably already seen a copy of the GNU General Public
+    License; if not, write to the Free Software Foundation, Inc., 675
+    Mass Ave, Cambridge, MA 02139, USA.
+
+
+I'm slowly starting to hack a Project Management system built at the
+top of RT2.  Those hacks are actually beeing used locally, but they
+are not (yet) wrapped or released for public usage.
+
+There should eventually be a Makefile here.  Though, I don't have much
+working experience with Makefiles, distributions and wrapping, so
+somebody else will have to do that.  This works from my shell - it
+might need adjustments:
+
+	# Actually, I'm using /tmp for all experiments ;)
+	my_rt_lib_dir=/tmp/FunRT/
+	my_rt_web_dir=/tmp/rt/webrt/
+	my_rt_db_name=RT11
+	
+	# The location of the distribution is used directly, so copy
+        # or untar this wherever you'd like it to be.
+	my_projman_dir=$PWD
+	
+	cd $my_rt_lib_dir
+	ln -s $my_projman_dir/lib ./ProjMan
+	cd $my_rt_web_dir
+	ln -s $my_projman_dir/web ./ProjMan
+	mysql $my_rt_db_name < $my_projman_dir/schema.mysql
+
+
+
