@@ -1,4 +1,5 @@
- <& /Elements/TitleBoxStart, 
+<!-- Transaction <%$Ticket->Id%>/<%$Transaction->Id%> -->
+<& /Elements/TitleBoxStart, 
 	title => 
 $Transaction->CreatedAsString. " " . 
 $TicketString .

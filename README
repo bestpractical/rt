@@ -12,24 +12,20 @@ The Leftbank Operation, Wesleyan University and by other contributing
 companies.
 
 
-STATUS 
-------
-
-This is a development release in the cycle toward RT2. This is NOT 
-a stable release. 
-
 
 BUGS
 ----
 
-Have a look at <URL:http://fsck.com/rt2/NoAuth/Buglist.html> for known bugs.
+Known issues with releases of RT2 are listed at 
+<URL:http://fsck.com/rt2/NoAuth/Errata.html>.  This includes every bug known
+to exist in each release of RT.  (When prompted, login as guest/guest)
+
+To find out more about currently open bugs, check out the live 
+Buglist at  <URL:http://fsck.com/rt2/NoAuth/Buglist.html>.
 (When prompted, login as guest/guest)
 
-To submit a bug, send an email to rt-2.0-bugs@fsck.com.
+To report a bug, send an email to rt-2.0-bugs@fsck.com.
 
-For documentation bugs, or if you have suggestions to the
-documentation, send a mail to rt-docs@fsck.com
- 
 
 REQUIRED PACKAGES:
 ------------------
