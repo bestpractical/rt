@@ -95,33 +95,26 @@ $Logger->add(Log::Dispatch::File->new
       ]
      );
 
-# these modes don't do much right now...i had to hard code them in because 
-# perl ws being nasty about the leading 0  check RT_Content.pl for hacking
-# (Those shouldn't be needed in 2.0?)
-$dirmode=0750;
-$transactionmode=0640;
-umask(0027);	
-
-# rt runs setuid to this user and group to keep its datafile private
-# no users should be in the rt group
-# if you change these, make sure to edit the makefile and
-# to chown the rt directory structure
-# (are those needed any more?)
-#$rtuser="!!RTUSER!!";
-#$rtgroup="!!RTGROUP!!";
-
+# A hash table of convertion subs to be used for transforming RT Link
+# URIs to URLs in the web interface.  If you want to use RT towards
+# locally installed databases, this is the right place to configure it.
+# (TODO!)
+my %URI2HTML=
+    (
+     'fsck.com-rt' => sub {warn "stub!";},
+     'mozilla.com-bugzilla' => sub {warn "stub!";},
+     'fsck.com-kb' => sub {warn "stub!"}
+     );
+    
 
 # before doing a "make install" in /usr/local/rt/src you NEED to change the 
 # password below and change the apropriate line in /usr/local/rt/etc/mysql.acl	
 $DatabasePassword="!!DB_RT_PASS!!";
 
 
-#name of RT installation
-#rt will look for this string in the headers of incoming mail
-#once you set it, you should NEVER change it.
-# (if you do, users will have no end to problems with their old
-#tickets getting new requests opened for them)
-
+# name of RT installation
+# Use a smart name, it's not smart changing this, unless you know
+# exactly what you're doing.
 $rtname="!!RT_MAIL_TAG!!";  
 
 # Domain name and hostname
