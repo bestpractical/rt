@@ -1,0 +1,122 @@
+#!/usr/bin/perl
+
+Help();
+
+sub Help {
+print <<EOF;
+
+User configuration
+
+--user <userid>
+   
+  	--delete
+  	--create
+
+  Core Attributes
+	--set-userid
+	--set-unix-username
+	--set-password
+	--set-email
+	--set-privileged
+	--set-comments
+	--set-signature
+	--set-organization
+
+  Names	
+	--set-realname
+	--set-nickname
+	
+  Auth and external info
+	--set-ext-contactinfo-id
+	--set-ext-contactinfo-system
+	--set-ext-auth-id
+	--set-ext-auth-system
+
+  Phone numbers
+	--set-phone-home
+	--set-phone-work
+	--set-phone-mobile
+	--set-phone-pager
+
+  Paper address
+	--set-address1
+	--set-address2
+	--set-city
+	--set-state
+	--set-zip
+	--set-country
+	--set-otherinfo	
+
+
+Group Configuration
+--group <groupid>
+	--create 
+	--delete
+	--set-description <new description>
+	--set-groupid <new groupid>
+	--add-member <userid>
+	--delete-member <userid>
+	
+
+Queue Configuration
+--queue <queueid>
+	--create
+	--delete
+	--set-queueid
+	--set-correspondence-address
+	--set-comment-address
+	--set-initial-priority
+	--set-final-priority
+	--set-default-due-in
+	--add-cc
+	--delete-cc
+	--add-admincc
+	--delete-admincc
+	
+	--add-keyword-select [name] [root keyword] [<single|multiple>] [depth]
+	--delete-keyword-select [name]
+	
+	--create-template  <name> <description>
+	--modify-template <name> <description>
+	--delete-template <name>
+
+	--add-scrip <condition> <action> <template>
+	--delete-scrip <condition> <action> <template>
+
+	--grant-user <userid> <right>
+	--grant-group <groupid> <right>
+
+	--revoke-user <userid> <right>
+	--revoke-group <groupid> <right>
+
+
+System configuration
+--system 
+	--add-keyword-select [name] [root keyword] [<single|multiple>] [depth]
+	--delete-keyword-select [name]
+	
+	--create-template  <name> <description>
+	--modify-template <name> <description>
+	--delete-template <name>
+
+	--add-scrip <condition> <action> <template>
+	--delete-scrip <condition> <action> <template>
+
+	--grant-user <userid> <right>
+	--grant-group <groupid> <right>
+
+	--revoke-user <userid> <right>
+	--revoke-group <groupid> <right>	
+
+
+Keywords
+--keyword  <fully qualified name>
+  	--create
+	--delete
+	--set-name
+	--set-description
+
+
+EOF
+
+}
