@@ -77,7 +77,7 @@ for (@TYPES) { $TYPES{$_} = 1};
 $RIGHTS = {
     SeeCustomField            => 'See custom fields',       # loc_pair
     AdminCustomField          => 'Create, delete and modify custom fields',        # loc_pair
-    ModifyObjectCustomFieldValues => 'Add, delete and modify custom field values for objects' #loc_pair
+    ModifyCustomField         => 'Add, delete and modify custom field values for objects' #loc_pair
 
 };
 
@@ -908,7 +908,7 @@ sub AddValueForObject {
 	my $obj = $args{'Object'} or return;
 
 
-    unless ($self->CurrentUserHasRight('ModifyObjectCustomFieldValues')) {
+    unless ($self->CurrentUserHasRight('ModifyCustomField')) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -947,7 +947,7 @@ sub DeleteValueForObject {
 		     @_ );
 
 
-    unless ($self->CurrentUserHasRight('ModifyObjectCustomFieldValues')) {
+    unless ($self->CurrentUserHasRight('ModifyCustomField')) {
         return (0, $self->loc('Permission Denied'));
     }
 
