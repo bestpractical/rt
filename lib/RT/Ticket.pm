@@ -160,7 +160,8 @@ sub Create {
 
   }
   #Add a transaction for the create
-  my ($Trans,$ErrStr) = $self->_NewTransaction(Type => "Create",
+  my $Trans;
+  ($Trans,$ErrStr) = $self->_NewTransaction(Type => "Create",
 				     TimeTaken => 0, 
 				     MIMEEntity=>$args{'MIMEEntity'});
   
