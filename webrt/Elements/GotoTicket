@@ -1,1 +1,1 @@
-<FORM ACTION="/Ticket/Display.html"><input type=submit value="Goto ticket">&nbsp;<input size=4 name=id></FORM>
+<FORM ACTION="<%$RT::WebPath%>/Ticket/Display.html"><input type=submit value="Goto ticket">&nbsp;<input size=4 name=id></FORM>
