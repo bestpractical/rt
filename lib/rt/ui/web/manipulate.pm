@@ -592,7 +592,7 @@ sub display_queue {
   print "<!-- Query String 
 $query_string
 -->
-<font size=$QUEUE_FONT">
+<font size=\"$QUEUE_FONT\">
 <TABLE cellpadding=4 border=1 width=100% bgcolor=\"\#bbbbbb\">
 
 <TR>
@@ -741,10 +741,10 @@ sub display_history_tables {
     $bgcolor="\#330000" if ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'owner');	
     $bgcolor="\#AA0000" if ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'date_due');	
     
-    print "	 
-<TR bgcolor=\"$bgcolor\" height=25>
-<td><img src=\"/webrt/endcap.gif\" height=30 alt='(' ></td>
-<TD align=\"left\" valign=\"center\"  width=\"15%\">
+    print "
+<TR BGCOLOR=\"$bgcolor\">
+<TD WIDTH=5 BGCOLOR=\"$bgcolor\">&nbsp;</TD>
+<TD align=\"left\" valign=\"center\" width=\"15%\">
 <font color=\"\#ffffff\" size=\"-1\">
 $date
 $time
@@ -756,14 +756,19 @@ $time
 <b>$rt::req[$serial_num]{'trans'}[$temp]{text}</b>
 </font>
 </TD>
-<TD width=0%><IMG SRC=\"\" width=1 height=1 alt=')'></TD>
+<TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=28 alt=')'></TD>
 </TR>
+<TR>
+<TD COLSPAN=3><img src=\"/webrt/sbs.gif\" width=100% height=4 alt=''></TD> 
+<TD><img src=\"/webrt/sbc.gif\"  width=4 alt='' height=4></TD>
+</TR>
+
+
 ";
     
     if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
       print "
 <TR>
-<TD></TD>
 
 <TD VALIGN=\"TOP\">
 <TABLE>";
@@ -857,8 +862,8 @@ sub display_summary {
   
   use Time::Local;
   
-  $fg_color="#FFFFFF";
-  $bg_color="#EEEEEE";
+  $bg_color="#FFFFFF";
+  $fg_color="#EEEEEE";
   
   if ($frames) {
     $target = "target=\"summary\"";
@@ -881,7 +886,7 @@ sub display_summary {
 
   print "
 <font color=\"\$fg_color\">
-<TABLE cellspacing=0 cellpadding=0 width=\"100%\">
+<TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
 
 <TR VALIGN=\"TOP\">
 <TD ALIGN=\"RIGHT\">
