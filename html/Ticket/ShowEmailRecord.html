@@ -16,7 +16,7 @@ $Transaction => undef
      unless ($AttachmentObj->TransactionId() == $Transaction ) {
         Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
      }
-$m->content_type('text/plain');
+$r->content_type('text/plain');
 </%init>
 <pre>
 <%$AttachmentObj->Headers%>
