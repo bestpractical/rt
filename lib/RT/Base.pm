@@ -72,6 +72,9 @@ sub CurrentUser {
     if (@_) {
         $self->{'original_user'} = $self->{'user'};
         $self->{'user'} = shift;
+        # We need to weaken the CurrentUser ($self->{'user'}) reference
+        # if the object in question is the currentuser object.
+        # This avoids memory leaks.
         Scalar::Util::weaken($self->{'user'}) if (ref($self->{'user'}) &&
                                                     $self->{'user'} == $self );
     }
@@ -79,7 +82,6 @@ sub CurrentUser {
     unless ( ref( $self->{'user'}) ) {
         $RT::Logger->err( "$self was created without a CurrentUser\n" . Carp::cluck() );
         return (0);
-        die;
     }
     return ( $self->{'user'} );
 }
