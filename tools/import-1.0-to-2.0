@@ -6,11 +6,6 @@
 #  RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
 
 
-#
-# Still to come:
-#	importing merged tickets
-#       properly handling ticket dates
-
 my $RT1USER = "root";
 my $RT1PASSWORD = 'password';
 my $RT1DATABASE = "rt";
@@ -25,10 +20,8 @@ use strict;
 use Carp;
 use Getopt::Long qw(:config pass_through);
 
-use lib "/opt/rt2/lib";
-use lib "/opt/rt2/etc";
-#use lib "!!RT_LIB_PATH!!";
-#use lib "!!RT_ETC_PATH!!";
+use lib "!!RT_LIB_PATH!!";
+use lib "!!RT_ETC_PATH!!";
 
 use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
 			   GetCurrentUser GetMessageContent);
