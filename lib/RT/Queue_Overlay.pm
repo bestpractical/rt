@@ -327,7 +327,7 @@ sub Load {
         $self->SUPER::LoadById($identifier);
     }
     else {
-        $self->LoadByCol( "Name", $identifier );
+        $self->LoadByCols( Name => $identifier );
     }
 
     return ( $self->Id );

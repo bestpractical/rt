@@ -213,7 +213,8 @@ sub LoadByCols {
             else {
                 my ($op, $val);
                 ($key, $op, $val) = $self->_Handle->_MakeClauseCaseInsensitive($key, '=', $hash{$key});
-                $newhash{$key} = $val;
+                $newhash{$key}->{operator} = $op;
+                $newhash{$key}->{value} = $val;
             }
         }
 

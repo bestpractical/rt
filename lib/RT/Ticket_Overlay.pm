@@ -842,8 +842,8 @@ AddRequestor: jesse\@example.com
 EOF
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
-$ticket->Create(Subject => 'first', Queue => 'general');
-ok($ticket->Id, "Created the test ticket");
+my ($id,$msg) =$ticket->Create(Subject => 'first', Queue => 'general');
+ok($ticket->Id, "Created the test ticket - ".$id ." - ".$msg);
 $ticket->UpdateFrom822($simple_update);
 is($ticket->Subject, 'target', "changed the subject");
 my $jesse = RT::User->new($RT::SystemUser);
