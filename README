@@ -20,7 +20,7 @@ o   Perl5.x ( http://www.perl.com ) -- free
 	
 	RT is written almost entirely in perl.
 
-o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- free
+o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- semifree
         
 	FTP mysql from www.mysql.com and follow the INSTALL instructions
         contained therein
