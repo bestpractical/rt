@@ -1,0 +1,7 @@
+<TEXTAREA COLS=80 ROWS=15 NAME="<%$Name%>"><% $Default %></TEXTAREA>
+
+<%ARGS>
+$QuoteTransaction => undef
+$Name=>'Content'
+$Default=>''
+</%ARGS>

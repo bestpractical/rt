@@ -40,8 +40,7 @@ Update Type: <select name="UpdateType">
 	</select> <br>
 
 Update Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>"> <br>
-<TEXTAREA COLS=80 ROWS=15 NAME="UpdateContent">
-</TEXTAREA>
+<& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
 <INPUT TYPE=SUBMIT VALUE="Submit Update">
 </FORM>
