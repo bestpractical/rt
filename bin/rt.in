@@ -195,7 +195,7 @@ sub help {
 
 sub list {
     my ($q, $type, %data);
-    $orderby = $config{orderby};
+    my $orderby = $config{orderby};
     
     if ($config{orderby}) {
          $data{orderby} = $config{orderby};
