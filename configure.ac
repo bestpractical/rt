@@ -237,8 +237,8 @@ dnl Configure the output files, and generate them.
 AC_CONFIG_FILES([
 		 sbin/rt-dump-database
 		 sbin/rt-setup-database
-                 sbin/rt-test-dependencies
-                 Makefile
+		 sbin/rt-test-dependencies
+		 Makefile
 		 etc/RT_Config.pm
 		 lib/RT.pm
  		 bin/mason_handler.fcgi
