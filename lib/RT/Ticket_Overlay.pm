@@ -3312,14 +3312,14 @@ sub CustomFieldValues {
 
     if ($field =~ /^\d+$/) {
         $cf->LoadById($field);
-    } else {
+    } elsif ($field) {
         $cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
         unless( $cf->id ) {
             $cf->LoadByNameAndQueue(Name => $field, Queue => '0');
         }
     }
     my $cf_values = RT::TicketCustomFieldValues->new( $self->CurrentUser );
-    $cf_values->LimitToCustomField($cf->id);
+    $cf_values->LimitToCustomField($cf->id) if $cf->id;
     $cf_values->LimitToTicket($self->Id());
     $cf_values->OrderBy( FIELD => 'id' );
 
