@@ -23,11 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
-<& /User/Elements/Tabs, current_tab => '/User/Groups/index.html'&>
+<& /User/Elements/GroupTabs, current_tab => '/User/Groups/index.html'&>
 
 <&|/l&>Personal groups</&>:<BR>
 <UL>
-<LI><A HREF="Modify.html?Create=1"><&|/l&>Create a new personal group</&></A><BR><BR></LI>
 %while ( my $Group = $Groups->Next) {
 <LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><BR>
 %}

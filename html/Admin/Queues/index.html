@@ -23,14 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc("Admin queues") &>
-<& /Admin/Elements/Tabs, current_tab => 'Admin/Queues/' &>
+<& /Admin/Elements/QueueTabs, current_tab => 'Admin/Queues/' &>
 
 
 <& /Elements/TitleBoxStart, title => loc("Select a queue") &>
-
-% if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue')) {
-<P><A HREF="<%$RT::WebPath%>/Admin/Queues/Modify.html?Create=1"><&|/l&>Create a new queue</&></A><BR><BR></P>
-% }
 
 <TABLE>
 <TR>

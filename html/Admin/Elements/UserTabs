@@ -26,7 +26,9 @@
 			 current_tab => 'Admin/Users/', 
                          current_subtab => $current_subtab &>
 <%INIT>
-my $subtabs = {
+my $subtabs;
+if ($id) {
+$subtabs = {
 	       Queues => { title => loc('Basics'),
 			   path => "Admin/Users/Modify.html?id=".$id
 			 },
@@ -35,6 +37,13 @@ my $subtabs = {
 #			 }
 	       
 	      };
+}
+if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers')) {
+  $subtabs->{"A"} = { title => loc('New user'),
+  		     	path => "Admin/Users/Modify.html?Create=1",
+			   };
+}
+
 </%INIT>
   
   

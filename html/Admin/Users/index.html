@@ -23,14 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Admin users') &>
-<& /Admin/Elements/Tabs, current_tab => 'Admin/Users/' &>
+<& /Admin/Elements/UserTabs, current_tab => 'Admin/Users/' &>
 
 
 <& /Elements/TitleBoxStart, title => loc('Select a user') &>
-
-% if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers')) {
-<P><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1"><&|/l&>Create a new user</&></A></P>
-% }
 
 <TABLE>
 <TR>

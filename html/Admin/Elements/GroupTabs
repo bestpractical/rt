@@ -23,9 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Groups/' &>
-<hr>
 <%INIT>
-my $subtabs = { 
+my $subtabs;
+if ($GroupObj) {
+$subtabs = { 
              Basics => { title => loc('Basics'),
                          path => "Admin/Groups/Modify.html?id=". $GroupObj->id
                        },
@@ -40,7 +41,10 @@ my $subtabs = {
                           path => "Admin/Groups/UserRights.html?id=".$GroupObj->id,
                         },
 	};
-
+}
+$subtabs->{"A"} = { title => loc('New group'),
+	     	path => "Admin/Groups/Modify.html?Create=1",
+ 	  };
 </%INIT>
 <%ARGS>
 $GroupObj => undef

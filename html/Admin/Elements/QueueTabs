@@ -25,11 +25,13 @@
 <& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Queues/' &>
 <hr>
 <%INIT>
-  my $subtabs = {
-		 A => { title => loc('Basics'),
+my $subtabs;
+if ($id) {
+  $subtabs = {
+		 Ab => { title => loc('Basics'),
   		     	path => "Admin/Queues/Modify.html?id=".$id,
 			   },
-		 B => { title => loc('People'),
+		 B => { title => loc('Watchers'),
 		 	path => "Admin/Queues/People.html?id=".$id,
 		      },
 
@@ -40,22 +42,24 @@
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },
 
-                 F => { title => loc('Custom Fields'),
+                 E => { title => loc('Custom Fields'),
                         path => 'Admin/Queues/CustomFields.html?id='.$id,
                         },
 
-		 G => { title => loc('Group Rights'),
+		 F => { title => loc('Group Rights'),
 			  path => "Admin/Queues/GroupRights.html?id=".$id,
 			},	
-		 H => { title => loc('User Rights'),
+		 G => { title => loc('User Rights'),
 			  path => "Admin/Queues/UserRights.html?id=".$id,
 			},
-
-
-		 
-};
+  };
+}
+if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue')) {
+  $subtabs->{"A"} = { title => loc('New queue'),
+  		     	path => "Admin/Queues/Modify.html?Create=1",
+			   };
+}
 </%INIT>
-
   
 <%ARGS>
 $id => undef

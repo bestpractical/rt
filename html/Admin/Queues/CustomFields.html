@@ -22,28 +22,25 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id &>
+<& /Admin/Elements/Header, Title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
+<& /Admin/Elements/QueueTabs, id => $Queue->id &>
 
-<h2><&|/l&>Custom Fields which apply to all queues</&></h2>
-<& /Admin/Elements/ListGlobalCustomFields &>
-<BR> 
-<& /Admin/Elements/EditCustomFields, title => $title, %ARGS &>
+<& /Elements/TitleBoxStart, title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
+<UL>
+<LI><A href="CustomField.html?create=1&Queue=<%$Queue->id%>"><&|/l&>Create a new Custom Field</&></A><BR><BR>
 
+%while  (my $CustomFieldObj = $CustomFields->Next) { 
+
+<LI><A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id()%>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a><BR>
+
+%}
+
+<& /Elements/TitleBoxEnd &>
 <%INIT>
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($id);
-
-my $title;
-
-if ($QueueObj->id) {
-    $title = loc("Edit Custom Fields for queue [_1]", $QueueObj->Name);
-} else {
-    Abort(loc("Queue [_1] not found",$id));
-}
-
-
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load($id);
+my $CustomFields = $Queue->CustomFields;
 </%INIT>
 <%ARGS>
-$id => undef         #some identifier that a Queue could 
+$id => undef
 </%ARGS>

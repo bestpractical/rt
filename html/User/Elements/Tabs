@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'User/', current_tab => $current_tab, current_subtab => $current_subtab&>
+<& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'User/Prefs.html', current_tab => $current_tab, current_subtab => $current_subtab &>
 
 <hr>
   
@@ -30,10 +30,10 @@
   my $tabs = { a => { title => loc('Prefs'),
 			  path => 'User/Prefs.html',
 			},
-	       g => { title => loc('Delegation Groups'),
-			   path => 'User/Groups/index.html',
+	       g => { title => loc('Groups'),
+			   path => 'User/Groups/',
 			 },
-	       h => { title => loc('Delegation Rights'),
+	       h => { title => loc('Rights'),
 			   path => 'User/Delegation.html',
 			 },
 	     };
