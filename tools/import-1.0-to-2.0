@@ -699,13 +699,15 @@ sub MigrateTransactions {
 	
 	if ( $trans_args{'Type'} ) {
 	    
-	    # {{{ Figure out who's the transaction actor. create a user if we need to
-	    
+	    # {{{ Figure out the transaction actor. create a user if we need to
 	    
 	    my $User = new RT::User($RT::SystemUser);
 	    
 	    if ($row->{'actor'}) {
 	    	$User->Load( $row->{'actor'} );
+	        unless ($User->Id) {
+		    $User->LoadByEmail($row->{'actor'});
+		}
 	        unless ($User->Id) {
 		    my $Address = $row->{'actor'};
 		    $Address .= "\@$EMAILDOMAIN" unless $Address =~ /\@/;
