@@ -994,6 +994,7 @@ sub ProcessTicketBasics {
       TimeEstimated
       TimeWorked
       TimeLeft
+      Type
       Status
       Queue
     );

@@ -80,8 +80,7 @@
       <td class="label"><&|/l&>Final Priority</&>:</td>
       <td class="value"><input name=FinalPriority value="<%$TicketObj->FinalPriority|h%>" SIZE="5"></td>
     </TR>
-
-
+<& /Elements/Callback, _CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS &>
 </TABLE>
 
 <%INIT>
