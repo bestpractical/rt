@@ -274,6 +274,9 @@ sub UpdateArticleCustomFieldValues {
     while ( my $CustomField = $CustomFields->Next ) {
 	# {{{ do some setup
 
+	my %values;
+
+
 	# Thanks to the miracle of http and html, if the form is empty (if all values are deleted, this just loses.	
 	next unless defined 
 	    $ARGSRef->{'RT::FM::Article-'.$Article->Id.'-CustomField-'.$CustomField->Id.'-AllValues-Magic'}; 
