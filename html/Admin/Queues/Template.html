@@ -45,7 +45,7 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $Queue, 
-    QueueObj => $TemplateObj->QueueObj,
+    QueueObj => $QueueObj,
      current_tab => 'Admin/Queues/Templates.html?id='.$Queue,
      current_subtab => $current_subtab, 
      subtabs => $subtabs, 
@@ -84,7 +84,7 @@ my $subtabs = {
 
 if ($Create) {
   $title = loc("Create a template");
-  $current_subtab = "Admin/Queues/Template.html?create=1&Queue=".$Queue;
+  $current_subtab = "Admin/Queues/Template.html?Create=1&Queue=".$Queue;
 }
 
 else {
@@ -100,8 +100,10 @@ else {
   
     
 }
+my $QueueObj;
 if ($TemplateObj->Id()) {
   $Queue = $TemplateObj->Queue;
+  $QueueObj = $TemplateObj->QueueObj;
 
   my @attribs = qw( Description Content Queue Name);
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
@@ -112,6 +114,9 @@ if ($TemplateObj->Id()) {
   		     	path => "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->Id(),
 			};
   push @results, @aresults;
+} else {
+  $QueueObj = RT::Queue->new($session{'CurrentUser'});
+  $QueueObj->Load($Queue);
 }
 
 </%INIT>
