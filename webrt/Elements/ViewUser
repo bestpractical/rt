@@ -1,12 +1,12 @@
-% my $name=$User->RealName || $User->EmailAddress;
+
 <& /Elements/TitleBoxStart, 
 	title => "<a class='inverse' href=\"$RT::WebPath/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">Tickets from $name</a>",
 	titleright=> "<a class='inverse' href=\"$RT::WebPath/EditUserComments.html?id=".$User->id."\">Comments about $name</a>" &>
 <TABLE WIDTH="100%">
 <tr>
 <td halign=left valign=top>
-%while (my $w=$as_requestor->Next) {
-	<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$w->Value%>"><%$w->Value%></a>
+%while (my $w=$tickets->Next) {
+<%$w->Id%>: <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$w->id%>"><%$w->Subject%></a> (<%$w->Status%>)<BR>
 %}
 </td>
 <td align=right valign=top>
@@ -20,9 +20,10 @@ $User=>undef
 </%ARGS>
 
 <%INIT>
-use RT::Watchers;
-my $as_requestor=RT::Watchers->new($session{'CurrentUser'});
-$as_requestor->Limit(FIELD=>'Scope', VALUE=>'Ticket');
-$as_requestor->Limit(FIELD=>'Type', VALUE=>'Requestor');
-$as_requestor->Limit(FIELD=>'Owner', VALUE=>$User->Id);
+my $name=$User->RealName || $User->EmailAddress;	
+
+my $tickets = new RT::Tickets($session{'CurrentUser'});
+$tickets->LimitRequestor(VALUE => $User->EmailAddress);
+
+
 </%INIT>

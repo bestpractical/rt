@@ -189,13 +189,11 @@ sub HasEntry {
 sub RelativePaths  {
     my $self = shift;
 
-    $self->{is_modified}++;
-
     my @list;
 
-    # Here $w is a RT::ObjectKeyword
-    while (my $w=$self->Next()) {
-	push(@list, $w->KeywordRelativePath);
+    # Here $key is a RT::ObjectKeyword
+    while (my $key=$self->Next()) {
+	push(@list, $key->KeywordRelativePath);
     }
     return(\@list);
 }

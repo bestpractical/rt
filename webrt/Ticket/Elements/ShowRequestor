@@ -1,9 +1,13 @@
-% while (($w=$Ticket->Requestors->Next) && (ref $w)) {
-%if ((my $u=$w->OwnerObj) &&  ($w->Owner != 0)){
-<& /Elements/ViewUser, User=>$u &>
-% } }
+% while ($requestor=$people->Next) {
+% if (($requestor->Owner ) && ($user=$requestor->OwnerObj)) {
+<& /Elements/ViewUser, User=>$user &>
+% }
+%}
 
+<%INIT>
+my ($requestor,$user);
+my $people = $Ticket->Requestors;
+</%INIT>
 <%ARGS>
-$w => undef
 $Ticket=>undef
 </%ARGS>

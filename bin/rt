@@ -200,7 +200,7 @@ a speciifc ticket.
 
 	  --summary [format-string]
              show a listing-style summary of the tickets found. If format string
-             is ommitted, uses $RT_SUMMARY_FORMAT or an internal default
+             is ommitted, uses \$RT_SUMMARY_FORMAT or an internal default
             
 
              #TODO: doc summary 
@@ -270,7 +270,7 @@ Comments and replies
                 Specify the path to the source file for this ticket update
 
 	      --no-edit
-                Don't invoke $EDITOR to edit the content of this update
+                Don't invoke \$EDITOR to edit the content of this update
 
 
 

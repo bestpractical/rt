@@ -975,13 +975,13 @@ sub _ProcessRestrictions {
 
 	    #Make sure we're only talking about ticket watchers
 	    $self->SUPER::Limit( ALIAS => $Watch,
-			  FIELD => 'Scope',
-			  VALUE => 'Ticket',
-			  OPERATOR => '=');
-
+				 FIELD => 'Scope',
+				 VALUE => 'Ticket',
+				 OPERATOR => '=');
+	    
 	    #Limit it to the address we want
-	    $self->SUPER::Limit( ALIAS => $Watch,
-				 FIELD => 'Owner',
+	    $self->SUPER::Limit( ALIAS => $User,
+				 FIELD => 'EmailAddress',
 				 ENTRYAGGREGATOR => 'OR',
 				 VALUE => $restriction->{'VALUE'},
 				 OPERATOR => $restriction->{'OPERATOR'}

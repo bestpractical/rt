@@ -42,6 +42,7 @@ sub _Accessible  {
 	      id => 'read',
           Alias => 'read/write',
 	      Title => 'read/write',
+          Type => 'read/write', #Type is one of Action or Message
 	      Content => 'read/write',
           Queue => 'read/write'
 	     );
@@ -126,6 +127,7 @@ sub Create {
     my %args = ( Content => undef,
                  Queue => undef,
                  Title => '[no title]',
+                 Type => 'Action', #By default, template are 'Action' templates
                  Alias => undef,
                  @_
                 );

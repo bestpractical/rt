@@ -281,6 +281,7 @@ my $gratuitous = {
     'id', 'serial', '', '', '', '',
     'Queue', 'integer', 'NOT NULL', '', '0', '',
     'Alias', 'varchar', '', '40', '', '',
+    'Type', 'varchar', 'NULL', '16', '','',
     'Title', 'varchar', 'NULL', '120', '', '',
     'Language', 'varchar', 'NULL', '16', '', '',
     'TranslationOf', 'integer', 'NULL', '', '', '',

@@ -171,14 +171,11 @@ sub LimitToAdminCc  {
 
 sub Emails  {
     my $self = shift;
+    my @list;    # List is a list of watcher email addresses
 
-    $self->{is_modified}++;
-
-    # List is a list of watcher email addresses
-    my @list;
-    # Here $w is a RT::WatcherObject
-    while (my $w=$self->Next()) {
-	push(@list, $w->Email);
+    # $watcher is an RT::Watcher object
+    while (my $watcher=$self->Next()) {
+	push(@list, $watcher->Email);
     }
     return \@list;
 }

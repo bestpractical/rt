@@ -526,18 +526,13 @@ Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 sub Watchers {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
-    return (0, "Permission Denied");
+  require RT::Watchers;
+  my $watchers=RT::Watchers->new($self->CurrentUser);
+  if ($self->CurrentUserHasRight('ShowTicket')) {
+      $watchers->LimitToTicket($self->id);
   }
-
-  if (! defined ($self->{'Watchers'}) 
-      || $self->{'Watchers'}->{is_modified}) {
-    require RT::Watchers;
-    $self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
-    $self->{'Watchers'}->LimitToTicket($self->id);
-
-  }
-  return($self->{'Watchers'});
+  
+  return($watchers);
   
 }
 
@@ -645,21 +640,12 @@ Returns this ticket's Requestors as an RT::Watchers object
 sub Requestors {
     my $self = shift;
     
-
+    my $requestors = $self->Watchers();
+    if ($self->CurrentUserHasRight('ShowTicket')) {
+	$requestors->LimitToRequestors();
+    }	
     
-  require RT::Watchers;
-    
-    if (! defined ($self->{'Requestors'})) {
-	
-	$self->{'Requestors'} = RT::Watchers->new($self->CurrentUser);
-
-	
-	if ($self->CurrentUserHasRight('ShowTicket')) {
-	    $self->{'Requestors'}->LimitToTicket($self->id);
-	    $self->{'Requestors'}->LimitToRequestors();
-	}	
-    }
-    return($self->{'Requestors'});
+    return($requestors);
     
 }
 
@@ -677,17 +663,13 @@ Returns a watchers object which contains this ticket's Cc watchers
 sub Cc {
     my $self = shift;
     
+    my $cc = $self->Watchers();
     
-    if (! defined ($self->{'Cc'})) {
-	require RT::Watchers;
-	$self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
-	
-	if ($self->CurrentUserHasRight('ShowTicket')) {
-	    $self->{'Cc'}->LimitToTicket($self->id);
-	    $self->{'Cc'}->LimitToCc();
-	}
+    if ($self->CurrentUserHasRight('ShowTicket')) {
+	$cc->LimitToCc();
     }
-    return($self->{'Cc'});
+    
+    return($cc);
     
 }
 
@@ -705,18 +687,11 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 sub AdminCc {
     my $self = shift;
     
-
-    
-    if (! defined ($self->{'AdminCc'})) {
-	require RT::Watchers;
-	$self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
-	if ($self->CurrentUserHasRight('ShowTicket')) {
-	    $self->{'AdminCc'}->LimitToTicket($self->id);
-	    $self->{'AdminCc'}->LimitToAdminCc();
-	}
+    my $admincc = $self->Watchers();
+    if ($self->CurrentUserHasRight('ShowTicket')) {
+	$admincc->LimitToAdminCc();
     }
-    return($self->{'AdminCc'});
-    
+    return($admincc);
 }
 
 # }}}

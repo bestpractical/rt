@@ -140,19 +140,12 @@ Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 sub Watchers {
     my $self = shift;
     
-    unless ($self->CurrentUserHasRight('ExploreQueue')) {
-	return (0, "Permission Denied");
-    }
-    
-    if (! defined ($self->{'Watchers'}) 
-      || $self->{'Watchers'}->{is_modified}) {
-	require RT::Watchers;
-	$self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
-	$self->{'Watchers'}->LimitToTicket($self->id);
-	
-    }
-    return($self->{'Watchers'});
-  
+    require RT::Watchers;
+    my $watchers =RT::Watchers->new($self->CurrentUser);
+    if ($self->CurrentUserHasRight('ExploreQueue')) {
+	$watchers->LimitToQueue($self->id);	
+    }	
+    return($watchers);
 }
 # }}}
 
@@ -253,28 +246,21 @@ Returns a watchers object which contains this ticket's Cc watchers
 
 sub Cc {
     my $self = shift;
-    
-    #If we ACL this, we lose on ACL checks
-    unless ($self->CurrentUserHasRight('ExploreQueue')) {
-	return (0, "Permission Denied")
+    my $cc = $self->Watchers();
+    if ($self->CurrentUserHasRight('ExploreQueue')) {
+	$cc->LimitToAdminCc();
     }
-    
-    return ($self->_Cc);
+
+    return ($cc);
 }
 
 # A helper function for Cc, so that we can call it from the ACL checks 
 # without going through acl checks.
 sub _Cc {
     my $self = shift;
-    
-    
-    if (! defined ($self->{'Cc'})) {
-	require RT::Watchers;
-	$self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
-	$self->{'Cc'}->LimitToQueue($self->id);
-	$self->{'Cc'}->LimitToCc();
-    }
-    return($self->{'Cc'});
+    my $cc = $self->Watchers();
+    $cc->LimitToAdminCc();
+    return($cc);
     
 }
 
@@ -292,26 +278,20 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 
 sub AdminCc {
     my $self = shift;
-    
-    unless ($self->CurrentUserHasRight('ExploreQueue')) {
-	return (0, "Permission Denied");
+    my $admin_cc = $self->Watchers();
+    if ($self->CurrentUserHasRight('ExploreQueue')) {
+ 	$admin_cc->LimitToAdminCc();
     }
     
-    return($self->_AdminCc());
+    return($admin_cc);
 }
 
 #helper function for AdminCc so we can call it without ACLs
 sub _AdminCc {
     my $self = shift;
-    
-    if (! defined ($self->{'AdminCc'})) {
-	require RT::Watchers;
-	$self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
-	$self->{'AdminCc'}->LimitToQueue($self->id);
-	$self->{'AdminCc'}->LimitToAdminCc();
-    }
-    return($self->{'AdminCc'});
-    
+    my $admin_cc = $self->Watchers();
+    $admin_cc->LimitToAdminCc();
+    return($admin_cc);
 }
 
 # }}}
@@ -319,6 +299,7 @@ sub _AdminCc {
 # {{{ IsWatcher, IsCc, IsAdminCc
 
 # {{{ sub IsWatcher
+
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
 =head2 IsWatcher
@@ -389,6 +370,7 @@ sub IsWatcher {
     }
     
 }
+
 # }}}
 
 # {{{ sub IsCc
