@@ -121,7 +121,7 @@ sub ProcessUpdateMessage {
 	    Data => \@UpdateContent);
 	
 	## TODO: Implement public comments
-	if ($args{ARGS}->{'UpdateType'} =~ /^(private|public)$/) {
+	if ($args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/) {
 	    my ($Transaction, $Description) = $args{TicketObj}->Comment
 		( CcMessageTo => $args{ARGSRef}->{'UpdateCc'},
 		  BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
@@ -139,22 +139,6 @@ sub ProcessUpdateMessage {
 	}
     }
 }
-# }}}
-
-# {{{ sub ProcessStatusChanges 
-
-sub ProcessStatusChanges {
-    my %args=( Ticket => undef,
-	       ARGS => undef,
-               Actions => undef,
-               @_
-	      );
-    if ($args{ARGS}->{'SetStatus'} and ($args{ARGS}->{'SetStatus'} ne $args{Ticket}->Status())) {
-	my ($Transaction, $Description)=$args{Ticket}->SetStatus($args{ARGS}->{'SetStatus'});
-	push(@{$args{Actions}}, $Description);
-    }
-}
-
 # }}}
 
 # {{{ sub ProcessSearchQuery
