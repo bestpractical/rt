@@ -68,4 +68,9 @@ sub LoadByObjectContentAndCustomField {
     
 }
 
+sub Delete {
+    my $self = shift;
+    $self->SetCurrent(0);
+}
+
 1;

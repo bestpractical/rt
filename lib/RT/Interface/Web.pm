@@ -1166,12 +1166,35 @@ sub ProcessObjectCustomFieldUpdates {
 			    push ( @results, $msg );
 			}
 		    }
+		    elsif ( $arg =~ /-Upload$/ ) {
+			my $cgi_object = $m->cgi_object;
+			my $fh = $cgi_object->upload($arg) or next;
+			my $upload_info = $cgi_object->uploadInfo($fh);
+			my $filename = "$fh";
+			$filename =~ s#^.*[\\/]##;
+			my ( $val, $msg ) = $Object->AddCustomFieldValue(
+			    Field => $cf,
+			    Value => $filename,
+			    LargeContent => do { local $/; scalar <$fh> },
+			    ContentType => $upload_info->{'Content-Type'},
+			);
+		    }
 		    elsif ( $arg =~ /-DeleteValues$/ ) {
 			foreach my $value (@values) {
 			    next unless length($value);
 			    my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
 				Field => $cf,
 				Value => $value
+			    );
+			    push ( @results, $msg );
+			}
+		    }
+		    elsif ( $arg =~ /-DeleteValueIds$/ ) {
+			foreach my $value (@values) {
+			    next unless length($value);
+			    my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
+				Field => $cf,
+				ValueId => $value,
 			    );
 			    push ( @results, $msg );
 			}

@@ -773,6 +773,8 @@ sub AddValueForObject {
 	my $self = shift;
 	my %args = ( Object => undef,
                  Content => undef,
+		 LargeContent => undef,
+		 ContentType => undef,
 		     @_ );
 	my $obj = $args{'Object'} or return;
 
@@ -780,6 +782,8 @@ sub AddValueForObject {
 	my $val = $newval->Create(ObjectType => ref($obj),
 	                    ObjectId => $obj->Id,
                             Content => $args{'Content'},
+                            LargeContent => $args{'LargeContent'},
+                            ContentType => $args{'ContentType'},
                             CustomField => $self->Id);
 
     return($val);
@@ -798,15 +802,25 @@ Adds a custom field value for a ticket. Takes a param hash of Object and Content
 =cut
 
 sub DeleteValueForObject {
-	my $self = shift;
-	my %args = ( Object => undef,
+    my $self = shift;
+    my %args = ( Object => undef,
                  Content => undef,
+                 Id => undef,
 		     @_ );
 
-	my $oldval = RT::ObjectCustomFieldValue->new($self->CurrentUser);
-    $oldval->LoadByObjectContentAndCustomField (Object => $args{'Object'}, 
-                                                Content =>  $args{'Content'}, 
-                                                CustomField => $self->Id );
+    my $oldval = RT::ObjectCustomFieldValue->new($self->CurrentUser);
+
+    if (my $id = $args{'Id'}) {
+	$oldval->Load($id);
+    }
+    else {
+	$oldval->LoadByObjectContentAndCustomField(
+	    Object => $args{'Object'}, 
+	    Content =>  $args{'Content'}, 
+	    CustomField => $self->Id
+	);
+    }
+
     # check ot make sure we found it
     unless ($oldval->Id) {
         return(0, $self->loc("Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->Name));

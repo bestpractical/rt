@@ -21,18 +21,33 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% while (my $value = $Values->Next ) {
-%# XXX - let user download the file(s) here?
-<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><a href="/CustomFieldValue/<% $value->Id %>/<% $value->Content %>"><% $value->Content %></a><br>
-% }
-% if (!$MaxValues or $Values->Count < $MaxValues) {
-<input type="file" name="<%$NamePrefix%><%$CustomField->Id%>-Upload">
-% }
-<%ARGS>
-$Object => undef
-$CustomField => undef
-$NamePrefix => undef
-$Default => undef
-$Values => undef
-$MaxValues => undef
-</%ARGS>
+<%perl>
+my $id;
+my $arg = $m->dhandler_arg;                # get rest of path
+if ($arg =~ /^(\d+)\//) {
+    $id = $1;
+}
+else {
+    Abort("Corrupted customfieldvalue URL.");
+}
+my $OCFV = RT::ObjectCustomFieldValue->new($session{'CurrentUser'});
+$OCFV->Load($id) || Abort("OCFV '$id' could not be loaded");
+
+unless ($OCFV->id) {
+    Abort("Bad OCFV id. Couldn't find OCFV '$id'\n");
+}
+
+my $content_type = $OCFV->ContentType || 'text/plain';
+    
+unless ($RT::TrustHTMLAttachments) {
+    $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
+}
+
+$r->content_type( $content_type );
+$m->clear_buffer();
+$m->out($OCFV->LargeContent);
+$m->abort; 
+</%perl>
+<%attr>
+AutoFlush => 0
+</%attr>

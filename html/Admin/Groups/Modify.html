@@ -31,7 +31,7 @@
 
 
 
-<FORM ACTION="<%$RT::WebPath%>/Admin/Groups/Modify.html" METHOD=POST>
+<FORM ACTION="<%$RT::WebPath%>/Admin/Groups/Modify.html" METHOD=POST ENCTYPE="multipart/form-data">
 
 %unless ($Group->Id) {
 <INPUT TYPE=HIDDEN NAME=id VALUE="new">

@@ -30,7 +30,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST>
+<FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST ENCTYPE="multipart/form-data">
 %if ($Create) {
 <INPUT TYPE=HIDDEN NAME=id VALUE="new">
 % } else {

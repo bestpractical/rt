@@ -791,7 +791,9 @@ sub _AddCustomFieldValue {
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
             Object  => $self,
-            Content => $args{'Value'}
+            Content => $args{'Value'},
+            LargeContent => $args{'LargeContent'},
+            ContentType => $args{'ContenType'},
         );
 
         unless ($new_value_id) {
@@ -836,7 +838,9 @@ sub _AddCustomFieldValue {
     else {
         my ( $new_value_id ) = $cf->AddValueForObject(
             Object  => $self,
-            Content => $args{'Value'}
+            Content => $args{'Value'},
+            LargeContent => $args{'LargeContent'},
+            ContentType => $args{'ContenType'},
         );
 
         unless ($new_value_id) {
@@ -879,6 +883,7 @@ sub DeleteCustomFieldValue {
     my %args = (
         Field => undef,
         Value => undef,
+	ValueId => undef,
         @_);
 
 #    XXX - normalise CF related ACLs... ask obra!
@@ -898,7 +903,11 @@ sub DeleteCustomFieldValue {
     }
 
 
-     my ($val, $msg) = $cf->DeleteValueForObject(Object => $self, Content => $args{'Value'});
+     my ($val, $msg) = $cf->DeleteValueForObject(
+	 Object => $self,
+	 Id => $args{'ValueId'},
+	 Content => $args{'Value'},
+     );
      unless ($val) { 
             return (0,$msg);
      }

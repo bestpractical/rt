@@ -22,11 +22,11 @@
 %# 
 %# END LICENSE BLOCK
 % while (my $value = $Values->Next ) {
-%# XXX - display thumbnails or full images?
-<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValues" value="<% $value->Id %>"><% $value->Content %><br>
+%# XXX - let user download the file(s) here?
+<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><a href="/CustomFieldValue/<% $value->Id %>/<% $value->Content %>"><% $value->Content %></a><br>
 % }
 % if (!$MaxValues or $Values->Count < $MaxValues) {
-<input type="file" name="<%$NamePrefix%><%$CustomField->Id%>-Value">
+<input type="file" name="<%$NamePrefix%><%$CustomField->Id%>-Upload">
 % }
 <%ARGS>
 $Object => undef
