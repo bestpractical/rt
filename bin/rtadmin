@@ -42,6 +42,7 @@ my $help_acl ="
 	  --userid <user>
           --groupid <group>
 	--list-rights";
+
 # }}}
     
     # {{{ help_keyword_sel
@@ -172,6 +173,8 @@ Queue Configuration for --queue <queueid>
 	--delete-cc <email address>
 	--add-admincc <email address>
 	--delete-admincc <email address>
+        --list-watchers
+
 	
 
 $help_acl
@@ -370,8 +373,9 @@ sub AdminQueue {
 	       'CommentAddress=s', 'InitialPriority=n', 'FinalPriority=n',
 	       'DefaultDueIn=n',
 	       
-	       'add-cc=s', 'add-admin-cc=s', 'delete-cc=s', 'delete-admin-cc=s',
-	       'create-template'
+	       'add-cc=s@', 'add-admincc=s@', 
+	       'delete-cc=s@', 'delete-admincc=s@',
+	       'list-watchers', 'create-template'
 	       );
 
     use RT::Queue;
@@ -427,6 +431,34 @@ sub AdminQueue {
 	    }	
 	}	
        	
+	foreach my $person (@{$args{'add-cc'}}) {
+	    my ($val, $msg) = $queue_obj->AddCc(Email => $person);
+	    print "$msg\n";
+	}
+	foreach my $person (@{$args{'add-admincc'}}) {
+	    my ($val, $msg) = $queue_obj->AddAdminCc(Email => $person);
+	    print "$msg\n";
+	}
+
+	foreach my $person (@{$args{'delete-cc'}}) {
+	    my ($val, $msg) = $queue_obj->DeleteCc($person);
+	    print "$msg\n";
+	}
+	foreach my $person (@{$args{'delete-admincc'}}) {
+	    my ($val, $msg) = $queue_obj->DeleteAdminCc($person);
+	    print "$msg\n";
+	}
+
+	if ($args{'list-watchers'}) {
+	    require RT::Watchers;
+	    my $watchers = new RT::Watchers($CurrentUser);
+	    $watchers->LimitToQueue($queue_obj->id);
+	    while (my $watcher = $watchers->Next()) {
+		printf("%10s %-60s\n",
+		       $watcher->Type, $watcher->Email );
+	    }	
+	}	
+
         AdminTemplates($queue_obj->Id());
         AdminScrips($queue_obj->Id());
 	AdminRights($queue_obj->Id());
@@ -597,6 +629,7 @@ sub AdminKeywordSelects {
 # }}}
 
 # {{{ AdminGroup
+
 sub AdminGroup {
     my $group = shift;
 
@@ -674,8 +707,8 @@ sub AdminGroup {
     }	
     
 }
-# }}}
 
+# }}}
 
 # {{{ AdminSystem
 sub AdminSystem {
@@ -716,9 +749,6 @@ sub AdminTemplates {
 	while (my $template = $templates->Next) {
 	    print $template->Id.": ".$template->Name." - " . $template->Description ."\n";
 	}	
-    }
-    else {
-	print "Did not want to list templates\n";
     }
 
     # }}}
@@ -819,6 +849,7 @@ sub AdminScrips {
 		  $scrip->TemplateObj->Name."\n";
 	}	
     }
+
     # }}}
 
     require RT::Scrip;
@@ -889,6 +920,7 @@ sub AdminRights {
 	      
 	}	
     }
+
     # }}}
 
     require RT::ACE;    
@@ -969,5 +1001,31 @@ sub AdminRights {
 
 }
 
-
 # }}}
+
+
+sub ListUsers {
+    require RT::Users;
+    my $users = new RT::Users($CurrentUser);
+    $users->UnLimit();
+    while (my $user = $users->Next()) {
+	printf ("%16s %-16s\n",$user->Name(), $user->EmailAddress());
+    }
+}
+sub ListQueues {
+    require RT::Queues;
+    my $queues = new RT::Queues($CurrentUser);
+    $queues->UnLimit();
+    while (my $queue = $queues->Next()) {
+	printf ("%16s %-16s\n",$queue->Name(), $queue->Description());
+    }
+}
+
+sub ListGroups {
+    require RT::Groups;
+    my $groups = new RT::Groups($CurrentUser);
+    $groups->UnLimit();
+    while (my $group = $groups->Next()) {
+	printf ("%16s %-16s\n",$group->Name(), $group->Description());
+    }	
+}

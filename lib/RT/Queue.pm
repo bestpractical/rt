@@ -576,11 +576,13 @@ It removes that watcher from this Queue\'s list of watchers.
 sub DeleteWatcher {
     my $self = shift;
     my $id = shift;
-
+    
     my $type;
     
     $type = shift if (@_);
     
+
+    require RT::Watcher;
     my $Watcher = new RT::Watcher($self->CurrentUser);
     
     #If it\'s a numeric watcherid
@@ -639,7 +641,7 @@ sub DeleteWatcher {
 	    return (0, "Permission Denied");
 	}
     }
-    
+
     # }}}
     
     unless (($Watcher->Scope eq 'Queue') and
