@@ -1,6 +1,6 @@
 
 <& /Elements/Header, Title=>"Update Ticket ".$Ticket->Id.": ".$Ticket->Subject  &>
-<& /Elements/Tabs &>
+<& /Ticket/Elements/Tabs, id => $id &>
 <& /Elements/TitleBoxStart, title => 'Update ticket '.$Ticket->Id &>
 
 <FORM ACTION="Display.html" METHOD=POST>
@@ -58,10 +58,10 @@ my $ResponseDefault=$Action eq "Respond" ? "SELECTED" : "";
 
 use RT::Ticket;
 my $Ticket=RT::Ticket->new($session{'CurrentUser'});
-$Ticket->Load($ARGS{'id'}) || Abort ("Couldn't load ticket.");
+$Ticket->Load($id) || Abort ("Couldn't load ticket.");
 </%INIT>
 
 <%ARGS>
-
+$id => undef
 $Action => undef
 </%ARGS>

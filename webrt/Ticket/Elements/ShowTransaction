@@ -1,5 +1,6 @@
  <& /Elements/TitleBoxStart, title => $Transaction->Description." at ".$Transaction->CreatedAsString, titleright=> $Transaction->Message->First ? ($RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "[<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Respond\">Reply</a>] [<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Comment\">Comment</a>]</a>") : "" &>
 
+
     <TABLE WIDTH="100%">
       <TR>
 	<TD VALIGN=TOP WIDTH="20%">
@@ -25,18 +26,27 @@
 % $attachments->GotoFirstItem();
 %  while (my $message=$attachments->Next) {
 
+<TABLE WIDTH="100%">
+<TR>
+<TD>
 
 <pre>
 %if ($FullHeaders) {
 <%$message->Headers %>
-<A HREF="Display.html?id=<%$Transaction->TicketObj->id%>">Brief headers</a>
-
 % } else {
 <%$message->NiceHeaders %>
+%}
+</pre>
+</TD>
+<TD VALIGN=TOP ALIGN=RIGHT>
+%if ($FullHeaders) {
+<A HREF="Display.html?id=<%$Transaction->TicketObj->id%>">Brief headers</a>
+% } else {
 <A HREF="Display.html?ShowHeaders=<%$Transaction->Id%>&id=<%$Transaction->TicketObj->id%>">Full headers</a>
 %}
-
-</pre>
+</TD>
+</TR>
+</TABLE>
 
 %   if ($message->ContentType =~ m{^(text/plain|message)} && length($message->Content)<13456) {
 <pre>

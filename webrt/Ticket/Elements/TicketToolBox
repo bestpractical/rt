@@ -1,4 +1,4 @@
-  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "<font size=+3>#$id: $subj</font>", titleright=> "<a href=\"../Search/Listing.html\">Back to listing</a> | $take $open | <a href=\"Modify.html?id=$id\">Modify</a> / <a href=\"Update.html?Action=Comment&id=$id\">Update</a> "&>
+<%$take%> <%$open%> | <a href="Modify.html?id=<%$id%>">Modify</a> | <a href="Update.html?Action=Comment&id=<%$id%>">Comment</a> 
 
 
 <%ARGS>

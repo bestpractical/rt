@@ -2,18 +2,20 @@
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
 <& /Elements/Header, Title => "Ticket #".$Ticket->Id.($Ticket->Subject&&(", ".$Ticket->Subject))."" &>
-<& /Elements/Tabs &>
+<& /Ticket/Elements/Tabs, id => $id &>
 
-% for (@Actions) {
-   <%$_%><br>
-% }
+<& /Elements/ListActions, actions => \@Actions &>
 
 
 <& /Ticket/Elements/TicketToolBox, Ticket => $Ticket&>
 
+  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "<font size=+3>#".$Ticket->id.": ".$Ticket->Subject."</font>" &>
+
+
 <& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
 <& /Elements/TitleBoxEnd &>
 
+<BR>
 <& /Elements/TitleBoxStart, title =>'Ticket History' &>
       
       
@@ -45,7 +47,7 @@ if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
     
     my $Queue = new RT::Queue($session{'CurrentUser'});	
-    unless ($Queue->Load($ARGS{'queue'})) {
+    unless ($Queue->Load($ARGS{'Queue'})) {
 	Abort('Queue not found');
     }
     
@@ -66,7 +68,7 @@ if ($ARGS{'id'} eq 'new') {
 				     );
     
     #TODO in Create_Details.html: priorities and due-date      
-    my ($id, $Trans, $ErrMsg)= $Ticket->Create(Queue=>$ARGS{queue},
+    my ($id, $Trans, $ErrMsg)= $Ticket->Create(Queue=>$ARGS{Queue},
 					       Owner=>$ARGS{ValueOfOwner},
 					       Requestor=> \@Requestors,
 					       Cc => \@Cc,

@@ -1,21 +1,108 @@
 %# $Header$
-%# Copyleft 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
+%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com> 
 
-<& /Elements/Header, Title => "Create request" &>
+<& /Elements/Header, Title => "Create a new ticket" &>
 <& /Elements/Tabs &>
+<FORM ACTION="Display.html" METHOD="POST">
+<INPUT TYPE=HIDDEN Name="id" VALUE="new">
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket"&>
 
-<FORM METHOD="GET" ACTION="Create_Detail.html">
+<TABLE>
+<TR><TD>Queue</TD>
+<TD><& /Elements/SelectNewTicketQueue, Name=>"Queue", Verbose => 'True' &></TD>
+<TD>Status:
+</TD>
+<TD>
+<& /Elements/SelectStatus, Name => "Status", Default=> 'new' &>
+</TD>
+<TD>
+Owner: 
+</TD>
+<TD>
+<& /Elements/SelectOwner, Name => "ValueOfOwner" &>
+</TD>
+</TR>
+<TR>
+<TD>
+Requestors: 
+</TD>
+<TD COLSPAN=5>
+<INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=40>
+</TD>
+</TR>
+<TR>
+<TD>
+Cc:
+</TD>
+<TD COLSPAN=5>
+ <INPUT NAME="Cc" SIZE=40>
+</TD>
+</TR>
 
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket" &>
-Queue: <& /Elements/SelectQueue, Name=>"Queue", Default=>$session{'LastQueue'}&>
-<& /Elements/TitleBoxEnd &><BR><BR>
+<TR>
+<TD>
+Subject:
+</TD>
+<TD COLSPAN=5>
+<INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
+</TD>
+</TR>
+
+<TR>
+<TD>
+Relationships
+</TD>
+<TD COLSPAN=5>
+<TABLE>
+<TR>
+<TD>
+Depended on by:<BR><input size=5 name="DependsOn" value="<% $DependsOn %>">
+</TD>
+<TD>
+Depends on:
+<BR>
+<input size=5 name="DependedOnBy" value="<% $DependedOnBy %>">
+</TD>
+<TD>Subticket of:<BR>
+<input size=5 name="MemberOf" value="<% $MemberOf %>">
+</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+<TR>
+<TD>
+Attach file:
+</TD>
+<TD COLSPAN=5>
+<INPUT TYPE=FILE NAME="Attachment">
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=6>
+Describe the issue below:<br>
+<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+
+<BR>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT COLSPAN=2>
+</TD>
+</TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Label => "Create ticket"&>
 
 
-<& /Elements/Submit &>
 </FORM>
 
 
+
 <%ARGS>
-$id => undef
+$DependsOn => undef
+$DependedOnBy => undef
+$MemberOf => undef
 $QuoteTransaction => undef
+
 </%ARGS>

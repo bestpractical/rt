@@ -12,7 +12,7 @@
 <BODY BGCOLOR="<%$BgColor%>">
 <TABLE BORDER=0 WIDTH=100%>
 <TR VALIGN=TOP>
-<TD><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"><font size=+2>Request Tracker <%$RT::VERSION%></font>
+<TD WIDTH=32><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"></TD><TD VALIGN=CENTER ALIGN=LEFT><font size=+2>Request Tracker <%$RT::VERSION%></font>
 </TD>
 <TD ALIGN=RIGHT>
 % if ($session{'CurrentUser'} ) {

@@ -1,1 +1,23 @@
-<& /Elements/Tabs &>
+<& /Elements/Tabs, tabs => $tabs &>
+<hr>
+<%INIT>
+  my $tabs = {
+		 A => { title => 'Display',
+			     path => "Ticket/Display.html?id=".$id,
+			   },
+		 B => { title => 'Modify',
+			  path => "Ticket/Modify.html?id=".$id,
+			},
+		 C => { title => 'Comment',
+			     path => "Ticket/Update.html?Action=Comment&id=".$id,
+			   },
+		 D => { title => 'Reply',
+				path => "Ticket/Update.html?Action=Respond&id=".$id,
+		      }
+};
+</%INIT>
+
+  
+<%ARGS>
+$id => undef
+</%ARGS>

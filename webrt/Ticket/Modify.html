@@ -1,7 +1,6 @@
 <& /Elements/Header &>
-<& /Elements/Tabs &>
+<& /Ticket/Elements/Tabs, id => $id  &>
 
-<h1>Modify a ticket</h1>
 <& /Elements/ListActions, actions => \@results &>
 <& Elements/ModifyTicket, TicketObj => $TicketObj, %ARGS  &>
 
@@ -9,10 +8,6 @@
 
 my $field;
 my @results;
-
-use RT::Ticket;
-use MIME::Entity;
-use RT::Interface::Web;
 
 # {{{ Load the ticket
 #If we get handed two ids, mason will make them an array. bleck.
