@@ -198,7 +198,7 @@ sub Watchers {
     require RT::Watchers;
     $self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
     $self->{'Watchers'}->LimitToTicket($self->id);
-    $self->{'Watchers'}->LimitToQueue($self->_Value('Queue'));
+#    $self->{'Watchers'}->LimitToQueue($self->_Value('Queue'));
   }
   return($self->{'Watchers'});
   
