@@ -6,7 +6,7 @@
 	<& /Elements/TitleBoxStart, title => 'Signature'  &>
 <form method=post>
 <input type="hidden" name="id" value=<%$id%>>
-<TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $session{CurrentUser}->Signature %></TEXTAREA><br><br>
+<TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $u->Signature %></TEXTAREA><br><br>
 <input type="submit" value="Update signature">
 </form>
 	  <& /Elements/TitleBoxEnd &>
@@ -47,7 +47,7 @@ require RT::User;
 my $u=RT::User->new($session{CurrentUser});
 $u->Load($id) || die "Couldn't load that user ($id)";
 if ($Signature) {
-$u->SetSignature($Signature);
+my ($val, $msg)=$u->SetSignature($Signature);
 $RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
 }
 
