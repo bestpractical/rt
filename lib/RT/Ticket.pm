@@ -83,12 +83,11 @@ Returns: TICKETID, Transaction Object, Error Message
 
 sub Create {
   my $self = shift;
-  my ( $ErrStr, $Queue);
+  my ( $ErrStr, $Queue, $Owner);
 
   my %args = (id => undef,
 	      EffectiveId => undef,
 	      Queue => undef,
-	      QueueTag => undef,
 	      Requestor => undef,
 	      RequestorEmail => undef,
 	      Alias => undef,
@@ -123,12 +122,30 @@ sub Create {
     return (0, 0,'Queue not set');
   }
 
+  if ( !defined($args{'Owner'})) {
+	#TODO this shouldn't need to exist
+	$Owner = $RT::Nobody;
+  }
+  elsif ( (defined($args{'Owner'})) && (!ref($args{'Owner'})) ) {
+    
+    $Owner=RT::User->new($self->CurrentUser);
+    $Owner->Load($args{'Owner'});
+    #TODO error check this and return 0 if it's not loading properly
+  }
+  elsif (ref($args{'Owner'}) eq 'RT::User') {
+        $Owner = $args{'Owner'};
+  }
+  else {
+        $RT::Logger->err($args{'Owner'} . " not a recognised user object.");
+   }
+
+   #TODO: return an error if the owner can't own tickets in this queue ACL +++ 
 
    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
     return (0,0,"Permission Denied");
   }
 
-  #TODO we should see what sort of due date we're getting, rather
+  #TODO we should see what sort of due date we're getting, rather +
   # than assuming it's in ISO format.
   my $due = new RT::Date($self->CurrentUser);
   $due->Set (Format => 'ISO',
@@ -138,7 +155,7 @@ sub Create {
 				EffectiveId => $args{'EffectiveId'},
 				Queue => $Queue->Id,
 				Alias => $args{'Alias'},
-				Owner => $args{'Owner'} || $RT::Nobody,
+				Owner => $Owner->Id,
 				Subject => $args{'Subject'},
 				InitialPriority => $args{'InitialPriority'},
 				FinalPriority => $args{'FinalPriority'},
