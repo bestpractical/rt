@@ -7,7 +7,7 @@
 Pseudogroups:<BR>
 <UL>
 %while ( $Group = $PseudoGroups->Next) {
-<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->id%>: <%$Group->Name%></a><BR>
+<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name%></a><BR>
 %}
 
 </UL>
@@ -16,7 +16,7 @@ Groups:<BR>
 <UL>
 <LI><A HREF="Modify.html?Create=1">Create a new group</A><BR><BR></LI>
 %while ( $Group = $Groups->Next) {
-<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->id%>: <%$Group->Name%></a><BR>
+<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name%></a><BR>
 %}
 </UL>
 

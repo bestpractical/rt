@@ -11,7 +11,7 @@
 
 
 % while (my $key = $Keywords->Next) {
-    <LI><%$key->id%>:
+    <LI>
 % if ($Edit == $key->id) {
       <input name="KeyName-<%$key->id%>" value="<%$key->Name%>">
 	  <input type=submit value="Update">
