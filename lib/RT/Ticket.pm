@@ -834,7 +834,8 @@ sub _NewLink {
   my $linkid = $link->Create(%args);
 
   #Write the transaction
-  my $b,$t;
+  my $b;
+  my $t;
   if ($args{dir} eq 'F') {
       $b=$args{base};
       $t='THIS';
