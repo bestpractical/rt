@@ -223,8 +223,8 @@ sub Delete {
 
 =head2 Message
 
-  Returns the RT::Attachment Object which is the top-level message object
-for this transaction
+  Returns the RT::Attachments Object which contains the "top-level" object
+  attachment for this transaction
 
 =cut
 
