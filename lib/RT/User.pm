@@ -67,21 +67,21 @@ sub delete {
   
   
   
-  $user_id=$rt::dbh->quote($self->UserId);
+  $user_id=$self->_Handle->quote($self->UserId);
   
   if ($self->CurrentUser->IsAdministrator) {
     
     if ($self->UserId  ne $self->CurrentUser) {
       $query_string = "DELETE FROM users WHERE UserId = $user_id";
-      $sth = $dbh->prepare($query_string) or 
-	return ("[delete_user] prepare had some problem: $DBI::errstr\n$query_string\n");
+      $sth = $self->_Handle->prepare($query_string) or 
+	return ("[delete_user] prepare had some problem: $self->_Handle->errstr\n$query_string\n");
       $sth->execute or 
-	return ("[delete_user] execute had some problem: $DBI::errstr\n$query_string\n");
+	return ("[delete_user] execute had some problem: $self->_Handle->errstr\n$query_string\n");
       $query_string = "DELETE FROM queue_acl WHERE UserId = $user_id";
-      $sth = $dbh->prepare($query_string) or 
-	return ("[delete_user] Query had some problem: $DBI::errstr\n$query_string\n");
+      $sth = $self->_Handle->prepare($query_string) or 
+	return ("[delete_user] Query had some problem: $self->_Handle->errstr\n$query_string\n");
       $sth->execute or
-	return ("[delete_user] Query had some problem: $DBI::errstr\n$query_string\n");  
+	return ("[delete_user] Query had some problem: $self->_Handle->errstr\n$query_string\n");  
       return ("User deleted.");
       
     }
