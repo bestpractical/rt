@@ -35,10 +35,10 @@ $current_subtab, Title => $title &>
 <TR><TD ALIGN=RIGHT>
 <&|/l&>Class Name</&>: 
 </TD>
-<TD><INPUT name="Name" value="<%$ClassObj->Name%>"></TD>
+<TD><INPUT name="Name" value="<% $Create ? "" : $ClassObj->Name %>"></TD>
 </TR><TR>
 <TD ALIGN=RIGHT>
-<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$ClassObj->Description%>" size=60></TD></TR>
+<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<% $Create ? "" : $ClassObj->Description %>" size=60></TD></TR>
 <TR>
 <TR>
 <TD>
@@ -100,7 +100,7 @@ if  ( ($SetEnabled) and ( $Disabled != $ClassObj->Disabled) ) {
     push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
 }
 
-unless ($ClassObj->Disabled()) {
+unless ($Create ? $Disabled : $ClassObj->Disabled()) {
     $EnabledChecked ="CHECKED";
 }
 
@@ -123,5 +123,5 @@ $Name => undef
 $Create => undef
 $Description => undef
 $SetEnabled => undef
-$Enabled => undef
+$Enabled => 1
 </%ARGS>
