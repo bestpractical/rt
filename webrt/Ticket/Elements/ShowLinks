@@ -28,7 +28,7 @@ SuperTickets:<BR>
 
 SubTickets:<BR>
 <& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
-
+<BR>
 References:<BR>
 <UL>
 % while (my $Link = $Ticket->RefersTo->Next) {

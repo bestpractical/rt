@@ -68,11 +68,8 @@ sub activate  {
 
     $RT::Logger->debug("Creating attachement temp dir\n");
 
-    my $AttachmentDir = "/tmp/rt-tmp-$time-$$-".int(rand(100));
-    
-    #TODO log an emergency and bounce the message (MIME Encoded) 
-    # to the sender and to RT-Owner  if we can't store the message
-    mkdir("$AttachmentDir", 0700) || die "Couldn't create temp dir!";
+    use File::Temp;
+    my $AttachmentDir = File::Temp::tempdir (TMPDIR => 1, CLEANUP => 1);
     
     # Set up output directory for files:
     $parser->output_dir("$AttachmentDir");
@@ -100,14 +97,14 @@ sub activate  {
     
     # TODO - information about the charset is lost here!
     $head->decode;
-
+    
     # }}}
-
+    
     #Get us a current user object.
     my $CurrentUser = &GetCurrentUser($head);
-
+    
     my $MessageId = $head->get('Message-Id') || "<no-message-id-".time.rand(2000)."\@.$RT::rtname>";
- 
+    
     # {{{ Lets check for mail loops of various sorts.
 
     $RT::Logger->debug("Checking for mail loops\n");
@@ -143,9 +140,8 @@ sub activate  {
 	$RT::Logger->crit("RT Recieved mail ($MessageId) from itself");
         
 	#Should we mail it to RTOwner?
-	## TODO: This should be documented in config.pm
 	if ($RT::LoopsToRTOwner) {
-	    &MailError(To => $RT::OwnerEmail,
+	    MailError(To => $RT::OwnerEmail,
 		       Subject => "RT Bounce: $subject",
 		       Explanation => "RT thinks this message may be a bounce",
 		       MIMEObj => $entity);
@@ -422,11 +418,8 @@ sub MailError {
     $mimeobj->sync_headers();
     $entity->add_part($mimeobj);
     
-    $entity->print();
     $entity->send($RT::MailCommand, $RT::MailParams);
-    
-
-    
+        
 }
 
 # }}}
