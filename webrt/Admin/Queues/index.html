@@ -17,7 +17,7 @@
 </TD>
 <TD VALIGN=TOP>
 <UL>
-% if ($session{'CurrentUser'}->HasSystemRight('AdminQueues')) {
+% if ($session{'CurrentUser'}->HasSystemRight('AdminQueue')) {
 <LI><A HREF="<%$RT::WebPath%>/Admin/Queues/Modify.html?Create=1">Create a new queue</A><BR><BR></LI>
 </UL>
 % }
