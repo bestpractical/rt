@@ -57,7 +57,7 @@
 <a href="<%$RT::WebPath%>/SelfService/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>: <%$Ticket->Subject%></a>
 </TD>
 <TD>
-<%$Ticket->Status%>
+<%loc($Ticket->Status)%>
 </TD><TD>
 <%$Ticket->OwnerObj->Name%>
 </TR>
