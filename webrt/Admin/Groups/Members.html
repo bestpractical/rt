@@ -25,31 +25,27 @@ Current members
 
 (Check box to delete group member)
 <UL>
+% if ($Group->MembersObj->Count == 0 ) {
+<LI><i>(No members)</i>
+% } else {
 % while (my $member = $Group->MembersObj->Next()) {
 <LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->id%>">
 <%$member->UserObj->UserId%> (<%$member->UserObj->RealName%>)
+% }
 % }
 </UL>
 </TD>
 </TR>
 </TABLE>
+<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </form>
-<& /Elements/TitleBoxEnd &>
 
 
 <%INIT>
 my $Group = new RT::Group($session{'CurrentUser'});
 
-if ($id) {
-    $Group->Load($id) || Abort('Could not load group');
-}
-elsif ($CreateGroup) {
-    $Group->Create(Name => "$Name");
-}
-else {
-    Abort("You didn't specify a valid action");
-}
+$Group->Load($id) || Abort('Could not load group');
 
 
 my $key;
