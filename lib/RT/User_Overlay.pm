@@ -764,7 +764,7 @@ sub ResetPassword {
         $template->LoadGlobalTemplate('RT_PasswordChange_Privileged');
     }
     else {
-        $template->LoadGlobalTemplate('RT_PasswordChange_Privileged');
+        $template->LoadGlobalTemplate('RT_PasswordChange_NonPrivileged');
     }
 
     unless ( $template->Id ) {
