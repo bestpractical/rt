@@ -867,7 +867,7 @@ sub _SetupTransactionJoins {
         ALIAS1 => 'main',
         FIELD1 => $self->{'primary_key'},    # UGH!
         TABLE2 => 'Transactions',
-        FIELD2 => 'Ticket'
+        FIELD2 => 'ObjectId'
     );
 
     # Join Transactions To Attachments
