@@ -86,18 +86,25 @@ my %handlers = (
     grant       => ["grant", "revoke"],
 );
 
-# Once we find and call an appropriate handler, we're done.
-
-my (%actions, $action);
+my %actions;
 foreach my $fn (keys %handlers) {
     foreach my $alias (@{ $handlers{$fn} }) {
         $actions{$alias} = \&{"$fn"};
     }
 }
-if (@ARGV && exists $actions{$ARGV[0]}) {
-    $action = shift @ARGV;
+
+# Once we find and call an appropriate handler, we're done.
+
+sub handle {
+    my $action;
+
+    if (@ARGV && exists $actions{$ARGV[0]}) {
+        $action = shift @ARGV;
+    }
+    $actions{$action || "help"}->($action || ());
 }
-$actions{$action || "help"}->($action || ());
+
+handle(@ARGV);
 exit;
 
 # Handler functions.
@@ -113,18 +120,21 @@ sub logout {
     submit("$REST/logout") if defined $session->cookie;
 }
 
+my %help;
 sub help {
     my ($action, $type) = @_;
-    my (%help, $key);
+    my $key;
 
     # What help topics do we know about?
-    local $/ = undef;
-    foreach my $item (@{ Form::parse(<DATA>) }) {
-        my $title = $item->[2]{Title};
-        my @titles = ref $title eq 'ARRAY' ? @$title : $title;
+    if (!%help) {
+        local $/ = undef;
+        foreach my $item (@{ Form::parse(<DATA>) }) {
+            my $title = $item->[2]{Title};
+            my @titles = ref $title eq 'ARRAY' ? @$title : $title;
 
-        foreach $title (grep $_, @titles) {
-            $help{$title} = $item->[2]{Text};
+            foreach $title (@titles) {
+                $help{$title} = $item->[2]{Text};
+            }
         }
     }
 
