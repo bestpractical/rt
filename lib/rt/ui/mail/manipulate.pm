@@ -41,14 +41,14 @@ sub activate {
       ($serial_num,$transaction_num, $message)=&rt::add_new_request(
 		$in_queue,$area,
 		$current_user,'','',$subject,
-		$queues{"$in_queue"}{'default_final_prio'},
-		$queues{"$in_queue"}{'default_prio'},'open',
+		$rt::queues{"$in_queue"}{'default_final_prio'},
+		$rt::queues{"$in_queue"}{'default_prio'},'open',
 		$rt::time,0,0,$content,$current_user);
       
     }
     else {
 
-	if (&is_not_a_requestor($current_user, $serial_num)){
+	if (&rt::is_not_a_requestor($current_user, $serial_num)){
 	$notify_requestor = 1;
 	}
 	else {

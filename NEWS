@@ -1,5 +1,9 @@
 20 Oct 1999
 -----------
+* Fixed leading spaces in the subject line when sending mail
+
+* More work on cleaning up the from line
+
 * Fixed the repeated (queue) (queue) in transaction messages
 
 * When a message comes into the mailgate, RT is now more careful about whether 
