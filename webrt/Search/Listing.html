@@ -52,7 +52,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
       </%PERL>
 <TR bgcolor="<%$bgcolor%>" >
 %# The ticket view is controlled by config.pm, WebOptions
-%foreach my $col (@{Config('QueueListingCols')}) {
+%foreach my $col (@{Config(\%ARGS,'QueueListingCols')}) {
 <TD><& TicketCell , Ticket=>$Ticket,  Column=>$col &></TD>
 %}
 </TR>
