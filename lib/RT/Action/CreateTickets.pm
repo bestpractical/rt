@@ -350,6 +350,8 @@ sub CreateByTemplate {
     my $self = shift;
     my $top = shift;
 
+    my @results;
+
     # XXX: cargo cult programming that works. i'll be back.
     use bytes;
 
@@ -372,6 +374,9 @@ sub CreateByTemplate {
 	# reasonable data and do our thang
 
 	my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%$ticketargs);
+
+	push @results, $T::Tickets{$template_id}->loc("Ticket [_1]", $T::Tickets{$template_id}->Id) . ': ' .$msg;
+
 	if (!$id) {
 	    if ($self->TicketObj) {
 		$msg = "Couldn't create related ticket $template_id for ".
@@ -432,6 +437,8 @@ sub CreateByTemplate {
 
 	$ticket->SetStatus($args{Status}) if defined $args{Status};
     }
+
+    return @results;
 }
 
 sub UpdateByTemplate {
