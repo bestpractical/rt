@@ -49,7 +49,7 @@
 <&|/l&>Add Columns</&>:
 </td>
 <td>
-Format:
+<&|/l&>Format</&>:
 </td>
 <td></td>
 <td>
@@ -59,32 +59,27 @@ Format:
 <td valign=top>
 <select size="6" name="SelectDisplayColumns" multiple>
 % foreach my $field ( @$AvailableColumns) {
-<option value="<%$field%>"><%
-loc($m->comp(
-                '/Elements/RT__Ticket/ColumnMap',
-                Name => $field,
-                Attr => 'title'
-              )
-              || $field) %></option>
+<option value="<%$field%>"><% loc( $field) %></option>
+%# $m->comp( '/Elements/RT__Ticket/ColumnMap', Name => $field, Attr => 'title') || 
 % }
 </select>
 </td>
 <td>
-Link:
-<select name=Link>
+<&|/l&>Link</&>:
+<select name="Link">
 <option value="None">-</option>
 <option value="Display"><&|/l&>Display</&></option>
 <option value="Take"><&|/l&>Take</&></option>
 </select>
-<br>Title: <input name="Title" size=10>
-<br>Size:
-<select name=Size>
+<br><&|/l&>Title</&>: <input name="Title" size=10>
+<br><&|/l&>Size</&>:
+<select name="Size">
 <option value="">-</option>
 <option value="Small"><&|/l&>Small</&></option>
 <option value="Large"><&|/l&>Large</&></option>
 </select>
-<br>Face:
-<select name=Face>
+<br><&|/l&>Style</&>:
+<select name="Face">
 <option value="">-</option>
 <option value="Bold"><&|/l&>Bold</&></option>
 <option value="Italic"><&|/l&>Italic</&></option>
@@ -98,11 +93,7 @@ Link:
 % my $i=0;
 % foreach my $field (@$CurrentFormat) {
 <option value="<%$i++%>><%$field->{Column}%>">
-<%loc($m->comp(
-                '/Elements/RT__Ticket/ColumnMap',
-                Name => $field->{Column},
-                Attr => 'title'
-              ) || $field->{Column}) %></option>
+<%loc( $field->{Column}) %></option>
 % }
 </select>
 <br>
