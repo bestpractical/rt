@@ -26,33 +26,38 @@ sub Create {
 
 sub create {
   my $self = shift;
-
+  
   my %args = ( id => undef,
-	       effective_sn => '',
-	       time_taken => 0,
-	       ticket => '',
-               actor => '',
-               type => '',
-	       data => '',
-	       date => '',
-	       content => '',
+	       TimeTaken => 0,
+	       Ticket => '',
+
+               Type => '',
+	       Data => '',
+
+	       Content => '',
 	       @_
 	     );
   #if we didn't specify a ticket, we need to bail
   return (0) if (! $args{'ticket'});
 
   #lets create our parent object
-  my $id = $self->SUPER::create(article => $args{'article'},
-				url => $args{'url'},
-				title => $args{'title'},
-				comment => $args{'comment'});
+  my $id = $self->SUPER::create(ticket => $args{'ticket'},
+				effective_ticket  => $args{'ticket'},
+				time_taken => $args{'TimeTaken'},
+				date => time(),
+				time_taken => $args{'time_taken'},
+				type => $args{'type'},
+				content => $args{'content'},
+				data => $args{'data'}
+				actor => $self->CurrentUser(),
+			       );
   return ($id);
 }
 
 
-sub EffectiveSerial {
+sub EffectiveTicket {
   my $self = shift;
-  return($self->_set_and_return('effective_sn'));
+  return($self->_set_and_return('effective_ticket'));
 }
 
 #Table specific data accessors/ modifiers
@@ -69,10 +74,17 @@ sub Ticket {
   my $self = shift;
   return($self->_set_and_return('ticket'));
 }
-sub url {
+
+#sub url {
+#  my $self = shift;
+#  return($self->_set_and_return('url'));
+#}
+
+sub Date {
   my $self = shift;
-  return($self->_set_and_return('url'));
+  return($self->_set_and_return('date'));
 }
+
 sub Data {
   my $self = shift;
   return($self->_set_and_return('data'));
@@ -108,53 +120,53 @@ sub Description {
   }
   
   elsif ($self->Type eq 'status'){
-    if ($self->{'data'} eq 'dead') {
+    if ($self->Data eq 'dead') {
       return ("Request killed by ". $self->Actor);
     }
     else {
-      return( "Status changed to $self->{'data'} by ".$self->Actor);
+      return( "Status changed to ".$self->Data." by ".$self->Actor);
     }
   }
   elsif ($self->Type eq 'queue_id'){
-    return( "Queue changed to $self->{'data'} by ".$self->Actor);
+    return( "Queue changed to ".$self->Data." by ".$self->Actor);
   }
   elsif ($self->Type eq 'owner'){
-    if ($self->{'data'} eq $self->Actor){
+    if ($self->Data eq $self->Actor){
       return( "Taken by ".$self->Actor);
     }
-    elsif ($self->{'data'} eq ''){
+    elsif ($self->Data eq ''){
       return( "Untaken by ".$self->Actor);
     }
     
     else{
-      return( "Owner changed to $self->{'data'} by ". $self->Actor);
+      return( "Owner changed to ".$self->Data." by ". $self->Actor);
     }
   }
   elsif ($self->Type eq 'requestors'){
-    return( "User changed to $self->{'data'} by ".$self->Actor);
+    return( "User changed to ".$self->Data." by ".$self->Actor);
   }
   elsif ($self->Type eq 'priority') {
-	return( "Priority changed to $self->{'data'} by ".$self->Actor);
+    return( "Priority changed to ".$self->Data." by ".$self->Actor);
       }    
   elsif ($self->Type eq 'final_priority') {
-	return( "Final Priority changed to $self->{'data'} by ".$self->Actor);
+    return( "Final Priority changed to ".$self->Data." by ".$self->Actor);
       }
   elsif ($self->Type eq 'date_due') {  
-      ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year)=&parse_time($self->{'data'});
+    ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year)=&parse_time(".$self->Data.");
       $text_time = sprintf ("%s, %s %s %4d %.2d:%.2d:%.2d", $wday, $mon, $mday, $year,$hour,$min,$sec);
     return( "Date Due changed to $text_time by ".$self->Actor);
-  }
+    }
   elsif ($self->Type eq 'subject') {
-      return( "Subject changed to $self->{'data'} by ".$self->Actor);
+      return( "Subject changed to ".$self->Data." by ".$self->Actor);
       }
   elsif ($self->Type eq 'date_told') {
-	return( "User notified by ".$self->Actor);
+    return( "User notified by ".$self->Actor);
       }
   elsif ($self->Type eq 'effective_sn') {
-    return( "Request $self->{'serial_num'} merged into $self->{'data'} by ".$self->Actor);
+    return( "Request $self->{'serial_num'} merged into ".$self->Data." by ".$self->Actor);
   }
   elsif ($self->Type eq 'subreqrsv') {
-    return "Subrequest #$self->{'data'} resolved by ".$self->Actor;
+    return "Subrequest #".$self->Data." resolved by ".$self->Actor;
   }
   elsif ($self->Type eq 'link') {
     #TODO: make this fit with the rest of things.

@@ -18,22 +18,55 @@ sub new {
 }
 
 
+sub Create {
+  my $self = shift;
+  return($self->create(@_);)
+}
+
 sub create {
   my $self = shift;
-  my $id = $self->SUPER::create(@_);
-  $self->load_by_reference($id);
-  
-  #TODO: this is horrificially wasteful. we shouldn't commit 
-  # to the db and then instantly turn around and load the same data
+ 
+  my %args = (id => undef,
+	      effective_id => undef,
+	      queue => undef,
+	      area => undef,
+	      alias => undef,
+	      requestors => undef,
+	      owner => undef,
+	      subject => undef,
+	      initial_priority => undef,
+	      final_priority => undef,
+	      priority => undef,
+	      status => 'open',
+	      time_worked => 0,
+	      date_created => time(),
+	      date_told => 0,
+	      date_acted => time(),
+	      date_due => 0,
+	      @_);
 
-#sub create is handled by the baseclass. we should be calling it like this:
-#$id = $article->create( title => "This is a a title",
-#		  mimetype => "text/plain",
-#		  author => "jesse@arepa.com",
-#		  summary => "this article explains how to from a widget",
-#		  content => "lots and lots of content goes here. it doesn't 
-#                              need to be preqoted");
-# TODO: created is not autoset
+  my $id = $self->SUPER::create(id => $args{'id'},
+				effective_id => $args{'effective_id'},
+				queue => $args{'queue'},
+				area => $args{'area'},
+				alias => $args{'alias'},
+				requestors => $args{'requestors'},
+				owner => $args{'owner'},
+				subject => $args{'subject'},
+				initial_priority => $args{'initial_priority'},
+				final_priority => $args{'final_priority'},
+				priority => $args{'priority'},
+				status => $args{'status'},
+				time_worked => $args{'time_worked'},
+				date_created => $args{'date_created'},
+				date_told => $args{'date_told'},
+				date_acted => $args{'date_acted'},
+				date_due => $args{'date_due'}
+			       );
+
+  
+  return($id);
+
 }
 sub created {
   my $self = shift;
@@ -41,14 +74,15 @@ sub created {
 }
 
 
-sub SerialNum {
+
+sub TicketId {
   my $self = shift;
   return($self->id);
 }
-sub EffectiveSm {
+sub EffectiveTicket {
   my $self = shift;
 
-  $self->_set_and_return('effective_sn',@_);
+  $self->_set_and_return('effective_ticket',@_);
 }
 
 sub Queue {
@@ -75,7 +109,7 @@ sub Queue {
     #TODO: IF THE AREA DOESN'T EXIST IN THE NEW QUEUE, YANK IT.
     
     else {
-      $self->_set_and_return('queue_id',$new_queue);
+      $self->_set_and_return('queue',$new_queue);
     }
   }
   #if they're not setting the queueid, just return a queue object
@@ -84,7 +118,7 @@ sub Queue {
     if (!$self->{'queue'})  {
       require RT::Queue;
       $self->{'queue'} = RT::Queue->new($self->CurrentUser);
-      $self->{'queue'}->load($self->_set_and_return('queue_id'));
+      $self->{'queue'}->load($self->_set_and_return('queue'));
     }
     return ($self->{'queue'});
     
@@ -327,30 +361,27 @@ sub NewCorrespondence {
 
 sub _NewTransaction {
   my $self = shift;
-
   my $type = shift;
   my $data = shift;
   my $time_taken = shift;
   my $content = shift;
+
+
   my $trans = new RT::Transaction($self->CurrentUser);
-  $trans->Create( effective_sn => $self->EffectiveSN,
-		  ticket => $self->Id, 		  
-		  time_taken => "$time_taken",
-		  actor => $self->CurrentUser,
-		  type => "$type",
-		  data => "$data",
-		  date => time,
-		  content => "$content"
+  $trans->Create( Ticket => $self->EffectiveSN,
+		  TimeTaken => "$time_taken",
+		  Type => "$type",
+		  Data => "$data",
+		  Content => "$content"
 		);
-  
-  $self->_update_time_taken($time_taken); 
+  $self->_UpdateTimeTaken($time_taken); 
 }
 
 sub Transactions {
   my $self = shift;
   if (!$self->{'transactions'}) {
     $self->{'transactions'} = new RT::Transactions($self->CurrentUser);
-    $self->{'transactions'}->Limit( FIELD => 'effective_sn',
+    $self->{'transactions'}->Limit( FIELD => 'effective_ticket',
                                     VALUE => $self->id() );
   }
   return($self->{'transactions'});
@@ -455,13 +486,13 @@ sub IsRequestor {
 #
 
 
-sub _update_time_taken {
+sub _UpdateTimeTaken {
   my $self = shift;
-  warn("_update_time_taken not implemented yet.");
+  warn("_UpdateTimeTaken not implemented yet.");
   
 }
 
-sub _update_date_acted {
+sub _UpdateDateActed {
   my $self = shift;
   $self->SUPER::_set_and_return('date_acted',time);
 }
@@ -494,13 +525,11 @@ sub _set_and_return {
     my $content = @_;
     
     
-  #record what's being done in the transaction
+    #record what's being done in the transaction
     
     $self->_NewTransaction ($field, $value, $time_taken, $content);
     
-  
-    
-    $self->_update_date_acted;
+    $self->_UpdateDateActed;
   
     $self->SUPER::_set_and_return($field, @_);
     
@@ -566,7 +595,7 @@ sub Merge {
 #    }    
     
 
-#    $transaction_num=&update_request($in_serial_num,'effective_sn',$in_merge_into, $in_current_user);    
+#    $transaction_num=&update_request($in_serial_num,'effective_ticket',$in_merge_into, $in_current_user);    
 
 #	$query_string = "UPDATE transactions SET effective_sn = $in_merge_into WHERE effective_sn = $in_serial_num";
 #	$sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n";

@@ -1,7 +1,6 @@
 # $Header$
-# $Tag$
 #
-# Request Tracker is Copyright 1997 Jesse Reed Vincent <jesse@fsck.com>
+# Request Tracker is Copyright 1996-1999 Jesse Reed Vincent <jesse@fsck.com>
 # RT is distribute under the terms of the GNU Public License
 
 
@@ -34,8 +33,8 @@ CREATE TABLE users (
   Comments CHAR(120),
   IsAdministrator INT
 )\g
-
-INSERT INTO users VALUES ('root', 'Reginald Oot', 'wordpass','root@localhost','432-HELP','Room 000','Keeper of the Blinkenlights',1)\g
+	
+INSERT INTO users VALUES (0,'root','root', 'Reginald Oot', 'wordpass','root@localhost','432-HELP','Room 000','Keeper of the Blinkenlights',1)\g
 
 CREATE TABLE queues (
  id CHAR(40) NOT NULL PRIMARY KEY,
@@ -58,13 +57,12 @@ CREATE TABLE queues (
 # Table structure for table 'each_req'
 #
 
-CREATE TABLE each_req (
+CREATE TABLE ticket (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  effective_sn INT,
-  queue_id CHAR(40),
+  effective_id INT,
+  queue CHAR(40),
   area CHAR(40),
   alias CHAR(40),
-  keywords CHAR(200),
   requestors CHAR(200),
   owner CHAR(40),
   subject CHAR(200),
@@ -85,7 +83,7 @@ CREATE TABLE each_req (
 
 CREATE TABLE transactions (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  effective_sn INT,
+  effective_ticket INT,
   ticket INT,
   time_taken INT,
   actor CHAR(40),
@@ -93,13 +91,13 @@ CREATE TABLE transactions (
   data CHAR(100),
   content BLOB,
   date INT
-) \g
+)\g
 
 CREATE TABLE mime_bodies (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   message_id char(160),
   content_type char(80),
-  charset char(32),
+  charset char(32)
 
 )\g
 
@@ -109,19 +107,17 @@ CREATE TABLE links (
   foreign_db INT
 )\g
 
-CREATE TABLE relships (
+
+  # Different types might be handled differently by the code. Currently
+  # 'dependency' and 'knowledgelink' is the only supported.
+  # The base_url references remote DBs. The type-dependent code should
+  # create valid URLs. I have tried to make generic templates, making a
+  # completely generic support for "links", but it got too messy with
+  # too many exceptions, option bitmaps, different URLs for different
+  # purposes, etc.
+
+CREATE TABLE relations (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-
-# Different types might be handled differently by the code. Currently
-# 'dependency' and 'knowledgelink' is the only supported.
-
-  type varchar, 
-
-# The base_url references remote DBs. The type-dependent code should
-# create valid URLs. I have tried to make generic templates, making a
-# completely generic support for "links", but it got too messy with
-# too many exceptions, option bitmaps, different URLs for different
-# purposes, etc.
-
-  base_url varchar
+  type VARCHAR(20), 
+  base_url VARCHAR(200)
 )\g

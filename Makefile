@@ -1,8 +1,8 @@
-# $Header: /usr/local/cvsroot/rt/Makefile,v 1.69 1999/04/13 07:07:35 jesse Exp O
+# $Header$
 # 
 #
-# Request Tracker is Copyright 1997-9 Jesse Reed Vincent <jesse@fsck.com>
-# RT is distribute under the terms of the GNU Public License
+# Request Tracker is Copyright 1997-9 Jesse Vincent <jesse@fsck.com>
+# RT is distributed under the terms of the GNU Public License
 
 CC			=	gcc
 PERL			= 	/usr/bin/perl
