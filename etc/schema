@@ -1,12 +1,9 @@
+# $Header$
+# $Tag$
+#
+# Request Tracker is Copyright 1997 Jesse Reed Vincent <jesse@fsck.com>
+# RT is distribute under the terms of the GNU Public License
 
-# MsqlPerl Dump  (requires mSQL-1.0.6 or better)
-#
-# Host: localhost    Database: request
-#--------------------------------------------------------
-
-#
-# Table structure for table 'general_info'
-#
 
 CREATE TABLE queue_acl (
   queue_id CHAR(40),
@@ -55,7 +52,7 @@ CREATE TABLE queues (
 #
 
 CREATE TABLE each_req (
-  serial_num INT NOT NULL PRIMARY KEY,
+  serial_num int(11) AUTO_INCREMENT,
   effective_sn INT,
   queue_id CHAR(40),
   area CHAR(40),
@@ -80,7 +77,7 @@ CREATE TABLE each_req (
 #
 
 CREATE TABLE transactions (
-  id INT NOT NULL PRIMARY KEY,
+  id int(11) AUTO_INCREMENT,
   effective_sn INT,
   serial_num INT,
   actor CHAR(40),
