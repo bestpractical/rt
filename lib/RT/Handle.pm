@@ -31,10 +31,15 @@ Takes nothing. Calls SUPER::Connect with the needed args
 
 sub Connect {
 my $self=shift;
+
+# Unless the database port is a positive integer, we really don't want to pass it.
+$RT::DatabasePort = undef unless ($RT::DatabasePort =~ /^(\d+)$/);
+
 $self->SUPER::Connect(Host => $RT::DatabaseHost, 
 			 Database => $RT::DatabaseName, 
 			 User => $RT::DatabaseUser,
 			 Password => $RT::DatabasePassword,
+			 Port => $RT::DatabasePort,
 			 Driver => $RT::DatabaseType);
    
 }
