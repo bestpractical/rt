@@ -11,7 +11,7 @@ use RT::CurrentUser;
    
 # {{{ sub activate 
 sub activate  {
-    my ($Verbose, ReturnTid, $Debug);
+    my ($Verbose, $ReturnTid, $Debug);
    
     #Set some sensible defaults 
     my $Queue = 1;
@@ -38,8 +38,9 @@ sub activate  {
       if (($flag eq '-r') or ($flag eq '--area')) {
 	$area = shift @ARGV;
       }    
+      
 
-    
+  }
     
     my ($From, $TicketId, $Subject,$SquelchReplies);
     
@@ -230,7 +231,7 @@ sub activate  {
     &ParseCommands($entity);
 
     return(0);
-}
+  }
 # }}}
 
 # {{{ sub CheckForLoops 
@@ -360,7 +361,7 @@ sub ParseCommands {
 
 	  #TODO: use a published interface.  +++
 	  $Ticket->_NewLink(dir=>$dir,Target=>$to,Base=>$from,Type=>$typ);
-	  $RT::Logger->info( "$CurrentUser->UserId." created a link by mail ($_)");
+	  $RT::Logger->info( $CurrentUser->UserId." created a link by mail ($_)");
       } else {
 	  die "unknown command $command : $_";
       }
