@@ -24,10 +24,10 @@
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html".$QueryString, 
-    Title => $title,
-    Format => $Format,
+    Title => $title, Format => $Format,
     Query => $Query,
-    Rows => $ARGS{'Rows'} &>
+    Rows => $ARGS{'Rows'},
+&>
 
 <table width=100%>
 <tr>
@@ -64,7 +64,7 @@
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
 <& Elements/EditSearches, CurrentSearch => $search_hash &>
-</form>
+</FORM>
 </td>
 </tr>
 <tr>
@@ -76,13 +76,13 @@
 <input type=hidden name=SearchId value="<%$ARGS{'SearchId'}%>">
 <& Elements/DisplayOptions, Format=> ($Format||$search_hash->{'Format'}),
 AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, %ARGS &>
-</form>
+</FORM>
 </td>
 </tr>
 </table>
-</FORM>
 
 <%INIT>
+use Tree::Simple;
 
 my $search_hash = {};
 my $search;
@@ -93,6 +93,7 @@ if ($NewQuery) {
     $Format = '';
     $Description = '';
     undef $session{'CurrentSearchHash'};
+    $session{'tickets'}->CleanSlate() if defined $session{'tickets'};
 } else {
     $search_hash = $session{'CurrentSearchHash'};
     $Query ||= $search_hash->{'Query'};
@@ -202,7 +203,8 @@ else {
 
 
 # {{{ Parse the query
-my $items = ParseQuery( $Query, \@actions );
+my $tree;
+ParseQuery( $Query, \$tree, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
@@ -211,29 +213,19 @@ if ( $actions[0] ) {
 }
 
 my @options;
+my $optionlist;
 $Query  = "";
 %queues = ();
-build_array( \$Query, $items, "", "", 0, \@options, \%queues );
-my $currentkey = "";
-$currentkey = $options[$ARGS{clauses}]->{Key} if $ARGS{clauses};
+
+$optionlist = build_array( \$Query, $ARGS{clauses}, $tree, \@options, \%queues );
+
+my $currentkey;
+$currentkey = $options[$ARGS{clauses}] if defined $ARGS{clauses};
 
 # We can't check for the addclause button because hitting return in
 # a criterion will get lost otherwise
 if (1) {
 
-    my ($key, $top);
-    if ($currentkey) {
-        $key = $currentkey;
-        my ( $prefix, $depth, $num ) = parsekey($key);
-        $top = 1 if $depth == 1;  
-    }
-    else {
-        $key = "{" . '0.0' . "}{Subkey}{1.0}";
-        $top = 1;
-    }
-    while ( keyexists( $items, $key ) ) {
-        $key = nextkey($key);
-    }
     foreach my $arg ( keys %ARGS ) {
         if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ) {
             my $field = $1;
@@ -252,31 +244,36 @@ if (1) {
                 Value => "'$ARGS{'ValueOf' . $field}'"
             };
 
-            setvalue($items, $key, $clause);
-            setaggregator( $items, $key, $ARGS{'AndOr'} );
-
-            if ($top) {
-                # if the next item is a subkey, put it there
-                my $newkey = appendsubkey( $items, $key );
-                my $oldkey = $key;
-                movecurrent( $items, $newkey, \$oldkey );
-            }
-
-            $currentkey = $key;
-            $key = nextkey($key);
-        }
+	    my $newnode = Tree::Simple->new($clause);
+	    if ($currentkey) {
+		my $newindex = $currentkey->getIndex() + 1;
+		if ($currentkey->getParent()->getParent()->isRoot()) {
+		    my $newparent = Tree::Simple->new($ARGS{'AndOr'});
+		    $newparent->addChild($newnode);
+		    $newnode = $newparent;
+		}
+		$currentkey->insertSibling($newindex, $newnode);
+		$currentkey = $newnode;
+	    } else {
+		my $newparent = Tree::Simple->new($ARGS{'AndOr'});
+		$newparent->addChild($newnode);
+		$tree->getChild(0)->addChild($newparent);
+		$currentkey = $newparent;
+	    }
+	}
     }
 }
 
 # {{{ Move things around
 if ( $ARGS{"Up"} ) {
     if ($currentkey) {
-        # we can only move it up if it's not at the top
-        my $prev = prevkey($currentkey);
-
-        if ( swap( $items, $prev, $currentkey ) ) {
-            $currentkey = "$prev";
-        }
+	my $index = $currentkey->getIndex();
+	if ( $currentkey->getIndex() > 0 ) {
+	    my $parent = $currentkey->getParent();
+	    $parent->removeChild($index);
+	    $parent->insertChild($index - 1, $currentkey);
+	    $currentkey = $parent->getChild($index - 1);
+	}
         else {
             push( @actions, [ "error: can't move up", -1 ] );
         }
@@ -287,12 +284,13 @@ if ( $ARGS{"Up"} ) {
 }
 elsif ( $ARGS{"Down"} ) {
     if ($currentkey) {
-        # we can only move it down if it's not at the bottom
-        my $newkey = nextkey($currentkey);
-
-        if ( swap( $items, $newkey, $currentkey ) ) {
-            $currentkey = "$newkey";
-        }
+	my $index = $currentkey->getIndex();
+	my $parent = $currentkey->getParent();
+	if ( $currentkey->getIndex() < ($parent->getChildCount - 1) ) {
+	    $parent->removeChild($index);
+	    $parent->insertChild($index + 1, $currentkey);
+	    $currentkey = $parent->getChild($index + 1);
+	}
         else {
             push( @actions, [ "error: can't move down", -1 ] );
         }
@@ -303,20 +301,15 @@ elsif ( $ARGS{"Down"} ) {
 }
 elsif ( $ARGS{"Left"} ) {
     if ($currentkey) {
-        # we can only move it left if...what?
-        my $parent = parentkey($currentkey);
-
-        if ( $parent =~ m/^{0.0}.*/ && $parent ne "{0.0}" ) {
-            my $newkey = appendkey( $items, $parent );
-            movecurrent( $items, $newkey, \$currentkey );
-
-            # if there was an empty group left behind, delete it
-            my $subhash = gethash($items, $parent . "{Subkey}");
-            if ( !( keys %{$subhash} ) ) {
-                deletevalue($items, $parent);
-                reworkkeys( $items, $parent, \$currentkey );
-            }
-
+	my $parent = $currentkey->getParent();
+	my $grandparent = $parent->getParent();
+	if (!$grandparent->isRoot) {
+	    my $index = $parent->getIndex();
+	    $parent->removeChild($currentkey);
+	    $grandparent->insertChild($index, $currentkey);
+	    if ($parent->isLeaf()) {
+		$grandparent->removeChild($parent);
+	    }
         }
         else {
             push( @actions, [ "error: can't move left", -1 ] );
@@ -328,44 +321,60 @@ elsif ( $ARGS{"Left"} ) {
 }
 elsif ( $ARGS{"Right"} ) {
     if ($currentkey) {
-        # you can't move right if you leave no siblings behind
-        if (   keyexists( $items, nextkey($currentkey) )
-            || keyexists( $items, prevkey($currentkey) ) )
-        {
-
-            # if the next item is a subkey, put it there
-            my $newkey = appendsubkey( $items, $currentkey );
-
-            movecurrent( $items, $newkey, \$currentkey );
-        }
-        else {
-            push( @actions, [ "error: can't move right", -1 ] );
-        }
-
-    }
-    else {
+	my $parent = $currentkey->getParent();
+	my $index = $currentkey->getIndex();
+	my $newparent;
+	if ($index > 0 ) {
+	    my $sibling = $parent->getChild($index - 1);
+	    if (ref($sibling)) {
+		$parent->removeChild($currentkey);
+		my $newtree = Tree::Simple->new('AND', $parent);
+		$newtree->addChild($currentkey);
+	    } else {
+		$parent->removeChild($index);
+		$sibling->addChild($currentkey);
+	    }
+	}
+	else {
+	    $parent->removeChild($currentkey);
+	    $newparent = Tree::Simple->new('AND', $parent);
+	    $newparent->addChild($currentkey);
+	}
+    } else {
         push( @actions, [ "error: nothing to move", -1 ] );
     }
 }
 elsif ( $ARGS{"DeleteClause"} ) {
     if ($currentkey) {
-        deletevalue($items, $currentkey);
-        reworkkeys( $items, $currentkey, \$currentkey );
+	$currentkey->getParent()->removeChild($currentkey);
     }
     else {
         push( @actions, [ "error: nothing to delete", -1 ] );
     }
 }
 elsif ( $ARGS{"Toggle"} ) {
-    my $ea = getaggregator( $items, $currentkey);
-    if ($ea eq 'AND') {
-        setaggregator( $items, $currentkey, 'OR' );
-    } else {
-        setaggregator( $items, $currentkey, 'AND' );
+    my $ea;
+    if ($currentkey) {
+	if (!ref($currentkey->getNodeValue())) {
+	    if ($currentkey->getNodeValue() eq 'AND') {
+		$currentkey->setNodeValue('OR');
+	    } else {
+		$currentkey->setNodeValue('AND');
+	    }
+	} else {
+	    if ($currentkey->getParent()->getNodeValue() eq 'AND') {
+		$currentkey->getParent()->setNodeValue('OR');
+	    } else {
+		$currentkey->getParent()->setNodeValue('AND');
+	    }
+	}
+    }
+    else {
+        push( @actions, [ "error: nothing to toggle", -1 ] );
     }
 }
 elsif ( $ARGS{"Clear"} ) {
-    $items = ();
+    $tree = Tree::Simple->new(Tree::Simple->ROOT);
 }
 
 # }}}
@@ -374,95 +383,81 @@ elsif ( $ARGS{"Clear"} ) {
 $Query   = "";
 @options = ();
 %queues  = ();
-build_array( \$Query, $items, "", "", 0, \@options, \%queues );
-my $ea;
-my $i          = 0;
-my $optionlist = "";
-while ( my $val = shift @options ) {
-    last if ( !$val->{Value} );
-    my $key = $val->{Key};
-    my ( $prefix, $depth, $num ) = parsekey($key);
-    my $selected;
-
-    next unless ( $val->{Value}->{Key} || $val->{Value}->{Subkey} );
-    $ea = $val->{EA};
-
-    if ( $depth > 0 ) {
-        if ( $key eq $currentkey ) {
-            $selected = "SELECTED";
-        }
-        else {
-            $selected = "";
-        }
-        $optionlist .= "<option value=$i $selected>";
-        $optionlist .= "&nbsp;" x ( 5 * ( $depth - 1 ) );
-#        $optionlist .= "$i: $key ";
-
-        if ( $num > 0 || $val->{Value}->{Subkey} ) {
-            $optionlist .= $ea . " ";
-        }
-        $optionlist .=
-          "$val->{Value}->{Key} $val->{Value}->{Op} $val->{Value}->{Value}";
-        $optionlist .= "</option>\n";
-
-    }
-    $i++;
-}
+$optionlist = build_array( \$Query, $currentkey, $tree, \@options, \%queues );
 
 sub build_array {
     my $Query     = shift;
-    my $items     = shift;
-    my $parentkey = shift;
-    my $ea        = shift;
-    my $i         = shift;
+    my $currentkey = shift;
+    my $tree = shift;
     my ($keys, $queues)    = @_;
+    my $i = 0;
+    my $optionlist;
+    my $depth = 0;
+    my %parens;
 
-    while ( my $item = $items->{ $i + 0 } ) {
-        my $j = 0;
-        while ( my $item = $items->{ $i + ( $j / 10 ) } ) {
+    $tree->traverse(
+    sub {
+    my ($_tree) = @_;
 
-            my $depth = $i;
+    return if $_tree->getParent->isRoot();
 
-            my $subkey = $item->{Subkey};
-            if ( defined $subkey && scalar keys %$subkey ) {
-                my $sendkey = "";
-                if ($parentkey) {
-                    $sendkey = $parentkey . "{Subkey}{$i.$j}";
-                }
-                else {
-                    $sendkey = "{$i.$j}";
-                }
-                push @$keys, { Key => $sendkey, Value => $item, EA => $ea };
-                # no aggregator if it's first
-                $$Query .= " " . $ea . " " if ($j > 0 && $$Query); 
-                $$Query .= "("             if $depth > 0;
-                my $x = $i + 1;
-                build_array( $Query, $subkey, $sendkey, $item->{EA}, 
-			     $x, $keys, , $queues );
-                $$Query .= ")" if $depth > 0;
-            }
-            else {
-                if ( $depth >= 1 ) {
-                    my $mykey;
-                    if ($parentkey) {
-                        $mykey = $parentkey . "{Subkey}{$i.$j}";
-                    }
-                    else {
-                        $mykey = " " . $i . $j . " ";
-                    }
-                    $$Query .= " " . $ea . " " if ( $j > 0 );
-                    $$Query .= "$item->{Key} $item->{Op} $item->{Value}" if $item->{Key};
-                    push @$keys, { Key => $mykey, Value => $item, EA => $ea };
+    push @$keys, $_tree;
+    my $clause = $_tree->getNodeValue();
+    my $str;
+    if (ref($clause)) {
+	my $ea = $_tree->getParent()->getNodeValue();
+        $str .= $ea . " " if $_tree->getIndex() > 0;
+	$str .= $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
 
-                    if ( $item->{Key} eq "Queue" ) {
-                        $queues->{ $item->{Value} } = 1;
-                    }
-                }
-            }
-            $j++;
-        }
-        $i++;
+	if ( $clause->{Key} eq "Queue" ) {
+	    $queues->{ $clause->{Value} } = 1;
+	}
+    } else {
+	$str = $_tree->getNodeValue() if $_tree->getIndex() > 0;
     }
+
+    my $selected;
+    if ($_tree == $currentkey) {
+	$selected = "SELECTED";
+    }
+    else {
+	$selected = "";
+    }
+
+    foreach my $p (keys %parens) {
+	if ($p > $_tree->getDepth) {
+	    $$Query .= ')' x $parens{$p};
+	    $parens{$p}--;
+	}
+    }
+
+    $optionlist .= "<option value=$i $selected>" .
+	("&nbsp;" x 5 x ($_tree->getDepth() - 1)) . "$str</option>\n";
+    my $parent = $_tree->getParent();
+    if (!($parent->isRoot || $parent->getParent()->isRoot) &&
+	!ref($parent->getNodeValue())) {
+	if ( $_tree->getIndex() == 0) {
+	    $$Query .= '(';
+	    $parens{$_tree->getDepth}++;
+	}
+    }
+    $$Query .= " " . $str . " ";
+
+    if ($_tree->getDepth < $depth) {
+	$$Query .= ')';
+	$parens{$depth}--;
+    }
+
+    $i++;
+}
+);
+
+foreach my $p (keys %parens) {
+    $$Query .= ") " x $parens{$p};
+}
+
+return $optionlist;
+
 }
 
 use Regexp::Common qw /delimited/;
@@ -476,19 +471,18 @@ use constant KEYWORD => 16;
 
 sub ParseQuery {
     my $string = shift;
+    my $tree = shift;
     my @actions = shift;
     my $want   = KEYWORD | PAREN;
     my $last   = undef;
 
     my $depth = 1;
-    my $query = {};
-    my %depths;
-    my %items;
 
-    setvalue($query, "{0.0}", {});
-    setvalue($query, "{0.0}{Subkey}", {});
-    setvalue($query, "{0.0}{Subkey}{1.0}", {});
-    setvalue($query, "{0.0}{Subkey}{1.0}{Subkey}", {});
+    # make a tree root
+    $$tree = Tree::Simple->new(Tree::Simple->ROOT);
+    my $root = Tree::Simple->new('AND', $$tree);
+    my $lastnode = $root;
+    my $parentnode = $root;
 
     # get the FIELDS from Tickets_Overlay
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
@@ -504,14 +498,13 @@ sub ParseQuery {
     my $re_op      = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)] ;    # long to short
     my $re_paren = qr'\(|\)';
 
-    my ( $ea, $key, $op, $value ) = ( "", "", "", "" );
+    # assume that $ea is AND if it's not set
+    my ( $ea, $key, $op, $value ) = ( "AND", "", "", "" );
 
     # order of matches in the RE is important.. op should come early,
     # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
     # as a keyword or value.
 
-    my $num = 0;
-    $depths{1} = 0;
     while ( $string =~ /(
                       $re_aggreg
                       |$re_op
@@ -546,44 +539,20 @@ sub ParseQuery {
         # Parens are highest priority
         if ( $current & PAREN ) {
             if ( $val eq "(" ) {
-                $num = 0;
-                $depth++;
-		$depths{$depth} = 0;
-
-                my $hashkey;
-                my @keys;
-                $hashkey = "$depth" . "." . "$depths{$depth}" . "";
-                my $keystring = "";
-
-                while ( $parentdepth >= 1 ) {
-                    $hashkey = $parentdepth . ".$depths{$parentdepth}";
-                    push @keys, $hashkey;
-                    $parentdepth--;
-                }
-
-                # build up the keystring from the top
-                $keystring .= "{" . ( pop @keys ) . "}";
-                while ( my $k = pop @keys ) {
-                    $keystring .= "{Subkey}{$k}";
-                }
-                $keystring = "{0.0}{Subkey}" . $keystring;
-
-		if (!gethash($query, parentkey($keystring))) {
-		    setvalue($query, parentkey($keystring), {});
-		}
-                setaggregator( $query, $keystring, $ea );
+		$depth++;
+		# make a new node that the clauses can be children of
+		$parentnode = Tree::Simple->new($ea, $parentnode);
             }
             else {
-                $depth--;
-                $num = $depths{$depth} + 1;
+		$depth--;
+		$parentnode = $parentnode->getParent();
+		$lastnode = $parentnode;
             }
 
             $want = KEYWORD | PAREN | AGGREG;
         }
         elsif ( $current & AGGREG ) {
             $ea = $val;
-	    $depths{$depth}++ if ($last & PAREN);
-
             $want = KEYWORD | PAREN;
         }
         elsif ( $current & KEYWORD ) {
@@ -630,23 +599,6 @@ sub ParseQuery {
         }
 
         if ( $current & VALUE ) {
-	    $depths{$depth}++;
-
-            my $keystring = "";
-            $keystring = "{Subkey}{" . $parentdepth . ".$num" . "}";
-            $parentdepth--;
-
-            while ( $parentdepth > 0 ) {
-                $keystring = "{Subkey}{"
-                  . $parentdepth
-                  . ".$depths{$parentdepth}" . "}"
-                  . $keystring;
-                $parentdepth--;
-            }
-
-	    $ea = 'AND' if !$ea;
-            $keystring = "{0.0}" . $keystring;
-
 	    if ( $key =~ /^CF./ ) {
 	        $key = "'" . $key . "'";
 	    }
@@ -656,10 +608,9 @@ sub ParseQuery {
                 Value => $val
             };
 
-	    setvalue($query, $keystring, $clause);
-            setaggregator( $query, $keystring, $ea );
-
-            $num++;
+	    # explicity add a child to it
+	    $lastnode = Tree::Simple->new($clause, $parentnode);
+	    $lastnode->getParent()->setNodeValue($ea);
 
             ( $ea, $key, $op, $value ) = ( "", "", "", "" );
         }
@@ -676,8 +627,6 @@ sub ParseQuery {
     # This will never happen, because the parser will complain
     push @actions, [ "Mismatched parentheses", -1 ]
       unless $depth == 1;
-
-    return $query;
 }
 
 sub _match {
@@ -688,306 +637,6 @@ sub _match {
 
     #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
     return 0;
-}
-
-sub keyexists {
-    my $hash = shift;
-    my $key  = shift;
-
-    my ($prefix, $depth, $num) = parsekey($key);
-    return exists $hash->{0.0} if ($depth == 0);
-
-    my $myhash = gethash($hash, $prefix);
-
-    return exists ($myhash->{$depth + ($num/10)});
-}
-
-sub subkeyexists {
-    my $hash = shift;
-    my $key  = shift;
-
-    my $myhash = gethash($hash, $key);
-    return exists $myhash->{Subkey};
-}
-
-sub appendsubkey {
-    my $hash = shift;
-    my $key  = shift;
-
-    my $newkey;
-
-    # if the next key exists, get the last key
-    my $nextkey = nextkey($key);
-    if ( subkeyexists( $hash, $nextkey ) ) {
-        $newkey = appendkey( $hash, subkey( $nextkey ) );
-    }
-    else {
-        $newkey = subkey($key);
-    }
-
-    return $newkey;
-}
-
-sub prevkey {
-    my $key = shift;
-    my ( $prefix, $depth, $num ) = parsekey($key);
-
-    my $k = "$depth." . ( $num - 1 );
-    return $prefix . "{$k}";
-}
-
-sub nextkey {
-    my $key = shift;
-    my ( $prefix, $depth, $num ) = parsekey($key);
-
-    my $k = "$depth." . ( $num + 1 );
-    
-    return $prefix . "{$k}";
-}
-
-sub subkey {
-    my $key = shift;
-    my ( $prefix, $depth, $num ) = parsekey($key);
-
-    return $prefix . "{" . "$depth.$num" . "}{Subkey}{" . ( $depth + 1 ) . ".0}";
-}
-
-sub parentkey {
-    my $key = shift;
-    my ( $prefix, $depth, $num ) = parsekey($key);
-    if ( $depth > 0 ) {
-        $prefix =~ s/(.*){Subkey}/$1/;
-    }
-    else {
-        $prefix = "";
-    }
-
-    return $prefix;
-}
-
-sub parsekey {
-    my $key = shift;
-
-    # pull apart the key
-    $key =~ m/(.*){(.*)}$/;
-    my $prefix = $1;
-    my $depth = 0;
-    my $num = 0;
-    my $final = $2;
-    if ($final =~ m/(\d).(\d)/) {
-	$depth  = $1;
-	$num    = $2;
-    } else {
-	$depth = $final;
-    }
-    return ( $prefix, $depth, $num );
-}
-
-sub reworkkeys {
-    my $hash = shift;
-    my $key  = shift;
-    my $currentkey = shift;
-
-    # if our parent doesn't exist, return immediately
-    if ( !keyexists( $hash, parentkey($key) ) ) {
-        return;
-    }
-
-    fixsubkeys( $hash, $key );
-
-    # don't try to rework keys if the first one exists
-    if (   keyexists( $hash, $key )
-        || subkeyexists( $hash, $key ) )
-    {
-        return;
-    }
-
-    my $nextkey = nextkey($key);
-    while ( keyexists( $hash, $nextkey ) ) {
-        if ( keyexists( $hash, $nextkey ) ) {
-	    my $temp = gethash($hash, $nextkey);
-	    setvalue($hash, $key, $temp);
-            $$currentkey = $key . $2 if $$currentkey =~ m/($nextkey)(.*)/;
-        }
-
-        # set this so that we can return it;
-        $key = $nextkey;
-
-        if ( subkeyexists( $hash, $key ) ) {
-            my $subkey = subkey($key);
-            reworkkeys( $hash, subkey($key), $currentkey );
-        }
-
-        $nextkey = nextkey($key);
-    }
-    deletevalue($hash, $key);
-}
-
-sub fixsubkeys {
-    my $hash = shift;
-    my $key  = shift;
-
-    if ( subkeyexists( $hash, $key ) ) {
-        my ( $prefix, $depth, $num ) = parsekey($key);
-        my $item = gethash($hash, $key . "{Subkey}");
-	my %temp = %$item;
-        foreach my $i ( keys %temp ) {
-            my $num = $i - int($i);
-            my $new = int($depth) + 1 + $num;
-            if ( $i != $new ) {
-		setvalue($hash, $key . "{Subkey}{$new}", $temp{$i});
-		deletevalue($hash, $key . "{Subkey}{$i}");
-                fixsubkeys( $hash, $key . "{Subkey}{$new}" );
-            }
-            $num++;
-        }
-    }
-}
-
-sub getaggregator {
-    my $hash = shift;
-    my $key  = shift;
-
-    my $parent = parentkey($key);
-    my $ea = gethash($hash, $parent . "{EA}");
-
-    return $ea;
-}
-
-sub setaggregator {
-    my $hash = shift;
-    my $key  = shift;
-    my $ea   = shift;
-
-    my $parentkey = parentkey($key);
-    my $parenthash = gethash($hash, parentkey($key));
-    $parenthash->{EA} = $ea;
-
-}
-
-sub appendkey {
-    my $hash = shift;
-    my $key  = shift;
-
-    my $newkey;
-    if ($key) {
-        $newkey = $key;
-    }
-    else {
-        $newkey = "{" . "0.0" . "}{Subkey}{1.0}";
-    }
-
-    while ( keyexists( $hash, $newkey ) ) {
-        $newkey = nextkey($newkey);
-    }
-
-    return $newkey;
-}
-
-sub movecurrent {
-    my $hash   = shift;
-    my $newkey = shift;
-    my $currentkey = shift;
-
-    my $origkey = $$currentkey;
-    my $old = gethash($hash, $origkey);
-    my %temp = %$old;
-
-    deletevalue($hash, $origkey);
-    my $orignewkey = $newkey;
-
-    setvalue($hash, $newkey, \%temp);
-
-    $$currentkey = $orignewkey;
-    reworkkeys( $hash, $orignewkey, $currentkey );
-    reworkkeys( $hash, $origkey, $currentkey );
-
-    return 1;
-}
-
-sub swap {
-    my $hash = shift;
-    my $key1 = shift;
-    my $key2 = shift;
-
-    return 0 if !( keyexists( $hash, $key1 ) && keyexists( $hash, $key2 ) );
-
-    # store the value temporarily
-    my $val1 = gethash($hash, $key1);
-    my %temp = %$val1;
-
-    my $val2 = gethash($hash, $key2);
-
-    setvalue($hash, $key2, \%temp);
-    setvalue($hash, $key1, $val2);
-
-    return 1;
-}
-
-sub gethash {
-    my $hash = shift;
-    my $key = shift;
-
-    my $returnhash;
-
-    $key =~ s/^{0.0}(.*)$/$1/;
-    $key =~ s/^{(.*)}$/$1/;
-    my @keys = split(/\}\{/, $key);
-    $returnhash = $hash->{0.0};
-    foreach my $k (@keys) {
-	if (exists $returnhash->{$k}) {
-	    $returnhash = $returnhash->{$k};
-	} else {
-	    $returnhash = $returnhash->{$k+0};
-	}
-    }
-
-    return $returnhash;
-}
-
-sub setvalue {
-    my $hash = shift;
-    my $key = shift;
-    my $value = shift;
-
-    my ($prefix, $depth, $num) = parsekey($key);
-    my $newhash;
-    if ($prefix) {
-	my $parentkey = parentkey($key);
-
-	my $parent;
-	if (!gethash($hash, $parentkey)) {
-	    setvalue($hash, $parentkey, {});
-	    $parent = gethash($hash, $parentkey);
-	} else {
-	    $parent = gethash($hash, $parentkey);
-	}
-
-	if (!exists $parent->{Subkey}) {
-	    $parent->{Subkey} = {};
-	}
-	$newhash = gethash($hash, $prefix);
-    } else {
-	$newhash = $hash;
-    }
-
-    $newhash->{$depth + ($num / 10)} = $value;
-
-    # if there isn't an aggregator, set it to AND
-    my $ea = getaggregator( $hash, $key);
-    if (!$ea) {
-	setaggregator( $hash, $key, 'AND' );
-    }
-
-}
-
-sub deletevalue {
-    my $hash = shift;
-    my $key = shift;
-
-    my ($prefix, $depth, $num) = parsekey($key);
-    my $parent = gethash($hash, $prefix);
-    delete $parent->{$depth + ($num / 10)};
 }
 
 sub debug {
