@@ -1,34 +1,49 @@
+%# Search, aka FeedURI
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/css" href="<% $BaseURL %>/NoAuth/feed.css"?>
-<feed version="0.3" xmlns="http://purl.org/atom/ns#">
-  <title>Search result on <% $Type %></title>
+<?xml-stylesheet type="text/css" href="<% $BaseURI %>/NoAuth/feed.css"?>
+<feed version="0.3"
+  xmlns="http://purl.org/atom/ns#"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+>
+  <title><&|/l&>Query</&>: <% loc($Type) %></title>
   <author>
     <name><% $RT::Organization %></name>
     <url><% $RT::WebURL %></url>
   </author>
-  <link rel="alternate" type="text/html" href="<% $RT::WebURL %>"/>
-  <link rel="service.post" type="application/x.atom+xml" href="<% $BaseURL %>/<% lc($Type) %>"/>
-  <link rel="service.feed" type="application/x.atom+xml" href="<% $BaseURL %>/<% lc($Type) %>"/>
-  <tagline mode="escaped"><% $count %> results found.</tagline>
+  <tagline mode="escaped">
+    <&|/l, $page, int(($TotalFound-1)/$rows)+1&>Page [_1] of [_2]</&>
+    (<&|/l, $TotalFound&>[_1] Total</&>)
+  </tagline>
+  <& $Link, Relation => "alternate", Type => 'text/html', URI => $RT::WebURL, Title => loc("Homepage") &>
   <id>rt-fsck.com://<% $RT::rtname %>/<% $Path %></id>
+  <link rel="service.post" type="application/x.atom+xml" href="<% $FeedURI %>/new"/>
+  <link rel="service.feed" type="application/x.atom+xml" href="<% $FeedURI %>"/>
   <modified><% $modified %></modified>
   <generator url="http://www.bestpractical.com/rt/" version="<% $RT::VERSION %>">RT</generator>
 % foreach my $entry (@entries) {
   <entry>
     <title mode="escaped"><% $entry->{Name} %></title>
-    <link rel="alternate" type="text/html" href="<% $RT::WebURL %><% $entry->{URL} %>"/>
-    <link rel="service.edit" type="application/x.atom+xml" href="<% $BaseURL %>/<% lc($Type) %>/<% $entry->{Id} %>"/>
+    <summary mode="escaped"><% $entry->{Description} %></summary>
     <modified><% $entry->{LastUpdated} %></modified>
     <issued><% $entry->{Created} %></issued>
     <created><% $entry->{Created} %></created>
     <id>rt-fsck.com://<% $RT::rtname %>/<% $Path %>/<% $entry->{Id} %></id>
-    <summary mode="escaped"><% $entry->{Description} %></summary>
+    <& $Link, Relation => "alternate", Type => 'text/html', URI => "$RT::WebURL$entry->{URI}", Title => $entry->{Name} &>
+    <link rel="service.edit" type="application/x.atom+xml" href="<% $FeedURI %>/<% $entry->{Id} %>"/>
     <content type="text/plain" mode="escaped"><% $entry->{Content} %></content>
   </entry>
 % }
+% if ($page > 1) {
+  <& $Link, URI => "$FeedURI?$prev", Title => loc("Previous Page"), Relation => 'prev', &>
+% }
+% if (($page * $rows) < $TotalFound) {
+  <& $Link, URI => "$FeedURI?$next", Title => loc("Next Page"), Relation => 'next', &>
+% }
 </feed>
 <%INIT>
-my %URL = (
+$r->content_type('text/xml');
+
+my %URI = (
     Tickets	=> 'Ticket/Display.html?id=',
     Templates	=> 'Admin/Global/Template.html?Template=',
     Scrips	=> 'Admin/Global/Scrip.html?id=',
@@ -36,15 +51,18 @@ my %URL = (
     Users	=> 'Admin/Users/Modify.html?id=',
     Groups	=> 'Admin/Groups/Modify.html?id=',
 );
-my $BaseURL = "$RT::WebPath/REST/2.0";
+my $BaseURI = "$RT::WebPath/REST/2.0";
+my $FeedURI = "$BaseURI/\l$Type";
+my $Link = "$BaseURI/Elements/Link";
 
-my $Collection = $CollectionClass->new($session{CurrentUser});
-$Collection->UnLimit;
-my $count = $Collection->Count;
+my $List = $CollectionClass->new($session{CurrentUser});
+$List->UnLimit;
+$List->RowsPerPage($rows) if $rows > 0;
+$List->GotoPage($page - 1) if $page > 0;
 
-$r->content_type('text/xml');
-
-my $entries = '';
+my $TotalFound = $List->CountAll;
+$rows = $TotalFound if $rows <= 0;
+$page = 1 if $page <= 0;
 
 my $now = RT::Date->new($session{CurrentUser});
 $now->SetToNow;
@@ -52,24 +70,35 @@ my $modified = $now->W3CDTF;
 
 my @entries;
 
-while (my $entry = $Collection->Next) {
+while (my $entry = $List->Next) {
     my %entry = map { $_ => eval { $entry->$_ } || '' }
 	qw(Id Name Description Content);
     $entry{Created} = $entry->CreatedObj->W3CDTF;
     $entry{Created} =~ s/ /T/;
     $entry{LastUpdated} = $entry->LastUpdatedObj->W3CDTF;
     $entry{LastUpdated} =~ s/ /T/;
-    $entry{URL} = $URL{$Type} . $entry{Id};
+    $entry{URI} = $URI{$Type} . $entry{Id};
     if (my $queue = eval { $entry->Queue } ) {
-	$entry{URL} =~ s/Global/Queues/;
+	$entry{URI} =~ s/Global/Queues/;
 	$entry{Params} .= "&Queue=$queue";
     }
     push @entries, \%entry;
 }
+
+my %query;
+while (my ($k, $v) = each %ARGS) {
+    $query{$k} = $v if $k eq lc($k);
+}
+my $prev = $m->comp('/Elements/QueryString', %query, page => ($page-1));
+my $next = $m->comp('/Elements/QueryString', %query, page => ($page+1));
 
 </%INIT>
 <%ARGS>
 $Path
 $Type
 $CollectionClass
+
+$rows => 3
+$page => 1
+$query => undef
 </%ARGS>

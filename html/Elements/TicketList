@@ -40,7 +40,7 @@
 </TABLE>
 % if ($ShowNavigation) {
 <hr>
-<&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
+<&|/l, $Page, int(($TotalFound-1)/$Rows)+1&>Page [_1] of [_2]</&>
 
 <%perl>
 my $prev =  $m->comp('/Elements/QueryString', Query => $Query,

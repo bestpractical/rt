@@ -3,6 +3,7 @@
 % my $path = $m->base_comp->path;
 % if ($path =~ $RT::WebNoAuthRegex ) {
 %     $r->content_type('text/css') if $path =~ /\.css$/i;
+%     $r->content_type('text/xml') if $path =~ /\.xsl$/i;
 %     $m->call_next(%ARGS);
 %     $m->abort();
 % }

@@ -1,5 +1,6 @@
 feed {
   display:block;
+  text-align:center;
   font-family:verdana, sans-serif;
   margin:2%;
 }
@@ -17,16 +18,48 @@ title {
   font-size:150%;
   color:#000000;
   display:block;
+  text-align:left;
   font-weight:bold;
 }
 
-tagline {
+tagline, author {
+  text-align:left;
   display:block;
   font-size:90%;
 }
 
-link {
-  font-size:90%;
+feed>link.html:before {
+    content: attr(title)
+}
+
+feed>link.html[rel!="alternate"] {
+  padding: 3pt;
+  border:solid 1px #dddddd;
+  font-size: 90%;
+}
+
+feed>link.html[rel="alternate"] {
+  display: block;
+  text-align: left;
+}
+
+link.html[rel="alternate"]:before {
+  content: "HTML";
+  background-color: #003366;
+  color: #c9c9ff;
+  padding: 1px 5px 1px 5px;
+  font-size: xx-small;
+}
+
+entry title {
+  font-size:125%;
+  font-weight:bold;
+  color:#003366;
+  display:block;
+  padding:5px 0px 0px 0px;
+  margin:0px 0px 0px 0px;
+  border-top:solid 1px #dddddd;
+  background:#eeeeee;
 }
 
 id {
@@ -43,19 +76,10 @@ generator {
   margin:0px 0px 30px 0px;
 }
 
-entry title {
-  font-size:125%;
-  font-weight:bold;
-  color:#003366;
-  display:block;
-  padding:15px 1% 0px 3%;
-  margin:10px 0px 0px 0px;
-  border-top:solid 1px #dddddd;
-  background:#eeeeee;
-}
 
 entry modified {
   display:inline;
+  font-style: italic;
 }
 
 created {
@@ -78,9 +102,8 @@ content {
 
 
 entry {
+  text-align:left;
   border-top:dotted 1px #999999;
-  margin:30px 0px 5px 0px;
-  padding:5px;
   display:block;
   background:#ffffff;
   padding:5px 0px 10px 0px;

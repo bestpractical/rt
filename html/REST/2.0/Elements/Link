@@ -1,0 +1,9 @@
+%# Make a HTML link and an Atom link
+<html:link class="html" rel="<% $Relation %>" type="<% $Type %>" href="<% $URI %>" title="<% $Title %>" />
+<link rel="<% $Relation %>" type="<% $Type %>" href="<% $URI %>" title="<% $Title %>" />
+<%ARGS>
+$Relation => "alternate"
+$Type => "application/x.atom+xml"
+$URI => "#"
+$Title => ""
+</%ARGS>
