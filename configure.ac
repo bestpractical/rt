@@ -241,6 +241,7 @@ AC_CONFIG_FILES([
 		 lib/t/05cronsupport.pl
 		 lib/t/06mailgateway.pl
 		 lib/t/07acl.pl
+		 lib/t/08web_cf.pl
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd

@@ -180,6 +180,7 @@ Apache::Test
 HTML::Form
 HTML::TokeParser
 WWW::Mechanize
+Test::WWW::Mechanize
 .
 
 $deps{'FASTCGI'} = [ _( << '.') ];

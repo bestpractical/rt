@@ -47,3 +47,5 @@ require "@RT_LIB_PATH@/t/04_send_email.pl";
 require "@RT_LIB_PATH@/t/05cronsupport.pl";
 require "@RT_LIB_PATH@/t/06mailgateway.pl";
 require "@RT_LIB_PATH@/t/07acl.pl";
+require "@RT_LIB_PATH@/t/08web_cf.pl";
+
