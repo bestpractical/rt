@@ -779,7 +779,7 @@ sub ProcessTicketBasics {
 
   
   # We special case owner changing, so we can use ForceOwnerChange
-   if ( defined ($ARGSRef->{'Owner'}) && 
+   if ( $ARGSRef->{'Owner'} && 
 	($TicketObj->Owner != $ARGSRef->{'Owner'}) ) {
        my ($ChownType);
        if ($ARGSRef->{'ForceOwnerChange'}) {
