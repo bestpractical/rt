@@ -244,7 +244,7 @@ or as members of groups
 sub WhoHaveRight {
     my $self = shift;
     my %args = ( Right                  => undef,
-                 Object =>              => undef,
+                 Object                 => undef,
                  IncludeSystemRights    => undef,
                  IncludeSuperusers      => undef,
                  IncludeSubgroupMembers => 1,
