@@ -86,6 +86,7 @@ use Carp;
     use Text::Quoted;
 }
 
+use RT::Interface::Web::Handler;
 $Handler = RT::Interface::Web::Handler->new(@RT::MasonParameters);
 
 sub handler {
