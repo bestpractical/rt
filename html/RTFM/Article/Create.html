@@ -21,7 +21,7 @@
  <&|/l&>Summary</&>
 </td>
 <td>
-<input name=Summary SIZE=50>
+<input name=Summary SIZE=50 VALUE="<%$ARGS{'Summary'}%>">
 </TD>
 </TR>
 <TR>
@@ -96,7 +96,7 @@ foreach my $arg (keys %ARGS) {
 my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
 $ClassObj->Load($Class);
 unless ($ClassObj->Id) {
-    Abort("'%1' isn't a valid class identifier", $Class);
+    $m->comp("/RTFM/Elements/Error", Why => "'%1' isn't a valid class identifier", $Class);
 }
 my        $CustomFields = $ClassObj->CustomFields();
 </%init>

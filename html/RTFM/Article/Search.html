@@ -1,6 +1,5 @@
-<& /Elements/Header &>
-<& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html",
-title => "Search for articles" &>
+<& /RTFM/Elements/Header, title => 'Search for articles' &>
+<& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/Search.html", Title => "Search for articles" &>
 
 
 <ul>
@@ -11,8 +10,13 @@ title => "Search for articles" &>
 </li>
 % }
 </ul>
-<h2>Search</h2>
 
+% if ($ARGS{'HideOptions'} == 1) {
+% my $qs = $ENV{'QueryString'};
+% $qs =~ s/HideOptions=1//gi;
+<a href="Search.html?<%$qs%>">Show advanced search options...</a>
+% }  else { 
+<& /Elements/TitleBoxStart, title => 'Advanced Search Criteria'&>
 <form target="Search.html" method="GET">
 <br>Class is <& ../Elements/SelectClass, Name => 'Class', Multiple =>1, Size =>
 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
@@ -73,7 +77,8 @@ Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$
 </table>
 
 <div align="right"><input type="submit"></div>
-
+<&/Elements/TitleBoxEnd&>
+% }
 </form>
 <%init>
 my $user;

@@ -65,12 +65,12 @@ else {
                                                     Type        => $Type,
                                                     Description => $Description,
                                                     SortOrder   => $SortOrder );
-        Abort( loc( "Could not create CustomField", $msg ) ) unless ($val);
+        $m->comp("/RTFM/Elements/Error", Why =>  loc( "Could not create CustomField", $msg ) ) unless ($val);
         push @results, $msg;
         $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name() );
     }
     else {
-        $CustomFieldObj->Load($id) || Abort( loc('No CustomField') );
+        $CustomFieldObj->Load($id) || $m->comp("/RTFM/Elements/Error", Why =>  loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name() );
 
         my @attribs = qw( Name Type Description SortOrder);

@@ -74,14 +74,14 @@ else {
     if ($id eq 'new') {
        my ($val, $msg) =  $ClassObj->Create(Name => $Name);
        if ($val == 0 ) {
-           Abort("$msg");
+           $m->comp("/RTFM/Elements/Error", Why => "$msg");
 	}
 	else {
 		push @results, $msg;
 	}    
      }
      else {
-        $ClassObj->Load($id) || $ClassObj->Load($Name) || Abort("Couldn't load class '$Name'");
+        $ClassObj->Load($id) || $ClassObj->Load($Name) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$Name'");
     }
         $title = loc('Editing Configuration for Class [_1]', $ClassObj->Name);
     

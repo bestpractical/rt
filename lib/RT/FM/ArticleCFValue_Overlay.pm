@@ -30,7 +30,6 @@ sub Create {
                  CustomField => undef,
                  @_ );
 
-    $RT::Logger->debug("Got here!");
 
     # {{{ Validate the article
     my $art = RT::FM::Article->new( $self->CurrentUser );
@@ -56,13 +55,13 @@ sub Create {
 
 
     unless ( defined $args{'Content'} ) {
-        return ( 0, "Content not set" );
+        return ( 0, $self->loc("Content not set") );
     }
 
     # If this custom field is a "select from a list" 
     # make sure that we're not supplying invalid values
     unless ( $cf->ValidateValueForArticle( Value => $args{'Content'}, Article => $args{'Article'} ) ) {
-        return ( 0, $self->loc("Invalid value for this custom field") );
+        return ( 0, $self->loc("[_1] is an invalid value for custom field [_2] for article [_3]", $args{'Content'}, $cf->Name, $args{'Article'}) );
     }
     # }}}
 

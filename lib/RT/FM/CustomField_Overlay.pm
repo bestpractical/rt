@@ -561,10 +561,10 @@ sub ValidateValueForArticle {
     # get the actual values for the custom field as an array and see if it has this entry
     my @values = grep { $_->Content eq $args{'Value'}} @{$article_values->ItemsArrayRef};
     if (shift @values) {
-        $RT::Logger->debug($args{'Value'} ." isn't a current value for ".$args{'Article'});
+        $RT::Logger->debug($args{'Value'} ." is a current value for ".$args{'Article'});
         return undef;
     } else {
-        $RT::Logger->debug($args{'Value'} ." is a current value for ".$args{'Article'});
+        $RT::Logger->debug($args{'Value'} ." is not a current value for ".$args{'Article'});
         return 1;
     }
 

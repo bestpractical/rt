@@ -120,11 +120,11 @@ $right);
 
 
 if (!defined $id) {
-    Abort(loc("No Class defined"));
+    $m->comp("/RTFM/Elements/Error", Why => loc("No Class defined"));
 }
 
 my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
-$ClassObj->Load($id) || Abort(loc("Couldn't load Class [_1]",$id));
+$ClassObj->Load($id) || $m->comp("/RTFM/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
 
 # Find out which users we want to display ACL selects for
 my $Privileged = RT::Group->new($session{'CurrentUser'});

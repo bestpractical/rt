@@ -2,6 +2,33 @@
 use strict;
 no warnings qw/redefine/;
 
+sub Create {
+    my $self = shift;
+    my %args = (
+                Article => '0',
+                ChangeLog => '',
+                Type => '',
+                Field => '',
+                OldContent => '',
+                NewContent => '',
+
+          @_);
+
+    foreach my $field qw(ChangeLog Type OldContent NewContent) {
+        $args{$field} = '' unless ($args{$field});
+
+    }
+
+    $self->SUPER::Create(
+                         Article => $args{'Article'},
+                         ChangeLog => $args{'ChangeLog'},
+                         Type => $args{'Type'},
+                         Field => $args{'Field'},
+                         OldContent => $args{'OldContent'},
+                         NewContent => $args{'NewContent'},
+);
+
+}
 
 sub Description {
     my $self = shift;

@@ -862,7 +862,7 @@ sub _AddCustomFieldValue {
                                       OldContent => $old_value,
                                       NewContent => $new_value->Content );
         }
-        return ( 1, $self->loc( "Custom field value changed from [_1] to [_2]", $old_value, $new_value->Content ) );
+        return ( 1, $self->loc( "Custom field value changed from '[_1]' to '[_2]'", $old_value, $new_value->Content ) );
         # }}}
     }
 
@@ -915,15 +915,21 @@ sub DeleteCustomFieldValue {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+
+    my $cf = RT::FM::CustomField->new($RT::SystemUser);
+    $cf->Load($args{'Field'});
+
+
     #Load up the ObjectKeyword we\'re talking about
     my $CFObjectValue = new RT::FM::ArticleCFValue( $self->CurrentUser );
     $CFObjectValue->LoadByCols( Content     => $args{'Content'},
-                                CustomField => $args{'Field'},
+                                CustomField => $cf->Id,
                                 Article     => $self->id() );
+
 
     #if we can\'t find it, bail
     unless ( $CFObjectValue->id ) {
-        return ( undef, $self->loc( "Couldn't load custom field [_1] value [_2] while trying to delete it.", $args{'Field'}, $args{'Content'} ) );
+        return ( undef, $self->loc( "Couldn't load custom field [_1] value [_2] while trying to delete it.", $cf->Id, $args{'Content'} ) );
     }
 
     #record transaction here.
@@ -944,14 +950,13 @@ sub DeleteCustomFieldValue {
         $RT::Handle->Rollback();
         return ( undef,
                  $self->loc( "Couldn't delete  custom field [_1] value [_2].",
-                             $args{'Field'}, $args{'Content'} ) );
+                             $cf->Id, $args{'Content'} ) );
     }
 
     $RT::Handle->Commit();
     return ( 1,
              $self->loc( "Value [_1] deleted from custom field [_2].",
-                         $CFObjectValue->Content,
-                         $args{'Field'} ) );
+                         $CFObjectValue->Content, $cf->Name ) );
 
 }
 

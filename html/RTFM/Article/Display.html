@@ -8,14 +8,14 @@
 % while (my $cf = $cfs->Next) {
 % my $values = $article->CustomFieldValues($cf->Id);
 <tr>
-<td><b><%$cf->Name%></b></td>
+<td valign=top><b><%$cf->Name%></b></td>
 <td>
 % if ($cf->Type eq 'TextSingle') { 
 % my $value = $values->First;
 % my $content;
 % if ( $value) {$content = $value->Content};
-% $content =~ s/\n/<br>/gi;
-<%$content%>
+% $content = "<pre>".$content."</pre>" unless ($content =~ /<(.{1,5})>/);
+<%$content|n%>
 % } else {
 <ul>
 % while (my $value = $values->Next) {
@@ -55,12 +55,12 @@ my $article = RT::FM::Article->new($session{'CurrentUser'});
 
 $article->Load($id);
 unless ($article->Id) {
-    Abort(loc("Article not found"));
+    $m->comp("/RTFM/Elements/Error", Why => loc("Article not found"));
 }
 
 unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj, 
                                            Right => 'ShowArticle')) {
-    Abort(loc("Permission Denied"));
+    $m->comp("/RTFM/Elements/Error", Why => loc("Permission Denied"));
 }
 
 my $cfs = $article->ClassObj->CustomFields;

@@ -64,7 +64,7 @@ my $ClassObj = new RT::FM::Class( $session{'CurrentUser'} );
 
 my ( $title, @results );
 
-$ClassObj->Load($ARGS{'id'}) || Abort("Couldn't load class '$id'");
+$ClassObj->Load($ARGS{'id'}) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$id'");
 
 my $ClassCFs = $ClassObj->CustomFields;
 

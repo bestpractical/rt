@@ -22,42 +22,32 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
-
+<table>
 % while (my $CustomField = $CustomFields->Next) {
 % my $Values = $ArticleObj->CustomFieldValues($CustomField->id);
-% while (my $val = $Values->Next) {
-<%$val->Content%>
-% }
-
-<%$CustomField->Name%> - <%$CustomField->Type%><br>
+<tr>
+<td valign="top" align="right"><B><%$CustomField->Name%></b><br><small><i>(<%$CustomField->Type%>)</i></small></td>
+<td valign="top">
 % if ($CustomField->Type eq 'FreeformSingle') {
-
 <input name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Value"
        value="<%$Values->First->Content%>">
-
-
-% } elsif ($CustomField->Type eq 'FreeformMultiple') {
-
+% }
+%  elsif ($CustomField->Type eq 'FreeformMultiple') {
 <textarea name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
 %while (my $value = $Values->Next ) {
 <%$value->Content%>
 %}
 </textarea>
-
 % } 
 %  elsif ($CustomField->Type eq 'TextSingle') {
-
-<textarea rows="10" cols="60"name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
+<textarea rows="10" cols="60"name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Value">
 %while (my $value = $Values->Next ) {
 <%$value->Content%>
 %}
 </textarea>
-
 % } 
 % elsif ($CustomField->Type =~ /^Select/) {
 % my $CustomFieldValues = $CustomField->ValuesObj();
-
 <select name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Values"
         size="5"
         <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>
@@ -70,7 +60,10 @@
 <option value="" <%$Values->Count == 0 && 'SELECTED' %>><&|/l&>(no value)</&></option>
 </select>
 % }
+</TD>
+</TR>
 % }
+</TABLE>
 
 <%INIT>
 my $CustomFields;

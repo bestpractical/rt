@@ -77,11 +77,11 @@
   
 
 if (!defined $id) {
-    Abort(loc("No CustomField defined"));
+    $m->comp("/RTFM/Elements/Error", Why => loc("No CustomField defined"));
 }
 
 my $CustomFieldObj = RT::FM::CustomField->new($session{'CurrentUser'});
-$CustomFieldObj->Load($id) || Abort(loc("Couldn't load CustomField [_1]",$id));
+$CustomFieldObj->Load($id) || $m->comp("/RTFM/Elements/Error", Why => loc("Couldn't load CustomField [_1]",$id));
 
 my $Groups;
   
