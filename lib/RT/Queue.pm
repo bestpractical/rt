@@ -17,6 +17,7 @@
 
 package RT::Queue;
 use RT::Record;
+
 @ISA= qw(RT::Record);
 
 # {{{  sub _Init 
@@ -612,6 +613,46 @@ sub AddScripScope {
 }
 # }}}
 
+# {{{ sub KeywordSelects
+
+=head2 KeywordSelects
+
+Returns an B<RT::KeywordSelects> object containing the collection of
+B<RT::KeywordSelect> objects which apply to this queue. 
+
+=cut
+
+sub KeywordSelects {
+  my $self = shift;
+
+
+  use RT::KeywordSelects;
+  my $KeywordSelects = new RT::KeywordSelects($self->CurrentUser);
+  # ok, this isn't quite right.  it assumes ObjectField is "Queue" if 
+  # ObjectValue is the current Queue.id, which is currently true, but the
+  # idea is to support additional QueueFields...
+  # SELECT * FROM KeywordSelects WHERE
+  # ObjectType = "Ticket" AND
+  # ( ObjectField = "" OR
+  #   ( ObjectField = "Queue" AND ObjectValue = $self->Queue )
+  # ) 
+  $KeywordSelects->Limit(
+			 FIELD => 'ObjectType',
+			 VALUE => 'Ticket',
+			);
+#  $KeywordSelects->Limit(
+#    FIELD => 'ObjectField',
+#    VALUE => '',
+#    ENTRYAGGREGATOR => 'OR',
+  #  );
+  $KeywordSelects->Limit(FIELD => 'ObjectValue',
+			 VALUE => $self->id,
+			 ENTRYAGGREGATOR => 'OR',
+			);
+  return ($KeywordSelects)
+}
+# }}}
+
 # {{{ sub ACL 
 
 =head2 ACL
@@ -632,6 +673,8 @@ sub ACL  {
   
 }
 # }}}
+
+
 
 # {{{ ACCESS CONTROL
 

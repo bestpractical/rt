@@ -15,8 +15,8 @@
 	       System => { 'title' => 'Global',
 			   path => 'Admin/Global/',
 			 },
-               KeywordSelects => { title => 'Keywords',
-                                   path => 'Admin/KeywordSelects/',
+               Keywords => { title => 'Keywords',
+                                   path => 'Admin/Keywords/',
                                  },
 
 	       

@@ -306,6 +306,7 @@ my $gratuitous = {
   'columns' =>  [
     'id', 'serial', '', '', '', '',
     'Keyword', 'integer', 'NOT NULL', '', '', '',
+    'KeywordSelect', 'integer', 'NOT NULL', '', '', '',
     'ObjectType', 'varchar', 'NOT NULL', '32', '', '',
     'ObjectId', 'integer', 'NOT NULL', '', '', '',
   ],
@@ -318,16 +319,16 @@ my $gratuitous = {
 'KeywordSelects' => {
   'columns' =>  [
     'id', 'serial', '', '', '', '',
-    'Parent', 'integer', 'NULL', '', '', '',
+    'Keyword', 'integer', 'NULL', '', '', '',
     'Single', 'integer', 'NULL', '', '', '',
-    'Generations', 'integer', 'NOT NULL', '', 0, '',
+    'Depth', 'integer', 'NOT NULL', '', 0, '',
     'ObjectType', 'varchar', 'NOT NULL',  '32', '', '',
     'ObjectField', 'varchar', 'NULL', '32', '', '',
     'ObjectValue', 'varchar', 'NULL', '255', '', '',
   ],
   'primary_key' => 'id',
   'unique' => [ [ ] ],
-  'index' => [ [ 'Parent' ] ],
+  'index' => [ [ 'Keyword' ], [ 'ObjectType', 'ObjectField', 'ObjectValue'] ],
 },
 
 };

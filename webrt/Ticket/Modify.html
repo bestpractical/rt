@@ -22,6 +22,7 @@ my $field;
 my @results;
 
 # {{{ Load the ticket
+
 #If we get handed two ids, mason will make them an array. bleck.
 # We want teh first one. Just because there's no other sensible way
 # to deal
@@ -29,9 +30,11 @@ my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);
 
 my $TicketObj = new RT::Ticket($session{'CurrentUser'});
 $TicketObj->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
+
 # }}}
 
 # {{{ Set basic fields 
+
 my @fields = qw(
           Queue 
           Owner 
@@ -60,30 +63,62 @@ my $check = "if ((defined \$ARGS{$field}) and
 
 # }}}
 
-#set KeywordSelects
-my $KeywordSelects = $TicketObj->KeywordSelects;
-my $KeywordSelect;
-while ( $KeywordSelect = $KeywordSelects->Next ) {
-  next unless defined $ARGS{'KeywordSelectMagic'. $KeywordSelect->id};
-  my $value = $ARGS{'KeywordSelect'. $KeywordSelect->id} || [];
-  my %values = map { $_=>1 } ref($value) ? @{$value} : ( $value );
-  my $old = $KeywordSelect->KeywordObj->TicketDescendents($TicketObj->id);
-  foreach ( grep { ! defined($values{$_}) } keys %{$old} ) {
-    my $ObjectKeyword =
-      $KeywordSelect->KeywordObj->TicketObjectKeyword( $_, $TicketObj->id );
-    $ObjectKeyword->Delete;
-    delete $old->{$_};
-  }
-  foreach  ( grep { ! defined($old->{$_}) } keys %values ) {
-    my $ObjectKeyword = new RT::ObjectKeyword $session{CurrentUser};
-    $ObjectKeyword->Create(
-      Keyword    =>  $_,
-      ObjectType => 'Ticket',
-      ObjectId   => $TicketObj->id,
-    ) or Abort "can't create ObjectKeyword Keyword=>$_, ObjectType=>Ticket, Parent=>". $TicketObj->id;
+# {{{ set ObjectKeywords.
+
+my $KeywordSelects = $TicketObj->QueueObj->KeywordSelects;
+
+# iterate through all the keyword selects for this queue
+
+while ( my $KeywordSelect = $KeywordSelects->Next ) {
+    # {{{ do some setup
+
+    # if we have KeywordSelectMagic for this keywordselect:
+    next unless defined $ARGS{'KeywordSelectMagic'. $KeywordSelect->id};
     
-  }
+    
+    # Lets get a hash of the possible values to work with
+    my $value = $ARGS{'KeywordSelect'. $KeywordSelect->id} || [];
+    
+    #lets get all those values in a hash. regardless of # of entries
+    my %values = map { $_=>1 } ref($value) ? @{$value} : ( $value );
+    
+    # Load up the ObjectKeywords for this KeywordSelect for this ticket
+    my $ObjectKeys = $TicketObj->KeywordsObj($KeywordSelect->id);
+
+    # }}}
+    # {{{ add new keywords
+    my ($key);
+    foreach $key (keys %values) {
+	#unless the ticket has that keyword for that keyword select,
+	unless ($ObjectKeys->HasEntry($key)) {
+	    #Add the keyword
+	    $RT::Logger->debug ("Now adding $key");
+	    my ($result, $msg) = 
+	      $TicketObj->AddKeyword( Keyword => $key,
+				      KeywordSelect => $KeywordSelect->id);
+	    push(@results, $msg);
+	}
+    }
+
+    # }}}
+    # {{{ Delete unused keywords
+    # Iterate through $ObjectKeys
+    while (my $TicketKey = $ObjectKeys->Next) {
+	
+	# if the hash defined above doesn\'t contain the keyword mentioned,
+	unless ($values{$TicketKey->Keyword}) {
+	    #I'd really love to just call $keyword->Delete, but then 
+	    # we wouldn't get a transaction recorded
+	    my ($result, $msg) = $TicketObj->DeleteKeyword(Keyword => $TicketKey->Keyword,
+						   KeywordSelect => $KeywordSelect->id);
+	    push(@results, $msg);
+	}
+    }
+
+    # }}}
 }
+
+# }}}
 
 </%INIT>
 

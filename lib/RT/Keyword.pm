@@ -18,31 +18,32 @@ sub _Init {
 }
 
 sub _Accessible {
-    shift->SUPER::_Accessible( @_,
-    Name        => 'read/write', #the keyword itself
-    Description => 'read/write', #(not yet used)
-    Parent      => 'read/write', #optional link to another B<RT::Keyword>, allowing keyword to be arranged in a hierarchical fashion.  Can be specified by id or Name.
-  );
+    my $self = shift;
+    my %cols = (
+		Name        => 'read/write', #the keyword itself
+		Description => 'read/write', #(not yet used)
+		Parent      => 'read/write', #optional id of another B<RT::Keyword>, allowing keyword to be arranged hierarchically
+	       );
+    return ($self->SUPER::_Accessible( @_, %cols));
+    
 }
 
 =head1 NAME
 
- RT::Keyword - Manipulate an RT::ObjectKeyword record
+ RT::Keyword - Manipulate an RT::Keyword record
 
 =head1 SYNOPSIS
 
   use RT::Keyword;
 
   my $keyword = RT::Keyword->new($CurrentUser);
-  $keyword->Create(
-    Name => 'tofu',
-  );
+  $keyword->Create( Name => 'tofu',
+		  );
 
   my $keyword = RT::Keyword->new($CurrentUser);
-  $keyword->Create(
-    Name   => 'beast',
-    Parent => 2,
-  );
+  $keyword->Create( Name   => 'beast',
+		    Parent => 2,
+		  );
 
 =head1 DESCRIPTION
 
@@ -72,12 +73,21 @@ Parent - optional link to another B<RT::Keyword>, allowing keyword to be arrange
 
 sub Create {
     my $self = shift;
-    my %hash = @_;
-    if ( $hash{Parent} && $hash{Parent} !~ /^\d+$/ ) {
-	#TODO +++ should not be dieing in the core. 
-	die "can't yet specify parents by name, sorry: ". $hash{Parent};
+    my %args = (Name => undef,
+		Description => undef,
+		Parent => 0,
+		@_);
+
+
+    #TODO check for ACLs+++
+    if ( $args{'Parent'} && $args{'Parent'} !~ /^\d+$/ ) {
+	$RT::Logger->err( "can't yet specify parents by name, sorry: ". $args{'Parent'});
     }
-    $self->SUPER::Create(%hash);
+    
+    $self->SUPER::Create(Name => $args{'Name'},
+			 Description => $args{'Description'},
+			 Parent => $args{'Parent'}
+			);
 }
 
 =item Set KEY => VALUE
@@ -99,8 +109,63 @@ sub Set {
 sub Delete {
     my $self = shift;
     #TODO: check referential integrety - Keywords, ObjectKeywords, KeywordSelects
+    
+    #TODO: ACL check
+    
+    #TODO find all children of this keyword and make them children of my parent.
+
     $self->SUPER::Delete(@_);
 }
+
+
+=item Path
+
+  Returns this Keyword's full path going back to the root. (eg /OS/Unix/Linux/Redhat if 
+this keyword is "Redhat" )
+
+=cut
+
+sub Path {
+    my $self = shift;
+    
+    if ($self->Parent == 0) {
+	return ("/".$self->Name);
+    }
+    else {
+	return ( $self->ParentObj->Path . "/" . $self->Name);
+    }	
+    
+}
+
+
+=item ParentObj
+
+  Returns an RT::Keyword object of this Keyword's 'parents'
+
+=cut
+
+sub ParentObj {
+    my $self = shift;
+    
+    my $ParentObj = new RT::Keyword($self->CurrentUser);
+    $ParentObj->Load($self->Parent);
+    return ($ParentObj);
+}
+
+=item Children
+
+Return an RT::Keywords object  this Object's children.
+
+=cut
+
+sub Children {
+    my $self = shift;
+    
+    my $Children = new RT::Keywords($self->CurrentUser);
+    $Children->LimitToParent($self->id);
+    return ($Children);
+}
+
 
 =item Descendents [ NUM_GENERATIONS [ EXCLUDE_HASHREF ]  ]
 
@@ -119,15 +184,18 @@ sub Descendents {
     
     tie %results, 'Tie::IxHash';
     my $Keywords = new RT::Keywords($self->CurrentUser);
-    $Keywords->Limit( FIELD => 'Parent', VALUE => $self->id );
+    $Keywords->LimitToParent($self->id);
     
     while ( my $Keyword = $Keywords->Next ) {
 	next if defined $exclude->{ $Keyword->id };
 	$results{ $Keyword->id } = $Keyword->Name;
 	if ( $generations == 0 || $generations > 1 ) {
 	    my $kids = $Keyword->Descendents($generations-1, \%results);
-	    $results { $_ } = $Keyword->Name. " | ". $kids->{$_}
-	      foreach keys %{$kids};
+	    
+	    my $kid;
+	    foreach $kid ( keys %{$kids}) {
+		$results{"$kid"} = $Keyword->Name. "/". $kids->{"$kid"};
+	    }
 	}
     }
     return(\%results);
@@ -164,16 +232,12 @@ sub TicketObjectKeyword {
     my $self = shift;
     my $kid = shift;
     my $ticket = shift;
-    my $ObjectKeywords = new RT::ObjectKeywords($self->CurrentUser);
-
-    #TODO +++ I think this just wants to use RT::ObjectKeyword->LoadByCols
-    # there's no need for the weight of using a search object.
-
-    $ObjectKeywords->Limit( FIELD=>'Keyword',    VALUE=>$kid );
-    $ObjectKeywords->Limit( FIELD=>'ObjectType', VALUE=>'Ticket' );
-    $ObjectKeywords->Limit( FIELD=>'ObjectId',   VALUE=>$ticket );
+    my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
     
-    return($ObjectKeywords->Next);
+    $ObjectKeyword->LoadByCols(Keyword => $kid, 
+			       ObjectType => 'Ticket', 
+			       ObjectId => $ticket);
+    return($ObjectKeyword);
 }
 
 =back

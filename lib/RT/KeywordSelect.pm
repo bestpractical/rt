@@ -16,14 +16,16 @@ sub _Init {
 }
 
 sub _Accessible {
-    shift->SUPER::_Accessible( @_,
-      Parent => 'read/write', # link to Keywords.  Can be specified by id or Name.,
-      Single => 'read/write', # bool (described below)
-      Generations => 'read/write', #- If non-zero, limits the descendents to this number of levels deep.
-      ObjectType  => 'read/write', # currently only C<Ticket>
-      ObjectField => 'read/write', #optional, currently only C<Queue>
-      ObjectValue => 'read/write', #constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
-  );
+    my $self = shift;
+    my %Cols = (
+		Keyword => 'read/write', # link to Keywords.  Can be specified by id
+		Single => 'read/write', # bool (described below)
+		Depth => 'read/write', #- If non-zero, limits the descendents to this number of levels deep.
+		ObjectType  => 'read/write', # currently only C<Ticket>
+		ObjectField => 'read/write', #optional, currently only C<Queue>
+		ObjectValue => 'read/write', #constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
+	       );
+    return($self->SUPER::_Accessible(@_, %Cols));  
 }
 
 =head1 NAME
@@ -36,18 +38,18 @@ sub _Accessible {
 
   my $keyword_select = RT::KeywordSelect->new($CurrentUser);
   $keyword_select->Create(
-    Parent     => 20,
+    Keyword     => 20,
     ObjectType => 'Ticket',
   );
 
   my $keyword_select = RT::KeywordSelect->new($CurrentUser);
   $keyword_select->Create(
-    Parent      => 20,
+    Keyword     => 20,
     ObjectType  => 'Ticket',
     ObjectField => 'Queue',
     ObjectValue => 1,
     Single      => 1,
-    Generations => 4,
+    Depth => 4,
   );
 
 =head1 DESCRIPTION
@@ -91,9 +93,9 @@ the newly created record, or false if there was an error.
 
 Keys are:
 
-Parent - link to Keywords.  Can be specified by id or Name.
+Keyword - link to Keywords.  Can be specified by id or Name.
 Single - bool (described above)
-Generations - If non-zero, limits the descendents to this number of levels deep.
+Depth - If non-zero, limits the descendents to this number of levels deep.
 ObjectType - currently only C<Ticket>
 ObjectField - optional, currently only C<Queue>
 ObjectValue - constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
@@ -102,17 +104,35 @@ ObjectValue - constrains KeywordSelect function to when B<ObjectType>.I<ObjectFi
 
 sub Create {
     my $self = shift;
-    my %hash = @_;
-    if ( $hash{Parent} && $hash{Parent} !~ /^\d+$/ ) {
+    my %args = ( Keyword => undef,
+		 Single => 1,
+		 Depth => 0,
+		 ObjectType => undef,
+		 ObjectField => undef,
+		 ObjectValue => undef,
+		 @_);
+
+    if ( $args{'Keyword'} && $args{'Keyword'} !~ /^\d+$/ ) {
 	#TODO +++ never die in core code. return failure.
-	die "not yet";
+	$RT::Logger->debug("Keyword ".$args{'Keyword'} ." is not an integer.");
+	return(undef);
     }
-    return($self->SUPER::Create(%hash));
+
+    #TODO: ACL check here +++
+    
+    return($self->SUPER::Create( Keyword => $args{'Keyword'},
+				 Single => $args{'Single'},
+				 Depth => $args{'Depth'},
+				 ObjectType => $args{'ObjectType'},
+				 ObjectField => $args{'ObjectField'},
+				 ObjectValue => $args{'ObjectValue'}));
+
+
 }
 
 =item KeywordObj
 
-Returns the B<RT::Keyword> referenced by the I<Parent> field.
+Returns the B<RT::Keyword> referenced by the I<Keyword> field.
 
 =cut
 
@@ -120,7 +140,7 @@ sub KeywordObj {
     my $self = shift;
 
     my $Keyword = new RT::Keyword($self->CurrentUser);
-    $Keyword->Load( $self->Parent ); #or ?
+    $Keyword->Load( $self->Keyword ); #or ?
     return($Keyword);
 } 
 

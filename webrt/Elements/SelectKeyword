@@ -1,0 +1,20 @@
+<SELECT NAME="<%$name%>" <%$multiple%> <%$size%>>
+<OPTION VALUE="">-</OPTION>
+<& SelectKeywordOptions, root=>$root &> 
+</SELECT>
+
+<%INIT>
+if ($multiple) {
+	$multiple = "MULTIPLE";
+}
+if ($size) {
+	$size="SIZE=$size";
+}	
+</%INIT>
+<%ARGS>
+$multiple => undef
+$size => undef
+$name => 'Keyword'
+$root => 0
+
+</%ARGS>

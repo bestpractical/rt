@@ -14,9 +14,13 @@
 		 D => { title => 'Templates',
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },
-		 E => { title => 'People',
+		 E => { title => 'Keyword Selections',
+				path => "Admin/Queues/Keywords.html?id=".$id,
+			},
+		 F => { title => 'People',
 		 	path => "Admin/Queues/People.html?id=".$id,
 		      }
+		 
 };
 </%INIT>
 

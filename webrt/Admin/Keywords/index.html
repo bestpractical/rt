@@ -1,0 +1,81 @@
+<& /Elements/Header, title => 'Admin/Keywords' &>
+<& /Admin/Elements/Tabs, current_tab => 'Admin/Keywords/' &>
+
+<& /Elements/TitleBoxStart, title => 'Keywords' &>
+<a href="?RootId=<%$Root->Parent%>"><%$Root->Path%></a>
+<UL>
+<FORM <METHOD=POST>
+<input type=hidden name=RootId value="<%$RootId%>">
+
+
+% while (my $key = $Keywords->Next) {
+    <LI><%$key->id%>:
+% if ($Edit == $key->id) {
+      <input name="KeyName-<%$key->id%>" value="<%$key->Name%>">
+	  <input type=submit value="Update">
+	    <input type=submit name="Delete-<%$key->id%>" value="Delete">
+% } else {
+	      <A HREF="?RootId=<%$key->id%>"><%$key->Name%></A>
+      [<a href="?Edit=<%$key->id%>&RootId=<%$Root->Id%>">edit</a>]
+% }
+
+
+	  </LI>
+% }
+	  <LI>
+	    <input name="KeyName-New"> <input type=submit value="Add">
+</UL>
+</FORM>
+
+<& /Elements/TitleBoxEnd &>
+<%INIT>
+  
+if ($ARGS{'KeyName-New'}) {
+    my $NewKey = new RT::Keyword($session{'CurrentUser'});
+    $NewKey->Create( Parent => $RootId, Name => $ARGS{'KeyName-New'});
+}
+
+my $arg;
+foreach $arg (keys %ARGS) {
+    if ($arg =~ /^Delete-(\d*)$/) {
+	my $id = $1;
+	my $keyword = new RT::Keyword($session{'CurrentUser'});
+	$keyword->Delete();
+    }	
+    elsif ($arg =~ /^KeyName-(\d*)$/) {
+	my $id = $1;
+	my $keyword = new RT::Keyword ($session{'CurrentUser'});
+	$keyword->Load($id);
+	if ($keyword->Name() ne $ARGS{"$arg"}) {
+	    $keyword->SetName($ARGS{"$arg"});
+	}	
+	if (($ARGS{"KeyParent-$id"}) && 
+	    ($keyword->Parent ne $ARGS{"KeyParent-$id"})) {
+	    $keyword->SetParent($ARGS{"KeyParent-$id"});
+	}	
+      }	
+}
+
+
+my $Root = new RT::Keyword($session{'CurrentUser'});
+my $Keywords;
+#If we have a root load it.
+if ($RootId != 0) {
+    $Root->Load($RootId);
+    $Keywords = $Root->Children();
+    
+}
+else {
+    $Keywords = new RT::Keywords($session{'CurrentUser'});
+    $Keywords->LimitToParent(0);
+}
+
+
+
+
+
+</%INIT>
+<%ARGS>
+$RootId => 0
+$Edit => undef
+</%ARGS>

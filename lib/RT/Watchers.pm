@@ -19,6 +19,11 @@ my $watchers = new RT::Watchers($CurrentUser)
 =cut
 
 package RT::Watchers;
+
+use strict;
+use vars qw( @ISA );
+
+
 require RT::EasySearch;
 require RT::Watcher;
 @ISA= qw(RT::EasySearch);

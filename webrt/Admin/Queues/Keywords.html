@@ -1,0 +1,119 @@
+<& /Admin/Elements/Header, Title => 'Edit keywords' &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
+
+<& /Elements/ListActions, actions => \@actions &>
+
+<& /Elements/TitleBoxStart, title => $description &>
+  
+  <FORM METHOD=GET>
+    <INPUT TYPE=HIDDEN NAME=id VALUE=<%$id%>>
+% if ($KeywordSelects->Count > 0 ) {
+<TABLE>
+<TR>
+<TD>Delete
+</TD>
+<TD>
+</TR>
+% while (my $keywordselect = $KeywordSelects->Next ) {
+<TR>
+<TD>
+<INPUT TYPE="CHECKBOX" NAME="DeleteKeywordSelect-<%$keywordselect->Id%>">
+</TD>
+<TD>
+% if ($keywordselect->Single) {
+Single
+% } else {
+Multiple
+% }
+	    children of
+	    <% $keywordselect->KeywordObj->Path %>
+% if ($keywordselect->Depth) {
+	    up to <%$keywordselect->Depth%> levels deep.
+% }
+</TD>
+</TR>
+% }
+</TABLE>
+% }
+
+Add a keyword selection to this queue:
+<ul>
+	<li>
+	  <select name="Single">
+	    <option value='1'>Single</option>
+	    <option value='0'>Multiple</option>
+	  </select>
+	  children of
+	  <& /Elements/SelectKeyword, root => '0', name => 'Keyword' &>
+	  up to <input name="Depth" size=2> levels deep.
+	</li>
+      </ul>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit &>
+</FORM>
+<%init>
+my (@actions, $description);
+
+my $KeywordSelects = new RT::KeywordSelects ($session{'CurrentUser'});
+unless ($id =~ /^\d+$/) {
+    Abort("$id isn't a valid Queue id.");
+}
+
+unless ($KeywordSelects->LimitToQueue($id)) {
+    Abort("Couldn't load KeywordSelects.");
+        }
+
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($id);
+
+if ($QueueObj->id) {
+    $description = "Modify Keyword selections for queue '". $QueueObj->QueueId ."'";
+}
+else {
+    $description = "Modify global Keyword selections";
+}
+
+
+if (($Keyword) && ($Keyword ne '' )){
+    my $NewKeywordSelect = new RT::KeywordSelect($session{'CurrentUser'});
+    
+
+    my $retval = $NewKeywordSelect->Create ( ObjectField => 'Queue',
+					     ObjectValue => $QueueObj->id,
+					     ObjectType => 'Ticket',
+					     Keyword => $Keyword,
+					     Single => $Single,
+					     Depth => $Depth,
+					     
+					   );
+    if (defined $retval) {
+        push @actions, "KeywordSelect added to queue";
+    }
+    else {
+        push @actions, "KeywordSelect could not be added to queue";
+    }
+}
+
+# {{{ deal with modifying and deleting existing scrips
+my ($key);
+foreach $key (keys %ARGS) {
+    # {{{ if we're trying to delete the scrip
+    if ($key =~ /^DeleteKeywordSelect-(\d+)/) {
+	my $id = $1;
+	my $keywordselect = new RT::KeywordSelect($session{'CurrentUser'});
+	$keywordselect->Load($id);
+	$keywordselect->Delete;
+    }
+	# }}}
+
+    
+}
+# }}}
+</%init>
+
+<%ARGS>
+$id => undef         #some identifier that a Queue could 
+$Keyword => undef
+$Single => undef
+$Depth => undef
+</%ARGS>

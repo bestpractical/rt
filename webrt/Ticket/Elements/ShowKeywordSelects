@@ -1,23 +1,22 @@
 <TABLE>
-% while ( $KeywordSelect = $KeywordSelects->Next ) {
-<TR>
-<TD>
-<% $KeywordSelect->KeywordObj->Name %><BR>
-</TD>
-<TD>
+% while ( my $KeywordSelect = $KeywordSelects->Next ) {
+    <TR>
+      <TD>
+	<% $KeywordSelect->KeywordObj->Name %><BR>
+      </TD>
+      <TD>
 %   my $TicketDescendents = $KeywordSelect->KeywordObj->TicketDescendents($Ticket->id);
 %   foreach my $kid ( keys %{$TicketDescendents} ) {
-<% '<B>'. $TicketDescendents->{$kid}. '</B>' |n %><BR>
+	<B><% $TicketDescendents->{$kid}|n %></B>
+	<BR>
 %   }
-</TD>
-</TR>
+      </TD>
+    </TR>
 % }
 </TABLE>
 
 <%INIT>
-use RT::ObjectKeywords;
-my $KeywordSelects = $Ticket->KeywordSelects;
-my $KeywordSelect;
+my $KeywordSelects = $Ticket->QueueObj->KeywordSelects;
 </%INIT>
 
 <%ARGS>

@@ -30,7 +30,7 @@ use RT::Link;
 use RT::Links;
 use RT::Date;
 use RT::Watcher;
-use RT::KeywordSelects;
+
 
 @ISA= qw(RT::Record);
 
@@ -601,7 +601,7 @@ sub AdminCcAsString {
     unless ($self->CurrentUserHasRight('ShowTicket')) {
 	return undef;
     }
-
+    
     
     return ($self->AdminCc->EmailsAsString());
     
@@ -629,7 +629,6 @@ sub CcAsString {
     return ($self->Cc->EmailsAsString());
 
 }
-
 
 # }}}
 
@@ -883,6 +882,8 @@ sub IsOwner {
     }
 }
 
+
+# }}}
 
 # }}}
 
@@ -1446,14 +1447,16 @@ sub ReferedToBy {
 # {{{ sub Children
 # Gets all (local) links where we're the TARGET
 sub Children {
-    return $_[0]->_Links('Target');
+    my $self = shift;
+    return $self->_Links('Target');
 }
 # }}}
 
 # {{{ sub Parents
 # Gets all (local) links where we're the BASE
 sub Parents {
-    return $_[0]->_Links('Base');
+    my $self = shift;
+    return $self->_Links('Base');
 }
 # }}}
 
@@ -1478,7 +1481,6 @@ sub _Links {
 }
 
 # }}}
-
 
 # {{{ sub URI 
 
@@ -1581,76 +1583,236 @@ TODO Rewrite _NewLink so it's easy to understand.
 =cut
 
 sub _NewLink {
-  my $self = shift;
-  my %args = ( dir => '',
-	       Target => '',
-	       Base => '',
-	       Type => '',
-	       @_ );
-  
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
-      return (0, "Permission Denied",0);
-  }
-  
-  # {{{ We don't want references to ourself
+    my $self = shift;
+    my %args = ( dir => '',
+		 Target => '',
+		 Base => '',
+		 Type => '',
+		 @_ );
+    
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied",0);
+    }
+    
+    # {{{ We don't want references to ourself
   if ($args{Base} eq $args{Target}) {
       return (0,"You're linking up yourself, that doesn't make sense");
   }	
   # }}}
- 
-
-
-  # If the base isn't a URI, make it a URI. 
-  # If the target isn't a URI, make it a URI. 
-  
-  
-  # {{{ Check if the link already exists - we don't want duplicates
-  my $Links=RT::Links->new($self->CurrentUser);
-  $Links->Limit(FIELD=>'Type',VALUE => $args{Type});
-  $Links->Limit(FIELD=>'Base',VALUE => $args{Base});
-  $Links->Limit(FIELD=>'Target',VALUE => $args{Target});
-  my $l=$Links->First;
-  if ($l) {
-      $RT::Logger->log(level=>'info', 
-		       message=>"Somebody tried to duplicate a link");
-      return ($l->id, "Link already exists",0);
-  }
-  # }}}
-
-  # TODO: URIfy local tickets
-  
-  # Storing the link in the DB.
-  my $link = RT::Link->new($self->CurrentUser);
-  my ($linkid) = $link->Create(Target => $args{Target}, 
-			       Base => $args{Base}, 
-			       Type => $args{Type});
-  
-  #Write the transaction
-  my  ($b, $t);
-
-  if ($args{dir} eq 'T') {
-      $t=$args{Target};
-      $b=$self->Id;
-  } else {
-      $t=$self->Id;
-      $b=$args{Base};
-  }
-  my $TransString="Ticket $b $args{Type} ticket $t.";
-  
-  my ($Trans, $Msg, $TransObj) = $self->_NewTransaction
-    (Type => 'Link',
-     Data => $TransString,
-     TimeTaken => 0 # Is this always true?
-    );
-  
-  return ($linkid, "Link created ($TransString)", $transactionid);
-
-}  
+        
+    # If the base isn't a URI, make it a URI. 
+    # If the target isn't a URI, make it a URI. 
+        
+    # {{{ Check if the link already exists - we don't want duplicates
+    my $Links=RT::Links->new($self->CurrentUser);
+    $Links->Limit(FIELD=>'Type',VALUE => $args{Type});
+    $Links->Limit(FIELD=>'Base',VALUE => $args{Base});
+    $Links->Limit(FIELD=>'Target',VALUE => $args{Target});
+    my $l=$Links->First;
+    if ($l) {
+	$RT::Logger->debug("$self Somebody tried to duplicate a link");
+	return ($l->id, "Link already exists",0);
+    }
+    # }}}
+    
+    # TODO: URIfy local tickets
+    
+    # Storing the link in the DB.
+    my $link = RT::Link->new($self->CurrentUser);
+    my ($linkid) = $link->Create(Target => $args{Target}, 
+				 Base => $args{Base}, 
+				 Type => $args{Type});
+    
+    #Write the transaction
+    my  ($b, $t);
+    
+    if ($args{dir} eq 'T') {
+	$t=$args{Target};
+	$b=$self->Id;
+    } else {
+	$t=$self->Id;
+	$b=$args{Base};
+    }
+    my $TransString="Ticket $b $args{Type} ticket $t.";
+    
+    my ($Trans, $Msg, $TransObj) = $self->_NewTransaction
+      (Type => 'Link',
+       Data => $TransString,
+       TimeTaken => 0 # Is this always true?
+      );
+    
+    return ($linkid, "Link created ($TransString)", $transactionid);
+    
+}
+# }}}
 
 # }}}
-  
+
+# {{{ Routines dealing with keywords
+
+# {{{ sub KeywordsObj
+
+=head2 KeywordsObj [KEYWORD_SELECT_ID]
+
+  Returns an B<RT::ObjectKeywords> object preloaded with this ticket's ObjectKeywords.
+If the optional KEYWORD_SELECT parameter is set, limit the keywords object to that keyword
+select.
+
+=cut
+
+sub KeywordsObj {
+    my $self = shift;
+    my $keyword_select; 
+        
+    $keyword_select = shift  if (@_);
+    
+    
+    #TODO check acl
+    
+    use RT::ObjectKeywords;
+    my $Keywords = new RT::ObjectKeywords($self->CurrentUser);
+    $Keywords->LimitToTicket($self->id);
+    
+    if ($keyword_select) {
+	$Keywords->LimitToKeywordSelect($keyword_select);
+    }	
+    
+    return ($Keywords);
+}
+
 # }}}
+
+# {{{ sub AddKeyword
+
+=head2 AddKeyword
+
+Takes a paramhash of Keyword and KeywordSelect.  If Keyword is a valid choice
+for KeywordSelect, creates a KeywordObject.  If the KeywordSelect says this should
+be a single KeywordObject, automatically removes the old value.
+
+ Issues: probably doesn't enforce the depth restrictions or make sure that keywords
+are coming from the right part of the tree. really should.
+
+=cut
+
+sub AddKeyword {
+    my $self = shift;
+    my %args = ( KeywordSelect => undef,  # id of a keyword select record
+		 Keyword => undef, #id of the keyword to add
+		 @_
+	       );
+    
+    my ($OldValue);
+    
+    #TODO +++ check ACL
+    
+
+    #TODO make sure that $args{'Keyword'} is valid for $args{'KeywordSelect'}
+
+    #TODO: make sure that $args{'KeywordSelect'} applies to this ticket's queue.
+    
+    my $Keyword = new RT::Keyword($self->CurrentUser);
+    unless ($Keyword->Load($args{'Keyword'}) ) {
+	$RT::Logger->err("$self Couldn't load Keyword ".$args{'Keyword'});
+	return(undef);
+    }
+    
+    my $KeywordSelectObj = new RT::KeywordSelect($self->CurrentUser);
+    unless ($KeywordSelectObj->Load($args{'KeywordSelect'})) {
+	$RT::Logger->err("$self Couldn't load KeywordSelect ".$args{'KeywordSelect'});
+	return(undef, "Couldn't load keywordselect");
+    }
+    
+    my $Keywords = $self->KeywordsObj($KeywordSelectObj->id);
+
+    #If the ticket already has this keyword, just get out of here.
+    if ($Keywords->HasEntry($Keyword->id)) {
+	return(undef, "That is already the current value");
+    }	
+
+    #If the keywordselect wants this to be a singleton:
+
+    if ($KeywordSelectObj->Single) {
+
+	#Whack any old values...keep track of the last value that we get.
+	#we shouldn't need a loop ehre, but we do it anyway, to try to 
+	# help keep the database clean.
+	while (my $OldKey = $Keywords->Next) {
+	    my $OldValue = $OldKey->Name;
+	    $OldKey->Delete();
+	}	
+	
+	
+    }
+
+    # record a single transaction.
+    my ($TransactionId, $Msg, $TransactionObj) = 
+      $self->_NewTransaction( Type => 'Keyword',
+			      OldValue => $OldValue,
+			      NewValue => $Keyword->Name );
+    
+    # create the new objectkeyword 
+    my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
+    my $result = $ObjectKeyword->Create( Keyword => $Keyword->Id,
+					 ObjectType => 'Ticket',
+					 ObjectId => $self->Id,
+					 KeywordSelect => $KeywordSelectObj->Id );
+    
+    
+    return ($TransactionId, "Keyword ".$ObjectKeyword->KeywordObj->Name ."added.");    
+
+}	
+
+# }}}
+
+# {{{ sub DeleteKeyword
+
+=head2 DeleteKeyword
   
+  Takes a paramhash. Deletes the Keyword denoted by the I<Keyword> parameter from this
+  ticket's object keywords.
+
+=cut
+
+sub DeleteKeyword {
+    my $self = shift;
+    my %args = ( Keyword => undef,
+		 KeywordSelect => undef,
+		 @_ );
+    
+    #TODO check acl
+    
+    #Load up the ObjectKeyword we\'re talking about
+    my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
+    $ObjectKeyword->LoadByCols(Keyword => $args{'Keyword'},
+			 KeywordSelect => $args{'KeywordSelect'},
+			 ObjectType => 'Ticket',
+			 ObjectId => $self->id()
+			);
+    
+    #if we can\'t find it, bail
+    unless ($ObjectKeyword->id) {
+	$RT::Logger->err("Couldn't find the keyword ".$args{'Keyword'} .
+			 " for keywordselect ". $args{'KeywordSelect'} . 
+			 "for ticket ".$self->id );
+	return (undef, "Couldn't load keyword");
+    };
+    
+    #record transaction here.
+    my ($TransactionId, $Msg, $TransObj) = 
+      $self->_NewTransaction( Type => 'Keyword', 
+			      OldValue => $ObjectKeyword->KeywordObj->Name);
+    
+    $ObjectKeyword->Delete();
+    
+    return ($TransactionId, "Keyword ".$ObjectKeyword->KeywordObj->Name ."deleted.");
+    
+}
+
+# }}}
+
+# }}}
+
 # {{{ Actions + Routines dealing with transactions
 
 # {{{ Routines dealing with ownership
@@ -1834,6 +1996,7 @@ sub Steal {
 
 
 # {{{ sub SetStatus
+
 sub SetStatus { 
   my $self = shift;
   my $status = shift;
@@ -1882,6 +2045,7 @@ sub SetStatus {
 		     TimeTaken => 0,
 		     TransactionType => 'Status'));
 }
+
 # }}}
 
 # {{{ sub Kill
@@ -2035,7 +2199,7 @@ sub _NewTransaction {
 		      MIMEObj => $args{'MIMEObj'}
 		      );
 
-  warn $msg unless $transaction;
+  $RT::Logger->warn($msg) unless $transaction;
   
   $self->_SetLastUpdated;
   
@@ -2246,42 +2410,6 @@ sub HasRight {
 
 # }}}
 
-=head2 KeywordSelects
-
-Returns an B<RT::KeywordSelects> object containing the collection of
-B<RT::KeywordSelect> objects which apply to this ticket.
-
-=cut
-
-sub KeywordSelects {
-  my $self = shift;
-  $self->id;
-  $self->Queue;
-  my $KeywordSelects = new RT::KeywordSelects $self->CurrentUser;
-  # ok, this isn't quite right.  it assumes ObjectField is "Queue" if 
-  # ObjectValue is the current Queue.id, which is currently true, but the
-  # idea is to support additional QueueFields...
-  # SELECT * FROM KeywordSelects WHERE
-  # ObjectType = "Ticket" AND
-  # ( ObjectField = "" OR
-  #   ( ObjectField = "Queue" AND ObjectValue = $self->Queue )
-  # ) 
-  $KeywordSelects->Limit(
-    FIELD => 'ObjectType',
-    VALUE => 'Ticket',
-  );
-#  $KeywordSelects->Limit(
-#    FIELD => 'ObjectField',
-#    VALUE => '',
-#    ENTRYAGGREGATOR => 'OR',
-#  );
-#  $KeywordSelects->Limit(
-#    FIELD => 'ObjectValue',
-#    VALUE => $self->Queue, 
-#    ENTRYAGGREGATOR => 'OR',
-#  );
-  $KeywordSelects;
-}
 
 1;
 

@@ -15,11 +15,15 @@ sub _Init {
 }
 
 sub _Accessible {
-    shift->SUPER::_Accessible ( @_,
-        Keyword     => 'read/write', #link to the B<RT::Keyword>
-        ObjectType  => 'read/write', #currently only C<Ticket>
-        ObjectId    => 'read/write', #link to the object specified in I<ObjectType>
-  );
+    my $self = shift;
+    
+    my %cols = (
+		Keyword       => 'read/write', #link to the B<RT::Keyword>
+		KeywordSelect => 'read/write', #link to the B<RT::KeywordSelect>
+		ObjectType    => 'read/write', #currently only C<Ticket>
+		ObjectId      => 'read/write', #link to the object specified in I<ObjectType>
+	       );
+    return ($self->SUPER::_Accessible( @_, %cols));
 }
 
 # TODO +++ add in a create so we can ACL it and check values
@@ -64,6 +68,34 @@ ObjectType - currently only C<Ticket>
 ObjectId - link to the object specified in I<ObjectType>
 
 =cut
+
+sub Create {
+    my $self = shift;
+    my %args = (Keyword => undef,
+		KeywordSelect => undef,
+		ObjectType => undef,
+		ObjectId => undef,
+		@_);
+    
+    return ($self->SUPER::Create( Keyword => $args{'Keyword'}, 
+				  KeywordSelect => $args{'KeywordSelect'},
+				  ObjectType => $args{'ObjectType'}, 
+				  ObjectId => $args{'ObjectId'}))
+}
+
+=item KeywordObj 
+
+Returns an B<RT::Keyword> object of the Keyword associated with this ObjectKeyword.
+
+=cut
+
+sub KeywordObj {
+    my $self = shift;
+    my $keyword = new RT::Keyword($self->CurrentUser);
+    $keyword->Load($self->Keyword);
+    return ($keyword);
+}
+
 
 =back
 

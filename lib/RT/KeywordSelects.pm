@@ -16,10 +16,36 @@ sub _Init {
   return ($self->SUPER::_Init(@_));
 }
 
+=head2 LimitToQueue 
+
+Takes a queue id. Limits the returned set to KeywordSelects for that queue.
+Repeated calls will be OR'd together.
+
+=cut
+
+sub LimitToQueue {
+    my $self = shift;
+    my $queue = shift;
+    $self->Limit( FIELD => 'ObjectType',
+		  VALUE => 'Ticket',
+		  OPERATOR => '=');
+
+    $self->Limit( FIELD => 'ObjectField',
+		  VALUE => 'Queue',
+		  OPERATOR => '=');
+
+    $self->Limit( FIELD => 'ObjectValue',
+		  VALUE => $queue,
+		  OPERATOR => '=',
+		  ENTRYAGGREGATOR => 'OR'
+		);
+    
+}
+
 sub NewItem {
-  my $self = shift;
-  #my $Handle = shift;
-  new RT::KeywordSelect $self->CurrentUser;
+    my $self = shift;
+    #my $Handle = shift;
+    return (new RT::KeywordSelect($self->CurrentUser));
 }
 
 1;
