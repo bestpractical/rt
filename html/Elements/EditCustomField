@@ -43,45 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ($CustomField->Type eq 'FreeformSingle') {
-      <input name="<%$NamePrefix%><%$CustomField->Id%>-Value"
-        size="<%$Cols%>"
-% if ($Object) {
-          value="<%$Values->Count ? $Values->First->Content : ''%>"
-% } elsif ($Default) {
-          value="<%$Default ? $Default : ''%>"
-% }
->
-% } elsif ($CustomField->Type eq 'FreeformMultiple') {
-% my $content;
-% if ($Object) {
-%          while (my $value = $Values->Next ) {
-%                 $content .= $value->Content;
-%           }
-% } elsif ($Default) {
-          value="<%$Default ? $Default : ''%>"
-%  }
-<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
-<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$content%></textarea>
-% } elsif ($CustomField->Type =~ /^Select/) {
-      <input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
-      <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
-        size="<%$Rows%>"
-        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>>
-% my $CustomFieldValues = $CustomField->Values();
-% my $selected;
-% while (my $value = $CustomFieldValues->Next) {
-        <option value="<% $value->Name %>" 
-% if ($Object) {
-            <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
-% } elsif ($Default) {
-            <% ($Default eq $value->Name) && ($selected = 1) && 'SELECTED' %>
-% }
-            ><% $value->Name%></option>
-% }
-        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
-      </select>
-% }
 <%INIT>
 my $Values;
 if ($Object) {
