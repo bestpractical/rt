@@ -36,12 +36,13 @@ A { font-weight: bold;
       		color: #000000;
 	    /* border: none -- breaks NS 4.x */ }
 
+.currenttab { background-color: #cccccc; }
 
-A.inverse {
-	    color: #ffffff; };	
+.inverse { color: #ffffff; }
 
 
-A:link IMG, A:visited IMG { border-style: none }
+
+A:link IMG, A:visited IMG { border-style: none };
 
 A IMG { color: white } /* The only way to hide the border in NS 4.x */
 

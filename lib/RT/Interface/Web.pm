@@ -94,6 +94,7 @@ sub LoadTicket {
     }
     return $Ticket;
 }
+
 # }}}
 
 
@@ -343,6 +344,7 @@ sub ProcessSearchQuery {
     # }}}
 
 }
+
 # }}}
 
 # {{{ sub Config 
@@ -370,7 +372,6 @@ sub ProcessACLChanges {
     
     my ($ACL, @results);
     foreach $ACL (@CheckACL) {
-	
 	my ($Principal);
 	
 	# Parse out what we're really talking about. 
@@ -432,9 +433,6 @@ sub ProcessACLChanges {
 		
 		next unless ($right);
 		
-		$RT::Logger->debug ("Now handling right $right\n");
-		
-		
 		#if the right that's been selected wasn't there before, add it.
 		unless ($CurrentACL->HasEntry(RightScope => "$Scope",
 					      RightName => "$right",
@@ -443,29 +441,38 @@ sub ProcessACLChanges {
 					      PrincipalId => $Principal->Id )) {
 		    
 		    #Add new entry to list of rights.
-		    $RT::Logger->debug("Granting queue $AppliesTo right $right to ".
-				       $Principal->id.	 " for queue $AppliesTo\n"); 
 		    if ($Scope eq 'Queue') {
-			my ($val, $msg) = $Principal->GrantQueueRight( RightAppliesTo => $AppliesTo,
-								       RightName => "$right" );
+			
+			my $Queue = new RT::Queue($session{'CurrentUser'});
+			$Queue->Load($AppliesTo);
+			unless ($Queue->id) {
+			    Abort("Couldn't find a queue called $AppliesTo");
+			}
 
+
+			my ($val, $msg) = 
+			  $Principal->GrantQueueRight( RightAppliesTo => $Queue->id,
+						       RightName => "$right" );
+			
 			if ($val) { 
 			    push (@results, "Granted right $right to ".
-				  $Principal->id." for queue $AppliesTo.\n");
+				  $Principal->Name." for queue " . 
+				  $Queue->Name);
 			}
 			else {
 			    push (@results, $msg);
 			}
 		    }
 		    elsif ($Scope eq 'System') {
-			my ($val, $msg)	=$Principal->GrantSystemRight( RightAppliesTo => $AppliesTo,
-								       RightName => "$right" );
+			my ($val, $msg)	=
+			  $Principal->GrantSystemRight(RightAppliesTo => $AppliesTo,
+						       RightName => "$right" );
 			if ($val) {
 			    push (@results, "Granted system right '$right' to ".
-				  $Principal->id. ".\n");	 
+				  $Principal->Name);
 			}
 			else {
-				push (@results, $msg);
+			    push (@results, $msg);
 			    }	
 		    }
 		}
@@ -485,17 +492,20 @@ sub ProcessACLChanges {
 		unless ($rights{$right->RightName}) {
 		    #yank the entry out of  the ACL
 		    $right->Delete();
-		    push (@results, "Revoked ".$right->PrincipalType." ".
-                    $right->PrincipalId . "'s right to ". $right->RightName. 
-                    "  for " . $right->RightScope. " ". 
-                    $right->RightAppliesTo.".\n");
+
+		    my $phrase = "Revoked ".$right->PrincipalType." ".
+		      $right->PrincipalObj->Name . "'s right to ". $right->RightName;
+
+		    if ($right->RightScope eq 'System') {
+			$phrase .= ' across all queues.';
+		    }
+		    else {
+			$phrase .= ' for the queue '.$right->AppliesToObj->Name. '.';
+		    }
+		    push (@results, $phrase);
 		}
-		
-		
 	    }
 	    # }}}
-	    
-	    
 	}
     }
     

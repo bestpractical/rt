@@ -1,0 +1,88 @@
+'  <& /Admin/Elements/Header, Title => 'Modify user rights for queue '. $QueueObj->Name &>
+<& /Admin/Elements/QueueTabs, id => $id &>  
+<& /Elements/ListActions, actions => \@results &>
+
+  <FORM METHOD=POST>
+    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
+      
+
+
+<& /Elements/TitleBoxStart, title => 'Modify user rights for queue '.$QueueObj->Name &>
+      
+      <TABLE>
+        
+%	while (my $UserObj = $Users->Next()) {
+  <TR ALIGN=RIGHT> 
+	<TD VALIGN=TOP>
+	    <% $UserObj->Name %>
+		  </TD>
+	  <TD>
+	    <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj,
+		    PrincipalType => 'User',
+		      Scope => 'Queue',
+			QueueObj => $QueueObj &>
+	  </TD>
+	</TR>
+% }
+      </TABLE>
+	
+      <P>Be careful to hold down your control or apple key when selecting rights, to make sure that you don't 
+	remove rights that were granted previously.
+      </P>
+            
+      <& /Elements/TitleBoxEnd &>
+      <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
+
+      
+  </FORM>
+  
+  <%INIT>
+ 
+  #Update the acls.
+  my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
+
+# {{{ Deal with setting up the display of current rights.
+
+# {{{ do basic initialization.
+
+#Define vars used in html above
+my ($GroupObj);
+
+my ($right);
+
+
+if (!defined $id) {
+    Abort("No Queue defined");
+}
+
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($id) ||
+  Abort("Couldn't load queue $id");
+
+# Find out which users we want to display ACL selects for
+my $Users = new RT::Users($session{'CurrentUser'});
+#$Users->UnLimit;
+$Users->LimitToPrivileged();
+
+# Find out which groups we want to display ACL selects for.
+my $Groups = new RT::Groups($session{'CurrentUser'});
+$Groups->UnLimit();
+
+# }}}
+    
+  
+  # }}}
+    
+
+
+
+  
+  </%INIT>
+
+<%ARGS>
+$id = undef
+$UserString => undef
+$UserOp => undef
+$UserField => undef
+@CheckACL => undef
+</%ARGS>

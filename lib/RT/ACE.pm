@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-  RT::ACE - RT's ACE object
+  RT::ACE - RT\'s ACE object
 
 =head1 SYNOPSIS
 
@@ -252,7 +252,6 @@ sub Create {
 	return (0, 'That user already has that right');
     }	
 
-    $RT::Logger->debug("$self ->Create Granting ". $args{'RightName'} ." to ".  $args{'PrincipalId'}."\n");
     my $id = $self->SUPER::Create( PrincipalId => $princ_id,
 				   PrincipalType => $args{'PrincipalType'},
 				   RightName => $args{'RightName'},
@@ -291,6 +290,7 @@ sub Delete {
     return ($self->SUPER::Delete(@_));
     
 }
+
 # }}}
 
 # {{{ sub _BootstrapRight 

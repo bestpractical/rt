@@ -8,7 +8,7 @@ use vars qw($PROMPT $SCHEMA_FILE $SCHEMA_DIR
 
 use DBI;
 use DBIx::DataSource qw( create_database drop_database );
-use DBIx::DBSchema;
+
 
 $|=1; #unbuffer that output.
 
@@ -49,7 +49,7 @@ sub prompt_for_dba_password {
     print "Enter the $DB_TYPE password for $DB_DBA: ";
 
     system "stty -echo";
-    my $DB_DBA_PASSWORD = scalar(<STDIN>); #keep off commandline
+    $DB_DBA_PASSWORD = scalar(<STDIN>); #keep off commandline
     system "stty echo";
     chomp $DB_DBA_PASSWORD;
 
@@ -154,6 +154,7 @@ sub insert_schema {
 sub generate_schema_from_hash {
     my (@schema);
     
+    require DBIx::DBSchema;    
     my $schema_href = do "$SCHEMA_FILE" or die $@ || $!;
     my $schema = DBIx::DBSchema->pretty_read($schema_href);
     

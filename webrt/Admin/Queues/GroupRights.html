@@ -1,12 +1,13 @@
-<& /Admin/Elements/Header, Title => 'Modify System ACLS' &>
-<& /Admin/Elements/SystemTabs &>
-  
+'  <& /Admin/Elements/Header, Title => 'Modify group rights for queue '. $QueueObj->Name &>
+<& /Admin/Elements/QueueTabs, id => $id &>  
 <& /Elements/ListActions, actions => \@results &>
+
   <FORM METHOD=POST>
+    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
       
 
 
-<h2>Modify global rights for groups</h2>
+<& /Elements/TitleBoxStart, title => 'Modify group rights for queue '.$QueueObj->Name &>
 
 <TABLE>
 <TR><TD>Pseudogroups</TD></TR>
@@ -19,7 +20,9 @@
 		<TD>
 	    <& /Admin/Elements/SelectRights, PrincipalObj => $GroupObj, 
                                    PrincipalType => 'Group',
-                                   Scope => 'System' &>
+	                           QueueObj => $QueueObj,
+                                   Scope => 'Queue' &>
+
 		</TD>
 	      </TR>
 	
@@ -36,7 +39,9 @@
 		<TD>
 	    <& /Admin/Elements/SelectRights, PrincipalObj => $GroupObj, 
                                    PrincipalType => 'Group',
-                                   Scope => 'System' &>
+	                           QueueObj => $QueueObj,
+                                   Scope => 'Queue' &>
+
 		</TD>
 	      </TR>
 	
@@ -47,18 +52,33 @@
 remove rights that were granted previously.
 	</P>
       
+
+      <& /Elements/TitleBoxEnd &>
       <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
   </FORM>
   
   <%INIT>
  
-   #Update the acls.
- my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
+  #Update the acls.
+  my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
 
-        
-    # {{{ do basic initialization.
-    
-  
+# {{{ Deal with setting up the display of current rights.
+
+# {{{ do basic initialization.
+
+#Define vars used in html above
+my ($GroupObj);
+
+my ($right);
+
+
+if (!defined $id) {
+    Abort("No Queue defined");
+}
+
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($id) ||
+  Abort("Couldn't load queue $id");
   
   # Find out which groups we want to display ACL selects for.
   my $Groups = new RT::Groups($session{'CurrentUser'});
@@ -70,13 +90,22 @@ remove rights that were granted previously.
   #TODO: limit this to non-pseudogroups
   $PseudoGroups->LimitToPseudo;
 
-  # }}}
+
+# }}}
     
   
+  # }}}
+    
+
+
 
   
   </%INIT>
 
 <%ARGS>
+$id = undef
+$UserString => undef
+$UserOp => undef
+$UserField => undef
 @CheckACL => undef
 </%ARGS>
