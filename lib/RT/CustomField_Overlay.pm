@@ -348,19 +348,16 @@ Return a CustomFieldeValues object of all acceptable values for this Custom Fiel
 
 =cut
 
+*ValuesObj = \&Values;
+
 sub Values {
     my $self = shift;
 
     my $cf_values = RT::CustomFieldValues->new($self->CurrentUser);
-    if ( $self->CurrentUserHasRight( 'SeeCustomField') ) {
+    if ($self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
         $cf_values->LimitToCustomField($self->Id);
     }
     return ($cf_values);
-}
-
-sub ValuesObj {
-    my $self = shift;
-    return $self->Values(@_);
 }
 
 # }}}
@@ -674,8 +671,8 @@ sub _Value {
     my $field = shift;
 
     # we need to do the rights check
-    unless ( $self->CurrentUserHasRight( 'SeeCustomField') ) {
-	return (undef);
+    unless ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
+	    return (undef);
     }
     return ( $self->__Value($field) );
 
