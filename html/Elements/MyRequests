@@ -34,45 +34,64 @@
 % while (my $Ticket = $MyTickets->Next) {
 % $i++;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<TD ALIGN=RIGHT>
-<%$Ticket->Id%>
-</TD>
+% my @cols = $MyTickets->DisplayColumns;
+% foreach my $col (@cols) {
 <TD>
-<A HREF="<% $RT::WebPath %>/Ticket/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Subject || loc('(no subject)')%>
-</A>
-</TD>
-<TD>
-<%$Ticket->QueueObj->Name%>
-</TD>
-<TD>
-% if ($Ticket->HasUnresolvedDependencies ) {
-%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval'  )) { 
-<em><&|/l&>(pending approval)</&></em>
-%     } else {
-<em><&|/l&>(pending other tickets)</&></em>
-%     }
+% if ($map->{$col}) { $col = $map->{$col} ;
+% $m->out(&{$col->{value}}($Ticket));
+
+% my $cmd = "\$Ticket->$col()";
+% eval {$m->out(eval $cmd)}|| $m->out($@);
 % } else {
-<%loc($Ticket->Status)%>
+
+%$col =~ s/##(.*?)##/&{$map->{$1}->{value}}($Ticket);/ge;
+<%$col|n%>
 % }
+
 </TD>
-<TD>
-<%$Ticket->OwnerObj->Name%>
-</TD>
+% }
+
 </TR>
 % }
 </TABLE>
-<& /Elements/TitleBoxEnd &>
-
-
+<& /Elements/TitleBoxEnd &> 
 <%INIT>
+
+my $map = {
+    QueueName             => { value => sub { return $_[0]->QueueObj->Name}},
+    OwnerName             => { value => sub { return $_[0]->OwnerObj->Name}},
+    id             => { value => sub { return $_[0]->id}},
+    Status             => { value => sub { return $_[0]->Status}},
+    Subject             => { value => sub { return $_[0]->Subject}},
+    ExtendedStatus => {
+        title => loc('Status'),
+        value => sub {
+            my $Ticket = shift;
+
+            if ( $Ticket->HasUnresolvedDependencies ) {
+                if (    $Ticket->HasUnresolvedDependencies( Type => 'approval' )
+                     or $Ticket->HasUnresolvedDependencies( Type => 'code' ) ) {
+                    return "<em>" . loc('(pending approval)') . "</em>";
+                }
+                else {
+                    return "<em>" . loc('(pending other tickets)') . "</em>";
+                }
+            }
+            else {
+                return loc( $Ticket->Status );
+            }
+
+          }
+    }
+};
+
 my $rows = 10;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitWatcher(TYPE => 'Requestor', VALUE => $session{'CurrentUser'}->EmailAddress);
-$MyTickets->LimitStatus(VALUE => "open");
-$MyTickets->LimitStatus(VALUE => "new");
-$MyTickets->RowsPerPage($rows);
-$MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
+
+$MyTickets->FromSQL("SELECT '<a href=\"/Ticket/Display.html?id=##id##\">##id##</a>', '<a href=\"/Ticket/Display.html?id=##id##\">##Subject##</a>', QueueName, ExtendedStatus, OwnerName WHERE Requestor = '".$session{'CurrentUser'}->EmailAddress."' AND ( Status = 'new' OR Status = 'open')");
+
+
+$MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC'); 
 
 </%INIT>

@@ -24,6 +24,8 @@
 use strict;
 use warnings;
 
+use RT::Tickets;
+
 # Import configuration data from the lexcial scope of __PACKAGE__ (or
 # at least where those two Subroutines are defined.)
 
@@ -124,7 +126,6 @@ my $re_aggreg = qr[(?i:AND|OR)];
 my $re_select = qr[(?i:SELECT)];
 my $re_where = qr[(?i:WHERE)];
 my $re_value  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
-my $re_column  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
 my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
 my $re_op     = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
 my $re_paren  = qr'\(|\)';
@@ -182,7 +183,6 @@ sub _parser {
   while ($string =~ /(
                       $re_select
                       |$re_where
-                      |$re_column
                       |$re_aggreg
                       |$re_op
                       |$re_keyword
@@ -193,12 +193,13 @@ sub _parser {
     my $current = 0;
 
     # Highest priority is last
-    $current = OP      if _match($re_op,$val);
+    $current = OP      if _match($re_op,$val) ;
     $current = VALUE   if _match($re_value,$val);
     $current = KEYWORD if _match($re_keyword,$val) && ($want & KEYWORD);
     $current = AGGREG  if _match($re_aggreg,$val);
     $current = PAREN   if _match($re_paren,$val);
-    $current = COLUMN if _match($re_column,$val) && ($want & COLUMN);
+    $current = COLUMN if _match($re_keyword,$val) && ($want & COLUMN);
+    $current = WHERE if _match($re_where,$val) && ($want & WHERE);
     $current = SELECT if _match($re_select,$val);
 
 
@@ -209,6 +210,8 @@ sub _parser {
     }
 
     # State Machine:
+
+    $RT::Logger->debug("We've just found a '$current' called '$val'");
 
     # Parens are highest priority
     if ($current & PAREN) {
@@ -230,7 +233,14 @@ sub _parser {
     }
 
     elsif ($current & COLUMN ) {
-        push @{$self->{'columns_to_display'}}, $val;
+      if ($val =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
+        substr($val,0,1) = "";
+        substr($val,-1,1) = "";
+      }
+      # Unescape escaped characters
+      $val =~ s!\\(.)!$1!g;     
+        $self->_DisplayColumn($val);
+
         $want = COLUMN | WHERE;
 
     } 
@@ -381,12 +391,60 @@ failure.
 
 =begin testing
 
+use RT::Tickets;
 
 my $query = "SELECT id WHERE Status = 'open'";
 
 my $tix = RT::Tickets->new($RT::SystemUser);
 
-my ($id, $msg)  
+my ($id, $msg)  = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+my @cols =  $tix->DisplayColumns;
+
+ok ($cols[0] == 'id', "We're  displaying the ticket id");
+ok ($cols[1] == undef, "We're  displaying the ticket id");
+
+
+my $query = "SELECT id, Status WHERE Status = 'open'";
+
+my $tix = RT::Tickets->new($RT::SystemUser);
+
+my ($id, $msg)  = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+my @cols =  $tix->DisplayColumns;
+
+ok ($cols[0] == 'id', "We're only displaying the ticket id");
+ok ($cols[1] == 'Status', "We're only displaying the ticket id");
+
+my $query = qq[SELECT id, Status, '<A href="/Ticket/Display.html?id=##id##">Subject, this: ##Subject##</a>' WHERE Status = 'open'];
+
+my $tix = RT::Tickets->new($RT::SystemUser);
+
+my ($id, $msg)  = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+my @cols =  $tix->DisplayColumns;
+
+ok ($cols[0] == 'id', "We're only displaying the ticket id");
+ok ($cols[1] == 'Status', "We're only displaying the ticket id");
+
+
+
+$query = "Status = 'open'";
+my ($id, $msg)  = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+my @cols =  $tix->DisplayColumns;
+
+ok ($cols[0] == undef, "We haven't explicitly asked to display anything");
+
+
 
 
 
@@ -400,13 +458,15 @@ sub FromSQL {
 
   $self->CleanSlate;
   $self->_InitSQL();
-  return (1,"No Query") unless $query;
+
+  return (1,$self->loc("No Query")) unless $query;
 
   $self->{_sql_query} = $query;
   eval { $self->_parser( $query ); };
-  $RT::Logger->error( $@ ) if $@;
-  return(0,$@) if $@;
-
+    if ($@) {
+        $RT::Logger->error( $@ );
+        return(0,$@);
+    }
   # We only want to look at EffectiveId's (mostly) for these searches.
   unless (exists $self->{_sql_looking_at}{'effectiveid'}) {
   $self->SUPER::Limit( FIELD           => 'EffectiveId',
@@ -441,6 +501,40 @@ sub FromSQL {
 
   return (1,$self->loc("Valid Query"));
 
+}
+
+=head2 _DisplayColumn COL
+
+Add COL to this search's list of "Columns to display"
+
+COL can either be a
+
+LiteralColumnName
+"QuotedString" (Containing ##LiteralColumnName## to embed the colum name inside it)
+
+What else?
+
+
+
+=cut
+
+sub _DisplayColumn {
+    my $self = shift;
+    my $col = shift;
+    push @{$self->{'columns_to_display'}}, $col;
+
+
+}
+
+=head2 DisplayColumns 
+
+Returns an array of the columns to show in the printed results of this object
+
+=cut
+
+sub DisplayColumns {
+    my $self = shift;
+    return (@{$self->{'columns_to_display'}});
 }
 
 
