@@ -921,7 +921,7 @@ sub _CustomFieldLimit {
         ALIAS1        => $TicketCFs,
         FIELD1           => 'CustomField',
         TABLE2          => 'CustomFields',
-        ALIAS2          => 'id'
+        FIELD2          => 'id'
     );
     $self->_SQLLimit(
         LEFTJOIN        => $cfalias,
