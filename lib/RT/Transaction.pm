@@ -73,7 +73,8 @@ sub Create  {
     
     #Load a ScripsScopes object
     #Iterate through each script and check it's applicability.
-    
+    $RT::Logger->log(level=>'debug', message=>("Searching for scrips for transaction #".$self->Id." (".$self->Type()."), ticket #".$TicketAsSystem->Id));
+   
     while (my $Scope = $ScripScopes->Next()) {
 	
 	# TODO: we're really doing a lot of unneccessary
@@ -311,7 +312,10 @@ sub _Accessible  {
 	      TimeTaken => 'read',
 	      Ticket => 'read',
 	      Type=> 'read',
+	      Field => 'read',
 	      Data => 'read',
+	      NewValue => 'read',
+	      OldValue => 'read',
 	      EffectiveTicket => 'read',
 	      Creator => 'read',
 	      Created => 'read/auto',

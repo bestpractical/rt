@@ -692,8 +692,7 @@ sub SetStatus {
       $status eq 'resolved' ? 'Resolve' :
       $status eq 'dead' ? 'Kill' : 'huh?';
 
-  if (($status ne 'open') and ($status ne 'stalled') and 
-      ($status ne 'resolved') and ($status ne 'dead') ) {
+  if ($action eq 'huh?') {
     return (0,"That status is not valid.");
   }
   
@@ -1112,6 +1111,8 @@ sub _NewTransaction {
 
   warn $msg unless $transaction;
   
+  $self->_UpdateDateActed;
+  
   if (defined $args{'TimeTaken'} ) {
     $self->_UpdateTimeTaken($args{'TimeTaken'}); 
   }
@@ -1201,6 +1202,13 @@ sub _UpdateTimeTaken {
 }
 # }}}
 
+# {{{ sub _UpdateDateActed
+sub _UpdateDateActed {
+  my $self = shift;
+  $self->SUPER::_Set();
+}
+# }}}
+
 # {{{ sub _Set
 
 #This overrides RT::Record
@@ -1229,6 +1237,8 @@ sub _Set {
     $TimeTaken = 0 if (!defined $TimeTaken);
 
     #record what's being done in the transaction
+    my ($ret, $msg)=$self->SUPER::_Set($Field, $Value);
+    $ret or return (0,$msg);
     my $Old=$self->_Value("$Field") || undef;
     my $Trans=	$self->_NewTransaction 
 	(Type => $MoreOptions->{'TransactionType'}||"Set",
@@ -1237,7 +1247,6 @@ sub _Set {
 	 OldValue =>  $Old,
 	 TimeTaken => $TimeTaken || 0
 	 );
-    $self->SUPER::_Set($Field, $Value);
     return ($Trans,"$Field changed from ".($Old||"(nothing)")." to ".($Value||"(nothing)"));
   }
   

@@ -43,6 +43,8 @@ sub Create  {
   
   #TODO: this is horrificially wasteful. we shouldn't commit 
   # to the db and then instantly turn around and load the same data
+
+  #DEAL WITH USER ID
   
   return (1,"Interest noted");
 }

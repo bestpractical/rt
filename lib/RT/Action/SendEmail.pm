@@ -94,9 +94,9 @@ sub IsApplicable  {
       return 0;
   }
 
-  if (!$m) {
-      warn "No transaction attachment";
-  }
+  $RT::Logger->log(message=>"No transaction attachment; ".$self->TransactionObj->Description,
+		   level=>'debug')
+      unless $m;
 
   # More work needs to be done here to avoid duplicates beeing sent,
   # and to ensure that there actually are any receipients.

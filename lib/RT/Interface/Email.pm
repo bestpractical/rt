@@ -123,7 +123,7 @@ sub activate  {
   # with the header key "RT-Command":
   
   my $commands=$entity->head->get('RT-Command');
-  my @commands=(ref $commands ? @$commands : $commands);
+  my @commands=(defined $commands ? ( ref $commands ? @$commands : $commands ) : ());
   
   # TODO: pull out "%RT " commands from the message body and put
   # them in commands
