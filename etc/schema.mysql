@@ -30,7 +30,7 @@ CREATE TABLE Queues (
 
 # {{{ Values for Queues
 # Default queue - should eventually be created by the admin-cli through some init script
-INSERT INTO Queues VALUES (1, 'general','A General Catch-all queue' ,'rt@localhost', 'rt-comment@localhost', 1, 0, 0, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO Queues VALUES (1, 'general','A General Catch-all queue' ,'rt@localhost', 'rt-comment@localhost', 1, 0, 0, NULL, NULL, NULL, NULL);
 
 # }}}
 
