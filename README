@@ -27,6 +27,8 @@ get it stabilized.  So just go ahead, but don't say you haven't been warned!
 RT2 will contain a lot of enhancements and features that at least I consider
 as essential.
 
+To get updated on the current status of RT, check the rt-devel mailinglist.
+
 
 BUGS
 ----
@@ -54,6 +56,12 @@ o   A DB backend; MySQL is recommended ( http://www.mysql.com ) -- semifree
         contained therein.  In the current development version (1.3),
         only MySQL is supported, but the work of porting to other
         backends should be rather trivial.
+
+	It should be pretty trivial to port RT to other DBMS'es (PostgreSQL
+	is free ( http://www.postgresql.org ), Interbase ( www.interbase.com
+	) has their own open source license).  None of those are explicitly
+	supported by this README, nor by the code as of today (June 2000).
+	We rely on contributors to fix the porting.
 
 o   GNU Make ( http://www.gnu.org )
 
