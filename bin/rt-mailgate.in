@@ -1,26 +1,26 @@
 #!@PERL@ -w
 # BEGIN LICENSE BLOCK
-# 
+#
 # Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
-# 
+#
 # (Except where explictly superceded by other copyright notices)
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # Unless otherwise specified, all modifications, corrections or
 # extensions to this work which alter its source code become the
 # property of Best Practical Solutions, LLC when submitted for
 # inclusion in the work.
-# 
-# 
+#
+#
 # END LICENSE BLOCK
 
 =head1 NAME
@@ -28,6 +28,9 @@
 rt-mailgate - Mail interface to RT3.
 
 =begin testing
+
+use RT::I18N;
+
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
@@ -105,6 +108,38 @@ my $u = RT::User->new($RT::SystemUser);
 $u->Load('doesnotexist@fsck.com');
 ok( $u->Id != 0, " user does not exist and was not created by failed ticket submission");
 
+
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+                                                                         
+print MAIL <<EOF;
+From: root\@localhost
+To: rtemail\@mydomain.com
+Subject: This is a test of I18N ticket creation
+Content-Type: text/plain; charset="utf-8"
+
+2 accented lines
+\303\242\303\252\303\256\303\264\303\273
+\303\241\303\251\303\255\303\263\303\272
+bye
+EOF
+close (MAIL);
+
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok (UNIVERSAL::isa($tick,'RT::Ticket'));
+ok ($tick->Id, "found ticket ".$tick->Id);
+ok ($tick->Subject eq 'This is a test of I18N ticket creation', "Created the ticket");
+
+
+
+my $unistring = "\303\241\303\251\303\255\303\263\303\272";
+Encode::_utf8_on($unistring);
+
+ok ($tick->Transactions->First->Content =~ /$unistring/, "It appears to be unicode - ".$tick->Transactions->First->Content);
+
 ($val,$msg) = $g->PrincipalObj->RevokeRight(Right => 'CreateTicket');
 ok ($val, $msg);
 
@@ -170,7 +205,7 @@ if ( $content !~ /^(ok|not ok)/ ) {
     # It's not the server's fault if the mail is bogus. We just want to know that
     # *something* came out of the server.
     die <<EOF
-RT server error. 
+RT server error.
 
 The RT server which handled your email did not behave as expected. It
 said:
@@ -178,7 +213,7 @@ said:
 $content
 EOF
 
-} 
+}
 
 sub check_failure {
     my $r = shift;
@@ -208,8 +243,8 @@ sub check_failure {
 
 Usual invocation (from MTA):
 
-    rt-mailgate --action (correspond|comment) --queue queuename 
-                --url http://your.rt.server/ 
+    rt-mailgate --action (correspond|comment) --queue queuename
+                --url http://your.rt.server/
                 [ --extension (queue|action|ticket)
 
 See C<man rt-mailgate> for more.
@@ -218,7 +253,7 @@ See C<man rt-mailgate> for more.
 
 =over 3
 
-=item C<--action>    
+=item C<--action>
 
 Specifies whether this is a correspondence or comment address.
 
@@ -235,10 +270,10 @@ The location of the web server for your RT instance.
 
 Some MTAs will route mail sent to user-foo@host or user+foo@host to user@host
 and present "foo" in the environment variable $EXTENSION. By specifying
-the value "queue" for this parameter, the queue this message should be 
-submitted to will be set to the value of $EXTENSION. By specifying 
+the value "queue" for this parameter, the queue this message should be
+submitted to will be set to the value of $EXTENSION. By specifying
 "ticket", $EXTENSION will be interpreted as the id of the ticket this message
-is related to.  "action" will allow the user to specify either "comment" or 
+is related to.  "action" will allow the user to specify either "comment" or
 "correspond" in the address extension.
 
 
@@ -302,16 +337,16 @@ What's actually going on in the above is that C<@RT::MailPlugins> is a
 list of Perl modules; RT prepends C<RT::Interface::Email::> to the name,
 to form a package name, and then C<use>'s this module. The module is
 expected to provide a C<GetCurrentUser> subroutine, which takes a hash of
-several parameters: 
+several parameters:
 
 =over 4
 
-=item Message 
+=item Message
 
 A C<MIME::Entity> object representing the email
-=item CurrentUser 
+=item CurrentUser
 
-An C<RT::CurrentUser> object 
+An C<RT::CurrentUser> object
 
 =item AuthStat
 
@@ -319,7 +354,7 @@ The authentication level returned from the previous plugin.
 
 =item Ticket [OPTIONAL]
 
-The ticket under discussion 
+The ticket under discussion
 
 =item Queue [OPTIONAL]
 
@@ -336,7 +371,7 @@ authentication level. The authentication level can be zero, not allowed
 to communicate with RT at all, (a "permission denied" error is mailed to
 the correspondent) or one, which is the normal mode of operation.
 Additionally, if C<-1> is returned, then the processing of the plug-ins
-stops immediately and the message is ignored. 
+stops immediately and the message is ignored.
 
 =cut
 

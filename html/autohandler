@@ -46,7 +46,7 @@ $r->content_type("text/html; charset=utf-8");
 if ($m->base_comp->path =~ '^/+NoAuth/' ||
     $m->base_comp->path =~ '^/+REST/\d+\.\d+/NoAuth/')
 {
-    $m->call_next();
+    $m->call_next(%ARGS);
     $m->abort();
 }
 
@@ -142,7 +142,7 @@ if ( (defined $session{'CurrentUser'}) and
 	$m->abort();
     }
     else {
-	$m->call_next();
+	$m->call_next(%ARGS);
     }
 }
 
