@@ -25,6 +25,12 @@ sub _Init {
   my $self = shift;
   $self->{'table'} = "Queues";
   $self->{'primary_key'} = "id";
+
+  # By default, order by name
+  $self->OrderBy( ALIAS => 'main',
+		  FIELD => 'Name',
+		  ORDER => 'ASC');
+
   return ($self->SUPER::_Init(@_));
 }
 # }}}
