@@ -88,7 +88,7 @@ sub LimitToQueue  {
 		FIELD => 'ObjectId',
 		VALUE => "$queue")
       if defined $queue;
-  $self->LimitToObjectType( 'RT::Queue' );
+  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 # }}}
 
@@ -110,7 +110,7 @@ sub LimitToGlobal  {
                 ENTRYAGGREGATOR => 'OR',
 		FIELD => 'ObjectId',
 		VALUE => 0);
-  $self->LimitToObjectType( 'RT::Queue' );
+  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 # }}}
 
@@ -208,17 +208,16 @@ sub LimitToGlobalOrObjectId {
     my $self = shift;
     my $id = shift || 0;
 
-    my $object_cfs = $self->NewAlias('ObjectCustomFields');
     $self->Join( ALIAS1 => 'main',
                 FIELD1 => 'id',
-                ALIAS2 => $object_cfs,
+                ALIAS2 => $self->_OCFAlias,
                 FIELD2 => 'CustomField' );
-    $self->Limit( ALIAS           => $object_cfs,
+    $self->Limit( ALIAS           => $self->_OCFAlias,
                  FIELD           => 'ObjectId',
                  OPERATOR        => '=',
                  VALUE           => $id,
                  ENTRYAGGREGATOR => 'OR' );
-    $self->Limit( ALIAS           => $object_cfs,
+    $self->Limit( ALIAS           => $self->_OCFAlias,
                  FIELD           => 'ObjectId',
                  OPERATOR        => '=',
                  VALUE           => 0,

@@ -1816,7 +1816,7 @@ msgstr "自訂欄位"
 #: html/Admin/CustomFields/index.html:14
 #. ($lookup)
 msgid "Custom Fields of %1"
-msgstr "%1的自訂欄位"
+msgstr "「%1」的自訂欄位"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom Fields which apply to all queues"
@@ -2824,7 +2824,7 @@ msgstr "全域簽核"
 
 #: html/Admin/Elements/EditCustomFields:44
 msgid "Global Custom Fields"
-msgstr ""
+msgstr "全域自訂欄位"
 
 #: NOT FOUND IN SOURCE
 msgid "Global Keyword Selections"

@@ -3878,7 +3878,7 @@ sub Transactions {
 
 # }}}
 
-sub _CustomFieldComposites {
+sub _LookupTypes {
     "RT::Queue-RT::Ticket";
 }
 
