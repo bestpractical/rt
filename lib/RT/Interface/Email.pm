@@ -31,8 +31,10 @@ BEGIN {
 		      &MailError 
 		      &ParseCcAddressesFromHead
 		      &ParseSenderAddressFromHead 
-		      &ParseErrorsToAddressFromHead
-		      
+   		      &ParseErrorsToAddressFromHead
+              &ParseAddressFromHeader
+
+
 		      &debug);
 }
 
@@ -564,7 +566,8 @@ sub ParseAddressFromHeader{
     }
  
     my $Name =  ($AddrObj->phrase || $AddrObj->comment || $AddrObj->address);
-    
+
+
     #Lets take the from and load a user object.
     my $Address = $AddrObj->address;
 
