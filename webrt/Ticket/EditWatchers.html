@@ -24,20 +24,16 @@ those persons.
 <& /Ticket/Elements/EditWatcherList, Watchers=>$Requestors, Type=>'Requestor', Domain=>'Ticket', id=>$id &>
 
 %# Edit Cc receipients
-<h1>Carbon/Courtesy Copies</h1> 
+<h1>Carbon Copies</h1> 
 
-In RT2, a Cc watcher is principially the same as a requestor, only
-that they will be listed on the Cc-line in the emails sent, not the
-To-line.
-
+Users or addresses which should get carbon copies of correspondence on this
+ticket<br>
 <& /Ticket/Elements/EditWatcherList, Watchers=>$Ccs, Type=>'Cc', Domain=>'Ticket', id=>$id &>
 
-<h1>Admin Ccs</h1> 
+<h1>Administrative Ccs</h1> 
 
-The Admin Cc is typically some person witch is familiar with RT.  He
-will either be a bcc receipient on mail sent by RT, or he will get
-private copies, often with extended information from RT.
-
+Users or addresses who should get copies of correspondence and private notes on
+this ticket<br>
 <& /Ticket/Elements/EditWatcherList, Watchers=>$AdminCcs, Type=>'AdminCc', Domain=>'Ticket', id=>$id &>
 
 <h1>Queue Watchers for <%$Queue->QueueId%></h1>

@@ -10,7 +10,7 @@
 </SELECT>
 
 <%ONCE>
-my @types = qw  ('Requestor', 'Cc', 'AdminCc');
+my @types = qw(Requestor Cc AdminCc);
 </%ONCE>
 <%ARGS>
 $Default=>undef
