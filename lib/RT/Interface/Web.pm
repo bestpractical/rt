@@ -47,30 +47,6 @@ use strict;
 
 
 
-# {{{ sub NewParser
-
-=head2 NewParser
-
-  Returns a new Mason::Parser object. Takes a param hash of things 
-  that get passed to HTML::Mason::Parser. Currently hard coded to only
-  take the parameter 'allow_globals'.
-
-=cut
-
-sub NewParser {
-    my %args = (
-        allow_globals => undef,
-        @_
-    );
-
-    my $parser = new HTML::Mason::Parser(
-        default_escape_flags => 'h',
-        allow_globals        => $args{'allow_globals'}
-    );
-    return ($parser);
-}
-
-# }}}
 
 # {{{ sub NewApacheHandler 
 
@@ -90,7 +66,10 @@ sub NewApacheHandler {
             [ standard => $RT::MasonComponentRoot ]
         ],
         args_method => "CGI",
-        data_dir => "$RT::MasonDataDir");
+        default_escape_flags => 'h',
+        allow_globals        => [qw(%session)],
+        data_dir => "$RT::MasonDataDir"
+    );
     
     return ($ah);
 }
@@ -116,6 +95,7 @@ sub NewCGIHandler {
             [ standard => $RT::MasonComponentRoot ]
         ],
         data_dir => "$RT::MasonDataDir",
+        default_escape_flags => 'h',
         allow_globals        => [qw(%session)]
     );
     return ($handler);

@@ -79,10 +79,12 @@ unless ($Collapsed) {
       <TD BGCOLOR="<%$bgcolor%>">&nbsp;&nbsp;</TD>
       <TD>&nbsp&nbsp;</TD>
       <TD COLSPAN=3 VALIGN=TOP>
+<span class="message">
 	<PRE>
 <%$headers%>
 </PRE>
 <& ShowMessageStanza, Depth => 0, Message => $quoted &>
+</span>
       </TD>
       <TD VALIGN=TOP ALIGN=RIGHT>
 	

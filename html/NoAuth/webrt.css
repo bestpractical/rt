@@ -83,7 +83,6 @@ SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 .blue {  background-color: #4682B4;
 	 background-position: left top;
 	 vertical-align: top;
-	 text-valign: center;
 	 text-align: left;
          }
 .blueright {  background-color: #4682B4;
@@ -159,22 +158,30 @@ TD.mainbody {
         padding-right: 0.5em;
         margin-left: 1em;
         margin-right: 1em;
-
 }
 
-TH { font-size: 80%;
+th { font-size: 80%;
      font-weight: bold;
-     font-color: #336699;
+     color: #336699;
+}
 
-    }
-TH.titlebox {
+th.titlebox {
+        text-align: left;
         padding-left: 0.5em;
         padding-right: 0.5em;
         margin-left: 0.5em;
         margin-right: 0.5em;
         border-top: solid black 1px;
         border-bottom: solid black 1px;
-        font-size: 13px;
+}    
+th.titleboxright {
+        text-align: right;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        border-top: solid black 1px;
+        border-bottom: solid black 1px;
 }    
 
 TD.titlebox {
@@ -218,7 +225,7 @@ H1, H2, H3 {
 
 
 DIV.endmatter { margin-left: -7% }
-.bpscredits {margin-top 1em;
+.bpscredits {margin-top: 1em;
              text-align: right; 
              color: #666666;
 	     font-size: 60%;
@@ -256,12 +263,18 @@ span.title { font-size: 1.6em;
 span.productname { font-size: 2em;
              color: #0066cc;}
 SPAN.titleboxtitle {
-        font-size: 1.2em;
+        font-size: 1.1em;
         color: #ffffff;
-	 vertical-align: bottom;
-	 text-align: right;
+	 vertical-align: center;
+	 text-align: left;
         }
 
+SPAN.titleboxright {
+        font-size: 0.8em;
+        color: #ffffff;
+	 vertical-align: center;
+	 text-align: right;
+        }
 
 SPAN.attribution {
   font-weight: bold;
@@ -309,7 +322,7 @@ ul.topnav {
 	padding-top:0;
 	margin-top: 0;
 	margin-bottom:0;
-};
+}
 
 
 <%init>

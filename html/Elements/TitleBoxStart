@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TABLE CLASS="<%$class%>" 
+<TABLE CLASS="<%$class|n%>" 
         BGCOLOR="<%$color%>" 
         CELLSPACING=0
         BORDER=0
@@ -30,27 +30,25 @@
         CELLPADDING="0">
 
   <TR>
-    <TH valign=middle align=left
-        <%$color && "style=\"color: $color;\""%>
-        <%$class && "class=\"$class\""%>>
+    <TH 
+        <%$color && "style=\"color: $color;\""|n%>
+        <%$class ? "class=\"$class\"" : "class=\"titlebox\""|n%>>
       <span class="titleboxtitle">
         <b>
          <% $title_href && "<A CLASS=\"$title_class\" HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
       </span>
     </TH>
     <TH  
-         <%$color && "style=\"color: $color;\""%>
-         <%$class ? "class=\"$class\"": "class=\"titleboxright\""%>>
-      <span class="titleboxright">
-        <%$titleright ? $titleright : '&nbsp;' |n %>
-      </span>
+         <%$color && "style=\"color: $color;\""|n%>
+         <%$class ? "class=\"$class\"": "class=\"titleboxright\""|n%>>
+      <span class="titleboxright"><%$titleright ? $titleright : '&nbsp;' |n %></span>
     </TH>
   </TR>
   <tr>
-    <td bgcolor="<%$contentbg%>" colspan="2" class="<%defined($bodyclass) ? $bodyclass :  $class%>">
+    <td bgcolor="<%$contentbg%>" colspan="2" class="<%defined($bodyclass) ? $bodyclass :  $class|n%>">
 <%ARGS>
 $width => "100%"
-$class =>  'titlebox'
+$class =>  undef
 $bodyclass => undef
 $title_href => undef
 $title => undef
