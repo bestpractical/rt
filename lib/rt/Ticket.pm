@@ -57,13 +57,26 @@ sub QueueId {
   
   #TODO: does this work?
   if ($new_queue = shift) {
-  #TODO this will clobber the old queue definition. is this what we want?
+    #TODO this will clobber the old queue definition. 
+    #it should load its own queue object, maybe.
+
+    
     if (!$self->Queue->load($new_queue)) {
       return (0, "That queue does not exist");
     }
     if (!$self->Queue->Create_Permitted) {
       return (0, "You may not create requests in that queue.");
     }
+
+    #TODO THIS CODE COMES FROM RT 1.0
+    # #if the owner isn't able to manipulate reqs in the new queue
+    #if(!can_manipulate_queue($in_queue, $rt::req[$in_serial_num]{'owner'})) { 
+    #&update_request($in_serial_num,'owner','','_rt_system');
+    #     }
+    
+    #TODO: IF THE AREA DOESN'T EXIST IN THE NEW QUEUE, YANK IT.
+
+
   }
   $self->_set_and_return('queue_id',@_);
 }
@@ -104,14 +117,27 @@ sub Owner {
   if ($new_owner = shift) {
     #new owner can be blank or the name of a new owner.
     if (($new_owner != '') and (!$self->Modify_Permitted($new_owner))) {
-      return (0, "That user may not own requests in that queue")
+      return ("That user may not own requests in that queue")
     }
   }
-  
-  if (($new_owner != $self->Owner()) and ($self->Owner != '')) {
+  elsif ($new_owner eq $self->Owner) {
+	return("You already own that request");
+	}
+  elsif (($self->CurrentUser ne $self->Owner()) and ($self->Owner != '')) {
     return("You can only reassign tickets that you own or that are unowned");
   }
-  $self->_set_and_return('owner',$new_owner);
+	
+#  elsif ( #TODO $new_owner doesn't have queue perms ) {
+#	return ("That user doesn't have permission to modify this request");
+#	}
+
+  else {
+    #TODO
+    #If we're giving the request to someone other than $self->CurrentUser
+    #send them mail
+    $self->_set_and_return('owner',$new_owner);
+  }
+
 }
 
 
@@ -236,7 +262,9 @@ sub NewComment {
   my $bcc = shift;
   my $time_taken = shift;
 
-  
+  if ($subject !~ /\[(\s*)comment(\s*)\]/i) {
+    $subject .= ' [comment]';
+  }
   #Record the correspondence (write the transaction)
   $self->_NewTransaction('comment',$subject,$time_taken,$content);
   
@@ -486,6 +514,63 @@ sub Queue {
   
 }
 
+
+#
+# Actions that don't have a corresponding display component
+#
+
+sub Merge {
+  my $self = shift;
+
+# TODO: IMPLEMENT
+
+#  my  ($in_serial_num, $in_merge_into, $in_current_user) = @_;
+#  my ($new_requestors, $old_requestors, @requestors_list, $user); 
+#  my ($transaction_num);
+#    my %requestors;
+#    if (!(&can_manipulate_request($in_serial_num,$in_current_user)) or (!(&can_manipulate_request($in_merge_into,$in_current_user)))) {
+#      return (0,"You don't have permission to modify both requests you wish to merge");
+#    }
+#    #&req_in($in_serial_num,$in_current_user);
+#    #&req_in($in_merge_into,$in_current_user);
+#    if ( $req[$in_merge_into]{'date_created'} == 0) {
+#	return (0,"That request doesn't exist\n");
+#      }
+    
+#    $old_requestors=$req[$in_serial_num]{'requestors'};
+#    $new_requestors=$req[$in_merge_into]{'requestors'};
+#    @requestors_list=split(/,/ , $old_requestors . ", $new_requestors");
+#    foreach $user (@requestors_list) {
+#	$user =~ s/\s//g;
+#	$user .= "\@$rt::domain" if ! ($user =~ /\@/);
+#	$requestors{$user} = 1;
+#    }
+#    $new_requestors = join(",",sort keys %requestors);
+    
+#    &update_each_req($in_merge_into,'requestors',$new_requestors);
+
+#  if ($req[$in_merge_into]{'date_created'} > $req[$in_serial_num]{'date_created'}) {
+#	&update_each_req($in_merge_into,'date_created',$req[$in_serial_num]{'date_created'});
+#    }
+#    if (($req[$in_merge_into]{'date_told'} < $req[$in_serial_num]{'date_told'}) && ($req[$in_serial_num]{'date_told'} > 0)) {
+#	&update_each_req($in_merge_into,'date_told',$req[$in_serial_num]{'date_told'});
+#    }
+
+#    if (($req[$in_merge_into]{'date_due'} < $req[$in_serial_num]{'date_due'}) && ($req[$in_serial_num]{'date_due'} > 0)) {
+#	&update_each_req($in_merge_into,'date_due',$req[$in_serial_num]{'date_due'});
+#    }    
+    
+
+#    $transaction_num=&update_request($in_serial_num,'effective_sn',$in_merge_into, $in_current_user);    
+
+#	$query_string = "UPDATE transactions SET effective_sn = $in_merge_into WHERE effective_sn = $in_serial_num";
+#	$sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n";
+#	$rv = $sth->execute  or warn "execute had some problem: $DBI::errstr\n";
+
+#    &req_in($in_merge_into,$in_current_user);
+#    return ($transaction_num,"Request #$in_serial_num has been merged into request #$in_merge_into.");
+
+}  
 
 #
 #ACCESS CONTROL
