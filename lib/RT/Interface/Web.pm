@@ -17,42 +17,46 @@ sub Error {
 sub LoadTicket {
     return 1 if $Ticket;
     $Ticket = RT::Ticket->new($session{'CurrentUser'});
-    $Ticket->Load($id);
+    unless ($Ticket->Load($id)) {
+	&Error("Could not load ticket $id");
+    }
 }
 
 #{{{ sub CreateOrLoad - will create or load a ticket
 sub CreateOrLoad {
-    $Ticket = RT::Ticket->new($session{'CurrentUser'}) unless $Ticket;
-    if ($id eq 'new') { 
+    my $Ticket=RT::Ticket->new($session{'CurrentUser'});
+    my %args=@_;
+    if ($args{id} eq 'new') { 
 	require MIME::Entity;
 	my ($Trans,$ErrMsg);
 	#TODO in Create_Details.html: priorities and due-date      
 	($id, $Trans, $ErrMsg)=
 	    $Ticket->Create( 
-			     Queue=>$ARGS{queue},
-			     Owner=>$ARGS{ValueOfOwner},
-			     Requestors=>$ARGS{Requestors} || $session{CurrentUser}->EmailAddress,
-			     Subject=>$ARGS{Subject},
-			     Status=>$ARGS{Status}||'open',
+			     Queue=>$args{ARGS}->{queue},
+			     Owner=>$args{ARGS}->{ValueOfOwner},
+			     Requestors=>$args{ARGS}->{Requestors} || $session{CurrentUser}->EmailAddress,
+			     Subject=>$args{ARGS}->{Subject},
+			     Status=>$args{ARGS}->{Status}||'open',
 			     MIMEObj => MIME::Entity->build
 			     ( 
-			       Subject => $ARGS{Subject},
-			       From => $ARGS{Requestors},
-			       Cc => $ARGS{Cc},
-			       Data => $ARGS{Content}
+			       Subject => $args{ARGS}->{Subject},
+			       From => $args{ARGS}->{Requestors},
+			       Cc => $args{ARGS}->{Cc},
+			       Data => $args{ARGS}->{Content}
 			       )	  
 			     );         
 	unless ($id && $Trans) {
 	    &mc_comp("/Elements/Error" , Why => $ErrMsg);
 	    $m->abort;
 	}
-	push(@Actions, $ErrMsg);
+	push(@{$args{Actions}}, $ErrMsg);
     } else {
-	unless ($Ticket->Load($id)) {
+	unless ($Ticket->Load($args{id})) {
 	    &mc_comp("/Elements/Error" , Why => "Ticket couldn't be loaded");
 	    $m->abort;
 	}
     }
+    return $Ticket;
 }
 
 

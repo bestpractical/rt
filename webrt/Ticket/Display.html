@@ -21,19 +21,20 @@
 
 <%ARGS>
 $id => undef
-$Ticket => undef
-@Actions => ()
 </%ARGS>
 
 <%INIT>
 
-&Error('No ticket specified') unless $id||$Ticket;
+&Error('No ticket specified') unless $id;
 
 use RT::Ticket;
 use RT::CurrentUser;
 use RT::Interface::Web;
 
-&CreateOrLoad;
+my @Actions;
+
+my $Ticket = CreateOrLoad(id=>$id, ARGS=>\%ARGS, Actions=>\@Actions);
+$id=$Ticket->Id;
 
 # Eventually, link up the ticket:
 
