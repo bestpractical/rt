@@ -35,7 +35,8 @@ use File::Temp qw/tempdir/;
 
 =head1 NAME
 
-  RT::Interface::CLI - helper functions for creating a commandline RT interface
+  RT::EmailParser - helper functions for parsing parts from incoming
+  email messages
 
 =head1 SYNOPSIS
 
@@ -182,8 +183,10 @@ sub SmartParseMIMEEntityFromScalar {
         print $fh $args{'Message'};
         close($fh);
         if ( -f $temp_file ) {
-            $self->ParseMIMEEntityFromFile($temp_file, $args{'Decode'});
-            unlink($temp_file );
+            # We have to trust the temp file's name -- untaint it
+            $temp_file =~ /(.*)/;
+            $self->ParseMIMEEntityFromFile($1, $args{'Decode'});
+            unlink($1);
         }
     } #If for some reason we weren't able to parse the message using a temp file      # try it with a scalar
     if ( !$self->Entity ) {
