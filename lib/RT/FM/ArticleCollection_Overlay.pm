@@ -27,9 +27,9 @@ no warnings qw/redefine/;
 =head2 Next
 
 Returns the next article that this user can see.
-   
+
 =cut
-   
+
 sub Next {
     my $self = shift;
    
@@ -37,18 +37,18 @@ sub Next {
     my $Object = $self->SUPER::Next();
     if ((defined($Object)) and (ref($Object))) {
 
-    if ($Object->CurrentUserHasRight('ShowArticle')) {
-        return($Object);
-    }
+        if ($Object->CurrentUserHasRight('ShowArticle')) {
+            return($Object);
+        }
 
-    #If the user doesn't have the right to show this Object
-    else {
-        return($self->Next());
-    }
+        #If the user doesn't have the right to show this Object
+        else {
+            return($self->Next());
+        }
     }
     #if there never was any queue
     else {
-    return(undef);
+        return(undef);
     }  
 
 }
@@ -68,15 +68,15 @@ sub Limit {
                 @_);
 
     if (ref( $ARGS{'VALUE'} )) {
-      my @values = $ARGS{'VALUE'};
+        my @values = $ARGS{'VALUE'};
         delete $ARGS{'VALUE'};
         foreach my $v (@values) {
             $self->SUPER::Limit(%ARGS, VALUE => $v);
         } 
     }
     else {
-    $RT::Logger->debug(ref($self). " Limit called :".join(" ",%ARGS));
-       $self->SUPER::Limit(%ARGS);
+        $RT::Logger->debug(ref($self). " Limit called :".join(" ",%ARGS));
+        $self->SUPER::Limit(%ARGS);
     }
 }
 
@@ -296,33 +296,32 @@ sub LimitCustomField {
       ref( $args{'VALUE'} ) ? @{ $args{'VALUE'} } : ( $args{'VALUE'} );
 
     foreach my $value (@values) {
-    next unless $value; #strip out total blank wildcards
-    my $ObjectValuesAlias = $self->Join(
-        TYPE   => 'left',
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'FM_ArticleCFValues',
-        FIELD2 => 'Article'
-    );
-
-    if ( $args{'FIELD'} ) {
-        $self->SUPER::Limit(
-            ALIAS           => $ObjectValuesAlias,
-            FIELD           => 'CustomField',
-            VALUE           => $args{'FIELD'},
-            ENTRYAGGREGATOR => 'OR'
+        next unless $value; #strip out total blank wildcards
+        my $ObjectValuesAlias = $self->Join(
+            TYPE   => 'left',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'FM_ArticleCFValues',
+            FIELD2 => 'Article'
         );
-    
 
-        $self->SUPER::Limit(
-            ALIAS           => $ObjectValuesAlias,
-            FIELD           => 'CustomField',
-            OPERATOR        => 'IS',
-            VALUE           => 'NULL',
-            QUOTEVALUE      => 0,
-            ENTRYAGGREGATOR => 'OR',
-        );
-    }
+        if ( $args{'FIELD'} ) {
+            $self->SUPER::Limit(
+                ALIAS           => $ObjectValuesAlias,
+                FIELD           => 'CustomField',
+                VALUE           => $args{'FIELD'},
+                ENTRYAGGREGATOR => 'OR'
+            );
+
+            $self->SUPER::Limit(
+                ALIAS           => $ObjectValuesAlias,
+                FIELD           => 'CustomField',
+                OPERATOR        => 'IS',
+                VALUE           => 'NULL',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'OR',
+            );
+        }
 
         #If we're trying to find articles where a custom field value doesn't match
         # something, be sure to find  things where it's null
@@ -341,14 +340,14 @@ sub LimitCustomField {
                 $op = 'LIKE';
             }
 
-        $self->SUPER::Limit(
-            LEFTJOIN           => $ObjectValuesAlias,
-            FIELD           => 'Content',
-            OPERATOR        => $op,
-            VALUE           => $value,
-            QUOTEVALUE      => $args{'QUOTEVALUE'},
-            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
-        );
+            $self->SUPER::Limit(
+                LEFTJOIN           => $ObjectValuesAlias,
+                FIELD           => 'Content',
+                OPERATOR        => $op,
+                VALUE           => $value,
+                QUOTEVALUE      => $args{'QUOTEVALUE'},
+                ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+            );
             $self->SUPER::Limit(
                 ALIAS           => $ObjectValuesAlias,
                 FIELD           => 'Content',
@@ -359,33 +358,70 @@ sub LimitCustomField {
             );
         }
         else { 
-        $self->SUPER::Limit(
-            ALIAS           => $ObjectValuesAlias,
-            FIELD           => 'Content',
-            OPERATOR        => $args{'OPERATOR'},
-            VALUE           => $value,
-            QUOTEVALUE      => $args{'QUOTEVALUE'},
-            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
-        );
+            $self->SUPER::Limit(
+                ALIAS           => $ObjectValuesAlias,
+                FIELD           => 'Content',
+                OPERATOR        => $args{'OPERATOR'},
+                VALUE           => $value,
+                QUOTEVALUE      => $args{'QUOTEVALUE'},
+                ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+            );
+        }
     }
-
-    }
-
-
 }
 
 # }}}
 
-# {{{ LimitRefersTo
+# {{{ LimitTopics
+sub LimitTopics {
+    my $self = shift;
+    my @topics = @_;
+
+    my $topics = $self->NewAlias('FM_ObjectTopics');
+    $self->Limit(
+        ALIAS => $topics,
+        FIELD => 'Topic',
+        VALUE => $_,
+        ENTRYAGGREGATOR => 'OR'
+    ) for @topics;
+    
+    $self->Limit(
+        ALIAS => $topics,
+        FIELD => 'ObjectType',
+        VALUE => 'RT::FM::Article',
+    );
+    $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        ALIAS2 => $topics,
+        FIELD2 => 'ObjectId',
+    );
+}
+# }}}
+
+# {{{ LimitRefersTo URI
 
 =head2 LimitRefersTo URI
 
-Limit the result set to only articles which refers to the URI passed in.
+Limit the result set to only articles which are referred to by the URI passed in.
+
+=begin testing
+
+use RT::FM::ArticleCollection;
+my $ac = RT::FM::ArticleCollection->new($RT::SystemUser);
+ok($ac->isa('RT::FM::ArticleCollection'));
+ok($ac->isa('RT::FM::SearchBuilder'));
+ok ($ac->isa('DBIx::SearchBuilder'));
+ok ($ac->LimitRefersTo('http://dead.link'));
+ok ($ac->Count == 0);
+
+=end testing
+
+
 
 =cut
 
 sub LimitRefersTo {
-
     my $self = shift;
     my $uri  = shift;
 
@@ -444,49 +480,6 @@ sub LimitReferredToBy {
         FIELD1 => 'URI',
         ALIAS2 => $links,
         FIELD2 => 'Target'
-    );
-
-}
-# }}}
-
-# {{{ LimitRefersTo URI
-
-=head2 LimitRefersTo URI
-
-Limit the result set to only articles which are referred to by the URI passed in.
-
-=begin testing
-
-use RT::FM::ArticleCollection;
-my $ac = RT::FM::ArticleCollection->new($RT::SystemUser);
-ok($ac->isa('RT::FM::ArticleCollection'));
-ok($ac->isa('RT::FM::SearchBuilder'));
-ok ($ac->isa('DBIx::SearchBuilder'));
-ok ($ac->LimitRefersTo('http://dead.link'));
-ok ($ac->Count == 0);
-
-=end testing
-
-
-
-=cut
-
-sub LimitRefersTo {
-    my $self = shift;
-    my $uri  = shift;
-
-    my $links = $self->NewAlias('Links');
-    $self->Limit(
-        ALIAS => $links,
-        FIELD => 'Target',
-        VALUE => $uri
-    );
-
-    $self->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'URI',
-        ALIAS2 => $links,
-        FIELD2 => 'Base'
     );
 
 }

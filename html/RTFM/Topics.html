@@ -16,15 +16,20 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Elements/Tabs, current_toptab => "RTFM/Topics.html", Title => loc('Topic hierarchy') &>
+<& /RTFM/Elements/Tabs, current_toptab => "RTFM/Topics.html", Title => loc('Topic hierarchy'), class => $class, topic => $id &>
 
+<a href="Topics.html">Root</a>
 % if (defined $class) {
+% my $c = RT::FM::Class->new($session{'CurrentUser'});
+% $c->Load($class);
+&gt; <a href="Topics.html?class=<% $c->Id %>"><% $c->Name %></a>
 
 % if ($id != 0) {
 % my $t = RT::FM::Topic->new($session{'CurrentUser'});
 % $t->Load($id);
-<a href="Topics.html?class=<% $class %>&id=<% $t->Parent %>">Parent</a><br />
+&gt; <& /RTFM/Article/Elements/ShowTopic, topic => $t &>
 % }
+<br />
 
 <& /Elements/TitleBoxStart, title => loc('Topics') &>
 % my $Topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
@@ -64,7 +69,8 @@
 % }
 
 % } else {
-Choose a class to examine:
+<br />
+<& /Elements/TitleBoxStart, title => loc('Classes') &>
 <ul>
 % my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
 % $Classes->UnLimit;
@@ -72,6 +78,7 @@ Choose a class to examine:
 <li><a href="Topics.html?class=<%$c->Id%>"><% $c->Name %></li>
 % }
 </ul>
+<& /Elements/TitleBoxEnd &>
 
 % }
 

@@ -16,21 +16,25 @@
 %# 
 %# END LICENSE BLOCK
 
+% if ($ClassObj->Id) {
 <table>
 <tr>
 <td>Fields in this class:</td>
 <td>
+% }
 
 <input type="hidden" name="EditTopics" value="1" />
 <select multiple size="10" name="Topics">
-  <optgroup label="Current class (<% $ClassObj->Name%>)"> 
-% $inTree->traverse(sub {
-%   my $tree = shift;
-%   my $topic = $tree->getNodeValue;
-%   $m->print("<option value=\"".$topic->Id."\""
-%     .(exists $topics{$topic->Id} ? " selected" : "").">"
-%     .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
-% });
+% if ($ClassObj->Id) {
+%   $m->print("<optgroup label=\"Current class (".$ClassObj->Name.")\">");
+%   $inTree->traverse(sub {
+%     my $tree = shift;
+%     my $topic = $tree->getNodeValue;
+%     $m->print("<option value=\"".$topic->Id."\""
+%       .(exists $topics{$topic->Id} ? " selected" : "").">"
+%       .("&nbsp;" x ($tree->getDepth*5)).$topic->Name."</option>\n");
+%   });
+% }
 % my $class = $ClassObj->Id;
 % $otherTree->traverse(sub {
 %   my $tree = shift;
@@ -48,8 +52,10 @@
 % });
 </optgroup>
 </select>
+% if ($ClassObj->Id) {
 </td>
 </tr>
+% }
 
 <%INIT>
 use Tree::Simple;
@@ -60,16 +66,21 @@ $inClass->OrderByCols({FIELD => 'Name'});
 my $inTree = buildTree($inClass);
 
 my $otherClass = new RT::FM::TopicCollection($session{'CurrentUser'});
-$otherClass->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
-$otherClass->Limit(FIELD => 'ObjectId', OPERATOR => '!=', VALUE => $ClassObj->Id);
+if ($ClassObj->Id) {
+    $otherClass->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
+    $otherClass->Limit(FIELD => 'ObjectId', OPERATOR => '!=', VALUE => $ClassObj->Id);
+} else {
+    $otherClass->UnLimit;
+}
 my $otherTree = buildTree($otherClass);
 
 my $articleTopics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
 $articleTopics->LimitToObject($ArticleObj);
 my %topics;
 while (my $topicObj = $articleTopics->Next) {
-    $topics{$topicObj->Topic} = $topicObj;
+    $topics{$topicObj->Topic} = 1;
 }
+$topics{$_} = 1 for @Topics;
 
 
 sub buildTree {
@@ -103,7 +114,7 @@ sub buildTree {
 
 </%INIT>
 <%ARGS>
-$id => undef
-$ArticleObj => undef
-$ClassObj => undef
+$ArticleObj => new RT::FM::Article($session{'CurrentUser'})
+$ClassObj => new RT::FM::Class($session{'CurrentUser'})
+@Topics => undef
 </%ARGS>

@@ -49,7 +49,7 @@ my $second_tabs = { 'aab' => { title => loc('Overview'),
                   };
 
 my $topactions = {
-        B => { html => $m->scomp('/RTFM/Elements/GotoArticle') }
+        B => { html => $m->scomp('/RTFM/Elements/GotoArticle', %ARGS) }
         };
 
                     

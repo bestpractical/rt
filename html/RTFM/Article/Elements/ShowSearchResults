@@ -41,7 +41,7 @@ CLASS="oddline"
 CLASS="evenline"
 % }
 >
-<TD ROWSPAN="2">
+<TD ROWSPAN="3">
 <B>
 <a href="Display.html?id=<%$article->Id%>">#<%$article->id%></a>
 </B></TD>
@@ -59,6 +59,19 @@ CLASS="oddline"
 CLASS="evenline"
 % }
 ><TD COLSPAN="4"><small><%$article->Summary%></small></TD>
+</TR>
+<TR
+% if ($i%2) {
+CLASS="oddline"
+% } else {
+CLASS="evenline"
+% }
+><TD COLSPAN="4"><small>
+% my $Topics = $article->Topics;
+% while (my $t = $Topics->Next) {
+<& /RTFM/Article/Elements/ShowTopic, topic => $t->TopicObj &><br />
+% }
+</small></TD>
 </TR>
 </SPAN>
 % }

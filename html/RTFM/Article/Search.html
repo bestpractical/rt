@@ -26,6 +26,7 @@ my @results;
 my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 
 
+# Don't want to search for a null class when there is no class specced
 my $customfields = RT::FM::CustomFieldCollection->new( $session{'CurrentUser'} );
 if ( $ARGS{'Class'} ) {
     my @Classes =
@@ -41,7 +42,6 @@ else {
 
 }
 
-# Don't want to search for a null class when there is no class specced
 my %dates;
 foreach my $date qw(Created< Created> LastUpdated< LastUpdated>) {
     next unless ( $ARGS{$date} );
@@ -67,6 +67,28 @@ foreach my $link ( split ( /\s+/, $RefersTo ) ) {
 foreach my $link ( split ( /\s+/, $ReferredToBy ) ) {
     next unless ($link);
     $articles->LimitReferredToBy($link);
+}
+
+if ($ARGS{'Topics'}) {
+    my @Topics =
+      ( ref $ARGS{'Topics'} eq 'ARRAY' )
+      ? @{ $ARGS{'Topics'} }
+      : ( $ARGS{'Topics'} );
+    @Topics = map {split} @Topics;
+    if ($ARGS{'ExpandTopics'}) {
+        my %topics;
+        while (@Topics) {
+            my $id = shift @Topics;
+            next if $topics{$id};
+            my $Topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
+            $Topics->Limit(FIELD => 'Parent', VALUE => $id);
+            push @Topics, $_->Id while $_ = $Topics->Next;
+            $topics{$id}++;
+        }
+        @Topics = keys %topics;
+        $ARGS{'Topics'} = \@Topics;
+    }
+    $articles->LimitTopics(@Topics);
 }
 
 my %cfs;

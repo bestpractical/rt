@@ -40,6 +40,8 @@
 </td>
 </tr>
 </table>
+<br><&|/l&>Has topic</&><& /RTFM/Article/Elements/EditTopics, %ARGS &>
+<br /><&|/l&>Include subtopics of selected topics</&> <input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
 <br><&|/l&>Name matches</&>
 <input name="Name~" value="<%$ARGS{'Name~'}%>">
 <&|/l&>and not</&>
