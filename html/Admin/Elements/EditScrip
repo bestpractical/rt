@@ -77,6 +77,14 @@
 </TR>
 <TR>
 <TD ALIGN=RIGHT>
+<&|/l&>Stage</&>: 
+</TD>
+<TD>
+<& /Admin/Elements/SelectStage, Name => "Scrip-$id-Stage", Default => $scrip->Stage &>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
 <&|/l&>Template</&>: 
 </TD>
 <TD>
@@ -123,6 +131,7 @@ elsif ($id) {
       ScripAction
       ScripCondition
       Template
+      Stage
       Description
       CustomPrepareCode
       CustomCommitCode

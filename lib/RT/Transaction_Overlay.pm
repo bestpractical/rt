@@ -114,66 +114,13 @@ sub Create {
 
     #Provide a way to turn off scrips if we need to
     if ( $args{'ActivateScrips'} ) {
-
-        #We're really going to need a non-acled ticket for the scrips to work
-        my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
-        $TicketAsSystem->Load( $args{'Ticket'} )
-          || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
-
-        my $TransAsSystem = RT::Transaction->new($RT::SystemUser);
-        $TransAsSystem->Load( $self->id )
-          || $RT::Logger->err(
-            "$self couldn't load a copy of itself as superuser\n"); 
-        # {{{ Deal with Scrips
-
-        use RT::Scrips;
-        my $PossibleScrips = RT::Scrips->new($RT::SystemUser);
-
-        $PossibleScrips->LimitToQueue( $TicketAsSystem->QueueObj->Id )
-          ;                                  #Limit it to  $Ticket->QueueObj->Id
-        $PossibleScrips->LimitToGlobal()
-            unless $TicketAsSystem->QueueObj->Disabled;    # or to "global"
-
-
-        $PossibleScrips->Limit(FIELD => "Stage", VALUE => "TransactionCreate");
-
-
-        my $ConditionsAlias = $PossibleScrips->NewAlias('ScripConditions');
-
-        $PossibleScrips->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'ScripCondition',
-            ALIAS2 => $ConditionsAlias,
-            FIELD2 => 'id'
+        require RT::Scrips;
+        RT::Scrips->new($RT::SystemUser)->Apply(
+            Stage       => 'TransactionCreate',
+            Type        => $args{'Type'},
+            Ticket      => $args{'Ticket'},
+            Transaction => $self->id,
         );
-
-        #We only want things where the scrip applies to this sort of transaction
-        $PossibleScrips->Limit(
-            ALIAS           => $ConditionsAlias,
-            FIELD           => 'ApplicableTransTypes',
-            OPERATOR        => 'LIKE',
-            VALUE           => $args{'Type'},
-            ENTRYAGGREGATOR => 'OR',
-        );
-
-        # Or where the scrip applies to any transaction
-        $PossibleScrips->Limit(
-            ALIAS           => $ConditionsAlias,
-            FIELD           => 'ApplicableTransTypes',
-            OPERATOR        => 'LIKE',
-            VALUE           => "Any",
-            ENTRYAGGREGATOR => 'OR',
-        );
-
-        #Iterate through each script and check it's applicability.
-
-        while ( my $Scrip = $PossibleScrips->Next() ) {
-            $Scrip->Apply (TicketObj => $TicketAsSystem,
-                           TransactionObj => $TransAsSystem);
-        }
-
-        # }}}
-
     }
 
     return ( $id, $self->loc("Transaction Created") );

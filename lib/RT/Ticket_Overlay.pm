@@ -3817,10 +3817,38 @@ sub _NewTransaction {
     if ( defined $args{'TimeTaken'} ) {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
+    if ( $RT::UseTransactionBatch and $transaction ) {
+	push @{$self->{_TransactionBatch}}, $trans;
+    }
     return ( $transaction, $msg, $trans );
 }
 
 # }}}
+
+=head2 TransactionBatch
+
+  Returns an array reference of all transactions created on this ticket during
+  this ticket object's lifetime, or undef if there were none.
+
+  Only works when the $RT::UseTransactionBatch config variable is set to true.
+
+=cut
+
+sub TransactionBatch {
+    my $self = shift;
+    return $self->{_TransactionBatch};
+}
+
+sub DESTROY {
+    my $self = shift;
+    my $batch = $self->TransactionBatch or return;
+    require RT::Scrips;
+    RT::Scrips->new($RT::SystemUser)->Apply(
+	Stage		=> 'TransactionBatch',
+	TicketObj	=> $self,
+	TransactionObj	=> $batch->[0],
+    );
+}
 
 # }}}
 

@@ -129,5 +129,77 @@ sub Next {
 }
 # }}}
 
+sub Apply {
+    my ($self, %args) = @_;
+
+    #We're really going to need a non-acled ticket for the scrips to work
+    my ($TicketObj, $TransactionObj);
+
+    if ( ($TicketObj = $args{'TicketObj'}) ) {
+	$TicketObj->CurrentUser($self->CurrentUser);
+    }
+    else {
+	$TicketObj = RT::Ticket->new($self->CurrentUser);
+	$TicketObj->Load( $args{'Ticket'} )
+	    || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
+    }
+
+    if ( ($TransactionObj = $args{'TransactionObj'}) ) {
+	$TransactionObj->CurrentUser($self->CurrentUser);
+    }
+    else {
+	$TransactionObj = RT::Transaction->new($self->CurrentUser);
+	$TransactionObj->Load( $args{'Transaction'} )
+	    || $RT::Logger->err("$self couldn't load transaction $args{'Transaction'}\n");
+    }
+
+    # {{{ Deal with Scrips
+
+    $self->LimitToQueue( $TicketObj->QueueObj->Id )
+        ;                                  #Limit it to  $Ticket->QueueObj->Id
+    $self->LimitToGlobal()
+        unless $TicketObj->QueueObj->Disabled;    # or to "global"
+
+
+    $self->Limit(FIELD => "Stage", VALUE => $args{'Stage'});
+
+
+    my $ConditionsAlias = $self->NewAlias('ScripConditions');
+
+    $self->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'ScripCondition',
+        ALIAS2 => $ConditionsAlias,
+        FIELD2 => 'id'
+    );
+
+    #We only want things where the scrip applies to this sort of transaction
+    $self->Limit(
+        ALIAS           => $ConditionsAlias,
+        FIELD           => 'ApplicableTransTypes',
+        OPERATOR        => 'LIKE',
+        VALUE           => $args{'Type'},
+        ENTRYAGGREGATOR => 'OR',
+    ) if $args{'Type'};
+
+    # Or where the scrip applies to any transaction
+    $self->Limit(
+        ALIAS           => $ConditionsAlias,
+        FIELD           => 'ApplicableTransTypes',
+        OPERATOR        => 'LIKE',
+        VALUE           => "Any",
+        ENTRYAGGREGATOR => 'OR',
+    );
+
+    #Iterate through each script and check it's applicability.
+    while ( my $Scrip = $self->Next() ) {
+        $Scrip->Apply (TicketObj => $TicketObj,
+                        TransactionObj => $TransactionObj);
+    }
+
+    # }}}
+}
+
+
 1;
 
