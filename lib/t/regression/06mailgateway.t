@@ -280,7 +280,10 @@ my $entity = MIME::Entity->build( From => 'root@localhost',
                                 Data => ['This is a test of a binary attachment']);
 
 # currently in lib/t/autogen
-$entity->attach(Path => '/opt/rt3/share/html/NoAuth/images/bplogo.gif', 
+
+my $LOGO_FILE = $RT::MasonComponentRoot.'/NoAuth/images/bplogo.gif';
+
+$entity->attach(Path => $LOGO_FILE,
                 Type => 'image/gif',
                 Encoding => 'base64');
 
@@ -302,7 +305,7 @@ ok (UNIVERSAL::isa($tick,'RT::Ticket'));
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'binary attachment test', "Created the ticket - ".$tick->Id);
 
-my $file = `cat '/opt/rt3/share/html/NoAuth/images/bplogo.gif'`;
+my $file = `cat $LOGO_FILE`;
 ok ($file, "Read in the logo image");
 
 
