@@ -88,6 +88,15 @@ sub Prepare  {
 
   $self->SetPrecedence();
 
+  # Is it any reason why we need three separate subs for this?  I can
+  # hardly see that they will operate that differently. --TobiX
+
+  $self->SetTo();
+
+  $self->SetCc();
+
+  $self->SetBcc();
+
  $self->{'Body'} .= 
     "\n-------------------------------------------- Managed by Request Tracker\n\n";
   
@@ -204,8 +213,8 @@ sub SetContentType {
   # transaction message.  BTW, I think our (reply|comment) templates
   # as of today will break if the incoming Message has a different
   # content-type than text/plain.  Eventually we should fix the
-  # template system so the original message should always be a MIME
-  # part.
+  # template system so the original message always will be a separate
+  # MIME part.
 
   unless ($self->TemplateObj->{'Header'}->get('Content-Type')) {
       $self->TemplateObj->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
@@ -242,6 +251,10 @@ my $self = shift;
 
 # {{{ sub SetEnvelopeTo
 
+# Ehrm ... I thought EnvelopeTo was something that was set by some
+# MTAs, not a field that would be respected when calling the MDA /
+# sending through SMTP?
+
 sub SetEnvelopeTo {
   my $self = shift;
   #TODO Set Envelope to
@@ -254,7 +267,9 @@ sub SetEnvelopeTo {
 
 sub SetTo {
   my $self = shift;
-  #TODO Set To
+  if (exists $self->{'To'}) {
+      $self->TemplateObj->{'Header'}->add('To', $self->{'To'});
+  }
   return($self->{'To'});
 }
 
@@ -264,7 +279,9 @@ sub SetTo {
 
 sub SetCc {
   my $self = shift;
-  #TODO Set Cc
+  if (exists $self->{'Cc'}) {
+      $self->TemplateObj->{'Header'}->add('Cc', $self->{'Cc'});
+  }
   return($self->{'Cc'});
 }
 
@@ -274,7 +291,9 @@ sub SetCc {
 
 sub SetBcc {
   my $self = shift;
-  #TODO Set Bcc
+  if (exists $self->{'Bcc'}) {
+      $self->TemplateObj->{'Header'}->add('Bcc', $self->{'Bcc'});
+  }
   return($self->{'Bcc'});
 }
 # }}}
@@ -292,8 +311,6 @@ sub SetPrecedence {
 # {{{ sub SetSubject
 
 # This routine sets the subject. it does not add the rt tag. that gets done elsewhere
-
-# Where? --TobiX
 
 sub SetSubject {
   my $self = shift;
