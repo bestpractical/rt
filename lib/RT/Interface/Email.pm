@@ -140,6 +140,7 @@ sub CheckForLoops  {
     
     #If this instance of RT sent it our, we don't want to take it in
     my $RTLoop = $head->get("X-RT-Loop-Prevention") || "";
+    chomp ($RTLoop); #remove that newline
     if ($RTLoop eq "$RT::rtname") {
 	return (1);
     }
@@ -289,6 +290,8 @@ sub MailError {
 				      To => $args{'To'},
 				      Subject => $args{'Subject'},
 				    );
+    $entity->SetHeader('X-RT-Loop-Prevention', $RT::rtname);
+
     $entity->attach(  Data => $args{'Explanation'}."\n");
     
     my $mimeobj = $args{'MIMEObj'};
@@ -314,7 +317,7 @@ sub GetCurrentUser  {
     my $entity = shift;
     my $ErrorsTo = shift;
 
-    my %UserInfo = {};
+    my %UserInfo = ();
 
     #Suck the address of the sender out of the header
     my ($Address, $Name) = ParseSenderAddressFromHead($head);

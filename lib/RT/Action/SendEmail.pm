@@ -184,7 +184,8 @@ sub SetRTSpecialHeaders {
     $self->SetMessageID();
     
     $self->SetPrecedence();
-        
+
+    $self->SetHeader('X-RT-Loop-Prevention', $RT::rtname); 
     $self->SetHeader('RT-Ticket', $RT::rtname. " #".$self->TicketObj->id());
     $self->SetHeader
       ('Managed-by',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt/)");

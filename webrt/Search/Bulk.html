@@ -62,6 +62,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <TD VALIGN=TOP>
 <UL>
 <li> Make Owner <& /Elements/SelectOwner, Name => "Owner" &>
+(<input type=checkbox name="ForceOwnerChange"> Force change)
 <li> Add Requestor <INPUT Name="AddRequestor" SIZE=20>
 <li> Remove Requestor <INPUT Name="DeleteRequestor" SIZE=20>
 <li> Add Cc <INPUT Name="AddCc" SIZE=20>

@@ -16,7 +16,8 @@
 
 % $attachments->GotoFirstItem;
 %  while (my $message=$attachments->Next) {
-% next unless ($message->Content);
+% #we don't want to show any empty transactions, unless they have kids
+% next unless ($message->Content || $message->Children->Count);
 <TR BGCOLOR="<%$rowbgcolor%>">
 <TD BGCOLOR="<%$bgcolor%>">&nbsp;&nbsp;</TD>
 <TD>&nbsp&nbsp;</TD>

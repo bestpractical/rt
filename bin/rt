@@ -108,6 +108,7 @@ my @args =("id=s" => \@id,
 	   "limit-body=s",	\@limit_body,
 	   "limit-created=s" => \@limit_created,
 	   "limit-due=s" =>	\@limit_due,
+ 	   "limit-last-updated=s" => \@limit_lastupdated,
 
 	   "limit-member-of=s" => \@limit_memberof,
 	   "limit-has-member=s" => \@limit_hasmember,
