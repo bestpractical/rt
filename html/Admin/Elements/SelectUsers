@@ -1,4 +1,4 @@
-%# {{{ BEGIN BPS TAGGED BLOCK
+%# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
 %#  
@@ -42,7 +42,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# }}} END BPS TAGGED BLOCK
+%# END BPS TAGGED BLOCK }}}
 <SELECT MULTIPLE NAME="<%$Name%>"  SIZE=10>
 %while (my $user = $users->Next) {
 <OPTION VALUE="<%$user->id%>"><%$user->Name%>

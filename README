@@ -1,4 +1,4 @@
-# {{{ BEGIN BPS TAGGED BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
 #  
@@ -42,7 +42,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# }}} END BPS TAGGED BLOCK
+# END BPS TAGGED BLOCK }}}
 RT is an enterprise-grade issue tracking system. It allows
 organizations to keep track of their to-do lists, who is working
 on which tasks, what's already been done, and when tasks were
@@ -73,7 +73,8 @@ o   A DB backend; MySQL is recommended ( http://www.mysql.com )
         Currently supported:  Mysql 4.0.13 or later with InnoDB support.
                               Postgres 7.2 or later.
                               Oracle 9iR2.
-        Beta-quality support for Informix and SQLite is also available.
+                              SQLite 3.0. (Not recommended for production)
+        Beta-quality support for Informix is also available.
 
 
 o   Apache version 1.3.x or 2.x (http://httpd.apache.org) 
