@@ -193,18 +193,18 @@ sub comment {
  
     #if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
     #	return (0,"You ($in_current_user) don't have permission to modify request \#$in_serial_num");
-    }
+   # }
    
      #Todo: this may or may not be broken. ideally we should have the headers and body in seperate places. 
      if ($in_cc) {
           $in_content = "Cc: $in_cc\n\n$in_content";
        }
-   &req_in($in_serial_num, '_rt_system');
+    &req_in($in_serial_num, '_rt_system');
    $queue_id =$rt::req[$in_serial_num]{queue_id}; 
 
     $transaction_num=&add_transaction($in_serial_num, $in_current_user, 'comments','',$in_content,$time, 1,$in_current_user);
   
-if ($queues{$queue_id}{m_members_comment}) {
+   if ($queues{$queue_id}{m_members_comment}) {
 	&template_mail('comment',$queue_id,"$queues{$queue_id}{dist_list}",$in_cc,$in_bcc,$in_serial_num,$transaction_num,"$in_subject",$in_current_user,$in_content);
 
     }
