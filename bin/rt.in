@@ -30,6 +30,7 @@ use strict;
 
 use Cwd;
 use LWP;
+use Text::ParseWords;
 use HTTP::Request::Common;
 
 # We derive configuration information from hardwired defaults, dotfiles,
@@ -75,6 +76,7 @@ my $idlist = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 my %handlers = (
 #   handler     => [ ...aliases... ],
     version     => ["version", "ver"],
+    shell       => ["shell"],
     logout      => ["logout"],
     help        => ["help", "man"],
     show        => ["show", "cat"],
@@ -95,7 +97,7 @@ foreach my $fn (keys %handlers) {
 
 # Once we find and call an appropriate handler, we're done.
 
-sub handle {
+sub handler {
     my $action;
 
     if (@ARGV && exists $actions{$ARGV[0]}) {
@@ -104,13 +106,27 @@ sub handle {
     $actions{$action || "help"}->($action || ());
 }
 
-handle(@ARGV);
+handler();
 exit;
 
 # Handler functions.
 # ------------------
 #
 # The following subs are handlers for each entry in %actions.
+
+sub shell {
+    $|=1;
+    print "rt> ";
+    while (<>) {
+        chomp;
+        next if /^#/ || /^\s*$/;
+
+        @ARGV = shellwords($_);
+        handler();
+        print "rt> ";
+    }
+    print "\n";
+}
 
 sub version {
     print "rt $VERSION\n";
