@@ -26,39 +26,21 @@
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O29 A29 B29] /-/-/-/-/-/-/-/-/-/-/
 <h2><%$caption%></h2>
-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-<h2><%$caption%></h2>
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 </TD></TR></TABLE>
 % if ($CustomFields->Count == 0 ) {
 <P><i><&|/l&>(No custom fields)</&></i></P>
 % } else {
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O34 A34 B34] /-/-/-/-/-/-/-/-/-/-/
 <TABLE cellspacing=0 cellpadding=2>
-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-<TABLE cellspacing=0 cellpadding=2>
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O36 A35 B36] /-/-/-/-/-/-/-/-/-/-/
 % my $count;
 % while (my $CustomFieldObj = $CustomFields->Next) { 
+<TR>
   <TD valign="TOP">
 % if ($CustomFieldObj->Name) {
     <A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><b><%$CustomFieldObj->Name%></b></a><br>
 % } else {
     <A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><i>(<%loc("no name")%>)</i></a><br>
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O44 A35 B45] /-/-/-/-/-/-/-/-/-/-/
-    <%$CustomFieldObj->Description%>
-  </TD>
-  <TD valign="TOP">
-    <i><% $CustomFieldObj->FriendlyType %></i>
-  </TD>
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-<TR>
-  <TD valign="TOP">
-    <A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><b><%$CustomFieldObj->Name%></b></a><br>
+% }
     <%$CustomFieldObj->Description%>
   </TD>
   <TD valign="TOP">
@@ -66,47 +48,21 @@
   </TD>
 %  # show 'move up' unless it's the first item
 %  if ($count++) {
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O51 A48 B52] /-/-/-/-/-/-/-/-/-/-/
   <TD valign="TOP">
     <a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>
-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-  <TD valign="TOP">
-    <a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 %  } else {
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O54 A51 B55] /-/-/-/-/-/-/-/-/-/-/
   <TD valign="TOP" ALIGN=RIGHT>
-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-  <TD valign="TOP" ALIGN=RIGHT>
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 %  }
 
 %  # show 'move down' unless it's the last item
 %  if (!$CustomFields->IsLast) {
 %  $m->print(' | ') if $count > 1;
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O60 A57 B61] /-/-/-/-/-/-/-/-/-/-/
     <a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>
-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-    <a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 %  }
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O62 A59 B63] /-/-/-/-/-/-/-/-/-/-/
 </TD>
 </TR>
 % }
 
-% while (my $CustomFieldObj = $CustomFields->Next) { 
-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-</TD>
-</TR>
-% }
-
-% while (my $CustomFieldObj = $CustomFields->Next) { 
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-% }
-
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O65 A66 B70] /-/-/-/-/-/-/-/-/-/-/
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 </TABLE>
 % }
 <FORM METHOD=GET ACTION="CustomFields.html">
