@@ -133,8 +133,11 @@ else {
 	($val, $msg) = $UserObj->Create( Name => $Name,
 					 EmailAddress => $ARGS{'EmailAddress'}
 				       );
-	push @results, $msg;
-	
+	if ($val) {
+		push @results, $msg;
+	} else {
+		push @results, 'User could not be created: '. $msg;
+	}	
 	
     }
     else {

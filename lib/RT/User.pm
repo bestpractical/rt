@@ -147,20 +147,15 @@ sub Create  {
     
     #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
     if ($RT::SystemUser) { #This only works if RT::SystemUser has been defined
-	my $TempUser = RT::User->new($RT::SystemUser);
-	$TempUser->Load($args{'Name'});
-	return (0, 'Name in use') if ($TempUser->Id);
+		my $TempUser = RT::User->new($RT::SystemUser);
+		$TempUser->Load($args{'Name'});
+		return (0, 'Name in use') if ($TempUser->Id);
 	
-	my $TempUser2 =RT::User->new($RT::SystemUser);
-	$TempUser2->LoadByEmail($args{'EmailAddress'});
-	return(0, 'Email in use') 
-	  if (( $args{'EmailAddress'}) and 
-	      ( $TempUser2->EmailAddress) and
-	      ($TempUser2->EmailAddress eq $args{'EmailAddress'}));
-	
+		return(0, 'Email address in use') 
+			unless ($self->ValidateEmailAddress($args{'EmailAddress'}));
     }
     else {
-	$RT::Logger->warning("$self couldn't check for pre-existing ".
+		$RT::Logger->warning("$self couldn't check for pre-existing ".
 			     " users on create. This will happen".
 			     " on installation\n");
     }
@@ -169,7 +164,7 @@ sub Create  {
     
     #If the create failed.
     unless ($id) {
-	return (0, 'Could not create user');
+		return (0, 'Could not create user');
     }
       
     
@@ -255,11 +250,51 @@ sub LoadByEmail {
     my $self=shift;
     my $address = shift;
 
+    # Never load an empty address as an email address.
+    unless ($address) {
+	return(undef);
+    }
+
     $address = RT::CanonicalizeAddress($address);
     #$RT::Logger->debug("Trying to load an email address: $address\n");
     return $self->LoadByCol("EmailAddress", $address);
 }
 # }}}
+
+
+# {{{ sub ValidateEmailAddress
+
+=head2 ValidateEmailAddress ADDRESS
+
+Returns true if the email address entered is not in use by another user or is 
+undef or ''. Returns false if it's in use. 
+
+=cut
+
+sub ValidateEmailAddress {
+	my $self = shift;
+	my $Value = shift;
+
+ 	# if the email address is null, it's always valid
+ 	return (1) if(!$Value || $Value eq "");
+
+ 	my $TempUser = RT::User->new($RT::SystemUser);
+ 	$TempUser->LoadByEmail($Value);
+
+ 	if( $TempUser->id && 
+	   ($TempUser->id != $self->id)) { # if we found a user with that address 
+					# it's invalid to set this user's address to it
+ 		return(undef);
+ 	}
+ 	else { #it's a valid email address
+ 		return(1);
+ 	}
+}
+
+# }}}
+
+
+
 
 # {{{ sub SetRandomPassword
 
@@ -1115,7 +1150,7 @@ sub _Set {
   # Nobody is allowed to futz with RT_System or Nobody unless they
   # want to change an email address. For 2.2, neither should have an email address
 
-  if (($self->Privileged == 2) && ($args{'Field'} ne 'Email')) {
+  if ($self->Privileged == 2) {
     return (0, "Can not modify system users"); 
   }
   unless ($self->CurrentUserCanModify($args{'Field'})) {

@@ -70,7 +70,6 @@ $CurrentUser->LoadByName('RT_System');
 my @users = ( 
 	     { 
 	      Name => 'Nobody',
-	      EmailAddress => "nobody\@localhost",
 	      RealName => 'Nobody in particular',
 	      Comments => 'Do not delete or modify this user. It is integral ' .
 	      'to RT\'s internal data structures',
