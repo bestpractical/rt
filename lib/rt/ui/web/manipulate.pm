@@ -720,7 +720,6 @@ sub display_history_tables {
     
     print "
 <TR BGCOLOR=\"$bgcolor\">
-<TD WIDTH=5 BGCOLOR=\"$bgcolor\">&nbsp;</TD>
 <TD align=\"left\" valign=\"middle\" width=\"15%\">
 <font color=\"\#ffffff\" size=\"-1\">
 $date
@@ -763,16 +762,14 @@ print "
     
 
 print "</FONT></TD>
-<TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=\"28\" alt=\"\"></TD>
 </TR>
 <TR>
-<TD COLSPAN=5><img src=\"/webrt/sbs.gif\" width=100% height=4 alt=\"\"></TD>
-<TD><img src=\"/webrt/sbc.gif\"  width=4 alt=\"\" height=4></TD></TR>";
+";
     
    if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
      print "
 
-<TR><TD BGCOLOR=\"#FFFFFF\" colspan=5>
+<TR><TD BGCOLOR=\"#FFFFFF\" colspan=3>
 <TABLE CELLPADDING=20 width=\"100%\"><TR><TD BGCOLOR=\"\#EEEEEE\">
 <font size=\"$MESSAGE_FONT\">";
       
