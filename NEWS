@@ -1,3 +1,9 @@
+23 Feb 99
+---------
+
+Fixed "delete user" functionality, which was totally broken.
+thanks to rich west.
+
 20 Feb 99
 ---------
 tiny admin ui tweak to make lynx happier
