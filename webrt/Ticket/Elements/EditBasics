@@ -29,14 +29,14 @@
 <TD>
 <& /Elements/ShadedBox,
 	title => 'Priority',
-	content => "<input name=Priority value=\"".$TicketObj->Priority."\" SIZE=2>"
+	content => "<input name=Priority value=\"".$TicketObj->Priority."\" SIZE=3>"
 &>
 
 </TD>
 <TD>
 <& /Elements/ShadedBox,
 	title => 'Final Priority',
-	content => "<input name=FinalPriority value=\"".$TicketObj->FinalPriority."\" SIZE=2>"
+	content => "<input name=FinalPriority value=\"".$TicketObj->FinalPriority."\" SIZE=3>"
 &>
 
 

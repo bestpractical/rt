@@ -101,7 +101,7 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit, Label => 'Search', AlternateLabel => 'Refine', Name => 'Action'&>
+<& /Elements/Submit, Label => 'Show Results', AlternateLabel => 'Refine', Name => 'Action'&>
 
 </FORM>
 

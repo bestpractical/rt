@@ -565,25 +565,28 @@ sub LimitAdminCc {
 
 =head2 LimitLinkedTo
 
-LimitLinkedTo takes a paramhash with two fields: TYPE and TICKET
+LimitLinkedTo takes a paramhash with two fields: TYPE and TARGET
 TYPE limits the sort of relationship we want to search on
-TICKET is the id of the BASE of the link
+
+TARGET is the id or URI of the TARGET of the link
+(TARGET used to be 'TICKET'.  'TICKET' is deprecated, but will be treated as TARGET
 
 =cut
 
 sub LimitLinkedTo {
     my $self = shift;
-    my %args = ( FIELD => undef,
-		 TICKET => undef,
-		 TYPE => undef,
+    my %args = ( 
+		TICKET => undef,
+		TARGET => undef,
+		TYPE => undef,
 		 @_);
 
 
     $self->Limit( FIELD => 'LinkedTo',
 		  BASE => undef,
-		  TARGET => $args{'TICKET'},
+		  TARGET => ($args{'TARGET'} || $args{'TICKET'}),
 		  TYPE => $args{'TYPE'},
-		  DESCRIPTION => "Tickets ".$args{'TYPE'}." by ".$args{'TICKET'}
+		  DESCRIPTION => "Tickets ".$args{'TYPE'}." by ".($args{'TARGET'} || $args{'TICKET'})
 		);
 }
 
@@ -594,15 +597,19 @@ sub LimitLinkedTo {
 
 =head2 LimitLinkedFrom
 
-LimitLinkedFrom takes a paramhash with two fields: TYPE and TICKET
+LimitLinkedFrom takes a paramhash with two fields: TYPE and BASE
 TYPE limits the sort of relationship we want to search on
-TICKET is the id of the BASE of the link
+
+
+BASE is the id or URI of the BASE of the link
+(BASE used to be 'TICKET'.  'TICKET' is deprecated, but will be treated as BASE
+
 
 =cut
 
 sub LimitLinkedFrom {
     my $self = shift;
-    my %args = ( FIELD => undef,
+    my %args = ( BASE => undef,
 		 TICKET => undef,
 		 TYPE => undef,
 		 @_);
@@ -610,9 +617,9 @@ sub LimitLinkedFrom {
     
     $self->Limit( FIELD => 'LinkedTo',
 		  TARGET => undef,
-		  BASE => $args{'TICKET'},
+		  BASE => ($args{'BASE'} || $args{'TICKET'}),
 		  TYPE => $args{'TYPE'},
-		  DESCRIPTION => "Tickets " .$args{'TICKET'} ." ".$args{'TYPE'}
+		  DESCRIPTION => "Tickets " .($args{'BASE'} || $args{'TICKET'}) ." ".$args{'TYPE'}
 		);
 }
 
@@ -661,6 +668,33 @@ sub LimitDependedOnBy {
     my $ticket_id = shift;
     $self->LimitLinkedFrom (  TICKET=> "$ticket_id",
                                TYPE => 'DependsOn',
+			     );
+    
+}
+
+# }}}
+
+
+# {{{ LimitRefersTo
+
+sub LimitRefersTo {
+    my $self = shift;
+    my $ticket_id = shift;
+    $self->LimitLinkedTo ( TARGET => "$ticket_id",
+                           TYPE => 'RefersTo',
+			   );
+    
+}
+
+# }}}
+
+# {{{ LimitReferredToBy
+
+sub LimitReferredToBy {
+    my $self = shift;
+    my $ticket_id = shift;
+    $self->LimitLinkedFrom (  BASE=> "$ticket_id",
+                               TYPE => 'RefersTo',
 			     );
     
 }
@@ -1211,9 +1245,22 @@ sub _ProcessRestrictions {
 	    
 	    #If we're trying to limit it to things that are target of
 	    if ($restriction->{'TARGET'}) {
+		
+
+		# If the TARGET is an integer that means that we want to look at the LocalTarget
+		# field. otherwise, we want to look at the "Target" field
+
+		my ($matchfield);
+		if ($restriction->{'TARGET'} =~/^(\d+)$/) {
+		    $matchfield = "LocalTarget";
+		}	
+		else {
+		    $matchfield = "Target";
+		}	
+
 		$self->SUPER::Limit(ALIAS => $LinkAlias,
 				    ENTRYAGGREGATOR => 'AND',
-				    FIELD =>   'LocalTarget',
+				    FIELD =>   $matchfield,
 				    OPERATOR => '=',
 				    VALUE =>    $restriction->{'TARGET'} );
 
@@ -1229,9 +1276,23 @@ sub _ProcessRestrictions {
 	    }
 	    #If we're trying to limit it to things that are base of
 	    elsif ($restriction->{'BASE'}) {
+
+
+		# If we're trying to match a numeric link, we want to look at LocalBase,
+		# otherwise we want to look at "Base"
+
+		my ($matchfield);
+		if ($restriction->{'BASE'} =~/^(\d+)$/) {
+		    $matchfield = "LocalBase";
+		}	
+		else {
+		    $matchfield = "Base";
+		}	
+
+
 		$self->SUPER::Limit(ALIAS => $LinkAlias,
 				    ENTRYAGGREGATOR => 'AND',
-				    FIELD =>   'LocalBase',
+				    FIELD => $matchfield,
 				    OPERATOR => '=',
 				    VALUE =>    $restriction->{'BASE'} );
 		
@@ -1442,6 +1503,7 @@ sub SetListingFormat {
     }
     return(1);
 }
+
 # }}}
 
 # {{{ sub HeaderAsHTML

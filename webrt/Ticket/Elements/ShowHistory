@@ -1,14 +1,15 @@
 <TABLE BORDER=0 width="100%">
 <TR>
 <TD ALIGN=LEFT><font size=+3>History</font></TD>
-<TD align=right>Display mode: 
+<TD align=right><font size=-1>Display mode: 
 %  if ($ShowHeaders == $Ticket->Id) {
-[<A HREF="Display.html?id=<%$Ticket->id%>">Brief headers</a>]
+[<A HREF="<%$URIFile%>?id=<%$Ticket->id%>">Brief headers</a>]
 <b>[Full headers]</b>
 % } else {
 <b>[Brief headers]</b>
-[<A HREF="Display.html?ShowHeaders=<%$Ticket->Id%>&id=<%$Ticket->id%>">Full headers</a>]
+[<A HREF="<%$URIFile%>?ShowHeaders=<%$Ticket->Id%>&id=<%$Ticket->id%>">Full headers</a>]
 %  }
+</font>
 </TD>
 </TR>
 </TABLE>
@@ -30,6 +31,7 @@ my $i;
 
 </%INIT>
 <%ARGS>
+$URIFile => 'Display.html'
 $Ticket => undef
 $ShowHeaders => undef
 $Collapsed => undef

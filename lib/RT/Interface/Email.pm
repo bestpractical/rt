@@ -289,8 +289,8 @@ sub MailError {
 				      Bcc => $args{'Bcc'},
 				      To => $args{'To'},
 				      Subject => $args{'Subject'},
+				      X-RT-Loop-Prevention => $RT::rtname,
 				    );
-    $entity->SetHeader('X-RT-Loop-Prevention', $RT::rtname);
 
     $entity->attach(  Data => $args{'Explanation'}."\n");
     

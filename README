@@ -52,7 +52,9 @@ o   A DB backend; MySQL is recommended ( http://www.mysql.com )
 
 o   Apache + mod_perl -- ( http://perl.apache.org)
 	If you compile mod_perl as a DSO, you're on your own. It's known
-	to have massive stability problems
+	to have massive stability problems.
+	mod_perl must be build with EVERYTHING=1
+	
 
 o    Various and sundry perl modules
 		

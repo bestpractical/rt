@@ -421,7 +421,8 @@ else {
 		
 	    unless ($queue_obj->Load($val)) {
 		$RT::Logger->debug("Queue '$val' not found");
-		return(-1);
+		print STDERR "Queue '$val' not found\n";	
+		exit(-1);
 	    }
 	    $RT::Logger->debug ("Limiting queue to $op ".$queue_obj->Name);
 	    $Tickets->LimitQueue(VALUE => $queue_obj->Name,
@@ -441,7 +442,8 @@ else {
 		
 	    unless ($user_obj->Load($val)) {
 		$RT::Logger->debug("User '$val' not found");
-		return(-1);
+		print STDERR "User '$val' not found\n";	
+		exit(-1);
 	    }
 	    $val = $user_obj->id();
 		
@@ -1128,7 +1130,7 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
           Due: @{[$Ticket->DueAsString]}
       Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->AgeAsString]})
  Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->LongSinceToldAsString]})
-  Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedBy]}
+  Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedByObj->Name]}
 	         
 EOFORM
 
@@ -1275,7 +1277,7 @@ sub BuildListingFormat {
 		    updated => {  chars => '12',
 				  justify => 'r',
 				  title => 'Updated',
-				  value => '$Ticket->UpdatedAsString'
+				  value => '$Ticket->LastUpdatedAsString'
 			       },
 		    due => {  chars => '12',
 			      justify => 'r',
