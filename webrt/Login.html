@@ -6,7 +6,7 @@
 <% $Error %>
 <& /Elements/TitleBoxEnd &>
 % }
-
+<BR>
 <& /Elements/TitleBoxStart, width=> "40%", titleright => "RT for $RT::rtname", title => 'Login' ,
 contentbg=>"#cccccc" &>
 
@@ -15,13 +15,14 @@ contentbg=>"#cccccc" &>
 <FORM METHOD=POST >
 <TABLE BORDER=0>
 <TR ALIGN=RIGHT>
-<TD ALIGN=RIGHT>Username:</TD><TD><input name=user value="<%$user%>"></TD></TR>
-<TR><TD ALIGN=RIGHT>Password:</TD><TD><input type=password name=pass></TD></TR>
+<TD ALIGN=RIGHT>Username:</TD><TD ALIGN=LEFT><input name=user value="<%$user%>"></TD></TR>
+<TR><TD ALIGN=RIGHT>Password:</TD><TD ALIGN=LEFT><input type=password name=pass></TD></TR>
 </TABLE>
 <BR>
 <DIV ALIGN=RIGHT>
 <input type=submit Value="Login">
 </DIV>
+<&/Elements/TitleBoxEnd&>
 % # The code below iterates through everything in the passed in arguments
 % # Preserving all the old parameters
 % # This would be easier, except mason is 'smart' and calls multiple values
@@ -42,7 +43,16 @@ contentbg=>"#cccccc" &>
 
 </FORM>
 </DIV>
-<&/Elements/TitleBoxEnd&>
+
+<BR>
+If you've forgotten your username or password, RT can <A
+href="/NoAuth/Reminder.html">send you a reminder</a>.
+
+<BR>
+<HR>
+RT is &copy; Copyright 2000 Jesse Vincent &lt;jesse@fsck.com&gt;.  It is
+distributed under <a href="http://www.gnu.org/copyleft/gpl.html">Version 2 of the GNU General Public License.</a>
+
 
 <%ARGS>
 $user => ""
