@@ -314,6 +314,7 @@ sub Create {
                  Subject         => '',
                  InitialPriority => undef,
                  FinalPriority   => undef,
+                 Priority   => undef,
                  Status          => 'new',
                  TimeWorked      => "0",
                  TimeLeft        => 0,
@@ -377,6 +378,11 @@ sub Create {
     # If there's no queue default final priority and it's not set, set it to 0
     $args{'FinalPriority'} = ( $QueueObj->FinalPriority || 0 )
       unless ( defined $args{'FinalPriority'} );
+
+    # Priority may have changed from InitialPriority, for the case
+    # where we're importing tickets (eg, from an older RT version.)
+    my $priority = $args{'Priority'} || $args{'InitialPriority'};
+
 
     # {{{ Dates
     #TODO we should see what sort of due date we're getting, rather +
@@ -473,7 +479,7 @@ sub Create {
      next unless (defined $args{$type});
         foreach my $watcher ( ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
         my $user = RT::User->new($RT::SystemUser);
-        $user->LoadOrCreateByEmail($watcher) if ($watcher !~ /^\d+$/);
+        $user->LoadOrCreateByEmail($watcher) if ($watcher && $watcher !~ /^\d+$/);
         }
     }
 
@@ -485,7 +491,7 @@ sub Create {
                                    Subject         => $args{'Subject'},
                                    InitialPriority => $args{'InitialPriority'},
                                    FinalPriority   => $args{'FinalPriority'},
-                                   Priority        => $args{'InitialPriority'},
+                                   Priority        => $priority,
                                    Status          => $args{'Status'},
                                    TimeWorked      => $args{'TimeWorked'},
                                    TimeEstimated   => $args{'TimeEstimated'},
@@ -545,6 +551,9 @@ sub Create {
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
         next unless (defined $args{$type});
         foreach my $watcher ( ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
+
+	   # If there is an empty entry in the list, let's get out of here.
+	   next unless $watcher;
 
 	    # we reason that all-digits number must be a principal id, not email
 	    # this is the only way to can add

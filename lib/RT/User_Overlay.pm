@@ -203,13 +203,15 @@ sub Create {
         @_    # get the real argumentlist
     );
 
-
-    $args{'EmailAddress'} = $self->CanonicalizeEmailAddress($args{'EmailAddress'});
-
     #Check the ACL
     unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return ( 0, $self->loc('No permission to create users') );
     }
+
+    $args{'EmailAddress'} = $self->CanonicalizeEmailAddress($args{'EmailAddress'});
+    # if the user doesn't have a name defined, set it to the email address
+    $args{'Name'} = $args{'EmailAddress'} unless ($args{'Name'});
+
 
 
     # Privileged is no longer a column in users
@@ -234,7 +236,9 @@ sub Create {
 
     #TODO Specify some sensible defaults.
 
-    unless ( defined( $args{'Name'} ) ) {
+    unless ( $args{'Name'} ) {
+	use Data::Dumper;
+	$RT::Logger->crit(Dumper \%args);
         return ( 0, $self->loc("Must specify 'Name' attribute") );
     }
 
