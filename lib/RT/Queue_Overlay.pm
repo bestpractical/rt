@@ -301,10 +301,26 @@ sub IsInactiveStatus {
 
 # {{{ sub Create
 
+
+
+
 =head2 Create
 
 Create takes the name of the new queue 
 If you pass the ACL check, it creates the queue and returns its queue id.
+
+=begin testing
+
+my $queue = RT::Queue->new($RT::SystemUser);
+my ($id, $val) = $queue->Create( Name => 'Test1');
+ok($id, $val);
+
+($id, $val) = $queue->Create( Name => '66');
+ok(!$id, $val);
+
+
+=end testing
+
 
 =cut
 
@@ -418,20 +434,14 @@ sub ValidateName {
     my $tempqueue = new RT::Queue($RT::SystemUser);
     $tempqueue->Load($name);
 
-    #If we couldn't load it :)
-    unless ( $tempqueue->id() ) {
-        return (1);
-    }
-
     #If this queue exists, return undef
-    #Avoid the ACL check.
     if ( $tempqueue->Name() ) {
         return (undef);
     }
 
     #If the queue doesn't exist, return 1
     else {
-        return (1);
+        return ($self->SUPER::ValidateName($name));
     }
 
 }
