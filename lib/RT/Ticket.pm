@@ -790,6 +790,17 @@ sub LastUpdatedByObj {
 }
 # }}}
 
+# {{{ sub TimeWorkedAsString
+sub TimeWorkedAsString {
+    my $self=shift;
+    return "-" unless $self->TimeWorked;
+    require Date::Kronos;
+    my $diff=Date::Kronos->new(cal_type=>Unix, value=>($self->TimeWorked*60));
+    $diff->delta(1);
+    return $diff->stringify;
+}
+# }}}
+
 # }}}
 
 
