@@ -5,8 +5,11 @@
 <A HREF="<%$RT::WebPath%>/">You're welcome to login again</a>
 
 
-<%INIT>
+<%PERL>
+if (defined %session) {
 tied(%session)->delete;
-</%INIT>
+}
+$m->abort();
+</%PERL>
 
 

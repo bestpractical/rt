@@ -313,8 +313,11 @@ sub Descendents {
 	if ( $generations == 0 || $generations > 1 ) {
 	    #if we're limiting to some number of generations,
 	    # decrement the number of generations
-	    $generations-- if ( $generations > 1 );
-	    my $kids = $Keyword->Descendents($generations, \%results);
+
+	    my $nextgen = $generations;
+	    $nextgen-- if ( $nextgen > 1 );
+	    
+	    my $kids = $Keyword->Descendents($nextgen, \%results);
 	    
 	    foreach my $kid ( keys %{$kids}) {
 		$results{"$kid"} = $Keyword->Name. "/". $kids->{"$kid"};

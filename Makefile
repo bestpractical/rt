@@ -41,8 +41,12 @@ RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
+
+# RT needs to be able to write to MASON_DATA_PATH and MASON_SESSION_PATH
+# RT will create and chown these directories. Don't just set them to /tmp
 MASON_DATA_PATH		=       $(RT_PATH)/WebRT/data
 MASON_SESSION_PATH	=       $(RT_PATH)/WebRT/sessiondata
+
 RT_LOG_PATH             =       /tmp
 
 # RT_READABLE_DIR_MODE is the mode of directories that are generally meant to be
@@ -211,7 +215,7 @@ fixperms:
 	chgrp $(RTGROUP) $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
-	chmod 0755 $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
+	chmod 0755  $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 	chmod g+s $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
@@ -238,7 +242,7 @@ libs-install:
 	[ -d $(RT_LIB_PATH) ] || mkdir $(RT_LIB_PATH)
 	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
 	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
-	chmod -R 0755 $(RT_LIB_PATH)
+	chmod -R $(RT_READABLE_DIR_MODE) $(RT_LIB_PATH)
 	( cd ./lib; \
 	  $(PERL) Makefile.PL LIB=$(RT_LIB_PATH) \
 	    && make \
