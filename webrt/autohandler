@@ -6,6 +6,7 @@ my %cookies = fetch CGI::Cookie;
 	#TODO if the password is the user's password
 	$session{'CurrentUser'} = RT::CurrentUser->new();
 	unless ($session{'CurrentUser'}->Load($user)) {
+                $session{'CurrentUser'} = undef;
 		&mc_comp("/Elements/Error", Why => "User Unknown");
 		$m->abort;
 	};
