@@ -104,12 +104,12 @@ Set($StoreLoops , undef);
 Set($MaxAttachmentSize , 10000000);
 
 # $TruncateLongAttachments: if this is set to a non-undef value,
-# RT will truncate attachments longer than MaxAttachmentLength.
+# RT will truncate attachments longer than MaxAttachmentSize.
 
 Set($TruncateLongAttachments , undef);
 
 # $DropLongAttachments: if this is set to a non-undef value,
-# RT will silently drop attachments longer than MaxAttachmentLength.
+# RT will silently drop attachments longer than MaxAttachmentSize.
 
 Set($DropLongAttachments , undef);
 
