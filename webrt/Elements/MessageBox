@@ -1,7 +1,4 @@
-<TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %>
-<%$message%>
-<%$signature%>
-</TEXTAREA>
+<TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %><%$message%><%$signature%></TEXTAREA>
 <%INIT>
 
 my ($message);
