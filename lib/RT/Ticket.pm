@@ -7,13 +7,6 @@ package RT::Ticket;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-# {{{ Static sub "URIIsLocal" checks whether an URI is local or not
-sub URIIsLocal {
-    my $URI=shift;
-    # TODO: More thorough check
-    return $URI =~ /^\d+$/;
-}
-# }}} URIIsLocal
 
 # {{{ sub new
 
@@ -790,6 +783,14 @@ sub URI {
     return "fsck.com-rt://$rt::domain/$rt::rtname/ticket/".$self->id;
 }
 
+# }}}
+
+# {{{ Static sub "URIIsLocal" checks whether an URI is local or not
+sub URIIsLocal {
+    my $URI=shift;
+    # TODO: More thorough check
+    return $URI =~ /^\d+$/;
+}
 # }}}
 
 # {{{ sub LinkTo
