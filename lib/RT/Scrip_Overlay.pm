@@ -56,8 +56,6 @@ ok ($ticket2->Priority != '87', "Ticket priority is set right");
 =cut
 
 no warnings qw(redefine);
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O60 A60 B59] /-/-/-/-/-/-/-/-/-/-/
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 
 
 # {{{ sub Create 

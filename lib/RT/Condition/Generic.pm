@@ -63,7 +63,6 @@ sub _Init  {
 	       ApplicableTransTypes => undef,
 	       @_ );
   
-  
   $self->{'Argument'} = $args{'Argument'};
   $self->{'ScripObj'} = $args{'ScripObj'};
   $self->{'TicketObj'} = $args{'TicketObj'};

@@ -11,7 +11,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	29
+RT_VERSION_PATCH	=	30
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -75,6 +75,8 @@ RT_CLI_BIN		=	$(RT_BIN_PATH)/rt
 RT_CLI_ADMIN_BIN	=	$(RT_BIN_PATH)/rtadmin
 # RT's mail gateway
 RT_MAILGATE_BIN		=	$(RT_BIN_PATH)/rt-mailgate
+# RT's cron tool
+RT_CRON_BIN		=	$(RT_BIN_PATH)/rt-crontool
 
 # }}}
 
@@ -84,6 +86,7 @@ SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_MAILGATE_BIN) \
 				$(DESTDIR)/$(RT_CLI_ADMIN_BIN)
 
 BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
+				$(DESTDIR)/$(RT_CRON_BIN) \
 				$(SETGID_BINARIES)
 SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
 
@@ -346,6 +349,7 @@ bin-install:
 		bin/mason_handler.fcgi \
 		bin/mason_handler.svc \
 		bin/webmux.pl \
+		bin/rt-crontool \
 		bin/rt-commit-handler \
 		$(DESTDIR)/$(RT_BIN_PATH)
 	$(PERL) -p -i -e " s'!!PERL!!'"$(PERL)"'g;\

@@ -818,6 +818,7 @@ AddWatcher takes a parameter hash. The keys are as follows:
 Type        One of Requestor, Cc, AdminCc
 
 PrinicpalId The RT::Principal id of the user or group that's being added as a watcher
+
 Email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
@@ -984,14 +985,21 @@ sub DeleteWatcher {
 
     my %args = ( Type => undef,
                  PrincipalId => undef,
+                 Email => undef,
                  @_ );
 
-    unless ($args{'PrincipalId'} ) {
+    unless ($args{'PrincipalId'} || $args{'Email'} ) {
         return(0, $self->loc("No principal specified"));
     }
     my $principal = RT::Principal->new($self->CurrentUser);
-    $principal->Load($args{'PrincipalId'});
+    if ($args{'PrincipalId'} ) {
 
+        $principal->Load($args{'PrincipalId'});
+    } else {
+        my $user = RT::Useer->new($self->CurrentUser);
+        $user->LoadByEmail($args{'Email'});
+        $principal->Load($user->Id);
+    }
     # If we can't find this watcher, we need to bail.
     unless ($principal->Id) {
         return(0, $self->loc("Could not find that principal"));
@@ -1024,7 +1032,7 @@ sub DeleteWatcher {
             }
         }
         else {
-            $RT::Logger->warn( "$self -> DelWatcher got passed a bogus type");
+            $RT::Logger->warn( "$self -> DeleteWatcher got passed a bogus type");
             return ( 0, $self->loc('Error in parameters to Ticket->DelWatcher') );
         }
     }
