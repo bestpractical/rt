@@ -82,7 +82,7 @@ sub PrintRow {
 	$Owner = $Ticket->Owner->UserId;
       }
       else {
-	$Owner = "";
+	$Owner = "Nobody";
       }
       printf "%-${length}.${length}s ", $Owner;
     }

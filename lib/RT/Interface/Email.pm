@@ -15,7 +15,7 @@ sub activate  {
    
     #Set some sensible defaults 
     my $Queue = 1;
-    my $Action = 'Correspond';  
+    my $Action = "correspond";  
   
     while (my $flag = shift @ARGV) {
       if (($flag eq '-v') or ($flag eq '--verbose')) {
@@ -101,7 +101,7 @@ sub activate  {
     #Get us a current user object.
     my $CurrentUser = &GetCurrentUser($head);
 
-    my $MessageId = $head->get->('Message-Id');
+    my $MessageId = $head->get('Message-Id') || "<no-message-id-".time.rand(2000)."\@.$RT::rtname>";
  
     # {{{ Lets check for mail loops of various sorts.
 
@@ -157,7 +157,7 @@ sub activate  {
     # }}}
 
     #Pull apart the subject line
-    $Subject = $head->get('Subject') || "";
+    $Subject = $head->get('Subject') || "[no subject]";
     chomp $Subject;
     $TicketId = &GetTicketId($Subject);
 
@@ -174,12 +174,12 @@ sub activate  {
    	
 	#If the message doesn't reference a ticket #, create a new ticket
 	# {{{ Create a new ticket
-	if ($Action eq 'correspond') {
+	if ($Action =~ /correspond/) {
 	    
 	    #    open a new ticket 
 	    my $Ticket = new RT::Ticket($CurrentUser);
 	    my ($id, $Transaction, $ErrStr) = 
-	      $Ticket->Create ( QueueTag => $Queue,
+	      $Ticket->Create ( Queue => $Queue,
 				Area => $Area,
 				Subject => $Subject,
 				Requestor => $CurrentUser,
@@ -191,7 +191,7 @@ sub activate  {
 	
 	else {
 	    #TODO Return an error message
-	    $RT::Logger->crit("$Action aliases require a TicketId to work on (from $CurrentUser->address) $MessageId");
+	    $RT::Logger->crit("$Action aliases require a TicketId to work on (from ".$CurrentUser->UserObj->EmailAddress.") $MessageId");
 	    return();
 	}
     }
@@ -410,7 +410,7 @@ sub GetCurrentUser  {
   my $Address = $FromObj->address;
 
   #This will apply local address canonicalization rules
-  $Address = &RT::CanonicalizeAddres($Address);
+  $Address = &RT::CanonicalizeAddress($Address);
 
   my $CurrentUser = RT::CurrentUser->new($FromObj->address);
   

@@ -48,7 +48,7 @@ sub Set {
     my %args = ( Format => 'unix',
 		 Value => time,
 		 @_);
-    if ($args{'Value'} == 0) {
+    if (($args{'Value'} =~ /^\d*$/) and ($args{'Value'} == 0)) {
 	$self->{'time'} = 0;
 	return($self->Unix());
     }
