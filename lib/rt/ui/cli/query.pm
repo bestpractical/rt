@@ -123,6 +123,10 @@ sub build_query {
   use RT::Tickets;
   my $Tickets = RT::Tickets->new($CurrentUser);
 
+  # A hack to deal with the default..
+  if ($#ARGV==-1) {
+      push(@ARGV, '-open');
+  }
 
   for ($i=0;$i<=$#ARGV;$i++) {
     if (($ARGV[0] eq '-help')  or 
@@ -205,7 +209,7 @@ sub build_query {
     
     
     
-    #TODO: DEAL WITH ORDERING 
+    #TODO: DEAL WITH ORDERING & DEFAULT ORDERING
     if ($ARGV[$i] eq '-orderby') {
       if ($order_ops){
 	$order_ops .= ", ";
@@ -225,21 +229,6 @@ sub build_query {
   }    
   
   
-  #DEAL WITH DEFAULTS
-  
-  if (!$query_string) {
-    $query_string = "status = \'open\'";
-  }
-  if ($order_ops) {
-    $query_string .= "ORDER BY $order_ops";
-  }
-  else {
-    $query_string .= "ORDER BY serial_num";
-  }
-  if ($reverse) {
-    $query_string .= " DESC";
-  }
-  
   return ($Tickets);
 }
   sub usage {
@@ -255,6 +244,7 @@ sub build_query {
            -owner    <user>  lists all requests owned by <user>
            -unowned          lists unowned requests
            -user <user>      lists all requests made by <user>
+	   -queue <queue>    lists from queue <queue>
            -open             lists only the open requests
            -resolved         lists resolved requests
            -stalled          lists stalled requests
