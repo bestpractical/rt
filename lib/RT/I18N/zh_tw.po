@@ -3324,8 +3324,8 @@ msgstr "RT %1 版，<a href=\"http://bestpractical.com\">Best Practical Solution
 
 #: bin/rt:332
 #. ($RT::VERSION)
-msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
-msgstr "RT %1。版權所有 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgid "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr "RT %1。版權所有 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
 
 #: html/Admin/index.html:25 html/Admin/index.html:26
 msgid "RT Administration"
@@ -3396,8 +3396,8 @@ msgid "RT has proccessed your commands"
 msgstr "RT 已執行您的命令"
 
 #: html/Elements/Login:83
-msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT 版權所有 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;。<br>本軟體依 <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU 通用公共授權第二版</a> 散佈。"
+msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RT 版權所有 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;。<br>本軟體依 <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU 通用公共授權第二版</a> 散佈。"
 
 #: bin/enhanced-mailgate:200
 msgid "RT thinks this message may be a bounce"

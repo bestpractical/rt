@@ -211,7 +211,6 @@ Usual invocation (from MTA):
     rt-mailgate --action (correspond|comment) --queue queuename 
                 --url http://your.rt.server/ 
                 [ --extension (queue|action|ticket)
-                [--jar /tmp/mailgate/cookies.txt]
 
 See C<man rt-mailgate> for more.
 
@@ -231,13 +230,6 @@ Reflects which queue this address handles.
 
 The location of the web server for your RT instance.
 
-
-=item C<--jar>  OPTIONAL
-
-File in which to save RT cookie. If this is given and contains a valid
-cookie, C<rt-mailgate> will present this to the web server instead of
-the username and password. If this is given and doesn't contain a valid
-cookie, the mailgate will log in and store the cookie for next time.
 
 =item C<--extension> OPTIONAL
 

@@ -93,7 +93,6 @@ sub Create {
 
     #lets create our transaction
     my %params = (Ticket    => $args{'Ticket'},
-        TimeTaken => $args{'TimeTaken'},
         Type      => $args{'Type'},
         Data      => $args{'Data'},
         Field     => $args{'Field'},
@@ -103,7 +102,7 @@ sub Create {
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr qw(id Creator Created LastUpdated LastUpdatedBy) {
+    foreach my $attr qw(id Creator Created LastUpdated TimeTaken LastUpdatedBy) {
         $params{$attr} = $args{$attr} if ($args{$attr});
     }
  

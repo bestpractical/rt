@@ -2782,8 +2782,8 @@ msgstr "RT %1 od <a href=\"http://bestpractical.com\">Best Practival Solutions, 
 
 #: bin/rt:332
 #. ($RT::VERSION)
-msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
-msgstr "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgid "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
 
 #: html/Admin/index.html:25
 msgid "RT Administration"
@@ -2851,8 +2851,8 @@ msgid "RT has proccessed your commands"
 msgstr "RT zpracoval vaše příkazy"
 
 #: html/Elements/Login:80
-msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT je &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Šířeno pod <a href=\"http://www.gnu.org/copyleft/gpl.html\">verzí 2 GNU General Public License.</a>"
+msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RT je &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Šířeno pod <a href=\"http://www.gnu.org/copyleft/gpl.html\">verzí 2 GNU General Public License.</a>"
 
 #: bin/enhanced-mailgate:200 bin/rt-mailgate:204
 msgid "RT thinks this message may be a bounce"

@@ -1,6 +1,6 @@
 # BEGIN LICENSE BLOCK
 # 
-# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# Copyright (c) 1996-%1 Jesse Vincent <jesse@bestpractical.com>
 # 
 # (Except where explictly superceded by other copyright notices)
 # 

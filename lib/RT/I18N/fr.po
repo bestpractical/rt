@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 
-# Copyright (c) 2002 Jesse Vincent <jesse@bestpractical.com>
+# Copyright (c) %1 Jesse Vincent <jesse@bestpractical.com>
 #
 "Project-Id-Version: RT 2.1.39\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
@@ -3236,8 +3236,8 @@ msgstr "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions
 
 #: bin/rt:332
 #. ($RT::VERSION)
-msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
-msgstr " RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgid "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr " RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
 
 #: html/Admin/index.html:25 html/Admin/index.html:26
 msgid "RT Administration"
@@ -3312,8 +3312,8 @@ msgid "RT has proccessed your commands"
 msgstr "RT a exécuté vos commandes"
 
 #: html/Elements/Login:83
-msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT est &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Distribué sous <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 de la licence générale GNU.</a>"
+msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RT est &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Distribué sous <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 de la licence générale GNU.</a>"
 
 #: bin/enhanced-mailgate:201
 msgid "RT thinks this message may be a bounce"

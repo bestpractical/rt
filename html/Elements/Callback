@@ -45,6 +45,13 @@ if (!$callbacks) {
     my $path = "/Callbacks/*$Page/$_CallbackName";
     $callbacks = [ $m->interp->resolver->glob_path($path) ];
     @$callbacks = grep !/^\.|~$/, @$callbacks; #skip backup files
+
+    #skip files without a package
+    my $invalid_base = "/Callbacks/$Page/$_CallbackName";
+    @$callbacks = grep !/^$invalid_base$/, @$callbacks;
+
+
+
     $cache{$Page,$_CallbackName} = $callbacks;
 }
 
