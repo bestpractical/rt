@@ -39,7 +39,49 @@
 </form>
 <%INIT>
   
+my $Entries = {};
 my $TicketObj = LoadTicket($id);
+my $CustomFields = $TicketObj->QueueObj->CustomFields();
+
+while (my $CustomField = $CustomFields->Next()) {
+    next unless ($CustomField->Type =~ /Entry$/);
+    $Entries->{$CustomField->Id} = [ map {
+	$_->Content
+    } @{$TicketObj->CustomFieldValues($CustomField->Id)->ItemsArrayRef} ];
+}
+
+# {{{ deal with deleting entered entries
+
+my $added_entry;
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteEntry-(.+)$/) {
+	foreach my $col (keys %$Entries) {
+	    splice(@{$Entries->{$col}}, $1, 1);
+	}
+    }
+    if ($key =~ m/^AddEntry-(.+)$/) {
+	$added_entry->{$1} = $ARGS{$key};
+    }
+}
+# }}}
+
+# {{{ now add back the new entries, if at least one value is given
+my $LastIndex = -1;
+foreach my $col (keys %$Entries) {
+    $LastIndex = $#{$Entries->{$col}}
+	if $#{$Entries->{$col}} > $LastIndex;
+}
+
+if (grep { $_ ne '' } values %$added_entry) {
+    $LastIndex++;
+    foreach my $col (keys %$added_entry) {
+	$Entries->{$col}[$LastIndex] = $added_entry->{$col};
+    }
+}
+# }}}
+
+$ARGS{"Ticket-".$TicketObj->Id."-CustomField-$_-Values"} = $Entries->{$_}
+    foreach keys %{$Entries};
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 my @cf_results = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
@@ -48,7 +90,7 @@ push (@results, @cf_results);
 # TODO: display the results, even if we can't display the ticket
 
 unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
-     Abort("No permission to view ticket");
+    Abort("No permission to view ticket");
 } 
 
 </%INIT>

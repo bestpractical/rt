@@ -32,7 +32,7 @@
 
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Queues/Modify.html" METHOD=POST>
-%if ($Create ) {
+%if ($Create ) { 
 <INPUT TYPE=HIDDEN NAME=id VALUE="new">
 % } else {
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
@@ -42,37 +42,37 @@
 <TR><TD ALIGN=RIGHT>
 <&|/l&>Queue Name</&>: 
 </TD>
-<TD><INPUT name="Name" value="<%$QueueObj->Name%>"></TD>
+<TD><INPUT name="Name" value="<% ($Create) ? "" : $QueueObj->Name %>"></TD>
 </TR><TR>
 <TD ALIGN=RIGHT>
-<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$QueueObj->Description%>" size=60></TD></TR>
+<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size=60></TD></TR>
 <TR>
 <TD ALIGN=RIGHT>
 <&|/l&>Correspondence Address</&>:
 </TD><TD>
-<INPUT name="CorrespondAddress" value="<%$QueueObj->CorrespondAddress%>">
+<INPUT name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>">
 </TD>
 <TD ALIGN=RIGHT>
 
 <&|/l&>Comment Address</&>: </TD><TD>
-<INPUT NAME="CommentAddress" value="<%$QueueObj->CommentAddress%>">
+<INPUT NAME="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>">
 </TD>
 </TR><TR>
 
 <TD ALIGN=RIGHT>
 <&|/l&>Priority starts at</&>: 
-</TD><TD><INPUT NAME="InitialPriority" value="<%$QueueObj->InitialPriority %>">
+</TD><TD><INPUT NAME="InitialPriority" value="<% ($Create) ? "" : $QueueObj->InitialPriority %>">
 </TD>
 <TD ALIGN=RIGHT>
 <&|/l&>Over time, priority moves toward</&>:
-</TD><TD><INPUT NAME="FinalPriority" value="<%$QueueObj->FinalPriority %>">
+</TD><TD><INPUT NAME="FinalPriority" value="<% ($Create) ? "" : $QueueObj->FinalPriority %>">
 </TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT>
 <&|/l&>Requests should be due in</&>:
 </TD><TD>
-<INPUT NAME="DefaultDueIn" VALUE="<%$QueueObj->DefaultDueIn%>"> <&|/l&>days</&>.
+<INPUT NAME="DefaultDueIn" VALUE="<% ($Create) ? "" : $QueueObj->DefaultDueIn%>"> <&|/l&>days</&>.
 </TD>
 </TR>
 <TR>
@@ -94,6 +94,7 @@
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 my  ($title, @results, $Disabled, $EnabledChecked);
+$EnabledChecked = "CHECKED";
 
 if ($Create) {
     $title = loc("Create a queue");
@@ -123,22 +124,21 @@ my @attribs= qw(Description CorrespondAddress CommentAddress Name
 				    Object => $QueueObj, 
 				    ARGSRef => \%ARGS);
 
-}
-
-#we're asking about enabled on the web page but really care about disabled.
-if ($Enabled == 1) {
-    $Disabled = 0;
-}	
-else {
-    $Disabled = 1;
-}
-if  ( ($SetEnabled) and ( $Disabled != $QueueObj->Disabled) ) { 
-    my  ($code, $msg) = $QueueObj->SetDisabled($Disabled);
-    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
-}
-
-unless ($QueueObj->Disabled()) {
-    $EnabledChecked ="CHECKED";
+  #we're asking about enabled on the web page but really care about disabled.
+  if ($Enabled == 1) {
+      $Disabled = 0;
+  }	
+  else {
+      $Disabled = 1;
+  }
+  if  ( ($SetEnabled) and ( $Disabled != $QueueObj->Disabled) ) { 
+      my  ($code, $msg) = $QueueObj->SetDisabled($Disabled);
+      push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+  }
+  
+  if ($QueueObj->Disabled()) {
+      $EnabledChecked ="";
+  }
 }
 </%INIT>
 

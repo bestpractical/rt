@@ -42,15 +42,35 @@ my ($appv_id, $next_appv_id);
 </%PERL>
 <TR>
 <TD>[ <&|/l&>Begin Approval</&> ]</TD>
-<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=create&Queue=<%$Queue%>&WFId=<%$next_appv_id%>"><&|/l&>AddNextState</&></A> ]</TD>
+<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=create&Queue=<%$Queue%>&WFId=<%$next_appv_id%>"><&|/l&>Add Next State</&></A> ]</TD>
 <TD></TD>
 </TR>
 <%PERL>
-if (defined $session{WorkFlow}) {
-    {
-    use Data::Dumper;
-    $RT::Logger->debug(Dumper($session{WorkFlow}));
+if ($TemplateObj->Id and defined(my $content = $TemplateObj->Content)) {
+    my @flow = ();
+    my ($Queue, $User) = ( RT::Queue->new($session{CurrentUser}),
+                           RT::User->new($session{CurrentUser})
+                         );
+    foreach (sort split(/^ENDOFCONTENT\n*/m, $content)) {
+        next unless /^===Create-Ticket: T(.*)$/m;
+        my $stage = { Id => $1 };
+        $stage->{Owner} = $1		if /^Owner: (.*)$/m;
+        $stage->{Queue} = $1		if /^Queue: (.*)$/m;
+        $stage->{AdminCc} = $1		if /^AdminCc: (.*)$/m;
+        $stage->{Description} = $1	if /^Subject: (.*)$/m;
+        $stage->{Type} = ucfirst($1)	if /^Type: (.*)$/m;
+        $stage->{Content} = $1		if /^Content: (.*)$/ms;
+        $User->Load( $stage->{Owner} );
+        $Queue->Load( $stage->{Queue} );
+        $stage->{Owner} = $User->Id;
+        $stage->{Queue} = $Queue->Id;
+        push @flow, $stage;
     }
+    
+    $session{WorkFlow} = [ @flow ];
+}
+
+if (defined $session{WorkFlow}) {
     foreach my $item (@{$session{WorkFlow}}) {
 	$appv_id = $item->{Id};
 	my $cur_level;
@@ -68,21 +88,29 @@ if (defined $session{WorkFlow}) {
 	}
 
 	$level = $cur_level;
-	my $User = new RT::User($session{'CurrentUser'});
+	my $User = RT::User->new($session{'CurrentUser'});
 	$User->Load($item->{Owner});
-	my $TicketQueue = new RT::Queue($session{'CurrentUser'});
+	my $user_name = ($User->Name) ? (" - " . $User->Name) : '';
+
+	my $Group = RT::Principal->new($session{'CurrentUser'});
+	$Group->Load($item->{AdminCc});
+	my $group_name = (eval{$Group->Object}) ? (" - " . $Group->Object->Name) : '';
+
+	my $TicketQueue = RT::Queue->new($session{'CurrentUser'});
 	$TicketQueue->Load($item->{Queue});
-	# DEBUG
-	$RT::Logger->debug("Id:". $item->{Id});
-	$RT::Logger->debug("Description:". $item->{Description});
-	$RT::Logger->debug("Type:". $item->{Type});
-	$RT::Logger->debug("Name:". $User->Name());
-	$RT::Logger->debug("TicketQueue:". $TicketQueue->Name());
+	my $queue_name = $TicketQueue->Name;
+	if ($queue_name eq '___Approvals' and $item->{Type} =~ /approval|code/i) {
+	    $queue_name = '';
+	}
+	else {
+	    $queue_name = " - $queue_name";
+	}
+
 </%PERL>
 <TR>
-<TD><%$indent%>[ <% $item->{Id} %> - <% $item->{Type} %> - <% $User->Name() %> - <% $TicketQueue->Name() %> - <% $item->{Description} %> ]</TD>
-<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=create&Queue=<%$Queue%>&WFId=<%$next_appv_id%>">AddNextState</A> ]</TD>
-<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=delete&Queue=<%$Queue%>&WFId=<%$appv_id%>">Delete</A> ]</TD>
+<TD><%$indent%>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=modify&Queue=<%$Queue%>&WFId=<%$appv_id%>"><% $item->{Id} %></A> - <% loc($item->{Type}) %><% $user_name . $group_name . $queue_name %> - <% $item->{Description} %> ]</TD>
+<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=create&Queue=<%$Queue%>&WFId=<%$next_appv_id%>"><&|/l&>Add Next State</&></A> ]</TD>
+<TD ALIGN=RIGHT>[ <A HREF="<%$URL%>?template=<%$template%>&WFAction=delete&Queue=<%$Queue%>&WFId=<%$appv_id%>"><&|/l&>Delete</&></A> ]</TD>
 </TR>
 %    }
 %}
@@ -92,47 +120,130 @@ if (defined $session{WorkFlow}) {
 <TD></TD>
 </TR>
 <& /Elements/TitleBoxEnd &>
+<& /Elements/TitleBoxStart, title => loc("Approval Details") . ($ARGShref->{WFId} && " #$ARGShref->{WFId}"), color => "#cccc00" &>
 
-<& /Elements/TitleBoxStart, title => loc("Approval Details"), color => "#cccc00" &>
 <TABLE>
 <TR>
-<TD ALIGN=RIGHT><&|/l&>Type</&>:</TD>
-<TD><& /Elements/SelectTicketTypes, Name => 'WFType', Default => $WFType &></TD>
-<TD ALIGN=RIGHT><&|/l&>Queue</&>:</TD>
-<TD><& /Elements/SelectQueue, Name => 'WFQueue' &></TD>
-<TD ALIGN=RIGHT><&|/l&>Owner</&>:</TD>
-<TD><& /Elements/SelectOwner, Name => 'WFOwner',Default => $WFOwner &></TD>
+<TD ALIGN=RIGHT><&|/l&>Condition</&>:</TD>
+<TD COLSPAN=3>
+<% $ARGShref->{WFCondition} || ''%>
+</TD><TD ALIGN=RIGHT>
+<a href="/Search/Listing.html">[
+<&|/l&>Edit Conditions</&>
+]</a></TD></TR>
+<TR>
+<TD ROWSPAN=4 ALIGN=RIGHT><&|/l&>Type</&>:</TD>
+<TD>
+<& .WFType, Default => $ARGShref->{WFType}, Type => (
+    'Approval' # loc
+) &><br>
+</TD>
+<TD ALIGN=LEFT><&|/l&>Owner</&>:
+<& /Elements/SelectOwner, Name => 'WFOwner',Default => $ARGShref->{WFOwner} || undef &></TD>
+<TD ALIGN=RIGHT><&|/l&>AdminCc</&>:</TD>
+<TD>
+<% loc("[_1] [_2] of group [_3]", $depth_str, $role_str, $group_str) %>
+</TD>
 </TR>
+<TR>
+<TD>
+<& .WFType, Default => $ARGShref->{WFType}, Type => (
+    'Ticket' # loc
+) &><br>
+</TD>
+<TD COLSPAN=3 ALIGN=LEFT><&|/l&>Queue</&>:
+<& /Elements/SelectQueue, Name => 'WFQueue', Default => $ARGShref->{WFQueue} || undef &></TD>
+</TR>
+<TR>
+<TD>
+<& .WFType, Default => $ARGShref->{WFType}, Type => (
+    'Alias' # loc
+) &>
+</TD>
+<TD COLSPAN=3 ALIGN=LEFT><&|/l&>Alias for</&>:
+<% $alias_str %>
+</TD></TR>
+<TR><TD COLSPAN=4>
+<& .WFType, Default => $ARGShref->{WFType}, Type => (
+    'Code' # loc
+) &><br>
+</TD></TR>
 <TR>
 <TD ALIGN=RIGHT><&|/l&>Description</&>:</TD>
 <TD COLSPAN=5>
-<input name="WFDescription" VALUE="<%$WFDescription%>" SIZE=80><BR>
-</TD>
-</TR>
+<input name="WFDescription" VALUE="<% $ARGShref->{WFDescription} || ''%>" SIZE=80><BR>
+</TD></TR>
+<TR><TD COLSPAN=5>
+</TD></TR>
+<TR>
 <TD ALIGN=RIGHT VALIGN=TOP>
 <&|/l&>Content</&>:<BR>
 </TD>
 <TD COLSPAN=5>
-<TEXTAREA NAME=WFContent ROWS=10 COLS=80 WRAP=SOFT>
-<%$WFContent%></TEXTAREA>
+<TEXTAREA NAME=WFContent ROWS=5 COLS=80 WRAP=SOFT>
+<%$ARGShref->{WFContent} || ''%></TEXTAREA>
 </TD>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 
+<%def .WFType>
+<INPUT NAME="WFType" TYPE='RADIO' VALUE="<% $Type %>" <% (($Default || 'Approval') eq $Type) && 'CHECKED' %>><% loc($Type) %>
+<%args>
+$Type
+$Default
+</%args>
+</%def>
 <%INIT>
-# don't loc because it must be programmer's fault.
-# TODO: XXX WHAT?
-Abort("URL must be specified") unless $URL;
+my $depth_str = '<SELECT NAME="WFDepth">';
+foreach my $d (0 .. $MaxDepth) {
+    $depth_str .= "<OPTION VALUE='$d' ";
+    $depth_str .= "SELECTED" if $d eq $ARGShref->{WFDepth};
+    $depth_str .= ">";
 
+    # this is almost like a joke. ;)
+    $depth_str .= loc('Grand')  for 2 .. $d;
+    $depth_str .= loc('Parent') if $d;
+    $depth_str .= "</OPTION>";
+}
+$depth_str .= '</SELECT>';
+
+my $role_str = '<SELECT NAME="WFRole">';
+foreach my $r (
+    'Members',            # loc
+    'Admins',             # loc
+) {
+    $role_str .= "<OPTION VALUE='$r' ";
+    $role_str .= "SELECTED" if $r eq $ARGShref->{WFRole};
+    $role_str .= ">" . loc($r). "</OPTION>";
+}
+$role_str .= '</SELECT>';
+
+my $Groups = RT::Groups->new($session{CurrentUser});
+$Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+
+my $group_str = '<SELECT NAME="WFAdminCc">';
+$group_str .= '<OPTION VALUE="">-</OPTION>';
+$group_str .= '<OPTION VALUE="-1">'.loc("(requestor's group)").'</OPTION>';
+while ( my $Group = $Groups->Next()) {
+    $group_str .= "<OPTION VALUE='" . $Group->Id . "' ";
+    $group_str .= "SELECTED" if $Group->Id == $ARGShref->{WFAdminCc};
+    $group_str .= ">" . $Group->Name() . '</OPTION>';
+}
+$group_str .= '</SELECT>';
+
+my $alias_str = '<SELECT NAME="WFAlias">';
+$alias_str .= '<OPTION VALUE="">-</OPTION>';
+foreach my $id (map $_->{Id}, @{$session{WorkFlow}}) {
+    $alias_str .= "<OPTION VALUE='$id' ";
+    $alias_str .= "SELECTED" if $id == $ARGShref->{WFAdminCc};
+    $alias_str .= ">$id</OPTION>";
+}
 </%INIT>
-
 <%ARGS>
-$URL => undef
+$URL
 $Queue => undef
 $template => undef
-$WFType => undef
-$WFQueue => undef
-$WFOwner => undef
-$WFDescription => undef
-$WFContent => undef
+$TemplateObj => undef
+$MaxDepth => 2
+$ARGShref => {}
 </%ARGS>

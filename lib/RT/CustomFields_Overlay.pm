@@ -49,15 +49,6 @@ ok (require RT::CustomFields);
 no warnings qw(redefine);
 
 
-# {{{ sub _Init
-sub _Init { 
-  my $self = shift;
-  $self->{'table'} = "CustomFields";
-  $self->{'primary_key'} = "id";
-  return ( $self->SUPER::_Init(@_));
-}
-# }}}
-
 # {{{ sub LimitToGlobalOrQueue 
 
 =item LimitToGlobalOrQueue QUEUEID

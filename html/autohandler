@@ -24,6 +24,7 @@
 %# END LICENSE BLOCK
 <%INIT>
 local *session;
+Encode::_utf8_on($ARGS{$_}) foreach (keys %ARGS);
 
 if ($ARGS{'Debug'}) {
         require Time::HiRes;
@@ -99,8 +100,8 @@ elsif ($RT::WebExternalAuth and length($ENV{'REMOTE_USER'})) {
 	}
 	else {
 	    delete $session{'CurrentUser'};
-	    $m->comp('/Elements/Login', %ARGS, Error=> loc('Cannot create user: [_1]', $msg));
 	    $m->abort() unless $RT::WebFallbackToInternalAuth;
+	    $m->comp('/Elements/Login', %ARGS, Error=> loc('Cannot create user: [_1]', $msg));
 	}
     }
 
@@ -130,7 +131,7 @@ if (!$session{'CurrentUser'} && defined ($user) && defined ($pass) ){
     unless ($session{'CurrentUser'}->IsPassword($pass)) {
 	delete $session{'CurrentUser'};
 	
-	$m->comp('/Elements/Login', Error => loc('Your username or password is incorrect'), %ARGS);
+	$m->comp('/Elements/Login', %ARGS, Error => loc('Your username or password is incorrect'), %ARGS);
 	$m->abort(); 
     }
 }
@@ -147,7 +148,6 @@ if ( (defined $session{'CurrentUser'}) and
 	$m->abort();
     }
     else {
-	Encode::_utf8_on($ARGS{$_}) foreach (keys %ARGS);
 	$m->call_next(%ARGS);
     }
 }

@@ -44,15 +44,19 @@
 <TD><INPUT name="Name" value="<%$Group->Name%>"></TD>
 </TR><TR>
 <TD ALIGN=RIGHT>
-<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD></TR>
+<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD>
+</TR><TR>
+<TD COLSPAN=2>
+<INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
+<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><BR>
+</TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
 </form>
 <%INIT>
 
-my ($title);
-my (@results);
+my  ($title, @results, $Disabled, $EnabledChecked);
 
 my $Group = RT::Group->new($session{'CurrentUser'});
 
@@ -98,6 +102,22 @@ if ($id) {
     push (@results,@fieldresults);
 }
 
+#we're asking about enabled on the web page but really care about disabled.
+if ($Enabled == 1) {
+    $Disabled = 0;
+}	
+else {
+    $Disabled = 1;
+}
+if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
+    my  ($code, $msg) = $Group->SetDisabled($Disabled);
+    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+}
+
+unless ($Group->Disabled()) {
+    $EnabledChecked ="CHECKED";
+}
+
 
 </%INIT>
 
@@ -106,5 +126,7 @@ if ($id) {
 $Create => undef
 $Name => undef
 $Description => undef
+$SetEnabled => undef
+$Enabled => undef
 $id => undef
 </%ARGS>

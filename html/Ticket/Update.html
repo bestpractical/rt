@@ -26,9 +26,9 @@
 <& /Ticket/Elements/Tabs, Ticket => $Ticket &>
 <& /Elements/TitleBoxStart, title => $title &>
 
-<FORM ACTION="Display.html" NAME="TicketUpdate" 
+<FORM ACTION="/Ticket/Update.html?<%($ARGS{QuoteTransaction}) && "QuoteTransaction=$ARGS{QuoteTransaction}&"%><%($Action) && "Action=$Action"%>" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
-
+<input type="hidden" name="DefaultStatus" value="<% $ARGS{DefaultStatus} %>">
 <font size=-1>
 <TABLE>
 <TR><TD>
@@ -58,7 +58,7 @@
 <& /Elements/SelectStatus, Name=>"Status", Default => $DefaultStatus &>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner, Name=>"Owner", Default => $Ticket->OwnerObj->Id(), QueueObj => $Ticket->QueueObj, TicketObj => $Ticket &>
-<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked"> <&|/l&>minutes</&></td></tr>
+<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked"<% ($ARGS{UpdateTimeWorked}) && " VALUE=\"$ARGS{UpdateTimeWorked}\"" %>> <&|/l&>minutes</&></td></tr>
 <tr><td align=right><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
@@ -69,17 +69,36 @@
 % }
 </select> 
 </td></tr>
-<tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<%$Ticket->Subject()%>"></td></tr>
-<tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60><BR>
+<tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% ($ARGS{UpdateSubject}) ? $ARGS{UpdateSubject} : $Ticket->Subject()%>"></td></tr>
+<tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60<% ($ARGS{UpdateCc}) && " VALUE=\"$ARGS{UpdateCc}\"" %>><BR>
 <i><font size=-2>
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)</&></font></i>
+<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
-<tr><td align=right><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size=60><BR>
+<tr><td align=right><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size=60<% ($ARGS{UpdateBcc}) && " VALUE=\"$ARGS{UpdateBcc}\"" %>><BR>
 <i><font size=-2>
-<&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)</&></font></i>
+<&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
-<tr><td align=right><&|/l&>Attach</&>:</td><td><input name="UpdateAttachment" type="file"></td></tr>
-<tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td><& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
+% if (exists $session{'Attachments'}) {
+<TD>
+<&|/l&>Attached file</&>:
+</TD>
+<TD COLSPAN=5>
+<&|/l&>Check box to delete</&><BR>
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+% } # end of foreach
+</TD>
+</TR>
+<TR>
+% } # end of if
+<tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
+</td></tr>
+<tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
+% if (exists $ARGS{UpdateContent}) {
+<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent} &>
+% } else {
+<& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
+% }
 </td></tr>
 		<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>"><br>
 </table>
@@ -88,7 +107,7 @@
 
 
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit &>
+<& /Elements/Submit, Name => 'SubmitTicket' &>
   </FORM>
 
 
@@ -101,6 +120,8 @@ my $title;
 
 my $Ticket = LoadTicket($id);
 
+
+$DefaultStatus = $ARGS{Status} if exists $ARGS{Status};
 
 if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve ticket #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
@@ -120,11 +141,39 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') ); 
-	
 
-     
-     
 
+# {{{ deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+	delete $session{'Attachments'}{$1};
+    }
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+}
+
+# {{{ store the uploaded attachment in session
+if ($ARGS{'Attach'}) {			# attachment?
+    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+    my $attachment = MakeMIMEEntity(
+        Subject             => "$ARGS{'Attach'}",
+        Body                => "",
+        AttachmentFieldName => 'Attach'
+    );
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
+				$ARGS{'Attach'} => $attachment };
+}
+# }}}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+    delete $session{'Attachments'};
+}
+# }}}
+
+if ( exists $ARGS{SubmitTicket} ) {
+    $m->comp('Display.html', %ARGS);
+    $m->abort();
+}
 </%INIT>
 
 <%ARGS>

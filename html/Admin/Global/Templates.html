@@ -26,7 +26,7 @@
 <& /Admin/Elements/SystemTabs &>
 
 <& /Elements/TitleBoxStart, title => loc('Edit system templates') &>
-<P><A href="Template.html?create=1&Queue=0"><&|/l&>Create a new template</&></A></P>
+<P><A href="Template.html?create=1&Queue=0"><&|/l&>Create a new template</&></A>
 
 <P>
 <&|/l&>Templates</&>:<BR>
@@ -36,7 +36,7 @@
 <LI><A HREF="Template.html?template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<% loc($TemplateObj->Name) %>: <% loc($TemplateObj->Description) %></a><BR>
 
 %}
-<UL>
+</UL>
 </P>
 
 <& /Elements/TitleBoxEnd &>

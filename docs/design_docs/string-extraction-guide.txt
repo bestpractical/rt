@@ -1,5 +1,5 @@
-# $File: //depot/RT/rt/docs/design_docs/string-extraction-guide.txt $ $Author: plasmabal $
-# $Revision: #8 $ $Change: 1004 $ $DateTime: 2002/09/23 09:03:02 $
+# $File: //depot/RT/rt-devel/docs/design_docs/string-extraction-guide.txt $ $Author: autrijus $
+# $Revision: #2 $ $Change: 1431 $ $DateTime: 2002/10/15 17:24:45 $
 
 Run 'p4 edit lib/RT/I18N/zh_tw.pm' and 'perl l10n.pl' to add new
 extractions to the zh_tw.pm.

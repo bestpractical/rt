@@ -221,7 +221,7 @@ sub ParseTicketId {
 
     my $Subject = shift;
 
-    if ( $Subject =~ s/\[$RT::rtname \#(\d+)\]//i ) {
+    if ( $Subject =~ s/\[$RT::rtname \#(\d+)\s*\]//i ) {
         my $id = $1;
         $RT::Logger->debug("Found a ticket ID. It's $id");
         return ($id);

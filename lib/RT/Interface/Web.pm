@@ -246,12 +246,11 @@ sub CreateTicket {
         From                => $ARGS{'From'},
         Cc                  => $ARGS{'Cc'},
         Body                => $ARGS{'Content'},
-#        AttachmentFieldName => 'Attach'
     );
 
     if ($ARGS{'Attachments'}) {
-	$MIMEObj->make_multipart;
-	$MIMEObj->add_part($_) foreach values %{$ARGS{'Attachments'}};
+        $MIMEObj->make_multipart;
+        $MIMEObj->add_part($_) foreach values %{$ARGS{'Attachments'}};
     }
 
     my %create_args = (
@@ -366,17 +365,15 @@ sub ProcessUpdateMessage {
             $args{ARGSRef}->{'UpdateSubject'} = undef;
         }
 
-        my $Message;
-	{
-	    # MIME::Head is not happy in utf-8 domain.
-	    no utf8;
-	    use bytes;
-	    $Message = MakeMIMEEntity(
-                Subject             => $args{ARGSRef}->{'UpdateSubject'},
-                Body                => $args{ARGSRef}->{'UpdateContent'},
-                AttachmentFieldName => 'UpdateAttachment'
-            );
-	}
+        my $Message = MakeMIMEEntity(
+            Subject             => $args{ARGSRef}->{'UpdateSubject'},
+            Body                => $args{ARGSRef}->{'UpdateContent'},
+        );
+
+        if ($args{ARGSRef}->{'UpdateAttachments'}) {
+            $Message->make_multipart;
+            $Message->add_part($_) foreach values %{$args{ARGSRef}->{'UpdateAttachments'}};
+        }
 
         ## TODO: Implement public comments
         if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
@@ -434,12 +431,19 @@ sub MakeMIMEEntity {
     #Make the update content have no 'weird' newlines in it
 
     $args{'Body'} =~ s/\r\n/\n/gs;
-    my $Message = MIME::Entity->build(
-        Subject => $args{'Subject'} || "",
-        From    => $args{'From'},
-        Cc      => $args{'Cc'},
-        Data    => [ $args{'Body'} ]
-    );
+    my $Message;
+    {
+        # MIME::Head is not happy in utf-8 domain.  This only happens
+        # when processing an incoming email (so far observed).
+        no utf8;
+        use bytes;
+        $Message = MIME::Entity->build(
+            Subject => $args{'Subject'} || "",
+            From    => $args{'From'},
+            Cc      => $args{'Cc'},
+            Data    => [ $args{'Body'} ]
+        );
+    }
 
     my $cgi_object = $m->cgi_object;
 
@@ -464,7 +468,7 @@ sub MakeMIMEEntity {
     # Prefer the cached name first over CGI.pm stringification.
     my $filename = $RT::Mason::CGI::Filename;
     $filename = "$filehandle" unless defined($filename);
-		   
+                   
     $filename =~ s#^.*/##;
     $Message->attach(
         Path     => $temp_file,
@@ -473,7 +477,7 @@ sub MakeMIMEEntity {
     );
     close($fh);
 
-    #	}
+    #   }
 
     }
 
@@ -526,6 +530,9 @@ sub ProcessSearchQuery {
     }
     elsif ( $args{ARGS}->{'GotoPage'} eq 'Prev' ) {
         $session{'tickets'}->PrevPage;
+    }
+    elsif ( $args{ARGS}->{'GotoPage'} > 0 ) {
+        $session{'tickets'}->GotoPage( $args{ARGS}->{GotoPage} - 1 );
     }
 
     # }}}
@@ -850,8 +857,8 @@ sub UpdateRecordObject {
             $value = $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute };
 
         } else {
-		next;
-	}
+                next;
+        }
 
             $value =~ s/\r\n/\n/gs;
         if ($value ne $object->$attribute()){

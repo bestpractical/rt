@@ -45,7 +45,17 @@
      }
      $r->content_type( $AttachmentObj->ContentType || 'text/plain');
      $m->clear_buffer();
-     $m->out($AttachmentObj->Content); 
+     {
+         # sometimes binary attachments is converted to utf-8.  this
+         # seems to fix the problem.
+         #
+         # This bug is VERY DIFFICULT to reproduce.  You have to
+         # reload many many times to get a chance to see it.  That's
+         # why I'm not sure if this will fix it for good.
+         my $Content = $AttachmentObj->Content;
+         Encode::_utf8_on($Content);
+         $m->out($Content);
+     }
      $m->abort; 
 </%perl>
 

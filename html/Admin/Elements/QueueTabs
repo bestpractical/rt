@@ -29,7 +29,7 @@
 		 A => { title => loc('Basics'),
   		     	path => "Admin/Queues/Modify.html?id=".$id,
 			   },
-		 B => { title => loc('Watchers'),
+		 B => { title => loc('People'),
 		 	path => "Admin/Queues/People.html?id=".$id,
 		      },
 
@@ -40,14 +40,14 @@
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },
 
-                 E => { title => loc('Custom Fields'),
+                 F => { title => loc('Custom Fields'),
                         path => 'Admin/Queues/CustomFields.html?id='.$id,
                         },
 
-		 F => { title => loc('Group Rights'),
+		 G => { title => loc('Group Rights'),
 			  path => "Admin/Queues/GroupRights.html?id=".$id,
 			},	
-		 G => { title => loc('User Rights'),
+		 H => { title => loc('User Rights'),
 			  path => "Admin/Queues/UserRights.html?id=".$id,
 			},
 

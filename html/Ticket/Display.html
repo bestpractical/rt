@@ -95,9 +95,11 @@ if (defined $ARGS{'Action'}) {
         $ARGS{'UpdateContent'} ne  "-- \n" .
                                 $session{'CurrentUser'}->UserObj->Signature
        ) {
+            $ARGS{UpdateAttachments} = $session{'Attachments'};
 	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
 				 Actions=>\@Actions, 
 				 TicketObj=>$Ticket);
+            delete $session{'Attachments'};
 	}
 #Process status updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);

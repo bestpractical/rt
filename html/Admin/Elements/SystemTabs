@@ -33,10 +33,10 @@
 	       B => { title => loc('Templates'),
 			path => 'Admin/Global/Templates.html',
 		      },
-	        C => { title => loc('Group Rights'),
+	        D => { title => loc('Group Rights'),
 			        path => 'Admin/Global/GroupRights.html',
 		      },
-	        D => { title => loc('User Rights'),
+	        E => { title => loc('User Rights'),
 			        path => 'Admin/Global/UserRights.html',
 		      }
 

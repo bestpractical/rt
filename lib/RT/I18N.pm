@@ -32,6 +32,7 @@ package RT::I18N;
 
 use strict;
 use Locale::Maketext 1.01;
+use Locale::Maketext::Lexicon 0.10;
 use base ('Locale::Maketext::Fuzzy');
 use vars qw( %Lexicon );
 
@@ -43,21 +44,6 @@ use Encode;
 
 use MIME::Entity;
 use MIME::Head;
-
-my @languages;
-
-BEGIN {
-    # Acquire all .po files and iterate them into lexicons
-    @languages = map {
-	m|/(\w+).po$|g
-    } glob(substr(__FILE__, 0, -3) . "/*.po");
-
-    require Locale::Maketext::Lexicon;
-    Locale::Maketext::Lexicon->import({ map {
-	$_ => [Gettext => "$_.po"]
-    } @languages });
-}
-
 
 # I decree that this project's first language is English.
 
@@ -77,6 +63,58 @@ BEGIN {
 );
 # End of lexicon.
 
+=head2 Init
+
+Initializes the lexicons used for localization.
+
+=begin testing
+
+use_ok (RT::I18N);
+ok(RT::I18N->Init);
+
+=end testing
+
+=cut
+
+sub Init {
+    # Acquire all .po files and iterate them into lexicons
+    my @languages = map {
+	m|/(\w+).po$|g
+    } glob(substr(__FILE__, 0, -3) . "/*.po");
+
+    Locale::Maketext::Lexicon->import({ map {
+	$_ => [Gettext => "$_.po"]
+    } @languages });
+
+    # allow user to override lexicons using local/po/...
+    if (-d $RT::LocalLexiconPath) {
+	require File::Find;
+	File::Find::find( {
+	    wanted		=> sub {
+		return unless /(\w+)\.po$/;
+		Locale::Maketext::Lexicon->import({
+		    $1 => [Gettext => $File::Find::name],
+		});
+	    },
+	    follow		=> 1,
+	    untaint		=> 1,
+	    untaint_skip	=> 1,
+	}, $RT::LocalLexiconPath );
+    }
+
+    # Force UTF8 flag on if we're sure it's utf8 already
+    foreach my $lang (@languages) {
+	my $pkg = __PACKAGE__ . "::$lang";
+	next unless $pkg->encoding eq 'utf-8';
+
+	no strict 'refs';
+	my $lexicon = \%{"$pkg\::Lexicon"};
+	Encode::_utf8_on($lexicon->{$_}) for keys %{$lexicon};
+    }
+
+    return 1;
+}
+
 =head2 encoding
 
 Returns the encoding of the current lexicon, as yanked out of __ContentType's "charset" field.
@@ -84,7 +122,6 @@ If it can't find anything, it returns 'ISO-8859-1'
 
 =begin testing
 
-use_ok (RT::I18N);
 ok(my $chinese = RT::I18N->get_handle('zh_tw'));
 ok(UNIVERSAL::can($chinese, 'maketext'));
 ok($chinese->maketext('__Content-Type') =~ /utf-8/i, "Found the utf-8 charset for traditional chinese in the string ".$chinese->maketext('__Content-Type'));
@@ -153,16 +190,6 @@ sub encoding {
     }
 }
 
-}
-
-# Force UTF8 flag on if we're sure it's utf8 already
-foreach my $lang (@languages) {
-    my $pkg = __PACKAGE__ . "::$lang";
-    next unless $pkg->encoding eq 'utf-8';
-
-    no strict 'refs';
-    my $lexicon = \%{"$pkg\::Lexicon"};
-    Encode::_utf8_on($lexicon->{$_}) for keys %{$lexicon};
 }
 
 # {{{ SetMIMEEntityToUTF8

@@ -30,10 +30,10 @@
   my $tabs = { a => { title => loc('Prefs'),
 			  path => 'User/Prefs.html',
 			},
-	       g => { title => loc('Groups'),
+	       g => { title => loc('Delegation Groups'),
 			   path => 'User/Groups/index.html',
 			 },
-	       h => { title => loc('Rights'),
+	       h => { title => loc('Delegation Rights'),
 			   path => 'User/Delegation.html',
 			 },
 	     };

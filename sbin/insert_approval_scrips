@@ -118,12 +118,17 @@ foreach my $link (@{ $links->ItemsArrayRef }) {
 	if ($obj->Type eq 'ticket') {
 	    $obj->Correspond(
 		Content	=> $self->loc("Your request was rejected."),
-		Reopen	=> 0,
 	    );
-	    $obj->Reject;
+	    $obj->SetStatus(
+		Status	=> 'rejected',
+		Force	=> 1,
+	    );
 	}
 	else {
-	    $obj->Delete;
+	    $obj->SetStatus(
+		Status	=> 'deleted',
+		Force	=> 1,
+	    );
 	}
     }
 }
@@ -132,7 +137,10 @@ $links = $self->TicketObj->DependsOn;
 foreach my $link (@{ $links->ItemsArrayRef }) {
     my $obj = $link->TargetObj;
     if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
-	$obj->Delete;
+	$obj->SetStatus(
+	    Status	=> 'deleted',
+	    Force	=> 1,
+	);
     }
 }
 
@@ -161,10 +169,11 @@ foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
 	    "Approver's notes: [_1]", # loc
 	    $self->TicketObj->Transactions->Last->Content,
 	),
-	Reopen	=> 0,
+	_reopen	=> 0,
     );
 }
 
+return 1;
 # ------------------------------------------------------------------- #
 	],
 	Template => 'AdminComment'
@@ -190,7 +199,7 @@ while (my $link = $links->Next) {
     if ($obj->Type eq 'ticket') {
 	$obj->Correspond(
 	    Content	=> $self->loc("Your request has been approved."),
-	    Reopen	=> 0,
+	    _reopen	=> 0,
 	);
     }
     elsif ($obj->Type eq 'code') {
@@ -204,15 +213,21 @@ while (my $link = $links->Next) {
 	}
 
 	if ($rv or !@TOP) {
-	    $obj->Resolve;
+	    $obj->SetStatus(
+		Status	=> 'resolved',
+		Force	=> 1,
+	    );
 	}
 	else {
-	    $obj->Reject;
+	    $obj->SetStatus(
+		Status	=> 'rejected',
+		Force	=> 1,
+	    );
 	}
     }
 }
 
-return(1);
+return 1;
 # ------------------------------------------------------------------- #
 	],
         Template    => 'AdminComment',
@@ -247,12 +262,18 @@ batch-process all your pending approvals.
 	Name        => 'RootApproval',					# loc
 	Description => 'Need approval from system administrator',	# loc
 	Content     => << '.',
+#
 # FLOW CHART FOR THE FOLLOWING CODE:
-#    2 ----> [ ? ] ---> 3 ----> { 4! } ----> end
-#                    `------/
-# 1 and 2 are normal tickets; 3 is a 'code' ticket to be executed.
-
+#  { 1 } --->  2 ----> [ ? ] ---> 3 ----> { 4 } ----> end
+#                        `-----------------------'
+#
+# 1 rejects tickets with all-uppercase subjects.
+# 2 and 3 are approval tickets.
+# The branch point '?' will always go to 3, but could be changed below.
+# 4 is a 'code' ticket that writes to a log.
+#
 ===Create-Ticket: BEGIN
+### BEGIN ### { %X = () } #####################################################
 Subject: BEGIN #{$Tickets{TOP}->Id}
 Queue: ___Approvals
 Type: code
@@ -261,8 +282,8 @@ Content: BEGIN #{$Tickets{TOP}->Id}
 ENDOFCONTENT
 
 ===Create-Ticket: T1
-### ENTRY POINT ### { %X = (); "\nDepends-On: BEGIN\n" } ######################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/} do {
+### ENTRY POINT ### { "\nDepends-On: BEGIN\n" } ###############################
+{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
 ### NEXT STATE ################################################################
     2
 ###############################################################################
@@ -281,9 +302,9 @@ ENDOFCONTENT
 
 ===Create-Ticket: T2
 ### NON-ENTRY POINT ### { $X{$ID} or die } ####################################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/} do {
+{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
 ### NEXT STATE ################################################################
-    (rand 2) ? 3 : 0   # not a bug -- we *want* it always pass to 2 ;)
+    (do{ rand(2) } ? (3) : ()),	# not a bug -- we *want* it always pass to 2 ;)
 ###############################################################################
 }).join($/,map"Requestor: $_",$Tickets{TOP}->Requestors->MemberEmailAddresses)}
 ###############################################################################
@@ -301,7 +322,7 @@ ENDOFCONTENT
 
 ===Create-Ticket: T3
 ### NON-ENTRY POINT ### { $X{$ID} or die } ####################################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/} do {
+{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
 ### NEXT STATE ################################################################
     4
 ###############################################################################
@@ -311,7 +332,7 @@ ENDOFCONTENT
 Subject: System Administrator review for {$TOP->Subject}
 Queue: ___Approvals
 Type: approval
-Owner: root
+AdminCc: root
 Content-Type: text/plain
 Content:
 Please review the request from { $TOP->RequestorAddresses },
@@ -321,7 +342,7 @@ ENDOFCONTENT
 
 ===Create-Ticket: T4
 ### NON-ENTRY POINT ### { $X{$ID} or die } ####################################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/} do {
+{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
 ### NEXT STATE ################################################################
     5
 ###############################################################################
@@ -342,9 +363,8 @@ ENDOFCONTENT
 
 ===Create-Ticket: T5
 ### NON-ENTRY POINT ### { $X{$ID} or die } ####################################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/} do {
+{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
 ### NEXT STATE ################################################################
-    0
 ###############################################################################
 }).join($/,map"Requestor: $_",$Tickets{TOP}->Requestors->MemberEmailAddresses)}
 ###############################################################################
@@ -354,7 +374,10 @@ Queue: ___Approvals
 Type: code
 Content-Type: text/plain
 Content:
-$TOP->SetStatus( 'resolved', 1 ); # forced!
+$TOP->SetStatus(
+    Status	=> 'resolved',
+    Force	=> 1,
+);
 return 1;
 ENDOFCONTENT
 

@@ -47,7 +47,9 @@ contentbg=>"#cccccc" &>
 </TABLE>
 <&/Elements/TitleBoxEnd&>
 % # From mason 1.0.1 forward, this doesn't work. in fact, it breaks things.
-% if (0) {
+% # But on Mason 1.15 it's fixed again, so we still use it.  Remember to
+% # search for 'have your cake and eat it too' in CGI.pm and uncomment it!
+% if (1) {
 % # The code below iterates through everything in the passed in arguments
 % # Preserving all the old parameters
 % # This would be easier, except mason is 'smart' and calls multiple values

@@ -26,7 +26,7 @@
 <ul>
 <li><i>none</i>
 % } else {
-<i>(Check box to delete)</i><br><BR>
+<i><&|/l&>(Check box to delete)</&></i><br><BR>
 <ul>
 % while (my $watcher=$Members->Next) {
 <li>

@@ -28,9 +28,9 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'System' &>
-<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'Queue' &>
-<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'Group' &>
+<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::System' &>
+<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::Queue' &>
+<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::Group' &>
 
 <& /Elements/Submit &>
 </form>

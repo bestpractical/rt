@@ -485,6 +485,12 @@ sub Create {
         foreach my $watcher (
                   ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
 
+	    # we reason that all-digits number must be a principal id, not email
+	    # this is the only way to can add
+	    my $field = 'Email';
+	    $field = 'PrincipalId' if $watcher =~ /^\d+$/;
+	    $RT::Logger->info("Putting principal $watcher as $field");
+
             if ( $type eq 'AdminCc' ) {
 
                 # Note that we're using AddWatcher, rather than _AddWatcher, as we 
@@ -492,12 +498,12 @@ sub Create {
                 # could make themselves adminccs and maybe get ticket rights. that would
                 # be poor
                 my ( $wval, $wmsg ) = $self->AddWatcher( Type   => $type,
-                                                         Email  => $watcher,
+                                                         $field => $watcher,
                                                          Silent => 1 );
             }
             else {
                 my ( $wval, $wmsg ) = $self->_AddWatcher( Type   => $type,
-                                                          Email  => $watcher,
+                                                          $field => $watcher,
                                                           Silent => 1 );
             }
 
@@ -868,7 +874,6 @@ sub _CreateTicketGroups {
     return(1);
     
 }
-
 
 # }}}
 
@@ -1856,6 +1861,9 @@ MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content
 
 if there's no MIMEObj, Content is used to build a MIME::Entity object
 
+If the _reopen attribute is set to a false value, tickets with
+status other than 'new' or 'open' would not be reopened.
+
 
 =cut
 
@@ -2194,9 +2202,19 @@ sub _Links {
     unless ( $self->{"$field$type"} ) {
         $self->{"$field$type"} = new RT::Links( $self->CurrentUser );
         if ( $self->CurrentUserHasRight('ShowTicket') ) {
-
+            # Maybe this ticket is a merged ticket
+            my $Tickets = new RT::Tickets( $self->CurrentUser );
+            # at least to myself
             $self->{"$field$type"}->Limit( FIELD => $field,
-                                           VALUE => $self->URI );
+                                           VALUE => $self->URI,
+                                           ENTRYAGGREGATOR => 'OR' );
+            $Tickets->Limit( FIELD => 'EffectiveId',
+                             VALUE => $self->EffectiveId );
+            while (my $Ticket = $Tickets->Next) {
+                $self->{"$field$type"}->Limit( FIELD => $field,
+                                               VALUE => $Ticket->URI,
+                                               ENTRYAGGREGATOR => 'OR' );
+            }
             $self->{"$field$type"}->Limit( FIELD => 'Type',
                                            VALUE => $type )
               if ($type);
@@ -2729,14 +2747,11 @@ sub ValidateStatus {
 
 # {{{ sub SetStatus
 
-=head2 SetStatus STATUS, FORCE
+=head2 SetStatus STATUS
 
 Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
 
-If FORCE is true, ignore unresolved dependencies and force a status change.
-
-BUG. XXX. TODO:  FORCE as a flag is the WRONG idiom for this. and should never be used. there should be a clean API for this. IT IS NOT OK TO USE IT. IF YOU USE IT IN CODE, YOU WILL GET HURT
-
+Alternatively, you can pass in a list of named parameters (Status => STATUS, Force => FORCE).  If FORCE is true, ignore unresolved dependencies and force a status change.
 
 =begin testing
 
@@ -2763,15 +2778,21 @@ ok(!$id,$msg);
 
 sub SetStatus {
     my $self   = shift;
-    my $status = shift;
-    my $force  = shift;
+    my %args;
+
+    if (@_ == 1) {
+	$args{Status} = shift;
+    }
+    else {
+	%args = (@_);
+    }
 
     #Check ACL
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if (!$force and $self->HasUnresolvedDependencies) {
+    if (!$args{Force} and $self->HasUnresolvedDependencies) {
         return (0, $self->loc('That ticket has unresolved dependencies'));
     }
 
@@ -2797,7 +2818,7 @@ sub SetStatus {
 
     #Actually update the status
    my ($val, $msg)= $self->_Set( Field           => 'Status',
-                          Value           => $status,
+                          Value           => $args{Status},
                           TimeTaken       => 0,
                           TransactionType => 'Status'  );
 
@@ -3289,6 +3310,7 @@ sub _ClassAccessible {
           Creator         => { 'read' => 1,  'auto'  => 1 },
           Told            => { 'read' => 1,  'write' => 1 },
           Resolved        => { 'read' => 1 },
+          Type            => { 'read' => 1 },
           Starts        => { 'read' => 1, 'write' => 1 },
           Started       => { 'read' => 1, 'write' => 1 },
           Due           => { 'read' => 1, 'write' => 1 },

@@ -26,11 +26,14 @@
 <table width="100%">
 % my ($i, $class);
 % my %done;
-% while (my $ticket = $tickets->Next() ) {
+% foreach ($tickets, $group_tickets) {
+%   while (my $ticket = $_->Next() ) {
 %     next if !$ARGS{'ShowDependent'} and $ticket->HasUnresolvedDependencies( Type => 'approval' );
+%     next if $done{$ticket->Id}++; # don't show duplicate tickets
 %     $i++; 
 %     $class = ($i%2) ?  "oddline" : "evenline";
 <& Approve, ticket => $ticket, class => $class &>
+%   }
 % }
 </table>
 
@@ -51,32 +54,37 @@
 <%init>
 my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
 $tickets->LimitOwner( VALUE => $session{'CurrentUser'}->Id );
-$tickets->Limit( FIELD      => 'Type', VALUE => 'Approval' );
 
-if ( $ARGS{'ShowResolved'} ) {
-    $tickets->LimitStatus( VALUE => 'resolved' );
-}
-if ( $ARGS{'ShowRejected'} ) {
-    $tickets->LimitStatus( VALUE => 'rejected' );
-}
-if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'Resolved'} ) ) {
-    $tickets->LimitStatus( VALUE => 'open' );
-    $tickets->LimitStatus( VALUE => 'new' );
-    $tickets->LimitStatus( VALUE => 'stalled' );
-}
-    my $created_before = RT::Date->new( $session{'CurrentUser'} );
-    my $created_after = RT::Date->new( $session{'CurrentUser'} );
+# also consider AdminCcs as potential approvers.
+my $group_tickets = RT::Tickets->new( $session{'CurrentUser'} );
+#$group_tickets->LimitWatcher( OPERATOR => '!=', TYPE => 'AdminCc', VALUE => 'FRANKEN'); #$session{'CurrentUser'}->EmailAddress );
 
+my $created_before = RT::Date->new( $session{'CurrentUser'} );
+my $created_after = RT::Date->new( $session{'CurrentUser'} );
 
-if ( $ARGS{'CreatedBefore'} ) {
-    $created_before->Set( Format => 'unknown', Value => $ARGS{'CreatedBefore'} );
-    $tickets->LimitCreated( OPERATOR => "<=", VALUE => $created_before->ISO );
+foreach ($tickets, $group_tickets) {
+    $_->Limit( FIELD      => 'Type', VALUE => 'approval' );
 
-}
-if ( $ARGS{'CreatedAfter'} ) {
-    $created_after->Set( Format => 'unknown', Value => $ARGS{'CreatedAfter'} );
-    $tickets->LimitCreated( OPERATOR => ">=", VALUE => $created_after->ISO );
+    if ( $ARGS{'ShowResolved'} ) {
+	$_->LimitStatus( VALUE => 'resolved' );
+    }
+    if ( $ARGS{'ShowRejected'} ) {
+	$_->LimitStatus( VALUE => 'rejected' );
+    }
+    if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'Resolved'} ) ) {
+	$_->LimitStatus( VALUE => 'open' );
+	$_->LimitStatus( VALUE => 'new' );
+	$_->LimitStatus( VALUE => 'stalled' );
+    }
 
+    if ( $ARGS{'CreatedBefore'} ) {
+	$created_before->Set( Format => 'unknown', Value => $ARGS{'CreatedBefore'} );
+	$_->LimitCreated( OPERATOR => "<=", VALUE => $created_before->ISO );
+    }
+    if ( $ARGS{'CreatedAfter'} ) {
+	$created_after->Set( Format => 'unknown', Value => $ARGS{'CreatedAfter'} );
+	$_->LimitCreated( OPERATOR => ">=", VALUE => $created_after->ISO );
+    }
 }
 
 </%init>

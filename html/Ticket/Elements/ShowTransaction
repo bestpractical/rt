@@ -53,7 +53,7 @@ unless ($Collapsed) {
       }
       chomp $headers;
       if ($headers) {
-	   # XXX TODO AUTRIJUS: WHAT DOES THIS CODE DO?
+	   # localize the common headers (like 'Subject:'), too.
 	   $headers =~ s/^([^:]+)(?=:)/loc($1)/em;
 	   $headers .= "\n\n";
       }

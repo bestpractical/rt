@@ -29,28 +29,52 @@
 <table width=100%>
 <TR>
 <TD WIDTH="25" bgcolor="#999999">&nbsp;</TD><TD>
-% while (my $link = $approving->Next()) {
-%     next unless ($link->BaseURI->IsLocal());
-%     my $type = $link->BaseObj->Type;
-%     if ($type eq 'approval') {
+<%PERL>
+my %show;
+while (my $link = $approving->Next()) {
+    next unless ($link->BaseURI->IsLocal());
+    my $text = '<a name="' . $link->BaseObj->Id . '">';
+    my $head = '';
+    my $type = $link->BaseObj->Type;
+    my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen);
 
-<& /Elements/TitleBoxStart, title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject) &>
-<& /Ticket/Elements/ShowCustomFields, Ticket => $link->BaseObj &>
+    if ($type eq 'approval') {
+	$head .= $m->scomp('/Elements/TitleBoxStart', title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$text .= $head;
+	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->BaseObj);
+    } elsif ($type eq 'ticket') {
+	$head .= $m->scomp('/Elements/TitleBoxStart', title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$text .= $head;
+	$text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->BaseObj);
+    } else {
+	$head .= $m->scomp('/Elements/TitleBoxStart', title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
+	$text .= $head;
+    }
 
-%     } elsif ($type eq 'ticket') {
+    $text .= $m->scomp('/Ticket/Elements/ShowHistory' , Ticket => $link->BaseObj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0);
 
-<& /Elements/TitleBoxStart, title => loc("Ticket #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject) &>
-<& /Ticket/Elements/ShowSummary, Ticket => $link->BaseObj &>
+    $head .= $m->scomp('/Elements/TitleBoxEnd');
+    $text .= $m->scomp('/Elements/TitleBoxEnd');
+    $text .= $dep;
+    $text .= '</a>';
+    $show{$link->BaseObj->Id} = {
+	text => $text,
+	head => $head,
+    };
+}
 
-%     } else {
-<& /Elements/TitleBoxStart, title => loc("#[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject) &>
-%     }
+my $refer;
+foreach my $id (sort keys %show) {
+    if ($_seen->{$id}++) {
+	$refer .= "<a href='#$id'>" . $show{$id}{head} . "</a>";
+	next;
+    }
 
-<& /Ticket/Elements/ShowHistory , Ticket => $link->BaseObj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
-<& /Elements/TitleBoxEnd &>
+    $m->print($show{$id}{text});
+}
+$m->print($refer);
 
-<& ShowDependency, Ticket => $link->BaseObj &>
-% }
+</%PERL>
 </TD>
 </TR>
 </TABLE>
@@ -58,4 +82,5 @@
 % }
 <%ARGS>
 $Ticket
+$_seen => {}
 </%ARGS>

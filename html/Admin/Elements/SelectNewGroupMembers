@@ -22,14 +22,17 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<SELECT MULTIPLE NAME="<%$Name%>"  SIZE=10>
-<OPTION VALUE=""><b><&|/l&>Users</&></b></OPTION>
+<b><&|/l&>Users</&></b>
+<SELECT MULTIPLE NAME="<%$Name%>Users"  SIZE=10>
 %while (my $user = $users->Next) {
-<OPTION VALUE="User-<%$user->id%>">- <%$user->Name%></OPTION>
+<OPTION VALUE="User-<%$user->id%>"><%$user->Name%></OPTION>
 %}
-<OPTION VALUE=""><b><&|/l&>Groups</&></b></OPTION>
+</SELECT>
+<br>
+<b><&|/l&>Groups</&></b>
+<SELECT MULTIPLE NAME="<%$Name%>Groups"  SIZE=10>
 %while (my $group = $groups->Next) {
-<OPTION VALUE="Group-<%$group->id%>">- <%$group->Name%></OPTION>
+<OPTION VALUE="Group-<%$group->id%>"><%$group->Name%></OPTION>
 %}
 </SELECT>
 
@@ -41,10 +44,14 @@ $users->Limit(FIELD => 'id', VALUE => $RT::Nobody->id, OPERATOR => '!=' );
 $users->LimitToPrivileged();
 
 my $groups = new RT::Groups($session{'CurrentUser'});
+
+# self-recursive group membership considered harmful!
+$groups->Limit(FIELD => 'id', VALUE => $Group->id, OPERATOR => '!=' );
 $groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
 
 
 </%INIT>
 <%ARGS>
 $Name => 'Users'
+$Group
 </%ARGS>

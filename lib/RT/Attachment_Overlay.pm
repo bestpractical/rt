@@ -244,7 +244,8 @@ before returning it.
 sub Content {
   my $self = shift;
   if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
-      return $self->_Value('Content');
+      return $self->_Value('Content',
+                           decode_utf8 => ($self->ContentType =~ m/^text/i || 0 ) );
   } elsif ( $self->ContentEncoding eq 'base64' ) {
       return MIME::Base64::decode_base64($self->_Value('Content'));
   } else {
@@ -418,7 +419,7 @@ sub _Value  {
     #if the field is public, return it.
     if ($self->_Accessible($field, 'public')) {
 	#$RT::Logger->debug("Skipping ACL check for $field\n");
-	return($self->__Value($field));
+	return($self->__Value($field, @_));
 	
     }
     
@@ -426,7 +427,7 @@ sub _Value  {
     elsif ( (($self->TransactionObj->CurrentUserHasRight('ShowTicketComments')) and
 	     ($self->TransactionObj->Type eq 'Comment') )  or
 	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
-		return($self->__Value($field));
+		return($self->__Value($field, @_));
     }
     #if they ain't got rights to see, don't let em
     else {

@@ -25,6 +25,7 @@
 
 package RT;
 use strict;
+use RT::I18N;
 use RT::CurrentUser;
 use RT::System;
 
@@ -57,6 +58,7 @@ sub LoadConfig {
     # localizing here would suck.
     #require $config_file || die $self->loc("Couldn't load RT config file '[_1]' [_2]", $config_file, $@);
     require $config_file || die ("Couldn't load RT config file  $config_file $@");
+    RT::I18N->Init;
 }
 
 =item Init
@@ -146,6 +148,10 @@ sub InitLogging {
 		       min_level => $RT::LogToSyslog,
 			 callbacks => sub { my %p = @_;
                                 my ($package, $filename, $line) = caller(5);
+
+				# syswrite() cannot take utf8; turn it off here.
+				Encode::_utf8_off($p{message});
+
 				if ($p{level} eq 'debug') {
 
                                 return "$p{message}\n" }

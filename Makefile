@@ -31,7 +31,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	43
+RT_VERSION_PATCH	=	44
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -67,6 +67,7 @@ RT_BIN_PATH		=	`$(GETPARAM) "BinPath"`
 RT_SBIN_PATH		=	`$(GETPARAM) "SbinPath"`
 RT_LIB_PATH		=	`$(GETPARAM) "LibPath"`
 RT_MAN_PATH		=	`$(GETPARAM) "ManPath"`
+LOCAL_LEXICON_PATH	=	`$(GETPARAM) "LocalLexiconPath"`
 MASON_HTML_PATH		=	`$(GETPARAM) "MasonComponentRoot"`
 MASON_LOCAL_HTML_PATH	=	`$(GETPARAM) "MasonLocalComponentRoot"`
 MASON_DATA_PATH		=	`$(GETPARAM) "MasonDataDir"`
@@ -237,7 +238,8 @@ fixperms:
 
 	# Make the web ui readable by all. 
 	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(MASON_HTML_PATH) \
-					$(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+					$(DESTDIR)/$(MASON_LOCAL_HTML_PATH) \
+					$(DESTDIR)/$(LOCAL_LEXICON_PATH)
 	chown -R $(LIBS_OWNER) 	$(DESTDIR)/$(MASON_HTML_PATH) \
 				$(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
 	chgrp -R $(LIBS_GROUP) 	$(DESTDIR)/$(MASON_HTML_PATH) \
@@ -264,6 +266,7 @@ dirs:
 	mkdir -p $(DESTDIR)/$(MASON_SESSION_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+	mkdir -p $(DESTDIR)/$(LOCAL_LEXICON_PATH)
 # }}}
 
 install: config-install dirs files-install initialize-database fixperms

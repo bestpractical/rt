@@ -43,13 +43,13 @@
 <TD><&|/l&>Status</&>:
 </TD>
 <TD>
-<& /Elements/SelectStatus, Name => "Status", Default=> 'new' &>
+<& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new' &>
 </TD>
 <TD>
 <&|/l&>Owner</&>:
 </TD>
 <TD>
-<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj &>
+<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||undef &>
 </TD>
 </TR>
 <TR>
@@ -57,7 +57,7 @@
 <&|/l&>Requestors</&>:
 </TD>
 <TD COLSPAN=5>
-<INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=40>
+<INPUT Name="Requestors" Value="<% ($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress %>" SIZE=40>
 </TD>
 </TR>
 <TR>
@@ -65,7 +65,9 @@
 <&|/l&>Cc</&>:
 </TD>
 <TD COLSPAN=5>
- <INPUT NAME="Cc" SIZE=40>
+<INPUT NAME="Cc" SIZE=40<% $ARGS{Cc} && " VALUE=\"$ARGS{Cc}\""%>><BR>
+<i><font size=-2>
+<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
 </TD>
 </TR>
 <TR>
@@ -73,7 +75,9 @@
 <&|/l&>Admin Cc</&>:
 </TD>
 <TD COLSPAN=5>
- <INPUT NAME="AdminCc" SIZE=40>
+<INPUT NAME="AdminCc" SIZE=40<% $ARGS{AdminCc} && " VALUE=\"$ARGS{AdminCc}\""%>><BR>
+<i><font size=-2>
+<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
 </TD>
 </TR>
 <TR>
@@ -81,14 +85,24 @@
 <&|/l&>Subject</&>:
 </TD>
 <TD COLSPAN=5>
-<INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
+<INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<%$ARGS{Subject} || ''%>">
 </TD>
 </TR>
+% my @entry_fields;
 % while( my $cf = $CFs->Next() ) {
+%   if ($cf->Type =~ /Entry$/) {
+%     push @entry_fields, $cf;
+%     next;
+%   }
 <TR><TD ALIGN=LEFT VALIGN="top"><%$cf->Name%>:</TD>
 <TD><% $cf->Description && '<i>'.$cf->Description . '</i><br>'%> <& /Ticket/Elements/EditCustomFieldValues, Name => 'CustomField-'.$cf->Id, CustomField => $cf &>
 </TD>
 </TR>
+% }
+% if (@entry_fields) {
+<TR><TD COLSPAN=6>
+<& /Ticket/Elements/EditCustomFieldEntries, Prefix => 'AddEntry-', CustomFields => \@entry_fields, TempValues => $Entries &>
+</TD></TR>
 % }
 <TR>
 % if (exists $session{'Attachments'}) {
@@ -99,11 +113,11 @@
 <&|/l&>Check box to delete</&><BR>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
 <input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
-% }
+% } # end of foreach
 </TD>
 </TR>
 <TR>
-% }
+% } # end of if
 <TD>
 <&|/l&>Attach file</&>:
 </TD>
@@ -115,7 +129,11 @@
 <TR>
 <TD COLSPAN=6>
 <&|/l&>Describe the issue below</&>:<br>
+% if (exists $ARGS{Content}) {
+<& /Elements/MessageBox, Default => $ARGS{Content} &>
+% } else {
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+%}
 
 <BR>
 </TD>
@@ -145,10 +163,10 @@
 		title_class=> 'inverse',  
 		color => "#993333" &>
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD><TD><input size=3 name="InitialPriority" value="<%$QueueObj->InitialPriority%>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<%$QueueObj->FinalPriority%>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><input size=3 name="TimeWorked"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><input size=3 name="TimeLeft"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD><TD><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " VALUE=\"$ARGS{TimeWorked}\""  %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " VALUE=\"$ARGS{TimeLeft}\"" %>></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>
@@ -164,8 +182,8 @@
 		 color => "#663366" &>
 
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD><TD><input size=10 name="Starts"<% $ARGS{Starts} && " VALUE=\"$ARGS{Starts}\"" %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Due</&>:</TD><TD><input size=10 name="Due"<% $ARGS{Due} && " VALUE=\"$ARGS{Due}\"" %>></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>
@@ -175,12 +193,12 @@
 
 <i><&|/l&>(Enter ticket ids or URLs, seperated with spaces)</&></i>
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Depends on</&></TD><TD><input size=10 name="new-DependsOn"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Depended on by</&></TD><TD><input size=10 name="DependsOn-new"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Parents</&></TD><TD><input size=10 name="new-MemberOf"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Children</&></TD><TD><input size=10 name="MemberOf-new"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Refers to</&></TD><TD><input size=10 name="new-RefersTo"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Referred to by</&></TD><TD><input size=10 name="RefersTo-new"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Depends on</&></TD><TD><input size=10 name="new-DependsOn"<% $ARGS{'new-DependsOn'} && " VALUE=\"$ARGS{'new-DependsOn'}\""%>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Depended on by</&></TD><TD><input size=10 name="DependsOn-new"<% $ARGS{'DependsOn-new'} && " VALUE=\"$ARGS{'DependsOn-new'}\"" %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Parents</&></TD><TD><input size=10 name="new-MemberOf"<% $ARGS{'new-MemberOf'} && " VALUE=\"$ARGS{'new-MemberOf'}\"" %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Children</&></TD><TD><input size=10 name="MemberOf-new" <% $ARGS{'MemberOf-new'} && " VALUE=\"$ARGS{'MemberOf-new'}\"" %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Refers to</&></TD><TD><input size=10 name="new-RefersTo"<% $ARGS{'new-RefersTo'} && " VALUE=\"$ARGS{'new-MemberOf'}\"" %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Referred to by</&></TD><TD><input size=10 name="RefersTo-new"<% $ARGS{'RefersTo-new'} && " VALUE=\"$ARGS{'RefersTo-new'}\"" %>></TD></TR>
 
 
 </TABLE>
@@ -208,11 +226,8 @@ foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
 	delete $session{'Attachments'}{$1};
     }
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
-
-# delete temporary storage entry to make WebUI clean if no attachmens left
-delete $session{'Attachments'} unless scalar keys %{$session{'Attachments'}};
-# }}}
 
 # {{{ store the uploaded attachment in session
 if ($ARGS{'Attach'}) {			# attachment?
@@ -222,12 +237,57 @@ if ($ARGS{'Attach'}) {			# attachment?
         Body                => "",
         AttachmentFieldName => 'Attach'
     );
-    $session{'Attachments'} = { %{$session{'Attachments'}},
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
 				$ARGS{'Attach'} => $attachment };
 }
 # }}}
 
-if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
+# {{{ deal with deleting entered entries
+my $Entries = $session{'Entries'} || {};
+my $added_entry;
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteEntry-(.+)$/) {
+	foreach my $col (keys %$Entries) {
+	    splice(@{$Entries->{$col}}, $1, 1);
+	}
+    }
+    if ($key =~ m/^AddEntry-(.+)$/) {
+	$added_entry->{$1} = $ARGS{$key};
+    }
+}
+# }}}
+
+# {{{ now add back the new entries, if at least one value is given
+my $LastIndex = -1;
+foreach my $col (keys %$Entries) {
+    $LastIndex = $#{$Entries->{$col}}
+	if $#{$Entries->{$col}} > $LastIndex;
+}
+
+if (grep { $_ ne '' } values %$added_entry) {
+    $LastIndex++;
+    foreach my $col (keys %$added_entry) {
+	$Entries->{$col}[$LastIndex] = $added_entry->{$col};
+    }
+}
+# }}}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
+    delete $session{'Attachments'};
+}
+
+if (keys %{$Entries} and $ARGS{'id'} eq 'new') {
+    $ARGS{"CustomField-$_"} = $Entries->{$_} foreach keys %{$Entries};
+    $session{'Entries'} = { %{$Entries} };
+}
+else {
+    delete $session{'Entries'};
+}
+
+# }}}
+
+if ((!exists $ARGS{'AddMoreAttach'}) && (!exists $ARGS{'AddMoreEntry'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
     $m->comp('Display.html', %ARGS);
     $m->abort();
 }

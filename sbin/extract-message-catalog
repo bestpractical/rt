@@ -201,7 +201,7 @@ sub update {
         next if !length( $Lexicon{$_} ) and $is_english;
 
         my %seen;
-        $out .= $Header{$_};
+        $out .= $Header{$_} if exists $Header{$_};
         if ( $f && $f !~ /^\s+$/ ) {
 
             $out .= "#: $f\n";

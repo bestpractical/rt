@@ -71,7 +71,7 @@
 </UL>
 </TD>
 <TD VALIGN=TOP>
-<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers" &>
+<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group &>
 </TD>
 </TR>
 </TABLE>
@@ -98,7 +98,10 @@ if ($key =~ /^DeleteMember-(\d+)$/) {
 }
 
 # Make sure AddMembers is always an array
-my @AddMembers = (ref $AddMembers eq 'ARRAY') ? @{$AddMembers} : ($AddMembers);
+my @AddMembers = (
+    ((ref $AddMembersUsers eq 'ARRAY') ? @{$AddMembersUsers} : ($AddMembersUsers)),
+    ((ref $AddMembersGroups eq 'ARRAY') ? @{$AddMembersGroups} : ($AddMembersGroups)),
+);
 
 foreach my $member (@AddMembers) {
     next unless ($member);
@@ -124,6 +127,7 @@ foreach my $member (@AddMembers) {
 </%INIT>
 
 <%ARGS>
-$AddMembers => undef
+$AddMembersUsers  => undef
+$AddMembersGroups => undef
 $id => undef
 </%ARGS>

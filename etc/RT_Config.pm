@@ -44,6 +44,7 @@ $LibPath = $BasePath . "lib/";
 $EtcPath = $BasePath . "etc/";
 $ManPath = $BasePath . "man/";
 $VarPath = $BasePath . "var/";
+$LocalLexiconPath = $BasePath . "local/po/";
 
 
 $WebUser = 'www';

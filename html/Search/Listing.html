@@ -61,8 +61,10 @@ HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->Free
 <%PERL>
 
 my $i;
+my $ticketcount;
       
 $session{'tickets'}->RedoSearch();
+$ticketcount = $session{tickets}->Count();
 while (my $Ticket = $session{'tickets'}->Next) {
  $i++;
  if ($i % 2) {
@@ -88,19 +90,35 @@ while (my $Ticket = $session{'tickets'}->Next) {
 </TABLE>
 
 <div align=center>
+%if ($ticketcount > $session{'tickets_rows_per_page'}) {
 <font size=2>
 <a href="Listing.html?GotoPage=1"><&|/l&>First page</&></a>
 &nbsp;&nbsp;
+%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
 <a href="Listing.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
 &nbsp;&nbsp;
+%  }                                                                           
+%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
 <a href="Listing.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+%  }
 %#&nbsp;&nbsp;<form method=get action="Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
 </font>
+%}
 </div>
 % if ($session{'tickets'}->Count()) { 
-<div align=right>
+<!--<div align=right>-->
+<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
+<tr>
+<td align=left>
+<&|/l, $ticketcount &>%1 result(s) found</&>
+</td>
+<td align=right>
+
 <a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a>
-</div>
+<!--</div>-->
+</td>
+</tr>
+</table>
 % }
 <HR>
 

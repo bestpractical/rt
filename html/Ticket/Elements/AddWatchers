@@ -39,6 +39,17 @@
 % }
 % }
 
+% if ($Groups->Count) {
+<tr><td>
+<&|/l&>Type</&>
+</td><td>
+<&|/l&>Group</&>
+</td></tr>
+% while (my $g = $Groups->Next ) {
+<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-".$g->PrincipalId, Scope => 'queue' &></td><td><%$g->Name%> (<%$g->Description%>)</td></tr>
+% }
+% }
+
 <tr><td>
 <&|/l&>Type</&>
 </td><td>
@@ -62,13 +73,17 @@
 </table>
 
 <%INIT>
-my ($msg, $Users);
+my ($msg, $Users, $Groups);
 if ($UserString) {
     $Users = RT::Users->new($session{'CurrentUser'});
     $Users->Limit(FIELD => $UserField,
                  VALUE => $UserString,
                  OPERATOR => $UserOp);
      }
+
+$Groups = new RT::Groups($session{'CurrentUser'});
+$Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+
 </%INIT>
 
 <%ARGS>

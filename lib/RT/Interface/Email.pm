@@ -41,8 +41,7 @@ BEGIN {
 
     # your exported package globals go here,
     # as well as any optionally exported functions
-    @EXPORT_OK = qw(&CleanEnv &GetCurrentUser
-      &MailError &debug &loc);
+    @EXPORT_OK = qw(&CleanEnv &GetCurrentUser &MailError &debug);
 }
 
 =head1 NAME

@@ -23,6 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <%PERL>
+my $rows = 25;
 my $people = $Ticket->Requestors->MembersObj;
 while (my $member=$people->Next) {
 my $requestor = $member->MemberObj->Object;
@@ -31,7 +32,7 @@ my $tickets = RT::Tickets->new($session{'CurrentUser'});
 $tickets->LimitWatcher(TYPE => 'Requestor', VALUE => $member->MemberId ); # the principal id
 $tickets->LimitStatus( VALUE => 'open');
 $tickets->LimitStatus( VALUE => 'new');
-$tickets->RowsPerPage(25);
+$tickets->RowsPerPage($rows);
 $tickets->OrderBy(FIELD => 'Priority',
 		  ORDER => 'DESC');
 </%PERL>
@@ -43,7 +44,7 @@ $tickets->OrderBy(FIELD => 'Priority',
 <&|/l&>Comments about this user</&>:<BR>
 <B><% ($requestor->Comments || loc("No comment entered about this user")) %></B><BR>
 
-<&|/l&>This user's 25 highest priority tickets</&>:<BR>
+<&|/l, $rows &>This user's [_1] highest priority tickets</&>:<BR>
 <UL>
 %while (my $w=$tickets->Next) {
 <LI><%$w->Id%>: <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$w->id%>"><%$w->Subject%></a> (<%$w->Status%>)

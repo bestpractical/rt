@@ -28,11 +28,6 @@
 %}
 </SELECT>
 
-<%INIT>
-# Approval # loc
-# Code # loc
-</%INIT>
-
 <%ARGS>
 $Name => 'TickType'
 $Default => undef

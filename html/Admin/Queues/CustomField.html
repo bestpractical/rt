@@ -36,7 +36,7 @@
 <&|/l&>Description</&>: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
 <&|/l&>Type</&>: <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
 <BR>
-% if ($CustomFieldObj->Id) {
+% if ($CustomFieldObj->Id and $CustomFieldObj->Type =~ /Select/) {
 <H2><&|/l&>Values</&></H2>
 <BR>
 <font size=-1>
@@ -65,9 +65,10 @@ if (! $CustomField ) {
                                                  Name => $Name, 
                                                  Type => $Type,
                                                  Description => $Description,
-                                                 SortOrder => $SortOrder);
+						 );
       Abort(loc("Could not create CustomField", $msg)) unless ($val);
      push @results, $msg;
+     $CustomFieldObj->SetSortOrder($CustomFieldObj->id);
      $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
     } else {
        $CustomFieldObj->Load($CustomField) || Abort(loc('No CustomField'));
@@ -89,7 +90,6 @@ $id = $CustomFieldObj->id;
 $Queue => undef
 $CustomField => undef
 $Type => undef
-$SortOrder => undef
 $Description => undef
 $Name => undef
 </%ARGS>

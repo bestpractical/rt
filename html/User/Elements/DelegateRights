@@ -26,11 +26,11 @@
 <%perl>
 
 foreach my $object (keys %{$objects->{$ObjectType}}) {
-unless ($ObjectType eq 'System') {
+unless ($ObjectType eq 'RT::System') {
 my $object_obj = @{$objects->{$ObjectType}{$object}}[0]->Object;
 
 </%perl>
-<h3><% loc($object_obj->Name) %></h3>
+<h3><% $object_obj->Name %></h3>
 % }
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
         <th width=15%><&|/l&>Personal groups:</&></th>
@@ -69,7 +69,7 @@ while ( my $delegation = $delegations->Next) {
 </table>
 <%init>
 
-my $sectionheading = loc("[_1] rights", loc($ObjectType));
+my $sectionheading = loc("[_1] rights", loc($ObjectType =~ /^RT::(.*)$/));
 # 'System' # loc
 # 'Group'  # loc
 # 'Queue'  # loc

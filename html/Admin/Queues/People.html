@@ -51,13 +51,17 @@
 </TD>
 <TD VALIGN=TOP>
 <h3><&|/l&>New watchers</&></h3>
+
 <&|/l&>Find people whose</&><BR>
 <& /Elements/SelectUsers &>
 <input type=submit name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
 <BR>
-<&|/l&>Add new watchers</&>:<br>
 
+<&|/l&>Add new watchers</&>:<br>
+<p>
+<b><&|/l&>Users</&></b>
 % if ($msg) {
+<br>
 <i><%$msg%></i>
 % } elsif ($Users) {
 <ul>
@@ -68,6 +72,7 @@
 % }
 </ul>
 % }
+
 
 </TD>
 </TR>
@@ -82,7 +87,7 @@
 
 <%INIT>
 
-my ($field, @results, $User, $Users, $watcher, $msg);
+my ($field, @results, $User, $Users, $Groups, $watcher, $msg);
 
 # {{{ Load the queue
 #If we get handed two ids, mason will make them an array. bleck.
@@ -133,6 +138,7 @@ else {
                  VALUE => $ARGS{'UserString'},
                  OPERATOR => $ARGS{'UserOp'});
      }
+
 </%INIT>
 
 <%ARGS>

@@ -36,7 +36,8 @@
 <a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->MemberObj->Object->id%>">
 <%$watcher->MemberObj->Object->Name%></a>
 %} else {
-<%$watcher->MemberObj->Object->Name%>
+<a href="<%$RT::WebPath%>/Admin/Groups/Modify.html?id=<%$watcher->MemberObj->Object->id%>">
+<%$watcher->MemberObj->Object->Name%></a>
 %}
 % }
 </ul>
