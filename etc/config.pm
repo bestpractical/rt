@@ -6,7 +6,21 @@
 package RT;
 
 # Different "tunable" configuration options should be in this hash:
-%SitePolicy=();
+%SitePolicy=
+    (
+     QueueListingCols => 
+      [
+       { Header     => 'Ticket Id',
+	 TicketLink => 1,
+	 TicketAttribute => 'Id'
+       }
+      ],
+      [
+       { Header     => 'Subject',
+	 TicketAttribute => 'Subject'
+       }
+      ]
+     );
 
 # these modes don't do much right now...i had to hard code them in because 
 # perl ws being nasty about the leading 0  check RT_Content.pl for hacking
