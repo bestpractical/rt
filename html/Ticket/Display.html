@@ -119,6 +119,8 @@ if ($ARGS{'id'} eq 'new') {
     push (@Actions, @BasicActions, @results);
 }
 
+
+
 $m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
 	 TicketObj => \$TicketObj, Tickets => \$Tickets, ARGSRef => \%ARGS);
 

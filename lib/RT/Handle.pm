@@ -60,7 +60,6 @@ Takes nothing. Calls SUPER::Connect with the needed args
 sub Connect {
     my $self = shift;
 
-
     if ($RT::DatabaseType eq 'Oracle') {
         $ENV{'NLS_LANG'} = ".UTF8";
     }

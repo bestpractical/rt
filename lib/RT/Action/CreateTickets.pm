@@ -223,9 +223,9 @@ my $approvals =
 '===Create-Ticket: approval
 Queue: Approvals
 Type: Approval
-AdminCc: root@localhost
+AdminCc: {join ("\nAdminCc: ",@admins) }
 Depended-On-By: TOP
-Refers-To: TOP
+Refers-To:  TOP 
 Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
 Content-Type: text/plain

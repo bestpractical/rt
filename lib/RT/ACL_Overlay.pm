@@ -119,11 +119,11 @@ sub LimitToPrincipal {
     # lead me to start to suspect that we really want users and groups
     # to just be the same table. or _maybe_ that we want an object db.
     my $princ = RT::Principal->new($RT::SystemUser);
-    $princ->Load($args{'PrincipalId'});
+    $princ->Load($args{'Id'});
     if ($princ->PrincipalType eq 'User') {
     my $group = RT::Group->new($RT::SystemUser);
         $group->LoadACLEquivalenceGroup($princ);
-        $args{'PrincipalId'} = $group->PrincipalId;
+        $args{'Id'} = $group->PrincipalId;
     }
         $self->Limit( FIELD           => 'PrincipalId',
                       OPERATOR        => '=',

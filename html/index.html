@@ -90,7 +90,7 @@ if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 
    if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        $m->comp("/Ticket/Display.html", id=> $1);
+        $m->comp("/Ticket/Display.html" , id=> $1);
         return();
     }
 
