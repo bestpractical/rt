@@ -1,4 +1,5 @@
 $Header$
+
 RT is (c) 1996,1997 by Jesse Vincent <jrvincent@wesleyan.edu>
 
 RT is distributed under the GNU Public License.
@@ -53,6 +54,8 @@ For the sake of simplicity, we use /usr/local/rt in our example.
 
 GENERAL INSTALLATION
 --------------------
+
+0   Read README.FIRST before you touch ANYTHING
 
 1   Unpack this distribution SOMWHERE OTHER THAN  /usr/local/rt
 
