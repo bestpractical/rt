@@ -50,16 +50,20 @@
   <tr>
     <td class="label"><%$CustomField->Name%>:</td>
     <td class="value">
+<ul>
 % while (my $Value = $Values->Next()) {
+<li>
 %   if ($CustomField->Type eq 'Image') {
 <& ShowCustomFieldImage, Object => $Value &>
 %   } else {
-<%$Value->Content%><br>
+<%$Value->Content%>
 %   }
+</li>
 % }
 % unless ($Values->Count()) {
-<i><&|/l&>(no value)</&></i>
+<li><i><&|/l&>(no value)</&></i></li>
 % }
+</ul>
     </td>
   </tr>
 % }
