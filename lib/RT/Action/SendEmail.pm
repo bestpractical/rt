@@ -31,11 +31,10 @@ sub Commit  {
   my @body = grep($_ .= "\n", split(/\n/,$self->{'Body'}));
 
 
-  # This one is stupid.  There are really stability concerns with
-  # smtpsend.  We really should call $self->{'Message'}->send instead
-  # - unfortunately that sub is not implemented, and probably never
-  # will be.  I will probably mash it together myself some day.
-  # -- TobiX
+  # We should have some kind of site specific configuration here.  I
+  # think the default method for sending an email should be
+  # send('sendmail'), but some RT installations might want to use the
+  # smtpsend method anyway.
 
   $self->TemplateObj->smtpsend || die "could not send email";
 
@@ -57,6 +56,12 @@ sub Prepare  {
 
 
   #TODO: Tobix: what does this do? -jesse
+
+  # ... I thought you introduced this one? :) Anyway, it folds long
+  # header lines according to rfc822.  I don't think it's necessary to
+  # fold the headers ... and eventually it's done in the send and
+  # smtpsend methods anyway IIRC. -TobiX
+
   $self->TemplateObj->{'Header'}->fold(78);
 
 
@@ -78,7 +83,8 @@ sub Prepare  {
   $self->SetRTSpecialHeaders();
 
   $self->SetReferences();
-  #TODO Set up an In-Reply-To maybe.
+
+  $self->SetMessageID();
 
   $self->SetPrecedence();
 
@@ -121,30 +127,85 @@ sub SetRTSpecialHeaders {
 
 # {{{ sub SetReferences
 
-# This routine will set the References: header, autopopulating it with all the correspondence on this
-# ticket so far. This should make RT responses threadable. Yay!
+# This routine will set the References: and In-Reply-To headers,
+# autopopulating it with all the correspondence on this ticket so
+# far. This should make RT responses threadable. Yay!
 
 sub SetReferences {
   my $self = shift;
   
+  # TODO: this one is broken.  What is this email really a reply to?
+  # If it's a reply to an incoming message, we'll need to use the
+  # actual message-id from the appropriate Attachment object.  For
+  # incoming mails, we would like to preserve the In-Reply-To and/or
+  # References.
+
   $self->TemplateObj->{'Header'}->add
-    ('References', "<rt-ticket-".$self->{'TicketObject'}->id()."\@".$RT::rtname.">");
-    #TODO We should always add References headers for previous messages
-  # related to this ticket.
+    ('In-Reply-To', "<rt-".$self->{'TicketObj'}->id().
+     "-".
+     $self->{'TransactionObj'}->id()."\@".$RT::rtname.">");
+
+  # Changed this one to In-Reply-To.  References are mostly used in
+  # News.  For email messages one reference is usually enough, and we
+  # set it up by In-Reply-To rather than References.  This is mostly
+  # IMO as RFC822 (unfortunately) isn't very clear at this.  I'm not
+  # familiar with how this is threated in eventual follow-ups of
+  # rfc822 --TobiX
+
+  # TODO $RT::rtname should be replaced by $RT::hostname to form valid
+  # message-ids (ref rfc822)
+
+  # TODO We should always add References headers for all message-ids
+  # of previous messages related to this ticket.
 }
+# }}}
+
+# {{{ sub SetMessageID
+
+# Without this one, threading won't work very nice in email agents.
+# Anyway, I'm not really sure it's that healthy if we need to send
+# several separate/different emails about the same transaction.
+
+sub SetMessageID {
+
+  # TODO this one might be sort of broken.  If we have several scrips
+  # sending several emails to several different persons, we need to
+  # pull out different message-ids.  I'd suggest message ids like
+  # "rt-ticket#-transaction#-scrip#-receipient#"
+
+  # TODO $RT::rtname should be replaced by $RT::hostname to form valid
+  # message-ids (ref rfc822)
+
+  $self->TemplateObj->{'Header'}->add
+    ('Message-ID', "<rt-".$self->{'TicketObj'}->id().
+     "-".
+     $self->{'TransactionObj'}->id()."\@".$RT::rtname.">")
+	unless $self->TemplateObj->{'Header'}->get('Message-ID');
+}
+
+
 # }}}
 
 # {{{ sub SetContentType
 sub SetContentType {
   my $self = shift;
   
-  
-  # TODO do we really need this with MIME::Entity? I think it autosets it -- jesse
-  #. ISO-8859-1 just
-  # isn't sufficient for international usage (it's even not enough for
-  # European usage ... there are people using ISO-8859-2 and KOI-8 and
-  # stuff like that).
-  # By default, the Template's Content-Type is used. 
+  # TODO do we really need this with MIME::Entity? I think it autosets
+  # it -- jesse
+
+  # I guess it can autoset Content-Type if it's different from
+  # text/plain, but MIME::Entity has no way to determinate what
+  # charset a template is written in.  I should know most about this
+  # issue; my maid uses ISO-8859-4 and my gf uses KOI-8. :) --TobiX
+
+  # The Template's Content-Type is used when nothing else is set.
+
+  # TODO by default, we should peek at the Content-Type of the
+  # transaction message.  BTW, I think our (reply|comment) templates
+  # as of today will break if the incoming Message has a different
+  # content-type than text/plain.  Eventually we should fix the
+  # template system so the original message should always be a MIME
+  # part.
 
   unless ($self->TemplateObj->{'Header'}->get('Content-Type')) {
       $self->TemplateObj->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
@@ -170,6 +231,7 @@ my $self = shift;
 
   unless ($self->TemplateObj->{'Header'}->get('From')) {
       my $friendly_name=$self->{TransactionObject}->Creator->RealName;
+      # TODO: this "via RT" should really be site-configurable.
       $self->TemplateObj->{'Header'}->add('From', "$friendly_name via RT <$email_address>");
       $self->TemplateObj->{'Header'}->add('Reply-To', "$email_address");
   }
@@ -230,6 +292,8 @@ sub SetPrecedence {
 # {{{ sub SetSubject
 
 # This routine sets the subject. it does not add the rt tag. that gets done elsewhere
+
+# Where? --TobiX
 
 sub SetSubject {
   my $self = shift;
