@@ -110,3 +110,7 @@ P.map-also { font-style: italic; margin-left: 15%; text-align: right }
 background-color : #eeeeee;
 
 }
+
+<%init>
+$r->header_out('Expires' ,'+30m');
+</%init>

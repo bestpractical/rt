@@ -44,7 +44,7 @@ ok($chinese->encoding eq 'utf-8', "The encoding is 'utf-8' -".$chinese->encoding
 
 ok(my $en = RT::I18N->get_handle('en'));
 ok(UNIVERSAL::can($en, 'maketext'));
-ok($en->encoding eq 'ISO-8859-1', "The encoding is 'ISO-8859-1'");
+ok($en->encoding eq 'ISO-8859-1', "The encoding ".$en->encoding." is 'ISO-8859-1'");
 
 =end testing
 

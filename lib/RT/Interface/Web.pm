@@ -312,7 +312,9 @@ sub ProcessUpdateMessage {
         }
         else {
             push ( @{ $args{'Actions'} },
-"Update type was neither correspondence nor comment. Update not recorded"
+                loc("Update type was neither correspondence nor comment.").
+                " ".
+                loc("Update not recorded.")
             );
         }
     }
@@ -354,7 +356,7 @@ sub MakeMIMEEntity {
 
     my $cgi_object = $RT::Mason::CGI;
 
-    my $filehandle = eval { $cgi_object->upload( $args{'AttachmentFieldName'} ) } or return;
+    my $filehandle = eval { $cgi_object->upload( $args{'AttachmentFieldName'} ) } or return ($Message);
 
     use File::Temp qw(tempfile tempdir);
 

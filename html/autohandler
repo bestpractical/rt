@@ -1,9 +1,8 @@
 %# $Header: /raid/cvsroot/rt/webrt/autohandler,v 1.2 2001/11/06 23:06:07 jesse Exp $
 <& /Elements/Footer, %ARGS &>
-
 <%INIT>
 
-local %session;
+local *session;
 
 if ($ARGS{'Debug'}) {
         require Time::HiRes;

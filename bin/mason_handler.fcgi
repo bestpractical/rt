@@ -21,7 +21,7 @@ RT::LoadConfig();
 
 package RT::Mason;
 use HTML::Mason;    # brings in subpackages: Parser, Interp, etc.
-use RT::MasonCGIHandler;
+use HTML::Mason::CGIHandler;
 
 use vars qw( $CGI);
 
@@ -36,7 +36,6 @@ use Carp;
 {
 
     package HTML::Mason::Commands;
-    use vars qw(%session);
 
     use RT::Tickets;
     use RT::Transactions;
@@ -79,30 +78,11 @@ RT::Init();
 
 
 # Response loop
-while ( $RT::Mason::CGI = new CGI::Fast ) {
-
+while ( my $cgi = new CGI::Fast ) {
     my $h = RT::Interface::Web::NewCGIHandler();
-    my $comp = $ENV{'PATH_INFO'};
-    
-    if ($comp =~ /^(.*)$/) {  # untaint the path info. apache should
-                              # never hand us a bogus path. 
-                              # We should be more careful here.
-        $comp = $1;
-    }    
-    
-    if ($comp =~ /\/$/) {
-        $comp .= "index.html";
+    unless ($h->interp->comp_exists($cgi->path_info)) {
+	$cgi->path_info($cgi->path_info."/index.html");
     }
-    
-
-        $h->handle_cgi($comp);
-        untie %HTML::Mason::Commands::session;
-
-
-
-    #This is all largely cut and pasted from mason's session_handler.pl
-
-
-
-
+    $h->handle_cgi_object($cgi);
+    # _should_ always be tied
 }

@@ -43,7 +43,7 @@ my @mason_modules = qw(
 Params::Validate 0.02
 Cache::Cache
 Exception::Class
-HTML::Mason 1.09
+HTML::Mason 1.09_2
 MLDBM
 Errno
 FreezeThaw

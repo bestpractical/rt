@@ -20,7 +20,7 @@ use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
 use HTML::Mason::ApacheHandler( args_method => 'CGI' );
 use HTML::Mason;                   # brings in subpackages: Parser, Interp, etc.
 
-use vars qw(%session $Nobody $SystemUser $r);
+use vars qw($Nobody $SystemUser $r);
 
 #Clean up our umask...so that the session files aren't world readable, writable or executable
 umask(0077);
@@ -33,7 +33,6 @@ use Carp;
 {
 
     package HTML::Mason::Commands;
-    use vars qw(%session);
 
     use RT::Tickets;
     use RT::Transactions;
@@ -92,7 +91,6 @@ sub handler {
     return -1 if defined( $r->content_type ) && $r->content_type !~ m|^text/|io;
 
     my $status = $ah->handle_request($r);
-    untie %HTML::Mason::Commands::session;
 
     return $status;
 

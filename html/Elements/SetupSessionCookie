@@ -1,11 +1,11 @@
 <%perl>
 my %cookies = CGI::Cookie->fetch();
-my $IsMySQL = ($RT::DatabaseType eq 'mysql');
+my $IsMySQL = ($RT::DatabaseType eq 'mysql');;
 my $session_class = $IsMySQL ? 'Apache::Session::MySQL' : 'Apache::Session::File';
 my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
     eval {
-        tie %HTML::Mason::Commands::session, $session_class,
+        tie %session, $session_class,
           ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
           $IsMySQL ? {
             Handle     => $RT::Handle->dbh,
@@ -15,12 +15,11 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
             LockDirectory => $RT::MasonSessionDir,
           };
     };
-
     if ($@) {
 
         # If the session is invalid, create a new session.
         if ( $@ =~ /Object does not/i ) {
-            tie %HTML::Mason::Commands::session, $session_class, undef,
+            tie %session, $session_class, undef,
               $IsMySQL ? {
                 Handle     => $RT::Handle->dbh,
                 LockHandle => $RT::Handle->dbh,
@@ -38,7 +37,7 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
     if ( !$cookies{'RT_SID'} ) {
         my $cookie = new CGI::Cookie(
             -name  => 'RT_SID',
-            -value => $HTML::Mason::Commands::session{_session_id},
+            -value => $session{_session_id},
             -path  => '/',
         );
         $r->header_out('Set-Cookie', $cookie->as_string);

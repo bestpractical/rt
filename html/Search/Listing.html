@@ -5,7 +5,7 @@
 
 
 % unless ($ARGS{'Action'} eq loc('Refine')) {
-<TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=1>
+<TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
 <TR>
 %foreach my $col (@{Config(\%ARGS, 'QueueListingCols')}) {
 <TH>
@@ -50,7 +50,10 @@ while (my $Ticket = $session{'tickets'}->Next) {
      $bgcolor = "#ffffff";
  }
       </%PERL>
-<TR bgcolor="<%$bgcolor%>" >
+<TR BGCOLOR="<%$bgcolor%>" 
+    ONMOUSEOVER="this.bgColor = '#aaaaff'"
+      ONMOUSEOUT="this.bgColor = '<%$bgcolor%>'"
+      ONCLICK="parent.location= '../Ticket/Display.html?id=<%$Ticket->Id%>'" >
 %# The ticket view is controlled by config.pm, WebOptions
 %foreach my $col (@{Config(\%ARGS,'QueueListingCols')}) {
 <TD><& TicketCell , Ticket=>$Ticket,  Column=>$col &></TD>

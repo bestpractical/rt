@@ -1011,7 +1011,7 @@ sub DeleteWatcher {
     unless ( $args{'Silent'} ) {
         $self->_NewTransaction(
             Type     => 'DelWatcher',
-            NewValue => $principal->Id,
+            OldValue => $principal->Id,
             Field    => $args{'Type'}
         );
     }

@@ -2,7 +2,6 @@
 <HTML>
 <HEAD>
 <TITLE><%$Title%></TITLE>
-<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 
 %# TODO this gets called from error. but I have no idea what it might
 %# be used for. can we whack it?  -jesse
@@ -54,6 +53,9 @@ $BgColor => '#ffffff'
 $ShowBar => 1
 </%ARGS>
 <%INIT>
+
+$r->header_out('Pragma' => 'no-cache');
+$r->header_out('Cache-control' => 'no-cache');
 $Title = "RT/$RT::rtname: ".$Title;
 </%INIT>
 
