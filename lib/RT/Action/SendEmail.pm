@@ -144,8 +144,13 @@ sub SetReceipients {
       # This is a bit messy, I guess it needs to be cleaned a bit.
       if ($a =~ /^\$/) {
 	  $receipients=$self->{TicketObject}->Watchers()->Emails($');
-	  my $r2=$self->{TicketObject}->{values}->{$'};
-	  my $r3=$self->{TransactionObject}->{values}->{$'};
+	  my ($r2,$r3)=(undef, undef);
+	  if ($' eq 'Owner') {
+	      $r2=$self->{TicketObject}->Owner->EmailAddress();
+	  } else {
+	      $r2=$self->{TicketObject}->{values}->{$'};
+	      $r3=$self->{TransactionObject}->{values}->{$'};
+	  }
 	  push @$receipients, $r2 if $r2;
 	  push @$receipients, $r3 if $r3;
       } else {

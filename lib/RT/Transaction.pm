@@ -174,8 +174,16 @@ sub Description {
   elsif ($self->Type eq 'Set') {
     if ($self->Field eq 'Owner') {
       return ("Owner changed from " . $self->OldValue ." to ".$self->NewValue ." by ". $self->Creator->UserId);
+    } elsif ($self->Field eq 'Status') {
+      if ($self->NewValue eq 'dead') {
+        return ("Request killed by ". $self->Creator->UserId);
+      }
+      else {
+        return( "Status changed from ".  $self->OldValue . 
+	        " to ". $self->NewValue.
+	        " by ".$self->Creator->UserId);
+      }
     }
-
     #TODO Add the other Set types here.
   }
 
@@ -193,18 +201,11 @@ sub Description {
     return( "Area changed to $to by". $self->Creator->UserId);
   }
   
-  elsif ($self->Type eq 'status'){
-    if ($self->Data eq 'dead') {
-      return ("Request killed by ". $self->Creator->UserId);
-    }
-    else {
-      return( "Status changed to ".$self->Data." by ".$self->Creator->UserId);
-    }
-  }
   elsif ($self->Type eq 'queue_id'){
     return( "Queue changed to ".$self->Data." by ".$self->Creator->UserId);
   }
-  elsif ($self->Type eq 'owner'){
+  elsif ($self->Type =~ /^(Take|Steal|Untake)$/){
+    # todo
     if ($self->Data eq $self->Creator->UserId){
       return( "Taken by ".$self->Creator->UserId);
     }

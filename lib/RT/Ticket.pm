@@ -306,8 +306,8 @@ sub Owner {
   if (! defined $self->{'owner'})  {
     require RT::User;
     $self->{'owner'} = new RT::User ($self->CurrentUser);
-    if ($self->_Value('Owner') != undef ) {
-	print STDERR "Owner is '". $self->_Value('Owner')."'\n";
+    if (defined $self->_Value('Owner')) {
+	print STDERR "Owner is #". $self->_Value('Owner')."\n";
      $self->{'owner'}->Load($self->_Value('Owner'));
 
     }
@@ -323,12 +323,12 @@ sub Owner {
 
 sub Take {
   my $self = shift;
-  return($self->SetOwner($self->CurrentUser->Id));
+  return($self->SetOwner($self->CurrentUser->Id, 'Take'));
 }
 
 sub Untake {
   my $self = shift;
-  return($self->SetOwner(""));
+  return($self->SetOwner("", 'Untake'));
 }
 
 
@@ -343,7 +343,7 @@ sub Steal {
   }
   else {
     # TODO: Send a "This ticket was stolen from you" alert
-    return($self->_Set('owner',$self->CurrentUser->Id));
+    return($self->_Set('owner',$self->CurrentUser->Id, 'Steal'));
   }
   
   
@@ -351,6 +351,9 @@ sub Steal {
 sub SetOwner {
   my $self = shift;
   my $NewOwner = shift;
+  my $Type = shift;
+  my $more_params={};
+  $more_params->{TransactionType}=$Type if $Type;
   my ($NewOwnerObj);
 
   #TODO this routine dies when: we're trying to give something away
@@ -370,7 +373,7 @@ sub SetOwner {
   #TODO:this breaks stealing.
   
 
-  if (($self->Owner->Id != 0 ) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
+  if (($self->Owner->Id) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
     print STDERR  "You can only reassign tickets that you own or that are unowned\n";
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
@@ -397,7 +400,7 @@ sub SetOwner {
     #send them mail
   }
 
-  return($self->_Set('Owner',$NewOwnerObj->Id));  
+  return($self->_Set('Owner',$NewOwnerObj->Id,0,$more_params));
 }
 
 
@@ -414,13 +417,13 @@ sub SetStatus {
     return (0,"That status is not valid.");
   }
   
-  if ($status == 'resolved') {
+  if ($status eq 'resolved') {
 
     #&open_parents($in_serial_num, $in_current_user) || $transaction_num=0; 
     #TODO: we need to check for open parents.
   }
   
-  return($self->_Set('status',@_));
+  return($self->_Set('Status',$status));
 }
 
 sub Kill {
@@ -796,20 +799,20 @@ sub _Set {
     my $Field = shift;
     my $Value = shift;
     my $TimeTaken = shift if @_;
+    my $MoreOptions = shift if @_;
     
     if (!defined $TimeTaken) {
       $TimeTaken = 0;
     }
     #record what's being done in the transaction
-    $self->_NewTransaction (Type => "Set",
-			    Field => "$Field",
-			    NewValue => "$Value",
-			    OldValue =>  $self->_Value("$Field"),
-			    TimeTaken => $TimeTaken
+    $self->_NewTransaction (Type => $MoreOptions->{'TransactionType'}||"Set",
+			    Field => $Field,
+			    NewValue => $Value || undef,
+			    OldValue =>  $self->_Value("$Field") || undef,
+			    TimeTaken => $TimeTaken || 0
 			   );
     
     $self->SUPER::_Set($Field, $Value);
-    #Figure out where to send mail
   }
   
 }
