@@ -38,7 +38,7 @@
 %    } 
 % else {
 	
-Attachment: <A HREF="Display.html?PickUpTransaction=<%$message->Id%>"><% $message->ContentType %></a>
+Attachment: <A HREF="Display.html?PickUpAttachment=<%$message->Id%>"><% $message->ContentType %></a>
 %    }
 % }
 
