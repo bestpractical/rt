@@ -314,6 +314,8 @@ sub GetCurrentUser  {
     my $entity = shift;
     my $ErrorsTo = shift;
 
+    my %UserInfo = {};
+
     #Suck the address of the sender out of the header
     my ($Address, $Name) = ParseSenderAddressFromHead($head);
     
@@ -525,6 +527,11 @@ sub ParseAddressFromHeader{
     my @Addresses = Mail::Address->parse($Addr);
     
     my $AddrObj = $Addresses[0];
+
+    unless (ref($AddrObj)) {
+	return(undef,undef);
+    }
+ 
     my $Name =  ($AddrObj->phrase || $AddrObj->comment || $AddrObj->address);
     
     #Lets take the from and load a user object.
