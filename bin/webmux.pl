@@ -142,10 +142,10 @@ sub handler {
 	   -path => '/',);
 	$r->header_out('Set-Cookie', => $cookie);
     }
-    
+
+    tied(%HTML::Mason::Commands::session)->make_modified(); 
     
     my $status = $ah->handle_request($r);
-    tied(%HTML::Mason::Commands::session)->make_modified(); 
     untie %HTML::Mason::Commands::session;
     
     return $status;

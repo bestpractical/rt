@@ -1,11 +1,11 @@
 <& /Elements/TitleBoxStart, title => "25 highest priority tickets I own..." &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
-<TH>#</TH>
-<TH>Subject</TH>
-<TH>Queue</TH>
-<TH>Status</TH>
-<TH>&nbsp;</TH>
+<TH ALIGN=RIGHT>#</TH>
+<TH ALIGN=LEFT>Subject</TH>
+<TH ALIGN=LEFT>Queue</TH>
+<TH ALIGN=LEFT>Status</TH>
+<TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
 % while (my $Ticket = $MyTickets->Next) {
 <TR>

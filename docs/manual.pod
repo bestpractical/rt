@@ -202,7 +202,9 @@ There are a bunch of predefined system-wide templates like:
 	system-wide tempaltes and allows queue administrators
 	to define per-queue templates.  
 
-
+	Templates can optionally have RFC822 headers which will be appended
+	to an outgoing mail message.  If a template has such headers, it
+	B<MUST> contain 2 newlines seperating the message body from the headers.
 
 =head2	ACL
 
