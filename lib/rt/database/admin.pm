@@ -112,7 +112,7 @@ sub add_modify_queue_conf {
 	    $query_string="INSERT INTO queues (queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio) VALUES ($queue_id, $in_mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio)";
 	    $dbh->Query($query_string) or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
 	    $< = $>; #set real to effective uid
-	    system("cp", "-rp", "$rt_dir/lib/original-templates","$template_dir/queues/$in_queue_id");
+	    system("cp", "-rp", "$rt_dir/lib/generic_templates","$template_dir/queues/$in_queue_id");
 	    &rt::load_queue_conf();
 	 return(1,"Queue $in_queue_id sucessfully created.");   
 	}
