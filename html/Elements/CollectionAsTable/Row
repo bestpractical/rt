@@ -68,7 +68,8 @@ foreach my $column (@Format) {
         next;
     }
     $item++;
-    $m->out('<td class="collection-as-table">');
+	my $align = ($column->{align} || "left");
+    $m->out('<td class="collection-as-table" align="' . $align . '">');
     foreach my $subcol ( @{ $column->{output} } ) {
         if ( $subcol =~ /^__(.*?)__$/o ) {
             my $col = $1;
