@@ -191,8 +191,9 @@ sub LoadByCols {
             # If we've been passed an empty value, we can't do the lookup. 
             # We don't need to explicitly downcase integers or an id.
             if ( $key =~ '^id$'
+                || !defined( $hash{$key} )
                 || $hash{$key} =~ /^\d+$/
-                || !defined( $hash{$key} ) )
+                 )
             {
                 $newhash{$key} = $hash{$key};
             }
@@ -419,31 +420,36 @@ sub CurrentUser {
 
 
 sub __Value {
-    my $self = shift;
+    my $self  = shift;
     my $field = shift;
     my %args = ( decode_utf8 => 1,
-		 @_);
+                 @_ );
 
-
+    unless (defined $field && $field) {
+        $RT::Logger->error("$self __Value called with undef field");
+    }
     my $value = $self->SUPER::__Value($field);
-    if ($args{'decode_utf8'}) {
-    if ($] >= 5.007003 and eval { require Encode; 1 }) {
-	return Encode::decode_utf8($value);
-    }
-    elsif ($] >= 5.006001) {
-	return pack('U0A*', $value);
-    }
-    elsif ($] >= 5.006) {
-	eval '$value =~ tr/\0-\xFF//CU'; # avoid syntax error
-	return $value;
+
+    return('') if ( !defined($value) || $value eq '');
+
+    if ( $args{'decode_utf8'} ) {
+        if ( $] >= 5.007003 and eval { require Encode; 1 } ) {
+            return Encode::decode_utf8($value);
+        }
+        elsif ( $] >= 5.006001 ) {
+            return pack( 'U0A*', $value );
+        }
+        elsif ( $] >= 5.006 ) {
+            eval '$value =~ tr/\0-\xFF//CU';    # avoid syntax error
+            return $value;
+        }
+        else {
+            return $value;
+        }
     }
     else {
-	return $value;
+        return $value;
     }
-   }
-   else {
-	return $value;
-  }
 }
 
 

@@ -367,12 +367,13 @@ sub _Create {
         Domain      => undef,
         Type        => undef,
         Instance    => undef,
+        InsideTransaction => undef,
         @_
     );
 
-    $RT::Handle->BeginTransaction();
+    $RT::Handle->BeginTransaction() unless ($args{'InsideTransaction'});
     # Groups deal with principal ids, rather than user ids.
-    # When creating this user, set up a principal Id for it.
+    # When creating this group, set up a principal Id for it.
     my $principal    = RT::Principal->new( $self->CurrentUser );
     my $principal_id = $principal->Create(
         PrincipalType => 'Group',
@@ -396,14 +397,14 @@ sub _Create {
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
-        $RT::Handle->Rollback();
+        $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
         $self->crit(
             "Couldn't create a Principal on new user create. Strange thi
 ngs are afoot at the circle K" );
         return ( 0, $self->loc('Could not create group') );
     }
 
-    $RT::Handle->Commit();
+    $RT::Handle->Commit() unless ($args{'InsideTransaction'});
     return ( $id, $self->loc("Group created") );
 }
 
@@ -453,7 +454,8 @@ sub _CreateACLEquivalenceGroup {
                            Type => 'UserEquiv',
                            Name => 'User '. $princ->Object->Id,
                            Description => 'ACL equiv. for user '.$princ->Object->Id,
-                           Instance => $princ->Id);
+                           Instance => $princ->Id,
+                           InsideTransaction => 1);
       unless ($id) {
         $RT::Logger->crit("Couldn't create ACL equivalence group");
         return undef;
@@ -546,14 +548,17 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 sub CreateRoleGroup {
     my $self = shift;
     my %args = ( Instance => undef,
-                 Type => undef,
-                 Domain => undef,
-                 @_);
-    unless ($args{'Type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/) {
-        return  (0, $self->loc("Invalid Group Type"));
+                 Type     => undef,
+                 Domain   => undef,
+                 @_ );
+    unless ( $args{'Type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/ ) {
+        return ( 0, $self->loc("Invalid Group Type") );
     }
 
-    return($self->_Create( Domain => $args{'Domain'}, Instance => $args{'Instance'} , Type => $args{'Type'}));
+    return ( $self->_Create( Domain            => $args{'Domain'},
+                             Instance          => $args{'Instance'},
+                             Type              => $args{'Type'},
+                             InsideTransaction => 1 ) );
 }
 
 # }}}

@@ -1,35 +1,63 @@
 sub acl {
+    my $dbh = shift;
 
-return (
-"drop user ${RT::DatabaseUser};",
-"create user ${RT::DatabaseUser} with password '${RT::DatabasePassword}' NOCREATEDB NOCREATEUSER;",
-"grant select, insert, update, delete on Groups to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Groups_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on ACL to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on ACL_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Watchers to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Watchers_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Links to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Links_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Users to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Users_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Tickets to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Tickets_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on GroupMembers to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on GroupMembers_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Queues to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Queues_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Transactions to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Transactions_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on ScripActions to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on ScripActions_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on ScripConditions to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on ScripConditions_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Scrips to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Scrips_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Attachments to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Attachments_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Templates to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Templates_id_seq to ${RT::DatabaseUser};",
+    my @acls;
+
+    my @tables = qw (
+
+      attachments_id_seq
+      Attachments
+      queues_id_seq
+      Queues
+      links_id_seq
+      Links
+      principals_id_seq
+      Principals
+      groups_id_seq
+      Groups
+      scripconditions_id_seq
+      ScripConditions
+      transactions_id_seq
+      Transactions
+      scrips_id_seq
+      Scrips
+      acl_id_seq
+      ACL
+      groupmembers_id_seq
+      GroupMembers
+      cachedgroupmembers_id_seq
+      CachedGroupMembers
+      users_id_seq
+      Users
+      tickets_id_seq
+      Tickets
+      scripactions_id_seq
+      ScripActions
+      templates_id_seq
+      Templates
+      ticketcustomfieldvalues_id_s
+      TicketCustomFieldValues
+      customfields_id_seq
+      CustomFields
+      customfieldvalues_id_seq
+      CustomFieldValues
+      sessions
+    );
+
+    # if there's already an rt_user, drop it.
+    my @row =
+      $dbh->selectrow_array( "select usename from pg_user where usename = '" . $RT::DatabaseUser."'" );
+    if ( $row[0] ) {
+        push @acls, "drop user ${RT::DatabaseUser};",;
+    }
+
+    push @acls, "create user ${RT::DatabaseUser} with password '${RT::DatabasePassword}' NOCREATEDB NOCREATEUSER;";
+    foreach my $table (@tables) {
+        push @acls,
+          "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to "
+          . $RT::DatabaseUser . ";";
+
+    }
+    return (@acls);
 }
 1;

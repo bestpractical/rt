@@ -75,13 +75,12 @@ else {    # this is a virgin install
         Creator    => '1'
     );
 
-    if ($val) {
-        print "done.\n";
-    }
-    else {
+    unless ($val) {
         print "$msg\n";
         exit(1);
     }
+    print "done.\n";
+    $RT::Handle->dbh->disconnect();
 }
 
 #now that we bootstrapped that little bit, we can use the standard RT cli
@@ -100,33 +99,18 @@ RT::Init;
 
 $CurrentUser->LoadByName('RT_System');
 
-# {{{ Users
 
-my @users;
+print "Creating Superuser  ACL...";
+use RT::ACE;
+use RT::Group;
 
-unless ($LastVersion) {
-    @users = (
-        {
-            Name     => 'Nobody',
-            RealName => 'Nobody in particular',
-            Comments => 'Do not delete or modify this user. It is integral '
-              . 'to RT\'s internal data structures',
-            Privileged => '0',
-        },
-
-        {
-            Name         => 'root',
-            Gecos        => 'root',
-            RealName     => 'Enoch Root',
-            Password     => 'password',
-            EmailAddress => "root\@localhost",
-            Comments     => 'SuperUser',
-            Privileged   => '1',
-        }
-    );
-}
-
-# }}}
+        my $superuser_ace = RT::ACE->new($CurrentUser);
+        $superuser_ace->_BootstrapCreate(
+            PrincipalId        => ACLEquivGroupId($CurrentUser->Id),
+            PrincipalType  => 'Group',
+            RightName      => 'SuperUser',
+            ObjectType     => 'System',
+            ObjectId => '0');
 
 # {{{ Groups 
 
@@ -187,19 +171,66 @@ unless ($LastVersion) {
 
 # }}}
 
+print "Creating groups...";
+foreach $item (@groups) {
+    my $new_entry = RT::Group->new($CurrentUser);
+    my ($return, $msg)   = $new_entry->_Create(%$item);
+    print "(Error: $msg)" unless ($return);
+    print $return. ".";
+}
+print "done.\n";
+
+# {{{ Users
+
+my @users;
+
+unless ($LastVersion) {
+    @users = (
+        {
+            Name     => 'Nobody',
+            RealName => 'Nobody in particular',
+            Comments => 'Do not delete or modify this user. It is integral '
+              . 'to RT\'s internal data structures',
+            Privileged => '0',
+        },
+
+        {
+            Name         => 'root',
+            Gecos        => 'root',
+            RealName     => 'Enoch Root',
+            Password     => 'password',
+            EmailAddress => "root\@localhost",
+            Comments     => 'SuperUser',
+            Privileged   => '1',
+        }
+    );
+}
+
+# }}}
+print "Creating users...";
+use RT::User;
+foreach $item (@users) {
+    my $new_entry = new RT::User($CurrentUser);
+    my ( $return, $msg ) = $new_entry->Create(%$item);
+    print "(Error: $msg)" unless ($return);
+    print $return. ".";
+}
+print "done.\n";
+
+
 # {{{ ACL
 my @acl;
 unless ($LastVersion) {
     @acl = (    
         { 
-            UserId    => '10', # - principalId
+            UserId    => 'Nobody', # - principalId
             Right      => 'OwnTicket',
             ObjectType     => 'System',
             ObjectId => '0'
         },
 
         {
-            UserId    => '12', # - principalid
+            UserId    => 'root', # - principalid
             Right      => 'SuperUser',
             ObjectType     => 'System',
             ObjectId => '0'
@@ -209,6 +240,22 @@ unless ($LastVersion) {
 }
 
 # }}}
+print "Creating ACL...";
+for $item (@acl) {
+
+    my $princ = RT::User->new($CurrentUser);
+    $princ->Load($item->{'UserId'});
+    my ($return, $msg) = $princ->PrincipalObj->GrantRight(Right => $item->{'Right'}, ObjectType => $item->{'ObjectType'}, ObjectId => $item->{'ObjectId'});
+    if ($return) {
+	    print $return. "."; 
+    } else {	
+	    print $msg . ".";
+
+    }
+ 
+}
+print "done.\n";
+
 
 # {{{ Queues
 
@@ -536,52 +583,6 @@ further questions or concerns, please respond to this message.
 
 # }}}
 
-print "Creating Superuser  ACL...";
-use RT::ACE;
-        my $superuser_ace = RT::ACE->new($CurrentUser);
-        $superuser_ace->_BootstrapCreate(
-            PrincipalId        => '2',
-            PrincipalType  => 'Group',
-            RightName      => 'SuperUser',
-            ObjectType     => 'System',
-            ObjectId => '0');
-
-
-print "Creating groups...";
-use RT::Group;
-foreach $item (@groups) {
-    my $new_entry = RT::Group->new($CurrentUser);
-    my ($return, $msg)   = $new_entry->_Create(%$item);
-    print "(Error: $msg)" unless ($return);
-    print $return. ".";
-}
-print "done.\n";
-
-print "Creating users...";
-use RT::User;
-foreach $item (@users) {
-    my $new_entry = new RT::User($CurrentUser);
-    my ( $return, $msg ) = $new_entry->Create(%$item);
-    print "(Error: $msg)" unless ($return);
-    print $return. ".";
-}
-print "done.\n";
-print "Creating ACL...";
-for $item (@acl) {
-
-    my $princ = RT::User->new($CurrentUser);
-    $princ->Load($item->{'UserId'});
-    my ($return, $msg) = $princ->PrincipalObj->GrantRight(Right => $item->{'Right'}, ObjectType => $item->{'ObjectType'}, ObjectId => $item->{'ObjectId'});
-    if ($return) {
-	    print $return. "."; 
-    } else {	
-	    print $msg . ".";
-
-    }
- 
-}
-print "done.\n";
-
 print "Creating queues...";
 use RT::Queue;
 for $item (@queues) {
@@ -625,5 +626,13 @@ print "done.\n";
 
 $RT::Handle->Disconnect();
 
-1;
 
+sub ACLEquivGroupId {
+        my $username = shift;
+        my $user = RT::User->new($CurrentUser);
+        $user->Load($username);
+        my $equiv_group = RT::Group->new($CurrentUser);
+        $equiv_group->LoadACLEquivalenceGroup($user);
+        return ($equiv_group->Id)
+}
+1;

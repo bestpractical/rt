@@ -153,9 +153,8 @@ sub _yesno {
 
 # }}}
 
-# {{{ insert_acls 
+# {{{ insert_acls
 sub insert_acl {
-    my @acl;
     if ( $RT::DatabaseType =~ /^oracle$/i ) {
         do $RT::EtcPath . "acl.Oracle"
           || die "Couldn't find ACLS for Oracle\n" . $@;
@@ -173,14 +172,15 @@ sub insert_acl {
     }
 
     my $dbh = DBI->connect( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword );
-    foreach my $statement ( acl() ) {
+    my @acl = acl($dbh);
+    foreach my $statement ( @acl ) {
         print STDERR $statement if $DEBUG;
         my $sth = $dbh->prepare($statement) or die $dbh->errstr;
         unless ( $sth->execute ) {
             die "Problem with statement:\n $statement\n" . $sth->errstr;
         }
     }
-
+        $dbh->disconnect();
 }
 
 # }}}
