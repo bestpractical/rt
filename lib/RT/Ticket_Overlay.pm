@@ -543,6 +543,15 @@ sub CreateFromEmailMessage {
                  Queue => undef,
                  ExtractActorFromSender => undef,
                  @_ );
+
+    
+    # Pull out requestor
+
+    # Pull out Cc?
+
+    # 
+
+
 }
 
 # }}}

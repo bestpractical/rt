@@ -4,19 +4,18 @@
 
 PERL			= 	/usr/bin/perl
 
-CONFIG_FILE_PATH	=	/opt/rt22/etc
+CONFIG_FILE_PATH	=	/opt/rt3/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
 
 GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	32
+RT_VERSION_PATCH	=	33
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 
-BRANCH			=	rt-2-1
 
 # This is the group that all of the installed files will be chgrp'ed to.
 RTGROUP			=	rt

@@ -10,7 +10,6 @@ BEGIN {
         use RT;
         RT::LoadConfig();
 }
-use DBIx::DataSource qw( create_database drop_database );
 
 $| = 1;    #unbuffer that output.
 
@@ -21,24 +20,31 @@ $ACTION = shift @ARGV;
 require RT::Handle;
 my $Handle = RT::Handle->new($RT::DatabaseType);
 $Handle->BuildDSN;
-my $DSN = $Handle->DSN;
-
+my $dbh ;
 if ( $ACTION eq 'create' ) {
+        my $dsn = $Handle->DSN;
+        $dsn =~ s/dbname=$RT::DatabaseName//;
+     $dbh = DBI->connect( $dsn, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) || die $DBI::errstr;
     print "Now creating a database for RT.\n";
     create_db();
 }
 elsif ( $ACTION eq 'drop' ) {
+     unless (  $dbh = DBI->connect( $Handle->DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) )
+     
+        {  warn $DBI::errstr;
+           warn "Database doesn't appear to exist. Aborting database drop.";
+           exit(0);
+        }
     print "Now dropping the RT2 database.\n";
     drop_db();
 }
 elsif ( $ACTION eq 'insert' ) {
+     $dbh = DBI->connect( $Handle->DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) || die $DBI::errstr;
     print "Now populating database schema.\n";
     insert_schema();
 }
-elsif ( $ACTION eq 'generate' ) {
-    generate_schema( shift @ARGV );
-}
 elsif ( $ACTION eq 'acl' ) {
+     $dbh = DBI->connect( $Handle->DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) || die $DBI::errstr;
     insert_acl();
 }
 
@@ -47,36 +53,11 @@ else {
     exit(-1);
 }
 
-# {{{ sub drop_db
-sub drop_db {
-
-    if ($PROMPT) {
-        print <<END;
-
-About to drop $RT::DatabaseType database $RT::DatabaseName.
-WARNING: This will erase all data in $RT::DatabaseName.
-If you have an existing RT 2.x installation, this will destroy all your data.
-i
-END
-        exit unless _yesno();
-
-    }
-
-    print "\nDropping $RT::DatabaseType database $RT::DatabaseName.\n";
-    drop_database( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword )
-      or warn $DBIx::DataSource::errstr;
-
-}
-
-# }}}
-
 # {{{ sub insert_schema
 sub insert_schema {
     my (@schema);
     print "Creating database schema.\n";
 
-    my $dbh = DBI->connect( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword )
-      or die $DBI::errstr;
 
     if ( -f $RT::EtcPath . "/schema." . $RT::DatabaseType ) {
         open( SCHEMA, "<" . $RT::EtcPath . "/schema." . $RT::DatabaseType );
@@ -109,37 +90,32 @@ sub insert_schema {
 
 # }}}
 
-# {{{ sub generate_schema
+# {{{ sub drop_db
+sub drop_db {
+    if ($PROMPT) {
+        print <<END;
 
-=item generate_schema SOURCE_FILENAME
+About to drop $RT::DatabaseType database $RT::DatabaseName.
+WARNING: This will erase all data in $RT::DatabaseName.
 
-From a DBIx::DBSchema style config file, generate database-apropriate
-schema
+END
+        exit unless _yesno();
 
-=cut
-
-sub generate_schema {
-    my $schema_file = shift;
-
-    require DBIx::DBSchema;
-    my $schema_href = do "$schema_file" or die $@ || $!;
-    my $schema = DBIx::DBSchema->pretty_read($schema_href);
-
-    foreach my $statement (
-        $schema->sql( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) )
-    {
-        print $statement;
     }
 
+    print "Dropping $RT::DatabaseType database $RT::DatabaseName.\n";
+
+
+    $dbh->do("Drop DATABASE $RT::DatabaseName") or warn $DBI::errstr;
 }
 
 # }}}
-
 # {{{ sub create_db
 sub create_db {
     print "Creating $RT::DatabaseType database $RT::DatabaseName.\n";
-    create_database( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword )
-      or die $DBIx::DataSource::errstr;
+
+
+    $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
 }
 
 # }}}
@@ -155,6 +131,7 @@ sub _yesno {
 
 # {{{ insert_acls
 sub insert_acl {
+        
     if ( $RT::DatabaseType =~ /^oracle$/i ) {
         do $RT::EtcPath . "acl.Oracle"
           || die "Couldn't find ACLS for Oracle\n" . $@;
@@ -171,7 +148,6 @@ sub insert_acl {
         die "Unknown RT database type";
     }
 
-    my $dbh = DBI->connect( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword );
     my @acl = acl($dbh);
     foreach my $statement ( @acl ) {
         print STDERR $statement if $DEBUG;
@@ -184,3 +160,4 @@ sub insert_acl {
 }
 
 # }}}
+

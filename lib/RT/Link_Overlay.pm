@@ -292,22 +292,35 @@ sub AsHREF {
 
 # }}}
 
-# {{{ sub GetContent - gets the content from a link
+# {{{ sub GetContent 
+
+=head2 GetContent
+
+Gets the content from a link. Undocumented
+
+=cut
+
 sub GetContent {
-    my ($self, $URI)= @_;
-    if ($self->_IsLocal($URI)) {
-	die "stub";
-    } else {
-	# Find protocol
-	if ($URI =~ m|^(.*?)://|) {
-	    if (exists $RT::ContentFromURI{$1}) {
-		return $RT::ContentFromURI{$1}->($URI);
-	    } else {
-		warn "No sub exists for fetching the content from a $1 in $URI";
-	    }
-	} else {
-	    warn "No protocol specified in $URI";
-	}
+    my  $self = shift;
+    my $uri = shift;
+    if ( $self->_IsLocal($URI) ) {
+        return "";
+    }
+    else {
+
+        # Find protocol
+        if ( $URI =~ m|^(.*?)://| ) {
+            if ( exists $RT::ContentFromURI{$1} ) {
+                return $RT::ContentFromURI{$1}->($URI);
+            }
+            else {
+                return $self->loc( "Not configured to fetch the content from a [_1] in [_2]", $1, $URI );
+            }
+        }
+        else {
+            return $self->loc( "No protocol specified in [_1]", $URI );
+
+        }
     }
 }
 # }}}

@@ -1,4 +1,4 @@
-# $Header: /raid/cvsroot/rt/etc/Attic/RT_Config.pm,v 1.1.2.1 2002/01/28 05:27:13 jesse Exp $	
+# $Header: /raid/cvsroot/rt/etc/Attic/RT_Config.pm,v 1.1.2.1 2002/01/28 05:27:13 jesse Exp $	;
 
 package RT;
 
@@ -37,16 +37,17 @@ $MinimumPasswordLength = "5";
 $Timezone =  'US/Eastern'; 
 
 # LogDir is where RT writes its logfiles.
+$LogDir = $VarPath."log";
 # This directory should be writable by your rt group
 
-$BasePath = "/opt/rt22/";
+$BasePath = "/opt/rt3/";
 
 $BinPath = $BasePath . "bin/";
 $SbinPath = $BasePath . "sbin/";
 $LibPath = $BasePath . "lib/";
 $EtcPath = $BasePath . "etc/";
 $ManPath = $BasePath . "man/";
-
+$VarPath = $BasePath . "var/";
 
 
 $WebUser = 'www';
@@ -56,26 +57,25 @@ $WebGroup = 'www';
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 # (this should be autoconfigured during 'make install' or 'make upgrade')
 
-$MasonComponentRoot = $BasePath . "WebRT/html";
+$MasonComponentRoot = $BasePath . "html";
 
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local
 # mason html files.
 # (this should be autoconfigured during 'make install' or 'make upgrade')
 
-$MasonLocalComponentRoot = $BasePath ."local/WebRT/html";
+$MasonLocalComponentRoot = $BasePath ."local/html";
 
 # $MasonDataDir Where mason keeps its datafiles
 # (this should be autoconfigured during 'make install' or 'make upgrade')
 
-$MasonDataDir = $BasePath."WebRT/data";
+$MasonDataDir = $VarPath."data";
 
 # RT needs to put session data (for preserving state between connections
 # via the web interface)
-$MasonSessionDir = $BasePath ."WebRT/session_data";
+$MasonSessionDir = $VarPath ."session_data";
 
 # }}}
 
-$LogDir = "/var/log/rt";
 
 # }}}
 
@@ -110,7 +110,7 @@ $DatabaseDBA="root";
 $DatabaseDBAPassword="";
 
 # The name of the RT's database on your database server
-$DatabaseName='rt22';
+$DatabaseName='rt3';
 
 # If you're using Postgres and have compiled in SSL support, 
 # set DatabaseRequireSSL to 1 to turn on SSL communication
@@ -273,9 +273,9 @@ $UseFriendlyToLine = 1;
 
 
 #  Mail loops will generate a critical log message.
-
+$LogToSyslog = 'debug';
 $LogToScreen = 'debug';
-$LogToFile = 'debug';
+$LogToFile = undef;
 $LogToFileNamed = "$LogDir/rt.log"; #log to rt.log.<pid>.<user>
 
 # }}}
@@ -338,10 +338,6 @@ $WebExternalAuto = undef;
 #This is from tobias' prototype web search UI. it may stay and it may go.
 %WebOptions=
     (
-     # This is for putting in more user-actions at the Transaction
-     # bar.  I will typically add "Enter bug in Bugzilla" here.:
-     ExtraTransactionActions => sub { return ""; },
-
      # Here you can modify the list view.  Be aware that the web
      # interface might crash if TicketAttribute is wrongly set.
      
@@ -371,7 +367,7 @@ $WebExternalAuto = undef;
 
        { Header => 'Told',				# loc
 	 TicketAttribute => 'ToldObj->AgeAsString'
-	 },
+	 },  
 
        { Header => 'Age',				# loc
 	 TicketAttribute => 'CreatedObj->AgeAsString'
@@ -412,7 +408,6 @@ $TicketBaseURI = "fsck.com-rt://$Organization/$rtname/ticket/";
       'https' => sub {return @_;},
       'ftp' => sub {return @_;},
      'fsck.com-rt' => sub {warn "stub!";},
-     'mozilla.org-bugzilla' => sub {warn "stub!"},
      'fsck.com-kb' => sub {warn "stub!"}
      );
 
@@ -421,36 +416,8 @@ $TicketBaseURI = "fsck.com-rt://$Organization/$rtname/ticket/";
 %ContentFromURI=   
     (
      'fsck.com-rt' => sub {warn "stub!";},
-     'mozilla.org-bugzilla' => sub {warn "stub!"},
      'fsck.com-kb' => sub {warn "stub!"}
      );
-
-# }}}
-
-# {{{ No User servicable parts inside 
-
-############################################
-############################################
-############################################
-#
-#  Don't edit anything below this line unless you really know
-#  what you're doing
-#
-#
-############################################
-############################################
-
-# TODO: get this stuff out of the config file and into RT.pm
-
-#Set up us the timezone
-$ENV{'TZ'} = $Timezone; #TODO: Bogus hack to deal with Date::Manip whining
-
-# Configure sendmail if we're using Entity->send('sendmail')
-if ($MailCommand eq 'sendmail') {
-    $MailParams = $SendmailArguments;
-}
-
-
 
 # }}}
 

@@ -6,7 +6,7 @@
 
 =begin testing
 
-ok(open(GATE ,"| perl /opt/rt22/bin/rt-mailgate --action correspond --queue general"));
+ok(open(GATE ,"| perl $RT::BinPath/rt-mailgate --action correspond --queue general"));
 print GATE <<EOM;
 From: hostmaster\@example.com
 To: rt\@example.com

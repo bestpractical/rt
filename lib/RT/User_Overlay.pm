@@ -362,7 +362,7 @@ sub _BootstrapCreate {
     my $principal = RT::Principal->new($self->CurrentUser);
     my $principal_id = $principal->Create(PrincipalType => 'User', ObjectId => '0');
     $principal->__Set(Field => 'ObjectId', Value => $principal_id);
-    
+   
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         $RT::Handle->Rollback();
@@ -371,11 +371,11 @@ sub _BootstrapCreate {
     }
     $self->SUPER::Create(id => $principal_id, %args);
     my $id = $self->Id;
-
     #If the create failed.
-    return ( 0, 'Could not create user' ) 
-      unless ($id); # Never loc this
-
+      unless ($id) {
+      $RT::Handle->Rollback();
+      return ( 0, 'Could not create user' ) ; #never loc this
+    }
 
     my $aclstash = RT::Group->new($self->CurrentUser);
     my $stash_id  = $aclstash->_CreateACLEquivalenceGroup($principal);

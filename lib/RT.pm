@@ -72,8 +72,10 @@ sub InitLogging {
 
     $, = '';
     use Log::Dispatch 1.6;
-    use Log::Dispatch::File;
     use Log::Dispatch::Screen;
+
+    use Log::Dispatch::File;
+    use Log::Dispatch::Syslog;
 
     $RT::Logger=Log::Dispatch->new();
     
@@ -111,6 +113,22 @@ sub InitLogging {
                                 return "[".gmtime(time)."] [".$p{level}."]: $p{message}\n" }
 				else {
                                 return "[".gmtime(time)."] [".$p{level}."]: $p{message} ($filename:$line)\n"}
+				},
+             
+		       stderr => 1
+		     ));
+    }
+    if ($RT::LogToSyslog) {
+	$RT::Logger->add(Log::Dispatch::Syslog->new
+		     ( name => 'syslog',
+		       min_level => $RT::LogToSyslog,
+			 callbacks => sub { my %p = @_;
+                                my ($package, $filename, $line) = caller(5);
+				if ($p{level} eq 'debug') {
+
+                                return "$p{message}\n" }
+				else {
+                                return "$p{message} ($filename:$line)\n"}
 				},
              
 		       stderr => 1

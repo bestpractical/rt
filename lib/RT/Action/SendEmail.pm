@@ -119,6 +119,11 @@ sub Commit  {
 	close(MAIL);
     }
     else {
+	if ($RT::MailCommand eq 'sendmail') {
+	    $RT::MailParams = $RT::SendmailArguments;
+	}
+	
+
 	unless ($MIMEObj->send($RT::MailCommand, $RT::MailParams)) {
 	    $RT::Logger->crit("$self: Could not send mail for ".$self->TransactionObj."\n");
 	    return(0);
