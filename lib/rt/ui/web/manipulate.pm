@@ -247,7 +247,7 @@ sub frame_display_request {
   
     &rt::ui::web::content_header();
     print "
-<frameset rows=\"35,65\" name=\"body\" border=\"0\">
+<frameset rows=\"20,80\" name=\"body\" border=\"0\">
 <frameset cols=\"45,55\" name=\"reqtop\" border\"0\">
 <frame src=\"$ScriptURL?display=ReqOptions&amp;serial_num=$serial_num\" name=\"req_buttons\" scrolling=\"no\">
 <frame src=\"$ScriptURL?serial_num=$serial_num\" name=\"summary\">
@@ -266,7 +266,7 @@ sub frame_display_request {
 sub frame_display_queue {
   &rt::ui::web::content_header();
   print "
-<frameset rows=\"20,80\" border=\"1\">
+<frameset rows=\"35,65\" border=\"1\">
 <frame src=\"$ScriptURL?display=Queue\" name=\"queue\">
 <frame src=\"$ScriptURL?display=Request\" name=\"workspace\">
 </frameset>";
