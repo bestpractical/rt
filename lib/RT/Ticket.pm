@@ -31,11 +31,25 @@ This module lets you manipulate RT's most key object. The Ticket.
 
 =cut
 
-=over 10
-
 # }}}
 
 # {{{ sub new
+
+sub new {
+  my $proto = shift;
+  my $class = ref($proto) || $proto;
+  my $self  = {};
+  bless ($self, $class);
+  $self->{'table'} = "Tickets";
+  $self->_Init(@_);
+  return ($self);
+}
+
+# }}}
+
+# {{{ sub Create
+
+=over 10
 
 =item Create (ARGS)
 
@@ -54,8 +68,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
     FinalPriority -- an integer from 0 to 99
     Status -- a textual tag. one of 'open' 'stalled' 'resolved' for now
     TimeWorked -- an integer
-    Told -- a unix time. time of last contact
-    Due -- a unix time describing the due date
+    Told -- a unix time or a Date::Kronos object. time of last contact (stubbed!)
+    Due -- a unix time or a Date::Kronos object describing the due date (stubbed!)
     MIMEEntity -- a MIME::Entity object with the content of the initial ticket request.
 
 Returns: TICKETID, Transaction Object, Error Message
@@ -63,20 +77,6 @@ Returns: TICKETID, Transaction Object, Error Message
 =cut
 
 
-
-sub new {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->{'table'} = "Tickets";
-  $self->_Init(@_);
-  return ($self);
-}
-
-# }}}
-
-# {{{ sub Create
 
 sub Create {
   my $self = shift;
@@ -95,8 +95,8 @@ sub Create {
 	      FinalPriority => 0,
 	      Status => 'open',
 	      TimeWorked => 0,
-	      Told => 0,
-	      Due => 0,
+	      Told => undef,
+	      Due => undef,
 	      MIMEEntity => undef,
 	     
 	      @_);
@@ -126,8 +126,8 @@ sub Create {
 				Priority => $args{'InitialPriority'},
 				Status => $args{'Status'},
 				TimeWorked => $args{'TimeWorked'},
-				Told => $args{'Told'},
-				Due => $args{'Due'}
+				Told => undef,
+				Due => undef
 			       );
   
   #Load 'er up.
@@ -552,191 +552,6 @@ sub Queue {
 
 # }}}
 
-# {{{ Routines dealing with ownership
-
-# {{{ sub Owner
-
-sub Owner {
-  my $self = shift;
-
-  defined ($self->_Value('Owner')) || return undef;
-	
-  #If the owner object ain't loaded yet
-  if (! exists $self->{'owner'})  {
-    require RT::User;
-    $self->{'owner'} = new RT::User ($self->CurrentUser);
-    $self->{'owner'}->Load($self->_Value('Owner'));
-  }
-  
-  #TODO It feels unwise, but we're returning an empty owner
-  # object rather than undef.
-  
-  #Return the owner object
-  return ($self->{'owner'});
-}
-
-# }}}
-
-# {{{ sub OwnerAsString 
-sub OwnerAsString {
-  my $self = shift;
-  return($self->Owner->EmailAddress);
-
-}
-
-# }}}
-
-# {{{ sub Take
-sub Take {
-  my $self = shift;
-  return($self->SetOwner($self->CurrentUser->Id, 'Take'));
-}
-# }}}
-
-# {{{ sub Untake
-sub Untake {
-  my $self = shift;
-  return($self->SetOwner($RT::Nobody, 'Untake'));
-}
-# }}}
-
-# {{{ sub Steal 
-
-sub Steal {
-  my $self = shift;
-  
-  if (!$self->ModifyPermitted){
-    return (0,"Permission Denied");
-  }
-  elsif ($self->Owner->Id eq $self->CurrentUser->Id ) {
-    return (0,"You already own this ticket"); 
-  }
-  else {
-    # TODO: Send a "This ticket was stolen from you" alert
-    return($self->_Set('owner',$self->CurrentUser->Id, 'Steal'));
-  }
-    
-}
-
-# }}}
-
-# {{{ sub SetOwner
-
-sub SetOwner {
-  my $self = shift;
-  my $NewOwner = shift;
-  my $Type = shift;
-  my $more_params={};
-  $more_params->{TransactionType}=$Type if $Type;
-  my ($NewOwnerObj);
-
-  require RT::User;
-  $NewOwnerObj = RT::User->new($self->CurrentUser);
-  
-  if (!$NewOwnerObj->Load($NewOwner)) {
-    
-    return (0, "That user does not exist");
-  }
-  
-  
-  #If thie ticket has an owner and it's not the current user
-
-  # TODO: check this
-  
-  if ($Type ne 'Steal' and 
-      $self->Owner->Id!=$RT::Nobody and 
-      $self->CurrentUser->Id ne $self->Owner->Id()) {
-    
-    return(0, "You can only reassign tickets that you own or that are unowned");
-  }
-  #If we've specified a new owner and that user can't modify the ticket
-  elsif (($NewOwner) and (!$self->ModifyPermitted($NewOwnerObj->Id))) {
-    return (0, "That user may not own requests in that queue")
-  }
-  
-  
-  #If the ticket has an owner and it's the new owner, we don't need
-  #To do anything
-  elsif (($self->Owner) and ($NewOwnerObj->Id eq $self->Owner->Id)) {
-    return(0, "That user already owns that request");
-  }
-  
-  
-  #  elsif ( #TODO $new_owner doesn't have queue perms ) {
-  #	return (0,"That user doesn't have permission to modify this request");
-  #	}
-  
-  else {
-    #TODO
-    #If we're giving the request to someone other than $self->CurrentUser
-    #send them mail
-  }
-
-  return($self->_Set('Owner',$NewOwnerObj->Id,0,$more_params));
-}
-
-# }}}
-
-# }}}
-
-# {{{ Routines dealing with status
-
-
-# {{{ sub SetStatus
-sub SetStatus { 
-  my $self = shift;
-  my $status = shift;
-  my $action = 
-      $status eq 'open' ? 'Open' :
-      $status eq 'stalled' ? 'Stall' :
-      $status eq 'resolved' ? 'Resolve' :
-      $status eq 'dead' ? 'Kill' : 'huh?';
-
-  if ($action eq 'huh?') {
-    return (0,"That status is not valid.");
-  }
-  
-  if ($status eq 'resolved') {
-
-    #&open_parents($in_serial_num, $in_current_user) || $transaction_num=0; 
-    #TODO: we need to check for open parents.
-  }
-  
-  return($self->_Set('Status',$status, 0,{TransactionType=>$action}));
-}
-# }}}
-
-# {{{ sub Kill
-sub Kill {
-  my $self = shift;
-  return ($self->SetStatus('dead'));
-  # TODO: garbage collection
-}
-# }}}
-
-# {{{ sub Stall
-sub Stall {
-  my $self = shift;
-  return ($self->SetStatus('stalled'));
-}
-# }}}
-
-# {{{ sub Owner
-sub Open {
-  my $self = shift;
-  return ($self->SetStatus('open'));
-}
-# }}}
-
-# {{{ sub Resolve
-sub Resolve {
-  my $self = shift;
-  return ($self->SetStatus('resolved'));
-}
-# }}}
-
-# }}}
-
 # {{{ Date printing routines
 
 # Created and LastUpdated belongs to the DBIx::Record layer (and maybe even deeper)
@@ -745,7 +560,8 @@ sub Resolve {
 sub DueAsString {
   my $self = shift;
   if ($self->Due) {
-    return (scalar(localtime($self->Due)));
+      my $time=$self->DueObj;
+      return $time->Gregorian->stringify();
   }
   else {
     return("Never");
@@ -753,16 +569,67 @@ sub DueAsString {
 }
 # }}}
 
+# {{{ sub GraceTimeAsString 
+sub GraceTimeAsString {
+    my $self=shift;
+    require Date::Kronos;
+    if ($self->Due) {
+	my $now=Date::Kronos->new(cal_type=>'Unix');
+	my $diff=$now - $self->DueObj;
+	return $diff->stringify;
+    } else {
+	return "Forever";
+    }
+}
+# }}}
+
+# {{{ sub DueObj
+sub DueObj {
+    require Date::Kronos;
+    my $self=shift;
+    my $time=Date::Kronos->new;
+    $time->Gregorian->sql_timestamp($self->Due);
+    return $time;
+}
+# }}}
+
+# {{{ sub ToldObj
+sub ToldObj {
+    require Date::Kronos;
+    my $self=shift;
+    my $time=Date::Kronos->new;
+    $time->Gregorian->sql_timestamp($self->Told);
+    return $time;
+}
+# }}}
+
+# {{{ sub LongSinceToldAsString
+sub LongSinceToldAsString {
+    my $self=shift;
+    require Date::Kronos;
+    if ($self->Told) {
+	my $now=Date::Kronos->new(cal_type=>'Unix');
+	my $diff=$now - $self->ToldObj;
+	return $diff->stringify;
+    } else {
+	return "Never";
+    }
+}
+
+
 # {{{ sub ToldAsString
 sub ToldAsString {
   my $self = shift;
-  if ($self->Due) {
-    return (scalar(localtime($self->Told)));
+  if ($self->Told) {
+      my $time=$self->ToldObj;
+      return $time->Gregorian->stringify();
   }
   else {
     return("Never");
   }
 }
+# }}}
+
 # }}}
 
 # }}}
@@ -773,13 +640,6 @@ sub ToldAsString {
 sub Notify {
     my $self = shift;
     return ($self->_Set("Told",time()));
-}
-# }}}
-
-# {{{ sub SinceTold
-sub SinceTold {
-  my $self = shift;
-  return ("Ticket->SinceTold unimplemented");
 }
 # }}}
 
@@ -1064,7 +924,200 @@ sub _NewLink {
  
 # }}}
 
-# {{{ Routines dealing with transactions
+# {{{ Actions + Routines dealing with transactions
+
+# {{{ Routines dealing with ownership
+
+# {{{ sub Owner
+
+sub Owner {
+  my $self = shift;
+
+  defined ($self->_Value('Owner')) || return undef;
+	
+  #If the owner object ain't loaded yet
+  if (! exists $self->{'owner'})  {
+    require RT::User;
+    $self->{'owner'} = new RT::User ($self->CurrentUser);
+    $self->{'owner'}->Load($self->_Value('Owner'));
+  }
+  
+  #TODO It feels unwise, but we're returning an empty owner
+  # object rather than undef.
+  
+  #Return the owner object
+  return ($self->{'owner'});
+}
+
+# }}}
+
+# {{{ sub OwnerAsString 
+sub OwnerAsString {
+  my $self = shift;
+  return($self->Owner->EmailAddress);
+
+}
+
+# }}}
+
+# {{{ sub Take
+sub Take {
+  my $self = shift;
+  return($self->SetOwner($self->CurrentUser->Id, 'Take'));
+}
+# }}}
+
+# {{{ sub Untake
+sub Untake {
+  my $self = shift;
+  return($self->SetOwner($RT::Nobody, 'Untake'));
+}
+# }}}
+
+# {{{ sub Steal 
+
+sub Steal {
+  my $self = shift;
+  
+  if (!$self->ModifyPermitted){
+    return (0,"Permission Denied");
+  }
+  elsif ($self->Owner->Id eq $self->CurrentUser->Id ) {
+    return (0,"You already own this ticket"); 
+  }
+  else {
+    # TODO: Send a "This ticket was stolen from you" alert
+    return($self->_Set('owner',$self->CurrentUser->Id, 'Steal'));
+  }
+    
+}
+
+# }}}
+
+# {{{ sub SetOwner
+
+sub SetOwner {
+  my $self = shift;
+  my $NewOwner = shift;
+  my $Type = shift;
+  my $more_params={};
+  $more_params->{TransactionType}=$Type if $Type;
+  my ($NewOwnerObj);
+
+  require RT::User;
+  $NewOwnerObj = RT::User->new($self->CurrentUser);
+  
+  if (!$NewOwnerObj->Load($NewOwner)) {
+    
+    return (0, "That user does not exist");
+  }
+  
+  
+  #If thie ticket has an owner and it's not the current user
+
+  # TODO: check this
+  
+  if ($Type ne 'Steal' and 
+      $self->Owner->Id!=$RT::Nobody and 
+      $self->CurrentUser->Id ne $self->Owner->Id()) {
+    
+    return(0, "You can only reassign tickets that you own or that are unowned");
+  }
+  #If we've specified a new owner and that user can't modify the ticket
+  elsif (($NewOwner) and (!$self->ModifyPermitted($NewOwnerObj->Id))) {
+    return (0, "That user may not own requests in that queue")
+  }
+  
+  
+  #If the ticket has an owner and it's the new owner, we don't need
+  #To do anything
+  elsif (($self->Owner) and ($NewOwnerObj->Id eq $self->Owner->Id)) {
+    return(0, "That user already owns that request");
+  }
+  
+  
+  #  elsif ( #TODO $new_owner doesn't have queue perms ) {
+  #	return (0,"That user doesn't have permission to modify this request");
+  #	}
+  
+  else {
+    #TODO
+    #If we're giving the request to someone other than $self->CurrentUser
+    #send them mail
+  }
+
+  return($self->_Set('Owner',$NewOwnerObj->Id,0,$more_params));
+}
+
+# }}}
+
+# }}}
+
+# {{{ Routines dealing with status
+
+
+# {{{ sub SetStatus
+sub SetStatus { 
+  my $self = shift;
+  my $status = shift;
+  my $action = 
+      $status eq 'open' ? 'Open' :
+      $status eq 'stalled' ? 'Stall' :
+      $status eq 'resolved' ? 'Resolve' :
+      $status eq 'dead' ? 'Kill' : 'huh?';
+
+  if ($action eq 'huh?') {
+    return (0,"That status is not valid.");
+  }
+  
+  if ($status eq 'resolved') {
+
+    #&open_parents($in_serial_num, $in_current_user) || $transaction_num=0; 
+    #TODO: we need to check for open parents.
+  }
+  
+  return($self->_Set('Status',$status, 0,{TransactionType=>$action}));
+}
+# }}}
+
+# {{{ sub Kill
+sub Kill {
+  my $self = shift;
+  return ($self->SetStatus('dead'));
+  # TODO: garbage collection
+}
+# }}}
+
+# {{{ sub Stall
+sub Stall {
+  my $self = shift;
+  return ($self->SetStatus('stalled'));
+}
+# }}}
+
+# {{{ sub Owner
+sub Open {
+  my $self = shift;
+  return ($self->SetStatus('open'));
+}
+# }}}
+
+# {{{ sub Resolve
+sub Resolve {
+  my $self = shift;
+  return ($self->SetStatus('resolved'));
+}
+# }}}
+
+# }}}
+
+# {{{ sub UpdateTold
+sub UpdateTold {
+    my $self=shift;
+    my $timetaken=shift || 0;
+    $self->_Set('Told','now()',$timetaken,{TransactionType=>'Told',IsSQL=>1});
+}
+# }}}
 
 # {{{ sub Transactions 
 
@@ -1221,7 +1274,7 @@ sub _Set {
     #if the user is trying to modify the record
     my $Field = shift;
     my $Value = shift;
-    my $TimeTaken = shift if @_;
+    my $TimeTaken = shift || 0;
     
     #TODO: what the hell are moreoptions?
 
@@ -1233,11 +1286,13 @@ sub _Set {
     # TobiX
 
     my $MoreOptions = shift if @_;
-    
-    $TimeTaken = 0 if (!defined $TimeTaken);
 
+    unless (ref $MoreOptions) {
+	$MoreOptions={ActionType=>$MoreOptions};
+    }
+    
     #record what's being done in the transaction
-    my ($ret, $msg)=$self->SUPER::_Set($Field, $Value);
+    my ($ret, $msg)=$self->SUPER::_Set($Field, $Value, $MoreOptions->{IsSQL}||undef);
     $ret or return (0,$msg);
     my $Old=$self->_Value("$Field") || undef;
     my $Trans=	$self->_NewTransaction 
@@ -1245,7 +1300,7 @@ sub _Set {
 	 Field => $Field,
 	 NewValue => $Value || undef,
 	 OldValue =>  $Old,
-	 TimeTaken => $TimeTaken || 0
+	 TimeTaken => $TimeTaken || 0,
 	 );
     return ($Trans,"$Field changed from ".($Old||"(nothing)")." to ".($Value||"(nothing)"));
   }

@@ -108,7 +108,14 @@ unless ($Ticket->Load($id)) {
 
 
       # Eventually, take the ticket:
-      if ($ARGS{Action} eq "Take") {
+      # TODO: What if there are more Actions?
+      if (exists $ARGS{Action} && $ARGS{Action} eq "Take") {
+         $Ticket->Take;
+	 push(@Actions, "Ticket taken!");
+      }
+
+      # Eventually, take the ticket:
+      if (exists $ARGS{Action} && $ARGS{Action} eq "Kill") {
          $Ticket->Take;
 	 push(@Actions, "Ticket taken!");
       }

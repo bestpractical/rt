@@ -1,4 +1,4 @@
-  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Ticket->Subject||"(No subject given)", titleright=> "<a href=\"../Search/Listing.html?keep=1\">Back to listing</a> / <a href=\"#last\">Last transaction</a> | <a href=\"ProcessUpdate.html?Take=1&id=".$Ticket->Id."\">Take</a> / <a href=\"ProcessUpdate.html?Kill=1&id=".$Ticket->Id."\">Kill</a> | <a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=".$Ticket->Id."\">Update</a> "&>
+  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Ticket->Subject||"(No subject given)", titleright=> "<a href=\"../Search/Listing.html?keep=1\">Back to listing</a> / <a href=\"#last\">Last transaction</a> | <a href=\"ProcessUpdate.html?Action=Take&id=".$Ticket->Id."\">Take</a> / <a href=\"ProcessUpdate.html?Action=Kill&id=".$Ticket->Id."\">Kill</a> | <a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=".$Ticket->Id."\">Update</a> "&>
 
 
 <%ARGS>

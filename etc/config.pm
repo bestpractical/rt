@@ -83,7 +83,7 @@ $Logger->add(Log::Dispatch::File->new
 	 },
 
        { Header => 'Told',
-	 TicketAttribute => 'ToldAsString'
+	 TicketAttribute => 'LongSinceToldAsString'
 	 },
 
        { Header => 'Age',

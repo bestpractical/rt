@@ -524,7 +524,7 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
           Due: @{[$Ticket->DueAsString]}
       Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->AgeAsString]})
- Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->SinceTold]} ago)
+ Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->LongSinceToldAsString]} ago)
   Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedBy]}
 	         
 EOFORM
@@ -573,7 +573,7 @@ sub LoadTicket  {
   $CurrentUser=&GetCurrentUser;
   #print "Current User is ".$CurrentUser->Id."\n";;
   use RT::Ticket;
-  $Ticket = new RT::Ticket ($CurrentUser);
+  $Ticket = RT::Ticket->new($CurrentUser);
   ($Status, $Message) = $Ticket->Load($id);
   if (!$Status) {
     print ("The ticket could not be loaded\n$Message\n");

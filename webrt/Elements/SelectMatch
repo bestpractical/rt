@@ -24,7 +24,7 @@ $LikeDefault => undef
 if ($Default && $Default !~ /true/i) {
 	$FalseDefault = "SELECTED";
 }
-elsif ($Default !~ /false/i) {
+elsif ($Default && $Default !~ /false/i) {
 	$TrueDefault = "SELECTED";
 } else {
 	$LikeDefault = "SELECTED";

@@ -111,7 +111,7 @@ sub PrintRow {
     elsif ($field =~ /^l(\d*)$/){ 
       $length = $1;
       if (!$length) {$length=6;}
-      printf "%-${length}.${length}s ", $Ticket->SinceTold;
+      printf "%-${length}.${length}s ", $Ticket->LongSinceToldAsString;
     }
     elsif ($field =~ /^w(.)$/) {
       if ($1 eq 't') { print "\t";}
