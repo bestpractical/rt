@@ -43,7 +43,7 @@ sub template_mail{
 	return("template_mail:No Recipient Specified!");
     }
 
-    open (MAIL, "|$rt::mailprog -f$rt::mail_alias");
+    open (MAIL, "|$rt::mailprog -f$rt::mail_alias $rt::mail_options");
 
     print  MAIL "Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject
 Reply-To: $rt::mail_alias
