@@ -10,9 +10,15 @@
 
 =head3 Mysql
 
+If you'll be running RT on Mysql, you'll need v3.23 or higher. RT is primarily
+developed on Mysql. Because of this, it's likely to be the best-tested
+database for RT
+
 =head3 PostgreSQL
 
 =head3 Oracle
+
+RT runs on Oracle 8 or 8i.  
 
 =head1	Installation
 
@@ -22,19 +28,69 @@
 
 =head2	Apache configuration
 
+
 =head2	Mail gateway configuration
 
 =head1	Concepts
 
 =head2	Tickets
 
+As a ticketing system, it should be no surprise that one of RT's most important
+objects is the B<Ticket>.  A single ticket corresponds to a single bug, bug report, outage report, task or some other thing that needs dealing with.
+
+
+=head2 Links
+
+Tickets can be linked to each other. 
+
+=head3 MemberOf
+
+=head3 RelatedTo
+
+=head3 DependsOn
+
+=head3 MergedInto
+
 =head2	Queues
+
+Queues are an administrative unit with their own ACLs, Scrips, Templates 
+and KeywordSelects.  Each ticket must be associated with one and only one queue.
+
+Create a seperate queue for each group of tickets that need different attributesor which have different access control requirements.
+
 
 =head2	Users
 
+=head3 User types
+
+=head4 Privileged Users
+
+Privileged users are users who can be granted rights and responsibilities.
+These users show up in user listings by default.
+
+=head4 Nonprivileged Users
+
+These users can not be granted rights or responsibilites (except as
+members of pseudogroups (see below)). These users can not access the 
+normal RT web interface.  When they access the web interface, they
+are immediately shunted to RT's "SelfService" interface for requestors.
+
+When email is submitted to RT's email gateway from an unknown email
+address, RT will automatically create a Nonprivileged user.
+
 =head3	Attributes
 
-=head3	Roles
+=head4 Name
+
+=head4 Password
+
+=head4 Gecos (Unix Username)
+
+RT's commandline tool uses your unix username to authenticate you. Set this 
+to the unix username of each RT user who should be able to use the commandline
+tools
+
+=head3 'Disabling' users
 
 =head2	Groups
 
@@ -60,19 +116,40 @@
 
 =head2  Keywords
 
+
+
 =head3  The Keywords tree
 
-=head3 Keyword Selections
+RT has a single 'tree' of keywords which can be attached to tickets 
+by means of keyword selects.
+
+=head3 Keyword Selects
+
+Keyword Selects allow a site to define sets of keywords which users 
+can use to 'tag' tickets.  
+
+Configuration options for keywords include:
+	
+	Scope: whether a keyword select applies to tickets in a single queue or
+	to every ticket in the system.
 
 =head4 Name
 
-=head4 Description
+	Name: The title of the Keyword Select displayed in the user interface
 
 =head4 Multiplicty
 
+	Single: Whether a user can only pick one value for the keyword select
+	or whether s/he can pick multiple values
+
 =head4 Depth
 
-=head4 Which Keyword
+	Depth: how deep RT will recurse through the keywords tree to find
+	available keywords. If depth is set to 0, depth is not limited.
+
+=head4 Root Keyword
+
+	Which keyword is to be the 'root' of the tree of available keywords?
 
 =head2	Scrips
 
@@ -225,9 +302,40 @@ grant the rights 'ReplyToTicket' and 'CommentOnTicket' to the pseudogroup 'Every
 
 =head3	mod_perl Configuration
 
+=head4  Basic configuration
+
+mod_perl will initialize rt's mod_perl handler for every child it forks.
+rt's mod_perl handler immediately opens a database connection as
+soon as it's initialized.
+
+If you configure apache to spawn 200 children, you need to configure
+your database server to handle 200 connections from apache.
+
+If you need RT to run through a high-traffic webserver, we recommend
+that you run RT on its own seperate apache server and proxy requests from
+your main webserver.  (see the next section)
+
+=head4  using a seperate webserver with mod_proxypass
+
+
+Set up an apache process which binds itself to a high port on 127.0.0.1.
+
+Set the following values in RT's config.pm:
+
+TODO: insert values from fsck.com/rt2/ here.
+
+On your main apache webserver, install mod_proxypass and add the directive:
+
+ProxyPass /rt/  http://localhost:<port>/rt/
+
 =head3	speedycgi Configuration
 
+The speedycgi version of RT's web interface isn't supported in RT 2.0
+
 =head3	fastcgi Configuration
+
+The fastcgi version of RT's web interface isn't supported in RT 2.0
+
 
 =head1	Questions
 
