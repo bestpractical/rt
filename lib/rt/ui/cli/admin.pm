@@ -17,7 +17,7 @@ sub activate {
 
   &parse_args();
   return(0);
-
+  
 
 }
 
@@ -187,18 +187,26 @@ sub cli_acl_queue {
 }
  sub cli_modify_user{
    my $user_id = shift;
-   my $User = new RT::User($CurrentUser->UserId, $RT::Handle);
-   $User->Load($user_id);
+   my $User;
+   $User = new RT::User($CurrentUser->GetUserId, $RT::Handle);
+   if (!$User->Load($user_id)){
+     print "That user does not exist.\n";
+     return(0);
+   }
+
    &cli_modify_user_helper($User);
  }
+ 
+ 
+ sub cli_modify_user_helper {
+   my $User = shift;
 
 
-sub cli_modify_user_helper {
-  my $User = shift;
-  my ($email, $real_name, $password, $phone, $office, $admin_rt, $comments, $message);
-  
-  if (($CurrentUser->UserId eq $User->UserId) or ($CurrentUser->GetIsAdministrator)) {
-    
+   my ($email, $real_name, $password, $phone, $office, $admin_rt, $comments, $message);
+   
+   if (($CurrentUser->GetUserId eq $User->GetUserId) or 
+       ($CurrentUser->GetIsAdministrator)) {
+     
     $email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,
 					 $User->GetEmailAddress);
     $real_name=&rt::ui::cli::question_string("Real Name",

@@ -116,6 +116,10 @@ sub delete {
   
 }
 
+sub Load {
+  my $self = shift;
+  return ($self->load(@_));
+}
 sub load {
   my $self = shift;
   my $identifier = shift;
@@ -125,7 +129,8 @@ sub load {
     $self->SUPER::load($identifier);
   }
   else {
-    $self->LoadByCol("UserId",$identifier);
+
+   $self->LoadByCol("UserId",$identifier);
   }
 }
 

@@ -15,31 +15,17 @@ sub new {
   return ($self);
 }
 
-sub User {
-  my $self = shift;
-  $self->_set_and_return('user_id',@_);
+sub _Accessible {
+  my $self = shift;  
+  my %Cols = (
+	     User => 'read/write',
+	     Queue => 'read/write',
+	     Display => 'read/write',
+	     Manipulate => 'write',
+	     Admin => 'read/write',
+	    );
+  return($self->SUPER::_Accessible(@_, %Cols));
 }
 
 
-sub Queue {
- my $self = shift;
-  $self->_set_and_return('queue_id',@_);
-
-}
-
-sub Display {
- my $self = shift;
-  $self->_set_and_return('display',@_);
-
-}
-
-sub Modify {
- my $self = shift;
-  $self->_set_and_return('modify',@_);
-
-}
-
-sub Admin {
- my $self = shift;
-  $self->_set_and_return('admin',@_);
-}
+1;

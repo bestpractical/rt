@@ -3,8 +3,7 @@
 # This software is redistributable under the terms of the GNU GPL
 #
 
-
-package RT::Ticket;
+ package RT::Ticket;
 use RT::Record;
 @ISA= qw(RT::Record);
 
@@ -13,12 +12,36 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'table'} = "each_req";
+  $self->{'table'} = "tickets";
   $self->{'user'} = shift;
   $self->_init(@_);
   return ($self);
 }
 
+
+
+
+sub _Accessible {
+  my $self = shift;  
+  my %Cols = (
+	      EffectiveId => 'read/write',
+	      Queue => 'read/write',
+	      Alias => 'read/write',
+	      Requestors => 'read/write',
+	      Owner => 'read/write',
+	      Subject => 'read/write',
+	      InitialPriority => 'read',
+	      FinalPriority => 'read/write',
+	      Priority => 'read/write',
+	      Status => 'read/write',
+	      TimeWorked => 'read',
+	      DateCreated => 'read',
+	      DateTold => 'read/write',
+	      DateActed => 'read/write',
+	      DateDue => 'read/write'
+	     );
+  return($self->SUPER::_Accessible(@_, %Cols));
+}
 
 sub Create {
   my $self = shift;
@@ -29,78 +52,64 @@ sub create {
   my $self = shift;
  
   my %args = (id => undef,
-	      effective_id => undef,
-	      queue => undef,
-	      area => undef,
-	      alias => undef,
-	      requestors => undef,
-	      owner => undef,
-	      subject => undef,
-	      initial_priority => undef,
-	      final_priority => undef,
-	      status => 'open',
-	      time_worked => 0,
-	      date_created => time(),
-	      date_told => 0,
-	      date_acted => time(),
-	      date_due => 0,
-	      content => undef,
+	      EffectiveId => undef,
+	      Queue => undef,
+	      Area => undef,
+	      Alias => undef,
+	      Requestors => undef,
+	      Owner => undef,
+	      Subject => undef,
+	      InitialPriority => undef,
+	      FinalPriority => undef,
+	      Status => 'open',
+	      TimeWorked => 0,
+	      DateCreated => time(),
+	      DateTold => 0,
+	      DateActed => time(),
+	      DateDue => 0,
+	      Content => undef,
 	      @_);
-
-  my $id = $self->SUPER::Create(id => $args{'id'},
-				effective_id => $args{'effective_id'},
-				queue => $args{'queue'},
-				area => $args{'area'},
-				alias => $args{'alias'},
-				requestors => $args{'requestors'},
-				owner => $args{'owner'},
-				subject => $args{'subject'},
-				initial_priority => $args{'initial_priority'},
-				final_priority => $args{'final_priority'},
-				priority => $args{'initial_priority'},
-				status => $args{'status'},
-				time_worked => $args{'time_worked'},
-				date_created => $args{'date_created'},
-				date_told => $args{'date_told'},
-				date_acted => $args{'date_acted'},
-				date_due => $args{'date_due'}
+  
+  my $ErrStr = $self->SUPER::Create(Id => $args{'id'},
+				EffectiveId => $args{'EffectiveId'},
+				Queue => $args{'Queue'},
+				Area => $args{'Area'},
+				Alias => $args{'Alias'},
+				Requestors => $args{'Requestors'},
+				Owner => $args{'Owner'},
+				Subject => $args{'Subject'},
+				InitialPriority => $args{'InitialPriority'},
+				FinalPriority => $args{'FinalPriority'},
+				Priority => $args{'InitialPriority'},
+				Status => $args{'Status'},
+				TimeWorked => $args{'TimeWorked'},
+				DateCreated => $args{'DateCreated'},
+				DateTold => $args{'DateTold'},
+				DateActed => $args{'DateActed'},
+				DateDue => $args{'DateDue'}
 			       );
-
+  
   #TODO: ADD A TRANSACTION
   #TODO: DO SOMETHING WITH $args{'content'}
-
-  return($id);
-
-}
-sub created {
-  my $self = shift;
-  $self->_set_and_return('created');
-}
-
-
-
-sub TicketId {
-  my $self = shift;
-  return($self->id);
-}
-sub EffectiveTicket {
-  my $self = shift;
-
-  $self->_set_and_return('effective_ticket',@_);
-}
-
-sub Queue {
-  my $self = shift;
-  my ($new_queue, $queue_obj);
   
-  #TODO: does this work?
-  if ($NewQueue = shift) {
-    #TODO this will clobber the old queue definition. 
-    #it should load its own queue object, maybe.
+  return($self->Id, $ErrStr);
+  
+}
 
-    my $NewQueueObj = RT::Queue->new($self->CurrentUser);
+sub SetQueue {
+  my $self = shift;
+  my ($NewQueue, $NewQueueObj);
+  
+  if ($NewQueue = shift) {
     
-    if (!$NewQueueObj->load($new_queue)) {
+    #TODO Check to make sure this isn't the current queue.
+        
+    #TODO this will clobber the old queue definition. 
+      
+    use RT::Queue;
+    $NewQueueObj = RT::Queue->new($self->CurrentUser);
+    
+    if (!$NewQueueObj->Load($NewQueue)) {
       return (0, "That queue does not exist");
     }
     elsif (!$NewQueueObj->Create_Permitted) {
@@ -113,84 +122,87 @@ sub Queue {
     #TODO: IF THE AREA DOESN'T EXIST IN THE NEW QUEUE, YANK IT.
     
     else {
-      $self->_set_and_return('queue',$new_queue);
+      $self->_Set('Queue', $NewQueueObj->Id());
     }
   }
-  #if they're not setting the queueid, just return a queue object
   else {
-    
-    if (!$self->{'queue'})  {
-      require RT::Queue;
-      $self->{'queue'} = RT::Queue->new($self->CurrentUser);
-      $self->{'queue'}->load($self->_set_and_return('queue'));
-    }
-    return ($self->{'queue'});
-    
+    return ("No queue specified");
+    #if they're not setting the queueid, just return a queue object
+  }
 }
 
-    return($self->{'queue'});
-}
-
-
-sub Area {
+sub GetQueue {
   my $self = shift;
-  
-  
-  #TODO: if we get an area check to see if it's a valid area in this queue
-  
-  $self->_set_and_return('area',@_);
-}
-sub Alias {
-  my $self = shift;
-  #TODO
-  $self->_set_and_return('alias',@_);
+  if (!$self->{'queue'})  {
+    require RT::Queue;
+    $self->{'queue'} = RT::Queue->new($self->CurrentUser);
+    $self->{'queue'}->load($self->_Value('Queue'));
+  }
+  return ($self->{'queue'});
 }
 
-sub Requestors{
-  my $self = shift;
-  $self->_set_and_return('requestors',@_);
-}
+
+
 
 sub Take {
   my $self=shift;
-  $self->Owner($self->CurrentUser);
+  $self->SetOwner($self->CurrentUser);
 }
 
 sub Untake {
   my $self=shift;
-  $self->Owner("");
+  $self->SetOwner("");
 }
 
 
-sub Owner {
+sub GetOwner {
   my $self = shift;
-  
-  #TODO: does this take the null owner properly?
-  if ($new_owner = shift) {
-    #new owner can be blank or the name of a new owner.
-    if (($new_owner != '') and (!$self->Modify_Permitted($new_owner))) {
-      return ("That user may not own requests in that queue")
-    }
+  if (!$self->{'owner'})  {
+    require RT::User;
+    $self->{'owner'} = RT::User->new($self->CurrentUser);
+    $self->{'owner'}->load($self->_Value('Owner'));
   }
-  elsif ($new_owner eq $self->Owner) {
-	return("You already own that request");
-	}
-  elsif (($self->CurrentUser ne $self->Owner()) and ($self->Owner != '')) {
+  return ($self->{'owner'});
+}
+
+sub SetOwner {
+  my $self = shift;
+  my $NewOwner = shift;
+  my ($NewOwnerObj);
+  use RT::User;
+  
+  my $NewOwnerObj = RT::User->new($self->CurrentUser);
+  
+  if (!$NewOwnerObj->Load($NewOwner)) {
+    return (0, "That user does not exist");
+  }
+  
+  #new owner can be blank or the name of a new owner.
+  if (($NewOwner != '') and (!$self->Modify_Permitted($NewOwner))) {
+    return ("That user may not own requests in that queue")
+  }
+  
+  elsif ($NewOwnerObj->Id eq $self->GetOwner->Id) {
+    return("That user already owns that request");
+  }
+  elsif (($self->CurrentUser ne $self->GetOwner()) and ($self->GetOwner != '')) {
     return("You can only reassign tickets that you own or that are unowned");
   }
-	
-#  elsif ( #TODO $new_owner doesn't have queue perms ) {
-#	return ("That user doesn't have permission to modify this request");
-#	}
-
+  
+  #  elsif ( #TODO $new_owner doesn't have queue perms ) {
+  #	return ("That user doesn't have permission to modify this request");
+  #	}
+  
   else {
     #TODO
     #If we're giving the request to someone other than $self->CurrentUser
     #send them mail
-    $self->_set_and_return('owner',$new_owner);
   }
-
+  $self->_Set('Owner',$NewOwnerObj->Id);
+  
+  
 }
+
 
 
 sub Steal {
@@ -199,7 +211,7 @@ sub Steal {
   if (!$self->CanManipulate($self->CurrentUser)){
     return ("Permission Denied");
   }
-  elsif ($self->Owner == $self->CurrentUser ) {
+  elsif ($self->GetOwner == $self->CurrentUser ) {
     return ("You already own this ticket"); 
   }
   
@@ -208,27 +220,7 @@ sub Steal {
     return($self->_set_and_return('owner',$self->CurrentUser));
   }
   
-}
-
-sub Subject {
-  my $self = shift;
-  $self->_set_and_return('subject',@_);
-}
-
-sub InitialPriority {
-  my $self = shift;
-  #we never allow this to be reset
-  $self->_set_and_return('initial_priority');
-}
-
-sub FinalPriority {
-  my $self = shift;
-  $self->_set_and_return('final_priority',@_);
-}
-
-sub Priority {
-  my $self = shift;
-  $self->_set_and_return('priority',@_);
+  
 }
 
 sub Status { 
@@ -261,28 +253,18 @@ sub Kill {
 
 sub Stall {
   my $self = shift;
-  return ($Self->Status('stalled'));
+  return ($Self->SetStatus('stalled'));
   
 }
 
 sub Open {
   my $self = shift;
-  return ($Self->Status('open'));
+  return ($Self->SetStatus('open'));
 }
 
 sub Resolve {
   my $self = shift;
-  return ($Self->Status('resolved'));
-}
-
-sub TimeWorked {
-  my $self = shift;
-  $self->_set_and_return('time_worked',@_);
-}
-
-sub DateCreated {
-  my $self = shift;
-  $self->_set_and_return('date_created');
+  return ($Self->SetStatus('resolved'));
 }
 
 sub Notify {
@@ -290,16 +272,6 @@ sub Notify {
   return ($self->DateTold(time()));
 }
   
-sub DateTold {
-  my $self = shift;
-  $self->_set_and_return('date_told',@_);
-}
-
-sub DateDue {
-  my $self = shift;
-  $self->_set_and_return('date_due',@_);
-}
-
 sub SinceTold {
   my $self = shift;
   return ("Ticket->SinceTold unimplemented");
@@ -477,11 +449,6 @@ sub NewLink {
 # UTILITY METHODS
 # 
     
-sub CurrentUser {
-  my $self = shift;
-  return($self->{'user'});
-}
-
 sub IsRequestor {
   my $self = shift;
   my $username = shift;
@@ -560,10 +527,6 @@ sub _set_and_return {
     return (0, "Permission Denied");
   }
 }
-
-
-
-
 
 
 #

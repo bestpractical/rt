@@ -6,12 +6,11 @@
 
 CREATE TABLE acl (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  queue CHAR(40),
-  user CHAR(40),
-  display INT,
-  manipulate INT,
-  admin INT,
-  mail INT
+  Queue INT,
+  User INT,
+  Display INT,
+  Manipulate INT,
+  Admin INT
 )\g
 
 CREATE TABLE queue_areas (
@@ -59,22 +58,21 @@ CREATE TABLE queues (
 
 CREATE TABLE tickets (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  effective_id INT,
-  queue CHAR(40),
-  area CHAR(40),
-  alias CHAR(40),
-  requestors CHAR(200),
-  owner CHAR(40),
-  subject CHAR(200),
-  initial_priority INT,
-  final_priority INT,
-  priority INT,
-  status CHAR(10),
-  time_worked INT,
-  date_created INT,
-  date_told INT,
-  date_acted INT,
-  date_due INT
+  EffectiveId INT,
+  Queue INT,
+  Alias CHAR(40),
+  Requestors CHAR(200),
+  Owner INT,
+  Subject CHAR(200),
+  InitialPriority INT,
+  FinalPriority INT,
+  Priority INT,
+  Status CHAR(10),
+  TimeWorked INT,
+  DateCreated INT,
+  DateTold INT,
+  DateActed INT,
+  DateDue INT
 ) \g
 
 #
