@@ -87,8 +87,7 @@ else {
 
 my $portlets = $session{'my_rt_portlets'};
 
-my %allowed_components = map {$_ => 1}
-    qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage);
+my %allowed_components = map {$_ => 1} @{$RT::HomepageComponents};
 my @items;
 
 push @items, map {["component-$_", $_]} sort keys %allowed_components;
