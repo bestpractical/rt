@@ -1,7 +1,10 @@
 <TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %>
-<%$Signature%>
+<%$message%>
+<%$signature%>
 </TEXTAREA>
 <%INIT>
+
+my ($message);
 
 if ($MessageURI) {
 	my $code;
@@ -10,23 +13,12 @@ if ($MessageURI) {
 if ($QuoteTransaction) {
     my $transaction=RT::Transaction->new($session{'CurrentUser'});
     $transaction->Load($QuoteTransaction);
-    my $message=$transaction->Message->First;
-
-    # TODO: This code is disgustingly ugly. It needs to be taken out, shot,
-    # and buried in an unmarked grave. 
-    my $dumb="";
-    my $d=\$dumb;
-    if ($message) {
-	    ($d, $Width)=$message->Quote(Reply=>$Default);
-    }
-    $Default=$$d;
-    #END todo
-
+    $message=$transaction->Content(Quote => 1);
 }
 
-my $Signature = '';
+my $signature = '';
 if ($session{'CurrentUser'}->UserObj->Signature) {
-	$Signature = "-- \n".$session{'CurrentUser'}->UserObj->Signature;
+	$signature = "-- \n".$session{'CurrentUser'}->UserObj->Signature;
 }
 
 </%INIT>
