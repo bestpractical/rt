@@ -158,7 +158,7 @@ sub add_correspondence {
     }
     
     #if it's coming from somebody other than the user, send them a copy
-    if ( (&is_not_a_requestor($in_current_user,$in_serial_num)) {
+    if  (&is_not_a_requestor($in_current_user,$in_serial_num)) {
       &update_each_req($in_serial_num, 'date_told', $rt::time);
       $tem=&rt::template_mail('correspondence', $queue_id, "$requestors", $in_cc, $in_bcc, 
 			      "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');

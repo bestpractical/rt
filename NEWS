@@ -1,3 +1,9 @@
+3 Dec 1999
+----------
+
+* Fixed a typo introduced by tobix's latest patch for mail sending
+  (Which he didn't update the news for. *poke* )
+
 8 Nov 1999
 ----------
 * Fixed a longstanding bug in rtq's -prio operator
