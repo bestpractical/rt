@@ -666,7 +666,7 @@ sub MigrateTransactions {
 	    #clean up files with false multipart Content-type
 	    my @n_headers;
 	    while ( my $header = shift @headers ) {
-		if ( $header =~ /^content-type: multipart\/(alternative|mixed|report|signed|digest|related)\s*;/i ) {
+		if ( $header =~ /^content-type:\*multipart\/(alternative|mixed|report|signed|digest|related)\s*;/i ) {
 		    my $two = 0;
 		    my $boundary;
 		    if ( $header =~ /;\s*boundary="?([\-\w\.\=\/\+\%]+)"?/i ) {
