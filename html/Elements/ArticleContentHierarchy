@@ -22,7 +22,7 @@ type="i"
 % }
 <BR>
 <%$article->ContentObj->Body |n%>
-% if ($session{'current_user'}->IsEditor) {
+% if ($session{'CurrentUser'}->IsEditor) {
 <div align="right"><i><A href="<%$RT::FM::WebPath%>/edit/edit_article.html?id=<%$article->Id%>">Edit</a></i></div>
 %}
 
