@@ -36,7 +36,7 @@ $tickets->OrderBy(FIELD => 'Priority',
 		  ORDER => 'DESC');
 </%PERL>
 
-% if ($requestor->Privileged) {
+% unless ($requestor->Privileged) {
 <& /Elements/TitleBoxStart, 
 	title => "<a class='inverse' href=\"$RT::WebPath/Admin/Users/Modify.html?id=".$requestor->id."\">".loc("More about [_1]", $name)."</a>" &>
 
