@@ -45,6 +45,7 @@ unless ($Collapsed) {
 
 
 <%PERL>
+  my $quoted;
   if ($message->Parent == 0) {
       if ($ShowHeaders == $Ticket->Id) {
 	  $headers = $message->Headers;
@@ -65,13 +66,8 @@ unless ($Collapsed) {
 
 	 $content = $message->Content;
 
-	 my $wrapper = new Text::Wrapper (columns=>85);
-	 $content = $wrapper->wrap($content);
-         $content =~ s/&/&amp;/g;
-	 $content =~ s/</&lt;/g;
-	 $content =~ s/>/&gt;/g;
-         $content =~ s!((?:http|https|ftp|mailto):\S*?)([\s"']|&gt;|\.[\n])!<A HREF=\"$1\" TARGET=new>$1</A>$2!g;
-
+         use Text::Quoted;
+         $quoted = extract ($content); 
 
      }
      else {
@@ -84,8 +80,9 @@ unless ($Collapsed) {
       <TD>&nbsp&nbsp;</TD>
       <TD COLSPAN=3 VALIGN=TOP>
 	<PRE>
-<%$headers%><%$content|n%>
+<%$headers%>
 </PRE>
+<& ShowMessageStanza, Depth => 0, Message => $quoted &>
       </TD>
       <TD VALIGN=TOP ALIGN=RIGHT>
 	

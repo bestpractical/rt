@@ -306,10 +306,10 @@ sub Content {
             $content = $wrapper->wrap($content);
         }
 
-        $content =~ s/^/> /gm;
         $content = '['
           . $self->CreatorObj->Name() . ' - '
           . $self->CreatedAsString() . "]:\n\n" . $content . "\n\n";
+        $content =~ s/^/> /gm;
 
     }
 

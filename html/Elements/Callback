@@ -1,9 +1,7 @@
 <%init>
-$m->print('/Callbacks'. $m->callers(1)->path.'/'.$ARGS{'Name'}.'/*');
 my @callbacks = $m->interp->resolver->glob_path('/Callbacks/'. $m->callers(1)->path.'/'.$ARGS{'Name'}.'/*');
 # TODO: memoize these callbacks, so we don't have a big perf hit
 foreach my $comp (@callbacks) {
-$m->print($comp."<br>");
         $m->comp($comp, %ARGS);
 }
 return(1);
