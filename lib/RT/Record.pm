@@ -1774,6 +1774,7 @@ sub CustomFieldValues {
         # Look up the field ID.
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
         $cfs->LimitToGlobalOrObjectId( $self->Id() );
+        $cfs->LimitToLookupType($self->_LookupTypes);
         $cfs->Limit( FIELD => 'Name', OPERATOR => '=', VALUE => $field );
 
         if ( $cfs->First ) {
@@ -1793,6 +1794,7 @@ sub CustomFieldValues {
     $cf_values->LimitToCustomField($field) if ($field);
     $cf_values->LimitToObject($self);
     $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+
 
     return ($cf_values);
 }

@@ -944,6 +944,39 @@ sub UpdateCustomFields {
     }
 }
 
+
+
+=head2 CustomFieldValues
+
+ Do name => id mapping (if needed) before falling back to RT::Record's CustomFieldValues
+
+ See L<RT::Record>
+
+=cut
+
+sub CustomFieldValues {
+    my $self  = shift;
+    my $field = shift;
+
+    if ( UNIVERSAL::can( $self->Object, 'QueueObj' ) ) {
+
+        unless ( $field =~ /^\d+$/ ) {
+            my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->LoadByName(
+                Name  => $field,
+                Queue => $self->Object->QueueObj->Id
+            );
+            unless ( $cf->id ) {
+                $cf->LoadByName( Name => $field, Queue => '0' );
+            }
+            $field = $cf->id;
+        }
+    }
+    return $self->SUPER::CustomFieldValues($field);
+}
+
+# }}}
+
 sub _LookupTypes {
     "RT::Queue-RT::Ticket-RT::Transaction";
 }
