@@ -269,7 +269,7 @@ sub ProcessSearchQuery {
     # }}}    
     # {{{ Limit Content
     if ($args{ARGS}->{'ValueOfContent'} ne '') {
-	$session{'tickets'}->Limit(				
+	$session{'tickets'}->LimitContent(				
 				   VALUE =>  $args{ARGS}->{'ValueOfContent'},
 				   OPERATOR => $args{ARGS}->{'ContentOp'},
 				  );
