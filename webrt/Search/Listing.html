@@ -28,8 +28,6 @@
 use RT::Tickets;
 use RT::CurrentUser;
 
-print STDERR "Kilroy was here\n";
-
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Tickets = RT::Tickets->new($CurrentUser);
 
@@ -42,6 +40,11 @@ if ($ARGS{'LimitOwner'}) {
   else {
     $oper = "=";
   }
+  
+  # Better error handling is certainly needed.  I'll just use die as for
+  # now.  If die is a big problem, it's possible to trap it anyway.
+  die "Huh? LimitOwner specified, but not ValueOfOwner."
+      unless $ARGS{'ValueOfOwner'};
   
   $Tickets->Limit (FIELD => 'Owner',
 		   VALUE => $ARGS{'ValueOfOwner'},
