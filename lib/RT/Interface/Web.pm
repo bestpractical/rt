@@ -27,7 +27,25 @@
 ## This is a library of static subs to be used by the Mason web
 ## interface to RT
 
+
+=head1 NAME
+
+RT::Interface::Web
+
+=begin testing
+
+use_ok(RT::Interface::Web);
+
+=end testing
+
+=cut
+
+
 package RT::Interface::Web;
+use strict;
+
+
+
 
 # {{{ sub NewParser
 
@@ -108,6 +126,8 @@ sub NewCGIHandler {
 
 
 package HTML::Mason::Commands;
+use strict;
+use vars qw/$r $m %session/;
 
 # {{{ SetContentType
 
@@ -652,7 +672,7 @@ sub ProcessSearchQuery {
         my $oper = $args{ARGS}->{ "CustomFieldOp" . $id };
         foreach my $value ( ref($form) ? @{$form} : ($form) ) {
             my $quote = 1;
-            if ( $KeywordId =~ /^null$/i ) {
+            if ( $value =~ /^null$/i ) {
 
                 #Don't quote the string 'null'
                 $quote = 0;
@@ -733,10 +753,10 @@ sub ProcessACLChanges {
             my $obj;
 
             if ($object_type eq 'RT::Queue') {
-                $obj = RT::Queue->new($session{'CurrentUser'};
+                $obj = RT::Queue->new($session{'CurrentUser'});
                 $obj->Load($object_id);      
             } elsif ($object_type eq 'RT::Group') {
-                $obj = RT::Group->new($session{'CurrentUser'};
+                $obj = RT::Group->new($session{'CurrentUser'});
                 $obj->Load($object_id);      
 
             } elsif ($object_type eq 'RT::System') {
@@ -766,10 +786,10 @@ sub ProcessACLChanges {
             my $obj;
 
             if ($object_type eq 'RT::Queue') {
-                $obj = RT::Queue->new($session{'CurrentUser'};
+                $obj = RT::Queue->new($session{'CurrentUser'});
                 $obj->Load($object_id);      
             } elsif ($object_type eq 'RT::Group') {
-                $obj = RT::Group->new($session{'CurrentUser'};
+                $obj = RT::Group->new($session{'CurrentUser'});
                 $obj->Load($object_id);      
 
             } elsif ($object_type eq 'RT::System') {
@@ -1079,7 +1099,7 @@ sub ProcessTicketCustomFieldUpdates {
 "User asked for an unknown update type for custom field "
                           . $cf->Name
                           . " for ticket "
-                          . $ticket->id );
+                          . $Ticket->id );
                 }
             }
         }
@@ -1198,7 +1218,7 @@ sub ProcessTicketDates {
     );
 
     #Run through each field in this list. update the value if apropriate
-    foreach $field (@date_fields) {
+    foreach my $field (@date_fields) {
         my ( $code, $msg );
 
         my $DateObj = RT::Date->new( $session{'CurrentUser'} );

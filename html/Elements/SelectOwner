@@ -26,15 +26,28 @@
 <OPTION VALUE="">-</OPTION>
 <OPTION <% ($RT::Nobody->Id() == $Default) && "SELECTED" %> VALUE="<%$RT::Nobody->Id%>"><%$RT::Nobody->Name%></OPTION>
 %while ( my $User = $Users->Next())  {
-% if ((!defined $QueueObj) || ($User->HasQueueRight(Right => 'OwnTicket', QueueObj => $QueueObj, TicketObj => $TicketObj))){
 <OPTION VALUE="<%$User->Id()%>" <% ($User->Id() == $Default) && "SELECTED" %>><%$User->Name()%></OPTION>
-% }
 %}
 </SELECT>
 
 <%INIT>
 my $Users = RT::Users->new($session{CurrentUser});
 $Users->LimitToPrivileged;
+my $object;
+
+
+if ($TicketObj) {
+        $object = $TicketObj;
+}
+elsif ($QueueObj) {
+        $object = $QueueObj;
+}
+if ($object) {
+        $Users->WhoHaveRight(Right => 'OwnTicket',
+                     Object => $object,
+                     IncludeSystemRights => 1,
+                     IncludeSuperusers => 1);
+}
 </%INIT>
 
 <%ARGS>
