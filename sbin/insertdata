@@ -263,7 +263,7 @@ my @queues;
 unless ($LastVersion) {
     @queues = (
         {
-            Name              => 'general',
+            Name              => 'General',
             Description       => 'The default queue',
             CorrespondAddress => "rt\@localhost",
             CommentAddress    => "rt-comment\@localhost"

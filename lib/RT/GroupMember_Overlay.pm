@@ -228,11 +228,15 @@ sub _StashUser {
 Takes no arguments. deletes the currently loaded member from the 
 group in question.
 
+Expects to be called _outside_ a transaction
+
 =cut
 
 sub Delete {
     my $self = shift;
 
+
+    $RT::Handle->BeginTransaction();
 
     # Find all occurrences of this member as a member of this group
     # in the cache and nuke them, recursively.

@@ -16,7 +16,7 @@ if ($q->id != 0) {
         die "Regression tests not starting with a clean DB. Bailing";
 }
 
-my ($id, $msg) = $q->Create( Name => 'regression',
+my ($id, $msg) = $q->Create( Name => 'Regression',
             Description => 'A regression test queue',
             CorrespondAddress => 'correspond@a',
             CommentAddress => 'comment@a');
@@ -27,7 +27,7 @@ my $q2 = RT::Queue->new($RT::SystemUser);
 
 ok($q2->Load($id));
 is($q2->id, $id, "Sucessfully loaded the queue again");
-is($q2->Name, 'regression');
+is($q2->Name, 'Regression');
 is($q2->Description, 'A regression test queue');
 is($q2->CorrespondAddress, 'correspond@a');
 is($q2->CommentAddress, 'comment@a');
