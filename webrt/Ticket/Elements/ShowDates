@@ -1,10 +1,10 @@
  <TABLE WIDTH="100%">
       <TR>
 	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => 'Due' , content => $Ticket->DueAsString &>
+	  <& /Elements/ShadedBox, title => 'Due' , content => $Ticket->Due ? $Ticket->DueAsString : "-" &>
 	</TD>
 	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => 'Last Update' , content => $Ticket->LastUpdated ." by ".$Ticket->LastUpdatedBy &>
+	  <& /Elements/ShadedBox, title => 'Last Update' , content => $Ticket->LastUpdated ? ($Ticket->LastUpdatedAsString ." by ".$Ticket->LastUpdatedBy) : "Never" &>
 	</TD>
 
 	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
