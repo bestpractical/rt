@@ -452,7 +452,7 @@ sub _AddWatcher {
     }
 
 
-    my ($m_id, $m_msg) = $group->AddMember($principal->Id);
+    my ($m_id, $m_msg) = $group->_AddMember($principal->Id);
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
 
@@ -550,7 +550,7 @@ sub DeleteWatcher {
         $self->loc('That principal is not a [_1] for this queue', $args{'Type'}) );
     }
 
-    my ($m_id, $m_msg) = $group->DeleteMember($principal->Id);
+    my ($m_id, $m_msg) = $group->_DeleteMember($principal->Id);
     unless ($m_id) {
         $RT::Logger->error("Failed to delete ".$principal->Id.
                            " as a member of group ".$group->Id."\n".$m_msg);

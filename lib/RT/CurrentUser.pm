@@ -247,6 +247,18 @@ sub Privileged {
 
 # {{{ Convenient ACL methods
 
+
+=head2 HasGroupRight
+
+calls $self->UserObj->HasGroupRight with the arguments passed in
+
+=cut
+
+sub HasGroupRight {
+	my $self = shift;
+	return ($self->UserObj->HasGroupRight(@_));
+}
+
 =head2 HasQueueRight
 
 calls $self->UserObj->HasQueueRight with the arguments passed in

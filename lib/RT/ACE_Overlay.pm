@@ -27,7 +27,7 @@ use RT::Principal;
 use vars qw (%SCOPES
    	     %QUEUERIGHTS
 	     %SYSTEMRIGHTS
-         %GROUPRIGHTS
+             %GROUPRIGHTS
 	     %LOWERCASERIGHTNAMES
 	    ); 
 
@@ -74,16 +74,16 @@ use vars qw (%SCOPES
 # XXX TODO Can't localize these outside of having an object around.
 %SYSTEMRIGHTS = (
         SuperUser => 'Do anything and everything',
-		AdminGroups => 'Create, delete and modify groups',
+		AdminGroup => 'Create, delete and modify groups',
 	    AdminUsers => 'Create, delete and modify users',
 		ModifySelf => "Modify one's own RT account",
 
 		);
 
-%GROUPRIGHTS = qw(
-       AdminGroup
-       AdminGroupMembership
-       ModifyOwnMembership
+%GROUPRIGHTS = (
+       AdminGroup 	=> 'Modify group metadata. Delete group',
+       AdminGroupMembership => 'Modify membership roster for this group',
+       ModifyOwnMembership => 'Join or leave this group'
 );
 
 # }}}
@@ -109,6 +109,9 @@ foreach $right (keys %SYSTEMRIGHTS) {
     $LOWERCASERIGHTNAMES{lc $right}=$right;
 }
 
+foreach $right (keys %GROUPRIGHTS) {
+    $LOWERCASERIGHTNAMES{lc $right}=$right;
+}
 # }}}
 
 # {{{ sub LoadByValues
@@ -161,8 +164,8 @@ PARAMS is a parameter hash with the following elements:
    PrincipalId => The id of an RT::Principal object
    PrincipalType => "User" "Group" or any Role type
    RightName => the name of a right. in any case
-   ObjectType => "System" | "Queue"
-   ObjectId => a queue id or undef
+   ObjectType => "System" | "Queue" | "Group"
+   ObjectId => a queue id, group id or undef
 
 =cut
 
@@ -201,6 +204,11 @@ sub Create {
 	        return (0, $self->loc('Permission Denied'));
 	    }
     }
+    elsif ($args{'ObjectType'} eq 'Group') {
+	    unless ($self->CurrentUserHasGroupRight( Group => $args{'ObjectId'}, Right => 'AdminGroup')) {
+	        return (0, $self->loc('Permission Denied'));
+	    }
+    }
     #If it's not a scope we recognise, something scary is happening.
     else {
 	$RT::Logger->err("RT::ACE->Create got an object type it didn't recognize: ".  $args{'ObjectType'}." Bailing. \n");
@@ -215,12 +223,17 @@ sub Create {
     #check if it's a valid RightName
     if ($args{'ObjectType'} eq 'Queue') {
 	unless (exists $QUEUERIGHTS{$args{'RightName'}}) {
-	    return(0, 'Invalid right');
+	    return(0, $self->loc('Invalid right'));
 	}	
 	}	
+    elsif ($args{'ObjectType' eq 'Group'}) {
+	unless (exists $GROUPRIGHTS{$args{'RightName'}}) {
+	    return(0, $self->loc('Invalid right'));
+	}		    
+    }	
     elsif ($args{'ObjectType' eq 'System'}) {
 	unless (exists $SYSTEMRIGHTS{$args{'RightName'}}) {
-	    return(0, 'Invalid right');
+	    return(0, $self->loc('Invalid right'));
 	}		    
     }	
     # }}}
@@ -382,19 +395,42 @@ sub SystemRights {
 
 # }}}
 
-# {{{ sub AppliesToObj
+# {{{ sub GroupRights
 
-=head2 AppliesToObj
+=head2 GroupRights
 
-If the AppliesTo is a queue, returns the queue object. If it's 
-the system object, returns undef. If the user has no rights, returns undef.
+Returns a hash of all the possible rights at the system scope
 
 =cut
 
-sub AppliesToObj {
+sub GroupRights {
+	return (%GROUPRIGHTS);
+}
+
+
+# }}}
+
+# {{{ sub Object
+
+=head2 Object
+
+If the object this ACE applies ot o is a queue, returns the queue object. 
+If the object this ACE applies ot o is a group, returns the group object. 
+If it's the system object, returns undef. 
+
+If the user has no rights, returns undef.
+
+=cut
+
+sub Object {
     my $self = shift;
     if ($self->ObjectType eq 'Queue') {
-	my $appliesto_obj = new RT::Queue($self->CurrentUser);
+	my $appliesto_obj = RT::Queue->new($self->CurrentUser);
+	$appliesto_obj->Load($self->ObjectId);
+	return($appliesto_obj);
+    }
+    elsif ($self->ObjectType eq 'Group') {
+	my $appliesto_obj = RT::Group->new($self->CurrentUser);
 	$appliesto_obj->Load($self->ObjectId);
 	return($appliesto_obj);
     }
@@ -402,8 +438,8 @@ sub AppliesToObj {
 	return (undef);
     }	
     else {
-	$RT::Logger->warning("$self -> AppliesToObj called for an object ".
-			     "of an unknown scope:" . $self->ObjectType);
+	$RT::Logger->warning("$self -> Object called for an object ".
+			     "of an unknown type:" . $self->ObjectType);
 	return(undef);
     }
 }	
@@ -455,6 +491,29 @@ sub _Value {
 # }}}
 
 
+# {{{ sub CurrentUserHasGroupRight 
+
+=head2 CurrentUserHasGroupRight ( Group => GROUPID, Right => RIGHTNANAME )
+
+Check to see whether the current user has the specified right for the specified group.
+
+=cut
+
+sub CurrentUserHasGroupRight {
+    my $self = shift;
+    my %args = (Group => undef,
+		Right => undef,
+		@_
+		);
+    return ($self->HasRight( Right => $args{'Right'},
+			     Principal => $self->CurrentUser->UserObj,
+			     Group => $args{'Group'}));
+}
+
+# }}}
+
+# {{{ sub CurrentUserHasSystemRight 
+=head2 CurrentUserHasSystemRight RIGHTNAME
 # {{{ sub CurrentUserHasQueueRight 
 
 =head2 CurrentUserHasQueueRight ( Queue => QUEUEID, Right => RIGHTNANAME )
@@ -533,11 +592,18 @@ sub HasRight {
 		 System => undef,
                  @_ ); 
 
+	# TODO XXXX This code could be refactored to just use ->HasRight
+	# and be MUCH cleaner.
+
     #If we're explicitly specifying a queue, as we need to do on create
     if (defined $args{'Queue'}) {
 	return ($args{'Principal'}->HasQueueRight(Right => $args{'Right'},
 						  Queue => $args{'Queue'}));
     }
+    elsif (defined $args{'Group'}) {
+	return ($args{'Principal'}->HasGroupRight(Right => $args{'Right'},
+						  Group => $args{'Group'}));
+   }	
     #else if we're specifying to check a system right
     elsif ((defined $args{'System'}) and (defined $args{'Right'})) {
         return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
@@ -546,13 +612,18 @@ sub HasRight {
     elsif ($self->__Value('ObjectType') eq 'System') {
 	return $args{'Principal'}->HasSystemRight($args{'Right'});
     }
+    elsif ($self->__Value('ObjectType') eq 'Group') {
+	return $args{'Principal'}->HasGroupRight( Group => $self->__Value('ObjectId'),
+						  Right => $args{'Right'} );
+    }	
     elsif ($self->__Value('ObjectType') eq 'Queue') {
 	return $args{'Principal'}->HasQueueRight( Queue => $self->__Value('ObjectId'),
 						  Right => $args{'Right'} );
     }	
     else {
-	$RT::Logger->warning("$self: Trying to check an acl for a scope we ".
-			     "don't understand:" . $self->__Value('ObjectType') ."\n");
+	Carp;
+	$RT::Logger->warning(Carp::cluck("$self: Trying to check an acl for a scope we ".
+			     "don't understand:" . $self->__Value('ObjectType') ."\n"));
 	return undef;
     }
 

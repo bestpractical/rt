@@ -312,15 +312,14 @@ $WebImagesURL = $WebURL."/NoAuth/images/";
 $LogoURL = $WebImagesURL."/rt.jpg";
 
 # If $WebExternalAuth is defined, RT will defer to the environment's
-# REMOTE_USER variable. If $WebExternalOnly is undefined, the user is
-# allowed a chance of fallback.
+# REMOTE_USER variable.
 
 $WebExternalAuth = undef;
 
+# If $WebFallbackToInternalAuth is undefined, the user is allowed a chance
+# of fallback to the login screen, even if REMOTE_USER failed.
 
-# TODO: WHAT DOES THIS MEAN, AUTRIJUS?
-
-$WebExternalOnly = undef;
+$WebFallbackToInternalAuth = undef;
 
 # $WebExternalGecos means to match 'gecos' field as the user identity;
 # useful with mod_auth_pwcheck and IIS Integrated Windows logon.

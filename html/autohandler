@@ -87,7 +87,8 @@ elsif ($RT::WebExternalAuth and length($ENV{'REMOTE_USER'})) {
     }
 }
 
-delete $session{'CurrentUser'} unless defined $session{'CurrentUser'}->Id;
+delete $session{'CurrentUser'}
+    unless $session{'CurrentUser'} and defined $session{'CurrentUser'}->Id;
 
 # If the user is loging in, let's authenticate
 if (!$session{'CurrentUser'} && defined ($user) && defined ($pass) ){

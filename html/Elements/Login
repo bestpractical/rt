@@ -11,7 +11,7 @@
 contentbg=>"#cccccc" &>
 
 
-% unless ($RT::WebExternalAuth) {
+% unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <FORM METHOD=POST >
 <TABLE BORDER=0 WIDTH=100%>
 <TR ALIGN=RIGHT>

@@ -333,6 +333,7 @@ sub Privileged {
 #create a user without validating _any_ data.
 
 #To be used only on database init.
+# We can't localize here because it's before we _have_ a loc framework
 
 sub _BootstrapCreate {
     my $self = shift;
@@ -346,7 +347,7 @@ sub _BootstrapCreate {
     my $id = $self->SUPER::Create(%args);
 
     #If the create failed.
-    return ( 0, $self->loc('Could not create user') )
+    return ( 0, 'Could not create user' )
       unless ($id);
 
     # Groups deal with principal ids, rather than user ids.
@@ -359,12 +360,12 @@ sub _BootstrapCreate {
     unless ($principal_id) {
         $RT::Handle->Rollback();
         $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, 'Could not create user' );
     }
                                     
     $RT::Handle->Commit();
 
-    return ( $id, $self->loc('User created') );
+    return ( $id, 'User created' );
 }
 
 # }}}
@@ -943,15 +944,15 @@ sub HasGroupRight {
     my $self = shift;
     my %args = (
         GroupObj    => undef,
-        GroupId       => undef,
+        Group       => undef,
         Right       => undef,
         @_
     );
 
 
-    if ( defined $args{'GroupId'} ) {
+    if ( defined $args{'Group'} ) {
         $args{'GroupObj'} = RT::Group->new( $self->CurrentUser );
-        $args{'GroupObj'}->Load( $args{'GroupId'} );
+        $args{'GroupObj'}->Load( $args{'Group'} );
     }
 
     # {{{ Validate and load up the GroupId

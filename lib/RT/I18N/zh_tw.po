@@ -73,6 +73,10 @@ msgstr "%1 ¤w¤£¦A¬O¦¹¥Ó½Ð³æªº %2¡C"
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 ¤w¤£¦A¬O¦Û­qÄæ¦ì %2 ªº­È¡C"
 
+#: html/Admin/Queues/Keywords.html html/Admin/Queues/Scrips.html
+msgid "%1 isn't a valid Queue id."
+msgstr ""
+
 #: html/Ticket/Elements/ShowBasics
 msgid "%1 min"
 msgstr "%1 ¤ÀÄÁ"
@@ -533,9 +537,17 @@ msgstr "¤£¯à·s¼W¦Û­qÄæ¦ìªº­È¡C%1 "
 msgid "Could not change owner. "
 msgstr "¤£¯à§ó§ï©Ó¿ì¤H¡C "
 
+#: html/Admin/Queues/CustomField.html
+msgid "Could not create CustomField"
+msgstr ""
+
 #: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm
 msgid "Could not create group"
 msgstr "µLªk«Ø¥ß·s¸s²Õ"
+
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
+msgid "Could not create template: %1"
+msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not create ticket. Queue not set"
@@ -625,13 +637,25 @@ msgstr "§ä¤£¨ì¨Ï¥ÎªÌ\\n"
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "µLªk±q¨Ï¥ÎªÌ¸ê®Æ®w¸ü¤J %1¡C\\n"
 
+#: html/Admin/Queues/Keywords.html
+msgid "Couldn't load KeywordSelects."
+msgstr ""
+
 #: lib/RT.pm
 msgid "Couldn't load RT config file '%1' %2"
 msgstr "µLªk¸ü¤J RT ³]©wÀÉ '%1' %2"
 
+#: html/Admin/Queues/Scrips.html
+msgid "Couldn't load Scrips."
+msgstr ""
+
 #: lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm
 msgid "Couldn't load link"
 msgstr "µLªk¸ü¤JÃìµ²¡C"
+
+#: html/Admin/Queues/People.html
+msgid "Couldn't load queue"
+msgstr ""
 
 #: html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
 msgid "Couldn't load queue %1"
@@ -644,6 +668,14 @@ msgstr "µLªk¸ü¤J¤âÄò"
 #: bin/rtadmin
 msgid "Couldn't load template"
 msgstr "µLªk¸ü¤J½d¥»"
+
+#: html/Admin/Users/Prefs.html
+msgid "Couldn't load that user (%1)"
+msgstr ""
+
+#: html/SelfService/Display.html
+msgid "Couldn't load ticket '%1'"
+msgstr ""
 
 #: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Country"
@@ -740,6 +772,10 @@ msgstr "²{¦³µø¹î­û"
 #: html/Admin/Elements/QueueTabs html/Ticket/Elements/ShowSummary
 msgid "Custom Fields"
 msgstr "¦Û­qÄæ¦ì"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Custom field %1 not found"
+msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm
 msgid "Custom field not found"
@@ -1061,7 +1097,7 @@ msgstr "%1 ªº pgp Ã±³¹¬O¥¿½Tªº\\n"
 msgid "Goto page"
 msgstr "¨ì­¶­±"
 
-#: html/Elements/GotoTicket
+#: html/Elements/GotoTicket html/SelfService/Elements/GotoTicket
 msgid "Goto ticket"
 msgstr "³s¨ì¥Ó½Ð³æ"
 
@@ -1076,6 +1112,10 @@ msgstr "¸s²ÕÅv­­"
 #: lib/RT/Group_Overlay.pm
 msgid "Group already has member"
 msgstr "¸s²Õ¤º¤w¦³¦¨­û"
+
+#: html/Admin/Groups/Modify.html.rej
+msgid "Group could not be created."
+msgstr ""
 
 #: lib/RT/Group_Overlay.pm
 msgid "Group created"
@@ -1173,9 +1213,17 @@ msgstr "¤£¦Xªkªº©Ó¿ì¤H¡C§ï¦¨¹w³]©Ó¿ì¤H'µL'¡C"
 msgid "Invalid queue"
 msgstr "¤£¦Xªkªº¦î¦C"
 
+#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm
+msgid "Invalid right"
+msgstr ""
+
 #: lib/RT/Record.pm
 msgid "Invalid value for %1"
 msgstr "%1 ªº­È¤£¦Xªk"
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Invalid value for custom field"
+msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm
 msgid "Invalid value for status"
@@ -1247,7 +1295,7 @@ msgstr "¤¹³\\³o¦W¨Ï¥ÎªÌµn¤JRT"
 
 #: html/Admin/Users/Modify.html
 msgid "Let this user be granted rights"
-msgstr "Åý³o¦W¨Ï¥ÎªÌ¾Ö¦³§¹¾ãÅv­­©"
+msgstr "Åý³o¦W¨Ï¥ÎªÌ¾Ö¦³§¹¾ãÅv­­?"
 
 #: bin/rt
 msgid "Limiting owner to %1 %2"
@@ -1267,6 +1315,10 @@ msgstr "µLªk«Ø¥ßÃìµ²"
 
 #: lib/RT/Ticket_Overlay.pm
 msgid "Link created (%1)"
+msgstr ""
+
+#: lib/RT/Ticket_Overlay.pm
+msgid "Link deleted (%1)"
 msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm
@@ -1433,7 +1485,7 @@ msgstr "­×§ï¸s²Õªº¾ãÅéÅv­­"
 msgid "Modify global rights for users"
 msgstr "­×§ï¨Ï¥ÎªÌªº¾ãÅéÅv­­"
 
-#: html/Admin/Global/Scrips.html
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Modify global scrips"
 msgstr "­×§ï¾ãÅé¤âÄò"
 
@@ -1447,11 +1499,15 @@ msgstr "­×§ï¦î¦C %1 ªº¸s²ÕÅv­­"
 
 #: html/Admin/Queues/People.html
 msgid "Modify people related to queue %1"
-msgstr "­×§ïÃìµ²¨ì¦î¦C %1 ªº¤H­û¨"
+msgstr "­×§ïÃìµ²¨ì¦î¦C %1 ªº¤H­û?"
 
 #: html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html
 msgid "Modify people related to ticket #%1"
 msgstr "­×§ï¥Ó½Ð³æ #%1 Ãìµ²¨ìªº¤H­û"
+
+#: html/Admin/Queues/Scrips.html
+msgid "Modify scrips for queue %1"
+msgstr ""
 
 #: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Modify template %1"
@@ -1561,6 +1617,10 @@ msgstr "¼ÊºÙ"
 msgid "Nickname"
 msgstr "¼ÊºÙ"
 
+#: html/Admin/Queues/CustomField.html
+msgid "No CustomField"
+msgstr ""
+
 #: html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
 msgid "No Queue defined"
 msgstr ""
@@ -1568,6 +1628,10 @@ msgstr ""
 #: bin/rt bin/rtadmin
 msgid "No RT user found. Please consult your RT administrator.\\n"
 msgstr "§ä¤£¨ì RT ¨Ï¥ÎªÌ¡C½Ð¦V RT ºÞ²z­û¬d¸ß¡C\\n"
+
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
+msgid "No Template"
+msgstr ""
 
 #: bin/rt-commit-handler
 msgid "No Ticket specified. Aborting ticket "
@@ -1612,6 +1676,10 @@ msgstr "¨S¦³¦b¦î¦C '%1' «Ø¥ß¥Ó½Ð³æªºÅv­­"
 #: lib/RT/User_Overlay.pm
 msgid "No permission to create users"
 msgstr "¨S¦³«Ø¥ß¨Ï¥ÎªÌªºÅv­­"
+
+#: html/SelfService/Display.html
+msgid "No permission to display that ticket"
+msgstr ""
 
 #: html/SelfService/Update.html
 msgid "No permission to view update ticket"
@@ -1761,7 +1829,7 @@ msgstr "±K½X: %1"
 msgid "People"
 msgstr "¤H­û"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
+#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
 msgid "Permission Denied"
 msgstr "Åv­­¤£¨¬"
 
@@ -1841,6 +1909,10 @@ msgstr "µLªk«Ø¥ß¦î¦C"
 msgid "Queue created"
 msgstr "¦î¦C«Ø¥ß§¹¦¨"
 
+#: html/SelfService/Display.html
+msgid "Queue not found"
+msgstr ""
+
 #: html/Admin/Elements/Tabs
 msgid "Queues"
 msgstr "¦î¦C"
@@ -1877,7 +1949,7 @@ msgstr "RT ³]©w¿ù»~"
 msgid "RT Critical error. Message not recorded!"
 msgstr "RT ­P©R¿ù»~¡C°T®§¥¼³Q¬ö¿ý¡C"
 
-#: html/Elements/Error
+#: html/Elements/Error html/SelfService/Error.html
 msgid "RT Error"
 msgstr "RT ¿ù»~"
 
@@ -1891,7 +1963,7 @@ msgstr "RT ¦¬¨ì±q¦Û¤v±H¥Xªº¶l¥ó (%1)"
 
 #: html/SelfService/Closed.html
 msgid "RT Self Service / Closed Tickets"
-msgstr "RT ¦Û§UªA°È/µ²§ôªº¥Ó½Ð³"
+msgstr "RT ¦Û§UªA°È/µ²§ôªº¥Ó½Ð?"
 
 #: bin/enhanced-mailgate
 msgid "RT couldn't authenticate you"
@@ -2151,7 +2223,7 @@ msgstr "±Æ§Ç¤è¦¡"
 
 #: html/Search/PickRestriction
 msgid "Sort results by"
-msgstr "µ²ªG±Æ§Ç¤è¦¡¥"
+msgstr "µ²ªG±Æ§Ç¤è¦¡?"
 
 #: html/Admin/Elements/AddCustomFieldValue
 msgid "SortOrder"
@@ -2527,7 +2599,7 @@ msgstr "§ó·sÃ±³¹"
 
 #: html/Ticket/ModifyAll.html
 msgid "Update ticket"
-msgstr "§ó·s¥Ó½Ð³æ¸"
+msgstr "§ó·s¥Ó½Ð³æ?"
 
 #: html/SelfService/Update.html
 msgid "Update ticket # %1"
@@ -2657,6 +2729,10 @@ msgstr ""
 msgid "You have been logged out of RT."
 msgstr "±z¤wµn¥X RT¡C"
 
+#: html/SelfService/Display.html
+msgid "You have no permission to create tickets in that queue."
+msgstr ""
+
 #: lib/RT/Ticket_Overlay.pm
 msgid "You may not create requests in that queue."
 msgstr "±z¤£¯à¦b¸Ó¦î¦C¤¤´£¥X¥Ó½Ð¡C"
@@ -2777,7 +2853,7 @@ msgstr "¤£²Å¦X"
 msgid "sec"
 msgstr ""
 
-#: html/Elements/Error
+#: html/Elements/Error html/SelfService/Error.html
 msgid "the calling component did not specify why"
 msgstr "©I¥s¤¸¥ó¥¼«ü©ú­ì¦]"
 

@@ -412,7 +412,7 @@ sub Create {
     # We denormalize it into the Ticket table too because doing otherwise would 
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
 
-    $self->OwnerGroup->AddMember($Owner->PrincipalId);
+    $self->OwnerGroup->_AddMember($Owner->PrincipalId);
 
 
     # Set the requestors in the Groups table
@@ -900,7 +900,7 @@ sub _AddWatcher {
     }
 
 
-    my ($m_id, $m_msg) = $group->AddMember($principal->Id);
+    my ($m_id, $m_msg) = $group->_AddMember($principal->Id);
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
 
@@ -1008,7 +1008,7 @@ sub DeleteWatcher {
         $self->loc('That principal is not a [_1] for this ticket', $args{'Type'}) );
     }
 
-    my ($m_id, $m_msg) = $group->DeleteMember($principal->Id);
+    my ($m_id, $m_msg) = $group->_DeleteMember($principal->Id);
     unless ($m_id) {
         $RT::Logger->error("Failed to delete ".$principal->Id.
                            " as a member of group ".$group->Id."\n".$m_msg);
@@ -2301,13 +2301,15 @@ sub SetOwner {
     $RT::Handle->NewTransaction();
 
     # Delete the owner in the owner group, then add a new one
+    # TODO: is this safe? it's not how we really want the API to work 
+    # for most things, but it's fast.
     my ($del_id, $del_msg) = $self->OwnerGroup->Members->First->Delete();
     unless ($del_id) {
         $RT::Handle->Rollback();
         return(0, $self->loc("Could not change owner. "). $del_msg);
     }
 
-    my ($add_id,$add_msg) = $self->OwnerGroup->AddMember($NewOwnerObj->PrincipalId);
+    my ($add_id,$add_msg) = $self->OwnerGroup->_AddMember($NewOwnerObj->PrincipalId);
     unless ($add_id) {
         $RT::Handle->Rollback();
         return(0, $self->loc("Could not change owner. "). $add_msg);

@@ -49,6 +49,7 @@ Errno
 FreezeThaw
 Digest::MD5
 CGI::Cookie 1.20
+Storable
 Apache::Session 1.53);
 
 my @cli_modules = qw(
@@ -56,11 +57,13 @@ Getopt::Long 2.24
 );
 
 my @dev_modules = qw(
+Regexp::Common
 Time::HiRes 
 Test::Inline 
 );
 
 my @fcgi_modules = qw(
+FCGI
 CGI::Fast 
 );
 

@@ -32,12 +32,15 @@
     $ACLObj->LimitToObject( Id => $ObjectId, Type => $ObjectType);
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);#, Type => $PrincipalType);
 
+    if ($ObjectType eq 'Group') { 
+        %Rights = $ACE->GroupRights();
+    } 
 
-    if ($ObjectType eq 'Queue') { 
+    elsif ($ObjectType eq 'Queue') { 
         %Rights = $ACE->QueueRights();
     } 
     elsif ($ObjectType eq 'System') {
-        %Rights =  ( $ACE->SystemRights , $ACE->QueueRights());
+        %Rights =  ( $ACE->SystemRights , $ACE->QueueRights(),$ACE->GroupRights());
     }
 
     

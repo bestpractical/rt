@@ -828,11 +828,11 @@ sub AdminRights {
             $acl->LimitToSystem();
         }
         while ( my $ace = $acl->Next ) {
-            print $ace->RightScope;
+            print $ace->ObjectType;
 
             #Print the queue name if we have it.
-            print " " . $ace->AppliesToObj->Name
-              if ( defined $ace->AppliesToObj );
+            print " " . $ace->Object->Name
+              if ( defined $ace->Object );
 
             print loc(
                 ": [_1] [_2] has right [_3]\n",

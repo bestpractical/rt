@@ -16,7 +16,7 @@
 <& /Elements/TitleBoxEnd &>
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});
-$Groups->LimitToGroups();
+$Groups->LimitToUserDefinedGroups();
 
 </%INIT>
 <%ARGS>

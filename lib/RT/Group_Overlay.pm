@@ -40,24 +40,32 @@ my $ng = RT::Group->new($RT::SystemUser);
 
 ok($ng->LoadUserDefinedGroup('TestGroup'), "Loaded testgroup");
 ok(($ng->id == $group->id), "Loaded the right group");
-ok ($ng->AddMember('1'), "Added a member to the group");
-ok ($ng->AddMember('2' ), "Added a member to the group");
-ok ($ng->AddMember('3' ), "Added a member to the group");
+
+
+ok (($id,$msg) = $ng->AddMember('1'), "Added a member to the group");
+ok($id, $msg);
+ok (($id,$msg) = $ng->AddMember('2' ), "Added a member to the group");
+ok($id, $msg);
+ok (($id,$msg) = $ng->AddMember('3' ), "Added a member to the group");
+ok($id, $msg);
 
 # Group 1 now has members 1, 2 ,3
 
 my $group_2 = RT::Group->new($RT::SystemUser);
 ok (my ($id_2, $msg_2) = $group_2->CreateUserDefinedGroup( Name => 'TestGroup2', Description => 'A second test group'), , 'Created a new group');
-ok ($id_2 != 0, "Created group 2 ok");
-ok ($group_2->AddMember($ng->PrincipalId), "Made TestGroup a member of testgroup2");
-ok ($group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
+ok ($id_2 != 0, "Created group 2 ok- $msg_2 ");
+ok (($id,$msg) = $group_2->AddMember($ng->PrincipalId), "Made TestGroup a member of testgroup2");
+ok($id, $msg);
+ok (($id,$msg) = $group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
+ok($id, $msg);
 
 # Group 2 how has 1, g1->{1, 2,3}
 
 my $group_3 = RT::Group->new($RT::SystemUser);
 ok (($id_3, $msg) = $group_3->CreateUserDefinedGroup( Name => 'TestGroup3', Description => 'A second test group'), 'Created a new group');
 ok ($id_3 != 0, "Created group 3 ok - $msg");
-ok ($group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
+ok (($id,$msg) =$group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
+ok($id, $msg);
 
 # g3 now has g2->{1, g1->{1,2,3}}
 
@@ -67,13 +75,13 @@ $principal_1->Load('1');
 my $principal_2 = RT::Principal->new($RT::SystemUser);
 $principal_2->Load('2');
 
-ok ($group_3->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
+ok (($id,$msg) = $group_3->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
+ok($id, $msg);
 
 # g3 now has 1, g2->{1, g1->{1,2,3}}
 
 ok($group_3->HasMember($principal_2) == undef, "group 3 doesn't have member 2");
 ok($group_3->HasMemberRecursively($principal_2), "group 3 has member 2 recursively");
-
 ok($ng->HasMember($principal_2) , "group ".$ng->Id." has member 2");
 my ($delid , $delmsg) =$ng->DeleteMember($principal_2->Id);
 ok ($delid !=0, "Sucessfully deleted it-".$delid."-".$delmsg);
@@ -339,7 +347,7 @@ A helper subroutine which creates a system group
 sub CreateUserDefinedGroup {
     my $self = shift;
 
-    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+    unless ( $self->CurrentUserHasRight('CreateGroup') ) {
         $RT::Logger->warning( $self->CurrentUser->Name
               . " Tried to create a group without permission." );
         return ( 0, $self->loc('Permission Denied') );
@@ -363,7 +371,7 @@ personal groups are used for ACL delegation and adding to ticket roles
 sub CreatePersonalGroup {
     my $self = shift;
 
-    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+    unless ( $self->CurrentUserHasRight('CreatePersonalGroup') ) {
         $RT::Logger->warning( $self->CurrentUser->Name
               . " Tried to create a group without permission." );
         return ( 0, $self->loc('Permission Denied') );
@@ -412,7 +420,7 @@ Delete this object
 sub Delete {
     my $self = shift;
 
-    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+    unless ( $self->CurrentUserHasRight('AdminGroup') ) {
         return ( 0, 'Permission Denied' );
     }
 
@@ -558,8 +566,33 @@ sub AddMember {
     my $new_member = shift;
 
 
+    # We should only allow membership changes if the user has the right 
+    # to modify group membership or the user is the principal in question
+    # and the user has the right to modify his own membership
+
+    unless ( ($new_member == $self->CurrentUser->PrincipalId &&
+	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
+	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
+        #User has no permission to be doing this
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+   
+    $self->_AddMember($new_member);
+}
+
+# A helper subroutine for AddMember that bypasses the ACL checks
+# this should _ONLY_ ever be called from Ticket/Queue AddWatcher
+# when we want to deal with groups according to queue rights
+# In the dim future, this will all get factored out and life
+# will get better	
+
+sub _AddMember {
+    my $self = shift;
+    my $new_member = shift;
+
     unless ($self->Id) {
-        $RT::Logger->err("Attempting to add a member to a group which wasn't loaded. 'oops'");
+        $RT::Logger->crit("Attempting to add a member to a group which wasn't loaded. 'oops'");
         return(0, $self->loc("Group not found"));
     }
 
@@ -568,10 +601,6 @@ sub AddMember {
     my $new_member_obj = RT::Principal->new( $self->CurrentUser );
     $new_member_obj->Load($new_member);
 
-    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
-        #User has no permission to be doing this
-        return ( 0, $self->loc("Permission Denied") );
-    }
 
     unless ( $new_member_obj->Id ) {
         $RT::Logger->debug("Couldn't find that principal");
@@ -689,7 +718,7 @@ sub HasMemberRecursively {
 
 =head2 DeleteMember PRINCIPAL_ID
 
-Takes the user id of a member.
+Takes the principal id of a current user or group.
 If the current user has apropriate rights,
 removes that GroupMember from this group.
 Returns a two value array. the first value is true on successful 
@@ -701,11 +730,30 @@ sub DeleteMember {
     my $self   = shift;
     my $member_id = shift;
 
-    #$RT::Logger->debug("About to try to delete principal $member_id  as a".  "member of group ".$self->Id);
 
-    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
-        return ( 0, $self->loc("Permission Denied"));
+    # We should only allow membership changes if the user has the right 
+    # to modify group membership or the user is the principal in question
+    # and the user has the right to modify his own membership
+
+    unless ( ($new_member == $self->CurrentUser->PrincipalId &&
+	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
+	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
+        #User has no permission to be doing this
+        return ( 0, $self->loc("Permission Denied") );
     }
+
+    $self->_DeleteMember($member_id);
+}
+
+# A helper subroutine for DeleteMember that bypasses the ACL checks
+# this should _ONLY_ ever be called from Ticket/Queue  DeleteWatcher
+# when we want to deal with groups according to queue rights
+# In the dim future, this will all get factored out and life
+# will get better	
+
+sub _DeleteMember {
+    my $self = shift;
+    my $member_id = shift;
 
     my $member_obj =  RT::GroupMember->new( $self->CurrentUser );
     
@@ -742,7 +790,7 @@ sub DeleteMember {
 sub _Set {
     my $self = shift;
 
-    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+    unless ( $self->CurrentUserHasRight('AdminGroup') ) {
         return ( 0, 'Permission Denied' );
     }
 
@@ -775,12 +823,18 @@ sub CurrentUserHasRight {
     my $self = shift;
     my $right = shift;
 
-    if ($self->CurrentUser->HasGroupRight( Group => $self->Id,
-                                           Right => $right )) {
 
+
+    if ($self->Id && $self->CurrentUser->HasGroupRight( Group => $self->Id, Right => $right )) {
+	$RT::Logger->debug($self->CurrentUser->Name . " has the right $right for group ". $self->Id);
         return(1);
    }
+    elsif ( $self->CurrentUser->HasSystemRight(  Right => $right )) {
+	$RT::Logger->debug($self->CurrentUser->Name . " has the right $right systemwide");
+	return (1);
+    }
     else {
+	$RT::Logger->debug($self->CurrentUser->Name . " doesn't have the right $right");
         return(undef);
     }
 

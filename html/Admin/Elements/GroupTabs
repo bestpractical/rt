@@ -4,11 +4,18 @@
 my $subtabs = { 
              Basics => { title => loc('Basics'),
                          path => "Admin/Groups/Modify.html?id=". $GroupObj->id
-                       }
-	};
+                       },
 
-$subtabs->{'Members'} = { title => loc('Members'),
-                         path => "Admin/Groups/Members.html?id=".$GroupObj->id };
+	     Members=>  { title => loc('Members'),
+                         path => "Admin/Groups/Members.html?id=".$GroupObj->id },
+
+            F => { title => loc('Group Rights'),
+                          path => "Admin/Groups/GroupRights.html?id=".$GroupObj->id,
+                        },
+                 G => { title => loc('User Rights'),
+                          path => "Admin/Groups/UserRights.html?id=".$GroupObj->id,
+                        },
+	};
 
 </%INIT>
 <%ARGS>
