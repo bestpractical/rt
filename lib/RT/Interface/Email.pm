@@ -310,9 +310,11 @@ sub MailError {
     $entity->attach(  Data => $args{'Explanation'}."\n");
     
     my $mimeobj = $args{'MIMEObj'};
-    $mimeobj->sync_headers();
-    $entity->add_part($mimeobj);
-    
+    if ($mimeobj) {
+        $mimeobj->sync_headers();
+        $entity->add_part($mimeobj);
+    } 
+
     if ($RT::MailCommand eq 'sendmailpipe') {
         open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);
         print MAIL $entity->as_string;
