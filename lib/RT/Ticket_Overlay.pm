@@ -1644,6 +1644,10 @@ is($#returned, 0, "The ticket has one squelched recipients");
 is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
 
 
+my ($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
+ok($ret, "Removed nobody as a squelched recipient - ".$msg);
+is($#returned, -1, "The ticket has no squelched recipients");
+
 =end testing
 
 =cut
@@ -1651,15 +1655,48 @@ is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
 sub SquelchMailTo {
     my $self = shift;
     if (@_) {
+        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+            return undef;
+        }
         my $attr = shift;
-        $self->AddAttribute(Name => 'SquelchMailTo', Content => $attr) 
- unless  grep { $_->Content eq $attr } $self->Attributes->Named('SquelchMailTo');
+        $self->AddAttribute( Name => 'SquelchMailTo', Content => $attr )
+          unless grep { $_->Content eq $attr }
+          $self->Attributes->Named('SquelchMailTo');
 
     }
-    my @attributes = $self->Attributes->Named('SquelchMailTo'); 
-    return(@attributes);
+    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+        return undef;
+    }
+    my @attributes = $self->Attributes->Named('SquelchMailTo');
+    return (@attributes);
 }
 
+
+=head2 UnsquelchMailTo ADDRESS
+
+Takes an address and removes it from this ticket's "SquelchMailTo" list. If an address appears multiple times, each instance is removed.
+
+Returns a tuple of (status, message)
+
+=cut
+
+sub UnsquelchMailTo {
+    my $self = shift;
+
+    my $address = shift;
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+# TODO: the user also needs to have ShowTicket to make this work. will that ever be an issue?
+    my @attributes = $self->SquelchMailTo();
+    foreach my $attribute (@attributes) {
+        if ( $attribute->Content eq $address ) {
+            $attribute->Delete();
+        }
+    }
+    return ( 1, $self->loc("Record Deleted") );
+}
 
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string

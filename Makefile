@@ -27,7 +27,7 @@
 #
 
 
-PERL			= 	/usr/local/bin/perl
+PERL			= 	/usr/bin/perl
 
 CONFIG_FILE_PATH	=	/opt/rt3/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
@@ -55,8 +55,8 @@ LIBS_OWNER 		=	root
 # Group that should own all of RT's libraries, generally root.
 LIBS_GROUP		=	bin
 
-WEB_USER		=	www
-WEB_GROUP		=	www
+WEB_USER		=	www-data
+WEB_GROUP		=	www-data
 
 
 APACHECTL		=	/usr/sbin/apachectl

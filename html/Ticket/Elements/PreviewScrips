@@ -2,54 +2,82 @@
 $TicketObj => undef
 
 </%args>
-
-<b><&|/l&>Preview of notifications</&></b>
 <%init>
 
-my $action;
+my $arg = 'Ticket-'.$TicketObj->Id.'-SquelchMailTo';
+my @squelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
-if ($ARGS{'UpdateType'} eq 'response' ) {
-    $action = 'Correspond';
-} else {
-    $action = 'Comment';
+foreach my $address (@squelchto) {
+        $TicketObj->SquelchMailTo($address) if ($address);
 }
 
 
-        my $Message = MakeMIMEEntity(
-            Subject             => $ARGS{'UpdateSubject'},
-            Body                => $ARGS{'UpdateContent'},
-        );
+$arg = 'Ticket-'.$TicketObj->Id.'-UnsquelchMailTo';
+my @unsquelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
+
+foreach my $address (@unsquelchto) {
+        $TicketObj->UnsquelchMailTo($address) if ($address);
+}
 
 
-        ## TODO: Implement public comments
-            my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
-                CcMessageTo  => $ARGS{'UpdateCc'},
-                BccMessageTo => $ARGS{'UpdateBcc'},
-                MIMEObj      => $Message,
-                TimeTaken    => $ARGS{'UpdateTimeWorked'},
-                DryRun => 1
-            );
+my $action;
+
+if ( $ARGS{'UpdateType'} eq 'response' ) {
+    $action = 'Correspond';
+}
+else {
+    $action = 'Comment';
+}
+
+my $Message = MakeMIMEEntity(
+    Subject => $ARGS{'UpdateSubject'},
+    Body    => $ARGS{'UpdateContent'},
+);
+
+my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
+    CcMessageTo  => $ARGS{'UpdateCc'},
+    BccMessageTo => $ARGS{'UpdateBcc'},
+    MIMEObj      => $Message,
+    TimeTaken    => $ARGS{'UpdateTimeWorked'},
+    DryRun       => 1
+);
 
 
-
+my @non_recipients = $TicketObj->SquelchMailTo;
 </%init>
+
+<h2><&|/l&>Squelched message recipients</&></h2>
+<i><&|/l&>(Check boxes to enable notifications to the listed recipients)</&></i>
+<br>
+<ul>
+% foreach my $recipient (@non_recipients) {
+<li><input type="checkbox" name="Ticket-<%$TicketObj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>">
+<% $recipient->Content %>
+% }
+</ul>
+<h2><&|/l&>Message recipients</&></h2>
+<i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i>
 % foreach my $scrip (@{$Object->Scrips->Prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
-<hr>
 <b><%$scrip->Description%></b><br>
-<%$scrip->ConditionObj->Name%> 
-<%$scrip->ActionObj->Name%> 
-<%$scrip->TemplateObj->Name%> <br>
-
+<&|/l, $scrip->ConditionObj->Name, $scrip->ActionObj->Name, $scrip->TemplateObj->Name&>[_1] [_2] with template [_3]</&>
+<br>
 %foreach my $type qw(To Cc Bcc) {
+%my @addresses =  $scrip->ActionObj->Action->$type();
+% next unless $addresses[0];
 <%loc($type)%>:
-%foreach my $addr ($scrip->ActionObj->Action->$type()) {
-<%$addr->address%>
-%}
+<ul>
+%foreach my $addr (@addresses) {
+<li><input type="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>"> <%$addr->address%>
+% }
+</ul>
 <br>
 % }
+% if ($RT::PreviewScripMessages) {
 <textarea cols=80 rows="5">
 <%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
 </textarea>
+% }
+<hr>
 %}
-<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Update Preview')&>  
+<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Save changes')&>  

@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>

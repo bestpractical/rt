@@ -44,7 +44,7 @@ ok (require RT::Record);
 package RT::Record;
 use RT::Date;
 use RT::User;
-
+use RT::Attributes;
 use RT::Base;
 use DBIx::SearchBuilder::Record::Cachable;
 

@@ -417,32 +417,47 @@ Remove addresses that are RT addresses or that are on this transaction's blackli
 sub RemoveInappropriateRecipients {
     my $self = shift;
 
-        # Weed out any RT addresses. We really don't want to talk to ourselves!
-        @{$self->{'To'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'To'}});
-        @{$self->{'Cc'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'Cc'}});
-        @{$self->{'Bcc'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'Bcc'}});
+    my @blacklist;
+
+    # Weed out any RT addresses. We really don't want to talk to ourselves!
+    @{ $self->{'To'} } =
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'To'} } );
+    @{ $self->{'Cc'} } =
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Cc'} } );
+    @{ $self->{'Bcc'} } =
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Bcc'} } );
+
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
 
     if ( defined $self->TransactionObj->Attachments->First() ) {
-
-        my $squelch = $self->TransactionObj->Attachments->First->GetHeader( 'RT-Squelch-Replies-To');
+        my $squelch =
+          $self->TransactionObj->Attachments->First->GetHeader(
+            'RT-Squelch-Replies-To');
 
         if ($squelch) {
-            my @blacklist = split ( /,/, $squelch );
-
-            # Cycle through the people we're sending to and pull out anyone on the
-            # system blacklist
-
-            foreach my $person_to_yank (@blacklist) {
-                $person_to_yank =~ s/\s//g;
-                @{ $self->{'To'} } = grep ( !/^$person_to_yank$/, @{ $self->{'To'} } );
-                @{ $self->{'Cc'} } = grep ( !/^$person_to_yank$/, @{ $self->{'Cc'} } );
-                @{ $self->{'Bcc'} } = grep ( !/^$person_to_yank$/, @{ $self->{'Bcc'} } );
-            }
+            @blacklist = split ( /,/, $squelch );
         }
     }
+
+# Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
+    my @non_recipients = $self->TicketObj->SquelchMailTo;
+    foreach my $attribute (@non_recipients) {
+        push @blacklist, $attribute->Content;
+    }
+
+    # Cycle through the people we're sending to and pull out anyone on the
+    # system blacklist
+
+    foreach my $person_to_yank (@blacklist) {
+        $person_to_yank =~ s/\s//g;
+        @{ $self->{'To'} } = grep ( !/^$person_to_yank$/, @{ $self->{'To'} } );
+        @{ $self->{'Cc'} } = grep ( !/^$person_to_yank$/, @{ $self->{'Cc'} } );
+        @{ $self->{'Bcc'} } =
+          grep ( !/^$person_to_yank$/, @{ $self->{'Bcc'} } );
+    }
 }
+
 # }}}
 # {{{ sub SetReturnAddress
 
