@@ -27,7 +27,6 @@ use RT::Interface::Email  qw(CleanEnv LoadConfig DBConnect
 			     ParseCcAddressesFromHead
 			     ParseSenderAddressesFromHead 
 			     ParseErrorsToAddressFromHead
-			     
 			    );
 
 #Clean out all the nasties from the environment
@@ -88,11 +87,11 @@ while (my $flag = shift @ARGV) {
 # get the current mime entity from stdin
 my ($entity, $head) = ParseMIMEEntityFromSTDIN();
 
-#Get us a current user object.
-my $CurrentUser = GetCurrentUser($head, $entity);
-
 #Get someone to send runtime errors to;
 my $ErrorsTo = ParseErrorsToAddressFromHead($head);
+
+#Get us a current user object.
+my $CurrentUser = GetCurrentUser($head, $entity, $ErrorsTo);
 
 
 my $MessageId = $head->get('Message-Id') || 

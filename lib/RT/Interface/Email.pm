@@ -79,7 +79,7 @@ sub CleanEnv {
     $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
     $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
     $ENV{'ENV'} = '' if defined $ENV{'ENV'};
-    $ENV{'IFS'} = ''		if defined $ENV{'IFS'};
+    $ENV{'IFS'} = '' if defined $ENV{'IFS'};
 }
 
 
@@ -276,9 +276,13 @@ sub MailError {
 		Subject => 'There has been an error',
 		Explanation => 'Unexplained error',
 		MIMEObj => undef,
+		LogLevel => 'crit',
 		@_);
 
-    $RT::Logger->crit($args{'Explanation'});
+
+    $RT::Logger->log(level => $args{'LogLevel'}, 
+		     message => $args{'Explanation'}
+		    );
     my $entity = MIME::Entity->build( Type  =>"multipart/mixed",
 				      From => $args{'From'},
 				      Bcc => $args{'Bcc'},
@@ -307,17 +311,42 @@ sub MailError {
 
 sub GetCurrentUser  {
     my $head = shift;
-    my $entity = shift; 
+    my $entity = shift;
+    my $ErrorsTo = shift;
+
     #Suck the address of the sender out of the header
     my ($Address, $Name) = ParseSenderAddressFromHead($head);
     
     #This will apply local address canonicalization rules
     $Address = RT::CanonicalizeAddress($Address);
   
+    #If desired, synchronize with an external database
+
+    my $UserFoundInExternalDatabase = 0;
+
+    # Username is the 'Name' attribute of the user that RT uses for things
+    # like authentication
+    my $Username = undef;
+    if ($RT::LookupSenderInExternalDatabase) {
+	($Address, $Username, $Name, $UserFoundInExternalDatabase) = 
+	  RT::LookupExternalUserInfo($Address, $Name);
+    }
+    
     my $CurrentUser = RT::CurrentUser->new();
     
-    $CurrentUser->LoadByEmail($Address);
-  
+    # First try looking up by a username, if we got one from the external
+    # db lookup. Next, try looking up by email address. Failing that,
+    # try looking up by users who have this user's email address as their
+    # username.
+
+    if ($Username) {
+	$CurrentUser->LoadByName($Username);
+    }	
+    
+    unless ($CurrentUser->Id) {
+	$CurrentUser->LoadByEmail($Address);
+    }	
+
     #If we can't get it by email address, try by name.  
     unless ($CurrentUser->Id) {
 	$CurrentUser->LoadByName($Address);
@@ -325,35 +354,67 @@ sub GetCurrentUser  {
     
     
     unless ($CurrentUser->Id) {
-	#If it fails, create a user
-		
-	my $NewUser = RT::User->new($RT::SystemUser);
-	
-	my ($Val, $Message) = 
-	  $NewUser->Create(Name => $Address,
-			   EmailAddress => $Address,
-			   RealName => "$Name",
-			   Password => undef,
-			   Privileged => 0,
-			   Comments => 'Autocreated on ticket submission'
-			  );
-	
-	unless ($Val) {
-	    $RT::Logger->crit("Create user failed in mailgateway: $Message\n");
+        #If we couldn't load a user, determine whether to create a user
+
+        # {{{ If we require an incoming address to be found in the external
+	# user database, reject the incoming message appropriately
+        if ( $RT::LookupSenderInExternalDatabase &&
+	     $RT::SenderMustExistInExternalDatabase && 
+	     !$UserFoundInExternalDatabase) {
 	    
-	    MailError( To => $RT::OwnerEmail,
-		       Subject => "User could not be created",
+	    my $Message = "Sender's email address was not found in the user database.";
+
+	    $CurrentUser->Load($RT::Nobody->Id);
+
+	    # {{{  This code useful only if you've defined an AutoRejectRequest template
+	    
+	    require RT::Template;
+	    my $template = new RT::Template($CurrentUser);
+	    $template->Load('AutoRejectRequest');
+	    $Message = $template->Content || $Message;
+	    
+	    # }}}
+	    
+	    MailError( To => $ErrorsTo,
+		       Subject => "Ticket Creation failed: user could not be created",
 		       Explanation => $Message,
-		       MIMEObj => $entity
+		       MIMEObj => $entity,
+		       LogLevel => 'notice'
 		     );
-	}
+
+	    return($CurrentUser);
+
+	} 
+	# }}}
 	
+	else {
+	    my $NewUser = RT::User->new($RT::SystemUser);
+	
+	    my ($Val, $Message) = 
+	      $NewUser->Create(Name => ($Username || $Address),
+			       EmailAddress => $Address,
+			       RealName => "$Name",
+			       Password => undef,
+			       Privileged => 0,
+			       Comments => 'Autocreated on ticket submission'
+			      );
+	    
+	    unless ($Val) {
+		MailError( To => $ErrorsTo,
+			   Subject => "User could not be created",
+			   Explanation => "User creation failed in mailgateway: $Message",
+			   MIMEObj => $entity,
+			   LogLevel => 'crit'
+			 );
+	    }
+	}
+
 	#Load the new user object
 	$CurrentUser->LoadByEmail($Address);
 	
 	unless ($CurrentUser->id) {
 	    $RT::Logger->warning("Couldn't load user '$Address'.".
-			      " Defaulting to nobody");
+				 " Defaulting to nobody\n");
 	    
 	    $CurrentUser->Load($RT::Nobody->Id);
 	}
