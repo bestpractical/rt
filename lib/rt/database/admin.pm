@@ -80,20 +80,20 @@ sub delete_queue {
   my ($query_string,$update_clause);
   
   
-  if (!(&is_a_queue($queue_id))){
-    return(0,"Queue $queue_id does not exist!");
+  if (!(&is_a_queue($in_queue_id))){
+    return(0,"Queue $in_queue_id does not exist!");
   }
   else {
     
     $queue_id=$rt::dbh->quote($in_queue_id);
     if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
-      $query_string = "DELETE FROM queues WHERE queue_id = $in_queue_id";
+      $query_string = "DELETE FROM queues WHERE queue_id = $queue_id";
       $dbh->Query($query_string) or 
 	return (0, "[delete_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
-      $query_string = "DELETE FROM queue_acl WHERE queue_id = $in_queue_id";
+      $query_string = "DELETE FROM queue_acl WHERE queue_id = $queue_id";
       $dbh->Query($query_string) or 
 	return (0, "[delete_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
-      $query_string = "DELETE FROM queue_areas WHERE queue_id = $in_queue_id";
+      $query_string = "DELETE FROM queue_areas WHERE queue_id = $queue_id";
       $dbh->Query($query_string) or
 	return (0, "[delete_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");  
       delete $rt::queues{"$in_queue_id"};

@@ -1,6 +1,8 @@
 6 Jul 99
 --------
 
+Made queue deletion work...unquoted and quoted values were being used in the wrong place.
+
 Cleaned up the admin ui to make it slightly more understandable
 
 queue names with spaces in them should now work better, i hope. [fsck #76]
