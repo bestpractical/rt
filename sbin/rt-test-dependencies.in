@@ -143,6 +143,7 @@ Text::Quoted 1.3
 Tree::Simple 1.04
 Scalar::Util
 Module::Versions::Report
+YAML
 .
 
 $deps{'MASON'} = [ _( << '.') ];
