@@ -9,6 +9,7 @@
 %if ($session{'CurrentUser'}) {
 You are currently authenticated as <a href="<%$RT::WebURL%>/ViewUser.html?id=<%$session{'CurrentUser'}->Id%>"><%$session{'CurrentUser'}->UserId%></a>.
 %}
+<hr>
 
 
 <%ARGS>
