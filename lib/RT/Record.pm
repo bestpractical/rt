@@ -549,8 +549,22 @@ sub URI {
 }
 
 # }}}
- 
 
+=head2 ValidateName NAME
+
+Validate the name of the record we're creating. Mostly, just make sure it's not a numeric ID, which is invalid for Name
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $value = shift;
+    if ($value =~ /^\d+$/) {
+        return(0);
+    } else  {
+         return (1);
+    }
+}
 
 
 
