@@ -12,6 +12,7 @@ sub activate {
   $CurrentUser = new RT::User($current_user,$Handle);
   if (!$CurrentUser->load($current_user)) {
     print "You have no RT access.\n";
+    return();
   }
 
   
@@ -20,6 +21,8 @@ sub activate {
   
 
   &parse_args;
+  return(0);
+
 }
 
 sub parse_args {
