@@ -56,7 +56,14 @@ If you pass the ACL check, it creates the queue and returns its queue id.
 
 sub Create  {
     my $self = shift;
-    my %args = (@_); 
+    my %args = ( Name => undef,
+		 CorrespondAddress => undef,
+		 Description => undef,
+		 CommentAddress => undef,
+		 InitialPriority => undef,
+		 FinalPriority =>  undef,
+		 DefaultDueIn =>  undef,
+		 @_); 
     
     unless ($self->CurrentUser->HasSystemRight('AdminQueue')) {    #Check them ACLs
 	return (0, "No permission to create queues") 
@@ -87,12 +94,14 @@ sub Delete  {
     # this function needs to move all requests into some other queue!
     my ($query_string,$update_clause);
     
-    $RT::Logger->crit("$self ->Delete not implemented\n");
-    return(0,"Queue->Delete not implemented yet");
+
 
     unless ($self->CurrentUserHasRight('AdminQueue')) {
 	return(0, "You do not have the privileges to delete queues");
     }
+
+    $RT::Logger->crit("$self ->Delete not implemented\n");
+    return(0,"Queue->Delete not implemented yet");
     
     #TODO:  DO ALL THESE +++ before 2.0
     #Find all the tickets in this queue.
@@ -127,11 +136,17 @@ sub Load  {
     else {
 	$self->LoadByCol("Name", $identifier);
     }
+
     return ($self->Id);
 
 
 }
 # }}}
+
+
+
+
+# {{{ Dealing with watchers
 
 # {{{ sub Watchers
 
@@ -172,8 +187,10 @@ WatchersAsString ...
 sub WatchersAsString {
     my $self=shift;
 
-    return (undef)
-      unless ($self->CurrentUserHasRight('ExploreQueue'));
+    unless ($self->CurrentUserHasRight('ExploreQueue')) {
+	return (undef);
+    }
+    
     return($self->Watchers->EmailsAsString());
 }
 
@@ -415,30 +432,28 @@ We need either an Email Address in Email or a userid in Owner
 =cut
 
 sub AddWatcher {
-  my $self = shift;
-  my %args = ( Email => undef,
-	       Type => undef,
-	       Owner => 0,
-	       @_ 
-	     );
-
-  
-
-  unless ($self->CurrentUserHasRight('ModifyQueueWatchers')) {
-      return (0, "Permission Denied");
-  } 
-  
-  #TODO: Look up the Email that's been passed in to find the watcher's +++ before 2.0
-  # user id. Set Owner to that value.
-  
-  require RT::Watcher;
-  my $Watcher = new RT::Watcher ($self->CurrentUser);
-  return ($Watcher->Create(Scope => 'Queue', 
-			   Value => $self->Id,
-			   Email => $args{'Email'},
-			   Type => $args{'Type'},
-			   Owner => $args{'Owner'}
-			  ));
+    my $self = shift;
+    my %args = ( Email => undef,
+		 Type => undef,
+		 Owner => 0,
+		 @_ 
+	       );
+    
+    unless ($self->CurrentUserHasRight('ModifyQueueWatchers')) {
+	return (0, "Permission Denied");
+    } 
+    
+    #TODO: Look up the Email that's been passed in to find the watcher's +++ before 2.0
+    # user id. Set Owner to that value.
+    
+    require RT::Watcher;
+    my $Watcher = new RT::Watcher ($self->CurrentUser);
+    return ($Watcher->Create(Scope => 'Queue', 
+			     Value => $self->Id,
+			     Email => $args{'Email'},
+			     Type => $args{'Type'},
+			     Owner => $args{'Owner'}
+			    ));
 }
 
 # }}}
@@ -455,8 +470,8 @@ We need either an Email Address in Email or a userid in Owner
 
 
 sub AddCc {
-  my $self = shift;
-  return ($self->AddWatcher ( Type => 'Cc', @_));
+    my $self = shift;
+    return ($self->AddWatcher ( Type => 'Cc', @_));
 }
 # }}}
 	
@@ -471,8 +486,8 @@ We need either an Email Address in Email or a userid in Owner
 =cut
 
 sub AddAdminCc {
-  my $self = shift;
-  return ($self->AddWatcher ( Type => 'AdminCc', @_));
+    my $self = shift;
+    return ($self->AddWatcher ( Type => 'AdminCc', @_));
 }
 # }}}
 
@@ -527,6 +542,8 @@ sub DeleteWatcher {
 
 # }}}
 
+# }}}
+
 # {{{ sub Templates
 
 =head2 Templates
@@ -537,15 +554,20 @@ Returns an RT::Templates object of all of this queue's templates.
 
 sub Templates {
     my $self = shift;
- 
-    #TODO ACL: do we need to acl this?
+    
+
     my $templates = RT::Templates->new($self->CurrentUser);
-    $templates->LimitToQueue($self->id);
+    if ($self->CurrentUserHasRight('ShowTemplate')) {
+	$templates->LimitToQueue($self->id);
+    }
+    
     return ($templates); 
 }
 
 # }}}
 
+
+# {{{ Dealing with keyword selects
 
 # {{{ sub AddKeywordSelect
 
@@ -567,6 +589,7 @@ sub AddKeywordSelect {
     
     #ACLS get handled in KeywordSelect
     my $NewKeywordSelect = new RT::KeywordSelect($self->CurrentUser);
+    
     return ($NewKeywordSelect->Create (Keyword => $args{'Keyword'},
 			       Depth => $args{'Depth'},
 			       Name => $args{'Name'},
@@ -627,6 +650,15 @@ sub KeywordSelects {
 }
 # }}}
 
+# }}}
+
+
+
+
+
+
+# {{{ ACCESS CONTROL
+
 # {{{ sub ACL 
 
 =head2 ACL
@@ -637,34 +669,39 @@ sub KeywordSelects {
 
 sub ACL  {
   my $self = shift;
-  if (!$self->{'acl'}) {
-    use RT::ACL;
-    $self->{'acl'} = new RT::ACL($self->CurrentUser);
-    $self->{'acl'}->LimitScopeToQueue($self->Id);
+  
+  
+  use RT::ACL;
+  my $acl = new RT::ACL($self->CurrentUser);
+  
+  if ($self->CurrentUserHasRight('ShowACL')) {
+      $acl->LimitToQueue($self->Id);
   }
   
- return ($self->{'acl'});
+ return ($acl);
   
 }
 # }}}
-
-
-
-# {{{ ACCESS CONTROL
-
 
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
-    #TODO ACL Checks for 2.0 
+
+    unless ($self->CurrentUserHasRight('AdminQueue')) {
+	return(0, 'Permission denied');
+    }	
     return ($self->SUPER::_Set(@_));
 }
 # }}}
 
-# {{{ sub _Set
+# {{{ sub _Value
 sub _Value {
     my $self = shift;
-    #TODO ACL Checks for 2.0 
+
+    unless ($self->CurrentUserHasRight('ExploreQueue')) {
+	return (undef);
+    }
+
     return ($self->SUPER::_Value(@_));
 }
 # }}}

@@ -25,12 +25,12 @@
 
     if ($Scope eq 'Queue') { 
         $AppliesTo = $QueueObj->Id;
-        $ACLObj->LimitScopeToQueue($AppliesTo);
+        $ACLObj->LimitToQueue($AppliesTo);
         %Rights = $ACE->QueueRights();
     } 
     elsif ($Scope eq 'System') {
         $AppliesTo = 0;
-        $ACLObj->LimitScopeToSystem();
+        $ACLObj->LimitToSystem();
         %Rights =  ( $ACE->SystemRights , $ACE->QueueRights());
     }
 

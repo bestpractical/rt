@@ -8,7 +8,7 @@
 
 <%INIT>
 my $ACL = new RT::ACL($session{'CurrentUser'});
-$ACL->LimitScopeToQueue($QueueObj->id);
+$ACL->LimitToQueue($QueueObj->id);
 $ACL->LimitPrincipalToUser($PrincipalId);
 </%INIT>
 <%ARGS>
