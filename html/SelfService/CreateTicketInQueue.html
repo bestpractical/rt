@@ -43,44 +43,19 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/PageLayout,
-    current_toptab => $current_toptab,
-    current_tab => $current_tab,
-    toptabs => $tabs,
-    topactions => $actions,
-    title => $Title
-&>
-<a name="skipnav" id="skipnav" accesskey="8"></a>
-<%INIT>
+<& Elements/Header, Title => loc("Create a ticket") &>
 
-if ($Title) {
-$Title = loc ("RT Self Service") . " / " . $Title;
-} else {
-$Title = loc ("RT Self Service");
+<h1><&|/l&>Select a queue for your new ticket</&></h1>
 
-}
-my ($tab);
-my $tabs = { A  => { title => loc('Open tickets'),
-                        path => 'SelfService/',
-                      },
-             B => { title => loc('Closed tickets'),
-                         path => 'SelfService/Closed.html',
-                       },
-             C => { title => loc('New ticket'),
-                    path => 'SelfService/CreateTicketInQueue.html'
-                    },
-             Z => { title => loc('Preferences'),
-                    path => 'SelfService/Prefs.html'
-                    }
-           };
-my $actions = {
-	B => { html => $m->scomp('GotoTicket') 
-		}
-	};
-</%INIT>
-<%ARGS>
-$Title => undef
-$current_toptab => undef
-$current_tab => undef
-</%ARGS>
+<dl>
+% while (my $queue = $queues->Next) {    
+% next unless $queue->CurrentUserHasRight('CreateTicket');
 
+<dt><a href="<%$RT::WebPath%>/SelfService/Create.html?Queue=<%$queue->id%>"><%$queue->Name%></a></dt>
+<dd><%$queue->Description%></dd>
+% }
+</dl>
+<%init>
+my $queues = RT::Queues->new($session{'CurrentUser'});
+$queues->UnLimit;
+</%init>

@@ -54,6 +54,7 @@
                 title_class=> 'inverse',  
                 color => "#993333" &>
                 <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+                <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
           <& /Elements/TitleBoxEnd &>
 </TD>
         <TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
@@ -97,106 +98,106 @@ if ( $id[0] eq 'new' ) {
 
     unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
         $m->comp( 'Error.html',
-             Why =>
-               loc('You have no permission to create tickets in that queue.') );
+            Why =>
+              loc('You have no permission to create tickets in that queue.') );
         $m->abort;
     }
 
-    my @Requestors = split ( /\s*,\s*/, $ARGS{'Requestors'} );
-    my @Cc         = split ( /\s*,\s*/, $ARGS{'Cc'} );
+    ( $Ticket, @results ) =
+    CreateTicket( Attachments => $session{'Attachments'}, %ARGS, Status => 'new' );
 
-    my $MIMEObj = MakeMIMEEntity( Subject             => $ARGS{'Subject'},
-                                  From                => $ARGS{'From'},
-                                  Cc                  => $ARGS{'Cc'},
-                                  Body                => $ARGS{'Content'},
-                                  AttachmentFieldName => 'Attach' );
+    unless ( $Ticket->id ) {
+        $m->comp( 'Error.html', Why => join( "\n", @results ));
+              $m->abort();
+        }
 
-    #TODO in Create_Details.html: priorities and due-date
-    my ( $id, $Trans, $ErrMsg ) = $Ticket->Create( Queue     => $ARGS{Queue},
-                                                   Requestor => \@Requestors,
-                                                   Cc        => \@Cc,
-                                                   Subject   => $ARGS{Subject},
-                                                   MIMEObj   => $MIMEObj );
-    unless ( $id && $Trans ) {
-        $m->comp( 'Error.html', Why => $ErrMsg );
-        $m->abort();
+        # }}}
+
+        # delete temporary storage entry to make WebUI clean
+        unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
+            delete $session{'Attachments'};
+        }
+
+        # }}}
     }
-
-    push ( @results, $ErrMsg );
+    else {
+        unless ( $Ticket->Load( $id[0] ) ) {
+            $m->comp( 'Error.html',
+                Why => loc( "Couldn't load ticket '[_1]'", $id ) );
+            $m->abort();
+        }
+    }
 
     # }}}
 
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
-    delete $session{'Attachments'};
-}
-# }}}
-}
-else {
-    unless ( $Ticket->Load( $id[0] ) ) {
+    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
         $m->comp( 'Error.html',
-                  Why => loc( "Couldn't load ticket '[_1]'", $id ) );
+            Why => loc("No permission to display that ticket") );
         $m->abort();
     }
-}
 
-# }}}
+    my ( $code, $msg );
 
-unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-    $m->comp( 'Error.html',
-              Why => loc("No permission to display that ticket") );
-    $m->abort();
-}
+    #Update the status
+    if (    ( defined $ARGS{'Status'} )
+        and $ARGS{'Status'}
+        and ( $ARGS{'Status'} ne $Ticket->Status ) )
+    {
+        ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
+        push @results, "$msg";
+    }
 
-my ( $code, $msg );
+    # {{{ store the uploaded attachment in session
+    if ( $ARGS{'Attach'} ) {    # attachment?
+        $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
-#Update the status
-if (     ( defined $ARGS{'Status'} ) and $ARGS{'Status'}
-     and ( $ARGS{'Status'} ne $Ticket->Status ) ) {
-    ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
-    push @results, "$msg";
-}
+        my $subject = "$ARGS{'Attach'}";
 
-# {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+        # since CGI.pm deutf8izes the magic field, we need to add it back.
+        Encode::_utf8_on($subject);
 
-    my $subject = "$ARGS{'Attach'}";
-    # since CGI.pm deutf8izes the magic field, we need to add it back.
-    Encode::_utf8_on($subject);
-    # strip leading directories
-    $subject =~ s#^.*[\\/]##;
+        # strip leading directories
+        $subject =~ s#^.*[\\/]##;
 
-    my $attachment = MakeMIMEEntity(
-        Subject             => $subject,
-        Body                => "",
-        AttachmentFieldName => 'Attach'
+        my $attachment = MakeMIMEEntity(
+            Subject             => $subject,
+            Body                => "",
+            AttachmentFieldName => 'Attach'
+        );
+
+        $session{'Attachments'} =
+          { %{ $session{'Attachments'} || {} },
+            $ARGS{'Attach'} => $attachment };
+    }
+
+    # }}}
+
+    if (
+        $session{'Attachments'}
+        || (   $ARGS{'UpdateContent'} ne ''
+            && $ARGS{'UpdateContent'} ne "-- \n"
+            . $session{'CurrentUser'}->UserObj->Signature )
+      )
+    {
+        $ARGS{UpdateAttachments} = $session{'Attachments'};
+    }
+    ProcessUpdateMessage(
+        ARGSRef   => \%ARGS,
+        Actions   => \@results,
+        TicketObj => $Ticket
     );
 
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
-}
-# }}}
+    # delete temporary storage entry to make WebUI clean
+    unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
+        delete $session{'Attachments'};
+    }
 
-if ( $session{'Attachments'} || 
-     (   $ARGS{'UpdateContent'} ne ''
-	 && $ARGS{'UpdateContent'} ne "-- \n"
-	 . $session{'CurrentUser'}->UserObj->Signature )) {
-    $ARGS{UpdateAttachments} = $session{'Attachments'};
-}
-ProcessUpdateMessage( ARGSRef   => \%ARGS,
-                      Actions   => \@results,
-                      TicketObj => $Ticket );
+    # }}}
 
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
-    delete $session{'Attachments'};
-}
-# }}}
+    my $Transactions = $Ticket->Transactions;
 
-my $Transactions = $Ticket->Transactions;
-
-my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
+    my $attachments =
+      $m->comp( '/Ticket/Elements/FindAttachments', Ticket => $Ticket );
 
 </%INIT>
 
