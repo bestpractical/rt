@@ -1,4 +1,4 @@
-<& /Elements/TitleBoxStart, title => "25 most important tickets I requested..." &>
+<& /Elements/TitleBoxStart, title => "25 highest priority tickets I requested..." &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH align=right>#</TH>
