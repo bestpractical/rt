@@ -28,6 +28,7 @@
     subactions => $subactions,
     title => $Title
 &>
+<& /Elements/Callback, %ARGS, _CallbackName => "Header" &>
 <%INIT>
 my $action;
 

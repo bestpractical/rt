@@ -27,7 +27,7 @@
 % my $values = $Article->CustomFieldValues($cf->Id);
 % if ($cf->Type eq 'TextSingle') {
 % my $value = $values->First; 
-% my $content = $value->Content;
+% my $content = $value ? $value->Content : "";
 % if ($content =~ /<(.{1,5})>/) {
 %    $content = de_htmlify($content);
 % }
@@ -36,7 +36,7 @@
 <%$content%>
 % } else {
 % my $val = $values->Next;
-% my $content = $val->Content;
+% my $content = $val ? $val->Content : "";
 % if ($content =~ /<(.{1,5})>/) {
 %    $content = de_htmlify($content);
 % }

@@ -16,7 +16,7 @@
 %# 
 %# END LICENSE BLOCK
 
-<table>
+<table id="cfs">
 % while (my $cf = $cfs->Next) {
 %   my $values = $article->CustomFieldValues($cf->Id);
 %   my $class_cf = RT::FM::ClassCustomField->new($session{'CurrentUser'});
@@ -25,7 +25,7 @@
 %   next if $display eq "Hidden";
 %   next if $display eq "Hidden when empty" and not $values->Count;
 <tr class="<% (split(' ',$display))[-1] %>">
-<td valign=top><b><%$cf->Name%></b></td>
+<th valign="top"><%$cf->Name%></th>
 <td>
 <% ($cf->Type !~ /Single$/) && '<ul>' |n%>
 <%perl>

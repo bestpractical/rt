@@ -1,2 +1,5 @@
-.emphasized td { font-weight: bolder; color: #c00}
-.de-emphasized td { color: #999; }
+#cfs .emphasized    td { font-weight: bold;    color: #c00; font-size: 11pt; }
+#cfs .emphasized    th { font-weight: bolder;  color: #c00; font-size: 13pt; }
+
+#cfs .de-emphasized td { font-weight: lighter; color: #999; font-size:  9pt; }
+#cfs .de-emphasized th { font-weight: normal;  color: #999; font-size: 11pt; }
