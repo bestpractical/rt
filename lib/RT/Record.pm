@@ -1764,10 +1764,8 @@ sub CustomFieldValues {
     $cf_values->LimitToObject($self);
     $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
 
-}
 
-return ($cf_values);
-## Please see file perltidy.ERR
+    return ($cf_values);
 }
 
 # }}}
