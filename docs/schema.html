@@ -13,7 +13,7 @@
 <dt>
   Name varchar(255) NULL  
   </dt>
-<dd></dd>
+<dd>A short, ideally unique, identifier for this article</dd>
 <dt>
   Summary varchar(255) NULL  
   </dt>
@@ -21,7 +21,8 @@
 <dt>
   SortOrder integer NULL  
   </dt>
-<dd></dd>
+<dd>When articles are automatically ordered by RTFM, this field defines which
+articles should be listed first. (Lower numbers are listed first)</dd>
 <dt>
   Class integer NULL
   </dt>
@@ -48,16 +49,17 @@
 <dt>
   Name varchar(255) NULL  
   </dt>
-<dd></dd>
+<dd>A short name for this class. Used to help categorize articles and access to
+articles</dd>
 <dt>
   Description varchar(255) NULL  
 
   </dt>
-<dd></dd>
+<dd>A brief description of what this class is used for.</dd>
 <dt>
   SortOrder integer NULL  
   </dt>
-<dd>Used to automatically order classes in listings</dd>
+<dd>Used to automatically order classes in listings.</dd>
 <dt>
   Disabled int(2) not null default '0'
   </dt>
@@ -70,7 +72,7 @@
 
        <p> Within RTFM, rights to a class and all articles within that class can be granted to an RT user or group, using RT's ACL system.  Class objects contain the necessary metadata to be ACLed within RT.
 
-FM_CustomFields
+<h1>FM_CustomFields</h1><h1>
  <h2>Fields:</h2>
  <dl><dt>
   id INTEGER NOT NULL  AUTO_INCREMENT
@@ -79,7 +81,7 @@ FM_CustomFields
 <dt>
   Name varchar(200) NULL  
   </dt>
-<dd></dd>
+<dd>A short name for this custom field. </dd>
 <dt>
   Type varchar(200) NULL  
   </dt>
@@ -93,7 +95,10 @@ SelectSingle SelectMultiple FreeformSingle FreeformMultiple TextSingle
 <dt>
   SortOrder integer NULL  
   </dt>
-<dd></dd></dl>
+<dd>When custom fields are automatically ordered by RTFM, this field defines which
+articles should be listed first. (Lower numbers are listed first)</dd>
+
+</dl>
 
 <p>Almost all data and metadata related to an "Article" is attached to it in the form of CustomFields. 
 
@@ -133,15 +138,18 @@ SelectSingle SelectMultiple FreeformSingle FreeformMultiple TextSingle
 <dt>
   Name varchar(255) NULL  
  </dt>
-<dd></dd>
+<dd>What this custom field value is called. This is the name that shows up in a
+list of possible values for a custom field.</dd>
 <dt>
   Description varchar(255) NULL  
  </dt>
-<dd></dd>
+<dd>A brief description of what this value is used for, in the
+context of the custom field.</dd>
 <dt>
   SortOrder integer NULL  
   </dt>
-<dd></dd>
+<dd>When values are automatically ordered by RTFM, this field defines which
+articles should be listed first. (Lower numbers are listed first)</dd>
 </dl>
 
 
@@ -165,13 +173,16 @@ SelectSingle SelectMultiple FreeformSingle FreeformMultiple TextSingle
 <dt>
   Content text
   </dt>
-<dd></dd></dl>
-	
-	<p>ArticleCFValues contains a list of current values for each applicable CustomField for each article.
-	To ensure data integrity, even as the "current" acceptable values for a Custom Field change, Article Custom Field Values
-	are stored by value, rather than by reference in the ArticleCFValues table. This has the adted benefit of allowing "Select" custom fields
+<dd>
+	To ensure data integrity, even as the "current" acceptable values for a
+    Custom Field change, the content is
+	stored by value, rather than by reference in the ArticleCFValues table.
+    This has the added benefit of allowing "Select" custom fields
 	to be converted to "Freeform" custom fields without losing data.
 
+</dd></dl>
+	
+	<p>ArticleCFValues contains a list of current values for each applicable CustomField for each article.
         
 
 <h1>FM_Transactions</h1>
