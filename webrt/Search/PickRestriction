@@ -1,23 +1,37 @@
 %# $Header$
-<& /Elements/TitleBoxStart, title => 'Restrict Search'&>
 <FORM ACTION="Listing.html" METHOD="POST">
+<& /Elements/TitleBoxStart, title => 'Restrict Search'&>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
 <ul>
-<li>Owner is  <& /Elements/SelectBoolean, Name => "OwnerOp", TrueVal=> '=', FalseVal => '!=' &> 
+<li>Owner is  <& /Elements/SelectBoolean, Name => "OwnerOp", 
+					  TrueVal=> '=', 
+					  FalseVal => '!=' 
+&> 
 <& /Elements/SelectOwner, Name => "ValueOfOwner" &>
 
 <li>
-Requestor email address <& /Elements/SelectMatch, Name => "RequestorOp", True => "matches", 
-			   False => "does not match", Like => "Contains" &>
+Requestor email address 
+<& /Elements/SelectMatch, Name => "RequestorOp", 
+			  True => "matches", 
+			  False => "does not match", 
+			  Like => "Contains" 
+&>
 <INPUT Name="ValueOfRequestor" SIZE=20>
 
 <li>
-Subject <& /Elements/SelectMatch, Name => "SubjectOp", True => "matches", False => "does not match", 
-	Like => "contains" &> 
+Subject <& /Elements/SelectMatch, Name => "SubjectOp", 
+				  True => "matches", 
+				  False => "does not match", 
+				  Like => "contains" 
+&> 
 <INPUT Name="ValueOfSubject" SIZE=20>
 
-<li>Queue  <& /Elements/SelectBoolean, Name => "QueueOp" , True => "is", False => "isn't", TrueVal=> '=', FalseVal => '!=' &>
+<li>Queue  <& /Elements/SelectBoolean,  Name => "QueueOp" , 
+					True => "is", 
+					False => "isn't", 
+					TrueVal=> '=', 
+					FalseVal => '!=' &>
 <& /Elements/SelectQueue, Name => "ValueOfQueue" &>
 
 <li>
@@ -26,11 +40,21 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp", True => "matches", False 
 <& /Elements/SelectDate, Name  => "ValueOfDate", ShowTime => 0 &>
 
 <li>Ticket content 
-<& /Elements/SelectBoolean, Name => "ContentOp", True => "matches", 
-	False => "does not match", TrueVal => 'LIKE', FalseVal => 'NOT LIKE' &> <Input Name="ValueOfContent" Size=20>
+<& /Elements/SelectBoolean, Name => "ContentOp", 
+			    True => "matches", 
+			    False => "does not match", 
+			    TrueVal => 'LIKE', 
+			    FalseVal => 'NOT LIKE' 
+&> 
+<Input Name="ValueOfContent" Size=20>
 
 <li>Status 
-<& /Elements/SelectBoolean, Name => "StatusOp", True => "is", False => "isn't", TrueVal=> '=', FalseVal => '!=' &>  
+<& /Elements/SelectBoolean, Name => "StatusOp", 
+			    True => "is", 
+  			    False => "isn't", 
+			    TrueVal=> '=', 
+			    FalseVal => '!=' 
+&>  
 <& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
 % while ( my $KeywordSelect = $KeywordSelects->Next ) {
@@ -44,19 +68,30 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp", True => "matches", False 
 			    KeywordObj => $KeywordSelect->KeywordObj
 			    &>
 % }
-<li>Results per page <& /Elements/SelectResultsPerPage, Name => "ResultsPerPage", Default => $ARGS{'ResultsPerPage'} &>
 
-<li>Sort results by <& /Elements/SelectTicketSortBy, Name => "TicketsSortBy", Default => $ARGS{'TicketsSortBy'} &> 
+</UL>
 
-<& /Elements/SelectSortOrder, Name => 'TicketsSortOrder' &>
+<& /Elements/TitleBoxEnd &>
 
+<& /Elements/TitleBoxStart, title => 'Ordering and sorting'&>
 
+<UL>
 
+<li>Results per page <& /Elements/SelectResultsPerPage, Name => "RowsPerPage", 
+							Default => $session{'tickets_rows_per_page'} 
+&>
+
+<li>Sort results by <& /Elements/SelectTicketSortBy, Name => "TicketsSortBy", 
+						     Default => $session{'tickets_sort_by'} 
+&> 
+
+<& /Elements/SelectSortOrder, Name => 'TicketsSortOrder', Default => $session{'tickets_sort_order'} &>
 
 </UL>
 
 
 </DIV>
+
 
 
 <& /Elements/TitleBoxEnd &>

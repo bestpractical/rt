@@ -1,7 +1,18 @@
 <SELECT NAME="<%$Name%>">
-<OPTION value="ASC">Ascending</OPTION>
-<OPTION value="DESC">Descending</OPTION>
+%foreach my $order (@orders) {
+<OPTION VALUE="<%$order%>" <%$order eq $Default && 'SELECTED' %>>
+<% shift @order_names %>
+</OPTION>
+% }
 </SELECT>
+
+<%INIT>
+my @orders = qw (ASC DESC);
+my @order_names = qw (Ascending Descending);
+
+</%INIT>
+
 <%ARGS>
 $Name => 'SortOrder'
+$Default => 'ASC'
 </%ARGS>

@@ -22,6 +22,7 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 =cut
 
 package RT::Attachment;
+use MIME::Base64;
 use RT::Record;
 use vars qw|@ISA|;
 @ISA= qw(RT::Record);
@@ -34,22 +35,20 @@ sub _Init  {
 }
 # }}}
 
-# {{{ sub _Accessible 
-sub _Accessible  {
-  my $self = shift;
-  my %Cols = (
-	      TransactionId => 'read/public',
-	      MessageId => 'read',
-	      ContentType => 'read',
-	      Subject => 'read',
-	      Content => 'read',
-	      Headers => 'read',
-	      Filename => 'read',
-	      Creator => 'read/auto',
-	      Created => 'read/auto'
-
-	     );
-  return $self->SUPER::_Accessible(@_, %Cols);
+# {{{ sub _ClassAccessible 
+sub _ClassAccessible {
+  {
+    TransactionId   => { 'read'=>1, 'public'=>1, },
+    MessageId       => { 'read'=>1, },
+    ContentType     => { 'read'=>1, },
+    Subject         => { 'read'=>1, },
+    Content         => { 'read'=>1, },
+    ContentEncoding => { 'read'=>1, },
+    Headers         => { 'read'=>1, },
+    Filename        => { 'read'=>1, },
+    Creator         => { 'read'=>1, 'auto'=>1, },
+    Created         => { 'read'=>1, 'auto'=>1, },
+  };
 }
 # }}}
 
@@ -118,7 +117,8 @@ sub Create  {
   #Get the filename
   my $Filename = $Attachment->head->recommended_filename;
   
-   if ($Attachment->is_multipart) {
+  #if ($Attachment->is_multipart) {
+  if ($Attachment->parts) {
     $id = $self->SUPER::Create(TransactionId => $args{'TransactionId'},
 			       Parent => 0,
 			       ContentType  => $Attachment->mime_type,
@@ -127,17 +127,12 @@ sub Create  {
 	
 			      );
     
-  for (my $Counter = 0; $Counter < $Attachment->parts(); $Counter++) {
+    foreach my $part ( $Attachment->parts ) {
+
       my $SubAttachment = new RT::Attachment($self->CurrentUser);
       $SubAttachment->Create(TransactionId => $args{'TransactionId'},
-			     Parent => "$id",
-
-			     # This was "part", and has always worked
-			     # until I upgraded MIME::Entity.  seems
-			     # like "parts" should work according to
-			     # the doc?
-
-			     Attachment => $Attachment->parts($Counter),
+			     Parent => $id,
+			     Attachment => $part,
 			     ContentType  => $Attachment->mime_type,
 			     Headers => $Attachment->head->as_string(),
 		
@@ -159,6 +154,7 @@ sub Create  {
     my $id = $self->SUPER::Create(TransactionId => $args{'TransactionId'},
 				  ContentType  => $Attachment->mime_type,
 				  Parent => $args{'Parent'},
+				  ContentEncoding => $Encoding,
 				  Content => $Body,
 				  Headers => $Attachment->head->as_string,
 				  Subject => $Subject,
@@ -187,7 +183,7 @@ sub Quote {
 
     # TODO: Handle Multipart/Mixed (eventually fix the link in the
     # ShowHistory web template?)
-    if ($self->ContentType =~ m{^(text/plain|message)}) {
+    if ( $self->ContentType =~ m{^(text/plain|message)}i ) {
 	$body=$self->Content;
 
 	# Do we need any preformatting (wrapping, that is) of the message?

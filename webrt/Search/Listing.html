@@ -1,32 +1,31 @@
 %# $Header$
-%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+%# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
 <& /Elements/Header, Title => "Search" &>
 <& /Elements/Tabs &>
 
-<H1><Tickets</H1>
-
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=1>
 <TR>
-%foreach (@{Config(\%ARGS, 'QueueListingCols')}) {
-   <TH><% $_->{Header} %></TH>
+%foreach my $col (@{Config(\%ARGS, 'QueueListingCols')}) {
+   <TH><% $col->{Header} %></TH>
 %}
 </TR>
 
 <%PERL>
 
+my $i;
 while (my $Ticket = $session{'tickets'}->Next) {
- $cnt++; 
- if (($cnt % 2) == 1) {
-	$bgcolor = "#dddddd";
+ $i++;
+ if ($i % 2) {
+     $bgcolor = "#dddddd";
  }
  else {
- 	$bgcolor = "#ffffff";
+     $bgcolor = "#ffffff";
  }
-</%PERL>
+      </%PERL>
 <TR bgcolor="<%$bgcolor%>" >
 %# The ticket view is controlled by config.pm, WebOptions
-%foreach (@{Config(\%ARGS, 'QueueListingCols')}) {
-<TD><& TicketCell , Ticket=>$Ticket,  Column=>$_ &></TD>
+%foreach my $col (@{Config(\%ARGS, 'QueueListingCols')}) {
+<TD><& TicketCell , Ticket=>$Ticket,  Column=>$col &></TD>
 %}
 </TR>
 %}
@@ -35,9 +34,16 @@ while (my $Ticket = $session{'tickets'}->Next) {
 
 </TABLE>
 
-<a href="Listing.html?GotoPage=Prev">Previous page</a>
-<a href="Listing.html?GotoPage=Next">Next page</a>
-
+<div align=center>
+<font size=2>
+<a href="Listing.html?GotoPage=1">First page</a>
+&nbsp;&nbsp;
+<a href="Listing.html?GotoPage=Prev">&lt;Previous page</a>
+&nbsp;&nbsp;
+<a href="Listing.html?GotoPage=Next">Next page&gt;</a>
+%#&nbsp;&nbsp;<form method=get action="Listing.html">Goto page <input name=GotoPage size=2></form>
+</font>
+</div>
 
 <HR>
 <TABLE WIDTH="100%">
@@ -63,9 +69,8 @@ while (my $Ticket = $session{'tickets'}->Next) {
 </TABLE>
 
 <%INIT>
-my $cnt = 0;
-my $bgcolor;
 
+my $bgcolor;
 require RT::Interface::Web;
 
 $session{'i'}++;

@@ -71,6 +71,7 @@ sub _Handle  {
 # }}}
 
 # {{{ sub Create 
+
 sub Create  {
     my $self = shift;
     my $now = new RT::Date($self->CurrentUser);
@@ -99,6 +100,7 @@ sub Create  {
     return($id);
     
 }
+
 # }}}
 
 # {{{ Datehandling
@@ -190,7 +192,7 @@ sub _Set  {
     $args{'Value'} = 0; 
    }
 
-  $self->_SetLastUpdated;
+  $self->_SetLastUpdated();
   $self->SUPER::_Set(Field => $args{'Field'},
 		     Value => $args{'Value'},
 		     IsSQL => $args{'IsSQL'});
@@ -209,18 +211,19 @@ It takes no options. Arguably, this is a bug
 =cut
 
 sub _SetLastUpdated {
-	my $self = shift;
-  use RT::Date;
-  my $now = new RT::Date($self->CurrentUser);
-  $now->SetToNow();
+    my $self = shift;
+    use RT::Date;
+    my $now = new RT::Date($self->CurrentUser);
+    $now->SetToNow();
 
-  #TODO this should be using _Set not UpdateTableValue. it's a stupid ++
-  # short circuiting
-  $error_condition = $self->_Handle->UpdateTableValue($self->{'table'}, 'LastUpdated',$now->ISO,$self->id)
-    if ($self->_Accessible('LastUpdated','auto'));
-
-  $self->SUPER::_Set(Field => 'LastUpdatedBy', Value => $self->CurrentUser->id)
-    if ($self->_Accessible('LastUpdatedBy','auto'));
+    if ($self->_Accessible('LastUpdated','auto')) {
+    	my ($msg, $val) = $self->__Set( Field => 'LastUpdated',
+                                        Value => $now->ISO);
+    }
+    if ($self->_Accessible('LastUpdatedBy','auto')) {
+        my ($msg, $val) = $self->__Set( Field => 'LastUpdatedBy', 
+				        Value => $self->CurrentUser->id);
+    }
 }
 
 # }}}

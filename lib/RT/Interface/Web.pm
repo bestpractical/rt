@@ -130,6 +130,7 @@ sub LinkUpIfRequested {
 # }}}
 
 # {{{ sub ProcessSimpleActions
+
 ## TODO: This is obscenely hacky, that eval should go away.  Eventually,
 ## the eval is not needed in perl 5.6.0.  Eventually the sub should
 ## accept more than one Action, and it should handle Actions with
@@ -143,6 +144,7 @@ sub ProcessSimpleActions {
 	push(@{$args{Actions}}, $msg);
     }
 }
+
 # }}}
 
 # {{{ sub ProcessOwnerChanges
@@ -237,17 +239,21 @@ sub ProcessSearchQuery {
 
     # {{{ Deal with limiting the search
     if ($args{ARGS}->{'TicketsSortBy'}) {
+	$session{'tickets_sort_by'} = $args{ARGS}->{'TicketsSortBy'};
+	$session{'tickets_sort_order'} = $args{ARGS}->{'TicketsSortOrder'};
 	$session{'tickets'}->OrderBy ( FIELD => $args{ARGS}->{'TicketsSortBy'},
 				       ORDER => $args{ARGS}->{'TicketsSortOrder'});
     }
     # }}}
     
     # {{{ Set the query limit
-    if (defined $args{ARGS}->{'ResultsPerPage'}) {
+    if (defined $args{ARGS}->{'RowsPerPage'}) {
 	$RT::Logger->debug("limiting to ". 
-			   $args{ARGS}->{'ResultsPerPage'} . 
+			   $args{ARGS}->{'RowsPerPage'} . 
 			   " rows");
-	$session{'tickets'}->RowsPerPage($args{ARGS}->{'ResultsPerPage'});
+
+	$session{'tickets_rows_per_page'} = $args{ARGS}->{'RowsPerPage'};
+	$session{'tickets'}->RowsPerPage($args{ARGS}->{'RowsPerPage'});
     }
     
     # }}}
