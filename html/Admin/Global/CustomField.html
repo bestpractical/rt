@@ -50,9 +50,10 @@
     subtabs => $subtabs, 
     Title => $title &>
 
-<& /Admin/Elements/EditCustomField, title => $title,  %ARGS &>
+<& "/Admin/Elements/EditCustomField", title => $title, %ARGS &>
 
 <%INIT>
+
 my ($title, $current_subtab);
 
 my $subtabs = {
@@ -77,7 +78,11 @@ else {
         path => "Admin/Global/CustomField.html?CustomField=" . $CustomField . "&Queue=0"
     };
 }
+
 </%INIT>
 <%ARGS>
 $CustomField => undef
 </%ARGS>
+<%ATTR>
+AutoFlush => 0
+</%ATTR>

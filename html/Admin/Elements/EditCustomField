@@ -32,7 +32,8 @@
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
 %# community by submitting them to Best Practical Solutions, LLC.)
-%# 
+%# http://www.foxnews.com/story/0,2933,127839,00.html
+
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
 %# Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -103,18 +104,26 @@ if (! $CustomField ) {
                                                  Type => $Type,
                                                  Description => $Description,
 						 );
-      Abort(loc("Could not create CustomField", $msg)) unless ($val);
-     push @results, $msg;
-     $CustomFieldObj->SetSortOrder($CustomFieldObj->id);
-     $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
+      
+      # if there is an error, then abort.  But since at this point there's
+      # stuff already printed, clear it out.
+      # (This only works in conjunction with temporarily turning autoflush
+      #  off in the files that use this component.)
+      unless ($val) {
+	  $m->clear_buffer;
+	  Abort(loc("Could not create CustomField: [_1]", $msg));
+      }
+      push @results, $msg;
+      $CustomFieldObj->SetSortOrder($CustomFieldObj->id);
+      $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
     } else {
-       $CustomFieldObj->Load($CustomField) || Abort(loc('No CustomField'));
+      $CustomFieldObj->Load($CustomField) || Abort(loc('No CustomField'));
       $title = loc('Editing CustomField [_1]', $CustomFieldObj->Name()); 
 
       my @aresults = ProcessCustomFieldUpdates ( 
                         CustomFieldObj => $CustomFieldObj,
                         ARGSRef => \%ARGS );
-     push @results, @aresults;
+      push @results, @aresults;
     }
 
 
