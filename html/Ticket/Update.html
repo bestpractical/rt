@@ -95,9 +95,9 @@ value="<% $ARGS{UpdateCc} %>"><BR>
 
 
 <& /Elements/Submit, Name => 'SubmitTicket' &>
-
+% if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
 <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
-
+% }
 </FORM>
 <%INIT>
 

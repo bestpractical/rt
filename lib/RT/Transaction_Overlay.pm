@@ -788,6 +788,19 @@ sub _Value {
             return (undef);
         }
     }
+    elsif ( $self->__Value('Type') eq 'CommentEmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments')
+            && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            return (undef);
+        }
+
+    }
+    elsif ( $self->__Value('Type') eq 'EmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail')) {
+            return (undef);
+        }
+
+    }
 
     #if they ain't got rights to see, don't let em
     else {
