@@ -5,6 +5,7 @@
 <INPUT TYPE="hidden" NAME="RT::FM::Article-<%$ArticleObj->Id%>-CustomField-<%$cf->Id%>-AllValues-Magic" VALUE=1">
 <& ArticleSelectCustomFieldValues,
 	cf => $cf, 
+	ArticleObj => $ArticleObj,
 	Name => "RT::FM::Article-".$ArticleObj->Id. "-CustomField-".$cf->Id.'-AllValues', 
 	Selected => \%selected &>
 
