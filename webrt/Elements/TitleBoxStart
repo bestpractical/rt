@@ -1,10 +1,10 @@
 <TABLE CLASS="<%$class%>" BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=0 WIDTH="<%$width%>">
-<TR><TD ROWSPAN=4><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 height=1 ALT=""></TD>
+<TR><TD ROWSPAN=2><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 height=1 ALT=""></TD>
 <TD valign=middle align=left bgcolor="<%$color%>">&nbsp;<font size=-1 color="#ffffff"><b>
 <% $title_href && "<A CLASS=\"$title_class\" HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%>
 </b></font></TD>
 <TD  ALIGN="right" valign=middle bgcolor="<%$color%>"><FONT color="#ffffff" SIZE=-1><%$titleright |n %></FONT>&nbsp;</TD>
-<TD ROWSPAN=4><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 ALT=""></TD></TR>
+<TD ROWSPAN=2><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 height=1 ALT=""></TD></TR>
 <TR><TD COLSPAN=2 bgcolor="<%$contentbg%>" valign=top align=left WIDTH=100%>
 <TABLE CELLPADDING=2 WIDTH=100%><TR><TD>
 <%ARGS>
