@@ -119,14 +119,15 @@ sub LoadAction  {
 # {{{ sub TemplateObj
 sub TemplateObj {
     my $self = shift;
-  if (!$self->{'TemplateObj'})  {
-    require RT::Template;
-    $self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
-    $self->{'TemplateObj'}->LoadById($self->{'Template'});
+    return undef unless $self->{Template};
+    if (!$self->{'TemplateObj'})  {
+	require RT::Template;
+	$self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
+	$self->{'TemplateObj'}->LoadById($self->{'Template'});
+	
+    }
   
-  }
-  
-  return ($self->{'TemplateObj'});
+    return ($self->{'TemplateObj'});
 }
 # }}}
 
