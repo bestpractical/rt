@@ -1,0 +1,8 @@
+<& /Elements/Tabs, tabs => \@tabs, basepath => 'Admin' &>
+
+<%INIT>
+my ($tab);
+my @tabs = qw(Users Groups Queues Scrips Templates);
+</%INIT>
+
+

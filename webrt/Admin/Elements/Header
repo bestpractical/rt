@@ -1,0 +1,6 @@
+<& /Elements/Header, Title => $Title &>
+<& /Admin/Elements/Tabs &>
+
+<%ARGS>
+$Title => undef
+</%ARGS>

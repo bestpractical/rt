@@ -1,0 +1,7 @@
+% foreach $action (@actions) {
+   <%$action%><br>
+% }
+<%ARGS>
+$action => undef
+@actions => undef
+</%ARGS>
