@@ -66,7 +66,7 @@ sub Commit  {
 	
 	# if a to address contains anyone in the squelch replies to, yank it out.
 	while ( my $line =  $self->TemplateObj->MIMEObj->head->get($header)) {
-	    if ($line =~ / $blacklist,//)  {
+	    if ($line =~ s/ $blacklist,//)  {
 		$ $self->TemplateObj->MIMEObj->head->replace($header, $line);
 	    }
 	}
