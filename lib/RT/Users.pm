@@ -89,7 +89,7 @@ sub MemberOfGroup {
     my $groupalias = $self->NewAlias('GroupMembers');
 
     $self->Join( ALIAS1 => 'main', FIELD1 => 'id', 
-		 ALIAS2 => "$groupalias", FIELD2 => 'UserId');
+		 ALIAS2 => "$groupalias", FIELD2 => 'Name');
     
     $self->Limit (ALIAS => "$groupalias",
 		  FIELD => 'GroupId',

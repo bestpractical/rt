@@ -12,7 +12,7 @@
 	  <& /Elements/ShadedBox, title => 'Priority', content=> $Ticket->Priority."/".$Ticket->FinalPriority &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Queue', content=> $Ticket->QueueObj->QueueId &>
+	  <& /Elements/ShadedBox, title => 'Queue', content=> $Ticket->QueueObj->Name &>
 	</TD>	
 
 

@@ -10,13 +10,13 @@
 <LI><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1">Create a new user</A><BR><BR></LI>
 
 %while ( $user = $users->Next) {
-<LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->UserId%></a></LI>
+<LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->Name%></a></LI>
 %}
 
 </UL>
 
 <FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Users/">
-Find users with email addresses like like: <INPUT SIZE=8 NAME="EmailLike VALUE="<%$EmailLike%>"> and UserIds like <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"> <INPUT TYPE="submit" Value="Go">
+Find users with email addresses like like: <INPUT SIZE=8 NAME="EmailLike VALUE="<%$EmailLike%>"> and Names like <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"> <INPUT TYPE="submit" Value="Go">
 
 <& /Elements/TitleBoxEnd &>
 
@@ -29,7 +29,7 @@ if ((!defined $IdLike) and (!defined $EmailLike) ) {
 }
 else {
     if (defined $IdLike) {
-$users->Limit(FIELD => 'UserId',
+$users->Limit(FIELD => 'Name',
               VALUE => $IdLike,
               OPERATOR => 'LIKE' );
 }

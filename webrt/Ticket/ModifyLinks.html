@@ -21,7 +21,7 @@ Depends on:<BR>
 % my $member = $link->TargetObj;
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%>
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
 [<%$member->Status%>]
 
 % }
@@ -33,7 +33,7 @@ Depended on by:<BR>
 % my $member = $link->BaseObj;
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> 
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
 [<%$member->Status%>]
 % }
 </UL>
@@ -44,7 +44,7 @@ SuperTickets:<BR>
 % my $member = $link->TargetObj;
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%>
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
 [<%$member->Status%>]
 
 % }
@@ -56,7 +56,7 @@ SubTickets:<BR>
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % my $member = $link->BaseObj;
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> 
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
 [<%$member->Status%>]
 % }
 </UL>
@@ -70,7 +70,7 @@ References:<BR>
 % if ($link->TargetIsLocal) {
 % my $member = $link->TargetObj;
 
-<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
 <A HREF="<%$link->TargetAsHREF%>"><%$link->Target%></A>
 % }
@@ -84,7 +84,7 @@ Referred to by:<BR>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % if ($link->BaseIsLocal) {
 % my $member = $link->BaseObj;
-<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
 <A HREF="<%$link->BaseAsHREF%>"><%$link->Base%></A>
 %}

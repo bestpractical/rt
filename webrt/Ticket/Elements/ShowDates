@@ -45,7 +45,7 @@ Updated:
 </TD>
 <TD>
 <A HREF="#lasttrans">
-<% $Ticket->LastUpdated ? ($Ticket->LastUpdatedAsString ." by ".$Ticket->LastUpdatedByObj->UserId) : "Never" | h %></a>
+<% $Ticket->LastUpdated ? ($Ticket->LastUpdatedAsString ." by ".$Ticket->LastUpdatedByObj->Name) : "Never" | h %></a>
 </TD>
 </TR>
 </TABLE>

@@ -31,20 +31,23 @@ sub _Init  {
 # }}}
 
 # {{{ sub _Accessible 
+
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      # {{{ Core RT info
-	      UserId => 'public/read/write',
+	      Name => 'public/read/write',
 	      Password => 'write',
 	      Comments => 'read/write',
 	      Signature => 'read/write',
 	      EmailAddress => 'public/read/write',
+	      PagerEmailAddress => 'read/write',
 	      FreeformContactInfo => 'read/write',
 	      Organization => 'public/read/write',
 	      Disabled => 'public/read', #To modify this attribute, we have helper
 	      #methods
 	      Privileged => 'read/write', # 0=no 1=user 2=system
+
 	      # }}}
 	      
 	      # {{{ Names
@@ -96,6 +99,7 @@ sub _Accessible  {
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
+
 # }}}
 
 # {{{ sub Create 
@@ -130,8 +134,8 @@ sub Create  {
     #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
     if ($RT::SystemUser) { #This only works if RT::SystemUser has been defined
 	my $TempUser = new RT::User($RT::SystemUser);
-	$TempUser->Load($args{'UserId'});
-	return (0, 'UserId in use') if ($TempUser->Id);
+	$TempUser->Load($args{'Name'});
+	return (0, 'Name in use') if ($TempUser->Id);
     }
     else {
 	$RT::Logger->warning("$self couldn't check for pre-existing ".
@@ -176,13 +180,12 @@ sub Delete  {
     
     #TODO Handle User->Delete
     
-    $user_id=$self->_Handle->quote($self->UserId);
+    $user_id=$self->_Handle->quote($self->Name);
     
     if ($self->CurrentUser->IsAdministrator) {
 	
-	if ($self->UserId  ne $self->CurrentUser) {
-	    $query_string = "DELETE FROM users WHERE UserId = $user_id";
-	    $query_string = "DELETE FROM queue_acl WHERE UserId = $user_id";
+	if ($self->Name  ne $self->CurrentUser) {
+	    
 	    return ("User deleted.");
 	    
 	}
@@ -204,7 +207,7 @@ sub Delete  {
 
 Load a user object from the database. Takes a single argument.
 If the argument is numerical, load by the column 'id'. Otherwise, load by
-the "UserId" column which is the user's textual username.
+the "Name" column which is the user's textual username.
 
 =cut
 
@@ -217,9 +220,10 @@ sub Load  {
 	$self->SUPER::LoadById($identifier);
     }
     else {
-	$self->LoadByCol("UserId",$identifier);
+	$self->LoadByCol("Name",$identifier);
     }
 }
+
 # }}}
 
 # {{{ sub LoadByEmail
@@ -453,7 +457,7 @@ sub IsPassword {
 	return(undef);
     } 
     if ($self->Disabled) {
-  	$RT::Logger->info("Disabled user ".$self->UserId." tried to log in");
+  	$RT::Logger->info("Disabled user ".$self->Name." tried to log in");
 	return(undef);
     }
     if ($self->__Value('Password') eq crypt($value, $self->__Value('Password'))) {
@@ -463,6 +467,7 @@ sub IsPassword {
 	return (undef);
     }
 }
+
 # }}}
 
 # {{{ sub Disable
@@ -715,8 +720,7 @@ sub HasSystemRight {
 
 # {{{ sub _HasRight
 
-=head2 sub _HasRight (Right => 'right', Scope => 'scope',  AppliesTo => int,
-					  ExtendedPrincipals => SQL)
+=head2 sub _HasRight (Right => 'right', Scope => 'scope',  AppliesTo => int, ExtendedPrincipals => SQL)
 
 _HasRight is a private helper method for checking a user's rights. It takes
 several options:
@@ -752,7 +756,7 @@ sub _HasRight {
 		 @_);
     
     if ($self->Disabled) {
-	$RT::Logger->debug ("Disabled User:  ".$self->UserId.
+	$RT::Logger->debug ("Disabled User:  ".$self->Name.
 			    " failed access check for ".$args{'Right'}.
 			    " to object ".$args{'Scope'}."/".
 			    $args{'AppliesTo'}."\n");
@@ -1055,7 +1059,7 @@ sub _Value  {
   
   #If the current user doesn't have ACLs, don't let em at it.  
   
-  my @PublicFields = qw( UserId EmailAddress Organization Disabled
+  my @PublicFields = qw( Name EmailAddress Organization Disabled
 			 RealName NickName Gecos ExternalAuthId 
 			 AuthSystem ExternalContactInfoId 
 			 ContactInfoSystem );

@@ -33,12 +33,12 @@ use RT::Record;
 
 sub _Init  {
   my $self = shift;
-  my $UserId = shift;
+  my $Name = shift;
 
   $self->{'table'} = "Users";
 
-  if (defined($UserId)) {
-    $self->Load($UserId);
+  if (defined($Name)) {
+    $self->Load($Name);
   }
   
   $self->_MyCurrentUser($self);
@@ -73,7 +73,7 @@ sub UserObj {
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
-	      UserId => 'read',
+	      Name => 'read',
 	      Gecos => 'read',
 	      RealName => 'read',
 	      Password => 'neither',
@@ -125,18 +125,18 @@ sub LoadByGecos  {
 }
 # }}}
 
-# {{{ sub LoadByUserId
+# {{{ sub LoadByName
 
-=head2 LoadByUserId
+=head2 LoadByName
 
 Loads a User into this CurrentUser object.
-Takes a UserId.
+Takes a Name.
 =cut
 
-sub LoadByUserId {
+sub LoadByName {
     my $self = shift;
     my $identifier = shift;
-    $self->LoadByCol("UserId",$identifier);
+    $self->LoadByCol("Name",$identifier);
     
 }
 # }}}
@@ -146,8 +146,8 @@ sub LoadByUserId {
 =head2 Load
 
 Loads a User into this CurrentUser object.
-Takes either an integer (users id column reference) or a UserId
-The latter is deprecated. Instead, you should use LoadByUserId.
+Takes either an integer (users id column reference) or a Name
+The latter is deprecated. Instead, you should use LoadByName.
 Formerly, this routine also took email addresses. 
 
 =cut
@@ -163,7 +163,7 @@ sub Load  {
   else {
       # This is a bit dangerous, we might get false authen if somebody
       # uses ambigous userids or real names:
-      $self->LoadByCol("UserId",$identifier);
+      $self->LoadByCol("Name",$identifier);
   }
 }
 # }}}

@@ -6,13 +6,13 @@
 
 %while (my $Queue = $Queues->Next) {
 
-<h2><%$Queue->QueueId%></h2>
+<h2><%$Queue->Name%></h2>
 <i><%$Queue->Description%></i><br>
 
 %my $Templates = $Queue->Templates;
 %while  (my $TemplateObj = $Templates->Next) { 
 
-<A HREF="Modify.html?id=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Alias%>: <%$TemplateObj->Title%></a><BR>
+<A HREF="Modify.html?id=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Name%>: <%$TemplateObj->Description%></a><BR>
 
 %}
 %}

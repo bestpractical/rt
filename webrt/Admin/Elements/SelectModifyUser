@@ -1,5 +1,5 @@
 %while ( $user = $users->Next) {
-<A HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->UserId%></a><BR>
+<A HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->Name%></a><BR>
 %}
 <%INIT>
 my ($user);
@@ -9,7 +9,7 @@ $users->Limit(FIELD => 'id',
               OPERATOR => '!=' );
 
 if (defined $IdLike) {
-$users->Limit(FIELD => 'UserId',
+$users->Limit(FIELD => 'Name',
               VALUE => $IdLike,
               OPERATOR => 'LIKE' );
 }

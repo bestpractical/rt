@@ -52,7 +52,6 @@ $DatabasePassword="!!DB_RT_PASS!!";
 # The name of the RT's database on your database server
 $DatabaseName="!!DB_DATABASE!!";
 
-
 # }}}
 
 # {{{ Incoming mail gateway configuration
@@ -202,7 +201,7 @@ $MasonDataDir = "!!MASON_DATA_PATH!!";
 
 
        { Header => 'Queue',
-	 TicketAttribute => 'QueueObj->QueueId'
+	 TicketAttribute => 'QueueObj->Name'
 	 },
 
 
@@ -222,7 +221,7 @@ $MasonDataDir = "!!MASON_DATA_PATH!!";
        # TODO: It would be nice with a link here to the Owner and all
        # other request owned by this Owner.
        { Header => 'Owner',
-	 TicketAttribute => 'OwnerObj->UserId'
+	 TicketAttribute => 'OwnerObj->Name'
        },
    
  

@@ -22,7 +22,7 @@
 <TD>
 <% $scrip->ConditionObj->Name %> 
 <% $scrip->ActionObj->Name %> 
-<% $scrip->TemplateObj->Alias %>
+<% $scrip->TemplateObj->Name %>
 </TD>
 </TR>
 % }
@@ -55,7 +55,7 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($id);
 
 if ($QueueObj->id) {
-    $description = "Modify scrips for queue '". $QueueObj->QueueId ."'";
+    $description = "Modify scrips for queue '". $QueueObj->Name ."'";
 }
 else {
     $description = "Modify global scrips";

@@ -102,7 +102,7 @@ $queues->UnLimit;
 
 my %queues;
 my $queue;
-$queues{$queue->id} = $queue->QueueId while $queue = $queues->Next;
+$queues{$queue->id} = $queue->Name while $queue = $queues->Next;
 
 </%INIT>
 

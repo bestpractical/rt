@@ -315,17 +315,17 @@ sub Description  {
   }
 
   if ($self->Type eq 'Create'){
-    return("Request created by ".$self->Creator->UserId);
+    return("Request created by ".$self->Creator->Name);
   }
   elsif ($self->Type =~ /Status/) {
     if ($self->Field eq 'Status') {
       if ($self->NewValue eq 'dead') {
-	  return ("Request killed by ". $self->Creator->UserId);
+	  return ("Request killed by ". $self->Creator->Name);
       }
       else {
 	  return( "Status changed from ".  $self->OldValue . 
 		  " to ". $self->NewValue.
-		  " by ".$self->Creator->UserId);
+		  " by ".$self->Creator->Name);
       }
   }
     # Generic:
@@ -333,11 +333,11 @@ sub Description  {
 }
   
   if ($self->Type eq 'Correspond')    {
-    return("Mail sent by ". $self->Creator->UserId);
+    return("Mail sent by ". $self->Creator->Name);
   }
   
   elsif ($self->Type eq 'Comment')  {
-    return( "Comments added by ".$self->Creator->UserId);
+    return( "Comments added by ".$self->Creator->Name);
 }
   
   elsif ($self->Type eq 'Keyword') {
@@ -354,17 +354,17 @@ sub Description  {
   
   elsif ($self->Type =~ /^(Take|Steal|Untake|Give)$/){
       if ($self->Type eq 'Untake'){
-	  return( "Untaken by ".$self->Creator->UserId);
+	  return( "Untaken by ".$self->Creator->Name);
       }
     
       if ($self->Type eq "Take") {
-	  return( "Taken by ".$self->Creator->UserId);
+	  return( "Taken by ".$self->Creator->Name);
       }
 
       if ($self->Type eq "Steal") {
 	  my $Old = RT::User->new($self->CurrentUser);
 	  $Old->Load($self->OldValue);
-	  return "Request stolen from ".$Old->UserId." by ".$self->Creator->UserId;
+	  return "Request stolen from ".$Old->Name." by ".$self->Creator->Name;
       }
 
       if ($self->Type eq "Give") {
@@ -372,7 +372,7 @@ sub Description  {
 	  my $New = RT::User->new($self->CurrentUser);
 	  $New->Load($self->NewValue);
 
-	  return( "Request given to ".$New->UserId." by ". $self->Creator->UserId);
+	  return( "Request given to ".$New->Name." by ". $self->Creator->Name);
       }
       
       my $New = RT::User->new($self->CurrentUser);
@@ -380,23 +380,23 @@ sub Description  {
       my $Old = RT::User->new($self->CurrentUser);
       $Old->Load($self->OldValue);
       
-      return "Owner changed from ".$New->UserId." to ".$Old->UserId." by ".$self->Creator->UserId;
+      return "Owner changed from ".$New->Name." to ".$Old->Name." by ".$self->Creator->Name;
 
   }
 
   elsif ($self->Type eq 'AddWatcher'){
-      return( $self->Field." ". $self->NewValue ." added by ".$self->Creator->UserId);
+      return( $self->Field." ". $self->NewValue ." added by ".$self->Creator->Name);
   }
   
   elsif ($self->Type eq 'DelWatcher'){
-      return( $self->Field." ".$self->OldValue ." deleted by ".$self->Creator->UserId);
+      return( $self->Field." ".$self->OldValue ." deleted by ".$self->Creator->Name);
   }
   
   elsif ($self->Type eq 'Subject') {
-      return( "Subject changed to ".$self->Data." by ".$self->Creator->UserId);
+      return( "Subject changed to ".$self->Data." by ".$self->Creator->Name);
   }
   elsif ($self->Type eq 'Told') {
-      return( "User notified by ".$self->Creator->UserId);
+      return( "User notified by ".$self->Creator->Name);
   }
   
   elsif ($self->Type eq 'AddLink') {

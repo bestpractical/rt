@@ -12,7 +12,7 @@
 	<TD VALIGN=TOP>
 
 
-	    <A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$UserObj->id%>"><% $UserObj->UserId %></A>
+	    <A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$UserObj->id%>"><% $UserObj->Name %></A>
 		  </TD>
 		<TD>
 	    <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj, 

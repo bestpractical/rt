@@ -214,7 +214,7 @@ sub Quote {
 
 	$body =~ s/^/> /gm;
 
-	$body = '[' . $self->TransactionObj->Creator->UserId . ' - ' . $self->TransactionObj->AgeAsString 
+	$body = '[' . $self->TransactionObj->Creator->Name . ' - ' . $self->TransactionObj->AgeAsString 
 	            . "]:\n\n"
    	        . $body . "\n\n";
 

@@ -18,7 +18,7 @@
 </A>
 </TD>
 <TD>
-<%$Ticket->QueueObj->QueueId%>
+<%$Ticket->QueueObj->Name%>
 </TD><TD>
 <%$Ticket->Status%>
 </TD>

@@ -33,7 +33,7 @@
 	<& /Elements/TitleBoxStart, title => 'User ID'  &>
 <form method=post>
 <input type="hidden" name="id" value="<%$id%>">
-<input name="UserId" value="<% $u->UserId %>"><input type="submit" value="Update ID">
+<input name="Name" value="<% $u->Name %>"><input type="submit" value="Update ID">
 </form>
 	  <& /Elements/TitleBoxEnd &>
 
@@ -44,7 +44,7 @@ $id => $session{CurrentUser} ? $session{CurrentUser}->Id : 0
 $Signature => undef
 $Email => undef
 $RealName => undef
-$UserId => undef
+$Name => undef
 </%ARGS>
 
 <%INIT>
@@ -66,8 +66,8 @@ my ($val, $msg)=$u->SetRealName($RealName);
 $RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
 }
 
-if ($UserId) {
-my ($val, $msg)=$u->SetUserId($UserId);
+if ($Name) {
+my ($val, $msg)=$u->SetName($Name);
 $RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
 }
 

@@ -1,4 +1,4 @@
-  <& /Admin/Elements/Header, Title => 'Modify ACLS for queue '. $QueueObj->QueueId &>
+  <& /Admin/Elements/Header, Title => 'Modify ACLS for queue '. $QueueObj->Name &>
 <& /Admin/Elements/QueueTabs, id => $id &>  
 <& /Elements/ListActions, actions => \@results &>
 
@@ -7,7 +7,7 @@
       
 
 
-<& /Elements/TitleBoxStart, title => 'Modify ACLS for queue '.$QueueObj->QueueId &>
+<& /Elements/TitleBoxStart, title => 'Modify ACLS for queue '.$QueueObj->Name &>
       <TABLE>
 	<TR>
 	  <TD>
@@ -27,7 +27,7 @@
 	<TD VALIGN=TOP>
 
 
-	    <% $UserObj->UserId %>
+	    <% $UserObj->Name %>
 		  </TD>
 		<TD>
 		  <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj,

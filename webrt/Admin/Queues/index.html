@@ -5,7 +5,7 @@
 <LI><A HREF="<% $RT::WebPath %>/Admin/Queues/Modify.html?Create=1">Create new a queue.</A>
 
 %while ( $queue = $queues->Next) {
-<LI><A HREF="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->QueueId%></a><BR>
+<LI><A HREF="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->Name%></a><BR>
 %}
 
 </UL>

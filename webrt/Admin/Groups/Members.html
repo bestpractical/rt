@@ -30,7 +30,7 @@ Current members
 % } else {
 % while (my $member = $Group->MembersObj->Next()) {
 <LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->id%>">
-<%$member->UserObj->UserId%> (<%$member->UserObj->RealName%>)
+<%$member->UserObj->Name%> (<%$member->UserObj->RealName%>)
 % }
 % }
 </UL>

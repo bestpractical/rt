@@ -74,7 +74,7 @@ Add new watchers:<br>
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
-<li><&/Elements/SelectWatcherType, Scope=>'queue', Name => "WatcherTypeUser".$u->Id &> <%$u->UserId%>
+<li><&/Elements/SelectWatcherType, Scope=>'queue', Name => "WatcherTypeUser".$u->Id &> <%$u->Name%>
 (<%$u->RealName%>)
 % }
 </ul>
@@ -152,7 +152,7 @@ else {
 </%INIT>
 
 <%ARGS>
-$UserField => 'UserId'
+$UserField => 'Name'
 $UserOp => '='
 $UserString => undef
 $Type => undef

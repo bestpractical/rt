@@ -7,7 +7,7 @@
 <TR><TD ALIGN=RIGHT>
 Queue Name: 
 </TD>
-<TD><INPUT name="QueueId" value="<%$QueueObj->QueueId%>"></TD>
+<TD><INPUT name="Name" value="<%$QueueObj->Name%>"></TD>
 </TR><TR>
 <TD ALIGN=RIGHT>
 Description:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$QueueObj->Description%>" size=60></TD></TR>

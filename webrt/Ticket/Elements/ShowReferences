@@ -4,7 +4,7 @@
 % if ($Link->TargetIsLocal) {
 % my $member = $Link->TargetObj;
 
-<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
 <A HREF="<%$Link->TargetAsHREF%>"><%$Link->Target%></A>
 % }
@@ -16,7 +16,7 @@
 <LI>
 % if ($Link->BaseIsLocal) {
 % my $member = $Link->BaseObj;
-<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
 <A HREF="<%$Link->BaseAsHREF%>"><%$Link->Base%></A>
 %}

@@ -1,9 +1,9 @@
 <SELECT NAME="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
-<OPTION <% ($RT::Nobody->Id() == $Default) && "SELECTED" %> VALUE="<%$RT::Nobody->Id%>"><%$RT::Nobody->UserId%></OPTION>
+<OPTION <% ($RT::Nobody->Id() == $Default) && "SELECTED" %> VALUE="<%$RT::Nobody->Id%>"><%$RT::Nobody->Name%></OPTION>
 %while ( my $User = $Users->Next())  {
 % if ((!defined $QueueObj) || ($QueueObj->HasRight( Principal => $User, Right => 'OwnTicket'))){
-<OPTION VALUE="<%$User->Id()%>" <% ($User->Id() == $Default) && "SELECTED" %>><%$User->UserId()%></OPTION>
+<OPTION VALUE="<%$User->Id()%>" <% ($User->Id() == $Default) && "SELECTED" %>><%$User->Name()%></OPTION>
 % }
 %}
 </SELECT>

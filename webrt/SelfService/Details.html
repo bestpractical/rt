@@ -13,8 +13,8 @@
 	</TD>
       <TD>
 	<%$Ticket->Id%>
-% if ($Ticket->Alias) {
-	(<%$Ticket->Alias%>)
+% if ($Ticket->Name) {
+	(<%$Ticket->Name%>)
 % }
 
 	</TD>
@@ -50,7 +50,7 @@
 	Queue
 	</TD>
       <TD>
-	<%$Ticket->QueueObj->QueueId%> (<%$Ticket->QueueObj->Description%>)
+	<%$Ticket->QueueObj->Name%> (<%$Ticket->QueueObj->Description%>)
       </TD>
     </TR>
     <TR>	

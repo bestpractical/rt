@@ -29,9 +29,10 @@ sub _Init  {
 # }}}
 
 # {{{ sub _Accessible 
+
 sub _Accessible  {
     my $self = shift;
-    my %Cols = ( QueueId => 'read/write',
+    my %Cols = ( Name => 'read/write',
 		 CorrespondAddress => 'read/write',
 		 Description => 'read/write',
 		 CommentAddress =>  'read/write',
@@ -41,6 +42,7 @@ sub _Accessible  {
 	       );
     return($self->SUPER::_Accessible(@_, %Cols));
 }
+
 # }}}
 
 # {{{ sub Create
@@ -97,7 +99,7 @@ sub Delete  {
     #Go through the tickets and change their queue to $newqueue
     #Blow away all of the queue acls for this queue.
     #Remove the queue object
-    return (1, "Queue $self->QueueId deleted.");
+    return (1, "Queue ".$self->Name." deleted.");
     
 }
 
@@ -107,7 +109,7 @@ sub Delete  {
 
 =head2 Load
 
-Takes either a numerical id or a textual QueueId and loads the specified queue.
+Takes either a numerical id or a textual Name and loads the specified queue.
   
 =cut
 
@@ -123,7 +125,7 @@ sub Load  {
 	return($self->SUPER::LoadById($identifier));
     }
     else {
-	return($self->LoadByCol("QueueId", $identifier));
+	return($self->LoadByCol("Name", $identifier));
   }
 
 }
@@ -542,36 +544,6 @@ sub Templates {
 
 # }}}
 
-# {{{ sub AddScripScope
-
-=head2 AddScripScope
-
-Adds a scrip to this queue's list of scrips to try.
-Takes a param hash consiting of "Scrip" and "Template" which are references
-to the "Scrips" and "Templates" queue, respectively.
-
-=cut
-sub AddScripScope {
-    my $self= shift;
-    my %args = ( Scrip => undef,
-                 Template => undef,
-                 @_ );
- 
-
-    #TODO ACL: this needs to be acled
-   
-    require RT::ScripScope;
-    my $new_scope = new RT::ScripScope($self->CurrentUser);
-    
-    #TODO: +++ check Scrip and template values;
-
-    my $retval =  $new_scope->Create( Scrip => $args{'Scrip'},
-                        Queue => $self->id,
-                        Template => $args{'Template'}
-                       );
-     return ($retval);
-}
-# }}}
 
 # {{{ sub AddKeywordSelect
 

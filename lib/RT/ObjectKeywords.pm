@@ -47,7 +47,7 @@ sub LimitToKeywordSelect {
 
     #We're limiting by name. time to be klever
     else {
-	my $ks = $self->Alias('KeywordSelects');
+	my $ks = $self->NewAlias('KeywordSelects');
 	$self->Join(ALIAS1 => $ks, FIELD1 => 'id',
 		    ALIAS2 => 'main', FIELD2 => 'KeywordSelect');
 	

@@ -310,7 +310,7 @@ sub CanonicalizeURI {
   #It's not a URI. It's not a numerical ticket ID. It must be an alias
   else { 
     my $ticket = new RT::Ticket($self->CurrentUser);
-    $ticket->LoadByAlias($id);
+    $ticket->LoadByName($id);
     #If we couldn't find a ticket, return undef.
     return undef unless (defined $ticket->Id);
     $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");

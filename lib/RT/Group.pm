@@ -74,7 +74,7 @@ sub Create {
 		 @_);
     
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	$RT::Logger->warning($self->CurrentUser->UserId ." Tried to create a group without permission.");
+	$RT::Logger->warning($self->CurrentUser->Name ." Tried to create a group without permission.");
 	return(undef);
     }
     
@@ -85,6 +85,7 @@ sub Create {
 
     return ($retval);
 }
+
 # }}}
 
 # {{{ MembersObj
@@ -197,7 +198,7 @@ sub DeleteMember {
    
     #check ot make sure we're deleting members from the same group.
     if ($member_obj->GroupId != $self->id) {
-        $RT::Logger->warn("$self: ".$self->CurrentUser->UserId." tried to delete member $member from the wrong group (".$self->id.").\n");
+        $RT::Logger->warn("$self: ".$self->CurrentUser->Name." tried to delete member $member from the wrong group (".$self->id.").\n");
     }
     #Now that we've checked ACLs and sanity, delete the groupmember
 

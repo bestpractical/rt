@@ -2,7 +2,7 @@ Depends on:<BR>
 <UL>
 % while (my $Link = $Ticket->DependsOn->Next) {
 % my $member = $Link->TargetObj;
-<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%>
+<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
 [<%$member->Status%>]
 
 % }
@@ -12,7 +12,7 @@ Depended on by:<BR>
 <UL>
 % while (my $Link = $Ticket->DependedOnBy->Next) {
 % my $member = $Link->TargetObj;
-<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> 
+<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
 [<%$member->Status%>]
 % }
 </UL>
@@ -20,7 +20,7 @@ SuperTickets:<BR>
 <UL>
 % while (my $Link = $Ticket->MemberOf->Next) {
 % my $member = $Link->TargetObj;
-<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%>
+<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
 [<%$member->Status%>]
 
 % }
@@ -36,7 +36,7 @@ References:<BR>
 % if ($Link->TargetIsLocal) {
 % my $member = $Link->TargetObj;
 
-<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
 <A HREF="<%$Link->TargetAsHREF%>"><%$Link->Target%></A>
 % }
@@ -49,7 +49,7 @@ Referred to by:<BR>
 <LI>
 % if ($Link->BaseIsLocal) {
 % my $member = $Link->BaseObj;
-<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
 <A HREF="<%$Link->BaseAsHREF%>"><%$Link->Base%></A>
 %}

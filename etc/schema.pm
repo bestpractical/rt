@@ -68,7 +68,7 @@ my $gratuitous = {
 'Users' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'UserId', 'varchar', '', '120', '', '',
+    'Name', 'varchar', '', '120', '', '',
     'Password', 'varchar', 'NULL', '40', '', '',
     'Comments', 'blob', 'NULL', '', '', '',
     'Signature', 'blob', 'NULL', '', '', '',
@@ -104,7 +104,7 @@ my $gratuitous = {
     'Deleted', 'bool', 'NULL','','','',
   ],
   'primary_key' => 'id',
-  'unique' => [ ['UserId'] ],
+  'unique' => [ ['Name'] ],
   'index' => [  ],
 },
 
@@ -113,7 +113,7 @@ my $gratuitous = {
     'id', 'serial', '', '', '', '',
     'EffectiveId', 'integer', 'NULL', '', '', '',
     'Queue', 'integer', 'NULL', '', '', '',
-    'Alias', 'varchar', 'NULL', '40', '', '',
+    'Name', 'varchar', 'NULL', '40', '', '',
     'Type', 'varchar', 'NULL', '16', '', '',
     'IssueStatement', 'integer', 'NULL', '', '', '',
     'Resolution', 'integer', 'NULL', '', '', '',
@@ -137,7 +137,7 @@ my $gratuitous = {
     'Deleted', 'bool', 'NULL','','','',
   ],
   'primary_key' => 'id',
-  'unique' => [ [ 'Alias']  ],
+  'unique' => [ [ 'Name']  ],
   'index' => [  ],
 },
 
@@ -155,7 +155,7 @@ my $gratuitous = {
 'Queues' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'QueueId', 'varchar', '', '40', '', '', #Textual 'name' for this queue
+    'Name', 'varchar', '', '40', '', '', #Textual 'name' for this queue
     'Description', 'varchar', 'NULL', '120', '', '', #Textual descr. of this
     #queue
     'CorrespondAddress', 'varchar', 'NULL', '40', '', '',
@@ -171,7 +171,7 @@ my $gratuitous = {
     'Deleted', 'bool', 'NULL','','','',
   ],
   'primary_key' => 'id',
-  'unique' => [ ['QueueId'] ],
+  'unique' => [ ['Name'] ],
   'index' => [  ],
 },
 
@@ -280,9 +280,9 @@ my $gratuitous = {
   'columns' => [
     'id', 'serial', '', '', '', '',
     'Queue', 'integer', 'NOT NULL', '', '0', '',
-    'Alias', 'varchar', '', '40', '', '',
+    'Name', 'varchar', '', '40', '', '',
+    'Description', 'varchar', 'NULL', '120', '', '',
     'Type', 'varchar', 'NULL', '16', '','',
-    'Title', 'varchar', 'NULL', '120', '', '',
     'Language', 'varchar', 'NULL', '16', '', '',
     'TranslationOf', 'integer', 'NULL', '', '', '',
     'Content', 'blob', 'NULL', '', '', '',
@@ -292,7 +292,7 @@ my $gratuitous = {
     'Created', 'timestamp', 'NULL', '', '', '',
   ],
   'primary_key' => 'id',
-  'unique' => [ ['Alias'] ],
+  'unique' => [ ['Name'] ],
   'index' => [  ],
 },
 

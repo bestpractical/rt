@@ -7,7 +7,7 @@
 	  <& /Elements/ShadedBox, title => 'Date' , content => $Transaction->CreatedAsString &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%"> 
-	  <& /Elements/ShadedBox, title => 'Actor' , content => $Transaction->Creator->UserId &>
+	  <& /Elements/ShadedBox, title => 'Actor' , content => $Transaction->Creator->Name &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
 	  <& /Elements/ShadedBox, title => 'Time Worked' , content => $TimeTaken &>

@@ -1,5 +1,7 @@
 To look RT 2.0's open bugs:
 
-http://fsck.com/rt2/  login as guest/guest
+http://fsck.com/rt2/NoAuth/Buglist.html
+
+If you want to look at more detail, you may need to login as guest/guest
 
 

@@ -16,7 +16,7 @@
 <TD VALIGN=TOP ROWSPAN=2>
 <& /Elements/TitleBoxStart, title => 'Identity' &>
 
-RT UserId: <input name="UserId" value="<%$UserObj->UserId%>"> <b>(required)</b>
+RT Name: <input name="Name" value="<%$UserObj->Name%>"> <b>(required)</b>
 <BR>
 Name: <input name="RealName" value="<%$UserObj->RealName%>">
 <BR>
@@ -123,18 +123,18 @@ if ($Create) {
 } 
 else {
 if ($id eq 'new') {
-    my ($val, $msg) = $UserObj->Create( UserId => $UserId );
+    my ($val, $msg) = $UserObj->Create( Name => $Name );
     push @results, $msg;
 }
 else {
-    $UserObj->Load($id) || $UserObj->Load($UserId) || Abort("Couldn't load user '$UserId'");
+    $UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
 
 }
-    $title = "Modify the user ". $UserObj->UserId;
+    $title = "Modify the user ". $UserObj->Name;
     
 }
 {
-my @fields = qw(UserId Comments Signature EmailAddress FreeformContactInfo 
+my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
 		Organization RealName NickName Lang EmailEncoding WebEncoding 
 		ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
 		AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
@@ -184,7 +184,7 @@ if ($UserObj->Privileged()) {
 $id => undef
 $result => undef
 @results => undef
-$UserId  => undef
+$Name  => undef
 $Comments  => undef
 $Signature  => undef
 $EmailAddress  => undef

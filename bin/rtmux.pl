@@ -40,11 +40,11 @@ use RT::CurrentUser;
 #RT's system user is a genuine database user. its id lives here
 
 $RT::SystemUser = new RT::CurrentUser();
-$RT::SystemUser->LoadByUserId('RT_System');
+$RT::SystemUser->LoadByName('RT_System');
 
 #RT's "nobody user" is a genuine database user. its ID lives here.
 $RT::Nobody = new RT::CurrentUser();
-$RT::Nobody->LoadByUserId('Nobody');
+$RT::Nobody->LoadByName('Nobody');
 
 my $program = $0; 
 

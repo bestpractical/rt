@@ -19,7 +19,7 @@ my %cookies = fetch CGI::Cookie;
         $m->call_next;
 }
 elsif (defined $session{'CurrentUser'}){
-	$RT::Logger->debug($session{CurrentUser}->UserId." accessing ".$r->uri);
+	$RT::Logger->debug($session{CurrentUser}->Name." accessing ".$r->uri);
 
 	$m->call_next;
 }

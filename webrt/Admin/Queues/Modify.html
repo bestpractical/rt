@@ -18,7 +18,7 @@
 <TR><TD ALIGN=RIGHT>
 Queue Name: 
 </TD>
-<TD><INPUT name="QueueId" value="<%$QueueObj->QueueId%>"></TD>
+<TD><INPUT name="Name" value="<%$QueueObj->Name%>"></TD>
 </TR><TR>
 <TD ALIGN=RIGHT>
 Description:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$QueueObj->Description%>" size=60></TD></TR>
@@ -69,16 +69,16 @@ if ($Create) {
 
 else {
     if ($id eq 'new') {
-        $QueueObj->Create(QueueId => $QueueId);
+        $QueueObj->Create(Name => $Name);
      }
      else {
-        $QueueObj->Load($id) || $QueueObj->Load($QueueId) || Abort("Couldn't load queue '$QueueId'");
+        $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort("Couldn't load queue '$Name'");
     }
-        $title = 'Editing Configuration for queue '.$QueueObj->QueueId;
+        $title = 'Editing Configuration for queue '.$QueueObj->Name;
     
 }
 
-my @fields = qw(Description CorrespondAddress CommentAddress QueueId 
+my @fields = qw(Description CorrespondAddress CommentAddress Name 
                 InitialPriority FinalPriority DefaultDueIn);
 
 
@@ -102,7 +102,7 @@ eval $check;
 $id => undef
 $result => undef
 @results => undef
-$QueueId => undef
+$Name => undef
 $Create => undef
 $Description => undef
 $CorrespondAddress => undef

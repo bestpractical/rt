@@ -68,7 +68,7 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($id);
 
 
-$description = "Modify Keyword selections for queue '". $QueueObj->QueueId ."'";
+$description = "Modify Keyword selections for queue '". $QueueObj->Name ."'";
 
 
 

@@ -392,7 +392,7 @@ sub ParseCommands {
 
 	  #TODO: use a published interface.  +++
 	  $Ticket->_NewLink(dir=>$dir,Target=>$to,Base=>$from,Type=>$typ);
-	  $RT::Logger->info( $CurrentUser->UserId." created a link by mail ($_)");
+	  $RT::Logger->info( $CurrentUser->Name." created a link by mail ($_)");
       } else {
 	  die "unknown command $command : $_";
       }
@@ -446,11 +446,11 @@ sub GetCurrentUser  {
     #If it fails, create a user
     
     my $SystemUser = new RT::CurrentUser();
-    $SystemUser->LoadByUserId('RT_System');
+    $SystemUser->LoadByName('RT_System');
 
     my $NewUser = RT::User->new($RT::SystemUser);
  
-    my ($Val, $Message) = $NewUser->Create(UserId => $FromObj->address,
+    my ($Val, $Message) = $NewUser->Create(Name => $FromObj->address,
 					   EmailAddress => $Address,
 					   RealName => "$Name",
 					   Password => undef,

@@ -1,5 +1,5 @@
 <select name="UserField">
-<option value="UserId">User Id
+<option value="Name">User Id
 <option value="EmailAddress">Email
 <option value="RealName">Name
 <option value="Organization">Organization

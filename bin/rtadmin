@@ -1,75 +1,114 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
+#
+# $Header$
+# RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
 
-Help();
+use strict;
+use Carp;
+use Getopt::Long qw(:config pass_through);
+
+use lib "!!RT_LIB_PATH!!";
+use lib "!!RT_ETC_PATH!!";
+
+use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
+			   GetCurrentUser GetMessageContent);
+
+#Clean out all the nasties from the environment
+CleanEnv();
+
+#Load etc/config.pm and drop privs
+LoadConfig();
+
+#Connect to the database and get RT::SystemUser and RT::Nobody loaded
+DBConnect();
+
+
+#Get the current user all loaded
+my $CurrentUser = GetCurrentUser();
+
+
+PickMode();
+
+
+# {{{ Help
 
 sub Help {
 print <<EOF;
 
 USAGE:  rtadmin --user <userid> [Userflags]
+	rtadmin --list-users
 	rtadmin --queue <queueid> [Queueflags]
+	rtadmin --list-queues
+	rtadmin --group [groupflags]
+	rtadmin --list-groups
 	rtadmin --system  [SystemFlags]
 	rtadmin --keyword [keywordflags]
-	rtadmin --group [groupflags]
 
 User configuration for --user <userid>
    
   	--delete
   	--create
+	--display
 
   Core Attributes
-	--set-userid
-	--set-unix-username
-	--set-password
-	--set-email
-	--set-privileged
-	--set-comments
-	--set-signature
-	--set-organization
+	--userid
+	--gecos
+	--password
+	--emailaddress
+	--privileged
+	--comments
+	--signature
+	--organization
 
   Names	
-	--set-realname
-	--set-nickname
+	--realname
+	--nickname
 	
   Auth and external info
-	--set-ext-contactinfo-id
-	--set-ext-contactinfo-system
-	--set-ext-auth-id
-	--set-ext-auth-system
+	--externalcontactinfoid
+	--contactinfosystem
+	--externalauthid
+	--authsystem
 
   Phone numbers
-	--set-phone-home
-	--set-phone-work
-	--set-phone-mobile
-	--set-phone-pager
+	--pagerphone
+	--workphone
+	--mobilemphone
+	--homephone
 
   Paper address
-	--set-address1
-	--set-address2
-	--set-city
-	--set-state
-	--set-zip
-	--set-country
-	--set-otherinfo	
+	--address1
+	--address2
+	--city
+	--state
+	--zip
+	--country
+	--freeformcontactqinfo	
 
 
 Group Configuration for --group <groupid>
 	--create 
 	--delete
-	--set-description <new description>
-	--set-groupid <new groupid>
+	--display
+
+	--description <new description>
+	--groupid <new groupid>
 	--add-member <userid>
 	--delete-member <userid>
-	
+	--list-members	
 
 Queue Configuration for --queue <queueid>
 	--create
 	--delete
-	--set-queueid
-	--set-correspondence-address
-	--set-comment-address
-	--set-initial-priority
-	--set-final-priority
-	--set-default-due-in
+	--display
+
+	--queueid
+	--correspondaddress
+	--commentaddress
+	--initialpriority
+	--finalpriority
+	--defaultduein
+
 	--add-cc
 	--delete-cc
 	--add-admincc
@@ -81,12 +120,21 @@ Queue Configuration for --queue <queueid>
 	--create-template  <name> <description>
 	--modify-template <name> <description>
 	--delete-template <name>
+	--display-template
+	--list-templates
 
 	--add-scrip <condition> <action> <template>
 	--delete-scrip <condition> <action> <template>
+	--list-scrips
 
 	--grant-user <userid> <right>
 	--grant-group <groupid> <right>
+
+	--list-user-rights <user>
+	--list-users-with-right
+
+	--list-group-rights <group>
+	--list-groups-with-right
 
 	--revoke-user <userid> <right>
 	--revoke-group <groupid> <right>
@@ -95,28 +143,303 @@ Queue Configuration for --queue <queueid>
 System configuration for --system 
 	--add-keyword-select [name] [root keyword] [<single|multiple>] [depth]
 	--delete-keyword-select [name]
-	
+	--list-keyword-selects	
+
+
 	--create-template  <name> <description>
 	--modify-template <name> <description>
 	--delete-template <name>
+	--display-template
+	--list-templates
 
 	--add-scrip <condition> <action> <template>
 	--delete-scrip <condition> <action> <template>
+	--list-scrips
 
 	--grant-user <userid> <right>
 	--grant-group <groupid> <right>
+	
+	--list-user-rights <user>
+	--list-users-with-right
 
+	--list-group-rights <group>
+	--list-groups-with-right
+	
 	--revoke-user <userid> <right>
 	--revoke-group <groupid> <right>	
 
 
-Keywords for --keyword  <fully qualified name>
+
+Template Configuration for --template 
+        --create
+        --delete
+        
+        --queue [queueid]
+        --system
+        --alias
+        --title
+        --edit
+        --display
+
+
+Keyword configuration for --keyword  <fully qualified name>
+	--list-children [<optional-depth>]
   	--create
 	--delete
-	--set-name
-	--set-description
+	--name
+	--description
 
 
 EOF
 
+}
+
+# }}}
+
+# {{{ PickMode
+sub PickMode {
+    my ($user,$group, $queue, $system, $keyword, $listusers, 
+	$listgroups, $listqueues, $help);
+
+
+
+    GetOptions ('help|h|usage' => \$help,
+		'user=s' => \$user,
+		'queue=s' => \$queue,
+		'group=s' => \$group,
+		'system=s' => \$system,
+		'keyword=s', => \$keyword,
+		'list-users' => \$listusers,
+		'list-queues' => \$listqueues,
+		'list-groups' => \$listgroups,
+	       );
+    
+    print "We got through the first round ok\n";
+    
+    if ($user)          { AdminUser($user) }  
+    elsif ($group)      { AdminGroup($group) }
+    elsif ($queue)      { AdminQueue($queue) }
+    elsif ($system)     { AdminSystem($system) }
+    elsif ($keyword)    { AdminKeyword($keyword) }
+    elsif ($listusers)  { ListUsers() }
+    elsif ($listgroups) { ListGroups()  }
+    elsif ($listqueues) { ListQueues() }
+    elsif ($help)       { Help()}
+    else {
+	print "No command found\n";
+    }
+    exit(0);
+}	
+
+# }}}
+
+
+# {{{ AdminUser
+sub AdminUser {
+    my $user=shift;
+    my %args;
+
+    GetOptions(\%args,
+	   'create', 'delete', 'display',
+	   'Name=s', 'Gecos=s', 'Password=s',
+	   'EmailAddress=s', 'Privileged=s', 'Comments=s', 'Signature=s',
+	   'Organization=s', 'RealName=s', 'NickName=s',  
+	   'ExternalContactInfoId=s', 'ContactInfoSystem=s', 
+           'ExternalAuthId=s', 'AuthSystem=s',
+	   'HomePhone=s', 'WorkPhone=s', 'MobilePhone=s', 'PagerPhone=s',
+           'Address1=s', 'Address2=s', 'City=s', 'State=s', 'Zip=s', 
+           'Country=s', 'FreeformContactInfo=s');
+
+    my $user_obj = new RT::User($CurrentUser);
+    
+    
+    #Create the user if we need to 
+    if ($args{'create'}) {
+	my ($status, $msg) = 
+	  $user_obj->Create( Name => $args{'Name'},
+			     Gecos => $args{'Gecos'},
+			     Password => $args{'Password'},
+			     EmailAddress => $args{'EmailAddress'},
+			     Privileged => $args{'Privileged'},
+			     Comments => $args{'Comments'},
+			     Signature => $args{'Signature'},
+			     Organization => $args{'Organization'},
+			     RealName => $args{'RealName'},
+			     NickName => $args{'NickName'},
+			     ExternalContactInfoId => $args{'ExternalContactInfoId'},
+			     ContactInfoSystem => $args{'ContactInfoSystem'},
+			     ExternalAuthId => $args{'ExternalAuthId'},
+			     AuthSystem => $args{'AuthSystem'},
+			     HomePhone => $args{'HomePhone'},
+			     WorkPhone => $args{'WorkPhone'},
+			     MobilePhone => $args{'MobilePhone'},
+			     PagerPhone => $args{'PagerPhone'},
+			     Address1 => $args{'Address1'},
+			     Address2 => $args{'Address2'},
+			     City  => $args{'City'},
+			     State => $args{'State'},
+			     Zip => $args{'Zip'},
+			     FreeformContactInfo => $args{'FreeformContactInfo'}
+			   );
+	
+	print "$msg\n";
+	return();
+	
+    }
+    else {
+	
+	
+	#Load the user
+	$user_obj->Load($user);
+	
+	unless ($user_obj->id) {
+	    print "User '$user' not found";
+	    return();
+	}	
+	
+	
+	
+	#modify the user if we need to
+	my @attributes = ('Name', 'Gecos', 'Password',
+			  'EmailAddress', 'Privileged', 'Comments', 'Signature',
+			  'Organization', 'RealName', 'NickName',  
+			  'ExternalContactInfoId', 'ContactInfoSystem', 
+			  'ExternalAuthId', 'AuthSystem',
+			  'HomePhone', 'WorkPhone', 'MobilePhone', 'PagerPhone',
+			  'Address1', 'Address2', 'City', 'State', 'Zip', 
+			  'Country', 'FreeformContactInfo');
+	foreach my $attrib (@attributes) {
+	    if ( (exists ($args{"$attrib"})) and
+		 ($user_obj->$attrib() ne $args{"$attrib"})) {
+		
+		my $method = "Set$attrib";
+		my ($val, $msg) = $user_obj->$method($args{"$attrib"});
+		print "User ".$user_obj->Name. " $attrib:  $msg\n";
+		
+	    }
+	}		
+	    
+	
+	print "About to display, if we can do that\n";
+	#Check if we need to display the user
+	if ($args{'display'}) {
+	    foreach my $attrib (@attributes) {
+		next if ($attrib eq 'Password'); #Can't see the password
+		printf("%22.22s %-64s\n",$attrib, ($user_obj->$attrib()||'(undefined)'));
+		
+	    }	
+	}	
+	
+	#Check if we need to delete the user
+	if ($args{'delete'}) {
+	    my ($val, $msg) = $user_obj->Delete();
+	    print "$msg\n";
+	}	
+	
+    }
+}
+# }}}
+
+
+# {{{ AdminQueue
+sub AdminUser {
+    my $user=shift;
+    my %args;
+
+    GetOptions(\%args,
+	       'create', 'delete', 'display',
+	       'Name', 'CorrespondAddress', 'Description',
+	       'CommentAddress', 'InitialPriority', 'FinalPriority',
+	       'DefaultDueIn',
+	       
+	       'add-cc=s', 'add-admin-cc=s', 'delete-cc=s', 'delete-admin-cc=s',
+	       'create-template
+	       );
+
+    my $queue_obj = new RT::Queue($CurrentUser);
+    
+    
+    #Create the user if we need to 
+    if ($args{'create'}) {
+	my ($status, $msg) = 
+	  $queue_obj->Create(
+			     Name => $args{'Name'},
+			     CorrespondAddress => $args{'CorrespondAddress'},
+			     Description => $args{'Description'},
+			     CommentAddress  => $args{'CommentAddress'},
+			     InitialPriority => $args{'InitialPriority'},
+			     FinalPriority => $args{'FinalPriority'},
+			     DefaultDueIn => $args{'DefaultDueIn'}
+			    );
+	
+	print "$msg\n";
+	return();
+	
+    }
+    else {
+	
+	
+	#Load the user
+	$queue_obj->Load($queue);
+	
+	unless ($queue_obj->id) {
+	    print "Queue '$queue' not found";
+	    return();
+	}	
+	
+	
+	
+	#modify the user if we need to
+	my @attributes = qw(Name CorrespondAddress Description
+			    CommentAddress InitialPriority FinalPriority
+			    DefaultDueIn
+			 );
+	foreach my $attrib (@attributes) {
+	    if ( (exists ($args{"$attrib"})) and
+		 ($queue_obj->$attrib() ne $args{"$attrib"})) {
+		
+		my $method = "Set$attrib";
+		my ($val, $msg) = $queue_obj->$method($args{"$attrib"});
+		print "Queue ".$queue_obj->Name. " $attrib:  $msg\n";
+		
+	    }
+	}		
+	    
+	
+	print "About to display, if we can do that\n";
+	#Check if we need to display the user
+	if ($args{'display'}) {
+	    foreach my $attrib (@attributes) {
+		printf("%22.22s %-64s\n",$attrib, ($queue_obj->$attrib()||'(undefined)'));
+		
+	    }	
+	}	
+	
+	#Check if we need to delete the user
+	if ($args{'delete'}) {
+	    my ($val, $msg) = $queue_obj->Delete();
+	    print "$msg\n";
+	}	
+	
+    }
+}
+# }}}
+
+# {{{
+sub AdminQueue {
+    my $queue = shift;
+}
+# }}}
+
+sub AdminKeyword {
+    my $keyword = shift;
+}
+
+sub AdminGroup {
+    my $group = shift;
+
+}
+
+sub AdminSystem {
+    
 }

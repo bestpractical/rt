@@ -6,7 +6,8 @@ Modify Template <%$TemplateObj->id%>:
 
 <FORM METHOD=POST ACTION="Modify.html">
 <INPUT TYPE=HIDDEN name="id" value="<%$TemplateObj->id%>">
-Title: <input name="Title" VALUE="<%$TemplateObj->Title%>" SIZE=80>
+Name: <input name="Name" VALUE="<%$TemplateObj->Name%>" SIZE=80>
+Description: <input name="Description" VALUE="<%$TemplateObj->Description%>" SIZE=80>
 <PRE>
 <TEXTAREA NAME=Content ROWS=25 COLS=80 WRAP=SOFT>
 <%$TemplateObj->Content%>
@@ -25,7 +26,7 @@ $TemplateObj->Load($id) || &Abort('No Template');
 # Deal with updating individual fields where we're doing something to watch
 # what goes in and out
     
-my @fields = qw( Title Content Queue Alias);
+my @fields = qw( Description Content Queue Name);
 
 #Run through each field in this list. update the value if apropriate
 my ($field);

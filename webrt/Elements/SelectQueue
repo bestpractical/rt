@@ -3,7 +3,7 @@
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
 % while (my $queue=$q->Next) {
-<OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->QueueId%>
+<OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->Name%>
 %   if (($Verbose) and ($queue->Description) ){
 (<%$queue->Description%>)
 %  }

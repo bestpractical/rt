@@ -1,10 +1,10 @@
 
-<& /Elements/TitleBoxStart, title => 'Editing Configuration for user '.$UserObj->UserId &>
+<& /Elements/TitleBoxStart, title => 'Editing Configuration for user '.$UserObj->Name &>
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/ModifyUser.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
 
-UserId: <input name="UserId" value="<%$UserObj->UserId%>">
+Name: <input name="Name" value="<%$UserObj->Name%>">
 <BR>
 New Password: <input type=password name="Pass1"><BR>
 Retype Password: <input type=password name="Pass2"><BR>

@@ -1,5 +1,5 @@
 # $Header$
-# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
+# (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #
 
@@ -75,26 +75,26 @@ sub Load {
    
    #It's not a URI. It's not a numerical ticket ID. It must be an alias
    else {
-       return( $self->LoadByAlias($id));
+       return( $self->LoadByName($id));
    }
    
    
 }
-  
+
 # }}}
 
-# {{{ sub LoadByAlias
+# {{{ sub LoadByName
 
-=head2 LoadByAlias
+=head2 LoadByName
 
 Takes a single argument. Loads the ticket whose alias matches what was passed in.
 
 =cut
 
-sub LoadByAlias {
+sub LoadByName {
     my $self = shift;
     my $alias = shift;
-   return($self->LoadByCol('Alias', $alias));
+   return($self->LoadByCol('Name', $alias));
 }
 
 # }}}
@@ -129,16 +129,16 @@ sub LoadByURI {
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   id 
-  Queue  - Either a Queue object or a QueueId
+  Queue  - Either a Queue object or a Queue Name
   
   Requestor -- An RT::User object (the ticket\'s requestor)
   RequestorEmail -- the requestors email address. (if the Requestor object isn't available
   
-  Requestor -  A list of RT::User objects, email addresses or UserIds
-  Cc  - A list of RT::User objects, email addresses or UserIds
-  AdminCc  - A list of RT::User objects, email addresses or UserIds
+  Requestor -  A list of RT::User objects, email addresses or Names
+  Cc  - A list of RT::User objects, email addresses or Names
+  AdminCc  - A list of RT::User objects, email addresses or Names
   
-  Alias  -- The ticket\'s textual alias
+  Name  -- The ticket\'s textual alias
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
@@ -162,7 +162,7 @@ sub Create {
 		Queue => undef,
 		Requestor => undef,
 		RequestorEmail => undef,
-		Alias => undef,
+		Name => undef,
 		Type => 'ticket',
 		Owner => $RT::Nobody->UserObj,
 		Subject => '[no subject]',
@@ -229,7 +229,7 @@ sub Create {
 	($Owner->Id != $RT::Nobody->Id) and 
 	(!$Owner->HasQueueRight( QueueObj => $Queue,  Right => 'OwnTicket'))) {
 	
-	$RT::Logger->warning("$self user ".$Owner->UserId . "(".$Owner->id .") was proposed ".
+	$RT::Logger->warning("$self user ".$Owner->Name . "(".$Owner->id .") was proposed ".
 			     "as a ticket owner but has no rights to own ".
 			     "tickets in this queue\n");
 	
@@ -253,7 +253,7 @@ sub Create {
     
     my $id = $self->SUPER::Create(
 				  Queue => $Queue->Id,
-				  Alias => $args{'Alias'},
+				  Name => $args{'Name'},
 				  Owner => $Owner->Id,
 				  Subject => $args{'Subject'},
 				  InitialPriority => $args{'InitialPriority'},
@@ -287,7 +287,7 @@ sub Create {
     
     # Logging
     if ($self->Id && $Trans) {
-	$ErrStr='Ticket #'.$self->Id . " created in queue ". $Queue->QueueId;
+	$ErrStr='Ticket #'.$self->Id . " created in queue ". $Queue->Name;
 	
 	$RT::Logger->info($ErrStr);
     } 
@@ -1842,7 +1842,7 @@ sub OwnerAsString {
 =head2 SetOwner
 
 Takes two arguments:
-     the Id or UserId of the owner 
+     the Id or Name of the owner 
 and  (optionally) the type of the SetOwner Transaction. It defaults
 to 'Give'.  'Steal' is also a valid option.
 
@@ -1901,7 +1901,7 @@ sub SetOwner {
   delete $self->{'owner'};
 
   if ($trans) {
-      $msg = "Owner changed from ".$OldOwnerObj->UserId." to ".$NewOwnerObj->UserId;
+      $msg = "Owner changed from ".$OldOwnerObj->Name." to ".$NewOwnerObj->Name;
   }
   return ($trans, $msg);
 	  
@@ -2200,7 +2200,7 @@ sub _Accessible {
   my $self = shift;  
   my %Cols = (
 	      Queue => 'read/write',
-	      Alias => 'read/write',
+	      Name => 'read/write',
 	      Requestors => 'read/write',
 	      Owner => 'read/write',
 	      Subject => 'read/write',

@@ -1,55 +1,32 @@
 #!/usr/bin/perl -w
 #
 # $Header$
-# RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
+# RT is (c) 1996-2001 Jesse Vincent <jesse@fsck.com>
 
-
-$ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
-$ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
-$ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
-$ENV{'ENV'} = '' if defined $ENV{'ENV'};
-$ENV{'IFS'} = ''		if defined $ENV{'IFS'};
-
-package RT;
 use strict;
-use vars qw($VERSION $Handle $Nobody $SystemUser);
+use Carp;
 use Getopt::Long;
-
-$VERSION="!!RT_VERSION!!";
 
 use lib "!!RT_LIB_PATH!!";
 use lib "!!RT_ETC_PATH!!";
 
-#This drags in  RT's config.pm
-use config;
+use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
+			   GetCurrentUser GetMessageContent);
 
-# Now that we got the config read in, we have the database 
-# password and don't need to be setgid
-# make the effective group the real group
+#Clean out all the nasties from the environment
+CleanEnv();
 
-$) = $(;
+#Load etc/config.pm and drop privs
+LoadConfig();
+
+#Connect to the database and get RT::SystemUser and RT::Nobody loaded
+DBConnect();
 
 
-
-use Carp;
-
-use RT::Handle;
-$RT::Handle = new RT::Handle($RT::DatabaseType);
-{
-$RT::Handle->Connect();
-}
-
-use RT::CurrentUser;
-#RT's system user is a genuine database user. its id lives here
-
-$RT::SystemUser = new RT::CurrentUser();
-$RT::SystemUser->LoadByUserId('RT_System');
-
-#RT's "nobody user" is a genuine database user. its ID lives here.
-$RT::Nobody = new RT::CurrentUser();
-$RT::Nobody->LoadByUserId('Nobody');
-
+#Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
+
+
 
 # {{{ commandline flags 
 
@@ -312,7 +289,7 @@ if ($queue) {
 # {{{ Check if we're creating, if so, create the ticket and be done
 
 if ($create) {
-    debug("Creating a new ticket");
+    $RT::Logger->debug("Creating a new ticket");
 
     #Make sure the current user can create tickets in this queue
     
@@ -328,18 +305,17 @@ if ($create) {
     my ($ticket, $trans, $msg) =
       $Ticket->Create(Queue => $queue,
 		    Owner => $owner,
-		    Status => ,
+		    Status => $status,
 		    Subject => $subject,
-		    Requestors => ,
-		    Cc => ,
-		    AdminCc => ,
+		    Requestors => undef,
+		    Cc => undef,
+		    AdminCc => undef,
 		    Due => $due,
 		    Starts => $starts,
 		    Started => $started,
 		    TimeLeft => $time_left,
 		    Priority => $priority,
 		    FinalPriority => $final_priority,
-		    Contacted =>,
 		      
 		   );
     print $msg . "\n";
@@ -398,12 +374,12 @@ else {
 	    my $user_obj = new RT::User($RT::SystemUser);
 		
 	    unless ($user_obj->Load($val)) {
-		debug("User '$val' not found");
+		$RT::Logger->debug("User '$val' not found");
 		return(-1);
 	    }
 	    $val = $user_obj->id();
 		
-	    debug ("Limiting owner to $op $val");
+	    $RT::Logger->debug ("Limiting owner to $op $val");
 	    $Tickets->LimitOwner(VALUE => "$val",
 				 OPERATOR => "$op");
 	}	
@@ -511,7 +487,7 @@ else {
  
 
     while (my $Ticket = $Tickets->Next()) {
-	debug ("Now working on ticket ". $Ticket->id);
+	$RT::Logger->debug ("Now working on ticket ". $Ticket->id);
     
 	#Run through all the ticket modifications we might want to do
 	#TODO: these are all insufficiently lazy and should be replaced with some 
@@ -542,7 +518,7 @@ else {
 	}	
 	
 	# add / delete adminccs
-        debug("Looking at admin ccs");
+        $RT::Logger->debug("Looking at admin ccs");
 	foreach $value (@admincc) {
 	    if ($value =~ /^(\W?)(.*)$/) {
 		my $op = $1;
@@ -551,32 +527,32 @@ else {
 		$Ticket->DeleteWatcher($addr) if ($op eq '-');
 	    }	
 	}	
-	
+
 	# }}}
 	
 	# {{{ Deal with ticket keywords
 
 	my $KeywordSelects = $Ticket->QueueObj->KeywordSelects();
-        debug ("Looking at keywords");
+        $RT::Logger->debug ("Looking at keywords");
 	foreach $value (@keywords) {
-           debug("Looking at --keyword=$value");
+           $RT::Logger->debug("Looking at --keyword=$value");
 	    if ($value =~ /^(\W?)(.*?)\/(.*)$/) {
 		my $op = $1;
 		my $select = $2;
 		my $keyword = $3;
 		
-		debug("Going to $op Keyword $select / $keyword");	
+		$RT::Logger->debug("Going to $op Keyword $select / $keyword");	
 		while (my $ks = $KeywordSelects->Next) {
-                    debug("$select is select ".$ks->Name." is found");
+                    $RT::Logger->debug("$select is select ".$ks->Name." is found");
 		    next unless ($ks->Name =~ /$select/i);
-		    debug ("Found a match for $select\n"); 
+		    $RT::Logger->debug ("Found a match for $select\n"); 
 		    my $kids = $ks->KeywordObj->Descendents;
     
                     my ($kid);
 		    foreach $kid (keys %{$kids}) {
-                        debug("Now comparing $keyword with ".$kids->{$kid}. "\n");
+                        $RT::Logger->debug("Now comparing $keyword with ".$kids->{$kid}. "\n");
 			next unless ($kids->{$kid} =~ /^$keyword$/i);
-		        debug("Going to $op $select / $keyword (".$kids->{$kid} .")");	
+		        $RT::Logger->debug("Going to $op $select / $keyword (".$kids->{$kid} .")");	
 			$Ticket->DeleteKeyword(KeywordSelect => $ks->id,
 					    Keyword => $kid) if ($op eq '-');
 			
@@ -656,7 +632,7 @@ else {
 	if ($due) {
 	    my $iso = ParseDateToISO($due);
 	    if ($iso) {
-		debug("Setting due date to $iso ($due)");
+		$RT::Logger->debug("Setting due date to $iso ($due)");
 		my ($trans, $msg) = 
 		  $Ticket->SetDue($iso);
 		print $msg;
@@ -768,9 +744,11 @@ else {
 
 	# {{{ Perform ticket comments/replies
 	if ($reply) {
-	    debug("Replying to ticket ".$Ticket->Id);
+	    $RT::Logger->debug("Replying to ticket ".$Ticket->Id);
 	    
-	    my $linesref =GetMessageContent( Edit => $edit, Source => $source);
+	    my $linesref = GetMessageContent( Edit => $edit, Source => $source,
+					     CurrentUser => $CurrentUser
+					   );
 	    
 	    #TODO build this entity
 	    require MIME::Entity;
@@ -781,9 +759,10 @@ else {
 	}	
 	
 	elsif ($comment) {
-	    debug("Commenting on ticket ".$Ticket->Id);
+	    $RT::Logger->debug("Commenting on ticket ".$Ticket->Id);
 	
-	    my $linesref =GetMessageContent(Edit => $edit, Source => $source);
+	    my $linesref =GetMessageContent(Edit => $edit, Source => $source,
+					    CurrentUser => $CurrentUser);
 	    #TODO build this entity
 	    require MIME::Entity;
 	    my $MIMEObj = MIME::Entity->build(Data => $linesref);
@@ -799,7 +778,7 @@ else {
 	# {{{ Display a full ticket listing and history
 	if ($history) {
 	    #Display the history
-	    debug("Show history for ".$Ticket->id);
+	    $RT::Logger->debug("Show history for ".$Ticket->id);
 	    
 	    if ($Ticket->CurrentUserHasRight("ShowTicket")) {
 		&ShowSummary($Ticket);
@@ -815,7 +794,7 @@ else {
 	
 	# {{{ Display a summary if we need to
 	if (defined $summary) {
-	    debug ("Show ticket summary with format $format");
+	    $RT::Logger->debug ("Show ticket summary with format $format");
 	    
 	    printf $format."\n", eval $code;
 	    
@@ -835,97 +814,11 @@ $RT::Handle->Disconnect();
 
 
 
-# {{{ sub GetCurrentUser 
-sub GetCurrentUser  {
-    unless ($CurrentUser) {
-	my $Gecos;
-	
-	require RT::CurrentUser;
-        
-	#Instantiate a user object
-    	
-	$Gecos=(getpwuid($<))[0];
-	#If the current user is 0, then RT will assume that the User object
-	#is that of the currentuser.
-	$CurrentUser = new RT::CurrentUser();
-	$CurrentUser->LoadByGecos($Gecos);
-	
-	unless ($CurrentUser->Id) {
-	    $CurrentUser = $RT::Nobody;
-	    debug ("No user with a unix login of '$Gecos' was found. Continuing in unprivileged mode.\n");
-	}
-    }
-    return($CurrentUser);
-}
-# }}}
 
-# {{{ sub GetMessageContent
 
-=head2 GetMessageContent
-
-Takes two arguments a source file and a boolean "edit".  If the source file is undef or "",
-assumes an empty file.  Returns an edited file as an array of lines.
-
-=cut
-
-sub GetMessageContent {
-    my %args = (  Source => undef,
-		 @_);
-    my $source = $args{'Source'};
-
-    my $edit = $args{'Edit'};
-    
-    my @lines;
-
-    use File::Temp qw/ tempfile/;
-    
-    #Load the sourcefile, if it's been handed to us
-    if ($source) {
-	open (SOURCE, "<$source");
-	@lines = (<SOURCE>);
-	close (SOURCE);
-    }
-
-    #get us a tempfile.
-    my ($fh, $filename) = tempfile("rt-".$CurrentUser->UserId."XXXXXXXX", TMPDIR=>1);
-	
-    #write to a tmpfile
-    for (@lines) {
-	print $fh $_;
-    }
-    close ($fh);
-    
-    #Edit the file if we need to
-    if ($edit) {	
-	system ($ENV{'EDITOR'}, $filename);
-    }	
-    
-    open (READ, "<$filename");
-    my @newlines = (<READ>);
-    close (READ);
-
-    unlink ($filename) unless ($debug);
-
-    print "Newlines is ".join("\n", @newlines);
-    return(\@newlines);
-    
-}
-
-# }}}
-
-# {{{ sub debug
-
-sub debug {
-    my $val = shift;
-    $RT::Logger->debug($val."\n");
-    if ($debug) {
-	print STDERR "$val\n";
-    }
-}
-
-# }}}
 
 # {{{ sub ParseBooleanOp
+
 =head2 ParseBooleanOp
 
   Takes an option modifier. returns the apropriate SQL operator.
@@ -947,6 +840,7 @@ sub ParseBooleanOp {
     
     return($op);
 }
+
 # }}}
 
 # {{{ sub ParseLikeOp
@@ -989,7 +883,7 @@ sub ParseDateToISO {
     my $parsed_date = Date::Manip::ParseDate($date);
     if ($parsed_date) {
 	my $unixdate = Date::Manip::UnixDate($parsed_date, "%s");
-	debug("Parsed date is $parsed_date (localtime)");
+	$RT::Logger->debug("Parsed date is $parsed_date (localtime)");
 	my $date_obj = new RT::Date($CurrentUser);
 	$date_obj->Set( Format => 'unix',
 			Value => $unixdate
@@ -1094,12 +988,12 @@ sub ShowSummary  {
 
 
     print <<EOFORM;
-Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->QueueObj->QueueId]}
+Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->QueueObj->Name]}
       Subject: @{[$Ticket->Subject]}
    Requestors: @{[$Ticket->RequestorsAsString]}
            Cc: @{[$Ticket->CcAsString]}
      Admin Cc: @{[$Ticket->AdminCcAsString]}
-        Owner: @{[$Ticket->OwnerObj->UserId]}
+        Owner: @{[$Ticket->OwnerObj->Name]}
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
           Due: @{[$Ticket->DueAsString]}
       Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->AgeAsString]})
@@ -1279,7 +1173,7 @@ sub BuildListingFormat {
 	    $length = $2;
 	}
 	else {	
-	    debug ("Error parsing $field\n");
+	    $RT::Logger->debug ("Error parsing $field\n");
 	}
 	if ($length) {
 	    push (@format, "%".$length.".".$length."s ");

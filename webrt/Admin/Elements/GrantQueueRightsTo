@@ -5,7 +5,7 @@
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
-<li> <%$u->UserId%> (<%$u->RealName%>) <& SelectQueueRights, Name => "GrantTo".$u->id &>
+<li> <%$u->Name%> (<%$u->RealName%>) <& SelectQueueRights, Name => "GrantTo".$u->id &>
 % }
 </ul>
 % }
@@ -24,7 +24,7 @@ else {
 </%INIT>
 
 <%ARGS>
-$UserField => 'UserId'
+$UserField => 'Name'
 $UserOp => '='
 $UserString => undef
 </%ARGS>

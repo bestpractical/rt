@@ -5,9 +5,9 @@
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Create(QueueId => "$QueueId");
+$QueueObj->Create(Name => "$Name");
 </%INIT>
 
 <%ARGS>
-$QueueId => undef
+$Name => undef
 </%ARGS>

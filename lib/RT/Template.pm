@@ -36,18 +36,20 @@ sub _Init {
 
 
 # {{{ sub _Accessible 
+
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      id => 'read',
-          Alias => 'read/write',
-	      Title => 'read/write',
-          Type => 'read/write', #Type is one of Action or Message
+	      Name => 'read/write',
+	      Description => 'read/write',
+	      Type => 'read/write', #Type is one of Action or Message
 	      Content => 'read/write',
-          Queue => 'read/write'
+	      Queue => 'read/write'
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);
 }
+
 # }}}
 
 # {{{ sub _Set
@@ -110,9 +112,9 @@ sub _Value  {
 
 =head2 Create
 
-Takes a paramhash of Content, Queue, Title and Alias.
-Alias should be a unique string identifying this Template.
-Title and Content should be the template's title and content.
+Takes a paramhash of Content, Queue, Name and Description.
+Name should be a unique string identifying this Template.
+Description and Content should be the template's title and content.
 Queue should be 0 for a global template and the queue # for a queue-specific 
 template.
 
@@ -126,9 +128,9 @@ sub Create {
     my $self = shift;
     my %args = ( Content => undef,
                  Queue => undef,
-                 Title => '[no title]',
+                 Description => '[no description]',
                  Type => 'Action', #By default, template are 'Action' templates
-                 Alias => undef,
+                 Name => undef,
                  @_
                 );
     
@@ -151,8 +153,8 @@ sub Create {
 
     my $result = $self->SUPER::Create( Content => "$args{'Content'}",
                                        Queue   => "$args{'Queue'}",
-                                       Title   => "$args{'Title'}",
-                                       Alias   => "$args{'Alias'}"
+                                       Description   => "$args{'Description'}",
+                                       Name   => "$args{'Name'}"
                                       );
 
     return ($result);

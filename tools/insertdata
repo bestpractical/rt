@@ -28,7 +28,7 @@ $RT::Handle->Connect();
 my $RT_System = new RT::CurrentUser(); #TODO how do we bootstrap?
 
 $RT_System->Create(
-		     UserId => 'RT_System',
+		     Name => 'RT_System',
 		     RealName => 'The RT System itself',
 		     Comments =>  'Do not delete or modify this user. It is integral to RT\'s internal database structures',
 		     Privileged => '2',
@@ -36,12 +36,12 @@ $RT_System->Create(
 
 
 my $CurrentUser = new RT::CurrentUser();
-$CurrentUser->LoadByUserId('RT_System');
+$CurrentUser->LoadByName('RT_System');
 # {{{ Users
 
 my @users = ( 
 	     { 
-	      UserId => 'Nobody',
+	      Name => 'Nobody',
 	      RealName => 'Nobody in particular',
 	      Comments => 'Do not delete or modify this user. It is integral ' .
 	      'to RT\'s internal data structures',
@@ -49,7 +49,7 @@ my @users = (
 	     },
 
 	     { 
-	      UserId => 'root',
+	      Name => 'root',
 	      Gecos => 'root',
 	      RealName => 'Enoch Root',
               Password => 'password',
@@ -116,8 +116,9 @@ my @acl = (  #TODO: make this actually take the serial # granted to root.
 # }}}
 
 # {{{ Queues
+
 my @queues = ( 
-	      { QueueId => 'general',
+	      { Name => 'general',
 		Description => 'The default queue',
 		CorrespondAddress => "rt\@localhost",
 		CommentAddress => "rt-comment\@localhost"
@@ -280,8 +281,8 @@ my @ScripConditions = (
 my @templates = (
 {
                 Queue   => '0',
-                Alias => 'Autoreply',
-				Title => 'Default Autoresponse Template', 
+                Name => 'Autoreply',
+				Description => 'Default Autoresponse Template', 
 				Content => 
 'Subject: AutoReply: {$Ticket->Subject}
 
@@ -307,16 +308,16 @@ problem. To do so, you may reply to this message.
 {
 #                  id => 2,
                 Queue   => '0',
-                Alias => 'Transaction', 
-                  Title => 'Default transaction template',
+                Name => 'Transaction', 
+                  Description => 'Default transaction template',
                   Content => '
 
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
-       Queue: {$Ticket->QueueObj->QueueId}
+       Queue: {$Ticket->QueueObj->Name}
      Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
-       Owner: {$Ticket->OwnerObj->UserId}
+       Owner: {$Ticket->OwnerObj->Name}
   Requestors: {join(",",\@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
@@ -327,8 +328,8 @@ Transaction: {$Transaction->Description}
 {
 
                   Queue   => '0',
-                  Alias => 'AdminCorrespondence',
-                  Title => 'Default admin correspondence template',
+                  Name => 'AdminCorrespondence',
+                  Description => 'Default admin correspondence template',
                   Content => 'Subject: {$Transaction->Message()->First()->Subject}
 
 {$Transaction->IsInbound() ? "In" : "Out"}bound correspondence:
@@ -340,8 +341,8 @@ Transaction: {$Transaction->Description}
 
 {
                   Queue   => '0',
-                  Alias => 'Correspondence',
-                  Title => 'Default correspondence template',
+                  Name => 'Correspondence',
+                  Description => 'Default correspondence template',
                   Content =>  '
 
 {$Transaction->Message()->First()->Content()}'},
@@ -349,8 +350,8 @@ Transaction: {$Transaction->Description}
 
 {
                   Queue   => '0',
-                  Alias => 'AdminComment',
-                  Title => 'Default admin comment template',
+                  Name => 'AdminComment',
+                  Description => 'Default admin comment template',
                   Content =>  'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
 
 
@@ -363,8 +364,8 @@ This is a comment.  It is not sent to the Requestor(s):
 
 {
                   Queue   => '0',
-                  Alias => 'StatusChange',
-                  Title => 'Ticket status changed',
+                  Name => 'StatusChange',
+                  Description => 'Ticket status changed',
                   Content =>  'Subject: Status Changed to: {$Transaction->NewValue}
 
 
@@ -376,8 +377,8 @@ This is a comment.  It is not sent to the Requestor(s):
 {
 
                  Queue => '0',
-                 Alias => 'Resolved',
-                  Title => 'Ticket Resolved',
+                 Name => 'Resolved',
+                  Description => 'Ticket Resolved',
                   Content => 'Subject: Ticket Resolved
 
 According to our records, your request has been resolved. If you have any

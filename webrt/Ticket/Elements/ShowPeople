@@ -1,5 +1,5 @@
 Owner<BR>
-&nbsp;<B><%$Ticket->OwnerObj->UserId%></B><BR>
+&nbsp;<B><%$Ticket->OwnerObj->Name%></B><BR>
 Requestors<BR>
 &nbsp;<B><%$Ticket->RequestorsAsString%></B><BR>
 Cc<BR>

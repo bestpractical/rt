@@ -1,14 +1,14 @@
-<& /Admin/Elements/Header, Title => 'Edit templates for '.$Queue->QueueId &>
+<& /Admin/Elements/Header, Title => 'Edit templates for '.$Queue->Name &>
 <& /Admin/Elements/QueueTabs, id => $Queue->id &>
 
-<& /Elements/TitleBoxStart, title => 'Edit templates for '.$Queue->QueueId &>
+<& /Elements/TitleBoxStart, title => 'Edit templates for '.$Queue->Name &>
 <UL>
 <LI><A href="CreateTemplate.html">Create a new template (needs code)</A><BR><BR>
 
 
 %while  (my $TemplateObj = $Templates->Next) { 
 
-<LI><A HREF="Template.html?id=<%$id%>&template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Alias%>: <%$TemplateObj->Title%></a><BR>
+<LI><A HREF="Template.html?id=<%$id%>&template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Name%>: <%$TemplateObj->Description%></a><BR>
 
 %}
 

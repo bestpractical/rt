@@ -68,12 +68,13 @@ RT_SPEEDYCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.scgi
 # The following are the names of the various binaries which make up RT 
 
 RT_CLI_BIN		=	$(RT_BIN_PATH)/rt
-RT_ADMIN_BIN		=	rtadmin
+RT_CLI_ADMIN_BIN	=	$(RT_BIN_PATH)/rtadmin
 RT_MAILGATE_BIN		=	rt-mailgate
 
 # }}}
 
 # {{{ Database setup
+
 #
 # DB_TYPE defines what sort of database RT trys to talk to
 # "mysql" is known to work.
@@ -198,16 +199,16 @@ fixperms:
 
 	# Make the interfaces executable and setgid rt
 	chown $(BIN_OWNER) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 	chgrp $(RTGROUP) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 	chmod 0755 $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 	chmod g+s $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 	# Make the web ui readable by all. 
 	chmod -R 0755 $(MASON_HTML_PATH)
@@ -270,27 +271,23 @@ insert-install:
 mux-install:
 	cp -p ./bin/rtmux.pl $(RT_PERL_MUX)
 	cp -p ./bin/webmux.pl $(RT_MODPERL_HANDLER)
+	cp -p ./bin/rtadmin $(RT_CLI_ADMIN_BIN)
 	cp -p ./bin/rt $(RT_CLI_BIN)
 	cp -p ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
 	cp -p ./bin/mason_handler.scgi $(RT_SPEEDYCGI_HANDLER)
 
 	$(PERL) -p -i -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
-				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;\
 				s'!!WEB_USER!!'$(WEB_USER)'g;\
 				s'!!WEB_GROUP!!'$(WEB_GROUP)'g;" \
 		$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN)
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 
 mux-links:
-
-	rm -f $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
-	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
-
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 

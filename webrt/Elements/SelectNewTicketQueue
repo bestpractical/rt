@@ -2,7 +2,7 @@
 <SELECT NAME ="<%$Name%>">
 % while (my $queue=$q->Next) {
 % if ($queue->CurrentUserHasRight('CreateTicket')) {
-<OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->QueueId%>
+<OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->Name%>
 %   if (($Verbose) and ($queue->Description) ){
 (<%$queue->Description%>)
 %  }

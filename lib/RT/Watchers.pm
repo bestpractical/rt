@@ -82,7 +82,7 @@ sub LimitToTicket {
 
 =head2 LimitToQueue
 
-Takes a single arg, which is a QueueId
+Takes a single arg, which is a queue id
 Limits to watchers of that queue.
 
 =cut

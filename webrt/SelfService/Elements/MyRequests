@@ -15,7 +15,7 @@
 <TD>
 <%$Ticket->Status%>
 </TD><TD>
-<%$Ticket->OwnerObj->UserId%>
+<%$Ticket->OwnerObj->Name%>
 </TD><TD ALIGN=RIGHT>
 [<A HREF="<% $RT::WebPath %>/SelfService/Display.html?id=<%$Ticket->Id%>">Details</A>]
 </TD>

@@ -123,7 +123,7 @@ sub LimitQueue {
     $self->Limit (FIELD => 'Queue',
 		  VALUE => $queue->id(),
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Queue ' .  $args{'OPERATOR'}. " ". $queue->QueueId
+		  DESCRIPTION => 'Queue ' .  $args{'OPERATOR'}. " ". $queue->Name
 		 );
     
 }
@@ -149,7 +149,7 @@ sub LimitOwner {
     $self->Limit (FIELD => 'Owner',
 		  VALUE => $owner->Id,
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Owner ' .  $args{'OPERATOR'}. " ". $owner->UserId()
+		  DESCRIPTION => 'Owner ' .  $args{'OPERATOR'}. " ". $owner->Name()
 		 );
     
 }
