@@ -21,7 +21,7 @@
 <i><&|/l&>Enter Articles or URIs to link Articles to. Separate multiple entries with spaces.</&></i><br>
 <i><&|/l&>(Check boxes to delete)</&></i><br>
 <TABLE>
-<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$id%>-RefersTo"><br>
+<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}%>"><br>
 <UL>
 % if ($id ne 'new') {
 %   my $refersto = $ArticleObj->RefersTo;
@@ -44,7 +44,7 @@
 % }
 </UL>
 </TD></TR>
-<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$id%>">
+<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}%>">
 <br>
 <UL>
 % if ($id ne 'new') {
