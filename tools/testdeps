@@ -30,7 +30,7 @@ Date::Manip
 Date::Format 
 MIME::Entity 5.108
 Mail::Mailer 1.20
-Getopt::Long 
+Getopt::Long 2.23
 Tie::IxHash 
 Text::Wrapper 
 Text::Template
