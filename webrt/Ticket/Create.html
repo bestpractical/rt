@@ -6,8 +6,13 @@
 <FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <A NAME="top">
+	
+	
+[<a class="currenttab">Show basics</a>] [<A HREF="#detail">Show details</a>]
+<BR>
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket"&>
-<TABLE>
+<div align=right><input type=submit value="Create"></div>
+<TABLE border=0 cellpadding=0 cellspacing=0>
 <TR><TD>Queue</TD>
 <TD><% $QueueObj->Name %>
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
@@ -78,8 +83,7 @@ Describe the issue below:<br>
 </TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
-<DIV ALIGN="RIGHT">[<A HREF="#detail">Show details</a>]</DIV>
-<& /Elements/Submit, Label => "Create ticket"&>
+<& /Elements/Submit, Label => "Create"&>
 
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
@@ -88,9 +92,8 @@ Describe the issue below:<br>
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 
 <A NAME="detail">
-<DIV ALIGN="RIGHT">
-[<A HREF="#top">Hide details</a>]
-</DIV>
+	[<A HREF="#top">Show basics</a>] [<a class="currenttab">Show details</a>]
+<BR>
 <TABLE WIDTH="100%" BORDER=0>
 <TR>
 <TD WIDTH="50%" VALIGN=TOP>
@@ -169,11 +172,12 @@ Describe the issue below:<br>
 <& /Elements/TitleBoxEnd &>
 <BR>
 
-<& /Elements/Submit, Label => "Create ticket"&>
 </TD>
 </TR>
 </TABLE>
+<& /Elements/Submit, Label => "Create"&>
 </FORM>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
