@@ -14,18 +14,14 @@ sub check_auth() {
     if ($rt::web_auth_mechanism =~ /external/i) {
       $current_user = $ENV{REMOTE_USER};                                        
       return (0);
-      
     }
     
     else {
-          
-    require rt::database::config;	
+    	require rt::database::config;	
+    	$AuthRealm="WebRT for $rt::rtname";
+    	($name, $pass)=&WebAuth::AuthCheck($AuthRealm);
     
-    $AuthRealm="WebRT for $rt::rtname";
-    
-    
-    ($name, $pass)=&WebAuth::AuthCheck($AuthRealm);
-       #if the user isn't even authenticating
+   #if the user isn't even authenticating
     if ($name eq '') {
       &WebAuth::AuthForceLogin($AuthRealm);
       exit(0)
@@ -143,55 +139,15 @@ sub frames {
 }
 
 sub cgi_vars_in {
-    my ($cgi_vars,$buffer,$name, $value, @pairs);
-    local($^W) = 0; #we're told that the value =~ lines are uninitialized vals
-                    #but they're not.
-# code between the lines was grabbed from form-mail.pl by MIT's the tech
-# Get the input
-    
-    #let's get the cookies
-
-    # Split the name-value pairs
-    if ($ENV{'CONTENT_LENGTH'}) {
-	read(STDIN, $cgi_vars, $ENV{'CONTENT_LENGTH'});
-	$cgi_vars .= "&";
-    }
-	$cgi_vars .= $ENV{'QUERY_STRING'};
-	@pairs = split(/&/, $cgi_vars);
-
-    
-    foreach $pair (@pairs)   {
-	($name, $value) = split(/=/, $pair);
-	# Un-Webify plus signs and %-encoding
-	$value =~ tr/+/ /;
-	$name  =~ tr/+/ /;
-	$value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
-	$name  =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
-	$value =~ s/&lt/</g;
-	$value =~ s/&gt/>/g;
-	# Stop people from using subshells to execute commands
-	# Not a big deal when using sendmail, but very important
-	# when using UCB mail (aka mailx).
-	$value =~ s/~!/ ~!/g;
-	
-	#untaint as per perl sec
-	if (0){ #($name ne 'content') { # we can't hack up content this way or we 
-	    $value =~ /^(\w+)$/;  # may not be able to read it
-	    $value = $1;          # a nasty hack, but we've gotta untaint things
-	}                         # although it may simply be better to untaint when we
-	# actually open a filehandle.
-
-	# Uncomment for debugging purposes
-	 print STDERR "A gnarled troll tells you that $name was set to $value\n";
-	$FORM{$name} = $value;
-	
-    }
+	use CGI qw/:cgi-lib/;
+	$query = new CGI;
+	%FORM = $query->Vars;
+	 
 
     # Pull in the cookies
-    # This had to be moved to the end here because it requires CGI.pm..which
-    # messes up my legacy CGI handling
     use CGI::Cookie;
     %rt::ui::web::cookies = fetch CGI::Cookie;
+
 
 }
 

@@ -1,3 +1,9 @@
+23 Jun 99
+---------
+Moved from custom CGI form field parsing to CGI.pm (it only required a few lines of code changes)
+
+
+
 16 Jun 99
 ---------
 Made the authentication page pass-through any querystring after authentication succeeds
