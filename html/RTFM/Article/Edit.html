@@ -28,8 +28,8 @@
 % }
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM METHOD=POST ACTION="Edit.html">
-<INPUT TYPE=HIDDEN NAME="id" VALUE="<%$id%>">
+<FORM METHOD=POST ACTION="Edit.html" name="EditArticle" id="EditArticle" enctype="multipart/form-data">
+<INPUT TYPE=HIDDEN NAME="id" VALUE="<%$id%>"/>
 
 <& Elements/EditBasics, ArticleObj => $ArticleObj,
                         EditClass =>$EditClass,
@@ -58,8 +58,9 @@
 </form>
 <%INIT>
 
-if (exists $ARGS{'Topics'}) {
-  $ARGS{'Topics'} = ref($ARGS{'Topics'}) ? $ARGS{'Topics'} : [$ARGS{'Topics'}]
+if ( exists $ARGS{'Topics'} ) {
+    $ARGS{'Topics'} =
+      ref( $ARGS{'Topics'} ) ? $ARGS{'Topics'} : [ $ARGS{'Topics'} ];
 }
 
 my @results;
@@ -67,7 +68,7 @@ my $title;
 
 my $Entries    = {};
 my $ArticleObj = RT::FM::Article->new( $session{'CurrentUser'} );
-my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
+my $ClassObj   = RT::FM::Class->new( $session{'CurrentUser'} );
 my %create_args;
 my %CFContent;
 my $EditClass = 1;
@@ -83,96 +84,107 @@ if ( !$id ) {
 
     $ClassObj->Load($Class);
     unless ( $ClassObj->Id ) {
-        $m->comp( "/RTFM/Elements/Error", Why => loc("'[_1]' isn't a valid class identifier", $Class));
+        $m->comp( "/RTFM/Elements/Error",
+            Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
     }
     $EditClass = 0;
-    $id = 'new';
+    $id        = 'new';
 }
 elsif ( $id eq 'new' ) {
 
     if ( $ARGS{'RefersTo-new'} ) {
         @{ $create_args{'RefersTo-new'} } =
-          split ( /\s+/, $ARGS{'RefersTo-new'} );
+          split( /\s+/, $ARGS{'RefersTo-new'} );
     }
 
     if ( $ARGS{'new-RefersTo'} ) {
         @{ $create_args{'new-RefersTo'} } =
-          split ( /\s+/, $ARGS{'new-RefersTo'} );
+          split( /\s+/, $ARGS{'new-RefersTo'} );
     }
 
-    foreach my $arg ( keys %ARGS ) {
-        if ( $arg =~ /^Article-new-CustomField-(\d+)-/ ) {
-            $create_args{'CustomField-'.$1} = $ARGS{$arg};
-        }
-    }
 
     my $msg;
-    ( $id, $msg ) = $ArticleObj->Create( Summary => $ARGS{'Summary'},
-                                         Name    => $ARGS{'Name'},
-                                         Class   => $ARGS{'Class'},
-                                         Topics  => $ARGS{'Topics'},
-                                         %create_args );
-        push ( @results, $msg );
-    if ($id ) {
+    ( $id, $msg ) = $ArticleObj->Create(
+        Summary => $ARGS{'Summary'},
+        Name    => $ARGS{'Name'},
+        Class   => $ARGS{'Class'},
+        Topics  => $ARGS{'Topics'},
+        %create_args
+    );
+    my @cf_results = ProcessObjectCustomFieldUpdates(
+        Object  => $ArticleObj,
+        ARGSRef => \%ARGS
+    );
+    @results = ( @results, @cf_results );
+
+    push( @results, $msg );
+    if ($id) {
         $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
     }
     else {
         $ClassObj->Load($Class);
         unless ( $ClassObj->Id ) {
-            $m->comp( "/RTFM/Elements/Error", Why => loc("'[_1]' isn't a valid class identifier", $Class));
-                }
-        $id = 'new';
+            $m->comp( "/RTFM/Elements/Error",
+                Why => loc( "'[_1]' isn't a valid class identifier", $Class ) );
+        }
+        $id        = 'new';
         $EditClass = 0;
-        $title = loc('Create a new article');
+        $title     = loc('Create a new article');
     }
-} else {
+}
+else {
 
     $ArticleObj->Load($id);
-      unless ( $ArticleObj->id ) {
+    unless ( $ArticleObj->id ) {
         $m->comp( "/RTFM/Elements/Error",
-                  Why => loc("Unable to load article") );
+            Why => loc("Unable to load article") );
     }
 
     my @attribs = qw(Name Summary Class);
 
-      @results = UpdateRecordObject( AttributesRef => \@attribs,
-                                     Object        => $ArticleObj,
-                                     ARGSRef       => \%ARGS );
+    @results = UpdateRecordObject(
+        AttributesRef => \@attribs,
+        Object        => $ArticleObj,
+        ARGSRef       => \%ARGS
+    );
 
-                               
-              my @cf_results = ProcessObjectCustomFieldUpdates(Object => $ArticleObj, ARGSRef => \%ARGS);
-    @results = (@results,@cf_results);
-      # Delete links that are gone gone gone.
-      foreach my $arg ( keys %ARGS ){
+    my @cf_results = ProcessObjectCustomFieldUpdates(
+        Object  => $ArticleObj,
+        ARGSRef => \%ARGS
+    );
+    @results = ( @results, @cf_results );
+
+    # Delete links that are gone gone gone.
+    foreach my $arg ( keys %ARGS ) {
         if ( $arg =~ /DeleteLink-(.*?)-(RefersTo|MemberOf|RefersTo)-(.*)$/ ) {
             my $base   = $1;
             my $type   = $2;
             my $target = $3;
 
-            my ( $val, $msg ) = $ArticleObj->DeleteLink( Base   => $base,
-                                                         Type   => $type,
-                                                         Target => $target );
+            my ( $val, $msg ) = $ArticleObj->DeleteLink(
+                Base   => $base,
+                Type   => $type,
+                Target => $target
+            );
 
             push @results, $msg;
 
         }
 
-      }
+    }
 
-      my @linktypes = qw(DependsOn MemberOf RefersTo );
+    my @linktypes = qw(DependsOn MemberOf RefersTo );
 
-      foreach my $linktype (@linktypes) {
+    foreach my $linktype (@linktypes) {
 
-        for my $luri ( split ( / /, $ARGS{ $ArticleObj->Id . "-$linktype" } ) )
-        {
+        for my $luri ( split( / /, $ARGS{ $ArticleObj->Id . "-$linktype" } ) ) {
             $luri =~ s/\s*$//;    # Strip trailing whitespace
             my ( $val, $msg ) =
               $ArticleObj->AddLink( Target => $luri, Type => $linktype );
             push @results, $msg;
         }
 
-        for my $luri ( split ( / /, $ARGS{ "$linktype-" . $ArticleObj->Id } ) )
-        {
+        for my $luri ( split( / /, $ARGS{ "$linktype-" . $ArticleObj->Id } ) ) {
             my ( $val, $msg ) =
               $ArticleObj->AddLink( Base => $luri, Type => $linktype );
 
@@ -182,34 +194,36 @@ elsif ( $id eq 'new' ) {
     }
 
     my %topics;
-    if ($ARGS{'EditTopics'}) {
-        $topics{$_}++ for @{$ARGS{'Topics'}};
-        my $objTopics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
+    if ( $ARGS{'EditTopics'} ) {
+        $topics{$_}++ for @{ $ARGS{'Topics'} };
+        my $objTopics =
+          new RT::FM::ObjectTopicCollection( $session{'CurrentUser'} );
         $objTopics->LimitToObject($ArticleObj);
-        while (my $t = $objTopics->Next) {
-            $topics{$t->Topic}--;
+        while ( my $t = $objTopics->Next ) {
+            $topics{ $t->Topic }--;
         }
-        for my $id (keys %topics) {
-            if ($topics{$id} > 0) {
-                my ($val, $msg) = $ArticleObj->AddTopic(Topic => $id);
+        for my $id ( keys %topics ) {
+            if ( $topics{$id} > 0 ) {
+                my ( $val, $msg ) = $ArticleObj->AddTopic( Topic => $id );
                 push @results, $msg;
-            } elsif ($topics{$id} < 0) {
-                my ($val, $msg) = $ArticleObj->DeleteTopic(Topic => $id);
+            }
+            elsif ( $topics{$id} < 0 ) {
+                my ( $val, $msg ) = $ArticleObj->DeleteTopic( Topic => $id );
                 push @results, $msg;
             }
         }
     }
-    
 
     $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
-  }
+}
 
-  # if they're working on an existing article
-  if ($ArticleObj->id) {
-  unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
-    $m->comp( "/RTFM/Elements/Error", Why => "No permission to view Article" );
+# if they're working on an existing article
+if ( $ArticleObj->id ) {
+    unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
+        $m->comp( "/RTFM/Elements/Error",
+            Why => "No permission to view Article" );
     }
-  }
+}
 
 </%INIT>
 

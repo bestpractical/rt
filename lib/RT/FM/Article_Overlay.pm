@@ -175,7 +175,7 @@ sub Create {
     }
     $RT::Handle->Commit();
 
-    return ( $id, $msg );
+    return ( $id, $self->loc('Article [_1] created',$self->id ));
 }
 
 # }}}
