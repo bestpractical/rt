@@ -3317,12 +3317,36 @@ sub Resolve {
 
 # {{{ Routines dealing with custom fields
 
+
+# {{{ FirstCustomFieldValue
+
+=item FirstCustomFieldValue FIELD
+
+Return the content of the first value of CustomField FIELD for this ticket
+Takes a field id or name
+
+=cut
+
+sub FirstCustomFieldValue {
+    my $self = shift;
+    my $field = shift;
+    my $values = $self->CustomFieldValues($field);
+    if ($values->First) {
+        return $values->First->Content;
+    } else {
+        return undef;
+    }
+
+}
+
+
+
 # {{{ CustomFieldValues
 
 =item CustomFieldValues FIELD
 
 Return a TicketCustomFieldValues object of all values of CustomField FIELD for this ticket.  
-Takes a field id 
+Takes a field id or name.
 
 
 =cut
@@ -3332,9 +3356,12 @@ sub CustomFieldValues {
     my $field = shift;
 
     my $cf = RT::CustomField->new($self->CurrentUser);
-    
-    $cf->LoadById($field);
 
+    if ($field =~ /^\d+$/) {
+        $cf->LoadById($field);
+    } else {
+        $cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
+    }
     my $cf_values = RT::TicketCustomFieldValues->new( $self->CurrentUser );
     $cf_values->LimitToCustomField($cf->id);
     $cf_values->LimitToTicket($self->Id());

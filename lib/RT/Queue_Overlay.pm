@@ -395,6 +395,23 @@ sub Templates {
 
 # {{{ Dealing with custom fields
 
+# {{{  CustomField
+
+=item CustomField NAME
+
+Load the queue-specific custom field named NAME
+
+=cut
+
+sub CustomField {
+    my $self = shift;
+    my $name = shift;
+    my $cf = RT::CustomField->new($self->CurrentUser);
+    $cf->LoadByNameAndQueue(Name => $name, Queue => $self->Id); 
+    return ($cf);
+}
+
+
 # {{{ CustomFields
 
 =item CustomFields

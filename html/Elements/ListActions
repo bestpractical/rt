@@ -33,6 +33,9 @@
 <& /Elements/TitleBoxEnd &>
 <BR>
 % }
+<%init>
+@actions = grep (/./,@actions);
+</%init>
 <%ARGS>
 @actions => undef
 </%ARGS>

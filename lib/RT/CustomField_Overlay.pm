@@ -55,16 +55,19 @@ for (@TYPES) { $TYPES{$_} = 1};
 =cut
 
 
-# {{{ sub LoadNameAndQueue
+# {{{ sub LoadByNameAndQueue
 
-=head2  LoadNameAndQueue (Queue => QUEUEID, Name => NAME)
+=head2  LoadByNameAndQueue (Queue => QUEUEID, Name => NAME)
 
 Loads the Custom field named NAME for Queue QUEUE. If QUEUE is 0,
 loads a global custom field
 
 =cut
 
-sub LoadNameAndQueue {
+# Compatibility for API change after 3.0 beta 1
+*LoadNameAndQueue = \&LoadByNameAndQueue;
+
+sub LoadByNameAndQueue {
     my $self = shift;
     my %args = (
         Queue => undef,

@@ -45,42 +45,7 @@
       <b><%$CustomField->Name%></b><br>
       <i><%$CustomField->FriendlyType%></i>
     </td>
-    <td class="entry">
-% my $Values;
-% if ($TicketObj) {
-%          $Values  = $TicketObj->CustomFieldValues($CustomField->id);
-% }
-% if ($CustomField->Type eq 'FreeformSingle') {
-      <input name="<%$NamePrefix%><%$CustomField->Id%>-Value"
-% if ($TicketObj) {
-          value="<%$Values->Count ? $Values->First->Content : ''%>"
-% }
->
-% } elsif ($CustomField->Type eq 'FreeformMultiple') {
-% my $content;
-% if ($TicketObj) {
-%          while (my $value = $Values->Next ) {
-%                 $content .= $value->Content;
-%           }
-%  }
-<textarea name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$content%></textarea>
-% } elsif ($CustomField->Type =~ /^Select/) {
-      <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
-        size="5"
-        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>>
-% my $CustomFieldValues = $CustomField->Values();
-% my $selected;
-% while (my $value = $CustomFieldValues->Next) {
-        <option value="<%$value->Name%>" 
-% if ($TicketObj) {
-            <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
-% }
-            ><% $value->Name%></option>
-% }
-        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
-      </select>
-% }
-    </td>
+    <td class="entry"><& EditCustomField, TicketObj => $TicketObj, CustomField => $CustomField, NamePrefix => $NamePrefix &></td>
   </tr>
 % }
 </table>

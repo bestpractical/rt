@@ -245,7 +245,8 @@ sub CreateTicket {
     );
   foreach my $arg (%ARGS) {
         if ($arg =~ /^CustomField-(\d+)(.*?)$/) {
-                $create_args{"CustomField-".$1} = $ARGS{"$arg"};
+            next if ($arg =~ /-Magic$/);
+            $create_args{"CustomField-".$1} = $ARGS{"$arg"};
         }
     }
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
@@ -1020,6 +1021,16 @@ sub ProcessTicketCustomFieldUpdates {
         foreach my $cf ( keys %{ $custom_fields_to_mod{$tick} } ) {
 
             foreach my $arg ( keys %{$ARGSRef} ) {
+                # since http won't pass in a form element with a null value, we need
+                # to fake it
+                if ($arg =~ /^(.*?)-Values-Magic$/ ) {
+                    # We don't care about the magic, if there's really a values element;
+                    next if (exists $ARGSRef->{$1.'-Values'}) ;
+
+                    $arg = $1."-Values";
+                    $ARGSRef->{$1."-Values"} = undef;
+                
+                }
                 next unless ( $arg =~ /^Ticket-$tick-CustomField-$cf-/ );
                 my @values =
                   ( ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) 
@@ -1045,7 +1056,7 @@ sub ProcessTicketCustomFieldUpdates {
                         push ( @results, $msg );
                     }
                 }
-                elsif ( $arg =~ /-Values$/ ) {
+                elsif ( $arg =~ /-Values/ ) {
                     my $cf_values = $Ticket->CustomFieldValues($cf);
 
                     my %values_hash;
@@ -1070,7 +1081,7 @@ sub ProcessTicketCustomFieldUpdates {
                                 Field => $cf,
                                 Value => $cf_value->Content
                             );
-                            push ( @results, $msg );
+                            push ( @results, $msg);
 
                         }
 

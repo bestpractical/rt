@@ -1,0 +1,68 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+% my $Values;
+% if ($TicketObj) {
+%          $Values  = $TicketObj->CustomFieldValues($CustomField->id);
+% }
+% if ($CustomField->Type eq 'FreeformSingle') {
+      <input name="<%$NamePrefix%><%$CustomField->Id%>-Value"
+        size="<%$Cols%>"
+% if ($TicketObj) {
+          value="<%$Values->Count ? $Values->First->Content : ''%>"
+% }
+>
+% } elsif ($CustomField->Type eq 'FreeformMultiple') {
+% my $content;
+% if ($TicketObj) {
+%          while (my $value = $Values->Next ) {
+%                 $content .= $value->Content;
+%           }
+%  }
+<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
+<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$content%></textarea>
+% } elsif ($CustomField->Type =~ /^Select/) {
+      <input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
+      <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
+        size="<%$Rows%>"
+        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>>
+% my $CustomFieldValues = $CustomField->Values();
+% my $selected;
+% while (my $value = $CustomFieldValues->Next) {
+        <option value="<%$value->Name%>" 
+% if ($TicketObj) {
+            <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
+% }
+            ><% $value->Name%></option>
+% }
+        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
+      </select>
+% }
+<%ARGS>
+$TicketObj => undef
+$CustomField => undef
+$NamePrefix => undef
+$Rows => 5
+$Cols=> 15
+</%ARGS>
