@@ -551,26 +551,10 @@ BLOCKQUOTE {
   /* color: #990; */
 }
 
-ADDRESS { 
-  text-align: right;
-  font-weight: bold;
-  font-style: italic 
-}
-
-BLOCKQUOTE P {			/* Try to avoid space above the attribution */
-  margin-bottom: 0;
-}
-BLOCKQUOTE ADDRESS {
-  margin: 0;
-}
-
-
 .emphasized {
   font-weight: bold
 }
 
-
-P.map-also { font-style: italic; margin-left: 15%; text-align: right }
 
 .oddline { 
         background-color : #ccccee;
@@ -599,9 +583,21 @@ ul.topnav {
 	margin-top: .5em;
 }
 
-TH.collection-as-table {  text-align: center;}
+TH.collection-as-table {  text-align: center;
+                          font-size: 0.8em; 
+                          padding-left: .5em;
+                          padding-right: .5em;
+                          color: #333333;
+                          background-color: #999999;
+                          white-space: nowrap;
+                          border-collapse: collapse;
+                          border-bottom: solid #999999 1px; 
+                  }
 
-TD.collection-as-table {  text-align: left;}
+TD.collection-as-table {  text-align: left;
+                          padding-left: .5em;
+                          padding-right: .5em;
+                        }
 
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:

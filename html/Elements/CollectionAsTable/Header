@@ -32,7 +32,7 @@ $Rows => undef
 $Page => undef
 $maxitems => undef
 </%ARGS>
-<TR>
+<TR class="collection-as-table">
 <%perl>
 
 my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page );
@@ -43,7 +43,7 @@ foreach my $col (@Format) {
     $item++;
     $$maxitems = $item if $item > $$maxitems;
     if ( $col->{title} eq 'NEWLINE' ) {
-        $m->out('</TR>       <TR>');
+        $m->out(qq{</TR>\n<TR class="collection-as-table">});
 	$item = 0;
     }
     else {
