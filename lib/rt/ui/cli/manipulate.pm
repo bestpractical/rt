@@ -314,7 +314,7 @@ sub ParseArgs {
 						     TimeTaken => $TimeTaken
 						   );
 			       
-    print $Message;
+    print $Description;
   }
   
   sub cli_respond_req {
@@ -335,7 +335,7 @@ n";
       }
     }
     my $Ticket = &LoadTicket($id);
-    $Message = $Ticket->NewCorrespondence(subject => "$subject",
+    my ($Trans, $Message) = $Ticket->NewCorrespondence(subject => "$subject",
 					   content => "$content",
 					   cc => "$cc",
 					   bcc => "$bcc",

@@ -349,7 +349,7 @@ sub Comment {
     #send a copy of the correspondence to the CC list and BCC list
   }
   
-  return ($Trans, "This correspondence has been recorded");
+  return ($Trans, "The comment has been recorded (but code is stubbed)");
 }
 
 sub Correspond {
@@ -389,7 +389,7 @@ sub Correspond {
     #send a copy of the correspondence to the CC list and BCC list
   }
   
-  return ("This correspondence has been recorded.");
+  return ($Trans, "CODE STUBBED - correspondence not sent");
 }
 
 
