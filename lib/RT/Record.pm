@@ -140,6 +140,9 @@ sub CreatedObj {
 # }}}
 
 # {{{ AgeAsString
+#
+# TODO: This should be deprecated
+#
 sub AgeAsString {
     my $self=shift;
     return($self->CreatedObj->AgeAsString());
@@ -147,6 +150,8 @@ sub AgeAsString {
 # }}}
 
 # {{{ LastUpdatedAsString
+
+# TODO this should be deprecated
 
 sub LastUpdatedAsString {
     my $self=shift;
@@ -161,6 +166,9 @@ sub LastUpdatedAsString {
 # }}}
 
 # {{{ CreatedAsString
+#
+# TODO This should be deprecated 
+#
 sub CreatedAsString {
     my $self = shift;
     return ($self->CreatedObj->AsString());
@@ -168,6 +176,9 @@ sub CreatedAsString {
 # }}}
 
 # {{{ LongSinceUpdateAsString
+#
+# TODO This should be deprecated
+#
 sub LongSinceUpdateAsString {
     my $self=shift;
     if ($self->LastUpdated) {

@@ -1,6 +1,7 @@
 # $Header$
 # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
+
 =head1 NAME
 
   RT::Link - an RT Link object

@@ -1,4 +1,5 @@
 #$Header$
+
 =head1 NAME
 
   RT::Links - A collection of Link objects

@@ -1409,6 +1409,8 @@ Return the time until this ticket is due as a string
 
 =cut
 
+# TODO This should be deprecated 
+
 sub GraceTimeAsString {
     my $self=shift;
     
@@ -1539,7 +1541,7 @@ sub ToldObj {
 
 # {{{ sub LongSinceToldAsString
 
-# TODO This should be called SinceToldAsString
+# TODO this should be deprecated
 
 
 sub LongSinceToldAsString {
@@ -1558,6 +1560,8 @@ sub LongSinceToldAsString {
 =head2 ToldAsString
 
 A convenience method that returns ToldObj->AsString
+
+TODO: This should be deprecated
 
 =cut
 

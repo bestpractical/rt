@@ -5,6 +5,7 @@
  RT::Keyword - Manipulate an RT::Keyword record
 
 =head1 SYNOPSIS
+
   use RT::Keyword;
 
   my $keyword = RT::Keyword->new($CurrentUser);

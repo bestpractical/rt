@@ -20,6 +20,7 @@ BEGIN {
     @EXPORT_OK   = qw(&CleanEnv &LoadConfig &DBConnect 
 		      &GetCurrentUser &GetMessageContent &debug);
 }
+
 =head1 NAME
 
   RT::Interface::CLI - helper functions for creating a commandline RT interface

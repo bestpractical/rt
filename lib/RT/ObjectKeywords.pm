@@ -5,12 +5,17 @@ package RT::ObjectKeywords;
 use strict;
 use vars qw( @ISA );
 
+=head1 NAME
 
+	RT::ObjectKeywords - note warning
 
 =head1 WARNING
 
 This module should B<NEVER> be called directly by client code. its API is entirely through RT ticket or other objects which can have keywords assigned.
 
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
 
 =begin testing
 

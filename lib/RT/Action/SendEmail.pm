@@ -16,6 +16,7 @@ require RT::Action::Generic;
 
 
 =head1 SYNOPSIS
+
   require RT::Action::SendEmail;
   @ISA  = qw(RT::Action::SendEmail);
 

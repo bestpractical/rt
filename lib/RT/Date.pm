@@ -1,6 +1,7 @@
 #$Header$
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
+
 =head1 NAME
 
   RT::Date - a simple Object Oriented date.

@@ -1,4 +1,5 @@
 #$Header$
+
 =head1 NAME
 
   RT::ScripActions - Collection of Action objects

@@ -1,4 +1,5 @@
 #$Header$
+
 =head1 NAME
 
   RT::Keywords - a collection of RT::Keyword objects

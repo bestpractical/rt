@@ -10,6 +10,7 @@ use RT::Keyword;
 @ISA = qw(RT::Record);
 
 # {{{ POD
+
 =head1 NAME
 
  RT::KeywordSelect - Manipulate an RT::KeywordSelect record

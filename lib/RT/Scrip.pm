@@ -1,4 +1,5 @@
 #$Header$
+
 =head1 NAME
 
   RT::Scrip - an RT Scrip object

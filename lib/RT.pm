@@ -7,6 +7,19 @@ use vars qw($VERSION $SystemUser $Nobody $Handle $Logger);
 
 $VERSION = '!!RT_VERSION!!';
 
+=head1 NAME
+
+	RT - Request Tracker
+
+=head1 SYNOPSIS
+
+	A fully featured request tracker package
+	
+
+=head1 DESCRIPTION
+
+
+=cut
 
 sub Init {
     #Get a database connection

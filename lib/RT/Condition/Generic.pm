@@ -4,7 +4,7 @@
 
 =head1 NAME
 
-  RT::Condition::Generic;
+  RT::Condition::Generic - ;
 
 =head1 SYNOPSIS
 
