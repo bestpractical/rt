@@ -30,7 +30,7 @@ DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
 
-TAG			= rtf-2-snap
+TAG			= rtfm-2-snap
 
 install: install-lib initdb
 
