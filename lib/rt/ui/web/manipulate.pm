@@ -311,7 +311,10 @@ sub takeaction {
       
       if ($rt::ui::web::FORM{'do_req_give'}){
 	($trans, $StatusMsg)=&rt::give($serial_num, $rt::ui::web::FORM{'do_req_give_to'}, $current_user);
-	if (($trans == 0 ) and ($rt::ui::web::FORM{'do_req_give_to'} eq $current_user)) {
+	
+	if (($trans == 0 ) and 
+	    ($rt::ui::web::FORM{'do_req_give_to'} eq $current_user) and 
+            ($rt::req[$serial_num]{'owner'} !~ $current_user) ) {
 	  $rt::ui::web::FORM{'display'} = 'SetSteal';
 	}
 	
