@@ -68,7 +68,9 @@
 %#
 %# and in html:
 %# <& /Widgets/SelectionBox:sow, self => $sel &>
-%# 
+%#
+%# if the SelectionBox is created with AutoSave option, OnSubmit will be called
+%# on every button clicked in non-js mode.
 <%method header>
 % if (0) {
 % # no javascript for now. it's broken in ie
@@ -147,7 +149,7 @@ else {
 
 @{$self->{Current}} = grep { exists $self->{_item_map}{$_} } @{$self->{Current}};
 
-if ($ARGS{$self->{Name}.'-Save'}) {
+if ($self->{AutoSave} or $ARGS{$self->{Name}.'-Save'}) {
     $self->{OnSubmit}->($self);
     delete $self->{Modified};
 }
