@@ -1,7 +1,7 @@
 # $Header$
 # 
 #
-# Request Tracker is Copyright 1997-9 Jesse Vincent <jesse@fsck.com>
+# Request Tracker is Copyright 1997-2000 Jesse Vincent <jesse@fsck.com>
 # RT is distributed under the terms of the GNU Public License
 
 PERL			= 	/usr/bin/perl
