@@ -40,7 +40,7 @@ my $action;
 my $basetopactions = {
 	A => { html => $m->scomp('/Elements/CreateTicket')	
 		},
-	B => { html => $m->scomp('/Elements/GotoTicket') 
+	B => { html => $m->scomp('/Elements/SimpleSearch') 
 		}
 	};
 my $basetabs = {     A => { title => loc('Homepage'),

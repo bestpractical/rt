@@ -426,19 +426,7 @@ sub __Value {
     return('') if ( !defined($value) || $value eq '');
 
     if ( $args{'decode_utf8'} ) {
-        if ( $] >= 5.007003 and eval { require Encode; 1 } ) {
-            return Encode::decode_utf8($value);
-        }
-        elsif ( $] >= 5.006001 ) {
-            return pack( 'U0A*', $value );
-        }
-        elsif ( $] >= 5.006 ) {
-            eval '$value =~ tr/\0-\xFF//CU';    # avoid syntax error
-            return $value;
-        }
-        else {
-            return $value;
-        }
+        return $self->DecodeUTF8($value);
     }
     else {
         return $value;
@@ -453,6 +441,31 @@ sub _CacheConfig {
      'fast_update_p'  => 1,
      'cache_for_sec'  => 30,
   }
+}
+
+=head2 _DecodeUTF8
+
+ When passed a string will "decode" it int a proper UTF-8 string
+
+=cut
+
+sub DecodeUTF8 {
+    my $self = shift;
+    my $value = shift;
+        if ( $] >= 5.007003 and eval { require Encode; 1 } ) {
+            return Encode::decode_utf8($value);
+        }
+        elsif ( $] >= 5.006001 ) {
+            return pack( 'U0A*', $value );
+        }
+        elsif ( $] >= 5.006 ) {
+            eval '$value =~ tr/\0-\xFF//CU';    # avoid syntax error
+            return $value;
+        }
+        else {
+            return $value;
+        }
+
 }
 
 1;

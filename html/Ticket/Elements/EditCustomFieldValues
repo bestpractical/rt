@@ -31,13 +31,13 @@ value="<%$Values->First->Content%>"
 % }       
 >
 % } elsif ($CustomField->Type eq 'FreeformMultiple') {
-<textarea name="<%$Name%>">
-% if ($Values) {
-%while (my $value = $Values->Next ) {
-<%$value->Content%>
-%}
-% }
-</textarea>
+%    my ($content);
+%    if ($Values) {
+%       while (my $value = $Values->Next ) {
+%               $content .= $value->Content;
+%       }
+%   }
+<textarea name="<%$Name%>"><%$content%></textarea>
 % } elsif ($CustomField->Type =~ /^Select/) {
 <select name="<%$Name%>"
         size="5"

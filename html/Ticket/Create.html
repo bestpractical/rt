@@ -87,12 +87,11 @@
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<%$ARGS{Subject} || ''%>">
 </TD>
 </TR>
-% while( my $cf = $CFs->Next() ) {
-<TR><TD ALIGN=LEFT VALIGN="top"><%$cf->Name%>:</TD>
-<TD><% $cf->Description && '<i>'.$cf->Description . '</i><br>'%> <& /Ticket/Elements/EditCustomFieldValues, Name => 'CustomField-'.$cf->Id, CustomField => $cf &>
+<TR>
+<TD COLSPAN=6>
+<& /Ticket/Elements/EditCustomFields, QueueObj => $QueueObj &>
 </TD>
 </TR>
-% }
 <TR>
 % if (exists $session{'Attachments'}) {
 <TD>

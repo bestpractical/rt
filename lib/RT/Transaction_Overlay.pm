@@ -590,9 +590,6 @@ sub BriefDescription {
     elsif ( $type eq 'Subject' ) {
         return $self->loc( "Subject changed to [_1]", $self->Data );
     }
-    elsif ( $type eq 'Told' ) {
-        return $self->loc("User notified");
-    }
 
     elsif ( $type eq 'AddLink' ) {
         return ( $self->Data );

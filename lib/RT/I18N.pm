@@ -248,7 +248,7 @@ sub SetMIMEEntityToEncoding {
 		}
 		else {
 		    $charset = 'utf-8';
-		    $RT::Logger->warn("Cannot Encode::Guess: $decoder; fallback to utf-8");
+		    $RT::Logger->warning("Cannot Encode::Guess: $decoder; fallback to utf-8");
 		}
 	    }
 	    else {
@@ -333,7 +333,7 @@ sub DecodeMIMEWordsToUTF8 {
 	    use MIME::Base64;
 	    $enc_str = decode_base64($enc_str);
 	} else {
-	    $RT::Logger->warn("RT::I18N::DecodeMIMEWordsUTF8 got a " .
+	    $RT::Logger->warning("RT::I18N::DecodeMIMEWordsUTF8 got a " .
 			      "strange encoding: $encoding.");
 	}
 

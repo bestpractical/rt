@@ -46,25 +46,35 @@
       <i><%$CustomField->FriendlyType%></i>
     </td>
     <td class="entry">
-% my $Values = $TicketObj->CustomFieldValues($CustomField->id);
+% my $Values;
+% if ($TicketObj) {
+%          $Values  = $TicketObj->CustomFieldValues($CustomField->id);
+% }
 % if ($CustomField->Type eq 'FreeformSingle') {
-      <input name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Value"
-          value="<%$Values->Count ? $Values->First->Content : ''%>">
+      <input name="<%$NamePrefix%><%$CustomField->Id%>-Value"
+% if ($TicketObj) {
+          value="<%$Values->Count ? $Values->First->Content : ''%>"
+% }
+>
 % } elsif ($CustomField->Type eq 'FreeformMultiple') {
-      <textarea name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
-%while (my $value = $Values->Next ) {
-        <%$value->Content%>
-%}
-      </textarea>
+% my $content;
+% if ($TicketObj) {
+%          while (my $value = $Values->Next ) {
+%                 $content .= $value->Content;
+%           }
+%  }
+<textarea name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$content%></textarea>
 % } elsif ($CustomField->Type =~ /^Select/) {
-      <select name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Values"
+      <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
         size="5"
         <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>>
 % my $CustomFieldValues = $CustomField->Values();
 % my $selected;
 % while (my $value = $CustomFieldValues->Next) {
         <option value="<%$value->Name%>" 
+% if ($TicketObj) {
             <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
+% }
             ><% $value->Name%></option>
 % }
         <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
@@ -79,8 +89,22 @@
 </table>
 
 <%INIT>
-my $CustomFields = $TicketObj->QueueObj->CustomFields();
+my $CustomFields;
+my $NamePrefix;
+
+if ($TicketObj) {
+ $CustomFields = $TicketObj->QueueObj->CustomFields();
+  $NamePrefix = "Ticket-".$TicketObj->Id."-CustomField-";
+
+} else {
+ $CustomFields = $QueueObj->CustomFields();
+  $NamePrefix = "CustomField-";
+}
+
+
+
 </%INIT>
 <%ARGS>
 $TicketObj => undef
+$QueueObj => undef
 </%ARGS>

@@ -1,0 +1,4 @@
+<form action="<% $RT::WebPath %>/index.html">
+<input size="12" name="q" accesskey="0">
+<input type="submit" value="<&|/l&>Search</&>">&nbsp;
+</form>

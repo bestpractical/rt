@@ -244,8 +244,8 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj
     );
   foreach my $arg (%ARGS) {
-        if ($arg =~ /^CustomField-(\d+)$/) {
-                $create_args{$arg} = $ARGS{"$arg"};
+        if ($arg =~ /^CustomField-(\d+)(.*?)$/) {
+                $create_args{"CustomField-".$1} = $ARGS{"$arg"};
         }
     }
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
@@ -845,6 +845,7 @@ sub UpdateRecordObject {
         }
 
             $value =~ s/\r\n/\n/gs;
+        $value = $object->DecodeUTF8($value);
         if ($value ne $object->$attribute()){
 
               my $method = "Set$attribute";
@@ -1064,17 +1065,7 @@ sub ProcessTicketCustomFieldUpdates {
 
                     }
                     while ( my $cf_value = $cf_values->Next ) {
-                        push ( @results,
-                            "Thinking about deleting "
-                              . $cf_value->Id . "-"
-                              . $cf_value->Content
-                              . " for custom field $cf" );
                         unless ( $values_hash{ $cf_value->Content } == 1 ) {
-                            push ( @results,
-                                "Deleting "
-                                  . $cf_value->Id . "-"
-                                  . $cf_value->Content
-                                  . " for custom field $cf" );
                             my ( $val, $msg ) = $Ticket->DeleteCustomFieldValue(
                                 Field => $cf,
                                 Value => $cf_value->Content
@@ -1086,11 +1077,7 @@ sub ProcessTicketCustomFieldUpdates {
                     }
                 }
                 else {
-                    push ( @results,
-"User asked for an unknown update type for custom field "
-                          . $cf->Name
-                          . " for ticket "
-                          . $Ticket->id );
+                    push ( @results, "User asked for an unknown update type for custom field " . $cf->Name . " for ticket " . $Ticket->id );
                 }
             }
         }

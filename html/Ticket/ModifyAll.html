@@ -111,12 +111,12 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
 
-my (@wresults, @results, @okresults, @dresults, @lresults);
+my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-
+ @cf_results = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
@@ -135,7 +135,7 @@ unless ($OnlySearchForPeople) {
 push @results, @wresults;
 push @results, @dresults;
 push @results, @lresults;
-push @results, @okresults;
+push @results, @cf_results;
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.
