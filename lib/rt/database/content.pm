@@ -4,9 +4,23 @@ sub write_content {
     local ($time, $serial_num,$transaction_num,$content) =@_;
      my ($temp,$file);
 
+
+    require rt::support::utils; # for untaint
+
     $serial_num=int($serial_num);
     $transaction_num=int($transaction_num);
     ($weekday, $month, $monthday, $hour, $min, $sec, $TZ, $year)=&parse_time($time);
+	$serial_num = &rt::untaint($serial_num);
+	$transaction_num = &rt::untaint($transaction_num);
+	$weekday= &rt::untaint($weekday);
+	$month= &rt::untaint($month);
+	$monthday = &rt::untaint($monthday);
+	$hour = &rt::untaint($hour);
+	$min = &rt::untaint($min);
+	$sec = &rt::untaint($sec);
+#	$TZ= &rt::untaint($TZ);
+	$year = &rt::untaint($year);
+
     $temp = $<;
     $< = $>; #set real to effective uid
     
@@ -15,18 +29,24 @@ sub write_content {
 	mkdir ("$transaction_dir/$year",0700);
 #	chown $rtusernum, $rtgroupnum, "$transaction_dir/$year";
     }
-    if (! (-d "$transaction_dir/$year/$month"))  {
-	mkdir("$transaction_dir/$year/$month",0700);
+    $month_dir = "$transaction_dir/$year/$month"; 
+
+    if (! (-d "$month_dir"))  {
+	mkdir("$month_dir",0700);
 	#chown $rtusernum, $rtgroupnum, "$transaction_dir/$year/$month";
     }
-    if (! (-d "$transaction_dir/$year/$month/$monthday"))  {
-	mkdir ("$transaction_dir/$year/$month/$monthday", 0700);
+
+    $day_dir = "$month_dir/$monthday";
+  
+
+  if (! (-d "$day_dir"))  {
+	mkdir ("$day_dir", 0700);
 #	chown $rtusernum, $rtgroupnum, "$transaction_dir/$year/$month/$monthday";
     }
     $file="$transaction_dir/$year/$month/$monthday/$serial_num.$transaction_num";
-    $file =~ /^(.*)$/g;            #I hate fucking taint checks
-    $file = $1;                    #especially when there isn't an elegant override
-                                   #and they only appear to work sometimes
+
+
+
     open(CONTENT, ">$file"); 
     print CONTENT "$content";
     close (CONTENT);
