@@ -318,6 +318,20 @@ sub DecodeMIMEWordsToEncoding {
 	    }
 	}
 
+        # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
+        # We _should_ be preserving them encoded until after parsing is completed and
+        # THEN undo the mime-encoding.
+        #
+        # This routine should be translating the existing mimeencoding to utf8 but leaving
+        # things encoded.
+        #
+        # It's legal for headers to contain mime-encoded commas and semicolons which
+        # should not be treated as address separators. (Encoding == quoting here)
+        #
+        # until this is fixed, we must escape any string containing a comma or semicolon
+        # this is only a bandaid
+
+        $enc_str = qq{"$enc_str"} if ($enc_str =~ /[,;]/);                                     
 	$str .= $prefix . $enc_str . $trailing;
     }
 
