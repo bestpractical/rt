@@ -192,10 +192,34 @@ sub Scrips {
 
 # {{{ sub Delete
 
+=head2 Delete
+
+Delete this transaction. Currently DOES NOT CHECK ACLS
+
+=cut
+
 sub Delete {
     my $self = shift;
-    return ( 0,
-        $self->loc('Deleting this object could break referential integrity') );
+
+
+    $RT::Handle->BeginTransaction();
+
+    my $attachments = $self->Attachments;
+
+    while (my $attachment = $attachments->Next) {
+        my ($id, $msg) = $attachment->Delete();
+        unless ($id) {
+            $RT::Handle->Rollback();
+            return($id, $self->loc("System Error: [_1]", $msg));
+        }
+    }
+    my ($id,$msg) = $self->SUPER::Delete();
+        unless ($id) {
+            $RT::Handle->Rollback();
+            return($id, $self->loc("System Error: [_1]", $msg));
+        }
+    $RT::Handle->Commit();
+    return ($id,$msg);
 }
 
 # }}}
