@@ -18,7 +18,7 @@
 
 <TABLE>
 <TD VALIGN=TOP>
-<i><&|/l&>Enter Articles or URIs to link Articles to. Separate multiple entries with spaces.</&></i><br>
+<i><&|/l&>Enter articles, tickets, or other URIs to link this article to.  Articles may be specified as "a:###" and tickets may be specified as "t:###", where ### represents the ID of the article or ticket.  Separate multiple entries with spaces.</&></i><br>
 <i><&|/l&>(Check boxes to delete)</&></i><br>
 <TABLE>
 <TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}%>"><br>
@@ -30,7 +30,9 @@
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
 %     if ($link->TargetURI->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
+%       my $type = ref($member->Object);
+%       $type =~ s/^.*::(\w+)$/$1/;
+<a href="<%$member->Resolver->HREF%>"><% loc($type) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
@@ -54,7 +56,9 @@
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 %     if ($link->BaseURI->IsLocal) {
-<a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
+%       my $type = ref($member->Object);
+%       $type =~ s/^.*::(\w+)$/$1/;
+<a href="<%$member->Resolver->HREF%>"><% loc($type) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
 %       } elsif (UNIVERSAL::can($member->Object, 'Subject')) {

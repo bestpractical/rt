@@ -37,14 +37,12 @@
                         id => $id,
                         %ARGS &>
 
-                        CUSTOM FIELDS
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj, 
                               CFContent => \%CFContent, 
                               ClassObj => $ClassObj, 
                               id =>$id,
                               %ARGS &>
 
-                              DONE
 <& Elements/EditTopics, ArticleObj => $ArticleObj,
                         ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
                         %ARGS &>

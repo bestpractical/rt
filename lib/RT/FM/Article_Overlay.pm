@@ -350,6 +350,13 @@ sub AddLink {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    # Disallow parsing of plain numbers in article links.  If they are
+    # allowed, they default to being tickets instead of articles, which
+    # is counterintuitive.
+    if ($args{'Target'} =~ /^\d+$/) {
+	return ( 0, $self->loc("Cannot add link to plain number") );
+    }
+
     $self->_AddLink(%args);
 }
 

@@ -19,7 +19,7 @@
 % if ($ClassObj->Id) {
 <table>
 <tr>
-<td>Fields in this class:</td>
+<td>Topics in this class:</td>
 <td>
 % }
 

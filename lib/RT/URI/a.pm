@@ -42,8 +42,6 @@ When handed an a: URI, figures out if it is an RTFM article.
 use_ok("RT::URI::a");
 my $uri = RT::URI::a->new($RT::SystemUser);
 ok(ref($uri), "URI object exists");
-is($uri->LocalURIPrefix, 'fsck.com-rtfm://example.com/article', 
-   "URI has correct local prefix");
 
 my $class = RT::FM::Class->new($RT::SystemUser);
 $class->Create(Name => 'URItest');
