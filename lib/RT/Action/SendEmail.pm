@@ -3,6 +3,8 @@
 package RT::Action::SendEmail;
 
 require RT::Action;
+require Mail::Internet;
+
 @ISA = qw(RT::Action);
 
 sub new {
@@ -16,8 +18,7 @@ sub new {
 
 sub _Init {
   my $self = shift;
-  $self->{'Message'} = new Mail::Internet; 
-
+  $self->{'Message'} = Mail::Internet->new; 
 }
 
 sub Commit {
