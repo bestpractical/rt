@@ -90,6 +90,9 @@ For 2.0, those Linking actions should be supported:
  care much about giving the requestor individual follow-up (typically
  "internal" requestors, etc.)
 
+ Based on user feedback, merged tickets will be displayed as the same ticket
+within RT's user interfaces. but the original tickets' transactions will be
+kept seperated in the database. this may require some magic.
  
 4. RefersTo / No Action link (linking)
 
@@ -103,7 +106,9 @@ BASE and TARGET are usually Tickets within one RT instance, but it
 might also point to external RT instances, other DB systems, etc.
 
 
-For 2.1, it should be very easy to set up site-specific link action types.
+
+
+In future revisions, it should be very easy to set up site-specific link action types.
 We should also consider to include more linking actions in the box.
 
 An example stolen from John Rouillard.  Eventually the [comments] should be
@@ -126,8 +131,7 @@ removed, and the text modified to fit the planned 2.0 link actions:
   on 3 has come to the conclusion that outgoing mail is backing up because
   of the DNS failure. She has cleared space by copying the mail queue to
   another disk, but can't really get email working till DNS is up. So she
-  does a tobiaslink [a Dependency link as described above :) --TobiX] to
-  ticket 4 stalling ticket 3.
+  creates a Dependency linkon  ticket 4 stalling ticket 3.
 
   We finally get DNS working and resolve ticket 3. What happens?  Tickets 1
   and 2 are resolved and email is sent to requestors notifying them of the
