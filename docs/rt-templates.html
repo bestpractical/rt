@@ -1,0 +1,235 @@
+<!doctype html public "-//W30//DTD W3 HTML 2.0//EN">
+
+<HTML>
+
+<!-- This file was generated using SDF 2.001 by
+     Ian Clatworthy (ianc@mincom.com). SDF is freely
+     available from http://www.mincom.com/mtr/sdf. -->
+
+<HEAD>
+<TITLE>RT Template Howto</TITLE>
+</HEAD>
+<BODY>
+
+<DIV CLASS="header">
+<DIV CLASS="navigate">
+</DIV>
+</DIV>
+<DIV CLASS="title">
+<H1 CLASS="doc-title">RT Template Howto</H1>
+<ADDRESS CLASS="doc-author">Dale Bewley &lt;dale@bewley.net&gt;</ADDRESS>
+<ADDRESS CLASS="doc-modified">23 February 2000</ADDRESS>
+<BR CLEAR="All">
+</DIV>
+<DIV CLASS="contents">
+<HR>
+<H2>Table of Contents</H2>
+<UL>
+<A HREF="#Introduction">1. Introduction</A>
+<BR>
+<A HREF="#Types of Templates">2. Types of Templates</A>
+<BR>
+<A HREF="#Embedable Tokens">3. Embedable Tokens</A><UL>
+<A HREF="#Token Interpolation">3.1. Token Interpolation</A></UL>
+<BR>
+<A HREF="#Sample Templates">4. Sample Templates</A><UL>
+<A HREF="#Sample give Template">4.1. Sample give Template</A>
+<BR>
+<A HREF="#Sample web_create Template">4.2. Sample web_create Template</A>
+<BR>
+<A HREF="#Sample transaction Template">4.3. Sample transaction Template</A></UL></UL>
+</DIV>
+<DIV CLASS="main">
+<HR>
+<H1><A NAME="Introduction">1. Introduction</A></H1>
+<P>This is a brief doc on how to create templates for use in RT.</P>
+<HR>
+<H1><A NAME="Types of Templates">2. Types of Templates</A></H1>
+<P>Templates are located in rt/etc/templates/queues/&lt;queue_name&gt; The templates available for customization are:</P>
+<UL>
+<LI>autoreply<UL>
+Used to build auto reply email message.</UL>
+<LI>comment<UL>
+Used to build comments entered through any of the UIs.</UL>
+<LI>correspondence<UL>
+Template for all mail sent by requestor / owner / queue members.</UL>
+<LI>error<UL>
+General errors template.</UL>
+<LI>give<UL>
+Used to build email notification which is sent to person assigned ownersip of a ticket.</UL>
+<LI>respond<UL>
+?</UL>
+<LI>steal<UL>
+Used to build email notifications for ex-owners of requests when they are stolen.</UL>
+<LI>transaction<UL>
+Used to build emails if an email is sent for each transaction. (priority change, etc)</UL>
+<LI>web_create<UL>
+Used to build a skeleton ticket in the web UI.</UL></UL>
+<HR>
+<H1><A NAME="Embedable Tokens">3. Embedable Tokens</A></H1>
+<P>Templates support the embedding of &quot;tokens&quot; for dynamically inserting information such as the ticket owners contact info.</P>
+<P>The available tokens are</P>
+<UL>
+<LI>%rtname%<UL>
+?</UL>
+<LI>%rtversion%<UL>
+RT Software version</UL>
+<LI>%actor%<UL>
+RT username and real name. i.e. &quot;'login' (Full Name)&quot;</UL>
+<LI>%owner%<UL>
+Ticket owner</UL>
+<LI>%subject%<UL>
+Ticket subject</UL>
+<LI>%serial_num%<UL>
+Ticket number</UL>
+<LI>%mailalias%<UL>
+Queue email alias</UL>
+<LI>%content%<UL>
+Content of the ticket / transaction</UL>
+<LI>%req:&lt;word&gt;%
+<BR>
+Where &lt;word&gt; can be:<UL><UL>
+<LI>serial_num
+<LI>effective_sn
+<LI>queue_id
+<LI>area
+<LI>alias
+<LI>keywords
+<LI>requestors
+<LI>owner
+<LI>subject
+<LI>initial_priority
+<LI>final_priority
+<LI>priority
+<LI>status
+<LI>time_worked
+<LI>date_created
+<LI>date_told
+<LI>date_acted
+<LI>date_due</UL></UL>
+<LI>%trans:&lt;word&gt;%
+<BR>
+Where &lt;word&gt; can be:<UL><UL>
+<LI>id
+<LI>effective_sn
+<LI>serial_num
+<LI>actor
+<LI>type
+<LI>trans_data
+<LI>trans_date</UL></UL>
+<LI>%queue:&lt;word&gt;%
+<BR>
+Where &lt;word&gt; can be:<UL><UL>
+<LI>queue_id
+<LI>mail_alias
+<LI>comment_alias
+<LI>m_owner_trans
+<BR>
+notify owner on transaction
+<LI>m_members_trans
+<BR>
+notify list members on transaction
+<LI>m_user_trans
+<BR>
+notify requestor on transaction
+<LI>m_user_create
+<BR>
+notify user on creation
+<LI>m_members_corresp
+<BR>
+notify members on creation
+<LI>m_members_comment
+<BR>
+notify members on comment
+<LI>m_user_resolve
+<BR>
+mail user on resolution.  NOT YET IMPLEMENTED
+<LI>allow_user_create
+<BR>
+let nonmembers create
+<LI>default_prio
+<LI>default_final_prio
+<LI>default_due_in</UL></UL></UL>
+<H2><A NAME="Token Interpolation">3.1. Token Interpolation</A></H2>
+<P>The code for interpolating these tokens can be easily hacked and is found in rt/lib/rt/mail.pm. It looks something like this:</P>
+<PRE>
+    $template =~ s/%rtname%/$rtname/g;
+    $template =~ s/%rtversion%/$rtversion/g;
+    $template =~ s/%actor%/\'$in_current_user\' ($rt::$users{$in_current_user}{real_name})/g;
+    $template =~ s/%owner%/$rt::$users{$rt::req[$in_serial_num]{owner}}{real_name} ($rt::$users{$rt::req[$in_serial_num]{owner}}{email})/g;
+    $template =~ s/%subject%/$in_subject/g;
+    $template =~ s/%serial_num%/$in_serial_num/g;
+    $template =~ s/%mailalias%/$mail_alias/g;
+    $template =~ s/%content%/$in_custom_content\n/g;
+    $template =~ s/%req:(\w+)%/$rt::req[$in_serial_num]{$1}/g;
+    $template =~ s/%trans:(\w+)%/$rt::req[$in_serial_num]{'trans'}[$in_id]{$1}/g;
+    $template =~ s/%queue:(\w+)%/$rt::queues{$rt::req[$in_serial_num]{'queue_id'}}{$1}/g;
+</PRE>
+<HR>
+<H1><A NAME="Sample Templates">4. Sample Templates</A></H1>
+<P>The default templates are found in rt/lib/generic_templates/ while normal queue templates are stored in rt/etc/templates/queues/&lt;queue_name&gt;/. I find it useful to put the full path name into the templates while you are tweaking them so it is easier for yourself and others to track down. You probably want to remove that from your templates that will go to requestors once you have your templates solidified.</P>
+<H2><A NAME="Sample give Template">4.1. Sample give Template</A></H2>
+<P>Example of template used to notify a user when a request has been given to them. You'll notice that I have included a link of http://rt.domain.com/ to remind the new owner of where to go to work on the ticket. I suppose it would be pretty crafty to include a direct link to the ticket.</P>
+<PRE>
+Ticket %serial_num% has been given to you by %actor%.
+Now it is YOUR job to get this issue resolved! Do it!!
+
+--
+%actor%
+%mailalias% http://rt.domain.com/
+/usr/local/rt/etc/templates/queues/noc/give
+</PRE>
+<H2><A NAME="Sample web_create Template">4.2. Sample web_create Template</A></H2>
+<P>This template automatically populates the textarea field when you create a web based request. In my installation we pretty much exclusively use the web interface and our tickets are only used inside the company.</P>
+<PRE>
+-=-=-=- For Internal use only - Do not send outside company -=-=-=-
+
+**********************************************************
+-- DESCRIPTION -------------------------------------------
+**********************************************************
+
+
+-- APPLICATIONS AFFECTED ---------------------------------
+
+
+-- CUSTOMER IMPACT ---------------------------------------
+
+
+-- CONTACT INFORMATION -----------------------------------
+%actor%
+Network Operations - 317-555-5555 - noc@domain.com
+
+
+-- UPDATE SECTION -----------------------------------
+
+
+-=-=-=- For Internal use only - Do not send outside company -=-=-=-
+</PRE>
+<H2><A NAME="Sample transaction Template">4.3. Sample transaction Template</A></H2>
+<P>This template will only be used if you choose to notify queue members of transactions.</P>
+<PRE>
+%trans:text_time%: Ticket %serial_num% was acted upon.
+
+  Ticket Num: %serial_num%
+ Transaction: %trans:text%
+
+       Queue: %req:queue_id%
+        Area: %req:area%
+     Subject: %req:subject%
+       Owner: %req:owner%
+  Requestors: %req:requestors%
+      Status: %req:status%
+
+-------------------------------------------------------------------------
+%trans:content%
+-------------------------------------------------------------------------
+/usr/local/rt/etc/templates/queues/noc/transaction
+</PRE>
+</DIV>
+<DIV CLASS="footer">
+<DIV CLASS="navigate">
+</DIV>
+</DIV>
+
+</BODY>
+</HTML>
