@@ -31,6 +31,9 @@ sub CreateOrLoad {
     my $Ticket=RT::Ticket->new($session{'CurrentUser'});
     my %args=@_;
     if ($args{id} eq 'new') { 
+	use RT::Date;
+	my $now = new RT::Date;
+	$now->SetToNow();
 	require MIME::Entity;
 	#TODO in Create_Details.html: priorities and due-date      
 	my ($id, $Trans, $ErrMsg)=
@@ -42,6 +45,7 @@ sub CreateOrLoad {
 			     RequestorEmail=>$args{ARGS}->{Requestors}||undef,
 			     Subject=>$args{ARGS}->{Subject},
 			     Status=>$args{ARGS}->{Status}||'open',
+			     Date => $now->ISO(),
 			     MIMEObj => MIME::Entity->build
 			     ( 
 			       Subject => $args{ARGS}->{Subject},

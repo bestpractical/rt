@@ -3,13 +3,13 @@
 	      <TH valign=middle align=left bgcolor="#336699"> 
 		<font size=-1 color="#ffffff">
 		  <b>
-		    <%$title%>
+		    <%$title |n %>
 		  </b>
 		</font>
 	      </TH>
 	      <TH ALIGN="right" valign=middle bgcolor="#336699">
 		<FONT SIZE=-1>
-		&nbsp;<%$titleright%>
+		&nbsp;<%$titleright |n %>
 		</FONT>
 	      </TH>
 	    </TR>	
