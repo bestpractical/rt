@@ -1,8 +1,12 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
+
 
 # Take a perl tarball and make a specfile for it. Now with bundles.
 #
 # Copyright 2000,2001 Simon Wilkinson. All rights reserved.
+#
+# 10/18/2001 - <jesse@bestpractical.com>
+#		Added resolution of prereq_pm modules
 #
 # This program is free software; you can redistribute it 
 # and/or modify it under the same terms as Perl itself.
@@ -16,15 +20,18 @@ use Sys::Hostname;
 use File::Basename;
 use Getopt::Long;
 
-use vars qw ($ARCH);
+use vars qw ($DEBUG $ARCH $builddir $seen @report);
 
 $ARCH = 'i386';
 
+$DEBUG = 0;
 # Icky globals
 
 my $release;
-my $builddir;
 my $package;
+
+$seen = {};
+
 
 sub usage 
 {
@@ -57,25 +64,24 @@ die "Build directory $builddir doesn't look like an RPM build root\n"
 
 process($package,$release);
 
+print join("",@report)."\n";
+
 sub process {
   my ($infile,$release)=@_;
 
-  # Find out where the user is hiding their RPM build root
-
+  # don't go through dependencies on something we've already dealt with
+  
+  return() if ($seen->{$infile});
+  $seen->{$infile} = 1;
 
   # Convert our installation list into an unbundled one
-  my $objs=unbundle($infile);
+  unbundle($infile);
 
-  print "Building the following modules:\n ", join("\n",@{$objs}),"\n";
+  print "Building $infile\n";
 
-  my $report;
-  my $module;
+    my $status = cpan2rpm($infile,$builddir,$release);
+    push (@report, $status);
 
-  foreach $module (@{$objs}) {
-    $report.=cpan2rpm($module,$builddir,$release);
-  }
-
-  print $report."\n";
 }
 
 # Given a Module, try to split it into its required components - this
@@ -83,23 +89,16 @@ sub process {
 # prereqs as well.
 
 sub unbundle {
-  my ($item,$seen) = @_;
+  my ($item) = @_;
 
-  $seen=[] if !$seen;
-
-
-  push(@{$seen},$item);
 
   if ($item=~/Bundle::/) {
 
     my $obj=CPAN::Shell->expand('Bundle',$item);
 
     foreach my $kid ($obj->contains) {
-
-      # Have we already seen this item?
-      if (!grep {$_ eq $kid} @{$seen}) {
-        $seen=unbundle($kid,$seen);
-      }
+      	# Have we already seen this item?
+     	process($kid,$release) unless $seen->{$kid};
     }
   }
 
@@ -114,7 +113,7 @@ sub cpan2rpm($$$) {
 
   my $obj=CPAN::Shell->expand('Module',$infile);
 
-  print "CPAN tells us the following about $infile:\n",$obj->as_string;
+  print "CPAN tells us the following about $infile:\n",$obj->as_string if ($DEBUG);
 
   $ret=fetch_source($obj,$builddir);
   $ret=build_specfile($obj,$builddir,$release) if !$ret;
@@ -167,14 +166,12 @@ sub fetch_source {
 }
 
 
-sub build_prereqs {
+sub build_prereqs($) {
   my ($prereqs) = @_;
   
   foreach my $prereq (keys %{$prereqs}) {
-	print "Now building prereq: $prereq\n";
-	process ($prereq, '1');
+	process ($prereq, $release);
   }
-
 }
 sub build_specfile($$$) {
   my ($obj,$builddir,$release) = @_;
@@ -238,11 +235,11 @@ EOF
 
   close(SPEC);
 
-  system("rpm -ba $builddir/SPECS/perl-$name.spec") == 0
+  system("rpm -ba $builddir/SPECS/perl-$name.spec >/dev/null") == 0
     or return "RPM of $source failed with : $!\n";
  
   system("rpm -Uvh $builddir/RPMS/$ARCH/perl-$name-\*.$ARCH.rpm") == 0
-    or return "RPM of $source could not be installed: $!\n";
+    or warn "RPM of $source could not be installed: $!\n";
 
   return "Built $name-$version-$release.$ARCH.rpm\n";
 }
