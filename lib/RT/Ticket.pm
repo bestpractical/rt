@@ -50,6 +50,45 @@ sub new {
 
 # }}}
 
+# {{{ sub LoadByAlias
+
+=head2 LoadByAlias
+
+Takes a single argument. Loads the ticket whose alias matches what was passed in.
+
+=cut
+
+sub LoadByAlias {
+    my $self = shift;
+    my $alias = shift;
+   return($self->LoadByCol('Alias', $alias));
+}
+
+# }}}
+
+# {{{ sub LoadByURI
+
+=head2 LoadByURI
+
+Given a local ticket URI, loads the specified ticket.
+
+=cut
+
+sub LoadByURI {
+
+    my $self = shift;
+    my $uri = shift;
+
+   if ($uri =~ /^$RT::TicketBaseURI(\d+)$/) {
+        my $id = $1;
+        return ($self->Load($id));
+    }
+    else {
+        return(undef);
+    }
+}
+
+# }}}
 # {{{ sub Create
 
 =over 10
@@ -1347,7 +1386,7 @@ sub _Links {
     unless (exists $self->{"$field$type"}) {
 	
 	$self->{"$field$type"} = new RT::Links($self->CurrentUser);
-	$self->{"$field$type"}->Limit(FIELD=>$field, VALUE=>$self->id);
+	$self->{"$field$type"}->Limit(FIELD=>$field, VALUE=>$self->URI);
 	$self->{"$field$type"}->Limit(FIELD=>'Type', VALUE=>$type) if ($type);
     }
     return ($self->{"$field$type"});
@@ -1375,9 +1414,15 @@ sub AllLinks {
 
 # {{{ sub URI 
 
+=head2 URI
+
+Returns this ticket's URI
+
+=cut
+
 sub URI {
     my $self = shift;
-    return "fsck.com-rt://$rt::domain/$rt::rtname/ticket/".$self->id;
+    return $RT::TicketBaseURI.$self->id;
 }
 
 # }}}
@@ -1385,7 +1430,6 @@ sub URI {
 # {{{ sub MergeInto
 
 =head2 MergeInto
-
 MergeInto take the id of the ticket to merge this ticket into.
 
 =cut
@@ -1425,7 +1469,7 @@ What the hell does this take for args?
 sub LinkTo {
     my $self = shift;
     my %args = ( dir => 'T',
-		 Base => $self->id,
+		 Base => $self->URI,
 		 Target => '',
 		 Type => '',
 		 @_ );
@@ -1447,7 +1491,7 @@ sub LinkFrom {
     my $self = shift;
     my %args = ( dir => 'F',
 		 Base => '',
-		 Target => $self->id,
+		 Target => $self->URI,
 		 Type => '',
 		 @_);
     $self->_NewLink(%args);
@@ -1475,6 +1519,12 @@ sub _NewLink {
   return (0,"You're linking up yourself, that doesn't make sense",0) 
       if ($args{Base} eq $args{Target});
   # }}}
+ 
+
+
+  # If the base isn't a URI, make it a URI. 
+  # If the target isn't a URI, make it a URI. 
+  
   
   # {{{ Check if the link already exists - we don't want duplicates
   my $Links=RT::Links->new($self->CurrentUser);
@@ -1920,7 +1970,6 @@ sub _Accessible {
 
 # {{{ sub _Set
 
-#This subclasses rt::record
 sub _Set {
   my $self = shift;
   

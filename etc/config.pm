@@ -12,6 +12,12 @@ package RT;
 
 $rtname="YOU_HAVE_NOT_SET_rtname";  
 
+# You should set this to your organization's DNS domain. For example,
+# fsck.com or asylum.arkham.ma.us. It's used by the linking interface to 
+# guarantee that ticket URIs are unique and easy to construct.
+
+$Organization = "example.com";
+
 # $user_passwd_min defines the minimum length for user passwords. Setting
 # it to 0 disables this check
 $user_passwd_min = "5";
@@ -272,6 +278,11 @@ $LocalePath = "!!LOCALE_PATH!!";
 
 # {{{ RT Linking Interface
 
+
+# Base path of the URI for local tickets
+$TicketBaseURI = "fsck.com-rt://$Organization/$rtname/ticket/";
+
+
 # A hash table of conversion subs to be used for transforming RT Link
 # URIs to URLs in the web interface.  If you want to use RT towards
 # locally installed databases, this is the right place to configure it.
@@ -290,9 +301,6 @@ $LocalePath = "!!LOCALE_PATH!!";
      'mozilla.org-bugzilla' => sub {warn "stub!"},
      'fsck.com-kb' => sub {warn "stub!"}
      );
-
-# If you want to use those, ask at rt-devel or to tobix@fsck.com for
-# advices.
 
 # }}}
 

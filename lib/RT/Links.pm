@@ -20,7 +20,16 @@ sub _Init   {
 sub Limit  {
   my $self = shift;
 my %args = ( ENTRYAGGREGATOR => 'AND',
+             OPERATOR => '=',
              @_);
+
+  #if someone's trying to search for tickets, try to resolve the uris for searching.
+
+  if (  ( $args{'OPERATOR'} eq '=') and
+        ( $args{'FIELD'}  eq 'Base') or ($args{'FIELD'} eq 'Target')
+     ) {
+   my $dummy = $self->NewItem;
+   $uri = $dummy->CanonicalizeURI($args{'VALUE'})
 
   $self->SUPER::Limit(%args);
 }
@@ -29,7 +38,6 @@ my %args = ( ENTRYAGGREGATOR => 'AND',
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $Handle = shift;
   my $item;
 
   use RT::Link;

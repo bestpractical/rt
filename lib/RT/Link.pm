@@ -30,10 +30,27 @@ sub Create  {
 	      Type => undef,
 	      @_ # get the real argumentlist
 	     );
-  
-  
+ 
+  my $BaseURI = $self->CanonicalizeURI($args{'Base'});
+  my $TargetURI = $self->CanonicalizeURI($args{'Target'});
 
-  my $id = $self->SUPER::Create(%args);
+ 
+    
+  unless (defined $BaseURI) {
+     $RT::Logger->warning ("$self couldn't resolve base:'".$args{'Base'}."' into a URI\n");
+       return (undef);
+   }
+  unless (defined $TargetURI) {
+     $RT::Logger->warning ("$self couldn't resolve target:'".$args{'Target'}."' into a URI\n");
+     return(undef);
+   }
+    
+ 
+ my $id = $self->SUPER::Create(Base => "$BaseURI",
+                               Target => "$TargetURI",
+                               Type => $args{'Type'});
+  
+  #TODO +++ deal with a failed create 
   $self->Load($id);
   
   #TODO: this is horrificially wasteful. we shouldn't commit 
@@ -48,8 +65,8 @@ sub Load  {
   my $self = shift;
   my $identifier = shift;
   
-  if ($identifier !~ /\D/) {
-    $self->SUPER::LoadById($identifier);
+  if ($identifier =~ /^\d+$/) {
+    $self->LoadById($identifier);
   }
   else {
 	return (0, "That's not a numerical id");
@@ -81,12 +98,12 @@ sub _TicketObj {
   my $tag="$name\_obj";
   
   unless (exists $self->{$tag}) {
-    if ($self->_IsLocal($ref)) {
-      $self->{$tag}=RT::Ticket->new($self->CurrentUser);
+
+  $self->{$tag}=RT::Ticket->new($self->CurrentUser);
+
+  #If we can get an actual ticket, load it up.
+  if ($self->_IsLocal($ref)) {
       $self->{$tag}->Load($ref);
-    }
-    else {
-      $self->{$tag} = undef;
     }
   }
   return $self->{$tag};
@@ -104,15 +121,6 @@ sub _Accessible  {
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
-# }}}
-
-
-# {{{ sub DisplayPermitted
-sub DisplayPermitted {
-    # TODO: stub!
-    return 1;
-}
-
 # }}}
 
 
@@ -141,12 +149,16 @@ sub _IsLocal {
   my $self = shift;
   my $URI=shift;
   unless ($URI) {
-      carp "_IsLocal used without an URI";
-      return 0;
+      $RT::Logger->warning ("$self _IsLocal called without a URI\n");
+      return (undef);
   }
   # TODO: More thorough check
-  $URI =~ /^(\d+)$/;
-  return $1;
+  if ($URI =~ /^$RT::TicketBaseURI(\d+)$/) {
+    return (1);
+   }
+   else {
+    return (undef);
+   }
 }
 # }}}
 
@@ -204,5 +216,61 @@ sub GetContent {
 }
 # }}}
 
+# {{{ sub CanonicalizeURI
+
+=head2 CanonicalizeURI
+
+Takes a single argument: some form of ticket identifier. 
+Returns its canonicalized URI.
+
+Bug: ticket aliases can't have :// in them. URIs must have :// in them.
+=cut
+
+sub  CanonicalizeURI {
+ my $self = shift;
+ my $id = shift;
+
+
+  #If it's a local URI, load the ticket object and return its URI
+  if ($id =~ /^$RT::TicketBaseURI/)  {
+    my $ticket = new RT::Ticket($self->CurrentUser);
+    $ticket->LoadByURI($id);
+    #If we couldn't find a ticket, return undef.
+    return undef unless (defined $ticket->Id);
+    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)");
+    return ($ticket->URI);
+  }
+  #If it's a remote URI, we're going to punt for now
+  elsif ($id =~ |://| ) {
+    return ($id);
+   }
+  
+  #If the base is an integer, load it as a ticket 
+ elsif ( $id =~ /^\d+$/ ) {
+   
+    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id. It's a ticket id.\n");
+    my $ticket = new RT::Ticket($self->CurrentUser);
+    $ticket->Load($id);
+    #If we couldn't find a ticket, return undef.
+    return undef unless (defined $ticket->Id);
+    $RT::Logger->debug("$self returned ".$ticket->URI ." (id #)");
+    return ($ticket->URI);
+  }
+
+  #It's not a URI. It's not a numerical ticket ID. It must be an alias
+  else { 
+    my $ticket = new RT::Ticket($self->CurrentUser);
+    $ticket->LoadByAlias($id);
+    #If we couldn't find a ticket, return undef.
+    return undef unless (defined $ticket->Id);
+    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)");
+    return ($ticket->URI);
+    return($ticket->URI);
+  }
+
+ 
+}
+
+# }}}
 1;
  
