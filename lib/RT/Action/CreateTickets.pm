@@ -441,6 +441,7 @@ sub UpdateByTemplate {
     # XXX: cargo cult programming that works. i'll be back.
     use bytes;
 
+    my @results;
     %T::Tickets = ();
 
     my $ticketargs;
@@ -475,22 +476,31 @@ sub UpdateByTemplate {
 
 	my $msg;
 	if (!$T::Tickets{$template_id}->Id) {
-	    if ($self->TicketObj) {
-		$msg = "Couldn't create related ticket $template_id for ".
-		    $self->TicketObj->Id ." ".$msg;
-	    } else {
-		$msg = "Couldn't create ticket $template_id " . $msg;
-	    }
+	    $msg = "Couldn't update ticket $template_id " . $msg;
 
 	    $RT::Logger->error($msg);
 	    next;
 	}
 
-	my (@results) =
+	my $current = $self->GetBaseTemplate($T::Tickets{$template_id});
+
+	$template_id =~ m/^update-(.*)/;
+	my $base_id = "base-$1";
+	my $base = $self->{'templates'}->{$base_id};
+	$base =~ s/\r//g;
+	$base =~ s/\n+$//;
+	$current =~ s/\n+$//;
+
+	if ($base ne $current) {
+	    push @results, "Could not update ticket " . $T::Tickets{$template_id}->Id . ": Ticket has changed";
+	    next;
+	} 
+
+	push @results,
 	    $T::Tickets{$template_id}->Update(AttributesRef => \@attribs,
 					      ARGSRef => $ticketargs);
 
-	next unless $ticketargs->{'UpdateType'};
+	next unless exists $ticketargs->{'UpdateType'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|public)$/ ) {
             my ( $Transaction, $Description, $Object ) = $T::Tickets{$template_id}->Comment(
                 CcMessageTo  => $ticketargs->{'Cc'},
@@ -498,7 +508,8 @@ sub UpdateByTemplate {
                 MIMEObj      => $ticketargs->{'MIMEObj'},
                 TimeTaken    => $ticketargs->{'TimeWorked'}
             );
-            push ( @results, $Description );
+            push ( @results, 
+		   $T::Tickets{$template_id}->loc("Ticket [_1]", $T::Tickets{$template_id}->id) . ': ' . $Description );
         }
         elsif ( $ticketargs->{'UpdateType'} eq 'response' ) {
             my ( $Transaction, $Description, $Object ) = $T::Tickets{$template_id}->Correspond(
@@ -507,7 +518,8 @@ sub UpdateByTemplate {
                 MIMEObj      => $ticketargs->{'MIMEObj'},
                 TimeTaken    => $ticketargs->{'TimeWorked'}
             );
-            push ( @results, $Description );
+            push ( @results,
+		   $T::Tickets{$template_id}->loc("Ticket [_1]", $T::Tickets{$template_id}->id) . ': ' . $Description );
         }
         else {
             push ( @results,
@@ -560,6 +572,7 @@ sub UpdateByTemplate {
 
 	$ticket->SetStatus($args{Status}) if defined $args{Status};
     }
+    return @results;
 }
 
 sub Parse {
@@ -569,12 +582,20 @@ sub Parse {
     my @template_order;
     my $template_id;
     foreach my $line (split(/\n/, $content)) {
-        if ($line =~ /^===Create-Ticket: (.*)$/) {
+	if ($line =~ /^===Create-Ticket: (.*)$/) {
 	    $template_id = "create-$1";
+	    $RT::Logger->debug("****  Create ticket: $template_id");
 	    push @{$self->{'create_tickets'}},$template_id;
         } elsif ($line =~ /^===Update-Ticket: (.*)$/) {
 	    $template_id = "update-$1";
+	    $RT::Logger->debug("****  Update ticket: $template_id");
 	    push @{$self->{'update_tickets'}},$template_id;
+        } elsif ($line =~ /^===Base-Ticket: (.*)$/) {
+	    $template_id = "base-$1";
+	    $RT::Logger->debug("****  Base ticket: $template_id");
+	    push @{$self->{'base_tickets'}},$template_id;
+	} elsif ($line =~ /^===#.*$/) { # a comment
+	    next;
         } else {
 	    $self->{'templates'}->{$template_id} .= $line."\n";
         }
@@ -658,11 +679,7 @@ sub ParseLines {
 	if $self->TicketObj;
 
     $args{'type'} ||= 'ticket';
-	
-    my $mimeobj = MIME::Entity->new();
-    $mimeobj->build(Type => $args{'contenttype'},
-		    Data => $args{'content'});
-    
+
     my %ticketargs = ( Queue => $args{'queue'},
 		       Subject=> $args{'subject'},
 		       Status => 'new',
@@ -680,9 +697,20 @@ sub ParseLines {
 		       InitialPriority => $args{'initialpriority'},
 		       FinalPriority => $args{'finalpriority'},
 		       Type => $args{'type'}, 
-		       UpdateType => $args{'updatetype'}, 
-		       MIMEObj => $mimeobj);
+		       );
 
+    my $content = $args{'content'};
+    $content =~ s/\s//g;
+    $content =~ s/\S//g;
+    $content =~ s/\r//g;
+    if ($content) {
+	my $mimeobj = MIME::Entity->new();
+	$mimeobj->build(Type => $args{'contenttype'},
+			Data => $args{'content'});
+	$ticketargs{MIMEObj} = $mimeobj;
+	$ticketargs{UpdateType} = $args{'updatetype'}, 
+    }
+    
     foreach my $key (keys(%args)) {
 	$key =~ /^customfield(\d+)$/ or next;
 	$ticketargs{ "CustomField-" . $1 } = $args{$key};
@@ -718,6 +746,86 @@ sub GetDeferred {
 			  Status => $args->{'status'},
 		      }
 		      );
+}
+
+sub GetUpdateTemplate {
+    my $self = shift;
+    my $t = shift;
+
+    my $string;
+    $string .= "Queue: " . $t->QueueObj->Name . "\n";
+    $string .= "Subject: " . $t->Subject . "\n";
+    $string .= "Status: " . $t->Status . "\n";
+    $string .= "UpdateType: response\n";
+    $string .= "Content: \n";
+    $string .= "ENDOFCONTENT\n";
+    $string .= "Due: " . $t->DueObj->AsString . "\n";
+    $string .= "Starts: " . $t->StartsObj->AsString . "\n";
+    $string .= "Started: " . $t->StartedObj->AsString . "\n";
+    $string .= "Resolved: " . $t->ResolvedObj->AsString . "\n";
+    $string .= "Owner: " . $t->OwnerObj->Name . "\n";
+    $string .= "Requestor: " . $t->RequestorAddresses . "\n";
+    $string .= "Cc: " . $t->CcAddresses . "\n";
+    $string .= "AdminCc: " . $t->AdminCcAddresses . "\n";
+    $string .= "TimeWorked: " . $t->TimeWorked . "\n";
+    $string .= "TimeEstimated: " . $t->TimeEstimated . "\n";
+    $string .= "TimeLeft: " . $t->TimeLeft . "\n";
+    $string .= "InitialPriority: " . $t->Priority . "\n";
+    $string .= "FinalPriority: " . $t->FinalPriority . "\n";
+
+    return $string;
+}
+
+sub GetBaseTemplate {
+    my $self = shift;
+    my $t = shift;
+
+    my $string;
+    $string .= "Queue: " . $t->Queue . "\n";
+    $string .= "Subject: " . $t->Subject . "\n";
+    $string .= "Status: " . $t->Status . "\n";
+    $string .= "Due: " . $t->DueObj->Unix . "\n";
+    $string .= "Starts: " . $t->StartsObj->Unix . "\n";
+    $string .= "Started: " . $t->StartedObj->Unix . "\n";
+    $string .= "Resolved: " . $t->ResolvedObj->Unix . "\n";
+    $string .= "Owner: " . $t->Owner . "\n";
+    $string .= "Requestor: " . $t->RequestorAddresses . "\n";
+    $string .= "Cc: " . $t->CcAddresses . "\n";
+    $string .= "AdminCc: " . $t->AdminCcAddresses . "\n";
+    $string .= "TimeWorked: " . $t->TimeWorked . "\n";
+    $string .= "TimeEstimated: " . $t->TimeEstimated . "\n";
+    $string .= "TimeLeft: " . $t->TimeLeft . "\n";
+    $string .= "InitialPriority: " . $t->Priority . "\n";
+    $string .= "FinalPriority: " . $t->FinalPriority . "\n";
+
+    return $string;
+}
+
+sub GetCreateTemplate {
+    my $self = shift;
+
+    my $string;
+
+    $string .= "Queue: General\n";
+    $string .= "Subject: \n";
+    $string .= "Status: new\n";
+    $string .= "Content: \n";
+    $string .= "ENDOFCONTENT\n";
+    $string .= "Due: \n";
+    $string .= "Starts: \n";
+    $string .= "Started: \n";
+    $string .= "Resolved: \n";
+    $string .= "Owner: \n";
+    $string .= "Requestor: \n";
+    $string .= "Cc: \n";
+    $string .= "AdminCc:\n"; 
+    $string .= "TimeWorked: \n";
+    $string .= "TimeEstimated: \n";
+    $string .= "TimeLeft: \n";
+    $string .= "InitialPriority: \n";
+    $string .= "FinalPriority: \n";
+
+    return $string;
 }
 
 eval "require RT::Action::CreateTickets_Vendor";
