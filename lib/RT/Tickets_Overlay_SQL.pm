@@ -129,14 +129,9 @@ use constant AGGREG => 2;
 use constant OP => 4;
 use constant PAREN => 8;
 use constant KEYWORD => 16;
-use constant SELECT => 32;
-use constant WHERE => 64;
-use constant COLUMN => 128;
-my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD SELECT WHERE COLUMN];
+my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD];
 
 my $re_aggreg = qr[(?i:AND|OR)];
-my $re_select = qr[(?i:SELECT)];
-my $re_where = qr[(?i:WHERE)];
 my $re_value  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
 my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
 my $re_op     = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
@@ -176,7 +171,7 @@ sub _close_bundle
 
 sub _parser {
   my ($self,$string) = @_;
-  my $want = SELECT | KEYWORD | PAREN;
+  my $want = KEYWORD | PAREN;
   my $last = undef;
 
   my $depth = 0;
@@ -193,9 +188,7 @@ sub _parser {
 
 
   while ($string =~ /(
-                      $re_select
-                      |$re_where
-                      |$re_aggreg
+                      $re_aggreg
                       |$re_op
                       |$re_keyword
                       |$re_value
@@ -210,9 +203,6 @@ sub _parser {
     $current = KEYWORD if _match($re_keyword,$val) && ($want & KEYWORD);
     $current = AGGREG  if _match($re_aggreg,$val);
     $current = PAREN   if _match($re_paren,$val);
-    $current = COLUMN if _match($re_keyword,$val) && ($want & COLUMN);
-    $current = WHERE if _match($re_where,$val) && ($want & WHERE);
-    $current = SELECT if _match($re_select,$val);
 
 
     unless ($current && $want & $current) {
@@ -240,26 +230,7 @@ sub _parser {
 
       $want = KEYWORD | PAREN | AGGREG;
     }
-    elsif ($current & SELECT ) {
-        $want = COLUMN | WHERE;
-    }
 
-    elsif ($current & COLUMN ) {
-      if ($val =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
-        substr($val,0,1) = "";
-        substr($val,-1,1) = "";
-      }
-      # Unescape escaped characters
-      $val =~ s!\\(.)!$1!g;     
-        $self->_DisplayColumn($val);
-
-        $want = COLUMN | WHERE;
-
-    } 
-    elsif ($current & WHERE ) {
-        $want = KEYWORD | PAREN;
-
-    }
     elsif ( $current & AGGREG ) {
       $ea = $val;
       $want = KEYWORD | PAREN;
@@ -405,56 +376,14 @@ failure.
 
 use RT::Tickets;
 
-my $query = "SELECT id WHERE Status = 'open'";
+
 
 my $tix = RT::Tickets->new($RT::SystemUser);
 
+my $query = "Status = 'open'";
 my ($id, $msg)  = $tix->FromSQL($query);
 
 ok ($id, $msg);
-
-my @cols =  $tix->DisplayColumns;
-
-ok ($cols[0]->{'attribute'} == 'id', "We're  displaying the ticket id");
-ok ($cols[1] == undef, "We're  displaying the ticket id");
-
-
-my $query = "SELECT id, Status WHERE Status = 'open'";
-
-my $tix = RT::Tickets->new($RT::SystemUser);
-
-my ($id, $msg)  = $tix->FromSQL($query);
-
-ok ($id, $msg);
-
-my @cols =  $tix->DisplayColumns;
-
-ok ($cols[0]->{'attribute'} == 'id', "We're only displaying the ticket id");
-ok ($cols[1]->{'attribute'} == 'Status', "We're only displaying the ticket id");
-
-my $query = qq[SELECT id, Status, '<A href="/Ticket/Display.html?id=##id##">Subject, this: ##Subject##</a>' WHERE Status = 'open'];
-
-my $tix = RT::Tickets->new($RT::SystemUser);
-
-my ($id, $msg)  = $tix->FromSQL($query);
-
-ok ($id, $msg);
-
-my @cols =  $tix->DisplayColumns;
-
-ok ($cols[0]->{'attribute'} == 'id', "We're only displaying the ticket id");
-ok ($cols[1]->{'attribute'} == 'Status', "We're only displaying the ticket id");
-
-
-
-$query = "Status = 'open'";
-my ($id, $msg)  = $tix->FromSQL($query);
-
-ok ($id, $msg);
-
-my @cols =  $tix->DisplayColumns;
-
-ok ($cols[0] == undef, "We haven't explicitly asked to display anything");
 
 
 my (@ids, @expectedids);
@@ -566,22 +495,6 @@ sub FromSQL {
 
 Returns the query that this object was initialized with
 
-=begin testing
-
-my $query = "SELECT id, Status WHERE Status = 'open'";
-
-my $tix = RT::Tickets->new($RT::SystemUser);
-
-my ($id, $msg)  = $tix->FromSQL($query);
-
-ok ($id, $msg);
-
-my $newq = $tix->Query();
-
-is ($query, $newq);
-
-=end testing
-
 =cut
 
 sub Query {
@@ -589,71 +502,6 @@ sub Query {
     return ($self->{_sql_query}); 
 }
 
-
-=head2 _DisplayColumn COL
-
-Add COL to this search's list of "Columns to display"
-
-COL can either be a
-
-LiteralColumnName
-"QuotedString" (Containing ##LiteralColumnName## to embed the colum name inside it)
-
-What else?
-
-
-
-=cut
-
-sub _DisplayColumn {
-    my $self = shift;
-    my $col  = shift;
-
-    my $colref;
-    if ( $col =~ s/\/STYLE:(.*?)$//io ) {
-        $colref->{'style'} = $1;
-    }
-    if ( $col =~ s/\/CLASS:(.*?)$//io ) {
-        $colref->{'class'} = $1;
-    }
-    if ( $col =~ s/\/TITLE:(.*?)$//io ) {
-        $colref->{'title'} = $1;
-    }
-    if ( $col =~ /__(.*?)__/gio ) {
-        my @subcols;
-        while ( $col =~ s/^(.*?)__(.*?)__//o ) {
-            push ( @subcols, $1 ) if ($1);
-            push ( @subcols, "__$2__" );
-            $colref->{'attribute'} = $2;
-        }
-        push ( @subcols, $col );
-        @{ $colref->{'output'} } = @subcols;
-    }
-    else {
-        @{ $colref->{'output'} } = ( "__" . $col . "__" );
-        $colref->{'attribute'} = $col;
-    }
-
-    if ( !$colref->{'title'} && grep { /^__(.*?)__$/io }
-        @{ $colref->{'output'} } )
-    {
-        $colref->{'title'}     = $1;
-        $colref->{'attribute'} = $1;
-    }
-    push @{ $self->{'_sql_columns_to_display'} }, $colref;
-
-}
-
-=head2 DisplayColumns 
-
-Returns an array of the columns to show in the printed results of this object
-
-=cut
-
-sub DisplayColumns {
-    my $self = shift;
-    return (@{$self->{'_sql_columns_to_display'}});
-}
 
 
 1;
