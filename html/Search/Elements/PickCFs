@@ -43,10 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-% use Data::Dumper;
-<pre>
-<%Dumper($CustomFields)%>
-</pre>
 % while ( my $CustomField = $CustomFields->Next ) {
 % my $name = "'CF.{" . $CustomField->Name . "}'";
 <tr><td class="label">
