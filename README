@@ -160,6 +160,8 @@ Add the following line to /etc/aliases (or your local equivalent) :
 		  recording the message as a transaction
 		  of its own"
 
+WARNING: as currently written, any mail from postmaster or mailer-daemon        will be silently discarded.  Some users of RT actually want that mail, and      hand-edit line 288 of lib/rt/ui/mail/manipulate.pm accordingly.  Be careful,    because after that "if" is an "elseif" that you probably want to keep.          
+
 The RT Mail Gateway can be used to perform actions on requests.
 For an explanation of how to use the Mail Gateway, send a message to
 any RT alias with the command %RT HELP on a line by itself.     
