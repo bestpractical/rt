@@ -125,8 +125,9 @@ sub help {
         my $title = $item->[2]{Title};
         my @titles = ref $title eq 'ARRAY' ? @$title : $title;
 
-        foreach $title (grep $_, @titles) {
-            $help{$title} = $item->[2]{Text};
+            foreach $title (grep $_, @titles) {
+                $help{$title} = $item->[2]{Text};
+            }
         }
     }
 
@@ -218,7 +219,7 @@ sub list {
     }
     return help("list", $type) if $bad;
 
-    my $r = submit("$REST/search/$type", { query => $q, %data, orderby => $orderby || "" });
+    my $r = submit("$REST/search/$type", { query => $q, %data, orderby => $data{orderby} || "" });
     print $r->content;
 }
 
@@ -828,7 +829,7 @@ sub submit {
     sub cookie {
         my ($self) = @_;
         my $cookie = $self->{sids}{$s}{$u};
-        return defined $cookie ? "RT_SID=$cookie" : undef;
+        return defined $cookie ? "RT_SID_$cookie" : undef;
     }
 
     # Deletes the current session cookie.
@@ -851,7 +852,7 @@ sub submit {
         my ($self, $response) = @_;
         my $cookie = $response->header("Set-Cookie");
 
-        if (defined $cookie && $cookie =~ /^RT_SID=([0-9A-Fa-f]+);/) {
+        if (defined $cookie && $cookie =~ /^RT_SID_(.[^;,\s]+=[0-9A-Fa-f]+);/) {
             $self->{sids}{$s}{$u} = $1;
         }
     }
@@ -868,7 +869,7 @@ sub submit {
             while (<F>) {
                 chomp;
                 next if /^$/ || /^#/;
-                next unless m#^https?://[^ ]+ \w+ [0-9A-Fa-f]+$#;
+                next unless m#^https?://[^ ]+ \w+ [^;,\s]+=[0-9A-Fa-f]+$#;
                 my ($server, $user, $cookie) = split / /, $_;
                 $sids->{$server}{$user} = $cookie;
             }
