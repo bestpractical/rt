@@ -1,5 +1,5 @@
 %#$Header: /raid/cvsroot/rt/webrt/Search/TicketCell,v 1.2 2001/11/06 23:07:01 jesse Exp $
-<% $link |n%><%$Column->{Constant} || eval("\$Ticket->$Column->{TicketAttribute}") || "-" %><% $endlink|n %>
+<% $link |n%><% $columnconstant || eval("\$Ticket->$Column->{TicketAttribute}") || "-" %><% $endlink|n %>
 <%INIT>
 
 my $link = "";
@@ -21,6 +21,8 @@ if ($Column->{TicketLink}) {
 	$link .= "\">";
 	$endlink = "</a>";
 }
+my $columnconstant = ($Column->{Constant}) ? loc($Column->{Constant}) : undef;
+
 </%INIT>
 <%ARGS>
 $Ticket => undef

@@ -67,6 +67,10 @@ msgstr "Nov"
 msgid "Oct."
 msgstr "Oct"
 
+#: html/Ticket/Elements/Tabs
+msgid "Open it"
+msgstr "Open"
+
 #: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
 msgid "Residence"
 msgstr "Home"
@@ -74,4 +78,3 @@ msgstr "Home"
 #: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Sep."
 msgstr "Sep"
-

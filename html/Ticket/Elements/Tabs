@@ -80,7 +80,7 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 	$actions->{'Open'} = 
 	  { 
 	   path => "Ticket/Display.html?Status=open&id=". $id,
-	   title => loc('Open')
+	   title => loc('Open it')
 	  };
     }
 }

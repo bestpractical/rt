@@ -13,7 +13,7 @@
 % my $colalias = $col;
 % $colalias =~ s/(Obj\-\>|)(Name|AsString)//;
 
-<TH ><% $colalias %>&nbsp;</TH>
+<TH><% loc($colalias) %>&nbsp;</TH>
 %}
 </TR>
 
@@ -62,7 +62,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <TD VALIGN=TOP>
 <UL>
 <li><&|/l&>Make Owner</&> <& /Elements/SelectOwner, Name => "Owner" &>
-(<input type=checkbox name="ForceOwnerChange"> Force change)
+(<input type=checkbox name="ForceOwnerChange"> <&|/l&>Force change</&>)
 <li> <&|/l&>Add Requestor</&> <INPUT Name="AddRequestor" SIZE=20>
 <li> <&|/l&>Remove Requestor</&> <INPUT Name="DeleteRequestor" SIZE=20>
 <li> <&|/l&>Add Cc</&> <INPUT Name="AddCc" SIZE=20>

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 2.1.10\n"
 "POT-Creation-Date: 2002-05-22 11:20+0200\n"
-"PO-Revision-Date: 2002-05-28 18:00+0200\n"
+"PO-Revision-Date: 2002-05-30 01:37+0200\n"
 "Last-Translator: Florian Bischof <flo@fxb.de>\n"
 "Language-Team: RT German <rt@lambda-bb.de>\n"
 "MIME-Version: 1.0\n"
@@ -821,6 +821,10 @@ msgstr "Dezember"
 msgid "Delete"
 msgstr "Löschen"
 
+#: html/Search/Listing.html
+msgid "delete"
+msgstr "löschen"
+
 #: lib/RT/Transaction_Overlay.pm
 msgid "Deleting this object could break referential integrity"
 msgstr "Löschen dieses Objektes kann die referenzielle Integrität gefährden"
@@ -1052,6 +1056,10 @@ msgstr "Foo Bar Baz"
 #: docs/design_docs/string-extraction-guide.txt
 msgid "Foo!"
 msgstr "Foo!"
+
+#: html/Search/Bulk.html
+msgid "Force change"
+msgstr "erzwinge Änderung"
 
 #: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "FreeformContactInfo"
@@ -1745,8 +1753,12 @@ msgstr "Oktober"
 msgid "On"
 msgstr "am"
 
-#: html/Elements/Quicksearch html/Ticket/Elements/Tabs
+#: html/Elements/Quicksearch
 msgid "Open"
+msgstr "Offen"
+
+#: html/Ticket/Elements/Tabs
+msgid "Open it"
 msgstr "Öffnen"
 
 #: html/SelfService/Elements/Tabs
@@ -2048,6 +2060,10 @@ msgstr "Klient"
 #: html/Search/PickRestriction
 msgid "Requestor email address"
 msgstr "Klienten-E-Mail-Adresse"
+
+#: html/Search/Bulk.html
+msgid "RequestorAddresses"
+msgstr "Klienten-Adressen"
 
 #:
 msgid "Requestor(s)"
@@ -2741,12 +2757,9 @@ msgstr "PLZ"
 msgid "[no subject]"
 msgstr "[kein Betreff]"
 
-# Das ganze Datums-Zeugs muss eigentlich in eine eigene Funktion.
-# "23 Stunden vor" ist keine sehr gute Übersetzung für "23 hours ago".
-# Solange schenken wir uns das "ago" komplett...
 #: lib/RT/Date.pm
-msgid "ago"
-msgstr " "
+msgid "%1 %2 ago"
+msgstr "vor %1 %2"
 
 #: html/Elements/SelectMatch
 msgid "contains"

@@ -26,7 +26,7 @@
 
 <TR>
 <TD>
-<a href="Display.html?id=<%$Ticket->id%>&Action=SetTold">Last Contact</a>:
+<a href="Display.html?id=<%$Ticket->id%>&Action=SetTold"><&|/l&>Last Contact</&></a>:
 </TD>
 <TD>
 <% $Ticket->ToldObj->AsString %>
