@@ -9,6 +9,7 @@ package WebAuth;
 require rt::database;
 use CGI::Cookie;
 &rt::connectdb();
+$debug =1;
 
 sub AuthCheck () {
     my ($AuthRealm) = @_;
@@ -48,7 +49,7 @@ if ($rt::program =~ /nph-/) {
 
     if  ( ( length($rt::ui::web::FORM{'username'}) ) and 
 	  ( length($rt::ui::web::FORM{'password'}) >= $rt::user_passwd_min) ) {
-
+	print STDERR "We've done FORMbased auth. now we're setting cookies\n" if $debug;
 #if we have a $path to play with...
 #not doing this breaks netscape
     if ($path ne '') { 
@@ -83,7 +84,9 @@ else {
       print "Set-Cookie: $set_user\n";   
 
 
-      
+      print STDERR "Set-Cookie: $set_password\n" if $debug;
+      print STDERR  "Set-Cookie: $set_user\n" if $debug;
+ 
       return( $rt::ui::web::FORM{'username'}, $hash);
     }
     
