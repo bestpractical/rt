@@ -265,11 +265,10 @@ Return a CustomFieldeValues object of all acceptable values for this Custom Fiel
 sub Values {
     my $self = shift;
 
-    unless ($self->CurrentUserHasRight('SeeQueue')) {
-        return (0, $self->loc('Permission Denied'));
-    }
     my $cf_values = RT::CustomFieldValues->new($self->CurrentUser);
-    $cf_values->LimitToCustomField($self->Id);
+    if ( $self->__Value('Queue') == 0 || $self->CurrentUserHasRight( 'SeeQueue') ) {
+        $cf_values->LimitToCustomField($self->Id);
+    }
     return ($cf_values);
 }
 
@@ -537,8 +536,8 @@ sub _Value {
      }
 
 
-    #If the current user doesn't have ACLs, don't let em at it.  
-        unless ( $self->CurrentUserHasRight( 'SeeQueue')) {
+    #Anybody can see global custom fields, otherwise we need to do the rights check
+        unless ( $self->__Value('Queue') == 0 || $self->CurrentUserHasRight( 'SeeQueue') ) {
             return (undef);
         }
     return ( $self->__Value($field) );
