@@ -56,7 +56,7 @@ $Name => 'LinksField'
 my @fields = ('HasMember',
 	      'MemberOf',
 	      'DependsOn',
-	      'DependentOn',
+	      'DependedOnBy',
 	      'RefersTo',
 	      'ReferredToBy',
 	      'LinkedTo',
