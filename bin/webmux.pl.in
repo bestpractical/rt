@@ -136,7 +136,7 @@ sub handler {
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache
       if (
-        $WebFlushDbCacheEveryRequest
+        $RT::WebFlushDbCacheEveryRequest
         and UNIVERSAL::can(
             'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache'
         )
