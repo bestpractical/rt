@@ -8,7 +8,12 @@ CC			=	gcc
 PERL			= 	/usr/bin/perl
 RTUSER			=	rt
 RTGROUP			=	rt
-RT_VERSION		=	0.9.10
+
+RT_VERSION_MAJOR	=	0
+RT_VERSION_MINOR	=	9
+RT_VERSION_PATCH	=	10
+
+RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
 #
 # RT_PATH is the name of the directory you want make to install RT in
@@ -137,9 +142,13 @@ instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "(Now, create a queue, add some users and start resolving requests)"
 
-upgrade: libs-install config-replace mux-install nondestruct
+upgrade: libs-install update-etc config-replace mux-install nondestruct
 
 nondestruct: mux-links glimpse fixperms
+
+
+update-etc:
+	cp -auR etc/*  $(RT_ETC_PATH)
 
 all:
 	@echo "Read the readme."
@@ -235,4 +244,7 @@ config-replace:
 	s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
 
 dist:
-	cvs co -d /tmp/rt-$(RT_VERSION) rt
+	cvs tag -F rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
+
+	cvs export -r rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERISON_PATCH) -d /tmp/rt-$(RT_VERSION) rt
+	cd /tmp; tar czvf /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz rt-$(RT_VERSION)/
