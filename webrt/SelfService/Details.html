@@ -162,7 +162,7 @@ else {
 # }}}
 
 unless ($session{'CurrentUser'}->HasQueueRight ( TicketObj => $Ticket,
-						 Right => 'DisplayTicket')) {
+						 Right => 'ShowTicket')) {
     $m->comp('Error.html', Why => "No permission to display that ticket");
     $m->abort();
 }
