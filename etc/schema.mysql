@@ -409,6 +409,7 @@ CREATE TABLE CustomFieldValues (
 CREATE TABLE sessions (
     id char(32) NOT NULL,
     a_session LONGTEXT,
+    LastUpdated TIMESTAMP,
     PRIMARY KEY (id)
 );
 

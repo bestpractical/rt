@@ -174,10 +174,17 @@ END
 
 # {{{ sub create_db
 sub create_db {
-    return if ( $RT::DatabaseType eq 'SQLite' );
     print "Creating $RT::DatabaseType database $RT::DatabaseName.\n";
-
-    $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
+    if ( $RT::DatabaseType eq 'SQLite' ) {
+        return;
+    }
+    elsif ( $RT::DatabaseType eq 'Pg' ) {
+        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH ENCODING='UNICODE'")
+          or die $DBI::errstr;
+    }
+    else {
+        $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
+    }
 }
 
 # }}}

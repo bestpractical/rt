@@ -25,8 +25,8 @@ CREATE TABLE Attachments (
   Filename varchar(255) NULL  ,
   ContentType varchar(80) NULL  ,
   ContentEncoding varchar(80) NULL  ,
-  Content bytea NULL  ,
-  Headers bytea NULL  ,
+  Content text NULL  ,
+  Headers text NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   PRIMARY KEY (id)
@@ -566,6 +566,7 @@ CREATE TABLE CustomFieldValues (
 CREATE TABLE sessions (
     id char(32) NOT NULL,
     a_session bytea,
+    LastUpdated not null default current_timestamp
     PRIMARY KEY (id)
 
 );
