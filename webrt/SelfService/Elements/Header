@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+     "http://www.w3.org/TR/REC-html40/loose.dtd"> 
+<HTML>
+<HEAD>
+<TITLE><%$Title%></TITLE>
+% if ($Code) {
+<META NAME="HTTP-EQUIV" VALUE="<%$Code%> <%$Why%>">
+% }
+
+<link rel="stylesheet" href="<%$RT::WebPath%>/webrt.css" type="text/css">
+</HEAD>
+<BODY BGCOLOR="<%$BgColor%>">
+<TABLE BORDER=0 WIDTH=100%>
+<TR VALIGN=TOP>
+<TD><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"><font size=+2>Request Tracker<%$RT::Version%></font>
+</TD>
+<TD ALIGN=RIGHT>
+% if ($session{'CurrentUser'} ) {
+Signed in as <b><%$session{'CurrentUser'}->UserId%></b>.<BR>
+[<A HREF="<%$RT::WebPath%>/SelfService/Prefs.html" >Preferences</A>] [<A HREF="<%$RT::WebPath%>/Logout.html">Logout</a>]
+% } else {
+Not logged in.
+% }
+</TD>
+</TR>
+</TABLE>
+
+<BR>
+<& /SelfService/Elements/Tabs &>
+
+<%ARGS>
+$Title => ''
+$Code => undef
+$Why => undef
+$BgColor => '#ffffff'
+</%ARGS>
+<%INIT>
+$Title = "RT/$RT::rtname: ".$Title;
+</%INIT>
+

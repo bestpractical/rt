@@ -1,0 +1,39 @@
+<& /Elements/TitleBoxStart, title => "Your $friendly_status requests" &>
+<TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
+<TR>
+<TD>
+</TD>
+</TR>
+% while (my $Ticket = $MyTickets->Next) {
+<TR>
+<TD>
+<%$Ticket->Id%>: <%$Ticket->Subject%>
+</TD>
+<TD>
+<%$Ticket->Status%>
+</TD><TD>
+<%$Ticket->OwnerObj->UserId%>
+</TD><TD>
+[<A HREF="<% $RT::WebPath %>/SelfService/Display.html?id=<%$Ticket->Id%>">Details</A>]
+</TD>
+</TR>
+% }
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+
+
+<%INIT>
+my $MyTickets;
+$MyTickets = new RT::Tickets ($session{'CurrentUser'});
+$MyTickets->LimitRequestor(VALUE => $session{'CurrentUser'}->Id);
+
+my $status;
+foreach $status (@status) {
+
+        $MyTickets->LimitStatus(VALUE => "$status");
+}
+</%INIT>
+<%ARGS>
+$friendly_status => 'open'
+@status => ['open','new','stalled']
+</%ARGS>
