@@ -117,7 +117,7 @@ regression: dropdb testify-pods install
 
 
 tag-and-release:
-	svn cp $(CANONICAL_REPO_TRUNK) $(CANONICAL_REPO_TAGS)/$(TAG) 
+#	svn cp $(CANONICAL_REPO_TRUNK) $(CANONICAL_REPO_TAGS)/$(TAG) 
 	svn export $(CANONICAL_REPO_TAGS)/$(TAG) $(TMP_DIR)/$(PRODUCT)-$(TAG)
 	svn log -v $(CANONICAL_REPO_TAGS)/$(TAG) > $(TMP_DIR)/$(PRODUCT)-$(TAG)/Changelog		
 	(cd $(TMP_DIR); tar czf $(PRODUCT)-$(TAG).tar.gz $(PRODUCT)-$(TAG))
