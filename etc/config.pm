@@ -69,8 +69,8 @@
     #set this to whatever program you want to send the mail that RT generates
     #be aware, however, that RT expects to be able to set the From: line
     #with sendmail's command line syntax
-    $mailprog = "!!MAIL_PROG!!";
-    $mail_options = "!!MAIL_OPTIONS";
+    $mailprog = "!!MAIL_PROGRAM!!";
+    $mail_options = "!!MAIL_OPTIONS!!";
 
 
     #glimpse_index is where you keep the glimpseindex binary
