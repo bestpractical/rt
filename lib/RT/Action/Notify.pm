@@ -22,15 +22,12 @@ sub SetRecipients {
 
     $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
     
-
     my (@To, @Cc, @Bcc);
 
     if ($arg =~ /\bRequestor\b/) {
 	push(@To, @{$self->TicketObj->Requestors->Emails});
     }
-    
-    
-    
+        
     if ($arg =~ /\bCc\b/) {
 	#If we have a To, make the Ccs, Ccs, otherwise, promote them to To
 	if (@To) {
@@ -42,9 +39,10 @@ sub SetRecipients {
 	}
     }
     
-    
-    if ($arg =~ /\bOwner\b/ && ($self->TicketObj->OwnerObj->id != $RT::Nobody->id)) {
-	#If we're not sending to Ccs or requestors, then the Owner can be the To.
+    if ( ($arg =~ /\bOwner\b/) && 
+	 ($self->TicketObj->OwnerObj->id != $RT::Nobody->id) ) {
+	# If we're not sending to Ccs or requestors, 
+	# then the Owner can be the To.
 	if (@To) {
 	    push(@Bcc, $self->TicketObj->OwnerObj->EmailAddress);
 	}
@@ -54,7 +52,6 @@ sub SetRecipients {
 	
     }
     
-    
     if ($arg =~ /\bAdminCc\b/) {
         push(@Bcc, @{$self->TicketObj->AdminCc->Emails});
 	push(@Bcc, @{$self->TicketObj->QueueObj->AdminCc->Emails});
@@ -62,26 +59,18 @@ sub SetRecipients {
 
     if ($RT::UseFriendlyToLine) {    
     	unless (@To) {
-		push (@To,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."':;");
-    	}
+	    push (@To,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."':;");
+	}
     } 
     
     my $creator = $self->TransactionObj->CreatorObj->EmailAddress();
       
-    #Strip the sender out of the To, Cc and AdminCc;
-    @To = grep (!/^$creator$/, @To);
-    @Cc = grep (!/^$creator$/, @Cc);
-    @AdminCc = grep (!/^$creator$/, @AdminCc);
-    
-    my $To = join(',',@To);
-    my $Cc = join(',',@Cc);
-    my $Bcc = join(',',@Bcc);
-    
-    
-    $self->SetTo($To);
-    $self->SetCc($Cc);
-    $self->SetBcc($Bcc);
-    
+    #Strip the sender out of the To, Cc and AdminCc and set the 
+    # recipients fields used to build the message by the superclass.
+    @{$self->{'To'}} = grep (!/^$creator$/, @To);
+    @{$self->{'Cc'}} = grep (!/^$creator$/, @Cc);
+    @{$self->{'Bcc'}} = grep (!/^$creator$/, @Bcc);
+        
     return(1);
 
 }

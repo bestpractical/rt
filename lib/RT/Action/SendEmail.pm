@@ -58,34 +58,61 @@ sub Commit  {
     # If the transaction has content and has the header RT-Squelch-Replies-To
     
     if (defined $self->TransactionObj->Message->First()) { 
-    my $headers = $self->TransactionObj->Message->First->Headers();
-    if ($headers =~ /^RT-Squelch-Replies-To: (.*?)$/si) {
-  	my $blacklist = $1;
+	my $headers = $self->TransactionObj->Message->First->Headers();
 	
-	# Cycle through the people we're sending to
-	my @headers = qw (To Cc Bcc);
-	
-	# if a to address contains anyone in the squelch replies to, yank it out.
-	while ( my $line =  $self->TemplateObj->MIMEObj->head->get($header)) {
-	    if ($line =~ s/$blacklist,//)  {
-		$self->TemplateObj->MIMEObj->head->replace($header, $line);
+	if ($headers =~ /^RT-Squelch-Replies-To: (.*?)$/si) {
+	    my @blacklist = split(/,/,$1);
+	    
+	    # Cycle through the people we're sending to and pull out anyone on the
+	    # system blacklist
+	    
+	    foreach my $person_to_yank (@blacklist) {
+		$person_to_yank =~ s/\s//g;
+		@{$self->{'To'}} = grep (!/^$person_to_yank$/, @{$self->{'To'}});
+		@{$self->{'Cc'}} = grep (!/^$person_to_yank$/, @{$self->{'Cc'}});
+		@{$self->{'Bcc'}} = grep (!/^$person_to_yank$/, @{$self->{'Bcc'}});
 	    }
 	}
+	
+
+	# Go add all the Tos, Ccs and Bccs that we need to to the message to 
+	# make it happy, but only if we actually have values in those arrays.
+
+	$self->SetHeader('To', join(',', @{$self->{'To'}})) 
+	  if (@{$self->{'To'}});
+	$self->SetHeader('Cc', join(',' , @{$self->{'Cc'}})) 
+	  if (@{$self->{'Cc'}});;
+	$self->SetHeader('Bcc', join(',', @{$self->{'Bcc'}})) 
+	  if (@{$self->{'Bcc'}});;
+	
+	my $MIMEObj = $self->TemplateObj->MIMEObj;
+
+
+	$MIMEObj->make_singlepart;
+
+
+	#If we don't have any recipients to send to, don't send a message;
+	unless ($MIMEObj->head->get('To') ||
+		$MIMEObj->head->get('Cc') || 
+		$MIMEObj->head->get('Bcc') ) {
+	    return(0);
+	}
+	
+	if ($RT::MailCommand eq 'sendmailpipe') {
+	    open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments");
+	    print MAIL $MIMEObj->as_string;
+	    close(MAIL);
+	}
+	else {
+	    $MIMEObj->send($RT::MailCommand, $RT::MailParams) || 
+	      $RT::Logger->crit("$self: Could not send mail for ".
+				$self->TransactionObj . "\n");
+	}
+	
+
     }
-  }
-    $self->TemplateObj->MIMEObj->make_singlepart;
-
-  if ($RT::MailCommand eq 'sendmailpipe') {
-    open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments");
-    print MAIL $self->TemplateObj->MIMEObj->as_string;
-    close(MAIL);
-  }
-  else {
-    $self->TemplateObj->MIMEObj->send($RT::MailCommand, $RT::MailParams) || 
-    $RT::Logger->crit("$self: Could not send mail for ".$self->TransactionObj . "\n");
-   }
+    
 }
-
 # }}}
 
 # {{{ sub Prepare 
@@ -228,31 +255,33 @@ sub SetMessageID {
 sub SetReturnAddress {
 
   my $self = shift;
-  
+  my %args = ( is_comment => 0,
+	       @_ );
+
   # From and Reply-To
-  # $self->{comment} should be set if the comment address is to be used.
-  my $email_address=$self->{comment} ? 
-    $self->TicketObj->QueueObj->CommentAddress :
-      $self->TicketObj->QueueObj->CorrespondAddress
-	or $RT::Logger->warning( "$self Can't find email address for queue" . $TicketObj->QueueObj->Name."\n");
-  
-  
+  # $args{is_comment} should be set if the comment address is to be used.
+  my $replyto;
+
+  if ($args{'is_comment'}) { 
+      $replyto = $self->TicketObj->QueueObj->CommentAddress;
+  }
+  else {
+      $replyto = $self->TicketObj->QueueObj->CorrespondAddress;
+  }
+    
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
       my $friendly_name=$self->TransactionObj->CreatorObj->RealName;
       # TODO: this "via RT" should really be site-configurable.
-      $self->SetHeader('From', "$friendly_name via RT <$email_address>");
+      $self->SetHeader('From', "$friendly_name via RT <$replyto>");
   }
   
   unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
-      $self->SetHeader('Reply-To', "$email_address");
+      $self->SetHeader('Reply-To', "$replyto");
   }
   
 }
 
 # }}}
-
-
-
 
 # {{{ sub SetHeader
 
@@ -266,6 +295,21 @@ sub SetHeader {
   $self->TemplateObj->MIMEObj->head->fold_length($field,10000);     
   $self->TemplateObj->MIMEObj->head->add($field, $val);
   return $self->TemplateObj->MIMEObj->head->get($field);
+}
+
+# }}}
+
+# {{{ sub SetRecipients
+
+=head2 SetRecipients
+
+Dummy method to be overriden by subclasses which want to set the recipients.
+
+=cut
+
+sub SetRecipients {
+    my $self = shift;
+    return();
 }
 
 # }}}

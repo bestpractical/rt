@@ -146,6 +146,14 @@ if ($IsALoop) {
 # }}}
 
 
+   #Don't let the user stuff the RT-Squelch-Replies-To header.
+    if ($head->get('RT-Squelch-Replies-To')) {
+        $head->add('RT-Relocated-Squelch-Replies-To',
+                   $head->get('RT-Squelch-Replies-To'));
+        $head->delete('RT-Squelch-Replies-To')
+    }
+
+
 if ($SquelchReplies) {
     ## TODO: This is a hack.  It should be some other way to
     ## indicate that the transaction should be "silent".
@@ -153,6 +161,7 @@ if ($SquelchReplies) {
     my $Sender = ParseSenderAddressFromHead($head);
     $head->add('RT-Squelch-Replies-To', $Sender);
 }
+
 # }}}
 
 # {{{ If we don't have a ticket Id, we're creating a new ticket

@@ -206,7 +206,7 @@ sub Templates {
 
 =head2
 
-Watchers returns a Watchers object preloaded with this ticket\'s watchers.
+Watchers returns a Watchers object preloaded with this queue\'s watchers.
 
 =cut
 
@@ -277,7 +277,7 @@ sub CcAsString {
 =head2 Cc
 
 Takes nothing.
-Returns a watchers object which contains this ticket\'s Cc watchers
+Returns a watchers object which contains this queue\'s Cc watchers
 
 =cut
 
@@ -308,7 +308,7 @@ sub _Cc {
 =head2 AdminCc
 
 Takes nothing.
-Returns this ticket's administrative Ccs as an RT::Watchers object
+Returns this queue's administrative Ccs as an RT::Watchers object
 
 =cut
 
@@ -318,7 +318,6 @@ sub AdminCc {
     if ($self->CurrentUserHasRight('SeeQueue')) {
  	$admin_cc->LimitToAdminCc();
     }
-    
     return($admin_cc);
 }
 
@@ -646,7 +645,7 @@ sub DeleteWatcher {
     
     unless (($Watcher->Scope eq 'Queue') and
 	    ($Watcher->Value == $self->id) ) {
-	return (0, "Not a watcher for this ticket");
+	return (0, "Not a watcher for this queue");
     }
     
 
