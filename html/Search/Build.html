@@ -46,16 +46,17 @@
 <td valign=top class="boxcontainer">
 <& /Elements/TitleBoxStart, title => loc("Query") . ": " .$Description &>
 <& Elements/NewListActions, actions => \@actions &>
-<select size=10 name=clauses style="width : 100%">
+<select size="10" name="clauses" style="width: 100%">
 <%$optionlist|n%>
 </select>
+</td></tr><tr><td bgcolor="#dddddd" colspan="2">
 <center>
 <input type=submit name="Up" value="^">
 <input type=submit name="Down" value="v">
 <input type=submit name="Left" value="<">
 <input type=submit name="Right" value=">">
 <input type=submit name="DeleteClause" value="Delete">
-<br>
+<br />
 <input type=submit name="Clear" value="Clear">
 <input type=submit name="Toggle" value="And/Or">
 %#<input type=submit name="EditQuery" value="Advanced">
