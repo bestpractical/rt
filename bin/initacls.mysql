@@ -18,6 +18,7 @@ echo "DATABASENAME = $DATABASENAME"
 PATH=$PATH:$BINDIR
 export PATH
 
+echo "$BINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} --password=${DBAPASSWD} mysql < $DATABASEACLS"
 
 $BINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} --password=${DBAPASSWD} mysql < $DATABASEACLS
 

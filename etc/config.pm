@@ -9,6 +9,7 @@
 
 package RT;
 
+print STDERR "config.pm required\n";
 #Where you keep templates for each of your queues
 $template_dir="!!RT_TEMPLATE_PATH!!";
 
@@ -29,7 +30,7 @@ $rtgroup="!!RTGROUP!!";
 
 # before doing a "make install" in /usr/local/rt/src you NEED to change the 
 # password below and change the apropriate line in /usr/local/rt/etc/mysql.acl	
-$RT::DatabasePassword="!!RT_DB_PASS!!";
+$DatabasePassword="!!DB_RT_PASS!!";
 
 
 #name of RT installation
@@ -43,19 +44,19 @@ $rtname="!!RT_MAIL_TAG!!";
 
 # host is the fqdn of your Mysql server
 # if it's on localhost, leave it blank for enhanced performance
-$RT::DatabaseHost="!!RT_DB_HOST!!";
+$DatabaseHost="!!DB_HOST!!";
 
 #The name of the database user (inside the database) 
-$RT::DatabaseUser="!!RT_DB_USER!!";
+$DatabaseUser="!!DB_RT_USER!!";
     
 
 
 
 #$dbname is the name of the RT's database on the Mysql server 
-$RT::DatabaseName="!!RT_DATABASE!!";
+$RT::DatabaseName="!!DB_DATABASE!!";
 
 # $rt_db is the database driver beeing used - i.e. MySQL.
-$DatabaseType="!!RT_DB!!";
+$DatabaseType="!!DB_TYPE!!";
 
 
 # $passwd_min defines the minimum length for user passwords.

@@ -4,7 +4,9 @@ package rt::ui::cli::admin;
 
 
 sub activate {
-  
+  my ($current_user, $tmp);
+
+  require RT::User;  
   ($current_user,$tmp)=getpwuid($<);
   $CurrentUser = new RT::User($current_user);
   $CurrentUser->load($current_user);
@@ -194,7 +196,7 @@ sub cli_acl_queue {
      $real_name=&rt::ui::cli::question_string("Real Name",$User->RealName);
      $password=&rt::ui::cli::question_string("RT Password (will echo)",$User->Password);
      $phone=&rt::ui::cli::question_string("Phone Number",$User->Phone);
-     $office=&rt::ui::cli::question_string("Office Location",$User->Office});
+     $office=&rt::ui::cli::question_string("Office Location",$User->Office);
      $comments=&rt::ui::cli::question_string("Misc info about this user",$User->Comments);
 
    if ($CurrentUser->IsAdministrator) {
@@ -230,7 +232,7 @@ sub cli_create_user {
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_user($User->UserId);
 }
-}
+
 sub cli_create_queue {
   my $queue_id = shift;
   my $Queue = new RT::Queue($CurrentUser->UserId);
@@ -277,8 +279,8 @@ sub cli_modify_queue {
       $message .= $Queue->MailRequestorOnCreation($m_user_create);
       $message .= $Queue->MailMembersOnCorrespondence($m_members_correspond);
       $message .= $Queue->MailMembersOnComment($m_members_comment);
-      $message .= $Queue->PermitNonmemberCreate($allow_user_create)
-      $message .= $Queue->StartingPriority(default_prio);
+      $message .= $Queue->PermitNonmemberCreate($allow_user_create);
+      $message .= $Queue->StartingPriority($default_prio);
       $message .= $Queue->FinalPriority($default_final_prio);
       print "$message\n";
     }

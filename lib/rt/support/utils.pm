@@ -207,7 +207,7 @@ sub quote_content {
     if ($max>76) {
         use Text::Wrapper;
 	my $wrapper=new Text::Wrapper (
-	     columns => 70
+	     columns => 70,
 	     body_start => ($max > 150 ? '   ' : ''), 
 	     par_start => ''
 	     );

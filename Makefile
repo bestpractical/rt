@@ -107,7 +107,7 @@ DB_HOME               = /usr
 # Right now, the only acceptable value for DB_TYPE is mysql.
 # TODO pgsql, oracle and sybase should be supported
 
-DB_TYPE                = mysql
+DB_TYPE                =	mysql
 
 
 
@@ -116,8 +116,8 @@ DB_TYPE                = mysql
 
 # Set DB_DBA to the name of a DB user with permission to create new databases 
 # Set DB_DBA_PASSWORD to that user's password
-DB_DBA                   = root
-DB_DBA_PASSWORD          = yawn
+DB_DBA                   =	root
+DB_DBA_PASSWORD          =	""
  
 #
 # Set this to the Fully Qualified Domain Name of your database server.
@@ -238,7 +238,15 @@ database:
 	su -c "bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'" $(DBA)
 
 acls:
-	su -c "bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DB_ACL)'" $(DBA)
+	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
+	$(PERL) -p -i.orig -e "	s'!!DB_TYPE!!'$(DB_TYPE)'g;\
+				s'!!DB_HOST!!'$(DB_HOST)'g;\
+			        s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
+			        s'!!DB_RT_HOST!!'$(DB_RT_HOST)'g;\
+			        s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
+				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
+
+	su -c "bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'" $(DBA)
 
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
@@ -281,16 +289,16 @@ config-replace:
 	mv $(RT_ETC_PATH)/config.pm $(RT_ETC_PATH)/config.pm.old
 	cp -rp ./etc/config.pm $(RT_ETC_PATH)
 	$(PERL) -p -i -e "\
+	s'!!DB_TYPE!!'$(DB_TYPE)'g;\
+	s'!!DB_HOST!!'$(DB_HOST)'g;\
+        s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
+        s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
+	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
 	s'!!RT_PATH!!'$(RT_PATH)'g;\
         s'!!RT_TEMPLATE_PATH!!'$(RT_TEMPLATE_PATH)'g;\
-        s'!!RTUSER!!'$(RTUSER)'g;\
-        s'!!RTGROUP!!'$(RTGROUP)'g;\
-        s'!!RT_DB_PASS!!'$(RT_DB_PASS)'g;\
-	s'!!RT_DB!!'$(RT_DB)'g;\
         s'!!RT_MAIL_TAG!!'$(RT_MAIL_TAG)'g;\
 	s'!!RT_USER_PASSWD_MIN!!'$(RT_USER_PASSWD_MIN)'g;\
         s'!!RT_HOST!!'$(RT_HOST)'g;\
-        s'!!RT_DATABASE!!'$(RT_DATABASE)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
 	s'!!WEB_IMAGE_PATH!!'$(WEB_IMAGE_PATH)'g;\
 	s'!!WEB_AUTH_MECHANISM!!'$(WEB_AUTH_MECHANISM)'g;\

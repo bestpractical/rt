@@ -15,14 +15,16 @@ use strict;
 #this is the RT path
 
 use lib "!!RT_LIB_PATH!!";
-
-require "!!RT_ETC_PATH!!/config.pm";
+use lib "!!RT_ETC_PATH!!";
+use config;
 
 use Carp;
 use DBIx::Handle;
 
 #TODO: need to identify the database user here....
-DBIx::Handle::Connect(Host => $RT::DatabaseHost, 
+my $Handle = new DBIx::Handle;
+
+$Handle->Connect(Host => $RT::DatabaseHost, 
 		      Database => $RT::DatabaseName, 
 		      User => $RT::DatabaseUser,
 		      Password => $RT::DatabasePassword,
@@ -32,24 +34,25 @@ DBIx::Handle::Connect(Host => $RT::DatabaseHost,
 
 require "!!RT_ETC_PATH!!/config.pm";          
 
-my $program = shift @ARGV;
+my $program = $0; 
+$program =~ s/(.*)\///;
+#shift @ARGV;
 if ($program eq '!!RT_ACTION_BIN!!') {
   # load rt-cli
   require rt::ui::cli::support;
    require rt::ui::cli::manipulate;
-  require rt::database::manipulate; 
+
   &rt::ui::cli::manipulate::activate();
 }
 elsif ($program eq '!!RT_QUERY_BIN!!') {
   # load rt-query
-  require rt::database;      
+
   require rt::ui::cli::query;
   &rt::ui::cli::query::activate();
   
 }
 elsif ($program eq '!!RT_ADMIN_BIN!!') {
   #load rt_admin
-  require rt::database::admin;
   require rt::support::utils;     
   require rt::ui::cli::support;
   require rt::ui::cli::admin;
@@ -72,7 +75,7 @@ elsif ($program eq '!!RT_WEB_ADMIN_BIN!!') {
 
 }
 elsif ($program eq '!!RT_MAILGATE_BIN!!') {
-  require rt::database::manipulate;
+
   require rt::support::utils;      
   require rt::support::mail;
   require rt::ui::mail::manipulate;

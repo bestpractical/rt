@@ -1,3 +1,5 @@
+#$Header$
+
 package RT::Record;
 @ISA= qw(DBIx::Record);
 
