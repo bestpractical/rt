@@ -312,10 +312,12 @@ li.currenttopnav-5-major {
 	 vertical-align: top;
 	 text-align: left;
          }
+%# Actually the "topactions" section
 .blueright {  background-color: #4682B4;
 	 background-position: left top;
 	 vertical-align: top;
 	 text-align: right;
+         padding-right: 1em;
          }
 .olddarkblue {  background-color: #003399;
 	 background-position: left top;
