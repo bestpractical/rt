@@ -25,18 +25,25 @@ sub _Accessible  {
 	       CommentAddress =>  'read/write',
 	       InitialPriority =>  'read/write',
 	       FinalPriority =>  'read/write',
-	       PermitNonmemberCreate => 'read/write',
 	       DefaultDueIn =>  'read/write'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
 # }}}
 
-# {{{ sub create 
-sub create  {
-  my $self = shift;
+# {{{ sub Create
+=head2 Create
 
-  my $id = $self->SUPER::Create(QueueId => @_);
+Create takes the name of the new queue 
+If you pass the ACL check, it creates the queue and returns its queue id.
+
+=cut
+
+sub Create  {
+  my $self = shift;
+  my $queue_id = shift;
+  #TODO +++ check acls
+  my $id = $self->SUPER::Create(QueueId => $queue_id);
   $self->LoadById($id);
   
 }
@@ -71,13 +78,6 @@ sub delete  {
 }
 # }}}
 
-# {{{ sub Create 
-sub Create  {
-  my $self = shift;
-  #print "In RT::Queue::Create\n";
-  return($self->create(@_));
-}
-# }}}
 
 
 # {{{ sub Load 
@@ -291,13 +291,7 @@ sub Grant {
 # {{{ sub CreatePermitted 
 sub CreatePermitted  {
   my $self = shift;
-  if ($self->PermitNonmemberCreate ||
-      $self->ModifyPermitted(@_)) { 
     return (1);
-  }
-  else {
-    return (undef);
-  }
 }
 # }}}
 
