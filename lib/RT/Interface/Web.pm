@@ -780,17 +780,13 @@ sub ProcessACLChanges {
 
             my $obj;
 
-            if ($object_type eq 'RT::Queue') {
-                $obj = RT::Queue->new($session{'CurrentUser'});
-                $obj->Load($object_id);      
-            } elsif ($object_type eq 'RT::Group') {
-                $obj = RT::Group->new($session{'CurrentUser'});
-                $obj->Load($object_id);      
-
-            } elsif ($object_type eq 'RT::System') {
+             if ($object_type eq 'RT::System') {
                 $obj = $RT::System;
+	    } elsif ($RT::ACE::OBJECT_TYPES{$object_type}) {
+                $obj = $object_type->new($session{'CurrentUser'});
+                $obj->Load($object_id);      
             } else {
-                push (@results, loc("System Error").
+                push (@results, loc("System Error"). ': '.
                                 loc("Rights could not be granted for [_1]", $object_type));
                 next;
             }
@@ -813,17 +809,14 @@ sub ProcessACLChanges {
             next unless ($right);
             my $obj;
 
-            if ($object_type eq 'RT::Queue') {
-                $obj = RT::Queue->new($session{'CurrentUser'});
-                $obj->Load($object_id);      
-            } elsif ($object_type eq 'RT::Group') {
-                $obj = RT::Group->new($session{'CurrentUser'});
-                $obj->Load($object_id);      
-
-            } elsif ($object_type eq 'RT::System') {
+             if ($object_type eq 'RT::System') {
                 $obj = $RT::System;
+	    } elsif ($RT::ACE::OBJECT_TYPES{$object_type}) {
+                $obj = $object_type->new($session{'CurrentUser'});
+                $obj->Load($object_id);      
             } else {
-                push (@results, loc("System Error").
+		die;
+                push (@results, loc("System Error"). ': '.
                                 loc("Rights could not be revoked for [_1]", $object_type));
                 next;
             }
