@@ -84,8 +84,8 @@ $MasonSessionDir = $VarPath ."session_data";
 # Database driver beeing used. Case matters
 # Valid types are "mysql" and "Pg" 
 
-$DatabaseType="SQLite";
-#$DatabaseType="mysql";
+#$DatabaseType="SQLite";
+$DatabaseType="mysql";
 #$DatabaseType="Pg";
 
 # The domain name of your database server
@@ -386,38 +386,6 @@ $WebExternalAuto = undef;
    
  
       ]
-     );
-
-# }}}
-
-# {{{ RT Linking Interface
-
-# $TicketBaseURI is the Base path of the URI for local tickets
-
-# You shouldn't need to touch this. it's used to link tickets both locally
-# and remotely
-
-$TicketBaseURI = "fsck.com-rt://$Organization/$rtname/ticket/";
-
-# A hash table of conversion subs to be used for transforming RT Link
-# URIs to URLs in the web interface.  If you want to use RT towards
-# locally installed databases, this is the right place to configure it.
-
-%URI2HTTP=
-    (
-      'http' => sub {return @_;},
-      'https' => sub {return @_;},
-      'ftp' => sub {return @_;},
-     'fsck.com-rt' => sub {warn "stub!";},
-     'fsck.com-kb' => sub {warn "stub!"}
-     );
-
-
-# A hash table of subs for fetching content from an URI
-%ContentFromURI=   
-    (
-     'fsck.com-rt' => sub {warn "stub!";},
-     'fsck.com-kb' => sub {warn "stub!"}
      );
 
 # }}}

@@ -73,7 +73,7 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->_MyCurrentUser(@_);
+  $self->CurrentUser(@_);
   $self->Unix(0);
   return $self;
 }
@@ -527,22 +527,6 @@ sub LocalTimezone {
     my $self = shift;
     
     return ($RT::Timezone);
-}
-
-# }}}
-
-# {{{ sub _MyCurrentUser 
-
-sub _MyCurrentUser {
-    my $self = shift;
-
-    $self->CurrentUser(@_);
-    if ( !defined( $self->CurrentUser ) ) {
-        use Carp;
-        Carp::cluck();
-        $RT::Logger->err("$self was created without a CurrentUser");
-        return (0);
-    }
 }
 
 # }}}

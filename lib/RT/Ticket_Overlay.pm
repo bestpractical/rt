@@ -104,6 +104,8 @@ use RT::Date;
 use RT::CustomFields;
 use RT::TicketCustomFieldValues;
 use RT::Tickets;
+use RT::URI::fsck_com_rt;
+use RT::URI;
 
 =begin testing
 
@@ -2142,10 +2144,10 @@ sub DeleteLink {
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
-        $args{'Target'} = $self->Id();
+        $args{'Target'} = $self->URI();
     }
     elsif ( $args{'Target'} ) {
-        $args{'Base'} = $self->Id();
+        $args{'Base'} = $self->URI();
     }
     else {
         $RT::Logger->debug("$self: Base or Target must be specified\n");
@@ -2153,13 +2155,10 @@ sub DeleteLink {
     }
 
     my $link = new RT::Link( $self->CurrentUser );
-    $RT::Logger->debug( "Trying to load link: "
-          . $args{'Base'} . " "
-          . $args{'Type'} . " "
-          . $args{'Target'} . "\n" );
+    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
 
-    $link->Load( $args{'Base'}, $args{'Type'}, $args{'Target'} );
 
+    $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
     #it's a real link. 
     if ( $link->id ) {
         $RT::Logger->debug( "We're going to delete link " . $link->id . "\n" );
@@ -2197,13 +2196,11 @@ Takes a paramhash of Type and one of Base or Target. Adds that link to this tick
 
 sub AddLink {
     my $self = shift;
-    my %args = (
-        Target => '',
-        Base   => '',
-        Type   => '',
-        Silent => undef,
-        @_
-    );
+    my %args = ( Target => '',
+                 Base   => '',
+                 Type   => '',
+                 Silent => undef,
+                 @_ );
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
@@ -2211,33 +2208,28 @@ sub AddLink {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug(
-"$self tried to delete a link. both base and target were specified\n"
-        );
+"$self tried to delete a link. both base and target were specified\n" );
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
-        $args{'Target'} = $self->Id();
+        $args{'Target'} = $self->URI();
     }
     elsif ( $args{'Target'} ) {
-        $args{'Base'} = $self->Id();
+        $args{'Base'} = $self->URI();
     }
     else {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    # {{{ We don't want references to ourself
-    if ( $args{Base} eq $args{Target} ) {
-        return ( 0, $self->loc("Can't link a ticket to itself") );
-    }
-
-    # }}}
-
     # If the base isn't a URI, make it a URI. 
     # If the target isn't a URI, make it a URI. 
 
     # {{{ Check if the link already exists - we don't want duplicates
-    my $old_link = new RT::Link( $self->CurrentUser );
-    $old_link->Load( $args{'Base'}, $args{'Type'}, $args{'Target'} );
+    use RT::Link;
+    my $old_link = RT::Link->new( $self->CurrentUser );
+    $old_link->LoadByParams( Base   => $args{'Base'},
+                             Type   => $args{'Type'},
+                             Target => $args{'Target'} );
     if ( $old_link->Id ) {
         $RT::Logger->debug("$self Somebody tried to duplicate a link");
         return ( $old_link->id, $self->loc("Link already exists"), 0 );
@@ -2247,11 +2239,9 @@ sub AddLink {
 
     # Storing the link in the DB.
     my $link = RT::Link->new( $self->CurrentUser );
-    my ($linkid) = $link->Create(
-        Target => $args{Target},
-        Base   => $args{Base},
-        Type   => $args{Type}
-    );
+    my ($linkid) = $link->Create( Target => $args{Target},
+                                  Base   => $args{Base},
+                                  Type   => $args{Type} );
 
     unless ($linkid) {
         return ( 0, $self->loc("Link could not be created") );
@@ -2268,11 +2258,10 @@ sub AddLink {
 
         #Write the transaction
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => 'AddLink',
-            Field     => $args{'Type'},
-            Data      => $TransString,
-            TimeTaken => 0
-        );
+                                                         Type  => 'AddLink',
+                                                         Field => $args{'Type'},
+                                                         Data  => $TransString,
+                                                         TimeTaken => 0 );
         return ( $Trans, $self->loc( "Link created ([_1])", $TransString ) );
     }
 
@@ -2290,7 +2279,8 @@ Returns this ticket's URI
 
 sub URI {
     my $self = shift;
-    return $RT::TicketBaseURI . $self->id;
+    my $uri = RT::URI::fsck_com_rt->new($self->CurrentUser);
+    return($uri->URIForObject($self));
 }
 
 # }}}

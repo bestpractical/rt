@@ -43,9 +43,9 @@ Owner: <%$ticket->OwnerObj->Name%>
 % my $links = $ticket->$linktype();
 % while (my $link = $links->Next) {
 % if ( $RT::Ticket::LINKTYPEMAP{$linktype}->{'Mode'} eq 'Base') {
-<%$ linktype%>: <%$link->BaseIsLocal? $link->LocalBase : $link->Base%>
+<%$ linktype%>: <%$link->BaseURI->IsLocal? $link->LocalBase : $link->Base%>
 % } else {
-<%$ linktype%>: <%$link->TargetIsLocal? $link->LocalTarget : $link->Target%>
+<%$ linktype%>: <%$link->TargetURI->IsLocal? $link->LocalTarget : $link->Target%>
 % }
 % }
 % }

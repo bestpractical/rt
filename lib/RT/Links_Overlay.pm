@@ -46,6 +46,7 @@ ok (require RT::Links);
 =cut
 
 no warnings qw(redefine);
+use RT::URI;
 
 # {{{ sub Limit 
 sub Limit  {
@@ -59,8 +60,9 @@ sub Limit  {
     if (  ( $args{'OPERATOR'} eq '=') and
 	  ( $args{'FIELD'}  eq 'Base') or ($args{'FIELD'} eq 'Target')
        ) {
-	my $dummy = $self->NewItem();
-	  $uri = $dummy->CanonicalizeURI($args{'VALUE'});
+	  my $dummy = RT::URI->new($self->CurrentUser);
+	   $dummy->FromURI($args{'VALUE'});
+       $uri = $dummy->URI;
     }
 
 

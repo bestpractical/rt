@@ -56,7 +56,7 @@ sub Commit {
     $Links->Limit(FIELD => 'Target', VALUE => $self->TicketObj->id);
 
     while (my $Link=$Links->Next()) {
-	next unless $Link->BaseIsLocal;
+	next unless $Link->BaseURI->IsLocal;
 	my $base=RT::Ticket->new($self->TicketObj->CurrentUser);
 	# Todo: Only work if Base is a plain ticket num:
 	$base->Load($Link->Base);

@@ -56,7 +56,7 @@ use DBIx::SearchBuilder::Record::Cachable;
 
 sub _Init {
     my $self = shift;
-    $self->_MyCurrentUser(@_);
+    $self->CurrentUser(@_);
 
 }
 
@@ -73,22 +73,6 @@ The primary keys for RT classes is 'id'
 sub _PrimaryKeys {
     my $self = shift;
     return ( ['id'] );
-}
-
-# }}}
-
-# {{{ sub _MyCurrentUser 
-
-sub _MyCurrentUser {
-    my $self = shift;
-
-    $self->CurrentUser(@_);
-    if ( !defined( $self->CurrentUser ) ) {
-        use Carp;
-        Carp::cluck();
-        $RT::Logger->err("$self was created without a CurrentUser");
-        return (0);
-    }
 }
 
 # }}}
@@ -415,27 +399,6 @@ sub LastUpdatedByObj {
         $self->{'LastUpdatedByObj'}->Load( $self->LastUpdatedBy );
     }
     return $self->{'LastUpdatedByObj'};
-}
-
-# }}}
-
-# {{{ sub CurrentUser 
-
-=head2 CurrentUser
-
-If called with an argument, sets the current user to that user object.
-This will affect ACL decisions, etc.  
-Returns the current user
-
-=cut
-
-sub CurrentUser {
-    my $self = shift;
-
-    if (@_) {
-        $self->{'user'} = shift;
-    }
-    return ( $self->{'user'} );
 }
 
 # }}}

@@ -27,10 +27,6 @@
 
 my ($message);
 
-if ($MessageURI) {
-	my $code;
-	($code, $Default)=RT::Link->GetContent($MessageURI);
-}
 if ($QuoteTransaction) {
     my $transaction=RT::Transaction->new($session{'CurrentUser'});
     $transaction->Load($QuoteTransaction);
@@ -47,8 +43,6 @@ if ($session{'CurrentUser'}->UserObj->Signature) {
 $QuoteTransaction => undef
 $Name => 'Content'
 $Default => ''
-$DefaultURI => undef
 $Width => 72
-$MessageURI => undef
 </%ARGS>
 

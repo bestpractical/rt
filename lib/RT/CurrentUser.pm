@@ -71,7 +71,7 @@ sub _Init  {
     $self->Load($Name);
   }
   
-  $self->_MyCurrentUser($self);
+  $self->CurrentUser($self);
 
 }
 # }}}

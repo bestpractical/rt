@@ -130,11 +130,7 @@ sub InitLogging {
 		       min_level => $RT::LogToScreen,
 			 callbacks => sub { my %p = @_;
                                 my ($package, $filename, $line) = caller(5);
-				if ($p{level} eq 'debug') {
-
-                                return "[".gmtime(time)."] [".$p{level}."]: $p{message}\n" }
-				else {
-                                return "[".gmtime(time)."] [".$p{level}."]: $p{message} ($filename:$line)\n"}
+                                return "[".gmtime(time)."] [".$p{level}."]: $p{message} ($filename:$line)\n"
 				},
              
 		       stderr => 1
