@@ -93,7 +93,9 @@ CREATE TABLE Groups (
 
 CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
 CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);   
-
+CREATE INDEX Groups3 ON Groups (Domain);
+CREATE INDEX Groups4 ON Groups (Instance);
+CREATE INDEX Groups5 ON Groups (Type);
 # }}}
 
 # {{{ ScripConditions
@@ -211,7 +213,8 @@ create table CachedGroupMembers (
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
 CREATE INDEX GrouMem  on CachedGroupMembers (GroupId,MemberId);
-
+CREATE INDEX CachedGroupMembers3 ON CachedGroupMembers(GroupId);
+CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (MemberId);
 # }}}
 
 # {{{ Users
@@ -303,6 +306,8 @@ CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
 CREATE INDEX Tickets4 ON Tickets (id, Status) ;
 CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
+CREATE INDEX Tickets7 ON Tickets (Type);
+CREATE INDEX Tickets8 ON Tickets (Status);
 
 # }}}
 

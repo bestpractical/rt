@@ -1,19 +1,18 @@
 # BEGIN LICENSE BLOCK
 # 
-# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 # 
 # (Except where explictly superceded by other copyright notices)
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
-# from www.gnu.org
+# from www.gnu.org.
 # 
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
 # 
 # Unless otherwise specified, all modifications, corrections or
 # extensions to this work which alter its source code become the
@@ -491,7 +490,7 @@ sub Create {
         $RT::Logger->crit( "Couldn't create ticket groups for ticket "
                            . $self->Id
                            . ". aborting Ticket creation." );
-        $self->Rollback();
+        $RT::Handle->Rollback();
         return ( 0, 0,
                  $self->loc( "Ticket could not be created due to an internal error") );
     }
