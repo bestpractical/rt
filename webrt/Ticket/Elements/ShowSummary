@@ -21,12 +21,12 @@
       </TD>
        </TR>
         <TR>
-	<TD WIDTH="50%">
+	<TD WIDTH="50%" VALIGN=TOP>
 	  <& /Elements/TitleBoxStart, title => 'Unresolved Dependencies', titleright => '<A HREF="">[As search]</a>' &>
 	  Nothing's here yet
 	  <& /Elements/TitleBoxEnd &>
 	</TD>
-	<TD WIDTH="50%">
+	<TD WIDTH="50%" VALIGN=TOP>
 	  <& /Elements/TitleBoxStart, title => 'Other Links', titleright => '<a href="LinkIt.html?id='.$Ticket->Id.'">[Make new links]</a> | <A HREF="">[As search]</a>' &>
 	<& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
 	

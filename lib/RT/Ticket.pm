@@ -92,7 +92,7 @@ sub Create {
 	      RequestorEmail => undef,
 	      Alias => undef,
 	      Type => undef,
-	      Owner => $RT::Nobody,
+	      Owner => $RT::Nobody->UserObj,
 	      Subject => undef,
 	      InitialPriority => 0,
 	      FinalPriority => 0,
@@ -124,7 +124,7 @@ sub Create {
 
   if ( !defined($args{'Owner'})) {
 	#TODO this shouldn't need to exist
-	$Owner = $RT::Nobody;
+	$Owner = $RT::Nobody->UserObj;
   }
   elsif ( (defined($args{'Owner'})) && (!ref($args{'Owner'})) ) {
     
@@ -1215,7 +1215,7 @@ sub SetOwner {
   #If thie ticket has an owner and it's not the current user
 
   if (($Type ne 'Steal' ) and  #If we're not stealing
-      ($self->Owner->Id != $RT::Nobody ) and  #and the owner is set
+      ($self->Owner->Id != $RT::Nobody-UserObj->Id ) and  #and the owner is set
       ($self->CurrentUser->Id ne $self->Owner->Id())) { #and it's not us
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
@@ -1259,7 +1259,7 @@ sub Take {
 # {{{ sub Untake
 sub Untake {
   my $self = shift;
-  my ($trans,$msg)=$self->SetOwner($RT::Nobody, 'Untake');
+  my ($trans,$msg)=$self->SetOwner($RT::Nobody->UserObj, 'Untake');
   return ($trans, 
 	  $trans 
 	  ? "Ticket untaken"
