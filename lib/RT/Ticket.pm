@@ -366,7 +366,7 @@ sub Queue {
   if (!$self->{'queue'})  {
     require RT::Queue;
     $self->{'queue'} = RT::Queue->new($self->CurrentUser);
-    $self->{'queue'}->load($self->_Value('Queue'));
+    $self->{'queue'}->Load($self->_Value('Queue'));
   }
   return ($self->{'queue'});
 }
@@ -784,10 +784,13 @@ sub Links {
 }
 # }}}
 
+# {{{ sub URL 
 sub URL {
     my $self = shift;
-    return "fsck.com-rt://$rt::domain/$rt::rtname/ticket/$self->id";
+    return "fsck.com-rt://$rt::domain/$rt::rtname/ticket/".$self->id;
 }
+
+# }}}
 
 # {{{ sub NewLink
 
@@ -799,6 +802,9 @@ sub NewLink {
     $self->_NewLink(base=>$self->id, %args);
 }
 
+# }}}
+
+# {{{ sub ReverseLink
 sub ReverseLink {
     my $self = shift;
     my %args = ( base => '',
@@ -807,6 +813,9 @@ sub ReverseLink {
     $self->_NewLink(target=>$self->id, %args);
 }
 
+# }}}
+
+# {{{ sub _NewLink
 sub _NewLink {
   my $self = shift;
   my %args = ( target => '',
