@@ -1,16 +1,7 @@
-<HTML>
-<HEAD>
-% if ($Code) {
-<META NAME="HTTP-EQUIV" VALUE="<%$Code%> <%$Why%>">
-% }
-<TITLE>
-<% $Title %>
-</TITLE>
-<BODY BGCOLOR=WHITE>
+<& /Elements/Header, Code => $Code, Why => $Why &>
+<& /Elements/Tabs &>
 <& /Elements/TitleBoxStart, title => $Title &>
-
-RT ran into an error:
-<br><%$Why%>
+<%$Why%>
 <br>
 <font size=-1>
 <%$Details%>
@@ -18,12 +9,15 @@ RT ran into an error:
 <& /Elements/TitleBoxEnd &>
 </body>
 </HTML>
+
+
 <%args>
 $Code => undef
-$Details => "(No details given)"
+$Details => undef
 $Title => "RT Error"
 $Why => "the calling component did not specify why"
 </%args>
+
 <%INIT>
 $RT::Logger->error("WebRT: $Why ($Details)");
 </%INIT>

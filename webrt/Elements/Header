@@ -2,7 +2,11 @@
      "http://www.w3.org/TR/REC-html40/loose.dtd"> 
 <HTML>
 <HEAD>
-<TITLE><%$Title%> </TITLE>
+<TITLE><%$Title%></TITLE>
+% if ($Code) {
+<META NAME="HTTP-EQUIV" VALUE="<%$Code%> <%$Why%>">
+% }
+
 <link rel="stylesheet" href="<%$RT::WebPath%>/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
@@ -24,6 +28,8 @@ Not logged in.
 <BR>
 <%ARGS>
 $Title => 'WebRT'
+$Code => undef
+$Why => undef
 $BgColor => '#ffffff'
 </%ARGS>
 <%INIT>
