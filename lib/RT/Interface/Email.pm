@@ -30,7 +30,7 @@ BEGIN {
 		      &ParseTicketId 
 		      &MailError 
 		      &ParseCcAddressesFromHead
-		      &ParseSenderAddressesFromHead 
+		      &ParseSenderAddressFromHead 
 		      &ParseErrorsToAddressFromHead
 		      
 		      &debug);
@@ -328,8 +328,11 @@ sub GetCurrentUser  {
     # like authentication
     my $Username = undef;
     if ($RT::LookupSenderInExternalDatabase) {
-	($Address, $Username, $Name, $UserFoundInExternalDatabase) = 
+	($UserFoundInExternalDatabase, %UserInfo) = 
 	  RT::LookupExternalUserInfo($Address, $Name);
+   
+       $Address = $UserInfo{'EmailAddress'};
+       $Username = $UserInfo{'Name'}; 
     }
     
     my $CurrentUser = RT::CurrentUser->new();
