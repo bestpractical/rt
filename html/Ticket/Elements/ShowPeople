@@ -27,15 +27,15 @@
     <td class="value"><%$Ticket->OwnerObj->Name%></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Requestors</&>:</td>
+    <td class="labeltop"><&|/l&>Requestors</&>:</td>
     <td class="value"><%$Ticket->RequestorAddresses%></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Cc</&>:</td>
+    <td class="labeltop"><&|/l&>Cc</&>:</td>
     <td class="value"><%$Ticket->CcAddresses%></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>AdminCc</&>:</td>
+    <td class="labeltop"><&|/l&>AdminCc</&>:</td>
     <td class="value"><%$Ticket->AdminCcAddresses%></td>
   </tr>
 </table>
