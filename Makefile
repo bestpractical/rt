@@ -377,7 +377,8 @@ tag-and-release:
 		aegis -cp -ind -delta $(TAG) . ;\
 		chmod 600 Makefile;\
 		aegis --report --project rt.$(RT_VERSION_MAJOR) \
-		      --cols 80 \
+		      --page_width 80 \
+		      --page_length 9999 \
 		      --change $(RT_VERSION_MINOR) --output Changelog Change_Log
 
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
