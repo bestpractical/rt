@@ -235,7 +235,7 @@ initialize: database acls
 
 
 database:
-	su -c "bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'" $(DBA)
+	su -c "sh bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'" $(DBA)
 
 acls:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
@@ -246,7 +246,7 @@ acls:
 			        s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
 				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
 
-	su -c "bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'" $(DBA)
+	su -c "sh bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'" $(DBA)
 
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
@@ -274,7 +274,7 @@ mux-links:
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 
-
+	chmod 4755 $(RT_PERL_MUX)
 
 
 	rm -f $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)

@@ -9,6 +9,7 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
+  $self->_Init();
   return $self;
 }
 

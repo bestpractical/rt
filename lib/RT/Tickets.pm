@@ -6,7 +6,10 @@ use DBIx::EasySearch;
 sub new {
   my $pkg= shift;
   my $self = SUPER::new $pkg;
+  $self-
 
+sub _Init {
+  my $self = shift;
   $self->{'table'} = "transaction";
   $self->{'primary_key'} = "id";
   return($self);
@@ -30,9 +33,9 @@ sub NewItem {
 
 sub Owner {
    my $self = shift;
-   my @owners = @_;
+   my $owner = shift;
    $self->Limit(FIELD=> 'Owner',
-		VALUES=> @Owners);
+		VALUE=> "$owner");
 
 }
 

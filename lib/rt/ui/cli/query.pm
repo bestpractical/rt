@@ -1,48 +1,45 @@
 # $Header$
-# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #
 
  package rt::ui::cli::query;
  
- sub activate {
-   
-   use RT::User;
-   print STDERR "foo\n";
-   ($current_user,$tmp)=getpwuid($<);
-   
-   $CurrentUser = new RT::User($current_user);
-   $CurrentUser->load($current_user);
-   
-   print STDERR "bar\n";
-   print STDERR "You are coming in as ".$CurrentUser->UserId."\n";
-   
-   &parse_args;
- }
- 
- 
- my $Requests=&build_query();
+sub activate {
+ &GetCurrentUser;
+ &ParseArgs();
+ return(0);
+}
 
- $count=&rt::get_queue($criteria,$CurrentUser->UserId);
- if (!$format_string) {
-   $format_string = "%n%p%o%g%l%t%r%s";
- }
- 
- &print_header($format_string);
- 
- while (my $Request = $Query->Next) {
-   #do this because we're redefining the format string internally each run.
-   my ($format_string) = $format_string;
-   
-   while ($format_string) {
-     ($field, $format_string) = split (/\%/, $format_string,2);  
-     
-     if  ($field =~ /^n(\d*)$/){ 
-       $length = $1;
-       if (!$length) {$length=6;}
-       printf "%-${length}.${length}s ", $Request->Id;
-     }
-     elsif ($field =~ /^d(\d*)$/){
+
+sub ParseArgs {
+
+  
+  my $Requests=&build_query();
+  if (!$Requests) {
+    print "No result found\n";
+    return
+  }
+  
+  if (!$format_string) {
+    $format_string = "%n%p%o%g%l%t%r%s";
+  }
+  
+  &print_header($format_string);
+  
+  while (my $Request = $Requests->Next) {
+    #do this because we're redefining the format string internally each run.
+    my ($format_string) = $format_string;
+    
+    while ($format_string) {
+      ($field, $format_string) = split (/\%/, $format_string,2);  
+      
+      if  ($field =~ /^n(\d*)$/){ 
+	$length = $1;
+	if (!$length) {$length=6;}
+	printf "%-${length}.${length}s ", $Request->Id;
+      }
+      elsif ($field =~ /^d(\d*)$/){
        my $length = $1;
        if ($Request->DateDue > 0) {
 	 my $date = localtime($Request->DateDue);
@@ -111,138 +108,131 @@
    }
    print "\n";
  }
- 
- sub build_query {
-    local ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
-    if (!$ARGV) {
-      return();
-    }
-    if (($ARGV[0] eq '-help')  or ($ARGV[0] eq '--help') or ($ARGV[0] eq '-h')) {
-      &usage();
-#      exit(0);
+}
+  
+sub build_query {
+  my ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
+  use RT::Tickets;
+  my $Requests = RT::Tickets->new($CurrentUser);
+
+#  if (!$ARGV) {
+#    return();
+#  }
+  if (($ARGV[0] eq '-help')  or ($ARGV[0] eq '--help') or ($ARGV[0] eq '-h')) {
+    &usage();
+    return();
+  }
+
+  for ($i=0;$i<=$#ARGV;$i++) {
+    if ($ARGV[$i] eq '-format') {
+      $format_string = $ARGV[++$i];
+      
     }
     
-    my $Requests = RT::Tickets->new($CurrentUser);
-    
-    if (&rt::is_a_queue($ARGV[0])){
-      $queue_ops = "queue_id = \'$ARGV[0]\'";
+    if ($ARGV[$i] eq '-queue') {
+      my $queue_id = $ARGV[++$i];
+      $Requests->Limit( FIELD => 'queue',
+			VALUE => "$queue_id");
     }
     
-    for ($i=0;$i<=$#ARGV;$i++) {
-      if ($ARGV[$i] eq '-format') {
-	$format_string = $ARGV[++$i];
-	
-      }
+    if ($ARGV[$i] eq '-owner') {
+      my $owner = $ARGV[++$i];
+      $Requests->Limit( FIELD => 'owner',
+			VALUE => "$owner");
       
-      if ($ARGV[$i] eq '-queue') {
-	my $queue_id = $ARGV[++$i];
-	$Requests->Limit( FIELD => 'queue',
-			  VALUE => "$queue_id");
-	  
-
-      }
-
-      if ($ARGV[$i] eq '-owner') {
-	my $owner = $ARGV[++$i];
-	$Requests->Limit( FIELD => 'owner',
-			  VALUE => "$owner");
-	
-      }
+    }
+    
+    if ($ARGV[$i] eq '-unowned'){
+      $Requests->Limit( FIELD => 'owner',
+			VALUE => "");
       
-      if ($ARGV[$i] eq '-unowned'){
-	$Requests->Limit( FIELD => 'owner',
-			  VALUE => "");
-
-      }
-      if ($ARGV[$i] =~ '-prio'){
-	my $operator = $ARGV[++$i];
-	my $priority = $ARGV[++$i];
-	$Requests->Limit( FIELD => 'priority',
-			  OPERATOR => "$operator",
-			  VALUE => "$priority");
-
-	$prio_ops .= " priority $ARGV[++$i] $ARGV[++$i] ";
-      }
+    }
+    if ($ARGV[$i] =~ '-prio'){
+      my $operator = $ARGV[++$i];
+      my $priority = $ARGV[++$i];
+      $Requests->Limit( FIELD => 'priority',
+			OPERATOR => "$operator",
+			VALUE => "$priority");
+    }
+    
+    if ($ARGV[$i] =~ '-stat'){
+      my $status = $ARGV[++$i];
+      $Requests->Limit( FIELD => 'status',
+			VALUE => "$status");
+    }
+    
+    if ($ARGV[$i] eq '-area'){
+      my $area = $ARGV[++$i];
+      $Requests->Limit( FIELD => 'area',
+			VALUE => "$area");
+    }
+    
+    if ($ARGV[$i] eq '-open'){
+      $Requests->Limit( FIELD => 'status',
+			VALUE => "open");
+    }
+    if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
+      $Requests->Limit( FIELD => 'status',
+			VALUE => "resolved");
       
-      if ($ARGV[$i] =~ '-stat'){
-	my $status = $ARGV[++$i];
-	$Requests->Limit( FIELD => 'status',
-			  VALUE => "$status");
-      }
       
-      if ($ARGV[$i] eq '-area'){
-	my $area = $ARGV[++$i];
-	$Requests->Limit( FIELD => 'area',
-			  VALUE => "$area");
-      }
-      
-      if ($ARGV[$i] eq '-open'){
-	$Requests->Limit( FIELD => 'status',
-			  VALUE => "open");
-      }
-      if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
-	$Requests->Limit( FIELD => 'status',
-			  VALUE => "resolved");
-
-	
-      }
-      if ($ARGV[$i] eq '-dead'){
-	$Requests->Limit( FIELD => 'status',
-			  VALUE => "dead");
-	
-      }    
-      
-      if ($ARGV[$i] eq '-stalled'){
-	$Requests->Limit( FIELD => 'status',
-			  VALUE => "stalled");
-      }
-      
-      if ($ARGV[$i] eq '-user') {
-	my $requestors = $ARGV[++$i];
-	$Requests->Limit( FIELD => 'requestors',
-			  VALUE => "%$requestors%",
-			  OPERATOR => 'LIKE');
-      }
-      
-
-      
-      #TODO: DEAL WITH ORDERING 
-      if ($ARGV[$i] eq '-orderby') {
-	if ($order_ops){
-	  $order_ops .= ", ";
-	}
-	$order_ops .= $ARGV[++$i]; 
-      }
-      if ($ARGV[$i] eq '-r') {
-	$reverse = ' DESC'; 
-      }
-      
-      if ($ARGV[$i] eq '-t') {       
-	if ($order_ops){
-	  $order_ops .= ", ";
-	}
-	$order_ops .= "date_acted"; 
-      }
+    }
+    if ($ARGV[$i] eq '-dead'){
+      $Requests->Limit( FIELD => 'status',
+			VALUE => "dead");
     }    
     
-  
-    #DEAL WITH DEFAULTS
-
-    if (!$query_string) {
-      $query_string = "status = \'open\'";
-    }
-    if ($order_ops) {
-      $query_string .= "ORDER BY $order_ops";
-    }
-    else {
-      $query_string .= "ORDER BY serial_num";
-    }
-    if ($reverse) {
-      $query_string .= " DESC";
+    if ($ARGV[$i] eq '-stalled'){
+      $Requests->Limit( FIELD => 'status',
+			VALUE => "stalled");
     }
     
-    return ($Requests);
+    if ($ARGV[$i] eq '-user') {
+      my $requestors = $ARGV[++$i];
+      $Requests->Limit( FIELD => 'requestors',
+			VALUE => "%$requestors%",
+			OPERATOR => 'LIKE');
+    }
+    
+    
+    
+    #TODO: DEAL WITH ORDERING 
+    if ($ARGV[$i] eq '-orderby') {
+      if ($order_ops){
+	$order_ops .= ", ";
+      }
+      $order_ops .= $ARGV[++$i]; 
+    }
+    if ($ARGV[$i] eq '-r') {
+      $reverse = ' DESC'; 
+    }
+    
+    if ($ARGV[$i] eq '-t') {       
+      if ($order_ops){
+	$order_ops .= ", ";
+      }
+      $order_ops .= "date_acted"; 
+    }
+  }    
+  
+  
+  #DEAL WITH DEFAULTS
+  
+  if (!$query_string) {
+    $query_string = "status = \'open\'";
   }
+  if ($order_ops) {
+    $query_string .= "ORDER BY $order_ops";
+  }
+  else {
+    $query_string .= "ORDER BY serial_num";
+  }
+  if ($reverse) {
+    $query_string .= " DESC";
+  }
+  
+  return ($Requests);
+}
   sub usage {
     print <<EOFORM;
     
@@ -391,5 +381,25 @@ sub print_header {
     }
     print "\n";
   }
+
+
+sub GetCurrentUser {
+  if (!$CurrentUser) {
+    my ($CurrentUid);
+    require RT::CurrentUser;
+        
+    #Instantiate a user object
+    
+    ($CurrentUid,undef)=getpwuid($<);
+    #If the current user is 0, then RT will assume that the User object
+    #is that of the currentuser.
+    $CurrentUser = new RT::CurrentUser();
+    if (!$CurrentUser->Load($CurrentUid)) {
+      print "You have no RT access\n";
+      return(0);
+    }
+  }
+  return($CurrentUser);
+}
 
 1;

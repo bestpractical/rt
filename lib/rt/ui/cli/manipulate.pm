@@ -8,7 +8,7 @@ package rt::ui::cli::manipulate;
 
 sub activate {
  &GetCurrentUser;
- &ParseArgs($CurrentUser);
+ &ParseArgs();
  return(0);
 }
 
