@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	51
+RT_VERSION_PATCH	=	52
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -77,7 +77,7 @@ RT_MAILGATE_BIN		=	$(RT_BIN_PATH)/rt-mailgate
 # "mysql" is known to work.
 # "Pg" is known to work
 # "Oracle" is in the early stages of working.
-#	 Dave Morgan <dmorgan@bartertrust.com> owns the oracle port
+
 
 DB_TYPE	        =	mysql
 
@@ -92,6 +92,10 @@ DB_HOME	      	= /usr
 # Set DB_DBA to the name of a DB user with permission to create new databases 
 # Set DB_DBA_PASSWORD to that user's password (if you don't, you'll be prompted
 # later)
+
+# For mysql, you probably want 'root'
+# For Pg, you probably want 'postgres' 
+# For oracle, you want 'system'
 
 DB_DBA	           =	root
 DB_DBA_PASSWORD	  =	
@@ -114,7 +118,7 @@ DB_HOST		=	localhost
 DB_RT_HOST			=	localhost
 
 # set this to the name you want to give to the RT database in 
-# your database server
+# your database server. For Oracle, this should be the name of your sid
 
 DB_DATABASE	=	rt2
 
@@ -126,10 +130,6 @@ DB_RT_USER	=	rt_user
 # *** Change This Before Installation***
 
 DB_RT_PASS      =      rt_pass
-
-# if you want to give the rt user different default privs, modify this file
-
-DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 
 # }}}
 
@@ -153,7 +153,7 @@ default:
 	@echo "Please read RT's readme before installing. Not doing so could"
 	@echo "be dangerous."
 
-install: dirs initialize upgrade insert instruct
+install: dirs initialize.$(DB_TYPE) upgrade insert instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
@@ -248,14 +248,17 @@ libs-install:
 html-install:
 	cp -rp ./webrt/* $(MASON_HTML_PATH)
 
-initialize: database acls
+
 
 genschema:
 	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' generate
 
-database:
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' insert
 
+initialize.Pg: createdb initdb.dba acls 
+
+initialize.mysql: createdb acls initdb.rtuser
+
+initialize.Oracle: acls initdb.rtuser
 
 acls:
 	cp etc/acl.$(DB_TYPE) '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
@@ -265,8 +268,16 @@ acls:
 				s'!!DB_RT_HOST!!'$(DB_RT_HOST)'g;\
 				s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
 				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
-
 	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)' 
+
+createdb: 
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' create
+
+initdb.dba:
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' insert
+
+initdb.rtuser:
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_RT_USER)' '$(DB_DATABASE)' insert
 
 
 

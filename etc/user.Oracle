@@ -1,9 +1,0 @@
-CREATE USER &&1 identified by &&2
-temporary tablespace TEMP
-default tablespace USERS
-quota unlimited on USERS;
-
-grant connect, resource to &&1;
-
-exit;
-

@@ -19,7 +19,7 @@ $SCHEMA_FILE = "$SCHEMA_DIR/schema.pm"; #hmm
 
 ($DB_TYPE, $DB_HOME, $DB_HOST, $DB_DBA, $DB_DATABASE, $ACTION) = @ARGV;
 
-prompt_for_dba_password();
+
 
 print_config_params();
 
@@ -32,15 +32,20 @@ elsif ($DB_TYPE eq 'Oracle') {
    $dsn .= "$DB_DATABASE";
 }
 
-if ($ACTION eq 'insert' ) {
+
+if ($ACTION eq 'create') {
     unless ($DB_TYPE eq 'Oracle') {
+	prompt_for_dba_password();
 	drop_db();
 	create_db();
     }
+}
+elsif ($ACTION eq 'insert' ) {
+    prompt_for_dba_password();
     insert_schema();
 }
-
 elsif ($ACTION eq 'generate') {
+    prompt_for_dba_password();
     generate_schema();
 }
 else {

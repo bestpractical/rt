@@ -1,8 +1,24 @@
 #!/bin/sh
-# Place Holder
-# Future 
-#	create proper data management schema
-#	with a data entry user with no DDL privileges
-# 	does not tie in easily with the way mysql and pg work
-exit;
+
+DATABASEHOME=$1
+HOSTNAME=$2
+DATABASEADMIN=$3
+DBAPASSWD=$4
+DATABASENAME=$5
+DATABASEACLS=$6
+
+BINDIR=${DATABASEHOME}/bin
+
+echo "DBHOME = $DATABASEHOME"
+echo "HOSTNAME = $HOSTNAME"
+echo "DATABASEADMIN = $DATABASEADMIN"
+echo "DBAPASSWD = $DBAPASSWD"
+echo "DATABASENAME = $DATABASENAME"
+
+PATH=$PATH:$BINDIR
+export PATH
+
+echo "$BINDIR/sqlplus ${DATABASEADMIN}@${DATABASENAME}  @$DATABASEACLS"
+
+$BINDIR/sqlplus ${DATABASEADMIN}@${DATABASENAME}  @$DATABASEACLS
 

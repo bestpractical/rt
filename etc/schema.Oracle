@@ -1,25 +1,53 @@
-CREATE SEQUENCE GROUPS_seq;
-CREATE TABLE Groups (
-	id 		NUMBER(11,0) PRIMARY KEY,
-	Name 		VARCHAR2(16) UNIQUE,
-	Description 	VARCHAR(64)
+CREATE SEQUENCE KEYWORDSELECTS_seq;
+CREATE TABLE KeywordSelects (
+	id		NUMBER(11, 0) PRIMARY KEY,
+	Name		VARCHAR2(255),
+	Keyword		NUMBER(11, 0),
+	Single		NUMBER(11, 0),
+	Depth		NUMBER(11, 0) DEFAULT 0,
+	ObjectType	VARCHAR2(32) NOT NULL,
+	ObjectField	VARCHAR2(32),
+	ObjectValue	VARCHAR2(255),
+	Disabled		NUMBER(11, 0) DEFAULT 0
 );
-CREATE SEQUENCE WATCHERS_seq;
-CREATE TABLE Watchers (
-   	id 		NUMBER(11,0) PRIMARY KEY,
-   	Type 		VARCHAR2(16), 	/*One of: Requestor, Cc, AdminCc*/
-   	Scope 		VARCHAR2(16),	/*One of: "Queue", "Ticket" as for now*/
-					/*... might be extended to "Keywords", "Owners", etc.*/
-   	Value 		NUMBER(11,0),	/*Which Queue or Ticket this Watcher Watches.*/
-   	Email 		VARCHAR2(255),  /*Where this Watch should send mail. If null, use Owner->EmailAddress*/
-   	Quiet 		NUMBER(11,0),	/*Should we send mail to this one at all.*/
-   	Owner 		NUMBER(11,0),	/*A reference to the users table. If it's for a Cc or AdminCc who doesn't*/
-					/*have an RT account, Owner should be 0.  OwnerObj->EmailAddress is */
-					/*usually equal to Email.  Owner will be automaticly set by Watchers->Create.*/
-   	Creator 	NUMBER(11,0),
-   	Created 	DATE,
-   	LastUpdatedBy 	NUMBER(11,0),
-   	LastUpdated 	DATE
+
+CREATE INDEX KeywordSelects1 ON KeywordSelects (Keyword);
+CREATE INDEX KeywordSelects2 ON 
+	KeywordSelects(ObjectType, ObjectField, ObjectValue);
+
+
+CREATE SEQUENCE ATTACHMENTS_seq;
+CREATE TABLE Attachments (
+  	id 		NUMBER(11,0) PRIMARY KEY,
+  	TransactionId	NUMBER(11,0) NOT NULL,
+  	Parent 		NUMBER(11,0), 		
+  	MessageId 	VARCHAR2(160),
+  	Subject 	VARCHAR2(255),
+  	Filename 	VARCHAR2(255),
+  	ContentType 	VARCHAR2(80),
+  	ContentEncoding 	VARCHAR2(80),
+  	Content 	CLOB,
+  	Headers 	CLOB,
+  	Creator 	NUMBER(11,0),
+  	Created 	DATE,
+  	Disabled 	NUMBER(11,0) DEFAULT 0
+);
+
+CREATE SEQUENCE QUEUES_seq;
+CREATE TABLE Queues (
+ 	id 			NUMBER(11, 0) PRIMARY KEY,
+	Name 			VARCHAR2(40) NOT NULL UNIQUE,
+	Description 		VARCHAR2(120),
+ 	CorrespondAddress 	VARCHAR2(40),
+ 	CommentAddress 		VARCHAR2(40),
+ 	InitialPriority 	NUMBER(11, 0),		
+ 	FinalPriority 		NUMBER(11, 0),
+ 	DefaultDueIn 		NUMBER(11, 0),
+  	Creator 		NUMBER(11, 0),
+  	Created 		DATE,
+  	LastUpdatedBy 		NUMBER(11, 0),
+  	LastUpdated		DATE,
+  	Disabled 		NUMBER(11,0) DEFAULT 0
 );
 
 CREATE SEQUENCE LINKS_seq;
@@ -28,6 +56,8 @@ CREATE TABLE Links (
   	Base 		VARCHAR2(255),
   	Target 		VARCHAR2(255),
   	Type 		VARCHAR2(20) NOT NULL,
+	LocalTarget	NUMBER(11,0),
+	LocalBase	NUMBER(11,0),
   	LastUpdatedBy 	NUMBER(11,0),
   	LastUpdated 	DATE,
   	Creator 	NUMBER(11,0),
@@ -36,21 +66,100 @@ CREATE TABLE Links (
 
 CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
 
-CREATE SEQUENCE TEMPLATES_seq;
-CREATE TABLE Templates (
-  	id 		NUMBER(11,0) PRIMARY KEY,
-	Queue 		NUMBER(11,0) DEFAULT 0 NOT NULL,
-	Name		VARCHAR2(40) NOT NULL UNIQUE,
-	Description	VARCHAR2(120),
-	Type		VARCHAR2(16),
-  	Language 	VARCHAR2(16), 
-  	TranslationOf 	NUMBER(11,0),
-  	Content 	CLOB,
-  	LastUpdated 	DATE,
-  	LastUpdatedBy 	NUMBER(11,0),
-  	Creator 	NUMBER(11,0),
-  	Created 	DATE
+
+
+CREATE SEQUENCE GROUPS_seq;
+CREATE TABLE Groups (
+	id 		NUMBER(11,0) PRIMARY KEY,
+	Name 		VARCHAR2(16) UNIQUE,
+	Description 	VARCHAR(64),
+	Pseudo		NUMBER(11,0) DEFAULT 0
 );
+
+CREATE SEQUENCE WATCHERS_seq;
+CREATE TABLE Watchers (
+   	id 		NUMBER(11,0) PRIMARY KEY,
+   	Type 		VARCHAR2(16), 	
+   	Scope 		VARCHAR2(16),	
+   	Value 		NUMBER(11,0),	
+   	Email 		VARCHAR2(255),  
+   	Quiet 		NUMBER(11,0),	
+   	Owner 		NUMBER(11,0),	
+   	Creator 	NUMBER(11,0),
+   	Created 	DATE,
+   	LastUpdatedBy 	NUMBER(11,0),
+   	LastUpdated 	DATE
+);
+
+
+
+CREATE SEQUENCE SCRIPCONDITIONS_seq;
+CREATE TABLE ScripConditions (
+ 	id 			NUMBER(11, 0) PRIMARY KEY,
+	Name 			VARCHAR2(255),
+	Description 		VARCHAR2(255),
+	ExecModule		VARCHAR2(60),
+	Argument		VARCHAR2(255),
+	ApplicableTransTypes	VARCHAR2(60),
+  	Creator 		NUMBER(11, 0),
+  	Created 		DATE,
+  	LastUpdatedBy 		NUMBER(11, 0),
+  	LastUpdated		DATE
+);
+
+
+CREATE SEQUENCE TRANSACTIONS_seq;
+CREATE TABLE Transactions (
+  	id 			NUMBER(11,0) PRIMARY KEY,
+  	EffectiveTicket 	NUMBER(11,0),
+  	Ticket 			NUMBER(11,0),
+  	TimeTaken 		NUMBER(11,0),
+  	Type 			VARCHAR2(20),
+  	Field 			VARCHAR2(40),
+  	OldValue 		VARCHAR2(255),
+  	NewValue 		VARCHAR2(255),
+  	Data 			VARCHAR2(100),
+  	Creator 		NUMBER(11,0),
+  	Created 		DATE,
+  	Disabled 		NUMBER(11,0) DEFAULT 0
+);
+
+CREATE SEQUENCE SCRIPS_seq;
+CREATE TABLE Scrips (
+  	id 		NUMBER(11,0) PRIMARY KEY,	
+	ScripCondition 	NUMBER(11,0),
+	ScripAction	NUMBER(11,0),
+	Stage		VARCHAR2(32),
+	Queue		NUMBER(11,0),
+	Template	NUMBER(11,0),
+  	Creator 	NUMBER(11,0),
+  	Created 	DATE,
+  	LastUpdatedBy 	NUMBER(11,0),
+  	LastUpdated 	DATE  
+);
+
+
+
+
+CREATE SEQUENCE ACL_seq;
+CREATE TABLE ACL (
+	id 		NUMBER(11,0) PRIMARY KEY,
+	PrincipalId 	NUMBER(11,0),
+	PrincipalType 	VARCHAR2(25),
+	RightName	VARCHAR2(25),
+	RightScope	VARCHAR2(25),
+	RightAppliesTo  NUMBER(11,0)
+);
+
+CREATE SEQUENCE GROUPMEMBERS_seq;
+CREATE TABLE GroupMembers (
+	id 		NUMBER(11,0) PRIMARY KEY,
+	GroupId 	NUMBER(11,0),
+	UserId 		NUMBER(11,0) 
+);
+
+CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, UserId);
+
 
 CREATE SEQUENCE OBJECTKEYWORDS_seq;
 CREATE TABLE ObjectKeywords (
@@ -65,29 +174,17 @@ CREATE UNIQUE INDEX ObjectKeywords1 ON ObjectKeywords
 	(ObjectId, ObjectType, KeywordSelect, Keyword);
 CREATE INDEX ObjectKeywords3 ON ObjectKeywords (Keyword);
 
-CREATE SEQUENCE ACL_seq;
-CREATE TABLE ACL (
-	id 		NUMBER(11,0) PRIMARY KEY,
-	PrincipalId 	NUMBER(11,0),
-	PrincipalType 	VARCHAR2(25),
-	RightName	VARCHAR2(25),
-	RightScope	VARCHAR2(25),
-	RightAppliesTo  NUMBER(11,0)
+CREATE SEQUENCE KEYWORDS_seq;
+CREATE TABLE Keywords (
+	id		NUMBER(11, 0) PRIMARY KEY,
+	Name		VARCHAR2(255) NOT NULL,
+	Description	VARCHAR2(255),
+	Parent		NUMBER(11, 0),
+	Disabled		NUMBER(11, 0) DEFAULT 0
 );
 
-CREATE SEQUENCE SCRIPACTIONS_seq;
-CREATE TABLE ScripActions (
-  id		NUMBER(11,0) PRIMARY KEY,
-  Name		VARCHAR2(255),
-  Description	VARCHAR2(255),
-  ExecModule	VARCHAR2(60),
-  Argument	VARCHAR2(255),
-  Creator	NUMBER(11,0),
-  Created	DATE,
-  LastUpdatedBy	NUMBER(11,0),
-  LastUpdated	DATE
-);
-
+CREATE UNIQUE INDEX Keywords1 ON Keywords (Name, Parent);
+CREATE INDEX Keywords3 ON Keywords (Parent);
 
 CREATE SEQUENCE USERS_seq;
 CREATE TABLE Users (
@@ -99,7 +196,6 @@ CREATE TABLE Users (
   	EmailAddress 		VARCHAR2(120),
   	FreeFormContactInfo 	CLOB,
 	Organization		VARCHAR2(200),
-	Disabled		NUMBER(11,0),
 	Privileged		NUMBER(11,0),
   	RealName 		VARCHAR2(120),
   	NickName 		VARCHAR2(16),
@@ -125,38 +221,26 @@ CREATE TABLE Users (
   	Created 		DATE,
   	LastUpdatedBy 		NUMBER(11,0),
   	LastUpdated 		DATE,
-	Deleted			NUMBER(11,0)
+	Disabled			NUMBER(11,0) DEFAULT 0
 );
 
 
-CREATE SEQUENCE SCRIPS_seq;
-CREATE TABLE Scrips (
-  	id 		NUMBER(11,0) PRIMARY KEY,	
-	ScripCondition 	NUMBER(11,0),
-	ScripAction	NUMBER(11,0),
-	Stage		VARCHAR2(32),
-	Queue		NUMBER(11,0),
-	Template	NUMBER(11,0),
-  	Creator 	NUMBER(11,0),
-  	Created 	DATE,
-  	LastUpdatedBy 	NUMBER(11,0),
-  	LastUpdated 	DATE  
-);
+
 
 CREATE SEQUENCE TICKETS_seq;
 CREATE TABLE Tickets (
   	id			NUMBER(11, 0) PRIMARY KEY,
   	EffectiveId		NUMBER(11, 0),
   	Queue 			NUMBER(11,0),
-  	Type 			VARCHAR2(16), 		/*Ticket, Task, Bug*/
-  	IssueStatement 		NUMBER(11,0), 		/*Reference to Attachments*/
-  	Resolution 		NUMBER(11,0),		/*Reference to Attachments*/
-  	Owner 			NUMBER(11,0),		/*Reference to Users*/
+  	Type 			VARCHAR2(16), 		
+  	IssueStatement 		NUMBER(11,0), 	
+  	Resolution 		NUMBER(11,0),		
+  	Owner 			NUMBER(11,0),		
   	Subject			VARCHAR2(200) DEFAULT '', 
   	InitialPriority 	NUMBER(11,0) DEFAULT 0,
   	FinalPriority 		NUMBER(11,0) DEFAULT 0,
   	Priority 		NUMBER(11,0) DEFAULT 0,
-  	Status 			VARCHAR2(10), 		/*For now, One of "Open, Stalled, Resolved, Dead"*/
+  	Status 			VARCHAR2(10), 		
   	TimeWorked 		NUMBER(11,0) DEFAULT 0,
 	TimeLeft 		NUMBER(11,0) DEFAULT 0,
   	Told 			DATE,
@@ -168,112 +252,36 @@ CREATE TABLE Tickets (
   	LastUpdated 		DATE,
 	Creator 		NUMBER(11,0),
   	Created 		DATE,
-  	Deleted 		NUMBER(11,0)
+  	Disabled 		NUMBER(11,0) DEFAULT 0
 );
 
-CREATE SEQUENCE KEYWORDSELECTS_seq;
-CREATE TABLE KeywordSelects (
-	id		NUMBER(11, 0) PRIMARY KEY,
-	Name		VARCHAR2(255),
-	Keyword		NUMBER(11, 0),
-	Single		NUMBER(11, 0),
-	Depth		NUMBER(11, 0) DEFAULT 0,
-	ObjectType	VARCHAR2(32) NOT NULL,
-	ObjectField	VARCHAR2(32),
-	ObjectValue	VARCHAR2(255),
-	Deleted		NUMBER(11, 0)
-);
-
-CREATE INDEX KeywordSelects1 ON KeywordSelects (Keyword);
-CREATE INDEX KeywordSelects2 ON 
-	KeywordSelects(ObjectType, ObjectField, ObjectValue);
-
-
-CREATE SEQUENCE KEYWORDS_seq;
-CREATE TABLE Keywords (
-	id		NUMBER(11, 0) PRIMARY KEY,
-	Name		VARCHAR2(255) NOT NULL,
-	Description	VARCHAR2(255),
-	Parent		NUMBER(11, 0),
-	Deleted		NUMBER(11, 0)
-);
-
-CREATE UNIQUE INDEX Keywords1 ON Keywords (Name, Parent);
-CREATE INDEX Keywords3 ON Keywords (Parent);
-
-
-CREATE SEQUENCE GROUPMEMBERS_seq;
-CREATE TABLE GroupMembers (
-	id 		NUMBER(11,0) PRIMARY KEY,
-	GroupId 	NUMBER(11,0),
-	UserId 		NUMBER(11,0) 
-);
-
-CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, UserId);
-
-
-CREATE SEQUENCE QUEUES_seq;
-CREATE TABLE Queues (
- 	id 			NUMBER(11, 0) PRIMARY KEY,
-	Name 			VARCHAR2(40) NOT NULL UNIQUE,
-	Description 		VARCHAR2(120),
- 	CorrespondAddress 	VARCHAR2(40),
- 	CommentAddress 		VARCHAR2(40),
- 	InitialPriority 	NUMBER(11, 0),		
- 	FinalPriority 		NUMBER(11, 0),
- 	DefaultDueIn 		NUMBER(11, 0),		/*reqs in this queue are due in X days by default*/
-  	Creator 		NUMBER(11, 0),
-  	Created 		DATE,
-  	LastUpdatedBy 		NUMBER(11, 0),
-  	LastUpdated		DATE,
-  	Deleted 		NUMBER(11,0)
+CREATE SEQUENCE SCRIPACTIONS_seq;
+CREATE TABLE ScripActions (
+  id		NUMBER(11,0) PRIMARY KEY,
+  Name		VARCHAR2(255),
+  Description	VARCHAR2(255),
+  ExecModule	VARCHAR2(60),
+  Argument	VARCHAR2(255),
+  Creator	NUMBER(11,0),
+  Created	DATE,
+  LastUpdatedBy	NUMBER(11,0),
+  LastUpdated	DATE
 );
 
 
-CREATE SEQUENCE TRANSACTIONS_seq;
-CREATE TABLE Transactions (
-  	id 			NUMBER(11,0) PRIMARY KEY,
-  	EffectiveTicket 	NUMBER(11,0),
-  	Ticket 			NUMBER(11,0),
-  	TimeTaken 		NUMBER(11,0),
-  	Type 			VARCHAR2(20),
-  	Field 			VARCHAR2(40),
-  	OldValue 		VARCHAR2(255),
-  	NewValue 		VARCHAR2(255),
-  	Data 			VARCHAR2(100),
-  	Creator 		NUMBER(11,0),
-  	Created 		DATE,
-  	Deleted 		NUMBER(11,0)
-);
-
-
-CREATE SEQUENCE SCRIPCONDITIONS_seq;
-CREATE TABLE ScripConditions (
- 	id 			NUMBER(11, 0) PRIMARY KEY,
-	Name 			VARCHAR2(255),
-	Description 		VARCHAR2(255),
-	ExecModule		VARCHAR2(60),
-	Argument		VARCHAR2(255),
-	ApplicableTransTypes	VARCHAR2(60),
-  	Creator 		NUMBER(11, 0),
-  	Created 		DATE,
-  	LastUpdatedBy 		NUMBER(11, 0),
-  	LastUpdated		DATE
-);
-
-
-CREATE SEQUENCE ATTACHMENTS_seq;
-CREATE TABLE Attachments (
+CREATE SEQUENCE TEMPLATES_seq;
+CREATE TABLE Templates (
   	id 		NUMBER(11,0) PRIMARY KEY,
-  	TransactionId	NUMBER(11,0) NOT NULL,
-  	Parent 		NUMBER(11,0), 		/*Another attachment.*/
-  	MessageId 	VARCHAR2(160),
-  	Subject 	VARCHAR2(255),
-  	Filename 	VARCHAR2(255),
-  	ContentType 	VARCHAR2(80),
+	Queue 		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Name		VARCHAR2(40) NOT NULL UNIQUE,
+	Description	VARCHAR2(120),
+	Type		VARCHAR2(16),
+  	Language 	VARCHAR2(16), 
+  	TranslationOf 	NUMBER(11,0),
   	Content 	CLOB,
-  	Headers 	CLOB,
+  	LastUpdated 	DATE,
+  	LastUpdatedBy 	NUMBER(11,0),
   	Creator 	NUMBER(11,0),
-  	Created 	DATE,
-  	Deleted 	NUMBER(11,0)
+  	Created 	DATE
 );
+
