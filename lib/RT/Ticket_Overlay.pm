@@ -2260,7 +2260,8 @@ sub DeleteLink {
     $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
     #it's a real link. 
     if ( $link->id ) {
-        $RT::Logger->debug( "We're going to delete link " . $link->id . "\n" );
+
+        my $linkid = $link->id;
         $link->Delete();
 
         my $TransString =
@@ -2272,7 +2273,7 @@ sub DeleteLink {
             TimeTaken => 0
         );
 
-        return ( $linkid, $self->loc("Link deleted ([_1])", $TransString), $transactionid );
+        return ( $Trans, $self->loc("Link deleted ([_1])", $TransString));
     }
 
     #if it's not a link we can find

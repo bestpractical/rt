@@ -87,5 +87,39 @@ sub Limit  {
 }
 # }}}
 
+# {{{ LimitRefersTo 
+
+=head2 LimitRefersTo URI
+
+find all things that refer to URI
+
+=cut
+
+sub LimitRefersTo {
+    my $self = shift;
+    my $URI = shift;
+
+    $self->Limit(FIELD => 'Type', VALUE => 'RefersTo');
+    $self->Limit(FIELD => 'Target', VALUE => $URI);
+}
+
+# }}}
+# {{{ LimitReferredToBy
+
+=head2 LimitReferredToBy URI
+
+find all things that URI refers to
+
+=cut
+
+sub LimitReferredToBy {
+    my $self = shift;
+    my $URI = shift;
+
+    $self->Limit(FIELD => 'Type', VALUE => 'RefersTo');
+    $self->Limit(FIELD => 'Base', VALUE => $URI);
+}
+
+# }}}
 1;
 
