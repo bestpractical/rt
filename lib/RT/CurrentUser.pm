@@ -240,6 +240,11 @@ sub Load  {
   if ($identifier !~ /\D/) {
     $self->SUPER::LoadById($identifier);
   }
+
+  elsif (UNIVERSAL::isa($identifier,"RT::User")) { 
+         # DWIM if they pass a user in 
+         $self->SUPER::LoadById($identifier->Id); 
+  } 
   else {
       # This is a bit dangerous, we might get false authen if somebody
       # uses ambigous userids or real names:
