@@ -19,6 +19,10 @@ TD, TH { /* ns workaround */
   font-family: "Helvetica", sans-serif;
 }
 
+TR.oddline { 
+    background-color : #eeeeee;
+}
+
 H1, H2, H3 { 
   margin-top: 0.2em;
   color: #336699;
