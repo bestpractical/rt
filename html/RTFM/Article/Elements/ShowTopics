@@ -15,20 +15,13 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-
-Topics:
 % my $topics = new RT::FM::ObjectTopicCollection($session{'CurrentUser'});
 % $topics->LimitToObject($article);
-% if ($topics->Count) {
-<ul>
 % my @topics;
 % while (my $t = $topics->Next) {
-<li><& /RTFM/Elements/ShowTopic, topic => $t->TopicObj &></li>
+<& /RTFM/Elements/ShowTopic, topic => $t->TopicObj &><br />
 % }
-</ul>
-% } else {
-<i>no topics</i>
-% }
+<br />
 
 <%args>
 $article => undef

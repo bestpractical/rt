@@ -20,11 +20,12 @@
     id => $id, 
     Title => $title, 
     current_subtab => 'RTFM/Article/Display.html?id='.$id &>
+<& Elements/ShowTopics, article => $article &>
+
 <emp><%$article->Summary%></emp>
 <br><br><br>
   <& Elements/ShowCustomFields, article => $article &>
 <br>
-<& Elements/ShowTopics, article => $article &>
 <br>
 <& Elements/ShowLinks, article => $article &>
 <%init>
