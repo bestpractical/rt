@@ -72,14 +72,10 @@ MigrateQueues();
 #  import queue ACLs for RT1 queues.
 
 #  import tickets from RT1.
+
 MigrateTickets();
 
-#  foreach ticket, 
-#  get the ticket core data
-#  get the ticket transaction data
-#  get the transaction attachments
-
-
+# {{{ sub MigrateQueues
 
 sub MigrateQueues {
 
@@ -186,11 +182,69 @@ sub MigrateQueues {
 
 	#Lets get the areas for this queue
 	MigrateAreas($queue);
-
+	MigrateQueueACLandAdminCcs($queue);
 	print "\n";
     }
     
 }
+# }}}
+
+# {{{ sub MigrateQueueACLandAdminCcs
+
+sub MigrateQueueACLandAdminCcs {
+    my $queue = shift;
+
+    my @displayrights = ( "SeeQueue", "ShowTemplate", "ShowScrips", 
+			  "ShowTicket", "ShowTicketComments");
+    my @manipulaterights = ( "CreateTicket", "ReplyToTicket", 
+			     "CommentOnTicket", "OwnTicket", 
+			     "ModifyTicket", "DeleteTicket");
+    my @adminrights = ( "ModifyACL", "ModifyQueueWatchers", 
+			"AdminKeywordSelects", "ModifyTemplate",
+			    "ModifyScrips");
+    
+    print "Granting queue rights.\n";
+    
+    my $sth = ExecStatement( "SELECT * from queue_acl WHERE " .
+			     "queue_id = " . $queue->id );
+    
+    while (my $row = $sth->fetchrow_hashref()) {
+	my @rights;
+	
+	print " Granting rights for: ".$row->{'user_id'}." ";
+	
+	@rights = (@rights, @displayrights) if ($row->{'display'});
+	@rights = (@rights, @manipulaterights) if ($row->{'manipulate'});
+	@rights = (@rights, @adminrights) if ($row->{'admin'});
+	
+	my $user = RT::User->new($RT::SystemUser);
+	$user->Load($row->{'user_id'});
+	
+	unless ($user->id) {
+	    print "Couldn't find user ".$row->{'user_id'}. 
+	      ". Not granting rights\n";
+	    return();
+	}
+	
+	foreach my $right (@rights) {
+	    print "$right...";
+	    $user->GrantQueueRight( RightName => $right,
+				    RightAppliesTo => $queue->id);
+	}
+	
+	print "...adding as AdminCc.";
+	$queue->AddAdminCc(Owner => $user->id);
+
+	print ".\n";
+    }
+    
+}
+
+
+
+# }}}
+
+# {{{ sub MigrateAreas
 
 sub MigrateAreas {
     my $queue = shift;
@@ -245,6 +299,11 @@ sub MigrateAreas {
     }
 }
 
+# }}}
+
+
+
+# {{{ sub MigrateUsers 
 
 sub MigrateUsers {
 
@@ -290,6 +349,9 @@ sub MigrateUsers {
         
 }
 
+# }}}
+
+# {{{ sub MigrateTickets
 
 sub MigrateTickets {
 
@@ -358,12 +420,16 @@ sub MigrateTickets {
 						 KeywordSelect => $area_sel->Id );
 	}
 	
-        ImportTransactions($ticket);
+        MigrateTransactions($ticket);
     }
     
 }
 
-sub ImportTransactions {
+# }}}
+
+# {{{ sub MigrateTransactions
+
+sub MigrateTransactions {
     my $ticket = shift;
     
     print "..transactions: ";
@@ -648,6 +714,9 @@ sub ImportTransactions {
     print "done.\n";
 }
 
+# }}}
+
+# {{{ sub ExecStatement
 
 sub ExecStatement {
     my $statement = shift;
@@ -658,3 +727,5 @@ sub ExecStatement {
     
     return ($sth);
 }
+
+# }}}
