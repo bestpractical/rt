@@ -110,14 +110,14 @@ unless ($Ticket->Load($id)) {
       # Eventually, take the ticket:
       # TODO: What if there are more Actions?
       if (exists $ARGS{Action} && $ARGS{Action} eq "Take") {
-         $Ticket->Take;
-	 push(@Actions, "Ticket taken!");
+         my ($res, $msg)=$Ticket->Take;
+	 push(@Actions, $msg);
       }
 
       # Eventually, take the ticket:
       if (exists $ARGS{Action} && $ARGS{Action} eq "Kill") {
-         $Ticket->Take;
-	 push(@Actions, "Ticket taken!");
+         my ($res, $msg)=$Ticket->Kill;
+	 push(@Actions, $msg);
       }
 
 </%INIT>

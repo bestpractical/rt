@@ -3,6 +3,7 @@
 <& /Elements/Footer &>
 
 <%INIT>
+# Try putting this one to 0 if you have troubles.
 if (1) {
 
 warn "WebURL Configuration ($RT::WebURL) does not match incoming URL (".$r->uri.")"
