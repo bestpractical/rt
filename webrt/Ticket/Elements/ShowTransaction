@@ -1,4 +1,4 @@
-      <& /Elements/TitleBoxStart, title => $Transaction->Description, titleright=> $RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "<a href=\"Create.html?id=".$Transaction->Ticket."&QuoteTransaction=".$Transaction->id."\">[Spawn]</a> | <a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."\">[Reply / Comment]</a>" &>
+      <& /Elements/TitleBoxStart, title => $Transaction->Description, titleright=> $RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "<a href=\"Create.html?id=".$Transaction->Ticket."&QuoteTransaction=".$Transaction->id."\">[Spawn]</a> | [<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Respond\">Reply</a> / <a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Comment\">Comment</a>]</a>" &>
       
     <TABLE WIDTH="100%">
       <TR>
@@ -30,7 +30,7 @@
 <%$message->Headers%>
 </pre>
 
-%   if ($message->ContentType =~ m{^(text/plain|message)}) {
+%   if ($message->ContentType =~ m{^(text/plain|message)} && length($message->Content)<13456) {
 <pre>
 %# TODO: We really should HTML'ify and/or HTML-escape the Content.
 <%$message->Content%>
@@ -38,7 +38,7 @@
 %    } 
 % else {
 	
-Attachment: <A HREF=""><% $message->ContentType %></a>
+Attachment: <A HREF="Display.html?PickUpTransaction=<%$message->Id%>"><% $message->ContentType %></a>
 %    }
 % }
 
