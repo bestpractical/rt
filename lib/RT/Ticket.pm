@@ -1714,7 +1714,7 @@ sub AddKeyword {
     
     my $Keyword = new RT::Keyword($self->CurrentUser);
     unless ($Keyword->Load($args{'Keyword'}) ) {
-	$RT::Logger->err("$self Couldn't load Keyword ".$args{'Keyword'});
+	$RT::Logger->err("$self Couldn't load Keyword ".$args{'Keyword'} ."\n");
 	return(undef);
     }
     

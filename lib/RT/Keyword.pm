@@ -178,7 +178,7 @@ sub RelativePath {
     
     my $MyPath = $self->Path;
 
-    $MyPath =~ s/^$OtherPath//g;
+    $MyPath =~ s/^$OtherPath\///g;
 
     return ($MyPath);
     

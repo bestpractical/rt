@@ -57,8 +57,7 @@ RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.fcgi
 
 # The following are the names of the various binaries which make up RT 
 
-RT_ACTION_BIN		=	rt
-RT_QUERY_BIN		=	rtq
+RT_CLI_BIN		=	$(RT_BIN_PATH)/rt
 RT_ADMIN_BIN		=	rtadmin
 RT_MAILGATE_BIN		=	rt-mailgate
 
@@ -247,32 +246,26 @@ insert-install:
 				$(RT_ETC_PATH)/insertdata
 
 mux-install:
-	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)
-	cp -rp ./bin/webmux.pl $(RT_MODPERL_HANDLER)
-	cp -rp ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
+	cp -p ./bin/rtmux.pl $(RT_PERL_MUX)
+	cp -p ./bin/webmux.pl $(RT_MODPERL_HANDLER)
+	cp -p ./bin/rt $(RT_CLI_BIN)
+	cp -p ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
 
 	$(PERL) -p -i -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
-				s'!!RT_ACTION_BIN!!'$(RT_ACTION_BIN)'g;\
-				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;\
 				s'!!WEB_USER!!'$(WEB_USER)'g;\
 				s'!!WEB_GROUP!!'$(WEB_GROUP)'g;" \
-					$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER)
+					$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) $(RT_CLI_BIN)
 
 
 mux-links:
-	rm -f $(RT_BIN_PATH)/$(RT_ACTION_BIN)
-	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_ACTION_BIN)
 
 	rm -f $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
 	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
-
-	rm -f $(RT_BIN_PATH)/$(RT_QUERY_BIN)
-	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_QUERY_BIN)
 
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)

@@ -91,51 +91,51 @@ my ( @id,
 
 # }}}
 # {{{    args
-my @args =("id=s", \@id,
-	   "limit-queue=s", \@limit_queue,
-	   "limit-status=s", \@limit_status,
-	   "limit-owner=s", \@limit_owner,
-	   "limit-priority=s", \@limit_priority,
-	   "limit-final-priority=s", \@limit_final_priority,
-	   "limit-requestor=s", \@limit_requestor,
-	   "limit-subject=s", \@limit_subject,
+my @args =("id=s" => \@id,
+	   "limit-queue=s" => \@limit_queue,
+	   "limit-status=s" => \@limit_status,
+	   "limit-owner=s" => \@limit_owner,
+	   "limit-priority=s" => \@limit_priority,
+	   "limit-final-priority=s" => \@limit_final_priority,
+	   "limit-requestor=s" => \@limit_requestor,
+	   "limit-subject=s" => \@limit_subject,
 	   "limit-body=s",	\@limit_body,
-	   "limit-created=s", \@limit_created,
-	   "limit-due=s",	\@limit_due,
-	   "limit-starts=s", \@limit_starts,
-	   "limit-started=s", \@limit_started,
-	   "limit-first=i", \$limit_first,
-	   "limit-rows=i", \$limit_rows,
-	   "history|show", \$history,
-	   "summary:s", \$summary,
-	   "create", \$create,
-	   "requestors=s", \@requestors,
-	   "cc=s", \@cc,
-	   "admincc=s", \@admincc,
-	   "status=s", \@status,
-	   "subject=s", \$subject,
-	   "owner=s", \$owner,
-	   "queue=s", \$queue,
-	   "time-left=i", \$time_left,
-	   "priority=i", \$priority,
-	   "final-priority=i", \$final_priority,
-	   "due=s", \$due,
-	   "starts=s", \$starts,
-	   "started=s", \$started,
-	   "contacted=s", \$contacted,
+	   "limit-created=s" => \@limit_created,
+	   "limit-due=s" =>	\@limit_due,
+	   "limit-starts=s" => \@limit_starts,
+	   "limit-started=s" => \@limit_started,
+	   "limit-first=i" => \$limit_first,
+	   "limit-rows=i" => \$limit_rows,
+	   "history|show" => \$history,
+	   "summary:s" => \$summary,
+	   "create" => \$create,
+	   "keywords=s" => \@keywords,
+	   "requestors=s" => \@requestors,
+	   "cc=s" => \@cc,
+	   "admincc=s" => \@admincc,
+	   "status=s" => \@status,
+	   "subject=s" => \$subject,
+	   "owner=s" => \$owner,
+	   "queue=s" => \$queue,
+	   "time-left=i" => \$time_left,
+	   "priority=i" => \$priority,
+	   "final-priority=i" => \$final_priority,
+	   "due=s" => \$due,
+	   "starts=s" => \$starts,
+	   "started=s" => \$started,
+	   "contacted=s" => \$contacted,
 	   "comment", \$comment,
 	   "reply|respond", \$reply,
-	   "source=s", \$source,
-	   "edit!", \$edit,
-	   "keywords=s", @keyword,
-	   "depends-on=s", \@dependson,
-	   "member-of=s", \@memberof, 
-	   "related-to=s", \@relatedto,
-	   "time-taken=i", \$time_taken,
-	   "verbose+", \$verbose,
-	   "debug", \$debug,
-	   "version", \$version,
-	   "help|h|usage", \$help
+	   "source=s" => \$source,
+	   "edit!" => \$edit,
+	   "depends-on=s" => \@dependson,
+	   "member-of=s" => \@memberof, 
+	   "related-to=s" => \@relatedto,
+	   "time-taken=i" => \$time_taken,
+	   "verbose+" => \$verbose,
+	   "debug" => \$debug,
+	   "version" => \$version,
+	   "help|h|usage" => \$help
 	  );
   
 # }}}
@@ -143,6 +143,7 @@ my @args =("id=s", \@id,
 
 GetOptions(@args);
 
+        print join(':',@keywords);
 # {{{ If they want it, print a usage message and get out
 
 if ($help) {
@@ -332,6 +333,7 @@ else {
 	}	
 	
 	# add / delete adminccs
+        debug("Looking at admin ccs");
 	foreach $value (@admincc) {
 	    if ($value =~ /^(\W?)(.*)$/) {
 		my $op = $1;
@@ -346,26 +348,32 @@ else {
 	
 	# {{{ Deal with ticket keywords
 
-	my $KeywordSelects = $Ticket->QueueObj->KeywordSelectsObj();
-
-	foreach $value (@keyword) {
+	my $KeywordSelects = $Ticket->QueueObj->KeywordSelects();
+        debug ("Looking at keywords");
+	foreach $value (@keywords) {
+           debug("Looking at --keyword=$value");
 	    if ($value =~ /^(\W?)(.*?)\/(.*)$/) {
 		my $op = $1;
 		my $select = $2;
-		my $key = $3;
+		my $keyword = $3;
 		
+		debug("Going to $op Keyword $select / $keyword");	
 		while (my $ks = $KeywordSelects->Next) {
-		    next unless ($ks->Name =~ /$select/);
-		    
+                    debug("$select is select ".$ks->Name." is found");
+		    next unless ($ks->Name =~ /$select/i);
+		    debug ("Found a match for $select\n"); 
 		    my $kids = $ks->KeywordObj->Descendents;
-		    foreach my $kid (keys %{$kids}) {
-			next unless ($kids{$key} =~ /^$key$/);
+    
+                    my ($kid);
+		    foreach $kid (keys %{$kids}) {
+                        debug("Now comparing $keyword with ".$kids->{$kid}. "\n");
+			next unless ($kids->{$kid} =~ /^$keyword$/i);
+		        debug("Going to $op $select / $keyword (".$kids->{$kid} .")");	
+			$Ticket->DeleteKeyword(KeywordSelect => $ks->id,
+					    Keyword => $kid) if ($op eq '-');
 			
 			$Ticket->AddKeyword(KeywordSelect => $ks->id,
-					    Keyword => $key) if ($op eq '-');
-			
-			$Ticket->AddKeyword(KeywordSelect => $is->id,
-					    Keyword => $key) if ($op eq '+');
+					    Keyword => $kid) if ($op eq '+');
 		    }
 		    
 		}
@@ -580,8 +588,26 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
 	         
 EOFORM
 
-#TODO List off all keyword selects and selected values.
+my $selects = $Ticket->QueueObj->KeywordSelects();
+    #get the keyword selects
+    print "Keywords:\n";
+    while (my $select = $selects->Next) {
+	print "\t" .$select->Name .": ";
+	my $keys = $Ticket->KeywordsObj($select->id);	
+	while (my $key = $keys->Next) {
+	    print $key->KeywordObj->RelativePath($select->KeywordObj) . "  ";
+	    
+	}	
+	print "\n";
+    }
+    
+#iterate through the keyword selects.
+#print the keyword select and all the related keywords
 
+
+
+
+#TODO: better link descriptions
    while (my $l=$Ticket->Children->Next) {
        print $l->BaseObj->id," (",$l->BaseObj->Subject,") is  ",$l->Type," this ticket\n";
    }
