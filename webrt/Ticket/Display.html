@@ -129,9 +129,18 @@ if (defined $ARGS{'Action'}) {
     push(@Actions, $msg);
   }
 }
-    
-ProcessUpdateMessage(ARGSRef=>\%ARGS, Actions=>\@Actions, TicketObj=>$Ticket);
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+    chomp ($ARGS{'UpdateContent'}) ;
 
+    if ($ARGS{'UpdateContent'} &&
+        $ARGS{'UpdateContent'} ne '' &&
+        $ARGS{'UpdateContent'} ne  "-- \n" .
+                                $session{'CurrentUser'}->UserObj->Signature
+       ) {
+	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
+				 Actions=>\@Actions, 
+				 TicketObj=>$Ticket);
+	}
 #Process status updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 

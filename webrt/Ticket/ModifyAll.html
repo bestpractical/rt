@@ -84,8 +84,19 @@ unless ($OnlySearchForPeople) {
 
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef=>\%ARGS, Actions=>\@results);
 
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+    chomp ($ARGS{'UpdateContent'}) ;
+
+    if ($ARGS{'UpdateContent'} && 
+	$ARGS{'UpdateContent'} ne '' && 
+	$ARGS{'UpdateContent'} ne  "-- \n" . 
+				$session{'CurrentUser'}->UserObj->Signature
+       ) {
+   	 ProcessUpdateMessage(TicketObj => $Ticket, 
+			      ARGSRef=>\%ARGS, 
+                              Actions=>\@results);
+	}
 }
 push @results, @wresults;
 push @results, @dresults;
