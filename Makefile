@@ -245,8 +245,8 @@ commit:
 predist: commit
 	cvs tag -r rt-1-1 -F $(TAG)
 	rm -rf /tmp/$(TAG)
-	cvs export -D now -d /tmp/$(TAG) -r rt-1-1 rt
-	cd /tmp/$(TAG); /usr/local/bin/cvs2cl.pl --tags --revisions --no-wrap --separate-header
+	cvs co -D now -d /tmp/$(TAG) -r rt-1-1 rt
+	cd /tmp/$(TAG); /usr/local/bin/cvs2cl.pl --tags --revisions --no-wrap --follow $(TAG) --separate-header
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
