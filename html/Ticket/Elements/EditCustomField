@@ -93,3 +93,7 @@ $Rows => 5
 $Cols=> 15
 $Default => undef
 </%ARGS>
+<%init>
+use Carp;
+$RT::Logger->error("Ticket/Elements/EditCustomField is deprecated in RT 3.4 and will be removed.\n". Carp::longmess);
+</%init>

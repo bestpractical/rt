@@ -155,7 +155,10 @@ while (my $Ticket = $Tickets->Next) {
 % while (my $CF = $TxnCFs->Next()) {
 <TR>
 <TD ALIGN=RIGHT><% $CF->Name %>:</TD>
-<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></TD>
+<TD><& /Elements/EditCustomField, 
+    CustomField => $CF, 
+    NamePrefix => "Object-RT::Transaction--CustomField-"
+    &><em><% $CF->FriendlyType %></em></TD>
 </TD></TR>
 % } # end if while
  <tr><td align=right><&|/l&>Attach</&>:</td><td><input name="UpdateAttachment" type="file"></td></tr>
@@ -165,35 +168,6 @@ while (my $Ticket = $Tickets->Next) {
  </table>
 
 <& /Elements/TitleBoxEnd &>
-% if (0) {
-<table>
-% foreach (keys %allcfs) {
-<tr><td class=label>
-%     my $cf = $allcfs{$_};
-%     my $pref;
-%     if ($cf->Queue == 0) {
-%         $pref = "[Global]";
-%     } else {
-%         $pref = "[Queue: " . $cfqnames{$_} . "]";
-%     }
-<%$pref%> <b><% $cf->Name %></b><br>
-<% $cf->FriendlyType %>
-</td>
-<td>
-% if ($cf->Type ne "FreeformMultiple") {
-<& /Ticket/Elements/EditCustomField, CustomField => $cf &>
-% } else {
-Add Values<br>
-<textarea cols=15 rows=3 name="<%$cf->Id%>-Values"></textarea>
-</td><td>
-Delete Values<br>
-<textarea cols=15 rows=3 name="<%$cf->Id%>-DeleteValues"></textarea>
-% }    
-</td>
-</tr>
-% }
-</table>
-% }
 
 
 <& /Elements/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
