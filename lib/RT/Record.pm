@@ -604,6 +604,79 @@ sub _Accessible  {
 
 }
 
+=head2 _EncodeLOB BODY MIME_TYPE
+
+Takes a potentially large attachment. Returns (ContentEncoding, EncodedBody) based on system configuration and selected database
+
+=cut
+
+sub _EncodeLOB {
+        my $self = shift;
+        my $Body = shift;
+        my $MIMEType = shift;
+
+        my $ContentEncoding = 'none';
+
+        #get the max attachment length from RT
+        my $MaxSize = $RT::MaxAttachmentSize;
+
+        #if the current attachment contains nulls and the
+        #database doesn't support embedded nulls
+
+        if ( $RT::AlwaysUseBase64 or
+             ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
+
+            # set a flag telling us to mimencode the attachment
+            $ContentEncoding = 'base64';
+
+            #cut the max attchment size by 25% (for mime-encoding overhead.
+            $RT::Logger->debug("Max size is $MaxSize\n");
+            $MaxSize = $MaxSize * 3 / 4;
+        # Some databases (postgres) can't handle non-utf8 data
+        } elsif (    !$RT::Handle->BinarySafeBLOBs
+                  && $MIMEType !~ /text\/plain/gi
+                  && !Encode::is_utf8( $Body, 1 ) ) {
+              $ContentEncoding = 'quoted-printable';
+        }
+
+        #if the attachment is larger than the maximum size
+        if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
+
+            # if we're supposed to truncate large attachments
+            if ($RT::TruncateLongAttachments) {
+
+                # truncate the attachment to that length.
+                $Body = substr( $Body, 0, $MaxSize );
+
+            }
+
+            # elsif we're supposed to drop large attachments on the floor,
+            elsif ($RT::DropLongAttachments) {
+
+                # drop the attachment on the floor
+                $RT::Logger->info( "$self: Dropped an attachment of size " . length($Body) . "\n" . "It started: " . substr( $Body, 0, 60 ) . "\n" );
+                return ("none", "Large attachment dropped" );
+            }
+        }
+
+        # if we need to mimencode the attachment
+        if ( $ContentEncoding eq 'base64' ) {
+
+            # base64 encode the attachment
+            Encode::_utf8_off($Body);
+            $Body = MIME::Base64::encode_base64($Body);
+
+        } elsif ($ContentEncoding eq 'quoted-printable') {
+            Encode::_utf8_off($Body);
+            $Body = MIME::QuotedPrint::encode($Body);
+        }
+
+
+        return ($ContentEncoding, $Body);
+
+}
+
+
 
 eval "require RT::Record_Overlay";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Overlay.pm});
