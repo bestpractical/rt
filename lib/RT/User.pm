@@ -36,17 +36,17 @@ sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      # {{{ Core RT info
-	      Name => 'public/read/write',
+	      Name => 'public/read/write/admin',
 	      Password => 'write',
-	      Comments => 'read/write',
+	      Comments => 'read/write/admin',
 	      Signature => 'read/write',
 	      EmailAddress => 'public/read/write',
 	      PagerEmailAddress => 'read/write',
 	      FreeformContactInfo => 'read/write',
-	      Organization => 'public/read/write',
-	      Disabled => 'public/read/write', #To modify this attribute, we have helper
+	      Organization => 'public/read/write/admin',
+	      Disabled => 'public/read/write/admin', #To modify this attribute, we have helper
 	      #methods
-	      Privileged => 'read/write', # 0=no 1=user 2=system
+	      Privileged => 'read/write/admin', # 0=no 1=user 2=system
 
 	      # }}}
 	      
@@ -63,15 +63,16 @@ sub _Accessible  {
 	      # }}}
 	      
 	      # {{{ External ContactInfo Linkage
-	      ExternalContactInfoId => 'public/read/write',
-	      ContactInfoSystem => 'public/read/write',
+	      ExternalContactInfoId => 'public/read/write/admin',
+	      ContactInfoSystem => 'public/read/write/admin',
 	      # }}}
 	      
 	      # {{{ User Authentication identifier
-	      ExternalAuthId => 'public/read/write',
+	      ExternalAuthId => 'public/read/write/admin',
 	      #Authentication system used for user 
-	      AuthSystem => 'public/read/write',
-	      Gecos => 'public/read/write', #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
+	      AuthSystem => 'public/read/write/admin',
+	      Gecos => 'public/read/write/admin', #Gecos is the name of the fields in a 
+	      # unix passwd file. In this case, it refers to "Unix Username"
 	      # }}}
 	      
 	      # {{{ Telephone numbers
@@ -173,7 +174,7 @@ sub Create  {
 
 # }}}
 
-# {{{ sub _BootstrapCreate {
+# {{{ sub _BootstrapCreate 
 
 #create a user without validating _any_ data.
 
@@ -263,7 +264,7 @@ sub SetRandomPassword  {
     my $self = shift;
 
 
-    unless ($self->CurrentUserCanModify) {
+    unless ($self->CurrentUserCanModify('Password')) {
 	return (0, "Permission Denied");
     }
     
@@ -421,7 +422,7 @@ sub SetPassword {
     my $self = shift;
     my $password = shift;
     
-    unless ($self->CurrentUserCanModify) {
+    unless ($self->CurrentUserCanModify('Password')) {
 	return(0, 'Permission Denied');
     }
     
@@ -483,16 +484,6 @@ set, all password checks for this user will fail. All ACL checks for this
 user will fail. The user will appear in no user listings.
 
 =cut 
-
-sub SetDisabled {
-    my $self = shift;
-    my $value = shift;
-
-    unless($self->CurrentUser->HasSystemRight('AdminUsers')) {
-	return (0, 'Permission denied');
-    }
-    return($self->_Set(Field => 'Disabled', Value => $value));
-}
 
 # }}}
 
@@ -963,11 +954,11 @@ sub _HasRight {
 
 # {{{ sub CurrentUserCanModify
 
-=head2 CurrentUserCanModify
+=head2 CurrentUserCanModify RIGHT
 
 If the user has rights for this object, either because
-he has 'AdminUsers' or (if he's trying to edit himself) 'ModifySelf',
-return 1. otherwise, return undef.
+he has 'AdminUsers' or (if he\'s trying to edit himself and the right isn\'t an 
+admin right) 'ModifySelf', return 1. otherwise, return undef.
 
 =cut
 
@@ -978,16 +969,23 @@ sub CurrentUserCanModify {
     if ($self->CurrentUserHasRight('AdminUsers')) {
 	return (1);
     }
+    #If the field is marked as an "administrators only" field, 
+    # don\'t let the user touch it.
+    elsif ($self->_Accessible($right, 'admin')) {
+	return(undef);
+    }
+    
     #If the current user is trying to modify themselves
     elsif ( ($self->id == $self->CurrentUser->id)  and
 	    ($self->CurrentUserHasRight('ModifySelf'))) {
-	
-
 	return(1);
     }
+ 
+    #If we don\'t have a good reason to grant them rights to modify
+    # by now, they lose
     else {
 	return(undef);
-    }	
+    }
     
 }
 
@@ -1022,9 +1020,11 @@ sub _Set {
 	      @_
 	     );
 
-  unless ($self->CurrentUserCanModify) {
+  unless ($self->CurrentUserCanModify($args{'Field'})) {
       return (0, "Permission Denied");
   }
+
+
   
   #Set the new value
   my ($ret, $msg)=$self->SUPER::_Set(Field => $args{'Field'}, 
