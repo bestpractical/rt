@@ -133,6 +133,15 @@ sub parse_headers {
 	#TODO perform a magic warning here..(auto-submit a req?)
 	exit(0);
     }
+   
+    elsif ($current_user =~/^X-RT-Loop-Prevention: $rt::rtname/g) {
+
+       #TODO perform a magic warning here..(auto-submit a req?)
+       if ($debug) {
+          print "This mail came from RT. gnite.\n";
+       }
+       exit(0);
+    }
     
     elsif ($current_user =~/^$rt::mail_alias/g) {
 	

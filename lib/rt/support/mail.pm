@@ -57,6 +57,7 @@ To: $in_recipient
 Cc: $in_cc
 Bcc: $in_bcc
 X-Request-ID: $in_serial_num
+X-RT-Loop-Prevention: $rt::rtname
 X-Sender: $in_current_user
 X-Managed-By: Request Tracker ($rt::rtversion)
  
