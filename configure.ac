@@ -155,6 +155,18 @@ AC_ARG_WITH(web-group,
             WEB_GROUP=www)
 AC_SUBST(WEB_GROUP)
 
+dnl INSTALL AS ME
+my_group=$(groups|cut -f1 -d' ')
+AC_ARG_WITH(my-user-group,
+            AC_HELP_STRING([--with-my-user-group],
+                           [set all users and groups to current user/group]),
+            RTGROUP=$my_group
+            BIN_OWNER=$USER
+            LIBS_OWNER=$USER
+            LIBS_GROUP=$my_group
+            WEB_USER=$USER
+            WEB_GROUP=$my_group)
+
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in
 dnl files are changed to use the new names.

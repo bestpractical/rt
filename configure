@@ -819,6 +819,7 @@ Optional Packages:
                           password for database user (default: rt_pass)
   --with-web-user=USER    user the web server runs as (default: www)
   --with-web-group=GROUP  group the web server runs as (default: www)
+  --with-my-user-group    set all users and groups to current user/group
 
 Some influential environment variables:
   PERL        Perl interpreter command
@@ -1874,6 +1875,19 @@ else
   WEB_GROUP=www
 fi;
 
+
+my_group=$(groups|cut -f1 -d' ')
+
+# Check whether --with-my-user-group or --without-my-user-group was given.
+if test "${with_my_user_group+set}" = set; then
+  withval="$with_my_user_group"
+  RTGROUP=$my_group
+            BIN_OWNER=$USER
+            LIBS_OWNER=$USER
+            LIBS_GROUP=$my_group
+            WEB_USER=$USER
+            WEB_GROUP=$my_group
+fi;
 
 
 RT_VERSION_MAJOR=${rt_version_major}
