@@ -81,10 +81,9 @@ sub Create {
     my $base = RT::URI->new( $self->CurrentUser );
     $base->FromURI( $args{'Base'} );
 
-    unless ( $base->Scheme ) {
+    unless ( $base->Resolver and $base->Scheme ) {
         $RT::Logger->warning( "$self couldn't resolve base:'"
                               . $args{'Base'} . " - "
-                              . $base->Scheme
                               . "' into a URI\n" );
 
         #use Data::Dumper;
