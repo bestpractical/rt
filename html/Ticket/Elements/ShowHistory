@@ -56,6 +56,7 @@ else {
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
 <%perl>
 my @attachments = @{$Attachments->ItemsArrayRef()};
+my @attachment_content = @{$AttachmentContent->ItemsArrayRef()};
 
 
 
@@ -75,6 +76,9 @@ while ( my $Transaction = $Transactions->Next ) {
 
     my @trans_attachments = grep { $_->TransactionId == $Transaction->Id } @attachments;
 
+    my $trans_content = {};
+    grep { ($_->TransactionId == $Transaction->Id ) && ($trans_content->{$_->Id} = $_)  } @attachment_content;
+
    
     #Args is first because we're clobbering the "Attachments" parameter 
     $m->comp( 'ShowTransaction',
@@ -87,6 +91,7 @@ while ( my $Transaction = $Transactions->Next ) {
               RowNum               => $i,
               ShowTitleBarCommands => $ShowTitleBarCommands,
               Attachments          => \@trans_attachments,
+              AttachmentContent    => $trans_content
  );
 }
 
@@ -108,6 +113,7 @@ $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket
 $URIFile => 'Display.html'
 $Ticket => undef
 $Attachments => undef
+$AttachmentContent => undef
 $ShowHeaders => undef
 $Collapsed => undef
 $ShowTitle => 1
