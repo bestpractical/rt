@@ -206,7 +206,7 @@ fixperms:
 	chmod $(RT_READABLE_DIR_MODE) $(RT_BIN_PATH)
 	chmod $(RT_READABLE_DIR_MODE) $(RT_BIN_PATH)	
 
-	chmod 0555 $(RT_ETC_PATH)
+	chmod 0755 $(RT_ETC_PATH)
 	chmod 0500 $(RT_ETC_PATH)/*
 
 	#TODO: the config file should probably be able to have its
@@ -235,7 +235,7 @@ fixperms:
 	chgrp -R $(LIBS_GROUP) $(MASON_HTML_PATH) $(MASON_LOCAL_HTML_PATH)
 
 	# Make the web ui's data dir writable
-	chmod 0700  $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
+	chmod 0770  $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
 	chown -R $(WEB_USER) $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
 	chgrp -R $(WEB_GROUP) $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
 dirs:
