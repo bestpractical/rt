@@ -92,7 +92,9 @@ sub Load {
        ($self->EffectiveId != $self->Id)) {
 	   return ($self->Load($self->EffectiveId));
        }
-       
+
+   #Ok. we're loaded. lets get outa here.
+   return ($self->Id);
    
 }
 
