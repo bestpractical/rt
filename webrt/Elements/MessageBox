@@ -1,15 +1,6 @@
 <TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %>
 <%$Signature%>
 </TEXTAREA>
-<%ARGS>
-$QuoteTransaction => undef
-$Name=>'Content'
-$Default=>''
-$DefaultURI=>undef
-$Width=>72
-$MessageURI=>undef
-</%ARGS>
-
 <%INIT>
 
 if ($MessageURI) {
@@ -17,16 +8,20 @@ if ($MessageURI) {
 	($code, $Default)=RT::Link->GetContent($MessageURI);
 }
 if ($QuoteTransaction) {
-    require RT::Ticket;
-    require RT::Transaction;
     my $transaction=RT::Transaction->new($session{'CurrentUser'});
     $transaction->Load($QuoteTransaction);
     my $message=$transaction->Message->First;
+
+    # TODO: This code is disgustingly ugly. It needs to be taken out, shot,
+    # and buried in an unmarked grave. 
     my $dumb="";
     my $d=\$dumb;
-    ($d, $Width)=$message->Quote(Reply=>$Default)
-	if $message;
+    if $message {
+	    ($d, $Width)=$message->Quote(Reply=>$Default);
+    }
     $Default=$$d;
+    #END todo
+
 }
 
 my $Signature = '';
@@ -35,4 +30,12 @@ if ($session{'CurrentUser'}->UserObj->Signature) {
 }
 
 </%INIT>
+<%ARGS>
+$QuoteTransaction => undef
+$Name => 'Content'
+$Default => ''
+$DefaultURI => undef
+$Width => 72
+$MessageURI => undef
+</%ARGS>
 

@@ -39,11 +39,11 @@ Email
 
 <%INIT>
 my ($msg, $Users);
-if ($ARGS{'UserString'}) {
+if ($UserString) {
     $Users = new RT::Users($session{'CurrentUser'});
-    $Users->Limit(FIELD => $ARGS{'UserField'},
-                 VALUE => $ARGS{'UserString'},
-                 OPERATOR => $ARGS{'UserOp'});
+    $Users->Limit(FIELD => $UserField,
+                 VALUE => $UserString,
+                 OPERATOR => $UserOp);
      }
 </%INIT>
 
