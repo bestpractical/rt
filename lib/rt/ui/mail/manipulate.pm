@@ -264,9 +264,6 @@ statements in the order you enter them.
 %RT RESOLVE <num>
     will resolve request <num>.
 
-%RT RESOLVE <num>
-    will resolve request <num>.
-
 %RT OPEN <num>
     will open request <num>.
 

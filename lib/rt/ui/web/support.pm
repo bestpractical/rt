@@ -20,18 +20,17 @@ sub check_auth() {
     
     
     ($name, $pass)=&WebAuth::AuthCheck($AuthRealm);
-    
+       #if the user isn't even authenticating
+    if ($name eq '') {
+      &WebAuth::AuthForceLogin($AuthRealm);
+      exit(0)
+    }
+ 
     #if the user's password is bad
-    if (!(&rt::is_password($name, $pass))) {
+    elsif (!(&rt::is_password($name, $pass))) {
       
       &WebAuth::AuthForceLogin($AuthRealm);
       exit(0);
-    }
-    
-    #if the user isn't even authenticating
-    elsif ($name eq '') {
-      &WebAuth::AuthForceLogin($AuthRealm);
-      exit(0)
     }
     
     #if the user is trying to log out

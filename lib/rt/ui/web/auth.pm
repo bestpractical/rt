@@ -14,6 +14,7 @@ sub AuthCheck () {
     my ($AuthRealm) = @_;
     my ($Name, $Pass,$path, $set_user, $set_pass);
     #lets get the cookies
+
     print "HTTP/1.0 200 Ok\n";
   
     if ($ENV{'SCRIPT_NAME'} =~ m|^(.*)/[^/]+$|) {
@@ -31,7 +32,7 @@ sub AuthCheck () {
     #$path .= '/';
    
     # lets set the user/pass cookies
-    if (length($rt::ui::web::FORM{'password'}) and length($rt::ui::web::FORM{'username'})) {
+    if (length($rt::ui::web::FORM{'username'}) and length($rt::ui::web::FORM{'password'})) {
       
       $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
 				  -value => "$rt::ui::web::FORM{'username'}",
@@ -50,39 +51,31 @@ sub AuthCheck () {
       	$set_user =~ s/; path=(.*?); /; /
       } 
        
-      #works well enough while we're nph-
-      #eventually, we'll need to do this with "meta" tags
-      
       print "Set-Cookie: $set_password\n";
       print "Set-Cookie: $set_user\n";   
-
-    }
-    
-    #if we don't have cookies, it means we just logged in.
-    if (!($rt::ui::web::cookies{'RT_PASSWORD'}) or !($rt::ui::web::cookies{'RT_USERNAME'})) {
-      $Name = $rt::ui::web::FORM{'username'};
-      $Pass = $rt::ui::web::FORM{'password'};
+      
+      return( $rt::ui::web::FORM{'username'}, $rt::ui::web::FORM{'password'});
     }
     
     #otherwise, we've got cookies.
+    elsif (!($rt::ui::web::cookies{'RT_PASSWORD'}) or !($rt::ui::web::cookies{'RT_USERNAME'})) {
+      return (undef,undef); 
+    }
+
     else {
-      $Name = $rt::ui::web::cookies{'RT_USERNAME'}->value;
-      $Pass = $rt::ui::web::cookies{'RT_PASSWORD'}->value;
+      return( $rt::ui::web::cookies{'RT_USERNAME'}->value, $rt::ui::web::cookies{'RT_PASSWORD'}->value );
     }
     
-    return ($Name, $Pass);
 }
 
 sub AuthForceLogout () {
   #this routine is deprecated
-
   return(&AuthForceLogin(@_));
 }
 
 sub AuthForceLogin () {
   local ($AuthRealm) = @_;
   my ($default_user, $path);
-  
   
   
   
@@ -109,7 +102,6 @@ sub AuthForceLogin () {
     $path =~ s|/$||;
     $pass_cookie->path($path);
     
-	
 	print "Set-Cookie: ", $pass_cookie, "\n";
 
   }
@@ -124,6 +116,8 @@ sub AuthForceLogin () {
     $path = $name_cookie->path();
     $path =~ s|/$||;
     $name_cookie->path($path);	
+
+
  	print "Set-Cookie: ", $name_cookie, "\n";
  }
   
@@ -220,7 +214,6 @@ print "&nbsp;</td>
 <br><br>
 ";
 
-require rt::ui::web::manipulate.pm;
 &rt::ui::web::credits();
 
 print "
