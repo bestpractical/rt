@@ -74,16 +74,16 @@ sub Load {
 
 sub LoadAction {
   my $self = shift;
-  my %args = ( Transaction => undef,
-	       Ticket => undef,
+  my %args = ( TransactionObject => undef,
+	       TicketObject => undef,
 	       @_ );
 
   #TODO: Put this in an eval  
   my $type = "RT::Action::". $self->Action;
   
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
-  $self->{'ScriptObject'}  = $type->new ( Ticket => $args{'Ticket'},
-					 Transaction => $args{'Transaction'},
+  $self->{'ScriptObject'}  = $type->new ( TicketObject => $args{'TicketObject'},
+					 TransactionObject => $args{'TransactionObject'},
 					 Template => $self->Template,
 					 Argument => $self->Argument,
 					 Type => $self->Type,

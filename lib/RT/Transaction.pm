@@ -80,11 +80,13 @@ sub Create {
   $Scrips->LimitToType($args{'Type'}); #Limit to $args{'Type'} or 'any'
   #Load a scrips object
   #Iterate through each script and check it's applicability.
+
+  $args{'TicketObject'}=$TicketAsSystem;
   
   while (my $Scrip = $Scrips->Next()) {
     
     #Load the scrip's action;
-    $Scrip->LoadAction($self, $self->TicketAsSystem);
+    $Scrip->LoadAction(TicketObject=>$TicketAsSystem, TransactionObject=>$self);
 
     #If it's applicable, prepare and commit it
     if ( $Scrip->IsApplicable() ) {
