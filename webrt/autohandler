@@ -8,20 +8,19 @@ if (1) {
 warn "WebURL Configuration ($RT::WebURL) does not match incoming URL (".$r->uri.")"
     if ($r->uri !~ /^\Q$RT::WebURL\E/);
 
-my $a=$SIG{__DIE__};
-$SIG{__DIE__}=
-sub {
-	$^S or &mc_comp("/Elements/Error", 
+my $a=sub {
+&mc_comp("/Elements/Error", 
 		Why=>"Internal Error", 
-		Details=>"You might ask your local RT admin what <code>$_[0]</code> means.  If he has configured RT smartly, he will get that error message sent by mail or to his pager or something.  Anyway, you'll probably have to nag about it to get this problem fixed.", 
+		Details=>"You might ask your local RT admin what <pre>$_[0]</pre> means.  If he has configured RT smartly, he will get that error message sent by mail or to his pager or something.  Anyway, you'll probably have to nag about it to get this problem fixed.", 
 		Code=>500);
-	$a->(@_)
-		if $a;
-
+	$RT::Logger->log(message=>$_[0], level=>'crit');
+	$m->abort;
 	1;
-	$m->abort unless $^S;
+};
+$SIG{__DIE__}=$a;
 }
-}
+
+
 </%INIT>
 
 
