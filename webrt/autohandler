@@ -6,7 +6,7 @@
 $m->{'rt_base_time'} = time;
 
 #if it's a noauth file, don't ask for auth.
-if ($m->base_comp->path =~ '^/NoAuth/') {
+if ($m->base_comp->path =~ '^/+NoAuth/') {
         $m->call_next();
 	$m->abort();
 }
@@ -50,7 +50,7 @@ if ( (defined $session{'CurrentUser'}) and
     
     # If the user isn\'t privileged, they can only see SelfService
     if ((! $session{'CurrentUser'}->Privileged) and
-	($m->base_comp->path !~ '^/SelfService/') ) {
+	($m->base_comp->path !~ '^/+SelfService/') ) {
 	$m->comp('/SelfService/index.html');
 	$m->abort();
     }
