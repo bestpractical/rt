@@ -48,6 +48,7 @@
 use strict;
 use lib "@RT_LIB_PATH@";
 use RT;
+use YAML;
 
 RT::LoadConfig();
 RT::Init();
@@ -77,10 +78,13 @@ foreach my $class (@classes) {
     $objects->OrderBy( FIELD => 'Id' );
 
     if ($LocalOnly) {
+        next if $class eq 'ACL'; # XXX - would go into infinite loop - XXX
 	$objects->Limit( FIELD => 'LastUpdatedBy', OPERATOR => '!=', VALUE => $SystemUserId )
 	    unless $class eq 'Groups';
 	$objects->Limit( FIELD => 'Id', OPERATOR => '!=', VALUE => $SystemUserId )
 	    if $class eq 'Users';
+	$objects->Limit( FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined' )
+	    if $class eq 'Groups';
     }
 
     my %fields;
@@ -139,9 +143,7 @@ foreach my $class (@classes) {
     }
 }
 
-use Data::Dumper;
-print Data::Dumper->Dump(
-    [map { $RV{$_} || [] } @classes],
-    [map { "*$_" } @classes],
-);
-
+print(<< '.', YAML::Dump({ map { ($_ => ($RV{$_} || [])) } @classes }));
+no strict;use YAML;*_=YAML::Load(do{local$/;<DATA>});@$_=@{$_{$_}}for keys%_
+__DATA__
+.
