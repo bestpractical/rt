@@ -36,7 +36,7 @@ sub InitDisplay {
   
   if (!($frames) && (!$rt::ui::web::FORM{'display'})) {
     
-    if ($serial_num > 0) {	
+    if ($serial_num > 0 || $rt::ui::web::FORM{'do_req_create'}) {	
       $rt::ui::web::FORM{'display'} = "History";
     }
     else{
