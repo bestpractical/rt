@@ -90,6 +90,24 @@ sub LoadByEmail  {
 }
 # }}}
 
+# {{{ sub LoadByGecos
+
+=head2 LoadByGecos
+
+Loads a User into this CurrentUser object.
+Takes a unix username as its only argument.
+
+=cut
+
+sub LoadByGecos  {
+    my $self = shift;
+    my $identifier = shift;
+        
+    $self->LoadByCol("Gecos",$identifier);
+    
+}
+# }}}
+
 # {{{ sub LoadByUserId
 
 =head2 LoadByUserId
@@ -132,8 +150,6 @@ sub Load  {
   }
 }
 # }}}
-
-
 
 # {{{ sub IsPassword
 

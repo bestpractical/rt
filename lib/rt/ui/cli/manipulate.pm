@@ -7,9 +7,10 @@ package rt::ui::cli::manipulate;
 # {{{ sub activate 
 sub activate  {
     &GetCurrentUser;
-    $RT::Logger->log(level=>'info', message=>$CurrentUser->UserId.' started up the RT cli');
+    $RT::Logger->info($CurrentUser->UserId. " started up the RT cli\n");
+    return(0) if (!$CurrentUser->Id); 
     &ParseArgs();
-    $RT::Logger->log(level=>'debug', message=>'RT cli going down');
+    $RT::Logger->debug('RT cli exiting.\n');
     return(0);
 }
 # }}}
@@ -17,16 +18,19 @@ sub activate  {
 # {{{ sub GetCurrentUser 
 sub GetCurrentUser  {
   if (!$CurrentUser) {
-    my ($CurrentUid);
+    my $Gecos;
+    
     require RT::CurrentUser;
         
     #Instantiate a user object
     
-    ($CurrentUid,undef)=getpwuid($<);
+    $Gecos=(getpwuid($<))[0];
     #If the current user is 0, then RT will assume that the User object
     #is that of the currentuser.
-    $CurrentUser = new RT::CurrentUser($CurrentUid);
-    if (!$CurrentUser) {
+    $CurrentUser = new RT::CurrentUser();
+    $CurrentUser->LoadByGecos($Gecos);
+    
+    if (!$CurrentUser->Id) {
       print "You have no RT access\n";
       return(0);
     }
@@ -595,12 +599,12 @@ sub LoadTicket  {
   my $id = shift;
   my ($Ticket,$Status,$Message,$CurrentUser);
   $CurrentUser=&GetCurrentUser;
-  #print "Current User is ".$CurrentUser->Id."\n";;
+  
   require RT::Ticket;
   $Ticket = RT::Ticket->new($CurrentUser);
-  ($Status) = $Ticket->Load($id);
-  if ($Status == 0) {
-    print ("Ticket $id could not be loaded\n");
+  $Status = $Ticket->Load($id);
+  if (!defined $Status ) {
+    print ("Ticket $id not found.");
     exit (-1);
  }
   else {

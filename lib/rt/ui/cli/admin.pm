@@ -9,11 +9,12 @@ use RT::Queue;
 
 # {{{ sub activate 
 sub activate  {
-  my ($current_user);
+  my ($Gecos);
   
   use RT::CurrentUser;  
-  ($current_user,undef)=getpwuid($<);
-  $CurrentUser = new RT::CurrentUser($current_user);
+  $Gecos=(getpwuid($<))[0];
+  $CurrentUser = new RT::CurrentUser();
+  $CurrentUser->LoadByGecos($Gecos);
   if (!$CurrentUser) {
     print "You have no RT access.\n";
     return();
