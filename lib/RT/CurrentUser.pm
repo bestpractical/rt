@@ -111,6 +111,8 @@ sub HasRight {
 	       AppliesTo => undef,
 	       Right => undef,
 	      @_);
+  1;
+}
 
 # }}}
 
