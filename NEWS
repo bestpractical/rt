@@ -3,6 +3,11 @@ Jan 8 2000
  
  Fixed setting due dates via the web ui, thanks to Thomas Koester
 
+Dec 11 2000
+-----------
+
+Mail headers are now parsed case insensitively, as they should be.
+
 Dec 1 2000
 ----------
 

@@ -260,26 +260,26 @@ sub parse_headers {
 	    $subject =~ s/\($rt::req[$serial_num]{'queue_id'}\)//i;
 	}
 	
-	elsif (($line =~ /^Subject: (.*)/s) and (!$subject)){
+	elsif (($line =~ /^Subject: (.*)/si) and (!$subject)){
 	    $subject=$1;
 	}
 	
-	elsif (($line =~ /^Reply-To: (.*)/s)) {
+	elsif (($line =~ /^Reply-To: (.*)/si)) {
 	    $replyto = $1;
 	}
 	
-	elsif ($line =~ /^From: (.*)/s) {
+	elsif ($line =~ /^From: (.*)/si) {
 	    $from = $1;
 	}
 	
-	elsif ($line =~ /^Sender: (.*)/s){
+	elsif ($line =~ /^Sender: (.*)/si){
 	    $sender = $1;
 	    
 	}
-	elsif ($line =~ /^Date: (.*)/s) {
+	elsif ($line =~ /^Date: (.*)/si) {
 	    $time_in_text = $1;
 	}
-	elsif ($line =~ /^Precedence: (.*)/s) {
+	elsif ($line =~ /^Precedence: (.*)/si) {
 	    $precedence = $1;
 	}
 	
