@@ -1,0 +1,10 @@
+    <h1>Create</h1>
+
+<FORM METHOD=POST ACTION="Create_Detail.html">
+
+Pick a queue on this page and then hit "Next"
+
+Queue :<& /Elements/SelectQueue, Name=>"Queue", Default=>$session{'LastQueue'}&>
+
+<INPUT TYPE=SUBMIT VALUE="Next">
+<FORM>

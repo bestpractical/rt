@@ -1,9 +1,0 @@
-%# $Header$
-%# This component will return a list of all the possible owners
-%# That this ticket can change to, with its current owner hilighted
-<SELECT name="owner">
-%# TODO: list off all possible owners
-</SELECT>
-<%args>
-$Ticket => undef   # Takes a reference to a ticket
-</%args>

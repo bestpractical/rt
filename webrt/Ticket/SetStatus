@@ -1,9 +1,0 @@
-%# $Header$
-%# This component will return a list of all the possible statuses
-%# That this ticket can change to, with its current status hilighted
-<SELECT name="status">
-%# TODO: list off all possible statuses
-</SELECT>
-<%args>
-$Ticket => undef   # Takes a reference to a ticket
-</%args>

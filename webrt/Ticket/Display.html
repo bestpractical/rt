@@ -11,6 +11,11 @@
 $id => undef
 </%ARGS>
 <%INIT>
+
+  if (!$ARGS{'id'}) {
+    &mc_comp("/Elements/Error" , Why => "No ticket specified");
+    $m->abort;
+  }
 use RT::Ticket;
 use RT::CurrentUser;
 my $CurrentUser = RT::CurrentUser->new(2);

@@ -3,6 +3,10 @@
 <TITLE><%$Title%> </TITLE>
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
+%if ($session{'CurrentUser'}) {
+You are currently authenticated as <%$session{'CurrentUser'}->UserId%>
+%}
+<hr>
 
 <%ARGS>
 $Title => 'WebRT'

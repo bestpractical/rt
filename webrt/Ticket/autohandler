@@ -1,11 +1,14 @@
 <& /Elements/Header &>
 <%PERL>
-if (defined ($user) && defined ($pass) && ($user eq $pass) ){
-	my  $cookie1 = new CGI::Cookie(-name=>'ID',-value=>123456);
-	$r->headers_out->add("Set-Cookie" => "$cookie1");
+if (defined ($user) && defined ($pass)){
+
+	#TODO if the password is the user's password
+	$session{'CurrentUser'} = new RT::CurrentUser();
+	$session{'CurrentUser'}->Load($user);
+
         $m->call_next;
 }
-elsif  ((defined $cookies{ID}) && ($cookies{ID}->value == '123456')) {
+elsif (defined $session{'CurrentUser'}){
 	$m->call_next;
 }
 else {

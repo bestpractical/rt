@@ -35,8 +35,8 @@ use RT::Ticket;
 use RT::CurrentUser;
 use MIME::Entity;
 
-my $CurrentUser = RT::CurrentUser->new(2);
-my $Ticket = RT::Ticket->new($CurrentUser);
+
+my $Ticket = RT::Ticket->new($session{'CurrentUser'});
 $Ticket->Load($ARGS{'id'});
 my @UpdateContent = split(/\r/,$ARGS{'UpdateContent'}."\n");
 
