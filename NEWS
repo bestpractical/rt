@@ -1,5 +1,6 @@
 20 Oct 1999
 -----------
+* RT now uses a queue's mail alias when sending mail.
 
 * Using the web UI to send correspondence should no longer not
   sent the correspondence if there are CCs, BCCs or the actor is
