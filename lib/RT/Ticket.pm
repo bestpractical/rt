@@ -985,7 +985,6 @@ sub _NewLink {
        TimeTaken => 0 # Is this always true?
        );
   
-  return (0, "work stubbed"); # Needs to be tested a bit
   return ($linkid, "Link created", $transactionid);
 }
 
