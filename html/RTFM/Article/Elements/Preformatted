@@ -28,18 +28,44 @@
 % if ($cf->Type eq 'TextSingle') {
 % my $value = $values->First; 
 % my $content = $value->Content;
+% if ($content =~ /<(.{1,5})>/) {
+%    $content = de_htmlify($content);
+% }
 <%$cf->Name%>:
 <%'-' x length($cf->Name) %>
 <%$content%>
 % } else {
 % my $val = $values->Next;
-<%$cf->Name%>: <%$val && $val->Content%>
+% my $content = $val->Content;
+% if ($content =~ /<(.{1,5})>/) {
+%    $content = de_htmlify($content);
+% }
+<%$cf->Name%>: <%$val && $content%>
 % while ($val = $values->Next) { 
 % my $content = $val->Content;
+% if ($content =~ /<(.{1,5})>/) {
+%    $content = de_htmlify($content);
+% }
 <%' ' x length($cf->Name)%>  <%$content%>
 % } 
 % }
 % }
+
+<%init>
+sub de_htmlify {
+    my $content = shift;
+    require HTML::TreeBuilder;
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse($content);
+    $tree->eof();
+
+    require HTML::FormatText;
+    my $formatter = HTML::FormatText->new(leftmargin => 0, rightmargin => 50);
+    $content = $formatter->format($tree);
+    return $content;
+}
+</%init>
+
 <%args>
 $Article
 </%args>

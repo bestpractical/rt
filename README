@@ -27,6 +27,12 @@ You can install it by executing the command:
 
     perl -MCPAN -e'install Text::WikiFormat'
 
+RTFM requires HTML::TreeBuilder and HTML::Format in addition to RT's
+standartd dependencies.  You can install it by executing the command:
+
+    perl -MCPAN -e'install HTML::TreeBuilder'
+    perl -MCPAN -e'install HTML::Format'
+
 
 Upgrade instructions (From an earlier 2.0.x release):
 -----------------------------------------------------
