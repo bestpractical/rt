@@ -79,14 +79,17 @@ sub LoadAction {
 	       @_ );
   
   
-  
-  $self->{'ScripObject'} = new $self->Action ( Ticket => $args{'Ticket'},
-					       Transaction => $args{'Transaction'},
-					       Template => $self->Template,
-					       Argument => $self->Argument,
-					       Type => $self->Type,
-					     );
-  
+  #TODO this should be trapped in an EVAL block
+  my $type = $self->Type;
+  eval {
+    use RT::Action::$type;
+    $self->{'ScripObject'} = new RT::Action::$type ( Ticket => $args{'Ticket'},
+						     Transaction => $args{'Transaction'},
+						     Template => $self->Template,
+						     Argument => $self->Argument,
+						     Type => $self->Type,
+						   );
+  }
 }
 
 #
