@@ -1,26 +1,14 @@
 API
 
-Take a look at doc/API. It's nowhere near done, but it's a start.
-At this point, it's probably actually out of date.
+Many of the modules have proper POD documentation. Those that don't
+need to be documented. nag an RT developer
 
 OUTLINE
-
-RT 1.1 started as plain featureadding to the existing 1.0 code base,
-until Jesse rocked it seriously up, starting to do an object oriented
-approach.  Personally I think the timing was quite bad; anyway the
-new code is very nice to work with.
-[ed note: _I_ think the timing was just fine.  -- jesse]
-
 
 There are still some elements from the code of the old 1.0, but most
 of the code is fresh.  The new object oriented code is mainly placed
 in the lib/RT/ directory, while the old code mainly remains in lib/rt
 (in addition to bin/rtmux.pl and some more).
-
-Because of this development path, there might be both new and old
-elements of code/documentation that is either not beeing used or
-outdated.  Just drop a note to rt-devel@fsck.com if you find anything
-like that.
 
 
 DEBUGGING HINTS
@@ -110,27 +98,11 @@ the SQL calls.  mysql has the possibility of writing very verbose logs
 - I love those logs - personally I think it's better looking into
 those logs than letting the script print out the SQL.
 
-Error logging from the production RT
-====================================
-
-I found Tie::STDERR to be a very nice module - put it into rtmux.pl.
-If the script prints anything to STDERR, Tie::STDERR will launch a
-mail about the output as well as the environment.  I think this is
-perfectly OK, because if a component in production actually produces
-error messages, something is wrong, and action should be taken ASAP.
-Of course it might result in some thousand emails dumping in while
-you're at home sleeping if something goes really wrong.  Tie::STDERR
-can also be set to log to a file.  It makes a bit sense to log the RT
-errors in one separate file instead of having the RT errors spread
-over the webserver error log and the maillog, and Tie::STDERR also
-print the environment info, which might be essential when trying to
-reproduce web errors.
-
 
 META
 
-The Request Tracker is developed by Jesse Vincent <jesse@fsck.com>
+Request Tracker is developed by Jesse Vincent <jesse@fsck.com>
 with help from the community.  The project is licenced under the GNU
 General Public License.  This file is mostly written by Tobias Brox
 <tobix@irctos.org>.  If anything seems stupid, or if you think there
-are better ways to do things, please tell Tobias.
+are better ways to do things, please tell Jesse

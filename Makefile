@@ -107,17 +107,23 @@ RT_USER_PASSWD_MIN	=	5
 
 
 # Database options
+h
+# DB_TYPE defines what sort of database RT trys to talk to
+# "mysql" is known to work.
+# "Oracle" is in the early stages of working.
+#	 Dave Morgan <dmorgan@bartertrust.com> owns the oracle port
+
+# 
+
+# Please submit necessary patches to rt11@fsck.com
+
+DB_TYPE	        =	mysql
 
 # DB_HOME is where the Database's commandline tools live
 # Note: $DB_HOME/bin is where the database binary tools are installed.
  
 DB_HOME	       = /opt/mysql
-
-# Right now, the only working value for DB_TYPE is mysql.  If you're using
-# Postgresql _and_ you're a hacker, you might want to try "Pg" as well.
-# Please submit necessary patches to rt11@fsck.com
-
-DB_TYPE	        =	mysql
+#DB_HOME			= /opt/oracle/product/8.0.5
 
 
 # Set DBA to the name of a unix account with the proper permissions and 
@@ -156,13 +162,13 @@ DB_DATABASE	=	RT2
 # Set this to the name of the rt database user
 #
 
-DB_RT_USER	=	RT2
+DB_RT_USER	=	rt_user
 
 #
 # Set this to the password used by the rt database user
-#
+# *** Change This Before Installation***
 
-DB_RT_PASS      =      $ecret
+DB_RT_PASS      =      rt_pass
 
 
 #
@@ -259,7 +265,7 @@ initialize: database acls
 
 
 database:
-	sh bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'
+	sh bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DB_RT_USER)' '$(DB_RT_PASS)'
 
 acls:
 	$(PERL) -p -i.orig -e " s'!!DB_TYPE!!'$(DB_TYPE)'g;\

@@ -1,0 +1,32 @@
+To facilitate local hacking, RT needs a mechanism to allow site administrators
+to easily add HTML templates for the web ui and to replace sections
+of code in RT's core modules _without_ having to modify those modules
+
+We'll use several methods to achieve this goal.
+
+	Webui
+		HTML::Mason allows users to create multiple
+component hierarchies.  RT should ship with a local component root
+defined and available. This root should be configured as the "primary"
+component root.
+
+
+	Core modules
+
+	This gets a bit trickier. we want to allow people to trivially
+subclass core modules and to use those subclasses throughout the code.
+
+The way we're going to handle this is by setting up a number of subroutines
+in config.pm that look something like this:
+
+sub NewTicketObj {
+	eval "require $TicketClass";
+	my $object = new $TicketClass;
+	return ($object);
+}
+
+# This variable is used for ref type checking
+$TicketClass = "RT::Ticket";
+
+we could use an eval around the require and thus completely avoid specifying
+the object in two places. which feels like a win. but i'm worried about perf.
