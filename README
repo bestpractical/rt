@@ -1,5 +1,8 @@
+$Header$
 RT is (c) 1996-2000 by Jesse Vincent <jesse@fsck.com>
-RT is distributed under the GNU General Public License.
+
+RT is licensed to you under the terms of version 2 of the GNU General 
+Public License. 
 
 If you don't have a copy of the GPL, you've been living in a cave,
 but one should be included in this distribution.
