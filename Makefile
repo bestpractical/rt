@@ -95,7 +95,13 @@ RT_USER_PASSWD_MIN	=	5
 # "surrogate" with MAIL_OPTIONS set to -t
 #
 MAIL_PROGRAM		= 	/usr/lib/sendmail
+
+#The following mail options are best for recent versions of sendmail
 MAIL_OPTIONS		=	-oi -t -ODeliveryMode=b -OErrorMode=m
+
+
+#The following mail options are best for sendmail emulators or pre 8.8 versions of sendmail
+#MAIL_OPTIONS		=	-oi -t
 
 #
 # Mysql related preferences
@@ -111,17 +117,17 @@ MYSQLDIR		=	/usr/bin
 MYSQL_VERSION		= 	3.22
 
 #
-# You must insert your "root" password for mysql to allow
-# RT to create its databases.  Remove this password from this Makefile 
+# If you have defined a password for the Mysql user "root",
+# you must replace "somepassword" below with your mysql root password and 
+# uncomment the mine in order for mysql to allow
+# RT to create its databases.  
+#
+# Remove this password from this Makefile 
 # AS SOON AS MAKE INSTALL FINISHES
+# In an ideal world we'd pull this from the commandline.
 #
 #
-#ROOT_MYSQL_PASS		=	My!word%z0t	
-ifdef ROOT_MYSQL_PASS
-ROOT_MYSQL_PASS_STRING = -p$(ROOT_MYSQL_PASS)
-else 
-ROOT_MYSQL_PASS_STRING = 
-endif
+#ROOT_MYSQL_PASS		=	somepassword
 
 #
 # this password is what RT will use to authenticate itself to mysql
@@ -133,13 +139,15 @@ RT_MYSQL_PASS           =       My!word%z0t
 
 #
 # Set this to the domain name of your Mysql server
+# If the database is local, rather than on a remote host, using "localhost" 
+# will greatly enhance performance.
 #
-
 RT_MYSQL_HOST		=	localhost
 
 #
-# Set this to the FQDN of your RT server.  It'll be used by mysql to grant 
-# rt on your RT server ACLS to the Mysql database.
+# Set this to the canonical name of the interface RT will be talking to the mysql database on.
+# If you said that the RT_MYSQL_HOST above was "localhost," this should be too.
+# This value will be used by mysql to grant  rt on your RT server access to the Mysql database.
 #
 
 RT_HOST			=	localhost
@@ -158,53 +166,34 @@ RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 
 
 #
-# HTTPD CONFIGURATION
+# Web UI Configuration
 #
 
+#TODO: NONE OF THIS IS LIVE YET.
 
-#
-# where rt's httpd should look for its images
-#
+# WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use for the 
+# web ui.  Valid choices are: "cookies" and "external".  Cookies uses http cookies to keep track of
+# authentication. External means that you will have configured your web server to prompt for the user's 
+# credentials and authenticate them before RT ever sees the request.
 
-HTTPD_IMAGES_PATH 	= $(RT_LIB_PATH)/images
+WEB_AUTH_MECHANISM		=	cookies
 
-#
-# where rt's httpd should keep its logs
-#
-
-HTTPD_LOG_DIR 		= /var/log/
-
-#
-# the error long for rt's httpd
-# 
-
-HTTPD_ERROR_LOG 	= $(HTTPD_LOG_DIR)/rt-httpd-errors
-
-#
-# the access log for rt's httpd
-#
-HTTPD_ACCESS_LOG 	= $(HTTPD_LOG_DIR)/rt-httpd-accesses
-
-#
-# what port the RT webserver should live on
-#
-HTTPD_PORT		= 8080
-
-#
-# what the http document should be on rt's web server
-# 
-HTTPD_ROOT		= /dev/null
-
-# this is the prefix for where the RT cgi binaries should appear to live from 
-# a web browser (the /path/to part of http://my.host/path/to/nph-webrt.cgi)
-
-HTTPD_CGI_PREFIX	= /rt
-
-
+WEB_AUTH_COOKIES_SSL_ONLY	=	no
+WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	no
 
 ####################################################################
 # No user servicable parts below this line.  Frob at your own risk #
 ####################################################################
+
+
+ifdef ROOT_MYSQL_PASS
+ROOT_MYSQL_PASS_STRING = -p$(ROOT_MYSQL_PASS)
+else 
+ROOT_MYSQL_PASS_STRING = 
+endif
+
+
+
 
 default:
 	@echo "Read the readme"
@@ -324,20 +313,6 @@ config-replace:
         s'!!MAIL_PROGRAM!!'$(MAIL_PROGRAM)'g;\
 	s'!!MAIL_OPTIONS!!'$(MAIL_OPTIONS)'g;\
 	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g; " $(RT_CONFIG)
-
-httpd.conf-replace:
-	mv $(RT_ETC_PATH)/httpd/cern/httpd.conf $(RT_ETC_PATH)/httpd/cern/httpd.conf.old
-	cp -rp ./etc/httpd/cern/httpd.conf $(RT_ETC_PATH)/httpd/cern
-	$(PERL) -p -i -e "\
-        s'!!RTUSER!!'$(RTUSER)'g;\
-        s'!!RTGROUP!!'$(RTGROUP)'g;\
-        s'!!HTTPD_PORT!!'$(HTTPD_PORT)'g;\
-        s'!!HTTPD_ROOT!!'$(HTTPD_ROOT)'g;\
-        s'!!HTTPD_ERROR_LOG!!'$(HTTPD_ERROR_LOG)'g;\
-        s'!!HTTPD_ACCESS_LOG!!'$(HTTPD_ACCESS_LOG)'g;\
-        s'!!RT_CGI_PATH!!'$(RT_CGI_PATH)'g;\
-        s'!!HTTPD_IMAGES_PATH!!'$(HTTPD_IMAGES_PATH)'g;\
-        s'!!HTTPD_CGI_PREFIX!!'$(HTTPD_CGI_PREFIX)'g; " $(RT_ETC_PATH)/httpd/cern/httpd.conf
 
 
 predist:

@@ -1,13 +1,14 @@
 $Header$
 
-RT is (c) 1996,1997, 1998 by Jesse Vincent <jrvincent@wesleyan.edu>
+RT is (c) 1996-1999 by Jesse Vincent <jesse@fsck.com>
 
 RT is distributed under the GNU Public License.
+
 If you don't have a copy of the GPL, you've been living in a cave,
 but one should be included in this distribution.
 
 WARNING:  RT IS BETA SOFTWARE.  VERSIONS OF IT HAVE BEEN RUNNING AT
-SEVERAL SITES FOR OVER A YEAR, HOWEVER I MAKE NO PROMISES AS TO ITS
+SEVERAL SITES FOR SEVERAL YEARS, HOWEVER I MAKE NO PROMISES AS TO ITS
 STABILITY.
 
 Development of RT has been sponsored in part by Utopia Inc, by The
@@ -22,24 +23,34 @@ All of these works are distributed under the GPL
 REQUIRED PACKAGES:
 ------------------
 
-o   GNU Make ( http://www.gnu.org ) -- free
-
 o   Perl5.x ( http://www.perl.com ) -- free
+	
+	RT is written almost entirely in perl.
 
 o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- free
         
 	FTP mysql from www.mysql.com and follow the INSTALL instructions
         contained therein
 
+
+o   GNU Make ( http://www.gnu.org ) -- free
+
+	I know for sure that GNU Make supports the conditionals syntax RT's
+	Makefile uses. I can't be sure about anything else.  If you don't have 
+	GNU Make, but feel reasonably comfortable with Makefiles, you probably
+	can get by without it.
+
 o   Msql-Mysql-modules ( ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
 
-	When installing MysqlPerl, it is imperative that you say yes when asked
-	"Do you want to install the MysqlPerl emulation?"  Please note
-	that Msql-Mysql-modules requires DBD to be installed to function.
+	When installing Msql-Mysql-modules, it is imperative that you say yes 
+	when asked "Do you want to install the MysqlPerl emulation?"  Please 
+	note that Msql-Mysql-modules requires DBD to be installed to function.
+	See the Msql-Mysql-modules documentation for more information.
 
-o   CGI::Cookie
-
-	CGI-Cookie is required for web authentication to work.
+o   CGI.pm ( http://www.perl.com ) -- free
+	
+	At the moment, we use the CGI::Cookie library included as a part of 
+	CGI.pm. CGI::Cookie is required for web authentication to work.
 
 INSTALL INSTRUCTIONS
 --------------------
@@ -53,7 +64,7 @@ GENERAL INSTALLATION
 --------------------
 
 0   If you are upgrading from .9.1 or earlier, Read README.91UPGRADE before 
-    you touch ANYTHING
+    you touch ANYTHING.
 
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 
@@ -61,26 +72,34 @@ GENERAL INSTALLATION
 
         	tar xzvf rt.tar.gz -C /tmp
 
-2   Create a user rt with primary group rt
+2   Read the documentation in /tmp/rt/docs. All of it.
 
-3   Check over /tmp/rt/Makefile
+3   Create a user rt with primary group rt
+
+4   Check over /tmp/rt/Makefile
 
 	There are many variables you NEED to customize for your site.
 	Even if you are just upgrading, you must set ALL variables.
 
-4a  FOR A NEW INSTALLATION: (If you don't have RT requests you want to keep)
+5a  FOR A NEW INSTALLATION: (If you don't already have an "rt" database in Mysql)
 
-        As ROOT: make install
+        As root, type:
+		
+		 make install	(replace "make" with the local name for GNU Make, if you need to)
 
-4b  FOR UPGRADING: (From any RT installation NEWER than RT 0.9.2)
 
-        As ROOT: make upgrade
+5b  FOR UPGRADING: (From any RT installation NEWER than RT 0.9.2)
+
+        As root, type: 
+		
+		make upgrade     (replace "make" with the local name for GNU Make, if you need to)
+
 	This will build new RT wrappers, config files and libraries without
 	overwriting your RT database.
 
-5   Configure the email and web gateways, as described below. 
+6   Configure the email and web gateways, as described below. 
 
-6   Using rtadmin, add a RT user for yourself.  Add an RT queue.   
+7   Using rtadmin, add a RT user for yourself.  Add an RT queue.   
     This must be done as root, as the only user with acls to access rt is root.
 
             [root@host bin]# ./rtadmin queue -create general
@@ -89,9 +108,12 @@ GENERAL INSTALLATION
     NOTE: root's password for the web interface is "wordpass" 
     (without the quotes.)  Not changing this is a SECURITY risk  
  
-7   Edit templates to your liking. Templates are found in
+8   Edit templates to your liking. Templates are found in
     rt/etc/templates/queues/<queue-name>
 
+9   Set up the mail gateway
+
+10  Set up the web interface  
 
 
 SETTING UP THE MAIL GATEWAY 
@@ -128,26 +150,24 @@ THE WEB UI
 
 If you don't already have an http daemon set up, you will probably want
 to start one to handle the CGI interface.  For now, I'd recommend the Apache
-httpd.  Additionally, you'll need a web browser that supports cookies.
-
-CERN:
-	It just works. We even include a sample config file for you
-
-	A sample config is in rt/etc/httpd/cern. Invoke it with the 
-	following command line:
-
-         /path/to/cern/httpd -r /path/to/rt/etc/httpd/cern/httpd.conf
-
-	o     you'll find rt-admin at http://host:8080/rt/nph-admin-webrt.cgi
-	o     you'll find rt at http://host:8080/rt/nph-webrt.cgi and
-	o                       http://host:8080/rt/nph-webrt.cgi/frames
-
+httpd.  Additionally, you'll need a web browser that supports unless you've 
+enabled "external" authentication above.
 
 Apache 
 	To get Apache working, you'll want to add two lines to your httpd.conf:
 
 	Alias /webrt/ "/path/to/rt/lib/images/"
 	ScriptAlias /rt/ "/path/to/rt/bin/cgi/"
+
+        o     you'll find rt-admin at http://host/rt/nph-admin-webrt.cgi
+        o     you'll find rt at http://host/rt/nph-webrt.cgi and
+        o                       http://host/rt/nph-webrt.cgi/frames
+
+CERN:
+	It just works. 
+	
+	You'' want to tell your server that /webrt/ is an alias for "/path/to/rt/lib/images/" and that
+	/rt is a Script Alias for "/path/to/rt/bin/cgi/"
 
         o     you'll find rt-admin at http://host/rt/nph-admin-webrt.cgi
         o     you'll find rt at http://host/rt/nph-webrt.cgi and
@@ -174,9 +194,8 @@ THE CLI
 RT-USERS MAILINGLIST
 --------------------
 
-
 By now, you've probably hit at least one sticking point. you probably
-want to join the RT-users mailinglist.  Send a message to:
+want to join the rt-users mailinglist.  Send a message to:
 
          rt-users-request@lists.fsck.com 
 
@@ -186,10 +205,10 @@ With the body of the message consisting of only the word:
 
 Address questions to the mailinglist.  If you feel your questions are
 best not asked publically, send them to me personally at:
-jrvincent@wesleyan.edu.
+jesse@fsck.com
 
 If you're interested in hacking on rt, you;ll want to subscribe to 
-rt-devel@fsck.com.  Subscribe to it with instructions similar to those 
+rt-devel@lists.fsck.com.  Subscribe to it with instructions similar to those 
 above.
 
 
@@ -204,9 +223,13 @@ day since.  Rich West rewrote this readme and did some UI hacking.  Adam
 Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
 Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
 Gerald Abshez, Dave Hull, Dave Schenet Dave Walton and Charlie Brady have all 
-contributed bug reports, code  or ideas that have helped RT along.   If I've 
+contributed bug reports, code  or ideas that have helped RT along.  Utopia Inc, 
+Wesleyan University and The Leftbank Operation have paid me to update RT and 
+release it to the public.  Without their support RT would not exist.   If I've 
 left you out, please drop me a line....it wasn't intentional. 
  
+
+
         Enjoy
 
         Jesse Vincent

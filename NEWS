@@ -1,3 +1,8 @@
+20 Apr 99
+---------
+Removed vestiges of CERN from the makefile.
+Added more description to the makefile
+
 13 apr 99
 ---------
 fixes for IE authentication
