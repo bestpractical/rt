@@ -725,8 +725,6 @@ sub Update {
 
         }
         else {
-            $RT::Logger->warning(
-                "$self asked to update an unknown attribute: $attribute");
             next;
         }
 
