@@ -194,6 +194,14 @@ AC_ARG_WITH(apachectl,
             APACHECTL=`which apachectl`)
 AC_SUBST(APACHECTL)
 
+dnl RT's "maintainer mode"
+AC_ARG_WITH(devel-mode,
+            AC_HELP_STRING([--with-devel-mode],
+                           [Turn on development aids that might hurt you in production]),
+
+            RT_DEVEL_MODE="1", 
+            RT_DEVEL_MODE="0")
+AC_SUBST(RT_DEVEL_MODE)
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in
 dnl files are changed to use the new names.

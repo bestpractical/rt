@@ -93,7 +93,7 @@
 </tr>
 <TR valign="top">
 <TD valign="top" width="100%" height="100%" class="mainbody" >
-
+%$m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 <%INIT>
 
   foreach my $tab (sort keys %{$toptabs}) {
