@@ -17,13 +17,13 @@ sub new {
 sub _Accessible {
   my $self = shift;
   my %Cols = ( QueueId => 'read/write',
-	        Name  => 'read/write',
-		Description => 'read/write',
-  		Scope => 'read/write',
-  		Type	 => 'read/write',
-  		Action  => 'read/write',
-  		Template => 'read/write',
- 		Argument  => 'read/write'
+	       Name  => 'read/write',
+	       Description => 'read/write',
+	       Scope => 'read/write',
+	       Type	 => 'read/write',
+	       Action  => 'read/write',
+	       Template => 'read/write',
+	       Argument  => 'read/write'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }

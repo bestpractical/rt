@@ -1,4 +1,4 @@
-# Copyright 1999 Jesse Vincent <jesse@fsck.com>
+# Copyright 1999-2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 # $Id$ 
 #
@@ -30,7 +30,6 @@ sub _Accessible {
 	      EffectiveTicket => 'read',
 	      Creator => 'read',
 	      Created => 'read'
-
 	     );
 }
 
@@ -67,6 +66,9 @@ sub Create {
 			       );
   $self->Load($id);
 
+  my $Scrips = RT::Scrips->new($self->CurrentUser);
+  $Scrips->Limit();#Limit it to queue 0 or $Ticket->QueueId
+  $Scrips->Limit();#Limit to $args{'Type'} or 'any'
   #Load a scrips object
   #Iterate through each script and check it's applicability.
    #If it's applicable, prepare and commit it.
