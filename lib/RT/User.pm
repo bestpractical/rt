@@ -106,15 +106,20 @@ sub Delete {
 
 sub load {
   my $self = shift;
+  my ($package, $filename, $line) = caller;
+  print STDERR "RT::User->load called from $package, line $line with arguments (",@_,")\n";
   return ($self->Load(@_));
 }
 sub Load {
   my $self = shift;
   my $identifier = shift;
-
+  my ($package, $filename, $line) = caller;
+#  print STDERR "RT::User->Load called from $package, line $line with arguments (",@_,")\n";
+  
+  print STDERR "RT::User->Load: Loading User $identifier\n";
   #if it's an int, load by id. otherwise, load by name.
   if ($identifier !~ /\D/) {
-    $self->SUPER::Load($identifier);
+    $self->SUPER::LoadById($identifier);
   }
   else {
 

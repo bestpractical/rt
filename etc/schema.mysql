@@ -81,14 +81,14 @@ CREATE TABLE tickets (
 
 CREATE TABLE transactions (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  effective_ticket INT,
-  ticket INT,
-  time_taken INT,
-  actor CHAR(40),
-  type CHAR(20),
-  data CHAR(100),
-  content BLOB,
-  date INT
+  EffectiveTicket INT,
+  Ticket INT,
+  TimeTaken INT,
+  Actor INT,
+  Type CHAR(20),
+  Data CHAR(100),
+  Content BLOB,
+  Date INT
 )\g
 
 CREATE TABLE mime_bodies (

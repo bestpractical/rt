@@ -39,7 +39,7 @@ sub create {
 #  print STDERR "In RT::Queue::create.pm\n";
   my $id = $self->SUPER::Create(QueueId => @_);
 #  print STDERR "Loading $id\n";
-  $self->load_by_id($id);
+  $self->LoadById($id);
   
 }
 
@@ -80,7 +80,7 @@ sub Create {
 sub Load {
   my $self = shift;
   my $queue_id = shift;
-  $self->SUPER::load_by_col("QueueId", $queue_id);
+  $self->SUPER::LoadByCol("QueueId", $queue_id);
 }
 
 sub load {

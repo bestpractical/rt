@@ -4,9 +4,9 @@ package rt::ui::cli::admin;
 sub activate {
   my ($current_user);
   
-  require RT::User;  
+  require RT::CurrentUser;  
   ($current_user,undef)=getpwuid($<);
-  $CurrentUser = new RT::User($current_user);
+  $CurrentUser = new RT::CurrentUser($current_user);
   if (!$CurrentUser->Load($current_user)) {
     print "You have no RT access.\n";
     return();
@@ -66,11 +66,11 @@ sub ParseArgs {
 		$area_name=$ARGV[++$i];
 		$queue_id=$ARGV[++$i];
 		if ($area_action =~ 'a') {
-		  ($flag, $message)=&rt::add_queue_area($queue_id, $area_name, $CurrentUser->UserId);
+		  ($flag, $message)=&rt::add_queue_area($queue_id, $area_name, $CurrentUser);
 		  print "$message\n"
 		}
 		elsif ($area_action =~  'd') {
-		  ($flag, $message)=&rt::delete_queue_area($queue_id, $area_name, $CurrentUser->UserId);
+		  ($flag, $message)=&rt::delete_queue_area($queue_id, $area_name, $CurrentUser);
 		  print "$message\n"
 		}	
 	      }
@@ -111,14 +111,14 @@ sub ParseArgs {
 		   while (my $login=$ARGV[++$i]) {
 		      ($login, $domain) = split('@', $login);
                       $domain || ($domain = $host);
-                      &add_pwent($domain, getpwnam($login), $CurrentUser->UserId);		  
+                      &add_pwent($domain, getpwnam($login), $CurrentUser);		  
 		   }
 	       } else { 
 		   #Sometimes it really had been useful beeing able to combine while with
 		   #else..  
 		   
                      &setpwent;
-                     while (&add_pwent($host, getpwent, $CurrentUser->UserId))
+                     while (&add_pwent($host, getpwent, $CurrentUser))
                           {;}
                      &endpwent;
 		   }
@@ -185,7 +185,7 @@ sub cli_acl_queue {
  sub cli_modify_user{
    my $user_id = shift;
    my $User;
-   $User = new RT::User($CurrentUser->UserId);
+   $User = new RT::User($CurrentUser);
    if (!$User->Load($user_id)){
      print "That user does not exist.\n";
      return(0);
@@ -201,7 +201,7 @@ sub cli_acl_queue {
 
    my ($email, $real_name, $password, $phone, $office, $admin_rt, $comments, $message);
    
-   if (($CurrentUser->UserId eq $User->UserId) or 
+   if (($CurrentUser->Id eq $User->Id) or 
        ($CurrentUser->IsAdministrator)) {
      
     $email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,
@@ -245,7 +245,7 @@ sub cli_acl_queue {
  
 sub cli_create_user {
   my $user_id = shift;
-  my $User = new RT::User($CurrentUser->UserId);
+  my $User = new RT::User($CurrentUser);
   $User->Create($user_id);
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_user_helper($User);
@@ -254,7 +254,7 @@ sub cli_create_user {
 sub cli_create_queue {
   my $queue_id = shift;
   use RT::Queue;
-  my $Queue = new RT::Queue($CurrentUser->UserId);
+  my $Queue = new RT::Queue($CurrentUser);
   $Queue->Create($queue_id);
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_queue_helper($Queue);
@@ -264,8 +264,8 @@ sub cli_modify_queue {
   my $queue_id = shift;
   # get a new queue object and fill it.
   use RT::Queue;
-  $Queue = new RT::Queue($CurrentUser->UserId);
-  $Queue->load($queue_id);
+  $Queue = new RT::Queue($CurrentUser);
+  $Queue->Load($queue_id);
   &cli_modify_queue_helper($Queue);
 }
 
@@ -326,7 +326,7 @@ sub cli_delete_queue {
   my  $queue_id = shift;
   # this function needs to ask about moving all requests into some other queue
     if(&rt::ui::cli::question_yes_no("Really DELETE queue $queue_id",0)){
-      my $Queue = new RT::Queue($CurrentUser->UserId);
+      my $Queue = new RT::Queue($CurrentUser);
       $Queue->Load($queue_id);
       $message = $Queue->Delete();
       print "$message\n";
@@ -339,7 +339,7 @@ sub cli_delete_queue {
 sub cli_delete_user {
   my  $user_id = shift;
   if(&rt::ui::cli::question_yes_no("Really DELETE user $user_id",0)){
-    my $User = new RT::User($CurrentUser->UserId);
+    my $User = new RT::User($CurrentUser);
     $User->Load($user_id);
     $message = $User->Delete();
     print "$message\n";
@@ -396,7 +396,7 @@ sub cli_user_acl {
 	}
 
 	if (&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)) {
-	    ($result,$message)=&rt::add_modify_queue_acl($queue_id, $user_id, $display, $manipulate, $admin, $CurrentUser->UserId);
+	    ($result,$message)=&rt::add_modify_queue_acl($queue_id, $user_id, $display, $manipulate, $admin, $CurrentUser);
 	    print "$message\n";
 	}
 	else {
@@ -415,7 +415,7 @@ sub cli_print_acl {
   my  $user_id =  shift;
   my  $queue_id  = shift;
   
-  my $ACE = new RT::ACE($CurrentUser->UserId);
+  my $ACE = new RT::ACE($CurrentUser);
   
   if (!&rt::is_a_queue($queue_id)){
     print "$queue_id: That queue does not exist. (You should never see this error)\n";

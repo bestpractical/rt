@@ -7,24 +7,32 @@ package rt::ui::cli::manipulate;
 
 
 sub activate {
-  my ($current_user);
-  require RT::User;
-
-    
-  #Instantiate a user object
-  
-  ($CurrentUser,undef)=getpwuid($<);
-  $CurrentUser = new RT::User($CurrentUser);
-  $CurrentUser->load($CurrentUser);
-  
-  &ParseArgs;
-  return(0);
+ &GetCurrentUser;
+ &ParseArgs($CurrentUser);
+ return(0);
 }
 
 
-  
-
+sub GetCurrentUser {
+  if (!$CurrentUser) {
+    my ($CurrentUid);
+    require RT::CurrentUser;
+        
+    #Instantiate a user object
+    
+    ($CurrentUid,undef)=getpwuid($<);
+    #If the current user is 0, then RT will assume that the User object
+    #is that of the currentuser.
+    $CurrentUser = new RT::CurrentUser();
+    if (!$CurrentUser->Load($CurrentUid)) {
+      print "You have no RT access\n";
+      return(0);
+    }
+  }
+  return($CurrentUser);
+}
 sub ParseArgs {
+
   for ($i=0;$i<=$#ARGV;$i++) {
     if ($ARGV[$i] eq "-create")   {
       &cli_create_req;
@@ -66,7 +74,7 @@ sub ParseArgs {
     elsif ($ARGV[$i] eq "-trans") {
       
       my $tid = int($ARGV[++$i]);
-      my $Transaction = RT::Transaction->new($CurrentUser->UserId);
+      my $Transaction = RT::Transaction->new($CurrentUser->Id);
       $Transaction->Load($tid);
       &ShowTransaction($Transaction);	
       
@@ -167,7 +175,7 @@ sub ParseArgs {
 	my $due_string=$ARGV[++$i];
 	my $due_date = &rt::DateParse($due_string);
 	
-	$Message .= $Ticket->SetDateDue($id, $due_date, $CurrentUser->UserId);
+	$Message .= $Ticket->SetDateDue($id, $due_date, $CurrentUser->Id);
 
 	}
       
@@ -248,7 +256,7 @@ sub ParseArgs {
       }
     }	 
     use RT::Ticket;
-    my $Ticket = RT::Ticket->new($CurrentUser->UserId);
+    my $Ticket = RT::Ticket->new($CurrentUser->Id);
     my $id = $Ticket->Create ( Queue => $queue,
 			       Area => $area,
 			       Alias => $alias,
@@ -286,7 +294,7 @@ sub ParseArgs {
 				content => "$content",
 				cc => "$cc",
 				bcc => "$bcc",
-				sender => $CurrentUser->UserId);
+				sender => $CurrentUser->EmailAddress);
     print $Message;
   }
   
@@ -312,7 +320,7 @@ n";
 					   content => "$content",
 					   cc => "$cc",
 					   bcc => "$bcc",
-					   sender => $CurrentUser->UserId);
+					   sender => $CurrentUser->EmailAddress);
     print $Message;
   }                   
   
@@ -397,10 +405,11 @@ EOFORM
   
 sub LoadTicket {
   my $id = shift;
-  my ($Ticket,$Status,$Message);
-  
+  my ($Ticket,$Status,$Message,$CurrentUser);
+  $CurrentUser=&GetCurrentUser;
+  print "Current User is ".$CurrentUser->Id."\n";;
   use RT::Ticket;
-  $Ticket = RT::Ticket->new($CurrentUser->UserId);
+  $Ticket = new RT::Ticket ($CurrentUser);
   ($Status, $Message) = $Ticket->Load($id);
   if (!$Status) {
     print ("The request could not be loaded");

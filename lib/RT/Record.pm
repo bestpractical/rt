@@ -14,6 +14,7 @@ sub new {
 
 sub _Init {
   my $self = shift;
+  $self->{'user'} = shift;
   $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 
@@ -31,14 +32,17 @@ sub _Value {
 
   my $self = shift;
   my $field = shift;
+  my ($package, $filename, $line) = caller;
+  print STDERR "DBIx::Record->_Value called from $package, line $line with arguments (",@_,")\n";
+  print STDERR "Determining value of $field\n";
   #if the user is trying to display only {
-    if ($self->DisplayPermitted) {
-      #if the user doesn't have display permission, return an error
-      return($self->SUPER::_Value($field));
-    }
-    else {
-      return(0, "Permission Denied");
-    }
+  if ($self->DisplayPermitted) {
+    #if the user doesn't have display permission, return an error
+    return($self->SUPER::_Value($field));
+  }
+  else {
+    return(0, "Permission Denied");
+  }
 }
 
 sub _Set {

@@ -123,23 +123,35 @@ sub Queue {
 
 sub Owner {
   my $self = shift;
-  if (!$self->{'owner'})  {
+  #If it's unowned, return undef
+  if (!$self->_Value('Owner')) {
+    return(undef);
+  }
+  #If it's got an owner
+  elsif (!$self->{'owner'})  {
     require RT::User;
     $self->{'owner'} = RT::User->new($self->CurrentUser);
-    $self->{'owner'}->load($self->_Value('Owner'));
+    $self->{'owner'}->Load($self->_Value('Owner'));
+    
+    
   }
+  
+  #Return the owner object
   return ($self->{'owner'});
 }
 
 
 sub Take {
   my $self=shift;
-  $self->SetOwner($self->CurrentUser);
+ my ($package, $filename, $line) = caller;
+  print STDERR "RT::Ticket->Take called from $package, line $line with arguments (",@_,")\n";
+  print STDERR "Taking ".$self->CurrentUser->Id."\n";
+  return($self->SetOwner($self->CurrentUser->Id));
 }
 
 sub Untake {
   my $self=shift;
-  $self->SetOwner("");
+  return($self->SetOwner(""));
 }
 
 
@@ -149,12 +161,12 @@ sub Steal {
   if (!$self->ModifyPermitted){
     return ("Permission Denied");
   }
-  elsif ($self->Owner->UserId eq $self->CurrentUser ) {
+  elsif ($self->Owner->Id eq $self->CurrentUser->Id ) {
     return ("You already own this ticket"); 
   }
   else {
     # TODO: Send a "This ticket was stolen from you" alert
-    return($self->_Set('owner',$self->CurrentUser));
+    return($self->_Set('owner',$self->CurrentUser->Id));
   }
   
   
@@ -164,6 +176,10 @@ sub SetOwner {
   my $NewOwner = shift;
   my ($NewOwnerObj);
 
+  #TODO this routine dies when: we're trying to give something away
+  #TODO this routine dies when: we're trying to steal something
+
+
   use RT::User;
   $NewOwnerObj = RT::User->new($self->CurrentUser);
   
@@ -171,17 +187,24 @@ sub SetOwner {
     return (0, "That user does not exist");
   }
   
-  #new owner can be blank or the name of a new owner.
-  if (($NewOwner != '') and (!$self->ModifyPermitted($NewOwner))) {
+  #If thie ticket has an owner and it's not the current user
+  #TODO:this breaks stealing.
+  
+  if (($self->Owner) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
+    return("You can only reassign tickets that you own or that are unowned");
+  }
+  #If we've specified a new owner and that user can't modify the ticket
+  elsif (($NewOwner) and (!$self->ModifyPermitted($NewOwnerObj->Id))) {
     return ("That user may not own requests in that queue")
   }
   
-  elsif ($NewOwnerObj->Id eq $self->Owner->Id) {
+
+  #If the ticket has an owner and it's the new owner, we don't need
+  #To do anything
+  elsif (($self->Owner) and ($NewOwnerObj->Id eq $self->Owner->Id)) {
     return("That user already owns that request");
   }
-  elsif (($self->CurrentUser ne $self->Owner()) and ($self->Owner != '')) {
-    return("You can only reassign tickets that you own or that are unowned");
-  }
+  
   
   #  elsif ( #TODO $new_owner doesn't have queue perms ) {
   #	return ("That user doesn't have permission to modify this request");
@@ -291,7 +314,7 @@ sub Comment {
   my $self = shift;
   
   my %args = ( subject => $self->Subject,
-	       sender => $self->CurrentUser,
+	       sender => $self->CurrentUser->EmailAddress,
 	       cc => undef,
 	       bcc => undef,
 	       time_taken => 0,
@@ -319,7 +342,7 @@ sub Comment {
 sub Correspond {
   my $self = shift;
     my %args = ( subject => $self->Subject,
-		 sender => $self->CurrentUser,
+		 sender => $self->CurrentUser->EmailAddress,
 		 cc => undef,
 		 bcc => undef,
 		 time_taken => 0,
@@ -453,10 +476,10 @@ sub _NewTransaction {
   my $data = shift;
   my $time_taken = shift;
   my $content = shift;
-
-
+  
+  use RT::Transaction;
   my $trans = new RT::Transaction($self->CurrentUser);
-  $trans->Create( Ticket => $self->EffectiveSN,
+  $trans->Create( Ticket => $self->EffectiveId,
 		  TimeTaken => "$time_taken",
 		  Type => "$type",
 		  Data => "$data",
@@ -495,26 +518,14 @@ sub _UpdateTimeTaken {
 
 sub _UpdateDateActed {
   my $self = shift;
-  $self->SUPER::_Set('date_acted',time);
+  $self->SUPER::_Set('DateActed',time);
 }
 
 
 
 
 
-# These methods override DBIx::Record
-
-sub _Value {
-  my $self = shift;
-  #If the user is only trying to display;
-  if ($self->DisplayPermitted) {
-    return ($self->SUPER::_Value(@_));
-  }
-    else {
-      return(0, "Permission Denied");
-    }
-}
-
+#This overrides RT::Record
 sub _Set {
   my $self = shift;
   my (@args);
@@ -533,7 +544,7 @@ sub _Set {
     
     $self->_NewTransaction ($field, $value, $time_taken, $content);
     $self->_UpdateDateActed;
-    $self->_Set($field, @_);
+    $self->SUPER::_Set($field, $value);
     #Figure out where to send mail
   }
   
@@ -548,11 +559,14 @@ sub _Set {
 sub DisplayPermitted {
   my $self = shift;
 
+  print STDERR "IN RT::Ticket->DisplayPermitted\n";
+  
   my $actor = shift;
   if (!$actor) {
-    my $actor = $self->CurrentUser;
+    my $actor = $self->CurrentUser->Id();
   }
-  if ($self->Queue->DisplayPermitted($actor)) {
+  if (1) {
+    #  if ($self->Queue->DisplayPermitted($actor)) {
     return(1);
   }
   else {
@@ -565,7 +579,7 @@ sub ModifyPermitted {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
-    my $actor = $self->CurrentUser;
+    my $actor = $self->CurrentUser->Id();
   }
   if ($self->Queue->ModifyPermitted($actor)) {
     
@@ -581,7 +595,7 @@ sub AdminPermitted {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
-    my $actor = $self->CurrentUser;
+    my $actor = $self->CurrentUser->Id();
   }
 
 

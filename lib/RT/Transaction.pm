@@ -18,11 +18,23 @@ sub new {
   return ($self);
 }
 
-
-#take simple args and call MKIA::Database::Record to do the real work.
-sub Create {
+sub _Accessible {
   my $self = shift;
-  return($self->create(@_));
+  my %Cols = (
+	      TimeTaken => 'read/write',
+	      Ticket => 'read/write',
+	      Type=> 'read/write',
+	      Data => 'read/write',
+	      Content => 'read/write',
+	      Date => 'read/write',
+	      EffectiveTicket => 'read/write',
+	      Actor => 'read/write'
+	     );
+}
+#take simple args and call RT::Record to do the real work.
+sub create {
+  my $self = shift;
+  return($self->Create(@_));
 }
 
 sub create {
@@ -31,79 +43,31 @@ sub create {
   my %args = ( id => undef,
 	       TimeTaken => 0,
 	       Ticket => '',
-
                Type => '',
 	       Data => '',
-
 	       Content => '',
 	       @_
 	     );
   #if we didn't specify a ticket, we need to bail
-  return (0) if (! $args{'ticket'});
+  return (0) if (! $args{'Ticket'});
 
   #lets create our parent object
-  my $id = $self->SUPER::Create(ticket => $args{'ticket'},
-				effective_ticket  => $args{'ticket'},
-				time_taken => $args{'TimeTaken'},
-				date => time(),
-				time_taken => $args{'time_taken'},
-				type => $args{'type'},
-				content => $args{'content'},
-				data => $args{'data'}
-				actor => $self->CurrentUser(),
+  my $id = $self->SUPER::Create(Ticket => $args{'ticket'},
+				EffectiveTicket  => $args{'Ticket'},
+				TimeTaken => $args{'TimeTaken'},
+				Date => time(),
+				Type => $args{'Type'},
+				Content => $args{'Content'},
+				Data => $args{'Data'},
+				Actor => $self->CurrentUser(),
 			       );
   return ($id);
 }
 
 
-sub EffectiveTicket {
-  my $self = shift;
-  return($self->_set_and_return('effective_ticket'));
-}
-
-#Table specific data accessors/ modifiers
-sub Type {
-  my $self = shift;
-  return($self->_set_and_return('type'));
-}
-sub Actor {
-  my $self = shift;
-  return($self->_set_and_return('actor'));
-}
-
-sub Ticket {
-  my $self = shift;
-  return($self->_set_and_return('ticket'));
-}
-
-#sub url {
-#  my $self = shift;
-#  return($self->_set_and_return('url'));
-#}
-
-sub Date {
-  my $self = shift;
-  return($self->_set_and_return('date'));
-}
-
 sub DateAsString {
   my $self = shift;
   return($self->_set_and_return('date'));
-}
-
-sub Data {
-  my $self = shift;
-  return($self->_set_and_return('data'));
-}
-
-sub Content {
-  my $self=shift;
-  return($self->_set_and_return('content'));
-}
-
-sub TimeTaken {
-  my $self=shift;
-  return($self->_set_and_return('time_taken'));
 }
 
 sub Description {
@@ -196,7 +160,58 @@ sub Description {
     return($self->Type . " modified. RT Should be more explicit about this!");
   }
   
-    
+  
+}
+#ACCESS CONTROL
+# 
+sub DisplayPermitted {
+  my $self = shift;
+
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser->Id();
+  }
+  if (1) {
+#  if ($self->Queue->DisplayPermitted($actor)) {
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
 }
 
+sub ModifyPermitted {
+  my $self = shift;
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser->Id();
+  }
+  if ($self->Queue->ModifyPermitted($actor)) {
+    
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
+}
+
+sub AdminPermitted {
+  my $self = shift;
+  my $actor = shift;
+  if (!$actor) {
+    my $actor = $self->CurrentUser->Id();
+  }
+
+
+  if ($self->Queue->AdminPermitted($actor)) {
+    
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
+}
 1;
