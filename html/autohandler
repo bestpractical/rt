@@ -24,10 +24,15 @@
 <%INIT>
 local *session;
 foreach my $key (keys %ARGS) {
+
+        # if they've passed multiple values, they'll be an array. if they've passed just one, a scalar
+        # whatever they are, mark them as utf8
         if (ref($ARGS{$key})) {
         @{$ARGS{$key}} = map {  Encode::decode('utf-8',$_, Encode::FB_PERLQQ)}  @{$ARGS{$key}}; 
         }
+        else {
         $ARGS{$key} = Encode::decode('utf-8',$ARGS{$key}, Encode::FB_PERLQQ) ;
+        }
 }
 if ($ARGS{'Debug'}) {
         require Time::HiRes;
