@@ -1624,16 +1624,16 @@ sub LimitCustomField {
         $args{'DESCRIPTION'} ||= $self->loc("Custom field [_1] [_2] [_3]",  $CF->Name , $args{OPERATOR} , $args{VALUE});
     }
 
-#    my $index = $self->_NextIndex;
-#    %{ $self->{'TicketRestrictions'}{$index} } = %args;
-
-
     my $q = "";
     if ($CF->Queue) {
       my $qo = new RT::Queue( $self->CurrentUser );
       $qo->load( $CF->Queue );
       $q = $qo->Name;
     }
+
+    my @rest;
+    @rest = ( ENTRYAGGREGATOR => 'AND' )
+      if ($CF->Type eq 'SelectMultiple');
 
     $self->Limit( VALUE => $args{VALUE},
 		  FIELD => "CF.".( $q
@@ -1642,11 +1642,11 @@ sub LimitCustomField {
 			   ),
 		  OPERATOR => $args{OPERATOR},
 		  CUSTOMFIELD => 1,
+		  @rest,
 		);
 
 
     $self->{'RecalcTicketLimits'} = 1;
-  #  return ($index);
 }
 
 # }}}
@@ -1930,12 +1930,19 @@ sub _RestrictionsToClauses {
     # defined $restriction->{'TARGET'} ?
     # $restriction->{TARGET} )
 
-    my $ea = $DefaultEA{$type};
+    my $ea = $restriction->{ENTRYAGGREGATOR} || $DefaultEA{$type};
     if ( ref $ea ) {
       die "Invalid operator $op for $field ($type)"
 	unless exists $ea->{$op};
       $ea = $ea->{$op};
     }
+
+    # Each CustomField should be put into a different Clause so they
+    # are ANDed together.
+    if ($restriction->{CUSTOMFIELD}) {
+      $realfield = $field;
+    }
+
     exists $clause{$realfield} or $clause{$realfield} = [];
     # Escape Quotes
     $field =~ s!(['"])!\\$1!g;
