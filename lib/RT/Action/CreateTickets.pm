@@ -593,6 +593,10 @@ sub ParseLines {
 		    last if ($l =~  /^ENDOFCONTENT\s*$/) ;
 		    push @{$args{'content'}}, $l."\n";
 		}
+	    } else {
+		# if it's not content, strip leading and trailing spaces
+		$args{ $tag } =~ s/^\s+//g;
+		$args{ $tag } =~ s/\s+$//g;
 	    }
 	}
     }
