@@ -3178,7 +3178,7 @@ sub SetStatus {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    if (!$args{Force} and $self->HasUnresolvedDependencies) {
+    if (!$args{Force} && ($args{'Status'} eq 'resolved') && $self->HasUnresolvedDependencies) {
         return (0, $self->loc('That ticket has unresolved dependencies'));
     }
 
