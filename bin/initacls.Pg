@@ -9,14 +9,10 @@ DATABASEACLS=$6
 
 BINDIR=${DATABASEHOME}/bin
 
-echo "DBHOME = $DATABASEHOME"
-echo "HOSTNAME = $HOSTNAME"
-echo "DATABASEADMIN = $DATABASEADMIN"
-echo "DBAPASSWD = $DBAPASSWD"
-echo "DATABASENAME = $DATABASENAME"
 
 PATH=$PATH:$BINDIR
 export PATH
 
+echo "Enter the postgres administrator's database password to create a new user for rt"
 psql -d $DATABASENAME -f $DATABASEACLS -U $DATABASEADMIN
 

@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	52
+RT_VERSION_PATCH	=	53
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -270,9 +270,14 @@ acls:
 				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
 	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)' 
 
+
+
+dropdb: 
+	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' drop
+
+
 createdb: 
 	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' create
-
 initdb.dba:
 	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' insert
 

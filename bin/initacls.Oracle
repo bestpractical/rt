@@ -18,7 +18,7 @@ echo "DATABASENAME = $DATABASENAME"
 PATH=$PATH:$BINDIR
 export PATH
 
-echo "$BINDIR/sqlplus ${DATABASEADMIN}@${DATABASENAME}  @$DATABASEACLS"
+echo "Please enter ${DATABASEADMIN}'s  password for the SID ${DATABASENAME} to create an rt user";
 
 $BINDIR/sqlplus ${DATABASEADMIN}@${DATABASENAME}  @$DATABASEACLS
 

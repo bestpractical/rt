@@ -70,6 +70,12 @@ GENERAL INSTALLATION
 
 2.2   If there are unsatisfied dependencies, install them by hand or run
 	make fixdeps
+	
+       (You may need to install Apache::Session and Apache::DBI by hand)
+
+2.3   Check to make sure everything was installed properly:
+	make testdeps
+
 
 3   Create a group called 'rt'
 
