@@ -97,5 +97,25 @@ sub HasEntry {
 
 }
 
+sub _DoSearch {
+    my $self = shift;
+    
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    unless($self->{'find_expired_rows'}) {
+        $self->LimitToCurrent();
+    }
+    
+    return($self->SUPER::_DoSearch(@_));
+    
+}
+
+sub LimitToCurrent {
+    my $self = shift;
+    
+    $self->Limit( FIELD => 'Current',
+		  VALUE => '1',
+		  OPERATOR => '=' );
+}
+
 1;
 

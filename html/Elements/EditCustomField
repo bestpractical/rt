@@ -68,18 +68,19 @@ if ($Object) {
 }
 my $Type = $CustomField->Type;
 my $MaxValues = $CustomField->MaxValues;
-$Type .= ($MaxValues > 1) ? 'Some' : $MaxValues ? 'Single' : 'Multiple';
 if ($MaxValues == 1 and $Object and $Values) {
     $Default = ($Values->Count ? $Values->First->Content : '');
 }
 return $m->comp(
-    "/Elements/CustomField/$Type",
+    "EditCustomField$Type",
     %ARGS,
     Rows => $Rows,
     Cols => $Cols,
     Default => $Default,
     Object => $Object,
     Values => $Values,
+    MaxValues => $MaxValues,
+    Multiple => ($MaxValues != 1),
     NamePrefix => $NamePrefix,
     CustomField => $CustomField,
 );

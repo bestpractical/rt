@@ -222,6 +222,10 @@ sub LimitToGlobalOrObjectId {
                  OPERATOR        => '=',
                  VALUE           => 0,
                  ENTRYAGGREGATOR => 'OR' ) if $id;
+    $self->OrderByCols(
+	{ ALIAS => $self->_OCFAlias, FIELD => 'ObjectId' },
+	{ ALIAS => $self->_OCFAlias, FIELD => 'SortOrder' },
+    );
     
     # This doesn't work on postgres. 
     #$self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');

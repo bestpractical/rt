@@ -32,8 +32,8 @@ use RT::ObjectCustomFieldValues;
 # Enumerate all valid types for this custom field
 @TYPES = (
     'Freeform',	# loc
-    'Text',     # loc
     'Select',	# loc
+    'Text',     # loc
     'Image',    # loc
     'Binary',   # loc
 );
@@ -478,9 +478,9 @@ my %FriendlyTypes = (
         'Enter up to [_1] values',	# loc
     ],
     Text => [
-        'Enter multiple text areas',	# loc
-        'Enter one text area',		# loc
-        'Enter up to [_1] text areas',	# loc
+        'Fill in multiple text areas',	# loc
+        'Fill in one text area',	# loc
+        'Fill in up to [_1] text areas',# loc
     ],
     Image => [
         'Upload multiple images',	# loc

@@ -2452,20 +2452,20 @@ msgid "English Name"
 msgstr "英文姓名"
 
 #: lib/RT/CustomField_Overlay.pm:481
-msgid "Enter multiple text areas"
-msgstr ""
+msgid "Fill in multiple text areas"
+msgstr "填入多個文字方塊"
 
 #: lib/RT/CustomField_Overlay.pm:476
 msgid "Enter multiple values"
-msgstr "鍵入多重項目"
+msgstr "鍵入多個項目"
 
 #: NOT FOUND IN SOURCE
 msgid "Enter one or more conditions below to search for users"
 msgstr "輸入下列單一或複式條件，查詢用戶資料"
 
 #: lib/RT/CustomField_Overlay.pm:482
-msgid "Enter one text area"
-msgstr ""
+msgid "Fill in one text area"
+msgstr "填入單一文字方塊"
 
 #: lib/RT/CustomField_Overlay.pm:477
 msgid "Enter one value"
@@ -2476,12 +2476,12 @@ msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with 
 msgstr "輸入申請單可鏈結到的申請單編號或網址。以空白隔開。"
 
 #: lib/RT/CustomField_Overlay.pm:483
-msgid "Enter up to %1 text areas"
-msgstr ""
+msgid "Fill in up to %1 text areas"
+msgstr "填入最多 %1 個文字方塊"
 
 #: lib/RT/CustomField_Overlay.pm:478
 msgid "Enter up to %1 values"
-msgstr ""
+msgstr "鍵入最多 %1 個項目"
 
 #: NOT FOUND IN SOURCE
 msgid "EntryBoolean"
@@ -5495,7 +5495,7 @@ msgstr "選擇群組"
 
 #: lib/RT/CustomField_Overlay.pm:471
 msgid "Select multiple values"
-msgstr "選擇多重項目"
+msgstr "選擇多個項目"
 
 #: lib/RT/CustomField_Overlay.pm:472
 msgid "Select one value"
@@ -6489,27 +6489,27 @@ msgstr "前次更新"
 
 #: lib/RT/CustomField_Overlay.pm:491
 msgid "Upload multiple files"
-msgstr ""
+msgstr "上傳多份檔案"
 
 #: lib/RT/CustomField_Overlay.pm:486
 msgid "Upload multiple images"
-msgstr ""
+msgstr "上傳多張圖片"
 
 #: lib/RT/CustomField_Overlay.pm:492
 msgid "Upload one files"
-msgstr ""
+msgstr "上傳單一檔案"
 
 #: lib/RT/CustomField_Overlay.pm:487
 msgid "Upload one image"
-msgstr ""
+msgstr "上傳單一圖片"
 
 #: lib/RT/CustomField_Overlay.pm:493
 msgid "Upload up to %1 files"
-msgstr ""
+msgstr "上傳最多 %1 份檔案"
 
 #: lib/RT/CustomField_Overlay.pm:488
 msgid "Upload up to %1 images"
-msgstr ""
+msgstr "上傳最多 %1 張圖片"
 
 #: NOT FOUND IN SOURCE
 msgid "User"

@@ -683,6 +683,7 @@ sub CustomFields {
 	$cfs->LimitToLookupType($lookup);
 	$cfs->LimitToGlobalOrObjectId($self->_LookupId($lookup));
     }
+
     return $cfs;
 }
 
