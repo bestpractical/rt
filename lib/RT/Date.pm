@@ -68,10 +68,11 @@ sub Set {
     elsif ($args{'Format'} =~ /^(sql|datemanip|iso)$/i) {
 	
 	if (($args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/) ||
-	    ($args{'Value'} =~ /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) ||
+        ($args{'Value'} =~ /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) ||
+	    ($args{'Value'} =~ /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/) ||
 	    ($args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/)) {
 	    
-	    my $year = $1;
+        my $year = $1;
 	    my $mon = $2;
 	    my $mday = $3;
 	    my $hours = $4;
