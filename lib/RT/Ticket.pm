@@ -609,7 +609,7 @@ sub SetOwner {
   
   
   #  elsif ( #TODO $new_owner doesn't have queue perms ) {
-  #	return ("That user doesn't have permission to modify this request");
+  #	return (0,"That user doesn't have permission to modify this request");
   #	}
   
   else {
