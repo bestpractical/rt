@@ -1101,13 +1101,10 @@ Takes nothing. returns this ticket's queue object
 sub QueueObj {
     my $self = shift;
     
-    unless ($self->{'queue_obj'}) { 
-    	$self->{'queue_obj'} = RT::Queue->new($self->CurrentUser);
-    	#We call __Value so that we can avoid the ACL decision and some deep recursion
-    	my ($result) = $self->{'queue_obj'}->Load($self->__Value('Queue'));
-	#TODO check errors on that.
-    } 
-    return ($self->{'queue_obj'});
+    $queue_obj = RT::Queue->new($self->CurrentUser);
+    #We call __Value so that we can avoid the ACL decision and some deep recursion
+    my ($result) = $queue_obj->Load($self->__Value('Queue'));
+    return ($queue_obj);
 }
 
 
