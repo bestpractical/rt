@@ -1,3 +1,4 @@
+%# $Header$
 <& /Elements/TitleBoxStart, title => 'Restrict Search'&>
 <FORM ACTION="Listing.html" METHOD="POST">
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
