@@ -35,6 +35,7 @@ be given and no output file will be created.
 my($infile, $outfile) = @ARGV;
 my($infh,$outfh);
 
+
 if( defined $infile ) {
     $infh = gensym;
     open($infh, $infile) or 
@@ -43,6 +44,16 @@ if( defined $infile ) {
 else {
     $infh = \*STDIN;
 }
+
+unless ($outfile) {
+     ( my $test = $infile ) =~ s/\.(pm|pod)$//;
+            $test =~ s/^lib\W//;
+            $test =~ s/\W/-/;
+            $test =~ s/\//__/g;
+
+        $outfile = "lib/t/autogen/autogen-$test.t";
+}
+
 
 my $p = Pod::Tests->new;
 $p->parse_fh($infh);

@@ -259,8 +259,8 @@ config-install:
 test: 
 	$(PERL) -Ilib lib/t/smoke.t
 
-regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database
-	(cd ./lib; $(PERL) Makefile.PL && make testifypods && $(PERL) t/02regression.t)
+regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database testify-pods
+	$(PERL) lib/t/02regression.t
 
 regression-quiet:
 	$(PERL) sbin/regression_harness
@@ -296,32 +296,11 @@ libs-install:
 	chown -R $(LIBS_OWNER) $(DESTDIR)/$(RT_LIB_PATH)
 	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
 	chmod -R $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_LIB_PATH)
-	( cd ./lib; \
-	  $(PERL) Makefile.PL INSTALLSITELIB=$(DESTDIR)/$(RT_LIB_PATH) \
-			      INSTALLMAN1DIR=none \
-			      INSTALLMAN3DIR=none \
-	    && $(MAKE) \
-	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
+	cp -rp lib/* $(DESTDIR)/$(RT_LIB_PATH)
+	$(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
 	    			  s'!!RT_CONFIG!!'$(CONFIG_FILE)'g;" \
-				  			blib/lib/RT.pm ; \
-	    $(MAKE) install \
-		   INSTALLSITEMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
-		   INSTALLSITEMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
-	)
+		$(DESTDIR)/$(RT_LIB_PATH)/RT.pm ; \
 
-libs-install-quick:
-	cd ./lib; \
-	$(PERL) Makefile.PL INSTALLSITELIB=$(DESTDIR)/$(RT_LIB_PATH) \
-			      INSTALLMAN1DIR=none \
-			      INSTALLMAN3DIR=none 
-	cd ./lib; $(MAKE)
-	cd ./lib; $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
-	    		  s'!!RT_CONFIG!!'$(CONFIG_FILE)'g;" blib/lib/RT.pm 
-	
-	cd ./lib ;$(MAKE) install \
-			      INSTALLSITEMAN1DIR= \
-			      INSTALLSITEMAN3DIR= 
-	
 # }}}
 
 # {{{ html-install
@@ -379,6 +358,15 @@ bin-install:
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside
+
+
+POD2TEST_EXE = sbin/extract_pod_tests
+
+testify-pods:
+	[ -d lib/t/autogen ] || mkdir lib/t/autogen
+	find lib -name \*pm |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+
+
 
 regenerate-catalogs:
 	$(PERL) sbin/extract-message-catalog
