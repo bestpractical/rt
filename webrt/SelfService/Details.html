@@ -177,6 +177,8 @@ if ((defined $ARGS{'Status'}) and
     push @results, "$msg";
 }
 
+ProcessUpdateMessage(ARGSRef=>\%ARGS, Actions=>\@results, TicketObj=>$Ticket);
+
 my $Transactions = $Ticket->Transactions;
 
 </%INIT>
