@@ -41,3 +41,4 @@ File::Find::find({wanted => \&wanted_regression}, 'lib/t/regression');
 sub wanted_regression { /^*\.t\z/s && require $_; }
 
 require "lib/t/03web.pl";
+require "lib/t/04_send_email.pl";

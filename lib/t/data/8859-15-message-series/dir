@@ -1,0 +1,356 @@
+Return-Path: <rt-users-admin@lists.fsck.com>
+Delivered-To: j@pallas.eruditorum.org
+Received: from pallas.eruditorum.org (localhost [127.0.0.1])
+	by pallas.eruditorum.org (Postfix) with ESMTP
+	id 72E3A111B3; Mon, 26 May 2003 14:50:14 -0400 (EDT)
+Delivered-To: rt-users@pallas.eruditorum.org
+Received: from mail-in-02.arcor-online.net (mail-in-02.arcor-online.net [151.189.21.42])
+	by pallas.eruditorum.org (Postfix) with ESMTP id 15E761118D
+	for <rt-users@lists.fsck.com>; Mon, 26 May 2003 14:49:56 -0400 (EDT)
+Received: from otdial-212-144-012-186.arcor-ip.net (otdial-212-144-011-024.arcor-ip.net [212.144.11.24])
+	by mail-in-02.arcor-online.net (Postfix) with ESMTP
+	id 745EE15E87; Mon, 26 May 2003 20:53:15 +0200 (CEST)
+From: Dirk Pape <pape-rt@inf.fu-berlin.de>
+To: Jesse Vincent <jesse@bestpractical.com>,
+	rt-users <rt-users@lists.fsck.com>
+Subject: Re: [rt-users] [rt-announce] Development Snapshot 3.0.2++
+Message-ID: <2147483647.1053982235@otdial-212-144-011-024.arcor-ip.net>
+In-Reply-To: <2147483647.1053974498@[10.0.255.35]>
+References: <20030523202405.GF23719@fsck.com>
+ <2147483647.1053974498@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==========2147500486=========="
+Sender: rt-users-admin@lists.fsck.com
+Errors-To: rt-users-admin@lists.fsck.com
+X-BeenThere: rt-users@lists.fsck.com
+X-Mailman-Version: 2.0.12
+Precedence: bulk
+List-Help: <mailto:rt-users-request@lists.fsck.com?subject=help>
+List-Post: <mailto:rt-users@lists.fsck.com>
+List-Subscribe: <http://lists.fsck.com/mailman/listinfo/rt-users>,
+	<mailto:rt-users-request@lists.fsck.com?subject=subscribe>
+List-Id: For users of RT: Request Tracker <rt-users.lists.fsck.com>
+List-Unsubscribe: <http://lists.fsck.com/mailman/listinfo/rt-users>,
+	<mailto:rt-users-request@lists.fsck.com?subject=unsubscribe>
+List-Archive: <http://lists.fsck.com/pipermail/rt-users/>
+Date: Mon, 26 May 2003 20:50:36 +0200
+X-Spam-Status: No, hits=-2.5 required=5.0
+	tests=AWL,IN_REP_TO,KNOWN_MAILING_LIST,QUOTED_EMAIL_TEXT,
+	      REFERENCES,REPLY_WITH_QUOTES
+	autolearn=ham version=2.55
+X-Spam-Level: 
+X-Spam-Checker-Version: SpamAssassin 2.55 (1.174.2.19-2003-05-19-exp)
+
+--==========2147500486==========
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hello,
+
+here is the digest I forgot to attach. And I also forgot to say, that these 
+were the only messages after a restart of apache.
+
+The messages in the digest are the copies which I - for testing purpose - 
+allways queue into a mailbox just befor it is queued via rt-mailgate into 
+the rt-system.
+
+--Am Montag, 26. Mai 2003 18:41 Uhr +0200 schrieb Dirk Pape 
+<pape-rt@inf.fu-berlin.de>:
+
+> I attach a digest with mails I send one after another to the rt-system
+> and they get queued into one queue, each as a new ticket.
+
+
+
+
+--==========2147500486==========
+Content-Type: multipart/digest; boundary="==========2147489407=========="
+
+--==========2147489407==========
+Content-Type: message/rfc822; name="test _________"
+
+Return-Path: <pape@inf.fu-berlin.de>
+Delivered-To: pape-rtdoublecheck@mi.fu-berlin.de
+Received: (qmail 27591 invoked by uid 9804); 26 May 2003 18:10:50 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:10:46 +0200
+Received: (Qmail 27575 invoked from network); 26 May 2003 18:10:46 +0200
+Received: From es.inf.fu-berlin.de (160.45.110.22)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:10:46 +0200
+Received: from leibniz ([160.45.40.10] helo=math.fu-berlin.de)
+	by es.inf.fu-berlin.de with smtp (Exim 3.35 #1 (Debian))
+	id 19KKYe-0000Yi-00
+	for <staff@tec.mi.fu-berlin.de>; Mon, 26 May 2003 18:10:44 +0200
+Received: (qmail 27557 invoked by uid 9804); 26 May 2003 18:10:44 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:10:40 +0200
+Received: (Qmail 27540 invoked from network); 26 May 2003 18:10:40 +0200
+Received: From eremix.inf.fu-berlin.de (HELO eremix) (160.45.113.36)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:10:40 +0200
+Date: Mon, 26 May 2003 18:11:00 +0200
+From: Dirk Pape <pape@inf.fu-berlin.de>
+To: staff@tec.mi.fu-berlin.de
+Subject: =?ISO-8859-15?Q?test_=E4=F6=FC=DF=C4=D6=DC=DF=A4?=
+Message-ID: <2147483647.1053972660@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Virus-Scanned: by AMaViS 0.3.12pre7-U23 [27578] (NAI-uvscan@math.fu-berlin.de)
+X-Remote-IP: 160.45.110.22
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; FORMAT=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+test nochmal in anderer Queue
+test =E4=F6=FC=DF=C4=D6=DC=DF=A4
+
+--==========2147489407==========
+Content-Type: message/rfc822; name="test _________"
+
+Return-Path: <pape@inf.fu-berlin.de>
+Delivered-To: pape-rtdoublecheck@mi.fu-berlin.de
+Received: (qmail 27754 invoked by uid 9804); 26 May 2003 18:11:24 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:11:20 +0200
+Received: (Qmail 27704 invoked from network); 26 May 2003 18:11:19 +0200
+Received: From es.inf.fu-berlin.de (160.45.110.22)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:11:19 +0200
+Received: from leibniz ([160.45.40.10] helo=math.fu-berlin.de)
+	by es.inf.fu-berlin.de with smtp (Exim 3.35 #1 (Debian))
+	id 19KKZA-0000Yy-00
+	for <staff@tec.mi.fu-berlin.de>; Mon, 26 May 2003 18:11:16 +0200
+Received: (qmail 27690 invoked by uid 9804); 26 May 2003 18:11:16 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:11:13 +0200
+Received: (Qmail 27677 invoked from network); 26 May 2003 18:11:13 +0200
+Received: From eremix.inf.fu-berlin.de (HELO eremix) (160.45.113.36)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:11:13 +0200
+Date: Mon, 26 May 2003 18:11:32 +0200
+From: Dirk Pape <pape@inf.fu-berlin.de>
+To: staff@tec.mi.fu-berlin.de
+Subject: =?ISO-8859-15?Q?test_=E4=F6=FC=DF=C4=D6=DC=DF=A4?=
+Message-ID: <2147483647.1053972692@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Virus-Scanned: by AMaViS 0.3.12pre7-U23 [27711] (NAI-uvscan@math.fu-berlin.de)
+X-Remote-IP: 160.45.110.22
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; FORMAT=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+test nochmal in anderer Queue
+test =E4=F6=FC=DF=C4=D6=DC=DF=A4
+
+--==========2147489407==========
+Content-Type: message/rfc822; name="test _________"
+
+Return-Path: <pape@inf.fu-berlin.de>
+Delivered-To: pape-rtdoublecheck@mi.fu-berlin.de
+Received: (qmail 27971 invoked by uid 9804); 26 May 2003 18:12:02 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:11:52 +0200
+Received: (Qmail 27908 invoked from network); 26 May 2003 18:11:52 +0200
+Received: From es.inf.fu-berlin.de (160.45.110.22)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:11:52 +0200
+Received: from leibniz ([160.45.40.10] helo=math.fu-berlin.de)
+	by es.inf.fu-berlin.de with smtp (Exim 3.35 #1 (Debian))
+	id 19KKZj-0000ZC-00
+	for <staff@tec.mi.fu-berlin.de>; Mon, 26 May 2003 18:11:51 +0200
+Received: (qmail 27848 invoked by uid 9804); 26 May 2003 18:11:50 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:11:46 +0200
+Received: (Qmail 27809 invoked from network); 26 May 2003 18:11:45 +0200
+Received: From eremix.inf.fu-berlin.de (HELO eremix) (160.45.113.36)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:11:45 +0200
+Date: Mon, 26 May 2003 18:12:05 +0200
+From: Dirk Pape <pape@inf.fu-berlin.de>
+To: staff@tec.mi.fu-berlin.de
+Subject: =?ISO-8859-15?Q?test_=E4=F6=FC=DF=C4=D6=DC=DF=A4?=
+Message-ID: <2147483647.1053972725@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Virus-Scanned: by AMaViS 0.3.12pre7-U23 [27911] (NAI-uvscan@math.fu-berlin.de)
+X-Remote-IP: 160.45.110.22
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; FORMAT=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+test nochmal in anderer Queue
+test =E4=F6=FC=DF=C4=D6=DC=DF=A4
+
+--==========2147489407==========
+Content-Type: message/rfc822; name="test _________"
+
+Return-Path: <pape@inf.fu-berlin.de>
+Delivered-To: pape-rtdoublecheck@mi.fu-berlin.de
+Received: (qmail 28283 invoked by uid 9804); 26 May 2003 18:12:39 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:12:36 +0200
+Received: (Qmail 28256 invoked from network); 26 May 2003 18:12:35 +0200
+Received: From es.inf.fu-berlin.de (160.45.110.22)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:12:35 +0200
+Received: from leibniz ([160.45.40.10] helo=math.fu-berlin.de)
+	by es.inf.fu-berlin.de with smtp (Exim 3.35 #1 (Debian))
+	id 19KKaQ-0000ZQ-00
+	for <staff@tec.mi.fu-berlin.de>; Mon, 26 May 2003 18:12:34 +0200
+Received: (qmail 28236 invoked by uid 9804); 26 May 2003 18:12:34 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:12:30 +0200
+Received: (Qmail 28224 invoked from network); 26 May 2003 18:12:30 +0200
+Received: From eremix.inf.fu-berlin.de (HELO eremix) (160.45.113.36)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:12:30 +0200
+Date: Mon, 26 May 2003 18:12:50 +0200
+From: Dirk Pape <pape@inf.fu-berlin.de>
+To: staff@tec.mi.fu-berlin.de
+Subject: =?ISO-8859-15?Q?test_=E4=F6=FC=DF=C4=D6=DC=DF=A4?=
+Message-ID: <2147483647.1053972770@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Virus-Scanned: by AMaViS 0.3.12pre7-U23 [28259] (NAI-uvscan@math.fu-berlin.de)
+X-Remote-IP: 160.45.110.22
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; FORMAT=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+test nochmal in anderer Queue
+test =E4=F6=FC=DF=C4=D6=DC=DF=A4
+
+--==========2147489407==========
+Content-Type: message/rfc822; name="test _________"
+
+Return-Path: <pape@inf.fu-berlin.de>
+Delivered-To: pape-rtdoublecheck@mi.fu-berlin.de
+Received: (qmail 28578 invoked by uid 9804); 26 May 2003 18:13:20 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:13:15 +0200
+Received: (Qmail 28534 invoked from network); 26 May 2003 18:13:14 +0200
+Received: From es.inf.fu-berlin.de (160.45.110.22)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:13:14 +0200
+Received: from leibniz ([160.45.40.10] helo=math.fu-berlin.de)
+	by es.inf.fu-berlin.de with smtp (Exim 3.35 #1 (Debian))
+	id 19KKb1-0000Ze-00
+	for <staff@tec.mi.fu-berlin.de>; Mon, 26 May 2003 18:13:11 +0200
+Received: (qmail 28516 invoked by uid 9804); 26 May 2003 18:13:11 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:13:08 +0200
+Received: (Qmail 28479 invoked from network); 26 May 2003 18:13:07 +0200
+Received: From eremix.inf.fu-berlin.de (HELO eremix) (160.45.113.36)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:13:07 +0200
+Date: Mon, 26 May 2003 18:13:27 +0200
+From: Dirk Pape <pape@inf.fu-berlin.de>
+To: staff@tec.mi.fu-berlin.de
+Subject: =?ISO-8859-15?Q?test_=E4=F6=FC=DF=C4=D6=DC=DF=A4?=
+Message-ID: <2147483647.1053972807@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Virus-Scanned: by AMaViS 0.3.12pre7-U23 [28540] (NAI-uvscan@math.fu-berlin.de)
+X-Remote-IP: 160.45.110.22
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; FORMAT=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+test nochmal in anderer Queue
+test =E4=F6=FC=DF=C4=D6=DC=DF=A4
+
+
+--==========2147489407==========
+Content-Type: message/rfc822; name="test _________"
+
+Return-Path: <pape@inf.fu-berlin.de>
+Delivered-To: pape-rtdoublecheck@mi.fu-berlin.de
+Received: (qmail 29108 invoked by uid 9804); 26 May 2003 18:14:15 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:14:10 +0200
+Received: (Qmail 29066 invoked from network); 26 May 2003 18:14:10 +0200
+Received: From es.inf.fu-berlin.de (160.45.110.22)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:14:10 +0200
+Received: from leibniz ([160.45.40.10] helo=math.fu-berlin.de)
+	by es.inf.fu-berlin.de with smtp (Exim 3.35 #1 (Debian))
+	id 19KKbw-0000Zr-00
+	for <staff@tec.mi.fu-berlin.de>; Mon, 26 May 2003 18:14:08 +0200
+Received: (qmail 29054 invoked by uid 9804); 26 May 2003 18:14:08 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:14:04 +0200
+Received: (Qmail 29036 invoked from network); 26 May 2003 18:14:04 +0200
+Received: From eremix.inf.fu-berlin.de (HELO eremix) (160.45.113.36)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:14:04 +0200
+Date: Mon, 26 May 2003 18:14:24 +0200
+From: Dirk Pape <pape@inf.fu-berlin.de>
+To: staff@tec.mi.fu-berlin.de
+Subject: =?ISO-8859-15?Q?test_=E4=F6=FC=DF=C4=D6=DC=DF=A4?=
+Message-ID: <2147483647.1053972864@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Virus-Scanned: by AMaViS 0.3.12pre7-U23 [29069] (NAI-uvscan@math.fu-berlin.de)
+X-Remote-IP: 160.45.110.22
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; FORMAT=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+test nochmal in anderer Queue
+test =E4=F6=FC=DF=C4=D6=DC=DF=A4
+
+--==========2147489407==========
+Content-Type: message/rfc822; name="test _________"
+
+Return-Path: <pape@inf.fu-berlin.de>
+Delivered-To: pape-rtdoublecheck@mi.fu-berlin.de
+Received: (qmail 29551 invoked by uid 9804); 26 May 2003 18:15:16 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:15:12 +0200
+Received: (Qmail 29521 invoked from network); 26 May 2003 18:15:12 +0200
+Received: From es.inf.fu-berlin.de (160.45.110.22)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:15:12 +0200
+Received: from leibniz ([160.45.40.10] helo=math.fu-berlin.de)
+	by es.inf.fu-berlin.de with smtp (Exim 3.35 #1 (Debian))
+	id 19KKcx-0000a4-00
+	for <staff@tec.mi.fu-berlin.de>; Mon, 26 May 2003 18:15:11 +0200
+Received: (qmail 29511 invoked by uid 9804); 26 May 2003 18:15:10 +0200
+Received: from localhost (HELO math.fu-berlin.de) (127.0.0.1)
+  by localhost with SMTP; 26 May 2003 18:15:07 +0200
+Received: (Qmail 29465 invoked from network); 26 May 2003 18:15:06 +0200
+Received: From eremix.inf.fu-berlin.de (HELO eremix) (160.45.113.36)
+  by leibniz.math.fu-berlin.de with SMTP; 26 May 2003 18:15:06 +0200
+Date: Mon, 26 May 2003 18:15:26 +0200
+From: Dirk Pape <pape@inf.fu-berlin.de>
+To: staff@tec.mi.fu-berlin.de
+Subject: =?ISO-8859-15?Q?test_=E4=F6=FC=DF=C4=D6=DC=DF=A4?=
+Message-ID: <2147483647.1053972926@[10.0.255.35]>
+X-Mailer: Mulberry/3.0.3 (Mac OS X)
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Envelope-Sender: pape@inf.fu-berlin.de
+X-Virus-Scanned: by AMaViS 0.3.12pre7-U23 [29524] (NAI-uvscan@math.fu-berlin.de)
+X-Remote-IP: 160.45.110.22
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15; FORMAT=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+test nochmal in anderer Queue
+test =E4=F6=FC=DF=C4=D6=DC=DF=A4
+
+
+--==========2147489407==========--
+
+--==========2147500486==========--
+
+_______________________________________________
+rt-users mailing list
+rt-users@lists.fsck.com
+http://lists.fsck.com/mailman/listinfo/rt-users
+
+Have you read the FAQ? The RT FAQ Manager lives at http://fsck.com/rtfm
+

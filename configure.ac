@@ -197,6 +197,7 @@ AC_CONFIG_FILES([
                  lib/t/01harness.t
                  lib/t/02regression.t
                  lib/t/03web.pl
+                 lib/t/04_send_email.pl
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/mason_handler.svc

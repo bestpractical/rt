@@ -1890,7 +1890,7 @@ RT_LOG_PATH=${exp_logfiledir}
 
 
 
-                                                                                                                                                                ac_config_files="$ac_config_files sbin/rt-setup-database sbin/rt-test-dependencies Makefile etc/RT_Config.pm lib/RT.pm lib/t/00smoke.t lib/t/01harness.t lib/t/02regression.t lib/t/03web.pl bin/mason_handler.fcgi bin/mason_handler.scgi bin/mason_handler.svc bin/rt-commit-handler bin/rt-crontool bin/rt-mailgate bin/webmux.pl"
+                                                                                                                                                                          ac_config_files="$ac_config_files sbin/rt-setup-database sbin/rt-test-dependencies Makefile etc/RT_Config.pm lib/RT.pm lib/t/00smoke.t lib/t/01harness.t lib/t/02regression.t lib/t/03web.pl lib/t/04_send_email.pl bin/mason_handler.fcgi bin/mason_handler.scgi bin/mason_handler.svc bin/rt-commit-handler bin/rt-crontool bin/rt-mailgate bin/webmux.pl"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -2431,6 +2431,7 @@ do
   "lib/t/01harness.t" ) CONFIG_FILES="$CONFIG_FILES lib/t/01harness.t" ;;
   "lib/t/02regression.t" ) CONFIG_FILES="$CONFIG_FILES lib/t/02regression.t" ;;
   "lib/t/03web.pl" ) CONFIG_FILES="$CONFIG_FILES lib/t/03web.pl" ;;
+  "lib/t/04_send_email.pl" ) CONFIG_FILES="$CONFIG_FILES lib/t/04_send_email.pl" ;;
   "bin/mason_handler.fcgi" ) CONFIG_FILES="$CONFIG_FILES bin/mason_handler.fcgi" ;;
   "bin/mason_handler.scgi" ) CONFIG_FILES="$CONFIG_FILES bin/mason_handler.scgi" ;;
   "bin/mason_handler.svc" ) CONFIG_FILES="$CONFIG_FILES bin/mason_handler.svc" ;;
@@ -2840,6 +2841,11 @@ s,@INSTALL@,$ac_INSTALL,;t t
 		chmod +x bin/rt-mailgate
                  ;;
     lib/t/03web.pl ) chmod +x configure
+                chmod +x sbin/rt-setup-database
+		chmod +x sbin/rt-test-dependencies
+		chmod +x bin/rt-mailgate
+                 ;;
+    lib/t/04_send_email.pl ) chmod +x configure
                 chmod +x sbin/rt-setup-database
 		chmod +x sbin/rt-test-dependencies
 		chmod +x bin/rt-mailgate

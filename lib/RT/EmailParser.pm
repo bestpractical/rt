@@ -30,6 +30,8 @@ use strict;
 use Mail::Address;
 use MIME::Entity;
 use MIME::Head;
+use MIME::Parser;
+use File::Temp qw/tempdir/;
 
 =head1 NAME
 

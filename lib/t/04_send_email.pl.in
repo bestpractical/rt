@@ -1,0 +1,202 @@
+#!@PERL@ -w
+
+use strict;
+use RT::EmailParser;
+use RT::Tickets;
+use RT::Action::SendEmail;
+
+my @_outgoing_messages;
+my @scrips_fired;
+
+#We're not testing acls here.
+my $everyone = RT::Group->new($RT::SystemUser);
+$everyone->LoadSystemInternalGroup('Everyone');
+$everyone->PrincipalObj->GrantRight(Right =>'SuperUser');
+
+
+is (__PACKAGE__, 'main', "We're operating in the main package");
+
+
+{
+no warnings qw/redefine/;
+sub RT::Action::SendEmail::SendMessage {
+        my $self = shift;
+        my $MIME = shift;
+
+        main::_fired_scrip($self->ScripObj);
+        main::ok(ref($MIME) eq 'MIME::Entity', "hey, look. it's a mime entity");
+}
+
+}
+
+# instrument SendEmail to pass us what it's about to send.
+# create a regular ticket
+
+my $parser = RT::EmailParser->new();
+$parser->ParseMIMEEntityFromScalar('From: root\@localhost
+To: rt\@example.com
+Subject: This is a test of new ticket creation as an unknown user
+
+Blah!
+Foob!');
+
+                                  
+use Data::Dumper;
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+my ($id,  $tid, $msg ) = $ticket->Create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
+ok ($id,$msg);
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+ok ($tick->Subject eq 'I18NTest', "failed to create the new ticket from an unprivileged account");
+
+# make sure it fires scrips.
+is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+# make sure it sends an autoreply
+# make sure it sends a notification to adminccs
+
+
+# we need to swap out SendMessage to test the new things we care about;
+&utf8_redef_sendmessage;
+
+# create an iso 8859-1 ticket
+@scrips_fired = ();
+
+my $content =  `cat ./lib/t/data/new-ticket-from-iso-8859-1` || die "couldn't find new content";
+
+
+
+
+
+
+
+$parser->ParseMIMEEntityFromScalar($content);
+
+
+# be as much like the mail gateway as possible.
+use RT::Interface::Email;
+                                  
+ RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+
+ok ($tick->Transactions->First->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
+
+
+# make sure it fires scrips.
+is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+# make sure it sends an autoreply
+
+
+# make sure it sends a notification to adminccs
+
+# If we correspond, does it do the right thing to the outbound messages?
+
+my ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
+ok ($id, $msg);
+
+($id, $msg) = $tick->Correspond(MIMEObj => $parser->Entity);
+ok ($id, $msg);
+
+
+# we need to swap out SendMessage to test the new things we care about;
+&iso8859_redef_sendmessage;
+$RT::EmailOutputEncoding = 'iso-8859-1';
+# create an iso 8859-1 ticket
+@scrips_fired = ();
+
+my $content =  `cat ./lib/t/data/new-ticket-from-iso-8859-1` || die "couldn't find new content";
+# be as much like the mail gateway as possible.
+use RT::Interface::Email;
+                                  
+ RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+
+ok ($tick->Transactions->First->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
+
+
+# make sure it fires scrips.
+is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+# make sure it sends an autoreply
+
+
+# make sure it sends a notification to adminccs
+
+
+# If we correspond, does it do the right thing to the outbound messages?
+
+my ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
+ok ($id, $msg);
+
+($id, $msg) = $tick->Correspond(MIMEObj => $parser->Entity);
+ok ($id, $msg);
+
+
+sub _fired_scrip {
+        my $scrip = shift;
+        push @scrips_fired, $scrip;
+}       
+
+sub utf8_redef_sendmessage {
+    no warnings qw/redefine/;
+    eval ' 
+    sub RT::Action::SendEmail::SendMessage {
+        my $self = shift;
+        my $MIME = shift;
+
+        my $scrip = $self->ScripObj->id;
+        ok(1, $self->ScripObj->ConditionObj->Name . " ".$self->ScripObj->ActionObj->Name);
+        main::_fired_scrip($self->ScripObj);
+        $MIME->make_singlepart;
+        main::ok( ref($MIME) eq \'MIME::Entity\',
+                  "hey, look. it\'s a mime entity" );
+        main::ok( ref( $MIME->head ) eq \'MIME::Head\',
+                  "its mime header is a mime header. yay" );
+        main::ok( $MIME->head->get(\'Content-Type\') =~ /utf-8/,
+                  "Its content type is utf-8" );
+        my $message_as_string = $MIME->bodyhandle->as_string();
+        use Encode;
+        $message_as_string = Encode::decode_utf8($message_as_string);
+        main::ok(
+            $message_as_string =~ /H\x{e5}vard/,
+"The message\'s content contains havard\'s name. this will fail if it\'s not utf8 out");
+
+    }';
+}
+
+sub iso8859_redef_sendmessage {
+    no warnings qw/redefine/;
+    eval ' 
+    sub RT::Action::SendEmail::SendMessage {
+        my $self = shift;
+        my $MIME = shift;
+
+        my $scrip = $self->ScripObj->id;
+        ok(1, $self->ScripObj->ConditionObj->Name . " ".$self->ScripObj->ActionObj->Name);
+        main::_fired_scrip($self->ScripObj);
+        $MIME->make_singlepart;
+        main::ok( ref($MIME) eq \'MIME::Entity\',
+                  "hey, look. it\'s a mime entity" );
+        main::ok( ref( $MIME->head ) eq \'MIME::Head\',
+                  "its mime header is a mime header. yay" );
+        main::ok( $MIME->head->get(\'Content-Type\') =~ /iso-8859-1/,
+                  "Its content type is iso-8859-1 - " . $MIME->head->get("Content-Type") );
+        my $message_as_string = $MIME->bodyhandle->as_string();
+        use Encode;
+        $message_as_string = Encode::decode("iso-8859-1",$message_as_string);
+        main::ok(
+            $message_as_string =~ /H\x{e5}vard/, "The message\'s content contains havard\'s name. this will fail if it\'s not utf8 out");
+
+    }';
+}
+1;

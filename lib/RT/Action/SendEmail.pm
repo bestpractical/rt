@@ -164,60 +164,11 @@ sub Commit {
 
     }
 
-    #If we don't have any recipients to send to, don't send a message;
-    unless (    $MIMEObj->head->get('To')
-             || $MIMEObj->head->get('Cc')
-             || $MIMEObj->head->get('Bcc') ) {
-        $RT::Logger->info($msgid.  " No recipients found. Not sending.\n");
-        return (1);
-    }
 
-    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
-    # If we don't have any 'To' header, drop in the pseudo-to header.
-
-    $self->SetHeader( 'To', join ( ',', @{ $self->{'PseudoTo'} } ) )
-      if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
-           and ( !$MIMEObj->head->get('To') ) );
-
-    if ( $RT::MailCommand eq 'sendmailpipe' ) {
-        eval {
-            open( MAIL, "|$RT::SendmailPath $RT::SendmailArguments" );
-            print MAIL $MIMEObj->as_string;
-            close(MAIL);
-          };
-          if ($@) {
-            $RT::Logger->crit($msgid.  "Could not send mail. -".$@ );
-        }
-    }
-    else {
-	my @mailer_args = ($RT::MailCommand);
-	local $ENV{MAILADDRESS};
-
-        if ( $RT::MailCommand eq 'sendmail' ) {
-	    push @mailer_args, $RT::SendmailArguments;
-        }
-        elsif ( $RT::MailCommand eq 'smtp' ) {
-	    $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');
-	    push @mailer_args, (Server => $RT::SMTPServer);
-	    push @mailer_args, (Debug => $RT::SMTPDebug);
-        }
-	else {
-	    push @mailer_args, $RT::MailParams;
-	}
-
-        unless ( $MIMEObj->send( @mailer_args ) ) {
-            $RT::Logger->crit($msgid.  "Could not send mail." );
-            return (0);
-        }
-    }
+    my $retval = $self->SendMessage($MIMEObj);
 
 
-     my $success = ($msgid. " sent To: ".$MIMEObj->head->get('To') . " Cc: ".$MIMEObj->head->get('Cc') . " Bcc: ".$MIMEObj->head->get('Bcc'));
-    $success =~ s/\n//gi;
-    $RT::Logger->info($success);
-
-    return (1);
-
+    return ($retval);
 }
 
 # }}}
@@ -269,6 +220,77 @@ sub Prepare {
 }
 
 # }}}
+
+# }}}
+
+# {{{ SendMessage
+=head2 SendMessage MIMEObj
+
+sends the message using RT's preferred API.
+TODO: Break this out to a seperate module
+
+=cut
+
+sub SendMessage {
+    my $self = shift;
+    my $MIMEObj = shift;
+
+    my $msgid = $MIMEObj->head->get('Message-Id');
+
+
+    #If we don't have any recipients to send to, don't send a message;
+    unless (    $MIMEObj->head->get('To')
+             || $MIMEObj->head->get('Cc')
+             || $MIMEObj->head->get('Bcc') ) {
+        $RT::Logger->info($msgid.  " No recipients found. Not sending.\n");
+        return (1);
+    }
+
+    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
+    # If we don't have any 'To' header, drop in the pseudo-to header.
+
+    $self->SetHeader( 'To', join ( ',', @{ $self->{'PseudoTo'} } ) )
+      if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
+           and ( !$MIMEObj->head->get('To') ) );
+    if ( $RT::MailCommand eq 'sendmailpipe' ) {
+        eval {
+            open( MAIL, "|$RT::SendmailPath $RT::SendmailArguments" );
+            print MAIL $MIMEObj->as_string;
+            close(MAIL);
+          };
+          if ($@) {
+            $RT::Logger->crit($msgid.  "Could not send mail. -".$@ );
+        }
+    }
+    else {
+	my @mailer_args = ($RT::MailCommand);
+	local $ENV{MAILADDRESS};
+
+        if ( $RT::MailCommand eq 'sendmail' ) {
+	    push @mailer_args, $RT::SendmailArguments;
+        }
+        elsif ( $RT::MailCommand eq 'smtp' ) {
+	    $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');
+	    push @mailer_args, (Server => $RT::SMTPServer);
+	    push @mailer_args, (Debug => $RT::SMTPDebug);
+        }
+	else {
+	    push @mailer_args, $RT::MailParams;
+	}
+
+        unless ( $MIMEObj->send( @mailer_args ) ) {
+            $RT::Logger->crit($msgid.  "Could not send mail." );
+            return (0);
+        }
+    }
+
+
+     my $success = ($msgid. " sent To: ".$MIMEObj->head->get('To') . " Cc: ".$MIMEObj->head->get('Cc') . " Bcc: ".$MIMEObj->head->get('Bcc'));
+    $success =~ s/\n//gi;
+    $RT::Logger->info($success);
+
+    return (1);
+}
 
 # }}}
 
@@ -589,7 +611,7 @@ sub SetHeaderAsEncoding {
     # See RT::I18N, 'NOTES:  Why Encode::_utf8_off before Encode::from_to'
     Encode::_utf8_off($value);
     my $res = Encode::from_to( $value, "utf-8", $enc );
-    $value = encode_mimewords( $value, 'b', $enc );
+    $value = encode_mimewords( $value, Encoding => 'b', Charset => $enc );
     $self->TemplateObj->MIMEObj->head->replace( $field, $value );
 }
 
