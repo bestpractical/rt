@@ -798,7 +798,7 @@ sub URIIsLocal {
 
 sub LinkTo {
     my $self = shift;
-    my %args = ( dir => 'F',
+    my %args = ( dir => 'T',
 		 Base => $self->id,
 		 Target => '',
 		 Type => '',
@@ -811,7 +811,7 @@ sub LinkTo {
 # {{{ sub LinkFrom
 sub LinkFrom {
     my $self = shift;
-    my %args = ( dir => 'T',
+    my %args = ( dir => 'F',
 		 Base => '',
 		 Target => $self->id,
 		 Type => '',

@@ -4,12 +4,10 @@ package RT::Action::StallDependent;
 require RT::Action;
 @ISA=qw|RT::Action|;
 
-#What does this type of Action does
-
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return (ref $self . " will stall a [local] BASE if a dependency link is created.");
+  return (ref $self . " will open a [local] BASE if it's stalled and dependent on a resolved request.");
 }
 # }}}
 
@@ -23,7 +21,7 @@ sub Prepare  {
 
 sub Commit {
     my $self = shift;
-    my ($base_id)=$self->TransactionObj->Data =~ /^([^ ]*)/;
+    # Find all Dependent
     my $base;
     if ($base_id eq "THIS") {
 	$base=$self->TicketObj;
@@ -31,7 +29,7 @@ sub Commit {
 	$base=RT::Ticket->new($self->TicketObj->CurrentUser);
 	$base->Load($base_id);
     }
-    $base->Stall if $base->Status eq 'Open';
+    $base->Stall if $base->Status eq 'open';
     return 0;
 }
 
