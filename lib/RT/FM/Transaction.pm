@@ -45,7 +45,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'Article'.
   text 'ChangeLog'.
   varchar(64) 'Type'.
-  int(11) 'CustomField'.
+  varchar(64) 'Field'.
   text 'OldContent'.
   text 'NewContent'.
 
@@ -60,7 +60,7 @@ sub Create {
                 Article => '0',
                 ChangeLog => '',
                 Type => '',
-                CustomField => '0',
+                Field => '',
                 OldContent => '',
                 NewContent => '',
 
@@ -69,7 +69,7 @@ sub Create {
                          Article => $args{'Article'},
                          ChangeLog => $args{'ChangeLog'},
                          Type => $args{'Type'},
-                         CustomField => $args{'CustomField'},
+                         Field => $args{'Field'},
                          OldContent => $args{'OldContent'},
                          NewContent => $args{'NewContent'},
 );
@@ -141,19 +141,19 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item CustomField
+=item Field
 
-Returns the current value of CustomField. 
-(In the database, CustomField is stored as int(11).)
-
-
-
-=item SetCustomField VALUE
+Returns the current value of Field. 
+(In the database, Field is stored as varchar(64).)
 
 
-Set CustomField to VALUE. 
+
+=item SetField VALUE
+
+
+Set Field to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, CustomField will be stored as a int(11).)
+(In the database, Field will be stored as a varchar(64).)
 
 
 =cut
@@ -207,8 +207,8 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'text', default => ''},
         Type => 
 		{read => 1, write => 1, type => 'varchar(64)', default => ''},
-        CustomField => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        Field => 
+		{read => 1, write => 1, type => 'varchar(64)', default => ''},
         OldContent => 
 		{read => 1, write => 1, type => 'text', default => ''},
         NewContent => 

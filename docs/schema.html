@@ -204,16 +204,16 @@ articles should be listed first. (Lower numbers are listed first)</dd>
  </dt>
 <dd>What sort of field is being changed. One of Link, Core, Custom</dd>
 <dt>
-  CustomField int NULL  
- </dt>
-<dd>Weak foreign key to FM_CustomFields.id. Only valid if Type is "Custom"</dd>
-<dt>
-  OldContent text NULL  
- </dt>
+  Field varchar(64) NOT NULL DEFAULT '',
+</dt> <dd>
+If Type is "Core": the name of the core field we're changing<br>
+If Type is "Custom": Weak foreign key to FM_CustomFields.id<br>
+If Type is "Link" a description of what sort of link we're referring to.
+(RefersTo, ReferredToBy)
+</dd> 
+<dt> OldContent text NOT NULL DEFAULT ""  </dt>
 <dd>The old value of the field in question</dd>
-<dt>
-  NewContent text NULL  
-  </dt>
+<dt> NewContent text NOT NULL DEFAULT "" </dt>
 <dd>The new value of the field in question</dd></dl>
         
 

@@ -22,11 +22,11 @@ no warnings qw/redefine/;
 
 use RT::FM;
 use RT::FM::ArticleCollection;
-use RT::FM::CustomField;
-use RT::FM::Class;
+use RT::FM::CustomFieldCollection;
+use RT::FM::ClassCollection;
 use RT::Links;
 use RT::URI::fsck_com_rtfm;
-
+use RT::FM::TransactionCollection;
 
 use vars qw/$RIGHTS/;
 
@@ -291,6 +291,9 @@ sub AddLink {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+
+    my ($link_type, $link_pointer);
+
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug(
 "$self tried to delete a link. both base and target were specified"
@@ -299,9 +302,13 @@ sub AddLink {
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
+        $link_type = "ReferredToBy";
+        $link_pointer = $args{'Base'};
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
+        $link_type = "RefersTo";
+        $link_pointer = $args{'Target'};
     }
     else {
         return ( 0, $self->loc('Either base or target must be specified') );
@@ -343,17 +350,16 @@ sub AddLink {
     }
 
     my $TransString =
-      "Ticket $args{'Base'} $args{Type} ticket $args{'Target'}.";
+      "$args{'Base'} $args{Type} $args{'Target'}";
 
     # Don't write the transaction if we're doing this on create
     if ( $args{'RecordTransaction'} ) {
 
         #Write the transaction
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => 'AddLink',
-            Field     => $args{'Type'},
-            Data      => $TransString,
-            TimeTaken => 0
+            Type      => 'Link',
+            Field     => $link_type,
+           NewContent      => $link_pointer
         );
         return ( $Trans, $self->loc( "Link created ([_1])", $TransString ) );
     } else {
@@ -518,16 +524,20 @@ sub DeleteLink {
 
     #we want one of base and target. we don't care which
     #but we only want _one_
-
+    my ($link_type, $link_pointer);
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target\n");
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
+        $link_type = "ReferredToBy";
+        $link_pointer = $args{'Base'};
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
+        $link_type = "RefersTo";
+        $link_pointer = $args{'Target'};
     }
     else {
         $RT::Logger->debug("$self: Base or Target must be specified\n");
@@ -545,9 +555,9 @@ sub DeleteLink {
         $link->Delete();
 
         my $TransString = "Ticket $args{'Base'} no longer $args{Type} ticket $args{'Target'}.";
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction( Type      => 'DeleteLink', Field     => $args{'Type'}, Data      => $TransString, );
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction( Type      => 'Link', Field     => $link_type, OldContent      => $link_pointer );
 
-        return ( $linkid, $self->loc("Link deleted ([_1])", $TransString));
+        return ( $linkid, $self->loc("Link deleted ([_1])", $args{'Base'}. " ".$args{'Type'}. " ". $args{'Target'}));
     }
 
 
@@ -837,9 +847,9 @@ sub _AddCustomFieldValue {
                         return ( 0, $msg );
                     }
                     my ( $TransactionId, $Msg, $TransactionObj ) =
-                      $self->_NewTransaction( Type     => 'CustomField',
+                      $self->_NewTransaction( Type     => 'Custom',
                                               Field    => $cf->Id,
-                                              OldValue => $old_value );
+                                              OldContent=> $old_value );
                 }
             }
         }
@@ -883,10 +893,10 @@ sub _AddCustomFieldValue {
         # {{{ Record the "Changed" transaction
         if ( $args{'RecordTransaction'} ) {
             my ( $TransactionId, $Msg, $TransactionObj ) =
-              $self->_NewTransaction( Type     => 'CustomField',
+              $self->_NewTransaction( Type     => 'Custom',
                                       Field    => $cf->Id,
-                                      OldValue => $old_value,
-                                      NewValue => $new_value->Content );
+                                      OldContent => $old_value,
+                                      NewContent => $new_value->Content );
         }
         return ( 1, $self->loc( "Custom field value changed from [_1] to [_2]", $old_value, $new_value->Content ) );
         # }}}
@@ -906,9 +916,9 @@ sub _AddCustomFieldValue {
         # {{{ Record a tranaction
         if ( $args{'RecordTransaction'} ) {
             my ( $TransactionId, $Msg, $TransactionObj ) =
-              $self->_NewTransaction( Type     => 'CustomField',
+              $self->_NewTransaction( Type     => 'Custom',
                                       Field    => $cf->Id,
-                                      NewValue => $args{'Content'} );
+                                      NewContent => $args{'Content'} );
             unless ($TransactionId) {
                 return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg) );
             }
@@ -934,28 +944,47 @@ sub _AddCustomFieldValue {
 sub DeleteCustomFieldValue {
     my $self = shift;
     my %args = ( Content => undef,
-		 Field => undef,
-		 @_ );
+                 Field   => undef,
+                 @_ );
 
     #Load up the ObjectKeyword we\'re talking about
-    my $CFObjectValue = new RT::FM::ArticleCFValue($self->CurrentUser);
-    $CFObjectValue->LoadByCols( Content  => $args{'Content'},
-			        CustomField => $args{'Field'},
-			        Article => $self->id()
-			      );
-    
+    my $CFObjectValue = new RT::FM::ArticleCFValue( $self->CurrentUser );
+    $CFObjectValue->LoadByCols( Content     => $args{'Content'},
+                                CustomField => $args{'Field'},
+                                Article     => $self->id() );
+
     #if we can\'t find it, bail
-    unless ($CFObjectValue->id) {
-	return (undef, $self->loc("Couldn't load custom field [_1] value [_2] while trying to delete it.",$args{'Field'}, $args{'Content'}));
-    };
-    
+    unless ( $CFObjectValue->id ) {
+        return ( undef, $self->loc( "Couldn't load custom field [_1] value [_2] while trying to delete it.", $args{'Field'}, $args{'Content'} ) );
+    }
+
     #record transaction here.
-   
-    $CFObjectValue->Delete();
-   
-    # TODO XXX error check
-    return (1, $self->loc("Value [_1] deleted from custom field [_2].",$CFObjectValue->Content, $args{'Field'}));
-    
+    $RT::Handle->BeginTransaction();
+    my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
+                                                  Type       => 'Custom',
+                                                  Field      => $CFObjectValue->CustomField,
+                                                  OldContent => $args{'Content'}
+    );
+    unless ($TransactionId) {
+        $RT::Handle->Rollback();
+        $RT::Logger->crit("Somehow, couldn't add a transaction. aiee");
+        return ( undef, $self->loc("Internal error") );
+    }
+    my $del = $CFObjectValue->Delete();
+    unless ($del) {
+
+        $RT::Handle->Rollback();
+        return ( undef,
+                 $self->loc( "Couldn't delete  custom field [_1] value [_2].",
+                             $args{'Field'}, $args{'Content'} ) );
+    }
+
+    $RT::Handle->Commit();
+    return ( 1,
+             $self->loc( "Value [_1] deleted from custom field [_2].",
+                         $CFObjectValue->Content,
+                         $args{'Field'} ) );
+
 }
 
 # }}}
@@ -982,18 +1011,91 @@ sub CurrentUserHasRight {
 
 # {{{ _NewTransaction
 
-=head2 _NewTransaction
+=head2 _NewTransaction PARAMHASH
 
-NOT IMPLEMENTED YET
+
+Takes a hash of:
+
+Type
+Field
+OldContent
+NewContent
+Data 
+
 
 =cut
 
 sub _NewTransaction {
     my $self = shift;
-    $RT::Logger->crit("$self _NewTransaction not implemented");
-    return 1;
+    my %args = ( Type     => undef,
+                 Field    => undef,
+                 OldContent => '',
+                 NewContent => '',
+                 ChangeLog     => '',
+                 @_ );
+
+
+    my $trans = RT::FM::Transaction->new($self->CurrentUser);
+    $trans->Create( Article => $self -> Id,
+                    Type => $args{'Type'},
+                    Field => $args{'Field'},
+                    OldContent => $args{'OldContent'},
+                    NewContent => $args{'NewContent'},
+                    ChangeLog => $args{'ChangeLog'} );  
+    #something bad happened;
+    unless ($trans->Id) {
+        $RT::Logger->crit($self ." could not create a transaction for ".%args);
+        return (undef, $self->loc("Internal error"), $trans);
+    }   
+
+    return ($trans->id,$self->loc("Transaction recorded"), $trans);
 }
 
 
 # }}}
+
+=head2 _Set { Field => undef, Value => undef
+
+Internal helper method to record a transaction as we update some core field of the article
+
+
+=begin testing
+
+my $art = RT::FM::Article->new($RT::SystemUser);
+$art->Load(1);
+ok ($art->Id == 1, "Loaded article 1");
+my $s =$art->Summary;
+my ($val, $msg) = $art->SetSummary("testFoo");
+ok ($val, $msg);
+ok ($art->Summary eq 'testFoo', "The Summary was set to foo");
+my $t = RT::FM::TransactionCollection->new($RT::SystemUser);
+$t->Limit(FIELD => 'Article', VALUE => '1');
+$t->OrderBy( FIELD => 'id', ORDER => 'DESC');
+my $trans = $t->First;
+ok ($trans->Type eq 'Core', "It's a core transaction");
+ok ($trans->Field eq 'Summary', "it's about setting the Summary");
+ok ($trans->NewContent eq 'testFoo', "The new content is 'foo'");
+ok ($trans->OldContent, "There was some old value");
+
+
+=end testing
+
+=cut
+
+
+sub _Set {
+    my $self = shift;
+    my %args = ( Field => undef,
+                 Value => undef,
+                 @_ );
+
+    $self->_NewTransaction( Type       => 'Core',
+                            Field      => $args{'Field'},
+                            NewContent => $args{'Value'},
+                            OldContent => $self->__Value( $args{'Field'} ) );
+
+    return ( $self->SUPER::_Set(%args) );
+
+}
+
 1;

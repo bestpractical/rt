@@ -78,10 +78,10 @@ PRIMARY KEY (id)
 CREATE TABLE FM_Transactions (
 id INTEGER NOT NULL AUTO_INCREMENT,
 Article integer NOT NULL DEFAULT 0,
-ChangeLog text NULL,
+ChangeLog text NOT NULL DEFAULT '',
 Type varchar(64) NOT NULL DEFAULT '',
-CustomField integer NOT NULL DEFAULT 0,
-OldContent text NULL,
-NewContent text NULL,
+Field varchar(64) NOT NULL DEFAULT '',
+OldContent text NOT NULL DEFAULT '',
+NewContent text NOT NULL DEFAULT '',
 PRIMARY KEY (id)
 );

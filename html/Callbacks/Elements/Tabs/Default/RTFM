@@ -1,0 +1,7 @@
+<%init>
+$toptabs->{'BB-RTFM'} = { title =>loc("RTFM"),
+                          path  => "RTFM/" };
+</%init>
+<%args>
+$toptabs =>undef
+</%args>

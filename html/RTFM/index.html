@@ -1,5 +1,5 @@
 <& /RTFM/Elements/Header &>                                                     
-<& /RTFM/Elements/Tabs &>                                                       
+<& /RTFM/Elements/Tabs, current_toptab => "RTFM/" &>
 <h1>Create an article...</h1>                                                   
 <ul>                                                                            
 % my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});          
@@ -10,5 +10,3 @@
 % }                                                                             
                                                                                 
 </ul>                                                                           
-                                                                                
-<h1><a href="Article/index.html">Existing articles</a></h1>    
