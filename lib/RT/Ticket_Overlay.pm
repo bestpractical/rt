@@ -338,7 +338,6 @@ sub Create {
         Resolved           => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
-
         @_
     );
 
@@ -468,7 +467,6 @@ sub Create {
               . $self->loc( "User '[_1]' could not be found.", $args{'Owner'} )
           )
           unless ( $Owner->Id );
-
     }
 
     #If we have a proposed owner and they don't have the right
@@ -555,10 +553,9 @@ sub Create {
           unless ( exists $params{$attr} && $params{$attr} );
     }
 
-
-    my ($id,$ticket_message) = $self->SUPER::Create( %params);
+    my ( $id, $ticket_message ) = $self->SUPER::Create(%params);
     unless ($id) {
-        $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message);
+        $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message );
         $RT::Handle->Rollback();
         return ( 0, 0,
             $self->loc("Ticket could not be created due to an internal error")
@@ -667,9 +664,11 @@ sub Create {
         next unless ( $arg =~ /^CustomField-(\d+)$/i );
         my $cfid = $1;
         foreach
-      my $value ( UNIVERSAL::isa($args{$arg}, 'ARRAY') ? @{ $args{$arg} } : ( $args{$arg} ) ) {
-        next unless (length($value));
-        $self->_AddCustomFieldValue( Field => $cfid,
+          my $value ( ref( $args{$arg} ) ? @{ $args{$arg} } : ( $args{$arg} ) )
+        {
+            next unless ( length($value) );
+            $self->_AddCustomFieldValue(
+                Field             => $cfid,
                 Value             => $value,
                 RecordTransaction => 0
             );
@@ -688,7 +687,7 @@ sub Create {
         );
 
         if ( $self->Id && $Trans ) {
-	       $TransObj->UpdateCustomFields( ARGSRef => \%args );
+
             $RT::Logger->info( "Ticket " . $self->Id . " created in queue '" . $QueueObj->Name . "' by " . $self->CurrentUser->Name );
             $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
@@ -2715,7 +2714,7 @@ sub MergeInto {
 
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
-    # by trying to do a seperate database query for merge info everytime 
+    # by trying to do a separate database query for merge info everytime 
     # loaded a ticket. 
 
     #update this ticket's effective id to the new ticket's id.

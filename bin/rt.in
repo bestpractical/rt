@@ -150,10 +150,10 @@ sub help {
             my $title = $item->[2]{Title};
             my @titles = ref $title eq 'ARRAY' ? @$title : $title;
 
-        foreach $title (grep $_, @titles) {
-            $help{$title} = $item->[2]{Text};
+            foreach $title (grep $_, @titles) {
+                $help{$title} = $item->[2]{Text};
+            }
         }
-    }
     }
 
     # What does the user want help with?
@@ -197,6 +197,9 @@ sub list {
     my ($q, $type, %data);
     my $orderby = $config{orderby};
     
+    if ($config{orderby}) {
+         $data{orderby} = $config{orderby};
+    } 
     my $bad = 0;
 
     while (@ARGV) {
@@ -209,7 +212,7 @@ sub list {
             $bad = 1, last unless get_var_argument(\%data);
         }
         elsif (/^-o$/) {
-            $data{orderby} = shift @ARGV;
+            $data{'orderby'} = shift @ARGV;
         }
         elsif (/^-([isl])$/) {
             $data{format} = $1;
@@ -230,10 +233,8 @@ sub list {
             $bad = 1; last;
         }
     }
-    
-    if (!defined $q)
-    {
-        $q = $config{query} ; 
+    if (!defined $q) {
+        $q = $config{query}; 
     }
     
     $type ||= "ticket";
@@ -244,7 +245,7 @@ sub list {
     }
     return help("list", $type) if $bad;
 
-    my $r = submit("$REST/search/$type", { query => $q, %data, orderby => $data{orderby} || "" });
+    my $r = submit("$REST/search/$type", { query => $q, %data });
     print $r->content;
 }
 

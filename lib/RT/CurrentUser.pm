@@ -59,11 +59,11 @@ use base qw/RT::Record/;
 # to be a CurrentUser object. but that's hard to do when we're trying to load
 # the CurrentUser object
 
-sub _Init  {
-  my $self = shift;
+sub _Init {
+    my $self = shift;
     my $User = shift;
 
-  $self->{'table'} = "Users";
+    $self->{'table'} = "Users";
 
     if ( defined($User) ) {
 
@@ -80,7 +80,7 @@ sub _Init  {
         else {
             $self->Load($User);
         }
-  }
+    }
 
     $self->_BuildTableAttributes();
 

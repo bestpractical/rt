@@ -124,7 +124,7 @@ does a css-busting but minimalist escaping of whatever html you're passing in.
 
 sub EscapeUTF8  {
         my  $ref = shift;
-        my $val = $$ref;                                                                                                                                
+        my $val = (Encode::is_utf8($$ref) ? Encode::encode_utf8($$ref) : $$ref);                                                                                                                                
         $val =~ s/&/&#38;/g;
         $val =~ s/</&lt;/g; 
         $val =~ s/>/&gt;/g;
@@ -1095,12 +1095,12 @@ sub ProcessObjectCustomFieldUpdates {
 	    if (!$Object or ref($Object) ne $class or $Object->id != $id) {
 		$Object = $class->new( $session{'CurrentUser'} );
 		$Object->Load($id);
-	    }
+	}
 
 	    # For each custom field  
 	    foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
-		my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-		$CustomFieldObj->LoadById($cf);
+	    my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
+	    $CustomFieldObj->LoadById($cf);
 
 		foreach my $arg ( keys %{$ARGSRef} ) {
 		    # since http won't pass in a form element with a null value, we need
@@ -1195,27 +1195,27 @@ sub ProcessObjectCustomFieldUpdates {
 		    elsif ( $arg =~ /-Values$/ ) {
 			my $cf_values = $Object->CustomFieldValues($cf);
 
-			# keep everything up to the point of difference, delete the rest
-			my $delete_flag;
-			foreach my $old_cf (@{$cf_values->ItemsArrayRef}) {
-			    if (!$delete_flag and @values and $old_cf->Content eq $values[0]) {
-				shift @values;
-				next;
-			    }
-
-			    $delete_flag ||= 1;
-			    $old_cf->Delete;
+		    # keep everything up to the point of difference, delete the rest
+		    my $delete_flag;
+		    foreach my $old_cf (@{$cf_values->ItemsArrayRef}) {
+			if (!$delete_flag and @values and $old_cf->Content eq $values[0]) {
+			    shift @values;
+			    next;
 			}
 
-			# now add/replace extra things, if any
-			foreach my $value (@values) {
-			    my ( $val, $msg ) = $Object->AddCustomFieldValue(
-				Field => $cf,
-				Value => $value
-			    );
-			    push ( @results, $msg );
-			}
+			$delete_flag ||= 1;
+			$old_cf->Delete;
 		    }
+
+		    # now add/replace extra things, if any
+		    foreach my $value (@values) {
+			    my ( $val, $msg ) = $Object->AddCustomFieldValue(
+			    Field => $cf,
+			    Value => $value
+			);
+			push ( @results, $msg );
+		    }
+		}
 		    else {
 			push ( @results, loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]", $cf->Name, $class, $Object->id ) );
 		    }

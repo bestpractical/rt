@@ -29,7 +29,11 @@
 % }
 <& /Elements/Callback, %ARGS &>
 <div class="bpscredits">
-<&|/l, '&#187;&#124;&#171;', $RT::VERSION, '2004', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&><br>
+<&|/l,     '&#187;&#124;&#171;', 
+     $RT::VERSION, 
+     '2004', 
+    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',
+&>[_1] RT [_2] Copyright 1996-[_3] [_4].</&><br>
 % if (!$Menu) {
 <&|/l&>Distributed under version 2 <a href="http://www.gnu.org/copyleft/gpl.html"> of the GNU GPL.</a></&><br>
 <&|/l, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>To inquire about support, training, custom development or licensing, please contact [_1].</&><br>

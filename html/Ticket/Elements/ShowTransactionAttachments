@@ -25,6 +25,7 @@
 # Find all the attachments which have parent $Parent
 # For each of these attachments
 foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
+
     # {{{    show the headers
     my $headers = $message->Headers;
     chomp $headers;

@@ -27,10 +27,10 @@
 
 % my $name;
 % if ($CustomField->QueueObj) {
-%   $name = "CF." . $CustomField->QueueObj->Name . 
-%	".{" . $CustomField->Name . "}";
+%   $name = "'CF." . $CustomField->QueueObj->Name . 
+%	".{" . $CustomField->Name . "}'";
 % } else {
-%   $name = "CF." . $CustomField->Name;
+%   $name = "'CF." . $CustomField->Name . "'";
 % }
 <% $CustomField->Name %> 
         <& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
