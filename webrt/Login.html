@@ -1,6 +1,5 @@
-<FORM METHOD=POST ACTION="/Login.html">
+<FORM METHOD=POST ACTION="<% $r->uri %>?<% scalar($r->args) %>">
 Right now, if your username matches your password, it auths you. isn't that sweet of it?<br>
-<input type=hidden name=goto value="<% $r->uri %>?<% $r->args %>">
 <input name=user value="<%$user%>"> <br>
 <input type=password name=pass>
 <input type=submit>
@@ -14,14 +13,3 @@ $pass => undef
 $goto => undef
 </%ARGS>
 
-<%INIT>
-if ($user eq $pass) {
-	my  $cookie1 = new CGI::Cookie(-name=>'ID',-value=>123456);
-	$r->headers_out->add("Set-Cookie" => "$cookie1");
-            $r->header_out(Location=>"$goto");
-            $m->abort(302);	
-}
-else {
-	my $login_ok = undef;
-}
-</%INIT>
