@@ -115,7 +115,7 @@ $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket =
 
 </%INIT>
 <%ARGS>
-$URIFile => 'Display.html'
+$URIFile => $RT::WebPath."/Ticket/Display.html"
 $Ticket => undef
 $Attachments => undef
 $AttachmentContent => undef
