@@ -55,11 +55,11 @@ LIBS_OWNER 		=	root
 # Group that should own all of RT's libraries, generally root.
 LIBS_GROUP		=	bin
 
-WEB_USER		=	www-data
-WEB_GROUP		=	www-data
+WEB_USER		=	www
+WEB_GROUP		=	www
 
 
-APACHECTL		=	/usr/sbin/apachectl
+APACHECTL		=	
 
 # {{{ Files and directories 
 
