@@ -9,7 +9,7 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->_Init;
+  $self->_Init(@_);
   return $self;
 }
 
@@ -19,7 +19,8 @@ sub _Init {
 	       Ticket => undef,
 	       Template => undef,
 	       Argument => undef,
-	       Type => undef);
+	       Type => undef,
+	       @_ );
   
   
   $self->{'Argument'} = $args{'Argument'};
@@ -84,7 +85,7 @@ sub Prepare {
 
 
 #If this rule applies to this transaction, return true.
-sub Applicable {
+sub IsApplicable {
   my $self = shift;
   return(undef);
 }

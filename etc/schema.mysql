@@ -104,7 +104,7 @@ CREATE TABLE InterestedParties (
    Ticket int(11),
    User int(11),
    Type VARCHAR(16) #Requestor, Cc, Bcc
-   )
+   )\g
 
 CREATE TABLE Tickets (
   id int(11) AUTO_INCREMENT PRIMARY KEY,

@@ -66,16 +66,35 @@ sub Create {
 			       );
   $self->Load($id);
 
+  #We're really going to need a non-acled ticket for the scrips to work
+  use RT::Ticket;
+  #TODO this MUST be as the "System" principal or it all breaks
+  #TODO This is actively broken, but it'll work as long as we have no acls
+  my $TicketAsSystem = RT::Ticket->new($self->CurrentUser);
+  $TicketAsSystem->Load($self->Ticket);
+
+  #Load a scrips object
+  use RT::Scrips;
   my $Scrips = RT::Scrips->new($self->CurrentUser);
-  $Scrips->Limit();#Limit it to queue 0 or $Ticket->QueueId
-  $Scrips->Limit();#Limit to $args{'Type'} or 'any'
+  $Scrips->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
+  $Scrips->LimitToType($args{'Type'}); #Limit to $args{'Type'} or 'any'
   #Load a scrips object
   #Iterate through each script and check it's applicability.
-   #If it's applicable, prepare and commit it.
+  
+  while (my $Scrip = $Scrips->Next()) {
+    
+    #Load the scrip's action;
+    $Scrip->LoadAction($self, $self->TicketAsSystem);
 
-
-
-
+    #If it's applicable, prepare and commit it
+    if ( $Scrip->IsApplicable() ) {
+      
+      $Scrip->Prepare();
+      $Scrip->Commit();
+    }
+    
+  } 
+  
   return ($id, "Transaction Created");
 }
 

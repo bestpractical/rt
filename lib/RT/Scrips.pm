@@ -28,13 +28,35 @@ sub Limit {
 	       @_);
   $self->SUPER::Limit(%args);
 }
+sub LimitToType {
+  my $self = shift;
+  my $type = shift;
+  $self->Limit (ENTRYAGGREGATOR => 'OR',
+		FIELD => 'Type',
+		VALUE => "$Type");
+   $self->Limit (ENTRYAGGREGATOR => 'OR',
+		FIELD => 'Type',
+		VALUE => 'any');
+  
+}
+sub LimitToQueue {
+  my $self = shift;
+  my $queue = shift;
+  $self->Limit (ENTRYAGGREGATOR => 'OR',
+		FIELD => 'Scope',
+		VALUE => "$queue");
+   $self->Limit (ENTRYAGGREGATOR => 'OR',
+		FIELD => 'Scope',
+		VALUE => 0);
+  
+}
 
 sub NewItem {
   my $self = shift;
   my $item;
 
   use RT::Scrip;
-  $item = new RT::Scrip($self->{'user'});
+  $item = new RT::Scrip();
   return($item);
 }
 

@@ -16,8 +16,7 @@ sub new {
 
 sub _Accessible {
   my $self = shift;
-  my %Cols = ( QueueId => 'read/write',
-	       Name  => 'read/write',
+  my %Cols = ( Name  => 'read/write',
 	       Description => 'read/write',
 	       Scope => 'read/write',
 	       Type	 => 'read/write',
@@ -31,7 +30,7 @@ sub _Accessible {
 sub Create {
   my $self = shift;
   die "RT::Scrip->create stubbed\n";
-  my $id = $self->SUPER::Create(QueueId => @_);
+  my $id = $self->SUPER::Create(Name => @_);
   $self->LoadById($id);
   
 }
@@ -67,16 +66,58 @@ sub Load {
   }
   else {
   die "This code is never reached ;)";  
-  #  $self->LoadByCol("QueueId", $identifier);
+ 
   }
 
+ 
+}
+
+sub LoadAction {
+  my $self = shift;
+  my %args = ( Transaction => undef,
+	       Ticket => undef,
+	       @_ );
+  
+  
+  
+  $self->{'ScripObject'} = new $self->Action ( Ticket => $args{'Ticket'},
+					       Transaction => $args{'Transaction'},
+					       Template => $self->Template,
+					       Argument => $self->Argument,
+					       Type => $self->Type,
+					     );
+  
 }
 
 #
+# The following methods call the action object
 #
- #
-#ACCESS CONTROL
+
+sub Prepare {
+  my $self = shift;
+  return ($self->{'ScriptObject'}->Prepare());
+  
+}
+
+sub Commit {
+  my $self = shift;
+  return ($self->{'ScriptObject'}->Activate());
+  
+}
+sub Describe {
+  my $self = shift;
+  return ($self->{'ScriptObject'}->Describe());
+  
+}
+sub IsApplicable {
+  my $self = shift;
+  return ($self->{'ScriptObject'}->IsApplicable());
+  
+}
+#
+# ACCESS CONTROL
 # 
+
 sub DisplayPermitted {
   my $self = shift;
 
