@@ -159,6 +159,7 @@ unless ($Attachments) {
     $Attachments = $attachments->ItemsArrayRef();
 }
 
+
 my $titlebar_commands='&nbsp;';
 
 # If the transaction has anything attached to it at all

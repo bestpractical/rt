@@ -55,8 +55,7 @@ else {
 
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
 <%perl>
-
-my @attachments = @{$attachments->ItemsArrayRef()};
+my @attachments = @{$Attachments->ItemsArrayRef()};
 
 
 
@@ -76,7 +75,11 @@ while ( my $Transaction = $Transactions->Next ) {
 
     my @trans_attachments = grep { $_->TransactionId == $Transaction->Id } @attachments;
 
+   
+    #Args is first because we're clobbering the "Attachments" parameter 
     $m->comp( 'ShowTransaction',
+            %ARGS,
+
               Ticket               => $Ticket,
               Transaction          => $Transaction,
               ShowHeaders          => $ShowHeaders,
@@ -84,7 +87,7 @@ while ( my $Transaction = $Transactions->Next ) {
               RowNum               => $i,
               ShowTitleBarCommands => $ShowTitleBarCommands,
               Attachments          => \@trans_attachments,
-              %ARGS );
+ );
 }
 
 </%perl>
@@ -97,46 +100,12 @@ while ( my $Transaction = $Transactions->Next ) {
 my $Transactions = $Ticket->Transactions;
 my $i;
 
-#A default implementation here loops through all transactions and pulls out all their attachments.
-# We end up doing an end-run around that to get a bit more performance
-my $attachments = RT::Attachments->new( $session{'CurrentUser'} );
-
-$attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId Created));
-
-if ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-        my $transactions = $attachments->NewAlias('Transactions');
-    $attachments->Join( ALIAS1 => 'main',
-                                           FIELD1 => 'TransactionId',
-                                           ALIAS2 => $transactions,
-                                           FIELD2 => 'id' );
-    
-    my $tickets = $attachments->NewAlias('Tickets');
-
-    $attachments->Join( ALIAS1 => $transactions,
-                        FIELD1 => 'Ticket',
-                        ALIAS2 => $tickets,
-                        FIELD2 => 'id' );
-    
-    $attachments->Limit( ALIAS => $tickets,
-                         FIELD => 'EffectiveId',
-                         VALUE => $Ticket->id() );
-
-
-
-    # if the user may not see comments do not return them
-    unless ( $Ticket->CurrentUserHasRight('ShowTicketComments') ) {
-        $attachments->Limit( ALIAS    => $transactions,
-                             FIELD    => 'Type',
-                             OPERATOR => '!=',
-                             VALUE    => "Comment" );
-    }
-
-}
 
 </%INIT>
 <%ARGS>
 $URIFile => 'Display.html'
 $Ticket => undef
+$Attachments => undef
 $ShowHeaders => undef
 $Collapsed => undef
 $ShowTitle => 1
