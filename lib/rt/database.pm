@@ -94,7 +94,7 @@ sub get_last_each_req_serial_num
 	my($serial_num);
 
 	# I like this one - unfortunately it's MySQL specific:
-	if ($rt::rt_db eq 'mysql') { return $sth->{insertid}; }
+	if ($rt::rt_db eq 'mysql') { return $dbh->{'mysql_insertid'}; }
 
 	# Pull the last inserted sequence value for the each_req table.
     	$query_string="select last_value from each_req_serial_num_seq";
@@ -113,7 +113,7 @@ sub get_last_transactions_id
 	my($transaction_num);
 
 	# I like this one - unfortunately it's MySQL specific:
-	if ($rt_db eq 'mysql') { return $sth->{insertid}; }
+	if ($rt_db eq 'mysql') { return $dbh->{'mysql_insertid'}; }
 
 	# Pull the last inserted sequence value for the transactions table.
     	$query_string="select last_value from transactions_id_seq";

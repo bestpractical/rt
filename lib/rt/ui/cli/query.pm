@@ -131,11 +131,11 @@ sub build_query {
 	       }
 	       $owner_ops .= " owner =  \'\'" ;
 	   }
-	   if ($ARGV[$i] eq '-priority'){
+	   if ($ARGV[$i] =~ '-prio'){
 	       if ($prio_ops){
 		   $prio_ops .= " AND ";
 	       }
-	       $prio_ops .= " prio $ARGV[++$i] $ARGV[++$i]";
+	       $prio_ops .= " priority $ARGV[++$i] $ARGV[++$i] ";
 	   }
 	   
 	   if ($ARGV[$i] =~ '-stat'){
