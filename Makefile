@@ -97,7 +97,7 @@ DB_RT_HOST			=	localhost
 # set this to the name you want to give to the RT database in 
 # your database server
 
-DB_DATABASE	=	RT2
+DB_DATABASE	=	rt2
 
 # Set this to the name of the rt database user
 
