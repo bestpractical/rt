@@ -36,7 +36,7 @@ sub LimitToType  {
       if defined $type;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Type',
-		VALUE => "Correspondence")
+		VALUE => "Correspond")
       if $type eq "Create";
   $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Type',

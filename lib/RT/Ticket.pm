@@ -831,11 +831,23 @@ sub NewLink {
 # {{{ sub IsRequestor
 sub IsRequestor {
   my $self = shift;
-  my $username = shift;
+  my $whom = shift;
+
+  my $mail;
+
+  #Todo: more advanced checking
+
+  if (ref $whom eq "Mail::Address") {
+      $mail=$whom->Address;
+  } elsif (ref $whom eq "RT::User") {
+      $mail=$whom->EmailAddress;
+  } elsif (!ref $whom) {
+      $mail=$whom;
+  }
   
   #if the requestors string contains the username
 
-  if ($self->Requestor() =~ /\$username/) {
+  if ($self->RequestorAsString() =~ /$mail/) {
 
     return(1);
   }

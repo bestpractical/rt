@@ -74,7 +74,7 @@ INSERT INTO Scrips VALUES (2,'NotifyOwnerOnTransaction',
 
 INSERT INTO Scrips VALUES (3, 'NotifyAdminWatchersOnCorrespond',
 			  'Sends mail to administrative watchers when email comes in',
-			  'Correspond','SendEmail',3,'',0,NULL,0,NULL);
+			  'Correspond,Create','SendEmail',3,'',0,NULL,0,NULL);
 
 INSERT INTO Scrips VALUES (4, 'NotifyRegularWatchersOnCorrespond', 
 			  'Send "official" mail to (external) Cc watchers and (external) requestors whenever correspondence comes in',
@@ -388,7 +388,7 @@ INSERT INTO Templates VALUES (3,'Default admin correspondence template', NULL, N
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminWatchersAsString}
 
-{$Transaction->is_inbound() ? "In" : "Out"}bound correspondence:
+{$Transaction->IsInbound() ? "In" : "Out"}bound correspondence:
 
 <URL: http://{$WebRT}/ticket/display.html?id={$Ticket->id} >
 

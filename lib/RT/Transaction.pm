@@ -22,6 +22,12 @@ sub new  {
 }
 # }}}
 
+sub IsInbound {
+  ;
+  my $self=shift;
+  return ($self->Ticket->IsRequestor($self->Owner));
+}
+
 #This is "Create Transaction"
 
 # {{{ sub Create 
@@ -95,7 +101,7 @@ sub Create  {
     # TODO: Agreed - jesse. It'll probably wait until after the 2.0 release unless it appears to
     # TODO: be a serious perf bottleneck.
 
-    next if ($Scope->ScripObj->Type && $Scope->ScripObj->Type ne $args{'Type'});
+    next if ($Scope->ScripObj->Type && $Scope->ScripObj->Type !~ /([Aa]ny)|(\b$args{'Type'}\b)/);
 
     #TODO: properly deal with errors raised in this scrip loop
    # eval {
