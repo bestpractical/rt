@@ -163,7 +163,6 @@ sub SmartParseMIMEEntityFromScalar {
     my %args = (  Message => undef, Decode => 1, @_ );
    
 
-    $RT::Logger->crit("$self - Decode  is '".$args{'Decode'}."'");
     my ( $fh, $temp_file );
     for ( 1 .. 10 ) {
 
@@ -280,7 +279,6 @@ sub _ParseMIMEEntity {
         }
     }
     if ($postprocess) {
-        $RT::Logger->crit("$self About to postprocess my entity");
     $self->_PostProcessNewEntity() ;
     }
 

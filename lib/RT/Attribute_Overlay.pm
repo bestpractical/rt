@@ -60,6 +60,12 @@ sub Create {
 	$args{ObjectId} = $args{Object}->Id;
     }
 
+    eval  {$args{'Content'} = $self->_SerializeContent($args{'Content'}); };
+    if ($@) {
+        return(0, $@);
+    }
+
+
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Content => $args{'Content'},
@@ -97,5 +103,62 @@ sub LoadByNameAndObject {
 }
 
 # }}}
+
+
+=head2 _DeserializeContent
+
+DeserializeContent returns this Attribute's "Content" as a hashref.
+
+
+=cut
+
+sub _DeserializeContent {
+    my $self = shift;
+    my $content = $self->_Value('Content');
+
+    my $hashref = Storable::thaw($content); 
+
+    return($hashref);
+
+}
+
+
+sub Content {
+    my $self = shift;
+    my $content = $self->_Value('Content');
+    if ($content =~ /^__Storable__(.*?)$/go) {
+        eval {$content = $self->_DeserializeContent($1); };
+        if ($@) {
+            $RT::Logger->crit("Deserialization of content for attribute ".$self->Id. " failed. Attribute was: ".$content);
+        }
+    } 
+
+    return($content);
+
+}
+
+sub _SerializeContent {
+    my $self = shift;
+    my $content = shift;
+
+    if (ref($content)) {
+         $content = "__Storable__".Storable::nfreeze($content); 
+    }
+    return ($content);
+}
+
+
+sub SetContent {
+    my $self = shift;
+    my $content = shift;
+
+    # We eval the serialization because it will lose on a coderef.
+    eval  {$content = $self->_SerializeContent($content); };
+    if ($@) {
+        return(0, $@);
+    }
+    return ($self->SetContent($content));
+}
+
 
 1;

@@ -21,17 +21,22 @@
 %# 
 %# 
 %# END LICENSE BLOCK
---<%$BaseURL%>--
-<& /Elements/TitleBoxStart, title => $Title, bodyclass=> '' &>
+
+
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-<& .Header, Format => \@Format, map => $map, AllowSorting => $AllowSorting, Order => $Order, OrderBy => $OrderBy , BaseURL => $BaseURL  &> 
+<& .Header, 
+    Format => \@Format, 
+    map => $map, 
+    AllowSorting => $AllowSorting, 
+    Order => $Order, 
+    OrderBy => $OrderBy , 
+    BaseURL => $BaseURL  &> 
 % my $i;
 % while (my $record = $Collection->Next) {
 % $i++;
 <& .Row, Format => \@Format, i => $i, record => $record, map => $map &>
 % }
 </TABLE>
-<& /Elements/TitleBoxEnd &> 
 <%INIT>
 
 my $map = {
@@ -174,8 +179,10 @@ my $map = {
 unless ($Collection) {
         $Collection = RT::Tickets->new($session{'CurrentUser'});
         $Collection->FromSQL($Query);
-        @Format = $Collection->DisplayColumns;
 }
+
+    my (@Format) = $m->comp('.ParseColumnDefinitions', Format => $Format);
+    
 
 $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 
@@ -191,7 +198,7 @@ $AllowSorting => undef
 $Order =>undef
 $OrderBy => undef
 $BaseURL => undef
-@Format => undef
+$Format => undef
 </%ARGS>
 %#### SUB COMPONENTS
 %#
@@ -272,4 +279,65 @@ foreach my $column (@Format) {
 }
 $m->out('</TR>');
 </%PERL>
+
+
+</%DEF>
+<%DEF .ParseColumnDefinitions >
+<%ARGS>
+$Format => "id, Subject"
+</%ARGS>
+
+<%init>
+use Regexp::Common qw(delimited);
+my @Columns;
+#my $quoted = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
+my $justquoted = qr[$RE{delimited}{-delim=>qq{\'\"}}];
+#my $quoted =        $RE{quoted}{-esc};
+my $word = qr [(?:\{|\}|\w|\.)+];
+
+while ($Format =~ /($justquoted|$word)/igx) {
+    my $col = $1;
+
+    if ($col =~ /^$RE{quoted}{-esc}$/) {
+        substr($col,0,1) = "";
+        substr($col,-1,1) = "";
+    }
+
+    my $colref;
+    if ( $col =~ s/\/STYLE:(.*?)$//io ) {
+        $colref->{'style'} = $1;
+    }
+    if ( $col =~ s/\/CLASS:(.*?)$//io ) {
+        $colref->{'class'} = $1;
+    }
+    if ( $col =~ s/\/TITLE:(.*?)$//io ) {
+        $colref->{'title'} = $1;
+    }
+    if ( $col =~ /__(.*?)__/gio ) {
+        my @subcols;
+        while ( $col =~ s/^(.*?)__(.*?)__//o ) {
+            push ( @subcols, $1 ) if ($1);
+            push ( @subcols, "__$2__" );
+            $colref->{'attribute'} = $2;
+        }
+        push ( @subcols, $col );
+        @{ $colref->{'output'} } = @subcols;
+    }
+    else {
+        @{ $colref->{'output'} } = ( "__" . $col . "__" );
+        $colref->{'attribute'} = $col;
+    }
+    
+    if ( !$colref->{'title'} && grep { /^__(.*?)__$/io }
+        @{ $colref->{'output'} } )
+    {   
+        $colref->{'title'}     = $1;
+        $colref->{'attribute'} = $1;
+    }
+
+
+    push @Columns, $colref;
+}
+    return(@Columns);
+</%init>
 </%DEF>

@@ -491,10 +491,12 @@ sub FromSQL {
   # Unless we've explicitly asked to look at a specific Type, we need
   # to limit to it.
   unless ($self->{looking_at_type}) {
-    $self->SUPER::Limit( FIELD => 'Type',
-                         OPERATOR => '=',
-                         VALUE => 'ticket');
+    $self->SUPER::Limit( FIELD => 'Type', OPERATOR => '=', VALUE => 'ticket');
   }
+
+  # We should never find deleted 
+  $self->SUPER::Limit( FIELD => 'Status', OPERATOR => '!=', VALUE => 'deleted');
+
 
   # set SB's dirty flag
   $self->{'must_redo_search'} = 1;

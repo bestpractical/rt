@@ -48,8 +48,8 @@ my $attr = $root->Attributes;
 
 ok (UNIVERSAL::isa($attr,'RT::Attributes'), 'got the attributes object');
 
-ok($root->AddAttribute(Name => 'TestAttr', Content => 'The attribute has content')); 
-
+my ($id, $msg) =  $root->AddAttribute(Name => 'TestAttr', Content => 'The attribute has content'); 
+ok ($id, $msg);
 my @names = $attr->Names;
 
 is ($names[0] , 'TestAttr');

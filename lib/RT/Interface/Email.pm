@@ -473,7 +473,6 @@ sub Gateway {
     # Since this needs loading, no matter what
 
     foreach (@RT::MailPlugins) {
-        $RT::Logger->crit("Looking at email plugin ".$_);
         my $Code;
         my $NewAuthStat;
         if ( ref($_) eq "CODE" ) {

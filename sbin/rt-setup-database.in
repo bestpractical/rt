@@ -336,7 +336,7 @@ sub insert_initial_data {
     #Put together a current user object so we can create a User object
     my $CurrentUser = new RT::CurrentUser();
 
-    print "Checking for existing system user ($CurrentUser)...";
+    print "Checking for existing system user...";
     my $test_user = RT::User->new($CurrentUser);
     $test_user->Load('RT_System');
     if ( $test_user->id ) {

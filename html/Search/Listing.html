@@ -26,33 +26,32 @@
     current_tab => 'Search/Listing.html', 
     Title => $title &>
 <hr>
-
-%if ($session{'tickets'} && $ticketcount && !  $HideResults) {
-
+about to be
+%unless  ( $HideResults) {
+Looking at results
 <& /Elements/TicketList, 
-    Query => $session{'tickets'}->Query, 
+    Query => $ARGS{'Query'},
     AllowSorting => 1,
     OrderBy => $ARGS{'OrderBy'},
     Order => $ARGS{'Order'},
     Rows => $ARGS{'Rows'},
     FirstRow => $ARGS{'FirstRow'},
-    Collection => $session{'tickets'},
-    Format => [$session{'tickets'}->DisplayColumns],
+    Format => $ARGS{'Format'},
+    
     BaseURL => $RT::WebPath."/Search/Listing.html?"
 
    &>
 <div align=right>
-
 <a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a>
-<a href="Results.tsv"><&|/l&>Download all the tickets as a tab delimited file</&></a>
-</td>
-</tr>
-</table>
-
+<a href="Results.tsv"><&|/l&>spreadsheet</&></a>
+<a href="Results.tsv"><&|/l&>RSS</&></a>
+</div>
 % }
 <form method="POST" action="Listing.html">
 <& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
+<textarea name="Format" rows=5 cols=80><%$Format%></textarea>
+<hr>
 <textarea name="Query" rows=5 cols=80><%$session{'tickets'}->Query||$Query%></textarea>
 
 <& /Elements/Submit &>
@@ -74,11 +73,10 @@ $session{'tickets'}->FromSQL($Query) if ($Query);
         $title = loc("Find tickets");
    }
 
-$Query= $session{'tickets'}->Query; 
 
-unless ($session{'tickets'}->Query) {
-$HideResults = 1;
-$Query = qq{ SELECT 
+unless ($Format) {
+$HideResults = 0;
+$Format = qq{
 '<B><A HREF="/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#'
 '<B><A HREF="/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 Status, 
@@ -91,7 +89,7 @@ Priority,
 '<small>__CreatedRelative__</small>',
 '<small>__ToldRelative__</small>',
 '<small>__LastUpdatedRelative__</small>',
-'<small>__TimeLeft__</small>' WHERE  };
+'<small>__TimeLeft__</small>'};
 }
 </%INIT>
 <%CLEANUP>
@@ -99,5 +97,6 @@ $session{'tickets'}->PrepForSerialization();
 </%CLEANUP>
 <%ARGS>
 $Query => undef
+$Format => undef 
 $HideResults => 0
 </%ARGS>
