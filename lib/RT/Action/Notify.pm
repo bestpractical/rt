@@ -33,7 +33,7 @@ sub SetRecipients {
     }
     
     
-    if ($arg =~ /\bOwner\b/ && ($self->TicketObj->Owner->id != $RT::Nobody->id)) {
+    if ($arg =~ /\bOwner\b/ && ($self->TicketObj->OwnerObj->id != $RT::Nobody->id)) {
 	#If we're not sending to Ccs or requestors, then the Owner can be the To.
 	if (@To) {
 	    push(@Bcc, $self->TicketObj->OwnerObj->EmailAddress);
