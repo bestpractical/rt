@@ -133,7 +133,7 @@ sub ParseURI {
     if ( $self->IsLocal) {
    
         my $local_uri_prefix = $self->LocalURIPrefix;
-    	if ($self->{'uri'} =~ /^$local_uri_prefix(\d+)$/) {
+    	if ($self->{'uri'} =~ /^$local_uri_prefix(\d+)$/i) {
     		my $id = $1;
     	
     
@@ -170,7 +170,7 @@ Returns undef otherwise.
 sub IsLocal {
 	my $self = shift;
         my $local_uri_prefix = $self->LocalURIPrefix;
-	if ($self->{'uri'} =~ /^$local_uri_prefix/) {
+	if ($self->{'uri'} =~ /^$local_uri_prefix/i) {
 		return 1;
     }
 	else {
