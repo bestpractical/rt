@@ -189,6 +189,22 @@ $ARGS{Due}%>"></TD></TR>
 <& /Elements/TitleBoxEnd &>
 <BR>
 
+% if ($TxnCFs->Count) {
+<& /Elements/TitleBoxStart, title => loc('Transaction Custom Fields'), 
+	title_class=> 'inverse',  
+	titleright => '', color=> "#333366" &>
+<TABLE BORDER=0>
+% while (my $CF = $TxnCFs->Next()) {
+<TR>
+<TD ALIGN=RIGHT><% $CF->Name %>:</TD>
+<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &></TD>
+<TD ALIGN=RIGHT><em><% $CF->FriendlyType %></em></TD>
+</TD></TR>
+% }
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+% }
+
 </TD>
 </TR>
 </TABLE>
@@ -206,7 +222,8 @@ $ARGS{Due}%>"></TD></TR>
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
-my $CFs = $QueueObj->CustomFields();
+my $CFs = $QueueObj->TicketCustomFields();
+my $TxnCFs = $QueueObj->TicketTransactionCustomFields();
 
 if ($QueueObj->DefaultDueIn) {
     my $default_due = RT::Date->new($session{'CurrentUser'});

@@ -63,8 +63,8 @@ Limits the set of custom fields found to global custom fields or those tied to t
 sub LimitToGlobalOrQueue {
     my $self = shift;
     my $queue = shift;
-    $self->LimitToQueue($queue);
-    $self->LimitToGlobal();
+    $self->LimitToGlobalOrObjectId( $queue );
+    $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 
 # }}}

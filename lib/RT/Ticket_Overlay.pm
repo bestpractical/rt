@@ -630,6 +630,7 @@ sub Create {
 
 
         if ( $self->Id && $Trans ) {
+	    $TransObj->UpdateCustomFields( ARGSRef => \%args );
             $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
             $ErrStr = join ( "\n", $ErrStr, @non_fatal_errors );
 
@@ -3877,6 +3878,11 @@ sub Transactions {
 }
 
 # }}}
+
+sub TransactionCustomFields {
+    my $self = shift;
+    return $self->QueueObj->TicketTransactionCustomFields;
+}
 
 sub _LookupTypes {
     "RT::Queue-RT::Ticket";

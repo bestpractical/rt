@@ -434,7 +434,19 @@ sub TicketCustomFields {
 
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $cfs->LimitToGlobalOrQueue( $self->Id );
+	$cfs->LimitToGlobalOrObjectId( $self->Id );
+	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+    }
+    return ($cfs);
+}
+
+sub TicketTransactionCustomFields {
+    my $self = shift;
+
+    my $cfs = RT::CustomFields->new( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('SeeQueue') ) {
+	$cfs->LimitToGlobalOrObjectId( $self->Id );
+	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
     }
     return ($cfs);
 }
@@ -1010,7 +1022,7 @@ sub HasRight {
     }
     return (
         $args{'Principal'}->HasRight(
-            Object => $self,
+            Object => $self->Id ? $self : $RT::System,
             Right    => $args{'Right'}
           )
     );

@@ -873,4 +873,27 @@ sub FriendlyObjectType {
     return $self->loc($type);
 }
 
+sub UpdateCustomFields {
+    my ($self, %args) = @_;
+    my $args_ref = $args{ARGSRef} or return;
+
+    foreach my $arg ( keys %$args_ref ) {
+        $arg =~ /^(?:Transaction)?CustomField-(\d+).*?(?<!-Magic)$/ or next;
+	my $cfid = $1;
+	my $values = $args_ref->{$arg};
+	foreach my $value ( ref($values) ? @$values : $values ) {
+	    next unless length($value);
+	    $self->_AddCustomFieldValue(
+		Field => $cfid,
+		Value => $value,
+		RecordTransaction => 0,
+	    );
+	}
+    }
+}
+
+sub _LookupTypes {
+    "RT::Queue-RT::Ticket-RT::Transaction";
+}
+
 1;

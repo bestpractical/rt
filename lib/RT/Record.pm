@@ -982,18 +982,16 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
 
-    my $cf = RT::CustomField->new($self->CurrentUser);
-
-    if ($field =~ /^\d+$/) {
-        $cf->LoadById($field);
-    } else {
-	# $cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
-	die "LoadByNameAndQueue not yet ported to Object";
-    }
     my $cf_values = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
-    $cf_values->LimitToCustomField($cf->id);
     $cf_values->LimitToObject($self);
     $cf_values->OrderBy( FIELD => 'id' );
+
+    if (length $field) {
+	$field =~ /^\d+$/ or die "LoadByNameAndQueue impossible for Record.pm";
+	my $cf = RT::CustomField->new($self->CurrentUser);
+        $cf->LoadById($field);
+	$cf_values->LimitToCustomField($cf->id);
+    }
 
     # @values is a CustomFieldValues object;
     return ($cf_values);

@@ -33,6 +33,14 @@
 <TD><%$TimeTaken%>&nbsp;</TD>
 <TD ALIGN="RIGHT"><font size=-1><%$titlebar_commands|n%></font></TD>
 </TR>
+% if ($Transaction->CustomFieldValues->Count) {
+<TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >
+<TD BGCOLOR="<%$bgcolor%>">&nbsp;&nbsp;</TD>
+<TD>&nbsp;&nbsp;</TD>
+<TD COLSPAN=4>
+<& /Elements/ShowCustomFields, Object => $Transaction &>
+</TD></TR>
+% }
 <%PERL>
 
 unless ($Collapsed) {

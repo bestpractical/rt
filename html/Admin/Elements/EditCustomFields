@@ -31,6 +31,7 @@
 <FORM METHOD=GET ACTION="CustomFields.html">
 <INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>">
 <INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>">
+<INPUT TYPE=HIDDEN NAME="SubType" VALUE="<% $SubType %>">
 <input type="checkbox" name="FindDisabledCustomFields"> <&|/l&>Include disabled custom fields in listing.</&>
 <input type=submit value="<&|/l&>Go!</&>">
 </FORM>
@@ -38,6 +39,7 @@
 <FORM ACTION="CustomFields.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>">
 <INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>">
+<INPUT TYPE=HIDDEN NAME="SubType" VALUE="<% $SubType %>">
 <INPUT TYPE=HIDDEN NAME="UpdateCFs" VALUE="1">
 
 % if ($Object->Id) {
@@ -59,14 +61,15 @@ my $caption;
 my @results;
 my (@GlobalCFs, @UnassignedCFs);
 
-if (!$Object->CurrentUserHasRight('AssignCustomFields')) {
+my $id = $Object->Id;
+if ($id and !$Object->CurrentUserHasRight('AssignCustomFields')) {
     $m->print('<P><i>', loc('(No custom fields)'), '</i></P>');
     return;
 }
 
-# by "RT::Queue" fields on UI we really mean "RT::Ticket" fields.
 my $lookup = $ObjectType;
-$lookup = 'RT::Queue-RT::Ticket' if $lookup eq 'RT::Queue';
+$lookup .= "-$SubType" if $SubType;
+
 $CustomFields->LimitToLookupType($lookup);
 $CustomFields->OrderBy( FIELD => 'Name' );
 
@@ -77,7 +80,6 @@ if ($FindDisabledCustomFields) {
     $caption = loc("Enabled Custom Fields");
 }
 
-my $id = $Object->Id;
 my ($GlobalCFs, $ObjectCFs);
 $ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
 $ObjectCFs->UnLimit;
@@ -179,4 +181,5 @@ $FindDisabledCustomFields => undef
 $UpdateCFs => 0
 $Object
 $ObjectType
+$SubType => ''
 </%ARGS>

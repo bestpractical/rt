@@ -691,6 +691,7 @@ sub LookupTypes {
     my $self = shift;
     qw(
 	RT::Queue-RT::Ticket
+	RT::Queue-RT::Ticket-RT::Transaction
 	RT::User
 	RT::Group
     );

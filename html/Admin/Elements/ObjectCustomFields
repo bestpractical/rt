@@ -25,17 +25,17 @@
 <& $ObjectTabs,
 $id ? (
     id => $Object->id, 
-    current_tab => "Admin/$Types/CustomFields.html?id=".$id, 
-    current_subtab => "Admin/$Types/CustomFields.html?id=".$id, 
+    current_tab => "Admin/$Types/CustomFields.html?$sub_type_url&id=".$id, 
+    current_subtab => "Admin/$Types/CustomFields.html?$sub_type_url&id=".$id, 
     "${Type}Obj" => $Object,
 ) : (
-    current_tab => "Admin/$Types/CustomFields.html",
-    current_subtab => "Admin/$Types/CustomFields.html",
+    current_tab => "Admin/$Types/CustomFields.html?$sub_type_url",
+    current_subtab => "Admin/$Types/CustomFields.html?$sub_type_url",
 ),
     Title => $title
     &>
 
-<& /Admin/Elements/EditCustomFields, title => $title, Object => $Object, %ARGS &>
+<& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object &>
 <%INIT>
 $ObjectType =~ /^RT::(Queue|User|Group)$/
     or Abort(loc("Object of type [_1] cannot take custom fields", $ObjectType));
@@ -49,8 +49,12 @@ $Object->Load($id) || Abort(loc("Couldn't load object [_1]", $id)) if $id;
 my $title = ($id ? loc('Edit Custom Fields for [_1]', $Object->Name)
 		 : loc("Modify Custom Fields which apply to all [_1]", loc($Types)));
 
+my $sub_type_url;
+$sub_type_url = "SubType=$SubType" if $SubType;
+
 </%INIT>
 <%ARGS>
 $id => undef
 $ObjectType
+$SubType => undef
 </%ARGS>

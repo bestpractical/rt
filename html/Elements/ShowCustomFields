@@ -21,7 +21,26 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/ShowCustomFields, Object => $Ticket &>
+<table>
+% my @entry_fields;
+% while (my $CustomField = $CustomFields->Next()) {
+% my $Values = $Object->CustomFieldValues($CustomField->Id);
+  <tr>
+    <td class="label"><%$CustomField->Name%>:</td>
+    <td class="value">
+% while (my $Value = $Values->Next()) {
+<%$Value->Content%><br>        
+% }
+% unless ($Values->Count()) {
+<i><&|/l&>(no value)</&></i>
+% }
+    </td>
+  </tr>
+% }
+</table>
+<%INIT>
+my $CustomFields = $Object->CustomFields;
+</%INIT>
 <%ARGS>
-$Ticket => undef
+$Object => undef
 </%ARGS>

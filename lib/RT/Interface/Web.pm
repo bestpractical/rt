@@ -335,9 +335,8 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj
     );
   foreach my $arg (%ARGS) {
-        if ($arg =~ /^CustomField-(\d+)(.*?)$/) {
-            next if ($arg =~ /-Magic$/);
-            $create_args{"CustomField-".$1} = $ARGS{"$arg"};
+        if ($arg =~ /^((?:Transaction)?CustomField-\d+).*?(?<!-Magic)$/) {
+            $create_args{$1} = $ARGS{$arg};
         }
     }
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
@@ -450,6 +449,8 @@ sub ProcessUpdateMessage {
                 TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
             );
             push ( @{ $args{Actions} }, $Description );
+	    print "I see $Object coming up\n";
+	    $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
         }
         elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
             my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Correspond(
@@ -459,6 +460,8 @@ sub ProcessUpdateMessage {
                 TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
             );
             push ( @{ $args{Actions} }, $Description );
+	    print "I see $Object coming down\n";
+	    $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
         }
         else {
             push ( @{ $args{'Actions'} },
