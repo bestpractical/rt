@@ -3,7 +3,7 @@
 % if ($session{'CurrentUser'}->IsEditor) {
 <a href="<%$RT::FM::WebPath%>/edit/create_article.html?Parent=<%$article_id%>">[New article]</a>
 % if ($article) {
-<a href="<%$RT::FM::WebPath%>/edit/edit_article.html?id=<%$article_id%>">[Edit]</a>
+<a href="<%$RT::FM::WebPath%>/edit/edit_article.html?DisplayRoot=<%$article->Id%>&id=<%$article_id%>">[Edit]</a>
 % }
 % }
 % if ($session{'CurrentUser'}->IsAdministrator) {

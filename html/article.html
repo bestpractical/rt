@@ -9,7 +9,7 @@
 <HR>
 <%$article->ContentObj->Body|n%>
 
-<& /Elements/ArticleContentHierarchy, parent => $article->Id &>
+<& /Elements/ArticleContentHierarchy, parent => $article->Id, Root => $article->Id &>
 </body>
 </html>
 

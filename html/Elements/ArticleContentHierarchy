@@ -23,11 +23,11 @@ type="i"
 <BR>
 <%$article->ContentObj->Body |n%>
 % if ($session{'CurrentUser'}->IsEditor) {
-<div align="right"><i><A href="<%$RT::FM::WebPath%>/edit/edit_article.html?id=<%$article->Id%>">Edit</a></i></div>
+<div align="right"><i><A href="<%$RT::FM::WebPath%>/edit/edit_article.html?id=<%$article->Id%>&DisplayRoot=<%$Root%>">Edit</a></i></div>
 %}
 
 % if ($Depth < 99) {
-<& ArticleContentHierarchy, parent => $article->Id , Depth => $Depth &> 
+<& ArticleContentHierarchy, parent => $article->Id , Depth => $Depth, Root => $Root &> 
 % }
 % if ($Depth >= 5) {
 </LI>
@@ -42,6 +42,7 @@ my $articles = new RT::FM::ArticleCollection($session{'CurrentUser'});
 $articles->LimitToParent($parent);
 </%INIT>
 <%ARGS>
+$Root => undef
 $parent => 0
 $Depth => 0
 </%ARGS>
