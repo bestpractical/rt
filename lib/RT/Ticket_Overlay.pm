@@ -3462,6 +3462,9 @@ sub CustomFieldValues {
         $cf->LoadById($field);
     } else {
         $cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
+        unless( $cf->id ) {
+            $cf->LoadByNameAndQueue(Name => $field, Queue => '0');
+        }
     }
     my $cf_values = RT::TicketCustomFieldValues->new( $self->CurrentUser );
     $cf_values->LimitToCustomField($cf->id);
