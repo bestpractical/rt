@@ -14,8 +14,7 @@ sub new {
   bless ($self, $class);
 
   $self->{'table'} = "transactions";
-  $self->{'user'} = shift;
-  $self->init(@_);
+  $self->_Init(@_);
   return ($self);
 }
 

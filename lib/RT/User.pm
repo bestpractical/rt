@@ -11,17 +11,16 @@ use RT::Record;
 
 
 sub new {
-    my $proto = shift;
+  my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
   $self->{'table'} = "users";
-  $self->{'user'} = shift;
-  
-  $self->_init(@_);
+  $self->_Init(@_);
 
   return($self);
 }
+
 sub _Accessible {
   my $self = shift;  
   my %Cols = (
@@ -39,7 +38,7 @@ sub _Accessible {
 }
 
 
-sub create {
+sub Create {
   my $self = shift;
   my %args = (
 	      UserId => undef,
@@ -57,24 +56,13 @@ sub create {
   return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
   
   my $id = $self->SUPER::Create(%args);
-  $self->load_by_reference($id);
-
+  $self->Load($id);
+  
   #TODO: this is horrificially wasteful. we shouldn't commit 
   # to the db and then instantly turn around and load the same data
-  
-  #sub create is handled by the baseclass. we should be calling it like this:
-  #$id = $article->create( title => "This is a a title",
-  #		  mimetype => "text/plain",
-  #		  author => "jesse@arepa.com",
-  #		  summary => "this article explains how to from a widget",
-  #		  content => "lots and lots of content goes here. it doesn't 
-  #                              need to be preqoted");
-  # TODO: created is not autoset
-  
-
-}
+  }
  
-sub delete {
+sub Delete {
   my $self = shift;
   my $new_owner = shift;
   

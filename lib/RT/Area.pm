@@ -16,8 +16,7 @@ sub new {
   bless ($self, $class);
 
   $self->{'table'} = "queue_areas";
-  $self->{'user'} = shift;
-  $self->_init(@_);
+  $self->_Init(@_);
   return ($self);
 }
 

@@ -9,11 +9,15 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  #  $self->{'table'} = "each_req";
-  #$self->{'user'} = shift;
   return $self;
 }
 
+sub _Init {
+  my $self = shift;
+  $self->SUPER::Init( 'Handle' => $RT::Handle);
+  
+  $self->{'DBIxHandle'} = $RT::Handle;
+}
 
 sub Create {
   my $self = shift;

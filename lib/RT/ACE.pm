@@ -10,8 +10,7 @@ sub new {
   my $self  = {};
   bless ($self, $class);
   $self->{'table'} = "queue_acls";
-  $self->{'user'} = shift;
-  $self->_init(@_);
+  $self->_Init(@_);
   return ($self);
 }
 

@@ -13,8 +13,7 @@ sub new {
   my $self  = {};
   bless ($self, $class);
   $self->{'table'} = "tickets";
-  $self->{'user'} = shift;
-  $self->_init(@_);
+  $self->_Init(@_);
   return ($self);
 }
 
@@ -22,6 +21,7 @@ sub new {
 
 
 sub _Accessible {
+
   my $self = shift;  
   my %Cols = (
 	      EffectiveId => 'read/write',

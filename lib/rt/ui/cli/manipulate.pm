@@ -3,94 +3,96 @@
 # $Id$ 
 #
 #
-package RT::ui::cli::manipulate;
+package rt::ui::cli::manipulate;
 
-{
-  sub activate {
-    require RT::User;
-    require RT::Ticket;
+
+sub activate {
+  my ($current_user);
+  require RT::User;
+
     
-    #Instantiate a user object
-    
-    ($CurrentUid,$tmp)=getpwuid($<);
-    $CurrentUser = new RT::User($CurrentUid);
-    $CurrentUser->load($CurrentUid);
-    
-    &ParseArgs;
-  }
+  #Instantiate a user object
   
+  ($CurrentUser,undef)=getpwuid($<);
+  $CurrentUser = new RT::User($CurrentUser);
+  $CurrentUser->load($CurrentUser);
+  
+  &ParseArgs;
+  return(0);
+}
+
 
   
-  
-  sub parse_args {
-    for ($i=0;$i<=$#ARGV;$i++) {
-      if ($ARGV[$i] eq "-create")   {
-	&cli_create_req;
+
+sub ParseArgs {
+  for ($i=0;$i<=$#ARGV;$i++) {
+    if ($ARGV[$i] eq "-create")   {
+      &cli_create_req;
+    }
+    elsif (($ARGV[$i] eq "-history") || ($ARGV[$i] eq "-show")){
+      my $id=int($ARGV[++$i]);
+      my $Request = &LoadTicket($id);
+      
+      if ($Request->DisplayPermitted) {
+	&ShowSummary($Request);
+	&ShowHistory($Request);
       }
-      elsif (($ARGV[$i] eq "-history") || ($ARGV[$i] eq "-show")){
-	my $id=int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
-	
-	if ($Request->DisplayPermitted) {
-	  &ShowSummary($Request);
-	  &ShowHistory($Request);
-	}
-	else {
-	  print "You don't have permission to view that ticket.\n";
-	}
+      else {
+	print "You don't have permission to view that ticket.\n";
       }
+    }
+    
+    
+    elsif ($ARGV[$i] eq "-publichistory") {
+      my $id=int($ARGV[++$i]);
+      my $Request = &LoadTicket($id);
       
+      if ($Request->DisplayPermitted) {
+	&ShowSummary($id);
+	&ShowRequestorHistory($id);
+      }
+      else {
+	print "You don't have permission to view that ticket\n";
+      }
+    } 
+    
+    
+    elsif ($ARGV[$i] eq "-trans") {
       
-      elsif ($ARGV[$i] eq "-publichistory") {
-	my $id=int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
-	
-	if ($Request->DisplayPermitted) {
-	  &ShowSummary($id);
-	  &ShowRequestorHistory($id);
-	}
-	else {
-	  print "You don't have permission to view that ticket\n";
-	}
-      } 
-      
-      
-      elsif ($ARGV[$i] eq "-trans") {
-	
-	my $tid = int($ARGV[++$i]);
-	my $Transaction = RT::Transaction->new($CurrentUser);
+      my $tid = int($ARGV[++$i]);
+	my $Transaction = RT::Transaction->new($CurrentUser->UserId);
 	$Transaction->Load($tid);
-	&ShowTransaction($Transaction);	
+      &ShowTransaction($Transaction);	
 	
       }
       
       elsif ($ARGV[$i] eq "-comment")	{
 	my $id = int($ARGV[++$i]);
-	my $Request=&LoadRequest($id);
+	my $Request=&LoadTicket($id);
 	&cli_comment_req($Request);
       }
       
       elsif ($ARGV[$i] eq "-respond") {
 	my $id = int($ARGV[++$i]);
-	my $Request=&LoadRequest($id);
+	my $Request=&LoadTicket($id);
 	&cli_respond_req($Request);
       }      	
       elsif ($ARGV[$i] eq "-take")	{
 	my $id = int($ARGV[++$i]);
-       	my $Request = &LoadRequest($id);
+       	my $Request = &LoadTicket($id);
 	$Message .= $Request->take($id, $CurrentUser->UserId);
       }
       
       elsif ($ARGV[$i] eq "-stall")	{
 	my $id = int($ARGV[++$i]);
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	$Message .= $Request->stall ($id, $CurrentUser->UserId);
 	
       }
       
       elsif ($ARGV[$i] eq "-kill")	{
 	$id=int($ARGV[++$i]);
-	my $Request=&LoadRequest($id);
+	my $Request=&LoadTicket($id);
 
 	$response=&rt::ui::cli::question_string("Type 'yes' if you REALLY want to KILL request \#$id",);
 	if ($response eq 'yes') { 
@@ -107,7 +109,7 @@ package RT::ui::cli::manipulate;
       elsif ($ARGV[$i] eq "-steal")	{
 	$id=int($ARGV[++$i]);
 	
-	my $Request=&LoadRequest($id);
+	my $Request=&LoadTicket($id);
 	$Message .= $Request->Steal();
 	
       }
@@ -115,14 +117,14 @@ package RT::ui::cli::manipulate;
       elsif ($ARGV[$i] eq "-user")	{
 	my $id = int($ARGV[++$i]);
 	my $new_user = $ARGV[++$i];
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	
 	$Message .= $Request->Requestors($new_user);
       }
       
       elsif ($ARGV[$i] eq "-untake")	{
 	my $id=int($ARGV[++$i]);
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 
 	$Message .= $Request->untake();
 
@@ -131,7 +133,7 @@ package RT::ui::cli::manipulate;
       elsif ($ARGV[$i] eq "-subject")	{
 	my $id = int($ARGV[++$i]);
 	my $subject = $ARGV[++$i];
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
         $Request->Subject ($subject);
 
       }
@@ -139,28 +141,28 @@ package RT::ui::cli::manipulate;
       elsif ($ARGV[$i] eq "-queue")	{
 	my $id=int($ARGV[++$i]);
 	my $queue=$ARGV[++$i];
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	$Message .= $Request->Queue($queue);
 	
       }
       elsif ($ARGV[$i] eq "-area")	{
 	my $id=int($ARGV[++$i]);
 	my $area=$ARGV[++$i];
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	$Message .= $Request->Area($area);
       }
       
       elsif ($ARGV[$i] eq "-merge")	{
 	my $id=int($ARGV[++$i]);
 	my $merge_into=int($ARGV[++$i]);
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 
 	$Message .= $Request->Merge($merge_into);
       }
 
       elsif ($ARGV[$i] eq "-due")	{
 	my $id=int($ARGV[++$i]);
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	
 	my $due_string=$ARGV[++$i];
 	my $due_date = &rt::date_parse($due_string);
@@ -171,7 +173,7 @@ package RT::ui::cli::manipulate;
       
       elsif ($ARGV[$i] eq "-prio") {
 	my $id=int($ARGV[++$i]);
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	my $priority=int($ARGV[++$i]);
 	$Message=$Request->Priority($priority);
 
@@ -180,13 +182,13 @@ package RT::ui::cli::manipulate;
       elsif ($ARGV[$i] eq "-finalprio") {
 	my $id = int($ARGV[++$i]);
 	my $priority = int($ARGV[++$i]);
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	$Message .= $Request->FinalPriority($priority);
 
       }
       elsif ($ARGV[$i] eq "-notify") {
 	my $id = int($ARGV[++$i]);
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	$Message .= $Request->Notify();
 
       }
@@ -194,13 +196,13 @@ package RT::ui::cli::manipulate;
       elsif ($ARGV[$i] eq "-give")	{
 	my $id = int($ARGV[++$i]);
 	my $owner = $ARGV[++$i];
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	$Message .= $Request->Give($owner);
       }
       
       elsif ($ARGV[$i] eq "-resolve")	{
 	my $id = int($ARGV[++$i]);
-	my $Request = &LoadRequest($id);
+	my $Request = &LoadTicket($id);
 	$Message .= $Request->Resolve();
 	
       }
@@ -245,7 +247,7 @@ package RT::ui::cli::manipulate;
 	$content .= $_;
       }
     }	 
-    my $Request = RT::Request->new($CurrentUser);
+    my $Request = RT::Request->new($CurrentUser->UserId);
     my $id = $Request->Create ( queue => $queue,
 				area => $area,
 				alias => $alias,
@@ -276,7 +278,7 @@ package RT::ui::cli::manipulate;
       }
     }
     
-    my $Request = &LoadRequest($id);
+    my $Request = &LoadTicket($id);
     $Message =$Request->Comment(subject => "$subject",
 				content => "$content",
 				cc => "$cc"
@@ -302,7 +304,7 @@ n";
 	$content .= $_;
       }
     }
-    my $Request = &LoadRequest($id);
+    my $Request = &LoadTicket($id);
     $Message = $Request->NewCorrespondence(subject => "$subject",
 					   content => "$content",
 					   cc => "$cc"
@@ -380,7 +382,7 @@ print << EOFORM;
 
 EOFORM
     
-  }
+}
   sub ShowTransaction {
     my $transaction = shift;
     
@@ -391,13 +393,19 @@ Date: @{[$transaction->DateAsString]} (@{[$transaction->TimeWorked]} minutes)
 @{[$transaction->Content]}
 EOFORM    
   }
-
+  
 sub LoadTicket {
   my $id = shift;
-  my $Request;
+  my ($Request,$Status,$Message);
+  
+  use RT::Ticket;
   $Request = RT::Ticket->new($CurrentUser->UserId);
-  $Request->Load($id);
-  return ($Request);
+  ($Status, $Message) = $Request->Load($id);
+  if (!$Status) {
+    return (0, "The request could not be loaded");
+  }
+  else {
+    return ($Request);
   
 }
 

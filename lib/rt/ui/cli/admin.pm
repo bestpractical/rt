@@ -1,27 +1,24 @@
 #$Header$
 package rt::ui::cli::admin;
 
-
-
 sub activate {
-  my $Handle = shift;
-  my ($current_user, $tmp);
-
+  my ($current_user);
+  
   require RT::User;  
-  ($current_user,$tmp)=getpwuid($<);
-  $CurrentUser = new RT::User($current_user,$RT::Handle);
+  ($current_user,undef)=getpwuid($<);
+  $CurrentUser = new RT::User($current_user);
   if (!$CurrentUser->load($current_user)) {
     print "You have no RT access.\n";
     return();
   }
-
-  &parse_args();
+  
+  &ParseArgs();
   return(0);
   
 
 }
 
-sub parse_args {
+sub ParseArgs {
 
     for ($i=0;$i<=$#ARGV;$i++) {
 	if ($ARGV[$i] =~ 'q') {
@@ -188,7 +185,7 @@ sub cli_acl_queue {
  sub cli_modify_user{
    my $user_id = shift;
    my $User;
-   $User = new RT::User($CurrentUser->GetUserId, $RT::Handle);
+   $User = new RT::User($CurrentUser->GetUserId);
    if (!$User->Load($user_id)){
      print "That user does not exist.\n";
      return(0);
@@ -248,7 +245,7 @@ sub cli_acl_queue {
  
 sub cli_create_user {
   my $user_id = shift;
-  my $User = new RT::User($CurrentUser->UserId, $RT::Handle);
+  my $User = new RT::User($CurrentUser->UserId);
   $User->Create($user_id);
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_user_helper($User);
@@ -257,7 +254,7 @@ sub cli_create_user {
 sub cli_create_queue {
   my $queue_id = shift;
   use RT::Queue;
-  my $Queue = new RT::Queue($CurrentUser->UserId, $RT::Handle);
+  my $Queue = new RT::Queue($CurrentUser->UserId);
   $Queue->Create($queue_id);
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_queue_helper($Queue);
@@ -267,7 +264,7 @@ sub cli_modify_queue {
   my $queue_id = shift;
   # get a new queue object and fill it.
   use RT::Queue;
-  $Queue = new RT::Queue($CurrentUser->UserId, $RT::Handle);
+  $Queue = new RT::Queue($CurrentUser->UserId);
   $Queue->load($queue_id);
   &cli_modify_queue_helper($Queue);
 }
@@ -329,7 +326,7 @@ sub cli_delete_queue {
   my  $queue_id = shift;
   # this function needs to ask about moving all requests into some other queue
     if(&rt::ui::cli::question_yes_no("Really DELETE queue $queue_id",0)){
-      my $Queue = new RT::Queue($CurrentUser->UserId, $RT::Handle);
+      my $Queue = new RT::Queue($CurrentUser->UserId);
       $Queue->Load($queue_id);
       $message = $Queue->Delete();
       print "$message\n";

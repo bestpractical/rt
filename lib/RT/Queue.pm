@@ -4,19 +4,13 @@ package RT::Queue;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-
-
-
-
-
 sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
   $self->{'table'} = "queues";
-  $self->{'user'} = shift;
-  $self->_init(@_);
+  $self->_Init(@_);
   return ($self);
 }
 
