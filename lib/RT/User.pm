@@ -363,6 +363,7 @@ sub HasQueueRight {
     my $self = shift;
     my %args = ( TicketObj => undef,
                  QueueObj => undef,
+		 Queue => undef,
 		 Right => undef,
 		 @_);
     
@@ -375,9 +376,13 @@ sub HasQueueRight {
     elsif (defined $args{'TicketObj'}) {
 	$QueueId = $args{'TicketObj'}->QueueObj->Id,
     }
+    elsif (defined $args{'Queue'}) {
+	$QueueId = $args{'Queue'};
+    }
+    
     else {
     	use Carp;
-	Carp::Confess();
+	Carp::confess();
 	$RT::Logger->debug("$self ->HasQueueRight found no valid queue id.");
     }
     

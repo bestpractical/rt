@@ -50,6 +50,7 @@ use vars qw (%SCOPE
 
 # System rights are rights granted to the whole system
 %SYSTEMRIGHTS = (
+         SuperUser => 'Do anything and everything',
 		 AdminGroups => 'Create, delete and modify groups',
 		 AdminUsers => 'Create, Delete and Modify users',
 		 ModifySelf => 'Modify one\'s own RT account',
@@ -68,7 +69,6 @@ use vars qw (%SCOPE
 			               AdminCc => 'The administrative CC of a ticket',
 			 );
 
-%GLOBAL_METAPRINCIPALS = ( Everyone => 'Any valid RT principal' );
 
 # }}}
 
@@ -103,8 +103,8 @@ sub Create {
 	#TODO check if it's a valid RightName/Principaltype
     }
     elsif ($args{'RightScope'} eq 'Queue') {
-	#TODO add logic here
-   	unless ($self->CurrentUser->HasQueueRight( Queue => $args{'RightAppliesTo'},
+   	
+    unless ($self->CurrentUser->HasQueueRight( Queue => $args{'RightAppliesTo'},
 						  Right => 'ModifyQueueACL')) {
 	    return (0, 'No permission to grant rights');
 	}

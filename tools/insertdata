@@ -65,14 +65,18 @@ my @users = (
 # {{{ Groups 
 
 my @groups = (
-
+              {
+               Name => 'Everyone',
+	       Description => 'Pseudogroup for internal use',
+	       Pseudo => '1',
+              },
 	      {
-	       Name => 'Cc',
+	       Name => 'Requestor',
 	       Description => 'Pseudogroup for internal use',
 	       Pseudo => '1',
 	      },
 	      {
-	       Name => 'Bcc',
+	       Name => 'Cc',
 	       Description => 'Pseudogroup for internal use',
 	       Pseudo => '1',
 	      },
