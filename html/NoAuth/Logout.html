@@ -24,15 +24,14 @@
 <HTML>
 <HEAD>
 <TITLE>RT: Logout</TITLE>
- <META HTTP-EQUIV="Refresh" CONTENT="0;URL=<%$RT::WebPath%>/">
+ <META HTTP-EQUIV="Refresh" CONTENT="0;URL=<%$URL%>">
 </HEAD>
 <BODY>
 <p><&|/l&>You have been logged out of RT.</&>
 
-
 <br>
 <br>
-<A HREF="<%$RT::WebPath%>/"><&|/l&>You're welcome to login again</&></a>
+<A HREF="<%$URL%>"><&|/l&>You're welcome to login again</&></a>
 
 
 <%PERL>
@@ -42,4 +41,6 @@ if (defined %session) {
 $m->abort();
 </%PERL>
 
-
+<%ARGS>
+$URL => $RT::WebPath."/"
+</%ARGS>
