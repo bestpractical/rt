@@ -2,7 +2,7 @@
 <& /Elements/NavBar &>
 %if ($articles->Count) {
 % while (my $article = $articles->Next) {
-<A href="article.html?id=<%$article->Id%>">#<%$article->Id%> <%$article->Summary%></a> (Updated <%$article->UpdatedObj->AsString%>)<br>
+<A href="factoid.html?id=<%$article->Id%>"><%$article->Summary%></a> (Updated <%$article->UpdatedObj->AsString%> by <%$article->UpdatedByObj->RealName%>)<br>
 
 % }
 

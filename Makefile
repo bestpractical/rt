@@ -105,12 +105,18 @@ make-dirs:
 
 install: install-files replace-paths initdb
 
-install-files: make-dirs
+install-files: make-dirs install-config install-libs install-binaries
+
+install-config:
+	cp -rp ./etc/* $(ETC_PATH)
+
+install-libs:
 	cp -rp ./html/* $(HTML_PATH)
 	cp -rp ./lib/* $(LIB_PATH)
+
+install-binaries:
 	cp -rp ./bin/* $(BIN_PATH)	
 	cp -rp ./sbin/* $(SBIN_PATH)	
-	cp -rp ./etc/* $(ETC_PATH)
 
 replace-paths:
 	$(PERL) -p -i -e " \

@@ -28,6 +28,11 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Article';
     $self->{'primary_key'} = 'id';
+    $self->OrderBy( ALIAS => 'main',
+		  FIELD => 'SortOrder',
+		  ORDER => 'ASC');
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 

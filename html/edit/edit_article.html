@@ -11,6 +11,18 @@ Summary: <input size=70 name="RT::FM::Article-<%$article->Id%>-Summary" value="<
 
 Parent: <& /Elements/ArticleSelect, Name => "RT::FM::Article-".$article->Id . "-Parent", Default => $article->ParentObj->Id &><BR>
 
+Children:
+<ul>
+% while (my $child = $children->Next) {
+<li><input type=hidden name="EditArticle" value="<%$child->Id%>">
+SortOrder: <input size=2 name="RT::FM::Article-<%$child->Id%>-SortOrder" value="<%$article->SortOrder%>">
+<%$child->Summary%>
+</li>
+% }
+</ul>
+
+
+
 <& /Elements/ArticleSelectCustomFields, ArticleObj => $article &>
 <BR>
 <textarea cols=70 rows=20 name="RT::FM::Article-<%$article->Id%>-Content"><%$article->ContentObj->Body%></textarea>
@@ -30,6 +42,7 @@ my @results = UpdateArticles(ARGSRef => \%ARGS);
 my $article = new RT::FM::Article($session{'CurrentUser'});
 $article->Load($id);
 
+my $children = $article->Children();
 
 </%INIT>
 <%ARGS>
