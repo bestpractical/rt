@@ -19,6 +19,9 @@ TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 # RT_PATH is the name of the directory you want make to install RT in
 #
 
+# As for now, DO NOT set rt-path to an existing path (i.e. /usr/local)
+
+
 RT_PATH			=	/opt/rt-1.3
 
 #
@@ -48,7 +51,7 @@ RT_WEB_MUX		=	$(RT_BIN_PATH)/webmux.pl
 # the Log::Dispatch POD.
 #
 
-RT_LOGFILE              = ($RT_PATH)/rt.log
+RT_LOGFILE              = $(RT_PATH)/rt.log
 
 #
 # The following are the names of the various binaries which make up RT 
@@ -219,13 +222,9 @@ all:
 	@echo "Read the readme."
 
 fixperms:
-	if [ \! -d $(RT_PATH) ] ;
-	then
-		chown -R $(RTUSER) $(RT_PATH)
-		chgrp -R $(RTGROUP) $(RT_PATH)  
-		chmod 0755 $(RT_PATH)
-	fi
-
+        chown -R $(RTUSER) $(RT_PATH)
+        chgrp -R $(RTGROUP) $(RT_PATH)  
+	chmod 0755 $(RT_PATH)
 	chmod -R 755 $(RT_LIB_PATH)
 	chmod -R 0750 $(RT_ETC_PATH)
 	chmod 0755 $(RT_BIN_PATH)
@@ -315,6 +314,7 @@ config-replace:
 	s'!!DB_HOST!!'$(DB_HOST)'g;\
         s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
         s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
+        s'!!RT_LOGFILE!!'$(RT_LOGFILE)'g;\
         s'!!RT_USER!!'$(RT_USER)'g;\
         s'!!RT_GROUP!!'$(RT_GROUP)'g;\
 	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
@@ -347,3 +347,4 @@ predist: commit
 dist: commit predist
 	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
 	ln -s ./rt-$(RT_VERSION).tar.gz /home/ftp/pub/rt/devel/rt.tar.gz
+
