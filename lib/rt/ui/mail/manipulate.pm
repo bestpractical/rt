@@ -44,7 +44,7 @@ sub activate {
       #WE REALLY SHOULD PARSE THE TIME OUT OF THE DATE HEADER...BUT FOR NOW
       # THE CURRENT TIME IS GOOD ENOUGH
       if ($debug) { print "Adding a new transaction\n";}
-      ($serial_num,$transaction_num, $message)=&rt::add_new_request($in_queue,$area,$current_user,'','',$subject,$queues{$in_queue}{'default_final_prio'},$queues{$in_queue}{'default_prio'},'open',$rt::time,0,0,$content,$current_user);
+      ($serial_num,$transaction_num, $message)=&rt::add_new_request($in_queue,$area,$current_user,'','',$subject,$queues{"$in_queue"}{'default_final_prio'},$queues{"$in_queue"}{'default_prio'},'open',$rt::time,0,0,$content,$current_user);
       
       
     }   

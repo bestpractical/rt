@@ -1122,7 +1122,7 @@ else {
 sub credits{
     print "
 <center>
-<img src=\"/webrt/rt.jpeg\" ALT=\"Request Tracker v$rt::rtversion\">";
+<img src=\"/webrt/rt.jpeg\" ALT=\"Request Tracker v$rt::rtversion\">
 <br>
 
 <font size=\"+1\">
