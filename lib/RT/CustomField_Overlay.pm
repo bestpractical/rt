@@ -109,7 +109,7 @@ sub Create {
 	# do nothing -- things below are strictly backward compat
     }
     elsif (  ! $args{'Queue'} ) {
-        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AdminCustomFields') ) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AssignCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
 	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
@@ -120,7 +120,7 @@ sub Create {
         unless ($queue->Id) {
             return (0, $self->loc("Queue not found"));
         }
-        unless ( $queue->CurrentUserHasRight('AdminCustomFields') ) {
+        unless ( $queue->CurrentUserHasRight('AssignCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
 	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
@@ -248,7 +248,7 @@ sub AddValue {
 		     SortOrder => undef,
 		     @_ );
 
-    unless ($self->CurrentUserHasRight('AdminCustomFields')) {
+    unless ($self->CurrentUserHasRight('AdminCustomField')) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -280,7 +280,7 @@ Does not remove this value for any article which has had it selected
 sub DeleteValue {
 	my $self = shift;
     my $id = shift;
-    unless ($self->CurrentUserHasRight('AdminCustomFields')) {
+    unless ($self->CurrentUserHasRight('AdminCustomField')) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -583,14 +583,13 @@ Helper function to call the custom field's queue's CurrentUserHasRight with the 
 =cut
 
 sub CurrentUserHasRight {
-    my $self = shift;
+    my $self  = shift;
     my $right = shift;
-    # if there's no queue, we want to know about a global right
-    if ( ( !defined $self->__Value('Queue') ) || ( $self->__Value('Queue') == 0 ) ) {
-         return $self->CurrentUser->HasRight( Object => $RT::System, Right => $right); 
-    } else {
-        return ( $self->QueueObj->CurrentUserHasRight($right) );
-    }
+
+    return $self->CurrentUser->HasRight(
+	Object => $self,
+	Right  => $right,
+    );
 }
 
 # }}}
@@ -600,7 +599,7 @@ sub CurrentUserHasRight {
 sub _Set {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('AdminCustomFields') ) {
+    unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
     return ( $self->SUPER::_Set(@_) );
@@ -721,7 +720,7 @@ sub AddToObject {
 	return ( 0, $self->loc('Lookup type mismatch') );
     }
 
-    unless ( $object->CurrentUserHasRight('AdminCustomFields') ) {
+    unless ( $object->CurrentUserHasRight('AssignCustomFields') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -746,7 +745,7 @@ sub RemoveFromObject {
 	return ( 0, $self->loc('Object type mismatch') );
     }
 
-    unless ( $object->CurrentUserHasRight('AdminCustomFields') ) {
+    unless ( $object->CurrentUserHasRight('AssignCustomFields') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -831,7 +830,7 @@ sub DeleteValueForObject {
     unless ($ret) {
         return(0, $self->loc("Custom field value could not be found"));
     }
-    return(1, $self->loc("Custom field value deleted"));
+    return($oldval->Id, $self->loc("Custom field value deleted"));
 }
 
 sub ValuesForObject {

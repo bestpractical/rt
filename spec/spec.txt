@@ -2,8 +2,6 @@
 
 Finish Txn display for User and Group
     UI done, needs to referentialise OldReference etc.
-ACL for per-CF editing
-    UI done, needs to verify API
 
 ===================================================================================
     AdminThis ACL for CFs controls CF data and metadata, but _not_ where it applies

@@ -502,13 +502,15 @@ sub BriefDescription {
         return $self->loc("No transaction type specified");
     }
 
+    my $obj_type = $self->FriendlyObjectType;
+
     if ( $type eq 'Create' ) {
-        return ($self->loc("Ticket created"));
+        return ($self->loc("[_1] created", $obj_type));
     }
     elsif ( $type =~ /Status/ ) {
         if ( $self->Field eq 'Status' ) {
             if ( $self->NewValue eq 'deleted' ) {
-                return ($self->loc("Ticket deleted"));
+                return ($self->loc("[_1] deleted", $obj_type));
             }
             else {
                 return ( $self->loc("Status changed from [_1] to [_2]", $self->loc($self->OldValue), $self->loc($self->NewValue) ));
@@ -719,6 +721,7 @@ Returns false otherwise
 
 sub IsInbound {
     my $self = shift;
+    $self->ObjectType eq 'RT::Ticket' or return undef;
     return ( $self->TicketObj->IsRequestor( $self->CreatorObj->PrincipalId ) );
 }
 
@@ -839,6 +842,9 @@ sub OldValue {
 	$Object->Load($self->__Value('OldReference'));
 	return $Object->Content;
     }
+    else {
+	return $self->__Value('OldValue');
+    }
 }
 
 sub NewValue {
@@ -847,6 +853,9 @@ sub NewValue {
 	my $Object = $type->new($self->CurrentUser);
 	$Object->Load($self->__Value('NewReference'));
 	return $Object->Content;
+    }
+    else {
+	return $self->__Value('NewValue');
     }
 }
 
@@ -857,5 +866,11 @@ sub Object {
     return($Object);
 }
 
+sub FriendlyObjectType {
+    my $self = shift;
+    my $type = $self->ObjectType or return undef;
+    $type =~ s/^RT:://;
+    return $self->loc($type);
+}
 
 1;

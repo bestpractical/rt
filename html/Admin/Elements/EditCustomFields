@@ -44,10 +44,10 @@
 <h3><&|/l&>Global Custom Fields</&></h3>
 <& PickCustomFields, CustomFields => \@GlobalCFs, ReadOnly => 1, id => $id &>
 % }
-<h3><&|/l&>Associated Custom Fields (uncheck to unassociate)</&></h3>
+<h3><&|/l&>Assigned Custom Fields (uncheck to remove)</&></h3>
 <& PickCustomFields, CustomFields => [$ObjectCFs->CustomFields], id => $id, Checked => 1 &>
-<h3><&|/l&>Unassociated Custom Fields (check to associate)</&></h3>
-<& PickCustomFields, CustomFields => \@UnassociatedCFs, id => $id &>
+<h3><&|/l&>Unassigned Custom Fields (check to assign)</&></h3>
+<& PickCustomFields, CustomFields => \@UnassignedCFs, id => $id &>
 
 <& /Elements/Submit &>
 </FORM>
@@ -57,9 +57,14 @@
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 my $caption;
 my @results;
-my (@GlobalCFs, @UnassociatedCFs);
+my (@GlobalCFs, @UnassignedCFs);
 
-# XXX - exception: by "RT::Queue" fields on UI we really mean "RT::Ticket" fields.
+if (!$Object->CurrentUserHasRight('AssignCustomFields')) {
+    $m->print('<P><i>', loc('(No custom fields)'), '</i></P>');
+    return;
+}
+
+# by "RT::Queue" fields on UI we really mean "RT::Ticket" fields.
 my $lookup = $ObjectType;
 $lookup = 'RT::Queue-RT::Ticket' if $lookup eq 'RT::Queue';
 $CustomFields->LimitToLookupType($lookup);
@@ -141,19 +146,20 @@ while (my $cf = $CustomFields->Next) {
 	    if (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
 		my ($val, $msg) = $cf->AddToObject($Object);
 		push (@results, $msg);
+		push @UnassignedCFs, $cf if !$val;
 	    }
-	    # my ($val, $msg) = $cf->SetSortOrderForObject(Object => $Object, SortOrder => $ARGS{"Object-$id-CF-$cf_id-SortOrder"});
 	}
 	else {
-	    push @UnassociatedCFs, $cf;
+	    push @UnassignedCFs, $cf;
 	    if ($ObjectCFs->HasEntryForCustomField($cf_id)) {
 		my ($val, $msg) = $cf->RemoveFromObject($Object);
 		push (@results, $msg);
+		pop @UnassignedCFs if !$val;
 	    }
 	}
     }
     elsif (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
-	push @UnassociatedCFs, $cf;
+	push @UnassignedCFs, $cf;
     }
 }
 

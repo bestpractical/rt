@@ -68,7 +68,7 @@ $RIGHTS = {
     ShowACL             => 'Display Access Control List',             # loc_pair
     ModifyACL           => 'Modify Access Control List',              # loc_pair
     ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
-    AdminCustomFields   => 'Assign and remove custom fields',         # loc_pair
+    AssignCustomFields  => 'Assign and remove custom fields',         # loc_pair
     ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
     ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
 

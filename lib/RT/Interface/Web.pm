@@ -1178,6 +1178,7 @@ sub ProcessObjectCustomFieldUpdates {
 			    LargeContent => do { local $/; scalar <$fh> },
 			    ContentType => $upload_info->{'Content-Type'},
 			);
+			push ( @results, $msg );
 		    }
 		    elsif ( $arg =~ /-DeleteValues$/ ) {
 			foreach my $value (@values) {

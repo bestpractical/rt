@@ -600,6 +600,9 @@ sub _NewTransaction {
         Type      => undef,
         OldValue  => undef,
         NewValue  => undef,
+        OldReference  => undef,
+        NewReference  => undef,
+        ReferenceType => undef,
         Data      => undef,
         Field     => undef,
         MIMEObj   => undef,
@@ -607,6 +610,19 @@ sub _NewTransaction {
         CommitScrips => 1,
         @_
     );
+
+    my $old_ref = $args{'OldReference'};
+    my $new_ref = $args{'NewReference'};
+    my $ref_type = $args{'ReferenceType'};
+    if ($old_ref or $new_ref) {
+	$ref_type ||= ref($old_ref) || ref($new_ref);
+	if (!$ref_type) {
+	    $RT::Logger->error("Reference type not specified for transaction");
+	    return;
+	}
+	$old_ref = $old_ref->Id if ref($old_ref);
+	$new_ref = $new_ref->Id if ref($new_ref);
+    }
 
     require RT::Transaction;
     my $trans = new RT::Transaction( $self->CurrentUser );
@@ -619,6 +635,9 @@ sub _NewTransaction {
         Field     => $args{'Field'},
         NewValue  => $args{'NewValue'},
         OldValue  => $args{'OldValue'},
+        NewReference  => $new_ref,
+        OldReference  => $old_ref,
+        ReferenceType => $ref_type,
         MIMEObj   => $args{'MIMEObj'},
         ActivateScrips => $args{'ActivateScrips'},
         CommitScrips => $args{'CommitScrips'},
@@ -768,7 +787,6 @@ sub _AddCustomFieldValue {
             while ( my $value = $values->Next ) {
                 $i++;
                 if ( $i < $cf_values ) {
-                    my $old_value = $value->Content;
                     my ($val, $msg) = $cf->DeleteValueForObject(Object => $self, Content => $value->Content);
                     unless ($val) {
                         return (0,$msg);
@@ -777,16 +795,16 @@ sub _AddCustomFieldValue {
                       $self->_NewTransaction(
                         Type     => 'CustomField',
                         Field    => $cf->Id,
-                        OldValue => $old_value
+                        OldReference => $value,
                       );
                 }
             }
         }
 
-        my $old_value;
-        if (my $value = $cf->ValuesForObject( $self )->First) {
-	    $old_value = $value->Content();
-	    return (1) if $old_value eq $args{'Value'};
+        my ($old_value, $old_content);
+        if ($old_value = $cf->ValuesForObject( $self )->First) {
+	    $old_content = $old_value->Content();
+	    return (1) if $old_content eq $args{'Value'};
 	}
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
@@ -807,7 +825,7 @@ sub _AddCustomFieldValue {
 
         # now that adding the new value was successful, delete the old one
 	if ($old_value) {
-	    my ($val, $msg) = $cf->DeleteValueForObject(Object => $self, Content => $old_value);
+	    my ($val, $msg) = $cf->DeleteValueForObject(Object => $self, Content => $old_content);
 	    unless ($val) { 
 	    		return (0,$msg);
 	    }
@@ -817,8 +835,8 @@ sub _AddCustomFieldValue {
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
             Type     => 'CustomField',
             Field    => $cf->Id,
-            OldValue => $old_value,
-            NewValue => $new_value->Content
+            OldReference => $old_value,
+            NewReference => $new_value,
         );
 	}
 
@@ -851,7 +869,8 @@ sub _AddCustomFieldValue {
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
             Type     => 'CustomField',
             Field    => $cf->Id,
-            NewValue => $args{'Value'}
+            NewReference => $new_value_id,
+	    ReferenceType => 'RT::ObjectCustomFieldValue',
         );
         unless ($TransactionId) {
             return ( 0,
@@ -914,13 +933,14 @@ sub DeleteCustomFieldValue {
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
             Type     => 'CustomField',
             Field    => $cf->Id,
-            OldValue => $args{'Value'}
+            OldReference => $val,
+	    ReferenceType => 'RT::ObjectCustomFieldValue',
         );
         unless($TransactionId) {
             return(0, $self->loc("Couldn't create a transaction: [_1]", $Msg));
         } 
 
-        return($TransactionId, $self->loc("[_1] is no longer a value for custom field [_2]", $args{'Value'}, $cf->Name));
+        return($TransactionId, $self->loc("[_1] is no longer a value for custom field [_2]", $TransactionObj->OldValue, $cf->Name));
 }
 
 # }}}

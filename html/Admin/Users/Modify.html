@@ -69,6 +69,11 @@
 <input name="Gecos" value="<%$UserObj->Gecos%>">
 </TD></TR>
 <TR><TD ALIGN="RIGHT">
+<&|/l&>Language</&>: 
+</TD><TD>
+<& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
 <&|/l&>Extra info</&>: 
 </TD><TD>
 <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>

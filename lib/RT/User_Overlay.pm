@@ -148,8 +148,12 @@ sub Create {
         Privileged => 0,
         Disabled => 0,
         EmailAddress => '',
+        _RecordTransaction => 1,
         @_    # get the real argumentlist
     );
+
+    # remove the value so it does not cripple SUPER::Create
+    my $record_transaction = delete $args{'_RecordTransaction'};
 
     #Check the ACL
     unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
@@ -267,6 +271,10 @@ sub Create {
         #$RT::Logger->debug("Making ".$self->Id." an unprivileged user");
         $unpriv->LoadSystemInternalGroup('Unprivileged');
         $unpriv->AddMember($self->PrincipalId);  
+    }
+
+    if ( $record_transaction ) {
+	$self->_NewTransaction( Type => "Create" );
     }
 
 
@@ -1482,11 +1490,14 @@ sub _Set {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    #Set the new value
-    my ( $ret, $msg ) = $self->SUPER::_Set(
-        Field => $args{'Field'},
-        Value => $args{'Value'}
-    );
+    my $Old = $self->SUPER::_Value("$args{'Field'}");
+    
+    my ($ret, $msg) = $self->SUPER::_Set( Field => $args{'Field'},
+					  Value => $args{'Value'} );
+    
+    #If we can't actually set the field to the value, don't record
+    # a transaction. instead, get out of here.
+    if ( $ret == 0 ) { return ( 0, $msg ); }
 
     if ( $args{'RecordTransaction'} == 1 ) {
 
@@ -1494,7 +1505,8 @@ sub _Set {
                                                Type => $args{'TransactionType'},
                                                Field     => $args{'Field'},
                                                NewValue  => $args{'Value'},
-                                               OldValue  => $self->SUPER::_Value("$args{'Field'}"),
+                                               OldValue  => $Old,
+                                               TimeTaken => $args{'TimeTaken'},
         );
         return ( $Trans, scalar $TransObj->Description );
     }

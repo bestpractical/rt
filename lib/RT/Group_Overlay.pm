@@ -446,6 +446,7 @@ sub _Create {
         Type        => undef,
         Instance    => '0',
         InsideTransaction => undef,
+        _RecordTransaction => 1,
         @_
     );
 
@@ -491,8 +492,12 @@ sub _Create {
     $cgm->Create(Group =>$self->PrincipalObj, Member => $self->PrincipalObj, ImmediateParent => $self->PrincipalObj);
 
 
+    if ( $args{'_RecordTransaction'} ) {
+	$self->_NewTransaction( Type => "Create" );
+    }
 
     $RT::Handle->Commit() unless ($args{'InsideTransaction'});
+
     return ( $id, $self->loc("Group created") );
 }
 
@@ -1180,7 +1185,14 @@ sub _Set {
     	}
 	}
 
-    my ($ret, $msg) = ( $self->SUPER::_Set(@_) );
+    my $Old = $self->SUPER::_Value("$args{'Field'}");
+    
+    my ($ret, $msg) = $self->SUPER::_Set( Field => $args{'Field'},
+					  Value => $args{'Value'} );
+    
+    #If we can't actually set the field to the value, don't record
+    # a transaction. instead, get out of here.
+    if ( $ret == 0 ) { return ( 0, $msg ); }
 
     if ( $args{'RecordTransaction'} == 1 ) {
 
@@ -1188,7 +1200,8 @@ sub _Set {
                                                Type => $args{'TransactionType'},
                                                Field     => $args{'Field'},
                                                NewValue  => $args{'Value'},
-                                               OldValue  => $self->SUPER::_Value("$args{'Field'}"),
+                                               OldValue  => $Old,
+                                               TimeTaken => $args{'TimeTaken'},
         );
         return ( $Trans, scalar $TransObj->Description );
     }
