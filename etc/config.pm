@@ -174,6 +174,10 @@ $CommentAddress="!!RT_COMMENT_MAIL_ALIAS!!";
 
 #TODO: Mail::Internet might need some configuration.
 
+# This might be the right place to put signatures.  Alternatives are
+# ~/.signature and in the DB (future feature)
+%Signatures=(joe=>"This is joe's signature");
+
 # }}}
 
 # {{{ WebRT Configuration

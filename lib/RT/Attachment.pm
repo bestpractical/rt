@@ -154,6 +154,10 @@ sub Quote {
 	# Remove quoted signature.
 	$body =~ s/\n-- (.*)$//s;
 
+	# Local noise.  THIS LINE SHOULD NOT BE HERE.  Just haven't
+	# found the right place yet.
+	$body =~ s/\n-- param start(.*)$//s;
+
 	# What's the longest line like?
 	foreach (split (/\n/,$body)) {
 	    $max=length if length>$max;
@@ -186,6 +190,28 @@ sub Quote {
     $max=60 if $max<60;
     $max=70 if $max>78;
     $max+=2;
+
+# I'll deal with this tomorrow.
+#    # Let's see if we can figure out the users signature...
+#    if ($Signatures($current_user)) {
+	
+#    }
+#    my @entry=getpwnam($current_user);
+#    my $home=$entry[7];
+#    for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
+#	if (-r $trythis) {
+#	    open(SIGNATURE, "<$trythis"); 
+#	    my $slash=$/;
+#	    undef $/;
+#	    $signature=<SIGNATURE>;
+#	    close(SIGNATURE);
+#	    $/=$slash;
+#	    $body .= "\n\n-- \n$signature";
+#	    last;
+#	}
+#    }
+
+
     return (\$body, $max);
 }
 # }}}
