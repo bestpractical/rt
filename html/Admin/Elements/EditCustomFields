@@ -41,12 +41,12 @@
 <INPUT TYPE=HIDDEN NAME="UpdateCFs" VALUE="1">
 
 % if ($Object->Id) {
-<h3>Global Custom Fields</h3>
+<h3><&|/l&>Global Custom Fields</&></h3>
 <& PickCustomFields, CustomFields => \@GlobalCFs, ReadOnly => 1 &>
 % }
-<h3>Associated Custom Fields (uncheck to unassociate)</h3>
+<h3><&|/l&>Associated Custom Fields (uncheck to unassociate)</&></h3>
 <& PickCustomFields, CustomFields => [$ObjectCFs->CustomFields], id => $Object->Id, Checked => 1 &>
-<h3>Unassociated Custom Fields (check to associate)</h3>
+<h3><&|/l&>Unassociated Custom Fields (check to associate)</&></h3>
 <& PickCustomFields, CustomFields => \@UnassociatedCFs, id => $Object->Id &>
 
 <& /Elements/Submit &>
@@ -157,7 +157,11 @@ while (my $cf = $CustomFields->Next) {
     }
 }
 
-$ObjectCFs->RedoSearch;
+# redo search...
+$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs->UnLimit;
+$ObjectCFs->LimitToObjectId($id);
+$ObjectCFs->LimitToLookupType($lookup);
 
 </%INIT>
 <%ARGS>

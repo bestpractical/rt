@@ -1,17 +1,13 @@
-User/Group CF and Txn UI first.
-===============================
-CF display for User and Group
-User/Group search in Configuration->User/Group
-Binary/image/textarea CFs.
+
+Finish iterative editing of Binary/image/textarea CFs
 Finish Txn display for User and Group
-ACL for per-CF editing (UI done, need verify API)
-    AdminThis ACL for CFs controls CF data and metadata, but _not_ where it applies
-    AdminCF ACL for Objects controls what CFs applies here, but _not_ CF's contents
-Display Group memberships for Users
-Requestor memberships display for Ticket Requestor
+ACL for per-CF editing (UI done, needs to verify API)
 Requestor-is-of-group ticket search
 
-
+===================================================================================
+    AdminThis ACL for CFs controls CF data and metadata, but _not_ where it applies
+    AdminCF ACL for Objects controls what CFs applies here, but _not_ CF's contents
+===================================================================================
 
 > As part of this work, Best Practical will provide a metadata system for
 > User and Groups akin to RT's current "CustomFields" system for tickets.

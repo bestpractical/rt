@@ -21,42 +21,22 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if (!$values->Count) {
-<p><em><&|/l&>(no values)</&></em></p>
-%    return;
-% }
-<i><&|/l&>(Check box to delete)</&></i>
-<table>
-<tr>
-<td>&nbsp;</td>
-<td><&|/l&>Sort</&></td>
-<td><&|/l&>Name</&></td>
-<td><&|/l&>Description</&></td>
-</tr>
-% while (my $value = $values->Next) {
-<tr>
-<td>
-<input type="checkbox" name="Delete-CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>">
-</td>
-<td>
-<input size=3 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-SortOrder" value="<%$value->SortOrder%>">
-</td>
-<td>
-<input type="text" size=30 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Name" value="<%$value->Name%>">
-</td>
-<td>
-<font size="-1">
-<input type="text" size=50 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Description" value="<%$value->Description%>">
-</font>
-</td>
-</tr>
-% }
-</table>
-<%init>
-
-my $values = $CustomField->ValuesObj();
-
-</%init>
-<%args>
+<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
+<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$Default%></textarea>
+<%INIT>
+if ($Values) {
+    $Default = '';
+    while (my $value = $Values->Next ) {
+	$Default .= $value->Content;
+    }
+}
+</%INIT>
+<%ARGS>
+$Values => undef
+$Object => undef
 $CustomField => undef
-</%args>
+$NamePrefix => undef
+$Default => undef
+$Cols
+$Rows
+</%ARGS>

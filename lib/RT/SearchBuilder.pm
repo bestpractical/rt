@@ -158,7 +158,65 @@ sub LimitAttribute {
 }
 # }}}
 
-1;
+# {{{ sub LimitCustomField
+
+=head2 LimitCustomField
+
+Takes a paramhash of key/value pairs with the following keys:
+
+=over 4
+
+=item CUSTOMFIELD - CustomField name or id.  If a name is passed, an additional
+parameter QUEUE may also be passed to distinguish the custom field.
+
+=item OPERATOR - The usual Limit operators
+
+=item VALUE - The value to compare against
+
+=back
+
+=cut
+
+sub _SingularClass {
+    my $self = shift;
+    my $class = ref($self);
+    $class =~ s/s$// or die "Cannot deduce SingularClass for $class";
+    return $class;
+}
+
+sub LimitCustomField {
+    my $self = shift;
+    my %args = ( VALUE        => undef,
+                 CUSTOMFIELD  => undef,
+                 OPERATOR     => '=',
+                 @_ );
+
+    my $alias = $self->Join(
+	TYPE       => 'left',
+	ALIAS1     => 'main',
+	FIELD1     => 'id',
+	TABLE2     => 'ObjectCustomFieldValues',
+	FIELD2     => 'ObjectId'
+    );
+    $self->Limit(
+	ALIAS      => $alias,
+	FIELD      => 'CustomField',
+	OPERATOR   => '=',
+	VALUE      => $args{'CUSTOMFIELD'},
+    );
+    $self->Limit(
+	ALIAS      => $alias,
+	FIELD      => 'ObjectType',
+	OPERATOR   => '=',
+	VALUE      => $self->_SingularClass,
+    );
+    $self->Limit(
+	ALIAS      => $alias,
+	FIELD      => 'Content',
+	OPERATOR   => $args{'OPERATOR'},
+	VALUE      => $args{'VALUE'},
+    );
+}
 
 # {{{ sub FindAllRows
 

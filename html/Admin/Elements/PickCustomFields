@@ -28,6 +28,7 @@
 % my $count;
 % foreach my $CustomFieldObj (@CustomFields) {
 <TR>
+%   if (!$ReadOnly) {
   <TD valign="TOP">
 <input type="checkbox"
 name="Object-<%$id%>-CF-<%$CustomFieldObj->Id%>"
@@ -35,6 +36,7 @@ value="1"
 <% $Checked && 'CHECKED' %>
 >
   </TD>
+%   }
   <TD valign="TOP">
 % if ($CustomFieldObj->Name) {
     <A HREF="/Admin/CustomFields/Modify.html?id=<%$CustomFieldObj->id()%>"><b><%$CustomFieldObj->Name%></b></a><br>

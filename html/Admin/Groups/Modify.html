@@ -50,8 +50,8 @@
 </TR>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
-<TR><TD ALIGN="RIGHT">
-<% $CF->Name %>
+<TR VALIGN="TOP"><TD ALIGN="RIGHT">
+<% $CF->Name %>:
 </TD><TD>
 <& /Elements/EditCustomField, CustomField => $CF, Object => $Group &>
 </TD></TR>

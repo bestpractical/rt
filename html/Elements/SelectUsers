@@ -26,6 +26,14 @@
 <option value="EmailAddress"><&|/l&>Email</&>
 <option value="RealName"><&|/l&>Name</&>
 <option value="Organization"><&|/l&>Organization</&>
+% while (my $CF = $CFs->Next) {
+<option value="CustomField-<% $CF->Id %>"><&|/l&>CustomField</&>: <% $CF->Name %>
+% }
 </select>
 <& /Elements/SelectMatch, Name=> 'UserOp' &>
 <input size=8 name="UserString">
+<%INIT>
+my $CFs = RT::CustomFields->new($session{'CurrentUser'});
+$CFs->LimitToChildType('RT::User');
+$CFs->OrderBy( FIELD => 'Name' );
+</%INIT>

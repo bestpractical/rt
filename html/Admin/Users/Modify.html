@@ -184,7 +184,7 @@
 <TABLE>
 % my $CFs = $UserObj->CustomFields;
 % while (my $CF = $CFs->Next) {
-<TR><TD ALIGN="RIGHT">
+<TR VALIGN="TOP"><TD ALIGN="RIGHT">
 <% $CF->Name %>:
 </TD><TD>
 <& /Elements/EditCustomField, %ARGS, Object => $UserObj, CustomField => $CF &>

@@ -188,6 +188,22 @@ sub LimitToLookupType  {
     $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
 }
 
+sub LimitToChildType  {
+    my $self = shift;
+    my $lookup = shift;
+ 
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+    $self->Limit( FIELD => 'LookupType', ENDSWITH => "$lookup" );
+}
+
+sub LimitToParentType  {
+    my $self = shift;
+    my $lookup = shift;
+ 
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+    $self->Limit( FIELD => 'LookupType', STARTSWITH => "$lookup" );
+}
+
 sub LimitToGlobalOrObjectId {
     my $self = shift;
     my $id = shift || 0;

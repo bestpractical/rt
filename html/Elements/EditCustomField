@@ -79,6 +79,7 @@ return $m->comp(
     Cols => $Cols,
     Default => $Default,
     Object => $Object,
+    Values => $Values,
     NamePrefix => $NamePrefix,
     CustomField => $CustomField,
 );

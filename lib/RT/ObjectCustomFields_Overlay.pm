@@ -71,7 +71,7 @@ sub HasEntryForCustomField {
 sub CustomFields {
     my $self = shift;
     my %seen;
-    map { $_->CustomFieldObj } grep { !$seen{$_->CustomField}++ } @{$self->ItemsArrayRef};
+    map { $_->CustomFieldObj } @{$self->ItemsArrayRef};
 }
 
 1;

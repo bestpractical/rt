@@ -63,11 +63,19 @@ unless (defined $UserString) {
 else {
     $caption = loc("Users matching search criteria");
 
-  if ($UserString) {
+  if (length $UserString) {
+    if ($UserField =~ /^CustomField-(\d+)/) {
+	$users->LimitCustomField(
+	    CUSTOMFIELD => $1,
+	    OPERATOR => $UserOp,
+	    VALUE => $UserString
+	); 
+    }
+    else {
 	$users->Limit( FIELD => $UserField,
 		        OPERATOR => $UserOp,
 		       VALUE => $UserString); 
-
+    }
 }
 }
 </%INIT>
