@@ -44,8 +44,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/CustomFieldTabs, id => $id, current_subtab =>
-"Admin/CustomFields/UserRights.html?id=".$id, Title => $title &>
+<& /Admin/Elements/CustomFieldTabs,
+    id => $id,
+    current_tab => "Admin/CustomFields/GroupRights.html?id=".$id,
+    Title => $title
+&>
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="GroupRights.html">
