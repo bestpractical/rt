@@ -215,7 +215,7 @@ sub Watchers {
 
 sub RequestorsAsString {
     my $self=shift;
-    return -CleanAddressesAsString ($self->Requestors->EmailsAsString() );
+    return _CleanAddressesAsString ($self->Requestors->EmailsAsString() );
 }
 
 sub WatchersAsString {
