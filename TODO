@@ -1,24 +1,19 @@
 RT Todo List
 
-. Allow CCs on Correspondence
-
 . Glimpse Searching
-
 . Reporting Scripts
-
-. Change rt to rtm
+. Allow user to rename RT commands in the makefile
 
 . Move request display into rtq
-
 . Allow sub-requests.
-
 . Web interface for requestors.
 . Convert to DBI. (So one could use oracle, mysql, etc.)
-. Simplify Web interface.
 . "Actions since" command (cli, web)
 . cleaner cli.
 . mailgate should be better about mime.
 . Searching on text of requests.
+
+
 
 
 

@@ -14,9 +14,18 @@ require rt::database::config;
 &rt::read_config();
 
 sub connectdb {
+  if ($mysql_version < 3.21) {
+
    if (!($dbh = Mysql->Connect($host, $dbname, $rtpass, $rtuser,))){
            die "[connectdb] Database connect failed: $Mysql::db_errstr\n";
          }
+ }
+  else {
+   if (!($dbh = Mysql->Connect($host, $dbname, $rtuser, $rtpass,))){
+              die "[connectdb] Database connect failed: $Mysql::db_errstr\n";
+      }
+
+   }
   }
 
 

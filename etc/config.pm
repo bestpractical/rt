@@ -4,11 +4,6 @@
     # there should be no need to change it
 
 
-    #  This is now set in rtmux.pl
-    #	The toplevel that RT is installed in.
-    #	    $rt_dir="/usr/local/rt";
-
-
     #Where you keep you transaction texts
     $transaction_dir="!!RT_TRANSACTIONS_PATH!!";
 
@@ -53,6 +48,11 @@
     
     #$dbname is the name of the RT's database on the Mysql server 
     $dbname="!!RT_MYSQL_DATABASE!!";
+
+    #$mysql_version determines the order the rt username and password
+    #are passed to mysqlperl.  it changed between 3.20 and 3.21
+
+    $mysql_version="!!MYSQL_VERSION!!";
 
     #$mail_alias is a generic alias to send mail to for any request
     #already in a queue because of the nature of RT, mail sent to any

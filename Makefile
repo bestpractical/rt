@@ -8,7 +8,7 @@ CC			=	gcc
 PERL			= 	/usr/bin/perl
 RTUSER			=	rt
 RTGROUP			=	rt
-RT_VERSION		=	0.9.8
+RT_VERSION		=	0.9.10
 
 #
 # RT_PATH is the name of the directory you want make to install RT in
@@ -72,10 +72,12 @@ GLIMPSE_INDEX		=       /usr/local/bin/glimpseindex
 # 
 # set this to whatever program you want to send the mail that RT generates
 # be aware, however, that RT expects to be able to set the From: line
-# with sendmail's command line syntax 
+# with sendmail's command line syntax. For versions of sendmail < 8.8 you may need
+# to remove some or all of the flags we're passing here.  However, nobody should be 
+# running a version of sendmail < 8.8
 #
 
-MAIL_PROGRAM		= 	/usr/lib/sendmail 
+MAIL_PROGRAM		= 	/usr/lib/sendmail -oi -t -ODeliveryMode=b -OErrorMode=m
 
 #
 # Mysql related preferences
@@ -84,6 +86,11 @@ MAIL_PROGRAM		= 	/usr/lib/sendmail
 #
 
 MYSQLDIR		=	/opt/mysql/bin
+
+# Mysql version can be 3.20 or 3.21.  This setting determines the order 
+# $rtuser and $rtpass are passed to MysqlPerl.  
+
+MYSQL_VERSION		= 	3.20
 
 #
 # this password is what RT will use to authenticate itself to mysql
@@ -139,9 +146,13 @@ all:
 fixperms:
 	chown -R $(RTUSER) $(RT_PATH)
 	chgrp -R $(RTGROUP) $(RT_PATH)  
-	chmod -R 770 $(RT_LIB_PATH)
-	chmod -R 770 $(RT_ETC_PATH)
+	chmod -R 700 $(RT_LIB_PATH)
+	chmod 0755 $(RT_ETC_PATH)
+	chmod -R 0700 $(RT_ETC_PATH)/*	
+	chmod 0775 $(RT_ETC_PATH)/images
+	chmod 0644 $(RT_ETC_PATH)/images/*
 	chmod 0755 $(RT_PATH)
+	
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(RT_CGI_PATH)
 	chmod 0755 $(RT_PERL_MUX)
@@ -220,7 +231,8 @@ config-replace:
         s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
         s'!!MAIL_PROGRAM!!'$(MAIL_PROGRAM)'g;\
-        s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
+	s'!!MYSQL_VERISON!!'$(MYSQL_VERSION)'g;\
+	s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
 
 dist:
 	cvs co -d /tmp/rt-$(RT_VERSION) rt
