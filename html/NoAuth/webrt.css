@@ -142,33 +142,33 @@ li.topnav-5-minor {
 }
 li.topnav-0-major {
 	 border-bottom: solid white 1px;
-	 padding-top: .25em
-	 padding-bottom: .5em
+	 padding-top: .25em;
+	 padding-bottom: .5em;
 }
 li.topnav-1-major {
 	 border-bottom: solid white 1px;
-	 padding-top: .25em
-	 padding-bottom: .5em
+	 padding-top: .25em;
+	 padding-bottom: .5em;
 }
 li.topnav-2-major {
 	 border-bottom: solid white 1px;
-	 padding-top: .25em
-	 padding-bottom: .5em
+	 padding-top: .25em;
+	 padding-bottom: .5em;
 }
 li.topnav-3-major {
 	 border-bottom: solid white 1px;
-	 padding-top: .25em
-	 padding-bottom: .5em
+	 padding-top: .25em;
+	 padding-bottom: .5em;
 }
 li.topnav-4-major {
 	 border-bottom: solid white 1px;
-	 padding-top: .25em
-	 padding-bottom: .5em
+	 padding-top: .25em;
+	 padding-bottom: .5em;
 }
 li.topnav-5-major {
 	 border-bottom: solid white 1px;
-	 padding-top: .25em
-	 padding-bottom: .5em
+	 padding-top: .25em;
+	 padding-bottom: .5em;
 }
 
 .currenttopnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -608,5 +608,5 @@ inherit => undef
 </%flags>
 <%init>
 $r->content_type('text/css');
-$r->headers_out->{'Expires'} = '+30m';
+#$r->headers_out->{'Expires'} = '+30m';
 </%init>
