@@ -887,7 +887,6 @@ sub ProcessACLChanges {
                 $obj = $object_type->new($session{'CurrentUser'});
                 $obj->Load($object_id);      
             } else {
-		die;
                 push (@results, loc("System Error"). ': '.
                                 loc("Rights could not be revoked for [_1]", $object_type));
                 next;
