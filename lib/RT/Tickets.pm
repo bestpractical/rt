@@ -32,6 +32,7 @@ use RT::EasySearch;
               Created => 'DATE',
               Subject => 'STRING',
               Content => 'TRANSFIELD',
+	      ContentType => 'TRANSFIELD',
 	      WatcherEmail => 'WATCHERFIELD'
 	    );
 # }}}
@@ -54,6 +55,13 @@ sub _NextIndex {
 }
 
 # {{{ sub Limit 
+
+=head2 Limit
+
+Takes a paramhash with the fields FIELD, OPERATOR, VALUE and DESCRIPTION
+Generally best called from LimitFoo methods
+
+=cut
 sub Limit {
    my $self = shift;
    my %args = ( FIELD => undef,
@@ -62,18 +70,373 @@ sub Limit {
 	        DESCRIPTION => undef,
                 @_
 	      );
-   $args{'DESCRIPTION'} = "Autodescribed: ".$args{'FIELD'} . $args{'OPERATOR'} . $ARGS{'VALUE'}
+   $args{'DESCRIPTION'} = "Autodescribed: ".$args{'FIELD'} . $args{'OPERATOR'} . $args{'VALUE'},
    if (!defined $args{'DESCRIPTION'}) ;
    
    my $index = $self->_NextIndex;
-   %{$self->{'TicketRestrictions'}{"$index"}} = ( FIELD => $args{'FIELD'},
-						  VALUE => $args{'VALUE'},
-						  OPERATOR => $args{'OPERATOR'},
-						  DESCRIPTION => $args{'DESCRIPTION'}
-						);
+   
+   #make the TicketRestrictions hash the equivalent of whatever we just passed in;
+   %{$self->{'TicketRestrictions'}{"$index"}} = %args;
+   
+   
    $self->{'RecalcTicketLimits'} = 1;
    return ($index);
 }
+# }}}
+
+# {{{ sub LimitQueue
+
+=head2 LimitQueue
+
+LimitQueue takes a paramhash with the fields OPERATOR and QUEUE.
+OPERATOR is one of = or !=.
+VALUE is a queue id. eventually, it should also take queue names and 
+queue objects
+
+=cut
+
+sub LimitQueue {
+    my $self = shift;
+    my %args = (@_);
+    my $queue = new RT::Queue($self->CurrentUser);
+    $queue->Load($args{'VALUE'});
+    $self->Limit (FIELD => 'Queue',
+		  VALUE => $queue->id(),
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Queue ' .  $args{'OPERATOR'}. " ". $queue->QueueId
+		 );
+    
+}
+
+# }}}
+
+# {{{ sub LimitOwner
+
+=head2 LimitOwner
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of = or !=.
+VALUE is a user id.
+
+=cut
+
+sub LimitOwner {
+    my $self = shift;
+    my %args = (@_);
+    
+    my $owner = new RT::User($self->CurrentUser);
+    $owner->Load($args{'VALUE'});
+    $self->Limit (FIELD => 'Owner',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Owner ' .  $args{'OPERATOR'}. " ". $owner->UserId
+		 );
+    
+}
+
+# }}}
+
+# {{{ sub LimitStatus
+
+=head2 LimitStatus
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of = or !=.
+VALUE is a status.
+
+=cut
+
+sub LimitStatus {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Status',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Status ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitSubject
+
+=head2 LimitSubject
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of = or !=.
+VALUE is a string to search for in the subject of the ticket.
+
+=cut
+
+sub LimitSubject {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Subject',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Subject ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+# {{{ sub LimitContent
+
+=head LimitContent
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, LIKE, NOT LIKE or !=.
+VALUE is a string to search for in the body of the ticket
+
+=cut
+sub LimitContent {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Content',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Ticket content ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitContentType
+
+=head LimitContentType
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, LIKE, NOT LIKE or !=.
+VALUE is a content type to search ticket attachments for
+
+=cut
+  
+sub LimitContentType {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'ContentType',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Ticket content type ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+# }}}
+
+# {{{ sub LimitPriority
+
+=head2 LimitPriority
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket's priority against
+
+=cut
+
+sub LimitPriority {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Priority',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+# {{{ sub LimitInitialPriority
+
+=head2 LimitInitialPriority
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket's initial priority against
+
+
+=cut
+
+sub LimitInitialPriority {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'InitialPriority',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Initial Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+# {{{ sub LimitFinalPriority
+
+=head2 LimitFinalPriority
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket's final priority against
+
+=cut
+
+sub LimitFinalPriority {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'FinalPriority',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Final Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitWatcher
+=head2 LimitWatcher
+
+Takes a paramhash with the fields OPERATOR, TYPE and VALUE.
+OPERATOR is one of =, LIKE, NOT LIKE or !=.
+VALUE is a value to match the ticket's watchers' email addresses against
+TYPE is the sort of watchers you want to match against. Leave it undef if you want to search all of them
+
+=cut
+
+sub LimitWatcher {
+    my $self = shift;
+    my %args = (@_);
+    my ($field, $desc);
+    if ($args{'TYPE'}) {
+	$field = $args{'TYPE'};
+    }
+    else {
+	$field = "Watcher";
+    }
+    $desc = "$field ".$ARGS{'OPERATOR'}." ".$args{'VALUE'};
+    $self->Limit (FIELD => 'WatcherEmail',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  TYPE => $args{'TYPE'},
+		  DESCRIPTION => "$desc"
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitRequestor
+=head2 LimitRequestor
+
+It's like LimitWatcher, but it presets TYPE to Requestor
+
+=cut
+
+
+sub LimitRequestor {
+    my $self = shift;
+    $self->LimitWatcher(TYPE=> 'Requestor', @_);
+}
+# }}}
+# {{{ sub LimitCc
+
+=head2 LimitCC
+
+It's like LimitWatcher, but it presets TYPE to Cc
+
+=cut
+
+sub LimitCc {
+    my $self = shift;
+    $self->LimitWatcher(TYPE=> 'Cc', @_);
+}
+# }}}
+# {{{ sub LimitAdminCc
+=head2 LimitAdminCc
+
+It's like LimitWatcher, but it presets TYPE to AdminCc
+
+=cut
+
+sub LimitAdminCc {
+    my $self = shift;
+    $self->LimitWatcher(TYPE=> 'AdminCc', @_);
+}
+# }}}
+
+
+
+
+=head1 TODO
+sub LimitDate
+<OPTION VALUE="Created">Created</OPTION>
+<OPTION VALUE="Started">Started</OPTION>
+<OPTION VALUE="Resolved">Resolved</OPTION>
+<OPTION VALUE="Told">Last Contacted</OPTION>
+<OPTION VALUE="LastUpdated">Last Updated</OPTION>
+<OPTION VALUE="StartsBy">Starts By</OPTION>
+<OPTION VALUE="Due">Due</OPTION>
+sub LimitMemberOf
+sub LimitHasMember
+sub LimitDependsOn
+sub LimitDependedOnBy
+sub LimitRelatedTo
+=cut
+
+# {{{ sub LimitPriority
+
+=head2 LimitPriority
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket's priority against
+
+=cut
+
+sub LimitPriority {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Priority',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+# {{{ sub LimitTimeWorked
+
+=head2 LimitTimeWorked
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket's TimeWorked attribute
+
+=cut
+
+sub LimitTimeWorked {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'TimeWorked',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Time worked ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+# {{{ sub LimitTimeLeft
+
+=head2 LimitTimeLeft
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket's TimeLeft attribute
+
+=cut
+
+sub LimitTimeLeft {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'TimeLeft',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Time left ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
 # }}}
 
 # {{{ sub NewItem 
@@ -160,6 +523,7 @@ sub ClearRestrictions {
     delete $self->{'TicketRestrictions'};
     $self->{'RecalcTicketLimits'} =1;
 }
+# }}}
 
 # {{{ sub DeleteRestriction
 
@@ -203,28 +567,28 @@ sub _ProcessRestrictions {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			      );
 	    }
 	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '!=') {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '!=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }
 	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '>') {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '>',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }
 	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '<') {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '<',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );	
 	    }
 	}
@@ -236,14 +600,14 @@ sub _ProcessRestrictions {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'OR',
 			      OPERATOR => '=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }
 	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '!=') {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '!=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }
 	    
@@ -257,21 +621,21 @@ sub _ProcessRestrictions {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }
 	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '>') {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '>',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }
 	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '<') {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '<',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }	    
 	}
@@ -284,14 +648,14 @@ sub _ProcessRestrictions {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'OR',
 			      OPERATOR => '=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }
 	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq 'LIKE') {
 		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => 'LIKE',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'}
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			    );
 	    }
 	}
@@ -312,13 +676,16 @@ sub _ProcessRestrictions {
 		$self->{'TicketAliases'}{'TransFieldAttachAlias'} = $self->NewAlias('Attachments');
 		
 	    }
+	    #Join transactions to attachments
 	    $self->Join( ALIAS1 => $self->{'TicketAliases'}{'TransFieldAttachAlias'},  
 			 FIELD1 => 'TransactionId',
 			 ALIAS2 => $self->{'TicketAliases'}{'TransFieldAlias'}, FIELD2=> 'id');
 	    
+	    #Join transactions to tickets
 	    $self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
 			 ALIAS2 =>$self->{'TicketAliases'}{'TransFieldAlias'}, FIELD2 => 'Ticket');
-
+	    
+	    #Search for the right field
 	    $self->SUPER::Limit(ALIAS => $self->{'TicketAliases'}{'TransFieldAttachAlias'},
 				  ENTRYAGGREGATOR => 'AND',
 				  FIELD =>    $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
@@ -332,24 +699,41 @@ sub _ProcessRestrictions {
 
 	# }}}
 
-	# {{{ if it's Transaction content that we're hunting for
+	# {{{ if it's a watcher that we're hunting for
 	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'WATCHERFIELD') {
 	    my $Watch = $self->NewAlias('Watchers');
 	    my $User = $self->NewAlias('Users');
+
+	    #Join watchers to users
 	    $self->Join( ALIAS1 => $Watch, FIELD1 => 'Owner',
 			 ALIAS2 => $User, FIELD2 => 'id');
+
+	    #Join Ticket to watchers
 	    $self->Join( ALIAS1 => 'main', FIELD1 => 'id',
 			 ALIAS2 => $Watch, FIELD2 => 'Value');
-	    $self->Limit( ALIAS => $Watch,
+
+	    #Make sure we're only talking about ticket watchers
+	    $self->SUPER::Limit( ALIAS => $Watch,
 			  FIELD => 'Scope',
 			  VALUE => 'Ticket',
 			  OPERATOR => '=');
-	    $self->Limit( ALIAS => $User,
+
+	    #Limit it to the address we want
+	    $self->SUPER::Limit( ALIAS => $User,
 			  FIELD => 'EmailAddress',
 			  ENTRYAGGREGATOR => 'OR',
 			  VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
 			  OPERATOR => $self->{'TicketRestrictions'}{"$row"}{'OPERATOR'}
 			);
+
+	    #If we only want a specific type of watchers, then limit it to that
+	    if ($self->{'TicketRestrictions'}{"$row"}{'TYPE'}) {
+		$self->SUPER::Limit( ALIAS => $Watch,
+			      FIELD => 'Type',
+			      ENTRYAGGREGATOR => 'OR',
+			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'TYPE'},
+			      OPERATOR => '=');
+	    }
 	}
 	# }}}
     }

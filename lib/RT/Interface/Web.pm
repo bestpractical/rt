@@ -1,5 +1,5 @@
 ## $Header$
-## Copyright 2000 Tobias Brox <tobix@fsck.com>
+## Copyright 2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
 ## Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
 ## This is a library of static subs to be used by the Mason web
@@ -201,25 +201,19 @@ sub ProcessSearchQuery {
     
     # {{{ Set the query limit
     #TODO this doesn't work
-    if ($args{ARGS}->{'LimitResultsPerPage'} and ($args{ARGS}->{'ValueOfResultsPerPage'})) {
+    if ($args{ARGS}->{'Limit1ResultsPerPage'} and ($args{ARGS}->{'ValueOfResultsPerPage'})) {
 	$session{'tickets'}->Rows($args{ARGS}->{'ValueOfResultsPerPage'});
     }
+
     # }}}
    
 
     # {{{ Limit owner
     if ($args{ARGS}->{'ValueOfOwner'} ne '' ) {
-	my $owner = new RT::User($session{'CurrentUser'});
-
-	$owner->Load($args{ARGS}->{'ValueOfOwner'});
-	
-	$session{'tickets'}->Limit (FIELD => 'Owner',
-				    VALUE => $args{ARGS}->{'ValueOfOwner'},
- 				    OPERATOR => $args{ARGS}->{'OwnerOp'},
-				    DESCRIPTION => "Owner " .
-				    $args{ARGS}->{'OwnerOp'} . " ".
-				    $owner->UserId
-				   );
+	$session{'tickets'}->LimitOwner(					
+					VALUE => $args{ARGS}->{'ValueOfOwner'},
+					OPERATOR => $args{ARGS}->{'OwnerOp'}
+				       );
     }
     # }}}
 
@@ -227,25 +221,18 @@ sub ProcessSearchQuery {
     #TODO this doesn't work
     
     if ($args{ARGS}->{'ValueOfRequestor'} ne '') {
-	my $alias=$session{'tickets'}->Limit  (FIELD => 'WatcherEmail',
-					       VALUE => $args{ARGS}->{'ValueOfRequestor'},
-					       OPERATOR =>  $args{ARGS}->{'RequestorOp'},
-					       DESCRIPTION => "Watcher's email address ".
-					       $args{ARGS}->{'RequestorOp'} . " ".
-					       $args{ARGS}->{'ValueOfRequestor'} );
+	my $alias=$session{'tickets'}->LimitRequestor (
+						       VALUE => $args{ARGS}->{'ValueOfRequestor'},
+						       OPERATOR =>  $args{ARGS}->{'RequestorOp'},
+						      );
 	
     }
     # }}}
     # {{{ Limit Queue
     if ($args{ARGS}->{'ValueOfQueue'} ne '') {
-	my $queue = new RT::Queue($session{'CurrentUser'});
-	$queue->Load($args{ARGS}->{'ValueOfQueue'});
-	$session{'tickets'}->Limit (FIELD => 'Queue',
+	$session{'tickets'}->LimitQueue(
 				    VALUE => $args{ARGS}->{'ValueOfQueue'},
-				    OPERATOR => $args{ARGS}->{'QueueOp'},
-				    DESCRIPTION => 'Queue ' .  $args{ARGS}->{'QueueOp'}. " ".
-				    $queue->QueueId
-				   );
+				    OPERATOR => $args{ARGS}->{'QueueOp'});
     }
     # }}}
         
@@ -253,12 +240,10 @@ sub ProcessSearchQuery {
 
     # {{{ Limit Status
     if ($args{ARGS}->{'ValueOfStatus'} ne '') {
-	$session{'tickets'}->Limit (FIELD => 'Status',
-				    VALUE => $args{ARGS}->{'ValueOfStatus'},
-				    OPERATOR =>  $args{ARGS}->{'StatusOp'},
-				    DESCRIPTION => "Status ".  $args{ARGS}->{'StatusOp'} .
-				    " ".$args{ARGS}->{'ValueOfStatus'}
-				   );
+	$session{'tickets'}->LimitStatus (
+					  VALUE => $args{ARGS}->{'ValueOfStatus'},
+					  OPERATOR =>  $args{ARGS}->{'StatusOp'},
+					 );
     }
 
 # }}}
@@ -266,24 +251,18 @@ sub ProcessSearchQuery {
     
     # {{{ Limit Subject
     if ($args{ARGS}->{'ValueOfSubject'} ne '') {
-	$session{'tickets'}->Limit(FIELD => 'Subject',
-				   VALUE =>  $args{ARGS}->{'ValueOfSubject'},
-				   OPERATOR => $args{ARGS}->{'SubjectOp'},
-				   DESCRIPTION => "Subject ". 
-				   $args{ARGS}->{'SubjectOp'}." ".
-				   $args{ARGS}->{'ValueOfSubject'}
-				  );
+	$session{'tickets'}->LimitSubject(
+					  VALUE =>  $args{ARGS}->{'ValueOfSubject'},
+					  OPERATOR => $args{ARGS}->{'SubjectOp'},
+					 );
     }
-
+    
     # }}}    
-     # {{{ Limit Subject
+    # {{{ Limit Content
     if ($args{ARGS}->{'ValueOfContent'} ne '') {
-	$session{'tickets'}->Limit(FIELD => 'Content',
+	$session{'tickets'}->Limit(				
 				   VALUE =>  $args{ARGS}->{'ValueOfContent'},
 				   OPERATOR => $args{ARGS}->{'ContentOp'},
-				   DESCRIPTION => "Transaction content". 
-				   $args{ARGS}->{'ContentOp'}." ".
-				   $args{ARGS}->{'ValueOfContent'}
 				  );
     }
 
@@ -302,4 +281,3 @@ sub Config {
 }
 
 1;
-
