@@ -1,0 +1,39 @@
+<TABLE WIDTH=100% cellspacing=0 cellpadding=3  border=0 BGCOLOR="#333399">
+	  <TR>
+% foreach my $tab (sort keys %{$tabs}) {
+	    <TD ALIGN=CENTER>
+<A 
+% if ($current_tab eq $tabs->{$tab}->{'path'}) {
+class='currenttab'
+% } 
+% else {
+class='inverse'
+% }
+	HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>?id=<%$id%>&Project=<%$Project%>"><% $tabs->{$tab}->{'title'}%></A>
+	    </TD>
+% }
+	  </TR>
+</TABLE>
+<BR>
+
+<%INIT>
+	
+  my $id = $Ticket->id();
+  my $tabs = {
+		 A => { title => 'Details',
+			path => "Projects/Edit.html",
+		      },
+	      
+	      B => { title => 'History',
+		      path => "Projects/History.html",
+		       },
+	     };
+
+</%INIT>
+
+  
+<%ARGS>
+$Ticket => undef
+$Project => undef
+$current_tab => undef
+</%ARGS>

@@ -1,0 +1,135 @@
+#!@PERL@ -w
+
+use strict;
+
+require ('@RT_BIN_PATH@/webmux.pl');
+
+use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+
+use Socket;
+
+RT::Init();
+
+my $port = 4711;
+my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
+
+main_loop($port);
+
+sub main_loop {
+    my $port = shift;
+    my $tcp  = getprotobyname('tcp');
+
+    socket( HTTPDaemon, PF_INET, SOCK_STREAM, $tcp ) or die "socket: $!";
+    setsockopt( HTTPDaemon, SOL_SOCKET, SO_REUSEADDR, pack( "l", 1 ) )
+      or warn "setsockopt: $!";
+    bind( HTTPDaemon, sockaddr_in( $port, INADDR_ANY ) ) or die "bind: $!";
+    listen( HTTPDaemon, SOMAXCONN ) or die "listen: $!";
+
+    print("You can connect to your RT server at http://localhost:$port/\n");
+
+    while (1) {
+
+        for ( ; accept( Remote, HTTPDaemon ); close Remote ) {
+
+            *STDIN  = *Remote;
+            *STDOUT = *Remote;
+
+            my $remote_sockaddr = getpeername(STDIN);
+            my ( undef, $iaddr ) = sockaddr_in($remote_sockaddr);
+            my $peername = gethostbyaddr( $iaddr, AF_INET ) || "localhost";
+            my $peeraddr = inet_ntoa($iaddr) || "127.0.0.1";
+
+            my $local_sockaddr = getsockname(STDIN);
+            my ( undef, $localiaddr ) = sockaddr_in($local_sockaddr);
+            my $localname = gethostbyaddr( $localiaddr, AF_INET )
+              || "localhost";
+            my $localaddr = inet_ntoa($localiaddr) || "127.0.0.1";
+
+            chomp( $_ = <STDIN> );
+            my ( $method, $request_uri, $proto, undef ) = split;
+
+            $request_uri =~ s#\\#/#g;
+            $RT::Logger->info("<- $peername: $_");
+            my ( $file, undef, $query_string ) =
+              ( $request_uri =~ /([^?]*)(\?(.*))?/ );    # split at ?
+            $file =~
+              s/%([\dA-Fa-f]{2})/chr(hex($1))/eg;  # decode url-escaped entities
+
+            last if ( $method !~ /^(GET|POST|HEAD)$/ );
+
+            build_cgi_env( method       => $method,
+                           query_string => $query_string,
+                           path         => $file,
+                           method       => $method,
+                           port         => $port,
+                           peername     => $peername,
+                           peeraddr     => $peeraddr,
+                           localname    => $localname,
+                           request_uri  => $request_uri );
+
+            RT::ConnectToDatabase();
+            my $cgi = CGI->new();
+
+            print "HTTP/1.0 200 OK\n";    # probably OK by now
+
+            if ( ( !$h->interp->comp_exists( $cgi->path_info ) )
+                && ($h->interp->comp_exists( $cgi->path_info . "/index.html" ) )
+              ) {
+                $cgi->path_info( $cgi->path_info . "/index.html" );
+            }
+
+            eval { $h->handle_cgi_object($cgi); };
+            $RT::Logger->crit($@) if ($@);
+
+            if ( $RT::Handle->TransactionDepth ) {
+                $RT::Handle->ForceRollback;
+                $RT::Logger->crit( "Transaction not committed. Usually indicates a software fault. Data loss may have occurred");
+            }
+
+        }
+
+    }
+
+}
+
+
+
+sub build_cgi_env {
+        my %args = ( query_string => '',
+                     path => '',
+                     port => undef,
+                     protocol => undef,
+                     localname => undef,
+                     method => undef,
+                     remote_name => undef,
+ 
+
+                        @_);
+                    
+        foreach my $var qw(USER_AGENT CONTENT_LENGTH CONTENT_TYPE) {
+            delete $ENV{$var};
+        }
+        while (<STDIN>) {
+            s/[\r\l\n\s]+$//;
+            /^User-Agent: (.+)/i      and $ENV{USER_AGENT}     = $1;
+            /^Content-length: (\d+)/i and $ENV{CONTENT_LENGTH} = $1;
+            /^Content-type: (.+)/i    and $ENV{CONTENT_TYPE}   = $1;
+            /^Cookie.?: (.+)/i and $ENV{COOKIE} .= $1 . "; ";
+            last if (/^$/);
+        }
+
+
+        $ENV{SERVER_PROTOCOL} = $args{protocol};
+        $ENV{SERVER_PORT}     = $args{port};
+        $ENV{SERVER_NAME}     = $args{'localname'};
+        $ENV{SERVER_URL}      = "http://".$args{'localname'}.":".$args{'port'}."/";
+        $ENV{PATH_INFO}       = $args{'path'};
+        $ENV{REQUEST_URI}     = $args{'request_uri'};
+        $ENV{REQUEST_METHOD}  = $args{method};
+        $ENV{REMOTE_ADDR}     = $args{'peeraddr'};
+        $ENV{REMOTE_HOST}     = $args{'peername'};
+        $ENV{QUERY_STRING}    = $args{'query_string'};
+        $ENV{SERVER_SOFTWARE} = "rt-standalone/$RT::VERSION";
+
+        CGI::initialize_globals();
+} 

@@ -50,14 +50,6 @@ use strict;
 no warnings qw(redefine);
 use RT::Template;
 
-# {{{  sub _Init 
-sub _Init  {
-    my $self = shift; 
-    $self->{'table'} = "ScripActions";
-    return ($self->SUPER::_Init(@_));
-}
-# }}}
-
 # {{{ sub _Accessible 
 sub _Accessible  {
     my $self = shift;
@@ -146,12 +138,12 @@ sub LoadAction  {
  
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
-    $self->{'Action'}  = $type->new ( 'ScripActionObj' => $self, 
-				      'TicketObj' => $args{'TicketObj'},
-				      'ScripObj' => $args{'ScripObj'},
-				      'TransactionObj' => $args{'TransactionObj'},
-				      'TemplateObj' => $self->TemplateObj,
-				      'Argument' => $self->Argument,
+    $self->{'Action'}  = $type->new ( ScripActionObj => $self, 
+				      TicketObj => $args{'TicketObj'},
+				      ScripObj => $args{'ScripObj'},
+				      TransactionObj => $args{'TransactionObj'},
+				      TemplateObj => $self->TemplateObj,
+				      Argument => $self->Argument,
 				    );
 }
 # }}}
@@ -160,7 +152,10 @@ sub LoadAction  {
 
 =head2 TemplateObj
 
-Return this action\'s template object
+Return this action's template object
+
+TODO: Why are we not using the Scrip's template object?
+
 
 =cut
 
@@ -196,7 +191,7 @@ sub TemplateObj {
 
 sub Prepare  {
     my $self = shift;
-    return ($self->{'Action'}->Prepare());
+    return ($self->Action->Prepare());
   
 }
 # }}}
@@ -204,7 +199,7 @@ sub Prepare  {
 # {{{ sub Commit 
 sub Commit  {
     my $self = shift;
-    return($self->{'Action'}->Commit());
+    return($self->Action->Commit());
     
     
 }
@@ -213,10 +208,21 @@ sub Commit  {
 # {{{ sub Describe 
 sub Describe  {
     my $self = shift;
-    return ($self->{'Action'}->Describe());
+    return ($self->Action->Describe());
     
 }
 # }}}
+
+=head2 Action
+
+Return the actual RT::Action object for this scrip.
+
+=cut
+
+sub Action {
+    my $self = shift;
+    return ($self->{'Action'});
+}
 
 # {{{ sub DESTROY
 sub DESTROY {
@@ -227,6 +233,12 @@ sub DESTROY {
 }
 # }}}
 
+=head2 TODO
+
+Between this, RT::Scrip and RT::Action::*, we need to be able to get rid of a 
+class. This just reeks of too much complexity -- jesse
+
+=cut
 
 1;
 

@@ -44,12 +44,12 @@ ok (require RT::Record);
 package RT::Record;
 use RT::Date;
 use RT::User;
-
+use RT::Attributes;
 use RT::Base;
 use DBIx::SearchBuilder::Record::Cachable;
 
 use strict;
-use vars qw/@ISA/;
+use vars qw/@ISA $_TABLE_ATTR/;
 
 @ISA = qw(RT::Base);
 
@@ -64,8 +64,8 @@ if ($RT::DontCacheSearchBuilderRecords ) {
 
 sub _Init {
     my $self = shift;
+    $self->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
     $self->CurrentUser(@_);
-
 }
 
 # }}}
@@ -84,6 +84,50 @@ sub _PrimaryKeys {
 }
 
 # }}}
+
+=head2 Attributes
+
+Return this object's attributes as an RT::Attributes object
+
+=cut
+
+sub Attributes {
+    my $self = shift;
+    
+    unless ($self->{'attributes'}) {
+        $self->{'attributes'} = RT::Attributes->new($self->CurrentUser);     
+       $self->{'attributes'}->LimitToObject($self); 
+    }
+    return ($self->{'attributes'}); 
+
+}
+
+
+=head2 AddAttribute { Name, Description, Content }
+
+Adds a new attribute for this object.
+
+=cut
+
+sub AddAttribute {
+    my $self = shift;
+    my %args = ( Name        => undef,
+                 Description => undef,
+                 Content     => undef,
+                 @_ );
+
+    my $attr = RT::Attribute->new( $self->CurrentUser );
+    my ( $id, $msg ) = $attr->Create( ObjectType  => ref($self),
+                                      ObjectId    => $self->Id,
+                                      Name        => $args{'Name'},
+                                      Description => $args{'Description'},
+                                      Content     => $args{'Content'} );
+
+    $self->Attributes->RedoSearch;
+    
+    return ($id, $msg);
+}
+
 
 # {{{ sub _Handle 
 sub _Handle {
@@ -194,6 +238,9 @@ DB is case sensitive
 sub LoadByCols {
     my $self = shift;
     my %hash = (@_);
+
+    # We don't want to hang onto this
+    delete $self->{'attributes'};
 
     # If this database is case sensitive we need to uncase objects for
     # explicit loading
@@ -414,8 +461,26 @@ sub LastUpdatedByObj {
 # }}}
 
 
+=head2 SQLType attribute
+
+return the SQL type for the attribute 'attribute' as stored in _ClassAccessible
+
+=cut
+
+sub SQLType {
+    my $self = shift;
+    my $field = shift;
+
+    return ($self->_Accessible($field, 'type'));
+
+
+}
+
 require Encode::compat if $] < 5.007001;
 require Encode;
+
+
+
 
 sub __Value {
     my $self  = shift;
@@ -439,16 +504,87 @@ sub __Value {
 sub _CacheConfig {
   {
      'cache_p'        => 1,
-     'fast_update_p'  => 1,
      'cache_for_sec'  => 30,
   }
 }
 
-=head2 _DecodeUTF8
 
- When passed a string will "decode" it int a proper UTF-8 string
+
+sub _BuildTableAttributes {
+    my $self = shift;
+
+    my $attributes;
+    if ( UNIVERSAL::can( $self, '_CoreAccessible' ) ) {
+       $attributes = $self->_CoreAccessible();
+    } elsif ( UNIVERSAL::can( $self, '_ClassAccessible' ) ) {
+       $attributes = $self->_ClassAccessible();
+
+    }
+
+    foreach my $column (%$attributes) {
+        foreach my $attr ( %{ $attributes->{$column} } ) {
+            $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+        }
+    }
+    if ( UNIVERSAL::can( $self, '_OverlayAccessible' ) ) {
+        $attributes = $self->_OverlayAccessible();
+
+        foreach my $column (%$attributes) {
+            foreach my $attr ( %{ $attributes->{$column} } ) {
+                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+            }
+        }
+    }
+    if ( UNIVERSAL::can( $self, '_VendorAccessible' ) ) {
+        $attributes = $self->_VendorAccessible();
+
+        foreach my $column (%$attributes) {
+            foreach my $attr ( %{ $attributes->{$column} } ) {
+                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+            }
+        }
+    }
+    if ( UNIVERSAL::can( $self, '_LocalAccessible' ) ) {
+        $attributes = $self->_LocalAccessible();
+
+        foreach my $column (%$attributes) {
+            foreach my $attr ( %{ $attributes->{$column} } ) {
+                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+            }
+        }
+    }
+
+}
+
+
+=head2 _ClassAccessible 
+
+Overrides the "core" _ClassAccessible using $_TABLE_ATTR. Behaves identical to the version in
+DBIx::SearchBuilder::Record
 
 =cut
+
+sub _ClassAccessible {
+    my $self = shift;
+    return $_TABLE_ATTR->{ref($self)};
+}
+
+=head2 _Accessible COLUMN ATTRIBUTE
+
+returns the value of ATTRIBUTE for COLUMN
+
+
+=cut 
+
+sub _Accessible  {
+  my $self = shift;
+  my $column = shift;
+  my $attribute = lc(shift);
+  return 0 unless defined ($_TABLE_ATTR->{ref($self)}->{$column});
+  return $_TABLE_ATTR->{ref($self)}->{$column}->{$attribute} || 0;
+
+}
+
 
 eval "require RT::Record_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Vendor.pm});

@@ -50,18 +50,19 @@ no warnings qw(redefine);
 use MIME::Base64;
 use MIME::QuotedPrint;
 
-# {{{ sub _ClassAccessible 
-sub _ClassAccessible {
+
+# {{{ sub _OverlayAccessible 
+sub _OverlayAccessible {
     {
-    TransactionId   => { 'read'=>1, 'public'=>1, },
-    MessageId       => { 'read'=>1, },
-    Parent          => { 'read'=>1, },
-    ContentType     => { 'read'=>1, },
-    Subject         => { 'read'=>1, },
-    Content         => { 'read'=>1, },
-    ContentEncoding => { 'read'=>1, },
-    Headers         => { 'read'=>1, },
-    Filename        => { 'read'=>1, },
+    TransactionId   => { 'read'=>1, 'public'=>1, 'write' => 0 },
+    MessageId       => { 'read'=>1, 'write' => 0 },
+    Parent          => { 'read'=>1, 'write' => 0 },
+    ContentType     => { 'read'=>1, 'write' => 0 },
+    Subject         => { 'read'=>1, 'write' => 0 },
+    Content         => { 'read'=>1, 'write' => 0 },
+    ContentEncoding => { 'read'=>1, 'write' => 0 },
+    Headers         => { 'read'=>1, 'write' => 0 },
+    Filename        => { 'read'=>1, 'write' => 0 },
     Creator         => { 'read'=>1, 'auto'=>1, },
     Created         => { 'read'=>1, 'auto'=>1, },
   };
@@ -82,6 +83,9 @@ sub TransactionObj {
     unless (exists $self->{_TransactionObj}) {
 	$self->{_TransactionObj}=RT::Transaction->new($self->CurrentUser);
 	$self->{_TransactionObj}->Load($self->TransactionId);
+    }
+    unless ($self->{_TransactionObj}->Id) {
+        $RT::Logger->crit("Attachment ".$self->id." can't find transaction ".$self->TransactionId." which it is ostensibly part of. That's bad");
     }
     return $self->{_TransactionObj};
 }
@@ -533,12 +537,10 @@ sub _Value  {
     my $self = shift;
     my $field = shift;
     
-    
+   
     #if the field is public, return it.
     if ($self->_Accessible($field, 'public')) {
-	#$RT::Logger->debug("Skipping ACL check for $field\n");
-	return($self->__Value($field, @_));
-	
+	    return($self->__Value($field, @_));
     }
     
     #If it's a comment, we need to be extra special careful

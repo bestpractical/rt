@@ -757,7 +757,7 @@ sub ResetPassword {
         Argument    => $pass
     );
 
-    $notification->SetTo( $self->EmailAddress );
+    $notification->SetHeader( 'To', $self->EmailAddress );
 
     my ($ret);
     $ret = $notification->Prepare();

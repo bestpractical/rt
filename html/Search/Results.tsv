@@ -1,0 +1,74 @@
+<%INIT>
+my $Tickets = $session{'tickets'};
+
+
+my $per_page = $Tickets->RowsPerPage();
+my $first_row = ($Tickets->FirstRow()+1);
+
+$Tickets->RowsPerPage(0);
+$Tickets->FirstRow(1);
+my @rows;
+my %known_cfs;
+
+my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLeft Priority FinalPriority OwnerObj->Name 
+                Requestors->MemberEmailAddressesAsString DueObj->ISO ToldObj->ISO
+                CreatedObj->ISO ResolvedObj->ISO );
+
+    $r->content_type('application/vnd.ms-excel');
+    while ( my $Ticket = $Tickets->Next()) {
+       my $row;
+ 	foreach my $attr (@attrs) {
+                my $method = '$Ticket->'.$attr.'()';
+	    $row->{$attr} = eval $method;
+            if ($@) {die "Failed to find $attr - ". $@}; 
+	}
+
+        my $cfs = $Ticket->QueueObj->CustomFields();
+        while (my $cf = $cfs->Next) {
+                my @content;
+               my $values = $Ticket->CustomFieldValues($cf->Id);
+               while (my $value = $values->Next) {
+                       push @content, $value->Content;
+               }
+                $row->{'CustomField-'.$cf->Id} = join(', ',@content);
+                if ($row->{'CustomField-'.$cf->Id}) {
+                        $known_cfs{$cf->Id} = $cf->Name;
+                }
+        }
+        push @rows, $row;
+
+
+    }
+{ 
+my @header;
+    foreach my $attr (@attrs) {
+        my $label = $attr;
+        $label =~ s'Obj-.(AsString|Name)''g;
+	push @header, $label;
+    }
+    foreach my $id (sort keys %known_cfs) {
+        push @header, $known_cfs{$id}; 
+    }
+
+$m->out(join("\t", @header));
+$m->out("\n");
+}
+foreach my $row (@rows) {
+        my @row;
+        foreach my $attr(@attrs) {
+                $RT::Logger->crit("Looking at $attr");
+                push @row, $row->{"$attr"};
+        }
+    foreach my $id (sort keys %known_cfs) {
+                push @row, $row->{'CustomField-'.$id};
+        }
+        
+        $m->out(join("\t",@row));
+        $m->out("\n");
+}
+
+
+$m->abort();
+$Tickets->RowsPerPage($per_page);
+$Tickets->FirstRow($first_row);
+</%INIT>

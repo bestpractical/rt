@@ -21,12 +21,27 @@
 # 
 # 
 # END LICENSE BLOCK
+#
 package RT::Action::Notify;
 require RT::Action::SendEmail;
-
+use Mail::Address;
 use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::Action::SendEmail);
+
+
+=head2 Prepare
+
+Set up the relevant recipients, then call our parent.
+
+=cut
+
+
+sub Prepare {
+    my $self = shift;
+    $self->SetRecipients();
+    $self->SUPER::Prepare();
+}
 
 # {{{ sub SetRecipients
 
@@ -47,10 +62,18 @@ sub SetRecipients {
     my ( @To, @PseudoTo, @Cc, @Bcc );
 
 
-    if ($arg =~ /\bOtherRecipients\b/) {
-        if ($self->TransactionObj->Attachments->First) {
-            push (@Cc, $self->TransactionObj->Attachments->First->GetHeader('RT-Send-Cc'));
-            push (@Bcc, $self->TransactionObj->Attachments->First->GetHeader('RT-Send-Bcc'));
+    if ( $arg =~ /\bOtherRecipients\b/ ) {
+        if ( $self->TransactionObj->Attachments->First ) {
+            my @cc_addresses = Mail::Address->parse($self->TransactionObj->Attachments->First->GetHeader('RT-Send-Cc'));
+            foreach my $addr (@cc_addresses) {
+                  push @Cc, $addr->address;
+            }
+            my @bcc_addresses = Mail::Address->parse($self->TransactionObj->Attachments->First->GetHeader('RT-Send-Bcc'));
+
+            foreach my $addr (@bcc_addresses) {
+                  push @Bcc, $addr->address;
+            }
+
         }
     }
 
@@ -118,7 +141,7 @@ sub SetRecipients {
         @{ $self->{'Bcc'} } = grep ( !/^$creator$/, @Bcc );
     }
     @{ $self->{'PseudoTo'} } = @PseudoTo;
-    return (1);
+
 
 }
 

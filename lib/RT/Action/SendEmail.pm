@@ -33,6 +33,7 @@ use vars qw/@ISA/;
 use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
+use Mail::Address;
 
 =head1 NAME
 
@@ -50,13 +51,6 @@ RT::Action::AutoReply is a good example subclass.
 
 Basically, you create another module RT::Action::YourAction which ISA
 RT::Action::SendEmail.
-
-If you want to set the recipients of the mail to something other than
-the addresses mentioned in the To, Cc, Bcc and headers in
-the template, you should subclass RT::Action::SendEmail and override
-either the SetRecipients method or the SetTo, SetCc, etc methods (see
-the comments for the SetRecipients sub).
-
 
 =begin testing
 
@@ -77,111 +71,13 @@ perl(1).
 
 # {{{ Scrip methods (_Init, Commit, Prepare, IsApplicable)
 
-# {{{ sub _Init
-# We use _Init from RT::Action
-# }}}
 
 # {{{ sub Commit
-#Do what we need to do and send it out.
+
 sub Commit {
     my $self = shift;
 
-    my $MIMEObj = $self->TemplateObj->MIMEObj;
-    my $msgid = $MIMEObj->head->get('Message-Id');
-    chomp $msgid;
-    $RT::Logger->info($msgid." #".$self->TicketObj->id."/".$self->TransactionObj->id." - Scrip ". $self->ScripObj->id ." ".$self->ScripObj->Description);
-    #send the email
-
-        # Weed out any RT addresses. We really don't want to talk to ourselves!
-        @{$self->{'To'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'To'}});
-        @{$self->{'Cc'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'Cc'}});
-        @{$self->{'Bcc'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'Bcc'}});
-    # If there are no recipients, don't try to send the message.
-    # If the transaction has content and has the header RT-Squelch-Replies-To
-
-    if ( defined $self->TransactionObj->Attachments->First() ) {
-
-        my $squelch = $self->TransactionObj->Attachments->First->GetHeader( 'RT-Squelch-Replies-To');
-
-        if ($squelch) {
-            my @blacklist = split ( /,/, $squelch );
-
-            # Cycle through the people we're sending to and pull out anyone on the
-            # system blacklist
-
-            foreach my $person_to_yank (@blacklist) {
-                $person_to_yank =~ s/\s//g;
-                @{ $self->{'To'} } =
-                  grep ( !/^$person_to_yank$/, @{ $self->{'To'} } );
-                @{ $self->{'Cc'} } =
-                  grep ( !/^$person_to_yank$/, @{ $self->{'Cc'} } );
-                @{ $self->{'Bcc'} } =
-                  grep ( !/^$person_to_yank$/, @{ $self->{'Bcc'} } );
-            }
-        }
-    }
-
-    # Go add all the Tos, Ccs and Bccs that we need to to the message to
-    # make it happy, but only if we actually have values in those arrays.
-
-    $self->SetHeader( 'To', join ( ',', @{ $self->{'To'} } ) )
-      if ( $self->{'To'} && @{ $self->{'To'} } );
-    $self->SetHeader( 'Cc', join ( ',', @{ $self->{'Cc'} } ) )
-      if ( $self->{'Cc'} && @{ $self->{'Cc'} } );
-    $self->SetHeader( 'Bcc', join ( ',', @{ $self->{'Bcc'} } ) )
-      if ( $self->{'Bcc'} && @{ $self->{'Bcc'} } );
-
-
-    $self->SetHeader('MIME-Version', '1.0');
-
-    # try to convert message body from utf-8 to $RT::EmailOutputEncoding
-    $self->SetHeader( 'Content-Type', 'text/plain; charset="utf-8"' );
-
-    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $RT::EmailOutputEncoding, 'mime_words_ok' );
-    $self->SetHeader( 'Content-Type', 'text/plain; charset="' . $RT::EmailOutputEncoding . '"' );
-
-
-    # Build up a MIME::Entity that looks like the original message.
-
-    my $do_attach = $self->TemplateObj->MIMEObj->head->get('RT-Attach-Message');
-
-    if ($do_attach) {
-        $self->TemplateObj->MIMEObj->head->delete('RT-Attach-Message');
-
-        my $attachments = RT::Attachments->new($RT::SystemUser);
-        $attachments->Limit( FIELD => 'TransactionId',
-                             VALUE => $self->TransactionObj->Id );
-        $attachments->OrderBy('id');
-
-        my $transaction_content_obj = $self->TransactionObj->ContentObj;
-
-        # attach any of this transaction's attachments
-        while ( my $attach = $attachments->Next ) {
-
-            # Don't attach anything blank
-            next unless ( $attach->ContentLength );
-
-            # We want to make sure that we don't include the attachment that's being sued as the "Content" of this message"
-            next
-              if (    $transaction_content_obj
-                   && $transaction_content_obj->Id == $attach->Id 
-                   && $transaction_content_obj->ContentType =~ qr{text/plain}i
-                );
-            $MIMEObj->make_multipart('mixed');
-            $MIMEObj->attach( Type => $attach->ContentType,
-                              Charset => $attach->OriginalEncoding,
-                              Data => $attach->OriginalContent,
-                              Filename => $self->MIMEEncodeString( $attach->Filename, $RT::EmailOutputEncoding ),
-                              Encoding    => '-SUGGEST');
-        }
-
-    }
-
-
-    my $retval = $self->SendMessage($MIMEObj);
-
-
-    return ($retval);
+    return($self->SendMessage($self->TemplateObj->MIMEObj));
 }
 
 # }}}
@@ -191,41 +87,52 @@ sub Commit {
 sub Prepare {
     my $self = shift;
 
-    # This actually populates the MIME::Entity fields in the Template Object
-
-    unless ( $self->TemplateObj ) {
-        $RT::Logger->warning("No template object handed to $self\n");
-    }
-
-    unless ( $self->TransactionObj ) {
-        $RT::Logger->warning("No transaction object handed to $self\n");
-
-    }
-
-    unless ( $self->TicketObj ) {
-        $RT::Logger->warning("No ticket object handed to $self\n");
-
-    }
-
     my ( $result, $message ) = $self->TemplateObj->Parse(
-                                         Argument       => $self->Argument,
-                                         TicketObj      => $self->TicketObj,
-                                         TransactionObj => $self->TransactionObj
+        Argument       => $self->Argument,
+        TicketObj      => $self->TicketObj,
+        TransactionObj => $self->TransactionObj
     );
-    if ($result) {
-
-        # Header
-        $self->SetSubject();
-        $self->SetSubjectToken();
-        $self->SetRecipients();
-        $self->SetReturnAddress();
-        $self->SetRTSpecialHeaders();
-        if ($RT::EmailOutputEncoding) {
-
-            # l10n related header
-            $self->SetHeaderAsEncoding( 'Subject', $RT::EmailOutputEncoding );
-        }
+    if ( !$result ) {
+        return (undef);
     }
+
+    my $MIMEObj = $self->TemplateObj->MIMEObj;
+
+    # Header
+    $self->SetRTSpecialHeaders();
+
+    $self->RemoveInappropriateRecipients();
+
+    # Go add all the Tos, Ccs and Bccs that we need to to the message to
+    # make it happy, but only if we actually have values in those arrays.
+
+    # TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
+
+    $self->SetHeader( 'To', join ( ',', @{ $self->{'To'} } ) )
+      if ( ! $MIMEObj->head->get('To') &&  $self->{'To'} && @{ $self->{'To'} } );
+    $self->SetHeader( 'Cc', join ( ',', @{ $self->{'Cc'} } ) )
+      if ( !$MIMEObj->head->get('Cc') && $self->{'Cc'} && @{ $self->{'Cc'} } );
+    $self->SetHeader( 'Bcc', join ( ',', @{ $self->{'Bcc'} } ) )
+      if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
+
+    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
+    # If we don't have any 'To' header, drop in the pseudo-to header.
+    $self->SetHeader( 'To', join ( ',', @{ $self->{'PseudoTo'} } ) )
+      if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
+        and ( !$MIMEObj->head->get('To') ) );
+
+    # We should never have to set the MIME-Version header
+    $self->SetHeader( 'MIME-Version', '1.0' );
+
+    # try to convert message body from utf-8 to $RT::EmailOutputEncoding
+    $self->SetHeader( 'Content-Type', 'text/plain; charset="utf-8"' );
+
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $RT::EmailOutputEncoding,
+        'mime_words_ok' );
+    $self->SetHeader( 'Content-Type', 'text/plain; charset="' . $RT::EmailOutputEncoding . '"' );
+
+    # Build up a MIME::Entity that looks like the original message.
+    $self->AddAttachments() if ( $MIMEObj->head->get('RT-Attach-Message') );
 
     return $result;
 
@@ -235,7 +142,55 @@ sub Prepare {
 
 # }}}
 
+
+
+=head2 To
+
+Returns an array of Mail::Address objects containing all the To: recipients for this notification
+
+=cut
+
+sub To {
+    my $self = shift;
+    return ($self->_AddressesFromHeader('To'));
+}
+
+=head2 Cc
+
+Returns an array of Mail::Address objects containing all the Cc: recipients for this notification
+
+=cut
+
+sub Cc { 
+    my $self = shift;
+    return ($self->_AddressesFromHeader('Cc'));
+}
+
+=head2 Bcc
+
+Returns an array of Mail::Address objects containing all the Bcc: recipients for this notification
+
+=cut
+
+
+sub Bcc {
+    my $self = shift;
+    return ($self->_AddressesFromHeader('Bcc'));
+
+}
+
+sub _AddressesFromHeader  {
+    my $self = shift;
+    my $field = shift;
+    my $header = $self->TemplateObj->MIMEObj->head->get($field);
+    my @addresses = Mail::Address->parse($header);
+
+    return (@addresses);
+}
+
+
 # {{{ SendMessage
+
 =head2 SendMessage MIMEObj
 
 sends the message using RT's preferred API.
@@ -244,61 +199,71 @@ TODO: Break this out to a seperate module
 =cut
 
 sub SendMessage {
-    my $self = shift;
+    my $self    = shift;
     my $MIMEObj = shift;
 
     my $msgid = $MIMEObj->head->get('Message-Id');
+    chomp $msgid;
 
+    $RT::Logger->info( $msgid . " #"
+        . $self->TicketObj->id . "/"
+        . $self->TransactionObj->id
+        . " - Scrip "
+        . $self->ScripObj->id . " "
+        . $self->ScripObj->Description );
 
     #If we don't have any recipients to send to, don't send a message;
-    unless (    $MIMEObj->head->get('To')
-             || $MIMEObj->head->get('Cc')
-             || $MIMEObj->head->get('Bcc') ) {
-        $RT::Logger->info($msgid.  " No recipients found. Not sending.\n");
+    unless ( $MIMEObj->head->get('To')
+        || $MIMEObj->head->get('Cc')
+        || $MIMEObj->head->get('Bcc') )
+    {
+        $RT::Logger->info( $msgid . " No recipients found. Not sending.\n" );
         return (1);
     }
 
-    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
-    # If we don't have any 'To' header, drop in the pseudo-to header.
 
-    $self->SetHeader( 'To', join ( ',', @{ $self->{'PseudoTo'} } ) )
-      if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
-           and ( !$MIMEObj->head->get('To') ) );
     if ( $RT::MailCommand eq 'sendmailpipe' ) {
         eval {
             open( MAIL, "|$RT::SendmailPath $RT::SendmailArguments" ) || die $!;
             print MAIL $MIMEObj->as_string;
             close(MAIL);
-          };
-          if ($@) {
-            $RT::Logger->crit($msgid.  "Could not send mail. -".$@ );
+        };
+        if ($@) {
+            $RT::Logger->crit( $msgid . "Could not send mail. -" . $@ );
         }
     }
     else {
-	my @mailer_args = ($RT::MailCommand);
-	local $ENV{MAILADDRESS};
+        my @mailer_args = ($RT::MailCommand);
+        local $ENV{MAILADDRESS};
 
         if ( $RT::MailCommand eq 'sendmail' ) {
-	    push @mailer_args, $RT::SendmailArguments;
+            push @mailer_args, $RT::SendmailArguments;
         }
         elsif ( $RT::MailCommand eq 'smtp' ) {
-	    $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');
-	    push @mailer_args, (Server => $RT::SMTPServer);
-	    push @mailer_args, (Debug => $RT::SMTPDebug);
+            $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');
+            push @mailer_args, ( Server => $RT::SMTPServer );
+            push @mailer_args, ( Debug  => $RT::SMTPDebug );
         }
-	else {
-	    push @mailer_args, $RT::MailParams;
-	}
+        else {
+            push @mailer_args, $RT::MailParams;
+        }
 
-        unless ( $MIMEObj->send( @mailer_args ) ) {
-            $RT::Logger->crit($msgid.  "Could not send mail." );
+        unless ( $MIMEObj->send(@mailer_args) ) {
+            $RT::Logger->crit( $msgid . "Could not send mail." );
             return (0);
         }
     }
 
-
-     my $success = ($msgid. " sent To: ".$MIMEObj->head->get('To') . " Cc: ".$MIMEObj->head->get('Cc') . " Bcc: ".$MIMEObj->head->get('Bcc'));
+    my $success =
+      ( $msgid
+      . " sent To: "
+      . $MIMEObj->head->get('To') . " Cc: "
+      . $MIMEObj->head->get('Cc') . " Bcc: "
+      . $MIMEObj->head->get('Bcc') );
     $success =~ s/\n//gi;
+
+    $self->RecordOutgoingMailTransaction($MIMEObj);
+
     $RT::Logger->info($success);
 
     return (1);
@@ -306,7 +271,81 @@ sub SendMessage {
 
 # }}}
 
-# {{{ Deal with message headers (Set* subs, designed for  easy overriding)
+# {{{ AddAttachments 
+=head2 AddAttachments
+
+Takes any attachments to this transaction and attaches them to the message
+we're building.
+
+=cut
+
+
+sub AddAttachments {
+    my $self = shift;
+
+    my $MIMEObj = $self->TemplateObj->MIMEObj;
+
+    $MIMEObj->head->delete('RT-Attach-Message');
+
+    my $attachments = RT::Attachments->new($RT::SystemUser);
+    $attachments->Limit(
+        FIELD => 'TransactionId',
+        VALUE => $self->TransactionObj->Id
+    );
+    $attachments->OrderBy('id');
+
+    my $transaction_content_obj = $self->TransactionObj->ContentObj;
+
+    # attach any of this transaction's attachments
+    while ( my $attach = $attachments->Next ) {
+
+        # Don't attach anything blank
+        next unless ( $attach->ContentLength );
+
+# We want to make sure that we don't include the attachment that's being sued as the "Content" of this message"
+        next
+          if ( $transaction_content_obj
+            && $transaction_content_obj->Id == $attach->Id
+            && $transaction_content_obj->ContentType =~ qr{text/plain}i );
+        $MIMEObj->make_multipart('mixed');
+        $MIMEObj->attach(
+            Type     => $attach->ContentType,
+            Charset  => $attach->OriginalEncoding,
+            Data     => $attach->OriginalContent,
+            Filename => $self->MIMEEncodeString( $attach->Filename,
+                $RT::EmailOutputEncoding ),
+            Encoding => '-SUGGEST'
+        );
+    }
+
+}
+
+# }}}
+
+# {{{ RecordOutgoingMailTransaction
+=head2 RecordOutgoingMailTransaction MIMEObj
+
+Record a transaction in RT with this outgoing message for future record-keeping purposes
+
+=cut
+
+
+
+sub RecordOutgoingMailTransaction {
+    my $self = shift;
+    my $MIMEObj = shift;
+
+    my $transaction = RT::Transaction->new($self->TransactionObj->CurrentUser);
+
+    # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
+
+    my ($id, $msg) = $transaction->Create( Ticket => $self->TicketObj->Id, Type => 'EmailRecord', Data => $MIMEObj->head->get('Message-Id'), MIMEObj => $MIMEObj, ActivateScrips => 0);
+
+
+}
+
+# }}}
+#
 
 # {{{ sub SetRTSpecialHeaders
 
@@ -320,36 +359,11 @@ that don't matter much to anybody else.
 sub SetRTSpecialHeaders {
     my $self = shift;
 
-    $self->SetReferences();
-
-    $self->SetMessageID();
-
-    $self->SetPrecedence();
-
-    $self->SetHeader( 'X-RT-Loop-Prevention', $RT::rtname );
-    $self->SetHeader( 'RT-Ticket',
-                      $RT::rtname . " #" . $self->TicketObj->id() );
-    $self->SetHeader( 'Managed-by',
-                      "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
-
-    $self->SetHeader( 'RT-Originator',
-                      $self->TransactionObj->CreatorObj->EmailAddress );
-    return ();
-
-}
-
-# {{{ sub SetReferences
-
-=head2 SetReferences 
-  
-  # This routine will set the References: and In-Reply-To headers,
-# autopopulating it with all the correspondence on this ticket so
-# far. This should make RT responses threadable.
-
-=cut
-
-sub SetReferences {
-    my $self = shift;
+    $self->SetSubject();
+    $self->SetSubjectToken();
+    $self->SetHeaderAsEncoding( 'Subject', $RT::EmailOutputEncoding )
+      if ($RT::EmailOutputEncoding);
+    $self->SetReturnAddress();
 
     # TODO: this one is broken.  What is this email really a reply to?
     # If it's a reply to an incoming message, we'll need to use the
@@ -358,46 +372,93 @@ sub SetReferences {
     # References.
 
     $self->SetHeader( 'In-Reply-To',
-                   "<rt-" . $self->TicketObj->id() . "\@" . $RT::rtname . ">" );
+        "<rt-" . $self->TicketObj->id() . "\@" . $RT::rtname . ">" );
 
     # TODO We should always add References headers for all message-ids
     # of previous messages related to this ticket.
+
+    $self->SetHeader( 'Message-ID',
+        "<rt-"
+        . $RT::VERSION . "-"
+        . $self->TicketObj->id() . "-"
+        . $self->TransactionObj->id() . "-"
+        . $self->ScripObj->Id . "."
+        . rand(20) . "\@"
+        . $RT::Organization . ">" )
+      unless $self->TemplateObj->MIMEObj->head->get('Message-ID');
+
+    $self->SetHeader( 'Precedence', "bulk" )
+      unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") );
+
+    $self->SetHeader( 'X-RT-Loop-Prevention', $RT::rtname );
+    $self->SetHeader( 'RT-Ticket',
+        $RT::rtname . " #" . $self->TicketObj->id() );
+    $self->SetHeader( 'Managed-by',
+        "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
+
+    $self->SetHeader( 'RT-Originator',
+        $self->TransactionObj->CreatorObj->EmailAddress );
+
 }
 
 # }}}
 
-# {{{ sub SetMessageID
 
-=head2 SetMessageID 
+# }}}
 
-Without this one, threading won't work very nice in email agents.
-Anyway, I'm not really sure it's that healthy if we need to send
-several separate/different emails about the same transaction.
+# {{{ RemoveInappropriateRecipients
+
+=head2 RemoveInappropriateRecipients
+
+Remove addresses that are RT addresses or that are on this transaction's blacklist
 
 =cut
 
-sub SetMessageID {
+sub RemoveInappropriateRecipients {
     my $self = shift;
 
-    # TODO this one might be sort of broken.  If we have several scrips +++
-    # sending several emails to several different persons, we need to
-    # pull out different message-ids.  I'd suggest message ids like
-    # "rt-ticket#-transaction#-scrip#-receipient#"
+    my @blacklist;
 
-    $self->SetHeader( 'Message-ID',
-                      "<rt-"
-                        . $RT::VERSION ."-"
-                        . $self->TicketObj->id() . "-"
-                        . $self->TransactionObj->id() . "."
-                        . rand(20) . "\@"
-                        . $RT::Organization . ">" )
-      unless $self->TemplateObj->MIMEObj->head->get('Message-ID');
+    # Weed out any RT addresses. We really don't want to talk to ourselves!
+    @{ $self->{'To'} } =
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'To'} } );
+    @{ $self->{'Cc'} } =
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Cc'} } );
+    @{ $self->{'Bcc'} } =
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Bcc'} } );
+
+    # If there are no recipients, don't try to send the message.
+    # If the transaction has content and has the header RT-Squelch-Replies-To
+
+    if ( defined $self->TransactionObj->Attachments->First() ) {
+        my $squelch =
+          $self->TransactionObj->Attachments->First->GetHeader(
+            'RT-Squelch-Replies-To');
+
+        if ($squelch) {
+            @blacklist = split ( /,/, $squelch );
+        }
+    }
+
+# Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
+    my @non_recipients = $self->TicketObj->SquelchMailTo;
+    foreach my $attribute (@non_recipients) {
+        push @blacklist, $attribute->Content;
+    }
+
+    # Cycle through the people we're sending to and pull out anyone on the
+    # system blacklist
+
+    foreach my $person_to_yank (@blacklist) {
+        $person_to_yank =~ s/\s//g;
+        @{ $self->{'To'} } = grep ( !/^$person_to_yank$/, @{ $self->{'To'} } );
+        @{ $self->{'Cc'} } = grep ( !/^$person_to_yank$/, @{ $self->{'Cc'} } );
+        @{ $self->{'Bcc'} } =
+          grep ( !/^$person_to_yank$/, @{ $self->{'Bcc'} } );
+    }
 }
 
 # }}}
-
-# }}}
-
 # {{{ sub SetReturnAddress
 
 =head2 SetReturnAddress is_comment => BOOLEAN
@@ -409,8 +470,10 @@ Calculate and set From and Reply-To headers based on the is_comment flag.
 sub SetReturnAddress {
 
     my $self = shift;
-    my %args = ( is_comment => 0,
-                 @_ );
+    my %args = (
+        is_comment => 0,
+        @_
+    );
 
     # From and Reply-To
     # $args{is_comment} should be set if the comment address is to be used.
@@ -426,21 +489,26 @@ sub SetReturnAddress {
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
-	if ($RT::UseFriendlyFromLine) {
-	    my $friendly_name = $self->TransactionObj->CreatorObj->RealName;
-	    if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
-		$friendly_name = $1;
-	    }
+        if ($RT::UseFriendlyFromLine) {
+            my $friendly_name = $self->TransactionObj->CreatorObj->RealName;
+            if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
+                $friendly_name = $1;
+            }
 
-	    $friendly_name =~ s/"/\\"/g;
-	    $self->SetHeader( 'From',
-		        sprintf($RT::FriendlyFromLineFormat, 
-                $self->MIMEEncodeString( $friendly_name, $RT::EmailOutputEncoding ), $replyto),
-	    );
-	}
-	else {
-	    $self->SetHeader( 'From', $replyto );
-	}
+            $friendly_name =~ s/"/\\"/g;
+            $self->SetHeader(
+                'From',
+                sprintf(
+                    $RT::FriendlyFromLineFormat,
+                    $self->MIMEEncodeString( $friendly_name,
+                        $RT::EmailOutputEncoding ),
+                    $replyto
+                ),
+            );
+        }
+        else {
+            $self->SetHeader( 'From', $replyto );
+        }
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('Reply-To') ) {
@@ -473,82 +541,6 @@ sub SetHeader {
 
 # }}}
 
-# {{{ sub SetRecipients
-
-=head2 SetRecipients
-
-Dummy method to be overriden by subclasses which want to set the recipients.
-
-=cut
-
-sub SetRecipients {
-    my $self = shift;
-    return ();
-}
-
-# }}}
-
-# {{{ sub SetTo
-
-=head2 SetTo
-
-Takes a string that is the addresses you want to send mail to
-
-=cut
-
-sub SetTo {
-    my $self      = shift;
-    my $addresses = shift;
-    return $self->SetHeader( 'To', $addresses );
-}
-
-# }}}
-
-# {{{ sub SetCc
-
-=head2 SetCc
-
-Takes a string that is the addresses you want to Cc
-
-=cut
-
-sub SetCc {
-    my $self      = shift;
-    my $addresses = shift;
-
-    return $self->SetHeader( 'Cc', $addresses );
-}
-
-# }}}
-
-# {{{ sub SetBcc
-
-=head2 SetBcc
-
-Takes a string that is the addresses you want to Bcc
-
-=cut
-
-sub SetBcc {
-    my $self      = shift;
-    my $addresses = shift;
-
-    return $self->SetHeader( 'Bcc', $addresses );
-}
-
-# }}}
-
-# {{{ sub SetPrecedence
-
-sub SetPrecedence {
-    my $self = shift;
-
-    unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") ) {
-        $self->SetHeader( 'Precedence', "bulk" );
-    }
-}
-
-# }}}
 
 # {{{ sub SetSubject
 
@@ -564,36 +556,33 @@ sub SetSubject {
     my $self = shift;
     my $subject;
 
-    unless ( $self->TemplateObj->MIMEObj->head->get('Subject') ) {
-        my $message = $self->TransactionObj->Attachments;
-        my $ticket  = $self->TicketObj->Id;
-
-        if ( $self->{'Subject'} ) {
-            $subject = $self->{'Subject'};
-        }
-        elsif (    ( $message->First() )
-                && ( $message->First->Headers ) ) {
-            my $header = $message->First->Headers();
-            $header =~ s/\n\s+/ /g;
-            if ( $header =~ /^Subject: (.*?)$/m ) {
-                $subject = $1;
-            }
-            else {
-                $subject = $self->TicketObj->Subject();
-            }
-
+    my $message = $self->TransactionObj->Attachments;
+    if ( $self->TemplateObj->MIMEObj->head->get('Subject') ) {
+        return ();
+    }
+    if ( $self->{'Subject'} ) {
+        $subject = $self->{'Subject'};
+    }
+    elsif ( ( $message->First() ) && ( $message->First->Headers ) ) {
+        my $header = $message->First->Headers();
+        $header =~ s/\n\s+/ /g;
+        if ( $header =~ /^Subject: (.*?)$/m ) {
+            $subject = $1;
         }
         else {
             $subject = $self->TicketObj->Subject();
         }
 
-        $subject =~ s/(\r\n|\n|\s)/ /gi;
-
-        chomp $subject;
-        $self->SetHeader( 'Subject', $subject );
-
     }
-    return ($subject);
+    else {
+        $subject = $self->TicketObj->Subject();
+    }
+
+    $subject =~ s/(\r\n|\n|\s)/ /gi;
+
+    chomp $subject;
+    $self->SetHeader( 'Subject', $subject );
+
 }
 
 # }}}
@@ -621,7 +610,7 @@ sub SetSubjectToken {
 
 # }}}
 
-# {{{
+# {{{ SetHeadingAsEncoding
 
 =head2 SetHeaderAsEncoding($field_name, $charset_encoding)
 
@@ -652,7 +641,7 @@ sub SetHeaderAsEncoding {
 } 
 # }}}
 
-# {{{ MIMENcodeString
+# {{{ MIMEEncodeString
 
 =head2 MIMEEncodeString STRING ENCODING
 

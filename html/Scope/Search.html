@@ -1,0 +1,141 @@
+<%args>
+$query => undef
+$per_page => 25
+$page => 1
+
+</%args>
+<%init>
+my $tix = RT::Tickets->new($session{'CurrentUser'});
+$tix->FromSQL($query);
+my $i;
+</%init>
+<& Elements/Header &>
+<script>
+var oldcurrent;
+var oldcurrentcolor;
+function hilite(num) {
+    if (oldcurrent) {
+    setbgcolor(oldcurrent, oldcurrentcolor);
+    }
+    oldcurrentcolor=getbgcolor(num);
+    setbgcolor(num, "#ff9999");
+    oldcurrent = num; 
+}
+
+function getbgcolor(num) {
+    idstring = "ticket" + num;
+    chunk = document.getElementById(idstring);
+    return chunk.style.backgroundColor;
+
+}
+function setbgcolor(num, color) {
+    idstring = "ticket" + num;
+    chunk = document.getElementById(idstring);
+    chunk.style.backgroundColor = color;
+    idstring = "ticket-actions" + num;
+    chunk = document.getElementById(idstring);
+    chunk.style.backgroundColor = color;
+    
+}
+
+function hide(num) {
+    idstring = "ticket" + num;
+    chunk = document.getElementById(idstring);
+    chunk.style.display = "none";
+    idstring = "ticket-actions" + num;
+    chunk = document.getElementById(idstring);
+    chunk.style.display = "none";
+}
+</script>
+% if ($tix->Count) {
+<font size="-1">
+Found <%$tix->Count%> tickets.
+%$tix->RowsPerPage($per_page);
+%$tix->GotoPage($page-1);
+(displaying <%$tix->FirstRow+1%> through <%$tix->FirstRow+ $tix->RowsPerPage%>)
+</font>
+% }
+<br>
+<br>
+<center>
+% if ($page-1 > 0 ) {
+<a
+href="Search.html?query=<%$query|un%>&page=<%$page-1%>&per_page=<%$per_page%>">&lt;&lt; Page <%$page -1%></a>
+% }
+ - Page <%$page%> - 
+% if  (($page * $per_page) <  $tix->Count) {
+<a
+href="Search.html?query=<%$query|un%>&page=<%$page+1%>&per_page=<%$per_page%>">Page
+<%$page+1%> &gt;&gt;</a>
+
+% }
+</center>
+<br>
+<table width="100%" cellspacing=0 cellpadding="3">
+% while (my $ticket = $tix->Next) {
+% $i++;
+<tr id="ticket<%$ticket->Id%>"
+ onclick="window.open('Work.html?id=<%$ticket->Id%>','View'); hilite(<%$ticket-Id%>);"
+ class="<%$i%2 ? 'evenline' : 'oddline'%>">
+<td rowspan="2" align="right">
+	<a href="Work.html?id=<%$ticket->Id%>" 
+    onClick="hilite(<%$ticket->Id%>)" 
+    target="View" ><span
+    id="id-<%$ticket->Id%>"><%$ticket->Id%></span></a></td>
+<td colspan="4" wrap="1"><font size="-2">
+	<a href="Work.html?id=<%$ticket->Id%>" target="View"
+    onClick="hilite(<%$ticket->Id%>)" 
+    
+    >
+<%$ticket->Subject%>
+</a>
+</font>
+<br>
+<font size="-3">
+<%$ticket->OwnerObj->Name%> - <b><%$ticket->Status%></b> 
+</form>
+</td>
+</tr>
+<tr class="<%$i%2 ? 'evenline' : 'oddline'%>" 
+ onclick="hilite(<%$ticket->Id%>);"
+ id="ticket-actions<%$ticket->id%>">
+<td align="left" colspan="4">
+<font size="-2"><a href="Update.html?id=<%$ticket->Id%>&SubmitTicket=1&Owner=<%$session{CurrentUser}->Id%>" target="Update">Take</a></font>
+ - <font size="-2"><a href="Update.html?id=<%$ticket->Id%>&SubmitTicket=1&Status=resolved" target="Update">Resolve</a></font>
+ - <font size="-2"><a 
+href="Action.html?id=<%$ticket->Id%>&Status=deleted"
+   onClick="hide('<%$ticket->Id%>')" 
+   target="Update">Delete</a></font>
+ - <font size="-2"><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$ticket->Id%>"  target="_blank">Details...</a></font>
+</td>
+
+</tr>
+</div>
+% }
+</table>
+<form method="post" action="index.html" target="_top">
+
+<br>
+Search:<br>
+<%perl>
+my $inaweek = RT::Date->new($session{'CurrentUser'});
+$inaweek->SetToNow;
+$inaweek->AddDays(7);
+my $q1 ="Status = 'open' OR Status = 'new' AND Owner = '".$session{'CurrentUser'}->Name."'";
+my $q2 ="Status = 'open' OR Status = 'new' AND Owner = '".$session{'CurrentUser'}->Name."' AND Due <= ".$inaweek->ISO;
+my $q3 = "Owner = 'Nobody' AND (Status = 'open' OR Status = 'new')";
+</%perl>
+<ul>
+<li><a target="_top" href="index.html?query=<%$q1%>">My new and open tickets</a>
+<li><a target="_top" href="index.html?query=<%$q2%>">My tickets due within 7 days</a>
+<li><a target="_top" href="index.html?query=<%$q3%>">New, unowned tickets</a>
+
+<br>
+
+<font size="-1"><textarea rows=3 cols=40 name="query"><%$query%></textarea>
+Show <input size="3" value="<%$per_page%>" name="per_page"> tickets per
+page.<br>
+</font>
+<input type="submit" value="<&|/l&>Go</&>">
+</form>
+%$m->abort();

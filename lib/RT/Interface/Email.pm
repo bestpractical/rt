@@ -413,37 +413,9 @@ sub Gateway {
     }
 
     my $parser = RT::EmailParser->new();
-    my ( $fh, $temp_file );
-    for ( 1 .. 10 ) {
 
-        # on NFS and NTFS, it is possible that tempfile() conflicts
-        # with other processes, causing a race condition. we try to
-        # accommodate this by pausing and retrying.
-        last if ( $fh, $temp_file ) = eval { File::Temp::tempfile(undef, UNLINK => 0) };
-        sleep 1;
-    }
-    if ($fh) {
-        binmode $fh;    #thank you, windows
-        $fh->autoflush(1);
-        print $fh $args{'message'};
-        close($fh);
+    $parser->SmartParseMIMEEntityFromScalar( Message => $args{'message'});
 
-        if ( -f $temp_file ) {
-            $parser->ParseMIMEEntityFromFile($temp_file);
-            File::Temp::unlink0( $fh, $temp_file );
-            if ($parser->Entity) {
-                delete $args{'message'};
-            }
-        }
-
-    }
-
-    #If for some reason we weren't able to parse the message using a temp file 
-    # try it with a scalar
-    if ($args{'message'}) {
-        $parser->ParseMIMEEntityFromScalar($args{'message'});
-
-    } 
 
     if (!$parser->Entity()) {
         MailError(
@@ -500,34 +472,37 @@ sub Gateway {
 
     # Since this needs loading, no matter what
 
-    for (@RT::MailPlugins) {
+    foreach (@RT::MailPlugins) {
+        $RT::Logger->crit("Looking at email plugin ".$_);
         my $Code;
         my $NewAuthStat;
         if ( ref($_) eq "CODE" ) {
             $Code = $_;
         }
         else {
-            $_ = "RT::Interface::Email::$_" unless /^RT::Interface::Email::/;
+            $_ = "RT::Interface::Email::".$_ unless $_ =~ /^RT::Interface::Email::/;
             eval "require $_;";
             if ($@) {
-                die ("Couldn't load module $_: $@");
+                $RT::Logger->crit("Couldn't load module '$_': $@");
                 next;
             }
             no strict 'refs';
             if ( !defined( $Code = *{ $_ . "::GetCurrentUser" }{CODE} ) ) {
-                die ("No GetCurrentUser code found in $_ module");
+                $RT::Logger->crit("No GetCurrentUser code found in $_ module");
                 next;
             }
         }
 
         ( $CurrentUser, $NewAuthStat ) = $Code->(
             Message     => $Message,
+            RawMessageRef => \$args{'message'},
             CurrentUser => $CurrentUser,
             AuthLevel   => $AuthStat,
             Action      => $args{'action'},
             Ticket      => $SystemTicket,
             Queue       => $SystemQueueObj
         );
+
 
         # If a module returns a "-1" then we discard the ticket, so.
         $AuthStat = -1 if $NewAuthStat == -1;
@@ -751,6 +726,7 @@ EOT
 
     return ( 1, "Success", $Ticket );
 }
+
 
 eval "require RT::Interface::Email_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email_Vendor.pm});

@@ -1749,6 +1749,7 @@ sub _Init  {
     $self->{'primary_key'} = "id";
     delete $self->{'items_array'};
     delete $self->{'item_map'};
+    delete $self->{'columns_to_display'};
     $self->SUPER::_Init(@_);
 
     $self->_InitSQL;

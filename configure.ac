@@ -6,7 +6,7 @@ AC_REVISION($Revision: 1.1 $)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [3.0.8], [rt-3.0-bugs@fsck.com])
+AC_INIT(RT, [3.1.1], [rt-3.1-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -174,6 +174,17 @@ AC_ARG_WITH(my-user-group,
             WEB_USER=$USER
             WEB_GROUP=$my_group)
 
+
+
+dnl Set the value of apachectl
+AC_ARG_WITH(apachectl,
+            AC_HELP_STRING([--with-apachectl],
+                           [instruct RT where to find your apachectl]),
+
+            APACHECTL=$withval, 
+            APACHECTL=`which apachectl`)
+AC_SUBST(APACHECTL)
+
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in
 dnl files are changed to use the new names.
@@ -219,6 +230,7 @@ AC_CONFIG_FILES([
                  lib/t/04_send_email.pl
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
+ 		 bin/standalone_httpd
  		 bin/mason_handler.svc
  		 bin/rt-commit-handler
  		 bin/rt-crontool

@@ -31,28 +31,6 @@
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
 <input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>">
 <input type="hidden" name="Action" value="<% $ARGS{Action} %>">
-<font size=-1>
-
-<TABLE>
-<TR><TD>
-<a href="ModifyPeople.html?id=<%$TicketObj->Id%>"><&|/l&>Ticket watchers</&></A></TD><TD align=right>
-<&|/l&>Requestor</&>:
-</TD><TD>
-<b><% $TicketObj->RequestorAddresses %></b>
-</TD></TR>
-<TR><TD>&nbsp;</TD><TD align=right>
-<&|/l&>Cc</&>:
-</TD><TD>
-<b><% $TicketObj->CcAddresses %></b>
-</TD></TR>
-<TR><TD>&nbsp;</TD><TD align=right>
-<&|/l&>AdminCc</&>:
-</TD><TD>
-<b><% $TicketObj->AdminCcAddresses %></b>
-</TD></TR>
-</TR>
-</TABLE>
-<hr>
 
 <TABLE BORDER=0>
 
@@ -74,7 +52,7 @@
 </td></tr>
 <tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% ($ARGS{UpdateSubject}) ? $ARGS{UpdateSubject} : $TicketObj->Subject()%>"></td></tr>
 <tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60
-value=<% $ARGS{UpdateCc} %>><BR>
+value="<% $ARGS{UpdateCc} %>"><BR>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
@@ -113,10 +91,10 @@ value=<% $ARGS{UpdateCc} %>><BR>
 
 
 <& /Elements/Submit, Name => 'SubmitTicket' &>
-  </FORM>
 
+<& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
 
-
+</FORM>
 <%INIT>
 
 my $CanRespond = 0;

@@ -561,6 +561,27 @@ CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
 -- }}}
 
+
+CREATE SEQUENCE attributes_id_seq;
+
+CREATE TABLE Attributes (
+  id INTEGER DEFAULT nextval('attributes_id_seq'),
+  Name varchar(255) NOT NULL  ,
+  Description varchar(255) NULL  ,
+  Content text,
+  ObjectType varchar(64),
+  ObjectId integer, # foreign key to anything
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
+  PRIMARY KEY (id)
+
+);
+CREATE INDEX Attributes1 on Attributes(Name, ObjectType, ObjectId);
+
+
+
 -- {{{ Sessions
 
 -- sessions is used by Apache::Session to keep sessions in the database.

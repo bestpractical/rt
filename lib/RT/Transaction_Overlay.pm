@@ -54,6 +54,7 @@ no warnings qw(redefine);
 use vars qw( %_BriefDescriptions );
 
 use RT::Attachments;
+use RT::Scrips;
 
 # {{{ sub Create 
 
@@ -82,6 +83,7 @@ sub Create {
         NewValue       => undef,
         MIMEObj        => undef,
         ActivateScrips => 1,
+        CommitScrips => 1,
         @_
     );
 
@@ -109,24 +111,48 @@ sub Create {
  
     my $id = $self->SUPER::Create(%params);
     $self->Load($id);
-    $self->_Attach( $args{'MIMEObj'} )
-      if defined $args{'MIMEObj'};
+    $self->_Attach( $args{'MIMEObj'} ) if defined $args{'MIMEObj'};
+
 
     #Provide a way to turn off scrips if we need to
+        $RT::Logger->debug('About to think about scrips for transaction' .$self->Id);            
     if ( $args{'ActivateScrips'} ) {
-        require RT::Scrips;
-        RT::Scrips->new($RT::SystemUser)->Apply(
+       $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
+
+        $RT::Logger->debug('About to prepare scrips for transaction' .$self->Id);            
+
+        $self->{'scrips'}->Prepare(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
             Ticket      => $args{'Ticket'},
             Transaction => $self->id,
         );
+        if ($args{'CommitScrips'} ) {
+            $RT::Logger->debug('About to commit scrips for transaction' .$self->Id);
+            $self->{'scrips'}->Commit();
+        }
     }
 
     return ( $id, $self->loc("Transaction Created") );
 }
 
 # }}}
+
+=head2 Scrips
+
+Returns the Scrips object for this transaction.
+This routine is only useful on a freshly created transaction object.
+Scrips do not get persisted to the database with transactions.
+
+
+=cut
+
+
+sub Scrips {
+    my $self = shift;
+    return($self->{'scrips'});
+}
+
 
 # {{{ sub Delete
 

@@ -1,0 +1,275 @@
+%# BEGIN LICENSE BLOCK;
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+--<%$BaseURL%>--
+<& /Elements/TitleBoxStart, title => $Title, bodyclass=> '' &>
+<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
+<& .Header, Format => \@Format, map => $map, AllowSorting => $AllowSorting, Order => $Order, OrderBy => $OrderBy , BaseURL => $BaseURL  &> 
+% my $i;
+% while (my $record = $Collection->Next) {
+% $i++;
+<& .Row, Format => \@Format, i => $i, record => $record, map => $map &>
+% }
+</TABLE>
+<& /Elements/TitleBoxEnd &> 
+<%INIT>
+
+my $map = {
+    QueueName => {
+        attribute => 'Queue',
+        title => 'Queue',
+        value => sub { return $_[0]->QueueObj->Name }
+    },
+    OwnerName => {
+        title => 'Owner',
+        attribute => 'Owner',
+        value => sub { return $_[0]->OwnerObj->Name }
+    },
+    id => {
+        align => 'right',
+        value => sub { return $_[0]->id }
+    },
+    Status => {
+        value => sub { return $_[0]->Status }
+    },
+    Subject => {
+        value => sub { return $_[0]->Subject }
+    },
+    ExtendedStatus => {
+        title => 'Status',
+        attribute => 'Status',
+        value => sub {
+            my $Ticket = shift;
+
+            if ( $Ticket->HasUnresolvedDependencies ) {
+                if ( $Ticket->HasUnresolvedDependencies( Type => 'approval' )
+                    or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
+                {
+                    return "<em>" . loc('(pending approval)') . "</em>";
+                }
+                else {
+                    return "<em>" . loc('(pending other Collection)') . "</em>";
+                }
+            }
+            else {
+                return loc( $Ticket->Status );
+            }
+
+        }
+    }, Priority => {
+        value => sub { return $_[0]->Priority }
+    },
+    InitialPriority => {
+        value => sub { return $_[0]->InitialPriority }
+    },
+    FinalPriority => {
+        value => sub { return $_[0]->FinalPriority }
+    },
+    EffectiveId => {
+        value => sub { return $_[0]->EffectiveId }
+    },
+    Type => {
+        value => sub { return $_[0]->Type }
+    },
+    TimeWorked => {
+        value => sub { return $_[0]->TimeWorked }
+    },
+    TimeLeft => {
+        value => sub { return $_[0]->TimeLeft }
+    },
+    TimeEstimated => {
+        value => sub { return $_[0]->TimeEstimated }
+    },
+    Requestors => {
+        value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+    },
+    Cc => {
+        value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
+    },
+    AdminCc => {
+        value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
+    },
+    StartsRelative => {
+        title => 'Starts',
+        attribute => 'Starts',
+        value => sub { return $_[0]->StartsObj->AgeAsString }
+    },
+    StartedRelative => {
+        title => 'Started',
+        attribute => 'Started',
+        value => sub { return $_[0]->StartedObj->AgeAsString }
+    },
+    CreatedRelative => {
+        title => 'Created',
+        attribute => 'Created',
+        value => sub { return $_[0]->CreatedObj->AgeAsString }
+    },
+    LastUpdatedRelative => {
+        title => 'LastUpdated',
+        attribute => 'LastUpdated',
+        value => sub { return $_[0]->LastUpdatedObj->AgeAsString }
+    },
+    ToldRelative => {
+        title => 'Told',
+        attribute => 'Told',
+        value => sub { return $_[0]->ToldObj->AgeAsString }
+    },
+    DueRelative => {
+        title => 'Due',
+        attribute => 'Due',
+        value => sub { return $_[0]->DueObj->AgeAsString }
+    },
+    ResolvedRelative => {
+        title => 'Resolved',
+        attribute => 'Resolved',
+        value => sub { return $_[0]->ResolvedObj->AgeAsString }
+    },
+    Starts => {
+        value => sub { return $_[0]->StartsObj->AsString }
+    },
+    Started => {
+        value => sub { return $_[0]->StartedObj->AsString }
+    },
+    Created => {
+        value => sub { return $_[0]->CreatedObj->AsString }
+    },
+    LastUpdated => {
+        value => sub { return $_[0]->LastUpdatedObj->AsString }
+    },
+    Told => {
+        value => sub { return $_[0]->ToldObj->AsString }
+    },
+    Due => {
+        value => sub { return $_[0]->DueObj->AsString }
+    },
+    Resolved => {
+        value => sub { return $_[0]->ResolvedObj->AsString }
+    },
+    '_CLASS' => {
+        value => sub { return  $_[1] %2 ? 'oddline' : 'evenline' } 
+        },
+
+};
+
+unless ($Collection) {
+        $Collection = RT::Tickets->new($session{'CurrentUser'});
+        $Collection->FromSQL($Query);
+        @Format = $Collection->DisplayColumns;
+}
+
+$Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+
+
+</%INIT>
+<%ARGS>
+$Query => undef
+$Rows => 10
+$Page => 1
+$Title => 'Ticket Search'
+$Collection => undef
+$AllowSorting => undef
+$Order =>undef
+$OrderBy => undef
+$BaseURL => undef
+@Format => undef
+</%ARGS>
+%#### SUB COMPONENTS
+%#
+%#
+%#
+<%DEF .Header>
+<%ARGS>
+@Format => undef
+$map => undef
+$AllowSorting => undef
+$Order=>undef
+$BaseURL => undef
+</%ARGS>
+<TR>
+<%perl>
+foreach my $col (@Format) {
+    if ( $col->{title} eq 'NEWLINE' ) {
+        $m->out('</TR>       <TR>');
+    }
+    else {
+        $m->out('<TH align="center">');
+        my $title = $col->{title};
+        $title =~ s/^__(.*)__$/$1/o;
+        $title = ( $map->{$title}->{title} || $title );
+        if ( $AllowSorting && $col->{'attribute'} ) {
+            my @query_args;
+            push @query_args,
+              ( "OrderBy="
+              . ( $map->{ $col->{'attribute'} }->{'attribute'}
+              ? $map->{ $col->{'attribute'} }->{'attribute'}
+              : $col->{'attribute'} ) );
+            push @query_args,
+              ( "Order=" . ( $ARGS{'Order'} eq 'ASC'  
+              ? 'DESC'
+              : 'ASC' ));
+            $m->out( '<a href="' . $BaseURL . '&'
+                . join ( '&', @query_args ) . '">'
+                . loc($title) . '</a>' );
+        }
+        else {
+            $m->out( loc($title) );
+        }
+        $m->out('</TH>');
+    }
+}
+</%perl>
+</TR>
+</%DEF>
+
+<%DEF .Row>
+<%ARGS>
+$i => undef
+@Format => undef
+$record => undef
+$map => undef
+</%ARGS>
+<%PERL>
+$m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
+foreach my $column (@Format) {
+    if ( $column->{title} eq 'NEWLINE' ) {
+        $m->out('</TR>');
+        $m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
+        next;
+    }
+    $m->out('<td align="left">');
+    foreach my $subcol ( @{ $column->{output} } ) {
+        if ( $subcol =~ /^__(.*?)__$/o ) {
+            my $col = $1;
+            if ( $map->{$col}->{value} && ref( $map->{$col}->{value} ) ) {
+                $m->out( &{ $map->{$col}->{value} } ( $record, $i ) );
+            }
+        }
+        else {
+            $m->out($subcol);
+        }
+    }
+    $m->out('</td>');
+}
+$m->out('</TR>');
+</%PERL>
+</%DEF>

@@ -25,88 +25,79 @@
 <& /Ticket/Elements/Tabs, 
     current_tab => 'Search/Listing.html', 
     Title => $title &>
+<hr>
 
-%if ($ticketcount && !  $ARGS{'HideResults'}) {
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& Elements/TicketHeader, %ARGS &>
-% my $i;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% $i++;
-<& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
-%}
-</TABLE>
-<div align=center>
-<font size=2>
-<a href="Listing.html?GotoPage=1"><&|/l&>First page</&></a>
-&nbsp;&nbsp;
-%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="Listing.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
-&nbsp;&nbsp;
-%  }                                                                           
-%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="Listing.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
-%  }
-%#&nbsp;&nbsp;<form method=get action="Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
-</font>
-</div>
-<!--<div align=right>-->
-<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
-<tr>
-<td align=left>
-(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
-</td>
-<td align=right>
+%if ($session{'tickets'} && $ticketcount && !  $HideResults) {
+
+<& /Elements/TicketList, 
+    Query => $session{'tickets'}->Query, 
+    AllowSorting => 1,
+    OrderBy => $ARGS{'OrderBy'},
+    Order => $ARGS{'Order'},
+    Rows => $ARGS{'Rows'},
+    FirstRow => $ARGS{'FirstRow'},
+    Collection => $session{'tickets'},
+    Format => [$session{'tickets'}->DisplayColumns],
+    BaseURL => $RT::WebPath."/Search/Listing.html?"
+
+   &>
+<div align=right>
 
 <a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a>
-<!--</div>-->
+<a href="Results.tsv"><&|/l&>Download all the tickets as a tab delimited file</&></a>
 </td>
 </tr>
 </table>
 
 % }
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
+<form method="POST" action="Listing.html">
 <& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-%my %restrictions=$session{'tickets'}->DescribeRestrictions();
-%foreach my $row (keys %restrictions){
-<%$restrictions{"$row"}%> <A HREF="<% $RT::WebPath %>/Search/Listing.html?DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
-%}
-<BR>
-<BR>
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
-<& /Elements/TitleBoxEnd&>
-</TD>
-<TD>
+<textarea name="Query" rows=5 cols=80><%$session{'tickets'}->Query||$Query%></textarea>
 
-<& Elements/PickRestriction, %ARGS &>
-
-</TD>
-</TR>
-</TABLE>
+<& /Elements/Submit &>
+<&/Elements/TitleBoxEnd &>
+</form>
 
 <%INIT>
 
 my ($title, $ticketcount);
 $session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	    $session{'tickets'}->ClearRestrictions;
-	}	
-}
-   ProcessSearchQuery(ARGS=>\%ARGS);
-   $session{'tickets'}->RedoSearch();
-   if ( $session{'tickets'}->DescribeRestrictions()) {
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless
+($session{'tickets'});
+$session{'tickets'}->FromSQL($Query) if ($Query);
+
+   if ( $session{'tickets'}->Query()) {
        $ticketcount = $session{tickets}->CountAll();
         $title = loc('Found [quant,_1,ticket]', $ticketcount);
     } else {
         $title = loc("Find tickets");
    }
+
+$Query= $session{'tickets'}->Query; 
+
+unless ($session{'tickets'}->Query) {
+$HideResults = 1;
+$Query = qq{ SELECT 
+'<B><A HREF="/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#'
+'<B><A HREF="/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+Status, 
+QueueName, 
+OwnerName, 
+Priority, 
+'__NEWLINE__',
+'',
+'<small>__Requestors__</small>',
+'<small>__CreatedRelative__</small>',
+'<small>__ToldRelative__</small>',
+'<small>__LastUpdatedRelative__</small>',
+'<small>__TimeLeft__</small>' WHERE  };
+}
 </%INIT>
 <%CLEANUP>
 $session{'tickets'}->PrepForSerialization();
 </%CLEANUP>
+<%ARGS>
+$Query => undef
+$HideResults => 0
+</%ARGS>

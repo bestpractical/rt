@@ -129,40 +129,172 @@ sub Next {
 }
 # }}}
 
+=head2 Apply
+
+Run through the relevant scrips. 
+
+=cut
+
 sub Apply {
-    my ($self, %args) = @_;
+    my $self = shift;
+
+    my %args = ( TicketObj      => undef,
+                 Ticket         => undef,
+                 Transaction    => undef,
+                 TransactionObj => undef,
+                 Stage          => undef,
+                 Type           => undef,
+                 @_ );
+
+    $self->Prepare(%args);
+    $self->Commit();
+
+}
+
+=head2 Commit
+
+Commit all of this object's prepared scrips
+
+=cut
+
+sub Commit {
+    my $self = shift;
+
+    
+    foreach my $scrip (@{$self->Prepared}) {
+
+        $scrip->Commit( TicketObj      => $self->{'TicketObj'},
+                        TransactionObj => $self->{'TransactionObj'} );
+    }
+}
+
+
+=head2 Prepare
+
+Only prepare the scrips, returning an array of the scrips we're interested in
+in order of preparation, not execution
+
+=cut
+
+sub Prepare { 
+    my $self = shift;
+    my %args = ( TicketObj      => undef,
+                 Ticket         => undef,
+                 Transaction    => undef,
+                 TransactionObj => undef,
+                 Stage          => undef,
+                 Type           => undef,
+                 @_ );
 
     #We're really going to need a non-acled ticket for the scrips to work
-    my ($TicketObj, $TransactionObj);
+    $self->_SetupSourceObjects( TicketObj      => $args{'TicketObj'},
+                                Ticket         => $args{'Ticket'},
+                                TransactionObj => $args{'TransactionObj'},
+                                Transaction    => $args{'Transaction'} );
 
-    if ( ($TicketObj = $args{'TicketObj'}) ) {
-        $TicketObj->CurrentUser($self->CurrentUser);
+
+    $self->_FindScrips( Stage => $args{'Stage'}, Type => $args{'Type'} );
+
+
+    #Iterate through each script and check it's applicability.
+    while ( my $scrip = $self->Next() ) {
+
+        next
+          unless ( $scrip->IsApplicable(
+                                     TicketObj      => $self->{'TicketObj'},
+                                     TransactionObj => $self->{'TransactionObj'}
+                   ) );
+
+        #If it's applicable, prepare and commit it
+        next
+          unless ( $scrip->Prepare( TicketObj      => $self->{'TicketObj'},
+                                    TransactionObj => $self->{'TransactionObj'}
+                   ) );
+        push @{$self->{'prepared_scrips'}}, $scrip;
+
+    }
+
+    return (@{$self->Prepared});
+
+};
+
+=head2 Prepared
+
+Returns an arrayref of the scrips this object has prepared
+
+
+=cut
+
+sub Prepared {
+    my $self = shift;
+    return ($self->{'prepared_scrips'} || []);
+}
+
+
+# {{{ sup _SetupSourceObjects
+=head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }
+
+Setup a ticket and transaction for this Scrip collection to work with as it runs through the 
+relevant scrips.  (Also to figure out which scrips apply)
+
+Returns: nothing
+
+=cut
+
+
+sub _SetupSourceObjects {
+
+    my $self = shift;
+    my %args = ( 
+            TicketObj => undef,
+            Ticket => undef,
+            Transaction => undef,
+            TransactionObj => undef,
+            @_ );
+
+    if ( ( $self->{'TicketObj'} = $args{'TicketObj'} ) ) {
+        $self->{'TicketObj'}->CurrentUser( $self->CurrentUser );
     }
     else {
-        $TicketObj = RT::Ticket->new($self->CurrentUser);
-        $TicketObj->Load( $args{'Ticket'} )
-            || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
+        $self->{'TicketObj'} = RT::Ticket->new( $self->CurrentUser );
+        $self->{'TicketObj'}->Load( $args{'Ticket'} )
+          || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
     }
 
-    if ( ($TransactionObj = $args{'TransactionObj'}) ) {
-        $TransactionObj->CurrentUser($self->CurrentUser);
+    if ( ( $self->{'TransactionObj'} = $args{'TransactionObj'} ) ) {
+        $self->{'TransactionObj'}->CurrentUser( $self->CurrentUser );
     }
     else {
-        $TransactionObj = RT::Transaction->new($self->CurrentUser);
-        $TransactionObj->Load( $args{'Transaction'} )
-            || $RT::Logger->err("$self couldn't load transaction $args{'Transaction'}\n");
+        $self->{'TransactionObj'} = RT::Transaction->new( $self->CurrentUser );
+        $self->{'TransactionObj'}->Load( $args{'Transaction'} )
+          || $RT::Logger->err( "$self couldn't load transaction $args{'Transaction'}\n");
     }
+} 
 
-    # {{{ Deal with Scrips
+# }}}
 
-    $self->LimitToQueue( $TicketObj->QueueObj->Id )
-        ;                                  #Limit it to  $Ticket->QueueObj->Id
+# {{{ sub _FindScrips;
+
+=head2 _FindScrips
+
+Find only the apropriate scrips for whatever we're doing now
+
+=cut
+
+sub _FindScrips {
+    my $self = shift;
+    my %args = (
+                 Stage => undef,
+                 Type => undef,
+                 @_ );
+
+
+    $self->LimitToQueue( $self->{'TicketObj'}->QueueObj->Id )
+      ;    #Limit it to  $Ticket->QueueObj->Id
     $self->LimitToGlobal()
-        unless $TicketObj->QueueObj->Disabled;    # or to "global"
+      unless $self->{'TicketObj'}->QueueObj->Disabled;    # or to "global"
 
-
-    $self->Limit(FIELD => "Stage", VALUE => $args{'Stage'});
-
+    $self->Limit( FIELD => "Stage", VALUE => $args{'Stage'} );
 
     my $ConditionsAlias = $self->NewAlias('ScripConditions');
 
@@ -180,7 +312,8 @@ sub Apply {
         OPERATOR        => 'LIKE',
         VALUE           => $args{'Type'},
         ENTRYAGGREGATOR => 'OR',
-    ) if $args{'Type'};
+      )
+      if $args{'Type'};
 
     # Or where the scrip applies to any transaction
     $self->Limit(
@@ -191,18 +324,10 @@ sub Apply {
         ENTRYAGGREGATOR => 'OR',
     );
 
-    #Iterate through each script and check it's applicability.
-    while ( my $Scrip = $self->Next() ) {
-        $Scrip->Apply (TicketObj => $TicketObj,
-                        TransactionObj => $TransactionObj);
-    }
-
-    $TicketObj->CurrentUser( $TicketObj->OriginalUser );
-    $TransactionObj->CurrentUser( $TransactionObj->OriginalUser );
-
-    # }}}
+    $RT::Logger->debug("Found ".$self->Count. " scrips");
 }
 
+# }}}
 
 1;
 

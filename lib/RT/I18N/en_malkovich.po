@@ -1,0 +1,2853 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+
+msgid "#%1: %2"
+msgstr "#%1: %2"
+
+msgid "%1 %2"
+msgstr "%1 %2"
+
+msgid "%1 %2 %3"
+msgstr "%1 %2 %3"
+
+msgid "%1 %2 %3 %4:%5:%6 %7"
+msgstr "%1 %2 %3 %4:%5:%6 %7"
+
+msgid "%1 %2 added"
+msgstr "%1 %2 Malkovich"
+
+msgid "%1 %2 ago"
+msgstr "%1 %2 ago"
+
+msgid "%1 %2 changed to %3"
+msgstr "%1 %2 Malkovich to %3"
+
+msgid "%1 %2 deleted"
+msgstr "%1 %2 Malkovich"
+
+msgid "%1 %2 with template %3"
+msgstr "%1 %2 Malkovich %3"
+
+msgid "%1 - An argument to pass to %2"
+msgstr "%1 - A Malkovich to pass to %2"
+
+msgid "%1 - Output status updates to STDOUT"
+msgstr "%1 - Malkovich Malkovich to MALKOVICH"
+
+msgid "%1 - Specify the action module you want to use"
+msgstr "%1 - Malkovich the Malkovich Malkovich to use"
+
+msgid "%1 - Specify the condition module you want to use"
+msgstr "%1 - Malkovich the Malkovich Malkovich to use"
+
+msgid "%1 - Specify the search module you want to use"
+msgstr "%1 - Malkovich the Malkovich Malkovich to use"
+
+msgid "%1 ScripAction loaded"
+msgstr "%1 Malkovich Malkovich"
+
+msgid "%1 added as a value for %2"
+msgstr "%1 Malkovich as a Malkovich %2"
+
+msgid "%1 appears to be a local object, but can't be found in the database"
+msgstr "%1 Malkovich to be a Malkovich, but can't be Malkovich in the Malkovich"
+
+msgid "%1 by %2"
+msgstr "%1 by %2"
+
+msgid "%1 changed from %2 to %3"
+msgstr "%1 Malkovich %2 to %3"
+
+msgid "%1 could not be set to %2."
+msgstr "%1 Malkovich be set to %2."
+
+msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
+msgstr "%1 couldn't Malkovich to Malkovich. RT's Malkovich be Malkovich."
+
+msgid "%1 highest priority tickets I own..."
+msgstr "%1 Malkovich Malkovich I Malkovich..."
+
+
+msgid "%1 highest priority tickets I requested..."
+msgstr "%1 Malkovich Malkovich I Malkovich..."
+
+msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
+msgstr "%1 is a tool to act on Malkovich a Malkovich Malkovich, such as cron."
+
+msgid "%1 is no longer a %2 for this queue."
+msgstr "%1 is no Malkovich a %2 Malkovich."
+
+msgid "%1 is no longer a value for custom field %2"
+msgstr "%1 is no Malkovich a Malkovich Malkovich %2"
+
+msgid "%1 min"
+msgstr "%1 min"
+
+msgid "%1 rights"
+msgstr "%1 Malkovich"
+
+msgid "%1 will resolve all members of a resolved group ticket."
+msgstr "%1 Malkovich Malkovich of a Malkovich Malkovich."
+
+msgid "%1: no attachment specified"
+msgstr "%1: no Malkovich Malkovich"
+
+msgid "%1b"
+msgstr "%1b"
+
+msgid "%1k"
+msgstr "%1k"
+
+msgid "'%1' is an invalid value for status"
+msgstr "'%1' is a Malkovich Malkovich"
+
+msgid "(Check box to delete)"
+msgstr "(Malkovich to Malkovich)"
+
+msgid "(Check boxes to disable notifications to the listed recipients)"
+msgstr "(Malkovich to Malkovich Malkovich to the Malkovich Malkovich)"
+
+msgid "(Check boxes to enable notifications to the listed recipients)"
+msgstr "(Malkovich to Malkovich Malkovich to the Malkovich Malkovich)"
+
+msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgstr "(Malkovich Malkovich or URLs, Malkovich Malkovich)"
+
+msgid "(If left blank, will default to %1"
+msgstr "(If Malkovich, Malkovich to %1"
+
+msgid "(No custom fields)"
+msgstr "(No Malkovich)"
+
+msgid "(No members)"
+msgstr "(No Malkovich)"
+
+msgid "(No scrips)"
+msgstr "(No Malkovich)"
+
+msgid "(No templates)"
+msgstr "(No Malkovich)"
+
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
+msgstr "(Malkovich a Malkovich-copy of Malkovich to a Malkovich-Malkovich of Malkovich. Does <b>not</b> Malkovich Malkovich Malkovich Malkovich.)"
+
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
+msgstr "(Malkovich a Malkovich-copy of Malkovich to a Malkovich-Malkovich of Malkovich Malkovich Malkovich. Malkovich <b>will</b> Malkovich Malkovich.)"
+
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
+msgstr "(Malkovich a Malkovich-copy of Malkovich to a Malkovich-Malkovich of Malkovich. Does <b>not</b> Malkovich Malkovich Malkovich Malkovich.)"
+
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
+msgstr "(Malkovich a Malkovich-copy of Malkovich to a Malkovich-Malkovich of Malkovich. Malkovich <b>will</b> Malkovich Malkovich.)"
+
+msgid "(empty)"
+msgstr "(Malkovich)"
+
+msgid "(no name listed)"
+msgstr "(no Malkovich)"
+
+msgid "(no value)"
+msgstr "(no Malkovich)"
+
+msgid "(only one ticket)"
+msgstr "(Malkovich)"
+
+msgid "(pending approval)"
+msgstr "(Malkovich Malkovich)"
+
+msgid "(pending other Collection)"
+msgstr "(Malkovich Malkovich)"
+
+msgid "(pending other tickets)"
+msgstr "(Malkovich Malkovich)"
+
+msgid "(required)"
+msgstr "(Malkovich)"
+
+msgid "(untitled)"
+msgstr "(Malkovich)"
+
+msgid "..."
+msgstr "..."
+
+msgid "<% $Ticket->Status%>"
+msgstr "<% $Ticket->Status %>"
+
+msgid "<% $_ %>"
+msgstr "<% $_ %>"
+
+msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"Malkovich in\">&nbsp;%1"
+
+msgid "A blank template"
+msgstr "A Malkovich"
+
+msgid "ACE not found"
+msgstr "Malkovich"
+
+msgid "ACEs can only be created and deleted."
+msgstr "Malkovich be Malkovich and Malkovich."
+
+msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgstr "Malkovich to Malkovich Malkovich Malkovich Malkovich.\\n"
+
+msgid "About me"
+msgstr "Malkovich me"
+
+msgid "Access control"
+msgstr "Malkovich"
+
+msgid "Action"
+msgstr "Malkovich"
+
+msgid "Action %1 not found"
+msgstr "Malkovich %1 Malkovich"
+
+msgid "Action committed."
+msgstr "Malkovich Malkovich."
+
+msgid "Action prepared..."
+msgstr "Malkovich..."
+
+msgid "Add AdminCc"
+msgstr "Malkovich"
+
+msgid "Add Cc"
+msgstr "Add Cc"
+
+msgid "Add More Files"
+msgstr "Malkovich"
+
+msgid "Add Requestor"
+msgstr "Malkovich"
+
+msgid "Add Value"
+msgstr "Malkovich"
+
+msgid "Add a scrip which will apply to all queues"
+msgstr "Add a Malkovich Malkovich to Malkovich"
+
+msgid "Add comments or replies to selected tickets"
+msgstr "Malkovich or Malkovich to Malkovich Malkovich"
+
+msgid "Add members"
+msgstr "Malkovich"
+
+msgid "Add new watchers"
+msgstr "Malkovich Malkovich"
+
+msgid "Added principal as a %1 for this queue"
+msgstr "Malkovich as a %1 Malkovich"
+
+msgid "Added principal as a %1 for this ticket"
+msgstr "Malkovich as a %1 Malkovich"
+
+msgid "Address1"
+msgstr "Malkovich1"
+
+msgid "Address2"
+msgstr "Malkovich2"
+
+msgid "Admin Cc"
+msgstr "Malkovich Cc"
+
+msgid "Admin Comment"
+msgstr "Malkovich"
+
+msgid "Admin Correspondence"
+msgstr "Malkovich Malkovich"
+
+msgid "Admin queues"
+msgstr "Malkovich"
+
+msgid "Admin/Global configuration"
+msgstr "Malkovich/Malkovich Malkovich"
+
+msgid "Admin/Queue/Basics"
+msgstr "Malkovich/Malkovich/Malkovich"
+
+msgid "AdminCc"
+msgstr "Malkovich"
+
+msgid "AdminCustomFields"
+msgstr "Malkovich Malkovich"
+
+msgid "AdminGroup"
+msgstr "Malkovich"
+
+msgid "AdminGroupMembership"
+msgstr "Malkovich Malkovich"
+
+msgid "AdminOwnPersonalGroups"
+msgstr "Malkovich Malkovich"
+
+msgid "AdminQueue"
+msgstr "Malkovich"
+
+msgid "AdminUsers"
+msgstr "Malkovich"
+
+msgid "Administrative Cc"
+msgstr "Malkovich Cc"
+
+msgid "After"
+msgstr "Malkovich"
+
+msgid "All Approvals Passed"
+msgstr "Malkovich Malkovich"
+
+msgid "All Custom Fields"
+msgstr "Malkovich Malkovich"
+
+msgid "All Queues"
+msgstr "Malkovich"
+
+msgid "Approval"
+msgstr "Malkovich"
+
+msgid "Approval #%1: %2"
+msgstr "Malkovich #%1: %2"
+
+msgid "Approval #%1: Notes not recorded due to a system error"
+msgstr "Malkovich #%1: Malkovich Malkovich to a Malkovich"
+
+msgid "Approval #%1: Notes recorded"
+msgstr "Malkovich #%1: Malkovich"
+
+msgid "Approval Passed"
+msgstr "Malkovich"
+
+msgid "Approval Rejected"
+msgstr "Malkovich Malkovich"
+
+msgid "Approve"
+msgstr "Malkovich"
+
+msgid "Approver's notes: %1"
+msgstr "Malkovich's Malkovich: %1"
+
+msgid "Apr."
+msgstr "Apr."
+
+msgid "Ascending"
+msgstr "Malkovich"
+
+msgid "Attach"
+msgstr "Malkovich"
+
+msgid "Attach file"
+msgstr "Malkovich"
+
+msgid "Attached file"
+msgstr "Malkovich"
+
+msgid "Attachment created"
+msgstr "Malkovich Malkovich"
+
+msgid "Attachment filename"
+msgstr "Malkovich Malkovich"
+
+msgid "Attachments"
+msgstr "Malkovich"
+
+msgid "Attribute Deleted"
+msgstr "Malkovich Malkovich"
+
+msgid "Aug."
+msgstr "Aug."
+
+msgid "AuthSystem"
+msgstr "Malkovich"
+
+msgid "Autoreply"
+msgstr "Malkovich"
+
+msgid "Autoreply To Requestors"
+msgstr "Malkovich To Malkovich"
+
+msgid "Bad data in %1"
+msgstr "Malkovich in %1"
+
+msgid "Basics"
+msgstr "Malkovich"
+
+msgid "Bcc"
+msgstr "Bcc"
+
+msgid "Be sure to save your changes"
+msgstr "Be sure to Malkovich Malkovich"
+
+msgid "Before"
+msgstr "Malkovich"
+
+msgid "Blank"
+msgstr "Malkovich"
+
+msgid "Brief headers"
+msgstr "Malkovich"
+
+msgid "Bulk ticket update"
+msgstr "Malkovich Malkovich"
+
+msgid "Can not modify system users"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Can this principal see this queue"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Can't add a custom field value without a name"
+msgstr "Can't add a Malkovich Malkovich Malkovich a name"
+
+msgid "Can't link a ticket to itself"
+msgstr "Can't link a Malkovich to Malkovich"
+
+msgid "Can't merge into a merged ticket. You should never get this error"
+msgstr "Can't Malkovich a Malkovich. Malkovich Malkovich Malkovich"
+
+msgid "Can't specifiy both base and target"
+msgstr "Can't Malkovich Malkovich and Malkovich"
+
+msgid "Cannot create user: %1"
+msgstr "Malkovich Malkovich: %1"
+
+msgid "Cc"
+msgstr "Cc"
+
+msgid "Change password"
+msgstr "Malkovich"
+
+msgid "Check box to delete"
+msgstr "Malkovich to Malkovich"
+
+msgid "Check box to revoke right"
+msgstr "Malkovich to Malkovich"
+
+msgid "Children"
+msgstr "Malkovich"
+
+msgid "City"
+msgstr "City"
+
+msgid "Closed"
+msgstr "Malkovich"
+
+msgid "Closed Tickets"
+msgstr "Malkovich"
+
+msgid "Closed tickets"
+msgstr "Malkovich"
+
+msgid "Comment"
+msgstr "Malkovich"
+
+msgid "Comment Address"
+msgstr "Malkovich"
+
+msgid "Comment on tickets"
+msgstr "Malkovich on Malkovich"
+
+msgid "CommentOnTicket"
+msgstr "Malkovich"
+
+msgid "Comments"
+msgstr "Malkovich"
+
+msgid "Comments (Not sent to requestors)"
+msgstr "Malkovich (Malkovich to Malkovich)"
+
+msgid "Comments (not sent to requestors)"
+msgstr "Malkovich (Malkovich to Malkovich)"
+
+msgid "Comments about %1"
+msgstr "Malkovich %1"
+
+msgid "Comments about this user"
+msgstr "Malkovich Malkovich"
+
+msgid "Comments added"
+msgstr "Malkovich"
+
+msgid "Commit Stubbed"
+msgstr "Malkovich"
+
+msgid "Condition"
+msgstr "Malkovich"
+
+msgid "Condition matches..."
+msgstr "Malkovich Malkovich..."
+
+msgid "Condition not found"
+msgstr "Malkovich Malkovich"
+
+msgid "Configuration"
+msgstr "Malkovich"
+
+msgid "Confirm"
+msgstr "Malkovich"
+
+msgid "ContactInfoSystem"
+msgstr "Malkovich Malkovich"
+
+msgid "Content"
+msgstr "Malkovich"
+
+msgid "Correspondence"
+msgstr "Malkovich"
+
+msgid "Correspondence Address"
+msgstr "Malkovich Malkovich"
+
+msgid "Correspondence added"
+msgstr "Malkovich Malkovich"
+
+msgid "Could not add new custom field value for ticket. "
+msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich. "
+
+msgid "Could not change owner. "
+msgstr "Malkovich Malkovich. "
+
+msgid "Could not create CustomField"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Could not create group"
+msgstr "Malkovich Malkovich"
+
+msgid "Could not create template: %1"
+msgstr "Malkovich Malkovich: %1"
+
+msgid "Could not create ticket. Queue not set"
+msgstr "Malkovich Malkovich. Malkovich"
+
+msgid "Could not create user"
+msgstr "Malkovich Malkovich"
+
+msgid "Could not find or create that user"
+msgstr "Malkovich or Malkovich Malkovich"
+
+msgid "Could not find that principal"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Could not load group"
+msgstr "Malkovich Malkovich"
+
+msgid "Could not make that principal a %1 for this queue"
+msgstr "Malkovich Malkovich Malkovich a %1 Malkovich"
+
+msgid "Could not make that principal a %1 for this ticket"
+msgstr "Malkovich Malkovich Malkovich a %1 Malkovich"
+
+msgid "Could not remove that principal as a %1 for this queue"
+msgstr "Malkovich Malkovich Malkovich as a %1 Malkovich"
+
+msgid "Couldn't add member to group"
+msgstr "Couldn't Malkovich to Malkovich"
+
+msgid "Couldn't create a transaction: %1"
+msgstr "Couldn't Malkovich a Malkovich: %1"
+
+msgid "Couldn't find row"
+msgstr "Couldn't Malkovich"
+
+msgid "Couldn't find that principal"
+msgstr "Couldn't Malkovich Malkovich"
+
+msgid "Couldn't find that value"
+msgstr "Couldn't Malkovich"
+
+msgid "Couldn't load %1 from the users database.\\n"
+msgstr "Couldn't load %1 from the Malkovich.\\n"
+
+msgid "Couldn't load group %1"
+msgstr "Couldn't Malkovich %1"
+
+msgid "Couldn't load link"
+msgstr "Couldn't Malkovich"
+
+msgid "Couldn't load queue"
+msgstr "Couldn't Malkovich"
+
+msgid "Couldn't load queue %1"
+msgstr "Couldn't Malkovich %1"
+
+msgid "Couldn't load that user (%1)"
+msgstr "Couldn't Malkovich (%1)"
+
+msgid "Couldn't load ticket '%1'"
+msgstr "Couldn't Malkovich '%1'"
+
+msgid "Country"
+msgstr "Malkovich"
+
+msgid "Create"
+msgstr "Malkovich"
+
+msgid "Create Tickets"
+msgstr "Malkovich"
+
+msgid "Create a CustomField"
+msgstr "Malkovich a Malkovich"
+
+msgid "Create a CustomField for queue %1"
+msgstr "Malkovich a Malkovich Malkovich %1"
+
+msgid "Create a CustomField which applies to all queues"
+msgstr "Malkovich a Malkovich Malkovich to Malkovich"
+
+msgid "Create a new group"
+msgstr "Malkovich a Malkovich"
+
+msgid "Create a new personal group"
+msgstr "Malkovich a Malkovich Malkovich"
+
+msgid "Create a new ticket"
+msgstr "Malkovich a Malkovich"
+
+msgid "Create a new user"
+msgstr "Malkovich a Malkovich"
+
+msgid "Create a queue"
+msgstr "Malkovich a Malkovich"
+
+msgid "Create a scrip for queue %1"
+msgstr "Malkovich a Malkovich %1"
+
+msgid "Create a template"
+msgstr "Malkovich a Malkovich"
+
+msgid "Create a ticket"
+msgstr "Malkovich a Malkovich"
+
+msgid "Create new tickets based on this scrip's template"
+msgstr "Malkovich Malkovich on Malkovich's Malkovich"
+
+msgid "Create ticket"
+msgstr "Malkovich"
+
+msgid "Create tickets in this queue"
+msgstr "Malkovich in Malkovich"
+
+msgid "Create, delete and modify custom fields"
+msgstr "Malkovich, Malkovich and Malkovich Malkovich"
+
+msgid "Create, delete and modify queues"
+msgstr "Malkovich, Malkovich and Malkovich"
+
+msgid "Create, delete and modify the members of personal groups"
+msgstr "Malkovich, Malkovich and Malkovich the Malkovich of Malkovich"
+
+msgid "Create, delete and modify users"
+msgstr "Malkovich, Malkovich and Malkovich"
+
+msgid "CreateTicket"
+msgstr "Malkovich"
+
+msgid "Created"
+msgstr "Malkovich"
+
+msgid "Created CustomField %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "Current Relationships"
+msgstr "Malkovich Malkovich"
+
+msgid "Current Scrips"
+msgstr "Malkovich"
+
+msgid "Current members"
+msgstr "Malkovich"
+
+msgid "Current rights"
+msgstr "Malkovich"
+
+msgid "Current search criteria"
+msgstr "Malkovich Malkovich"
+
+msgid "Current watchers"
+msgstr "Malkovich Malkovich"
+
+msgid "Custom Field #%1"
+msgstr "Malkovich #%1"
+
+msgid "Custom Fields"
+msgstr "Malkovich"
+
+msgid "Custom action cleanup code"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Custom action preparation code"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Custom condition"
+msgstr "Malkovich Malkovich"
+
+msgid "Custom field %1 %2 %3"
+msgstr "Malkovich %1 %2 %3"
+
+msgid "Custom field %1 has a value."
+msgstr "Malkovich %1 has a Malkovich."
+
+msgid "Custom field %1 has no value."
+msgstr "Malkovich %1 has no Malkovich."
+
+msgid "Custom field %1 not found"
+msgstr "Malkovich %1 Malkovich"
+
+msgid "Custom field deleted"
+msgstr "Malkovich Malkovich"
+
+msgid "Custom field not found"
+msgstr "Malkovich Malkovich"
+
+msgid "Custom field value %1 could not be found for custom field %2"
+msgstr "Malkovich Malkovich %1 Malkovich be Malkovich Malkovich %2"
+
+msgid "Custom field value could not be deleted"
+msgstr "Malkovich Malkovich Malkovich be Malkovich"
+
+msgid "Custom field value could not be found"
+msgstr "Malkovich Malkovich Malkovich be Malkovich"
+
+msgid "Custom field value deleted"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "CustomField"
+msgstr "Malkovich"
+
+msgid "Dates"
+msgstr "Malkovich"
+
+msgid "Dec."
+msgstr "Dec."
+
+msgid "Default Autoresponse template"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Default admin comment template"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Default admin correspondence template"
+msgid "Malkovich Malkovich Malkovich Malkovich"
+
+msgid "Default correspondence template"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Default transaction template"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Default: %1/%2 changed from %3 to %4"
+msgstr "Malkovich: %1/%2 Malkovich %3 to %4"
+
+msgid "Delegate rights"
+msgstr "Malkovich"
+
+msgid "Delegate specific rights which have been granted to you."
+msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich to you."
+
+msgid "DelegateRights"
+msgstr "Malkovich"
+
+msgid "Delegation"
+msgstr "Malkovich"
+
+msgid "Delete"
+msgstr "Malkovich"
+
+msgid "Delete selected scrips"
+msgstr "Malkovich Malkovich"
+
+msgid "Delete tickets"
+msgstr "Malkovich"
+
+msgid "DeleteTicket"
+msgstr "Malkovich"
+
+msgid "Deleting this object could break referential integrity"
+msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich"
+
+msgid "Deleting this object would break referential integrity"
+msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich"
+
+msgid "Deleting this object would violate referential integrity"
+msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich Malkovich"
+
+msgid "Deny"
+msgstr "Deny"
+
+msgid "Depended on by"
+msgstr "Malkovich on by"
+
+msgid "Dependency by %1 added"
+msgstr "Malkovich by %1 Malkovich"
+
+msgid "Dependency by %1 deleted"
+msgstr "Malkovich by %1 Malkovich"
+
+msgid "Dependency on %1 added"
+msgstr "Malkovich on %1 Malkovich"
+
+msgid "Dependency on %1 deleted"
+msgstr "Malkovich on %1 Malkovich"
+
+msgid "Depends on"
+msgstr "Malkovich on"
+
+msgid "Descending"
+msgstr "Malkovich"
+
+msgid "Describe the issue below"
+msgstr "Malkovich the Malkovich"
+
+msgid "Description"
+msgstr "Malkovich"
+
+msgid "Display"
+msgstr "Malkovich"
+
+msgid "Display Access Control List"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Display Scrip templates for this queue"
+msgstr "Malkovich Malkovich Malkovich Malkovich"
+
+msgid "Display Scrips for this queue"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Display mode"
+msgstr "Malkovich"
+
+msgid "Do anything and everything"
+msgstr "Do Malkovich and Malkovich"
+
+msgid "Don't refresh this page."
+msgstr "Don't Malkovich Malkovich."
+
+msgid "Don't show search results"
+msgstr "Don't Malkovich Malkovich"
+
+msgid "Download"
+msgstr "Malkovich"
+
+msgid "Download all the tickets as a tab delimited file"
+msgstr "Malkovich the Malkovich as a Malkovich Malkovich"
+
+msgid "Due"
+msgstr "Due"
+
+msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
+msgstr "MALKOVICH: Couldn't Malkovich '%1': %2.\\n"
+
+msgid "Edit Custom Fields for %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "Edit Relationships"
+msgstr "Malkovich Malkovich"
+
+msgid "Edit Templates for queue %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "Edit system templates"
+msgstr "Malkovich Malkovich"
+
+msgid "Editing Configuration for queue %1"
+msgstr "Malkovich Malkovich Malkovich %1"
+
+msgid "Editing Configuration for user %1"
+msgstr "Malkovich Malkovich Malkovich %1"
+
+msgid "Editing CustomField %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "Editing membership for group %1"
+msgstr "Malkovich Malkovich Malkovich %1"
+
+msgid "Editing membership for personal group %1"
+msgstr "Malkovich Malkovich Malkovich Malkovich %1"
+
+msgid "Either base or target must be specified"
+msgstr "Malkovich or Malkovich be Malkovich"
+
+msgid "Email"
+msgstr "Malkovich"
+
+msgid "Email address in use"
+msgstr "Malkovich in use"
+
+msgid "EmailAddress"
+msgstr "Malkovich"
+
+msgid "EmailEncoding"
+msgstr "Malkovich"
+
+msgid "Enabled (Unchecking this box disables this custom field)"
+msgstr "Malkovich (Malkovich Malkovich Malkovich Malkovich Malkovich)"
+
+msgid "Enabled (Unchecking this box disables this group)"
+msgstr "Malkovich (Malkovich Malkovich Malkovich Malkovich)"
+
+msgid "Enabled (Unchecking this box disables this queue)"
+msgstr "Malkovich (Malkovich Malkovich Malkovich Malkovich)"
+
+msgid "Enabled Custom Fields"
+msgstr "Malkovich Malkovich"
+
+msgid "Enabled Queues"
+msgstr "Malkovich"
+
+msgid "Enabled status %1"
+msgstr "Malkovich %1"
+
+msgid "Enter multiple values"
+msgstr "Malkovich Malkovich"
+
+msgid "Enter one value"
+msgstr "Malkovich"
+
+msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgstr "Malkovich or URIs to Malkovich to. Malkovich Malkovich Malkovich Malkovich."
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Error in parameters to Queue->AddWatcher"
+msgstr "Malkovich in Malkovich to Malkovich->Malkovich"
+
+msgid "Error in parameters to Queue->DelWatcher"
+msgstr "Malkovich in Malkovich to Malkovich->Malkovich"
+
+msgid "Error in parameters to Ticket->AddWatcher"
+msgstr "Malkovich in Malkovich to Malkovich->Malkovich"
+
+msgid "Error in parameters to Ticket->DelWatcher"
+msgstr "Malkovich in Malkovich to Malkovich->Malkovich"
+
+msgid "Everyone"
+msgstr "Malkovich"
+
+msgid "Example:"
+msgstr "Malkovich:"
+
+msgid "ExternalAuthId"
+msgstr "Malkovich"
+
+msgid "ExternalContactInfoId"
+msgstr "Malkovich Malkovich"
+
+msgid "Extra info"
+msgstr "Malkovich"
+
+msgid "Failed to find 'Privileged' users pseudogroup."
+msgstr "Malkovich to find 'Malkovich' Malkovich Malkovich."
+
+msgid "Failed to find 'Unprivileged' users pseudogroup"
+msgstr "Malkovich to find 'Malkovich' Malkovich Malkovich"
+
+msgid "Failed to load module %1. (%2)"
+msgstr "Malkovich to Malkovich %1. (%2)"
+
+msgid "Feb."
+msgstr "Feb."
+
+msgid "Final Priority"
+msgstr "Malkovich"
+
+msgid "FinalPriority"
+msgstr "Malkovich"
+
+msgid "Find group whose"
+msgstr "Malkovich Malkovich"
+
+msgid "Find people whose"
+msgstr "Malkovich Malkovich"
+
+msgid "Find tickets"
+msgstr "Malkovich"
+
+msgid "First"
+msgstr "Malkovich"
+
+msgid "Foo Bar Baz"
+msgstr "Malkovich"
+
+msgid "Foo!"
+msgstr "Foo!"
+
+msgid "Force change"
+msgstr "Malkovich"
+
+msgid "Found %quant(%1,ticket)"
+msgstr "Malkovich %quant(%1,Malkovich)"
+
+msgid "Found Object"
+msgstr "Malkovich"
+
+msgid "FreeformContactInfo"
+msgstr "Malkovich Malkovich"
+
+msgid "FreeformMultiple"
+msgstr "Malkovich Malkovich"
+
+msgid "FreeformSingle"
+msgstr "Malkovich"
+
+msgid "Fri."
+msgstr "Fri."
+
+msgid "Full headers"
+msgstr "Malkovich"
+
+msgid "Given to %1"
+msgstr "Malkovich to %1"
+
+msgid "Global"
+msgstr "Malkovich"
+
+msgid "Global template: %1"
+msgstr "Malkovich: %1"
+
+msgid "Go"
+msgstr "Go"
+
+msgid "Go!"
+msgstr "Go!"
+
+msgid "Goto ticket"
+msgstr "Malkovich"
+
+msgid "Group"
+msgstr "Malkovich"
+
+msgid "Group Rights"
+msgstr "Malkovich"
+
+msgid "Group already has member"
+msgstr "Malkovich Malkovich"
+
+msgid "Group could not be created: %1"
+msgstr "Malkovich be Malkovich: %1"
+
+msgid "Group created"
+msgstr "Malkovich"
+
+msgid "Group has no such member"
+msgstr "Malkovich no Malkovich"
+
+msgid "Group not found"
+msgstr "Malkovich"
+
+msgid "Groups"
+msgstr "Malkovich"
+
+msgid "Groups can't be members of their members"
+msgstr "Malkovich can't be Malkovich of Malkovich"
+
+msgid "Hello!"
+msgstr "Malkovich!"
+
+msgid "Hello, %1"
+msgstr "Malkovich, %1"
+
+msgid "History"
+msgstr "Malkovich"
+
+msgid "HomePhone"
+msgstr "Malkovich"
+
+msgid "Homepage"
+msgstr "Malkovich"
+
+msgid "I have %quant(%1,concrete mixer)."
+msgstr "I have %quant(%1,Malkovich)."
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Identity"
+msgstr "Malkovich"
+
+msgid "If an approval is rejected, reject the original and delete pending approvals"
+msgstr "If a Malkovich is Malkovich, Malkovich the Malkovich and Malkovich Malkovich"
+
+msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
+msgstr "If Malkovich Malkovich, a Malkovich Malkovich Malkovich Malkovich to Malkovich Malkovich Malkovich to RT."
+
+msgid "If you've updated anything above, be sure to"
+msgstr "If you've Malkovich Malkovich, be sure to"
+
+msgid "Illegal value for %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "Immutable field"
+msgstr "Malkovich"
+
+msgid "Include disabled custom fields in listing."
+msgstr "Malkovich Malkovich Malkovich in Malkovich."
+
+msgid "Include disabled queues in listing."
+msgstr "Malkovich Malkovich in Malkovich."
+
+msgid "Include disabled users in search."
+msgstr "Malkovich Malkovich in Malkovich."
+
+msgid "Initial Priority"
+msgstr "Malkovich Malkovich"
+
+msgid "InitialPriority"
+msgstr "Malkovich"
+
+msgid "Input error"
+msgstr "Malkovich"
+
+msgid "Internal Error"
+msgstr "Malkovich"
+
+msgid "Internal Error: %1"
+msgstr "Malkovich: %1"
+
+msgid "Invalid Group Type"
+msgstr "Malkovich Malkovich"
+
+msgid "Invalid Right"
+msgstr "Malkovich"
+
+msgid "Invalid data"
+msgstr "Malkovich"
+
+msgid "Invalid owner. Defaulting to 'nobody'."
+msgstr "Malkovich. Malkovich to 'Malkovich'."
+
+msgid "Invalid queue"
+msgstr "Malkovich"
+
+msgid "Invalid right"
+msgstr "Malkovich"
+
+msgid "Invalid value for %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "Invalid value for custom field"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Invalid value for status"
+msgstr "Malkovich Malkovich"
+
+msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
+msgstr "It is Malkovich Malkovich Malkovich Malkovich Malkovich be Malkovich to Malkovich."
+
+msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
+msgstr "It is Malkovich Malkovich a non-Malkovich Malkovich the Malkovich Malkovich and RT Malkovich to Malkovich."
+
+msgid "It takes several arguments:"
+msgstr "It Malkovich Malkovich:"
+
+msgid "Jan."
+msgstr "Jan."
+
+msgid "Join or leave this group"
+msgstr "Join or Malkovich Malkovich"
+
+msgid "Jul."
+msgstr "Jul."
+
+msgid "Jumbo"
+msgstr "Malkovich"
+
+msgid "Jun."
+msgstr "Jun."
+
+msgid "Lang"
+msgstr "Lang"
+
+msgid "Language"
+msgstr "Malkovich"
+
+msgid "Last"
+msgstr "Last"
+
+msgid "Last Contact"
+msgstr "Malkovich"
+
+msgid "Last Contact</a>"
+msgstr "Malkovich</a>"
+
+msgid "Last Contacted"
+msgstr "Malkovich"
+
+msgid "Last Notified"
+msgstr "Malkovich"
+
+msgid "Last Updated"
+msgstr "Malkovich"
+
+msgid "Let this user access RT"
+msgstr "Malkovich Malkovich RT"
+
+msgid "Let this user be granted rights"
+msgstr "Malkovich be Malkovich"
+
+msgid "Link already exists"
+msgstr "Malkovich Malkovich"
+
+msgid "Link could not be created"
+msgstr "Malkovich be Malkovich"
+
+msgid "Link created (%1)"
+msgstr "Malkovich (%1)"
+
+msgid "Link deleted (%1)"
+msgstr "Malkovich (%1)"
+
+msgid "Link not found"
+msgstr "Malkovich"
+
+msgid "Link ticket #%1"
+msgstr "Malkovich #%1"
+
+msgid "Links"
+msgstr "Malkovich"
+
+msgid "Location"
+msgstr "Malkovich"
+
+msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
+msgstr "Malkovich %1 Malkovich or couldn't be Malkovich.\\n RT can't run."
+
+msgid "Logged in as %1"
+msgstr "Malkovich in as %1"
+
+msgid "Login"
+msgstr "Malkovich"
+
+msgid "Logout"
+msgstr "Malkovich"
+
+msgid "Make Owner"
+msgstr "Malkovich"
+
+msgid "Make Status"
+msgstr "Malkovich"
+
+msgid "Make date Due"
+msgstr "Malkovich"
+
+msgid "Make date Resolved"
+msgstr "Malkovich Malkovich"
+
+msgid "Make date Started"
+msgstr "Malkovich Malkovich"
+
+msgid "Make date Starts"
+msgstr "Malkovich Malkovich"
+
+msgid "Make date Told"
+msgstr "Malkovich"
+
+msgid "Make priority"
+msgstr "Malkovich"
+
+msgid "Make queue"
+msgstr "Malkovich"
+
+msgid "Make subject"
+msgstr "Malkovich"
+
+msgid "Manage groups and group membership"
+msgstr "Malkovich and Malkovich Malkovich"
+
+msgid "Manage properties and configuration which apply to all queues"
+msgstr "Malkovich Malkovich and Malkovich Malkovich to Malkovich"
+
+msgid "Manage queues and queue-specific properties"
+msgstr "Malkovich and Malkovich-Malkovich Malkovich"
+
+msgid "Manage users and passwords"
+msgstr "Malkovich and Malkovich"
+
+msgid "Mar."
+msgstr "Mar."
+
+msgid "May."
+msgstr "May."
+
+msgid "Member %1 added"
+msgstr "Malkovich %1 Malkovich"
+
+msgid "Member %1 deleted"
+msgstr "Malkovich %1 Malkovich"
+
+msgid "Member added"
+msgstr "Malkovich"
+
+msgid "Member deleted"
+msgstr "Malkovich"
+
+msgid "Member not deleted"
+msgstr "Malkovich Malkovich"
+
+msgid "Member of"
+msgstr "Malkovich of"
+
+msgid "Members"
+msgstr "Malkovich"
+
+msgid "Membership in %1 added"
+msgstr "Malkovich in %1 Malkovich"
+
+msgid "Membership in %1 deleted"
+msgstr "Malkovich in %1 Malkovich"
+
+msgid "Merge Successful"
+msgstr "Malkovich Malkovich"
+
+msgid "Merge failed. Couldn't set EffectiveId"
+msgstr "Malkovich. Couldn't Malkovich"
+
+msgid "Merge into"
+msgstr "Malkovich"
+
+msgid "Message"
+msgstr "Malkovich"
+
+msgid "Message body not shown because it is too large or is not plain text."
+msgstr "Malkovich Malkovich Malkovich it is Malkovich or is Malkovich."
+
+msgid "Message could not be recorded"
+msgstr "Malkovich Malkovich be Malkovich"
+
+msgid "Message recipients"
+msgstr "Malkovich Malkovich"
+
+msgid "Message recorded"
+msgstr "Malkovich Malkovich"
+
+msgid "Missing a primary key?: %1"
+msgstr "Malkovich a Malkovich?: %1"
+
+msgid "Mobile"
+msgstr "Malkovich"
+
+msgid "MobilePhone"
+msgstr "Malkovich"
+
+msgid "Modify Access Control List"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Modify Custom Fields which apply to all queues"
+msgstr "Malkovich Malkovich Malkovich to Malkovich"
+
+msgid "Modify Scrip templates for this queue"
+msgstr "Malkovich Malkovich Malkovich Malkovich"
+
+msgid "Modify Scrips for this queue"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Modify a CustomField for queue %1"
+msgstr "Malkovich a Malkovich Malkovich %1"
+
+msgid "Modify a CustomField which applies to all queues"
+msgstr "Malkovich a Malkovich Malkovich to Malkovich"
+
+msgid "Modify a scrip for queue %1"
+msgstr "Malkovich a Malkovich %1"
+
+msgid "Modify a scrip which applies to all queues"
+msgstr "Malkovich a Malkovich Malkovich to Malkovich"
+
+msgid "Modify dates for #%1"
+msgstr "Malkovich Malkovich #%1"
+
+msgid "Modify dates for ticket # %1"
+msgstr "Malkovich Malkovich # %1"
+
+msgid "Modify global group rights"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Modify global group rights."
+msgstr "Malkovich Malkovich Malkovich."
+
+msgid "Modify global user rights"
+msgstr "Malkovich Malkovich"
+
+msgid "Modify global user rights."
+msgstr "Malkovich Malkovich."
+
+msgid "Modify group metadata or delete group"
+msgstr "Malkovich Malkovich or Malkovich"
+
+msgid "Modify group rights for group %1"
+msgstr "Malkovich Malkovich Malkovich %1"
+
+msgid "Modify group rights for queue %1"
+msgstr "Malkovich Malkovich Malkovich %1"
+
+msgid "Modify membership roster for this group"
+msgstr "Malkovich Malkovich Malkovich Malkovich"
+
+msgid "Modify one's own RT account"
+msgstr "Malkovich's own RT Malkovich"
+
+msgid "Modify people related to queue %1"
+msgstr "Malkovich Malkovich to Malkovich %1"
+
+msgid "Modify people related to ticket #%1"
+msgstr "Malkovich Malkovich to Malkovich #%1"
+
+msgid "Modify scrips for queue %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "Modify scrips which apply to all queues"
+msgstr "Malkovich Malkovich to Malkovich"
+
+msgid "Modify template %1"
+msgstr "Malkovich %1"
+
+msgid "Modify templates which apply to all queues"
+msgstr "Malkovich Malkovich Malkovich to Malkovich"
+
+msgid "Modify the group %1"
+msgstr "Malkovich the Malkovich %1"
+
+msgid "Modify the queue watchers"
+msgstr "Malkovich the Malkovich"
+
+msgid "Modify the user %1"
+msgstr "Malkovich the user %1"
+
+msgid "Modify ticket # %1"
+msgstr "Malkovich # %1"
+
+msgid "Modify ticket #%1"
+msgstr "Malkovich #%1"
+
+msgid "Modify tickets"
+msgstr "Malkovich"
+
+msgid "Modify user rights for group %1"
+msgstr "Malkovich Malkovich Malkovich %1"
+
+msgid "Modify user rights for queue %1"
+msgstr "Malkovich Malkovich Malkovich %1"
+
+msgid "ModifyACL"
+msgstr "Malkovich"
+
+msgid "ModifyOwnMembership"
+msgstr "Malkovich Malkovich"
+
+msgid "ModifyQueueWatchers"
+msgstr "Malkovich Malkovich"
+
+msgid "ModifyScrips"
+msgstr "Malkovich"
+
+msgid "ModifySelf"
+msgstr "Malkovich"
+
+msgid "ModifyTemplate"
+msgstr "Malkovich"
+
+msgid "ModifyTicket"
+msgstr "Malkovich"
+
+msgid "Mon."
+msgstr "Mon."
+
+msgid "More about %1"
+msgstr "Malkovich %1"
+
+msgid "Move down"
+msgstr "Malkovich"
+
+msgid "Move up"
+msgid "Move up"
+
+msgid "Multiple"
+msgstr "Malkovich"
+
+msgid "Must specify 'Name' attribute"
+msgstr "Malkovich 'Name' Malkovich"
+
+msgid "My %1 tickets"
+msgstr "My %1 Malkovich"
+
+msgid "My approvals"
+msgstr "My Malkovich"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Name in use"
+msgstr "Name in use"
+
+msgid "Never"
+msgstr "Malkovich"
+
+msgid "New"
+msgstr "New"
+
+msgid "New Password"
+msgstr "Malkovich"
+
+msgid "New Pending Approval"
+msgstr "Malkovich Malkovich"
+
+msgid "New Relationships"
+msgstr "Malkovich Malkovich"
+
+msgid "New Search"
+msgstr "Malkovich"
+
+msgid "New custom field"
+msgstr "Malkovich Malkovich"
+
+msgid "New group"
+msgstr "Malkovich"
+
+msgid "New password"
+msgstr "Malkovich"
+
+msgid "New password notification sent"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "New queue"
+msgstr "Malkovich"
+
+msgid "New rights"
+msgstr "Malkovich"
+
+msgid "New scrip"
+msgstr "Malkovich"
+
+msgid "New template"
+msgstr "Malkovich"
+
+msgid "New ticket"
+msgstr "Malkovich"
+
+msgid "New ticket doesn't exist"
+msgstr "Malkovich doesn't Malkovich"
+
+msgid "New user"
+msgstr "Malkovich"
+
+msgid "New user called"
+msgstr "Malkovich"
+
+msgid "New watchers"
+msgstr "Malkovich"
+
+msgid "New window setting"
+msgstr "Malkovich Malkovich"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "NickName"
+msgstr "Malkovich"
+
+msgid "Nickname"
+msgstr "Malkovich"
+
+msgid "No CustomField"
+msgstr "No Malkovich"
+
+msgid "No Group defined"
+msgstr "No Malkovich"
+
+msgid "No Query"
+msgstr "No Malkovich"
+
+msgid "No Queue defined"
+msgstr "No Malkovich"
+
+msgid "No RT user found. Please consult your RT administrator.\\n"
+msgstr "No RT Malkovich. Malkovich Malkovich RT Malkovich.\\n"
+
+msgid "No Template"
+msgstr "No Malkovich"
+
+msgid "No Ticket specified. Aborting ticket "
+msgstr "No Malkovich Malkovich. Malkovich "
+
+msgid "No action"
+msgstr "No Malkovich"
+
+msgid "No column specified"
+msgstr "No Malkovich Malkovich"
+
+msgid "No comment entered about this user"
+msgstr "No Malkovich Malkovich Malkovich"
+
+msgid "No description for %1"
+msgstr "No Malkovich %1"
+
+msgid "No group specified"
+msgstr "No Malkovich"
+
+msgid "No message attached"
+msgstr "No Malkovich Malkovich"
+
+msgid "No password set"
+msgstr "No Malkovich"
+
+msgid "No permission to create queues"
+msgstr "No Malkovich to Malkovich"
+
+msgid "No permission to create tickets in the queue '%1'"
+msgstr "No Malkovich to Malkovich in the Malkovich '%1'"
+
+msgid "No permission to create users"
+msgstr "No Malkovich to Malkovich"
+
+msgid "No permission to display that ticket"
+msgstr "No Malkovich to Malkovich Malkovich"
+
+msgid "No permission to view update ticket"
+msgstr "No Malkovich to Malkovich Malkovich"
+
+msgid "No principal specified"
+msgstr "No Malkovich Malkovich"
+
+msgid "No principals selected."
+msgstr "No Malkovich Malkovich."
+
+msgid "No queues matching search criteria found."
+msgstr "No Malkovich Malkovich Malkovich Malkovich."
+
+msgid "No rights found"
+msgstr "No Malkovich"
+
+msgid "No rights granted."
+msgstr "No Malkovich."
+
+msgid "No search to operate on."
+msgstr "No Malkovich to Malkovich on."
+
+msgid "No transaction type specified"
+msgstr "No Malkovich Malkovich Malkovich"
+
+msgid "No users matching search criteria found."
+msgstr "No Malkovich Malkovich Malkovich Malkovich."
+
+msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
+msgstr "No Malkovich RT Malkovich. RT Malkovich Malkovich. Malkovich Malkovich RT Malkovich.\\n"
+
+msgid "No value sent to _Set!\\n"
+msgstr "No Malkovich to _Set!\\n"
+
+msgid "Nonexistant field?"
+msgstr "Malkovich Malkovich?"
+
+msgid "Not logged in."
+msgstr "Malkovich in."
+
+msgid "Not set"
+msgstr "Malkovich"
+
+msgid "Not yet implemented."
+msgstr "Malkovich Malkovich."
+
+msgid "Notes"
+msgstr "Malkovich"
+
+msgid "Notification could not be sent"
+msgstr "Malkovich Malkovich be sent"
+
+msgid "Notify AdminCcs"
+msgstr "Malkovich"
+
+msgid "Notify AdminCcs as Comment"
+msgstr "Malkovich as Malkovich"
+
+msgid "Notify Other Recipients"
+msgstr "Malkovich Malkovich"
+
+msgid "Notify Other Recipients as Comment"
+msgstr "Malkovich Malkovich as Malkovich"
+
+msgid "Notify Owner"
+msgstr "Malkovich"
+
+msgid "Notify Owner as Comment"
+msgstr "Malkovich as Malkovich"
+
+msgid "Notify Owner of their rejected ticket"
+msgstr "Malkovich of Malkovich Malkovich"
+
+msgid "Notify Owner of their ticket has been approved by all approvers"
+msgstr "Malkovich of Malkovich Malkovich Malkovich by Malkovich"
+
+msgid "Notify Owner of their ticket has been approved by some approver"
+msgstr "Malkovich of Malkovich Malkovich Malkovich by Malkovich"
+
+msgid "Notify Owners and AdminCcs of new items pending their approval"
+msgstr "Malkovich and Malkovich of Malkovich Malkovich Malkovich"
+
+msgid "Notify Requestors"
+msgstr "Malkovich Malkovich"
+
+msgid "Notify Requestors and Ccs"
+msgstr "Malkovich Malkovich and Ccs"
+
+msgid "Notify Requestors and Ccs as Comment"
+msgstr "Malkovich Malkovich and Ccs as Malkovich"
+
+msgid "Notify Requestors, Ccs and AdminCcs"
+msgstr "Malkovich Malkovich, Ccs and Malkovich"
+
+msgid "Notify Requestors, Ccs and AdminCcs as Comment"
+msgstr "Malkovich Malkovich, Ccs and Malkovich as Malkovich"
+
+msgid "Nov."
+msgstr "Nov."
+
+msgid "Object could not be created"
+msgstr "Malkovich Malkovich be Malkovich"
+
+msgid "Object created"
+msgstr "Malkovich"
+
+msgid "Oct."
+msgstr "Oct."
+
+msgid "On"
+msgstr "On"
+
+msgid "On Comment"
+msgstr "On Malkovich"
+
+msgid "On Correspond"
+msgstr "On Malkovich"
+
+msgid "On Create"
+msgstr "On Malkovich"
+
+msgid "On Owner Change"
+msgstr "On Malkovich"
+
+msgid "On Queue Change"
+msgstr "On Malkovich"
+
+msgid "On Resolve"
+msgstr "On Malkovich"
+
+msgid "On Status Change"
+msgstr "On Malkovich"
+
+msgid "On Transaction"
+msgstr "On Malkovich"
+
+msgid "Only show approvals for requests created after %1"
+msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich %1"
+
+msgid "Only show approvals for requests created before %1"
+msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich %1"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "Open it"
+msgstr "Open it"
+
+msgid "Open tickets"
+msgstr "Malkovich"
+
+msgid "Open tickets (from listing) in a new window"
+msgstr "Malkovich (Malkovich) in a Malkovich"
+
+msgid "Open tickets (from listing) in another window"
+msgstr "Malkovich (Malkovich) in Malkovich"
+
+msgid "Open tickets on correspondence"
+msgstr "Malkovich on Malkovich"
+
+msgid "Ordering and sorting"
+msgstr "Malkovich and Malkovich"
+
+msgid "Organization"
+msgstr "Malkovich"
+
+msgid "Originating ticket: #%1"
+msgstr "Malkovich Malkovich: #%1"
+
+msgid "Over time, priority moves toward"
+msgstr "Malkovich, Malkovich Malkovich"
+
+msgid "Own tickets"
+msgstr "Malkovich"
+
+msgid "OwnTicket"
+msgstr "Malkovich"
+
+msgid "Owner"
+msgstr "Malkovich"
+
+msgid "Owner forcibly changed from %1 to %2"
+msgstr "Malkovich Malkovich Malkovich %1 to %2"
+
+msgid "Owner is"
+msgstr "Malkovich is"
+
+msgid "Pager"
+msgstr "Malkovich"
+
+msgid "PagerPhone"
+msgstr "Malkovich"
+
+msgid "Parents"
+msgstr "Malkovich"
+
+msgid "Password"
+msgstr "Malkovich"
+
+msgid "Password Reminder"
+msgstr "Malkovich Malkovich"
+
+msgid "Password too short"
+msgstr "Malkovich Malkovich"
+
+msgid "Password: %1"
+msgstr "Malkovich: %1"
+
+msgid "Passwords do not match."
+msgstr "Malkovich do Malkovich."
+
+msgid "Passwords do not match. Your password has not been changed"
+msgstr "Malkovich do Malkovich. Malkovich Malkovich Malkovich"
+
+msgid "People"
+msgstr "Malkovich"
+
+msgid "Perform a user-defined action"
+msgstr "Malkovich a user-Malkovich"
+
+msgid "Permission Denied"
+msgstr "Malkovich Malkovich"
+
+msgid "Personal Groups"
+msgstr "Malkovich"
+
+msgid "Personal groups"
+msgstr "Malkovich"
+
+msgid "Personal groups:"
+msgstr "Malkovich:"
+
+msgid "Phone numbers"
+msgstr "Malkovich"
+
+msgid "Preferences"
+msgstr "Malkovich"
+
+msgid "Prepare Stubbed"
+msgstr "Malkovich"
+
+msgid "Prev"
+msgstr "Prev"
+
+msgid "Principal %1 not found."
+msgstr "Malkovich %1 Malkovich."
+
+msgid "Priority"
+msgstr "Malkovich"
+
+msgid "Priority starts at"
+msgstr "Malkovich at"
+
+msgid "Privileged"
+msgstr "Malkovich"
+
+msgid "Privileged status: %1"
+msgstr "Malkovich Malkovich: %1"
+
+msgid "Privileged users"
+msgstr "Malkovich Malkovich"
+
+msgid "Projects"
+msgstr "Malkovich"
+
+msgid "Pseudogroup for internal use"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Queue"
+msgstr "Malkovich"
+
+msgid "Queue %1 not found"
+msgstr "Malkovich %1 Malkovich"
+
+msgid "Queue Name"
+msgstr "Malkovich"
+
+msgid "Queue already exists"
+msgstr "Malkovich Malkovich"
+
+msgid "Queue could not be created"
+msgstr "Malkovich not be Malkovich"
+
+msgid "Queue could not be loaded."
+msgstr "Malkovich be Malkovich."
+
+msgid "Queue created"
+msgstr "Malkovich"
+
+msgid "Queue not found"
+msgstr "Malkovich"
+
+msgid "Queues"
+msgstr "Malkovich"
+
+msgid "Quick search"
+msgstr "Malkovich"
+
+msgid "RT %1"
+msgstr "RT %1"
+
+msgid "RT %1 for %2"
+msgstr "RT %1 for %2"
+
+msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
+msgstr "RT %1 from <a href=\"http://Malkovich.com\">Malkovich Malkovich, LLC</a>."
+
+msgid "RT Administration"
+msgstr "RT Malkovich"
+
+msgid "RT Error"
+msgstr "RT Malkovich"
+
+msgid "RT at a glance"
+msgstr "RT at a Malkovich"
+
+msgid "RT for %1"
+msgstr "RT for %1"
+
+msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent <jesse@bestpractical.com>.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RT is &copy; Malkovich 1996-%1 Malkovich <Malkovich@Malkovich.com>.  It is Malkovich Malkovich <a href=\"http://www.gnu.org/copyleft/gpl.html\">Malkovich 2 of the Malkovich Malkovich Malkovich.</a>"
+
+msgid "Real Name"
+msgstr "Malkovich"
+
+msgid "RealName"
+msgstr "Malkovich"
+
+msgid "Reference by %1 added"
+msgstr "Malkovich by %1 Malkovich"
+
+msgid "Reference by %1 deleted"
+msgstr "Malkovich by %1 Malkovich"
+
+msgid "Reference to %1 added"
+msgstr "Malkovich to %1 Malkovich"
+
+msgid "Reference to %1 deleted"
+msgstr "Malkovich to %1 Malkovich"
+
+msgid "Referred to by"
+msgstr "Malkovich to by"
+
+msgid "Refers to"
+msgstr "Malkovich to"
+
+msgid "Refine search"
+msgstr "Malkovich"
+
+msgid "Refresh this page every %1 minutes."
+msgstr "Malkovich Malkovich %1 Malkovich."
+
+msgid "Relationships"
+msgstr "Malkovich"
+
+msgid "Remove AdminCc"
+msgstr "Malkovich"
+
+msgid "Remove Cc"
+msgstr "Malkovich Cc"
+
+msgid "Remove Requestor"
+msgstr "Malkovich Malkovich"
+
+msgid "Reply"
+msgstr "Malkovich"
+
+msgid "Reply to tickets"
+msgstr "Malkovich to Malkovich"
+
+msgid "ReplyToTicket"
+msgstr "Malkovich"
+
+msgid "Requestor"
+msgstr "Malkovich"
+
+msgid "Requestor email address"
+msgstr "Malkovich Malkovich"
+
+msgid "Requestors"
+msgstr "Malkovich"
+
+msgid "Requests should be due in"
+msgstr "Malkovich be due in"
+
+msgid "Reset"
+msgstr "Malkovich"
+
+msgid "Residence"
+msgstr "Malkovich"
+
+msgid "Resolve"
+msgstr "Malkovich"
+
+msgid "Resolve ticket #%1 (%2)"
+msgstr "Malkovich #%1 (%2)"
+
+msgid "Resolved"
+msgstr "Malkovich"
+
+msgid "Response to requestors"
+msgstr "Malkovich to Malkovich"
+
+msgid "Results"
+msgstr "Malkovich"
+
+msgid "Results per page"
+msgstr "Malkovich Malkovich"
+
+msgid "Retype Password"
+msgstr "Malkovich"
+
+msgid "Right Delegated"
+msgstr "Malkovich"
+
+msgid "Right Granted"
+msgstr "Malkovich"
+
+msgid "Right Loaded"
+msgstr "Malkovich"
+
+msgid "Right could not be revoked"
+msgstr "Malkovich be Malkovich"
+
+msgid "Right not found"
+msgstr "Malkovich"
+
+msgid "Right not loaded."
+msgstr "Malkovich Malkovich."
+
+msgid "Right revoked"
+msgstr "Malkovich"
+
+msgid "Rights"
+msgstr "Malkovich"
+
+msgid "Rights could not be granted for %1"
+msgstr "Malkovich Malkovich be Malkovich %1"
+
+msgid "Rights could not be revoked for %1"
+msgstr "Malkovich Malkovich be Malkovich %1"
+
+msgid "Roles"
+msgstr "Malkovich"
+
+msgid "Sat."
+msgstr "Sat."
+
+msgid "Save Changes"
+msgstr "Malkovich"
+
+msgid "Save changes"
+msgstr "Malkovich"
+
+msgid "Scrip #%1"
+msgstr "Malkovich #%1"
+
+msgid "Scrip Created"
+msgstr "Malkovich"
+
+msgid "Scrip deleted"
+msgstr "Malkovich"
+
+msgid "Scrips"
+msgstr "Malkovich"
+
+msgid "Scrips which apply to all queues"
+msgstr "Malkovich Malkovich to Malkovich"
+
+msgid "Search"
+msgstr "Malkovich"
+
+msgid "Search for approvals"
+msgstr "Malkovich Malkovich"
+
+msgid "Security:"
+msgstr "Malkovich:"
+
+msgid "SeeQueue"
+msgstr "Malkovich"
+
+msgid "Select a group"
+msgstr "Malkovich a Malkovich"
+
+msgid "Select a user"
+msgstr "Malkovich a user"
+
+msgid "Select custom field"
+msgstr "Malkovich Malkovich"
+
+msgid "Select group"
+msgstr "Malkovich"
+
+msgid "Select multiple values"
+msgstr "Malkovich Malkovich"
+
+msgid "Select one value"
+msgstr "Malkovich Malkovich"
+
+msgid "Select queue"
+msgstr "Malkovich"
+
+msgid "Select scrip"
+msgstr "Malkovich"
+
+msgid "Select template"
+msgstr "Malkovich"
+
+msgid "Select user"
+msgstr "Malkovich"
+
+msgid "SelectMultiple"
+msgstr "Malkovich"
+
+msgid "SelectSingle"
+msgstr "Malkovich"
+
+msgid "Send mail to all watchers"
+msgstr "Malkovich to Malkovich"
+
+msgid "Send mail to all watchers as a \"comment\""
+msgstr "Malkovich to Malkovich as a \"Malkovich\""
+
+msgid "Send mail to requestors and Ccs"
+msgstr "Malkovich to Malkovich and Ccs"
+
+msgid "Send mail to requestors and Ccs as a comment"
+msgstr "Malkovich to Malkovich and Ccs as a Malkovich"
+
+msgid "Sends a message to the requestors"
+msgstr "Malkovich a Malkovich to the Malkovich"
+
+msgid "Sends mail to explicitly listed Ccs and Bccs"
+msgstr "Malkovich to Malkovich Malkovich and Bccs"
+
+msgid "Sends mail to the administrative Ccs"
+msgstr "Malkovich to the Malkovich Malkovich"
+
+msgid "Sends mail to the administrative Ccs as a comment"
+msgstr "Malkovich to the Malkovich Malkovich as a Malkovich"
+
+msgid "Sends mail to the owner"
+msgstr "Malkovich to the Malkovich"
+
+msgid "Sep."
+msgstr "Sep."
+
+msgid "Show approved requests"
+msgstr "Malkovich Malkovich"
+
+msgid "Show basics"
+msgstr "Malkovich"
+
+msgid "Show denied requests"
+msgstr "Malkovich Malkovich"
+
+msgid "Show details"
+msgstr "Malkovich"
+
+msgid "Show pending requests"
+msgstr "Malkovich Malkovich"
+
+msgid "Show requests awaiting other approvals"
+msgstr "Malkovich Malkovich Malkovich Malkovich"
+
+msgid "Show ticket private commentary"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Show ticket summaries"
+msgstr "Malkovich Malkovich"
+
+msgid "ShowACL"
+msgstr "Malkovich"
+
+msgid "ShowScrips"
+msgstr "Malkovich"
+
+msgid "ShowTemplate"
+msgstr "Malkovich"
+
+msgid "ShowTicket"
+msgstr "Malkovich"
+
+msgid "ShowTicketComments"
+msgstr "Malkovich Malkovich"
+
+msgid "Sign up as a ticket Requestor or ticket or queue Cc"
+msgstr "Sign up as a Malkovich Malkovich or Malkovich or Malkovich Cc"
+
+msgid "Sign up as a ticket or queue AdminCc"
+msgstr "Sign up as a Malkovich or Malkovich"
+
+msgid "Signature"
+msgstr "Malkovich"
+
+msgid "Single"
+msgstr "Malkovich"
+
+msgid "Skip Menu"
+msgstr "Malkovich"
+
+msgid "Sort"
+msgstr "Sort"
+
+msgid "Sort results by"
+msgstr "Malkovich by"
+
+msgid "Squelched message recipients"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Stage"
+msgstr "Malkovich"
+
+msgid "Started"
+msgstr "Malkovich"
+
+msgid "Starts"
+msgstr "Malkovich"
+
+msgid "State"
+msgstr "Malkovich"
+
+msgid "Status"
+msgstr "Malkovich"
+
+msgid "Status Change"
+msgstr "Malkovich"
+
+msgid "Status changed from %1 to %2"
+msgstr "Malkovich Malkovich %1 to %2"
+
+msgid "Steal"
+msgstr "Malkovich"
+
+msgid "Steal tickets"
+msgstr "Malkovich"
+
+msgid "StealTicket"
+msgstr "Malkovich"
+
+msgid "Stolen from %1 "
+msgstr "Malkovich %1 "
+
+msgid "Subject"
+msgstr "Malkovich"
+
+msgid "Subject changed to %1"
+msgstr "Malkovich to %1"
+
+msgid "Submit"
+msgstr "Malkovich"
+
+msgid "Succeeded"
+msgstr "Malkovich"
+
+msgid "Sun."
+msgstr "Sun."
+
+msgid "SuperUser"
+msgstr "Malkovich"
+
+msgid "System"
+msgstr "Malkovich"
+
+msgid "System Error"
+msgstr "Malkovich"
+
+msgid "System error. Right not delegated."
+msgstr "Malkovich. Malkovich Malkovich."
+
+msgid "System error. Right not granted."
+msgstr "Malkovich. Malkovich Malkovich."
+
+msgid "System groups"
+msgstr "Malkovich"
+
+msgid "SystemRolegroup for internal use"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "TEST_STRING"
+msgstr "TEST_MALKOVICH"
+
+msgid "Take"
+msgstr "Take"
+
+msgid "Take tickets"
+msgstr "Malkovich"
+
+msgid "TakeTicket"
+msgstr "Malkovich"
+
+msgid "Taken"
+msgstr "Malkovich"
+
+msgid "Template"
+msgstr "Malkovich"
+
+msgid "Template #%1"
+msgstr "Malkovich #%1"
+
+msgid "Template deleted"
+msgstr "Malkovich Malkovich"
+
+msgid "Template not found"
+msgstr "Malkovich Malkovich"
+
+msgid "Template parsed"
+msgstr "Malkovich"
+
+msgid "Templates"
+msgstr "Malkovich"
+
+msgid "That is already the current value"
+msgstr "That is Malkovich the Malkovich"
+
+msgid "That is not a value for this custom field"
+msgstr "That is not a Malkovich Malkovich Malkovich"
+
+msgid "That is the same value"
+msgstr "That is the Malkovich"
+
+msgid "That principal already has that right"
+msgstr "Malkovich Malkovich Malkovich Malkovich"
+
+msgid "That principal is already a %1 for this queue"
+msgstr "Malkovich is Malkovich a %1 Malkovich"
+
+msgid "That principal is already a %1 for this ticket"
+msgstr "Malkovich is Malkovich a %1 Malkovich"
+
+msgid "That principal is not a %1 for this queue"
+msgstr "That Malkovich is not a %1 Malkovich"
+
+msgid "That queue does not exist"
+msgstr "Malkovich Malkovich"
+
+msgid "That ticket has unresolved dependencies"
+msgstr "Malkovich Malkovich Malkovich Malkovich"
+
+msgid "That user already owns that ticket"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "That user does not exist"
+msgstr "Malkovich Malkovich"
+
+msgid "That user is already privileged"
+msgstr "Malkovich is Malkovich Malkovich"
+
+msgid "That user is already unprivileged"
+msgstr "Malkovich is Malkovich Malkovich"
+
+msgid "That user is now privileged"
+msgstr "Malkovich is Malkovich"
+
+msgid "That user is now unprivileged"
+msgstr "Malkovich is Malkovich Malkovich"
+
+msgid "That user may not own tickets in that queue"
+msgstr "Malkovich Malkovich Malkovich in Malkovich"
+
+msgid "That's not a numerical id"
+msgstr "That's not a Malkovich id"
+
+msgid "The Basics"
+msgstr "The Malkovich"
+
+msgid "The CC of a ticket"
+msgstr "The CC of a Malkovich"
+
+msgid "The administrative CC of a ticket"
+msgstr "The Malkovich CC of a Malkovich"
+
+msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
+msgstr "The Malkovich Malkovich Malkovich Malkovich Malkovich in the Malkovich 'Malkovich' and Malkovich Malkovich to 99 if they haven't Malkovich in 4 Malkovich:"
+
+msgid "The following commands were not proccessed:\\n\\n"
+msgstr "The Malkovich Malkovich Malkovich Malkovich:\\n\\n"
+
+msgid "The new value has been set."
+msgstr "The Malkovich Malkovich."
+
+msgid "The owner of a ticket"
+msgstr "The Malkovich of a Malkovich"
+
+msgid "The requestor of a ticket"
+msgstr "The Malkovich of a Malkovich"
+
+msgid "These comments aren't generally visible to the user"
+msgstr "Malkovich aren't Malkovich Malkovich to the user"
+
+msgid "This tool allows the user to run arbitrary perl modules from within RT."
+msgstr "Malkovich Malkovich the user to Malkovich Malkovich Malkovich Malkovich RT."
+
+msgid "This transaction appears to have no content"
+msgstr "Malkovich Malkovich to have no Malkovich"
+
+msgid "This user's %1 highest priority tickets"
+msgstr "Malkovich's %1 Malkovich Malkovich"
+
+msgid "Thu."
+msgstr "Thu."
+
+msgid "Ticket #%1 Jumbo update: %2"
+msgstr "Malkovich #%1 Malkovich: %2"
+
+msgid "Ticket #%1: %2"
+msgstr "Malkovich #%1: %2"
+
+msgid "Ticket %1 created in queue '%2'"
+msgstr "Malkovich %1 Malkovich in Malkovich '%2'"
+
+msgid "Ticket %1 loaded\\n"
+msgstr "Malkovich %1 Malkovich\\n"
+
+msgid "Ticket %1: %2"
+msgstr "Malkovich %1: %2"
+
+msgid "Ticket History # %1 %2"
+msgstr "Malkovich # %1 %2"
+
+msgid "Ticket Resolved"
+msgstr "Malkovich"
+
+msgid "Ticket attachment"
+msgstr "Malkovich Malkovich"
+
+msgid "Ticket content"
+msgstr "Malkovich"
+
+msgid "Ticket content type"
+msgstr "Malkovich Malkovich"
+
+msgid "Ticket could not be created due to an internal error"
+msgstr "Malkovich Malkovich be Malkovich to a Malkovich"
+
+msgid "Ticket created"
+msgstr "Malkovich"
+
+msgid "Ticket deleted"
+msgstr "Malkovich"
+
+msgid "Ticket status changed"
+msgstr "Malkovich Malkovich"
+
+msgid "Tickets"
+msgstr "Malkovich"
+
+msgid "Tickets %1 %2"
+msgstr "Malkovich %1 %2"
+
+msgid "Tickets %1 by %2"
+msgstr "Malkovich %1 by %2"
+
+msgid "Tickets from %1"
+msgstr "Malkovich %1"
+
+msgid "Tickets which depend on this approval:"
+msgstr "Malkovich Malkovich on Malkovich:"
+
+msgid "Time Left"
+msgstr "Malkovich"
+
+msgid "Time Worked"
+msgstr "Malkovich"
+
+msgid "Time left"
+msgstr "Malkovich"
+
+msgid "Time to display"
+msgstr "Time to Malkovich"
+
+msgid "Time worked"
+msgstr "Malkovich"
+
+msgid "TimeWorked"
+msgstr "Malkovich"
+
+msgid "To generate a diff of this commit:"
+msgstr "To Malkovich a diff of Malkovich:"
+
+msgid "To generate a diff of this commit:\\n"
+msgstr "To Malkovich a diff of Malkovich:\\n"
+
+msgid "Told"
+msgstr "Told"
+
+msgid "Transaction"
+msgstr "Malkovich"
+
+msgid "Transaction %1 purged"
+msgstr "Malkovich %1 Malkovich"
+
+msgid "Transaction Created"
+msgstr "Malkovich Malkovich"
+
+msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
+msgstr "Malkovich->Malkovich couldn't, as you didn't Malkovich a Malkovich id"
+
+msgid "Transactions are immutable"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Tue."
+msgstr "Tue."
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Unimplemented"
+msgstr "Malkovich"
+
+msgid "Unix login"
+msgstr "Malkovich"
+
+msgid "UnixUsername"
+msgstr "Malkovich"
+
+msgid "Unknown ContentEncoding %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "Unlimited"
+msgstr "Malkovich"
+
+msgid "Unprivileged"
+msgstr "Malkovich"
+
+msgid "Untaken"
+msgstr "Malkovich"
+
+msgid "Update"
+msgstr "Malkovich"
+
+msgid "Update ID"
+msgstr "Malkovich ID"
+
+msgid "Update Type"
+msgstr "Malkovich"
+
+msgid "Update all these tickets at once"
+msgstr "Malkovich Malkovich at once"
+
+msgid "Update email"
+msgstr "Malkovich"
+
+msgid "Update name"
+msgstr "Malkovich"
+
+msgid "Update not recorded."
+msgstr "Malkovich Malkovich."
+
+msgid "Update selected tickets"
+msgstr "Malkovich Malkovich"
+
+msgid "Update signature"
+msgstr "Malkovich Malkovich"
+
+msgid "Update ticket"
+msgstr "Malkovich"
+
+msgid "Update ticket #%1"
+msgstr "Malkovich #%1"
+
+msgid "Update ticket #%1 (%2)"
+msgstr "Malkovich #%1 (%2)"
+
+msgid "Update type was neither correspondence nor comment."
+msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich."
+
+msgid "Updated"
+msgstr "Malkovich"
+
+msgid "User Defined"
+msgstr "Malkovich"
+
+msgid "User ID"
+msgstr "User ID"
+
+msgid "User Id"
+msgstr "User Id"
+
+msgid "User Rights"
+msgstr "Malkovich"
+
+msgid "User could not be created: %1"
+msgstr "Malkovich be Malkovich: %1"
+
+msgid "User created"
+msgstr "Malkovich"
+
+msgid "User defined groups"
+msgstr "Malkovich Malkovich"
+
+msgid "User loaded"
+msgstr "Malkovich"
+
+msgid "User view"
+msgstr "Malkovich"
+
+msgid "Username"
+msgstr "Malkovich"
+
+msgid "Users"
+msgstr "Malkovich"
+
+msgid "Users matching search criteria"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "Valid Query"
+msgstr "Malkovich"
+
+msgid "Values"
+msgstr "Malkovich"
+
+msgid "Watch"
+msgstr "Malkovich"
+
+msgid "WatchAsAdminCc"
+msgstr "Malkovich"
+
+msgid "Watchers"
+msgstr "Malkovich"
+
+msgid "WebEncoding"
+msgstr "Malkovich"
+
+msgid "Wed."
+msgstr "Wed."
+
+msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
+msgstr "When a Malkovich Malkovich by Malkovich, Malkovich Malkovich to the Malkovich"
+
+msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
+msgstr "When a Malkovich Malkovich by Malkovich, Malkovich Malkovich to the Malkovich"
+
+msgid "When a ticket is created"
+msgstr "When a Malkovich is Malkovich"
+
+msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgstr "When a Malkovich is Malkovich, Malkovich the Malkovich and Malkovich of the Malkovich Malkovich Malkovich"
+
+msgid "When anything happens"
+msgstr "Malkovich Malkovich"
+
+msgid "Whenever a ticket is resolved"
+msgstr "Malkovich a Malkovich is Malkovich"
+
+msgid "Whenever a ticket's owner changes"
+msgstr "Malkovich a Malkovich's Malkovich"
+
+msgid "Whenever a ticket's queue changes"
+msgstr "Malkovich a Malkovich's Malkovich"
+
+msgid "Whenever a ticket's status changes"
+msgstr "Malkovich a Malkovich's Malkovich"
+
+msgid "Whenever a user-defined condition occurs"
+msgstr "Malkovich a user-Malkovich Malkovich"
+
+msgid "Whenever comments come in"
+msgstr "Malkovich Malkovich in"
+
+msgid "Whenever correspondence comes in"
+msgstr "Malkovich Malkovich Malkovich in"
+
+msgid "Work"
+msgstr "Work"
+
+msgid "WorkPhone"
+msgstr "Malkovich"
+
+msgid "Worked"
+msgstr "Malkovich"
+
+msgid "XXX CHANGEME You are not an authorized user"
+msgstr "MALKOVICH Malkovich a Malkovich"
+
+msgid "You already own this ticket"
+msgstr "Malkovich Malkovich Malkovich"
+
+msgid "You are not an authorized user"
+msgstr "Malkovich a Malkovich"
+
+msgid "You can access it with the Download button on the right."
+msgstr "Malkovich it with the Malkovich on the Malkovich."
+
+msgid "You can only reassign tickets that you own or that are unowned"
+msgstr "Malkovich Malkovich Malkovich Malkovich or Malkovich Malkovich"
+
+msgid "You found %1 tickets in queue %2"
+msgstr "Malkovich %1 Malkovich in Malkovich %2"
+
+msgid "You have been logged out of RT."
+msgstr "Malkovich Malkovich of RT."
+
+msgid "You have no permission to create tickets in that queue."
+msgstr "Malkovich no Malkovich to Malkovich in that Malkovich."
+
+msgid "You may not create requests in that queue."
+msgstr "Malkovich Malkovich Malkovich in Malkovich."
+
+msgid "You're welcome to login again"
+msgstr "You're Malkovich to Malkovich"
+
+msgid "Your request has been approved by %1. Other approvals may still be pending."
+msgstr "Malkovich Malkovich Malkovich by %1. Malkovich Malkovich be Malkovich."
+
+msgid "Your request has been approved."
+msgstr "Malkovich Malkovich Malkovich."
+
+msgid "Your request was rejected."
+msgstr "Malkovich Malkovich."
+
+msgid "Your username or password is incorrect"
+msgstr "Malkovich or Malkovich is Malkovich"
+
+msgid "Zip"
+msgstr "Zip"
+
+msgid "as granted to %1"
+msgstr "as Malkovich to %1"
+
+msgid "closed"
+msgstr "Malkovich"
+
+msgid "contains"
+msgstr "Malkovich"
+
+msgid "content"
+msgstr "Malkovich"
+
+msgid "content-type"
+msgstr "Malkovich-type"
+
+msgid "days"
+msgstr "days"
+
+msgid "deleted"
+msgstr "Malkovich"
+
+msgid "does not match"
+msgstr "Malkovich"
+
+msgid "doesn't contain"
+msgstr "doesn't Malkovich"
+
+msgid "equal to"
+msgstr "Malkovich to"
+
+msgid "filename"
+msgstr "Malkovich"
+
+msgid "greater than"
+msgstr "Malkovich"
+
+msgid "group '%1'"
+msgstr "Malkovich '%1'"
+
+msgid "hours"
+msgstr "Malkovich"
+
+msgid "is"
+msgstr "is"
+
+msgid "isn't"
+msgstr "isn't"
+
+msgid "less than"
+msgstr "Malkovich"
+
+msgid "matches"
+msgstr "Malkovich"
+
+msgid "min"
+msgstr "min"
+
+msgid "minutes"
+msgstr "Malkovich"
+
+msgid "modifications\\n\\n"
+msgstr "Malkovich\\n\\n"
+
+msgid "months"
+msgstr "Malkovich"
+
+msgid "new"
+msgstr "new"
+
+msgid "no name"
+msgstr "no name"
+
+msgid "no value"
+msgstr "no Malkovich"
+
+msgid "none"
+msgstr "none"
+
+msgid "not equal to"
+msgstr "Malkovich to"
+
+msgid "open"
+msgstr "open"
+
+msgid "personal group '%1' for user '%2'"
+msgstr "Malkovich '%1' Malkovich '%2'"
+
+msgid "queue %1 %2"
+msgstr "Malkovich %1 %2"
+
+msgid "rejected"
+msgstr "Malkovich"
+
+msgid "resolved"
+msgstr "Malkovich"
+
+msgid "sec"
+msgstr "sec"
+
+msgid "stalled"
+msgstr "Malkovich"
+
+msgid "system %1"
+msgstr "Malkovich %1"
+
+msgid "system group '%1'"
+msgstr "Malkovich '%1'"
+
+msgid "the calling component did not specify why"
+msgstr "the Malkovich Malkovich Malkovich Malkovich"
+
+msgid "ticket #%1"
+msgstr "Malkovich #%1"
+
+msgid "ticket #%1 %2"
+msgstr "Malkovich #%1 %2"
+
+msgid "undescribed group %1"
+msgstr "Malkovich Malkovich %1"
+
+msgid "user %1"
+msgstr "user %1"
+
+msgid "weeks"
+msgstr "Malkovich"
+
+msgid "years"
+msgstr "Malkovich"
+

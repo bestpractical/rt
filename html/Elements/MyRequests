@@ -21,58 +21,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("[_1] highest priority tickets I requested...", $rows), bodyclass=> '' &>
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-<TR>
-<TH align=right><&|/l&>#</&></TH>
-<TH align=left><&|/l&>Subject</&></TH>
-<TH align=left><&|/l&>Queue</&></TH>
-<TH align=left><&|/l&>Status</&></TH>
-<TH align=left><&|/l&>Owner</&></TH>
-</TR>
-% my $i;
-% while (my $Ticket = $MyTickets->Next) {
-% $i++;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<TD ALIGN=RIGHT>
-<%$Ticket->Id%>
-</TD>
-<TD>
-<A HREF="<% $RT::WebPath %>/Ticket/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Subject || loc('(no subject)')%>
-</A>
-</TD>
-<TD>
-<%$Ticket->QueueObj->Name%>
-</TD>
-<TD>
-% if ($Ticket->HasUnresolvedDependencies ) {
-%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval'  )) { 
-<em><&|/l&>(pending approval)</&></em>
-%     } else {
-<em><&|/l&>(pending other tickets)</&></em>
-%     }
-% } else {
-<%loc($Ticket->Status)%>
-% }
-</TD>
-<TD>
-<%$Ticket->OwnerObj->Name%>
-</TD>
-</TR>
-% }
-</TABLE>
-<& /Elements/TitleBoxEnd &>
 
+<& /Elements/TicketList, 
+        Title => loc("[_1] highest priority tickets I requested...", $rows),
+        Query => "SELECT '<a href=\"/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, OwnerName WHERE Requestor = '".$session{'CurrentUser'}->EmailAddress."' AND ( Status = 'new' OR Status = 'open')"
+        &>
 
-<%INIT>
+<%init>
 my $rows = 10;
-my $MyTickets;
-$MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitWatcher(TYPE => 'Requestor', VALUE => $session{'CurrentUser'}->EmailAddress);
-$MyTickets->LimitStatus(VALUE => "open");
-$MyTickets->LimitStatus(VALUE => "new");
-$MyTickets->RowsPerPage($rows);
-$MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
-
-</%INIT>
+</%init>

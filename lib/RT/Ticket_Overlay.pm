@@ -124,6 +124,7 @@ use RT::TicketCustomFieldValues;
 use RT::Tickets;
 use RT::URI::fsck_com_rt;
 use RT::URI;
+use MIME::Entity;
 
 =begin testing
 
@@ -1506,61 +1507,66 @@ Email (the email address of an existing wathcer)
 sub DeleteWatcher {
     my $self = shift;
 
-    my %args = ( Type => undef,
+    my %args = ( Type        => undef,
                  PrincipalId => undef,
-                 Email => undef,
+                 Email       => undef,
                  @_ );
 
-    unless ($args{'PrincipalId'} || $args{'Email'} ) {
-        return(0, $self->loc("No principal specified"));
+    unless ( $args{'PrincipalId'} || $args{'Email'} ) {
+        return ( 0, $self->loc("No principal specified") );
     }
-    my $principal = RT::Principal->new($self->CurrentUser);
-    if ($args{'PrincipalId'} ) {
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    if ( $args{'PrincipalId'} ) {
 
-        $principal->Load($args{'PrincipalId'});
-    } else {
-        my $user = RT::User->new($self->CurrentUser);
-        $user->LoadByEmail($args{'Email'});
-        $principal->Load($user->Id);
+        $principal->Load( $args{'PrincipalId'} );
     }
+    else {
+        my $user = RT::User->new( $self->CurrentUser );
+        $user->LoadByEmail( $args{'Email'} );
+        $principal->Load( $user->Id );
+    }
+
     # If we can't find this watcher, we need to bail.
-    unless ($principal->Id) {
-        return(0, $self->loc("Could not find that principal"));
+    unless ( $principal->Id ) {
+        return ( 0, $self->loc("Could not find that principal") );
     }
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->Id);
-    unless ($group->id) {
-        return(0,$self->loc("Group not found"));
+    my $group = RT::Group->new( $self->CurrentUser );
+    $group->LoadTicketRoleGroup( Type => $args{'Type'}, Ticket => $self->Id );
+    unless ( $group->id ) {
+        return ( 0, $self->loc("Group not found") );
     }
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
-        #  If it's an AdminCc and they don't have 
+    if ( $self->CurrentUser->PrincipalId eq $args{'PrincipalId'} ) {
+
+        #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( $args{'Type'} eq 'AdminCc' ) {
-            unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied'))
+            unless (    $self->CurrentUserHasRight('ModifyTicket')
+                     or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
+                return ( 0, $self->loc('Permission Denied') );
             }
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
-            unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('Watch') ) {
-                return ( 0, $self->loc('Permission Denied'))
+        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) )
+        {
+            unless (    $self->CurrentUserHasRight('ModifyTicket')
+                     or $self->CurrentUserHasRight('Watch') ) {
+                return ( 0, $self->loc('Permission Denied') );
             }
         }
         else {
-            $RT::Logger->warn( "$self -> DeleteWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Ticket->DelWatcher') );
+            $RT::Logger->warn("$self -> DeleteWatcher got passed a bogus type");
+            return ( 0,
+                     $self->loc('Error in parameters to Ticket->DelWatcher') );
         }
     }
 
-    # If the watcher isn't the current user 
+    # If the watcher isn't the current user
     # and the current user  doesn't have 'ModifyTicket' bail
     else {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
@@ -1570,37 +1576,123 @@ sub DeleteWatcher {
 
     # }}}
 
-
     # see if this user is already a watcher.
 
-    unless ( $group->HasMember($principal)) {
-        return ( 0, 
-        $self->loc('That principal is not a [_1] for this ticket', $args{'Type'}) );
+    unless ( $group->HasMember($principal) ) {
+        return ( 0,
+                 $self->loc( 'That principal is not a [_1] for this ticket',
+                             $args{'Type'} ) );
     }
 
-    my ($m_id, $m_msg) = $group->_DeleteMember($principal->Id);
+    my ( $m_id, $m_msg ) = $group->_DeleteMember( $principal->Id );
     unless ($m_id) {
-        $RT::Logger->error("Failed to delete ".$principal->Id.
-                           " as a member of group ".$group->Id."\n".$m_msg);
+        $RT::Logger->error( "Failed to delete "
+                            . $principal->Id
+                            . " as a member of group "
+                            . $group->Id . "\n"
+                            . $m_msg );
 
-        return ( 0,    $self->loc('Could not remove that principal as a [_1] for this ticket', $args{'Type'}) );
+        return (0,
+                $self->loc(
+                    'Could not remove that principal as a [_1] for this ticket',
+                    $args{'Type'} ) );
     }
 
     unless ( $args{'Silent'} ) {
-        $self->_NewTransaction(
-            Type     => 'DelWatcher',
-            OldValue => $principal->Id,
-            Field    => $args{'Type'}
-        );
+        $self->_NewTransaction( Type     => 'DelWatcher',
+                                OldValue => $principal->Id,
+                                Field    => $args{'Type'} );
     }
 
-    return ( 1, $self->loc("[_1] is no longer a [_2] for this ticket.", $principal->Object->Name, $args{'Type'} ));
+    return ( 1,
+             $self->loc( "[_1] is no longer a [_2] for this ticket.",
+                         $principal->Object->Name,
+                         $args{'Type'} ) );
 }
 
 
 
-
 # }}}
+
+
+=head2 SquelchMailTo [EMAIL]
+
+Takes an optional email address to never email about updates to this ticket.
+
+
+Returns an array of the RT::Attribute objects for this ticket's 'SquelchMailTo' attributes.
+
+=begin testing
+
+my $t = RT::Ticket->new($RT::SystemUser);
+ok($t->Create(Queue => 'general', Subject => 'SquelchTest'));
+
+is($#{$t->SquelchMailTo}, -1, "The ticket has no squelched recipients");
+
+my @returned = $t->SquelchMailTo('nobody@example.com');
+
+is($#returned, 0, "The ticket has one squelched recipients");
+
+my @names = $t->Attributes->Names;
+is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
+@returned = $t->SquelchMailTo('nobody@example.com');
+
+
+is($#returned, 0, "The ticket has one squelched recipients");
+
+@names = $t->Attributes->Names;
+is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
+
+
+my ($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
+ok($ret, "Removed nobody as a squelched recipient - ".$msg);
+@returned = $t->SquelchMailTo();
+is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned));
+
+
+=end testing
+
+=cut
+
+sub SquelchMailTo {
+    my $self = shift;
+    if (@_) {
+        unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+            return undef;
+        }
+        my $attr = shift;
+        $self->AddAttribute( Name => 'SquelchMailTo', Content => $attr )
+          unless grep { $_->Content eq $attr }
+          $self->Attributes->Named('SquelchMailTo');
+
+    }
+    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+        return undef;
+    }
+    my @attributes = $self->Attributes->Named('SquelchMailTo');
+    return (@attributes);
+}
+
+
+=head2 UnsquelchMailTo ADDRESS
+
+Takes an address and removes it from this ticket's "SquelchMailTo" list. If an address appears multiple times, each instance is removed.
+
+Returns a tuple of (status, message)
+
+=cut
+
+sub UnsquelchMailTo {
+    my $self = shift;
+
+    my $address = shift;
+    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    my ($val, $msg) = $self->Attributes->DeleteEntry ( Name => 'SquelchMailTo', Content => $address);
+    return ($val, $msg);
+}
 
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
@@ -2198,11 +2290,14 @@ Takes a hashref with the following attributes:
 If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
 commentl
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content.
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
+
+If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
+They will, however, be prepared and you'll be able to access them through the TransactionObj
+
 
 =cut
 
-## Please see file perltidy.ERR
 sub Comment {
     my $self = shift;
 
@@ -2211,51 +2306,27 @@ sub Comment {
                  MIMEObj      => undef,
                  Content      => undef,
                  TimeTaken => 0,
+                 DryRun     => 0, 
                  @_ );
 
     unless (    ( $self->CurrentUserHasRight('CommentOnTicket') )
              or ( $self->CurrentUserHasRight('ModifyTicket') ) ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, $self->loc("Permission Denied"), undef );
+    }
+    $args{'NoteType'} = 'Comment';
+
+    if ($args{'DryRun'}) {
+        $RT::Handle->BeginTransaction();
+        $args{'CommitScrips'} = 0;
     }
 
-    unless ( $args{'MIMEObj'} ) {
-        if ( $args{'Content'} ) {
-            use MIME::Entity;
-            $args{'MIMEObj'} = MIME::Entity->build(
-		Data => ( ref $args{'Content'} ? $args{'Content'} : [ $args{'Content'} ] )
-	    );
-        }
-        else {
-
-            return ( 0, $self->loc("No correspondence attached") );
-        }
+    my @results = $self->_RecordNote(%args);
+    if ($args{'DryRun'}) {
+        $RT::Handle->Rollback();
     }
 
-    RT::I18N::SetMIMEEntityToUTF8($args{'MIMEObj'}); # convert text parts into utf-8
-
-    # If we've been passed in CcMessageTo and BccMessageTo fields,
-    # add them to the mime object for passing on to the transaction handler
-    # The "NotifyOtherRecipients" scripAction will look for RT--Send-Cc: and
-    # RT-Send-Bcc: headers
-
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',
-        RT::User::CanonicalizeEmailAddress(undef, $args{'CcMessageTo'}) )
-	if defined $args{'CcMessageTo'};
-    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc',
-        RT::User::CanonicalizeEmailAddress(undef, $args{'BccMessageTo'}) )
-	if defined $args{'BccMessageTo'};
-
-    #Record the correspondence (write the transaction)
-    my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-        Type      => 'Comment',
-        Data      => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
-        TimeTaken => $args{'TimeTaken'},
-        MIMEObj   => $args{'MIMEObj'}
-    );
-
-    return ( $Trans, $self->loc("The comment has been recorded") );
+    return(@results);
 }
-
 # }}}
 
 # {{{ sub Correspond
@@ -2266,9 +2337,12 @@ Correspond on this ticket.
 Takes a hashref with the following attributes:
 
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
 
 if there's no MIMEObj, Content is used to build a MIME::Entity object
+
+If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
+They will, however, be prepared and you'll be able to access them through the TransactionObj
 
 
 =cut
@@ -2284,57 +2358,96 @@ sub Correspond {
 
     unless (    ( $self->CurrentUserHasRight('ReplyToTicket') )
              or ( $self->CurrentUserHasRight('ModifyTicket') ) ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, $self->loc("Permission Denied"), undef );
     }
 
-    unless ( $args{'MIMEObj'} ) {
-        if ( $args{'Content'} ) {
-            use MIME::Entity;
-            $args{'MIMEObj'} = MIME::Entity->build(
-		Data => ( ref $args{'Content'} ?  $args{'Content'} : [ $args{'Content'} ] )
-	    );
-
-        }
-        else {
-
-            return ( 0, $self->loc("No correspondence attached") );
-        }
+    $args{'NoteType'} = 'Correspond'; 
+    if ($args{'DryRun'}) {
+        $RT::Handle->BeginTransaction();
+        $args{'CommitScrips'} = 0;
     }
 
-    RT::I18N::SetMIMEEntityToUTF8($args{'MIMEObj'}); # convert text parts into utf-8
-
-    # If we've been passed in CcMessageTo and BccMessageTo fields,
-    # add them to the mime object for passing on to the transaction handler
-    # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
-    # headers
-
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',
-        RT::User::CanonicalizeEmailAddress(undef, $args{'CcMessageTo'}) )
-	if defined $args{'CcMessageTo'};
-    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc',
-        RT::User::CanonicalizeEmailAddress(undef, $args{'BccMessageTo'}) )
-	if defined $args{'BccMessageTo'};
-
-    #Record the correspondence (write the transaction)
-    my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
-             Type => 'Correspond',
-             Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
-             TimeTaken => $args{'TimeTaken'},
-             MIMEObj   => $args{'MIMEObj'} );
-
-    unless ($Trans) {
-        $RT::Logger->err( "$self couldn't init a transaction $msg");
-        return ( $Trans, $self->loc("correspondence (probably) not sent"), $args{'MIMEObj'} );
-    }
+    my @results = $self->_RecordNote(%args);
 
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
+    $self->_SetTold unless ( $self->IsRequestor($self->CurrentUser->id));
 
-    unless ( $TransObj->IsInbound ) {
-        $self->_SetTold;
+    if ($args{'DryRun'}) {
+        $RT::Handle->Rollback();
     }
 
-    return ( $Trans, $self->loc("correspondence sent") );
+    return (@results);
+
+}
+
+# }}}
+
+# {{{ sub _RecordNote
+
+=head2 _RecordNote
+
+the meat of both comment and correspond. 
+
+Performs no access control checks. hence, dangerous.
+
+=cut
+
+sub _RecordNote {
+
+    my $self = shift;
+    my %args = ( CcMessageTo  => undef,
+                 BccMessageTo => undef,
+                 MIMEObj      => undef,
+                 Content      => undef,
+                 TimeTaken    => 0,
+                 CommitScrips => 1,
+                 @_ );
+
+    unless ( $args{'MIMEObj'} || $args{'Content'} ) {
+            return ( 0, $self->loc("No message attached"), undef );
+    }
+    unless ( $args{'MIMEObj'} ) {
+            $args{'MIMEObj'} = MIME::Entity->build( Data => (
+                                                          ref $args{'Content'}
+                                                          ? $args{'Content'}
+                                                          : [ $args{'Content'} ]
+                                                    ) );
+        }
+
+    # convert text parts into utf-8
+    RT::I18N::SetMIMEEntityToUTF8( $args{'MIMEObj'} );
+
+# If we've been passed in CcMessageTo and BccMessageTo fields,
+# add them to the mime object for passing on to the transaction handler
+# The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
+# headers
+
+    $args{'MIMEObj'}->head->add( 'RT-Send-Cc', RT::User::CanonicalizeEmailAddress(
+                                                     undef, $args{'CcMessageTo'}
+                                 ) )
+      if defined $args{'CcMessageTo'};
+    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc',
+                                 RT::User::CanonicalizeEmailAddress(
+                                                    undef, $args{'BccMessageTo'}
+                                 ) )
+      if defined $args{'BccMessageTo'};
+
+    #Record the correspondence (write the transaction)
+    my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
+             Type => $args{'NoteType'},
+             Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
+             TimeTaken => $args{'TimeTaken'},
+             MIMEObj   => $args{'MIMEObj'}, 
+             CommitScrips => $args{'CommitScrips'},
+    );
+
+    unless ($Trans) {
+        $RT::Logger->err("$self couldn't init a transaction $msg");
+        return ( $Trans, $self->loc("Message could not be recorded"), undef );
+    }
+
+    return ( $Trans, $self->loc("Message recorded"), $TransObj );
 }
 
 # }}}
@@ -3783,6 +3896,12 @@ sub Transactions {
 
 # {{{ sub _NewTransaction
 
+=head2 _NewTransaction  PARAMHASH
+
+Private function to create a new RT::Transaction object for this ticket update
+
+=cut
+
 sub _NewTransaction {
     my $self = shift;
     my %args = (
@@ -3793,6 +3912,8 @@ sub _NewTransaction {
         Data      => undef,
         Field     => undef,
         MIMEObj   => undef,
+        ActivateScrips => 1,
+        CommitScrips => 1,
         @_
     );
 
@@ -3806,10 +3927,12 @@ sub _NewTransaction {
         Field     => $args{'Field'},
         NewValue  => $args{'NewValue'},
         OldValue  => $args{'OldValue'},
-        MIMEObj   => $args{'MIMEObj'}
+        MIMEObj   => $args{'MIMEObj'},
+        ActivateScrips => $args{'ActivateScrips'},
+        CommitScrips => $args{'CommitScrips'},
     );
 
-
+    # Rationalize the object since we may have done things to it during the caching.
     $self->Load($self->Id);
 
     $RT::Logger->warning($msg) unless $transaction;
@@ -3820,7 +3943,7 @@ sub _NewTransaction {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
     if ( $RT::UseTransactionBatch and $transaction ) {
-	push @{$self->{_TransactionBatch}}, $trans;
+	    push @{$self->{_TransactionBatch}}, $trans;
     }
     return ( $transaction, $msg, $trans );
 }

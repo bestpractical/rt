@@ -29,25 +29,20 @@ CLASS="oddline"
 CLASS="evenline"
 % }
 >
-<TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->id%></a></B></TD>
-<TD><B><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></B></TD>
-<TD><%loc($Ticket->Status)%></TD>
-<TD><%$Ticket->QueueObj->Name%></TD>
-<TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
-<TD><%$Ticket->Priority%></TD>
-</TR>
-<TR
-% if ($i%2) {
-CLASS="oddline"
-% } else {
-CLASS="evenline"
-% }
-><TD><small><%$Ticket->Requestors->MemberEmailAddressesAsString%></small></TD>
-<TD><SMALL><%$Ticket->CreatedObj->AgeAsString || '-'%></SMALL></TD>
-<TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
-<TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
-<TD><SMALL><%$Ticket->TimeLeft%></SMALL></TD>
-</TR>
+
+'<B><A HREF="/Ticket/Display.html?id=##id##">##id##</a></B></TD>
+<TD><B><A HREF="/Ticket/Display.html?id=##id##">##Subject##</a></B></TD>
+<td>##Status##</td>
+:<td>##QueueName##</td>
+<td>##OwnerName##</td>
+<td>##Priority##</td>
+</tr>
+<tr>
+<td><small>##Requestors##</small></td>
+<td><small>##Created##</small></td>
+<td><small>##Told##</small></td>
+<td><small>##LastUpdated</small></td>
+<td><small>##TimeLeft##</small>
 </SPAN>
 <%ARGS>
 $Ticket => undef

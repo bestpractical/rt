@@ -102,6 +102,64 @@ sub LimitToDeleted {
 }
 # }}}
 
+# {{{ sub LimitAttribute
+
+=head2 LimitAttribute PARAMHASH
+
+Takes NAME, OPERATOR and VALUE to find records that has the
+matching Attribute.
+
+=cut
+
+sub LimitAttribute {
+    my ($self, %args) = @_;
+    
+    my $alias = $self->Join(
+	TYPE   => 'left',
+	ALIAS1 => 'main',
+	FIELD1 => 'id',
+	TABLE2 => 'Attributes',
+	FIELD2 => 'ObjectId'
+    );
+
+    my $type = ref($self);
+    $type =~ s/(?:s|Collection)$//; # XXX - Hack!
+
+    $self->Limit(
+	ALIAS	   => $alias,
+	FIELD      => 'ObjectType',
+	OPERATOR   => '=',
+	VALUE      => $type,
+    );
+    $self->Limit(
+	ALIAS	   => $alias,
+	FIELD      => 'Name',
+	OPERATOR   => '=',
+	VALUE      => $args{NAME},
+    ) if exists $args{NAME};
+
+    return unless exists $args{VALUE};
+
+    $self->Limit(
+	ALIAS	   => $alias,
+	FIELD      => 'Content',
+	OPERATOR   => ($args{OPERATOR} || '='),
+	VALUE      => $args{VALUE},
+	ENTRYAGGREGATOR => 'OR',
+    );
+
+    $self->Limit(
+	ALIAS	   => $alias,
+	FIELD      => 'Content',
+	OPERATOR   => '=',
+	VALUE      => '0',
+	ENTRYAGGREGATOR => 'OR',
+    ) if $args{EMPTY};
+}
+# }}}
+
+1;
+
 # {{{ sub FindAllRows
 
 =head2 FindAllRows
