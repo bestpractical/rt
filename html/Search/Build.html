@@ -24,9 +24,11 @@
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html".$QueryString, 
-    Title => $title, Format => $Format,
+    Title => $title,
+    Format => $Format,
     Query => $Query,
     Rows => $ARGS{'Rows'},
+    OrderBy => $ARGS{'OrderBy'}
 &>
 
 <table width=100%>
@@ -106,6 +108,7 @@ if ($NewQuery) {
     $Format ||= $search_hash->{'Format'};
     $Description ||= $search_hash->{'Description'};
     $SearchId ||= $search_hash->{'SearchId'} || 'new';
+    $ARGS{'OrderBy'} ||= $search_hash->{'OrderBy'} || 'id';
     $search ||= $search_hash->{'Object'};
 }
 
@@ -732,6 +735,7 @@ $search_hash->{'Format'} = $Format;
 $search_hash->{'Query'} = $Query;
 $search_hash->{'Description'} = $Description;
 $search_hash->{'Object'} = $search;
+$search_hash->{'OrderBy'} = $ARGS{'OrderBy'};
 
 $session{'CurrentSearchHash'} = $search_hash;
 # }}}

@@ -159,10 +159,10 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 
 my $args = "?" . $m->comp(
     '/Elements/QueryString',
-    Query   => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
-    Format  => $ARGS{'Format'} || $session{'CurrentSearchHash'}->{'Format'},
-    OrderBy => $ARGS{'OrderBy'},
-    Order   => $ARGS{'Order'},
+    Query   => $ARGS{'Query'}   || $session{'CurrentSearchHash'}->{'Query'},
+    Format  => $ARGS{'Format'}  || $session{'CurrentSearchHash'}->{'Format'},
+    OrderBy => $ARGS{'OrderBy'} || $session{'CurrentSearchHash'}->{'OrderBy'},
+    Order   => $ARGS{'Order'}   || $session{'CurrentSearchHash'}->{'Order'},
     Rows    => $ARGS{'Rows'},
   ) if ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'});
 

@@ -1781,31 +1781,6 @@ sub CountAll {
 # }}}
 
 
-# {{{ sub ItemsArrayRef
-
-=head2 ItemsArrayRef
-
-Returns a reference to the set of all items found in this search
-
-=cut
-
-sub ItemsArrayRef {
-    my $self = shift;
-    my @items;
-
-    unless ( $self->{'items_array'} ) {
-
-        my $placeholder = $self->_ItemsCounter;
-        $self->GotoFirstItem();
-        while ( my $item = $self->Next ) {
-            push ( @{ $self->{'items_array'} }, $item );
-        }
-        $self->GotoItem($placeholder);
-    }
-    return ( $self->{'items_array'} );
-}
-# }}}
-
 # {{{ sub Next
 sub Next {
 	my $self = shift;
