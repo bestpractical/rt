@@ -76,13 +76,28 @@ sub CreatedAsString {
 }
 
 
+sub Message {
+ my $self = shift;
+  
+  use RT::Attachments;
+ if (!defined ($self->{'message'}) ){
+   
+   $self->{'message'} = new RT::Attachments($self->CurrentUser);
+   $self->{'message'}->Limit(FIELD => 'TransactionId',
+			     VALUE => $self->Id);
+
+   $self->{'message'}->ChildrenOf(0);
+ } 
+ return($self->{'message'});
+}
 
 sub Attachments {
   my $self = shift;
   if (@_) {
     my $Types = shift;
   }
-
+  
+  #TODO cache this
   use RT::Attachments;
   my $Attachments = new RT::Attachments($self->CurrentUser);
   $Attachments->Limit(FIELD => 'TransactionId',
@@ -119,14 +134,17 @@ sub Attach {
 
 sub Description {
   my $self = shift;
-  if ($self->Type eq 'create'){
+  if (!defined($self->Type)) {
+    return("No transaction type specified");
+  }
+  if ($self->Type eq 'Create'){
     return("Request created by ".$self->Creator->UserId);
   }
-  elsif ($self->Type eq 'correspond')    {
+  elsif ($self->Type eq 'Ccorrespond')    {
     return("Mail sent by ". $self->Creator->UserId);
   }
   
-  elsif ($self->Type eq 'comments')  {
+  elsif ($self->Type eq 'Comment')  {
     return( "Comments added by ".$self->Creator->UserId);
   }
   

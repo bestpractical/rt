@@ -64,13 +64,12 @@ sub Create {
   
 
   #Add a transaction for the create
-  my $Trans = $self->_NewTransaction("create",undef,0);
+  my $Trans = $self->_NewTransaction(Type => "Create",
+				     TimeTaken => 0);
   
   
 
   #Attach the content to the transaction, if we were passed in an attachment
-  
-  
   if ($args{'Attachment'}){
     $Trans->Attach($args{'Attachment'});
   }
@@ -78,7 +77,6 @@ sub Create {
 
 
   #TODO If the requestor is supposed to get an autoreply on creation, do that now.
-
   return($self->Id, $Trans, $ErrStr);
   
 }
@@ -153,15 +151,15 @@ sub Owner {
 
 
 sub Take {
-  my $self=shift;
- my ($package, $filename, $line) = caller;
+  my $self = shift;
+  my ($package, $filename, $line) = caller;
   print STDERR "RT::Ticket->Take called from $package, line $line with arguments (",@_,")\n";
   print STDERR "Taking ".$self->CurrentUser->Id."\n";
   return($self->SetOwner($self->CurrentUser->Id));
 }
 
 sub Untake {
-  my $self=shift;
+  my $self = shift;
   return($self->SetOwner(""));
 }
 
@@ -325,56 +323,69 @@ sub Merge {
 sub Comment {
   my $self = shift;
   
-  my %args = ( Subject => $self->Subject,
-	       Sender => $self->CurrentUser->EmailAddress,
-	       Cc => undef,
-	       Bcc => undef,
+  my %args = ( MIMEObj => undef,
 	       TimeTaken => 0,
 	       @_ );
-  
-  if ($args{'subject'} !~ /\[(\s*)comment(\s*)\]/i) {
-    $args{'subject'} .= ' [comment]';
-  }
+    
+
+  #For ease of processing
+  my $MIME = $args{'MIMEObj'};
+
   #Record the correspondence (write the transaction)
-  $self->_NewTransaction('comment',$args{'subject'},$args{'time_taken'},
-			 $args{'content'});
-  
+  my $Trans = $self->_NewTransaction( Type => 'Comment',
+				      Data => $MIME->head->get('subject'),
+				      TimeTaken => $args{'TimeTaken'}
+				    );
+
+  $Trans->Attach($MIME);
+
+  #Set the from address to be the queue's comment address
+    
   #Send a copy to the queue members, if necessary
   
-  #Send a copy to the owner if necesary
+  #Send a copy to the ticket owner if necesary
   
   if ($args{'cc'} || $args{'bcc'} ) {
     #send a copy of the correspondence to the CC list and BCC list
   }
   
-  return ("This correspondence has been recorded");
+  return ($Trans, "This correspondence has been recorded");
 }
 
 sub Correspond {
   my $self = shift;
-    my %args = ( Subject => $self->Subject,
-		 Sender => $self->CurrentUser->EmailAddress,
-		 Cc => undef,
-		 Bcc => undef,
+    my %args = ( MIMEObj => undef,
 		 TimeTaken => 0,
-		 Content => undef,
 		 @_ );
-
   
+  my ($Cc, $Bcc, $Sender);
+  #For ease of processing
+  my $MIME = $args{'MIMEObj'};
+  
+  if (! defined ($MIME)) {
+    return("No correspondence attached");
+  }
   #Record the correspondence (write the transaction)
-  $self->_NewTransaction('correspondence',$args{'subject'},$args{'time_taken'},$args{'content'});
+  my $Trans = $self->_NewTransaction(Type => 'Correspond',
+			 Data => $MIME->head->get('subject'),
+			 TimeTaken => $args{'TimeTaken'}
+			);
+
+  $Trans->Attach($MIME);
+
+
   
   #Send a copy to the queue members, if necessary
   
   #Send a copy to the owner if necesary
   
-  if (!$self->IsRequestor($args{'sender'})) {
+  if (!$self->IsRequestor($Ssender)) {
     #Send a copy of the correspondence to the user
     #Flip the date_told to now
     #If we've sent the correspondence to the user, flip the note the date_told
   }
   
-  elsif ($args{'cc'} || $args{'bcc'} ) {
+  elsif ($Bcc || $Cc ) {
     #send a copy of the correspondence to the CC list and BCC list
   }
   
@@ -484,20 +495,31 @@ sub IsRequestor {
 
 sub _NewTransaction {
   my $self = shift;
-  my $Type = shift;
-  my $Data = shift;
-  my $TimeTaken = shift;
+  my %args = (TimeTaken => 0,
+	     Type => undef,
+	     OldValue => undef,
+	     NewValue => undef,
+	     Data => undef,
+	     Field => undef,
+	     @_);
   
   
   use RT::Transaction;
-  print STDERR "My effective id is ".$self->Id."\n";
   my $trans = new RT::Transaction($self->CurrentUser);
   $trans->Create( Ticket => $self->EffectiveId,
-		  TimeTaken => "$TimeTaken",
-		  Type => "$Type",
-		  Data => "$Data"
+		  TimeTaken => $args{'TimeTaken'},
+		  Type => $args{'Type'},
+		  Data => $args{'Data'},
+		  Field => $args{'Field'},
+		  NewValue => $args{'NewValue'},
+		  OldValue => $args{'OldValue'},
 		);
-  $self->_UpdateTimeTaken($TimeTaken); 
+  
+  $self->_UpdateDateActed;
+  
+  if ($args{'TimeTaken'} > 0 ) {
+    $self->_UpdateTimeTaken($TimeTaken); 
+  }
   return($trans);
 }
 
@@ -524,14 +546,22 @@ sub _Accessible {
   return($self->SUPER::_Accessible(@_, %Cols));
 }
 
+#This routine will increment the timeworked counter. it should
+#only be called from _NewTransaction 
 sub _UpdateTimeTaken {
   my $self = shift;
-  warn("_UpdateTimeTaken not implemented yet.");
+  my $Minutes = shift;
+  my ($Total);
+  
+  $Total = $self->_Value("TimeWorked");
+  $Total = $Total + $Minutes;
+  $self->SUPER::_Set("TimeWorked", $Total);
+  return ($Total);
 }
 
 sub _UpdateDateActed {
   my $self = shift;
-  $self->SUPER::_Set('LastUpdated',time);
+  $self->SUPER::_Set('LastUpdated',undef);
 }
 
 
@@ -541,30 +571,28 @@ sub _UpdateDateActed {
 #This overrides RT::Record
 sub _Set {
   my $self = shift;
-  my (@args);
-  #if the user is trying to modify the record
-  if ($self->ModifyPermitted) {
+  if (!$self->ModifyPermitted) {
+        return (0, "Permission Denied");
+  }
+  else {
+    #if the user is trying to modify the record
     
-    my $field = shift;
-    my $value = shift;
-    my $time_taken = shift if @_;
-    
-    print STDERR "Setting $field to $value\n";
-    #TODO: this doesn't work, iirc.
-    
-    my $content = @_;
+    my $Field = shift;
+    my $Value = shift;
+    my $TimeTaken = shift if @_;
     
     #record what's being done in the transaction
+    $self->_NewTransaction (Type => "Set",
+			    Field => "$Field",
+			    NewValue => "$Value",
+			    OldValue =>  $self->_Value("$Field"),
+			    TimeTaken => $TimeTaken
+			   );
     
-    $self->_NewTransaction ($field, $value, $time_taken, $content);
-    $self->_UpdateDateActed;
     $self->SUPER::_Set($field, $value);
     #Figure out where to send mail
   }
   
-  else {
-    return (0, "Permission Denied");
-  }
 }
 
 #

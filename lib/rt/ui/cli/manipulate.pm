@@ -233,12 +233,15 @@ sub ParseArgs {
   
   
   sub cli_create_req {	
-    my ($queue_id,$owner,$requestors,$status,$priority,$subject,$final_prio,$date_due, $due_string);
+    my ($queue_id,$owner,$Requestors,$status,$priority,$Subject,$final_prio,
+	$Cc, $Bcc, $date_due, $due_string);
     $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     $area=&rt::ui::cli::question_string("Place Request in area",);
     $owner=&rt::ui::cli::question_string( "Give request to");
-    $requestors=&rt::ui::cli::question_string("Requestor(s)",);
-    $subject=&rt::ui::cli::question_string("Subject",);
+    $Requestors=&rt::ui::cli::question_string("Requestor(s)",);
+    $Cc = &rt::ui::cli::question_string("Cc",);
+    $Bcc =  &rt::ui::cli::question_string("Bcc",);
+    $Subject=&rt::ui::cli::question_string("Subject",);
     $priority=&rt::ui::cli::question_int("Starting Priority",$rt::queues{$queue_id}{'default_prio'});
     $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
     $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
@@ -255,27 +258,37 @@ sub ParseArgs {
 	$content .= $_;
       }
     }	 
+    use MIME::Entity;
+    $Message = MIME::Entity->build ( Subject => "$Subject",
+				     From => "$Requestors",
+				     Cc => "$Cc",
+				     Bcc => "$Bcc",
+				     Data => "$content");
+
     use RT::Ticket;
     my $Ticket = RT::Ticket->new($CurrentUser);
     my ($id, $Transaction, $ErrStr) = $Ticket->Create ( Queue => $queue,
 			       Area => $area,
 			       Alias => $alias,
-			       Requestors => $requestors,
 			       Owner => $owner,
-			       Subject => $subject,
+			       Subject => $Subject,
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
 			       Status => 'open',
-			       Due => $date_due);
-    $Transaction->Attach('','text/plain','',$content);
+			       	Due => $date_due,
+	      			Attachment => $Message			
+						      );
     printf("Request %s created",$id);
   }
   
   sub cli_comment_req {	
     my $Ticket = shift ;
-    my ($subject,$content,$trans,$message,$cc,$bcc );
+    my ($subject,@content,$trans,$cc,$bcc,$Transaction,
+	$Description, $TimeTaken);
     
+    $TimeTaken = &rt::ui::cli::question_int("How long did you spend on this transaction?");
     $subject=&rt::ui::cli::question_string("Subject",);
+    
     $cc=&rt::ui::cli::question_string("Cc",);
     $bcc=&rt::ui::cli::question_string("Bcc",);   
     print "Please enter your comments this request, terminated\nby a line containing only a period:\n";
@@ -284,16 +297,21 @@ sub ParseArgs {
 	last;
       }
       else {
-	$content .= $_;
+	push (@content, $_);
+	
       }
     }
     
+    use MIME::Entity;
+    $Message = MIME::Entity->build ( Subject => "$subject",
+				     Cc => "$cc",
+				     Bcc => "$Bcc",
+				     Data => @content);
 
-    $Message = $Ticket->Comment(subject => "$subject",
-				content => "$content",
-				cc => "$cc",
-				bcc => "$bcc",
-				sender => $CurrentUser->EmailAddress);
+    ($Transaction, $Description) = $Ticket->Comment( MIMEObj => $Message,
+						     TimeTaken => $TimeTaken
+						   );
+			       
     print $Message;
   }
   
@@ -376,7 +394,7 @@ EOFORM
 
     use Time::Local;
     print <<EOFORM
-Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]}  Queue:@{[$Ticket->Queue->QueueId]}
+Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->Queue->QueueId]}
       Subject: @{[$Ticket->Subject]}
    Requestors: @{[$Ticket->Requestors]}
         Owner: @{[$Ticket->Owner->UserId]}
@@ -391,11 +409,23 @@ EOFORM
 sub ShowTransaction {
   my $transaction = shift;
   
-print <<EOFORM
+print <<EOFORM;
 ==========================================================================
 Date: @{[$transaction->CreatedAsString]} (@{[$transaction->TimeTaken]} minutes)
 @{[$transaction->Description]}
 EOFORM
+  
+  my $message = $transaction->Message->First;
+  if (!defined ($message) ) {
+    print "Um. no message\n";
+  return();
+  }
+print <<EOFORM;
+--------------------------------------------------------------------------
+@{[$message->Headers]}
+@{[$message->Content]}
+EOFORM
+  return();
 }
   
 sub LoadTicket {
