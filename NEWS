@@ -1,3 +1,12 @@
+20 Oct 1999
+-----------
+
+* Using the web UI to send correspondence should no longer not
+  sent the correspondence if there are CCs, BCCs or the actor is
+  the same as the requestor. thanks to <douglas@arepa.com> for 
+  pointing out the deficiency.
+  
+
 6 Oct 1999
 ----------
 
