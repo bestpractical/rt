@@ -1734,11 +1734,14 @@ sub _Links {
     my $field = shift;
     my $type =shift || "";
 
-    $self->{"$field$type"} = new RT::Links($self->CurrentUser);
-    if ($self->CurrentUserHasRight('ShowTicket')) {
-	
-	$self->{"$field$type"}->Limit(FIELD=>$field, VALUE=>$self->URI);
-	$self->{"$field$type"}->Limit(FIELD=>'Type', VALUE=>$type) if ($type);
+    unless ($self->{"$field$type"}) {
+	$self->{"$field$type"} = new RT::Links($self->CurrentUser);
+	if ($self->CurrentUserHasRight('ShowTicket')) {
+	    
+	    $self->{"$field$type"}->Limit(FIELD=>$field, VALUE=>$self->URI);
+	    $self->{"$field$type"}->Limit(FIELD=>'Type', 
+					  VALUE=>$type) if ($type);
+	}
     }
     return ($self->{"$field$type"});
 }
