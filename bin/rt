@@ -360,7 +360,7 @@ if ($create) {
 		      Starts => $starts,
 		      Started => $started,
 		      TimeLeft => $time_left,
-		      Priority => $priority,
+		      InitialPriority => $priority,
 		      FinalPriority => $final_priority,
 		      MIMEObj => $MIMEObj
 		     );
