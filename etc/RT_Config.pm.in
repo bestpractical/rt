@@ -286,7 +286,7 @@ Set($WebImagesURL , $WebPath . "/NoAuth/images/");
 
 # $RTLogoURL points to the URL of the RT logo displayed in the web UI
 
-Set($LogoURL , $WebImagesURL . "rt.jpg");
+Set($LogoURL , $WebImagesURL . "bplogo.gif");
 
 # WebNoAuthRegex - What portion of RT's URLspace should not require
 # authentication.

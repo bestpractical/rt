@@ -282,7 +282,7 @@ my $entity = MIME::Entity->build( From => 'root@localhost',
                                 Data => ['This is a test of a binary attachment']);
 
 # currently in lib/t/autogen
-$entity->attach(Path => '@MASON_HTML_PATH@/NoAuth/images/spacer.gif', 
+$entity->attach(Path => '@MASON_HTML_PATH@/NoAuth/images/bplogo.gif', 
                 Type => 'image/gif',
                 Encoding => 'base64');
 
@@ -304,7 +304,7 @@ ok (UNIVERSAL::isa($tick,'RT::Ticket'));
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'binary attachment test', "Created the ticket - ".$tick->Id);
 
-my $file = `cat '@MASON_HTML_PATH@/NoAuth/images/spacer.gif'`;
+my $file = `cat '@MASON_HTML_PATH@/NoAuth/images/bplogo.gif'`;
 ok ($file, "Read in the logo image");
 
 
@@ -332,7 +332,7 @@ use LWP::UserAgent;
 # Grab the binary attachment via the web ui
 my $ua      = LWP::UserAgent->new();
 
-my $full_url = "http://localhost".$RT::WebPath."/Ticket/Attachment/".$attachment->TransactionId."/".$attachment->id."/spacer.gif?&user=root&pass=password";
+my $full_url = "http://localhost".$RT::WebPath."/Ticket/Attachment/".$attachment->TransactionId."/".$attachment->id."/bplogo.gif?&user=root&pass=password";
 my $r = $ua->get( $full_url);
 
 
