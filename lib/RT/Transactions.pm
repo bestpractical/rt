@@ -1,18 +1,17 @@
 #$Header$
+
 package RT::Transactions;
+use RT::EasySearch;
 
-use DBIx::EasySearch;
-
-@ISA= qw(DBIx::EasySearch);
+@ISA= qw(RT::EasySearch);
 
 
-sub new {
-  my $pkg= shift;
-  my $self = SUPER::new $pkg;
-  
+sub _Init  {
+  my $self = shift;
+ 
   $self->{'table'} = "Transactions";
   $self->{'primary_key'} = "id";
-  return($self);
+  $self->SUPER::_Init(@_);
 }
 
 sub Limit {

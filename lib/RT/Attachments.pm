@@ -1,19 +1,20 @@
 #$Header$
-package RT::Transactions;
 
-use DBIx::EasySearch;
+package RT::Attachments;
 
-@ISA= qw(DBIx::EasySearch);
+use RT::EasySearch;
+
+@ISA= qw(RT::EasySearch);
 
 
-sub new {
-  my $pkg= shift;
-  my $self = SUPER::new $pkg;
-  
+sub _Init  {
+  my $self = shift;
+ 
   $self->{'table'} = "Attachments";
   $self->{'primary_key'} = "id";
-  return($self);
+  $self->SUPER::_Init(@_);
 }
+
 
 sub Limit {
   my $self = shift;

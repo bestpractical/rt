@@ -25,7 +25,7 @@ sub NewItem {
   my $Handle = shift;
   my $item;
   use RT::Ticket;
-  $item = new RT::Ticket($self->{'user'}, $Handle);
+  $item = new RT::Ticket($self->{'user'});
   return($item);
 }
 

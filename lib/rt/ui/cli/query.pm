@@ -15,8 +15,8 @@ sub activate {
 sub ParseArgs {
 
   
-  my $Requests=&build_query();
-  if (!$Requests) {
+  my $Tickets=&build_query();
+  if (!$Tickets) {
     print "No result found\n";
     return
   }
@@ -27,7 +27,7 @@ sub ParseArgs {
   
   &print_header($format_string);
   
-  while (my $Request = $Requests->Next) {
+  while (my $Ticket = $Tickets->Next) {
     #do this because we're redefining the format string internally each run.
     my ($format_string) = $format_string;
     
@@ -37,12 +37,12 @@ sub ParseArgs {
       if  ($field =~ /^n(\d*)$/){ 
 	$length = $1;
 	if (!$length) {$length=6;}
-	printf "%-${length}.${length}s ", $Request->Id;
+	printf "%-${length}.${length}s ", $Ticket->Id;
       }
       elsif ($field =~ /^d(\d*)$/){
        my $length = $1;
-       if ($Request->DateDue > 0) {
-	 my $date = localtime($Request->DateDue);
+       if ($Ticket->DateDue > 0) {
+	 my $date = localtime($Ticket->DateDue);
 	 $date =~ s/\d*:\d*:\d*//;	
 	 if (!$length) {$length=5;}
 	 printf "%-${length}.${length}s ", $date;
@@ -52,50 +52,58 @@ sub ParseArgs {
        }
      }
      elsif ($field =~ /^p(\d*)$/){ 
-       $length = $1;
+       $length = $1; 
        if (!$length) {$length=2;}
-       printf "%-${length}.${length}d ", $Request->Priority;
+  
+       printf "%-${length}.${length}d ", $Ticket->Priority;
      }
      elsif ($field =~ /^r(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=9;}
-       printf "%-${length}.${length}s ", $Request->Requestors;
+       printf "%-${length}.${length}s ", $Ticket->Requestors;
      }
      elsif ($field =~ /^o(\d*)$/){ 
        $length = $1;
+       my $Owner;
        if (!$length) {$length=8;}
-       printf "%-${length}.${length}s ", $Request->Owner->UserId;
+       if ($Ticket->Owner) {
+	 $Owner = $Ticket->Owner->UserId;
+       }
+       else {
+	 $Owner = "";
+       }
+       printf "%-${length}.${length}s ", $Owner;
      }
-     
+      
      elsif ($field =~ /^s(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=30;}
-       printf "%-${length}.${length}s ", $Request->Subject;
+       printf "%-${length}.${length}s ", $Ticket->Subject;
      }
      elsif ($field =~ /^t(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=5;}
-       printf "%-${length}.${length}s ", $Request->Status;
+       printf "%-${length}.${length}s ", $Ticket->Status;
      }
      elsif ($field =~ /^q(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=8;}
-       printf "%-${length}.${length}s ", $Request->Queue->Id;
+       printf "%-${length}.${length}s ", $Ticket->Queue->Id;
      }
      elsif ($field =~ /^a(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=7;}
-       printf "%-${length}.${length}s ", $Request->Area;
+       printf "%-${length}.${length}s ", $Ticket->Area;
      }
      elsif ($field =~ /^g(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=6;}
-       printf "%-${length}.${length}s ", $Request->Age;
+       printf "%-${length}.${length}s ", $Ticket->Age;
      }
      elsif ($field =~ /^l(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=6;}
-       printf "%-${length}.${length}s ", $Request->SinceTold;
+       printf "%-${length}.${length}s ", $Ticket->SinceTold;
      }
      elsif ($field =~ /^w(.)$/) {
        if ($1 eq 't') { print "\t";}
@@ -113,17 +121,17 @@ sub ParseArgs {
 sub build_query {
   my ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
   use RT::Tickets;
-  my $Requests = RT::Tickets->new($CurrentUser);
+  my $Tickets = RT::Tickets->new($CurrentUser);
 
-#  if (!$ARGV) {
-#    return();
-#  }
-  if (($ARGV[0] eq '-help')  or ($ARGV[0] eq '--help') or ($ARGV[0] eq '-h')) {
-    &usage();
-    return();
-  }
 
   for ($i=0;$i<=$#ARGV;$i++) {
+    if (($ARGV[0] eq '-help')  or 
+	($ARGV[0] eq '--help') or 
+	($ARGV[0] eq '-h')) {
+      &usage();
+      return();
+  }
+
     if ($ARGV[$i] eq '-format') {
       $format_string = $ARGV[++$i];
       
@@ -131,26 +139,26 @@ sub build_query {
     
     if ($ARGV[$i] eq '-queue') {
       my $queue_id = $ARGV[++$i];
-      $Requests->Limit( FIELD => 'queue',
+      $Tickets->Limit( FIELD => 'queue',
 			VALUE => "$queue_id");
     }
     
     if ($ARGV[$i] eq '-owner') {
       my $owner = $ARGV[++$i];
-      $Requests->Limit( FIELD => 'owner',
+      $Tickets->Limit( FIELD => 'owner',
 			VALUE => "$owner");
       
     }
     
     if ($ARGV[$i] eq '-unowned'){
-      $Requests->Limit( FIELD => 'owner',
+      $Tickets->Limit( FIELD => 'owner',
 			VALUE => "");
       
     }
     if ($ARGV[$i] =~ '-prio'){
       my $operator = $ARGV[++$i];
       my $priority = $ARGV[++$i];
-      $Requests->Limit( FIELD => 'priority',
+      $Tickets->Limit( FIELD => 'priority',
 			OPERATOR => "$operator",
 			VALUE => "$priority");
     }
@@ -158,39 +166,39 @@ sub build_query {
     if ($ARGV[$i] =~ '-stat'){
       my $status = $ARGV[++$i];
       print "Got some status\n";
-      $Requests->Limit( FIELD => 'status',
+      $Tickets->Limit( FIELD => 'status',
 			VALUE => "$status");
     }
     
     if ($ARGV[$i] eq '-area'){
       my $area = $ARGV[++$i];
-      $Requests->Limit( FIELD => 'area',
+      $Tickets->Limit( FIELD => 'area',
 			VALUE => "$area");
     }
     
     if ($ARGV[$i] eq '-open'){
-      $Requests->Limit( FIELD => 'status',
+      $Tickets->Limit( FIELD => 'status',
 			VALUE => "open");
     }
     if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
-      $Requests->Limit( FIELD => 'status',
+      $Tickets->Limit( FIELD => 'status',
 			VALUE => "resolved");
       
       
     }
     if ($ARGV[$i] eq '-dead'){
-      $Requests->Limit( FIELD => 'status',
+      $Tickets->Limit( FIELD => 'status',
 			VALUE => "dead");
     }    
     
     if ($ARGV[$i] eq '-stalled'){
-      $Requests->Limit( FIELD => 'status',
+      $Tickets->Limit( FIELD => 'status',
 			VALUE => "stalled");
     }
     
     if ($ARGV[$i] eq '-user') {
       my $requestors = $ARGV[++$i];
-      $Requests->Limit( FIELD => 'requestors',
+      $Tickets->Limit( FIELD => 'requestors',
 			VALUE => "%$requestors%",
 			OPERATOR => 'LIKE');
     }
@@ -232,7 +240,7 @@ sub build_query {
     $query_string .= " DESC";
   }
   
-  return ($Requests);
+  return ($Tickets);
 }
   sub usage {
     print <<EOFORM;

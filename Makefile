@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	5
+RT_VERSION_PATCH	=	6
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -311,7 +311,7 @@ commit:
 predist: commit
 	cvs tag -F $(TAG)
 	rm -rf /tmp/$(TAG)
-	cvs export -D now -d /tmp/$(TAG) -r rt-1-1 rt
+	cvs export -D now -d /tmp/$(TAG) rt
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 

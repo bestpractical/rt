@@ -62,10 +62,12 @@ sub activate {
   
   #Figure out who's sending this message.
   $From = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
-
+  chomp $From;
+  
   #Pull apart the subject line
   $Subject = $head->get('Subject');
-  
+  chomp $Subject;
+
   if ($Subject =~ s/\[$rt::rtname \#(\d+)\]//i) {
     $TicketId = $1;
   }

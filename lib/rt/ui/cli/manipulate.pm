@@ -224,7 +224,8 @@ sub ParseArgs {
     }
     next;
   }
-  print "$Message\n";
+
+  print "$Message\n" if defined($Message);
 }
   
   
@@ -375,29 +376,25 @@ EOFORM
 
     use Time::Local;
     print <<EOFORM
-       Serial Number:@{[$Ticket->Id]}
-               Queue:@{[$Ticket->Queue->QueueId]}
-                Area:$Ticket->Area
-          Requestors:@{[$Ticket->Requestors]}
-               Owner:@{[$Ticket->Owner->UserId]}
-             Subject:@{[$Ticket->Subject]}
-      Final Priority:@{[$Ticket->FinalPriority]}
-    Current Priority:@{[$Ticket->Priority]}
-              Status:@{[$Ticket->Status]}
-             Created:@{[localtime($Ticket->Created)]}) (@{[$Ticket->Age]}) ago)
-        Last Contact:@{[localtime($Ticket->Told)]}) (@{[$Ticket->SinceTold]} ago)
-	         Due:@{[localtime($Ticket->Due)]})
+Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]}  Queue:@{[$Ticket->Queue->QueueId]}
+      Subject: @{[$Ticket->Subject]}
+   Requestors: @{[$Ticket->Requestors]}
+        Owner: @{[$Ticket->Owner->UserId]}
+     Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
+          Due: @{[localtime($Ticket->Due)]})
+      Created: @{[localtime($Ticket->Created)]}) (@{[$Ticket->Age]}) ago)
+ Last Contact: @{[localtime($Ticket->Told)]}) (@{[$Ticket->SinceTold]} ago)
+	         
 
 EOFORM
 }
 sub ShowTransaction {
   my $transaction = shift;
   
-  print <<EOFORM
+print <<EOFORM
 ==========================================================================
-Date: @{[$transaction->DateAsString]} (@{[$transaction->TimeWorked]} minutes)
+Date: @{[$transaction->CreatedAsString]} (@{[$transaction->TimeTaken]} minutes)
 @{[$transaction->Description]}
-@{[$transaction->Content]}
 EOFORM
 }
   

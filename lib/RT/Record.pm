@@ -42,8 +42,10 @@ sub _MyHandle {
 
 sub Create {
   my $self = shift;
+  my @args = (Creator => $self->CurrentUser->Id,
+	      @_);
   #  print STDERR "In RT::Record->create\n";
-  my $id = $self->SUPER::Create(@_);
+  my $id = $self->SUPER::Create(@args);
   #  print STDERR "RT::Record->create Loading by Ref $id\n";
   return($id);
 
@@ -78,6 +80,16 @@ sub _Set {
     return (0, "Permission Denied");
   }
   
+}
+
+sub Creator {
+  my $self = shift;
+  if (!$self->{'creator'}) {
+    use RT::User;
+    $self->{'creator'} = RT::User->new($self->CurrentUser);
+    $self->{'creator'}->Load($self->_Value('Creator'));
+  }
+  return($self->{'creator'});
 }
 
 sub CurrentUser {

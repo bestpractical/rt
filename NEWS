@@ -1,3 +1,11 @@
+24 Jan 2000
+-----------
+
+* Attachments support in code. rtq now basically works
+  Mailgate creates new tickets
+  rt -show now works a bit (doesn't display transaction content yet)
+  rt -subject works. several other commandline tools work
+
 Dec 3 1999
 ----------
 * more backend work. started ripping out legacy code. 

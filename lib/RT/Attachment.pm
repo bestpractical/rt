@@ -70,7 +70,7 @@ sub Create {
 			       Headers => $Attachment->head->as_string,
 			       Subject => $Subject,
 			       Created => undef,
-			       Creator => $self->CurrentUser->UserId()
+	
 			      );
     
   for (my $Counter = 0; $Counter < $Attachment->parts(); $Counter++) {
@@ -104,8 +104,7 @@ sub Create {
 				  Subject => $Subject,
 				  Filename => $Filename,
 				  Created => undef,
-				  Creator => $self->CurrentUser->UserId()
-			       );
+				 );
   return ($id);
 }
 }

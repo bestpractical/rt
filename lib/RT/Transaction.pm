@@ -63,7 +63,6 @@ sub Create {
 				Field => $args{'Field'},
 				OldValue => $args{'OldValue'},
 				NewValue => $args{'NewValue'},
-				Creator =>  $self->CurrentUser->UserId(),
 				Created => undef
 			       );
   $self->Load($id);
@@ -75,6 +74,7 @@ sub CreatedAsString {
   my $self = shift;
   return($self->_Value('Created'));
 }
+
 
 
 sub Attachments {
@@ -120,70 +120,70 @@ sub Attach {
 sub Description {
   my $self = shift;
   if ($self->Type eq 'create'){
-    return("Request created by ".$self->Creator);
+    return("Request created by ".$self->Creator->UserId);
   }
   elsif ($self->Type eq 'correspond')    {
-    return("Mail sent by ". $self->Creator);
+    return("Mail sent by ". $self->Creator->UserId);
   }
   
   elsif ($self->Type eq 'comments')  {
-    return( "Comments added by ".$self->Creator);
+    return( "Comments added by ".$self->Creator->UserId);
   }
   
   elsif ($self->Type eq 'area')  {
     my $to = $self->{'data'};
     $to = 'none' if ! $to;
-    return( "Area changed to $to by". $self->Creator);
+    return( "Area changed to $to by". $self->Creator->UserId);
   }
   
   elsif ($self->Type eq 'status'){
     if ($self->Data eq 'dead') {
-      return ("Request killed by ". $self->Creator);
+      return ("Request killed by ". $self->Creator->UserId);
     }
     else {
-      return( "Status changed to ".$self->Data." by ".$self->Creator);
+      return( "Status changed to ".$self->Data." by ".$self->Creator->UserId);
     }
   }
   elsif ($self->Type eq 'queue_id'){
-    return( "Queue changed to ".$self->Data." by ".$self->Creator);
+    return( "Queue changed to ".$self->Data." by ".$self->Creator->UserId);
   }
   elsif ($self->Type eq 'owner'){
-    if ($self->Data eq $self->Creator){
-      return( "Taken by ".$self->Creator);
+    if ($self->Data eq $self->Creator->UserId){
+      return( "Taken by ".$self->Creator->UserId);
     }
     elsif ($self->Data eq ''){
-      return( "Untaken by ".$self->Creator);
+      return( "Untaken by ".$self->Creator->UserId);
     }
     
     else{
-      return( "Owner changed to ".$self->Data." by ". $self->Creator);
+      return( "Owner changed to ".$self->Data." by ". $self->Creator->UserId);
     }
   }
   elsif ($self->Type eq 'requestors'){
-    return( "User changed to ".$self->Data." by ".$self->Creator);
+    return( "User changed to ".$self->Data." by ".$self->Creator->UserId);
   }
   elsif ($self->Type eq 'priority') {
-    return( "Priority changed to ".$self->Data." by ".$self->Creator);
+    return( "Priority changed to ".$self->Data." by ".$self->Creator->UserId);
       }    
   elsif ($self->Type eq 'final_priority') {
-    return( "Final Priority changed to ".$self->Data." by ".$self->Creator);
+    return( "Final Priority changed to ".$self->Data." by ".$self->Creator->UserId);
       }
   elsif ($self->Type eq 'date_due') {  
     ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year)=&parse_time(".$self->Data.");
       $text_time = sprintf ("%s, %s %s %4d %.2d:%.2d:%.2d", $wday, $mon, $mday, $year,$hour,$min,$sec);
-    return( "Date Due changed to $text_time by ".$self->Creator);
+    return( "Date Due changed to $text_time by ".$self->Creator->UserId);
     }
-  elsif ($self->Type eq 'subject') {
-      return( "Subject changed to ".$self->Data." by ".$self->Creator);
+  elsif ($self->Type eq 'Subject') {
+      return( "Subject changed to ".$self->Data." by ".$self->Creator->UserId);
       }
   elsif ($self->Type eq 'date_told') {
-    return( "User notified by ".$self->Creator);
+    return( "User notified by ".$self->Creator->UserId);
       }
   elsif ($self->Type eq 'effective_sn') {
-    return( "Request $self->{'serial_num'} merged into ".$self->Data." by ".$self->Creator);
+    return( "Request $self->{'serial_num'} merged into ".$self->Data." by ".$self->Creator->UserId);
   }
   elsif ($self->Type eq 'subreqrsv') {
-    return "Subrequest #".$self->Data." resolved by ".$self->Creator;
+    return "Subrequest #".$self->Data." resolved by ".$self->Creator->UserId;
   }
   elsif ($self->Type eq 'link') {
     #TODO: make this fit with the rest of things.
@@ -192,15 +192,15 @@ sub Description {
     if ($type =~ /^dependency(-?)$/) {
       #$remote=(defined $remote) ? " at $remote" : "";
       if ($1 eq '-') {
-	return ("Request \#$fid$remote made dependent on this request by ".$self->Creator);
+	return ("Request \#$fid$remote made dependent on this request by ".$self->Creator->UserId);
       } else {
-	return ("This request made dependent on request \#$fid$remote by ".$self->Creator);
+	return ("This request made dependent on request \#$fid$remote by ".$self->Creator->UserId);
       }
     } else {
       
       # Some kind of plugin system needed here.
       
-      return ("$type linked to $fid at $remote by ".$self->Creator);
+      return ("$type linked to $fid at $remote by ".$self->Creator->UserId);
     }
   }
   else {

@@ -70,7 +70,7 @@ sub Create {
 
   #Attach the content to the transaction, if we were passed in an attachment
   
-
+  
   if ($args{'Attachment'}){
     $Trans->Attach($args{'Attachment'});
   }
@@ -134,18 +134,18 @@ sub Queue {
 
 sub Owner {
   my $self = shift;
-  #If it's unowned, return undef
-  if (!$self->_Value('Owner')) {
-    return(undef);
-  }
+  
+  
+  require RT::User;
+  $self->{'owner'} = RT::User->new($self->CurrentUser);
+
   #If it's got an owner
-  elsif (!$self->{'owner'})  {
-    require RT::User;
-    $self->{'owner'} = RT::User->new($self->CurrentUser);
+  if (!$self->{'owner'})  {
     $self->{'owner'}->Load($self->_Value('Owner'));
-    
-    
   }
+  
+  #TODO It feels unwise, but we're returning an empty owner
+  # object rather than undef.
   
   #Return the owner object
   return ($self->{'owner'});
@@ -389,8 +389,9 @@ sub Correspond {
 sub Transactions {
   my $self = shift;
   if (!$self->{'transactions'}) {
-    $self->{'transactions'} = new RT::Transactions($self->CurrentUser);
-    $self->{'transactions'}->Limit( FIELD => 'effective_ticket',
+    use RT::Transactions;
+    $self->{'transactions'} = RT::Transactions->new($self->CurrentUser);
+    $self->{'transactions'}->Limit( FIELD => 'EffectiveTicket',
                                     VALUE => $self->id() );
   }
   return($self->{'transactions'});
@@ -530,7 +531,7 @@ sub _UpdateTimeTaken {
 
 sub _UpdateDateActed {
   my $self = shift;
-  $self->SUPER::_Set('Updated',time);
+  $self->SUPER::_Set('LastUpdated',time);
 }
 
 
