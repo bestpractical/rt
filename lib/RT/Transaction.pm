@@ -14,7 +14,8 @@
 =head1 DESCRIPTION
 
 
-Each RT::Transaction describes an atomic change to a ticket object or an update to an RT::Ticket object.
+Each RT::Transaction describes an atomic change to a ticket object or 
+an update to an RT::Ticket object.
 It can have arbitrary MIME attachments.
 
 
@@ -227,6 +228,27 @@ sub Message  {
     } 
     return($self->{'message'});
 }
+# }}}
+
+# {{{ sub Content
+
+=head2 Content
+
+If this transaction has attached mime objects, returns the first one.
+Otherwise, returns an empty string.
+
+=cut
+
+sub Content {
+    my $self = shift;
+    if ($self->Message->First) {
+	return ($self->Message->First->Content);
+    }
+    else {
+	return (undef);
+    }
+}
+
 # }}}
 
 # {{{ sub Attachments 

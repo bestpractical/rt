@@ -318,7 +318,7 @@ you may reply to this message.
                         {$Ticket->QueueObj->CorrespondAddress()}
 
 -------------------------------------------------------------------------
-{$Transaction->Message()->First()->Content()}
+{$Transaction->Content()}
 ' },
 
 {
@@ -338,7 +338,7 @@ Transaction: {$Transaction->Description}
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------
-{$Transaction->Message()->First()->Content() if $Transaction->Message()->First()}'},
+{$Transaction->Content() if $Transaction->Message()->First()}'},
 
 
 {
@@ -350,7 +350,7 @@ Transaction: {$Transaction->Description}
 
 <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 
-{$Transaction->Message()->First()->Content()}' },
+{$Transaction->Content()}' },
 
 
 {
@@ -359,7 +359,7 @@ Transaction: {$Transaction->Description}
                   Description => 'Default correspondence template',
                   Content =>  '
 
-{$Transaction->Message()->First()->Content()}'},
+{$Transaction->Content()}'},
 
 
 {
@@ -372,7 +372,7 @@ Transaction: {$Transaction->Description}
 {$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
-{$Transaction->Message()->First()->Content()}
+{$Transaction->Content()}
 '},
 
 
@@ -385,7 +385,7 @@ This is a comment.  It is not sent to the Requestor(s):
 
 {$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
 
-{$Transaction->Message()->First()->Content()}
+{$Transaction->Content()}
 '},
 
 {

@@ -73,45 +73,46 @@ sub Commit  {
 		@{$self->{'Bcc'}} = grep (!/^$person_to_yank$/, @{$self->{'Bcc'}});
 	    }
 	}
-	
-
-	# Go add all the Tos, Ccs and Bccs that we need to to the message to 
-	# make it happy, but only if we actually have values in those arrays.
-
-	$self->SetHeader('To', join(',', @{$self->{'To'}})) 
-	  if (@{$self->{'To'}});
-	$self->SetHeader('Cc', join(',' , @{$self->{'Cc'}})) 
-	  if (@{$self->{'Cc'}});;
+    }
+    
+    # Go add all the Tos, Ccs and Bccs that we need to to the message to 
+    # make it happy, but only if we actually have values in those arrays.
+    
+    $self->SetHeader('To', join(',', @{$self->{'To'}})) 
+      if (@{$self->{'To'}});
+    $self->SetHeader('Cc', join(',' , @{$self->{'Cc'}})) 
+      if (@{$self->{'Cc'}});;
 	$self->SetHeader('Bcc', join(',', @{$self->{'Bcc'}})) 
 	  if (@{$self->{'Bcc'}});;
-	
-	my $MIMEObj = $self->TemplateObj->MIMEObj;
+    
+    my $MIMEObj = $self->TemplateObj->MIMEObj;
+    
 
-
-	$MIMEObj->make_singlepart;
-
-
-	#If we don't have any recipients to send to, don't send a message;
-	unless ($MIMEObj->head->get('To') ||
-		$MIMEObj->head->get('Cc') || 
-		$MIMEObj->head->get('Bcc') ) {
-	    $RT::Logger->info('$self: No recipients found. Not sending.\n');
+    $MIMEObj->make_singlepart;
+    
+    
+    #If we don't have any recipients to send to, don't send a message;
+    unless ($MIMEObj->head->get('To') ||
+	    $MIMEObj->head->get('Cc') || 
+	    $MIMEObj->head->get('Bcc') ) {
+	$RT::Logger->debug('$self: No recipients found. Not sending.\n');
+	return(0);
+    }
+    
+    if ($RT::MailCommand eq 'sendmailpipe') {
+	open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);
+	print MAIL $MIMEObj->as_string;
+	close(MAIL);
+    }
+    else {
+	unless ($MIMEObj->send($RT::MailCommand, $RT::MailParams)) {
+	    $RT::Logger->crit("$self: Could not send mail for ".
+			      $self->TransactionObj . "\n");
 	    return(0);
 	}
-	
-	if ($RT::MailCommand eq 'sendmailpipe') {
-	    open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments");
-	    print MAIL $MIMEObj->as_string;
-	    close(MAIL);
-	}
-	else {
-	    $MIMEObj->send($RT::MailCommand, $RT::MailParams) || 
-	      $RT::Logger->crit("$self: Could not send mail for ".
-				$self->TransactionObj . "\n");
-	}
-	
-
     }
+    
+    return (1);
     
 }
 # }}}
