@@ -139,8 +139,7 @@ GENERAL INSTALLATION
 
 	It DOES NOT IMPORT:
 		Attachments removed by stripmime or Templates.
-
-
+	
 6   Edit etc/config.pm in your RT installation directory.  In many
     cases sensible defaults have been included. In others, you MUST
     supply a value.
