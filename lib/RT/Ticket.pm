@@ -7,6 +7,14 @@ package RT::Ticket;
 use RT::Record;
 @ISA= qw(RT::Record);
 
+# {{{ Static sub "URIIsLocal" checks whether an URI is local or not
+sub URIIsLocal {
+    my $URI=shift;
+    # TODO: More thorough check
+    return $URI =~ /^\d+$/;
+}
+# }}} URIIsLocal
+
 # {{{ sub new
 
 sub new {
@@ -813,7 +821,7 @@ sub _NewLink {
   #Write the transaction
   my $Trans = $self->_NewTransaction
       (Type => 'Link',
-       Data => $args{type},
+       Data => "$args{type} $args{base} $args{target} $linkid",
        TimeTaken => 0 # Is this always true?
        );
   
