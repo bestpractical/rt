@@ -1,9 +1,13 @@
 %trans:text_time%: Request %serial_num% was acted upon.
 
-	%trans:text%
-
-			The Systems Group
-			%mailalias%
+ Transaction: %trans:text%
+ 
+       Queue: %req:queue_id%
+        Area: %req:area%               
+     Subject: %req:subject%
+       Owner: %req:owner%
+  Requestors: %req:requestors%    
+      Status: %req:status%
 
 -------------------------------------------------------------------------
 %trans:content%
