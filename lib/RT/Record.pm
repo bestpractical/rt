@@ -115,9 +115,13 @@ Delete this record object from the database.
 
 sub Delete {
     my $self = shift;
-    my ($rv, $msg) = $self->SUPER::Delete;
-    $msg ||= $self->loc("Object deleted");
-    return ($rv, $msg);
+    my ($rv) = $self->SUPER::Delete;
+    if ($rv) {
+        return ($rv, $self->loc("Object deleted"));
+    } else {
+
+        return(0, $self->loc("Object could not be deleted"))
+    } 
 }
 
 =head2 Attributes

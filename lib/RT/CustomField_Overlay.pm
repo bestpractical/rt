@@ -271,7 +271,7 @@ ok($cf->Id == 1);
 ok(my ($val,$msg)  = $cf->AddValue(Name => 'foo' , Description => 'TestCFValue', SortOrder => '6'));
 ok($val != 0);
 ok (my ($delval, $delmsg) = $cf->DeleteValue($val));
-ok ($delval != 0);
+ok ($delval,"Deleting a cf value: $delmsg");
 
 =end testing
 

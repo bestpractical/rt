@@ -319,7 +319,7 @@ sub Delete {
         }
     }
 
-    my $err = $self->SUPER::Delete();
+    my ($err, $msg) = $self->SUPER::Delete();
     unless ($err) {
             $RT::Logger->warning("Couldn't delete cached group submember ".$self->Id);
         $RT::Handle->Rollback();
