@@ -24,6 +24,7 @@ DBTYPE		=		mysql
 CONFIG_FILE_PATH	=       $(RT_PREFIX)/etc
 CONFIG_FILE	     =       $(CONFIG_FILE_PATH)/RT_Config.pm
 RT_LIB_PATH	     =       $(RT_PREFIX)/lib
+RT_LEXICON_PATH	     =       $(RT_PREFIX)/local/po
 MASON_HTML_PATH	 =       $(RT_PREFIX)/share/html
 
 GETPARAM		=       $(PERL) -I$(RT_LIB_PATH) -e'use RT; RT::LoadConfig(); print $${$$RT::{$$ARGV[0]}};'
@@ -36,7 +37,7 @@ DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
 TAG			= rtfm-2-0-beta-6
 
 
-upgrade: install-lib install-html
+upgrade: install-lib install-html install-lexicon
 install: upgrade initdb
 
 html-install: install-html
@@ -50,9 +51,15 @@ install-html:
 install-lib:
 	cp -rp lib/* $(RT_LIB_PATH)
 	chmod -R 755 $(RT_LIB_PATH)
+
+install-lexicon:
+	cp -rp po/* $(RT_LEXICON_PATH)
+
 factory:
 	cd lib; $(PERL) ../tools/factory.mysql $(DB_DATABASE) RT::FM
 
+regenerate-catalogs:
+	$(PERL) ../rt/sbin/extract-message-catalog po/*/*
 
 initdb: initdb.$(DBTYPE)
 

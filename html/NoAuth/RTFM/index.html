@@ -16,24 +16,26 @@
 %# 
 %# END LICENSE BLOCK
 
-<& Elements/Tabs, current_tab => 'NoAuth/RTFM/index.html', Title => 'Welcome
-to RTFM'&>
+<& Elements/Tabs, current_tab => 'NoAuth/RTFM/index.html', Title => loc('Welcome to RTFM') &>
 
 
-<h1>Quick search</h1>
+<h1><&|/l&>Quick search</&></h1>
 
 <form action="Search.html" METHOD="POST">
 <INPUT TYPE="hidden" NAME="HideOptions" VALUE="1">
-Search <& /RTFM/Elements/SelectClass, ShowNullOption => 0 , Name => 'Class'&> for articles matching 
-<input name="Content~=" size="15"><input type="submit" value="<&|/l&>Go</&>">
+<&|/l&>Search</&>
+<&/RTFM/Elements/SelectClass, ShowNullOption => 0 , Name => 'Class' &>
+<&|/l&>for articles matching</&>
+<input name="Content~=" size="15">
+<input type="submit" value="<&|/l&>Go</&>">
 </form>
 
 
-<h1>Browse the knowledge base</h1>
+<h1><&|/l&>Browse the knowledge base</&></h1>
 
-Show me <a href="Browse.html?class=Knowledge%20Base&group_by=category">  all knowledge base articles</a>.
+<a href="Browse.html?class=Knowledge%20Base&group_by=category"><&|/l&>Show all knowledge base articles.</&></a>
 
-<h1>FAQ</h1>
+<h1><&|/l&>FAQ</&></h1>
 
-The <a href="FAQs.html">FAQ</a> is a list of simple questions and answers.
+<a href="FAQs.html"><&|/l&>FAQ: a list of simple questions and answers.</&></a>
 

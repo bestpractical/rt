@@ -22,7 +22,7 @@ Title => loc('Create an article in class...') &>
 % my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});          
 % $Classes->UnLimit;                                                            
 % while (my $Class = $Classes->Next) {                                          
-<li><a href="Create.html?Class=<%$Class->Id%>">in class <%$Class->Name%>
+<li><a href="Create.html?Class=<%$Class->Id%>"><&|/l, $Class->Name&>in class [_1]</&>
 </a></li>                                                                       
 % }                                                                             
                                                                                 

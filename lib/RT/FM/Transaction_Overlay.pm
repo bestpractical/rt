@@ -73,7 +73,7 @@ sub Description {
             return $self->loc("[_1] value '[_2]' added",$cf->Name, $self->NewContent);
         
         } elsif ($self->OldContent) {
-            return $self->loc("[_1] value '[_2]' delete",$cf->Name, $self->OldContent);
+            return $self->loc("[_1] value '[_2]' deleted",$cf->Name, $self->OldContent);
 
         }
     } elsif ($self->Type eq 'Create') { 

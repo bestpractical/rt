@@ -19,53 +19,53 @@
 % if ($ARGS{'HideOptions'} == 1) {
 % my $qs = $ENV{'QUERY_STRING'};
 % $qs =~ s/HideOptions=1//gi;
-<a href="Search.html?<%$qs%>">Show advanced search options...</a>
+<a href="Search.html?<%$qs%>"><&|/l&>Show advanced search options...</&></a>
 % }  else { 
-<& /Elements/TitleBoxStart, title => 'Advanced Search Criteria'&>
+<& /Elements/TitleBoxStart, title => loc('Advanced Search Criteria')&>
 <form action="Search.html" method="GET">
 <br>
 <table>
 <tr valign="middle">
 <td>
-Class is
+<&|/l&>Class is</&>
 </td>
 <td>
 <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
 </td>
 <td>
-and is not
+<&|/l&>and is not</&>
 </td>
 <td>
 <& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
 </td>
 </tr>
 </table>
-<br>Name matches 
+<br><&|/l&>Name matches</&>
 <input name="Name~" value="<%$ARGS{'Name~'}%>">
-and not 
+<&|/l&>and not</&>
 <input name="Name!~" value="<%$ARGS{'Name!~'}%>">
-<br>Summary matches 
+<br><&|/l&>Summary matches</&>
 <input Summary="Summary~" value="<%$ARGS{'Summary~'}%>">
-and not 
+<&|/l&>and not</&>
 <input Summary="Summary!~" value="<%$ARGS{'Summary!~'}%>">
 
-<br>Created between
+<br><&|/l&>Created during</&>
 <& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
-and 
+<&|/l&>till</&>
 <& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
 
-<br>Updated between
+<br><&|/l&>Created during</&>
 <& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
 ($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
-and 
+<&|/l&>till</&>
 <& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
 ($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
 <br>
-Which refer to <input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
-<i>Seperate multiple URLs with spaces</i>
+<&|/l&>Which refer to</&> <input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
+<i><&|/l&>Seperate multiple URLs with spaces</&></i>
 <br>
-Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
-<i>Seperate multiple URLs with spaces</i>
+<&|/l&>Which are referred to by </&> <input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
+<i><&|/l&>Seperate multiple URLs with spaces</&></i>
 
 
 <table>
@@ -73,7 +73,7 @@ Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$
 % while (my $field = $customfields->Next ) {
 
 <tr>
-<td><%$field->Name%> matches</td><td valign=top>
+<td><&|/l, $field->Name &>[_1] matches</&></td><td valign=top>
 % my $matches = $field->Name."~";
 % my $nomatches = $field->Name."!~";
 <& /RTFM/Article/Elements/SearchByCustomField, 
@@ -81,7 +81,7 @@ Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$
     Name => $matches,
     Values => $ARGS{$matches} &>
     </td>
-    <td>and not</td>
+    <td><&|/l&>and not</&></td>
     <td valign="top">
 <& /RTFM/Article/Elements/SearchByCustomField, 
     Field => $field, 

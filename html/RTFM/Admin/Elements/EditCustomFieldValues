@@ -24,7 +24,7 @@
 % if ($values->Count) {
 <tr colspan=3>
 <td>
-<&|/l&>(no values</&>
+<&|/l&>(no values)</&>
 </td>
 </tr>
 % }

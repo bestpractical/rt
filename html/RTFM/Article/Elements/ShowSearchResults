@@ -20,14 +20,14 @@
 
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <TR>
-<TH ALIGN="left">id</TH ALIGN="left">
-<TH ALIGN="left">Name</TH ALIGN="left">
-<TH ALIGN="left">Class</TH ALIGN="left">
-<TH ALIGN="left">Created</TH ALIGN="left">
-<TH ALIGN="left">Modified</TH ALIGN="left">
+<TH ALIGN="left"><&|/l&>id</&></TH>
+<TH ALIGN="left"><&|/l&>Name</&></TH>
+<TH ALIGN="left"><&|/l&>Class</&></TH>
+<TH ALIGN="left"><&|/l&>Created</&></TH>
+<TH ALIGN="left"><&|/l&>Modified</&></TH>
 </TR>
 <TR>
-<TH ALIGN="left" class="tickeTH ALIGN="left"eader">&nbsp;</TH ALIGN="left">
+<TH ALIGN="left" class="ticketheader" COLSPAN="5">&nbsp;</TH>
 </TR>
 
 

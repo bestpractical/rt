@@ -1,0 +1,851 @@
+# Traditional Chinese localization catalog for Request Tracker (RT)
+msgid ""
+msgstr ""
+"Last-Translator: Autrijus Tang <autrijus@autrijus.org>\n"
+"Language-Team: Chinese <members@ourinet.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: html/RTFM/Elements/ListArticles:20 html/RTFM/Elements/NewestArticles:22 html/RTFM/Elements/UpdatedArticles:22
+msgid "#"
+msgstr "#"
+
+#: html/NoAuth/RTFM/FAQs.html:60
+#. ($class_obj->Name)
+msgid "%1"
+msgstr "%1"
+
+#: lib/RT/FM/Article_Overlay.pm:976
+#. ($args{'Content'}, $cf->Name)
+msgid "%1 added as a value for %2"
+msgstr "新增 %1 作為 %2 的值"
+
+#: lib/RT/FM/Transaction_Overlay.pm:53
+#. ($self->Field , $self->OldContent, $self->NewContent)
+msgid "%1 changed from '%2' to '%3'"
+msgstr "%1 的值從 %2 改為 %3"
+
+#: html/NoAuth/RTFM/FAQs.html:58
+#. ($class_obj->Name, $category)
+msgid "%1 in category '%2'"
+msgstr "'%2' 分類裡的 %1"
+
+#: lib/RT/FM/ArticleCFValue_Overlay.pm:82
+#. ($args{'Content'}, $cf->Name, $args{'Article'})
+msgid "%1 is an invalid value for custom field %2 for article %3"
+msgstr "%1 不能作為 %3 文章的 %2 自訂欄位值"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:76
+#. ($field->Name)
+msgid "%1 matches"
+msgstr "%1 符合"
+
+#: html/RTFM/Elements/UpdatedArticles:19
+#. ($rows)
+msgid "%1 most recently updated articles"
+msgstr "最近更新的的 %1 篇文章"
+
+#: html/RTFM/Elements/NewestArticles:19
+#. ($rows)
+msgid "%1 newest articles"
+msgstr "最新的 %1 篇文章"
+
+#: lib/RT/FM/Transaction_Overlay.pm:73
+#. ($cf->Name, $self->NewContent)
+msgid "%1 value '%2' added"
+msgstr "%1 的值 '%2' 新增成功"
+
+#: lib/RT/FM/Transaction_Overlay.pm:69
+#. ($cf->Name, $self->OldContent, $self->NewContent)
+msgid "%1 value '%2' changed to '%3'"
+msgstr "%1 的值 '%2' 已更改為 '%3'"
+
+#: lib/RT/FM/Transaction_Overlay.pm:76
+#. ($cf->Name, $self->OldContent)
+msgid "%1 value '%2' deleted"
+msgstr "%1 的值 '%2' 刪除成功"
+
+#: html/RTFM/Article/Elements/EditLinks:23
+msgid "(Check box to delete)"
+msgstr "(點選欲刪除的項目)"
+
+#: html/RTFM/Admin/Elements/EditCustomFieldValues:20
+msgid "(Delete)"
+msgstr "(刪除)"
+
+#: html/RTFM/Elements/ListArticles:38 html/RTFM/Elements/NewestArticles:48 html/RTFM/Elements/UpdatedArticles:36 html/RTFM/Elements/UpdatedArticles:49
+msgid "(no Summary)"
+msgstr "(沒有摘要)"
+
+#: html/RTFM/Elements/ListArticles:31 html/RTFM/Elements/NewestArticles:35
+msgid "(no name)"
+msgstr "(沒有名稱)"
+
+#: html/RTFM/Article/Create.html:81 html/RTFM/Article/Elements/EditCustomFields:54 html/RTFM/Article/Elements/SearchByCustomField:31
+msgid "(no value)"
+msgstr "(無)"
+
+#: html/RTFM/Admin/Elements/EditCustomFieldValues:27
+msgid "(no values)"
+msgstr "(沒有值)"
+
+#: html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:37 html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:40
+msgid "(unnamed)"
+msgstr "(未命名)"
+
+#: html/RTFM/Admin/Elements/AddCustomFieldValue:21
+msgid "Add a value"
+msgstr "新增欄位值"
+
+#: html/RTFM/Admin/Classes/CustomFields.html:19
+msgid "Admin/Class/CustomFields"
+msgstr "管理員/分類/自訂欄位"
+
+#: lib/RT/FM/Class_Overlay.pm:58
+msgid "AdminClass"
+msgstr "管理分類"
+
+#: lib/RT/FM/CustomField_Overlay.pm:31
+msgid "AdminCustomField"
+msgstr "管理自訂欄位"
+
+#: lib/RT/FM/CustomField_Overlay.pm:30
+msgid "AdminValues"
+msgstr "管理欄位值"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:24
+msgid "Advanced Search Criteria"
+msgstr "進階查詢條件"
+
+#: html/RTFM/Admin/Classes/index.html:57
+msgid "All Classes"
+msgstr "所有分類"
+
+#: html/RTFM/Article/Delete.html:29
+msgid "Are you sure you want to delete this article?"
+msgstr "您確定要刪除這篇文章嗎？"
+
+#: html/RTFM/Article/Delete.html:69
+#. ($ArticleObj->Id)
+msgid "Article #%1 deleted"
+msgstr "文章 #%1 刪除成功"
+
+#: html/NoAuth/RTFM/Display.html:47 html/NoAuth/RTFM/DynDisplay.html:62 html/RTFM/Article/Display.html:46
+#. ($article->Id, $article->Name)
+msgid "Article #%1: %2"
+msgstr "文章 #%1: %2"
+
+#: lib/RT/FM/Article_Overlay.pm:280
+msgid "Article Deleted"
+msgstr "文章刪除成功"
+
+#: lib/RT/FM/Transaction_Overlay.pm:80
+msgid "Article created"
+msgstr "文章建立成功"
+
+#: html/NoAuth/RTFM/Display.html:36 html/NoAuth/RTFM/DynDisplay.html:51 html/RTFM/Article/Display.html:35 html/RTFM/Article/Elements/ShowHistory:35
+msgid "Article not found"
+msgstr "找不到文章"
+
+#: html/RTFM/Elements/Tabs:43
+msgid "Articles"
+msgstr "文章"
+
+#: html/RTFM/Admin/Elements/ClassTabs:29 html/RTFM/Admin/Elements/CustomFieldTabs:38
+msgid "Basics"
+msgstr "基本資訊"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:59 html/RTFM/Admin/Classes/UserRights.html:46 html/RTFM/Admin/CustomFields/GroupRights.html:61 html/RTFM/Admin/CustomFields/UserRights.html:46
+msgid "Be sure to save your changes"
+msgstr "請別忘了儲存更改。"
+
+#: html/NoAuth/RTFM/Browse.html:20
+#. ($class_obj->Name)
+msgid "Browse %1"
+msgstr "瀏覽 %1"
+
+#: html/NoAuth/RTFM/index.html:34
+msgid "Browse the knowledge base"
+msgstr "瀏覽知識庫"
+
+#: lib/RT/FM/Article_Overlay.pm:359
+msgid "Can't link a ticket to itself"
+msgstr "申請單不能鏈結自己。"
+
+#: lib/RT/FM/Article_Overlay.pm:340 lib/RT/FM/Article_Overlay.pm:569
+msgid "Can't specifiy both base and target"
+msgstr "不能同時指定起始申請單與目的申請單"
+
+#: html/RTFM/Article/Create.html:46 html/RTFM/Article/Elements/EditBasics:38 html/RTFM/Article/Elements/ShowSearchResults:25
+msgid "Class"
+msgstr "分類"
+
+#: html/RTFM/Admin/Classes/Modify.html:36
+msgid "Class Name"
+msgstr "分類名稱"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:30
+msgid "Class is"
+msgstr "屬於分類"
+
+#: html/RTFM/Admin/Elements/Tabs:25
+msgid "Classes"
+msgstr "分類"
+
+#: html/RTFM/Elements/Tabs:45
+msgid "Configuration"
+msgstr "設定"
+
+#: lib/RT/FM/ArticleCFValue_Overlay.pm:76
+msgid "Content not set"
+msgstr "未設定內容"
+
+#: lib/RT/FM/Article_Overlay.pm:962
+#. ($new_value_msg)
+msgid "Could not add new custom field value for Article. %1"
+msgstr "無法為文章新增欄位值: %1"
+
+#: lib/RT/FM/Article_Overlay.pm:923
+#. ($value_msg)
+msgid "Could not add new custom field value for Article. %1 "
+msgstr "無法為文章新增欄位值: %1"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:64
+#. ($msg)
+msgid "Could not create CustomField"
+msgstr "無法新增自訂欄位"
+
+#: lib/RT/FM/Article_Overlay.pm:973
+#. ($Msg)
+msgid "Couldn't create a transaction: %1"
+msgstr "無法新增更動報告"
+
+#: lib/RT/FM/CustomField_Overlay.pm:257
+msgid "Couldn't find that value"
+msgstr "找不到該值"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:71 html/RTFM/Admin/Classes/UserRights.html:120 html/RTFM/Admin/CustomFields/UserRights.html:121
+#. ($id)
+msgid "Couldn't load Class %1"
+msgstr "無法載入分類 %1"
+
+#: html/RTFM/Admin/CustomFields/GroupRights.html:77
+#. ($id)
+msgid "Couldn't load CustomField %1"
+msgstr "無法載入自訂欄位 %1"
+
+#: lib/RT/FM/Article_Overlay.pm:1018
+#. ($cf->Id, $args{'Content'})
+msgid "Couldn't load custom field %1 value %2 while trying to delete it."
+msgstr "無法同時載入及刪除自訂欄位 %1 的值 %2"
+
+#: html/RTFM/Article/Create.html:100 html/RTFM/Article/ExtractFromTicket.html:51
+msgid "Create"
+msgstr "新增"
+
+#: html/RTFM/Admin/Classes/Modify.html:63
+msgid "Create a Class"
+msgstr "新增分類"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:54
+msgid "Create a CustomField"
+msgstr "新增自訂欄位"
+
+#: html/RTFM/Article/Create.html:19
+msgid "Create a new article"
+msgstr "新增文章"
+
+#: html/RTFM/Elements/CreateArticle:19
+msgid "Create an article"
+msgstr "新增文章"
+
+#: html/RTFM/Article/PreCreate.html:20
+msgid "Create an article in class..."
+msgstr "新增文章於分類..."
+
+#: lib/RT/FM/Class_Overlay.pm:54
+msgid "Create articles in this class"
+msgstr "在此分類中新增文章"
+
+#: lib/RT/FM/Class_Overlay.pm:54
+msgid "CreateArticle"
+msgstr "新增文章"
+
+#: html/RTFM/Article/Elements/ShowSearchResults:26
+msgid "Created"
+msgstr "建立日期"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:66
+#. ($CustomFieldObj->Name())
+msgid "Created CustomField %1"
+msgstr "自訂欄位 %1 新增成功"
+
+#: html/RTFM/Elements/NewestArticles:24 html/RTFM/Elements/UpdatedArticles:24
+msgid "Created by"
+msgstr "建立者"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:52 html/RTFM/Article/Elements/ShowSearchCriteria:57
+msgid "Created during"
+msgstr "建立於"
+
+#: html/RTFM/Article/Elements/EditLinks:22
+msgid "Current Relationships"
+msgstr "現有關係"
+
+#: html/NoAuth/RTFM/Display.html:23 html/RTFM/Admin/Elements/ClassTabs:33 html/RTFM/Admin/Elements/Tabs:28 html/RTFM/Article/Display.html:22
+msgid "Custom Fields"
+msgstr "自訂欄位"
+
+#: lib/RT/FM/Article_Overlay.pm:867
+#. ($args{'Field'})
+msgid "Custom field %1 not found"
+msgstr "找不到自訂欄位 %1"
+
+#: lib/RT/FM/Article_Overlay.pm:862
+#. ($args{'Field'})
+msgid "Custom field %1 not valid for that article"
+msgstr "自訂欄位 %1 不適用於此文章"
+
+#: lib/RT/FM/ArticleCFValue_Overlay.pm:64
+msgid "Custom field not found"
+msgstr "找不到自訂欄位"
+
+#: NOT FOUND IN SOURCE
+msgid "Custom field value %1 could not be found for custom field"
+msgstr "找不到自訂欄位裡的值 %1"
+
+#: lib/RT/FM/CustomField_Overlay.pm:461
+#. ($args{'Content'}, $self->Name)
+msgid "Custom field value %1 could not be found for custom field %2"
+msgstr "找不到自訂欄位 %1 的值 %2"
+
+#: lib/RT/FM/Article_Overlay.pm:951
+#. ($old_value, $new_value->Content)
+msgid "Custom field value changed from '%1' to '%2'"
+msgstr "自訂欄位的值從 %1 改為 %2"
+
+#: lib/RT/FM/CustomField_Overlay.pm:267
+msgid "Custom field value could not be deleted"
+msgstr "無法刪除自訂欄位值"
+
+#: lib/RT/FM/CustomField_Overlay.pm:468
+msgid "Custom field value could not be found"
+msgstr "找不到自訂欄位值"
+
+#: lib/RT/FM/CustomField_Overlay.pm:265 lib/RT/FM/CustomField_Overlay.pm:470
+msgid "Custom field value deleted"
+msgstr "自訂欄位值刪除成功"
+
+#: html/RTFM/Article/Elements/Tabs:62
+msgid "Delete"
+msgstr "刪除"
+
+#: html/RTFM/Article/Delete.html:73
+#. ($ArticleObj->Id)
+msgid "Delete article #%1"
+msgstr "刪除文章 #%1"
+
+#: html/RTFM/Admin/Classes/Modify.html:41 html/RTFM/Admin/CustomFields/Basics.html:28 html/RTFM/Admin/Elements/EditCustomFieldValues:22
+msgid "Description"
+msgstr "描述"
+
+#: html/NoAuth/RTFM/Elements/ArticleTabs:36 html/RTFM/Article/Elements/Tabs:39
+msgid "Display"
+msgstr "顯示內容"
+
+#: lib/RT/FM/Class_Overlay.pm:59 lib/RT/FM/CustomField_Overlay.pm:32
+msgid "Display Access Control List"
+msgstr "顯示權限控制清單"
+
+#: html/RTFM/Admin/Classes/CustomFields.html:73
+#. ($ClassObj->Name)
+msgid "Edit Custom Fields for Class %1"
+msgstr "編輯分類 %1 的自訂欄位"
+
+#: html/RTFM/Admin/Classes/Modify.html:79
+#. ($ClassObj->Name)
+msgid "Editing Configuration for Class %1"
+msgstr "編輯分類 %1 的設定"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:70
+#. ($CustomFieldObj->Name())
+msgid "Editing CustomField %1"
+msgstr "編輯自訂欄位 %1"
+
+#: lib/RT/FM/Article_Overlay.pm:353 lib/RT/FM/Article_Overlay.pm:583
+msgid "Either base or target must be specified"
+msgstr "需要指定起始申請單或目的申請單"
+
+#: html/RTFM/Admin/Classes/Modify.html:47
+msgid "Enabled (Unchecking this box disables this Class)"
+msgstr "已啟用（取消勾選可停用此分類）"
+
+#: html/RTFM/Admin/Classes/index.html:61
+msgid "Enabled Classes"
+msgstr "已啟用的分類"
+
+#: html/RTFM/Admin/Classes/Modify.html:100
+#. (loc_fuzzy($msg))
+msgid "Enabled status %1"
+msgstr "啟用狀態 %1"
+
+#: html/RTFM/Article/Create.html:88 html/RTFM/Article/Elements/EditLinks:73
+msgid "Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces."
+msgstr "鍵入欲鏈結到的文章或網址，以空白分開。"
+
+#: html/RTFM/Article/ExtractIntoClass.html:19
+#. ($Ticket)
+msgid "Extract article from ticket #%1"
+msgstr "從申請單 #%1 裡擷取文章"
+
+#: html/RTFM/Article/ExtractFromTicket.html:19
+#. ($Ticket, $ClassObj->Name)
+msgid "Extract article from ticket #%1 into class %2"
+msgstr "從申請單 #%1 裡擷取文章到分類 %2"
+
+#: html/NoAuth/RTFM/index.html:38
+msgid "FAQ"
+msgstr "答客問"
+
+#: html/NoAuth/RTFM/index.html:40
+msgid "FAQ: a list of simple questions and answers."
+msgstr "答客問: 常見問題與答案集錦"
+
+#: html/NoAuth/RTFM/index.html:30
+msgid "Go"
+msgstr "執行"
+
+#: html/RTFM/Admin/Classes/index.html:44
+msgid "Go!"
+msgstr "執行"
+
+#: html/RTFM/Admin/Elements/ClassTabs:37 html/RTFM/Admin/Elements/CustomFieldTabs:42
+msgid "Group Rights"
+msgstr "群組權限"
+
+#: html/NoAuth/RTFM/Elements/ArticleTabs:40 html/RTFM/Article/Elements/Tabs:43
+msgid "History"
+msgstr "紀錄"
+
+#: html/NoAuth/RTFM/History.html:24 html/RTFM/Article/History.html:22
+#. ($id)
+msgid "History for article #%1"
+msgstr "文章 #%1 的更動紀錄"
+
+#: html/RTFM/Article/Edit.html:33
+msgid "If you've updated anything above, be sure to"
+msgstr "若您已更新以上資料，請記得按一下"
+
+#: html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:34
+msgid "Include RTFM article:"
+msgstr "引用 RTFM 文章:"
+
+#: html/RTFM/Admin/Classes/index.html:42
+msgid "Include disabled classes in listing."
+msgstr "列出已停用的分類。"
+
+#: lib/RT/FM/Article_Overlay.pm:248 lib/RT/FM/Article_Overlay.pm:257 lib/RT/FM/Article_Overlay.pm:265 lib/RT/FM/Article_Overlay.pm:274
+msgid "Internal Error"
+msgstr "內部錯誤"
+
+#: lib/RT/FM/Article_Overlay.pm:1031 lib/RT/FM/Article_Overlay.pm:1113
+msgid "Internal error"
+msgstr "內部錯誤"
+
+#: lib/RT/FM/Article_Overlay.pm:103
+msgid "Invalid Class"
+msgstr "錯誤的分類"
+
+#: lib/RT/FM/ArticleCFValue_Overlay.pm:56
+msgid "Invalid article"
+msgstr "錯誤的文章"
+
+#: lib/RT/FM/CustomField_Overlay.pm:613 lib/RT/FM/CustomField_Overlay.pm:673 lib/RT/FM/CustomField_Overlay.pm:710
+msgid "Invalid value for class"
+msgstr "錯誤的分類值"
+
+#: lib/RT/FM/Article_Overlay.pm:372
+msgid "Link already exists"
+msgstr "此鏈結已存在"
+
+#: lib/RT/FM/Article_Overlay.pm:388
+msgid "Link could not be created"
+msgstr "無法新增鏈結"
+
+#: lib/RT/FM/Article_Overlay.pm:403 lib/RT/FM/Article_Overlay.pm:405
+#. ($TransString)
+msgid "Link created (%1)"
+msgstr "鏈結(%1)新增完畢"
+
+#: lib/RT/FM/Article_Overlay.pm:599
+#. ($args{'Base'}. " ".$args{'Type'}. " ". $args{'Target'})
+msgid "Link deleted (%1)"
+msgstr "鏈結(%1)刪除完畢"
+
+#: lib/RT/FM/Article_Overlay.pm:606
+msgid "Link not found"
+msgstr "找不到鏈結"
+
+#: html/NoAuth/RTFM/Display.html:27 html/RTFM/Article/Display.html:26
+msgid "Links"
+msgstr "鏈結"
+
+#: html/RTFM/Article/Elements/ShowSearchResults:27
+msgid "Modified"
+msgstr "更改日"
+
+#: html/RTFM/Article/Elements/Tabs:55
+msgid "Modify"
+msgstr "更改"
+
+#: lib/RT/FM/Class_Overlay.pm:60 lib/RT/FM/CustomField_Overlay.pm:33
+msgid "Modify Access Control List"
+msgstr "更改權限控制清單"
+
+#: html/RTFM/Article/Edit.html:210
+#. ($ArticleObj->Id)
+msgid "Modify article #%1"
+msgstr "更改文章 #%1"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:19 html/RTFM/Admin/Classes/GroupRights.html:25
+#. ($ClassObj->Name)
+msgid "Modify group rights for Class %1"
+msgstr "更改分類 %1 的群組權限"
+
+#: html/RTFM/Admin/CustomFields/GroupRights.html:21
+#. ($CustomFieldObj->Name)
+msgid "Modify group rights for custom field %1"
+msgstr "更改自訂欄位 %1 的群組權限"
+
+#: lib/RT/FM/Class_Overlay.pm:58
+msgid "Modify metadata and custom fields for this class"
+msgstr "更改此分類的描述資料及自訂欄位"
+
+#: lib/RT/FM/CustomField_Overlay.pm:31
+msgid "Modify metadata for this custom field"
+msgstr "更改此分類的描述資料"
+
+#: lib/RT/FM/Class_Overlay.pm:57
+msgid "Modify or delete articles in this class"
+msgstr "更改或刪除此分類裡的文章"
+
+#: html/RTFM/Admin/Classes/UserRights.html:19 html/RTFM/Admin/Classes/UserRights.html:25
+#. ($ClassObj->Name)
+msgid "Modify user rights for class %1"
+msgstr "更改分類 %1 的使用者權限"
+
+#: html/RTFM/Admin/CustomFields/UserRights.html:21
+#. ($CustomFieldObj->Name)
+msgid "Modify user rights for custom field %1"
+msgstr "更改自訂欄位 %1 的使用者權限"
+
+#: lib/RT/FM/CustomField_Overlay.pm:30
+msgid "Modify values for this custom field"
+msgstr "更改此自訂欄位的值"
+
+#: lib/RT/FM/Class_Overlay.pm:60 lib/RT/FM/CustomField_Overlay.pm:33
+msgid "ModifyACL"
+msgstr "更改權限清單"
+
+#: lib/RT/FM/Class_Overlay.pm:57
+msgid "ModifyArticle"
+msgstr "更改文章"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:27 html/RTFM/Admin/Elements/EditCustomFieldValues:22 html/RTFM/Article/Create.html:30 html/RTFM/Article/Elements/EditBasics:22 html/RTFM/Article/Elements/ShowSearchResults:24 html/RTFM/Elements/ListArticles:21 html/RTFM/Elements/NewestArticles:23 html/RTFM/Elements/UpdatedArticles:23
+msgid "Name"
+msgstr "名稱"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:43
+msgid "Name matches"
+msgstr "名稱符合"
+
+#: html/RTFM/Article/Elements/Tabs:29
+msgid "New Article"
+msgstr "新增文章"
+
+#: html/RTFM/Article/Elements/EditLinks:72
+msgid "New Relationships"
+msgstr "新增關係"
+
+#: html/RTFM/Admin/Elements/ClassTabs:52
+msgid "New class"
+msgstr "新增分類"
+
+#: html/RTFM/Admin/Elements/CustomFieldTabs:59
+msgid "New custom field"
+msgstr "新增自訂欄位"
+
+#: html/NoAuth/RTFM/Elements/ArticleTabs:26
+msgid "New search"
+msgstr "重新查詢"
+
+#: html/RTFM/Article/Delete.html:34
+msgid "No"
+msgstr "否"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:67 html/RTFM/Admin/Classes/UserRights.html:116 html/RTFM/Admin/CustomFields/UserRights.html:117
+msgid "No Class defined"
+msgstr "未定義任何分類"
+
+#: html/RTFM/Admin/Classes/index.html:28
+msgid "No Classes matching search criteria found."
+msgstr "找不到符合條件的分類。"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:69
+msgid "No CustomField"
+msgstr "無自訂欄位"
+
+#: html/RTFM/Admin/CustomFields/GroupRights.html:73
+msgid "No CustomField defined"
+msgstr "未定義自訂欄位"
+
+#: html/NoAuth/RTFM/Elements/Tabs:35 html/RTFM/Elements/Tabs:41 html/RTFM/index.html:19
+msgid "Overview"
+msgstr "總覽"
+
+#: html/NoAuth/RTFM/Display.html:41 html/NoAuth/RTFM/DynDisplay.html:56 html/RTFM/Article/Display.html:40 html/RTFM/Article/Elements/ShowHistory:40 lib/RT/FM/Article_Overlay.pm:1001 lib/RT/FM/Article_Overlay.pm:107 lib/RT/FM/Article_Overlay.pm:1178 lib/RT/FM/Article_Overlay.pm:234 lib/RT/FM/Article_Overlay.pm:332 lib/RT/FM/Article_Overlay.pm:561 lib/RT/FM/Article_Overlay.pm:701 lib/RT/FM/Article_Overlay.pm:838 lib/RT/FM/Class_Overlay.pm:165 lib/RT/FM/Class_Overlay.pm:248 lib/RT/FM/CustomField_Overlay.pm:127 lib/RT/FM/CustomField_Overlay.pm:222 lib/RT/FM/CustomField_Overlay.pm:251 lib/RT/FM/CustomField_Overlay.pm:616 lib/RT/FM/CustomField_Overlay.pm:676 lib/RT/FM/CustomField_Overlay.pm:713
+msgid "Permission Denied"
+msgstr "權限不足"
+
+#: html/NoAuth/RTFM/index.html:22 html/RTFM/Elements/QuickSearch:19
+msgid "Quick search"
+msgstr "表單一覽"
+
+#: html/RTFM/Elements/Tabs:35
+msgid "RT"
+msgstr "RT"
+
+#: html/Callbacks/RTFM/Elements/Tabs/Default:20 html/NoAuth/RTFM/Elements/Tabs:33 html/RTFM/Elements/Tabs:37
+msgid "RTFM"
+msgstr "RTFM"
+
+#: html/RTFM/Admin/index.html:19
+msgid "RTFM Administration"
+msgstr "RTFM 管理"
+
+#: html/NoAuth/RTFM/Elements/Error:36 html/RTFM/Elements/Error:36
+msgid "RTFM Error"
+msgstr "RTFM 錯誤"
+
+#: html/RTFM/Article/Create.html:92 html/RTFM/Article/Elements/EditLinks:48 html/RTFM/Article/Elements/EditLinks:76 html/RTFM/Article/Elements/ShowLinks:46
+msgid "Referred to by"
+msgstr "被參考"
+
+#: html/RTFM/Article/Create.html:90 html/RTFM/Article/Elements/EditLinks:25 html/RTFM/Article/Elements/EditLinks:75 html/RTFM/Article/Elements/ShowLinks:23
+msgid "Refers to"
+msgstr "參考"
+
+#: html/RTFM/Article/Create.html:87
+msgid "Relationships"
+msgstr "關係"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:94 html/RTFM/Admin/CustomFields/GroupRights.html:99
+#. ($object_type)
+msgid "Rights could not be granted for %1"
+msgstr "無法將權限賦予 %1"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:121 html/RTFM/Admin/CustomFields/GroupRights.html:126
+#. ($object_type)
+msgid "Rights could not be revoked for %1"
+msgstr "無法撤消 %1 的權限"
+
+#: html/RTFM/Article/Edit.html:33
+msgid "Save Changes"
+msgstr "儲存更改"
+
+#: html/NoAuth/RTFM/Elements/Tabs:37 html/NoAuth/RTFM/index.html:26 html/RTFM/Article/Elements/Tabs:26 html/RTFM/Elements/GotoArticle:19
+msgid "Search"
+msgstr "查詢"
+
+#: html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:30
+msgid "Search for RTFM articles matching"
+msgstr "查詢 RTFM 文章:"
+
+#: html/NoAuth/RTFM/Search.html:19 html/RTFM/Article/Search.html:19
+msgid "Search for articles"
+msgstr "查詢文章"
+
+#: lib/RT/FM/Class_Overlay.pm:55 lib/RT/FM/Class_Overlay.pm:56
+msgid "See articles in this class"
+msgstr "顯示此分類裡的文章"
+
+#: lib/RT/FM/Class_Overlay.pm:53
+msgid "See that this class exists"
+msgstr "顯示此分類存在與否"
+
+#: lib/RT/FM/CustomField_Overlay.pm:29
+msgid "See this custom field's name and values"
+msgstr "顯示此自訂欄位的名稱與值"
+
+#: lib/RT/FM/Class_Overlay.pm:53
+msgid "SeeClass"
+msgstr "顯示分類"
+
+#: html/RTFM/Admin/Classes/index.html:19
+msgid "Select a Class"
+msgstr "選擇分類"
+
+#: html/RTFM/Admin/CustomFields/index.html:19
+msgid "Select a Custom Fields"
+msgstr "選擇自訂欄位"
+
+#: html/RTFM/Admin/Elements/ClassTabs:49
+msgid "Select class"
+msgstr "選擇分類"
+
+#: html/RTFM/Admin/Elements/CustomFieldTabs:56
+msgid "Select custom field"
+msgstr "選擇自訂欄位"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:65 html/RTFM/Article/Elements/ShowSearchCriteria:68
+msgid "Seperate multiple URLs with spaces"
+msgstr "網址間以空白隔開"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:22
+msgid "Show advanced search options..."
+msgstr "顯示進階查詢選項..."
+
+#: html/NoAuth/RTFM/index.html:36
+msgid "Show all knowledge base articles."
+msgstr "顯示所有知識庫裡的文章。"
+
+#: lib/RT/FM/Class_Overlay.pm:59 lib/RT/FM/CustomField_Overlay.pm:32
+msgid "ShowACL"
+msgstr "顯示權限清單"
+
+#: lib/RT/FM/Class_Overlay.pm:55
+msgid "ShowArticle"
+msgstr "顯示文章"
+
+#: lib/RT/FM/Class_Overlay.pm:56
+msgid "ShowArticleHistory"
+msgstr "顯示文章紀錄"
+
+#: lib/RT/FM/CustomField_Overlay.pm:29
+msgid "ShowCustomField"
+msgstr "顯示自訂欄位"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:31 html/RTFM/Admin/Elements/EditCustomFieldValues:21
+msgid "Sort Order"
+msgstr "排序順位"
+
+#: html/RTFM/Article/Create.html:38 html/RTFM/Article/Elements/EditBasics:30
+msgid "Summary"
+msgstr "摘要"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:47
+msgid "Summary matches"
+msgstr "摘要符合"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:120 html/RTFM/Admin/Classes/GroupRights.html:93 html/RTFM/Admin/Classes/UserRights.html:69 html/RTFM/Admin/Classes/UserRights.html:99 html/RTFM/Admin/CustomFields/GroupRights.html:125 html/RTFM/Admin/CustomFields/GroupRights.html:98 html/RTFM/Admin/CustomFields/UserRights.html:100 html/RTFM/Admin/CustomFields/UserRights.html:70
+msgid "System Error"
+msgstr "系統錯誤"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:27 html/RTFM/Admin/CustomFields/GroupRights.html:28
+msgid "System groups"
+msgstr "系統群組"
+
+#: lib/RT/FM/CustomField_Overlay.pm:626
+msgid "That is already the current value"
+msgstr "已經是目前欄位的值"
+
+#: lib/RT/FM/CustomField_Overlay.pm:260
+msgid "That is not a value for this custom field"
+msgstr "這不是該自訂欄位的值"
+
+#: lib/RT/FM/Transaction_Overlay.pm:59
+#. ($self->Field , $self->OldContent)
+msgid "This article no longer %1 '%2'"
+msgstr "這篇文章的 %1 不再是 '%2'"
+
+#: lib/RT/FM/Transaction_Overlay.pm:57
+#. ($self->Field , $self->NewContent)
+msgid "This article now %1 '%2'"
+msgstr "這篇文章的 %1 成為 '%2'"
+
+#: lib/RT/FM/CustomField_Overlay.pm:683 lib/RT/FM/CustomField_Overlay.pm:719
+msgid "This custom field does not apply to that class"
+msgstr "此自訂欄位不適用於該分類"
+
+#: lib/RT/FM/Article_Overlay.pm:1116
+msgid "Transaction recorded"
+msgstr "更動已紀錄"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:29
+msgid "Type"
+msgstr "類別"
+
+#: html/RTFM/Article/Delete.html:59 html/RTFM/Article/Edit.html:73
+msgid "Unable to load article"
+msgstr "無法載入文章"
+
+#: html/RTFM/Elements/NewestArticles:42 html/RTFM/Elements/UpdatedArticles:43
+msgid "Update"
+msgstr "處理"
+
+#: html/RTFM/Article/ExtractFromTicket.html:26
+msgid "Use the dropdown menus to select which transactions you want to extract into a new RTFM article"
+msgstr "利用下拉式選單，選出想擷取到 RTFM 文章裡的更動項目"
+
+#: html/RTFM/Admin/Elements/ClassTabs:40 html/RTFM/Admin/Elements/CustomFieldTabs:46
+msgid "User Rights"
+msgstr "使用者權限"
+
+#: html/RTFM/Admin/Classes/GroupRights.html:42 html/RTFM/Admin/CustomFields/GroupRights.html:44
+msgid "User defined groups"
+msgstr "使用者定義的群組"
+
+#: lib/RT/FM/ArticleCFValue_Overlay.pm:89
+msgid "Value added"
+msgstr "欄位值新增成功"
+
+#: html/RTFM/Admin/CustomFields/Basics.html:35
+msgid "Values"
+msgstr "欄位值"
+
+#: html/NoAuth/RTFM/index.html:19
+msgid "Welcome to RTFM"
+msgstr "歡迎使用 RTFM"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:67
+msgid "Which are referred to by "
+msgstr "出現於"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:64
+msgid "Which refer to"
+msgstr "引述"
+
+#: html/RTFM/Article/Delete.html:42
+msgid "Yes"
+msgstr "是"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:36
+msgid "and is not"
+msgstr "但不屬於"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:45 html/RTFM/Article/Elements/ShowSearchCriteria:49 html/RTFM/Article/Elements/ShowSearchCriteria:84
+msgid "and not"
+msgstr "但不符合"
+
+#: html/NoAuth/RTFM/index.html:28
+msgid "for articles matching"
+msgstr "裡的文章:"
+
+#: html/RTFM/Article/Elements/ShowSearchResults:23
+msgid "id"
+msgstr "編號"
+
+#: html/RTFM/Article/PreCreate.html:25
+#. ($Class->Name)
+msgid "in class %1"
+msgstr "屬於 %1 分類"
+
+#: html/NoAuth/RTFM/Elements/Error:37 html/RTFM/Elements/Error:37
+msgid "the calling component did not specify why"
+msgstr "呼叫元件未指明原因"
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:54 html/RTFM/Article/Elements/ShowSearchCriteria:60
+msgid "till"
+msgstr "至"
+

@@ -458,8 +458,7 @@ sub DeleteValueForArticle {
         return (
             0,
             $self->loc(
-                "Custom field value [_1] could not be found for custom field
- [_2]", $args{'Content'}, $self->Name ) );
+                "Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->Name ) );
     }
 
     # delete it
