@@ -443,6 +443,7 @@ n";
 	$content .= $_;
       }
     }
+    require MIME::Entity;
     my ($Trans, $Message) = $Ticket->Correspond
       ( CcMessageTo => $cc,
 	BccMessageTo => $bcc,

@@ -102,11 +102,12 @@ sub Create  {
 		$RT::Logger->log(level=>'debug', message=>("Found a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id));
 		if ( $Scope->ScripObj->IsApplicable() ) {
 
-		    $RT::Logger->log(level=>'info', message=>("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id));
+		    $RT::Logger->log(level=>'debug', message=>("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe,$Scope->ScripObj->TemplateObj->id).") at ticket #".$TicketAsSystem->Id));
 
 
 		    $Scope->ScripObj->Prepare() &&   
-		    $Scope->ScripObj->Commit();
+		    $Scope->ScripObj->Commit() &&
+		    $RT::Logger->log(level=>'info', message=>("Sucsessfully executed a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id));
 		   
 		    #We're done with it. lets clean up.
 		    #TODO: why the fuck do we need to do this? 

@@ -712,9 +712,9 @@ sub LongSinceToldAsString {
     require Date::Kronos;
     if ($self->Told) {
 	my $now=Date::Kronos->new(cal_type=>'Unix');
-	warn $now->stringify();
 	my $diff=$now - $self->ToldObj;
-	return $diff->Unix->stringify || warn;
+	warn $diff->Unix->stringify;
+	return $diff->Unix->stringify;
     } else {
 	return "Never";
     }
@@ -763,15 +763,17 @@ sub Comment {
 	      MIMEObj => undef,
 	      TimeTaken => 0,
 	      @_ );
+
+  my $MIMEObj=$args{MIMEObj}; # For convenience
     
   unless ($self->CurrentUserHasRight('CommentOnTicket')) {
     return (0, "Permission Denied");
   }
   #Record the correspondence (write the transaction)
   my $Trans = $self->_NewTransaction( Type => 'Comment',
-				      Data => $MIME->head->get('subject'),
+				      Data => $MIMEObj->head->get('subject'),
 				      TimeTaken => $args{'TimeTaken'},
-				      MIMEObj => $args{'MIMEObj'}
+				      MIMEObj => $MIMEObj
 				    );
   
   if ($args{'CcMessageTo'} || 
@@ -798,7 +800,7 @@ sub Correspond {
     return (0, "Permission Denied");
   }
 
-  if (! defined ($args{'MIMEObj'})) {
+  unless ($args{'MIMEObj'}) {
     return(0,"No correspondence attached");
   }
 
@@ -807,7 +809,7 @@ sub Correspond {
           (Type => 'Correspond',
 	   Data => $args{'MIMEObj'}->head->get('subject'),
 	   TimeTaken => $args{'TimeTaken'},
-	   MIMEObj=> $args{'$MIMEObj'}     
+	   MIMEObj=> $args{'MIMEObj'}     
 	   );
 
   # Probably this ones will be a part of the MIMEObj above, and not
@@ -1509,8 +1511,8 @@ sub HasRight {
     
     my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE (($ScopeClause) AND ($RightClause) AND ($PrincipalsClause))";
     
-    print $query_string_1."\n";
-    print $query_string_2."\n";
+#    print $query_string_1."\n";
+#    print $query_string_2."\n";
 
     my ($hitcount);
     

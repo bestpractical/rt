@@ -3,7 +3,7 @@
 
 <& /Elements/Header, Title => "Create request" &>
 
-<FORM METHOD=POST ACTION="Create_Detail.html">
+<FORM METHOD="GET" ACTION="Create_Detail.html">
 
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "What queue should the new request be putted into?" &>
 <& /Elements/SelectQueue, Name=>"Queue", Default=>$session{'LastQueue'}&>
@@ -23,8 +23,8 @@
 <input type="radio" name="Link" value="ParentOf">The new ticket is a member of ticket <input name="LinkTo" value="<% $id %>"><BR><BR>
 <& /Elements/TitleBoxEnd &>
 
-<FORM>
 <INPUT TYPE=SUBMIT VALUE="Next">
+</FORM>
 
 
 <%ARGS>

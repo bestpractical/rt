@@ -182,7 +182,7 @@ sub Quote {
 	$body =~ s/^/> /gm;
 
 	$body = '[' . $self->TransactionObj->Creator->UserId . ' - ' . $self->TransactionObj->AgeAsString 
-	            . "]:\n\n[REMOVE THIS LINE, AND ANY EXCESSIVE LINES BELOW]\n"
+	            . "]:\n\n"
    	        . $body . "\n\n";
 
     } else {

@@ -32,8 +32,10 @@ sub Commit  {
   # it's very easy to subclass Mail::Mailer::mail - but you should
   # probably talk with Graham Barr first.
 
-  $self->{'TemplateObj'}->MIMEObj->send('sendmail') || die "Could not send mail (check the FAQ)";
+  $self->TemplateObj->MIMEObj->send('sendmail') || die "Could not send mail (check the FAQ)";
 #  $self->TemplateObj->MIMEObj->smtpsend(Host => 'localhost') || die "could not send email";
+
+  $RT::Logger->log(message=>"Mail sent", level=>'debug')
 
   # TODO Better error handling?
 
@@ -73,6 +75,21 @@ sub Prepare  {
   $self->SetRecipients() || return 0;
 
 # Todo: add "\n-------------------------------------------- Managed by Request Tracker\n\n" to the message body
+
+  unless ($self->TemplateObj) {
+      warn "oh! No template given! :(";
+      return 0;
+  }
+
+  unless ($self->TransactionObj) {
+      warn "oh! No transaction given! :(";
+      return 0;
+  }
+
+  unless ($self->TransactionObj->Message->First) {
+      warn "oh! No message given! :(";
+      return 0;
+  }
 
   return 1;
   

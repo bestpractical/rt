@@ -22,12 +22,14 @@ sub Prepare  {
 sub Commit {
     my $self = shift;
     # Find all Dependent
-    $self->TransactionObj->Data =~ /^([^ ]*) DependsOn / || return 0;
+    unless ($self->TransactionObj->Data =~ /^([^ ]*) DependsOn /) {
+	warn; return 0;
+    }
     my $base;
     if ($1 eq "THIS") {
 	$base=$self->TicketObj;
     } else {
-	my $base_id=&RT::Link::_IsLocal($base_id) || return 0;
+	my $base_id=&RT::Link::_IsLocal($1) || return 0;
 	$base=RT::Ticket->new($self->TicketObj->CurrentUser);
 	$base->Load($base_id);
     }

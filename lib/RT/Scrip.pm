@@ -79,7 +79,7 @@ sub Load  {
     $self->SUPER::LoadById($identifier);
   }
   else {
-    die "This code is never reached ;)";  
+    die "This code should never be reached ;)";  
 
   }
 
