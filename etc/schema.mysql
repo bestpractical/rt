@@ -8,191 +8,7 @@
 # the makefile should call up some init scrips that uses an RT api or the (admin)
 # cli to add the data.
 
-# {{{ Table ACL {
-
-CREATE TABLE ACL (
-	id int primary key auto_increment,
-	PrinicpalId INT(11),
-	PrincipalType VARCHAR(16),
-	PrincipalScope VARCHAR(16),
-	ObjectType VARCHAR(16),
-	ObjectId  INT,
-	Right VARCHAR(16)
-);
-
-# }}}
-
-
-# {{{ TABLE Scrips
-CREATE TABLE Scrips (
-  id int(11)                #The ID.  All IDs lower than 256 is reservated
-	AUTO_INCREMENT      #default scrips.
-	PRIMARY KEY, 
-  Name VARCHAR(255),	    #Textual string
-  Description VARCHAR(255), #another longer textual string
-  Type VARCHAR(60),	    #Transaction type or 'any'	
-  Action VARCHAR(60),	    #Name of a perl module. inside RT::Action
-  DefaultTemplate INT(11),  #Link to the templates table of template to pass in.
-  Argument VARCHAR(255),    #an argument to pass in.
-
-  Creator INT(11),
-  Created TIMESTAMP,
-  LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP  
-)\g
-
-# }}}
-
-# TODO: 
-# -steal & give (should be sent both to old and new)
-# mechanisms to avoid sending more than one mail to a party
-# dealing with CC and BCC.
-
-
-# {{{ Values for Scrips
-
-# Short about the default available actions for subscriptions; (this should be in some docs)
-
-# Action    - base class for any scrips.
-#   SendEmail - standard thing, mails away a template
-#     Notify  - sends away a template to the recipient in the Scrips Argument 
-#     AutoReply - sends an autoreply 
-
-INSERT INTO Scrips VALUES (1,'Autoreply', 
-			  'Sends an automatic response to the requestor when a ticket was created',
-			  'Create','AutoReply',1,'',0,NULL,0,NULL);
-
-INSERT INTO Scrips VALUES (2,'NotifyOwnerOnTransaction',
-			  'Sends mail to owner when anything happens',
-			  'Any','Notify',2,'Owner',0,NULL,0,NULL);
-
-INSERT INTO Scrips VALUES (3, 'NotifyAdminWatchersOnCorrespond',
-			  'Sends mail to administrative watchers when email comes in',
-			  'Correspond,Create','SendEmail',3,'',0,NULL,0,NULL);
-
-INSERT INTO Scrips VALUES (4, 'NotifyRegularWatchersOnCorrespond', 
-			  'Send "official" mail to (external) Cc watchers and (external) requestors whenever correspondence comes in',
-			  'Correspond','SendEmail',4,'',0,NULL,0,NULL);
-
-INSERT INTO Scrips VALUES (5, 'NotifyAdminWatchersOnComment',
-			   'Send mail to administrative watchers whenever comments come in',
-			  'Comment','SendEmail',5,'AdminCc',1,0,1,0);
-
-INSERT INTO Scrips VALUES (6, 'NotifyAllWatchersOnStatus', 
-			  'Send mail to watchers whenever a ticket\'s status changes',
-			  'Resolve/Stall/Open/Kill','SendEmail',6,'',1,0,1,0);
-
-INSERT INTO Scrips VALUES (7, 'NotifyAllWatchersOnResolve', 
-			  'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
-			  'Resolve','SendEmailOnResolve',7,'',1,0,1,0);
-
-INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
-			  'Sends mail to owner when anything happens',
-			  'Any','Notify',2,'AdminCc',1,NULL,1,NULL);
-
-# Short about the default available link actions available;
-
-# Action
-#   StallDependent - stalls the dependent upon a DependsOn linking action.
-#   OpenDependent - when a DependsOn is resolved, the dependent should be opened.
-#   Spam - upon correspondance to a group ticket, sends to all member requestors.
-#   ResolveMembers - when a Group Ticket is resolved, all Members should be resolved.
-#   ResolveGroupTicket - resolve the Group Ticket when all Members are resolved.
-
-INSERT INTO Scrips VALUES (9, 'StallDependentOnLink', 
-		           'Stalls the dependent when a DependsOn link is made',
-			   'Link', 'StallDependent',NULL,NULL,1,NULL,1,NULL);
-
-INSERT INTO Scrips VALUES (10, 'OpenDependentOnResolve', 
-		           'Opens the dependent when the DependsOn is resolved',
-			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
-
-INSERT INTO Scrips VALUES (11, 'ResolveMembers', 
-		           'Resolves all members when MemberOf is resolved',
-			   'Resolve', 'ResolveMembers',NULL,NULL,1,NULL,1,NULL);
-
-INSERT INTO Scrips VALUES (13, 'NotifyWatchersofMembers', 'Sends mail to the watchers of all tickets
-			   which are members of this ticket',
-			   'Correspond', 'Spam',4,NULL,1,NULL,1,NULL);
-
-INSERT INTO Scrips VALUES (255, 'PlaceHolder', 'Custom Scrips should have higher ID', 'None', 
-			  NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
-# }}}
-
-# {{{ TABLE ScripScope
-CREATE TABLE ScripScope (
-  id int(11) AUTO_INCREMENT PRIMARY KEY,
-  Scrip int(11), #Scrip Id
-  Queue INT(11), #Queue Id 0 for global
-		 # (maybe there might be conditions where other
-                 # Scopes apply, i.e. a ticket, keyword, owner, etc?)
-  Template INT(11), #Template Id or 0 for default template
-
-  Creator INT(11),
-  Created TIMESTAMP,
-  LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP  
-)\g
-
-# Put all scrips at all queues:
-insert into ScripScope select NULL, id, 0, NULL, NULL, NULL, NULL, NULL from Scrips;
-delete from ScripScope where id=8;
-
-# }}}
-
-# {{{ Table Users 
-
- # Actually I don't think this is a good way to do it; we
- # need it to be site-configurable what information we want to store
- # about our users.
-
-CREATE TABLE Users (
-  id int(11) AUTO_INCREMENT PRIMARY KEY,
-  UserId VARCHAR(120) NOT NULL,
-
-  Gecos CHAR(16), #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
-  RealName VARCHAR(120),
-  Password VARCHAR(40), 			
-  ExternalId VARCHAR(100),
-
- # I'm a bit uncertain if we have this one right.
- # It's an important demand that it's possible to bind all requests
- # from one person to the same entry in the Users table, even when a
- # person is operating from several different email addresses.
-  EmailAddress VARCHAR(120),
-
-  HomePhone VARCHAR(30),
-  WorkPhone VARCHAR(30),
-  Address1 VARCHAR(200),
-  Address2 VARCHAR(200),
-  City VARCHAR(100),
-  State VARCHAR(100),
-  Zip VARCHAR(16),
-  Country VARCHAR(50),
-  Comments BLOB,
-  CanManipulate INT,  #Whether this user can be granted rights
-		      #If 0, the user can only be a requestor
-  IsAdministrator INT,
-
-  Creator INT(11),
-  Created TIMESTAMP,
-  LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
-)\g
-
-# }}}
-
-# {{{ Values for Users
-INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
-
-INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (2, 'Nobody', "Noone in particular", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
-
-INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (3, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
-# }}}
+# {{{ Core entities (Queues, Tickets, Transactions, Attachments, Links)
 
 # {{{ TABLE Queues 
 CREATE TABLE Queues (
@@ -216,27 +32,6 @@ CREATE TABLE Queues (
 # {{{ Values for Queues
 # Default queue - should eventually be created by the admin-cli through some init script
 INSERT INTO Queues VALUES (1, 'general','A General Catch-all queue' ,'rt@localhost', 'rt-comment@localhost', 1, 0, 0, NULL, NULL, NULL, NULL, NULL);
-
-# }}}
-
-# {{{ TABLE Watchers
-CREATE TABLE Watchers (
-   id int(11) AUTO_INCREMENT PRIMARY KEY,
-   Type VARCHAR(16), 	# One of: Requestor, Cc, AdminCc
-   Scope varchar(16),	# One of: "Queue", "Ticket" as for now
-			# ... might be extended to "Keywords", "Owners", etc.
-   Value INT(11),	# Which Queue or Ticket this Watcher Watches.
-   Email VARCHAR(255),  # Where this Watch should send mail. If null, use Owner->EmailAddress
-   Quiet INT(1),	# Should we send mail to this one at all.
-   Owner INT(11),	# TODO: We're not dealing with this yet. For now, it's always 0
-			# A reference to the users table. If it's for a Cc or AdminCc who doesn't
-			# have an RT account, Owner should be 0
-
-   Creator INT(11),
-   Created TIMESTAMP,
-   LastUpdatedBy INT(11),
-   LastUpdated TIMESTAMP
-)\g
 
 # }}}
 
@@ -339,6 +134,223 @@ CREATE TABLE Links (
 )\g
 
 # }}}
+
+# }}}
+
+# {{{ User and watchers handling
+
+# {{{ Table Users 
+
+ # Actually I don't think this is a good way to do it; we
+ # need it to be site-configurable what information we want to store
+ # about our users.
+
+CREATE TABLE Users (
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  UserId VARCHAR(120) NOT NULL,
+
+  Gecos CHAR(16), #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
+  RealName VARCHAR(120),
+  Password VARCHAR(40), 			
+  ExternalId VARCHAR(100),
+
+ # I'm a bit uncertain if we have this one right.
+ # It's an important demand that it's possible to bind all requests
+ # from one person to the same entry in the Users table, even when a
+ # person is operating from several different email addresses.
+  EmailAddress VARCHAR(120),
+
+  HomePhone VARCHAR(30),
+  WorkPhone VARCHAR(30),
+  Address1 VARCHAR(200),
+  Address2 VARCHAR(200),
+  City VARCHAR(100),
+  State VARCHAR(100),
+  Zip VARCHAR(16),
+  Country VARCHAR(50),
+  Comments BLOB,
+  CanManipulate INT,  #Whether this user can be granted rights
+		      #If 0, the user can only be a requestor
+  IsAdministrator INT,
+
+  Creator INT(11),
+  Created TIMESTAMP,
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP
+)\g
+
+# }}}
+
+# {{{ Values for Users
+INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
+
+INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (2, 'Nobody', "Noone in particular", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
+
+INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (3, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
+# }}}
+
+# {{{ TABLE Watchers
+CREATE TABLE Watchers (
+   id int(11) AUTO_INCREMENT PRIMARY KEY,
+   Type VARCHAR(16), 	# One of: Requestor, Cc, AdminCc
+   Scope varchar(16),	# One of: "Queue", "Ticket" as for now
+			# ... might be extended to "Keywords", "Owners", etc.
+   Value INT(11),	# Which Queue or Ticket this Watcher Watches.
+   Email VARCHAR(255),  # Where this Watch should send mail. If null, use Owner->EmailAddress
+   Quiet INT(1),	# Should we send mail to this one at all.
+   Owner INT(11),	# TODO: We're not dealing with this yet. For now, it's always 0
+			# A reference to the users table. If it's for a Cc or AdminCc who doesn't
+			# have an RT account, Owner should be 0
+
+   Creator INT(11),
+   Created TIMESTAMP,
+   LastUpdatedBy INT(11),
+   LastUpdated TIMESTAMP
+)\g
+
+# }}}
+
+# }}}
+
+# {{{ Table ACL {
+
+CREATE TABLE ACL (
+	id int primary key auto_increment,
+	PrinicpalId INT(11),
+	PrincipalType VARCHAR(16),
+	PrincipalScope VARCHAR(16),
+	ObjectType VARCHAR(16),
+	ObjectId  INT,
+	Right VARCHAR(16)
+);
+
+# }}}
+
+# {{{ Scrip system
+
+# TODO: 
+# -steal & give (should be sent both to old and new)
+# mechanisms to avoid sending more than one mail to a party
+# dealing with CC and BCC.
+
+# {{{ TABLE Scrips
+CREATE TABLE Scrips (
+  id int(11)                #The ID.  All IDs lower than 256 is reservated
+	AUTO_INCREMENT      #default scrips.
+	PRIMARY KEY, 
+  Name VARCHAR(255),	    #Textual string
+  Description VARCHAR(255), #another longer textual string
+  Type VARCHAR(60),	    #Transaction type or 'any'	
+  Action VARCHAR(60),	    #Name of a perl module. inside RT::Action
+  DefaultTemplate INT(11),  #Link to the templates table of template to pass in.
+  Argument VARCHAR(255),    #an argument to pass in.
+
+  Creator INT(11),
+  Created TIMESTAMP,
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP  
+)\g
+
+# }}}
+
+# {{{ Values for Scrips
+
+# Short about the default available actions for subscriptions; (this should be in some docs)
+
+# Action    - base class for any scrips.
+#   SendEmail - standard thing, mails away a template
+#     Notify  - sends away a template to the recipient in the Scrips Argument 
+#     AutoReply - sends an autoreply 
+
+INSERT INTO Scrips VALUES (1,'Autoreply', 
+			  'Sends an automatic response to the requestor when a ticket was created',
+			  'Create','AutoReply',1,'',0,NULL,0,NULL);
+
+INSERT INTO Scrips VALUES (2,'NotifyOwnerOnTransaction',
+			  'Sends mail to owner when anything happens',
+			  'Any','Notify',2,'Owner',0,NULL,0,NULL);
+
+INSERT INTO Scrips VALUES (3, 'NotifyAdminWatchersOnCorrespond',
+			  'Sends mail to administrative watchers when email comes in',
+			  'Correspond,Create','SendEmail',3,'',0,NULL,0,NULL);
+
+INSERT INTO Scrips VALUES (4, 'NotifyRegularWatchersOnCorrespond', 
+			  'Send "official" mail to (external) Cc watchers and (external) requestors whenever correspondence comes in',
+			  'Correspond','SendEmail',4,'',0,NULL,0,NULL);
+
+INSERT INTO Scrips VALUES (5, 'NotifyAdminWatchersOnComment',
+			   'Send mail to administrative watchers whenever comments come in',
+			  'Comment','SendEmail',5,'AdminCc',1,0,1,0);
+
+INSERT INTO Scrips VALUES (6, 'NotifyAllWatchersOnStatus', 
+			  'Send mail to watchers whenever a ticket\'s status changes',
+			  'Resolve/Stall/Open/Kill','SendEmail',6,'',1,0,1,0);
+
+INSERT INTO Scrips VALUES (7, 'NotifyAllWatchersOnResolve', 
+			  'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
+			  'Resolve','SendEmailOnResolve',7,'',1,0,1,0);
+
+INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
+			  'Sends mail to owner when anything happens',
+			  'Any','Notify',2,'AdminCc',1,NULL,1,NULL);
+
+# Short about the default available link actions available;
+
+# Action
+#   StallDependent - stalls the dependent upon a DependsOn linking action.
+#   OpenDependent - when a DependsOn is resolved, the dependent should be opened.
+#   Spam - upon correspondance to a group ticket, sends to all member requestors.
+#   ResolveMembers - when a Group Ticket is resolved, all Members should be resolved.
+#   ResolveGroupTicket - resolve the Group Ticket when all Members are resolved.
+
+INSERT INTO Scrips VALUES (9, 'StallDependentOnLink', 
+		           'Stalls the dependent when a DependsOn link is made',
+			   'Link', 'StallDependent',NULL,NULL,1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (10, 'OpenDependentOnResolve', 
+		           'Opens the dependent when the DependsOn is resolved',
+			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (11, 'ResolveMembers', 
+		           'Resolves all members when MemberOf is resolved',
+			   'Resolve', 'ResolveMembers',NULL,NULL,1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (13, 'NotifyWatchersofMembers', 'Sends mail to the watchers of all tickets
+			   which are members of this ticket',
+			   'Correspond', 'Spam',4,NULL,1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (255, 'PlaceHolder', 'Custom Scrips should have higher ID', 'None', 
+			  NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+# }}}
+
+# {{{ TABLE ScripScope
+CREATE TABLE ScripScope (
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  Scrip int(11), #Scrip Id
+  Queue INT(11), #Queue Id 0 for global
+		 # (maybe there might be conditions where other
+                 # Scopes apply, i.e. a ticket, keyword, owner, etc?)
+  Template INT(11), #Template Id or 0 for default template
+
+  Creator INT(11),
+  Created TIMESTAMP,
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP  
+)\g
+
+# Put all scrips at all queues:
+insert into ScripScope select NULL, id, 0, NULL, NULL, NULL, NULL, NULL from Scrips;
+delete from ScripScope where id=8;
+
+# }}}
+
+# }}}
+
+# {{{ Templates
 
 # {{{ TABLE Templates
 
@@ -483,6 +495,9 @@ NULL,20000227191745,NULL,00000000000000);
 
 # }}}
 
+# }}}
+
+# {{{ Stubbed work
 
 # For storing who we have sent autoreplies to, so we don't overload
 # somebody with those autoreplies.  Take a look at Action/AutoReply.pm
@@ -493,3 +508,5 @@ NULL,20000227191745,NULL,00000000000000);
 #  Template int,
 #  Created TIMESTAMP
 #);
+
+# }}}
