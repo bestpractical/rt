@@ -232,7 +232,7 @@ sub add_modify_queue_acl {
 		
 		$query_string = "UPDATE queue_acl SET $update_clause WHERE queue_id = $queue_id AND user_id = $user_id";
 		$query_string =~ s/,(\s*)WHERE/ WHERE/g;
-		print $query_string;	
+		print "UPDATING WITH QYUERY $query_string\n";	
 		$dbh->Query($query_string) or warn "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n";
 		delete $rt::queues{$in_queue_id}{acls}{$in_user_id};
 		&rt::load_queue_acls();
