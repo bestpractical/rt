@@ -114,7 +114,7 @@ sub parse_headers {
   my ($content) ="@_";
   ($headers, $body) = split (/\n\n/, $content, 2);
 
-  foreach $line (split (/\n/,$headers)) {
+  foreach $line (split (/\n(?!\s)/,$headers)) {
     
     if ($line =~/^X-RT-Loop-Prevention: $rt::rtname/g) {
       die ("RT has recieved mail from itself. Goodnight.");
@@ -127,23 +127,23 @@ sub parse_headers {
       $subject =~ s/\($rt::req[$serial_num]{'queue_id'}\)//i;
     }
     
-    elsif (($line =~ /^Subject: (.*)/) and (!$subject)){
+    elsif (($line =~ /^Subject: (.*)/s) and (!$subject)){
       $subject=$1;
     }
     
-    elsif (($line =~ /^Reply-To: (.*)/)) {
+    elsif (($line =~ /^Reply-To: (.*)/s)) {
       $replyto = $1;
     }
 
-    elsif ($line =~ /^From: (.*)/) {
+    elsif ($line =~ /^From: (.*)/s) {
       $from = $1;
     }
   
-    elsif ($line =~ /^Sender: (.*)/){
+    elsif ($line =~ /^Sender: (.*)/s){
       $sender = $1;
       
     }
-    elsif ($line =~ /^Date: (.*)/) {
+    elsif ($line =~ /^Date: (.*)/s) {
       $time_in_text = $1;
     }
   }
