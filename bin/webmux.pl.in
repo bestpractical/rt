@@ -134,9 +134,13 @@ sub handler {
         );
     }
 
-    DBIx::SearchBuilder::Record::Cachable->FlushCache if UNIVERSAL::can(
-        'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache'
-    );
+    DBIx::SearchBuilder::Record::Cachable->FlushCache
+      if (
+        $WebFlushDbCacheEveryRequest
+        and UNIVERSAL::can(
+            'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache'
+        )
+      );
 
     return $status;
 }

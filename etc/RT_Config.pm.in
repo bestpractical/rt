@@ -348,6 +348,16 @@ Set($WebExternalAuto , undef);
 
 # Set($WebSessionClass , 'Apache::Session::File');
 
+# By default, RT clears its database cache after every page view.
+# This ensures that you've always got the most current information 
+# when working in a multi-process (mod_perl or FastCGI) Environment
+# Setting $WebFlushDbCacheEveryRequest to '0' will turn this off,
+# which will speed RT up a bit, at the expense of a tiny bit of data 
+# accuracy
+
+Set($WebFlushDbCacheEveryRequest, '1');
+
+
 # $MaxInlineBody is the maximum attachment size that we want to see
 # inline when viewing a transaction. 13456 is a random sane-sounding
 # default.
