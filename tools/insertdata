@@ -336,7 +336,7 @@ Transaction: {$Transaction->Description}
        Owner: {$Ticket->OwnerObj->Name}
   Requestors: {$Ticket->Requestors->EmailsAsString()}
       Status: {$Ticket->Status}
- Ticket <URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
+ Ticket <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------
 {$Transaction->Message()->First()->Content() if $Transaction->Message()->First()}'},
 
@@ -348,7 +348,7 @@ Transaction: {$Transaction->Description}
                   Description => 'Default admin correspondence template',
                   Content => 'Subject: {$Transaction->Message()->First()->Subject}
 
-<URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
+<URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
 
 {$Transaction->Message()->First()->Content()}' },
 
@@ -369,7 +369,7 @@ Transaction: {$Transaction->Description}
                   Content =>  'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
 
 
-{$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
+{$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
 {$Transaction->Message()->First()->Content()}
@@ -383,7 +383,7 @@ This is a comment.  It is not sent to the Requestor(s):
                   Content =>  'Subject: Status Changed to: {$Transaction->NewValue}
 
 
-{$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
+{$RT::WebURL}Ticket/Display.html?id={$Ticket->id}
 
 {$Transaction->Message()->First()->Content()}
 '},

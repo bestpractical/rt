@@ -214,7 +214,7 @@ $WebPath = "";
 
 $WebBaseURL = "http://RT::WebBaseURL.not.configured:80/";
 
-$WebURL = $WebBaseURL . $WebPath. "/";
+$WebURL = $WebBaseURL . $WebPath . "/";
 
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files

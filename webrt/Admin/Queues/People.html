@@ -13,7 +13,7 @@
 <TD VALIGN=TOP >
 
 <h3>Current watchers</h3>
-(Check box to delete)<br>
+<i>(Check box to delete)</i><br><BR>
 
 
 Cc:
@@ -70,7 +70,7 @@ Find people whose<BR>
 Add new watchers:<br>
 
 % if ($msg) {
-<%$msg%>
+<i><%$msg%></i>
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
