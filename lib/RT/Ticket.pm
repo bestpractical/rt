@@ -734,6 +734,24 @@ sub QueueObj {
 
 # {{{ Date printing routines
 
+# {{{ sub DueObj
+sub DueObj {
+    my $self = shift;
+    
+    my $time = new RT::Date($self->CurrentUser);
+
+    # -1 is RT::Date slang for never
+    if ($self->Due) {
+	$time->Set(Format => 'sql', Value => $self->Due );
+    }
+    else {
+	$time->Set(Format => 'unix', Value => -1);
+    }
+    
+    return $time;
+}
+# }}}
+
 # {{{ sub DueAsString 
 
 sub DueAsString {
@@ -758,24 +776,6 @@ sub GraceTimeAsString {
     }
 }
 
-# }}}
-
-# {{{ sub DueObj
-sub DueObj {
-    my $self = shift;
-    
-    my $time = new RT::Date($self->CurrentUser);
-
-    # -1 is RT::Date slang for never
-    if ($self->Due) {
-	$time->Set(Format => 'sql', Value => $self->Due );
-    }
-    else {
-	$time->Set(Format => 'unix', Value => -1);
-    }
-    
-    return $time;
-}
 # }}}
 
 
@@ -1061,16 +1061,25 @@ sub HasKeyword {
 
 =head2 Members
 
-  This returns an RT::Links object which references all the tickets that have 
-this ticket as their target AND are of type 'MemberOf'
+  This returns an RT::Tickets object which references all the tickets 
+that have  this ticket as their target AND are of type 'MemberOf'
 
 =cut
 
 sub Members {
-    my $self = shift;
-    return $self->_Links('Target','MemberOf');
+   my $self = shift;
+   
+   if (!defined ($self->{'members'})){
+   use RT::Tickets;
+   $self->{'members'} = new RT::Tickets($self->CurrentUser);
+   #Tickets that are Members of this ticket
+   $self->{'members'}->LimitMemberOf($self->id);
+   #Don't show dead tickets
+   $self->{'members'}->LimitStatus( OPERATOR => '!=',
+				     VALUE => 'dead');
+   }
+   return ($self->{'members'});
 }
-
 
 # }}}
 
@@ -1086,11 +1095,17 @@ this ticket as their base AND are of type 'MemberOf' AND are not marked
 
 sub MemberOf {
    my $self = shift;
+   if (!defined ($self->{'memberof'})){
+   use RT::Tickets;
+   $self->{'memberof'} = new RT::Tickets($self->CurrentUser);
+   #Tickets that  this ticket is a member of
+   $self->{'memberof'}->LimitHasMember($self->id);
+   #Don't show dead tickets
+   $self->{'memberof'}->LimitStatus( OPERATOR => '!=',
+                                     VALUE => 'dead');
+   }
+   return ($self->{'memberof'});
 
-   my $memberof = new RT::Tickets($self->CurrentUser);
-   $memberof->LimitMemberOf($self->id);
-   $memberof->LimitStatus( OPERATOR => '!=',
-				     VALUE => 'dead');
 }
 
 

@@ -554,10 +554,10 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
 EOFORM
 
    while (my $l=$Ticket->Children->Next) {
-       print $l->BaseObj->id," (",$l->BaseObj->Subject,") ",$l->Type," THIS\n";
+       print $l->BaseObj->id," (",$l->BaseObj->Subject,") is  ",$l->Type," this ticket\n";
    }
    while (my $l=$Ticket->Parents->Next) {
-       print "THIS ",$l->Type," ",$l->TargetObj->Id," (",$l->TargetObj->Subject,")\n";
+       print "This ticket is ",$l->Type," ",$l->TargetObj->Id," (",$l->TargetObj->Subject,")\n";
    }
 }
 # }}}
