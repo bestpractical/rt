@@ -1,0 +1,6 @@
+%    my $url = $RT::WebPath . "/Download/CustomFieldValue/".$Object->Id.'/'.$Object->Content;
+<a href="<% $url %>"><% $Object->Content %></a>
+<img type="<% $Object->ContentType %>" height=64 src="<% $url %>" align="middle">
+<%ARGS>
+$Object
+</%ARGS>

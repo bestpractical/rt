@@ -22,9 +22,7 @@
 %# 
 %# END LICENSE BLOCK
 % while ($Values and my $value = $Values->Next ) {
-%    my $url = $RT::WebPath . "/Download/CustomFieldValue/".$value->Id.'/'.$value->Content;
-<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><a href="<% $url %>"><% $value->Content %></a>
-<img type="<% $value->ContentType %>" height=64 src="<% $url %>" align="middle">
+<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>"><& ShowCustomFieldImage, Object => $value &>
 <br>
 % }
 % if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {

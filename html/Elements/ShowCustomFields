@@ -29,7 +29,11 @@
     <td class="label"><%$CustomField->Name%>:</td>
     <td class="value">
 % while (my $Value = $Values->Next()) {
-<%$Value->Content%><br>        
+%   if ($CustomField->Type eq 'Image') {
+<& ShowCustomFieldImage, Object => $Value &>
+%   } else {
+<%$Value->Content%><br>
+%   }
 % }
 % unless ($Values->Count()) {
 <i><&|/l&>(no value)</&></i>
