@@ -152,7 +152,8 @@ sub DeleteWatcher {
 
 sub Watchers {
   my $self = shift;
-  if (! defined ($self->{'Watchers'})) {
+  if (! defined ($self->{'Watchers'}) 
+      || $self->{'Watchers'}->{is_modified}) {
     require RT::Watchers;
     $self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
     $self->{'Watchers'}->LimitToTicket($self->id);

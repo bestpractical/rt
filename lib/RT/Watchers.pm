@@ -63,6 +63,8 @@ sub LimitToRequestors {
 sub Emails {
     my $self = shift;
     my $type = shift;
+
+    $self->{is_modified}++;
     $self->LimitToType($type)
 	if $type;
     my @list;
