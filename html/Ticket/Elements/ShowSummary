@@ -53,7 +53,7 @@
 	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
           <br>
-% if ($Ticket->QueueObj->CustomFields()->First) {
+% if ($Ticket->QueueObj->TicketCustomFields->First) {
 	  <& /Elements/TitleBoxStart, title => loc('Custom Fields'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  

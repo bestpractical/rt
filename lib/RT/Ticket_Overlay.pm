@@ -380,8 +380,7 @@ sub Create {
         $QueueObj->Load( $args{'Queue'}->Id );
     }
     else {
-        $RT::Logger->debug(
-            $args{'Queue'} . " not a recognised queue object." );
+        $RT::Logger->debug( $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
@@ -400,11 +399,7 @@ sub Create {
     {
         return (
             0, 0,
-            $self->loc(
-                "No permission to create tickets in the queue '[_1]'",
-                $QueueObj->Name
-            )
-        );
+            $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->Name));
     }
 
     unless ( $QueueObj->IsValidStatus( $args{'Status'} ) ) {
@@ -718,6 +713,8 @@ sub Create {
 
         if ( $self->Id && $Trans ) {
 
+            $TransObj->UpdateCustomFields(ARGSRef => \%args);
+
             $RT::Logger->info( "Ticket " . $self->Id . " created in queue '" . $QueueObj->Name . "' by " . $self->CurrentUser->Name );
             $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
@@ -727,11 +724,7 @@ sub Create {
 
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
             $RT::Logger->error("Ticket couldn't be created: $ErrStr");
-            return (
-                0, 0,
-                $self->loc(
-                    "Ticket could not be created due to an internal error")
-            );
+            return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
         }
 
         $RT::Handle->Commit();

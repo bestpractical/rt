@@ -104,7 +104,7 @@
 %    while (my $CF = $TxnCFs->Next()) {
 <TR>
 <TD class="label"><% $CF->Name %>:</TD>
-<TD class="entry"><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &><em><% $CF->FriendlyType %></em></TD>
+<TD class="entry"><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></TD>
 </TD></TR>
 %    } # end if while
 % } # end of if

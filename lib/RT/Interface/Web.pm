@@ -310,12 +310,15 @@ sub CreateTicket {
         Starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
-    foreach my $arg (%ARGS) {
-        if ($arg =~ /^CustomField-(\d+)(.*?)$/) {
-            my $cfid = $1;
-
+    foreach my $arg (keys %ARGS) {
             next if ($arg =~ /-Magic$/);
-            my $cf = new RT::CustomField( $RT::SystemUser );
+       #Object-RT::Ticket--CustomField-3-Values
+        if ($arg =~ /^Object-RT::Transaction--CustomField-/) {
+            $create_args{$arg} = $ARGS{$arg};
+        }
+        elsif ($arg =~ /^Object-RT::Ticket--CustomField-(\d+)(.*?)$/) {
+            my $cfid = $1;
+            my $cf = RT::CustomField->new( $session{'CurrentUser'});
             $cf->Load($cfid);
 
             if ($cf->Type eq 'FreeformMultiple') {
@@ -327,10 +330,11 @@ sub CreateTicket {
         }
     }
 
-    # turn new link lists into arrays, and pass in the proper arguments
-    my (@dependson, @dependedonby, 
-	@parents, @children, 
-	@refersto, @referredtoby);
+
+    # XXX TODO This code should be about six lines. and badly needs refactoring.
+ 
+    # {{{ turn new link lists into arrays, and pass in the proper arguments
+    my (@dependson, @dependedonby, @parents, @children, @refersto, @referredtoby);
 
     foreach my $luri ( split ( / /, $ARGS{"new-DependsOn"} ) ) {
 	$luri =~ s/\s*$//;    # Strip trailing whitespace
@@ -364,7 +368,9 @@ sub CreateTicket {
 	push @referredtoby, $luri;
     }
     $create_args{'ReferredToBy'} = \@referredtoby;
-
+    # }}}
+  
+ 
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ( $id && $Trans ) {
         Abort($ErrMsg);
