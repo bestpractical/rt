@@ -1,80 +1,88 @@
-msgid "Mon."
-msgstr "Mon"
-
-msgid "Tue."
-msgstr "Tue"
-
-msgid "Wed."
-msgstr "Wed"
-
-msgid "Thu."
-msgstr "Thu"
-
-msgid "Fri."
-msgstr "Fri"
-
-msgid "Sat."
-msgstr "Sat"
-
-msgid "Sun."
-msgstr "Sun"
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:402
 msgid "Apr."
 msgstr "Apr"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:406
 msgid "Aug."
 msgstr "Aug"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:410
 msgid "Dec."
 msgstr "Dec"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:400
 msgid "Feb."
 msgstr "Feb"
 
-#: html/Elements/Tabs html/Elements/Tabs,D
+#: lib/RT/Date.pm:380
+msgid "Fri."
+msgstr "Fri"
+
+#: html/Elements/Tabs:112
 msgid "Homepage"
 msgstr "Home"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:399
 msgid "Jan."
 msgstr "Jan"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:405
 msgid "Jul."
 msgstr "Jul"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:404
 msgid "Jun."
 msgstr "Jun"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:401
 msgid "Mar."
 msgstr "Mar"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:403
 msgid "May."
 msgstr "May"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:376
+msgid "Mon."
+msgstr "Mon"
+
+#: lib/RT/Date.pm:409
 msgid "Nov."
 msgstr "Nov"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:408
 msgid "Oct."
 msgstr "Oct"
 
-#: html/Ticket/Elements/Tabs
+#: html/Ticket/Elements/Tabs:102
 msgid "Open it"
 msgstr "Open"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html:113
 msgid "Residence"
 msgstr "Home"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm:381
+msgid "Sat."
+msgstr "Sat"
+
+#: lib/RT/Date.pm:407
 msgid "Sep."
 msgstr "Sep"
+
+#: lib/RT/Date.pm:382
+msgid "Sun."
+msgstr "Sun"
+
+#: lib/RT/Date.pm:379
+msgid "Thu."
+msgstr "Thu"
+
+#: lib/RT/Date.pm:377
+msgid "Tue."
+msgstr "Tue"
+
+#: lib/RT/Date.pm:378
+msgid "Wed."
+msgstr "Wed"
+

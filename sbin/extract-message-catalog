@@ -1,3 +1,6 @@
+#!/usr/bin/perl -w 
+
+# Portions Copyright 2002 Autrijus Tang <autrijus@autrijus.org>
 
 use strict;
 use File::Find;
@@ -5,130 +8,152 @@ use File::Copy;
 use Regexp::Common;
 use Carp;
 
-use vars qw ($DEBUG);
+use vars qw ($DEBUG $FILECAT);
 
 $DEBUG = 1;
 
 @ARGV = <lib/RT/I18N/*.po> unless @ARGV;
 
+$FILECAT = {};
+    File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, '.' );
+
+   # {{{ pull strings out of the code.
+
+    sub extract_strings_from_code {
+        my $file = $_;
+        local $/;
+        return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen' );
+        return if ( $_               =~ /.bak$|~|,D|,B$/ );
+        return if ( $_               =~ /^#/ );
+        print "Looking at $File::Find::name\n";
+        my $filename = $File::Find::name;
+        $filename =~ s'^./'';
+        open _, $file or die $!;
+        $_ =  <_>;
+        my $line = 1;
+        while (m!\G.*?<&\|/l(.*?)&>(.*?)</&>!sg) {
+            my ( $vars, $str ) = ( $1, $2 );
+            $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+            $str =~ s/\\'/\'/g;
+            #print "STR IS $str\n";
+            push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
+        }
+
+        $line = 1;
+        pos($_) = 0;
+        while (m/\G.*?\bloc$RE{balanced}{-parens=>'()'}{-keep}/sg) {
+            my $match = $1;
+            $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+            my ( $vars, $str );
+            if ( $match =~
+                 /\(($RE{delimited}{-delim=>q{'"}}{-esc}{-keep})(.*?)\)$/ ) {
+
+                $str = substr( $1, 1, -1 );       # reversed
+
+                $vars = $9;
+            }
+            else {
+                next;
+            }
+            $vars =~ s/[\n\r]//g;
+            $str  =~ s/\\'/\'/g;
+
+            push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
+        }
+        close (_);
+    }
+    # }}} extract from strings
+
+
+
+   foreach my $str ( sort keys %{$FILECAT} ) {
+        my $entry = $FILECAT->{$str};
+        my $oldstr = $str;
+        $str =~ s/\\/\\\\/g;
+        $str =~ s/\"/\\"/g;
+        $str =~ s/\[_(\d+)\]/%$1/g;
+        $str =~ s/~([\[\]])/$1/g;
+        delete $FILECAT->{$oldstr};
+        $FILECAT->{$str} = $entry;
+    #            $Lexicon{$str} ||= '';;
+    }
+
 foreach my $lang (@ARGV) {
-    $lang =~ s|.*/||; $lang =~ s|\.po$||;
+    $lang =~ s|.*/||;
+    $lang =~ s|\.po$||;
+
     # eval { update($lang) } or warn $@;
     update($lang);
 }
 
 sub update {
     my $lang = shift;
-
     print "Updating $lang...\n";
-    
-    my (%Lexicon, %file);
+    my ( %Lexicon, %Header);
     my $out = '';
 
-    
     open LEXICON, "lib/RT/I18N/$lang.po" or warn $@;
-    while (<LEXICON>) {
-	if (1 .. /^$/) { $out .= $_; next }
+    my @lines = (<LEXICON>);
+    @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
+    while (@lines) {
+        my $msghdr = "";
+        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
+        my $msgid  = shift @lines;
+        my $msgstr = "";
+        $msgstr .= shift @lines while ( $lines[0] =~ /^(msgstr|")/ );
 
-	my $msgid = <LEXICON>;
-	$msgid = <LEXICON> until $msgid =~ /^msgid/;
+        last unless $msgid;
 
-	my $msgstr = <LEXICON>;
-	<LEXICON>;
-	chomp $msgid;
-	chomp $msgstr;
-	$msgid =~ s/^msgid "(.*)"$/$1/ or die $msgid;
-	$msgstr =~ s/^msgstr "(.*)"$/$1/ or die $msgstr;
-	$Lexicon{$msgid}=$msgstr;
+        chomp $msgid;
+        chomp $msgstr;
+        $msgid  =~ s/^msgid "(.*)"$/$1/    or die $msgid;
+        $msgstr =~ s/^msgstr "(.*)"$/$1/ms or die $msgstr;
+
+
+        $Lexicon{$msgid} = $msgstr;
+        $Header{$msgid}  = $msghdr;
     }
 
-    local $/;
-    print "Done reading lexicon \n";
+    my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
 
-    File::Find::find({wanted => \&extract_strings_from_code, follow => 1}, '.');
+   foreach my $str ( sort keys %{$FILECAT} ) {
+                $Lexicon{$str} ||= '';;
+    }
+    foreach ( sort keys %Lexicon ) {
+        my $f = join ( ' ', sort map $_->[0].":".$_->[1], @{ $FILECAT->{$_} } );
+        my $nospace = $_;
+        $nospace =~ s/ +$//;
 
-    sub extract_strings_from_code {
-	my $file = $_;
-	return if ($File::Find::dir =~ 'lib/blib|lib/t/autogen');
-	return if ($_ =~ /.bak$|~|,D|,B$/);
-	return if ($_ =~ /^#/);
-	print "Looking at $File::Find::name\n";
-	my $filename = $File::Find::name; 
-	open _, $file or die $!; $_ = <_>; $filename =~ s'^./'';
+        if ( !$Lexicon{$_} and $Lexicon{$nospace} ) {
+            $Lexicon{$_} =
+              $Lexicon{$nospace} . ( ' ' x ( length($_) - length($nospace) ) );
+        }
 
-	my $line = 1;
-	while (m!\G.*?<&\|/l(.*?)&>(.*?)</&>!sg) {
-	    my ($vars, $str) = ($1, $2);
-	    $line += ( () = ($& =~ /\n/g) ); # cryptocontext!
-            $str =~ s/\\'/\'/g; 
-            push @{$file{$str}}, [ $filename, $line, $vars ];
-	}
+        next if !length( $Lexicon{$_} ) and $is_english;
 
-	$line = 1;
-	pos($_) = 0;
+        my %seen;
+        $out .= $Header{$_};
+        if ( $f && $f !~ /^\s+$/ ) {
 
-	while (m/\G.*?\bloc$RE{balanced}{-parens=>'()'}{-keep}/sg) {
-	    my $match = $1;
-	    $line += ( () = ($& =~ /\n/g) ); # cryptocontext!
-	    my ($vars, $str);
-	    if ($match =~ /\(($RE{delimited}{-delim=>'"'}{-esc}{-keep})(.*?)\)$/) {
-		($vars, $str) = ($9, substr($1, 1, -1)); # reversed
-	    }
-	    elsif ($match =~ /\(($RE{delimited}{-delim=>"'"}{-esc}{-keep})(.*?)\)$/) {
-		($vars, $str) = ($9, substr($1, 1, -1)); # reversed
-	    }
-	    else {
-		next;
-	    }
-	    $vars =~ s/[\n\r]//g;
-	    $str =~ s/\\'/\'/g; 
-	    push @{$file{$str}}, [ $filename, $line, $vars ];
-	}
+            $out .= "#: $f\n";
+        }
+        else {
+            $out .= "#: NOT FOUND IN SOURCE\n";
+
+        }
+        foreach my $entry ( grep { $_->[2] } @{ $FILECAT->{$_} } ) {
+            my ( $file, $line, $var ) = @{$entry};
+            $var =~ s/^\s*,\s*//;
+            $var =~ s/\s*$//;
+            $out .= "#. ($var)\n" unless $seen{$var}++;
+        }
+        $out .= "msgid \"$_\"\nmsgstr \"$Lexicon{$_}\"\n\n";
     }
 
-    foreach my $str (sort keys %file) {
-	my $entry = $file{$str};
-
-	$str =~ s/\\/\\\\/g;
-	$str =~ s/\"/\\"/g;
-	$str =~ s/\[_(\d+)\]/%$1/g;
-	$str =~ s/~([\[\]])/$1/g;
-
-	$file{$str} = $entry;
-	$Lexicon{$str} ||= '';
-    }
-
-    my $is_english = ($lang =~/^en(?:[^A-Za-z]|$)/);
-
-    delete $file{''};
-    foreach (sort keys %Lexicon) {
-	my $f = join(' ', sort map "$_->[0]:$_->[1]", @{$file{$_}});
-	$f = " $f" if length $f;
-	my $nospace = $_;
-	$nospace =~ s/ +$//;
-
-	if (!$Lexicon{$_} and $Lexicon{$nospace}) {
-	    $Lexicon{$_} = $Lexicon{$nospace} . (' ' x (length($_) - length($nospace)));
-	}
-
-	next if !length($Lexicon{$_}) and $is_english;
-
-	my %seen;
-	$out .= "#:$f\n";
-	foreach my $entry ( grep { $_->[2] } @{$file{$_}} ) {
-	    my ($file, $line, $var) = @{$entry};
-	    $var =~ s/^\s*,\s*//; $var =~ s/\s*$//;
-	    $out .= "#. ($var)\n" unless $seen{$var}++;
-	}
-	$out .= "msgid \"$_\"\nmsgstr \"$Lexicon{$_}\"\n\n";
-    }
-
-    open _, ">lib/RT/I18N/$lang.po" or die $!;
-    print _ $out;
-    close _;
+    open PO, ">lib/RT/I18N/$lang.po" or die $!;
+    print PO $out;
+    close PO;
 
     return 1;
 }
-
-# pull strings out of the code.
 

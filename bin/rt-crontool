@@ -178,8 +178,7 @@ sub help {
     print loc("Security:")."\n";
     print loc("This tool allows the user to run arbitrary perl modules from within RT.")." ". 
         loc("If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT.")." ".
-        loc("It is incredibly important that nonprivileged users not be
-allowed to run this tool."). " " . 
+        loc("It is incredibly important that nonprivileged users not be allowed to run this tool."). " " . 
         loc("It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool.")."\n";
     print "\n";
     print loc("Example:");
