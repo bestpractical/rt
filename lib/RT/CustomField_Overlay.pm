@@ -680,6 +680,10 @@ sub SetQueue {
     return 0;
 }
 
+sub QueueObj {
+    return undef;
+}
+
 sub SetTypeComposite {
     my $self = shift;
     my $composite = shift;
