@@ -239,7 +239,7 @@ sub Prepare {
 =head2 SendMessage MIMEObj
 
 sends the message using RT's preferred API.
-TODO: Break this out to a seperate module
+TODO: Break this out to a separate module
 
 =cut
 

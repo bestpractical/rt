@@ -282,7 +282,7 @@ msgid "(Check boxes to delete)"
 msgstr "(Merk boksene for å slette)"
 
 #: html/Ticket/Create.html:178
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Skriv inn referansenummer eller URler, separert med mellomrom)"
 
 #: html/Admin/Queues/Modify.html:54 html/Admin/Queues/Modify.html:60

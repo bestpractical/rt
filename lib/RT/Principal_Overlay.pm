@@ -557,7 +557,7 @@ sub _GetPrincipalTypeForACL {
 Returns a list uniquely representing an object or normal scalar.
 
 For scalars, its string value is returned; for objects that has an
-id() method, its class name and Id are returned as a string seperated by a "-".
+id() method, its class name and Id are returned as a string separated by a "-".
 
 =cut
 

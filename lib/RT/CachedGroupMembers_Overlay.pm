@@ -51,7 +51,7 @@ no warnings qw(redefine);
 =head2 LimitToUsers
 
 Limits this search object to users who are members of this group
-This is really useful when you want to haave your UI seperate out
+This is really useful when you want to have your UI separate out
 groups from users for display purposes
 
 =cut
@@ -78,7 +78,7 @@ sub LimitToUsers {
 =head2 LimitToGroups
 
 Limits this search object to Groups who are members of this group
-This is really useful when you want to haave your UI seperate out
+This is really useful when you want to have your UI separate out
 groups from users for display purposes
 
 =cut

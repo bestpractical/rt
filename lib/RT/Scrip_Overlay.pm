@@ -243,7 +243,7 @@ sub ActionObj {
 	
 	$self->{'ScripActionObj'} = RT::ScripAction->new($self->CurrentUser);
 	#TODO: why are we loading Actions with templates like this. 
-	# two seperate methods might make more sense
+	# two separate methods might make more sense
 	$self->{'ScripActionObj'}->Load($self->ScripAction, $self->Template);
     }
     return ($self->{'ScripActionObj'});

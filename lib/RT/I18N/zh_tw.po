@@ -322,7 +322,7 @@ msgid "(Check boxes to delete)"
 msgstr "(點選欲刪除的項目)"
 
 #: html/Ticket/Create.html:178
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(鍵入申請單編號或網址，以空白分隔)"
 
 #: html/Admin/Queues/Modify.html:53 html/Admin/Queues/Modify.html:59
