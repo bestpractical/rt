@@ -1,88 +1,88 @@
-#: lib/RT/Date.pm:414
+#: lib/RT/Date.pm:437
 msgid "Apr."
 msgstr "Apr"
 
-#: lib/RT/Date.pm:418
+#: lib/RT/Date.pm:441
 msgid "Aug."
 msgstr "Aug"
 
-#: lib/RT/Date.pm:422
+#: lib/RT/Date.pm:445
 msgid "Dec."
 msgstr "Dec"
 
-#: lib/RT/Date.pm:412
+#: lib/RT/Date.pm:435
 msgid "Feb."
 msgstr "Feb"
 
-#: lib/RT/Date.pm:392
+#: lib/RT/Date.pm:415
 msgid "Fri."
 msgstr "Fri"
 
-#: html/Elements/Tabs:43
+#: html/Elements/Tabs:65
 msgid "Homepage"
 msgstr "Home"
 
-#: lib/RT/Date.pm:411
+#: lib/RT/Date.pm:434
 msgid "Jan."
 msgstr "Jan"
 
-#: lib/RT/Date.pm:417
+#: lib/RT/Date.pm:440
 msgid "Jul."
 msgstr "Jul"
 
-#: lib/RT/Date.pm:416
+#: lib/RT/Date.pm:439
 msgid "Jun."
 msgstr "Jun"
 
-#: lib/RT/Date.pm:413
+#: lib/RT/Date.pm:436
 msgid "Mar."
 msgstr "Mar"
 
-#: lib/RT/Date.pm:415
+#: lib/RT/Date.pm:438
 msgid "May."
 msgstr "May"
 
-#: lib/RT/Date.pm:388
+#: lib/RT/Date.pm:411
 msgid "Mon."
 msgstr "Mon"
 
-#: lib/RT/Date.pm:421
+#: lib/RT/Date.pm:444
 msgid "Nov."
 msgstr "Nov"
 
-#: lib/RT/Date.pm:420
+#: lib/RT/Date.pm:443
 msgid "Oct."
 msgstr "Oct"
 
-#: html/Ticket/Elements/Tabs:137
+#: html/Ticket/Elements/Tabs:159
 msgid "Open it"
 msgstr "Open"
 
-#: html/Admin/Users/Modify.html:163 html/User/Prefs.html:63
+#: html/Admin/Users/Modify.html:183 html/User/Prefs.html:85
 msgid "Residence"
 msgstr "Home"
 
-#: lib/RT/Date.pm:393
+#: lib/RT/Date.pm:416
 msgid "Sat."
 msgstr "Sat"
 
-#: lib/RT/Date.pm:419
+#: lib/RT/Date.pm:442
 msgid "Sep."
 msgstr "Sep"
 
-#: lib/RT/Date.pm:394
+#: lib/RT/Date.pm:417
 msgid "Sun."
 msgstr "Sun"
 
-#: lib/RT/Date.pm:391
+#: lib/RT/Date.pm:414
 msgid "Thu."
 msgstr "Thu"
 
-#: lib/RT/Date.pm:389
+#: lib/RT/Date.pm:412
 msgid "Tue."
 msgstr "Tue"
 
-#: lib/RT/Date.pm:390
+#: lib/RT/Date.pm:413
 msgid "Wed."
 msgstr "Wed"
 
