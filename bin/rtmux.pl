@@ -11,16 +11,16 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 package rt;
 
-#set this to the root of your RT Installation
+#this is the RT path
 $rt_dir = "!!RT_PATH!!";
+
 push (@INC, "$rt_dir/lib/");
 
 require "$rt_dir/etc/config.pm";          
 
-my ($program) = shift @_;
-
+my ($program) = shift @ARGV;
 &initialize();
-if ($program =~ '/rt$') {
+if ($program eq 'rt') {
   # load rt-cli
   require rt::ui::cli::support;
  
@@ -28,14 +28,14 @@ if ($program =~ '/rt$') {
   require rt::database::manipulate; 
   &rt::ui::cli::manipulate::activate();
 }
-elsif ($program =~ '/rtq$') {
+elsif ($program eq 'rtq') {
   # load rt-query
   require rt::database;      
   require rt::ui::cli::query;
   &rt::ui::cli::query::activate();
   
 }
-elsif ($program =~ '/rtadmin$') {
+elsif ($program eq 'rtadmin') {
   #load rt_admin
   require rt::database::admin;
   require rt::support::utils;     
@@ -43,14 +43,14 @@ elsif ($program =~ '/rtadmin$') {
   require rt::ui::cli::admin;
   &rt::ui::cli::admin::activate();
 }
-elsif ($program =~ '/nph-webrt.cgi$') {
+elsif ($program eq 'nph-webrt.cgi') {
   #
   require rt::ui::web::support;
   require rt::ui::web::auth;     
   require rt::ui::web::manipulate;
   &rt::ui::web::activate();
 }
-elsif ($program =~ '/nph-admin-webrt.cgi$') {
+elsif ($program eq 'nph-admin-webrt.cgi') {
   #load web-admin
   require rt::ui::web::support;
   require rt::ui::web::auth;
@@ -59,7 +59,7 @@ elsif ($program =~ '/nph-admin-webrt.cgi$') {
   &rt::ui::web::activate();
 
 }
-elsif ($program =~ '/rt-mailgate$') {
+elsif ($program eq 'rt-mailgate') {
   require rt::database::manipulate;
   require rt::support::utils;      
   require rt::support::mail;
