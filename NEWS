@@ -1,3 +1,11 @@
+6 Dec 1999
+----------
+* Fixed a bug with admin-webrt.cgi/frames. Thanks to
+  Marion Hakanson <hakanson@cse.ogi.edu>   
+
+* Fixd a frames spacing bug from Paul Evans <pm_evans@yahoo.com>   
+ 
+
 3 Dec 1999
 ----------
 
