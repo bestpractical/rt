@@ -77,7 +77,11 @@ ok (require RT::Tickets);
 =end testing
 
 =cut
+
 use strict;
+
+package RT::Tickets;
+
 no warnings qw(redefine);
 use vars qw(@SORTFIELDS);
 use RT::CustomFields;
