@@ -193,7 +193,7 @@ a.currenttopnav-1 {  font-family: Verdana, sans-serif;
 	 font-size: 12px;
          font-weight: bold;
 	 color: #FFFF66;
-	 text-decoration: normal;
+	 text-decoration: none;
 	 white-space: nowrap}
 a.currenttopnav-2 {  font-family: Verdana, sans-serif;
 	 font-size: 11px;
@@ -343,7 +343,7 @@ div.messagebody {
 
 
 div.downloadattachment {
-    font size: 10px;
+    font-size: 10px;
     text-align: right;
 
 }
@@ -549,7 +549,7 @@ SPAN.label { font-size: 0.8em;
 DIV.page-stats { font-size: 0.8em;
                   color: #cccccc;
                   text-align: right;
-              };
+              }
 
 
 BLOCKQUOTE {
