@@ -319,11 +319,11 @@ sub Create {
                  Subject         => '',
                  InitialPriority => undef,
                  FinalPriority   => undef,
-                 Priority   => undef,
+                 Priority        => undef,
                  Status          => 'new',
-                 TimeWorked      => "0",
+                 TimeWorked      => 0,
                  TimeLeft        => 0,
-                 TimeEstimated        => 0,
+                 TimeEstimated   => 0,
                  Due             => undef,
                  Starts          => undef,
                  Started         => undef,
@@ -517,7 +517,9 @@ sub Create {
         delete $params{$attr}  unless (exists $params{$attr} && $params{$attr});
     }
 
-
+    # Delete the time worked if we're counting it in the transaction
+    delete $params{TimeWorked} if $args{'_RecordTransaction'};
+    
     my ($id,$ticket_message) = $self->SUPER::Create( %params);
     unless ($id) {
         $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message);
@@ -628,7 +630,7 @@ sub Create {
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
                                                      Type      => "Create",
-                                                     TimeTaken => 0,
+                                                     TimeTaken => $args{'TimeWorked'},
                                                      MIMEObj => $args{'MIMEObj'}
         );
 
