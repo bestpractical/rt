@@ -483,18 +483,22 @@ sub Import {
 
     # {{{ Deal with setting the owner
       
-    #If we've been handed an integer (aka an Id for the users table 
+    # Attempt to take user object, user name or user id.
+    # Assign to nobody if lookup fails.
     if (defined ($args{'Owner'})) { 
-    if ($args{'Owner'} =~ /^\d+$/) {
-	$Owner = new RT::User($self->CurrentUser);
-	$Owner->Load($args{'Owner'});
-	
+	if ( ref($args{'Owner'}) ) {
+	    $Owner = $args{'Owner'};
+	}
+	else {
+	    $Owner = new RT::User($self->CurrentUser);
+	    $Owner->Load($args{'Owner'});
+	    if ( ! defined($Owner->id) ) {
+		$Owner->Load($RT::Nobody->id);
+	    }
+	}
     }
     
-    elsif ( ref($args{'Owner'}) ) {
-      	$Owner = $args{'Owner'};
-    }
-    } 
+
     #If we have a proposed owner and they don't have the right 
     #to own a ticket, scream about it and make them not the owner
     if ((defined ($Owner)) and
@@ -622,8 +626,11 @@ sub AddWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if (($args{'Email'} eq $self->CurrentUser->EmailAddress) or
-	($args{'Owner'} eq $self->CurrentUser->Id)) {
+    if ( ( $self->CurrentUser->EmailAddress &&
+           ($args{'Email'} eq $self->CurrentUser->EmailAddress) ) or
+           ($args{'Owner'} eq $self->CurrentUser->Id) 
+        ) {
+
 	
 	#  If it's an AdminCc and they don't have 
 	#   'WatchAsAdminCc' or 'ModifyTicket', bail
