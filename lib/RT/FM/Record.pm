@@ -34,9 +34,9 @@
 
 
 package RT::FM::Record;
-use RT::Record;
+use  base qw(RT::Record);
+use RT::FM;
 
-@ISA= qw(RT::Record);
 
 
 =head2 Load <id | Name >

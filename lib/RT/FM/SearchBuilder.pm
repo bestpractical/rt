@@ -32,8 +32,9 @@
 =cut
 
 package RT::FM::SearchBuilder;
-use RT::SearchBuilder;
-@ISA= qw(RT::SearchBuilder);
+use base qw(RT::SearchBuilder);
+use RT::FM;
+
 
 # {{{ sub LimitToEnabled
 

@@ -187,8 +187,11 @@ sub Create {
     # aren't expensive and stupid
     $self->__Set( Field => 'URI', Value => $self->URI );
 
-    $self->_NewTransaction( Type => 'Create' );
-
+    my ($txn_id, $txn_msg,$txn) = $self->_NewTransaction( Type => 'Create' );
+    unless ($txn_id) {
+        $RT::Handle->Rollback();
+        return (undef, $self->loc('Internal error: [_1]', $txn_msg));
+    }
     $RT::Handle->Commit();
 
     return ( $id, $msg );
@@ -932,17 +935,17 @@ sub _NewTransaction {
                  @_ );
 
     my $trans = RT::Transaction->new( $self->CurrentUser );
-    $trans->Create( Object    => $self,
+    my ($id,$msg) = $trans->Create( ObjectId    => $self->id,
+                    ObjectType => ref($self),
                     Type       => $args{'Type'},
                     Field      => $args{'Field'},
                     OldContent => $args{'OldContent'},
-                    NewContent => $args{'NewContent'})
+                    NewContent => $args{'NewContent'});
 
     #something bad happened;
-    unless ( $trans->Id ) {
-        $RT::Logger->crit(
-                       $self . " could not create a transaction for " . %args );
-        return ( undef, $self->loc("Internal error"), $trans );
+    unless ( $id ) {
+        $RT::Logger->crit( $self . " could not create a transaction for " . %args );
+        return ( undef, $msg, $trans );
     }
 
     return ( $trans->id, $self->loc("Transaction recorded"), $trans );

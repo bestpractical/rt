@@ -5,6 +5,7 @@ license: GPL version 2
 distribution_type: module
 requires:
   perl: 5.8.0
+  Text::WikiFormat: 0
   RT: 3.4.0
 no_index:
   directory:
