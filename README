@@ -82,8 +82,6 @@ GENERAL INSTALLATION
 	make fixdeps
 	
        (You may need to install Apache::Session and Apache::DBI by hand.
-	If RT doesn't find a recent enough DBD::mysql it will attempt to
-	install the latest release, which, at this time is a broken beta.
 
 	You might need to install Msql-Mysql-Modules by hand.
 	perl -MCPAN -e'install DBD::mysql::Install' should do it for you.
@@ -155,8 +153,8 @@ machine.
  
 Add the following lines to /etc/aliases (or your local equivalent) :
 
-    rt-comment: "|/path/to/rt/bin/rt-mailgate --queue general --action comment"
-    rt:         "|/path/to/rt/bin/rt-mailgate --queue general --action correspond"
+    rt-comment: "|/path/to/rt2/bin/rt-mailgate --queue general --action comment"
+    rt:         "|/path/to/rt2/bin/rt-mailgate --queue general --action correspond"
                                                          |          |
                                          <queue-name>----/          |
                                                                     |
@@ -179,10 +177,10 @@ Apache
 
 
 <VirtualHost your.ip.address>
-DocumentRoot /opt/rt/WebRT/html
+DocumentRoot /path/to/rt2/WebRT/html
 ServerName your.rt.server.hostname
 PerlModule Apache::DBI
-PerlRequire /opt/rt/bin/webmux.pl
+PerlRequire /path/to/rt2/bin/webmux.pl
 <Location />
  SetHandler perl-script
  PerlHandler RT::Mason
@@ -191,20 +189,17 @@ PerlRequire /opt/rt/bin/webmux.pl
 
 Additionally, you should set up a cron job to remove stale session data.
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-WARNING: Don't install this cron job or run this find command if your
- MASON_SESSION_PATH
-
-(known in config.pm as $MasonSessionDir) points to a directory that could 
-EVER contain any file that's not a Apache::Session datafile.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ WARNING: Don't install this cron job or run this find command if your
+ MASON_SESSION_PATH (known in config.pm as $MasonSessionDir) 
+ points to a directory that could  EVER contain any file that's not 
+ a Apache::Session datafile.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # Every hour, nuke session files and lockfiles that haven't been 
 # touched in 10 hours
 
-0 * * * * find <MASON_SESSION_PATH> --type f -amin +600 -exec rm {}\;
-
-(replace <MASON_SESSION_PATH> with the apropriate path )
+0 * * * * find /path/to/rt2/WebRT/sessiondata --type f -amin +600 -exec rm {}\;
 
 
 THE CLI
@@ -215,13 +210,13 @@ THE CLI
                 "rt" (manipulate or display requests) 
                 "rtadmin" (modify queues, users and acls)
 
-        All three of these programs take --help as an option.
+        Both of these programs take --help as an option.
 	
 
 TROUBLESHOOTING
 ---------------
 
-All errors will be appended to a logfile, which lives in /tmp/rt.log unless 
+All errors will be appended to a logfile, which lives in /tmp/rt.log.* unless 
 you've reconfigured it.  Check etc/config.pm for details.
 
 If the solution to the problem you're running into isn't obvious and you've 
