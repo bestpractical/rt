@@ -54,7 +54,7 @@ Value: Ticket or queue id
 Type: Requestor, Cc or AdminCc.  Requestor is not supported for a scope of \'Queue\'
 Email: The email address of the watcher.  If the email address maps to an RT User, this is resolved
 to an Owner object instead.
-Owner: The RT user id of the 'owner\' of this watcher object. 
+Owner: The RT user id of the \'owner\' of this watcher object. 
 
 =cut
 
@@ -84,6 +84,30 @@ sub Create  {
    	    delete $args{'Email'};
 	}
     }
+    
+    
+    if ($args{'Type'} eq "Requestor" and $args{'Owner'} == 0) {
+	# Requestors *MUST* have an account
+	
+	my $Address = RT::CanonicalizeAddress($args{'Email'});
+	
+	my $NewUser = RT::User->new($RT::SystemUser);
+	my ($Val, $Message) =
+	  $NewUser->Create(Name => $Address,
+			   EmailAddress => $Address,
+			   RealName => $Address,
+			   Password => undef,
+			   Privileged => 0,
+			   Comments => 'Autocreated on ticket submission'
+			  );
+	return (0, "Could not create watcher for requestor")
+	  unless $Val;
+	if ($NewUser->id) {
+	    $args{'Owner'} = $NewUser->id;
+	    delete $args{'Email'};
+	}
+    }
+    
     
     
     
