@@ -30,7 +30,7 @@ sub activate {
   
   if ($debug) {print "Now at &parse_actions\n";}
   
-no  $content=&parse_actions($current_user,$content);
+  $content=&parse_actions($current_user,$content);
   
   #flip the content around..we should just MIME the sucker instead
   if ($debug) { print "Now at &munge_content\n";}

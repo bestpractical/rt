@@ -101,40 +101,45 @@ sub AuthForceLogin () {
       <TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 BGCOLOR=\"#EEEEEE\">
 
 <TR VALIGN=\"TOP\">
-<TD COLSPAN=2>
+<TD COLSPAN=3>
 <TABLE WIDTH=\"100%\" CELLPADDING=10 CELLSPACING=0 BORDER=0>
 <TR ALIGN=\"LEFT\"><TD VALIGN=\"CENTER\" BGCOLOR=\"#CCCCCC\">
-$AuthRealm Login:
+<b>$AuthRealm Login:</b>
 </TD></TR>
 </TABLE>
 </TD>
 
- <TD ROWSPAN=\"4\" width=8 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=16 height=250 alt=')'></TD>
+ <TD ROWSPAN=\"4\" width=8 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=16 height=250 alt=''></TD>
 </TR>  
 <TR>
 <TD ALIGN=\"RIGHT\">
-Username:
+Username:&nbsp;
 </TD>
-<TD>
+<TD >
 <input name=\"username\" VALUE=\"$default_user\" size=\"20\">
 </TD>
+<TD></TD>
 </TR>
 <TR>
 <TD ALIGN=\"RIGHT\">
-Password:
+Password:&nbsp;
 </TD>
-<TD>
+<TD >
 <input name=\"password\" type=\"password\" size=\"20\">
 </TD>
+<TD></TD>
 </TR>
 <TR>
-<TD COLSPAN=2 ALIGN=\"RIGHT\">
+<td>&nbsp;
+</td>
+<TD>&nbsp;</TD>
+<TD ALIGN=\"LEFT\">
 <INPUT TYPE=\"SUBMIT\" VALUE=\"Login\">
 </TD>
 </TR>
 
 
-<TR VALIGN=\"TOP\"><TD COLSPAN=2><img src=\"/webrt/sbs.gif\" width=420 height=16 alt=''></TD>
+<TR VALIGN=\"TOP\"><TD COLSPAN=3><img src=\"/webrt/sbs.gif\" width=420 height=16 alt=''></TD>
 <TD ALIGN=\"LEFT\" BGCOLOR=\"#ffffff\"><img src=\"/webrt/sbc.gif\" width=12 alt='' height=16></TD></TR>
 </TABLE>
 </CENTER>
