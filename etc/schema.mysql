@@ -53,10 +53,6 @@ CREATE TABLE Tickets (
   FinalPriority INT DEFAULT 0,
   Priority INT DEFAULT 0,
   Status VARCHAR(10), #For now, One of" Open, Stalled, Resolved, Dead
-
-  State VARCHAR(12), #For instance/queue-specific logic, can be just
-	             #whatever is relevant at a site. Often a better
-		     #resolution of the Status.
   TimeWorked INT DEFAULT 0,
   Told DATETIME,
   Due DATETIME,
