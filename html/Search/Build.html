@@ -251,6 +251,8 @@ if (1) {
 		    my $newparent = Tree::Simple->new($ARGS{'AndOr'});
 		    $newparent->addChild($newnode);
 		    $newnode = $newparent;
+		} else {
+		    $currentkey->getParent()->setNodeValue($ARGS{'AndOr'});
 		}
 		$currentkey->insertSibling($newindex, $newnode);
 		$currentkey = $newnode;
@@ -326,7 +328,7 @@ elsif ( $ARGS{"Right"} ) {
 	my $newparent;
 	if ($index > 0 ) {
 	    my $sibling = $parent->getChild($index - 1);
-	    if (ref($sibling)) {
+	    if (ref($sibling->getNodeValue)) {
 		$parent->removeChild($currentkey);
 		my $newtree = Tree::Simple->new('AND', $parent);
 		$newtree->addChild($currentkey);
@@ -355,17 +357,22 @@ elsif ( $ARGS{"DeleteClause"} ) {
 elsif ( $ARGS{"Toggle"} ) {
     my $ea;
     if ($currentkey) {
-	if (!ref($currentkey->getNodeValue())) {
-	    if ($currentkey->getNodeValue() eq 'AND') {
+	my $value = $currentkey->getNodeValue();
+	my $parent = $currentkey->getParent();
+	my $parentvalue = $parent->getNodeValue();
+	if (ref($value)) {
+	    debug("setting parent value");
+	    if ( $parentvalue eq 'AND') {
+		$parent->setNodeValue('OR');
+	    } else {
+		$parent->setNodeValue('AND');
+	    }
+	} else {
+	    debug("setting my value");
+	    if ($value eq 'AND') {
 		$currentkey->setNodeValue('OR');
 	    } else {
 		$currentkey->setNodeValue('AND');
-	    }
-	} else {
-	    if ($currentkey->getParent()->getNodeValue() eq 'AND') {
-		$currentkey->getParent()->setNodeValue('OR');
-	    } else {
-		$currentkey->getParent()->setNodeValue('AND');
 	    }
 	}
     }
@@ -404,8 +411,8 @@ sub build_array {
     push @$keys, $_tree;
     my $clause = $_tree->getNodeValue();
     my $str;
+    my $ea = $_tree->getParent()->getNodeValue();
     if (ref($clause)) {
-	my $ea = $_tree->getParent()->getNodeValue();
         $str .= $ea . " " if $_tree->getIndex() > 0;
 	$str .= $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
 
@@ -413,7 +420,7 @@ sub build_array {
 	    $queues->{ $clause->{Value} } = 1;
 	}
     } else {
-	$str = $_tree->getNodeValue() if $_tree->getIndex() > 0;
+	$str = $ea if $_tree->getIndex() > 0;
     }
 
     my $selected;
