@@ -22,6 +22,8 @@ All of these works are distributed under the GPL
 REQUIRED PACKAGES:
 ------------------
 
+o   GNU Make ( http://www.gnu.org ) -- free
+
 o   Perl5.x ( http://www.perl.com ) -- free
 
 o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- free
