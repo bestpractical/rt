@@ -3841,6 +3841,12 @@ sub TransactionBatch {
 
 sub DESTROY {
     my $self = shift;
+
+    # The following line eliminates reentrancy.
+    # It protects against the fact that perl doesn't deal gracefully
+    # when an object's refcount is changed in its destructor.
+    return if $self->{_Destroyed}++;
+
     my $batch = $self->TransactionBatch or return;
     require RT::Scrips;
     RT::Scrips->new($RT::SystemUser)->Apply(
