@@ -336,35 +336,54 @@ sub CreateTicket {
         Starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
-  foreach my $arg (%ARGS) {
+    foreach my $arg (%ARGS) {
         if ($arg =~ /^CustomField-(\d+)(.*?)$/) {
             next if ($arg =~ /-Magic$/);
             $create_args{"CustomField-".$1} = $ARGS{"$arg"};
         }
     }
+
+    # turn new link lists into arrays, and pass in the proper arguments
+    my (@dependson, @dependedonby, 
+	@parents, @children, 
+	@refersto, @referredtoby);
+
+    foreach my $luri ( split ( / /, $ARGS{"new-DependsOn"} ) ) {
+	$luri =~ s/\s*$//;    # Strip trailing whitespace
+	push @dependson, $luri;
+    }
+    $create_args{'DependsOn'} = \@dependson;
+
+    foreach my $luri ( split ( / /, $ARGS{"DependsOn-new"} ) ) {
+	push @dependedonby, $luri;
+    }
+    $create_args{'DependedOnBy'} = \@dependedonby;
+
+    foreach my $luri ( split ( / /, $ARGS{"new-MemberOf"} ) ) {
+	$luri =~ s/\s*$//;    # Strip trailing whitespace
+	push @parents, $luri;
+    }
+    $create_args{'Parents'} = \@parents;
+
+    foreach my $luri ( split ( / /, $ARGS{"MemberOf-new"} ) ) {
+	push @children, $luri;
+    }
+    $create_args{'Children'} = \@children;
+
+    foreach my $luri ( split ( / /, $ARGS{"new-RefersTo"} ) ) {
+	$luri =~ s/\s*$//;    # Strip trailing whitespace
+	push @refersto, $luri;
+    }
+    $create_args{'RefersTo'} = \@refersto;
+
+    foreach my $luri ( split ( / /, $ARGS{"RefersTo-new"} ) ) {
+	push @referredtoby, $luri;
+    }
+    $create_args{'ReferredToBy'} = \@referredtoby;
+
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ( $id && $Trans ) {
         Abort($ErrMsg);
-    }
-    my @linktypes = qw( DependsOn MemberOf RefersTo );
-
-    foreach my $linktype (@linktypes) {
-        foreach my $luri ( split ( / /, $ARGS{"new-$linktype"} ) ) {
-            $luri =~ s/\s*$//;    # Strip trailing whitespace
-            my ( $val, $msg ) = $Ticket->AddLink(
-                Target => $luri,
-                Type   => $linktype
-            );
-            push ( @Actions, $msg ) unless ($val);
-        }
-
-        foreach my $luri ( split ( / /, $ARGS{"$linktype-new"} ) ) {
-            my ( $val, $msg ) = $Ticket->AddLink(
-                Base => $luri,
-                Type => $linktype
-            );
-            push ( @Actions, $msg ) unless ($val);
-        }
     }
 
     push ( @Actions, split("\n", $ErrMsg) );
