@@ -742,7 +742,10 @@ sub BriefDescription {
     },
     Set => sub {
         my $self = shift;
-        if ( $self->Field eq 'Queue' ) {
+        if ( $self->Field eq 'Password' ) {
+            return $self->loc('Password changed');
+        }
+        elsif ( $self->Field eq 'Queue' ) {
             my $q1 = new RT::Queue( $self->CurrentUser );
             $q1->Load( $self->OldValue );
             my $q2 = new RT::Queue( $self->CurrentUser );
