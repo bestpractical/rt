@@ -1083,7 +1083,7 @@ sub DeleteCustomFieldValue {
 
     #Load up the ObjectKeyword we\'re talking about
 
-    my $values = RT::FM::ArticleCFValueCollection($self->CurrentUser);
+    my $values = RT::FM::ArticleCFValueCollection->new($self->CurrentUser);
     $values->LimitToArticle($self->id);
     $values->LimitToCustomField($self->id);
     my $CFObjectValue = $values->HasEntryWithContent($args{'Content'}); 
