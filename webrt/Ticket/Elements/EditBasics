@@ -1,10 +1,8 @@
 <TABLE>
 <TR>
 <TD COLSPAN=6>
-<& /Elements/ShadedBox, 
-        title => 'Subject', 
-        content => "<input name=Subject value=\"".$TicketObj->Subject."\"  SIZE=70>"
-&>
+        Subject<BR>
+        <input name=Subject value="<%$TicketObj->Subject|h%>"  SIZE=70>
 </TD>
 </TR>
 <TR>

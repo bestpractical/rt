@@ -2316,7 +2316,7 @@ sub _NewTransaction {
 		      MIMEObj => $args{'MIMEObj'}
 		      );
 
-  $RT::Logger->warn($msg) unless $transaction;
+  $RT::Logger->warning($msg) unless $transaction;
   
   $self->_SetLastUpdated;
   

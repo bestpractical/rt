@@ -4,7 +4,7 @@
 	<TD  ALIGN="right" valign=middle bgcolor="<%$color%>"><FONT color="#ffffff" SIZE=-1><%$titleright |n %></FONT>&nbsp;</TD>
 	<TD ROWSPAN=4><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 ALT=""></TD></TR>	
     <TR><TD COLSPAN=2 bgcolor="<%$contentbg%>" valign=top align=left WIDTH=100%>
-<TABLE CELLPADDING=2><TR><TD>
+<TABLE CELLPADDING=2 WIDTH=100%><TR><TD>
 <%ARGS>
 $width => "100%"
 $title => undef

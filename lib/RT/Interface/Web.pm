@@ -84,12 +84,13 @@ sub Abort {
 # }}}
 
 # {{{ sub LoadTicket - loads a ticket
+
 sub LoadTicket {
     my $id=shift;
     my $CurrentUser = shift;
     my $Ticket = RT::Ticket->new($CurrentUser);
     unless ($Ticket->Load($id)) {
-	&Error("Could not load ticket $id");
+	Abort("Could not load ticket $id");
     }
     return $Ticket;
 }
@@ -143,9 +144,9 @@ sub ProcessSimpleActions {
 }
 # }}}
 
-# {{{ sub ProcessOwnerChangeRequest
+# {{{ sub ProcessOwnerChanges
 
-sub ProcessOwnerChangeRequest {
+sub ProcessOwnerChanges {
     my %args=@_;
     if ($args{ARGS}->{'SetOwner'}
         and ($args{ARGS}->{'SetOwner'} ne $args{Ticket}->OwnerObj->Id())) {
@@ -185,9 +186,9 @@ sub ProcessUpdateMessage {
 }
 # }}}
 
-# {{{ sub ProcessStatusChangeQuery 
+# {{{ sub ProcessStatusChanges 
 
-sub ProcessStatusChangeQuery {
+sub ProcessStatusChanges {
     my %args=@_;
     if ($args{ARGS}->{'SetStatus'} and ($args{ARGS}->{'SetStatus'} ne $args{Ticket}->Status())) {
 	my ($Transaction, $Description)=$args{Ticket}->SetStatus($args{ARGS}->{'SetStatus'});
