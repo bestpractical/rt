@@ -324,7 +324,9 @@ misc:
 		    print "checked" if ($rt::users{$user_id}{admin_rt});
 		    print "><br><hr>\n";
 		    foreach $queue_id ( sort keys %rt::queues) {
-			print "<b><A HREF=\"$ScriptURL?display=Modify+the+Queue+called&queue_id=$queue_id\">$queue_id</a>:</b>\n";
+			my $escaped_queue_id = $queue_id;
+			$escaped_queue_id =~s/ /%20/g;
+			print "<b><A HREF=\"$ScriptURL?display=Modify+the+Queue+called&queue_id=$escaped_queue_id\">$queue_id</a>:</b>\n";
 			
 			if (!&rt::is_a_queue($queue_id)){
 			    print "$queue_id: That queue does not exist. (You should never see this error)\n";
@@ -463,7 +465,9 @@ Access Control
 
 ";
     foreach $user_id (sort keys %rt::users) {
-      print "<A HREF=\"$ScriptURL?display=Modify+the+User+called&user_id=$user_id\">$user_id</a>:";
+	my $escaped_user_id = $user_id;
+	$escaped_user_id=~s/ /%20/g;
+      print "<A HREF=\"$ScriptURL?display=Modify+the+User+called&user_id=$escaped_user_id\">$user_id</a>:";
 
 	&select_queue_acls($user_id, $queue_id);
     }

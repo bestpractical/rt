@@ -8,7 +8,7 @@ package rt::ui::web;
 
 sub check_auth() {
     my ($name,$pass);
-    my $debug = 1;    
+    my $debug = 0;   
     # If we're doing external authentication
 
     if ($rt::web_auth_mechanism =~ /external/i) {

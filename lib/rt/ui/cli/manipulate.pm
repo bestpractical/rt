@@ -188,7 +188,7 @@ sub cli_create_req {
     $final_priority=&rt::ui::cli::question_int("Final Priority",$queues{$queue_id}{default_final_prio});
     $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YY)",);
     if ($due_string ne '') {
-	 $due_date = &rt::date_parse($due_string);
+	 $date_due = &rt::date_parse($due_string);
 	}  
   print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
@@ -267,13 +267,12 @@ sub cli_help_req {
     -resolve <num>	  Change <num>'s status to resolved
     -open <num>		  Change <num>'s status to open
     -stall <num>	  Change <num>'s status to stalled
-    -show <num>		  Display current status of <num>
+    -show <num>		  Display transaction history current status of <num>
     -take <num>		  Become owner of <num> (if unowned)
     -steal <num>	  Become owner of <num> (if owned by another)
     -untake <num>	  Make <num> ownerless (if owned by you) 
     -give <num> <user>	  Make <user> owner of <num>
     -user <num> <user>	  Change the requestor ID of <num> to <user>
-    -show <num>	          Display transaction history and status of <num>
     -due <num< <date>     Change <num>'s due date to <date> (MM/DD/YY)
     -comment <num>	  Add comments about <num> from STDIN
     -respond <num>	  Respond to <num>

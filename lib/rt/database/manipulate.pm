@@ -354,9 +354,10 @@ sub change_queue {
     if (! $transaction_num) {
       return (0,"Specify a different queue.");
     }
-    
+	#if the owner isn't able to manipulate reqs in the new queue
+     if(!can_manipulate_queue($un_queue, $rt::req[$in_serial_num]{'owner'}) { 
        &update_request($in_serial_num,'owner','','_rt_system');
-
+	}
 	return ($transaction_num,"Request #$in_serial_num moved to queue $in_queue.");
 }
 

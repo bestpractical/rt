@@ -1,5 +1,10 @@
 6 Jul 99
 --------
+Now, if you move a request to a new queue, it won't disown it if the same person can own reqs in the new queue. [fsck #75] (untested)
+
+Fixed a problem with cli create not properly handling due dates ([fsck #67])
+Fixed a duplicate --help entry for bin/rt [fsck #69]
+Fixed bugs fsck  #68/77: Odness Merging RT requests 
 
 Transactions from merged requests will now be displayed along with the request id of the request that transaction was originially associated with.
 
