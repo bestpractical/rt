@@ -25,6 +25,12 @@ my @okresults = ProcessTicketObjectKeywords(TicketObj => $TicketObj, ARGSRef => 
 
 push (@results, @okresults);
 
+# TODO: display the results, even if we can't display the ticket
+
+unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+     Abort("No permission to view ticket");
+} 
+
 </%INIT>
 
 
