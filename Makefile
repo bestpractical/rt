@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	9pre1
+RT_VERSION_PATCH	=	9pre2
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -178,7 +178,7 @@ default:
 	@echo "Please read RT's readme before installing. Not doing so could"
 	@echo "be dangerous."
 
-install: dirs initialize.$(DB_TYPE) upgrade insert instruct
+install: upgrade initialize.$(DB_TYPE) insert instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
@@ -300,7 +300,7 @@ html-install:
 
 
 genschema:
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' generate
+	echo $(DB_DBA_PASSWORD) | $(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' generate-unattended
 
 
 initialize.Pg: createdb initdb.dba acls 
@@ -326,12 +326,12 @@ dropdb:
 
 
 createdb: 
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' create
+	echo $(DB_DBA_PASSWORD) | $(PERL) tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' create-unattended
 initdb.dba:
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' insert
+	echo $(DB_DBA_PASSWORD) | $(PERL) tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DATABASE)' insert-unattended
 
 initdb.rtuser:
-	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_RT_USER)' '$(DB_DATABASE)' insert
+	echo $(DB_RT_PASS) |$(PERL) tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_RT_USER)' '$(DB_DATABASE)' insert-unattended
 
 
 
