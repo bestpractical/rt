@@ -895,7 +895,7 @@ sub _HasRight {
 	
 	# {{{ deal with checking if the user has a right as a member of a metagroup
 
-	$RT::Logger->debug("Now Trying $MetaGroupRightsQuery\n");	
+#	$RT::Logger->debug("Now Trying $MetaGroupRightsQuery\n");	
 	$hitcount = $self->_Handle->FetchResult($MetaGroupRightsQuery);
 	
 	#if there's a match, the right is granted
@@ -905,7 +905,7 @@ sub _HasRight {
 	    return (1);
 	}
 	
-	$RT::Logger->debug("No ACL matched MetaGroups query: $MetaGroupRightsQuery\n");	
+#	$RT::Logger->debug("No ACL matched MetaGroups query: $MetaGroupRightsQuery\n");	
 
 	# }}}    
 	
@@ -930,7 +930,7 @@ sub _HasRight {
 	return (1);
     }
     
-    $RT::Logger->debug("No ACL matched $GroupRightsQuery\n");	
+#    $RT::Logger->debug("No ACL matched $GroupRightsQuery\n");	
     
     # }}}
 
@@ -953,7 +953,7 @@ sub _HasRight {
 
     else { #If the user just doesn't have the right
 	
-	$RT::Logger->debug("No ACL matched $IndividualRightsQuery\n");
+#	$RT::Logger->debug("No ACL matched $IndividualRightsQuery\n");
 	
 	#If nothing matched, return 0.
 	$self->{'rights'}{"$hashkey"}{'set'} = time;

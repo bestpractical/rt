@@ -160,10 +160,8 @@ sub activate  {
 	    return unless ($RT::StoreLoops);
 	}
     }
-    
+
     # }}}
-
-
     
     #Pull apart the subject line
     $Subject = $head->get('Subject') || "[no subject]";
@@ -203,9 +201,10 @@ sub activate  {
 	    if ($id == 0 )
 	      {
 		  #TODO +++ put in a new mimeobj with the error
-		  MailError( To => $CurrentUser, 
+		  MailError( To => $CurrentUser->EmailAddress, 
 			     Subject => "Ticket creation failed",
-			     MIMEOBJ => $entity
+			     Explanation => $ErrStr,
+			     MIMEObj => $entity
 			   );
 		  
 		  
@@ -213,6 +212,7 @@ sub activate  {
 
 	      }	
 	}
+
 	# }}}
 	
 	else {
@@ -403,14 +403,30 @@ sub ParseCommands {
 
 # {{{ sub MailError 
 sub MailError {
-    my %args = (To => undef,
-		From =>undef,
-		Subject => undef,
-		Explanation => undef,
+    my %args = (To => $RT::OwnerEmail,
+		From => $RT::CorrespondAddress,
+		Subject => 'There has been an error',
+		Explanation => 'Unexplained error',
 		MIMEObj => undef,
 		@_);
+
+    $RT::Logger->crit($args{'Explanation'});
+    my $entity = MIME::Entity->build( Type  =>"multipart/mixed",
+				      From => $args{'From'},
+				      To => $args{'To'},
+				      Subject => $args{'Subject'},
+				    );
+    $entity->attach(  Data => $args{'Explanation'}."\n");
     
-    $RT::Logger->crit( "RT::Interface::Mail::MailError stubbed\n");
+    my $mimeobj = $args{'MIMEObj'};
+    $mimeobj->sync_headers();
+    $entity->add_part($mimeobj);
+    
+    $entity->print();
+    $entity->send($RT::MailCommand, $RT::MailParams);
+    
+
+    
 }
 
 # }}}
@@ -450,7 +466,7 @@ sub GetCurrentUser  {
 
     my $NewUser = RT::User->new($RT::SystemUser);
  
-    my ($Val, $Message) = $NewUser->Create(Name => $FromObj->address,
+    my ($Val, $Message) = $NewUser->Create(Name => $Address,
 					   EmailAddress => $Address,
 					   RealName => "$Name",
 					   Password => undef,

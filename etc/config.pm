@@ -109,6 +109,9 @@ $SendmailArguments="-oi -t  ";
 #For sendmail 8, you want the following options
 #$SendmailArguments="-oi -t -ODeliveryMode=b -OErrorMode=m";
 
+$MailCommand = 'sendmail', 
+$MailParams = $SendmailArguments;
+
 # }}}
 
 # {{{ Logging
@@ -139,6 +142,7 @@ $Logger->add(Log::Dispatch::Screen->new
 	       min_level => 'debug',
 	       stderr => 1
 	     ));
+
 # }}}
 
 # {{{ Web UI configuration
