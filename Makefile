@@ -107,7 +107,6 @@ tag-and-release-never-by-hand:
 	mkdir /tmp/$(TAG)
 	cd /tmp/$(TAG); \
 			 aegis -cp -ind -delta $(TAG) . ;\
-			 make reconfigure;\
 			 chmod 600 Makefile;\
 			 aegis --report --project rtfm.2.0 \
 				--page_width 80 \
