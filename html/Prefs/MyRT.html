@@ -53,19 +53,17 @@
 <& /Widgets/SelectionBox:header &>
 
 <& /Elements/ListActions, actions => \@actions &>
-<p>
-<&|/Elements/TitleBox, title => loc('Options'), bodyclass => "" &>
-<form method="POST" action="MyRT.html">
-<&|/l&>Summary rows</&>:<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>">
-<& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save' &>
-</form>
-</&>
-<br>
+<br />
 % for my $pane (@panes) {
 <&|/Elements/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
 <& /Widgets/SelectionBox:show, self => $pane &></&>
-<br>
+<br />
 % }
+<&|/Elements/TitleBox, title => loc('Options'), bodyclass => "" &>
+<form method="POST" action="MyRT.html">
+    <&|/l&>Rows per box</&>:<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>" /> <input type="submit" label="<%loc('Save')%>" />
+</form>
+</&>
 <%INIT>
 my @actions;
 
@@ -127,7 +125,8 @@ for my $pane ('body', 'summary') {
 	$m->comp ('/Widgets/SelectionBox:new',
 		  Action => 'MyRT.html',
 		  Name => $pane,
-		  Available => \@items,
+                  Available => \@items,
+                  AutoSave => 1,
 		  OnSubmit =>
 		  sub { my $sel = shift;
 			$portlets->{$pane} =
