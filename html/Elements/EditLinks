@@ -34,7 +34,7 @@
   <tr>
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
-% while (my $link = $Ticket->DependsOn->Next) {
+% while (my $link = $Object->DependsOn->Next) {
       <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
         <& ShowLink, URI => $link->TargetURI &><br>
 % }
@@ -43,7 +43,7 @@
   <tr>
     <td class="labeltop"><&|/l&>Depended on by</&>:</td>
     <td class="value">
-% while (my $link = $Ticket->DependedOnBy->Next) {
+% while (my $link = $Object->DependedOnBy->Next) {
 % my $member = $link->BaseObj;
       <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
         <& ShowLink, URI => $link->BaseURI &><br>
@@ -53,7 +53,7 @@
   <tr>
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
-% while (my $link = $Ticket->MemberOf->Next) {
+% while (my $link = $Object->MemberOf->Next) {
       <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
         <& ShowLink, URI => $link->TargetURI &><br>
 % }
@@ -62,7 +62,7 @@
   <tr>
     <td class="labeltop"><&|/l&>Children</&>:</td>
     <td class="value">
-% while (my $link = $Ticket->Members->Next) {
+% while (my $link = $Object->Members->Next) {
       <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
         <& ShowLink, URI => $link->BaseURI &><br>
 % }
@@ -71,7 +71,7 @@
   <tr>
     <td class="labeltop"><&|/l&>Refers to</&>:</td>
     <td class="value">
-% while (my $link = $Ticket->RefersTo->Next) {
+% while (my $link = $Object->RefersTo->Next) {
       <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
         <& ShowLink, URI => $link->TargetURI &><br>
 %}
@@ -80,7 +80,7 @@
   <tr>
     <td class="labeltop"><&|/l&>Referred to by</&>:</td>
     <td class="value">
-% while (my $link = $Ticket->ReferredToBy->Next) {
+% while (my $link = $Object->ReferredToBy->Next) {
       <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
         <& ShowLink, URI => $link->BaseURI &><br>
 % }
@@ -91,35 +91,43 @@
 </TD>
 <TD VALIGN=TOP>
 <h3><&|/l&>New Relationships</&></h3>
-<i><&|/l&>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</&></i><br>
+% if (ref($Object) eq 'RT::Ticket') {
+<i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></i><br>
+% } elsif (ref($Object) eq 'RT::Queue') {
+<i><&|/l&>Enter queues or URIs to link queues to. Separate multiple entries with spaces.</&></i><br>
+% } else {
+<i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br>
+% }
 <TABLE>
+% if ($Merge) {
   <TR>
     <TD class="label"><&|/l&>Merge into</&>:</TD>
-    <TD class="entry"><input name="<%$Ticket->Id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD>
+    <TD class="entry"><input name="<%$Object->Id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD>
   </TR>
+% }
   <TR>
     <TD class="label"><&|/l&>Depends on</&>:</TD>
-    <TD class="entry"><input name="<%$Ticket->Id%>-DependsOn"></TD>
+    <TD class="entry"><input name="<%$Object->Id%>-DependsOn"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Depended on by</&>:</TD>
-    <TD class="entry"><input name="DependsOn-<%$Ticket->Id%>"></TD>
+    <TD class="entry"><input name="DependsOn-<%$Object->Id%>"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Parents</&>:</TD>
-    <TD class="entry"><input name="<%$Ticket->Id%>-MemberOf"></TD>
+    <TD class="entry"><input name="<%$Object->Id%>-MemberOf"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Children</&>:</TD>
-    <TD class="entry"> <input name="MemberOf-<%$Ticket->Id%>"></TD>
+    <TD class="entry"> <input name="MemberOf-<%$Object->Id%>"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Refers to</&>:</TD>
-    <TD class="entry"><input name="<%$Ticket->Id%>-RefersTo"></TD>
+    <TD class="entry"><input name="<%$Object->Id%>-RefersTo"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Referred to by</&>:</TD>
-    <TD class="entry"> <input name="RefersTo-<%$Ticket->Id%>"></TD>
+    <TD class="entry"> <input name="RefersTo-<%$Object->Id%>"></TD>
   </TR>
 </TABLE>
 </TD>
@@ -129,5 +137,6 @@
 
       
 <%ARGS>
-$Ticket => undef
+$Object => undef
+$Merge => 0
 </%ARGS>
