@@ -179,8 +179,10 @@ sub create_db {
         return;
     }
     elsif ( $RT::DatabaseType eq 'Pg' ) {
-        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH ENCODING='UNICODE'")
-          or die $DBI::errstr;
+        $dbh->do("CREATE DATABASE $RT::DatabaseName WITH ENCODING='UNICODE'");
+        if ($DBI::errstr) {
+            $dbh->do("CREATE DATABASE $RT::DatabaseName") || die $DBI::errstr;
+        }
     }
     else {
         $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;

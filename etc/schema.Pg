@@ -566,7 +566,7 @@ CREATE TABLE CustomFieldValues (
 CREATE TABLE sessions (
     id char(32) NOT NULL,
     a_session bytea,
-    LastUpdated timestamp not null default current_timestamp
+    LastUpdated TIMESTAMP not null default current_timestamp,
     PRIMARY KEY (id)
 
 );
