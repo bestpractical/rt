@@ -468,7 +468,10 @@ sub Import {
 
     # If the ticket didn't have an id
     # Set the ticket's effective ID now that we've created it.
-    unless ($args{'id'} ) { 
+    if ($args{'id'} ) { 
+	  $self->Load($args{'id'});
+    }
+    else {
 	   my ($val, $msg) = $self->__Set(Field => 'EffectiveId', Value => $id);
     
     	   unless ($val) {

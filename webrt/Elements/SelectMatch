@@ -1,6 +1,7 @@
 %# $Header$
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="LIKE" <%$LikeDefault%>><%$Like%></OPTION>
+<OPTION VALUE="NOT LIKE" <%$NotLikeDefault%>><%$NotLike%></OPTION>
 <OPTION VALUE="=" <%$TrueDefault%>><%$True%></OPTION>
 <OPTION VALUE="!=" <%$FalseDefault%>><%$False%></OPTION>
 </SELECT>
@@ -8,6 +9,7 @@
 <%ARGS>
 $Name => undef
 $Like => 'contains'
+$NotLike => "doesn't contain"
 $True => 'is'
 $False => "isn't"
 $Default => undef
@@ -20,6 +22,9 @@ if ($Default && $Default !~ /true/i) {
 elsif ($Default && $Default !~ /false/i) {
 	$TrueDefault = "SELECTED";
 } 
+elsif ($Default && $Default !~ /notlike/i) {
+	$NotLikeDefault = "SELECTED";
+}
 else {
 	$LikeDefault = "SELECTED";
 }

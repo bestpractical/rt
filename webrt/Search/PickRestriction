@@ -12,19 +12,11 @@
 
 <li>
 Requestor email address 
-<& /Elements/SelectMatch, Name => "RequestorOp", 
-			  True => "matches", 
-			  False => "does not match", 
-			  Like => "Contains" 
-&>
+<& /Elements/SelectMatch, Name => "RequestorOp" &>
 <INPUT Name="ValueOfRequestor" SIZE=20>
 
 <li>
-Subject <& /Elements/SelectMatch, Name => "SubjectOp", 
-				  True => "matches", 
-				  False => "does not match", 
-				  Like => "contains" 
-&> 
+Subject <& /Elements/SelectMatch, Name => "SubjectOp" &> 
 <INPUT Name="ValueOfSubject" SIZE=20>
 
 <li>Queue  <& /Elements/SelectBoolean,  Name => "QueueOp" , 
