@@ -1964,17 +1964,18 @@ sub SetTold {
 
 =head2 _SetTold
 
-Updates the told without the transaction, that's  useful when we're sending replies.
+Updates the told without a transaction or acl check. Useful when we're sending replies.
 
 =cut
 
 sub _SetTold {
     my $self=shift;
+    
     my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow();
     #use __Set to get no ACLs ;)
-    return($self->__Set(Field => 'Told', 
-		       Value => $now->ISO);
+    return($self->__Set(Field => 'Told',
+			Value => $now->ISO));
 }
 
 # }}}
