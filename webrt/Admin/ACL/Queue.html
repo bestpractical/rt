@@ -2,15 +2,6 @@
 <INPUT TYPE=HIDDEN NAME=QueueId VALUE="<%$Queue->id%>">
 
 <pre>
-Get the acl for this queue and princtype admincc
-get the acl for this queue and princtype cc
-get the acl for this queue and princtype requestor
-
-get the acl for scope queue/ticket and id this queue
-iterate through it.
-
-
-
 
 For a queue
 
@@ -57,6 +48,20 @@ if (!defined $QueueId) {
 my $Queue = new RT::Queue($session{'CurrentUser'});
 $Queue->Load($QueueId) ||
         &FatalError("Couldn't load queue $QueueId");
+
+
+my $AdminCcRights = new RT::ACL($session{'CurrentUser'});
+$AdminCcRights->LimitToQueue($Queue->id);
+$AdminCcRights->LimitToAdminCc();
+
+my $CcRights = new RT::ACL($session{'CurrentUser'});
+$CcRights->LimitToQueue($Queue->id);
+$CcRights->LimitToCc();
+
+my $RequestorRights = new RT::ACL($session{'CurrentUser'});
+$RequestorRights->LimitToQueue($Queue->id);
+$RequestorRights->LimitToRequestor();
+
 
 </%INIT>
 

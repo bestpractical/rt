@@ -29,11 +29,16 @@ use vars qw (%SCOPE
          CreateTemplates => 'Create email templates for this queue',
          ModifyTemplates => 'Modify email templates for this queue',
          ShowTemplates => 'Display email templates for this queue',
+         ModifyScripScopes => 'Modify ScripScopes for this queue',
+         ShowScripScopes => 'Display ScripScopes for this queue',
 	   );
 
 # System rights are rights granted to the whole system
 %SYSTEMRIGHTS = ( CreateQueue => 'Create queues',
 		  DeleteQueue => 'Delete queues',
+          ModifyScripScopes => 'Modify global ScripScopes',
+          ShowScripScopes => 'Display global ScripScopes',
+
 		  AdminUsers => 'Create, Delete and Modify users',
 		  ModifySelf => 'Modify one\'s own RT account',
 		  ModifySystemACL => 'Modify system ACLs',
