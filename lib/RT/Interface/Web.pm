@@ -511,32 +511,31 @@ Returns an array of success/failure messages
 =cut
 
 sub UpdateRecordObject {
-  my %args = ( 
-	      ARGSRef => undef,
-	      AttributesRef => undef,
-	      Object => undef,
-	      @_
-	     );
-  
-  my (@results);
-
-  my $object = $args{'Object'};
-  my $attributes = $args{'AttributesRef'};
-  my $ARGSRef = $args{'ARGSRef'};
-  
-  foreach $attribute (@$attributes) {
-    if ((defined $ARGSRef->{"$attribute"}) and 
-	($ARGSRef->{"$attribute"} ne $object->$attribute())) {
-
-      $ARGSRef->{"$attribute"} =~ s/\r\n/\n/gs;
-      
-      my $method = "Set$attribute";
-      my ($code, $msg) = $object->$method($ARGSRef->{"$attribute"});
-      push @results, "$attribute: $msg";
-    }
+    my %args = ( 
+		ARGSRef => undef,
+		AttributesRef => undef,
+		Object => undef,
+		@_
+	       );
     
-  }
-  return (@results);
+    my (@results);
+    
+    my $object = $args{'Object'};
+    my $attributes = $args{'AttributesRef'};
+    my $ARGSRef = $args{'ARGSRef'};
+    
+    foreach $attribute (@$attributes) {
+	if ((defined $ARGSRef->{"$attribute"}) and 
+	    ($ARGSRef->{"$attribute"} ne $object->$attribute())) {
+	    
+	    $ARGSRef->{"$attribute"} =~ s/\r\n/\n/gs;
+	    
+	    my $method = "Set$attribute";
+	    my ($code, $msg) = $object->$method($ARGSRef->{"$attribute"});
+	    push @results, "$attribute: $msg";
+	}
+    }
+    return (@results);
 }
 # }}}
 
@@ -605,33 +604,47 @@ sub ProcessTicketWatchers {
     
     foreach my $key (keys %$ARGSRef) {
       # Delete deletable watchers
-      if (($key =~ /^DelWatcher(\d*)$/) and
-	  ($ARGSRef->{$key})) {
-	my ($code, $msg) = $Ticket->DeleteWatcher($1);
-	push @results, $msg;
+	if (($key =~ /^DelWatcher(\d*)$/) and
+	    ($ARGSRef->{$key})) {
+	    my ($code, $msg) = $Ticket->DeleteWatcher($1);
+	    push @results, $msg;
+	}
+	# Delete watchers in the simple style demanded by the bulk manipulator
+	elsif ($key =~ /^Delete(Requestor|Cc|AdminCc)$/) {
+	    my ($code, $msg) = 
+	      $Ticket->DeleteWatcher( $ARGSRef->{$key}, $1);
+	    push @results, $msg;
+	}
+	
+	
+	# Add new wathchers by email address      
+	elsif ( ($ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
+		($key =~ /^WatcherTypeEmail(\d*)$/) ) {
+	    #They're in this order because otherwise $1 gets clobbered :/
+	    my ($code, $msg) = 
+	      $Ticket->AddWatcher(Type => $ARGSRef->{$key}, 
+				  Email => $ARGSRef->{"WatcherAddressEmail".$1});
+	    push @results, $msg;
+	}
+	#Add requestors in the simple style demanded by the bulk manipulator
+	elsif ($key =~ /^Add(Requestor|Cc|AdminCc)$/) {
+	  my ($code, $msg) = 
+	    $Ticket->AddWatcher(Type => $1,
+				Email => $ARGSRef->{$key});
+	  push @results, $msg;
       }
-
-      # Add new wathchers by email address      
-      elsif ( ($ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
-	      ($key =~ /^WatcherTypeEmail(\d*)$/) ) {
-	#They're in this order because otherwise $1 gets clobbered :/
-	my ($code, $msg) = 
-	  $Ticket->AddWatcher(Type => $ARGSRef->{$key}, 
-			      Email => $ARGSRef->{"WatcherAddressEmail".$1});
-	push @results, $msg;
-      }
-
-      # Add new  watchers by owner
-      elsif ( ($ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
-	      ($key =~ /^WatcherTypeUser(\d*)$/) ) {
-	#They're in this order because otherwise $1 gets clobbered :/
-	my ($code, $msg) = 
-	  $Ticket->AddWatcher(Type => $ARGSRef->{$key}, Owner => $1);
-	push @results, $msg;
-      }
+	
+	# Add new  watchers by owner
+	elsif ( ($ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
+		($key =~ /^WatcherTypeUser(\d*)$/) ) {
+	    #They're in this order because otherwise $1 gets clobbered :/
+	    my ($code, $msg) = 
+	      $Ticket->AddWatcher(Type => $ARGSRef->{$key}, Owner => $1);
+	    push @results, $msg;
+	}
     }
     
-
+    
     # }}}
 
     return (@results);
@@ -781,7 +794,6 @@ sub ProcessTicketObjectKeywords {
     my $KeywordSelects = $TicketObj->QueueObj->KeywordSelects;
     
     # iterate through all the keyword selects for this queue
-    
     while ( my $KeywordSelect = $KeywordSelects->Next ) {
 	# {{{ do some setup
 	
@@ -837,6 +849,25 @@ sub ProcessTicketObjectKeywords {
 	# }}}
     }
     
+    #Iterate through the keyword selects for BulkManipulator style access
+    while ( my $KeywordSelect = $KeywordSelects->Next ) {
+	if ($ARGSRef->{"AddToKeywordSelect".$KeywordSelect->Id}) {
+	    #Add the keyword
+	    my ($result, $msg) = 
+		  $TicketObj->AddKeyword( Keyword => $ARGSRef->{"AddToKeywordSelect".
+								$KeywordSelect->Id },
+					  KeywordSelect => $KeywordSelect->id);
+		push(@results, $msg);
+	    }	
+	if ($ARGSRef->{"DeleteFromKeywordSelect".$KeywordSelect->Id}) {
+	    #Delete the keyword
+	    my ($result, $msg) = 
+	      $TicketObj->DeleteKeyword(Keyword =>$ARGSRef->{"DeleteFromKeywordSelect".
+							     $KeywordSelect->Id },
+					KeywordSelect => $KeywordSelect->id);
+	    push(@results, $msg);
+	}	
+    }	
     # }}}
     
     return (@results);

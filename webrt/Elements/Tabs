@@ -19,6 +19,9 @@ class='currenttab'
 	  </TR>
 	</TABLE>
 <BR>
+% if ($tabs_scalar) {
+<% $tabs_scalar |n%>
+% }
 % if ($tabs) {
 	
 	<TABLE CELLSPACING=0 CELLPADDING=0 BORDER=0>	
@@ -36,7 +39,9 @@ HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}
 %}
 
 <BR>
-
+% if ($subtabs_scalar) {
+<% $subtabs_scalar |n%>
+% }
 % if ($subtabs) {
 	<TABLE>	
 	  <TR>
@@ -77,6 +82,9 @@ HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}
 </TR></TABLE>
 % }
 	
+% if ($subactions_scalar) {
+<% $subactions_scalar |n%>
+% }
 % if ($subactions) {
 <BR>|&nbsp;
 %  foreach $action (sort keys %{$subactions}) {
@@ -115,8 +123,11 @@ $current_toptab =>  "none"
 $current_tab => "none"
 $current_subtab => "none"
 $tabs => undef
+$tabs_scalar => undef
 $subtabs => undef
 $actions => undef
 $subactions => undef
+$subtabs_scalar => undef
+$subactions_scalar => undef
 </%ARGS>
 

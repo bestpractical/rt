@@ -686,6 +686,7 @@ It removes that watcher from this Ticket\'s list of watchers.
 
 =cut
 
+#TODO It is lame that you can't call this the same way you can call AddWatcher
 
 sub DeleteWatcher {
     my $self = shift;

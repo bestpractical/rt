@@ -1,21 +1,8 @@
-<& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab &>
-
-<%PERL>
-if (defined $session{'tickets'}) {
-my $items = $session{'tickets'}->ItemsArrayRef();
-my @indexs = grep(($items->[$_]->id == $Ticket->Id), 0 .. $#{$items});
-if ($indexs[0]) {
-</%PERL>
-<A HREF="Display.html?id=<%$items->[0]->id%>">|&lt; First</a>
-<A HREF="Display.html?id=<%$items->[$indexs[0]-1]->id%>">&lt;&lt; Previous</a>
-<A HREF="Display.html?id=<%$items->[$indexs[0]+1]->id%>">Next &gt;&gt;</a>
-<A HREF="Display.html?id=<%$items->[-1]->id%>">Last &gt;|</a>
-% }
-%}
+<& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab, tabs_scalar => $tabs_scalar &>
 <%INIT>
 	
   my $id = $Ticket->id();
-
+  my $tabs_scalar = '';
   my $tabs = {
 		 A => { title => 'Display',
 			path => "Ticket/Display.html?id=".$id,
@@ -98,6 +85,34 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     }
 }
 
+
+
+
+if (defined $session{'tickets'}) {
+    my $items = $session{'tickets'}->ItemsArrayRef();
+    my @indexs = grep(($items->[$_]->id == $Ticket->Id), 0 .. $#{$items});
+    if ($items->[$indexs[0]]->id == $Ticket->Id) {
+	# Don't display prev links if we're on the first ticket
+ 	if ( $items->[0]->id != $Ticket->id ) {
+	    $tabs_scalar .= '[<A HREF="Display.html?id='.
+	      $items->[0]->id.
+		'">&lt;&lt; First</a>] ';
+	    $tabs_scalar .= '[<A HREF="Display.html?id='.
+	      $items->[$indexs[0]-1]->id.
+		'">&lt; Prev</a>] ';
+	}
+	# Don't display next links if we're on the last ticket
+	if ( $Ticket->id != $items->[-1]->id ) {
+	    $tabs_scalar .= '[<A HREF="Display.html?id='.
+	      $items->[$indexs[0]+1]->id.
+		'">Next &gt;</a>] ';
+	    $tabs_scalar .= '[<A HREF="Display.html?id='.
+	      $items->[-1]->id.
+		'">Last &gt;&gt</a>]';
+	}
+	$tabs_scalar .= "<BR><BR>";
+    }
+}
 </%INIT>
 
   
