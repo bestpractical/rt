@@ -150,7 +150,8 @@ sub CreatedAsString {
 sub LongSinceUpdateAsString {
     my $self=shift;
     if ($self->LastUpdated) {
-	return ($self->LastUpdatedObj->AsString());
+      my $now = new RT::Date($self->CurrentUser);
+	return ($now->DiffAsString($self->LastUpdatedObj));
 	
     } else {
 	return "never";
