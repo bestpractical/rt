@@ -183,7 +183,7 @@ sub SmartParseMIMEEntityFromScalar {
         close($fh);
         if ( -f $temp_file ) {
             $self->ParseMIMEEntityFromFile($temp_file, $args{'Decode'});
-            File::Temp::unlink0( $fh, $temp_file );
+            unlink($temp_file );
         }
     } #If for some reason we weren't able to parse the message using a temp file      # try it with a scalar
     if ( !$self->Entity ) {
@@ -628,10 +628,10 @@ A private instance method which sets up a mime parser to do its job
 sub _SetupMIMEParser {
     my $self = shift;
     my $parser = shift;
-    my $AttachmentDir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+     $self->{'AttachmentDir'} ||= File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
 
     # Set up output directory for files:
-    $parser->output_dir("$AttachmentDir");
+    $parser->output_dir($self->{'AttachmentDir'});
     $parser->filer->ignore_filename(1);
 
 
@@ -647,7 +647,15 @@ sub _SetupMIMEParser {
 
     $parser->output_to_core(0);
 }
+
 # }}}
+
+sub DESTROY {
+    my $self = shift;
+    File::Path::rmtree([$self->{'AttachmentDir'}],0,1);
+}
+
+
 
 eval "require RT::EmailParser_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Vendor.pm});
