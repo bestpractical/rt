@@ -203,7 +203,7 @@ sub MigrateQueueACLandAdminCcs {
     print "Granting queue rights.\n";
     
     my $sth = ExecStatement( "SELECT * from queue_acl WHERE " .
-			     "queue_id = " . $queue->id );
+			     "queue_id = " .  $dbh->quote($queue->Name ));
     
     while (my $row = $sth->fetchrow_hashref()) {
 	my @rights;
