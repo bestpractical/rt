@@ -1,9 +1,12 @@
 <& /Elements/TitleBoxStart, title => "Your $friendly_status requests" &>
 <TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
 <TR>
-<TD>
-</TD>
+<TH>Subject</TH>
+<TH>Status</TH>
+<TH>Owner</TH>
+<TH>&nbsp;</TH>
 </TR>
+<TR>
 % while (my $Ticket = $MyTickets->Next) {
 <TR>
 <TD>
@@ -13,7 +16,7 @@
 <%$Ticket->Status%>
 </TD><TD>
 <%$Ticket->OwnerObj->UserId%>
-</TD><TD>
+</TD><TD ALIGN=RIGHT>
 [<A HREF="<% $RT::WebPath %>/SelfService/Display.html?id=<%$Ticket->Id%>">Details</A>]
 </TD>
 </TR>

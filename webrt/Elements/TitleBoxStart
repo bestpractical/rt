@@ -1,6 +1,9 @@
-	  <TABLE width="<%$width%>" border=0 cellpadding=4 cellspacing=0 bgcolor="#336699">
+	<TABLE BGCOLOR="#000000" CELLSPACING=0 BORDER=0 CELLPADDING=1 WIDTH="<%$width%>">
+	<TR VALIGN="MIDDLE">
+	<TD ALIGN="CENTER">
+	  <TABLE width="100%" border=0 cellpadding=4 cellspacing=0>
 	    <TR> 
-	      <TH valign=middle align=left bgcolor="#336699"> 
+	      <TH valign=middle align=left bgcolor="#336699"> 	
 		<font size=-1 color="#ffffff">
 		  <b>
 		    <%$title |n %>

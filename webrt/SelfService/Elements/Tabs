@@ -2,8 +2,7 @@
 <TR>
 % foreach $tab (sort keys %{$tabs}) {
 <TD ALIGN=CENTER>
-[<A HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'tit
-le'}%></A>]
+[<A HREF="<%$RT::WebPath%>/<% $tabs->{"$tab"}->{'path'}%>"><% $tabs->{"$tab"}->{'title'}%></A>]
 </TD>
 %}
 </TR>

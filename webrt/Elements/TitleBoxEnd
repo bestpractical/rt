@@ -2,6 +2,7 @@
 	      </TD>
 	    </TR>
 	  </TABLE>
+</TD></TR></TABLE>
 <%ARGS>
 $title => undef
 $content => undef

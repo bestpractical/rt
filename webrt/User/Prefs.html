@@ -1,5 +1,5 @@
 <& /Elements/Header, Title=>"Preferences" &>
-
+<& /Elements/Tabs &>
 %if ($session{CurrentUser} && ($session{CurrentUser}->Id == $id)) {
 	<& /Elements/TitleBoxStart, title => 'Signature'  &>
 <form method=post>
