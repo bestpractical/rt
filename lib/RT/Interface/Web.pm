@@ -575,7 +575,7 @@ sub UpdateRecordObject {
     if ((defined $ARGSRef->{"$attribute"}) and 
 	($ARGSRef->{"$attribute"} ne $object->$attribute())) {
 
-      $ARGSRef->{"$attribute"} =~   s/\r\n/\n/gs;
+      $ARGSRef->{"$attribute"} =~ s/\r\n/\n/gs;
       
       my $method = "Set$attribute";
       my ($code, $msg) = $object->$method($ARGSRef->{"$attribute"});
