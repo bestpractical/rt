@@ -78,8 +78,8 @@ ok(RT::I18N->Init);
 sub Init {
     # Load language-specific functions
     foreach my $language ( glob(substr(__FILE__, 0, -3) . "/*.pm")) {
-        if ($language =~ /\b([-\w.\/\\]+)$/) {
-            require $language;
+        if ($language =~ /^([-\w.\/\\]+)$/) {
+            require $1;
         }
         else {
 	    warn("$language is tainted. not loading");
