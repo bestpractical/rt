@@ -44,6 +44,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+use strict;
 use DBI;
 
 my $database  = shift;
@@ -147,6 +148,7 @@ foreach my $table (@tables) {
 $tablemap{'CreatedBy'} = 'User';
 $tablemap{'UpdatedBy'} = 'User';
 
+my %typemap;
 $typemap{'id'}            = 'ro';
 $typemap{'Creator'}       = 'auto';
 $typemap{'Created'}       = 'auto';
@@ -183,18 +185,20 @@ foreach my $table (@tables) {
     my $ClassAccessible = "";
     my $FieldsPod       = "";
     my $CreatePod       = "";
+    my $RecordInit      = "";
     my %fields;
 
 
-    $introspection = $dbh->prepare("SELECT * from $table where id is null");
+    my $introspection = $dbh->prepare("SELECT * from $table where id is null");
     $introspection->execute();
     my @names =@{ $introspection->{'NAME'}};
     my @types = @{$introspection->{'TYPE'}};
     my @is_blob = @{$introspection->{'mysql_is_blob'}};
     my @is_num = @{$introspection->{'mysql_is_num'}};
 
-    my %sqltypes = {};
-    my %numeric = {};
+    my %blobness = ();
+    my %sqltypes = ();
+    my %numeric = ();
     foreach my $name (@names) {
         $sqltypes{$name} = shift @types;
         $blobness{$name} = (shift @is_blob || "0");
@@ -216,6 +220,8 @@ foreach my $table (@tables) {
         $fields{$field} = 1;
 
         #generate the 'accessible' datastructure
+
+        no warnings 'uninitialized';
 
         if ( $typemap{$field} eq 'auto' ) {
             $ClassAccessible .= "        $field => 
@@ -297,7 +303,7 @@ sub ${field}Obj {
 
     }
 
-    $Create = "
+    my $Create = "
 sub Create {
     my \$self = shift;
     my \%args = ( 
