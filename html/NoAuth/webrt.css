@@ -155,7 +155,7 @@ UL.topnav LI :focus { text-decoration: underline; }
 
 TD.mainbody {
         padding-top: 0.5em;
-        padding-left: 0em;
+        padding-left: 1em;
         padding-right: 1em;
         margin-left: 1em;
         margin-right: 1em;

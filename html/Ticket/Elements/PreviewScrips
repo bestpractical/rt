@@ -22,7 +22,7 @@ foreach my $address (@unsquelchto) {
 
 my $action;
 
-if ( $ARGS{'UpdateType'} eq 'response' ) {
+if (( $ARGS{'UpdateType'} eq 'response' ) || ($ARGS{'Action'} eq 'Respond' )) {
     $action = 'Correspond';
 }
 else {
@@ -45,8 +45,29 @@ my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
 
 my @non_recipients = $TicketObj->SquelchMailTo;
 </%init>
-
-<h2><&|/l&>Squelched message recipients</&></h2>
+<h2><&|/l&>This message will be sent to...</&></h2>
+<i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br>
+% foreach my $scrip (@{$Object->Scrips->Prepared}) {
+% next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
+<b><%$scrip->Description%></b><br>
+<&|/l, $scrip->ConditionObj->Name, $scrip->ActionObj->Name, $scrip->TemplateObj->Name&>[_1] [_2] with template [_3]</&>
+<br>
+%foreach my $type qw(To Cc Bcc) {
+%my @addresses =  $scrip->ActionObj->Action->$type();
+<ul>
+%foreach my $addr (@addresses) {
+<li> <b><%loc($type)%></b>: <input type="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>"> <%$addr->address%>
+% }
+</ul>
+% }
+% if ($RT::PreviewScripMessages) {
+<textarea cols=80 rows="5">
+<%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
+</textarea>
+% }
+%}
+<br>
+<h2><&|/l&>Messages about this ticket will not be sent to...</&></h2>
 <i><&|/l&>(Check boxes to enable notifications to the listed recipients)</&></i>
 <br>
 <ul>
@@ -55,29 +76,4 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 <% $recipient->Content %>
 % }
 </ul>
-<h2><&|/l&>Message recipients</&></h2>
-<i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i>
-% foreach my $scrip (@{$Object->Scrips->Prepared}) {
-% next unless $scrip->ActionObj->Action->isa('RT::Action::SendEmail');
-<b><%$scrip->Description%></b><br>
-<&|/l, $scrip->ConditionObj->Name, $scrip->ActionObj->Name, $scrip->TemplateObj->Name&>[_1] [_2] with template [_3]</&>
-<br>
-%foreach my $type qw(To Cc Bcc) {
-%my @addresses =  $scrip->ActionObj->Action->$type();
-% next unless $addresses[0];
-<%loc($type)%>:
-<ul>
-%foreach my $addr (@addresses) {
-<li><input type="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>"> <%$addr->address%>
-% }
-</ul>
-<br>
-% }
-% if ($RT::PreviewScripMessages) {
-<textarea cols=80 rows="5">
-<%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
-</textarea>
-% }
-<hr>
-%}
 <& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Save changes')&>  
