@@ -84,7 +84,7 @@ my %FIELDS =
     RefersTo        => ['LINK' => To => 'RefersTo',],
     HasMember	    => ['LINK' => From => 'MemberOf',],
     DependentOn     => ['LINK' => From => 'DependsOn',],
-    ReferredTo      => ['LINK' => From => 'RefersTo',],
+    ReferredToBy    => ['LINK' => From => 'RefersTo',],
 #   HasDepender	    => ['LINK',],
 #   RelatedTo	    => ['LINK',],
     Told	    => ['DATE' => 'Told',],
@@ -127,12 +127,18 @@ my %can_bundle =
   );
 
 # Default EntryAggregator per type
+# if you specify OP, you must specify all valid OPs
 my %DefaultEA = (
                  INT		=> 'AND',
                  ENUM		=> { '=' => 'OR',
 				     '!='=> 'AND'
 				   },
-                 DATE		=> 'AND',
+                 DATE		=> { '=' => 'OR',
+				     '>='=> 'AND',
+				     '<='=> 'AND',
+				     '>' => 'AND',
+				     '<' => 'AND'
+				   },
                  STRING		=> { '=' => 'OR',
 				     '!='=> 'AND',
 				     'LIKE'=> 'AND',
@@ -140,7 +146,7 @@ my %DefaultEA = (
 				   },
                  TRANSFIELD	=> 'AND',
                  TRANSDATE	=> 'AND',
-                 LINK => 'AND',
+                 LINK           => 'OR',
                  LINKFIELD	=> 'AND',
                  TARGET		=> 'AND',
                  BASE		=> 'AND',
@@ -350,7 +356,7 @@ sub _DateLimit {
   my ($sb,$field,$op,$value,@rest) = @_;
 
   die "Invalid Date Op: $op"
-     unless $op =~ /^(=|!=|>|<|>=|<=)$/;
+     unless $op =~ /^(=|>|<|>=|<=)$/;
 
   my $meta = $FIELDS{$field};
   die "Incorrect Meta Data for $field"
@@ -363,15 +369,48 @@ sub _DateLimit {
   my $time = Time::ParseDate::parsedate( $value,
 			UK => $RT::DateDayBeforeMonth,
 			PREFER_PAST => $RT::AmbiguousDayInPast,
-			PREFER_FUTURE => !($RT::AmbiguousDayInPast));
-  $value = strftime("%Y-%m-%d %H:%M", gmtime($time));
+			PREFER_FUTURE => !($RT::AmbiguousDayInPast),
+                        FUZZY => 1
+				       );
 
-  $sb->_SQLLimit(
-	     FIELD => $meta->[1],
-	     OPERATOR => $op,
-	     VALUE => $value,
-	     @rest,
-	    );
+  if ($op eq "=") {
+    # if we're specifying =, that means we want everything on a
+    # particular single day.  in the database, we need to check for >
+    # and < the edges of that day.
+
+    my $daystart = strftime("%Y-%m-%d %H:%M",
+			    gmtime($time - ( $time % 86400 )));
+    my $dayend   = strftime("%Y-%m-%d %H:%M",
+			    gmtime($time + ( 86399 - $time % 86400 )));
+
+    $sb-> _OpenParen;
+
+    $sb->_SQLLimit(
+		   FIELD => $meta->[1],
+		   OPERATOR => ">=",
+		   VALUE => $daystart,
+		   @rest,
+		  );
+
+    $sb->_SQLLimit(
+		   FIELD => $meta->[1],
+		   OPERATOR => "<=",
+		   VALUE => $dayend,
+		   @rest,
+		   ENTRYAGGREGATOR => 'AND',
+		  );
+
+    $sb-> _CloseParen;
+
+  } else {
+    $value = strftime("%Y-%m-%d %H:%M", gmtime($time));
+    $sb->_SQLLimit(
+		   FIELD => $meta->[1],
+		   OPERATOR => $op,
+		   VALUE => $value,
+		   @rest,
+		  );
+  }
 }
 
 =head2 _StringLimit
@@ -1393,11 +1432,18 @@ sub LimitLinkedFrom {
 		 TYPE => undef,
 		 @_);
 
+    # translate RT2 From/To naming to RT3 TicketSQL naming
+    my %fromToMap = qw(DependsOn DependentOn
+		       MemberOf  HasMember
+		       RefersTo  ReferredToBy);
+
+    my $type = $args{'TYPE'};
+    $type = $fromToMap{$type} if exists($fromToMap{$type});
 
     $self->Limit( FIELD => 'LinkedTo',
 		  TARGET => undef,
 		  BASE => ($args{'BASE'} || $args{'TICKET'}),
-		  TYPE => $args{'TYPE'},
+		  TYPE => $type,
 		  DESCRIPTION => $self->loc(
 		   "Tickets [_1] [_2]", $self->loc($args{'TYPE'}), ($args{'BASE'} || $args{'TICKET'})
 		  ),

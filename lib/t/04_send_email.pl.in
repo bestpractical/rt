@@ -473,7 +473,6 @@ sub crashes_redef_sendmessage {
 }
 
 
-die;
 
 # }}}
 
