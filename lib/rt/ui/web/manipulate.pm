@@ -859,8 +859,8 @@ sub display_summary {
   
   use Time::Local;
   
-  $bg_color="#FFFFFF";
-  $fg_color="#EEEEEE";
+  $bg_color="#000000";
+  $fg_color="#FFFFFF";
   
   if ($frames) {
     $target = "target=\"summary\"";
@@ -869,16 +869,14 @@ sub display_summary {
 	$target="";
       }
   $qtarget="target=\"queue\"";
-  print "
-<font size=\"-1\">
-<font size=\"+1\">T</font>rack <font size=\"+1\">R</font>equestor\n<br>
- <a href=\"$ScriptURL?display=Queue&amp;q_user=other&amp;q_user_other=$rt::req[$in_serial_num]{requestors}\" $qtarget>List all requests by this requestor</a>";
+
+
 
   if (&rt::can_manipulate_request ($serial_num, $current_user)) {
 
   print "
 <hr>
-<font size=\"+1\">R</font>equest <font size=\"+1\">H</font>eader <font size=\"+1\">I</font>nfo\n<br>
+<Request Header Info\n<br>
 <font size=\"-1\">
 <form action=\"$ScriptURL\" method=\"post\">
 <font color=\"$fg_color\">
@@ -891,7 +889,7 @@ sub display_summary {
 <b>Serial Number:</b>
 </TD>
 
-<TD ALIGN=\"CENTER\" bgcolor=\"$bg_color\">
+<TD ALIGN=\"LEFT\" bgcolor=\"$bg_color\">
 <input size=5 name=\"req_merge_into\" value=\"$in_serial_num\">
 </TD>
 
@@ -909,7 +907,7 @@ sub display_summary {
 <b>Subject:</b>
 </TD>
 
-<TD ALIGN=\"CENTER\" bgcolor=\"$bg_color\" >
+<TD ALIGN=\"LEFT\" bgcolor=\"$bg_color\" >
 <input size=25 name=\"subject\" value=\"$rt::req[$in_serial_num]{'subject'}\">
 </TD>
 
@@ -922,7 +920,7 @@ sub display_summary {
 <TD  align=\"right\">
 <b>Area:</b></a>
 </TD>
-<TD ALIGN=\"CENTER\" bgcolor=\"$bg_color\">";
+<TD ALIGN=\"LEFt\" bgcolor=\"$bg_color\">";
     print "<select name=\"area\"><option value=\"\">None ";
     foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
       print "<option ";
@@ -938,7 +936,7 @@ sub display_summary {
 <TD ALIGN=\"RIGHT\">
 <b>Queue:</b>
 
-<TD ALIGN=\"CENTER\" bgcolor=\"$bg_color\">
+<TD ALIGN=\"LEFT\" bgcolor=\"$bg_color\">
 <select name=\"queue\">";
     foreach $queue (sort keys %rt::queues) {
       if (&rt::can_create_request($queue, $current_user)) {
@@ -960,8 +958,9 @@ sub display_summary {
 <TD ALIGN=\"RIGHT\">
 <b>Requestors:</b>
 </TD>
-<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">
-<input size=20 name=\"recipient\" VALUE=\"$rt::req[$serial_num]{'requestors'}\">
+<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">
+<input size=20 name=\"recipient\" VALUE=\"$rt::req[$serial_num]{'requestors'}\"> <a href=\"$ScriptURL?display=Queue&amp;q_user=other&amp;q_user_other=$rt::req[$in_serial_num]{requestors}\" $qtarget>This user's requests.</a>
+
 </TD>
 <TD BGCOLOR=\"$bg_color\">
 <input type=\"checkbox\" name=\"do_req_user\">Change requestor!
@@ -971,7 +970,7 @@ sub display_summary {
 <TD ALIGN=\"RIGHT\">
 <b>Owner:</b>
 </TD>
-<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">
+<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">
 <select name=\"do_req_give_to\">
 <option value=\"\">Nobody ";	
     foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}} ) {
@@ -991,7 +990,7 @@ sub display_summary {
 <TD ALIGN=\"RIGHT\">
 <b>Status:</b>
 </TD>
-<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
     if ($rt::req[$serial_num]{status} eq 'dead') { 
       print "<i>Dead</i>";
     } else {
@@ -1023,7 +1022,7 @@ sub display_summary {
 Last User Contact:</b>
 </TD>
 		    
-<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
 			
   if ($rt::req[$in_serial_num]{'date_told'}) {
 			    print scalar localtime($rt::req[$in_serial_num]{'date_told'});
@@ -1043,7 +1042,7 @@ Last User Contact:</b>
 <TD ALIGN=\"RIGHT\">
 <b>Current Priority:</b>
 </TD>
-<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
     &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
     print "
 </TD>
@@ -1055,7 +1054,7 @@ Last User Contact:</b>
 <TD ALIGN=\"RIGHT\">
 <b>Final Priority:</b>
 </TD> 
-<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
     &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
     print "
 </TD>
@@ -1069,7 +1068,7 @@ Last User Contact:</b>
 <b>Due:</b>
 </TD>
 
-<TD ALIGN=\"CENTER\" BGCOLOR=\"$bg_color\">";
+<TD ALIGN=\"LEFT\" BGCOLOR=\"$bg_color\">";
   if ($rt::req[$in_serial_num]{'date_due'}) {
       print "in $rt::req[$in_serial_num]{'till_due'}<br>";
     } else {
@@ -1104,7 +1103,10 @@ scalar localtime($rt::req[$in_serial_num]{'date_created'}) . "
     </TD>
     </TR>
     </TABLE>
-    <input type=\"submit\" value=\"Change something\">
+
+<DIV ALIGN=RIGHT>
+  <input type=\"reset\" value=\"Reset\"> <input type=\"submit\" value=\"Change something\">
+  </DIV>
     </font>
     </form>
     ";

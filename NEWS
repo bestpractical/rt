@@ -1,3 +1,15 @@
+22 Jul 99 (Jesse)
+-----------------
+Inital cleanup to the web ticket view. I'd like to significantly 
+compact and simplify that display.  More tables are probably in 
+order.  Additionally, I want to get rid of all those buttons "I 
+changed this." There's just no need for them. we can write logic 
+to do that for us.  Also, I bumped the version to 1.1.1.  I'd like 
+to do this 'linux-kernel-esque' The 1.1.x 
+series will be a development series leading toward 1.2.  Once we 
+get the DB changes in, I'll feel comfortable rolling a 'releaseable' 
+1.1 version for people who like pain.
+
 21 jul 99 (Tobix)
 -----------------
 Merged some bugfixes from the 1-0-branch. Migrated to Internet::Mail

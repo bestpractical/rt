@@ -10,7 +10,7 @@ RTUSER			=	rt
 RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
-RT_VERSION_MINOR	=	pre1
+RT_VERSION_MINOR	=	1
 RT_VERSION_PATCH	=	1
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -19,7 +19,7 @@ RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 # RT_PATH is the name of the directory you want make to install RT in
 #
 
-RT_PATH			=	/usr/local/rt
+RT_PATH			=	/opt/rt
 
 #
 # The rest of these paths are all configurable, but you probably don't want to 
