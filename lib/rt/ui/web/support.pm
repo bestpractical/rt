@@ -74,7 +74,7 @@ sub print_transaction {
     #   accept rfc822 messages and stupid RT format
 
     ((($body,$headers) =  split (/--- Headers Follow ---\n\n/, $lines,2))) or 
-	(($headers, $body) = split ('\n\n',$lines)) or
+	(($headers, $body) = split ('\n\n',$lines,2)) or
 	    $body = $lines;
     
     
