@@ -136,7 +136,7 @@ DB_TYPE			=	mysql
 
 # For mysql, you probably want 'root'
 # For Pg, you probably want 'postgres' 
-# For oracle, you want 'system'
+# For Oracle, you want 'system'
 
 DB_DBA			=	root
 

@@ -385,7 +385,8 @@ sub HasRight {
     "AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND ".
         "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))".
 
-        " ) LIMIT 1";
+        " ) ";
+        $self->_Handle->ApplyLimits(\$groups_query, 1); #only return one result
         
     my @roles;
     foreach my $object (@{$args{'EquivObjects'}}) { 
@@ -397,7 +398,8 @@ sub HasRight {
     if (@roles) {
 	 $roles_query = $query_base . "AND ".
             " ( (".join (' OR ', @roles)." ) ".  
-        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') LIMIT 1";
+        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') "; 
+        $self->_Handle->ApplyLimits(\$roles_query, 1); #only return one result
 
    }
 

@@ -47,7 +47,7 @@ Set($Timezone , 'US/Eastern');
 # {{{ Database Configuration
 
 # Database driver beeing used. Case matters
-# Valid types are "mysql" and "Pg"
+# Valid types are "mysql", "Oracle" and "Pg"
 
 Set($DatabaseType , '@DB_TYPE@');
 

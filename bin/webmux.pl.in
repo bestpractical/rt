@@ -31,6 +31,19 @@ BEGIN {
     $ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
+    @ORACLE_ENV_PREF@
+}
+
+if ($mod_perl::VERSION >= 1.9908) {
+    require Apache::RequestUtil;
+    no warnings 'redefine';
+    my $sub = *Apache::request{CODE};
+    *Apache::request = sub {
+        my $r;
+        eval { $r = $sub->('Apache'); };
+        # warn $@ if $@;
+        return $r;
+    };
 }
 
 use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");

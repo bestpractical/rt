@@ -80,7 +80,12 @@ if ( $args{'action'} eq 'init' ) {
     $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} )
       || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
     print "Now creating a database for RT.\n";
+    if ($RT::DatabaseType ne 'Oracle' ||
+        $args{'dba'} ne $RT::DatabaseUser) {
     create_db();
+    } else {
+        print "...skipped as ".$args{'dba'} ." is not " . $RT::DatabaseUser . " or we're working with Oracle.\n";
+    }
 
     $dbh->disconnect;
     $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
@@ -89,7 +94,7 @@ if ( $args{'action'} eq 'init' ) {
     print "Now populating database schema.\n";
     insert_schema();
     print "Now inserting database ACLs\n";
-    insert_acl();
+    insert_acl() unless ($RT::DatabaseType eq 'Oracle');
     print "Now inserting RT core system objects\n";
     insert_initial_data();
     print "Now inserting RT data\n";
@@ -139,6 +144,7 @@ sub insert_schema {
         my $statement = "";
         foreach my $line (<SCHEMA>, <SCHEMA_LOCAL>) {
             $line =~ s/\#.*//g;
+            $line =~ s/--.*//g;
             $statement .= $line;
             if ( $line =~ /;(\s*)$/ ) {
                 $statement =~ s/;(\s*)$//g;
@@ -168,6 +174,16 @@ sub insert_schema {
 # {{{ sub drop_db
 sub drop_db {
     return if ( $RT::DatabaseType eq 'SQLite' );
+    if ( $RT::DatabaseType eq 'Oracle' ) {
+        print <<END;
+
+To delete the tables and sequences of the RT Oracle database by running 
+    \@etc/drop.Oracle 
+through SQLPlus.
+
+END
+        return;
+    }	
     unless ( $args{'force'} ) {
         print <<END;
 
@@ -197,6 +213,9 @@ sub create_db {
         if ($DBI::errstr) {
             $dbh->do("CREATE DATABASE $RT::DatabaseName") || die $DBI::errstr;
         }
+    }
+    elsif ($RT::DatabaseType eq 'Oracle') {
+        insert_acl();
     }
     else {
         $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;

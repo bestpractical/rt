@@ -26,7 +26,7 @@ my %cookies = CGI::Cookie->fetch();
 my %backends = (
     mysql	=> 'Apache::Session::MySQL',
     Pg		=> 'Apache::Session::Postgres',
-    Oracle	=> 'Apache::Session::Oracle',
+#    Oracle	=> 'Apache::Session::Oracle',
 ) unless $RT::WebSessionClass;
 my $session_class = $RT::WebSessionClass || $backends{$RT::DatabaseType} || 'Apache::Session::File';
 my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;

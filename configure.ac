@@ -75,13 +75,20 @@ AC_SUBST(LIBS_GROUP)
 dnl DB_TYPE
 AC_ARG_WITH(db-type,
 	    AC_HELP_STRING([--with-db-type=TYPE],
-	    		   [sort of database RT will use (default: mysql) (mysql and Pg are valid)]), 
+	    		   [sort of database RT will use (default: mysql) (mysql, Oracle and Pg are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
-if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite'; then
-	AC_MSG_ERROR([Only Pg and mysql are valid db types])
+if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle'; then
+	AC_MSG_ERROR([Only Oracle, Pg and mysql are valid db types])
 fi
 AC_SUBST(DB_TYPE)
+
+dnl ORACLE_ENV_PREF
+if test "$DB_TYPE" = 'Oracle'; then
+	test "x$ORACLE_HOME" = 'x' && AC_MSG_ERROR([Please declare the ORACLE_HOME environment variable])
+	ORACLE_ENV_PREF="\$ENV{'ORACLE_HOME'} = '$ORACLE_HOME';"
+fi
+AC_SUBST(ORACLE_ENV_PREF)
 
 dnl DB_HOST
 AC_ARG_WITH(db-host,
