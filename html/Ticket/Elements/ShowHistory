@@ -131,9 +131,7 @@ $m->flush_buffer();
 my $Transactions = new RT::Transactions($session{'CurrentUser'});
 if ($Tickets) {
     while (my $t = $Tickets->Next) {
-	$Transactions->Limit(FIELD => 'Ticket',
-			     OPERATOR => '=',
-			     VALUE => $t->Id);
+	$Transactions->LimitToTicket($t->id);
     }
 } else {
     $Transactions = $Ticket->Transactions;

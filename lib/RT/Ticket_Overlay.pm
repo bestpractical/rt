@@ -150,6 +150,7 @@ use RT::Links;
 use RT::Date;
 use RT::CustomFields;
 use RT::Tickets;
+use RT::Transactions;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
@@ -3563,27 +3564,11 @@ sub HasRight {
 sub Transactions {
     my $self = shift;
 
-    use RT::Transactions;
     my $transactions = RT::Transactions->new( $self->CurrentUser );
 
     #If the user has no rights, return an empty object
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        my $tickets = $transactions->NewAlias('Tickets');
-        $transactions->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'ObjectId',
-            ALIAS2 => $tickets,
-            FIELD2 => 'id'
-        );
-        $transactions->Limit(
-            ALIAS => $tickets,
-            FIELD => 'EffectiveId',
-            VALUE => $self->id()
-        );
-	$transactions->Limit(
-	    FIELD    => 'ObjectType',
-	    VALUE    => ref($self),
-	);
+        $transactions->LimitToTicket($self->id);
 
         # if the user may not see comments do not return them
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
