@@ -210,21 +210,7 @@ sub Description  {
     return("Request created by ".$self->Creator->UserId);
   }
   elsif ($self->Type =~ /Set|Stall|Open|Resolve|Kill/) {
-    if ($self->Field eq 'Owner') {
-      my $New = RT::User->new($CurrentUser);
-      $New->Load($self->NewValue);
-
-      if ($self->OldValue) {
-	my $Old = RT::User->new($CurrentUser);
-	$Old->Load($self->OldValue);
-	return ("Owner changed from " . $Old->UserId ." to ".$New->UserId ." by ". $self->Creator->UserId);
-      }
-      else {
-	return ("Owner set to ".$New->UserId." by ". $self->Creator->UserId);
-      }
-    
-    }
-    elsif ($self->Field eq 'Status') {
+    if ($self->Field eq 'Status') {
       if ($self->NewValue eq 'dead') {
         return ("Request killed by ". $self->Creator->UserId);
       }
@@ -234,10 +220,11 @@ sub Description  {
 	        " by ".$self->Creator->UserId);
       }
     }
-    #TODO Add the other Set types here.
+    # Generic:
+    return $self->Field." changed from ".($self->OldValue||"(empty value)")." to ".$self->NewValue." by ".$self->Creator->UserId;
   }
 
-  elsif ($self->Type eq 'Correspond')    {
+  if ($self->Type eq 'Correspond')    {
     return("Mail sent by ". $self->Creator->UserId);
   }
   
@@ -255,16 +242,35 @@ sub Description  {
     return( "Queue changed to ".$self->Data." by ".$self->Creator->UserId);
   }
   elsif ($self->Type =~ /^(Take|Steal|Untake|Give)$/){
-    if ($self->Type eq 'Take'){
-      return( "Taken by ".$self->Creator->UserId);
-    }
-    elsif ($self->Type eq 'Untake'){
-      return( "Untaken by ".$self->Creator->UserId);
-    }
+      if ($self->Type eq 'Untake'){
+	  return( "Untaken by ".$self->Creator->UserId);
+      }
     
-    else{
-      return( "Owner changed to ".$self->Data." by ". $self->Creator->UserId);
-    }
+      if ($self->Type eq "Take") {
+	  return( "Taken by ".$self->Creator->UserId);
+      }
+
+      if ($self->Type eq "Steal") {
+	  my $Old = RT::User->new($CurrentUser);
+	  $Old->Load($self->OldValue);
+	  return "Request stolen from ".$Old->UserId." by ".$self->Creator->UserId;
+      }
+
+      if ($self->Type eq "Give") {
+	  
+	  my $New = RT::User->new($CurrentUser);
+	  $New->Load($self->NewValue);
+
+	  return( "Request given to ".$New->UserId." by ". $self->Creator->UserId);
+      }
+
+      my $New = RT::User->new($CurrentUser);
+      $New->Load($self->NewValue);
+      my $Old = RT::User->new($CurrentUser);
+      $Old->Load($self->OldValue);
+
+      return "Owner changed from ".$New->UserId." to ".$Old->UserId." by ".$self->Creator->UserId;
+
   }
   elsif ($self->Type eq 'requestors'){
     return( "User changed to ".$self->Data." by ".$self->Creator->UserId);
@@ -283,7 +289,7 @@ sub Description  {
   elsif ($self->Type eq 'Subject') {
       return( "Subject changed to ".$self->Data." by ".$self->Creator->UserId);
       }
-  elsif ($self->Type eq 'date_told') {
+  elsif ($self->Type eq 'Told') {
     return( "User notified by ".$self->Creator->UserId);
       }
   elsif ($self->Type eq 'effective_sn') {

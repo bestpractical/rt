@@ -1,6 +1,18 @@
-  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Ticket->Subject||"(No subject given)", titleright=> "<a href=\"../Search/Listing.html?keep=1\">Back to listing</a> / <a href=\"#last\">Last transaction</a> | <a href=\"ProcessUpdate.html?Action=Take&id=".$Ticket->Id."\">Take</a> / <a href=\"Display.html?Action=Kill&id=".$Ticket->Id."\">Kill</a> | <a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=".$Ticket->Id."\">Update</a> "&>
+  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $subj, titleright=> "<a href=\"../Search/Listing.html?keep=1\">Back to listing</a> / <a href=\"#last\">Last transaction</a> | $take <a href=\"Display.html?Action=Kill&id=$id\">Kill</a> | <a href=\"Modify.html?id=$id\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=$id\">Update</a> "&>
 
 
 <%ARGS>
 $Ticket = undef
 </%ARGS>
+<%INIT>
+my $subj=$Ticket->Subject||"(No subject given)";
+my $id=$Ticket->Id;
+my $can_take=($Ticket->Owner->id == $RT::Nobody);
+my $can_steal=!$can_take && $Ticket->Owner->id!=$session{CurrentUser}->id;
+my $take="";
+if ($can_take) {
+	$take="<a href=\"Display.html?Action=Take&id=$id\">Take</a> /";
+} elsif ($can_steal) {
+	$take="<blink><strong><a href=\"Display.html?Action=Steal&id=$id\">Steal</a></strong></blink> /";
+}
+</%INIT>

@@ -114,6 +114,13 @@ unless ($Ticket->Load($id)) {
 	 push(@Actions, $msg);
       }
 
+      # Eventually, steal the ticket:
+      # TODO: What if there are more Actions?
+      if (exists $ARGS{Action} && $ARGS{Action} eq "Steal") {
+         my ($res, $msg)=$Ticket->Steal;
+	 push(@Actions, $msg);
+      }
+
       # Eventually, kill the ticket:
       if (exists $ARGS{Action} && $ARGS{Action} eq "Kill") {
          my ($res, $msg)=$Ticket->Kill;

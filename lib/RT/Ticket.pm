@@ -95,7 +95,6 @@ sub Create {
 	      FinalPriority => 0,
 	      Status => 'open',
 	      TimeWorked => 0,
-	      Told => undef,
 	      Due => undef,
 	      MIMEEntity => undef,
 	     
@@ -126,7 +125,6 @@ sub Create {
 				Priority => $args{'InitialPriority'},
 				Status => $args{'Status'},
 				TimeWorked => $args{'TimeWorked'},
-				Told => undef,
 				Due => undef
 			       );
   
@@ -998,14 +996,22 @@ sub OwnerAsString {
 # {{{ sub Take
 sub Take {
   my $self = shift;
-  return($self->SetOwner($self->CurrentUser->Id, 'Take'));
+  my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Take');
+  return ($trans, 
+	  $trans 
+	  ? "Ticket taken"
+	  : $msg);
 }
 # }}}
 
 # {{{ sub Untake
 sub Untake {
   my $self = shift;
-  return($self->SetOwner($RT::Nobody, 'Untake'));
+  my ($trans,$msg)=$self->SetOwner($RT::Nobody, 'Untake');
+  return ($trans, 
+	  $trans 
+	  ? "Ticket untaken"
+	  : $msg);
 }
 # }}}
 
@@ -1021,8 +1027,11 @@ sub Steal {
     return (0,"You already own this ticket"); 
   }
   else {
-    # TODO: Send a "This ticket was stolen from you" alert
-    return($self->_Set('owner',$self->CurrentUser->Id, 'Steal'));
+      my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Steal'); 
+      return ($trans, 
+	      $trans 
+	      ? "Ticket stolen"
+	      : $msg);
   }
     
 }
@@ -1034,13 +1043,13 @@ sub Steal {
 sub SetOwner {
   my $self = shift;
   my $NewOwner = shift;
-  my $Type = shift;
-  my $more_params={};
-  $more_params->{TransactionType}=$Type if $Type;
+  my $Type = shift || "Give";
+  my $more_params={TransactionType=>$Type};
   my ($NewOwnerObj);
 
   require RT::User;
   $NewOwnerObj = RT::User->new($self->CurrentUser);
+  my $OldOwnerObj = $self->Owner;
   
   if (!$NewOwnerObj->Load($NewOwner)) {
     
@@ -1081,7 +1090,11 @@ sub SetOwner {
     #send them mail
   }
 
-  return($self->_Set('Owner',$NewOwnerObj->Id,0,$more_params));
+  my ($trans,$msg)=$self->_Set('Owner',$NewOwnerObj->Id,0,$more_params);
+  return ($trans, 
+	  ($trans 
+	  ? ("Owner changed from ".$OldOwnerObj->UserId." to ".$NewOwnerObj->UserId)
+	  : $msg));
 }
 
 # }}}
@@ -1334,7 +1347,7 @@ sub _Set {
     my $MoreOptions = shift if @_;
 
     unless (ref $MoreOptions) {
-	$MoreOptions={ActionType=>$MoreOptions};
+	$MoreOptions={TransactionType=>$MoreOptions};
     }
     
     #Take care of the old value
