@@ -99,6 +99,7 @@ sub main_loop {
         for ( ; accept( Remote, HTTPDaemon ); close Remote ) {
             Module::Refresh->refresh if $RT::DevelMode;
 
+            binmode *Remote, ':utf8';
             *STDIN  = *Remote;
             *STDOUT = *Remote;
 
