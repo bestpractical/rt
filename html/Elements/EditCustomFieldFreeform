@@ -44,7 +44,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($Multiple) {
-<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
 <textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$Default%></textarea>
 % } else {
 <input name="<%$NamePrefix%><%$CustomField->Id%>-Value" size="<%$Cols%>" value="<%$Default ? $Default : ''%>">
