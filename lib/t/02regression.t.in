@@ -34,9 +34,10 @@ is($q2->CommentAddress, 'comment@a');
 
 
 use File::Find;
-File::Find::find({wanted => \&wanted}, 'lib/t/autogen');
-sub wanted { /^autogen.*\.t\z/s && require $_; }
+File::Find::find({wanted => \&wanted_autogen}, 'lib/t/autogen');
+sub wanted_autogen { /^autogen.*\.t\z/s && require $_; }
 
 File::Find::find({wanted => \&wanted_regression}, 'lib/t/regression');
 sub wanted_regression { /^*\.t\z/s && require $_; }
 
+require "lib/t/03web.pl";

@@ -5,7 +5,6 @@ use WWW::Mechanize;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
-use Test::More qw(no_plan);
 
 my $cookie_jar = HTTP::Cookies->new;
 my $agent = WWW::Mechanize->new();
@@ -37,4 +36,27 @@ $agent->click(0);
 is($agent->{'status'}, 200, "Fetched the page ok");
 ok( $agent->{'content'} =~ /Logout/i, "Found a logout link");
 
+
+use File::Find;
+find ( \&wanted , 'html/');
+
+sub wanted {
+        -f  && /\.html$/ && $_ !~ /Logout.html$/  && test_get($File::Find::name);
+}       
+
+sub test_get {
+        my $file = shift;
+
+
+        $file =~ s#^html/##; 
+        ok ($agent->get("$url/$file", "GET $url/$file"));
+        is ($agent->{'status'}, 200, "Loaded $file");
+        ok( $agent->{'content'} =~ /Logout/i, "Found a logout link on $file ");
+        ok( $agent->{'content'} !~ /Not logged in/i, "Still logged in for  $file");
+        ok( $agent->{'content'} !~ /System error/i, "Didn't get a Mason compilation error on $file");
+        
+}
+
 # }}}
+
+1;

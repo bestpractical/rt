@@ -78,8 +78,14 @@ ok(RT::I18N->Init);
 
 sub Init {
     # Load language-specific functions
-    require $_ for glob(substr(__FILE__, 0, -3) . "/*.pm");
-
+    foreach my $language ( glob(substr(__FILE__, 0, -3) . "/*.pm")) {
+        if ($language =~ /^([-\w.\/\\]+)$/) {
+           require "$1";
+        }
+        else {
+            $RT::Logger->warning("$language is tainted. not loading");
+        } 
+    }
     # Acquire all .po files and iterate them into lexicons
     my @languages = map {
 	m|/(\w+).po$|g

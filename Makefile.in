@@ -308,6 +308,9 @@ config-install:
 test: 
 	$(PERL) -Ilib lib/t/00smoke.t
 
+regression-nosetgid-quiet: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
+	$(PERL) sbin/regression_harness
+
 regression-nosetgid: config-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
 	$(PERL) lib/t/02regression.t
 

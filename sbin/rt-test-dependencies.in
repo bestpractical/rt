@@ -134,6 +134,7 @@ $deps{'DEV'} = [ _( << '.') ];
 Regexp::Common
 Time::HiRes 
 Test::Inline 
+WWW::Mechanize
 .
 
 $deps{'FASTCGI'} = [ _( << '.') ];
