@@ -18,7 +18,7 @@ sub template_replace_tokens {
     $template =~ s/%serial_num%/$in_serial_num/g;
     $template =~ s/%mailalias%/$mail_alias/g;
     $template =~ s/%content%/$in_custom_content\n/g;
-    $template =~ s/%req:(\w+)%/$rt::eq[$in_serial_num]{$1}/g;
+    $template =~ s/%req:(\w+)%/$rt::req[$in_serial_num]{$1}/g;
     $template =~ s/%trans:(\w+)%/$rt::req[$in_serial_num]{'trans'}[$in_id]{$1}/g;
     $template =~ s/%queue:(\w+)%/$rt::queues{$rt::req[$in_serial_num]{'queue_id'}}{$1}/g;
 
