@@ -574,6 +574,14 @@ sub MigrateTransactions {
 	    $date->Set( Format=>'unix', Value=>$row->{trans_data} );
 	    $trans_args{'NewValue'} = $date->ISO();
 	} 
+	elsif ( $row->{type} eq 'subject' ) {
+	    $trans_args{'Type'} = "Set";
+	    $trans_args{'Field'} ="Subject";
+	    $trans_args{'OldValue'} = $Subject;
+	    $trans_args{'NewValue'} = $row->{trans_data};
+	    $Subject = $row->{trans_data};
+	    
+	} 
 	elsif ( $row->{type} eq 'priority' ) {
 	    $trans_args{'Type'} = "Set";
 	    $trans_args{'Field'} ="Priority";
