@@ -8,7 +8,31 @@
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=1>
 <TR>
 %foreach my $col (@{Config(\%ARGS, 'QueueListingCols')}) {
-   <TH><% $col->{Header} %></TH>
+<TH>
+
+<%PERL>	
+my ($order);
+ my $attr = $col->{'TicketAttribute'};
+ $attr =~ s/Obj->(Name|AsString|AgeAsString)//g;
+  if ($session{'tickets_sort_order'} =~ /^asc$/i) {
+   $order = 'DESC';
+ } else {
+   $order = 'ASC';
+ }
+</%PERL>
+
+% if (grep (/^$attr$/i, $session{'tickets'}->SortFields)) {
+<A 
+% if ($attr eq $session{'tickets_sort_by'}) {
+class="currenttab"
+% }
+HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$attr%>&TicketsSortOrder=<%$order%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">
+<%$col->{Header}%>
+</A>
+% } else {
+<% $col->{Header} %>
+% }
+</TH>
 %}
 </TR>
 
@@ -28,7 +52,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
       </%PERL>
 <TR bgcolor="<%$bgcolor%>" >
 %# The ticket view is controlled by config.pm, WebOptions
-%foreach my $col (@{Config(\%ARGS, 'QueueListingCols')}) {
+%foreach my $col (@{Config('QueueListingCols')}) {
 <TD><& TicketCell , Ticket=>$Ticket,  Column=>$col &></TD>
 %}
 </TR>
