@@ -223,6 +223,7 @@ sub LoadByEmail {
 }
 # }}}
 
+
 # {{{ sub IsPassword
 
 =head2 IsPassword

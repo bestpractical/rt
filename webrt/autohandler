@@ -2,27 +2,51 @@
 
 <%INIT>
 if (defined ($user) && defined ($pass)){
-my %cookies = fetch CGI::Cookie;
-	#TODO if the password is the user's password
-	$session{'CurrentUser'} = RT::CurrentUser->new();
-	unless ($session{'CurrentUser'}->Load($user)) {
-                $session{'CurrentUser'} = undef;
-		&mc_comp("/Elements/Error", Why => "User Unknown");
-		$m->comp('/Login.html', %ARGS);
-	};
-        unless ($session{'CurrentUser'}->IsPassword($pass)) {
-		$session{'CurrentUser'} = undef;
-                &mc_comp("/Elements/Error", Why => "Wrong Password");
-		$m->comp('/Login.html', %ARGS);
-        }
+    my %cookies = fetch CGI::Cookie;
+    #TODO if the password is the user's password
+    $session{'CurrentUser'} = RT::CurrentUser->new();
+    unless ($session{'CurrentUser'}->Load($user)) {
+	$session{'CurrentUser'} = undef;
+	&mc_comp("/Elements/Error", Why => "User Unknown");
+	$m->comp('/Login.html', %ARGS);
+    };
+    unless ($session{'CurrentUser'}->IsPassword($pass)) {
+	$session{'CurrentUser'} = undef;
+	
+	$m->comp('/Login.html', Error => 'Your username or password is incorrect', %ARGS);
+	$m->abort;
+    }
+    if  (!$session{'CurrentUser'}->Privileged) {
+	# If the user isn't priviledged, they can only see SelfService
+	#TODO this isn't quite right. it will force selfservice users
+	#to their homepage...
+        #TODO +++ limit this properly. the other way breaks any page other than index
         $m->call_next;
-}
-elsif (defined $session{'CurrentUser'}){
+        #	$m->comp('/SelfService/index.html');
+    }
+    else {
 	$m->call_next;
+    }
+}
+  
+elsif (defined $session{'CurrentUser'}){
+ 
+    if  (!$session{'CurrentUser'}->Privileged) {
+	# If the user isn't priviledged, they can only see SelfService
+	#TODO this isn't quite right. it will force selfservice users
+	#to their homepage...
+        #TODO +++ see above
+	#$m->comp('/SelfService/index.html');
+        $m->call_next;
+    }
+    else {
+	$m->call_next;
+    }
+    
 }
 else {
-$m->comp('/Login.html', %ARGS);
- }
+    $m->comp('/Login.html', %ARGS);
+}
 </%INIT>
 
 <%ARGS>

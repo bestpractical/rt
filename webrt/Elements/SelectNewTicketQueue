@@ -1,0 +1,26 @@
+%# $Header$
+
+<SELECT NAME ="<%$Name%>">
+<OPTION VALUE="">-</OPTION>
+% while (my $queue=$q->Next) {
+% if ($queue->CurrentUserHasRight('CreateTicket')) {
+<OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->QueueId%>
+%   if (($Verbose) and ($queue->Description) ){
+(<%$queue->Description%>)
+%  }
+</OPTION>
+%  }
+% }
+</SELECT>
+
+<%ARGS>
+$Name => 'Queue'
+$Verbose => undef
+$Default => undef
+</%ARGS>
+
+<%INIT>
+use RT::Queues;
+my $q=new RT::Queues($session{'CurrentUser'});
+$q->UnLimit;
+</%INIT>

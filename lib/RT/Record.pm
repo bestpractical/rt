@@ -48,9 +48,9 @@ sub _Init  {
 
 sub _MyCurrentUser  {
     my $self = shift;
-    
-    $self->{'user'} = shift;
-    
+  
+    $RT::Logger->debug("Current user is ".$_[0]);
+    $self->CurrentUser(@_);
     if(!defined($self->CurrentUser)) {
 	use Carp;
 	Carp::confess();
@@ -230,8 +230,21 @@ sub Creator  {
 # }}}
 
 # {{{ sub CurrentUser 
+
+=head2 CurrentUser
+
+If called with an argument, sets the current user to that user object.
+This will affect ACL decisions, etc.  
+Returns the current user
+
+=cut
+
 sub CurrentUser  {
   my $self = shift;
+
+  if (@_) {
+    $self->{'user'} = shift;
+  }
   return ($self->{'user'});
 }
 # }}}

@@ -1,0 +1,63 @@
+%# $Header$
+%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
+
+<& /Elements/Header, Title => "Create a request" &>
+<& /Elements/Tabs &>
+<FORM ACTION="Display.html" METHOD="POST">
+<INPUT TYPE=HIDDEN Name="id" VALUE="new">
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket " &>
+
+<TABLE>
+<TR>
+<TD>
+Queue:
+</TD>
+<TD>
+<& /Elements/SelectNewTicketQueue, Verbose => 'True' &>
+</TD>
+</TR>
+<TR>
+<TD>
+Requestors: 
+</TD>
+<TD>
+<INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=20>
+</TD>
+</TR>
+<TR>
+<TD>
+Cc:
+</TD>
+<TD>
+ <INPUT NAME="Cc" SIZE=20>
+</TD>
+</TR>
+<TR>
+<TD>
+Subject:
+</TD>
+<TD COLSPAN=3>
+<INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
+</TD>
+</TR>
+
+<TR>
+<TD>
+Attach file:
+</TD>
+<TD>
+<INPUT TYPE=FILE NAME="Attachment">
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=2>
+Describe the issue below:<br>
+<& /Elements/MessageBox &>
+</TD>
+</TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Label => "Create ticket"&>
+
+
+</FORM>

@@ -1,0 +1,17 @@
+<SELECT MULTIPLE NAME="<%$Name%>"  SIZE=10>
+%while (my $user = $users->Next) {
+<OPTION VALUE="<%$user->id%>"><%$user->UserId%>
+%}
+</SELECT>
+
+<%INIT>
+my $users = new RT::Users($session{'CurrentUser'});
+
+$users->Limit(FIELD => 'id', VALUE => $RT::SystemUser->id, OPERATOR => '!=' );
+$users->Limit(FIELD => 'id', VALUE => $RT::Nobody->id, OPERATOR => '!=' );
+$users->LimitToPrivileged();
+
+</%INIT>
+<%ARGS>
+$Name => 'Users'
+</%ARGS>

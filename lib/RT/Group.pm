@@ -109,7 +109,7 @@ sub MembersObj {
 
 =head2 AddMember
 
-AddMember adds a user to this group.  It takes an RT::User object and 
+AddMember adds a user to this group.  It takes a user id and 
 returns true on successful addition or null on failure.
 
 =cut
@@ -131,13 +131,14 @@ sub AddMember {
     }
 
     my $member_object = new RT::GroupMember($self->CurrentUser);
-    $member_object->Create( UserId => $new_member->id, GroupId => $self->id );
+    $member_object->Create( UserId => $new_member, GroupId => $self->id );
 
 }
 
 # }}}
 
 # {{{ HasMember
+
 =head2 HasMember
 
 Takes a user Id and returns a GroupMember Id if that user is a member of 
@@ -171,6 +172,7 @@ sub HasMember {
 # }}}
 
 # {{{ DeleteMember
+
 =head2 DeleteMember
 
 Takes the id of a GroupMember object. If the current user has apropriate rights,

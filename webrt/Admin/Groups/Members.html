@@ -1,0 +1,72 @@
+<& /Admin/Elements/Header, Title => "RT/Admin/Edit the group ". $Group->Name &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+
+<& /Elements/TitleBoxStart, title => 'Editing configuration for group '.$Group->Id &>
+
+<FORM ACTION="<%$RT::WebPath%>/Admin/Groups/Members.html" METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
+<TABLE WIDTH="100%">
+<TR>
+<TD>
+Add members
+</TD>
+<TD>
+Remove members
+</TD>
+</TR>
+
+<TR>
+<TD>
+<& /Admin/Elements/SelectUsers, Name => "AddMembers" &>
+</TD>
+<TD>
+% while (my $member = $Group->MembersObj->Next()) {
+<INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->id%>">
+<%$member->UserObj->UserId%> (<%$member->UserObj->RealName%>)
+% }
+</TD>
+</TR>
+</TABLE>
+<& /Elements/Submit &>
+</form>
+<& /Elements/TitleBoxEnd &>
+
+
+<%INIT>
+my $Group = new RT::Group($session{'CurrentUser'});
+
+if ($id) {
+    $Group->Load($id) || Abort('Could not load group');
+}
+elsif ($CreateGroup) {
+    $Group->Create(Name => "$Name");
+}
+else {
+    Abort("You didn't specify a valid action");
+}
+
+
+my $key;
+foreach $key (keys %ARGS) {
+
+if ($key =~ /^DeleteMember-(\d+)$/) {
+    my $id = $1; 
+    my $retval = $Group->DeleteMember();
+    push (@results, $retval);
+}
+if ($key =~ /^AddMembers$/) {
+    my $retval = $Group->AddMember($ARGS{"$key"});
+    push (@results, $retval);
+}
+}
+
+</%INIT>
+
+<%ARGS>
+@results => undef
+$CreateGroup => undef
+$Name => undef
+$id => undef
+</%ARGS>

@@ -8,9 +8,12 @@
 
 =head1 SYNOPSIS
 
-  use RT::GroupMember;
+RT::GroupMember should never be called directly. It should generally
+only be accessed through the helper functions in RT::Group;
 
 =head1 DESCRIPTION
+
+
 
 
 =head1 METHODS
@@ -96,11 +99,24 @@ sub Delete {
     return($self->$SUPER::Delete(@_));
 }
 
-    
-
-
-
 # }}}
+
+# {{{ sub UserObj
+
+=head2 UserObj
+
+Returns an RT::User object for the user specified by $self->UserId
+
+=cut
+
+sub UserObj {
+    my $self = shift;
+    unless (defined ($self->{'user_obj'})) {
+        $self->{'user_obj'} = new RT::User($self->CurrentUser);
+        $self->{'user_obj'}->Load($self->UserId);
+    }
+    return($self->{'user_obj'});
+}
 
 # {{{ sub _Set
 sub _Set {

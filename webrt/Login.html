@@ -1,7 +1,17 @@
 <& /Elements/Header, Title=>"Login" , &>
+
 <DIV ALIGN=CENTER>
+% if ($Error) {
+<& /Elements/TitleBoxStart, title => 'Error' &>
+<% $Error %>
+<& /Elements/TitleBoxEnd &>
+% }
+
 <& /Elements/TitleBoxStart, width=> "40%", titleright => "RT for $RT::rtname", title => 'Login' ,
 contentbg=>"#cccccc" &>
+
+
+
 <FORM METHOD=POST >
 <TABLE BORDER=0>
 <TR ALIGN=RIGHT>
@@ -33,12 +43,12 @@ contentbg=>"#cccccc" &>
 </FORM>
 </DIV>
 <&/Elements/TitleBoxEnd&>
-<& /Elements/Footer, SuppressAuthString => 1 &>
-<% $m->abort() %>
+
 <%ARGS>
 $user => ""
 $pass => undef
 $goto => undef
+$Error => undef
 </%ARGS>
 
 <%INIT>

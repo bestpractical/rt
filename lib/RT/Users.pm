@@ -131,8 +131,8 @@ Limits to users who can be made members of ACLs and groups
 sub LimitToPrivileged {
     my $self = shift;
     $self->Limit( FIELD => 'Privileged',
-                  Operator => '=',
-                  Value => '1');
+                  OPERATOR => '=',
+                  VALUE => '1');
 }
 
 # }}}

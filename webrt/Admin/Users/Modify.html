@@ -6,13 +6,73 @@
 <b><%$result%></b><br>
 %}
 
-<& /Admin/Elements/ModifyUser, UserObj => $UserObj &>
+
+<& /Elements/TitleBoxStart, title => 'Editing Configuration for user '.$UserObj->UserId &>
+
+<FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
+
+UserId: <input name="UserId" value="<%$UserObj->UserId%>">
+<BR>
+New Password: <input type=password name="Pass1"><BR>
+Retype Password: <input type=password name="Pass2"><BR>
+
+Comments: <TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL>
+<%$UserObj->Comments%>
+</TEXTAREA>
+
+<BR>
+Signature: <TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD>
+<%$UserObj->Signature%>
+</TEXTAREA>
+<BR>
+EmailAddress: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
+<BR>
+FreeformContactInfo: <input name="FreeformContactInfo" value="<%$UserObj->FreeformContactInfo%>">
+<BR>
+Organization: <input name="Organization" value="<%$UserObj->Organization%>">
+<BR>
+RealName: <input name="RealName" value="<%$UserObj->RealName%>">
+<BR>
+NickName: <input name="NickName" value="<%$UserObj->NickName%>">
+<BR>
+Unix login: <input name="Gecos" value="<%$UserObj->Gecos%>">
+<BR>
+HomePhone: <input name="HomePhone" value="<%$UserObj->HomePhone%>">
+<BR>
+WorkPhone: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>">
+<BR>
+MobilePhone: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>">
+<BR>
+PagerPhone: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>">
+<BR>
+Address1: <input name="Address1" value="<%$UserObj->Address1%>">
+<BR>
+Address2: <input name="Address2" value="<%$UserObj->Address2%>">
+<BR>
+City: <input name="City" value="<%$UserObj->City%>">
+<BR>
+State: <input name="State" value="<%$UserObj->State%>">
+<BR>
+Zip: <input name="Zip" value="<%$UserObj->Zip%>">
+<BR>
+Country: <input name="Country" value="<%$UserObj->Country%>">
+<BR>
+<& /Elements/Submit &>
+</form>
+<& /Elements/TitleBoxEnd &>
 
 <%INIT>
 use RT::Interface::Web;
 my $UserObj = new RT::User($session{'CurrentUser'});
-$UserObj->Load($id) || $UserObj->Load($UserId) || $m->comp('/Elements/Error', Why => "Couldn't load user '$UserId'");
 
+if ($CreateUser) {
+
+$UserObj->Create();
+}
+else {
+$UserObj->Load($id) || $UserObj->Load($UserId) || $m->comp('/Elements/Error', Why => "Couldn't load user '$UserId'");
+}
 
 my @fields = qw(UserId Comments Signature EmailAddress FreeformContactInfo 
 		Organization RealName NickName Lang EmailEncoding WebEncoding 
@@ -34,6 +94,7 @@ my $check = "if ((defined \$$field) and (\$$field !~ \$UserObj->$field)) {
 eval $check;
 
 }
+#TODO: make this report errors properly
 if ((defined $Pass1)  and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
 my ($code, $msg);
 ($code, $msg) = $UserObj->SetPassword($Pass1);
@@ -76,5 +137,5 @@ $Zip  => undef
 $Country => undef
 $Pass1 => undef
 $Pass2=> undef
-
+$CreateUser=> undef
 </%ARGS>

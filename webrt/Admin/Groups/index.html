@@ -5,7 +5,8 @@
 <TR>
 <TD VALIGN=TOP>
 <h1>Create</h1>
-<FORM METHOD=get ACTION="<% $RT::WebPath %>/Admin/Groups/Create.html">
+<FORM METHOD=get ACTION="<% $RT::WebPath %>/Admin/Groups/Modify.html">
+<input type=hidden name="CreateGroup" value="true">
 Create a Group called <INPUT NAME="Name" size=10><input type=submit>
 </form>
 </TD>

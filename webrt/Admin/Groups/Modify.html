@@ -1,0 +1,62 @@
+<& /Admin/Elements/Header, Title => "RT/Admin/Edit the group ". $Group->Name &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+
+<& /Elements/TitleBoxStart, title => 'Editing configuration for group '.$Group->Id &>
+
+<FORM ACTION="<%$RT::WebPath%>/Admin/Groups/Modify.html" METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
+<TABLE>
+<TR><TD ALIGN=RIGHT>
+Name: 
+</TD>
+<TD><INPUT name="Name" value="<%$Group->Name%>"></TD>
+</TR><TR>
+<TD ALIGN=RIGHT>
+Description:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD></TR>
+</TABLE>
+<& /Elements/Submit &>
+</form>
+<& /Elements/TitleBoxEnd &>
+
+<%INIT>
+
+my $Group = new RT::Group($session{'CurrentUser'});
+
+if ($id) {
+    $Group->Load($id) || Abort('Could not load group');
+}
+elsif ($CreateGroup) {
+    $Group->Create(Name => "$Name");
+}
+else {
+    Abort("You didn't specify a valid action");
+}
+
+
+my @fields = qw(Description Name );
+
+
+#Run through each field in this list. update the value if apropriate
+my $field;
+foreach $field (@fields) {
+my ($code, $msg);
+my $check = "if ((defined \$$field) and (\$$field !~ \$Group->$field)) {
+  (\$code, \$msg) = \$Group->Set$field(\$$field);
+
+     push \@results, \$msg;
+   }";
+eval $check;
+
+}
+
+</%INIT>
+
+
+<%ARGS>
+$CreateGroup => undef
+@results => undef
+$Name => undef
+$id => undef
+</%ARGS>

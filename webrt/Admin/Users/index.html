@@ -4,7 +4,9 @@
 <TR>
 <TD VALIGN=TOP>
 <h2>Create</h2>
-<& /Admin/Elements/CreateUserCalled &>
+<FORM METHOD=POST ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html">
+New user <input type=submit value="CreateUser">
+</form>
 </TD>
 
 <TD VALIGN=TOP>

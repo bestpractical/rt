@@ -179,6 +179,22 @@ sub IsPassword {
 }
 # }}}
 
+# {{{ sub Privileged
+
+=head2 Privileged
+
+Returns true if the current user can be granted rights and be
+a member of groups.
+
+=cut
+
+sub Privileged {
+    my $self = shift;
+    return ($self->UserObj->Privileged());
+}
+
+# }}}
+
 # {{{ Convenient ACL methods
 
 =head2 HasQueueRight
