@@ -21,4 +21,4 @@ export PATH
 echo "$BINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} mysql < $DATABASEACLS"
 
 $BINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} mysql < $DATABASEACLS
-
+$BINDIR/mysqladmin --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} reload

@@ -138,7 +138,7 @@ sub Create  {
 	
 	my $TempUser2 =RT::User->new($RT::SystemUser);
 	$TempUser2->LoadByEmail($args{'EmailAddress'});
-	return(0, 'Email in use') if ($TempUser2->EmailAddress eq $args{'EmailAddress'});
+	return(0, 'Email in use') if ((defined $args{'EmailAddress'}) and ($TempUser2->EmailAddress eq $args{'EmailAddress'}));
 
     }
     else {
@@ -568,6 +568,12 @@ sub HasQueueRight {
     }
     
     if (defined $args{'QueueObj'}) {
+	
+	unless ($args{'QueueObj'}->Id) {
+	    $RT::Logger->debug("$self passed a bogus queue or queue object. aborting ACL check");
+	    return(undef);
+	}	
+	
 	$QueueId = $args{'QueueObj'}->Id;
 	
 	if ($args{'QueueObj'}->IsCc($self)) { #If user is a cc
@@ -658,8 +664,9 @@ sub HasSystemRight {
 		 IsRequestor => undef,
 		 @_);
     
-    if (!defined $right) {
-	$RT::Logger->debug("RT::User::HasSystemRight was passed in no right.");
+    unless (defined $right) {
+
+	$RT::Logger->debug("$self RT::User::HasSystemRight was passed in no right.");
 	return(undef);
     }	
     return ( $self->_HasRight ( Scope => 'System',

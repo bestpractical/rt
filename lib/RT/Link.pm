@@ -33,6 +33,7 @@ sub _Init  {
 # }}}
 
 # {{{ sub Create 
+
 sub Create  {
   my $self = shift;
   my %args = (
@@ -68,6 +69,7 @@ sub Create  {
     
   return ($id);
 }
+
 # }}}
  
 # {{{ sub Load 
@@ -103,6 +105,7 @@ sub Load  {
 	return (0, "That's not a numerical id");
   }
 }
+
 # }}}
 
 # {{{ sub TargetObj 
@@ -320,7 +323,7 @@ sub CanonicalizeURI {
     #If it's a local URI, load the ticket object and return its URI
     if ($id =~ /^$RT::TicketBaseURI/) {
 	my $ticket = new RT::Ticket($self->CurrentUser);
-	$ticket->LoadByURI($id);
+	$ticket->Load($id);
 	#If we couldn't find a ticket, return undef.
 	return undef unless (defined $ticket->Id);
 	$RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");

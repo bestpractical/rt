@@ -340,6 +340,7 @@ sub IsWatcher {
     
     my %args = ( Type => 'Requestor',
 		 Id => undef,
+		 Email => undef,
 		 @_
 	       );
     #ACL check - can't do it. we need this method for ACL checks
@@ -418,7 +419,7 @@ sub IsCc {
   my $self = shift;
   my $cc = shift;
   
-  return ($self->IsWatcher( Type => 'Cc', Identifier => $cc ));
+  return ($self->IsWatcher( Type => 'Cc', Id => $cc ));
   
 }
 
@@ -440,7 +441,7 @@ sub IsAdminCc {
   my $self = shift;
   my $admincc = shift;
   
-  return ($self->IsWatcher( Type => 'AdminCc', Identifier => $admincc ));
+  return ($self->IsWatcher( Type => 'AdminCc', Id => $admincc ));
   
 }
 

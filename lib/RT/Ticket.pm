@@ -59,26 +59,40 @@ Otherwise, returns the ticket id.
 sub Load {
    my $self = shift;
    my $id = shift;
+
+   #TODO modify this routine to look at EffectiveId and do the recursive load
+   # thing. be careful to cache all the interim tickets we try so we don't loop forever.
    
-   #If it's a local URI, load the ticket object and return its URI
-   if ($id =~ /^$RT::TicketBaseURI/)  {
-       return($self->LoadByURI($id));
+   #If it's a local URI, turn it into a ticket id
+   if ($id =~ /^$RT::TicketBaseURI(\d+)$/)  {
+       $id = $1;
    }
    #If it's a remote URI, we're going to punt for now
    elsif ($id =~ '://' ) {
        return (undef);
    }
    
-   #If the base is an integer, load it as a ticket 
-   elsif ( $id =~ /^\d+$/ ) {
-       return($self->LoadById($id));
+   #If we have an integer URI, load the ticket
+   if ( $id =~ /^\d+$/ ) {
+       my $ticketid = $self->LoadById($id);
+   
+       unless ($ticketid) {
+	   $RT::Logger->debug("$self tried to load a bogus ticket: $id\n");
+	   return(undef);
+       }
    }
    
    #It's not a URI. It's not a numerical ticket ID. Punt!
    else {
-       return(undef)
+       return(undef);
    }
    
+   #If we're merged, resolve the merge.
+   if (($self->EffectiveId) and
+       ($self->EffectiveId != $self->Id)) {
+	   return ($self->Load($self->EffectiveId));
+       }
+       
    
 }
 
@@ -279,6 +293,13 @@ sub Create {
 	$RT::Logger->warning("Ticket couldn't be created: $ErrStr");
     }
     
+    #Set the ticket's effective ID now that we've created it.
+    my ($val, $msg) = $self->__Set('EffectiveId', $self->Id());
+
+    unless ($val) {
+	$RT::Logger->err("$self -> Create couldn't set EffectiveId: $msg\n");
+    }	
+    
     # Hmh ... shouldn't $ErrStr be the second return argument?
     # Eventually, are all the callers updated?
     return($self->Id, $TransObj->Id, $ErrStr);
@@ -347,7 +368,8 @@ sub _AddWatcher {
 	   $args{'Email'} = $args{'Person'};
        }	
     }	
-    
+
+    #If we only have an email address, try to resolve it to an owner   
     if ($args{'Owner'} == 0) {
 	my $User = new RT::User($RT::SystemUser);
 	$User->LoadByEmail($args{'Email'});
@@ -358,7 +380,7 @@ sub _AddWatcher {
     }
     
     
-    #If we have an email address, try to resolve it to an owner
+ 
     
     require RT::Watcher;
     my $Watcher = new RT::Watcher ($self->CurrentUser);
@@ -477,7 +499,8 @@ sub DeleteWatcher {
     else {
 	#Iterate throug all the watchers looking for this email address
 	#it may be faster to speed this up with a custom query
-	while ($Watcher = $self->Watchers->Next) {
+	my $watchers = $self->Watchers();
+	while ($Watcher = $watchers->Next) {
 	    if ($Watcher->Email =~ /^$id$/) {
 		$self->_NewTransaction ( Type => 'DelWatcher',
 					 OldValue => $Watcher->Email,
@@ -686,6 +709,8 @@ sub IsWatcher {
     
     my %args = ( Type => 'Requestor',
 		 User => undef,
+		 Email => undef,
+		 Id => undef,
 		 @_
 	       );
     
@@ -698,7 +723,7 @@ sub IsWatcher {
 	#Dangerous but ok for now TODO
 	$cols{'Owner'} = $args{'Id'}->Id;
     }
-    elsif ($args{'Id'} =~ /^\d+$/) { # if it's an integer, it's an RT::User obj
+    elsif ($args{'Id'} =~ /^\d+$/) { # if it's an integer, it's a reference to an RT::User obj
 	$cols{'Owner'} = $args{'Id'};
     }
     else {
@@ -1566,29 +1591,74 @@ MergeInto take the id of the ticket to merge this ticket into.
 =cut
 
 sub MergeInto {
-  my $self = shift;
-  my $MergeInto = shift;
+    my $self = shift;
+    my $MergeInto = shift;
+    
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+    }
+    
+    # Load up the new ticket.
+    my $NewTicket = RT::Ticket->new($self->CurrentUser);
+    
+    # make sure it exists.
+    unless (defined $NewTicket->Id) {
+	return (0, 'New ticket doesn\'t exist');
+    }
+    
+    unless ($NewTicket->id == $NewTicket->EffectiveId) {
+	$RT::Logger->err('$self trying to merge into '.$NewTicket->Id.' which is itself merged.\n');
+	return (0, "Can't merge into a merged ticket. You should never get this error");
+    }
+    
+    # Make sure the current user can modify the new ticket.
+    unless ($NewTicket->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+    }
+    
+    # We use EffectiveId here even though it duplicates information from
+    # the links table becasue of the massive performance hit we'd take
+    # by trying to do a seperate database query for merge info everytime 
+    # loaded a ticket. 
+    
+    
+    
+    unless ($val) {
+	$RT::Logger->Error("$self couldn't set effective id. ticket not merged");
+	return (0, $msg);
+    }	
+    
+    #update this ticket's effective id to the new ticket's id.
+    my ($val, $msg) = $self->__Set('EffectiveId', $NewTicket->Id());
+    
+    #make a new link: this ticket is merged into that other ticket.
+    $self->AddLink( Type =>'MergedInto',
+		    Target => $NewTicket->Id() );
+    
+    #add all of this ticket's watchers to that ticket.
+    my $watchers = $self->Watchers();
+    while (my $watcher = $watchers->Next()) {
+	unless ($NewTicket->HasWatcher ( Type => $watcher->Type(),
+					 Email => $watcher->Email(),
+					 Id => $watcher->Owner())) {
+	    $NewTicket->AddWatcher( Type => $watcher->Type, 
+				    Email => $watcher->Email(),
+				    Owner => $watcher->Owner());
+	    
+	}
+    }
 
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
-    return (0, "Permission Denied");
-  }
-  
-  #TODO: Merge must be implemented +++
-  die "Ticket::Merge stubbed";
-  #Make sure this user can modify this ticket
-  #Load $MergeInto as Ticket $Target
-
-  #Make sure this user can modify $Target
-  #If I have an owner and the $Target doesn't, set them on the target
-  
-  #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
-  #Merge the requestor lists
-  #Set my effective_sn to the $Target's Effective SN.
-  #Set all my transactions Effective_SN to the $Target's Effective_Sn
-  
-  #Make sure this ticket object thinks its merged
-
-  return ($TransactionObj, "Merge Successful");
+    #find all of the tickets that were merged into this ticket. 
+    my $old_mergees = new RT::Tickets($self->CurrentUser);
+    $old_mergees->Limit( FIELD => 'EffectiveId',
+			 OPERATOR => '=',
+			 VALUE => $self->Id );
+    while (my $ticket = $old_mergees->Next()) {
+	#   update their EffectiveId fields to the new ticket's id
+	my ($val, $msg) = $ticket->__Set('EffectiveId', $NewTicket->Id());
+    }	
+    
+    return ($TransactionObj, "Merge Successful");
 }  
 
 # }}}
@@ -2122,8 +2192,15 @@ sub Transactions {
 
     #If the user has no rights, return an empty object
     if ($self->CurrentUserHasRight('ShowTicket')) {
-	$transactions->Limit( FIELD => 'Ticket',
-			      VALUE => $self->id() );
+	my $tickets = $transactions->NewAlias('Tickets');
+	$transactions->Limit( ALIAS1 => 'main',
+			      FIELD1 => 'Ticket',
+			      ALIAS2 => $tickets,
+			      FIELD2 => 'id');
+	$transactions->Limit( ALIAS => $tickets,
+			      FIELD => 'EffectiveId',
+			      VALUE => $self->id());
+	
     }	
     return($transactions);
 }
@@ -2179,6 +2256,7 @@ sub _Accessible {
 
   my $self = shift;  
   my %Cols = (
+	      EffectiveId => 'read',
 	      Queue => 'read/write',
 	      Requestors => 'read/write',
 	      Owner => 'read/write',

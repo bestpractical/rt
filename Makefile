@@ -323,4 +323,4 @@ predist: commit
 
 dist: commit predist
 	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
-	ln -s ./rt-$(RT_VERSION).tar.gz /home/ftp/pub/rt/devel/rt.tar.gz
+	ln -s ./$(TAG).tar.gz /home/ftp/pub/rt/devel/rt.tar.gz

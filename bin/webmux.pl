@@ -8,7 +8,13 @@ $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
 $ENV{'ENV'} = '' if defined $ENV{'ENV'};
 $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
+
+# We really don't want apache to try to eat all vm
+# see http://perl.apache.org/guide/control.html#Preventing_mod_perl_Processes_Fr
+
+
 package RT::Mason;
+use Apache::DBI; #before we touch anythign DBI related, we want that persistent connection
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 use HTML::Mason::ApacheHandler;
 

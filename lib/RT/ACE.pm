@@ -195,25 +195,25 @@ sub Create {
     }
 
     # }}}
+ 
+    #TODO allow loading of queues by name.    
     
     # {{{ Check the ACL
     if ($args{'RightScope'} eq 'System') {
 	
 	unless ($self->CurrentUserHasSystemRight('ModifyACL')) {
-	    $RT::Logger->error("No permission to grant rights");
+	    $RT::Logger->error("Permission denied.");
 	    return(undef);
 	}
-	
-	
     }
+    
     elsif ($args{'RightScope'} eq 'Queue') {
-   	
 	unless ($self->CurrentUserHasQueueRight( Queue => $args{'RightAppliesTo'},
 						 Right => 'ModifyACL')) {
-	    return (0, 'No permission to grant rights');
+	    return (0, 'Permission denied.');
 	}
-	#TODO allow loading of queues by name.
-
+	
+	
 	
 	
     }
@@ -267,7 +267,7 @@ sub Create {
     }
     else {
 	$RT::Logger->err('System error. right not granted.');
-	return(undef);
+	return(0, 'System Error. right not granted');
     }
 }
 
@@ -498,7 +498,9 @@ sub CurrentUserHasSystemRight {
     my $self = shift;
     my $right = shift;
     return ($self->HasRight( Right => $right,
-			     Principal => $self->CurrentUser->UserObj));
+			     Principal => $self->CurrentUser->UserObj,
+			     System => 1
+			   ));
 }
 
 
@@ -506,10 +508,9 @@ sub CurrentUserHasSystemRight {
 
 # {{{ sub CurrentUserHasRight
 
-=item CurrentUserHasRight RIGHT  [QUEUEID]
+=item CurrentUserHasRight RIGHT 
+Takes a rightname as a string.
 
-Takes a rightname as a string. Can take a queue id as a second
-optional parameter, which can be useful to a routine like create.
 Helper menthod for HasRight. Presets Principal to CurrentUser then 
 calls HasRight.
 
@@ -540,25 +541,25 @@ sub HasRight {
     my %args = ( Right => undef,
                  Principal => undef,
 		 Queue => undef,
-		 System => undef
-                 @_ );
+		 System => undef,
+                 @_ ); 
 
     #If we're explicitly specifying a queue, as we need to do on create
-    if ($args{'Queue'}) {
+    if (defined $args{'Queue'}) {
 	return ($args{'Principal'}->HasQueueRight(Right => $args{'Right'},
 						  Queue => $args{'Queue'}));
     }
     #else if we're specifying to check a system right
-    elsif ($args{'System'}) {
+    elsif ((defined $args{'System'}) and (defined $args{'Right'})) {
         return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
     }	
     
     elsif ($self->__Value('RightScope') eq 'System') {
-	return $args{'Principal'}->HasSystemRight($right);
+	return $args{'Principal'}->HasSystemRight($args{'Right'});
     }
     elsif ($self->__Value('RightScope') eq 'Queue') {
 	return $args{'Principal'}->HasQueueRight( Queue => $self->__Value('RightAppliesTo'),
-						  Right => $right );
+						  Right => $args{'Right'} );
     }	
     else {
 	$RT::Logger->warning("$self: Trying to check an acl for a scope we ".

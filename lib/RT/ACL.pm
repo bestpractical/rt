@@ -292,7 +292,7 @@ sub HasEntry {
     $self->_DoSearch();
 
 #    $RT::Logger->debug("Now in ".$self."->HasEntry\n");
-
+if (0) {
     $RT::Logger->debug("Trying to find as_hash-> ".
 		       $args{'RightScope'} . "-" .
 		       $args{'RightAppliesTo'} . "-" . 
@@ -301,18 +301,18 @@ sub HasEntry {
 		       $args{'PrincipalType'}.
 		       "..."
 		      );
-    
+}
     if ($self->{'as_hash'}->{ $args{'RightScope'} . "-" .
 			      $args{'RightAppliesTo'} . "-" . 
 			      $args{'RightName'} . "-" .
 			      $args{'PrincipalId'} . "-" .
 			      $args{'PrincipalType'}
                             } == 1) {
-	$RT::Logger->debug("found.\n");
+#	$RT::Logger->debug("found.\n");
 	return(1);
     }
     else {
-	$RT::Logger->debug("not found.\n");
+#	$RT::Logger->debug("not found.\n");
 	return(undef);
     }
 }

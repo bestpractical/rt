@@ -1,4 +1,16 @@
- ## $Header$
+
+# {{{ sub LoadTicket - loads a ticket
+
+sub LoadTicket {
+    my $id=shift;
+    my $CurrentUser = shift;
+    my $Ticket = RT::Ticket->new($CurrentUser);
+    unless ($Ticket->Load($id)) {
+	Abort("Could not load ticket $id");
+    }
+    return $Ticket;
+}
+# }}} ## $Header$
 ## Copyright 2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
 ## Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
@@ -342,7 +354,7 @@ sub ProcessACLChanges {
     
     my $ACLref= shift;
     my $ARGSref = shift;
-
+    
     my @CheckACL = @$ACLref;
     my %ARGS = %$ARGSref;
     
@@ -408,6 +420,7 @@ sub ProcessACLChanges {
 	    my ($right,%rights);
 	    foreach $right (@rights) {
 		
+		next unless ($right);
 		
 		$RT::Logger->debug ("Now handling right $right\n");
 		
@@ -419,22 +432,31 @@ sub ProcessACLChanges {
 					      PrincipalType => $PrincipalType ,
 					      PrincipalId => $Principal->Id )) {
 		    
-		    #TODO Deal with system rights
 		    #Add new entry to list of rights.
 		    $RT::Logger->debug("Granting queue $AppliesTo right $right to ".
 				       $Principal->id.	 " for queue $AppliesTo\n"); 
 		    if ($Scope eq 'Queue') {
-			$Principal->GrantQueueRight( RightAppliesTo => $AppliesTo,
-						     RightName => "$right" );
-			push (@results, "Granted right $right to ".
-			      $Principal->id." for queue $AppliesTo.\n");
+			my ($val, $msg) = $Principal->GrantQueueRight( RightAppliesTo => $AppliesTo,
+								       RightName => "$right" );
+
+			if ($val) { 
+			    push (@results, "Granted right $right to ".
+				  $Principal->id." for queue $AppliesTo.\n");
+			}
+			else {
+			    push (@results, $msg);
+			}
 		    }
 		    elsif ($Scope eq 'System') {
-			$Principal->GrantSystemRight( RightAppliesTo => $AppliesTo,
-						      RightName => "$right" );
-			push (@results, "Granted system right '$right' to ".
-			      $Principal->id. ".\n");	 
-	
+			my ($val, $msg)	=$Principal->GrantSystemRight( RightAppliesTo => $AppliesTo,
+								       RightName => "$right" );
+			if ($val) {
+			    push (@results, "Granted system right '$right' to ".
+				  $Principal->id. ".\n");	 
+			}
+			else {
+				push (@results, $msg);
+			    }	
 		    }
 		}
 		# Build up a hash of rights, so that we can easily check

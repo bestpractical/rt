@@ -62,14 +62,16 @@ GENERAL INSTALLATION
 
         	tar xzvf rt.tar.gz -C /tmp
 
-2   Satisfy RT's myriad dependencies.  There's a perl script in rt/bin
-    called testdeps.pl that uses CPAN to automate all of this.
+2   Satisfy RT's myriad dependencies.  There's a perl script in rt/tools
+    called testdeps that uses CPAN to automate all of this.
 
 2.1   Check for compliance:
-	perl rt/tools/testdeps -warn
+	perl rt/tools/testdeps -warn <dbtype> 
+	 (replace <dbtype> with mysql, pg or oracle)
 
 2.2   If there are unsatisfied dependencies, install them by hand or
-      run rt/tools/testdeps -fix
+      run rt/tools/testdeps -fix <dbtype>
+	 (replace <dbtype> with mysql, pg or oracle)
 
 3   Create a user rt with primary group rt
 
@@ -131,7 +133,7 @@ GENERAL INSTALLATION
                                              to the right of the button)
 
 
-    NOTE: root's password for the web interface is "wordpass" 
+    NOTE: root's password for the web interface is "password" 
     (without the quotes.)  Not changing this is a SECURITY risk
     
 
@@ -261,8 +263,8 @@ Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
 John Lengeling, Elmar Knipp, Gerald Abshez, Dave Hull, Dave Schenet,
 Dave Walton, Jan Okrouhly, Tobias Brox, Lamont Lucas, Charlie Brady,
 Robin Shostack, Eric Mumpower, Jerrod Wiesman, Adam Hammer, Ivan Kohler, Alex
-Pilosov, Mary Alderdice, Deborah Kaplan, Jens von Bülow, Tristan Horn
-Lee Ann Goldstein
+Pilosov, Mary Alderdice, Deborah Kaplan, Jens von Bülow, Tristan Horn,
+Lee Ann Goldstein, Karel P Kerezman
 and many others
 have all contributed bug reports, code or ideas that have helped RT along.  
 
