@@ -33,8 +33,8 @@ sub LimitToType {
   my $type = shift;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Type',
-		VALUE => "$Type")
-      if defined $Type;
+		VALUE => "$type")
+      if defined $type;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Type',
 		VALUE => 'any');
