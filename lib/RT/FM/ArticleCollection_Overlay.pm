@@ -19,6 +19,21 @@
 no warnings qw/redefine/;
 use strict;
 
+=head2 Limit { FIELD  => undef, OPERATOR => '=', VALUE => 'undef'} 
+
+Limit the result set. See DBIx::SearchBuilder docs
+
+
+=cut
+
+sub Limit {
+    my $self = shift;
+    my %ARGS =( OPERATOR => '=', 
+                @_);
+
+    $self->SUPER::Limit(%ARGS);
+}
+
 
 =head2 LimitName  { OPERATOR => 'LIKE', VALUE => undef } 
 
@@ -226,6 +241,8 @@ sub LimitToCustomFieldValue {
     my @values =
       ref( $args{'VALUE'} ) ? @{ $args{'VALUE'} } : ( $args{'VALUE'} );
 
+    foreach my $value (@values) {
+    next unless $value; #strip out total blank wildcards
     my $ObjectValuesAlias = $self->Join(
         TYPE   => 'left',
         ALIAS1 => 'main',
@@ -250,20 +267,32 @@ sub LimitToCustomFieldValue {
             ENTRYAGGREGATOR => 'OR',
         );
     }
-    foreach my $value (@values) {
-        $self->SUPER::Limit(
-            ALIAS           => $ObjectValuesAlias,
-            FIELD           => 'Content',
-            OPERATOR        => $args{'OPERATOR'},
-            VALUE           => $value,
-            QUOTEVALUE      => $args{'QUOTEVALUE'},
-            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
-        );
 
         #If we're trying to find articles where a custom field value doesn't match
         # something, be sure to find  things where it's null
 
+        #basically, we do a left join on the value being applicable to the article and then we turn around 
+        # and make sure that it's actually null in practise
+
+        #TODO this should deal with starts with and ends with
+
         if ( $args{'OPERATOR'} eq '!='  || $args{'OPERATOR'} =~ /^not like$/i) {
+            my $op;
+            if ($args{'OPERATOR'} eq '!=') {
+                $op = "=";
+            }
+            elsif ($args{'OPERATOR'} =~ /^not like$/i) {
+                $op = 'LIKE';
+            }
+
+        $self->SUPER::Limit(
+            LEFTJOIN           => $ObjectValuesAlias,
+            FIELD           => 'Content',
+            OPERATOR        => $op,
+            VALUE           => $value,
+            QUOTEVALUE      => $args{'QUOTEVALUE'},
+            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+        );
             $self->SUPER::Limit(
                 ALIAS           => $ObjectValuesAlias,
                 FIELD           => 'Content',
@@ -273,6 +302,17 @@ sub LimitToCustomFieldValue {
                 ENTRYAGGREGATOR => 'OR',
             );
         }
+        else { 
+        $self->SUPER::Limit(
+            ALIAS           => $ObjectValuesAlias,
+            FIELD           => 'Content',
+            OPERATOR        => $args{'OPERATOR'},
+            VALUE           => $value,
+            QUOTEVALUE      => $args{'QUOTEVALUE'},
+            ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
+        );
+    }
+
     }
 
 

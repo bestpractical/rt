@@ -3,6 +3,7 @@
 % my $CustomFieldValues = $Field->ValuesObj();
 <select name="<%$Name%>-Values"
         size="5"
+        multiple
         >
 % while (my $value = $CustomFieldValues->Next) {
 <option value="<%$value->Name%>" 
@@ -16,9 +17,11 @@
 % else {
 <input name="<%$Name%>" value="<%$Values[0]%>">
 % }
-
+<%init>
+my @Values =ref( $Values ) ? @{ $Values } : ( $Values ); 
+</%init>
 <%ARGS>
 $Field => undef
 $Name => 'CustomField'
-@Values => undef
+$Values => undef
 </%ARGS>

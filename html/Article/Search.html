@@ -1,13 +1,16 @@
 <& /Elements/Header, title => "Search for articles" &>
 <& /RTFM/Elements/Tabs&>
 
+% use Data::Dumper;
+<pre>
+<%Dumper($articles)%>
+</pre>
 <ul>
 % while (my $article = $articles->Next) {
 
 <li><a href="Display.html?id=<%$article->Id%>">#<%$article->id%>: <%$article->Name%></a>
 <br><font size="-1"><%$article->Summary%></font>
 </li>
-
 % }
 </ul>
 
@@ -25,11 +28,11 @@ $ARGS{'Class'} &>
 <input name="Summary" value="<%$ARGS{'Summary'}%>">
 
 <br>Created between
-<& /Elements/SelectDate, Name=>"CreatedBefore", Default =>  $ARGS{'Created'}&>
+<& /Elements/SelectDate, Name=>"CreatedBefore", Default => $ARGS{'CreatedBefore'}&>
 and <& /Elements/SelectDate, Name=>"CreatedAfter", Default =>  $ARGS{'CreatedAfter'}&>
 
 <br>Updated between
-<& /Elements/SelectDate, Name=>"UpdatedBefore", Default =>  $ARGS{'Updated'}&>
+<& /Elements/SelectDate, Name=>"UpdatedBefore", Default => $ARGS{'UpdatedBefore'}&>
 and <& /Elements/SelectDate, Name=>"UpdatedAfter", Default =>  $ARGS{'UpdatedAfter'}&>
 
 
@@ -40,20 +43,18 @@ and <& /Elements/SelectDate, Name=>"UpdatedAfter", Default =>  $ARGS{'UpdatedAft
 <tr>
 <td><%$field->Name%> matches</td><td valign=top>
 % my $arg = $field->Id."-Matches-Values";
-% my @match_values =  ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} :  ($ARGS{$arg});
 <& Elements/SearchByCustomField, 
     Field => $field, 
     Name => $field->Id."-Matches", 
-    Values => @match_values &>
+    Values => $ARGS{$arg} &>
     </td>
     <td>and doesn't match</td>
     <td valign="top">
 % $arg = $field->Id."-NoMatches-Values";
-% my @no_match_values =  ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} :  ($ARGS{$arg});
 <& Elements/SearchByCustomField, 
     Field => $field, 
     Name => $field->Id."-NoMatches", 
-    Values => @no_match_values 
+    Values => $ARGS{$arg}
     &>
     </td>
     </tr>
@@ -73,10 +74,36 @@ if ($ARGS{'Class'}) {
 my $articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
 # Don't want to search for a null class when there is no class specced
 foreach my $arg qw(Class Name Summary) {
-    next unless ($ARGS{$arg}); #ignore undef values
+    next unless (defined $ARGS{$arg} && $ARGS{$arg} ne ''); #ignore undef values
     $articles->Limit(FIELD => $arg,
-                    OPERATOR => $ARGS{$arg."Op"},
+                    OPERATOR => $ARGS{$arg."Op"} || '=',
                     VALUE => $ARGS{$arg});
 }
 
+foreach my $arg ( keys %ARGS ) {
+    if ( $arg =~ /^(\d+)-Matches-Values$/ ) {
+	    my @values =ref( $ARGS{$arg} ) ? @{ $ARGS{$arg} } : ( $ARGS{$arg} ); 
+	    $articles->LimitToCustomFieldValue( FIELD=> $1,
+                                            OPERATOR => 'LIKE',
+                                            VALUE    => \@values );
+
+    }
+    if ( $arg =~ /^(\d+)-NoMatches-Values$/ ) {
+	    my @values =ref( $ARGS{$arg} ) ? @{ $ARGS{$arg} } : ( $ARGS{$arg} ); 
+        $articles->LimitToCustomFieldValue( FIELD    => $1,
+                                            OPERATOR => 'NOT LIKE',
+                                            VALUE    => \@values );
+
+    }
+}
+
+
 </%init>
+<%ARGS>
+$CreatedBefore => ''
+$CreatedAfter => ''
+$UpdatedBefore => ''
+$UpdatedAfter => ''
+
+
+</%ARGS>
