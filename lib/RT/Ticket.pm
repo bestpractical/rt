@@ -416,7 +416,7 @@ sub Watchers {
 
 sub RequestorsAsString {
     my $self=shift;
-    return _CleanAddressesAsString ($self->Requestors->EmailsAsString() );
+    return _CleanAddressesAsString($self->Requestors->EmailsAsString() );
 }
 
 =head2 WatchersAsString
@@ -506,9 +506,10 @@ sub Requestors {
   unless ($self->CurrentUserHasRight('ShowTicket')) {
     return (0, "Permission Denied");
   }
+  require RT::Watchers;
 
   if (! defined ($self->{'Requestors'})) {
-    require RT::Watchers;
+    
     $self->{'Requestors'} = RT::Watchers->new($self->CurrentUser);
     $self->{'Requestors'}->LimitToTicket($self->id);
     $self->{'Requestors'}->LimitToRequestors();
