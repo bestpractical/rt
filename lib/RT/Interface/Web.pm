@@ -1241,8 +1241,8 @@ sub ProcessTicketWatchers {
         }
 
         # Delete watchers in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
-            my ( $code, $msg ) = $Ticket->DeleteWatcher( Type => $ARGSRef->{$key}, PrincipalId => $1 );
+        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {	    
+            my ( $code, $msg ) = $Ticket->DeleteWatcher( Email => $ARGSRef->{$key}, Type => $1 );
             push @results, $msg;
         }
 
