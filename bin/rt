@@ -335,7 +335,7 @@ else {
 	    $Tickets->LimitId ( VALUE => $1,
 				OPERATOR => '=');
 	}	
-	elsif ($value =~ /^(\d?)\D?(\d*)$/) {
+	elsif ($value =~ /^(\d*)\D?(\d*)$/) {
 	    my $start = $1;
 	    my $end = $2;
 	    $Tickets->LimitId(
