@@ -224,7 +224,7 @@ Additionally, you should set up a cron job to remove stale session data.
 # Every hour, nuke session files and lockfiles that haven't been 
 # touched in 10 hours
 
-0 * * * * find /path/to/rt2/WebRT/sessiondata -type f -amin +600 -exec rm {}\;
+0 * * * * find /path/to/rt2/WebRT/sessiondata -type f -amin +600 -exec rm {} \;
 
 
 THE CLI
