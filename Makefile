@@ -7,7 +7,7 @@
 PERL			= 	/usr/bin/perl
 RTUSER			=	rt
 RTGROUP			=	rt
-RT_VERSION		=	0.9.5
+RT_VERSION		=	0.9.6
 
 #
 # RT_PATH is the name of the directory you want make to install RT in
