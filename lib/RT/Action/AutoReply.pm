@@ -17,10 +17,15 @@ sub Commit {
 
 sub Prepare {
   my $self = shift;
-  #Set the To and Cc
-  #Set the subject
-  #Set the body 
+
   print "Preparing\n";
+
+  $self->{'Header'}->add('Subject', 
+			 "[$RT::rtname \#$$self{Ticket}] Autoreply: ".
+			 $self->{TicketObject}->Subject());
+
+  $self->{'Header'}->add('Precedence', 'bulk');
+
   return $self->SUPER::Prepare();
 }
 

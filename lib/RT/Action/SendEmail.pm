@@ -22,6 +22,7 @@ sub _Init {
   $self->{'TemplateObject'}=RT::Template->new;
   $self->{'TemplateObject'}->Load($self->{Template});
   $self->{'Header'} = Mail::Header->new;
+  $self->{'Header'}->fold(78);
 }
 
 sub Commit {
@@ -34,22 +35,78 @@ sub Commit {
   # will be.  I will probably mash it together myself some day.
   # TobiX
 
-  $self->{'Message'}=Mail::Internet->new(Header=>$self->{'Header'}, Body=>$self->{'Body'});
+  $self->{'Message'}=Mail::Internet->new(Header=>$self->{'Header'}, 
+					 Body=>$self->{'Body'});
   $self->{'Message'}->smtpsend || die "could not send email";
 
 }
 
+
 sub Prepare {
   my $self = shift;
 
-  if (my $a=$self->{Argument} and !$self->{Header}->get('To')) {
-      my $receipient=eval "\$self->{TicketObject}->{$a}";
-      $self->{Header}->add('To', $receipient)
-	  if $receipient;
+  # Header
+  
+  # To, bcc and cc
+  if (my $a=$self->{Argument}) {
+      my $receipient;
+      if ($a eq '$Requestor') {
+	  $receipient=$self->{TicketObject}->Creator()->EmailAddress();
+      } else {
+	  warn "stub - no support for argument/receipient $a yet";
+      } 
+      $self->{Header}->add('To', $receipient);
+  } else {
+      warn "stub";
+      # Find all watchers, and add
   }
 
-  #perform variable substitution on the template
-  
+  # Subject
+  unless ($self->{'Header'}->get(Subject)) {
+      $self->{'Header'}->add('subject', 
+			     "[$RT::rtname #$$self{Ticket}] ".
+			     $self->{TicketObject}->Subject());
+
+      # Should use the Subject of the transaction, not the ticket?
+
+      # My Create Transaction has no subject ... nor transaction.
+      # A bug? I haven't investigated more yet.
+
+  }
+
+  # From, Sender and Reply-To
+  # $self->{comment} should be set if the comment address is to be used.
+  unless ($self->{'Header'}->get('From')) {
+      my $friendly_name=$self->{TransactionObject}->Creator->RealName;
+      my $email_address=$self->{comment} ? 
+	  $self->{TicketObject}->Queue->CommentAddress :
+          $self->{TicketObject}->Queue->CorrespondAddress;
+      $self->{'Header'}->add('From', "$friendly_name <$email_address>");
+      $self->{'Header'}->add('Reply-To', "$email_address");
+      $self->{'Header'}->add('Sender', $self->{TransactionObject}->Creator->EmailAddress);
+      # Is this one necessary?
+      $self->{'Header'}->add('X-Sender', $self->{TransactionObject}->Creator->EmailAddress);
+  }
+
+  # This should perhaps be in the templates table. ISO-8859-1 just
+  # isn't sufficient.
+
+  unless ($self->{'Header'}->get('Content-Type')) {
+      $self->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
+  }
+
+  $self->{'Header'}->add('X-Request-ID', $self->{'TicketObject'}->id());
+  $self->{'Header'}->add('X-RT-Loop-Prevention', $RT::rtname);
+
+  # Perform variable substitution on the template
+  $self->{'Body'}=$self->{TemplateObject}->Parse($self);
+  $self->{'Body'} .= 
+      "\n-------------------------------------------- Managed by Request Tracker\n\n";
+ 
+
+
+  $head->add('X-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
+
 }
 
 sub IsApplicable {
@@ -58,3 +115,5 @@ sub IsApplicable {
 }
 
 1;
+
+
