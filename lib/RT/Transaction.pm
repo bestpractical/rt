@@ -53,7 +53,6 @@ sub Create  {
 				  Field => $args{'Field'},
 				  OldValue => $args{'OldValue'},
 				  NewValue => $args{'NewValue'},
-				  Created => undef
 				 );
     $self->Load($id);
     $self->_Attach($args{'MIMEEntity'})
@@ -315,8 +314,9 @@ sub _Accessible  {
 	      Data => 'read',
 	      EffectiveTicket => 'read',
 	      Creator => 'read',
-	      Created => 'read'
+	      Created => 'read/auto'
 	     );
+  return $self->SUPER::_Accessible(@_, %Cols);
 }
 # }}}
 

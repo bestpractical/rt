@@ -37,7 +37,6 @@ This module lets you manipulate RT's most key object. The Ticket.
 
 # {{{ sub new
 
-
 =item Create (ARGS)
 
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
@@ -55,7 +54,6 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
     FinalPriority -- an integer from 0 to 99
     Status -- a textual tag. one of 'open' 'stalled' 'resolved' for now
     TimeWorked -- an integer
-    Created -- a unix time
     Told -- a unix time. time of last contact
     Due -- a unix time describing the due date
     MIMEEntity -- a MIME::Entity object with the content of the initial ticket request.
