@@ -123,29 +123,29 @@ print "SELECTED";};
         print "> Never";
 
 	print "<OPTION VALUE=60 ";
-        if ($rt::ui::web::FORM{'refresh'} == 59 ) { print "SELECTED " ;}
+        if ($rt::ui::web::FORM{'refresh'} == 60 ) { print "SELECTED " ;}
         print "> every 1 minute";
 
 
         print "<OPTION VALUE=180 ";
-        if ($rt::ui::web::FORM{'refresh'} == 179 ) { print "SELECTED " ;}
+        if ($rt::ui::web::FORM{'refresh'} == 180 ) { print "SELECTED " ;}
         print "> every 3 minutes";
 
 
         print "<OPTION VALUE=300 ";
-        if ($rt::ui::web::FORM{'refresh'} == 299 ) { print "SELECTED " ;}
+        if ($rt::ui::web::FORM{'refresh'} == 300 ) { print "SELECTED " ;}
         print "> every 5 minutes";
 	
 	print "<OPTION VALUE=600 ";
-        if ($rt::ui::web::FORM{'refresh'} == 599 ) { print "SELECTED " ;}
+        if ($rt::ui::web::FORM{'refresh'} == 600 ) { print "SELECTED " ;}
         print "> every 10 minutes";
 
 	print "<OPTION VALUE=1800 ";
-        if ($rt::ui::web::FORM{'refresh'} == 1799 ) { print "SELECTED "; }
+        if ($rt::ui::web::FORM{'refresh'} == 1800 ) { print "SELECTED "; }
         print "> every 30 minutes";
 
 	print "<OPTION VALUE=3600 ";
-        if ($rt::ui::web::FORM{'refresh'} == 3599 ) { print "SELECTED "; }
+        if ($rt::ui::web::FORM{'refresh'} == 3600 ) { print "SELECTED "; }
         print "> every hour";
 
 		
@@ -384,6 +384,20 @@ Status:<select name=\"do_req_status\">\n";
     print ">resolved\n";
     print "
 </select>
+
+Give to:<select name=\"do_req_give_to\">
+<option value=\"\">Nobody ";   
+    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}}) {
+       if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
+           print "<option ";
+               print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
+               print ">$user_id\n";
+           }
+       }
+    print "</select>
+<input type=\"hidden\" name=\"do_req_give\" value=\"true\">
+
+
 To:       $rt::req[$serial_num]{requestors}
 Cc:	  <input name=\"cc\">
 Bcc:      <input name=\"bcc\">

@@ -76,17 +76,23 @@ sub parse_args {
 		$passwd=$ARGV[++$i];
 		$admin=$ARGV[++$i];
 		if (!defined($admin)) {
-		    print "Usage: user -update <password> <administrator> [<users>...]\n";
+		    print "Usage: user -getpwent <password> <administrator> [<users>...]\n";
 		    exit(0);
 		}
 		if (defined($ARGV[i+1])) {
 		   while (my $login=$ARGV[++$i]) {
-		       &add_pwent(getpwnam($login), $current_user);
+		      ($login, $domain) = split('@', $login);
+                      $domain || ($domain = $host);
+                      &add_pwent($domain, getpwnam($login), $current_user);		  
 		   }
 	       } else { 
 		   #Sometimes it really had been useful beeing able to combine while with
 		   #else..  
-		   while (&add_pwent(getpwent, $current_user)) {;}
+		   
+                     &setpwent;
+                     while (&add_pwent($host, getpwent, $current_user))
+                          {;}
+                     &endpwent;
 	       }
    
 	    }
@@ -121,12 +127,12 @@ sub parse_args {
 # This code by tobix...
 sub add_pwent {
   if (!@_) {return undef;}
-  my ($name,$pass,$uid,$gid,
+  my ($domain, $name,$pass,$uid,$gid,
       $quota,$comment,$gcos,$dir,$shell,$whoami) = @_;
   my ($realname,$office,$phone)=split(/,/,$gcos);
 
   my ($result, $msg)=&rt::add_modify_user_info
-      ($name,$realname,$passwd,"$name\@$host",$phone,$office,$comment,
+      ($name,$realname,$passwd,"$name\@$domain",$phone,$office,$comment,
        ($name eq $whoami ? 1 : $admin),$whoami);
 
   # Report to STDOUT:

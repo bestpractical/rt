@@ -128,8 +128,14 @@ sub add_transaction {
 	&rt::template_mail ('transaction',$queue_id,$queues{$queue_id}{dist_list},"","", "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
       }
       if ($queues{$queue_id}{m_user_trans}){
+
+       #We don't want to mail the user on comment
+       if ($in_type ne 'comments') {
 	  &rt::template_mail ('transaction',$queue_id,$requestors,"","", "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
+
+	}
       }
+
     }
 
     return ($transaction_num);

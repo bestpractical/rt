@@ -61,7 +61,7 @@ sub template_mail{
     }
 #    print STDERR "Debug 1\n";
     
-    if ($in_recipient eq "") {
+    if (!$in_recipient && !$in_cc && !$in_bcc) {
 	return("template_mail:No Recipient Specified!");
     }
 

@@ -564,8 +564,11 @@ sub display_queue {
 
   #we subtract 1 from the refresh rate so that the default value is -1..which 
   #means never refresh...as 0 should...but 0 means refresh now.
-  $rt::ui::web::FORM{'refresh'} =   $rt::ui::web::FORM{'refresh'}-1;
-  if ($rt::ui::web::FORM{'refresh'} >=1) {
+ 
+  if ( ! $rt::ui::web::FORM{'refresh'} ) {
+          $rt::ui::web::FORM{'refresh'} = -1;
+	}
+  if ($rt::ui::web::FORM{'refresh'} > -1) {
   print "<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"". $rt::ui::web::FORM{'refresh'}."\">";
   }
   $query = $ENV{'QUERY_STRING'};
@@ -576,7 +579,7 @@ sub display_queue {
 $query_string
 -->
 <font size=\"$QUEUE_FONT\">
-<TABLE cellpadding=4 border=1 width=100% bgcolor=\"\#bbbbbb\">
+<TABLE cellpadding=4 border=1 width=\"100%\" bgcolor=\"\#bbbbbb\">
 
 <TR>";
 
@@ -718,7 +721,7 @@ sub display_history_tables {
     print "
 <TR BGCOLOR=\"$bgcolor\">
 <TD WIDTH=5 BGCOLOR=\"$bgcolor\">&nbsp;</TD>
-<TD align=\"left\" valign=\"center\" width=\"15%\">
+<TD align=\"left\" valign=\"middle\" width=\"15%\">
 <font color=\"\#ffffff\" size=\"-1\">
 $date
 $time
@@ -732,7 +735,7 @@ $time
 <b>$rt::req[$serial_num]{'trans'}[$temp]{text}</b>
 </font>
 </TD>
-<TD ALIGN=\"RIGHT\" VALIGN=\"CENTER\"><FONT color=\"\#ffffff\">&nbsp;";
+<TD ALIGN=\"RIGHT\" VALIGN=\"MIDDLE\"><FONT color=\"\#ffffff\">&nbsp;";
 
     if (&rt::can_manipulate_request($serial_num, $current_user)) {
     
@@ -764,11 +767,11 @@ $time
     }
   }
 print "</FONT></TD>
-<TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=\"28\" alt=')'></TD>
+<TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=\"28\" alt=\"\"></TD>
 </TR>
 <TR>
-<TD COLSPAN=5><img src=\"/webrt/sbs.gif\" width=100% height=4 alt=''></TD>
-<TD><img src=\"/webrt/sbc.gif\"  width=4 alt='' height=4></TD></TR>";
+<TD COLSPAN=5><img src=\"/webrt/sbs.gif\" width=100% height=4 alt=\"\"></TD>
+<TD><img src=\"/webrt/sbc.gif\"  width=4 alt=\"\" height=4></TD></TR>";
     
    if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
      print "
@@ -1010,7 +1013,7 @@ sub queue_header {
   my $name = shift;
   my ($header);
   $header = "<TH>
-<TABLE>
+<TABLE CELLPADDING=0 CELLSPACING=0>
 <TR WIDTH=\"100%\"><TD COLSPAN=2 ALIGN=\"CENTER\">
 <FONT SIZE=\"-1\">$name</FONT></TD></TR>
 <TR><TD ALIGN=\"LEFT\">
@@ -1041,13 +1044,13 @@ sub display_commands {
 	require rt::ui::web::forms;
 	print "<hr>";
 
-	print "<TABLE WIDTH=\"100%\" BGCOLOR=\"#ffffff\" CELLSPACING=0 BORDER=0><TR><TD ALIGN=CENTER VALIGN=CENTER>";
+	print "<TABLE WIDTH=\"100%\" BGCOLOR=\"#ffffff\" CELLSPACING=0 BORDER=0><TR><TD ALIGN=CENTER VALIGN="MIDDLE">";
 
-	print "<A HREF=\"$ScriptURL\">Display Queue</A></TD><TD ALIGN=CENTER VALIGN=CENTER>";
+	print "<A HREF=\"$ScriptURL\">Display Queue</A></TD><TD ALIGN=CENTER VALIGN="MIDDLE">";
 	&FormCreate;
-	print "</TD><TD ALIGN=CENTER VALIGN=CENTER>";
+	print "</TD><TD ALIGN=CENTER VALIGN="MIDDLE">";
 	&FormShowNum;
-        print "</TD><TD ALIGN=CENTER VALIGN=CENTER><A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A></TD></TR></TABLE>";
+        print "</TD><TD ALIGN=CENTER VALIGN="MIDDLE"><A HREF=\"$ScriptURL?display=Logout\" target=\"_top\">Logout</A></TD></TR></TABLE>";
 
 
 

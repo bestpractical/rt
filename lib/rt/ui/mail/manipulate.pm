@@ -122,13 +122,20 @@ sub parse_headers {
       $time_in_text = $1 if ($line =~/^Date: (.*)/);
       if ($current_user =~/(\S*\@\S*)/) {
 	$current_user =$1;
+        $rt::users{$current_user}{real_name}=$` 
+             if (!exists $rt::users{$current_user}{real_name});
+           }
       }
       if ($current_user =~/<(\S*\@\S*)>/){
 	$current_user =$1;
+	$rt::users{$current_user}{real_name}=$'
+             if (!exists $rt::users{$current_user}{real_name});
       }
       if ($current_user =~/<(\S*)>/){
 	$current_user =$1;
-      }
+        $rt::users{$current_user}{real_name}=$` 
+              if (!exists $rt::users{$current_user}{real_name});
+        }
     }
     
     if (!$subject) {
@@ -172,7 +179,7 @@ sub parse_actions {
   my ($trans, $message, $serial_num, $line, $original_line, $current_user);
   
   foreach $line (split(/\n/,$body)) {
-    my $count;
+    my $count, @arg;
     $original_line = $line;
     
     
@@ -185,10 +192,8 @@ sub parse_actions {
 
       while ($line) {
 	
-	foreach $count (0..$#arg)
-	  {
-	    $arg[$count]="";
-	  }
+	#this replaces a silly loop.
+	#@arg=();	
 
 	#parse for doublequoted strings
 	if ($line =~ /^\"(.?)\"\s?(.*)/) {

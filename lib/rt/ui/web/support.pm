@@ -13,7 +13,6 @@ sub check_auth() {
 
     if ($rt::web_auth_mechanism =~ /external/i) {
       $current_user = $ENV{REMOTE_USER};                                        
-      &WebAuth::Headers_Authenticated();  
       return (0);
       
     }
@@ -225,7 +224,7 @@ sub select_a_date{
 	$default=$rt::time+604800;
     }
    
-   ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $now_year)=&rt::parse_time($rt::time);
+   ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $now_year)=&rt::parse_time($default);
   print "<select name=\"".$name."_mday\">\n";
     for ($counter=1;$counter<=31;$counter++) {
 	print "<option";

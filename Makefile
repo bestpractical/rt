@@ -125,18 +125,18 @@ MYSQLDIR		=	/usr/bin
 
 MYSQL_VERSION		= 	3.22
 
+# define MYSQL_DBADMIN to the name of a MySQL user with permission to
+# create new databases 
+MYSQL_DBADMIN		=	root
 #
-# If you have defined a password for the Mysql user "root",
-# you must replace "somepassword" below with your mysql root password and 
-# uncomment the mine in order for mysql to allow
-# RT to create its databases.  
+# If you have defined a password for this Mysql user,
+# you must either replace "somepassword" below with the mysql password
+# of that user and uncomment the line.
 #
-# Remove this password from this Makefile 
-# AS SOON AS MAKE INSTALL FINISHES
-# In an ideal world we'd pull this from the commandline.
+# If you put the password in this Makefile you should REMOVE IT
+# AS SOON AS "make install" FINISHES
 #
-#
-#ROOT_MYSQL_PASS		=	somepassword
+#DBADMIN_MYSQL_PASS		=	somepassword
 
 #
 # this password is what RT will use to authenticate itself to mysql
@@ -197,14 +197,11 @@ WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	no
 # No user servicable parts below this line.  Frob at your own risk #
 ####################################################################
 
-
-ifdef ROOT_MYSQL_PASS
-ROOT_MYSQL_PASS_STRING = -p$(ROOT_MYSQL_PASS)
+ifdef DBADMIN_MYSQL_PASS
+DBADMIN_MYSQL_PASS_STRING = -p$(DBADMIN_MYSQL_PASS)
 else 
-ROOT_MYSQL_PASS_STRING = 
+DBADMIN_MYSQL_PASS_STRING = 
 endif
-
-
 
 
 default:
@@ -256,8 +253,8 @@ initialize: database acls
 
 database:
 #	$(MYSQLDIR)/mysqladmin drop $(RT_MYSQL_DATABASE)
-	-$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) create $(RT_MYSQL_DATABASE)
-	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) $(RT_MYSQL_DATABASE) < etc/schema      
+	-$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) create $(RT_MYSQL_DATABASE)
+	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) $(RT_MYSQL_DATABASE) < etc/schema      
 
 acls:
 	-$(PERL) -p -i.orig -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
@@ -266,8 +263,8 @@ acls:
 		s'!!RTUSER!!'$(RTUSER)'g;\
 		s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
 		" $(RT_MYSQL_ACL)
-	$(MYSQLDIR)/mysql $(ROOT_MYSQL_PASS_STRING) mysql < $(RT_MYSQL_ACL) 
-	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) reload
+	$(MYSQLDIR)/mysql $(DBADMIN_MYSQL_PASS_STRING) mysql < $(RT_MYSQL_ACL) 
+	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u $(MYSQL_DBADMIN) $(DBADMIN_MYSQL_PASS_STRING) reload
 
 
 mux-install:

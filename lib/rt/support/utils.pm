@@ -83,7 +83,7 @@ sub can_admin_queue {
 }
 sub is_not_a_requestor{
     my($address,$serial_num) =@_;
-    if ($req[$serial_num]{'requestors'} =~ /(^|\s|,)$address(,|\s|\b)/) {
+    if ($req[$serial_num]{'requestors'} =~ /(^|\s|,)$address(,|\s|\b)/i) {
 	return(0);
     }
     else {

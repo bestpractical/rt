@@ -1,3 +1,25 @@
+14 Jun 99
+---------
+
+Web UI now respects minimum password length
+Allowed the specification of a non-root Database superuser.
+Made is_not_a_requestor comparison case insensitive
+Cleaned up some of the web refresh code.
+Web queue listing headings have been compacted per rich.
+Fixed a bug in comment which caused it to break when there was no to line
+Fixed a date selector bug with a  patch to lib/rt/ui/web/support.pm in  Michael Brader <mbrader@aurema.com> 
+Stray debug code yanked by Charlie Brady <charlieb@aurema.com> 
+Fixed some bods in cc/bcc on comment from Tobias Brox
+Removed some legacy code from when we had to deal with  doing our own http error codes by charlieb@aurema.com
+Fixed a lot of HTML nits from charlieb@aurema.com
+a patch for getting the from-lines nicer when using the mail-ui by Tobias Brox
+Fixed some bogosity in rtadmin user -getpwent from charlieb@aurema.com
+Comments are no longer mailed to the requestor if you have 'notify user on transaction' turned on
+Comments are no longer access-controlled
+Big change: only users with "manipulate" or "queue admin" permissions will get queue email from here on in.
+	(formerly, anyone with "display" permission would get queue mail.  -- charlieb@aurema.com
+
+
 12 May 99
 ---------
 

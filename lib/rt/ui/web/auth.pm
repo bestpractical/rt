@@ -46,10 +46,12 @@ if ($rt::program =~ /nph-/) {
     # lets set the user/pass cookies
     
 
-    if (length($rt::ui::web::FORM{'username'}) and length($rt::ui::web::FORM{'password'})) {
+    if  ( ( length($rt::ui::web::FORM{'username'}) ) and 
+	  ( length($rt::ui::web::FORM{'password'}) >= $rt::user_passwd_min) ) {
+
 #if we have a $path to play with...
 #not doing this breaks netscape
-if ($path ne '') { 
+    if ($path ne '') { 
      
       $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
                                   -value => "$rt::ui::web::FORM{'username'}",
@@ -176,14 +178,14 @@ sub AuthForceLogin () {
 <TD COLSPAN=3>
 <TABLE WIDTH=\"100%\" CELLPADDING=10 CELLSPACING=0 BORDER=0>
 <TR ALIGN=\"LEFT\">
-<TD VALIGN=\"CENTER\" BGCOLOR=\"#CCCCCC\">
+<TD VALIGN=\"MIDDLE\" BGCOLOR=\"#CCCCCC\">
 <b>$AuthRealm Login:</b>
 </TD></TR>
 </TABLE>
 </TD>
 
  <TD ROWSPAN=\"4\" width=8 bgcolor=\"#ffffff\">
-<IMG SRC=\"/webrt/srs.gif\" width=16 height=250 alt=''></TD>
+<IMG SRC=\"/webrt/srs.gif\" width=16 height=250 alt=\"\"></TD>
 </TR>  
 <TR>
 <TD ALIGN=\"RIGHT\">
@@ -236,8 +238,8 @@ print "&nbsp;</td>
 
 
 <TR VALIGN=\"TOP\">
-<TD COLSPAN=3><img src=\"/webrt/sbs.gif\" width=520 height=16 alt=''></TD>
-<TD ALIGN=\"LEFT\" BGCOLOR=\"#ffffff\"><img src=\"/webrt/sbc.gif\" width=12 alt='' height=16></TD>
+<TD COLSPAN=3><img src=\"/webrt/sbs.gif\" width=520 height=16 alt=\"\"></TD>
+<TD ALIGN=\"LEFT\" BGCOLOR=\"#ffffff\"><img src=\"/webrt/sbc.gif\" width=12 alt=\"\" height=16></TD>
 </TR>
 </TABLE>
 </CENTER>
@@ -280,14 +282,6 @@ sub HTTP_AuthAvailable() {
     }
     return undef;
   }    
-
-sub Headers_Authenticated(){
-  #We simply DO NOT NEED THIS HERE
-  
-  return();   
-  
-  
-}
 
 
 

@@ -16,7 +16,6 @@ if ($value) {
     $message="";
 }
 &rt::ui::web::check_auth();
-&WebAuth::Headers_Authenticated();
 
 $result=&take_action();
 &DisplayForm();
@@ -87,7 +86,6 @@ sub take_action {
 	    $acl=$rt::ui::web::FORM{"$acl_string"};
 	    
 	    
-		print STDERR "ACL is $acl -- Aclstring is $acl_string\n";
 
 	    if ($acl eq 'admin') {
 		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,1,1,$current_user);
@@ -162,7 +160,7 @@ sub menu () {
     print "
 <form action=\"$ScriptURL\" method=\"post\">
 
-<table width=100%><TR VALIGN=TOP><TD VALIGN=TOP ALIGN=LEFT>
+<table width=\"100%\"><TR VALIGN=TOP><TD VALIGN=TOP ALIGN=LEFT>
 
 <H2>User Configuration</H2>\n";
     
@@ -249,7 +247,7 @@ sub FormModifyUser{
     
   
     print "
-<TABLE WIDTH=100%>
+<TABLE WIDTH=\"100%\">
  <TR>
   <TD VALIGN=TOP>
 
@@ -365,7 +363,7 @@ misc:
 	print "</TD></TR></TABLE>\n";	
     
 
-    print "<TABLE WIDTH=100% BGCOLOR=\"#DDDDDD\" BORDER=0 CELLSPACING=0 CELLPADDING=3><TR><TD ALIGN=LEFT WIDTH=33%>
+    print "<TABLE WIDTH=\"100%\" BGCOLOR=\"#DDDDDD\" BORDER=0 CELLSPACING=0 CELLPADDING=3><TR><TD ALIGN=LEFT WIDTH=33%>
 <input type=\"submit\" name=\"action\" value=\"Update User\">
 </TD>\n";
     if ($rt::users{$current_user}{admin_rt}) {
@@ -544,12 +542,12 @@ sub page_head {
 my $page_title = shift; 
 
 print <<EOF;
-<table width=100% cellpadding=5 cellspacing=0 border=0>
+<table width=\"100%\" cellpadding=5 cellspacing=0 border=0>
 <tr bgcolor=\"#dddddd\">
-<td align=left valign=center>
+<td align=\"left\" valign=\"middle\">
 <FONT SIZE=+2><A HREF="$ScriptURL">RT Web Administrator</A></FONT>
 </td>
-<td align=right valign=center>
+<td align=\"right\" valign=\"middle\">
 <FONT SIZE=+2>$page_title</FONT></td></tr></table>
 EOF
 }
