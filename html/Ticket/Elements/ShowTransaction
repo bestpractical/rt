@@ -116,7 +116,7 @@ $ShowHeaders => 0
 $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
-$AttachPath => "<%$RT::WebPath%>/Ticket/Attachment"
+$AttachPath => $RT::WebPath."/Ticket/Attachment"
 </%ARGS>
 
 <%INIT>
