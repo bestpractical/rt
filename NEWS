@@ -3,6 +3,8 @@
 
 Incorporated a LOT of changes from Serge Zhuk <serge@yahoo-inc.com>
 
+Included newest versions of Rich West's req2rt and other scripts.
+
 Bug fixes:
 
 - changing user permissions via web queue-editing ui now actually works
