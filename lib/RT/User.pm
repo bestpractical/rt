@@ -787,8 +787,8 @@ sub _HasRight {
     
   # $RT::Logger->debug($hashkey."\n");
     
-    #Anything older than two minutes needs to be rechecked
-    my $cache_timeout = (time - 120);
+    #Anything older than 30 seconds needs to be rechecked
+    my $cache_timeout = (time - 30);
     
     
     if ((defined $self->{'rights'}{"$hashkey"}) &&
@@ -839,8 +839,9 @@ sub _HasRight {
 	  "($args{'ExtendedPrincipalsClause'}))";
     }
     
-    my $GroupPrincipalsClause = "((PrincipalType = 'Group') AND ".
-      "(PrincipalId = GroupMembers.Id) AND  (GroupMembers.UserId = ".$self->Id."))";
+    my $GroupPrincipalsClause = "((ACL.PrincipalType = 'Group') ".
+      "AND (ACL.PrincipalId = Groups.Id) AND (GroupMembers.GroupId = Groups.Id) ".
+     " AND (GroupMembers.UserId = ".$self->Id."))";
     
     
 
@@ -928,7 +929,7 @@ sub _HasRight {
 	return (1);
     }
     
-    #$RT::Logger->debug("No ACL matched $GroupRightsQuery\n");	
+    $RT::Logger->debug("No ACL matched $GroupRightsQuery\n");	
     
     # }}}
 
@@ -993,7 +994,6 @@ sub CurrentUserCanModify {
     }	
     
 }
-
 
 # }}}
 
@@ -1065,18 +1065,21 @@ sub _Value  {
       return($self->SUPER::_Value($field));
       
   }
+  #If the user wants to see their own values, let them
+  elsif ($self->CurrentUser->Id == $self->Id) {	
+      return($self->SUPER::_Value($field));
+  } 
   #If the user has admin users, return the field
   elsif ($self->CurrentUserHasRight('AdminUsers')) {
       return($self->SUPER::_Value($field));
   }
-  #If the user wants to see their own values, let them
-  
-  elsif ($self->CurrentUser->Id == $self->Id) {	
-      return($self->SUPER::_Value($field));
-  }
+  else {
+      return(undef);
+  }	
+ 
 
 }
-  
+
 # }}}
 
 # }}}
