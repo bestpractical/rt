@@ -10,7 +10,7 @@
 <& /Elements/ArticleCustomFields, ArticleObj => $article &>
 
 <HR>
-<%$article->ContentObj->Body%>
+<%$article->ContentObj->Body|n%>
 
 <& /Elements/ArticleContentHierarchy, parent => $article->Id &>
 </body>

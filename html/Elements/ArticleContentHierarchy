@@ -11,7 +11,7 @@ type="i"
 <LI>
 % if ($Depth < 5) {
 <H<%$Depth%>><% $article->Summary %></H<%$Depth%>>
-% else {
+% } else {
 <% $article->Summary %>
 % }
 <BR>
