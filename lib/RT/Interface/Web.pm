@@ -69,7 +69,7 @@ package HTML::Mason::Commands;
 # {{{ sub Abort
 # Error - calls Error and aborts
 sub Abort {
-    &mc_comp("/Elements/Error" , Why => shift);
+    $m->comp("/Elements/Error" , Why => shift);
     $m->abort;
 }
 # }}}
@@ -81,60 +81,6 @@ sub LoadTicket {
     my $Ticket = RT::Ticket->new($CurrentUser);
     unless ($Ticket->Load($id)) {
 	&Error("Could not load ticket $id");
-    }
-    return $Ticket;
-}
-# }}}
-
-# {{{ sub CreateOrLoad - will create or load a ticket
-sub CreateOrLoad {
-    my %args=(@_);
-    my $CurrentUser = $args{'CurrentUser'};
-
-
-    my $Ticket = new RT::Ticket($CurrentUser);
-    if ($args{id} eq 'new') { 
-	
-	require RT::Queue;
-	my $Queue = new RT::Queue($CurrentUser);	
-	unless ($Queue->Load($args{'ARGS'}->{'queue'})) {
-		&mc_comp("/Elements/Error", Why => 'Queue not found');
-		$m->abort;
-	}
-
-	unless ($Queue->CurrentUserHasRight('CreateTicket')) {
-	    &mc_comp("/Elements/Error", Why => 'Permission Denied');
-	    $m->abort;
-	}
-	require MIME::Entity;
-	#TODO in Create_Details.html: priorities and due-date      
-	my ($id, $Trans, $ErrMsg)=
-	    $Ticket->Create( 
-			     Queue=>$args{ARGS}->{queue},
-			     Owner=>$args{ARGS}->{ValueOfOwner},
-			     Requestor=>($args{ARGS}->{Requestors} 
-					 ? undef : $session{CurrentUser}->UserObj()),
-			     RequestorEmail=>$args{ARGS}->{Requestors}||undef,
-			     Subject=>$args{ARGS}->{Subject},
-			     Status=>$args{ARGS}->{Status}||'open',
-			     MIMEObj => MIME::Entity->build
-			     ( 
-			       Subject => $args{ARGS}->{Subject},
-			       From => $args{ARGS}->{Requestors},
-			       Cc => $args{ARGS}->{Cc},
-			       Data => $args{ARGS}->{Content}
-			       )	  
-			     );         
-	unless ($id && $Trans) {
-	    &mc_comp("/Elements/Error" , Why => $ErrMsg);
-	    $m->abort;
-	}
-	push(@{$args{Actions}}, $ErrMsg);
-    } else {
-	unless ($Ticket->Load($args{id})) {
-	    &mc_comp("/Elements/Error" , Why => "Ticket couldn't be loaded");
-	    $m->abort;
-	}
     }
     return $Ticket;
 }
@@ -173,7 +119,7 @@ sub LinkUpIfRequested {
 # }}}
 
 # {{{ sub ProcessSimpleActions
-## TODO: This is a bit hacky, that eval should go away.  Eventually,
+## TODO: This is obscenely hacky, that eval should go away.  Eventually,
 ## the eval is not needed in perl 5.6.0.  Eventually the sub should
 ## accept more than one Action, and it should handle Actions with
 ## arguments.

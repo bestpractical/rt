@@ -28,35 +28,76 @@ $Create => undef
 
 <%INIT>
 
-&Error('No ticket specified') unless $id;
 
-use RT::Ticket;
-use RT::CurrentUser;
-use RT::Interface::Web;
+my ($linkid, $message, $tid, $Ticket, @Actions);  
 
-my @Actions;
 
-#Here, tobias passes in an empty array so we can get the returns out.
-my $Ticket = &CreateOrLoad(CurrentUser => $session{'CurrentUser'},
-			   id=>$id, 
-			   ARGS=>\%ARGS, 
-			   Actions=>\@Actions);
+$Ticket = new RT::Ticket($session{'CurrentUser'});
 
-my ($linkid, $message, $tid);
+unless ($id) {
+    Abort('No ticket specified');
+}
+
+if ($ARGS{'id'} eq 'new') {
+    # {{{ Create a new ticket
+    
+    my $Queue = new RT::Queue($session{'CurrentUser'});	
+    unless ($Queue->Load($ARGS{'queue'})) {
+	Abort('Queue not found');
+    }
+    
+    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+	Abort('You have no permission to create tickets in that queue.');
+    }
+    
+    require MIME::Entity;
+    my $MIMEObj = MIME::Entity->build(Subject => $ARGS{Subject},
+				      From => $ARGS{Requestors},
+				      Cc => $ARGS{Cc},
+				      Data => $ARGS{Content}
+				     );
+    
+    #TODO in Create_Details.html: priorities and due-date      
+    my ($id, $Trans, $ErrMsg)= $Ticket->Create( 
+					       Queue=>$ARGS{queue},
+					       Owner=>$ARGS{ValueOfOwner},
+					       RequestorEmail=>$ARGS{Requestors},
+					       Subject=>$ARGS{Subject},
+					       Status=>$ARGS{Status},
+					       MIMEObj => $MIMEObj	  
+					      );         
+    unless ($id && $Trans) {
+	Abort($ErrMsg);
+	
+    }
+    push(@Actions, $ErrMsg);
+
+    # }}}
+}
+
+else { 
+    unless ($Ticket->Load($ARGS{id})) {
+	Abort("Ticket couldn't be loaded");
+    }	
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+	Abort("No permission to view ticket");
+    }
+}
+
 if ($ARGS{'DependsOn'}){
-  ($linkid, $message, $tid) = $Ticket->LinkFrom( Base => $ARGS{'DependsOn'}, Type => 'DependsOn');
-  push @Actions, $message;
+    ($linkid, $message, $tid) = $Ticket->LinkFrom( Base => $ARGS{'DependsOn'}, Type => 'DependsOn');
+    push @Actions, $message;
 }
 
 if ($ARGS{'DependedOnBy'}){
-  ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'DependedOnBy'}, Type => 'DependsOn');
-  push @Actions, $message;
+    ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'DependedOnBy'}, Type => 'DependsOn');
+    push @Actions, $message;
 }
 
 
 if ($ARGS{'MemberOf'}){
-  ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'MemberOf'}, Type => 'MemberOf');
-  push @Actions, $message;
+    ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'MemberOf'}, Type => 'MemberOf');
+    push @Actions, $message;
 }
 
 

@@ -1,13 +1,18 @@
-%while (my $Transaction = $Ticket->Transactions->Next) {
+
+%while (my $Transaction = $Transactions->Next) {
 % $FullHeaders=1 if ($ShowHeaders eq $Transaction->Id);
-%	if ($Ticket->Transactions->IsLast) {
+%	if ($Transactions->IsLast) {
 	<a name="lasttrans">
 % 	}
 	<& ShowTransaction, Transaction => $Transaction, FullHeaders => $FullHeaders &>
 <BR>
 %}
 
+<%INIT>
 
+my $Transactions = $Ticket->Transactions;
+
+</%INIT>
 <%ARGS>
 $Ticket => undef
 $ShowHeaders => undef

@@ -67,20 +67,6 @@ sub ParseArgs  {
     }
     
     
-    elsif ($ARGV[$i] eq "-publichistory") {
-      my $id=int($ARGV[++$i]);
-      my $Ticket = &LoadTicket($id);
-      
-      if ($Ticket->CurrentUserHasRight("ShowTicket")) {
-	&ShowSummary($id);
-	&ShowRequestorHistory($id);
-      }
-      else {
-	print "You don't have permission to view that ticket\n";
-      }
-    } 
-    
-    
     elsif ($ARGV[$i] eq "-trans") {
       
       my $tid = int($ARGV[++$i]);
@@ -482,24 +468,15 @@ n";
 # {{{ sub ShowHistory 
 sub ShowHistory  {
     my $Ticket = shift;
-    my $Transaction;
-    while ($Transaction = $Ticket->Transactions->Next) {
+    my $Transaction;    
+    my $Transactions = $Ticket->Transactions;
+
+    while ($Transaction = $Transactions->Next) {
       &ShowTransaction($Transaction);
     }   
   }
 # }}}
 
-# {{{ sub ShowRequestorHistory 
-sub ShowRequestorHistory  {
-    my $Ticket = shift;
-    my $Transaction;
-    while ($Transaction = $Ticket->Transactions->Next) {
-      if ($Transaction->Type ne 'comment') {
-	&ShowTransaction($Transaction);
-      }
-    }   
-  }
-# }}}
   
 # {{{ sub ShowHelp 
 

@@ -10,9 +10,12 @@
 =head1 SYNOPSIS
 
   use RT::Ticket;
-my $ticket = new RT::Ticket($CurrentUser);
+  my $ticket = new RT::Ticket($CurrentUser);
+  $ticket->Load($ticket_id);
 
 =head1 DESCRIPTION
+
+This module lets you manipulate RT's most key object. The Ticket.
 
 
 =head1 METHODS
@@ -30,29 +33,6 @@ use RT::Watcher;
 
 @ISA= qw(RT::Record);
 
-# {{{ POD
-
-=head1 NAME
-
- Ticket - Manipulate an RT Ticket Object
-
-=head1 SYNOPSIS
-
-  use RT::Ticket;
-    ...
-  my $ticket = RT::Ticket->new($self->CurrentUser);
-  $ticket->Load($ticket_id);
-
-  ....
-
-=head1 DESCRIPTION
- 
-This module lets you manipulate RT's most key object. The Ticket.
-
-
-=cut
-
-# }}}
 
 # {{{ sub _Init
 
@@ -75,32 +55,31 @@ Otherwise, returns the ticket id.
 =cut
 
 sub Load {
-   my $self=shift;
+   my $self = shift;
    my $id = shift;
-
-#If it's a local URI, load the ticket object and return its URI
+   
+   #If it's a local URI, load the ticket object and return its URI
    if ($id =~ /^$RT::TicketBaseURI/)  {
-      return($self->LoadByURI($id));
+       return($self->LoadByURI($id));
    }
-#If it's a remote URI, we're going to punt for now
+   #If it's a remote URI, we're going to punt for now
    elsif ($id =~ '://' ) {
-      return (undef);
+       return (undef);
+   }
+   
+   #If the base is an integer, load it as a ticket 
+   elsif ( $id =~ /^\d+$/ ) {
+       return($self->LoadById($id));
+   }
+   
+   #It's not a URI. It's not a numerical ticket ID. It must be an alias
+   else {
+       return( $self->LoadByAlias($id));
+   }
+   
+   
 }
-
-#If the base is an integer, load it as a ticket 
-elsif ( $id =~ /^\d+$/ ) {
-
-   return($self->LoadById($id));
-}
-
-#It's not a URI. It's not a numerical ticket ID. It must be an alias
-else {
-   return( $self->LoadByAlias($id));
-}
-
-
-}
-
+  
 # }}}
 
 # {{{ sub LoadByAlias
@@ -128,11 +107,10 @@ Given a local ticket URI, loads the specified ticket.
 =cut
 
 sub LoadByURI {
-
     my $self = shift;
     my $uri = shift;
-
-   if ($uri =~ /^$RT::TicketBaseURI(\d+)$/) {
+    
+    if ($uri =~ /^$RT::TicketBaseURI(\d+)$/) {
         my $id = $1;
         return ($self->Load($id));
     }
@@ -190,9 +168,8 @@ sub Create {
 		MIMEObj => undef,
 		@_);
     
-    #TODO Load queue defaults +++
-    
-    
+    #TODO Load queue defaults +++ v2.0
+        
     if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
 	$Queue=RT::Queue->new($self->CurrentUser);
 	$Queue->Load($args{'Queue'});
@@ -210,11 +187,14 @@ sub Create {
 	return (0, 0,'Queue not set');
     }
     
+    #Check the ACLS
+    unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
+					      QueueObj => $Queue )) {
+	return (0,0,"Permission Denied");
+    }
     
     
     # Deal with setting the owner
-    
-    
     if (ref($args{'Owner'}) eq 'RT::User') {
 	$Owner = $args{'Owner'};
     }
@@ -256,11 +236,6 @@ sub Create {
 	$Owner->Load($RT::Nobody->UserObj->Id);
     }	
 	    
-	    
-    unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
-					       QueueObj => $Queue )) {
-	return (0,0,"Permission Denied");
-    }
     
     #TODO we should see what sort of due date we're getting, rather +
     # than assuming it's in ISO format.
@@ -552,18 +527,18 @@ sub Watchers {
 
 =head2 RequestorsAsString
 
-=item B<Takes>
 
-=item I<nothing>
-
-=item B<Returns>
-
-=item String: All Ticket/Queue Requestors.
+B<Takes> I<nothing>
+ B<Returns> String: All Ticket/Queue Requestors.
 
 =cut
 
 sub RequestorsAsString {
     my $self=shift;
+
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
+	return (0, "Permission Denied");
+    }
     return _CleanAddressesAsString($self->Requestors->EmailsAsString() );
 }
 
@@ -576,6 +551,11 @@ B<Returns> String: All Ticket/Queue Watchers.
 
 sub WatchersAsString {
     my $self=shift;
+
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
+	return (0, "Permission Denied");
+    }
+    
     return _CleanAddressesAsString ($self->Watchers->EmailsAsString() . ", " .
 		  $self->QueueObj->Watchers->EmailsAsString());
 }
@@ -595,6 +575,11 @@ sub WatchersAsString {
 
 sub AdminCcAsString {
     my $self=shift;
+
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
+	return (0, "Permission Denied");
+    }
+
     return _CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
 				    $self->QueueObj->AdminCc->EmailsAsString());
 }
@@ -613,10 +598,16 @@ sub AdminCcAsString {
 
 sub CcAsString {
     my $self=shift;
+
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
+	return (0, "Permission Denied");
+    }
+    
     return _CleanAddressesAsString ($self->Cc->EmailsAsString() . ", ".
 				    $self->QueueObj->Cc->EmailsAsString());
 }
 
+# {{{ sub  _CleanAddressesAsString
 =head2 _CleanAddressesAsString
 
 =item B<Takes>
@@ -638,6 +629,7 @@ sub _CleanAddressesAsString {
 }
 
 # }}}
+# }}}
 
 # {{{ Routines that return RT::Watchers objects of Requestors, Ccs and AdminCcs
 
@@ -653,6 +645,9 @@ Returns this ticket's Requestors as an RT::Watchers object
 sub Requestors {
     my $self = shift;
     
+  unless ($self->CurrentUserHasRight('ShowTicket')) {
+    return (0, "Permission Denied");
+  }
     
   require RT::Watchers;
     
@@ -678,18 +673,20 @@ Returns a watchers object which contains this ticket's Cc watchers
 =cut
 
 sub Cc {
-  my $self = shift;
-
-  
-
-  if (! defined ($self->{'Cc'})) {
-    require RT::Watchers;
-    $self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
-    $self->{'Cc'}->LimitToTicket($self->id);
-    $self->{'Cc'}->LimitToCc();
-  }
-  return($self->{'Cc'});
-  
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
+	return (0, "Permission Denied");
+    } 
+    
+    if (! defined ($self->{'Cc'})) {
+	require RT::Watchers;
+	$self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
+	$self->{'Cc'}->LimitToTicket($self->id);
+	$self->{'Cc'}->LimitToCc();
+    }
+    return($self->{'Cc'});
+    
 }
 
 # }}}
@@ -704,16 +701,20 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 =cut
 
 sub AdminCc {
-  my $self = shift;
-  
-  if (! defined ($self->{'AdminCc'})) {
-    require RT::Watchers;
-    $self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
-    $self->{'AdminCc'}->LimitToTicket($self->id);
-    $self->{'AdminCc'}->LimitToAdminCc();
-  }
-  return($self->{'AdminCc'});
-  
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
+	return (0, "Permission Denied");
+    }
+    
+    if (! defined ($self->{'AdminCc'})) {
+	require RT::Watchers;
+	$self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
+	$self->{'AdminCc'}->LimitToTicket($self->id);
+	$self->{'AdminCc'}->LimitToAdminCc();
+    }
+    return($self->{'AdminCc'});
+    
 }
 
 # }}}
@@ -862,10 +863,11 @@ returns undef otherwise
 sub IsOwner {
     my $self = shift;
     my $person = shift;
-
-
-    #TODO not implemented yet
-    return(undef);
+    
+#    unless ($self->CurrentUserHasRight('ShowTicket')) {
+#	return (0, "Permission Denied");
+#    }
+    
     if ($person->Id == $self->OwnerObj->id) {
 	return(1);
     }
@@ -957,6 +959,8 @@ Takes nothing. returns this ticket's queue object
 
 sub QueueObj {
     my $self = shift;
+
+    
     if (!defined $self->{'queue'})  {
 	require RT::Queue;
 	if (!($self->{'queue'} = RT::Queue->new($self->CurrentUser))) {
@@ -1055,6 +1059,11 @@ sub SetStarted {
     my $self = shift;
     my $time = shift || 0;
     
+
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+    }
+
     #We create a date object to catch date weirdness
     my $time_obj = new RT::Date($self->CurrentUser());
     if ($time != 0)  {
@@ -1235,9 +1244,12 @@ sub Comment {
 	      TimeTaken => 0,
 	      @_ );
 
-  unless ($self->CurrentUserHasRight('CommentOnTicket')) {
-    return (0, "Permission Denied");
+  unless (($self->CurrentUserHasRight('CommentOnTicket')) or
+	  ($self->CurrentUserHasRight('ModifyTicket'))) {
+      return (0, "Permission Denied");
   }
+  
+  
   #Record the correspondence (write the transaction)
   my ($Trans, $Msg, $TransObj) = $self->_NewTransaction( Type => 'Comment',
 				      Data => $args{MIMEObj}->head->get('subject'),
@@ -1275,7 +1287,8 @@ sub Correspond {
 	       TimeTaken => 0,
 	       @_ );
 
-  unless ($self->CurrentUserHasRight('ReplyToTicket')) {
+  unless (($self->CurrentUserHasRight('ReplyToTicket')) or
+	  ($self->CurrentUserHasRight('ModifyTicket'))) {
       return (0, "Permission Denied");
   }
   
@@ -1315,51 +1328,6 @@ sub Correspond {
 
 # }}}
 
-# {{{ Routines dealing with keywords
-
-# TODO: Implement keywords
-
-# {{{ sub Keywords
-
-sub Keywords {
-  my $self = shift;
-  #TODO Implement
-  return($self->{'article_keys'});
-}
-
-# }}}
-
-# {{{ sub NewKeyword
-
-# TODO: keywords not implemented
-sub NewKeyword {
-  my $self = shift;
-  my $keyid = shift;
-  
-    my ($keyword);
-  
-  $keyword = new RT::Article::Keyword($self->CurrentUser);
-  return($keyword->create( keyword => "$keyid",
-			   article => $self->id));
-  
-  #reset the keyword listing...
-  $self->{'article_keys'} = undef;
-  return();
-}
-
-# }}}
-
-# {{{ sub HasKeyword
-
-sub HasKeyword {
-  my $self = shift;
-  
-  die "HasKeyword stubbed";
-}
-
-# }}}
-# }}}
-
 # {{{ Routines dealing with Links and Relations between tickets
 
 # {{{ sub Members
@@ -1373,15 +1341,19 @@ that have  this ticket as their target AND are of type 'MemberOf'
 
 sub Members {
    my $self = shift;
+
+   unless ($self->CurrentUserHasRight('ShowTicket')) {
+       return (0, "Permission Denied");
+   }
    
    if (!defined ($self->{'members'})){
-   use RT::Tickets;
-   $self->{'members'} = new RT::Tickets($self->CurrentUser);
-   #Tickets that are Members of this ticket
-   $self->{'members'}->LimitMemberOf($self->id);
-   #Don't show dead tickets
-   $self->{'members'}->LimitStatus( OPERATOR => '!=',
-				     VALUE => 'dead');
+       use RT::Tickets;
+       $self->{'members'} = new RT::Tickets($self->CurrentUser);
+       #Tickets that are Members of this ticket
+       $self->{'members'}->LimitMemberOf($self->id);
+       #Don't show dead tickets
+       $self->{'members'}->LimitStatus( OPERATOR => '!=',
+					VALUE => 'dead');
    }
    return ($self->{'members'});
 }
@@ -1400,17 +1372,22 @@ this ticket as their base AND are of type 'MemberOf' AND are not marked
 
 sub MemberOf {
    my $self = shift;
+   
+   unless ($self->CurrentUserHasRight('ShowTicket')) {
+      return (0, "Permission Denied");
+  }
+   
    if (!defined ($self->{'memberof'})){
-   use RT::Tickets;
-   $self->{'memberof'} = new RT::Tickets($self->CurrentUser);
-   #Tickets that  this ticket is a member of
-   $self->{'memberof'}->LimitHasMember($self->id);
-   #Don't show dead tickets
-   $self->{'memberof'}->LimitStatus( OPERATOR => '!=',
-                                     VALUE => 'dead');
+       use RT::Tickets;
+       $self->{'memberof'} = new RT::Tickets($self->CurrentUser);
+       #Tickets that  this ticket is a member of
+       $self->{'memberof'}->LimitHasMember($self->id);
+       #Don't show dead tickets
+       $self->{'memberof'}->LimitStatus( OPERATOR => '!=',
+					 VALUE => 'dead');
    }
    return ($self->{'memberof'});
-
+   
 }
 
 # }}}
@@ -1489,13 +1466,15 @@ sub Parents {
 
 # {{{ sub _Links 
 sub _Links {
-  my $self = shift;
-
-
-  #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic
-  #tobias meant by $f
-  my $field = shift;
-  my $type =shift || "";
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
+	return (0, "Permission Denied");
+    }
+    #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic ---
+    #tobias meant by $f
+    my $field = shift;
+    my $type =shift || "";
     unless (exists $self->{"$field$type"}) {
 	
 	$self->{"$field$type"} = new RT::Links($self->CurrentUser);
@@ -1507,23 +1486,6 @@ sub _Links {
 
 # }}}
 
-# {{{ sub AllLinks
-# this should return a reference to an RT::Links object which contains
-# all links to or from the current ticket
-
-sub AllLinks {
-  my $self= shift;
-  #TODO this should work
-  die "Stub!";
-  
-#  if (! $self->{'all_links'}) {
-#      $self->{'all_links'} = new RT::Links($self->CurrentUser);
-#    $self->{'all_links'}->Limit(FIELD => 'article',
-#					      VALUE => $self->id);
-#  }
-#  return($self->{'pointer_to_links_object'});
-}
-# }}}
 
 # {{{ sub URI 
 
@@ -1550,6 +1512,10 @@ MergeInto take the id of the ticket to merge this ticket into.
 sub MergeInto {
   my $self = shift;
   my $MergeInto = shift;
+
+  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+    return (0, "Permission Denied");
+  }
   
   #TODO: Merge must be implemented +++
   die "Ticket::Merge stubbed";
@@ -1575,7 +1541,7 @@ sub MergeInto {
 
 =head2 LinkTo
 
-What the hell does this take for args?
+TODO What the hell does this take for args?
 
 =cut
 
@@ -1628,9 +1594,14 @@ sub _NewLink {
 	       Type => '',
 	       @_ );
   
+  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+      return (0, "Permission Denied",0);
+  }
+  
   # {{{ We don't want references to ourself
-  return (0,"You're linking up yourself, that doesn't make sense",0) 
-      if ($args{Base} eq $args{Target});
+  if ($args{Base} eq $args{Target}) {
+      return (0,"You're linking up yourself, that doesn't make sense");
+  }	
   # }}}
  
 
@@ -1648,7 +1619,7 @@ sub _NewLink {
   if ($l) {
       $RT::Logger->log(level=>'info', 
 		       message=>"Somebody tried to duplicate a link");
-      return ($l->id, "Link already exists", 0);
+      return ($l->id, "Link already exists",0);
   }
   # }}}
 
@@ -1754,8 +1725,11 @@ sub SetOwner {
   my $Type = shift || "Give";
   my ($NewOwnerObj);
   
-  #TODO: +++ check CurrentUser's ACL here.
-  
+
+  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+      return (0, "Permission Denied");
+  }  
+
   $RT::Logger->debug("in RT::Ticket->SetOwner()");
   
   $NewOwnerObj = RT::User->new($self->CurrentUser);
@@ -1816,10 +1790,8 @@ A convenince method to set the ticket's owner to the current user
 
 sub Take {
   my $self = shift;
-  $RT::Logger->debug("in RT::Ticket->Take()");
-  my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Take');
- 
-  return ($trans, $msg);
+  
+  return ($self->SetOwner($self->CurrentUser->Id, 'Take'));
 }
 # }}}
 
@@ -1833,8 +1805,8 @@ Convenience method to set the owner to 'nobody' if the current user is the owner
 
 sub Untake {
   my $self = shift;
-  my ($trans,$msg)=$self->SetOwner($RT::Nobody->UserObj, 'Untake');
-  return ($trans,  $msg);
+  
+  return($self->SetOwner($RT::Nobody->UserObj, 'Untake'));
 }
 # }}}
 
@@ -1854,8 +1826,7 @@ sub Steal {
       return (0,"You already own this ticket"); 
   }
   else {
-      my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Steal'); 
-      return ($trans, $msg);
+      return($self->SetOwner($self->CurrentUser->Id, 'Steal'));
       
   }
   
@@ -1883,7 +1854,12 @@ sub SetStatus {
     return (0,"The status '$status' is not valid.");
   }
 
-  #TODO check ACL
+
+  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+      return (undef);
+  }
+  
+	  #TODO check ACL
 
   my $now = new RT::Date($self->CurrentUser);
   $now->SetToNow();
@@ -1915,6 +1891,13 @@ sub SetStatus {
 # }}}
 
 # {{{ sub Kill
+
+=head2 Kill
+
+Takes no arguments. Marks this ticket for garbage collection
+
+=cut
+
 sub Kill {
   my $self = shift;
   return ($self->SetStatus('dead'));
@@ -1923,6 +1906,13 @@ sub Kill {
 # }}}
 
 # {{{ sub Stall
+
+=head2 Stall
+
+Sets this ticket's status to stalled
+
+=cut
+
 sub Stall {
   my $self = shift;
   return ($self->SetStatus('stalled'));
@@ -1930,6 +1920,13 @@ sub Stall {
 # }}}
 
 # {{{ sub Open
+
+=head2 Open
+
+Sets this ticket's status to Open
+
+=cut
+
 sub Open {
   my $self = shift;
   return ($self->SetStatus('open'));
@@ -1937,6 +1934,13 @@ sub Open {
 # }}}
 
 # {{{ sub Resolve
+
+=head2
+
+Sets this ticket's status to Resolved
+
+=cut
+
 sub Resolve {
   my $self = shift;
   return ($self->SetStatus('resolved'));
@@ -1998,13 +2002,13 @@ sub Transactions {
 	return (0, "Permission Denied");
     }
     
-    if (!$self->{'transactions'}) {
-	use RT::Transactions;
-	$self->{'transactions'} = RT::Transactions->new($self->CurrentUser);
-	$self->{'transactions'}->Limit( FIELD => 'Ticket',
-					VALUE => $self->id() );
-    }
-    return($self->{'transactions'});
+    
+    use RT::Transactions;
+    my $transactions = RT::Transactions->new($self->CurrentUser);
+    $transactions->Limit( FIELD => 'Ticket',
+			  VALUE => $self->id() );
+    
+    return($transactions);
 }
 
 # }}}
