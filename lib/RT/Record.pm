@@ -52,7 +52,7 @@ sub _MyCurrentUser  {
     $self->CurrentUser(@_);
     if(!defined($self->CurrentUser)) {
 	use Carp;
-	Carp::confess();
+	Carp::cluck();
 	$RT::Logger->err("$self was created without a CurrentUser\n"); 
       return(0);
     }

@@ -1,7 +1,9 @@
-&nbsp;</TD>
+</TD></TR></TABLE>
+</TD>
 </TR>
-
-
+<TR>
+<TD COLSPAN=3><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" height=1 ALT="&nbsp;"></TD>
+</TR>
 </TABLE>
 <%ARGS>
 $title => undef

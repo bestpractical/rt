@@ -403,7 +403,7 @@ print "Creating users...";
 use RT::User;
 foreach $item (@users) {
    my $new_entry = new RT::User($CurrentUser);
-   my $return = $new_entry->Create(%$item);
+   my ($msg, $return) = $new_entry->Create(%$item);
   print $return.".";
 }
 print "done.\n";

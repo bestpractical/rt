@@ -7,8 +7,8 @@ my $subtabs = {
 	       Queues => { title => 'Basics',
 			   path => "Admin/Users/Modify.html?id=".$id
 			 },
-	       Scrips => { title => 'Queue Rights',
-			   path => 'Admin/Scrips/'
+	       Scrips => { title => 'Rights',
+			   path => "Admin/Users/Rights.html?id=".$id
 			 }
 	       
 	      };

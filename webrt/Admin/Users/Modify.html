@@ -90,9 +90,7 @@ Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 <& /Elements/TitleBoxEnd &>
 <BR>
 <& /Elements/TitleBoxStart, title => 'Comments about this user' &>
-<TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL>
-<%$UserObj->Comments%>
-</TEXTAREA>
+<TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL><%$UserObj->Comments%></TEXTAREA>
 <& /Elements/TitleBoxEnd &>
 
 
@@ -125,7 +123,8 @@ if ($Create) {
 } 
 else {
 if ($id eq 'new') {
-    $UserObj->Create( UserId => $UserId );
+    my ($val, $msg) = $UserObj->Create( UserId => $UserId );
+    push @results, $msg;
 }
 else {
     $UserObj->Load($id) || $UserObj->Load($UserId) || Abort("Couldn't load user '$UserId'");
@@ -150,7 +149,7 @@ my ($code, $msg);
 my $check = "if ((defined \$$field) and ( \$UserObj->$field ne \$$field )) {;;
   (\$code, \$msg) = \$UserObj->Set$field(\$$field);
 
-     push \@results, \$msg;
+     push \@results, '$field:' . \$msg;
    }
    ";
 eval $check;
@@ -161,7 +160,7 @@ eval $check;
 
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
 my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
-     push @results, $msg;
+     push @results, 'Privileged status: '. $msg;
 }
 
 
@@ -170,7 +169,7 @@ my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
 if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
     my ($code, $msg);
     ($code, $msg) = $UserObj->SetPassword($Pass1);
-    push @results, $msg;
+    push @results, 'Password: '. $msg;
 }
 
 

@@ -1,20 +1,10 @@
-<TABLE BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=3 WIDTH="<%$width%>">
-<TR> 
-<TD><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 ALT="&nbsp;"></TD>
-<TD valign=middle align=left bgcolor="<%$color%>"> 	
-<font size=-1 color="#ffffff"><b><%$title |n %></b></font>
-</TD>
-<TD ALIGN="right" valign=middle bgcolor="<%$color%>">
-<FONT color="#ffffff" SIZE=-1>
-&nbsp;<%$titleright |n %>
-</FONT>
-</TD>
-</TR>	
-<TR> 
-<TD><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 ALT="&nbsp;"></TD>
-<TD COLSPAN=2 bgcolor="<%$contentbg%>" valign=top WIDTH=100%>
-
-	
+  <TABLE BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=0 WIDTH="<%$width%>">
+    <TR><TD ROWSPAN=4><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 height=1 ALT=""></TD>
+	<TD valign=middle align=left bgcolor="<%$color%>">&nbsp;<font size=-1 color="#ffffff"><b><%$title |n %></b></font></TD>
+	<TD  ALIGN="right" valign=middle bgcolor="<%$color%>"><FONT color="#ffffff" SIZE=-1><%$titleright |n %></FONT>&nbsp;</TD>
+	<TD ROWSPAN=4><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 ALT=""></TD></TR>	
+    <TR><TD COLSPAN=2 bgcolor="<%$contentbg%>" valign=top align=left WIDTH=100%>
+<TABLE CELLPADDING=2><TR><TD>
 <%ARGS>
 $width => "100%"
 $title => undef

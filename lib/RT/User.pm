@@ -105,8 +105,13 @@ sub Create  {
     my %args = (Privileged => 0,
 		@_ # get the real argumentlist
 	       );
-
-    #TODO check for duplicate emails and userid +++
+    
+    #Check the ACL
+    unless ($self->CurrentUserHasRight('AdminUsers')) {
+	return (0, 'No permission to create users');
+    }
+    
+    #TODO check for duplicate email addresses +++
 
     if (! $args{'Password'})  {
 	$args{'Password'} = '*NO-PASSWORD*';
@@ -120,14 +125,23 @@ sub Create  {
     }   
         
     #TODO Specify some sensible defaults.
-    #TODO check ACLs
 
-    #TODO +++ SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
-    
+
+    #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
+    if ($RT::SystemUser) { #This only works if RT::SystemUser has been defined
+	my $TempUser = new RT::User($RT::SystemUser);
+	$TempUser->Load($args{'UserId'});
+	return (0, 'UserId in use') if ($TempUser->Id);
+    }
+    else {
+	$RT::Logger->warning("$self couldn't check for pre-existing ".
+			     " users on create. This will happen".
+			     " on installation");
+    }
     my $id = $self->SUPER::Create(%args);
     
     #If the create failed.
-    return (undef) if ($id == 0);
+    return (0, 'Could not create user') if ($id == 0);
     
     #TODO post 2.0
     #if ($args{'SendWelcomeMessage'}) {
@@ -135,7 +149,7 @@ sub Create  {
     #	#TODO: Send the user a "welcome message"  see [fsck.com #290]
     #}
     
-    return ($id);
+    return ($id, 'User created');
 }
 
 # }}}
@@ -815,12 +829,12 @@ sub CurrentUserCanModify {
     my $self = shift;
     my $right = shift;
 
-    if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
+    if ($self->CurrentUserHasRight('AdminUsers')) {
 	return (1);
     }
     #If the current user is trying to modify themselves
     elsif ( ($self->id == $self->CurrentUser->id)  and
-	    ($self->CurrentUser->HasSystemRight('ModifySelf'))) {
+	    ($self->CurrentUserHasRight('ModifySelf'))) {
 	
 
 	return(1);
@@ -834,7 +848,7 @@ sub CurrentUserCanModify {
 
 # }}}
 
-# {{{ sub CurrentUserHasSystemRight
+# {{{ sub CurrentUserHasRight
 
 =head2
   

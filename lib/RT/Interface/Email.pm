@@ -428,21 +428,16 @@ sub GetCurrentUser  {
   # the ticket as "system"
   
   my @FromAddresses = Mail::Address->parse($From) or die "Couldn't parse From-address";
-
+  
   my $FromObj = $FromAddresses[0];
-
-
-
   my $Name =  ($FromObj->phrase || $FromObj->comment || $FromObj->address);
   
   #Lets take the from and load a user object.
-
-
   my $Address = $FromObj->address;
-
+  
   #This will apply local address canonicalization rules
-  $Address = &RT::CanonicalizeAddress($Address);
-
+  $Address = RT::CanonicalizeAddress($Address);
+  
   my $CurrentUser = RT::CurrentUser->new();
 
   $CurrentUser->LoadByEmail($Address);
@@ -453,9 +448,8 @@ sub GetCurrentUser  {
     my $SystemUser = new RT::CurrentUser();
     $SystemUser->LoadByUserId('RT_System');
 
-    my $NewUser = RT::User->new($SystemUser);#Create a user as root 
-    #TODO: Figure out a better way to do this
-    ## Tobix: What's wrong with this way?
+    my $NewUser = RT::User->new($RT::SystemUser);
+ 
     my ($Val, $Message) = $NewUser->Create(UserId => $FromObj->address,
 					   EmailAddress => $Address,
 					   RealName => "$Name",
@@ -465,15 +459,14 @@ sub GetCurrentUser  {
 					  );
     
     if (!$Val) {
-      #TODO this should not just up and die. at the worst it should send mail.
-      die $Message;
+	$RT::Logger->crit("Could not create new user on mail receipt: $Message\n");
+	#TODO this should not just up and die. at the worst it should send mail.
+	die $Message;
     }
-
     
-
     #Load the new user object
     $CurrentUser->LoadByEmail($Address);
-  }
+}
   return ($CurrentUser);
 }
 
