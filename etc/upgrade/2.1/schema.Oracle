@@ -18,3 +18,7 @@ Topic NUMBER(11,0) NOT NULL,
 ObjectType varchar2(64) DEFAULT '' NOT NULL,
 ObjectId NUMBER(11,0) NOT NULL
 );
+
+
+ALTER TABLE FM_ClassCustomFields
+ADD Display varchar2(255) DEFAULT '' NOT NULL;

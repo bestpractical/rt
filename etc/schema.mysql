@@ -20,7 +20,7 @@ CustomField integer not NULL,
 Creator integer NOT NULL DEFAULT 0,
 Created DATETIME NULL,
 SortOrder int(2) not null default '0',
-Display varchar(255) not null default 'normal',
+Display varchar(255) not null default '',
 LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated DATETIME NULL,
 PRIMARY KEY (id)

@@ -16,3 +16,7 @@ ObjectType varchar(64) NOT NULL DEFAULT '',
 ObjectId integer NOT NULL,
 PRIMARY KEY (id)
 ) TYPE=InnoDB;
+
+
+ALTER TABLE FM_ClassCustomFields
+ADD COLUMN Display varchar(255) not null default '';

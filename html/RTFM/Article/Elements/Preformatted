@@ -24,31 +24,38 @@
 %my $cfs = $Article->ClassObj->CustomFields;  
 % while (my $cf = $cfs->Next) {
 
-% my $values = $Article->CustomFieldValues($cf->Id);
-% if ($cf->Type eq 'TextSingle') {
-% my $value = $values->First; 
-% my $content = $value ? $value->Content : "";
-% if ($content =~ /<(.{1,5})>/) {
-%    $content = de_htmlify($content);
-% }
-<%$cf->Name%>:
-<%'-' x length($cf->Name) %>
-<%$content%>
-% } else {
-% my $val = $values->Next;
-% my $content = $val ? $val->Content : "";
-% if ($content =~ /<(.{1,5})>/) {
-%    $content = de_htmlify($content);
-% }
-<%$cf->Name%>: <%$val && $content%>
-% while ($val = $values->Next) { 
-% my $content = $val->Content;
-% if ($content =~ /<(.{1,5})>/) {
-%    $content = de_htmlify($content);
-% }
-<%' ' x length($cf->Name)%>  <%$content%>
-% } 
-% }
+%   my $ccf = RT::FM::ClassCustomField->new($session{'CurrentUser'});
+%   $ccf->LoadByCols(Class => $Article->ClassObj->Id, CustomField => $cf->Id);
+%   my $values = $Article->CustomFieldValues($cf->Id);
+%   my $display = $ccf->Display;
+%   if ($display eq "Hidden when empty") {
+%     $display = $values->Count ? "Visible" : "Hidden";
+%   }
+%   next if $display eq "Hidden";
+%   if ($cf->Type eq 'TextSingle') {
+%     my $value = $values->First; 
+%     my $content = $value ? $value->Content : "";
+%     if ($content =~ /<(.{1,5})>/) {
+%       $content = de_htmlify($content);
+%     }
+<%    $cf->Name%>:
+<%    '-' x length($cf->Name) %>
+<%    $content%>
+%   } else {
+%     my $val = $values->Next;
+%     my $content = $val ? $val->Content : "";
+%     if ($content =~ /<(.{1,5})>/) {
+%       $content = de_htmlify($content);
+%     }
+<%    $cf->Name%>: <%$val && $content%>
+%     while ($val = $values->Next) { 
+%       my $content = $val->Content;
+%       if ($content =~ /<(.{1,5})>/) {
+%         $content = de_htmlify($content);
+%       }
+<%      ' ' x length($cf->Name)%>  <%$content%>
+%     } 
+%   }
 % }
 
 <%init>
