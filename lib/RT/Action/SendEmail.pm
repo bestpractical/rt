@@ -129,7 +129,7 @@ sub Commit {
     $self->SetHeader( 'Cc', join ( ',', @{ $self->{'Cc'} } ) )
       if ( $self->{'Cc'} && @{ $self->{'Cc'} } );
     $self->SetHeader( 'Bcc', join ( ',', @{ $self->{'Bcc'} } ) )
-      if ( $self->{'Cc'} && @{ $self->{'Bcc'} } );
+      if ( $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
 
     $self->SetHeader('MIME-Version', '1.0');
