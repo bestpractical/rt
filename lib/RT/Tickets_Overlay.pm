@@ -676,6 +676,7 @@ sub _CustomFieldLimit {
     $CF->LimitToQueue( $q->Id );
     $queue = $q->Id;
   } else {
+    $field = $1 if $field =~ /^{(.+)}$/; # trim { }
     $CF->LimitToGlobal;
   }
   $CF->FindAllRows;
