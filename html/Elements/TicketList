@@ -21,51 +21,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+--<%$BaseURL%>--
 <& /Elements/TitleBoxStart, title => $Title, bodyclass=> '' &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-<TR>
-% foreach my $col (@cols) { 
-% if ($col->{title} eq 'NEWLINE') {
-</TR>       <TR>
-% } else {
-<TH align="center">
-% my $title = $col->{title};
-% $title =~ s/^__(.*)__$/$1/o;
-% $title = ($map->{$title}->{title} || $title);
-% if ($AllowSorting && $col->{'attribute'}) {
-<a href="?SortBy=<%$col->{'attribute'}%>&SortOrder=<%$ARGS{'SortOrder'} eq 'ASC' ? 'DESC' : 'ASC'"><%loc($title)%></a>
-% } else {
-% $m->out(loc($title));
-% }
-</TH>
-% } 
-% }
-</TR>
+<& .Header, Format => \@Format, map => $map, AllowSorting => $AllowSorting, Order => $Order, OrderBy => $OrderBy , BaseURL => $BaseURL  &> 
 % my $i;
-% while (my $Ticket = $Tickets->Next) {
+% while (my $record = $Collection->Next) {
 % $i++;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-% foreach my $column (@cols) {
-% if ($column->{title} eq 'NEWLINE') {
-</TR> 
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-% next;
-% }
-<td align="<% 'left'%>">
-% foreach my $subcol (@{$column->{output}}) {
-% if ($subcol =~ /^__(.*?)__$/o) {
-% my $col = $1;
-% if ($map->{$col}->{value} && ref ($map->{$col}->{value})) {
-%       $m->out(&{$map->{$col}->{value}}($Ticket, $i));
-% }
-% } 
-% else {
-%$m->out($subcol);
-% }
-% }
-</td>
-% }
-</TR>
+<& .Row, Format => \@Format, i => $i, record => $record, map => $map &>
 % }
 </TABLE>
 <& /Elements/TitleBoxEnd &> 
@@ -73,11 +36,13 @@
 
 my $map = {
     QueueName => {
+        attribute => 'Queue',
         title => 'Queue',
         value => sub { return $_[0]->QueueObj->Name }
     },
     OwnerName => {
         title => 'Owner',
+        attribute => 'Owner',
         value => sub { return $_[0]->OwnerObj->Name }
     },
     id => {
@@ -92,6 +57,7 @@ my $map = {
     },
     ExtendedStatus => {
         title => 'Status',
+        attribute => 'Status',
         value => sub {
             my $Ticket = shift;
 
@@ -102,7 +68,7 @@ my $map = {
                     return "<em>" . loc('(pending approval)') . "</em>";
                 }
                 else {
-                    return "<em>" . loc('(pending other tickets)') . "</em>";
+                    return "<em>" . loc('(pending other Collection)') . "</em>";
                 }
             }
             else {
@@ -145,30 +111,37 @@ my $map = {
     },
     StartsRelative => {
         title => 'Starts',
+        attribute => 'Starts',
         value => sub { return $_[0]->StartsObj->AgeAsString }
     },
     StartedRelative => {
         title => 'Started',
+        attribute => 'Started',
         value => sub { return $_[0]->StartedObj->AgeAsString }
     },
     CreatedRelative => {
         title => 'Created',
+        attribute => 'Created',
         value => sub { return $_[0]->CreatedObj->AgeAsString }
     },
     LastUpdatedRelative => {
         title => 'LastUpdated',
+        attribute => 'LastUpdated',
         value => sub { return $_[0]->LastUpdatedObj->AgeAsString }
     },
     ToldRelative => {
         title => 'Told',
+        attribute => 'Told',
         value => sub { return $_[0]->ToldObj->AgeAsString }
     },
     DueRelative => {
         title => 'Due',
+        attribute => 'Due',
         value => sub { return $_[0]->DueObj->AgeAsString }
     },
     ResolvedRelative => {
         title => 'Resolved',
+        attribute => 'Resolved',
         value => sub { return $_[0]->ResolvedObj->AgeAsString }
     },
     Starts => {
@@ -198,13 +171,14 @@ my $map = {
 
 };
 
-unless ($Tickets) {
-        $Tickets = RT::Tickets->new($session{'CurrentUser'});
-        $Tickets->FromSQL($Query);
-        $Tickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC'); 
+unless ($Collection) {
+        $Collection = RT::Tickets->new($session{'CurrentUser'});
+        $Collection->FromSQL($Query);
+        @Format = $Collection->DisplayColumns;
 }
 
-my @cols = $Tickets->DisplayColumns;
+$Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+
 
 </%INIT>
 <%ARGS>
@@ -212,6 +186,90 @@ $Query => undef
 $Rows => 10
 $Page => 1
 $Title => 'Ticket Search'
-$Tickets => undef
+$Collection => undef
 $AllowSorting => undef
+$Order =>undef
+$OrderBy => undef
+$BaseURL => undef
+@Format => undef
 </%ARGS>
+%#### SUB COMPONENTS
+%#
+%#
+%#
+<%DEF .Header>
+<%ARGS>
+@Format => undef
+$map => undef
+$AllowSorting => undef
+$Order=>undef
+$BaseURL => undef
+</%ARGS>
+<TR>
+<%perl>
+foreach my $col (@Format) {
+    if ( $col->{title} eq 'NEWLINE' ) {
+        $m->out('</TR>       <TR>');
+    }
+    else {
+        $m->out('<TH align="center">');
+        my $title = $col->{title};
+        $title =~ s/^__(.*)__$/$1/o;
+        $title = ( $map->{$title}->{title} || $title );
+        if ( $AllowSorting && $col->{'attribute'} ) {
+            my @query_args;
+            push @query_args,
+              ( "OrderBy="
+              . ( $map->{ $col->{'attribute'} }->{'attribute'}
+              ? $map->{ $col->{'attribute'} }->{'attribute'}
+              : $col->{'attribute'} ) );
+            push @query_args,
+              ( "Order=" . ( $ARGS{'Order'} eq 'ASC'  
+              ? 'DESC'
+              : 'ASC' ));
+            $m->out( '<a href="' . $BaseURL . '&'
+                . join ( '&', @query_args ) . '">'
+                . loc($title) . '</a>' );
+        }
+        else {
+            $m->out( loc($title) );
+        }
+        $m->out('</TH>');
+    }
+}
+</%perl>
+</TR>
+</%DEF>
+
+<%DEF .Row>
+<%ARGS>
+$i => undef
+@Format => undef
+$record => undef
+$map => undef
+</%ARGS>
+<%PERL>
+$m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
+foreach my $column (@Format) {
+    if ( $column->{title} eq 'NEWLINE' ) {
+        $m->out('</TR>');
+        $m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
+        next;
+    }
+    $m->out('<td align="left">');
+    foreach my $subcol ( @{ $column->{output} } ) {
+        if ( $subcol =~ /^__(.*?)__$/o ) {
+            my $col = $1;
+            if ( $map->{$col}->{value} && ref( $map->{$col}->{value} ) ) {
+                $m->out( &{ $map->{$col}->{value} } ( $record, $i ) );
+            }
+        }
+        else {
+            $m->out($subcol);
+        }
+    }
+    $m->out('</td>');
+}
+$m->out('</TR>');
+</%PERL>
+</%DEF>

@@ -566,7 +566,7 @@ sub _DisplayColumn {
         while ( $col =~ s/^(.*?)__(.*?)__//o ) {
             push ( @subcols, $1 ) if ($1);
             push ( @subcols, "__$2__" );
-            $colref->{'attribute'} = $col;
+            $colref->{'attribute'} = $2;
         }
         push ( @subcols, $col );
         @{ $colref->{'output'} } = @subcols;
