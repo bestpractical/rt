@@ -241,6 +241,28 @@ sub ACL  {
 #
  #
 #ACCESS CONTROL
+
+sub _HasRight {
+  my $self = shift;
+  my $right = shift;
+
+  return (1);
+
+  # by default, the actor is the current user
+  if (!@_) {
+    my $actor = $self->CurrentUser->Id();
+  }
+  else {
+    my $actor = shift;   
+  }
+  
+
+  
+  
+
+
+}
+
 # 
 
 # {{{ sub CreatePermitted 
