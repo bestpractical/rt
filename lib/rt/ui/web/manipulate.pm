@@ -23,7 +23,7 @@ $frames=&rt::ui::web::frames();
 
 if ($serial_num > 0) {
   require rt::database;
-$effective_sn = &normalize_sn($serial_num);
+$effective_sn = &rt::normalize_sn($serial_num);
   &rt::req_in($effective_sn,$current_user);
 }
 
