@@ -38,6 +38,16 @@ sub Create  {
   
     # }}} (Args)
 
+    # {{{ DEAL WITH USER ID
+    my $User=RT::User->new($self->CurrentUser);
+    if (!$Owner && $User->LoadByEmail($args{Email})) {
+	$args{Owner}=$User->id;
+	delete $args{Email};
+    } elsif (!$Owner && $args{Name} && $User->LoadByName($args{Name})) {
+	$args{Owner}=$User->id;
+    }
+    # }}}
+  
     # {{{ Create & Load
     my $id = $self->SUPER::Create(%args);
     $self->Load($id);
@@ -48,13 +58,6 @@ sub Create  {
     # }}}
 
 
-    # {{{ DEAL WITH USER ID
-    my $User=RT::User->new($self->CurrentUser);
-    if ($User->LoadByEmail($args{Email})) {
-	$self->_Set('Owner', $User->id);
-    }
-    # }}}
-  
     return (1,"Interest noted");
 }
 # }}}
@@ -105,7 +108,7 @@ sub Email {
     return ($self->SUPER::Email);
   }
   else {
-    return ($self->{'OwnerObj'}->EmailAddress);
+    return ($self->OwnerObj->EmailAddress);
   }
 }
 # }}}

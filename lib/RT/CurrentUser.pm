@@ -68,7 +68,9 @@ sub Load  {
     $self->LoadByCol("EmailAddress",$identifier);
   }
   else {
-    $self->LoadByCol("UserId",$identifier);
+    # This is a bit dangerous, we might get false authen if somebody
+    # uses ambigous userids or real names:
+    $self->LoadByCol("UserId",$identifier) || $self->LoadByCol("RealName",$identifier);
   }
 }
 # }}}

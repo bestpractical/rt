@@ -3,6 +3,7 @@
 
 package RT::Interface::Email;
 use RT::Ticket;
+my $FromObj;
 # {{{ sub activate 
 sub activate  {
   my $Queue  = $ARGV[0];
@@ -42,6 +43,7 @@ sub activate  {
   #TODO: Deal with this error better
   my $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
  
+  #Now we've got a parsed mime object. 
 
  
   # Get the head, a MIME::Head:
@@ -86,6 +88,8 @@ sub activate  {
       $Ticket->Create ( QueueTag => $Queue,
 			Area => $Area,
 			Subject => $Subject,
+			Requestor => $CurrentUser,
+			RequestorEmail => $FromObj->address,
 			MIMEObj => $entity
 		      );
    #print "id/trans/err:  $id $Transaction $ErrStr\n"; 
@@ -233,15 +237,17 @@ sub GetCurrentUser  {
   #TODO: probably, we should do something smart here like generate
   # the ticket as "system"
 
-  my ($FromObj) = Mail::Address->parse($From) or die "Couldn't parse From-address";
+  ($FromObj) = Mail::Address->parse($From) or die "Couldn't parse From-address";
   my $Name =  ($FromObj->phrase || $FromObj->comment || $FromObj->address);
 
-  
-  #Now we've got a parsed mime object. 
-  use RT::CurrentUser;
-  my $CurrentUser = new RT::CurrentUser($FromObj->address);
-  
   #Lets take the from and load a user object.
+
+  use RT::CurrentUser;
+  my $CurrentUser = RT::CurrentUser->new($FromObj->address);
+  
+  # One more try if we couldn't find that user
+  $CurrentUser->Id || $CurrentUser->_Init($Name);
+  
   unless ($CurrentUser->Id) {
     #If it fails, create a user
     

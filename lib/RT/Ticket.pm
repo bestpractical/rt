@@ -60,7 +60,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
     EffectiveId
     Queue
     QueueTag
-    Requestor -- is this obsolete?
+    Requestor -- A requestor object, if available.  Eventually taken from the MIME object.
+    RequestorEmail -- the requestors email.  Eventually taken from Requestor or the MIME object
     Alias  -- unused
     Type --unused
     Owner -- is this a user id or a a username?
@@ -88,6 +89,7 @@ sub Create {
 	      Queue => undef,
 	      QueueTag => undef,
 	      Requestor => undef,
+	      RequestorEmail => undef,
 	      Alias => undef,
 	      Type => undef,
 	      Owner => $RT::Nobody,
@@ -141,18 +143,38 @@ sub Create {
     warn $message;
     return (0, 0, $message);
   }
+
+
+  if (defined $args{Requestor} || defined $args{RequestorEmail}) {
+      my %watcher=(Type=>'Requestor');
+      if (defined $args{RequestorEmail}) {
+	  $watcher{Email} = $args{RequestorEmail};
+      }
+      if (defined $args{Requestor}) {
+	  $watcher{Owner}=$args{Requestor}->Id;
+	  if  ( $args{RequestorEmail} && 
+		$args{RequestorEmail} eq $args{Requestor}->EmailAddress 
+		) {
+	      delete $watcher{Email};
+	  }
+      }
+      $self->AddWatcher(%watcher);
+  } 
   if (defined $args{'MIMEObj'}) {
     my $head = $args{'MIMEObj'}->head;
     
     require Mail::Address;
 
-    #Add the requestor to the list of watchers
-    my $FromLine = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
-    my @From = Mail::Address->parse($FromLine);
-    
-    foreach $From (@From) {
-      $self->AddWatcher ( Email => $From->address,
-			  Type => "Requestor");
+    unless (defined $args{'Requestor'} || defined $args{'RequestorEmail'}) {
+	#Add the requestor to the list of watchers
+	my $FromLine = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
+	my @From = Mail::Address->parse($FromLine);
+	
+	foreach $From (@From) {
+	    $self->AddWatcher ( Email => $From->address,
+				Type => "Requestor",
+				Name => $From->phrase||$From->comment);
+	}
     }
     
     my @Cc = Mail::Address->parse($head->get('Cc'));
