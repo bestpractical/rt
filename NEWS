@@ -1,0 +1,22 @@
+Aug 24, 1997
+------------
+	The mailing routines now correctly print the To: line.
+	The mailing routines should now be able to handle bizzare 
+	  email addresses on the command line. (I added a pair of " marks.)
+
+25 Aug 1997
+-----------
+	Changing subject now returns a correct response.
+	Database Select errors are now more verbose.
+	Added in Rich West's new README. (Thanks, Rich!)
+
+9 Sep 1997
+----------
+	Added support routines for importing requests
+	Added rich west's req2rt program in contrib
+	Web interface now does header parsing
+	Web interface now displays things in <angle brackets> in messages properly.
+	There were other fixes which I've forgotten.
+
+
+

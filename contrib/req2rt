@@ -1,0 +1,526 @@
+#!/path/to/perl
+##                                                                        ##
+# req2rt.pl						Author: Rich West  #
+#                                                       rwest@sarnoff.com  #
+
+#                                                                          #
+# This little utility will read through all of the REQ formatted files,    #
+# break them apart into the individual transactions, and create an RT      #
+# formatted request using RT's interface to the mySQL database.            #
+##                                                                        ##
+
+
+# To execute it, simply run contrib/req2rt SETUID TO YOUR RT USER.  
+# It takes either command line arguments 
+# -or- 
+# it will prompt for the options it needs.
+#
+#
+# Please be aware that when converting tickets, this utility attempts to
+# break apart the single file format of the REQ ticket and split it into
+# individual "transactions" to be incorporated into the RT database.  As
+# you know, individual requests can have numerous correspondence, so this
+# converstion process can take quite a while if you have a large REQ
+# queue to convert.
+
+
+# Also, there is a known BUG in the fact that is cannot handle tickets
+# that have been merged.  All other tickets are handled appropriately.
+
+package rt;
+require RT_Database;
+require RT_Manipulate;
+require "getopts.pl";
+
+
+
+$debug = 0;
+
+
+sub usage
+
+{
+
+   $prog_name = `basename $0`;
+   chop($prog_name);
+   print STDERR "usage: $prog_name -r<<req_home> -a<<list_alias> -q<<queue>\n\n";
+   exit;
+
+}
+
+
+sub munge
+
+{
+
+   local($_,$prompt,$default) = @_;
+   local($response);
+   local($done) = 0;
+   while (!$done)
+
+   {
+
+      print ($prompt,"<<",$default,">: ") ;
+      chop($response = <<STDIN>);
+      if (!length($response)) { $response = $default; }
+      $done = &check($_,$response) ;
+   }
+
+   return ($response);
+
+}
+
+
+sub check
+{
+
+   local($_,$response) = @_;
+   local($done) = 0;
+   chk_rsp:
+
+   {
+       
+       if (/r/ && (-d $response)) { $done = 1; last chk_rsp; }
+       if (/a/ && (length($response) >= 5)) { $done = 1; last chk_rsp;}
+       if (/q/ && (length($response) >= 4)) { $done = 1; last chk_rsp;}
+              &erroneous($_);
+   }
+
+   return ($done);
+
+}
+
+
+sub erroneous
+
+{
+
+   local($_) = @_;
+   print "Error: ";
+   err_response:
+
+   {
+
+      if (/r/)
+
+      {
+
+         print "No such directory exists.\n";
+
+         last err_response;
+
+      }
+
+      if (/a/)
+
+      {
+
+         print "Alias is too short (>= 4 characters).\n";
+
+         last err_response;
+
+      }
+
+      if (/l/)
+
+      {
+
+         print "List is too short (>= 4 characters).\n";
+
+         last err_response;
+
+      }
+
+   }
+
+}
+
+
+##                                                                       ##
+# Set these two variables and you should be all set!                      #
+##                                                                       ##
+
+
+$in_type = "create";
+
+$due = "";
+
+$current_user = "root";
+
+##                                                                       ##
+# Get all of the requested ticket numbers and dump them into a list       #
+
+##                                                                       ##
+
+sub get_list
+{
+
+   local ($QUEUE) = @_;
+   %LIST = "";
+
+   open (LS, "ls $vars[0]/$QUEUE | ") || die "could not ls $vars[0]/$QUEUE.\n";
+
+   while (<<LS>)
+   {
+      chop;
+      print ".";
+      $LIST{$_} = 1;
+   }
+   close(LS);
+   return (%LIST);
+}
+
+
+##                                                                       ##
+# Go through each ticket in the received list, read them in, parse them   #
+# and add them into RT.                                                   #
+##                                                                       ##
+
+sub read_tickets
+{
+   local (%LIST, $QUEUE) = @_;
+  foreach $LIST (keys %LIST)
+   {
+      $first = 1;
+      print ".";
+      open (TICKET, "cat $vars[0]/$QUEUE/$LIST | ") || die "Could not read $LIST\n";
+      print "Reading $LIST.\n" if ($debug);
+      while (<<TICKET>)
+      {
+
+
+##                                                                        ##
+# Do some simple checks to grab the valuable information out of the header #
+# of the REQ based message.                                                #
+##                                                                        ##
+
+
+         if ( /^X-Request-Number/ )
+         {
+            chop;
+            $ticket_num = (split(/: /,$_))[1];
+            next;
+         }
+
+         if ( /^X-Request-Owner/ ) 
+         {
+            chop;
+            $owner = (split(/: /,$_))[1];
+            if (!$owner) { $owner = ""; }
+            next;
+         }
+
+         if ( /^X-Request-User/ ) 
+
+         {
+
+            chop;
+
+            $who = (split(/: /,$_))[1];
+
+            next;
+
+         }
+
+         if ( /^X-Request-Date/ )
+
+         {
+
+            chop;
+
+            $date = (split(/\(/,$_))[1];
+
+            $date = (split(/\)/,$date))[0];
+
+            next;
+
+         }
+
+         if ( /^X-Request-Notified/ )
+
+         {
+
+            chop;
+
+            $told = (split(/\(/,$_))[1];
+
+            $told = (split(/\)/,$told))[0];
+
+            next;
+
+         }
+
+         if ( /^X-Request-Status/ )
+
+         {
+
+            chop;
+
+            $request_status = (split(/: /,$_))[1];
+
+            next;
+
+         }
+
+         if ( /^X-Request-Date/ )
+
+         {
+
+            chop;
+
+            $date = (split(/\(/,$_))[1];
+
+            $date = (split(/\)/,$date))[0];
+
+            next;
+
+         }
+
+         if ( /^X-Request-Acted/ )
+
+         {
+
+            chop;
+
+            $date = (split(/\(/,$_))[1];
+
+            $date = (split(/\)/,$date))[0];
+
+            next;
+
+         }
+
+         if ( /^X-Request-Action/ )
+
+         {
+
+            chop;
+
+            $who = (split(/ /,$_))[4];
+
+            chop $who; # Remove the trailing
+
+            chop $who; # period.
+
+            next;
+
+         }
+
+         if ( /^Subject/ && (!$got_subj) )
+
+         {
+
+            chop;
+
+            $got_subj = 1;
+
+            $request_subject = (split(/: /,$_))[1];
+
+            next;
+
+         }
+
+         if ( /^X-/ )
+
+         {
+
+            next;
+
+         }
+
+
+##                                                                        ##
+# The string of equal signs indicates the end of that particular message.  #
+# At that point, we get the ticket number for the request and add it into  #
+# the database.  All additional correspondence just gets added.            #
+##                                                                        ##
+
+
+         if (/^============/)
+
+         {
+
+            if ($first)
+
+            {
+
+               print "Adding request.\n$INFO" if ($debug);
+
+               ($serial, $trans, $result) = &import_request($vars[2], $ticket_num, "", $who, $vars[1], $owner, $request_subject, $priority, $priority, $request_status, $date, $told, $due, $INFO, $current_user);
+
+               print "$serial, $trans, $result" if ($debug);
+
+               $INFO = "";
+
+               $first = 0;
+
+               next;
+
+            }
+
+            print "Adding correspondence.\n$INFO" if ($debug);
+
+            ($trans, $result) = &import_correspondence($ticket_num, $INFO, $request_subject, $current_user);
+
+            print "$trans, $result" if ($debug);
+
+            $INFO = "";
+
+            next;
+
+         }
+
+         $INFO = $INFO . $_;
+
+      }
+
+
+##                                                                        ##
+# Because the REQ message does not END with the string of equal signs, we  #
+# need to grab the LAST message and add it, too.                           #
+# Also, if the message has NO correspondence, we want to grab it, too.     #
+##                                                                        ##
+
+
+      if (!$first)
+
+      {
+
+         print "Adding final correspondence.\n$INFO" if ($debug);
+
+         ($trans, $result) = &import_correspondence($ticket_num, $INFO,
+$request_subject, $current_user);
+
+         print "$trans, $result" if ($debug);
+
+      }
+
+      else
+
+      {
+
+         print "Adding request.\n$INFO" if ($debug);
+
+         ($serial, $trans, $result) = &import_request($vars[2], $ticket_num, "", $who, $vars[1], $owner, $request_subject, $priority, $priority, $request_status, $date, $told, $due, $INFO, $current_user);
+
+         print "$serial, $trans, $result" if ($debug);
+
+      }
+
+      $INFO = "";
+
+
+##                                                                        ##
+# If this is being read from REQ's resolved queue, let's make this a       #
+# resolved RT ticket as well (otherwise it will remain "open").            #
+##                                                                        ##
+
+
+      if ($request_status eq "resolved")
+
+      {
+
+         ($trans, $result)=&rt::resolve ($ticket_num, $current_user);
+
+         print "$trans, $result" if ($debug);
+
+      }
+
+
+##                                                                        ##
+# Since we are done with this ticket, we don't want this information to    #
+# bleed into any other tickets, so we clear it out.                        #
+##                                                                        ##
+
+
+      $first = 0;
+
+      $got_subj = 0;
+
+      $who = "";
+
+      $date = "";
+
+      $request_subject = "";
+
+      $request_status = "";
+
+   }
+
+}
+
+         
+
+
+##                                                                        ##
+# Main Program                                                             #
+##                                                                        ##
+
+sub main
+
+{
+
+   print "\nBuilding Active REQ list.";
+
+   %ACTIVE = &get_list( "active" );
+
+   print "\nDone.\nBuilding Resolved REQ list.";
+
+   %RESOLVED = &get_list( "resolved" );
+
+   print "\nDone.\nReading and converting Active tickets to RT.";
+
+   &read_tickets(%ACTIVE,"active");
+
+   print "\nDone.\nReading and converting Resolved tickets to RT.";
+
+   &read_tickets(%RESOLVED, "resolved");
+
+   print "\nDone.\n";
+
+}
+
+
+##                                                                        ##
+# Set the Debug level and begin the conversion                             #
+##                                                                        ##
+
+@prompts = ("Path to REQ Home directory ", "List alias ", "Destination
+Queue ");
+
+@opts = ("r", "a", "q", "t");
+
+@defaults = ('/usr/local/req', 'systems@host.com', 'systems-list');
+
+&usage if !&Getopts(join(':',@opts));
+
+for ( $i = 0; $i << $#opts; $i++)
+
+{
+
+   if (eval "(!defined (\$opt_$opts[$i]) ||
+!length(\$opt_$opts[$i]))")
+
+   {
+
+      $vars[$i] = &munge($opts[$i],$prompts[$i],$defaults[$i]);
+
+   }
+
+   else
+
+   {
+
+      eval "\$vars[$i] = \$opt_$opts[$i];";
+
+      die "program exit" if (!&check($opts[$i],$vars[$i])) ;
+
+   }
+
+}
+
+
+&main;
+
+
+

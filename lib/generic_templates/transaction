@@ -1,0 +1,9 @@
+%trans:text_time%: Request %serial_num% was acted upon.
+
+	%trans:text%
+
+			The Systems Group
+			%mailalias%
+
+-------------------------------------------------------------------------
+%trans:content%

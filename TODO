@@ -1,0 +1,17 @@
+RT Todo List
+
+1. Web interface for requestors.
+2. Mail interface for take,give, resolve, etc.
+3. Convert to DBI. (So one could use oracle, mysql, etc.)
+4. Simplify Web interface.
+5. Reporting tool.
+6. "Actions since" command (cli, web)
+7. cleaner cli.
+8. mailgate should be better about mime.
+9. Web interface should let users change their own info. (such as passwd)
+10. Searching on text of requests.
+11. req import tool.
+
+98. rt daemon. (for running interfaces remotely or not setuid)
+99. TK interface
+

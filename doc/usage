@@ -1,0 +1,58 @@
+The RT model is both simpler and more complex than the req model.
+
+	Bob has just signed on as a new sysadmin at Whatsamatta U. and sits down in front of his snazzy new SGI Ultraviolet workstation for his first day on the job.  He's both surprised and relieved when he's informed that he doesn't have to run some beast like Lotus Bloats to keep track of the "emergencies" that he has to deal with.  First thing in the morning, his boss Larry calls him over to his VT and explains about the basics of RT:
+	
+	"RT's a set of perl scripts that keeps track of chatter within the systems group and with users.  The first thing we've gotta do is set you up with access to the database.
+
+	rtadmin user -create bob
+
+	Welcome to Request Tracker 0.961121
+	User's email alias (ex: somebody@somewhere.com) []:bob@watsamatta.edu
+		(the address you'll work with RT from)	
+	RT Password (will echo) []:wordpass
+		(not yet implemented)
+	Phone Number []:x2345
+		(for use by carbon based lifeforms)
+	Office Location []:In the Dungeon        
+		(rt doesn't care where your office...but your boss might) 
+	Misc info about this user []:bob's in charge of rt  
+		(random info about you)
+	Is this user the RT administrator [N]:y
+		(are you allowed to muck with any part of RT you want?)
+	Are you satisfied with your answers [N]:y
+		(commit changes?)
+
+
+	"You can edit all that at any point you want by invoking
+
+		rtadmin user -modify bob
+
+	"Next we want to give you privileges to mess with the systems general queue"		
+		rtadmin user -acl bob general
+
+		Can this user access this queue [N]:y
+		Can this user manipulate requests in this queue [N]:y
+		Is this user the administrator for this queue [N]:y
+		Are you satisfied with your answers [N]:y
+		User bob's ACL successfully modified
+
+
+	Next, we should create you a queue for your personal todo list.
+	Nobody else will be able to see your queue or mess with it.
+
+		 rtadmin queue -create bob_personal  
+	
+		Queue email alias (ex: support@somewhere.com) []:systems@watsamatta.edu
+		Mail request owner on transaction [N]:
+		Mail queue members on transaction [N]:n
+		Mail requestors on transaction [N]:
+		Autoreply to requestor on creation [N]:
+		Mail queue members on creation [N]:
+		Mail queue members on comment [N]:
+		Allow non-queue members to create requests [N]:
+		Default request priority (1-100) []:50
+		Default final request priority (1-100) []:50
+		Are you satisfied with your answers [N]:y
+		
+		Queue bob_personal updated.
+
