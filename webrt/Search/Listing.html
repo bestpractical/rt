@@ -48,7 +48,11 @@ while (my $Ticket = $session{'tickets'}->Next) {
 %#&nbsp;&nbsp;<form method=get action="Listing.html">Goto page <input name=GotoPage size=2></form>
 </font>
 </div>
-
+% if ($session{'tickets'}->Count()) { 
+<div align=right>
+<a href="Bulk.html">Update all these tickets at once</a>
+</div>
+% }
 <HR>
 <TABLE WIDTH="100%">
 <TR>

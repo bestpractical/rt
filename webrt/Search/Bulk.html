@@ -1,0 +1,163 @@
+%# $Header$
+%# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
+<& /Elements/Header, Title => "Bulk ticket update" &>
+<& /Elements/Tabs, current_toptab => 'Search/Listing.html' &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<FORM METHOD=POST>
+<TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
+<TR>
+<TH>Update</TH>
+%foreach my $col (@cols) {
+% my $colalias = $col;
+% $colalias =~ s/(Obj\-\>|)(Name|AsString)//;
+
+<TH ><% $colalias %>&nbsp;</TH>
+%}
+</TR>
+
+<%PERL>
+
+my $i;
+
+
+      
+$session{'tickets'}->RedoSearch();
+while (my $Ticket = $session{'tickets'}->Next) {
+ $i++;
+ if ($i % 2) {
+     $bgcolor = "#dddddd";
+ }
+ else {
+     $bgcolor = "#ffffff";
+ }
+      </%PERL>
+<TR bgcolor="<%$bgcolor%>">
+<TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
+%# The ticket view is controlled by config.pm, WebOptions
+%foreach my $col (@cols) {
+<TD><% eval "\$Ticket->$col()" %>&nbsp;</TD>
+%}
+</TR>
+%}
+
+
+
+</TABLE>
+
+<div align=center>
+<font size=2>
+<a href="Listing.html?GotoPage=1">First page</a>
+&nbsp;&nbsp;
+<a href="Listing.html?GotoPage=Prev">&lt;Previous page</a>
+&nbsp;&nbsp;
+<a href="Listing.html?GotoPage=Next">Next page&gt;</a>
+%#&nbsp;&nbsp;<form method=get action="Listing.html">Goto page <input name=GotoPage size=2></form>
+</font>
+</div>
+
+<HR>
+
+
+<& /Elements/TitleBoxStart, title => 'Update selected tickets' &>
+<TABLE>
+<TR>
+<TD VALIGN=TOP>
+<UL>
+<li> Make Owner <& /Elements/SelectOwner, Name => "Owner" &>
+<li> Add Requestor <INPUT Name="AddRequestor" SIZE=20>
+<li> Remove Requestor <INPUT Name="DeleteRequestor" SIZE=20>
+<li> Add Cc <INPUT Name="AddCc" SIZE=20>
+<li> Remove Cc <INPUT Name="DeleteCc" SIZE=20>
+<li> Add AdminCc <INPUT Name="AddAdminCc" SIZE=20>
+<li> Remove AdminCc <INPUT Name="DeleteAdminCc" SIZE=20>
+</UL>
+</TD>
+<TD VALIGN=TOP>
+<UL>
+<li> Make subject <INPUT Name="Subject" SIZE=20>
+<li> Make priority <INPUT Name="Priority" SIZE=4>
+<li> Make queue <& /Elements/SelectQueue, Name => "Queue" &>
+
+<li>Make Status <& /Elements/SelectStatus, Name => "Status" &>
+
+
+
+<li> Make date Starts <& /Elements/SelectDate, Name => "Starts_Date", ShowTime => 0, Default => '' &>
+<li> Make date Started <& /Elements/SelectDate, Name => "Started_Date", ShowTime => 0, Default => '' &>
+<li> Make date Told <& /Elements/SelectDate, Name => "Told_Date", ShowTime => 0, Default => '' &>
+<li> Make date Due <& /Elements/SelectDate, Name => "Due_Date", ShowTime => 0, Default => '' &>
+<li> Make date Resolved <& /Elements/SelectDate, Name => "Resolved_Date", ShowTime => 0, Default => '' &>
+
+
+% while ( my $KeywordSelect = $KeywordSelects->Next ) {
+
+<li> Add <% $KeywordSelect->Name %> <& /Elements/SelectKeyword, Name => "AddToKeywordSelect".$KeywordSelect->id, KeywordObj => $KeywordSelect->KeywordObj &>
+<li> Remove <% $KeywordSelect->Name %> <& /Elements/SelectKeyword, Name => "DeleteFromKeywordSelect".$KeywordSelect->id, KeywordObj => $KeywordSelect->KeywordObj &>
+% }
+
+</UL>
+
+
+</TD>
+</TR>
+</TABLE>
+
+
+
+
+
+<& /Elements/TitleBoxEnd &>
+
+<& /Elements/Submit &>
+
+
+</FORM>
+% use Data::Dumper;
+<PRE>
+<% Dumper( \%ARGS) %>
+</PRE>
+<%INIT>
+
+
+  # Iterate through the ARGS hash and remove anything with a null value.
+  map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+
+my ($bgcolor, @results);
+my @cols = qw(id Status Priority Subject Queue OwnerObj->Name RequestorsAsString DueAsString );
+
+Abort("No search to operate on") unless ($session{'tickets'});
+
+my $KeywordSelects = new RT::KeywordSelects $session{'CurrentUser'};
+foreach ( $session{'tickets'}->RestrictionValues('Queue') ) {
+    $KeywordSelects->LimitToQueue($_);
+}
+
+$KeywordSelects->IncludeGlobals;
+
+
+#Iterate through each ticket we've been handed
+
+while (my $Ticket = $session{'tickets'}->Next) {
+    $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
+    next unless ($ARGS{"UpdateTicket".$Ticket->Id});
+    $RT::Logger->debug ("Matched\n");
+    #Update the basics.
+    my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
+    my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
+    my @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+    my @selectresults = ProcessTicketObjectKeywords(TicketObj => $Ticket, ARGSRef => \%ARGS);
+    
+    
+    my @tempresults = (@watchresults, @basicresults, @selectresults);
+    @tempresults = map { "Ticket ".$Ticket->Id. ": ".$_ } @tempresults;
+
+    
+    #Update the keyword selects
+    #Update the watchers
+    $RT::Logger->debug(join("\n",@tempresults));
+    @results = (@results, @tempresults);
+}
+
+</%INIT>
