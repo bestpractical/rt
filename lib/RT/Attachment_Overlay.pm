@@ -212,26 +212,7 @@ before returning it.
 
 sub Content {
   my $self = shift;
-  my $decode_utf8 = (($self->ContentType eq 'text/plain') ? 1 : 0);
-
-  if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
-      return $self->_Value(
-	  'Content',
-	  decode_utf8 => $decode_utf8,
-      );
-  } elsif ( $self->ContentEncoding eq 'base64' ) {
-      return ( $decode_utf8
-        ? Encode::decode_utf8(MIME::Base64::decode_base64($self->_Value('Content')))
-        : MIME::Base64::decode_base64($self->_Value('Content'))
-      );
-  } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
-      return ( $decode_utf8
-        ? Encode::decode_utf8(MIME::QuotedPrint::decode($self->_Value('Content')))
-        : MIME::QuotedPrint::decode($self->_Value('Content'))
-      );
-  } else {
-      return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
-  }
+   $self->_DecodeLOB($self->ContentType, $self->ContentEncoding, $self->_Value('Content', decode_utf8 => 0));
 }
 
 

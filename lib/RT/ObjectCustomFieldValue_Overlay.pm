@@ -25,6 +25,45 @@ use strict;
 no warnings qw(redefine);
 
 
+sub Create {
+    my $self = shift;
+    my %args = (
+                CustomField => '0',
+                ObjectType => '',
+                ObjectId => '0',
+                Current => '1',
+                Content => '',
+                LargeContent => '',
+                ContentType => '',
+                ContentEncoding => '',
+
+          @_);
+    ($args{'ContentEncoding'}, $args{'LargeContent'}) = $self->_EncodeLOB($args{'LargeContent'}, $args{'ContentType'}) if ($args{'LargeContent'}); 
+    $self->SUPER::Create(
+                         CustomField => $args{'CustomField'},
+                         ObjectType => $args{'ObjectType'},
+                         ObjectId => $args{'ObjectId'},
+                         Current => $args{'Current'},
+                         Content => $args{'Content'},
+                         LargeContent => $args{'LargeContent'},
+                         ContentType => $args{'ContentType'},
+                         ContentEncoding => $args{'ContentEncoding'},
+);
+
+
+
+}
+
+
+sub LargeContent {
+    my $self = shift;
+    $self->_DecodeLOB( $self->ContentType, $self->ContentEncoding,
+        $self->_Value( 'LargeContent', decode_utf 8 => 0 ) );
+
+}
+
+
+
 
 =head2 LoadByTicketContentAndCustomField { Ticket => TICKET, CustomField => CUSTOMFIELD, Content => CONTENT }
 

@@ -676,6 +676,28 @@ sub _EncodeLOB {
 
 }
 
+sub _DecodeLOB {
+    my $self            = shift;
+    my $ContentType     = shift;
+    my $ContentEncoding = shift;
+    my $Content         = shift;
+
+    if ( $ContentEncoding eq 'base64' ) {
+        $Content = MIME::Base64::decode_base64($Content);
+    }
+    elsif ( $ContentEncoding eq 'quoted-printable' ) {
+        $Content = MIME::QuotedPrint::decode($Content);
+    }
+    elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
+        return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
+    }
+    if ( $ContentType eq 'text/plain' ) {
+        return Encode::decode_utf8($Content);
+    }
+    else {
+        return ($Content);
+    }
+}
 
 # {{{ LINKDIRMAP
 # A helper table for relationships mapping to make it easier
