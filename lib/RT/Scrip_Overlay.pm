@@ -143,7 +143,7 @@ sub Create {
     require RT::ScripAction;
     my $action = new RT::ScripAction( $self->CurrentUser );
     $action->Load( $args{'ScripAction'} );
-    return ( 0, $self->loc( "Action [_1] not found", $args{ScripAction} ) )
+    return ( 0, $self->loc( "Action [_1] not found", $args{'ScripAction'} ) )
       unless $action->Id;
 
     require RT::Template;

@@ -66,7 +66,7 @@ $DatabasePort='@DB_PORT@';
 $DatabaseUser='@DB_RT_USER@';
 
 # Password the DatabaseUser should use to access the database
-$DatabasePassword='rt_pass';
+$DatabasePassword='@DB_RT_PASS@';
 
 
 # The name of the RT's database on your database server

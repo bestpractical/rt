@@ -186,14 +186,11 @@ AC_CONFIG_FILES([
                  lib/t/02regression.t
                  lib/t/03web.pl
  		 sbin/insert_approval_scrips
- 		 bin/enhanced-mailgate
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.svc
- 		 bin/rt
  		 bin/rt-commit-handler
  		 bin/rt-crontool
  		 bin/rt-mailgate
- 		 bin/rtadmin
  		 bin/webmux.pl],
 		[chmod +x configure
                 chmod +x sbin/rt-setup-database

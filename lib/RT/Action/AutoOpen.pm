@@ -24,9 +24,7 @@
 # END LICENSE BLOCK
 # This Action will open the BASE if a dependent is resolved.
 
-package RT::Action::OpenDependent;
 require RT::Action::Generic;
-require RT::Links;
 
 use strict;
 use vars qw/@ISA/;
@@ -39,43 +37,42 @@ use vars qw/@ISA/;
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return (ref $self . " will stall a [local] BASE if it's open and a dependency link is created.");
+  return (ref $self );
 }
 # }}}
 
 
 # {{{ sub Prepare 
 sub Prepare  {
-    # nothing to prepare
-    return 1;
+    my $self = shift;
+    # if the ticket is already open or the ticket is new and the message is more mail from the 
+    # requestor, don't reopen it.
+    if (     (($self->TicketObj->Status eq 'new') &&   $self->TransactionObj->IsInbound  ) 
+         ||  ( $self->TicketObj->Status eq 'open')) {
+        return undef;
+    }
+    else {
+        return (!);
+    }
 }
 # }}}
 
 sub Commit {
     my $self = shift;
+      my $oldstatus = $self->TicketObj->Status();
+        $self->TicketObj->__Set( Field => 'Status', Value => 'open' );
+        $self->TicketObj->_NewTransaction(
+                         Type     => 'Set',
+                         Field    => 'Status',
+                         OldValue => $oldstatus,
+                         NewValue => 'open',
+                         Data => 'Ticket auto-opened on incoming correspondence'
+        );
 
-    my $Links=RT::Links->new($RT::SystemUser);
-    $Links->Limit(FIELD => 'Type', VALUE => 'DependsOn');
-    $Links->Limit(FIELD => 'Target', VALUE => $self->TicketObj->id);
 
-    while (my $Link=$Links->Next()) {
-	next unless $Link->BaseURI->IsLocal;
-	my $base=RT::Ticket->new($self->TicketObj->CurrentUser);
-	# Todo: Only work if Base is a plain ticket num:
-	$base->Load($Link->Base);
-        $base->Open if $base->Status eq 'stalled';
-    }
+    return(1);
 }
 
 
-# Applicability checked in Commit.
-
-# {{{ sub IsApplicable 
-sub IsApplicable  {
-  my $self = shift;
-  1;  
-  return 1;
-}
-# }}}
 
 1;

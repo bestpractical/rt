@@ -1840,11 +1840,8 @@ sub ValidateQueue {
     my $self  = shift;
     my $Value = shift;
 
-    #TODO I don't think this should be here. We shouldn't allow anything to have an undef queue,
     if ( !$Value ) {
-        $RT::Logger->warning(
-" RT:::Queue::ValidateQueue called with a null value. this isn't ok."
-        );
+        $RT::Logger->warning( " RT:::Queue::ValidateQueue called with a null value. this isn't ok.");
         return (1);
     }
 
@@ -1973,29 +1970,6 @@ sub DueAsString {
 
 # }}}
 
-# {{{ sub GraceTimeAsString 
-
-=head2 GraceTimeAsString
-
-Return the time until this ticket is due as a string
-
-=cut
-
-# TODO This should be deprecated 
-
-sub GraceTimeAsString {
-    my $self = shift;
-
-    if ( $self->Due ) {
-        return ( $self->DueObj->AgeAsString() );
-    }
-    else {
-        return "";
-    }
-}
-
-# }}}
-
 # {{{ sub ResolvedObj
 
 =head2 ResolvedObj
@@ -2113,23 +2087,6 @@ sub ToldObj {
     my $time = new RT::Date( $self->CurrentUser );
     $time->Set( Format => 'sql', Value => $self->Told );
     return $time;
-}
-
-# }}}
-
-# {{{ sub LongSinceToldAsString
-
-# TODO this should be deprecated
-
-sub LongSinceToldAsString {
-    my $self = shift;
-
-    if ( $self->Told ) {
-        return $self->ToldObj->AgeAsString();
-    }
-    else {
-        return "Never";
-    }
 }
 
 # }}}
@@ -2314,28 +2271,9 @@ sub Correspond {
              TimeTaken => $args{'TimeTaken'},
              MIMEObj   => $args{'MIMEObj'} );
 
-    # TODO this bit of logic should really become a scrip for 3.0
-    my $TicketAsSystem = new RT::Ticket($RT::SystemUser);
-    $TicketAsSystem->Load( $self->Id );
-
-    if (     ( $TicketAsSystem->Status ne 'open' )
-         and ( $TicketAsSystem->Status ne 'new' ) ) {
-
-        my $oldstatus = $TicketAsSystem->Status();
-        $TicketAsSystem->__Set( Field => 'Status', Value => 'open' );
-        $TicketAsSystem->_NewTransaction(
-                         Type     => 'Set',
-                         Field    => 'Status',
-                         OldValue => $oldstatus,
-                         NewValue => 'open',
-                         Data => 'Ticket auto-opened on incoming correspondence'
-        );
-    }
-
     unless ($Trans) {
         $RT::Logger->err( "$self couldn't init a transaction $msg");
-        return ( $Trans, $self->loc("correspondence (probably) not sent"),
-                 $args{'MIMEObj'} );
+        return ( $Trans, $self->loc("correspondence (probably) not sent"), $args{'MIMEObj'} );
     }
 
     #Set the last told date to now if this isn't mail from the requestor.

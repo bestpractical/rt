@@ -1,83 +1,12 @@
-#!@PERL@ -w
-# BEGIN LICENSE BLOCK
-# 
-# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-# 
-# (Except where explictly superceded by other copyright notices)
-# 
-# This work is made available to you under the terms of Version 2 of
-# the GNU General Public License. A copy of that license should have
-# been provided with this software, but in any event can be snarfed
-# from www.gnu.org
-# 
-# This work is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
-# 
-# 
-# END LICENSE BLOCK
-
-use strict;
-use vars qw($VERSION $Handle $Nobody $SystemUser $item);
-
-use lib "@RT_LIB_PATH@";
-
-my $ApprovalQueueName = "___Approvals";
 
 #This drags in  RT's config.pm
-# We do it in a begin block because RT::Handle needs to know the type to do its
-# inheritance
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::InitLogging();
-}
-use Carp;
-
-use RT::User;
-use RT::CurrentUser;
-use RT::Scrip;
-use RT::Template;
-
-#connect to the db
-require RT::Handle;
-$RT::Handle = RT::Handle->new();
-$RT::Handle->Connect();
-
-#Put together a current user object so we can create a User object
-my $CurrentUser = new RT::CurrentUser();
-
-#now that we bootstrapped that little bit, we can use the standard RT cli
-# helpers  to do what we need
-
-use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent);
-
-#Clean out all the nasties from the environment
-CleanEnv();
-
-#Load etc/config.pm and drop privs
-RT::LoadConfig();
-
-#Connect to the database and get RT::SystemUser and RT::Nobody loaded
-RT::Init;
-
-$CurrentUser->LoadByName('RT_System');
-
 # {{{ Queues
 my $approvals_queue = RT::Queue->new($CurrentUser);
-$approvals_queue->Load($ApprovalQueueName);
 unless ($approvals_queue->Id) {
     my ($val, $msg) = $approvals_queue->Create(
-        Name        => $ApprovalQueueName,
+        Name        => '___Approvals',
         Description => 'A system-internal queue for the approvals system',
-	Disabled    => 1,
+	Disabled    => 2,
     );
 
     unless ($val) {
@@ -158,11 +87,9 @@ return(1) unless ($self->TicketObj->Type eq 'approval');
 
 foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
     $obj->Correspond(
-	Content => $self->loc(
-	    "Your request has been approved by [_1]. Other approvals may still be pending.", # loc
+	Content => $self->loc( "Your request has been approved by [_1]. Other approvals may still be pending.", # loc
 	    $self->TransactionObj->CreatorObj->Name,
-	) . "\n" . $self->loc(
-	    "Approver's notes: [_1]", # loc
+	) . "\n" . $self->loc( "Approver's notes: [_1]", # loc
 	    $self->TicketObj->Transactions->Last->Content,
 	),
 	_reopen	=> 0,
@@ -209,16 +136,10 @@ while (my $link = $links->Next) {
 	}
 
 	if ($rv or !@TOP) {
-	    $obj->SetStatus(
-		Status	=> 'resolved',
-		Force	=> 1,
-	    );
+	    $obj->SetStatus( Status	=> 'resolved', Force	=> 1,);
 	}
 	else {
-	    $obj->SetStatus(
-		Status	=> 'rejected',
-		Force	=> 1,
-	    );
+	    $obj->SetStatus( Status	=> 'rejected', Force	=> 1,);
 	}
     }
 }
@@ -253,165 +174,9 @@ batch-process all your pending approvals.
 {$Transaction->Content()}
 '
     },
-    {
-	Queue       => '0',
-	Name        => 'RootApproval',					# loc
-	Description => 'Need approval from system administrator',	# loc
-	Content     => << '.',
-#
-# FLOW CHART FOR THE FOLLOWING CODE:
-#  { 1 } --->  2 ----> [ ? ] ---> 3 ----> { 4 } ----> end
-#                        `-----------------------'
-#
-# 1 rejects tickets with all-uppercase subjects.
-# 2 and 3 are approval tickets.
-# The branch point '?' will always go to 3, but could be changed below.
-# 4 is a 'code' ticket that writes to a log.
-#
-===Create-Ticket: BEGIN
-### BEGIN ### { %X = () } #####################################################
-Subject: BEGIN #{$Tickets{TOP}->Id}
-Queue: ___Approvals
-Type: code
-Status: resolved
-Content: BEGIN #{$Tickets{TOP}->Id}
-ENDOFCONTENT
-
-===Create-Ticket: T1
-### ENTRY POINT ### { "\nDepends-On: BEGIN\n" } ###############################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
-### NEXT STATE ################################################################
-    2
-###############################################################################
-}).join($/,map"Requestor: $_",$Tickets{TOP}->Requestors->MemberEmailAddresses)}
-###############################################################################
-
-Subject: Reject ALL CAPS ticket subjects
-Queue: ___Approvals
-Type: code
-Content-Type: text/plain
-Content:
-my $subject = $TOP->Subject;
-return ($subject ne uc($subject));
-ENDOFCONTENT
-
-
-===Create-Ticket: T2
-### NON-ENTRY POINT ### { $X{$ID} or die } ####################################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
-### NEXT STATE ################################################################
-    (do{ rand(2) } ? (3) : ()),	# not a bug -- we *want* it always pass to 2 ;)
-###############################################################################
-}).join($/,map"Requestor: $_",$Tickets{TOP}->Requestors->MemberEmailAddresses)}
-###############################################################################
-
-Subject: Management review of { $TOP->Subject }
-Queue: ___Approvals
-Type: approval
-Owner: root
-Content-Type: text/plain
-Content:
-Please review the request from { $TOP->RequestorAddresses },
-and see if it matches the company policy.
-ENDOFCONTENT
-
-
-===Create-Ticket: T3
-### NON-ENTRY POINT ### { $X{$ID} or die } ####################################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
-### NEXT STATE ################################################################
-    4
-###############################################################################
-}).join($/,map"Requestor: $_",$Tickets{TOP}->Requestors->MemberEmailAddresses)}
-###############################################################################
-
-Subject: System Administrator review for {$TOP->Subject}
-Queue: ___Approvals
-Type: approval
-AdminCc: root
-Content-Type: text/plain
-Content:
-Please review the request from { $TOP->RequestorAddresses },
-and see if it is technically feasible.
-ENDOFCONTENT
-
-
-===Create-Ticket: T4
-### NON-ENTRY POINT ### { $X{$ID} or die } ####################################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
-### NEXT STATE ################################################################
-    5
-###############################################################################
-}).join($/,map"Requestor: $_",$Tickets{TOP}->Requestors->MemberEmailAddresses)}
-###############################################################################
-
-Subject: Record the resolution of {$Tickets{TOP}->Subject}
-Queue: ___Approvals
-Type: code
-Content-Type: text/plain
-Content:
-open(my $fh, '>>', "/tmp/resolved.log") or return;
-print $fh "Resolved: ", $TOP->Subject, "\n";
-close $fh;
-return 1;
-ENDOFCONTENT
-
-
-===Create-Ticket: T5
-### NON-ENTRY POINT ### { $X{$ID} or die } ####################################
-{join('',map{"Depended-On-By: ".( $_ ? ( $X{"T$_"} = "T$_" ) : "TOP" ).$/}do{0,
-### NEXT STATE ################################################################
-###############################################################################
-}).join($/,map"Requestor: $_",$Tickets{TOP}->Requestors->MemberEmailAddresses)}
-###############################################################################
-
-Subject: Finish the { $TOP->Subject }
-Queue: ___Approvals
-Type: code
-Content-Type: text/plain
-Content:
-$TOP->SetStatus(
-    Status	=> 'resolved',
-    Force	=> 1,
-);
-return 1;
-ENDOFCONTENT
-
-.
-    },
 );
 
 # }}}
-
-print "Creating templates...";
-
-use RT::Template;
-for $item (@templates) {
-    my $new_entry = RT::Template->new($CurrentUser);
-    my $return    = $new_entry->Create(%$item);
-    print $return. ".";
-}
-print "done.\n";
-
-print "Creating scrips...";
-
-use RT::Template;
-for $item (@scrips) {
-    my $new_entry = RT::Scrip->new($CurrentUser);
-    my ($return, $cmsg) = $new_entry->Create(%$item);
-    print $return. ".";
-    unless ($return) {
-        warn $cmsg;
-
-        use Data::Dumper;
-
-        #print scalar Dumper($item);
-    }
-
-}
-print "done.\n";
-
-$RT::Handle->Disconnect();
 
 1;
 

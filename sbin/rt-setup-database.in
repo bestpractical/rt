@@ -46,6 +46,7 @@ use RT::User;
 use RT::Queue;
 use RT::ScripCondition;
 use RT::CustomField;
+use RT::Scrip;
 
 
 RT::LoadConfig();
@@ -445,8 +446,12 @@ sub insert_data {
 
     for $item (@Scrips) {
         my $new_entry = new RT::Scrip($CurrentUser);
-        my $return    = $new_entry->Create(%$item);
-        print $return. ".";
+        my ($return, $msg)    = $new_entry->Create(%$item);
+        if ($return) {
+         print $return. ".";
+        } else {
+          print "(Error: $msg)\n";  
+        }
     }
     print "done.\n";
 

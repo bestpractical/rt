@@ -43,7 +43,7 @@
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
 % while (my $Link = $Ticket->MemberOf->Next) {
-<& ShowLink, URI => $Link->BaseURI &>
+<& ShowLink, URI => $Link->TargetURI &>
 % }
     </td>
   </tr>
