@@ -547,20 +547,23 @@ sub IsRequestor {
 
 # }}}
 # {{{ sub IsCc
+
 #TODO Implement
 sub IsCc {
   my $self = shift;
-  die "TicketIsAdminCc Stubbed";  
+  return (0);
   
 }
+
 # }}}
 # {{{ sub IsAdminCc
+
 #TODO Implement
 sub IsAdminCc {
   my $self = shift;
-  die "TicketIsAdminCc Stubbed";
-
+  return(0);
 }
+
 # }}}
 
 # }}}
@@ -593,6 +596,7 @@ sub ValidateQueue {
 # }}}
 
 # {{{ sub SetQueue  
+
 sub SetQueue {
   my $self = shift;
   my ($NewQueue, $NewQueueObj);
@@ -611,10 +615,10 @@ sub SetQueue {
     if (!$NewQueueObj->Load($NewQueue)) {
       return (0, "That queue does not exist");
     }
-    elsif (!$NewQueueObj->CreatePermitted) {
+    elsif (!$NewQueueObj->CurrentUserHasRight('CreateTickets')) {
       return (0, "You may not create requests in that queue.");
     }
-    elsif (!$NewQueueObj->ModifyPermitted($self->Owner)) {
+    elsif (!$NewQueueObj->HasRight('CreateTickets',$self->Owner)) {
       $self->Untake();
     }
     
@@ -627,6 +631,7 @@ sub SetQueue {
     return (0,"No queue specified");
   }
 }
+
 # }}}
 
 # {{{ sub Queue
@@ -1121,7 +1126,7 @@ sub Untake {
 sub Steal {
   my $self = shift;
   
-  if (!$self->ModifyPermitted){
+  if (!$self->CurrentUserHasRight('ModifyTicket')){
     return (0,"Permission Denied");
   }
   elsif ($self->Owner->Id eq $self->CurrentUser->Id ) {
@@ -1169,7 +1174,7 @@ sub SetOwner {
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
   #If we've specified a new owner and that user can't modify the ticket
-  elsif (($NewOwner) and (!$self->ModifyPermitted($NewOwnerObj->Id))) {
+  elsif (($NewOwner) and (!$self->HasRight('OwnTickets',$NewOwnerObj->Id))) {
     return (0, "That user may not own requests in that queue")
   }
   
@@ -1489,24 +1494,34 @@ sub HasRight {
     my $right = shift;
     my $actor = shift;   
     
-    my $RightClause = "Right = '$right'";
+    my $RightClause = "(Right = '$right') OR (Right = 'SuperUser')";
     my $ScopeClause = "(Scope = 'Queue') AND ((AppliesTo = ".$self->Queue->id().") OR (AppliesTo = 0))";
-    my $PrincipalsClause =   "((PrincipalType = 'User') AND (PrincipalId = $actor)) OR 
- ((PrinciaplType = 'Group') AND (PrincipalId = GroupMembers.Id) AND (GroupMembers.UserId = $actor)) OR
-  (PrincipalType = 'Everyone')";
+    my $PrincipalsClause =   "(PrincipalType = 'User') AND ((PrincipalId = $actor) OR (PrincipalId = 0))";
     
     $PrincipalsClause .= " OR (PrincipalType = 'Owner') "  if ($actor == $self->Owner->Id);
-    $PrincipalsClause .= "OR (PrincipalType = 'TicketRequestor') " if $self->IsRequestor->($actor);
-    $PrincipalsClause .= "OR (PrincipalType = 'TicketCc') " if  $self->IsCc($actor);
-    $PrincipalsClause .= "OR (PrincipalType = 'TicketAdminCc') " if $self->IsAdminCc($actor);
-        
-    my $query_string = "SELECT COUNT(*) FROM ACL, GroupMembers WHERE (($ScopeClause) AND ($RightClause) AND ($PrincipalsClause))";
+    $PrincipalsClause .= "OR (PrincipalType = 'TicketRequestor') " if ($self->IsRequestor($actor));
+    $PrincipalsClause .= "OR (PrincipalType = 'TicketCc') " if  ($self->IsCc($actor));
+    $PrincipalsClause .= "OR (PrincipalType = 'TicketAdminCc') " if ($self->IsAdminCc($actor));
     
-    my $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string);
+    $GroupPrincipalsClause = "((PrincipalType = 'Group') AND (PrincipalId = GroupMembers.Id) AND (GroupMembers.UserId = $actor))";
+
+    my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers WHERE (($ScopeClause) AND ($RightClause) AND ($GroupPrincipalsClause))";    
+    
+    my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE (($ScopeClause) AND ($RightClause) AND ($PrincipalsClause))";
+    
+    print $query_string_1."\n";
+    print $query_string_2."\n";
+
+    my ($hitcount);
+    
+    $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_1);
     
     #if there's a match, the right is granted
     return (1) if ($hitcount);
     
+    $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_2);
+      return (1) if ($hitcount);
+
     return(0);
   }
 

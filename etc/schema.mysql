@@ -240,6 +240,9 @@ CREATE TABLE ACL (
 
 );
 
+#Grant everyone all rights until we get things settled
+INSERT INTO ACL VALUES (1,0,'User','SuperUser','Queue',0);
+
 # }}}
 
 # {{{ TABLE Watchers
