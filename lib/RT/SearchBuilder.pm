@@ -151,8 +151,8 @@ sub LimitAttribute {
     $self->Limit(
 	ALIAS	   => $alias,
 	FIELD      => 'Content',
-	OPERATOR   => '=',
-	VALUE      => '0',
+	OPERATOR   => 'IS',
+	VALUE      => 'NULL',
 	ENTRYAGGREGATOR => 'OR',
     ) if $args{EMPTY};
 }
