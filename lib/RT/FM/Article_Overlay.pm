@@ -25,8 +25,13 @@ use RT::FM::ArticleCollection;
 use RT::FM::ObjectTopicCollection;
 use RT::FM::ClassCollection;
 use RT::Links;
+use RT::CustomFields;
 use RT::URI::fsck_com_rtfm;
 use RT::Transactions;
+
+# This object takes custom fields
+
+RT::CustomField->_ForObjectType( _LookupTypes() => 'RTFM Articles' );    #loc
 
 # {{{ Create
 
@@ -909,69 +914,6 @@ sub CurrentUserHasRight {
 
 # }}}
 
-# {{{ _NewTransaction
-
-=head2 _NewTransaction PARAMHASH
-
-
-Takes a hash of:
-
-Type
-Field
-OldContent
-NewContent
-Data 
-
-
-=cut
-
-sub _NewTransaction {
-    my $self = shift;
-    my %args = ( Type       => undef,
-                 Field      => '',
-                 OldContent => '',
-                 NewContent => '',
-                 ChangeLog  => '',
-                 @_ );
-
-    my $trans = RT::Transaction->new( $self->CurrentUser );
-    my ($id,$msg) = $trans->Create( ObjectId    => $self->id,
-                    ObjectType => ref($self),
-                    Type       => $args{'Type'},
-                    Field      => $args{'Field'},
-                    OldContent => $args{'OldContent'},
-                    NewContent => $args{'NewContent'});
-
-    #something bad happened;
-    unless ( $id ) {
-        $RT::Logger->crit( $self . " could not create a transaction for " . %args );
-        return ( undef, $msg, $trans );
-    }
-
-    return ( $trans->id, $self->loc("Transaction recorded"), $trans );
-}
-
-# }}}
-
-=head2 Transactions
-
-Returns an RT::FM::TransactionCollection pre-loaded with all the transactions for tthis Article. If the current user doesn't have the right to 'ShowArticleHistory',
-this object is an _empty_ TransactionCollection
-
-=cut
-
-sub Transactions {
-    my $self         = shift;
-    my $transactions = RT::Transactions->new( $self->CurrentUser );
-
-    if ( $self->CurrentUserHasRight('ShowArticleHistory') ) {
-         $transactions->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
-         $transactions->Limit( FIELD    => 'ObjectId', OPERATOR => '=', VALUE    => $self->Id );
-    }
-
-    return ($transactions);
-
-}
 
 # {{{ _Set
 
@@ -1038,4 +980,16 @@ sub _Value {
 
 # }}}
 
+sub _LookupTypes {
+    "RT::FM::Class-RT::FM::Article";
+}
+
+# _LookupId is the id of the toplevel type object the customfield is joined to
+# in this case, that's an RT::FM::Class.
+
+sub _LookupId {
+    my $self = shift;
+    return $self->ClassObj->id;
+
+}
 1;

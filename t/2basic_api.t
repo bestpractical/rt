@@ -40,7 +40,7 @@ isa_ok($cf, 'RT::CustomField');
 
 ($id,$msg) = $cf->Create( Name => 'FM::Sample-'.$$,
              Description => 'Test text cf',
-             LookupType => RT::FM::Class->_LookupTypes,
+             LookupType => RT::FM::Article->_LookupTypes,
              Type => 'Text'
              );
 
@@ -55,7 +55,7 @@ ok ($id,$msg);
 
 # Does our class have a custom field?
 
-my $cfs = $class->CustomFields;
+my $cfs = $class->ArticleCustomFields;
 isa_ok($cfs, 'RT::CustomFields');
 is($cfs->Count, 1, "We only have one custom field");
 my $found_cf = $cfs->First;
@@ -63,7 +63,7 @@ is ($cf->id, $found_cf->id, "it's the right one");
 
 ($id,$msg) = $cf->RemoveFromObject($class);
 
-is($class->CustomFields->Count, 0, "All gone!");
+is($class->ArticleCustomFields->Count, 0, "All gone!");
 
 # Put it back. we want to go forward.
 
@@ -93,5 +93,25 @@ is ($txn->ObjectId , $id ,  "It's the right article");
 is ($txn->Type, 'Create', "It's a create!");
 
 
-# Test some custom fields
+my $art_cfs = $art->CustomFields();
+is ($art_cfs->Count, 1, "It has a custom field");
+my $values = $art->CustomFieldValues($art_cfs->First);
+is ($values->Count, 0);
+
+$art->AddCustomFieldValue(Field => $cf->id, Value => 'Testing');
+$values = $art->CustomFieldValues($art_cfs->First->id);
+
+# We added the custom field
+is ($values->Count, 1);
+is ($values->First->Content, 'Testing', "We added the CF");
+
+is ($art->Transactions->Count,2, "We added a second transaction for the custom field addition");
+my $txn2 = $art->Transactions->Last;
+is ($txn2->ObjectId, $art->id);
+is ($txn2->id, ($txn->id +1));
+is ($txn2->Type, 'CustomField');
+is($txn2->NewValue, 'Testing');
+is ($txn2->OldValue, '');
+
+
 

@@ -1,19 +1,19 @@
 # BEGIN LICENSE BLOCK
-# 
+#
 #  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
-#  
+#
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of version 2 of the GNU General Public License 
+#  it under the terms of version 2 of the GNU General Public License
 #  as published by the Free Software Foundation.
-# 
+#
 #  A copy of that license should have arrived with this
 #  software, but in any event can be snarfed from www.gnu.org.
-# 
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-# 
+#
 # END LICENSE BLOCK
 
 package RT::FM::Class;
@@ -21,10 +21,10 @@ package RT::FM::Class;
 no warnings qw/redefine/;
 use strict;
 
-
 use RT::FM::System;
 use RT::CustomFields;
 use RT::ACL;
+use RT::FM::ArticleCollection;
 
 
 =head2 Load IDENTIFIER
@@ -35,33 +35,32 @@ Loads a class, either by name or by id
 
 sub Load {
     my $self = shift;
-    my $id = shift;
+    my $id   = shift;
 
-    if ($id =~/^\d+$/) {
+    if ( $id =~ /^\d+$/ ) {
         $self->SUPER::Load($id);
     }
     else {
-        $self->LoadByCols(Name => $id);
+        $self->LoadByCols( Name => $id );
     }
 }
-
-
 
 # {{{ This object provides ACLs
 
 use vars qw/$RIGHTS/;
 $RIGHTS = {
 
-    SeeClass            => 'See that this class exists', #loc_pair
-    CreateArticle       => 'Create articles in this class', #loc_pair
-    ShowArticle         => 'See articles in this class', #loc_pair
-    ShowArticleHistory  => 'See articles in this class', #loc_pair
-    ModifyArticle       => 'Modify or delete articles in this class', #loc_pair
+    SeeClass            => 'See that this class exists',               #loc_pair
+    CreateArticle       => 'Create articles in this class',            #loc_pair
+    ShowArticle         => 'See articles in this class',               #loc_pair
+    ShowArticleHistory  => 'See articles in this class',               #loc_pair
+    ModifyArticle       => 'Modify or delete articles in this class',  #loc_pair
     ModifyArticleTopics => 'Modify topics for articles in this class', #loc_pair
-    AdminClass          => 'Modify metadata and custom fields for this class', #loc_pair
-    AdminTopics         => 'Modify topic hierarchy associated with this class', #loc_pair
-    ShowACL             => 'Display Access Control List', # loc_pair
-    ModifyACL           => 'Modify Access Control List', # loc_pair
+    AdminClass  => 'Modify metadata and custom fields for this class', #loc_pair
+    AdminTopics =>
+      'Modify topic hierarchy associated with this class',             #loc_pair
+    ShowACL   => 'Display Access Control List',    # loc_pair
+    ModifyACL => 'Modify Access Control List',     # loc_pair
 };
 
 # TODO: This should be refactored out into an RT::ACLedObject or something
@@ -69,12 +68,10 @@ $RIGHTS = {
 
 # Tell RT::ACE that this sort of object can get acls granted
 $RT::ACE::OBJECT_TYPES{'RT::FM::Class'} = 1;
- 
 
 foreach my $right ( keys %{$RIGHTS} ) {
     $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
-
 
 =head2 AvailableRights
 
@@ -85,15 +82,10 @@ he rights do
 
 sub AvailableRights {
     my $self = shift;
-    return($RIGHTS);
+    return ($RIGHTS);
 }
 
 # }}}
-
-# This object takes custom fields
-
-RT::CustomField->_ForObjectType(_LookupTypes() => 'RTFM Articles'); #loc
-
 
 
 # {{{ Create
@@ -161,40 +153,46 @@ ok ($id, $msg. "- Can create classes as a random new user after ACL grant");
 
 =cut
 
-
 sub Create {
     my $self = shift;
-    my %args = ( 
-                Name => '',
-                Description => '',
-                SortOrder => '0',
-    @_);
+    my %args = (
+        Name        => '',
+        Description => '',
+        SortOrder   => '0',
+        @_
+    );
 
-    unless ($self->CurrentUser->HasRight(Right => 'AdminClass', Object => $RT::FM::System) ) {
-        return(0, $self->loc('Permission Denied'));
+    unless (
+        $self->CurrentUser->HasRight(
+            Right  => 'AdminClass',
+            Object => $RT::FM::System
+        )
+      )
+    {
+        return ( 0, $self->loc('Permission Denied') );
     }
 
     $self->SUPER::Create(
-                         Name => $args{'Name'},
-                         Description => $args{'Description'},
-                         SortOrder => $args{'SortOrder'},
+        Name        => $args{'Name'},
+        Description => $args{'Description'},
+        SortOrder   => $args{'SortOrder'},
     );
 
 }
 
 sub ValidateName {
-    my $self = shift;
+    my $self   = shift;
     my $newval = shift;
 
     return undef unless ($newval);
     my $obj = RT::FM::Class->new($RT::SystemUser);
     $obj->Load($newval);
-    return undef if ($obj->Id);
-    return 1;     
+    return undef if ( $obj->Id );
+    return 1;
 
 }
-# }}}
 
+# }}}
 
 # }}}
 
@@ -227,19 +225,29 @@ sub _Value {
 # }}}
 
 sub CurrentUserHasRight {
-    my $self = shift;
+    my $self  = shift;
     my $right = shift;
 
-    return ($self->CurrentUser->HasRight( Right => $right,
-                                          Object => $self, 
-                                          EquivObjects => [$RT::System, $RT::FM::System] ));
+    return (
+        $self->CurrentUser->HasRight(
+            Right        => $right,
+            Object       => $self,
+            EquivObjects => [ $RT::System, $RT::FM::System ]
+        )
+    );
 
 }
 
-sub _LookupTypes {
-    "RT::FM::Class-RT::FM::Article";
-}
+sub ArticleCustomFields {
+    my $self = shift;
 
+    my $cfs = RT::CustomFields->new( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('SeeClass') ) {
+        $cfs->LimitToGlobalOrObjectId( $self->Id );
+        $cfs->LimitToLookupType( RT::FM::Article->_LookupTypes );
+    }
+    return ($cfs);
+}
 
 1;
 
