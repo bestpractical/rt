@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 # {{{ Front Material 
 
 =head1 SYNOPSIS
@@ -230,6 +231,7 @@ sub Load {
     #TODO modify this routine to look at EffectiveId and do the recursive load
     # thing. be careful to cache all the interim tickets we try so we don't loop forever.
 
+
     #If it's a local URI, turn it into a ticket id
     if ( $id =~ /^$RT::TicketBaseURI(\d+)$/ ) {
         $id = $1;
@@ -242,7 +244,7 @@ sub Load {
 
     #If we have an integer URI, load the ticket
     if ( $id =~ /^\d+$/ ) {
-        my $ticketid = $self->LoadById($id);
+        my ($ticketid,$msg) = $self->LoadById($id);
 
         unless ($self->Id) {
             $RT::Logger->crit("$self tried to load a bogus ticket: $id\n");
@@ -252,11 +254,13 @@ sub Load {
 
     #It's not a URI. It's not a numerical ticket ID. Punt!
     else {
+        $RT::Logger->warning("Tried to load a bogus ticket id: '$id'");
         return (undef);
     }
 
     #If we're merged, resolve the merge.
     if ( ( $self->EffectiveId ) and ( $self->EffectiveId != $self->Id ) ) {
+        $RT::Logger->debug ("We found a merged ticket.". $self->id ."/".$self->EffectiveId);
         return ( $self->Load( $self->EffectiveId ) );
     }
 
@@ -864,7 +868,6 @@ sub UpdateFrom822 {
         $ticketargs{'Queue'} = $tempqueue->Id() if ( $tempqueue->id );
     }
 
-    # die "updaterecordobject is a webui thingy";
     my @results;
 
     foreach my $attribute (@attribs) {
@@ -2533,46 +2536,58 @@ sub AddLink {
 
 # }}}
 
+
 # {{{ sub MergeInto
 
 =head2 MergeInto
 
 MergeInto take the id of the ticket to merge this ticket into.
 
+
+=begin testing
+
+my $t1 = RT::Ticket->new($RT::SystemUser);
+$t1->Create ( Subject => 'Merge test 1', Queue => 'general');
+my $t1id = $t1->id;
+my $t2 = RT::Ticket->new($RT::SystemUser);
+$t2->Create ( Subject => 'Merge test 2', Queue => 'general');
+my $t2id = $t2->id;
+my ($msg, $val) = $t1->MergeInto($t2->id);
+ok ($msg,$val);
+$t1 = RT::Ticket->new($RT::SystemUser);
+is ($t1->id, undef, "ok. we've got a blank ticket1");
+$t1->Load($t1id);
+is ($t1->id, 17, "first ticket's id is 17");
+
+is ($t1->id, $t2->id);
+
+=end testing
+
 =cut
 
 sub MergeInto {
     my $self      = shift;
-    my $MergeInto = shift;
+    my $ticket_id = shift;
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
     # Load up the new ticket.
-    my $NewTicket = RT::Ticket->new($RT::SystemUser);
-    $NewTicket->Load($MergeInto);
+    my $MergeInto = RT::Ticket->new($RT::SystemUser);
+    $MergeInto->Load($ticket_id);
 
     # make sure it exists.
-    unless ( defined $NewTicket->Id ) {
+    unless ( $MergeInto->Id ) {
         return ( 0, $self->loc("New ticket doesn't exist") );
     }
 
     # Make sure the current user can modify the new ticket.
-    unless ( $NewTicket->CurrentUserHasRight('ModifyTicket') ) {
-        $RT::Logger->debug("failed...");
+    unless ( $MergeInto->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    $RT::Logger->debug(
-        "checking if the new ticket has the same id and effective id...");
-    unless ( $NewTicket->id == $NewTicket->EffectiveId ) {
-        $RT::Logger->err( "$self trying to merge into "
-              . $NewTicket->Id
-              . " which is itself merged.\n" );
-        return ( 0,
-            $self->loc("Can't merge into a merged ticket. You should never get this error") );
-    }
+    $RT::Handle->BeginTransaction();
 
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
@@ -2582,19 +2597,20 @@ sub MergeInto {
     #update this ticket's effective id to the new ticket's id.
     my ( $id_val, $id_msg ) = $self->__Set(
         Field => 'EffectiveId',
-        Value => $NewTicket->Id()
+        Value => $MergeInto->Id()
     );
 
     unless ($id_val) {
-        $RT::Logger->error(
-            "Couldn't set effective ID for " . $self->Id . ": $id_msg" );
+        $RT::Handle->Rollback();
         return ( 0, $self->loc("Merge failed. Couldn't set EffectiveId") );
     }
 
     my ( $status_val, $status_msg ) = $self->__Set( Field => 'Status', Value => 'resolved');
 
     unless ($status_val) {
+        $RT::Handle->Rollback();
         $RT::Logger->error( $self->loc("[_1] couldn't set status to resolved. RT's Database may be inconsistent.", $self) );
+        return ( 0, $self->loc("Merge failed. Couldn't set Status") );
     }
 
 
@@ -2603,10 +2619,10 @@ sub MergeInto {
     $old_links_to->Limit(FIELD => 'Target', VALUE => $self->URI);
 
     while (my $link = $old_links_to->Next) {
-        if ($link->Base eq $NewTicket->URI) {
+        if ($link->Base eq $MergeInto->URI) {
             $link->Delete;
         } else {
-            $link->SetTarget($NewTicket->URI);
+            $link->SetTarget($MergeInto->URI);
         }
 
     }
@@ -2615,41 +2631,38 @@ sub MergeInto {
     $old_links_from->Limit(FIELD => 'Base', VALUE => $self->URI);
 
     while (my $link = $old_links_from->Next) {
-        if ($link->Target eq $NewTicket->URI) {
+        if ($link->Target eq $MergeInto->URI) {
             $link->Delete;
         } else {
-            $link->SetBase($NewTicket->URI);
+            $link->SetBase($MergeInto->URI);
         }
 
     }
 
     # Update time fields
-    $NewTicket->SetTimeEstimated(($NewTicket->TimeEstimated || 0) + ($self->TimeEstimated || 0));
-    $NewTicket->SetTimeWorked(   ($NewTicket->TimeWorked || 0)    + ($self->TimeWorked || 0));
-    $NewTicket->SetTimeLeft(     ($NewTicket->TimeLeft || 0)      + ($self->TimeLeft || 0));   
+    foreach my $type qw(TimeEstimated TimeWorked TimeLeft) {
 
-    #add all of this ticket's watchers to that ticket.
-    my $requestors = $self->Requestors->MembersObj;
-    while (my $watcher = $requestors->Next) { 
-        $NewTicket->_AddWatcher( Type => 'Requestor',
-                                  Silent => 1,
-                                  PrincipalId => $watcher->MemberId);
+        my $mutator = "Set$type";
+        $MergeInto->$mutator(
+            ( $MergeInto->$type() || 0 ) + ( $self->$type() || 0 ) );
+
     }
+#add all of this ticket's watchers to that ticket.
+    foreach my $watcher_type qw(Requestors Cc AdminCc) {
 
-    my $Ccs = $self->Cc->MembersObj;
-    while (my $watcher = $Ccs->Next) { 
-        $NewTicket->_AddWatcher( Type => 'Cc',
-                                  Silent => 1,
-                                  PrincipalId => $watcher->MemberId);
+        my $people = $self->$watcher_type->MembersObj;
+        my $addwatcher_type =  $watcher_type;
+        $addwatcher_type  =~ s/s$//;
+
+        while ( my $watcher = $people->Next ) {
+            $MergeInto->_AddWatcher(
+                Type        => $watcher_type,
+                Silent      => 1,
+                PrincipalId => $watcher->MemberId
+            );
+        }
+
     }
-
-    my $AdminCcs = $self->AdminCc->MembersObj;
-    while (my $watcher = $AdminCcs->Next) { 
-        $NewTicket->_AddWatcher( Type => 'AdminCc',
-                                  Silent => 1,
-                                  PrincipalId => $watcher->MemberId);
-    }
-
 
     #find all of the tickets that were merged into this ticket. 
     my $old_mergees = new RT::Tickets( $self->CurrentUser );
@@ -2663,15 +2676,16 @@ sub MergeInto {
     while ( my $ticket = $old_mergees->Next() ) {
         my ( $val, $msg ) = $ticket->__Set(
             Field => 'EffectiveId',
-            Value => $NewTicket->Id()
+            Value => $MergeInto->Id()
         );
     }
 
     #make a new link: this ticket is merged into that other ticket.
-    $self->AddLink( Type   => 'MergedInto', Target => $NewTicket->Id());
+    $self->AddLink( Type   => 'MergedInto', Target => $MergeInto->Id());
 
-    $NewTicket->_SetLastUpdated;
+    $MergeInto->_SetLastUpdated;    
 
+    $RT::Handle->Commit();
     return ( 1, $self->loc("Merge Successful") );
 }
 
@@ -2744,7 +2758,8 @@ $t->Steal();
 is ($t->OwnerObj->id, $RT::SystemUser->id , "SystemUser owns the ticket");
 my $txns = RT::Transactions->new($RT::SystemUser);
 $txns->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$txns->Limit(FIELD => 'Ticket', VALUE => '1');
+$txns->Limit(FIELD => 'ObjectId', VALUE => '1');
+$txns->Limit(FIELD => 'ObjectType', VALUE => 'RT::Ticket');
 my $steal  = $txns->First;
 ok($steal->OldValue == $root->Id , "Stolen from root");
 ok($steal->NewValue == $RT::SystemUser->Id , "Stolen by the systemuser");
