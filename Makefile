@@ -14,7 +14,7 @@ RT_VERSION_MINOR	=	1
 RT_VERSION_PATCH	=	4pre
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
-TAG 	   =	rt-$(RT_VERSION)
+TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 
 #
 # RT_PATH is the name of the directory you want make to install RT in
@@ -313,7 +313,7 @@ dist: commit
 	rm -rf /tmp/($TAG)
 	cvs export -D now -d /tmp/($TAG) rt
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/($TAG).tar.gz $(TAG)/
-	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
+	chmod 644 /home/ftp/pub/rt/devel/rt-$(VERSION).tar.gz
 	cd /home/ftp/pub/rt/devel/
 	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
-	ln -s ./$(TAG).tar.gz ./rt.tar.gz
+	ln -s ./rt-$(VERSION).tar.gz ./rt.tar.gz
