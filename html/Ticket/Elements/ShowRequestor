@@ -22,13 +22,13 @@
 %# 
 %# END LICENSE BLOCK
 <%PERL>
-my $rows = 25;
+my $rows = 10;
 my $people = $Ticket->Requestors->MembersObj;
 while (my $member=$people->Next) {
 my $requestor = $member->MemberObj->Object;
 my $name=$requestor->RealName || $requestor->EmailAddress;	
 my $tickets = RT::Tickets->new($session{'CurrentUser'});
-$tickets->LimitWatcher(TYPE => 'Requestor', VALUE => $member->MemberId ); # the principal id
+$tickets->LimitWatcher(TYPE => 'Requestor', VALUE => $requestor->EmailAddress );
 $tickets->LimitStatus( VALUE => 'open');
 $tickets->LimitStatus( VALUE => 'new');
 $tickets->RowsPerPage($rows);
