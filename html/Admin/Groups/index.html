@@ -25,19 +25,13 @@
 <& /Admin/Elements/GroupTabs, current_tab => 'Admin/Groups/',
     current_subtab => 'Admin/Groups/', 
     Title => $title &>
-<%$caption%>:<BR> <UL> 
-%if ($Groups->Count == 0) {
-<LI> <i><&|/l&>No groups matching search criteria found.</&></i>
-% }
-%my @ids;
+
+
+<UL>
 %while ( my $Group = $Groups->Next) {
-%    push @ids, $Group->Id;
 <LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><BR>
 %}
 </UL>
-%if (my $ids = join(',', @ids)) {
-<em>(<a href="/Download/Tabular/Group/<% $ids %>/Groups.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br>
-%}
 <br><br>
 <FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Groups/index.html">
 <input type="checkbox" name="FindDisabledGroups"> <&|/l&>Include disabled groups in listing.</&>
@@ -45,41 +39,17 @@
 <div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
 </FORM>
 
-<br><br>
-<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Groups/index.html">
-<&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><BR>
-<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
-</FORM>
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});
+
+if ($FindDisabledGroups) {
+  $Groups->{'find_disabled_rows'} = 1;
+}
+
 $Groups->LimitToUserDefinedGroups();
 my $title = loc('Select a group');
-my $caption;
 
-if (length $GroupString) {
-    $caption = loc("Groups matching search criteria");
-    if ($GroupField =~ /^CustomField-(\d+)/) {
-	$Groups->LimitCustomField(
-	    CUSTOMFIELD => $1,
-	    OPERATOR => $GroupOp,
-	    VALUE => $GroupString,
-	); 
-    }
-    else {
-	$Groups->Limit(
-	    FIELD => $GroupField,
-	    OPERATOR => $GroupOp,
-	    VALUE => $GroupString,
-	); 
-    }
-}
-else {
-    $caption = loc("User-defined groups");
-}
 </%INIT>
 <%ARGS>
-$GroupString => undef
-$GroupOp => '='
-$GroupField => 'Name'
 $FindDisabledGroups => 0
 </%ARGS>

@@ -440,7 +440,7 @@ msgid "(Check boxes to enable notifications to the listed recipients)"
 msgstr ""
 
 #: html/Ticket/Create.html:178
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Inserire il numero di tickets o gli URL, separati da spazi)"
 
 #: NOT FOUND IN SOURCE

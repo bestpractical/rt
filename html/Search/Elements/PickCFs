@@ -24,7 +24,14 @@
 <table cellspacing=0 border=0>
 % while ( my $CustomField = $CustomFields->Next ) {
 <tr><td>
-% my $name = "'CF." . $CustomField->Name . "'";
+
+% my $name;
+% if ($CustomField->QueueObj->id) {
+%   $name = "'CF." . $CustomField->QueueObj->Name . 
+%	".{" . $CustomField->Name . "}'";
+% } else {
+%   $name = "'CF." . $CustomField->Name . "'";
+% }
 <% $CustomField->Name %> 
         <& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
                                     True => loc("is"), 
@@ -40,9 +47,10 @@
 
 <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach my $id (keys %cfqueues) {
+foreach (keys %cfqueues) {
+    my $id = $_;
     $id =~ s/^.'*(.*).'*$/$1/;
-    # Gotta load up the $queue object, since queues get stored by name now. my $id
+    # Gotta load up the $queue object, since queues get stored by name now.
     my $queue = RT::Queue->new($session{'CurrentUser'});
     $queue->Load($id);
     $CustomFields->LimitToQueue($queue->Id);

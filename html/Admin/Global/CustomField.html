@@ -22,9 +22,8 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->Id, 
-    QueueObj => $QueueObj,                                                      
-    current_tab => 'Admin/Queues/CustomFields.html?id='.$QueueObj->id, 
+<& /Admin/Elements/SystemTabs, 
+    current_tab => 'Admin/Global/CustomFields.html',
     current_subtab => $current_subtab, 
     subtabs => $subtabs, 
     Title => $title &>
@@ -32,29 +31,31 @@
 <& /Admin/Elements/EditCustomField, title => $title,  %ARGS &>
 
 <%INIT>
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue);
-
 my ($title, $current_subtab);
 
-unless($QueueObj->id) {
-    Abort(loc("Queue [_1] not found", $Queue));
-}
-if ($CustomField) {
-    $title = loc('Modify a CustomField for queue [_1]', $QueueObj->Name()); 
-}else {
-    $current_subtab = "Admin/Queues/CustomField.html?create=1&Queue=".$QueueObj->id;
-    $title = loc('Create a CustomField for queue [_1]', $QueueObj->Name()); 
-}
-
 my $subtabs = {
-		 A => { title => loc('New custom field'),
-  		     	path => "Admin/Queues/CustomField.html?create=1&Queue=".$QueueObj->id
+		 A => { title => loc('Select custom field'),
+  		     	path => "Admin/Global/CustomFields.html"
+			   },
+		 B => { title => loc('New custom field'),
+  		     	path => "Admin/Global/CustomField.html?create=1&Queue=0",
+			separator => 1,
 			   }
 	      };
-
+if ( $ARGS{'create'} ) {
+    $current_subtab = "Admin/Global/CustomField.html?create=1&Queue=0";
+    $title          = loc('Create a CustomField which applies to all queues');
+}
+else {
+    $current_subtab =
+      "Admin/Global/CustomField.html?CustomField=" . $CustomField . "&Queue=0";
+    $title = loc('Modify a CustomField which applies to all queues');
+    $subtabs->{"C"} = {
+        title => loc( 'Custom Field #[_1]', $CustomField ),
+        path => "Admin/Global/CustomField.html?CustomField=" . $CustomField . "&Queue=0"
+    };
+}
 </%INIT>
 <%ARGS>
 $CustomField => undef
-$Queue => undef
 </%ARGS>

@@ -10,39 +10,37 @@ sub acl {
       Attributes
       attributes_id_seq
       queues_id_seq
- Queues 
+      Queues
       links_id_seq
- Links 
+      Links
       principals_id_seq
- Principals 
+      Principals
       groups_id_seq
- Groups 
+      Groups
       scripconditions_id_seq
- ScripConditions 
+      ScripConditions
       transactions_id_seq
- Transactions 
+      Transactions
       scrips_id_seq
- Scrips 
+      Scrips
       acl_id_seq
- ACL 
+      ACL
       groupmembers_id_seq
- GroupMembers 
+      GroupMembers
       cachedgroupmembers_id_seq
- CachedGroupMembers 
+      CachedGroupMembers
       users_id_seq
- Users 
+      Users
       tickets_id_seq
- Tickets 
+      Tickets
       scripactions_id_seq
- ScripActions 
+      ScripActions
       templates_id_seq
- Templates 
- objectcustomfieldvalues_id_s
- ObjectCustomFieldValues 
+      Templates
+      ticketcustomfieldvalues_id_s
+      TicketCustomFieldValues
       customfields_id_seq
- CustomFields 
- objectcustomfields_id_s
- ObjectCustomFields 
+      CustomFields
       customfieldvalues_id_seq
       CustomFieldValues
       sessions

@@ -78,16 +78,6 @@ value="<% $ARGS{UpdateCc} %>"><BR>
 </TR>
 <TR>
 % } # end of if
-
-% if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
-%    while (my $CF = $TxnCFs->Next()) {
-<TR>
-<TD ALIGN=RIGHT><% $CF->Name %>:</TD>
-<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &><em><% $CF->FriendlyType %></em></TD>
-</TD></TR>
-%    } # end if while
-% } # end of if
-
 <tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
@@ -188,7 +178,6 @@ if ( exists $ARGS{SubmitTicket} ) {
     $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
     return;
 }
-
 </%INIT>
 
 <%ARGS>

@@ -16,7 +16,7 @@ msgstr "#"
 
 #: NOT FOUND IN SOURCE
 msgid "#%1"
-msgstr "#%1"	
+msgstr "#%1"
 
 #: html/Approvals/Elements/Approve:26 html/Approvals/Elements/ShowDependency:49 html/SelfService/Display.html:24 html/Ticket/Display.html:25 html/Ticket/Display.html:29
 #. ($TicketObj->Id, $TicketObj->Subject)

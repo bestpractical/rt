@@ -174,7 +174,6 @@ sub update {
     while (@lines) {
         my $msghdr = "";
         $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
-        
         my $msgid  = shift @lines;
         my $msgstr = "";
         $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgstr|")/ );
@@ -183,8 +182,8 @@ sub update {
 
         chomp $msgid;
         chomp $msgstr;
-        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/ms    or warn "$msgid in $file";
-        $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+        $msgid  =~ s/^msgid "(.*)"$/$1/    or warn $msgid;
+        $msgstr =~ s/^msgstr "(.*)"$/$1/ms or warn $msgstr;
 
         $Lexicon{$msgid} = $msgstr;
         $Header{$msgid}  = $msghdr;
@@ -209,10 +208,6 @@ sub update {
 
         my %seen;
         $out .= $Header{$_} if exists $Header{$_};
-
-
-
-        next if (!$f && $_ && !$Lexicon{$_});
         if ( $f && $f !~ /^\s+$/ ) {
 
             $out .= "#: $f\n";

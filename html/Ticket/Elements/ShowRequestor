@@ -51,11 +51,6 @@ $tickets->OrderBy(FIELD => 'Priority',
 <LI><a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
 %}
 </UL>
-
-<&|/l&>Groups this user belongs to</&>:<BR>
-
-<& /Elements/ShowMemberships, UserObj => $requestor &>
-
 <& /Elements/TitleBoxEnd &>
 
 % }

@@ -78,7 +78,7 @@
     } 
 
         else {
-                %Rights = ( loc('System Error') => loc("No rights found") );
+                %Rights = { loc('System Error') => loc("No rights found")};
         }
         
     $ACLDesc = "$PrincipalId-".ref($Object)."-".$Object->Id;

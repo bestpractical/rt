@@ -74,7 +74,7 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
             -value => $session{_session_id},
             -path  => '/',
         );
-        $r->headers_out->{'Set-Cookie'} = $cookie->as_string;
+        $r->header_out('Set-Cookie', $cookie->as_string);
 
     } 
 

@@ -21,7 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, %ARGS &>
+<& /Elements/Header, Title => $Title &>
 
 <%ARGS>
 $Title => undef

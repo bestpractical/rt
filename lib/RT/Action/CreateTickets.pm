@@ -126,8 +126,8 @@ A convoluted example
          push (@admins, $admin->EmailAddress); 
      }
  }
- Queue: ___Approvals
- Type: approval
+ Queue: Approvals
+ Type: Approval
  AdminCc: {join ("\nAdminCc: ",@admins) }
  Depended-On-By: TOP
  Refers-To: TOP
@@ -142,7 +142,7 @@ A convoluted example
  Subject: Manager approval
  Depended-On-By: TOP
  Refers-On: {$Tickets{"approval"}->Id}
- Queue: ___Approvals
+ Queue: Approvals
  Content-Type: text/plain
  Content: 
  Your approval is requred for this ticket, too.
@@ -221,8 +221,8 @@ ok ($approvalsq->Id, "Created Approvals test queue");
 
 my $approvals = 
 '===Create-Ticket: approval
-Queue: ___Approvals
-Type: approval
+Queue: Approvals
+Type: Approval
 AdminCc: {join ("\nAdminCc: ",@admins) }
 Depended-On-By: {$Tickets{"TOP"}->Id}
 Refers-To: TOP 
@@ -236,7 +236,7 @@ ENDOFCONTENT
 ===Create-Ticket: two
 Subject: Manager approval.
 Depended-On-By: approval
-Queue: ___Approvals
+Queue: Approvals
 Content-Type: text/plain
 Content: 
 Your minion approved ticket {$Tickets{"TOP"}->Id}. you ok with that?

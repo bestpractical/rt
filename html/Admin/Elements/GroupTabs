@@ -45,18 +45,14 @@ $tabs->{"this"} = { class => "currentnav",
                path  => "Admin/Groups/GroupRights.html?id=" . $GroupObj->id, },
         G => { title => loc('User Rights'),
                path  => "Admin/Groups/UserRights.html?id=" . $GroupObj->id, },
-        H => { title => loc('History'),
-               path  => "Admin/Groups/History.html?id=" . $GroupObj->id },
     }
 }
 }
 $tabs->{"A"} = { title => loc('Select group'),
                  path  => "Admin/Groups/", };
 $tabs->{"B"} = { title     => loc('New group'),
-                 path      => "Admin/Groups/Modify.html?Create=1", };
-$tabs->{"C"} = { title => loc('Custom Fields'),
-		 path => "Admin/Groups/CustomFields.html",
-		 separator => 1, };
+                 path      => "Admin/Groups/Modify.html?Create=1",
+                 separator => 1, };
 
 # Now let callbacks add their extra tabs
 $m->comp( '/Elements/Callback', tabs => $tabs, %ARGS );

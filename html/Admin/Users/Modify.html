@@ -30,7 +30,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST ENCTYPE="multipart/form-data">
+<FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST>
 %if ($Create) {
 <INPUT TYPE=HIDDEN NAME=id VALUE="new">
 % } else {
@@ -67,11 +67,6 @@
 <&|/l&>Unix login</&>: 
 </TD><TD>
 <input name="Gecos" value="<%$UserObj->Gecos%>">
-</TD></TR>
-<TR><TD ALIGN="RIGHT">
-<&|/l&>Language</&>: 
-</TD><TD>
-<& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &>
 </TD></TR>
 <TR><TD ALIGN="RIGHT">
 <&|/l&>Extra info</&>: 
@@ -182,21 +177,6 @@
 <TR>
 </TR>
 </TABLE>
-<BR>
-<& /Elements/TitleBoxStart, title => loc('Custom Fields') &>
-<TABLE>
-% my $CFs = $UserObj->CustomFields;
-% while (my $CF = $CFs->Next) {
-<TR VALIGN="TOP"><TD ALIGN="RIGHT">
-<% $CF->Name %>:
-</TD><TD>
-<& /Elements/EditCustomField, %ARGS, Object => $UserObj, CustomField => $CF &>
-</TD></TR>
-% }
-<TR>
-</TR>
-</TABLE>
-<& /Elements/TitleBoxEnd &>
 <TR>
 <TD colspan="2">
 <& /Elements/TitleBoxStart, title => loc('Comments about this user') &>
@@ -308,7 +288,6 @@ if ($UserObj->Id && $id ne 'new') {
 					    Object => $UserObj,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 
 
 # {{{ Deal with special fields: Privileged, Enabled and Password

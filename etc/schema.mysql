@@ -118,23 +118,21 @@ CREATE TABLE ScripConditions (
 # {{{ Transactions
 CREATE TABLE Transactions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  ObjectType varchar(64) NOT NULL,
-  ObjectId integer NOT NULL DEFAULT 0  ,
+  EffectiveTicket integer NOT NULL DEFAULT 0  ,
+  Ticket integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
-  ReferenceType varchar(255) NULL,
-  OldReference integer NULL  ,
-  NewReference integer NULL  ,
   Data varchar(255) NULL  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (Ticket);
+CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 
 # }}}
 
@@ -339,19 +337,13 @@ CREATE TABLE Templates (
 
 # }}}
 
-# {{{ ObjectCustomFieldValues 
+# {{{ TicketCustomFieldValues 
 
-CREATE TABLE ObjectCustomFieldValues (
+CREATE TABLE TicketCustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
+  Ticket int NOT NULL  ,
   CustomField int NOT NULL  ,
-  ObjectType varchar(255) NOT NULL,	    # Final target of the Object
-  ObjectId int NOT NULL  ,		    # New -- Replaces Ticket
-
-  Current BOOL DEFAULT 1,		    # New -- whether the value was current
   Content varchar(255) NULL  ,
-  LargeContent LONGTEXT NULL,		    # New -- to hold 255+ strings
-  ContentType varchar(80) NULL,		    # New -- only text/* gets searched
-  ContentEncoding varchar(80) NULL  ,	    # New -- for binary Content
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -360,8 +352,7 @@ CREATE TABLE ObjectCustomFieldValues (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
 
 # }}}
 
@@ -370,13 +361,10 @@ CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,Ob
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NULL  ,
-  Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
-  MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
-  Pattern varchar(255) NULL  ,	# New -- Must validate against this
-  Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
+  Type varchar(200) NULL  ,
+  Queue integer NOT NULL DEFAULT 0 ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
-  LookupType varchar(255) NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -386,22 +374,8 @@ CREATE TABLE CustomFields (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-# }}}
+CREATE INDEX CustomFields1 on CustomFields (Disabled, Queue);
 
-# {{{ ObjectCustomFields 
-
-CREATE TABLE ObjectCustomFields (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
-  CustomField int NOT NULL  ,
-  ObjectId integer NOT NULL,
-  SortOrder integer NOT NULL DEFAULT 0  ,
-
-  Creator integer NOT NULL DEFAULT 0  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
-  LastUpdated DATETIME NULL  ,
-  PRIMARY KEY (id)
-) TYPE=InnoDB;
 
 # }}}
 

@@ -8,9 +8,6 @@ use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
 use Socket;
 
-$SIG{CHLD} = "IGNORE"; # reap child processes
-
-
 RT::Init();
 
 my $port = shift || '8080';
@@ -34,8 +31,6 @@ sub main_loop {
     while (1) {
 
         for ( ; accept( Remote, HTTPDaemon ); close Remote ) {
-
-	    fork and next;
 
             *STDIN  = *Remote;
             *STDOUT = *Remote;
@@ -90,7 +85,7 @@ sub main_loop {
                 $RT::Handle->ForceRollback;
                 $RT::Logger->crit( "Transaction not committed. Usually indicates a software fault. Data loss may have occurred");
             }
-	    exit(); # our forked process
+
         }
 
     }

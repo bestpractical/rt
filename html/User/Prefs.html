@@ -188,10 +188,9 @@ if ($UserObj->Id) {
 					    Object => $UserObj,
 					    ARGSRef => \%ARGS );
     if ($Lang) {
-	$session{'CurrentUser'}->LanguageHandle($Lang);
-	$session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+        $session{'CurrentUser'}->LanguageHandle($Lang);
+        $session{'CurrentUser'}= $session{'CurrentUser'}; # Force writeback
     }
-
     push (@results,@fieldresults);
 
 

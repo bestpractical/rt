@@ -147,7 +147,7 @@ elsif ( $RT::WebExternalAuth ) {
     elsif ($RT::WebFallbackToInternalAuth) {
   	unless (defined($session{'CurrentUser'})) {
 	        $m->comp('/Elements/Login', %ARGS,
-                         Error=> loc('You are not an authorized user'));
+                         Error=> loc('XXX CHANGEME You are not an authorized user'));
                 $m->abort();
 	}
     } else {

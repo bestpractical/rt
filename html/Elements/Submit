@@ -21,32 +21,15 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($CheckAll or $ClearAll) {
-<script><!--
-function set_checkbox (obj, val) {
-    var i;
-    var myfield = obj.form.getElementsByTagName('input');
-    for (i = 0; i < myfield.length; i++) {
-	if (myfield[i].type == 'checkbox') {
-	    myfield[i].checked = val;
-	}
-    }
-}
---></script>
-% }
 <TABLE WIDTH=100% BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=0 >
 <TR>
-<TD>
-% if ($CheckAll) {
-<INPUT TYPE=BUTTON VALUE="<%$CheckAllLabel%>" ONCLICK="set_checkbox(this, true)">
-% }
-% if ($ClearAll) {
-<INPUT TYPE=BUTTON VALUE="<%$ClearAllLabel%>" ONCLICK="set_checkbox(this, false)">
-% }
 % if ($Reset) {
+<TD>
+<FONT COLOR=#ffd800 >
 <INPUT TYPE=RESET VALUE="<%$ResetLabel%>">
-%}
+</FONT>
 </TD>
+%}
 <TD>
 &nbsp;
 </TD>
@@ -74,10 +57,6 @@ $AlternateCaption => undef
 $AlternateLabel => undef
 $Label => loc('Submit')
 $Name => undef
-$CheckAll => undef
-$CheckAllLabel => loc('Check All')
-$ClearAll => undef
-$ClearAllLabel => loc('Clear All')
 $Reset => undef
 $ResetLabel => loc('Reset')
 </%ARGS>

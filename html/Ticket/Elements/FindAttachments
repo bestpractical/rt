@@ -18,14 +18,11 @@ $attachments->Join( ALIAS1 => 'main',
     
 my $tickets = $attachments->NewAlias('Tickets');
 
-  $attachments->Join( ALIAS1 => $transactions,                         
-                        FIELD1 => 'ObjectId',
-                        ALIAS2 => $tickets,
-                        FIELD2 => 'id' );
-    
-    $attachments->Limit( ALIAS => $transactions,
-                         FIELD => 'ObjectType',
-                        VALUE => 'RT::Ticket');
+$attachments->Join( ALIAS1 => $transactions,
+		    FIELD1 => 'Ticket',
+		    ALIAS2 => $tickets,
+		    FIELD2 => 'id' );
+
 if ($Tickets) {
     while ($Ticket = $Tickets->Next) {
 	$attachments->Limit( ALIAS => $tickets,

@@ -1,26 +1,26 @@
 #!@PERL@
 # BEGIN LICENSE BLOCK
-# 
+#
 # Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
-# 
+#
 # (Except where explictly superceded by other copyright notices)
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # Unless otherwise specified, all modifications, corrections or
 # extensions to this work which alter its source code become the
 # property of Best Practical Solutions, LLC when submitted for
 # inclusion in the work.
-# 
-# 
+#
+#
 # END LICENSE BLOCK
 
 use strict;
@@ -32,9 +32,10 @@ BEGIN {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-    eval { require Apache2; require APR::Table; require MasonX::Apache2Handler; 1 } or
-    eval { require Apache2; require Apache::compat; 1 } or die $@
-        if $ENV{'MOD_PERL'} and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:2|1\.9)};
+    eval { require Apache2; require Apache::compat }
+      if $ENV{'MOD_PERL'}
+      and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:2|1\.9)};
+
 }
 
 use lib ( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@" );
@@ -46,29 +47,23 @@ use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
                                    #set private_tempfiles
 
 BEGIN {
-    if ($MasonX::Apache2Handler::VERSION) {
-        $RT::MasonHandlerClass = 'MasonX::Apache2Handler';
+    if ( $mod_perl::VERSION && ( $mod_perl::VERSION >= 1.9908 ) ) {
+        require Apache::RequestUtil;
+        no warnings 'redefine';
+        my $sub = *Apache::request{CODE};
+        *Apache::request = sub {
+            my $r;
+            eval { $r = $sub->('Apache'); };
+
+            # warn $@ if $@;
+            return $r;
+        };
     }
-    elsif ($mod_perl::VERSION && ($mod_perl::VERSION >= 1.9908)) {
-	require Apache::RequestUtil;
-	no warnings 'redefine';
-	my $sub = *Apache::request{CODE};
-	*Apache::request = sub {
-	    my $r;
-	    eval { $r = $sub->('Apache'); };
-	    # warn $@ if $@;
-	    return $r;
-	};
-	require HTML::Mason::ApacheHandler;
-        $RT::MasonHandlerClass = 'HTML::Mason::ApacheHandler';
-    }
-    elsif ($CGI::MOD_PERL) {
-	require HTML::Mason::ApacheHandler;
-        $RT::MasonHandlerClass = 'HTML::Mason::ApacheHandler';
+    if ($CGI::MOD_PERL) {
+        require HTML::Mason::ApacheHandler;
     }
     else {
-	require HTML::Mason::CGIHandler;
-        $RT::MasonHandlerClass = 'HTML::Mason::CGIHandler';
+        require HTML::Mason::CGIHandler;
     }
 }
 
@@ -85,6 +80,21 @@ use Carp;
 
     package HTML::Mason::Commands;
     use vars qw(%session);
+
+    use RT::Tickets;
+    use RT::Transactions;
+    use RT::Users;
+    use RT::CurrentUser;
+    use RT::Templates;
+    use RT::Queues;
+    use RT::ScripActions;
+    use RT::ScripConditions;
+    use RT::Scrips;
+    use RT::Groups;
+    use RT::GroupMembers;
+    use RT::CustomFields;
+    use RT::CustomFieldValues;
+    use RT::TicketCustomFieldValues;
 
     use RT::Interface::Web;
     use MIME::Entity;

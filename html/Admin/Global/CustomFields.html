@@ -21,24 +21,27 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% while ($Values and my $value = $Values->Next ) {
-<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><% $value->Content %></textarea><br>
-% }
-% if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
-<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
-<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"></textarea>
-% }
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/SystemTabs, 
+    current_tab => 'Admin/Global/CustomFields.html',
+    current_subtab => 'Admin/Global/CustomFields.html', 
+    subtabs => $subtabs, 
+    Title => $title &>
+
+<& /Admin/Elements/EditCustomFields, title => $title, %ARGS &>
+
 <%INIT>
-# XXX - MultiValue textarea is for now outlawed.
-$MaxValues = 1;
+my $subtabs = {
+		 A => { title => loc('Select custom field'),
+  		     	path => "Admin/Global/CustomFields.html"
+			   },
+		 B => { title => loc('New custom field'),
+  		     	path => "Admin/Global/CustomField.html?create=1&Queue=0",
+			separator => 1,
+			   }
+	      };
+my $title = loc("Modify Custom Fields which apply to all queues");
 </%INIT>
 <%ARGS>
-$Object => undef
-$CustomField => undef
-$NamePrefix => undef
-$Default => undef
-$Values => undef
-$MaxValues => undef
-$Cols
-$Rows
+$id => undef
 </%ARGS>

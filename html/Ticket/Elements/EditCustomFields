@@ -44,7 +44,7 @@
       <b><%$CustomField->Name%></b><br>
       <i><%$CustomField->FriendlyType%></i>
     </td>
-    <td class="entry"><& /Elements/EditCustomField, Object => $TicketObj, CustomField => $CustomField, NamePrefix => $NamePrefix &></td>
+    <td class="entry"><& EditCustomField, TicketObj => $TicketObj, CustomField => $CustomField, NamePrefix => $NamePrefix &></td>
   </tr>
 % }
 </table>
@@ -57,12 +57,12 @@ my $CustomFields;
 my $NamePrefix;
 
 if ($TicketObj) {
- $CustomFields = $TicketObj->CustomFields();
-  $NamePrefix = "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
+ $CustomFields = $TicketObj->QueueObj->CustomFields();
+  $NamePrefix = "Ticket-".$TicketObj->Id."-CustomField-";
 
 } else {
- $CustomFields = $QueueObj->TicketCustomFields();
-  $NamePrefix = "Object-RT::Ticket--CustomField-";
+ $CustomFields = $QueueObj->CustomFields();
+  $NamePrefix = "CustomField-";
 }
 
 

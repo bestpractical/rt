@@ -75,6 +75,7 @@ sub Create {
     my %args = (
         id             => undef,
         TimeTaken      => 0,
+        Ticket         => 0,
         Type           => 'undefined',
         Data           => '',
         Field          => undef,
@@ -83,36 +84,24 @@ sub Create {
         MIMEObj        => undef,
         ActivateScrips => 1,
         CommitScrips => 1,
-	ObjectType => 'RT::Ticket',
-	ObjectId => 0,
-	ReferenceType => undef,
-        OldReference       => undef,
-        NewReference       => undef,
         @_
     );
 
-    $args{ObjectId} ||= $args{Ticket};
-
     #if we didn't specify a ticket, we need to bail
-    unless ( $args{'ObjectId'} && $args{'ObjectType'}) {
-        return ( 0, $self->loc( "Transaction->Create couldn't, as you didn't specify an object type and id"));
+    unless ( $args{'Ticket'} ) {
+        return ( 0, $self->loc( "Transaction->Create couldn't, as you didn't specify a ticket id"));
     }
 
 
 
     #lets create our transaction
-    my %params = (
+    my %params = (Ticket    => $args{'Ticket'},
         Type      => $args{'Type'},
         Data      => $args{'Data'},
         Field     => $args{'Field'},
         OldValue  => $args{'OldValue'},
         NewValue  => $args{'NewValue'},
-        Created   => $args{'Created'},
-	ObjectType => $args{'ObjectType'},
-	ObjectId => $args{'ObjectId'},
-	ReferenceType => $args{'ReferenceType'},
-	OldReference => $args{'OldReference'},
-	NewReference => $args{'NewReference'},
+        Created   => $args{'Created'}
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
@@ -127,7 +116,7 @@ sub Create {
 
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction' .$self->Id);            
-    if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Ticket' ) {
+    if ( $args{'ActivateScrips'} ) {
        $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
 
         $RT::Logger->debug('About to prepare scrips for transaction' .$self->Id);            
@@ -135,7 +124,7 @@ sub Create {
         $self->{'scrips'}->Prepare(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
-            Ticket      => $args{'ObjectId'},
+            Ticket      => $args{'Ticket'},
             Transaction => $self->id,
         );
         if ($args{'CommitScrips'} ) {
@@ -504,15 +493,13 @@ sub BriefDescription {
         return $self->loc("No transaction type specified");
     }
 
-    my $obj_type = $self->FriendlyObjectType;
-
     if ( $type eq 'Create' ) {
-        return ($self->loc("[_1] created", $obj_type));
+        return ($self->loc("Ticket created"));
     }
     elsif ( $type =~ /Status/ ) {
         if ( $self->Field eq 'Status' ) {
             if ( $self->NewValue eq 'deleted' ) {
-                return ($self->loc("[_1] deleted", $obj_type));
+                return ($self->loc("Ticket deleted"));
             }
             else {
                 return ( $self->loc("Status changed from [_1] to [_2]", $self->loc($self->OldValue), $self->loc($self->NewValue) ));
@@ -734,7 +721,6 @@ Returns false otherwise
 
 sub IsInbound {
     my $self = shift;
-    $self->ObjectType eq 'RT::Ticket' or return undef;
     return ( $self->TicketObj->IsRequestor( $self->CreatorObj->PrincipalId ) );
 }
 
@@ -850,77 +836,6 @@ sub CurrentUserHasRight {
 }
 
 # }}}
-
-sub Ticket {
-    my $self = shift;
-    return $self->ObjectId;
-}
-
-sub TicketObj {
-    my $self = shift;
-    return $self->Object;
-}
-
-sub OldValue {
-    my $self = shift;
-    if (my $type = $self->__Value('ReferenceType')) {
-	my $Object = $type->new($self->CurrentUser);
-	$Object->Load($self->__Value('OldReference'));
-	return $Object->Content;
-    }
-    else {
-	return $self->__Value('OldValue');
-    }
-}
-
-sub NewValue {
-    my $self = shift;
-    if (my $type = $self->__Value('ReferenceType')) {
-	my $Object = $type->new($self->CurrentUser);
-	$Object->Load($self->__Value('NewReference'));
-	return $Object->Content;
-    }
-    else {
-	return $self->__Value('NewValue');
-    }
-}
-
-sub Object {
-    my $self  = shift;
-    my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
-    $Object->Load($self->__Value('ObjectId'));
-    return($Object);
-}
-
-sub FriendlyObjectType {
-    my $self = shift;
-    my $type = $self->ObjectType or return undef;
-    $type =~ s/^RT:://;
-    return $self->loc($type);
-}
-
-sub UpdateCustomFields {
-    my ($self, %args) = @_;
-    my $args_ref = $args{ARGSRef} or return;
-
-    foreach my $arg ( keys %$args_ref ) {
-        $arg =~ /^(?:Transaction)?CustomField-(\d+).*?(?<!-Magic)$/ or next;
-	my $cfid = $1;
-	my $values = $args_ref->{$arg};
-	foreach my $value ( UNIVERSAL::isa($values, 'ARRAY') ? @$values : $values ) {
-	    next unless length($value);
-	    $self->_AddCustomFieldValue(
-		Field => $cfid,
-		Value => $value,
-		RecordTransaction => 0,
-	    );
-	}
-    }
-}
-
-sub _LookupTypes {
-    "RT::Queue-RT::Ticket-RT::Transaction";
-}
 
 # Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
 sub _CacheConfig {

@@ -58,7 +58,7 @@ msgstr "Oct"
 msgid "Open it"
 msgstr "Open"
 
-#: html/Admin/Users/Modify.html:163 html/User/Prefs.html:63
+#: html/Admin/Users/Modify.html:156 html/User/Prefs.html:63
 msgid "Residence"
 msgstr "Home"
 

@@ -447,7 +447,6 @@ sub _Create {
         Type        => undef,
         Instance    => '0',
         InsideTransaction => undef,
-        _RecordTransaction => 1,
         @_
     );
 
@@ -493,12 +492,8 @@ sub _Create {
     $cgm->Create(Group =>$self->PrincipalObj, Member => $self->PrincipalObj, ImmediateParent => $self->PrincipalObj);
 
 
-    if ( $args{'_RecordTransaction'} ) {
-	$self->_NewTransaction( Type => "Create" );
-    }
 
     $RT::Handle->Commit() unless ($args{'InsideTransaction'});
-
     return ( $id, $self->loc("Group created") );
 }
 
@@ -1153,13 +1148,6 @@ sub _DeleteMember {
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
-    my %args = (
-        Field => undef,
-        Value => undef,
-	TransactionType   => 'Set',
-	RecordTransaction => 1,
-        @_
-    );
 
 	if ($self->Domain eq 'Personal') {
    		if ($self->CurrentUser->PrincipalId == $self->Instance) {
@@ -1177,30 +1165,7 @@ sub _Set {
         	return ( 0, $self->loc('Permission Denied') );
     	}
 	}
-
-    my $Old = $self->SUPER::_Value("$args{'Field'}");
-    
-    my ($ret, $msg) = $self->SUPER::_Set( Field => $args{'Field'},
-					  Value => $args{'Value'} );
-    
-    #If we can't actually set the field to the value, don't record
-    # a transaction. instead, get out of here.
-    if ( $ret == 0 ) { return ( 0, $msg ); }
-
-    if ( $args{'RecordTransaction'} == 1 ) {
-
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-                                               Type => $args{'TransactionType'},
-                                               Field     => $args{'Field'},
-                                               NewValue  => $args{'Value'},
-                                               OldValue  => $Old,
-                                               TimeTaken => $args{'TimeTaken'},
-        );
-        return ( $Trans, scalar $TransObj->Description );
-    }
-    else {
-        return ( $ret, $msg );
-    }
+    return ( $self->SUPER::_Set(@_) );
 }
 
 # }}}
@@ -1288,13 +1253,5 @@ sub PrincipalId {
 }
 
 # }}}
-
-sub BasicColumns {
-    (
-	[ Name => 'Name' ],
-	[ Description => 'Description' ],
-    );
-}
-
 1;
 

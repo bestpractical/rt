@@ -359,5 +359,5 @@ inherit => undef
 </%flags>
 <%init>
 $r->content_type('text/css');
-$r->headers_out->{'Expires'} = '+30m';
+$r->header_out('Expires' ,'+30m');
 </%init>

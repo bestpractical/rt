@@ -381,15 +381,7 @@ sub _ParseContent {
         SOURCE => $content
     );
 
-    my $is_broken = 0;
-    my $retval = $template->fill_in( PACKAGE => 'T', BROKEN => sub {
-        my (%args) = @_;
-        $RT::Logger->error("Template parsing error: $args{error}")
-	    unless $args{error} =~ /^Died at /; # ignore intentional die()
-        $is_broken++;
-	return undef;
-    } );
-    return undef if $is_broken;
+    my $retval = $template->fill_in( PACKAGE => 'T' );
 
     # MIME::Parser has problems dealing with high-bit utf8 data.
     Encode::_utf8_off($retval);

@@ -128,26 +128,15 @@
 <& /Elements/SelectMatch, Name => "WatcherOp" &>
 </td><td>
 <Input Name="ValueOfWatcher" Size=20>
-% } elsif ($field eq 'WatcherGroup') {
-<& SelectPersonType, Name => 'WatcherGroupField', Default => 'RequestorGroup', Suffix => 'Group' &>
-</td><td>
-<& /Elements/SelectBoolean, Name => "WatcherGroupOp", 
-					  True=> 'belongs to', 
-					  False=> 'does not belong to', 
-					  TrueVal=> '=', 
-					  FalseVal => '!='
-&>
-</td><td>
-<& SelectGroup, Name => 'ValueOfWatcherGroup' &>
 % } else {
-<% loc($field) %>
+<&|/l&><%$field%></&>
 <& /Elements/SelectMatch, Name => "$field" . "Op" &>
 <INPUT Name="<%"ValueOf" . $field%>" value=""SIZE=20>
 % }
 </td></tr>
 % }
 % } else {
-<% loc($field) %>
+<&|/l&><%$field%></&>
 </td><td>
 <& /Elements/SelectMatch, Name => "$field" . "Op" &>
 </td><td>
@@ -171,6 +160,5 @@ my @fields = ('Attachment',
 
 my @people = ('Actor',
 	      'Watcher',
-	      'WatcherGroup',
 	      );
 </%INIT>

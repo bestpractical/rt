@@ -36,9 +36,9 @@
                         path => 'Admin/Global/Templates.html',
                       },
               
-#                F => { title => loc('Custom Fields'),
-#                        path => 'Admin/Global/CustomFields.html',
-#                        },
+                F => { title => loc('Custom Fields'),
+                        path => 'Admin/Global/CustomFields.html',
+                        },
 
                 G => { title => loc('Group Rights'),
                                 path => 'Admin/Global/GroupRights.html',
