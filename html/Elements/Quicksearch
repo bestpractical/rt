@@ -21,13 +21,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("Quick search"), bodyclass => "" &>
+<div class="ticket-overview">
+<& /Elements/TitleBoxStart, title => loc("Quick search"), bodyclass => "", class=> 'ticket-overview' &>
 
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
+<TABLE>
 <tr>                                                                          
-       <th align=left><&|/l&>Queue</&></th>                                         
-       <th align=right><font size=-1><&|/l&>New</&></font></th>
-       <th align=right><font size=-1><&|/l&>Open</&></font></th>          
+       <th align=left><&|/l&>Queue</&></th>
+       <th align=right><&|/l&>New</&></th>
+       <th align=right><&|/l&>Open</&></th>          
 </tr>
 
 <%PERL>
@@ -61,7 +62,7 @@ while (my $queue = $Queues->Next) {
 % }
 </TABLE>
 <& /Elements/TitleBoxEnd &>
-
+</div>
 <%INIT>
 my $Queues = RT::Queues->new($session{'CurrentUser'}); 
 $Queues->UnLimit();

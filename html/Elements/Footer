@@ -22,10 +22,7 @@
 %# 
 %# END LICENSE BLOCK
 % if ($Menu) {
-</td>
-</tr>
-<tr>
-<td>
+</div>
 % }
 <& /Elements/Callback, %ARGS &>
 <div class="bpscredits">

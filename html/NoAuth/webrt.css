@@ -1,8 +1,14 @@
-%# BEGIN LICENSE BLOCK
+%# {{{ BEGIN BPS TAGGED BLOCK
 %# 
-%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
 %# 
-%# (Except where explictly superceded by other copyright notices)
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
 %# 
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
@@ -14,96 +20,347 @@
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
 %# 
-%# Unless otherwise specified, all modifications, corrections or
-%# extensions to this work which alter its source code become the
-%# property of Best Practical Solutions, LLC when submitted for
-%# inclusion in the work.
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 %# 
 %# 
-%# END LICENSE BLOCK
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# }}} END BPS TAGGED BLOCK
+div.frontmatter {
+    padding-left: 13%;
+    width: 87%;
+    margin-top: 51px;    
+    white-space: nowrap;
+}
+
+div.logo {
+    top: 0;
+    left: 0;
+	 border-bottom: solid #999999 1px;
+    position: absolute;
+     z-index: 2;
+
+
+
+
+}
+body>div.logo {position: fixed;}
+
+
+div.login-information {
+             text-align: right; 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    background: #ffffff;
+	 font-size: 12px;
+    float: left;
+    vertical-align: top;
+    border-right: 1em;
+    padding-right: .5em;
+    position: absolute;
+    width: 100%;
+    right: 0;
+    top: 0;
+	 border-bottom: solid #999999 1px;
+     height: 50px;
+     z-index: 1;
+}
+body>div.login-information {position: fixed;}
+
+div.bpscredits {margin-top: 1em;
+             text-align: right; 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 9px;
+             color: #666666;
+    right: 1em;
+    bottom: 0;
+    position: fixed;
+    width: 85%;
+    background: #ffffff;
+
+}
+
 SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 12px;
 	 color: #FFFFFF;
 	 text-decoration: none;
-	 white-space: nowrap}
+	 white-space: normal;}
 .nav2 {	 font-size: 10px;
-	 white-space: nowrap}
-.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 13px;
-	 font-weight: normal;
-	 color: #FFFFFF;
-	 text-decoration: none;
-	 white-space: nowrap}
+	 white-space: normal;}
 .currentnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 13px;
+	 font-size: 100%;
          font-weight: bold;
 	 color: #FFFF66;
 	 text-decoration: none;
-	 white-space: nowrap}
-.topnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 16px;
+	 white-space: normal;
+    }
+     .topnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 110%;
 	 font-weight: normal;
 	 color: #FFFFFF;
 	 text-decoration: none;
-	 white-space: nowrap}
+	 white-space: normal;}
+
+%# .topnav is the original RT class for the sidebar navigation tabs.
+%# Font-sizing by level depth was originally hard-coded into Elements/Menu.
+%# This modification sets a different class name for each level, allowing
+%# style sheet control over the formats.
+
+a.topnav-0 {  font-family: Verdana, sans-serif;
+	 font-size: 110%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-1 {  font-family: Verdana, sans-serif;
+	 font-size: 100%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-2 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-3 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-4 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+a.topnav-5 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: normal;}
+li.topnav-0-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-1-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-2-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-3-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-4-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-5-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-0-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-1-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-2-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-3-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-4-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.topnav-5-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+
 .currenttopnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 16px;
+	 font-size: 110%;
          font-weight: bold;
 	 color: #FFFF66;
 	 text-decoration: none;
-	 white-space: nowrap}
-.topactions {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 10px;
-	 color: #FFFFFF;
+	 white-space: normal;}
+
+%# .currenttopnav is the original RT class for the sidebar navigation tabs.
+%# Font-sizing by level depth was originally hard-coded into Elements/Menu.
+%# This modification sets a different class name for each level, allowing
+%# style sheet control over the formats
+
+a.currenttopnav-0 {  font-family: Verdana, sans-serif;
+	 font-size: 110%;
+         font-weight: bold;
+	 color: #FFFF66;
 	 text-decoration: none;
-	 white-space: nowrap}
+	 white-space: normal;}
+a.currenttopnav-1 {  font-family: Verdana, sans-serif;
+	 font-size: 100%;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-2 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-3 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-4 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+a.currenttopnav-5 {  font-family: Verdana, sans-serif;
+	 font-size: 85%;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: normal;}
+li.currenttopnav-0-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-1-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-2-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-3-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-4-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-5-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-0-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-1-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-2-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-3-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-4-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-5-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+
+}
 .subnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
 	 font-weight: normal;
 	 color: #FFFFFF;
 	 text-decoration: none;
-	 white-space: nowrap}
+	 white-space: normal;}
 .currentsubnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
          font-weight: bold;
 	 color: #FFFF66;
 	 text-decoration: none;
-	 white-space: nowrap}
-.error {  background-color: #ff0000;
+	 white-space: normal;}
+.error {  background: #ff0000;
 	 background-position: left top;
 	 vertical-align: top;
 	 text-align: left;
          }
-.oldblue {  background-color: #0066CC;
-	 background-position: left top;
-	 vertical-align: top;
-	 text-align: left;
-         }
-.blue {  background-color: #4682B4;
-	 background-position: left top;
-	 vertical-align: top;
-	 text-align: left;
-         }
-.blueright {  background-color: #4682B4;
-	 background-position: left top;
-	 vertical-align: top;
+.actions {  
+     width: 100%;
+     background: #336699;
+     margin-right: .5em;
+     margin-bottom: 1em;
+     font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 85%;
+	 color: #FFFFFF;
+	 text-decoration: none;
 	 text-align: right;
-         }
-.olddarkblue {  background-color: #003399;
-	 background-position: left top;
-	 vertical-align: top;
-	 text-align: left;
-         }
-.darkblue {  background-color: #000080;
-	 background-position: left top;
-	 vertical-align: top;
-	 text-align: left;
-         }
-.darkblueright {  background-color: #000080;
-	 background-position: left top;
-	 vertical-align: top;
-	 text-align: right;
-         }
+}
+
+.overdue {
+	 color: red;
+}
 
 div.messagebody {
     padding: 2em; 
@@ -112,7 +369,7 @@ div.messagebody {
 
 
 div.downloadattachment {
-    font size: 10px;
+    font-size: 10px;
     text-align: right;
 
 }
@@ -122,17 +379,37 @@ td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
 	 background-position: left top;
          }
-.black { background-color: #000000;
+.black { background: #000000;
 	 background-position: left top;
          }
-span.rtname {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 18px;
-	 font-weight: normal;
-	 color: #ffffff}
-span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
-	 font-size: 20px;
+
+
+th {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 80%;
+     font-weight: bold;
+	 background-position: left top;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+         }
+
+div.rtname {  font-family: Verdana, Arial, Helvetica, sans-serif;
+     top: 0;
+     left: 230px;
+     color: #000000;
+     background-color: #ffffff;
+	 border-bottom: solid #999999 1px;
+	 font-size: 12px;
+    position: absolute;
+     text-align: left;
+     height: 50px;
+     width: 30%;
 	 font-weight: bold;
-	 color: #ffffff}
+     padding-left: .5em;
+     z-index: 3;
+}
+body>div.rtname {position: fixed;}
 .header {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 12px;
 	 font-weight: bold;
@@ -154,11 +431,6 @@ span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 text-align: center;
 	 vertical-align: middle;
 	 text-decoration: none}
-.rtblue { background-color: #3399FF;
-         margin-top: 0.2em;
-	 background-position: left top;
-	 vertical-align: top }
-
 
 .currenttab { margin: 0.2em; background: #336699; }
 .othertab { margin: 0.2em; background: #efefef; }
@@ -166,12 +438,25 @@ span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 
 UL.topnav LI :focus { text-decoration: underline; }
 
-TD.mainbody {
-        padding-top: 0.5em;
+div.dialog {
+                position: absolute;
+                width: 20%;
+                            left: 40%;
+                                        top: 20%;
+
+}
+
+div.mainbody {
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        right: 0;
+        top: 0;
+        margin-left: 13%;
         padding-left: 1em;
-        padding-right: 1em;
-        margin-left: 1em;
+        padding-bottom: 0.25em;
         margin-right: 1em;
+        margin-bottom: 2em;
+        margin-top: 2em;
+        position: absolute;
 }
 
 td.boxcontainer + td.boxcontainer {
@@ -181,36 +466,48 @@ td.boxcontainer + td.boxcontainer {
 }
 
 th.ticketheader { font-size: 80%;
-     font-weight: bold;
      color: #336699;
      background: #cccccc; 
 }
 
+table.box td {
+       border-collapse: collapse; 
+       border: 0;
+       margin: 0;
+     padding: 0px; 
+}
+
+table.box {
+        width: 100%;
+}
+
+
+
+
+table.titlebar {
+    width: 100%;
+     color: #ffffff;
+     background: #003399;
+
+
+}
 th.titlebox {
         text-align: left;
-        padding-left: 0.5em;
-        padding-right: 0.5em;
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-        border-top: solid black 1px;
-        border-bottom: solid black 1px;
+	     vertical-align: middle;
 }    
 th.titleboxright {
+	     vertical-align: middle;
         text-align: right;
-        padding-left: 0.5em;
-        padding-right: 0.5em;
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-        border-top: solid black 1px;
-        border-bottom: solid black 1px;
 }    
 
 TD.titlebox {
         padding-left: 1em;
         padding-right: 1em;
         padding-top: 1em;
-        padding-bottom: 1em;
+        padding-bottom: 1em; 
 }
+
+
 
 SPAN.message {
 	font-size: 100%;
@@ -221,15 +518,6 @@ SPAN.message {
 BODY {
   color: #000;
   background: #FFFFFF;
-  font-family: "Helvetica", sans-serif;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  margin-left: 0px;
-  margin-right: 0px;
-  border-top: 0px;
-  border-bottom: 0px;
-  border-left: 0px;
-  border-right: 0px;
 }
 
 
@@ -251,10 +539,6 @@ H1, H2, H3 {
 
 
 DIV.endmatter { margin-left: -7% }
-.bpscredits {margin-top: 1em;
-             text-align: right; 
-             color: #666666;
-             }
 
 
 A { font-weight: bold; color: #000000;
@@ -274,7 +558,7 @@ A IMG { color: white } /* The only way to hide the border in NS 4.x */
 a:link {  text-decoration: none}
 a:visited {  text-decoration: none}  
 a:hover {  text-decoration: underline}
-/* a:focus { background-color: #ccccee } */
+/* a:focus { background: #ccccee } */
 
 .hide {
   display: none;
@@ -283,17 +567,45 @@ a:hover {  text-decoration: underline}
 
 SPAN.date { font-size: 0.8em }
 
-span.title { font-size: 1.6em;
+div.title { font-size: 1em;
 	     vertical-align: middle;
-             color: #ffffff;}
+             color: #ffffff;
+        background: #336699; 
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-weight: bold;
+    position: fixed;
+    float: top;
+    left: 13%;
+    width: 87%;
+     padding-left: 1.2em;
+             padding-right: 1em;
+                     margin-right:0;
+                     z-index: 999;
+
+}
+body>div.title {position: fixed;}
+
+     }
 span.productname { font-size: 2em;
              color: #0066cc;}
-SPAN.titleboxtitle {
+
+
+
+SPAN.titleboxtitle, SPAN.titleboxclose {
         font-size: 80%;
         color: #ffffff;
 	 vertical-align: middle;
 	 text-align: left;
         }
+
+
+
+SPAN.titleboxtitle a {
+        color: #ffffff;
+}
+SPAN.titleboxtitle a:after {
+	content: "...";
+}
 
 SPAN.titleboxright {
         font-size: 0.8em;
@@ -311,7 +623,6 @@ SPAN.label { font-size: 0.8em;
 
 BLOCKQUOTE {
   font-style: italic;
-  /* color: #990; */
 }
 
 ADDRESS { 
@@ -320,24 +631,42 @@ ADDRESS {
   font-style: italic 
 }
 
-BLOCKQUOTE P {			/* Try to avoid space above the attribution */
-  margin-bottom: 0;
+
+
+div.menu {
+        float: top;
+        top: 51px;
+        bottom: 0em;
+        left: 0em;
+          margin: 0;
+    font-size: 70%;
+    float: left;
+      position: absolute; 
+     background: #336699;
+	 text-align: left;
+     padding-right: 1%;
+     width: 13%;
+     height: 100%;
+     z-index: 99;
 }
-BLOCKQUOTE ADDRESS {
-  margin: 0;
+/* IE hack */
+
+body>div.menu {position: fixed;}
+
+
+table.ticket-overview {
+    width: 15%;
+}
+div.ticket-overview {
+        top: 51px;
+        right: 0em;
+    float: right;
+      position: absolute; 
+     background: #336699;
+	 text-align: left;
+     padding-right: 1%;
 }
 
-
-.emphasized {
-  font-weight: bold
-}
-
-
-P.map-also { font-style: italic; margin-left: 15%; text-align: right }
-
-.oddline { 
-        background-color : #ccccee;
-}
 
 ul.topnav {
 	list-style: none;
@@ -350,6 +679,38 @@ ul.topnav {
 	margin-bottom:0;
 }
 
+.menu-major-separator {
+	border-bottom: solid white 1px;
+	padding-top: .25em;
+	padding-bottom: .5em;
+}
+
+.menu-minor-separator {
+        border-top: solid #999999 1px;
+	padding-top: .1em;
+	margin-top: .5em;
+}
+
+div.topactions {
+    top: 1.25em;
+    right: 0;
+    float: right;
+    position: absolute;
+    white-space: nowrap;
+    vertical-align: center;
+    width:  86%;
+    z-index: 4;
+}
+body>div.topactions {position: fixed;}
+
+span.topaction {
+    text-align: right;
+    float: right;
+    padding-left: 1em;
+}
+
+
+
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
 %#   "latter specified rule wins"
@@ -359,5 +720,5 @@ inherit => undef
 </%flags>
 <%init>
 $r->content_type('text/css');
-$r->headers_out->{'Expires'} = '+30m';
+#$r->headers_out->{'Expires'} = '+30m';
 </%init>

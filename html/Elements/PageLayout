@@ -21,43 +21,28 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table class="darkblue" border=0 cellspacing=0 cellpadding=0 width="100%">
-  <th class="titlebox" align="left"><span class="rtname"><%$AppName%></span>
-  </th>
-      <span class="topactions">
-% foreach my $action (sort keys %{$topactions}) {
-        <td class="darkblueright">
-        <%$topactions->{"$action"}->{'html'} |n %>
-        </td>
+<div class="rtname"><%$AppName%></div>
+<div class="topactions">
+% foreach my $action (reverse sort keys %{$topactions}) {
+<span class="topaction" >
+% $m->out($topactions->{"$action"}->{'html'}."&nbsp;" );
+</span>
 % }
-      </span>
-</table>
-<table border=0 cellspacing=0 cellpadding=0 width="100%" height="100%">
-%# Vertical menu
-<TR height="100%">
-<TD valign="top" width="140" class="blue">
-          <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
-</TD>
-<td valign="top">
-<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
-<tr>
-  <td class="blue" valign="top">
-    <span class="title"><%$title%></span>
-</td>
-</tr>
-<tr>
-<td class="blueright" valign="top">
-    <span class="nav"> 
+</div>
+<div class="frontmatter">
+    <div class="title"><%$title%></div>
+    <div class="actions"> 
 % if ($actions) {
 % my @actions;
 % foreach my $action (sort keys %{$actions}) {
 % if ($actions->{"$action"}->{'html'}) {
 % push @actions, $actions->{"$action"}->{'html'}; 
 % } else {
-% push @actions,  "<A class='nav' HREF=\"".$RT::WebPath."/".$actions->{$action}->{'path'}."\">".$actions->{$action}->{'title'}."</A>";
+% push @actions,  "<A class=\"actions\" HREF=\"".$RT::WebPath."/".$actions->{$action}->{'path'}."\">".$actions->{$action}->{'title'}."</A>";
 % }
 %  }
 <% join(" | ", @actions) | n %>
+% }
 % if ($subactions) {
 % my @actions;
 % foreach my $action (sort keys %{$subactions}) {
@@ -65,12 +50,12 @@
 %  }
 <% join(" | ", @actions) | n %>
 % }
-% }
-    </span>
-  </td>
-</tr>
-<TR valign="top">
-<TD valign="top" width="100%" height="100%" class="mainbody" >
+</div>
+</div>
+<div class="menu">
+          <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
+</div>
+<div class="mainbody">
 
 <%INIT>
 

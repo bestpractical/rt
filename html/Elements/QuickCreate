@@ -1,4 +1,4 @@
-<& /Elements/TitleBoxStart, title => loc('Quick ticket creation') &>
+<& /Elements/TitleBoxStart, title => loc('Quick ticket creation'), class => 'quick-create' &>
 <form method="post" action="<%$RT::WebPath%>/index.html">
 <input type="hidden" name="QuickCreate" value="1">
 <table>

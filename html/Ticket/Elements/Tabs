@@ -167,9 +167,9 @@ my $args = "?" . $m->comp(
   ) if ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'});
 
 $tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",
-                 title     => loc('New Query')};
+                 title     => loc('New Search')};
 $tabs->{"g"} = { path      => "Search/Build.html$args",
-                 title     => loc('Query Builder')};
+                 title     => loc('Edit Search')};
 $tabs->{"h"} = { path      => "Search/Edit.html$args",
                  title     => loc('Advanced'),
                  separator => 1 };
