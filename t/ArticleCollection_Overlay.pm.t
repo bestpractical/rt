@@ -4,32 +4,48 @@ use Test::More qw/no_plan/;
 use_ok(RT);
 RT::LoadConfig();
 RT::Init();
+
 use_ok( RT::FM::ArticleCollection);
+use_ok( RT::FM::ClassCollection);
+
+my $class = RT::FM::Class->new($RT::SystemUser);
+my ($id,$msg) = $class->Create(Name => 'CollectionTest-'.$$);
+ok($id,$msg);
+
+my $art = RT::FM::Article->new($RT::SystemUser);
+($id,$msg) = $art->Create( Class => $class->id,
+            Name => 'Collection-1-'.$$,
+             Summary => 'Coll-1-'.$$);
+
+ok($id,$msg);
+
 my $arts =RT::FM::ArticleCollection->new($RT::SystemUser);
-$arts->LimitName (VALUE => 'testing');
-is($arts->Count, 0, 'Found no artlcles with summaries matching the word "testing"');
+$arts->LimitName (VALUE => 'Collection-1-'.$$.'fake');
+is($arts->Count, 0, "Found no artlcles with names matching something that is not there");
 
 my $arts2 =RT::FM::ArticleCollection->new($RT::SystemUser);
-#$arts2->LimitName (VALUE => 'test');
-#is($arts2->Count, 3, 'Found 3 artlcles with summaries matching the word "test"');
+$arts2->LimitName (VALUE => 'Collection-1-'.$$);
+is($arts2->Count, 1, 'Found one with names matching the word "test"');
 
 
- $arts =RT::FM::ArticleCollection->new($RT::SystemUser);
-$arts->LimitSummary (VALUE => 'testing');
-is($arts->Count, 0, 'Found no artlcles with summaries matching the word "testing"');
 
- $arts2 =RT::FM::ArticleCollection->new($RT::SystemUser);
-$arts2->LimitSummary (VALUE => 'test');
-is($arts2->Count, 3, 'Found 3 artlcles with summaries matching the word "test" (found '.$arts2->Count.')');
+my $arts =RT::FM::ArticleCollection->new($RT::SystemUser);
+$arts->LimitSummary (VALUE => 'Coll-1-'.$$.'fake');
+is($arts->Count, 0, 'Found no artlcles with summarys matching something that is not there');
+
+my $arts2 =RT::FM::ArticleCollection->new($RT::SystemUser);
+$arts2->LimitSummary (VALUE => 'Coll-1-'.$$);
+is($arts2->Count, 1, 'Found one with summarys matching the word "Coll-1"');
+
 
 
 my $new_art = RT::FM::Article->new($RT::SystemUser);
-$new_art->Create (Class => 1,
-                  Name => 'CFSearchTest1',
-                  CustomField-1 => 'testing' );
+($id,$msg) = $new_art->Create (Class => $class->id,
+                  Name => 'CFSearchTest1'.$$,
+                  CustomField-1 => 'testing'.$$ );
 
 
-ok( $new_art->Id, " Created a testable article");
+ok( $id,$msg . " Created a testable article");
 
  $arts = RT::FM::ArticleCollection->new($RT::SystemUser);
 ok($arts->isa('RT::FM::ArticleCollection'), "Got an article collection");
