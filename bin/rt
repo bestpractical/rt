@@ -167,6 +167,7 @@ print join(':',@keywords);
 
 if ($help) {
 
+
 print <<EOUSAGE;
 
 Limit the set of records returned:
@@ -246,11 +247,13 @@ Attributes
 
   Watchers
 	  --requestors=[+|-]<userid|email address>
-          add or remove this user as a ticket requestor
+          add or remove this user as a ticket requestor 
 	  --cc=[+|-]<userid|email address>
           add or remove this user as a ticket cc
 	  --admincc=[+|-]<userid|email address>
           add or remove this user as a ticket admincc
+
+	(When creating tickets, just leave off the + or - )
 
   Keywords
 	  --keywords[+|-]<keyword_select>/<keyword>
@@ -395,10 +398,10 @@ else {
     # {{{ limit on status
 
     foreach $value (@limit_status) {
-	if ($value =~ /^(.?)(new|open|stalled|resolved|dead)$/) {
+	if ($value =~ /^(=|!=|)(.*)$/) {
 	    my $op = $1;
 	    my $val = $2;
-		
+	    
 	    $op = ParseBooleanOp($op);
 	    $Tickets->LimitStatus(VALUE => "$val",
 				  OPERATOR => "$op");
