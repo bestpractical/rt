@@ -1,0 +1,21 @@
+ <TABLE WIDTH="100%">
+      <TR>
+	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
+	  <& /Elements/ShadedBox, title => 'Due' , content => $Ticket->DueAsString &>
+	</TD>
+	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
+	  <& /Elements/ShadedBox, title => 'Last Update' , content => $Ticket->LastUpdated ." by ".$Ticket->LastUpdatedBy &>
+	</TD>
+
+	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
+	  <& /Elements/ShadedBox, title => 'Last Contact' , content => $Ticket->Told &>
+	</TD>
+	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
+	  <& /Elements/ShadedBox, title => 'Created' , content => $Ticket->CreatedAsString &>
+	</TD>
+      </TR>
+    </TABLE>
+
+<%ARGS>
+$Ticket = undef
+</%ARGS>

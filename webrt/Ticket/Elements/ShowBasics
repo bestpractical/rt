@@ -1,0 +1,24 @@
+ <TABLE WIDTH="100%">
+      <TR>
+	<TD VALIGN=TOP WIDTH="20%">
+	  <& /Elements/ShadedBox, title => 'Id' , content => $Ticket->Id &>
+	</TD>
+	<TD VALIGN=TOP WIDTH="20%"> <& /Elements/ShadedBox, title => 'Status' , content => $Ticket->Status &>
+	</TD>
+	<TD VALIGN=TOP WIDTH="20%">
+	  <& /Elements/ShadedBox, title => 'Time Worked' , content => $Ticket->TimeWorked ." minutes" &>
+	</TD>
+	<TD VALIGN=TOP WIDTH="20%">
+	  <& /Elements/ShadedBox, title => 'Queue', content=> $Ticket->Queue->QueueId &>
+	</TD>
+	<TD VALIGN=TOP WIDTH="20%">
+	  <& /Elements/ShadedBox, title => 'Priority', content=> $Ticket->Priority."/".$Ticket->FinalPriority &>
+	</TD>	
+
+
+      </TR>
+    </TABLE>
+
+<%ARGS>
+$Ticket = undef
+</%ARGS>

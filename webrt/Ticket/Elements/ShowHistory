@@ -1,0 +1,8 @@
+<%ARGS>
+$Ticket => undef
+
+</%ARGS>
+%while (my $Transaction = $Ticket->Transactions->Next) {
+	<& /Ticket/Elements/ShowTransaction, Transaction => $Transaction &>
+%}
+

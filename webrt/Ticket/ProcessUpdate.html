@@ -9,9 +9,17 @@
     <h1>ProcessUpdate</h1>
     Ticket Updated.
 %# TODO: We should eventually fill out with _what_ has been done, as well.
-    <& DisplayTicket, Ticket => $Ticket &>
-  </body>
-</html>
+ 
+
+<& /Ticket/Elements/ToolBar, Ticket => $Ticket&>
+
+<& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
+
+
+<& /Ticket/Elements/ShowHistory , Ticket => $Ticket &> 
+
+<& /Elements/Footer &>
+
 
 <%args>
 $id => undef

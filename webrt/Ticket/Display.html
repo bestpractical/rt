@@ -3,7 +3,13 @@
 
 <& /Elements/Header, Title => "WebRT Ticket View" &>
 
-<& DisplayTicket, Ticket => $Ticket &>
+<& /Ticket/Elements/ToolBar, Ticket => $Ticket&>
+
+<& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
+
+
+<& /Ticket/Elements/ShowHistory , Ticket => $Ticket &> 
+
 <& /Elements/Footer &>
 
 

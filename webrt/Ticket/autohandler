@@ -1,7 +1,5 @@
-<& /Elements/Header &>
 <%PERL>
 if (defined ($user) && defined ($pass)){
-
 	#TODO if the password is the user's password
 	$session{'CurrentUser'} = new RT::CurrentUser();
 	$session{'CurrentUser'}->Load($user);
@@ -12,11 +10,10 @@ elsif (defined $session{'CurrentUser'}){
 	$m->call_next;
 }
 else {
-
-&mc_comp('/Login.html')
+$m->comp('/Login.html')
  }
 </%PERL>
-<& /Elements/Footer &>
+
 <%INIT>
 my %cookies = fetch CGI::Cookie;
 </%INIT>

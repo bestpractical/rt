@@ -1,0 +1,61 @@
+      <& /Elements/TitleBoxStart, title => $Transaction->Description, titleright=> "<a href=\"Update.html?id=".$Transaction->Ticket . "QuoteTransaction=".$attachments->First->Id."\">[Reply / Comment]</a>" &>
+      
+    <TABLE WIDTH="100%">
+      <TR>
+	<TD VALIGN=TOP WIDTH="20%">
+	  <& /Elements/ShadedBox, title => 'Date' , content => $Transaction->CreatedAsString &>
+	</TD>
+	<TD VALIGN=TOP WIDTH="20%">
+	  <& /Elements/ShadedBox, title => 'Id' , content => $Transaction->Id &>
+	</TD>
+	<TD VALIGN=TOP WIDTH="20%"> 
+	  <& /Elements/ShadedBox, title => 'Actor' , content => $Transaction->Actor &>
+	</TD>
+	<TD VALIGN=TOP WIDTH="20%">
+	  <& /Elements/ShadedBox, title => 'Time Worked' , content => $TimeTaken &>
+	</TD>
+	
+	
+      </TR>
+    </TABLE>
+
+    
+
+% $attachments->GotoFirstItem();
+%  while (my $message=$attachments->Next) {
+
+
+
+<pre><font size=-1>
+<%$message->Headers%>
+</font>
+</pre>
+
+%   if ($message->ContentType =~ m{^(text/plain|message)}) {
+<BLOCKQUOTE.message>
+<%$message->Content%>
+</BLOCKQUOTE>
+%    } 
+% else {
+	
+Attachment: <A HREF=""><% $message->ContentType %></a>
+%    }
+% }
+
+
+    <& /Elements/TitleBoxEnd &>
+
+
+<%ARGS>
+$Transaction => undef
+$attachments => $Transaction->Attachments
+$TimeTaken => undef
+
+</%ARGS>
+
+<%INIT>
+if ($Transaction->TimeTaken > 0) {
+	$TimeTaken = $Transaction->TimeTaken." minutes"
+}
+
+</%INIT>
