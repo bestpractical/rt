@@ -630,9 +630,10 @@ sub Parse {
 	    $line =~ s/\r$//;
 	    $RT::Logger->debug("Line: $line");
 	    if ($line =~ /^===$/) {
-		if ($template_id && !$queue) {
+		if ($template_id && !$queue && $qname) {
 		    $self->{'templates'}->{$template_id} .= "Queue: $qname\n";
-		} elsif ($template_id && !$requestor) {
+		}
+		if ($template_id && !$requestor && $requestorname) {
 		    $self->{'templates'}->{$template_id} .= "Requestor: $requestorname\n";
 		}
 		$queue = 0;
@@ -707,6 +708,7 @@ sub Parse {
 	    while ($line =~ /($justquoted|$delimited|$empty)/igx) {
 		if ($i == 0) {
 		    $queue = 0;
+		    $requestor = 0;
 		    my $tid = $1;
 		    $tid =~ s/^\s//;
 		    $tid =~ s/\s$//;
@@ -752,10 +754,10 @@ sub Parse {
 		}
 		$i++;
 	    }
-	    if (!$queue) {
+	    if (!$queue && $qname) {
 		$self->{'templates'}->{$template_id} .= "Queue: $qname\n";
 	    }
-	    if (!$requestor) {
+	    if (!$requestor && $requestorname) {
 		$self->{'templates'}->{$template_id} .= "Requestor: $requestorname\n";
 	    }
 	}
