@@ -235,7 +235,7 @@ sub Message  {
 =head2 Content
 
 If this transaction has attached mime objects, returns the first one.
-Otherwise, returns an empty string.
+Otherwise, returns undef.
 
 =cut
 
@@ -249,6 +249,26 @@ sub Content {
     }
 }
 
+# }}}
+
+# {{{ sub Subject
+
+=head2 Subject
+
+If this transaction has attached mime objects, returns the first one's subject
+Otherwise, returns null
+  
+=cut
+
+sub Subject {
+    my $self = shift;
+    if ($self->Message->First) {
+	return ($self->Message->First->Subject);
+    }
+    else {
+	return (undef);
+    }
+}
 # }}}
 
 # {{{ sub Attachments 

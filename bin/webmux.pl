@@ -25,6 +25,7 @@ use vars qw($VERSION %session $Nobody $SystemUser);
 #Clean up our umask...so that the session files aren't world readable, writable or executable
 umask(0077);
 
+
   
 $VERSION="!!RT_VERSION!!";
 
@@ -85,6 +86,14 @@ my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
 my $interp = &RT::Interface::Web::NewInterp(parser=>$parser);
 
 my $ah = &RT::Interface::Web::NewApacheHandler($interp);
+
+
+# Activate the following if running httpd as root (the normal case).
+# Resets ownership of all files created by Mason at startup.
+#
+chown (Apache->server->uid, Apache->server->gid, 
+		$interp->files_written, $RT::MasonSessionDir);
+
 
 # Die if WebSessionDir doesn't exist or we can't write to it
 

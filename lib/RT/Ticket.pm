@@ -325,6 +325,180 @@ sub Create {
 
 # }}}
 
+# {{{ sub Import
+
+=head2 Import PARAMHASH
+
+Import a ticket. Doesn\'t create a transaction. doesn\'t supply queue defaults, etc.
+
+Returns: TICKETID
+
+=cut
+
+
+sub Import {
+    my $self = shift;
+    my ( $ErrStr, $QueueObj, $Owner);
+    
+    my %args = (id => undef,
+		Queue => undef,
+		Requestor => undef,
+		Type => 'ticket',
+		Owner => $RT::Nobody->UserObj,
+		Subject => '[no subject]',
+		InitialPriority => undef,
+		FinalPriority => undef,
+		Status => 'new',
+		TimeWorked => "0",
+		Due => undef,
+		Created => undef,
+		Updated => undef,
+		Told => undef,
+		@_);
+    
+    if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
+	$QueueObj=RT::Queue->new($RT::SystemUser);
+	$QueueObj->Load($args{'Queue'});
+	#TODO error check this and return 0 if it\'s not loading properly +++
+    }
+    elsif (ref($args{'Queue'}) eq 'RT::Queue') {
+	$QueueObj=RT::Queue->new($RT::SystemUser);
+	$QueueObj->Load($args{'Queue'}->Id);
+    }
+    else {
+	$RT::Logger->debug("$self ". $args{'Queue'} . 
+			   " not a recognised queue object.");
+    }
+    
+    #Can't create a ticket without a queue.
+    unless (defined ($QueueObj)) {
+	$RT::Logger->debug( "$self No queue given for ticket creation.");
+	return (0, 0,'Could not create ticket. Queue not set');
+    }
+    
+    #Now that we have a queue, Check the ACLS
+    unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
+					      QueueObj => $QueueObj )) {
+	return (0,0,"No permission to create tickets in the queue '". 
+		$QueueObj->Name."'.");
+    }
+    
+    
+    # {{{ Parse these dates
+
+    my $due = new RT::Date($self->CurrentUser);
+    $due->Set (Format => 'unknown', Value => $args{'Due'})
+      if (defined $args{'Due'});
+    
+    my $told =  new RT::Date($self->CurrentUser);
+    $told->Set (Format => 'unknown', Value => $args{'Told'})
+      if (defined $args{'Told'});
+
+    my $created =  new RT::Date($self->CurrentUser);
+    $created->Set (Format => 'unknown', Value => $args{'Created'})
+      if (defined $args{'Created'});
+
+    my $updated =  new RT::Date($self->CurrentUser);
+    $updated->Set (Format => 'unknown', Value => $args{'Updated'})
+      if (defined $args{'Updated'});
+    
+    # }}}
+
+
+    # {{{ Deal with setting the owner
+    
+    if (ref($args{'Owner'}) eq 'RT::User') {
+	$Owner = $args{'Owner'};
+    }
+    #If we've been handed an integer (aka an Id for the users table 
+    elsif ($args{'Owner'} =~ /^\d+$/) {
+	$Owner = new RT::User($self->CurrentUser);
+	$Owner->Load($args{'Owner'});
+	
+    }
+    #If we can't handle it, call it nobody
+    else {
+	if (ref($args{'Owner'})) {
+	    $RT::Logger->warning("$ticket ->Create called with an Owner of ".
+		 "type ".ref($args{'Owner'}) .". Defaulting to nobody.\n");
+	}
+	else { 
+	    $RT::Logger->warning("$self ->Create called with an ".
+				 "unknown datatype for Owner: ".$args{'Owner'} .
+				 ". Defaulting to Nobody.\n");
+	}
+    }
+    
+    #If we have a proposed owner and they don't have the right 
+    #to own a ticket, scream about it and make them not the owner
+    if ((defined ($Owner)) and
+	($Owner->Id != $RT::Nobody->Id) and 
+	(!$Owner->HasQueueRight( QueueObj => $QueueObj, 
+				 Right => 'OwnTicket'))) {
+	
+	$RT::Logger->warning("$self user ".$Owner->Name . "(".$Owner->id .
+			     ") was proposed ".
+			     "as a ticket owner but has no rights to own ".
+			     "tickets in this queue\n");
+	
+	$Owner = undef;
+    }
+    
+    #If we haven't been handed a valid owner, make it nobody.
+    unless (defined ($Owner)) {
+	$Owner = new RT::User($self->CurrentUser);
+	$Owner->Load($RT::Nobody->UserObj->Id);
+    }	
+
+    # }}}
+
+    unless ($self->ValidateStatus($args{'Status'})) {
+	return (0,0,'Invalid value for status');
+    }
+    
+    my $id = $self->SUPER::Create(
+				  id => $args{'id'}.
+				  
+				  Queue => $QueueObj->Id,
+				  Owner => $Owner->Id,
+				  Subject => $args{'Subject'},
+				  InitialPriority => $args{'InitialPriority'},
+				  FinalPriority => $args{'FinalPriority'},
+				  Priority => $args{'InitialPriority'},
+				  Status => $args{'Status'},
+				  TimeWorked => $args{'TimeWorked'},
+				  Type => $args{'Type'},	
+				  Created => $created->ISO,
+				  Told => $told->ISO,
+				  LastUpdated => $updated->ISO,
+				  
+				  Due => $due->ISO,
+				 );
+    #Set the ticket's effective ID now that we've created it.
+    my ($val, $msg) = $self->__Set(Field => 'EffectiveId', Value => $id);
+    
+    unless ($val) {
+	$RT::Logger->err("$self ->Create couldn't set EffectiveId: $msg\n");
+    }	
+     
+
+    my $watcher;
+    foreach $watcher (@{$args{'Cc'}}) {
+	$self->_AddWatcher( Type => 'Cc', Person => $watcher, Silent => 1);
+    }	
+    foreach $watcher (@{$args{'AdminCc'}}) {
+	$self->_AddWatcher( Type => 'AdminCc', Person => $watcher, Silent => 1);
+    }	
+    foreach $watcher (@{$args{'Requestor'}}) {
+	$self->_AddWatcher( Type => 'Requestor', Person => $watcher, Silent => 1);
+   }
+    
+    return($self->Id, $ErrStr);
+}
+
+# }}}
+
+
 # {{{ sub Delete
 
 sub Delete {
@@ -1909,9 +2083,7 @@ be a single KeywordObject, automatically removes the old value.
  Issues: probably doesn't enforce the depth restrictions or make sure that keywords
 are coming from the right part of the tree. really should.
 
-=cut
-
-sub AddKeyword {
+=cusub AddKeyword {
     my $self = shift;
     my %args = ( KeywordSelect => undef,  # id of a keyword select record
 		 Keyword => undef, #id of the keyword to add
