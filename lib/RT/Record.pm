@@ -129,6 +129,58 @@ sub AddAttribute {
 }
 
 
+=head2 SetAttribute { Name, Description, Content }
+
+Like AddAttribute, but replaces all existing attributes with the same Name.
+
+=cut
+
+sub SetAttribute {
+    my $self = shift;
+    my %args = ( Name        => undef,
+                 Description => undef,
+                 Content     => undef,
+                 @_ );
+
+    my @AttributeObjs = $self->Attributes->Named( $args{'Name'} )
+        or return $self->AddAttribute( %args );
+
+    my $AttributeObj = pop( @AttributeObjs );
+    $_->Delete foreach @AttributeObjs;
+
+    $AttributeObj->SetDescription( $args{'Description'} );
+    $AttributeObj->SetContent( $args{'Content'} );
+
+    $self->Attributes->RedoSearch;
+    return 1;
+}
+
+=head2 DeleteAttribute NAME
+
+Deletes all attributes with the matching name for this object.
+
+=cut
+
+sub DeleteAttribute {
+    my $self = shift;
+    my $name = shift;
+    return $self->Attributes->DeleteEntry( Name => $name );
+}
+
+=head2 FirstAttribute NAME
+
+Returns the value of the first attribute with the matching name
+for this object, or C<undef> if no such attributes exist.
+
+=cut
+
+sub FirstAttribute {
+    my $self = shift;
+    my $name = shift;
+    return ($self->Attributes->Named( $name ))[0];
+}
+
+
 # {{{ sub _Handle 
 sub _Handle {
     my $self = shift;

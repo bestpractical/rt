@@ -137,9 +137,13 @@ sub WithId {
 
 =head2 DeleteEntry { Name =>   Content => , id => }
 
-Deletes the attribute with
-    the  matching name 
+Deletes attributes with
+    the matching name 
  and the matching content or id
+
+If Content and id are both undefined, delete all attributes with
+the matching name.
+
 =cut
 
 
@@ -151,8 +155,10 @@ sub DeleteEntry {
                  @_);
 
     foreach my $attr ($self->Named($args{'Name'})){ 
-        $attr->Delete if ($attr->Content eq $args{'Content'});
-        $attr->Delete if ($attr->id eq $args{'id'});
+        $attr->Delete
+            if (!defined $args{'id'} and !defined $args{'Content'})
+            or (defined $args{'id'} and $attr->id eq $args{'id'})
+            or (defined $args{'Content'} and $attr->Content eq $args{'Content'});
     }
     $self->_DoSearch();
     return (1, $self->loc('Attribute Deleted'));
