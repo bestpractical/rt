@@ -28,15 +28,14 @@
 <%INIT>
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitRequestor(VALUE => $session{'CurrentUser'}->Id);
+$MyTickets->LimitRequestor(VALUE => $session{'CurrentUser'}->EmailAddress);
 
-my $status;
-foreach $status (@status) {
+foreach my $status (@status) {
 
-        $MyTickets->LimitStatus(VALUE => "$status");
+        $MyTickets->LimitStatus(VALUE => $status);
 }
 </%INIT>
 <%ARGS>
 $friendly_status => 'open'
-@status => ['open','new','stalled']
+@status => ('open', 'new', 'stalled')
 </%ARGS>
