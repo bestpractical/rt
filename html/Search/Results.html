@@ -62,9 +62,6 @@ if ( $session{'tickets'}->Query()) {
     $title = loc("Find tickets");
 }
 
-# escape the '#' symbols so they won't be parsed as part of a URL
-$Format =~ s/#/%23/g;
-
 $ARGS{Format} = $Format;
 
 </%INIT>

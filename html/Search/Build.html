@@ -66,6 +66,7 @@
 </FORM>
 
 <%INIT>
+
 my $search_hash = {};
 my $search;
 my $title = "Query Builder";
@@ -1003,10 +1004,13 @@ my @format = split(/,\s*/, $Format);
 foreach my $field (@format) {
     my %column = ();
     $field =~ s/'(.*)'/$1/;
-    $field =~ s/(.*)__(.*)__(.*)/$2/;
+    my ($prefix, $suffix);
+    if ($field =~ m/(.*)__(.*)__(.*)/) {
+	$prefix = $1;
+	$suffix = $3;
+	$field = $2;
+    }
     $field = "<blank>" if !$field;
-    my $prefix = $1;
-    my $suffix = $3;
     $column{Prefix} = $prefix;
     $column{Suffix} = $suffix;
     $field =~ s/\s*(.*)\s*/$1/;
