@@ -288,7 +288,6 @@ CREATE TABLE Templates (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Title VARCHAR(120),
   Content BLOB,
-  Headers BLOB,
   Creator INT(11),
   Created TIMESTAMP,
 
@@ -302,55 +301,61 @@ CREATE TABLE Templates (
 # Default templates
 # Should eventually be created through some init script calling on the CLI
 INSERT INTO Templates VALUES (1,'Default Autoresponse Template',
+'Subject: AutoReply: {$Ticket->Subject}
+To: {$Ticket->RequestorsAsString}
+Cc: {$Ticket->CcAsString}
+Bcc: {$Ticket->AdminCcAsString}
 
-'        Greetings,
+       Greetings,
         This message has been automatically generated in response to your
-message regarding \"{$object->{TicketObject}->Subject()}\", the content of which appears below.
+message regarding \"{$Ticket->Subject()}\", the content of which appears below.
 There is no need to reply to it now. The Support group has received
-your message and it has been assigned a ticket ID of [{$rtname} #{$object->{TicketObject}->id()}].
+your message and it has been assigned a ticket ID of [{$rtname} #{$Ticket->id()}].
 Please include the string
 
-         [{$rtname} #{$object->{TicketObject}->id}]
+         [{$rtname} #{$Ticket->id}]
 in the subject line of all future correspondence about this
 problem. To do so, you may reply to this message.
                         Thank you,
                         The Support Group
-                        {$object->{TicketObject}->Queue()->CorrespondAddress()}
+                        {$Ticket->Queue()->CorrespondAddress()}
 
 -------------------------------------------------------------------------
-{$object->{TransactionObject}->Message()->First()->Content()}\n',
-'Subject: AutoReply: $object->{Subject}
-Content-Type: text/plain; charset=ISO-8859-1 ',
+{$Transaction->Message()->First()->Content()}
+',
 NULL,20000227191248,NULL,00000000000000);
 
 
 INSERT INTO Templates VALUES (2,'Default Transaction Template',
-'{$object->{TransactionObject}->CreatedAsString}: Request {$object->{TicketObject}->id} was acted upon.
-Transaction: {$object->{TransactionObject}->Description}
-       Queue: {$object->{TicketObject}->Queue->QueueId}
+'X-Template: foo
+
+{$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
+Transaction: {$Transaction->Description}
+       Queue: {$Ticket->Queue->QueueId}
         Area: (stubbed!)               
      Subject: {$object->{Subject}}
-       Owner: {$object->{TicketObject}->Owner->UserId || "Nobody"}
-  Requestors: {join(",",@{$object->{TicketObject}->Requestors->Emails()})}    
-      Status: {$object->{TicketObject}->Status}
+       Owner: {$Ticket->Owner->UserId || "Nobody"}
+  Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
+      Status: {$Ticket->Status}
 -------------------------------------------------------------------------
-{$object->{TransactionObject}->Message()->First()->Content() if $object->{TransactionObject}->Message()->First()}\n',
-'Subject: $object->{Subject}
-Content-Type: text/plain; charset=ISO-8859-1',
+{$Transaction->Message()->First()->Content() if $object->{TransactionObj}->Message()->First()}',
 NULL,20000227191543,NULL,00000000000000);
 
 
-INSERT INTO Templates VALUES (3,'Default Correspondance template','{$object->{TransactionObject}->Message()->First()->Content()}',
+INSERT INTO Templates VALUES (3,'Default Correspondance template',
 'Subject: $object->{Subject}
-Content-Type: text/plain; charset=ISO-8859-1',
+Content-Type: text/plain; charset=ISO-8859-1
+
+{$Transaction->Message()->First()->Content()}',
 NULL,20000227191745,NULL,00000000000000);
 
-INSERT INTO Templates VALUES (4,'Default Comment template','This is a comment.  It is not sent to the Requestor(s):
-
-{$object->{TransactionObject}->Message()->First()->Content()}
-',
+INSERT INTO Templates VALUES (4,'Default Comment template',
 'Subject: [Comment] $object->{Subject}
 Content-Type: text/plain; charset=ISO-8859-1
+
+This is a comment.  It is not sent to the Requestor(s):
+
+{$Transaction->Message()->First()->Content()}
 ',
 NULL,20000227191745,NULL,00000000000000);
 

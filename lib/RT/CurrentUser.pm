@@ -55,7 +55,6 @@ sub _Accessible  {
 }
 # }}}
 
-
 # {{{ sub Load 
 sub Load  {
   my $self = shift;
@@ -73,7 +72,6 @@ sub Load  {
   }
 }
 # }}}
-
 
 #used to check if a password is correct
 

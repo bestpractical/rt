@@ -40,26 +40,23 @@ sub Prepare  {
 }
 # }}}
 
-
-
 # {{{ sub SetSubject
 sub SetSubject {
   my $self = shift;
   
   #If the template has a subject line already, we do nothing.
-  unless ($self->TemplateObj->{'Header'}->get(Subject)) {
+  unless ($self->TemplateObj->MIMEObj->head->get(Subject)) {
     
     # Make the subject the Ticket's subject.
-    $self->{Subject}=$self->TicketObject->Subject() || "(no subject)";
+    $self->{Subject}=$self->TicketObj->Subject() || "(no subject)";
     
     #Set the header object's notion of the subject.
-    $self->TemplateObj->{'Header'}->add('Subject',"AutoReply ($$self{Subject})");
+    $self->TemplateObj->MIMEObj->head->add('Subject',"AutoReply ($$self{Subject})");
     
   }
 }
 
 # }}}
-
 
 # {{{ sub SetReturnAddress 
 
@@ -79,10 +76,10 @@ sub SetReturnAddress {
 	or warn "Can't find email address for queue?";
   
   
-  unless ($self->TemplateObj->{'Header'}->get('From')) {
-    my $friendly_name=$self->{TransactionObject}->Creator->RealName;
-    $self->TemplateObj->{'Header'}->add('From', "Request Tracker <$email_address>");
-    $self->TemplateObj->{'Header'}->add('Reply-To', "<$email_address");
+  unless ($self->TemplateObj->MIMEObj->head->get('From')) {
+    my $friendly_name=$self->{TransactionObj}->Creator->RealName;
+    $self->TemplateObj->MIMEObj->head->add('From', "Request Tracker <$email_address>");
+    $self->TemplateObj->MIMEObj->head->add('Reply-To', "$email_address");
   }
   
 

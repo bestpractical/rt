@@ -28,20 +28,25 @@ sub Commit  {
   my $self = shift;
   #send the email
 
+  print STDERR "About to Commit a mail message\n";
+
   my @body = grep($_ .= "\n", split(/\n/,$self->{'Body'}));
 
+  #TODO HACKISH
+  open(SENDMAIL,"|/usr/lib/sendmail -oi -t");
 
   # We should have some kind of site specific configuration here.  I
   # think the default method for sending an email should be
   # send('sendmail'), but some RT installations might want to use the
   # smtpsend method anyway.
-
-  $self->TemplateObj->smtpsend || die "could not send email";
+  $self->TemplateObj->MIMEObj->print(\*SENDMAIL);
+#  $self->TemplateObj->MIMEObj->smtpsend(Host => 'localhost') || die "could not send email";
 
   #TODO: enable this once tobix' new Mail::Internet is out there.
   #$self->{'TemplateObj'}->send('sendmail'); || die "Could not send mail;
 
   # TODO Tell the administrator that RT couldn't send mail
+  close(SENDMAIL)
 
 }
 # }}}
@@ -52,17 +57,9 @@ sub Prepare  {
   my $self = shift;
 
   # This actually populates the MIME::Entity fields in the Template Object
-  $self->TemplateObj->Parse;
 
-
-  #TODO: Tobix: what does this do? -jesse
-
-  # ... I thought you introduced this one? :) Anyway, it folds long
-  # header lines according to rfc822.  I don't think it's necessary to
-  # fold the headers ... and eventually it's done in the send and
-  # smtpsend methods anyway IIRC. -TobiX
-
-  $self->TemplateObj->{'Header'}->fold(78);
+  $self->TemplateObj->Parse(TicketObj => $self->TicketObj, 
+			    TransactionObj => $self->TransactionObj);
 
 
   # Header
@@ -74,7 +71,8 @@ sub Prepare  {
 
   $self->SetSubject();
 
-  #TODO We should _Always_ insert the [RT::rtname #$ticket] tag here.
+  my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
+  $self->TemplateObj->MIMEObj->head->replace('subject', "[$RT::rtname #".$self->TicketObj->id."] $sub");  
 
   $self->SetReturnAddress();
 
@@ -114,21 +112,21 @@ sub Prepare  {
 sub SetRTSpecialHeaders {
   my $self = shift;
     
-  unless ($self->TemplateObj->{'Header'}->get('RT-Action')) {
-    $self->TemplateObj->{'Header'}->add('RT-Action', $self->Describe);
+  unless ($self->TemplateObj->MIMEObj->head->get('RT-Action')) {
+    $self->TemplateObj->MIMEObj->head->add('RT-Action', $self->Describe);
   }
   
-  unless ($self->TemplateObj->{'Header'}->get('RT-Scrip')) {
-    $self->TemplateObj->{'Header'}->add('RT-Scrip', $self->{'ScripObject'}->Description);
+  unless ($self->TemplateObj->MIMEObj->head->get('RT-Scrip')) {
+    $self->TemplateObj->MIMEObj->head->add('RT-Scrip', $self->{'ScripObj'}->Description);
   }
   
-  $self->TemplateObj->{'Header'}->add('RT-Ticket-ID', $self->{'TicketObject'}->id());
-  $self->TemplateObj->{'Header'}->add('RT-Loop-Prevention', $RT::rtname);
+  $self->TemplateObj->MIMEObj->head->add('RT-Ticket-ID', $self->TicketObj->id());
+  $self->TemplateObj->MIMEObj->head->add('RT-Loop-Prevention', $RT::rtname);
 
-  $self->TemplateObj->{'Header'}->add
+  $self->TemplateObj->MIMEObj->head->add
     ('RT-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
 
-  $self->TemplateObj->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
+  $self->TemplateObj->MIMEObj->head->add('RT-Originator', $self->TransactionObj->Creator->EmailAddress);
   return();
 
 }
@@ -149,10 +147,10 @@ sub SetReferences {
   # incoming mails, we would like to preserve the In-Reply-To and/or
   # References.
 
-  $self->TemplateObj->{'Header'}->add
-    ('In-Reply-To', "<rt-".$self->{'TicketObj'}->id().
+  $self->TemplateObj->MIMEObj->head->add
+    ('In-Reply-To', "<rt-".$self->TicketObj->id().
      "-".
-     $self->{'TransactionObj'}->id()."\@".$RT::rtname.">");
+     $self->TransactionObj->id()."\@".$RT::rtname.">");
 
   # Changed this one to In-Reply-To.  References are mostly used in
   # News.  For email messages one reference is usually enough, and we
@@ -176,6 +174,7 @@ sub SetReferences {
 # several separate/different emails about the same transaction.
 
 sub SetMessageID {
+  my $self = shift;
 
   # TODO this one might be sort of broken.  If we have several scrips
   # sending several emails to several different persons, we need to
@@ -185,11 +184,11 @@ sub SetMessageID {
   # TODO $RT::rtname should be replaced by $RT::hostname to form valid
   # message-ids (ref rfc822)
 
-  $self->TemplateObj->{'Header'}->add
-    ('Message-ID', "<rt-".$self->{'TicketObj'}->id().
+  $self->TemplateObj->MIMEObj->head->add
+    ('Message-ID', "<rt-".$self->TicketObj->id().
      "-".
-     $self->{'TransactionObj'}->id()."\@".$RT::rtname.">")
-	unless $self->TemplateObj->{'Header'}->get('Message-ID');
+     $self->TransactionObj->id()."\@".$RT::rtname.">")
+      unless $self->TemplateObj->MIMEObj->head->get('Message-ID');
 }
 
 
@@ -216,8 +215,8 @@ sub SetContentType {
   # template system so the original message always will be a separate
   # MIME part.
 
-  unless ($self->TemplateObj->{'Header'}->get('Content-Type')) {
-      $self->TemplateObj->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
+  unless ($self->TemplateObj->MIMEObj->head->get('Content-Type')) {
+      $self->TemplateObj->MIMEObj->head->add('Content-Type', 'text/plain; charset=ISO-8859-1');
   }
 return();
 }
@@ -228,23 +227,26 @@ return();
 # {{{ sub SetReturnAddress 
 sub SetReturnAddress {
 
-my $self = shift;
-
+  my $self = shift;
+  
   # From and Reply-To
   # $self->{comment} should be set if the comment address is to be used.
   my $email_address=$self->{comment} ? 
-      $self->{TicketObject}->Queue->CommentAddress :
-      $self->{TicketObject}->Queue->CorrespondAddress
-	  or warn "Can't find email address for queue?";
-
-
-  unless ($self->TemplateObj->{'Header'}->get('From')) {
-      my $friendly_name=$self->{TransactionObject}->Creator->RealName;
-      # TODO: this "via RT" should really be site-configurable.
-      $self->TemplateObj->{'Header'}->add('From', "$friendly_name via RT <$email_address>");
-      $self->TemplateObj->{'Header'}->add('Reply-To', "$email_address");
+    $self->TicketObj->Queue->CommentAddress :
+      $self->TicketObj->Queue->CorrespondAddress
+	or warn "Can't find email address for queue?";
+  
+  
+  unless ($self->TemplateObj->MIMEObj->head->get('From')) {
+    my $friendly_name=$self->TransactionObj->Creator->RealName;
+    # TODO: this "via RT" should really be site-configurable.
+    $self->TemplateObj->MIMEObj->head->add('From', "$friendly_name via RT <$email_address>");
   }
-
+  
+  unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
+    $self->TemplateObj->MIMEObj->head->add('Reply-To', "$email_address");
+  }
+  
 }
 
 # }}}
@@ -268,7 +270,7 @@ sub SetEnvelopeTo {
 sub SetTo {
   my $self = shift;
   if (exists $self->{'To'}) {
-      $self->TemplateObj->{'Header'}->add('To', $self->{'To'});
+      $self->TemplateObj->MIMEObj->head->add('To', $self->{'To'});
   }
   return($self->{'To'});
 }
@@ -280,7 +282,7 @@ sub SetTo {
 sub SetCc {
   my $self = shift;
   if (exists $self->{'Cc'}) {
-      $self->TemplateObj->{'Header'}->add('Cc', $self->{'Cc'});
+      $self->TemplateObj->MIMEObj->head->add('Cc', $self->{'Cc'});
   }
   return($self->{'Cc'});
 }
@@ -292,7 +294,7 @@ sub SetCc {
 sub SetBcc {
   my $self = shift;
   if (exists $self->{'Bcc'}) {
-      $self->TemplateObj->{'Header'}->add('Bcc', $self->{'Bcc'});
+      $self->TemplateObj->MIMEObj->head->add('Bcc', $self->{'Bcc'});
   }
   return($self->{'Bcc'});
 }
@@ -302,7 +304,7 @@ sub SetBcc {
 sub SetPrecedence {
   
   my $self = shift;
-  $self->TemplateObj->{'Header'}->add('Precedence', "Bulk");
+  $self->TemplateObj->MIMEObj->head->add('Precedence', "Bulk");
 }
 
 
@@ -314,15 +316,15 @@ sub SetPrecedence {
 
 sub SetSubject {
   my $self = shift;
-  unless ($self->TemplateObj->{'Header'}->get(Subject)) {
-      my $m=$self->{TransactionObject}->Message->First;
-      my $ticket=$self->{TicketObject}->Id;
+  unless ($self->TemplateObj->MIMEObj->head->get(Subject)) {
+      my $m=$self->TransactionObj->Message->First;
+      my $ticket=$self->TicketObj->Id;
       ($self->{Subject})=$m->Headers =~ /^Subject: (.*)$/m
 	  if $m;
-      $self->{Subject}=$self->{TicketObject}->Subject()
+      $self->{Subject}=$self->TicketObj->Subject()
 	  unless $self->{Subject};
       
-      $self->TemplateObj->{'Header'}->add('Subject',"$$self{Subject}");
+      $self->TemplateObj->MIMEObj->head->add('Subject',"$$self{Subject}");
 
   }
 

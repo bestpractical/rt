@@ -84,6 +84,7 @@ sub LimitToAdminCc  {
     $self->LimitToType("AdminCc");
 }
 # }}}
+
 # Return a (reference to a) list of emails
 # {{{ sub Emails 
 sub Emails  {
@@ -99,20 +100,6 @@ sub Emails  {
     }
     return \@list;
 }
-# }}}
-
-# {{{ sub LimitToCc 
-sub LimitToCc  {
-  my $self = shift;
-  $self->LimitToType("Cc");
-}
-# }}}
-
-# {{{ sub LimitToBcc 
-sub LimitToBcc  {
-  my $self = shift;
-  $self->LimitToType("Bcc");
-} 
 # }}}
 
 # {{{ sub NewItem 

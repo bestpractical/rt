@@ -4,8 +4,8 @@
 
 package RT::Template;
 use RT::Record;
-use MIME::Entity;
-@ISA= qw(RT::Record MIME::Entity);
+
+@ISA= qw(RT::Record);
 
 #
 # The new plan for RT::Template is that it's a subclass of MIME::Entity, which is
@@ -15,11 +15,12 @@ use MIME::Entity;
 
 # {{{ sub new 
 sub new  {
-    $pkg=shift;
-    my $self=SUPER::new $pkg;
-    $self->{'table'}="Templates";
-    $self->_Init(@_);
-    return $self;
+  my $pkg=shift;
+    my $self=RT::Record::new($pkg);
+  
+  $self->{'table'}="Templates";
+  $self->_Init(@_);
+  return $self;
 }
 # }}}
 
@@ -32,7 +33,6 @@ sub _Accessible  {
 	      Content => 'read',
 	      Creator => 'read',
 	      Created => 'read',
-	      Headers => 'read',
 	      LastUpdatedBy => 'read',
 	      LastUpdated => 'read'
 	     );
@@ -46,6 +46,13 @@ sub DisplayPermitted  {
 }
 # }}}
 
+# {{{ sub MIMEObj
+sub MIMEObj {
+  my $self = shift;
+  return ($self->{'MIMEObj'});
+}
+# }}}
+
 
 # {{{ sub Parse 
 
@@ -54,91 +61,57 @@ sub DisplayPermitted  {
 
 sub Parse {
   my $self = shift;
-  $self->_ParseHeaders();
-  $self->_ParseContent();
-  $self->_ImportHeaders();
-  $self->_ImportContent();
 
-}
-
-# }}}
-
-# {{{ sub _ImportHeaders
-# This sticks $self->Headers into the templates MIME::Entity Headers
-sub _ImportHeaders {
-  my $self = shift;
+  #We're passing in whatever we were passed. it's destined for _ParseContent
+  my $content = $self->_ParseContent(@_);
   
+  #Lets build our mime Entity
+  use MIME::Entity;
+  $self->{'MIMEObj'}= MIME::Entity->new();
 
-  for (split /\n/, $self->Headers) {
-    /: /;
-    $self->{Header}->add($`, $');
+  $self->{'MIMEObj'}->build(Type => 'multipart/mixed');
+
+
+
+  (my $headers, my $body) = split(/\n\n/,$content,2);
+
+  $self->{'MIMEObj'}->attach(Data => $body);
+
+  foreach $header (split(/\n/,$headers)) {
+    (my $key, my $value) = (split(/: /,$header,2));
+    $self->{'MIMEObj'}->head->add($key, $value);
   }
-}
-
-# }}}
-
-# {{{ sub ImportContent {
-
-# This sticks $self->Content into the Template's MIME::Entity Body 
-sub _ImportBody {
-  my $self = shift;
   
+  $self->{'MIMEObj'}->print;
+  print STDERR "Leaving RT::Template::Parse\n"
 }
+
 # }}}
 
+# {{{ sub _ParseContent
 
-# {{{ sub ParseHeaders 
-# This routine performs template substitutions on $self->Headers
+# Perform Template substitutions on the Body
 
-sub _ParseHeaders  {
+sub _ParseContent  {
   my $self=shift;
-  my $object=shift;
-  
+  my %args = ( TicketObj => undef,
+	       TransactionObj => undef,
+	       @_);
+
   # Might be subject to change
   require Text::Template;
   
-  # Ouch ... this sucks a bit.  Maybe Text::Template is based upon
-  # some old perl4 code?  It can't take my'ed variables, and it
-  # won't accept objects as hashes, nor hashes containing objects.
-  
-  $T::self=$self;
-  $T::object=$object;
+  $T::Ticket = $args{'TicketObj'};
+  $T::Transaction = $args{'TransactionObj'};
+
   $T::rtname=$RT::rtname;
   
-  $template=Text::Template->new(TYPE=>STRING, 
-				SOURCE=>$self->Headers);
-  return ($template->fill_in(PACKAGE=>T));
-
-}
-# }}}
-
-# {{{ sub ParseBody 
-
-# ParseBody will perform Template substitutions on the Body
-
-sub _ParseBody  {
-  my $self=shift;
-  my $object=shift;
-
-  
-  # Might be subject to change
-  require Text::Template;
-  
-  # Ouch ... this sucks a bit.  Maybe Text::Template is based upon
-  # some old perl4 code?  It can't take my'ed variables, and it
-  # won't accept objects as hashes, nor hashes containing objects.
-  
-  $T::self=$self;
-  $T::object=$object;
-  $T::rtname=$RT::rtname;
-
   $template=Text::Template->new(TYPE=>STRING, 
 				SOURCE=>$self->Content);
   
   return ($template->fill_in(PACKAGE=>T));
 }
 # }}}
-
 
 
 

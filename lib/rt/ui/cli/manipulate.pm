@@ -265,8 +265,14 @@ sub ParseArgs  {
   }
 
   # TODO: This is wrong.  Message should always be a scalar.
-  if (ref $Message) {$Message->print;}
-  else {print $Message;}
+  
+  if (defined $Message) {
+    print $Message."\n";
+  }
+#  if (ref $Message) {$Message->print;}
+#  else {print $Message;}
+  
+
 }
 # }}}
 

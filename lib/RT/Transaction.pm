@@ -1,6 +1,6 @@
 # Copyright 1999-2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
-# $Id$ 
+# $Header$
 #
 #
 package RT::Transaction;
@@ -22,23 +22,8 @@ sub new  {
 }
 # }}}
 
-# {{{ sub _Accessible 
-sub _Accessible  {
-  my $self = shift;
-  my %Cols = (
-	      TimeTaken => 'read',
-	      Ticket => 'read',
-	      Type=> 'read',
-	      Data => 'read',
-	      EffectiveTicket => 'read',
-	      Creator => 'read',
-	      Created => 'read'
-	     );
-}
-# }}}
-
-
 #This is "Create Transaction"
+
 # {{{ sub Create 
 sub Create  {
   my $self = shift;
@@ -58,7 +43,7 @@ sub Create  {
   unless ( $args{'Ticket'} ) {
     return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
   }
-
+  
   #lets create our parent object
   my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
 				EffectiveTicket  => $args{'Ticket'},
@@ -70,63 +55,72 @@ sub Create  {
 				NewValue => $args{'NewValue'},
 				Created => undef
 			       );
+
+
   $self->Load($id);
 
-  $self->Attach($args{'MIMEEntity'})
+  
+  $self->_Attach($args{'MIMEEntity'})
       if defined $args{'MIMEEntity'};
+
 
   #We're really going to need a non-acled ticket for the scrips to work
   use RT::Ticket;
   #TODO this MUST be as the "System" principal or it all breaks
   #TODO This is actively broken, but it'll work as long as we have no acls
-  my $TicketAsSystem = RT::Ticket->new($self->CurrentUser);
+  my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
   $TicketAsSystem->Load($self->Ticket);
 
- 
-  # Here, we send a copy of the transaction to all Interested Parties.
+
+   # Here, we send a copy of the transaction to all Interested Parties.
+
+
   
-  
-
-
-
   # Deal with Scrips
 
   #Load a scrips object
-  use RT::Scrips;
-  use RT::ScripScope;
   use RT::ScripScopes;
-  my $ScripScope = RT::ScripScopes->new($self->CurrentUser);
-#  my $Scrips = RT::Scrips->new($self->CurrentUser);
-  $ScripScope->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
-#  $Scrips->LimitToType($args{'Type'}); #Limit to $args{'Type'} or 'any'
+  my $ScripScopes = RT::ScripScopes->new($RT::SystemUser);
+  $ScripScopes->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
 
   #Load a ScripsScopes object
   #Iterate through each script and check it's applicability.
 
-  while (my $Scope = $ScripScope->Next()) {
+  while (my $Scope = $ScripScopes->Next()) {
 
-    # This sucks a bit ... we're really doing a lot of unneccessary
-    # loading here. I think we really should do a search on two
-    # tables.  --TobiX
+    # TODO: 
+    # TODO: This sucks a bit ... we're really doing a lot of unneccessary
+    # TODO: loading here. I think we really should do a search on two
+    # TODO: tables.  --TobiX
+    # TODO: Agreed - jesse. It'll probably wait until after the 2.0 release unless it appears to
+    # TODO: be a serious perf bottleneck.
+
     next if ($Scope->ScripObj->Type && $Scope->ScripObj->Type ne $args{'Type'});
 
-    #TODO: Raise errors here.
-    eval {
+    #TODO: properly deal with errors raised in this scrip loop
+   # eval {
       #Load the scrip's action;
-      $Scope->ScripObj->LoadAction(TicketObject=>$TicketAsSystem, TransactionObject=>$self);
+      $Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
+				   TemplateObj => $Scope->ScripObj->TemplateObj,
+				   TransactionObj => $self);
       
       #If it's applicable, prepare and commit it
       if ( $Scope->ScripObj->IsApplicable() ) {
-	$Scope->ScripObj->Prepare() and $Scope->ScripObj->Commit();
+	print STDERR "About to describe\n";
+	print STDERR $Scope->ScripObj->Describe();
+
+	print STDERR "About to prepare\n";
+	$Scope->ScripObj->Prepare();   
+	print STDERR "About to Commit\n";
+	$Scope->ScripObj->Commit();
       }
     }
 
-  } 
+# }
   
   return ($id, "Transaction Created");
 }
 # }}}
-
 
 # {{{ sub CreatedAsString 
 sub CreatedAsString  {
@@ -134,7 +128,6 @@ sub CreatedAsString  {
   return($self->_Value('Created'));
 }
 # }}}
-
 
 # {{{ sub Message 
 sub Message  {
@@ -177,13 +170,14 @@ sub Attachments  {
 
 }
 # }}}
-# {{{ sub Attach 
-sub Attach  {
+
+# {{{ sub _Attach 
+sub _Attach  {
   my $self = shift;
   my $MIMEObject = shift;
 
   if (!defined($MIMEObject)) {
-    die "RT::Transaction->Attach: We can't attach a mime object if you don't give us one.\n";
+    die "RT::Transaction::_Attach: We can't attach a mime object if you don't give us one.\n";
   }
   
 
@@ -195,8 +189,6 @@ sub Attach  {
   
 }
 # }}}
-
-
 
 # {{{ sub Description 
 sub Description  {
@@ -316,8 +308,25 @@ sub Description  {
   
 }
 # }}}
+
+# {{{ sub _Accessible 
+sub _Accessible  {
+  my $self = shift;
+  my %Cols = (
+	      TimeTaken => 'read',
+	      Ticket => 'read',
+	      Type=> 'read',
+	      Data => 'read',
+	      EffectiveTicket => 'read',
+	      Creator => 'read',
+	      Created => 'read'
+	     );
+}
+# }}}
+
+
 #ACCESS CONTROL
-# 
+
 # {{{ sub DisplayPermitted 
 sub DisplayPermitted  {
   my $self = shift;

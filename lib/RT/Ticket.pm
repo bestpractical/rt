@@ -69,11 +69,15 @@ sub Create {
 				Told => $args{'Told'},
 				Due => $args{'Due'}
 			       );
+  
+  print STDERR "Id is $id\n";
   #Load 'er up.
   $self->Load($id);
   #Now that we know the self
-  $self->SUPER::_Set("EffectiveId",$id);
-  
+  (my $code, my $message) = $self->SUPER::_Set("EffectiveId",$id);
+  if ($code == 0) {
+    print STDERR "$message\n";
+  }
   if (defined $args{'MIMEEntity'}) {
     my $head = $args{'MIMEEntity'}->head;
     
@@ -798,6 +802,7 @@ sub Links {
 # }}}
 
 # {{{ sub NewLink
+
 sub NewLink {
   my $self = shift;
   my %args = ( url => '',
@@ -806,7 +811,7 @@ sub NewLink {
 	       @_ );
  
   my $link = new RT::Article::URL;
-  $id = $link->create( url => $args{'url'},
+  my $id = $link->create( url => $args{'url'},
 		       title => $args{'title'},
 		       comment => $args{'comment'},
 		       article => $self->id()
@@ -814,6 +819,7 @@ sub NewLink {
     print STDERR "made new create\n";
  return ($id);
 }
+
 # }}}
  
 

@@ -1,4 +1,6 @@
-#$Header$
+# Copyright 1999-2000 Jesse Vincent <jesse@fsck.com>
+# Released under the terms of the GNU Public License
+# $Header$
 
 package RT::Scrip;
 use RT::Record;
@@ -40,9 +42,8 @@ sub Create  {
 }
 # }}}
 
-
 # {{{ sub delete 
-sub delete  {
+sub Delete  {
   my $self = shift;
  # this function needs to move all requests into some other queue!
   my ($query_string,$update_clause);
@@ -54,13 +55,14 @@ sub delete  {
 }
 # }}}
 
+
 # {{{ sub create 
+# Todo: yank this before release
 sub create  {
   my $self = shift;
-  return($self->Create(@_));
+  die "RT::Scrip::create should be RT::Scrip::Create";
 }
 # }}}
-
 
 # {{{ sub Load 
 sub Load  {
@@ -104,7 +106,8 @@ sub LoadAction  {
   my $type = "RT::Action::". $self->Action;
   
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
-  $self->{'ScriptObject'}  = $type->new ( 'TicketObj' => $args{'TicketObj'},
+  $self->{'ScriptObject'}  = $type->new ( 'ScripObj' => $self, 
+					  'TicketObj' => $args{'TicketObj'},
 					  'TransactionObj' => $args{'TransactionObj'},
 					  'TemplateObj' => $self->TemplateObj,
 					  'Argument' => $self->Argument,
@@ -127,10 +130,7 @@ sub TemplateObj {
 }
 # }}}
 
-
-#
 # The following methods call the action object
-#
 
 # {{{ sub Prepare 
 sub Prepare  {
@@ -147,6 +147,7 @@ sub Commit  {
   
 }
 # }}}
+
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
@@ -154,6 +155,7 @@ sub Describe  {
   
 }
 # }}}
+
 # {{{ sub IsApplicable 
 sub IsApplicable  {
   my $self = shift;
@@ -161,9 +163,8 @@ sub IsApplicable  {
   
 }
 # }}}
-#
+
 # ACCESS CONTROL
-# 
 
 # {{{ sub DisplayPermitted 
 sub DisplayPermitted  {
@@ -183,6 +184,7 @@ sub DisplayPermitted  {
   }
 }
 # }}}
+
 # {{{ sub ModifyPermitted 
 sub ModifyPermitted  {
   my $self = shift;

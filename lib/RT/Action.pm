@@ -1,8 +1,8 @@
 # $Header$
+# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
+# This software is redistributable under the terms of the GNU GPL
 
 package RT::Action;
-
-
 
 # {{{ sub new 
 sub new  {
@@ -20,6 +20,7 @@ sub _Init  {
   my $self = shift;
   my %args = ( TransactionObj => undef,
 	       TicketObj => undef,
+	       ScripObj => undef,
 	       TemplateObj => undef,
 	       Argument => undef,
 	       Type => undef,
@@ -27,6 +28,7 @@ sub _Init  {
   
   
   $self->{'Argument'} = $args{'Argument'};
+  $self->{'ScripObj'} = $args{'ScripObj'};
   $self->{'TicketObj'} = $args{'TicketObj'};
   $self->{'TransactionObj'} = $args{'TransactionObj'};
   $self->{'TemplateObj'} = $args{'TemplateObj'};
@@ -34,10 +36,8 @@ sub _Init  {
 }
 # }}}
 
+# Access Scripwide data
 
-
-
-#Access Scripwide data
 # {{{ sub Argument 
 sub Argument  {
   my $self = shift;
@@ -51,12 +51,14 @@ sub TicketObj  {
   return($self->{'TicketObj'});
 }
 # }}}
+
 # {{{ sub TransactionObj
 sub TransactionObj  {
   my $self = shift;
   return($self->{'TransactionObj'});
 }
 # }}}
+
 # {{{ sub TemplateObj
 sub TemplateObj  {
   my $self = shift;
@@ -72,13 +74,10 @@ sub Type  {
 # }}}
 
 
-
-#
 # Scrip methods
-#
-
 
 #Do what we need to do and send it out.
+
 # {{{ sub Commit 
 sub Commit  {
   my $self = shift;
@@ -88,6 +87,7 @@ sub Commit  {
 
 
 #What does this type of Action does
+
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
@@ -95,7 +95,9 @@ sub Describe  {
 }
 # }}}
 
+
 #Parse the templates, get things ready to go.
+
 # {{{ sub Prepare 
 sub Prepare  {
   my $self = shift;
@@ -105,6 +107,7 @@ sub Prepare  {
 
 
 #If this rule applies to this transaction, return true.
+
 # {{{ sub IsApplicable 
 sub IsApplicable  {
   my $self = shift;

@@ -12,7 +12,7 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 package RT;
 use strict;
-use vars qw($VERSION);
+use vars qw($VERSION $Handle $SystemUser);
 
 $VERSION="!!RT_VERSION!!";
 
@@ -26,14 +26,19 @@ use DBIx::Handle;
 
 
 #TODO: need to identify the database user here....
-$RT::Handle = new DBIx::Handle;
+$Handle = new DBIx::Handle;
 
-$RT::Handle->Connect(Host => $RT::DatabaseHost, 
+$Handle->Connect(Host => $RT::DatabaseHost, 
 		     Database => $RT::DatabaseName, 
 		     User => $RT::DatabaseUser,
 		     Password => $RT::DatabasePassword,
 		     Driver => $RT::DatabaseType);
 
+
+#Load up a user object for actions taken by RT itself
+use RT::CurrentUser;
+#TODO abstract out the ID of the RT SystemUser
+$SystemUser = RT::CurrentUser->new(1);
 
 
 my $program = $0; 
