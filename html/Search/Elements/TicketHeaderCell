@@ -22,12 +22,14 @@
 %# 
 %# END LICENSE BLOCK
 <%INIT> 
-my ($order);
+my ($order,$curorder);
  $Attribute =~ s/Obj->(Name|AsString|AgeAsString)//g;
   if ($session{'tickets_sort_order'} =~ /^asc$/i) {
    $order = 'DESC';
+   $curorder = 'ASC';
  } else {
    $order = 'ASC';
+   $curorder = 'DESC';
  }
 $Header = $Attribute unless ($Header);
 
@@ -37,8 +39,10 @@ $Header = $Attribute unless ($Header);
 <A 
 % if ($Attribute eq $session{'tickets_sort_by'}) {
 class="currenttab"
-% }
 HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$Attribute%>&TicketsSortOrder=<%$order%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">
+% } else {
+HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$Attribute%>&TicketsSortOrder=<%$curorder%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">
+% }
 <% loc($Header) %>
 </A>
 % } else {
