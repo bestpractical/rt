@@ -29,7 +29,7 @@ alter table objectcustomfieldvalues drop index ticketcustomfieldvalues1;
 
 alter table objectcustomfieldvalues drop index ticketcustomfieldvalues2;
 
-alter table objectcustomfieldvalues add index ObjectCustomFieldValues1 (CustomField,ObjectType,ObjectId,Content); 
+alter table objectcustomfieldvalues add index ObjectCustomFieldValues1 (Content); 
 
 alter table objectcustomfieldvalues add index ObjectCustomFieldValues2 (CustomField,ObjectType,ObjectId); 
 
