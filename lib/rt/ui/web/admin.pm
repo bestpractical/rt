@@ -418,30 +418,39 @@ Queue Configuration
     &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
     print "</td></tr></table>\n<BR>\n";
 
+    print "<h2>Request owner:</h2>\n";
     print "<input type=\"checkbox\" name=\"m_owner_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_owner_trans});
-    print "> Send <b>request owner</b> email notification of each transaction<br>\n";
+    print "> Send email notification of each transaction<br>\n";
      
-    print "<input type=\"checkbox\" name=\"m_members_trans\" ";
+   
+    print "<h2>Queue members:</h2>";
+   print "<input type=\"checkbox\" name=\"m_members_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_members_trans});
-    print ">Send <b>all queue members</b> email notification of each transaction<br>\n";
-    
+    print ">Send email notification of each transaction<br>\n";
+
+   print "<input type=\"checkbox\" name=\"m_members_correspond\" ";
+    print "CHECKED" if ($rt::queues{$queue_id}{m_members_correspond});
+    print ">Send copies of all correspondence<br>\n";
+
+    print "<input type=\"checkbox\" name=\"m_members_comment\" ";
+    print "CHECKED" if ($rt::queues{$queue_id}{m_members_comment});
+    print ">Send copies of all comments<br>\n";
+   
+    print "<h2>Requestors:</h2>"; 
+  
+    print "<i>(requestors will always be sent copies of all correspondence.)</i>\n<br>\n";
+  
     print "<input type=\"checkbox\" name=\"m_user_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_user_trans});
-    print ">Send <b>requestors</b> email notifications of each transaction (except comment) on their requests<br>\n";
+    print ">Send email notifications of each transaction (except comment)<br>\n";
     
     print "<input type=\"checkbox\" name=\"m_user_create\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_user_create});
-    print "> Send <b>requestors</b> an autoreply on request creation<br>\n";
-    
-    print "<input type=\"checkbox\" name=\"m_members_correspond\" ";
-    print "CHECKED" if ($rt::queues{$queue_id}{m_members_correspond});
-    print ">Send <b>queue members</b> copies of  all correspondence<br>\n";
-    
-    print "<input type=\"checkbox\" name=\"m_members_comment\" ";
-    print "CHECKED" if ($rt::queues{$queue_id}{m_members_comment});
-    print ">Send <b>queue members</b> copies of  all comments<br>\n";
-    
+    print "> Send an autoreply on request creation<br>\n";
+   
+
+	 
     print "<input type=\"checkbox\" name=\"allow_user_create\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{allow_user_create});
     print ">Allow non-members to create requests<br>\n";
@@ -464,6 +473,12 @@ Access Control
 </H2>
 
 ";
+
+    print "<input type=\"checkbox\" name=\"allow_user_create\" ";
+    print "CHECKED" if ($rt::queues{$queue_id}{allow_user_create});
+    print ">Allow non-members to create requests<br>\n";
+
+
     foreach $user_id (sort keys %rt::users) {
 	my $escaped_user_id = $user_id;
 	$escaped_user_id=~s/ /%20/g;
