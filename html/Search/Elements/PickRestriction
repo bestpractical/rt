@@ -21,7 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<FORM ACTION="Listing.html" METHOD="GET">
+<FORM ACTION="<%$RT::WebPath%>/Search/Listing.html" METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()%>">
 <& /Elements/TitleBoxStart, title => loc('Refine search')&>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
