@@ -17,9 +17,12 @@ export PATH
 echo "Enter the postgres administrator's database password to create a new user for rt"
 
 if [ "fnord$PORT" != "fnord" ]; then
-psql -h $HOSTNAME -p $PORT -d $DATABASENAME -f $DATABASEACLS -U $DATABASEADMIN
-
-else
-psql -h $HOSTNAME -d $DATABASENAME -f $DATABASEACLS -U $DATABASEADMIN
-
+	$PORT = "-p $PORT"
 fi;
+
+if [ "fnord$HOSTNAME" != "fnord" ]; then
+	$HOSTNAME = "-h $HOSTNAME"
+fi;
+
+psql $HOSTNAME $PORT -d $DATABASENAME -f $DATABASEACLS -U $DATABASEADMIN
+
