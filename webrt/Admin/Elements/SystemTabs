@@ -7,6 +7,10 @@
 			   path => 'Admin/Global/Scrips.html',
 			 },
 
+	       Templates => { title => 'Templates',
+			path => 'Admin/Global/Templates.html',
+		      },
+		 
 	       ACL => { title => 'ACL',
 			path => 'Admin/Global/ACL.html',
 		      }

@@ -11,18 +11,21 @@
 %while  (my $Template = $OtherTemplates->Next) {
 <OPTION VALUE=<%$Template->Id%>
 <% ($Template->Id == $Default)  && 'SELECTED'%>
-><%$Template->QueueObj->QueueId%>:<%$Template->Alias%>
+>Global template: <%$Template->Alias%>
 </OPTION>
 %}
 </SELECT>
 
 <%INIT>
-my $PrimaryTemplates = RT::Templates->new($session{'CurrentUser'});
-$PrimaryTemplates->LimitToQueue($DefaultQueue);
 
+
+my $PrimaryTemplates = RT::Templates->new($session{'CurrentUser'});
+if ($DefaultQueue != 0) {
+$PrimaryTemplates->LimitToQueue($DefaultQueue);
+}
 
 my $OtherTemplates = RT::Templates->new($session{'CurrentUser'});
-$OtherTemplates->LimitToNotInQueue($DefaultQueue);
+$OtherTemplates->LimitToSystem($DefaultQueue);
 
 </%INIT>
 <%ARGS>

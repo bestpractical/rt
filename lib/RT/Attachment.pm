@@ -51,6 +51,15 @@ sub _Accessible  {
 }
 # }}}
 
+
+# {{{ sub TransactionObj 
+
+=head2 TransactionObj
+
+Returns the transaction object asscoiated with this attachment.
+
+=cut
+
 sub TransactionObj {
     require RT::Transaction;
     my $self=shift;
@@ -61,8 +70,20 @@ sub TransactionObj {
     return $self->{_TransactionObj};
 }
 
+# }}}
+
 #take simple args and call RT::Record to do the real work.
 # {{{ sub Create 
+
+=head2 Create
+
+Create a new attachment. Takes a paramhash:
+    
+    'Attachment' Should be a single MIME body with optional subparts
+    'Parent' is an optional Parent RT::Attachment object
+    'TransactionId' is the mandatory id of the Transaction this attachment is associated with.;
+
+=cut
 
 sub Create  {
   my $self = shift;
@@ -227,9 +248,50 @@ sub NiceHeaders {
 }
 # }}}
 
+
+# {{{ sub _Value 
+
+=head2 _Value
+
+Takes the name of a table column.
+Returns its value as a string, if the user passes an ACL check
+
+=cut
+
+sub _Value  {
+
+    my $self = shift;
+    my $field = shift;
+    
+    
+    #if the field is public, return it.
+    if ($self->_Accessible($field, 'public')) {
+	$RT::Logger->debug("Skipping ACL check for $field\n");
+	return($self->SUPER::_Value($field));
+	
+    }
+    
+    #If it's a comment, we need to be extra special careful
+    if ($self->TransactionObj->Type eq 'Comment') {
+	unless 
+	  ($self->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
+	      return (0, "Permission Denied");
+	  }
+    }	
+    #if they ain't got rights to see, don't let em
+    else {
+	unless ($self->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicket')) {
+	    return (0, "Permission Denied");
+	}
+    }	
+    
+    
+    return($self->SUPER::_Value($field));
+    
+}
+
 # }}}
 
-# {{{ ACCESS CONTROL
-
 # }}}
+
 1;

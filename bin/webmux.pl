@@ -27,6 +27,7 @@ use config;
 use Carp;
 use DBIx::SearchBuilder::Handle;
 
+
 {  
     package HTML::Mason::Commands;
     use vars qw(%session);

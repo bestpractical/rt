@@ -1,0 +1,24 @@
+<& /Admin/Elements/Header, Title => 'Edit system templates' &>
+<& /Admin/Elements/SystemTabs &>
+
+<& /Elements/TitleBoxStart, title => 'Edit system templates' &>
+<UL>
+<LI><A href="Template.html?Create=1">Create a new template (needs code)</A><BR><BR>
+
+
+%while  (my $TemplateObj = $Templates->Next) { 
+
+<LI><A HREF="Template.html?id=<%$id%>&template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Alias%>: <%$TemplateObj->Title%></a><BR>
+
+%}
+
+<& /Elements/TitleBoxEnd &>
+<%INIT>
+
+my $Templates = RT::Templates->new($session{'CurrentUser'});
+$Templates->LimitToSystem();
+
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

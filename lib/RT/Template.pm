@@ -53,9 +53,10 @@ sub _Accessible  {
 
 sub _Set {
   my $self = shift;
-  if ($self->Queue == 0 ) {
-      unless $self->CurrentUser->HasSystemRight('ModifyTemplates') {
-	  return (undef);
+  # use super::value or we get acl blocked
+  if ($self->SUPER::_Value('Queue') == 0 ) {
+      unless ($self->CurrentUser->HasSystemRight('ModifyTemplates')) {
+	    return (undef);
       }	
   }
   else {
@@ -85,8 +86,9 @@ sub _Value  {
   my $field = shift;
 
   #If the current user doesn't have ACLs, don't let em at it.  
-  if ($self->Queue == 0 ) {
-      unless $self->CurrentUser->HasSystemRight('ShowTemplates') {
+  #use super::value or we get acl blocked
+  if ($self->SUPER::_Value('Queue') == 0 ) {
+      unless ($self->CurrentUser->HasSystemRight('ShowTemplates')) {
 	  return (undef);
       }	
   }

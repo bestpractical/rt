@@ -58,9 +58,7 @@ sub Create  {
     unless ( $args{'Ticket'} ) {
 	return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
     }
-    
-    
-    
+        
     #lets create our transaction
     my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
 	                          TimeTaken => $args{'TimeTaken'},
@@ -210,13 +208,29 @@ a ContentType that Attachments should be restricted to.
 
 
 sub Attachments  {
-  my $self = shift;
-  if (@_) {
-    my $Types = shift;
-  }
-  
-  #TODO cache this
-  use RT::Attachments;
+    my $self = shift;
+    if (@_) {
+	my $Types = shift;
+    }
+    
+    #TODO cache this
+    use RT::Attachments;
+    
+    #If it's a comment, return an empty object if they don't have the right to see it
+    if ($self->Type eq 'Comment') {
+	unless ($self->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
+	    return ($Attachments);
+	    
+	}
+    }	
+    #if they ain't got rights to see, return an empty object
+    else {
+	unless ($self->TicketObj->CurrentUserHasRight('ShowTicket')) {
+	    return ($Attachments);
+	}
+    }
+
+
   my $Attachments = new RT::Attachments($self->CurrentUser);
   $Attachments->Limit(FIELD => 'TransactionId',
 		      VALUE => $self->Id);
@@ -435,6 +449,78 @@ sub IsInbound {
 }
 
 # }}}
+
+# }}}
+
+
+# {{{ sub _Set
+
+sub _Set {
+    my $self = shift;
+    
+    unless ($self->TicketObj->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+    }
+    
+    my %args = (Field => undef,
+		Value => undef,
+		@_
+	       );
+    my ($ret, $msg)=$self->SUPER::_Set(Field => $args{'Field'}, 
+				       Value=> $args{'Value'});
+    
+    
+    if ($ret==0) {
+	return (0,$msg);
+    }
+    
+
+    else {
+	return ($ret, $msg);
+    }
+}
+
+# }}}
+
+# {{{ sub _Value 
+
+=head2 _Value
+
+Takes the name of a table column.
+Returns its value as a string, if the user passes an ACL check
+
+=cut
+
+sub _Value  {
+
+    my $self = shift;
+    my $field = shift;
+    
+    
+    #if the field is public, return it.
+    if ($self->_Accessible($field, 'public')) {
+	$RT::Logger->debug("Skipping ACL check for $field\n");
+	return($self->SUPER::_Value($field));
+	
+    }
+    
+    #If it's a comment, we need to be extra special careful
+    if ($self->Type eq 'Comment') {
+	unless ($self->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
+	    return (0, "Permission Denied");
+	}
+    }	
+    #if they ain't got rights to see, don't let em
+    else {
+	unless ($self->TicketObj->CurrentUserHasRight('ShowTicket')) {
+	    return (0, "Permission Denied");
+	}
+    }	
+    
+    
+    return($self->SUPER::_Value($field));
+    
+}
 
 # }}}
 
