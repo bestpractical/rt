@@ -8,12 +8,12 @@ my %cookies = fetch CGI::Cookie;
 	unless ($session{'CurrentUser'}->Load($user)) {
                 $session{'CurrentUser'} = undef;
 		&mc_comp("/Elements/Error", Why => "User Unknown");
-		$m->abort;
+		$m->comp('/Login.html', %ARGS);
 	};
         unless ($session{'CurrentUser'}->IsPassword($pass)) {
 		$session{'CurrentUser'} = undef;
                 &mc_comp("/Elements/Error", Why => "Wrong Password");
-                $m->abort;
+		$m->comp('/Login.html', %ARGS);
         }
         $m->call_next;
 }
@@ -21,7 +21,7 @@ elsif (defined $session{'CurrentUser'}){
 	$m->call_next;
 }
 else {
-$m->comp('/Login.html')
+$m->comp('/Login.html', %ARGS);
  }
 </%INIT>
 

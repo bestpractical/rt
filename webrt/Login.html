@@ -12,10 +12,22 @@ contentbg=>"#cccccc" &>
 <DIV ALIGN=RIGHT>
 <input type=submit Value="Login">
 </DIV>
+% # The code below iterates through everything in the passed in arguments
 % # Preserving all the old parameters
-% my @z=$r->args; while (1) { my ($k, $v)=(shift @z, shift @z); last unless $k;
-<input type="hidden" name="<% $k %>" value="<% $v %>">
-% }
+% # This would be easier, except mason is 'smart' and calls multiple values
+% # arrays rather than multiple hash keys
+% my $key; my $val;
+% foreach $key (keys %ARGS) {
+% 	if (ref($ARGS{$key}) =~ /ARRAY/) {
+% 		foreach $val (@{$ARGS{$key}}) {
+<input type=hidden name="<%$key %>" value="<% $val %>">
+% 		}
+% 	}
+%	else {
+<input type="hidden" name="<% $key %>" value="<% $ARGS{$key} %>">
+% 	}
+%}
+
 </FORM>
 </DIV>
 <&/Elements/TitleBoxEnd&>
