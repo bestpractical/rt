@@ -73,6 +73,10 @@
 =begin testing
 
 ok (require RT::Tickets);
+ok( my $testtickets = RT::Tickets->new( $RT::SystemUser ) );
+ok( $testtickets->LimitStatus( VALUE => 'deleted' ) );
+# Should be zero until 'allow_deleted_search'
+ok( $testtickets->Count == 0 );
 
 =end testing
 
@@ -1038,6 +1042,11 @@ Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of = or !=.
 VALUE is a status.
 
+RT adds Status != 'deleted' until object has
+allow_deleted_search internal property set.
+$tickets->{'allow_deleted_search'} = 1;
+$tickets->LimitStatus( VALUE => 'deleted' );
+
 =cut
 
 sub LimitStatus {
@@ -1896,7 +1905,8 @@ sub Next {
 	    #TODO we should be doing this in the where clause.
 	    #but you can't do multiple clauses on the same field just yet :/
 
-	    if ($Ticket->__Value('Status') eq 'deleted') {
+	    if ( $Ticket->__Value('Status') eq 'deleted' &&
+			!$self->{'allow_deleted_search'} ) {
 		return($self->Next());
 	    }
             # Since Ticket could be granted with more rights instead
@@ -2221,5 +2231,24 @@ sub PrepForSerialization {
     $self->RedoSearch();
 }
 
+
+=head1 FLAGS
+
+RT::Tickets supports several flags which alter search behavior:
+
+
+allow_deleted_search  (Otherwise never show deleted tickets in search results)
+looking_at_type (otherwise limit to type=ticket)
+
+These flags are set by calling 
+
+$tickets->{'flagname'} = 1;
+
+BUG: There should be an API for this
+
+=cut
+
 1;
+
+
 

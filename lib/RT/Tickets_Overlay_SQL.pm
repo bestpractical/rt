@@ -509,8 +509,12 @@ sub FromSQL {
     $self->SUPER::Limit( FIELD => 'Type', OPERATOR => '=', VALUE => 'ticket');
   }
 
-  # We never ever want to show deleted tickets
-  $self->SUPER::Limit(FIELD => 'Status' , OPERATOR => '!=', VALUE => 'deleted');
+  # We don't want deleted tickets unless 'allow_deleted_search' is set
+  unless( $self->{'allow_deleted_search'} ) {
+    $self->SUPER::Limit(FIELD => 'Status',
+                        OPERATOR => '!=',
+                        VALUE => 'deleted');
+  }
 
 
   # set SB's dirty flag
