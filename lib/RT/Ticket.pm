@@ -2240,8 +2240,14 @@ sub Transactions {
 	$transactions->Limit( ALIAS => $tickets,
 			      FIELD => 'EffectiveId',
 			      VALUE => $self->id());
-	
-    }	
+        # if the user may not see comments do not return them
+        unless ($self->CurrentUserHasRight('ShowTicketComments')) {
+            $transactions->Limit( FIELD => 'Type',
+                                  OPERATOR => '!=',
+                                  VALUE => "Comment");
+        }
+    }
+    
     return($transactions);
 }
 
