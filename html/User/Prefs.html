@@ -165,7 +165,7 @@
 %if ($UserObj->Privileged) {
 <BR>
 <& /Elements/TitleBoxStart, title => loc('Signature') &>
-<TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD>
+<TEXTAREA COLS=80 ROWS=5 name="Signature" class="signature" WRAP=HARD>
 <%$UserObj->Signature%></TEXTAREA>
 <& /Elements/TitleBoxEnd &>
 % }

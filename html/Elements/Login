@@ -67,7 +67,7 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 contentbg=>"#cccccc" &>
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-<FORM METHOD=POST ACTION="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>" >
+<FORM id="login" name="login" METHOD=POST ACTION="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>" >
 <TABLE BORDER=0 WIDTH=100%>
 <TR ALIGN=RIGHT>
 <TD ALIGN=RIGHT><&|/l&>Username</&>:</TD><TD ALIGN=LEFT><input name=user value="<%$user%>"></TD></TR>

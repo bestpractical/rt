@@ -75,9 +75,8 @@ ONLOAD="
 "
 % }
 >
-<div class="logo"><a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="" width="230" height="50"></a></div>
+<div class="logo"><a href="http://bestpractical.com"><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="<%loc("Best Practical Solutions, LLC corporate logo")%>" width="230" height="50"></a></div>
 <div class="login-information">
-% if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id && $LoggedIn) {
 <SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A></SPAN>
 %if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System )) {
 <A  HREF="<%$RT::WebPath%><% $Prefs %>" ><&|/l&>Preferences</&></A>

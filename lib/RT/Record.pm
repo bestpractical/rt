@@ -474,12 +474,33 @@ sub _Set {
         $args{'Value'} = 0;
     }
 
-    $self->_SetLastUpdated();
-    my ( $val, $msg ) = $self->SUPER::_Set(
+    my $old_val = $self->__Value($args{'Field'});
+     $self->_SetLastUpdated();
+    my $ret = $self->SUPER::_Set(
         Field => $args{'Field'},
         Value => $args{'Value'},
         IsSQL => $args{'IsSQL'}
     );
+        my ($status, $msg) =  $ret->as_array();
+
+        # @values has two values, a status code and a message.
+
+    # $ret is a Class::ReturnValue object. as such, in a boolean context, it's a bool
+    # we want to change the standard "success" message
+    if ($status) {
+        $msg =
+          $self->loc(
+            "[_1] changed from [_2] to [_3]",
+            $args{'Field'},
+            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
+            '"' . $self->__Value( $args{'Field'}) . '"' 
+          );
+      } else {
+
+          $msg = $self->CurrentUser->loc_fuzzy($msg);
+    }
+    return wantarray ? ($status, $msg) : $ret;     
+
 }
 
 # }}}
@@ -871,12 +892,12 @@ sub Update {
         next if ( $value eq $self->$attribute() );
         my $method = "Set$attribute";
         my ( $code, $msg ) = $self->$method($value);
-
         my ($prefix) = ref($self) =~ /RT::(\w+)/;
-        push @results,
-          $self->loc( "$prefix [_1]", $self->id ) . ': '
-          . $self->loc($attribute) . ': '
-          . $self->CurrentUser->loc_fuzzy($msg);
+
+        # Default to $id, but use name if we can get it.
+        my $label = $self->id;
+        $label = $self->Name if (UNIVERSAL::can($self,'Name'));
+        push @results, $self->loc( "$prefix [_1]", $label ) . ': '. $msg;
 
 =for loc
                                    "[_1] could not be set to [_2].",       # loc
@@ -1014,10 +1035,12 @@ ok (!$t2->HasUnresolvedDependencies, "Ticket ".$t2->Id." has no unresolved deps"
 
 my ($rid, $rmsg)= $t1->Resolve();
 ok(!$rid, $rmsg);
-ok($t2->Resolve);
+my ($rid2, $rmsg2) = $t2->Resolve();
+ok ($rid2, $rmsg2);
 ($rid, $rmsg)= $t1->Resolve();
 ok(!$rid, $rmsg);
-ok($t3->Resolve);
+my ($rid3,$rmsg3) = $t3->Resolve;
+ok ($rid3,$rmsg3);
 ($rid, $rmsg)= $t1->Resolve();
 ok($rid, $rmsg);
 

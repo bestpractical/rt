@@ -5,7 +5,7 @@
 %# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
-%# (Except where explicitly superseded by other copyright notices)
+%# (Except where explicitly superseded by other copyright notices),
 %# 
 %# 
 %# LICENSE:
@@ -31,7 +31,7 @@
 %# to you to modify and distribute this software under the terms of
 %# the GNU General Public License and is only of importance to you if
 %# you choose to contribute your changes and enhancements to the
-%# community by submitting them to Best Practical Solutions, LLC.)
+%# community by submitting them to Best Practical Solutions, LLC.),
 %# 
 %# By intentionally submitting any modifications, corrections or
 %# derivatives to this work, or any other work intended for use with
@@ -47,19 +47,53 @@
 <& /Admin/Elements/Tabs, Title => loc('RT Administration') &>
 
 <ul>
-<li><font size="+2"><a href="Users/"><&|/l&>Users</&></a></font><br>
-<&|/l&>Manage users and passwords</&>
+%    foreach my $key (sort keys %$tabs) {
+<li><font size="+2"><a href="<%$RT::WebPath%>/<%$tabs->{$key}->{'path'}|n %>"><%$tabs->{$key} ->{'title'}%></a></font><br>
+<%$tabs->{$key}->{description}%>
 </li>
-<li><font size="+2"><a href="Groups/"><&|/l&>Groups</&></a></font><br>
-<&|/l&>Manage groups and group membership</&>
-</li>
-<li><font size="+2"><a href="Queues/"><&|/l&>Queues</&></a></font><br>
-<&|/l&>Manage queues and queue-specific properties</&>
-</li>
-<li><font size="+2"><a href="CustomFields/"><&|/l&>Custom Fields</&></a></font><br>
-<&|/l&>Manage custom fields and custom field values</&>
-</li>
-<li><font size="+2"><a href="Global/"><&|/l&>Global</&></a></font><br>
-<&|/l&>Manage properties and configuration which apply to all queues</&>
-</li>
+%}
 </ul>
+<%init>
+
+
+
+my $tabs = {
+    A => {
+        title       => loc('Users'),
+        path        => 'Admin/Users/index.html',
+        description => loc('Manage users and passwords'),
+    },
+    B => {
+        title => loc('Groups'),
+        path  => 'Admin/Groups/index.html',
+        description => loc('Manage groups and group membership'),
+    },
+    C => {
+        title       => loc('Queues'),
+        path        => 'Admin/Queues/index.html',
+        description => loc('Manage queues and queue-specific properties'),
+    },
+    D => {
+        'title'     => loc('Custom Fields'),
+        description => loc('Manage custom fields and custom field values'),
+          path      => 'Admin/CustomFields/index.html',
+    },
+    E => {
+        'title'     => loc('Global'),
+        path        => 'Admin/Global/index.html',
+        description =>
+          loc('Manage properties and configuration which apply to all queues'),
+    },
+    F => {
+        'title'     => loc('Tools'),
+        path        => 'Admin/Tools/index.html',
+        description => loc('Use other RT administrative tools')
+    },
+};
+
+  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+
+
+
+
+</%init>

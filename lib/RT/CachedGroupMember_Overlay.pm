@@ -242,11 +242,14 @@ mysql supported foreign keys with cascading SetDisableds.
 sub SetDisabled {
     my $self = shift;
     my $val = shift;
-    
+ 
+    # if it's already disabled, we're good.
+    return {1} if ($self->__Value('Disabled') == $val);
     my $err = $self->SUPER::SetDisabled($val);
-    unless ($err) {
-        $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $self->Id );
-        return (undef);
+    my ($retval, $msg) = $err->as_array();
+    unless ($retval) {
+        $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $self->Id .": $msg");
+        return ($err);
     }
     
     my $member = $self->MemberObj();
@@ -260,7 +263,7 @@ sub SetDisabled {
             my $kid_err = $kid->SetDisabled($val );
             unless ($kid_err) {
                 $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $kid->Id );
-                return (undef);
+                return ($kid_err);
             }
         }
     }

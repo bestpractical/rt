@@ -3448,7 +3448,7 @@ sub _Set {
                                                OldValue  => $Old,
                                                TimeTaken => $args{'TimeTaken'},
         );
-        return ( $Trans, scalar $TransObj->Description );
+        return ( $Trans, scalar $TransObj->BriefDescription );
     }
     else {
         return ( $ret, $msg );

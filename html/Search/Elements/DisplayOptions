@@ -54,12 +54,12 @@
 <tr>
 <td class=label>
 <&|/l&>Order by</&>:
-</td><td class=label>
+</td><td class=value>
 <select name="OrderBy">
 % foreach my $field (keys %fields) {
 %    next unless $field;
 <option value=<%$field%>
-% if ($field eq $OrderBy) {
+% if ($field =~ /$OrderBy/i) {
 SELECTED
 % }
 ><%$field%></option>
@@ -81,7 +81,7 @@ SELECTED
 </tr>
 <td class=label>
 <&|/l&>Rows per page</&>:
-</td><td>
+</td><td class="value">
 <& /Elements/SelectResultsPerPage, 
     Name => "RowsPerPage", 
     Default => $RowsPerPage &>
@@ -97,6 +97,8 @@ SELECTED
 my $tickets = new RT::Tickets($session{'CurrentUser'});
 my %fields = %{$tickets->FIELDS};
 map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
+delete $fields{'EffectiveId'};
+
 
 </%INIT>
 
