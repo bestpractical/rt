@@ -655,6 +655,15 @@ sub _SetupMIMEParser {
     # do _not_ store each msg as in-core scalar;
 
     $parser->output_to_core(0);
+
+    # From the MIME::Parser docs:
+    # "Normally, tmpfiles are created when needed during parsing, and destroyed automatically when they go out of scope"
+    # Turns out that the default is to recycle tempfiles
+    # Temp files should never be recycled, especially when running under perl taint checking
+    
+    $parser->tmp_recycling(0);
+    
+
 }
 
 # }}}
