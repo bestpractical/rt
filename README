@@ -73,7 +73,7 @@ o Libwww-perl / LWP::UserAgent and HTTP::Request
 	links from external web-based databases.
 
 o DBIx::Record and DBIx::EasySearch
-        ( ftp://ftp.fsck.com/pub/DBIx ) -- free
+        ( ftp://ftp.fsck.com/pub/rt/devel ) -- free
 
 	These will be used for RT's new Object interface...
 
@@ -162,7 +162,7 @@ machine.
  
 Add the following line to /etc/aliases (or your local equivalent) :
 
-        rt:     |"/path/to/lrt/bin/rt-mailgate general correspond"
+        rt:     |"/path/to/rt/bin/rt-mailgate general correspond"
                                                     |          |
                                    <<queue-name>----/          |
                                                                |
@@ -190,31 +190,18 @@ httpd.  Additionally, you'll need a web browser that supports unless you've
 enabled "external" authentication above.
 
 Apache 
-	To get Apache working, you'll want to add two lines to your httpd.conf:
+        RT Uses HTML::Mason  You'll need to add a few lines to your
+        httpd.conf telling it to use rt's web ui:
 
-	Alias /webrt/ "/path/to/rt/lib/images/"
-	ScriptAlias /rt/ "/path/to/rt/bin/cgi/"
-
-        o     you'll find rt-admin at http://host/rt/admin-webrt.cgi
-        o     you'll find rt at http://host/rt/webrt.cgi and
-        o                       http://host/rt/webrt.cgi/frames
-
-	If you'd rather use Apache's mod_auth_mysql, check out 
-	"contrib/mod_auth_mysql.README"
-
-CERN:
-	It just works. 
-	
-	You'' want to tell your server that /webrt/ is an alias for 
-	"/path/to/rt/lib/images/" and that
-	/rt is a Script Alias for "/path/to/rt/bin/cgi/"
-
-        o     you'll find rt-admin at http://host/rt/nph-admin-webrt.cgi
-        o     you'll find rt at http://host/rt/nph-webrt.cgi and
-        o                       http://host/rt/nph-webrt.cgi/frames
-
-Netscape:
-	You're on your own for configuring it, but it should work just fine.
+        <VirtualHost 216.34.107.130>
+        DocumentRoot /opt/apache/hosted/mason.fsck.com/html
+        ServerName mason.fsck.com
+        PerlRequire /path/to/rt/bin/mason-handler.pl
+        <Location />
+        SetHandler perl-script
+        PerlHandler HTML::Mason
+        </Location>
+        </VirtualHost>
 
 
 THE CLI
