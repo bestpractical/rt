@@ -94,6 +94,7 @@ sub Create  {
   #Load a scrips object
   use RT::Scrips;
   use RT::ScripScope;
+  use RT::ScripScopes;
   my $ScripScope = RT::ScripScopes->new($self->CurrentUser);
 #  my $Scrips = RT::Scrips->new($self->CurrentUser);
   $ScripScope->LimitToQueue($TicketAsSystem->Queue->Id); #Limit it to queue 0 or $Ticket->QueueId
