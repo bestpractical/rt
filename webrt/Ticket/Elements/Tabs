@@ -57,7 +57,7 @@ if ($Ticket->CurrentUserHasRight('OwnTicket')) {
 	   title => 'Take'
 	  };
     }
-    elsif ( $Ticket->OwnerObj->id!=$session{CurrentUser}->id) {
+    elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id) {
 	$actions->{'Steal'} = 	
 	  { 
 	   path => "Ticket/Display.html?Action=Steal&id=".$id,
@@ -70,7 +70,8 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     if ($Ticket->Status ne 'resolved') {
 	$actions->{'Resolve'} = 
 	  { 
-	   path => "Ticket/Display.html?Status=resolved&id=". $id,
+
+           path => "Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=".$id,
 	   title => 'Resolve'
 	  };
     }	

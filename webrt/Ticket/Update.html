@@ -1,29 +1,44 @@
 
-<& /Elements/Header, Title=>"Update Ticket ".$Ticket->Id.": ".$Ticket->Subject  &>
+<& /Elements/Header, Title=> $title  &>
 <& /Ticket/Elements/Tabs, Ticket => $Ticket &>
-<& /Elements/TitleBoxStart, title => 'Update ticket '.$Ticket->Id &>
+<& /Elements/TitleBoxStart, title => $title &>
 
 <FORM ACTION="Display.html" METHOD=POST>
 
+<& /Elements/TitleBoxStart, title => 'Interested Parties' &>
 <TABLE>
-<TR>
-<TD VALIGN=TOP ALIGN=RIGHT>Interested Parties
-</TD>
-<TD>
-<ul>
-<li>	Requestor: <% $Ticket->RequestorsAsString %> 
-<li>	Cc: <% $Ticket->CcAsString %>
-<li>    QueueCc: <% $Ticket->QueueObj->CcAsString %>
-<br>
-<li>	AdminCc: <% $Ticket->AdminCcAsString %> 
-<li>    QueueAdminCc: <% $Ticket->QueueObj->AdminCcAsString %>
-</ul>
+<TR><TD>Ticket</TD><TD align=right>
+Requestor:
+</TD><TD>
+<% $Ticket->RequestorsAsString %> 
+</TD></TR>
+<TR><TD>&nbsp;</TD><TD align=right>
+Cc:
+</TD><TD>
+<% $Ticket->CcAsString %>
+</TD></TR>
+<TR><TD>&nbsp;</TD><TD align=right>
+AdminCc:
+</TD><TD>
+<% $Ticket->AdminCcAsString %> 
+</TD></TR>
+<TR><TD>Queue</TD><TD align=right>
+Cc:
+</TD><TD>
+<% $Ticket->QueueObj->CcAsString %>
+</TD></TR>
+<TR><TD>&nbsp;</TD><TD align=right>
+AdminCc: 
+</TD><TD>
+<% $Ticket->QueueObj->AdminCcAsString %>
 </TD>
 </TR>
 </TABLE>
 
+<& /Elements/TitleBoxEnd &>
+
 Status:
-<& /Elements/SelectStatus, Name=>"SetStatus", Default => $Ticket->Status() &> 
+<& /Elements/SelectStatus, Name=>"SetStatus", Default => $DefaultStatus &> 
 
 Owner:  
 <& /Elements/SelectOwner, Name=>"SetOwner", Default => $Ticket->OwnerObj->Id(), Queue => $Ticket->QueueObj &>
@@ -53,18 +68,30 @@ Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>">
 
 <%INIT>
 
-## Things needed in the template - we'll do the processing here, just
-## for the convinience:
+my ($title);
+my $Ticket = LoadTicket($id);
+
+if ($DefaultStatus eq 'resolved') {
+	$title = "Resolve ticket #" . $Ticket->id;
+}
+else {
+	$title = "Update ticket #" . $Ticket->id;
+}
+# Things needed in the template - we'll do the processing here, just
+# for the convinience:
 
 my $CommentDefault=$Action eq "Comment" ? "SELECTED" : "";
 my $ResponseDefault=$Action eq "Respond" ? "SELECTED" : "";
 
-use RT::Ticket;
-my $Ticket=RT::Ticket->new($session{'CurrentUser'});
-$Ticket->Load($id) || Abort ("Couldn't load ticket.");
+
+$DefaultStatus = $Ticket->Status() unless ($DefaultStatus);
+
+
+
 </%INIT>
 
 <%ARGS>
 $id => undef
 $Action => undef
+$DefaultStatus => undef
 </%ARGS>
