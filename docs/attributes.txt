@@ -1,101 +1,119 @@
-A Request has a number of attributes: 
 
-Serial Number, Queue, Area, Requestors, Owner, Subject, Final Priority,
-Current Priority, Status, Created, Last User Contact, Last Contact, DueDate,
-and Age.
-
-        - What is the Serial Number?
-
-The Serial Number is a unique number within a given instance of RT used to 
-refer to that Request.  They are not recycled.
-
-        - What is a Queue?
-
-A Queue is a grouping of Requests designated for a particular group of people
-to access a/o address.  Queues can have distinct access mechanisms,
-permissions, responsible persons, and names.  
-
-        EX:  Sam E's Circus sets up &RT& to track issues.  Issues regarding
-        setup and takedown go to the "roustabouts" area, while issues 
-        regarding food and drink sales go to the "concessions" area.
-
-        - What is an Area?
-
-An Area is used for further grouping Requests in a single Queue.  The same
-people will be responsible for the Requests, but will categorize them for the
-sake of convenience.  Areas can also have distinct access mechanisms (e.g. different mail aliases).  Areas do not have ACLs seperate from those of the queue
-they are a part of.
-
-        EX:  The "concessions" area will have several areas, including "cotton 
-        candy," "popcorn," and "watered-down-soda."  The same vendors will
-        be reading and addressing issues in all three of these areas, but will
-        be able to sort the incoming Requests on them.
-
-	- What is a Requestor?
-
-A Requestor is the person who opens a Request by sending in the first
-Transaction on the subject.  &RT& has configurable options for keeping this
-person automatically informed as to the progress of their request.
-
-        - What is an Owner?
-
-The Owner of a Request is the person who is taking responsibility for the
-issue or question raised therein.  They will very likely be the primary person to make updates to the Request and change its state as it matures.
-
-        - What is the Subject?
-
-Much like the "Subject:" line in email, the Subject of a Request is a quick
-summary of the question or issue raised in the first Transaction of the
-Request.  This may change as the Request matures.
-
-        - What is the Due Date?
-
-Setting a Due Date for a Request indicates the date by which point the owner of the Request expects (or wants, at any rate) the Request to be resolved.
-
-        - What is the Priority?
-
-A Request may optionally have a Priority set for it, which indicates its
-urgency.  Higher numbers indicate higher Priority.  A Request may have no
-set priority, may simply have its Priority set to a static number, or it may
-have its Final Priority set.  Final Priority requires a Due Date to operate
--- as the Request gets closer to its Due Date, its current priority gets
-higher. On (##JRV## day before?  day of? AH: NO. final priority isn't for real,
-yet. ) the final day, its priority becomes the preset Final Priority.
-
-  EX: James Earl Jones creates a Request in July which will come due on
-  December 20th, to remind himself to get Solstice presents for his friends.
-  He sets the Final Priority of the Request to 95, knowing that as he gets
-  close to the time when he'll actually need to go shopping, the priority will
-  rise and bring this Request to his attention again.
-
-		- What is a Request's Status?
-		
-A Request will always be in one of the following four states:
-
-    Open -- the Request is expecting imminent action a/o updates
- Stalled -- the Request needs a specific action or piece of
-            information before it can proceed
-Resolved -- the Request has either been answered or successfully
-            taken care of, and no longer needs action
-    Dead -- the request should not have been in the ticketing system to begin
-	    with and has been completely purged.
-
-		- What is the Creation Date?
-
-The date the first Transaction of the Request was logged.  (Duh.)
-
-		- What is the "Last User Contact"?
-
-&RT& can automatically inform the Requestor of any updates to the Request,
-or someone updating the Request can optionally tag an update to be sent to
-the Requestor.  Either way, &RT& keeps track of when the most recent contact
-with the Requestor *through*&RT&* was.
-
-		- What is the "Last Contact"?
-
-The last logged update to the Request.  (##JRV## this isn't quite correct, I know.  Clarification? AH: you're thinking of "Last modification" it's the last time the req was touched)
-
-		- What is the "Age" of a Request?
-
-The amount of time elapsed since the first Transaction for this Request. (AH:
-since the request was created..)
+  Attributes: a vocabulary
+  
+   A Request has a number of attributes:
+          Serial Number, Queue, Area, Requestors, Owner, Subject, Final
+          Priority, Current Priority, Status, Created, Last User Contact,
+          Last Contact, DueDate, and Age.
+          
+   What is the Serial Number?
+          
+          The Serial Number is a unique number within a given instance of
+          RT used to refer to that Request. They are not recycled.
+          
+   What is a Queue?
+          
+          A Queue is a grouping of Requests designated for a particular
+          group of people to access a/o address. Queues can have distinct
+          access mechanisms, permissions, responsible persons, and names.
+          
+     EX: Sam E's Circus sets up &RT& to track issues. Issues regarding
+     setup and takedown go to the "roustabouts" queue, while issues
+     regarding food and drink sales go to the "concessions" queue.
+     
+   What is an Area?
+          
+          An Area is used for further grouping Requests in a single
+          Queue. The same people will be responsible for the Requests,
+          but will categorize them for the sake of convenience. Areas can
+          also have distinct access mechanisms (e.g. different mail
+          aliases). Areas do not have ACLs seperate from those of the
+          queue they are a part of.
+          
+     EX: The "concessions" area will have several Areas, including
+     "cotton candy," "popcorn," and "watered-down-soda." The same
+     vendors will be reading and addressing issues in all three of these
+     areas, but will be able to sort the incoming Requests on them.
+     
+   What is a Requestor?
+          
+          A Requestor is the person who opens a Request by sending in the
+          first Transaction on the subject. &RT& has configurable options
+          for keeping this person automatically informed as to the
+          progress of their request.
+          
+   What is an Owner?
+          
+          The Owner of a Request is the person who is taking
+          responsibility for the issue or question raised therein. They
+          will very likely be the primary person to make updates to the
+          Request and change its state as it matures.
+          
+   What is the Subject?
+          
+          Much like the "Subject:" line in email, the Subject of a
+          Request is a quick summary of the question or issue raised in
+          the first Transaction of the Request. This may change as the
+          Request matures.
+          
+   What is the Due Date?
+          
+          Setting a Due Date for a Request indicates the date by which
+          point the owner of the Request expects (or wants, at any rate)
+          the Request to be resolved.
+          
+   What is the Priority?
+          
+          A Request may optionally have a Priority set for it, which
+          indicates its urgency. Higher numbers indicate higher Priority.
+          A Request may have no set priority, may simply have its
+          Priority set to a static number, or it may have its Final
+          Priority set. Final Priority requires a Due Date to operate -
+          as the Request gets closer to its Due Date, its current
+          priority gets higher. On (##JRV## day before? day of? AH: NO.
+          final priority isn't for real, yet. ##JRV## Oh? how d'you mean
+          "not real"? ) the final day, its priority becomes the preset
+          Final Priority.
+          
+     EX: James Earl Jones creates a Request in July which will come due
+     on December 20th, to remind himself to get Solstice presents for
+     his friends. He sets the Final Priority of the Request to 95,
+     knowing that as he gets close to the time when he'll actually need
+     to go shopping, the priority will rise and bring this Request to
+     his attention again.
+     
+   What is a Request's Status?
+          
+          A Request will always be in one of the following four states:
+          
+     Open -- the Request is expecting imminent action a/o updates
+     Stalled -- the Request needs a specific action or piece of
+     information before it can proceed
+     Resolved -- the Request has either been answered or successfully
+     taken care of, and no longer needs action
+     Dead -- the request should not have been in the ticketing system to
+     begin with and has been completely purged.
+     
+   What is the Creation Date?
+          
+          The date the first Transaction of the Request was logged.
+          (Duh.)
+          
+   What is the "Last User Contact"?
+          
+          &RT& can automatically inform the Requestor of any updates to
+          the Request, or someone updating the Request can optionally tag
+          an update to be sent to the Requestor. Either way, &RT& keeps
+          track of when the most recent contact with the Requestor
+          through &RT& was.
+          
+   What is the "Last Contact"?
+          
+          The last logged update to the Request. (##JRV## this isn't
+          quite correct, I know. Clarification? AH: you're thinking of
+          "Last modification" it's the last time the req was touched)
+          
+   What is the "Age" of a Request?
+          
+          The amount of time elapsed since the first Transaction for this
+          Request. (AH: since the request was created..)

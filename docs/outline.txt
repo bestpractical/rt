@@ -1,63 +1,64 @@
-What is RT for?
 
-        &RT& is an automated system for monitoring, answering, and documenting
-requests.  It was designed as a system to aid helpdesks, but could conceivably
-work just as well for development teams, construction groups, political
-insurgencies, or circus performers -- in short, any situation in which a
-particular group of people needs to request information or action from another
-group of people, while monitoring the status of these requests.
-
-Why did Jesse write it?
-
-Jesse began &RT& at the urgings of a coworker while working for the summer for
-Utopia, Inc, and continued work while attending Wesleyan University and
-working for Cohesive Network Systems' New England Division (at the time, the
-LeftBank Operation).  All three groups have benefitted from it, and hoped to
-share these benefits with the user community at large by keeping Jesse fed and
-amused while working.
-
-THE VOCABULARY
-
-What is a Transaction?
-
-A Transaction is the most fundamental unit of matter under &RT&.  It may
-consist of a single emailed communication or a single submission from the web
-interface or CLUI.  It is from one person, and may begin, continue, or mark
-the end of a Request.
-
-What is a Request?
-
-A Request is a collection of Transactions addressing a single topic through
-its lifetime. 
-
-
-
- 
-
-
-As a user, what are my configuration options?
-	- contact info, mostly
-
-As a queue administrator, what are they?
-
-  Notification options:
-	- Mail request owner on transaction
-    - Mail request queue members on transaction (anyone with View)
-    - Mail requestors on transaction
-    - Autoreply to requestors on creation
-    - Mail correspondence to queue members
-    - Mail comments to queue members
-    - Allow non-members to create requests
-    
-  User access levels
- 	- admin, manipulate, display, no access
- 	
-  Priority Levels
-  Mail alias
-  Area controls
-
--------
-
+   What is RT for?
+          
+          &RT& is an automated system for monitoring, answering, and
+          documenting requests. It was designed as a system to aid
+          helpdesks, but could conceivably work just as well for
+          development teams, construction groups, political insurgencies,
+          or circus performers -- in short, any situation in which a
+          particular group of people needs to request information or
+          action from another group of people, while monitoring the
+          status of these requests.
+          
+   Why did Jesse write it?
+          
+          Jesse began &RT& at the urgings of a coworker while working for
+          the summer for Utopia, Inc, and continued work while attending
+          Wesleyan University and working for Cohesive Network Systems'
+          New England Division (at the time, the LeftBank Operation). All
+          three groups have benefitted from it, and hoped to share these
+          benefits with the user community at large by keeping Jesse fed
+          and amused while working. THE VOCABULARY
+          
+   What is a Transaction?
+          
+          A Transaction is the most fundamental unit of matter under
+          &RT&. It may consist of a single emailed communication or a
+          single submission from the web interface or CLUI. It is from
+          one person, and may begin, continue, or mark the end of a
+          Request.
+          
+   What is a Request?
+          
+          A Request is a collection of Transactions addressing a single
+          topic through its lifetime.
+          
+   As a user, what are my personal configuration options?
+          
+          - contact info, mostly
+          
+   As a queue administrator, what are they?
+          
+          Notification options:
+          
+          + Mail request owner on transaction
+          + Mail request queue members on transaction (anyone with View)
+          + Mail requestors on transaction
+          + Autoreply to requestors on creation
+          + Mail correspondence to queue members
+          + Mail comments to queue members
+          + Allow non-members to create requests
+            
+          User access levels
+          
+          + admin, manipulate, display, no access
+            
+          Priority Levels Mail alias Area controls -------
+          
+  These docs aren't done yet, clearly.
+  
+          These are notes. Move along, citizens.
+          
 THE MOVING PARTS
 
 CLUI
@@ -65,29 +66,29 @@ CLUI
 RTQ:
 Welcome to Request Tracker 0.9.6
 
-       usage: rtq <queue> <options>
-       Where <options> are almost any combination of:
+       usage: rtq
+       Where  are almost any combination of:
            -r                list requests in reverse order
            -t                list most recently modified requests first
-    
-           -prio <op> <prio> list requests which have a <prio> satisfying <op>
+
+           -prio   list requests which have a  satisfying
                              op may be one of = < > <= >= <>
-           -owner    <user>  prints all requests owned by <user>
+           -owner      prints all requests owned by
            -unowned          prints only the un-taken requests
-           -user <user>      prints all requests made by <user>
+           -user       prints all requests made by
            -open             prints only the open requests
            -resolved         prints resolved requests
            -stalled          prints stalled requests
            -dead             prints killed requests
-           -orderby <crit>   Sorts requests by <crit>  (one of serial_num, 
-                             queue_id, requestors, owner, subject, priority, 
+           -orderby    Sorts requests by   (one of serial_num,
+                             queue_id, requestors, owner, subject, priority,
                              status, date_created, date_due
-           -format <format> allows you to specify the output of rtq.
-                             <format> is a string of the form %xn%xn%xn.  
-                             x is any of the commands associated below.  
-                             n is an integer which corresponds to the 
-                             number of spaces you'd like the output of x 
-                             to take up.  <format>'s default value is 
+           -format  allows you to specify the output of rtq.
+                              is a string of the form %xn%xn%xn.
+                             x is any of the commands associated below.
+                             n is an integer which corresponds to the
+                             number of spaces you'd like the output of x
+                             to take up.  's default value is
                              "%n%p%o%g%l%t%r%s". Valid values of x are:
                              n[6]      serial number
                              p[2]      priority
@@ -109,63 +110,36 @@ RT-ADMIN:
 Welcome to Request Tracker 0.9.6
 
 user
-      -create <user> create a RT account for <user>
-      -modify <user> modify user info for <user>
-      -delete <user> delete <user>'s RT account
-acl <user> <queue> set user <user>'s privileges for queue <queue>
-                   if <queue> is ommitted, list user <user>'s ACLs
+      -create  create a RT account for
+      -modify  modify user info for
+      -delete  delete 's RT account
+acl   set user 's privileges for queue
+                   if  is ommitted, list user 's ACLs
 
-queue -create <queue>              create a new queue called <queue>
-      -modify <queue>              modify <queue>'s settings
-      -delete <queue>              completely wipe out <queue>
-      -area add <area> <queue>     adds <area> to <queue>
-      -area delete <area> <queue>  remove <area> from <queue>
+queue -create               create a new queue called
+      -modify               modify 's settings
+      -delete               completely wipe out
+      -area add
 
-RT:
-Welcome to Request Tracker 0.9.6
-
-    
-    RT CLI Flags and their arguments
-    -----------------------------------------------
-    -create               Interactively create a new request
-    -resolve <num>        Change <num>'s status to resolved
-    -open <num>           Change <num>'s status to open
-    -stall <num>          Change <num>'s status to stalled
-    -show <num>           Display current status of <num>
-    -take <num>           Become owner of <num> (if unowned)
-    -steal <num>          Become owner of <num> (if owned by another)
-    -untake <num>         Make <num> ownerless (if owned by you) 
-    -give <num> <user>    Make <user> owner of <num>
-    -user <num> <user>    Change the requestor ID of <num> to <user>
-    -show <num>           Display transaction history and status of <num>
-    -due <num< <date>     Change <num>'s due date to <date> (MM/DD/YY)
-    -comment <num>        Add comments about <num> from STDIN
-    -respond <num>        Respond to <num>
-    -subject <num> <sub>  Change <num>'s subject to <sub>
-    -queue <num> <queue>  Change <num>'s queue to <queue>
-    -area <num> <area>    Change <num>'s area to <area>
-    -prio <num> <int>     Change <num>'s priority to <int>
-    -finalprio <num <int> Change <num>'s final priority to <int>
-    -notify <num>         Note that <num>'s requestor was notified
-    -merge <num1> <num2>  Merge <num1> into <num2>
-    -kill <num>           Permanently remove <num> from the database
-
-
-THE WEB INTERFACE:
-
-User:  Login , View Queue (and view options therein, and Refresh), Create Requests, View History, Logout
-
-Manipulator:  Comment, Reply, Take, Resolve
-
-
-VIA EMAIL:
-
-create a request
-
-Reply to a Request (goes to initiator, depending on queue settings)
-
-Comment on Request's (doesn't go to users)
-
-Action: (lib/rt/ui/mail) 
-
-(mail to any rt alias with %rt help)
+          adds
+          
+   to -area delete remove from RT: Welcome to Request Tracker 0.9.6 RT
+   CLI Flags and their arguments
+   ----------------------------------------------- -create Interactively
+   create a new request -resolve Change 's status to resolved -open
+   Change 's status to open -stall Change 's status to stalled -show
+   Display current status of -take Become owner of (if unowned) -steal
+   Become owner of (if owned by another) -untake Make ownerless (if owned
+   by you) -give Make owner of -user Change the requestor ID of to -show
+   Display transaction history and status of -due Change 's due date to
+   (MM/DD/YY) -comment Add comments about from STDIN -respond Respond to
+   -subject Change 's subject to -queue Change 's queue to -area Change
+   's area to -prio Change 's priority to -finalprio Change 's final
+   priority to -notify Note that 's requestor was notified -merge Merge
+   into -kill Permanently remove from the database THE WEB INTERFACE:
+   User: Login , View Queue (and view options therein, and Refresh),
+   Create Requests, View History, Logout Manipulator: Comment, Reply,
+   Take, Resolve VIA EMAIL: create a request Reply to a Request (goes to
+   initiator, depending on queue settings) Comment on Request's (doesn't
+   go to users) Action: (lib/rt/ui/mail) (mail to any rt alias with %rt
+   help)

@@ -1,95 +1,85 @@
-	-What can I do as an RT administrator?
 
-You can add, delete, or modify users, queues, areas, and access levels.
-
-  	-What can I change about a User?
-
-     If you are an &RT& Admin, you are allowed to directly change other
-     Users' setups.  If you are not, you're only allowed to change your own.
-
-     Usernames are unchangeable.  If you've got to change it, you'll need
-     to create a new user with the new name and give them the same
-     permissions as you.
-
-     You may change the email address associated with a User, their
-     password, phone number, office designation
-
-User Configuration
-
-   Username: adam
-   email: ______________________________
-   password: _______________(leave blank unless you want to change)
-   phone: ______________________________
-   office: ______________________________
-   misc: ______________________________
-   
-Access Control
-
-   RT Admin: [_]
-     _________________________________________________________________
-   
-   DnA-Devel: [Display...]
-   Update User Delete this User Return to Admin Menu
-   
-                  You are currently authenticated as adam.
-     Be careful not to leave yourself logged in from a public terminal
-                  Please report all bugs to Jesse Vincent
-
-
-        -What can I change about a Queue?
-
-    the Mail Alias for a Queue, which is used in putting return addresses on
-    mail sent out regarding a particular queue.  
-
-    the default Initial Priority for any Request started in the Queue.
-
-    the defaul Final Priority for such Requests.
-
-    Whether or not the Request Owner receives copies of every transactions
-    associated with that Request.
-
-        EX: Benny has taken charge of a large and thorny problem.  While she
-        is the official Owner, she has delegated some of the research
-        necessary to solve the problem to other people.  As they report
-        their findings into the Request, Benny would like to see them.  She
-        checks the box marked "Mail request owner on transaction."
-
-    Whether or not Queue Members receive copies of every transaction that
-    happens in the Queue.
-
-	EX: Kee, Brian, and Moira all have Manipulate access to the Queue
-	"general," and all of them want to be kept appraised of what's going
-	on with other Requests therein, even those owned by one of the other
-	two people.
-
-    Whether or not the Requestor will automatically receive any Transaction
-    having to do with their Request.
-
-    Whether or not &RT& will autoreply to someone who's just created a
-    Request, acknoledging their Request and letting them know the Request
-    Number. 
-
-    Whether or not Queue Correspondence (that is, Transactions specifically
-    sent to the Requestor as well as added to the Request) gets mailed to
-    every Queue Member.
-
-    Whether or not Queue Comments (that is, Transactions meant to be added
-    to a Request and not explicitly sent to the Requestor) get mailed to
-    every Queue Member.
-
-    Whether or not non-Queue Members are allowed to create Requests.
-    Remember, someone with Display access is not considered a Queue Member.
-
-      EX: Marc wants all of his users to be able to mail in Requests, but
-      doesn't want to give them all Manipulate access to the Queue.  By
-      checking the "Allow Non-Queue Members to create Requests" checkbox, he
-      allows them to create Requests, but leaves them all with only Display
-      privileges in the Queue, so that they can look at the Requests without
-      being able to screw them up.
-
-    Area Control -- If you have Administrative access to the Queue, you may
-    delete or create Areas within it.
-   
-    Access Control -- If you have Administrative access to the Queue, you
-    may change other users' access levels within that Queue.  (##JRV##
-    Nuances I'm missing here? AH: nope.)
+  Administrative Duties
+  
+   What can I do as an RT administrator?
+          
+          You can add, delete, or modify users, queues, areas, and access
+          levels.
+          
+   What can I change about a User?
+          
+          If you are an &RT& Admin, you are allowed to directly change
+          other Users' setups. If you are not, you're only allowed to
+          change your own.
+          
+          Usernames are unchangeable. If you've got to change it, you'll
+          need to create a new user with the new name and give them the
+          same permissions as you.
+          
+          You may change the email address associated with a User, their
+          password, phone number, office designation, and "misc" field
+          which can contain any information you'd like (full name,
+          astrological sign, food allergies, etc.).
+          
+          You may also give them "RT Admin" privileges, which will let
+          them do everything you can.
+          
+   What can I change about a Queue?
+          
+          the Mail Alias for a Queue, which is used in putting return
+          addresses on mail sent out regarding a particular queue.
+          
+          the default Initial Priority for any Request started in the
+          Queue.
+          
+          the defaul Final Priority for such Requests.
+          
+          Whether or not the Request Owner receives copies of every
+          transactions associated with that Request.
+          
+     EX: Benny has taken charge of a large and thorny problem. While she
+     is the official Owner, she has delegated some of the research
+     necessary to solve the problem to other people. As they report
+     their findings into the Request, Benny would like to see them. She
+     checks the box marked "Mail request owner on transaction."
+     
+          Whether or not Queue Members receive copies of every
+          transaction that happens in the Queue.
+          
+     EX: Kee, Brian, and Moira all have Manipulate access to the Queue
+     "general," and all of them want to be kept appraised of what's
+     going on with other Requests therein, even those owned by one of
+     the other two people.
+     
+          Whether or not the Requestor will automatically receive any
+          Transaction having to do with their Request.
+          
+          Whether or not &RT& will autoreply to someone who's just
+          created a Request, acknoledging their Request and letting them
+          know the Request Number.
+          
+          Whether or not Queue Correspondence (that is, Transactions
+          specifically sent to the Requestor as well as added to the
+          Request) gets mailed to every Queue Member.
+          
+          Whether or not Queue Comments (that is, Transactions meant to
+          be added to a Request and not explicitly sent to the Requestor)
+          get mailed to every Queue Member.
+          
+          Whether or not non-Queue Members are allowed to create
+          Requests. Remember, someone with Display access is not
+          considered a Queue Member.
+          
+     EX: Marc wants all of his users to be able to mail in Requests, but
+     doesn't want to give them all Manipulate access to the Queue. By
+     checking the "Allow Non-Queue Members to create Requests" checkbox,
+     he allows them to create Requests, but leaves them all with only
+     Display privileges in the Queue, so that they can look at the
+     Requests without being able to screw them up.
+     
+          Area Control -- If you have Administrative access to the Queue,
+          you may delete or create Areas within it.
+          
+          Access Control -- If you have Administrative access to the
+          Queue, you may change other users' access levels within that
+          Queue.

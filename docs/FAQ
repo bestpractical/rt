@@ -1,0 +1,30 @@
+
+  FAQ
+  
+   what should RT_MAIL_TAG be, and why?
+          
+          RT_MAIL_TAG should be a unique site/install identifier. Every
+          piece of mail which that RT sends out, regardless of Queue or
+          Area, will have that token put onto the subject line, i.e.
+          "Subject: [circus #8799] Too Many Monkeys!" (in this case, the
+          RT_MAIL_TAG is "circus."
+          
+   Sends OUT? What about receives? the makefile implies that it's needed
+          on
+          
+          incoming mail, as well.
+          
+          every piece of mail that it's supposed to parse correctly and
+          add to an existing ticket will need that token as well.
+          
+   Where? Anyplace, in the body of the request, or some other special
+          place?
+          
+          On the subject line.
+          
+   If they are going to have 2 seperate queues, one for internal IT and
+          one for servers accessed from outside sources, will everyone
+          use the same MAIL_TAG?
+          yes. the same tag and the same ordinal system across both
+          queues. (i.e. req's 4, 5, and 6 are in queue Foo. The next
+          person to open a req in queue Bar will get given number 7.)
