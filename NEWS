@@ -132,11 +132,11 @@ get the DB changes in, I'll feel comfortable rolling a 'releaseable'
 
 21 jul 99 (Tobix)
 -----------------
-Merged some bugfixes from the 1-0-branch. Migrated to Internet::Mail
+Merged some bugfixes from the 1-0-branch. Migrated to Mail::Internet
 for sending emails (patch by Charlie Brady) - most of the users won't
 notice the difference, but it's A Right Thing (ref. Charlie Brady). As
 a result, mailprog configuration is removed from the
-Makefile. However, Internet::Mail _might_ require some configuration.
+Makefile. However, Mail::Internet _might_ require some configuration.
 
 Tagged as 1.1pre.2.
 

@@ -19,6 +19,5 @@ PATH=$PATH:$BINDIR
 export PATH
 
 
-$BINDIR/mysql -h $HOSTNAME -u $DBA $DBAPASSWD mysql < $DATABASEACLS
-$BINDIR/mysqladmin -h $HOSTNAME -u $DBA $DBAPASSWD reload
+$BINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} --password=${DBAPASSWD} mysql < $DATABASEACLS
 

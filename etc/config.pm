@@ -52,7 +52,8 @@
     #$mysql_version determines the order the rt username and password
     #are passed to mysqlperl.  it changed between 3.20 and 3.21
 
-    $mysql_version="!!MYSQL_VERSION!!";
+    # Obsolete? We use DBI now, not mysqlperl.- khamer
+    #$mysql_version="!!MYSQL_VERSION!!";
 
     # $passwd_min defines the minimum length for user passwords.
     $user_passwd_min = "!!RT_USER_PASSWD_MIN!!";
@@ -69,7 +70,7 @@
     $mail_alias = "!!RT_MAIL_ALIAS!!";
 
 
-    # (TODO) Internet::Mail might need some configuration.
+    # (TODO) Mail:Internet might need some configuration.
 
 
     # WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use

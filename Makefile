@@ -92,7 +92,7 @@ RT_USER_PASSWD_MIN	=	5
 
 
 # While it earlier was possible to specify mail program and
-# options here, newer versions of RT uses Internet::Mail
+# options here, newer versions of RT uses Mail::Internet
 # instead. Hopefully, it will work straight out of the box.
 # If not, ask for help at rt-users@lists.fsck.com
 
@@ -101,6 +101,7 @@ RT_USER_PASSWD_MIN	=	5
 
 # I'm trying to move from MySQL to a general system. If something
 # still needs mysql, it's sort of broken.
+# Note: $DB_HOME/bin is where the database binary tools are installed.
  
 DB_HOME               = /usr/bin
 RT_DB                 = mysql
@@ -130,6 +131,12 @@ RT_HOST			=	localhost
 #
 
 RT_DATABASE	=	rt
+
+#
+# Set this to the password used by the rt database user
+#
+
+RT_DB_PASS	=	password
 
 #
 # if you want to give the rt user different default privs, modify this file
@@ -275,11 +282,12 @@ config-replace:
         s'!!RT_TEMPLATE_PATH!!'$(RT_TEMPLATE_PATH)'g;\
         s'!!RTUSER!!'$(RTUSER)'g;\
         s'!!RTGROUP!!'$(RTGROUP)'g;\
-        s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
+        s'!!RT_DB_PASS!!'$(RT_DB_PASS)'g;\
+	s'!!RT_DB!!'$(RT_DB)'g;\
         s'!!RT_MAIL_TAG!!'$(RT_MAIL_TAG)'g;\
 	s'!!RT_USER_PASSWD_MIN!!'$(RT_USER_PASSWD_MIN)'g;\
-        s'!!RT_MYSQL_HOST!!'$(RT_MYSQL_HOST)'g;\
-        s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
+        s'!!RT_HOST!!'$(RT_HOST)'g;\
+        s'!!RT_DATABASE!!'$(RT_DATABASE)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
 	s'!!WEB_AUTH_MECHANISM!!'$(WEB_AUTH_MECHANISM)'g;\
 	s'!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!'$(WEB_AUTH_COOKIES_ALLOW_NO_PATH)'g;\

@@ -55,10 +55,12 @@ o   Text::Wrapper ( CPAN or http://www.perl.com ) -- free
 	For quoting and eventually wrapping messages in the WebRT
 	reply textarea.
 
-o   Internet::Mail ( CPAN or http://www.perl.com ) -- free
+o   Mail::Internet ( CPAN or http://www.perl.com ) -- free
+
+	Part of the MailTools package. 
 
 	For sending email. Earlier versions used an external mail
-	program (like sendmail). Internet::Mail usually works right
+	program (like sendmail). Mail::Internet usually works right
 	out of the box, but if it doesn't, complain to
 	rt-devel@lists.fsck.com.
 

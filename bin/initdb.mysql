@@ -18,11 +18,11 @@ PATH=$PATH:$MYSQLBINDIR
 export PATH
 
 echo "Dropping database $DATABASENAME."
-$MYSQLBINDIR/mysqladmin -h $HOSTNAME -u $DATABASEADMIN drop $DATABASENAME
+$MYSQLBINDIR/mysqladmin --host=${HOSTNAME} --user=${DATABASEADMIN} --password=${DBAPASSWD} drop $DATABASENAME
 
 echo "Creating database $DATABASENAME."
-$MYSQLBINDIR/mysqladmin -h $HOSTNAME -u $DATABASEADMIN $DBAPASSWD create $DATABASENAME
+$MYSQLBINDIR/mysqladmin --host=${HOSTNAME} --user=${DATABASEADMIN} --password=${DBAPASSWD} create $DATABASENAME
 
 echo "Reading schema."
-$MYSQLBINDIR/mysql -h $HOSTNAME -u  $DATABASEADMIN $DBAPASSWD $DATABASENAME < etc/schema.mysql
+$MYSQLBINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} --password=${DBAPASSWD} $DATABASENAME < etc/schema.mysql
 
