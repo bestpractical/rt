@@ -137,7 +137,6 @@ sub insert_schema {
     else {
         die "Couldn't find schema file for " . $RT::DatabaseType . "\n";
     }
-    $dbh->disconnect;
     print "schema sucessfully inserted\n";
 
 }
@@ -225,7 +224,6 @@ sub insert_acl {
             die "Problem with statement:\n $statement\n" . $sth->errstr;
         }
     }
-    $dbh->disconnect();
 }
 
 # }}}
