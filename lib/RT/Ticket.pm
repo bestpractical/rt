@@ -212,14 +212,14 @@ sub WatcherClassAsString {
   my $class = shift || "";
   my $o = ($class||"Watchers").'AsString';
   if (!defined $self->{$o}) {
-    $self->{$o} = "";
     my @w=();
+    $self->{$o} = "";
     while (my $watcher = $self->Watchers->Next) {
       push(@w, $watcher->Email)
-	  if ($watcher->Type =~ /\b$class\b/)
+	if ($watcher->Type =~ /\b$class\b/)
     }
+    $self->{'WatchersAsString'}=join(",",@w);
   }
-  $self->{'WatchersAsString'}=join(",",@w);
   return ( $self->{'WatchersAsString'});
   
 }
