@@ -31,6 +31,7 @@ foreach my $stanza (@$Message) {
     }
     elsif ( ref $stanza eq "HASH" ) {
         my $content = $stanza->{raw};
+        RT::Interface::Web::EscapeUTF8(\$content);
          $m->comp('/Elements/Callback', content_ref  => \$content, %ARGS);
 </%perl>
 <font color="<%$colors[$Depth]%>"><%$content |n%><br></font>

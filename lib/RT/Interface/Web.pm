@@ -108,6 +108,10 @@ sub NewCGIHandler {
     return ($handler);
 
 }
+# }}}
+
+
+# {{{ EscapeUTF8
 
 =head2 EscapeUTF8 SCALARREF
 
@@ -117,12 +121,13 @@ does a css-busting but minimalist escaping of whatever html you're passing in.
 
 sub EscapeUTF8  {
         my  $ref = shift;
-        $$ref =~ s/&/&#38/g;
+        $$ref =~ s/&/&#38;/g;
         $$ref =~ s/</&lt;/g; 
         $$ref =~ s/>/&gt;/g;
-        $$ref =~ s/\(/&#40/g;
-        $$ref =~ s/\)/&#41/g;
-
+        $$ref =~ s/\(/&#40;/g;
+        $$ref =~ s/\)/&#41;/g;
+        $$ref =~ s/"/&#42;/g;
+        $$ref =~ s/'/&#47;/g;
 
 }
 
