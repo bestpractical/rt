@@ -1,38 +1,41 @@
 <& /Elements/TitleBoxStart, title => "Find new/open tickets", titleright => "<A class='inverse' href=\"$RT::WebPath/Search/Listing.html?NewSearch=1\">Advanced Search</A>" &>
 
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                        
-<tr>                                                                           
-       <th>Queue</th>                                                          
-       <th>New</th>                                                            
-       <th>Open</th>                                                           
+<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
+<tr>                                                                          
+       <th align=left>Queue</th>                                         
+       <th align=left><font size=-1>New</font></th>
+       <th align=left><font size=-1>Open</font></th>          
+       <th align=left><font size=-1>Stalled</font></th>          
 </tr>
 
 <%PERL>
 while (my $queue = $Queues->Next) {
-     $Tickets->ClearRestrictions;                                            
-     $Tickets->LimitStatus(VALUE => "open");                                 
-     $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');             
+     $Tickets->ClearRestrictions;                                           
+     $Tickets->LimitStatus(VALUE => "open");                                
+     $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');            
      my $open = $Tickets->Count();
-     $Tickets->ClearRestrictions;                                            
-     $Tickets->LimitStatus(VALUE => "new");                                  
-     $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');             
+
+     $Tickets->ClearRestrictions;                                           
+     $Tickets->LimitStatus(VALUE => "new");
+     $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');            
      my $new = $Tickets->Count();
 
+     $Tickets->ClearRestrictions; 
+     $Tickets->LimitStatus(VALUE => "stalled");
+     $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');            
+     my $stalled = $Tickets->Count();
 </%PERL>
 <TR><TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&NewSearch=1"><%$queue->Name%></a></TD>
-<TD>
-<%$new%>
-</TD>
-<TD>
-<%$open%>
-</TD>
+<TD><%$new%></TD>
+<TD><%$open%></TD>
+<TD><%$stalled%></TD>
 </TR>
 % }
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
-my $Queues = new RT::Queues($session{'CurrentUser'});  
+my $Queues = new RT::Queues($session{'CurrentUser'}); 
 $Queues->UnLimit();
 my $Tickets = new RT::Tickets ($session{'CurrentUser'});
 </%INIT>

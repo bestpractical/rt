@@ -586,6 +586,8 @@ sub HasQueueRight {
 	$args{'QueueObj'}->Load($args{'Queue'});
     }
     
+
+    # {{{ Validate and load up the QueueId
     if (defined $args{'QueueObj'}) {
 	
 	unless ($args{'QueueObj'}->Id) {
@@ -594,20 +596,40 @@ sub HasQueueRight {
 	}	
 	
 	$QueueId = $args{'QueueObj'}->Id;
-	
-	if ($args{'QueueObj'}->IsCc($self)) { #If user is a cc
-	    $IsCc = 1;
-	}
-	if ($args{'QueueObj'}->IsAdminCc($self)) { #If user is an admin cc
-	    $IsAdminCc = 1;
-	}
-	
-    } 
+    }
+
     elsif (defined $args{'TicketObj'}) {
-
 	$QueueId = $args{'TicketObj'}->QueueObj->Id;
-	
+    }
 
+    unless ($QueueId) {
+	$RT::Logger->debug( "$self->HasQueueRight Couldn't find a queue id");
+    }
+
+    # }}}
+
+        
+    #  here's where we figure out whether a user has the right we're asking about.
+    #    first we see if they have the right personally for the queue in question. 
+    my $retval = $self->_HasRight(Scope => 'Queue',
+				  AppliesTo => $QueueId,
+				  Right => $args{'Right'},
+				  IsOwner => $IsOwner);
+
+    return ($retval) if (defined $retval);
+    
+    # then we see whether they have the right personally globally. 
+    $retval = $self->HasSystemRight( $args{'Right'});
+
+    return ($retval) if (defined $retval);
+
+    # now that we know they don't have the right personally,
+    
+    # {{{ Find out about whether the current user is a Requestor, Cc, AdminCc or Owner
+
+   
+    
+    if (defined $args{'TicketObj'}) {
 	if ($args{'TicketObj'}->IsRequestor($self)) {#user is requestor
 	    $IsRequestor = 1;
 	}	
@@ -615,6 +637,7 @@ sub HasQueueRight {
 	if ($args{'TicketObj'}->IsCc($self)) { #If user is a cc
 	    $IsCc = 1;
 	}
+
 	if ($args{'TicketObj'}->IsAdminCc($self)) { #If user is an admin cc
 	    $IsAdminCc = 1;
 	}	
@@ -623,16 +646,20 @@ sub HasQueueRight {
 	    $IsOwner = 1;
 	}
     }
+    elsif (defined $args{'QueueObj'}) {
+	if ($args{'QueueObj'}->IsCc($self)) { #If user is a cc
+	    $IsCc = 1;
+	}
+	if ($args{'QueueObj'}->IsAdminCc($self)) { #If user is an admin cc
+	    $IsAdminCc = 1;
+	}
+	
+    } 
+    # }}}
+    
+    # then see whether they have the right for the queue as a member of a metagroup 
 
-    unless ($QueueId) {
-	$RT::Logger->debug( "$self->HasQueueRight Couldn't find a queue id");
-    }
-
-    #If the user wants to create a ticket, that would make them a requestor
-    #A stupid hack to make the metaprincipals stuff work.
-    #I wish we weren't hardcoding specific rights in here.
-
-    my $retval = $self->_HasRight(Scope => 'Queue',
+    $retval = $self->_HasRight(Scope => 'Queue',
 				  AppliesTo => $QueueId,
 				  Right => $args{'Right'},
 				  IsOwner => $IsOwner,
@@ -640,22 +667,19 @@ sub HasQueueRight {
 				  IsAdminCc => $IsAdminCc,
 				  IsRequestor => $IsRequestor
 				 );
-    if (defined $retval) {
-	#	$RT::Logger->debug("Got a return value: $retval\n");
-	return ($retval);
-    }
-    #if they don't have the queue right, see if they have the system right.
-    else {
-        $retval = $self->HasSystemRight( $args{'Right'},
-					 (
-					  IsOwner => $IsOwner,
-					  IsCc => $IsCc,
-					  IsAdminCc => $IsAdminCc,
-					  IsRequestor => $IsRequestor
-					  )
-				       );
-        return ($retval);
-    }
+
+    return ($retval) if (defined $retval);
+
+    #   then we see whether they have the right globally as a member of a metagroup
+    $retval = $self->HasSystemRight( $args{'Right'},
+				     (IsOwner => $IsOwner,
+				      IsCc => $IsCc,
+				      IsAdminCc => $IsAdminCc,
+				      IsRequestor => $IsRequestor
+				     ) );
+
+    #If they haven't gotten it by now, they just lose.
+    return ($retval);
     
 }
 
