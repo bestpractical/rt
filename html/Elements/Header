@@ -58,7 +58,6 @@ ONLOAD="
 % } else {
 <&|/l&>Not logged in.</&>
 % }
-</font>
     </td>
   </tr>
 </table>
