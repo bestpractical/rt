@@ -122,6 +122,13 @@ sub Limit {
     %{$self->{'TicketRestrictions'}{$index}} = %args;
 
     $self->{'RecalcTicketLimits'} = 1;
+
+    # If we're looking at the effective id, we don't want to append the other clause
+    # which limits us to tickets where id = effective id 
+    if ($args{'FIELD'} eq 'EffectiveId') {
+        $self->{'looking_at_effective_id'} = 1;
+    }
+
     return ($index);
 }
 
@@ -932,6 +939,7 @@ sub _Init  {
     my $self = shift;
     $self->{'table'} = "Tickets";
     $self->{'RecalcTicketLimits'} = 1;
+    $self->{'looking_at_effective_id'} = 0;
     $self->{'restriction_index'} =1;
     $self->{'primary_key'} = "id";
     $self->SUPER::_Init(@_);
@@ -1082,6 +1090,7 @@ Removes all restrictions irretrievably
 sub ClearRestrictions {
     my $self = shift;
     delete $self->{'TicketRestrictions'};
+    $self->{'looking_at_effective_id'} = 0;
     $self->{'RecalcTicketLimits'} =1;
 }
 
@@ -1481,7 +1490,8 @@ sub _ProcessRestrictions {
      
      # here, we make sure we don't get any tickets that have been merged  into other tickets
      # (Ticket Id == Ticket EffectiveId
-     if ($self->_isLimited) {
+     # note that we _really_ don't want to do this if we're already looking at the effectiveid
+     if ($self->_isLimited && (! $self->{'looking_at_effective_id'})) {
         $self->SUPER::Limit( FIELD => 'EffectiveId', 
               OPERATOR => '=',
               QUOTEVALUE => 0,
