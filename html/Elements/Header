@@ -30,7 +30,7 @@
 <META HTTP-EQUIV="REFRESH" CONTENT="<%$Refresh%>">
 % }
 
-<link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
@@ -40,7 +40,8 @@
     <td colspan=2><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="" width="230" height="50"></td>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
-    <td width="20%" align="right">
+    <td width="50%" align="right">
+<SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A> |</SPAN>
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 <A  HREF="<%$RT::WebPath%>/User/Prefs.html" ><&|/l&>Preferences</&></A>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {

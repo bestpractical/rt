@@ -22,4 +22,4 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<FORM ACTION="<%$RT::WebPath%>/Ticket/Display.html"><input type=submit value="<&|/l&>Goto ticket</&>">&nbsp;<input size=5 name=id></FORM>
+<FORM ACTION="<%$RT::WebPath%>/Ticket/Display.html"><input type=submit value="<&|/l&>Goto ticket</&>">&nbsp;<input size=5 name=id accesskey="0"></FORM>

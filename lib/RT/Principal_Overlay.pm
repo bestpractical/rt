@@ -260,11 +260,21 @@ sub HasRight {
     # {{{ If we've cached a win or loss for this lookup say so
 
     # {{{ Construct a hashkey to cache decisions in
-    my ($hashkey);
-    {    #it's ugly, but we need to turn off warning, because we're joining nulls.
-        local $^W = 0;
-        $hashkey = $self->Id . ":" . join ( ";:;", %args );
-    }
+    my $hashkey = do {
+	no warnings 'uninitialized';
+        
+	# We don't worry about the hash ordering, as this is only
+	# temporarily used; also if the key changes it would be
+	# invalidated anyway.
+        join (
+            ";:;", $self->Id, map {
+                $_,                              # the key of each arguments
+                ($_ eq 'EquivObjects')           # for object arrayref...
+		    ? map(_ReferenceId($_), @{$args{$_}}) # calculate each
+                    : _ReferenceId( $args{$_} ) # otherwise just the value
+            } keys %args
+        );
+    };
     # }}}
 
     #Anything older than 10 seconds needs to be rechecked
@@ -475,9 +485,6 @@ sub _InvalidateACLCache {
 
 # }}}
 
-1;
-
-
 
 # {{{ _GetPrincipalTypeForACL
 
@@ -502,4 +509,28 @@ sub _GetPrincipalTypeForACL {
 }
 
 # }}}
+
+# {{{ _ReferenceId
+
+=head2 _ReferenceId
+
+Returns a list uniquely representing an object or normal scalar.
+
+For scalars, its string value is returned; for objects that has an
+id() method, its class name and Id are returned as a string seperated by a "-".
+
+=cut
+
+sub _ReferenceId {
+    my $scalar = shift;
+
+    # just return the value for non-objects
+    return $scalar unless UNIVERSAL::can($scalar, 'id');
+
+    # an object -- return the class and id
+    return(ref($scalar)."-". $scalar->id);
+}
+
+# }}}
+
 1;

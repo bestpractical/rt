@@ -83,13 +83,11 @@ just handed off the SearchBuilder)
 use Regexp::Common qw /delimited/;
 
 # States
-use constant ({
-               VALUE => 1,
-               AGGREG => 2,
-               OP => 4,
-               PAREN => 8,
-               KEYWORD => 16,
-              });
+use constant VALUE => 1;
+use constant AGGREG => 2;
+use constant OP => 4;
+use constant PAREN => 8;
+use constant KEYWORD => 16;
 my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD];
 
 my $re_aggreg = qr[(?i:AND|OR)];

@@ -38,6 +38,7 @@
 <table border=0 cellspacing=0 cellpadding=0 bordercolor=#FFFFFF width=100%>
   <span class="topnav">
 % my $sep=0;
+% my $accesskey="1";
 % foreach $tab (sort keys %{$toptabs}) {
 % if ($sep) {
     <tr><td height="2"></td></tr>
@@ -59,7 +60,7 @@
     </tr>
     <tr> 
       <td class="blue" colspan=2 width=100%>
-        <A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>" class="<%$class%>" style="font-size: <%$size%>"><% $toptabs->{$tab}->{'title'}%></A>
+        <A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>" class="<%$class%>" style="font-size: <%$size%>" <% !$level && "accesskey='".$accesskey++."'" %>><% $toptabs->{$tab}->{'title'}%></A>
       </td>
     </tr>
 % if ($toptabs->{$tab}->{'separator'}) {

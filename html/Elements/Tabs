@@ -134,6 +134,7 @@
 % }
 <TR>
 <TD valign="top" width=100% height=100% colspan=2>
+<a name="skipnav" id="skipnav" accesskey="8"></a>
 
 <%INIT>
 my $action;

@@ -352,6 +352,9 @@ sub _DateLimit {
   die "Incorrect Meta Data for $field"
     unless (defined $meta->[1]);
 
+  use Date::Parse;
+  use POSIX 'strftime';
+
   my $time = str2time($value);
   $value = strftime("%Y-%m-%d %H:%M",localtime($time));
 
@@ -2180,3 +2183,4 @@ TransactionContent
 # }}}
 
 1;
+

@@ -22,14 +22,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs,
-    tabs => $tabs, 
-    current_toptab => 'Approvals/', 
-    current_tab => $current_tab, 
-    Title => $Title &>
-
-<%ARGS>
-$tabs => undef
-$current_tab => undef
-$Title => undef
-</%ARGS>
+<select name="GroupField">
+<option value="Name"><&|/l&>Name</&>
+<option value="Description"><&|/l&>Description</&>
+</select>
+<& /Elements/SelectMatch, Name=> 'GroupOp' &>
+<input size=8 name="GroupString">

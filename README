@@ -163,7 +163,8 @@ Apache
     DocumentRoot /path/to/rt3/share/html
     AddDefaultCharset UTF-8
 
-    PerlModule Apache2 Apache::compat	# only for Apache/mod_perl 2.x
+    # this line applies to Apache2+mod_perl2 only
+    PerlModule Apache2 Apache::compat
 
     PerlModule Apache::DBI
     PerlRequire /path/to/rt3/bin/webmux.pl

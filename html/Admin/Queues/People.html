@@ -58,13 +58,17 @@
 <& /Elements/SelectUsers &>
 <input type=submit name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
 <BR>
+<&|/l&>Find group whose</&><BR>
+<& /Elements/SelectGroups &>
+<input type=submit name="OnlySearchForGroup" value="<&|/l&>Go!</&>">
 
+<p>
 <&|/l&>Add new watchers</&>:<br>
 <p>
 <b><&|/l&>Users</&></b>
-% if ($msg) {
+% if ($user_msg) {
 <br>
-<i><%$msg%></i>
+<i><%$user_msg%></i>
 % } elsif ($Users) {
 <ul>
 % while (my $u = $Users->Next ) {
@@ -78,6 +82,10 @@
 <p>
 <b><&|/l&>Groups</&></b>
 
+% if ($group_msg) {
+<br>
+<i><%$group_msg%></i>
+% } elsif ($Groups) {
 <ul>
 % while (my $g = $Groups->Next ) {
 <li><&/Elements/SelectWatcherType, Scope=>'queue', Name =>
@@ -85,6 +93,7 @@
 (<%$g->Description%>)
 % }
 </ul>
+% }
 
 </TD>
 </TR>
@@ -100,7 +109,7 @@
 <%INIT>
 
 my $current_tab;
-my ($field, @results, $User, $Users, $Groups, $watcher, $msg);
+my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 # {{{ Load the queue
 #If we get handed two ids, mason will make them an array. bleck.
@@ -142,8 +151,8 @@ foreach my  $key (keys %ARGS) {
 
  
 
-if (!$ARGS{'UserString'}) {
-$msg = loc("No principals selected.");
+if (!length $ARGS{'UserString'}) {
+$user_msg = loc("No principals selected.");
  }
 else {
     $Users = new RT::Users($session{'CurrentUser'});
@@ -152,8 +161,16 @@ else {
                  OPERATOR => $ARGS{'UserOp'});
      }
 
+if (!length $ARGS{'GroupString'}) {
+$group_msg = loc("No principals selected.");
+ }
+else {
 $Groups = new RT::Groups($session{'CurrentUser'});
 $Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+$Groups->Limit(FIELD => $ARGS{'GroupField'},
+		VALUE => $ARGS{'GroupString'},
+		OPERATOR => $ARGS{'GroupOp'});
+     }
 
 $current_tab = 'Admin/Queues/People.html?id='.$QueueObj->id;
 </%INIT>
@@ -162,6 +179,9 @@ $current_tab = 'Admin/Queues/People.html?id='.$QueueObj->id;
 $UserField => 'Name'
 $UserOp => '='
 $UserString => undef
+$GroupField => 'Name'
+$GroupOp => '='
+$GroupString => undef
 $Type => undef
 $id => undef
 </%ARGS>
