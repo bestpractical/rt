@@ -27,7 +27,7 @@ my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 
 
 # Don't want to search for a null class when there is no class specced
-my $customfields = RT::FM::CustomFieldCollection->new( $session{'CurrentUser'} );
+my $customfields = RT::CustomFields->new( $session{'CurrentUser'} );
 if ( $ARGS{'Class'} ) {
     my @Classes =
       ( ref $ARGS{'Class'} eq 'ARRAY' )
@@ -92,7 +92,7 @@ if ($ARGS{'Topics'}) {
 }
 
 my %cfs;
-my $all_cfs = RT::FM::CustomFieldCollection->new($session{'CurrentUser'});
+my $all_cfs = RT::CustomFields->new($session{'CurrentUser'});
 $all_cfs->UnLimit();
 while ( my $cf = $all_cfs->Next ) {
     $cfs{ $cf->Name } = $cf->Id;
