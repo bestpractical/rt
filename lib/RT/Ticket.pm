@@ -43,6 +43,34 @@ sub new {
 
 # }}}
 
+=over 10
+
+=item Create (ARGS)
+
+Arguments: ARGS is a hash of named parameters.  Valid parameters are:
+
+    id 
+    EffectiveId
+    Queue
+    QueueTag
+    Requestor -- is this obsolete?
+    Alias  -- unused
+    Type --unused
+    Owner -- is this a user id or a a username?
+    Subject -- A string describing the subject of the ticket
+    InitialPriority -- an integer from 0 to 99
+    FinalPriority -- an integer from 0 to 99
+    Status -- a textual tag. one of 'open' 'stalled' 'resolved' for now
+    TimeWorked -- an integer
+    Created -- a unix time
+    Told -- a unix time. time of last contact
+    Due -- a unix time describing the due date
+    MIMEEntity -- a MIME::Entity object with the content of the initial ticket request.
+
+Returns: TICKETID, Transaction Object, Error Message
+
+=cut
+
 # {{{ sub Create
 
 sub Create {
