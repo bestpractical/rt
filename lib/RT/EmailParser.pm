@@ -467,6 +467,8 @@ sub ParseAddressFromHeader {
     my $self = shift;
     my $Addr = shift;
 
+    # Perl 5.8.0 breaks when doing regex matches on utf8
+    Encode::_utf8_off($Addr) if $] == 5.008;
     my @Addresses = Mail::Address->parse($Addr);
 
     my $AddrObj = $Addresses[0];
