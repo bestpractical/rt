@@ -33,10 +33,10 @@
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
-%#leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('/NoAuth/images/indicator.gif')">
+%#leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('<%$RT::WebImagesURL%>/indicator.gif')">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
   <tr> 
-    <td colspan=2><img src="/NoAuth/images/bplogo.gif" alt="" width="230" height="50"></td>
+    <td colspan=2><img src="<%$RT::WebImagesURL%>/bplogo.gif" alt="" width="230" height="50"></td>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td width="20%" align="right">
@@ -53,12 +53,12 @@
 </font>
     </td>
   </tr>
-  <tr><td class="black" colspan="5"><img src="/NoAuth/images/space.gif" alt="" width="700" height="1"></td></tr>
+  <tr><td class="black" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="1"></td></tr>
 <tr valign="middle">
-        <td class="blue" align="left" valign="middle" colspan="5"><img src="/NoAuth/images/space.gif" alt="" width="60" height="20" ><span class="title"><%$Title%></span></td>
+        <td class="blue" align="left" valign="middle" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="60" height="20" ><span class="title"><%$Title%></span></td>
 </tr>
-  <tr><td class="blue" colspan="5"><img src="/NoAuth/images/space.gif" alt="" width="700" height="3"></td></tr>
-  <tr><td class="black" colspan="5"><img src="/NoAuth/images/space.gif" alt="" width="700" height="1"></td></tr>
+  <tr><td class="blue" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="3"></td></tr>
+  <tr><td class="black" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="1"></td></tr>
 </table>
 <%INIT>
 

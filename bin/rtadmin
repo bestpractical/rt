@@ -847,7 +847,7 @@ sub AdminRights {
         require RT::ACL;
         my $acl = new RT::ACL($CurrentUser);
         if ( $queue != 0 ) {
-            $acl->LimitToQueue($queue);
+            $acl->LimitToObject(Type => "Queue", Id=>$queue);
         }
         else {
             $acl->LimitToObject(Type => 'System');
@@ -862,7 +862,7 @@ sub AdminRights {
             print loc(
                 ": [_1] [_2] has right [_3]\n",
                 $ace->PrincipalType,
-                $ace->PrincipalObj->Name,
+                $ace->PrincipalObj->Object->Name,
                 $ace->RightName
             )
         }
@@ -909,8 +909,10 @@ sub AdminRights {
 	# {{{ Delete rights that need deleting
 	foreach my $right (@{$args{'revoke-right'}}) {
 	    my $ace = new RT::ACE($CurrentUser);
-	    $RT::Logger->debug(loc("Trying to delete a right: [_1]", $right \n));
-	    my ($val, $msg) = $ace->LoadByValues( RightName => $right,
+	    $RT::Logger->debug(loc("Trying to delete a right: [_1]", $right));
+	    my ($val, $msg) = $ace->LoadByValues( ObjectType => "Queue",
+						  ObjectId => $queue,
+						  RightName => $right,
 						  RightScope => $scope,
 						  PrincipalType => $principal->{'type'},
 						  PrincipalId => $principal->{'id'},
@@ -931,7 +933,9 @@ sub AdminRights {
 	# {{{ grant rights that need granting
 	foreach my $right (@{$args{'grant-right'}}) {
 	    my $ace = new RT::ACE($CurrentUser);
-	    my ($val, $msg) = $ace->Create(RightName => $right,
+	    my ($val, $msg) = $ace->Create(ObjectType => "Queue",
+					   ObjectId => $queue,
+					   RightName => $right,
 					   PrincipalType => $principal->{'type'},
 					   PrincipalId => $principal->{'id'},
 					   RightScope => $scope,
