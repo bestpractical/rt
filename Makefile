@@ -37,7 +37,7 @@ DB_DATABASE	     =	     `${GETPARAM} DatabaseName`
 DB_RT_USER	      =	      `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =	      `${GETPARAM} DatabasePass`
 DB_DBA			= root
-TAG			= rtfm-2-0RC3
+TAG			= rtfm-2-0-0RC3
 
 
 upgrade: install-lib install-html install-lexicon
