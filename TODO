@@ -5,7 +5,6 @@ Before we hit 1.0
 
   Install
 	Documentation
-		make foo -> (GNU MAKE foo)
 	Make ACLS needs work
 		make it a perl script.
 		

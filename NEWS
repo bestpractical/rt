@@ -1,3 +1,10 @@
+7 Jul 99
+--------
+
+Now, only users with "manipulate" access are considered to be queue members.
+Fixed a problem in rt-mailgate that caused it to take a Sender: header as gospel if it came before a Reply-To: [fsck #80]
+Giving a request to yourself in the webui will no longer prompt the user to "Steal" their own request
+
 6 Jul 99
 --------
 

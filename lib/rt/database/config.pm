@@ -23,7 +23,7 @@
 	    $rt::queues{$queue_id}{acls}{$user_id}{'manipulate'}=$row[3];
 	    $rt::queues{$queue_id}{acls}{$user_id}{'admin'}=$row[4];
 
-	    if ($row[5] and $row[2]) {
+	    if ($row[5] and $row[3]) {
 
 		if ($queues{$queue_id}{'dist_list'}) {
 		    $queues{$queue_id}{'dist_list'} .= ", " . $row[5];
