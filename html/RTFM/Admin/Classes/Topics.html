@@ -73,7 +73,9 @@ $topic
 <li><& .tree, Element => $e, Action => $Action, Prefix => $Prefix, ClassObj => $ClassObj, Modify => $Modify &></li>
 % }
 % if ($Action) {
+% unless ($Action eq "Move" and grep {$_->getNodeValue->Id == $Modify} $Element->getAllChildren) {
 <li><input type="submit" name="<%$Prefix%>-<%$topic eq "root" ? 0 : $topic->Id%>" value="<&|/l&><%$Action%> here</&>" /></li>
+% }
 % }
 </ul>
 <%args>
