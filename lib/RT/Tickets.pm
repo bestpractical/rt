@@ -107,7 +107,8 @@ Returns a frozen string suitable for handing back to ThawLimits.
 sub FreezeLimits {
 	my $self = shift;
 	require FreezeThaw;
-	return (FreezeThaw::freeze($self->{'TicketRestrictions'}));
+	return (FreezeThaw::freeze($self->{'TicketRestrictions'},
+				  ));
 }
 
 # }}}
@@ -126,12 +127,17 @@ sub ThawLimits {
 	
 	#if we don't have $in, get outta here.
 	return undef unless ($in);
+	
+
+	$self->CleanSlate();
 
 	require FreezeThaw;
-
+	
 	#We don't need to die if the thaw fails.
+	
 	eval {
-		($self->{'TicketRestrictions'}) = FreezeThaw::thaw($in);
+		($self->{'TicketRestrictions'},
+		) = FreezeThaw::thaw($in);
 	}
 
 }

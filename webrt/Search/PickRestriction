@@ -1,6 +1,7 @@
 %# $Header$
-<FORM ACTION="Listing.html" METHOD="POST">
-<& /Elements/TitleBoxStart, title => 'Restrict Search'&>
+<FORM ACTION="Listing.html" METHOD="GET">
+<INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<%$session{'tickets'}->FreezeLimits()|u%>
+<& /Elements/TitleBoxStart, title => 'Refine Search'&>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
 <ul>
@@ -98,7 +99,7 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit &>
+<& /Elements/Submit, Label => 'Search', AlternateLabel => 'Refine', Name => 'Action'&>
 
 </FORM>
 

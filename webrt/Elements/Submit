@@ -13,15 +13,32 @@
 <TD ALIGN=RIGHT VALIGN=CENTER>
 
 <FONT COLOR=#ffd800>
+
+% if ($AlternateLabel) {
+<B><%$AlternateCaption%>
+<INPUT TYPE=SUBMIT
+%if ($Name) {
+NAME="<%$Name%>"
+%}
+VALUE='<%$AlternateLabel%>'></B>
+% }
+
 <B><%$Caption%>
-<INPUT TYPE=SUBMIT VALUE='<%$Label%>'></B></FONT>
+<INPUT TYPE=SUBMIT
+%if ($Name) {
+NAME="<%$Name%>"
+% }
+ VALUE='<%$Label%>'></B></FONT>
 </TD>
 </TR>
 </TABLE>
 <%ARGS>
 $color => "#336699"
 $Caption => undef
+$AlternateCaption => undef
+$AlternateLabel => undef
 $Label => 'Submit'
+$Name => undef
 $Reset => undef
 $ResetLabel => 'Reset'
 </%ARGS>
