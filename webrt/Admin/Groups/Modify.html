@@ -47,25 +47,30 @@ else {
     else {
 	$Group->Load($id) || Abort('Could not load group');
     }
-    $title = "Modify the group ". $Group->Name;
 
-  
+
+    if ($id) {
+	$title = "Modify the group ". $Group->Name;
+
+    }	
+
+    # If the create failed
+    else {
+	$title = "Create a new group";
+	$Create = 1;
+    }    
+    
 }
 
-my @fields = qw(Description Name );
-
-
-#Run through each field in this list. update the value if apropriate
-my $field;
-foreach $field (@fields) {
-my $check = "if ((defined \$$field) and (\$Group->$field ne \$$field)) {
-  my (\$code, \$msg) = \$Group->Set$field(\$$field);
-
-     push \@results, \$msg;
-   }";
-eval $check;
-
+if ($id) {
+    
+    my @fields = qw(Description Name );
+    my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
+					    Object => $GroupObj,
+					    ARGSRef => \%ARGS );
+    push (@results,@fieldresults);
 }
+
 
 </%INIT>
 

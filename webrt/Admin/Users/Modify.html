@@ -124,48 +124,60 @@ Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 my $UserObj = new RT::User($session{'CurrentUser'});
 my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
 
+my ($val, $msg);
+
 if ($Create) {
     $title = "Create a new user";
 } 
 else {
-if ($id eq 'new') {
-    my ($val, $msg) = $UserObj->Create( Name => $Name,
-					EmailAddress => $ARGS{'EmailAddress'}
-				      );
-    push @results, $msg;
-}
-else {
-    $UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
 
-}
-    $title = "Modify the user ". $UserObj->Name;
+    if ($id eq 'new') {
+	($val, $msg) = $UserObj->Create( Name => $Name,
+					 EmailAddress => $ARGS{'EmailAddress'}
+				       );
+	push @results, $msg;
+	
+	
+    }
+    else {
+	$UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
+	$val = $UserObj->Id();
+    }
+
+    if ($val) {
+	$title = "Modify the user ". $UserObj->Name;
+    }	
+
+    # If the create failed
+    else {
+	$title = "Create a new user";
+	$Create = 1;
+    }    
+
     
+
 }
-{
-my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
-		Organization RealName NickName Lang EmailEncoding WebEncoding 
-		ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
-		AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
+
+
+
+
+# If we have a user to modify, lets try. 
+if ($val) {
+    
+    my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
+		    Organization RealName NickName Lang EmailEncoding WebEncoding 
+		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
+		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
 		Address2 City State Zip Country 
-       );
-
-
-#Run through each field in this list. update the value if apropriate
-my $field;
-foreach $field (@fields) {
-my ($code, $msg);
-my $check = "if ((defined \$$field) and ( \$UserObj->$field ne \$$field )) {;;
-  (\$code, \$msg) = \$UserObj->Set$field(\$$field);
-
-     push \@results, '$field:' . \$msg;
-   }
-   ";
-eval $check;
-
-}
+		   );
+    
+    my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
+					    Object => $UserObj,
+					    ARGSRef => \%ARGS );
+    push (@results,@fieldresults);
 }
 
-
+# {{{ Deal with special fields: Privileged, Enabled and Password
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
 my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
      push @results, 'Privileged status: '. $msg;
@@ -191,6 +203,9 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->I
     push @results, 'Password: '. $msg;
 }
 
+# }}}
+
+# {{{ Do some setup for the ui
 unless ($UserObj->Disabled()) {
     $EnabledChecked ="CHECKED";
 }
@@ -199,6 +214,7 @@ if ($UserObj->Privileged()) {
     $PrivilegedChecked = "CHECKED";
 }
 
+# }}}
 </%INIT>
 
 

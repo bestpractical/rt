@@ -160,8 +160,10 @@ sub Create  {
     my $id = $self->SUPER::Create(%args);
     
     #If the create failed.
-    return (0, 'Could not create user') 
-      unless ($id);
+    unless ($id) {
+	return (0, 'Could not create user');
+    }
+      
     
     #TODO post 2.0
     #if ($args{'SendWelcomeMessage'}) {

@@ -406,13 +406,14 @@ sub ProcessACLChanges {
     my %ARGS = %$ARGSref;
     
     my ($ACL, @results);
+
+    # {{{ Add rights
     foreach $ACL (@CheckACL) {
 	my ($Principal);
 	
+	next unless ($ACL);
+
 	# Parse out what we're really talking about. 
-	# it would be good to make this code generic enough to apply
-	# to system rights too
-	
 	if ($ACL =~ /^(.*?)-(\d+)-(.*?)-(\d+)/) {
 	    my $PrincipalType = $1;
 	    my $PrincipalId = $2;
@@ -452,21 +453,16 @@ sub ProcessACLChanges {
 	    # {{{ Get the values of the select we're working with 
 	    # into an array. it will contain all the new rights that have 
 	    # been granted
-	    
-	    
 	    #Hack to turn the ACL returned into an array
-
 	    my @rights = ref($ARGS{"GrantACE-$ACL"}) eq 'ARRAY' ?
 	      @{$ARGS{"GrantACE-$ACL"}} : ($ARGS{"GrantACE-$ACL"});
-	    
-	    my @RevokeACE = ref($ARGS{"RevokeACE"}) eq 'ARRAY' ?
-	      @{$ARGS{"RevokeACE"}} : ($ARGS{"RevokeACE"});
-	    
+
 	    # }}}
 	    
-	    # {{{ Add any rights we need. at the same time, build up
-	    # a hash of what rights have been selected 
-	    
+	    # {{{ Add any rights we need.
+
+
+
 	    foreach my $right (@rights) {
 		next unless ($right);
 		
@@ -508,15 +504,23 @@ sub ProcessACLChanges {
 			}
 			else {
 			    push (@results, $msg);
-			    }	
+			}	
 		    }
 		}
 	    }
-	    # }}}
 	    
-	    # {{{ remove any rights that have been deleted
+	    # }}}
+	}
+    }
+    # }}} Add rights
+
+    # {{{ remove any rights that have been deleted
+
+	    my @RevokeACE = ref($ARGS{"RevokeACE"}) eq 'ARRAY' ?
+	      @{$ARGS{"RevokeACE"}} : ($ARGS{"RevokeACE"});
+
 	    foreach my $aceid (@RevokeACE) {
-		next unless ($aceid);
+
 		my $right = new RT::ACE($session{'CurrentUser'});
 		$right->Load($aceid);
 	 	next unless ($right->id);
@@ -540,11 +544,11 @@ sub ProcessACLChanges {
 	    }
 
 	    # }}}
-	}
-    }
+    
+    
     
     return (@results);
-  }
+}
 
 
 # }}}
@@ -574,7 +578,6 @@ sub UpdateRecordObject {
   my $ARGSRef = $args{'ARGSRef'};
   
   foreach $attribute (@$attributes) {
-    $RT::Logger->debug("Looking at attribute $attribute-");#.$object->$attribute()."\n");
     if ((defined $ARGSRef->{"$attribute"}) and 
 	($ARGSRef->{"$attribute"} ne $object->$attribute())) {
 
@@ -794,7 +797,6 @@ sub ProcessTicketLinks {
     
     return (@results);
 }
-
 
 # }}}
 
