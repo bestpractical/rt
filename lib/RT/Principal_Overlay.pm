@@ -343,7 +343,7 @@ sub HasRight {
 
 
     if (@roles) {
-        $or_check_roles = " OR ( (".join (' OR ', @roles)." ) ".  
+        $or_check_roles = " ( (".join (' OR ', @roles)." ) ".  
         " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') ";
 
    } 
@@ -371,7 +371,7 @@ sub HasRight {
 
     
 
-    my $query = "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  ".
+    my $query_base = "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  ".
     # Only find superuser or rights with the name $right
    "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') ".
    # Never find disabled groups.
@@ -386,22 +386,27 @@ sub HasRight {
     "AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->Id . "' ".
 
     # Make sure the rights apply to the entire system or to the object in question
-    "AND ( ".join(' OR ', @look_at_objects).") ".
+    "AND ( ".join(' OR ', @look_at_objects).") ";
+
+	my $groups_query = $query_base . 
+
 
     # limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
     "AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND ".
         "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))".
 
-        # have a look at role groups, if there are any
-         $or_check_roles.
-        " ) ".
-        " LIMIT 1"; #only return one result
+        " ) ";
+        
+	my $roles_query = $query_base . "AND ".$or_check_roles;
+
+	$roles_query .= " LIMIT 1"; #only return one result
+	$groups_query  .= " LIMIT 1"; #only return one result
 
     # }}}
 
     # {{{ Actually check the ACL by performing an SQL query
-    #   $RT::Logger->debug("Now Trying $query");	
-    my $hitcount = $self->_Handle->FetchResult($query);
+    #   $RT::Logger->debug("Now Trying $groups_query");	
+    my $hitcount = $self->_Handle->FetchResult($groups_query);
     # }}}
     
     # {{{ if there's a match, the right is granted 
@@ -413,15 +418,26 @@ sub HasRight {
         return (1);
     }
     # }}}
-    # {{{ If there's no match, the right is not granted
+    # {{{ If there's no match on groups, try it on roles
     else {   
 
-        # 	$RT::Logger->debug("No ACL matched query: $query\n");	
+    	$hitcount = $self->_Handle->FetchResult($roles_query);
+
+    if ($hitcount) {
+
+        # Cache a positive hit.
+        $self->_ACLCache->{"$hashkey"}{'set'} = time;
+        $self->_ACLCache->{"$hashkey"}{'val'} = 1;
+        return (1);
+	}
+
+        else {
         # cache a negative hit
         $self->_ACLCache->{"$hashkey"}{'set'} = time;
         $self->_ACLCache->{"$hashkey"}{'val'} = -1;
 
         return (undef);
+	}
     }
     # }}}
 }
