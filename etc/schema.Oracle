@@ -8,6 +8,9 @@ REM data shouldn't be here, it's mostly for test purposes.  Eventually,
 REM the makefile should call up some init scrips that uses an RT api or the (admin)
 REM cli to add the data.
 
+REM I think it might make sense replacing "TIMESTAMP" with "DATE"
+REM for mysql.  Yes, indeed, I'll do that right away.
+
 REM Dave Morgan BarterTrust 2000/08
 REM	- Oracle Port
 REM	- issue with AUTO INCREMENT
@@ -16,15 +19,12 @@ REM		  a sequence generated number in. This means
 REM		  the value of the primary key column cannot be defined
 REM		  in the insert statement. The trigger will override any 
 REM		  supplied value
-REM	- ISSUE with BLOBS and LONGBLOBS
-REM		- all have been converted to VARCHAR2(4000)
-REM		- (This will be fixed soon)
-
+REM
 REM {{{ Core entities (Queues, Tickets, Transactions, Attachments, Links)
 
 REM {{{ TABLE Queues 
 
-CREATE SEQUENCE QUEUE_NUM;
+CREATE SEQUENCE QUEUES_NUM;
 CREATE TABLE Queues (
  	id 			NUMBER(11, 0) PRIMARY KEY,
  	QueueId 		VARCHAR2(40) NOT NULL,
@@ -47,7 +47,7 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT QUEUE_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT QUEUES_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
@@ -59,7 +59,7 @@ INSERT INTO Queues VALUES (NULL, 'general','A General Catch-all queue' ,'rt@loca
 
 REM {{{ TABLE Tickets
 
-CREATE SEQUENCE TICKET_NUM;
+CREATE SEQUENCE TICKETS_NUM;
 CREATE TABLE Tickets (
   	id			NUMBER(11, 0) PRIMARY KEY,
   	EffectiveId		NUMBER(11, 0),
@@ -75,8 +75,12 @@ CREATE TABLE Tickets (
   	Priority 		NUMBER(11,0) DEFAULT 0,
   	Status 			VARCHAR2(10), 		/*For now, One of "Open, Stalled, Resolved, Dead"*/
   	TimeWorked 		NUMBER(11,0) DEFAULT 0,
+	TimeLeft 		NUMBER(11,0) DEFAULT 0,
   	Told 			DATE,
+	Starts			DATE,
+	Started			DATE,
   	Due 			DATE,
+	Resolved		DATE,
   	LastUpdatedBy 		NUMBER(11,0),
   	LastUpdated 		DATE,
 	Creator 		NUMBER(11,0),
@@ -89,14 +93,14 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT TICKET_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT TICKETS_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
 
 REM {{{ TABLE Transactions
 
-CREATE SEQUENCE TRANSACTION_NUM;
+CREATE SEQUENCE TRANSACTIONS_NUM;
 CREATE TABLE Transactions (
   	id 			NUMBER(11,0) PRIMARY KEY,
   	EffectiveTicket 	NUMBER(11,0),
@@ -117,14 +121,14 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT TRANSACTION_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT TRANSACTIONS_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
 
 REM {{{ TABLE Attachments
 
-CREATE SEQUENCE ATTACHMENT_NUM;
+CREATE SEQUENCE ATTACHMENTS_NUM;
 CREATE TABLE Attachments (
   	id 		NUMBER(11,0) PRIMARY KEY,
   	TransactionId	NUMBER(11,0) NOT NULL,
@@ -133,8 +137,8 @@ CREATE TABLE Attachments (
   	Subject 	VARCHAR2(255),
   	Filename 	VARCHAR2(255),
   	ContentType 	VARCHAR2(80),
-  	Content 	VARCHAR2(4000),
-  	Headers 	VARCHAR2(4000),
+  	Content 	CLOB,
+  	Headers 	CLOB,
   	Creator 	NUMBER(11,0),
   	Created 	DATE
 );
@@ -145,14 +149,14 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT ATTACHMENT_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT ATTACHMENTS_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
 
 REM {{{ TABLE Links
 
-CREATE SEQUENCE LINK_NUM;
+CREATE SEQUENCE LINKS_NUM;
 CREATE TABLE Links (
   	id 		NUMBER(11,0) PRIMARY KEY,
   	Base 		VARCHAR2(255),
@@ -164,6 +168,21 @@ CREATE TABLE Links (
   	Created 	DATE
 );
 
+  REM Type can be one of:
+  REM <BASE> DependsOn <TARGET>
+  REM <BASE> MemberOf <TARGET>
+  REM <BASE> MergedInto <TARGET>
+  REM <BASE> RefersTo <TARGET>
+
+  REM One possible Idea: Turn base into URIs
+  REM fsck.com-rt://instancename/ticket/<id>
+
+  REM We need possibilities for letting links point to/from remote
+  REM instances of RT as well as to other remote and internal web-based
+  REM databases.  I suggest another table for URL information about
+  REM foreign installations and different databases (URLs, description,
+  REM ++) ... and using the
+  REM mail gateway for communication between different RT instances.
 
 CREATE OR REPLACE TRIGGER LINKS_AUTOINCREMENT
 BEFORE  INSERT ON  LINKS
@@ -171,7 +190,7 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT LINK_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT LINKS_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
@@ -180,8 +199,18 @@ REM {{{ Users, ACL and watchers
 
 REM {{{ Table Users 
 
+ REM Actually I don't think this is a good way to do it; we
+ REM need it to be site-configurable what information we want to store
+ REM about our users.
 
-CREATE SEQUENCE USER_NUM;
+ REM Actually I think the best way is to only store only what is
+ REM essential for RT, and let
+ REM all other data be stored externally in any system of choise.  Hm.
+
+ REM ATOH, A Plugin authentication system which replaces this table
+ REM would clearly be the best and only right thing.  We have to fix that for RT 2.1
+
+CREATE SEQUENCE USERS_NUM;
 CREATE TABLE Users (
   	id 		NUMBER(11,0) PRIMARY KEY,
   	UserId 		VARCHAR2(120) NOT NULL,
@@ -190,12 +219,17 @@ CREATE TABLE Users (
   	RealName 	VARCHAR2(120),
   	Lang 		VARCHAR2(16), 		/*Preffered language - to be used by L10N (not there, yet)*/
   	Password 	VARCHAR2(40),
-  	Comments 	VARCHAR2(4000),
-  	Signature 	VARCHAR2(4000),
+  	Comments 	CLOB,
+  	Signature 	CLOB,
   	EmailAddress 	VARCHAR2(120),
-  	CanManipulate 	NUMBER(11,0),
+  	CanManipulate 	NUMBER(11,0),		/*Whether this user can be granted rights*/
+						/*If 0, the user can only be a requestor*/
   	IsAdministrator NUMBER(11,0),
+ /*We should rather have a "plug'n'play" authentication system where*/
+ /*this table can be exchanged for some external system.*/
   	ExternalId 	VARCHAR2(100),
+ /*I'd daresay that those fields really shouldn't be in RT:*/
+ /*-- TobiX*/
   	HomePhone 	VARCHAR2(30),
   	WorkPhone 	VARCHAR2(30),
   	Address1 	VARCHAR2(200),
@@ -216,12 +250,22 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT USER_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT USERS_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
 
 REM }}}
+
+REM {{{ Values for Users
+INSERT INTO Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (1, 'RT_System', 'The RT System itself', UTL_RAW.CAST_TO_RAW('Do not delete or modify this user. It is integral to RT''s internal database structures'),1,1, NULL, 1, NULL );
+
+INSERT INTO Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (2, 'Nobody', 'No-one in particular', UTL_RAW.CAST_TO_RAW('Do not delete or modify this user. It is integral to RT''s internal database structures'),1,1, NULL, 1, NULL );
+
+INSERT INTO Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (3, 'root', 'root', 'Enoch Root', 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
 
 REM {{{ AlternateEmails (stubbed!)
 REM Create Table AlternateEmails (
@@ -230,15 +274,46 @@ REM    Email VARCHAR2(120) PRIMARY KEY
 REM );
 REM }}}
 
-REM {{{ Values for Users
-INSERT INTO Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (1, 'RT_System', 'The RT System itself', 'Do not delete or modify this user. It is integral to RT''s internal database structures',1,1, NULL, 1, NULL );
 
-INSERT INTO Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (2, 'Nobody', 'No-one in particular', 'Do not delete or modify this user. It is integral to RT''s internal database structures',1,1, NULL, 1, NULL );
+CREATE SEQUENCE GROUPS_NUM;
+CREATE TABLE Groups (
+	id 		NUMBER(11,0) PRIMARY KEY,
+	Name 		VARCHAR2(16),
+	Description 	VARCHAR(64)
+);
 
-INSERT INTO Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (3, 'root', 'root', 'Enoch Root', 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
+CREATE OR REPLACE TRIGGER GROUPS_AUTOINCREMENT
+BEFORE  INSERT ON  GROUPS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT GROUPS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+REM }}}
+
+REM {{{ Table GroupMembers
+CREATE SEQUENCE GROUPMEMBERS_NUM;
+CREATE TABLE GroupMembers (
+	id 		NUMBER(11,0) PRIMARY KEY,
+	GroupId 	NUMBER(11,0) ,
+	UserId 		NUMBER(11,0) 
+);
+
+REM }}}
+CREATE OR REPLACE TRIGGER GROUPMEMBERS_AUTOINCREMENT
+BEFORE  INSERT ON  GROUPMEMBERS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT GROUPMEMBERS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
 
 
 REM {{{ Table ACL {
@@ -247,11 +322,10 @@ CREATE SEQUENCE ACL_NUM;
 CREATE TABLE ACL (
 	id 		NUMBER(11,0) PRIMARY KEY,
 	PrincipalId 	NUMBER(11,0),
-	PrincipalType 	VARCHAR2(16),
-	PrincipalScope 	VARCHAR2(16),
-	ObjectType 	VARCHAR2(16),
-	ObjectId  	NUMBER(11,0),
-	Right 		VARCHAR2(16)
+	PrincipalType 	VARCHAR2(25),
+	Right 		VARCHAR2(25),
+	Scope 		VARCHAR2(25),
+	AppliesTo  	NUMBER(11,0)
 );
 
 CREATE OR REPLACE TRIGGER ACL_AUTOINCREMENT
@@ -265,9 +339,12 @@ BEGIN
 END;
 /
 
+REM Grant everyone all rights until we get things settled
+INSERT INTO ACL VALUES (NULL, 0,'Everyone','SuperUser','System',0);
+
 REM {{{ TABLE Watchers
 
-CREATE SEQUENCE WATCHER_NUM;
+CREATE SEQUENCE WATCHERS_NUM;
 CREATE TABLE Watchers (
    	id 		NUMBER(11,0) PRIMARY KEY,
    	Type 		VARCHAR2(16), 	/*One of: Requestor, Cc, AdminCc*/
@@ -291,16 +368,21 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT WATCHER_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT WATCHERS_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
 
 REM {{{ Scrip system
 
+REM TODO: 
+REM -steal & give (should be sent both to old and new)
+REM mechanisms to avoid sending more than one mail to a party
+REM dealing with CC and BCC.
+
 REM {{{ TABLE Scrips
 
-CREATE SEQUENCE SCRIP_NUM;
+CREATE SEQUENCE SCRIPS_NUM;
 CREATE TABLE Scrips (
   	id 		NUMBER(11,0) PRIMARY KEY,	/*The ID.  All IDs lower than 256 is reservated*/
 							/*default scrips.*/
@@ -322,12 +404,19 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT SCRIP_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT SCRIPS_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
 
 REM {{{ Values for Scrips
+
+REM Short about the default available actions for subscriptions; (this should be in some docs)
+
+REM Action    - base class for any scrips.
+REM 	SendEmail - standard thing, mails away a template
+REM     Notify  - sends away a template to the recipient in the Scrips Argument 
+REM     AutoReply - sends an autoreply 
 
 INSERT INTO Scrips VALUES (1,'Autoreply', 
 			  'Sends an automatic response to the requestor when a ticket was created',
@@ -361,10 +450,19 @@ INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
 			  'Sends mail to owner when anything happens',
 			  'Any','Notify',2,'AdminCc',1,NULL,1,NULL);
 
+REM TODO: Get Notify.pm to support OldOwner + fix a template
 REM INSERT INTO Scrips VALUES (20, 'NotifyOldOwnerOnSteal',
 REM			  'Sends mail to the old owner when the ticket is stolen',
 REM			  'Steal','Notify',10,'OldOwner',1,NULL,1,NULL);
 
+REM Short about the default available link actions available;
+
+REM Action
+REM   StallDependent - stalls the dependent upon a DependsOn linking action.
+REM   OpenDependent - when a DependsOn is resolved, the dependent should be opened.
+REM   Spam - upon correspondance to a group ticket, sends to all member requestors.
+REM   ResolveMembers - when a Group Ticket is resolved, all Members should be resolved.
+REM   ResolveGroupTicket - resolve the Group Ticket when all Members are resolved.
 
 INSERT INTO Scrips VALUES (9, 'StallDependentOnLink', 
 		           'Stalls the dependent when a DependsOn link is made',
@@ -424,13 +522,25 @@ REM delete from ScripScope where id=8;
 
 REM {{{ TABLE Templates
 
-CREATE SEQUENCE TEMPLATE_NUM;
+CREATE SEQUENCE TEMPLATES_NUM;
 CREATE TABLE Templates (
   	id 		NUMBER(11,0) PRIMARY KEY,
   	Title 		VARCHAR2(120),
   	Language 	VARCHAR2(16), 
   	TranslationOf 	NUMBER(11,0),
-  	Content 	VARCHAR2(4000),
+/*The standard language codes should be used, things like en, en-GB*/
+/*(or is it UK), en-US and fr-FR, fr-CA, etc.  With 16 characters*/
+/*available, it's also possible to add languages or variants not*/
+/*covered by the standard.  TranslationOf should poNUMBER(11,0) to the id of*/
+/*the "original" template (or any other translation), and it should be*/
+/*the same for all the different translations of the same content.*/
+/* */
+/*I'm not sure if those attributes will be used directly by the code*/
+/*anywhere in the near future, but if we're going to do more content*/
+/*managing (i.e. put a language attribute on every user, and*/
+/*automaticly determinate what templates are appropriate to send to a*/
+/*user)*/
+  	Content 	CLOB,
   	LastUpdatedBy 	NUMBER(11,0),
   	LastUpdated 	DATE,
   	Creator 	NUMBER(11,0),
@@ -443,16 +553,18 @@ FOR EACH ROW
 DECLARE
 id_number INTEGER;
 BEGIN
-	SELECT TEMPLATE_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	SELECT TEMPLATES_NUM.nextval INTO ID_NUMBER FROM DUAL;
 	:new.id := ID_NUMBER;
 END;
 /
 
 
 REM {{{ Values for Templates
+REM Default templates
+REM Should eventually be created through some init script calling on the CLI admin tools
 
 INSERT INTO Templates VALUES (1,'Default Autoresponse Template', NULL, NULL,
-'To: {$Ticket->RequestorsAsString}
+UTL_RAW.CAST_TO_RAW('To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
 Bcc: {$Ticket->AdminCcAsString}
 Subject: AutoReply: {$Ticket->Subject}
@@ -467,72 +579,72 @@ in the subject line of all future correspondence about this
 problem. To do so, you may reply to this message.
                         Thank you,
                         The Support Group
-                        {$Ticket->QueueObj()->CorrespondAddress()}
+                        {$Ticket->Queue()->CorrespondAddress()}
 -------------------------------------------------------------------------
-{$Transaction->Message()->First()->Content()}',
+{$Transaction->Message()->First()->Content()}'),
 NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'));
 
 INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL,
-'Reply-To: {$Ticket->QueueObj->CommentAddress} (Replies will be entered as comments)
+UTL_RAW.CAST_TO_RAW('Reply-To: {$Ticket->Queue->CommentAddress} (Replies will be entered as comments)
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
-       Queue: {$Ticket->QueueObj->QueueId}
+       Queue: {$Ticket->Queue->QueueId}
      Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
-       Owner: {$Ticket->Owner ? $Ticket->OwnerObj->UserId : "Nobody"}
+       Owner: {$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------
-{$Transaction->Message()->First()->Content() if $Transaction->Message()->First()}',
+{$Transaction->Message()->First()->Content() if $Transaction->Message()->First()}'),
 NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'));
 
 
 
 INSERT INTO Templates VALUES (3,'Default admin correspondence template', NULL, NULL,
-'Subject: {$Transaction->Message()->First()->Subject}
+UTL_RAW.CAST_TO_RAW('Subject: {$Transaction->Message()->First()->Subject}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminCcAsString}
 {$Transaction->IsInbound() ? "In" : "Out"}bound correspondence:
 <URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
-{$Transaction->Message()->First()->Content()}',
+{$Transaction->Message()->First()->Content()}'),
 NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'));
 
 INSERT INTO Templates VALUES (4,'Default Correspondence template for requestors', NULL, NULL,
-'Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
+UTL_RAW.CAST_TO_RAW('Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
 Content-Type: text/plain; charset=ISO-8859-1
-{$Transaction->Message()->First()->Content()}',
+{$Transaction->Message()->First()->Content()}'),
 NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'));
 
 
 INSERT INTO Templates VALUES (5,'Default Administrative Comment template', NULL, NULL,
-'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\[Comment\]//g; $s;}
-Reply-To: {$Ticket->QueueObj->CommentAddress}
+UTL_RAW.CAST_TO_RAW('Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\[Comment\]//g; $s;}
+Reply-To: {$Ticket->Queue->CommentAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminCcAsString}
 {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
-{$Transaction->Message()->First()->Content()}',
+{$Transaction->Message()->First()->Content()}'),
 NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'));
 
 
 INSERT INTO Templates VALUES (6,'Status Change', NULL, NULL,
-'Subject: Status Changed to: {$Transaction->NewValue}
-Reply-To: {$Ticket->QueueObj->CorrespondAddress}
+UTL_RAW.CAST_TO_RAW('Subject: Status Changed to: {$Transaction->NewValue}
+Reply-To: {$Ticket->Queue->CorrespondAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->WatchersAsString}
 {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
-{$Transaction->Message()->First()->Content()}',
+{$Transaction->Message()->First()->Content()}'),
 NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'));
 
 INSERT INTO Templates VALUES (7,'Ticket Resolved', NULL, NULL,
-'Subject: Ticket Resolved
-Reply-To: {$Ticket->QueueObj->CorrespondAddress}
+UTL_RAW.CAST_TO_RAW('Subject: Ticket Resolved
+Reply-To: {$Ticket->Queue->CorrespondAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
-Your request has been resolved. We hope you''re happy.',
+Your request has been resolved. We hope you''re happy.'),
 NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'));
 
 REM }}}
