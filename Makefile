@@ -328,5 +328,6 @@ dist:
 	rm -rf /tmp/rt-$(RT_VERSION)
 	cvs export -D now -d /tmp/rt-$(RT_VERSION) rt
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz rt-$(RT_VERSION)/
+	rm -f /home/ftp/pub/rt/devel/rt.tar.gz
 	ln -s ./rt-$(RT_VERSION).tar.gz ./rt.tar.gz
 	chmod 644 /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz
