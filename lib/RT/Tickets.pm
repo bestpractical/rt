@@ -214,14 +214,16 @@ sub LimitStatus {
 =head2 LimitType
 
 Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of = or !=.
+OPERATOR is one of = or !=, it defaults to "=".
 VALUE is a string to search for in the type of the ticket.
 
 =cut
 
 sub LimitType {
     my $self = shift;
-    my %args = (@_);
+    my %args = (OPERATOR => '=',
+		VALUE => undef,
+		@_);
     $self->Limit (FIELD => 'Type',
                   VALUE => $args{'VALUE'},
                   OPERATOR => $args{'OPERATOR'},
@@ -637,7 +639,7 @@ sub LimitLinkedFrom {
 sub LimitMemberOf {
     my $self = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedTo ( TICKET=> "$ticket_id",
+    $self->LimitLinkedTo ( TARGET=> "$ticket_id",
 			   TYPE => 'MemberOf',
 			  );
     
@@ -648,7 +650,7 @@ sub LimitMemberOf {
 sub LimitHasMember {
     my $self = shift;
     my $ticket_id =shift;
-    $self->LimitLinkedFrom ( TICKET => "$ticket_id",
+    $self->LimitLinkedFrom ( BASE => "$ticket_id",
 			     TYPE => 'MemberOf',
 			     );
     
@@ -660,7 +662,7 @@ sub LimitHasMember {
 sub LimitDependsOn {
     my $self = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedTo ( TICKET => "$ticket_id",
+    $self->LimitLinkedTo ( TARGET => "$ticket_id",
                            TYPE => 'DependsOn',
 			   );
     
@@ -673,7 +675,7 @@ sub LimitDependsOn {
 sub LimitDependedOnBy {
     my $self = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedFrom (  TICKET=> "$ticket_id",
+    $self->LimitLinkedFrom (  BASE => "$ticket_id",
                                TYPE => 'DependsOn',
 			     );
     
