@@ -1,5 +1,6 @@
 20 Oct 1999
 -----------
+* Fixed the repeated (queue) (queue) in transaction messages
 
 * When a message comes into the mailgate, RT is now more careful about whether 
   or not to send it to the user. (This fixes a bug introduced in last night's 

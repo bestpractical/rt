@@ -122,8 +122,9 @@ sub parse_headers {
     
     elsif (($line =~ /^Subject:(.*)\[$rt::rtname\s*\#(\d+)\]\s*(.*)/i) and (!$subject)){
       $serial_num=$2;
+      &rt::req_in($serial_num,$current_user);
       $subject=$3;
-      $subject =~ s/\($in_queue\)//i;
+      $subject =~ s/\($rt::req[$serial_num]{'queue_id'}\)//i;
     }
     
     elsif (($line =~ /^Subject: (.*)/) and (!$subject)){
