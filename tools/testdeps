@@ -19,6 +19,8 @@ $mode = shift || print_help();
 $dbd = shift || print_help();
 
 @modules = qw(
+Digest::MD5
+Storable
 DBI 1.18
 DBIx::DataSource 0.02
 DBIx::SearchBuilder 0.48
