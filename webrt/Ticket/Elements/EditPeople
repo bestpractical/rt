@@ -12,7 +12,7 @@ Find people whose<BR>
         UserOp => $UserOp, UserField => $UserField &> 
 </TD><TD VALIGN=TOP>
 <h3>Owner</h3>
-Owner: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, Default => $Ticket->OwnerObj->Id &>
+Owner: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
 <h3>Current watchers</h3>
 (Check box to delete)<br>
 
