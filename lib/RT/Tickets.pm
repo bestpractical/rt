@@ -5,6 +5,7 @@ use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
 
 # {{{ TYPES
+
 %TYPES =    ( Status => 'ENUM',
 	      Queue  => 'ENUM',
 	      Type => 'ENUM',
@@ -12,8 +13,7 @@ use RT::EasySearch;
 	      LastUpdatedBy => 'ENUM',
 	      Owner => 'ENUM',
 	      id => 'INT',
-	      EffectiveId => 'INT',
-	      InitialPriority => 'INT',
+	     	      InitialPriority => 'INT',
 	      FinalPriority => 'INT',
 	      Priority => 'INT',
 	      TimeLeft => 'INT',
@@ -38,6 +38,7 @@ use RT::EasySearch;
 	      LinkedTo => 'LINKFIELD',
 	      
 	    );
+
 # }}}
 
 # {{{ sub _Init 
@@ -932,7 +933,6 @@ sub PrevPage {
 
 "Int" Things that get Is LessThan and GreaterThan
 id
-EffectiveId
 InitialPriority
 FinalPriority
 Priority

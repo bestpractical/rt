@@ -1,106 +1,170 @@
-<FORM METHOD=POST>
-<INPUT TYPE=HIDDEN NAME=Queue VALUE="<%$QueueObj->id%>">
-
-<TABLE>
-<%PERL>
-#Iterate through all users with rights in this queu
-while (my $UserObj = $Users->Next()) {
-my $UserACLObj = new RT::ACL($session{'CurrentUser'});
-
-$UserACLObj->LimitScopeToQueue($QueueObj->Id);
-$UserACLObj->LimitPrincipalToUser($UserObj->Id);
-$UserACLObj->_BuildHash();
-</%PERL>
-<TR>
-<TD>
-<%$UserObj->UserId%>
-</TD>
-<TD>
-<SELECT SIZE=5  MULTIPLE NAME="ACL-User-<%$UserObj->Id%>-<%$QueueObj->Id%>">
-%foreach $right (keys %TicketRights) {
-<OPTION VALUE="Ticket-<%$right%>"
-<%  $UserACLObj->HasEntry(PrincipalId => $UserObj->Id ,
-               PrincipalType => 'User',
-               RightName => $right, 
-               RightScope => 'Ticket', 
-               RightAppliesTo => $QueueObj->Id) && 'SELECTED' %>
->Ticket:<%$right%></OPTION>
-%}
-%foreach $right (keys %QueueRights) {
-<OPTION VALUE="Queue-<%$right%>"
-<%  $UserACLObj->HasEntry(PrincipalId=> $UserObj->Id , 
-              PrincipalType => 'User', 
-              RightName => $right, 
-              RightScope => 'Queue', 
-              RightAppliesTo => $QueueObj->Id) && 'SELECTED'  %>
->Queue:<%$right%></OPTION>
-%}
-</SELECT>
-</TD>
-</TR>
-
-% }
-</TABLE>
-
-<TABLE>
-
-%#Iterate through all users with rights in this queu
-%while (my $GroupObj = $Groups->Next()) {
-<TR>
-<TD>
-<%$GroupObj->GroupId%>
-</TD>
-<TD>
-<SELECT SIZE=5  MULTIPLE NAME="ACL-Group-<%$GroupObj->Id%>-<%$QueueObj->Id%>">
-%foreach $right (keys %TicketRights) {
-<OPTION VALUE="Ticket-<%$right%>">Ticket:<%$right%></OPTION>
-%}
-%foreach $right (keys %QueueRights) {
-<OPTION VALUE="Queue-<%$right%>">Queue:<%$right%></OPTION>
-%}
-</SELECT>
-</TD>
-</TR>
-
-% }
-</TABLE>
-<INPUT TYPE=SUBMIT>
-</FORM>
-<%INIT>
-
-if (!defined $Queue) {
+<& /Admin/Elements/Header, Title => 'RT ACL Administration' &>
+  <FORM METHOD=POST>
+    <INPUT TYPE=HIDDEN NAME=Queue VALUE="<%$QueueObj->id%>">
+      
+      <TABLE>
+    <%PERL>
+    #Iterate through all users with rights in this queu
+    while (my $UserObj = $Users->Next()) {
+	my $UserACLObj = new RT::ACL($session{'CurrentUser'});
+	
+	$UserACLObj->LimitScopeToQueue($QueueObj->Id);
+	$UserACLObj->LimitPrincipalToUser($UserObj->Id);
+	$UserACLObj->_BuildHash();
+	</%PERL>
+	<TR>
+	  <TD>
+	    <%$UserObj->UserId%>
+	  </TD>
+	  <TD>
+	    <INPUT TYPE=HIDDEN NAME="CheckACL" VALUE="User-<%$UserObj->Id%>-Queue-<%$QueueObj->Id%>">
+	      <SELECT SIZE=5  MULTIPLE NAME="ACL-User-<%$UserObj->Id%>-Queue-<%$QueueObj->Id%>">
+		%foreach $right (keys %TicketRights) {
+		<OPTION VALUE="Ticket-<%$right%>"
+		  <%  $UserACLObj->HasEntry(PrincipalId => $UserObj->Id ,
+					    PrincipalType => 'User',
+					    RightName => $right, 
+					    RightScope => 'Ticket', 
+		  RightAppliesTo => $QueueObj->Id) && 'SELECTED' %>
+		  >Ticket:<%$right%></OPTION>
+		    %}
+	%foreach $right (keys %QueueRights) {
+	    <OPTION VALUE="Queue-<%$right%>"
+	      <%  $UserACLObj->HasEntry(PrincipalId=> $UserObj->Id , 
+					PrincipalType => 'User', 
+					RightName => $right, 
+					RightScope => 'Queue', 
+					RightAppliesTo => $QueueObj->Id) && 'SELECTED'  %>
+		  >Queue:<%$right%></OPTION>
+		    %}
+	      </SELECT>
+	  </TD>
+	</TR>
+	
+	  % }
+      </TABLE>
+      
+      <TABLE>
+	
+    %#Iterate through all users with rights in this queu
+    %while (my $GroupObj = $Groups->Next()) {
+	<TR>
+	  <TD>
+	    <%$GroupObj->GroupId%>
+	  </TD>
+	  <TD>
+	    <INPUT TYPE=HIDDEN NAME="CheckACL" VALUE="Group-<%$GroupObj->Id%>-Queue-<%$QueueObj->Id%>">
+	    <SELECT SIZE=5  MULTIPLE NAME="ACL-Group-<%$GroupObj->Id%>-<%$QueueObj->Id%>">
+	      %foreach $right (keys %TicketRights) {
+	      <OPTION VALUE="Ticket-<%$right%>">Ticket:<%$right%></OPTION>
+		%}
+	      %foreach $right (keys %QueueRights) {
+	      <OPTION VALUE="Queue-<%$right%>">Queue:<%$right%></OPTION>
+	      %}
+	    </SELECT>
+	  </TD>
+	</TR>
+	
+	% }
+      </TABLE>
+      <INPUT TYPE=SUBMIT>
+  </FORM>
+    <%INIT>
+    
+    if (!defined $Queue) {
         &FatalError("No Queue defined");
-}
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue) ||
-        &FatalError("Couldn't load queue $Queue");
+    }
+  my $QueueObj = new RT::Queue($session{'CurrentUser'});
+  $QueueObj->Load($Queue) ||
+    &FatalError("Couldn't load queue $Queue");
+  
+  #Create an RT::Users object which contains all users
+  my $Users = new RT::Users($session{'CurrentUser'});
+  $Users->LimitToPrivileged();
+  #$Users->UnLimit();
+  
+  
+  #Get an RT::Groups object to list the ACLs for
+  my $Groups = new RT::Groups($session{'CurrentUser'});
+  $Users->UnLimit();
 
-#Create an RT::Users object which contains all users
-my $Users = new RT::Users($session{'CurrentUser'});
-$Users->LimitToPrivileged();
-#$Users->UnLimit();
+  
+  my $AdminCcRights = new RT::ACL($session{'CurrentUser'});
+  $AdminCcRights->LimitScopeToQueue($QueueObj->id);
+  $AdminCcRights->LimitPrincipalToType('AdminCc');
+  
+  my $CcRights = new RT::ACL($session{'CurrentUser'});
+  $CcRights->LimitScopeToQueue($QueueObj->id);
+  $CcRights->LimitPrincipalToType('Cc');
+  
+  my $RequestorRights = new RT::ACL($session{'CurrentUser'});
+  $RequestorRights->LimitScopeToQueue($QueueObj->id);
+  $RequestorRights->LimitPrincipalToType('Requestor');
+  
+  my ($right);
+  my %TicketRights = RT::ACE->TicketRights;
+  my %QueueRights = RT::ACE->QueueRights;
+  
+
+  # {{{ Deal with any changes made to the ACL 
+
+  my $ACL;
+  foreach $ACL (@CheckACL) {
+      
+      
+      if ($ACL =~ /^(.*?)-(\d+)-Queue-(\d+)/) {
+	  $PrincipalType = $1;
+	  $PrincipalId = $2;
+	  $Queue = $3;
+	  
+	  
+	  #load up an RT::ACL object with the right characteristics.
+	  my $CurrentACL = new RT::ACL($session{'CurrentUser'});
+	  $CurrentACL->LimitScopeToQueue($Queue);
+	  $CurrentACL->LimitPrincipalToType($PrincipalType);
+	  $CurrentACL->LimitPrincipalToId($PrincipalId);
+	  
+	  #Lets get the values of the select we're working with 
+	  #into an array. this array contains all the new rights that have been granted
+	  
+	  my @rights = ref($ARGS{"$ACL"}) eq 'ARRAY' ?
+               @{$ARGS{"$ACL"}} : ($ARGS{"$ACL"});
+	  
+	  #Remove any ACL entries that have been deselected
+	  my ($entry,%rights);
+	  foreach $entry (@rights) {
+	      
+	      #if the right that's been selected wasn't there before, add it.
+	      unless ($CurrentACL->HasEntry()) {
+		  #TODO: add entry
+	      }	
+	      
+	      #Lets build up a hash of rights, so that we can easily check through them
+	      # to make sure the user hasn't turned off any rights.
+	      $rights{$entry} = 1;
+	      
+	  }
+	  
 
 
-#Get an RT::Groups object to list the ACLs for
-my $Groups = new RT::Groups($session{'CurrentUser'});
-$Users->UnLimit();
+	  while ($entry = $CurrentACL->Next()) {
+	      #If @rights doesn't contain what $entry does, then the user has
+	      # removed that right.
+	      
+	      unless ($rights{$entry->RightScope.":".$entry->RightName}) {
+		  #yank the entry out of  the ACL
+		  $entry->Delete();
+	      }
+	      
+	      
+	  }	
+	  
+      }	
+	
+  
+  # }}}
 
 
-my $AdminCcRights = new RT::ACL($session{'CurrentUser'});
-$AdminCcRights->LimitScopeToQueue($QueueObj->id);
-$AdminCcRights->LimitPrincipalToType('AdminCc');
-
-my $CcRights = new RT::ACL($session{'CurrentUser'});
-$CcRights->LimitScopeToQueue($QueueObj->id);
-$CcRights->LimitPrincipalToType('Cc');
-
-my $RequestorRights = new RT::ACL($session{'CurrentUser'});
-$RequestorRights->LimitScopeToQueue($QueueObj->id);
-$RequestorRights->LimitPrincipalToType('Requestor');
-
-my ($right);
-my %TicketRights = RT::ACE->TicketRights;
-my %QueueRights = RT::ACE->QueueRights;
 </%INIT>
 
 <%ARGS>
@@ -108,4 +172,5 @@ $Queue = undef
 $UserString => undef
 $UserOp => undef
 $UserField => undef
+@CheckACL => undef;
 </%ARGS>

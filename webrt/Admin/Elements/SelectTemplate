@@ -1,0 +1,34 @@
+<SELECT NAME=<%$Name%>>
+<OPTION VALUE="" 
+<% $Default eq 'none' && 'SELECTED' %>
+>-</OPTION>
+%while  (my $Template = $PrimaryTemplates->Next) {
+<OPTION VALUE=<%$Template->Id%>
+<% ($Template->Id == $Default) && 'SELECTED' %>
+><%$Template->Alias%>(<%$Template->Title%>)
+</OPTION>
+%}
+%while  (my $Template = $OtherTemplates->Next) {
+<OPTION VALUE=<%$Template->Id%>
+<% ($Template->Id == $Default)  && 'SELECTED'%>
+><%$Template->QueueObj->QueueId%>:<%$Template->Alias%>(<%$Template->Title%>)
+</OPTION>
+%}
+</SELECT>
+
+<%INIT>
+my $PrimaryTemplates = RT::Templates->new($session{'CurrentUser'});
+$PrimaryTemplates->LimitToQueue($DefaultQueue);
+
+
+my $OtherTemplates = RT::Templates->new($session{'CurrentUser'});
+$OtherTemplates->LimitToNotInQueue($DefaultQueue);
+
+</%INIT>
+<%ARGS>
+
+$Default => 'none'
+$DefaultQueue => undef
+$Name => 'Template'
+
+</%ARGS>

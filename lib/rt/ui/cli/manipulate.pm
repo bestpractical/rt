@@ -322,8 +322,8 @@ sub cli_create_req  {
     require RT::Queue;
     my $Queue = RT::Queue->new($CurrentUser);
     while ($Queue->Load($queue_id) eq undef ) {
-      print "That Queue does not exist\n";
-      $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
+	print "That Queue does not exist\n";
+	$queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     }
     unless ($CurrentUser->HasTicketRight( Right => 'Create',
                                           QueueObj => $Queue)) {
@@ -334,21 +334,22 @@ sub cli_create_req  {
     
     #TODO this fails. this right does not exist
     warn "Bogus rights check";
-    if ($CurrentUser->HasTicketRight(Right => "Ticket",
+    if ($CurrentUser->HasTicketRight(Right => "Modify",
                                      QueueObj => $Queue)) {
-      
-      require RT::User;
-      $Owner = RT::User->new($CurrentUser);
+	
+	require RT::User;
+      $Owner = RT::User->new($RT::SystemUser->UserObj);
       
       $owner=&rt::ui::cli::question_string( "Give request to");
 	
-      while ($owner && (!$Owner->Load($owner) || !$Owner->HasTicketRight("Modify"))) {
+	while ($owner && (!$Owner->Load($owner) || !$Owner->HasTicketRight(Right => "Modify",
+									   QueueObj => $Queue))) {
+	    
+	    print "That user doesn't exist or can't own tickets in that queue\n";
+	    $owner=&rt::ui::cli::question_string( "Give request to")
+	}
 	
-	print "That user doesn't exist or can't own tickets in that queue\n";
-	$owner=&rt::ui::cli::question_string( "Give request to")
-      }
-      
-      
+	
       $priority=&rt::ui::cli::question_int("Starting Priority",$rt::queues{$queue_id}{'default_prio'});
       $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
       $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);

@@ -180,10 +180,9 @@ calls $self->UserObj->HasTicketRight with the arguments passed in
 =cut
 
 sub HasTicketRight {
-	my $self = shift;
-	return ($self->UserObj->HasTicketRight(@_));
+    my $self = shift;
+    return ($self->UserObj->HasTicketRight(@_));
 }
-
 
 
 
@@ -212,36 +211,19 @@ sub HasSystemRight {
 # }}}
 
 # {{{ sub HasRight
+
+=head2 HasSystemRight
+
+calls $self->UserObj->HasRight with the arguments passed in
+
+=cut
+
 sub HasRight {
   my $self = shift;
-  my %args = ( Scope => undef,
-	       AppliesTo => undef,
-	       Right => undef,
-	       @_);
-  # TODO: Something is obviously missing here.
-  return 1;
+  return ($self->UserObj->HasRight(@_));
 }
 
 # }}}
-
-# {{{ sub DisplayPermitted 
-sub DisplayPermitted  {
-  my $self = shift;
-  #TODO: Implement
-  return(1);
-}
-# }}}
-
-# {{{ sub ModifyPermitted 
-sub ModifyPermitted  {
-  my $self = shift;
-  #TODO: Implement
-  return(1);
-}
-# }}}
-
-
-
 
 1;
  

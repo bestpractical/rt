@@ -6,6 +6,8 @@ my $gratuitous = {
   'columns' => [
     'id', 'serial', '', '', '', '',
     'Name', 'varchar', 'NULL', '16', '', '',
+    'Pseudo', 'integer', '0', '1', '', '',
+
     'Description', 'varchar', 'NULL', '64', '', '',
   ],
   'primary_key' => 'id',

@@ -43,10 +43,11 @@ my @users = (
 	     { 
 	      UserId => 'Nobody',
 	      RealName => 'Nobody in particular',
-	      Comments => 'Do not delete or modify this user. It is integral to RT\'s internal data structures',
+	      Comments => 'Do not delete or modify this user. It is integral ' .
+	      'to RT\'s internal data structures',
 	      Privileged => '1',
 	     },
-	     
+
 	     { 
 	      UserId => 'root',
 	      Gecos => 'root',
@@ -57,6 +58,30 @@ my @users = (
 	      Privileged => '1',
 	     }
 	    );
+
+# }}}
+
+
+# {{{ Groups 
+
+my @groups = (
+
+	      {
+	       Name => 'Cc',
+	       Description => 'Pseudogroup for internal use',
+	       Pseudo => '1',
+	      },
+	      {
+	       Name => 'Bcc',
+	       Description => 'Pseudogroup for internal use',
+	       Pseudo => '1',
+	      },
+	      {
+	       Name => 'AdminCc',
+	       Description => 'Pseudogroup for internal use',
+	       Pseudo => '1',
+	      },
+	     );
 
 # }}}
 
@@ -342,7 +367,6 @@ further questions or concerns, simply respond to this message.
 
 
 
-
 print "Creating ACL...";
 use RT::ACE;
 for $item (@acl) {
@@ -360,11 +384,21 @@ foreach $item (@users) {
    my $return = $new_entry->Create(%$item);
   print $return.".";
 }
-
 print "done.\n";
 
+print "Creating groups...";
+use RT::Group;
+foreach $item (@groups) {
+   my $new_entry = new RT::Group($CurrentUser);
+   my $return = $new_entry->Create(%$item);
+  print $return.".";
+}
+print "done.\n";
+
+
+
 print "Creating queues...";
-    use RT::Queue;
+use RT::Queue;
 for $item (@queues) {
     my $new_entry = new RT::Queue($CurrentUser);
     my $return = $new_entry->Create(%$item);
@@ -374,12 +408,10 @@ for $item (@queues) {
 print "done.\n";
 print "Creating scrips...";
 
-    use RT::Scrip;
+use RT::Scrip;
 for $item (@scrips) {
-
     my $new_entry = new RT::Scrip($CurrentUser);
-   
-    my $return = $new_entry->Create(%$item);
+       my $return = $new_entry->Create(%$item);
     print $return.".";
 }
 

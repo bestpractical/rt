@@ -202,6 +202,30 @@ sub LimitPrincipalToType {
 		VALUE => $type );
 }
 
+
+=head2 LimitPrincipalToId 
+
+Takes a single argument, the numeric Id of the principal to limit this ACL to. Repeated calls to this 
+function will broaden the scope of the search to include all principals listed.
+
+=cut
+
+sub LimitPrincipalToId {
+    my $self = shift;
+    my $id = shift;
+
+    if ($id =~ /^\d+$/) {
+	$self->Limit(ENTRYAGGREGATOR => 'OR',
+		     FIELD => 'PrincipalId',
+		     VALUE => $id );
+    }
+    else {
+	$RT::Logger->warn($self."->LimitPrincipalToId called with '$id' as an id");
+	return undef;
+    }
+}
+
+
 #wrap around _DoSearch  so that we can build the hash of returned
 #values 
 sub _DoSearch {

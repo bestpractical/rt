@@ -1,0 +1,25 @@
+<SELECT NAME=<%$Name%>>
+<OPTION VALUE="" 
+<% $Default eq undef && 'SELECTED' %>
+>-</OPTION>
+%while  (my $Scrip = $Scrips->Next) {
+<OPTION VALUE=<%$Scrip->Id%>
+<% $Scrip->Id == $Default && 'SELECTED' %>
+><%$Scrip->Name%>(<%$Scrip->Description%>)
+</OPTION>
+%}
+</SELECT>
+
+<%INIT>
+my $Scrips = RT::Scrips->new($session{'CurrentUser'});
+$Scrips->UnLimit;
+
+
+
+</%INIT>
+<%ARGS>
+
+$Default => undef
+$Name => 'Scrip'
+
+</%ARGS>

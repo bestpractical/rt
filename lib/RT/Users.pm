@@ -4,7 +4,7 @@
 
 package RT::Users;
 use RT::EasySearch;
-@ISA= qw(RT::EasySearch);
+@ISA = qw(RT::EasySearch);
 
 
 # {{{ sub _Init 
@@ -38,6 +38,8 @@ sub NewItem  {
 }
 # }}}
 
+
+# {{{ LimitToEmail
 =head2 LimitToEmail
 
 Takes one argument. an email address. limits the returned set to
@@ -46,11 +48,12 @@ that email address
 =cut
 
 sub LimitToEmail {
-    my $self=shift;
-    my $addr=shift;
+    my $self = shift;
+    my $addr = shift;
     $self->Limit(FIELD => 'EmailAddress', VALUE => "$addr");
 }
 
+# }}}
 
 # {{{ MemberOfGroup
 
@@ -82,7 +85,7 @@ sub MemberOfGroup {
 # }}}
 
 
-
+# {{{ Disabled
 =head2 Disabled
 
 Limits the returned set to users who have been disabled
@@ -93,8 +96,13 @@ sub Disabled {
     my $self = shift;
     $self->Limit( FIELD => 'Disabled',
 		  OPERATOR => '=',
-		  VALUE=> '1');
+		  VALUE => '1');
 }
+
+# }}}
+
+# TODO: wrapper around _DoSearch which explicitly sets !Disabled unless Disabled has been called.
+# by default, Disabled users should be neither seen nor heard.
 
 # {{{ LimitToPrivileged
 
@@ -183,7 +191,6 @@ sub HasQueueRight {
 
 
 # }}}
-
 
 # {{{ HasSystemRight
 

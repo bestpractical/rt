@@ -52,8 +52,7 @@ sub Create  {
     
     #lets create our transaction
     my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
-				  EffectiveTicket  => $args{'Ticket'},
-				  TimeTaken => $args{'TimeTaken'},
+	                          TimeTaken => $args{'TimeTaken'},
 				  Type => $args{'Type'},
 				  Data => $args{'Data'},
 				  Field => $args{'Field'},
@@ -148,6 +147,7 @@ sub Create  {
   # }}}
     return ($id, "Transaction Created");
 }
+
 # }}}
 
 # {{{ Routines dealing with Attachments
@@ -374,6 +374,7 @@ sub Description  {
 # }}}
 
 # {{{ sub _Accessible 
+
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
@@ -384,13 +385,13 @@ sub _Accessible  {
 	      Data => 'read',
 	      NewValue => 'read',
 	      OldValue => 'read',
-	      EffectiveTicket => 'read',
 	      Creator => 'read/auto',
 	      Created => 'read/auto',
 	      LastUpdated => 'read/auto'
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);
 }
+
 # }}}
 
 # }}}
@@ -417,28 +418,16 @@ sub IsInbound {
 
 =head2 CurrentUserHasRight
 
-Calls $self->TicketObj->CurrentUserHasRight with the argument list
+Calls $self->CurrentUser->HasTicketRight with the argument list
 passed in here.
 
 =cut
 
 sub CurrentUserHasRight {
     my $self = shift;
-    return ($self->TicketObj->CurrentUserHasRight(@_));
+    my %args = (TicketObj => $self->TicketObj,
+		@_);
+    return ($self->CurrentUser->HasTicketRight(%args));
 }
-
-=head2 HasRight
-
-Calls $self->TicketObj->HasRight with the argument list
-passed in here.
-
-=cut
-
-
-sub HasRight {
-    my $self = shift;
-    return ($self->TicketObj->HasRight(@_));
-}
-
 
 1;

@@ -1,7 +1,7 @@
 # $Header$
 # (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
-#
+
 
 package RT::User;
 use RT::Record;
@@ -9,14 +9,14 @@ use RT::Record;
 
 # {{{ sub new 
 sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->{'table'} = "Users";
-  $self->_Init(@_);
-
-  return($self);
+    my $proto = shift;
+    my $class = ref($proto) || $proto;
+    my $self  = {};
+    bless ($self, $class);
+    $self->{'table'} = "Users";
+    $self->_Init(@_);
+    
+    return($self);
 }
 # }}}
 
@@ -42,9 +42,7 @@ sub _Accessible  {
 	      RealName => 'read/write',
 	      NickName => 'read/write',
 	      # }}}
-	      
-	      
-	      
+	      	      
 	      # {{{ Localization and Internationalization
 	      Lang => 'read/write',
 	      EmailEncoding => 'read/write',
@@ -93,97 +91,97 @@ sub _Accessible  {
 # {{{ sub Create 
 
 sub Create  {
-  my $self = shift;
-  my %args = (
-	      Privileged => 0,
-	      @_ # get the real argumentlist
-	     );
-
-  #TODO: insert argument list +++
-  ##TODO: unless defined $args{'Password'}, make a random password.
-
-  #Todo we shouldn't do anything if we have no password to start.
-  #return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
-  
-  #TODO Specify some sensible defaults.
-  #TODO check ACLs
-
-  my $id = $self->SUPER::Create(%args);
-
-  #If the create failed.
-  return (0) if ($id == 0);
-
-  $self->Load($id);
-  
-  #TODO: this is horrificially wasteful. we shouldn't commit 
-  # to the db and then instantly turn around and load the same data
-
-
-  if ($args{'SendWelcomeMessage'}) {
-      #TODO: Check if the email exists and looks valid
-      #TODO: Send the user a "welcome message"  see [fsck.com #290]
-  }
-
-  return ($id);
+    my $self = shift;
+    my %args = (
+		Privileged => 0,
+		@_ # get the real argumentlist
+	       );
+    
+    #TODO: insert argument list +++
+    ##TODO: unless defined $args{'Password'}, make a random password.
+    
+    #Todo we shouldn't do anything if we have no password to start.
+    #return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
+    
+    #TODO Specify some sensible defaults.
+    #TODO check ACLs
+    
+    my $id = $self->SUPER::Create(%args);
+    
+    #If the create failed.
+    return (undef) if ($id == 0);
+    
+    $self->Load($id);
+    
+    #TODO: this is horrificially wasteful. we shouldn't commit 
+    # to the db and then instantly turn around and load the same data
+    
+    
+    if ($args{'SendWelcomeMessage'}) {
+	#TODO: Check if the email exists and looks valid
+	#TODO: Send the user a "welcome message"  see [fsck.com #290]
+    }
+    
+    return ($id);
 }
 
 # }}}
 
 # {{{ sub Delete 
-
+#This should probably not ever exist. deleting users 
+#would hose the schema.
 sub Delete  {
-  my $self = shift;
-
-  my $new_owner = shift;
-
-  #TODO: check ACLS  
-  #TODO: Here, we should take all this admin's tickets that
-  #      are stalled or open and reassign them to $new_owner;
-  #      additionally, we should nuke this user's acls
-
-
-
-  my ($query_string,$update_clause, $user_id);
-  
-  #TODO Handle User->Delete
-  die "User->Delete not implemented";
-  $user_id=$self->_Handle->quote($self->UserId);
-  
-  if ($self->CurrentUser->IsAdministrator) {
+    my $self = shift;
     
-    if ($self->UserId  ne $self->CurrentUser) {
-      $query_string = "DELETE FROM users WHERE UserId = $user_id";
-      $query_string = "DELETE FROM queue_acl WHERE UserId = $user_id";
-
-      
-      return ("User deleted.");
-      
+    die "User->Delete not implemented";
+    
+    my $new_owner = shift;
+  
+    #TODO: check ACLS  
+    #TODO: Here, we should take all this admin's tickets that
+    #      are stalled or open and reassign them to $new_owner;
+    #      additionally, we should nuke this user's acls
+    
+    
+    
+    my ($query_string,$update_clause, $user_id);
+    
+    #TODO Handle User->Delete
+    
+    $user_id=$self->_Handle->quote($self->UserId);
+    
+    if ($self->CurrentUser->IsAdministrator) {
+	
+	if ($self->UserId  ne $self->CurrentUser) {
+	    $query_string = "DELETE FROM users WHERE UserId = $user_id";
+	    $query_string = "DELETE FROM queue_acl WHERE UserId = $user_id";
+	    return ("User deleted.");
+	    
+	}
+	else {
+	    return("You may not delete yourself. (Do you know why?)");
+	}
     }
     else {
-      return("You may not delete yourself. (Do you know why?)");
+	return("You do not have the privileges to delete that user.");
     }
-  }
-  else {
-    return("You do not have the privileges to delete that user.");
-  }
-  
+    
 }
 
 # }}}
 
 # {{{ sub Load 
 sub Load  {
-  my $self = shift;
-  my $identifier = shift || return undef;
-
-  #if it's an int, load by id. otherwise, load by name.
-  if ($identifier !~ /\D/) {
-    $self->SUPER::LoadById($identifier);
-  }
-  else {
-
-   $self->LoadByCol("UserId",$identifier);
-  }
+    my $self = shift;
+    my $identifier = shift || return undef;
+    
+    #if it's an int, load by id. otherwise, load by name.
+    if ($identifier !~ /\D/) {
+	$self->SUPER::LoadById($identifier);
+    }
+    else {
+	$self->LoadByCol("UserId",$identifier);
+    }
 }
 # }}}
 
@@ -195,7 +193,6 @@ sub LoadByEmail {
 }
 # }}}
 
-#used to check if a password is correct
 # {{{ sub IsPassword
 
 =head2 IsPassword
@@ -205,27 +202,25 @@ Returns undef otherwise.
 
 =cut
 
-
-
 sub IsPassword { 
-  my $self = shift;
-  my $value = shift;
-
-  $RT::Logger->debug($self->UserId." attempting to authenticate with password '$value'\n");
-  # RT does not allow null passwords 
-  if ((!defined ($value)) or ($value eq '')) {
+    my $self = shift;
+    my $value = shift;
+    
+    $RT::Logger->debug($self->UserId." attempting to authenticate with password '$value'\n");
+    # RT does not allow null passwords 
+    if ((!defined ($value)) or ($value eq '')) {
 	return(undef);
-  } 
-  if ($self->Disabled) {
+    } 
+    if ($self->Disabled) {
   	$RT::Logger->info("Disabled user ".$self->UserId." tried to log in");
 	return(undef);
-  }
-  if ($value eq $self->_Value('Password')) {
-    return (1);
-  }
-  else {
-    return (undef);
-  }
+    }
+    if ($value eq $self->_Value('Password')) {
+	return (1);
+    }
+    else {
+	return (undef);
+    }
 }
 # }}}
 
@@ -260,16 +255,95 @@ for a fuller treatment of this
 =cut 
 
 sub Enable {
-	my $self = shift;
-	
-	if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
-	  return($self->_Set(Field => 'Disabled', Value => 0));
-}
+    my $self = shift;
+    
+    if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
+	return($self->_Set(Field => 'Disabled', Value => 0));
+    }
 }
 
 # }}}
 
+# {{{ ACL Related routines
+
+# {{{ GrantQueueRight
+
+=head2 GrantQueueRight
+
+A convenience method for ACE::Create that autosets RightScope to 'Queue'
+
+=cut
+
+sub GrantQueueRight {
+    
+    my $self = shift;
+    my %args = ( RightScope => 'Queue',
+		 RightName => undef,
+		 RightAppliesTo => undef,
+		 PrincipalType => 'User',
+		 PrincipalId => $self->Id,
+		 @_);
+    
+    my $ace = new RT::ACE($self->CurrentUser);
+    
+    return ($ace->Create(%args));
+}
+
+# }}}
+
+# {{{ GrantGlobalQueueRight
+
+=head2 GrantGloblaQueueRight
+
+A convenience method for ACE::Create that autosets RightScope to 'Queue' and RightAppliesTo to '0'
+
+=cut
+
+sub GrantGlobalQueueRight {
+    
+    my $self = shift;
+    my %args = ( RightScope => 'Queue',
+		 RightName => undef,
+		 RightAppliesTo => 0,
+		 PrincipalType => 'User',
+		 PrincipalId => $self->Id,
+		 @_);
+    
+    my $ace = new RT::ACE($self->CurrentUser);
+    
+    return ($ace->Create(%args));
+}
+
+# }}}
+
+# {{{ GrantSystemRight
+
+=head2 GrantSystemRight
+
+Grant a right to someone.
+Presets RightScope to 'System' and RightAppliesTo to '0'
+
+=cut
+sub GrantSystemRight {
+    
+    my $self = shift;
+    my %args = ( RightScope => 'System',
+		 RightName => undef,
+		 RightAppliesTo => 0,
+		 PrincipalType => 'User',
+		 PrincipalId => $self->Id,
+		 @_);
+    
+    my $ace = new RT::ACE($self->CurrentUser);
+    
+    return ($ace->Create(%args));
+}
+
+
+# }}}
+
 # {{{ sub HasQueueRight
+
 =head2 HasQueueRight( QueueObj => RT::Queue, Right => 'Right' )
 
 Returns 1 if this user has the right specified in the paramhash. for the queue
@@ -280,19 +354,20 @@ Returns undef if they don't
 =cut
 
 sub HasQueueRight {
-	my $self = shift;
-	my %args = ( QueueObj => undef,
-				 Right => undef,
-				 @_);
-	
-	unless (ref ($args{'QueueObj'}) =~ /^RT::Queue/) {
-		$RT::Logger->debug("RT::User::HasQueueRight was passed $args{'QueueObj'} as a queue object");
-	}
-	
-	return ($self->_HasRight(Scope => 'Queue',
-				AppliesTo => $args{'QueueObj'}->Id,
-				Right => "$args{'Right'}"));
-	
+    my $self = shift;
+    my %args = ( QueueObj => undef,
+		 Right => undef,
+		 @_);
+    
+    unless (ref ($args{'QueueObj'}) =~ /^RT::Queue/) {
+	$RT::Logger->debug("RT::User::HasQueueRight was passed ".
+			   "$args{'QueueObj'} as a queue object");
+    }
+    
+    return ($self->_HasRight(Scope => 'Queue',
+			     AppliesTo => $args{'QueueObj'}->Id,
+			     Right => "$args{'Right'}"));
+    
 }
 
 # }}}
@@ -314,24 +389,30 @@ Returns undef if they don't
 =cut
 
 sub HasTicketRight {
-	my $self = shift;
-	my %args = ( TicketObj => undef,
+    my $self = shift;
+    my %args = ( TicketObj => undef,
                  QueueObj => undef,
-		     Right => undef,
-		     @_);
-
+		 Right => undef,
+		 @_);
+    
     my ($QueueId);
-
-	#Check to make sure that the ticketobj is really a ticketobject	
+    
+    #Check to make sure that the ticketobj is really a ticketobject	
     if (defined $args{'QueueObj'}) {
         $QueueId = $args{'QueueObj'}->Id;
-    } elsif (defined $args{'TicketObj'}) {
+    } 
+    elsif (defined $args{'TicketObj'}) {
         $QueueId = $args{'TicketObj'}->QueueObj->Id,
-    }        
-	return ($self->_HasRight(Scope => 'Ticket',
-				AppliesTo => $QueueId,
-				Right => "$args{'Right'}"));
-	
+    }
+    else {
+	use Carp;
+	Carp::Confess;
+	$RT::Logger->debug("$self ->HasTicketRight didn't find a valid queue id.");
+    }
+    return ($self->_HasRight(Scope => 'Ticket',
+			     AppliesTo => $QueueId,
+			     Right => "$args{'Right'}"));
+    
 }
 
 # }}}
@@ -340,25 +421,24 @@ sub HasTicketRight {
 
 =head2 HasSystemRight ( Right => 'right')
 
-Returns 1 if this user has the right 'right'
-
-Returns undef if this user doesn't
+Returns 1 if this user has the listed 'right'. Returns undef if this user doesn't.
 
 =cut
 
 sub HasSystemRight {
-	my $self = shift;
-	my %args = ( Right => 'undef',
-	   	     @_);
-
-	if (!defined $args{'Right'}) {
-		$RT::Logger->debug("RT::User::HasSystemRight was passed in no right. this won't do");
-		return(0);
-	}	
-	return ($self->_HasRight ( Scope => 'System',
-				   AppliesTo => 0,
-				   Right => $args{'Right'}));
-	
+    my $self = shift;
+    my %args = ( Right => 'undef',
+		 @_);
+    
+    if (!defined $args{'Right'}) {
+	$RT::Logger->debug("RT::User::HasSystemRight was passed in no right.");
+	return(undef);
+    }	
+    return ( $self->_HasRight ( Scope => 'System',
+				AppliesTo => 0,
+				Right => $args{'Right'})
+	   );
+    
 }
 
 # }}}
@@ -389,98 +469,131 @@ Returns undef if no ACE was found.
 
 
 sub _HasRight {
-	
-	my $self = shift;
-	my %args = ( Right => undef,
-	 	     Scope => undef,
-		     AppliesTo => undef,
-		     ExtendedPrincipals => undef,
-		     @_);
-		
-
-	if ($self->Disabled) {
-		$RT::Logger->debug ("Disabled User:  ".$self->UserId." failed access check for ".$args{'Right'}." to object ".$args{'Scope'}."/".$args{'AppliesTo'}."\n");
-		return (undef);
-	}
-
-	if (!defined $args{'Right'}) {
-		$RT::Logger->debug("_HasRight called without a right\n");
-		return(0);
-	}
-	elsif (!defined $args{'Scope'}) {
-		$RT::Logger->debug("_HasRight called without a scope\n");
-		return(0)
-	}
-	elsif (!defined $args{'AppliesTo'}) {
-		$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
-		return(0)
-	}
-
-	#If we've cached a win or loss for this lookup say so
-	#TODO Security +++ check to make sure this is complete and right
-	if (defined ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"})) {
-	    #$RT::Logger->debug("Got a cached ACL decision for ".$args{'Right'}.$args{'Scope'}.$args{'AppliesTo'}."\n");	    
-	    return  ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
-	}
-
-	my $RightClause = "(RightName = '$args{'Right'}')";
-	
-	my $ScopeClause = "(RightScope = '$args{'Scope'}')";
-	
-	#If an AppliesTo was passed in, we should pay attention to it.
-	#otherwise, none is needed
-
-	$ScopeClause = "($ScopeClause AND ((RightAppliesTo = 0) OR (RightAppliesTo = $args{'AppliesTo'})))"
-	  if ($args{'AppliesTo'});
-	
-	
-	# The generic principals clause looks for users with my id
-	# and Rights that apply to _everyone_
-	my $PrincipalsClause =  "(((PrincipalType = 'User') AND (PrincipalId = ".$self->Id.")) OR (PrincipalType = 'Everyone'))";
     
-	# If the user is the superuser, grant them the damn right ;)
-	my $SuperUserClause = "(RightName = 'SuperUser') AND (RightScope = 'System') AND (RightAppliesTo = 0)";
-	
-	# If we've been passed in an extended principals clause, we should lump it
-	# on to the existing principals clause. it'll make life easier
-	if ($args{'ExtendedPrincipals'}) {
-		$PrincipalsClause = "(($PrincipalsClause) OR ($args{'ExtendedPrincipalsClause'}))";
-	}
-	my $GroupPrincipalsClause = "((PrincipalType = 'Group') AND (PrincipalId = GroupMembers.Id) AND (GroupMembers.UserId = ".$self->Id."))";
-	
-	
-	# This query checks to se whether the user has the right as a member of a group
-	my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers WHERE (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) AND ($GroupPrincipalsClause))";    
-	
-	# This query checks to see whether the current user has the right directly
-	my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) AND ($PrincipalsClause))";
-	
-
-
-	my ($hitcount);
-#	$RT::Logger->debug("Now Trying $query_string_1\n");	
-	$hitcount = $self->_Handle->FetchResult($query_string_1);
-  
-	#if there's a match, the right is granted
-	if ($hitcount) {
-	    $self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
-	    return (1);
-	}
-#	$RT::Logger->debug("No ACL matched $query_string_1\n");	
-	
-
-	
-	$hitcount = $self->_Handle->FetchResult($query_string_2);
-
-	if ($hitcount) {
-	    $self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
-	    return (1);
-	}
-		
-	$RT::Logger->debug("No ACL matched $query_string_2\n")	;
-	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=0;
+    my $self = shift;
+    my %args = ( Right => undef,
+		 Scope => undef,
+		 AppliesTo => undef,
+		 ExtendedPrincipals => undef,
+		 @_);
+    
+    
+    if ($self->Disabled) {
+	$RT::Logger->debug ("Disabled User:  ".$self->UserId.
+			    " failed access check for ".$args{'Right'}.
+			    " to object ".$args{'Scope'}."/".
+			    $args{'AppliesTo'}."\n");
+	return (undef);
+    }
+    
+    if (!defined $args{'Right'}) {
+	$RT::Logger->debug("_HasRight called without a right\n");
 	return(0);
+    }
+    elsif (!defined $args{'Scope'}) {
+	$RT::Logger->debug("_HasRight called without a scope\n");
+	return(0)
+    }
+    elsif (!defined $args{'AppliesTo'}) {
+	$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
+	return(0)
+    }
+    
+    #If we've cached a win or loss for this lookup say so
+    #TODO Security +++ check to make sure this is complete and right
+    
+    if (defined ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"})) {
+	$RT::Logger->debug("Got a cached ACL decision for ". 
+			   $args{'Right'}.$args{'Scope'}.
+			   $args{'AppliesTo'}."\n");	    
+	return  ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
+    }
+    
+    my $RightClause = "(RightName = '$args{'Right'}')";
+    my $ScopeClause = "(RightScope = '$args{'Scope'}')";
+    
+    #If an AppliesTo was passed in, we should pay attention to it.
+    #otherwise, none is needed
+    
+    $ScopeClause = "($ScopeClause AND ((RightAppliesTo = 0) OR ".
+      " (RightAppliesTo = $args{'AppliesTo'})))"
+	if ($args{'AppliesTo'});
+    
+    
+    # The generic principals clause looks for users with my id
+    # and Rights that apply to _everyone_
+    my $PrincipalsClause =  "(((PrincipalType = 'User') AND ".
+      "	(PrincipalId = ".$self->Id.")) OR ".
+	"(PrincipalType = 'Everyone'))";
+    
+    # If the user is the superuser, grant them the damn right ;)
+    my $SuperUserClause = "(RightName = 'SuperUser') AND ".
+      "(RightScope = 'System') AND (RightAppliesTo = 0)";
+    
+    # If we've been passed in an extended principals clause, we should lump it
+    # on to the existing principals clause. it'll make life easier
+    if ($args{'ExtendedPrincipals'}) {
+	$PrincipalsClause = "(($PrincipalsClause) OR ".
+	  "($args{'ExtendedPrincipalsClause'}))";
+    }
+    
+    my $GroupPrincipalsClause = "((PrincipalType = 'Group') AND ".
+      "(PrincipalId = GroupMembers.Id) AND ".
+	" (GroupMembers.UserId = ".$self->Id."))";
+    
+    
+    # This query checks to se whether the user has the right as a member of a
+    # group
+    my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers WHERE ".
+      " (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) ".
+	" AND ($GroupPrincipalsClause))";    
+    
+    
+    
+    my ($hitcount);
+    
+    # {{{ deal with checking to see whether the user has a right as a member of a group
+
+    $RT::Logger->debug("Now Trying $query_string_1\n");	
+    $hitcount = $self->_Handle->FetchResult($query_string_1);
+    
+    #if there's a match, the right is granted
+    if ($hitcount) {
+	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
+	return (1);
+    }
+    
+    $RT::Logger->debug("No ACL matched $query_string_1\n");	
+    
+    # }}}
+
+    # {{{ Check to see whether the user has a right as an individual
+    
+    # This query checks to see whether the current user has the right directly
+    my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE ".
+      " (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) " .
+	" AND ($PrincipalsClause))";
+
+    
+    $hitcount = $self->_Handle->FetchResult($query_string_2);
+    
+    if ($hitcount) {
+	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
+	return (1);
+    }
+    
+    $RT::Logger->debug("No ACL matched $query_string_2\n");
+
+    # }}}
+
+
+    #If nothing matched, return 0.
+    $self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}= 0;
+    
+    return (0);
 }
+
+# }}}
 
 # }}}
 1;

@@ -39,17 +39,16 @@ This module lets you manipulate RT's most key object. The Ticket.
 # {{{ sub new
 
 sub new {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->{'table'} = "Tickets";
-  $self->_Init(@_);
-  return ($self);
+      my $proto = shift;
+      my $class = ref($proto) || $proto;
+      my $self  = {};
+      bless ($self, $class);
+      $self->{'table'} = "Tickets";
+      $self->_Init(@_);
+      return ($self);
 }
 
 # }}}
-
 
 # {{{ sub Load
 
@@ -62,28 +61,28 @@ Otherwise, returns the ticket id.
 =cut
 
 sub Load {
-    my $self=shift;
-    my $id = shift;
+   my $self=shift;
+   my $id = shift;
 
-  #If it's a local URI, load the ticket object and return its URI
-  if ($id =~ /^$RT::TicketBaseURI/)  {
-    return($self->LoadByURI($id));
-  }
-  #If it's a remote URI, we're going to punt for now
-  elsif ($id =~ '://' ) {
-    return (undef);
+#If it's a local URI, load the ticket object and return its URI
+   if ($id =~ /^$RT::TicketBaseURI/)  {
+      return($self->LoadByURI($id));
    }
+#If it's a remote URI, we're going to punt for now
+   elsif ($id =~ '://' ) {
+      return (undef);
+}
 
-  #If the base is an integer, load it as a ticket 
- elsif ( $id =~ /^\d+$/ ) {
+#If the base is an integer, load it as a ticket 
+elsif ( $id =~ /^\d+$/ ) {
 
-    return($self->LoadById($id));
-  }
+   return($self->LoadById($id));
+}
 
-  #It's not a URI. It's not a numerical ticket ID. It must be an alias
-  else {
+#It's not a URI. It's not a numerical ticket ID. It must be an alias
+else {
    return( $self->LoadByAlias($id));
-  }
+}
 
 
 }
@@ -129,16 +128,14 @@ sub LoadByURI {
 }
 
 # }}}
+
 # {{{ sub Create
 
-=over 10
-
-=item Create (ARGS)
+=head2 Create (ARGS)
 
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
     id 
-    EffectiveId
     Queue  - Either a Queue object or a QueueId
     QueueTag
     Requestor -- A requestor object, if available.  Eventually taken from the MIME object.
@@ -161,180 +158,189 @@ Returns: TICKETID, Transaction Object, Error Message
 
 
 sub Create {
-  my $self = shift;
-  my ( $ErrStr, $Queue, $Owner);
-
-  my %args = (id => undef,
-	      EffectiveId => undef,
-	      Queue => undef,
-	      Requestor => undef,
-	      RequestorEmail => undef,
-	      Alias => undef,
-	      Type => 'ticket',
-	      Owner => $RT::Nobody->UserObj,
-	      Subject => '[no subject]',
-	      InitialPriority => "0",
-	      FinalPriority => "0",
-	      Status => 'new',
-	      TimeWorked => "0",
-	      Due => "0",
-	      MIMEObj => undef,
-	      @_);
-
-  #TODO Load queue defaults +++
-
-  
-  if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
-    $Queue=RT::Queue->new($self->CurrentUser);
-    $Queue->Load($args{'Queue'});
-    #TODO error check this and return 0 if it's not loading properly +++
-  }
-  elsif (ref($args{'Queue'}) eq 'RT::Queue') {
+    my $self = shift;
+    my ( $ErrStr, $Queue, $Owner);
+    
+    my %args = (id => undef,
+		Queue => undef,
+		Requestor => undef,
+		RequestorEmail => undef,
+		Alias => undef,
+		Type => 'ticket',
+		Owner => $RT::Nobody->UserObj,
+		Subject => '[no subject]',
+		InitialPriority => "0",
+		FinalPriority => "0",
+		Status => 'new',
+		TimeWorked => "0",
+		Due => "0",
+		MIMEObj => undef,
+		@_);
+    
+    #TODO Load queue defaults +++
+    
+    
+    if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
+	$Queue=RT::Queue->new($self->CurrentUser);
+	$Queue->Load($args{'Queue'});
+	#TODO error check this and return 0 if it's not loading properly +++
+    }
+    elsif (ref($args{'Queue'}) eq 'RT::Queue') {
 	$Queue = $args{'Queue'};
-  }
-  else {
+    }
+    else {
 	$RT::Logger->err($args{'Queue'} . " not a recognised queue object.");
+    }
+    #Can't create a ticket without a queue.
+    unless (defined ($Queue)) {
+	$RT::Logger->err( "No queue given for ticket create request '".$args{'Subject'}."'");
+	return (0, 0,'Queue not set');
+    }
+    
+    
+    
+    # Deal with setting the owner
+    
+    
+    if (ref($args{'Owner'}) eq 'RT::User') {
+	$Owner = $args{'Owner'};
+    }
+    #If we've been handed an integer (aka an Id for the users table 
+    elsif ($args{'Owner'} =~ /^\d+$/) {
+	$Owner = new RT::User($self->CurrentUser);
+	$Owner->Load($args{'Owner'});
+	
+    }
+    #If we can't handle it, call it nobody
+    else {
+	if (ref($args{'Owner'})) {
+	    $RT::Logger->warning("Ticket $ticket  ->Create called with an Owner of ".
+				 "type ".ref($args{'Owner'}) .". Defaulting to nobody.\n");
 	}
-  #Can't create a ticket without a queue.
-  unless (defined ($Queue)) {
-    $RT::Logger->err( "No queue given for ticket create request '".$args{'Subject'}."'");
-    return (0, 0,'Queue not set');
-  }
-
-
-
-  # Deal with setting the owner
-
-
-  if (ref($args{'Owner'}) eq 'RT::User') {
-    $Owner = $args{'Owner'};
-  }
-  #If we've been handed an integer (aka an Id for the users table 
-  elsif ($args{'Owner'} =~ /^\d+$/) {
-    $Owner = new RT::User($self->CurrentUser);
-    $Owner->Load($args{'Owner'});
-
-  }
-  #If we can't handle it, call it nobody
-  else {
-    if (ref($args{'Owner'})) {
-         $RT::Logger->warning("Ticket $ticket  ->Create called with an Owner of type ".ref($args{'Owner'}) .". Defaulting to nobody.\n");
-    }
-    else { 
-        $RT::Logger->warning("Ticket $ticket ->Create called with an unrecognised datatype for Owner: ".$args{'Owner'} .". Defaulting to Nobody.\n");
-    }
-    $Owner = new RT::User($self->CurrentUser);
-    $Owner->Load($RT::Nobody->UserObj->Id);
-  }
-
-    unless ($self->HasRight(Principal => $Owner,
-                             Right     => 'Own')) {
-        $RT::Logger->warning("$self user ".$Owner->Id ." was proposed as a ticket owner but has no rights to own tickets in this queue\n");
-        $Owner = undef;
-        $Owner = new RT::User($self->CurrentUser);
-        $Owner->Load($RT::Nobody->UserObj->Id);
-
-   }
-
-   unless ($CurrentUser->HasTicketRight(Right => 'Create',
-                                        QueueObj => $Queue )) {
-    return (0,0,"Permission Denied");
-  }
-
-  #TODO we should see what sort of due date we're getting, rather +
-  # than assuming it's in ISO format.
-  my $due = new RT::Date($self->CurrentUser);
-  $due->Set (Format => 'ISO',
-	     Value => $args{'Due'});
-         
-  my $id = $self->SUPER::Create(
-				EffectiveId => $args{'EffectiveId'},
-				Queue => $Queue->Id,
-				Alias => $args{'Alias'},
-				Owner => $Owner->Id,
-				Subject => $args{'Subject'},
-				InitialPriority => $args{'InitialPriority'},
-				FinalPriority => $args{'FinalPriority'},
-				Priority => $args{'InitialPriority'},
-				Status => $args{'Status'},
-				TimeWorked => $args{'TimeWorked'},
-				Type => $args{'Type'},	
-				Due => $due->ISO
-				
-			       );
-  
-  #Load 'er up.
-  $self->Load($id);
-
-  #Now that we know the self
-  (my $error, my $message) = $self->_Set(Field => "EffectiveId", 
-					 Value => $id,
-					 RecordTransaction => 0);
-  if ($error == 0) {
-      $RT::Logger->warning("Couldn't set EffectiveId for Ticket $id: $message.");
-      return (0, 0, $message);
-  }
-
-
-  #TODO make sure this is doing the right thing +++
-  if (defined $args{Requestor} || defined $args{RequestorEmail}) {
-    my %watcher=(Type=>'Requestor');
-    if (defined $args{RequestorEmail}) {
-      $watcher{Email} = $args{RequestorEmail};
-    }
-    if (defined $args{Requestor}) {
-      $watcher{Owner}=$args{Requestor}->Id;
-      if  ( $args{RequestorEmail} && 
-	    $args{RequestorEmail} eq $args{Requestor}->EmailAddress 
-	  ) {
-	delete $watcher{Email};
-      }
-    }
-    $self->AddWatcher(%watcher);
-  } 
-  if (defined $args{'MIMEObj'}) {
-    my $head = $args{'MIMEObj'}->head;
-    
-    require Mail::Address;
-    
-    unless (defined $args{'Requestor'} || defined $args{'RequestorEmail'}) {
-      #Add the requestor to the list of watchers
-      my $FromLine = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
-      my @From = Mail::Address->parse($FromLine);
-      
-      foreach $From (@From) {
-	$self->AddWatcher ( Email => $From->address,
-			    Type => "Requestor");
-      }
+	else { 
+	    $RT::Logger->warning("Ticket $ticket ->Create called with an ".
+				 "unrecognised datatype for Owner: ".$args{'Owner'} .
+				 ". Defaulting to Nobody.\n");
+	}
     }
     
-    my @Cc = Mail::Address->parse($head->get('Cc'));
-    foreach $Cc (@Cc) {
-      $self->AddWatcher ( Email => $Cc->address,
-			  Type => "Cc");
+    #If we have a proposed owner and they don't have the right 
+    #to own a ticket, scream about it and make them not the owner
+    if ((defined ($Owner)) and
+	($Owner->Id != $RT::Nobody->Id) and 
+	(!$self->HasRight(Principal => $Owner, Right => 'Own'))) {
+	
+	$RT::Logger->warning("$self user ".$Owner->UserId . "(".$Owner->id .") was proposed ".
+			     "as a ticket owner but has no rights to own ".
+			     "tickets in this queue\n");
+	
+	$Owner = undef;
     }
     
-  }
-  #Add a transaction for the create
-  my ($Trans, $Msg, $TransObj) = $self->_NewTransaction(Type => "Create",
-					    TimeTaken => 0, 
-					    MIMEObj=>$args{'MIMEObj'});
-  
-  # Logging
-  if ($self->Id && $Trans) {
-      $ErrStr='New request #'.$self->Id." (".$self->Subject.") created in queue ".
-	  $self->QueueObj->QueueId;
+    #If we haven't been handed a valid owner, make it nobody.
+    unless (defined ($Owner)) {
+	$Owner = new RT::User($self->CurrentUser);
+	$Owner->Load($RT::Nobody->UserObj->Id);
+    }	
+	    
+	    
+    unless ($self->CurrentUser->HasTicketRight(Right => 'Create',
+					       QueueObj => $Queue )) {
+	return (0,0,"Permission Denied");
+    }
+    
+    #TODO we should see what sort of due date we're getting, rather +
+    # than assuming it's in ISO format.
+    my $due = new RT::Date($self->CurrentUser);
+    $due->Set (Format => 'ISO',
+	       Value => $args{'Due'});
+    
+    my $id = $self->SUPER::Create(
+				  Queue => $Queue->Id,
+				  Alias => $args{'Alias'},
+				  Owner => $Owner->Id,
+				  Subject => $args{'Subject'},
+				  InitialPriority => $args{'InitialPriority'},
+				  FinalPriority => $args{'FinalPriority'},
+				  Priority => $args{'InitialPriority'},
+				  Status => $args{'Status'},
+				  TimeWorked => $args{'TimeWorked'},
+				  Type => $args{'Type'},	
+				  Due => $due->ISO
+				  
+				 );
+    
+    #Load 'er up.
+    $self->Load($id);
 
-      $RT::Logger->log(level=>'info', 
-		       message=>$ErrStr);
-  } else {
-      $RT::Logger->log(level=>'warning', 
-		       message=>"New request couldn't be successfully made; $ErrStr");
-  }
+    
+    #TODO make sure this is doing the right thing +++
+    if (defined $args{Requestor} || defined $args{RequestorEmail}) {
+	
+	my %watcher=(Type=>'Requestor');
+	if (defined $args{RequestorEmail}) {
+            $watcher{Email} = $args{RequestorEmail};
+	}
+	if (defined $args{Requestor}) {
+            $watcher{Owner}=$args{Requestor}->Id;
+            if  ( $args{RequestorEmail} && 
+                  $args{RequestorEmail} eq $args{Requestor}->EmailAddress 
+                ) {
+		delete $watcher{Email};
+            }
+	}
+	$self->AddWatcher(%watcher);
+    } 
+    if (defined $args{'MIMEObj'}) {
+	my $head = $args{'MIMEObj'}->head;
+	
+	require Mail::Address;
+	
+	#If an explicit requestor wasn't passed in then look in the mail message
+	# for one
+	unless (defined $args{'Requestor'} || defined $args{'RequestorEmail'}) {
 
-  # Hmh ... shouldn't $ErrStr be the second return argument?
-  # Eventually, are all the callers updated?
-  return($self->Id, $TransObj->Id, $ErrStr);
+	    # Suck out the person who sent the mail. add it as a requestor for the ticket
+	    my $FromLine = $head->get('Reply-To') || 
+	      $head->get('From') || 
+		$head->get('Sender');
+
+	    my @From = Mail::Address->parse($FromLine);
+	    
+	    foreach $From (@From) {
+		$self->AddWatcher ( Email => $From->address,
+				    Type => "Requestor");
+	    }
+	}
+	
+	#Add all the CCs that are in the email message passed in
+	my @Cc = Mail::Address->parse($head->get('Cc'));
+	foreach $Cc (@Cc) {
+            $self->AddWatcher ( Email => $Cc->address,
+				Type => "Cc");
+	}
+	
+    }
+    #Add a transaction for the create
+    my ($Trans, $Msg, $TransObj) = 
+      $self->_NewTransaction(Type => "Create",
+			     TimeTaken => 0, 
+			     MIMEObj=>$args{'MIMEObj'});
+    
+    # Logging
+    if ($self->Id && $Trans) {
+	$ErrStr='Ticket #'.$self->Id." (".$self->Subject . ")"
+	  . " created in queue ". $self->QueueObj->QueueId;
+	
+	$RT::Logger->info($ErrStr);
+    } 
+    else {
+	$RT::Logger->warning("Ticket couldn't be created: $ErrStr");
+    }
+    
+    # Hmh ... shouldn't $ErrStr be the second return argument?
+    # Eventually, are all the callers updated?
+    return($self->Id, $TransObj->Id, $ErrStr);
 }
 
 # }}}
@@ -358,8 +364,8 @@ If the watcher you\'re trying to set has an RT account, set the Owner paremeter 
 =cut
 
 sub AddWatcher {
-  my $self = shift;
-  my %args = (
+   my $self = shift;
+   my %args = (
 	       Email => undef,
 	       Type => undef,
 	       Owner => 0,
@@ -392,8 +398,8 @@ the "Type" parameter to \'Requestor\'
 =cut
 
 sub AddRequestor {
-  my $self = shift;
-  return ($self->AddWatcher ( Type => 'Requestor', @_));
+   my $self = shift;
+   return ($self->AddWatcher ( Type => 'Requestor', @_));
 }
 
 # }}}
@@ -408,8 +414,8 @@ the "Type" parameter to \'Cc\'
 =cut
 
 sub AddCc {
-  my $self = shift;
-  return ($self->AddWatcher ( Type => 'Cc', @_));
+   my $self = shift;
+   return ($self->AddWatcher ( Type => 'Cc', @_));
 }
 # }}}
 	
@@ -423,8 +429,8 @@ the "Type" parameter to \'AdminCc\'
 =cut
 
 sub AddAdminCc {
-  my $self = shift;
-  return ($self->AddWatcher ( Type => 'AdminCc', @_));
+   my $self = shift;
+   return ($self->AddWatcher ( Type => 'AdminCc', @_));
 }
 
 # }}}
@@ -863,12 +869,12 @@ sub SetQueue {
     if (!$NewQueueObj->Load($NewQueue)) {
       return (0, "That queue does not exist");
     }
-    elsif (!$CurrentUser->HasTicketRight(Right =>'Create',
-                                         QueueObj => $NewQueueObj )) {
+    elsif (!$self->CurrentUser->HasTicketRight(Right =>'Create',
+					       QueueObj => $NewQueueObj )) {
       return (0, "You may not create requests in that queue.");
     }
     elsif (!$NewOwnerObj->HasTicketRight(Right=> 'Create',  
-                                         Queue => $NewQueueObj)) {
+                                         QueueObj => $NewQueueObj)) {
       $self->Untake();
     }
     
@@ -1611,12 +1617,13 @@ sub _NewLink {
   return ($linkid, "Link created ($TransString)", $transactionid);
 
 }  
+
 # }}}
   
 # }}}
   
 # {{{ Actions + Routines dealing with transactions
-  
+
 # {{{ Routines dealing with ownership
 
 # {{{ sub Owner
@@ -1701,8 +1708,8 @@ sub SetOwner {
   #If we've specified a new owner and that user can't modify the ticket
   elsif (($NewOwnerObj) and 
 	 (!$NewOwnerObj->HasTicketRight(Right => 'OwnTicket',
-					TicketObj => $self,
-				       ))) {
+					TicketObj => $self))
+	) {
       return (0, "That user may not own requests in that queue");
   }
   
@@ -1927,7 +1934,7 @@ sub Transactions {
     if (!$self->{'transactions'}) {
 	use RT::Transactions;
 	$self->{'transactions'} = RT::Transactions->new($self->CurrentUser);
-	$self->{'transactions'}->Limit( FIELD => 'EffectiveTicket',
+	$self->{'transactions'}->Limit( FIELD => 'Ticket',
 					VALUE => $self->id() );
     }
     return($self->{'transactions'});
@@ -1952,7 +1959,7 @@ sub _NewTransaction {
   require RT::Transaction;
   my $trans = new RT::Transaction($self->CurrentUser);
   my ($transaction, $msg) = 
-      $trans->Create( Ticket => $self->EffectiveId,
+      $trans->Create( Ticket => $self->Id,
 		      TimeTaken => $args{'TimeTaken'},
 		      Type => $args{'Type'},
 		      Data => $args{'Data'},
@@ -1984,7 +1991,6 @@ sub _Accessible {
 
   my $self = shift;  
   my %Cols = (
-	      EffectiveId => 'read',
 	      Queue => 'read/write',
 	      Alias => 'read/write',
 	      Requestors => 'read/write',
@@ -2171,4 +2177,3 @@ sub HasRight {
 # }}}
 
 1;
-
