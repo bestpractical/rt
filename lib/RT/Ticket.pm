@@ -369,7 +369,10 @@ sub AddWatcher {
   unless ($self->CurrentUserHasRight('ModifyTicket')) {
     return (0, "Permission Denied");
   }
- 
+   
+   #clear the watchers cache
+   $self->{'watchers_cache'} = undef;
+
   require RT::Watcher;
   my $Watcher = new RT::Watcher ($self->CurrentUser);
   return($Watcher->Create( Value => $self->Id,
@@ -455,6 +458,9 @@ sub DeleteWatcher {
         return (0, "Permission Denied");
     }
     
+    #Clear out the watchers hash.
+    $self->{'watchers'} = undef;
+
     #If it's a numeric watcherid
    if ($id =~ /^(\d*)$/) { 
     $Watcher = new RT::Watcher($self->CurrentUser);
@@ -711,13 +717,60 @@ is a ticket watcher. Returns undef otherwise
 sub IsWatcher {
     my $self = shift;
     
-    my @args = (Type => 'Requestor',
-		User => undef);
+    my %args = ( Type => 'Requestor',
+		 User => undef,
+		 @_
+	       );
+    
+ 
+    my %cols = ('Type' => $args{'Type'},
+		'Scope' => 'Ticket',
+		'Value' => $self->Id
+	       );
+
+    if (ref($args{'Id'})){ #If it's a ref, assume it's an RT::User object;
+	#Dangerous but ok for now
+	$cols{'Owner'} = $args{'Id'}->Id;
+    }
+    elsif ($args{'Id'} =~ /^\d+$/) { # if it's an integer, it's an RT::User obj
+	$cols{'Owner'} = $args{'Id'};
+    }
+    else {
+	$cols{'Email'} = $args{'Id'};
+    }	
+
+    if ($args{'Email'}) {
+	$cols{'Email'} = $args{'Email'};
+    }
+    
+
+
+    my ($description);
+    $description = join(":",%cols);
+    
+    #If we've cached a positive match...
+    if (defined $self->{'watchers_cache'}->{"$description"}) {
+	if ($self->{'watchers_cache'}->{"$description"} == 1) {
+	    return(1);
+	}
+	#If we've cached a negative match...
+	else {
+	    return(undef);
+	}
+    }
+
+    my $watcher = new RT::Watcher($self->CurrentUser);
+    $watcher->LoadByCols(%cols);
     
     
-    $RT::Logger->warning( "Ticket::IsWatcher unimplemented");
-    return (undef);
-    #TODO Implement. this sub should perform an SQL match along the lines of the ACL check
+    if ($watcher->id) {
+	$self->{'watchers_cache'}->{"$description"} = 1;
+	return(1);
+    }	
+    else {
+	$self->{'watchers_cache'}->{"$description"} = 0;
+	return(undef);
+    }
     
 }
 # }}}
@@ -725,38 +778,18 @@ sub IsWatcher {
 # {{{ sub IsRequestor
 =head2 IsRequestor
   
-  Takes a string. Returns true if the string is a requestor of the current ticket.
+  Takes an email address, RT::User object or integer (RT user id)
+  Returns true if the string is a requestor of the current ticket.
 
-=item Bugs
-
-Should also be able to handle an RT::User object
 
 =cut
 sub IsRequestor {
     my $self = shift;
     my $whom = shift;
     
-    my $mail;
-    
-    #TODO uncomment the line below and blow away the rest of the sub once IsWatcher is done.
-    #return ($self->IsWatcher(Type => 'Requestor', Id => $whom);
-    
-    if (ref $whom eq "Mail::Address") {
-	$mail=$whom->Address;
-    } elsif (ref $whom eq "RT::User") {
-	$mail=$whom->EmailAddress;
-    } elsif (!ref $whom) {
-	$mail=$whom;
-    }
-    
-    #if the requestors string contains the username
-    if ($self->RequestorsAsString() =~ /$mail/) {
-	$RT::Logger->error("IsRequestor is dangerously broken!\n");
-      return(1);
-  }
-    else {
-	return(undef);
-    }
+
+    return ($self->IsWatcher(Type => 'Requestor', Id => $whom));
+	    
 };
 
 # }}}
@@ -773,7 +806,7 @@ sub IsCc {
   my $self = shift;
   my $cc = shift;
   
-  return ($self->IsWatcher( Type => 'Cc', Identifier => $cc ));
+  return ($self->IsWatcher( Type => 'Cc', Id => $cc ));
   
 }
 
@@ -793,7 +826,7 @@ sub IsAdminCc {
   my $self = shift;
   my $bcc = shift;
   
-  return ($self->IsWatcher( Type => 'AdminCc', Identifier => $bcc ));
+  return ($self->IsWatcher( Type => 'AdminCc', Id => $bcc ));
   
 }
 
