@@ -12,9 +12,15 @@
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
 % if ($link->TargetURI->IsLocal) {
-% my $member = $link->TargetObj;
+% my $member = $link->TargetURI;
 
-<a href="<%$RT::WebPath%>/RTFM/Article/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Name%><br>
+<a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
+% if (UNIVERSAL::can($member->Object, 'Name')) {
+<%$member->Object->Name%>
+% } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
+<%$member->Object->Subject%>
+% }
+</a>
 % } else {
 <A HREF="<%$link->TargetURI%>"><%$link->Target%></A>
 % }
@@ -28,8 +34,14 @@
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % if ($link->BaseURI->IsLocal) {
-% my $member = $link->BaseObj;
-<a href="<%$RT::WebPath%>/RTFM/Article/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Name%>
+% my $member = $link->BaseURI;
+<a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
+% if (UNIVERSAL::can($member->Object, 'Name')) {
+<%$member->Object->Name%>
+% } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
+<%$member->Object->Subject%>
+% }
+</a>
 % } else {
 <A HREF="<%$link->BaseURI%>"><%$link->Base%></A>
 %}

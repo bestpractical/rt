@@ -1,10 +1,10 @@
 <%init>
 $actions->{'rtfm-extract-article'} = { title => 'Extract Article',
-                                        link => 'RTFM/Article/ExtractFromTicket.html?'.$Ticket->id };
+                                        path => 'RTFM/Article/ExtractIntoClass.html?Ticket='.$Ticket->id };
 </%init>
 <%args>
 $Ticket =>undef
-$tabs => undefs
+$tabs => undef
 $actions => undef
 </%args>
 </%args>

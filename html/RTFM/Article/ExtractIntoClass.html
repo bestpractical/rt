@@ -1,0 +1,20 @@
+<& /RTFM/Elements/Header, Title => loc('Extract article from ticket
+#[_1]',$Ticket) &>                  
+<& /RTFM/Elements/Tabs  &>                                   
+
+<h1>Create a new article</h1>
+
+Select a class to create a new article in:
+<dl>
+% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});          
+% $Classes->UnLimit;                                                            
+% while (my $Class = $Classes->Next) {                                          
+<dt><a href="ExtractFromTicket.html?Ticket=<%$Ticket%>&Class=<%$Class->Id%>"><%$Class->Name%></a>
+</dt>
+<dd><%$Class->Description%></dd>
+
+% }                                                                             
+</dl>
+<%args>
+$Ticket => undef
+</%args>

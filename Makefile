@@ -36,7 +36,7 @@ install: install-lib install-html initdb
 
 install-html:
 	-mkdir $(MASON_HTML_PATH)/RTFM
-	cp -rp html/* $(MASON_HTML_PATH)/RTFM/
+	cp -rp html/* $(MASON_HTML_PATH)/
 
 install-lib:
 	cp -rp lib/* $(RT_LIB_PATH)
