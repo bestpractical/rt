@@ -11,7 +11,6 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 package RT::Mason;
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
-
 use vars qw($VERSION %session $Nobody $SystemUser);
 
 # List of modules that you want to use from components (see Admin

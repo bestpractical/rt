@@ -10,6 +10,7 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 package RT::Mason;
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
+use HTML::Mason::ApacheHandler;
 
 use vars qw($VERSION %session $Nobody $SystemUser);
 
