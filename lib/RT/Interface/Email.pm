@@ -18,6 +18,7 @@ sub activate  {
 
   my $time = time;
 
+  #TODO: This should be pid + time + a random # for safety.
   my $AttachmentDir = "/tmp/rt-tmp-$time";
   mkdir "$AttachmentDir", 0700;
 
@@ -189,8 +190,7 @@ sub CheckForLoops  {
       return (2, "We received a mail from ourself!");
   }
 
-  # TODO
-  # We might not trap the rare case where RT instance A sends a mail
+  # TODO: We might not trap the rare case where RT instance A sends a mail
   # to RT instance B which sends a mail to ...
  
   #if it's from a postmaster or mailer daemon, it's likely a bounce.
@@ -210,6 +210,10 @@ sub CheckForLoops  {
   }
 
   #If it claims to be bulk mail, discard it
+  # TODO: We actually want to record it. but we can't send any mail
+  # to anything that might possibly have generated the bounce.
+  # perhaps it should get emailed to rt-owner
+
   my $Precedence = $head->get("Precedence") || "" ;
 
   if ($Precedence =~ /^(bulk|junk)/i) {
@@ -217,9 +221,6 @@ sub CheckForLoops  {
   }
 }
 # }}}
-
-
-
 
 # {{{ sub GetCurrentUser 
 sub GetCurrentUser  {
