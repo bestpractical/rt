@@ -859,8 +859,8 @@ sub display_summary {
   
   use Time::Local;
   
-  $bg_color="#000000";
-  $fg_color="#FFFFFF";
+  $bg_color="#FFFFFF";
+  $fg_color="#000000";
   
   if ($frames) {
     $target = "target=\"summary\"";
