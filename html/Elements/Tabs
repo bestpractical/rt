@@ -175,7 +175,7 @@ my $toptabs = {    A => { title => loc('Homepage'),
                     B => { title => loc('Search'),
                         path => 'Search/Listing.html'
                       },
-                    C => { title => loc('User'),
+                    ZZ => { title => loc('Preferences'),
                         path => 'User/Prefs.html'
                       },
                     D => { title => loc('Approval'),

@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /User/Elements/Tabs, subtabs => $subtabs, current_tab => 'User/Groups/' &>
+<& /User/Elements/Tabs, subtabs => $subtabs, current_tab => 'User/Groups/', current_subtab => $current_subtab &>
 <%INIT>
 my $subtabs;
 if ($GroupObj) {
@@ -35,11 +35,15 @@ $subtabs = {
                          path => "User/Groups/Members.html?id=".$GroupObj->id },
 
 	};
-}
+} else {
+
 $subtabs->{"A"} = { title => loc('New group'),
                          path => "User/Groups/Modify.html?Create=1"
                        };
+
+}
 </%INIT>
 <%ARGS>
 $GroupObj => undef
+$current_subtab => undef
 </%ARGS>

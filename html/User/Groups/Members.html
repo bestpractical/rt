@@ -23,13 +23,13 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
-<& /User/Elements/GroupTabs, GroupObj => $Group &>
+<& /User/Elements/GroupTabs, GroupObj => $Group, current_subtab => "User/Groups/Members.html?id=".$Group->id &>
 <& /Elements/ListActions, actions => \@results &>
 
 
 <& /Elements/TitleBoxStart, title => $title &>
 
-<FORM ACTION="<%$RT::WebPath%>/User/Groups/Members.html" METHOD=POST>
+<FORM ACTION="<%$RT::WebPath%>/User/Groups/Members.html" METHOD="POST">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
 <TABLE WIDTH="100%">
 <TR>
@@ -43,7 +43,7 @@
 
 <TR>
 <TD VALIGN=TOP>
-<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers" &>
+<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group &>
 </TD>
 <TD VALIGN=TOP>
 
@@ -101,9 +101,10 @@ if ($key =~ /^DeleteMember-(\d+)$/) {
 }
 
 # Make sure AddMembers is always an array
-my @AddMembers = (ref $AddMembers eq 'ARRAY') ? @{$AddMembers} : ($AddMembers);
+my @AddMembersUsers = (ref $AddMembersUsers eq 'ARRAY') ? @{$AddMembersUsers} : ($AddMembersUsers);
+my @AddMembersGroups = (ref $AddMembersGroups eq 'ARRAY') ? @{$AddMembersGroups} : ($AddMembersGroups);
 
-foreach my $member (@AddMembers) {
+foreach my $member (@AddMembersUsers, @AddMembersGroups) {
     next unless ($member);
 
     my $principal;
@@ -129,6 +130,7 @@ my $title = loc('Editing membership for personal group [_1]', $Group->Name);
 </%INIT>
 
 <%ARGS>
-$AddMembers => undef
+$AddMembersUsers => undef
+$AddMembersGroups => undef
 $id => undef
 </%ARGS>

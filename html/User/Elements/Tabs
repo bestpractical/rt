@@ -27,13 +27,13 @@
 <hr>
   
 <%INIT>
-  my $tabs = { a => { title => loc('Prefs'),
+  my $tabs = { a => { title => loc('About me'),
 			  path => 'User/Prefs.html',
 			},
-	       g => { title => loc('Groups'),
+	       g => { title => loc('Personal Groups'),
 			   path => 'User/Groups/',
 			 },
-	       h => { title => loc('Rights'),
+	       h => { title => loc('Delegation'),
 			   path => 'User/Delegation.html',
 			 },
 	     };

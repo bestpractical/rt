@@ -24,7 +24,8 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
 
-<& /User/Elements/GroupTabs, GroupObj => $Group &>
+<& /User/Elements/GroupTabs, GroupObj => $Group, current_subtab =>
+'User/Groups/Modify.html?id='.$Group->Id &>
 <& /Elements/ListActions, actions => \@results &>
 
 
