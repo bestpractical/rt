@@ -15,28 +15,27 @@ package rt;
 #this is the RT path
 $rt_dir = "!!RT_PATH!!";
 
-push (@INC, "$rt_dir/lib/");
+push (@INC, "!!RT_LIB_PATH!!");
 
-require "$rt_dir/etc/config.pm";          
+require "!!RT_ETC_PATH!!/config.pm";          
 
 my ($program) = shift @ARGV;
 &initialize();
-if ($program eq 'rt') {
+if ($program eq '!!RT_ACTION_BIN!!') {
   # load rt-cli
   require rt::ui::cli::support;
- 
-  require rt::ui::cli::manipulate;
+   require rt::ui::cli::manipulate;
   require rt::database::manipulate; 
   &rt::ui::cli::manipulate::activate();
 }
-elsif ($program eq 'rtq') {
+elsif ($program eq '!!RT_QUERY_BIN!!') {
   # load rt-query
   require rt::database;      
   require rt::ui::cli::query;
   &rt::ui::cli::query::activate();
   
 }
-elsif ($program eq 'rtadmin') {
+elsif ($program eq '!!RT_ADMIN_BIN!!') {
   #load rt_admin
   require rt::database::admin;
   require rt::support::utils;     
@@ -44,14 +43,14 @@ elsif ($program eq 'rtadmin') {
   require rt::ui::cli::admin;
   &rt::ui::cli::admin::activate();
 }
-elsif ($program eq 'nph-webrt.cgi') {
+elsif ($program eq '!!RT_WEB_QUERY_BIN!!') {
   #
   require rt::ui::web::support;
   require rt::ui::web::auth;     
   require rt::ui::web::manipulate;
   &rt::ui::web::activate();
 }
-elsif ($program eq 'nph-admin-webrt.cgi') {
+elsif ($program eq '!!RT_WEB_ADMIN_BIN!!') {
   #load web-admin
   require rt::ui::web::support;
   require rt::ui::web::auth;
@@ -60,7 +59,7 @@ elsif ($program eq 'nph-admin-webrt.cgi') {
   &rt::ui::web::activate();
 
 }
-elsif ($program eq 'rt-mailgate') {
+elsif ($program eq '!!RT_MAILGATE_BIN!!') {
   require rt::database::manipulate;
   require rt::support::utils;      
   require rt::support::mail;
@@ -72,8 +71,6 @@ else {
   exit(1);
 }
 
-
-push(@INC,"$rt_dir/lib/routines");
 
 sub initialize{
   my ($in_current_user) = @_;
