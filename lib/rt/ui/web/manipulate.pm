@@ -180,6 +180,8 @@ sub DisplayForm {
     	  if (!$frames) {
 	      #&display_commands();
 	        }
+        require rt::ui::web::forms;
+
     &FormHeader("Details");
     print "<BR><BR>";
   &do_bar($serial_num);
