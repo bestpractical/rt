@@ -18,6 +18,7 @@
 
 <table>
 % while (my $CustomField = $CustomFields->Next()) {
+1
   <tr>
     <td class="labeltop">
       <b><%$CustomField->Name%></b><br>
@@ -36,12 +37,12 @@
 my $CustomFields;
 my $NamePrefix;
 
-if ($ArticleObj->ClassObj->id) {
-    $CustomFields = $ArticleObj->ClassObj->CustomFields();
+if ($ArticleObj->id && $ArticleObj->ClassObj->id) {
+    $CustomFields = $ArticleObj->ClassObj->ArticleCustomFields();
     $NamePrefix = "Object-RT::FM::Article-".$ArticleObj->Id."-CustomField-";
 }
 else {
-    $CustomFields = $ClassObj->CustomFields();
+    $CustomFields = $ClassObj->ArticleCustomFields();
     $NamePrefix = "Object-RT::FM::Article--CustomField-";
 }
 </%INIT>

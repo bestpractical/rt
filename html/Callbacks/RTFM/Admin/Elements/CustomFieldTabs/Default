@@ -13,4 +13,3 @@ $tabs => undef
     }
 
 </%init>
-$m->out("<h1>FOO</h1>", 'n');

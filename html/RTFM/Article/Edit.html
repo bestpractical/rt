@@ -36,11 +36,15 @@
                         ClassObj => $ClassObj,  
                         id => $id,
                         %ARGS &>
+
+                        CUSTOM FIELDS
 <& Elements/EditCustomFields, ArticleObj => $ArticleObj, 
                               CFContent => \%CFContent, 
                               ClassObj => $ClassObj, 
                               id =>$id,
                               %ARGS &>
+
+                              DONE
 <& Elements/EditTopics, ArticleObj => $ArticleObj,
                         ClassObj => $ArticleObj->Id ? $ArticleObj->ClassObj : $ClassObj,
                         %ARGS &>
@@ -135,101 +139,9 @@ elsif ( $id eq 'new' ) {
                                      Object        => $ArticleObj,
                                      ARGSRef       => \%ARGS );
 
-      my $CustomFields = $ArticleObj->ClassObj->CustomFields();
-
-      # Build up a list of articles that we want to work with
-      my %articles_to_mod;
-      my %custom_fields_to_mod;
-      foreach my $arg ( keys %ARGS ) {
-        if ( $arg =~ /^Article-(\d+)-CustomField-(\d+)-/ ) {
-
- # For each of those articles, find out what custom fields we want to work with.
-            $custom_fields_to_mod{$1}{$2} = 1;
-        }
-    }
-
-    # For each of those Articles
-    foreach my $article ( keys %custom_fields_to_mod ){
-        my $Article = RT::FM::Article->new( $session{'CurrentUser'} );
-          $Article->Load($article);
-
-          # For each custom field
-          foreach my $cf ( keys %{ $custom_fields_to_mod{$article} } ) {
-            foreach my $arg ( keys %ARGS ) {
-                next unless ( $arg =~ /^Article-$article-CustomField-$cf-/ );
-                my @tempvalues =
-                  ( ref( $ARGS{$arg} ) eq 'ARRAY' )
-                  ? @{ $ARGS{$arg} }
-                  : ( $ARGS{$arg} );
-
-                # clobber those newlines into something vaguely standard
-                # that ||1 means that if it doesn't match newline, still add it
-                my @values =
-                  grep { $_ =~ s/\r\n|\n\r|\n|\r/\n/g || 1 } @tempvalues;
-                chomp(@values);
-                if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
-                    my $cf_values = $Article->CustomFieldValues($cf);
-                    foreach my $value (@values) {
-                        next unless ($value);
-
-                        unless ( $cf_values->HasEntryWithContent($value) ) {
-                            my ( $val, $msg ) = $Article->AddCustomFieldValue(
-                                                               Field   => $cf,
-                                                               Content => $value
-                            );
-                            push ( @results, $msg );
-                        }
-                    }
-                }
-                elsif ( $arg =~ /-DeleteValues$/ ) {
-                    foreach my $value (@values) {
-                        next unless ($value);
-                        my ( $val, $msg ) = $Article->DeleteCustomFieldValue(
-                                                               Field   => $cf,
-                                                               Content => $value
-                        );
-                        push ( @results, $msg );
-                    }
-                }
-                elsif ( $arg =~ /-Values$/ ) {
-                    my $cf_values = $Article->CustomFieldValues($cf);
-
-                    my %values_hash;
-                    foreach my $value (@values) {
-                        next unless ($value);
-
-                        # build up a hash of values that the new set has
-                        $values_hash{$value} = 1;
-                        unless ( $cf_values->HasEntryWithContent($value) ) {
-                            my ( $val, $msg ) = $Article->AddCustomFieldValue(
-                                                               Field   => $cf,
-                                                               Content => $value
-                            );
-                            push ( @results, $msg );
-                        }
-
-                    }
-                    $cf_values = $Article->CustomFieldValues($cf);
-                    while ( my $cf_value = $cf_values->Next ) {
-                        unless ( $values_hash{ $cf_value->Content } == 1 ) {
-                            my ( $val, $msg ) = $Article->DeleteCustomFieldValue( Field   => $cf, Content => $cf_value->Content);
-                            push ( @results, $msg );
-                        }
-
-                    }
-                }
-                else {
-                    push ( @results,
-"User asked for an unknown update type for custom field "
-                          . $cf->Name
-                          . " for Article "
-                          . $Article->id );
-                }
-            }
-        }
-
-      }
-
+                               
+              my @cf_results = ProcessObjectCustomFieldUpdates(Object => $ArticleObj, ARGSRef => \%ARGS);
+    @results = (@results,@cf_results);
       # Delete links that are gone gone gone.
       foreach my $arg ( keys %ARGS ){
         if ( $arg =~ /DeleteLink-(.*?)-(RefersTo|MemberOf|RefersTo)-(.*)$/ ) {
