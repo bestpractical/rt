@@ -18,7 +18,7 @@
 
 <%init>
 if ($Ticket) {
-$actions->{'rtfm-extract-article'} = { title => 'Extract Article',
+$actions->{'rtfm-extract-article'} = { title => loc('Extract Article'),
                                         path => 'RTFM/Article/ExtractIntoClass.html?Ticket='.$Ticket->id };
 }
 </%init>
