@@ -137,7 +137,7 @@ sub activate  {
       next if /^$/;
       chomp;
       $RT::Logger->log(message=>"Action requested through email: $_", level=>'info');
-      my ($command, $arguments)=/^(?:\s*)(\w+)(?: (.*))?$/
+      my ($command, $arguments)=/^(?:\s*)((\w+|-))(?: (.*))?$/
 	  or die "syntax error";
       if ($command =~ /^(Un)?[Ll]ink$/) {
 	  if ($1) {
@@ -162,7 +162,7 @@ sub activate  {
 	  # dirty? yes. how to fix?
 	  $Ticket->_NewLink(dir=>$dir,Target=>$to,Base=>$from,Type=>$typ);
       } else {
-	  die "unknown command $command";
+	  die "unknown command $command : $_";
       }
   }
   

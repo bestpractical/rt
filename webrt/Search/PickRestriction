@@ -13,7 +13,7 @@ Sorry, there is quite some of the functionality below that doesn't work yet.  Wh
 	<INPUT Name="ValueOfRequestor" SIZE=20>
 
 <li><& /Elements/Checkbox, Name => "LimitSubject" &>
-Subject <& /Elements/SelectBoolean, Name => "NegateSubject", False => "matches", True => "does not match" &> 
+Subject <& /Elements/SelectMatch, Name => "NegateSubject", False => "matches", True => "does not match", Like => "contains" &> 
 	<INPUT Name="ValueOfSubject" SIZE=20>
 
 <li><& /Elements/Checkbox, Name => "LimitQueue" &>

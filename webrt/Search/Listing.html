@@ -35,7 +35,7 @@
 # tobix.. (besides, the "current restrictions" must be listed up, and it
 # must be possible to remove restrictions if this should make any sense)
 
-  if (1 || !defined $session{'tickets'}) {
+  if (!$ARGS{'keep'} || !defined $session{'tickets'}) {
     use RT::TicketCollection;
     $session{'tickets'} = RT::TicketCollection->new($session{'CurrentUser'});
     
@@ -70,10 +70,15 @@ if (0) {
 
 
 if ($ARGS{'LimitSubject'}) {
-  my $oper = $ARGS{'NegateSubject'} ? "!=" : "="; 
+  my $val=$ARGS{'ValueOfSubject'};
+  my $oper = $ARGS{'NegateSubject'} || "=";
+  $oper="!=" if ($oper eq 1);
+  if ($oper eq 'Like') {
+     $val="%$val%";
+  }
   $session{'tickets'}->NewRestriction (FIELD => 'Subject',
-				       VALUE => $ARGS{'ValueOfSubject'},
-				       OPERATOR => "$oper"
+				       VALUE => $val,
+				       OPERATOR => $oper
 				      )
 }
 

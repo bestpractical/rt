@@ -1,7 +1,9 @@
 <%PERL>
 if (defined ($user) && defined ($pass)){
 	#TODO if the password is the user's password
-	$session{'CurrentUser'} = new RT::CurrentUser();
+	my $tst = RT::CurrentUser->new() or die "huh1?";
+	$session{'CurrentUser'} = $tst
+		or die "huh2?";
 	$session{'CurrentUser'}->Load($user);
 
         $m->call_next;
