@@ -22,7 +22,32 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<LABEL ACCESSKEY="9"><& SelectQueue, Name => $Name, Verbose => $Verbose, Default => $Default, ShowAllQueues => 0, ShowNullOption => 0 &></LABEL>
+<LABEL ACCESSKEY="9">
+<SELECT NAME ="<%$Name%>">
+% foreach my $queue (@{$session{'create_in_queues'}}) {
+<OPTION VALUE="<%$queue->{'id'}%>" <%($Default && ($queue->{'id'} == $Default)) && 'SELECTED'%>><%$queue->{'Name'}%>
+%   if (($Verbose) and ($queue->{'Description'}) ){
+(<%$queue->{'Description'}%>)
+%  }
+</OPTION>
+% }
+</SELECT>
+</LABEL>
+
+<%INIT>
+unless ($session{'create_in_queues'}) { 
+
+my $q=new RT::Queues($session{'CurrentUser'});
+$q->UnLimit;
+while (my $queue=$q->Next) {
+        if ($queue->CurrentUserHasRight('CreateTicket')) {
+                my $ds = { Name => $queue->Name, Description => $queue->Description, id => $queue->id };
+                push (@{$session{'create_in_queues'}}, $ds);
+        }        
+}
+}
+</%INIT>
+
 
 <%ARGS>
 $Name => 'Queue'

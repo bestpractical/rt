@@ -70,12 +70,13 @@
 
 
 <%INIT>
-my $rows = 25;
+my $rows = 10;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
+$MyTickets->RowsPerPage($rows);
 $MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
 
 </%INIT>

@@ -48,8 +48,7 @@
 </TD>
 <TD>
 % if ($Ticket->HasUnresolvedDependencies ) {
-%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval' ) or
-%         $Ticket->HasUnresolvedDependencies( Type => 'code' )) {
+%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval' ) ) { or
 <em><&|/l&>(pending approval)</&></em>
 %     } else {
 <em><&|/l&>(pending other tickets)</&></em>
@@ -68,12 +67,13 @@
 
 
 <%INIT>
-my $rows = 25;
+my $rows = 10;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitWatcher(TYPE => 'Requestor', VALUE => $session{'CurrentUser'}->EmailAddress);
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
+$MyTickets->RowsPerPage($rows);
 $MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
 
 </%INIT>
