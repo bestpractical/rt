@@ -23,7 +23,12 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Callback, Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS &>
-<& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab, current_toptab => "Search/Listing.html" &> 
+<& /Elements/Tabs, 
+    tabs => $tabs, 
+    actions => $actions, 
+    current_tab => $current_tab, 
+    current_toptab => "Search/Listing.html",
+    Title => $Title &> 
 <%INIT>
 	
 my $id          = $Ticket->id();
@@ -147,4 +152,5 @@ $Ticket => undef
 $subtabs => undef
 $current_tab => undef
 $current_subtab => undef
+$Title => undef
 </%ARGS>

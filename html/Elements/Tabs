@@ -115,6 +115,9 @@
 <TD valign="top" width=100%>
 <table border=0 cellspacing=0 cellpadding=0 width="100%" height=100%>
 % if ($Title) {
+<tr><td>
+<& BevelBoxRaisedStart &>
+<table border=0 cellspacing=0 cellpadding=0 width="100%">
 <tr><td class=blue colspan=2></td></tr>
 <tr>
   <td class=blue>
@@ -123,8 +126,11 @@
   <td class=blue width=100%>
     <span class=title><%$Title%></span>
   </td>
-<tr><td class=blue colspan=2></td></tr>
 </tr>
+<tr><td class=blue colspan=2></td></tr>
+</table>
+<& BevelBoxRaisedEnd &>
+</td></tr>
 % }
 <TR>
 <TD valign="top" width=100% height=100% colspan=2>

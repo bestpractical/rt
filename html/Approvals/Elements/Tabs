@@ -22,13 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, tabs => $tabs &>
+<& /Elements/Tabs, tabs => $tabs, Title => $Title &>
 <%INIT>
 </%INIT>
-
   
 <%ARGS>
 $tabs => undef
 $current_tab => undef
-
+$Title => undef
 </%ARGS>
