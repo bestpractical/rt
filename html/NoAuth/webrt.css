@@ -599,6 +599,10 @@ ul.topnav {
 	margin-top: .5em;
 }
 
+TH.collection-as-table {  text-align: center;}
+
+TD.collection-as-table {  text-align: left;}
+
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
 %#   "latter specified rule wins"
