@@ -613,26 +613,26 @@ sub select_queue_acls {
 	if (!&rt::can_display_queue($queue_id,$user_id)){
 	    print "SELECTED";
 	}
-	print ">No Access\n";
+	print ">No Access-flag is $flag\n";
 
 	print "<option value=\"admin\"";
 	if ((&rt::can_admin_queue($queue_id,$user_id))== 1){
 	    print "SELECTED";
 	    $flag = 1;
 	}
-	print">Admin\n";
+	print">Admin-flag is $flag\n";
 
 	print "<option value=\"manip\"";
 	if (! $flag && (&rt::can_manipulate_queue($queue_id,$user_id))==1){
 	    print "SELECTED";
 	    $flag = 1;
 	}
-	print">Manipulate\n";
+	print">Manipulate-flag is $flag\n";
 	print "<option value=\"disp\"";
 	if (! $flag && (&rt::can_display_queue($queue_id,$user_id))==1){
 	    print "SELECTED";
 	}
-	print">Display\n";	
+	print">Display-flag is $flag\n";	
     print "</select><br>\n";
 }
 
