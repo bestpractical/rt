@@ -97,8 +97,7 @@ MIME::Entity 5.108
 Mail::Mailer 1.52
 Net::SMTP
 Text::Wrapper 
-Date::Parse
-Date::Format 
+Time::ParseDate
 File::Temp
 Term::ReadKey
 Text::Autoformat

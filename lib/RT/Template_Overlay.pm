@@ -299,8 +299,8 @@ sub MIMEObj {
 
 =item Parse
 
- This routine performs Text::Template parsing on thte template and then imports the 
- results into a MIME::Entity so we can really use it
+ This routine performs Text::Template parsing on the template and then
+ imports the results into a MIME::Entity so we can really use it
  It returns a tuple of (val, message)
  If val is 0, the message contains an error message
 

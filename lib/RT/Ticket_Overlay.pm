@@ -1012,6 +1012,7 @@ sub Import {
         Due             => undef,
         Created         => undef,
         Updated         => undef,
+        Resolved        => undef,
         Told            => undef,
         @_
     );
@@ -1131,6 +1132,7 @@ sub Import {
         Created         => $args{'Created'},		# loc
         Told            => $args{'Told'},		# loc
         LastUpdated     => $args{'Updated'},		# loc
+        Resolved        => $args{'Resolved'},		# loc
         Due             => $args{'Due'},		# loc
     );
 
@@ -2159,7 +2161,7 @@ sub TimeWorkedAsString {
 =head2 Comment
 
 Comment on this ticket.
-Takes a hashref with the follwoing attributes:
+Takes a hashref with the following attributes:
 If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
 commentl
 
@@ -2863,6 +2865,8 @@ sub MergeInto {
         );
     }
 
+    $NewTicket->_SetLastUpdated;
+
     return ( 1, $self->loc("Merge Successful") );
 }
 
@@ -2936,7 +2940,8 @@ sub SetOwner {
     my $NewOwnerObj = RT::User->new( $self->CurrentUser );
     my $OldOwnerObj = $self->OwnerObj;
 
-    if ( !$NewOwnerObj->Load($NewOwner) ) {
+    $NewOwnerObj->Load($NewOwner);
+    if (!$NewOwnerObj->Id) {
         return ( 0, $self->loc("That user does not exist") );
     }
 
@@ -2954,7 +2959,7 @@ sub SetOwner {
 
     #If we've specified a new owner and that user can't modify the ticket
     elsif (
-        ($NewOwnerObj)
+        ($NewOwnerObj->Id)
         and (
             !$NewOwnerObj->HasRight(
                 Right     => 'OwnTicket',
@@ -3266,7 +3271,7 @@ sub Open {
 
 # {{{ sub Resolve
 
-=head2
+=head2 Resolve
 
 Sets this ticket\'s status to Resolved
 

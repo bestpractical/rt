@@ -94,12 +94,13 @@ $Error => undef
 if ($session{'SessionType'} eq 'REST') {
         $r->content_type('text/plain');
         if ($Error) {
-
                 $m->out($Error);
         } else {
                 $m->out(loc("Not logged in"));
         }
         $m->abort();
+} else {
+        $r->content_type('text/html');
 }
 
 

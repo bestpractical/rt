@@ -51,7 +51,7 @@
 <LI> <i><&|/l&>No users matching search criteria found.</&></i>
 % }
 %while ( $user = $users->Next) {
-<LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->Name%></a></LI>
+<LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->Name || loc('(no name listed)')%></a></LI>
 %}
 
 </UL>

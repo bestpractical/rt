@@ -51,11 +51,13 @@
 <&|/l&>Correspondence Address</&>:
 </TD><TD>
 <INPUT name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>">
+<BR><font size="-1"><i><&|/l , $RT::CorrespondAddress&>(If left blank, will default to [_1]</&></i></font>
 </TD>
 <TD ALIGN=RIGHT>
 
 <&|/l&>Comment Address</&>: </TD><TD>
 <INPUT NAME="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>">
+<BR><font size="-1"><i><&|/l , $RT::CommentAddress&>(If left blank, will default to [_1]</&></i></font>
 </TD>
 </TR><TR>
 

@@ -153,7 +153,7 @@ if ( (defined $session{'CurrentUser'}) and
 
     # If the user isn\'t privileged, they can only see SelfService
     if ((! $session{'CurrentUser'}->Privileged) and
-	($m->base_comp->path !~ '^/SelfService/') ) {
+	($m->base_comp->path !~ '^(/+)SelfService/') ) {
 	$m->comp('/SelfService/index.html');
 	$m->abort();
     }

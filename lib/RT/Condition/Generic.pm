@@ -91,7 +91,7 @@ sub _Init  {
   $self->{'ScripObj'} = $args{'ScripObj'};
   $self->{'TicketObj'} = $args{'TicketObj'};
   $self->{'TransactionObj'} = $args{'TransactionObj'};
-  $self->{'ApplicableTransTypes'} = $args{'ApplicableTypes'};
+  $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
 }
 # }}}
 

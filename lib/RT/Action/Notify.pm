@@ -97,8 +97,8 @@ sub SetRecipients {
     if ($RT::UseFriendlyToLine) {
         unless (@To) {
             push ( @PseudoTo,
-                "'$arg of $RT::rtname Ticket #"
-                  . $self->TicketObj->id . "':;" );
+                "\"$arg of $RT::rtname Ticket #"
+                  . $self->TicketObj->id . "\":;" );
         }
     }
 

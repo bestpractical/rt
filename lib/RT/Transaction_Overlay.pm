@@ -190,8 +190,8 @@ sub Delete {
 
 =head2 Message
 
-  Returns the RT::Attachment Object which is the top-level message object
-for this transaction
+  Returns the RT::Attachments Object which contains the "top-level"object
+  attachment for this transaction
 
 =cut
 
@@ -608,6 +608,15 @@ sub BriefDescription {
             $q2->Load( $self->NewValue );
             return $self->loc("[_1] changed from [_2] to [_3]", $self->Field , $q1->Name , $q2->Name);
         }
+
+        # Write the date/time change at local time:
+    elsif ($self->Field =~  /Due|Starts|Started|Told/) {
+        my $t1 = new RT::Date($self->CurrentUser);
+        $t1->Set(Format => 'ISO', Value => $self->NewValue);
+        my $t2 = new RT::Date($self->CurrentUser);
+        $t2->Set(Format => 'ISO', Value => $self->OldValue);
+        return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, $t2->AsString, $t1->AsString );
+    }
         else {
             return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, $self->OldValue, $self->NewValue );
         }

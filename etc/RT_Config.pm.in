@@ -159,15 +159,13 @@ $SenderMustExistInExternalDatabase = undef;
 
 # {{{ Outgoing mail configuration
 
-#$MailAlias is a generic alias to send mail to for any request
-#already in a queue.  
+# RT is designed such that any mail which already has a ticket-id associated
+# with it will get to the right place automatically.
 
-#RT is designed such that any mail which already has a ticket-id associated
-#with it will get to the right place automatically.
-
-#This is the default address that will be listed in 
-#From: and Reply-To: headers of mail tracked by RT unless overridden
-#by a queue specific address
+# $CorrespondAddress and $CommentAddress are the default addresses 
+# that will be listed in From: and Reply-To: headers of correspondence
+# and comment mail tracked by RT, unless overridden by a queue-specific
+# address. 
 
 $CorrespondAddress='RT::CorrespondAddress.not.set';
 
@@ -177,22 +175,23 @@ $CommentAddress='RT::CommentAddress.not.set';
 #Sendmail Configuration
 
 # $MailCommand defines which method RT will use to try to send mail
-# We know that 'sendmail' works fairly well.
-# If 'sendmail' doesn't work well for you, try 'sendmailpipe' 
-# But note that you have to configure $SendmailPath and add a -t 
-# to $SendmailArguments
+# We know that 'sendmailpipe' works fairly well.
+# If 'sendmailpipe' doesn't work well for you, try 'sendmail' 
+#
+# Note that you should remove the '-t' from $SendmailArguments 
+# if you use 'sendmail rather than 'sendmailpipe'
 
-$MailCommand = 'sendmail';
+$MailCommand = 'sendmailpipe';
 
 # $SendmailArguments defines what flags to pass to $Sendmail
 # assuming you picked 'sendmail' or 'sendmailpipe' as the $MailCommand above.
 # If you picked 'sendmailpipe', you MUST add a -t flag to $SendmailArguments
 
 # These options are good for most sendmail wrappers and workalikes
-$SendmailArguments="-oi";
+$SendmailArguments="-oi -t";
 
 # These arguments are good for sendmail brand sendmail 8 and newer
-#$SendmailArguments="-oi -ODeliveryMode=b -OErrorMode=m";
+#$SendmailArguments="-oi -t -ODeliveryMode=b -OErrorMode=m";
 
 # If you selected 'sendmailpipe' above, you MUST specify the path
 # to your sendmail binary in $SendmailPath.  
@@ -201,11 +200,12 @@ $SendmailPath = "/usr/sbin/sendmail";
 
 # RT can optionally set a "Friendly" 'To:' header when sending messages to 
 # Ccs or AdminCcs (rather than having a blank 'To:' header.
+
 # This feature DOES NOT WORK WITH SENDMAIL[tm] BRAND SENDMAIL
 # If you are using sendmail, rather than postfix, qmail, exim or some other MTA,
 # you _must_ disable this option.
 
-$UseFriendlyToLine = 1;
+$UseFriendlyToLine = 0;
 
 
 # }}}
@@ -262,11 +262,11 @@ $WebURL = $WebBaseURL . $WebPath . "/";
 # you should make RT's WebRT/html/NoAuth/images directory available on 
 # a static web server and supply that URL as $WebImagesURL.
 
-$WebImagesURL = $WebURL."/NoAuth/images/";
+$WebImagesURL = $WebURL."NoAuth/images/";
 
 # $RTLogoURL points to the URL of the RT logo displayed in the web UI
 
-$LogoURL = $WebImagesURL."/rt.jpg";
+$LogoURL = $WebImagesURL."rt.jpg";
 
 # If $WebExternalAuth is defined, RT will defer to the environment's
 # REMOTE_USER variable.

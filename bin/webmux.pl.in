@@ -84,7 +84,7 @@ use Carp;
     use MIME::Entity;
     use Text::Wrapper;
     use CGI::Cookie;
-    use Date::Parse;
+    use Time::ParseDate;
     use HTML::Entities;
 }
 

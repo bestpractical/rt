@@ -202,8 +202,17 @@ sub loc_fuzzy {
 # Error - calls Error and aborts
 sub Abort {
 
-    $m->comp( "/Elements/Error", Why => shift );;
-    $m->abort;
+    if ($session{'ErrorDocument'} && 
+        $session{'ErrorDocumentType'}) {
+        SetContentType($session{'ErrorDocumentType'});
+        $m->comp($session{'ErrorDocument'} , Why => shift);
+        $m->abort;
+    } 
+    else  {
+        SetContentType('text/html');
+        $m->comp("/Elements/Error" , Why => shift);
+        $m->abort;
+    }
 }
 
 # }}}

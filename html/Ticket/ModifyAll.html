@@ -120,7 +120,6 @@ unless ($OnlySearchForPeople) {
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-    chomp ($ARGS{'UpdateContent'}) ;
 
     if ($ARGS{'UpdateContent'} && 
 	$ARGS{'UpdateContent'} ne '' && 

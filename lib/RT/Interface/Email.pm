@@ -53,6 +53,7 @@ BEGIN {
 		      &ParseCcAddressesFromHead
 		      &ParseSenderAddressFromHead 
 		      &ParseErrorsToAddressFromHead
+                      &ParseAddressFromHeader
               &Gateway);
 
 }
@@ -195,6 +196,11 @@ sub ParseMIMEEntity {
     # Get the head, a MIME::Head:
     my $head = $entity->head;
     
+    # RT2 unfolds headers that are have embedded newlines.
+    # The reason is not documented anywhere. Let's leave the
+    # long headers folded and see what breaks. -- pdh
+    # $head->unfold;
+
     # TODO - information about the charset is lost here!
     $head->decode;
 
@@ -246,8 +252,10 @@ sub MailError {
     $entity->attach(  Data => $args{'Explanation'}."\n");
     
     my $mimeobj = $args{'MIMEObj'};
-    $mimeobj->sync_headers();
-    $entity->add_part($mimeobj);
+    if ($mimeobj) {
+        $mimeobj->sync_headers();
+        $entity->add_part($mimeobj);
+    }
     
     if ($RT::MailCommand eq 'sendmailpipe') {
         open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);

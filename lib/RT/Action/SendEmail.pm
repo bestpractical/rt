@@ -67,7 +67,7 @@ ok (require RT::Action::SendEmail);
 
 =head1 AUTHOR
 
-Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>
+Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
 
 =head1 SEE ALSO
 
@@ -91,10 +91,10 @@ sub Commit  {
     # If the transaction has content and has the header RT-Squelch-Replies-To
     
     if (defined $self->TransactionObj->Message->First()) { 
-	my $headers = $self->TransactionObj->Message->First->Headers();
+	my $squelch = $self->TransactionObj->Message->First->GetHeader('RT-Squelch-Replies-To');
 	
-	if ($headers =~ /^RT-Squelch-Replies-To: (.*?)$/si) {
-	    my @blacklist = split(/,/,$1);
+	if ($squelch) {
+	    my @blacklist = split(/,/,$squelch);
 	    
 	    # Cycle through the people we're sending to and pull out anyone on the
 	    # system blacklist
@@ -232,7 +232,7 @@ sub SetRTSpecialHeaders {
     $self->SetHeader('X-RT-Loop-Prevention', $RT::rtname); 
     $self->SetHeader('RT-Ticket', $RT::rtname. " #".$self->TicketObj->id());
     $self->SetHeader
-      ('Managed-by',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt/)");
+      ('Managed-by',"RT $RT::VERSION (http://www.bestpractical.com/rt/)");
     
     $self->SetHeader('RT-Originator', $self->TransactionObj->CreatorObj->EmailAddress);
     return();
@@ -264,10 +264,6 @@ sub SetReferences {
     ('In-Reply-To', "<rt-".$self->TicketObj->id().
      "\@".$RT::rtname.">");
 
-
-  # TODO $RT::rtname should be replaced by $RT::hostname to form valid
-  # message-ids (ref rfc822)
-
   # TODO We should always add References headers for all message-ids
   # of previous messages related to this ticket.
 }
@@ -288,13 +284,10 @@ sub SetMessageID {
   # pull out different message-ids.  I'd suggest message ids like
   # "rt-ticket#-transaction#-scrip#-receipient#"
 
-  # TODO $RT::rtname should be replaced by $RT::hostname to form valid
-  # message-ids (ref rfc822)
-  
   $self->SetHeader
     ('Message-ID', "<rt-".$self->TicketObj->id().
      "-".
-     $self->TransactionObj->id()."." .rand(20) . "\@".$RT::rtname.">")
+     $self->TransactionObj->id()."." .rand(20) . "\@".$RT::Organization.">")
       unless $self->TemplateObj->MIMEObj->head->get('Message-ID');
 }
 
@@ -326,8 +319,14 @@ sub SetReturnAddress {
     
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
       my $friendly_name=$self->TransactionObj->CreatorObj->RealName;
+      if ($friendly_name =~ /^"(.*)"$/) { # a quoted string
+          $friendly_name = $1;
+      }
+
+      $friendly_name =~ s/"/\\"/g;
+
       # TODO: this "via RT" should really be site-configurable.
-      $self->SetHeader('From', "$friendly_name via RT <$replyto>");
+      $self->SetHeader('From', "\"$friendly_name via RT\" <$replyto>");
   }
   
   unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
@@ -415,7 +414,9 @@ sub SetBcc {
 sub SetPrecedence {
   my $self = shift;
 
-  $self->SetHeader('Precedence', "bulk");
+  unless ($self->TemplateObj->MIMEObj->head->get("Precedence")) {
+    $self->SetHeader('Precedence', "bulk");
+  }
 }
 
 # }}}
