@@ -1573,7 +1573,7 @@ sub _UpdateTold {
     $now->SetToNow();
     return($self->_Set(Field => 'Told', 
 		       Value => $now->ISO, 
-		       UpdateTransaction => 0));
+		       RecordTransaction => 0));
 }
 
 # }}}
