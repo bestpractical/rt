@@ -22,6 +22,7 @@
 %# 
 %# END LICENSE BLOCK
 <%perl>
+if (ref($Message)) {
 foreach my $stanza (@$Message) {
     if ( ref $stanza eq "ARRAY" ) {
         $m->comp( 'ShowMessageStanza',
@@ -38,6 +39,13 @@ foreach my $stanza (@$Message) {
 </%perl>
 <font color="<%$colors[$Depth]%>"><%$content |n%><br></font>
 %       }
+% }
+% } else {
+% my $content = $Message;
+%        RT::Interface::Web::EscapeUTF8(\$content);
+%        $m->comp('/Elements/Callback', content => \$content, %ARGS);
+%                $content =~ s/\n/<br>/gi;
+<%$content |n%><br>
 % }
 <%INIT>
 use URI::URL;

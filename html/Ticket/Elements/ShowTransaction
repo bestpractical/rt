@@ -58,8 +58,13 @@ unless ($Collapsed) {
      my $MAX_INLINE_BODY = $RT::MaxInlineBody || 13456;
      if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
 				    $message->ContentLength < $MAX_INLINE_BODY ) {
+         eval {
          require Text::Quoted;
-	 $quoted = Text::Quoted::extract($message->Content); 
+	     $quoted = Text::Quoted::extract($message->Content); 
+        }; 
+        if ($@) {
+            $quoted = $message->Content;
+        }
      }
         
 </%PERL>
