@@ -100,7 +100,9 @@ sub handler {
     }
     
     if ( !$cookies{'AF_SID'} ) {
-      my $cookie = new CGI::Cookie(-name=>'AF_SID', -value=>$HTML::Mason::Commands::session{_session_id}, -path => '/',);
+      my $cookie = new CGI::Cookie(-name=>'AF_SID', 
+				   -value=>$HTML::Mason::Commands::session{_session_id}, 
+				   -path => '/',);
       $r->header_out('Set-Cookie', => $cookie);
     }
     
