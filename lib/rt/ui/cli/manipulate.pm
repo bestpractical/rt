@@ -187,8 +187,10 @@ sub cli_create_req {
     $priority=&rt::ui::cli::question_int("Starting Priority",$queues{$queue_id}{default_prio});
     $final_priority=&rt::ui::cli::question_int("Final Priority",$queues{$queue_id}{default_final_prio});
     $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YY)",);
-    $due_date = &rt::date_parse($due_string);
-    print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
+    if ($due_string ne '') {
+	 $due_date = &rt::date_parse($due_string);
+	}  
+  print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
 	if(/^\.\n/) {
 	    last;
