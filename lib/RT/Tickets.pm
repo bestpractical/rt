@@ -400,7 +400,8 @@ sub LimitLinkedTo {
 		 TICKET => undef,
 		 TYPE => undef,
 		 @_);
- 
+
+
     $self->Limit( FIELD => 'LinkedTo',
 		  BASE => undef,
 		  TARGET => $args{'TICKET'},
@@ -428,6 +429,7 @@ sub LimitLinkedFrom {
 		 TYPE => undef,
 		 @_);
 
+    
     $self->Limit( FIELD => 'LinkedTo',
 		  TARGET => undef,
 		  BASE => $args{'TICKET'},
@@ -824,7 +826,7 @@ sub _ProcessRestrictions {
 	    if ($self->{'TicketRestrictions'}{"$row"}{'TARGET'}) {
 		$self->SUPER::Limit(ALIAS => $LinkAlias,
 				    ENTRYAGGREGATOR => 'AND',
-				    FIELD =>   'Target',
+				    FIELD =>   'LocalTarget',
 				    OPERATOR => '=',
 				    VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'TARGET'} );
 
@@ -832,7 +834,7 @@ sub _ProcessRestrictions {
 		#If we're searching on target, join the base to ticket.id
 		$self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
 			     ALIAS2 => $LinkAlias,
-			     FIELD2 => 'Base');
+			     FIELD2 => 'LocalBase');
 
 	    
 
@@ -842,14 +844,14 @@ sub _ProcessRestrictions {
 	    elsif ($self->{'TicketRestrictions'}{"$row"}{'BASE'}) {
 		$self->SUPER::Limit(ALIAS => $LinkAlias,
 				    ENTRYAGGREGATOR => 'AND',
-				    FIELD =>   'Base',
+				    FIELD =>   'LocalBase',
 				    OPERATOR => '=',
 				    VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'BASE'} );
 		
 		#If we're searching on base, join the target to ticket.id
 		$self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
 			     ALIAS2 => $LinkAlias,
-			     FIELD2 => 'Target');
+			     FIELD2 => 'LocalTarget');
 		
 	    }
 

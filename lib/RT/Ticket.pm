@@ -892,7 +892,8 @@ sub QueueObj {
   my $self = shift;
   if (!defined $self->{'queue'})  {
     require RT::Queue;
-    $self->{'queue'} = RT::Queue->new($self->CurrentUser);
+    $self->{'queue'} = RT::Queue->new($self->CurrentUser)
+      or die "RT::Queue->new(". $self->CurrentUser. ") returned false";
     #We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
     my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
 

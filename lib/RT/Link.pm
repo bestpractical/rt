@@ -45,9 +45,12 @@ sub Create  {
      return(undef);
    }
     
- 
+ my $LocalBase = $self->_IsLocal($BaseURI);
+ my $LocalTarget = $self->_IsLocal($TargetURI);
  my $id = $self->SUPER::Create(Base => "$BaseURI",
                                Target => "$TargetURI",
+                               LocalBase => $LocalBase, 
+                               LocalTarget => $LocalTarget,
                                Type => $args{'Type'});
   
   #TODO +++ deal with a failed create 
@@ -115,9 +118,11 @@ sub _TicketObj {
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
-	      Base => 'read/write',
-	      Target => 'read/write',
-	      Type => 'read/write',
+          LocalBase => 'read',
+          LocalTarget => 'read',
+	      Base => 'read',
+	      Target => 'read',
+	      Type => 'read',
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
@@ -143,6 +148,11 @@ sub TargetIsLocal {
 # }}}
 
 # {{{ sub _IsLocal
+=head2 _IsLocal 
+
+when handed a URI returns the local ticket id if it's local. otherwise returns undef.
+
+=cut
 
 # checks whether an URI is local or not
 sub _IsLocal {
@@ -154,7 +164,7 @@ sub _IsLocal {
   }
   # TODO: More thorough check
   if ($URI =~ /^$RT::TicketBaseURI(\d+)$/) {
-    return (1);
+    return($1);
    }
    else {
     return (undef);

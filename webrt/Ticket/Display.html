@@ -43,12 +43,12 @@ my $Ticket = &CreateOrLoad(CurrentUser => $session{'CurrentUser'},
 
 my ($linkid, $message, $tid);
 if ($ARGS{'DependsOn'}){
-  ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'DependsOn'}, Type => 'DependsOn');
+  ($linkid, $message, $tid) = $Ticket->LinkFrom( Base => $ARGS{'DependsOn'}, Type => 'DependsOn');
   push @Actions, $message;
 }
 
 if ($ARGS{'DependedOnBy'}){
-  ($linkid, $message, $tid) = $Ticket->LinkFrom( Base => $ARGS{'DependedOnBy'}, Type => 'DependsOn');
+  ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'DependedOnBy'}, Type => 'DependsOn');
   push @Actions, $message;
 }
 

@@ -29,7 +29,7 @@ $ENV{'TZ'} = 'US/Eastern'; #TODO: Bogus hack to deal with Date::Manip whining
 
 
 # RootDir is the root of the RT installation
-$RootDir = "!!ROOTDOR!!";
+$LogDir = "!!RT_LOG_PATH!!";
 
 # }}}
 
@@ -131,7 +131,7 @@ $Logger=Log::Dispatch->new();
 $Logger->add(Log::Dispatch::File->new
 	     ( name=>'rtlog',
 	       min_level=>'debug',
-	       filename=>"/tmp/rt.log.".$$.".".$<, #log to /tmp/rt.log.<pid>.<user>
+	       filename=>"$LogDir/rt.log.".$$.".".$<, #log to rt.log.<pid>.<user>
 	       mode=>'append',
 	       callback => sub {my %p=@_; return "$p{message}\n"}
 	     ));

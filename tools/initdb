@@ -67,6 +67,8 @@ foreach my $statement ( $schema->sql($dsn, $DB_DBA, $DB_DBA_PASSWORD ) ) {
 
 $dbh->disconnect;
 
+print "schema sucessfully inserted\n";
+
 sub _yesno {
   print "Proceed [y/N]:";
   my $x = scalar(<STDIN>);

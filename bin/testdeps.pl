@@ -29,8 +29,8 @@
 #                     'Text::Template'      => 0,
 #                     'DBIx::SearchBuilder' => 0,
 #                     'Apache::Session'     => 1.03,
-#                     'DBIx::DataSource'    => 0,
-#                     'DBIx::DBSchema'      => 0,
+#                     'DBIx::DataSource'    => 0.03,
+#                     'DBIx::DBSchema'      => 0.13,
 #                   },
 
 use strict;

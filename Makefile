@@ -41,6 +41,7 @@ RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
 MASON_DATA_PATH		=       $(RT_PATH)/WebRT/data
+RT_LOG_PATH             =       $(RT_PATH)
 
 # The location of your rt configuration file
 RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
@@ -67,11 +68,9 @@ RT_MAILGATE_BIN		=	rt-mailgate
 #
 # DB_TYPE defines what sort of database RT trys to talk to
 # "mysql" is known to work.
-# "Pg" gets you the preliminary postgres support. which needs a miracle
+# "Pg" gets you the preliminary postgres support. 
 # "Oracle" is in the early stages of working.
 #	 Dave Morgan <dmorgan@bartertrust.com> owns the oracle port
-
-# Please submit necessary patches to rt11@fsck.com
 
 DB_TYPE	        =	mysql
 
@@ -279,6 +278,7 @@ config-replace:
 	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
 	s'!!MASON_HTML_PATH!!'$(MASON_HTML_PATH)'g;\
 	s'!!MASON_DATA_PATH!!'$(MASON_DATA_PATH)'g;\
+	s'!!RT_LOG_PATH!!'$(RT_LOG_PATH)'g;\
 	" $(RT_CONFIG)
 
 

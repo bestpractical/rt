@@ -1,35 +1,17 @@
-drop user !!RTUSER!!;
-create user !!RTUSER!! with password !!RT_DB_PASS!! NOCREATEDB NOCREATEUSER;
+drop user !!DB_RT_USER!!;
+create user !!DB_RT_USER!! with password '!!DB_RT_PASS!!' NOCREATEDB NOCREATEUSER;
 
+grant select, insert, update, delete on Groups to !!DB_RT_USER!!;
+grant select, insert, update, delete on ACL to !!DB_RT_USER!!;
+grant select, insert, update, delete on Watchers to !!DB_RT_USER!!;
+grant select, insert, update, delete on Links to !!DB_RT_USER!!;
+grant select, insert, update, delete on Users to !!DB_RT_USER!!;
+grant select, insert, update, delete on Scrips to !!DB_RT_USER!!;
+grant select, insert, update, delete on Tickets to !!DB_RT_USER!!;
+grant select, insert, update, delete on GroupMembers to !!DB_RT_USER!!;
+grant select, insert, update, delete on Queues to !!DB_RT_USER!!;
+grant select, insert, update, delete on Transactions to !!DB_RT_USER!!;
+grant select, insert, update, delete on ScripScope to !!DB_RT_USER!!;
+grant select, insert, update, delete on Attachments to !!DB_RT_USER!!;
+grant select, insert, update, delete on Templates to !!DB_RT_USER!!;
 
-revoke all on each_req from !!RTUSER!!;
-revoke all on each_req_pkey from !!RTUSER!!;
-revoke all on each_req_serial_num_seq from !!RTUSER!!;
-revoke all on queue_acl from !!RTUSER!!;
-revoke all on queue_areas from !!RTUSER!!;
-revoke all on queues from !!RTUSER!!;
-revoke all on queues_pkey from !!RTUSER!!;
-revoke all on transactions from !!RTUSER!!;
-revoke all on transactions_id_seq from !!RTUSER!!;
-revoke all on transactions_pkey from !!RTUSER!!;
-revoke all on users from !!RTUSER!!;
-revoke all on users_pkey from !!RTUSER!!;
-
-
-grant select, insert, update, delete on each_req to !!RTUSER!!;
-grant select, insert, update, delete on each_req_pkey to !!RTUSER!!;
-grant select, insert, update, delete on each_req_serial_num_seq to !!RTUSER!!;
-grant select, insert, update, delete on queue_acl to !!RTUSER!!;
-grant select, insert, update, delete on queue_areas to !!RTUSER!!;
-grant select, insert, update, delete on queues to !!RTUSER!!;
-grant select, insert, update, delete on queues_pkey to !!RTUSER!!;
-grant select, insert, update, delete on transactions to !!RTUSER!!;
-grant select, insert, update, delete on transactions_id_seq to !!RTUSER!!;
-grant select, insert, update, delete on transactions_pkey to !!RTUSER!!;
-grant select, insert, update, delete on users to !!RTUSER!!;
-grant select, insert, update, delete on users_pkey to !!RTUSER!!;
-
-
---DELETE FROM db where db LIKE '!!RT_DATABASE!!';
---INSERT INTO db (Host, Db, User, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv) VALUES ('%','!!RT_DATABASE!!','!!RTUSER!!','Y','Y','Y','Y','N','N');
---INSERT INTO pg_user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv) VALUES ('!!RT_HOST!!','!!RTUSER!!',password('!!RT_DB_PASS!!'),'N','N','N','N','N','N','N','N','N','N');
