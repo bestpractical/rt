@@ -30,6 +30,8 @@
         size="<%$Cols%>"
 % if ($TicketObj) {
           value="<%$Values->Count ? $Values->First->Content : ''%>"
+% } elsif ($Default) {
+          value="<%$Default ? $Default : ''%>"
 % }
 >
 % } elsif ($CustomField->Type eq 'FreeformMultiple') {
@@ -38,6 +40,8 @@
 %          while (my $value = $Values->Next ) {
 %                 $content .= $value->Content;
 %           }
+% } elsif ($Default) {
+          value="<%$Default ? $Default : ''%>"
 %  }
 <input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
 <textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$content%></textarea>
