@@ -481,7 +481,7 @@ sub GetHeader {
     my $self = shift;
     my $tag = shift;
     foreach my $line ($self->_SplitHeaders) {
-        if ($line =~ /^\Q$tag\E:\s+(.*)$/i) { #if we find the header, return its value
+        if ($line =~ /^\Q$tag\E:\s+(.*)$/si) { #if we find the header, return its value
             return ($1);
         }
     }
