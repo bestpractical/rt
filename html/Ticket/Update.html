@@ -193,7 +193,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 
 if ( exists $ARGS{SubmitTicket} ) {
     $m->comp('Display.html', %ARGS);
-    $m->abort();
+    return;
 }
 </%INIT>
 

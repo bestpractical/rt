@@ -439,7 +439,7 @@ msgstr "<% $_ %>"
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"提出申請單\">&nbsp;%1"
 
-#: etc/initialdata:221
+#: etc/initialdata.zh:221 etc/initialdata:203
 msgid "A blank template"
 msgstr "空白範本"
 
@@ -610,11 +610,11 @@ msgstr "管理員"
 msgid "Admin Cc"
 msgstr "管理員副本"
 
-#: etc/initialdata:303
+#: etc/initialdata.zh:303 etc/initialdata:280
 msgid "Admin Comment"
 msgstr "管理員評論"
 
-#: etc/initialdata:261
+#: etc/initialdata.zh:261 etc/initialdata:259
 msgid "Admin Correspondence"
 msgstr "管理員回覆"
 
@@ -650,7 +650,7 @@ msgstr "管理員 Email"
 msgid "AdminAllPersonalGroups"
 msgstr "管理所有代理人群組"
 
-#: etc/initialdata:74 html/Admin/Elements/ModifyTemplateAsWorkflow:155 html/Ticket/Elements/ShowPeople:38 html/Ticket/Update.html:49 lib/RT/ACE_Overlay.pm:88
+#: etc/initialdata.zh:74 etc/initialdata:56 html/Admin/Elements/ModifyTemplateAsWorkflow:155 html/Ticket/Elements/ShowPeople:38 html/Ticket/Update.html:49 lib/RT/ACE_Overlay.pm:88
 msgid "AdminCc"
 msgstr "管理員副本"
 
@@ -738,7 +738,7 @@ msgstr "相當於"
 msgid "All"
 msgstr "全部"
 
-#: etc/initialdata:372
+#: etc/initialdata.zh:372 etc/initialdata:348
 msgid "All Approvals Passed"
 msgstr "完成全部簽核"
 
@@ -811,11 +811,11 @@ msgstr "簽核時限"
 msgid "Approval Notes"
 msgstr "簽核意見"
 
-#: etc/initialdata:357
+#: etc/initialdata.zh:357 etc/initialdata:336
 msgid "Approval Passed"
 msgstr "完成某項簽核"
 
-#: etc/initialdata:383
+#: etc/initialdata.zh:383 etc/initialdata:359
 msgid "Approval Rejected"
 msgstr "駁回某項簽核"
 
@@ -847,7 +847,7 @@ msgstr "簽核人"
 msgid "Approver Setting"
 msgstr "執行簽核人設定"
 
-#: etc/initialdata:516 etc/upgrade/2.1.71:148 html/Edit/Elements/CreateApprovalsQueue:122
+#: etc/initialdata.zh:516 etc/initialdata:486 etc/upgrade/2.1.71:148 html/Edit/Elements/CreateApprovalsQueue:122
 msgid "Approver's notes: %1"
 msgstr "簽核備註：%1"
 
@@ -923,11 +923,11 @@ msgstr "自動駁回表單"
 msgid "AutoResolve"
 msgstr "自動完成表單處理"
 
-#: etc/initialdata:224
+#: etc/initialdata.zh:224 etc/initialdata:206
 msgid "Autoreply"
 msgstr "自動回覆"
 
-#: etc/initialdata:90
+#: etc/initialdata.zh:90 etc/initialdata:72
 msgid "Autoreply To Requestors"
 msgstr "自動對申請人回覆"
 
@@ -992,7 +992,7 @@ msgstr "起始日"
 msgid "Birthday"
 msgstr "生日"
 
-#: etc/initialdata:220
+#: etc/initialdata.zh:220 etc/initialdata:202
 msgid "Blank"
 msgstr "空白範本"
 
@@ -1061,7 +1061,7 @@ msgstr "分類管理"
 msgid "Category"
 msgstr "分類"
 
-#: etc/initialdata:68 html/Admin/Queues/People.html:43 html/SelfService/Create.html:48 html/Ticket/Create.html:63 html/Ticket/Elements/EditPeople:50 html/Ticket/Elements/ShowPeople:34 html/Ticket/Update.html:44 html/Ticket/Update.html:76 html/Work/Tickets/Update.html:43 lib/RT/ACE_Overlay.pm:87
+#: etc/initialdata.zh:68 etc/initialdata:50 html/Admin/Queues/People.html:43 html/SelfService/Create.html:48 html/Ticket/Create.html:63 html/Ticket/Elements/EditPeople:50 html/Ticket/Elements/ShowPeople:34 html/Ticket/Update.html:44 html/Ticket/Update.html:76 html/Work/Tickets/Update.html:43 lib/RT/ACE_Overlay.pm:87
 msgid "Cc"
 msgstr "副本"
 
@@ -1108,6 +1108,10 @@ msgstr "中英文"
 #: html/Admin/Elements/ModifyUser:79 html/Admin/Users/Modify.html:131 html/User/Prefs.html:91 html/Work/Preferences/Info:80
 msgid "City"
 msgstr "所在城市"
+
+#: html/Edit/Elements/104Top:30
+msgid "ClassicUI"
+msgstr "傳統介面"
 
 #: html/Ticket/Elements/ShowDates:46
 msgid "Closed"
@@ -1246,7 +1250,7 @@ msgstr "複製"
 msgid "Copy Field From:"
 msgstr "欲複製欄位："
 
-#: etc/initialdata:282
+#: etc/initialdata.zh:282 etc/initialdata:271
 msgid "Correspondence"
 msgstr "回覆"
 
@@ -1466,7 +1470,7 @@ msgstr "新增"
 msgid "Create Subgroup:"
 msgstr "新增子群組："
 
-#: etc/initialdata:145
+#: etc/initialdata.zh:145 etc/initialdata:127
 msgid "Create Tickets"
 msgstr "新增申請單"
 
@@ -1572,7 +1576,7 @@ msgstr "新增失敗：%1/%2/%3"
 msgid "Create new item"
 msgstr "建立新項目"
 
-#: etc/initialdata:147
+#: etc/initialdata.zh:147 etc/initialdata:129
 msgid "Create new tickets based on this scrip's template"
 msgstr "依據此項手續內的模版，新增申請單"
 
@@ -1784,23 +1788,23 @@ msgstr "十二月"
 msgid "Default Autoresponse Template"
 msgstr "預設自動回應範本"
 
-#: etc/initialdata:225
+#: etc/initialdata.zh:225 etc/initialdata:207
 msgid "Default Autoresponse template"
 msgstr "預設自動回應範本"
 
-#: etc/initialdata:304
+#: etc/initialdata.zh:304 etc/initialdata:281
 msgid "Default admin comment template"
 msgstr "預設管理員評論範本"
 
-#: etc/initialdata:262
+#: etc/initialdata.zh:262 etc/initialdata:260
 msgid "Default admin correspondence template"
 msgstr "預設管理員回覆範本"
 
-#: etc/initialdata:283
+#: etc/initialdata.zh:283 etc/initialdata:272
 msgid "Default correspondence template"
 msgstr "預設回覆範本"
 
-#: etc/initialdata:240
+#: etc/initialdata.zh:240 etc/initialdata:238
 msgid "Default transaction template"
 msgstr "預設更動範本"
 
@@ -1837,7 +1841,7 @@ msgstr "代理表單："
 msgid "Delegated Type"
 msgstr "代理表單種類"
 
-#: html/Edit/Users/index.html:125 html/Work/Delegates/Info:31 html/Work/Delegates/List:8 html/Work/Elements/Tab:39 html/Work/Overview/Info:28
+#: html/Edit/Users/index.html:125 html/Work/Delegates/Info:31 html/Work/Delegates/List:8 html/Work/Elements/Tab:41 html/Work/Overview/Info:28
 msgid "Delegates"
 msgstr "代理人"
 
@@ -1985,7 +1989,7 @@ msgstr "經辦業務說明"
 msgid "Description:"
 msgstr "描述："
 
-#: html/Work/Tickets/Create.html:108 html/Work/Tickets/Elements/EditCustomFields:39 html/Work/Tickets/Elements/ShowCustomFields:41
+#: html/Work/Tickets/Create.html:108 html/Work/Tickets/Elements/EditCustomFields:13 html/Work/Tickets/Elements/ShowCustomFields:15
 msgid "Details"
 msgstr "細節"
 
@@ -2325,7 +2329,7 @@ msgstr "申請單->新增視察員的參數有誤"
 msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "申請單->刪除視察員的參數有誤"
 
-#: etc/initialdata:38
+#: etc/initialdata.zh:38 etc/initialdata:20
 msgid "Everyone"
 msgstr "所有人"
 
@@ -2588,7 +2592,7 @@ msgstr "擁有全域權限列表："
 msgid "Global Scrips"
 msgstr "全域手續"
 
-#: html/Edit/Elements/Tab:38
+#: html/Edit/Elements/Tab:40
 msgid "Global Setup"
 msgstr "全域設定"
 
@@ -2653,7 +2657,7 @@ msgstr "群組權限"
 msgid "Group Rights:"
 msgstr "擁有群組權限列表："
 
-#: html/Edit/Elements/Tab:34
+#: html/Edit/Elements/Tab:36
 msgid "Group Setup"
 msgstr "群組設定"
 
@@ -2735,7 +2739,7 @@ msgstr "嗨！"
 msgid "Hello, %1"
 msgstr "嗨，%1"
 
-#: html/Edit/Elements/104Top:27
+#: html/Edit/Elements/104Top:28
 msgid "Help"
 msgstr "輔助說明"
 
@@ -2751,7 +2755,7 @@ msgstr "紀錄"
 msgid "HomePhone"
 msgstr "住處電話"
 
-#: html/Edit/Elements/104Top:15 html/Edit/Elements/104Top:23 html/Edit/Elements/EDOMHeader:9 html/Elements/Tabs:43
+#: html/Edit/Elements/104Top:15 html/Edit/Elements/104Top:24 html/Edit/Elements/EDOMHeader:9 html/Elements/Tabs:43
 msgid "Homepage"
 msgstr "主頁"
 
@@ -2780,7 +2784,7 @@ msgstr "編號"
 msgid "Identity"
 msgstr "身份"
 
-#: etc/initialdata:439 etc/upgrade/2.1.71:86 html/Edit/Elements/CreateApprovalsQueue:58
+#: etc/initialdata.zh:439 etc/initialdata:411 etc/upgrade/2.1.71:86 html/Edit/Elements/CreateApprovalsQueue:58
 msgid "If an approval is rejected, reject the original and delete pending approvals"
 msgstr "若簽核單遭到駁回，則連帶駁回原申請單，並刪除其他相關的待簽核事項"
 
@@ -3078,7 +3082,7 @@ msgstr "紀錄等級"
 msgid "LogToFileNamed"
 msgstr "紀錄檔名"
 
-#: html/Elements/Header:56
+#: html/Elements/Header:57
 #. ("<b>".$session{'CurrentUser'}->Name."</b>")
 msgid "Logged in as %1"
 msgstr "使用者：%1"
@@ -3087,7 +3091,7 @@ msgstr "使用者：%1"
 msgid "Login"
 msgstr "登入"
 
-#: html/Edit/Elements/104Top:17 html/Edit/Elements/104Top:17 html/Edit/Elements/104Top:29 html/Elements/Header:53
+#: html/Edit/Elements/104Top:17 html/Edit/Elements/104Top:17 html/Edit/Elements/104Top:32 html/Elements/Header:54
 msgid "Logout"
 msgstr "登出"
 
@@ -3505,15 +3509,15 @@ msgstr "必須指定 'Name' 的屬性"
 msgid "My %1 tickets"
 msgstr "我的 %1 申請單"
 
-#: html/Work/Elements/Tab:35
+#: html/Work/Elements/Tab:37
 msgid "My Approvals"
 msgstr "表單簽核"
 
-#: html/Work/Elements/Tab:33
+#: html/Work/Elements/Tab:35
 msgid "My Requests"
 msgstr "表單申請追蹤"
 
-#: html/Work/Elements/Tab:37
+#: html/Work/Elements/Tab:39
 msgid "My Tickets"
 msgstr "表單處理"
 
@@ -3549,7 +3553,7 @@ msgstr "新建立"
 msgid "New Password"
 msgstr "新的密碼"
 
-#: etc/initialdata:341 etc/upgrade/2.1.71:16 html/Edit/Elements/CreateApprovalsQueue:21
+#: etc/initialdata.zh:341 etc/initialdata:317 etc/upgrade/2.1.71:16 html/Edit/Elements/CreateApprovalsQueue:21
 msgid "New Pending Approval"
 msgstr "新的待簽核事項"
 
@@ -3557,7 +3561,7 @@ msgstr "新的待簽核事項"
 msgid "New Relationships"
 msgstr "新增關係"
 
-#: html/Work/Elements/Tab:31
+#: html/Work/Elements/Tab:33
 msgid "New Request"
 msgstr "表單申請"
 
@@ -3815,7 +3819,7 @@ msgstr "未設定成從 %2 內擷取 %1"
 msgid "Not logged in"
 msgstr "尚未登入"
 
-#: html/Elements/Header:58
+#: html/Elements/Header:59
 msgid "Not logged in."
 msgstr "尚未登入"
 
@@ -3843,63 +3847,63 @@ msgstr "備註："
 msgid "Notification could not be sent"
 msgstr "無法送出通知"
 
-#: etc/initialdata:111
+#: etc/initialdata.zh:111 etc/initialdata:93
 msgid "Notify AdminCcs"
 msgstr "通知管理員副本收件人"
 
-#: etc/initialdata:107
+#: etc/initialdata.zh:107 etc/initialdata:89
 msgid "Notify AdminCcs as Comment"
 msgstr "以評論方式通知管理員副本收件人"
 
-#: etc/initialdata:138
+#: etc/initialdata.zh:138 etc/initialdata:120
 msgid "Notify Other Recipients"
 msgstr "通知其他收件人"
 
-#: etc/initialdata:134
+#: etc/initialdata.zh:134 etc/initialdata:116
 msgid "Notify Other Recipients as Comment"
 msgstr "以評論方式通知其他收件人"
 
-#: etc/initialdata:103
+#: etc/initialdata.zh:103 etc/initialdata:85
 msgid "Notify Owner"
 msgstr "通知承辦人"
 
-#: etc/initialdata:99
+#: etc/initialdata.zh:99 etc/initialdata:81
 msgid "Notify Owner as Comment"
 msgstr "以評論方式通知承辦人"
 
-#: etc/initialdata:385
+#: etc/initialdata.zh:385 etc/initialdata:361
 msgid "Notify Owner of their rejected ticket"
 msgstr "通知承辦人申請單已駁回"
 
-#: etc/initialdata:374
+#: etc/initialdata.zh:374 etc/initialdata:350
 msgid "Notify Owner of their ticket has been approved by all approvers"
 msgstr "通知承辦人申請單已完成全部簽核"
 
-#: etc/initialdata:359
+#: etc/initialdata.zh:359 etc/initialdata:338
 msgid "Notify Owner of their ticket has been approved by some approver"
 msgstr "通知承辦人申請單已完成某項簽核"
 
-#: etc/initialdata:343 etc/upgrade/2.1.71:17 html/Edit/Elements/CreateApprovalsQueue:22
+#: etc/initialdata.zh:343 etc/initialdata:319 etc/upgrade/2.1.71:17 html/Edit/Elements/CreateApprovalsQueue:22
 msgid "Notify Owners and AdminCcs of new items pending their approval"
 msgstr "整理待簽核事項，通知承辦人及管理員副本收件人"
 
-#: etc/initialdata:95
+#: etc/initialdata.zh:95 etc/initialdata:77
 msgid "Notify Requestors"
 msgstr "通知申請人"
 
-#: etc/initialdata:121
+#: etc/initialdata.zh:121 etc/initialdata:103
 msgid "Notify Requestors and Ccs"
 msgstr "通知申請人及副本收件人"
 
-#: etc/initialdata:116
+#: etc/initialdata.zh:116 etc/initialdata:98
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "以評論方式通知申請人及副本收件人"
 
-#: etc/initialdata:130
+#: etc/initialdata.zh:130 etc/initialdata:112
 msgid "Notify Requestors, Ccs and AdminCcs"
 msgstr "通知申請人、副本及管理員副本收件人"
 
-#: etc/initialdata:126
+#: etc/initialdata.zh:126 etc/initialdata:108
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "以評論方式通知申請人、副本及管理員副本收件人"
 
@@ -3959,35 +3963,35 @@ msgstr "辦公室電話"
 msgid "On"
 msgstr "等於"
 
-#: etc/initialdata:173
+#: etc/initialdata.zh:173 etc/initialdata:155
 msgid "On Comment"
 msgstr "評論時"
 
-#: etc/initialdata:166
+#: etc/initialdata.zh:166 etc/initialdata:148
 msgid "On Correspond"
 msgstr "回覆申請單時"
 
-#: etc/initialdata:155
+#: etc/initialdata.zh:155 etc/initialdata:137
 msgid "On Create"
 msgstr "新增申請單時"
 
-#: etc/initialdata:187
+#: etc/initialdata.zh:187 etc/initialdata:169
 msgid "On Owner Change"
 msgstr "承辦人改變時"
 
-#: etc/initialdata:195
+#: etc/initialdata.zh:195 etc/initialdata:177
 msgid "On Queue Change"
 msgstr "表單改變時"
 
-#: etc/initialdata:201
+#: etc/initialdata.zh:201 etc/initialdata:183
 msgid "On Resolve"
 msgstr "解決申請單時"
 
-#: etc/initialdata:179
+#: etc/initialdata.zh:179 etc/initialdata:161
 msgid "On Status Change"
 msgstr "現況改變時"
 
-#: etc/initialdata:160
+#: etc/initialdata.zh:160 etc/initialdata:142
 msgid "On Transaction"
 msgstr "發生更動時"
 
@@ -4021,7 +4025,7 @@ msgstr "在新視窗開啟(列表的)申請單"
 msgid "Open tickets (from listing) in another window"
 msgstr "在另一個視窗開啟(列表的)申請單"
 
-#: etc/initialdata:150
+#: etc/initialdata.zh:150 etc/initialdata:132
 msgid "Open tickets on correspondence"
 msgstr "收到回覆時即開啟申請單"
 
@@ -4079,7 +4083,7 @@ msgstr "取代全域權限"
 msgid "OverrideGlobalACL status %1"
 msgstr "取代全域權限 %1"
 
-#: html/Work/Elements/Tab:29
+#: html/Work/Elements/Tab:31
 msgid "Overview"
 msgstr "總覽"
 
@@ -4091,7 +4095,7 @@ msgstr "承辦申請單"
 msgid "OwnTicket"
 msgstr "承辦申請單"
 
-#: etc/initialdata:56 html/Admin/Elements/ModifyTemplateAsWorkflow:141 html/Edit/Global/Workflow/Owner.html:19 html/Edit/Queues/Basic/Top:47 html/Edit/Queues/Basic/Top:58 html/Elements/MyRequests:31 html/SelfService/Elements/MyRequests:29 html/Ticket/Create.html:47 html/Ticket/Elements/EditPeople:42 html/Ticket/Elements/EditPeople:43 html/Ticket/Elements/ShowPeople:26 html/Ticket/Update.html:62 html/Work/Elements/MyRequests:13 html/Work/Elements/Quicksearch:18 html/Work/Tickets/Elements/ShowBasics:21 html/Work/Tickets/Update.html:27 lib/RT/ACE_Overlay.pm:85 lib/RT/Tickets_Overlay.pm:1244
+#: etc/initialdata.zh:56 etc/initialdata:38 html/Admin/Elements/ModifyTemplateAsWorkflow:141 html/Edit/Global/Workflow/Owner.html:19 html/Edit/Queues/Basic/Top:47 html/Edit/Queues/Basic/Top:58 html/Elements/MyRequests:31 html/SelfService/Elements/MyRequests:29 html/Ticket/Create.html:47 html/Ticket/Elements/EditPeople:42 html/Ticket/Elements/EditPeople:43 html/Ticket/Elements/ShowPeople:26 html/Ticket/Update.html:62 html/Work/Elements/MyRequests:13 html/Work/Elements/Quicksearch:18 html/Work/Tickets/Elements/ShowBasics:21 html/Work/Tickets/Update.html:27 lib/RT/ACE_Overlay.pm:85 lib/RT/Tickets_Overlay.pm:1244
 msgid "Owner"
 msgstr "承辦人"
 
@@ -4181,7 +4185,7 @@ msgstr "人員"
 msgid "People with Queue Rights"
 msgstr "擁有表單權限人員"
 
-#: etc/initialdata:143
+#: etc/initialdata.zh:143 etc/initialdata:125
 msgid "Perform a user-defined action"
 msgstr "執行使用者自訂的動作"
 
@@ -4293,7 +4297,7 @@ msgstr "職級"
 msgid "Pref"
 msgstr "偏好"
 
-#: html/Edit/Elements/104Top:25 html/Elements/Header:51 html/Elements/Tabs:52 html/SelfService/Elements/Tabs:50 html/SelfService/Prefs.html:24 html/User/Prefs.html:24 html/User/Prefs.html:27 html/Work/Elements/Tab:41
+#: html/Edit/Elements/104Top:26 html/Elements/Header:51 html/Elements/Tabs:52 html/SelfService/Elements/Tabs:50 html/SelfService/Prefs.html:24 html/User/Prefs.html:24 html/User/Prefs.html:27 html/Work/Elements/Tab:43
 msgid "Preferences"
 msgstr "偏好"
 
@@ -4330,7 +4334,7 @@ msgstr "優先順位"
 msgid "Priority starts at"
 msgstr "優先順位起始值"
 
-#: etc/initialdata:43
+#: etc/initialdata.zh:43 etc/initialdata:25
 msgid "Privileged"
 msgstr "內部成員"
 
@@ -4347,7 +4351,7 @@ msgstr "內部成員"
 msgid "Process Status"
 msgstr "處理狀態"
 
-#: etc/initialdata:41 etc/initialdata:47 etc/initialdata:53 etc/initialdata:77
+#: etc/initialdata.zh:41 etc/initialdata.zh:47 etc/initialdata.zh:53 etc/initialdata.zh:77 etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
 msgid "Pseudogroup for internal use"
 msgstr "內部用的虛擬群組"
 
@@ -4401,7 +4405,7 @@ msgstr "表單權限"
 msgid "Queue Scrips"
 msgstr "表單手續"
 
-#: html/Edit/Elements/Tab:36
+#: html/Edit/Elements/Tab:38
 msgid "Queue Setup"
 msgstr "表單設定"
 
@@ -4647,7 +4651,7 @@ msgstr "上下班刷卡"
 msgid "Reported on"
 msgstr "到職日期"
 
-#: etc/initialdata:62 html/Ticket/Update.html:39 html/Work/Elements/List:21 html/Work/Elements/MyApprovals:12 html/Work/Elements/SelectSearch:30 html/Work/Tickets/Elements/ShowBasics:54 lib/RT/ACE_Overlay.pm:86
+#: etc/initialdata.zh:62 etc/initialdata:44 html/Ticket/Update.html:39 html/Work/Elements/List:21 html/Work/Elements/MyApprovals:12 html/Work/Elements/SelectSearch:30 html/Work/Tickets/Elements/ShowBasics:54 lib/RT/ACE_Overlay.pm:86
 msgid "Requestor"
 msgstr "申請人"
 
@@ -4704,7 +4708,7 @@ msgstr "解決"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "解決申請單 #%1 (%2)"
 
-#: etc/initialdata:331 html/Elements/SelectDateType:27 lib/RT/Ticket_Overlay.pm:1178
+#: etc/initialdata.zh:331 etc/initialdata:308 html/Elements/SelectDateType:27 lib/RT/Ticket_Overlay.pm:1178
 msgid "Resolved"
 msgstr "已解決"
 
@@ -4868,7 +4872,7 @@ msgstr "%1 的手續\\n"
 msgid "Scrips which apply to all queues"
 msgstr "適用於所有表單的手續"
 
-#: html/Edit/Elements/104Buttons:75 html/Elements/SimpleSearch:26 html/Search/Elements/PickRestriction:125 html/Ticket/Elements/Tabs:158 html/Work/Elements/Tab:43 html/Work/Search/PickRestriction:102
+#: html/Edit/Elements/104Buttons:75 html/Elements/SimpleSearch:26 html/Search/Elements/PickRestriction:125 html/Ticket/Elements/Tabs:158 html/Work/Elements/Tab:45 html/Work/Search/PickRestriction:102
 msgid "Search"
 msgstr "查詢"
 
@@ -4972,39 +4976,39 @@ msgstr "新增對象："
 msgid "Self Service"
 msgstr "自助服務"
 
-#: etc/initialdata:131
+#: etc/initialdata.zh:131 etc/initialdata:113
 msgid "Send mail to all watchers"
 msgstr "寄信給所有視察員"
 
-#: etc/initialdata:127
+#: etc/initialdata.zh:127 etc/initialdata:109
 msgid "Send mail to all watchers as a \"comment\""
 msgstr "以評論方式寄信給所有視察員"
 
-#: etc/initialdata:122
+#: etc/initialdata.zh:122 etc/initialdata:104
 msgid "Send mail to requestors and Ccs"
 msgstr "寄信給申請人及副本收件人"
 
-#: etc/initialdata:117
+#: etc/initialdata.zh:117 etc/initialdata:99
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "以評論方式寄信給申請人及副本收件人"
 
-#: etc/initialdata:96
+#: etc/initialdata.zh:96 etc/initialdata:78
 msgid "Sends a message to the requestors"
 msgstr "寄信給申請人"
 
-#: etc/initialdata:135 etc/initialdata:139
+#: etc/initialdata.zh:135 etc/initialdata.zh:139 etc/initialdata:117 etc/initialdata:121
 msgid "Sends mail to explicitly listed Ccs and Bccs"
 msgstr "寄信給特定的副本及密件副本收件人"
 
-#: etc/initialdata:112
+#: etc/initialdata.zh:112 etc/initialdata:94
 msgid "Sends mail to the administrative Ccs"
 msgstr "寄信給管理員副本收件人"
 
-#: etc/initialdata:108
+#: etc/initialdata.zh:108 etc/initialdata:90
 msgid "Sends mail to the administrative Ccs as a comment"
 msgstr "以評論寄信給管理員副本收件人"
 
-#: etc/initialdata:100 etc/initialdata:104
+#: etc/initialdata.zh:100 etc/initialdata.zh:104 etc/initialdata:82 etc/initialdata:86
 msgid "Sends mail to the owner"
 msgstr "寄信給申請人"
 
@@ -5100,7 +5104,7 @@ msgstr "使用者：%1"
 msgid "Single"
 msgstr "單一"
 
-#: html/Elements/Header:50
+#: html/Edit/Elements/104Top:21 html/Elements/Header:50
 msgid "Skip Menu"
 msgstr "略過選單"
 
@@ -5168,7 +5172,7 @@ msgstr "州"
 msgid "Status"
 msgstr "現況"
 
-#: etc/initialdata:317
+#: etc/initialdata.zh:317 etc/initialdata:294
 msgid "Status Change"
 msgstr "現況改變時"
 
@@ -5279,13 +5283,17 @@ msgstr "系統群組"
 msgid "SystemInternal"
 msgstr "系統內部用"
 
-#: etc/initialdata:59 etc/initialdata:65 etc/initialdata:71
+#: etc/initialdata.zh:59 etc/initialdata.zh:65 etc/initialdata.zh:71 etc/initialdata:41 etc/initialdata:47 etc/initialdata:53
 msgid "SystemRolegroup for internal use"
 msgstr "內部使用的系統角色群組"
 
 #: lib/RT/CurrentUser.pm:319
 msgid "TEST_STRING"
 msgstr "TEST_STRING"
+
+#: html/Edit/Elements/104Top:30
+msgid "TabbedUI"
+msgstr "頁籤介面"
 
 #: html/Ticket/Elements/Tabs:142
 msgid "Take"
@@ -5567,7 +5575,7 @@ msgstr "申請單編號"
 msgid "Ticket Processing Due"
 msgstr "表單運行期限"
 
-#: etc/initialdata:332
+#: etc/initialdata.zh:332 etc/initialdata:309
 msgid "Ticket Resolved"
 msgstr "申請單已解決"
 
@@ -5615,7 +5623,7 @@ msgstr "申請單刪除完畢"
 msgid "Ticket not found"
 msgstr "找不到申請單"
 
-#: etc/initialdata:318
+#: etc/initialdata.zh:318 etc/initialdata:295
 msgid "Ticket status changed"
 msgstr "申請單現況已改變"
 
@@ -5690,7 +5698,7 @@ msgstr "告知日期"
 msgid "Total"
 msgstr "頁"
 
-#: etc/initialdata:239
+#: etc/initialdata.zh:239 etc/initialdata:237
 msgid "Transaction"
 msgstr "更動"
 
@@ -5739,7 +5747,7 @@ msgstr "外部系統登入帳號"
 msgid "UnixUsername"
 msgstr "外部系統登入帳號"
 
-#: lib/RT/Attachment_Overlay.pm:273 lib/RT/Attachment_Overlay.pm:303
+#: lib/RT/Attachment_Overlay.pm:269 lib/RT/Attachment_Overlay.pm:299
 #. ($self->ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "不可解的內容文字編碼方式 %1"
@@ -5748,7 +5756,7 @@ msgstr "不可解的內容文字編碼方式 %1"
 msgid "Unlimited"
 msgstr "全數顯示"
 
-#: etc/initialdata:50
+#: etc/initialdata.zh:50 etc/initialdata:32
 msgid "Unprivileged"
 msgstr "非內部成員"
 
@@ -5842,7 +5850,7 @@ msgstr "找不到使用者 '%1'"
 msgid "User '%1' not found\\n"
 msgstr "找不到使用者 '%1'\\n"
 
-#: etc/initialdata:142 etc/initialdata:209
+#: etc/initialdata.zh:142 etc/initialdata.zh:209 etc/initialdata:124 etc/initialdata:191
 msgid "User Defined"
 msgstr "使用者自訂"
 
@@ -5862,7 +5870,7 @@ msgstr "員工編號"
 msgid "User Rights"
 msgstr "使用者權限"
 
-#: html/Edit/Elements/Tab:32
+#: html/Edit/Elements/Tab:34
 msgid "User Setup"
 msgstr "使用者設定"
 
@@ -5943,51 +5951,51 @@ msgstr "星期三"
 msgid "Wed."
 msgstr "星期三"
 
-#: etc/initialdata:533 etc/upgrade/2.1.71:161 html/Edit/Elements/CreateApprovalsQueue:135
+#: etc/initialdata.zh:533 etc/initialdata:503 etc/upgrade/2.1.71:161 html/Edit/Elements/CreateApprovalsQueue:135
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
 msgstr "當申請單通過所有簽核後，將此訊息回覆到原申請單"
 
-#: etc/initialdata:497 etc/upgrade/2.1.71:135 html/Edit/Elements/CreateApprovalsQueue:107
+#: etc/initialdata.zh:497 etc/initialdata:467 etc/upgrade/2.1.71:135 html/Edit/Elements/CreateApprovalsQueue:107
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
 msgstr "當申請單通過某項簽核後，將此訊息回覆到原申請單"
 
-#: etc/initialdata:156
+#: etc/initialdata.zh:156 etc/initialdata:138
 msgid "When a ticket is created"
 msgstr "新增申請單時"
 
-#: etc/initialdata:428 etc/upgrade/2.1.71:79 html/Edit/Elements/CreateApprovalsQueue:51
+#: etc/initialdata.zh:428 etc/initialdata:400 etc/upgrade/2.1.71:79 html/Edit/Elements/CreateApprovalsQueue:51
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "簽核單新增之後，通知應受理的承辦人及管理員副本收件人"
 
-#: etc/initialdata:161
+#: etc/initialdata.zh:161 etc/initialdata:143
 msgid "When anything happens"
 msgstr "當任何事情發生時"
 
-#: etc/initialdata:202
+#: etc/initialdata.zh:202 etc/initialdata:184
 msgid "Whenever a ticket is resolved"
 msgstr "當申請單解決時"
 
-#: etc/initialdata:188
+#: etc/initialdata.zh:188 etc/initialdata:170
 msgid "Whenever a ticket's owner changes"
 msgstr "當申請單更換承辦人時"
 
-#: etc/initialdata:196
+#: etc/initialdata.zh:196 etc/initialdata:178
 msgid "Whenever a ticket's queue changes"
 msgstr "當申請單更換表單時"
 
-#: etc/initialdata:180
+#: etc/initialdata.zh:180 etc/initialdata:162
 msgid "Whenever a ticket's status changes"
 msgstr "當申請單更新現況時"
 
-#: etc/initialdata:210
+#: etc/initialdata.zh:210 etc/initialdata:192
 msgid "Whenever a user-defined condition occurs"
 msgstr "當使用者自訂的情況發生時"
 
-#: etc/initialdata:174
+#: etc/initialdata.zh:174 etc/initialdata:156
 msgid "Whenever comments come in"
 msgstr "當評論送達時"
 
-#: etc/initialdata:167
+#: etc/initialdata.zh:167 etc/initialdata:149
 msgid "Whenever correspondence comes in"
 msgstr "當回覆送達時"
 
@@ -6077,11 +6085,11 @@ msgstr "您提出的 %1 申請單"
 msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
 msgstr "RT 管理員可能設錯了由 RT 寄出的郵件收件人標頭檔"
 
-#: etc/initialdata:514 etc/upgrade/2.1.71:146 html/Edit/Elements/CreateApprovalsQueue:119
+#: etc/initialdata.zh:514 etc/initialdata:484 etc/upgrade/2.1.71:146 html/Edit/Elements/CreateApprovalsQueue:119
 msgid "Your request has been approved by %1. Other approvals may still be pending."
 msgstr "申請單已由 %1 批准。可能還有其他待簽核的步驟。"
 
-#: etc/initialdata:552 etc/upgrade/2.1.71:180 html/Edit/Elements/CreateApprovalsQueue:154
+#: etc/initialdata.zh:552 etc/initialdata:522 etc/upgrade/2.1.71:180 html/Edit/Elements/CreateApprovalsQueue:154
 msgid "Your request has been approved."
 msgstr "您的申請單已完成簽核程序。"
 
@@ -6089,11 +6097,11 @@ msgstr "您的申請單已完成簽核程序。"
 msgid "Your request was rejected"
 msgstr "您的申請單已被駁回"
 
-#: etc/initialdata:455
+#: etc/initialdata.zh:455
 msgid "Your request was rejected by %1."
 msgstr "您的申請單已被 %1 駁回。"
 
-#: etc/upgrade/2.1.71:101 html/Edit/Elements/CreateApprovalsQueue:73
+#: etc/initialdata:427 etc/upgrade/2.1.71:101 html/Edit/Elements/CreateApprovalsQueue:73
 msgid "Your request was rejected."
 msgstr "您的申請單已被駁回。"
 

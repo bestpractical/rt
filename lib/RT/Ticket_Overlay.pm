@@ -2800,9 +2800,9 @@ sub MergeInto {
     $RT::Logger->debug(
         "checking if the new ticket has the same id and effective id...");
     unless ( $NewTicket->id == $NewTicket->EffectiveId ) {
-        $RT::Logger->err( '$self trying to merge into '
+        $RT::Logger->err( "$self trying to merge into "
               . $NewTicket->Id
-              . ' which is itself merged.\n' );
+              . " which is itself merged.\n" );
         return ( 0,
             $self->loc("Can't merge into a merged ticket. You should never get this error") );
     }

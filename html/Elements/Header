@@ -49,8 +49,9 @@ ONLOAD="
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id && $LoggedIn) {
 <SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A> |</SPAN>
 <A  HREF="<%$RT::WebPath%><% $Prefs %>" ><&|/l&>Preferences</&></A>
+<& /Elements/Callback, %ARGS &>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-&nbsp;|&nbsp;<A  HREF="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL && "?URL=".$URL%>"><&|/l&>Logout</&></a>
+| <A  HREF="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL && "?URL=".$URL%>"><&|/l&>Logout</&></a>
 % }
 <BR>
 <&|/l, "<b>".$session{'CurrentUser'}->Name."</b>" &>Logged in as [_1]</&>

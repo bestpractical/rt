@@ -474,6 +474,34 @@ sub GetHeader {
 }
 # }}}
 
+# {{{ sub SetHeader
+
+=head2 SetHeader ( 'Tag', 'Value' )
+
+Replace or add a Header to the attachment's headers.
+
+=cut
+
+sub SetHeader {
+    my $self = shift;
+    my $tag = shift;
+    my $newheader = '';
+
+    foreach my $line (split(/\n/,$self->SUPER::Headers)) {
+        if (defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i) {
+	    $newheader .= "$tag: $_[0]\n";
+	    undef $tag;
+        }
+	else {
+	    $newheader .= "$line\n";
+	}
+    }
+
+    $newheader .= "$tag: $_[0]\n" if defined $tag;
+    $self->__Set( Field => 'Headers', Value => $newheader);
+}
+# }}}
+
 # {{{ sub _Value 
 
 =head2 _Value
@@ -515,22 +543,22 @@ sub _Value  {
 sub ContentLength {
     my $self = shift;
 
-
-	# XXX TODO: this really should be cashed. for a given attachment, it will never change. 
-	# how about a global hash, autrijus?
-
     unless ( (($self->TransactionObj->CurrentUserHasRight('ShowTicketComments')) and
 	     ($self->TransactionObj->Type eq 'Comment') )  or
 	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
 	return undef;
     }
 
-    my $size = $self->_Handle->FetchResult(
-	"SELECT LENGTH(Content) FROM Attachments WHERE Id = ?", $self->Id
-    ) or return 0;
+    if (my $len = $self->GetHeader('Content-Length')) {
+	return $len;
+    }
 
-    $size = int($size / 4 * 3) if $self->__Value('ContentEncoding') eq 'base64';
-    return $size;
+    {
+	use bytes;
+	my $len = length($self->Content);
+	$self->SetHeader('Content-Length' => $len);
+	return $len;
+    }
 }
 
 # }}}
