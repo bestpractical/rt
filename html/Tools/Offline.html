@@ -28,6 +28,9 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
+<& /Elements/Callback, Requestor => \$requestoraddress,
+    Queue => \$qname, %ARGS &>
+
 <FORM ACTION="Offline.html" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
 <table>
@@ -38,6 +41,15 @@
 <td>
 <& /Elements/SelectQueue, Name => "qname", NamedValues => 1 &>
 <i><&|/l&>If no queue is specified, create tickets in this queue.</&></i>
+</td>
+</tr>
+<tr>
+<td class=label>
+<&|/l&>Default Requestor</&>:
+</td>
+<td>
+<input name=requestoraddress value=<%$requestoraddress%>>
+<i><&|/l&>If no Requestor is specified, create tickets with this requestor.</&></i>
 </td>
 </tr>
 <tr><td class=labeltop>
@@ -69,6 +81,10 @@ use RT::Action::CreateTickets;
 my $action = new RT::Action::CreateTickets;
 my $string;
 
+my $requestoraddress = $ARGS{'requestoraddress'};
+my $qname = $ARGS{'qname'};
+$RT::Logger->crit("          ********** requestor: " . $requestoraddress);
+
 if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     $ARGS{'string'} = "";
     my $cgi_object = $m->cgi_object;
@@ -79,7 +95,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
 	$template .= $buffer;
     }
-    $action->Parse($template, $ARGS{'qname'});
+    $action->Parse($template, $qname, $requestoraddress);
     foreach (@{ $action->{'create_tickets'} }) {
 	my $id = $_;
 	$id =~ s/^create\-//;
@@ -89,7 +105,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 
     $ARGS{'string'} = $string;
 } elsif ($ARGS{'UpdateTickets'}) {
-    $action->Parse($ARGS{string}, $ARGS{'qname'});
+    $action->Parse($ARGS{string}, $qname, $requestoraddress);
     push @results, $action->CreateByTemplate();
     push @results, $action->UpdateByTemplate();
     $string = $ARGS{string};

@@ -619,10 +619,11 @@ sub Parse {
     my $self = shift;
     my $content = shift;
     my $qname = shift;
+    my $requestorname = shift;
 
     my @template_order;
     my $template_id;
-    my $queue;
+    my ($queue, $requestor);
     if (substr($content, 0, 3) eq '===') {
 	$RT::Logger->debug("Line: ===");
 	foreach my $line (split(/\n/, $content)) {
@@ -631,8 +632,11 @@ sub Parse {
 	    if ($line =~ /^===$/) {
 		if ($template_id && !$queue) {
 		    $self->{'templates'}->{$template_id} .= "Queue: $qname\n";
+		} elsif ($template_id && !$requestor) {
+		    $self->{'templates'}->{$template_id} .= "Requestor: $requestorname\n";
 		}
 		$queue = 0;
+		$requestor = 0;
 	    }
 	    if ($line =~ /^===Create-Ticket: (.*)$/) {
 		$template_id = "create-$1";
@@ -657,6 +661,16 @@ sub Parse {
 		    if (!$value) {
 			$value = $qname;
 			$line = "Queue: $value";
+		    }
+		}
+		if ( $line =~ /^Requestor:(.*)/i) {
+		    $requestor = 1;
+		    my $value = $1;
+		    $value =~ s/^\s//;
+		    $value =~ s/\s$//;
+		    if (!$value) {
+			$value = $requestorname;
+			$line = "Requestor: $value";
 		    }
 		}
 		$self->{'templates'}->{$template_id} .= $line."\n";
@@ -724,6 +738,12 @@ sub Parse {
 			    $value = $qname;
 			}
 		    }
+		    if ( $field =~ /Requestor/i) {
+			$requestor = 1;
+			if (!$value) {
+			    $value = $requestorname;
+			}
+		    }
 		    $self->{'templates'}->{$template_id} .= $field . ": ";
 		    $self->{'templates'}->{$template_id} .= $value || "";
 		    $self->{'templates'}->{$template_id} .= "\n";
@@ -734,6 +754,9 @@ sub Parse {
 	    }
 	    if (!$queue) {
 		$self->{'templates'}->{$template_id} .= "Queue: $qname\n";
+	    }
+	    if (!$requestor) {
+		$self->{'templates'}->{$template_id} .= "Requestor: $requestorname\n";
 	    }
 	}
     }
@@ -797,8 +820,10 @@ sub ParseLines {
 		}
 	    } else {
 		# if it's not content, strip leading and trailing spaces
-		$args{ $tag } =~ s/^\s+//g;
-		$args{ $tag } =~ s/\s+$//g;
+		if ($args{ $tag }) {
+		    $args{ $tag } =~ s/^\s+//g;
+		    $args{ $tag } =~ s/\s+$//g;
+		}
 	    }
 	}
     }
