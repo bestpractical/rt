@@ -2,7 +2,7 @@
 <DIV ALIGN=CENTER>
 <& /Elements/TitleBoxStart, width=> "40%", titleright => "RT for $RT::rtname", title => 'Login' ,
 contentbg=>"#cccccc" &>
-<FORM METHOD=POST ACTION="<% $r->uri %>">
+<FORM METHOD=POST ACTION="<% $RT::WebPath%><% $r->uri %>">
 <TABLE BORDER=0>
 <TR ALIGN=RIGHT>
 <TD ALIGN=RIGHT>Username:</TD><TD><input name=user value="<%$user%>"></TD></TR>
