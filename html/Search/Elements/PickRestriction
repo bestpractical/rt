@@ -77,7 +77,7 @@
 			    TrueVal=> '=', 
 			    FalseVal => '!=' 
 &>  
-<& /Elements/SelectStatus, Name => "ValueOfStatus" &>
+<& /Elements/SelectStatus, Name => "ValueOfStatus", SkipDeleted => 1 &>
 
 
 % while ( my $CustomField = $CustomFields->Next ) {

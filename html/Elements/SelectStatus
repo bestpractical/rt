@@ -24,6 +24,7 @@
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
 %foreach my $status (@status) {
+%next if ($SkipDeleted && $status eq 'deleted');
 <OPTION VALUE="<%$status%>" <%($Default eq $status) && 'SELECTED'%>><%loc($status)%></OPTION>
 % }
 </SELECT>
@@ -34,4 +35,5 @@ my @status = $queue->StatusArray();
 <%ARGS>
 $Name => undef
 $Default => undef
+$SkipDeleted => 0
 </%ARGS>
