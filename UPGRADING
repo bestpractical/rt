@@ -1,5 +1,30 @@
 UPGRADING
 
+From RT3.0.x:
+
+    Read this document for important instructions on updating your
+database.  The README file contains the process for upgrading.
+
+    The short version:
+
+    - Run the configure program exactly as you did previously.
+
+      (Look at the config.log file from the previous source tree to
+      figure out what that was.)
+
+    - make upgrade
+
+    - stop and start your apache
+
+From RT2.0.x:
+
+    
+    Download the RT2 to RT3 migration tools from:
+
+    http://bestpractical.com/pub/rt/devel/rt2-to-rt3.tar.gz
+
+    Follow the included instructions.
+
 
 *******
 WARNING
