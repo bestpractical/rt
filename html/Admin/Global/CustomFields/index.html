@@ -56,28 +56,36 @@
 </ul>
 
 <%INIT>
-my $title =  loc("Global custom field configuration");
+my $title = loc("Global custom field configuration");
 
-  my $tabs = {
-                
-               A => { title => loc('Users'),
-               text => loc('Select custom fields for all users'),
-                           path => 'Users.html',
-                         },
-               B => { title => loc('Groups'),
-                        text => loc('Select custom fields for all user groups'),
-                        path => 'Groups.html',
-                      },
-              
-                F => { title => loc('Tickets'),
-                text => loc('Select custom fields for tickets in all queues'),
-                        path => 'Queue-Tickets.html',
-                        },
+my $tabs = {
 
-                        G => { title => loc('Ticket Transactions'),
-                                text => loc('Select custom fields for transactions on tickets in all queues'),
-                                path => 'Queue-Transactions.html',
-                      },
- 
+    A => {
+        title => loc('Users'),
+        text  => loc('Select custom fields for all users'),
+        path  => 'Users.html',
+    },
+    B => {
+        title => loc('Groups'),
+        text  => loc('Select custom fields for all user groups'),
+        path  => 'Groups.html',
+    },
+
+    F => {
+        title => loc('Tickets'),
+        text  => loc('Select custom fields for tickets in all queues'),
+        path  => 'Queue-Tickets.html',
+    },
+
+    G => {
+        title => loc('Ticket Transactions'),
+        text  =>
+          loc('Select custom fields for transactions on tickets in all queues'),
+        path => 'Queue-Transactions.html',
+    },
+
 };
+
+
+$m->comp('/Elements/Callback', tabs => $tabs);
 </%INIT>
