@@ -115,6 +115,7 @@ sub insert_schema {
 
 # {{{ sub drop_db
 sub drop_db {
+    return if ($RT::DatabaseType eq 'SQLite');
     if ($PROMPT) {
         print <<END;
 
@@ -133,10 +134,12 @@ END
 }
 
 # }}}
+
 # {{{ sub create_db
 sub create_db {
+    return if ($RT::DatabaseType eq 'SQLite');
     print "Creating $RT::DatabaseType database $RT::DatabaseName.\n";
-
+        
 
     $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
 }
@@ -166,6 +169,9 @@ sub insert_acl {
     elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
         do $RT::EtcPath . "acl.mysql"
           || die "Couldn't find ACLS for mysql\n" . $@;
+    }
+    elsif ($RT::DatabaseType =~ /^SQLite$/i) {
+        return; 
     }
     else {
         die "Unknown RT database type";

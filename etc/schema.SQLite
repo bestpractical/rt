@@ -1,0 +1,376 @@
+--- {{{ Attachments
+
+CREATE TABLE Attachments (
+  id INTEGER PRIMARY KEY  ,
+  TransactionId INTEGER  ,
+  Parent integer NULL  ,
+  MessageId varchar(160) NULL  ,
+  Subject varchar(255) NULL  ,
+  Filename varchar(255) NULL  ,
+  ContentType varchar(80) NULL  ,
+  ContentEncoding varchar(80) NULL  ,
+  Content LONGTEXT NULL  ,
+  Headers LONGTEXT NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL 
+  
+) ;
+
+CREATE INDEX Attachments1 ON Attachments (Parent) ;
+CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
+CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
+--- }}}
+
+--- {{{ Queues
+CREATE TABLE Queues (
+  id INTEGER PRIMARY KEY  ,
+  Name varchar(120) NOT NULL  ,
+  Description varchar(120) NULL  ,
+  CorrespondAddress varchar(120) NULL  ,
+  CommentAddress varchar(120) NULL  ,
+  InitialPriority integer NULL  ,
+  FinalPriority integer NULL  ,
+  DefaultDueIn integer NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0 
+ 
+) ;
+CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
+
+--- }}}
+
+--- {{{ Links
+
+CREATE TABLE Links (
+  id INTEGER PRIMARY KEY  ,
+  Base varchar(240) NULL  ,
+  Target varchar(240) NULL  ,
+  Type varchar(20) NOT NULL  ,
+  LocalTarget integer NULL  ,
+  LocalBase integer NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL  
+  
+) ;
+CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
+
+--- }}}
+
+--- {{{ Principals
+
+CREATE TABLE Principals (
+        id INTEGER   not null,
+        PrincipalType VARCHAR(16) not null,
+        ObjectId integer 
+        
+) ;
+
+--- }}}
+
+--- {{{ Groups
+
+CREATE TABLE Groups (
+  id INTEGER PRIMARY KEY  ,
+  Name varchar(16) NULL  ,
+  Description varchar(64) NULL  ,
+  Domain varchar(64),
+  Type varchar(64),
+  Instance varchar(64)
+  
+) ;
+
+CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
+
+--- }}}
+
+--- {{{ ScripConditions
+
+CREATE TABLE ScripConditions (
+  id INTEGER PRIMARY KEY  ,
+  Name varchar(255) NULL  ,
+  Description varchar(255) NULL  ,
+  ExecModule varchar(60) NULL  ,
+  Argument varchar(255) NULL  ,
+  ApplicableTransTypes varchar(60) NULL  ,
+
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  
+  
+) ;
+
+--- }}}
+
+--- {{{ Transactions
+CREATE TABLE Transactions (
+  id INTEGER PRIMARY KEY  ,
+  EffectiveTicket integer NULL  ,
+  Ticket integer NULL  ,
+  TimeTaken integer NULL  ,
+  Type varchar(20) NULL  ,
+  Field varchar(40) NULL  ,
+  OldValue varchar(255) NULL  ,
+  NewValue varchar(255) NULL  ,
+  Data varchar(100) NULL  ,
+
+  Creator integer NULL  ,
+  Created DATETIME NULL  
+  
+) ;
+CREATE INDEX Transactions1 ON Transactions (Ticket);
+CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
+
+--- }}}
+
+--- {{{ Scrips 
+
+CREATE TABLE Scrips (
+  id INTEGER PRIMARY KEY  ,
+  Description varchar(255),
+  ScripCondition integer NULL  ,
+  ScripAction integer NULL  ,
+  ConditionRules text NULL  ,
+  ActionRules text NULL  ,
+  CustomIsApplicableCode text NULL  ,
+  CustomPrepareCode text NULL  ,
+  CustomCommitCode text NULL  ,
+  Stage varchar(32) NULL  ,
+  Queue integer NULL  ,
+  Template integer NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  
+  
+) ;
+
+--- }}}
+
+--- {{{ ACL
+CREATE TABLE ACL (
+  id INTEGER PRIMARY KEY  ,
+  PrincipalType varchar(25) NOT NULL,
+
+  PrincipalId INTEGER,
+  RightName varchar(25) NOT NULL  ,
+  ObjectType varchar(25) NOT NULL  ,
+  ObjectId INTEGER default 0,
+  DelegatedBy integer NOT NULL default 0, 
+  DelegatedFrom integer NOT NULL default 0
+  
+) ;
+
+
+--- }}}
+
+--- {{{ GroupMembers 
+
+CREATE TABLE GroupMembers (
+  id INTEGER PRIMARY KEY  ,
+  GroupId integer NULL,
+  MemberId integer NULL
+  
+) ;
+
+--- }}}
+
+--- {{{ GroupMembersCache
+
+create table CachedGroupMembers (
+        id int ,
+        GroupId int, 
+        MemberId int, 
+        Via int, 
+        ImmediateParentId int
+        
+) ;
+
+--- }}}
+
+--- {{{ Users
+
+CREATE TABLE Users (
+  id INTEGER PRIMARY KEY  ,
+  Name varchar(120) NOT NULL  ,
+  Password varchar(40) NULL  ,
+  Comments blob NULL  ,
+  Signature blob NULL  ,
+  EmailAddress varchar(120) NULL  ,
+  FreeformContactInfo blob NULL  ,
+  Organization varchar(200) NULL  ,
+  RealName varchar(120) NULL  ,
+  NickName varchar(16) NULL  ,
+  Lang varchar(16) NULL  ,
+  EmailEncoding varchar(16) NULL  ,
+  WebEncoding varchar(16) NULL  ,
+  ExternalContactInfoId varchar(100) NULL  ,
+  ContactInfoSystem varchar(30) NULL  ,
+  ExternalAuthId varchar(100) NULL  ,
+  AuthSystem varchar(30) NULL  ,
+  Gecos varchar(16) NULL  ,
+  HomePhone varchar(30) NULL  ,
+  WorkPhone varchar(30) NULL  ,
+  MobilePhone varchar(30) NULL  ,
+  PagerPhone varchar(30) NULL  ,
+  Address1 varchar(200) NULL  ,
+  Address2 varchar(200) NULL  ,
+  City varchar(100) NULL  ,
+  State varchar(100) NULL  ,
+  Zip varchar(16) NULL  ,
+  Country varchar(50) NULL  ,
+  PGPKey text NULL,
+
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0 
+  
+) ;
+
+
+CREATE UNIQUE INDEX Users1 ON Users (Name) ;
+CREATE INDEX Users2 ON Users (Name);
+CREATE INDEX Users3 ON Users (id, EmailAddress);
+CREATE INDEX Users4 ON Users (EmailAddress);
+
+
+--- }}}
+
+--- {{{ Tickets
+
+CREATE TABLE Tickets (
+  id INTEGER PRIMARY KEY  ,
+  EffectiveId integer NULL  ,
+  Queue integer NULL  ,
+  Type varchar(16) NULL  ,
+  IssueStatement integer NULL  ,
+  Resolution integer NULL  ,
+  Owner integer NULL  ,
+  Subject varchar(200) NULL DEFAULT '[no subject]' ,
+  InitialPriority integer NULL  ,
+  FinalPriority integer NULL  ,
+  Priority integer NULL  ,
+  TimeEstimated integer NULL  ,
+  TimeWorked integer NULL  ,
+  Status varchar(10) NULL  ,
+  TimeLeft integer NULL  ,
+  Told DATETIME NULL  ,
+  Starts DATETIME NULL  ,
+  Started DATETIME NULL  ,
+  Due DATETIME NULL  ,
+  Resolved DATETIME NULL  ,
+
+
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0
+  
+) ;
+
+CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
+CREATE INDEX Tickets2 ON Tickets (Owner) ;
+CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
+CREATE INDEX Tickets4 ON Tickets (id, Status) ;
+CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
+
+--- }}}
+
+--- {{{ ScripActions
+
+CREATE TABLE ScripActions (
+  id INTEGER PRIMARY KEY  ,
+  Name varchar(255) NULL  ,
+  Description varchar(255) NULL  ,
+  ExecModule varchar(60) NULL  ,
+  Argument varchar(255) NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  
+  
+) ;
+
+--- }}}
+
+--- {{{ Templates
+
+CREATE TABLE Templates (
+  id INTEGER PRIMARY KEY  ,
+  Queue integer NOT NULL DEFAULT 0 ,
+  Name varchar(40) NOT NULL  ,
+  Description varchar(120) NULL  ,
+  Type varchar(16) NULL  ,
+  Language varchar(16) NULL  ,
+  TranslationOf integer NULL  ,
+  Content blob NULL  ,
+  LastUpdated DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  Creator integer NULL  ,
+  Created DATETIME NULL  
+  
+) ;
+
+--- }}}
+
+--- {{{ TicketCustomFieldValues 
+
+CREATE TABLE TicketCustomFieldValues (
+  id INTEGER PRIMARY KEY  ,
+  Ticket int NOT NULL  ,
+  CustomField int NOT NULL  ,
+  Content varchar(255) NULL  ,
+
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  
+  
+) ;
+
+--- }}}
+
+--- {{{ CustomFields
+
+CREATE TABLE CustomFields (
+  id INTEGER PRIMARY KEY  ,
+  Name varchar(200) NULL  ,
+  Type varchar(200) NULL  ,
+  Queue int NULL ,
+  Description varchar(200) NULL  ,
+  SortOrder integer NULL  ,
+
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL 
+  
+) ;
+
+--- }}}
+
+--- {{{ CustomFieldValues 
+
+CREATE TABLE CustomFieldValues (
+  id INTEGER PRIMARY KEY  ,
+  CustomField int NOT NULL  ,
+  Name varchar(200) NULL  ,
+  Description varchar(200) NULL  ,
+  SortOrder integer NULL  ,
+
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL 
+  
+) ;
+
+--- }}}

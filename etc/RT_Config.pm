@@ -84,7 +84,8 @@ $MasonSessionDir = $VarPath ."session_data";
 # Database driver beeing used. Case matters
 # Valid types are "mysql" and "Pg" 
 
-$DatabaseType="mysql";
+$DatabaseType="SQLite";
+#$DatabaseType="mysql";
 #$DatabaseType="Pg";
 
 # The domain name of your database server
