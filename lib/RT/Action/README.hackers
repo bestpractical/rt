@@ -1,0 +1,17 @@
+This directory currently contains the subscription logic.  (I thought a bit
+of moving it to a subdirectory of its own.)
+
+The Link subdirectory contains the the Link logic.
+
+Adding site-specific actions should be easy.  Take a look at ../Action.pm to
+see what needs to be overrided.  Ultimately, there should be some POD at
+Action.pm, but it seems like nobody has written it :(
+
+If you want to make actions that might be useful to others, I'd suggest
+talking a bit at rt-devel@fsck.com about namespace and functionality.
+
+If you'd like to make truely site-specific actions, do whatever you'd like.
+I'd suggest putting truely site-specific actions into a subdirectory of its
+own.
+
+-- TobiX, april 2000
