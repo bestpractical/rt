@@ -1,5 +1,6 @@
-<%PERL>
+<%INIT>
 if (defined ($user) && defined ($pass)){
+my %cookies = fetch CGI::Cookie;
 	#TODO if the password is the user's password
 	$session{'CurrentUser'} = new RT::CurrentUser();
 	unless ($session{'CurrentUser'}->Load($user)) {
@@ -18,8 +19,8 @@ if (defined ($user) && defined ($pass)){
         $m->call_next;
 }
 elsif (defined $session{'CurrentUser'}){
-	$RT::Logger->log(level=>'debug', 
-			 message=>join(' ',$session{CurrentUser}->UserId,'accessing',$r->uri));
+	$RT::Logger->debug($session{CurrentUser}->UserId." accessing ".$r->uri);
+
 	$m->call_next;
 }
 else {
@@ -27,10 +28,6 @@ else {
 			 message=>$r->uri. " accessed by somebody who hasn't logged in");
 $m->comp('/Login.html');
  }
-</%PERL>
-
-<%INIT>
-my %cookies = fetch CGI::Cookie;
 </%INIT>
 <%ARGS>
 $user => undef

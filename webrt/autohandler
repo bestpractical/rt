@@ -1,35 +1,30 @@
-%# Remember to put this in all .html templates: <& /Elements/Header &>
-<% $m->call_next %>
 <& /Elements/Footer &>
 
 <%INIT>
-# Try putting this one to 0 if you have troubles.
-if (1) {
-
-warn "WebURL Configuration ($RT::WebURL) does not match incoming URL (".$r->uri.")"
-    if ($r->uri !~ /^\Q$RT::WebURL\E/);
-
-my $a=sub {
-if ($^S) {
-	$RT::Logger->log(message=>$_[0], level=>'warning');
-	die @_;
+if (defined ($user) && defined ($pass)){
+my %cookies = fetch CGI::Cookie;
+	#TODO if the password is the user's password
+	$session{'CurrentUser'} = RT::CurrentUser->new();
+	unless ($session{'CurrentUser'}->Load($user)) {
+		&mc_comp("/Elements/Error", Why => "User Unknown");
+		$m->abort;
+	};
+        unless ($session{'CurrentUser'}->IsPassword($pass)) {
+		$session{'CurrentUser'} = undef;
+                &mc_comp("/Elements/Error", Why => "Wrong Password");
+                $m->abort;
+        }
+        $m->call_next;
 }
-&mc_comp("/Elements/Error", 
-		Why=>"Internal Error", 
-		Details=>"$_[0]",
-		Code=>500);
-	$RT::Logger->log(message=>$_[0], level=>'crit');
-	$RT::Logger->remove('rtmail');
-	$m->abort;
-	die;
-	1;
-};
-$SIG{__DIE__}=$a;
+elsif (defined $session{'CurrentUser'}){
+	$m->call_next;
 }
-
-
+else {
+$m->comp('/Login.html')
+ }
 </%INIT>
 
-
-
-
+<%ARGS>
+$user => undef
+$pass => undef
+</%ARGS>

@@ -1,11 +1,12 @@
+<UL>
 % while (my $Link = $Ticket->Members->Next) {
 % my $member = $Link->BaseObj;
-<font face="courier"><%$dstring%>-</font> <a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<LI><a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Subject%> [<%$member->Status%>]<br>
 % if ($depth < 8) {
 <&/Ticket/Elements/ShowMembers, Ticket => $member, depth => ($depth+1) &> 
 % }
 % }
-
+</UL>
 
 <%INIT>
 #TODO perf this is stupid and wasteful but i'm sleepy and spacey

@@ -4,14 +4,6 @@
 
 package RT;
 
-#use vars qw/%SitePolicy $dirmode $transactionmode $DatabasePassword 
-# $rtname $domain $host $DatabaseHost $DatabaseUser $RT::DatabaseName 
-# $DatabaseType $user_passwd_min $MailAlias $WebrtImagePath 
-# $web_auth_mechanism $web_auth_cookies_allow_no_path $DefaultLocale 
-# $LocalePath $Nobody $Logger/;
-
-
-
 # {{{ Base Configuration (everything below should be set by the Makefile)
 
 # name of RT installation

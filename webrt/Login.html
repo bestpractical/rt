@@ -1,14 +1,24 @@
-<& /Elements/Header, Title=>"Login" &>
+<& /Elements/Header, Title=>"Login" , SuppressAuthString=>1 &>
+<DIV ALIGN=CENTER>
+<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT for $RT::rtname", title => 'Login' ,
+contentbg=>"#cccccc" &>
 <FORM METHOD=POST ACTION="<% $r->uri %>">
-UserId:<input name=user value="<%$user%>"> <br>
-Password:<input type=password name=pass>
-<input type=submit>
+<TABLE BORDER=0>
+<TR ALIGN=RIGHT>
+<TD ALIGN=RIGHT>Username:</TD><TD><input name=user value="<%$user%>"></TD></TR>
+<TR><TD ALIGN=RIGHT>Password:</TD><TD><input type=password name=pass></TD></TR>
+</TABLE>
+<BR>
+<DIV ALIGN=RIGHT>
+<input type=submit Value="Login">
+</DIV>
 % # Preserving all the old parameters
 % my @z=$r->args; while (1) { my ($k, $v)=(shift @z, shift @z); last unless $k;
 <input type="hidden" name="<% $k %>" value="<% $v %>">
 % }
 </FORM>
-
+</DIV>
+<&/Elements/TitleBoxEnd&>
 
 <%ARGS>
 $user => ""
@@ -17,21 +27,4 @@ $goto => undef
 </%ARGS>
 
 <%INIT>
-# How do we deal with this?  Do we want to keep some session
-# information or what?
-
-# Why do we want to blow away the session like this?
-# wait. do you mean that when a user logs in with the same cookie we had before,
-# that it should wipe the session data or that when the same user was logged in
-# from somewhere else that it should blow away their old session?
-if (0) {
-my $o=tied(%HTML::Mason::Commands::session);
-if ($o) {
-  $o->delete;
-} else {
-  warn "It seems like there is something seriously broken with your perl!?!";
-  delete $session{CurrentUser}
-    if exists $session{CurrentUser};
-}
-}
 </%INIT>

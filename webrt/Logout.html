@@ -6,11 +6,7 @@
 
 
 <%INIT>
-if (tied(%session) && (ref(tied(%session)) eq "Apache::Session")) {
 tied(%session)->delete;
-} else {
-delete $session{CurrentUser};
-}
 </%INIT>
 
 
