@@ -1,5 +1,7 @@
 
   FAQ
+  
+  CONFIGURATION
 
    RT_MAIL_TAG
   
@@ -32,6 +34,11 @@
 
 
    KNOWN ERRORS AND TRAPS
+   
+   It doesn't work?
+
+          Check the logfile for useful hints.  The logfile should be
+	  specified in the Makefile.
 
    "Could not send mail"?
 
@@ -43,3 +50,18 @@
 
           Check if you have the most recent version of Mailtools
           (Mail::Internet, Mail::Mailer, etc), available from CPAN.
+	  
+   It's complaining about a missing Mail::Field::addrlist?
+
+          That's a weird bug in Mail::Field.  Tobix hasn't really understood
+	  it himself, there is no reason why it should be called.  Anyway,
+	  locate AddrList.pm and make a symlink from addrlist.pm to your
+	  AddrList.pm.  Eventually, hang around and wait for an upgrade of
+	  Mail::Field ... or Log::Dispatch, because it seems to be
+	  Log::Dispatch that uses Mail::Field.
+	  
+   httpd won't run when I use the webmux.pl perlhandler (mod_perl)?
+   
+          Tip from a user: RedHat comes with mod_perl as a dynamic library,
+	  but it has to be compiled into apache to get Mason working.
+	  
