@@ -25,7 +25,7 @@
 
 use strict;
 use File::Basename;
-require (dirname(__FILE__) . '/webmux.pl');
+require ('@RT_BIN_PATH@/webmux.pl');
 
 my $h = &RT::Interface::Web::NewCGIHandler();
 
