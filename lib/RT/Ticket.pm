@@ -548,7 +548,7 @@ sub Watchers {
 
 
 B<Takes> I<nothing>
- B<Returns> String: All Ticket/Queue Requestors.
+ B<Returns> String: All Ticket Requestor email addresses as a string.
 
 =cut
 
@@ -556,15 +556,16 @@ sub RequestorsAsString {
     my $self=shift;
 
     unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return (0, "Permission Denied");
+        return undef;
     }
-    return _CleanAddressesAsString($self->Requestors->EmailsAsString() );
+
+    return ($self->Requestors->EmailsAsString() );
 }
 
 =head2 WatchersAsString
 
 B<Takes> I<nothing>
-B<Returns> String: All Ticket/Queue Watchers.
+B<Returns> String: All Ticket Watchers email addresses as a string
 
 =cut
 
@@ -575,8 +576,8 @@ sub WatchersAsString {
 	return (0, "Permission Denied");
     }
     
-    return _CleanAddressesAsString ($self->Watchers->EmailsAsString() . ", " .
-		  $self->QueueObj->Watchers->EmailsAsString());
+    return ($self->Watchers->EmailsAsString());
+
 }
 
 =head2 AdminCcAsString
@@ -587,7 +588,7 @@ sub WatchersAsString {
 
 =item B<Returns>
 
-=item String: All Ticket/Queue AdminCcs.
+=item String: All Ticket AdminCc email addresses as a string
 
 =cut
 
@@ -596,11 +597,12 @@ sub AdminCcAsString {
     my $self=shift;
 
     unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return (0, "Permission Denied");
+	return undef;
     }
 
-    return _CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
-				    $self->QueueObj->AdminCc->EmailsAsString());
+    
+    return ($self->AdminCc->EmailsAsString());
+    
 }
 
 =head2 CcAsString
@@ -611,7 +613,7 @@ sub AdminCcAsString {
 
 =item B<Returns>
 
-=item String: All Ticket/Queue Ccs.
+=item String: All Ticket Ccs as a string of email addresses
 
 =cut
 
@@ -619,35 +621,14 @@ sub CcAsString {
     my $self=shift;
 
     unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return (0, "Permission Denied");
+        return undef; 
     }
     
-    return _CleanAddressesAsString ($self->Cc->EmailsAsString() . ", ".
-				    $self->QueueObj->Cc->EmailsAsString());
+    return ($self->Cc->EmailsAsString());
+
 }
 
-# {{{ sub  _CleanAddressesAsString
-=head2 _CleanAddressesAsString
 
-=item B<Takes>
-
-=item String: A comma delineated address list
-
-=item B<Returns>
-
-=item String: A comma delineated address list
-
-=cut
-
-sub _CleanAddressesAsString {
-    my $i=shift;
-    $i =~ s/^, //;
-    $i =~ s/, $//;
-    $i =~ s/, ,/,/g;
-    return $i;
-}
-
-# }}}
 # }}}
 
 # {{{ Routines that return RT::Watchers objects of Requestors, Ccs and AdminCcs
@@ -664,17 +645,19 @@ Returns this ticket's Requestors as an RT::Watchers object
 sub Requestors {
     my $self = shift;
     
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
-    return (0, "Permission Denied");
-  }
+
     
   require RT::Watchers;
     
     if (! defined ($self->{'Requestors'})) {
 	
 	$self->{'Requestors'} = RT::Watchers->new($self->CurrentUser);
-	$self->{'Requestors'}->LimitToTicket($self->id);
-	$self->{'Requestors'}->LimitToRequestors();
+
+	
+	if ($self->CurrentUserHasRight('ShowTicket')) {
+	    $self->{'Requestors'}->LimitToTicket($self->id);
+	    $self->{'Requestors'}->LimitToRequestors();
+	}	
     }
     return($self->{'Requestors'});
     
@@ -694,15 +677,15 @@ Returns a watchers object which contains this ticket's Cc watchers
 sub Cc {
     my $self = shift;
     
-    unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return (0, "Permission Denied");
-    } 
     
     if (! defined ($self->{'Cc'})) {
 	require RT::Watchers;
 	$self->{'Cc'} = new RT::Watchers ($self->CurrentUser);
-	$self->{'Cc'}->LimitToTicket($self->id);
-	$self->{'Cc'}->LimitToCc();
+	
+	if ($self->CurrentUserHasRight('ShowTicket')) {
+	    $self->{'Cc'}->LimitToTicket($self->id);
+	    $self->{'Cc'}->LimitToCc();
+	}
     }
     return($self->{'Cc'});
     
@@ -722,15 +705,15 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 sub AdminCc {
     my $self = shift;
     
-    unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return (0, "Permission Denied");
-    }
+
     
     if (! defined ($self->{'AdminCc'})) {
 	require RT::Watchers;
 	$self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
-	$self->{'AdminCc'}->LimitToTicket($self->id);
-	$self->{'AdminCc'}->LimitToAdminCc();
+	if ($self->CurrentUserHasRight('ShowTicket')) {
+	    $self->{'AdminCc'}->LimitToTicket($self->id);
+	    $self->{'AdminCc'}->LimitToAdminCc();
+	}
     }
     return($self->{'AdminCc'});
     
@@ -883,7 +866,7 @@ sub IsOwner {
     my $self = shift;
     my $person = shift;
   
-    $RT::Logger->debug("Person is ".$person);
+
 
     #Tickets won't yet have owners when they're being created.
     unless ($self->OwnerObj->id) {
