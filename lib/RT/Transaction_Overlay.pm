@@ -770,20 +770,8 @@ sub IsInbound {
 sub _OverlayAccessible {
     {
 
-        id => { read => 1, type => 'int(11)', default => '' },
-          EffectiveTicket =>
-          { read => 1, write => 1, type => 'int(11)', default => '' },
-          Ticket =>
-          { read => 1, public => 1, type => 'int(11)', default => '' },
-          TimeTaken => { read => 1, type => 'int(11)',      default => '' },
-          Type      => { read => 1, type => 'varchar(20)',  default => '' },
-          Field     => { read => 1, type => 'varchar(40)',  default => '' },
-          OldValue  => { read => 1, type => 'varchar(255)', default => '' },
-          NewValue  => { read => 1, type => 'varchar(255)', default => '' },
-          Data      => { read => 1, type => 'varchar(100)', default => '' },
-          Creator => { read => 1, auto => 1, type => 'int(11)', default => '' },
-          Created =>
-          { read => 1, auto => 1, type => 'datetime', default => '' },
+          ObjectType => { public => 1},
+          ObjectId => { public => 1},
 
     }
 };
@@ -840,6 +828,13 @@ sub _Value {
         }
 
     }
+    # Make sure the user can see the custom field before showing that it changed
+    elsif ( ( $self->__Value('Type') eq 'CustomField' ) && $self->__Value('Field') ) {
+        my $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->Load( $self->__Value('Field') );
+        return (undef) unless ( $cf->CurrentUserHasRight('SeeCustomField') );
+    }
+
 
     #if they ain't got rights to see, don't let em
     else {
