@@ -309,6 +309,5 @@ predist: commit
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
 dist: commit predist
-	(cd /home/ftp/pub/rt/devel/
 	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
-	ln -s ./rt-$(RT-VERSION).tar.gz ./rt.tar.gz )
+	ln -s ./rt-$(RT-VERSION).tar.gz /home/ftp/pub/rt/devel/rt.tar.gz )
