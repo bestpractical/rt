@@ -42,7 +42,7 @@ unless ($Collapsed) {
 	 $content = $wrapper->wrap($content);
 	 $content =~ s/</&lt;/g;
 	 $content =~ s/>/&gt;/g;
-	 $content =~ s!((?:http|https|ftp|mailto)://\S*?)([\s"']|&lt;)!<A HREF=\"$1\">$1</A>$2!g;
+	 $content =~ s!((?:http|https|ftp|mailto):\S*?)([\s"']|&lt;)!<A HREF=\"$1\">$1</A>$2!g;
 
      }
      else {
