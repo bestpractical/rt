@@ -47,6 +47,8 @@
 % }
 <%INIT>
 
+$Format = $RT::DefaultSearchResultFormat unless $Format;
+
 $Rows = '25' unless ($Rows); # we need a positive value
 # {{{ item map
 my $map = {
