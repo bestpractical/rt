@@ -231,7 +231,8 @@ sub InitLogging {
                                 return "$p{message} ($filename:$line)\n"}
 				},
              
-		       stderr => 1
+		       stderr => 1,
+               @RT::LogToSyslogConf
 		     ));
     }
 

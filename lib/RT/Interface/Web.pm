@@ -101,6 +101,7 @@ sub NewCGIHandler {
         default_escape_flags => 'h',
         allow_globals        => [qw(%session)],
         autoflush => 1,
+        @_
     );
   
 

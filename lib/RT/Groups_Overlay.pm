@@ -354,5 +354,18 @@ sub LimitToDeleted {
 		);
 }
 # }}}
+
+sub _DoSearch {
+    my $self = shift;
+    
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    unless($self->{'find_disabled_rows'}) {
+	$self->LimitToEnabled();
+    }
+    
+    return($self->SUPER::_DoSearch(@_));
+    
+}
+
 1;
 

@@ -32,12 +32,24 @@
 <LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><BR>
 %}
 </UL>
+<br><br>
+<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Groups/index.html">
+<input type="checkbox" name="FindDisabledGroups"> <&|/l&>Include disabled groups in listing.</&>
+<BR>
+<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
+</FORM>
 
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});
+
+if ($FindDisabledGroups) {
+  $Groups->{'find_disabled_rows'} = 1;
+}
+
 $Groups->LimitToUserDefinedGroups();
 my $title = loc('Select a group');
 
 </%INIT>
 <%ARGS>
+$FindDisabledGroups => 0
 </%ARGS>

@@ -536,13 +536,6 @@ sub _TransLimit {
 
   $sb->_OpenParen;
 
-  # Join Transactions To Attachments
-  $sb->Join( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->Join( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
 
   #Search for the right field
   $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
@@ -552,6 +545,14 @@ sub _TransLimit {
 		 CASESENSITIVE => 0,
 		 @rest
 		);
+
+  # Join Transactions To Attachments
+  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
+
+  # Join Transactions to Tickets
+  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
+	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
 
   $sb->_CloseParen;
 
