@@ -99,9 +99,13 @@ use Carp;
 use RT::Interface::Web::Handler;
 $Handler = RT::Interface::Web::Handler->new(@RT::MasonParameters);
 
-if (!$RT::DevelMode) {
+if ($ENV{'MOD_PERL'} && !$RT::DevelMode) {
     # Under static_source, we need to purge the component cache
     # each time we restart, so newer components may be reloaded.
+    #
+    # We can't do this in FastCGI or we'll blow away the component root _every_ time a new server starts
+    # which happens every few hits.
+    
     use File::Path qw( rmtree );
     use File::Glob qw( bsd_glob );
     rmtree([ bsd_glob("$RT::MasonDataDir/obj/*") ], 0, 1);
