@@ -431,6 +431,8 @@ sub Commit {
 
 	$args{'requestor'} ||= $self->TicketObj->Requestors->MemberEmailAddresses;
 
+	$args{'type'} ||= 'ticket';
+
 	my %ticketargs = ( Queue => $args{'queue'},
 		      Subject=> $args{'subject'},
 		    Status => 'new',
