@@ -22,7 +22,7 @@
 % while (my $Transaction = $Transactions->Next) {
 % $i++;
 %	if ($Transactions->IsLast) {
-	<a name="lasttrans">
+	<a name="lasttrans"></a>
 % 	}
 	    <& ShowTransaction, Ticket => $Ticket, Transaction => $Transaction, ShowHeaders => $ShowHeaders, Collapsed => $Collapsed, RowNum => $i  &>
 % }
