@@ -57,6 +57,31 @@ sub _Accessible  {
 }
 # }}}
 
+# {{{ sub Load 
+
+=head2 Load
+
+Load a group object from the database. Takes a single argument.
+If the argument is numerical, load by the column 'id'. Otherwise, load by
+the "Name" column which is the group's textual name
+
+=cut
+
+sub Load  {
+    my $self = shift;
+    my $identifier = shift || return undef;
+    
+    #if it's an int, load by id. otherwise, load by name.
+    if ($identifier !~ /\D/) {
+	$self->SUPER::LoadById($identifier);
+    }
+    else {
+	$self->LoadByCol("Name",$identifier);
+    }
+}
+
+# }}}
+
 # {{{ sub Create
 
 =head2 Create
