@@ -1118,7 +1118,7 @@ sub _AddLink {
 
     unless ($linkid) {
         $RT::Logger->error("Link could not be created: ".$linkmsg);
-        return ( 0, $self->loc("Link could not be created") );
+        return ( 0, $self->loc("Link could not be created. [_1]", $linkmsg) );
     }
 
     my $TransString =
