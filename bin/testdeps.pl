@@ -20,8 +20,9 @@ use vars qw($mode $module @modules);
 
 $mode = shift || &print_help;
 
-@modules = qw(DBI HTML::Mason MIME::Entity Mail::Mailer CGI::Cookie
-	      DBIx::Record DBIx::EasySearch Apache::Session DBIx::Handle);
+@modules = qw(DBI HTML::Mason MIME::Entity Mail::Mailer CGI::Cookie 
+		Log::Dispatch
+	        DBIx::Record DBIx::EasySearch Apache::Session DBIx::Handle);
 use CPAN;
 
 
