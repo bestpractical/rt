@@ -154,7 +154,8 @@ else {
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
-        if ( $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
+        if ( $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket')
+             or $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket')) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
@@ -164,7 +165,8 @@ else {
               . loc('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket') ) {
+        if ( $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket')
+             or $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket')) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
