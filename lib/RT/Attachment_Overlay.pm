@@ -532,29 +532,32 @@ Returns its value as a string, if the user passes an ACL check
 
 =cut
 
-sub _Value  {
+sub _Value {
 
-    my $self = shift;
+    my $self  = shift;
     my $field = shift;
-    
-   
+
     #if the field is public, return it.
-    if ($self->_Accessible($field, 'public')) {
-	    return($self->__Value($field, @_));
+    if ( $self->_Accessible( $field, 'public' ) ) {
+        return ( $self->__Value( $field, @_ ) );
     }
-    
+
     #If it's a comment, we need to be extra special careful
-    elsif ( (($self->TransactionObj->CurrentUserHasRight('ShowTicketComments')) and
-	     ($self->TransactionObj->Type eq 'Comment') )  or
-	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
-		return($self->__Value($field, @_));
+    elsif ( $self->TransactionObj->Type =~ /^Comment/ ) {
+        if ( $self->TransactionObj->CurrentUserHasRight('ShowTicketComments') )
+        {
+            return ( $self->__Value( $field, @_ ) );
+        }
     }
+    elsif ( $self->TransactionObj->CurrentUserHasRight('ShowTicket') ) {
+        return ( $self->__Value( $field, @_ ) );
+    }
+
     #if they ain't got rights to see, don't let em
     else {
-	    return(undef);
-	}
-    	
-    
+        return (undef);
+    }
+
 }
 
 # }}}

@@ -35,6 +35,10 @@ if ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
         $attachments->Limit( ALIAS    => $transactions,
                              FIELD    => 'Type',
                              OPERATOR => '!=',
+                             VALUE    => "CommentEmailRecord" );
+        $attachments->Limit( ALIAS    => $transactions,
+                             FIELD    => 'Type',
+                             OPERATOR => '!=',
                              VALUE    => "Comment" );
     }
 }

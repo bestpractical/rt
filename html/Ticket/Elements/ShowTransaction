@@ -190,7 +190,7 @@ else {
         @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
     }
 
-    if ( $Transaction->Attachments->First && $ShowTitleBarCommands ) {
+    if ( $Attachments->[0] && $ShowTitleBarCommands ) {
         if ( $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"Update.html?id="

@@ -3890,12 +3890,14 @@ sub Transactions {
             $transactions->Limit(
                 FIELD    => 'Type',
                 OPERATOR => '!=',
-                VALUE    => "Comment"
+                VALUE    => "Comment",
+                ENTRYAGGREGATOR => 'AND'
             );
             $transactions->Limit(
                 FIELD    => 'Type',
                 OPERATOR => '!=',
-                VALUE    => "CommentEmailRecord"
+                VALUE    => "CommentEmailRecord",
+                ENTRYAGGREGATOR => 'AND'
             );
         }
     }
