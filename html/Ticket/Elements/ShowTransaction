@@ -94,6 +94,8 @@ if ( $Ticket->Id != $Transaction->Ticket ) {
 
 if ( $Transaction->TimeTaken != 0 ) {
     $TimeTaken = $Transaction->TimeTaken . " min";
+} else {
+    $TimeTaken = '';
 }
 
 unless ($Attachments) { 

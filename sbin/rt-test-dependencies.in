@@ -188,6 +188,10 @@ $deps{'POSTGRESQL'} = [ _( << '.') ];
 DBD::Pg
 .
 
+$deps{'SQLITE'} = [ _( << '.') ];
+DBD::SQLite
+.
+
 if ($args{'download'}) {
 
     my %modules;

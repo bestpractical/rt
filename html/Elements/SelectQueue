@@ -32,7 +32,7 @@
 % }
 % while (my $queue=$q->Next) {
 % if ($ShowAllQueues || $queue->CurrentUserHasRight('CreateTicket')) {
-<OPTION VALUE="<%($NamedValues ? $queue->Name : $queue->Id) %>" <%( $queue->Id == $Default ? 'SELECTED' : '')%>><%$queue->Name%>
+<OPTION VALUE="<%($NamedValues ? $queue->Name : $queue->Id) %>" <%( $queue->Id eq $Default ? 'SELECTED' : '')%>><%$queue->Name%>
 %   if (($Verbose) and ($queue->Description) ){
 (<%$queue->Description%>)
 %  }
