@@ -71,6 +71,9 @@ if ($ARGS{'id'} eq 'new') {
 	Abort($ErrMsg);
     }
 
+    # don't try to change queue to the current queue
+    delete $ARGS{'Queue'};
+
     push(@Actions, $ErrMsg);
 
     # }}}
