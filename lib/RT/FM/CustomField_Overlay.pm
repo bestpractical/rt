@@ -17,6 +17,7 @@
 # END LICENSE BLOCK
 
 no warnings qw/redefine/;
+use strict;
 
 use RT::FM::CustomFieldValueCollection;
 use RT::FM::ArticleCFValueCollection;

@@ -1,4 +1,6 @@
 no warnings qw/redefine/;
+use strict;
+
 
 use RT::FM::System;
 use RT::FM::CustomFieldCollection;
@@ -187,23 +189,7 @@ sub CustomFields {
     my $self      = shift;
     
     my $cfs       = RT::FM::CustomFieldCollection->new( $self->CurrentUser );
-    my $class_cfs = $cfs->NewAlias('FM_ClassCustomFields');
-    $cfs->Join( ALIAS1 => 'main',
-                FIELD1 => 'id',
-                ALIAS2 => $class_cfs,
-                FIELD2 => 'CustomField' );
-    $cfs->Limit( ALIAS           => $class_cfs,
-                 FIELD           => 'Class',
-                 OPERATOR        => '=',
-                 VALUE           => $self->Id,
-                 ENTRYAGGREGATOR => 'OR' );
-    if (0) {
-    $cfs->Limit( ALIAS           => $class_cfs,
-                 FIELD           => 'Class',
-                 OPERATOR        => '=',
-                 VALUE           => "0",
-                 ENTRYAGGREGATOR => 'OR' );
-    }
+    $cfs->LimitToClass($self->Id);
     return($cfs);                
 }
 # }}}

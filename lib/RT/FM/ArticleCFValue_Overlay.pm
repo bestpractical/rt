@@ -1,5 +1,7 @@
 no warnings qw/redefine/;
 
+use strict;
+
 use RT::FM::Article;
 use RT::FM::Content;
 

@@ -60,9 +60,9 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Summary => '',
-                SortOrder => '',
-                Class => '',
-                Parent => '',
+                SortOrder => '0',
+                Class => '0',
+                Parent => '0',
                 URI => '',
 
 		  @_);
@@ -257,19 +257,19 @@ sub _ClassAccessible {
         Summary => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Class => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Parent => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         URI => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
 

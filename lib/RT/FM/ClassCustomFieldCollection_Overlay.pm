@@ -1,4 +1,5 @@
 no warnings qw/redefine/;
+use strict;
 
 # {{{ sub HasEntryForClass
           
@@ -16,7 +17,7 @@ sub HasEntryForClass {
     my @items = grep {$_->Class == $id } @{$self->ItemsArrayRef};
 
     if ($#items > 1) {
-    die "$self HasEntry had a list with more than one of $item in it. this can never happen";
+    die "$self HasEntry had a list with more than one of $id in it. this can never happen";
     }
 
     if ($#items == -1 ) {
@@ -45,7 +46,7 @@ sub HasEntryForCustomField {
     my @items = grep {$_->CustomField == $id } @{$self->ItemsArrayRef};
 
     if ($#items > 1) {
-    die "$self HasEntry had a list with more than one of $item in it. this can never happen";
+    die "$self HasEntry had a list with more than one of $id in it. this can never happen";
     }
 
     if ($#items == -1 ) {

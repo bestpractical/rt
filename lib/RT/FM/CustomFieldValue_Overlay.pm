@@ -18,6 +18,7 @@
 
 
 no warnings qw/redefine/;
+use strict;
 
 
 1;

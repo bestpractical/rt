@@ -144,9 +144,9 @@ is ($at->Summary, $article->Summary);
 sub Create {
     my $self = shift;
     my %args = ( 
-                Name => undef,
-                Summary => undef,
-                Class => undef,
+                Name => '',
+                Summary => '',
+                Class => '0',
                 CustomFields => { },
                 Links => { },
 		  @_);

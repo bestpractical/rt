@@ -1,0 +1,82 @@
+<& /Elements/Header, title => "Search for articles" &>
+<& /RTFM/Elements/Tabs&>
+
+<ul>
+% while (my $article = $articles->Next) {
+
+<li><a href="Display.html?id=<%$article->Id%>">#<%$article->id%>: <%$article->Name%></a>
+<br><font size="-1"><%$article->Summary%></font>
+</li>
+
+% }
+</ul>
+
+<h2>Search</h2>
+
+<form target="Search.html" method="GET">
+<br>Class is <& ../Elements/SelectClass, Name => 'Class', Default =>
+$ARGS{'Class'} &>
+<br>Name
+<& /Elements/SelectMatch, Name => 'NameOp' , Default => $ARGS{'NameOp'} &>
+<input name="Name" value="<%$ARGS{'Name'}%>">
+
+<br>Summary
+<& /Elements/SelectMatch, Name => 'SummaryOp',  Default => $ARGS{'SummaryOp'}&>
+<input name="Summary" value="<%$ARGS{'Summary'}%>">
+
+<br>Created between
+<& /Elements/SelectDate, Name=>"CreatedBefore", Default =>  $ARGS{'Created'}&>
+and <& /Elements/SelectDate, Name=>"CreatedAfter", Default =>  $ARGS{'CreatedAfter'}&>
+
+<br>Updated between
+<& /Elements/SelectDate, Name=>"UpdatedBefore", Default =>  $ARGS{'Updated'}&>
+and <& /Elements/SelectDate, Name=>"UpdatedAfter", Default =>  $ARGS{'UpdatedAfter'}&>
+
+
+<table>
+%# for each custom field 
+% while (my $field = $cfs->Next ) {
+
+<tr>
+<td><%$field->Name%> matches</td><td valign=top>
+% my $arg = $field->Id."-Matches-Values";
+% my @match_values =  ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} :  ($ARGS{$arg});
+<& Elements/SearchByCustomField, 
+    Field => $field, 
+    Name => $field->Id."-Matches", 
+    Values => @match_values &>
+    </td>
+    <td>and doesn't match</td>
+    <td valign="top">
+% $arg = $field->Id."-NoMatches-Values";
+% my @no_match_values =  ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} :  ($ARGS{$arg});
+<& Elements/SearchByCustomField, 
+    Field => $field, 
+    Name => $field->Id."-NoMatches", 
+    Values => @no_match_values 
+    &>
+    </td>
+    </tr>
+
+% }
+</table>
+
+<& /Elements/Submit, Label => loc('Show Results'), AlternateLabel => loc('Refine'), Name => 'Action'&>
+
+
+</form>
+<%init>
+my $cfs = RT::FM::CustomFieldCollection->new($session{'CurrentUser'});
+if ($ARGS{'Class'}) { 
+    $cfs->LimitToClass($ARGS{'Class'});
+}
+my $articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
+# Don't want to search for a null class when there is no class specced
+foreach my $arg qw(Class Name Summary) {
+    next unless ($ARGS{$arg}); #ignore undef values
+    $articles->Limit(FIELD => $arg,
+                    OPERATOR => $ARGS{$arg."Op"},
+                    VALUE => $ARGS{$arg});
+}
+
+</%init>

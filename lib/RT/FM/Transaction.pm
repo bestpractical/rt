@@ -57,10 +57,10 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                Article => '',
+                Article => '0',
                 ChangeLog => '',
                 Type => '',
-                CustomField => '',
+                CustomField => '0',
                 OldContent => '',
                 NewContent => '',
 
@@ -202,13 +202,13 @@ sub _ClassAccessible {
         id =>
 		{read => 1, type => 'int(11)', default => ''},
         Article => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         ChangeLog => 
 		{read => 1, write => 1, type => 'text', default => ''},
         Type => 
 		{read => 1, write => 1, type => 'varchar(64)', default => ''},
         CustomField => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         OldContent => 
 		{read => 1, write => 1, type => 'text', default => ''},
         NewContent => 

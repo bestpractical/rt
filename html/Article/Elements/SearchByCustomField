@@ -1,0 +1,24 @@
+%# if the custom field is a select, enumerate the options
+% if ($Field->Type =~ /^Select/) {
+% my $CustomFieldValues = $Field->ValuesObj();
+<select name="<%$Name%>-Values"
+        size="5"
+        >
+% while (my $value = $CustomFieldValues->Next) {
+<option value="<%$value->Name%>" 
+      <% grep (/^@{[$value->Name]}$/, @Values) && 'SELECTED'%>
+        ><% $value->Name%></option>
+% }
+<option value="" <% $#Values < 0 && 'SELECTED'%>><&|/l&>(no value)</&></option>
+</select>
+% }
+%# otherwise, put in a textedity field
+% else {
+<input name="<%$Name%>" value="<%$Values[0]%>">
+% }
+
+<%ARGS>
+$Field => undef
+$Name => 'CustomField'
+@Values => undef
+</%ARGS>
