@@ -83,6 +83,13 @@ RT_MAIL_TAG		=	change-this-string-or-perish
 
 RT_MAIL_ALIAS		=	rt\@your.domain.is.not.yet.set
 
+# All mail to RT_MAIL_COMMENT_ALIAS should generate a COMMENT rather than a REPLY.
+
+RT_COMMENT_MAIL_ALIAS		=	rt-comment\@your.domain.is.not.yet.set
+
+# Consult the README file to see how you set up the rt and rt-comment
+# mailing aliases.
+
 #
 # RT_USER_MIN_PASS specifies the minimum length of RT user passwords.  If you don't
 # want such functionality, simply set it to 0
@@ -310,6 +317,7 @@ config-replace:
         s'!!RT_HOST!!'$(RT_HOST)'g;\
         s'!!RT_DOMAIN!!'$(RT_DOMAIN)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
+        s'!!RT_COMMENT_MAIL_ALIAS!!'$(RT_COMMENT_MAIL_ALIAS)'g;\
 	s'!!DEFAULT_LOCALE!!'$(DEFAULT_LOCALE)'g;\
 	s'!!LOCALE_PATH!!'$(RT_LOCALE_PATH)'g;\
 	s'!!WEB_PATH!!'$(WEB_PATH)'g;\
