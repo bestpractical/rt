@@ -38,11 +38,8 @@
       <img src="<%$RT::WebImagesURL%>/space.gif" alt="" height="3"></TD>
   </TR>
   <TR>
-    <td>
-      <table cellspacing="0" cellpadding="0">
     <TD <%$color && "bgcolor=\"$color\""%>
-        <%$class && "class=\"$class\""%>>
-      <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="5"></TD>
+        <%$class && "class=\"$class\""%> width=5><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="5"></TD>
     <TD valign=middle align=left
         <%$color && "bgcolor=\"$color\""%>
         <%$class && "class=\"$class\""%>>
@@ -51,21 +48,18 @@
          <% $title_href && "<A CLASS=\"$title_class\" HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
       </span>
     </TD>
-    <TD  ALIGN="right" 
-         VALIGN=middle 
-         COLSPAN=2       
+    <TD  
+         COLSPAN="2"
          <%$color && "bgcolor=\"$color\""%>
-         <%$class && "class=\"$class\""%>>
+         <%$class ? "class=\"$class\"": "class=\"titleboxright\""%>>
       <span class="titleboxright">
-        <%$titleright |n %>
+        <%$titleright ? $titleright : '&nbsp;' |n %>
       </span>
-      &nbsp;
     </TD>
     <TD <%$color && "bgcolor=\"$color\""%>
-        <%$class && "class=\"$class\""%>>
-      <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="3"></TD>
-      </table>
-    </td>
+        <%$class && "class=\"$class\""%>
+        width="3"
+        ><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="3"></TD>
   </TR>
   <TR>
     <TD colspan="5" 

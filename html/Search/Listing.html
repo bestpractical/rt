@@ -23,8 +23,8 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc("Search"), Refresh => $session{'tickets_refresh_interval'} &>
-<& /Elements/Tabs, 
-    current_toptab => 'Search/Listing.html', 
+<& /Ticket/Elements/Tabs, 
+    current_tab => 'Search/Listing.html', 
     Title => loc("Search") &>
 
 % unless ($ARGS{'Action'} eq loc('Refine')) {
@@ -68,16 +68,10 @@ $session{'tickets'}->RedoSearch();
 $ticketcount = $session{tickets}->Count();
 while (my $Ticket = $session{'tickets'}->Next) {
  $i++;
- if ($i % 2) {
-     $bgcolor = "#dddddd";
- }
- else {
-     $bgcolor = "#ffffff";
- }
       </%PERL>
-<TR BGCOLOR="<%$bgcolor%>" 
-    ONMOUSEOVER="this.bgColor = '#aaaaff'"
-      ONMOUSEOUT="this.bgColor = '<%$bgcolor%>'"
+      <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" 
+    ONMOUSEOVER="this.Class = 'oddline'"
+      ONMOUSEOUT="this.Class = 'evenline'"
       ONCLICK="parent.location= '../Ticket/Display.html?id=<%$Ticket->Id%>'" >
 %# The ticket view is controlled by config.pm, WebOptions
 %foreach my $col (@{Config(\%ARGS,'QueueListingCols')}) {
@@ -129,7 +123,6 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => loc('Search Criteria')&>
 
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?ClearRestrictions=1"><&|/l&>New search</&></a><br>
 <A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
 <BR>
 <BR>

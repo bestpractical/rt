@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TR bgcolor="<%$rowbgcolor%>">
+<TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >                                
 <TD bgcolor="<%$bgcolor%>"><A NAME="#<%$Transaction->Id%>"></A>&nbsp&nbsp;</TD>
 <TD>&nbsp&nbsp;</TD>
 <TD><font size=-2><% $transdate|n %></font>&nbsp;</TD>
@@ -75,7 +75,7 @@ unless ($Collapsed) {
      }
         
 </%PERL>
-<TR BGCOLOR="<%$rowbgcolor%>">
+<TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >                                
       <TD BGCOLOR="<%$bgcolor%>">&nbsp;&nbsp;</TD>
       <TD>&nbsp&nbsp;</TD>
       <TD COLSPAN=3 VALIGN=TOP>
@@ -121,16 +121,10 @@ $RowNum => 1
 <%INIT>
 
 
-my ($TimeTaken, $TicketString, $bgcolor, $rowbgcolor);
+my ($TimeTaken, $TicketString, $bgcolor);
 
 my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
-
-if ($RowNum % 2) {
-	$rowbgcolor="#cccccc";
-} else {
-	$rowbgcolor="#ffffff";
-}
 
 if ($Transaction->Type =~ /^(Create|Correspond|Comment$)/) {
 	if ($Transaction->IsInbound) {

@@ -31,11 +31,12 @@
 <TH ALIGN=LEFT><&|/l&>Status</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
+  <TR>    
 % my $i;
 % while (my $Ticket = $MyTickets->Next) {
 %     next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
 %     last if $i++ >= $rows;
-<TR>
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
 <TD ALIGN=RIGHT>
 <%$Ticket->Id%>
 </TD>

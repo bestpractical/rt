@@ -45,7 +45,11 @@
     <tr><td height="2"></td></tr>
 % }
 % $sep=0;
-% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
+% my $current = $current_toptab;
+% my $path = $toptabs->{$tab}->{'path'};
+% $path =~ s#/index.html$##gi;
+% $current =~ s#/index.html$##gi;
+% if ( $path eq $current) {
 %     $class="currenttopnav"
 % } else {
 %     $class="topnav"
@@ -62,17 +66,18 @@
 % $sep=1;
 % }
 %# Second-level items
-% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
-% my ($t, $current);
+%# if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
+%# commented out by jesse on 4 jan 2003 so that tickets/search and ticket/# can
+%# both have menu items
 % if ($toptabs->{$tab}->{'subtabs'}) {
-%   $t = $toptabs->{$tab}->{'subtabs'};
-%   $current = $toptabs->{$tab}->{'current_subtab'};
     <tr>
       <td width=5></td>
       <td>
-        <& /Elements/Menu, level => $level+1, current_toptab => $current, toptabs => $t &>
+        <& /Elements/Menu, level => $level+1, 
+                current_toptab => $toptabs->{$tab}->{'current_subtab'},
+                toptabs => $toptabs->{$tab}->{'subtabs'} &>
 % }
-% }
+%# }
 %# put a line after each top-level menu entry
 % if ($level eq 0) {
     <tr><td height=<%$padding%>></td></tr>

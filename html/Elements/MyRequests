@@ -30,10 +30,11 @@
 <TH align=left><&|/l&>Queue</&></TH>
 <TH align=left><&|/l&>Status</&></TH>
 <TH align=left><&|/l&>Owner</&></TH>
-<TH>&nbsp;</TH>
 </TR>
+% my $i;
 % while (my $Ticket = $MyTickets->Next) {
-<TR>
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <TD ALIGN=RIGHT>
 <%$Ticket->Id%>
 </TD>

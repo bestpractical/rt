@@ -22,9 +22,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, %ARGS &>
+<SELECT NAME ="<%$Name%>">
+% while (my $option = shift @Options) {
+% my $value = shift @Values;
+<OPTION VALUE="<%$value%>"
+% if ($Default eq $value) {
+SELECTED
+% }
+><%$option%></OPTION>
+% }
+</SELECT>
+
 <%ARGS>
-$tabs => undef
-$current_tab => undef
-$Title => undef
+$Name => undef
+@Options => ( loc('contains'), loc("doesn't contain"), loc('is'), loc("isn't"), loc('less than'), loc('greater than'))
+@Values => ('LIKE', 'NOT LIKE', '=', '!=', '<', '>')
+$Default => undef
 </%ARGS>

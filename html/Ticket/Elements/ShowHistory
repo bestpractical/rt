@@ -22,26 +22,36 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($ShowDisplayModes or $ShowTitle) {
-<TABLE BORDER=0 width="100%">
-<TR>
-<TD ALIGN=LEFT>
-% if ($ShowTitle) {
-<font size=+3><&|/l&>History</&></font>
-% }
-&nbsp;</TD>
-<TD align=right><font size=-1><&|/l&>Display mode</&>: 
-%  if ($ShowHeaders == $Ticket->Id) {
-[<A HREF="<%$URIFile%>?id=<%$Ticket->id%>"><&|/l&>Brief headers</&></a>]
-<b>[<&|/l&>Full headers</&>]</b>
-% } else {
-<b>[<&|/l&>Brief headers</&>]</b>
-[<A HREF="<%$URIFile%>?ShowHeaders=<%$Ticket->Id%>&id=<%$Ticket->id%>"><&|/l&>Full headers</&></a>]
-%  }
-</font>
-</TD>
-</TR>
-</TABLE>
+<%perl>
+ if ($ShowDisplayModes or $ShowTitle) {
+my $title;
+my $titleright;
+if ($ShowTitle) {
+    $title = loc('History');
+}
+else {
+    $title = '&nbsp;';
+}
+$titleright = loc('Display mode') . ":";
+if ( $ShowHeaders == $Ticket->Id ) {
+    $titleright .= "[<A HREF=\"" . $URIFile . "?id="
+      . $Ticket->id . "\">"
+      . loc("Brief headers")
+      . "</a>] <b>["
+      . loc("Full headers") . "]</b>";
+}
+else {
+    $titleright .= "<b>["
+      . loc("Brief headers")
+      . "]</b> [<A HREF=\""
+      . $URIFile
+      . "?ShowHeaders="
+      . $Ticket->Id . "&id="
+      . $Ticket->id . "\">"
+      . loc("Full headers") . "</a>]";
+}
+</%perl>
+<& /Elements/TitleBoxStart, title => $title, titleright => $titleright&>
 % }
 
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
@@ -53,6 +63,9 @@
 	    <& ShowTransaction, Ticket => $Ticket, Transaction => $Transaction, ShowHeaders => $ShowHeaders, Collapsed => $Collapsed, RowNum => $i, ShowTitleBarCommands => $ShowTitleBarCommands  &>
 % }
 </TABLE>
+% if ($ShowDisplayModes or $ShowTitle) {
+<& /Elements/TitleBoxEnd &>
+% }
 <%INIT>
 
 my $Transactions = $Ticket->Transactions;

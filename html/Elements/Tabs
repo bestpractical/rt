@@ -146,7 +146,7 @@ my $topactions = {
 my $toptabs = {     A => { title => loc('Homepage'),
                            path => '',
                          },
-                    B => { title => loc('Search'),
+                    B => { title => loc('Tickets'),
                         path => 'Search/Listing.html'
                       },
                     D => { title => loc('Approval'),

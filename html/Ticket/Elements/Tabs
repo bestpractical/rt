@@ -27,39 +27,105 @@
     tabs => $tabs, 
     actions => $actions, 
     current_tab => $current_tab, 
-    current_toptab => "Search/Listing.html",
+    current_toptab => $current_toptab,
     Title => $Title &> 
 <%INIT>
+
+my $tabs = {};
+my $current_toptab = "Search/Listing.html",
+    my $searchtabs = { new => { title => loc('New Search'),
+                                path => 'Search/Listing.html?ClearRestrictions=1'}
+                        
+
+} ;
+my $actions;
+
+if ( $Ticket) {
 	
-my $id          = $Ticket->id();
-my $tabs = {
-    _A => { title => loc('Display'),
-           path  => "Ticket/Display.html?id=" . $id, },
+my $id   = $Ticket->id();
 
-    _Ab => { title => loc('History'),
-            path  => "Ticket/History.html?id=" . $id, },
-    _B => { title => loc('Basics'),
-           path  => "Ticket/Modify.html?id=" . $id, },
+if ( defined $session{'tickets'} ) {
+    my $items  = $session{'tickets'}->ItemsArrayRef();
+    my @indexs = grep( ( $items->[$_]->id == $Ticket->Id ), 0 .. $#{$items} );
 
-    _C => { title => loc('Dates'),
-           path  => "Ticket/ModifyDates.html?id=" . $id, },
-    _D =>
-      { title => loc('People'), path => "Ticket/ModifyPeople.html?id=" . $id, },
-    _E => { title => loc('Links'),
-           path  => "Ticket/ModifyLinks.html?id=" . $id, },
-    _F => { title => loc('Jumbo'),
-           path  => "Ticket/ModifyAll.html?id=" . $id, },
+    if ( $items->[0] && @indexs ) {
 
-};
+        if ( $items->[ $indexs[0] ]->id == $Ticket->Id ) {
 
-foreach my $tab ( sort keys %{$tabs} ) {
-    if ( $tabs->{$tab}->{'path'} eq $current_tab ) {
-        $tabs->{$tab}->{"subtabs"}        = $subtabs;
-        $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+            # Don't $current_toptab = display prev links if we're on the first ticket
+            if ( $items->[0]->id != $Ticket->id ) {
+
+                $searchtabs->{'_a'} = {
+                            class => "nav",
+                            path => "Ticket/Display.html?id=" . $items->[0]->id,
+                            title => '&lt;&lt; ' . loc('First') };
+                $searchtabs->{"_b"} = { class => "nav",
+                                  path  => "Ticket/Display.html?id="
+                                    . $items->[ $indexs[0] - 1 ]->id,
+                                  title => '&lt; ' . loc('Prev') };
+            }
+        }
+    }
+
+    if ( $items->[0] && @indexs ) {
+
+        # Don't display next links if we're on the last ticket
+        if ( $Ticket->id != $items->[-1]->id ) {
+            $searchtabs->{'d'} = { class => "nav",
+                             path  => "Ticket/Display.html?id="
+                               . $items->[ $indexs[0] + 1 ]->id,
+                             title => loc('Next') . ' &gt;' };
+            $searchtabs->{'e'} = {
+                           class => "nav",
+                           path => "Ticket/Display.html?id=" . $items->[-1]->id,
+                           title => loc('Last') . ' &gt;&gt' };
+        }
     }
 }
 
-my $actions;
+
+
+
+$tabs->{"this"} = { class => "currentnav",
+                    path  => "Ticket/Display.html?id=" . $Ticket->id,
+                    title => "#" . $id,
+                    current_subtab => $current_subtab };
+
+my $ticket_page_tabs = {
+    _A => { title => loc('Display'),
+            path  => "Ticket/Display.html?id=" . $id, },
+
+    _Ab => { title => loc('History'),
+             path  => "Ticket/History.html?id=" . $id, },
+    _B => { title => loc('Basics'),
+            path  => "Ticket/Modify.html?id=" . $id, },
+
+    _C => { title => loc('Dates'),
+            path  => "Ticket/ModifyDates.html?id=" . $id, },
+    _D =>
+      { title => loc('People'), path => "Ticket/ModifyPeople.html?id=" . $id, },
+    _E => { title => loc('Links'),
+            path  => "Ticket/ModifyLinks.html?id=" . $id, },
+    _F => { title => loc('Jumbo'),
+            path  => "Ticket/ModifyAll.html?id=" . $id,
+            seperator => 1
+ },
+
+};
+
+foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
+    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {
+        $ticket_page_tabs->{$tab}->{"subtabs"}        = $subtabs;
+        $tabs->{'this'}->{"current_subtab"}        = 
+        $ticket_page_tabs->{$tab}->{"path"};
+    }
+}
+$tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
+$current_tab = "Ticket/Display.html?id=" . $id;
+
+
+
+
 
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
@@ -100,50 +166,11 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
                         path  => "Ticket/Update.html?Action=Comment&id=" . $id,
     };
 }
-
-if ( defined $session{'tickets'} ) {
-    my $items  = $session{'tickets'}->ItemsArrayRef();
-    my @indexs = grep( ( $items->[$_]->id == $Ticket->Id ), 0 .. $#{$items} );
-
-    if ( $items->[0] && @indexs ) {
-
-        if ( $items->[ $indexs[0] ]->id == $Ticket->Id ) {
-
-            # Don't display prev links if we're on the first ticket
-            if ( $items->[0]->id != $Ticket->id ) {
-
-                $tabs->{'_a'} = {
-                            class => "nav",
-                            path => "Ticket/Display.html?id=" . $items->[0]->id,
-                            title => '&lt;&lt; ' . loc('First') };
-                $tabs->{"_b"} = {
-                    class => "nav",
-                    path  => "Ticket/Display.html?id=" . $items->[ $indexs[0] - 1 ]->id,
-                    title => '&lt; ' . loc('Prev') };
-            }
-        }
-    }
-
-    if ( $items->[0] && @indexs ) {
-
-        # Don't display next links if we're on the last ticket
-        if ( $Ticket->id != $items->[-1]->id ) {
-            $tabs->{'d'} = { class => "nav",
-                                    path  => "Ticket/Display.html?id=" . $items->[ $indexs[0] + 1 ]->id,
-                                    title => loc('Next') . ' &gt;' };
-            $tabs->{'e'} = {
-                           class => "nav",
-                           path => "Ticket/Display.html?id=" . $items->[-1]->id,
-                           title => loc('Last') . ' &gt;&gt' };
-        }
-    }
 }
-    $tabs->{"c"} = { class => "currentnav",
-                            path  => "Ticket/Display.html?id=" . $Ticket->id,
-                            title => "#" . $Ticket->Id };
-
-        $tabs->{"g"} = {separator => 1};
-
+$tabs->{"g"} = { path      => 'Search/Listing.html',
+                 title     => loc('Search'),
+                 separator => 1,
+                 subtabs   => $searchtabs };
 </%INIT>
 
   

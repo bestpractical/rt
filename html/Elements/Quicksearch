@@ -33,6 +33,7 @@
 </tr>
 
 <%PERL>
+my $i;
 while (my $queue = $Queues->Next) {
      $Tickets->ClearRestrictions;                                           
      $Tickets->LimitStatus(VALUE => "open");                                
@@ -49,17 +50,19 @@ while (my $queue = $Queues->Next) {
      $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');            
      my $stalled = $Tickets->Count();
 </%PERL>
-<TR><TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$queue->Name%></a></TD>
-<TD><%$new%></TD>
-<TD><%$open%></TD>
-<TD><%$stalled%></TD>
+% $i++;                                                                         
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
+<TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$queue->Name%></a></TD>
+<TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$new%></a></TD>
+<TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&openSearch=1"><%$open%></a></TD>
+<TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=stalled&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&stalledSearch=1"><%$stalled%></a></TD>
 </TR>
 % }
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
-my $Queues = new RT::Queues($session{'CurrentUser'}); 
+my $Queues = RT::Queues->new($session{'CurrentUser'}); 
 $Queues->UnLimit();
-my $Tickets = new RT::Tickets ($session{'CurrentUser'});
+my $Tickets = RT::Tickets->new($session{'CurrentUser'});
 </%INIT>

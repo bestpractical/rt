@@ -138,7 +138,7 @@ TD {border-color: #cccccc }
 
 .currenttab { margin: 0.2em; background: #336699; }
 .othertab { margin: 0.2em; background: #efefef; }
-.oddline { background-color : #eeeeee; }
+.oddline { background-color : #ccccee; }
 
 TH { font-size: 80%;
      font-weight: bold;
@@ -164,8 +164,16 @@ TD, TH { /* ns workaround */
   font-family: "Helvetica", sans-serif;
 }
 
+TH {
+    background-color : #ccccee;
+}
+
 TR.oddline { 
-    background-color : #eeeeee;
+    background-color : #ffffff;
+}
+
+TR.evenline { 
+    background-color : #ccccee;
 }
 
 H1, H2, H3 { 
@@ -224,8 +232,12 @@ SPAN.titleboxtitle {
 
 
 SPAN.titleboxright {
-        font-size: 1.2em;
+        font-size: 1em;
         color: #ffffff;
+        }
+TD.titleboxright {
+	 vertical-align: bottom;
+	 text-align: right;
         }
 
 
@@ -263,7 +275,7 @@ BLOCKQUOTE ADDRESS {
 P.map-also { font-style: italic; margin-left: 15%; text-align: right }
 
 .oddline { 
-        background-color : #eeeeee;
+        background-color : #ccccee;
 }
 
 <%init>
