@@ -279,6 +279,7 @@ sub SubValue {
     my $self = shift;
     my $key = shift;
     my $values = $self->Content();
+    return undef unless ref($values);
     return($values->{$key});
 }
 
