@@ -1,0 +1,15 @@
+% my $l=$Column->{TicketLink}; if ($l) {
+<a href="<% $l!=1 ? $l : "../Ticket/Display.html?" %>id=<%$Ticket->Id%>">
+%}
+<%eval("\$Ticket->$Column->{TicketAttribute}") || "-" %>
+% if ($l) {
+</a>
+% }
+
+
+
+
+<%ARGS>
+$Ticket => undef
+$Column => undef
+</%ARGS>

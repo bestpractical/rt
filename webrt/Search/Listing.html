@@ -8,11 +8,18 @@
 %#<& QueueInterpretRestrictionCookies &>
 <TABLE WIDTH=100%>
 %#<& QueueHeader format="$format" &>
+<TR>
+%foreach (@{_cfg(\%ARGS, 'QueueListingCols')}) {
+   <TH><% $_->{Header} %>
+%}
+
 %while (my $Ticket = $Tickets->Next) {
 <TR>
+%foreach (@{_cfg(\%ARGS, 'QueueListingCols')}) {
 	<TD>
-	<& QueueItem , Ticket=>$Ticket &>
+	<& TicketCell , Ticket=>$Ticket,  Column=>$_ &>
 	</TD>
+%}
 </TR>
 %}
 </TABLE>
@@ -127,8 +134,9 @@ if ($ARGS{'LimitStatus'}) {
 # it belong to, and how should it get access to all this data?
 
 sub _cfg {
+  my $args=shift;
   my $key=shift;
-  return $ARGS{$key} || $RT::SitePolicy{$key};
+  return $args->{$key} || $RT::SitePolicy{$key};
 }
 
 # $Tickets->Limit( FIELD => 'status',
