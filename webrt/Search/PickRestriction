@@ -56,6 +56,10 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 &>  
 <& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
+
+<li>Which <& /Elements/SelectLinkType, Name => 'TargetType' &> ticket <input size="5" name ="ValueOfTarget">
+<li>Which ticket <input size="5" name ="ValueOfBase"> <& /Elements/SelectLinkType, Name => 'BaseType' &>
+
 % while ( my $KeywordSelect = $KeywordSelects->Next ) {
 
 <li><% $KeywordSelect->Name %> 

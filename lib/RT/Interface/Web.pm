@@ -605,7 +605,24 @@ sub ProcessSearchQuery {
         );
     }
 
-    # }}}   
+    # }}}
+    # {{{ Limit relationships
+    if ($args{ARGS}->{'ValueOfTarget'} ne '' ) {
+        $session{'tickets'}->LimitLinkedTo( TYPE => $args{ARGS}->{'TargetType'}, 
+                                    TARGET => $args{ARGS}->{'ValueOfTarget'}
+                                    );
+
+    }
+    
+    if ($args{ARGS}->{'ValueOfBase'} ne '' ) {
+        $session{'tickets'}->LimitLinkedFrom( TYPE => $args{ARGS}->{'BaseType'}, 
+                                    BASE => $args{ARGS}->{'ValueOfBase'}
+                                    );
+
+    }
+
+
+    # }}}
     # {{{ Limit KeywordSelects
 
     foreach my $KeywordSelectId (
