@@ -79,6 +79,10 @@ Limits the returned set to values for the ticket with Id TICKETID
 sub LimitToTicket {
     my $self = shift;
     my $ticket = shift;
+
+
+    $RT::Logger->warning(ref($self) . " -> LimitToTicket deprecated in favor of LimitToObject");
+
     $self->Limit( FIELD => 'ObjectType',
 		  VALUE => 'RT::Ticket',
 		  OPERATOR => '=');

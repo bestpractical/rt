@@ -16,6 +16,16 @@ accidentally damage your database and lose data or worse.
 
 *******
 
+
+UPGRADING FROM 3.3.11 and earlier - Changes:
+
+= Rights Changes =
+
+Custom Fields now have an additional right "ModifyObjectCustomFieldValues". 
+This right governs whether a user can modify an object's custom field values
+for a particular custom field. This includes adding, deleting and changing values.
+
+
 UPGRADING FROM 3.2 and earlier - Changes:
 
 = Rights changes =

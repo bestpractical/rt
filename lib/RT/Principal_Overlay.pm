@@ -143,6 +143,11 @@ sub Object {
 
 A helper function which calls RT::ACE->Create
 
+
+
+   Returns a tuple of (STATUS, MESSAGE);  If the call succeeded, STATUS is true. Otherwise it's 
+   false.
+
 =cut
 
 sub GrantRight {
@@ -183,6 +188,11 @@ sub GrantRight {
 =head2 RevokeRight { Right => "RightName", Object => "object" }
 
 Delete a right that a user has 
+
+
+   Returns a tuple of (STATUS, MESSAGE);  If the call succeeded, STATUS is true. Otherwise it's 
+      false.
+
 
 =cut
 

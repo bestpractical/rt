@@ -211,6 +211,12 @@ PARAMS is a parameter hash with the following elements:
    ObjectType => the type of the object in question (ref ($object))
    ObjectId => the id of the object in question $object->Id
 
+
+
+   Returns a tuple of (STATUS, MESSAGE);  If the call succeeded, STATUS is true. Otherwise it's false.
+
+
+
 =cut
 
 sub Create {

@@ -66,12 +66,16 @@ ok($testqueue->Create( Name => 'ticket tests'));
 ok($testqueue->Id != 0);
 use_ok(RT::CustomField);
 ok(my $testcf = RT::CustomField->new($RT::SystemUser));
-ok($testcf->Create( Name => 'selectmulti',
+my ($ret, $cmsg) = $testcf->Create( Name => 'selectmulti',
                     Queue => $testqueue->id,
-                               Type => 'SelectMultiple'));
-ok($testcf->AddValue ( Name => 'Value1',
+                               Type => 'SelectMultiple');
+ok($ret,"Created the custom field - ".$cmsg);
+($ret,$cmsg) = $testcf->AddValue ( Name => 'Value1',
                         SortOrder => '1',
-                        Description => 'A testing value'));
+                        Description => 'A testing value');
+
+ok($ret, "Added a value - ".$cmsg);
+
 ok($testcf->AddValue ( Name => 'Value2',
                         SortOrder => '2',
                         Description => 'Another testing value'));
