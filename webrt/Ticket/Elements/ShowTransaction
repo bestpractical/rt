@@ -1,4 +1,4 @@
-      <& /Elements/TitleBoxStart, title => $Transaction->Description, titleright=> "<a href=\"Update.html?id=".$Transaction->Ticket . "QuoteTransaction=".$attachments->First->Id."\">[Reply / Comment]</a>" &>
+      <& /Elements/TitleBoxStart, title => $Transaction->Description, titleright=> "<a href=\"Update.html?id=".$Transaction->Ticket . "QuoteTransaction=".$Transaction->Id."\">[Reply / Comment / Spawn]</a>" &>
       
     <TABLE WIDTH="100%">
       <TR>
