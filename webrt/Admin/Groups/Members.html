@@ -22,12 +22,11 @@ Current members
 <& /Admin/Elements/SelectUsers, Name => "AddMembers" &>
 </TD>
 <TD VALIGN=TOP>
-
+% if ($Group->MembersObj->Count == 0 ) {
+<i>(No members)</i>
+% } else {
 (Check box to delete group member)
 <UL>
-% if ($Group->MembersObj->Count == 0 ) {
-<LI><i>(No members)</i>
-% } else {
 % while (my $member = $Group->MembersObj->Next()) {
 <LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->UserObj->id%>">
 <%$member->UserObj->Name%> (<%$member->UserObj->RealName%>)
