@@ -144,10 +144,11 @@ CREATE TABLE Links (
  # about our users.
 
  # Actually I think the best way is to only store only what is
- # essential for RT (RealName, id, password, UserId and Lang), and let
+ # essential for RT, and let
  # all other data be stored externally in any system of choise.  Hm.
- # ATOH, A Plugin authentication system would clearly be the best and
- # only right thing.  We have to fix that for RT 2.1
+
+ # ATOH, A Plugin authentication system which replaces this table
+ # would clearly be the best and only right thing.  We have to fix that for RT 2.1
 
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -157,14 +158,19 @@ CREATE TABLE Users (
   RealName VARCHAR(120),
   Lang VARCHAR(16), # Preffered language - to be used by L10N (not there, yet)
   Password VARCHAR(40),
+  Comments BLOB,
+  Signature BLOB,
+  EmailAddress VARCHAR(120),
+  CanManipulate INT,  #Whether this user can be granted rights
+		      #If 0, the user can only be a requestor
+  IsAdministrator INT,
+
+ # We should rather have a "plug'n'play" authentication system where
+ # this table can be exchanged for some external system.
   ExternalId VARCHAR(100),
 
- # I'm a bit uncertain if we have this one right.
- # It's an important demand that it's possible to bind all requests
- # from one person to the same entry in the Users table, even when a
- # person is operating from several different email addresses.
-  EmailAddress VARCHAR(120),
-
+ # I'd daresay that those fields really shouldn't be in RT:
+ # -- TobiX
   HomePhone VARCHAR(30),
   WorkPhone VARCHAR(30),
   Address1 VARCHAR(200),
@@ -173,10 +179,7 @@ CREATE TABLE Users (
   State VARCHAR(100),
   Zip VARCHAR(16),
   Country VARCHAR(50),
-  Comments BLOB,
-  CanManipulate INT,  #Whether this user can be granted rights
-		      #If 0, the user can only be a requestor
-  IsAdministrator INT,
+
 
   Creator INT(11),
   Created DATETIME,
