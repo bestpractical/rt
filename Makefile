@@ -231,7 +231,6 @@ libs-install:
 	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
 	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
 	chmod -R 0755 $(RT_LIB_PATH)
-	cp -rp ./lib/rt $(RT_LIB_PATH)    
 	( cd ./lib; \
 	  $(PERL) Makefile.PL LIB=$(RT_LIB_PATH) \
 	    && make \
