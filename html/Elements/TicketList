@@ -1,0 +1,181 @@
+%# BEGIN LICENSE BLOCK;
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/TitleBoxStart, title => $Title, bodyclass=> '' &>
+<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
+<TR>
+% foreach my $col (@cols) { 
+<TH align="center">
+<%perl>
+         if ($col =~ s/\/TITLE:(.*?)$//i) {
+                $m->out(loc($1));
+
+        } elsif ($map->{$col}->{'title'}) {
+               $m->out(loc($map->{$col}->{title})); 
+        } elsif ($map->{$col}) {
+                $m->out(loc($col));
+        }
+</%perl> 
+</TH>
+% }
+</TR>
+% my $i;
+% while (my $Ticket = $Tickets->Next) {
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+% foreach my $column (@cols) {
+% my $col = $column; #noclobber
+% if (exists $map->{$col}->{value}) { 
+<td align="<%$map->{$col}->{align} || 'left'%>">
+% if ($map->{$col}->{value} && ref ($map->{$col}->{value})) {
+%       $m->out(&{$map->{$col}->{value}}($Ticket));
+% } else {
+<%$col%> has no value sub
+% }
+</td>
+% } 
+% # if it's not a listed value, it's a literal, possibly with embedded values
+% else {
+% $col =~ s/\/TITLE:(.*?)$//i;
+%$col =~ s/##(.*?)##/&{$map->{$1}->{value}}($Ticket);/ge;
+<td><%$col|n%></td>
+% }
+% }
+
+</TR>
+% }
+</TABLE>
+<& /Elements/TitleBoxEnd &> 
+<%INIT>
+
+my $map = {
+    QueueName => {
+        title => 'Queue',
+        value => sub { return $_[0]->QueueObj->Name }
+    },
+    OwnerName => {
+        title => 'Owner',
+        value => sub { return $_[0]->OwnerObj->Name }
+    },
+    id => {
+        align => 'right',
+        value => sub { return $_[0]->id }
+    },
+    Status => {
+        value => sub { return $_[0]->Status }
+    },
+    Subject => {
+        value => sub { return $_[0]->Subject }
+    },
+    ExtendedStatus => {
+        title => 'Status',
+        value => sub {
+            my $Ticket = shift;
+
+            if ( $Ticket->HasUnresolvedDependencies ) {
+                if ( $Ticket->HasUnresolvedDependencies( Type => 'approval' )
+                    or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
+                {
+                    return "<em>" . loc('(pending approval)') . "</em>";
+                }
+                else {
+                    return "<em>" . loc('(pending other tickets)') . "</em>";
+                }
+            }
+            else {
+                return loc( $Ticket->Status );
+            }
+
+        }
+    }, Priority => {
+        value => sub { return $_[0]->Priority }
+    },
+    InitialPriority => {
+        value => sub { return $_[0]->InitialPriority }
+    },
+    FinalPriority => {
+        value => sub { return $_[0]->FinalPriority }
+    },
+    EffectiveId => {
+        value => sub { return $_[0]->EffectiveId }
+    },
+    Type => {
+        value => sub { return $_[0]->Type }
+    },
+    TimeWorked => {
+        value => sub { return $_[0]->TimeWorked }
+    },
+    TimeLeft => {
+        value => sub { return $_[0]->TimeLeft }
+    },
+    TimeEstimated => {
+        value => sub { return $_[0]->TimeEstimated }
+    },
+    Requestors => {
+        value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+    },
+    Cc => {
+        value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
+    },
+    AdminCc => {
+        value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
+    },
+    Starts => {
+        value => sub { return $_[0]->StartsObj->AsString }
+    },
+    Started => {
+        value => sub { return $_[0]->StartedObj->AsString }
+    },
+    Created => {
+        value => sub { return $_[0]->CreatedObj->AsString }
+    },
+    LastUpdated => {
+        value => sub { return $_[0]->LastUpdatedObj->AsString }
+    },
+    Told => {
+        value => sub { return $_[0]->ToldObj->AsString }
+    },
+    Due => {
+        value => sub { return $_[0]->DueObj->AsString }
+    },
+    Resolved => {
+        value => sub { return $_[0]->ResolvedObj->AsString }
+    },
+
+};
+
+my $Tickets = new RT::Tickets ($session{'CurrentUser'});
+
+$Tickets->FromSQL($Query);
+
+$Tickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC'); 
+my @cols = $Tickets->DisplayColumns;
+
+</%INIT>
+<%ARGS>
+$Query => undef
+$Rows => 10
+$Page => 1
+$Title => 'Ticket Search'
+
+</%ARGS>

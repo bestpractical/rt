@@ -21,61 +21,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("[_1] highest priority tickets I own...", $rows), bodyclass=> '' &>
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-<TR>
-<TH ALIGN=RIGHT><&|/l&>#</&></TH>
-<TH ALIGN=LEFT><&|/l&>Subject</&></TH>
-<TH ALIGN=LEFT><&|/l&>Queue</&></TH>
-<TH ALIGN=LEFT><&|/l&>Status</&></TH>
-<TH ALIGN=LEFT>&nbsp;</TH>
-</TR>
-  <TR>    
-% my $i;
-% while (my $Ticket = $MyTickets->Next) {
-%     next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
-%     last if $i++ >= $rows;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
-<TD ALIGN=RIGHT>
-<%$Ticket->Id%>
-</TD>
-<TD>
-<A HREF="<% $RT::WebPath %>/Ticket/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Subject || loc('(no subject)')%>
-</A>
-</TD>
-<TD>
-<%$Ticket->QueueObj->Name%>
-</TD>
-<TD>
-% if ($Ticket->HasUnresolvedDependencies ) {
-%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval' ) or
-%         $Ticket->HasUnresolvedDependencies( Type => 'code' )) {
-<em><&|/l&>(pending approval)</&></em>
-%     } else {
-<em><&|/l&>(pending other tickets)</&></em>
-%     }
-% } else {
-<%loc($Ticket->Status)%>
-% }
-</TD>
-<TD ALIGN=RIGHT>
-[<A HREF="<% $RT::WebPath %>/Ticket/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
-</TD>
-</TR>
-% }
-</TABLE>
-<& /Elements/TitleBoxEnd &>
 
+<& /Elements/TicketList, 
+        Title => loc("[_1] highest priority tickets I requested...", $rows),
+        Query => "SELECT '<a href=\"/Ticket/Display.html?id=##id##\">##id##</a>/TITLE:#', '<a href=\"/Ticket/Display.html?id=##id##\">##Subject##</a>/TITLE:Subject', QueueName, ExtendedStatus WHERE Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open')"
+        &>
+<%init>
+my $rows=10;
+</%init>
 
-<%INIT>
-my $rows = $RT::MyTicketsLength;
-my $MyTickets;
-$MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
-$MyTickets->LimitStatus(VALUE => "open");
-$MyTickets->LimitStatus(VALUE => "new");
-$MyTickets->RowsPerPage($rows);
-$MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
-
-</%INIT>
