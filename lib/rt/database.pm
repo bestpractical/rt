@@ -1,7 +1,7 @@
 package rt;
 use Mysql;
 
-&connectdb;
+&connectdb();
 
 require rt::support::utils;   
 require rt::database::config;
