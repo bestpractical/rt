@@ -11,9 +11,10 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	4
+RT_VERSION_PATCH	=	4pre
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
+TAG 	   =	rt-$(RT_VERSION)
 
 #
 # RT_PATH is the name of the directory you want make to install RT in
@@ -301,7 +302,6 @@ commit:
 	cvs commit
 
 predist: commit
-	TAG = "rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-pre$(RT_VERSION_PATCH)"
 	cvs tag -F $(TAG)
 	rm -rf /tmp/($TAG)
 	cvs export -D now -d /tmp/($TAG) rt
@@ -309,7 +309,6 @@ predist: commit
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
 dist: commit
-	TAG = "rt-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)"
 	cvs tag -F $(TAG)
 	rm -rf /tmp/($TAG)
 	cvs export -D now -d /tmp/($TAG) rt
