@@ -43,4 +43,28 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/ObjectCustomFields, %ARGS, ObjectType => 'RT::Queue' &>
+<& /Admin/Elements/Header, Title => $title &>
+<&    /Admin/Elements/QueueTabs,
+    id => $Object->id, 
+    current_tab => "Admin/Queues/CustomFields.html?SubType=$SubType&id=$id", 
+    current_subtab => "Admin/Queues/CustomFields.html?SubType=$SubType&id=$id", 
+    QueueObj => $Object,
+    Title => $title
+    &>
+
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::Queue' &>
+<%INIT>
+my $Object = RT::Queue->new( $session{'CurrentUser'} );
+
+$Object->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
+my $FriendlySubTypes =
+  RT::CustomField->new( $session{'CurrentUser'} )
+  ->FriendlyLookupType( $Object->CustomFieldLookupType );
+
+my $title = loc( 'Edit Custom Fields for [_1]', $Object->Name );
+
+</%INIT>
+<%ARGS>
+$id => undef
+$SubType => 'RT::Queue-RT::Ticket'
+</%ARGS>
