@@ -1,15 +1,10 @@
-package rt::ui::mail::manipulate;
+package RT::UI::MailGateway;
 
 sub activate {
   
-  #uncomment for a debugging version
-  $debug = 0;
-  
-  $area = ""; #TODO: we may want to be able to set the area on the command line
-  
-  $content=&read_mail_from_stdin();
-  $in_queue=$ARGV[0];
-  $in_action=$ARGV[1];
+   my $in_queue=$ARGV[0];
+  my $in_action=$ARGV[1];
+  my $in_area = $ARGV[2];
   
   if (!$in_queue){
     $in_queue="general";
@@ -18,82 +13,38 @@ sub activate {
     $in_action='correspond';
   }
     
-  &parse_headers($content);
-  
-  #get all that rt stuff squared away.
-    &rt::initialize($current_user);
-  
-  # Check if the requestors/users email is known 
-  # (ideally some strong autentication should be used):
-  $current_user=$rt::emails{$current_user} if exists $rt::emails{$current_user};
- 
-  #take all those actions
-  
-  $content=&parse_actions($current_user,$serial_num, $content);
-  
-  #flip the content around..we should just MIME the sucker instead
-  &munge_content($content);
-  
-  if ($in_action eq 'actions') {
-    exit(0);
-  }
-  elsif ($in_action eq 'correspond') {
-    if (!$serial_num) {
-      #WE REALLY SHOULD PARSE THE TIME OUT OF THE DATE HEADER...BUT FOR NOW
-      # THE CURRENT TIME IS GOOD ENOUGH
-      
-      ($serial_num,$transaction_num, $message)=&rt::add_new_request
-	  ($in_queue,$area,
-	   $current_user,'','',$subject,
-	   $rt::queues{"$in_queue"}{'default_final_prio'},
-	   $rt::queues{"$in_queue"}{'default_prio'},'open',
-	   time,0,0,$content,$current_user,$cc,$bcc
-	   );
-    }
-    else {
-	if (&rt::is_not_a_requestor($current_user, $serial_num)){
-	    $notify_requestor=1;
-	} else {
-	    $notify_requestor=0;
-	}
-	($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",$notify_requestor,$current_user);
-      
-    }
-  }
-  elsif ($in_action eq 'comment') {
-	if (!$serial_num) {
-		$edited_content = "
-You did not specify a ticket number for these comments. Please resubmit them
-with a ticket number.  Your comments appear below.
+  #Load message into a Message::Internet message?
 
-$content.
-";
-    &rt::template_mail('error', '_rt_system', "$current_user", '', '', "", 
-			"$transaction_num", "RT Error: $subject", 
-			"$current_user", "$edited_content");
-  	exit(0);
-	}
+  #THIS IS PLACEHOLDER CODE
+  #DO we even want MIME::Parser?  
+  # Create a new MIME parser:
+  my $parser = new MIME::Parser;
+  
+  # Read the MIME message:
+  $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
 
 
-    if ($debug) {print "Now commenting on request \# $serial_num\n";}
-    ($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject","" ,"" ,$current_user);
-  }
+
+  #If the message applies to an existing ticket
+
+  #   If the message contains commands, execute them
+
+  #   If the mail message is a comment, add a comment.
+
+
+  #   If the message is correspondence, add it to the ticket
+
+
+
+  #If the message doesn't reference a ticket #,
+
+  #    If the message is meant to be a comment, return an error.
+
+  #    open a new ticket 
+
+
+
   
-  # if there's been an error, mail the user with the message
-  if ($transaction_num == 0) {
-    $edited_content = "There has been an error with your request:\n$message\n\nYour message is reproduced below:\n\n$content\n";
-    &rt::template_mail('error', '_rt_system', "$current_user", '', '', 
-			"$serial_num", "$transaction_num", 
-		       "RT Error: $subject", "$current_user", "$edited_content");
-  }
-  
-  
-  if ($response) {
-      &send_rt_response($current_user);
-    }
-  
-  
-}
 
 sub read_mail_from_stdin {
   local $content;
@@ -250,9 +201,6 @@ sub parse_actions {
           $line = "";
         }
       }
-      
-      
-      
       
       
       #deal with USER commands

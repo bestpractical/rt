@@ -40,6 +40,8 @@ sub Create {
 	      ContentType => 'text/plain',
 	      Content => undef,
 	      @_);
+
+  #TODO Load queue defaults
   
   my $id = $self->SUPER::Create(Id => $args{'id'},
 				EffectiveId => $args{'EffectiveId'},
@@ -74,6 +76,9 @@ sub Create {
   $Trans->Attach($args{'Subject'}, $args{'ContentType'},
 		 $args{'ContentMessageId'}, $args{'Content'});
 
+
+
+  #TODO If the requestor is supposed to get an autoreply on creation, do that now.
   
   return($self->Id, $ErrStr);
   
