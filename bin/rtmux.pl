@@ -74,7 +74,7 @@ elsif ($program eq '!!RT_MAILGATE_BIN!!') {
   &RT::Interface::Email::activate();
 }
 
-elsif ($program eq 'webrt.cgi') {
+elsif ($program eq '!!RT_CGI_BIN!!') {
   use HTML::Mason;
   package HTML::Mason;
   my $parser = new HTML::Mason::Parser;

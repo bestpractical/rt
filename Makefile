@@ -231,6 +231,7 @@ mux-install:
 				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
+				s'!!RT_CGI_BIN!!'$(RT_CGI_BIN)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX)
 
