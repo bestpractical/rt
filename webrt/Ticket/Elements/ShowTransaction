@@ -62,7 +62,8 @@
 This is a multipart message
 % } else {
 	
-Attachment: <A HREF="Attachment/<%$Ticket->id%>/<%$Transaction->Id%>/<%$message->Filename%>"><%$message->Filename%></a>
+Attachment: <A HREF="Attachment/<%$Transaction->Id%>/<%$Transaction->TicketObj->id%>/<%$message->Id%>/<%$message->Filename%>"><%$message->Filename%></a>
+
 %  }
 % }
 

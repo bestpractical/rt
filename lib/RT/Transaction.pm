@@ -415,7 +415,7 @@ sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      TimeTaken => 'read',
-	      Ticket => 'read',
+	      Ticket => 'read/public',
 	      Type=> 'read',
 	      Field => 'read',
 	      Data => 'read',
@@ -503,9 +503,10 @@ sub _Value  {
 	return($self->SUPER::_Value($field));
 	
     }
-    
     #If it's a comment, we need to be extra special careful
-    if ($self->Type eq 'Comment') {
+    if ($self->SUPER::_Value('Type') eq 'Comment') {
+        
+        
 	unless ($self->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
 	    return (0, "Permission Denied");
 	}

@@ -567,7 +567,7 @@ sub _HasRight {
     }
     elsif (!defined $args{'AppliesTo'}) {
         use Carp;
-        $RT::Lobber->debug(Carp::cluck."\n");
+        $RT::Logger->debug(Carp::cluck."\n");
     	$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
     	return(undef);
     }

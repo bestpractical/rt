@@ -49,7 +49,6 @@ sub _Init  {
 sub _MyCurrentUser  {
     my $self = shift;
   
-    $RT::Logger->debug("Current user is ".$_[0]);
     $self->CurrentUser(@_);
     if(!defined($self->CurrentUser)) {
 	use Carp;

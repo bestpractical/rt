@@ -64,7 +64,7 @@ sub TransactionObj {
     require RT::Transaction;
     my $self=shift;
     unless (exists $self->{_TransactionObj}) {
-	$self->{_TransactionObj}=RT::Transaction->new($self->Creator);
+	$self->{_TransactionObj}=RT::Transaction->new($self->CurrentUser);
 	$self->{_TransactionObj}->Load($self->TransactionId);
     }
     return $self->{_TransactionObj};

@@ -885,12 +885,15 @@ returns undef otherwise
 sub IsOwner {
     my $self = shift;
     my $person = shift;
-    
-#    unless ($self->CurrentUserHasRight('ShowTicket')) {
-#	return (0, "Permission Denied");
-#    }
-    
-    if ($person->Id == $self->OwnerObj->id) {
+  
+    $RT::Logger->debug("Person is ".$person);
+
+    #Tickets won't yet have owners when they're being created.
+    unless ($self->OwnerObj->id) {
+        return(undef);
+    }
+
+    if ($person->id == $self->OwnerObj->id) {
 	return(1);
     }
     else {
@@ -1701,7 +1704,6 @@ sub OwnerObj {
     #If this gets ACLed, we lose on a rights check in User.pm and
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
-    if (!defined ($self->SUPER::_Value('Owner'))) {return (undef);}
     
     #If the owner object ain't loaded yet
     if (! exists $self->{'owner'})  {
