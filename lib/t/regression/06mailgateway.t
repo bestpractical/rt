@@ -58,7 +58,7 @@ RT::Init();
 use RT::I18N;
 # Make sure that when we call the mailgate wrong, it tempfails
 
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://bad.address"), "Opened the mailgate - The error below is expected - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://this.test.for.non-connection.is.expected.to.generate.an.error"), "Opened the mailgate - The error below is expected - $@");
 print MAIL <<EOF;
 From: root\@localhost
 To: rt\@example.com
