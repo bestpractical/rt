@@ -117,6 +117,20 @@ sub ParseArgs  {
 	
       }
       
+      elsif ($ARGV[$i] eq "-link")	{
+	$base=int($ARGV[++$i]);
+	$type=int($ARGV[++$i]);
+	$target=int($ARGV[++$i]);
+
+	# TODO: Check if base or target is local ticket
+	# TODO: load the local ticket
+	# my $Ticket=&LoadTicket($base);
+	# TODO: link it
+	
+	$Message .= "Not linked (code stubbed)";
+	
+      }
+      
       elsif ($ARGV[$i] eq "-steal")	{
 	$id=int($ARGV[++$i]);
 	
