@@ -34,7 +34,7 @@ use Getopt::Long;
 use CPAN;
 my %args;
 my %deps;
-GetOptions(\%args,'install', 'with-MYSQL', 'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE', 'with-ORACLE', 'with-FASTCGI', 'with-SPEEDYCGI', 'with-MODPERL1', 'with-MODPERL2' ,'with-DEV');
+GetOptions(\%args,'install', 'with-MYSQL', 'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE', 'with-ORACLE', 'with-FASTCGI', 'with-SPEEDYCGI', 'with-MODPERL1', 'with-MODPERL2' ,'with-DEV', 'download=s');
 
 if (!keys %args) {
     help();
@@ -49,9 +49,6 @@ $args{'with-CORE'} = 1;
 $args{'with-DEV'} =1; 
 $args{'with-CLI'} =1; 
 $args{'with-MAILGATE'} =1; 
-if ($] < 5.007) {
-$args{'with-I18N-COMPAT'} = 1;
-}
 
 sub warn_modperl2 {
     print <<'.';
@@ -95,6 +92,7 @@ sub _ {
 }
 
 $deps{'CORE'} = [ _( << '.') ];
+Digest::base
 Digest::MD5 2.27
 DBI 1.37
 Test::Inline
@@ -123,8 +121,8 @@ Scalar::Util
 $deps{'MASON'} = [ _( << '.') ];
 Params::Validate 0.02
 Cache::Cache
-Exception::Class
-HTML::Mason 1.16
+Exception::Class 1.14
+HTML::Mason 1.23
 MLDBM
 Errno
 FreezeThaw
@@ -149,6 +147,9 @@ $deps{'DEV'} = [ _( << '.') ];
 Regexp::Common
 Time::HiRes 
 Test::Inline 
+Apache::Test
+HTML::Form
+HTML::TokeParser
 WWW::Mechanize
 .
 
@@ -175,11 +176,6 @@ CGI 2.89
 Apache::DBI
 .
 
-$deps{'I18N-COMPAT'} = [ _( << '.') ];
-Text::Iconv
-Encode::compat 0.04
-.
-
 $deps{'MYSQL'} = [ _( << '.') ];
 DBD::mysql 2.1018
 .
@@ -189,6 +185,48 @@ DBD::Oracle
 $deps{'POSTGRESQL'} = [ _( << '.') ];
 DBD::Pg
 .
+
+if ($args{'download'}) {
+
+    my %modules;
+
+    foreach my $key (keys %deps) {
+     
+
+	my @deps = (@{$deps{$key}});
+	while (@deps) {
+    my $mod = shift @deps;
+    my $ver = shift @deps;
+    next if ($mod =~ /^(DBD-|Apache-Request)/);
+    $modules{$mod} = $ver;
+
+    }
+    }
+    my @mods = keys %modules;
+    CPAN::get();
+        my $moddir = $args{'download'};
+    foreach my $mod(@mods){
+        $CPAN::Config->{'build_dir'} = $moddir;
+        CPAN::get($mod);
+    }
+
+    opendir(DIR, $moddir);
+    while ( my $dir = readdir(DIR)) {
+        print "Dir is $dir\n";
+        next if ( $dir =~ /^\.\.?$/);
+
+        if ($dir =~ /^(.*)-(.*?)$/) {
+            print "$1  --  $2\n";
+            `rsync -a $moddir/$dir/*  $moddir/$1`;
+            `rm -rf $moddir/$dir`;
+
+        }
+
+    }
+    closedir(DIR);
+    exit;
+}
+
 
 print "perl:\n";
 print "\t5.8.0";
