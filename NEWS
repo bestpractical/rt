@@ -1,3 +1,18 @@
+6 Jul 99
+--------
+
+Transactions from merged requests will now be displayed along with the request id of the request that transaction was originially associated with.
+
+Fixed [fsck #74], which was reported by charlie brady:
+   Messages are sent out from the mail interface with content first, then
+   "--- Headers Follow ---", then the headers. In our vanilla sendmail setup,
+   before the headers is a UUCP style deliver notification "From blah Tue Jul
+   6 18:13:01 1999" line. This is interpreted by many mail agents as a
+   message delimiter, so that what is seen in the mail agent is not one, but
+   two messages. This is easily fixed by using the conventional quoting
+   mechanism...
+Fixed [fsck #71] WebRT: "User" should be "Requestor" 
+
 29 Jun 99
 ---------
 Got cookies auth working with ie4.01sp1 and Navigator.

@@ -85,6 +85,7 @@ sub read_mail_from_stdin {
 
 
 sub munge_content {
+  $content =~ s/^(From )/\>$1/mg;
   ($headers, $body) = split (/\n\n/, $content, 2);
   
   $content = $body . "\n\n--- Headers Follow ---\n\n" . $headers;

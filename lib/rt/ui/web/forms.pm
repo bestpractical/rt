@@ -102,7 +102,7 @@ print "SELECTED";};
 
 </TD><td valign=\"top\">
 <font size=\"-1\">
-<b>User</b>: <INPUT TYPE=\"radio\" NAME=\"q_user\" VALUE=\"\"";
+<b>Requestor</b>: <INPUT TYPE=\"radio\" NAME=\"q_user\" VALUE=\"\"";
  
    $rt::ui::web::FORM{'q_user'} = '' if ! defined $rt::ui::web::FORM{'q_user'};
 

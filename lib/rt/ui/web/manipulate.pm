@@ -726,7 +726,14 @@ $time
 </TD>
 <TD align=\"left\">
 <font color=\"\#ffffff\">
-<b>$rt::req[$serial_num]{'trans'}[$temp]{text}</b>
+<b>$rt::req[$serial_num]{'trans'}[$temp]{text}</b>";
+
+if ($rt::req[$serial_num]{'trans'}[$temp]{'effective_sn'} != 
+    $rt::req[$serial_num]{'trans'}[$temp]{'serial_num'} ) {
+
+   print " (as #$rt::req[$serial_num]{'trans'}[$temp]{'serial_num'})";
+}
+print "
 </font>
 </TD>
 <TD ALIGN=\"RIGHT\" VALIGN=\"MIDDLE\"><FONT color=\"\#ffffff\">&nbsp;";

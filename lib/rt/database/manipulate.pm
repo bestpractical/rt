@@ -327,6 +327,7 @@ sub merge {
     $query_string = "UPDATE transactions SET effective_sn = $in_merge_into WHERE effective_sn = $in_serial_num";
     $dbh->Query($query_string) or warn "Query had some problem: $Mysql::db_errstr\n";
 
+    &req_in($in_merge_into,$in_current_user);
     return ($transaction_num,"Request #$in_serial_num has been merged into request #$in_merge_into.");
 
 }
