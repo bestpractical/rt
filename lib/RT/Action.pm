@@ -1,6 +1,6 @@
 # $Header$
 
-package RT::Scrips::Base;
+package RT::Action::Base;
 
 
 

@@ -1,7 +1,7 @@
 # $Header$
 
-package RT::Scrips::SendEmail;
-@ISA qw(RT::Scrips::Base);
+package RT::Action::SendEmail;
+@ISA qw(RT::Action);
 
 
 sub _Init {
