@@ -1643,14 +1643,18 @@ sub MergeInto {
     #update this ticket's effective id to the new ticket's id.
     $RT::Logger->debug("setting $self effective id to ".
 		       $NewTicket->Id()."...");
-    my ($val, $msg) = $self->__Set(Field => 'EffectiveId', 
+    my ($id_val, $id_msg) = $self->__Set(Field => 'EffectiveId', 
 				   Value => $NewTicket->Id());
 
-    
-    my ($val, $msg) = $self->__Set(Field => 'Status',
+    unless ($id_val) {
+	$RT::Logger->error('Couldn't set effective ID for ".$self->Id.": $id_msg");
+	return(0,'Merge failed. Couldn\'t set EffectiveId');
+    }
+ 
+    my ($status_val, $status_msg) = $self->__Set(Field => 'Status',
 				   Value => 'resolved');
 
-    unless ($val) {
+    unless ($status_val) {
 	$RT::Logger->error("$self couldn't set status to resolved. db may be inconsistent.");
     }	    
 

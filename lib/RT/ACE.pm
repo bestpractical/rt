@@ -148,7 +148,6 @@ sub LoadByValues {
 
 # }}}
 
-
 # {{{ sub Create
 
 =head2 Create <PARAMS>
@@ -175,11 +174,11 @@ sub Create {
     
     # {{{ Validate the principal
     my ($princ_obj);
-    if ($args{'PrincipalType'} eq 'Group') {
+    if ($args{'PrincipalType'} eq 'User') {
 	$princ_obj = new RT::User($RT::SystemUser);
 	
     }	
-    elsif ($args{'PrincipalType'} eq 'User') {
+    elsif ($args{'PrincipalType'} eq 'Group') {
 	require RT::Group;
 	$princ_obj = new RT::Group($RT::SystemUser);
     }
@@ -195,7 +194,7 @@ sub Create {
     }
 
     # }}}
- 
+    
     #TODO allow loading of queues by name.    
     
     # {{{ Check the ACL
