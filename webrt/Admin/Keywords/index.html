@@ -15,10 +15,14 @@
 % if ($Edit == $key->id) {
       <input name="KeyName-<%$key->id%>" value="<%$key->Name%>">
 	  <input type=submit value="Update">
-	    <input type=submit name="Delete-<%$key->id%>" value="Delete">
+	    <input type=submit name="Disable-<%$key->id%>" value="Disable">
 % } else {
 	      <A HREF="?RootId=<%$key->id%>"><%$key->Name%></A>
+% if ($key->Disabled) {
+	<input type=submit name="Enable-<%$key->id%>" value="Enable">
+% } else {
       [<a href="?Edit=<%$key->id%>&RootId=<%$Root->Id%>">edit</a>]
+% }
 % }
 
 
@@ -27,6 +31,10 @@
 	  <LI>
 	    <input name="KeyName-New"> <input type=submit value="Add">
 </UL>
+<BR>
+	  <input type="checkbox" name="ShowDisabled"> Include disabled items in listing.
+	<input type=submit value="Go!">
+
 </FORM>
 
 <& /Elements/TitleBoxEnd &>
@@ -41,7 +49,7 @@ if ($ARGS{'KeyName-New'}) {
 
 my $arg;
 foreach $arg (keys %ARGS) {
-    if ($arg =~ /^Delete-(\d*)$/) {
+    if ($arg =~ /^Disable-(\d*)$/) {
 	my $id = $1;
 	my $keyword = new RT::Keyword($session{'CurrentUser'});
 	$keyword->Load($id);
@@ -50,6 +58,13 @@ foreach $arg (keys %ARGS) {
 
 
     }	
+    elsif ($arg =~ /^Enable-(\d*)$/) {
+	my $id = $1;
+	my $keyword = new RT::Keyword($session{'CurrentUser'});
+	$keyword->Load($id);
+	my ($val, $msg) = $keyword->SetDisabled(0);
+	push (@Actions, $msg);
+    }
     elsif ($arg =~ /^KeyName-(\d*)$/) {
 	my $id = $1;
 	my $keyword = new RT::Keyword ($session{'CurrentUser'});
@@ -80,6 +95,9 @@ else {
     $Keywords->LimitToParent(0);
 }
 
+if ($ShowDisabled) {
+    $Keywords->{'find_disabled_rows'} = 1;
+}
 
 
 
@@ -88,4 +106,5 @@ else {
 <%ARGS>
 $RootId => 0
 $Edit => undef
+$ShowDisabled => 0
 </%ARGS>
