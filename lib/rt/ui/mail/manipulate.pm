@@ -438,7 +438,7 @@ sub parse_actions {
         will kill request <num>.
         
         %RT MERGE <num1> [INTO] <num2>
-        will merge request <num2> into request <num2>.
+        will merge request <num1> into request <num2>.
         
         %RT SET owner <num> <user>
         will set request <num>'s owner to <user>.
