@@ -1,40 +1,559 @@
-<html>
-<head>
-<title>
-FAQ
-</title>
-</head>
-<body bgcolor="#ffffff">
-<img WIDTH="169" HEIGHT="121" src="rt.gif" alt="">
-<h3>FAQ </h3>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html lang="en" dir="LTR">
+  <head>
+    <title>RT FAQ</title>
+    <meta NAME="Author" CONTENT="Michael Brader">
+    <meta NAME="Description" CONTENT="RT FAQ (text version)">
+    <meta NAME="Keywords" CONTENT="RT Request Tracker FAQ Frequently Asked Questions">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <style type="text/css">
+      BODY
+      {
+      background: white;
+      color: black;
+      margin-left: 10%;
+      margin-right: 10%;
+      }
+    </style>
+  </head>
 
-<dl>
+  <body>
+    <pre>
+$Id$ -*- text -*-
+Archive-name: rt-faq
+Last-modified: Wednesday October  6 16:31:20 EST 1999
+    </pre>
 
-<dt><strong>what should RT_MAIL_TAG be, and why?</strong>
-<p>
+    <h1>RT Frequently Asked Questions</h1>
+    
+    <hr>
 
-<dd>   RT_MAIL_TAG should be a unique site/install identifier.
-   Every piece of mail which that RT sends out, regardless of Queue or Area,
-   will have that token put onto the subject line, i.e.
-     "Subject: [circus #8799] Too Many Monkeys!" 
-     (in this case, the RT_MAIL_TAG is "circus."
+    <h3>Introduction</h3>
 
-<dt><strong>Sends OUT? What about receives?  the makefile implies that it's needed on</strong>
-<p>
-incoming mail, as well.
+    <p>This is the RT Frequently Asked Questions list.
+    
+    <p>RT is an automated system for monitoring, answering, and
+    documenting requests. It was designed as a system to aid
+    helpdesks, but could conceivably work just as well for development
+    teams, construction groups, political insurgencies, or circus
+    performers -- in short, any situation in which a particular group
+    of people needs to request information or action from another
+    group of people, while monitoring the status of these requests.
 
-<dd>   every piece of mail that it's supposed to parse correctly and add to
-   an existing ticket will need that token as well.
+    <p>RT was developed by Jesse Vincent &lt;jesse@fsck.com&gt; and he
+    remains the primary maintainer aided and abetted by the members of
+    the rt-devel mailing list. Development of RT has been sponsored in
+    part by Utopia Inc, by The Leftbank Operation and by Wesleyan
+    University. Some of the RT code has been derived from Remy Evard's
+    req package.
 
-<dt><strong>Where? Anyplace, in the body of the request, or some other special place?</strong>
-<p>
+    <p>If you have a Web browser, the official hypertext version is
+    at: <a href="http://www.fsck.com/projects/rt/docs/FAQ.html">
+    &lt;URL:http://www.fsck.com/projects/rt/docs/FAQ.html&gt; </a>
+    
+    <p>This FAQ is maintained by Michael Brader. All errors are mine
+    unless otherwise attributed :-) Special thanks to Jesse, Tobias,
+    Charlie and the rt-devel mailing list for their contributions.
 
-<dd>   On the subject line.         
+    <p><strong>What's changed since last time?</strong>
 
-<dt><strong>If they are going to have 2 seperate queues, one for internal IT and one for servers accessed from outside sources, will everyone use the same MAIL_TAG?</strong>
+    <ul>
+      <li>1. Minor updates for RT 1.0</li>
+    </ul>
+    
+    <p>This file was last modified on Wednesday October  6 16:31:20 EST 1999
+    
+    <hr>
 
-<dd>   yes.  the same tag and the same ordinal system across both queues.  (i.e.
-   req's 4, 5, and 6 are in queue Foo.  The next person to open a req in queue
-   Bar will get given number 7.)
+    <h3>Table Of Contents</h3>
 
-   </dl>
+    <ul>
+      <li>1. Introduction and basic RT concepts
+
+        <p>
+        <ul>
+          <li>Q1.1 What is the latest version of RT?</li>
+          <li>Q1.2 Where do I get RT?</li>
+        </ul>
+      </li>
+      
+      <li><p>2. Installation
+
+        <p>
+        <ul>
+          <li>Q2.1 What other packages/modules are required?</li>
+          <li>Q2.2 Upgrading from RT version 0.9.1 or lower.</li>
+          <li>Q2.3 How do I get a clean RT installation?</li>
+        </ul>
+
+      <li><p>3. Request manipulation
+
+        <p>
+        <ul>
+          <li>Q3.1 How do I access the database directly?</li>
+        </ul>
+      </li>
+
+      <li><p>4. Web interface
+
+        <p>
+        <ul>
+          <li>Q4.1 When I use webrt, it comes up with "No valid RT</li>
+          <li>Q4.2 How do I merge two requests from the web interface?</li>
+        </ul>
+      </li>
+
+      <li><p>5. Mail
+
+        <p>
+        <ul>
+          <li>Q5.1 Sendmail won't let me run rt-mailgate</li>
+          <li>Q5.2 Why are mail messages being split in two?</li>
+          <li>Q5.3 Does RT have MIME support?</li>
+        </ul>
+      </li>
+      
+      <li><p>9. Miscellaneous
+
+        <p>
+        <ul>
+          <li>Q9.1 Are there any newsgroups for discussing RT. Mailing lists?</li>
+          <li>Q9.2 My problem is not in the FAQ. What now?</li>
+          <li>Q9.3 Why did Jesse write RT?</li>
+          <li>Q9.4 Who has helped or sponsored the development of RT?</li>
+          <li>Q9.5 What other resources are available?</li>
+        </ul>
+      </li>
+    </ul>
+
+    <hr>
+
+    <h2>1. Introduction</h2>
+    
+    <hr>
+
+    <h3>Q1.1 What is the latest version of RT?</h3>
+
+    <p>The latest stable version is 0.99.9 which was released on the
+    4th of August 1999.
+
+    <p>The latest alpha version of RT is 1.0.0pre2 which was released
+    on the 1st of October 1999
+
+    <p>This is a beta release leading up to the release of RT 1.0
+    which should come out any day now.
+
+    <hr>
+
+    <h3>Q1.2 Where do I get RT?</h3>
+
+    <p>The latest released version of RT can be found at <a
+    href="ftp://ftp.fsck.com/pub/rt/devel/rt.tar.gz">
+    ftp://ftp.fsck.com/pub/rt/devel/rt.tar.gz</a>
+
+    <p>You will occasionally find alpha releases in the same
+    directory. You should not use these unless you are on the rt-devel
+    mailing list (rt-devel@fsck.com)
+
+    <hr>
+
+    <h2>2. Installation</h2>
+    
+    <hr>
+
+    <h3>Q2.1 What other packages/modules are required?</h3>
+
+    <p>You will need the following packages to install and run RT
+    successfully. The download URL for some of these resources can
+    change frequently. If it doesn't work, go to the general URL and
+    navigate to the version you require.
+
+    <ul>
+      <li>Perl version 5.003 or higher<br>
+    General URL : <a href="http://www.perl.com/CPAN/">http://www.perl.com/CPAN/</a><br>
+    Download URL: <a href="http://www.perl.com/CPAN/src/stable.tar.gz">http://www.perl.com/CPAN/src/stable.tar.gz</a><br>
+    Mirrors     : (should be automatic, but you can try
+    <a href="http://www.perl.com/CPAN/SITES.html">http://www.perl.com/CPAN/SITES.html</a>)
+      </li>
+
+      <li>MySQL 3.20.x, 3.21.x or 3.22.x<br>
+        General URL : <a href="http://www.mysql.com">http://www.mysql.com</a><br>
+        Download URL: <a href="http://www.mysql.com/download.html">http://www.mysql.com/download.html</a><br>
+        Mirrors     : <a href="http://www.mysql.com/mirrors.html">http://www.mysql.com/mirrors.html</a>
+      </li>
+    
+      <li>GNU Make ( http://www.gnu.org )<br>
+    
+        General URL : <a href="http://www.gnu.org/software/make/make.html">http://www.gnu.org/software/make/make.html</a><br>
+        Download URL: <a href="ftp://ftp.gnu.org/pub/gnu/make/">ftp://ftp.gnu.org/pub/gnu/make/</a><br>
+        Mirrors     : <a href="http://www.gnu.org/order/ftp.html">http://www.gnu.org/order/ftp.html</a>
+
+        <p>I know for sure that GNU Make supports the conditionals
+        syntax RT's Makefile uses. I can't be sure about anything
+        else.  If you don't have GNU Make, but feel reasonably
+        comfortable with Makefiles, you probably can get by without
+        it.
+
+    </ul>
+
+    <p>You will need the following Perl packages, all available from
+    CPAN:
+
+    <ul>
+      <li>Msql-Mysql-modules
+
+        <p>Download URL: <a href="http://www.perl.com/CPAN/modules/by-module/Msql/">http://www.perl.com/CPAN/modules/by-module/Msql/</a>
+
+        <p>When installing Msql-Mysql-modules, it is imperative that
+        you say yes when asked "Do you want to install the MysqlPerl
+        emulation?"  Please note that Msql-Mysql-modules requires DBD
+        to be installed to function.  See the Msql-Mysql-modules
+        documentation for more information.
+      </li>
+
+      <li>CGI.pm
+
+        <p>Download URL: <a href="http://www.perl.com/CPAN/modules/by-module/CGI/">http://www.perl.com/CPAN/modules/by-module/CGI/</a>
+    
+        <p>CGI.pm and CGI::Cookie are used for our basic Form and
+        Cookie processing. We recommend that you use at least 2.53 as
+        we know that version works.
+      </li>
+
+      <li>Digest::MD5
+
+        <p>Download URL: <a href="http://www.perl.com/CPAN/modules/by-module/MD5/">http://www.perl.com/CPAN/modules/by-module/MD5/</a>
+    
+        <p>Digest::MD5 is a perl module used for generating MD5 hashes
+        of files or strings, in this case, the password hashes used by
+        the Web interface. It is required for web authentication to
+        work.
+          </li>
+    </ul>
+
+    <hr>
+
+    <h3>Q2.2 Upgrading from RT version 0.9.1 or lower.</h3>
+
+    <p>This is the contents of the file README.91UPGRADE which should be part of the release:
+
+      <pre>
+Since RT 0.9.1, the codebase and database format have undergone
+incompatible changes.  This version of the installation package
+does NOT come with an easy upgrade path from 0.9.1 or before.
+However, the instructions below should make the upgrade possible.
+
+This version of RT should be significantly more stable than
+0.9.1, but new buglets may have crept into my code when I wasn't
+looking.  As always, I look forward to any comments you may have.
+
+Jesse
+jrvincent@wesleyan.edu
+
+To upgrade from .9.1 to a post-.9.4 version :
+
+"mysqldump -c -t rt &gt; (YOUR_RT_DUMP_FILE)"  
+edit (YOUR_RT_DUMP_FILE) to remove the ACL line for "root"
+(Something like 
+grep -v "INSERT INTO users VALUES ('root'" \
+(YOUR_RT_DUMP_FILE) &gt; (YOUR_RT_DUMP_FILE2)
+should do the trick
+
+copy your current RT installation to a safe location
+"mysqladmin drop rt"    
+install a fresh copy of RT .9.8, as if for the first time
+mysql rt &lt; (YOUR_RT_DUMP_FILE2)
+copy your transaction tree back into place
+copy rt/etc/templates/queues back into place
+    </pre>
+    
+    <hr>
+
+    <h3>Q2.3 How do I get a clean RT installation?</h3>
+
+    <p>While you are installing and testing RT, you may end up with a
+    lot of test transactions cluttering up the database. If you would
+    like to clear them out, the following should do the trick (from
+    Bryan Allbery allbery@ece.cmu.edu):
+
+    <p>Run mysql, connect to the MySQL database, and delete everything
+    in the each_req and transaction tables.
+
+    <p>Then remove everything under the transactions directory
+    wherever you installed RT (/usr/local/rt/transactions in my case).
+
+    <hr>
+
+    <h2>3. Request Manipulation</h2>
+    
+    <hr>
+
+    <h3>Q3.1 How do I access the database directly?</h3>
+
+    <p>Mysql has a command line interface. Log onto the database host
+    and enter the following command, substituting symbols in ALL CAPS
+    for those specified in the Makefile (or in etc/config.pm) where
+    appropriate:
+
+    <pre>
+mysql -u &lt;MYSQL_DBADMIN&gt; -p -h &lt;RT_MYSQL_HOST&gt; rt
+    </pre>
+
+    <p>Enter the password at the prompt. The password is the one
+    specified as RT_MYSQL_PASS in the Makefile.
+
+    <p>You should see a prompt similar to this:
+
+      <pre>
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4985 to server version: 3.22.23b
+
+Type 'help' for help.
+
+mysql&gt;
+    </pre>
+
+    <p>You can then access the database using SQL commands. Enter
+    "help" to get a summary of the available commands. For example, to
+    see all RT users, enter "select * from users;" and you should see
+    something like the following (the output has been edited, removing
+    columns to fit inside 80 characters - missing fields are password,
+    email, phone, office and comments):
+
+    <pre>
++----------+-----------------------+-----+----------+
+| user_id  | real_name             | ... | admin_rt |
++----------+-----------------------+-----+----------+
+| testuser | RT test user          | ... |        0 |
+| charlieb | Charlie Brady         | ... |        1 |
+| chris    | Chris Maltby          | ... |        0 |
+| mbrader  | Michael Brader        | ... |        1 |
++----------+-----------------------+-----+----------+
+4 rows in set (0.01 sec)
+    </pre>
+
+    <hr>
+
+    <h2>4. Web Interface</h2>
+    
+    <hr>
+
+    <h3>Q4.1 When I use webrt, it comes up with "You are not logged in"
+      or "No valid RT credentials found". What's going on?</h3>
+
+    <p>Until you are successfully authenticated, this message and a
+    login box are displayed. Enter your RT username and password and
+    click OK.
+
+    <p>If you still can't log in, you (or your administrator) will
+    have to check whether you are in the database of users and that
+    your password is correct.
+
+    <p>The most common problems with authentication are:
+
+    <ol>
+      <li>User have turned off cookies.</li>
+
+      <li>MSIE bug</li>
+
+      <li>You're not using the right domain name (i.e.
+      &lt;URL:http://skylight.fsck.com/rt/webrt.cgi&gt; gives same
+      behaviour while &lt;URL:http://www.fsck.com/rt/webrt.cgi&gt;
+      doesn't)</li>
+
+      <li>The cookie is based at several things, also the IP people
+      are sitting at - sites using IP masquerading and similar stuff
+      might get the broken authentication.</li>
+
+    </ol>
+
+    <hr>
+
+    <h3>Q4.2 How do I merge two requests from the web interface?</h3>
+
+    <p>Select the request you would like to merge into another
+    request. Click on "Serial number", enter the serial number of the
+    second request and click on the merge button.
+
+    <hr>
+
+    <h2>5. Mail</h2>
+    
+    <hr>
+
+    <h3>Q5.1 Sendmail won't let me run rt-mailgate</h3>
+
+    <p>If you get an error like the following:
+
+    <pre>
+----- The following addresses had permanent fatal errors -----
+|"/usr/local/rt/bin/rt-mailgate general action"
+(expanded from: &lt;rt-action@mustang.hiwaay.net&gt;)
+
+----- Transcript of session follows -----
+sh: rt-mailgate not available for sendmail programs
+554 |"/usr/local/rt/bin/rt-mailgate general action"... Service unavailable
+    </pre>
+
+    <p>then, the following information from Jesse should help:
+
+    <pre>
+Sendmail has a program called smrsh. smrsh restricts what binaries can
+be run from sendmail aliases.  I think it keeps the programs in
+/etc/smrsh on redhat6.  add a symlink from
+/usr/local/rt/bin/rt-mailgate to /etc/smrsh/rt-mailgate and things
+should work better.
+    </pre>
+
+    <hr>
+
+    <h3>Q5.2 Why are mail messages being split in two?</h3>
+
+    <p>Older versions of RT (before 0.99.9) has a bug where lines
+    beginning with 'From' were not being correctly escaped. You should
+    upgrade to the latest version of RT.
+
+    <hr>
+
+    <h2>9. Miscellaneous</h2>
+    
+    <hr>
+
+    <h3>Q9.1 Are there any newsgroups for discussing RT. Mailing lists?</h3>
+
+    <p>Currently, there are no newsgroups but there are several
+    mailing lists:
+
+    <ul>
+      <li>rt-users - for users or administrators of RT
+
+        <p>To subscribe, send mail to rt-users-request@fsck.com with a
+          body containing the word
+
+        <pre>
+subscribe
+        </pre>
+
+        <p>To unsubscribe, send mail to rt-users-request@fsck.com with
+        a body containing the word
+
+        <pre>
+unsubscribe
+        </pre>
+      </li>
+
+      <li>rt-devel - for those who wish to develop RT or understand
+      its internal implementation.
+
+        <p>To subscribe/unsubscribe, follow the instructions for
+        rt-users but using the address rt-devel-request@fsck.com
+
+      </li>
+    </ul>
+      
+    <hr>
+
+    <h3>Q9.2 My problem is not in the FAQ. What now?</h3>
+
+    <p>If you're still having problems, I suggest the following steps:
+
+    <ul>
+
+      <li>Ensure you are running the latest copy of RT</li>
+
+      <li>Make sure that the Perl libraries you are using are the
+      versions specified in the INSTALL file</li>
+
+    <li>send mail to rt-users@lists.fsck.com detailing your
+    problem. You should include:
+
+        <p>
+        <ul>
+          <li>the version of RT you are running (the output of the
+          `rt` command is sufficient)</li>
+
+          <li>a description of the system you are running RT on (the
+          output of `uname -a`)</li>
+
+          <li>the version of Perl you are using (the output of `perl
+          -V`)</li>
+
+          <li>the name and version of your web server software and the
+          name and version of any browsers which are being used (if
+          the problem relates to the web interface)</li>
+
+          <li>any local or contributed patches that have been
+          installed should be mentioned.</li>
+
+          <li>the nature of the problem, including detailed steps on
+          how to reproduce it.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <hr>
+
+    <h3>Q9.3 Why did Jesse write RT?</h3>
+
+    <p>Jesse began RT at the urgings of a coworker while working for
+    the summer for Utopia, Inc, and continued work while attending
+    Wesleyan University and working for Cohesive Network Systems' New
+    England Division (at the time, the LeftBank Operation). All three
+    groups have benefitted from it, and hoped to share these benefits
+    with the user community at large by keeping Jesse fed and amused
+    while working.
+    
+    <hr>
+
+    <h3>Q9.4 Who has helped or sponsored the development of RT?</h3>
+
+    <p>From Jesse:
+
+    <pre>
+A lot of people are responsible for making RT a better
+program.  Many thanks to Lauren Burka, who originally tasked
+me with writing this beast.  She forced me to use a database
+backend.  I've thanked her for it every day since.  Rich
+West rewrote this readme and did some UI hacking.  Adam
+Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams,
+Trey Belew, Sean Dague, Nathan Mehl, Kee Hinckley, Rich
+West, Dale Bewley, Serge Zhuk, Gerald Abshez, Dave Hull,
+Dave Schenet Dave Walton, Jan Okrouhly, Tobias Brox Lamont
+Lucase and Charlie Brady have all contributed bug reports,
+code or ideas that have helped RT along.
+
+Arepa, Inc., Utopia Inc, Wesleyan University and The
+Leftbank Operation have paid me to update RT and release it
+to the public.  Without their support RT would not exist.
+If I've left you out, please drop me a line ....it wasn't
+intentional.
+
+Enjoy
+
+Jesse Vincent
+jesse@fsck.com
+    </pre>
+    <hr>
+
+    <h3>Q9.5 What other resources are available?</h3>
+
+    <p>Jesse maintains a web site for RT at <a
+    href="http://www.fsck.com/projects/rt/">
+    http://www.fsck.com/projects/rt/</a>
+
+    <hr>
+
+    <p>RT is © 1996-1999 by Jesse Vincent &lt;jesse@fsck.com&gt;
+
+    <p>This FAQ is Copyright © 1999 Michael Brader
+    &lt;mbrader@stoic.com.au&gt;. Please send comments, and
+    suggestions to me and the development mailing list
+    &lt;rt-devel@fsck.com&gt;
+
+    <p>__END__
+  </pre>
+  </body>
+</html>
