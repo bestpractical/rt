@@ -91,8 +91,8 @@ my $ah = &RT::Interface::Web::NewApacheHandler($interp);
 # Activate the following if running httpd as root (the normal case).
 # Resets ownership of all files created by Mason at startup.
 #
-chown (Apache->server->uid, Apache->server->gid, 
-		$interp->files_written, $RT::MasonSessionDir);
+#chown (Apache->server->uid, Apache->server->gid, 
+#		$interp->files_written, $RT::MasonSessionDir);
 
 
 # Die if WebSessionDir doesn't exist or we can't write to it

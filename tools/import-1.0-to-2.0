@@ -447,7 +447,7 @@ sub MigrateTickets {
 		$areaobj->Create(Name => $row->{'area'},
 				 Description => 'Autocreated by RT 1.0 import',
 				 Parent => $queue_area_obj->id);
-		$areaobj->Disable();
+		$areaobj->SetDisabled('1');
 	    }
 
 	    # create the new objectkeyword. bypass the Ticketobj so we don't
@@ -486,6 +486,7 @@ sub MigrateTransactions {
     my $Subject = '';
     my $Owner = $RT::Nobody->Id;
     my $Priority = $ticket->InitialPriority();
+    my $FinalPriority = $ticket->Priority();
 
     while (my $row = $sth->fetchrow_hashref()) {  
 	my (%trans_args, $MIMEObj, $trans_file);
@@ -588,6 +589,14 @@ sub MigrateTransactions {
 	    $trans_args{'OldValue'} = $Priority;
 	    $trans_args{'NewValue'} = $row->{'trans_data'};
 	    $Priority = $row->{'trans_data'};
+	    
+	} 
+	elsif ( $row->{type} eq 'final_priority' ) {
+	    $trans_args{'Type'} = "Set";
+	    $trans_args{'Field'} ="FinalPriority";
+	    $trans_args{'OldValue'} = $FinalPriority;
+	    $trans_args{'NewValue'} = $row->{'trans_data'};
+	    $FinalPriority = $row->{'trans_data'};
 	    
 	} 
 	elsif ( $row->{type} eq 'date_told' ) {
