@@ -22,13 +22,13 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("Find new/open tickets"), bodyclass => "" &>
+<& /Elements/TitleBoxStart, title => loc("Quick search"), bodyclass => "" &>
 
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
 <tr>                                                                          
        <th align=left><&|/l&>Queue</&></th>                                         
-       <th align=left><font size=-1><&|/l&>New</&></font></th>
-       <th align=left><font size=-1><&|/l&>Open</&></font></th>          
+       <th align=right><font size=-1><&|/l&>New</&></font></th>
+       <th align=right><font size=-1><&|/l&>Open</&></font></th>          
 </tr>
 
 <%PERL>
