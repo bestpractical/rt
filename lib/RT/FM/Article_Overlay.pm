@@ -1082,13 +1082,14 @@ sub DeleteCustomFieldValue {
     $cf->Load( $args{'Field'} );
 
     #Load up the ObjectKeyword we\'re talking about
-    my $CFObjectValue = new RT::FM::ArticleCFValue( $self->CurrentUser );
-    $CFObjectValue->LoadByCols( Content     => $args{'Content'},
-                                CustomField => $cf->Id,
-                                Article     => $self->id() );
+
+    my $values = RT::FM::ArticleCFValueCollection($self->CurrentUser);
+    $values->LimitToArticle($self->id);
+    $values->LimitToCustomField($self->id);
+    my $CFObjectValue = $values->HasEntryWithContent($args{'Content'}); 
 
     #if we can\'t find it, bail
-    unless ( $CFObjectValue->id ) {
+    unless ($CFObjectValue ) {
         return (
             undef,
             $self->loc(

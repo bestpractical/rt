@@ -1,5 +1,5 @@
 PRODUCT			        = RTFM
-TAG			            = 2.0.3rc8
+TAG			            = 2.0.3rc9
 CANONICAL_REPO		    = svn+ssh://svn.bestpractical.com/svn/bps-public/rtfm/
 TAGS		            = tags/
 TRUNK	                = trunk/
