@@ -26,8 +26,8 @@ Current members
 (Check box to delete group member)
 <UL>
 % while (my $member = $Group->MembersObj->Next()) {
-<INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->id%>">
-<LI><%$member->UserObj->UserId%> (<%$member->UserObj->RealName%>)
+<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->id%>">
+<%$member->UserObj->UserId%> (<%$member->UserObj->RealName%>)
 % }
 </UL>
 </TD>
