@@ -1,0 +1,14 @@
+<SELECT NAME="<%$Name%>">
+% foreach my $field (@sortfields) {
+<OPTION VALUE="<%$field%>" <%$field eq $Default && 'SELECTED'%>><%$field%></OPTION>
+% }
+</SELECT>
+
+<%INIT>
+my @sortfields = qw(id Status Owner Due Starts Started
+		    Resolved Priority TimeWorked TimeLeft);
+</%INIT>
+<%ARGS>
+$Name => 'SortTicketsBy'
+$Default => 'id'
+</%ARGS>

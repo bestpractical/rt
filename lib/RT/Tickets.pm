@@ -58,24 +58,7 @@ use RT::Ticket;
 
 # }}}
 
-# {{{ sub _Init 
-sub _Init  {
-    my $self = shift;
-    $self->{'table'} = "Tickets";
-    $self->{'RecalcTicketLimits'} = 1;
-    $self->{'restriction_index'} =1;
-    $self->{'primary_key'} = "id";
-    $self->SUPER::_Init(@_);
-    
-}
-# }}}
-
-# {{{ sub _NextIndex
-sub _NextIndex {
-    my $self = shift;
-    return ($self->{'restriction_index'}++);
-}
-# }}}
+# {{{ Limit the result set based on content
 
 # {{{ sub Limit 
 
@@ -105,7 +88,10 @@ sub Limit {
     $self->{'RecalcTicketLimits'} = 1;
     return ($index);
 }
+
 # }}}
+
+# {{{ Limit by enum or foreign key
 
 # {{{ sub LimitQueue
 
@@ -113,16 +99,20 @@ sub Limit {
 
 LimitQueue takes a paramhash with the fields OPERATOR and QUEUE.
 OPERATOR is one of = or !=.
-VALUE is a queue id. eventually, it should also take queue names and 
-queue objects
+VALUE is a queue id. 
 
 =cut
 
 sub LimitQueue {
     my $self = shift;
     my %args = (@_);
+
+    #TODO  VALUE should also take queue names and queue objects
     my $queue = new RT::Queue($self->CurrentUser);
     $queue->Load($args{'VALUE'});
+    
+    #TODO check for a valid queue here
+
     $self->Limit (FIELD => 'Queue',
 		  VALUE => $queue->id(),
 		  OPERATOR => $args{'OPERATOR'},
@@ -132,32 +122,6 @@ sub LimitQueue {
 }
 # }}}
 
-# {{{ sub LimitOwner
-
-=head2 LimitOwner
-
-Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of = or !=.
-VALUE is a user id.
-
-=cut
-
-sub LimitOwner {
-    my $self = shift;
-    my %args = ( OPERATOR => '=',
-                 @_);
-    
-    my $owner = new RT::User($self->CurrentUser);
-    $owner->Load($args{'VALUE'});
-    $self->Limit (FIELD => 'Owner',
-		  VALUE => $owner->Id,
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Owner ' .  $args{'OPERATOR'}. " ". $owner->Name()
-		 );
-    
-}
-
-# }}}
 # {{{ sub LimitStatus
 
 =head2 LimitStatus
@@ -180,6 +144,33 @@ sub LimitStatus {
 }
 
 # }}}
+
+# {{{ sub LimitType
+
+=head2 LimitType
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of = or !=.
+VALUE is a string to search for in the type of the ticket.
+
+=cut
+
+sub LimitType {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Type',
+                  VALUE => $args{'VALUE'},
+                  OPERATOR => $args{'OPERATOR'},
+                  DESCRIPTION => 'Type ' .  $args{'OPERATOR'}. " ". $args{'Limit'},
+                 );
+}
+
+# }}}
+
+# }}}
+
+# {{{ Limit by string field
+
 # {{{ sub LimitSubject
 
 =head2 LimitSubject
@@ -201,27 +192,11 @@ sub LimitSubject {
 }
 
 # }}}
-# {{{ sub LimitType
-
-=head2 LimitType
-
-Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of = or !=.
-VALUE is a string to search for in the type of the ticket.
-
-=cut
-
-sub LimitType {
-    my $self = shift;
-    my %args = (@_);
-    $self->Limit (FIELD => 'Type',
-                  VALUE => $args{'VALUE'},
-                  OPERATOR => $args{'OPERATOR'},
-                  DESCRIPTION => 'Type ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
-                 );
-}
 
 # }}}
+
+# {{{ Limit based on ticket numerical attributes
+# Things that can be > < = !=
 
 # {{{ sub LimitId
 
@@ -237,6 +212,7 @@ sub LimitId {
     my $self = shift;
     my %args = (OPERATOR => '=',
                 @_);
+    
     $self->Limit (FIELD => 'id',
                   VALUE => $args{'VALUE'},
                   OPERATOR => $args{'OPERATOR'},
@@ -245,6 +221,121 @@ sub LimitId {
 }
 
 # }}}
+
+# {{{ sub LimitPriority
+
+=head2 LimitPriority
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket\'s priority against
+
+=cut
+
+sub LimitPriority {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Priority',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitInitialPriority
+
+=head2 LimitInitialPriority
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket\'s initial priority against
+
+
+=cut
+
+sub LimitInitialPriority {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'InitialPriority',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Initial Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitFinalPriority
+
+=head2 LimitFinalPriority
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket\'s final priority against
+
+=cut
+
+sub LimitFinalPriority {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'FinalPriority',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Final Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitTimeWorked
+
+=head2 LimitTimeWorked
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket's TimeWorked attribute
+
+=cut
+
+sub LimitTimeWorked {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'TimeWorked',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Time worked ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitTimeLeft
+
+=head2 LimitTimeLeft
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a value to match the ticket's TimeLeft attribute
+
+=cut
+
+sub LimitTimeLeft {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'TimeLeft',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => 'Time left ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		 );
+}
+
+# }}}
+
+# }}}
+
+# {{{ Limiting based on attachment attributes
 
 # {{{ sub LimitContent
 
@@ -286,70 +377,39 @@ sub LimitContentType {
 		 );
 }
 # }}}
-# {{{ sub LimitPriority
 
-=head2 LimitPriority
+# }}}
+
+# {{{ Limiting based on people
+
+# {{{ sub LimitOwner
+
+=head2 LimitOwner
 
 Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket\'s priority against
+OPERATOR is one of = or !=.
+VALUE is a user id.
 
 =cut
 
-sub LimitPriority {
+sub LimitOwner {
     my $self = shift;
-    my %args = (@_);
-    $self->Limit (FIELD => 'Priority',
-		  VALUE => $args{'VALUE'},
+    my %args = ( OPERATOR => '=',
+                 @_);
+    
+    my $owner = new RT::User($self->CurrentUser);
+    $owner->Load($args{'VALUE'});
+    $self->Limit (FIELD => 'Owner',
+		  VALUE => $owner->Id,
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => 'Owner ' .  $args{'OPERATOR'}. " ". $owner->Name()
 		 );
+    
 }
 
 # }}}
-# {{{ sub LimitInitialPriority
 
-=head2 LimitInitialPriority
-
-Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket\'s initial priority against
-
-
-=cut
-
-sub LimitInitialPriority {
-    my $self = shift;
-    my %args = (@_);
-    $self->Limit (FIELD => 'InitialPriority',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Initial Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
-		 );
-}
-
-# }}}
-# {{{ sub LimitFinalPriority
-
-=head2 LimitFinalPriority
-
-Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket\'s final priority against
-
-=cut
-
-sub LimitFinalPriority {
-    my $self = shift;
-    my %args = (@_);
-    $self->Limit (FIELD => 'FinalPriority',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Final Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
-		 );
-}
-
-# }}}
+# {{{ Limiting watchers
 
 # {{{ sub LimitWatcher
 
@@ -438,6 +498,12 @@ sub LimitAdminCc {
 
 # }}}
 
+# }}}
+
+# }}}
+
+# {{{ Limiting based on links
+
 # {{{ LimitLinkedTo
 
 =head2 LimitLinkedTo
@@ -466,6 +532,7 @@ sub LimitLinkedTo {
 
 
 # }}}
+
 # {{{ LimitLinkedFrom
 
 =head2 LimitLinkedFrom
@@ -505,6 +572,7 @@ sub LimitMemberOf {
     
 }
 # }}}
+
 # {{{ LimitHasMember
 sub LimitHasMember {
     my $self = shift;
@@ -515,6 +583,7 @@ sub LimitHasMember {
     
 }
 # }}}
+
 # {{{ LimitDependsOn
 sub LimitDependsOn {
     my $self = shift;
@@ -525,6 +594,7 @@ sub LimitDependsOn {
     
 }
 # }}}
+
 # {{{ LimitDependedOnBy
 sub LimitDependedOnBy {
     my $self = shift;
@@ -536,10 +606,16 @@ sub LimitDependedOnBy {
 }
 # }}}
 
+# }}}
+
+# {{{ limit based on ticket date attribtes
 
 =head1 TODO
+
 # {{{ LimitDate 
-sub LimitDate
+sub LimitDate {
+}
+# }}}
 <OPTION VALUE="Created">Created</OPTION>
 <OPTION VALUE="Started">Started</OPTION>
 <OPTION VALUE="Resolved">Resolved</OPTION>
@@ -547,55 +623,8 @@ sub LimitDate
 <OPTION VALUE="LastUpdated">Last Updated</OPTION>
 <OPTION VALUE="StartsBy">Starts By</OPTION>
 <OPTION VALUE="Due">Due</OPTION>
-# }}}
-
-sub LimitDependsOn
-sub LimitDependedOnBy
-}
 
 =cut
-
-
-# {{{ sub LimitTimeWorked
-
-=head2 LimitTimeWorked
-
-Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket's TimeWorked attribute
-
-=cut
-
-sub LimitTimeWorked {
-    my $self = shift;
-    my %args = (@_);
-    $self->Limit (FIELD => 'TimeWorked',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Time worked ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
-		 );
-}
-
-# }}}
-# {{{ sub LimitTimeLeft
-
-=head2 LimitTimeLeft
-
-Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket's TimeLeft attribute
-
-=cut
-
-sub LimitTimeLeft {
-    my $self = shift;
-    my %args = (@_);
-    $self->Limit (FIELD => 'TimeLeft',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Time left ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
-		 );
-}
 
 # }}}
 
@@ -641,6 +670,37 @@ sub LimitKeyword {
     $self->{'RecalcTicketLimits'} = 1;
     return ($index);
 }
+
+# }}}
+
+# {{{ sub _NextIndex
+
+=head2 _NextIndex
+
+Keep track of the counter for the array of restrictions
+
+=cut
+
+sub _NextIndex {
+    my $self = shift;
+    return ($self->{'restriction_index'}++);
+}
+# }}}
+
+# }}} 
+
+# {{{ Core bits to make this a DBIx::SearchBuilder object
+
+# {{{ sub _Init 
+sub _Init  {
+    my $self = shift;
+    $self->{'table'} = "Tickets";
+    $self->{'RecalcTicketLimits'} = 1;
+    $self->{'restriction_index'} =1;
+    $self->{'primary_key'} = "id";
+    $self->SUPER::_Init(@_);
+    
+}
 # }}}
 
 # {{{ sub NewItem 
@@ -676,6 +736,10 @@ sub Next {
 
 }
 # }}}
+
+# }}}
+
+# {{{ Deal with storing and restoring restrictions
 
 # {{{ sub LoadRestrictions
 
@@ -746,6 +810,7 @@ sub ClearRestrictions {
     delete $self->{'TicketRestrictions'};
     $self->{'RecalcTicketLimits'} =1;
 }
+
 # }}}
 
 # {{{ sub DeleteRestriction
@@ -897,8 +962,6 @@ sub _ProcessRestrictions {
 
 	}
 
-
-
 	# }}}
 	# {{{ if it's a relationship that we're hunting for
 	
@@ -994,6 +1057,7 @@ sub _ProcessRestrictions {
 				     OPERATOR => '=');
 	    }
 	}
+
 	# }}}
 	# {{{ keyword
 	elsif ($TYPES{$restriction->{'FIELD'}} eq 'KEYWORDFIELD') {
@@ -1029,63 +1093,19 @@ sub _ProcessRestrictions {
     }
     $self->{'RecalcTicketLimits'} = 0;
 }
+
 # }}}
 
-# {{{ sub NextPage
-sub NextPage {
-  my $self = shift;
-  $self->FirstRow( $self->FirstRow + $self->Rows );
-}
 # }}}
 
-# {{{ sub FirstPage
-sub FirstPage {
-  my $self = shift;
-  $self->FirstRow(1);
-}
+# {{{ Deal with sorting the set of records found
+
+
 # }}}
 
-# {{{ sub PrevPage
-sub PrevPage {
-  my $self = shift;
-  if ($self->FirstRow > 1) {
-    $self->FirstRow( $self->FirstRow - $self->Rows );
-  }
-  else {
-    $self->FirstRow(1);
-  }
-}
-# }}}
+# {{{ Deal with displaying rows of the listing 
 
-# {{{ POD
-=head2 notes
-"Enum" Things that get Is, IsNot
-
-
-"Int" Things that get Is LessThan and GreaterThan
-id
-InitialPriority
-FinalPriority
-Priority
-TimeLeft
-TimeWorked
-
-"Text" Things that get Is, Like
-Subject
-TransactionContent
-
-
-"Link" OPERATORs
-
-
-"Date" OPERATORs Is, Before, After
-
-=cut
-# }}}
-
-
-
-
+# {{{ sub SetListingFormat
 
 =head2 SetListingFormat
 
@@ -1117,6 +1137,7 @@ AttributeName    Id | Subject | Status | Owner | Priority | InitialPriority | Ti
 #accept a format string
 
 
+
 sub SetListingFormat {
     my $self = shift;
     my $listing_format = shift;
@@ -1142,15 +1163,10 @@ sub SetListingFormat {
     }
     return(1);
 }
+# }}}
 
-
-
-
-
-#Seperate methods for
-
-#Print HTML Header
-sub HTMLHeader {
+# {{{ sub HeaderAsHTML
+sub HeaderAsHTML {
     my $self = shift;
     my $header = "";
     my $col;
@@ -1160,17 +1176,19 @@ sub HTMLHeader {
     }
     return ($header);
 }
+# }}}
 
-
+# {{{ sub HeaderAsText
 #Print text header
-sub TextHeader {
+sub HeaderAsText {
     my $self = shift;
     my ($header);
     
     return ($header);
 }
+# }}}
 
-
+# {{{ sub TicketAsHTMLRow
 #Print HTML row
 sub TicketAsHTMLRow {
     my $self = shift;
@@ -1182,16 +1200,19 @@ sub TicketAsHTMLRow {
     }
     return ($row);
 }
+# }}}
 
-
+# {{{ sub TicketAsTextRow
 #Print text row
 sub TicketAsTextRow {
     my $self = shift;
     my ($row);
+
+    #TODO implement
     
     return ($row);
 }
-
+# }}}
 
 # {{{ _ColumnTitle {
 
@@ -1314,5 +1335,33 @@ sub _TicketColumnValue {
       
 }
 
+# }}}
+
+# }}}
+
+# {{{ POD
+=head2 notes
+"Enum" Things that get Is, IsNot
+
+
+"Int" Things that get Is LessThan and GreaterThan
+id
+InitialPriority
+FinalPriority
+Priority
+TimeLeft
+TimeWorked
+
+"Text" Things that get Is, Like
+Subject
+TransactionContent
+
+
+"Link" OPERATORs
+
+
+"Date" OPERATORs Is, Before, After
+
+=cut
 # }}}
 1;

@@ -10,8 +10,11 @@ SELECTED
 
 
 <%INIT>
-my $KeywordObj = new RT::Keyword($session{'CurrentUser'});
-$KeywordObj->Load($Root);
+
+unless (defined $KeywordObj) {
+    $KeywordObj = new RT::Keyword($session{'CurrentUser'});
+    $KeywordObj->Load($Root);
+}
 my $Descendents = $KeywordObj->Descendents();
 
 if ($Multiple) {
@@ -27,6 +30,7 @@ if ($Size) {
 $Multiple => undef
 $Size => undef
 $Name => 'Keyword'
+$KeywordObj => undef
 $Root => 0
 $Default => undef
 </%ARGS>

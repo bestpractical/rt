@@ -3,14 +3,19 @@
 %# TODO: Better default handling
 
 <SELECT NAME ="<%$Name%>">
-<OPTION VALUE="10" >10
-<OPTION VALUE="25" >25
-<OPTION VALUE="50" >50
-<OPTION VALUE="100" SELECTED>100
-<OPTION VALUE="0">Unlimited
+% foreach my $value (@values) {
+<OPTION VALUE="<%$value%>" <% $value == $Default && 'SELECTED' %>>
+<% shift @labels %>
+</OPTION>
+% }
 </SELECT>
 
+<%INIT>
+my @values = qw(0 10 25 50 100);
+my @labels = qw(Unlimited 10 25 50 100);
+</%INIT>
 <%ARGS>
+
 $Name => undef
 $Default => undef
 

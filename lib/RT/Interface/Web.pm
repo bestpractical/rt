@@ -212,12 +212,10 @@ TODO Doc exactly what comes in the paramhash
 
 sub ProcessSearchQuery {
     my %args=@_;
-    
+
     ## TODO: The only parameter here is %ARGS.  Maybe it would be
     ## cleaner to load this parameter as $ARGS, and use $ARGS->{...}
     ## instead of $args{ARGS}->{...} ? :)
-    
-    require RT::Tickets;
     
     #Searches are sticky.
     if (defined $session{'tickets'}) {
@@ -227,14 +225,31 @@ sub ProcessSearchQuery {
 	# Init a new search
 	$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'});
     }
+
+    # {{{ Goto next/prev page
+    if ($args{ARGS}->{'GotoPage'} eq 'Next') {
+	$session{'tickets'}->NextPage;
+    }
+    elsif ($args{ARGS}->{'GotoPage'} eq 'Prev') {
+	$session{'tickets'}->PrevPage;
+    }
+    # }}}
+
+    # {{{ Deal with limiting the search
+    if ($args{ARGS}->{'TicketsSortBy'}) {
+	$session{'tickets'}->OrderBy ( FIELD => $args{ARGS}->{'TicketsSortBy'},
+				       ORDER => $args{ARGS}->{'TicketsSortOrder'});
+    }
+    # }}}
     
     # {{{ Set the query limit
-    #TODO this doesn't work
-    if ($args{ARGS}->{'Limit1ResultsPerPage'} and 
-	($args{ARGS}->{'ValueOfResultsPerPage'})) {
-	$session{'tickets'}->Rows($args{ARGS}->{'ValueOfResultsPerPage'});
+    if (defined $args{ARGS}->{'ResultsPerPage'}) {
+	$RT::Logger->debug("limiting to ". 
+			   $args{ARGS}->{'ResultsPerPage'} . 
+			   " rows");
+	$session{'tickets'}->RowsPerPage($args{ARGS}->{'ResultsPerPage'});
     }
-
+    
     # }}}
     # {{{ Limit owner
     if ($args{ARGS}->{'ValueOfOwner'} ne '' ) {
@@ -301,23 +316,24 @@ sub ProcessSearchQuery {
     # }}}   
     # {{{ Limit KeywordSelects
     foreach my $KeywordSelectId (
-      map { /^KeywordSelect(\d+)$/; $1 }
+	map { /^KeywordSelect(\d+)$/; $1 }
         grep { /^KeywordSelect(\d+)$/; }
           keys %{$args{ARGS}}
     ) {
       my $form = $args{ARGS}->{"KeywordSelect$KeywordSelectId"};
       my $oper = $args{ARGS}->{"KeywordSelectOp$KeywordSelectId"};
       foreach my $KeywordId ( ref($form) ? @{ $form } : ( $form ) ) {
-       if ($KeywordId) {
-        $session{'tickets'}->LimitKeyword(
-                                           KEYWORDSELECT => $KeywordSelectId,
-                                           OPERATOR => $oper,
-                                           KEYWORD => $KeywordId,
-                                         );
-         }
+	  if ($KeywordId) {
+	      $session{'tickets'}->LimitKeyword(
+						KEYWORDSELECT => $KeywordSelectId,
+						OPERATOR => $oper,
+						KEYWORD => $KeywordId,
+					       );
+	  }
       }
-
+      
     }
+
     # }}}
 
 }

@@ -1,0 +1,7 @@
+<SELECT NAME="<%$Name%>">
+<OPTION value="ASC">Ascending</OPTION>
+<OPTION value="DESC">Descending</OPTION>
+</SELECT>
+<%ARGS>
+$Name => 'SortOrder'
+</%ARGS>
