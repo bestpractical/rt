@@ -289,6 +289,8 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->I
     my ($code, $msg);
     ($code, $msg) = $UserObj->SetPassword($Pass1);
     push @results, loc('Password: [_1]', loc_fuzzy($msg));
+} elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
+    push @results, loc("Passwords do not match.");
 }
 
 # }}}
