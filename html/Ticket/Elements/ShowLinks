@@ -76,6 +76,10 @@
 </ul>
     </td>
   </tr>
+
+% # Allow people to add more rows to the table                                                                                                                           
+%  $m->comp('/Elements/Callback', %ARGS );
+
 </table>
 
 <%ARGS>
