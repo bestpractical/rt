@@ -217,7 +217,6 @@ sub insert_schema {
 
 # {{{ sub drop_db
 sub drop_db {
-    return if ( $RT::DatabaseType eq 'SQLite' );
     if ( $RT::DatabaseType eq 'Oracle' ) {
         print <<END;
 
@@ -241,6 +240,10 @@ END
 
     print "Dropping $RT::DatabaseType database $RT::DatabaseName.\n";
 
+    if ( $RT::DatabaseType eq 'SQLite' ) {
+	unlink $RT::DatabaseName or warn $!;
+	return;
+    }
     $dbh->do("Drop DATABASE $RT::DatabaseName") or warn $DBI::errstr;
 }
 

@@ -297,21 +297,29 @@ CREATE TABLE Templates (
 );
 
 
-CREATE SEQUENCE TICKETCUSTOMFIELDVALUES_seq;
-CREATE TABLE TicketCustomFieldValues (
+CREATE SEQUENCE OBJECTCUSTOMFIELDVALUES_seq;
+CREATE TABLE ObjectCustomFieldValues (
 	id		NUMBER(11,0) 
-		CONSTRAINT TicketCustomFieldValues_Key PRIMARY KEY,
-	Ticket		NUMBER(11,0),
+		CONSTRAINT ObjectCustomFieldValues_Key PRIMARY KEY,
 	CustomField	NUMBER(11,0) NOT NULL,
+	ObjectType	VARCHAR2(25) NOT NULL,
+	ObjectId	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
+
 	Content		VARCHAR2(255),
+  	LargeContent 	CLOB,
+  	ContentType 	VARCHAR2(80),
+  	ContentEncoding VARCHAR2(80),
+
 	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Created		DATE,
 	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
-	LastUpdated	DATE
+	LastUpdated	DATE,
+	Disabled	NUMBER(11,0) DEFAULT 0 NOT NULL
 );
 
-CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
-CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
 
 CREATE SEQUENCE CUSTOMFIELDS_seq;
 CREATE TABLE CustomFields (

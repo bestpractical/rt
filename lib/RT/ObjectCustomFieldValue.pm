@@ -91,11 +91,12 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'CustomField'.
   varchar(255) 'ObjectType'.
   int(11) 'ObjectId'.
-  tinyint(1) 'Current' defaults to '1'.
+  int(11) 'SortOrder'.
   varchar(255) 'Content'.
   longtext 'LargeContent'.
   varchar(80) 'ContentType'.
   varchar(80) 'ContentEncoding'.
+  smallint(6) 'Disabled'.
 
 =cut
 
@@ -108,22 +109,24 @@ sub Create {
                 CustomField => '0',
                 ObjectType => '',
                 ObjectId => '0',
-                Current => '1',
+                SortOrder => '0',
                 Content => '',
                 LargeContent => '',
                 ContentType => '',
                 ContentEncoding => '',
+                Disabled => '0',
 
 		  @_);
     $self->SUPER::Create(
                          CustomField => $args{'CustomField'},
                          ObjectType => $args{'ObjectType'},
                          ObjectId => $args{'ObjectId'},
-                         Current => $args{'Current'},
+                         SortOrder => $args{'SortOrder'},
                          Content => $args{'Content'},
                          LargeContent => $args{'LargeContent'},
                          ContentType => $args{'ContentType'},
                          ContentEncoding => $args{'ContentEncoding'},
+                         Disabled => $args{'Disabled'},
 );
 
 }
@@ -207,19 +210,19 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Current
+=head2 SortOrder
 
-Returns the current value of Current. 
-(In the database, Current is stored as tinyint(1).)
-
-
-
-=head2 SetCurrent VALUE
+Returns the current value of SortOrder. 
+(In the database, SortOrder is stored as int(11).)
 
 
-Set Current to VALUE. 
+
+=head2 SetSortOrder VALUE
+
+
+Set SortOrder to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Current will be stored as a tinyint(1).)
+(In the database, SortOrder will be stored as a int(11).)
 
 
 =cut
@@ -333,6 +336,24 @@ Returns the current value of LastUpdated.
 =cut
 
 
+=head2 Disabled
+
+Returns the current value of Disabled. 
+(In the database, Disabled is stored as smallint(6).)
+
+
+
+=head2 SetDisabled VALUE
+
+
+Set Disabled to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Disabled will be stored as a smallint(6).)
+
+
+=cut
+
+
 
 sub _CoreAccessible {
     {
@@ -345,8 +366,8 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         ObjectId => 
 		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        Current => 
-		{read => 1, write => 1, sql_type => -6, length => 1,  is_blob => 0,  is_numeric => 1,  type => 'tinyint(1)', default => '1'},
+        SortOrder => 
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Content => 
 		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         LargeContent => 
@@ -363,6 +384,8 @@ sub _CoreAccessible {
 		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        Disabled => 
+		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
 
  }
 };

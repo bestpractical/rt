@@ -125,8 +125,8 @@
 <& SelectPersonType, Name => 'WatcherGroupField', Default => 'RequestorGroup', Suffix => 'Group' &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "WatcherGroupOp", 
-					  True=> 'belongs to', 
-					  False=> 'does not belong to', 
+					  True=> loc('belongs to'), 
+					  False=> loc('does not belong to'), 
 					  TrueVal=> '=', 
 					  FalseVal => '!='
 &>

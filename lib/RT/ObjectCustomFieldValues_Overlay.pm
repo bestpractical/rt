@@ -124,7 +124,7 @@ sub _DoSearch {
     
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless($self->{'find_expired_rows'}) {
-        $self->LimitToCurrent();
+        $self->LimitToEnabled();
     }
     
     return($self->SUPER::_DoSearch(@_));
@@ -136,19 +136,11 @@ sub _DoCount {
     
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless($self->{'find_expired_rows'}) {
-        $self->LimitToCurrent();
+        $self->LimitToEnabled();
     }
     
     return($self->SUPER::_DoCount(@_));
     
-}
-
-sub LimitToCurrent {
-    my $self = shift;
-    
-    $self->Limit( FIELD => 'Current',
-		  VALUE => '1',
-		  OPERATOR => '=' );
 }
 
 1;

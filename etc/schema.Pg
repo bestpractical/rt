@@ -491,7 +491,8 @@ CREATE TABLE ObjectCustomFieldValues (
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NULL  ,
   ObjectId int NOT NULL  ,
-  Current int DEFAULT 1,
+  SortOrder integer NOT NULL DEFAULT 0  ,
+
   Content varchar(255) NULL  ,
   LargeContent text NULL,
   ContentType varchar(80) NULL,
@@ -501,6 +502,7 @@ CREATE TABLE ObjectCustomFieldValues (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
+  Disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );

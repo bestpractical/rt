@@ -29,7 +29,7 @@ $Attr => undef
 
 
 <%INIT>
-our ( $COLUMN_MAP, $CUSTOM_FIELD_MAP );
+our ( $COLUMN_MAP );
 
 sub ColumnMap {
     my $name = shift;
@@ -42,43 +42,49 @@ sub ColumnMap {
 
     # now, let's deal with harder things, like Custom Fields
 
-    elsif ( $name =~ /^(?:CF|CustomField).(.*)$/ ) {
+    elsif ( $name =~ /^(?:CF|CustomField)\.\{(.+)\}$/ ) {
         my $field = $1;
-        my $cf;
-        if ( $CUSTOM_FIELD_MAP->{$field} ) {
-            $cf = $CUSTOM_FIELD_MAP->{$field};
-        }
-        else {
-
-            $cf = RT::CustomField->new( $session{'CurrentUser'} );
-
-            if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
-                $cf->LoadByNameAndQueue( Queue => $1, Name => $2 );
-            }
-            else {
-                $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
-                $cf->LoadByNameAndQueue( Queue => "0", Name => $field );
-            }
-            $CUSTOM_FIELD_MAP->{$field} = $cf if ( $cf->id );
-        }
-
-        unless ( $cf->id ) {
-            return undef;
-        }
 
         if ( $attr eq 'attribute' ) {
             return (undef);
         }
         elsif ( $attr eq 'title' ) {
-            return ( $cf->Name );
+            return ( $field );
         }
         elsif ( $attr eq 'value' ) {
-            my $value = eval "sub {
-                    my \$values = \$_[0]->CustomFieldValues('" . $cf->id . "');
-                    return ( join( ', ', map { \$_->Content } \@{ \$values->ItemsArrayRef } ))
-                  }" || die $@;
-            return ($value);
+	    # Display custom field contents, separated by newlines.
+            # For Image custom fields we also show a thumbnail here.
+            return sub {
+                my $values = $_[0]->CustomFieldValues($field);
+                return map {
+                    (
+                        ($_->CustomFieldObj->Type eq 'Image')
+                            ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
+                            : $_->Content
+                    ),
+                    \'<br>',
+                } @{ $values->ItemsArrayRef }
+	    };
         }
+    }
+}
+
+sub LinkCallback {
+    my $method = shift;
+
+    my $mode            = $RT::Ticket::LINKTYPEMAP{$method}{Mode};
+    my $mode_uri        = $mode.'URI';
+    my $mode_is_local   = $mode.'IsLocal';
+    my $local_type      = 'Local'.$mode;
+
+    return sub {
+        map {
+            \'<A HREF="',
+            $_->$mode_uri->Resolver->HREF,
+            \'">',
+            ( $_->$mode_is_local ? $_->$local_type : $_->$mode ),
+            \'</A><BR>',
+        } @{ $_[0]->$method->ItemsArrayRef }
     }
 }
 
@@ -116,10 +122,10 @@ $COLUMN_MAP = {
                 if (   $Ticket->HasUnresolvedDependencies( Type => 'approval' )
                     or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
                 {
-                    return "<em>" . loc('(pending approval)') . "</em>";
+                    return \'<em>', loc('(pending approval)'), \'</em>';
                 }
                 else {
-                    return "<em>" . loc('(pending other Collection)') . "</em>";
+                    return \'<em>', loc('(pending other Collection)'), \'</em>';
                 }
             }
             else {
@@ -205,7 +211,7 @@ $COLUMN_MAP = {
         value     => sub { 
 	    my $date = $_[0]->DueObj;
 	    if ($date && $date->Unix > 0 && $date->Unix < time()) {
-		return '<span class="overdue">' . $date->AgeAsString . '</span>';
+		return \'<span class="overdue">' . $date->AgeAsString . \'</span>';
 	    } else {
 		return $date->AgeAsString;
 	    }
@@ -256,140 +262,10 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->ResolvedObj->AsString }
     },
 
-    DependedOnBy => {
-        title => 'Depended On By',
-        value => sub {
-            my $links = $_[0]->DependedOnBy;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    Members => {
-        value => sub {
-            my $links = $_[0]->Members;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    Children => {
-        value => sub {
-            my $links = $_[0]->Members;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    ReferredToBy => {
-        title => 'Referred to By',
-        value => sub {
-            my $links = $_[0]->ReferredToBy;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-
-    DependsOn => {
-        title => 'Depends On',
-        value => sub {
-            my $links = $_[0]->DependsOn;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    MemberOf => {
-        title => 'Member Of',
-        value => sub {
-            my $links = $_[0]->MemberOf;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    Parents => {
-        value => sub {
-            my $links = $_[0]->MemberOf;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    RefersTo => {
-        title => 'Refers To',
-        value => sub {
-            my $links = $_[0]->RefersTo;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
+    # Everything from LINKTYPEMAP
+    (map {
+        $_ => { value => LinkCallback( $_ ) }
+    } keys %RT::Ticket::LINKTYPEMAP),
 
     '_CLASS' => {
         value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
