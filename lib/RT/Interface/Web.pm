@@ -70,6 +70,8 @@ sub NewApacheHandler {
         allow_globals        => [qw(%session)],
         data_dir => "$RT::MasonDataDir"
     );
+
+    $ah->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
     
     return ($ah);
 }
@@ -98,7 +100,30 @@ sub NewCGIHandler {
         default_escape_flags => 'h',
         allow_globals        => [qw(%session)]
     );
+  
+
+    $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
+
+
     return ($handler);
+
+}
+
+=head2 EscapeUTF8 SCALARREF
+
+does a css-busting but minimalist escaping of whatever html you're passing in.
+
+=cut
+
+sub EscapeUTF8  {
+        my  $ref = shift;
+        $$ref =~ s/&/&#38/g;
+        $$ref =~ s/</&lt;/g; 
+        $$ref =~ s/>/&gt;/g;
+        $$ref =~ s/\(/&#40/g;
+        $$ref =~ s/\)/&#41/g;
+
+
 }
 
 # }}}
