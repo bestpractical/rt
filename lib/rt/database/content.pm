@@ -26,13 +26,15 @@ sub write_content {
     
     #these 0700s should be $dirmodes..but perl doesn't like that.
     if (! (-d "$transaction_dir/$year")) {
-	mkdir ("$transaction_dir/$year",0700);
+	mkdir ("$transaction_dir/$year",0700) or  
+           die "Could not create dir $transaction_dir/$year: $!\n";
 #	chown $rtusernum, $rtgroupnum, "$transaction_dir/$year";
     }
     $month_dir = "$transaction_dir/$year/$month"; 
 
     if (! (-d "$month_dir"))  {
-	mkdir("$month_dir",0700);
+	mkdir("$month_dir",0700) or 
+           die "Could not create dir $month_dir: $!\n";
 	#chown $rtusernum, $rtgroupnum, "$transaction_dir/$year/$month";
     }
 
@@ -40,15 +42,16 @@ sub write_content {
   
 
   if (! (-d "$day_dir"))  {
-	mkdir ("$day_dir", 0700);
+	mkdir ("$day_dir", 0700) or
+		die "Could not create dir $day_dir: $!\n"; 
 #	chown $rtusernum, $rtgroupnum, "$transaction_dir/$year/$month/$monthday";
     }
     $file="$transaction_dir/$year/$month/$monthday/$serial_num.$transaction_num";
 
 
 
-    open(CONTENT, ">$file"); 
-    print CONTENT "$content";
+    open(CONTENT, ">$file") or die "Couldn't open $file for writing: $!\n";
+    print CONTENT "$content" or die "Error writing to $file: $!\n";
     close (CONTENT);
 
     $< = $temp;    
