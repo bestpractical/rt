@@ -11,29 +11,45 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 package HTML::Mason;
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 
-use vars qw($VERSION);
-$VERSION="!!RT_VERSION!!";
+use vars qw($VERSION %session);
 
-use lib "!!RT_LIB_PATH!!";
-use lib "!!RT_ETC_PATH!!";
+# List of modules that you want to use from components (see Admin
+# manual for details)
 
-#This drags in  RT's config.pm
-use config;
-use Carp;
-use DBIx::Handle;
-use RT::Ticket;
-use RT::Tickets;
-use RT::Transaction;
-use RT::Transactions;
-use RT::User;
-use RT::Users;
-use RT::CurrentUser;
-use RT::Template;
-use RT::Templates;
-use RT::Queue;
-use RT::Queues;
-use MIME::Entity;
-use CGI::Cookie;
+
+  
+  
+  $VERSION="!!RT_VERSION!!";
+  
+  use lib "!!RT_LIB_PATH!!";
+  use lib "!!RT_ETC_PATH!!";
+
+  #This drags in  RT's config.pm
+  use config;
+  use Carp;
+  use DBIx::Handle;
+
+{  
+  package HTML::Mason::Commands;
+  use vars qw(%session);
+
+  use RT::Ticket;
+  use RT::Tickets;
+  use RT::Transaction;
+  use RT::Transactions;
+  use RT::User;
+  use RT::Users;
+  use RT::CurrentUser;
+  use RT::Template;
+  use RT::Templates;
+  use RT::Queue;
+  use RT::Queues;
+  use MIME::Entity;
+  use CGI::Cookie;
+  
+  #TODO: make this use DBI
+  use Apache::Session::File;
+ }
 
 #TODO: need to identify the database user here....
 $RT::Handle = new DBIx::Handle;
@@ -60,8 +76,40 @@ chown ( [getpwnam('nobody')]->[2], [getgrnam('nobody')]->[2],
 
 sub handler {
     my ($r) = @_;
-        return -1 if defined($r->content_type) && $r->content_type !~ m|^text/|io;
-    $ah->handle_request($r);
-}
+
+    # We don't need to handle non-text items
+    return -1 if defined($r->content_type) && $r->content_type !~ m|^text/|io;
+    
+
+    #This is all largely cut and pasted from mason's session_handler.pl
+
+    my %cookies = parse CGI::Cookie($r->header_in('Cookie'));
+    
+    
+    eval { 
+      tie %HTML::Mason::Commands::session, 'Apache::Session::File',
+      ( $cookies{'AF_SID'} ? $cookies{'AF_SID'}->value() : undef );
+    };
+    
+    if ( $@ ) {
+      # If the session is invalid, create a new session.
+      if ( $@ =~ m#^Object does not exist in the data store# ) {
+	   tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef;
+	   undef $cookies{'AF_SID'};
+	}
+    }
+    
+    if ( !$cookies{'AF_SID'} ) {
+      my $cookie = new CGI::Cookie(-name=>'AF_SID', -value=>$HTML::Mason::Commands::session{_session_id}, -path => '/',);
+      $r->header_out('Set-Cookie', => $cookie);
+    }
+    
+        my $status = $ah->handle_request($r);
+
+    untie %HTML::Mason::Commands::session;
+  
+    return $status;
+
+  }
 1;
 
