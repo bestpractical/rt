@@ -652,7 +652,9 @@ sub display_history_tables {
   print "
 <font size=\"+1\">T</font>ransaction <font size=\"+1\">H</font>istory\n<br>
 <font size=\"-1\">
-<TABLE WIDTH=\"100%\">
+<TABLE WIDTH=\"100%\" cellpadding=0 cellspacing=0 border=0>
+
+
 ";
   
   
@@ -672,28 +674,29 @@ sub display_history_tables {
     $bgcolor="\#AA0000" if ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'date_due');	
     
     print "	 
-<TR bgcolor=\"$bgcolor\">
-<TD valign=\"top\" align=\"left\" width=\"15%\">
+<TR bgcolor=\"$bgcolor\" height=40>
+<td><img src=\"/webrt/endcap.gif\" alt='(' ></td>
+<TD align=\"left\" valign=\"center\"  width=\"15%\">
 <font color=\"\#ffffff\" size=\"-1\">
 $date
-<br>
 $time
 </font>
-
 </TD>
 
-<TD align=\"left\" width=\"85%\">
+<TD align=\"left\">
 <font color=\"\#ffffff\">
 <b>$rt::req[$serial_num]{'trans'}[$temp]{text}</b>
 </font>
 </TD>
-
+<TD width=0%><IMG SRC=\"\" width=1 height=1 alt=')'></TD>
 </TR>
 ";
     
     if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
       print "
 <TR>
+<TD></TD>
+
 <TD VALIGN=\"TOP\">
 <TABLE>";
 
@@ -733,7 +736,7 @@ $time
       print "</TABLE>
     
 </TD>
-<TD BGCOLOR=\"#EEEEEE\">
+<TD BGCOLOR=\"#EEEEEE\" colspan=2>
 <font size=\"$MESSAGE_FONT\">";
       
       &rt::ui::web::print_transaction('all','received',$rt::req[$serial_num]{'trans'}[$temp]{'content'});
