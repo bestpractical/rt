@@ -15,6 +15,8 @@ Interested Parties:
 	Requestor:<% $Ticket->RequestorAsString %> <br>
 	Cc:<% $Ticket->CcAsString %><br>
 	Bcc: <% $Ticket->BccAsString %> <br>
+Status: <% $Ticket->Status %> -&gt;<& SetStatus Ticket => $Ticket&>
+Owner: <% $Ticket->Owner %> -&gt; <& SetOwner Ticket => $Ticket &>
 
 Time Worked: <input size=4 name="time_worked"> minutes<br>
 Update Type: <select name="type">
