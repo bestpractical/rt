@@ -12,13 +12,20 @@ Some code for RT has been derived from Remy Evard's req package.
 
 All of these works are distributed under the GPL
 
-STATUS
-------
 
-This is the README file for RT 1.1/2.0.  It's currently under development,
-expected stable release in June.  Some working prealpha version is expected
-any moment.  At the moment, the Action/Scrips stuff is broken, the web
-UI is missing, and a lot of other quite important features are missing.
+STATUS (updated by Tobix, 2000-06-05)
+-------------------------------------
+
+This is the README file for RT2. This is NOT a stable release.  Lots of
+things are still missing.  Don't expect it to just work out of the box.
+Unless you're a patient hacker, you should probably either go for RT1 or
+hang around and wait for RT2 to become more stable.
+
+At the other hand, we need all the testers and hands we can get on this to
+get it stabilized.  So just go ahead, but don't say you haven't been warned!
+
+RT2 will contain a lot of enhancements and features that at least I consider
+as essential.
 
 
 BUGS
@@ -102,8 +109,8 @@ o   DBIx::Record and DBIx::EasySearch
 o   HTML::Mason (CPAN) 
 	For the web ui
 
-o Locale::PGetText
-	Used by RT for localization
+o   Locale::Maketext
+	Will probably be used by RT for localization.
 
 o   Apache + mod_perl -- free, optional 
 	You might choose to run without a Web UI, and you can choose
