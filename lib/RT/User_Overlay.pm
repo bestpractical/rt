@@ -298,7 +298,7 @@ sub Create {
 
     unless ($stash_id) {
         $RT::Handle->Rollback();
-        $RT::Logger->crit("Couldn't stash the user in groumembers");
+        $RT::Logger->crit("Couldn't stash the user in groupmembers");
         return ( 0, $self->loc('Could not create user') );
     }
 
