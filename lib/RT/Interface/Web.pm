@@ -46,7 +46,7 @@ sub NewInterp {
  			 	  [standard => $RT::MasonComponentRoot] ] , 
                    data_dir => "$RT::MasonDataDir",
                    parser => undef,
-                   @_);
+		   @_);
     
     #We allow recursive autohandlers to allow for RT auth.
 
