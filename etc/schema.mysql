@@ -83,8 +83,10 @@ CREATE TABLE Watchers (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX (Scope, Value, Type, Owner)
 );
+CREATE INDEX Watchers1 ON Watchers (Scope, Value, Type, Owner);
 CREATE TABLE ScripConditions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NULL  ,
@@ -132,8 +134,10 @@ CREATE TABLE ACL (
   RightName varchar(25) NULL  ,
   RightScope varchar(25) NULL  ,
   RightAppliesTo integer NULL  ,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX (RightScope, RightAppliesTo, RightName, PrincipalType, PrincipalId)
 );
+CREATE INDEX ACL1 ON ACL (RightScope, RightAppliesTo, RightName, PrincipalType, PrincipalId);
 CREATE TABLE GroupMembers (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   GroupId integer NULL  ,
@@ -206,9 +210,11 @@ CREATE TABLE Users (
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id),
-  UNIQUE (Name)
+  UNIQUE (Name),
+  INDEX (EmailAddress)
 );
 CREATE UNIQUE INDEX Users1 ON Users (Name);
+CREATE INDEX Users2 ON Users (EmailAddress);
 CREATE TABLE Tickets (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   EffectiveId integer NULL  ,
@@ -234,8 +240,12 @@ CREATE TABLE Tickets (
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX (Queue, Status),
+  INDEX (id, Status)
 );
+CREATE INDEX Tickets1 ON Tickets (Queue, Status);
+CREATE INDEX Tickets2 ON Tickets (id, Status);
 CREATE TABLE ScripActions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NULL  ,

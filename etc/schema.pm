@@ -25,7 +25,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [  ],
-  'index' => [  ],
+  'index' => [ ['RightScope','RightAppliesTo','RightName','PrincipalType','PrincipalId'] ],
 },
 
 'Watchers' => {
@@ -44,7 +44,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [  ],
-  'index' => [  ],
+  'index' => [ ['Scope','Value','Type','Owner'] ],
 },
 
 'Links' => {
@@ -104,7 +104,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [ ['Name'] ],
-  'index' => [  ],
+  'index' => [ ['EmailAddress'] ],
 },
 
 'Tickets' => {
@@ -136,7 +136,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [ [] ],
-  'index' => [  ],
+  'index' => [ ['Queue', 'Status'], [ 'id', 'Status' ] ],
 },
 
 'GroupMembers' => {

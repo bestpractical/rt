@@ -7,6 +7,9 @@ my $tickets = new RT::Tickets($session{'CurrentUser'});
 $tickets->LimitRequestor(VALUE => $user->EmailAddress);
 $tickets->LimitStatus( VALUE => 'open');
 $tickets->LimitStatus( VALUE => 'new');
+$tickets->RowsPerPage(25);
+$tickets->OrderBy(FIELD => 'Priority',
+		  ORDER => 'DESC');
 </%PERL>
 
 <& /Elements/TitleBoxStart, 
@@ -14,7 +17,7 @@ $tickets->LimitStatus( VALUE => 'new');
 
 Comments about this user:<BR>
 <B><% ($user->Comments || "No comment entered about this user") %></B><BR>
-This user's open tickets:<BR>
+This user's 25 highest priority tickets:<BR>
 <UL>
 %while (my $w=$tickets->Next) {
 <LI><%$w->Id%>: <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$w->id%>"><%$w->Subject%></a> (<%$w->Status%>)

@@ -307,7 +307,7 @@ sub Create {
     
     # Logging
     if ($self->Id && $Trans) {
-	$ErrStr='Ticket '.$self->Id . " created in queue ". $QueueObj->Id;
+	$ErrStr='Ticket '.$self->Id . " created in queue '". $QueueObj->Name. "'";
 	
 	$RT::Logger->info($ErrStr);
     } 

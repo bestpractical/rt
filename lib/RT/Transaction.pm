@@ -225,12 +225,9 @@ a ContentType that Attachments should be restricted to.
 
 sub Attachments  {
     my $self = shift;
-    if (@_) {
-	my $Types = shift;
-    }
-    
+    my $Types = '';
+    $Types = shift if (@_);
 
-    
     my $Attachments = new RT::Attachments($self->CurrentUser);
     
     #If it's a comment, return an empty object if they don't have the right to see it

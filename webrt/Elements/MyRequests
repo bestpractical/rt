@@ -1,4 +1,4 @@
-<& /Elements/TitleBoxStart, title => "Tickets I requested..." &>
+<& /Elements/TitleBoxStart, title => "25 most important tickets I requested..." &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH>#</TH>
@@ -39,4 +39,7 @@ $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitRequestor(VALUE => $session{'CurrentUser'}->EmailAddress);
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
+$MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
+$MyTickets->RowsPerPage(25);
+
 </%INIT>

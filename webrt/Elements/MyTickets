@@ -1,4 +1,4 @@
-<& /Elements/TitleBoxStart, title => "Tickets I own..." &>
+<& /Elements/TitleBoxStart, title => "25 highest priority tickets I own..." &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH>#</TH>
@@ -37,4 +37,7 @@ $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
+$MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
+$MyTickets->RowsPerPage(25);
+
 </%INIT>

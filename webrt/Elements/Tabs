@@ -97,7 +97,7 @@ my $toptabs = {    A => { title => 'Home',
                         path => 'Search/Listing.html'
                       },
 
-                    D => { title => 'Administration',
+                    D => { title => 'Configuration',
                            path => 'Admin/'
                          }
                  };
