@@ -22,24 +22,40 @@
 # 
 # 
 # END LICENSE BLOCK
-WARNING
--------
-
-This is a DEVELOPMENT RELEASE OF RT. PROCEED AT YOUR OWN RISK.
 
 
+RT is an enterprise-grade issue tracking system. [it needs more description
+here before 3.0.0]
+
+This is a BETA release. It's not been field-tested enough to be recommended 
+for production deployment, but it's proven itself stable in internal testing 
+and is largely feature complete.
+
+        Jesse Vincent
+        Best Practical Solutions, LLC
+        5 Feb 2003
 
 REQUIRED PACKAGES:
 ------------------
 
-o   Perl5.6.1 or later with support for setgid perl scripts
-        RT's command line and mail gateway tools run setgid to the 'rt' group
+o   Perl5.6.1 or later.
+
+
+        RT's FastCGI handler runs setgid to the 'RT' group
 	to protect RT's database password.  You may need to install a special 
 	"suidperl" package or reconfigure your perl setup to support
-	 "setuid scripts".
+	 "setuid scripts" if you intend to use RT with FastCGI.
+
+
+        If you intend to use RT's support for non-english languages, it is 
+        STRONGLY recommended that you use perl 5.8.0 or newer, as it contains 
+        significantly enhanced support for Unicode and non-english languages.
+         (Put another way, trying to use RT with Perl 5.6.1 in a
+          non-English-speaking environment will hurt a lot.)
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:    Mysql 4.0.3 or newer. 
+        Currently supported:  Mysql 4.0.6 or newer. 
+                              Mysql 3.23.46 or newer with support for InnoDB 
 				 (Some older releases had crippling SQL bugs)
 				Postgres 7.2 or later
 
@@ -63,7 +79,7 @@ GENERAL INSTALLATION
 
         Granted, you've already got it open. To do this cleanly:
 
-        	tar xzvf rt.tar.gz -C /tmp
+        	tar xzvf rt-2-1-xx.tar.gz -C /tmp
 
 2   Run the "configure" script. 
 
@@ -73,14 +89,23 @@ GENERAL INSTALLATION
 3   Satisfy RT's myriad dependencies. 
 
 3.1   Check for compliance:
-	make testdeps
+        
+        perl sbin/rt-test-dependencies \
+                --with-<databasename> --with-<web-environment>
 
-3.2   If there are unsatisfied dependencies, install them by hand or run
-	make fixdeps
+        databasename is one of: mysql, postgres
+        web-environment is one of: fastcgi, modperl1, modperl2
+
+3.2   If there are unsatisfied dependencies, install them by hand or run:
+
+        perl sbin/rt-test-dependencies \
+                --with-<databasename> --with-<web-environment> --install
 	
 
 3.3   Check to make sure everything was installed properly:
-	make testdeps
+
+        perl sbin/rt-test-dependencies \
+                --with-<databasename> --with-<web-environment>
 
 4   Create a group called 'rt'
 
@@ -126,26 +151,6 @@ GENERAL INSTALLATION
     optional step.
 
 
-SETTING UP THE MAIL GATEWAY 
----------------------------
-
-An alias for the initial queue will need to be made in either your
-global mail aliases file (if you are using NIS) or locally on your
-machine.
- 
-Add the following lines to /etc/aliases (or your local equivalent) :
-
-rt:         "|/path/to/rt3/bin/rt-mailgate --queue general --action correspond --url http://localhost/"
-rt-comment: "|/path/to/rt3/bin/rt-mailgate --queue general --action comment --url http://localhost/"
-                                                   |                |             |
-                                   <queue-name>----/                |             |
-                                                                    |             |
-                      <correspond or comment depending on whether   |             |
-                      the mail should be resent to the requestor>---/             |
-                                                                                  |
-                                                 <root to the rt web interface>---/
-
-
 
 THE WEB UI
 ----------
@@ -162,54 +167,41 @@ Apache
 
 <VirtualHost your.ip.address>
     ServerName your.rt.server.hostname
-    DocumentRoot /path/to/rt3/share/html
+    DocumentRoot /opt/rt3/share/html
     AddDefaultCharset UTF-8
 
     # this line applies to Apache2+mod_perl2 only
     PerlModule Apache2 Apache::compat
 
     PerlModule Apache::DBI
-    PerlRequire /path/to/rt3/bin/webmux.pl
+    PerlRequire /opt/rt3/bin/webmux.pl
 
-    <FilesMatch "\.html$">
+    <Location />
         SetHandler perl-script
         PerlHandler RT::Mason
-    </FilesMatch>
-    <LocationMatch "/Attachment/">
-        SetHandler perl-script
-        PerlHandler RT::Mason
-    </LocationMatch>
-    <LocationMatch "/REST/">
-        SetHandler perl-script
-        PerlHandler RT::Mason
-    </LocationMatch>
+    </Location>
 </VirtualHost>
 
-Additionally, if you are using a database engine other than MySQL, you should
-set up a cron job to remove stale session locks.  (MySQL uses the database
-itself for that.)
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- WARNING: Don't install this cron job or run this find command if your
- MASON_SESSION_PATH (known in config.pm as $MasonSessionDir) 
- points to a directory that could  EVER contain any file that's not 
- a Apache::Session datafile.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-# Every hour, nuke session files and lockfiles that haven't been 
-# touched in 10 hours
-
-0 * * * * find /path/to/rt3/WebRT/sessiondata -type f -amin +600 -exec rm {} \;
 
 
-THE CLI
--------
-        Binaries for the CLI are located in rt3/bin
-        You've got:
+SETTING UP THE MAIL GATEWAY 
+---------------------------
 
-                "rtadmin" (modify queues, users and acls)
+An alias for the initial queue will need to be made in either your
+global mail aliases file (if you are using NIS) or locally on your
+machine.
+ 
+Add the following lines to /etc/aliases (or your local equivalent) :
 
-        This program takes --help as an option.
+rt:         "|/opt/rt3/bin/rt-mailgate --queue general --action correspond --url http://localhost/"
+rt-comment: "|/opt/rt3/bin/rt-mailgate --queue general --action comment --url http://localhost/"
+                                            |                |             |
+                            <queue-name>----/                |             |
+                                                             |             |
+               <correspond or comment depending on whether   |             |
+               the mail should be resent to the requestor>---/             |
+                                                                           |
+                                            <URL for RT's web interface>---/
 
 
 BUGS
@@ -262,7 +254,6 @@ stuff.
 
 TROUBLESHOOTING
 ---------------
-
 
 If the solution to the problem you're running into isn't obvious and you've 
 checked the FAQ, feel free to send mail to rt-users@fsck.com (for released 

@@ -90,8 +90,8 @@ sub Commit  {
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
     
-    if (defined $self->TransactionObj->Message->First()) { 
-	my $squelch = $self->TransactionObj->Message->First->GetHeader('RT-Squelch-Replies-To');
+    if (defined $self->TransactionObj->Attachments->First()) { 
+	my $squelch = $self->TransactionObj->Attachments->First->GetHeader('RT-Squelch-Replies-To');
 	
 	if ($squelch) {
 	    my @blacklist = split(/,/,$squelch);
@@ -436,7 +436,7 @@ sub SetSubject {
   my $subject;
     
   unless ($self->TemplateObj->MIMEObj->head->get('Subject')) {
-    my $message=$self->TransactionObj->Message;
+    my $message=$self->TransactionObj->Attachments;
     my $ticket=$self->TicketObj->Id;
     
     if ($self->{'Subject'}) {

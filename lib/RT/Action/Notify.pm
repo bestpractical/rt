@@ -49,9 +49,9 @@ sub SetRecipients {
 
 
     if ($arg =~ /\bOtherRecipients\b/) {
-        if ($self->TransactionObj->Message->First) {
-            push (@Cc, $self->TransactionObj->Message->First->GetHeader('RT-Send-Cc'));
-            push (@Bcc, $self->TransactionObj->Message->First->GetHeader('RT-Send-Bcc'));
+        if ($self->TransactionObj->Attachments->First) {
+            push (@Cc, $self->TransactionObj->Attachments->First->GetHeader('RT-Send-Cc'));
+            push (@Bcc, $self->TransactionObj->Attachments->First->GetHeader('RT-Send-Bcc'));
         }
     }
 
