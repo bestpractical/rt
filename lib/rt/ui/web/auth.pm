@@ -31,7 +31,7 @@ sub AuthCheck () {
     #$path .= '/';
    
     # lets set the user/pass cookies
-    if (length($rt::ui::web::FORM{'username'}) and length($rt::ui::web::FORM{'username'})) {
+    if (length($rt::ui::web::FORM{'password'}) and length($rt::ui::web::FORM{'username'})) {
       
       $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
 				  -value => "$rt::ui::web::FORM{'username'}",
@@ -220,6 +220,7 @@ print "&nbsp;</td>
 <br><br>
 ";
 
+require rt::ui::web::manipulate.pm;
 &rt::ui::web::credits();
 
 print "
