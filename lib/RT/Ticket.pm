@@ -1431,6 +1431,20 @@ sub Correspond {
        TimeTaken => $args{'TimeTaken'},
        MIMEObj=> $args{'MIMEObj'}     
       );
+
+    if (($TransObj->IsInbound) and 
+	($self->Status ne 'open') and
+	($self->Status ne 'new')
+       ) {
+	my $oldstatus = $self->__Value('Status');
+	$self->__Set(Field => 'Status', Value => 'open');
+	$self->_NewTransaction ( Type => 'Set',
+				 Field => 'Status',
+				 OldValue => $oldstatus,
+				 NewValue => 'open',
+				 Data => 'Ticket auto-opened on incoming correspondence'
+			       );
+    }
     
     unless ($Trans) {
 	$RT::Logger->err("$self couldn't init a transaction ($msg)\n");
