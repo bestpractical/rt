@@ -292,7 +292,7 @@ sub SetReturnAddress {
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
       my $friendly_name=$self->TransactionObj->CreatorObj->RealName;
       # TODO: this "via RT" should really be site-configurable.
-      $self->SetHeader('From', "$friendly_name via RT <$replyto>");
+      $self->SetHeader('From', "\"$friendly_name via RT\" <$replyto>");
   }
   
   unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
