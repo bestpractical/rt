@@ -1,7 +1,25 @@
 <SELECT NAME="<%$Name%>">
-<OPTION VALUE="">None</OPTION>
+<OPTION VALUE="1">None</OPTION>
+
+%while ( my $User = $Users->Next()) {
+
+<OPTION VALUE="<%$User->Id()%>"><%$User->UserId() %></OPTION>
+
+%}
+
 </SELECT>
 
 <%ARGS>
+
 $Name => undef
 </%ARGS>
+
+<%INIT>
+use RT::CurrentUser;
+my $CurrentUser = RT::CurrentUser->new(2);
+my $Users = RT::Users->new($CurrentUser);
+$Users->Limit( FIELD => 'id',
+		OPERATOR => "!=",
+	        VALUE => 1
+		);
+</%INIT>

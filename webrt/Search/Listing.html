@@ -20,27 +20,27 @@
 
 <HR>
 
-%#<& QueueAddRestriction &>
-
+<& PickRestriction, CurrentUser => $CurrentUser &>
+  
 
 <%INIT>
-use RT::CurrentUser;
+
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Tickets = RT::Tickets->new($CurrentUser);
-use RT::Tickets;
+
 
 if ($ARGS{'LimitOwner'}) {
-  
-  if ($ARGS{'NegateOwner'}=1) {
-    my $oper = "!=";
+  my $oper;
+  if ($ARGS{'NegateOwner'}==1) {
+    $oper = "!=";
   }
   else {
-    my $oper = "=";
+    $oper = "=";
   }
   
   $Tickets->Limit (FIELD => 'Owner',
-		   VALUE => $ARGS{'ValueOfOwner'}
-		   OPERATOR => "$Oper"
+		   VALUE => $ARGS{'ValueOfOwner'},
+		   OPERATOR => "$oper"
 		  )
 }
 
@@ -49,82 +49,69 @@ if (0) {
 # TODO: this code requires some creative use of EasySearch that I'm not up to 
 # right now
 #if ($ARGS{'LimitRequestor'}) {
+  my $oper;
+  if ($ARGS{'NegateRequestor'}==1) {
   
-  if ($ARGS{'NegateRequestor'}=1) {
-    my $oper = "NOT LIKE";
+    $oper = "NOT LIKE";
   }
   else {
-    my $oper = "LIKE";
+    $oper = "LIKE";
   }
   
   $Tickets->Limit (FIELD => 'Requestors',
-		   VALUE => $ARGS{'ValueOfRequestors'}
-		   OPERATOR => "$Oper"
+		   VALUE => $ARGS{'ValueOfRequestors'},
+		   OPERATOR => "$oper"
 		  )
 }
 
 
 if ($ARGS{'LimitSubject'}) {
-  
-  if ($ARGS{'NegateSubject'}=1) {
-    my $oper = "NOT LIKE";
+ my $oper; 
+  if ($ARGS{'NegateSubject'}==1) {
+    $oper = "NOT LIKE";
   }
   else {
-    my $oper = "LIKE";
+    $oper = "LIKE";
   }
   
   $Tickets->Limit (FIELD => 'Subject',
-		   VALUE => $ARGS{'ValueOfSubject'}
-		   OPERATOR => "$Oper"
+		   VALUE => $ARGS{'ValueOfSubject'},
+		   OPERATOR => "$oper"
 		  )
 }
 
 
 
 if ($ARGS{'LimitQueue'}) {
-  
-  if ($ARGS{'NegateQueue'}=1) {
-    my $oper = "!=";
+  my $oper;
+  if ($ARGS{'NegateQueue'}==1) {
+    $oper = "!=";
   }
   else {
-    my $oper = "=";
+    $oper = "=";
   }
   
   $Tickets->Limit (FIELD => 'Queue',
-		   VALUE => $ARGS{'ValueOfQueue'}
-		   OPERATOR => "$Oper"
+		   VALUE => $ARGS{'ValueOfQueue'},
+		   OPERATOR => "$oper"
 		  )
 }
 
-if ($ARGS{'LimitQueue'}) {
-  
-  if ($ARGS{'NegateQueue'}=1) {
-    my $oper = "!=";
-  }
-  else {
-    my $oper = "=";
-  }
-  
-  $Tickets->Limit (FIELD => 'Queue',
-		   VALUE => $ARGS{'ValueOfQueue'}
-		   OPERATOR => "$Oper"
-		  )
-}
 if ($ARGS{'LimitStatus'}) {
-  
-  if ($ARGS{'NegateStatus'}=1) {
-    my $oper = "!=";
+  my $oper;
+  if ($ARGS{'NegateStatus'}==1) {
+    $oper = "!=";
   }
   else {
-    my $oper = "=";
+    $oper = "=";
   }
   
   $Tickets->Limit (FIELD => 'Status',
-		   VALUE => $ARGS{'ValueOfStatus'}
-		   OPERATOR => "$Oper"
+		   VALUE => $ARGS{'ValueOfStatus'},
+		   OPERATOR => "$oper"
 		  )
 }
 
- $Tickets->Limit( FIELD => 'status',
-			VALUE => "open");
+# $Tickets->Limit( FIELD => 'status',
+#			VALUE => "open");
 </%INIT>

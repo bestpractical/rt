@@ -1,8 +1,8 @@
 %# $Header$
 
 <SELECT NAME ="<%$Name%>">
-<OPTION VALUE="True"><%$True%></OPTION>
-<OPTION VALUE="False"><%$False%></OPTION>
+<OPTION VALUE="1" <%$TrueDefault%>><%$True%></OPTION>
+<OPTION VALUE="0" <%$FalseDefault%>><%$False%></OPTION>
 </SELECT>
 
 <%ARGS>
@@ -10,4 +10,15 @@ $Name => undef
 $True => undef
 $False => undef
 $Default => undef
+$TrueDefault => undef
+$FalseDefault => undef
 </%ARGS>
+
+<%INIT>
+if ($Default !~ /true/i) {
+	$FalseDefault = "SELECTED";
+}
+else {
+	$TrueDefault = "SELECTED";
+}
+</%INIT>

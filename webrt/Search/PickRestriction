@@ -4,19 +4,19 @@
 <ul>
 <li>
 <& /Elements/Checkbox, Name => "LimitOwner" &> 
-	Owner is  <& /Elements/SelectBoolean, Name => "NegateOwner", True => "is", False => "isn't" &>  
+	Owner is  <& /Elements/SelectBoolean, Name => "NegateOwner", True => "isn't", False => "is", Default=> "False" &>  
 	<& /Elements/SelectOwner, Name => "ValueOfOwner" &>
 
 <li><& /Elements/Checkbox, Name => "LimitRequestor" &> 
-	Requestor email address <& /Elements/SelectBoolean, Name => "NegateRequestor", True => "matches", False => "does not match" &> 
+	Requestor email address <& /Elements/SelectBoolean, Name => "NegateRequestor", False => "matches", True => "does not match" &> 
 	<INPUT Name="ValueOfRequestor" SIZE=20>
 
 <li><& /Elements/Checkbox, Name => "LimitSubject" &>
-Subject <& /Elements/SelectBoolean, Name => "NegateSubject", True => "matches", False => "does not match" &> 
+Subject <& /Elements/SelectBoolean, Name => "NegateSubject", False => "matches", True => "does not match" &> 
 	<INPUT Name="ValueOfSubject" SIZE=20>
 
 <li><& /Elements/Checkbox, Name => "LimitQueue" &>
-Queue  <& /Elements/SelectBoolean, Name => "NegateOwner" , True => "is", False => "isn't" &>
+Queue  <& /Elements/SelectBoolean, Name => "NegateQueue" , False => "is", True => "isn't" &>
 	<& /Elements/SelectQueue, name => "ValueOfQueue" &>
 
 <li><& /Elements/Checkbox, Name => "LimitCreated" &>
@@ -32,14 +32,15 @@ Created <& /Elements/SelectDateRelation, Name=>"OpCreated" &>
 	<& /Elements/SelectDate, Name => "ValueOfLastUpdate" &>
 
 <li><& /Elements/Checkbox, Name => "LimitContent" &>
-	Ticket content  <& /Elements/SelectBoolean, Name => "NegateRequestor", True => "matches", False => "does not match" &> 
+	Ticket content  <& /Elements/SelectBoolean, Name => "NegateContent", False => "matches", True => "does not match", Default => "False" &> 
 	<Input Name="ValueOfContent" Size=20>
 
 <li><& /Elements/Checkbox, Name => "LimitStatus" &>
-Status <& /Elements/SelectBoolean, Name => "NegateStatus", True => "is", False => "isn't" &>  
+Status <& /Elements/SelectBoolean, Name => "NegateStatus", False => "is", True => "isn't", Default => "False" &>  
 	<& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
 </pre>
 </blockquote>
 <input type=submit>
 </FORM>
+

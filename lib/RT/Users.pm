@@ -3,8 +3,8 @@
 # This software is redistributable under the terms of the GNU GPL
 
 package RT::Users;
-use DBIx::EasySearch;
-@ISA= qw(DBIx::EasySearch);
+use RT::EasySearch;
+@ISA= qw(RT::EasySearch);
 
 
 # {{{ sub new 
@@ -33,7 +33,7 @@ sub NewItem  {
   my $self = shift;
   my $Handle = shift;
   my $item;
-  $item = new RT::User($self->{'user'}, $Handle);
+  $item = new RT::User($self->{'user'});
   return($item);
 }
 # }}}
