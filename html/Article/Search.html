@@ -1,10 +1,7 @@
 <& /Elements/Header, title => "Search for articles" &>
 <& /RTFM/Elements/Tabs&>
 
-% use Data::Dumper;
-<pre>
-<%Dumper($articles)%>
-</pre>
+% unless ($ARGS{'Action'} eq loc('Refine')) {
 <ul>
 % while (my $article = $articles->Next) {
 
@@ -13,7 +10,7 @@
 </li>
 % }
 </ul>
-
+% }
 <h2>Search</h2>
 
 <form target="Search.html" method="GET">
@@ -28,12 +25,24 @@ $ARGS{'Class'} &>
 <input name="Summary" value="<%$ARGS{'Summary'}%>">
 
 <br>Created between
-<& /Elements/SelectDate, Name=>"CreatedBefore", Default => $ARGS{'CreatedBefore'}&>
-and <& /Elements/SelectDate, Name=>"CreatedAfter", Default =>  $ARGS{'CreatedAfter'}&>
+<& /Elements/SelectDate, Name=>"CreatedAfter", Default =>
+($dates{'CreatedAfter'} ? $dates{'CreatedAfter'}->AsString : '') &>
+and 
+<& /Elements/SelectDate, Name=>"CreatedBefore", Default =>
+($dates{'CreatedBefore'} ? $dates{'CreatedBefore'}->AsString:'')&>
 
 <br>Updated between
-<& /Elements/SelectDate, Name=>"UpdatedBefore", Default => $ARGS{'UpdatedBefore'}&>
-and <& /Elements/SelectDate, Name=>"UpdatedAfter", Default =>  $ARGS{'UpdatedAfter'}&>
+<& /Elements/SelectDate, Name=>"LastUpdatedAfter", Default =>
+($dates{'LastUpdatedAfter'} ? $dates{'LastUpdatedAfter'}->AsString:'')&>
+and 
+<& /Elements/SelectDate, Name=>"LastUpdatedBefore", Default => 
+($dates{'LastUpdatedBefore'} ? $dates{'LastUpdatedBefore'}->AsString:'')&>
+<br>
+Which refer to <input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
+<i>Seperate multiple URLs with spaces</i>
+<br>
+Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
+<i>Seperate multiple URLs with spaces</i>
 
 
 <table>
@@ -97,13 +106,48 @@ foreach my $arg ( keys %ARGS ) {
     }
 }
 
+my %dates;
+foreach my $date qw(CreatedBefore CreatedAfter LastUpdatedBefore LastUpdatedAfter) {
+    next unless ($ARGS{$date});
+    my $seconds = parsedate ($ARGS{$date}, FUZZY => 1, PREFER_PAST => 1);
+    my $date_obj = RT::Date->new($session{'CurrentUser'});
+    $date_obj->Set( Format => 'unix', Value => $seconds);
+    $dates{$date} = $date_obj;
+
+    if ($date =~ /^(.*?)Before$/i) {
+        $articles->Limit( FIELD => $1,
+                          OPERATOR => "<=",
+                          ENTRYAGGREGATOR => "AND",
+                          VALUE => $date_obj->ISO);
+    }
+
+    if ($date =~ /^(.*?)After$/i) {
+        $articles->Limit( FIELD => $1,
+                          OPERATOR => ">=",
+                          ENTRYAGGREGATOR => "AND",
+                          VALUE => $date_obj->ISO);
+    }
+
+}
+my $link;
+foreach $link (split (/\s+/,$RefersTo)) {
+    next unless ($link);
+    $articles->LimitRefersTo($link);
+}
+
+foreach $link (split(/\s+/,$ReferredToBy)) {
+    next unless ($link);
+    $articles->LimitReferredToBy($link);
+}
+
 
 </%init>
 <%ARGS>
 $CreatedBefore => ''
 $CreatedAfter => ''
-$UpdatedBefore => ''
-$UpdatedAfter => ''
-
+$LastUpdatedBefore => ''
+$LastUpdatedAfter => ''
+$RefersTo => undef
+$ReferredToBy => undef
 
 </%ARGS>

@@ -18,41 +18,4 @@
 
 RT/FAQ Manager is a tool for maintaining an organizational knowledgebase, including articles tagged with structured, site-defined metadata.
 
-RT/FM allows anyone to browse, search and read articles.
-
-Users who are marked as 'Editors' can create and edit articles.
-
-Users who are marked as 'Administrators' can modify what metadata is
-tracked about articles and can create, delete and modify users.
-
-
-1) Install some prerequisites:
-
-It needs HTML::Mason, apache, Apache::Session, mod_perl, DBI, DBIx::SearchBuilder, Log::Dispatch, MIME::Entity and likely some other stuff I'm forgetting at the moment.
-
-
-2) Edit the makefile and 'make install',
-
-RT/FM will install its binaries, libraries and configuration file.
-
-
-3) Edit RT/FM's newly installed configuration file (etc/rtfm_config.pm),
-setting things like the mason data directory and the apache::session 
-session directory. 
-
-4) Configure apache to start RT/FM:
-
-PerlRequire /opt/rtfm/bin/webmux.pl
-Alias /fm /opt/rtfm/html
-
-<Location /fm>
- SetHandler perl-script
- PerlHandler RT::FM::Mason
-</Location>
-
-
-5) go check out RT/FM.  (When you want to get into the administrative functions,
-root's password is 'password')
-
-
-
+Required modules: Time::ParseDate

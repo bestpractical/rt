@@ -2,5 +2,6 @@
 use RT::FM::ArticleCollection;
 use RT::FM::ClassCollection;
 use RT::FM::CustomFieldCollection;
+use Time::ParseDate;
 $m->call_next();
 </%init>
