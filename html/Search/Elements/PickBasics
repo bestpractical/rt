@@ -23,59 +23,12 @@
 %# END LICENSE BLOCK
 <& /Elements/TitleBoxStart, title => loc('Ticket Basics')&>
 <table>
+<tr><td>
+<table>
 % foreach my $field (@fields1) {
 <tr><td align=right>
-% if ($field eq "Status") {
-<&|/l&>Status</&>:
-</td><td>
-<& /Elements/SelectBoolean, Name => "StatusOp", 
-			    True => loc("is"), 
-  			    False => loc("isn't"), 
-			    TrueVal=> '=', 
-			    FalseVal => '!=' 
-&>  
-</td><td>
-<& /Elements/SelectStatus, Name => "ValueOfStatus", SkipDeleted => 1 &>
-% } elsif ($field eq "Subject") {
-<&|/l&>Subject</&>:
-</td><td>
-<& /Elements/SelectMatch, Name => "SubjectOp" &> 
-</td><td>
-<INPUT Name="ValueOfSubject" SIZE=30>
-% } elsif ($field eq "Queue") {
-<&|/l&>Queue</&>:
-</td><td>
-<& /Elements/SelectBoolean,  Name => "QueueOp" , 
-					True => loc("is"), 
-					False => loc("isn't"), 
-					TrueVal=> '=', 
-					FalseVal => '!=' &>
-</td><td>
-<& /Elements/SelectQueue, Name => "ValueOfQueue" &>
-% } elsif ($field =~ m/.*Priority/) {
-<&|/l&><%$field%></&>:
-</td><td>
-<& /Elements/SelectEqualityOperator, Name => $field . "Op" &>
-</td><td>
-<INPUT Name="<%"ValueOf" . $field%>" SIZE=5>
-% } elsif ($field eq "id") {
-<&|/l&>Id</&>:
-</td><td>
-<& /Elements/SelectEqualityOperator, Name => "idOp" &>
-</td><td>
-<INPUT Name="ValueOfid" SIZE=5>
-% } else {
-<&|/l&><%$field%></&>:
-</td><td>
-<& /Elements/SelectMatch, Name => "$field" . "Op" &>
-</td><td>
-<INPUT Name="<%"ValueOf" . $field%>" value=""SIZE=20>
-% }
-</td></tr>
-% }
-
-<tr><td align=right>
-<& /Elements/SelectAttachmentField, Name => 'AttachmentField' &>:
+% if ($field eq "Attachment") {
+<& /Elements/SelectAttachmentField, Name => 'AttachmentField' &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "AttachmentOp", 
 			    True => loc("matches"), 
@@ -85,17 +38,13 @@
 &> 
 </td><td>
 <Input Name="ValueOfAttachment" Size=20>
-</td></tr>
-
-<tr><td align=right>
-<& /Elements/SelectDateType, Name=>"DateField" &>:
+% } elsif ($field eq "Dates") {
+<& /Elements/SelectDateType, Name=>"DateField" &>
 </td><td>
 <& /Elements/SelectDateRelation, Name=>"DateOp" &>
 </td><td>
 <& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
-</td></tr>
-
-<tr><td align=right>
+% } elsif ($field eq "Links") {
 <& SelectLinks, Name=>"LinksField" &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "LinksOp", 
@@ -106,21 +55,92 @@
 &>  
 </td><td>
 <INPUT Name="ValueOfLinks" value="" SIZE=5>
+%} elsif ($field =~ m/.*Priority/ || $field =~ m/Time.*/) {
+<&|/l&><%$field%></&>
+</td><td>
+<& /Elements/SelectEqualityOperator, Name => $field . "Op" &>
+</td><td>
+<INPUT Name="<%"ValueOf" . $field%>" SIZE=5>
+% } else {
+<&|/l&><%$field%></&>
+</td><td>
+<& /Elements/SelectMatch, Name => "$field" . "Op" &>
+</td><td>
+<INPUT Name="<%"ValueOf" . $field%>" value=""SIZE=20>
+% }
+</td></tr>
+% }
+
 </td></tr>
 
 </table>
+</td>
+<td>
+<table>
+% foreach my $field (@fields2) {
+<tr><td align=right>
+% if ($field eq "Status") {
+<&|/l&>Status</&>
+</td><td>
+<& /Elements/SelectBoolean, Name => "StatusOp", 
+			    True => loc("is"), 
+  			    False => loc("isn't"), 
+			    TrueVal=> '=', 
+			    FalseVal => '!=' 
+&>  
+</td><td>
+<& /Elements/SelectStatus, Name => "ValueOfStatus", SkipDeleted => 1 &>
+%} elsif ($field =~ m/.*Priority/ || $field =~ m/Time.*/) {
+<&|/l&><%$field%></&>
+</td><td>
+<& /Elements/SelectEqualityOperator, Name => $field . "Op" &>
+</td><td>
+<INPUT Name="<%"ValueOf" . $field%>" SIZE=5>
+% } elsif ($field eq "Queue") {
+<&|/l&>Queue</&>
+</td><td>
+<& /Elements/SelectBoolean,  Name => "QueueOp" , 
+					True => loc("is"), 
+					False => loc("isn't"), 
+					TrueVal=> '=', 
+					FalseVal => '!=' &>
+</td><td>
+<& /Elements/SelectQueue, Name => "ValueOfQueue" &>
+% } elsif ($field eq "id") {
+<&|/l&>Id</&>
+</td><td>
+<& /Elements/SelectEqualityOperator, Name => "idOp" &>
+</td><td>
+<INPUT Name="ValueOfid" SIZE=5>
+% } else {
+<&|/l&><%$field%></&>
+</td><td>
+<& /Elements/SelectMatch, Name => "$field" . "Op" &>
+</td><td>
+<INPUT Name="<%"ValueOf" . $field%>" value="" SIZE=20>
+% }
+</td></tr>
+% }
+</table>
+</td></tr>
+</table>
+
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
 my @fields1 = ('Subject',
-	       'Queue',
-	       'Status',
+	       'Attachment',
+	       'Dates',
 	       'TimeLeft',
 	       'TimeWorked',
-	       'id',
+	       'Links',
+	       );
+
+my @fields2 = ('Queue',
+	       'Status',
 	       'Priority',
 	       'InitialPriority',
 	       'FinalPriority',
+	       'id',
 	       );
 </%INIT>
-
