@@ -119,7 +119,7 @@ sub LoadConfig {
 sub Init {
     require RT::Handle;
     #Get a database connection
-        unless ($Handle && $Handle->dbh->ping) {
+         unless ($Handle && $Handle->dbh && $Handle->dbh->ping) {
     $Handle = RT::Handle->new();
         } 
     $Handle->Connect();
