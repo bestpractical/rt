@@ -1,3 +1,33 @@
+26 Jun 98
+---------
+	
+	Well, Here's RT 0.9.17.  .9.15 and .9.16 were released over the past
+	several days and have most of the improvements in this new version.
+	
+	New:
+		* Documentation from <adam@apocalypse.org> (see rt/docs) 
+		 it's still in preliminary form, but it's here
+		* cleaned up admin interface
+		* bug fixes for mysql 3.21 (though there are issues with 
+		mysql 3.21 and the web interface that have been reported by SOME
+		users.
+
+		* Ingo Luetkebohle <ingo@devconsult.de> has contributed the 
+		  beginnings of code to allow an http server to perform 
+		  authentication for us. (Like apache-ssl with mod_mysql_auth)
+		  expect this in the next beta or so
+
+		* 3 and 5 minute refresh options in web-queue-view
+
+		* auto-configuration of cern httpd.conf files.  apache version
+		  coming soon.
+
+
+		* Eliminated apparent need for glimpse.  We're never going to 
+		  use it. Instead we'll just be going to mysql for transaction
+		  content by 1.1 or so.
+
+		A bunch of other stuff I've forgotten.	
 2 Apr 1998
 ----------
 
