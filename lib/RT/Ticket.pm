@@ -530,7 +530,8 @@ sub SetStatus {
 # {{{ sub Kill
 sub Kill {
   my $self = shift;
-  die "Ticket::Kill Unimplemented";
+  return ($self->SetStatus('dead'));
+  # TODO: garbage collection
 }
 # }}}
 
