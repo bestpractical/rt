@@ -245,7 +245,7 @@ $currentkey = $options[$ARGS{clauses}] if defined $ARGS{clauses};
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ) {
+    if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ne "") {
 	# We're adding a $1 clause
 	my $field = $1;
 	my ($keyword, $op, $value);
@@ -271,7 +271,7 @@ foreach my $arg ( keys %ARGS ) {
             # It has to be this way until #5182 is fixed
             $value = "'NULL'";
 	} else {
-            $value = "'NULL'";
+            $value = "'$value'";
         }
 
 	my $clause = {
