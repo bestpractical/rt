@@ -689,8 +689,12 @@ sub SetOwner {
 sub SetStatus { 
   my $self = shift;
   my $status = shift;
-  my $action = shift;
-  
+  my $action = 
+      $status eq 'open' ? 'Open' :
+      $status eq 'stalled' ? 'Stall' :
+      $status eq 'resolved' ? 'Resolve' :
+      $status eq 'dead' ? 'Kill' : 'huh?';
+
   if (($status ne 'open') and ($status ne 'stalled') and 
       ($status ne 'resolved') and ($status ne 'dead') ) {
     return (0,"That status is not valid.");
@@ -709,7 +713,7 @@ sub SetStatus {
 # {{{ sub Kill
 sub Kill {
   my $self = shift;
-  return ($self->SetStatus('dead', 'Kill'));
+  return ($self->SetStatus('dead'));
   # TODO: garbage collection
 }
 # }}}
@@ -717,21 +721,21 @@ sub Kill {
 # {{{ sub Stall
 sub Stall {
   my $self = shift;
-  return ($self->SetStatus('stalled', 'Stall'));
+  return ($self->SetStatus('stalled'));
 }
 # }}}
 
 # {{{ sub Owner
 sub Open {
   my $self = shift;
-  return ($self->SetStatus('open', 'Open'));
+  return ($self->SetStatus('open'));
 }
 # }}}
 
 # {{{ sub Resolve
 sub Resolve {
   my $self = shift;
-  return ($self->SetStatus('resolved', 'Resolve'));
+  return ($self->SetStatus('resolved'));
 }
 # }}}
 

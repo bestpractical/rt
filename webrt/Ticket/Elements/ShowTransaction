@@ -27,7 +27,8 @@
 
 
 <pre>
-<%$message->Headers%>
+<A HREF="Display.html?PickUpHeaders=<%$message->Id%>">Full headers</a>
+<%$message->NiceHeaders %>
 </pre>
 
 %   if ($message->ContentType =~ m{^(text/plain|message)} && length($message->Content)<13456) {

@@ -131,6 +131,7 @@ sub Create  {
 
 # }}}
 
+# {{{ UTILITIES
 
 # {{{ sub Quote - it might be possible to use the Mail::Internet
 # utility methods ... but I do have a slight feeling that we'd rather
@@ -216,9 +217,21 @@ sub Quote {
 }
 # }}}
 
+# {{{ sub NiceHeaders - pulls out only the most relevant headers
+sub NiceHeaders {
+    my $self=shift;
+    my $hdrs="";
+    for (split(/\n/,$self->Headers)) {
+	$hdrs.="$_\n"
+	    if /^(To|From|Cc|Date|Subject): /i
+    }
+    return $hdrs;
+}
+# }}}
 
+# }}}
 
-#ACCESS CONTROL
+# {{{ ACCESS CONTROL
 # 
 # {{{ sub DisplayPermitted 
 sub DisplayPermitted  {
@@ -275,5 +288,7 @@ sub AdminPermitted  {
     return(0);
   }
 }
+# }}}
+
 # }}}
 1;

@@ -11,3 +11,8 @@ KB         - Integration to Jesse's knowledge base.  -- TobiX
 
 folding.el - An emacs plugin.  This is the reason why we have all those
              weird # {{{ comments
+
+ApacheWrapper.pm - Replacement for the Apache object for CGI-users.
+
+ApacheSessionFile.pm - I had problems with Apache::Session, and made this
+             file.

@@ -65,6 +65,11 @@ elsif ($ARGS{'UpdateType'} eq 'response') {
     push(@Actions, $Description);
   }
 
+if ($ARGS{'Take'}) {
+    ($Transaction, $Description)=$Ticket->Take();
+    push(@Actions, $Description);
+}
+
 if ($ARGS{'SetStatus'} and ($ARGS{'SetStatus'} ne $Ticket->Status())) {
     ($Transaction, $Description)=$Ticket->SetStatus($ARGS{'SetStatus'});
     push(@Actions, $Description);
