@@ -77,17 +77,13 @@ my ($msg, $Users, $Groups);
 
 if ($UserString) {
     $Users = RT::Users->new($session{'CurrentUser'});
-    $Users->Limit(FIELD => $UserField,
-                 VALUE => $UserString,
-                 OPERATOR => $UserOp);
+    $Users->Limit(FIELD => $UserField, VALUE => $UserString, OPERATOR => $UserOp);
      }
 
 if ($GroupString) {
     $Groups = RT::Groups->new($session{'CurrentUser'});
     $Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
-    $Groups->Limit(FIELD => $ARGS{'GroupField'},
-		VALUE => $ARGS{'GroupString'},
-		OPERATOR => $ARGS{'GroupOp'});
+    $Groups->Limit(FIELD => $GroupField, VALUE => $GroupString, OPERATOR => $GroupOp);
      }
 
 </%INIT>
@@ -96,4 +92,7 @@ if ($GroupString) {
 $UserField => 'Name'
 $UserOp => '='
 $UserString => undef
+$GroupField => 'Name'
+GroupOp => '='
+GroupString => undef
 </%ARGS>
