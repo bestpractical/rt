@@ -27,11 +27,10 @@ use Log::Dispatch::File;
 # get it working.  I really don't want RT to break on such a stupid
 # thing as logging, so I'll leave logging to file as the default.
 
-# Version 1.11 of Log::Dispatch::File doesn't trail the message with a
-# newline, which might make the log file extremely messy.  You might
-# eventually hack it yourself.  Or I will eventually fix a
-# Log::Dispatch::LogFile, unless the next verson of Log::Dispatch is
-# likely to come around shortly.
+# I'm using a hacked version of Log::Dispatch::File here which trails
+# the messages with a newline.  For newer versions of Log::Dispatch, a
+# callback should be used.  I will eventually look more into this
+# later.
 
 $Logger=Log::Dispatch->new;
 $Logger->add(Log::Dispatch::File->new
@@ -41,15 +40,20 @@ $Logger->add(Log::Dispatch::File->new
 	       mode=>'append'
 	      ));
 
-# Different "tunable" configuration options should be in this hash:
-%SitePolicy=
+# Different "tunable" configuration options should be in those hashes:
+%SitePolicy=();
+%WebOptions=
     (
-     QueueListingCols => 
+     # This is for putting in more user-actions at the Transaction
+     # bar.  I will typically add "Enter bug in Bugzilla" here.:
+     ExtraTransactionActions => sub { return ""; },
+
      # Here you can modify the list view.  Be aware that the web
      # interface might crash if TicketAttribute is wrongly set.
      # Consult the docs (if somebody is going to write them?) your
      # local RT hacker or eventually the rt-users / rt-devel
      # mailinglists
+     QueueListingCols => 
       [
        { Header     => 'Ticket Id',
 	 TicketLink => 1,
@@ -102,7 +106,7 @@ $Logger->add(Log::Dispatch::File->new
 my %URI2HTTP=
     (
      'fsck.com-rt' => sub {warn "stub!";},
-     'mozilla.com-bugzilla' => sub {warn "stub!";},
+     'mozilla.org-bugzilla' => sub {warn "stub!";},
      'fsck.com-kb' => sub {warn "stub!"}
      );
     
