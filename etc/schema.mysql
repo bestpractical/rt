@@ -64,6 +64,7 @@ CREATE TABLE FM_Articles (
   Class integer NULL,
   Parent integer NULL,
 
+  URI varchar(255),
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,

@@ -48,6 +48,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'SortOrder'.
   int(11) 'Class'.
   int(11) 'Parent'.
+  varchar(255) 'URI'.
 
 =cut
 
@@ -62,6 +63,7 @@ sub Create {
                 SortOrder => '',
                 Class => '',
                 Parent => '',
+                URI => '',
 
 		  @_);
     $self->SUPER::Create(
@@ -70,6 +72,7 @@ sub Create {
                          SortOrder => $args{'SortOrder'},
                          Class => $args{'Class'},
                          Parent => $args{'Parent'},
+                         URI => $args{'URI'},
 );
 
 }
@@ -189,6 +192,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item URI
+
+Returns the current value of URI. 
+(In the database, URI is stored as varchar(255).)
+
+
+
+=item SetURI VALUE
+
+
+Set URI to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, URI will be stored as a varchar(255).)
+
+
+=cut
+
+
 =item Creator
 
 Returns the current value of Creator. 
@@ -241,6 +262,8 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         Parent => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
+        URI => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => ''},
         Created => 
