@@ -37,11 +37,14 @@ up and use.
 REQUIRED PACKAGES:
 ------------------
 
-o   Perl 5.8.0 or later (http://www.perl.com).
+o   Perl 5.8.3 or later (http://www.perl.com).
 
  	(If you intend to use the FastCGI or SpeedyCGI support, you 
 	 need to make sure that perl has been built with support for 
 	 setgid perl scripts.)`
+
+    Perl versions prior to 5.8.3 contain bugs that could result in data
+    corruption. We recommend strongly that you use 5.8.3 or newer.
 
     Perl 5.6.1 is currently deprecated and will be officially desupported
     in a future release
@@ -49,15 +52,7 @@ o   Perl 5.8.0 or later (http://www.perl.com).
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
         Currently supported:  Mysql 4.0.13 or later. 
                               Postgres 7.2 or later.
-
-                              Mysql 3.23.46 or newer with support for InnoDB 
-			      is currently deprecated and will be officially
-			      desupported in a future release.
-
-        Future support:       Oracle 9i.
-                              Oracle support has reached beta status and
-                              is being made available to further support
-                              this database for all RT functionality.
+                              Oracle 9iR2.
 
 o   Apache version 1.3.x or 2.x (http://httpd.apache.org) 
     with mod_perl -- (http://perl.apache.org ) 
