@@ -24,8 +24,7 @@
 <%PERL>
 my $rows = 10;
 my $people = $Ticket->Requestors->UserMembersObj;
-while (my $member=$people->Next) {
-my $requestor = $member->MemberObj->Object;
+while (my $requestor=$people->Next) {
 my $name=$requestor->RealName || $requestor->EmailAddress;	
 my $tickets = RT::Tickets->new($session{'CurrentUser'});
 $tickets->LimitWatcher(TYPE => 'Requestor', VALUE => $requestor->EmailAddress );
