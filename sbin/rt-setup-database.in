@@ -275,15 +275,15 @@ sub insert_acl {
     }
     elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
         do $base_path . "/acl.mysql"
-          || die "Couldn't find ACLS for mysql in " . $RT::EtcPath . "\n" . $@;
+          || die "Couldn't find ACLS for mysql in $base_path\n" . $@;
     }
     elsif ( $RT::DatabaseType =~ /^Sybase$/i ) {
         do $base_path . "/acl.Sybase"
-          || die "Couldn't find ACLS for Sybase in " . $RT::EtcPath . "\n" . $@;
+          || die "Couldn't find ACLS for Sybase in $base_path\n" . $@;
     }
     elsif ( $RT::DatabaseType =~ /^informix$/i ) {
         do $base_path . "/acl.Informix"
-          || die "Couldn't find ACLS for Informix in " . $RT::EtcPath . "\n" . $@;
+          || die "Couldn't find ACLS for Informix in $base_path\n" . $@;
     }
     elsif ( $RT::DatabaseType =~ /^SQLite$/i ) {
         return;
