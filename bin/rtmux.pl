@@ -17,9 +17,10 @@ push (@INC, "$rt_dir/lib/");
 
 require "$rt_dir/etc/config.pm";          
 
+my ($program) = shift @_;
 
 &initialize();
-if ($0 =~ '/rt$') {
+if ($program =~ '/rt$') {
   # load rt-cli
   require rt::ui::cli::support;
  
@@ -27,14 +28,14 @@ if ($0 =~ '/rt$') {
   require rt::database::manipulate; 
   &rt::ui::cli::manipulate::activate();
 }
-elsif ($0 =~ '/rtq$') {
+elsif ($program =~ '/rtq$') {
   # load rt-query
   require rt::database;      
   require rt::ui::cli::query;
   &rt::ui::cli::query::activate();
   
 }
-elsif ($0 =~ '/rtadmin$') {
+elsif ($program =~ '/rtadmin$') {
   #load rt_admin
   require rt::database::admin;
   require rt::support::utils;     
@@ -42,14 +43,14 @@ elsif ($0 =~ '/rtadmin$') {
   require rt::ui::cli::admin;
   &rt::ui::cli::admin::activate();
 }
-elsif ($0 =~ '/nph-webrt.cgi$') {
+elsif ($program =~ '/nph-webrt.cgi$') {
   #
   require rt::ui::web::support;
   require rt::ui::web::auth;     
   require rt::ui::web::manipulate;
   &rt::ui::web::activate();
 }
-elsif ($0 =~ '/nph-admin-webrt.cgi$') {
+elsif ($program =~ '/nph-admin-webrt.cgi$') {
   #load web-admin
   require rt::ui::web::support;
   require rt::ui::web::auth;
@@ -58,7 +59,7 @@ elsif ($0 =~ '/nph-admin-webrt.cgi$') {
   &rt::ui::web::activate();
 
 }
-elsif ($0 =~ '/rt-mailgate$') {
+elsif ($program =~ '/rt-mailgate$') {
   require rt::database::manipulate;
   require rt::support::utils;      
   require rt::support::mail;
@@ -66,7 +67,7 @@ elsif ($0 =~ '/rt-mailgate$') {
   &rt::ui::mail::manipulate::activate();
 }
 else {
-  print STDERR "RT Has been launched with an illegal launch program ($0)\n";
+  print STDERR "RT Has been launched with an illegal launch program ($program)\n";
   exit(1);
 }
 
