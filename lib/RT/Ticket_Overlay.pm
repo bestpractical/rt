@@ -420,12 +420,12 @@ sub Create {
                                        Right    => 'OwnTicket' ) )
       ) {
 
-        $RT::Logger->warning( "$self user "
+        $RT::Logger->warning( "User "
                               . $Owner->Name . "("
                               . $Owner->id
                               . ") was proposed "
                               . "as a ticket owner but has no rights to own "
-                              . "tickets in this queue\n" );
+                              . "tickets in ".$QueueObj->Name );
 
         push @non_fatal_errors, $self->loc("Invalid owner. Defaulting to 'nobody'.");
 
@@ -499,7 +499,6 @@ sub Create {
 	    # this is the only way to can add
 	    my $field = 'Email';
 	    $field = 'PrincipalId' if $watcher =~ /^\d+$/;
-	    $RT::Logger->info("Putting principal $watcher as $field");
 
 	    my ( $wval, $wmsg );
 

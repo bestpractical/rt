@@ -205,10 +205,10 @@ sub _parser {
   } # while
 
   die "Incomplete query"
-    unless ($want | PAREN || $want | KEYWORD );
+    unless (($want | PAREN) || ($want | KEYWORD));
 
   die "Incomplete Query"
-    unless ($last | PAREN || $last || VALUE );
+    unless ($last && ($last | PAREN) || ($last || VALUE));
 
   # This will never happen, because the parser will complain
   die "Mismatched parentheses"
@@ -231,7 +231,7 @@ sub ClausesToSQL {
     my $first = 1;
 
     # Build SQL from the data hash
-    for my $data ( @{ $clauses->{$f} } ) {
+     for my $data ( @{ $clauses->{$f} } ) {
       $sql .= $data->[0] unless $first; $first=0;
       $sql .= " '". $data->[2] . "' ";
       $sql .= $data->[3] . " ";
@@ -253,16 +253,19 @@ sub FromSQL {
 
   $self->CleanSlate;
 
+   return unless $query;
+
   $self->{_sql_query} = $query;
   $self->_parser( $query );
 
   # We only want to look at EffectiveId's (mostly) for these searches.
-  $self->SUPER::Limit( FIELD => 'EffectiveId',
-                ENTRYAGGREGATOR => 'aNd',
-                OPERATOR => '=',
-                QUOTEVALUE => 0,
-                VALUE => 'main.id');   #TODO, we shouldn't be hard
-                                       #coding the tablename to main.
+  $self->SUPER::Limit( FIELD           => 'EffectiveId',
+                     ENTRYAGGREGATOR => 'AND',
+                     OPERATOR        => '=',
+                     QUOTEVALUE      => 0,
+                     VALUE           => 'main.id'
+    );    #TODO, we shouldn't be hard
+      #coding the tablename to main.
 
   # FIXME: Need to bring this logic back in
 

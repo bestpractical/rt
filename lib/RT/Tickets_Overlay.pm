@@ -1885,20 +1885,34 @@ sub _ProcessRestrictions {
 	unless (exists $FIELDS{$field}
 		or $restriction->{CUSTOMFIELD});
 
-      my $type = $FIELDS{$field}->[0];
-      my $op = $restriction->{'OPERATOR'};
-      my $value = ( $restriction->{'VALUE'}
-		    || $restriction->{'TICKET'}
-		    || $restriction->{'BASE'}
-		    || $restriction->{'TARGET'}
-		  );
-      my $ea =  $DefaultEA{$type};
-      if (ref $ea) {
-	die "Invalid operator $op for $field ($type)"
-	  unless exists $ea->{$op};
-	$ea = $ea->{$op};
-      }
-      exists $clause{$field} or $clause{$field} = [];
+    my $type = $FIELDS{$field}->[0];
+    my $op   = $restriction->{'OPERATOR'};
+
+    my $value = ( grep { defined }
+                    map { $restriction->{$_} } qw(VALUE TICKET BASE TARGET))[0];
+
+    # this performs the moral equivalent of defined or/dor/C<//>,
+    # without the short circuiting.You need to use a 'defined or'
+    # type thing instead of just checking for truth values, because
+    # VALUE could be 0.(i.e. "false")
+
+    # You could also use this, but I find it less aesthetic:
+    # (although it does short circuit)
+    #( defined $restriction->{'VALUE'}? $restriction->{VALUE} :
+    # defined $restriction->{'TICKET'} ?
+    # $restriction->{TICKET} :
+    # defined $restriction->{'BASE'} ?
+    # $restriction->{BASE} :
+    # defined $restriction->{'TARGET'} ?
+    # $restriction->{TARGET} )
+
+    my $ea = $DefaultEA{$type};
+    if ( ref $ea ) {
+        die "Invalid operator $op for $field ($type)"
+          unless exists $ea->{$op};
+        $ea = $ea->{$op};
+    }
+    exists $clause{$field} or $clause{$field} = [];
 
       my $data = [ $ea, $type, $field, $op, $value ];
 
