@@ -747,7 +747,7 @@ sub ProcessTicketObjectKeywords {
 	     );
   
   my $TicketObj = $args{'TicketObj'};
-  my %ARGSRef = $args{'ARGSRef'};
+  my $ARGSRef = $args{'ARGSRef'};
 
   my (@results);
   
