@@ -591,6 +591,9 @@ sub LoadOrCreateByEmail {
         $self->LoadByEmail($email);
         $message = $self->loc('User loaded');
         unless ($self->Id) {
+		$self->Load($email);
+	}
+	unless($self->Id) {
             ( $val, $message ) = $self->Create(
                 Name => $email,
                 EmailAddress => $email,
