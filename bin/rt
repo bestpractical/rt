@@ -91,7 +91,7 @@ my ( @id,
      $edit,
      @dependson,
      @memberof, 
-     @relatedto,
+     @refersto,
      @keywords,
      $time_taken,
      $verbose,
@@ -146,7 +146,7 @@ my @args =("id=s" => \@id,
 	   "edit!" => \$edit,
 	   "depends-on=s" => \@dependson,
 	   "member-of=s" => \@memberof, 
-	   "related-to=s" => \@relatedto,
+	   "refers-to=s" => \@refersto,
 	   "time-left=i" => \$time_left,
 	   "time-taken=i" => \$time_taken,
 	   "verbose+" => \$verbose,
@@ -262,7 +262,7 @@ Attributes
 
 	   --depends-on=[+|-]<ticketid>
 	   --member-of=[+|-]<ticketid>
-	   --related-to=[+|-]<ticketid>
+	   --refers-to=[+|-]<ticketid>
 
 Comments and replies
 
@@ -505,8 +505,10 @@ else {
 	my $format_string = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "%id4%subject20";
 
 	($format, $titles, $code) = BuildListingFormat($format_string);
-    }	
-    printf $format ."\n", eval $titles;
+        printf "$format\n", eval "$titles";
+   }	
+
+ 
 
     while (my $Ticket = $Tickets->Next()) {
 	debug ("Now working on ticket ". $Ticket->id);
@@ -590,28 +592,62 @@ else {
 	# {{{ deal with links
 	
 	# add /delete depends-ons
-	my $value;
-	foreach $value (@dependson) {
+
+	foreach my $value (@dependson) {
 	    if ($value =~ /^(\W?)(.*)$/) {
 		my $op = $1;
 		my $ticket = $2;
 		if ($op eq '+') {
 		    my ($trans, $msg) =
-		      $Ticket->AddDependency(Target => $ticket);
+		      $Ticket->AddLink(Type => 'DependsOn', Target => $ticket);
 		    print $msg;
 		}
 		elsif ($op eq '-') {
 		    my ($trans, $msg) = 
-		      $Ticket->DeleteDependency(Target => $ticket);
+		      $Ticket->DeleteLink(Type => 'DependsOn', Target => $ticket);
 		    print $msg;
 		}
 
 	    }
 	}
 	# add /delete member-of
-	
-	# add / delete related-to
-	
+	foreach my $value (@memberof) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $ticket = $2;
+		if ($op eq '+') {
+		    my ($trans, $msg) =
+		      $Ticket->AddLink(Type => 'MemberOf', Target => $ticket);
+		    print $msg;
+		}
+		elsif ($op eq '-') {
+		    my ($trans, $msg) = 
+		      $Ticket->DeleteLink(Type => 'MemberOf', Target => $ticket);
+		    print $msg;
+		}
+
+	    }
+	}	
+	# add / delete refers-to
+		foreach my $value (@refersto) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $ticket = $2;
+		if ($op eq '+') {
+		    my ($trans, $msg) =
+		      $Ticket->AddLink(Type => 'RefersTo', Target => $ticket);
+		    print $msg;
+		}
+		elsif ($op eq '-') {
+		    my ($trans, $msg) = 
+		      $Ticket->DeleteLink(Type => 'RefersTo', Target => $ticket);
+		    print $msg;
+		}
+
+	    }
+	}
+
+
 	# }}}
 	
 	# {{{ deal with dates
@@ -1012,7 +1048,7 @@ sub ParseDateRange {
 
     }	
     
-    return ($startobj->ISO, $endobj->ISO);
+    return ($start_obj->ISO, $end_obj->ISO);
     
     
     
@@ -1052,6 +1088,7 @@ sub ParseRange {
 # }}}
 	  
 # {{{ sub ShowSummary 
+
 sub ShowSummary  {
     my $Ticket = shift;
 
@@ -1098,6 +1135,7 @@ print "Dependencies: \n";
        print "This ticket ",$l->Type," ",$l->TargetObj->Id," (",$l->TargetObj->Subject,")\n";
    }
 }
+
 # }}}
 
 # {{{ sub ShowHistory 
@@ -1266,4 +1304,3 @@ sub BuildListingFormat {
 
 
 1;
-
