@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <ul>
 %# Print out a placeholder if there are none.
 %if ($Members->Count == 0 ) {

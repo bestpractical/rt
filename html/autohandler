@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <%INIT>
 
 # Roll back any dangling transactions from a previous failed connection

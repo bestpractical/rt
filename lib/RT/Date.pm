@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 =head1 NAME
 
   RT::Date - a simple Object Oriented date.
@@ -186,18 +187,16 @@ sub Set {
 
                 $self->Unix(-1) unless $self->Unix;
             }
-        }
-        else {
-            use Carp;
-            Carp::cluck;
-            $RT::Logger->debug(
-                     "Couldn't parse date $args{'Value'} as a $args{'Format'}");
-
+        } else {
+        require Time::ParseDate;
+	        my $date = Time::ParseDate::parsedate($args{'Value'},  GMT => 1);
+            return ( $self->Set( Format => 'unix', Value => "$date" ) );
+             
         }
     }
     elsif ( $args{'Format'} =~ /^unknown$/i ) {
-        require Time::ParseDate;
 
+        require Time::ParseDate;
         #Convert it to an ISO format string
 
 	my $date = Time::ParseDate::parsedate($args{'Value'},

@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <%INIT>
 if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
     $r->content_type("text/plain");

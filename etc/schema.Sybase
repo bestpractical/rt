@@ -1,9 +1,10 @@
 # {{{ Attachments
+USE rt3regression;
 
-CREATE TABLE rt3.Attachments (
+CREATE TABLE Attachments (
   id numeric(38,0) identity,
-  TransactionId integer NOT NULL  ,
-  Parent integer NOT NULL   ,
+  TransactionId integer DEFAULT 0    ,
+  Parent integer DEFAULT 0     ,
   MessageId varchar(160) NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
@@ -11,94 +12,94 @@ CREATE TABLE rt3.Attachments (
   ContentEncoding varchar(80) NULL  ,
   Content TEXT NULL  ,
   Headers TEXT NULL  ,
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX Attachments1 ON Attachments (Parent) ;
-CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
-CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
+#CREATE INDEX Attachments1 ON Attachments (Parent) ;
+#CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
+#CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 # }}}
 
 # {{{ Queues
-CREATE TABLE rt3.Queues (
+CREATE TABLE Queues (
   id numeric(38,0) identity,
-  Name varchar(200) NOT NULL  ,
+  Name varchar(200)   ,
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
   CommentAddress varchar(120) NULL  ,
-  InitialPriority integer NOT NULL   ,
-  FinalPriority integer NOT NULL   ,
-  DefaultDueIn integer NOT NULL   ,
-  Creator integer NOT NULL   ,
+  InitialPriority integer DEFAULT 0     ,
+  FinalPriority integer DEFAULT 0     ,
+  DefaultDueIn integer DEFAULT 0     ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
-  Disabled numeric(1) NOT NULL  ,
+  Disabled numeric(1) DEFAULT 0    ,
   PRIMARY KEY (id)
 ) ;
 CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
-CREATE INDEX Queues2 ON Queues (Disabled) ;
+#CREATE INDEX Queues2 ON Queues (Disabled) ;
 
 # }}}
 
 # {{{ Links
 
-CREATE TABLE rt3.Links (
+CREATE TABLE Links (
   id numeric(38,0) identity,
   Base varchar(240) NULL  ,
   Target varchar(240) NULL  ,
-  Type varchar(20) NOT NULL  ,
-  LocalTarget integer NOT NULL   ,
-  LocalBase integer NOT NULL   ,
-  LastUpdatedBy integer NOT NULL   ,
+  Type varchar(20)   ,
+  LocalTarget integer DEFAULT 0     ,
+  LocalBase integer DEFAULT 0     ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
 
 CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
-CREATE INDEX Links2 ON Links (Base,  Type) ;
-CREATE INDEX Links3 ON Links (Target,  Type) ;
-CREATE INDEX Links4 ON Links(Type,LocalBase);
+#CREATE INDEX Links2 ON Links (Base,  Type) ;
+#CREATE INDEX Links3 ON Links (Target,  Type) ;
+#CREATE INDEX Links4 ON Links(Type,LocalBase);
 
 # }}}
 
 # {{{ Principals
 
-CREATE TABLE rt3.Principals (
+CREATE TABLE Principals (
       id numeric(38,0) identity,
-        PrincipalType VARCHAR(16) not null,
-        ObjectId integer,         Disabled numeric(1) NOT NULL  ,
+        PrincipalType VARCHAR(16) ,
+        ObjectId integer DEFAULT 0 ,         Disabled numeric(1) DEFAULT 0    ,
         PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX Principals2 ON Principals (ObjectId);
+#CREATE INDEX Principals2 ON Principals (ObjectId);
 
 # }}}
 
 # {{{ Groups
 
-CREATE TABLE rt3.Groups (
-  id numeric(38,0) identity,
+CREATE TABLE Groups (
+  id numeric(38,0),
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
-  Instance integer,
+  Instance integer DEFAULT 0 ,
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
-CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);   
+#CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
+#CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);   
 
 # }}}
 
 # {{{ ScripConditions
 
-CREATE TABLE rt3.ScripConditions (
+CREATE TABLE ScripConditions (
   id numeric(38,0) identity,
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
@@ -106,9 +107,9 @@ CREATE TABLE rt3.ScripConditions (
   Argument varchar(255) NULL  ,
   ApplicableTransTypes varchar(60) NULL  ,
 
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
@@ -116,44 +117,44 @@ CREATE TABLE rt3.ScripConditions (
 # }}}
 
 # {{{ Transactions
-CREATE TABLE rt3.Transactions (
+CREATE TABLE Transactions (
   id numeric(38,0) identity,
-  EffectiveTicket integer NOT NULL   ,
-  Ticket integer NOT NULL   ,
-  TimeTaken integer NOT NULL   ,
-  Type varchar(20) NULL  ,
-  Field varchar(40) NULL  ,
-  OldValue varchar(255) NULL  ,
-  NewValue varchar(255) NULL  ,
-  Data varchar(255) NULL  ,
+  EffectiveTicket integer DEFAULT 0     NOT NULL,
+  Ticket integer DEFAULT 0     NOT NULL,
+  TimeTaken integer DEFAULT 0     NOT NULL,
+  Type varchar(20) DEFAULT '' NOT NULL  ,
+  Field varchar(40) DEFAULT '' NOT NULL  ,
+  OldValue varchar(255) DEFAULT '' NOT NULL  ,
+  NewValue varchar(255) DEFAULT '' NOT NULL  ,
+  Data varchar(255) DEFAULT '' NOT NULL  ,
 
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
-CREATE INDEX Transactions1 ON Transactions (Ticket);
-CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
+#CREATE INDEX Transactions1 ON Transactions (Ticket);
+#CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 
 # }}}
 
 # {{{ Scrips 
 
-CREATE TABLE rt3.Scrips (
+CREATE TABLE Scrips (
   id numeric(38,0) identity,
   Description varchar(255),
-  ScripCondition integer NOT NULL   ,
-  ScripAction integer NOT NULL   ,
+  ScripCondition integer DEFAULT 0     ,
+  ScripAction integer DEFAULT 0     ,
   ConditionRules text NULL  ,
   ActionRules text NULL  ,
   CustomIsApplicableCode text NULL  ,
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,
   Stage varchar(32) NULL  ,
-  Queue integer NOT NULL   ,
-  Template integer NOT NULL   ,
-  Creator integer NOT NULL   ,
+  Queue integer DEFAULT 0     ,
+  Template integer DEFAULT 0     ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
@@ -161,29 +162,29 @@ CREATE TABLE rt3.Scrips (
 # }}}
 
 # {{{ ACL
-CREATE TABLE rt3.ACL (
+CREATE TABLE ACL (
   id numeric(38,0) identity,
-  PrincipalType varchar(25) NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
+  PrincipalType varchar(25) , #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
 
-  PrincipalId integer NOT NULL  , #Foreign key to principals
-  RightName varchar(25) NOT NULL  ,
-  ObjectType varchar(25) NOT NULL  ,
-  ObjectId integer NOT NULL ,
-  DelegatedBy integer NOT NULL , #foreign key to principals with a userid
-  DelegatedFrom integer NOT NULL , #foreign key to ACL
+  PrincipalId integer DEFAULT 0    , #Foreign key to principals
+  RightName varchar(25)   ,
+  ObjectType varchar(25)   ,
+  ObjectId integer DEFAULT 0   ,
+  DelegatedBy integer DEFAULT 0    , #foreign key to principals with a userid
+  DelegatedFrom integer DEFAULT 0   , #foreign key to ACL
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
+#CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
 
 # }}}
 
 # {{{ GroupMembers 
 
-CREATE TABLE rt3.GroupMembers (
+CREATE TABLE GroupMembers (
   id numeric(38,0) identity,
-  GroupId integer NOT NULL ,
-  MemberId integer NOT NULL ,  #Foreign key to Principals
+  GroupId integer DEFAULT 0   ,
+  MemberId integer DEFAULT 0   ,  #Foreign key to Principals
   PRIMARY KEY (id)
 ) ;
 CREATE UNIQUE INDEX GroupMembers1 on GroupMembers (GroupId, MemberId);
@@ -193,7 +194,7 @@ CREATE UNIQUE INDEX GroupMembers1 on GroupMembers (GroupId, MemberId);
 
 # {{{ GroupMembersCache
 
-CREATE TABLE rt3.CachedGroupMembers (
+CREATE TABLE CachedGroupMembers (
   id numeric(38,0) identity,
         GroupId int, # foreign key to Principals
         MemberId int, # foreign key to Principals
@@ -201,7 +202,7 @@ CREATE TABLE rt3.CachedGroupMembers (
         ImmediateParentId int, #foreign key to prinicpals.         
                                # this points to the group that the member is
                                # a member of, for ease of deletes.
-        Disabled numeric(1) NOT NULL  , # if this cached group member is a member of this group by way of a disabled
+        Disabled numeric(1) DEFAULT 0    , # if this cached group member is a member of this group by way of a disabled
                                            # group or this group is disabled, this will be set to 1
                                            # this allows us to not find members of disabled subgroups when listing off
                                            # group members recursively.
@@ -209,16 +210,16 @@ CREATE TABLE rt3.CachedGroupMembers (
         PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
-CREATE INDEX GrouMem  on CachedGroupMembers (GroupId,MemberId);
+#CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
+#CREATE INDEX GrouMem  on CachedGroupMembers (GroupId,MemberId);
 
 # }}}
 
 # {{{ Users
 
-CREATE TABLE rt3.Users (
-  id numeric(38,0) identity,
-  Name varchar(200) NOT NULL  ,
+CREATE TABLE Users (
+  id numeric(38,0),
+  Name varchar(200)   ,
   Password varchar(40) NULL  ,
   Comments text NULL  ,
   Signature text NULL  ,
@@ -248,40 +249,40 @@ CREATE TABLE rt3.Users (
   Timezone varchar(50) NULL  ,
   PGPKey text NULL,
 
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
 
 
 CREATE UNIQUE INDEX Users1 ON Users (Name) ;
-CREATE INDEX Users2 ON Users (Name);
-CREATE INDEX Users3 ON Users (id, EmailAddress);
-CREATE INDEX Users4 ON Users (EmailAddress);
+#CREATE INDEX Users2 ON Users (Name);
+#CREATE INDEX Users3 ON Users (id, EmailAddress);
+#CREATE INDEX Users4 ON Users (EmailAddress);
 
 
 # }}}
 
 # {{{ Tickets
 
-CREATE TABLE rt3.Tickets (
+CREATE TABLE Tickets (
   id numeric(38,0) identity,
-  EffectiveId integer NOT NULL   ,
-  Queue integer NOT NULL   ,
+  EffectiveId integer DEFAULT 0     ,
+  Queue integer DEFAULT 0     ,
   Type varchar(16) NULL  ,
-  IssueStatement integer NOT NULL   ,
-  Resolution integer NOT NULL   ,
-  Owner integer NOT NULL   ,
+  IssueStatement integer DEFAULT 0     ,
+  Resolution integer DEFAULT 0     ,
+  Owner integer DEFAULT 0     ,
   Subject varchar(200) NULL,
-  InitialPriority integer NOT NULL   ,
-  FinalPriority integer NOT NULL   ,
-  Priority integer NOT NULL   ,
-  TimeEstimated integer NOT NULL   ,
-  TimeWorked integer NOT NULL   ,
+  InitialPriority integer DEFAULT 0     ,
+  FinalPriority integer DEFAULT 0     ,
+  Priority integer DEFAULT 0 ,
+  TimeEstimated integer DEFAULT 0     ,
+  TimeWorked integer DEFAULT 0     ,
   Status varchar(10) NULL  ,
-  TimeLeft integer NOT NULL   ,
+  TimeLeft integer DEFAULT 0     ,
   Told DATETIME NULL  ,
   Starts DATETIME NULL  ,
   Started DATETIME NULL  ,
@@ -289,34 +290,34 @@ CREATE TABLE rt3.Tickets (
   Resolved DATETIME NULL  ,
 
 
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  Disabled numeric(1) NOT NULL  ,
+  Disabled numeric(1) DEFAULT 0 ,
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
-CREATE INDEX Tickets2 ON Tickets (Owner) ;
-CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
-CREATE INDEX Tickets4 ON Tickets (id, Status) ;
-CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
-CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
+#CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
+#CREATE INDEX Tickets2 ON Tickets (Owner) ;
+#CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
+#CREATE INDEX Tickets4 ON Tickets (id, Status) ;
+#CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
+#CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
 
 # }}}
 
 # {{{ ScripActions
 
-CREATE TABLE rt3.ScripActions (
+CREATE TABLE ScripActions (
   id numeric(38,0) identity,
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
@@ -325,18 +326,18 @@ CREATE TABLE rt3.ScripActions (
 
 # {{{ Templates
 
-CREATE TABLE rt3.Templates (
+CREATE TABLE Templates (
   id numeric(38,0) identity,
-  Queue integer NOT NULL  ,
-  Name varchar(200) NOT NULL  ,
+  Queue integer DEFAULT 0    ,
+  Name varchar(200)   ,
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
-  TranslationOf integer NOT NULL   ,
+  TranslationOf integer DEFAULT 0     ,
   Content text NULL  ,
   LastUpdated DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
-  Creator integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
@@ -345,87 +346,87 @@ CREATE TABLE rt3.Templates (
 
 # {{{ TicketCustomFieldValues 
 
-CREATE TABLE rt3.TicketCustomFieldValues (
+CREATE TABLE TicketCustomFieldValues (
   id numeric(38,0) identity,
-  Ticket int NOT NULL  ,
-  CustomField int NOT NULL  ,
+  Ticket int   ,
+  CustomField int   ,
   Content varchar(255) NULL  ,
 
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
-CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
+#CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
+#CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
 
 # }}}
 
 # {{{ CustomFields
 
-CREATE TABLE rt3.CustomFields (
+CREATE TABLE CustomFields (
   id numeric(38,0) identity,
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
-  Queue integer NOT NULL  ,
+  Queue integer DEFAULT 0    ,
   Description varchar(255) NULL  ,
-  SortOrder integer NOT NULL   ,
+  SortOrder integer DEFAULT 0     ,
 
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
-  Disabled numeric(1) NOT NULL  ,
+  Disabled numeric(1) DEFAULT 0    ,
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX CustomFields1 on CustomFields (Disabled, Queue);
+#CREATE INDEX CustomFields1 on CustomFields (Disabled, Queue);
 
 
 # }}}
 
 # {{{ CustomFieldValues 
 
-CREATE TABLE rt3.CustomFieldValues (
+CREATE TABLE CustomFieldValues (
   id numeric(38,0) identity,
-  CustomField int NOT NULL  ,
+  CustomField int   ,
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
-  SortOrder integer NOT NULL   ,
+  SortOrder integer DEFAULT 0     ,
 
-  Creator integer NOT NULL   ,
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
+#CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
  
 # }}}
 
 
 # {{{ Attributes
 
-CREATE TABLE rt3.Attributes (
+CREATE TABLE Attributes (
   id numeric(38,0) identity,
   Name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
   Content text,
   ContentType varchar(16),
   ObjectType varchar(64),
-  ObjectId integer, # foreign key to anything
-  Creator integer NOT NULL   ,
+  ObjectId integer DEFAULT 0 , # foreign key to anything
+  Creator integer DEFAULT 0     ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NOT NULL   ,
+  LastUpdatedBy integer DEFAULT 0     ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+#CREATE INDEX Attributes1 on Attributes(Name);
+#CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 
 # }}}
 
@@ -434,8 +435,8 @@ CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
 # sessions is used by Apache::Session to keep sessions in the database.
 # We should have a reaper script somewhere.
 
-CREATE TABLE rt3.sessions (
-    id char(32) NOT NULL,
+CREATE TABLE sessions (
+    id char(32) ,
     a_session TEXT,
     LastUpdated DATETIME,
     PRIMARY KEY (id)

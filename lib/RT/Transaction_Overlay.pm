@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 =head1 NAME
 
   RT::Transaction - RT\'s transaction object
@@ -100,9 +101,9 @@ sub Create {
         Ticket         => 0,
         Type           => 'undefined',
         Data           => '',
-        Field          => undef,
-        OldValue       => undef,
-        NewValue       => undef,
+        Field          => '',
+        OldValue       => '',
+        NewValue       => '',
         MIMEObj        => undef,
         ActivateScrips => 1,
         CommitScrips => 1,
@@ -133,7 +134,7 @@ sub Create {
  
     my $id = $self->SUPER::Create(%params);
     $self->Load($id);
-    $self->_Attach( $args{'MIMEObj'} ) if defined $args{'MIMEObj'};
+    $self->_Attach( $args{'MIMEObj'} ) if $args{'MIMEObj'};
 
 
     #Provide a way to turn off scrips if we need to
@@ -423,7 +424,7 @@ sub _Attach {
     my $self       = shift;
     my $MIMEObject = shift;
 
-    if ( !defined($MIMEObject) ) {
+    if ( !$MIMEObject ) {
         $RT::Logger->error(
 "$self _Attach: We can't attach a mime object if you don't give us one.\n"
         );
@@ -750,7 +751,7 @@ sub IsInbound {
 
 # }}}
 
-sub _ClassAccessible {
+sub _OverlayAccessible {
     {
 
         id => { read => 1, type => 'int(11)', default => '' },

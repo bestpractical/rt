@@ -44,6 +44,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 #
 # This is just a basic script that checks to make sure that all
 # the modules needed by RT before you can install it.

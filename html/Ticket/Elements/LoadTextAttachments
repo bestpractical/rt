@@ -43,11 +43,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <%INIT>
 
 my $attachments = RT::Attachments->new( $session{'CurrentUser'} );
 
-$attachments->Columns( qw(id Content ContentType TransactionId ContentEncoding));
+$attachments->Columns( qw(id Content ContentType TransactionId ContentEncoding Creator Created));
 
 if ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
     my $transactions = $attachments->NewAlias('Transactions');

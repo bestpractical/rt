@@ -590,55 +590,55 @@ sub _CoreAccessible {
     {
      
         id =>
-		{read => 1, type => 'int(11)', default => ''},
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         EffectiveId => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Queue => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Type => 
-		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         IssueStatement => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Resolution => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Owner => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Subject => 
-		{read => 1, write => 1, type => 'varchar(200)', default => '[no subject]'},
+		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => '[no subject]'},
         InitialPriority => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         FinalPriority => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Priority => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         TimeEstimated => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         TimeWorked => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Status => 
-		{read => 1, write => 1, type => 'varchar(10)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 10,  is_blob => 0,  is_numeric => 0,  type => 'varchar(10)', default => ''},
         TimeLeft => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Told => 
-		{read => 1, write => 1, type => 'datetime', default => ''},
+		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Starts => 
-		{read => 1, write => 1, type => 'datetime', default => ''},
+		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Started => 
-		{read => 1, write => 1, type => 'datetime', default => ''},
+		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Due => 
-		{read => 1, write => 1, type => 'datetime', default => ''},
+		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Resolved => 
-		{read => 1, write => 1, type => 'datetime', default => ''},
+		{read => 1, write => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         Disabled => 
-		{read => 1, write => 1, type => 'smallint(6)', default => '0'},
+		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
 
  }
 };

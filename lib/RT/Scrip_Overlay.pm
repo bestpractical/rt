@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 =head1 NAME
 
   RT::Scrip - an RT Scrip object
@@ -132,10 +133,10 @@ sub Create {
         ScripAction            => 0,                     # name or id
         ScripCondition         => 0,                     # name or id
         Stage                  => 'TransactionCreate',
-        Description            => undef,
-        CustomPrepareCode      => undef,
-        CustomCommitCode       => undef,
-        CustomIsApplicableCode => undef,
+        Description            =>  '',
+        CustomPrepareCode      => '',
+        CustomCommitCode       => '',
+        CustomIsApplicableCode => '',
 
         @_ );
 

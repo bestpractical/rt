@@ -326,29 +326,29 @@ sub _CoreAccessible {
     {
      
         id =>
-		{read => 1, type => 'int(11)', default => ''},
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         TransactionId => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Parent => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         MessageId => 
-		{read => 1, write => 1, type => 'varchar(160)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 160,  is_blob => 0,  is_numeric => 0,  type => 'varchar(160)', default => ''},
         Subject => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Filename => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         ContentType => 
-		{read => 1, write => 1, type => 'varchar(80)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
         ContentEncoding => 
-		{read => 1, write => 1, type => 'varchar(80)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 80,  is_blob => 0,  is_numeric => 0,  type => 'varchar(80)', default => ''},
         Content => 
-		{read => 1, write => 1, type => 'longtext', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
         Headers => 
-		{read => 1, write => 1, type => 'longtext', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

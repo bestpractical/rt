@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <%init>
 $m->comp('/Ticket/Attachment/dhandler', %ARGS);
 $m->abort;

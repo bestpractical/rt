@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <LABEL ACCESSKEY="9">
 <SELECT NAME ="<%$Name%>">
 % foreach my $queue (@{$session{'create_in_queues'}}) {
@@ -76,6 +77,6 @@ while (my $queue=$q->Next) {
 
 <%ARGS>
 $Name => 'Queue'
-$Verbose => undef
+$Verbose => 0
 $Default => undef
 </%ARGS>

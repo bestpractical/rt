@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <SELECT MULTIPLE NAME="<%$Name%>"  SIZE=10>
 %while (my $group = $groups->Next) {
 <OPTION VALUE="<%$group->id%>"><%$group->Name%>

@@ -15,6 +15,8 @@ use RT::Config;
 
 =cut
 
+$RT::DatabaseServer = 'my_ASE';
+
 # {{{ Base Configuration
 
 # $rtname the string that RT will look for in mail messages to

@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 package RT::Action::Autoreply;
 require RT::Action::SendEmail;
 

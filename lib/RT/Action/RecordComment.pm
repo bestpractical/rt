@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>

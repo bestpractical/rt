@@ -46,6 +46,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 my $LICENSE  = <<'EOL';
 
 COPYRIGHT:
@@ -125,7 +126,7 @@ sub tag_mason {
                 print "no license section";
              $file ="%# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic%# }}} END BPS TAGGED BLOCK\n". $file;
         }
-        $file =~ s/%# }}} END BPS TAGGED BLOCK(\n+)/%# }}} END BPS TAGGED BLOCK\n/mg;
+        $file =~ s/%# }}} END BPS TAGGED BLOCK(\n+)/%# }}} END BPS TAGGED BLOCK\n\n/mg;
         print "\n";
         
         
@@ -157,7 +158,7 @@ sub tag_makefile {
                 print "no license section";
              $file ="# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic# }}} END BPS TAGGED BLOCK\n". $file;
         }
-        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n/mg;
+        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n\n/mg;
         print "\n";
         
         
@@ -190,7 +191,7 @@ sub tag_pm {
                 print "no license section";
              $file ="# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic# }}} END BPS TAGGED BLOCK\n". $file;
         }
-        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n/mg;
+        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n\n/mg;
         print "\n";
         
         
@@ -227,7 +228,7 @@ sub tag_script {
 
                 } 
         }
-        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n/mg;
+        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n\n/mg;
         print "\n";
         
 

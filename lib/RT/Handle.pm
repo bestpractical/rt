@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 =head1 NAME
 
   RT::Handle - RT's database handle
@@ -97,6 +98,7 @@ sub Connect {
 			 Password => $RT::DatabasePassword,
 			);
 
+    $self->SimpleQuery('use '.$RT::DatabaseName);
     $self->dbh->{LongReadLen} = $RT::MaxAttachmentSize;
    
 }
@@ -117,6 +119,7 @@ $RT::DatabaseHost = undef unless (defined $RT::DatabaseHost && $RT::DatabaseHost
 
 
     $self->SUPER::BuildDSN(Host => $RT::DatabaseHost, 
+             Server => $RT::DatabaseServer,
 			 Database => $RT::DatabaseName, 
 			 Port => $RT::DatabasePort,
 			 Driver => $RT::DatabaseType,

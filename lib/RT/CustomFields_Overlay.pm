@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 =head1 NAME
 
   RT::CustomFields - a collection of RT CustomField objects

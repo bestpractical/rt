@@ -1,6 +1,11 @@
 sub acl {
 return (
-"SP_ADDLOGIN ${RT::DatabaseUser}, ${RT::DatabasePassword}, ${RT::DatabaseName} ",
+#"use rt3",
+#"sp_addlogin '${RT::DatabaseUser}', '${RT::DatabasePassword}'",
+#  'sp_adduser "testuser"',
+#  'grant all to testuser'
+
+
 );
 }
 1;

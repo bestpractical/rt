@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <A href="<%$URI->Resolver->HREF%>">
 % if ($URI->IsLocal) {
 % my $member = $URI->Object;

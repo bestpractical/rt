@@ -764,73 +764,73 @@ sub _CoreAccessible {
     {
      
         id =>
-		{read => 1, type => 'int(11)', default => ''},
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Name => 
-		{read => 1, write => 1, type => 'varchar(200)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Password => 
-		{read => 1, write => 1, type => 'varchar(40)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varchar(40)', default => ''},
         Comments => 
-		{read => 1, write => 1, type => 'blob', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
         Signature => 
-		{read => 1, write => 1, type => 'blob', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
         EmailAddress => 
-		{read => 1, write => 1, type => 'varchar(120)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
         FreeformContactInfo => 
-		{read => 1, write => 1, type => 'blob', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'blob', default => ''},
         Organization => 
-		{read => 1, write => 1, type => 'varchar(200)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         RealName => 
-		{read => 1, write => 1, type => 'varchar(120)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 120,  is_blob => 0,  is_numeric => 0,  type => 'varchar(120)', default => ''},
         NickName => 
-		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Lang => 
-		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         EmailEncoding => 
-		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         WebEncoding => 
-		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         ExternalContactInfoId => 
-		{read => 1, write => 1, type => 'varchar(100)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
         ContactInfoSystem => 
-		{read => 1, write => 1, type => 'varchar(30)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
         ExternalAuthId => 
-		{read => 1, write => 1, type => 'varchar(100)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
         AuthSystem => 
-		{read => 1, write => 1, type => 'varchar(30)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
         Gecos => 
-		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         HomePhone => 
-		{read => 1, write => 1, type => 'varchar(30)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
         WorkPhone => 
-		{read => 1, write => 1, type => 'varchar(30)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
         MobilePhone => 
-		{read => 1, write => 1, type => 'varchar(30)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
         PagerPhone => 
-		{read => 1, write => 1, type => 'varchar(30)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 30,  is_blob => 0,  is_numeric => 0,  type => 'varchar(30)', default => ''},
         Address1 => 
-		{read => 1, write => 1, type => 'varchar(200)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         Address2 => 
-		{read => 1, write => 1, type => 'varchar(200)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 200,  is_blob => 0,  is_numeric => 0,  type => 'varchar(200)', default => ''},
         City => 
-		{read => 1, write => 1, type => 'varchar(100)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
         State => 
-		{read => 1, write => 1, type => 'varchar(100)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 100,  is_blob => 0,  is_numeric => 0,  type => 'varchar(100)', default => ''},
         Zip => 
-		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         Country => 
-		{read => 1, write => 1, type => 'varchar(50)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
         Timezone => 
-		{read => 1, write => 1, type => 'varchar(50)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
         PGPKey => 
-		{read => 1, write => 1, type => 'text', default => ''},
+		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         LastUpdated => 
-		{read => 1, auto => 1, type => 'datetime', default => ''},
+		{read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
 
  }
 };

@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 # {{{ Front Material 
 
 =head1 SYNOPSIS
@@ -340,11 +341,13 @@ sub Create {
 
     my %args = (
         id                 => undef,
-        EffectiveId        => undef,
+        EffectiveId        => 0,
         Queue              => undef,
         Requestor          => undef,
         Cc                 => undef,
         AdminCc            => undef,
+        IssueStatement      => 0,
+        Resolution          => 0,
         Type               => 'ticket',
         Owner              => undef,
         Subject            => '',
@@ -558,6 +561,8 @@ sub Create {
         TimeEstimated   => $args{'TimeEstimated'},
         TimeLeft        => $args{'TimeLeft'},
         Type            => $args{'Type'},
+        IssueStatement            => $args{'IssueStatement'},
+        Resolution            => $args{'Resolution'},
         Starts          => $Starts->ISO,
         Started         => $Started->ISO,
         Resolved        => $Resolved->ISO,
@@ -3378,7 +3383,7 @@ sub _AddCustomFieldValue {
     my $self = shift;
     my %args = (
         Field => undef,
-        Value => undef,
+        Value => '',
 	RecordTransaction => 1,
         @_
     );
@@ -3686,12 +3691,12 @@ sub _NewTransaction {
     my $self = shift;
     my %args = (
         TimeTaken => 0,
-        Type      => undef,
-        OldValue  => undef,
-        NewValue  => undef,
-        Data      => undef,
-        Field     => undef,
-        MIMEObj   => undef,
+        Type      => '',
+        OldValue  => '',
+        NewValue  => '',
+        Data      => '',
+        Field     => '',
+        MIMEObj   => '',
         ActivateScrips => 1,
         CommitScrips => 1,
         @_
@@ -3767,7 +3772,7 @@ sub DESTROY {
 
 # {{{ sub _ClassAccessible
 
-sub _ClassAccessible {
+sub _OverlayAccessible {
     {
         EffectiveId       => { 'read' => 1,  'write' => 1,  'public' => 1 },
           Queue           => { 'read' => 1,  'write' => 1 },

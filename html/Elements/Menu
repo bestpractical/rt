@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 %# font size depends on level
 % if ($level ge 3) {
 %   $size = $basesize-(6);

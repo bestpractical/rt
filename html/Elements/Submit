@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <TABLE WIDTH=100% BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=0 >
 <TR>
 % if ($Reset) {

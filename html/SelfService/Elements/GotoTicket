@@ -43,4 +43,5 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <FORM ACTION="<%$RT::WebPath%>/SelfService/Display.html"><input type=submit value="<&|/l&>Goto ticket</&>">&nbsp;<input size=4 name=id></FORM>

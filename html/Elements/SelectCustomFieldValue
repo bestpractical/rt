@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <& /Elements/Callback, %ARGS &>
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;

@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
 
 =head1 NAME
@@ -282,7 +283,8 @@ sub Create {
         Content => $args{'Content'},
         Queue   =>  $args{'Queue'},
         Description => $args{'Description'},
-        Name        => $args{'Name'}
+        Name        => $args{'Name'},
+        TranslationOf => 0
     );
 
     return ($result);
@@ -360,7 +362,9 @@ sub Parse {
     my $error = ( $@ || $parser->last_error );
 
     if ($error) {
-        $RT::Logger->error("$error");
+        use Data::Dumper;
+        $RT::Logger->error(scalar Dumper $content);
+        $RT::Logger->error(scalar Dumper $error);
         return ( 0, $error );
     }
 

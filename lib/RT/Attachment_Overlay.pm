@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 =head1 SYNOPSIS
 
   use RT::Attachment;
@@ -139,8 +140,9 @@ sub Create {
     my $Attachment = $args{'Attachment'};
 
 	    #if we didn't specify a ticket, we need to bail
-	    if ( $args{'TransactionId'} == 0 ) {
+	    unless ( $args{'TransactionId'} ) {
         $RT::Logger->crit( "RT::Attachment->Create couldn't, as you didn't specify a transaction\n" );
+        Carp::cluck;
         return (0);
 
     }

@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 use strict;
 
 no warnings qw(redefine);
@@ -374,9 +375,11 @@ sub HasRight {
             unless ($id) {
                 use Carp;
 		Carp::cluck("Trying to check $type rights for an unspecified $type");
-                $RT::Logger->crit("Trying to check $type rights for an unspecified $type");
-            }
-            push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = '$id')"; 
+                $RT::Logger->crit("Trying to check $type rights for an unspecified $type. Discarding"); 
+                next;
+            
+    }
+            push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = $id)"; 
             }
 
      
@@ -398,7 +401,7 @@ sub HasRight {
     # never find recursively disabled group members
     # also, check to see if the right is being granted _directly_ to this principal,
     #  as is the case when we want to look up group rights
-    "AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->Id . "' ".
+    "AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = " . $self->Id . " ".
 
     # Make sure the rights apply to the entire system or to the object in question
     "AND ( ".join(' OR ', @look_at_objects).") ";
@@ -426,7 +429,7 @@ sub HasRight {
     if (@roles) {
 	 $roles_query = $query_base . "AND ".
             " ( (".join (' OR ', @roles)." ) ".  
-        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') "; 
+        " AND Groups.Type = ACL.PrincipalType AND Groups.id = Principals.id AND Principals.PrincipalType = 'Group') "; 
         $self->_Handle->ApplyLimits(\$roles_query, 1); #only return one result
 
    }
@@ -498,7 +501,7 @@ sub _RolesForObject {
 
    # This should never be true.
    unless ($id =~ /^\d+$/) {
-	$RT::Logger->crit("RT::Prinicipal::_RolesForObject called with type $type and a non-integer id: '$id'");
+	$RT::Logger->crit("RT::Principal::_RolesForObject called with type $type and a non-integer id: '$id'");
 	$id = "'$id'";
    }
 

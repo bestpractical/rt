@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <%INIT>
 my %documents;
 
@@ -53,7 +54,7 @@ my %documents;
 # code that looks at attachments will look at each one in turn.
 my $attachments = RT::Attachments->new( $session{'CurrentUser'} );
 
-$attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId Created));
+$attachments->Columns( qw( id Filename ContentType Headers Subject Parent ContentEncoding TransactionId Created Creator));
 
 my $transactions = $attachments->NewAlias('Transactions');
 $attachments->Join( ALIAS1 => 'main',

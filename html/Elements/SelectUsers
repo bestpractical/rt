@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <select name="UserField">
 <option value="Name"><&|/l&>User Id</&>
 <option value="EmailAddress"><&|/l&>Email</&>

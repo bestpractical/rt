@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 =head1 NAME
 
   RT::Queue - an RT Queue object
@@ -309,6 +310,7 @@ sub Create {
         InitialPriority   => "0",
         FinalPriority     => "0",
         DefaultDueIn      => "0",
+        Disabled        => '0',
         @_
     );
 

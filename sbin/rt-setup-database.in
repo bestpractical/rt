@@ -44,6 +44,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
 use vars
@@ -81,6 +82,7 @@ GetOptions(
     'datadir=s'
 );
 
+$args{'debug'}=1;
 $| = 1;    #unbuffer that output.
 
 require RT::Handle;
@@ -135,7 +137,7 @@ if ( $args{'action'} eq 'init' ) {
     print "Now populating database schema.\n";
     insert_schema();
     print "Now inserting database ACLs\n";
-    insert_acl() unless ($RT::DatabaseType eq 'Oracle');
+    insert_acl() unless ($RT::DatabaseType eq 'Oracle' || $RT::DatabaseType eq 'Sybase');
     print "Now inserting RT core system objects\n";
     insert_initial_data();
     print "Now inserting RT data\n";
@@ -262,8 +264,12 @@ sub create_db {
         insert_acl();
     }
     elsif ( $RT::DatabaseType eq 'Informix' ) {
-	$ENV{DB_LOCALE} = 'en_us.utf8';
+        $ENV{DB_LOCALE} = 'en_us.utf8';
         $dbh->do("CREATE DATABASE $RT::DatabaseName WITH BUFFERED LOG");
+    }
+    elsif ( $RT::DatabaseType eq 'Sybase' ) {
+        $dbh->do("CREATE DATABASE $RT::DatabaseName ON DEFAULT = 128") or die $DBI::errstr;
+        insert_acl();
     }
     else {
         $dbh->do("CREATE DATABASE $RT::DatabaseName") or die $DBI::errstr;
@@ -301,7 +307,6 @@ sub _yesno {
 
 # {{{ insert_acls
 sub insert_acl {
-
         my $base_path = (shift || $RT::EtcPath);
 
     if ( $RT::DatabaseType =~ /^oracle$/i ) {
@@ -434,7 +439,9 @@ sub insert_data {
                              PrincipalType => 'Group',
                              RightName     => 'SuperUser',
                              ObjectType    => 'RT::System',
-                             ObjectId      => '1' );
+                             ObjectId      => '1',
+                             DelegatedFrom => 0,
+                             DelegatedBy => 0 );
 
     }
 

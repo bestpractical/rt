@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <tr><td>
 % foreach my $field (@fields) {
 <tr><td align=right>

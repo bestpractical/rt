@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <%flags>
 inherit => undef # inhibit UTF8 conversion done in /autohandler
 </%flags>

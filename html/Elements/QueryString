@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <%init>
 my @params;
 while ( (my $key, my $value) = each %ARGS ){

@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 use strict;
 no warnings qw(redefine);
 use Storable qw/nfreeze thaw/;
@@ -137,6 +138,7 @@ sub Create {
                 Object => undef,
 		  @_);
 
+
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
 	    $args{ObjectType} = ref($args{Object});
 	    $args{ObjectId} = $args{Object}->Id;
@@ -166,12 +168,13 @@ sub Create {
     if (ref ($args{'Content'}) ) { 
         eval  {$args{'Content'} = $self->_SerializeContent($args{'Content'}); };
         if ($@) {
+        use Data::Dumper;
+        $RT::Logger->error("Failed to serialize".(Dumper $args{'Content'}));
          return(0, $@);
         }
         $args{'ContentType'} = 'storable';
     }
 
-    
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Content => $args{'Content'},
@@ -227,7 +230,7 @@ sub _DeserializeContent {
     my $hashref;
     eval {$hashref  = thaw(decode_base64($content))} ; 
     if ($@) {
-        $RT::Logger->error("Deserialization of attribute ".$self->Id. " failed");
+        $RT::Logger->error("Deserialization of attribute ".$self->Id. " failed for '$content'");
     }
 
     return($hashref);
@@ -260,6 +263,7 @@ sub Content {
 sub _SerializeContent {
     my $self = shift;
     my $content = shift;
+        warn "Serializing ". Dumper($content);
         return( encode_base64(nfreeze($content))); 
 }
 

@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <SELECT NAME=<%$Name%>>
 % foreach my $stage (qw(TransactionCreate TransactionBatch Disabled)) {
 <OPTION VALUE=<%$stage%>

@@ -44,6 +44,7 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+
 =head1 NAME
 
 rt-mailgate - Mail interface to RT3.
@@ -54,7 +55,7 @@ use RT::I18N;
 
 # Make sure that when we call the mailgate wrong, it tempfails
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://bad.address"), "Opened the mailgate - The error below is expected - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://bad.address"), "Opened the mailgate - The error below is expected - $@");
 print MAIL <<EOF;
 From: root\@localhost
 To: rt\@example.com
@@ -70,7 +71,7 @@ is ( $? >> 8, 75, "The error message above is expected The mail gateway exited w
 
 # {{{ Test new ticket creation by root who is privileged and superuser
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate  --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate  --debug --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 To: rt\@example.com
@@ -98,7 +99,7 @@ ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the tick
 
 # {{{This is a test of new ticket creation as an unknown user
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist\@example.com
 To: rt\@example.com
@@ -135,7 +136,7 @@ ok ($val, "Granted everybody the right to create tickets - $msg");
 
 sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist\@example.com
 To: rt\@example.com
@@ -169,7 +170,7 @@ ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 #sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-2\@example.com
 To: rt\@example.com
@@ -195,7 +196,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket corresponde
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-2\@example.com
 To: rt\@example.com
@@ -222,7 +223,7 @@ ok( $u->Id != 0, " user exists and was created by ticket correspondence submissi
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 #sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-3\@example.com
 To: rt\@example.com
@@ -248,7 +249,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket comment sub
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 sleep(60); # gotta sleep so the remote process' ACL cache times out
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-3\@example.com
 To: rt\@example.com
@@ -286,7 +287,7 @@ $entity->attach(Path => '@MASON_HTML_PATH@/NoAuth/images/spacer.gif',
                 Encoding => 'base64');
 
 # Create a ticket with a binary attachment
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 
 $entity->print(\*MAIL);
 
@@ -344,7 +345,7 @@ is($file, $r->content, 'The attachment isn\'t screwed up in download');
 
 # {{{ Simple I18N testing
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
@@ -378,7 +379,7 @@ is ($unitick->Transactions->First->Content, $unitick->Transactions->First->Attac
 ok($unitick->Transactions->First->Attachments->First->Content =~ /$unistring/i, $unitick->Id." appears to be unicode ". $unitick->Transactions->First->Attachments->First->Id);
 # supposedly I18N fails on the second message sent in.
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
@@ -525,7 +526,7 @@ sub check_failure {
 Usual invocation (from MTA):
 
     rt-mailgate --action (correspond|comment) --queue queuename
-                --url http://your.rt.server/
+                --debug --url http://your.rt.server/
                 [ --debug ]
                 [ --extension (queue|action|ticket) ]
                 [ --timeout seconds ]
@@ -546,7 +547,7 @@ Specifies whether this is a correspondence or comment address.
 
 Reflects which queue this address handles.
 
-=item C<--url>
+=item C<--debug --url>
 
 The location of the web server for your RT instance.
 
@@ -594,10 +595,10 @@ monitoring. For instance, if you're using F</etc/aliases> and you have a
 "bugs" queue, you will want something like this:
 
     bugs:         "|/opt/rt3/bin/rt-mailgate --queue bugs --action correspond
-              --url http://rt.mycorp.com/"
+              --debug --url http://rt.mycorp.com/"
 
     bugs-comment: "|/opt/rt3/bin/rt-mailgate --queue bugs --action comment
-              --url http://rt.mycorp.com/"
+              --debug --url http://rt.mycorp.com/"
 
 Note that you don't have to run your RT server on your mail server, as
 the mail gateway will happily relay to a different machine.

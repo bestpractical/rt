@@ -43,6 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
+
 <i><&|/l&>(Check box to delete)</&></i>
 <ul>
 % while (my $v = $values->Next) {
