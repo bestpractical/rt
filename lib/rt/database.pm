@@ -84,9 +84,18 @@ sub add_request {
 
 
 sub add_transaction {
-    my ($in_serial_num, $in_actor, $in_type, $in_data,$in_content, $in_time,$in_do_mail,$in_current_user) = @_;
-    my ($transaction_num, $query_string, $queue_id, $owner, $requestors);
-
+  
+  my $in_serial_num = shift;
+  my $in_actor = shift;
+  my $in_type = shift;
+  my $in_data = shift;
+  my $in_content  = shift;
+  my $in_time = shift;
+  my $in_do_mail = shift;
+  my $in_current_user = shift;
+  
+  my ($transaction_num, $query_string, $queue_id, $owner, $requestors);
+  
     
     $in_actor = $rt::dbh->quote($in_actor);
     $in_type = $rt::dbh->quote($in_type);
@@ -127,16 +136,16 @@ sub add_transaction {
 
 sub update_each_req {
     my ($in_serial_num, $in_field, $in_new_value) = @_;
-    my $query_string;
+    my ($query_string, $new_value);
     
 	
     # if we're not actually changing the field, just abort 
     return 0 if $rt::req[$in_serial_num]{$in_field} eq $in_new_value;
     #quote the string before we update
-    $in_new_value = $dbh->quote($in_new_value); 
+    $new_value = $dbh->quote($in_new_value); 
     
     #set the field in the database
-    $query_string="UPDATE each_req SET $in_field = $in_new_value WHERE effective_sn = $in_serial_num";
+    $query_string="UPDATE each_req SET $in_field = $new_value WHERE effective_sn = $in_serial_num";
     #print "update_each_req: $query_string\n\n";
     $dbh->Query($query_string) or warn "[update_each_req] Query had some problem: $Msql::db_errstr\nQuery: $query_string\n";
     return 1;

@@ -73,7 +73,7 @@
  
  sub delete_queue {
    # this function needs to move all requests into some other queue!
-   my  ($queue_id,$in_current_user) = @_;
+   my  ($in_queue_id,$in_current_user) = @_;
    my ($query_string,$update_clause);
    
    
@@ -82,8 +82,8 @@
    }
    else {
      
-     $in_queue_id=$rt::dbh->quote($queue_id);
-     if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
+     $queue_id=$rt::dbh->quote($in_queue_id);
+     if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
        $query_string = "DELETE FROM queues WHERE queue_id = $in_queue_id";
        $dbh->Query($query_string) or 
 	 return (0, "[delete_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
@@ -93,7 +93,7 @@
        $query_string = "DELETE FROM queue_areas WHERE queue_id = $in_queue_id";
        $dbh->Query($query_string) or
 	 return (0, "[delete_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");  
-       delete $rt::queues{$queue_id};
+       delete $rt::queues{"$in_queue_id"};
        return (1, "Queue $in_queue_id deleted.");
      }
      else {
