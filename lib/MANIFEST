@@ -1,7 +1,6 @@
 MANIFEST
 MANIFEST.SKIP
 Makefile.PL
-t/regression.t
 RT/ACE.pm
 RT/ACE_Overlay.pm
 RT/ACL.pm
@@ -19,6 +18,11 @@ RT/Attachment.pm
 RT/Attachment_Overlay.pm
 RT/Attachments.pm
 RT/Attachments_Overlay.pm
+RT/Base.pm
+RT/CachedGroupMember.pm
+RT/CachedGroupMember_Overlay.pm
+RT/CachedGroupMembers.pm
+RT/CachedGroupMembers_Overlay.pm
 RT/Condition/AnyTransaction.pm
 RT/Condition/Generic.pm
 RT/Condition/StatusChange.pm
@@ -40,6 +44,12 @@ RT/Group_Overlay.pm
 RT/Groups.pm
 RT/Groups_Overlay.pm
 RT/Handle.pm
+RT/I18N.pm
+RT/I18N/en.pm
+RT/I18N/en_us.pm
+RT/I18N/fr.pm
+RT/I18N/i_default.pm
+RT/I18N/zh_tw.pm
 RT/Interface/CLI.pm
 RT/Interface/Email.pm
 RT/Interface/Web.pm
@@ -47,6 +57,10 @@ RT/Link.pm
 RT/Link_Overlay.pm
 RT/Links.pm
 RT/Links_Overlay.pm
+RT/Principal.pm
+RT/Principal_Overlay.pm
+RT/Principals.pm
+RT/Principals_Overlay.pm
 RT/Queue.pm
 RT/Queue_Overlay.pm
 RT/Queues.pm
@@ -54,8 +68,8 @@ RT/Queues_Overlay.pm
 RT/Record.pm
 RT/Scrip.pm
 RT/ScripAction.pm
-RT/ScripActions.pm
 RT/ScripAction_Overlay.pm
+RT/ScripActions.pm
 RT/ScripActions_Overlay.pm
 RT/ScripCondition.pm
 RT/ScripCondition_Overlay.pm
@@ -69,9 +83,9 @@ RT/Template.pm
 RT/Template_Overlay.pm
 RT/Templates.pm
 RT/Templates_Overlay.pm
-RT/TestHarness.pm
 RT/Ticket.pm
 RT/TicketCustomFieldValue.pm
+RT/TicketCustomFieldValue_Overlay.pm
 RT/TicketCustomFieldValues.pm
 RT/TicketCustomFieldValues_Overlay.pm
 RT/Ticket_Overlay.pm
@@ -89,3 +103,4 @@ RT/Watcher.pm
 RT/Watcher_Overlay.pm
 RT/Watchers.pm
 RT/Watchers_Overlay.pm
+t/regression.t

@@ -60,9 +60,8 @@ use vars qw(%TYPES @SORTFIELDS);
               Content => 'TRANSFIELD',
 	      ContentType => 'TRANSFIELD',
  	      TransactionDate => 'TRANSDATE',
-	      Watcher => 'WATCHERFIELD',
 	      LinkedTo => 'LINKFIELD',
-
+          Watcher => 'WATCHERFIELD',
 	    );
 
 

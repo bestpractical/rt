@@ -44,6 +44,9 @@ Errno
 FreezeThaw
 File::Temp 
 Log::Dispatch 1.6
+Locale::MakeText
+Locale::MakeText::Lexicon
+Time::HiRes
 );
 
 

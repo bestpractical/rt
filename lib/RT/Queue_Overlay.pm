@@ -308,7 +308,7 @@ sub _CreateQueueGroups {
         my $type_obj = RT::Group->new($self->CurrentUser);
         my ($id, $msg) = $type_obj->CreateWatcherGroup(Instance => $self->Id, 
                                                      Type => $type,
-                                                     Domain => 'Queue');
+                                                     Domain => 'QueueRole');
         unless ($id) {
             $RT::Logger->error("Couldn't create a Queue group of type '$type' for ticket ".
                                $self->Id.": ".$msg);

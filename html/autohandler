@@ -2,13 +2,23 @@
 <& /Elements/Footer, %ARGS &>
 
 <%INIT>
-$m->{'rt_base_time'} = time;
-
+if ($ARGS{'Debug'}) {
+        require Time::HiRes;
+        $m->{'rt_base_time'} = [Time::HiRes::gettimeofday];
+        
+}
+else {
+        $m->{'rt_base_time'} = time;
+}
 $m->comp('/Elements/SetupSessionCookie');
 
 unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
     $session{'CurrentUser'} = RT::CurrentUser->new();
 }
+
+# Set the proper encoding for the current language handle
+SetContentType("text/html; charset=".$session{'CurrentUser'}->LanguageHandle->encoding);
+$RT::Logger->debug("Language encoding is ".  $session{'CurrentUser'}->LanguageHandle->encoding);
 
 
 #if it's a noauth file, don't ask for auth.

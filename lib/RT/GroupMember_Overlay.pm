@@ -90,6 +90,12 @@ sub Create {
         $RT::Logger->warning("GroupMember::Create called with a bogus Principal arg");
         return (undef);
     }
+
+
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+    # TODO what about the groups key cache?
+    RT::User->_InvalidateACLCache();
+
     $RT::Handle->BeginTransaction();
 
     # We really need to make sure we don't add any members to this group
@@ -191,6 +197,10 @@ sub Delete {
         OPERATOR => '=',
         VALUE    => $self->GroupObj->Id
     );
+
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+    # TODO what about the groups key cache?
+    RT::User->_InvalidateACLCache();
 
     while ( my $item_to_del = $cached_submembers->Next() ) {
         #$RT::Logger->debug("About to delete a submember ".$item_to_del->MemberId);

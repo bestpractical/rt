@@ -44,6 +44,7 @@ sub _Init {
 
 Create takes a hash of values and creates a row in the database:
 
+  varchar(25) 'PrincipalType'.
   int(11) 'PrincipalId'.
   varchar(25) 'RightName'.
   varchar(25) 'ObjectType'.
@@ -57,13 +58,15 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                PrincipalId => '',
+                PrincipalType => '',
+                PrincipalId => '0',
                 RightName => '',
                 ObjectType => '',
-                ObjectId => '',
+                ObjectId => '0',
 
 		  @_);
     $self->SUPER::Create(
+                         PrincipalType => $args{'PrincipalType'},
                          PrincipalId => $args{'PrincipalId'},
                          RightName => $args{'RightName'},
                          ObjectType => $args{'ObjectType'},
@@ -78,6 +81,24 @@ sub Create {
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
+
+
+=cut
+
+
+=item PrincipalType
+
+Returns the current value of PrincipalType. 
+(In the database, PrincipalType is stored as varchar(25).)
+
+
+
+=item SetPrincipalType VALUE
+
+
+Set PrincipalType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, PrincipalType will be stored as a varchar(25).)
 
 
 =cut
@@ -161,14 +182,16 @@ sub _ClassAccessible {
      
         id =>
 		{read => 1, type => 'int(11)', default => ''},
+        PrincipalType => 
+		{read => 1, write => 1, type => 'varchar(25)', default => ''},
         PrincipalId => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         RightName => 
 		{read => 1, write => 1, type => 'varchar(25)', default => ''},
         ObjectType => 
 		{read => 1, write => 1, type => 'varchar(25)', default => ''},
         ObjectId => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
 
  }
 };

@@ -736,7 +736,9 @@ sub _CreateTicketGroups {
 
     foreach my $type (@types) {
         my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateWatcherGroup(Domain => 'Ticket', Instance => $self->Id, Type => $type);
+        my ($id, $msg) = $type_obj->CreateWatcherGroup(Domain => 'TicketRole',
+                                                       Instance => $self->Id, 
+                                                       Type => $type);
         unless ($id) {
             $RT::Logger->error("Couldn't create a ticket group of type '$type' for ticket ".
                                $self->Id.": ".$msg);     

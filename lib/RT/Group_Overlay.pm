@@ -32,22 +32,21 @@ ok (require RT::Group);
 
 ok (my $group = RT::Group->new($RT::SystemUser), "instantiated a group object");
 ok (my ($id, $msg) = $group->CreateSystemGroup( Name => 'TestGroup', Description => 'A test group',
-                    Domain => 'System', Instance => ''), 'Created a new group');
+                    ), 'Created a new group');
 ok ($id != 0, "Group id is $id");
 ok ($group->Name eq 'TestGroup', "The group's name is 'TestGroup'");
 my $ng = RT::Group->new($RT::SystemUser);
 
 ok($ng->LoadSystemGroup('TestGroup'), "Loaded testgroup");
 ok(($ng->id == $group->id), "Loaded the right group");
-ok ($ng->AddMember('1' ), "Added a member to the group");
+ok ($ng->AddMember('1'), "Added a member to the group");
 ok ($ng->AddMember('2' ), "Added a member to the group");
 ok ($ng->AddMember('3' ), "Added a member to the group");
 
 # Group 1 now has members 1, 2 ,3
 
 my $group_2 = RT::Group->new($RT::SystemUser);
-ok (my ($id_2, $msg_2) = $group_2->CreateSystemGroup( Name => 'TestGroup2', Description => 'A second test group',
-                    Domain => 'System', Instance => ''), 'Created a new group');
+ok (my ($id_2, $msg_2) = $group_2->CreateSystemGroup( Name => 'TestGroup2', Description => 'A second test group'), , 'Created a new group');
 ok ($id_2 != 0, "Created group 2 ok");
 ok ($group_2->AddMember($ng->PrincipalId), "Made TestGroup a member of testgroup2");
 ok ($group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
@@ -55,8 +54,7 @@ ok ($group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2"
 # Group 2 how has 1, g1->{1, 2,3}
 
 my $group_3 = RT::Group->new($RT::SystemUser);
-ok (($id_3, $msg) = $group_3->CreateSystemGroup( Name => 'TestGroup3', Description => 'A second test group',
-                    Domain => 'System', Instance => ''), 'Created a new group');
+ok (($id_3, $msg) = $group_3->CreateSystemGroup( Name => 'TestGroup3', Description => 'A second test group'), 'Created a new group');
 ok ($id_3 != 0, "Created group 3 ok");
 ok ($group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
 
@@ -148,7 +146,7 @@ sub LoadSystemGroup {
     my $self       = shift;
     my $identifier = shift;
 
-        $self->LoadByCols( "Domain" => 'System',
+        $self->LoadByCols( "Domain" => 'UserDefined',
                            "Instance" => '',
                            "Type" => '',
                            "Name" => $identifier );
@@ -156,9 +154,9 @@ sub LoadSystemGroup {
 
 # }}}
 
-# {{{ sub LoadPseudoGroup 
+# {{{ sub LoadSystemInternalGroup 
 
-=head2 LoadPseudoGroup NAME
+=head2 LoadSystemInternalGroup NAME
 
 Loads a Pseudo group from the database. The only argument is
 the group's name.
@@ -166,11 +164,11 @@ the group's name.
 
 =cut
 
-sub LoadPseudoGroup {
+sub LoadSystemInternalGroup {
     my $self       = shift;
     my $identifier = shift;
 
-        $self->LoadByCols( "Domain" => 'Pseudo',
+        $self->LoadByCols( "Domain" => 'SystemInternal',
                            "Instance" => '',
                            "Name" => '',
                            "Type" => $identifier );
@@ -197,7 +195,7 @@ sub LoadTicketGroup {
     my %args = (Ticket => undef,
                 Type => undef,
                 @_);
-        $self->LoadByCols( Domain => 'Ticket',
+        $self->LoadByCols( Domain => 'TicketRole',
                            Instance =>$args{'Ticket'}, 
                            Type => $args{'Type'}
                            );
@@ -224,7 +222,7 @@ sub LoadQueueGroup {
     my %args = (Queue => undef,
                 Type => undef,
                 @_);
-        $self->LoadByCols( Domain => 'Queue',
+        $self->LoadByCols( Domain => 'QueueRole',
                            Instance =>$args{'Queue'}, 
                            Type => $args{'Type'}
                            );
@@ -323,20 +321,20 @@ sub CreateSystemGroup {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    return($self->_Create( Domain => 'System', Type => '', Instance => '', @_));
+    return($self->_Create( Domain => 'UserDefined', Type => '', Instance => '', @_));
 }
 
 # }}}
 
-# {{{ CreatePseudoGroup
+# {{{ CreateSystemInternalGroup
 
-=head2 CreatePseudoGroup { Name => "name", Description => "Description"}
+=head2 CreateSystemInternalGroup { Name => "name", Description => "Description"}
 
 A helper subroutine which creates a Pseudo group 
 
 =cut
 
-sub CreatePseudoGroup {
+sub CreateSystemInternalGroup {
     my $self = shift;
 
     unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
@@ -345,7 +343,7 @@ sub CreatePseudoGroup {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    return($self->_Create( Domain => 'Pseudo', Type => '', Instance => '', @_));
+    return($self->_Create( Domain => 'SystemInternal', Type => '', Instance => '', @_));
 }
 
 # }}}

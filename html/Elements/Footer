@@ -3,7 +3,7 @@
 </div>
 % if ($Debug) {
 <HR>
-<b><&|/l&>Time to display</&>: <%time - $m->{'rt_base_time'} %></b>
+<b><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></b>
 % }
 % if ($Debug >= 2 ) {
 % require Data::Dumper;

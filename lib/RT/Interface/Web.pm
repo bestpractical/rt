@@ -683,7 +683,7 @@ sub ProcessACLChanges {
 
                         my ( $val, $msg ) = $Principal->GrantQueueRight(
                             RightAppliesTo => $Queue->id,
-                            RightName      => "$right"
+                            Right      => "$right"
                         );
 
                         if ($val) {
@@ -700,7 +700,7 @@ sub ProcessACLChanges {
                     elsif ( $Scope eq 'System' ) {
                         my ( $val, $msg ) = $Principal->GrantSystemRight(
                             RightAppliesTo => $AppliesTo,
-                            RightName      => "$right"
+                            Right      => "$right"
                         );
                         if ($val) {
                             push ( @results, "Granted system right '$right' to "

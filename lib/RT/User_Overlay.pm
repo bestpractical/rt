@@ -25,12 +25,13 @@ ok(require RT::User);
 
 no warnings qw(redefine);
 
-use vars qw( %_KEY_CACHE);
+use vars qw(%_USERS_KEY_CACHE);
+
+%_USERS_KEY_CACHE = ();
 
 use RT::Principals;
 use RT::ACE;
 
-%_KEY_CACHE = (); 
 
 # {{{ sub _Accessible 
 
@@ -201,18 +202,18 @@ sub Create {
 
     $RT::Logger->debug("Adding the user as a member of everyone"); 
     my $everyone = RT::Group->new($self->CurrentUser);
-    $everyone->LoadPseudoGroup('Everyone');
+    $everyone->LoadSystemInternalGroup('Everyone');
     $everyone->AddMember($self->PrincipalId);
 
     if ($privileged)  {
         my $priv = RT::Group->new($self->CurrentUser);
         $RT::Logger->debug("Making ".$self->Id." a privileged user");
-        $priv->LoadPseudoGroup('Privileged');
+        $priv->LoadSystemInternalGroup('Privileged');
         $priv->AddMember($self->PrincipalId);  
     } else {
         my $unpriv = RT::Group->new($self->CurrentUser);
         $RT::Logger->debug("Making ".$self->Id." an unprivileged user");
-        $unpriv->LoadPseudoGroup('Unprivileged');
+        $unpriv->LoadSystemInternalGroup('Unprivileged');
         $unpriv->AddMember($self->PrincipalId);  
     }
 
@@ -253,7 +254,7 @@ sub SetPrivileged {
     my $val = shift;
 
     my $priv = RT::Group->new($self->CurrentUser);
-    $priv->LoadPseudoGroup('Privileged');
+    $priv->LoadSystemInternalGroup('Privileged');
    
     unless ($priv->Id) {
         $RT::Logger->crit("Could not find Privileged pseudogroup");
@@ -261,7 +262,7 @@ sub SetPrivileged {
     }
 
     my $unpriv = RT::Group->new($self->CurrentUser);
-    $unpriv->LoadPseudoGroup('Unprivileged');
+    $unpriv->LoadSystemInternalGroup('Unprivileged');
     unless ($unpriv->Id) {
         $RT::Logger->crit("Could not find unprivileged pseudogroup");
         return(0,$self->loc("Failed to find 'Unprivileged' users pseudogroup"));
@@ -305,6 +306,8 @@ sub SetPrivileged {
 
 # }}}
 
+# {{{ Privileged
+
 =head2 Privileged
 
 Returns true if this user is privileged. Returns undef otherwise.
@@ -314,7 +317,7 @@ Returns true if this user is privileged. Returns undef otherwise.
 sub Privileged {
     my $self = shift;
     my $priv = RT::Group->new($self->CurrentUser);
-    $priv->LoadPseudoGroup('Privileged');
+    $priv->LoadSystemInternalGroup('Privileged');
     if ($priv->HasMember($self->PrincipalObj)) {
         return(1);
     }
@@ -322,6 +325,8 @@ sub Privileged {
         return(undef);
     }
 }
+
+# }}}
 
 # {{{ sub _BootstrapCreate 
 
@@ -485,6 +490,7 @@ sub CanonicalizeEmailAddress {
 # }}}
 
 
+# {{{ Password related functions
 
 # {{{ sub SetRandomPassword
 
@@ -852,6 +858,8 @@ sub IsPassword {
 
 # }}}
 
+# }}}
+
 # {{{ sub SetDisabled
 
 =head2 Sub SetDisabled
@@ -914,148 +922,6 @@ sub PrincipalId {
 
 # {{{ ACL Related routines
 
-# {{{ GrantQueueRight
-
-=head2 GrantQueueRight
-
-Grant a queue right to this user.  Takes a paramhash of which the elements
-ObjectId and RightName are important.
-
-=cut
-
-sub GrantQueueRight {
-
-    my $self = shift;
-    my %args = (
-        ObjectType     => 'Queue',
-        RightName      => undef,
-        ObjectId => undef,
-        PrincipalId    => $self->PrincipalId,
-        @_
-    );
-
-    #ACL check handled in ACE.pm
-
-
-    my $ace = RT::ACE->new( $self->CurrentUser );
-
-    return ( $ace->Create(%args) );
-}
-
-# }}}
-
-# {{{ GrantSystemRight
-
-=head2 GrantSystemRight
-
-Grant a system right to this user. 
-The only element that's important to set is RightName.
-
-=cut
-
-sub GrantSystemRight {
-
-    my $self = shift;
-    my %args = (
-        RightName      => undef,
-        ObjectType     => 'System',
-        ObjectId => 0,
-        PrincipalId    => $self->PrincipalId,
-        @_
-    );
-
-    #ACL check handled in ACE.pm
-
-    my $ace = RT::ACE->new( $self->CurrentUser );
-
-    return ( $ace->Create(%args) );
-}
-
-# }}}
-
-# {{{ RevokeSystemRight
-
-=head2 RevokeSystemRight { RightName => "right name"
-
-Revoke a system right for this user
-The only element that's important to set is RightName.
-
-=cut
-
-sub RevokeSystemRight {
-
-    my $self = shift;
-    my %args = (
-        RightName      => undef,
-        @_
-    );
-
-    return ($self->_RevokeRight(ObjectType => 'System', ObjectId => '0', RightName => $args{'RightName'}));
-
-}
-
-# }}}
-
-# {{{ RevokeQueueRight
-
-=head2 RevokeQueueRight { RightName => "right name", ObjectId => "queue id" }
-
-Revoke a Queue right for this user
-The only element that's important to set is RightName.
-
-=cut
-
-sub RevokeQueueRight {
-
-    my $self = shift;
-    my %args = (
-        RightName      => undef,
-        ObjectId       => undef,
-        @_
-    );
-
-    return ($self->_RevokeRight(ObjectType => 'Queue', ObjectId => $args{'ObjectId'}, RightName => $args{'RightName'}));
-
-}
-
-# }}}
-
-# {{{ _RevokeRight
-
-=head2 _RevokeRight { RightName = > "RightName", ObjectType => "object type", ObjectId => "object id" }
-
-Delete a right that a user has 
-
-=cut
-
-sub _RevokeRight {
-
-    my $self = shift;
-    my %args = (
-        RightName      => undef,
-        ObjectType     => undef,
-        ObjectId => undef,
-        @_
-    );
-
-    #ACL check handled in ACE.pm
-
-    my $ace = RT::ACE->new( $self->CurrentUser );
-    $ace->LoadByValues( RightName => $args{'RightName'},
-                        ObjectType => $args{'ObjectType'},
-                        ObjectId => $args{'ObjectId'},
-                        PrincipalId => $self->PrincipalId);
-    
-
-    unless ($ace->Id) {
-        return(0, $self->loc("ACE could not be found"));
-    }
-    return($ace->Delete);
-
-}
-
-# }}}
-
 
 # {{{ sub HasQueueRight
 
@@ -1064,7 +930,6 @@ sub _RevokeRight {
 Takes a paramhash which can contain
 these items:
     TicketObj => RT::Ticket or QueueObj => RT::Queue or Queue => integer
-    IsRequestor => undef, (for bootstrapping create)
     Right => 'Right' 
 
 
@@ -1076,6 +941,16 @@ Returns undef if they don't
 
 =begin testing
 
+my $root = RT::User->new($RT::SystemUser);
+$root->Load('root');
+ok($root->Id, "Found the root user");
+my $rootq = RT::Queue->new($root);
+$rootq->Load(1);
+ok($rootq->Id, "Loaded the first queue");
+
+ok ($rootq->CurrentUserHasRight('CreateTicket'), "Root can create tickets");
+
+
 my $new_user = RT::User->new($RT::SystemUser);
 my ($id, $msg) = $new_user->Create(Name => 'ACLTest');
 
@@ -1083,13 +958,98 @@ ok ($id, "Created a new user for acl test $msg");
 
 my $q = RT::Queue->new($new_user);
 $q->Load(1);
+ok($q->Id, "Loaded the first queue");
+
+
 ok (!$q->CurrentUserHasRight('CreateTicket'), "Some random user doesn't have the right to create tickets");
-ok (my ($gval, $gmsg) = $new_user->GrantQueueRight(RightName => 'CreateTicket', ObjectId => $q->Id), "Granted the random user the right to create tickets");
+ok (my ($gval, $gmsg) = $new_user->PrincipalObj->GrantQueueRight(Right => 'CreateTicket', ObjectId => $q->Id), "Granted the random user the right to create tickets");
 ok ($gval, "Grant succeeded - $gmsg");
 ok ($q->CurrentUserHasRight('CreateTicket'), "The user can create tickets after we grant him the right");
-ok (my ($gval, $gmsg) = $new_user->RevokeQueueRight(RightName => 'CreateTicket', ObjectId => $q->Id), "revoked the random user the right to create tickets");
+ok (my ($gval, $gmsg) = $new_user->PrincipalObj->RevokeQueueRight(Right => 'CreateTicket', ObjectId => $q->Id), "revoked the random user the right to create tickets");
 ok ($gval, "Revocation succeeded - $gmsg");
 ok (!$q->CurrentUserHasRight('CreateTicket'), "The user can't create tickets anymore");
+
+
+
+
+
+# Create a ticket in the queue
+my $new_tick = RT::Ticket->new($RT::SystemUser);
+my ($tickid, $tickmsg) = $new_tick->Create(Subject=> 'ACL Test', Queue => 'General');
+ok($tickid, "Created ticket: $tickid");
+# Make sure the user doesn't have the right to modify tickets in the queue
+ok (!$new_user->HasQueueRight( TicketObj => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+# Create a new group
+my $group = RT::Group->new($RT::SystemUser);
+$group->CreateSystemGroup(Name => 'ACLTest');
+ok($group->Id, "Created a new group Ok");
+# Grant a group the right to modify tickets in a queue
+ok(my ($gv,$gm) = $group->PrincipalObj->GrantQueueRight(ObjectId => $q->Id, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
+ok($gv,"Grant succeeed - $gm");
+# Add the user to the group
+ok( my ($aid, $amsg) = $group->AddMember($new_user->PrincipalId), "Added the member to the group");
+ok ($aid, "Member added to group: $amsg");
+# Make sure the user does have the right to modify tickets in the queue
+ok ($new_user->HasQueueRight( TicketObj => $new_tick, Right => 'ModifyTicket'), "User can modify the ticket with group membership");
+
+
+# Remove the user from the group
+ok( my ($did, $dmsg) = $group->DeleteMember($new_user->PrincipalId), "Deleted the member from the group");
+ok ($did,"Deleted the group member: $dmsg");
+# Make sure the user doesn't have the right to modify tickets in the queue
+ok (!$new_user->HasQueueRight( TicketObj => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+
+
+# Add the user to a subgroup of the group
+
+# Make sure the user does have the right to modify tickets in the queue
+
+# Remove the user from the subgroup
+
+# Make sure the user doesn't have the right to modify tickets in the queue
+
+# Revoke the right for the group
+
+
+# Grant queue admin cc the right to modify ticket in the queue 
+# Add the user as a queue admincc
+# Make sure the user does have the right to modify tickets in the queue
+# Remove the user from the role  group
+# Make sure the user doesn't have the right to modify tickets in the queue
+# Revoke the right for the role group
+
+
+# Grant queue admin cc the right to modify ticket in the queue 
+# Add the user as a ticket admincc
+# Make sure the user does have the right to modify tickets in the queue
+# Remove the user from the role  group
+# Make sure the user doesn't have the right to modify tickets in the queue
+# Revoke the right for the role group
+
+
+# Grant system admin cc the right to modify ticket 
+# Add the user as a queue admincc
+# Make sure the user does have the right to modify tickets in the queue
+# Remove the user from the role  group
+# Make sure the user doesn't have the right to modify tickets in the queue
+# Revoke the right for the role group
+
+
+# Grant system admin cc the right to modify ticket  
+# Add the user as a ticket admincc
+# Make sure the user does have the right to modify tickets in the queue
+# Remove the user from the role  group
+# Make sure the user doesn't have the right to modify tickets in the queue
+# Revoke the right for the role group
+
+# Grant "privileged users" the system right to create users
+# Create a privileged user.
+# have that user create another user
+# Revoke the right for privileged users to create users
+# have the privileged user try to create another user and fail the ACL check
+
+
+
 
 
 
@@ -1160,7 +1120,7 @@ sub HasSystemRight {
 
     unless ( defined $right ) {
 
-        $RT::Logger->debug(
+        $RT::Logger->warn(
             "$self RT::User::HasSystemRight was passed in no right.");
         return (undef);
     }
@@ -1209,7 +1169,7 @@ sub _HasRight {
 
 
     if ( $self->Disabled ) {
-        $RT::Logger->debug( "Disabled User:  " . $self->Name . " failed access check for " . $args{'Right'} . 
+        $RT::Logger->err( "Disabled User:  " . $self->Name . " failed access check for " . $args{'Right'} . 
                             " to object " . $args{'Scope'} . "/"
               . $args{'AppliesTo'} . "\n" );
         return (undef);
@@ -1232,90 +1192,74 @@ sub _HasRight {
         $hashkey = $self->Id . ":" . join (";:;", %args );
     }
 
-     $RT::Logger->debug("Our hashkey is $hashkey.");
+     #$RT::Logger->debug("Our hashkey is $hashkey.");
 
     #Anything older than 10 seconds needs to be rechecked
     my $cache_timeout = ( time - 10 );
+if ( ( defined $self->_ACLCache->{"$hashkey"} ) && ( $self->_ACLCache->{"$hashkey"} == 1 ) && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
+        && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
 
-    if ( ( defined $self->_KeyCache->{"$hashkey"} )
-        && ( $self->_KeyCache->{"$hashkey"} == 1 )
-        && ( defined $self->_KeyCache->{"$hashkey"}{'set'} )
-        && ( $self->_KeyCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
-
-        	  $RT::Logger->debug("Cached ACL win for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
-        return ( $self->_KeyCache->{"$hashkey"} );
+        	  #$RT::Logger->debug("Cached ACL win for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
+        return ( $self->_ACLCache->{"$hashkey"} );
     }
-    elsif ( ( defined $self->_KeyCache->{"$hashkey"} )
-        && ( $self->_KeyCache->{"$hashkey"} == -1 )
-        && ( defined $self->_KeyCache->{"$hashkey"}{'set'} )
-        && ( $self->_KeyCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
+    elsif ( ( defined $self->_ACLCache->{"$hashkey"} )
+        && ( $self->_ACLCache->{"$hashkey"} == -1 )
+        && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
+        && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
 
-        	$RT::Logger->debug("Cached ACL loss decision for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
+        	#$RT::Logger->debug("Cached ACL loss decision for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
 
         return (undef);
     }
 
 
 
+    # We want to grant the right if:
+
+    # The user has the right as an individual
+    my $user_query = $self->_GenerateHasRightAsUserQuery(Ticket => $args{'Ticket'}, Queue => $args{'Queue'}, Right => $args{'Right'});
+
+#    # The user has the right as a member of a system-internal or 
+#    # user-defined group
+#
+#    Find all records from the ACL where they're granted to a group 
+#    of type "UserDefined" or "System"
+#    for the object "System or the object "Queue N" and the group we're looking
+#    at has the recursive member $self->Id
+#
+#    # The user has the right based on a role
+#
+#    Find all the records from ACL where they're granted to the role "foo"
+#    for the object "System" or the object "Queue N" and the group we're looking
+#   at is of domain  ("QueueRole" and applies to the right queue)
+#                             or ("TicketRole" and applies to the right ticket)
+#    and the type is the same as the type of the ACL and the group has
+#    the recursive member $self->Id
+#
+
+my ($or_look_at_queue_rights, $or_check_ticket_roles, $or_check_roles);
 
     my $ticket = $args{'Ticket'};
     my $right = $args{'Right'};
     my $queue = $args{'Queue'};
 
-    my $user_query = "SELECT ACL.id from ACL, Principals WHERE  (ACL.RightName = '$right' OR ACL.RightName = 'SuperUser') ";
-    $user_query .= " AND ( Principals.PrincipalType = 'User' AND Principals.ObjectId = ".$self->Id." AND ACL.PrincipalId = Principals.Id )";
-    # We always want to look at system acls
-    $user_query .= " AND ( (ACL.ObjectType = 'System') ";
+if ($ticket) {
+     $or_check_ticket_roles = " OR ( Groups.Domain = 'TicketRole' AND Groups.Instance = '$ticket') ";
+}
+if ($queue) {
+     $or_look_at_queue_rights = " OR (ACL.ObjectType = 'Queue'  AND ACL.ObjectId = '$queue') ";
+     $or_check_roles = " OR ( ( (Groups.Domain = 'QueueRole' AND Groups.Instance = '$queue') $or_check_ticket_roles ) 
+                            AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.ObjectId AND Principals.PrincipalType = 'Group') ";
+}
 
-    # Sometimes we want to loon at queue ACLs
-    if ($queue) {
-        $user_query .= " OR (ACL.ObjectType = 'Queue' AND ACL.ObjectId = '$queue' )";
-    }
-    $user_query .=")";
+my $query = "
+SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers  WHERE  
+   (ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') AND ACL.PrincipalId = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '".$self->PrincipalId."' AND
+    (   ACL.ObjectType = 'System' $or_look_at_queue_rights ) AND 
+    (
+        (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND (Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined')) 
+           $or_check_roles ) ";
 
-
-
-
-    my $query = "SELECT ACL.id from ACL, Principals, Groups, Groups Groups_2, CachedGroupMembers WHERE  (ACL.RightName = '$right' OR ACL.RightName = 'SuperUser') AND (";
-
-    # We always want to look at system acls
-    $query .= "( (ACL.ObjectType = 'System') ";
-
-    # Sometimes we want to loon at queue ACLs
-    if ($queue) {
-        $query .= " OR (ACL.ObjectType = 'Queue' AND ACL.ObjectId = '$queue' )";
-    }
-
-    # Tie in the principals table
-    $query .= ") AND ACL.PrincipalId = Principals.Id )";
-
-    # Check for individual users
-
-    # Check for groups
-    $query.= " AND (Principals.PrincipalType = 'Group' AND Principals.ObjectId = Groups.Id) ";
-
-    # Let's make sure we only get users who are members of groups.
-    $query .= " AND CachedGroupMembers.MemberId = '".$self->PrincipalId."' ";
-
-    # Look for system groups and system-wide role groups
-    # Join to group 2 so that fscking SQL is happy.
-    $query .= "AND ((Groups.Domain = 'System' OR Groups.Domain = 'Pseudo') AND CachedGroupMembers.GroupId = Groups.Id AND Groups_2.Id = Groups.Id ) ";
-
-    # If we're talking about roles (requestor, Cc, admincc)...
-    if ($queue) {
-
-    $query .= " OR ( Groups.Domain ='Queue' AND Groups.Instance = '$queue' ". 
-            "  AND Groups_2.Type = Groups.Type AND CachedGroupMembers.GroupId = Groups_2.Id ".
-            "  AND  (  (Groups_2.Domain = 'SystemRoles') OR ( Groups_2.Domain = 'Queue' and Groups_2.Instance = '$queue' ) ";
-
-    # If we're talking about a ticket, look at the ticket roles
-    if ($ticket) { 
-        $query .= " OR  ( Groups_2.Domain='Ticket' AND Groups_2.Instance = '$ticket'  )";
-        
-    }
-
-    $query .= " ) )   ";
-    }
 
 $query .= " UNION $user_query";
 
@@ -1326,8 +1270,8 @@ $query .= " UNION $user_query";
 
         #if there's a match, the right is granted
         if ($hitcount) {
-            $self->_KeyCache->{"$hashkey"}{'set'} = time;
-            $self->_KeyCache->{"$hashkey"} = 1;
+            $self->_ACLCache->{"$hashkey"}{'set'} = time;
+            $self->_ACLCache->{"$hashkey"} = 1;
             return (1);
         }
 
@@ -1337,8 +1281,8 @@ $query .= " UNION $user_query";
         	$RT::Logger->debug("No ACL matched query: $query\n");	
 
         #If nothing matched, return 0.
-        $self->_KeyCache->{"$hashkey"}{'set'} = time;
-        $self->_KeyCache->{"$hashkey"} = -1;
+        $self->_ACLCache->{"$hashkey"}{'set'} = time;
+        $self->_ACLCache->{"$hashkey"} = -1;
 
         return (undef);
     }
@@ -1481,31 +1425,81 @@ sub _Value {
 
 # }}}
 
+# {{{ ACL caching
 
-# Function: _KeyCache
+# {{{ _ACLCache
+
+=head2 _ACLCache
+
+# Function: _ACLCache
 # Type    : private instance
 # Args    : none
-# Lvalue  : hash: KeyCache
+# Lvalue  : hash: ACLCache
 # Desc    : Returns a reference to the Key cache hash
 
-sub _KeyCache {
-    return(\%_KEY_CACHE);
+=cut
+
+sub _ACLCache {
+    return(\%_USERS_KEY_CACHE);
 }
 
-# {{{ _InvalidateKeyCache
+# }}}
 
-=head2 _InvalidateKeyCache
+# {{{ _InvalidateACLCache
+
+=head2 _InvalidateACLCache
 
 Cleans out and reinitializes the user rights key cache
 
 =cut
 
-sub _InvalidateKeyCache {
-    %_KEY_CACHE = ();
+sub _InvalidateACLCache {
+    %_USERS_KEY_CACHE = ();
 }
 
 # }}}
 
+# }}}
+
+# {{{ _GenerateHasRightAsUserQuery
+
+=head2 _GenerateHasRightAsUserQuery  {Ticket => undef, Queue => undef, Right =>undef }
+
+Takes an optional ticket id, queue id and a required right name
+Returns the SQL for a query about whether the user has the right in
+question for the object specified. If both ticket and queue are ommitted,
+checks whether the user has the right "systemwide
+
+
+=cut
+
+
+sub _GenerateHasRightAsUserQuery {
+    my $self = shift;
+    my %args = ( Ticket => undef,
+                 Right => undef,
+                 Queue => undef,
+                 @_);
+
+    my $ticket = $args{'Ticket'};
+    my $right = $args{'Right'};
+    my $queue = $args{'Queue'};
+
+    my $user_query = "SELECT ACL.id from ACL, Principals WHERE  (ACL.RightName = '$right' OR ACL.RightName = 'SuperUser') AND ACL.PrincipalType = 'User' ";
+    $user_query .= " AND ( Principals.PrincipalType = 'User' AND Principals.ObjectId = ".$self->Id." AND ACL.PrincipalId = Principals.Id )";
+    # We always want to look at system acls
+    $user_query .= " AND ( (ACL.ObjectType = 'System') ";
+
+    # Sometimes we want to loon at queue ACLs
+    if ($queue) {
+        $user_query .= " OR (ACL.ObjectType = 'Queue' AND ACL.ObjectId = '$queue' )";
+    }
+    $user_query .=")";
+
+    return ($user_query);
+
+}
+# }}}
 # }}}
 
 1;

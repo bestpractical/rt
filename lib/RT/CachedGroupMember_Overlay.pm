@@ -7,8 +7,8 @@ no warnings qw(redefine);
 
 Create takes a hash of values and creates a row in the database:
 
-  'Group' is the "top level" group we're building the ccache for. This is an 
-  RT::Group object
+  'Group' is the "top level" group we're building the cache for. This is an 
+  RT::Principal object
 
   'Member' is the RT::Principal  of the user or group we're adding
   to the cache.
@@ -34,15 +34,15 @@ sub Create {
         @_
     );
 
-    unless ( $args{'Member'} && $args{'Member'}->Id ) {
+    unless ( $args{'Member'} && UNIVERSAL::isa($args{'Member'}, 'RT::Principal') &&  $args{'Member'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus Member argument");
     }
 
-    unless ( $args{'Group'} && $args{'Group'}->Id ) {
+    unless ( $args{'Group'} && UNIVERSAL::isa($args{'Group'}, 'RT::Principal') &&  $args{'Group'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus Group argument");
     }
 
-    unless ( $args{'ImmediateParent'} && $args{'ImmediateParent'}->Id ) {
+    unless ( $args{'ImmediateParent'} && UNIVERSAL::isa($args{'ImmediateParent'}, 'RT::Principal') && $args{'ImmediateParent'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus ImmediateParent argument");
     }
     my $id = $self->SUPER::Create(

@@ -81,7 +81,6 @@ else {    # this is a virgin install
         print "$msg\n";
         exit(1);
     }
-
 }
 
 #now that we bootstrapped that little bit, we can use the standard RT cli
@@ -135,13 +134,13 @@ unless ($LastVersion) {
     @groups = (
         {
             Name        => 'Everyone',
-            Domain      => 'Pseudo',
+            Domain      => 'SystemInternal',
             Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
         {
             Type        => 'Privileged',
-            Domain      => 'Pseudo',
+            Domain      => 'SystemInternal',
             Instance    => '',
             Name        => '',
             Description => 'Pseudogroup for internal use',
@@ -149,7 +148,7 @@ unless ($LastVersion) {
         {
             Name        => '',
             Type        => 'Unprivileged',
-            Domain      => 'Pseudo',
+            Domain      => 'SystemInternal',
             Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
@@ -188,24 +187,17 @@ unless ($LastVersion) {
 
 # {{{ ACL
 my @acl;
-
 unless ($LastVersion) {
-    @acl = (    #TODO: make this actually take the serial # granted to root.
+    @acl = (    
         {
-            PrincipalId    => '1',
-            RightName      => 'SuperUser',
-            ObjectType     => 'System',
-            ObjectId => '0'
-        },
-        {
-            PrincipalId    => '2',
+            UserId    => '2',
             RightName      => 'OwnTicket',
             ObjectType     => 'System',
             ObjectId => '0'
         },
 
         {
-            PrincipalId    => '3',
+            UserId    => '3',
             RightName      => 'SuperUser',
             ObjectType     => 'System',
             ObjectId => '0'
@@ -499,16 +491,15 @@ further questions or concerns, please respond to this message.
 
 # }}}
 
-print "Creating ACL...";
+print "Creating Superuser  ACL...";
 use RT::ACE;
-for $item (@acl) {
-    my $new_entry = new RT::ACE($CurrentUser);
-
-    #Using an internal function. this should never be used outside of the bootstrap script
-    my $return = $new_entry->_BootstrapRight(%$item);
-    print $return. ".";
-}
-print "done.\n";
+        my $superuser_ace = RT::ACE->new($CurrentUser);
+        $superuser_ace->_BootstrapCreate(
+            PrincipalId        => '1',
+            PrincipalType  => 'User',
+            RightName      => 'SuperUser',
+            ObjectType     => 'System',
+            ObjectId => '0');
 
 
 print "Creating groups...";
@@ -530,6 +521,16 @@ foreach $item (@users) {
     print $return. ".";
 }
 print "done.\n";
+print "Creating ACL...";
+for $item (@acl) {
+    my $new_entry = new RT::ACE($CurrentUser);
+
+    #Using an internal function. this should never be used outside of the bootstrap script
+    my $return = $new_entry->_BootstrapCreate(%$item);
+    print $return. ".";
+}
+print "done.\n";
+
 print "Creating queues...";
 use RT::Queue;
 for $item (@queues) {

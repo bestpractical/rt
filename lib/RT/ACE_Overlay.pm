@@ -111,6 +111,7 @@ foreach $right (keys %SYSTEMRIGHTS) {
 Load an ACE by specifying a paramhash with the following fields:
 
               PrincipalId => undef,
+              PrincipalType => undef,
 	      RightName => undef,
 	      ObjectType => undef,
 	      ObjectId => undef,
@@ -120,12 +121,14 @@ Load an ACE by specifying a paramhash with the following fields:
 sub LoadByValues {
   my $self = shift;
   my %args = (PrincipalId => undef,
+              PrincipalType => undef,
 	      RightName => undef,
 	      ObjectType => undef,
 	      ObjectId => undef,
 	      @_);
   
   $self->LoadByCols (PrincipalId => $args{'PrincipalId'},
+              PrincipalType => $args{'PrincipalType'},
 		     RightName => $args{'RightName'},
 		     ObjectType => $args{'ObjectType'},
 		     ObjectId => $args{'ObjectId'}
@@ -148,7 +151,8 @@ sub LoadByValues {
 
 PARAMS is a parameter hash with the following elements:
 
-   PrincipalId => An if of an RT::Principal object
+   PrincipalId => The id of an RT::Principal object
+   PrincipalType => "User" "Group" or any Role type
    RightName => the name of a right. in any case
    ObjectType => "System" | "Queue"
    ObjectId => a queue id or undef
@@ -158,6 +162,7 @@ PARAMS is a parameter hash with the following elements:
 sub Create {
     my $self = shift;
     my %args = ( PrincipalId => undef,
+         PrincipalType => undef,
 		 RightName => undef,
 		 ObjectType => undef,
 		 ObjectId => undef,
@@ -192,7 +197,7 @@ sub Create {
     #If it's not a scope we recognise, something scary is happening.
     else {
 	$RT::Logger->err("RT::ACE->Create got an object type it didn't recognize: ".  $args{'ObjectType'}." Bailing. \n");
-	return(0,$self->loc("System error. Unable to grant rights."));
+	    return(0,$self->loc("System error. Unable to grant rights."));
     }
 
     # }}}
@@ -215,6 +220,7 @@ sub Create {
     
     # Make sure the right doesn't already exist.
     $self->LoadByCols (PrincipalId => $princ_id,
+              PrincipalType => $args{'PrincipalType'},
 		       RightName => $args{'RightName'},
 		       ObjectType => $args {'ObjectType'},
 		       ObjectId => $args{'ObjectId'}
@@ -224,6 +230,7 @@ sub Create {
     }	
 
     my $id = $self->SUPER::Create( PrincipalId => $princ_id,
+                   PrincipalType => $args{'PrincipalType'},
 				   RightName => $args{'RightName'},
 				   ObjectType => $args {'ObjectType'},
 				   ObjectId => $args{'ObjectId'}
@@ -232,7 +239,7 @@ sub Create {
    
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    RT::User->_InvalidateKeyCache();
+    RT::User->_InvalidateACLCache();
 
     if ($id > 0 ) {
 	    return ($id, $self->loc('Right Granted') );
@@ -265,8 +272,10 @@ sub Delete {
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    RT::User->_InvalidateKeyCache();
-
+    use Data::Dumper;
+    $RT::Logger->debug("Before, the key cache is ". Dumper(RT::User->_ACLCache()));
+    RT::User->_InvalidateACLCache();
+    $RT::Logger->debug("Afterwards, the key cache is ". Dumper(RT::User->_ACLCache()));
     if ($val) {
 	return ($val, $self->loc('ACE Deleted'));
     }	
@@ -277,33 +286,40 @@ sub Delete {
 
 # }}}
 
-# {{{ sub _BootstrapRight 
+# {{{ sub _BootstrapCreate 
 
-=head2 _BootstrapRight
+=head2 _BootstrapCreate
 
 Grant a right with no error checking and no ACL. this is _only_ for 
-installation. If you use this routine without jesse@fsck.com's explicit 
+installation. If you use this routine without the author's explicit 
 written approval, he will hunt you down and make you spend eternity
 translating mozilla's code into FORTRAN or intercal.
 
+If you think you need this routine, you've mistaken. 
+
 =cut
 
-sub _BootstrapRight {
+sub _BootstrapCreate {
     my $self = shift;
-    my %args = @_;
+    my %args = (@_);
 
-    my $id = $self->SUPER::Create( PrincipalId => $args{'PrincipalId'},
-				   RightName => $args{'RightName'},
-				   ObjectType => $args {'ObjectType'},
-				   ObjectId => $args{'ObjectId'}
-				 );
+    # When bootstrapping, make sure we get the _right_ users
+    if ($args{'UserId'} ) {
+    my $user = RT::User->new($self->CurrentUser);
+    $user->Load($args{'UserId'});
+        delete $args{'UserId'};
+        $args{'PrincipalId'} = $user->PrincipalId;
+        $args{'PrincipalType'} = 'User';
+    }
+
+    my $id = $self->SUPER::Create( %args);
     
     if ($id > 0 ) {
 	return ($id);
     }
     else {
-	$RT::Logger->err('System error. right not granted.');
-	return(undef);
+	    $RT::Logger->err('System error. right not granted.');
+	    return(undef);
     }
     
 }
