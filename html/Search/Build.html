@@ -24,9 +24,12 @@
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html".$QueryString, 
-    Title => $title, %ARGS &>
+    Title => $title,
+    Format => $Format,
+    Query => $Query,
+    Rows => $ARGS{'Rows'} &>
 
-<FORM METHOD="GET">
+<FORM METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
 <table width=100%>
@@ -77,26 +80,104 @@ my @actions        = ();
 my %queues;
 
 if ( $ARGS{"DoSearch"} ) {
-    $m->comp(
-        "Results.html",
-        Query   => $Query,
-        Format  => $Format,
-        OrderBy => $ARGS{OrderBy},
-        Rows    => $ARGS{RowsPerPage}
-    );
-    $m->abort();
-}
-elsif ( $ARGS{"EditQuery"} ) {
-    $m->comp(
-        "Edit.html",
-        Query    => $Query,
-        Format   => $Format,
-        SearchId => $SearchId
-    );
+    $m->comp( "Results.html", Query   => $Query, Format  => $Format, OrderBy => $ARGS{OrderBy}, Rows    => $ARGS{RowsPerPage});
     $m->abort();
 }
 
-my $items = ParseQuery( $Query || $search_hash->{'Query'}, \@actions );
+# If the user wants a new search, clobber the search id
+if ( $ARGS{'CopySearch'} ) {
+    $ARGS{'SearchId'} = 'new';
+}
+
+# {{{ if we're asked to revert the current search, we just want to load it
+if ( $ARGS{'Revert'} ) {
+    $ARGS{'LoadSavedSearch'} = $ARGS{'SearchId'};
+    $Format                  = undef;
+    $Query                   = undef;
+}
+
+# }}}
+
+# {{{ if we're asked to load a search, load it.
+if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    # XXX TODO This will only let users save personal searches
+    # We explicitly list out the available types and
+    # don't trust user input here
+    if (   ( $obj_type eq 'RT::User' ) && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+        $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+
+    }
+    elsif ($obj_type eq 'RT::Group')  {
+        my $group = RT::Group->new($session{'CurrentUser'});
+        $group->Load($obj_id);
+        $search = $group->Attributes->WithId($search_id);
+    }
+
+
+
+    $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
+    $ARGS{'Format'} = $Format   = $search->SubValue('Format');
+    $ARGS{'Query'} = $Query    = $search->SubValue('Query');
+
+
+
+}
+
+# }}}
+
+# if we've gotten to this point, without a $search, the user is doing _something_ other than
+# manipulating a search's saved status. whcih means we don't have a loaded
+# saved search.
+# we want to load the search they're working on and compare it to the currently
+# loaded search. this will let us present the right buttons.
+
+if ( !$search && $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    # XXX TODO This will only let users save personal searches
+    # We explicitly list out the available types and
+    # don't trust user input here
+    if (   ( $obj_type eq 'RT::User' ) && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+        $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+        $search_hash->{'SearchId'} = $ARGS{'SearchId'};
+
+    }
+    elsif ($obj_type eq 'RT::Group')  {
+        my $group = RT::Group->new($session{'CurrentUser'});
+        $group->Load($obj_id);
+        $search = $group->Attributes->WithId($search_id);
+        $search_hash->{'SearchId'} = $ARGS{'SearchId'};
+    }
+
+
+
+    else {
+        push @actions, [loc("Searches can't be associated with that kind of object"), 0];
+    }
+
+}
+
+if ($search) {
+    $search_hash->{Description} = ( $search->Description() || loc('Untitled search') );
+    $search_hash->{Format}   = $search->SubValue('Format');
+    $search_hash->{Query}    = $search->SubValue('Query');
+    $search_hash->{Object} = $search;
+}
+else {
+    $search_hash->{Description} = loc('Untitled search');
+    $search_hash->{Format}      = '';
+    $search_hash->{Query}       = '';
+}
+
+
+# {{{ Parse the query
+my $items = ParseQuery( $Query, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
@@ -115,8 +196,6 @@ $currentkey = $options[$ARGS{clauses}]->{Key} if $ARGS{clauses};
 # a criterion will get lost otherwise
 if (1) {
 
-    #$ARGS{"AddClause"}) {
-    my %hash = %$items;
     my $key;
     if ($currentkey) {
         $key = $currentkey;
@@ -124,7 +203,7 @@ if (1) {
     else {
         $key = "{" . '0.0' . "}{Subkey}{1.0}";
     }
-    while ( keyexists( \%hash, $key ) ) {
+    while ( keyexists( $items, $key ) ) {
         $key = nextkey($key);
     }
     foreach my $arg ( keys %ARGS ) {
@@ -136,7 +215,7 @@ if (1) {
             if ( $ARGS{ $field . "Field" } ) {
                 $keyword = $ARGS{ $field . "Field" };
             }
-            else {
+           else {
                 $keyword = $field;
             }
             my $clause = {
@@ -145,10 +224,8 @@ if (1) {
                 Value => "'$ARGS{'ValueOf' . $field}'"
             };
 
-            eval "\$hash$key = \$clause";
-
-            setaggregator( \%hash, $key, $ARGS{'AndOr'} );
-            $items = \%hash;
+            setvalue($items, $key, $clause);
+            setaggregator( $items, $key, $ARGS{'AndOr'} );
             $key   = nextkey($key);
         }
     }
@@ -157,19 +234,15 @@ if (1) {
 # {{{ Move things around
 if ( $ARGS{"Up"} ) {
     if ($currentkey) {
-        my %hash = %$items;
-
         # we can only move it up if it's not at the top
         my $prev = prevkey($currentkey);
 
-        if ( swap( \%hash, $prev, $currentkey ) ) {
+        if ( swap( $items, $prev, $currentkey ) ) {
             $currentkey = "$prev";
         }
         else {
             push( @actions, [ "error: can't move up", -1 ] );
         }
-
-        $items = \%hash;
     }
     else {
         push( @actions, [ "error: nothing to move", -1 ] );
@@ -177,19 +250,15 @@ if ( $ARGS{"Up"} ) {
 }
 elsif ( $ARGS{"Down"} ) {
     if ($currentkey) {
-        my %hash = %$items;
-
         # we can only move it down if it's not at the bottom
         my $newkey = nextkey($currentkey);
 
-        if ( swap( \%hash, $newkey, $currentkey ) ) {
+        if ( swap( $items, $newkey, $currentkey ) ) {
             $currentkey = "$newkey";
         }
         else {
             push( @actions, [ "error: can't move down", -1 ] );
         }
-
-        $items = \%hash;
     }
     else {
         push( @actions, [ "error: nothing to move", -1 ] );
@@ -197,30 +266,24 @@ elsif ( $ARGS{"Down"} ) {
 }
 elsif ( $ARGS{"Left"} ) {
     if ($currentkey) {
-        my %hash = %$items;
-
         # we can only move it left if...what?
         my $parent = parentkey($currentkey);
 
         if ( $parent =~ m/^{0.0}.*/ && $parent ne "{0.0}" ) {
-            my $newkey = appendkey( \%hash, $parent );
-
-            movecurrent( \%hash, $newkey, \$currentkey );
+            my $newkey = appendkey( $items, $parent );
+            movecurrent( $items, $newkey, \$currentkey );
 
             # if there was an empty group left behind, delete it
-            my $subhash;
-            eval "\$subhash = \$hash$parent" . "{Subkey}";
+            my $subhash = gethash($items, $parent . "{Subkey}");
             if ( !( keys %{$subhash} ) ) {
-                eval "delete \$hash$parent";
-                reworkkeys( \%hash, $parent, \$currentkey );
+                deletevalue($items, $parent);
+                reworkkeys( $items, $parent, \$currentkey );
             }
 
         }
         else {
             push( @actions, [ "error: can't move left", -1 ] );
         }
-
-        $items = \%hash;
     }
     else {
         push( @actions, [ "error: nothing to move", -1 ] );
@@ -228,17 +291,15 @@ elsif ( $ARGS{"Left"} ) {
 }
 elsif ( $ARGS{"Right"} ) {
     if ($currentkey) {
-        my %hash = %$items;
-
         # you can't move right if you leave no siblings behind
-        if (   keyexists( \%hash, nextkey($currentkey) )
-            || keyexists( \%hash, prevkey($currentkey) ) )
+        if (   keyexists( $items, nextkey($currentkey) )
+            || keyexists( $items, prevkey($currentkey) ) )
         {
 
             # if the next item is a subkey, put it there
-            my $newkey = appendsubkey( \%hash, $currentkey );
+            my $newkey = appendsubkey( $items, $currentkey );
 
-            movecurrent( \%hash, $newkey, \$currentkey );
+            movecurrent( $items, $newkey, \$currentkey );
         }
         else {
             push( @actions, [ "error: can't move right", -1 ] );
@@ -251,12 +312,8 @@ elsif ( $ARGS{"Right"} ) {
 }
 elsif ( $ARGS{"DeleteClause"} ) {
     if ($currentkey) {
-        my %hash = %$items;
-
-        eval "delete \$hash$currentkey";
-        reworkkeys( \%hash, $currentkey, \$currentkey );
-
-        $items = \%hash;
+        deletevalue($items, $currentkey);
+        reworkkeys( $items, $currentkey, \$currentkey );
     }
     else {
         push( @actions, [ "error: nothing to delete", -1 ] );
@@ -296,12 +353,10 @@ while ( my $val = shift @options ) {
         }
         $optionlist .= "<option value=$i $selected>";
         $optionlist .= "&nbsp;" x ( 5 * ( $depth - 1 ) );
-
 #        $optionlist .= "$i: $key ";
+
         if ( $num > 0 || $val->{Value}->{Subkey} ) {
             $optionlist .= $ea . " ";
-        }
-        else {
         }
         $optionlist .=
           "$val->{Value}->{Key} $val->{Value}->{Op} $val->{Value}->{Value}";
@@ -385,8 +440,11 @@ sub ParseQuery {
     my $last   = undef;
 
     my $depth = 1;
-    my %query = ();
+    my $query = {};
     my %depths;
+
+    setvalue($query, "{0.0}", {});
+    setvalue($query, "{0.0}{Subkey}", {});
 
     # get the FIELDS from Tickets_Overlay
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
@@ -399,9 +457,7 @@ sub ParseQuery {
     my $re_aggreg  = qr[(?i:AND|OR)];
     my $re_value   = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
     my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
-    my $re_op      =
-      qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]
-      ;    # long to short
+    my $re_op      = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)] ;    # long to short
     my $re_paren = qr'\(|\)';
 
     my ( $ea, $key, $op, $value ) = ( "", "", "", "" );
@@ -411,8 +467,7 @@ sub ParseQuery {
     # as a keyword or value.
 
     my $num = 0;
-    while (
-        $string =~ /(
+    while ( $string =~ /(
                       $re_aggreg
                       |$re_op
                       |$re_keyword
@@ -437,13 +492,7 @@ sub ParseQuery {
             # Error
             # FIXME: I will only print out the highest $want value
             my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions,
-              [
-"current: $current, want $want, Error near ->$val<- expecting a "
-                  . $token
-                  . " in '$string'\n",
-                -1
-              ];
+            push @actions, [ "current: $current, want $want, Error near ->$val<- expecting a " . $token . " in '$string'\n", -1 ];
         }
 
         # State Machine:
@@ -479,8 +528,10 @@ sub ParseQuery {
                 }
                 $keystring = "{0.0}{Subkey}" . $keystring;
 
-                setaggregator( \%query, $keystring, $ea );
-
+		if (!gethash($query, parentkey($keystring))) {
+		    setvalue($query, parentkey($keystring), {});
+		}
+                setaggregator( $query, $keystring, $ea );
             }
             else {
                 $depth--;
@@ -551,6 +602,7 @@ sub ParseQuery {
             }
 
             my $keystring = "";
+	    my $pd = $parentdepth;
             $keystring = "{Subkey}{" . $parentdepth . ".$num" . "}";
             $parentdepth--;
 
@@ -562,9 +614,8 @@ sub ParseQuery {
                 $parentdepth--;
             }
 
-            setaggregator( \%query, "{0.0}" . $keystring, $ea ) if $depth == 1;
-
-            $keystring = "\$query{0.0}" . $keystring;
+	    $ea = 'AND' if !$ea;
+            $keystring = "{0.0}" . $keystring;
 
             my $clause = {
                 Key   => $key,
@@ -572,7 +623,8 @@ sub ParseQuery {
                 Value => $val
             };
 
-            eval "$keystring = \$clause";
+	    setvalue($query, $keystring, $clause);
+            setaggregator( $query, $keystring, $ea );
 
             $num++;
 
@@ -592,7 +644,7 @@ sub ParseQuery {
     push @actions, [ "Mismatched parentheses", -1 ]
       unless $depth == 1;
 
-    return \%query;
+    return $query;
 }
 
 sub _match {
@@ -609,24 +661,20 @@ sub keyexists {
     my $hash = shift;
     my $key  = shift;
 
-    my $exists;
-    $key =~ s/\}\{/\}->\{/g;
-    eval "\$exists = exists \$hash->$key";
-    return $exists;
+    my ($prefix, $depth, $num) = parsekey($key);
+    return exists $hash->{0.0} if ($depth == 0);
+
+    my $myhash = gethash($hash, $prefix);
+
+    return exists ($myhash->{$depth + ($num/10)});
 }
 
 sub subkeyexists {
     my $hash = shift;
     my $key  = shift;
 
-    my $exists;
-    my $newkey = $key . "{Subkey}";
-    if ( keyexists( $hash, $key ) ) {
-        $newkey =~ s/\}\{/\}->\{/g;
-        eval "\$exists = exists \$hash->$newkey";
-    }
-
-    return $exists;
+    my $myhash = gethash($hash, $key);
+    return exists $myhash->{Subkey};
 }
 
 sub appendsubkey {
@@ -670,7 +718,6 @@ sub subkey {
 
 sub parentkey {
     my $key = shift;
-    $key =~ s/\}->\{/\}\{/g;
     my ( $prefix, $depth, $num ) = parsekey($key);
     if ( $depth > 0 ) {
         $prefix =~ s/(.*){Subkey}/$1/;
@@ -722,12 +769,9 @@ sub reworkkeys {
     my $nextkey = nextkey($key);
     while ( keyexists( $hash, $nextkey ) ) {
         if ( keyexists( $hash, $nextkey ) ) {
-            $key        =~ s/\}\{/\}->\{/g;
-            $nextkey    =~ s/\}\{/\}->\{/g;
-            $$currentkey =~ s/\}\{/\}->\{/g;
+	    my $temp = gethash($hash, $nextkey);
+	    setvalue($hash, $key, $temp);
             $$currentkey = $key . $2 if $$currentkey =~ m/($nextkey)(.*)/;
-            $$currentkey =~ s/\}->\{/\}\{/g;
-            eval "\$hash->$key = \$hash->$nextkey";
         }
 
         # set this so that we can return it;
@@ -740,54 +784,49 @@ sub reworkkeys {
 
         $nextkey = nextkey($key);
     }
-    $key =~ s/\}\{/\}->\{/g;
-    eval "delete \$hash->$key";
+    deletevalue($hash, $key);
 }
 
 sub fixsubkeys {
     my $hash = shift;
     my $key  = shift;
 
-    $key =~ s/\}\{/\}->\{/g;
-
     if ( subkeyexists( $hash, $key ) ) {
         my ( $prefix, $depth, $num ) = parsekey($key);
-        my %temp;
-        $key =~ s/\}\{/\}->\{/g;
-        eval "%temp = %{\$hash->$key" . "->{Subkey}}";
+        my $item = gethash($hash, $key . "{Subkey}");
+	my %temp = %$item;
         foreach my $i ( keys %temp ) {
             my $num = $i - int($i);
             my $new = int($depth) + 1 + $num;
             if ( $i != $new ) {
-                eval "\$hash->$key" . "->{Subkey}->{$new} = \$temp{$i}";
-                eval "delete \$hash->$key" . "{Subkey}->{$i}";
-                fixsubkeys( $hash, $key . "->{Subkey}->{$new}" );
+		setvalue($hash, $key . "{Subkey}{$new}", $temp{$i});
+		deletevalue($hash, $key . "{Subkey}{$i}");
+                fixsubkeys( $hash, $key . "{Subkey}{$new}" );
             }
             $num++;
         }
     }
 }
 
-sub getaggregator {
-    my $hash = shift;
-    my $key  = shift;
-
-    my $ea;
-    my $parent = parentkey($key);
-    $parent =~ s/\}\{/\}->\{/g;
-    eval "\$ea = \$hash->$parent" . "->{EA}";
-
-    return $ea;
-}
+#sub getaggregator {
+#    my $hash = shift;
+#    my $key  = shift;
+#
+#    my $parent = parentkey($key);
+#    my $ea = gethash($hash, $parent . "{EA}");
+#
+#    return $ea;
+#}
 
 sub setaggregator {
     my $hash = shift;
     my $key  = shift;
     my $ea   = shift;
 
-    my $parent = parentkey($key);
-    $parent =~ s/\}\{/\}->\{/g;
-    eval "\$hash->$parent->" . "{EA} = '$ea'";
+    my $parentkey = parentkey($key);
+    my $parenthash = gethash($hash, parentkey($key));
+    $parenthash->{EA} = $ea;
+
 }
 
 sub appendkey {
@@ -813,17 +852,15 @@ sub movecurrent {
     my $hash   = shift;
     my $newkey = shift;
     my $currentkey = shift;
-    my %temp   = {};
 
     my $origkey = $$currentkey;
+    my $old = gethash($hash, $origkey);
+    my %temp = %$old;
 
-    $origkey =~ s/\}\{/\}->\{/g;
-    eval "%temp = %{\$hash->$origkey}";
-
-    eval "delete \$hash->$origkey";
+    deletevalue($hash, $origkey);
     my $orignewkey = $newkey;
-    $newkey =~ s/\}\{/\}->\{/g;
-    eval "\$hash->$newkey = \\%temp";
+
+    setvalue($hash, $newkey, \%temp);
 
     $$currentkey = $orignewkey;
     reworkkeys( $hash, $origkey, $currentkey );
@@ -839,91 +876,96 @@ sub swap {
 
     return 0 if !( keyexists( $hash, $key1 ) && keyexists( $hash, $key2 ) );
 
-    my %temp = {};
-
     # store the value temporarily
-    $key1 =~ s/\}\{/\}->\{/g;
-    eval "%temp = %{\$hash->$key1}";
+    my $val1 = gethash($hash, $key1);
+    my %temp = %$val1;
 
-    eval "\$hash->$key1 = \$hash->$key2";
+    my $val2 = gethash($hash, $key2);
 
-    eval "\$hash->$key2 = \\%temp";
-
-    my $tempea = getaggregator( $hash, $key1 );
+    setvalue($hash, $key2, \%temp);
+    setvalue($hash, $key1, $val2);
 
     return 1;
 }
+
+sub gethash {
+    my $hash = shift;
+    my $key = shift;
+
+    my $returnhash;
+
+    $key =~ s/^{0.0}(.*)$/$1/;
+    $key =~ s/^{(.*)}$/$1/;
+    my @keys = split(/\}\{/, $key);
+    $returnhash = $hash->{0.0};
+    foreach my $k (@keys) {
+	if (exists $returnhash->{$k}) {
+	    $returnhash = $returnhash->{$k};
+	} else {
+	    $returnhash = $returnhash->{$k+0};
+	}
+    }
+
+    return $returnhash;
+}
+
+sub setvalue {
+    my $hash = shift;
+    my $key = shift;
+    my $value = shift;
+
+    my ($prefix, $depth, $num) = parsekey($key);
+    my $newhash;
+    if ($prefix) {
+	my $parentkey = parentkey($key);
+	my $parent = gethash($hash, $parentkey);
+	if (!gethash($hash, $parentkey)) {
+	    setvalue($hash, $parentkey, {});
+	    $parent = gethash($hash, $parentkey);
+	}
+
+	if (!exists $parent->{Subkey}) {
+	    $parent->{Subkey} = {};
+	}
+	$newhash = gethash($hash, $prefix);
+    } else {
+	$newhash = $hash;
+    }
+
+    $newhash->{$depth + ($num / 10)} = $value;
+}
+
+sub deletevalue {
+    my $hash = shift;
+    my $key = shift;
+
+    my ($prefix, $depth, $num) = parsekey($key);
+    my $parent = gethash($hash, $prefix);
+    delete $parent->{$depth + ($num / 10)};
+}
+
+sub debug {
+    my $message = shift;
+    $m->print($message . "<br>");
+}
+
+# }}}
 
 # }}}
 
 # {{{ Deal with format changes
 my ($AvailableColumns, $CurrentFormat);
-($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', %ARGS);;
-use Data::Dumper;
+($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', %ARGS);
 
 $ARGS{'Format'} = $Format;
 $ARGS{'Query'}  = $Query;
 
 # }}}
 
-# If the user wants a new search, clobber the search id
-if ( $ARGS{'CopySearch'} ) {
-    $ARGS{'SearchId'} = 'new';
-}
-
-# {{{ if we're asked to revert the current search, we just want to load it
-if ( $ARGS{'Revert'} ) {
-    $ARGS{'LoadSavedSearch'} = $ARGS{'SearchId'};
-    $Format                  = undef;
-    $Query                   = undef;
-}
-
-# }}}
-
-# {{{ if we're asked to load a search, load it.
-if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    # XXX TODO This will only let users save personal searches
-    # We explicitly list out the available types and
-    # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' )
-        && ( $obj_id == $session{'CurrentUser'}->id ) )
-    {
-        $search = $session{'CurrentUser'}->Attributes->WithId($search_id);
-
-    }
-
-    $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
-    $search_hash->{'Objectl'}  = $search;
-}
-
-# }}}
-
 # {{{ if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
-    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-        my $obj_type  = $1;
-        my $obj_id    = $2;
-        my $search_id = $3;
 
-        # XXX TODO This will only let users save personal searches
-        # We explicitly list out the available types and
-        # don't trust user input here
-        if (   ( $obj_type eq 'RT::User' )
-            && ( $obj_id == $session{'CurrentUser'}->id ) )
-        {
-            $search =
-              $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-
-        }
-        else {
-
-            die "unsupported search type"
-
-        }
+        if ($search && $search->id) {
 
         # if the search data or metadata has changed, change it
         $search->SetSubValues(
@@ -939,9 +981,24 @@ if ( $ARGS{'Save'} ) {
         $search_hash->{'Object'}   = $search;
 
     }
-    elsif ( $ARGS{'SearchId'} eq 'new' ) {
-        my ( $search_id, $search_msg ) =
-          $session{'CurrentUser'}->UserObj->AddAttribute(
+    elsif ( $ARGS{'SearchId'} eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+ 
+
+        my $container_object;
+        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
+            $container_object =    $session{'CurrentUser'}->UserObj;
+        }
+        elsif ($obj_type eq 'RT::Group') {
+            $container_object = RT::Group->new($session{'CurrentUser'});
+            $container_object->Load($obj_id);
+        }
+
+        if ($container_object->id ) { 
+
+        
+        my ( $search_id, $search_msg ) = $container_object->AddAttribute(
             Name        => 'SavedSearch',
             Description => $ARGS{'Description'},
             Content     => {
@@ -949,14 +1006,24 @@ if ( $ARGS{'Save'} ) {
                 Query  => $Query
             }
           );
-        $search =
-          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-        $search_hash->{'SearchId'} =
-            ref( $session{'CurrentUser'}->UserObj ) . '-'
-          . $session{'CurrentUser'}->UserObj->Id
-          . '-SavedSearch-'
-          . $search->Id;
+        $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+        $search_hash->{'SearchId'} = ref( $session{'CurrentUser'}->UserObj ) . '-'
+          . $session{'CurrentUser'}->UserObj->Id . '-SavedSearch-' . $search->Id;
     }
+        unless ($search->id) {
+            push @actions, [loc("Can't find a saved search to work with"), 0];
+        }
+
+    $search_hash->{Description} = ( $search->Description() || loc('Untitled search') );
+    $search_hash->{Format}   = $search->SubValue('Format');
+    $search_hash->{Query}    = $search->SubValue('Query');
+    $search_hash->{Object} = $search;
+    }
+
+    else {
+            push @actions, [loc("Can't save this search"), 0];
+    }
+
 }
 
 # }}}
@@ -968,65 +1035,39 @@ if ( $ARGS{'Delete'} ) {
         my $obj_type  = $1;
         my $obj_id    = $2;
         my $search_id = $3;
-        $session{'CurrentUser'}->UserObj->Attributes->DeleteEntry(
-            Name => 'SavedSearch',
-            id   => $search_id
-        );
+
+        my $container_object;
+        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
+            $container_object =    $session{'CurrentUser'}->UserObj;
+        }
+        elsif ($obj_type eq 'RT::Group') {
+            $container_object = RT::Group->new($session{'CurrentUser'});
+            $container_object->Load($obj_id);
+        }
+
+        if ($container_object->id ) { 
+
+        $container_object->Attributes->DeleteEntry( Name => 'SavedSearch', id   => $search_id);
 
         $Format = '';
         $Query  = '';
 
     }
 
+    delete $ARGS{'SearchId'};
+    }
 }
 
 # }}}
 
-# if we've gotten to this point, without a $search, the user is doing _something_ other than
-# manipulating a search's saved status. whcih means we don't have a loaded
-# saved search.
-# we want to load the search they're working on and compare it to the currently
-# loaded search. this will let us present the right buttons.
+# Escape the format (need more than standard mason url escaping)
+$Format =~ s/#/%23/g;
+$Format =~ s/&/%26/g;
 
-if ( !$search && $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
+# Build a querystring for the tabs
 
-    # XXX TODO This will only let users save personal searches
-    # We explicitly list out the available types and
-    # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' )
-        && ( $obj_id == $session{'CurrentUser'}->id ) )
-    {
-
-        $search =
-          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-        $search_hash->{'SearchId'} = $ARGS{'SearchId'};
-
-    }
-    else {
-
-        die "unsupported search type"
-
-    }
-
-}
-
-if ($search) {
-    $search_hash->{Description} =
-      ( $search->Description() || loc('Untitled search') );
-    $search_hash->{Format}   = $search->SubValue('Format');
-    $search_hash->{Query}    = $search->SubValue('Query');
-    $search_hash->{'Object'} = $search;
-}
-else {
-    $search_hash->{Description} = loc('Untitled search');
-    $search_hash->{Format}      = '';
-    $search_hash->{Query}       = '';
-}
-
-my $QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}";
+my $QueryString;
+$QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}" if ($Query);
 
 </%INIT>
 

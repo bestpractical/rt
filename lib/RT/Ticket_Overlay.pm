@@ -120,7 +120,6 @@ use RT::Record;
 use RT::Links;
 use RT::Date;
 use RT::CustomFields;
-use RT::TicketCustomFieldValues;
 use RT::Tickets;
 use RT::URI::fsck_com_rt;
 use RT::URI;
@@ -3553,7 +3552,7 @@ sub FirstCustomFieldValue {
 
 =item CustomFieldValues FIELD
 
-Return a TicketCustomFieldValues object of all values of CustomField FIELD for this ticket.  
+Return a ObjectCustomFieldValues object of all values of CustomField FIELD for this ticket.  
 Takes a field id or name.
 
 
@@ -3570,7 +3569,7 @@ sub CustomFieldValues {
     } else {
         $cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
     }
-    my $cf_values = RT::TicketCustomFieldValues->new( $self->CurrentUser );
+    my $cf_values = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
     $cf_values->LimitToCustomField($cf->id);
     $cf_values->LimitToTicket($self->Id());
     $cf_values->OrderBy( FIELD => 'id' );
@@ -3625,7 +3624,7 @@ sub _AddCustomFieldValue {
         return ( 0, $self->loc("Custom field [_1] not found", $args{'Field'}) );
     }
 
-    # Load up a TicketCustomFieldValues object for this custom field and this ticket
+    # Load up a ObjectCustomFieldValues object for this custom field and this ticket
     my $values = $cf->ValuesForTicket( $self->id );
 
     unless ( $cf->ValidateValue( $args{'Value'} ) ) {
@@ -3679,7 +3678,7 @@ sub _AddCustomFieldValue {
                   ,$value_msg) );
         }
 
-        my $new_value = RT::TicketCustomFieldValue->new( $self->CurrentUser );
+        my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
         $new_value->Load($new_value_id);
 
         # now that adding the new value was successful, delete the old one
@@ -3746,7 +3745,7 @@ sub _AddCustomFieldValue {
 
 Deletes VALUE as a value of CustomField FIELD. 
 
-VALUE can be a string, a CustomFieldValue or a TicketCustomFieldValue.
+VALUE can be a string, a CustomFieldValue or a ObjectCustomFieldValue.
 
 If VALUE isn't a valid value for the custom field, returns 
 (0, 'Error message' ) otherwise, returns (1, 'Success Message')
@@ -3869,7 +3868,7 @@ sub Transactions {
         my $tickets = $transactions->NewAlias('Tickets');
         $transactions->Join(
             ALIAS1 => 'main',
-            FIELD1 => 'Ticket',
+            FIELD1 => 'ObjectId',
             ALIAS2 => $tickets,
             FIELD2 => 'id'
         );
@@ -3878,6 +3877,10 @@ sub Transactions {
             FIELD => 'EffectiveId',
             VALUE => $self->id()
         );
+	$transactions->Limit(
+	    FIELD    => 'ObjectType',
+	    VALUE    => ref($self),
+	);
 
         # if the user may not see comments do not return them
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {

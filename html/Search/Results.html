@@ -23,31 +23,28 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => 'Search/Results.html', 
-    Title => $title, %ARGS &>
-<hr>
-about to be
-%unless  ( $HideResults) {
-Looking at results
-<& /Elements/TicketList, 
-    Query => $ARGS{'Query'},
-    AllowSorting => 1,
-    OrderBy => $ARGS{'OrderBy'},
-    Order => $ARGS{'Order'},
-    Rows => $ARGS{'Rows'},
-    FirstRow => $ARGS{'FirstRow'},
+    current_tab => "Search/Results.html".$QueryString, 
+    Title => $title,
     Format => $Format,
-    
-    BaseURL => $RT::WebPath."/Search/Listing.html?"
+    Query => $Query,
+    Rows => $ARGS{'Rows'} &>
+<hr>
+<& /Elements/TicketList, 
+    Query => $Query,
+    AllowSorting => 1,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    Rows => $Rows,
+    Page => $Page,
+    Format => $Format,
+    BaseURL => $RT::WebPath."/Search/Results.html?"
 
    &>
 <div align=right>
-<a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a>
-<a href="Results.tsv"><&|/l&>spreadsheet</&></a>
-<a href="Results.tsv"><&|/l&>RSS</&></a>
+<a href="Bulk.html<%$QueryString%>"><&|/l&>Update all these tickets at once</&></a><br>
+<a href="Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a><br>
+<a href="Results.tsv<%$QueryString%>"><&|/l&>RSS</&></a><br>
 </div>
-% }
-
 <%INIT>
 my ($title, $ticketcount);
 $session{'i'}++;
@@ -62,7 +59,11 @@ if ( $session{'tickets'}->Query()) {
     $title = loc("Find tickets");
 }
 
-$ARGS{Format} = $Format;
+my $tabformat = $Format;
+$tabformat =~ s/#/%23/g;
+$tabformat =~ s/&/%26/g;
+my $QueryString =
+"?Query=$Query&Format=$tabformat&Rows=$ARGS{'Rows'}&Page=<%$ARGS{'Page'}%>";
 
 </%INIT>
 <%CLEANUP>
@@ -73,4 +74,7 @@ $Query => undef
 $Format => undef 
 $HideResults => 0
 $Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>

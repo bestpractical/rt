@@ -22,7 +22,6 @@
 %# 
 %# END LICENSE BLOCK
 
-
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <& .Header, 
     Format => \@Format, 
@@ -37,8 +36,21 @@
 <& .Row, Format => \@Format, i => $i, record => $record, map => $map &>
 % }
 </TABLE>
+
+<&|/l, $Page, int($TotalFound/$Rows)&>Page [_1] of [_2]</&>
+% if ($Page != 1) {
+<A href="<%$BaseURL%>?Page=<%$Page-1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Previous Page</&></a>
+% }
+% if (($Page * $Rows) < $TotalFound) {
+<A href="<%$BaseURL%>Page=<%$Page+1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Next Page</&></a>
+% }
+
+
+
 <%INIT>
 
+$Rows = '25' unless ($Rows); # we need a positive value
+# {{{ item map
 my $map = {
     QueueName => {
         attribute => 'Queue',
@@ -176,15 +188,23 @@ my $map = {
 
 };
 
+# }}}
+
 unless ($Collection) {
         $Collection = RT::Tickets->new($session{'CurrentUser'});
         $Collection->FromSQL($Query);
 }
 
-    my (@Format) = $m->comp('.ParseColumnDefinitions', Format => $Format);
+my (@Format) = $m->comp('.ParseColumnDefinitions', Format => $Format);
     
 
 $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+$Collection->RowsPerPage($Rows);
+$Collection->GotoPage($Page-1); # SB uses page 0 as the first page
+my $TotalFound =  $Collection->CountAll();
+
+
+
 
 
 </%INIT>
@@ -198,12 +218,12 @@ $AllowSorting => undef
 $Order =>undef
 $OrderBy => undef
 $BaseURL => undef
-$Format => undef
+$Format => $RT::DefaultSearchResultFormat
 </%ARGS>
 %#### SUB COMPONENTS
 %#
 %#
-%#
+%# {{{ Header
 <%DEF .Header>
 <%ARGS>
 @Format => undef
@@ -247,7 +267,8 @@ foreach my $col (@Format) {
 </%perl>
 </TR>
 </%DEF>
-
+%# }}}
+%# {{{ Row
 <%DEF .Row>
 <%ARGS>
 $i => undef
@@ -282,6 +303,9 @@ $m->out('</TR>');
 
 
 </%DEF>
+%# }}}
+%# {{{ ParseColumnDefinitions
+
 <%DEF .ParseColumnDefinitions >
 <%ARGS>
 $Format => "id, Subject"
@@ -342,3 +366,4 @@ while ($Format =~ /($justquoted|$word)/igx) {
     return(@Columns);
 </%init>
 </%DEF>
+%# }}}

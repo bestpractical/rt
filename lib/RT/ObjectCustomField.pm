@@ -33,7 +33,7 @@ use strict;
 
 =head1 NAME
 
-RT::CustomField
+RT::ObjectCustomField
 
 
 =head1 SYNOPSIS
@@ -44,8 +44,9 @@ RT::CustomField
 
 =cut
 
-package RT::CustomField;
+package RT::ObjectCustomField;
 use RT::Record; 
+use RT::CustomField;
 
 
 use vars qw( @ISA );
@@ -54,7 +55,7 @@ use vars qw( @ISA );
 sub _Init {
   my $self = shift; 
 
-  $self->Table('CustomFields');
+  $self->Table('ObjectCustomFields');
   $self->SUPER::_Init(@_);
 }
 
@@ -66,13 +67,11 @@ sub _Init {
 
 Create takes a hash of values and creates a row in the database:
 
-  varchar(200) 'Name'.
-  varchar(200) 'Type'.
-  int(11) 'MaxValues'.
-  varchar(255) 'Pattern'.
-  varchar(255) 'Description'.
-  int(11) 'SortOrder'.
-  smallint(6) 'Disabled'.
+  int(11) 'CustomField'.
+  varchar(255) 'ObjectType'.
+  varchar(255) 'IntermediateType'.
+  varchar(255) 'ParentType'.
+  int(11) 'ParentId'.
 
 =cut
 
@@ -82,23 +81,19 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                Name => '',
-                Type => '',
-                MaxValues => '',
-                Pattern => '',
-                Description => '',
-                SortOrder => '0',
-                Disabled => '0',
+                CustomField => '0',
+                ObjectType => '',
+                IntermediateType => '',
+                ParentType => '',
+                ParentId => '0',
 
 		  @_);
     $self->SUPER::Create(
-                         Name => $args{'Name'},
-                         Type => $args{'Type'},
-                         MaxValues => $args{'MaxValues'},
-                         Pattern => $args{'Pattern'},
-                         Description => $args{'Description'},
-                         SortOrder => $args{'SortOrder'},
-                         Disabled => $args{'Disabled'},
+                         CustomField => $args{'CustomField'},
+                         ObjectType => $args{'ObjectType'},
+                         IntermediateType => $args{'IntermediateType'},
+                         ParentType => $args{'ParentType'},
+                         ParentId => $args{'ParentId'},
 );
 
 }
@@ -114,109 +109,105 @@ Returns the current value of id.
 =cut
 
 
-=head2 Name
+=head2 CustomField
 
-Returns the current value of Name. 
-(In the database, Name is stored as varchar(200).)
-
-
-
-=head2 SetName VALUE
+Returns the current value of CustomField. 
+(In the database, CustomField is stored as int(11).)
 
 
-Set Name to VALUE. 
+
+=head2 SetCustomField VALUE
+
+
+Set CustomField to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Name will be stored as a varchar(200).)
+(In the database, CustomField will be stored as a int(11).)
 
 
 =cut
 
 
-=head2 Type
+=head2 CustomFieldObj
 
-Returns the current value of Type. 
-(In the database, Type is stored as varchar(200).)
-
+Returns the CustomField Object which has the id returned by CustomField
 
 
-=head2 SetType VALUE
+=cut
+
+sub CustomFieldObj {
+	my $self = shift;
+	my $CustomField =  RT::CustomField->new($self->CurrentUser);
+	$CustomField->Load($self->__Value('CustomField'));
+	return($CustomField);
+}
+
+=head2 ObjectType
+
+Returns the current value of ObjectType. 
+(In the database, ObjectType is stored as varchar(255).)
 
 
-Set Type to VALUE. 
+
+=head2 SetObjectType VALUE
+
+
+Set ObjectType to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Type will be stored as a varchar(200).)
+(In the database, ObjectType will be stored as a varchar(255).)
 
 
 =cut
 
 
-=head2 MaxValues
+=head2 IntermediateType
 
-Returns the current value of MaxValues. 
-(In the database, MaxValues is stored as int(11).)
-
-
-
-=head2 SetMaxValues VALUE
+Returns the current value of IntermediateType. 
+(In the database, IntermediateType is stored as varchar(255).)
 
 
-Set MaxValues to VALUE. 
+
+=head2 SetIntermediateType VALUE
+
+
+Set IntermediateType to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, MaxValues will be stored as a int(11).)
+(In the database, IntermediateType will be stored as a varchar(255).)
 
 
 =cut
 
 
-=head2 Pattern
+=head2 ParentType
 
-Returns the current value of Pattern. 
-(In the database, Pattern is stored as varchar(255).)
-
-
-
-=head2 SetPattern VALUE
+Returns the current value of ParentType. 
+(In the database, ParentType is stored as varchar(255).)
 
 
-Set Pattern to VALUE. 
+
+=head2 SetParentType VALUE
+
+
+Set ParentType to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Pattern will be stored as a varchar(255).)
+(In the database, ParentType will be stored as a varchar(255).)
 
 
 =cut
 
 
-=head2 Description
+=head2 ParentId
 
-Returns the current value of Description. 
-(In the database, Description is stored as varchar(255).)
-
-
-
-=head2 SetDescription VALUE
+Returns the current value of ParentId. 
+(In the database, ParentId is stored as int(11).)
 
 
-Set Description to VALUE. 
+
+=head2 SetParentId VALUE
+
+
+Set ParentId to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Description will be stored as a varchar(255).)
-
-
-=cut
-
-
-=head2 SortOrder
-
-Returns the current value of SortOrder. 
-(In the database, SortOrder is stored as int(11).)
-
-
-
-=head2 SetSortOrder VALUE
-
-
-Set SortOrder to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, SortOrder will be stored as a int(11).)
+(In the database, ParentId will be stored as a int(11).)
 
 
 =cut
@@ -258,41 +249,21 @@ Returns the current value of LastUpdated.
 =cut
 
 
-=head2 Disabled
-
-Returns the current value of Disabled. 
-(In the database, Disabled is stored as smallint(6).)
-
-
-
-=head2 SetDisabled VALUE
-
-
-Set Disabled to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Disabled will be stored as a smallint(6).)
-
-
-=cut
-
-
 
 sub _CoreAccessible {
     {
      
         id =>
 		{read => 1, type => 'int(11)', default => ''},
-        Name => 
-		{read => 1, write => 1, type => 'varchar(200)', default => ''},
-        Type => 
-		{read => 1, write => 1, type => 'varchar(200)', default => ''},
-        MaxValues => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
-        Pattern => 
+        CustomField => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        ObjectType => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
-        Description => 
+        IntermediateType => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
-        SortOrder => 
+        ParentType => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        ParentId => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},
@@ -302,25 +273,23 @@ sub _CoreAccessible {
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
-        Disabled => 
-		{read => 1, write => 1, type => 'smallint(6)', default => '0'},
 
  }
 };
 
 
-        eval "require RT::CustomField_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomField_Overlay.pm}) {
+        eval "require RT::ObjectCustomField_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomField_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::CustomField_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomField_Vendor.pm}) {
+        eval "require RT::ObjectCustomField_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomField_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::CustomField_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/CustomField_Local.pm}) {
+        eval "require RT::ObjectCustomField_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/ObjectCustomField_Local.pm}) {
             die $@;
         };
 
@@ -341,7 +310,7 @@ If you'll be working with perl 5.6.0 or greater, each of these files should begi
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::CustomField_Overlay, RT::CustomField_Vendor, RT::CustomField_Local
+RT::ObjectCustomField_Overlay, RT::ObjectCustomField_Vendor, RT::ObjectCustomField_Local
 
 =cut
 

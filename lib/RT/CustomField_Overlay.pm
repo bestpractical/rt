@@ -27,7 +27,7 @@ no warnings qw(redefine);
 use vars qw(@TYPES %TYPES);
 
 use RT::CustomFieldValues;
-use RT::TicketCustomFieldValues;
+use RT::ObjectCustomFieldValues;
 
 # Enumerate all valid types for this custom field
 @TYPES = (
@@ -61,7 +61,8 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'Name'.
   varchar(200) 'Type'.
-  int(11) 'Queue'.
+  int(11) 'MaxValues'.
+  varchar(255) 'Pattern'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
   smallint(6) 'Disabled'.
@@ -76,7 +77,8 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Type => '',
-                Queue => '0',
+		MaxValues => 0,
+		Pattern  => '',
                 Description => '',
                 SortOrder => '0',
                 Disabled => '0',
@@ -84,8 +86,10 @@ sub Create {
 		  @_);
 
     
-
-    if (  ! $args{'Queue'} ) {
+    if ( !exists $args{'Queue'}) {
+	# do nothing -- things below are strictly backward compat
+    }
+    elsif (  ! $args{'Queue'} ) {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AdminCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
@@ -100,15 +104,27 @@ sub Create {
             return ( 0, $self->loc('Permission Denied') );
         }
     }
-    $self->SUPER::Create(
+    my $rv = $self->SUPER::Create(
                          Name => $args{'Name'},
                          Type => $args{'Type'},
-                         Queue => $args{'Queue'},
+                         MaxValues => $args{'MaxValues'},
+                         Pattern  => $args{'Pattern'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
                          Disabled => $args{'Disabled'},
 );
 
+    return $rv unless exists $args{'Queue'};
+
+    # Compat code -- create a new ObjectCustomField mapping
+    my $OCF = RT::ObjectCustomField->new($self->CurrentUser);
+    $OCF->Create(
+	CustomField => $self->Id,
+	ObjectType => 'RT::Queue',
+	ParentId => $args{'Queue'},
+    );
+
+    return $rv;
 }
 
 
@@ -138,7 +154,15 @@ sub LoadByNameAndQueue {
 	$args{'Queue'} = $QueueObj->Id;
     }
 
-    return ( $self->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} ) );
+    # XXX - really naive implementation.  Slow.
+
+    my $CFs = RT::CustomFields->new($self->CurrentUser);
+    $CFs->Limit( FIELD => 'Name', VALUE => $args{'Name'} );
+    $CFs->LimitToQueue( $args{'Queue'} );
+    $CFs->RowsPerPage(1);
+
+    my $CF = $CFs->First or return;
+    return $self->Load($CF->Id);
 
 }
 
@@ -287,7 +311,7 @@ sub Values {
 
 =head2 ValuesForTicket TICKET
 
-Returns a RT::TicketCustomFieldValues object of this Field's values for TICKET.
+Returns a RT::ObjectCustomFieldValues object of this Field's values for TICKET.
 TICKET is a ticket id.
 
 
@@ -297,7 +321,7 @@ sub ValuesForTicket {
 	my $self = shift;
     my $ticket_id = shift;
 
-	my $values = new RT::TicketCustomFieldValues($self->CurrentUser);
+	my $values = new RT::ObjectCustomFieldValues($self->CurrentUser);
 	$values->LimitToCustomField($self->Id);
     $values->LimitToTicket($ticket_id);
 
@@ -320,8 +344,9 @@ sub AddValueForTicket {
                  Content => undef,
 		     @_ );
 
-	my $newval = RT::TicketCustomFieldValue->new($self->CurrentUser);
-	my $val = $newval->Create(Ticket => $args{'Ticket'},
+	my $newval = RT::ObjectCustomFieldValue->new($self->CurrentUser);
+	my $val = $newval->Create(ObjectType => 'RT::Ticket',
+	                    ObjectId => $args{'Ticket'},
                             Content => $args{'Content'},
                             CustomField => $self->Id);
 
@@ -346,7 +371,7 @@ sub DeleteValueForTicket {
                  Content => undef,
 		     @_ );
 
-	my $oldval = RT::TicketCustomFieldValue->new($self->CurrentUser);
+	my $oldval = RT::ObjectCustomFieldValue->new($self->CurrentUser);
     $oldval->LoadByTicketContentAndCustomField (Ticket => $args{'Ticket'}, 
                                                 Content =>  $args{'Content'}, 
                                                 CustomField => $self->Id );
@@ -562,5 +587,13 @@ Takes a boolean.
 =cut
 
 # }}}
+
+sub Queue {
+    return 0;
+}
+
+sub SetQueue {
+    return 0;
+}
 
 1;

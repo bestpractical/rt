@@ -42,10 +42,8 @@
 
 my $i;
 
-
-      
-$session{'tickets'}->RedoSearch();
-while (my $Ticket = $session{'tickets'}->Next) {
+$Tickets->RedoSearch();
+while (my $Ticket = $Tickets->Next) {
  $i++;
  if ($i % 2) {
      $bgcolor = "#dddddd";
@@ -157,7 +155,11 @@ map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 my ($bgcolor, @results);
 my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
 
-Abort(loc("No search to operate on.")) unless ($session{'tickets'});
+
+my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+$Tickets->FromSQL($ARGS{'Query'});
+
+Abort(loc("No search to operate on.")) unless ($Tickets);
 
 
 my $do_comment_reply=0;
@@ -175,8 +177,8 @@ if ($ARGS{'UpdateContent'} &&
 #Iterate through each ticket we've been handed
 my @linkresults;
 
-$session{'tickets'}->RedoSearch();
-while (my $Ticket = $session{'tickets'}->Next) {
+$Tickets->RedoSearch();
+while (my $Ticket = $Tickets->Next) {
     $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
     next unless ($ARGS{"UpdateTicket".$Ticket->Id});
     $RT::Logger->debug ("Matched\n");

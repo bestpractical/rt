@@ -162,7 +162,7 @@ my $format = $ARGS{'Format'};
 $format =~ s/#/%23/g;
 $format =~ s/&/%26/g;
 
-my $args = "?Query=$ARGS{'Query'}&Format=\"$format\"&Rows=$ARGS{'Rows'}";
+my $args = "?Query=$ARGS{'Query'}&Format=$format&Rows=$ARGS{'Rows'}";
 
 $tabs->{"f"} = { path      => "Search/Build.html",
                  title     => loc('New Query'),

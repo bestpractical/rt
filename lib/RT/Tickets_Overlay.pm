@@ -761,11 +761,16 @@ sub _CustomFieldLimit {
       $self->Join( TYPE   => 'left',
 		   ALIAS1 => 'main',
 		   FIELD1 => 'id',
-		   TABLE2 => 'TicketCustomFieldValues',
-		   FIELD2 => 'Ticket' );
+		   TABLE2 => 'ObjectCustomFieldValues',
+		   FIELD2 => 'ObjectId' );
   }
 
   $self->_OpenParen;
+
+  $self->_SQLLimit( ALIAS      => $TicketCFs,
+		    FIELD      => 'ObjectType',
+		    VALUE      => ref($self),
+		);
 
   $self->_SQLLimit( ALIAS      => $TicketCFs,
 		    FIELD      => 'Content',

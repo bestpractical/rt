@@ -46,7 +46,6 @@ RT::Transaction
 
 package RT::Transaction;
 use RT::Record; 
-use RT::Ticket;
 
 
 use vars qw( @ISA );
@@ -67,13 +66,16 @@ sub _Init {
 
 Create takes a hash of values and creates a row in the database:
 
-  int(11) 'EffectiveTicket'.
-  int(11) 'Ticket'.
+  varchar(64) 'ObjectType'.
+  int(11) 'ObjectId'.
   int(11) 'TimeTaken'.
   varchar(20) 'Type'.
   varchar(40) 'Field'.
   varchar(255) 'OldValue'.
   varchar(255) 'NewValue'.
+  varchar(255) 'ReferenceType'.
+  int(11) 'OldReference'.
+  int(11) 'NewReference'.
   varchar(255) 'Data'.
 
 =cut
@@ -84,24 +86,30 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                EffectiveTicket => '0',
-                Ticket => '0',
+                ObjectType => '',
+                ObjectId => '0',
                 TimeTaken => '0',
                 Type => '',
                 Field => '',
                 OldValue => '',
                 NewValue => '',
+                ReferenceType => '',
+                OldReference => '',
+                NewReference => '',
                 Data => '',
 
 		  @_);
     $self->SUPER::Create(
-                         EffectiveTicket => $args{'EffectiveTicket'},
-                         Ticket => $args{'Ticket'},
+                         ObjectType => $args{'ObjectType'},
+                         ObjectId => $args{'ObjectId'},
                          TimeTaken => $args{'TimeTaken'},
                          Type => $args{'Type'},
                          Field => $args{'Field'},
                          OldValue => $args{'OldValue'},
                          NewValue => $args{'NewValue'},
+                         ReferenceType => $args{'ReferenceType'},
+                         OldReference => $args{'OldReference'},
+                         NewReference => $args{'NewReference'},
                          Data => $args{'Data'},
 );
 
@@ -118,55 +126,41 @@ Returns the current value of id.
 =cut
 
 
-=head2 EffectiveTicket
+=head2 ObjectType
 
-Returns the current value of EffectiveTicket. 
-(In the database, EffectiveTicket is stored as int(11).)
-
-
-
-=head2 SetEffectiveTicket VALUE
+Returns the current value of ObjectType. 
+(In the database, ObjectType is stored as varchar(64).)
 
 
-Set EffectiveTicket to VALUE. 
+
+=head2 SetObjectType VALUE
+
+
+Set ObjectType to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, EffectiveTicket will be stored as a int(11).)
+(In the database, ObjectType will be stored as a varchar(64).)
 
 
 =cut
 
 
-=head2 Ticket
+=head2 ObjectId
 
-Returns the current value of Ticket. 
-(In the database, Ticket is stored as int(11).)
-
-
-
-=head2 SetTicket VALUE
+Returns the current value of ObjectId. 
+(In the database, ObjectId is stored as int(11).)
 
 
-Set Ticket to VALUE. 
+
+=head2 SetObjectId VALUE
+
+
+Set ObjectId to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Ticket will be stored as a int(11).)
+(In the database, ObjectId will be stored as a int(11).)
 
 
 =cut
 
-
-=head2 TicketObj
-
-Returns the Ticket Object which has the id returned by Ticket
-
-
-=cut
-
-sub TicketObj {
-	my $self = shift;
-	my $Ticket =  RT::Ticket->new($self->CurrentUser);
-	$Ticket->Load($self->__Value('Ticket'));
-	return($Ticket);
-}
 
 =head2 TimeTaken
 
@@ -258,6 +252,60 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 ReferenceType
+
+Returns the current value of ReferenceType. 
+(In the database, ReferenceType is stored as varchar(255).)
+
+
+
+=head2 SetReferenceType VALUE
+
+
+Set ReferenceType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ReferenceType will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 OldReference
+
+Returns the current value of OldReference. 
+(In the database, OldReference is stored as int(11).)
+
+
+
+=head2 SetOldReference VALUE
+
+
+Set OldReference to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, OldReference will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 NewReference
+
+Returns the current value of NewReference. 
+(In the database, NewReference is stored as int(11).)
+
+
+
+=head2 SetNewReference VALUE
+
+
+Set NewReference to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, NewReference will be stored as a int(11).)
+
+
+=cut
+
+
 =head2 Data
 
 Returns the current value of Data. 
@@ -300,9 +348,9 @@ sub _CoreAccessible {
      
         id =>
 		{read => 1, type => 'int(11)', default => ''},
-        EffectiveTicket => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
-        Ticket => 
+        ObjectType => 
+		{read => 1, write => 1, type => 'varchar(64)', default => ''},
+        ObjectId => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
         TimeTaken => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
@@ -314,6 +362,12 @@ sub _CoreAccessible {
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         NewValue => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        ReferenceType => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        OldReference => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
+        NewReference => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
         Data => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Creator => 

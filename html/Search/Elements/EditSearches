@@ -1,13 +1,13 @@
 <& /Elements/TitleBoxStart, title => loc('Saved searches') &>
 <input type="hidden" name="SearchId" value="<%$SearchId%>">
 <&|/l&>Privacy:</&>
-% if ($CurrentSearch->{'Object'}) {
+% if ($CurrentSearch->{'Object'} && $CurrentSearch->{'Object'}->id) {
 <& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
 % } else {
 <& SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br>
 % }
 <&|/l&>Description</&>:<br>
-<font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>"></font>
+<font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>" onChange="BuildQuery.Save.click()"></font>
 <br>
 % if ($SearchId ne 'new') {
 <input type="submit" name="Revert" value="<%loc('Revert')%>">
@@ -21,7 +21,6 @@
 <&|/l&>Load saved search:</&><br>
 <& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
 <input value="<%loc('Load')%>" type="submit">
-</form>
 <& /Elements/TitleBoxEnd &>
 
 <%init>

@@ -75,7 +75,6 @@ sub Create {
     my %args = (
         id             => undef,
         TimeTaken      => 0,
-        Ticket         => 0,
         Type           => 'undefined',
         Data           => '',
         Field          => undef,
@@ -84,24 +83,36 @@ sub Create {
         MIMEObj        => undef,
         ActivateScrips => 1,
         CommitScrips => 1,
+	ObjectType => 'RT::Ticket',
+	ObjectId => 0,
+	ReferenceType => undef,
+        OldReference       => undef,
+        NewReference       => undef,
         @_
     );
 
+    $args{ObjectId} ||= $args{Ticket};
+
     #if we didn't specify a ticket, we need to bail
-    unless ( $args{'Ticket'} ) {
-        return ( 0, $self->loc( "Transaction->Create couldn't, as you didn't specify a ticket id"));
+    unless ( $args{'ObjectId'} ) {
+        return ( 0, $self->loc( "Transaction->Create couldn't, as you didn't specify an object id"));
     }
 
 
 
     #lets create our transaction
-    my %params = (Ticket    => $args{'Ticket'},
+    my %params = (
         Type      => $args{'Type'},
         Data      => $args{'Data'},
         Field     => $args{'Field'},
         OldValue  => $args{'OldValue'},
         NewValue  => $args{'NewValue'},
-        Created   => $args{'Created'}
+        Created   => $args{'Created'},
+	ObjectType => $args{'ObjectType'},
+	ObjectId => $args{'ObjectId'},
+	ReferenceType => $args{'ReferenceType'},
+	OldReference => $args{'OldReference'},
+	NewReference => $args{'NewReference'},
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
@@ -116,7 +127,7 @@ sub Create {
 
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction' .$self->Id);            
-    if ( $args{'ActivateScrips'} ) {
+    if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Ticket' ) {
        $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
 
         $RT::Logger->debug('About to prepare scrips for transaction' .$self->Id);            
@@ -124,7 +135,7 @@ sub Create {
         $self->{'scrips'}->Prepare(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
-            Ticket      => $args{'Ticket'},
+            Ticket      => $args{'ObjectId'},
             Transaction => $self->id,
         );
         if ($args{'CommitScrips'} ) {
@@ -810,5 +821,41 @@ sub CurrentUserHasRight {
 }
 
 # }}}
+
+sub Ticket {
+    my $self = shift;
+    return $self->ObjectId;
+}
+
+sub TicketObj {
+    my $self = shift;
+    return $self->Object;
+}
+
+sub OldValue {
+    my $self = shift;
+    if (my $type = $self->__Value('ReferenceType')) {
+	my $Object = $type->new($self->CurrentUser);
+	$Object->Load($self->__Value('OldReference'));
+	return $Object->Content;
+    }
+}
+
+sub NewValue {
+    my $self = shift;
+    if (my $type = $self->__Value('ReferenceType')) {
+	my $Object = $type->new($self->CurrentUser);
+	$Object->Load($self->__Value('NewReference'));
+	return $Object->Content;
+    }
+}
+
+sub Object {
+    my $self  = shift;
+    my $Object = $self->__Value('ObjectType')->new($self->CurrentUser);
+    $Object->Load($self->__Value('Ticket'));
+    return($Object);
+}
+
 
 1;

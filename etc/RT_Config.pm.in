@@ -335,6 +335,23 @@ Set($MyTicketsLength, 10);
 
 @MasonParameters = () unless (@MasonParameters);
 
+# $DefaultSearchResultFormat is the default format for RT search results
+Set ($DefaultSearchResultFormat, qq{
+   '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   Status,
+   QueueName, 
+   OwnerName, 
+   Priority, 
+   '__NEWLINE__',
+   '', 
+   '<small>__Requestors__</small>',
+   '<small>__CreatedRelative__</small>',
+   '<small>__ToldRelative__</small>',
+   '<small>__LastUpdatedRelative__</small>',
+   '<small>__TimeLeft__</small>'});
+
+
 # }}}
 
 # {{{ RT UTF-8 Settings

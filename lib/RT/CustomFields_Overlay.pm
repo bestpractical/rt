@@ -46,6 +46,12 @@ use strict;
 no warnings qw(redefine);
 
 
+sub _OCFAlias {
+    my $self = shift;
+    $self->{_sql_ocfalias} ||= $self->NewAlias('ObjectCustomFields');
+}
+
+
 # {{{ sub LimitToGlobalOrQueue 
 
 =item LimitToGlobalOrQueue QUEUEID
@@ -77,11 +83,12 @@ sub LimitToQueue  {
    my $self = shift;
   my $queue = shift;
  
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
+  $self->Limit (ALIAS => $self->_OCFAlias,
+                ENTRYAGGREGATOR => 'OR',
+		FIELD => 'ObjectId',
 		VALUE => "$queue")
       if defined $queue;
-  
+  $self->LimitToObjectType( 'RT::Queue' );
 }
 # }}}
 
@@ -99,13 +106,24 @@ another call to this method or LimitToQueue
 sub LimitToGlobal  {
    my $self = shift;
  
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
+  $self->Limit (ALIAS => $self->_OCFAlias,
+                ENTRYAGGREGATOR => 'OR',
+		FIELD => 'ObjectId',
 		VALUE => 0);
-  
+  $self->LimitToObjectType( 'RT::Queue' );
 }
 # }}}
 
+sub LimitToObjectType {
+    my $self = shift;
+    my $type = shift;
+
+    return if $self->{_sql_limit_objectype}{$type}++;
+    $self->Limit (ALIAS => $self->_OCFAlias,
+		    ENTRYAGGREGATOR => 'OR',
+		    FIELD => 'ObjectType',
+		    VALUE => $type);
+}
 
 # {{{ sub _DoSearch 
 

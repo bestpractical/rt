@@ -56,7 +56,7 @@ our $PERSONAL_ACL_MAP = {
 
 };
 
-=head2 LookupObjectRight { create, update, delete, display }
+=head2 LookupObjectRight { ObjectType => undef, ObjectId => undef, Name => undef, Right => { create, update, delete, display } }
 
 Returns the right that the user needs to have on this attribute's object to perform the related attribute operation. Returns "allow" if the right is otherwise unspecified.
 
@@ -64,20 +64,24 @@ Returns the right that the user needs to have on this attribute's object to perf
 
 sub LookupObjectRight { 
     my $self = shift;
-    my $right = shift;
+    my %args = ( ObjectType => undef,
+                 ObjectId => undef,
+                 Right => undef,
+                 Name => undef,
+                 @_);
 
     # if it's an attribute on oneself, check the personal acl map
-    if (($self->__Value('ObjectType') eq 'RT::User') && ($self->__Value('ObjectId') eq $self->CurrentUser->Id)) {
-    return('allow') unless ($PERSONAL_ACL_MAP->{$self->__Value('Name')});
-    return('allow') unless ($PERSONAL_ACL_MAP->{$self->__Value('Name')}->{$right});
-    return($PERSONAL_ACL_MAP->{$self->__Value('Name')}->{$right}); 
+    if (($args{'ObjectType'} eq 'RT::User') && ($args{'ObjectId'} eq $self->CurrentUser->Id)) {
+    return('allow') unless ($PERSONAL_ACL_MAP->{$args{'Name'}});
+    return('allow') unless ($PERSONAL_ACL_MAP->{$args{'Name'}}->{$args{'Right'}});
+    return($PERSONAL_ACL_MAP->{$args{'Name'}}->{$args{'Right'}}); 
 
     }
    # otherwise check the main ACL map
     else {
-    return('allow') unless ($ACL_MAP->{$self->__Value('Name')});
-    return('allow') unless ($ACL_MAP->{$self->__Value('Name')}->{$right});
-    return($ACL_MAP->{$self->__Value('Name')}->{$right}); 
+    return('allow') unless ($ACL_MAP->{$args{'Name'}});
+    return('allow') unless ($ACL_MAP->{$args{'Name'}}->{$args{'Right'}});
+    return($ACL_MAP->{$args{'Name'}}->{$args{'Right'}}); 
     }
 }
 
@@ -108,8 +112,7 @@ sub Create {
                 Description => '',
                 Content => '',
                 ContentType => '',
-                ObjectType => '',
-                ObjectId => '0',
+                Object => undef,
 		  @_);
 
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
@@ -120,8 +123,22 @@ sub Create {
 
     }
    
-
-
+    # object_right is the right that the user has to have on the object for them to have $right on this attribute
+    my $object_right = $self->LookupObjectRight(
+        Right      => 'create',
+        ObjectId   => $args{'ObjectId'},
+        ObjectType => $args{'ObjectType'},
+        Name       => $args{'Name'}
+    );
+    if ($object_right eq 'deny') { 
+        return (0, $self->loc('Permission Denied'));
+    } 
+    elsif ($object_right eq 'allow') {
+        # do nothing, we're ok
+    }
+    elsif (!$self->CurrentUser->HasRight( Object => $args{Object}, Right => $object_right)) {
+        return (0, $self->loc('Permission Denied'));
+    }
 
    
     if (ref ($args{'Content'}) ) { 
@@ -396,17 +413,17 @@ sub CurrentUserHasRight {
     my $right = shift;
 
     # object_right is the right that the user has to have on the object for them to have $right on this attribute
-    my $object_right = $self->LookupObjectRight($right);
+    my $object_right = $self->LookupObjectRight(
+        Right      => $right,
+        ObjectId   => $self->__Value('ObjectId'),
+        ObjectType => $self->__Value('ObjectType'),
+        Name       => $self->__Value('Name')
+    );
    
     return (1) if ($object_right eq 'allow');
-
     return (0) if ($object_right eq 'deny');
-
-
-        return(1) if ($self->CurrentUser->HasRight( Object => $self->Object,
-                                    
-                                      Right => $object_right));
-        return(undef);
+    return(1) if ($self->CurrentUser->HasRight( Object => $self->Object, Right => $object_right));
+    return(0);
 
 }
 
