@@ -45,9 +45,9 @@
 <&|/l&>and not</&>
 <input name="Name!~" value="<%$ARGS{'Name!~'}%>">
 <br><&|/l&>Summary matches</&>
-<input Summary="Summary~" value="<%$ARGS{'Summary~'}%>">
+<input name="Summary~" value="<%$ARGS{'Summary~'}%>">
 <&|/l&>and not</&>
-<input Summary="Summary!~" value="<%$ARGS{'Summary!~'}%>">
+<input name="Summary!~" value="<%$ARGS{'Summary!~'}%>">
 
 <br><&|/l&>Created during</&>
 <& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
