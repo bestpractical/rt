@@ -12,7 +12,7 @@ RT::Init();
 
 my $port = shift || '8080';
 if ( @RT::MasonParameters) {} # Shut up the warnings;
-my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
+my $h = &RT::Interface::Web::Handler::NewCGIHandler(@RT::MasonParameters);
 
 main_loop($port);
 
