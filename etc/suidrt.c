@@ -20,6 +20,7 @@
     Case-sensitive, of course.  */
 const char* SAFE_ENV_VARS [] = {
   "MOD_PERL",
+  "SCRIPT_NAME",
   "SERVER_ADMIN",
   "HTTP_COOKIE", 
   "COOKIE",
@@ -37,7 +38,6 @@ const char* SAFE_ENV_VARS [] = {
    "PATH_TRANSLATED",
    "REMOTE_HOST",  
    "REMOTE_ADDR", 
-   "SCRIPT_NAME",
    "SERVER_SOFTWARE",
    "SERVER_NAME",
    "SERVER_PROTOCOL", 
