@@ -119,7 +119,7 @@ $template
     if (close (MAIL)) {
       return("template_mail:Message Sent");
     } else {
-      die "Could not send mail :( $!";
+      die "Could not send mail :(\n$!\nTried to launch this command: $rt::mailprog $rt::mail_options\n";
     }
   }
 
