@@ -372,8 +372,8 @@ INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL,
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->Queue->QueueId}
         Area: (stubbed!)               
-     Subject: {$object->{Subject}}
-       Owner: {$Ticket->Owner->UserId || "Nobody"}
+     Subject: {$Transaction->Subject}
+       Owner: {$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
  Ticket <URL: http://{$WebRT}/ticket/display.html?id={$Ticket->id} >
@@ -384,9 +384,9 @@ NULL,20000227191543,NULL,00000000000000);
 
 
 INSERT INTO Templates VALUES (3,'Default admin correspondence template', NULL, NULL,
-'Subject: {$object->{Subject}}
+'Subject: {$Transaction->Message()->First()->Subject}
 Content-Type: text/plain; charset=ISO-8859-1
-To: {$Ticket->AdminWatchersAsString}
+To: {$Ticket->AdminCcAsString}
 
 {$Transaction->IsInbound() ? "In" : "Out"}bound correspondence:
 
@@ -396,7 +396,7 @@ To: {$Ticket->AdminWatchersAsString}
 NULL,20000227191745,NULL,00000000000000);
 
 INSERT INTO Templates VALUES (4,'Default Correspondence template for requestors', NULL, NULL,
-'Subject: Re: {$Transaction->Subject}
+'Subject: {$Transaction->Message()->First()->Subject}
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
 Content-Type: text/plain; charset=ISO-8859-1
@@ -409,10 +409,10 @@ NULL,20000227191745,NULL,00000000000000);
 
 
 INSERT INTO Templates VALUES (5,'Default Administrative Comment template', NULL, NULL,
-'Subject: [Comment] $object->{Subject}
+'Subject: [Comment] {$Transaction->Message()->First()->Subject}
 Reply-To: {$Ticket->Queue->CommentAddress}
 Content-Type: text/plain; charset=ISO-8859-1
-To: {$Ticket->AdminWatchersAsString}
+To: {$Ticket->AdminCcAsString}
 
 http://{$WebRT}/ticket/display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):

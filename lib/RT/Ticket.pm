@@ -192,6 +192,7 @@ sub Watchers {
     require RT::Watchers;
     $self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
     $self->{'Watchers'}->LimitToTicket($self->id);
+    $self->{'Watchers'}->LimitToQueue($self->_Value('Queue'));
   }
   return($self->{'Watchers'});
   
@@ -217,8 +218,6 @@ sub WatcherClassAsString {
   
 }
 
-# }}}
-
 sub RequestorsAsString {
     my $self=shift;
     return $self->WatcherClassAsString('Requestor');
@@ -238,6 +237,9 @@ sub CcAsString {
     my $self=shift;
     return $self->WatcherClassAsString('Cc');
 }
+
+# }}}
+
 
 # {{{ sub Requestors
 sub Requestors {
@@ -269,22 +271,6 @@ sub Cc {
 
 # }}}
 
-# {{{ sub CcAsString
-sub CcAsString {
-  my $self = shift;
-  if (!defined $self->{'CcAsString'}) {
-    $self->{'CcAsString'} = "";
-    while ($requestor = $self->Cc->Next) {
-      $self->{'CcAsString'} .= $requestor->Email .", ";
-      
-    }
-  }
-  $self->{'CcAsString'} =~ s/, $//;
-  return ( $self->{'CcAsString'});
-      
-}
-
-# }}}
 
 # {{{ sub AdminCc
 sub AdminCc {
@@ -299,21 +285,6 @@ sub AdminCc {
   
 }
 # }}}
-
-# {{{ sub AdminCcAsString
-sub AdminCcAsString {
-  my $self = shift;
-  if (!defined $self->{'AdminCcAsString'}) {
-    $self->{'AdminCcAsString'} = "";
-    while (my $requestor = $self->AdminCc->Next) {
-      $self->{'AdminCcAsString'} .= $requestor->Email .", ";
-    }
-    $self->{'AdminCcAsString'} =~ s/, $//;
-  }
-  return ( $self->{'AdminCcAsString'});
-}
-
-# }}}  
 
 # {{{ sub ValidateQueue
 

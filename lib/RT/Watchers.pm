@@ -33,7 +33,7 @@ sub Limit  {
 sub LimitToTicket { 
   my $self = shift;
   my $ticket = shift;
-  $self->Limit( ENTRYAGGREAGTOR => 'AND',
+  $self->Limit( ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Value',
 		VALUE => $ticket);
   $self->Limit (ENTRYAGGREGATOR => 'AND',
@@ -46,9 +46,9 @@ sub LimitToTicket {
 sub LimitToQueue  {
   my $self = shift;
   my $queue = shift;
-  $self->Limit (ENTRYAGGREGATOR => 'AND',
+  $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Value',
-		VALUE => "$queue");
+		VALUE => $queue);
   $self->Limit (ENTRYAGGREGATOR => 'AND',
 		FIELD => 'Scope',
 		VALUE => 'Queue');
