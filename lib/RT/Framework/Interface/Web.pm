@@ -296,7 +296,9 @@ sub UpdateArticleCustomFieldValues {
 				$values{$subvalue} = 1;
 			}
 		}
-		$values{$value} = 1;
+		else {
+			$values{$value} = 1;
+		}
 	}
 	
 	
