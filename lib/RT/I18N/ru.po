@@ -1822,7 +1822,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr ""
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Введите номера или ссылки на тикеты. Несколько тикетов разделяются пробелами."
 
 #: lib/RT/CustomField_Overlay.pm:532

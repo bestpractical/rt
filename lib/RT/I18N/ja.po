@@ -1810,7 +1810,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr ""
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "チケットをリンクするチケットまたはURLsを入力してください。入力する項目がいくつかある場合にはスペースで区切ってください。"
 
 #: lib/RT/CustomField_Overlay.pm:532

@@ -176,7 +176,7 @@ Create the RT::Logger object.
 
 sub InitLogging {
 
-    # We have to set the record seperator ($, man perlvar)
+    # We have to set the record separator ($, man perlvar)
     # or Log::Dispatch starts getting
     # really pissy, as some other module we use unsets it.
 

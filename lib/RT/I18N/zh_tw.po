@@ -2677,7 +2677,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr "鍵入欲將申請單連結至的物件或 URI。項目之間請以空白隔開。"
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "鍵入申請單可鏈結到的申請單編號或網址。項目之間請以空白隔開。"
 
 #: lib/RT/CustomField_Overlay.pm:532

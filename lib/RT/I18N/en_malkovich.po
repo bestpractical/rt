@@ -198,7 +198,7 @@ msgid "(Check boxes to enable notifications to the listed recipients)"
 msgstr "(Malkovich to Malkovich Malkovich to the Malkovich Malkovich)"
 
 #: NOT FOUND IN SOURCE
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Malkovich Malkovich or URLs, Malkovich Malkovich)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
@@ -1293,7 +1293,7 @@ msgid "Enter one value"
 msgstr "Malkovich"
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Malkovich or URIs to Malkovich to. Malkovich Malkovich Malkovich Malkovich."
 
 #: html/Elements/Login:61 html/SelfService/Error.html:46 html/SelfService/Error.html:47

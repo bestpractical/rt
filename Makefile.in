@@ -277,7 +277,7 @@ fixperms:
 	chmod 0500 $(DESTDIR)/$(RT_ETC_PATH)/*
 
 	#TODO: the config file should probably be able to have its
-	# owner set seperately from the binaries.
+	# owner set separately from the binaries.
 	chown -R $(BIN_OWNER) $(DESTDIR)/$(RT_ETC_PATH)
 	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_ETC_PATH)
 
