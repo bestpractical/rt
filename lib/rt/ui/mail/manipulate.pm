@@ -1,3 +1,4 @@
+# $Header$
 package rt::ui::mail::manipulate;
 
 sub activate {
@@ -7,9 +8,88 @@ sub activate {
   
   $area = ""; #TODO: we may want to be able to set the area on the command line
   
-  $content=&read_mail_from_stdin();
-  $in_queue=$ARGV[0];
-  $in_action=$ARGV[1];
+
+
+  if ($ARGV[0] eq '--help') {
+    print "
+
+RT Mailgate works in two modes. 'Traditional' and 'Extended Sytax'
+
+Traditional mode:
+
+rt-mailgate <queue> <action>
+
+<queue> is the full name of one of your RT queues. if it's got any 
+spaces in it, it should be quoted.
+
+<action> is one of 'comment', 'correspond' and 'action'
+
+comment means that any mail sent through this gateway will be logged 
+as private comments
+
+correspond means that any mail sent through this gateway will be 
+treateded as mail to or from the requestor. If you want tickets to be 
+autocreated through this interface, comment is the right choice.
+
+action is for rt's mail action mode.
+
+
+Extended syntax mode can be invoked by using the flag --extended-syntax as 
+the _first_ argument passed to rt-mailgate. after that, you can order 
+the arguments however you want.
+
+-v or --verbose will print a single line to STDOUT about what was done to 
+incoming mail if the alias is a comment or correspond alias.
+
+-t or --ticketid will print the integer ticket id to STDOUT if the alias is a 
+comment or correspond alias.
+
+-d or --debug will give you some running commentary about what rt-mailgate is 
+doing
+
+-a <action> or --action <action> determines whether this is a comment, 
+correspond or action alias (see above)
+
+-q <queue> or --queue <queue> will instruct rt-mailgate that incoming new 
+tickets should be put in queue <queue> (only makes sense on correspond 
+aliases)
+
+-r <area> or --area <area> determines what area to plunk this ticket into 
+if it's a new ticket (only makes sense on correspond aliases)
+
+";
+    exit(0);
+  }
+  
+  if ($ARGV[0] eq '--extended-syntax') {
+    while (my $flag = shift @ARGV) {
+      if (($flag eq '-v') or ($flag eq '--verbose')) {
+	$verbose = 1;
+      }
+      if (($flag eq '-t') or ($flag eq '--ticketid')) {
+	$return_tid = 1;
+      }
+
+      if (($flag eq '-d') or ($flag eq '--debug')) {
+	$debug = 1;
+      }
+
+      if (($flag eq '-q') or ($flag eq '--queue')) {
+	$in_queue = shift @ARGV;
+      } 
+      if (($flag eq '-a') or ($flag eq '--action')) {
+	$in_action = shift @ARGV;
+      } 
+      if (($flag eq '-r') or ($flag eq '--area')) {
+	$area = shift @ARGV;
+      }    
+
+    }
+  }
+  else {
+    $in_queue=$ARGV[0];
+    $in_action=$ARGV[1];
+  }
   
   if (!$in_queue){
     $in_queue="general";
@@ -17,14 +97,15 @@ sub activate {
   if (!$in_action){
     $in_action='correspond';
   }
+
+  $content=&read_mail_from_stdin();
     
   &parse_headers($content);
   
   #get all that rt stuff squared away.
-    &rt::initialize($current_user);
+  &rt::initialize($current_user);
   
   #take all those actions
-  
   $content=&parse_actions($current_user,$serial_num, $content);
   
   #flip the content around..we should just MIME the sucker instead
@@ -34,66 +115,82 @@ sub activate {
     exit(0);
   }
   elsif ($in_action eq 'correspond') {
+
+    #If we're creating a new ticket
     if (!$serial_num) {
-      #WE REALLY SHOULD PARSE THE TIME OUT OF THE DATE HEADER...BUT FOR NOW
-      # THE CURRENT TIME IS GOOD ENOUGH
-      
       ($serial_num,$transaction_num, $message)=&rt::add_new_request(
-		$in_queue,$area,
-		$current_user,'','',$subject,
+		$in_queue, $area, $current_user,'','',$subject,
 		$rt::queues{"$in_queue"}{'default_final_prio'},
 		$rt::queues{"$in_queue"}{'default_prio'},'open',
 		$rt::time,0,0,$content,$current_user);
-      
-    }
-    else {
 
-	if (&rt::is_not_a_requestor($current_user, $serial_num)){
-	$notify_requestor = 1;
-	}
-	else {
-	$notify_requestor = 0;
-	}	
+      # If $return_tid = 1, just return the serial number of the ticket created
+      print "$serial_num\n" if ($return_tid == 1);
+      print "Ticket='$serial_num' Queue='$in_queue' Area='$area' Sender='$current_user' Precedence='$precedence'\n" if ($verbose);
+    }
+
+    #If we're corresponding on an existing ticket
+    else {
+      #If the user isn't a requestor, notify the requestor
+      $notify_requestor = (&rt::is_not_a_requestor($current_user, $serial_num));
+      
+      #Add the correspondence, being careful to force the ticket to open.
       ($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,
 							  "open", $notify_requestor, $current_user);
+      
+      
+      # If $return_tid = 1, just return the serial number of the ticket corresponded on
+      print "$serial_num\n" if ($return_tid == 1);
+      
+      # If it's verbose, load the ticket and examine it and generate the verbose response
+      
+      if ($verbose) {
+	&rt::req_in($serial_num,'_rt_system');
+	print "Ticket='$serial_num' Queue='".$rt::req[$serial_num]{'queue'}."' Area='".$rt::req[$serial_num]{'area'}."' Sender='$current_user' Precedence='$precedence'\n" if ($verbose);
+      }
       
     }
   }
   elsif ($in_action eq 'comment') {
 	if (!$serial_num) {
-		$edited_content = "
+	  $edited_content = "
 You did not specify a ticket number for these comments. Please resubmit them
 with a ticket number.  Your comments appear below.
 
 $content.
 ";
-    &rt::template_mail('error', '_rt_system', "$current_user", '', '', "", 
-			"$transaction_num", "RT Error: $subject", 
-			"$current_user", "$edited_content");
-  	exit(0);
+	  &rt::template_mail('error', '_rt_system', "$current_user", '', '', "", 
+			     "$transaction_num", "RT Error: $subject", 
+			     "$current_user", "$edited_content");
+	  
+	  print "0\n" if ($return_tid == 1);
+	  # Verbose will return a ticket Id of 0 which means "you're screwed"
+	  print "Ticket='$serial_num' Queue='$in_queue' Area='$area' Sender='$current_user' Precedence='$precedence'\n" if ($verbose);
+	  exit(0);
 	}
-
-
-    if ($debug) {print "Now commenting on request \# $serial_num\n";}
-    ($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject","" ,"" ,$current_user);
-  }
+	
+	
+	if ($debug) {print "Now commenting on request \# $serial_num\n";}
+	($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject","" ,"" ,$current_user);
+	print "$serial_num\n" if ($return_tid == 1);
+      }
   
   # if there's been an error, mail the user with the message
   if ($transaction_num == 0) {
     $edited_content = "There has been an error with your request:\n$message\n\nYour message is reproduced below:\n\n$content\n";
     &rt::template_mail('error', '_rt_system', "$current_user", '', '', 
-			"$serial_num", "$transaction_num", 
+		       "$serial_num", "$transaction_num", 
 		       "RT Error: $subject", "$current_user", "$edited_content");
   }
   
-  
+
+  # if we've got actions to deal with. this happens unless someone screwed up badly above
   if ($response) {
-      &send_rt_response($current_user);
-    }
-  
-  
+    &send_rt_response($current_user);
+  }
 }
 
+# {{{ sub read_mail_from_stdin
 sub read_mail_from_stdin {
   local $content;
   while (<STDIN>){
@@ -101,17 +198,23 @@ sub read_mail_from_stdin {
   }
   return ($content);
 }
+# }}}
 
-
+# {{{ sub munge_content
 sub munge_content {
   $content =~ s/^(From )/\>$1/mg;
   ($headers, $body) = split (/\n\n/, $content, 2);
   $content = $body . "\n\n--- Headers Follow ---\n\n" . $headers;
   
 }
+# }}}
 
+# {{{ sub parse_headers
 sub parse_headers {
   my ($content) ="@_";
+  
+  $precedence = 'first-class';
+
   ($headers, $body) = split (/\n\n/, $content, 2);
 
   foreach $line (split (/\n(?!\s)/,$headers)) {
@@ -146,6 +249,10 @@ sub parse_headers {
     elsif ($line =~ /^Date: (.*)/s) {
       $time_in_text = $1;
     }
+    elsif ($line =~ /^Precedence: (.*)/s) {
+      $precedence = $1;
+    }
+    
   }
   
   $current_user = $replyto || $from || $sender;
@@ -184,24 +291,19 @@ sub parse_headers {
     exit(0);
   }
     
-  
-  
-  
-  
   elsif ($current_user =~/^$rt::mail_alias/g) {
     #TODO perform a magic warning here..(auto-submit a req?)
     #if we don't do this, rt mail will loop. which is VERY VERY BAD
     if ($debug) {
-      print "This mail came from RT. gnite.\n";
+      print "This mail came from RT. good night.\n";
       }
     exit(0);
   }
   
 }
+# }}}
 
-
-
-
+# {{{ sub parse_actions
 sub parse_actions {
   my ($real_current_user) = shift;
   
@@ -252,9 +354,6 @@ sub parse_actions {
           $line = "";
         }
       }
-      
-      
-      
       
       
       #deal with USER commands
@@ -534,7 +633,7 @@ sub parse_actions {
 
 
       if ($message) {
-	#if ($debug) {print "$message ($trans)\n";}
+	if ($debug) {print "$message ($trans)\n";}
 	$response .= "RT: $message ";
 	if ($trans) {$response .= "($trans)";}
 	$response .="\n";
@@ -551,6 +650,9 @@ sub parse_actions {
   
   return ($parsed_body);
 }
+# }}}
+
+# {{{ sub send_rt_response
 
 sub send_rt_response {
     my($real_current_user) = shift;
@@ -562,10 +664,7 @@ sub send_rt_response {
         ($trans,  $message)=&rt::resolve($resolve_nums[$count], (split(/\@/, $current_user))[0]);
         $response .= "RT: $message ($trans)\n";
       }
-    }
-    
-    
-# RESPONSE HERE
+    }    
     
     print "$response\n" if $debug;
     if ($response) {
@@ -576,4 +675,6 @@ sub send_rt_response {
     print "$message\n" if $debug;
     
   }
+
+# }}}
   1;

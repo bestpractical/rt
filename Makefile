@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	4pre2
+RT_VERSION_PATCH	=	4pre3
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -130,8 +130,8 @@ MAIL_OPTIONS		=	-oi -t -ODeliveryMode=b -OErrorMode=m
 
 MYSQLDIR		=	/usr/bin
 
-# Mysql version can be 3.20, 3.21 or 3.22.  This setting determines the order 
-# $rtuser and $rtpass are passed to MysqlPerl.  
+# Mysql version can be 3.20, 3.21, 3.22 or 3.23.  This setting determines 
+# the order in which $rtuser and $rtpass are passed to MysqlPerl.  
 
 MYSQL_VERSION		= 	3.22
 
