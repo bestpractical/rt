@@ -1,4 +1,4 @@
-# $Version$
+# $Header$
 #
 # WebAuth is part of RT: Request Tracker.
 # RT is (c) Copyright 1996-1999 Jesse Vincent
@@ -14,19 +14,18 @@ sub AuthCheck () {
     my ($AuthRealm) = @_;
     my ($hash, $Name, $ctx, $Pass,$path, $set_user, $set_pass);
     #lets get the cookies
-
-    if ($rt::program =~ /nph-/) {
+    
+if ($rt::program =~ /nph-/) {
 
       print "HTTP/1.0 200 Ok\n";
     }
-
-    if ($ENV{'SCRIPT_NAME'} =~ m|^(.*)/[^/]+$|) {
-      $path=$1;
-    }
-
-    # remove trailing slashes
-    $path =~ s|/+$||;
-
+	
+    #get the path
+    if ($ENV{'SCRIPT_NAME'} =~ m|^(.*)/(.*?)$|) {
+      	$path=$1;
+	# remove trailing slashes
+    	$path =~ s|/+$||;
+	}
     
 
 
@@ -43,28 +42,34 @@ sub AuthCheck () {
 
 
 
-    # ingo's patch appended a trailing /
-    # this _breaks_ lynx
-
-    # append one to work around browser inconsistencies (netscape
-    # always sends back path a / appended
-    #$path .= '/';
    
     # lets set the user/pass cookies
     
 
     if (length($rt::ui::web::FORM{'username'}) and length($rt::ui::web::FORM{'password'})) {
-      
+#if we have a $path to play with...
+#not doing this breaks netscape
+if ($path ne '') { 
+     
       $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
-				  -value => "$rt::ui::web::FORM{'username'}",
-				  -expires => '+6M',
-				  -path => $path);
+                                  -value => "$rt::ui::web::FORM{'username'}",
+                                  -expires => '+6M',
+                                  -path => $path);
       
       $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
-				      -value =>$hash,
-				      -path => $path);
+                                      -value =>$hash,
+                                      -path => $path);
       
- 
+ }
+else {
+      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
+                                  -value => "$rt::ui::web::FORM{'username'}",
+                                  -expires => '+6M');
+
+      $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
+                                      -value =>$hash);
+
+}
 
       if (($rt::web_auth_cookies_allow_no_path =~ /yes/i) and
 	  ($rt::ui::web::FORM{'insecure_path'})) {
@@ -74,6 +79,8 @@ sub AuthCheck () {
        
       print "Set-Cookie: $set_password\n";
       print "Set-Cookie: $set_user\n";   
+
+
       
       return( $rt::ui::web::FORM{'username'}, $hash);
     }
@@ -121,8 +128,9 @@ sub AuthForceLogin () {
  	
     $path = $pass_cookie->path();
     $path =~ s|/$||;
+	if ($path ne '') {
     $pass_cookie->path($path);
-    
+    }
 	print "Set-Cookie: ", $pass_cookie, "\n";
 
   }
@@ -136,9 +144,11 @@ sub AuthForceLogin () {
 	$name_cookie->value('');
     $path = $name_cookie->path();
     $path =~ s|/$||;
-    $name_cookie->path($path);	
+   if ($path ne '') {
+    
+		$name_cookie->path($path);	
 
-
+}
  	print "Set-Cookie: ", $name_cookie, "\n";
  }
   

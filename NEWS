@@ -1,3 +1,12 @@
+12 May 99
+---------
+
+Cookies hacked to deal with the fact that some versions of netscape
+don't deal well with a "path=/" statement. 
+
+Rolled .99.8pre4
+
+
 11 May 99
 ---------
 Loop prevention has been fixed, thanks to Tobias Brox
