@@ -113,8 +113,8 @@ sub cgi_vars_in {
     foreach $pair (@pairs)   {
 	($name, $value) = split(/=/, $pair);
 	# Un-Webify plus signs and %-encoding
-	$name =~ tr/+/ /;
 	$value =~ tr/+/ /;
+	$name  =~ tr/+/ /;
 	$value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
 	$name  =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
 	$value =~ s/&lt/</g;
@@ -132,7 +132,7 @@ sub cgi_vars_in {
 	# actually open a filehandle.
 
 	# Uncomment for debugging purposes
-	#  print STDERR "A gnarled troll tells you that $name was set to $value\n";
+	  print STDERR "A gnarled troll tells you that $name was set to $value\n";
 	$FORM{$name} = $value;
 	
     }
@@ -232,8 +232,8 @@ sub footer {
 
 	
 	print "<center>
-You are currently authenticated as $current_user. <br><a href=\"$rt::ui::web::ScriptURL?display=Logout\">Be careful not to leave yourself logged in from a <b>public terminal</b></a><br>
-Please report all bugs to <a href=\"mailto:jesse\@fsck.com\">Jesse Vincent</a>
+You are currently authenticated as $current_user. <br><a href=\"$rt::ui::web::ScriptURL?display=Logout\">Be careful not to leave yourself logged in from a <b>public terminal.</b></a><br>
+Please report all bugs to <a href=\"mailto:rt-devel\@lists.fsck.com\">the RT Developers</a>.
 </center>\n";
     }
     print "</body>\n</html>";
