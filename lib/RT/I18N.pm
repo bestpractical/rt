@@ -360,7 +360,6 @@ sub _FindOrGuessCharset {
 
 # }}}
 
-
 # {{{ _GuessCharset
 
 =head2 _GuessCharset STRING
@@ -426,6 +425,7 @@ sub SetMIMEHeadToEncoding {
     return if $charset eq $enc and $preserve_words;
 
     foreach my $tag ( $head->tags ) {
+        next unless $tag; # seen in wild: headers with no name
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
