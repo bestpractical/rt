@@ -70,7 +70,7 @@ sub _Init  {
     $self->Load($Name);
   }
   
-  $self->CurrentUser($self);
+ # $self->CurrentUser($self);
 
 }
 # }}}
@@ -104,15 +104,13 @@ sub Delete {
 sub UserObj {
     my $self = shift;
     
-    unless ($self->{'UserObj'}) {
 	use RT::User;
-	$self->{'UserObj'} = RT::User->new($self);
-	unless ($self->{'UserObj'}->Load($self->Id)) {
+	my $user = RT::User->new($self);
+
+	unless ($user->Load($self->Id)) {
 	    $RT::Logger->err($self->loc("Couldn't load [_1] from the users database.\n", $self->Id));
 	}
-	
-    }
-    return ($self->{'UserObj'});
+    return ($user);
 }
 # }}}
 
@@ -367,6 +365,19 @@ sub loc_fuzzy {
     return($result);
 }
 # }}}
+
+
+=head2 CurrentUser
+
+Return  the current currentuser object
+
+=cut
+
+sub CurrentUser  {
+    my $self = shift;
+    return($self);
+
+}
 
 eval "require RT::CurrentUser_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Vendor.pm});
