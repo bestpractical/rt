@@ -225,8 +225,8 @@ sub Create {
     if (ref($args{'Owner'}) eq 'RT::User') {
 	$Owner = $args{'Owner'};
     }
-    #If we've been handed an integer (aka an Id for the users table 
-    elsif ($args{'Owner'} =~ /^\d+$/) {
+    #If we've been handed something else, try to load the user.
+    elsif ($args{'Owner'}) {
 	$Owner = new RT::User($self->CurrentUser);
 	$Owner->Load($args{'Owner'});
 	
