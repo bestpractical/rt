@@ -6,6 +6,7 @@
 
 
 CREATE TABLE queue_acl (
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
   queue_id CHAR(40),
   user_id CHAR(40),
   display INT,
@@ -20,7 +21,7 @@ CREATE TABLE queue_areas (
 )\g
 
 CREATE TABLE users (
-  user_id CHAR(40) NOT NULL PRIMARY KEY, 
+  id CHAR(40) NOT NULL PRIMARY KEY, 
   gecos CHAR(16),
   real_name CHAR(40),
   password CHAR(40), 			
@@ -34,7 +35,7 @@ CREATE TABLE users (
 INSERT INTO users VALUES ('root', 'Reginald Oot', 'wordpass','root@localhost','432-HELP','Room 000','Keeper of the Blinkenlights',1)\g
 
 CREATE TABLE queues (
- queue_id CHAR(40) NOT NULL PRIMARY KEY,
+ id CHAR(40) NOT NULL PRIMARY KEY,
  mail_alias CHAR(40),
  comment_alias CHAR(40),
  m_owner_trans INT,             # notify owner on transaction
@@ -55,7 +56,7 @@ CREATE TABLE queues (
 #
 
 CREATE TABLE each_req (
-  serial_num int(11) AUTO_INCREMENT PRIMARY KEY,
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
   effective_sn INT,
   queue_id CHAR(40),
   area CHAR(40),

@@ -1,10 +1,3 @@
-
----------- Forwarded message ----------
-Date: Sat, 17 Jul 1999 23:48:07 +0100
-From: Colin Smith <colin@yelm.freeserve.co.uk>
-To: charlieb@aurema.com
-Subject: DBI/DBD diffs - Pg.acl
-
 drop user !!RTUSER!!;
 create user !!RTUSER!! with password !!RT_DB_PASS!! NOCREATEDB NOCREATEUSER;
 
@@ -40,23 +33,3 @@ grant select, insert, update, delete on users_pkey to !!RTUSER!!;
 --DELETE FROM db where db LIKE '!!RT_DATABASE!!';
 --INSERT INTO db (Host, Db, User, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv) VALUES ('%','!!RT_DATABASE!!','!!RTUSER!!','Y','Y','Y','Y','N','N');
 --INSERT INTO pg_user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv) VALUES ('!!RT_HOST!!','!!RTUSER!!',password('!!RT_DB_PASS!!'),'N','N','N','N','N','N','N','N','N','N');
-
-
---- Headers Follow ---
-
->From charlieb@aurema.com Sat Jul 17 18:04:25 1999
-Delivered-To: rt1.1@fsck.com
-Received: from smtp.sw.oz.au (smtp.sw.oz.au [203.31.96.1])
-	by skylight.fsck.com (Postfix) with ESMTP
-	id 1F51F16C06; Sat, 17 Jul 1999 18:04:21 -0700 (PDT)
-Received: from localhost (charlieb@localhost)
-	by smtp.sw.oz.au (8.8.8+Sun/8.8.8) with ESMTP id LAA10491
-	for <rt1.1@fsck.com>; Sun, 18 Jul 1999 11:03:35 +1000 (EST)
-Date: Sun, 18 Jul 1999 11:03:35 +1000 (EST)
-From: Charlie Brady <charlieb@aurema.com>
-Sender: charlieb@aurema.com
-To: rt1.1@fsck.com
-Subject: [fsck #109] DBI/DBD diffs 
-Message-ID: <Pine.SO4.4.05.9907181103140.9875-100000@swag.sw.oz.au>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII

@@ -4,7 +4,7 @@
 #
 # This code is not used yet.
 #
-package rt::Transaction;
+package RT::Area;
 @ISA= qw(RT::Record);
 
 sub new {
@@ -44,7 +44,7 @@ sub create {
 
 
 #Table specific data accessors/ modifiers
-sub title {
+sub  {
   my $self = shift;
   return($self->_set_and_return('title',@_));
 }
