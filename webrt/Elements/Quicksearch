@@ -28,7 +28,7 @@ while (my $queue = $Queues->Next) {
 </TD>
 </TR>
 % }
-<TABLE>
+</TABLE>
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
