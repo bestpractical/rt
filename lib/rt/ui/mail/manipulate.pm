@@ -153,8 +153,7 @@ sub parse_headers {
   
   #Get the real name of the current user from the replyto/from/sender/etc
   $rt::users{"$current_user"}{'real_name'} = $current_user;
-  $rt::users{"$current_user"}{'real_name'} =~ s/(\S*)\@(\S*)//;
-  $rt::users{"$current_user"}{'real_name'} =~ s/<(.*?)>//;
+
   
 
   if ($current_user =~/(\S*\@\S*)/) {
@@ -168,7 +167,8 @@ sub parse_headers {
   }
   
   
-
+  $rt::users{"$current_user"}{'real_name'} =~ s/(\S*)\@(\S*)//;
+  $rt::users{"$current_user"}{'real_name'} =~ s/<(.*?)>//;
   
   
   if (!$subject) {
