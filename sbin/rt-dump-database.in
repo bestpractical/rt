@@ -144,6 +144,6 @@ foreach my $class (@classes) {
 }
 
 print(<< '.', YAML::Dump({ map { ($_ => ($RV{$_} || [])) } @classes }));
-no strict;use YAML;*_=YAML::Load(do{local$/;<DATA>});@$_=@{$_{$_}}for keys%_
+no strict;use YAML;*_=YAML::Load(do{local$/;<DATA>});@$_=@{$_{$_}}for keys%_;1
 __DATA__
 .
