@@ -9,6 +9,25 @@ sub FormQueueOptions{
     local($^W) = 0; # Lots of form fields that may or may not exist give bogus errors
     my @qs;
     
+   if ($rt::ui::web::FORM{'q_limit'}) {
+      print "<CENTER>";
+      $range=$rt::ui::web::FORM{'q_limit'} + $rt::ui::web::FORM{'q_range'};
+      print "<A HREF=\"$ScriptURL?";
+      print "display=Queue" if ($frames);
+      print "&q_limit=$rt::ui::web::FORM{'q_limit'}&q_range=$range\">Next $rt::ui::web::FORM{'q_limit'}</A>";
+      print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+
+      $range=$rt::ui::web::FORM{'q_range'} - $rt::ui::web::FORM{'q_limit'};
+      if ($range >= 0) {
+         print "<A HREF=\"$ScriptURL?";
+         print "display=Queue" if ($frames);
+         print "&q_limit=$rt::ui::web::FORM{'q_limit'}&q_range=$range\">Previous $rt::ui::web::FORM{'q_limit'}</A>";
+      }
+      else {
+         print " None Previous";
+      }
+   }
+
 
     print "<form action=\"$ScriptURL\" method=\"get\"";
     if ($frames){ 
@@ -111,7 +130,7 @@ print "SELECTED";};
     
     print "<INPUT TYPE=\"radio\" NAME=\"q_user\" VALUE=\"other\"";
     print "CHECKED" if $rt::ui::web::FORM{'q_user_other'};
-    print "> <INPUT SIZE=8 NAME=\"q_user_other\"";
+    print "> <INPUT SIZE=16 NAME=\"q_user_other\"";
     print "VALUE=\"$rt::ui::web::FORM{'q_user_other'}\"" if $rt::ui::web::FORM{'q_user_other'};
     print "> 
 <br>
@@ -155,7 +174,50 @@ print"
 </font>
 
 
-</td></tr></table></center>
+
+        </td></tr>
+        <tr><td>
+        <font size=\"-1\">
+        <b>Area</b>:
+        <SELECT NAME=\"q_area\">
+        <option value=\"\">Any
+        <option value=\"\">None ";
+    foreach $area ( sort keys %{$rt::queues{$rt::ui::web::FORM{'q_queue'}}{areas}} )
+    {
+	print "<option ";
+	print "SELECTED" if ($rt::ui::web::FORM{'q_area'} eq $area);
+	print ">$area\n";
+    }
+    print "</select></font>";
+    print "</td><td>
+ <font size=\"-1\"><b>Length</b>:
+ <SELECT NAME=\"q_limit\">";
+         print "<OPTION VALUE=0 ";
+         if ($rt::ui::web::FORM{'q_limit'} == 0 ) { print "SELECTED " ;}
+         print "> All";
+ 
+         print "<OPTION VALUE=25 ";
+         if ($rt::ui::web::FORM{'q_limit'} == 25 ) { print "SELECTED " ;}
+         print "> 25";
+ 
+         print "<OPTION VALUE=50 ";
+         if ($rt::ui::web::FORM{'q_limit'} == 50 ) { print "SELECTED " ;}
+         print "> 50";
+ 
+         print "<OPTION VALUE=100 ";
+         if ($rt::ui::web::FORM{'q_limit'} == 100 ) { print "SELECTED " ;}
+         print "> 100";
+ 
+         print "<OPTION VALUE=500 ";
+         if ($rt::ui::web::FORM{'q_limit'} == 500 ) { print "SELECTED " ;}
+         print "> 500";
+ 
+         print "<OPTION VALUE=1000 ";
+         if ($rt::ui::web::FORM{'q_limit'} == 1000 ) { print "SELECTED " ;}
+         print "> 1000";
+ 
+     print "</select></font>
+ </td><td>
 <B>
 <center><input type=\"submit\" value =\"Update Queue Filters\"></center>
 </B>
@@ -223,7 +285,7 @@ sub FormSetArea{
     if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $current_user)) {
        foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
 	    print "<option ";
-		print "SELECTED" if ($user_id eq $rt::req[$serial_num]{area});
+		print "SELECTED" if ($area eq $rt::req[$serial_num]{area});
 		print ">$area\n";
 	    }
     }
@@ -354,13 +416,14 @@ sub  FormSetStatus{
     print "</FORM>\n";
 }
 sub FormReply{
-    my ($reply_content);
+    my ($reply_content, $width);
  
     # if we were called with a transaction num, let's read its content and quote it
     if ($rt::ui::web::FORM{'transaction'}) {
-	$reply_content= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
+      ($reply_content, $width)= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
+    } else {
+      $width=74;
     }
-
 
     print "<form action=\"$ScriptURL\" method=\"post\"";
     if ($frames) {
@@ -406,7 +469,7 @@ Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'sub
 </pre>
 <input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
 <font size=\"$MESSAGE_FONT\">
-<br><textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
+<br><textarea rows=15 cols=$width name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
 </font>
@@ -519,7 +582,7 @@ Final priority:
 </TD></TR>
 <TR><TD valign=\"top\" align=\"right\">Content:</TD><TD COLSPAN=5>
 <font size=\"-1\">
-<textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
+<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>
 $template
 </textarea>
 </TD></TR>
@@ -537,10 +600,10 @@ $template
 }
 
 sub FormComment{
-    my ($reply_content);
+  my ($reply_content, $width);
   if ($rt::ui::web::FORM{'transaction'}) {
-	$reply_content= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
-    }    
+    ($reply_content, $width)= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
+  } else { $width=74 }
     print "
 <form action=\"$ScriptURL\" method=\"post\" ";
 
@@ -558,7 +621,7 @@ Bcc:	 <input name=\"bcc\">
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
 <input type=\"hidden\" name=\"do_req_comment\" value=\"true\">
 <br><font size=\"$MESSAGE_FONT\">
-<textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
+<textarea rows=15 cols=$width name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
 </font>
