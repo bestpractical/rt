@@ -136,7 +136,7 @@ sub build_query  {
 
   # A hack to deal with the default..
   if ($#ARGV==-1) {
-      push(@ARGV, '-open');
+      push(@ARGV, '-open','-new');
   }
 
   for ($i=0;$i<=$#ARGV;$i++) {
@@ -189,6 +189,9 @@ sub build_query  {
       $Tickets->Limit(FIELD => 'Status', VALUE => 'open');
     }
     
+    if ($ARGV[$i] eq '-new'){
+      $Tickets->Limit(FIELD => 'Status', VALUE => 'new');
+    }
 
     if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
       $Tickets->Limit( FIELD => 'Status',
@@ -275,6 +278,7 @@ sub usage  {
            -user <user>      lists all requests made by <user>
 	   -queue <queue>    lists from queue <queue>
            -open             lists only the open requests
+           -new              lists only the new requests
            -resolved         lists resolved requests
            -stalled          lists stalled requests
            -dead             lists killed requests
@@ -303,7 +307,7 @@ sub usage  {
                              wn        newline
 
 
-                     Without options, rtq lists all open requests.
+                     Without options, rtq lists all open and new requests.
 EOFORM
 
 

@@ -13,7 +13,7 @@ use RT::EasySearch;
 	      LastUpdatedBy => 'ENUM',
 	      Owner => 'ENUM',
 	      id => 'INT',
-	     	      InitialPriority => 'INT',
+	      InitialPriority => 'INT',
 	      FinalPriority => 'INT',
 	      Priority => 'INT',
 	      TimeLeft => 'INT',
@@ -43,20 +43,22 @@ use RT::EasySearch;
 
 # {{{ sub _Init 
 sub _Init  {
-  my $self = shift;
-  $self->{'table'} = "Tickets";
-  $self->{'RecalcTicketLimits'} = 1;
-  $self->{'restriction_index'} =1;
-  $self->{'primary_key'} = "id";
-  $self->SUPER::_Init(@_);
-  
+    my $self = shift;
+    $self->{'table'} = "Tickets";
+    $self->{'RecalcTicketLimits'} = 1;
+    $self->{'restriction_index'} =1;
+    $self->{'primary_key'} = "id";
+    $self->SUPER::_Init(@_);
+    
 }
 # }}}
 
+# {{{ sub _NextItem
 sub _NextIndex {
     my $self = shift;
-      return ($self->{'restriction_index'}++);
+    return ($self->{'restriction_index'}++);
 }
+# }}}
 
 # {{{ sub Limit 
 
@@ -67,26 +69,27 @@ Generally best called from LimitFoo methods
 
 =cut
 sub Limit {
-   my $self = shift;
-   my %args = ( FIELD => undef,
-	        OPERATOR => '=',
-	        VALUE => undef,
-	        DESCRIPTION => undef,
-                @_
-	      );
+    my $self = shift;
+    my %args = ( FIELD => undef,
+		 OPERATOR => '=',
+		 VALUE => undef,
+		 DESCRIPTION => undef,
+		 @_
+	       );
    $args{'DESCRIPTION'} = "Autodescribed: ".$args{'FIELD'} . $args{'OPERATOR'} . $args{'VALUE'},
-   if (!defined $args{'DESCRIPTION'}) ;
-   
-   my $index = $self->_NextIndex;
-   
-   #make the TicketRestrictions hash the equivalent of whatever we just passed in;
-   %{$self->{'TicketRestrictions'}{"$index"}} = %args;
-   
-   
-   $self->{'RecalcTicketLimits'} = 1;
-   return ($index);
+    if (!defined $args{'DESCRIPTION'}) ;
+    
+    my $index = $self->_NextIndex;
+    
+    #make the TicketRestrictions hash the equivalent of whatever we just passed in;
+    %{$self->{'TicketRestrictions'}{"$index"}} = %args;
+    
+    
+    $self->{'RecalcTicketLimits'} = 1;
+    return ($index);
 }
 # }}}
+
 # {{{ sub LimitQueue
 
 =head2 LimitQueue
@@ -110,8 +113,8 @@ sub LimitQueue {
 		 );
     
 }
-
 # }}}
+
 # {{{ sub LimitOwner
 
 =head2 LimitOwner
@@ -124,14 +127,15 @@ VALUE is a user id.
 
 sub LimitOwner {
     my $self = shift;
-    my %args = (@_);
+    my %args = ( OPERATOR => '=',
+                 @_);
     
     my $owner = new RT::User($self->CurrentUser);
     $owner->Load($args{'VALUE'});
     $self->Limit (FIELD => 'Owner',
-		  VALUE => $args{'VALUE'},
+		  VALUE => $owner->Id,
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Owner ' .  $args{'OPERATOR'}. " ". $owner->UserId
+		  DESCRIPTION => 'Owner ' .  $args{'OPERATOR'}. " ". $owner->UserId()
 		 );
     
 }

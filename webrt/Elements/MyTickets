@@ -1,0 +1,34 @@
+<& /Elements/TitleBoxStart, title => "My Tickets" &>
+<TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
+<TR>
+<TD>
+</TD>
+</TR>
+% while (my $Ticket = $MyTickets->Next) {
+<TR>
+<TD>
+<A HREF="<% $RT::WebPath %>/Ticket/Display.html?id=<%$Ticket->Id%>">
+<%$Ticket->Id%>: <%$Ticket->Subject%>
+</A>
+</TD>
+<TD>
+<%$Ticket->QueueObj->QueueId%>
+</TD><TD>
+<%$Ticket->Status%>
+</TD>
+<TD>
+[<A HREF="<% $RT::WebPath %>/Ticket/Update.html?id=<%$Ticket->Id%>">Update</A>]
+</TD>
+</TR>
+% }
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+
+
+<%INIT>
+my $MyTickets;
+$MyTickets = new RT::Tickets ($session{'CurrentUser'});
+$MyTickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
+$MyTickets->LimitStatus(VALUE => "open");
+$MyTickets->LimitStatus(VALUE => "new");
+</%INIT>

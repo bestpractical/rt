@@ -1,15 +1,25 @@
 <& /Elements/Header, Title=>"Start page" &>
-<a href="Search/RestrictSearch.html">Advanced query</a><br>
-<hr>
-<h1>QuickSearch</h1>
-<form method="get" action="Search/Listing.html">
-<input type="hidden" name="QueueOp" value="=">
-<& /Elements/SelectQueue, Name => "ValueOfQueue" , Default =>1&>
-<input type="hidden" name="ValueOfStatus" value="open">
-<input type="hidden" name="StatusOp" value="=">
-<input type="submit" name="LimitStatus" value="Give me all open requests in this queue!">
-</form>
-
+<TABLE BORDER=0 WIDTH=100%>
+<TR VALIGN=TOP>
+<TD><IMG SRC="rt.jpg" alt="RT"><font size=+2>Request Tracker 2.0</font>
+</TD>
+<TD ALIGN=RIGHT>
+<a href="<%$RT::WebPath%>/User/Modify.html?id=<%$session{'CurrentUser'}->id%>">[Account]</a> [Preferences]<br>
+Signed in as <b><%$session{'CurrentUser'}->UserId%></b>.
+</TD>
+</TR>
+</TABLE>
+<TABLE BORDER=0 WIDTH=100%>
+<TR VALIGN=TOP>
+<TD WIDTH=70%>
+<& /Elements/MyTickets &>
+</TD>
+<TD>
+<& /Elements/Quicksearch &>
+</TD>
+</TR>
+</TABLE>
 <hr>
 <a href="Admin/">RT Administration</a><br>
 <a href="Ticket/Create.html">Create a ticket</a>
+

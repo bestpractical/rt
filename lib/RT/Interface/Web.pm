@@ -262,9 +262,9 @@ sub ProcessSearchQuery {
     ## TODO: The only parameter here is %ARGS.  Maybe it would be
     ## cleaner to load this parameter as $ARGS, and use $ARGS->{...}
     ## instead of $args{ARGS}->{...} ? :)
-
+    
     require RT::Tickets;
-
+    
     #Searches are sticky.
     if (defined $session{'tickets'}) {
 	# Reset the old search
@@ -276,10 +276,11 @@ sub ProcessSearchQuery {
     
     # {{{ Set the query limit
     #TODO this doesn't work
-    if ($args{ARGS}->{'Limit1ResultsPerPage'} and ($args{ARGS}->{'ValueOfResultsPerPage'})) {
+    if ($args{ARGS}->{'Limit1ResultsPerPage'} and 
+	($args{ARGS}->{'ValueOfResultsPerPage'})) {
 	$session{'tickets'}->Rows($args{ARGS}->{'ValueOfResultsPerPage'});
     }
-
+    
     # }}}
     # {{{ Limit owner
     if ($args{ARGS}->{'ValueOfOwner'} ne '' ) {
@@ -309,10 +310,20 @@ sub ProcessSearchQuery {
     # }}}
     # {{{ Limit Status
     if ($args{ARGS}->{'ValueOfStatus'} ne '') {
-	$session{'tickets'}->LimitStatus (
-					  VALUE => $args{ARGS}->{'ValueOfStatus'},
-					  OPERATOR =>  $args{ARGS}->{'StatusOp'},
-					 );
+	if ( ref($args{ARGS}->{'ValueOfStatus'}) ) {
+	    foreach my $value ( @{ $args{ARGS}->{'ValueOfStatus'} } ) {
+		$session{'tickets'}->LimitStatus (
+						  VALUE => $value,
+						  OPERATOR =>  $args{ARGS}->{'StatusOp'},
+						 );
+	    }
+	} else {
+	    $session{'tickets'}->LimitStatus (
+					      VALUE => $args{ARGS}->{'ValueOfStatus'},
+					      OPERATOR =>  $args{ARGS}->{'StatusOp'},
+					     );
+	}
+	
     }
 
 # }}}
@@ -323,7 +334,7 @@ sub ProcessSearchQuery {
 					  OPERATOR => $args{ARGS}->{'SubjectOp'},
 					 );
     }
-    
+
     # }}}    
     # {{{ Limit Content
     if ($args{ARGS}->{'ValueOfContent'} ne '') {

@@ -1704,8 +1704,8 @@ sub SetOwner {
   
   #If we've specified a new owner and that user can't modify the ticket
   elsif (($NewOwnerObj) and 
-	 (!$NewOwnerObj->HasQueuetRight(Right => 'OwnTickets',
-					TicketObj => $self))
+	 (!$NewOwnerObj->HasQueueRight(Right => 'OwnTickets',
+					QueueObj => $self->QueueObj))
 	) {
       return (0, "That user may not own requests in that queue");
   }

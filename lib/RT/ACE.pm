@@ -21,39 +21,39 @@ use vars qw (%SCOPE
 # Queue rights are the sort of queue rights that can only be granted
 # to real people or groups
 %QUEUERIGHTS = ( 
-         SeeQueue => 'Can this principal see this queue',
-		 ExploreQueue => 'Look at this queue\'s configuration, watchers, etc',
-		 ListQueue => 'Display a listing of ticket',
-         AdminQueue => 'Create, delete and modify queues', 
-         
-         ModifyACL => 'Modify this queue\'s ACL',
-         ModifyQueueWatchers => 'Modify the queue watchers',
+		SeeQueue => 'Can this principal see this queue',
+		ExploreQueue => 'Look at this queue\'s configuration, watchers, etc',
+		ListQueue => 'Display a listing of ticket',
+		AdminQueue => 'Create, delete and modify queues', 
 		
-         CreateTemplate => 'Create email templates for this queue',
-		 ModifyTemplate => 'Modify email templates for this queue',
-		 ShowTemplate => 'Display email templates for this queue',
+		ModifyACL => 'Modify this queue\'s ACL',
+		ModifyQueueWatchers => 'Modify the queue watchers',
+		
+		CreateTemplate => 'Create email templates for this queue',
+		ModifyTemplate => 'Modify email templates for this queue',
+		ShowTemplate => 'Display email templates for this queue',
+		
+		ModifyScripScopes => 'Modify ScripScopes for this queue',
+		ShowScripScopes => 'Display ScripScopes for this queue',
 
-         ModifyScripScopes => 'Modify ScripScopes for this queue',
-		 ShowScripScopes => 'Display ScripScopes for this queue',
-
-         ShowTicket => 'Show ticket summaries',
-		 ShowTicketHistory => 'Show ticket histories',
-		 ShowTicketComments => 'Show ticket private commentary',
-		 CreateTicket => 'Create tickets in this queue',
-         ReplyToTicket => 'Reply to tickets',
-		 CommentOnTicket => 'Comment on tickets',
-		 OwnTicket => 'Own tickets',
-		 ModifyTicket => 'Modify tickets',
-		 DeleteTicket => 'Delete tickets'
-      );	
+		ShowTicket => 'Show ticket summaries',
+		ShowTicketHistory => 'Show ticket histories',
+		ShowTicketComments => 'Show ticket private commentary',
+		CreateTicket => 'Create tickets in this queue',
+		ReplyToTicket => 'Reply to tickets',
+		CommentOnTicket => 'Comment on tickets',
+		OwnTicket => 'Own tickets',
+		ModifyTicket => 'Modify tickets',
+		DeleteTicket => 'Delete tickets'
+	       );	
 
 
 # System rights are rights granted to the whole system
 %SYSTEMRIGHTS = (
-		  AdminGroups => 'Create, delete and modify groups',
-		  AdminUsers => 'Create, Delete and Modify users',
-	      ModifySelf => 'Modify one\'s own RT account',
-	      ModifySystemACL => 'Modify system ACLs',
+		 AdminGroups => 'Create, delete and modify groups',
+		 AdminUsers => 'Create, Delete and Modify users',
+		 ModifySelf => 'Modify one\'s own RT account',
+		 ModifySystemACL => 'Modify system ACLs',
 
 		);
 
@@ -102,24 +102,12 @@ sub Create {
 	
 	#TODO check if it's a valid RightName/Principaltype
     }
-    elsif (($args{'RightScope'} eq 'Queue') and
-	   ($args{'RightAppliesTo'} eq '0')) {
-	
-	unless ($self->CurrentUser->HasSystemRight('ModifySystemACL')) {
-	      $RT::Logger->err("No permission to grant rights");
-	      return (undef);
-	  }
-
-	#TODO check if it's a valid RightName/Principaltype
-	
-    }
     elsif ($args{'RightScope'} eq 'Queue') {
 	#TODO add logic here
-   	#unless $self->CurrentUser->id has 'ModifyQueueACL' for 
-	#(queue == $args->{'AppliesTo'}) {
-	# if the user can't do it,
-	# return (0, 'No permission to grant rights');
-	#}
+   	unless ($self->CurrentUser->HasQueueRight( Queue => $args{'RightAppliesTo'},
+						  Right => 'ModifyQueueACL')) {
+	    return (0, 'No permission to grant rights');
+	}
 	
 	#TODO check if it's a valid RightName/Principaltype
 	
