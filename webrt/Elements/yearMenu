@@ -17,7 +17,7 @@ $max - Maximum year appearing in menus; defaults to $min plus 10.
 
 <%args>
 $menu_name=>'year'
-$current=>undef
-$min=>(localtime)[5]+1900
+$current=>(localtime)[5]+1900
+$min=>(localtime)[5]+1900-1
 $max=>$min+10
 </%args>
