@@ -765,6 +765,14 @@ sub _AddCustomFieldValue {
         return ( 0, $self->loc("Custom field [_1] not found", $args{'Field'}) );
     }
 
+    my $OCFs = RT::ObjectCustomFields->new( $self->CurrentUser );
+    $OCFs->LimitToCustomField( $cf->Id );
+    $OCFs->LimitToObjectId( $self->Id );
+    $OCFs->LimitToObjectId( 0 );
+    unless ($OCFs->Count) {
+        return ( 0, $self->loc("Custom field [_1] does not apply to this object", $args{'Field'}) );
+    }
+
     # Load up a ObjectCustomFieldValues object for this custom field and this ticket
     my $values = $cf->ValuesForObject( $self );
 

@@ -50,7 +50,7 @@
 <h3><&|/l&>Unassigned Objects (check to assign)</&></h3>
 <& /Admin/Elements/PickObjects, Objects => \@UnassignedObjs, id => $id &>
 
-<& /Elements/Submit &>
+<& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
 </FORM>
 
 <%INIT>

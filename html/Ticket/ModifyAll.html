@@ -78,6 +78,14 @@
     <td class="label"><&|/l&>Subject</&>:</td>
     <td class="entry"><input name="UpdateSubject" size=60 value=""></td>
   </tr>
+% if (my $TxnCFs = $Ticket->TransactionCustomFields) {
+%    while (my $CF = $TxnCFs->Next()) {
+<TR>
+<TD class="label"><% $CF->Name %>:</TD>
+<TD class="entry"><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &><em><% $CF->FriendlyType %></em></TD>
+</TD></TR>
+%    } # end if while
+% } # end of if
   <tr>
     <td class="label"><&|/l&>Attach</&>:</td>
     <td class="entry"><input name="UpdateAttachment" type=file></td>

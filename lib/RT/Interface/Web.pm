@@ -449,7 +449,6 @@ sub ProcessUpdateMessage {
                 TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
             );
             push ( @{ $args{Actions} }, $Description );
-	    print "I see $Object coming up\n";
 	    $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
         }
         elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {

@@ -51,7 +51,7 @@
 <h3><&|/l&>Unassigned Custom Fields (check to assign)</&></h3>
 <& PickCustomFields, CustomFields => \@UnassignedCFs, id => $id &>
 
-<& /Elements/Submit &>
+<& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
 </FORM>
 
 

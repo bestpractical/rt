@@ -206,22 +206,28 @@ sub LimitToParentType  {
 
 sub LimitToGlobalOrObjectId {
     my $self = shift;
-    my $id = shift || 0;
+    my $global_only = 1;
 
     $self->Join( ALIAS1 => 'main',
                 FIELD1 => 'id',
                 ALIAS2 => $self->_OCFAlias,
                 FIELD2 => 'CustomField' );
-    $self->Limit( ALIAS           => $self->_OCFAlias,
-                 FIELD           => 'ObjectId',
-                 OPERATOR        => '=',
-                 VALUE           => $id,
-                 ENTRYAGGREGATOR => 'OR' );
+
+    foreach my $id (@ARGV) {
+	$self->Limit( ALIAS           => $self->_OCFAlias,
+		    FIELD           => 'ObjectId',
+		    OPERATOR        => '=',
+		    VALUE           => $id || 0,
+		    ENTRYAGGREGATOR => 'OR' );
+	$global_only = 0 if $id;
+    }
+
     $self->Limit( ALIAS           => $self->_OCFAlias,
                  FIELD           => 'ObjectId',
                  OPERATOR        => '=',
                  VALUE           => 0,
-                 ENTRYAGGREGATOR => 'OR' ) if $id;
+                 ENTRYAGGREGATOR => 'OR' ) if $global_only;
+
     $self->OrderByCols(
 	{ ALIAS => $self->_OCFAlias, FIELD => 'ObjectId' },
 	{ ALIAS => $self->_OCFAlias, FIELD => 'SortOrder' },

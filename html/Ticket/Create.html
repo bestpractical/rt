@@ -91,6 +91,14 @@
 <& /Ticket/Elements/EditCustomFields, QueueObj => $QueueObj &>
 </TD>
 </TR>
+% if ($TxnCFs->Count) {
+% while (my $CF = $TxnCFs->Next()) {
+<TR>
+<TD ALIGN=RIGHT><% $CF->Name %>:</TD>
+<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &><em><% $CF->FriendlyType %></em></TD>
+</TD></TR>
+% }
+% }
 <TR>
 % if (exists $session{'Attachments'}) {
 <TD class=label>
@@ -188,22 +196,6 @@ $ARGS{Due}%>"></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>
-
-% if ($TxnCFs->Count) {
-<& /Elements/TitleBoxStart, title => loc('Transaction Custom Fields'), 
-	title_class=> 'inverse',  
-	titleright => '', color=> "#333366" &>
-<TABLE BORDER=0>
-% while (my $CF = $TxnCFs->Next()) {
-<TR>
-<TD ALIGN=RIGHT><% $CF->Name %>:</TD>
-<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &></TD>
-<TD ALIGN=RIGHT><em><% $CF->FriendlyType %></em></TD>
-</TD></TR>
-% }
-</TABLE>
-<& /Elements/TitleBoxEnd &>
-% }
 
 </TD>
 </TR>
