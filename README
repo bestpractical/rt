@@ -215,7 +215,8 @@ the mod_perl perl interpreter within Apache httpd and FastCGI
 mod_perl
 --------
 
-To install RT with mod_perl, you'll need to add a few lines to your 
+To install RT with mod_perl, you'll need to install the
+apache database connection cache and add a few lines to your 
 Apache configuration file telling it about RT:
 
 <VirtualHost your.ip.address>
@@ -231,6 +232,12 @@ Apache configuration file telling it about RT:
         PerlHandler RT::Mason
     </Location>
 </VirtualHost>
+
+To make sure that the Apache database connection cache is installed, run
+the following command:
+
+    perl -MCPAN -e'install Apache::DBI'
+
 
 FastCGI
 -------
