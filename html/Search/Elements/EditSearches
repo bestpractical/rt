@@ -55,13 +55,14 @@
 % }
 <&|/l&>Description</&>:<br>
 <font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>"></font>
-<br>
+<nobr>
 % if ($SearchId ne 'new') {
 % if ($Dirty) {
 <input type="submit" name="Revert" value="<%loc('Revert')%>">
 % }
 <input type="submit" name="Delete" value="<%loc('Delete')%>">
 <input type="submit" name="CopySearch" value="<%loc('Copy')%>">
+</nobr>
 
 % }
 
