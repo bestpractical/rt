@@ -56,25 +56,6 @@ sub activate {
   
   my $CurrentUser = &GetCurrentUser($head);
 
-
- 
-
-  my $FromObj = shift @Address;
-  my $Name =  ($FromObj->phrase || $FromObj->comment);
-
-
-  my $Bcc = $head->get('Bcc');
-
-
-  
-
-  #Go through every address in the From, Cc and Bcc headers
-  #Foreach header, see if the address has an RT account.
-  #if it doesn't hafve an account, create an account.
-
-
-
-
   require RT::Ticket;
   
   #If the message doesn't reference a ticket #, create a new ticket
@@ -92,23 +73,9 @@ sub activate {
 			Area => $Area,
 			Subject => $Subject,
 			Attachment => $entity
-			Requestor => $CurrentUser->Email
 		      );
     
-    my @Cc = Mail::Address->parse($head->get('Cc'));
-    foreach $Cc (@Cc) {
-      $Ticket->AddWatcher ( Email => $Cc->address,
-			    Type => "Cc");
-    }
-
-    my @Bcc = Mail::Address->parse($head->get('Bcc'));
-    foreach $Bcc (@Bcc) {
-      $Ticket->AddWatcher ( Email => $Bcc->address,
-			    Type => "Bcc");
-    }
-
-
-
+  }
   else { #If we have a ticketid
     #   If the message contains commands, execute them
     
@@ -119,8 +86,8 @@ sub activate {
       #TODO: Check for error conditions.
       $Ticket->Comment(MIMEObj=>$entity);
     }
-
-
+    
+    
     #   If the message is correspondence, add it to the ticket
     elsif ($Action =~ /correspond/) {
       
@@ -129,16 +96,10 @@ sub activate {
       #TODO: Check for error conditions
       $Ticket->Comment(MIMEObj => $entity);
     }
-   }
-
+  }
+  
   return(0);
 }
-
-
-
-
-
-
 
 sub CheckForLoops {
   my $head = shift;

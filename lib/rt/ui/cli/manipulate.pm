@@ -316,16 +316,13 @@ sub ParseArgs {
 			       Alias => $alias,
 			       Owner => $owner,
 			       Subject => $Subject,
-			       Requestor => $Requestor,
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
 			       Status => 'open',
 			       Due => $date_due,
-	      		       Attachment => $Message			
+	      		       MIMEEntity => $Message			
 						      );
 
-#    $Ticket->AddWatcher (all the ccs)
-    #$Ticket->AddWatcher (all the Bccs)
     printf("Request %s created",$id);
   }
   

@@ -59,6 +59,7 @@ sub NewItem {
   my $self = shift;
   my $Handle = shift;
   my $item;
+ use RT::Watcher;
   $item = new RT::Watcher($self->{'user'}, $Handle);
   return($item);
 }

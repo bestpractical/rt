@@ -36,7 +36,7 @@ sub Create {
 	      Created => time(),
 	      Told => 0,
 	      Due => 0,
-	      Attachment => undef,
+	      MIMEEntity => undef,
 	      @_);
 
   #TODO Load queue defaults
@@ -61,23 +61,41 @@ sub Create {
   #Now that we know the self
   $self->SUPER::_Set("EffectiveId",$id);
   
-  
-  #Add the requestor to the list of watchers
-  require RT::Watcher;
-  my $Requestor = new RT::Watcher ($self->CurrentUser);
-  $Requestor->Create( Ticket => $self->Id(),
-		      Email => 'Requestor', 
-		      Type =>$arg{'requestor'} );
-  
-  
+  if (defined $args{'MIMEntity'}) {
+    my $head = $args{'MIMEEntity'}->head;
+    
+    #Add the requestor to the list of watchers
+    my $FromLine = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
+    my @From = Mail::Address->parse($FromLine);
+    
+    foreach $From (@From) {
+      my $Watcher = RT::Watcher->new($self->CurrentUser);
+      
+      $self->AddWatcher ( Email => $From->address,
+			  Type => "Requestor");
+    }
+    
+    my @Cc = Mail::Address->parse($head->get('Cc'));
+    foreach $Cc (@Cc) {
+      $self->AddWatcher ( Email => $Cc->address,
+			  Type => "Cc");
+    }
+    
+    my @Bcc = Mail::Address->parse($head->get('Bcc'));
+    foreach $Bcc (@Bcc) {
+      $self->AddWatcher ( Email => $Bcc->address,
+			  Type => "Bcc");
+    }
+    
+  }
   #Add a transaction for the create
   my $Trans = $self->_NewTransaction(Type => "Create",
 				     TimeTaken => 0);
   
   
-  #Attach the content to the transaction, if we were passed in an attachment
-  if ($args{'Attachment'}){
-    $Trans->Attach($args{'Attachment'});
+  #Attach the content to the transaction
+  if ($args{'MIMEEntity'}){
+    $Trans->Attach($args{'MIMEEntity'});
   }
   
   
@@ -150,8 +168,12 @@ sub RequestorsAsString {
     while (my $requestor = $self->Requestors->Next) {
       $self->{'RequestorsAsString'} .= $requestor->Email.", ";    
     }
-    return ( $self->{'RequestorsAsString'});
+    $self->{'RequestorsAsString'} =~ s/,$//;
   }
+  
+
+  return ( $self->{'RequestorsAsString'});
+  
 }
 
 sub Cc {
@@ -173,10 +195,12 @@ sub CcAsString {
       $self->{'CcAsString'} .= $requestor->Email .", ";
       
     }
-    return ( $self->{'CcAsString'});
-    
-    
   }
+  $self->{'CcAsString'} =~ s/,$//;
+  return ( $self->{'CcAsString'});
+    
+    
+  
 }
 sub Bcc {
   my $self = shift;
@@ -194,12 +218,13 @@ sub BccAsString {
     $self->{'BccAsString'} = "";
     while (my $requestor = $self->Bcc->Next) {
       $self->{'BccAsString'} .= $requestor->Email .", ";
-      
     }
-    return ( $self->{'BccAsString'});
-
-    
+    $self->{'BccAsString'} =~ s/,$//;
   }
+  return ( $self->{'BccAsString'});
+  
+    
+  
 }
   
 
