@@ -137,14 +137,15 @@ my @panes = ('main', 'right');
 #if ($ARGS{'Save'}) {
 if ($ARGS{'submit'}) {
     for my $pane (@panes) {
+	my $this = $ARGS{'PortletList-'.$pane};
+	$this = [$this] unless ref ($this);
 	next unless $ARGS{'PortletList-'.$pane};
 	$portlets->{$pane} =
 	    [map { m/(\w+)-(.*)$}/;
 		   # XXX: CHECK!
 		   { type => $1,
 		     name => $2,
-		   }}
-	     @{$ARGS{'PortletList-'.$pane}}];
+		 }} @$this];
     }
 
     $user->SetPreferences('My RT', $portlets);
