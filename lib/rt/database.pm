@@ -455,6 +455,31 @@ sub req_in
     }
 }
 
+sub links_in
+{
+    my ($in_serial_num, $in_current_user) = @_;
+    my ($effective_sn);
+
+    if (defined $rt::links[$serial_num]) {
+	# No work needed?
+	return;
+    }
+
+    $effective_sn = &normalize_sn($in_serial_num);
+
+    $query_string = "SELECT foreign_db, foreign_id FROM links WHERE serial_num = $effective_sn";
+    $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\nQuery String = $query_string\n";
+    $rv = $sth->execute or warn "execute had some problem: $DBI::errstr\nQuery String = $query_string\n";
+    $rt::links[$serial_num]=[];
+
+    while (@row=$sth->fetchrow_array) {
+	my %tmp=();
+	for ('foreign_db', 'foreign_id') {
+	    $tmp{$_}=shift @row;
+	}
+	push(@{$rt::links[$serial_num]}, \%tmp);
+    }
+}
 
 sub get_queue {
     my ($in_criteria,$in_current_user) =@_;
@@ -536,6 +561,34 @@ sub parse_req_row {
 	$req[$in_serial_num]{'since_acted'}="";
     }
 
+}
+
+sub open_parents {
+    my ($in_serial_num, $in_current_user)=@_;
+    $rt::GetStalledParents->execute($in_serial_num) 
+	|| warn "Statement execution failed ($DBI::errstr)";
+    my $row;
+    while ($row=$rt::GetStalledParents->fetch) {
+	if ($row->[1]) {
+	    die "Stub :( The remote RT needs to be updated";
+	    # something like this needs to be done at remote RT server:
+	    add_transaction($row->[0], $in_current_user, 'subreqrsv', "$in_serial_num at $rt::BaseURL",
+			'', $rt::time, 1, $in_current_user);
+	} else {
+	    update_request($row->[0], 'status', 'open', '_rt_system');
+	    add_transaction($row->[0], $in_current_user, 'subreqrsv', $in_serial_num,
+			'', $rt::time, 1, $in_current_user);
+	}
+    }
+    $rt::GetStalledParents->finish;
+}
+
+sub add_link {
+    my ($in_serial_num, $in_current_user, $otherdb, $foreign_id, $foreign_tag) = @_;
+    $rt::AddLink->execute($in_serial_num, $otherdb, $foreign_id, $foreign_tag) 
+	|| warn "Failed to add link";
+    $rt::AddLink->finish;
+    push(@{$rt::links[$serial_num]}, {'foreign_db'=>$otherdb, 'foreign_id'=>$foreign_id});
 }
 
 sub quote_wrapper {

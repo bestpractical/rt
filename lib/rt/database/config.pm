@@ -21,7 +21,7 @@
                      values (?, ?, ?, ?)');
 
 	$rt::GetStalledParents=$dbh->prepare
-	    ("SELECT foreign_id from links,relship,each_req 
+	    ("SELECT foreign_id,url from links,relship,each_req 
               WHERE relship.type='dependency' 
                 and links.foreign_db=relship.id 
                 and links.serial_num=?

@@ -1,115 +1,4 @@
--sub links_in
--{
--    my ($in_serial_num, $in_current_user) = @_;
--    my ($effective_sn);
--
--    # Wouldn't it be smart to check if it's already in before doing any work?
--
--    $effective_sn = &normalize_sn($in_serial_num);
--    
--    $query_string = "SELECT foreign_db, foreign_id, foreign_tag FROM links WHERE serial_num = $effective_sn";
--    $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\nQuery String = $query_string\n";
--	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\nQuery String = $query_string\n";
--    @rt::links=();
--    $rt::links[$serial_num]=[];
--
--    while (@row=$sth->fetchrow_array) {
--	my %tmp=();
--	for ('foreign_db', 'foreign_id', 'foreign_tag') {
--	    $tmp{$_}=shift @row;
--	}
--	push(@{$rt::links[$serial_num]}, \%tmp);
--    }
--}
--
- 
- sub get_queue {
-     my ($in_criteria,$in_current_user) =@_;
-     my $temp=0;
-     
--    $query_string = "SELECT serial_num, effective_sn,  queue_id, area,  alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE $in_criteria";
-+    $query_string = "SELECT id, effective_sn,  queue_id, area,  alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE $in_criteria";
-     $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n$query_string\n";
- 	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\n$query_string\n";
- 
-@@ -587,37 +514,6 @@ sub quote_wrapper {
-   return("$out_val");
-   
- 
--}
--
--sub open_parents {
--    my ($in_serial_num, $in_current_user)=@_;
--    $rt::GetStalledParents->execute($in_serial_num) 
--	|| warn "Statement execution failed ($DBI::errstr)";
--    my $row;
--    while ($row=$rt::GetStalledParents->fetch) {
--	update_request($row->[0], 'status', 'open', '_rt_system');
--	add_transaction($row->[0], $in_current_user, 'subreqrsv', $in_serial_num,
--			'', $rt::time, 1, $in_current_user);
--    }
--    $rt::GetStalledParents->finish;
--}
--
--sub add_link {
--    my ($in_serial_num, $in_current_user, $otherdb, $foreign_id, $foreign_tag) = @_;
--    $rt::AddLink->execute($in_serial_num, $otherdb, $foreign_id, $foreign_tag) 
--	|| warn "Failed to add link";
--    $rt::AddLink->finish;
--}
--
--sub read_faq_hack {
--    my $hackysth=$rt::dbh->prepare
--    ("select Article.id, title, content from
--            mkia.Article,mkia.Keyword,mkia.KeywordList 
--	    where     Keyword.Article=Article.id 
--	          and KeywordList.id=Keyword.keyword 
--		  and KeywordList.parent=20 and KeywordList.name=?");
--    $hackysth->execute(@_);
--    return $hackysth->fetchrow_array
- }
- 
- 1;
-Only in rt/support: .#mail.pm.1.16.2.4
-diff -uwrF^sub /tmp/FunRT/support/CVS/Entries rt/support/CVS/Entries
---- /tmp/FunRT/support/CVS/Entries	Wed Dec  1 08:16:36 1999
-+++ rt/support/CVS/Entries	Wed Dec  1 08:16:15 1999
-@@ -1,3 +1,3 @@
--/utils.pm/1.8.2.2.2.9/Sat Oct 23 14:10:27 1999//TFunRT
--/mail.pm/1.16.2.1.2.5/Thu Nov 11 10:14:00 1999//TFunRT
-+/utils.pm/1.8.2.5/Wed Nov 17 10:50:49 1999//Trt-1-1
-+/mail.pm/1.16.2.5/Wed Nov 17 22:36:02 1999//Trt-1-1
- D
-diff -uwrF^sub /tmp/FunRT/support/CVS/Root rt/support/CVS/Root
---- /tmp/FunRT/support/CVS/Root	Wed Dec  1 08:16:36 1999
-+++ rt/support/CVS/Root	Wed Dec  1 08:16:15 1999
-@@ -1 +1 @@
--:ext:tobiasb@cvs.fsck.com:/raid/cvsroot
-+cvs.fsck.com:/raid/cvsroot
-diff -uwrF^sub /tmp/FunRT/support/CVS/Tag rt/support/CVS/Tag
---- /tmp/FunRT/support/CVS/Tag	Wed Dec  1 08:16:36 1999
-+++ rt/support/CVS/Tag	Wed Dec  1 08:16:15 1999
-@@ -1 +1 @@
--TFunRT
-+Trt-1-1
-diff -uwrF^sub /tmp/FunRT/support/mail.pm rt/support/mail.pm
 --- /tmp/FunRT/support/mail.pm	Thu Nov 11 11:14:00 1999
-+++ rt/support/mail.pm	Wed Nov 17 23:36:02 1999
-@@ -1,3 +1,4 @@
-+# $Header$
- #
- 
- package rt;
-@@ -97,7 +98,8 @@ sub template_mail{
-     $head->add('Subject',"[$rt::rtname \#" . $in_serial_num .
-        "] ($in_queue_id) $in_subject");
-     $head->add('Reply-To',$temp_mail_alias);
--    $head->add('From',$friendly_name . "<$temp_mail_alias>");
-+    $head->add('From',"$friendly_name via RT" .
-+       "<$temp_mail_alias>");
-     $head->add('Sender',"$in_current_user");
-     $head->add('To',$in_recipient);
-     $in_cc && $head->add('Cc',$in_cc);
 @@ -118,14 +120,9 @@ sub template_mail{
                    Header => $head,
                    Body => \@body;
@@ -130,36 +19,8 @@ diff -uwrF^sub /tmp/FunRT/support/mail.pm rt/support/mail.pm
  1;
 Only in rt/support: mail.pm~
 diff -uwrF^sub /tmp/FunRT/support/utils.pm rt/support/utils.pm
---- /tmp/FunRT/support/utils.pm	Sat Oct 23 16:10:27 1999
-+++ rt/support/utils.pm	Wed Nov 17 11:50:49 1999
-@@ -71,26 +71,6 @@ sub can_manipulate_queue {
- }
- 
- 
--sub dist_list {
--    my ($in_action, $in_queue, $in_serial_num)=@_;
--    &rt::req_in($in_serial_num);
--    my $action = $in_action eq 'new' ? "correspond" : $in_action;
--    my @dist_list;
--    push(@dist_list, $queues{$in_queue}{dist_list}) 
--	if ($queues{$in_queue}{"m_members_$action"} &&
--	    $queues{$in_queue}{dist_list});
--    push(@dist_list, $req[$in_serial_num]{owner})
--	if (($queues{$in_queue}{"m_owner_$action"} || 
--	     $queues{$in_queue}{m_owner_trans}) &&
--	    $req[$in_serial_num]{owner});
--    push(@dist_list, $req[$in_serial_num]{requestors})	
--	if (($queues{$in_queue}{"m_user_$action"} || 
--	     $queues{$in_queue}{m_user_trans}) &&
--	    $req[$in_serial_num]{requestors});
--    return join(', ', @dist_list);
--}
--
--
- 
- sub can_display_queue {
-     my ($in_queue, $in_user) =@_;
-@@ -175,7 +155,6 @@ sub booleanize {
+
+utils.pm
  sub quote_content {
      my $transaction = shift;
      my $current_user = shift;
@@ -2734,3 +2595,16 @@ diff -uwrF^sub /tmp/FunRT/ui/web/support.pm rt/ui/web/support.pm
  
  sub header {
      if ($header_printed) {
+
+
+From database.pm:
+-sub read_faq_hack {
+-    my $hackysth=$rt::dbh->prepare
+-    ("select Article.id, title, content from
+-            mkia.Article,mkia.Keyword,mkia.KeywordList 
+-	    where     Keyword.Article=Article.id 
+-	          and KeywordList.id=Keyword.keyword 
+-		  and KeywordList.parent=20 and KeywordList.name=?");
+-    $hackysth->execute(@_);
+-    return $hackysth->fetchrow_array
+ }
