@@ -29,7 +29,7 @@
 <& Elements/NewListActions, actions => \@actions &>
 
 <form action="Build.html">
-<& /Elements/MessageBox, Name => "querystring", Default => $querystring, Width => '100%' &>
+<& /Elements/MessageBox, Name => "Query", Default => $Query, Width => '100%' &>
 
 <& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => "Apply your changes"&>
 </form>
@@ -40,6 +40,6 @@ my $title = "Edit Query";
 
 
 <%ARGS>
-$querystring => undef
+$Query => undef
 @actions => undef
 </%ARGS>

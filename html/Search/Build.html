@@ -99,8 +99,6 @@ if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
 
 # if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
-    $m->print("trying to save! $ARGS{'SearchId'}<br>");
-
     if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         my $obj_type  = $1;
         my $obj_id    = $2;
@@ -134,7 +132,6 @@ if ( $ARGS{'Save'} ) {
 
     }
     elsif ( $ARGS{'SearchId'} eq 'new' ) {
-    $m->print("new search<br>");
         my ( $search_id, $search_msg ) =
           $session{'CurrentUser'}->UserObj->AddAttribute(
                                             Name        => 'SavedSearch',
@@ -150,12 +147,6 @@ if ( $ARGS{'Save'} ) {
           . '-'. $session{'CurrentUser'}->UserObj->Id
           . '-SavedSearch-'
           . $search->Id;
-
-    $m->print("end new search: $search<br>");
-    $m->print("end new search: " . $search->Id . "<br>");
-    $m->print("end new search: " . $Query . "<br>");
-my %content = $search->Content;
-    $m->print("end new search: " . $content{Query} . "<br>");
     }
 }
 
@@ -191,13 +182,21 @@ our @actions = ();
 our $selectedclause = $ARGS{clauses};
 our %queues;
 
+if ($ARGS{"DoSearch"}) {
+    $m->comp("Show.html", Query => $Query, Format => $ARGS{Format});
+    $m->abort();
+} elsif ($ARGS{"EditQuery"}) {
+    $m->comp("Edit.html", Query => $Query);
+    $m->abort();
+}
+
 my $items = {};
 
 $items = ParseQuery($Query||$search_hash->{'Query'});
 
 # if parsing went poorly, send them to the edit page to fix it
 if ($actions[0]) {
-    $m->comp("EditQuery.html", querystring => $Query, actions => \@actions);
+    $m->comp("Edit.html", Query => $Query, actions => \@actions);
     $m->abort();
 }
 
@@ -208,13 +207,7 @@ build_array(\$Query, $items, "", "", 0, \@options);
 our $currentkey = "";
 $currentkey = $options[$selectedclause]->{Key} if $selectedclause;
 
-if ($ARGS{"DoSearch"}) {
-    $m->comp("Show.html", Query => $Query, Format => $ARGS{Format});
-    $m->abort();
-} elsif ($ARGS{"EditQuery"}) {
-    $m->comp("Edit.html", querystring => $Query);
-    $m->abort();
-} elsif ($ARGS{"AddClause"}) {
+if ($ARGS{"AddClause"}) {
     my %hash = %$items;
     my $key;
     if ($currentkey) {
@@ -227,7 +220,6 @@ if ($ARGS{"DoSearch"}) {
     }
     foreach my $arg (keys %ARGS) {
         if ($arg =~ m/ValueOf(.+)/ && $ARGS{$arg}) {
-#	    $m->print("My arg: $arg $ARGS{$arg}<br>");
             my $field = $1;
 	    my $keyword;
 	    #figure out if it's a grouping
@@ -289,7 +281,8 @@ if ($ARGS{"Up"}) {
 
         # we can only move it left if...what?
         my $parent = parentkey($currentkey);
-        if ($parent =~ m/^{0.0}.*/) {
+
+        if ($parent =~ m/^{0.0}.*/ && $parent ne "{0.0}") {
 	    my $newkey = appendkey(\%hash, $parent);
 
 	    movecurrent(\%hash, $newkey);
@@ -313,11 +306,10 @@ if ($ARGS{"Up"}) {
 } elsif ($ARGS{"Right"}) {
     if ($currentkey) {
 	my %hash = %$items;
-	
+
 	# you can't move right if you leave no siblings behind
 	if (keyexists(\%hash, nextkey($currentkey)) || 
 	    keyexists(\%hash, prevkey($currentkey))) {
-	    
 	    # if the next item is a subkey, put it there
 	    my $newkey = appendsubkey(\%hash, $currentkey);
 	    
@@ -370,7 +362,7 @@ while (my $val = shift @options) {
 	$optionlist .= "<option value=$i $selected>";
 	$optionlist .= "&nbsp;" x (5 * ($depth-1));
 #	$optionlist .= "$i: $key ";
-	if ($num > 0) {
+	if ($num > 0 || $item{Subkey}) {
 	    $optionlist .= $ea . " ";
 	}
 	$optionlist .= "$item{Key} $item{Op} $item{Value}";
@@ -393,14 +385,14 @@ sub build_array {
 	while (my $item = $items->{$i + ($j / 10)}) {
 
 	    my %values = %{$item};
-
 	    if (!$ea) {
 		$ea = $values{EA};
 	    }
+
 	    my $depth = $i;
-	    
+
 	    my $subkey = $values{Subkey};
-	    if (defined $subkey) {
+	    if (defined $subkey && exists $values{Subkey}) {
 		my $sendkey = "";
 		if ($parentkey) {
 		    $sendkey = $parentkey. "{Subkey}{$i.$j}"; 
@@ -519,7 +511,7 @@ sub ParseQuery {
 	    my $keystring = "";
 	    
 	    while ($parentdepth >= 1) {
-		$hashkey = $parentdepth . ".$num";
+		$hashkey = $parentdepth . ".$depths{$parentdepth}";
 		push @keys, $hashkey;
 		$parentdepth--;
 	    }
@@ -529,8 +521,9 @@ sub ParseQuery {
 	    while (my $k = pop @keys) {
 		$keystring .= "{Subkey}{$k}";
 	    }
+	    $keystring = "{0.0}{Subkey}" . $keystring;
 
-	    setaggregator(\%query, "{0.0}{Subkey}" . $keystring, $ea);
+	    setaggregator(\%query, $keystring, $ea);
 
 	} else {
 	    $depth--;
@@ -664,7 +657,10 @@ sub subkeyexists {
 
     my %localhash = %{$hash};
     my $exists;
-    eval "\$exists = exists \$localhash$key" . "{Subkey}";
+    my $newkey = $key . "{Subkey}";
+    if (keyexists(\%localhash, $key)) {
+	eval "\$exists = exists \$localhash$newkey";
+    }
 
     return $exists;
 }
@@ -739,9 +735,13 @@ sub reworkkeys {
     my $key = shift;
 
     my %localhash = %{$hash};
-    my $origkey = $key;
-    my $returnkey = $key;
 
+    # if our parent doesn't exist, return immediately
+    if (!keyexists($hash, parentkey($key))) {
+	return;
+    }
+
+    fixsubkeys($hash, $key);
     # don't try to rework keys if the first one exists
     if (keyexists(\%localhash, $key) || 
 	subkeyexists(\%localhash, $key)) {
@@ -766,8 +766,29 @@ sub reworkkeys {
 	$nextkey = nextkey($key);
     }
     eval "delete \$localhash$key";
+}
 
-    return $returnkey;
+sub fixsubkeys {
+    my $hash = shift;
+    my $key = shift;
+
+    my %localhash = %{$hash};
+    if (subkeyexists(\%localhash, $key)) {
+	my ($prefix, $depth, $num) = parsekey($key);
+	my %temp;
+	eval "%temp = %{\$localhash$key" . "{Subkey}}";
+	foreach my $i (keys %temp) {
+	    my $num = $i - int($i);
+	    my $new = int($depth) + 1 + $num;
+	    if ($i != $new) {
+		eval "\$localhash$key" . "{Subkey}{$new} = \$temp{$i}";
+		eval "delete \$localhash$key" . "{Subkey}{$i}";
+		fixsubkeys(\%localhash, $key . "{Subkey}{$new}");
+	    }
+	    $num++;
+	}
+    }
+
 }
 
 sub getaggregator {
@@ -819,6 +840,7 @@ sub movecurrent {
     my $origkey = $currentkey;
 
     eval "%temp = %{\$localhash$currentkey}";
+
     eval "delete \$localhash$currentkey";
     eval "\$localhash$newkey = \\%temp";
 
