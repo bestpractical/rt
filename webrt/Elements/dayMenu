@@ -1,0 +1,18 @@
+<%doc>-------------------------------------------------------------------
+dayMenu: Display a pulldown menu of days of the month (1 to 31)
+
+Optional arguments:
+$menu_name - Name of menu, defaults to 'day'
+$current - Selected day value (1 to 31)
+-------------------------------------------------------------------</%doc>
+
+<select name="<% $menu_name %>">
+% foreach my $day (1..31) {
+<option value="<% $day %>" <% $day==$current ? "selected" : "" %>><% sprintf("%02d",$day) %>
+% }
+</select>
+
+<%args>
+$menu_name=>'day'
+$current=>undef
+</%args>

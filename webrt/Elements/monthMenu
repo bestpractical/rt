@@ -1,0 +1,36 @@
+<%doc>-------------------------------------------------------------------
+monthMenu: Display a pulldown menu of months
+
+Optional arguments:
+$menu_name - Name of menu, defaults to 'month'
+$current - Selected month value (1 to 12)
+$format - Choice of month labels:
+   'full'    (January, February, ...)
+   'short'   (Jan, Feb, ...)
+   'numeric' (1, 2, ...)
+  Defaults to 'full'. The format only affects appearance; the menu
+  values are always numeric.
+-------------------------------------------------------------------</%doc>
+
+<select name="<% $menu_name %>">
+% foreach my $month (1..12) {
+<option value="<% $month %>" <% $month==$current ? "selected" : "" %>>
+%   if ($format eq 'full') {
+<% $month_names[$month-1] %>
+%   } elsif ($format eq 'short') {
+<% substr($month_names[$month-1],0,3) %>
+%   } elsif ($format eq 'numeric') {
+<% sprintf("%02d",$month) %>
+%   }
+% }
+</select>
+
+<%init>
+my @month_names = qw(January February March April May June July August September October November December);
+</%init>
+
+<%args>
+$menu_name=>'month'
+$current=>undef
+$format=>'full'
+</%args>

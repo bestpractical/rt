@@ -1,0 +1,14 @@
+%# $Header$
+<SELECT NAME ="<%$Name%>">
+<OPTION VALUE="&lt;"><%$Before%></OPTION>
+<OPTION VALUE="="><%$On%></OPTION>
+<OPTION VALUE="&gt;"><%$After%></OPTION>
+</SELECT>
+
+<%ARGS>
+$Name => undef
+$Default => undef
+$Before => 'Before'
+$On => 	'On'
+$After => 'After'
+</%ARGS>

@@ -1,0 +1,16 @@
+%# $Header$
+<INPUT TYPE="Checkbox" NAME ="<%$Name%>" <%$IsChecked%>>
+
+<%ARGS>
+$Name => undef
+$Default => undef
+$True => undef
+$False => undef
+$IsChecked => undef
+</%ARGS>
+
+<%INIT>
+if ($Default =~ /checked/i ) {
+	my $IsChecked = " CHECKED ";
+}	
+</%INIT>

@@ -1,0 +1,13 @@
+<HTML>
+<HEAD>
+<TITLE><%$Title%> </TITLE>
+</HEAD>
+<BODY BGCOLOR="<%$BgColor%>">
+
+<%ARGS>
+$Title => 'WebRT'
+$BgColor => 'white'
+</%ARGS>
+<%INIT>
+$Title = "WebRT:".$Title;
+</%INIT>

@@ -1,0 +1,44 @@
+<FORM ACTION="ShowListing?CompileRestriction=1" METHOD="POST">
+
+<blockquote>
+<ul>
+<li>
+<& /Elements/Checkbox, Name => "CheckOwner" &> 
+	Owner is  <& /Elements/SelectBoolean, Name => "BoolOwner", True => "is", False => "isn't" &>  
+	<& /Elements/SelectOwner, Name => "ValueOfOwner" &>
+
+<li><& /Elements/Checkbox, Name => "CheckRequestor" &> 
+	Requestor email address <& /Elements/SelectBoolean, Name => "BoolRequestor", True => "matches", False => "does not match" &> 
+	<INPUT Name="ValueOfRequestor" SIZE=20>
+
+<li><& /Elements/Checkbox, Name => "CheckSubject" &>
+Subject <& /Elements/SelectBoolean, Name => "BoolSubject", True => "matches", False => "does not match" &> 
+	<INPUT Name="ValueOfSubject" SIZE=20>
+
+<li><& /Elements/Checkbox, Name => "CheckQueue" &>
+Queue  <& /Elements/SelectBoolean, Name => "BoolOwner" &>
+	<& /Elements/SelectQueue, name => "ValueOfQueue" &>
+
+<li><& /Elements/Checkbox, Name => "CheckCreated" &>
+Created <& /Elements/SelectDateRelation, Name=>"RelationCreated" &>
+	<& /Elements/SelectDate, Name  => "ValueOfCreated" &>
+
+<li><& /Elements/Checkbox, Name => "CheckLastMessage" &>
+	Last correspondence <& /Elements/SelectDateRelation, Name => "RelationLastMessage" &>
+	<& /Elements/SelectDate, Name  => "ValueOfLastMessage" &>
+
+<li><& /Elements/Checkbox, Name => "CheckLastUpdate" &>
+	Last update  <& /Elements/SelectDateRelation, Name=>"RelationLastUpdated" &>
+	<& /Elements/SelectDate, Name => "ValueOfLastUpdate" &>
+
+<li><& /Elements/Checkbox, Name => "CheckContent" &>
+	Ticket content  <& /Elements/SelectBoolean, Name => "BoolRequestor", True => "matches", False => "does not match" &> 
+	<Input Name="ValueOfContent" Size=20>
+
+<li><& /Elements/Checkbox, Name => "CheckStatus" &>
+Status <& /Elements/SelectBoolean, Name => "BoolStatus", True => "is", False => "isn't" &>  
+	<& /Elements/SelectStatus, Name => "ValueOfStatus" &>
+
+</pre>
+</blockquote>
+</FORM>

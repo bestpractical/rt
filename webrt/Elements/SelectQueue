@@ -1,0 +1,12 @@
+%# $Header$
+<SELECT NAME ="<%$Name%>">
+<OPTION VALUE="True"><%$True%></OPTION>
+<OPTION VALUE="False"><%$False%></OPTION>
+</SELECT>
+
+<%ARGS>
+$Name => undef
+$True => undef
+$False => undef
+$Default => undef
+</%ARGS>

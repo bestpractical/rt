@@ -1,0 +1,7 @@
+<SELECT NAME="<%$Name%>">
+<OPTION VALUE="">None</OPTION>
+</SELECT>
+
+<%ARGS>
+$Name => undef
+</%ARGS>

@@ -1,0 +1,33 @@
+<%doc>-------------------------------------------------------------------
+dateMenu: Uses monthMenu, dayMenu, and yearMenu consecutively to display
+a date menu set.
+
+Optional arguments:
+$menu_prefix - Prefix to prepend to each menu name.  For example, if
+  prefix is "first_", the menu names are "first_month", "first_day", and
+  "first_year" respectively. Default is no prefix.
+$current - Selected date, in Perl time() notation. Default is current time.
+$month_format - Month format, see monthMenu $format argument
+$min_year - Minimum year, see yearMenu $min argument
+$max_year - Maximum year, see yearMenu $max argument
+-------------------------------------------------------------------</%doc>
+
+<& monthMenu, menu_name=>$menu_prefix."month", %monthArgs &>
+<& dayMenu, menu_name=>$menu_prefix."day", %dayArgs &>,
+<& yearMenu, menu_name=>$menu_prefix."year", %yearArgs &>
+
+<%init>
+my (%monthArgs, %dayArgs, %yearArgs);    
+$monthArgs{'format'} = $ARGS{month_format} if $ARGS{month_format};
+$yearArgs{'min'} = $ARGS{min_year} if $ARGS{min_year};
+$yearArgs{'max'} = $ARGS{max_year} if $ARGS{max_year};
+my ($day,$month,$year) = (localtime($current))[3..5];
+$monthArgs{current} = $month+1;
+$dayArgs{current} = $day;
+$yearArgs{current} = $year+1900;
+</%init>
+
+<%args>
+$menu_prefix=>''
+$current=>time
+</%args>

@@ -1,0 +1,11 @@
+%# $Header$
+<SELECT NAME ="<%$Name%>">
+<OPTION VALUE="Open">
+<OPTION VALUE="Resolved">
+</SELECT>
+
+<%ARGS>
+$Name => undef
+$Default => undef
+
+</%ARGS>
