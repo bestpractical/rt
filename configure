@@ -1923,7 +1923,7 @@ RT_LOG_PATH=${exp_logfiledir}
 
 
 
-                                                                                                                                                                          ac_config_files="$ac_config_files sbin/rt-setup-database sbin/rt-test-dependencies Makefile etc/RT_Config.pm lib/RT.pm lib/t/00smoke.t lib/t/01harness.t lib/t/02regression.t lib/t/03web.pl lib/t/04_send_email.pl bin/mason_handler.fcgi bin/mason_handler.scgi bin/mason_handler.svc bin/rt-commit-handler bin/rt-crontool bin/rt-mailgate bin/webmux.pl"
+                                                                                                                                                                                    ac_config_files="$ac_config_files sbin/rt-setup-database sbin/rt-test-dependencies Makefile etc/RT_Config.pm lib/RT.pm lib/t/00smoke.t lib/t/01harness.t lib/t/02regression.t lib/t/03web.pl lib/t/04_send_email.pl bin/mason_handler.fcgi bin/mason_handler.scgi bin/mason_handler.svc bin/rt-commit-handler bin/rt-crontool bin/rt-mailgate bin/rt bin/webmux.pl"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -2491,6 +2491,7 @@ do
   "bin/rt-commit-handler" ) CONFIG_FILES="$CONFIG_FILES bin/rt-commit-handler" ;;
   "bin/rt-crontool" ) CONFIG_FILES="$CONFIG_FILES bin/rt-crontool" ;;
   "bin/rt-mailgate" ) CONFIG_FILES="$CONFIG_FILES bin/rt-mailgate" ;;
+  "bin/rt" ) CONFIG_FILES="$CONFIG_FILES bin/rt" ;;
   "bin/webmux.pl" ) CONFIG_FILES="$CONFIG_FILES bin/webmux.pl" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

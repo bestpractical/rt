@@ -21,4 +21,21 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-Logged in as <%$session{'CurrentUser'}->Name%> <<%$session{'CurrentUser'}->EmailAddress%>>
+%# REST/1.0/Forms/user/ns
+%#
+<%ARGS>
+$id
+</%ARGS>
+<%perl>
+use RT::Users;
+
+my $field = "Name";
+$field = "EmailAddress" if $id =~ /\@/;
+
+my $users = new RT::Users $session{CurrentUser};
+$users->Limit(FIELD => $field, OPERATOR => '=', VALUE => $id);
+if ($users->Count == 0) {
+    return (0, "No user named $id exists.");
+}
+return $users->Next->Id;
+</%perl>

@@ -1,3 +1,26 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
 %# REST/1.0/dhandler
 %#
 <%ARGS>
@@ -15,7 +38,9 @@ my $object = $m->dhandler_arg;
 
 my $name   = qr{[\w.-]+};
 my $list   = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
+my $label  = '[a-zA-Z0-9@_.+-]+';
 my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';
+my $labels = "(?:$label,)*$label";
 
 # We must handle requests such as the following:
 #
@@ -26,6 +51,11 @@ my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';
 # 4. http://.../REST/1.0/ticket/nn (all possibly with a single form).
 #    http://.../REST/1.0/ticket/nn/history
 #    http://.../REST/1.0/ticket/nn/attachment/1
+#
+# Objects are specified by their type, and either a unique numeric ID,
+# or a unique name (e.g. ticket/1, queue/foo). Multiple objects of the
+# same type may be specified by a comma-separated list of identifiers
+# (e.g., user/ams,rai or ticket/1-3,5-7).
 #
 # Ultimately, we want a list of object specifications to operate upon.
 # The URLs in (4) provide enough information to identify an object. We
@@ -42,10 +72,10 @@ if ($object eq 'show' ||                                # $REST/show
     # If the URL specifies a type, we'll accept only that one.
     foreach my $id (@id) {
         $id =~ s|^(?:$utype/)?|$utype/| if $utype;
-        if (my ($type, $ids, $extra) =
-            ($id =~ m#^($name)/($list)(?:(/.*))?$#o))
+        if (my ($type, $oids, $extra) =
+            ($id =~ m#^($name)/($list|$labels)(?:(/.*))?$#o))
         {
-            push(@objects, "$type/$_$extra") for expand_range($ids);
+            push(@objects, "$type/$_$extra") for expand_list($oids);
         }
         else {
             $status = "400 Bad Request";
@@ -80,12 +110,11 @@ elsif ($object eq 'edit' ||                             # $REST/edit
             if (exists $k->{id}) {
                 ($id = $k->{id}) =~ s|^(?:$type/)?|$type/| if $type;
 
-                if ($id =~ m#^($name)/(\d+)(?:/.*)?#o) {
+                if ($id =~ m#^$name/(?:$label|\d+)(?:/.*)?#o) {
                     push @objects, $id;
                 }
                 else {
-                    push @output, [ "# Invalid object ID: '$id'",
-                                    $o, $k, $e ];
+                    push @output, [ "# Invalid object ID: '$id'", $o, $k, $e ];
                 }
             }
             else {
@@ -151,20 +180,49 @@ if ($fields) {
 my (@comments, @output);
 
 foreach $object (@objects) {
-    unless ($object =~ m{^($name)/(\d+)(?:/($name)(?:/(.*))?)?$}o ||
-            $object =~ m{^($name)/(new)$}o)
-    {
-        $status = "400 Bad Request";
-        $output = "Invalid object specification: '$object'";
-        goto OUTPUT;
-    }
-    my ($type, $id, $attr, $args) = ($1, $2, ($3 || 'default'), $4);
-    my $handler = "Forms/$type/$attr";
+    my ($handler, $type, $id, $attr, $args);
+    my ($c, $o, $k, $e) = ("", ["id"], {id => $object}, 0);
 
-    unless ($m->comp_exists($handler)) {
-        $status = "400 Bad Request";
-        $output = "Invalid object data requested: $type/$attr";
-        goto OUTPUT;
+    my $i = 0;
+    if ($object =~ m{^($name)/(\d+|$label)(?:/($name)(?:/(.*))?)?$}o ||
+        $object =~ m{^($name)/(new)$}o)
+    {
+        ($type, $id, $attr, $args) = ($1, $2, ($3 || 'default'), $4);
+        $handler = "Forms/$type/$attr";
+
+        unless ($m->comp_exists($handler)) {
+            $i = 2;
+            $c = "# Invalid object data requested: $type/$attr";
+        }
+        elsif ($id !~ /^\d+$/) {
+            my $ns = "Forms/$type/ns";
+
+            # Can we resolve named objects?
+            unless ($m->comp_exists($ns)) {
+                $i = 3;
+                $c = "# Objects of type $type must be specified by numeric id.";
+            }
+            else {
+                my ($n, $s) = $m->comp("Forms/$type/ns", id => $id);
+                if ($n <= 0) { $i = 4; $c = "# $s"; }
+                else         { $i = 0; $id = $n;    }
+            }
+        }
+        else {
+            $i = 0;
+        }
+    }
+    else {
+        $i = 1;
+        $c = "# Invalid object specification: '$object'";
+    }
+
+    if ($i != 0) {
+        if ($content) {
+            (undef, $o, $k, $e) = @{ shift @$forms };
+        }
+        push @output, [ $c, $o, $k ];
+        next;
     }
 
     unless ($content) {

@@ -21,4 +21,18 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-Logged in as <%$session{'CurrentUser'}->Name%> <<%$session{'CurrentUser'}->EmailAddress%>>
+%# REST/1.0/Forms/queue/ns
+%#
+<%ARGS>
+$id
+</%ARGS>
+<%perl>
+use RT::Queues;
+
+my $queues = new RT::Queues $session{CurrentUser};
+$queues->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $id);
+if ($queues->Count == 0) {
+    return (0, "No queue named $id exists.");
+}
+return $queues->Next->Id;
+</%perl>

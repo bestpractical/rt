@@ -1,3 +1,26 @@
+# BEGIN LICENSE BLOCK
+# 
+# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# 
+# (Except where explictly superceded by other copyright notices)
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# Unless otherwise specified, all modifications, corrections or
+# extensions to this work which alter its source code become the
+# property of Best Practical Solutions, LLC when submitted for
+# inclusion in the work.
+# 
+# 
+# END LICENSE BLOCK
 # lib/RT/Interface/REST.pm
 #
 
@@ -12,18 +35,18 @@ BEGIN {
     $VERSION = do { my @r = (q$Revision: 1.00$ =~ /\d+/g); sprintf "%d."."%02d"x$#r, @r };
 
     @ISA = qw(Exporter);
-    @EXPORT = qw(expand_range form_parse form_compose vpush vsplit);
+    @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 }
 
 my $field = '[a-zA-Z][a-zA-Z0-9_-]*';
 
-sub expand_range {
-    my ($range) = @_;
-    my ($num, @elts, %elts);
+sub expand_list {
+    my ($list) = @_;
+    my ($elt, @elts, %elts);
 
-    foreach $num (split /,/, $range) {
-        if ($num =~ /^(\d+)-(\d+)$/) { push @elts, ($1..$2) }
-        else                         { push @elts, $num     }
+    foreach $elt (split /,/, $list) {
+        if ($elt =~ /^(\d+)-(\d+)$/) { push @elts, ($1..$2) }
+        else                         { push @elts, $elt }
     }
 
     @elts{@elts}=();

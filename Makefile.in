@@ -101,8 +101,8 @@ RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
 RT_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.fcgi
 # RT_WIN32_FASTCGI_HANDLER is the mason handler script for FastCGI
 RT_WIN32_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.svc
-# RT's admin CLI
-RT_CLI_ADMIN_BIN	=	$(RT_BIN_PATH)/rtadmin
+# RT's CLI
+RT_CLI_BIN		=	$(RT_BIN_PATH)/rt
 # RT's mail gateway
 RT_MAILGATE_BIN		=	$(RT_BIN_PATH)/rt-mailgate
 # RT's cron tool
@@ -115,6 +115,7 @@ SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
 
 BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
 				$(DESTDIR)/$(RT_MAILGATE_BIN) \
+				$(DESTDIR)/$(RT_CLI_BIN) \
 				$(DESTDIR)/$(RT_CRON_BIN) \
 				$(SETGID_BINARIES)
 SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
@@ -397,7 +398,9 @@ bin-install:
 	-cp -rp \
 		bin/rt-mailgate \
 		bin/mason_handler.fcgi \
+		bin/mason_handler.scgi \
 		bin/mason_handler.svc \
+		bin/rt \
 		bin/webmux.pl \
 		bin/rt-crontool \
 		$(DESTDIR)/$(RT_BIN_PATH)
