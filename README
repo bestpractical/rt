@@ -22,6 +22,11 @@ from bestpractical.com) Best Practical sells support and customization for RT
 and RTFM.  Feel free to contact us at sales@bestpractical.com if you have
 any questions about our service offerings.
 
+RTFM requires Text::WikiFormat in addition to RT's standartd dependencies.
+You can install it by executing the command:
+
+    perl -MCPAN -e'install Text::WikiFormat'
+
 
 Upgrade instructions (From an earlier 2.0.x release):
 -----------------------------------------------------
@@ -59,8 +64,8 @@ for name, summary and some other basic metadata). So, you need to go create
 some custom fields. You've got five choices. "SelectSingle" and
 "SelectMultiple" let you pick one or many choices from a list respectively.
 "FreeformSingle" and "FreeformMultiple" let you hand-enter one or many lines of
-text. "TextSingle" is what you want for the "Body" of articles. Once you've
-created your custom fields, go into your classes and click on "Custom Fields"
+text. "TextSingle" or "WikiTextSingle"  is what you want for the "Body" of articles. 
+Once you've created your custom fields, go into your classes and click on "Custom Fields"
 and add the Custom Fields you want to each class.
 
 Grant some ACLs to your users and start creating articles.

@@ -41,7 +41,7 @@ DB_DBA			= root
 
 
 PRODUCT			= RTFM
-TAG			= 2-0-2rc1
+TAG			= 2.0.2
 CANONICAL_REPO		= svn+ssh://svn.bestpractical.com/svn/bps-public/rtfm/
 CANONICAL_REPO_TAGS		= $(CANONICAL_REPO)/tags/
 CANONICAL_REPO_TRUNK		= $(CANONICAL_REPO)/trunk/
