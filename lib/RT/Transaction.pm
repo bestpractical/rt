@@ -85,10 +85,6 @@ sub Create {
   #Load a scrips object
   #Iterate through each script and check it's applicability.
 
-  #Tobias: Why is this needed?  -- jesse
-  $args{'TicketObject'}=$TicketAsSystem;
-
-  
   while (my $Scrip = $Scrips->Next()) {
     
     #Load the scrip's action;
@@ -96,9 +92,7 @@ sub Create {
 
     #If it's applicable, prepare and commit it
     if ( $Scrip->IsApplicable() ) {
-      
-      $Scrip->Prepare();
-      $Scrip->Commit();
+      $Scrip->Prepare() and $Scrip->Commit();
     }
     
   } 
