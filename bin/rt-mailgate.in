@@ -31,6 +31,7 @@ rt-mailgate - Mail interface to RT3.
 
 use RT::I18N;
 
+
 # {{{ Test new ticket creation by root who is privileged and superuser
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
@@ -72,7 +73,7 @@ close (MAIL);
 $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+$tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 my $u = RT::User->new($RT::SystemUser);
@@ -109,7 +110,7 @@ close (MAIL);
 $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+$tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 my $u = RT::User->new($RT::SystemUser);
@@ -215,7 +216,76 @@ ok( $u->Id != 0, " user exists and was created by ticket comment submission");
 
 # }}}
 
+# {{{ Testing preservation of binary attachments
 
+# Get a binary blob (Best Practical logo) 
+
+# Create a mime entity with an attachment
+
+use MIME::Entity;
+my $entity = MIME::Entity->build( From => 'root@localhost',
+                                 To => 'rt@localhost',
+                                Subject => 'binary attachment test',
+                                Data => ['This is a test of a binary attachment']);
+
+# currently in lib/t/autogen
+$entity->attach(Path => '../../../html/NoAuth/images/spacer.gif', 
+                Type => 'image/gif',
+                Encoding => 'base64');
+
+# Create a ticket with a binary attachment
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+
+$entity->print(\*MAIL);
+
+close (MAIL);
+
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
+ $tick = $tickets->First();
+ok (UNIVERSAL::isa($tick,'RT::Ticket'));
+ok ($tick->Id, "found ticket ".$tick->Id);
+ok ($tick->Subject eq 'binary attachment test', "Created the ticket - ".$tick->Id);
+
+my $file = `cat ../../../html/NoAuth/images/spacer.gif`;
+ok ($file, "Read in the logo image");
+
+
+        use Digest::MD5;
+warn "for the raw file the content is ".Digest::MD5::md5_base64($file);
+
+
+
+# Verify that the binary attachment is valid in the database
+my $attachments = RT::Attachments->new($RT::SystemUser);
+$attachments->Limit(FIELD => 'ContentType', VALUE => 'image/gif');
+ok ($attachments->Count == 1, 'Found only one gif in the database');
+my $attachment = $attachments->First;
+my $acontent = $attachment->Content;
+
+        warn "coming from the  database, the content is ".Digest::MD5::md5_base64($acontent);
+
+is($file, $acontent, 'The attachment isn\'t screwed up in the database.');
+
+# Log in as root
+use Getopt::Long;
+use LWP::UserAgent;
+
+
+# Grab the binary attachment via the web ui
+my $ua      = LWP::UserAgent->new();
+
+my $full_url = "http://localhost/Ticket/Attachment/".$attachment->TransactionId."/".$attachment->id."/spacer.gif?&user=root&pass=password";
+my $r = $ua->get( $full_url);
+
+
+# Verify that the downloaded attachment is the same as what we uploaded.
+is($file, $r->content, 'The attachment isn\'t screwed up in download');
+
+
+
+# }}}
 
 # {{{ Simple I18N testing
 
@@ -234,21 +304,20 @@ bye
 EOF
 close (MAIL);
 
-my $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
-ok (UNIVERSAL::isa($tick,'RT::Ticket'));
-ok ($tick->Id, "found ticket ".$tick->Id);
-ok ($tick->Subject eq 'This is a test of I18N ticket creation', "Created the ticket");
+my $unitickets = RT::Tickets->new($RT::SystemUser);
+$unitickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$unitickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
+my $unitick = $unitickets->First();
+ok (UNIVERSAL::isa($unitick,'RT::Ticket'));
+ok ($unitick->Id, "found ticket ".$unitick->Id);
+ok ($unitick->Subject eq 'This is a test of I18N ticket creation', "Created the ticket - ". $unitick->Subject);
 
 
 
 my $unistring = "\303\241\303\251\303\255\303\263\303\272";
 Encode::_utf8_on($unistring);
-
-ok ($tick->Transactions->First->Content =~ /$unistring/, "It appears to be unicode - ".$tick->Transactions->First->Content);
-
+is ($unitick->Transactions->First->Content, $unitick->Transactions->First->Attachments->First->Content, "Content is ". $unitick->Transactions->First->Attachments->First->Content);
+ok($unitick->Transactions->First->Attachments->First->Content =~ /$unistring/i, $unitick->Id." appears to be unicode ". $unitick->Transactions->First->Attachments->First->Id);
 # supposedly I18N fails on the second message sent in.
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
@@ -279,7 +348,7 @@ ok ($tick2->Subject eq 'This is a test of I18N ticket creation', "Created the ti
 my $unistring = "\303\241\303\251\303\255\303\263\303\272";
 Encode::_utf8_on($unistring);
 
-ok ($tick2->Transactions->First->Content =~ /$unistring/, "It appears to be unicode - ".$tick2->Transactions->First->Content);
+ok ($tick2->Transactions->First->Content =~ $unistring, "It appears to be unicode - ".$tick2->Transactions->First->Content);
 
 # }}}
 

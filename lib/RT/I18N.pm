@@ -30,7 +30,7 @@ RT::I18N - a base class for localization of RT
 package RT::I18N;
 
 use strict;
-use Locale::Maketext 1.01;
+use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.10;
 use base ('Locale::Maketext::Fuzzy');
 use vars qw( %Lexicon );
@@ -302,8 +302,9 @@ sub SetMIMEEntityToEncoding {
         elsif ( $enc eq 'utf-8' ) {
             Encode::_utf8_on( $lines[$_] ) foreach ( 0 .. $#lines );
         }
-
-        my $new_body = MIME::Body::InCore->new( \@lines );
+        my $new_body = MIME::Body::InCore->new( [                                              
+            map Encode::encode_utf8($_), @lines                                                
+        ] ); 
 
         # set up the new entity
         $head->mime_attr( "content-type.charset" => $enc );
