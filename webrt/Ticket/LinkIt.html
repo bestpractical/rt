@@ -8,9 +8,9 @@
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Make a link from/to this ticket (#" . $Ticket->Id . ": ". encode_entities($Ticket->Subject,"^A-Za-z0-9") . ")", titleright=> "<a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?id=".$Ticket->Id."\">Update</a> "&>
 
 <form action="Display.html" method="post">
-<input type=radio name="Link" value="">Nevermind<br>
-<input type=radio name="Link" value="LinkTo">This Ticket <& /Elements/SelectLinkType &> (URI(s) or ticket id(s):) <input name="LinkToURI"><br>
-<input type=radio name="Link" value="LinkFrom"><input name="LinkFromURI"><& /Elements/SelectLinkType &> this ticket.<br>
+<input type=radio name="Link" value="LinkTo">This Ticket <& /Elements/SelectLinkType &> (URI(s) or ticket id(s):) <input name="LinkToURI"> <BR><BR>
+<input type=radio name="Link" value="LinkFrom"><input name="LinkFromURI"><& /Elements/SelectLinkType &> this ticket.<BR><BR>
+<input type=submit>
 </form>
 
 <& /Elements/TitleBoxEnd &>
@@ -26,10 +26,8 @@ $id => undef
     $m->abort;
   }
 use RT::Ticket;
-use RT::CurrentUser;
 use HTML::Entities;
-my $CurrentUser = RT::CurrentUser->new(2);
-my $Ticket = RT::Ticket->new($CurrentUser);
+my $Ticket = RT::Ticket->new($RT::CurrentUser);
 unless ($Ticket->Load($id)) {
     &mc_comp("/Elements/Error" , Why => "Ticket couldn't be loaded");
     $m->abort;
