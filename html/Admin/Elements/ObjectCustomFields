@@ -51,8 +51,7 @@ $id ? (
     current_subtab => "Admin/$Types/CustomFields.html?$sub_type_url&id=".$id, 
     "${Type}Obj" => $Object,
 ) : (
-    current_tab => "Admin/$Types/CustomFields.html?$sub_type_url",
-    current_subtab => "Admin/$Types/CustomFields.html?$sub_type_url",
+    current_tab => "Admin/Global/CustomFields/${QualifiedType}s.html",
 ),
     Title => $title
     &>
@@ -62,15 +61,41 @@ $id ? (
 $ObjectType =~ /^RT::(Queue|User|Group)$/
     or Abort(loc("Object of type [_1] cannot take custom fields", $ObjectType));
 
+
+
 my $Type = $1;
 my $Types = $Type.'s';
-my $ObjectTabs = "/Admin/Elements/${Type}Tabs";
+my $ObjectTabs;
 my $Object = $ObjectType->new($session{'CurrentUser'});
-$Object->Load($id) || Abort(loc("Couldn't load object [_1]", $id)) if $id;
 
-my $title = ($id ? loc('Edit Custom Fields for [_1]', $Object->Name)
-		 : loc("Modify Custom Fields which apply to all [_1]", loc($Types)));
 
+my $QualifiedType;
+my $FriendlySubTypes;
+if ($SubType =~/^RT::(.*)$/)  {
+    $FriendlySubTypes = $1."s";
+   $QualifiedType = "$Type-$1"; 
+} else {
+    $QualifiedType = $Type;
+}
+
+if ($id) { 
+    $Object->Load($id) || Abort(loc("Couldn't load object [_1]", $id));
+    $ObjectTabs = "/Admin/Elements/${Type}Tabs";
+} else {
+    $ObjectTabs = "/Admin/Elements/GlobalCustomFieldTabs";
+
+} 
+
+my $title; 
+if ($id) {
+$title =  loc('Edit Custom Fields for [_1]', $Object->Name);
+}
+elsif ($SubType) {
+$title=   loc("Modify Custom Fields which apply to [_1] for all [_2]", loc(lc($FriendlySubTypes)), loc(lc($Types)));
+} else {
+ $title =loc("Modify Custom Fields which apply to all [_1]", loc(lc($Types)));
+
+}
 my $sub_type_url;
 $sub_type_url = "SubType=$SubType" if $SubType;
 

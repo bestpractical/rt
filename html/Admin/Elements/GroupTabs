@@ -75,9 +75,7 @@ $tabs->{"this"} = { class => "currentnav",
 $tabs->{"A"} = { title => loc('Select group'),
                  path  => "Admin/Groups/", };
 $tabs->{"B"} = { title     => loc('New group'),
-                 path      => "Admin/Groups/Modify.html?Create=1", };
-$tabs->{"C"} = { title => loc('Custom Fields'),
-		 path => "Admin/Groups/CustomFields.html",
+                 path      => "Admin/Groups/Modify.html?Create=1",
 		 separator => 1, };
 
 # Now let callbacks add their extra tabs

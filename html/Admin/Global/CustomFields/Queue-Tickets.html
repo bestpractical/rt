@@ -43,44 +43,5 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-<& /Elements/Callback, tabs => $tabs, %ARGS &>
-<& /Admin/Elements/Header, Title => loc('Admin/Global configuration') &>
-<& /Admin/Elements/SystemTabs, 
-    Title => loc('Admin/Global configuration') &>
-
-<ul>
-% foreach my $key (sort keys %$tabs) {
-<li><font size="+2"><a href="<% $tabs->{$key}{path} %>"><% $tabs->{$key}{title} %></a></font><br>
-<% $tabs->{$key}{text} %>
-</li>
-% }
-</ul>
-
-<%INIT>
-  my $tabs = {
-                
-               A => { title => loc('Scrips'),
-                           text => loc('Modify scrips which apply to all queues'),
-                           path => 'Scrips.html',
-                         },
-               B => { title => loc('Templates'),
-                        text => loc('Edit system templates'),
-                        path => 'Templates.html',
-                      },
-              
-                F => { title => loc('Custom Fields'),
-                text => loc('Modify global custom fields'),
-                        path => 'CustomFields/index.html',
-                        },
-
-                G => { title => loc('Group Rights'),
-                                text => loc('Modify global group rights'),
-                                path => 'GroupRights.html',
-                      },
-                H => { title => loc('User Rights'),
-                                text => loc('Modify global user rights'),
-                                path => 'UserRights.html',
-                      }
-
-};
-</%INIT>
+<& /Admin/Elements/ObjectCustomFields, %ARGS, ObjectType => 'RT::Queue',
+SubType => 'RT::Ticket' &>
