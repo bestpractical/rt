@@ -5,7 +5,7 @@
 
 # This contains both table definitions and some default data.  The
 # data shouldn't be here, it's mostly for test purposes.  Eventually,
-# the makefile should call up some init scrips that uses the (admin)
+# the makefile should call up some init scrips that uses an RT api or the (admin)
 # cli to add the data.
 
 # {{{ Table QueueACL

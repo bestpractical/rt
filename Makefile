@@ -186,7 +186,7 @@ instruct:
 
 upgrade: config-replace upgrade-noclobber
 
-upgrade-noclobber: libs-install html-install mux-install i18n-install nondestruct
+upgrade-noclobber: libs-install html-install mux-install nondestruct
 
 nondestruct: mux-links fixperms
 
@@ -247,7 +247,7 @@ mux-install:
 	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
 				s'!!RT_ACTION_BIN!!'$(RT_ACTION_BIN)'g;\
-r				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
+				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
 				s'!!WEBRT_CGI_BIN!!'$(WEBRT_CGI_BIN)'g;\

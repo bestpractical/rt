@@ -154,8 +154,11 @@ Right: (What does this entry give the principal the right to do)
 Action:	Is this a grant or a deny
 
 	Grant
-	Deny
+	
 
+order of evaluation
+
+ all rights evaluation follows this basi
 
 
 #
