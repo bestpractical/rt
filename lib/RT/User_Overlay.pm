@@ -263,7 +263,7 @@ sub Create {
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         $RT::Handle->Rollback();
-        $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
+        $RT::Logger->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
         return ( 0, $self->loc('Could not create user') );
     }
 
@@ -293,7 +293,7 @@ sub Create {
 
     unless ($stash_id) {
         $RT::Handle->Rollback();
-        $self->crit("Couldn't stash the user in groumembers");
+        $RT::Logger->crit("Couldn't stash the user in groumembers");
         return ( 0, $self->loc('Could not create user') );
     }
 
