@@ -114,9 +114,7 @@ sub Create {
 
 # }}}
 
-#
-# Routines dealing with watchers.
-#
+# {{{ Routines dealing with watchers.
 
 # {{{ sub AddWatcher
 
@@ -211,7 +209,7 @@ sub Watchers {
 }
 # }}}
 
-# {{{ a set of  ...AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
+# {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
 sub RequestorsAsString {
     my $self=shift;
@@ -276,7 +274,6 @@ sub Cc {
 
 # }}}
 
-
 # {{{ sub AdminCc
 # TODO: Should this also return queue watchers?
 # ...and are this used anywhere anyway?
@@ -293,6 +290,11 @@ sub AdminCc {
   
 }
 # }}}
+
+
+# }}}
+
+# {{{ Routines dealing with queues 
 
 # {{{ sub ValidateQueue
 
@@ -362,9 +364,9 @@ sub Queue {
 }
 # }}}
 
-#
-# Routines dealing with ownership
-#
+# }}}
+
+# {{{ Routines dealing with ownership
 
 # {{{ sub Owner
 
@@ -485,9 +487,10 @@ sub SetOwner {
 }
 # }}}
 
-#
-# Routines dealing with status
-#
+# }}}
+
+# {{{ Routines dealing with status
+
 
 # {{{ sub SetStatus
 sub SetStatus { 
@@ -538,10 +541,10 @@ sub Resolve {
 }
 # }}}
 
+# }}}
 
-#
-# Date printing routines
-#
+# {{{ Date printing routines
+
 
 # {{{ sub DueAsString 
 sub DueAsString {
@@ -586,9 +589,9 @@ sub LastUpdatedAsString {
 }
 # }}}
 
-#
-# Routines dealing with requestor metadata
-#
+# }}}
+
+# {{{ Routines dealing with requestor metadata
 
 # {{{ sub Notify
 sub Notify {
@@ -604,7 +607,6 @@ sub SinceTold {
 }
 # }}}
 
-
 # {{{ sub Age
 sub Age {
   my $self = shift;
@@ -612,9 +614,9 @@ sub Age {
 }
 # }}}
 
-#
-# Routines dealing with ticket relations
-#
+# }}}
+
+# {{{ Routines dealing with ticket relations
 
 # {{{ sub Merge
 sub Merge {
@@ -638,10 +640,9 @@ sub Merge {
 }  
 # }}}
 
+# }}}
 
-# 
-# Routines dealing with correspondence/comments
-#
+# {{{ Routines dealing with correspondence/comments
 
 # {{{ sub Comment
 #takes a subject, a cc list, a bcc list
@@ -723,24 +724,11 @@ sub Correspond {
 }
 # }}}
 
-#
-# Get the right transactions object. 
-#
-
-# {{{ sub Transactions 
-sub Transactions {
-  my $self = shift;
-  if (!$self->{'transactions'}) {
-    use RT::Transactions;
-    $self->{'transactions'} = RT::Transactions->new($self->CurrentUser);
-    $self->{'transactions'}->Limit( FIELD => 'EffectiveTicket',
-                                    VALUE => $self->id() );
-  }
-  return($self->{'transactions'});
-}
 # }}}
 
+# {{{ Routines dealing with keywords
 
+# TODO: Implement keywords
 
 # {{{ sub Keywords
 
@@ -768,7 +756,10 @@ sub NewKeyword {
 }
 # }}}
 
-#
+# }}}
+
+# {{{ Routines dealing with links
+
 #TODO: Links is not yet implemented
 #
 # {{{ sub Links
@@ -805,43 +796,24 @@ sub NewLink {
 
 # }}}
  
-
-#
-# UTILITY METHODS
-# 
-    
-# {{{ sub IsRequestor
-sub IsRequestor {
-  my $self = shift;
-  my $whom = shift;
-
-  my $mail;
-
-  #Todo: more advanced checking
-
-  if (ref $whom eq "Mail::Address") {
-      $mail=$whom->Address;
-  } elsif (ref $whom eq "RT::User") {
-      $mail=$whom->EmailAddress;
-  } elsif (!ref $whom) {
-      $mail=$whom;
-  }
-  
-  #if the requestors string contains the username
-
-  if ($self->RequestorsAsString() =~ /$mail/) {
-
-    return(1);
-  }
-  else {
-    return(undef);
-  }
-};
 # }}}
 
-#
-# PRIVATE UTILITY METHODS
-#
+# {{{ Routines dealing with transactions
+
+# {{{ sub Transactions 
+
+# Get the right transactions object. 
+sub Transactions {
+  my $self = shift;
+  if (!$self->{'transactions'}) {
+    use RT::Transactions;
+    $self->{'transactions'} = RT::Transactions->new($self->CurrentUser);
+    $self->{'transactions'}->Limit( FIELD => 'EffectiveTicket',
+                                    VALUE => $self->id() );
+  }
+  return($self->{'transactions'});
+}
+# }}}
 
 # {{{ sub NewTransaction
 sub _NewTransaction {
@@ -880,6 +852,41 @@ sub _NewTransaction {
 }
 # }}}
 
+# }}}
+
+# {{{ UTILITY METHODS
+    
+# {{{ sub IsRequestor
+sub IsRequestor {
+  my $self = shift;
+  my $whom = shift;
+
+  my $mail;
+
+  #Todo: more advanced checking
+
+  if (ref $whom eq "Mail::Address") {
+      $mail=$whom->Address;
+  } elsif (ref $whom eq "RT::User") {
+      $mail=$whom->EmailAddress;
+  } elsif (!ref $whom) {
+      $mail=$whom;
+  }
+  
+  #if the requestors string contains the username
+
+  if ($self->RequestorsAsString() =~ /$mail/) {
+
+    return(1);
+  }
+  else {
+    return(undef);
+  }
+};
+# }}}
+
+# {{{ PRIVATE UTILITY METHODS
+
 # {{{ sub _Accessible
 sub _Accessible {
 
@@ -907,10 +914,11 @@ sub _Accessible {
 }
 # }}}
 
+# {{{ sub _UpdateTimeTaken
 
 #This routine will increment the timeworked counter. it should
 #only be called from _NewTransaction 
-# {{{ sub _UpdateTimeTaken
+
 sub _UpdateTimeTaken {
   my $self = shift;
   my $Minutes = shift;
@@ -930,27 +938,25 @@ sub _UpdateDateActed {
 }
 # }}}
 
-
-
+# {{{ sub _Set
 
 #This overrides RT::Record
-# {{{ sub _Set
 sub _Set {
   my $self = shift;
   if (!$self->ModifyPermitted) {
-        return (0, "Permission Denied");
+    return (0, "Permission Denied");
   }
   else {
     #if the user is trying to modify the record
-    
     my $Field = shift;
     my $Value = shift;
     my $TimeTaken = shift if @_;
+    
+    #TODO: what the hell are moreoptions?
     my $MoreOptions = shift if @_;
     
-    if (!defined $TimeTaken) {
-      $TimeTaken = 0;
-    }
+    $TimeTaken = 0 if (!defined $TimeTaken);
+
     #record what's being done in the transaction
     $self->_NewTransaction (Type => $MoreOptions->{'TransactionType'}||"Set",
 			    Field => $Field,
@@ -958,16 +964,44 @@ sub _Set {
 			    OldValue =>  $self->_Value("$Field") || undef,
 			    TimeTaken => $TimeTaken || 0
 			   );
-    
     $self->SUPER::_Set($Field, $Value);
   }
   
 }
 # }}}
 
-#
-#ACCESS CONTROL
-# 
+# }}}
+
+# }}}
+
+# {{{ Routines dealing with ACCESS CONTROL
+
+# {{{ sub _HasRight 
+
+# TAKES: Right and optional "Actor" which defaults to the current user
+sub _HasRight {
+  my $self = shift;
+  
+
+  #TODO For now, they always do
+  return(1);
+
+
+  my $right = shift;
+  # by default, the actor is the current user
+  if (!@_) {
+    my $actor = $self->CurrentUser->Id();
+  }
+  else {
+    my $actor = shift;   
+  }
+  
+  return ($self->Queue->_HasRight(@_);
+  
+
+
+}
+# }}}
 
 # {{{ sub DisplayPermitted
 sub DisplayPermitted {
@@ -988,8 +1022,8 @@ sub DisplayPermitted {
 }
 # }}}
 
-
 # {{{ sub ModifyPermitted
+
 sub ModifyPermitted {
   my $self = shift;
   my $actor = shift;
@@ -1005,9 +1039,11 @@ sub ModifyPermitted {
     return(0);
   }
 }
+
 # }}}
 
 # {{{ sub AdminPermitted
+
 sub AdminPermitted {
   my $self = shift;
   my $actor = shift;
@@ -1025,6 +1061,9 @@ sub AdminPermitted {
     return(0);
   }
 }
+
+# }}}
+
 # }}}
 1;
 
