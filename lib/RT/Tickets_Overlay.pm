@@ -429,8 +429,8 @@ sub _TransDateLimit {
 	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
 
   my $d = new RT::Date( $sb->CurrentUser );
-  $d->Set($value);
-  $value = $d->ISO;
+  $d->Set( Format => 'ISO', Value => $value);
+   $value = $d->ISO;
 
   #Search for the right field
   $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
