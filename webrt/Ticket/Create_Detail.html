@@ -22,6 +22,7 @@ Describe the issue below:<br>
 
 <INPUT TYPE=SUBMIT VALUE="Submit">
 <%INIT>
+require RT::Queue;
 my $Queue = RT::Queue->new($session{'CurrentUser'});
 $Queue->Load($ARGS{'Queue'});
 </%INIT>
