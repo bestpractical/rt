@@ -121,7 +121,7 @@ RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 default:
 	@echo "Read the readme"
 
-install: dirs mux-install mux-links libs-install initialize config-replace nondestruct instruct
+install: dirs mux-install libs-install initialize config-replace nondestruct instruct
 
 suid-wrapper:
 	$(CC) etc/suidrt.c -DPERL=\"$(PERL)\" -DRT_PERL_MUX=\"$(RT_PERL_MUX)\" -o $(RT_WRAPPER)
@@ -130,7 +130,7 @@ instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "(Now, create a queue, add some users and start resolving requests)"
 
-upgrade: libs-install config-replace nondestruct
+upgrade: libs-install config-replace mux-install nondestruct
 
 nondestruct: mux-links glimpse fixperms
 
