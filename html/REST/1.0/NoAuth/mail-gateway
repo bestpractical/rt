@@ -54,6 +54,8 @@ $ticket => undef
 </%ARGS>
 <%init>
 use RT::Interface::Email; 
+$r->content_type('text/plain; charset=utf-8');
+$m->error_format('text');
 my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway(\%ARGS);
  if ($status == -75 ) {
 $m->out("temporary failure - ". $error);
