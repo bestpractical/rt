@@ -129,12 +129,12 @@ INSERT INTO Scrips VALUES (10, 'OpenDependentOnResolve',
 
 INSERT INTO Scrips VALUES (11, 'ResolveMember', 
 		           'Resolves all members when MemberOf is resolved',
-			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
+			   'Resolve', 'ResolveMembers',NULL,NULL,1,NULL,1,NULL);
 
 # Postponed ... it's just not important.
 #INSERT INTO Scrips VALUES (12, 'ResolveGroupTicket', 
 #		           'Resolves the group ticket when all members are resolved',
-#			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
+#			   'Resolve', ResolveGroupTicket',NULL,NULL,1,NULL,1,NULL);
 
 INSERT INTO Scrips VALUES (13, 'Spam', 'Spams people',
 			   'Correspond', 'Spam',4,NULL,1,NULL,1,NULL);
