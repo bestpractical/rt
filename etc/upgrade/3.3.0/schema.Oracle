@@ -24,8 +24,6 @@ ALTER TABLE ObjectCustomFieldValues ADD ContentEncoding VARCHAR2(80) NULL;
 ALTER TABLE ObjectCustomFieldValues ADD SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL;
 
 
-DROP INDEX ticketcustomfieldvalues1;
-DROP INDEX ticketcustomfieldvalues2;
 
 CREATE INDEX ObjectCustomFieldValues1 on ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
 CREATE INDEX ObjectCustomFieldValues2  on ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
