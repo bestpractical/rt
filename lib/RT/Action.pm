@@ -45,26 +45,26 @@ sub Argument  {
 }
 # }}}
 
-# {{{ sub Ticket 
+# {{{ sub TicketObj
 sub TicketObj  {
   my $self = shift;
   return($self->{'TicketObj'});
 }
 # }}}
-# {{{ sub Transaction 
+# {{{ sub TransactionObj
 sub TransactionObj  {
   my $self = shift;
   return($self->{'TransactionObj'});
 }
 # }}}
-# {{{ sub Template 
+# {{{ sub TemplateObj
 sub TemplateObj  {
   my $self = shift;
   return($self->{'TemplateObj'});
 }
 # }}}
 
-# {{{ sub Type 
+# {{{ sub Type
 sub Type  {
   my $self = shift;
   return($self->{'Type'});
