@@ -134,6 +134,17 @@ sub CreatedAsString  {
 }
 # }}}
 
+# {{{ sub TicketObj
+sub TicketObj {
+    my $self=shift;
+    my $ticket=new RT::Ticket;
+    return $self->{'TicketObj'}
+        if exists $self->{'TicketObj'};
+    $ticket->Load($self->Ticket);
+    return $self->{'TicketObj'}=$ticket;
+}
+# }}}
+
 # {{{ sub Message 
 sub Message  {
  my $self = shift;

@@ -831,7 +831,7 @@ sub IsRequestor {
   
   #if the requestors string contains the username
 
-  if ($self->RequestorAsString() =~ /$mail/) {
+  if ($self->RequestorsAsString() =~ /$mail/) {
 
     return(1);
   }
