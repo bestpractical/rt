@@ -154,7 +154,7 @@ sub cli_acl_queue {
  sub cli_create_modify_user{
     my ($user_id)=@_;
     if (($current_user eq $user_id) or ($rt::users{$current_user}{admin_rt})) {
-	$email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,$rt::users{$user_id}{email});
+	$email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@example.com)" ,$rt::users{$user_id}{email});
 	$real_name=&rt::ui::cli::question_string("Real Name",$rt::users{$user_id}{'real_name'});
 	$password=&rt::ui::cli::question_string("RT Password (will echo)",$rt::users{$user_id}{password});
 	$phone=&rt::ui::cli::question_string("Phone Number",$rt::users{$user_id}{phone});
@@ -184,7 +184,7 @@ sub cli_acl_queue {
 sub cli_create_modify_queue {
     my ($queue_id)=@_;
     my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans,$m_members_correspond, $m_user_create, $m_members_comment, $allow_user_create,$default_prio, $default_final_prio);
-    $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@somewhere.com)" ,$rt::queues{$queue_id}{mail_alias});
+    $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@example.com)" ,$rt::queues{$queue_id}{mail_alias});
     $m_owner_trans=&rt::ui::cli::question_yes_no("Mail request owner on transaction",$rt::queues{$queue_id}{m_owner_trans});
     
     $m_members_trans=&rt::ui::cli::question_yes_no("Mail queue members on transaction",$rt::queues{$queue_id}{m_members_trans});

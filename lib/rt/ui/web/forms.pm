@@ -364,51 +364,17 @@ sub FormReply{
     if ($rt::ui::web::FORM{'transaction'}) {
 	$reply_content= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
     }
+    my $target = "";
+    
+    $target = "target=\"summary\"" if ($frames);
 
+    &FormHeader("Reply to $rt::req[$serial_num]{requestors}");
+    
+    print "<form action=\"$ScriptURL\" method=\"post\" $target>";
 
-    print "<form action=\"$ScriptURL\" method=\"post\"";
-    if ($frames) {
-	print "target=\"summary\"";
-    }
-    print ">
-<H1>
-Enter your reply to the requestor below:
-</H1>
-<pre>
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
-Status:<select name=\"do_req_status\">\n";
-    print "<option value=\"open\" ";
-    if ($rt::req[$serial_num]{status} eq 'open') { print "SELECTED";}
-    print ">open\n";
-    print "<option value=\"stall\" ";
-    if ($rt::req[$serial_num]{status} eq 'stalled') { print "SELECTED";}
-    print ">stalled\n";
-    print "<option value=\"resolve\" ";
-    if ($rt::req[$serial_num]{status} eq 'resolved') { print "SELECTED";}
-    print ">resolved\n";
-    print "
-</select>
+    &UpdateOptions();
 
-Give to:<select name=\"do_req_give_to\">
-<option value=\"\">Nobody ";   
-    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}}) {
-       if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
-           print "<option ";
-               print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
-               print ">$user_id\n";
-           }
-       }
-    print "</select>
-<input type=\"hidden\" name=\"do_req_give\" value=\"true\">
-
-
-To:       $rt::req[$serial_num]{requestors}
-Cc:	  <input name=\"cc\">
-Bcc:      <input name=\"bcc\">
-From:     $rt::users{$current_user}{email}
-Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
-</pre>
-<input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
+print "<input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
 <font size=\"$MESSAGE_FONT\">
 <br><textarea rows=15 cols=78 name=\"content\" WRAP=HARD>
 $reply_content
@@ -545,23 +511,20 @@ sub FormComment{
   if ($rt::ui::web::FORM{'transaction'}) {
 	$reply_content= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
     }    
-    print "
-<form action=\"$ScriptURL\" method=\"post\" ";
 
-if ($rt::ui::web::frames) { print " target=\"summary\"";}
+    my $target = "";
 
-print " >
-<H1>
-Enter your comments below:
-</H1>
-<pre>
-Summary: <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
-Cc:	 <input name=\"cc\">
-Bcc:	 <input name=\"bcc\"> 
-</pre>
+    $target = " target=\"summary\"" if ($rt::ui::web::frames);
+
+&FormHeader("Comment on request $serial_num");
+
+    print "<form action=\"$ScriptURL\" method=\"post\" $target>
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
-<input type=\"hidden\" name=\"do_req_comment\" value=\"true\">
-<br><font size=\"$MESSAGE_FONT\">
+<input type=\"hidden\" name=\"do_req_comment\" value=\"true\">";
+
+&UpdateOptions;
+
+print "<font size=\"$MESSAGE_FONT\">
 <textarea rows=15 cols=78 name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
@@ -572,4 +535,78 @@ $reply_content
 </form>";
 }
 
+sub UpdateOptions {
+
+print "<TABLE BORDER=0 CELLPADDING=1 CELLSPACING=1>
+<TR>
+<TD ALIGN=RIGHT>Subject:</TD>
+<TD ALIGN=LEFT><input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\"></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>Cc:</TD>
+<TD ALIGN=LEFT><input name=\"cc\"></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>Bcc:</TD>
+<TD ALIGN=LEFT><input name=\"bcc\"> </TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+Status:</TD>
+<TD ALIGN=LEFT><select name=\"do_req_status\">\n";
+    print "<option value=\"open\" ";
+    if ($rt::req[$serial_num]{status} eq 'open') { print "SELECTED";}
+    print ">open\n";
+    print "<option value=\"stall\" ";
+    if ($rt::req[$serial_num]{status} eq 'stalled') { print "SELECTED";}
+    print ">stalled\n";
+    print "<option value=\"resolve\" ";
+    if ($rt::req[$serial_num]{status} eq 'resolved') { print "SELECTED";}
+    print ">resolved\n";
+    print "
+</select>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+Owner:</TD>
+<TD ALIGN=LEFT><select name=\"do_req_give_to\">
+<option value=\"\">Nobody ";   
+    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}}) {
+	if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
+	    my $selected = "";
+	    $selected = "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});	    
+	    print "<option $selected>$user_id\n";
+	}
+    }
+    print "</select>
+<input type=\"hidden\" name=\"do_req_give\" value=\"true\">
+</TD>
+</TR>
+</TABLE>";
+
+}
+
+sub FormHeader {
+    my $title = shift;
+    
+    print "
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=3 BGCOLOR=#3333CC CELLSPACING=0>
+<TR>
+<TD>
+<FONT COLOR=#FFFFFF FACE=Helvetica,Arial,Sanserif SIZE=+2>
+$title
+</FONT>
+</TD>
+<TD ALIGN=RIGHT>
+<FONT COLOR=#FFFFFF FACE=Helvetica,Arial,Sanserif SIZE=+2>
+Ticket $serial_num
+</TD>
+</TR>
+</TABLE>
+";
+
+}
+
 1;
+

@@ -176,12 +176,13 @@ sub DisplayForm {
     }
 
   }
-  
   if ($rt::ui::web::FORM{'display'} eq 'History') {
     	  if (!$frames) {
 	      &display_commands();
 	        }
-    &do_bar($serial_num);
+    &FormHeader("Details");
+    print "<BR><BR>";
+  &do_bar($serial_num);
     
     &display_summary($serial_num);
     print "<hr>";
@@ -581,22 +582,23 @@ sub display_queue {
 $query_string
 -->
 <font size=\"$QUEUE_FONT\">
-<TABLE cellpadding=4 border=1 width=\"100%\" bgcolor=\"\#bbbbbb\">
+<TABLE cellpadding=3 cellspacing=1 border=0 width=\"100%\" bgcolor=\"\#bbbbbb\">
+
 
 <TR>";
 
   print &queue_header('number',"Ser");
-  print &queue_header('queue',"Queue");
-  print &queue_header('owner',"Owner");
   print &queue_header('priority',"Pri");
   print &queue_header('status',"Status");
-  print &queue_header('timestamp',"Told");
+ print &queue_header('date_due',"Due");
+  print &queue_header('subject',"Subject");
+
+  print &queue_header('owner',"Owner");
+  print &queue_header('queue',"Queue");
   print &queue_header('area',"Area");
+  print &queue_header('user',"Requestor");
   print &queue_header('age',"Age");
   print &queue_header('last',"Last");
-  print &queue_header('date_due',"Due");
-  print &queue_header('user',"Requestor");
-  print &queue_header('subject',"Subject");
 
 print "</TR>";
   
@@ -626,30 +628,45 @@ print "</TR>";
     print ">$rt::req[$temp]{'serial_num'}</a></font>
 
 </TD>
+
 <TD NOWRAP>
-<font size=-1>$rt::req[$temp]{'queue_id'}</font>
+<font size=-1>$rt::req[$temp]{'priority'}&nbsp;</font>
 </TD>
-
-<TD NOWRAP>
-<font size=-1><b>$rt::req[$temp]{'owner'}</b>&nbsp;</font>
-</TD>
-
-<TD NOWRAP>
-<font size=-1>$rt::req[$temp]{'priority'}</font>
-</TD>   
-
 <TD NOWRAP>
 <font size=-1>$rt::req[$temp]{'status'}</font>
 </TD>
+<TD NOWRAP>";
 
-<TD NOWRAP>
-<font size=-1>$rt::req[$temp]{'since_told'}</font>
+
+    $due = $rt::req[$temp]{'till_due'};
+
+    if (substr($due,0,1) eq '-') {
+      $attr = "color=#ff0000";
+    } else { $attr = ""; }
+
+    print "
+<font size=-1 $attr>$due&nbsp;</font>
 </TD>
 
+<TD>
+<font size=-1>$rt::req[$temp]{'subject'}&nbsp;</font>
+</TD>
+<TD NOWRAP>
+<font size=-1><b>$rt::req[$temp]{'owner'}</b>&nbsp;</font>
+</TD>
+<TD NOWRAP>
+<font size=-1>$rt::req[$temp]{'queue_id'}</font>
+</TD>
 <TD NOWRAP>
 <font size=-1>$rt::req[$temp]{'area'}&nbsp;</font>
 </TD>
-	 
+<TD>
+<font size=-1>";
+print &fdro_murl_helper("display=SetReply","history",$wrapped_requestors,0,$rt::req[$temp]{'serial_num'});
+print "</font>
+</TD>
+
+
 <TD NOWRAP>
 <font size=-1>$rt::req[$temp]{'age'}</font>
 </TD>
@@ -658,27 +675,7 @@ print "</TR>";
 <font size=-1>$rt::req[$temp]{'since_acted'}</font>
 </TD>
               
-<TD NOWRAP>";
-    
-    
-    $due = $rt::req[$temp]{'till_due'};
-    
-    if (substr($due,0,1) eq '-') {
-      $attr = "color=#ff0000";
-    } else { $attr = ""; }
-    
-    print "
-<font size=-1 $attr>$due&nbsp;</font>
-</TD>
-
-               
-<TD>
-<font size=-1>$wrapped_requestors&nbsp;</font>
-</TD>
-
-<TD>
-<font size=-1>$rt::req[$temp]{'subject'}&nbsp;</font>
-</TD>";
+";
   }
   print "
 </TR>
@@ -696,8 +693,9 @@ sub display_history_tables {
   
   require rt::database;
   $total_transactions=&rt::transaction_history_in($in_serial_num, $current_user);
-  print "
-<font size=\"+1\">T</font>ransaction <font size=\"+1\">H</font>istory\n<br>
+&FormHeader("Transaction History"); 
+ print "
+<BR><BR>
 <font size=\"-1\">
 <TABLE WIDTH=\"100%\" cellpadding=0 cellspacing=0 border=0>
 
@@ -1011,7 +1009,7 @@ sub queue_header {
   my $name = shift;
   my ($header);
   $header = "<TH>
-<TABLE CELLPADDING=0 CELLSPACING=0>
+<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
 <TR WIDTH=\"100%\"><TD COLSPAN=2 ALIGN=\"CENTER\">
 <FONT SIZE=\"-1\">$name</FONT></TD></TR>
 <TR><TD ALIGN=\"LEFT\">
@@ -1023,20 +1021,23 @@ sub queue_header {
 #display req options munge url
 #makes it easier to print out a url for fdro
 sub fdro_murl {
+  return(fdro_murl_helper(@_,$serial_num));
+}
+
+sub fdro_murl_helper {
   my $custom_content = shift;
   my $target = shift;
   my $description = shift;
   my $trans = shift;
-  
-    $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$trans&";
-    $url .= $custom_content;
-    $url .= "\"";
-    $url .= " target=\"$target\"" if ($frames);
+  my $serial_num = shift;
+ 
+   my $targ = " target=\"$target\"" if ($frames);
 
-    $url .= " >";
-    $url .= "$description</a>";
+  my $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$trans&$custom_content;\"$targ>$description</a>";
     return($url);
+
 }
+
 sub display_commands {
    
 	if (!$frames) {
