@@ -4,13 +4,14 @@
 
 PERL			= 	/usr/bin/perl
 
-CONFIG_FILE_PATH	=	/opt/rt22/etc/RT_Config.pm
+CONFIG_FILE_PATH	=	/opt/rt22/etc
+CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
 
-GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE_PATH)"; print $${$$RT::{$$ARGV[0]}};'
+GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	7
+RT_VERSION_PATCH	=	8
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -59,8 +60,6 @@ RT_READABLE_DIR_MODE	=	0755
 
 
 
-# The location of your rt configuration file
-RT_CONFIG		=	$(RT_ETC_PATH)/RT_Config.pm
 
 # {{{ all these define the places that RT's binaries should get installed
 
@@ -153,13 +152,13 @@ default:
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
-	@echo "You must now configure it by editing $(RT_CONFIG)."
+	@echo "You must now configure it by editing $(CONFIG_FILE)."
 	@echo "From here on in, you should refer to the users guide."
 
 
 upgrade-instruct: 
 	@echo "Congratulations. RT has been upgraded. You should now check-over"
-	@echo "$(RT_CONFIG) for any necessarysite customization. Additionally,"
+	@echo "$(CONFIG_FILE) for any necessarysite customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
 	@echo "	   $(RT_SBIN_PATH)/insertdata <version>"
 	@echo "where <version> is the version of RT you're upgrading from."
@@ -201,7 +200,7 @@ fixperms:
 	chown -R $(BIN_OWNER) $(DESTDIR)/$(RT_ETC_PATH)
 	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_ETC_PATH)
 
-	chmod 0550 $(DESTDIR)/$(RT_CONFIG)
+	chmod 0550 $(DESTDIR)/$(CONFIG_FILE)
 
 	# Make the interfaces executable and setgid rt
 	chown $(BIN_OWNER) $(SETGID_BINARIES)
@@ -230,7 +229,7 @@ fixperms:
 fixperms-nosetgid: fixperms
 	@echo "You should never be running RT this way. it's unsafe"
 	chmod -s $(SETGID_BINARIES)
-	chmod 0555 $(DESTDIR)/$(RT_CONFIG)
+	chmod 0555 $(DESTDIR)/$(CONFIG_FILE)
 
 # {{{ dirs
 dirs:
@@ -247,13 +246,14 @@ files-install: libs-install etc-install bin-install sbin-install html-install
 initialize-database: createdb insert-schema database-acl insert-baseline-data
 
 config-install:
-	install -b -D -g $(RTGROUP) -o $(BIN_OWNER) etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE_PATH)
+	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)	
+	install -b -g $(RTGROUP) -o $(BIN_OWNER) etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
 	@echo "Installed configuration. about to install rt in  $(RT_PATH)"
 
 test: 
 	$(PERL) -Ilib lib/t/smoke.t
 
-regression: libs-install sbin-install bin-install regression-instruct dropdb initialize-database
+regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database
 	(cd ./lib; $(PERL) Makefile.PL && make testifypods && $(PERL) t/regression.t)
 		
 regression-instruct:
@@ -293,7 +293,7 @@ libs-install:
 			      INSTALLMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
 	    && $(MAKE) \
 	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
-	    			  s'!!RT_CONFIG!!'$(CONFIG_FILE_PATH)'g;" \
+	    			  s'!!RT_CONFIG!!'$(CONFIG_FILE)'g;" \
 				  			blib/lib/RT.pm ; \
 	    $(MAKE) install \
 		   INSTALLSITEMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
@@ -307,7 +307,7 @@ libs-install-quick:
 			      INSTALLMAN3DIR=none 
 	cd ./lib; $(MAKE)
 	cd ./lib; $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
-	    		  s'!!RT_CONFIG!!'$(CONFIG_FILE_PATH)'g;" blib/lib/RT.pm 
+	    		  s'!!RT_CONFIG!!'$(CONFIG_FILE)'g;" blib/lib/RT.pm 
 	
 	cd ./lib ;$(MAKE) install \
 			      INSTALLSITEMAN1DIR= \
