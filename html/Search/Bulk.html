@@ -167,9 +167,7 @@ while (my $Ticket = $Tickets->Next) {
 %     if ($cf->Queue == 0) {
 %         $pref = "[Global]";
 %     } else {
-%         my $queue = RT::Queue->new($session{'CurrentUser'});
-%         $queue->Load($cf->Queue);
-%         $pref = "[Queue: " . $queue->Name . "]";
+%         $pref = "[Queue: " . $cfqnames{$_} . "]";
 %     }
 <%$pref%> <b><% $cf->Name %></b><br>
 <% $cf->FriendlyType %>
@@ -215,17 +213,20 @@ $Tickets->FromSQL($ARGS{'Query'});
 Abort(loc("No search to operate on.")) unless ($Tickets);
 
 my %allcfs;
+my %cfqnames;
 my %cfqs;
 my $count = 0;
 while (my $Ticket = $Tickets->Next) {
     my $cfq = $Ticket->QueueObj;
+    my $cfqid = $cfq->Id;
     my $cfqn = $cfq->Name;
-    if (!$cfqs{$cfqn}) {
-	$cfqs{$cfqn} = 1;
+    unless ( exists $cfqs{$cfqid} ) {
+	$cfqs{$cfqid} = 1;
 	$count++;
 	my $cfs = $cfq->CustomFields;
 	while (my $cf = $cfs->Next) {
 	    $allcfs{$cf->Id} = $cf;
+	    $cfqnames{$cf->Id} = $cfqn;
 	}
     }
 }
