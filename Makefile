@@ -19,7 +19,7 @@
 PERL 			= /usr/bin/perl
 
 INSTALL 		= /bin/sh ./install-sh -c
-RT_PREFIX		= /opt/rt/rt3.fsck.com
+RT_PREFIX		= /opt/rt3
 
 CONFIG_FILE_PATH	= $(RT_PREFIX)/etc
 CONFIG_FILE	     	= $(CONFIG_FILE_PATH)/RT_Config.pm
