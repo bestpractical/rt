@@ -33,7 +33,9 @@ use RT::EasySearch;
               Subject => 'STRING',
               Content => 'TRANSFIELD',
 	      ContentType => 'TRANSFIELD',
-	      WatcherEmail => 'WATCHERFIELD'
+	      WatcherEmail => 'WATCHERFIELD',
+	      LinkedTo => 'LINKFIELD',
+	      
 	    );
 # }}}
 
@@ -83,7 +85,6 @@ sub Limit {
    return ($index);
 }
 # }}}
-
 # {{{ sub LimitQueue
 
 =head2 LimitQueue
@@ -109,7 +110,6 @@ sub LimitQueue {
 }
 
 # }}}
-
 # {{{ sub LimitOwner
 
 =head2 LimitOwner
@@ -135,7 +135,6 @@ sub LimitOwner {
 }
 
 # }}}
-
 # {{{ sub LimitStatus
 
 =head2 LimitStatus
@@ -157,7 +156,6 @@ sub LimitStatus {
 }
 
 # }}}
-
 # {{{ sub LimitSubject
 
 =head2 LimitSubject
@@ -199,7 +197,6 @@ sub LimitContent {
 }
 
 # }}}
-
 # {{{ sub LimitContentType
 
 =head LimitContentType
@@ -220,14 +217,13 @@ sub LimitContentType {
 		 );
 }
 # }}}
-
 # {{{ sub LimitPriority
 
 =head2 LimitPriority
 
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket's priority against
+VALUE is a value to match the ticket\'s priority against
 
 =cut
 
@@ -248,7 +244,7 @@ sub LimitPriority {
 
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket's initial priority against
+VALUE is a value to match the ticket\'s initial priority against
 
 
 =cut
@@ -270,7 +266,7 @@ sub LimitInitialPriority {
 
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket's final priority against
+VALUE is a value to match the ticket\'s final priority against
 
 =cut
 
@@ -287,15 +283,17 @@ sub LimitFinalPriority {
 # }}}
 
 # {{{ sub LimitWatcher
-=head2 LimitWatcher
 
-Takes a paramhash with the fields OPERATOR, TYPE and VALUE.
-OPERATOR is one of =, LIKE, NOT LIKE or !=.
-VALUE is a value to match the ticket's watchers' email addresses against
-TYPE is the sort of watchers you want to match against. Leave it undef if you want to search all of them
+
+=head2 LimitWatcher
+  
+  Takes a paramhash with the fields OPERATOR, TYPE and VALUE.
+  OPERATOR is one of =, LIKE, NOT LIKE or !=.
+  VALUE is a value to match the ticket\'s watcher email addresses against
+  TYPE is the sort of watchers you want to match against. Leave it undef if you want to search all of them
 
 =cut
-
+   
 sub LimitWatcher {
     my $self = shift;
     my %args = (@_);
@@ -318,9 +316,10 @@ sub LimitWatcher {
 # }}}
 
 # {{{ sub LimitRequestor
+
 =head2 LimitRequestor
 
-It's like LimitWatcher, but it presets TYPE to Requestor
+It\'s like LimitWatcher, but it presets TYPE to Requestor
 
 =cut
 
@@ -329,12 +328,14 @@ sub LimitRequestor {
     my $self = shift;
     $self->LimitWatcher(TYPE=> 'Requestor', @_);
 }
+
 # }}}
+
 # {{{ sub LimitCc
 
 =head2 LimitCC
 
-It's like LimitWatcher, but it presets TYPE to Cc
+It\'s like LimitWatcher, but it presets TYPE to Cc
 
 =cut
 
@@ -342,23 +343,119 @@ sub LimitCc {
     my $self = shift;
     $self->LimitWatcher(TYPE=> 'Cc', @_);
 }
+
 # }}}
+
 # {{{ sub LimitAdminCc
+
 =head2 LimitAdminCc
 
-It's like LimitWatcher, but it presets TYPE to AdminCc
+It\'s like LimitWatcher, but it presets TYPE to AdminCc
 
 =cut
-
+  
 sub LimitAdminCc {
     my $self = shift;
     $self->LimitWatcher(TYPE=> 'AdminCc', @_);
 }
+
 # }}}
 
+# {{{ LimitLinkedTo
+
+=head2 LimitLinkedTo
+
+LimitLinkedTo takes a paramhash with two fields: TYPE and TICKET
+TYPE limits the sort of relationship we want to search on
+TICKET is the id of the BASE of the link
+
+=cut
+
+sub LimitLinkedTo {
+    my $self = shift;
+    my %args = ( FIELD => undef,
+		 TICKET => undef,
+		 TYPE => undef,
+		 @_);
+ 
+    $self->Limit( FIELD => 'LinkedTo',
+		  BASE => undef,
+		  TARGET => $args{'TICKET'},
+		  TYPE => $args{'TYPE'},
+		  DESCRIPTION => "Tickets ".$args{'TYPE'}." by ".$args{'TICKET'}
+		);
+}
 
 
+# }}}
+# {{{ LimitLinkedFrom
 
+=head2 LimitLinkedFrom
+
+LimitLinkedFrom takes a paramhash with two fields: TYPE and TICKET
+TYPE limits the sort of relationship we want to search on
+TICKET is the id of the BASE of the link
+
+=cut
+
+sub LimitLinkedFrom {
+    my $self = shift;
+    my %args = ( FIELD => undef,
+		 TICKET => undef,
+		 TYPE => undef,
+		 @_);
+
+    $self->Limit( FIELD => 'LinkedTo',
+		  TARGET => undef,
+		  BASE => $args{'TICKET'},
+		  TYPE => $args{'TYPE'},
+		  DESCRIPTION => "Tickets " .$ARGS{'TICKET'} ." ".$args{'TYPE'}
+		);
+}
+
+
+# }}}
+
+# {{{ LimitMemberOf 
+sub LimitMemberOf {
+    my $self = shift;
+    my $ticket_id = shift;
+    $self->LimitLinkedTo ( TICKET=> "$ticket_id",
+			   TYPE => 'MemberOf',
+			  );
+    
+}
+# }}}
+# {{{ LimitHasMember
+sub LimitHasMember {
+    my $self = shift;
+    my $ticket_id =shift;
+    $self->LimitLinkedFrom ( TICKET => "$ticket_id",
+			     TYPE => 'MemberOf',
+			     );
+    
+}
+# }}}
+# {{{ LimitDependsOn
+sub LimitDependsOn {
+    my $self = shift;
+    my $ticket_id = shift;
+    $self->LimitLinkedTo ( TICKET => "$ticket_id",
+                           TYPE => 'DependsOn',
+			   );
+    
+}
+# }}}
+# {{{ LimitDependedOnBy
+sub LimitDependedOnBy {
+    my $self = shift;
+    my $ticket_id = shift;
+    $self->LimitLinkedFrom (  TICKET=> "$ticket_id",
+                               TYPE => 'DependsOn',
+			     );
+    
+}
+# }}}
 =head1 TODO
 sub LimitDate
 <OPTION VALUE="Created">Created</OPTION>
@@ -368,34 +465,15 @@ sub LimitDate
 <OPTION VALUE="LastUpdated">Last Updated</OPTION>
 <OPTION VALUE="StartsBy">Starts By</OPTION>
 <OPTION VALUE="Due">Due</OPTION>
-sub LimitMemberOf
-sub LimitHasMember
+
+
 sub LimitDependsOn
 sub LimitDependedOnBy
-sub LimitRelatedTo
-=cut
-
-# {{{ sub LimitPriority
-
-=head2 LimitPriority
-
-Takes a paramhash with the fields OPERATOR and VALUE.
-OPERATOR is one of =, >, < or !=.
-VALUE is a value to match the ticket's priority against
-
-=cut
-
-sub LimitPriority {
-    my $self = shift;
-    my %args = (@_);
-    $self->Limit (FIELD => 'Priority',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
-		 );
 }
 
-# }}}
+=cut
+
+
 # {{{ sub LimitTimeWorked
 
 =head2 LimitTimeWorked
@@ -698,7 +776,63 @@ sub _ProcessRestrictions {
 
 
 	# }}}
+	# {{{ if it's a relationship that we're hunting for
+	
+	# Takes FIELD: which is something like "LinkedTo"
+	# takes TARGET or BASE which is the TARGET or BASE id that we're searching for
+	# takes TYPE which is the type of link we're looking for.
 
+	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'LINKFIELD') {
+
+	    
+	    my $LinkAlias = $self->NewAlias ('Links');
+
+	    
+	    #Make sure we get the right type of link, if we're restricting it
+	    if ($self->{'TicketRestrictions'}{"$row"}{'TYPE'}) {
+		$self->SUPER::Limit(ALIAS => $LinkAlias,
+				    ENTRYAGGREGATOR => 'AND',
+				    FIELD =>   'Type',
+				    OPERATOR => '=',
+				    VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'TYPE'} );
+	    }
+	    
+	    #If we're trying to limit it to things that are target of
+	    if ($self->{'TicketRestrictions'}{"$row"}{'TARGET'}) {
+		$self->SUPER::Limit(ALIAS => $LinkAlias,
+				    ENTRYAGGREGATOR => 'AND',
+				    FIELD =>   'Target',
+				    OPERATOR => '=',
+				    VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'TARGET'} );
+
+		
+		#If we're searching on target, join the base to ticket.id
+		$self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
+			     ALIAS2 => $LinkAlias,
+			     FIELD2 => 'Base');
+
+	    
+
+
+	    }
+	    #If we're trying to limit it to things that are base of
+	    elsif ($self->{'TicketRestrictions'}{"$row"}{'BASE'}) {
+		$self->SUPER::Limit(ALIAS => $LinkAlias,
+				    ENTRYAGGREGATOR => 'AND',
+				    FIELD =>   'Base',
+				    OPERATOR => '=',
+				    VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'BASE'} );
+		
+		#If we're searching on base, join the target to ticket.id
+		$self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
+			     ALIAS2 => $LinkAlias,
+			     FIELD2 => 'Target');
+		
+	    }
+
+	}
+		
+	# }}}
 	# {{{ if it's a watcher that we're hunting for
 	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'WATCHERFIELD') {
 	    my $Watch = $self->NewAlias('Watchers');

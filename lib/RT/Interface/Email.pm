@@ -415,6 +415,8 @@ sub GetCurrentUser  {
   my $CurrentUser = RT::CurrentUser->new($FromObj->address);
   
   # One more try if we couldn't find that user
+  # TODO: we should never be calling _routines from external code.
+  # what the hell are we doing here ++++
   $CurrentUser->Id || $CurrentUser->_Init($Name);
   
   unless ($CurrentUser->Id) {
