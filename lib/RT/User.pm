@@ -581,33 +581,21 @@ sub HasQueueRight {
 		 Right => undef,
 		 @_);
     
-    my ($QueueId, $Requestor, $Cc, $AdminCc);
+    my ($Requestor, $Cc, $AdminCc);
     
     if (defined $args{'Queue'}) {
 	$args{'QueueObj'} = new RT::Queue($self->CurrentUser);
 	$args{'QueueObj'}->Load($args{'Queue'});
     }
     
+    if (defined $args{'TicketObj'}) {
+	$args{'QueueObj'} = $args{'TicketObj'}->QueueObj();
+    }
 
     # {{{ Validate and load up the QueueId
-    if (defined $args{'QueueObj'}) {
-	
-	unless ($args{'QueueObj'}->Id) {
-	    $RT::Logger->debug("$self passed a bogus queue or queue object. aborting ACL check");
-	    return(undef);
-	}	
-	
-	$QueueId = $args{'QueueObj'}->Id;
-    }
-
-    elsif (defined $args{'TicketObj'}) {
-	$QueueId = $args{'TicketObj'}->QueueObj->Id;
-    }
-
-    unless ($QueueId) {
+    unless ($args{'QueueObj'}->Id) {
 	require Carp;
 	$RT::Logger->debug(Carp::cluck ("$self->HasQueueRight Couldn't find a queue id"));
-	
     }
 
     # }}}
@@ -616,7 +604,7 @@ sub HasQueueRight {
     # Figure out whether a user has the right we're asking about.
     # first see if they have the right personally for the queue in question. 
     my $retval = $self->_HasRight(Scope => 'Queue',
-				  AppliesTo => $QueueId,
+				  AppliesTo => $args{'QueueObj'}->Id,
 				  Right => $args{'Right'},
 				  IsOwner => $IsOwner);
 
@@ -626,13 +614,11 @@ sub HasQueueRight {
     $retval = $self->HasSystemRight( $args{'Right'});
 
     return ($retval) if (defined $retval);
-
+    
     # now that we know they don't have the right personally,
     
     # {{{ Find out about whether the current user is a Requestor, Cc, AdminCc or Owner
 
-   
-    
     if (defined $args{'TicketObj'}) {
 	if ($args{'TicketObj'}->IsRequestor($self)) {#user is requestor
 	    $IsRequestor = 1;
@@ -650,7 +636,8 @@ sub HasQueueRight {
 	    $IsOwner = 1;
 	}
     }
-    elsif (defined $args{'QueueObj'}) {
+    
+    if (defined $args{'QueueObj'}) {
 	if ($args{'QueueObj'}->IsCc($self)) { #If user is a cc
 	    $IsCc = 1;
 	}
@@ -664,7 +651,7 @@ sub HasQueueRight {
     # then see whether they have the right for the queue as a member of a metagroup 
 
     $retval = $self->_HasRight(Scope => 'Queue',
-				  AppliesTo => $QueueId,
+				  AppliesTo => $args{'QueueObj'}->Id,
 				  Right => $args{'Right'},
 				  IsOwner => $IsOwner,
 				  IsCc => $IsCc,
@@ -797,13 +784,13 @@ sub _HasRight {
     my ($hashkey);
     { #it's ugly, but we need to turn off warning, cuz we're joining nulls.
 	local $^W=0;
-	$hashkey =join(':',%args);
+	$hashkey =$self->Id .":". join(':',%args);
     }	
     
   # $RT::Logger->debug($hashkey."\n");
     
-    #Anything older than 30 seconds needs to be rechecked
-    my $cache_timeout = (time - 30);
+    #Anything older than 10 seconds needs to be rechecked
+    my $cache_timeout = (time - 10);
     
     
     if ((defined $self->{'rights'}{"$hashkey"}) &&
