@@ -56,7 +56,8 @@ SetContentType("text/html; charset=".$session{'CurrentUser'}->LanguageHandle->en
 #$RT::Logger->debug("Language encoding is ".  $session{'CurrentUser'}->LanguageHandle->encoding);
 
 #if it's a noauth file, don't ask for auth.
-if ($m->base_comp->path =~ '^/NoAuth/') {
+if ( ($m->base_comp->path =~ '^(/+)NoAuth/') 
+ or ($m->base_comp->path =~ '^(/+)REST/([\d\.]+)/NoAuth/')) {
         $m->call_next();
 	$m->abort();
 }

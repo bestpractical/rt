@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 # {{{ Front Material 
 
 =head1 SYNOPSIS

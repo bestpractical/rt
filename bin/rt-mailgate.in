@@ -1,12 +1,37 @@
-#!@PERL@
+#!@PERL@ -w
+# BEGIN LICENSE BLOCK
+# 
+# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# 
+# (Except where explictly superceded by other copyright notices)
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# 
+# Unless otherwise specified, all modifications, corrections or
+# extensions to this work which alter its source code become the
+# property of Best Practical Solutions, LLC when submitted for
+# inclusion in the work.
+# 
+# 
+# END LICENSE BLOCK
+
+use strict;
 use Getopt::Long;
 use LWP::UserAgent;
 
 use constant EX_TEMPFAIL => 75;
 
 my %opts;
-GetOptions( \%opts, "queue=s", "action=s", "url=s", "username=s", "password=s",
-            "jar=s", "help" );
+GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug" );
 
 if ( $opts{help} ) {
     require Pod::Usage;
@@ -15,9 +40,8 @@ if ( $opts{help} ) {
     exit 1;    # Don't want to succeed if this is really an email!
 }
 
-for (qw(username password url)) {
-    die "RT misconfigured!\n\nNo $_ provided to mail gateway!\n"
-      unless $opts{$_};
+for (qw(url)) {
+    die "$0 invoked improperly\n\nNo $_ provided to mail gateway!\n" unless $opts{$_};
 }
 
 undef $/;
@@ -28,38 +52,26 @@ $ua->cookie_jar( { file => $opts{jar} } );
 my %args = (
     queue   => $opts{queue},
     action  => $opts{action},
-    message => [ undef, "message", Content => $message ],
+    message => $message,
     SessionType => 'REST',    # Surpress login box
 );
 
 # Set up cookie here.
 
-my $r = $ua->post( $opts{url} . "/REST/mail-gateway", {%args} );
+my $full_url = $opts{'url'}. "/REST/1.0/NoAuth/mail-gateway";
+warn "Connecting to $full_url" if $opts{'debug'};
+
+
+
+my $r = $ua->post( $full_url, {%args} );
 check_failure($r);
 
 my $content = $r->content;
-if ( $content =~ /Not logged in/i ) {
+warn $content if ($opts{debug});
 
-    # Cookie wasn't OK, try again with u/p
-    @args{qw(user pass)} = @opts{qw(username password)};
+if ( $content !~ /^(ok|not ok)/ ) {
 
-    $r = $ua->post( $opts{url} . "/REST/mail-gateway", {%args} );
-    check_failure($r);
-    $content = $r->content;
-    if ( $content =~ /Not logged in/i ) {    # No joy at all
-        die <<EOF;
-Invalid credentials
-
-The administrator of this RT instance failed to set up the credentials
-for the mail gateway correctly.
-EOF
-    }
-}
-
-if ( $content !~ /ok/ ) {
-
-    # This also catches "not ok". This is deliberate. It's not the
-    # server's fault if the mail is bogus. We just want to know that
+    # It's not the server's fault if the mail is bogus. We just want to know that
     # *something* came out of the server.
     die <<EOF
 RT server error. 
@@ -69,7 +81,8 @@ said:
 
 $content
 EOF
-}
+
+} 
 
 sub check_failure {
     my $r = shift;
@@ -88,6 +101,7 @@ sub check_failure {
     my $formatter = HTML::FormatText->new( leftmargin  => 0,
                                            rightmargin => 50 );
     warn $formatter->format($tree);
+    warn "This is $0 exiting because of an undefined server error" if ($opts{debug});
     exit EX_TEMPFAIL;
 }
 
@@ -102,8 +116,8 @@ rt-mailgate - Mail interface to RT3.
 Usual invocation (from MTA):
 
     rt-mailgate --action (correspond|comment) --queue queuename 
-                --url http://your.rt.server/ --username mailgate 
-                --password quux --jar /tmp/mailgate/cookies.txt
+                --url http://your.rt.server/ 
+                [--jar /tmp/mailgate/cookies.txt]
 
 See C<man rt-mailgate> for more.
 
@@ -123,15 +137,8 @@ Reflects which queue this address handles.
 
 The location of the web server for your RT instance.
 
-=item C<--username>
 
-The user name the mail gateway runs as.
-
-=item C<--password>
-
-The mail gateway user's password.
-
-=item C<--jar>
+=item C<--jar>  OPTIONAL
 
 File in which to save RT cookie. If this is given and contains a valid
 cookie, C<rt-mailgate> will present this to the web server instead of
@@ -160,10 +167,10 @@ monitoring. For instance, if you're using F</etc/aliases> and you have a
 "bugs" queue, you will want something like this:
 
     bugs:         "|/opt/rt3/bin/rt-mailgate --queue bugs --action correspond
-              --url http://rt.mycorp.com/ --user mailgate --password Quux"
+              --url http://rt.mycorp.com/"
 
     bugs-comment: "|/opt/rt3/bin/rt-mailgate --queue bugs --action comment
-              --url http://rt.mycorp.com/ --user mailgate --password Quux"
+              --url http://rt.mycorp.com/"
 
 Note that you don't have to run your RT server on your mail server, as
 the mail gateway will happily relay to a different machine.
