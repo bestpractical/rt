@@ -40,7 +40,7 @@ CREATE TABLE queues (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
  QueueId CHAR(40) NOT NULL,
  CorrespondAddress CHAR(40),
- CommentAlias CHAR(40),
+ CommentAddress CHAR(40),
  MailOwnerOnTransaction INT,             # notify owner on transaction
  MailMembersOnTransaction INT,		# notify list members on transaction
  MailRequestorOnTransaction INT,	# notify requestor on transaction

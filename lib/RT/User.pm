@@ -8,9 +8,10 @@ package RT::User;
 use RT::Record;
 @ISA= qw(RT::Record);
 
+
+
 sub new {
-  print STDERR "entering new User\n";
-  my $proto = shift;
+    my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
@@ -21,6 +22,22 @@ sub new {
 
   return($self);
 }
+sub _Accessible {
+  my $self = shift;  
+  my %Cols = (
+	     UserId => 'read/write',
+	     Gecos => 'read/write',
+	     RealName=> 'read/write',
+	     Password=> 'write',
+	     EmailAddress=> 'read/write',
+	     Phone=> 'read/write',
+	     Office=> 'read/write',
+	     Comments=> 'read/write',
+	     IsAdministrator => 'read/write'
+	    );
+  return($self->SUPER::_Accessible(@_, %Cols));
+}
+
 
 sub create {
   my $self = shift;
@@ -102,70 +119,27 @@ sub delete {
 sub load {
   my $self = shift;
   my $identifier = shift;
-  #TODO i'm blanking on the is an int function
-  if ($identifier eq int($identifier)) {
+
+  #if it's an int, load by id. otherwise, load by name.
+  if ($identifier !~ /\D/) {
     $self->SUPER::load($identifier);
   }
   else {
-    print STDERR "loading UserId = $identifier \n";
     $self->LoadByCol("UserId",$identifier);
   }
-}
-
-sub UserId { 
-  my $self = shift;
-  $self->_set_and_return('UserId',@_);
- }
-sub Password { 
-my $self = shift;
-  $self->_set_and_return('Password',@_);
-
-}
-sub RealName { 
-my $self = shift;
-  $self->_set_and_return('RealName',@_);
-
 }
 
 #used to check if a password is correct
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
-  if ($value = $self->Password) {
+  if ($value = $self->_Get('Password')) {
     return (1);
   }
   else {
     return (undef);
   }
 }
-
-sub EmailAddress { 
-my $self = shift;
-  $self->_set_and_return('EmailAddress',@_);
-
-}
-sub Phone  { 
-my $self = shift;
-  $self->_set_and_return('Phone',@_);
-
-}
-sub Office { 
-my $self = shift;
-  $self->_set_and_return('Office',@_);
-
-}
-sub Comments {
-  my $self = shift;
-  $self->_set_and_return('Comments',@_);
-
-}
-sub IsAdministrator {
-  my $self = shift;
-  #todo validate input
-  
-  $self->_set_and_return('IsAdministrator',@_);
-};
-
 
 sub DisplayPermitted {
   my $self = shift;

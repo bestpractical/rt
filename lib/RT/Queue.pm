@@ -4,6 +4,11 @@ package RT::Queue;
 use RT::Record;
 @ISA= qw(RT::Record);
 
+
+
+
+
+
 sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -15,16 +20,35 @@ sub new {
   return ($self);
 }
 
+sub _Accessible {
+  my $self = shift;
+  my %Cols = ( QueueId => 'read/write',
+	       CorrespondAddress => 'read/write',
+	       CommentAddress =>  'read/write',
+	       MailOwnerOnTransaction =>  'read/write',
+	       MailMembersOnTransaction =>  'read/write',
+	       MailRequestorOnTransaction =>  'read/write',
+	       MailRequestorOnCreation =>  'read/write',
+	       MailMembersOnCorrespondence => 'read/write',	
+	       MailMembersOnComment =>  'read/write',
+	       PermitNonmemberCreate =>  'read/write',
+	       InitialPriority =>  'read/write',
+	       FinalPriority =>  'read/write',
+	       DefaultDueIn =>  'read/write'
+	     );
+  return($self->SUPER::_Accessible(@_, %Cols));
+}
 
 sub create {
   my $self = shift;
 
-  print STDERR "In RT::Queue::create.pm\n";
+#  print STDERR "In RT::Queue::create.pm\n";
   my $id = $self->SUPER::Create(QueueId => @_);
-  print STDERR "Loading $id\n";
+#  print STDERR "Loading $id\n";
   $self->load_by_id($id);
   
 }
+
 
 sub delete {
   my $self = shift;
@@ -54,7 +78,7 @@ sub delete {
 
 sub Create {
   my $self = shift;
-  print "In RT::Queue::Create\n";
+  #print "In RT::Queue::Create\n";
   return($self->create(@_));
 }
 
@@ -70,72 +94,6 @@ sub load {
   return($self->Load(@_));
 }
 
-sub CorrespondAddress {
-  my $self = shift;
-  $self->_set_and_return('CorrespondAddress',@_);
-}
-
-sub QueueId {
-  my $self = shift;
-  $self->_set_and_return('QueueId');
-  
-}
-
-sub id {
-  my $self = shift;
-  return($self->_set_and_return('id'));
-}
-sub CommentAddress {
-  my $self = shift;
-  $self->_set_and_return('CommentAddress',@_);
-}
-
-
-
-sub StartingPriority {
-  my $self = shift;
-  $self->_set_and_return('InitialPriority',@_);
-}
-sub FinalPriority {
-  my $self = shift;
-  $self->_set_and_return('FinalPriority',@_);
-}
-
-sub PermitNonmemberCreate {
-  my $self = shift;
-  $self->_set_and_return('PermitNonmemberCreate',@_);
-}
-
-
-
-sub MailOwnerOnTransaction {
-  my $self = shift;
-  $self->_set_and_return('MailOwnerOnTransaction',@_);
-}
-
-sub MailMembersOnTransaction {
-  my $self = shift;
-  $self->_set_and_return('MailMembersOnTransaction',@_);
-}
-
-sub MailRequestorOnTransaction {
-  my $self = shift;
-  $self->_set_and_return('MailRequestorOnTransaction',@_);
-}
-sub MailRequestorOnCreation {
-  my $self = shift;
-  $self->_set_and_return('MailRequestorOnCreation',@_);
-}
-
-sub MailMembersOnCorrespondence {
-  my $self = shift;
-  $self->_set_and_return('MailMembersOnCorrespondence',@_);
-}
-
-sub MailMembersOnComment {
-  my $self = shift;
-  $self->_set_and_return('MailMembersOnComment',@_);
-}
 
 #
 # Distribution lists
@@ -144,7 +102,7 @@ sub DistributionList {
 	my $self = shift;
 	#return the list of all queue members.
 	return();
-}
+      }
 
 #
 
@@ -178,15 +136,15 @@ sub Areas {
 
 #returns an EasySearch of ACEs everyone who has anything to do with this queue.
 sub ACL {
- my $self = shift;
- if (!$self->{'acl'}) {
-   $self->{'acl'} = RT::ACL->new($self->{'user'});
-   $self->{'acl'}->Limit(FIELD => 'queue', 
-			 VALUE => "$self->id");
- }
- 
+  my $self = shift;
+  if (!$self->{'acl'}) {
+    $self->{'acl'} = RT::ACL->new($self->{'self'});
+    $user->{'acl'}->Limit(FIELD => 'queue', 
+			  VALUE => "$self->id");
+  }
+  
  return ($self->{'acl'});
-
+  
 }
 
 

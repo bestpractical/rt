@@ -195,7 +195,7 @@ WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	yes
 default:
 	@echo "Read the README"
 
-install: dirs mux-install libs-install initialize nondestruct config-replace mux-install fixperms instruct
+install: dirs initialize libs-install nondestruct config-replace mux-install fixperms instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "

@@ -25,31 +25,29 @@ sub Create {
 }
 
 
-sub _set_and_return {
+sub _Value {
+
   my $self = shift;
   my $field = shift;
   #if the user is trying to display only {
-  if (@_ == undef) {
-    
     if ($self->DisplayPermitted) {
       #if the user doesn't have display permission, return an error
-      $self->SUPER::_set_and_return($field);
+      return($self->SUPER::_Value($field));
     }
     else {
       return(0, "Permission Denied");
     }
-  }
+}
+
+sub _Set {
+  my $self = shift;
+  my $field = shift;
   #if the user is trying to modify the record
+  if ($self->ModifyPermitted) {
+    $self->SUPER::_Set($field, @_);
+  }
   else {
-    if ($self->ModifyPermitted) {
-      #instantiate a transaction 
-      #record what's being done in the transaction
- 
-      $self->SUPER::_set_and_return($field, @_);
-    }
-    else {
-      return (0, "Permission Denied");
-    }
+    return (0, "Permission Denied");
   }
   
 }
