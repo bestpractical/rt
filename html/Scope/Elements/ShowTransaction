@@ -42,7 +42,7 @@ unless ($Collapsed) {
      next unless ($message->ContentLength || $message->Children->Count);
 
   my ($headers, $quoted);
-      if ($ShowHeaders && ($ShowHeaders == $Ticket->Id)) {
+      if ($ShowHeaders) {
 	  $headers = $message->Headers;
       } else {
 	  $headers = $message->NiceHeaders;

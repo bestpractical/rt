@@ -32,7 +32,7 @@ else {
     $title = '&nbsp;';
 }
 $titleright = loc('Display mode') . ":";
-if ($ShowHeaders &&  $ShowHeaders == $Ticket->Id ) {
+if ($ShowHeaders) {
     $titleright .= "[<A HREF=\"" . $URIFile . "?id="
       . $Ticket->id . "\">"
       . loc("Brief headers")
@@ -44,8 +44,8 @@ else {
       . loc("Brief headers")
       . "]</b> [<A HREF=\""
       . $URIFile
-      . "?ShowHeaders="
-      . $Ticket->Id . "&id="
+      . "?ShowHeaders=1"
+      . "&id="
       . $Ticket->id . "\">"
       . loc("Full headers") . "</a>]";
 }
@@ -80,7 +80,7 @@ my $i;
 <%ARGS>
 $URIFile => 'Display.html'
 $Ticket => undef
-$ShowHeaders => undef
+$ShowHeaders => 0
 $Collapsed => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1

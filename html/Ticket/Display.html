@@ -38,6 +38,7 @@
 <BR>
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $TicketObj, 
+      Tickets => $Tickets, 
       Collapsed => $ARGS{'Collapsed'}, 
       ShowHeaders => $ARGS{'ShowHeaders'},
       Attachments => $attachments,
@@ -49,13 +50,13 @@
 <%ARGS>
 $id => undef
 $Create => undef
-$ShowHeaders => undef
+$ShowHeaders => 0
 $Collapsed => undef
 $TicketObj => undef
 </%ARGS>
 
 <%INIT>
-  my ($linkid, $message, $tid, @Actions);  
+my ($linkid, $message, $tid, @Actions, $Tickets);  
 
 unless ($id || $TicketObj) {
     Abort('No ticket specified');
@@ -113,17 +114,16 @@ if ($ARGS{'id'} eq 'new') {
     }
     #Process status updates
     my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$TicketObj);
-    my @results = ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => \%ARGS);                            
+    my @results = ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => \%ARGS);
 
     push (@Actions, @BasicActions, @results);
 }
 
-my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj);
+$m->comp('/Elements/Callback', _CallbackName => 'BeforeDisplay',
+	 TicketObj => \$TicketObj, Tickets => \$Tickets, ARGSRef => \%ARGS);
+
+
+my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
 my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
 
-
 </%INIT>
-
-
-
-

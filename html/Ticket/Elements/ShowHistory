@@ -32,7 +32,7 @@ else {
     $title = '&nbsp;';
 }
 $titleright = loc('Display mode') . ":";
-if ($ShowHeaders &&  $ShowHeaders == $Ticket->Id ) {
+if ($ShowHeaders) {
     $titleright .= "[<A HREF=\"" . $URIFile . "?id="
       . $Ticket->id . "\">"
       . loc("Brief headers")
@@ -44,8 +44,8 @@ else {
       . loc("Brief headers")
       . "]</b> [<A HREF=\""
       . $URIFile
-      . "?ShowHeaders="
-      . $Ticket->Id . "&id="
+      . "?ShowHeaders=1"
+      . "&id="
       . $Ticket->id . "\">"
       . loc("Full headers") . "</a>]";
 }
@@ -103,12 +103,19 @@ while ( my $Transaction = $Transactions->Next ) {
 <& /Elements/TitleBoxEnd &>
 % }
 <%INIT>
-
-my $Transactions = $Ticket->Transactions;
+my $Transactions = new RT::Transactions($session{'CurrentUser'});
+if ($Tickets) {
+    while (my $t = $Tickets->Next) {
+	$Transactions->Limit(FIELD => 'Ticket',
+			     OPERATOR => '=',
+			     VALUE => $t->Id);
+    }
+} else {
+    $Transactions = $Ticket->Transactions;
+}
 my $i;
 
-
-$Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
+$Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
 $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
 
 
@@ -117,9 +124,10 @@ $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket =
 <%ARGS>
 $URIFile => 'Display.html'
 $Ticket => undef
+$Tickets => undef
 $Attachments => undef
+$ShowHeaders => 0
 $AttachmentContent => undef
-$ShowHeaders => undef
 $Collapsed => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1
