@@ -867,7 +867,8 @@ sub _CustomFieldLimit {
         $null_columns_ok = 1;
     }
 
-
+    my $cfid = 0;
+    if ($queue) {
 
     my $q = RT::Queue->new( $self->CurrentUser );
     $q->Load($queue) if ($queue);
@@ -881,19 +882,19 @@ sub _CustomFieldLimit {
         $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
     }
 
-  my $cfid = $cf->id;
+     $cfid = $cf->id;
 
-  die "No custom field named $field found\n" unless $cfid;
+    }
 
 
     my $TicketCFs;
 
   # Perform one Join per CustomField
-    if ( $self->{_sql_keywordalias}{$cfid} ) {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid};
+    if ( $self->{_sql_object_cf_alias}{$cfid} ) {
+    $TicketCFs = $self->{_sql_object_cf_alias}{$cfid};
   }
     else {
-        $TicketCFs = $self->{_sql_keywordalias}{$cfid} = $self->_SQLJoin(
+        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid} = $self->_SQLJoin(
             TYPE   => 'left',
             ALIAS1 => 'main',
             FIELD1 => 'id',
@@ -908,13 +909,28 @@ sub _CustomFieldLimit {
         ENTRYAGGREGATOR => 'AND'
     );
 
+    if ($cfid) {
     $self->_SQLLimit(
         LEFTJOIN        => $TicketCFs,
         FIELD           => 'CustomField',
         VALUE           => $cfid,
         ENTRYAGGREGATOR => 'AND'
     );
+    } else {
+    my $cfalias = $self->_SQLJoin(
+        ALIAS1        => $TicketCFs,
+        FIELD1           => 'CustomField',
+        TABLE2          => 'CustomFields',
+        ALIAS2          => 'id'
+    );
+    $self->_SQLLimit(
+        LEFTJOIN        => $cfalias,
+        FIELD           => 'Name',
+        VALUE           => $field,
+    );
 
+
+    }
     }
 
     $self->_OpenParen;

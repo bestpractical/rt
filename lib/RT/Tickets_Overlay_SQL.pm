@@ -73,7 +73,7 @@ sub _InitSQL {
   $self->{'_sql_linkalias'}    = undef;
   $self->{'_sql_transalias'}    = undef;
   $self->{'_sql_trattachalias'} = undef;
-  $self->{'_sql_keywordalias'}  = undef;
+  $self->{'_sql_object_cf_alias'}  = undef;
   $self->{'_sql_depth'}         = 0;
   $self->{'_sql_localdepth'}    = 0;
   $self->{'_sql_query'}         = '';
