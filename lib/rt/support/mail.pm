@@ -120,9 +120,9 @@ sub template_mail{
                   Header => $head,
                   Body => \@body;
 
-    $message->smtpsend();
-
-    return(1, "template_mail: Message Sent");
+    $message->smtpsend() && return(1, "template_mail: Message Sent");
+    warn "Message not sent!! :(";
+    return (0, "template_mail: Message not sent");
 }
 
 1;

@@ -1,5 +1,4 @@
-# $Header$
-
+$Header$
 package rt::ui::cli::query;
 
 

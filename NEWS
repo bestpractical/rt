@@ -11,6 +11,10 @@
 
 * Several bugfixes to admin backend. (there is no $dbh->Query in DBI)
 
+8 Nov 1999
+----------
+* Fixed a longstanding bug in rtq's -prio operator
+
 21 Oct 1999
 -----------
 
