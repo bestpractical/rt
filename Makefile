@@ -6,13 +6,24 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	19
+RT_VERSION_PATCH	=	20
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 
-RTUSER			=	rt
 RTGROUP			=	rt
+
+
+
+# User which should own rt binaries
+BIN_OWNER		=	root
+
+# User that should own all of RT's libraries. generally root.
+LIBS_OWNER 		=	root
+
+# Group that should own all of RT's libraries. generally root.
+LIBS_GROUP		=	bin
+
 
 
 # {{{ Files and directories 
@@ -154,31 +165,51 @@ all:
 	@echo "Read the readme."
 
 fixperms:
-	chown -R $(RTUSER) $(RT_PATH)
-	chgrp -R $(RTGROUP) $(RT_PATH)  
-	chmod 0755 $(RT_PATH)
-	chmod -R 755 $(RT_LIB_PATH)
-	chmod -R 0750 $(RT_ETC_PATH)
-	chmod 0755 $(RT_BIN_PATH)
-	chmod 4755 $(RT_PERL_MUX)
-	chmod 700  $(MASON_DATA_PATH)
+
+	# Make the libraries readable
+	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
+	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
+	chmod -R 0755 $(RT_LIB_PATH)
+
+	chmod 0555 $(RT_ETC_PATH)
+
+	#TODO: the config file should probably be able to have its
+	# owner set seperately from the binaries.
+	chown $(BIN_OWNER) $(RT_CONFIG)
+	chgrp $(RTGROUP) $(RT_CONFIG)
+
+	chmod 0550 $(RT_CONFIG)
+
+	# Make the perl mux executable and setgid rt
+	chown $(BIN_OWNER) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER)
+	chgrp $(RTGROUP) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER)
+	chmod 0755 $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER)
+	chmod g+s $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER)
+
+	# Make the web ui readable by all. 
+	chmod -R 0755 $(MASON_HTML_PATH)
+	chown -R $(LIBS_OWNER) $(MASON_HTML_PATH)
+	chgrp -R $(LIBS_GROUP) $(MASON_HTML_PATH)
+
+	# Make the web ui's data dir writable
+	chmod 0700  $(MASON_DATA_PATH)
 	chown -R $(WEB_USER) $(MASON_DATA_PATH)
 
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(MASON_DATA_PATH)
 	mkdir -p $(RT_ETC_PATH)
-	cp -rp ./etc/* $(RT_ETC_PATH)
+	mkdir -p $(RT_LIB_PATH)
+	mkdir -p $(MASON_HTML_PATH)
+	# We don't need to do this anymore. all we want to copy is config.pm
+	# That gets done elsewhere
+	#cp -rp ./etc/* $(RT_ETC_PATH)
 
 libs-install: 
-	mkdir -p $(RT_LIB_PATH)
 	cp -rp ./lib/* $(RT_LIB_PATH)    
-	chmod -R 0755 $(RT_LIB_PATH)
 
 html-install:
-	mkdir -p $(MASON_HTML_PATH)
 	cp -rp ./webrt/* $(MASON_HTML_PATH)
-	chmod -R 0755 $(MASON_HTML_PATH)
 
 initialize: database acls
 
@@ -187,7 +218,8 @@ database:
 	$(PERL)	tools/initdb '$(DB_TYPE)' '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DATABASE)' '$(DB_RT_USER)'
 
 acls:
-	$(PERL) -p -i.orig -e " s'!!DB_TYPE!!'$(DB_TYPE)'g;\
+	cp etc/acl.$(DB_TYPE) '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
+	$(PERL) -p -i -e " s'!!DB_TYPE!!'$(DB_TYPE)'g;\
 				s'!!DB_HOST!!'$(DB_HOST)'g;\
 				s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
 				s'!!DB_RT_HOST!!'$(DB_RT_HOST)'g;\
@@ -200,7 +232,7 @@ acls:
 
 insert-install:
 	cp -rp ./tools/insertdata $(RT_ETC_PATH)/insertdata
-	$(PERL) -p -i.orig -e " s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
+	$(PERL) -p -i -e " s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" \
 				$(RT_ETC_PATH)/insertdata
 
@@ -209,7 +241,7 @@ mux-install:
 	cp -rp ./bin/webmux.pl $(RT_MODPERL_HANDLER)
 	cp -rp ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
 
-	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
+	$(PERL) -p -i -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
 				s'!!RT_ACTION_BIN!!'$(RT_ACTION_BIN)'g;\
 				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
@@ -237,15 +269,13 @@ mux-links:
 
 
 config-replace:
-	mv $(RT_ETC_PATH)/config.pm $(RT_ETC_PATH)/config.pm.old
-	cp -rp ./etc/config.pm $(RT_ETC_PATH)
+	-f $(RT_CONFIG) && mv $(RT_CONFIG) $(RT_CONFIG).old
+	cp -rp ./etc/config.pm $(RT_CONFIG)
 	$(PERL) -p -i -e "\
 	s'!!DB_TYPE!!'$(DB_TYPE)'g;\
 	s'!!DB_HOST!!'$(DB_HOST)'g;\
 	s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
 	s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
-	s'!!RT_USER!!'$(RT_USER)'g;\
-	s'!!RT_GROUP!!'$(RT_GROUP)'g;\
 	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
 	s'!!MASON_HTML_PATH!!'$(MASON_HTML_PATH)'g;\
 	s'!!MASON_DATA_PATH!!'$(MASON_DATA_PATH)'g;\
