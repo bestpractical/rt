@@ -421,6 +421,7 @@ sub MakeMIMEEntity {
         $RT::Logger->debug($file);
         my $filename = "$cgi_filehandle";
         $filename =~ s#^(.*)/##;
+        $filename =~ s#^(.*)\\##;
         my $uploadinfo = $cgi_object->uploadInfo($cgi_filehandle);
         $Message->attach(
             Data => \@file,
