@@ -376,7 +376,7 @@ sub SingleValue {
 
 =item ValuesForArticle TICKET
 
-Returns a RT::ArticleCFValueCollection object of this Field's values for TICKET.
+Returns a RT::FM::ArticleCFValueCollection object of this Field's values for TICKET.
 Article is a ticket id.
 
 
@@ -435,7 +435,7 @@ sub DeleteValueForArticle {
                  Content => undef,
                  @_ );
 
-    my $oldval = RT::ArticleCFValue->new( $self->CurrentUser );
+    my $oldval = RT::FM::ArticleCFValue->new( $self->CurrentUser );
     $oldval->LoadByArticleContentAndCustomField( Article      => $args{'Article'},
                                                 Content     => $args{'Content'},
                                                 CustomField => $self->Id );
@@ -536,6 +536,7 @@ sub ValidateValueForArticle {
 
     # If it's an invalid value for the custom field, don't keep going
     unless ($self->ValidateValue ($args{'Value'})) {
+    $RT::Logger->debug($args{'Value'} ." isn't a valid value for ".$args{'Article'});
         return(undef);
     }
 
@@ -547,8 +548,10 @@ sub ValidateValueForArticle {
     # get the actual values for the custom field as an array and see if it has this entry
     my @values = grep { $_->Content eq $args{'Value'}} @{$article_values->ItemsArrayRef};
     if (shift @values) {
+        $RT::Logger->debug($args{'Value'} ." isn't a current value for ".$args{'Article'});
         return undef;
     } else {
+        $RT::Logger->debug($args{'Value'} ." is a current value for ".$args{'Article'});
         return 1;
     }
 

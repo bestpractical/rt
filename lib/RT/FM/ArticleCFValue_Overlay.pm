@@ -2,8 +2,7 @@ no warnings qw/redefine/;
 
 use strict;
 
-use RT::FM::Article;
-use RT::FM::Content;
+use RT::FM::ArticleCollection;
 
 =head2 Create { } 
 
@@ -30,6 +29,9 @@ sub Create {
                  Article     => undef,
                  CustomField => undef,
                  @_ );
+
+    $RT::Logger->debug("Got here!");
+
     # {{{ Validate the article
     my $art = RT::FM::Article->new( $self->CurrentUser );
     $art->Load( $args{'Article'} );

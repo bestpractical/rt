@@ -5,3 +5,4 @@ DROP TABLE FM_Articles ;
 DROP TABLE FM_CustomFieldValues ;
 DROP TABLE FM_ArticleCFValues ;
 DROP TABLE FM_Transactions ;
+DELETE FROM Links;

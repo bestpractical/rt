@@ -758,7 +758,6 @@ ok ($id, "This cf is good for the class ".$art->ClassObj->Name);
 ok ($id, $msg);
 ($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "Test1");
 ok (!$id, "Can add a duplicate value to a custom field that's a 'select multiple' - $msg");
-
 ($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "Testy");
 ok ($id, $msg);
 
