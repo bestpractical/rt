@@ -10,7 +10,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	10
+RT_VERSION_PATCH	=	11
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -166,21 +166,6 @@ DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 
 WEB_IMAGE_PATH			=	/webrt
 
-# WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use 
-# for the web ui.  Valid choices are: "cookies" and "external".  Cookies 
-# uses http cookies to keep track of authentication. External means that 
-# you will have configured your web server to prompt for the user's 
-# credentials and authenticate them before RT ever sees the request.
-
-WEB_AUTH_MECHANISM		=	cookies
-
-# WEB_AUTH_COOKIES_ALLOW_NO_PATH allows RT users to check a box which sends
-# their authentication cookies to any CGI on the server.  This could be a 
-# security hole. You'll _never_ want to enable it, unless you've got clients
-# with IE4.01sp1..which chokes unless this is enabled.
-
-WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	yes
-
 ####################################################################
 # No user servicable parts below this line.  Frob at your own risk #
 ####################################################################
@@ -192,7 +177,7 @@ install: dirs initialize libs-install config-replace mux-install mux-links fixpe
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
-	@echo "(Now, create a queue, add some users and start resolving requests)"
+	@echo "From here on in, you should refer to the users guide."
 
 upgrade: libs-install config-replace mux-install nondestruct
 
