@@ -24,5 +24,5 @@ echo "Creating database $DATABASENAME."
 $MYSQLBINDIR/mysqladmin --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} create $DATABASENAME
 
 echo "Reading schema."
-$MYSQLBINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} -p ${DBAPASSWD} $DATABASENAME < etc/schema.mysql
+$MYSQLBINDIR/mysql --host=${HOSTNAME} --user=${DATABASEADMIN} -p${DBAPASSWD} $DATABASENAME < etc/schema.mysql
 
