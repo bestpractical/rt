@@ -311,7 +311,7 @@ sub Cc {
     my $self = shift;
     my $cc = $self->Watchers();
     if ($self->CurrentUserHasRight('ExploreQueue')) {
-	$cc->LimitToAdminCc();
+	$cc->LimitToCc();
     }
 
     return ($cc);
