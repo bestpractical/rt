@@ -784,30 +784,34 @@ sub Links {
 }
 # }}}
 
-# {{{ sub URL 
-sub URL {
+# {{{ sub URI 
+sub URI {
     my $self = shift;
     return "fsck.com-rt://$rt::domain/$rt::rtname/ticket/".$self->id;
 }
 
 # }}}
 
-# {{{ sub NewLink
+# {{{ sub LinkTo
 
-sub NewLink {
+sub LinkTo {
     my $self = shift;
-    my %args = ( target => '',
+    my %args = ( dir => 'F',
+		 base => $self->id,
+		 target => '',
 		 type => '',
 		 @_ );
-    $self->_NewLink(base=>$self->id, %args);
+    $self->_NewLink(%args);
 }
 
 # }}}
 
-# {{{ sub ReverseLink
-sub ReverseLink {
+# {{{ sub LinkFrom
+sub LinkFrom {
     my $self = shift;
-    my %args = ( base => '',
+    my %args = ( dir => 'T',
+		 base => '',
+		 target => $self->id,
 		 type => '',
 		 @_);
     $self->_NewLink(target=>$self->id, %args);
@@ -830,7 +834,7 @@ sub _NewLink {
   #Write the transaction
   my $Trans = $self->_NewTransaction
       (Type => 'Link',
-       Data => "$args{type} $args{base} $args{target} $linkid",
+       Data => "$args{dir} $args{type} $args{base} $args{target} $linkid",
        TimeTaken => 0 # Is this always true?
        );
   
