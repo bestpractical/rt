@@ -1723,7 +1723,8 @@ sub FirstCustomFieldValue {
 
 =item CustomFieldValues FIELD
 
-Return a ObjectCustomFieldValues object of all values of the CustomField whose id is FIELD for this ticket.  
+Return a ObjectCustomFieldValues object of all values of the CustomField whose 
+id or Name is FIELD for this ticket.  
 
 Returns an RT::ObjectCustomFieldValues object
 
@@ -1737,11 +1738,24 @@ sub CustomFieldValues {
     $cf_values->LimitToObject($self);
     $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
 
-    if ( length $field ) {
-        $field =~ /^\d+$/ or die "LoadByNameAndQueue impossible for Record.pm";
-        my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf_values->LimitToCustomField( $field);
+    # If we've been handed a value that contains a non-digit, it's a name. \
+    # Resolve it into an id.
+    if ( $field =~ /\D/ ) {
+
+        # Look up the field ID.
+        my $cfs = RT::CustomFields->new( $self->CurrentUser );
+        $cfs->LimitToGlobalOrObjectId( $self->Id() );
+        $cfs->Limit( FIELD => 'Name', OPERATOR => '=', VALUE => $field );
+
+        if ( $cfs->First ) {
+            $field = $cfs->First->id;
+        }
+        else {
+            $field = undef;
+        }
     }
+
+    $cf_values->LimitToCustomField($field) if ( $field =~ /^\d+$/o);
     return ($cf_values);
 }
 
