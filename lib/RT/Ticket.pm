@@ -454,7 +454,7 @@ sub SetOwner {
   
   if ($Type ne 'Steal' and 
       $self->Owner->Id!=$RT::Nobody and 
-      $self->CurrentUser->Id ne $self->Owner->Id())) {
+      $self->CurrentUser->Id ne $self->Owner->Id()) {
     print STDERR  "You can only reassign tickets that you own or that are unowned\n";
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
