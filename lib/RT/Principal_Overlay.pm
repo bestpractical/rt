@@ -345,7 +345,7 @@ sub HasRight {
 
     if (@roles) {
         $or_check_roles = " OR ( (".join (' OR ', @roles)." ) ".  
-        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.ObjectId AND Principals.PrincipalType = 'Group') ";
+        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') ";
 
    } 
     # {{{ Construct Right Match
@@ -375,21 +375,21 @@ sub HasRight {
     # Only find superuser or rights with the name $right
    "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') ".
    # Never find disabled groups.
-   "AND Principals.Disabled = 0 "
-    . "AND CachedGroupMembers.Disabled = 0  ".
-
+   "AND Principals.Disabled = 0 " .
+   "AND CachedGroupMembers.Disabled = 0  ".
+    "AND Principals.id = Groups.id " .  # We always grant rights to Groups
 
     # See if the principal is a member of the group recursively or _is the rightholder_
     # never find recursively disabled group members
     # also, check to see if the right is being granted _directly_ to this principal,
     #  as is the case when we want to look up group rights
-    "AND  Principals.Id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->Id . "' ".
+    "AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->Id . "' ".
 
     # Make sure the rights apply to the entire system or to the object in question
     "AND ( ".join(' OR ', @look_at_objects).") ".
 
     # limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
-    "AND ( (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND ".
+    "AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND ".
         "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))".
 
         # have a look at role groups, if there are any

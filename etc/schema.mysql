@@ -87,8 +87,9 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
+CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
 CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);   
+
 # }}}
 
 # {{{ ScripConditions
@@ -169,6 +170,7 @@ CREATE TABLE ACL (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
+CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
 
 # }}}
 
@@ -201,9 +203,8 @@ create table CachedGroupMembers (
         PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId);
-CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (GroupId);
-                                                                            
+CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
+
 # }}}
 
 # {{{ Users

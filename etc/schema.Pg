@@ -140,8 +140,7 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 
 );
-
-CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
+CREATE UNIQUE INDEX Groups1 ON Groups (Domain,Instance,Type,id, Name);
 CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);
 
 
@@ -261,6 +260,8 @@ CREATE TABLE ACL (
 
 );
 
+CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
+
 
 -- }}}
 
@@ -307,6 +308,7 @@ CREATE TABLE CachedGroupMembers (
 
 CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (GroupId);
+CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled); 
 
 -- }}}
 
