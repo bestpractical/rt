@@ -549,4 +549,9 @@ sub LocalTimezone {
 
 # }}}
 
+        eval "require RT::Date_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Date_Local.pm}) {
+            die $@;
+        };
+
 1;

@@ -25,6 +25,7 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
     current_tab => 'Admin/Queues/Templates.html?id='.$id, 
+    current_subtab => 'Admin/Queues/Templates.html?id='.$id, 
         QueueObj => $QueueObj,
     subtabs => $subtabs, 
     Title => $title &>
@@ -43,8 +44,11 @@ if ($QueueObj->id) {
     Abort(loc("Queue [_1] not found",$id));
 }
 my $subtabs = {
-	 A => { title => loc('New template'),
-	     	path => "Admin/Queues/Template.html?Create=1&Queue=".$id,
+	 A => { title => loc('Select template'),
+	     	path => "Admin/Queues/Templates.html?id=".$id,
+		   },
+	 B => { title => loc('New template'),
+	     	path => "Admin/Queues/Template.html?create=1&Queue=".$id,
 		   }
 	      };
 

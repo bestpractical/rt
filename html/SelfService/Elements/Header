@@ -22,56 +22,5 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
-     "http://www.w3.org/TR/REC-html40/loose.dtd"> 
-<HTML>
-<HEAD>
-<TITLE><%$Title%></TITLE>
-% if ($Code) {
-<META NAME="HTTP-EQUIV" VALUE="<%$Code%> <%$Why%>">
-% }
-
-<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
-</HEAD>
-<BODY BGCOLOR="<%$BgColor%>">
-<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 BGCOLOR="#993333">
-<TR VALIGN=TOP>
-<TD WIDTH=32>
-        <IMG SRC="<%$RT::LogoURL%>" alt="RT">
-</TD>
-<TD VALIGN=CENTER ALIGN=LEFT>
-<font size=+2 color=#ffffff>
-<B>
-<%$Title%>
-</B>
-</font>
-</TD>
-<TD ALIGN=RIGHT>
-<font color="#ffffff">
-% if ($session{'CurrentUser'} ) {
-<&|/l, $session{'CurrentUser'}->Name &>Signed in as [_1]</&>.<BR>
-[<A class='inverse' HREF="<%$RT::WebPath%>/SelfService/Prefs.html" >Preferences</A>]
-% unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) { 
- [<A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html">Logout</a>]
-% }
-% } else {
-<&|/l&>Not logged in.</&>
-% }
-</font>
-</TD>
-</TR>
-</TABLE>
-
-<BR>
+<& /Elements/Header, %ARGS, Prefs => '/SelfService/Prefs.html' &>
 <& /SelfService/Elements/Tabs &>
-
-<%ARGS>
-$Title => ''
-$Code => undef
-$Why => undef
-$BgColor => '#ffffff'
-</%ARGS>
-<%INIT>
-$Title = "RT/$RT::rtname: ".$Title;
-</%INIT>
-

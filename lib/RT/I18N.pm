@@ -77,6 +77,9 @@ ok(RT::I18N->Init);
 =cut
 
 sub Init {
+    # Load language-specific functions
+    require $_ for glob(substr(__FILE__, 0, -3) . "/*.pm");
+
     # Acquire all .po files and iterate them into lexicons
     my @languages = map {
 	m|/(\w+).po$|g

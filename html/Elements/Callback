@@ -56,7 +56,7 @@ if (!$callbacks) {
 }
 
 foreach my $comp (@$callbacks) {
-        $m->comp($comp, %ARGS);
+        $m->comp($comp, %ARGS) if $m->comp_exists($comp);
 }
 return(1);
 </%init>

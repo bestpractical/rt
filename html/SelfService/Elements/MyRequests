@@ -60,6 +60,6 @@ foreach my $status (@status) {
 }
 </%INIT>
 <%ARGS>
-$friendly_status => 'open'
+$friendly_status => loc('opened')
 @status => ('open', 'new', 'stalled')
 </%ARGS>

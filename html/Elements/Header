@@ -69,6 +69,7 @@ $r->header_out('Cache-control' => 'no-cache');
 </%INIT>
 
 <%ARGS>
+$Prefs => '/User/Prefs.html'
 $Focus => 'focus'
 $Title => undef
 $Code => undef
