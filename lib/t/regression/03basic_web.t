@@ -82,14 +82,14 @@ ok($agent->form_name('BuildQuery'));
 $agent->field("AttachmentField", "Subject");
 $agent->field("AttachmentOp", "LIKE");
 $agent->field("ValueOfAttachment", "aaa");
-$agent->submit();
+$agent->submit("AddClause");
 
 # set the next value
 ok($agent->form_name('BuildQuery'));
 $agent->field("AttachmentField", "Subject");
 $agent->field("AttachmentOp", "LIKE");
 $agent->field("ValueOfAttachment", "bbb");
-$agent->submit();
+$agent->submit("AddClause");
 
 ok($agent->form_name('BuildQuery'));
 
