@@ -700,7 +700,7 @@ sub _Delete {
     while ( my $delegated_ace = $delegated_from_this->Next ) {
         ( $delete_succeeded, $submsg ) =
           $delegated_ace->_Delete( InsideTransaction => 1 );
-        last if ($delete_succeeded);
+        last unless ($delete_succeeded);
     }
 
     unless ($delete_succeeded) {
