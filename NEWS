@@ -6,6 +6,8 @@ notice the difference, but it's A Right Thing (ref. Charlie Brady). As
 a result, mailprog configuration is removed from the
 Makefile. However, Internet::Mail _might_ require some configuration.
 
+Tagged as 1.1pre.2.
+
 17 jul 99 (Tobix)
 -----------------
 I've integrated my RT into the development branch rt 1.1, the version
