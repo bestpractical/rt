@@ -59,11 +59,11 @@ sub print_transaction {
     }
 
 
-    $body =~ s/(.{76})/$1\\\n /g;
+    $body =~ s/(.{76}).{3}/$1\n $2/g;
     
     print "<pre>";
     &print_html($body);
-    print "<pre>";
+    print "</pre>";
 }
 
 	

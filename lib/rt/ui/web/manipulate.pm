@@ -1020,19 +1020,7 @@ sub queue_header {
   my $col = shift;
   my $name = shift;
   my ($header);
-  $header = "<TH>
-<CENTER><FONT SIZE=\"-1\">
-$name
-<br>
-<a href=\"$ScriptURL?q_sort=$col\&$query\">
-<img src=\"/webrt/up.gif\" alt=\"Ascending\" border=0>
-</a> 
-&nbsp;<a href=\"$ScriptURL?q_sort=$col\&q_reverse=1&$query\">
-<img src=\"/webrt/down.gif\" alt=\"Descending\" border=0>
-</a>
-</FONT>
-</CENTER>
-</TH>";
+  $header = "<TH><CENTER><FONT SIZE=\"-1\">$name<br><a href=\"$ScriptURL?q_sort=$col\&$query\"><img src=\"/webrt/up.gif\" alt=\"Ascending\" border=0></a>&nbsp;<a href=\"$ScriptURL?q_sort=$col\&q_reverse=1&$query\"><img src=\"/webrt/down.gif\" alt=\"Descending\" border=0></a></FONT></CENTER></TH>";
   return ($header);
 }
 
