@@ -78,10 +78,12 @@ sub _Accessible  {
 	      Country => 'read/write',
 	      # }}}
 	      
+	      # {{{ Core DBIx::Record Attributes
 	      Creator => 'read/auto',
 	      Created => 'read/auto',
 	      LastUpdatedBy => 'read/auto',
 	      LastUpdated => 'read/auto'
+	      # }}}
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
@@ -180,7 +182,7 @@ sub LoadByEmail {
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
-  if ($value = $self->_Value('Password')) {
+  if ($value == $self->_Value('Password')) {
     return (1);
   }
   else {
@@ -208,24 +210,30 @@ sub ModifyPermitted  {
 # {{{ sub Signature 
 sub Signature {
     my $self=shift;
-    return ($self->SUPER::Signature)
-	if ($self->SUPER::Signature);
-    my @entry=getpwnam($self->Gecos || $self->UserId);
-    my $home=$entry[7];
-    for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
+    return ($self->SUPER::Signature);
+    
+    #TODO this code is never reached. In the future, maybe we'll support 
+    # signatures on disk from here.
+    if (0) {
+      my @entry=getpwnam($self->Gecos || $self->UserId);
+      my $home=$entry[7];
+      for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
 	if (-r $trythis) {
-	    local($/);
+	  local($/);
 	    undef $/;
-	    open(SIGNATURE, "<$trythis"); 
-	    $signature=<SIGNATURE>;
-	    close(SIGNATURE);
-	    return $signature;
+	  open(SIGNATURE, "<$trythis"); 
+	  $signature=<SIGNATURE>;
+	  close(SIGNATURE);
+	  return $signature;
 	}
+      }
+      return undef;
     }
-    return undef;
+  }
+
 }
-#}}}
- 
+# }}}
+
 
 
 

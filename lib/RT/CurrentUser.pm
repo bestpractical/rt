@@ -40,11 +40,14 @@ sub _Init  {
 
 # {{{ sub UserObj
 sub UserObj {
-    my $self = shift;
-    my $id=$self->id;
-    my $u=RT::User->new($self);
-    $u->Load($id) || die "Couldn't find myself in the user db?";
-    return $u;
+  my $self = shift;
+  
+  unless ($self->{'UserObj'}) {
+    $self->{'UserObj'} = RT::User->new($self);
+    $self->{'UserObj'}->Load($id) 
+      || die "Couldn't find myself in the user db?";
+  }
+  return ($self->{'UserObj'});
 }
 # }}}
 
@@ -55,7 +58,7 @@ sub _Accessible  {
 	      UserId => 'read',
 	      Gecos => 'read',
 	      RealName => 'read',
-	      Password => 'read/write',
+	      Password => 'neither',
 	      EmailAddress => 'read',
 	      CanManipulate => 'read',
 	      IsAdministrator => 'read'
@@ -79,24 +82,36 @@ sub Load  {
   else {
     # This is a bit dangerous, we might get false authen if somebody
     # uses ambigous userids or real names:
-    $self->LoadByCol("UserId",$identifier) || $self->LoadByCol("RealName",$identifier);
+    $self->LoadByCol("UserId",$identifier);
   }
 }
 # }}}
 
-#used to check if a password is correct
 
 # {{{ sub IsPassword
+
+#used to check if a password is correct
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
-  if ($value = $self->_Value('Password')) {
+  if ($value == $self->_Value('Password')) {
     return (1);
   }
   else {
     return (undef);
   }
 }
+# }}}
+
+
+# {{{ sub HasRight
+sub HasRight {
+  my $self = shift;
+  my $args = ( Scope => undef,
+	       AppliesTo => undef,
+	       Right => undef,
+	      @_);
+
 # }}}
 
 # {{{ sub DisplayPermitted 
@@ -114,6 +129,9 @@ sub ModifyPermitted  {
   return(1);
 }
 # }}}
+
+
+
 
 1;
  
