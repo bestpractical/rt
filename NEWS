@@ -1,3 +1,8 @@
+22 jul 99
+---------
+Fix for [fsck #113] Display of requests users can't manipulate should now give 
+an error
+
 22 Jul 99 (Jesse)
 -----------------
 Inital cleanup to the web ticket view. I'd like to significantly 

@@ -40,6 +40,13 @@ sub parse_args {
 	    $serial_num=int($ARGV[++$i]);
 	    &cli_show_req ($serial_num);
 	    &cli_history_req($serial_num);
+	    if (&rt::can_display_request($serial_num, $current_user)) {
+		&cli_show_req($serial_num);
+		&cli_history_req($serial_num);
+	    } 
+	    else {
+		print "You don't have permission to display request #$serial_num\n";
+	    }
 	}
 	
 	elsif ($ARGV[$i] eq "-comment")	{
@@ -168,9 +175,9 @@ sub parse_args {
 
 	else {
 	    &cli_help_req;
-	    }
-	next
 	}
+	next
+    }
 }
 
    

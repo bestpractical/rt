@@ -18,13 +18,27 @@ sub untaint {
 sub can_manipulate_request{
     my ($in_serial_num, $in_user) =@_;
     &req_in($in_serial_num,$in_user);
-    if (&can_manipulate_queue($rt::req[$in_serial_num]{queue_id},$in_user)) {
+    if (&can_manipulate_queue($rt::req[$in_serial_num]{'queue_id'},$in_user)) {
 	return(1);
     }
     else {
 	return(0);
     }
 }
+
+#can the named user display the named queue
+sub can_display_request{
+    my ($in_serial_num, $in_user) =@_;
+    &req_in($in_serial_num,$in_user);
+    if (&can_display_queue($rt::req[$in_serial_num]{'queue_id'},$in_user)) {
+	return(1);
+    }
+    else {
+	return(0);
+    }
+}
+
+
 sub can_create_request{
     my $in_queue = shift;
     my $in_user = shift;
@@ -55,6 +69,8 @@ sub can_manipulate_queue {
 	return(0);
     }
 }
+
+
 
 sub can_display_queue {
     my ($in_queue, $in_user) =@_;
