@@ -215,28 +215,28 @@ sub Watchers {
 
 sub RequestorsAsString {
     my $self=shift;
-    return ($self->Requestors->EmailsAsString() );
+    return -CleanAddressesAsString ($self->Requestors->EmailsAsString() );
 }
 
 sub WatchersAsString {
     my $self=shift;
-    return clean ($self->Watchers->EmailsAsString() . ", " .
+    return _CleanAddressesAsString ($self->Watchers->EmailsAsString() . ", " .
 		  $self->Queue->Watchers->EmailsAsString());
 }
 
 sub AdminCcAsString {
     my $self=shift;
-    return clean ($self->AdminCc->EmailsAsString() . ", " .
+    return _CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
 		  $self->Queue->AdminCc->EmailsAsString());
   }
 
 sub CcAsString {
     my $self=shift;
-    return clean ($self->Cc->EmailsAsString() . ", ".
+    return _CleanAddressesAsString ($self->Cc->EmailsAsString() . ", ".
 		  $self->Queue->Cc->EmailsAsString());
 }
 
-sub clean {
+sub _CleanAddressesAsString {
     my $i=shift;
     $i =~ s/^, //;
     $i =~ s/, $//;
