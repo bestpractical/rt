@@ -34,7 +34,7 @@ use Getopt::Long;
 use CPAN;
 my %args;
 my %deps;
-GetOptions(\%args,'install', 'with-MYSQL', 'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE', 'with-ORACLE', 'with-FASTCGI', 'with-MODPERL1', 'with-MODPERL2' ,'with-DEV');
+GetOptions(\%args,'install', 'with-MYSQL', 'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE', 'with-ORACLE', 'with-FASTCGI', 'with-SPEEDYCGI', 'with-MODPERL1', 'with-MODPERL2' ,'with-DEV');
 
 if  (!keys %args) {
 help();
@@ -67,6 +67,7 @@ The following switches will tell the tool to check for specific dependencies
 	--with-oracle		Database interface for oracle (unsupported)
 
 	--with-fastcgi		Libraries needed to support the fastcgi handler
+	--with-speedycgi	Libraries needed to support the speedycgi handler
 	--with-modperl1		Libraries needed to support the modperl 1 handler
 	--with-modperl2		Libraries needed to support the modperl 2 handler
 
@@ -140,6 +141,11 @@ $deps{'FASTCGI'} = [ _( << '.') ];
 CGI
 FCGI
 CGI::Fast 
+.
+
+$deps{'SPEEDYCGI'} = [ _( << '.') ];
+CGI
+CGI::SpeedyCGI
 .
 
 

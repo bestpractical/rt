@@ -27,6 +27,14 @@ AC_PATH_PROG([PERL], [perl], [not found])
 if test "$PERL" = 'not found'; then
 	AC_MSG_ERROR([cannot use $PACKAGE_NAME without perl])
 fi
+dnl SPEED_BIN
+AC_ARG_WITH(speedycgi,
+	    AC_HELP_STRING([--with-speedycgi=/path/to/speedy],
+	    		   [path to your speedycgi binary, if it exists]),
+            SPEEDY_BIN=$withval,
+            SPEEDY_BIN=/usr/local/bin/speedy) 
+AC_SUBST(SPEEDY_BIN)
+
 
 dnl Defaults paths for installation
 AC_PREFIX_DEFAULT([/opt/rt3])
@@ -67,7 +75,7 @@ AC_SUBST(LIBS_GROUP)
 dnl DB_TYPE
 AC_ARG_WITH(db-type,
 	    AC_HELP_STRING([--with-db-type=TYPE],
-	    		   [sort of database RT will use (default: mysql)]), 
+	    		   [sort of database RT will use (default: mysql) (mysql and Pg are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
 if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg'; then
@@ -189,6 +197,7 @@ AC_CONFIG_FILES([
                  lib/t/02regression.t
                  lib/t/03web.pl
  		 bin/mason_handler.fcgi
+ 		 bin/mason_handler.scgi
  		 bin/mason_handler.svc
  		 bin/rt-commit-handler
  		 bin/rt-crontool
