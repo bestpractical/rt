@@ -595,11 +595,11 @@ sub LastUpdatedAsString {
 
 # {{{ sub Notify
 sub Notify {
-  my $self = shift;
-  return ($self->_Set("Told",time()));
+    my $self = shift;
+    return ($self->_Set("Told",time()));
 }
 # }}}
-  
+
 # {{{ sub SinceTold
 sub SinceTold {
   my $self = shift;
@@ -980,27 +980,22 @@ sub _Set {
 
 # TAKES: Right and optional "Actor" which defaults to the current user
 sub _HasRight {
-  my $self = shift;
+    my $self = shift;
+    #TODO For now, they always do
+    return(1);
+
+    my $right = shift;
+    # by default, the actor is the current user
+    if (!@_) {
+	my $actor = $self->CurrentUser->Id();
+    }
+    else {
+	my $actor = shift;   
+    }
   
-
-  #TODO For now, they always do
-  return(1);
-
-
-  my $right = shift;
-  # by default, the actor is the current user
-  if (!@_) {
-    my $actor = $self->CurrentUser->Id();
-  }
-  else {
-    my $actor = shift;   
-  }
-  
-  return ($self->Queue->_HasRight(@_);
-  
-
-
+    return ($self->Queue->_HasRight(@_));
 }
+
 # }}}
 
 # {{{ sub DisplayPermitted
@@ -1066,5 +1061,6 @@ sub AdminPermitted {
 
 # }}}
 1;
+
 
 
