@@ -119,16 +119,19 @@ sub ParseArgs  {
       
       elsif ($ARGV[$i] eq "-link")	{
 	$base=int($ARGV[++$i]);
-	$type=int($ARGV[++$i]);
+	$type=$ARGV[++$i];
 	$target=int($ARGV[++$i]);
-
-	# TODO: Check if base or target is local ticket
-	# TODO: load the local ticket
-	# my $Ticket=&LoadTicket($base);
-	# TODO: link it
-	
-	$Message .= "Not linked (code stubbed)";
-	
+	if (RT::Ticket::URIIsLocal($base)) {
+	    my $Ticket=&LoadTicket($base);
+	    my ($res, $msg, $linkid)=
+		$Ticket->LinkTo(target=>$target, type=>$type);
+	    $Message .= $msg;
+	} elsif (RT::Ticket::URIIsLocal($target)) {
+	    my $Ticket=&LoadTicket($target);
+	    my ($res, $msg, $linkid)=
+		$Ticket->LinkFrom(base=>$base, type=>$type);
+	    $Message .= $msg;
+	}
       }
       
       elsif ($ARGV[$i] eq "-steal")	{
@@ -501,6 +504,8 @@ sub ShowHelp  {
     -merge <num1> <num2>  Merge <num1> into <num2>
     -trans <ser> <trans>  Display ticket <ser> transaction <trans>
     -kill <num>           Permanently remove <num> from the database
+
+    -link <num> (DependsOn|MemberOf|RefersTo) <num>
 EOFORM
     
   }
