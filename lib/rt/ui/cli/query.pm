@@ -137,7 +137,7 @@ sub build_query {
 	       $prio_ops .= " prio $ARGV[++$i] $ARGV[++$i]";
 	   }
 	   
-	   if ($ARGV[$i] eq '-status'){
+	   if ($ARGV[$i] =~ '-stat'){
 	       if ($status_ops){
 		   $status_ops .= " OR ";
 	       }
@@ -254,16 +254,17 @@ print"
     
            -prio <op> <prio> list requests which have a <prio> satisfying <op>
                              op may be one of = < > <= >= <>
-           -owner    <user>  prints all requests owned by <user>
-           -unowned          prints only the un-taken requests
-           -user <user>      prints all requests made by <user>
-           -open             prints only the open requests
-           -resolved         prints resolved requests
-           -stalled          prints stalled requests
-           -dead             prints killed requests
+           -owner    <user>  lists all requests owned by <user>
+           -unowned          lists unowned requests
+           -user <user>      lists all requests made by <user>
+           -open             lists only the open requests
+           -resolved         lists resolved requests
+           -stalled          lists stalled requests
+           -dead             lists killed requests
+	   -area <area>	     lists requests in the area <area>
            -orderby <crit>   Sorts requests by <crit>  (one of serial_num, 
                              queue_id, requestors, owner, subject, priority, 
-                             status, date_created, date_due
+                             status, date_created, date_due, area)
            -format <format> allows you to specify the output of rtq.
                              <format> is a string of the form %xn%xn%xn.  
                              x is any of the commands associated below.  
@@ -291,7 +292,7 @@ print"
     #          <num>            print only request <num>\n";
     #          :<num>           print a total of <num> requests\n";
     
-print "                     Without options, rtq prints all open requests.
+print "                     Without options, rtq lists all open requests.
 ";
 }
 

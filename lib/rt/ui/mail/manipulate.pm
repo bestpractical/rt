@@ -17,8 +17,6 @@ sub activate {
   if (!$in_action){
     $in_action='correspond';
   }
-  
-  
     
   &parse_headers($content);
   
@@ -26,8 +24,6 @@ sub activate {
     &rt::initialize($current_user);
   
   #take all those actions
-  
- 
   
   $content=&parse_actions($current_user,$serial_num, $content);
   
@@ -91,8 +87,10 @@ sub munge_content {
 }
 
 sub parse_headers {
-  local ($content) ="@_";
-  foreach $line (split (/\n/,$content)) {
+  my ($content) ="@_";
+  ($headers, $body) = split (/\n\n/, $content, 2);
+
+  foreach $line (split (/\n/,$headers)) {
     
     if ($line =~/^X-RT-Loop-Prevention: $rt::rtname/g) {
       die ("RT has recieved mail from itself. Goodnight.");
