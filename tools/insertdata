@@ -163,13 +163,19 @@ my @queues = (
 # {{{ ScripActions
 
 my @ScripActions = (
+
+		    {
+		     Name => 'AutoreplyToRequestor',
+		     Description =>       'Always sends a message to the requestor independent of message sender',
+		     ExecModule =>        'Autoreply',
+		     Argument =>          'Requestor'
+		    },
 		    {
 		     Name => 'NotifyRequestor',
 		     Description =>       'Sends a message to the requestor',
 		     ExecModule =>        'Notify',
 		     Argument =>          'Requestor'
 		    },
-
 		    {
 		     Name =>	          'NotifyOwnerAsComment',
 		     Description =>       'Sends mail to owner',

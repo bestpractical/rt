@@ -211,7 +211,7 @@ sub SetMessageID {
   # TODO $RT::rtname should be replaced by $RT::hostname to form valid
   # message-ids (ref rfc822)
   
-  $self->TemplateObj->MIMEObj->SetHeader
+  $self->SetHeader
     ('Message-ID', "<rt-".$self->TicketObj->id().
      "-".
      $self->TransactionObj->id()."." .rand(20) . "\@".$RT::rtname.">")
@@ -240,11 +240,11 @@ sub SetReturnAddress {
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
       my $friendly_name=$self->TransactionObj->CreatorObj->RealName;
       # TODO: this "via RT" should really be site-configurable.
-      $self->TemplateObj->MIMEObj->SetHeader('From', "$friendly_name via RT <$email_address>");
+      $self->SetHeader('From', "$friendly_name via RT <$email_address>");
   }
   
   unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
-      $self->TemplateObj->MIMEObj->SetHeader('Reply-To', "$email_address");
+      $self->SetHeader('Reply-To', "$email_address");
   }
   
 }
