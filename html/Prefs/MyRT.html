@@ -63,9 +63,6 @@
 </ul>
 </&>
 
-<&|/Elements/TitleBox, title => loc('Quick search'), bodyclass => "" &>
-</&>
-
 % for my $pane (@panes) {
 <&|/Elements/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
 <& /Widgets/SelectionBox:show, self => $pane &>
