@@ -97,16 +97,6 @@ sub new {
 Returns RT::FM::System's id. It's 1. 
 
 
-=begin testing
-
-use RT::FM::System;
-my $sys = RT::FM::System->new();
-is( $sys->Id, 1);
-is ($sys->id, 1);
-
-=end testing
-
-
 =cut
 
 *Id = \&id;

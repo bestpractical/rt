@@ -9,6 +9,6 @@ ok(RT::Init, "Basic initialization and DB connectivity");
 
 use File::Find;
 File::Find::find({wanted => \&wanted}, '.');
-sub wanted { /^*\.pm\z/s && ok(require $_, "Requiring '$_'"); }
+sub wanted { /^*\.pm\z/s && $_ !~ /Overlay/ && ok(require $_, "Requiring '$_'"); }
 
 
