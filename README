@@ -24,7 +24,7 @@ REQUIRED PACKAGES:
 
 o   Perl5.x ( http://www.perl.com ) -- free
 
-o   MySQL 3.20.x or 3.21.x ( http://www.tcx.se ) -- free
+o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.tcx.se ) -- free
         
 	FTP mysql from www.tcx.se and follow the INSTALL instructions
         contained therein
@@ -79,7 +79,7 @@ GENERAL INSTALLATION
             [root@host bin]# ./rtadmin user  -create joebob
 
     NOTE: root's password for the web interface is "wordpass" 
-    (without the quotes)   
+    (without the quotes.)  Not changing this is a SECURITY risk  
  
 7   Edit templates to your liking. Templates are found in
     rt/etc/templates/queues/<queue-name>
@@ -95,7 +95,7 @@ machine.
  
 Add the following line to /etc/aliases (or your local equivalent) :
 
-        rt:     |"/usr/local/rt/bin/rt-mailgate general correspond"
+        rt:     |"/path/to/lrt/bin/rt-mailgate general correspond"
                                                     |          |
                                    <<queue-name>----/          |
                                                                |
@@ -112,7 +112,7 @@ any RT alias with the command %RT HELP on a line by itself.
 
 You'll need an alias like the following for action requests:
 
-        rt-action:      |"/usr/local/rt/bin/rt-mailgate general action"
+        rt-action:      |"/path/to/rt/bin/rt-mailgate general action"
 	
 
 THE WEB UI
@@ -128,7 +128,7 @@ following two lines from util_script.c:
 -       else if (!strcasecmp (hdrs[i].key, "Authorization"))
 -           continue;
 
-(These lines can be found at approximately line 180 in apache 1.2.5
+(These lines can be found at approximately line 180 in apache 1.2.5)
 
 NOTE: Netscape's servers don't allow nph-cgi scripts to perform their own 
 authentication so they don't really work with WebRT. Besides, CERN and Apache 
@@ -188,7 +188,8 @@ She forced me to use a database backend.  I've thanked her for it every
 day since.  Rich West rewrote this readme and did some UI hacking.  Adam
 Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
 Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley and Serge Zhuk 
-have all contributed bug reports, code  or ideas that have helped RT along.  If I've left you out, please drop me a line....it wasn't intentional. 
+have all contributed bug reports, code  or ideas that have helped RT along.  
+If I've left you out, please drop me a line....it wasn't intentional. 
  
         Enjoy
 

@@ -51,6 +51,9 @@
 
     $mysql_version="!!MYSQL_VERSION!!";
 
+    # $passwd_min defines the minimum length for user passwords.
+    $user_passwd_min = "!!RT_USER_PASSWD_MIN!!";
+
     #$mail_alias is a generic alias to send mail to for any request
     #already in a queue because of the nature of RT, mail sent to any
     #correspondence address will get put in the right place and mail sent

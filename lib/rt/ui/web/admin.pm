@@ -109,10 +109,13 @@ sub take_action {
       ($flag, $message)=&rt::add_modify_queue_conf($rt::ui::web::FORM{queue_id}, $rt::ui::web::FORM{email}, &rt::booleanize($rt::ui::web::FORM{m_owner_trans}), &rt::booleanize($rt::ui::web::FORM{m_members_trans}), &rt::booleanize($rt::ui::web::FORM{m_user_trans}), &rt::booleanize($rt::ui::web::FORM{m_user_create}), &rt::booleanize($rt::ui::web::FORM{m_members_correspond}), &rt::booleanize($rt::ui::web::FORM{m_members_comment}), &rt::booleanize($rt::ui::web::FORM{allow_user_create}), "$rt::ui::web::FORM{'initial_prio_tens'}$rt::ui::web::FORM{'initial_prio_ones'}","$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}",$current_user);
 
 
-	for( sort keys %rt::users) {
-	    $user_id = $rt::users{$_};
+	foreach $user_id( sort keys %rt::users) {
+	    
 	    $acl_string="acl_" . $rt::ui::web::FORM{queue_id} . "_" . $user_id;
 	    $acl=$rt::ui::web::FORM{$acl_string};
+	    
+	    
+
 	    if ($acl eq 'admin') {
 		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,1,1,$current_user);
 	    }
@@ -613,14 +616,14 @@ sub select_queue_acls {
 	if (!&rt::can_display_queue($queue_id,$user_id)){
 	    print "SELECTED";
 	}
-	print ">No Access-flag is $flag\n";
+	print ">No Access\n";
 
 	print "<option value=\"admin\"";
 	if ((&rt::can_admin_queue($queue_id,$user_id))== 1){
 	    print "SELECTED";
 	    $flag = 1;
 	}
-	print">Admin-flag is $flag\n";
+	print">Admin\n";
 
 	print "<option value=\"manip\"";
 	if (! $flag && (&rt::can_manipulate_queue($queue_id,$user_id))==1){
@@ -632,7 +635,7 @@ sub select_queue_acls {
 	if (! $flag && (&rt::can_display_queue($queue_id,$user_id))==1){
 	    print "SELECTED";
 	}
-	print">Display-flag is $flag\n";	
+	print">Display\n";	
     print "</select><br>\n";
 }
 

@@ -18,15 +18,31 @@ sub parse_args {
 	    $action=$ARGV[++$i];
 	    if (($action eq "-modify") or ($action eq "-create")) {
 		$queue_id=$ARGV[++$i];
+		if (!$queue_id) {
+			print "You must specify a queue.\n";
+			exit(0);
+			}
+
 		&cli_create_modify_queue($queue_id);
 	    }
 	    elsif ($action eq "-delete")	{
 		$queue_id=$ARGV[++$i];
+            if (!$queue_id) {
+                        print "You must specify a queue.\n";
+                        exit(0);
+                        }
+
 		&cli_delete_queue($queue_id);
 	    }
 
 	    elsif ($action eq "-acl")	{
 		$queue_id=$ARGV[++$i];
+	                if (!$queue_id) {
+                        print "You must specify a queue.\n";
+                        exit(0);
+                        }
+
+
 		&cli_acl_queue($queue_id);
 	    }	
 	    
@@ -49,10 +65,22 @@ sub parse_args {
 	    $action=$ARGV[++$i];
 	    if (($action eq "-modify") or ($action eq "-create")) {
 		$user_id=$ARGV[++$i];
+	                if (!$user_id) {
+                        print "You must specify a user.\n";
+                        exit(0);
+                        }
+
+
 		&cli_create_modify_user($user_id);
 	    }
 	    elsif ($action eq "-delete")	{
 		$user_id=$ARGV[++$i];
+
+                        if (!$user_id) {
+                        print "You must specify a user.\n";
+                        exit(0);
+                        }
+
 		&cli_delete_user($user_id);
 	    }	
 	    

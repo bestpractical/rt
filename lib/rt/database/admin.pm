@@ -232,7 +232,7 @@ sub add_modify_queue_acl {
 		
 		$query_string = "UPDATE queue_acl SET $update_clause WHERE queue_id = $queue_id AND user_id = $user_id";
 		$query_string =~ s/,(\s*)WHERE/ WHERE/g;
-		print "UPDATING WITH QYUERY $query_string\n";	
+		#print "UPDATING WITH QYUERY $query_string\n";	
 		$dbh->Query($query_string) or warn "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n";
 		delete $rt::queues{$in_queue_id}{acls}{$in_user_id};
 		&rt::load_queue_acls();
@@ -247,12 +247,21 @@ sub add_modify_queue_acl {
 }
 
 sub add_modify_user_info {
-    my  ($in_user_id, $in_real_name,$in_password,$in_email, $in_phone, $in_office, $in_comments, $in_admin_rt, $in_current_user) = @_;
+    my  $in_user_id = shift;
+    my $in_real_name = shift;
+    my $in_password = shift;
+    my $in_email = shift;
+    my $in_phone = shift;
+    my $in_office = shift; 
+    my $in_comments = shift;
+    my $in_admin_rt = shift;
+    my $in_current_user = shift;
+
     my ($query_string,$update_clause);
 
-    my $passwd_limit = 6;
-    my $passwd_err = "Use longer password ($passwd_limit chars minimum)";
-    
+    my $passwd_err = "User create/modify failed: Use longer password ($user_passwd_min chars minimum)";
+   
+ 
     $new_user_id = $rt::dbh->quote($in_user_id);
     $new_real_name = $rt::dbh->quote($in_real_name);
     $in_password =~ s/\s//g;
@@ -262,13 +271,19 @@ sub add_modify_user_info {
     $new_office = $rt::dbh->quote ($in_office);
     $new_comments = $rt::dbh->quote ($in_comments);
   
+    if ($new_email eq '') { $new_email = "''";}
+    if ($new_comments eq '') { $new_comments = "''";}
+    if ($new_phone eq '')  { $new_phone = "''";}
+    if ($new_office eq '') {$new_office = "''";}
+    if ($new_real_name eq '') {$new_real_name="''";}
 
     if (!(&is_a_user($in_user_id))){
 # make sure one didn't specify too short password
-	return (0,$passwd_err) if length($in_password) < $passwd_limit;
+	return (0,$passwd_err) if length($in_password) < $user_passwd_min;
 
 	if ($users{$in_current_user}{admin_rt}){
 	    $query_string="INSERT INTO users (user_id, real_name, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_real_name, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
+	print "$query_string\n";
 	    $dbh->Query($query_string) or warn "[add_modify_user_info] Query had some problem: $Mysql::db_errstr\n";
 
 	    &rt::load_user_info();
@@ -292,7 +307,7 @@ sub add_modify_user_info {
 	    if ($in_admin_rt ne $users{$in_user_id}{'admin_rt'}) {$update_clause .= "admin_rt = $in_admin_rt, ";}
 	    if (($in_password ne $users{$in_user_id}{'password'}) && ($in_password ne ''))
 	    {
-		return (0,$passwd_err) if length($in_password) < $passwd_limit;
+		return (0,$passwd_err) if length($in_password) < $user_passwd_min;
 	    	$update_clause .= "password = $new_password ";
 	    }
 	    if ($update_clause) {

@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	0
 RT_VERSION_MINOR	=	9
-RT_VERSION_PATCH	=	17
+RT_VERSION_PATCH	=	18
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -77,6 +77,13 @@ RT_MAIL_TAG		=	change-this-string-or-perish
 
 RT_MAIL_ALIAS		=	rt\@your.domain.is.not.yet.set
 
+#
+# RT_USER_MIN_PASS specifies the minimum length of RT user passwords.  If you don't
+# want such functionality, simply set it to 0
+#
+RT_USER_PASSWD_MIN	=	5
+
+
 # 
 # set this to whatever program you want to send the mail that RT generates
 # be aware, however, that RT expects to be able to set the From: line
@@ -96,10 +103,10 @@ MAIL_OPTIONS		=	-oi -t -ODeliveryMode=b -OErrorMode=m
 
 MYSQLDIR		=	/opt/mysql/bin
 
-# Mysql version can be 3.20 or 3.21.  This setting determines the order 
+# Mysql version can be 3.20, 3.21 or 3.22.  This setting determines the order 
 # $rtuser and $rtpass are passed to MysqlPerl.  
 
-MYSQL_VERSION		= 	3.20
+MYSQL_VERSION		= 	3.22
 
 #
 # this password is what RT will use to authenticate itself to mysql
@@ -286,6 +293,7 @@ config-replace:
         s'!!RTGROUP!!'$(RTGROUP)'g;\
         s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
         s'!!RT_MAIL_TAG!!'$(RT_MAIL_TAG)'g;\
+	s'!!RT_USER_PASSWD_MIN!!'$(RT_USER_PASSWD_MIN)'g;\
         s'!!RT_MYSQL_HOST!!'$(RT_MYSQL_HOST)'g;\
         s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\

@@ -5,6 +5,12 @@ Incorporated a LOT of changes from Serge Zhuk <serge@yahoo-inc.com>
 
 Bug fixes:
 
+- changing user permissions via web queue-editing ui now actually works
+
+- cli admin ui tweaks
+
+- noted Mysql 3.22 compatibility.
+
 - mail header <From:> was inserted using sendmail -f, what produces
   X-Authentication warning on each message
 
@@ -47,7 +53,8 @@ Bug fixes:
 New features:
 
 
-- password length check added, empty passwords are not allowed 6 chars min
+- password length check added, empty passwords are not allowed. 5 char password
+  minimum by default.  This is setable in the Makefile or config.pm 
 
 - mail header <From:> is using an e-mail address of the Q, user sent request
   to, not the generic rt_alias as it's confusing for the users
