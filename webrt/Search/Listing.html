@@ -120,6 +120,17 @@ if ($ARGS{'LimitStatus'}) {
 		  )
 }
 
+# TODO: This one should _not_ be here, rather somewhere else
+# (suggestions?).  It might eventually read the cookies, user
+# configuration information from the DB, queue configuration information
+# from the DB, etc.  It should be object oriented.  But what object can
+# it belong to, and how should it get access to all this data?
+
+sub _cfg {
+  my $key=shift;
+  return $ARGS{$key} || $RT::SitePolicy{$key};
+}
+
 # $Tickets->Limit( FIELD => 'status',
 #			VALUE => "open");
 </%INIT>
