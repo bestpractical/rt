@@ -65,6 +65,7 @@ elsif ($QueueObj) {
 } 
 else {
         my $Queues = RT::Queues->new($session{CurrentUser});
+	$Queues->UnLimit();
 	while (my $Queue = $Queues->Next()) {
 	      push( @objects, $Queue );
         }
