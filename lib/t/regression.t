@@ -21,7 +21,7 @@ my ($id, $msg) = $q->Create( Name => 'regression',
             CorrespondAddress => 'correspond@a',
             CommentAddress => 'comment@a');
 
-isnt($id, 0, "Queue was created sucessfully");
+isnt($id, 0, "Queue was created sucessfully - $msg");
 
 my $q2 = RT::Queue->new($RT::SystemUser);
 

@@ -51,7 +51,6 @@ Create takes a hash of values and creates a row in the database:
   varchar(120) 'EmailAddress'.
   blob 'FreeformContactInfo'.
   varchar(200) 'Organization'.
-  int(11) 'Privileged'.
   varchar(120) 'RealName'.
   varchar(16) 'NickName'.
   varchar(16) 'Lang'.
@@ -89,7 +88,6 @@ sub Create {
                 EmailAddress => '',
                 FreeformContactInfo => '',
                 Organization => '',
-                Privileged => '',
                 RealName => '',
                 NickName => '',
                 Lang => '',
@@ -121,7 +119,6 @@ sub Create {
                          EmailAddress => $args{'EmailAddress'},
                          FreeformContactInfo => $args{'FreeformContactInfo'},
                          Organization => $args{'Organization'},
-                         Privileged => $args{'Privileged'},
                          RealName => $args{'RealName'},
                          NickName => $args{'NickName'},
                          Lang => $args{'Lang'},
@@ -279,24 +276,6 @@ Returns the current value of Organization.
 Set Organization to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Organization will be stored as a varchar(200).)
-
-
-=cut
-
-
-=item Privileged
-
-Returns the current value of Privileged. 
-(In the database, Privileged is stored as int(11).)
-
-
-
-=item SetPrivileged VALUE
-
-
-Set Privileged to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Privileged will be stored as a int(11).)
 
 
 =cut

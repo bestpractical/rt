@@ -156,6 +156,28 @@ sub LoadSystemGroup {
 
 # }}}
 
+# {{{ sub LoadPseudoGroup 
+
+=head2 LoadPseudoGroup NAME
+
+Loads a Pseudo group from the database. The only argument is
+the group's name.
+
+
+=cut
+
+sub LoadPseudoGroup {
+    my $self       = shift;
+    my $identifier = shift;
+
+        $self->LoadByCols( "Domain" => 'Pseudo',
+                           "Instance" => '',
+                           "Name" => '',
+                           "Type" => $identifier );
+}
+
+# }}}
+
 # {{{ sub LoadTicketGroup 
 
 =head2 LoadTicketGroup  { Ticket => TICKET_ID, Type => TYPE }
@@ -210,7 +232,7 @@ sub LoadQueueGroup {
 
 # }}}
 
-
+# {{{ sub Create
 =head2 Create
 
 You need to specify what sort of group you're creating by calling one of the other
@@ -223,6 +245,8 @@ sub Create {
     $RT::Logger->crit("Someone called RT::Group->Create. this method does not exist. someone's being evil");
     return(0,$self->loc('Permission Denied'));
 }
+
+# }}}
 
 # {{{ sub _Create
 
@@ -296,10 +320,32 @@ sub CreateSystemGroup {
     unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
         $RT::Logger->warning( $self->CurrentUser->Name
               . " Tried to create a group without permission." );
-        return ( 0, 'Permission Denied' );
+        return ( 0, $self->loc('Permission Denied') );
     }
 
     return($self->_Create( Domain => 'System', Type => '', Instance => '', @_));
+}
+
+# }}}
+
+# {{{ CreatePseudoGroup
+
+=head2 CreatePseudoGroup { Name => "name", Description => "Description"}
+
+A helper subroutine which creates a Pseudo group 
+
+=cut
+
+sub CreatePseudoGroup {
+    my $self = shift;
+
+    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+        $RT::Logger->warning( $self->CurrentUser->Name
+              . " Tried to create a group without permission." );
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    return($self->_Create( Domain => 'Pseudo', Type => '', Instance => '', @_));
 }
 
 # }}}
@@ -413,7 +459,6 @@ sub UserMembersObj {
 
 # }}}
 
-
 # {{{ MembersObj
 
 =head2 MembersObj
@@ -435,6 +480,8 @@ sub MembersObj {
 }
 
 # }}}
+
+# {{{ MemberEmailAddresses
 
 =head2 MemberEmailAddresses
 
@@ -465,12 +512,13 @@ who are members of this group.
 
 =cut
 
-# }}}
 
 sub MemberEmailAddressesAsString {
     my $self = shift;
     return (join(', ', $self->MemberEmailAddresses));
 }
+
+# }}}
 
 # {{{ AddMember
 
@@ -480,14 +528,17 @@ AddMember adds a principal to this group.  It takes a single principal id.
 Returns a two value array. the first value is true on successful 
 addition or 0 on failure.  The second value is a textual status msg.
 
-R
-
-
 =cut
 
 sub AddMember {
     my $self       = shift;
     my $new_member = shift;
+
+
+    unless ($self->Id) {
+        $RT::Logger->debug("Attempting to add a member to a group which wasn't loaded. 'oops'");
+        return(0, $self->loc("Group not found"));
+    }
 
     $RT::Logger->debug("About to add $new_member to group".$self->id);
 
@@ -566,7 +617,7 @@ sub HasMember {
 
     #If Load returns no objects, we have an undef id. 
     else {
-        $RT::Logger->debug($self." does not contain principal ".$principal->id);
+        #$RT::Logger->debug($self." does not contain principal ".$principal->id);
         return (undef);
     }
 }
@@ -629,8 +680,7 @@ sub DeleteMember {
     my $self   = shift;
     my $member_id = shift;
 
-    $RT::Logger->debug("About to try to delete principal $member_id  as a".
-                        "member of group ".$self->Id);
+    #$RT::Logger->debug("About to try to delete principal $member_id  as a".  "member of group ".$self->Id);
 
     unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
         return ( 0, $self->loc("Permission Denied"));
@@ -641,7 +691,7 @@ sub DeleteMember {
     $member_obj->LoadByCols( MemberId  => $member_id,
                              GroupId => $self->PrincipalId);
 
-    $RT::Logger->debug("Loaded the RT::GroupMember object ".$member_obj->id);
+    #$RT::Logger->debug("Loaded the RT::GroupMember object ".$member_obj->id);
 
     #If we couldn't load it, return undef.
     unless ( $member_obj->Id() ) {
@@ -653,7 +703,7 @@ sub DeleteMember {
     my $val = $member_obj->Delete();
 
     if ($val) {
-        $RT::Logger->debug("Deleted group ".$self->Id." member ". $member_id);
+        #$RT::Logger->debug("Deleted group ".$self->Id." member ". $member_id);
      
         return ( $val, $self->loc("Member deleted") );
     }
@@ -744,7 +794,7 @@ sub _Set {
 
 # {{{ Principal related routines
 
-=head2 PrincipalObj 
+=head2 PrincipalObj
 
 Returns the principal object for this user. returns an empty RT::Principal
 if there's no principal object matching this user. 

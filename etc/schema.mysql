@@ -84,7 +84,7 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE UNIQUE INDEX Groups1 ON Groups (Name) ;
+CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
 
 # }}}
 
@@ -151,8 +151,8 @@ CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   PrincipalId integer NULL  , #Foreign key to principals
   RightName varchar(25) NULL  ,
-  RightDomain varchar(25) NULL  ,
-  RightInstance integer NULL  ,
+  ObjectType varchar(25) NULL  ,
+  ObjectId integer NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 

@@ -71,7 +71,6 @@ else {    # this is a virgin install
         RealName => 'The RT System itself',
         Comments =>
 'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-        Privileged => '2',
         Creator    => '1'
     );
 
@@ -112,7 +111,7 @@ unless ($LastVersion) {
             RealName => 'Nobody in particular',
             Comments => 'Do not delete or modify this user. It is integral '
               . 'to RT\'s internal data structures',
-            Privileged => '2',
+            Privileged => '1',
         },
 
         {
@@ -141,26 +140,44 @@ unless ($LastVersion) {
             Description => 'Pseudogroup for internal use',
         },
         {
-            Name        => 'Owner',
+            Type        => 'Privileged',
+            Domain      => 'Pseudo',
+            Instance    => '',
+            Name        => '',
+            Description => 'Pseudogroup for internal use',
+        },
+        {
+            Name        => '',
+            Type        => 'Unprivileged',
             Domain      => 'Pseudo',
             Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
         {
-            Name        => 'Requestor',
-            Domain      => 'Pseudo',
+            Name        => '',
+            Type        => 'Owner',
+            Domain      => 'SystemRole',
             Instance    => '',
-            Description => 'Pseudogroup for internal use',
+            Description => 'SystemRolegroup for internal use',
         },
         {
-            Name        => 'Cc',
-            Domain      => 'Pseudo',
+            Name        => '',
+            Type        => 'Requestor',
+            Domain      => 'SystemRole',
             Instance    => '',
-            Description => 'Pseudogroup for internal use',
+            Description => 'SystemRolegroup for internal use',
         },
         {
-            Name        => 'AdminCc',
-            Domain      => 'Pseudo',
+            Name        => '',
+            Type        => 'Cc',
+            Domain      => 'SystemRole',
+            Instance    => '',
+            Description => 'SystemRolegroup for internal use',
+        },
+        {
+            Name        => '',
+            Type        => 'AdminCc',
+            Domain      => 'SystemRole',
             Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
@@ -177,21 +194,21 @@ unless ($LastVersion) {
         {
             PrincipalId    => '1',
             RightName      => 'SuperUser',
-            RightDomain     => 'System',
-            RightInstance => '0'
+            ObjectType     => 'System',
+            ObjectId => '0'
         },
         {
             PrincipalId    => '2',
-            RightName      => 'SuperUser',
-            RightDomain     => 'System',
-            RightInstance => '0'
+            RightName      => 'OwnTicket',
+            ObjectType     => 'System',
+            ObjectId => '0'
         },
 
         {
             PrincipalId    => '3',
             RightName      => 'SuperUser',
-            RightDomain     => 'System',
-            RightInstance => '0'
+            ObjectType     => 'System',
+            ObjectId => '0'
         }
 
     );
@@ -493,15 +510,6 @@ for $item (@acl) {
 }
 print "done.\n";
 
-print "Creating users...";
-use RT::User;
-foreach $item (@users) {
-    my $new_entry = new RT::User($CurrentUser);
-    my ( $return, $msg ) = $new_entry->Create(%$item);
-    print "(Error: $msg)" unless ($return);
-    print $return. ".";
-}
-print "done.\n";
 
 print "Creating groups...";
 use RT::Group;
@@ -513,6 +521,15 @@ foreach $item (@groups) {
 }
 print "done.\n";
 
+print "Creating users...";
+use RT::User;
+foreach $item (@users) {
+    my $new_entry = new RT::User($CurrentUser);
+    my ( $return, $msg ) = $new_entry->Create(%$item);
+    print "(Error: $msg)" unless ($return);
+    print $return. ".";
+}
+print "done.\n";
 print "Creating queues...";
 use RT::Queue;
 for $item (@queues) {
@@ -527,7 +544,7 @@ print "Creating ScripActions...";
 
 use RT::ScripAction;
 for $item (@ScripActions) {
-    my $new_entry = new RT::ScripAction($CurrentUser);
+    my $new_entry = RT::ScripAction->new($CurrentUser);
     my $return    = $new_entry->Create(%$item);
     print $return. ".";
 }
@@ -537,7 +554,7 @@ print "Creating ScripConditions...";
 
 use RT::ScripCondition;
 for $item (@ScripConditions) {
-    my $new_entry = new RT::ScripCondition($CurrentUser);
+    my $new_entry =  RT::ScripCondition->new($CurrentUser);
     my $return    = $new_entry->Create(%$item);
     print $return. ".";
 }

@@ -98,7 +98,7 @@ sub Load  {
 	
 	$self->{'Template'} = $template;
     }
-    return (loc('[_1] ScripAction loaded', $self->Id));
+    return ($self->loc('[_1] ScripAction loaded', $self->Id));
 }
 # }}}
 

@@ -32,7 +32,6 @@ ok (require RT::GroupMember);
 no warnings qw(redefine);
 use RT::CachedGroupMembers;
 
-
 # {{{ sub _ClassAccessible 
 
 sub _ClassAccessible {
@@ -74,6 +73,7 @@ sub Create {
             $args{'Group'}->Id
             
             ) {
+
         $RT::Logger->warning("GroupMember::Create called with a bogus Group arg");
         return (undef);
     }
@@ -193,7 +193,7 @@ sub Delete {
     );
 
     while ( my $item_to_del = $cached_submembers->Next() ) {
-        $RT::Logger->debug("About to delete a submember ".$item_to_del->MemberId);
+        #$RT::Logger->debug("About to delete a submember ".$item_to_del->MemberId);
         my $del_err = $item_to_del->Delete();
         unless ($del_err) {
             $RT::Handle->Rollback();

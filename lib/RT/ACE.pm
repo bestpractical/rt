@@ -46,8 +46,8 @@ Create takes a hash of values and creates a row in the database:
 
   int(11) 'PrincipalId'.
   varchar(25) 'RightName'.
-  varchar(25) 'RightDomain'.
-  int(11) 'RightInstance'.
+  varchar(25) 'ObjectType'.
+  int(11) 'ObjectId'.
 
 =cut
 
@@ -59,15 +59,15 @@ sub Create {
     my %args = ( 
                 PrincipalId => '',
                 RightName => '',
-                RightDomain => '',
-                RightInstance => '',
+                ObjectType => '',
+                ObjectId => '',
 
 		  @_);
     $self->SUPER::Create(
                          PrincipalId => $args{'PrincipalId'},
                          RightName => $args{'RightName'},
-                         RightDomain => $args{'RightDomain'},
-                         RightInstance => $args{'RightInstance'},
+                         ObjectType => $args{'ObjectType'},
+                         ObjectId => $args{'ObjectId'},
 );
 
 }
@@ -119,37 +119,37 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item RightDomain
+=item ObjectType
 
-Returns the current value of RightDomain. 
-(In the database, RightDomain is stored as varchar(25).)
-
-
-
-=item SetRightDomain VALUE
+Returns the current value of ObjectType. 
+(In the database, ObjectType is stored as varchar(25).)
 
 
-Set RightDomain to VALUE. 
+
+=item SetObjectType VALUE
+
+
+Set ObjectType to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, RightDomain will be stored as a varchar(25).)
+(In the database, ObjectType will be stored as a varchar(25).)
 
 
 =cut
 
 
-=item RightInstance
+=item ObjectId
 
-Returns the current value of RightInstance. 
-(In the database, RightInstance is stored as int(11).)
-
-
-
-=item SetRightInstance VALUE
+Returns the current value of ObjectId. 
+(In the database, ObjectId is stored as int(11).)
 
 
-Set RightInstance to VALUE. 
+
+=item SetObjectId VALUE
+
+
+Set ObjectId to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, RightInstance will be stored as a int(11).)
+(In the database, ObjectId will be stored as a int(11).)
 
 
 =cut
@@ -165,9 +165,9 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         RightName => 
 		{read => 1, write => 1, type => 'varchar(25)', default => ''},
-        RightDomain => 
+        ObjectType => 
 		{read => 1, write => 1, type => 'varchar(25)', default => ''},
-        RightInstance => 
+        ObjectId => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
 
  }

@@ -9,6 +9,7 @@
 =head1 DESCRIPTION
 
 
+
 =head1 METHODS
 
 =begin testing
@@ -111,8 +112,8 @@ Load an ACE by specifying a paramhash with the following fields:
 
               PrincipalId => undef,
 	      RightName => undef,
-	      RightDomain => undef,
-	      RightInstance => undef,
+	      ObjectType => undef,
+	      ObjectId => undef,
 
 =cut
 
@@ -120,14 +121,14 @@ sub LoadByValues {
   my $self = shift;
   my %args = (PrincipalId => undef,
 	      RightName => undef,
-	      RightDomain => undef,
-	      RightInstance => undef,
+	      ObjectType => undef,
+	      ObjectId => undef,
 	      @_);
   
   $self->LoadByCols (PrincipalId => $args{'PrincipalId'},
 		     RightName => $args{'RightName'},
-		     RightDomain => $args{'RightDomain'},
-		     RightInstance => $args{'RightInstance'}
+		     ObjectType => $args{'ObjectType'},
+		     ObjectId => $args{'ObjectId'}
 		    );
   
   #If we couldn't load it.
@@ -149,8 +150,8 @@ PARAMS is a parameter hash with the following elements:
 
    PrincipalId => An if of an RT::Principal object
    RightName => the name of a right. in any case
-   RightDomain => "System" | "Queue"
-   RightInstance => a queue id or undef
+   ObjectType => "System" | "Queue"
+   ObjectId => a queue id or undef
 
 =cut
 
@@ -158,8 +159,8 @@ sub Create {
     my $self = shift;
     my %args = ( PrincipalId => undef,
 		 RightName => undef,
-		 RightDomain => undef,
-		 RightInstance => undef,
+		 ObjectType => undef,
+		 ObjectId => undef,
 		 @_
 	       );
     
@@ -174,32 +175,24 @@ sub Create {
 
     # }}}
     
-    #TODO allow loading of queues by name.    
     
     # {{{ Check the ACL
-    if ($args{'RightDomain'} eq 'System') {
+    if ($args{'ObjectType'} eq 'System') {
 	
 	unless ($self->CurrentUserHasSystemRight('ModifyACL')) {
-	    $RT::Logger->error("Permission Denied.");
-	    return(undef);
+	    return(0, $self->loc("Permission Denied"));
 	}
     }
     
-    elsif ($args{'RightDomain'} eq 'Queue') {
-	unless ($self->CurrentUserHasQueueRight( Queue => $args{'RightInstance'},
-						 Right => 'ModifyACL')) {
-	    return (0, 'Permission Denied.');
-	}
-	
-	
-	
-	
+    elsif ($args{'ObjectType'} eq 'Queue') {
+	    unless ($self->CurrentUserHasQueueRight( Queue => $args{'ObjectId'}, Right => 'ModifyACL')) {
+	        return (0, $self->loc('Permission Denied'));
+	    }
     }
     #If it's not a scope we recognise, something scary is happening.
     else {
-	$RT::Logger->err("RT::ACE->Create got a scope it didn't recognize: ".
-			 $args{'RightDomain'}." Bailing. \n");
-	return(0,"System error. Unable to grant rights.");
+	$RT::Logger->err("RT::ACE->Create got an object type it didn't recognize: ".  $args{'ObjectType'}." Bailing. \n");
+	return(0,$self->loc("System error. Unable to grant rights."));
     }
 
     # }}}
@@ -208,12 +201,12 @@ sub Create {
     $args{'RightName'} = $self->CanonicalizeRightName($args{'RightName'});
     
     #check if it's a valid RightName
-    if ($args{'RightDomain'} eq 'Queue') {
+    if ($args{'ObjectType'} eq 'Queue') {
 	unless (exists $QUEUERIGHTS{$args{'RightName'}}) {
 	    return(0, 'Invalid right');
 	}	
 	}	
-    elsif ($args{'RightDomain' eq 'System'}) {
+    elsif ($args{'ObjectType' eq 'System'}) {
 	unless (exists $SYSTEMRIGHTS{$args{'RightName'}}) {
 	    return(0, 'Invalid right');
 	}		    
@@ -223,26 +216,29 @@ sub Create {
     # Make sure the right doesn't already exist.
     $self->LoadByCols (PrincipalId => $princ_id,
 		       RightName => $args{'RightName'},
-		       RightDomain => $args {'RightDomain'},
-		       RightInstance => $args{'RightInstance'}
+		       ObjectType => $args {'ObjectType'},
+		       ObjectId => $args{'ObjectId'}
 		      );
     if ($self->Id) {
-	return (0, 'That user already has that right');
+	    return (0, $self->loc('That user already has that right'));
     }	
 
     my $id = $self->SUPER::Create( PrincipalId => $princ_id,
 				   RightName => $args{'RightName'},
-				   RightDomain => $args {'RightDomain'},
-				   RightInstance => $args{'RightInstance'}
+				   ObjectType => $args {'ObjectType'},
+				   ObjectId => $args{'ObjectId'}
 				 );
     
-    
+   
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+    # TODO what about the groups key cache?
+    RT::User->_InvalidateKeyCache();
+
     if ($id > 0 ) {
-	return ($id, 'Right Granted');
+	    return ($id, $self->loc('Right Granted') );
     }
     else {
-	$RT::Logger->err(loc('System error. right not granted.'));
-	return(0, $self->loc('System Error. right not granted'));
+	    return(0, $self->loc('System Error. right not granted'));
     }
 }
 
@@ -253,7 +249,7 @@ sub Create {
 
 =head2 Delete
 
-Delete this object.
+Delete this object. This method should ONLY ever be called from RT::User or RT::Group
 
 =cut
 
@@ -266,6 +262,11 @@ sub Delete {
     
     
     my ($val,$msg) = $self->SUPER::Delete(@_);
+
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+    # TODO what about the groups key cache?
+    RT::User->_InvalidateKeyCache();
+
     if ($val) {
 	return ($val, $self->loc('ACE Deleted'));
     }	
@@ -293,8 +294,8 @@ sub _BootstrapRight {
 
     my $id = $self->SUPER::Create( PrincipalId => $args{'PrincipalId'},
 				   RightName => $args{'RightName'},
-				   RightDomain => $args {'RightDomain'},
-				   RightInstance => $args{'RightInstance'}
+				   ObjectType => $args {'ObjectType'},
+				   ObjectId => $args{'ObjectId'}
 				 );
     
     if ($id > 0 ) {
@@ -372,17 +373,17 @@ the system object, returns undef. If the user has no rights, returns undef.
 
 sub AppliesToObj {
     my $self = shift;
-    if ($self->RightDomain eq 'Queue') {
+    if ($self->ObjectType eq 'Queue') {
 	my $appliesto_obj = new RT::Queue($self->CurrentUser);
-	$appliesto_obj->Load($self->RightInstance);
+	$appliesto_obj->Load($self->ObjectId);
 	return($appliesto_obj);
     }
-    elsif ($self->RightDomain eq 'System') {
+    elsif ($self->ObjectType eq 'System') {
 	return (undef);
     }	
     else {
 	$RT::Logger->warning("$self -> AppliesToObj called for an object ".
-			     "of an unknown scope:" . $self->RightDomain);
+			     "of an unknown scope:" . $self->ObjectType);
 	return(undef);
     }
 }	
@@ -522,16 +523,16 @@ sub HasRight {
         return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
     }	
     
-    elsif ($self->__Value('RightDomain') eq 'System') {
+    elsif ($self->__Value('ObjectType') eq 'System') {
 	return $args{'Principal'}->HasSystemRight($args{'Right'});
     }
-    elsif ($self->__Value('RightDomain') eq 'Queue') {
-	return $args{'Principal'}->HasQueueRight( Queue => $self->__Value('RightInstance'),
+    elsif ($self->__Value('ObjectType') eq 'Queue') {
+	return $args{'Principal'}->HasQueueRight( Queue => $self->__Value('ObjectId'),
 						  Right => $args{'Right'} );
     }	
     else {
 	$RT::Logger->warning("$self: Trying to check an acl for a scope we ".
-			     "don't understand:" . $self->__Value('RightDomain') ."\n");
+			     "don't understand:" . $self->__Value('ObjectType') ."\n");
 	return undef;
     }
 
