@@ -12,7 +12,7 @@ type="i"
 % }
 
 % while (my $article = $articles->Next()) {
-<A NAME="<%$article->Id%>">
+<A NAME="<%$article->Id%>"></A>
 <BR>
 % if ($Depth < 5) {
 <H<%$Depth%>><% $article->Summary %></H<%$Depth%>>
