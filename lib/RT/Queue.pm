@@ -68,12 +68,18 @@ sub Create  {
     unless ($self->CurrentUser->HasSystemRight('AdminQueue')) {    #Check them ACLs
 	return (0, "No permission to create queues") 
     }
-    
+
+    unless ($self->ValidateName($args{'Name'})) {
+	return(0, 'Queue already exists');
+    }
     #TODO better input validation
     
     my $id = $self->SUPER::Create(%args);
+    unless ($id) {
+	return (0, 'Queue could not be created');
+    }
     $self->LoadById($id);
-    return ($id);
+    return ($id, "Queue $id created");
 }
 
 # }}}
@@ -143,8 +149,59 @@ sub Load  {
 }
 # }}}
 
+# {{{ sub ValidateName
+
+=head2 ValidateName NAME
+
+Takes a queue name. Returns true if it's an ok name for
+a new queue. Returns undef if there's already a queue by that name.
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $name = shift;
+   
+    my $tempqueue = new RT::Queue($RT::SystemUser);
+    $tempqueue->Load($name);
+
+    #If this queue exists, return 1
+    if ($tempqueue->Name()){
+        return(undef);
+    }
+
+    #If the queue doesn't exist, return undef
+    else {
+        return(1);
+    }
+
+}
 
 
+# }}}
+
+
+# {{{ sub Templates
+
+=head2 Templates
+
+Returns an RT::Templates object of all of this queue's templates.
+
+=cut
+
+sub Templates {
+    my $self = shift;
+    
+
+    my $templates = RT::Templates->new($self->CurrentUser);
+    if ($self->CurrentUserHasRight('ShowTemplate')) {
+	$templates->LimitToQueue($self->id);
+    }
+    
+    return ($templates); 
+}
+
+# }}}
 
 # {{{ Dealing with watchers
 
@@ -544,29 +601,6 @@ sub DeleteWatcher {
 
 # }}}
 
-# {{{ sub Templates
-
-=head2 Templates
-
-Returns an RT::Templates object of all of this queue's templates.
-
-=cut
-
-sub Templates {
-    my $self = shift;
-    
-
-    my $templates = RT::Templates->new($self->CurrentUser);
-    if ($self->CurrentUserHasRight('ShowTemplate')) {
-	$templates->LimitToQueue($self->id);
-    }
-    
-    return ($templates); 
-}
-
-# }}}
-
-
 # {{{ Dealing with keyword selects
 
 # {{{ sub AddKeywordSelect
@@ -651,11 +685,6 @@ sub KeywordSelects {
 # }}}
 
 # }}}
-
-
-
-
-
 
 # {{{ ACCESS CONTROL
 
@@ -783,4 +812,5 @@ sub Grant {
 # }}}
 
 # }}}
+
 1;

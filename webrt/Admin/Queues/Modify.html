@@ -61,7 +61,7 @@ Requests should be due in:
 <%INIT>
 use RT::Interface::Web;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-my $title;
+my  ($title, @results);
 
 if ($Create) {
     $title = "Create a queue";
@@ -69,7 +69,13 @@ if ($Create) {
 
 else {
     if ($id eq 'new') {
-        $QueueObj->Create(Name => $Name);
+       my ($val, $msg) =  $QueueObj->Create(Name => $Name);
+       if ($val == 0 ) {
+           Abort("Could not create queue: $msg");
+	}
+	else {
+		push @results, $msg;
+	}    
      }
      else {
         $QueueObj->Load($id) || $QueueObj->Load($Name) || Abort("Couldn't load queue '$Name'");
@@ -77,7 +83,7 @@ else {
         $title = 'Editing Configuration for queue '.$QueueObj->Name;
     
 }
-
+if ($QueueObj->Id()) {
 my @fields = qw(Description CorrespondAddress CommentAddress Name 
                 InitialPriority FinalPriority DefaultDueIn);
 
@@ -94,14 +100,13 @@ my $check = "if ((defined \$$field) and (\$$field !~ \$QueueObj->$field)) {
 eval $check;
 
 }
-
+}
 </%INIT>
 
 
 <%ARGS>
 $id => undef
 $result => undef
-@results => undef
 $Name => undef
 $Create => undef
 $Description => undef
