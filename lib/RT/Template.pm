@@ -106,6 +106,7 @@ sub _ParseContent  {
   $T::Transaction = $args{'TransactionObj'};
   $T::Argument = $args{'Argument'};
   $T::rtname=$RT::rtname;
+  $T::WebRT=$RT::WebRT;
   
   $template=Text::Template->new(TYPE=>STRING, 
 				SOURCE=>$self->Content);

@@ -4,8 +4,11 @@
 
 package RT::Action::SendEmail;
 require RT::Action;
+require Mail::Internet;
+require Mail::Mailer;
 
 die "You need MailTools 1.14 or newer (check the FAQ)" if ($Mail::Internet::VERSION<1.32);
+warn "Your Mail::Mailer might need patching" if ($Mail::Mailer::VERSION eq 1.19);
 
 @ISA = qw(RT::Action);
 
@@ -36,12 +39,14 @@ sub Commit  {
   # We should have some kind of site specific configuration here.  I
   # think the default method for sending an email should be
   # send('sendmail'), but some RT installations might want to use the
-  # smtpsend method anyway.
+  # smtpsend method anyway.  If you need support for other mailers,
+  # it's very easy to subclass Mail::Mailer::mail - but you should
+  # probably talk with Graham Barr first.
 
-  $self->{'TemplateObj'}->MIMEObj->send('sendmail') || die "Could not send mail ... check the FAQ";
+  $self->{'TemplateObj'}->MIMEObj->send('sendmail') || die "Could not send mail (check the FAQ)";
 #  $self->TemplateObj->MIMEObj->smtpsend(Host => 'localhost') || die "could not send email";
 
-  # TODO Tell the administrator that RT couldn't send mail
+  # TODO Better error handling?
 
 }
 # }}}
@@ -58,8 +63,6 @@ sub Prepare  {
 			    TicketObj => $self->TicketObj, 
 			    TransactionObj => $self->TransactionObj);
 
-
-  $self->SetRecipients();
 
   # Header
   
@@ -85,11 +88,7 @@ sub Prepare  {
 
   $self->SetPrecedence();
 
-  $self->SetTo();
-
-  $self->SetCc();
-
-  $self->SetBcc();
+  $self->SetRecipients();
 
  $self->{'Body'} .= 
     "\n-------------------------------------------- Managed by Request Tracker\n\n";
@@ -252,6 +251,7 @@ sub SetReturnAddress {
 sub SetEnvelopeTo {
   my $self = shift;
   if (exists $self->{'EnvelopeTo'}) {
+      # STUB!  Has to be done differently.
       $self->TemplateObj->MIMEObj->head->add('Envelope-To', $self->{'EnvelopeTo'});
   }
   return($self->{'EnvelopeTo'});
@@ -259,11 +259,32 @@ sub SetEnvelopeTo {
 
 # }}}
 
-# {{{ sub SetRecipientsTo
-sub SetRecipientsTo {
-    # Override this one to set $self->{'To'}, $self->{'Envelope-To'}, etc.
+# {{{ sub SetRecipients
+
+# The specialized SetRecipients sub should find out whom to send the
+# message to, and then set the header fields.
+
+# If SendEmail is called rather than a subclass, the receipients have
+# to be set by the template.
+
+# There is three ways to override this (well, more ways ... you could
+# of course add the logic to a specialized prepare or commit or
+# something ... but that's not considered a good way to do it anyway).
+
+# 1: Override SetRecipients to set the header fields (to, cc, bcc) and
+#    eventually call SetEnvelopeTo
+# 2: Override SetRecipients to set the hash elements $self->{To}, {Cc}
+#    and {Bcc}, and then call SUPER::SetRecipients.
+# 3: Override SetTo, SetCc and/or SetBcc.
+
+sub SetRecipients {
+  my $self=shift;
+  $self->SetTo();
+  $self->SetCc();
+  $self->SetBcc();
+  $self->SetEnvelopeTo();
 }
-# }}} sub SetRecipientsTo
+# }}} sub SetRecipients
 
 # {{{ sub SetTo
 
@@ -363,7 +384,8 @@ RT::Action::SendEmail.
 If you want to set the recipients of the mail to something other than
 the addresses mentioned in the To, Cc, Bcc and EnvelopeTo headers in
 the template, you should subclass RT::Action::SendEmail and override
-either the SetRecipients method or the SetTo, SetCc, etc methods.
+either the SetRecipients method or the SetTo, SetCc, etc methods (see
+the comments for the SetRecipients sub).
 
 The reason for the EnvelopeTo method is to allow you to set who the
 mail message is _really_ sent to, as sometimes you may want the
@@ -371,9 +393,7 @@ to/cc/bcc headers to "massage the truth" and not send mail to all
 listed addresses. For example, you may want to always set the To: and
 From: lines to RT but don't want to actually _send_ the mail there.
 
-Envelope-To is not mentionated in RFC822, and might not work with all
-mailers.  Actually TobiX is not sure it will work with any mailer at
-all.
+The EnvelopeTo functionality is not implemented as for now.
 
 =head1 AUTHOR
 

@@ -551,7 +551,7 @@ sub LoadTicket  {
   $Ticket = new RT::Ticket ($CurrentUser);
   ($Status, $Message) = $Ticket->Load($id);
   if (!$Status) {
-    print ("The request could not be loaded\n");
+    print ("The ticket could not be loaded\n$Message\n");
     return (0);
  }
   else {

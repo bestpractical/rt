@@ -341,10 +341,10 @@ CREATE TABLE Templates (
 # Should eventually be created through some init script calling on the CLI admin tools
 
 INSERT INTO Templates VALUES (1,'Default Autoresponse Template', NULL, NULL,
-'Subject: AutoReply: {$Ticket->Subject}
-To: {$Ticket->RequestorsAsString}
+'To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
 Bcc: {$Ticket->AdminCcAsString}
+Subject: AutoReply: {$Ticket->Subject}
 
        Greetings,
         This message has been automatically generated in response to your
