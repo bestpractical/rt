@@ -87,22 +87,65 @@ sub AuthForceLogin () {
     
   }
   print "
-<CENTER><B><FONT SIZE=\"+4\">No valid RT Credentials found</FONT></B></CENTER>
-  This RT Server requires you to log in with your RT username and password.  If you are unsure of your RT username or password, please seek out your local RT administrator.
+<TABLE cellpadding=10 cellspacing=0 border=0>
+<TR><TD BGCOLOR=\"#cccccc\"><FONT SIZE=\"+2\" COLOR=\"#bb0000\"><b>No valid RT Credentials found</b></FONT></TD></TR>
+<TR><TD BGCOLOR=\"#eeeeee\">
+  This RT Server requires you to log in with your RT username and password.  If you are unsure of your RT username or password, please seek out your local RT administrator.</TD>
+</TR>
+</TABLE>
     
     <FORM ACTION=\"$rt::ui::web::ScriptURL\" METHOD=\"POST\">
+
+
 <CENTER>
-      <TABLE><TR><TD COLSPAN=2>
-	$AuthRealm Login:
-	</TD></TR>  
-	  <TR><TD ALIGN=\"RIGHT\">Username:</TD><TD><input name=\"username\" VALUE=\"$default_user\" size=\"20\"></TD></TR>
-	    <TR><TD ALIGN=\"RIGHT\">Password:</TD><TD><input name=\"password\" type=\"password\" size=\"20\"></TD></TR>
-	      <TR><TD COLSPAN=2 ALIGN=\"RIGHT\">
-		
-		<INPUT TYPE=\"SUBMIT\" VALUE=\"Login\"></TD></TR>
-		  </TABLE>
+      <TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 BGCOLOR=\"#EEEEEE\">
+
+<TR VALIGN=\"TOP\">
+<TD COLSPAN=2>
+<TABLE WIDTH=\"100%\" CELLPADDING=10 CELLSPACING=0 BORDER=0>
+<TR ALIGN=\"LEFT\"><TD VALIGN=\"CENTER\" BGCOLOR=\"#CCCCCC\">
+$AuthRealm Login:
+</TD></TR>
+</TABLE>
+</TD>
+
+ <TD ROWSPAN=\"4\" width=8 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=16 height=250 alt=')'></TD>
+</TR>  
+<TR>
+<TD ALIGN=\"RIGHT\">
+Username:
+</TD>
+<TD>
+<input name=\"username\" VALUE=\"$default_user\" size=\"20\">
+</TD>
+</TR>
+<TR>
+<TD ALIGN=\"RIGHT\">
+Password:
+</TD>
+<TD>
+<input name=\"password\" type=\"password\" size=\"20\">
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=2 ALIGN=\"RIGHT\">
+<INPUT TYPE=\"SUBMIT\" VALUE=\"Login\">
+</TD>
+</TR>
+
+
+<TR VALIGN=\"TOP\"><TD COLSPAN=2><img src=\"/webrt/sbs.gif\" width=420 height=16 alt=''></TD>
+<TD ALIGN=\"LEFT\" BGCOLOR=\"#ffffff\"><img src=\"/webrt/sbc.gif\" width=12 alt='' height=16></TD></TR>
+</TABLE>
 </CENTER>
-		    </FORM>
+
+<br><br>
+";
+
+&rt::ui::web::credits();
+
+print "
+</FORM>
 
 </BODY>
 ";

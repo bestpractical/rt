@@ -1121,21 +1121,26 @@ else {
 
 sub credits{
     print "
-<center>
-<img src=\"/webrt/rt.jpeg\" ALT=\"Request Tracker v$rt::rtversion\">
-<br>
 
-<font size=\"+1\">
+<TABLE BORDER=0>
+<TR><TD>
+<A HREF=\"http://fsck.com/projects/rt\"><img border=0 src=\"/webrt/rt.jpeg\" ALT=\"Request Tracker v$rt::rtversion\"></a>
+</TD><TD VALIGN=\"BOTTOM\">
+
+<font size=\"-1\">
+This is Request Tracker version $rt::rtversion.<br><br>
 Request Tracker's development was initially comissioned by <a href=\"http://www.utopia.com\">Utopia Inc</a>.  Further work has been funded by <a href=\"http://www.leftbank.com\">The Leftbank Operation</a>. and <a href=\"http://www.wesleyan.edu\">Wesleyan University.</a>
 <br>
 This program is redistributable under the terms of the <b>GNU Public License.</b>
-</font>
+
 <br>
 Copyright &copy; 1996-1999
 <a href=\"http://www.fsck.com/~jesse/\">Jesse Vincent</a>.
+</font>
+</TD></TR></TABLE>
 ";
    
-    print "</center>";
+
 }
 sub initialize_sn {
     
