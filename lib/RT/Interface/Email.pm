@@ -44,19 +44,18 @@ sub activate  {
   # Get the head, a MIME::Head:
   $head = $entity->head;
 
-  #Lets check for mail loops of various sorts.
-  my $IsALoop = &CheckForLoops($head);
-  
-  if ($IsALoop) {
-    #TODO Send mail to an administrator
-    die "RT Recieved a message it should not process";
-  }
-  
-
-
   #Pull apart the subject line
   $Subject = $head->get('Subject') || "";
   chomp $Subject;
+
+  #Lets check for mail loops of various sorts.
+  my ($IsALoop, $LoopMsg) = &CheckForLoops($head);
+  
+  if ($IsALoop) {
+    $RT::Logger->log(level=>$IsALoop>1 ? 'critical' : 'error',
+		     message=>$LoopMsg);
+    $head->add('RT-Loop-Alarm', $LoopMsg)
+  }
   
   if ($Subject =~ s/\[$RT::rtname \#(\d+)\]//i) {
     $TicketId = $1;
@@ -131,22 +130,34 @@ sub CheckForLoops  {
   #If this instance of RT sent it our, we don't want to take it in
   my $RTLoop = $head->get("X-RT-Loop-Prevention") || "";
   if ($RTLoop eq "$RT::rtname") {
-    return(1);
+      return (2, "We received a mail from ourself!");
   }
+
+  # TODO
+  # We might not trap the rare case where RT instance A sends a mail
+  # to RT instance B which sends a mail to ...
  
   #if it's from a postmaster or mailer daemon, it's likely a bounce.
+
+  #TODO: better algorithms needed here - there is no standards for
+  #bounces, so it's very difficult to separate them from anything
+  #else.  At the other hand, the Return-To address is only ment to be
+  #used as an error channel, we might want to put up a separate
+  #Return-To address which is treated differently.
+
+  #TODO: search through the whole email and find the right Ticket ID.
   my $From = $head->get("From") || "";
   
   if (($From =~ /^mailer-daemon/i) or
       ($From =~ /^postmaster/i)){
-    return (1);
+    return (1, "This might be a bounce");
   }
 
   #If it claims to be bulk mail, discard it
   my $Precedence = $head->get("Precedence") || "" ;
 
-  if ($Precedence =~ /^bulk/i) {
-    return (1);
+  if ($Precedence =~ /^(bulk|junk)/i) {
+    return (1, "This is bulkmail");
   }
 }
 # }}}
