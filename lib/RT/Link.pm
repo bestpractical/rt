@@ -70,7 +70,10 @@ sub BaseObj {
 sub _Obj {
     my ($self,$w)=@_;
     my $tag="$w\_obj";
-    unless ($self->{$tag}) {
+    unless (exists $self->{$tag}) {
+	unless (URIIsLocal($w eq "Target" ? $self->Target : $self->Base)) {
+	    return $self->{$tag}=undef;
+	}
 	$self->{$tag}=RT::Ticket->new;
 	$self->{$tag}->Load($w eq "Target" ? $self->Target : $self->Base);
     }
@@ -93,6 +96,30 @@ sub DisplayPermitted {
     # TODO: stub!
     return 1;
 }
+
+# Static methods:
+
+# {{{ Static sub "URIIsLocal" checks whether an URI is local or not
+sub URIIsLocal {
+    my $URI=shift;
+    # TODO: More thorough check
+    $URI =~ /^(\d+)$/;
+    return $1;
+}
+# }}}
+
+# Converts Link URIs to HTTP URLs
+sub URI2HTTP {
+    my $URI=shift;
+    if (&URIIsLocal($URI)) {
+	my $url=$RT::WebURL . "Ticket/Display.html?id=$URI";
+	return $url;
+    } else {
+	my ($protocol) = $URI =~ m|(.*?)://|;
+	return $RT::URI2HTTP{$protocol}->($URI);
+    }
+}
+
 
 1;
  

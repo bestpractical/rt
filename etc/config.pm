@@ -99,7 +99,7 @@ $Logger->add(Log::Dispatch::File->new
 # URIs to URLs in the web interface.  If you want to use RT towards
 # locally installed databases, this is the right place to configure it.
 # (TODO!)
-my %URI2HTML=
+my %URI2HTTP=
     (
      'fsck.com-rt' => sub {warn "stub!";},
      'mozilla.com-bugzilla' => sub {warn "stub!";},
@@ -162,6 +162,8 @@ $MailAlias = "!!RT_MAIL_ALIAS!!";
 # documents.
 
 $WebrtImagePath = "!!WEB_IMAGE_PATH!!";
+$WebPath = "!!WEB_PATH!!";
+$WebURL = "http://$host\.$domain/$WebPath/";
 
 
 # WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use

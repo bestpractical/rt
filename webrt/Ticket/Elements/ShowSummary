@@ -1,3 +1,7 @@
+	<%INIT>
+	my $linkcount=0;
+	my $l;
+	</%INIT>
       <%ARGS>
       $Ticket = undef
       </%ARGS>
@@ -28,12 +32,28 @@
         <TR>
 	<TD WIDTH="50%">
 	  <& /Elements/TitleBoxStart, title => 'Unresolved Dependencies', titleright => '<A HREF="">[As search]</a>' &>
-	  This ticket has no unresoved dependencies
+	  This ticket has some or none unresoved dependencies
 	  <& /Elements/TitleBoxEnd &>
 	</TD>
 	<TD WIDTH="50%">
 	  <& /Elements/TitleBoxStart, title => 'Other Links', titleright => '<A HREF="">[As search]</a>' &>
-	  This would be a link if I'd implemented it yet;
+%    while ($l=$Ticket->Children->Next) { $linkcount++;
+       <a href="<% RT::Link::URI2HTTP($l->Base) %>"><% $l->Base %></a> 
+%if (RT::Link::URIIsLocal($l->Base)) {
+	(<% $l->BaseObj->Subject %>)
+%}
+<% $l->Type %> THIS <br>
+%}
+%   while ($l=$Ticket->Parents->Next) { $linkcount++;
+       THIS <% $l->Type %> 
+       <a href="<% RT::Link::URI2HTTP($l->Target) %>"><% $l->Target %></a> 
+%if (RT::Link::URIIsLocal($l->Target)) {
+(<% $l->TargetObj->Subject %>) <br>
+%}
+%   }
+% unless ($linkcount) {
+	This Ticket has no pending links
+% }
 	  <& /Elements/TitleBoxEnd &>	
 	</TD>
       </TR>
@@ -41,3 +61,8 @@
       
       
  
+
+
+
+
+

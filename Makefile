@@ -172,6 +172,12 @@ DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 
 WEB_IMAGE_PATH			=	/webrt
 
+# Web Path is the path to WebRT.  Check your web server configuration
+# to get it right.  It might eventually be changed later in the
+# config.pm file.
+
+WEB_PATH                        =       /webrt
+
 # hostname and domainname
 # todo: docs about when, how and where they will be used
 RT_HOST = `hostname`
@@ -306,6 +312,7 @@ config-replace:
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
 	s'!!DEFAULT_LOCALE!!'$(DEFAULT_LOCALE)'g;\
 	s'!!LOCALE_PATH!!'$(RT_LOCALE_PATH)'g;\
+	s'!!WEB_PATH!!'$(WEB_PATH)'g;\
 	s'!!WEB_IMAGE_PATH!!'$(WEB_IMAGE_PATH)'g;\
 	s'!!WEB_AUTH_MECHANISM!!'$(WEB_AUTH_MECHANISM)'g;\
 	s'!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!'$(WEB_AUTH_COOKIES_ALLOW_NO_PATH)'g;\

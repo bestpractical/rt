@@ -963,12 +963,11 @@ sub URI {
 
 # }}}
 
-# {{{ Static sub "URIIsLocal" checks whether an URI is local or not
+# {{{ Static sub "URIIsLocal" checks whether an URI is local or not (moved!)
 sub URIIsLocal {
-    my $URI=shift;
-    # TODO: More thorough check
-    $URI =~ /^(\d+)$/;
-    return $1;
+    # This sub shouldn't be called - let's log it:
+    warn "RT::Ticket::URIIsLocal called - should be RT::Link::URIIsLocal";
+    return RT::Link::URIIsLocal(@_);
 }
 # }}}
 
