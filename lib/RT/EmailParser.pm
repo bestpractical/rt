@@ -255,12 +255,17 @@ sub _PostProcessNewEntity {
 
     #Now we've got a parsed mime object. 
 
+    # Unfold headers that are have embedded newlines
+    #  Better do this before conversion or it will break
+    #  with multiline encoded Subject (RFC2047) (fsck.com #5594)
+    
+    $self->Head->unfold;
+
+
     # try to convert text parts into utf-8 charset
     RT::I18N::SetMIMEEntityToEncoding($self->{'entity'}, 'utf-8');
 
 
-    # Unfold headers that are have embedded newlines
-    $self->Head->unfold;
 
 
 }
