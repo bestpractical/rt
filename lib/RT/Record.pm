@@ -1522,7 +1522,7 @@ sub _AddCustomFieldValue {
 
         unless ($new_value_id) {
             return ( 0,
-                $self->loc("Could not add new custom field value for ticket. [_1] ",
+                $self->loc("Could not add new custom field value. [_1] ",
                   ,$value_msg) );
         }
 
@@ -1569,7 +1569,7 @@ sub _AddCustomFieldValue {
 
         unless ($new_value_id) {
             return ( 0,
-                $self->loc("Could not add new custom field value for ticket. "));
+                $self->loc("Could not add new custom field value. "));
         }
     if ( $args{'RecordTransaction'} ) {
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
