@@ -20,9 +20,9 @@ sub _Init {
 
 sub Create {
   my $self = shift;
-  print STDERR "In RT::Record->create\n";
+#  print STDERR "In RT::Record->create\n";
   my $id = $self->SUPER::Create(@_);
-  print STDERR "RT::Record->create Loading by Ref $id\n";
+#  print STDERR "RT::Record->create Loading by Ref $id\n";
   return($id);
 
 }
@@ -33,8 +33,8 @@ sub _Value {
   my $self = shift;
   my $field = shift;
   my ($package, $filename, $line) = caller;
-  print STDERR "DBIx::Record->_Value called from $package, line $line with arguments (",@_,")\n";
-  print STDERR "Determining value of $field\n";
+#  print STDERR "DBIx::Record->_Value called from $package, line $line with arguments (",@_,")\n";
+#  print STDERR "Determining value of $field\n";
   #if the user is trying to display only {
   if ($self->DisplayPermitted) {
     #if the user doesn't have display permission, return an error

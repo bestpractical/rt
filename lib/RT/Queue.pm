@@ -79,8 +79,15 @@ sub Create {
 
 sub Load {
   my $self = shift;
-  my $queue_id = shift;
-  $self->SUPER::LoadByCol("QueueId", $queue_id);
+  my $identifier = shift;
+  if ($identifier !~ /\D/) {
+    $self->SUPER::LoadById($identifier);
+  }
+  else {
+    
+    $self->LoadByCol("QueueId", $identifier);
+  }
+
 }
 
 sub load {

@@ -23,15 +23,21 @@ sub ParseArgs {
     for ($i=0;$i<=$#ARGV;$i++) {
 	if ($ARGV[$i] =~ 'q') {
 	    $action=$ARGV[++$i];
-	    if  ($action eq "-create") {
-		$queue_id=$ARGV[++$i];
-		if (!$queue_id) {
-		  print "You must specify a queue.\n";
-		  exit(0);
-		}
-		
-		&cli_create_queue($queue_id);
+
+	    
+	    if ($action eq "-list") {
+	      &cli_list_queues();
+	    }
+
+	    if ($action eq "-create") {
+	      $queue_id=$ARGV[++$i];
+	      if (!$queue_id) {
+		print "You must specify a queue.\n";
+		exit(0);
 	      }
+	      
+	      &cli_create_queue($queue_id);
+	    }
 	    
 	    if ($action eq "-modify") {
 	      $queue_id=$ARGV[++$i];
@@ -410,6 +416,18 @@ sub cli_user_acl {
     return(1);
 }
 
+
+sub cli_list_queues {
+  use RT::Queues;
+  my ($Queues, $Queue);
+  $Queues = new RT::Queues($CurrentUser);
+  $Queues->Limit (FIELD=> 'id',
+		  OPERATOR => '>',
+		  VALUE => '0');
+  while ($Queue = $Queues->Next) {
+    print $Queue->QueueId,"\t", $Queue->CorrespondAddress, "\t", $Queue->CommentAddress,"\n"; 
+  }
+}
 
 sub cli_print_acl {
   my  $user_id =  shift;
