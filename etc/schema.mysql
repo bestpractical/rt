@@ -5,10 +5,10 @@
 # RT is distribute under the terms of the GNU Public License
 
 
-CREATE TABLE queue_acl (
+CREATE TABLE acl (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  queue_id CHAR(40),
-  user_id CHAR(40),
+  queue CHAR(40),
+  user CHAR(40),
   display INT,
   manipulate INT,
   admin INT,
@@ -17,7 +17,7 @@ CREATE TABLE queue_acl (
 
 CREATE TABLE queue_areas (
  id int(11) AUTO_INCREMENT PRIMARY KEY,
-  queue_id CHAR(40) NOT NULL,
+  queue CHAR(40) NOT NULL,
 
   area CHAR(40) NOT NULL
 )\g

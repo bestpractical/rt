@@ -1,4 +1,10 @@
-1 Dec 1999
+Dec 3 1999
+----------
+* more backend work. started ripping out legacy code. 
+  There's no going back now :)
+
+
+Dec 1 1999
 ----------
 
 * lots of work on the new backend. totally broke the dist for now :)
