@@ -13,25 +13,25 @@ alter table TicketCustomFieldValues rename ObjectCustomFieldValues;
 
 alter table ObjectCustomFieldValues  change Ticket ObjectId integer NOT NULL DEFAULT 0  ;
 
-alter table objectcustomfieldvalues add column ObjectType varchar(255) not null;
+alter table ObjectCustomFieldValues add column ObjectType varchar(255) not null;
 
-update objectcustomfieldvalues set ObjectType = 'RT::Ticket';
+update ObjectCustomFieldValues set ObjectType = 'RT::Ticket';
 
-alter table objectcustomfieldvalues add column Current bool default 1;  
+alter table ObjectCustomFieldValues add column Current bool default 1;  
 
-alter table objectcustomfieldvalues add column LargeContent LONGTEXT NULL;
+alter table ObjectCustomFieldValues add column LargeContent LONGTEXT NULL;
 
-alter table objectcustomfieldvalues add column ContentType varchar(80) NULL;
+alter table ObjectCustomFieldValues add column ContentType varchar(80) NULL;
 
-alter table objectcustomfieldvalues add column ContentEncoding varchar(80) NULL;
+alter table ObjectCustomFieldValues add column ContentEncoding varchar(80) NULL;
 
-alter table objectcustomfieldvalues drop index ticketcustomfieldvalues1;
+alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues1;
 
-alter table objectcustomfieldvalues drop index ticketcustomfieldvalues2;
+alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues2;
 
-alter table objectcustomfieldvalues add index ObjectCustomFieldValues1 (Content); 
+alter table ObjectCustomFieldValues add index ObjectCustomFieldValues1 (Content); 
 
-alter table objectcustomfieldvalues add index ObjectCustomFieldValues2 (CustomField,ObjectType,ObjectId); 
+alter table ObjectCustomFieldValues add index ObjectCustomFieldValues2 (CustomField,ObjectType,ObjectId); 
 
 
 CREATE TABLE ObjectCustomFields (
