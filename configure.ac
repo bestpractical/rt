@@ -237,7 +237,7 @@ AC_CONFIG_FILES([
                  lib/t/02regression.t
                  lib/t/03web.pl
                  lib/t/04_send_email.pl
-		 lib/t/05cronsupport.pl
+		 lib/t/06mailgateway.pl
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd
