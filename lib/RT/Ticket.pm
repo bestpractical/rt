@@ -345,6 +345,7 @@ sub Import {
     my ( $ErrStr, $QueueObj, $Owner);
     
     my %args = (id => undef,
+		EffectiveId => undef,
 		Queue => undef,
 		Requestor => undef,
 		Type => 'ticket',
@@ -436,8 +437,18 @@ sub Import {
     $self->{'_AccessibleCache'}{LastUpdated} = { 'read'=>1, 'write'=>1 };
     $self->{'_AccessibleCache'}{LastUpdatedBy} = { 'read'=>1, 'auto'=>1 };
 
+
+    # If we're coming in with an id, set that now.
+    my $EffectiveId = undef;
+    if ($args{'id'}) {
+	$EffectiveId = $args{'id'};
+
+    }
+
+
     my $id = $self->SUPER::Create(
 				  id => $args{'id'},
+				  EffectiveId => $EffectiveId,
 				  Queue => $QueueObj->Id,
 				  Owner => $Owner->Id,
 				  Subject => $args{'Subject'},
@@ -455,14 +466,15 @@ sub Import {
 
 
 
-    #Set the ticket's effective ID now that we've created it.
+    # If the ticket didn't have an id
+    # Set the ticket's effective ID now that we've created it.
+    unless ($args{'id'} ) { 
+	   my ($val, $msg) = $self->__Set(Field => 'EffectiveId', Value => $id);
     
-    my ($val, $msg) = $self->__Set(Field => 'EffectiveId', Value => $id);
-    
-    unless ($val) {
-	$RT::Logger->err($self."->Import couldn't set EffectiveId: $msg\n");
-    }	
-    
+    	   unless ($val) {
+	    $RT::Logger->err($self."->Import couldn't set EffectiveId: $msg\n");
+   	   }	
+    } 
 
     my $watcher;
     foreach $watcher (@{$args{'Cc'}}) {
