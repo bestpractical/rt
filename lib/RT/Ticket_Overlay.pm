@@ -3356,7 +3356,7 @@ sub CustomFieldValues {
 =item AddCustomFieldValue { Field => FIELD, Value => VALUE }
 
 VALUE should be a string.
-FIELD can be a CustomField object OR a CustomField ID.
+FIELD can be a CustomField object, a CustomField ID, or a CustomField Name.
 
 
 Adds VALUE as a value of CustomField FIELD.  If this is a single-value custom field,
@@ -3386,6 +3386,9 @@ sub _AddCustomFieldValue {
     my $cf = RT::CustomField->new( $self->CurrentUser );
     if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
         $cf->Load( $args{'Field'}->id );
+    }
+    elsif ($args{'Field'} =~ /\D/) {
+        $cf->LoadByCols( Name => $args{'Field'}, Queue => $self->QueueObj->Id );
     }
     else {
         $cf->Load( $args{'Field'} );
