@@ -59,20 +59,20 @@
 <input type="hidden" name="<%$var%>" value="<%$ARGS{$var}%>">
 %}
 <& /Elements/TicketList, Query => $Query,
-    Format => $Format,
+    DisplayFormat => $Format,
+    Format => $ARGS{'Format'},
     Verbatim => 1,
     AllowSorting => 1,
     OrderBy => $OrderBy,
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
-    Format => $Format,
     BaseURL => $RT::WebPath."/Search/Bulk.html?"
    &>
 
 <HR>
 
-<& /Elements/Submit, Label => loc('Update All'), CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, Label => loc('Update'), CheckAll => 1, ClearAll => 1 &>
 <br>
 <& /Elements/TitleBoxStart, title => $title &>
 <TABLE>
@@ -152,60 +152,30 @@ my $cfs = RT::CustomFields->new($session{'CurrentUser'});
 $cfs->LimitToGlobal();
 $cfs->LimitToQueue($_) for keys %$seen_queues;
 </%perl>
+
+<table>
+<tr>
+<th><&|/l&>Name</&></th>
+<th><&|/l&>Add values</&></th>
+<th><&|/l&>Delete values</&></th>
+</tr>
 % while (my $cf = $cfs->Next()) {
-
-freeform single
-
-    set value
-    
-select single
-
-    set value
-
-freeform multiple
-
-    add values
-    delete values
-
-select multiple
-
-    add values
-    delete values
-
-textsingle 
-
-    set value
-
-upload single
-
-    upload a file
-
-upload multiple
-
-    upload a file
-    upload a file
-
-    ???
-
-image single
-
-    upload an image
-
-image multiple
-
-    upload an image
-    upload an image
-
-    ???
-
-<%$cf->Name%>
+<tr>
+<td class="label"><%$cf->Name%><br>
+<i>(<%$cf->FriendlyType%>)</i></td>
 % if ($cf->Type eq 'Select') {
-
-<&|/l&>Add these values</&>:
-
-<&|/l&>Delete these values</&>:
+<td><& /Elements/EditCustomFieldSelect, NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => 5, Multiple => ($cf->MaxValues ==1 ? 0 : 1)  &></td>
+<td><& /Elements/EditCustomFieldSelect, NamePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf, Rows => 5, Multiple => 1&></td>
+% } elsif ($cf->Type eq 'Freeform') {
+<td><& /Elements/EditCustomFieldFreeform, NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => 5, Multiple => ($cf->MaxValues ==1 ? 0 : 1), Cols => 25 &></td>
+<td><& /Elements/EditCustomFieldFreeform, NamePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf, Rows => 5, Multiple => ($cf->MaxValues == 1 ? 0 : 1), Cols => 25 &></td>
+% } elsif ($cf->Type eq 'Text') {
+<td><& /Elements/EditCustomFieldText, NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => 5, Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25 &></td>
+<td>&nbsp;</td>
 % } 
+</tr>
 % }
+</table>
 </&>
 
 <& /Elements/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
@@ -213,7 +183,7 @@ image multiple
 <& /Ticket/Elements/BulkLinks &>
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit, Label => loc('Update All'), CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, Label => loc('Update'), CheckAll => 1, ClearAll => 1 &>
 
 
 </FORM>
@@ -223,8 +193,10 @@ my $title = loc("Update multiple tickets");
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
-my ($bgcolor, @results);
-my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
+my ( @results);
+
+$Page ||= 1;
+
 
 $Format ||= $RT::DefaultSearchResultFormat;
 # inject _CHECKBOX to the first field.
@@ -243,27 +215,29 @@ Abort(loc("No search to operate on.")) unless ($Tickets);
 # build up a list of all custom fields for tickets that we're displaying, so 
 # we can display sane edit widgets.
 
-my $fields = {};
+my $fields      = {};
 my $seen_queues = {};
-while (my $ticket = $Tickets->Next) {
-    next if $seen_queues->{$ticket->Queue}++;
+while ( my $ticket = $Tickets->Next ) {
+    next if $seen_queues->{ $ticket->Queue }++;
 
     my $custom_fields = $ticket->QueueObj->TicketCustomFields;
-    while (my $field = $custom_fields->Next) {
-        $fields->{$field->id} = $field;
+    while ( my $field = $custom_fields->Next ) {
+        $fields->{ $field->id } = $field;
     }
 }
 
-my $do_comment_reply=0;
+my $do_comment_reply = 0;
+
 # Prepare for ticket updates
 $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-chomp ($ARGS{'UpdateContent'}) ;
+chomp( $ARGS{'UpdateContent'} );
 
-if ($ARGS{'UpdateContent'} &&
-    $ARGS{'UpdateContent'} ne '' &&
-    $ARGS{'UpdateContent'} ne  "-- \n" .
-    $session{'CurrentUser'}->UserObj->Signature) {
-            $do_comment_reply=1;
+if (   $ARGS{'UpdateContent'}
+    && $ARGS{'UpdateContent'} ne ''
+    && $ARGS{'UpdateContent'} ne "-- \n"
+    . $session{'CurrentUser'}->UserObj->Signature )
+{
+    $do_comment_reply = 1;
 }
 
 #Iterate through each ticket we've been handed
@@ -271,51 +245,120 @@ my @linkresults;
 my %queues;
 
 $Tickets->RedoSearch();
-while (my $Ticket = $Tickets->Next) {
-    $queues{$Ticket->QueueObj->Id}++;
-    $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
-    next unless ($ARGS{"UpdateTicket".$Ticket->Id});
-    $RT::Logger->debug ("Matched\n");
-    my @updateresults; 
+
+# pull out the labels for any custom fields we want to update
+
+my $cf_del_keys;
+@$cf_del_keys = grep { /^Bulk-Delete-CustomField/ } keys %ARGS;
+my $cf_add_keys;
+@$cf_add_keys = grep { /^Bulk-Add-CustomField/ } keys %ARGS;
+while ( my $Ticket = $Tickets->Next ) {
+    next unless ( $ARGS{ "UpdateTicket" . $Ticket->Id } );
+
+    #Update the links
+    $ARGS{'id'} = $Ticket->id;
+    $queues{ $Ticket->QueueObj->Id }++;
+
+    my @updateresults;
     if ($do_comment_reply) {
-       ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
+        ProcessUpdateMessage(
+            TicketObj => $Ticket,
+            ARGSRef   => \%ARGS,
+            Actions   => \@updateresults
+        );
     }
 
     #Update the basics.
-    my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
-    my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
+    my @basicresults =
+      ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    my @dateresults =
+      ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
     #Update the watchers
-    my @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+    my @watchresults =
+      ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
+    foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
+        $ARGS{ $Ticket->id . "-" . $type } = $ARGS{"Ticket-$type"};
+        $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
+    }
+    @linkresults =
+      ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
+        delete $ARGS{ $type . "-" . $Ticket->id };
+        delete $ARGS{ $Ticket->id . "-" . $type };
+    }
 
-    #Update the links
-    $ARGS{'id'} = $Ticket;
-    $ARGS{$Ticket->Id.'-MergeInto'} = $ARGS{'Ticket-MergeInto'};
-    $ARGS{$Ticket->Id.'-DependsOn'} = $ARGS{'Ticket-DependsOn'};
-    $ARGS{'DependsOn-'.$Ticket->Id} = $ARGS{'DependsOn-Ticket'};
-    $ARGS{$Ticket->Id.'-MemberOf'} = $ARGS{'Ticket-MemberOf'};
-    $ARGS{'MemberOf-'.$Ticket->Id} = $ARGS{'MemberOf-Ticket'};
-    $ARGS{$Ticket->Id.'-RefersTo'} = $ARGS{'Ticket-RefersTo'};
-    $ARGS{'RefersTo-'.$Ticket->Id} = $ARGS{'RefersTo-Ticket'};
-    @linkresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    delete $ARGS{'id'};
-    delete $ARGS{$Ticket->Id.'-MergeInto'};
-    delete $ARGS{$Ticket->Id.'-DependsOn'};
-    delete $ARGS{'DependsOn-'.$Ticket->Id};
-    delete $ARGS{$Ticket->Id.'-MemberOf'};
-    delete $ARGS{'MemberOf-'.$Ticket->Id};
-    delete $ARGS{$Ticket->Id.'-RefersTo'};
-    delete $ARGS{'RefersTo-'.$Ticket->Id};
-    my @tempresults = (@watchresults, @basicresults, @dateresults,
-    @updateresults, @linkresults);
-    @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
+    my @cfresults;
 
-    @results = (@results, @tempresults);
+    foreach my $list ( $cf_add_keys, $cf_del_keys ) {
+        my $op;
+
+        if ( $list->[0] =~ /Add/ ) {
+            $op = 'add';
+
+        }
+        elsif ( $list->[0] =~ /Del/ ) {
+            $op = 'del';
+        }
+        else {
+            $RT::Logger->crit(
+                "Got an op that was neither add nor delete. can never happen");
+            last;
+        }
+
+        foreach my $key (@$list) {
+            my ( $cfid, $cf );
+            if ( $key =~ /CustomField-(\d+)-/ ) {
+                $cfid = $1;
+                $cf   = RT::CustomField->new( $session{'CurrentUser'} );
+                $cf->Load($cfid);
+            }
+            else { next }
+            my @values =
+              ref( $ARGS{$key} ) eq 'ARRAY'
+              ? @{ $ARGS{$key} }
+              : ( $ARGS{$key} );
+            map { s/(\r\n|\r)/\n/g; } @values;    # fix the newlines
+            # now break the multiline values into multivalues
+            @values = map { split( /\n/, $_ ) } @values unless ( $cf->SingleValue );
+
+            my $current_values = $Ticket->CustomFieldValues($cfid);
+            foreach my $value (@values) {
+
+                if ( $op eq 'del' && $current_values->HasEntry($value) ) {
+
+                    my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
+                        Field => $cfid,
+                        Value => $value
+                    );
+                    push @cfresults, $msg;
+                }
+
+                elsif ( $op eq 'add' && !$current_values->HasEntry($value) ) {
+                    my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
+                        Field => $cfid,
+                        Value => $value
+                    );
+                    push @cfresults, $msg;
+                }
+            }
+        }
+    }
+    my @tempresults = (
+        @watchresults,  @basicresults, @dateresults,
+        @updateresults, @linkresults,  @cfresults
+    );
+
+    @tempresults =
+      map { loc( "Ticket [_1]: [_2]", $Ticket->Id, $_ ) } @tempresults;
+
+    @results = ( @results, @tempresults );
 }
 
-my $TxnCFs = RT::CustomFields->new($session{CurrentUser});
-$TxnCFs->LimitToLookupType("RT::Queue-RT::Ticket-RT::Transaction");
-$TxnCFs->LimitToGlobalOrObjectId(sort keys %queues);
+my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );
+$TxnCFs->LimitToLookupType(RT::Transaction->CustomFieldLookupType);
+$TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
 
 </%INIT>
 <%args>

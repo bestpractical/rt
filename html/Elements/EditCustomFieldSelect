@@ -66,6 +66,5 @@ $NamePrefix => undef
 $Default => undef
 $Values => undef
 $Multiple => 0
-$Cols
-$Rows
+$Rows => undef
 </%ARGS>
