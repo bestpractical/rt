@@ -58,7 +58,7 @@ sub Create {
 sub LargeContent {
     my $self = shift;
     $self->_DecodeLOB( $self->ContentType, $self->ContentEncoding,
-        $self->_Value( 'LargeContent', decode_utf_8 => 0 ) );
+        $self->_Value( 'LargeContent', decode_utf8 => 0 ) );
 
 }
 
