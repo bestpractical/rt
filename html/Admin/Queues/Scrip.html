@@ -1,0 +1,24 @@
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
+
+<& /Admin/Elements/EditScrip, title => $title,  %ARGS &>
+<%init>
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue);
+
+my $title;
+
+unless($QueueObj->id) {
+    Abort(loc("Queue [_1] not found",$id));
+}
+if ($id) {
+    $title = loc("Modify a scrip for queue [_1]", $QueueObj->Name);
+}else {
+    $title = loc("Create a scrip for queue [_1]", $QueueObj->Name);
+}
+</%init>
+
+<%ARGS>
+$id => undef  
+$Queue => undef
+</%ARGS>

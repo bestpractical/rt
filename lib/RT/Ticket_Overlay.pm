@@ -189,8 +189,9 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   InitialPriority -- an integer from 0 to 99
   FinalPriority -- an integer from 0 to 99
   Status -- any valid status (Defined in RT::Queue)
-  TimeWorked -- an integer
-  TimeLeft -- an integer
+  TimeEstimated -- an integer. estimated time for this task in minutes
+  TimeWorked -- an integer. time worked so far in minutes
+  TimeLeft -- an integer. time remaining in minutes
   Starts -- an ISO date describing the ticket\'s start date and time in GMT
   Due -- an ISO date describing the ticket\'s due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
@@ -228,6 +229,7 @@ sub Create {
                  Status          => 'new',
                  TimeWorked      => "0",
                  TimeLeft        => 0,
+                 TimeEstimated        => 0,
                  Due             => undef,
                  Starts          => undef,
                  MIMEObj         => undef,
@@ -380,6 +382,7 @@ sub Create {
                                    Priority        => $args{'InitialPriority'},
                                    Status          => $args{'Status'},
                                    TimeWorked      => $args{'TimeWorked'},
+                                   TimeEstimated   => $args{'TimeEstimated'},
                                    TimeLeft        => $args{'TimeLeft'},
                                    Type            => $args{'Type'},
                                    Starts          => $starts->ISO,
@@ -3000,6 +3003,7 @@ sub _ClassAccessible {
           FinalPriority   => { 'read' => 1,  'write' => 1 },
           Priority        => { 'read' => 1,  'write' => 1 },
           Status          => { 'read' => 1,  'write' => 1 },
+          TimeEstimated      => { 'read' => 1,  'write' => 1 },
           TimeWorked      => { 'read' => 1,  'write' => 1 },
           TimeLeft        => { 'read' => 1,  'write' => 1 },
           Created         => { 'read' => 1,  'auto'  => 1 },

@@ -31,18 +31,6 @@ sub _Init  {
 }
 # }}}
 
-# {{{ sub _Accessible 
-sub _Accessible  {
-    my $self = shift;
-    my %Cols = ( ScripAction  => 'read/write',
-		 ScripCondition => 'read/write',
-		 Stage => 'read/write',
-		 Queue => 'read/write', 
-		 Template => 'read/write',
-	       );
-    return($self->SUPER::_Accessible(@_, %Cols));
-}
-# }}}
 
 # {{{ sub Create 
 
@@ -56,61 +44,78 @@ retval is 0 for failure or scrip id.  msg is a textual description of what happe
 
 =cut
 
-sub Create  {
+sub Create {
     my $self = shift;
-    my %args = ( Queue => undef,
-		 Template => undef,
-		 ScripAction => undef,
-		 ScripCondition => undef,
-		 Stage => 'TransactionCreate',
-		 @_
-	       );
-    
-      
-    if ($args{'Queue'} == 0 ) { 
-	unless ($self->CurrentUser->HasSystemRight('ModifyScrips')) {
-	    return (0, $self->loc('Permission Denied'));
- 	}	
+    my %args = (
+        Queue                  => 0,
+        Template               => undef,
+        ScripAction            => undef,
+        ScripCondition         => undef,
+        Stage                  => 'TransactionCreate',
+        Description            => undef,
+        CustomPrepareCode      => undef,
+        CustomCommitCode       => undef,
+        CustomIsApplicableCode => undef,
+
+        @_
+    );
+
+    if ( $args{'Queue'} == 0 ) {
+        unless ( $self->CurrentUser->HasSystemRight('ModifyScrips') ) {
+            return ( 0, $self->loc('Permission Denied') );
+        }
     }
     else {
-	my $QueueObj = new RT::Queue($self->CurrentUser);
-	$QueueObj->Load($args{'Queue'});
-	unless ($QueueObj->id()) {
-	    return (0, $self->loc('Invalid queue'));
-	}
-	unless ($QueueObj->CurrentUserHasRight('ModifyScrips')) {
-	    return (0, $self->loc('Permission Denied'));
-	}	
+        my $QueueObj = new RT::Queue( $self->CurrentUser );
+        $QueueObj->Load( $args{'Queue'} );
+        unless ( $QueueObj->id() ) {
+            return ( 0, $self->loc('Invalid queue') );
+        }
+        unless ( $QueueObj->CurrentUserHasRight('ModifyScrips') ) {
+            return ( 0, $self->loc('Permission Denied') );
+        }
     }
 
     #TODO +++ validate input 
     #TODO: Allow loading Template, ScripAction and ScripCondition by name
 
     require RT::ScripAction;
-    my $action = new RT::ScripAction($self->CurrentUser);
-    $action->Load($args{'ScripAction'});
-    return (0, $self->loc("Action [_1] not found", $args{ScripAction})) unless $action->Id;
+    my $action = new RT::ScripAction( $self->CurrentUser );
+    $action->Load( $args{'ScripAction'} );
+    return ( 0, $self->loc( "Action [_1] not found", $args{ScripAction} ) )
+      unless $action->Id;
 
     require RT::Template;
-    my $template = new RT::Template($self->CurrentUser);
-    $template->Load($args{'Template'});
-    return (0, $self->loc('Template not found')) unless $template->Id;
+    my $template = new RT::Template( $self->CurrentUser );
+    $template->Load( $args{'Template'} );
+    return ( 0, $self->loc('Template not found') ) unless $template->Id;
 
     require RT::ScripCondition;
-    my $condition = new RT::ScripCondition($self->CurrentUser);
-    $condition->Load($args{'ScripCondition'});
+    my $condition = new RT::ScripCondition( $self->CurrentUser );
+    $condition->Load( $args{'ScripCondition'} );
 
-    unless ($condition->Id) {
-	return (0, $self->loc('Condition not found'));
-    }	
-    
-    my $id = $self->SUPER::Create(Queue => $args{'Queue'},
-				  Template => $template->Id,
-				  ScripCondition => $condition->id,
-				  Stage => $args{'Stage'},
-				  ScripAction => $action->Id
-				 );
-    return ($id, $self->loc('Scrip Created')); 
+    unless ( $condition->Id ) {
+        return ( 0, $self->loc('Condition not found') );
+    }
+
+    my ($id,$msg) = $self->SUPER::Create(
+        Queue                  => $args{'Queue'},
+        Template               => $template->Id,
+        ScripCondition         => $condition->id,
+        Stage                  => $args{'Stage'},
+        ScripAction            => $action->Id,
+        Description            => $args{'Description'},
+        CustomPrepareCode      => $args{'CustomPrepareCode'},
+        CustomCommitCode       => $args{'CustomCommitCode'},
+        CustomIsApplicableCode => $args{'CustomIsApplicableCode'},
+
+    );
+    if ($id) {
+        return ( $id, $self->loc('Scrip Created') );
+    }
+    else {
+        return($id,$msg);
+    }
 }
 
 # }}}

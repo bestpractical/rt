@@ -398,8 +398,12 @@ sub _Value  {
     elsif ( (($self->TransactionObj->CurrentUserHasRight('ShowTicketComments')) and
 	     ($self->TransactionObj->Type eq 'Comment') )  or
 	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
-	
-	return($self->__Value($field));
+	if ($field eq 'Content' && ($self->__Value('ContentEncoding') !~ /^utf-8$/ )) {
+		return($self->__Value($field, {decode_utf8 => 0}));
+	}
+	else {
+		return($self->__Value($field));
+	}
     }
     #if they ain't got rights to see, don't let em
     else {

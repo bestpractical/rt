@@ -22,7 +22,8 @@ my @core_modules = qw(
 CPAN 1.60
 DBI 1.18
 Test::Inline
-DBIx::SearchBuilder 0.60
+Class::ReturnValue 0.21
+DBIx::SearchBuilder 0.62
 DBIx::DataSource 0.02
 Text::Template
 File::Spec 0.8

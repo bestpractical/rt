@@ -1,5 +1,5 @@
 <div class="bpscredits">
-<&|/l, $RT::VERSION &>RT [_1] from <a href="http://bestpractical.com">Best Practical Solutions, LLC</a>.</&>
+&#187;&#124;&#171; <&|/l, $RT::VERSION &>RT [_1] from <a href="http://bestpractical.com">Best Practical Solutions, LLC</a>.</&>
 </div>
 % if ($Debug) {
 <HR>

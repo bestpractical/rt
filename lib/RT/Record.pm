@@ -122,15 +122,44 @@ sub Create {
       if $self->_Accessible( 'LastUpdatedBy', 'auto' );
 
     my $id = $self->SUPER::Create(%attribs);
-
+    if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
+        if ( $id->errno ) {
+            if (wantarray) {
+                return ( 0,
+                    $self->loc( "Internal Error: [_1]", $id->{error_message} ) );
+            }
+            else {
+                return (0);
+            }
+        }
+    }
     # If the object was created in the database, 
     # load it up now, so we're sure we get what the database 
     # has.  Arguably, this should not be necessary, but there
     # isn't much we can do about it.
+
+   unless ($id) { 
+    if (wantarray) {
+        return ( $id, $self->loc('Object could not be created') );
+    }
+    else {
+        return ($id);
+    }
+
+   }
+
+    if  (UNIVERSAL::isa('errno',$id)) {
+        exit(0);
+       warn "It's here!";
+        return(undef);
+    }
+
     $self->Load($id) if ($id);
 
+
+
     if (wantarray) {
-        return ( $id, 'Object created' );
+        return ( $id, $self->loc('Object created') );
     }
     else {
         return ($id);
@@ -392,9 +421,12 @@ sub CurrentUser {
 sub __Value {
     my $self = shift;
     my $field = shift;
+    my %args = ( decode_utf8 => 1,
+		 @_);
+
 
     my $value = $self->SUPER::__Value($field);
-
+    if ($args{'decode_utf8'}) {
     if ($] >= 5.007003 and eval { require Encode; 1 }) {
 	return Encode::decode_utf8($value);
     }
@@ -408,6 +440,10 @@ sub __Value {
     else {
 	return $value;
     }
+   }
+   else {
+	return $value;
+  }
 }
 
 

@@ -1,0 +1,129 @@
+<& /Elements/ListActions, actions => \@actions &>
+
+<& /Elements/TitleBoxStart, title => $title &>
+  
+<FORM METHOD=POST ACTION="Scrip.html">
+<input type="hidden" name="id" value="<%$id%>">
+<input type="hidden" name="Queue" value="<%$Queue%>">
+<%$title%>:
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Description</&>:
+</TD>
+<TD>
+<input Name="Scrip-<%$id%>-Description" value="<%$scrip->Description%>">
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Condition</&>:
+</TD>
+<TD>
+<& /Admin/Elements/SelectScripCondition, Name => "Scrip-$id-Condition", Default => $scrip->ConditionObj->Id &><BR>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Custom condition</&>:
+</TD>
+<TD>
+<TEXTAREA COLS=80 ROWS=8 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></TEXTAREA>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Action</&>:
+</TD>
+<TD>
+<& /Admin/Elements/SelectScripAction, Name => "Scrip-$id-Action", Default => $scrip->ActionObj->Id &>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Custom action preparation code</&>:
+</TD>
+<TD>
+<TEXTAREA COLS=80 ROWS=8 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
+</TD>
+</TR/
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Custom action cleanup code</&>:
+</TD>
+<TD>
+<TEXTAREA COLS=80 ROWS=8 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></TEXTAREA>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Template</&>: 
+</TD>
+<TD>
+<& /Admin/Elements/SelectTemplate, Name => "Scrip-$id-Template", Default => $scrip->TemplateObj->Id &>
+</TD>
+</TR>
+
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+</FORM>
+<%init>
+my (@actions);
+
+
+my $scrip = new RT::Scrip($session{'CurrentUser'});
+
+if ( $id eq 'new' ) {
+
+    my ( $retval, $msg ) = $scrip->Create(
+            Queue                  => $Queue,
+            ScripAction            => $ARGS{"Scrip-new-Action"},
+            ScripCondition         => $ARGS{"Scrip-new-Condition"},
+            Template               => $ARGS{"Scrip-new-Template"},
+            Description            => $ARGS{"Scrip-new-Description"},
+            CustomPrepareCode      => $ARGS{"Scrip-new-CustomPrepareCode"},
+            CustomCommitCode       => $ARGS{"Scrip-new-CustomCommitCode"},
+            CustomIsApplicableCode => $ARGS{"Scrip-new-CustomIsApplicableCode"},
+    );
+    if ( defined $retval ) {
+        push @actions, $msg;
+    }
+    else {
+        Abort( $msg);
+    }
+}
+elsif ($id) {
+    my ($val,$msg) =$scrip->Load($id);
+    if  ($val) {
+        $id = $scrip->id;
+    } else {
+       Abort ($msg);
+    }
+    my @attribs = qw (
+      Queue
+      ScripAction
+      ScripCondition
+      Template
+      Description
+      CustomPrepareCode
+      CustomCommitCode
+      CustomIsApplicableCode
+    );
+    my @results = UpdateRecordObject( AttributesRef => \@attribs,
+                                      AttributePrefix => 'Scrip-'.$scrip->Id,
+                                      Object        => $scrip,
+                                      ARGSRef       => \%ARGS );
+    push (@actions, @results);
+}
+
+elsif ($ARGS{'create'}) {
+    $id = 'new';
+}
+
+# }}}
+</%init>
+
+<%ARGS>
+$id => undef
+$title => undef
+$Queue => 0
+</%ARGS>

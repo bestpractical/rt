@@ -1,111 +1,25 @@
-<& /Admin/Elements/Header, Title => loc('Edit scrips') &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
 
-<& /Elements/ListActions, actions => \@actions &>
-
-<& /Elements/TitleBoxStart, title => $description &>
- 
-<h2><&|/l&>Global Scrips</&></h2>
+<h2><&|/l&>Scrips which apply to all queues</&></h2>
 <& /Admin/Elements/ListGlobalScrips &>
 <BR> 
-  <FORM METHOD=POST ACTION="Scrips.html">
-    <INPUT TYPE=HIDDEN NAME=id VALUE=<%$id%>>
-<h2><&|/l&>Queue Scrips</&></h2>
-% if ($Scrips->Count > 0 ) {
-<TABLE>
-<TR>
-<TD><&|/l&>Delete</&>
-</TD>
-<TD>
-</TR>
-% while (my $scrip = $Scrips->Next ) {
-<TR>
-<TD>
-<INPUT TYPE="CHECKBOX" NAME="DeleteScrip-<%$scrip->Id%>">
-</TD>
-<TD>
-<% $scrip->ConditionObj->Name %> 
-<% $scrip->ActionObj->Name %> with template
-<% $scrip->TemplateObj->Name %>
-</TD>
-</TR>
-% }
-</TABLE>
-% }
-<BR>
-<h2><&|/l&>Add a scrip to this queue</&></h2>
-<&|/l&>Condition</&>: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
-	  <&|/l&>Action</&>: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
-	  <&|/l&>Template</&>: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', DefaultQueue => $id &>
-
-<& /Elements/TitleBoxEnd &>
-<& /Elements/Submit &>
-</FORM>
+<& /Admin/Elements/EditScrips, title => $title, %ARGS &>
 <%init>
-my (@actions, $description);
-
-my $Scrips = new RT::Scrips ($session{'CurrentUser'});
-unless ($id =~ /^\d+$/) {
-    Abort(loc("[_1] isn't a valid Queue id.", $id));
-}
-
-unless ($Scrips->LimitToQueue($id)) {
-    Abort(loc("Couldn't load Scrips."));
-        }
-
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($id);
 
+my $title;
+
 if ($QueueObj->id) {
-    $description = loc("Modify scrips for queue [_1]", $QueueObj->Name);
-}
-else {
-    $description = loc("Modify global scrips");
-}
-
-
-if ($NewScripAction and $NewScripCondition) {
-    my $NewScrip = new RT::Scrip($session{'CurrentUser'});
-    
-    my ($retval, $msg) = $NewScrip->Create ( ScripAction => $NewScripAction,
-				     ScripCondition => $NewScripCondition,
-				     Stage => 'TransactionCreate',
-				     Queue => $id,
-				     Template => $NewScripTemplate);
-    if (defined $retval) {
-        push @actions, $msg;
-    }
-    else {
-        push @actions, $msg;
-    }
+    $title = loc("Modify scrips for queue [_1]", $QueueObj->Name);
+} else {
+    Abort(loc("Queue [_1] not found",$id));
 }
 
-# {{{ deal with modifying and deleting existing scrips
-my ($key );
-foreach $key (keys %ARGS) {
-	# {{{ if we're trying to delete the scrip
-    if ($key =~ /^DeleteScrip-(\d+)/) {
-            my $id = $1;
-	        my $scrip = new RT::Scrip($session{'CurrentUser'});
-	        $scrip->Load($id);
-    	    my ($retval, $msg) = $scrip->Delete;
-	    if ($retval) {
-	        push @actions, 'Scrip deleted';
-	    }
-	    else {
-		push @actions, $msg;
-	    }
-	}
-	# }}}
 
-    
-}
-# }}}
 </%init>
 
 <%ARGS>
-$NewScripCondition => undef
-$NewScripAction => undef
-$NewScripTemplate => undef
 $id => undef         #some identifier that a Queue could 
 </%ARGS>

@@ -55,8 +55,9 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'InitialPriority'.
   int(11) 'FinalPriority'.
   int(11) 'Priority'.
-  varchar(10) 'Status'.
+  int(11) 'TimeEstimated'.
   int(11) 'TimeWorked'.
+  varchar(10) 'Status'.
   int(11) 'TimeLeft'.
   datetime 'Told'.
   datetime 'Starts'.
@@ -83,8 +84,9 @@ sub Create {
                 InitialPriority => '',
                 FinalPriority => '',
                 Priority => '',
-                Status => '',
+                TimeEstimated => '',
                 TimeWorked => '',
+                Status => '',
                 TimeLeft => '',
                 Told => '',
                 Starts => '',
@@ -105,8 +107,9 @@ sub Create {
                          InitialPriority => $args{'InitialPriority'},
                          FinalPriority => $args{'FinalPriority'},
                          Priority => $args{'Priority'},
-                         Status => $args{'Status'},
+                         TimeEstimated => $args{'TimeEstimated'},
                          TimeWorked => $args{'TimeWorked'},
+                         Status => $args{'Status'},
                          TimeLeft => $args{'TimeLeft'},
                          Told => $args{'Told'},
                          Starts => $args{'Starts'},
@@ -323,19 +326,19 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Status
+=item TimeEstimated
 
-Returns the current value of Status. 
-(In the database, Status is stored as varchar(10).)
-
-
-
-=item SetStatus VALUE
+Returns the current value of TimeEstimated. 
+(In the database, TimeEstimated is stored as int(11).)
 
 
-Set Status to VALUE. 
+
+=item SetTimeEstimated VALUE
+
+
+Set TimeEstimated to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Status will be stored as a varchar(10).)
+(In the database, TimeEstimated will be stored as a int(11).)
 
 
 =cut
@@ -354,6 +357,24 @@ Returns the current value of TimeWorked.
 Set TimeWorked to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, TimeWorked will be stored as a int(11).)
+
+
+=cut
+
+
+=item Status
+
+Returns the current value of Status. 
+(In the database, Status is stored as varchar(10).)
+
+
+
+=item SetStatus VALUE
+
+
+Set Status to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Status will be stored as a varchar(10).)
 
 
 =cut
@@ -547,10 +568,12 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         Priority => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
-        Status => 
-		{read => 1, write => 1, type => 'varchar(10)', default => ''},
+        TimeEstimated => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
         TimeWorked => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
+        Status => 
+		{read => 1, write => 1, type => 'varchar(10)', default => ''},
         TimeLeft => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         Told => 

@@ -1,64 +1,17 @@
-<& /Admin/Elements/Header, Title => loc('Edit scrips') &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/SystemTabs &>
-
-<& /Elements/ListActions, actions => \@actions &>
-
-<& /Elements/TitleBoxStart, title => loc("Modify global scrips") &>
-
-<FORM METHOD=POST ACTION="Scrips.html">
-<P><A href="Scrip.html?create=1&Queue=0"><&|/l&>Create a new global scrip</&></A></P>
-
-<P><&|/l&>Global Scrips</&>:</P>
-% if ($Scrips->Count == 0 ) {
-<P><i><&|/l&>(No scrips)</&></i></P>
-% } else {
-<P><i><&|/l&>(Check box to delete scrip)</&></i></P>
-<TABLE>
-%   while (my $scrip = $Scrips->Next ) {
-<TR>
-<TD>
-<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<&|/l&>Edit</&></a>
-</TD>
-<TD>
-<%$scrip->Description%><BR>
-<font size="-1"><% $scrip->ConditionObj->Name %> <% $scrip->ActionObj->Name %> <&|/l, $scrip->TemplateObj->Name &>with template [_1]</&></font>
-</TD>
-</TR>
-%   }
-
-</TABLE>
-
-% }
-
-<& /Elements/TitleBoxEnd &>
-<& /Elements/Submit &>
-</FORM>
+<& /Admin/Elements/EditScrips, title => $title, %ARGS &>
+</form>
 <%init>
+
+my $title = loc("Modify scrips which apply to all queues");
+
 my (@actions);
 
-my $Scrips = new RT::Scrips ($session{'CurrentUser'});
-$Scrips->LimitToGlobal();
-
-# {{{ deal with modifying and deleting existing scrips
-my ($key );
-foreach $key (keys %ARGS) {
-  # {{{ if we're trying to delete the scrip
-  if ($key =~ /^DeleteScrip-(\d+)/) {
-    my $id = $1;
-    my $scrip = new RT::Scrip($session{'CurrentUser'});
-    $scrip->Load($id);
-    my ($retval, $msg) = $scrip->Delete;
-    if ($retval) {
-      push @actions, "Scrip deleted";
-    }
-    else {
-      push @actions, $msg;
-    }
-  }
-  # }}}
-}
-# }}}
 </%init>
 
+
+
 <%ARGS>
+$id => undef
 </%ARGS>
