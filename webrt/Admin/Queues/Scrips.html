@@ -4,9 +4,13 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Elements/TitleBoxStart, title => $description &>
-  
+ 
+<h2>Global Scrips</h2>
+<& /Admin/Elements/ListGlobalScrips &>
+<BR> 
   <FORM METHOD=POST ACTION="Scrips.html">
     <INPUT TYPE=HIDDEN NAME=id VALUE=<%$id%>>
+<h2>Queue Scrips</2>
 % if ($Scrips->Count > 0 ) {
 <TABLE>
 <TR>
@@ -28,14 +32,12 @@
 % }
 </TABLE>
 % }
-
-Add a scrip to this queue:
-<ul>
-<li>Condition: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
+<BR>
+<h2>Add a scrip to this queue</h2>
+Condition: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
 	  Action: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
 	  Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', DefaultQueue => $id &>
 
-</ul>
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </FORM>

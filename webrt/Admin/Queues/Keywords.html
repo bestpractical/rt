@@ -4,11 +4,18 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Elements/TitleBoxStart, title => $description &>
+
+<h2>Global Keyword Selections</h2>
+<& /Admin/Elements/ListGlobalKeywordSelects &>
+<BR>
   
   <FORM METHOD=POST ACTION="Keywords.html">
     <INPUT TYPE=HIDDEN NAME=id VALUE="<%$id%>">
 
 % if ($KeywordSelects->Count > 0 ) {
+
+
+<h2>Queue Keyword Selections</h2>
 <TABLE>
 <TR><TD>Delete</TD></TR>
 %  while (my $keywordselect = $KeywordSelects->Next ) {

@@ -1,0 +1,10 @@
+%  while (my $scrip = $Scrips->Next ) {
+<% $scrip->ConditionObj->Name %> 
+<% $scrip->ActionObj->Name %> 
+with template <% $scrip->TemplateObj->Name %>
+<BR>
+%   }
+<%init>
+my $Scrips = new RT::Scrips ($session{'CurrentUser'});
+$Scrips->LimitToGlobal();
+</%INIT>
