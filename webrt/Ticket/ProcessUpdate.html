@@ -38,6 +38,10 @@ $Description => undef
     $m->abort;
   }
 
+use RT::Ticket;
+use RT::CurrentUser;
+use MIME::Entity;
+
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Ticket = RT::Ticket->new($CurrentUser);
 $Ticket->Load($ARGS{'id'});
