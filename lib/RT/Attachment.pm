@@ -33,7 +33,7 @@ sub _Accessible  {
 	      Content => 'read',
 	      Headers => 'read',
 	      Filename => 'read',
-	      Creator => 'read',
+	      Creator => 'read/auto',
 	      Created => 'read/auto'
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);

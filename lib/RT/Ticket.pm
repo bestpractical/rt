@@ -1284,6 +1284,7 @@ sub _Accessible {
 	      Status => 'read/write',
 	      TimeWorked => 'read',
 	      Created => 'read/auto',
+	      Creator => 'auto',
 	      Told => 'read',
 	      LastUpdated => 'read/auto',
 	      LastUpdatedBy => 'read/auto',

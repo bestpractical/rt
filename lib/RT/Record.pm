@@ -52,12 +52,10 @@ sub _MyHandle  {
 # {{{ sub Create 
 sub Create  {
   my $self = shift;
-  my @args = (Creator => $self->CurrentUser->Id,
-	      @_);
-  push @args, 'Creator', $self->{'user'}->id
+  push @_, 'Creator', $self->{'user'}->id
 	if $self->_Accessible('Creator', 'auto');
   #  print STDERR "In RT::Record->create\n";
-  my $id = $self->SUPER::Create(@args);
+  my $id = $self->SUPER::Create(@_);
   #  print STDERR "RT::Record->create Loading by Ref $id\n";
   return($id);
 

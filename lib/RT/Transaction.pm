@@ -323,7 +323,7 @@ sub _Accessible  {
 	      NewValue => 'read',
 	      OldValue => 'read',
 	      EffectiveTicket => 'read',
-	      Creator => 'read',
+	      Creator => 'read/auto',
 	      Created => 'read/auto',
 	      LastUpdated => 'read/auto'
 	     );
