@@ -35,7 +35,7 @@ sub DisplayPermitted {
 }
 
 sub ParseHeaders {
-    Parse(@_, 'Headers');
+    return Parse(@_, 'Headers');
 }
 
 sub Parse {

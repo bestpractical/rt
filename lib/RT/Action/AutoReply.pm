@@ -6,7 +6,7 @@ require RT::Action::SendEmail;
 @ISA = qw(RT::Action::SendEmail);
 
 sub Describe {
-  return ("Sends an autoresponse to the requestor and all interested parties.");
+  return ("Sends an autoresponse to the requestor");
 }
 
 sub Commit {

@@ -497,6 +497,7 @@ sub SinceTold {
   my $self = shift;
   return ("Ticket->SinceTold unimplemented");
 }
+
 sub Age {
   my $self = shift;
   return("Ticket->Age unimplemented\n");

@@ -79,7 +79,7 @@ sub Prepare {
       $self->{Subject}=$self->{TicketObject}->Subject()
 	  unless $self->{Subject};
 
-      $self->{'Header'}->add('subject', 
+      $self->{'Header'}->add('Subject', 
 			     "[$RT::rtname #$ticket] $$self{Subject}");
 
   }
@@ -108,8 +108,16 @@ sub Prepare {
       $self->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
   }
 
-  $self->{'Header'}->add('X-Request-ID', $self->{'TicketObject'}->id());
-  $self->{'Header'}->add('X-RT-Loop-Prevention', $RT::rtname);
+  unless ($self->{'Header'}->get('RT-Action')) {
+      $self->{'Header'}->add('RT-Action', $self->Describe);
+  }
+
+  unless ($self->{'Header'}->get('RT-Scrip')) {
+      $self->{'Header'}->add('RT-Scrip', $self->{'ScripObject'}->Description);
+  }
+
+  $self->{'Header'}->add('RT-Ticket-ID', $self->{'TicketObject'}->id());
+  $self->{'Header'}->add('RT-Loop-Prevention', $RT::rtname);
 
   # Perform variable substitution on the template body
   $self->{'Body'}=$self->{TemplateObject}->Parse($self);

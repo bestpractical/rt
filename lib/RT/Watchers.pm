@@ -4,6 +4,7 @@
 
 package RT::Watchers;
 require RT::EasySearch;
+require RT::Watcher;
 @ISA= qw(RT::EasySearch);
 
 

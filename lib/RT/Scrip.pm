@@ -84,6 +84,7 @@ sub LoadAction {
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
   $self->{'ScriptObject'}  = $type->new ( TicketObject => $args{'TicketObject'},
 					 TransactionObject => $args{'TransactionObject'},
+					  ScripObject => $self,
 					 Template => $self->Template,
 					 Argument => $self->Argument,
 					 Type => $self->Type,

@@ -71,10 +71,10 @@ sub Commit {
 }
 
 
-#What does this type of Scrip do
+#What does this type of Action does
 sub Describe {
   my $self = shift;
-  return (1, "This is a baseclass for a Scrip.");
+  return ("No description for " . ref $self);
 }
 
 #Parse the templates, get things ready to go.
