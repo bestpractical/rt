@@ -1,0 +1,126 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/TitleBoxStart, title => loc('Ticket Basics')&>
+<table>
+% foreach my $field (@fields1) {
+<tr><td align=right>
+% if ($field eq "Status") {
+<&|/l&>Status</&>:
+</td><td>
+<& /Elements/SelectBoolean, Name => "StatusOp", 
+			    True => loc("is"), 
+  			    False => loc("isn't"), 
+			    TrueVal=> '=', 
+			    FalseVal => '!=' 
+&>  
+</td><td>
+<& /Elements/SelectStatus, Name => "ValueOfStatus", SkipDeleted => 1 &>
+% } elsif ($field eq "Subject") {
+<&|/l&>Subject</&>:
+</td><td>
+<& /Elements/SelectMatch, Name => "SubjectOp" &> 
+</td><td>
+<INPUT Name="ValueOfSubject" SIZE=30>
+% } elsif ($field eq "Queue") {
+<&|/l&>Queue</&>:
+</td><td>
+<& /Elements/SelectBoolean,  Name => "QueueOp" , 
+					True => loc("is"), 
+					False => loc("isn't"), 
+					TrueVal=> '=', 
+					FalseVal => '!=' &>
+</td><td>
+<& /Elements/SelectQueue, Name => "ValueOfQueue" &>
+% } elsif ($field =~ m/.*Priority/) {
+<&|/l&><%$field%></&>:
+</td><td>
+<& /Elements/SelectEqualityOperator, Name => $field . "Op" &>
+</td><td>
+<INPUT Name="<%"ValueOf" . $field%>" SIZE=5>
+% } elsif ($field eq "id") {
+<&|/l&>Id</&>:
+</td><td>
+<& /Elements/SelectEqualityOperator, Name => "idOp" &>
+</td><td>
+<INPUT Name="ValueOfid" SIZE=5>
+% } else {
+<&|/l&><%$field%></&>:
+</td><td>
+<& /Elements/SelectMatch, Name => "$field" . "Op" &>
+</td><td>
+<INPUT Name="<%"ValueOf" . $field%>" value=""SIZE=20>
+% }
+</td></tr>
+% }
+
+<tr><td align=right>
+<& /Elements/SelectAttachmentField, Name => 'AttachmentField' &>:
+</td><td>
+<& /Elements/SelectBoolean, Name => "AttachmentOp", 
+			    True => loc("matches"), 
+			    False => loc("does not match"), 
+			    TrueVal => 'LIKE', 
+			    FalseVal => 'NOT LIKE' 
+&> 
+</td><td>
+<Input Name="ValueOfAttachment" Size=20>
+</td></tr>
+
+<tr><td align=right>
+<& /Elements/SelectDateType, Name=>"DateField" &>:
+</td><td>
+<& /Elements/SelectDateRelation, Name=>"DateOp" &>
+</td><td>
+<& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
+</td></tr>
+
+<tr><td align=right>
+<& SelectLinks, Name=>"LinksField" &>
+</td><td>
+<& /Elements/SelectBoolean, Name => "LinksOp", 
+			    True => loc("is"), 
+  			    False => loc("isn't"), 
+			    TrueVal=> '=', 
+			    FalseVal => '!=' 
+&>  
+</td><td>
+<INPUT Name="ValueOfLinks" value="" SIZE=5>
+</td></tr>
+
+</table>
+<& /Elements/TitleBoxEnd &>
+
+<%INIT>
+my @fields1 = ('Subject',
+	       'Queue',
+	       'Status',
+	       'TimeLeft',
+	       'TimeWorked',
+	       'id',
+	       'Priority',
+	       'InitialPriority',
+	       'FinalPriority',
+	       );
+</%INIT>
+

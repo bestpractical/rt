@@ -21,25 +21,22 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => 'Search/Edit.html', 
-    Title => $title &>
-
-<& Elements/NewListActions, actions => \@actions &>
-
-<form action="Build.html">
-<& /Elements/MessageBox, Name => "querystring", Default => $querystring, Width => '100%' &>
-
-<& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => "Apply your changes"&>
-</form>
+<SELECT NAME="<%$Name%>">
+% foreach (@fields) {
+<OPTION VALUE="<%$_%>"><&|/l&><%$_%></&></OPTION>
+% }
+</SELECT>
+<%ARGS>
+$Name => 'LinksField'
+</%ARGS>
 
 <%INIT>
-my $title = "Edit Query";
+my @fields = ('HasMember',
+	      'MemberOf',
+	      'DependsOn',
+	      'DependentOn',
+	      'RefersTo',
+	      'ReferredToBy',
+	      'LinkedTo',
+	      );
 </%INIT>
-
-
-<%ARGS>
-$querystring => undef
-@actions => undef
-</%ARGS>

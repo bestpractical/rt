@@ -1,0 +1,875 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs, 
+    current_tab => 'Search/Build.html', 
+    Title => $title &>
+
+<FORM METHOD="GET">
+<input type=hidden name=Query value="<%$Query%>">
+<input type=hidden name=items value="<% $items %>">
+<table width=100%>
+<tr><td valign=top>
+<& /Elements/TitleBoxStart, title => $search_hash->{'Description'} &>
+<& Elements/NewListActions, actions => \@actions &>
+<select size=10 name=clauses <select style="width : 100%">
+<%$optionlist|n%>
+</select>
+<center>
+<input type=submit name="Up" value="^">
+<input type=submit name="Down" value="v">
+<input type=submit name="Left" value="<">
+<input type=submit name="Right" value=">">
+<input type=submit name="Toggle" DISABLED value="And/Or">
+<input type=submit name="DeleteClause" value="Delete">
+<input type=submit name="EditQuery" value="Edit">
+<input type=submit name="DoSearch" value="Search">
+</center>
+<br>
+<& /Elements/TitleBoxEnd &>
+
+</td>
+<td valign="top">
+<& Elements/EditSearches, CurrentSearch => $search_hash &>
+</td>
+</tr>
+<tr>
+<td>
+<&|/l&>Format:</&><br>
+<textarea name="Format" rows=5 cols=65><%($Format||$search_hash->{'Format'})%></textarea>
+</td>
+<td></td>
+</table>
+
+<& Elements/NewPickRestriction, query => $Query, cfqueues => \%queues, %ARGS &>
+
+<& /Elements/Submit, Caption => "Add additional restrictions", Label => loc('Add'), Name => 'AddClause'&>
+</FORM>
+
+<%INIT>
+my $search_hash = {};
+my $search;
+my $title = "Query Builder";
+
+# if we're asked to revert the current search, we just want to load it
+if ( $ARGS{'Revert'} ) {
+    $ARGS{'LoadSavedSearch'} = $ARGS{'SearchId'};
+    $Format                  = undef;
+    $Query                   = undef;
+}
+
+# if we're asked to load a search, load it.
+if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    # XXX TODO This will only let users save personal searches
+    # We explicitly list out the available types and
+    # don't trust user input here
+    if (    ( $obj_type eq 'RT::User' )
+         && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+        $search = $session{'CurrentUser'}->Attributes->WithId($search_id);
+
+    }
+
+    $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
+}
+
+# if we're asked to save the current search, save it
+if ( $ARGS{'Save'} ) {
+    $m->print("trying to save! $ARGS{'SearchId'}<br>");
+
+    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+        my $obj_type  = $1;
+        my $obj_id    = $2;
+        my $search_id = $3;
+
+        # XXX TODO This will only let users save personal searches
+        # We explicitly list out the available types and
+        # don't trust user input here
+        if (    ( $obj_type eq 'RT::User' )
+             && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+            $search =
+              $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+
+        }
+        else {
+
+            die "unsupported search type"
+
+        }
+
+        # if the search data or metadata has changed, change it
+        $search->SetSubValues( Format => $ARGS{'Format'},
+                               Query  => $ARGS{'Query'} );
+        $search->SetDescription( $ARGS{'Description'} );
+
+        # if the associated object has changed, change which object this search
+        # applies to
+
+
+         $search_hash->{'SearchId'}  = $ARGS{'SearchId'};
+
+    }
+    elsif ( $ARGS{'SearchId'} eq 'new' ) {
+    $m->print("new search<br>");
+        my ( $search_id, $search_msg ) =
+          $session{'CurrentUser'}->UserObj->AddAttribute(
+                                            Name        => 'SavedSearch',
+                                            Description => $ARGS{'Description'},
+                                            Content     => {
+                                                      Format => $ARGS{'Format'},
+                                                      Query  => $Query }
+          );
+        $search =
+          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+        $search_hash->{'SearchId'} =
+            ref( $session{'CurrentUser'}->UserObj )
+          . '-'. $session{'CurrentUser'}->UserObj->Id
+          . '-SavedSearch-'
+          . $search->Id;
+
+    $m->print("end new search: $search<br>");
+    $m->print("end new search: " . $search->Id . "<br>");
+    $m->print("end new search: " . $Query . "<br>");
+my %content = $search->Content;
+    $m->print("end new search: " . $content{Query} . "<br>");
+    }
+}
+
+# If we're asked to delete the current search, make it go away and reset
+# the search parameters
+if ( $ARGS{'Delete'} ) {
+    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+        my $obj_type  = $1;
+        my $obj_id    = $2;
+        my $search_id = $3;
+        $session{'CurrentUser'}->UserObj->Attributes->DeleteEntry(
+                                                          Name => 'SavedSearch',
+                                                          id   => $search_id );
+   
+    $Format = '';
+    $Query = '';
+
+}
+
+}
+
+if ($search) {
+    $search_hash->{Description} = ($search->Description()|| loc('Untitled search'));
+    $search_hash->{Format} = $search->SubValue('Format');
+    $search_hash->{Query} = $search->SubValue('Query');
+} else {
+    $search_hash->{Description} = loc('Untitled search');
+    $search_hash->{Format} = '';
+    $search_hash->{Query} = '';
+}
+
+our @actions = ();
+our $selectedclause = $ARGS{clauses};
+our %queues;
+
+my $items = {};
+
+$items = ParseQuery($Query||$search_hash->{'Query'});
+
+# if parsing went poorly, send them to the edit page to fix it
+if ($actions[0]) {
+    $m->comp("EditQuery.html", querystring => $Query, actions => \@actions);
+    $m->abort();
+}
+
+my @options;
+$Query = "";
+%queues = ();
+build_array(\$Query, $items, "", "", 0, \@options);
+our $currentkey = "";
+$currentkey = $options[$selectedclause]->{Key} if $selectedclause;
+
+if ($ARGS{"DoSearch"}) {
+    $m->comp("Show.html", Query => $Query, Format => $ARGS{Format});
+    $m->abort();
+} elsif ($ARGS{"EditQuery"}) {
+    $m->comp("Edit.html", querystring => $Query);
+    $m->abort();
+} elsif ($ARGS{"AddClause"}) {
+    my %hash = %$items;
+    my $key;
+    if ($currentkey) {
+        $key = $currentkey;
+    } else {
+        $key = "{" . '0.0' . "}{Subkey}{1.0}";
+    }
+    while (keyexists(\%hash, $key)) {
+	$key = nextkey($key);
+    }
+    foreach my $arg (keys %ARGS) {
+        if ($arg =~ m/ValueOf(.+)/ && $ARGS{$arg}) {
+#	    $m->print("My arg: $arg $ARGS{$arg}<br>");
+            my $field = $1;
+	    my $keyword;
+	    #figure out if it's a grouping
+	    if ($ARGS{$field . "Field"}) {
+		$keyword = $ARGS{$field . "Field"};
+	    } else {
+		$keyword = $field;
+	    }
+	    my $clause = { Key => $keyword,
+			   Op => $ARGS{$field . 'Op'},
+			   Value => "'$ARGS{'ValueOf' . $field}'" };
+
+	    eval "\$hash$key = \$clause";
+
+	    setaggregator(\%hash, $key, $ARGS{'AndOr'});
+	    $items = \%hash;
+	    $key = nextkey($key);
+         }
+    }
+}
+
+if ($ARGS{"Up"}) {
+    if ($currentkey) {
+        my %hash = %$items;
+
+        # we can only move it up if it's not at the top
+        my $prev = prevkey($currentkey);
+
+	if (swap(\%hash, $prev, $currentkey)) {
+            $currentkey = "$prev";
+        } else {
+	    push(@actions, ["error: can't move up", -1]);
+        }
+
+        $items = \%hash;
+    } else {
+        push(@actions, ["error: nothing to move", -1]);
+    }
+} elsif ($ARGS{"Down"}) {
+    if ($currentkey) {
+        my %hash = %$items;
+
+        # we can only move it down if it's not at the bottom
+        my $newkey = nextkey($currentkey);
+
+	if (swap(\%hash, $newkey, $currentkey)) {
+            $currentkey = "$newkey";
+	} else {
+	    push(@actions, ["error: can't move down", -1]);
+        }
+
+        $items = \%hash;
+    } else {
+        push(@actions, ["error: nothing to move", -1]);
+    }
+} elsif ($ARGS{"Left"}) {
+    if ($currentkey) {
+        my %hash = %$items;
+
+        # we can only move it left if...what?
+        my $parent = parentkey($currentkey);
+        if ($parent =~ m/^{0.0}.*/) {
+	    my $newkey = appendkey(\%hash, $parent);
+
+	    movecurrent(\%hash, $newkey);
+
+	    # if there was an empty group left behind, delete it
+	    my $subhash;
+            eval "\$subhash = \$hash$parent" . "{Subkey}";
+	    if (!(keys %{$subhash})) {
+		eval "delete \$hash$parent";
+		reworkkeys(\%hash, $parent);
+	    }
+
+        } else {
+	    push(@actions, ["error: can't move left", -1]);
+        }
+
+        $items = \%hash;
+    } else {
+        push(@actions, ["error: nothing to move", -1]);
+    }
+} elsif ($ARGS{"Right"}) {
+    if ($currentkey) {
+	my %hash = %$items;
+	
+	# you can't move right if you leave no siblings behind
+	if (keyexists(\%hash, nextkey($currentkey)) || 
+	    keyexists(\%hash, prevkey($currentkey))) {
+	    
+	    # if the next item is a subkey, put it there
+	    my $newkey = appendsubkey(\%hash, $currentkey);
+	    
+	    movecurrent(\%hash, $newkey);
+	} else {
+	    push(@actions, ["error: can't move right", -1]);
+        }
+	    
+    } else {
+        push(@actions, ["error: nothing to move", -1]);
+    }
+} elsif ($ARGS{"DeleteClause"}) {
+    if ($currentkey) {
+        my %hash = %$items;
+
+	eval "delete \$hash$currentkey";
+	reworkkeys(\%hash, $currentkey);
+
+	$items = \%hash;
+    } else {
+        push(@actions, ["error: nothing to delete", -1]);
+    }
+}
+
+$Query = "";
+@options = ();
+%queues = ();
+build_array(\$Query, $items, "", "", 0, \@options);
+my $ea;
+my $i = 0;
+my $optionlist = "";
+while (my $val = shift @options) {
+    last if (!$val->{Value});
+    my %item = %{$val->{Value}};
+    my $key = $val->{Key};
+    my ($prefix, $depth, $num) = parsekey($key);
+    my $selected;
+
+    next unless ($item{Key} || $item{Subkey});
+    if (exists $item{EA}) {
+	$ea = $item{EA};
+    }
+
+    if ($depth > 0) {
+	if ($key eq $currentkey) {
+	    $selected = "SELECTED";
+	} else {
+	    $selected = "";
+	}
+	$optionlist .= "<option value=$i $selected>";
+	$optionlist .= "&nbsp;" x (5 * ($depth-1));
+#	$optionlist .= "$i: $key ";
+	if ($num > 0) {
+	    $optionlist .= $ea . " ";
+	}
+	$optionlist .= "$item{Key} $item{Op} $item{Value}";
+	$optionlist .= "</option>\n";
+
+    }
+    $i++;
+}
+
+sub build_array {
+    my $Query = shift;
+    my $items = shift;
+    my $parentkey = shift;
+    my $ea = shift;
+    my $i = shift;
+    my ($keys) = @_;
+
+    while (my $item = $items->{$i + 0}) {
+	my $j = 0;
+	while (my $item = $items->{$i + ($j / 10)}) {
+
+	    my %values = %{$item};
+
+	    if (!$ea) {
+		$ea = $values{EA};
+	    }
+	    my $depth = $i;
+	    
+	    my $subkey = $values{Subkey};
+	    if (defined $subkey) {
+		my $sendkey = "";
+		if ($parentkey) {
+		    $sendkey = $parentkey. "{Subkey}{$i.$j}"; 
+		} else {
+		    $sendkey = "{$i.$j}";
+		}
+		push @$keys, { Key => $sendkey, Value => \%values};
+		$$Query .= " " . $ea . " " if ($j > 0);
+		$$Query .= "(" if $depth > 0;
+		my $x = $i+1;
+		build_array($Query, $subkey, $sendkey, $ea, $x, $keys);
+		$$Query .= ")" if $depth > 0;
+	    }  else {
+		if ($depth >= 1) {
+		    my $mykey;
+		    if ($parentkey) {
+			$mykey = $parentkey."{Subkey}{$i.$j}";
+		    } else {
+			$mykey = " " . $i.$j . " ";
+		    }
+		    $$Query .= " " . $ea . " " if ($j > 0);
+		    $$Query .= "$values{Key} $values{Op} $values{Value}";
+		    push @$keys, { Key => $mykey, Value => \%values};
+		    
+		    if ($values{Key} eq "Queue") {
+			$queues{$values{Value}} = 1;
+		    }
+		}
+	    }
+	    $j++;
+	}
+	$i++;
+    }
+}
+
+use Regexp::Common qw /delimited/;
+
+# States
+use constant VALUE => 1;
+use constant AGGREG => 2;
+use constant OP => 4;
+use constant PAREN => 8;
+use constant KEYWORD => 16;
+
+sub ParseQuery {
+  my $string = shift;
+  my $want = KEYWORD | PAREN;
+  my $last = undef;
+
+  my $depth = 1;
+  my %query = ();
+  my %depths;
+
+  # get the FIELDS from Tickets_Overlay
+  my $tickets = new RT::Tickets($session{'currentuser'});
+  my %FIELDS = %{$tickets->FIELDS};
+
+  # Lower Case version of FIELDS, for case insensitivity
+  my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELDS);
+
+  my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD];
+  my $re_aggreg = qr[(?i:AND|OR)];
+  my $re_value  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
+  my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
+  my $re_op     = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
+  my $re_paren  = qr'\(|\)';
+
+  my ($ea,$key,$op,$value) = ("","","","");
+
+  # order of matches in the RE is important.. op should come early,
+  # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
+  # as a keyword or value.
+
+  my $num=0;
+  while ($string =~ /(
+                      $re_aggreg
+                      |$re_op
+                      |$re_keyword
+                      |$re_value
+                      |$re_paren
+                     )/igx ) {
+    my $val = $1;
+    my $current = 0;
+
+    # Highest priority is last
+    $current = OP      if _match($re_op,$val);
+    $current = VALUE   if _match($re_value,$val);
+    $current = KEYWORD if _match($re_keyword,$val) && ($want & KEYWORD);
+    $current = AGGREG  if _match($re_aggreg,$val);
+    $current = PAREN   if _match($re_paren,$val);
+
+    unless ($current && $want & $current) {
+	# Error
+	# FIXME: I will only print out the highest $want value
+	my $token = $tokens[((log $want)/(log 2))];
+	push @actions, ["current: $current, want $want, Error near ->$val<- expecting a " .  $token . " in '$string'\n", -1];
+    }
+
+    # State Machine:
+    my $parentdepth = $depth;
+
+    # Parens are highest priority
+    if ($current & PAREN) {
+	if ($val eq "(") {
+	    if (!(defined $depths{$depth})) {
+		$depths{$depth} = 0;
+	    } else {
+		$depths{$depth}++;
+	    }
+	    $depth++;
+	    $num = 0;
+
+	    my $hashkey;
+	    my @keys;
+	    $hashkey = "$depth" . "." . "$depths{$depth}" . "";
+	    my $keystring = "";
+	    
+	    while ($parentdepth >= 1) {
+		$hashkey = $parentdepth . ".$num";
+		push @keys, $hashkey;
+		$parentdepth--;
+	    }
+
+	    # build up the keystring from the top
+	    $keystring .= "{" . (pop @keys) . "}";
+	    while (my $k = pop @keys) {
+		$keystring .= "{Subkey}{$k}";
+	    }
+
+	    setaggregator(\%query, "{0.0}{Subkey}" . $keystring, $ea);
+
+	} else {
+	    $depth--;
+	}
+	$want = KEYWORD | PAREN | AGGREG;
+    }
+    elsif ( $current & AGGREG ) {
+      $ea = $val;
+
+      $want = KEYWORD | PAREN;
+    }
+    elsif ( $current & KEYWORD ) {
+      $key = $val;
+      $want = OP;
+    }
+    elsif ( $current & OP ) {
+      $op = $val;
+      $want = VALUE;
+    }
+    elsif ( $current & VALUE ) {
+      $value = $val;
+
+      # Remove surrounding quotes from $key, $val
+      # (in future, simplify as for($key,$val) { action on $_ })
+      if ($key =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
+        substr($key,0,1) = "";
+        substr($key,-1,1) = "";
+      }
+      if ($val =~ /$RE{delimited}{-delim=>qq{\'\"}}/) {
+        substr($val,0,1) = "";
+        substr($val,-1,1) = "";
+      }
+      # Unescape escaped characters                                            
+      $key =~ s!\\(.)!$1!g;                                                    
+      $val =~ s!\\(.)!$1!g;     
+
+      my $subkey;
+      if ($key =~ /^(.+?)\.(.+)$/) {
+	  $key = $1;
+	  $subkey = $2;
+      }
+
+      my $class;
+      if (exists $lcfields{lc $key}) {
+        $key = $lcfields{lc $key};
+        $class = $FIELDS{$key}->[0];
+      }
+      if ($class ne 'INT') {
+	  $val = "'$val'";
+      }
+
+      push @actions, ["Unknown field: $key", -1] unless $class;
+
+      $want = PAREN | AGGREG;
+    } else {
+      push @actions, ["I'm lost", -1];
+    }
+
+
+    if ( $current & VALUE ) {
+	if (!(defined $depths{$depth})) {
+	    $depths{$depth} = 0;
+	} else {
+	    $depths{$depth}++;
+	}
+
+	my $keystring = "";
+	$keystring = "{Subkey}{" .
+	    $parentdepth . ".$depths{$parentdepth}}";
+	$parentdepth--;
+
+	while ($parentdepth > 0) {
+	    $keystring = "{Subkey}{" .
+		$parentdepth . ".$depths{$parentdepth}" . 
+		"}" . $keystring;
+	    $parentdepth--;
+	}
+
+	setaggregator(\%query, "{0.0}" . $keystring, $ea) if $depth == 1;
+
+	$keystring = "\$query{0.0}" . $keystring;
+
+	my $clause = { Key => $key,
+		       Op => $op,
+		       Value => $val };
+
+	eval "$keystring = \$clause";
+
+	$num++;
+
+	($ea,$key,$op,$value) = ("","","","");
+    }
+  
+    $last = $current;
+  } # while
+
+  push @actions, ["Incomplete query", -1]
+    unless (($want | PAREN) || ($want | KEYWORD));
+
+  push @actions, ["Incomplete Query", -1]
+    unless ($last && ($last | PAREN) || ($last || VALUE));
+
+  # This will never happen, because the parser will complain
+  push @actions, ["Mismatched parentheses", -1]
+    unless $depth == 1;
+
+  return \%query;
+}
+
+sub _match {
+  # Case insensitive equality
+  my ($y,$x) = @_;
+  return 1 if $x =~ /^$y$/i;
+  #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
+  return 0;
+}
+
+sub keyexists {
+    my $hash = shift;
+    my $key = shift;
+
+    my %localhash = %{$hash};
+    my $exists;
+    eval "\$exists = exists \$localhash$key";
+    return $exists;
+}
+
+sub subkeyexists {
+    my $hash = shift;
+    my $key = shift;
+
+    my %localhash = %{$hash};
+    my $exists;
+    eval "\$exists = exists \$localhash$key" . "{Subkey}";
+
+    return $exists;
+}
+
+sub appendsubkey {
+    my $hash = shift;
+    my $key = shift;
+
+    my %localhash = %{$hash};
+
+    my $nextkey;
+    if (subkeyexists(\%localhash, nextkey($key))) {
+	$nextkey = appendkey(\%localhash, subkey(nextkey($key)));
+    } else {
+        my ($prefix, $depth, $num) = parsekey($key);
+	$nextkey = subkey($key);
+    }
+
+    return $nextkey;
+}
+
+sub prevkey {
+    my $key = shift;
+    my ($prefix, $depth, $num) = parsekey($key);
+
+    my $k = "$depth." . ($num-1);
+    return $prefix . "{$k}";
+}
+
+sub nextkey {
+    my $key = shift;
+    my ($prefix, $depth, $num) = parsekey($key);
+
+    my $k = "$depth." . ($num+1);
+    return $prefix . "{$k}";
+}
+
+sub subkey {
+    my $key = shift;
+    my ($prefix, $depth, $num) = parsekey($key);
+
+    return $prefix . "{" . "$depth.$num" . "}{Subkey}{" . ($depth+1) . ".0}";
+}
+
+sub parentkey {
+    my $key = shift;
+    my ($prefix, $depth, $num) = parsekey($key);
+
+    if ($depth > 0) {
+	$prefix =~ s/(.*){Subkey}/$1/;
+    } else {
+	$prefix = "";
+    }
+
+    return $prefix;
+}
+
+sub parsekey {
+    my $key = shift;
+
+    # pull apart the key
+    $key =~ m/(.*){(\d+).(\d+)}$/;
+    my $prefix = $1;
+    my $depth = $2 || 0;
+    my $num = $3 || 0;
+
+    return ($prefix, $depth, $num);
+}
+
+sub reworkkeys {
+    my $hash = shift;
+    my $key = shift;
+
+    my %localhash = %{$hash};
+    my $origkey = $key;
+    my $returnkey = $key;
+
+    # don't try to rework keys if the first one exists
+    if (keyexists(\%localhash, $key) || 
+	subkeyexists(\%localhash, $key)) {
+	return;
+    }
+
+    my $nextkey = nextkey($key);
+    while (keyexists(\%localhash, $nextkey)) {
+	if (keyexists(\%localhash, $nextkey)) {
+	    $currentkey = $key . $2 if $currentkey =~ m/($nextkey)(.*)/;
+	    eval "\$localhash$key = \$localhash$nextkey";
+	}
+
+	# set this so that we can return it;
+	$key = $nextkey;
+
+	if (subkeyexists(\%localhash, $key)) {
+	    my $subkey = subkey($key);
+	    reworkkeys(\%localhash, subkey($key));
+	}
+	
+	$nextkey = nextkey($key);
+    }
+    eval "delete \$localhash$key";
+
+    return $returnkey;
+}
+
+sub getaggregator {
+    my $hash = shift;
+    my $key = shift;
+
+    my %localhash = %{$hash};
+    my $ea;
+    eval "\$ea = \$localhash" . parentkey($key) . "{EA}";
+
+    return $ea;
+}
+
+sub setaggregator {
+    my $hash = shift;
+    my $key = shift;
+    my $ea = shift;
+
+    my %localhash = %{$hash};
+    my $parent = parentkey($key);
+    eval "\$localhash$parent" . "{EA} = '$ea'";
+}
+
+sub appendkey {
+    my $hash = shift;
+    my $key = shift;
+    my %localhash = %{$hash};
+
+    my $newkey;
+    if ($key) {
+        $newkey = $key;
+    } else {
+        $newkey = "{" . "0.0" . "}{Subkey}{1.0}";
+    }
+
+    while (keyexists(\%localhash, $newkey)) {
+	$newkey = nextkey($newkey);
+    }
+
+    return $newkey;
+}
+
+sub movecurrent {
+    my $hash = shift;
+    my $newkey = shift;
+    my %localhash = %{$hash};
+    my %temp = {};
+
+    my $origkey = $currentkey;
+
+    eval "%temp = %{\$localhash$currentkey}";
+    eval "delete \$localhash$currentkey";
+    eval "\$localhash$newkey = \\%temp";
+
+    $currentkey = $newkey;
+    reworkkeys(\%localhash, $origkey);
+    reworkkeys(\%localhash, $newkey);
+
+    return 1;
+}
+
+sub swap {
+    my $hash = shift;
+    my $key1 = shift;
+    my $key2 = shift;
+    my %localhash = %{$hash};
+
+    return 0 if !(keyexists(\%localhash,$key1) && keyexists(\%localhash,$key2));
+
+    my %temp = {};
+
+    # store the value temporarily
+    eval "%temp = %{\$localhash$key1}";
+    eval "\$localhash$key1 = \$localhash$key2";
+
+    eval "\$localhash$key2 = \\%temp";
+
+    return 1;
+}
+
+unless ($Format) {
+$Format = qq{
+'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#'
+'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+Status, 
+QueueName, 
+OwnerName, 
+Priority, 
+'__NEWLINE__',
+'',
+'<small>__Requestors__</small>',
+'<small>__CreatedRelative__</small>',
+'<small>__ToldRelative__</small>',
+'<small>__LastUpdatedRelative__</small>',
+'<small>__TimeLeft__</small>'};
+}
+</%INIT>
+
+<%ARGS>
+$SearchId => 'new'
+$Query => undef
+$Format => undef 
+$Description => undef
+$HideResults => 0
+</%ARGS>

@@ -31,12 +31,8 @@
 <%INIT>
 
 my $tabs = {};
-my $current_toptab = "Search/Listing.html",
-    my $searchtabs = { new => { title => loc('New Search'),
-                                path => 'Search/Listing.html?ClearRestrictions=1'}
-                        
-
-} ;
+my $current_toptab = "Search/Build.html",
+my $searchtabs = {};
 my $actions;
 
 if ( $Ticket) {
@@ -160,10 +156,12 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
     };
 }
 }
-$tabs->{"g"} = { path      => 'Search/Listing.html',
-                 title     => loc('Search'),
-                 separator => 1,
+$tabs->{"g"} = { path      => 'Search/Build.html',
+                 title     => loc('Build Query'),
                  subtabs   => $searchtabs };
+$tabs->{"h"} = { path      => 'Search/Edit.html',
+                 title     => loc('Edit by hand'),
+                 separator => 1 };
 </%INIT>
 
   

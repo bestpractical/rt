@@ -1,0 +1,6 @@
+<input type=radio NAME="<%$Name%>" CHECKED VALUE="AND">AND</input>
+<input type=radio NAME="<%$Name%>" VALUE="OR">OR</input>
+
+<%ARGS>
+$Name => "Operator"
+</%ARGS>

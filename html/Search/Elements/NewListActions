@@ -21,25 +21,24 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => 'Search/Edit.html', 
-    Title => $title &>
-
-<& Elements/NewListActions, actions => \@actions &>
-
-<form action="Build.html">
-<& /Elements/MessageBox, Name => "querystring", Default => $querystring, Width => '100%' &>
-
-<& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => "Apply your changes"&>
-</form>
-
-<%INIT>
-my $title = "Edit Query";
-</%INIT>
-
-
+% if ($actions[0] ) {
+<b><%loc('Results')%></b><br>
+% foreach my $action (@actions) {
+% next unless ($action);
+% my @item = @$action;
+% if ($item[1] < 0) {
+<font color=red> 
+% }
+&nbsp;<%$item[0]%><BR>
+% if ($item[1] < 0) {
+</font>
+% }
+% }
+<BR>
+% }
+<%init>
+@actions = grep (/./,@actions);
+</%init>
 <%ARGS>
-$querystring => undef
 @actions => undef
 </%ARGS>

@@ -1,0 +1,73 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
+<& /Ticket/Elements/Tabs, 
+    current_tab => 'Search/Build.html', 
+    Title => $title &>
+<hr>
+about to be
+%unless  ( $HideResults) {
+Looking at results
+<& /Elements/TicketList, 
+    Query => $ARGS{'Query'},
+    AllowSorting => 1,
+    OrderBy => $ARGS{'OrderBy'},
+    Order => $ARGS{'Order'},
+    Rows => $ARGS{'Rows'},
+    FirstRow => $ARGS{'FirstRow'},
+    Format => $Format,
+    
+    BaseURL => $RT::WebPath."/Search/Listing.html?"
+
+   &>
+<div align=right>
+<a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a>
+<a href="Results.tsv"><&|/l&>spreadsheet</&></a>
+<a href="Results.tsv"><&|/l&>RSS</&></a>
+</div>
+% }
+
+<%INIT>
+my ($title, $ticketcount);
+$session{'i'}++;
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless
+($session{'tickets'});
+$session{'tickets'}->FromSQL($Query) if ($Query);
+
+if ( $session{'tickets'}->Query()) {
+    $ticketcount = $session{tickets}->CountAll();
+    $title = loc('Found [quant,_1,ticket]', $ticketcount);
+} else {
+    $title = loc("Find tickets");
+}
+
+</%INIT>
+<%CLEANUP>
+$session{'tickets'}->PrepForSerialization();
+</%CLEANUP>
+<%ARGS>
+$Query => undef
+$Format => undef 
+$HideResults => 0
+</%ARGS>

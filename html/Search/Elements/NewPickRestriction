@@ -21,25 +21,43 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => 'Search/Edit.html', 
-    Title => $title &>
 
-<& Elements/NewListActions, actions => \@actions &>
+<& /Elements/TitleBoxStart, title => loc('Add Restrictions')&>
+<table bgcolor=white width=100% cellspacing=0 cellpadding=0 border=0>
+<tr><td width=100%>
+<& SelectAndOr, Name => "AndOr" &>
+</td></tr>
+<tr>
+<td valign=top>
+  <table width=100%>
+    <tr>
+      <td valign=top>
+        <& PickBasics &>
+      </td>
+    </tr>
+  </table>
+</td>
+</tr>
 
-<form action="Build.html">
-<& /Elements/MessageBox, Name => "querystring", Default => $querystring, Width => '100%' &>
+<tr>
+<td valign=top>
+<table width=100%>
+<tr>
+<td valign=top>
+<& PickPeople &>
+</td>
+<td valign=top>
+<& PickCFs, cfqueues => \%cfqueues &>
+</td>
+</tr>
+</table>
+</td></tr>
+</table>
 
-<& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => "Apply your changes"&>
-</form>
-
-<%INIT>
-my $title = "Edit Query";
-</%INIT>
-
+<& /Elements/TitleBoxEnd &>
 
 <%ARGS>
-$querystring => undef
-@actions => undef
+$addquery => 0
+$query => undef
+%cfqueues => undef
 </%ARGS>
