@@ -555,10 +555,10 @@ sub AddWatcher {
     }
 
     # If the watcher isn't the current user 
-    # and the current user  doesn't have 'ModifyTicket'
+    # and the current user  doesn't have 'ModifyQueueWatcher'
     # bail
     else {
-        unless ( $self->CurrentUserHasRight('ModifyQueueWatcher') ) {
+        unless ( $self->CurrentUserHasRight('ModifyQueueWatchers') ) {
             return ( 0, $self->loc("Permission Denied") );
         }
     }
