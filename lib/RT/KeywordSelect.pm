@@ -405,7 +405,7 @@ sub HasRight {
     elsif (($self->__Value('ObjectField') eq 'Queue') and
 	   ($self->__Value('ObjectValue') > 0 )) {
         return ($args{'Principal'}->HasQueueRight(Right => $args{'Right'},
-						  Queue => $self->__Value('Queue') )); 
+						  Queue => $self->__Value('ObjectValue') )); 
     }
     
     #If the object is system scoped.

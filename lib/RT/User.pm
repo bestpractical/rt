@@ -593,9 +593,10 @@ sub HasQueueRight {
     }
 
     # {{{ Validate and load up the QueueId
-    unless ($args{'QueueObj'}->Id) {
+    unless ((defined $args{'QueueObj'}) and ($args{'QueueObj'}->Id)) {
 	require Carp;
 	$RT::Logger->debug(Carp::cluck ("$self->HasQueueRight Couldn't find a queue id"));
+	return undef;
     }
 
     # }}}
