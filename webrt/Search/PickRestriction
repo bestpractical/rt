@@ -57,8 +57,8 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 <& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
 
-<li>Which <& /Elements/SelectLinkType, Name => 'TargetType' &> ticket <input size="5" name ="ValueOfTarget">
-<li>Which ticket <input size="5" name ="ValueOfBase"> <& /Elements/SelectLinkType, Name => 'BaseType' &>
+<li>Which <& /Elements/SelectLinkType, Name => 'TargetType', Labels => ['depend on', 'refer to', 'are members of'], Values => ['DependsOn', 'RefersTo', 'MemberOf'] &> ticket <input size="5" name ="ValueOfTarget">
+<li>Which ticket <input size="5" name ="ValueOfBase"> <& /Elements/SelectLinkType, Name => 'BaseType', Labels => ['depends on', 'refers to', 'is a member of'], Values => ['DependsOn', 'RefersTo', 'MemberOf'] &>
 
 % while ( my $KeywordSelect = $KeywordSelects->Next ) {
 

@@ -1,14 +1,17 @@
 %# $Header$
 
 <SELECT NAME ="<%$Name%>">
-% foreach ('MemberOf', 'DependsOn', 'RefersTo') { # TODO: Merging!
-<OPTION VALUE="<%$_%>"><%$_%></OPTION>
+% while (my $label = shift @Labels) { 
+% my $value = shift @Values;
+<OPTION VALUE="<%$value%>"><%$label%></OPTION>
 % }
 </SELECT>
 
 <%ARGS>
 $Name => "LinkType"
 $Default => undef
+@Labels => ['MemberOf', 'DependsOn', 'RefersTo']
+@Values => ['MemberOf', 'DependsOn', 'RefersTo']
 </%ARGS>
 
 <%INIT>
