@@ -73,9 +73,8 @@ my $search_hash = {};
 my $search;
 my $title = loc("Query Builder");
 
-our @actions        = ();
-our $selectedclause = $ARGS{clauses};
-our %queues;
+my @actions        = ();
+my %queues;
 
 if ( $ARGS{"DoSearch"} ) {
     $m->comp(
@@ -97,7 +96,7 @@ elsif ( $ARGS{"EditQuery"} ) {
     $m->abort();
 }
 
-my $items = ParseQuery( $Query || $search_hash->{'Query'} );
+my $items = ParseQuery( $Query || $search_hash->{'Query'}, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
@@ -108,9 +107,9 @@ if ( $actions[0] ) {
 my @options;
 $Query  = "";
 %queues = ();
-build_array( \$Query, $items, "", "", 0, \@options );
-our $currentkey = "";
-$currentkey = $options[$selectedclause]->{Key} if $selectedclause;
+build_array( \$Query, $items, "", "", 0, \@options, \%queues );
+my $currentkey = "";
+$currentkey = $options[$ARGS{clauses}]->{Key} if $ARGS{clauses};
 
 # We can't check for the addclause button because hitting return in
 # a criterion will get lost otherwise
@@ -206,14 +205,14 @@ elsif ( $ARGS{"Left"} ) {
         if ( $parent =~ m/^{0.0}.*/ && $parent ne "{0.0}" ) {
             my $newkey = appendkey( \%hash, $parent );
 
-            movecurrent( \%hash, $newkey );
+            movecurrent( \%hash, $newkey, \$currentkey );
 
             # if there was an empty group left behind, delete it
             my $subhash;
             eval "\$subhash = \$hash$parent" . "{Subkey}";
             if ( !( keys %{$subhash} ) ) {
                 eval "delete \$hash$parent";
-                reworkkeys( \%hash, $parent );
+                reworkkeys( \%hash, $parent, \$currentkey );
             }
 
         }
@@ -239,7 +238,7 @@ elsif ( $ARGS{"Right"} ) {
             # if the next item is a subkey, put it there
             my $newkey = appendsubkey( \%hash, $currentkey );
 
-            movecurrent( \%hash, $newkey );
+            movecurrent( \%hash, $newkey, \$currentkey );
         }
         else {
             push( @actions, [ "error: can't move right", -1 ] );
@@ -255,7 +254,7 @@ elsif ( $ARGS{"DeleteClause"} ) {
         my %hash = %$items;
 
         eval "delete \$hash$currentkey";
-        reworkkeys( \%hash, $currentkey );
+        reworkkeys( \%hash, $currentkey, \$currentkey );
 
         $items = \%hash;
     }
@@ -273,7 +272,7 @@ elsif ( $ARGS{"Clear"} ) {
 $Query   = "";
 @options = ();
 %queues  = ();
-build_array( \$Query, $items, "", "", 0, \@options );
+build_array( \$Query, $items, "", "", 0, \@options, \%queues );
 my $ea;
 my $i          = 0;
 my $optionlist = "";
@@ -298,7 +297,7 @@ while ( my $val = shift @options ) {
         $optionlist .= "<option value=$i $selected>";
         $optionlist .= "&nbsp;" x ( 5 * ( $depth - 1 ) );
 
-        #	$optionlist .= "$i: $key ";
+#        $optionlist .= "$i: $key ";
         if ( $num > 0 || $val->{Value}->{Subkey} ) {
             $optionlist .= $ea . " ";
         }
@@ -318,7 +317,7 @@ sub build_array {
     my $parentkey = shift;
     my $ea        = shift;
     my $i         = shift;
-    my ($keys)    = @_;
+    my ($keys, $queues)    = @_;
 
     while ( my $item = $items->{ $i + 0 } ) {
         my $j = 0;
@@ -331,7 +330,7 @@ sub build_array {
             my $depth = $i;
 
             my $subkey = $item->{Subkey};
-            if ( defined $subkey && exists $item->{Subkey} ) {
+            if ( defined $subkey && scalar keys %$subkey ) {
                 my $sendkey = "";
                 if ($parentkey) {
                     $sendkey = $parentkey . "{Subkey}{$i.$j}";
@@ -343,7 +342,7 @@ sub build_array {
                 $$Query .= " " . $ea . " " if ( $j > 0 );
                 $$Query .= "("             if $depth > 0;
                 my $x = $i + 1;
-                build_array( $Query, $subkey, $sendkey, $ea, $x, $keys );
+                build_array( $Query, $subkey, $sendkey, $ea, $x, $keys, , $queues );
                 $$Query .= ")" if $depth > 0;
             }
             else {
@@ -360,7 +359,7 @@ sub build_array {
                     push @$keys, { Key => $mykey, Value => $item };
 
                     if ( $item->{Key} eq "Queue" ) {
-                        $queues{ $item->{Value} } = 1;
+                        $queues->{ $item->{Value} } = 1;
                     }
                 }
             }
@@ -381,6 +380,7 @@ use constant KEYWORD => 16;
 
 sub ParseQuery {
     my $string = shift;
+    my @actions = shift;
     my $want   = KEYWORD | PAREN;
     my $last   = undef;
 
@@ -686,17 +686,24 @@ sub parsekey {
     my $key = shift;
 
     # pull apart the key
-    $key =~ m/(.*){(\d+).(\d+)}$/;
+    $key =~ m/(.*){(.*)}$/;
     my $prefix = $1;
-    my $depth  = $2 || 0;
-    my $num    = $3 || 0;
-
+    my $depth = 0;
+    my $num = 0;
+    my $final = $2;
+    if ($final =~ m/(\d).(\d)/) {
+	$depth  = $1;
+	$num    = $2;
+    } else {
+	$depth = $final;
+    }
     return ( $prefix, $depth, $num );
 }
 
 sub reworkkeys {
     my $hash = shift;
     my $key  = shift;
+    my $currentkey = shift;
 
     # if our parent doesn't exist, return immediately
     if ( !keyexists( $hash, parentkey($key) ) ) {
@@ -717,9 +724,9 @@ sub reworkkeys {
         if ( keyexists( $hash, $nextkey ) ) {
             $key        =~ s/\}\{/\}->\{/g;
             $nextkey    =~ s/\}\{/\}->\{/g;
-            $currentkey =~ s/\}\{/\}->\{/g;
-            $currentkey = $key . $2 if $currentkey =~ m/($nextkey)(.*)/;
-            $currentkey =~ s/\}->\{/\}\{/g;
+            $$currentkey =~ s/\}\{/\}->\{/g;
+            $$currentkey = $key . $2 if $$currentkey =~ m/($nextkey)(.*)/;
+            $$currentkey =~ s/\}->\{/\}\{/g;
             eval "\$hash->$key = \$hash->$nextkey";
         }
 
@@ -728,7 +735,7 @@ sub reworkkeys {
 
         if ( subkeyexists( $hash, $key ) ) {
             my $subkey = subkey($key);
-            reworkkeys( $hash, subkey($key) );
+            reworkkeys( $hash, subkey($key), $currentkey );
         }
 
         $nextkey = nextkey($key);
@@ -741,6 +748,8 @@ sub fixsubkeys {
     my $hash = shift;
     my $key  = shift;
 
+    $key =~ s/\}\{/\}->\{/g;
+
     if ( subkeyexists( $hash, $key ) ) {
         my ( $prefix, $depth, $num ) = parsekey($key);
         my %temp;
@@ -750,14 +759,13 @@ sub fixsubkeys {
             my $num = $i - int($i);
             my $new = int($depth) + 1 + $num;
             if ( $i != $new ) {
-                eval "\$hash->$key" . "{Subkey}->{$new} = \$temp{$i}";
+                eval "\$hash->$key" . "->{Subkey}->{$new} = \$temp{$i}";
                 eval "delete \$hash->$key" . "{Subkey}->{$i}";
-                fixsubkeys( $hash, $key . "{Subkey}->{$new}" );
+                fixsubkeys( $hash, $key . "->{Subkey}->{$new}" );
             }
             $num++;
         }
     }
-
 }
 
 sub getaggregator {
@@ -804,9 +812,10 @@ sub appendkey {
 sub movecurrent {
     my $hash   = shift;
     my $newkey = shift;
+    my $currentkey = shift;
     my %temp   = {};
 
-    my $origkey = $currentkey;
+    my $origkey = $$currentkey;
 
     $origkey =~ s/\}\{/\}->\{/g;
     eval "%temp = %{\$hash->$origkey}";
@@ -816,9 +825,9 @@ sub movecurrent {
     $newkey =~ s/\}\{/\}->\{/g;
     eval "\$hash->$newkey = \\%temp";
 
-    $currentkey = $orignewkey;
-    reworkkeys( $hash, $origkey );
-    reworkkeys( $hash, $orignewkey );
+    $$currentkey = $orignewkey;
+    reworkkeys( $hash, $origkey, $currentkey );
+    reworkkeys( $hash, $orignewkey, $currentkey );
 
     return 1;
 }
