@@ -9,13 +9,17 @@
 </SELECT>
 
 <%ARGS>
-
+$Queue => undef
 $Name => undef
 </%ARGS>
 
 <%INIT>
 use RT::CurrentUser;
 use RT::Users;
+
+# TODO: respect the ACLs!!
+# This will be a list of some thousands requestors with the current scheme.
+
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Users = RT::Users->new($CurrentUser);
 $Users->Limit( FIELD => 'id',
