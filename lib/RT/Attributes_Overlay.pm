@@ -65,7 +65,6 @@ no warnings qw(redefine);
 
 sub _DoSearch {
     my $self = shift;
-    $RT::Logger->crit("We're redoing the search");
     $self->SUPER::_DoSearch();
     $self->_BuildAccessTable();
 }
@@ -75,7 +74,6 @@ sub _BuildAccessTable {
     my $self = shift;
     delete $self->{'attr'};
     while (my $attr = $self->Next) {
-        $RT::Logger->crit("We're building the attr table for ".$attr->Name);
         push @{$self->{'attr'}->{$attr->Name}}, $attr;
     }
 }

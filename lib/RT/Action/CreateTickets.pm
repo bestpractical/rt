@@ -220,25 +220,9 @@ ok ($approvalsq->Id, "Created Approvals test queue");
 
 my $approvals = 
 '===Create-Ticket: approval
-{  my $name = "HR";
-     my $groups = RT::Groups->new($RT::SystemUser);
-   $groups->LimitToUserDefinedGroups();
-   $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
-   $groups->WithMember($Transaction->CreatorObj->Id);
-
-   my $groupid = $groups->First->Id;
-
-   my $adminccs = RT::Users->new($RT::SystemUser);
-   $adminccs->WhoHaveRight(Right => "AdminGroup", IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, Object => $groups->First);
-
-    my @admins;
-    while (my $admin = $adminccs->Next) {
-        push (@admins, $admin->EmailAddress); 
-    }
-}
 Queue: Approvals
 Type: Approval
-AdminCc: {join ("\nAdminCc: ",@admins) }
+AdminCc: root@localhost
 Depended-On-By: TOP
 Refers-To: TOP
 Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}

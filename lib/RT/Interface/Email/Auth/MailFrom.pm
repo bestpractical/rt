@@ -35,6 +35,7 @@ sub GetCurrentUser {
                  Action      => undef,
                  @_ );
 
+
     # We don't need to do any external lookups
     my ( $Address, $Name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
     my $CurrentUser = RT::CurrentUser->new();
