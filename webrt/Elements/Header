@@ -3,14 +3,14 @@
 <HTML>
 <HEAD>
 <TITLE><%$Title%> </TITLE>
-<link rel="stylesheet" href="/webrt.css" type="text/css">
+<link rel="stylesheet" href="<%$RT::WebURL%>/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
 %if ($session{'CurrentUser'}) {
 You are currently authenticated as <a href="<%$RT::WebURL%>/ViewUser.html?id=<%$session{'CurrentUser'}->Id%>"><%$session{'CurrentUser'}->UserId%></a>.
 %}
 <hr>
-<form method="get" action="$RT::WebURL/Ticket/Display.html"><input type="submit" value="Show Ticket"> #<input name="id" size=5></form>
+<form method="get" action="<%$RT::WebURL%>/Ticket/Display.html"><input type="submit" value="Show Ticket"> #<input name="id" size=5></form>
 <hr>
 
 <%ARGS>
