@@ -1,0 +1,35 @@
+<%INIT>
+my $Tickets = $session{'tickets'};
+
+
+my $per_page = $Tickets->RowsPerPage();
+my $first_row = ($Tickets->FirstRow()+1);
+
+$Tickets->RowsPerPage(0);
+$Tickets->FirstRow(1);
+
+my @attrs = qw( QueueObj->Name Id Priority Subject OwnerObj->Name 
+                RequestorsAsString DueAsString ToldObj->AsString 
+                CreatedObj->AsString ResolvedObj->AsString );
+
+    $r->content_type('application/vnd.ms-excel');
+    my $header = "";
+    my $tabbed_output = '';
+    foreach my $attr (@attrs) {
+	$header .= $attr . "\t";
+    }
+    $header =~ s'Obj-.(AsString|Name)''g;
+    $tabbed_output .= $header . "\n";
+    while ( my $Ticket = $Tickets->Next()) {
+	my $line = '';
+ 	foreach my $attr (@attrs) {
+	    $line .= eval "\$Ticket->$attr()"; 
+            $line .= "\t";
+	}
+	$tabbed_output .= $line . "\n";
+    }
+$m->out($tabbed_output);
+$m->abort();
+$Tickets->RowsPerPage($per_page);
+$Tickets->FirstRow($first_row);
+</%INIT>
