@@ -876,7 +876,7 @@ sub display_summary {
 
   print "
 <hr>
-<Request Header Info\n<br>
+Request Header Info\n<br>
 <font size=\"-1\">
 <form action=\"$ScriptURL\" method=\"post\">
 <font color=\"$fg_color\">
