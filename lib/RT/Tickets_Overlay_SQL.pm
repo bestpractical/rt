@@ -358,4 +358,26 @@ The other 1% or so are via _ProcessRestrictions.
 All dies are trapped by eval {}s, and will be logged at the 'error'
 log level.  The general failure mode is to not display any tickets.
 
+=head2 General Flow
+
+Legacy Layer:
+
+   Legacy LimitFoo routines build up a RestrictionsHash
+
+   _ProcessRestrictions converts the Restrictions to Clauses
+   ([key,op,val,rest]).
+
+   Clauses are converted to RT-SQL (TicketSQL)
+
+New RT-SQL Layer:
+
+   FromSQL calls the parser
+
+   The parser calls the _FooLimit routines to do DBIx::SearchBuilder
+   limits.
+
+And then the normal SearchBuilder/Ticket routines are used for
+display/navigation.
+
 =cut
+

@@ -1947,7 +1947,7 @@ sub _ProcessRestrictions {
     #Blow away ticket aliases since we'll need to regenerate them for
     #a new search
     delete $self->{'TicketAliases'};
-
+    delete $self->{'items_array'};                                                                                                                            
     my $sql = $self->{_sql_query}; # Violating the _SQL namespace
     if (!$sql||$self->{'RecalcTicketLimits'}) {
       #  "Restrictions to Clauses Branch\n";
@@ -1974,10 +1974,11 @@ sub _ProcessRestrictions {
     if ($items->[0]) {
     $self->{'item_map'}->{'first'} = $items->[0]->Id;
     while (my $item = shift @$items ) {
-        $self->{'item_map'}->{$item->Id}->{'defined'} = 1;
-        $self->{'item_map'}->{$item->Id}->{prev}  = $prev;
-        $self->{'item_map'}->{$item->Id}->{next}  = $items->[0]->Id if ($items->[0]);
-        $prev = $item->Id;
+        my $id = $item->Id;
+        $self->{'item_map'}->{$id}->{'defined'} = 1;
+        $self->{'item_map'}->{$id}->{prev}  = $prev;
+        $self->{'item_map'}->{$id}->{next}  = $items->[0]->Id if ($items->[0]);
+        $prev = $id;
     }
     $self->{'item_map'}->{'last'} = $prev;
     }

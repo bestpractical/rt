@@ -102,7 +102,7 @@ if ($session{'tickets'}) {
    ProcessSearchQuery(ARGS=>\%ARGS);
    $session{'tickets'}->RedoSearch();
    if ( $session{'tickets'}->DescribeRestrictions()) {
-       $ticketcount = $session{tickets}->Count();
+       $ticketcount = $session{tickets}->CountAll();
         $title = loc('Found [quant,_1,ticket]', $ticketcount);
     } else {
         $title = loc("Find tickets");
