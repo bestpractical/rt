@@ -138,11 +138,68 @@ sub _ClassAccessible {
 
 # {{{ sub Create 
 
+=head2 Create { PARAMHASH }
+
+
+=begin testing
+
+# Make sure we can create a user
+
+my $u1 = RT::User->new($RT::SystemUser);
+is(ref($u1), 'RT::User');
+my ($id, $msg) = $u1->Create(Name => 'CreateTest1', EmailAddress => 'create-test-1@example.com');
+ok ($id, "Creating user CreateTest1 - " . $msg );
+
+# Make sure we can't create a second user with the same name
+my $u2 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u2->Create(Name => 'CreateTest1', EmailAddress => 'create-test-2@example.com');
+ok (!$id, $msg);
+
+
+# Make sure we can't create a second user with the same EmailAddress address
+my $u3 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u3->Create(Name => 'CreateTest2', EmailAddress => 'create-test-1@example.com');
+ok (!$id, $msg);
+
+# Make sure we can create a user with no EmailAddress address
+my $u4 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u4->Create(Name => 'CreateTest3');
+ok ($id, $msg);
+
+# make sure we can create a second user with no EmailAddress address
+my $u5 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u5->Create(Name => 'CreateTest4');
+ok ($id, $msg);
+
+# make sure we can create a user with a blank EmailAddress address
+my $u6 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u6->Create(Name => 'CreateTest6', EmailAddress => '');
+ok ($id, $msg);
+# make sure we can create a second user with a blankEmailAddress address
+my $u7 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u7->Create(Name => 'CreateTest7', EmailAddress => '');
+ok ($id, $msg);
+
+# Can we change the email address away from from "";
+($id,$msg) = $u7->SetEmailAddress('foo@bar');
+ok ($id, $msg);
+# can we change the address back to "";  
+($id,$msg) = $u7->SetEmailAddress('');
+ok ($id, $msg);
+is ($u7->EmailAddress, '');
+
+
+=end testing
+
+=cut
+
+
 sub Create {
     my $self = shift;
     my %args = (
         Privileged => 0,
         Disabled => 0,
+        EmailAddress => '',
         @_    # get the real argumentlist
     );
 
@@ -214,7 +271,7 @@ sub Create {
 
     #If the create failed.
     unless ($id) {
-        $RT::Logger->error("Could not create a new user");
+        $RT::Logger->error("Could not create a new user - " .join('-'. %args));
 
         return ( 0, $self->loc('Could not create user') );
     }
