@@ -26,7 +26,7 @@ msgstr "#%1: %2"
 #: lib/RT/Record.pm:737
 #. ($self->id)
 msgid "$prefix %1"
-msgstr ""
+msgstr "$prefix %1"
 
 #: NOT FOUND IN SOURCE
 msgid "%*(%1,group ticket)"
@@ -97,37 +97,13 @@ msgid "%1 %2 with template %3"
 msgstr "條件：%1 | 動作：%2 | 範本：%3"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 %2 הוסף"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 מקבוצה %3"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 נמחק"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 עם תבנית %3"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 שונה ל %3"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 這份申請單\\n"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 (%2) %3 פנייה זו\\n"
-msgstr ""
 
 #: html/Ticket/Elements/ShowAttachments:51
 #. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
 msgid "%1 (%2) by %3"
-msgstr ""
+msgstr "%1 (%2) - %3"
 
 #: html/SelfService/Update.html:30 html/Ticket/Elements/EditBasics:66 html/Ticket/Update.html:39 html/Ticket/Update.html:41 html/Tools/MyDay.html:20
 #. ($Ticket->Status())
@@ -135,7 +111,7 @@ msgstr ""
 #. ($TicketObj->OwnerObj->Name())
 #. ($DefaultStatus)
 msgid "%1 (Unchanged)"
-msgstr ""
+msgstr "%1 (未更改)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 - %2 shown"
@@ -168,21 +144,6 @@ msgstr "%1 - 指定欲使用的條件模組"
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - 指定欲使用的查詢模組"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 - ארגומנט להעביר אל %2"
-msgstr ""
-
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#: html/Elements/Footer:36
-#. ('&#187;&#124;&#171;', 
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 版，%4 版權所有，1996-%3。"
 
@@ -235,7 +196,7 @@ msgstr "%1 的值從 %2 改為 %3"
 #: html/Search/Build.html:161
 #. ($Description)
 msgid "%1 copy"
-msgstr ""
+msgstr "%1 複製"
 
 #: lib/RT/Record.pm:739
 msgid "%1 could not be set to %2."
@@ -299,10 +260,6 @@ msgstr "%1 已不再是自訂欄位 %2 的值。"
 msgid "%1 isn't a valid Queue id."
 msgstr "%1 不是一個合法的表單編號。"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 matches"
-msgstr ""
-
 #: html/Ticket/Create.html:155 html/Ticket/Create.html:156 html/Ticket/Elements/ShowBasics:36 html/Ticket/Elements/ShowBasics:42 html/Ticket/Elements/ShowBasics:47
 #. ('<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">')
 #. ('<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">')
@@ -311,14 +268,6 @@ msgstr ""
 #. ($Ticket->TimeLeft)
 msgid "%1 min"
 msgstr "%1 分鐘"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 most recently updated articles"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 newest articles"
-msgstr ""
 
 #: html/Elements/MyRequests:25
 #. ($rows)
@@ -374,42 +323,6 @@ msgstr "%1 會解決在已解決群組裡成員的申請單。"
 #: NOT FOUND IN SOURCE
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "如果 %1 起始申請單依賴於某個鏈結，或是某個鏈結的成員，它將會被延宕。"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 הוסף כערך עבור %2"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 כינויים דורשים מזהה פנייה כדי לעבוד עליהם"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 כינויים דורשים מזהה פנייה כדי לעבוד עליהם "
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 כינויים דורשים מזהה פנייה כדי לעבוד עליהם (מ %2) %3"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 לפני %2 ימים"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 נראה כמו אובייקט מקומי, אבל הוא אינו נמצא במסד הנתונים"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 על ידי %2"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 פעולת-סקריפ נטענה"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "%1 שונה מ %2 ל %3"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "%1's %2 objects"
@@ -481,10 +394,6 @@ msgstr "(點選欲啟用通知的收件人)"
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(鍵入申請單編號或網址，以空白分隔)"
 
-#: NOT FOUND IN SOURCE
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
-msgstr ""
-
 #: html/Admin/Queues/Modify.html:53 html/Admin/Queues/Modify.html:59
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
@@ -545,7 +454,7 @@ msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件�
 
 #: html/Admin/Elements/EditScrip:80
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
-msgstr ""
+msgstr "(當條件或動作設為「使用者自訂」時，請填入這些欄位)"
 
 #: NOT FOUND IN SOURCE
 msgid "(default delegate)"
@@ -563,17 +472,9 @@ msgstr "(空白)"
 msgid "(new)"
 msgstr "(新增)"
 
-#: NOT FOUND IN SOURCE
-msgid "(no Summary)"
-msgstr ""
-
 #: html/Admin/Users/index.html:38
 msgid "(no name listed)"
 msgstr "(沒有列出姓名)"
-
-#: NOT FOUND IN SOURCE
-msgid "(no name)"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "(no subject)"
@@ -620,18 +521,6 @@ msgid "*"
 msgstr "★"
 
 #: NOT FOUND IN SOURCE
-msgid "..."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "25 highest priority tickets I own..."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "25 highest priority tickets I requested..."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid ":"
 msgstr "："
 
@@ -655,10 +544,6 @@ msgstr "<%$field%>"
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"提出申請單\">&nbsp;%1"
-
-#: NOT FOUND IN SOURCE
-msgid "??????"
-msgstr ""
 
 #: etc/initialdata:218
 msgid "A blank template"
@@ -795,7 +680,7 @@ msgstr "新增一道用於所有表單的手續"
 
 #: html/Search/Build.html:43
 msgid "Add additional criteria"
-msgstr ""
+msgstr "新增查詢條件"
 
 #: html/Search/Bulk.html:125
 msgid "Add comments or replies to selected tickets"
@@ -965,7 +850,7 @@ msgstr "進階查詢"
 
 #: NOT FOUND IN SOURCE
 msgid "Advanced Search Criteria"
-msgstr ""
+msgstr "進階查詢條件"
 
 #: html/Elements/SelectDateRelation:35
 msgid "After"
@@ -990,10 +875,6 @@ msgstr "全部"
 #: etc/initialdata:363
 msgid "All Approvals Passed"
 msgstr "完成全部簽核"
-
-#: NOT FOUND IN SOURCE
-msgid "All Classes"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "All Condition"
@@ -1139,26 +1020,6 @@ msgstr "四月"
 #: NOT FOUND IN SOURCE
 msgid "Are you sure to delete checked items?"
 msgstr "您確定要刪除？"
-
-#: NOT FOUND IN SOURCE
-msgid "Are you sure you want to delete this article?"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Article #%1 deleted"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Article #%1: %2"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Article not found"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Articles"
-msgstr ""
 
 #: html/Elements/SelectSortOrder:34 html/Search/Elements/DisplayOptions:52
 msgid "Ascending"
@@ -1323,7 +1184,7 @@ msgstr "將查詢結果轉為可放入書籤的網址"
 
 #: html/Search/Results.html:47
 msgid "Bookmarkable link"
-msgstr ""
+msgstr "可放入書籤的網址"
 
 #: html/Ticket/Elements/ShowHistory:38 html/Ticket/Elements/ShowHistory:44
 msgid "Brief headers"
@@ -1451,22 +1312,6 @@ msgid "City"
 msgstr "所在城市"
 
 #: NOT FOUND IN SOURCE
-msgid "Class"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Class Name"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Class is"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Classes"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "ClassicUI"
 msgstr "傳統介面"
 
@@ -1481,10 +1326,6 @@ msgstr "已解決"
 #: html/SelfService/Closed.html:24
 msgid "Closed Tickets"
 msgstr "已解決的申請單"
-
-#: NOT FOUND IN SOURCE
-msgid "Closed requests"
-msgstr ""
 
 #: html/SelfService/Elements/Tabs:44
 msgid "Closed tickets"
@@ -1865,10 +1706,6 @@ msgstr "新增申請單"
 msgid "Create User:"
 msgstr "新增成員："
 
-#: NOT FOUND IN SOURCE
-msgid "Create a Class"
-msgstr ""
-
 #: html/Admin/Elements/EditCustomField:74
 msgid "Create a CustomField"
 msgstr "新增自訂欄位"
@@ -1885,10 +1722,6 @@ msgstr "為 %1 表單新增自訂欄位"
 #: NOT FOUND IN SOURCE
 msgid "Create a new Custom Field"
 msgstr "新增自訂欄位"
-
-#: NOT FOUND IN SOURCE
-msgid "Create a new article"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new global Scrip"
@@ -1960,14 +1793,6 @@ msgid "Create a workflow"
 msgstr "新增流程"
 
 #: NOT FOUND IN SOURCE
-msgid "Create an article"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Create an article in class..."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Create failed: %1 / %2 / %3 "
 msgstr "新增失敗：%1 / %2 / %3"
 
@@ -2025,14 +1850,6 @@ msgid "Created CustomField %1"
 msgstr "自訂欄位 %1 新增成功"
 
 #: NOT FOUND IN SOURCE
-msgid "Created by"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Created during"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Created template %1"
 msgstr "範本 %1 新增成功"
 
@@ -2063,10 +1880,6 @@ msgstr "現有群組列表："
 #: html/Elements/EditLinks:27
 msgid "Current Links"
 msgstr "現有關係"
-
-#: NOT FOUND IN SOURCE
-msgid "Current Relationships"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Current Rights:"
@@ -2240,7 +2053,7 @@ msgstr "預設表單"
 
 #: html/Tools/Offline.html:48
 msgid "Default Requestor"
-msgstr ""
+msgstr "預設申請人"
 
 #: NOT FOUND IN SOURCE
 msgid "Default Value"
@@ -2273,7 +2086,7 @@ msgstr "預設簽核"
 
 #: html/User/Delegation.html:24 html/User/Delegation.html:27
 msgid "Delegate rights"
-msgstr "代表團權限"
+msgstr "代理人權限"
 
 #: lib/RT/System.pm:62
 msgid "Delegate specific rights which have been granted to you."
@@ -2349,11 +2162,7 @@ msgstr "刪除"
 
 #: html/Admin/Elements/EditTemplates:57
 msgid "Delete Template"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Delete article #%1"
-msgstr ""
+msgstr "刪除範本"
 
 #: html/Admin/Elements/EditScrips:52
 msgid "Delete selected scrips"
@@ -2560,10 +2369,6 @@ msgid "Download"
 msgstr "下載"
 
 #: NOT FOUND IN SOURCE
-msgid "Download all the tickets as a tab delimited file"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Download as a tab-delimited file"
 msgstr "下載以 Tab 分隔的檔案"
 
@@ -2601,10 +2406,6 @@ msgid "Edit Custom Fields for %1"
 msgstr "編輯 %1 的自訂欄位"
 
 #: NOT FOUND IN SOURCE
-msgid "Edit Custom Fields for Class %1"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Edit Custom Fields for queue %1"
 msgstr "編輯表單 %1 的自訂欄位"
 
@@ -2615,10 +2416,6 @@ msgstr "編輯申請單關係"
 #: html/Search/Edit.html:46
 msgid "Edit Query"
 msgstr "編輯查詢"
-
-#: NOT FOUND IN SOURCE
-msgid "Edit Relationships"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Edit Subgroups"
@@ -2664,10 +2461,6 @@ msgstr "編輯 %1 的流程"
 #: lib/RT/Group_Overlay.pm:150
 msgid "EditSavedSearches"
 msgstr "編輯已儲存的查詢"
-
-#: NOT FOUND IN SOURCE
-msgid "Editing Configuration for Class %1"
-msgstr ""
 
 #: html/Admin/Queues/Modify.html:118
 #. ($QueueObj->Name)
@@ -2749,10 +2542,6 @@ msgstr "抵達地點"
 msgid "Enable Delegates"
 msgstr "代理啟動"
 
-#: NOT FOUND IN SOURCE
-msgid "Enabled (Unchecking this box disables this Class)"
-msgstr ""
-
 #: html/Admin/Elements/EditCustomField:50
 msgid "Enabled (Unchecking this box disables this custom field)"
 msgstr "啟用(取消勾選將停用此自訂欄位)"
@@ -2764,10 +2553,6 @@ msgstr "啟用(取消勾選將停用此群組)"
 #: html/Admin/Queues/Modify.html:83
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "啟用(取消勾選將停用此表單)"
-
-#: NOT FOUND IN SOURCE
-msgid "Enabled Classes"
-msgstr ""
 
 #: html/Admin/Elements/EditCustomFields:97
 msgid "Enabled Custom Fields"
@@ -2805,10 +2590,6 @@ msgstr "試用期滿日"
 #: NOT FOUND IN SOURCE
 msgid "English Name"
 msgstr "英文姓名"
-
-#: NOT FOUND IN SOURCE
-msgid "Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces."
-msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:433
 msgid "Enter multiple values"
@@ -2886,25 +2667,17 @@ msgstr "新增視察員失敗"
 msgid "Error in parameters to Queue->AddWatcher"
 msgstr "表單->新增視察員的參數有誤"
 
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DelWatcher"
-msgstr "表單->刪除視察員的參數有誤"
-
 #: lib/RT/Queue_Overlay.pm:754
 msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr ""
+msgstr "表單->刪除視察員的參數有誤"
 
 #: lib/RT/Ticket_Overlay.pm:1468
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "申請單->新增視察員的參數有誤"
 
-#: NOT FOUND IN SOURCE
-msgid "Error in parameters to Ticket->DelWatcher"
-msgstr "申請單->刪除視察員的參數有誤"
-
 #: lib/RT/Ticket_Overlay.pm:1630
 msgid "Error in parameters to Ticket->DeleteWatcher"
-msgstr ""
+msgstr "申請單->刪除視察員的參數有誤"
 
 #: bin/rt-crontool:206
 msgid "Escalate tickets"
@@ -2961,14 +2734,6 @@ msgstr "外部介面網址"
 #: html/Admin/Users/Modify.html:72
 msgid "Extra info"
 msgstr "備註"
-
-#: NOT FOUND IN SOURCE
-msgid "Extract article from ticket #%1"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Extract article from ticket #%1 into class %2"
-msgstr ""
 
 #: lib/RT/User_Overlay.pm:342
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -3433,10 +3198,6 @@ msgid "History"
 msgstr "紀錄"
 
 #: NOT FOUND IN SOURCE
-msgid "History for article #%1"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "History of the group %1"
 msgstr "群組 %1 的紀錄"
 
@@ -3462,10 +3223,6 @@ msgid "I have %quant(%1,concrete mixer)."
 msgstr "我有 %quant(%1,份固體攪拌器)。"
 
 #: NOT FOUND IN SOURCE
-msgid "I have [quant,_1,concrete mixer]."
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "ID Number"
 msgstr "身分證號"
 
@@ -3487,7 +3244,7 @@ msgstr "若簽核單遭到駁回，則連帶駁回原申請單，並刪除其他
 
 #: html/Tools/Offline.html:52
 msgid "If no Requestor is specified, create tickets with this requestor."
-msgstr ""
+msgstr "若沒有指定申請者，則以此使用者作為申請者"
 
 #: html/Tools/Offline.html:43
 msgid "If no queue is specified, create tickets in this queue."
@@ -3516,10 +3273,6 @@ msgstr "此欄位值不可更動"
 #: NOT FOUND IN SOURCE
 msgid "Import"
 msgstr "匯入"
-
-#: NOT FOUND IN SOURCE
-msgid "Include disabled classes in listing."
-msgstr ""
 
 #: html/Admin/Elements/EditCustomFields:72
 msgid "Include disabled custom fields in listing."
@@ -3719,10 +3472,6 @@ msgstr "上次更新"
 msgid "Last Contact"
 msgstr "上次聯絡"
 
-#: NOT FOUND IN SOURCE
-msgid "Last Contact</a>"
-msgstr ""
-
 #: html/Elements/SelectDateType:28
 msgid "Last Contacted"
 msgstr "上次聯絡日期"
@@ -3901,10 +3650,6 @@ msgid "Male"
 msgstr "男"
 
 #: NOT FOUND IN SOURCE
-msgid "Malkovich Malkovich Malkovich Malkovich"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Manage custom fields and custom field values"
 msgstr "管理自訂欄位及欄位值"
 
@@ -4041,10 +3786,6 @@ msgstr "信件內文不是純文字，因此無法顯示。"
 msgid "Message could not be recorded"
 msgstr "無法紀錄訊息"
 
-#: NOT FOUND IN SOURCE
-msgid "Message recipients"
-msgstr ""
-
 #: lib/RT/Ticket_Overlay.pm:2517
 msgid "Message recorded"
 msgstr "訊息紀錄成功"
@@ -4073,21 +3814,9 @@ msgstr "行動電話"
 msgid "MobilePhone"
 msgstr "行動電話"
 
-#: NOT FOUND IN SOURCE
-msgid "Modified"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Modify"
-msgstr ""
-
 #: lib/RT/Queue_Overlay.pm:71
 msgid "Modify Access Control List"
 msgstr "更改權限控制清單"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify Custom Field %1"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Modify Custom Fields which apply to all %1"
@@ -4099,15 +3828,15 @@ msgstr "更改適用於所有表單的自訂欄位"
 
 #: html/Admin/Global/GroupRights.html:84 html/Admin/Groups/GroupRights.html:72 html/Admin/Queues/GroupRights.html:85
 msgid "Modify Group Rights"
-msgstr ""
+msgstr "更改群組權限"
 
 #: html/Admin/Groups/Members.html:80 html/User/Groups/Members.html:79
 msgid "Modify Members"
-msgstr ""
+msgstr "更改成員"
 
 #: html/User/Delegation.html:36
 msgid "Modify Rights"
-msgstr ""
+msgstr "更改權限"
 
 #: lib/RT/Queue_Overlay.pm:74
 msgid "Modify Scrip templates for this queue"
@@ -4127,7 +3856,7 @@ msgstr "更改範本 %1"
 
 #: html/Admin/Global/UserRights.html:53 html/Admin/Groups/UserRights.html:54 html/Admin/Queues/UserRights.html:53
 msgid "Modify User Rights"
-msgstr ""
+msgstr "更改使用者權限"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify Workflow"
@@ -4150,10 +3879,6 @@ msgstr "更改 %1 表單內的手續"
 #: html/Admin/Global/Scrip.html:47
 msgid "Modify a scrip which applies to all queues"
 msgstr "更改適用於所有表單的手續"
-
-#: NOT FOUND IN SOURCE
-msgid "Modify article #%1"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Modify associated objects for %1"
@@ -4418,10 +4143,6 @@ msgid "Name in use"
 msgstr "帳號已有人使用"
 
 #: NOT FOUND IN SOURCE
-msgid "Name matches"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Nationality"
 msgstr "國籍"
 
@@ -4436,10 +4157,6 @@ msgstr "從未更動"
 #: html/Elements/Quicksearch:29
 msgid "New"
 msgstr "新建立"
-
-#: NOT FOUND IN SOURCE
-msgid "New Article"
-msgstr ""
 
 #: html/Elements/EditLinks:93
 msgid "New Links"
@@ -4458,10 +4175,6 @@ msgid "New Query"
 msgstr "新增查詢"
 
 #: NOT FOUND IN SOURCE
-msgid "New Relationships"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "New Request"
 msgstr "表單申請"
 
@@ -4472,10 +4185,6 @@ msgstr "新增查詢"
 #: NOT FOUND IN SOURCE
 msgid "New Watchers"
 msgstr "新增視察員"
-
-#: NOT FOUND IN SOURCE
-msgid "New class"
-msgstr ""
 
 #: html/Admin/Global/CustomField.html:40 html/Admin/Global/CustomFields.html:38 html/Admin/Queues/CustomField.html:51 html/Admin/Queues/CustomFields.html:40
 msgid "New custom field"
@@ -4792,11 +4501,11 @@ msgstr "以評論方式通知管理員副本收件人"
 
 #: etc/initialdata:93 etc/upgrade/3.1.17/content:6
 msgid "Notify Ccs"
-msgstr ""
+msgstr "通知副本收件人"
 
 #: etc/initialdata:89 etc/upgrade/3.1.17/content:2
 msgid "Notify Ccs as Comment"
-msgstr ""
+msgstr "以評論方式通知副本收件人"
 
 #: etc/initialdata:128
 msgid "Notify Other Recipients"
@@ -4948,7 +4657,7 @@ msgstr "承辦人改變時"
 
 #: etc/initialdata:177 etc/upgrade/3.1.17/content:15
 msgid "On Priority Change"
-msgstr ""
+msgstr "優先順位改變時"
 
 #: etc/initialdata:192
 msgid "On Queue Change"
@@ -4983,10 +4692,6 @@ msgstr "開啟"
 #: html/Ticket/Elements/Tabs:137
 msgid "Open it"
 msgstr "開啟"
-
-#: NOT FOUND IN SOURCE
-msgid "Open requests"
-msgstr ""
 
 #: html/SelfService/Elements/Tabs:41
 msgid "Open tickets"
@@ -5567,10 +5272,6 @@ msgid "RT Recieved mail (%1) from itself."
 msgstr "RT 收到從自己寄出的郵件 (%1)。"
 
 #: NOT FOUND IN SOURCE
-msgid "RT Self Service"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "RT Self Service / Closed Tickets"
 msgstr "RT 自助服務/已解決的申請單"
 
@@ -5616,14 +5317,6 @@ msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&
 msgstr "RT 版權所有 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;。<br>本軟體依 <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU 通用公共授權第二版</a> 散佈。"
 
 #: NOT FOUND IN SOURCE
-msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent <jesse@bestpractical.com>.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
 msgstr "RT 認為這可能是退信"
 
@@ -5646,10 +5339,6 @@ msgstr "系統運行角色"
 #: NOT FOUND IN SOURCE
 msgid "RT::Ticket-Role"
 msgstr "申請單運行角色"
-
-#: NOT FOUND IN SOURCE
-msgid "RTFM Error"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT_System"
@@ -5719,10 +5408,6 @@ msgstr "更新"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "每 %1 分鐘更新頁面"
-
-#: NOT FOUND IN SOURCE
-msgid "Relationships"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Remove"
@@ -5958,7 +5643,7 @@ msgstr "儲存更改"
 
 #: html/User/Prefs.html:157
 msgid "Save Preferences"
-msgstr ""
+msgstr "儲存偏好"
 
 #: html/Ticket/Elements/PreviewScrips:79
 msgid "Save changes"
@@ -5988,7 +5673,7 @@ msgstr "手續新增完畢"
 
 #: html/Admin/Elements/EditScrip:30
 msgid "Scrip Fields"
-msgstr ""
+msgstr "手續欄位"
 
 #: NOT FOUND IN SOURCE
 msgid "Scrip Name"
@@ -6025,10 +5710,6 @@ msgstr "查詢條件"
 #: html/Approvals/Elements/PendingMyApproval:38
 msgid "Search for approvals"
 msgstr "簽核單查詢"
-
-#: NOT FOUND IN SOURCE
-msgid "Search for articles"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Searches can't be associated with that kind of object"
@@ -6079,16 +5760,8 @@ msgid "Select All"
 msgstr "全選"
 
 #: NOT FOUND IN SOURCE
-msgid "Select a Class"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Select a Custom Field"
 msgstr "選擇自訂欄位"
-
-#: NOT FOUND IN SOURCE
-msgid "Select a Custom Fields"
-msgstr ""
 
 #: html/Admin/Groups/index.html:50
 msgid "Select a group"
@@ -6105,10 +5778,6 @@ msgstr "請選擇欲連結表單"
 #: html/Admin/Users/index.html:24 html/Admin/Users/index.html:27
 msgid "Select a user"
 msgstr "選擇使用者"
-
-#: NOT FOUND IN SOURCE
-msgid "Select class"
-msgstr ""
 
 #: html/Admin/Global/CustomField.html:37 html/Admin/Global/CustomFields.html:35
 msgid "Select custom field"
@@ -6204,11 +5873,11 @@ msgstr "寄信給特定的副本及密件副本收件人"
 
 #: etc/initialdata:94 etc/upgrade/3.1.17/content:7
 msgid "Sends mail to the Ccs"
-msgstr ""
+msgstr "寄信給副本收件人"
 
 #: etc/initialdata:90 etc/upgrade/3.1.17/content:3
 msgid "Sends mail to the Ccs as a comment"
-msgstr ""
+msgstr "以評論方式寄信給副本收件人"
 
 #: etc/initialdata:102
 msgid "Sends mail to the administrative Ccs"
@@ -6231,10 +5900,6 @@ msgid "Sep."
 msgstr "09"
 
 #: NOT FOUND IN SOURCE
-msgid "Seperate multiple URLs with spaces"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "September"
 msgstr "九月"
 
@@ -6252,7 +5917,7 @@ msgstr "顯示"
 
 #: html/Approvals/index.html:30
 msgid "Show Approvals"
-msgstr ""
+msgstr "顯示待簽核申請單"
 
 #: html/Search/Elements/EditFormat:11
 msgid "Show Columns"
@@ -6261,10 +5926,6 @@ msgstr "顯示欄位"
 #: html/Ticket/Elements/Tabs:178
 msgid "Show Results"
 msgstr "顯示結果"
-
-#: NOT FOUND IN SOURCE
-msgid "Show advanced search options..."
-msgstr ""
 
 #: html/Approvals/Elements/PendingMyApproval:43
 msgid "Show approved requests"
@@ -6355,10 +6016,6 @@ msgid "Sort"
 msgstr "順序"
 
 #: NOT FOUND IN SOURCE
-msgid "Sort Order"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Sort key"
 msgstr "排序方式"
 
@@ -6369,10 +6026,6 @@ msgstr "結果排序方式"
 #: NOT FOUND IN SOURCE
 msgid "SortOrder"
 msgstr "排序順序"
-
-#: NOT FOUND IN SOURCE
-msgid "Squelched message recipients"
-msgstr ""
 
 #: html/Admin/Elements/EditScrip:65
 msgid "Stage"
@@ -6470,24 +6123,12 @@ msgid "Submit"
 msgstr "送出"
 
 #: NOT FOUND IN SOURCE
-msgid "Submit Query"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "Submit Workflow"
 msgstr "送出流程"
 
 #: lib/RT/Group_Overlay.pm:749
 msgid "Succeeded"
 msgstr "設定成功"
-
-#: NOT FOUND IN SOURCE
-msgid "Summary"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Summary matches"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Sun"
@@ -7098,10 +6739,6 @@ msgstr "星期二"
 msgid "Type"
 msgstr "類別"
 
-#: NOT FOUND IN SOURCE
-msgid "Unable to load article"
-msgstr ""
-
 #: lib/RT/ScripCondition_Overlay.pm:103
 msgid "Unimplemented"
 msgstr "尚無實作"
@@ -7157,7 +6794,7 @@ msgstr "處理"
 
 #: html/Search/Bulk.html:146
 msgid "Update All"
-msgstr ""
+msgstr "全部更新"
 
 #: NOT FOUND IN SOURCE
 msgid "Update ID"
@@ -7165,7 +6802,7 @@ msgstr "更新編號"
 
 #: html/Ticket/Update.html:97
 msgid "Update Ticket"
-msgstr ""
+msgstr "更新申請單"
 
 #: html/Search/Bulk.html:127 html/Ticket/ModifyAll.html:65 html/Ticket/Update.html:48
 msgid "Update Type"
@@ -7258,10 +6895,6 @@ msgid "Upload your changes"
 msgstr "上載您的更動"
 
 #: NOT FOUND IN SOURCE
-msgid "Use the dropdown menus to select which transactions you want to extract into a new RTFM article"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "User"
 msgstr "使用者"
 
@@ -7292,7 +6925,7 @@ msgstr "使用者自訂"
 
 #: html/Admin/Elements/EditScrip:76
 msgid "User Defined conditions and actions"
-msgstr ""
+msgstr "使用者自訂的條件及動作"
 
 #: NOT FOUND IN SOURCE
 msgid "User ID"
@@ -7395,10 +7028,6 @@ msgstr "欄位值"
 msgid "View log"
 msgstr "檢視紀錄檔"
 
-#: NOT FOUND IN SOURCE
-msgid "VrijevormEnkele"
-msgstr ""
-
 #: lib/RT/Queue_Overlay.pm:84
 msgid "Watch"
 msgstr "視察"
@@ -7457,7 +7086,7 @@ msgstr "當申請單更換承辦人時"
 
 #: etc/initialdata:178 etc/upgrade/3.1.17/content:16
 msgid "Whenever a ticket's priority changes"
-msgstr ""
+msgstr "當申請單的優先順序改變時"
 
 #: etc/initialdata:193
 msgid "Whenever a ticket's queue changes"
@@ -7478,14 +7107,6 @@ msgstr "當評論送達時"
 #: etc/initialdata:157
 msgid "Whenever correspondence comes in"
 msgstr "當回覆送達時"
-
-#: NOT FOUND IN SOURCE
-msgid "Which are referred to by "
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "Which refer to"
-msgstr ""
 
 #: html/Admin/Users/Modify.html:161 html/User/Prefs.html:67
 msgid "Work"
@@ -7629,14 +7250,6 @@ msgid "alert"
 msgstr "急訊"
 
 #: NOT FOUND IN SOURCE
-msgid "and is not"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "and not"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "approving"
 msgstr "待簽核"
 
@@ -7741,10 +7354,6 @@ msgstr "小時"
 #: NOT FOUND IN SOURCE
 msgid "id"
 msgstr "編號"
-
-#: NOT FOUND IN SOURCE
-msgid "in class %1"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "info"
@@ -7901,10 +7510,6 @@ msgid "undescribed group %1"
 msgstr "沒有描述的群組 %1"
 
 #: NOT FOUND IN SOURCE
-msgid "undescripbed group %1"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
 msgid "unresolved"
 msgstr "未處理"
 
@@ -7928,8 +7533,4 @@ msgstr "範本：%1"
 #: lib/RT/Date.pm:331
 msgid "years"
 msgstr "年"
-
-#: NOT FOUND IN SOURCE
-msgid "ニックネーム"
-msgstr ""
 
