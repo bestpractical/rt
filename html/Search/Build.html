@@ -361,14 +361,12 @@ elsif ( $ARGS{"Toggle"} ) {
 	my $parent = $currentkey->getParent();
 	my $parentvalue = $parent->getNodeValue();
 	if (ref($value)) {
-	    debug("setting parent value");
 	    if ( $parentvalue eq 'AND') {
 		$parent->setNodeValue('OR');
 	    } else {
 		$parent->setNodeValue('AND');
 	    }
 	} else {
-	    debug("setting my value");
 	    if ($value eq 'AND') {
 		$currentkey->setNodeValue('OR');
 	    } else {
