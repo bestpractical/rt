@@ -4,7 +4,7 @@ $Ticket => undef
 </%ARGS>
 %while (my $Transaction = $Ticket->Transactions->Next) {
 %	if ($Ticket->Transactions->IsLast) {
-	<a name="last">&nbsp;</a>	
+	<a name="last<%$Ticket->Id%>">&nbsp;</a>	
 % 	}
 	<& /Ticket/Elements/ShowTransaction, Transaction => $Transaction &>
 <BR>

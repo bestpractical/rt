@@ -92,12 +92,14 @@ sub LinkUpIfRequested {
     }
 }
 
-sub DoAsRequested {
+## TODO: This is a bit hacky, that eval should go away.  Eventually,
+## it is not needed in perl 5.6.0.  Eventually the sub should accept
+## more than one Action, and it should handle Actions with arguments.
+sub ProcessActions {
     my %args=@_;
     # TODO: What if there are more Actions?
     if (exists $args{ARGS}->{Action}) {
 	my ($action)=$args{ARGS}->{Action} =~ /^(Steal|Kill|Take|UpdateTold)$/;
-	# This can be done cleaner in perl >5.6.0:
 	my ($res, $msg)=eval('$args{Ticket}->'.$action);
 	push(@{$args{Actions}}, $msg);
     }

@@ -3,6 +3,7 @@
 
 %if ($l->BaseIsLocal) {
 	(<% $l->BaseObj->Subject %>)
+% if ($l->Type eq "MemberOf") {$MemberCnt++};
 %}
 
 <% $l->Type %> THIS <br>
@@ -16,7 +17,14 @@
 %}		
 <br>
 %   }
+% if ($MemberCnt) {
+	<a href="Display.html?id=<%$Ticket->Id%>&ShowMembers=3">Show all member requests</a><br>
+%}
 
 <%ARGS>
 $Ticket = undef
 </%ARGS>
+
+<%INIT>
+my $MemberCnt=0;
+</%INIT>

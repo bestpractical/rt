@@ -19,6 +19,25 @@
 
 <& /Elements/TitleBoxEnd &>
 
+
+%# TODO: Evaluate if this should be in RT 2.0 or not, eventually move
+%# it to a separate module.
+%if ($ARGS{'ShowMembers'}) {
+
+%# Popular demand; to save time, it should be possible to request
+%# the history of _all_ the submembers through one mouse click
+
+%while (my $l=$Ticket->Children->Next) {
+%if ($l->BaseIsLocal) {
+%# TODO: Make a concentrated "ShowShortSummary"
+<h1>Ticket History for <%$l->BaseObj->Subject%></h1>
+<& /Ticket/Elements/ShowHistory, Ticket => $l->BaseObj &>
+%}
+%}
+
+%}
+
+
 <%ARGS>
 $id => undef
 </%ARGS>
@@ -33,7 +52,7 @@ use RT::Interface::Web;
 
 my @Actions;
 
-my $Ticket = CreateOrLoad(id=>$id, ARGS=>\%ARGS, Actions=>\@Actions);
+my $Ticket = &CreateOrLoad(id=>$id, ARGS=>\%ARGS, Actions=>\@Actions);
 $id=$Ticket->Id;
 
 # Eventually, link up the ticket:
@@ -41,9 +60,9 @@ $id=$Ticket->Id;
 &LinkUpIfRequested(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
 
 
-      # Eventually, update the told, take, steal, kill the ticket:
+# Eventually, update the told, take, steal, kill the ticket:
 
-&DoAsRequested(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
+&ProcessActions(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
 
 </%INIT>
 

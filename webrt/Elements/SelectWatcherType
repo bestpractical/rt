@@ -2,17 +2,16 @@
 %# Copyright 2000 Tobias Brox <tobix@fsck.com>
 %# Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
-<SELECT NAME ="WType">
-<OPTION VALUE="Requestor" <%$rsel%>>Requestor
-<OPTION VALUE="Cc" <%$csel%>>Cc
-<OPTION VALUE="AdminCc" <%$asel%>>AdminCc
+<SELECT NAME ="WatcherType">
+%# Make nice options:
+%for my $option ('Requestor', 'Cc', 'AdminCc') {
+<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%$option%></OPTION>
+%}
 </SELECT>
 
 <%ARGS>
 $Default=>undef
 </%ARGS>
-<%INIT>
-my $rsel=($Default eq "Requestor")&&"SELECTED";
-my $csel=($Default eq "Cc")&&"SELECTED";
-my $asel=($Default eq "AdminCc")&&"SELECTED";
-</%INIT>
+
+
+
