@@ -750,7 +750,7 @@ sub IsInbound {
 
 # }}}
 
-sub _ClassAccessible {
+sub _OverlayAccessible {
     {
 
         id => { read => 1, type => 'int(11)', default => '' },

@@ -3792,7 +3792,7 @@ sub DESTROY {
 
 # {{{ sub _ClassAccessible
 
-sub _ClassAccessible {
+sub _OverlayAccessible {
     {
         EffectiveId       => { 'read' => 1,  'write' => 1,  'public' => 1 },
           Queue           => { 'read' => 1,  'write' => 1 },
