@@ -163,17 +163,17 @@ msgstr "%1 konnte den Status nicht auf erledigt setzen. Die RT-Datenbank könnte
 #: html/Elements/MyTickets:25
 #. ($rows)
 msgid "%1 highest priority tickets I own..."
-msgstr "%1 mir zugewiesene Tickets mit höchster Priorität..."
+msgstr "%1 mir zugewiesene Anfragen mit höchster Priorität..."
 
 #: html/Elements/MyRequests:25
 #. ($rows)
 msgid "%1 highest priority tickets I requested..."
-msgstr "%1 von mir ausgelösten Tickets mit höchster Priorität"
+msgstr "Die %1 von mir ausgelösten Anfragen mit höchster Priorität"
 
 #: bin/rt-crontool:161
 #. ($0)
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
-msgstr "%1 ist ein Werkzeug um Tickets über externe Terminierungstools wie \"cron\" zu verarbeiten"
+msgstr "%1 ist ein Werkzeug um Anfragen über externe Terminierungstools wie \"cron\" zu verarbeiten"
 
 #: lib/RT/Queue_Overlay.pm:743
 #. ($principal->Object->Name, $args{'Type'})
@@ -183,7 +183,7 @@ msgstr "%1 ist kein %2 dieses Stapels mehr."
 #: lib/RT/Ticket_Overlay.pm:1570
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
-msgstr "%1 ist kein %2 dieses Tickets mehr."
+msgstr "%1 ist nicht mehr  %2 dieser Anfrage."
 
 #: lib/RT/Ticket_Overlay.pm:3527
 #. ($args{'Value'}, $cf->Name)
@@ -263,7 +263,7 @@ msgstr "(Markieren um zu löschen)"
 
 #: html/Ticket/Create.html:178
 msgid "(Enter ticket ids or URLs, seperated with spaces)"
-msgstr "(gib Ticketnummern oder URLs getrennt durch Leerzeichen ein)"
+msgstr "(Gib Anfragenummern oder URLs getrennt durch Leerzeichen ein)"
 
 #: html/Admin/Queues/Modify.html:54 html/Admin/Queues/Modify.html:60
 #. ($RT::CorrespondAddress)
@@ -329,7 +329,7 @@ msgstr "(keine Angabe)"
 
 #: html/Ticket/Elements/EditLinks:116
 msgid "(only one ticket)"
-msgstr "(nur ein Ticket)"
+msgstr "(nur eine Anfrage)"
 
 #: html/Elements/MyRequests:52 html/Elements/MyTickets:55
 msgid "(pending approval)"
@@ -337,7 +337,7 @@ msgstr "(wartet auf Freigabe)"
 
 #: html/Elements/MyRequests:54 html/Elements/MyTickets:57
 msgid "(pending other tickets)"
-msgstr "(wartet auf andere Tickets)"
+msgstr "(wartet auf andere Anfragen)"
 
 #: html/Admin/Users/Modify.html:50
 msgid "(required)"
@@ -366,7 +366,7 @@ msgstr ""
 #: docs/design_docs/string-extraction-guide.txt:54 html/Elements/CreateTicket:26
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"Neues Ticket in\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"Neue Anfrage in\">&nbsp;%1"
 
 #: etc/initialdata:203
 msgid "A blank template"
@@ -382,7 +382,7 @@ msgstr "ACEs können nur erstellt und gelöscht werden."
 
 #: bin/rt-commit-handler:755
 msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Breche ab um ungewünschte Ticketmodifikationen zu verhindern.\\n"
+msgstr "Breche ab um ungewünschte Veränderungen an der Anfrage zu verhindern.\\n"
 
 #: html/User/Elements/Tabs:32
 msgid "About me"
@@ -440,7 +440,7 @@ msgstr "Scrip erstellen, das auf alle Stapel angewendet wird"
 
 #: html/Search/Bulk.html:118
 msgid "Add comments or replies to selected tickets"
-msgstr "Füge Kommentare oder Antworten den ausgewählten Tickets zu"
+msgstr "Füge den ausgewählten Anfragen Kommentare oder Antworten hinzu"
 
 #: html/Admin/Groups/Members.html:42 html/User/Groups/Members.html:39
 msgid "Add members"
@@ -462,7 +462,7 @@ msgstr "Habe einen Hauptverantwortlichen als %1 für diesen Stapel hinzugefügt"
 #: lib/RT/Ticket_Overlay.pm:1454
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
-msgstr "Habe einen Hauptverantwortlichen als %1 für dieses Ticket hinzugefügt"
+msgstr "Habe einen Hauptverantwortlichen als %1 für diese Anfrage hinzugefügt"
 
 #: html/Admin/Elements/ModifyUser:76 html/Admin/Users/Modify.html:122 html/User/Prefs.html:88
 msgid "Address1"
@@ -478,7 +478,7 @@ msgstr "Admin CC"
 
 #: etc/initialdata:274
 msgid "Admin Comment"
-msgstr "Admin Notiz"
+msgstr "Admin Kommentar"
 
 #: etc/initialdata:256
 msgid "Admin Correspondence"
@@ -694,7 +694,7 @@ msgstr "BCC"
 
 #: html/Admin/Elements/EditScrip:88 html/Admin/Global/GroupRights.html:85 html/Admin/Global/Template.html:46 html/Admin/Global/UserRights.html:54 html/Admin/Groups/GroupRights.html:73 html/Admin/Groups/Members.html:81 html/Admin/Groups/Modify.html:56 html/Admin/Groups/UserRights.html:55 html/Admin/Queues/GroupRights.html:85 html/Admin/Queues/Template.html:45 html/Admin/Queues/UserRights.html:54 html/User/Groups/Modify.html:56
 msgid "Be sure to save your changes"
-msgstr "Denke daran deine Änderungen zu speichern"
+msgstr "Denke daran, Deine Änderungen zu speichern"
 
 ### wieder - Duzen???
 #: html/Elements/SelectDateRelation:34 lib/RT/CurrentUser.pm:322
@@ -711,7 +711,7 @@ msgstr "Leer"
 
 #: html/Search/Listing.html:79
 msgid "Bookmarkable URL for this search"
-msgstr "Lesezeichen-URL von dieser Suche"
+msgstr "Speicherbare URL für diese Suche"
 
 #: html/Ticket/Elements/ShowHistory:39 html/Ticket/Elements/ShowHistory:45
 msgid "Brief headers"
@@ -853,7 +853,7 @@ msgstr "Bedingung nicht gefunden"
 
 #: html/Elements/Tabs:52
 msgid "Configuration"
-msgstr "Einstellungen"
+msgstr "Konfiguration"
 
 #: html/SelfService/Prefs.html:33
 msgid "Confirm"
@@ -1312,11 +1312,11 @@ msgstr "Standard: %1/%2 von \"%3\" in \"%4\" geändert."
 
 #: html/User/Delegation.html:25 html/User/Delegation.html:28
 msgid "Delegate rights"
-msgstr "Rechte delegieren"
+msgstr "Rechte weitergeben"
 
 #: lib/RT/System.pm:63
 msgid "Delegate specific rights which have been granted to you."
-msgstr "Delegiere dir gewährte Rechte"
+msgstr "Dir gewährte Rechte weitergeben"
 
 #: lib/RT/System.pm:63
 msgid "DelegateRights"
@@ -1324,7 +1324,7 @@ msgstr ""
 
 #: html/User/Elements/Tabs:38
 msgid "Delegation"
-msgstr "Delegierung"
+msgstr "Rechteweitergabe"
 
 #: NOT FOUND IN SOURCE
 msgid "Delete"
@@ -1368,7 +1368,7 @@ msgstr "Abhängig von"
 
 #: html/Elements/SelectSortOrder:35
 msgid "Descending"
-msgstr "Absteigend"
+msgstr "absteigend"
 
 #: html/SelfService/Create.html:75 html/Ticket/Create.html:119
 msgid "Describe the issue below"
@@ -1417,7 +1417,7 @@ msgstr "Seite nicht aktualisieren."
 
 #: html/Search/Elements/PickRestriction:114
 msgid "Don't show search results"
-msgstr "Verstecke Suchergebnis"
+msgstr "Suchergebnisse nicht anzeigen"
 
 #: html/Ticket/Elements/ShowTransaction:105
 msgid "Download"
@@ -1470,12 +1470,12 @@ msgstr ""
 #. ($QueueObj->Name)
 #. ($QueueObj->Id)
 msgid "Editing Configuration for queue %1"
-msgstr "Bearbeite Einstellungen für den Stapel %1"
+msgstr "Bearbeite Konfiguration für den Stapel %1"
 
 #: html/Admin/Elements/ModifyUser:25
 #. ($UserObj->Name)
 msgid "Editing Configuration for user %1"
-msgstr "Bearbeite Einstellungen für Benutzer %1"
+msgstr "Bearbeite Konfiguration für Benutzer %1"
 
 #: html/Admin/Elements/EditCustomField:74
 #. ($CustomFieldObj->Name())
@@ -1638,7 +1638,7 @@ msgstr "Finde Leute deren"
 
 #: html/Search/Listing.html:108
 msgid "Find tickets"
-msgstr "Finde Tickets"
+msgstr "Anfragen suchen"
 
 #: NOT FOUND IN SOURCE
 msgid "Finish Approval"
@@ -1824,7 +1824,7 @@ msgstr "Wenn eine Freigabe abgewiesen wird, weise das Original ab und lösche wa
 
 #: bin/rt-crontool:190
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
-msgstr "Wenn dieses Werkzeug 'setgid' wäre könnte ein feindlicher lokaler User dadurch administrativen Zugriff auf RT erlangen."
+msgstr "Wenn dieses Werkzeug 'setgid' wäre könnte ein feindlicher lokaler Benutzer dadurch administrativen Zugriff auf RT erlangen."
 
 #: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyPeople.html:38
 msgid "If you've updated anything above, be sure to"
@@ -1938,7 +1938,7 @@ msgstr "Jul"
 
 #: html/Ticket/Elements/Tabs:99
 msgid "Jumbo"
-msgstr "Jumbo"
+msgstr "Alles"
 
 #: lib/RT/Date.pm:416
 msgid "Jun."
@@ -2083,23 +2083,23 @@ msgstr "Mach Stapel"
 
 #: html/Search/Bulk.html:98
 msgid "Make subject"
-msgstr "Mach Betreff"
+msgstr "Betreff setzen"
 
 #: html/Admin/index.html:33
 msgid "Manage groups and group membership"
-msgstr "Verwalte Gruppen und Gruppenmitglieder"
+msgstr "Gruppen und Gruppenmitglieder verwalten"
 
 #: html/Admin/index.html:39
 msgid "Manage properties and configuration which apply to all queues"
-msgstr "Verwalte Eigenschaften und Einstellungen die auf alle Stapel zutreffen"
+msgstr "Eigenschaften und Einstellungen für alle Stapel verwalten"
 
 #: html/Admin/index.html:36
 msgid "Manage queues and queue-specific properties"
-msgstr "Verwalte Stapel und stapelspezifische Einstellungen"
+msgstr "Stapel und stapelspezifische Einstellungen verwalten"
 
 #: html/Admin/index.html:30
 msgid "Manage users and passwords"
-msgstr "Verwalte Benutzer und Passworte"
+msgstr "Benutzer und Passworte verwalten"
 
 #: lib/RT/Date.pm:413
 msgid "Mar."
@@ -2510,7 +2510,7 @@ msgstr "Kein Stapel vorhanden"
 
 #: bin/rt-crontool:56
 msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "Kein RT-Benutzer gefunden. Bitte kontaktiere deinen RT-Administrator.\\n"
+msgstr "Kein RT-Benutzer gefunden. Bitte kontaktiere Deinen RT-Administrator.\\n"
 
 #: html/Admin/Global/Template.html:79 html/Admin/Queues/Template.html:76
 msgid "No Template"
@@ -2616,7 +2616,7 @@ msgstr "Keine auf die Suchkriterien passende Benutzer gefunden"
 
 #: bin/rt-commit-handler:644
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
-msgstr "Kein gültiger RT-Benutzer gefunden. RT CVS-Handler weggefallen. Bitte kontaktiere deinen RT-Administrator.\\n"
+msgstr "Kein gültiger RT-Benutzer gefunden. RT CVS-Handler weggefallen. Bitte kontaktiere Deinen RT-Administrator.\\n"
 
 #: lib/RT/Interface/Web.pm:859
 msgid "No value sent to _Set!\\n"
@@ -2672,7 +2672,7 @@ msgstr "Benachrichtige andere Empfänger"
 
 #: etc/initialdata:117
 msgid "Notify Other Recipients as Comment"
-msgstr "Benachrichtige andere Empfänger als Kommantar"
+msgstr "Benachrichtige andere Empfänger als Kommentar"
 
 #: etc/initialdata:86
 msgid "Notify Owner"
@@ -2728,23 +2728,23 @@ msgstr "am"
 
 #: etc/initialdata:155
 msgid "On Comment"
-msgstr "Beim Kommentieren"
+msgstr "Bei Kommentar"
 
 #: etc/initialdata:148
 msgid "On Correspond"
-msgstr "Beim Korrespondieren"
+msgstr "Bei Korrespondenz"
 
 #: etc/initialdata:137
 msgid "On Create"
-msgstr "Beim Erstellen"
+msgstr "Bei Erstellen"
 
 #: etc/initialdata:169
 msgid "On Owner Change"
-msgstr "Beim Eigentümerwechsel"
+msgstr "Bei Eigentümerwechsel"
 
 #: etc/initialdata:177
 msgid "On Queue Change"
-msgstr "Beim Stapelwechsel"
+msgstr "Bei Stapelwechsel"
 
 #: etc/initialdata:183
 msgid "On Resolve"
@@ -2752,7 +2752,7 @@ msgstr "Beim Erledigen"
 
 #: etc/initialdata:161
 msgid "On Status Change"
-msgstr "Beim Statuswechsel"
+msgstr "Bei Statuswechsel"
 
 #: etc/initialdata:142
 msgid "On Transaction"
@@ -2782,19 +2782,19 @@ msgstr "Offene Anfragen"
 
 #: html/Admin/Users/Prefs.html:41
 msgid "Open tickets (from listing) in a new window"
-msgstr "Öffne Tickets (aus der Liste) in neuem Fenster"
+msgstr "Öffne Anfragen (aus der Liste) in neuem Fenster"
 
 #: html/Admin/Users/Prefs.html:40
 msgid "Open tickets (from listing) in another window"
-msgstr "Öffne Tickets (aus der Liste) in ein anderes Fenster"
+msgstr "Öffne Anfragen (aus der Liste) in ein anderes Fenster"
 
 #: etc/initialdata:133
 msgid "Open tickets on correspondence"
-msgstr "Öffne Tickets bei Korrespondenz"
+msgstr "Öffne Anfragen bei Korrespondenz"
 
 #: html/Search/Elements/PickRestriction:101
 msgid "Ordering and sorting"
-msgstr "Listung und Sortierung"
+msgstr "Sortierung und Reihenfolge"
 
 #: html/Admin/Elements/ModifyUser:46 html/Admin/Users/Modify.html:117 html/Elements/SelectUsers:29 html/User/Prefs.html:86
 msgid "Organization"
@@ -2803,15 +2803,15 @@ msgstr "Organisation"
 #: html/Approvals/Elements/Approve:34
 #. ($approving->Id, $approving->Subject)
 msgid "Originating ticket: #%1"
-msgstr "Ursprungsticket: #%1"
+msgstr "Ursprüngliche Anfrage: #%1"
 
 #: html/Admin/Elements/ModifyQueue:55 html/Admin/Queues/Modify.html:69
 msgid "Over time, priority moves toward"
-msgstr "Über die Zeit steigt die Priorität bis"
+msgstr "Mit der Zeit steigt die Priorität auf"
 
 #: lib/RT/Queue_Overlay.pm:87
 msgid "Own tickets"
-msgstr "Eigene Tickets"
+msgstr "Eigene Anfrage"
 
 #: lib/RT/Queue_Overlay.pm:87
 msgid "OwnTicket"
@@ -2898,7 +2898,7 @@ msgstr "Platzhalter"
 
 #: html/Elements/Header:52 html/Elements/Tabs:55 html/SelfService/Prefs.html:25 html/User/Prefs.html:25 html/User/Prefs.html:28
 msgid "Preferences"
-msgstr "Einstellungen"
+msgstr "Voreinstellungen"
 
 #: NOT FOUND IN SOURCE
 msgid "Prefs"
@@ -3049,7 +3049,7 @@ msgstr ""
 
 #: html/SelfService/Closed.html:25
 msgid "RT Self Service / Closed Tickets"
-msgstr "RT Selbstbedienung / Geschlossene Tickets"
+msgstr "RT Selbstbedienung / Geschlossene Anfragen"
 
 #: html/index.html:25 html/index.html:28
 msgid "RT at a glance"
@@ -3082,7 +3082,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT has proccessed your commands"
-msgstr "RT hat deine Befehle verarbeitet"
+msgstr "RT hat Deine Befehle verarbeitet"
 
 #: html/Elements/Login:83
 #. ('2003')
@@ -3123,12 +3123,12 @@ msgstr ""
 
 #: html/Search/Elements/PickRestriction:27
 msgid "Refine search"
-msgstr "Verfeinere Suche"
+msgstr "Suche Verfeinen"
 
 #: html/Elements/Refresh:36
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
-msgstr "Aktualisiere diese Seite alle %1 Minuten."
+msgstr "Seite alle %1 Minuten aktualisieren."
 
 #: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
 msgid "Relationships"
@@ -3152,7 +3152,7 @@ msgstr "Antworten"
 
 #: lib/RT/Queue_Overlay.pm:85
 msgid "Reply to tickets"
-msgstr "Antworte auf Tickets"
+msgstr "Antworte auf Anfragen"
 
 #: lib/RT/Queue_Overlay.pm:85
 msgid "ReplyToTicket"
@@ -3164,7 +3164,7 @@ msgstr "Klient"
 
 #: html/Search/Elements/PickRestriction:38
 msgid "Requestor email address"
-msgstr "Klienten-E-Mail-Adresse"
+msgstr "email-Adresse des Klienten"
 
 #: NOT FOUND IN SOURCE
 msgid "Requestor(s)"
@@ -3193,7 +3193,7 @@ msgstr "Erledigen"
 #: html/Ticket/Update.html:133
 #. ($Ticket->id, $Ticket->Subject)
 msgid "Resolve ticket #%1 (%2)"
-msgstr "Erledige Ticket #%1 (%2)"
+msgstr "Erledige Anfrage Nr. %1 (%2)"
 
 #: etc/initialdata:302 html/Elements/SelectDateType:28 lib/RT/Ticket_Overlay.pm:1170
 msgid "Resolved"
@@ -3275,11 +3275,11 @@ msgstr "Sa"
 
 #: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyPeople.html:38
 msgid "Save Changes"
-msgstr "Speichere Änderungen"
+msgstr "Änderungen Sichern"
 
 #: html/Ticket/ModifyLinks.html:39
 msgid "Save changes"
-msgstr "Speichere Änderungen"
+msgstr "Änderungen Sichern"
 
 #: html/Admin/Global/Scrip.html:49
 #. ($ARGS{'id'})
@@ -3432,7 +3432,7 @@ msgstr "Zeige freigegebene Anfragen"
 
 #: html/Ticket/Create.html:144 html/Ticket/Create.html:34
 msgid "Show basics"
-msgstr "Zeige Basics"
+msgstr "Zeige Grundlagen"
 
 #: html/Approvals/Elements/PendingMyApproval:45
 msgid "Show denied requests"
@@ -3452,11 +3452,11 @@ msgstr "Zeige auf andere Freigaben wartende Anfragen"
 
 #: lib/RT/Queue_Overlay.pm:81
 msgid "Show ticket private commentary"
-msgstr "Zeige private Kommentare des Tickets"
+msgstr "Zeige private Kommentare des Anfragen"
 
 #: lib/RT/Queue_Overlay.pm:79
 msgid "Show ticket summaries"
-msgstr "Zeige Ticketzusammenfassungen"
+msgstr "Zeige Kurzfassungen der Anfragen"
 
 #: lib/RT/Queue_Overlay.pm:69
 msgid "ShowACL"
@@ -3480,11 +3480,11 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:82
 msgid "Sign up as a ticket Requestor or ticket or queue Cc"
-msgstr "Als Klient eines Tickets oder Ticket- bzw. Stapel-CC eintragen"
+msgstr "Als Klient einer Anfrage oder Anfrage- bzw. Stapel-CC eintragen"
 
 #: lib/RT/Queue_Overlay.pm:83
 msgid "Sign up as a ticket or queue AdminCc"
-msgstr "Als Ticket- oder Stapel-AdminCC eintragen"
+msgstr "Als Anfrage- oder Stapel-AdminCC eintragen"
 
 #: html/Admin/Elements/ModifyUser:39 html/Admin/Users/Modify.html:191 html/Admin/Users/Prefs.html:32 html/SelfService/Prefs.html:37 html/User/Prefs.html:112
 msgid "Signature"
@@ -3677,7 +3677,7 @@ msgstr "Das ist bereits der aktuelle Wert"
 
 #: lib/RT/CustomField_Overlay.pm:178
 msgid "That is not a value for this custom field"
-msgstr "Dies ist kein gültiger Wert dieses benutzerdefinierten Feldes"
+msgstr "Dies ist kein gültiger Wert für dieses benutzerdefinierte Feld"
 
 #: lib/RT/Ticket_Overlay.pm:1886
 msgid "That is the same value"
@@ -3691,7 +3691,7 @@ msgstr "Dieser Hauptverantwortliche ist bereits ein %1 dieses Stapels"
 #: lib/RT/Ticket_Overlay.pm:1434
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
-msgstr "Dieser Hauptverantwortliche ist bereits ein %1 dieses Tickets"
+msgstr "Dieser Hauptverantwortliche ist bereits ein %1 dieser Anfrage"
 
 #: lib/RT/Queue_Overlay.pm:732
 #. ($args{'Type'})
@@ -3701,7 +3701,7 @@ msgstr "Dieser Hauptverantwortliche ist nicht ein %1 dieses Stapels"
 #: lib/RT/Ticket_Overlay.pm:1551
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this ticket"
-msgstr "Dieser Hauptverantwortliche ist nicht ein %1 dieses Tickets"
+msgstr "Dieser Hauptverantwortliche ist nicht ein %1 dieser Anfrage"
 
 #: lib/RT/Ticket_Overlay.pm:1882
 msgid "That queue does not exist"
@@ -3709,15 +3709,15 @@ msgstr "Dieser Stapel existiert nicht"
 
 #: lib/RT/Ticket_Overlay.pm:3143
 msgid "That ticket has unresolved dependencies"
-msgstr "Dieses Ticket hat ungelöste Abhängigkeiten"
+msgstr "Diese Anfrage hat ungelöste Abhängigkeiten"
 
 #: lib/RT/ACE_Overlay.pm:288 lib/RT/ACE_Overlay.pm:597
 msgid "That user already has that right"
-msgstr "Dieser Benutzer hat bereits dieses Recht"
+msgstr "Dieser Benutzer hat dieses Recht bereits" 
 
 #: lib/RT/Ticket_Overlay.pm:2952
 msgid "That user already owns that ticket"
-msgstr "Diesem Benutzer gehört bereits das Ticket"
+msgstr "Diesem Benutzer gehört diese Anfrage bereits"
 
 #: lib/RT/Ticket_Overlay.pm:2918
 msgid "That user does not exist"
@@ -3733,7 +3733,7 @@ msgstr "Dieser Benutzer ist bereits ungeprivilegiert"
 
 #: lib/RT/User_Overlay.pm:327
 msgid "That user is now privileged"
-msgstr "Dieser Benutzer ist nun privilegiert"
+msgstr "Dieser Benutzer ist jetzt privilegiert"
 
 #: lib/RT/User_Overlay.pm:344
 msgid "That user is now unprivileged"
@@ -3741,7 +3741,7 @@ msgstr "Dieser Benutzer ist jetzt unprivelegiert"
 
 #: lib/RT/Ticket_Overlay.pm:2944
 msgid "That user may not own tickets in that queue"
-msgstr "Diesem Benutzer dürfen keine Tickets aus diesen Stapel gehören"
+msgstr "Diesem Benutzer dürfen keine Anfragen aus diesen Stapel gehören"
 
 #: lib/RT/Link_Overlay.pm:206
 msgid "That's not a numerical id"
@@ -3753,11 +3753,11 @@ msgstr "Grundlagen"
 
 #: lib/RT/ACE_Overlay.pm:88
 msgid "The CC of a ticket"
-msgstr "Der CC eines Tickets"
+msgstr "Der CC einer Anfrage"
 
 #: lib/RT/ACE_Overlay.pm:89
 msgid "The administrative CC of a ticket"
-msgstr "Der administrative CC eines Tickets"
+msgstr "Der administrative CC einer Anfrage"
 
 #: lib/RT/Ticket_Overlay.pm:2213
 msgid "The comment has been recorded"
@@ -3765,7 +3765,7 @@ msgstr "Der Kommentar wurde aufgezeichnet"
 
 #: bin/rt-crontool:198
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr "Das folgende Kommando wird alle aktiven Tickets des Stapels 'general' finden und ihre Priorität auf 99 setzen, wenn sie innerhalb der letzten 4 Stunden nicht angefasst wurden:"
+msgstr "Das folgende Kommando wird alle aktiven Anfragen des Stapels 'general' finden und ihre Priorität auf 99 setzen, wenn sie innerhalb der letzten 4 Stunden nicht angefasst wurden:"
 
 #: bin/rt-commit-handler:756 bin/rt-commit-handler:766
 msgid "The following commands were not proccessed:\\n\\n"
@@ -3777,11 +3777,11 @@ msgstr "Der neue Wert wurde gesetzt."
 
 #: lib/RT/ACE_Overlay.pm:86
 msgid "The owner of a ticket"
-msgstr "Der Inhaber eines Tickets"
+msgstr "Der Inhaber einer Anfrage"
 
 #: lib/RT/ACE_Overlay.pm:87
 msgid "The requestor of a ticket"
-msgstr "Der Klient eines Tickets"
+msgstr "Der Klient einer Anfrage"
 
 #: html/Admin/Elements/EditUserComments:26
 msgid "These comments aren't generally visible to the user"
@@ -3802,7 +3802,7 @@ msgstr "Diese Transaktion scheint keinen Inhalt zu haben"
 #: html/Ticket/Elements/ShowRequestor:47
 #. ($rows)
 msgid "This user's %1 highest priority tickets"
-msgstr "Die %1 höchstpriorisiertesten Tickets dieses Benutzers"
+msgstr "Die %1 höchstpriorisiertesten Anfragen dieses Benutzers"
 
 #: NOT FOUND IN SOURCE
 msgid "This user's 25 highest priority tickets"
@@ -3819,60 +3819,60 @@ msgstr ""
 #: html/Ticket/ModifyAll.html:25 html/Ticket/ModifyAll.html:29
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "Ticket #%1 Jumbo update: %2"
+msgstr "Anfrage Nr. %1 Alles aktualisieren: %2"
 
 #: html/Approvals/Elements/ShowDependency:46
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
-msgstr "Ticket #%1: %2"
+msgstr "Anfrage Nr. %1: %2"
 
 #: lib/RT/Ticket_Overlay.pm:608
 #. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
-msgstr "Ticket %1 wurde im Ticket '%2' angelegt"
+msgstr "Anfrage %1 wurde in Anfrage '%2' angelegt"
 
 #: bin/rt-commit-handler:760
 #. ($Ticket->Id)
 msgid "Ticket %1 loaded\\n"
-msgstr "Ticket %1 geladen\\n"
+msgstr "Anfrage %1 geladen\\n"
 
 #: html/Search/Bulk.html:181
 #. ($Ticket->Id,$_)
 msgid "Ticket %1: %2"
-msgstr "Ticket %1: %2"
+msgstr "Anfrage %1: %2"
 
 #: html/Ticket/History.html:25 html/Ticket/History.html:28
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
-msgstr "Tciket Historie #%1 %2"
+msgstr "Verlauf von Anfrage Nr. %1 %2"
 
 #: html/SelfService/Display.html:34
 msgid "Ticket Id"
-msgstr "Ticketnummer"
+msgstr "Anfrage Nr." 
 
 #: etc/initialdata:303
 msgid "Ticket Resolved"
-msgstr "Ticket erledigt"
+msgstr "Anfrage erledigt"
 
 #: html/Search/Elements/PickRestriction:63
 msgid "Ticket attachment"
-msgstr "Ticketanhang"
+msgstr "Anhang der Anfrage"
 
 #: lib/RT/Tickets_Overlay.pm:1166
 msgid "Ticket content"
-msgstr "Ticketinhalt"
+msgstr "Inhalt der Anfrage"
 
 #: lib/RT/Tickets_Overlay.pm:1212
 msgid "Ticket content type"
-msgstr "Ticketinhaltstyp"
+msgstr "Art des Inhalts der Anfrage"
 
 #: lib/RT/Ticket_Overlay.pm:495 lib/RT/Ticket_Overlay.pm:597
 msgid "Ticket could not be created due to an internal error"
-msgstr "Ticket konnte aufgrund eines internen Fehlers nicht angelegt werden"
+msgstr "Anfrage konnte aufgrund eines internen Fehlers nicht angelegt werden"
 
 #: lib/RT/Transaction_Overlay.pm:522
 msgid "Ticket created"
-msgstr "Ticket angelegt"
+msgstr "Anfrage angelegt"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket creation failed"
@@ -3880,46 +3880,46 @@ msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:527
 msgid "Ticket deleted"
-msgstr "Ticket gelöscht"
+msgstr "Anfrage gelöscht"
 
 #: html/REST/1.0/modify:29 html/REST/1.0/update:34
 msgid "Ticket id not found"
-msgstr "Ticketnummer nicht gefunden"
+msgstr "Anfragenummer nicht gefunden"
 
 #: html/REST/1.0/modify:36 html/REST/1.0/update:41
 msgid "Ticket not found"
-msgstr "Ticket nicht gefunden"
+msgstr "Anfrage nicht gefunden"
 
 #: etc/initialdata:289
 msgid "Ticket status changed"
-msgstr "Ticketstatus geändert"
+msgstr "Status der Anfrage geändert"
 
 #: html/Ticket/Update.html:39
 msgid "Ticket watchers"
-msgstr "Ticketbeobachter"
+msgstr "Beobachter der Anfrage"
 
 #: html/Elements/Tabs:49
 msgid "Tickets"
-msgstr "Tickets"
+msgstr "Anfragen"
 
 #: lib/RT/Tickets_Overlay.pm:1383
 #. ($self->loc($args{'TYPE'}), ($args{'BASE'} || $args{'TICKET'}))
 msgid "Tickets %1 %2"
-msgstr "Tickets %1 %2"
+msgstr "Anfragen %1 %2"
 
 #: lib/RT/Tickets_Overlay.pm:1348
 #. ($self->loc($args{'TYPE'}), ($args{'TARGET'} || $args{'TICKET'}))
 msgid "Tickets %1 by %2"
-msgstr "Tickets %2 von %2"
+msgstr "Anfragen %2 von %2"
 
 #: html/Elements/ViewUser:26
 #. ($name)
 msgid "Tickets from %1"
-msgstr "Tickets von %1"
+msgstr "Anfragen von %1"
 
 #: html/Approvals/Elements/ShowDependency:27
 msgid "Tickets which depend on this approval:"
-msgstr "Tickets welche von dieser Freigabe abhängen:"
+msgstr "Anfragen, die von dieser Freigabe abhängen:"
 
 #: html/Ticket/Create.html:157 html/Ticket/Elements/EditBasics:48
 msgid "Time Left"
@@ -4033,7 +4033,7 @@ msgstr "Aktualisierungtyp"
 
 #: html/Search/Listing.html:61
 msgid "Update all these tickets at once"
-msgstr "Aktualisiere alle diese Tickets auf einmal"
+msgstr "Aktualisiere alle diese Anfragen auf einmal"
 
 #: html/Admin/Users/Prefs.html:49
 msgid "Update email"
@@ -4049,7 +4049,7 @@ msgstr "Aktualisierung nicht aufgezeichnet."
 
 #: html/Search/Bulk.html:81
 msgid "Update selected tickets"
-msgstr "Aktualisiere ausgewählte Tickets"
+msgstr "Aktualisiere ausgewählte Anfragen"
 
 #: html/Admin/Users/Prefs.html:36
 msgid "Update signature"
@@ -4057,22 +4057,22 @@ msgstr "Aktualisiere Unterschrift"
 
 #: html/Ticket/ModifyAll.html:63
 msgid "Update ticket"
-msgstr "Aktualisiere Ticket"
+msgstr "Aktualisiere Anfrage"
 
 #: html/SelfService/Update.html:25 html/SelfService/Update.html:27
 #. ($Ticket->id)
 msgid "Update ticket # %1"
-msgstr "Aktualisiere Ticket #%1"
+msgstr "Aktualisiere Anfrage Nr. %1"
 
 #: html/SelfService/Update.html:50
 #. ($Ticket->id)
 msgid "Update ticket #%1"
-msgstr "Aktualisiere Ticket #%1"
+msgstr "Aktualisiere Anfrage Nr. %1"
 
 #: html/Ticket/Update.html:135
 #. ($Ticket->id, $Ticket->Subject)
 msgid "Update ticket #%1 (%2)"
-msgstr "Aktualisiere Ticket #%1 (%2)"
+msgstr "Aktualisiere Anfrage Nr. %1 (%2)"
 
 #: lib/RT/Interface/Web.pm:373
 msgid "Update type was neither correspondence nor comment."
@@ -4177,15 +4177,15 @@ msgstr "Mi"
 
 #: etc/upgrade/2.1.71:161
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
-msgstr "Füge Korrespondenz zum Originalticket wenn ein Ticket von allen Freigebende freigegeben wurde"
+msgstr "Füge Korrespondenz zum Originalticket, wenn eine Anfrage von allen Freigebenden freigegeben wurde"
 
 #: etc/upgrade/2.1.71:135
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
-msgstr "Füge Korrespondenz zum Originalticket wenn ein Ticket von einem Freigebenden freigegeben wurde"
+msgstr "Füge Korrespondenz zum Originalticket wenn eine Anfrage  von einem Freigebenden freigegeben wurde"
 
 #: etc/initialdata:138
 msgid "When a ticket is created"
-msgstr "Wenn ein Ticket erstellt wird"
+msgstr "Wenn eine Afrage erstellt wird"
 
 #: etc/upgrade/2.1.71:79
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
@@ -4197,23 +4197,23 @@ msgstr "Wenn irgendetwas passiert"
 
 #: etc/initialdata:184
 msgid "Whenever a ticket is resolved"
-msgstr "Immer wenn ein Ticket erledigt wird"
+msgstr "Immer wenn eine Anfrage  erledigt wird"
 
 #: etc/initialdata:170
 msgid "Whenever a ticket's owner changes"
-msgstr "Immer wenn der Ticketeigentümer wechselt"
+msgstr "Immer wenn der Eigentümer einer Anfrage wechselt"
 
 #: etc/initialdata:178
 msgid "Whenever a ticket's queue changes"
-msgstr "Immer wenn der Ticketstapel wechselt"
+msgstr "Immer wenn eine Anfrage den Stapel wechselt"
 
 #: etc/initialdata:162
 msgid "Whenever a ticket's status changes"
-msgstr "Immer wenn der Ticketstatus sich ändert"
+msgstr "Immer wenn sich der Status einer Anfrage ändert"
 
 #: etc/initialdata:192
 msgid "Whenever a user-defined condition occurs"
-msgstr "Wannimmer eine benutzerdefinierte Bedingung auftritt"
+msgstr "Immer wenn eine benutzerdefinierte Bedingung auftritt"
 
 #: etc/initialdata:156
 msgid "Whenever comments come in"
@@ -4237,7 +4237,7 @@ msgstr "Arbeitszeit"
 
 #: lib/RT/Ticket_Overlay.pm:3056
 msgid "You already own this ticket"
-msgstr "Du besitzt bereits dieses Ticket"
+msgstr "Du besitzt diese Anfrage bereits"
 
 #: html/autohandler:121
 msgid "You are not an authorized user"
@@ -4245,7 +4245,7 @@ msgstr "Du bist kein authorisierter Benutzer"
 
 #: lib/RT/Ticket_Overlay.pm:2930
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr "Du kannst nur Tickets ohne Inhaber jemanden zuweisen"
+msgstr "Du kannst nur Anfragen ohne Inhaber zuweisen"
 
 #: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
@@ -4254,7 +4254,7 @@ msgstr ""
 #: docs/design_docs/string-extraction-guide.txt:47
 #. ($num, $queue)
 msgid "You found %1 tickets in queue %2"
-msgstr "Du hast %1 Tickets in Stapel %2 gefunden"
+msgstr "Du hast %1 Anfragen in Stapel %2 gefunden"
 
 #: html/NoAuth/Logout.html:31 html/REST/1.0/logout:25
 msgid "You have been logged out of RT."
@@ -4262,11 +4262,11 @@ msgstr "Du wurdest von RT abgemeldet."
 
 #: html/SelfService/Display.html:134
 msgid "You have no permission to create tickets in that queue."
-msgstr "Du hast kein Recht Tickets in diesen Stapel anzulegen."
+msgstr "Du hast kein Recht, Anfragen in diesen Stapel anzulegen."
 
 #: lib/RT/Ticket_Overlay.pm:1895
 msgid "You may not create requests in that queue."
-msgstr "Du darfst in diesem Stapel keine Tickets erstellen"
+msgstr "Du darfst in diesem Stapel keine Anfragen erstellen"
 
 #: html/NoAuth/Logout.html:36
 msgid "You're welcome to login again"
@@ -4348,7 +4348,7 @@ msgstr "entspricht nicht"
 
 #: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:35
 msgid "doesn't contain"
-msgstr "beinhaltet nicht"
+msgstr "enthält nicht"
 
 #: html/Elements/SelectEqualityOperator:38
 msgid "equal to"
