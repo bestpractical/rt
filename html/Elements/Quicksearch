@@ -47,7 +47,7 @@
 
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
 <tr>                                                                          
-       <th class="collection-as-table" align=left><&|/l&>Queue</&></th>                                         
+       <th class="collection-as-table" align=left><&|/l&>Queue</&></th> 
        <th class="collection-as-table" align=right><&|/l&>New</&></th>
        <th class="collection-as-table" align=right><&|/l&>Open</&></th>          
 </tr>

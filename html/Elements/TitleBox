@@ -43,4 +43,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& TitleBoxStart, %ARGS&><%$m->content|n%><& TitleBoxEnd&>
+<div class="<% $class %>">
+    <& TitleBoxStart, %ARGS&><%$m->content|n%><& TitleBoxEnd&>
+</div>
+<%ARGS>
+$class =>  undef
+</%ARGS>
+

@@ -43,6 +43,54 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+div.frontmatter {
+    padding-left: 13%;
+    width: 87%;
+    margin-top: 51px;    
+    white-space: nowrap;
+}
+
+div.logo {
+top: 0;
+left: 0;
+position: absolute;
+	  border-bottom: solid #999999 1px;
+	  z-index: 2;
+}
+body>div.logo {position: fixed;}
+
+
+div.login-information {
+background: #ffffff;
+float: left;
+position: absolute;
+width: 100%;
+right: 0;
+top: 0;
+height: 50px;
+	text-align: right; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	vertical-align: top;
+	border-right: 1em;
+	padding-right: .5em;
+	border-bottom: solid #999999 1px;
+	z-index: 1;
+}
+body>div.login-information {position: fixed;}
+div.bpscredits {
+color: #666666;
+right: 1em;
+bottom: 0;
+position: fixed;
+width: 85%;
+background: #ffffff;
+	margin-top: 1em;
+	text-align: right; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+}
+
 SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 12px;
 	 color: #FFFFFF;
@@ -399,12 +447,21 @@ span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 
 UL.topnav LI :focus { text-decoration: underline; }
 
-TD.mainbody {
-        padding-top: 0.5em;
-        padding-left: 1em;
-        padding-right: 1em;
-        margin-left: 1em;
-        margin-right: 1em;
+div.dialog {
+                position: absolute;
+                width: 20%;
+                            left: 40%;
+                                        top: 20%;
+
+}
+
+div.mainbody {
+position: absolute;
+left: 13%;
+top: 80px;
+margin: 0px;
+padding: 1em;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
 td.boxcontainer + td.boxcontainer {
@@ -516,9 +573,21 @@ a:hover {  text-decoration: underline}
 
 SPAN.date { font-size: 0.8em }
 
-span.title { font-size: 1.6em;
-	     vertical-align: middle;
-             color: #ffffff;}
+div.title {
+color: #ffffff;
+background: #336699; 
+position: fixed;
+left: 14%;
+right:0px;
+margin: 0px;
+padding: 5px;
+	 font-size: 1em;
+	 font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-weight: bold;
+	 z-index: 999;
+}
+body>div.title {position: fixed;}
+
 span.productname { font-size: 2em;
              color: #0066cc;}
 SPAN.titleboxtitle, SPAN.titleboxclose {
@@ -563,8 +632,9 @@ BLOCKQUOTE {
 }
 
 
-.oddline { 
-        background-color : #ccccee;
+table.ticket-overview {
+width: 100px;
+background: #336699;
 }
 
 ul.topnav {
@@ -614,6 +684,26 @@ textarea.comments {
 textarea.messagebox {
     width: 100%;
 }
+
+/* Home */
+
+div.quick-create, div.my-requests, div.my-tickets {
+	width: 60%;
+	margin-bottom: 1em;
+}
+
+div.right-column {
+	width: 35%;
+	float: right;
+}
+div.ticket-overview {
+	margin-bottom: 1em;
+}
+div.page-refresh {
+	text-align: right;
+}
+
+/* END */
 
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
