@@ -1,6 +1,6 @@
 # $Header$
 package RT::Templates;
-use DBIx::EasySearch;
+use RT::EasySearch;
 @ISA= qw(DBIx::EasySearch);
 
 
