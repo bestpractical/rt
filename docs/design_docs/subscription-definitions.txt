@@ -21,9 +21,13 @@ What is a Scrip?
 
 ...it's an entry in the database that tells that an action is to be
 performed with a certain template and argument.  It can be limited by
-queue and transaction type.  It has a name and a description.
+transaction type.  It has a name and a description.
 
-/* I want to move the queue to a new table, for easier queue admin. */
+
+What is a ScripScope?
+
+...an indication of what queues the different Scrips applies to.  It should
+be easy to remove/insert ScripScope objects by the admin tools.
 
 
 What is a Watcher?
@@ -42,3 +46,17 @@ What is a Template?
 ...A template is a text template that is to be used for outgoing email -
 or for different use for different actions.  One template can be used by
 several Scrips.
+
+
+How does the system determinate whom to send mail to?
+
+The ScripScope table in the DB should indicate whether a Scrip is relevant
+for a queue or not /* TobiX thinks that this might eventually be extended to
+keywords, tickets, etc, and not only Queues */ ... the Scope table should
+indicate whether the Scrip is relevant for a given transaction type ... then
+the given Action should determinate whether it applies or not, and finally
+the Action has to find out (via the Watchers table) whom it applies to, and
+how to contact them ... and the Template tells how the mails that are sent
+out should look like.
+
+
