@@ -203,7 +203,7 @@ Otherwise, return its URI
 
 sub HREF {
     my $self = shift;
-    if ($self->IsLocal) {
+    if ($self->IsLocal && $self->Object) {
         return ( $RT::WebURL . "/RTFM/Article/Display.html?id=".$self->Object->Id);
     }   
     else {
