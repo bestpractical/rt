@@ -355,7 +355,7 @@ sub ParseArgs {
     $Message = MIME::Entity->build ( Subject => $subject || "",
 				     Cc => $cc || "",
 				     Bcc => $Bcc || "",
-				     Data => @content);
+				     Data => \@content);
 
     ($Transaction, $Description) = $Ticket->Comment( MIMEObj => $Message,
 						     TimeTaken => $TimeTaken
