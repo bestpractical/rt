@@ -11,8 +11,9 @@ my $RT1PASSWORD = undef;
 my $RT1DATABASE = "rt";
 my $RT1HOST = "localhost";
 my $RT1DATA = "/var/opt/rt";
-my $EMAILHOST = "apnic.net";	# user_id@EMAILHOST for missing RT1 emails
+my $EMAILDOMAIN = "apnic.net";	# user_id@EMAILDOMAIN for missing RT1 emails
 
+my $Debug = 2;
 
 
 use strict;
@@ -25,6 +26,10 @@ use lib "!!RT_ETC_PATH!!";
 use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
 			   GetCurrentUser GetMessageContent);
 
+use RT::User;
+use RT::Queue;
+use RT::Ticket;
+use RT::Transaction;
 #Clean out all the nasties from the environment
 CleanEnv();
 
@@ -183,7 +188,7 @@ sub MigrateAreas {
 			      Parent => $val);
 	
 	#Create all the areas underneath /QueueName/Area/
-	while my ($row = $sth->fetchrow()) {
+	while (my @row = $sth->fetchrow()) {
 	    my $this_area = RT::Keyword->new($RT::SystemUser);
 	    $this_area->Create (Name => $row[0],
 				Description => 'Autocreated by RT 1.0 import',
@@ -216,7 +221,7 @@ sub MigrateUsers {
 	my $user = RT::User->new($RT::SystemUser);
 	
 	#clean up bogus email addresses
-	$row[3] = $row[0]."\@$EMAILHOST" if ($row[3] eq "");
+	$row[3] = $row[0]."\@$EMAILDOMAIN" if ($row[3] eq "");
 
 	my ($return, $msg) =  $user->Create( Name => $row[0],
 					     Gecos => $row[0],
@@ -251,7 +256,7 @@ sub MigrateTickets {
 	my ($id, $msg) = 
 	  $ticket->Import( id => $row->{'serial_num'},
 			   Queue => $row->{'queue_id'},
-			   Status => $row{'status'},
+			   Status => $row->{'status'},
 			   Requestors => $row->{'requestors'},
 			   Owner => $row->{'owner'},
 			   Subject => $row->{'subject'},
@@ -274,21 +279,18 @@ sub MigrateTickets {
 
 	my $areaobj = new RT::Keyword($RT::SystemUser);
 	$areaobj->LoadByPath('/Queues/'.$ticket->QueueObj->Name.
-			     '/Area/'.$row{'area'});
+			     '/Area/'.$row->{'area'});
 	
 	# create the new objectkeyword. bypass the Ticketobj so we don't
 	# get a transaction created for us.
-	my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
+	my $ObjectKeyword = new RT::ObjectKeyword($RT::SystemUser);
 	my $result = $ObjectKeyword->Create( Keyword => $areaobj->id,
 					     ObjectType => 'Ticket',
 					     ObjectId => $ticket->Id,
-					     KeywordSelect => $area_Select->Id );
+					     KeywordSelect => $area_select->Id );
 	
-	
+        ImportTransactions($ticket);
     }
-    
-    ImportTransactions($ticket);
-    
     
 }
 
@@ -304,19 +306,24 @@ sub ImportTransactions {
     my $Owner = $RT::Nobody->Id;
     
     while (my $row = $sth->fetchrow_hashref()) {  
-	my %trans_args;
+	my (%trans_args, $MIMEObj, $trans_file);
 	
-	$trans_args{'Created'}  = $row->{trans_date};
-	$trans_args{'Creator'} = $row->{actor};
+	# {{{ Set the transaction date
+	if ( exists($row->{trans_date}) ) {
+	    my $created = new RT::Date($RT::SystemUser);
+	    $created->Set( Format=>'unix', Value=>$row->{'trans_date'});
+	    $trans_args{'Created'} = $created->ISO;
+	}
+
+	# }}}
 	
-	$trans_args{'MIMEObj'} = $MIMEObj if $load_content;
-		
 	warn "transaction $row->{id}\n" if $Debug;
 	
 	my $load_content = 0;
 	$trans_args{'Type'} = '';
 	$trans_args{'Field'} = '';
 
+	# {{{ Convert transaction type from RT1 to RT2
 	if ( $row->{type} eq 'create' ) {
 	    $load_content = 1;
 	    $trans_args{'Type'} = "Create";
@@ -371,8 +378,9 @@ sub ImportTransactions {
 	elsif ( $row->{type} eq 'effective_sn' ) {
 	    $trans_args{'Type'} = "AddLink";
 	    $trans_args{'Field'} ="MemberOf";
-	    $trans_args{'Data'} = "Ticket ". $Ticket->Id. " $trans_args{'Type'} ticket ". $row->{trans_data};
-
+	    $trans_args{'Data'} = "Ticket ". $ticket->Id. 
+	      " $trans_args{'Type'} ticket ". $row->{trans_data};
+	    
 	} 
 	elsif ( $row->{type} eq 'area' ) {
 	    $trans_args{'Type'} = "Keyword";
@@ -412,45 +420,38 @@ sub ImportTransactions {
 	} else {
 	    die "unrecognized transaction type: $row->{type}";
 	}
+
+	# }}}
 	
-	my $MIMEObj;
+
+
+	my $filename = $row->{serial_num}.$row->{id};
+
 	if ( $load_content ) {
 	    my $file = 
-	      time2str(
-		       "$rt1_transdir/%Y/%b/%e/$row->{serial_num}.$row->{id}",
-		       $row->{trans_date},
-		       'PST',
-		      );
+	      time2str("$RT1DATA/%Y/%b/%e/",$row->{trans_date},'PST');
+
+	    $file .= $filename;
 	    $file =~ s/ //;
 	    
 	    
 	    my $file2 = 
-	      time2str(
-		       "$rt1_transdir/%Y/%b/%e/$row->{serial_num}.$row->{id}",
-		       $row->{trans_date} + 43200,
-		       'PST',
-		      );
+	      time2str("$RT1DATA/%Y/%b/%e/",$row->{trans_date} + 43200,'PST');
+	    $file2 .= $filename;
 	    $file2 =~ s/ //;
-      my $file3 = 
-	time2str(
-		 "$rt1_transdir/%Y/%b/%e/$row->{serial_num}.$row->{id}",
-		 $row->{trans_date} - 43200,
-		 'PST',
-		);
+	    my $file3 = 
+	      time2str("$RT1DATA/%Y/%b/%e/",$row->{trans_date} - 43200,'PST');
+	    $file3 .= $filename;
 	    $file3 =~ s/ //;
 	    
-	    my $trans_file;
+	    $trans_file = -e $file ? $file : -e $file2 ? $file2 : -e $file3 ? $file3 : '' or
+	      warn "none of $file, $file2 or $file3 exist\n";
 	    
-	    $trans_file = -e $file ? $file : -e $file2 ? $file2 : -e $file3 ? $file3 : '' or do {
-		warn "none of $file, $file2 or $file3 exist\n"; #ugh
-		my $rar = <STDIN>;
-		$load_content = 0;
-	    };
 	}
 	
 	# {{{ if we need to get the content out of the database
 	
-	if ( $load_content ) {
+	if ( $trans_file ) {
 	    warn "  file $trans_file\n" if $Debug;
 	    
 	    #parse $trans_file
@@ -527,9 +528,46 @@ sub ImportTransactions {
 	if ( $trans_args{'Type'} ) {
 	    
 	    warn "adding transaction..\n";
-	    (my $Trans, my $Msg, my $TransObj) = 
-	      NewTransaction( $Ticket, %trans_args );
-	    die unless $Trans;
+	    
+	    # {{{ Figure out who's the transaction actor. create a user if we need to
+	    my $User = new RT::User($RT::SystemUser);
+	    $User->LoadByCol( "UserId", $row->{'actor'} );
+	    unless ($User->Id) {
+		my $Address = $row->{'actor'};
+		$Address .= $EMAILDOMAIN unless $Address =~ /\@/;
+		
+		my ($Val, $Message) = $User->Create(UserId => $row->{'actor'},
+						    EmailAddress => $Address,
+						    Password => undef,
+						    Privileged => 0,
+						    Comments => undef
+						   );
+		
+		unless($Val) {
+		    die "couldn't create User for $Address: $Message\n";
+		}
+	    };
+	    
+	    # }}}
+	    
+	    my $trans = new RT::Transaction($User);
+	    
+	    # Allow us to set the 'Created' attribute. 
+	    
+	    $trans->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
+	    my ($transaction, $msg) = 
+	      $trans->Create( Ticket => $ticket->Id,
+			      Type => $trans_args{'Type'},
+			      Data => $trans_args{'Data'},
+			      Field => $trans_args{'Field'},
+			      NewValue => $trans_args{'NewValue'},
+			      OldValue => $trans_args{'OldValue'},
+			      MIMEObj => $trans_args{'MIMEObj'},
+			      Created => $trans_args{'Created'}
+			    );
+	    
+	    die("Couldn't create transaction for ".$row->{'id'} . "\n$msg\n") 
+	      unless $transaction;
 	    warn "    added\n";
 	}
 	else {
@@ -540,87 +578,12 @@ sub ImportTransactions {
 }
 
 
-
-#
-# TODO: REFACTOR ME, DAMMIT
-#
-  
-sub NewTransaction {
-    my $ticket = shift;
-    my %args = (TimeTaken => 0,
-		Type => undef,
-		OldValue => undef,
-		NewValue => undef,
-		Data => undef,
-		Field => undef,
-		MIMEObj => undef,
-		@_);
-    
-    
-    
-    my $User = new RT::User($RT::SystemUser);
-    $User->LoadByCol( "UserId", $args{Creator} ) or do {
-	
-	my $Address = $args{Creator};
-	$Address .= '@mail-abuse.org' unless $Address =~ /\@/;
-	
-	my $NewUser = RT::User->new($RT::SystemUser);#Create a user as root 
-	my ($Val, $Message) = $NewUser->Create(UserId => $args{Creator},
-					       EmailAddress => $Address,
-					       Password => undef,
-					       Privileged => 0,
-					       Comments => undef
-					      );
-	
-	if (!$Val) {
-	    #TODO this should not just up and die.
-	    die "couldn't create User for $Address: $Message\n";
-	}
-    
-	$User = $NewUser;
-	
-    };
-    delete $args{Creator};
-    
-    if ( exists($args{Created}) ) {
-	my $created = new RT::Date($RT::SystemUser);
-	$created->Set( Format=>'unix', Value=>$args{Created} );
-	
-    }
-    
-    use RT::Transaction;
-    
-    my $trans = new RT::Transaction($User);
-    $trans->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
-    my ($transaction, $msg) = 
-      $trans->Create( Ticket => $ticket->Id,
-		      TimeTaken => $args{'TimeTaken'},
-		      Type => $args{'Type'},
-		      Data => $args{'Data'},
-		      Field => $args{'Field'},
-		      NewValue => $args{'NewValue'},
-		      OldValue => $args{'OldValue'},
-		      MIMEObj => $args{'MIMEObj'},
-		      Created => $created->ISO()
-		    );
-    
-    die($msg) unless $transaction;
-    
-    if (defined $args{'TimeTaken'} ) {
-	$ticket->_UpdateTimeTaken($args{'TimeTaken'}); 
-    }
-    return($transaction, $msg, $trans);
-    
-}
-
 sub ExecStatement {
     my $statement = shift;
     
     my $sth = $dbh->prepare($statement);
-OA    
     $sth->execute() or 
       die("Can't exec statement: $statement\nReason:" . $DBI::errstr."\n");
     
     return ($sth);
-
-
+}

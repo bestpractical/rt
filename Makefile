@@ -292,10 +292,11 @@ initdb.rtuser:
 
 
 insert-install:
-	cp -rp ./tools/insertdata $(RT_ETC_PATH)/insertdata
+	cp -rp ./tools/import-1.0-to-2.0 ./tools/insertdata\
+		 $(RT_ETC_PATH)
 	$(PERL) -p -i -e " s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
-				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" \
-				$(RT_ETC_PATH)/insertdata
+		           s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;"\
+		$(RT_ETC_PATH)/insertdata $(RT_ETC_PATH)/import-1.0-to-2.0
 
 bin-install:
 	cp -p ./bin/webmux.pl $(RT_MODPERL_HANDLER)
@@ -309,9 +310,7 @@ bin-install:
 				s'!!PERL!!'$(PERL)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
-				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;\
-				s'!!WEB_USER!!'$(WEB_USER)'g;\
-				s'!!WEB_GROUP!!'$(WEB_GROUP)'g;" \
+				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;"\
 		$(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) \
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN) \
 		$(RT_MAILGATE_BIN)
