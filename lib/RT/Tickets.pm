@@ -108,6 +108,7 @@ sub FreezeLimits {
 	my $self = shift;
 	require FreezeThaw;
 	return (FreezeThaw::freeze($self->{'TicketRestrictions'},
+				   $self->{'restriction_index'}
 				  ));
 }
 
@@ -127,9 +128,8 @@ sub ThawLimits {
 	
 	#if we don't have $in, get outta here.
 	return undef unless ($in);
-	
 
-	$self->CleanSlate();
+    	$self->{'RecalcTicketLimits'} = 1;
 
 	require FreezeThaw;
 	
@@ -137,6 +137,7 @@ sub ThawLimits {
 	
 	eval {
 		($self->{'TicketRestrictions'},
+		$self->{'restriction_index'}
 		) = FreezeThaw::thaw($in);
 	}
 

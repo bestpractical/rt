@@ -451,9 +451,14 @@ sub MailError {
     my $mimeobj = $args{'MIMEObj'};
     $mimeobj->sync_headers();
     $entity->add_part($mimeobj);
-    
-    $entity->send($RT::MailCommand, $RT::MailParams);
-        
+     if ($RT::MailCommand eq 'sendmailpipe') {
+    	open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);
+	print MAIL $entity->as_string;
+	close(MAIL);
+    }
+    else {
+    	$entity->send($RT::MailCommand, $RT::MailParams);
+    } 
 }
 
 # }}}
