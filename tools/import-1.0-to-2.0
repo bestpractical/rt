@@ -8,9 +8,8 @@
 
 #
 # Still to come:
-#	importing ACLs 
 #	importing merged tickets
-
+#       properly handling ticket dates
 
 my $RT1USER = "root";
 my $RT1PASSWORD = 'password';
@@ -59,8 +58,8 @@ my $dbh = DBI->connect($dsn, $RT1USER, $RT1PASSWORD)
 
 MigrateUsers();
 
-
 # lets create a place to put per-queue keywords. (areas)
+
 my $queue_keyword = RT::Keyword->new($RT::SystemUser);
 $queue_keyword->Create(Name => 'Queues', Parent => 0);
 
@@ -68,12 +67,17 @@ $queue_keyword->Create(Name => 'Queues', Parent => 0);
 
 MigrateQueues();
 
-
-#  import queue ACLs for RT1 queues.
-
 #  import tickets from RT1.
 
 MigrateTickets();
+
+print "Ok. We're all done here. Check things over very carefully. Conversion
+is an unproven science.\n";
+
+exit(0);
+
+
+# {{{ Subroutines and helpers
 
 # {{{ sub MigrateQueues
 
@@ -300,8 +304,6 @@ sub MigrateAreas {
 }
 
 # }}}
-
-
 
 # {{{ sub MigrateUsers 
 
@@ -727,5 +729,7 @@ sub ExecStatement {
     
     return ($sth);
 }
+
+# }}}
 
 # }}}
