@@ -363,7 +363,7 @@ msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Syötä tapausten numerot tai www-osoitteet, välilyönneillä erotettuina)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
@@ -1902,7 +1902,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr ""
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Lisää tapausten numerot tai www-linkit. Erota useammat välilyönneillä."
 
 #: lib/RT/CustomField_Overlay.pm:532

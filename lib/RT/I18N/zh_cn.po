@@ -2677,7 +2677,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr "键入欲将申请单连结至的对象或 URI。项目之间请以空白隔开。"
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "键入申请单可链接到的申请单编号或网址。项目之间请以空白隔开。"
 
 #: lib/RT/CustomField_Overlay.pm:532

@@ -92,7 +92,7 @@ For 2.0, those Linking actions should be supported:
 
  Based on user feedback, merged tickets will be displayed as the same ticket
 within RT's user interfaces. but the original tickets' transactions will be
-kept seperated in the database. this may require some magic.
+kept separated in the database. this may require some magic.
  
 4. RefersTo / No Action link (linking)
 

@@ -1776,7 +1776,7 @@ msgid "Enabled status: %1"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces."
+msgid "Enter Articles or URIs to link Articles to. Separate multiple entries with spaces."
 msgstr "Artikel oder URIs getrennt durch Leerzeichen eingeben."
 
 #: lib/RT/CustomField_Overlay.pm:530
@@ -1800,7 +1800,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr ""
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Ticketnummern oder URIs getrennt durch Leerzeichen eingeben."
 
 #: lib/RT/CustomField_Overlay.pm:532
@@ -4091,7 +4091,7 @@ msgid "Sep."
 msgstr "Sep"
 
 #: NOT FOUND IN SOURCE
-msgid "Seperate multiple URLs with spaces"
+msgid "Separate multiple URLs with spaces"
 msgstr "Mehrere URLs getrennt durch Leerzeichen eingeben"
 
 #: html/Ticket/Elements/ShowTransaction:148

@@ -2014,7 +2014,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr ""
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Ingrese los números de ticket o las URL que llevan hacia el ticket. Separe multiples entradas con espacios"
 
 #: lib/RT/CustomField_Overlay.pm:532
