@@ -308,64 +308,118 @@ Meta Data:
 =cut
 
 sub _LinkLimit {
-  my ($sb,$field,$op,$value,@rest) = @_;
+    my ( $sb, $field, $op, $value, @rest ) = @_;
 
-  die "Op must be ="
-    unless $op eq "=";
+    my $meta = $FIELDS{$field};
+    die "Invalid Operator $op for $field" unless $op =~ /^(=|!=|IS)/io;
 
-  my $meta = $FIELDS{$field};
-  die "Incorrect Meta Data for $field"
-    unless (defined $meta->[1] and defined $meta->[2]);
+    die "Incorrect Metadata for $field"
+      unless ( defined $meta->[1] and defined $meta->[2] );
 
-  $sb->{_sql_linkalias} = $sb->NewAlias ('Links')
-    unless defined $sb->{_sql_linkalias};
+    my $direction = $meta->[1];
 
-  $sb->_OpenParen();
+    my $matchfield;
+    my $linkfield;
+    my $is_local = 1;
+    my $is_null  = 0;
+    if ( $direction eq 'To' ) {
+        $matchfield = "Target";
+        $linkfield  = "Base";
 
-  $sb->_SQLLimit(
-	     ALIAS => $sb->{_sql_linkalias},
-	     FIELD =>   'Type',
-	     OPERATOR => '=',
-	     VALUE => $meta->[2],
-	     @rest,
-	    );
+    }
+    elsif ( $direction eq 'From' ) {
+        $linkfield  = "Target";
+        $matchfield = "Base";
 
-  if ($meta->[1] eq "To") {
-    my $matchfield = ( $value  =~ /^(\d+)$/ ? "LocalTarget" : "Target" );
+    }
+    else {
+        die "Invalid link direction '$meta->[1]' for $field\n";
+    }
 
-    $sb->_SQLLimit(
-	       ALIAS => $sb->{_sql_linkalias},
-	       ENTRYAGGREGATOR => 'AND',
-	       FIELD =>   $matchfield,
-	       OPERATOR => '=',
-	       VALUE => $value ,
-	      );
+    if ( $op eq '=' || $op =~ /^is/oi ) {
+        if ( $value eq '' || $value =~ /^null$/io ) {
+            $is_null = 1;
+            # When doing null searches, we need to turn everything around. WHY?
+            my $tmp = $linkfield;
+            $linkfield = $matchfield;
+            $matchfield = $tmp;
+        }
+        elsif ( $value =~ /\D/o ) {
+            $is_local = 0;
+        }
+        else {
+            $is_local = 1;
+        }
+    }
 
-    #If we're searching on target, join the base to ticket.id
-    $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'},
-	       ALIAS2 => $sb->{_sql_linkalias},	 FIELD2 => 'LocalBase');
+#For doing a left join to find "unlinked tickets" we want to generate a query that looks like this
+#    SELECT main.* FROM Tickets main
+#        LEFT JOIN Links Links_1 ON (     (Links_1.Type = 'MemberOf')
+#                                      AND(main.id = Links_1.LocalTarget))
+#        WHERE   ((main.EffectiveId = main.id))
+#            AND ((main.Status != 'deleted'))
+#            AND (Links_1.LocalBase IS NULL);
 
-  } elsif ( $meta->[1] eq "From" ) {
-    my $matchfield = ( $value  =~ /^(\d+)$/ ? "LocalBase" : "Base" );
+    if ($is_null) {
+        my $linkalias = $sb->Join(
+            TYPE   => 'left',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Links',
+            FIELD2 => 'Local' . $linkfield
+        );
 
-    $sb->_SQLLimit(
-	       ALIAS => $sb->{_sql_linkalias},
-	       ENTRYAGGREGATOR => 'AND',
-	       FIELD =>   $matchfield,
-	       OPERATOR => '=',
-	       VALUE => $value ,
-	      );
+        $sb->SUPER::Limit(
+            LEFTJOIN => $linkalias,
+            FIELD    => 'Type',
+            OPERATOR => '=',
+            VALUE    => $meta->[2],
+            @rest,
+        );
 
-    #If we're searching on base, join the target to ticket.id
-    $sb->_SQLJoin( ALIAS1 => 'main',     FIELD1 => $sb->{'primary_key'},
-	       ALIAS2 => $sb->{_sql_linkalias}, FIELD2 => 'LocalTarget');
+        $sb->_SQLLimit(
+            ALIAS           => $linkalias,
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => ( $is_local ? "Local$matchfield" : $matchfield ),
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => '0',
+        );
 
-  } else {
-    die "Invalid link direction '$meta->[1]' for $field\n";
-  }
+    }
+    else {
 
-  $sb->_CloseParen();
+        $sb->{_sql_linkalias} = $sb->NewAlias('Links')
+          unless defined $sb->{_sql_linkalias};
 
+        $sb->_OpenParen();
+
+        $sb->_SQLLimit(
+            ALIAS    => $sb->{_sql_linkalias},
+            FIELD    => 'Type',
+            OPERATOR => '=',
+            VALUE    => $meta->[2],
+            @rest,
+        );
+
+        $sb->_SQLLimit(
+            ALIAS           => $sb->{_sql_linkalias},
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => ( $is_local ? "Local$matchfield" : $matchfield ),
+            OPERATOR        => '=',
+            VALUE           => $value,
+        );
+
+        #If we're searching on target, join the base to ticket.id
+        $sb->_SQLJoin(
+            ALIAS1 => 'main',
+            FIELD1 => $sb->{'primary_key'},
+            ALIAS2 => $sb->{_sql_linkalias},
+            FIELD2 => 'Local' . $linkfield
+        );
+
+        $sb->_CloseParen();
+    }
 }
 
 =head2 _DateLimit
