@@ -44,23 +44,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /User/Elements/Tabs,
+<& /Prefs/Elements/Tabs,
     current_tab => 'Prefs/MyRT.html',
-    Title => $title
+    Title => $title,
+    Searches => \@sys_searches
 &>
 
 <& /Widgets/SelectionBox:header &>
 
 <& /Elements/ListActions, actions => \@actions &>
 <p>
-<&|/Elements/TitleBox, title => loc('Predefined searches'), bodyclass => "" &>
-<ul>
-<li><a href="<% $RT::WebPath %>/Prefs/Quicksearch.html"><&|/l&>Quick search</&></a></li>
-% for my $search (@sys_searches) {
-<li><a href="<% $RT::WebPath.'/Prefs/Search.html?'.$m->comp('/Elements/QueryString', name => ref($search->[1]).'-'.$search->[1]->Id) %>"><% $search->[0] %></a></li>
-% }
-</ul>
-</&>
 <&|/Elements/TitleBox, title => loc('Options'), bodyclass => "" &>
 <form method="POST" action="MyRT.html">
 <&|/l&>Summary rows</&>:<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>">
