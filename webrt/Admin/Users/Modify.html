@@ -31,13 +31,12 @@ Extra info: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->Free
 <TD VALIGN=TOP>
 <& /Elements/TitleBoxStart, title => 'Access control' &>
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> Enabled user. (
-Can access system)<BR>
+<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>>
+Let this user access RT<BR>
 
 
 <INPUT TYPE=HIDDEN NAME="SetPrivileged" VALUE="1">
-<INPUT TYPE=CHECKBOX NAME="Privileged" VALUE="1" <%$PrivilegedChecked%>> Privileged user. (Can
-be granted rights.)<BR>
+<INPUT TYPE=CHECKBOX NAME="Privileged" VALUE="1" <%$PrivilegedChecked%>> Let this user be granted rights<BR>
 		    
 
 <TABLE>
