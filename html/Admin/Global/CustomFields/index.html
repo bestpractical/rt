@@ -44,9 +44,8 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Callback, tabs => $tabs, %ARGS &>
-<& /Admin/Elements/Header, Title => loc('Admin/Global configuration') &>
-<& /Admin/Elements/SystemTabs, 
-    Title => loc('Admin/Global configuration') &>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/GlobalCustomFieldTabs, Title => $title &>
 
 <ul>
 % foreach my $key (sort keys %$tabs) {
@@ -57,30 +56,28 @@
 </ul>
 
 <%INIT>
+my $title =  loc("Global custom field configuration");
+
   my $tabs = {
                 
-               A => { title => loc('Scrips'),
-                           text => loc('Modify scrips which apply to all queues'),
-                           path => 'Scrips.html',
+               A => { title => loc('Users'),
+               text => loc('Select custom fields for all users'),
+                           path => 'Users.html',
                          },
-               B => { title => loc('Templates'),
-                        text => loc('Edit system templates'),
-                        path => 'Templates.html',
+               B => { title => loc('Groups'),
+                        text => loc('Select custom fields for all user groups'),
+                        path => 'Groups.html',
                       },
               
-                F => { title => loc('Custom Fields'),
-                text => loc('Modify global custom fields'),
-                        path => 'CustomFields/index.html',
+                F => { title => loc('Tickets'),
+                text => loc('Select custom fields for tickets in all queues'),
+                        path => 'Queue-Tickets.html',
                         },
 
-                G => { title => loc('Group Rights'),
-                                text => loc('Modify global group rights'),
-                                path => 'GroupRights.html',
+                        G => { title => loc('Ticket Transactions'),
+                                text => loc('Select custom fields for transactions on tickets in all queues'),
+                                path => 'Queue-Transactions.html',
                       },
-                H => { title => loc('User Rights'),
-                                text => loc('Modify global user rights'),
-                                path => 'UserRights.html',
-                      }
-
+ 
 };
 </%INIT>
