@@ -227,6 +227,11 @@ fixperms:
 				$(DESTDIR)/$(MASON_SESSION_PATH)
 # }}}
 
+fixperms-nosetgid: fixperms
+	@echo "You should never be running RT this way. it's unsafe"
+	chmod -s $(SETGID_BINARIES)
+	chmod 0555 $(DESTDIR)/$(RT_CONFIG)
+
 # {{{ dirs
 dirs:
 	mkdir -p $(DESTDIR)/$(MASON_DATA_PATH)
@@ -235,7 +240,7 @@ dirs:
 	mkdir -p $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
 # }}}
 
-install: config-install files-install initialize-database fixperms
+install: config-install dirs files-install initialize-database fixperms
 
 files-install: libs-install etc-install bin-install sbin-install html-install
 
@@ -393,4 +398,7 @@ rpm:
 	rpm -ba etc/rt.spec
 
 
+apachectl:
+	/usr/sbin/apachectl stop
+	/usr/sbin/apachectl start
 # }}}

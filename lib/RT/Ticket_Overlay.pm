@@ -17,6 +17,54 @@ This module lets you manipulate RT\'s ticket object.
 
 =head1 METHODS
 
+=begin testing
+
+use_ok ( RT::Queue);
+ok(my $testqueue = RT::Queue->new($RT::SystemUser));
+ok($testqueue->Create( Name => 'ticket tests'));
+ok($testqueue->Id != 0);
+use_ok(RT::CustomField);
+ok(my $testcf = RT::CustomField->new($RT::SystemUser));
+ok($testcf->Create( Name => 'selectmulti',
+                    Queue => $testqueue->id,
+                               Type => 'SelectMultiple'));
+ok($testcf->AddValue ( Name => 'Value1',
+                        SortOrder => '1',
+                        Description => 'A testing value'));
+ok($testcf->AddValue ( Name => 'Value2',
+                        SortOrder => '2',
+                        Description => 'Another testing value'));
+                       
+ok($testcf->Values->Count == 2);
+
+use_ok(RT::Ticket);
+
+ok(my $t = RT::Ticket->new($RT::SystemUser));
+ok(my ($id, $msg) = $t->Create( Queue => $testqueue->Id,
+               Subject => 'Testing',
+              ));
+ok($id != 0);
+ok(my ($cfv, $cfm) =$t->AddCustomFieldValue(Field => $testcf->Id,
+                           Value => 'Value1'));
+ok($cfv != 0, "Custom field creation didn't return an error: $cfm");
+ok($t->CustomFieldValues($testcf->Id)->Count == 1);
+ok($t->CustomFieldValues($testcf->Id)->First &&
+    $t->CustomFieldValues($testcf->Id)->First->Content eq 'Value1');;
+
+ok(my ($cfdv, $cfdm) = $t->DeleteCustomFieldValue(Field => $testcf->Id,
+                        Value => 'Value1'));
+ok ($cfdv != 0, "Deleted a custom field value: $cfdm");
+ok($t->CustomFieldValues($testcf->Id)->Count == 0);
+
+ok(my $t2 = RT::Ticket->new($RT::SystemUser));
+ok($t2->Load($id));
+ok($t2->Subject eq 'Testing');
+ok($t2->QueueObj->Id eq $testqueue->id);
+ok($t2->OwnerObj->Id == $RT::Nobody->Id);
+
+
+=end testing
+
 =cut
 
 no warnings qw(redefine);
@@ -28,6 +76,8 @@ use RT::Link;
 use RT::Links;
 use RT::Date;
 use RT::Watcher;
+use RT::CustomFields;
+use RT::TicketCustomFieldValues;
 
 =begin testing
 
@@ -2595,29 +2645,13 @@ sub Resolve {
 
 # {{{ Routines dealing with custom fields
 
-=item CustomFields
-
-Returns an RT::CustomFields object containing all global custom fields, as well as those tied to this queue
-
-=cut
-
-sub CustomFields {
-    my $self = shift;
-
-    my $cfs = RT::CustomFields->new( $self->CurrentUser );
-    $cfs->LimitToGlobalOrQueue( $self->QueueObj->Id );
-    return ($cfs);
-}
-
 # {{{ CustomFieldValues
 
 =item CustomFieldValues FIELD
 
-Return a CustomFieldValues object of all values of CustomField FIELD for this ticket.
+Return a TicketCustomFieldValues object of all values of CustomField FIELD for this ticket.  
+Takes a field id 
 
-Takes a field id or name
-
-Returns an array of TicketCustomFieldValue objects.
 
 =cut
 
@@ -2625,17 +2659,14 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
 
-    unless ( $field =~ /^\d+$/ ) {
-        $cf->LoadById($field);
-    }
-    else {
-        $cf->LoadByNameAndQueue( Field => $field, Queue => $self->Id );
-    }
+    my $cf = RT::CustomField->new($self->CurrentUser);
+    
+    $cf->LoadById($field);
 
-    my $cf_values = RT::CustomFieldValues->new( $self->CurrentUser );
-    $cf_values->LimitToCustomField($cf);
+    my $cf_values = RT::TicketCustomFieldValues->new( $self->CurrentUser );
+    $cf_values->LimitToCustomField($cf->id);
 
-    # @values is an array of CustomFieldValue objects;
+    # @values is a CustomFieldValues object;
     return ($cf_values);
 }
 
@@ -2666,14 +2697,14 @@ sub AddCustomFieldValue {
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
     if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
-        $cf->LoadById( $args{'Field'}->id );
+        $cf->Load( $args{'Field'}->id );
     }
     else {
-        $cf->LoadById( $args{'Field'} );
+        $cf->Load( $args{'Field'} );
     }
 
     unless ( $cf->Id ) {
-        return ( 0, "Custom field not found" );
+        return ( 0, "Custom field ".$args{'Field'}. " not found" );
     }
 
     # Load up a TicketCustomFieldValues object for this custom field and this ticket
@@ -2698,8 +2729,11 @@ sub AddCustomFieldValue {
             while ( my $value = $values->Next ) {
                 $i++;
                 if ( $i < $cf_values ) {
-                    my $old_value = $value->FriendlyName;
-                    $value->Delete();
+                    my $old_value = $value->Content;
+                    my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $value->Content);
+                    unless ($val) {
+                        return (0,$msg);
+                    }
                     my ( $TransactionId, $Msg, $TransactionObj ) =
                       $self->_NewTransaction(
                         Type     => 'CustomField',
@@ -2711,13 +2745,14 @@ sub AddCustomFieldValue {
         }
 
         my $value     = $cf->ValuesForTicket( $self->Id )->First;
-        my $old_value = $value->FriendlyContent();
+        my $old_value = $value->Content();
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForTicket(
             Ticket  => $self->Id,
             Content => $args{'Value'}
         );
 
+        $RT::Logger->debug ("added a custom field value : $value_msg\n");
         unless ($new_value_id) {
             return ( 0,
                 "Could not add new custom field value for ticket. "
@@ -2728,43 +2763,43 @@ sub AddCustomFieldValue {
         $new_value->Load($value_id);
 
         # now that adding the new value was successful, delete the old one
-        $value->Delete();
+        my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $value->Content);
+        unless ($val) { 
+                  return (0,$msg);
+        }
 
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
             Type     => 'CustomField',
             Field    => $cf->Id,
             OldValue => $old_value,
-            NewValue => $new_value->FriendlyContent
+            NewValue => $new_value->Content
         );
         return ( 1, "Custom field value changed from $old_value to "
-              . $new_value->FriendlyContent );
+              . $new_value->Content );
 
     }
 
     # otherwise, just add a new value and record "new value added"
     else {
-        my ( $new_value_id, $value_msg ) = $cf->AddValueForTicket(
+        my ( $new_value_id ) = $cf->AddValueForTicket(
             Ticket  => $self->Id,
             Content => $args{'Value'}
         );
 
         unless ($new_value_id) {
             return ( 0,
-                "Could not add new custom field value for ticket. "
-                  . $value_msg );
+                "Could not add new custom field value for ticket. ");
         }
-
-        my $new_value = RT::TicketCustomFieldValue->new( $self->CurrentUser );
-        $new_value->Load($value_id);
 
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
             Type     => 'CustomField',
             Field    => $cf->Id,
-            OldValue => $old_value,
-            NewValue => $new_value->FriendlyContent
+            NewValue => $args{'Value'}
         );
-        return ( 1, "Custom field value changed from $old_value to "
-              . $new_value->FriendlyContent );
+        unless($TransactionId) {
+            return(0,"Couldn't create a transaction: $Msg");
+        } 
+        return ( 1, "$args{'Value'} added as a value for ". $cf->Name);
     }
 
 }
@@ -2789,8 +2824,35 @@ sub DeleteCustomFieldValue {
     my %args = (
         Field => undef,
         Value => undef,
-        @_
-    );
+        @_);
+
+    my $cf = RT::CustomField->new( $self->CurrentUser );
+    if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
+        $cf->LoadById( $args{'Field'}->id );
+    }
+    else {
+        $cf->LoadById( $args{'Field'} );
+    }
+
+    unless ( $cf->Id ) {
+        return ( 0, "Custom field not found" );
+    }
+
+
+     my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $args{'Value'});
+     unless ($val) { 
+            return (0,$msg);
+     }
+        my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
+            Type     => 'CustomField',
+            Field    => $cf->Id,
+            OldValue => $args{'Value'}
+        );
+        unless($TransactionId) {
+            return(0,"Couldn't create a transaction: $Msg");
+        } 
+
+        return($TransactionId, "'".$args{'Value'}."' is no longer a value for custom field".$cf->Name);
 }
 
 # }}}

@@ -3,11 +3,13 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <FORM METHOD=POST ACTION="Modify.html">
+<INPUT TYPE=hidden name="Debug" value="2">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 
 <& /Elements/TitleBoxStart, title => 'Modify ticket #'.$TicketObj->Id, 
   color=> "#993333", width => "100%" &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
+<& Elements/EditCustomFields, TicketObj => $TicketObj &>
 <& /Elements/TitleBoxEnd &>
 
 <& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#993333" &>
@@ -17,8 +19,8 @@
 my $TicketObj = LoadTicket($id);
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-
-push (@results, @okresults);
+my @cf_results = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
+push (@results, @cf_results);
 
 # TODO: display the results, even if we can't display the ticket
 

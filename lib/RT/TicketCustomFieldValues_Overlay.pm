@@ -40,5 +40,25 @@ sub LimitToTicket {
 
 # }}}
 
+
+=sub HasEntry VALUE
+
+Returns true if this CustomFieldValues collection has an entry with content that eq VALUE
+
+=cut
+
+
+sub HasEntry {
+    my $self = shift;
+    my $value = shift;
+
+    #TODO: this could cache and optimize a fair bit.
+    foreach my $item (@{$self->ItemsArrayRef}) {
+        return(1) if ($item->Content eq $value);  
+    }
+    return undef;
+
+}
+
 1;
 

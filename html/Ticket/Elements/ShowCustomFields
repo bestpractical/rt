@@ -1,0 +1,20 @@
+<dl>
+% while (my $CustomField = $CustomFields->Next()) {
+% my $Values = $Ticket->CustomFieldValues($CustomField->Id);
+<dt><%$CustomField->Name%></dt>
+<dd>
+% while (my $Value = $Values->Next()) {
+<%$Value->Content%><br>        
+% }
+% unless ($Values->Count()) {
+<i>No Values</i>
+% }
+</dd>
+% }
+</dl>
+<%INIT>
+my $CustomFields = $Ticket->QueueObj->CustomFields();
+</%INIT>
+<%ARGS>
+$Ticket => undef
+</%ARGS>

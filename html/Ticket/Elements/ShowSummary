@@ -5,7 +5,13 @@
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#993333" &>
-	  <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxEnd &>
+	  <& /Elements/TitleBoxStart, title => 'Custom Fields', 
+		title_href =>"$RT::WebPath/Ticket/CustomFields.html?id=".$Ticket->Id, 
+		title_class=> 'inverse',  
+		color => "#993333" &>
+	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 
 	<BR>
@@ -13,7 +19,7 @@
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
-	  <& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
+	        <& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
 	<& /Elements/TitleBoxEnd &>
 	</TD>
 	<BR>

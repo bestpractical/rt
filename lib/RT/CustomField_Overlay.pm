@@ -6,6 +6,9 @@ no warnings qw(redefine);
 
 use vars qw(@TYPES %TYPES);
 
+use RT::CustomFieldValues;
+use RT::TicketCustomFieldValues;
+
 # Enumerate all valid types for this custom field
 @TYPES = qw(SelectSingle SelectMultiple FreeformSingle FreeformMultiple );
 # Populate a hash of types of easier validation
@@ -23,6 +26,29 @@ for (@TYPES) { $TYPES{$_} = 1};
 =head1 'CORE' METHODS
 
 =cut
+
+
+# {{{ sub LoadNameAndQueue
+
+=head2  LoadNameAndQueue (Queue => QUEUEID, Name => NAME)
+
+Loads the Custom field named NAME for Queue QUEUE. If QUEUE is 0,
+loads a global custom field
+
+=cut
+
+sub LoadNameAndQueue {
+    my $self = shift;
+    my %args = (
+        Queue => undef,
+        Name  => undef
+    );
+
+    return ( $self->LoadByCols( Name => $args{'Name'}, Queue => {'Queue'} ) );
+
+}
+
+# }}}
 
 # {{{ Dealing with custom field values 
 
@@ -62,6 +88,18 @@ ok($bad_id == 0, 'Global custom field correctly decided to not create a cf with 
 
 Create a new value for this CustomField.  Takes a paramhash containing the elements Name, Description and SortOrder
 
+=begin testing
+
+ok(my $cf = RT::CustomField->new($RT::SystemUser));
+$cf->Load(1);
+ok($cf->Id == 1);
+ok(my ($val,$msg)  = $cf->AddValue(Name => 'foo' , Description => 'TestCFValue', SortOrder => '6'));
+ok($val != 0);
+ok (my ($delval, $delmsg) = $cf->DeleteValue($val));
+ok ($delval != 0);
+
+=end testing
+
 =cut
 
 sub AddValue {
@@ -72,7 +110,7 @@ sub AddValue {
 		     @_ );
 
     unless ($args{'Name'}) {
-        return("Can't add a custom field value without a name");
+        return(0, "Can't add a custom field value without a name");
     }
 	my $newval = RT::CustomFieldValue->new($self->CurrentUser);
 	return($newval->Create(
@@ -100,7 +138,7 @@ sub DeleteValue {
 	my $self = shift;
     my $id = shift;
 
-	my $val_to_del = RT::CustomFieldValue->Id($self->CurrentUser);
+	my $val_to_del = RT::CustomFieldValue->new($self->CurrentUser);
 	$val_to_del->Load($id);
 	unless ($val_to_del->Id) {
 		return (0, "Couldn't find that value");
@@ -109,7 +147,12 @@ sub DeleteValue {
 		return (0, "That is not a value for this custom field");
 	}
 
-	return($val_to_del->Delete());
+	my $retval = $val_to_del->Delete();
+    if ($retval) {
+        return ($retval, "Custom field value deleted");
+    } else {
+        return(0, "Custom field value could not be deleted");
+    }
 }
 
 # }}}
@@ -172,21 +215,82 @@ Adds a custom field value for a ticket. Takes a param hash of Ticket and Content
 
 sub AddValueForTicket {
 	my $self = shift;
-	my %args = ( Ticket => undef.
+	my %args = ( Ticket => undef,
                  Content => undef,
 		     @_ );
 
-	my $newval = RT::CustomFieldValue->new($self->CurrentUser);
-	return($newval->Create(Ticket => $args{'Ticket'},
+	my $newval = RT::TicketCustomFieldValue->new($self->CurrentUser);
+	my $val = $newval->Create(Ticket => $args{'Ticket'},
                             Content => $args{'Content'},
-                            CustomField => $self->Id)
-    );
+                            CustomField => $self->Id);
+
+    return($val);
+
 }
 
 
 # }}}
 
+# {{{ DeleteValueForTicket
+
+=item DeleteValueForTicket HASH
+
+Adds a custom field value for a ticket. Takes a param hash of Ticket and Content
+
+=cut
+
+sub DeleteValueForTicket {
+	my $self = shift;
+	my %args = ( Ticket => undef,
+                 Content => undef,
+		     @_ );
+
+	my $oldval = RT::TicketCustomFieldValue->new($self->CurrentUser);
+    $oldval->LoadByTicketContentAndCustomField (Ticket => $args{'Ticket'}, 
+                                                Content =>  $args{'Content'}, 
+                                                CustomField => $self->Id );
+    # check ot make sure we found it
+    unless ($oldval->Id) {
+        return(0,"Custom field value '".$args{'Content'}."' could not be found for custom field '". $self->Name."'.");
+    }
+    # delete it
+
+    my $ret = $oldval->Delete();
+    unless ($ret) {
+        return(0,"Custom field value could not be found");
+    }
+    return(1, "Custom field value deleted");
+}
+
+
 # }}}
+# }}}
+
+
+=item ValidateQueue Queue
+
+Make sure that the queue specified is a valid queue name
+
+=cut
+
+sub ValidateQueue {
+    my $self = shift;
+    my $id = shift;
+
+    if ($id eq '0') { # 0 means "Global" null would _not_ be ok.
+        return (1); 
+    }
+
+    my $q = RT::Queue->new($RT::SystemUser);
+    $q->Load($id);
+    unless ($q->id) {
+        return undef;
+    }
+    return (1);
+
+
+}
+
 
 # {{{ Types
 
@@ -201,6 +305,8 @@ sub Types {
 }
 
 # }}}
+
+
 
 =item ValidateType TYPE
 

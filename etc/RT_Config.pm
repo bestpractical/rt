@@ -272,8 +272,8 @@ $UseFriendlyToLine = 1;
 
 #  Mail loops will generate a critical log message.
 
-$LogToScreen = 'error';
-$LogToFile = undef;
+$LogToScreen = 'debug';
+$LogToFile = 'debug';
 $LogToFileNamed = "$LogDir/rt.log.".$$.".".$<; #log to rt.log.<pid>.<user>
 
 # }}}

@@ -12,12 +12,14 @@ Name: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
 Description: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
 Type: <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
 <BR>
+% if ($CustomFieldObj->Id) {
 <H2>Values</H2>
 <BR>
 <font size=-1>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
 <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </font>
+% }
 <& /Elements/TitleBoxEnd&>
 <&/Elements/Submit&>
 </FORM>
@@ -29,36 +31,41 @@ Type: <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $Cust
 my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
 my  ($title, @results, $id);
 
-if ($create) {
+if (! $CustomField ) { 
   $title = "Create a CustomField";
   $id = 'new';
-}
-else {
-  if ($CustomField eq 'new') {
-      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue, Name => $Name);
+} else {
+
+    if ($CustomField eq 'new') {
+      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue, 
+                                                 Name => $Name, 
+                                                 Type => $Type,
+                                                 Description => $Description,
+                                                 SortOrder => $SortOrder);
       Abort("Could not create CustomField: $msg") unless ($val);
      push @results, $msg;
      $title = 'Created CustomField ' . $CustomFieldObj->Name(); 
-    }
-    else {
+    } else {
        $CustomFieldObj->Load($CustomField) || Abort('No CustomField');
       $title = 'Editing CustomField ' . $CustomFieldObj->Name(); 
-    }
 
-    my @aresults = ProcessCustomFieldUpdates ( 
+      my @aresults = ProcessCustomFieldUpdates ( 
                         CustomFieldObj => $CustomFieldObj,
                         ARGSRef => \%ARGS );
-    push @results, @aresults;
+     push @results, @aresults;
+    }
 
-    $id = $CustomFieldObj->id;
+
+$id = $CustomFieldObj->id;
 }
-
 
 
 </%INIT>
 <%ARGS>
 $Queue => undef
 $CustomField => undef
-$create => undef
+$Type => undef
+$SortOrder => undef
+$Description => undef
 $Name => undef
 </%ARGS>

@@ -1,0 +1,34 @@
+% while (my $CustomField = $CustomFields->Next()) {
+% my $Values = $TicketObj->CustomFieldValues($CustomField->id);
+
+<%$CustomField->Name%> - <%$CustomField->Type%><br>
+% if ($CustomField->Type eq 'FreeformSingle') {
+<input name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Value"
+       value="<%$Values->First->Content%>">
+% } elsif ($CustomField->Type eq 'FreeformMultiple') {
+<textarea name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
+%while (my $value = $Values->Next ) {
+<%$value->Content%>
+%}
+</textarea>
+% } elsif ($CustomField->Type =~ /^Select/) {
+<select name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Values"
+        size="5"
+        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>
+        >
+% my $CustomFieldValues = $CustomField->Values();
+% while (my $value = $CustomFieldValues->Next) {
+<option value="<%$value->Name%>" 
+        <% $Values->HasEntry($value->Name) && 'SELECTED' %>
+        ><% $value->Name%></option>
+% }
+<option value="" <%$Values->Count == 0 && 'SELECTED' %>>(No Value)</option>
+</select>
+% }
+% }
+<%INIT>
+my $CustomFields = $TicketObj->QueueObj->CustomFields();
+</%INIT>
+<%ARGS>
+$TicketObj => undef
+</%ARGS>

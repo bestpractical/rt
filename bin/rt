@@ -5,11 +5,12 @@
 
 use strict;
 use Carp;
-use Getopt::Long;
 
 use lib "!!RT_LIB_PATH!!";
 
 package RT;
+
+use Getopt::Long;
 
 use RT::Interface::CLI  qw(CleanEnv GetCurrentUser GetMessageContent);
 

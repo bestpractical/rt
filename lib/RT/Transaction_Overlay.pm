@@ -447,25 +447,6 @@ sub _Attach  {
 
 # {{{ Routines dealing with Transaction Attributes
 
-# {{{ sub TicketObj
-
-=head2 TicketObj
-
-Returns this transaction's ticket object.
-
-=cut
-
-sub TicketObj {
-    my $self = shift;
-    if (! exists $self->{'TicketObj'}) {
-	$self->{'TicketObj'} = new RT::Ticket($self->CurrentUser);
-	$self->{'TicketObj'}->Load($self->Ticket);
-    }
-    
-    return $self->{'TicketObj'};
-}
-# }}}
-
 # {{{ sub Description 
 
 =head2 Description
@@ -680,21 +661,102 @@ sub IsInbound {
 
 # {{{ sub _Accessible 
 
-sub _Accessible  {
-  my $self = shift;
-  my %Cols = (
-	      TimeTaken => 'read',
-	      Ticket => 'read/public',
-	      Type=> 'read',
-	      Field => 'read',
-	      Data => 'read',
-	      NewValue => 'read',
-	      OldValue => 'read',
-	      Creator => 'read/auto',
-	      Created => 'read/auto',
-	     );
-  return $self->SUPER::_Accessible(@_, %Cols);
+sub _ClassAccessible {
+    {
+     
+        id =>
+                {read => 1, type => 'int(11)', default => ''},
+        EffectiveTicket => 
+                {read => 1, write => 1, type => 'int(11)', default => ''},
+        Ticket => 
+                {read => 1, write => 1, type => 'int(11)', default => ''},
+        TimeTaken => 
+                {read => 1, write => 1, type => 'int(11)', default => ''},
+        Type => 
+                {read => 1, write => 1, type => 'varchar(20)', default => ''},
+        Field => 
+                {read => 1, write => 1, type => 'varchar(40)', default => ''},
+        OldValue => 
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
+        NewValue => 
+                {read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Data => 
+                {read => 1, write => 1, type => 'varchar(100)', default => ''},
+        Creator => 
+                {read => 1, auto => 1, type => 'int(11)', default => ''},
+        Created => 
+                {read => 1, auto => 1, type => 'datetime', default => ''},
+    };
 }
+
+=cut
+
+
+=item Data
+
+Returns the current value of Data. 
+(In the database, Data is stored as varchar(100).);
+
+
+
+=item SetData VALUE
+
+
+Set Data to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Data will be stored as a varchar(100).)
+
+
+=cut
+
+
+=item Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=item Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
+
+sub _ClassAccessible {
+    {
+     
+        id =>
+                {read => 1, type => 'int(11)', default => ''},
+        EffectiveTicket => 
+                {read => 1, write => 1, type => 'int(11)', default => ''},
+        Ticket => 
+                {read => 1, public => 1, type => 'int(11)', default => ''},
+        TimeTaken => 
+                {read => 1,  type => 'int(11)', default => ''},
+        Type => 
+                {read => 1,  type => 'varchar(20)', default => ''},
+        Field => 
+                {read => 1,  type => 'varchar(40)', default => ''},
+        OldValue => 
+                {read => 1,  type => 'varchar(255)', default => ''},
+        NewValue => 
+                {read => 1,  type => 'varchar(255)', default => ''},
+        Data => 
+                {read => 1,  type => 'varchar(100)', default => ''},
+        Creator => 
+                {read => 1, auto => 1, type => 'int(11)', default => ''},
+        Created => 
+                {read => 1, auto => 1, type => 'datetime', default => ''},
+
+ }
+};
 
 # }}}
 

@@ -193,6 +193,8 @@ sub _BootstrapCreate {
     my $self = shift;
     my %args = (@_);
 
+    $args{'Password'} = '*NO-PASSWORD*';
+
     my $id = $self->SUPER::Create(%args);
 
     #If the create failed.
@@ -674,6 +676,12 @@ sub IsPassword {
             "Disabled user " . $self->Name . " tried to log in" );
         return (undef);
     }
+
+    if ( ($self->__Value('Password') eq '') || 
+         ($self->__Value('Password') eq undef) )  {
+        return(undef);
+     }
+
     if ( $self->__Value('Password') eq
         crypt( $value, $self->__Value('Password') ) )
     {
@@ -805,6 +813,8 @@ sub HasQueueRight {
 
     if ( defined $args{'TicketObj'} ) {
         $args{'QueueObj'} = $args{'TicketObj'}->QueueObj();
+        $RT::Logger->debug("We got TicketObj. so we're making queueobj: ".
+                            $args{'QueueObj'}->Name());
     }
 
     # {{{ Validate and load up the QueueId
