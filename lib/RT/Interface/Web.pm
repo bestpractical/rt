@@ -85,6 +85,99 @@ sub Abort {
 }
 # }}}
 
+# sub CreateTicket 
+
+=head2 CreateTicket ARGS
+
+Create a new ticket, using Mason's %ARGS.  returns @results.
+=cut
+
+sub CreateTicket {
+    my %ARGS = (@_);
+
+    my (@Actions);
+
+    my $Ticket = new RT::Ticket($session{'CurrentUser'});
+
+    my $Queue = new RT::Queue($session{'CurrentUser'});	
+    unless ($Queue->Load($ARGS{'Queue'})) {
+	Abort('Queue not found');
+    }
+    
+    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+	Abort('You have no permission to create tickets in that queue.');
+    }
+   
+    my $due = new RT::Date($session{'CurrentUser'});
+    $due->Set(Format => 'unknown', Value => $ARGS{'Due'});
+    my $starts = new RT::Date($session{'CurrentUser'});
+    $starts->Set(Format => 'unknown', Value => $ARGS{'Starts'});
+    
+ 
+    my @Requestors = split(/,/,$ARGS{'Requestors'});
+    my @Cc = split(/,/,$ARGS{'Cc'});
+    my @AdminCc = split(/,/,$ARGS{'AdminCc'});
+    
+    my $MIMEObj = MakeMIMEEntity( Subject => $ARGS{'Subject'},
+				  From => $ARGS{'From'},
+				  Cc => $ARGS{'Cc'},
+				  Body => $ARGS{'Content'},
+				  AttachmentFieldName => 'Attach');
+ 
+				  
+    my %create_args = ( 
+		       Queue => $ARGS{Queue},
+		       Owner=>$ARGS{Owner},
+		       InitialPriority=> $ARGS{InitialPriority},
+		       FinalPriority=> $ARGS{FinalPriority},
+		       TimeLeft => $ARGS{TimeLeft},
+		       TimeWorked => $ARGS{TimeWorked},
+		       Requestor=> \@Requestors,
+		       Cc => \@Cc,
+		       AdminCc => \@AdminCc,
+		       Subject=>$ARGS{Subject},
+		       Status=>$ARGS{Status},
+		       Due => $due->ISO,
+		       Starts => $starts->ISO,
+		       MIMEObj => $MIMEObj	  
+		      );         
+
+    
+    # we need to get any KeywordSelect-<integer> fields into %create_args..
+    grep { $_ =~ /^KeywordSelect-/ && {$create_args{$_} = $ARGS{$_}}} %ARGS;
+
+    my ($id, $Trans, $ErrMsg)= $Ticket->Create(%create_args);
+    unless ($id && $Trans) {
+	Abort($ErrMsg);
+    }
+    my @linktypes = qw( DependsOn MemberOf RefersTo );
+    
+    foreach my $linktype (@linktypes) {
+      foreach my $luri (split (/ /,$ARGS{"new-$linktype"})) {
+	$luri =~ s/\s*$//; # Strip trailing whitespace
+	my ($val, $msg) = $Ticket->AddLink( Target => $luri,
+					    Type => $linktype);
+	push (@Actions, $msg) unless ($val);
+      }
+      
+      foreach my $luri (split (/ /,$ARGS{"$linktype-new"})) {
+	my ($val, $msg) = $Ticket->AddLink( Base => $luri,
+					    Type => $linktype);
+	
+	push (@Actions, $msg) unless ($val);
+      }
+    }
+
+    push(@Actions, $ErrMsg);
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+      Abort("No permission to view newly created ticket #".$Ticket->id.".");
+    }
+    return ($Ticket, @Actions);
+
+}
+
+# }}}
+
 # {{{ sub LoadTicket - loads a ticket
 
 =head2  LoadTicket id

@@ -47,9 +47,9 @@ if ($ARGS{'id'} eq 'new') {
     }
    
     my $due = new RT::Date($session{'CurrentUser'});
-    $due->Set(value => $ARGS{'Due'});
+    $due->Set(Format => 'unknown', Value => $ARGS{'Due'});
     my $starts = new RT::Date($session{'CurrentUser'});
-    $starts->Set(value => $ARGS{'Starts'});
+    $starts->Set(Format => 'unknown', Value => $ARGS{'Starts'});
     
  
     my @Requestors = split(/,/,$ARGS{'Requestors'});
