@@ -1,4 +1,13 @@
 7 apr 99
+--------
+fixes for newer versions of MysqlModules which can't handle null values to be
+quoted.
+
+also, we now allow null requestors.
+
+
+
+7 apr 99
 ---------
 
 more cookie fixes

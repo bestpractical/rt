@@ -47,7 +47,7 @@ sub add_request {
     my $in_date_told = shift;
     my $in_date_due = shift;
     my $in_current_user = shift;
-    my ($query_string, $serial_num);
+    my ($query_string, $serial_num, $queue_id, $area, $requestors, $alias, $owner, $subject, $status, $current_user);
     
     
     # if we aren't passed the serial num, get a new one.
@@ -57,16 +57,17 @@ sub add_request {
     }
 
 
-    $in_queue_id = $rt::dbh->quote($in_queue_id);
-    $in_area = $rt::dbh->quote($in_area);
-    $in_requestors = $rt::dbh->quote($in_requestors);
-    $in_alias = $rt::dbh->quote($in_alias);
-    $in_owner = $rt::dbh->quote($in_owner);
-    $in_subject = $rt::dbh->quote($in_subject);
-    $in_status = $rt::dbh->quote($in_status);
-    $in_current_user = $rt::dbh->quote($in_current_user);
+    $queue_id = &rt::quote_wrapper($in_queue_id);
+    $area = &rt::quote_wrapper($in_area);
+    $requestors = &rt::quote_wrapper($in_requestors);
+    $alias = &rt::quote_wrapper($in_alias);
+    $owner = &rt::quote_wrapper($in_owner);
+    $subject = &rt::quote_wrapper($in_subject);
+    $status = &rt::quote_wrapper($in_status);
+    $current_user = &rt::quote_wrapper($in_current_user);
 
-    $query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $in_queue_id, $in_area, $in_alias, $in_requestors, $in_owner, $in_subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $in_status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
+    
+    $query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
     
     $sth = $dbh->Query($query_string) 
 	or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
@@ -94,12 +95,12 @@ sub add_transaction {
   my $in_do_mail = shift;
   my $in_current_user = shift;
   
-  my ($transaction_num, $query_string, $queue_id, $owner, $requestors);
+  my ($actor, $type, $data, $transaction_num, $query_string, $queue_id, $owner, $requestors);
   
     
-    $in_actor = $rt::dbh->quote($in_actor);
-    $in_type = $rt::dbh->quote($in_type);
-    $in_data = $rt::dbh->quote($in_data);
+    $actor = &rt::quote_wrapper($in_actor);
+    $type = &rt::quote_wrapper($in_type);
+    $data = &rt::quote_wrapper($in_data);
     
 
     &req_in($in_serial_num, '_rt_system');
@@ -108,7 +109,7 @@ sub add_transaction {
     $owner=$rt::req[$in_serial_num]{owner};
     &req_in($in_serial_num, $in_current_user);
 
-    $query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES (NULL, $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $in_actor, $in_type, $in_data, $in_time)";
+    $query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES (NULL, $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
     $sth = $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Mysql::db_errstr\nQuery: $query_string\n";
     $transaction_num = $sth->insert_id;       
 
@@ -142,7 +143,9 @@ sub update_each_req {
     # if we're not actually changing the field, just abort 
     return 0 if $rt::req[$in_serial_num]{$in_field} eq $in_new_value;
     #quote the string before we update
-    $new_value = $dbh->quote($in_new_value); 
+
+
+    $new_value = &rt::quote_wrapper($in_new_value); 
     
     #set the field in the database
     $query_string="UPDATE each_req SET $in_field = $new_value WHERE effective_sn = $in_serial_num";
@@ -436,6 +439,22 @@ sub parse_req_row {
 	$req[$in_serial_num]{'since_told'}="";
 	$req[$in_serial_num]{'since_acted'}="";
     }
+
+}
+
+sub quote_wrapper {
+  my $in_val = shift;
+  my ($out_val);
+  if (!$in_val) {
+    return ("''");
+    
+  }
+  else {
+    $out_val = $rt::dbh->quote($in_val);
+    
+  }
+  return("$out_val");
+  
 
 }
 

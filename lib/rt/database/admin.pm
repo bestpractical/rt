@@ -106,9 +106,20 @@
    my  ( $in_queue_id, $in_mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio,$in_current_user) = @_;
    my ($query_string,$mail_alias,$update_clause,$queue_id);
    
+   if (! $in_queue_id) {
+     return(0);
+     
+   }
    $queue_id=$rt::dbh->quote($in_queue_id); # if we did in_queue_id, the test below would fail.
+   if ($in_mail_alias) {
+   
    $mail_alias=$rt::dbh->quote($in_mail_alias);
-   if (!&is_a_queue($in_queue_id)){
+ }
+   else {
+     $mail_alias="''";
+     
+   }
+if (!&is_a_queue($in_queue_id)){
      
      if ($users{$in_current_user}{admin_rt}) {
        $query_string="INSERT INTO queues (queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio) VALUES ($queue_id, $mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio)";
@@ -159,9 +170,7 @@
  sub add_queue_area {
    my  ( $in_queue_id,$in_area,$in_current_user) = @_;
    my ($query_string,$update_clause, $queue_id, $area);
-   $queue_id = $rt::dbh->quote($in_queue_id);
-   $area = $rt::dbh->quote($in_area);
-   
+
    
    if ((&is_an_area($in_queue_id, $in_area))){
      return(0,"Queue $in_queue_id already has an area \"$in_area\"");
@@ -170,6 +179,10 @@
    if (!(&is_a_queue($in_queue_id))){
      return(0,"That queue does not exist");
    }
+
+   $queue_id = $rt::dbh->quote($in_queue_id);
+   $area = $rt::dbh->quote($in_area);
+   
    if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
      $query_string="INSERT INTO queue_areas (queue_id, area) VALUES ($queue_id, $area)";
      
@@ -186,10 +199,7 @@
  sub add_modify_queue_acl {
    my  ( $in_queue_id,$in_user_id,$in_display,$in_manipulate,$in_admin,$in_current_user) = @_;
    my ($query_string,$update_clause);
-   $queue_id = $rt::dbh->quote($in_queue_id);
-   $user_id = $rt::dbh->quote($in_user_id);
-   
- 
+
    
    if (!(&is_a_queue($in_queue_id))){
      return(0,"That queue does not exist");
@@ -198,7 +208,10 @@
      return(0,"That user does not exist");
    }
 
+      $queue_id = $rt::dbh->quote($in_queue_id);
+   $user_id = $rt::dbh->quote($in_user_id);
    
+ 
    if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
      # don't lock yourself out
      
@@ -293,26 +306,71 @@
    
    my $passwd_err = "User create/modify failed: Use longer password ($user_passwd_min chars minimum)";
    
+
+#   print STDERR "in add_mod_user_info\n";
    
-   $new_user_id = $rt::dbh->quote($in_user_id);
-   $new_real_name = $rt::dbh->quote($in_real_name);
+   if ($in_user_id) {
+     $new_user_id = $rt::dbh->quote($in_user_id);
+   }
+   if ($in_real_name) {
+   
+     $new_real_name = $rt::dbh->quote($in_real_name);
+   }   
+   else {
+     $new_real_name="''";
+     
+   }
+
    $in_password =~ s/\s//g;
-   $new_password =$rt::dbh->quote($in_password);
-   $new_email = $rt::dbh->quote($in_email);
-   $new_phone = $rt::dbh->quote($in_phone);
-   $new_office = $rt::dbh->quote ($in_office);
-   $new_comments = $rt::dbh->quote ($in_comments);
+   if ($in_password) {
+     $in_password =~ s/\s//g;
+     $new_password =$rt::dbh->quote($in_password);
+   }   
+   else {
+     $new_password="''";
+     
+   }
+
+   return (0,$passwd_err) if length($in_password) < $user_passwd_min;
    
-   if ($new_email eq '') { $new_email = "''";}
-   if ($new_comments eq '') { $new_comments = "''";}
-   if ($new_phone eq '')  { $new_phone = "''";}
-   if ($new_office eq '') {$new_office = "''";}
-   if ($new_real_name eq '') {$new_real_name="''";}
+   if ($in_email) {
+     
+     $new_email = $rt::dbh->quote($in_email);
+   } 
+   else {
+     $new_email="''";
+     
+   }
+   if ($in_phone) {
+     
+     $new_phone = $rt::dbh->quote($in_phone);
+   }
+   else {
+     $new_phone="''";
+     
+   }
+
+   if ($in_office) {
+     
+     $new_office = $rt::dbh->quote ($in_office);
+   } 
+   else {
+     $new_office="''";
+     
+   }
+   if ($in_comments) {
+     
+     $new_comments = $rt::dbh->quote ($in_comments);
+   }
+   else {
+     $new_comments="''";
+     
+   }
+  
    
    if (!(&is_a_user($in_user_id))){
      # make sure one didn't specify too short password
-     return (0,$passwd_err) if length($in_password) < $user_passwd_min;
-     
+  
      if ($users{$in_current_user}{admin_rt}){
        $query_string="INSERT INTO users (user_id, real_name, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_real_name, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
        

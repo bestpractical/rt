@@ -377,7 +377,8 @@ my %nreqs;
 my $err = "ERROR: Incorrect requestor(s): '$reqs'";
 
    $reqs =~ s/\s//g;
-   return ('',$err) if ! $reqs;
+#i think we should allow empty requestors
+#   return ('',$err) if ! $reqs;
    @l = split(/,/,$reqs);
    for( @l )
    {
@@ -385,7 +386,7 @@ my $err = "ERROR: Incorrect requestor(s): '$reqs'";
 	$nreqs{$_} = 1;
    }
    $res = join(",",sort keys %nreqs);
-   return ('',$err) if ! $res;
+#   return ('',$err) if ! $res;
    return ($res,'');
 }
 
