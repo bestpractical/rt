@@ -152,6 +152,7 @@ sub CheckForLoops  {
     #If this instance of RT sent it our, we don't want to take it in
     my $RTLoop = $head->get("X-RT-Loop-Prevention") || "";
     chomp ($RTLoop); #remove that newline
+    $RTLoop =~ s/\s*$//;
     if ($RTLoop eq "$RT::rtname") {
 	return (1);
     }
