@@ -127,16 +127,12 @@ INSERT INTO Scrips VALUES (10, 'OpenDependentOnResolve',
 		           'Opens the dependent when the DependsOn is resolved',
 			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
 
-INSERT INTO Scrips VALUES (11, 'ResolveMember', 
+INSERT INTO Scrips VALUES (11, 'ResolveMembers', 
 		           'Resolves all members when MemberOf is resolved',
 			   'Resolve', 'ResolveMembers',NULL,NULL,1,NULL,1,NULL);
 
-# Postponed ... it's just not important.
-#INSERT INTO Scrips VALUES (12, 'ResolveGroupTicket', 
-#		           'Resolves the group ticket when all members are resolved',
-#			   'Resolve', ResolveGroupTicket',NULL,NULL,1,NULL,1,NULL);
-
-INSERT INTO Scrips VALUES (13, 'Spam', 'Spams people',
+INSERT INTO Scrips VALUES (13, 'NotifyWatchersofMembers', 'Sends mail to the watchers of all tickets
+			   which are members of this ticket',
 			   'Correspond', 'Spam',4,NULL,1,NULL,1,NULL);
 
 INSERT INTO Scrips VALUES (255, 'PlaceHolder', 'Custom Scrips should have higher ID', 'None', 
@@ -274,16 +270,16 @@ CREATE TABLE Tickets (
   IssueStatement INT, #Reference to Attachments
   Resolution INT, #Reference to Attachments
   Owner INT, #Reference to Users
-  Subject VARCHAR(200), 
-  InitialPriority INT,
-  FinalPriority INT,
-  Priority INT,
+  Subject VARCHAR(200) DEFAULT '', 
+  InitialPriority INT DEFAULT 0,
+  FinalPriority INT DEFAULT 0,
+  Priority INT DEFAULT 0,
   Status VARCHAR(10), #For now, One of" Open, Stalled, Resolved, Dead
 
   State VARCHAR(12), #For instance/queue-specific logic, can be just
 	             #whatever is relevant at a site. Often a better
 		     #resolution of the Status.
-  TimeWorked INT,
+  TimeWorked INT DEFAULT 0,
   Told INT, #TODO: Make a date type
   Due INT, #TODO: Make a date type
 
