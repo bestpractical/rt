@@ -8,7 +8,7 @@ up and use.
 
 RT is commercially supported software. To purchase support, training,
 custom development or professional services, please write to
-sales@bestpractical.com. 
+<sales@bestpractical.com>. 
 
         Jesse Vincent
         Best Practical Solutions, LLC
@@ -248,7 +248,7 @@ rt-comment: "|/opt/rt3/bin/rt-mailgate --queue general --action comment --url ht
 BUGS
 ----
 
-To report a bug, send email to rt-bugs@fsck.com.
+To report a bug, send email to <rt-bugs@fsck.com>.
 
 GETTING HELP
 ------------
@@ -256,7 +256,7 @@ GETTING HELP
 If RT is mission-critical for you or if you use it heavily, we recommend that
 you purchase a commercial support contract.  Details on support contracts
 are available at http://www.bestpractical.com or by writing to
-<sales@bestpractical.com>. 
+<sales@bestpractical.com>.
 
 If you're interested in having RT extended or customized or would like more
 information about commercial support options, please send email to 
@@ -269,14 +269,14 @@ RT-USERS MAILINGLIST
 To keep up to date on the latest RT tips, techniques and extensions,
 you probably want to join the rt-users mailing list.  Send a message to:
 
-         rt-users-request@lists.bestpractical.com 
+         <rt-users-request@lists.bestpractical.com>
 
 With the body of the message consisting of only the word:
 
         subscribe
 
 If you're interested in hacking on RT, you'll want to subscribe to
-rt-devel@lists.bestpractical.com.  Subscribe to it with instructions
+<rt-devel@lists.bestpractical.com>.  Subscribe to it with instructions
 similar to those above.
 
 Address questions about the stable release to the rt-users list, and
