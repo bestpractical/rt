@@ -38,7 +38,7 @@ CREATE TABLE Scrips (
 INSERT INTO Scrips VALUES (1,'Autoreply','Sends an automatic response to the requestor when a ticket was created',0,'Create','AutoReply',1,'$Requestor',1,20000129185915,1,20000129185915);
 INSERT INTO Scrips VALUES (2,'TellOwnerOnTransaction','Sends mail to owner when anything happens',0,'Any','SendEmail',2,'$Owner',1,20000223220850,1,20000129190056);
 INSERT INTO Scrips VALUES (3,'MailCorrespondence','Sends mail to requestor',0,'Correspond','MailCorrespondence',3,'$Requestor',1,20000129190151,1,20000129190151);
-INSERT INTO Scrips VALUES (3,'TellMembersOnMail','Sends mail to interessted parties when email comes in',0,'Correspond','SendEmail',3,'',1,20000223220850,1,20000129190151);
+INSERT INTO Scrips VALUES (4,'TellMembersOnMail','Sends mail to interessted parties when email comes in',0,'Correspond','SendEmail',3,'',1,20000223220850,1,20000129190151);
 
 
 CREATE TABLE Users (
@@ -190,14 +190,16 @@ CREATE TABLE Templates (
   content BLOB,
   Creator INT(11),
   Created TIMESTAMP,
+  ExtraHeaders VARCHAR(255),
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP
 )\g
 
 # Default templates
-INSERT INTO Templates VALUES (1,NULL,'        Greetings,\n        This message has been automatically generated in response to your\nmessage regarding \"{$object->{TicketObject}->Subject()}\", the content of which appears below.  \nThere is no need to reply to it now. The Support group has received\nyour message and it has been assigned a ticket ID of [{$rtname} #{$object->{TicketObject}->id()}]. \nPlease include the string\n\n\n          [{$rtname} #{$object->{TicketObject}->id}]\n\n        in the subject line of all future correspondence about this\nproblem. To do so, you may reply to this message. \n\n\n                        Thank you,\n\n                        The Support Group\n                        {$object->{TicketObject}->Queue()->CorrespondAddress()}\n\n-------------------------------------------------------------------------\n{$object->{TransactionObject}->Attachments()->First()->Content()}\n',NULL,20000227191248,NULL,00000000000000);
-INSERT INTO Templates VALUES (2,NULL,'{$object->{TransactionObject}->Created}: Request {$object->{TicketObject}->id} was acted upon.\n\n Transaction: {$object->{TransactionObject}->Description}\n \n       Queue: {$object->{TicketObject}->Queue->QueueId}\n        Area: {warn "stubbed"}               \n     Subject: {$object->{Subject}\n       Owner: {$object->{TicketObject}->Owner->UserId || "Nobody"}\n  Requestors: {join(",",@{$object->{TicketObject}->Emails("Requestors")})}    \n      Status: {$object->{TicketObject}->Status}\n\n-------------------------------------------------------------------------\n{$object->{TransactionObject}->Attachments->First}\n',NULL,20000227191543,NULL,00000000000000);
-INSERT INTO Templates VALUES (3,NULL,'%trans:content%',NULL,20000227191745,NULL,00000000000000);
+INSERT INTO Templates VALUES (1,NULL,'        Greetings,\n        This message has been automatically generated in response to your\nmessage regarding \"{$object->{TicketObject}->Subject()}\", the content of which appears below.  \nThere is no need to reply to it now. The Support group has received\nyour message and it has been assigned a ticket ID of [{$rtname} #{$object->{TicketObject}->id()}]. \nPlease include the string\n\n\n          [{$rtname} #{$object->{TicketObject}->id}]\n\n        in the subject line of all future correspondence about this\nproblem. To do so, you may reply to this message. \n\n\n                        Thank you,\n\n                        The Support Group\n                        {$object->{TicketObject}->Queue()->CorrespondAddress()}\n\n-------------------------------------------------------------------------\n{$object->{TransactionObject}->Message()->First()->Content()}\n',NULL,20000227191248,NULL,00000000000000);
+INSERT INTO Templates VALUES (2,NULL,'{$object->{TransactionObject}->Created}: Request {$object->{TicketObject}->id} was acted upon.\n\n Transaction: {$object->{TransactionObject}->Description}\n \n       Queue: {$object->{TicketObject}->Queue->QueueId}\n        Area: {warn "stubbed"}               \n     Subject: {$object->{Subject}\n       Owner: {$object->{TicketObject}->Owner->UserId || "Nobody"}\n  Requestors: {join(",",@{$object->{TicketObject}->Emails("Requestors")})}    \n      Status: {$object->{TicketObject}->Status}\n\n-------------------------------------------------------------------------\n{$object->{TransactionObject}->Message->First}\n',NULL,20000227191543,NULL,00000000000000);
+INSERT INTO Templates VALUES (3,NULL,'{$object->{TransactionObject}->Message->First->Content',NULL,20000227191745,NULL,00000000000000);
+
 
 
 
