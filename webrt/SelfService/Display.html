@@ -93,7 +93,7 @@
 %while (my $Transaction = $Transactions->Next) {
 % $i++;
 %	if ($Transactions->IsLast) {
-	<a name="lasttrans">
+	<a name="lasttrans"></a>
 % 	}
 	<& /Ticket/Elements/ShowTransaction, Transaction => $Transaction, 
 					     RowNum => $i,
