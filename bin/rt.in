@@ -153,6 +153,7 @@ sub help {
             foreach $title (grep $_, @titles) {
                 $help{$title} = $item->[2]{Text};
             }
+        }
     }
 
     # What does the user want help with?
@@ -686,7 +687,7 @@ sub link {
             $bad = 1;
         }
         unless (exists $ltypes{lc $rel}) {
-            whine "Invalid relationship '$rel' specified.";
+            whine "Invalid link '$rel' specified.";
             $bad = 1;
         }
         %data = (id => $from, rel => $rel, to => $to, del => $del);
@@ -1768,16 +1769,16 @@ Text:
 
     Syntax:
 
-        rt link [-d] <id-A> <relationship> <id-B>
+        rt link [-d] <id-A> <link> <id-B>
 
     Creates (or, with -d, deletes) a link between the specified tickets.
-    The relationship can (irrespective of case) be any of:
+    The link can (irrespective of case) be any of:
 
         DependsOn/DependedOnBy:     A depends upon B (or vice versa).
         RefersTo/ReferredToBy:      A refers to B (or vice versa).
         MemberOf/HasMember:         A is a member of B (or vice versa).
 
-    To view a ticket's relationships, use "rt show ticket/3/links". (See
+    To view a ticket's links, use "rt show ticket/3/links". (See
     "rt help ticket" and "rt help show".)
 
     Options:

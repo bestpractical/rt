@@ -57,7 +57,7 @@ BEGIN {
 
 =head1 NAME
 
-  RT::Interface::CLI - helper functions for creating a commandline RT interface
+  RT::Interface::Email - helper functions for parsing email sent to RT
 
 =head1 SYNOPSIS
 
@@ -166,6 +166,7 @@ sub MailError {
 				      Bcc => $args{'Bcc'},
 				      To => $args{'To'},
 				      Subject => $args{'Subject'},
+				      Precedence => 'bulk',
 				      'X-RT-Loop-Prevention' => $RT::rtname,
 				    );
 
@@ -375,6 +376,9 @@ This performs all the "guts" of the mail rt-mailgate program, and is
 designed to be called from the web interface with a message, user
 object, and so on.
 
+Can also take an optional 'ticket' parameter; this ticket id overrides
+any ticket id found in the subject.
+
 Returns:
 
     An array of:
@@ -446,9 +450,12 @@ sub Gateway {
     $args{'ticket'} ||= $parser->ParseTicketId($Subject);
 
     my $SystemTicket;
+    my $Right = 'CreateTicket';
     if ( $args{'ticket'} ) {
         $SystemTicket = RT::Ticket->new($RT::SystemUser);
         $SystemTicket->Load( $args{'ticket'} );
+	# if there's an existing ticket, this must be a reply
+	$Right = 'ReplyToTicket';
     }
 
     #Set up a queue object
@@ -524,7 +531,7 @@ sub Gateway {
 RT could not load a valid user, and RT's configuration does not allow
 for the creation of a new user for this email ($ErrorsTo).
 
-You might need to grant 'Everyone' the right 'CreateTicket' for the
+You might need to grant 'Everyone' the right '$Right' for the
 queue @{[$args{'queue'}]}.
 
 EOT

@@ -45,9 +45,6 @@ RT::LoadConfig();
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
 
-#Drop setgid permissions
-RT::DropSetGIDPermissions();
-
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 
@@ -68,7 +65,7 @@ GetOptions( "search=s"        => \$search,
             "help"            => \$help,
             "verbose|v"       => \$verbose );
 
-help() if $help;
+help() if $help or not @ARGV or not $action;
 
 # We _must_ have a search object
 load_module($search);

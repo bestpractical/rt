@@ -498,7 +498,7 @@ sub TicketTransactionCustomFields {
 
 =head2 _CreateQueueGroups
 
-Create the ticket groups and relationships for this ticket. 
+Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->Create _inside of a transaction_
 
 It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
@@ -770,8 +770,8 @@ sub DeleteWatcher {
             }
         }
         else {
-            $RT::Logger->warn( "$self -> DelWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Queue->DelWatcher') );
+            $RT::Logger->warn( "$self -> DeleteWatcher got passed a bogus type");
+            return ( 0, $self->loc('Error in parameters to Queue->DeleteWatcher') );
         }
     }
 

@@ -45,7 +45,18 @@ use strict;
 
 
 
+my @DefaultHandlerArgs = (
 
+    comp_root => [
+        [ local    => $RT::MasonLocalComponentRoot ],
+        [ standard => $RT::MasonComponentRoot ]
+    ],
+    default_escape_flags => 'h',
+    data_dir             => "$RT::MasonDataDir",
+    allow_globals        => [qw(%session)],
+    autoflush            => 1
+
+);
 
 # {{{ sub NewApacheHandler 
 
@@ -124,7 +135,8 @@ does a css-busting but minimalist escaping of whatever html you're passing in.
 
 sub EscapeUTF8  {
         my  $ref = shift;
-        my $val = (Encode::is_utf8($$ref) ? Encode::encode_utf8($$ref) : $$ref);                                                                                                                                
+        my $val = $$ref;
+        use bytes;
         $val =~ s/&/&#38;/g;
         $val =~ s/</&lt;/g; 
         $val =~ s/>/&gt;/g;
@@ -133,6 +145,8 @@ sub EscapeUTF8  {
         $val =~ s/"/&#34;/g;
         $val =~ s/'/&#39;/g;
         $$ref = $val;
+        Encode::_utf8_on($$ref);
+
 
 }
 
@@ -1251,7 +1265,7 @@ sub ProcessTicketWatchers {
     foreach my $key ( keys %$ARGSRef ) {
 
         # {{{ Delete deletable watchers
-        if ( ( $key =~ /^Ticket-DelWatcher-Type-(.*)-Principal-(\d+)$/ )  ) {
+        if ( ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ )  ) {
             my ( $code, $msg ) = 
                 $Ticket->DeleteWatcher(PrincipalId => $2,
                                        Type => $1);

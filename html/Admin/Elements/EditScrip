@@ -27,6 +27,7 @@
 <FORM METHOD=POST ACTION="Scrip.html">
 <input type="hidden" name="id" value="<%$id%>">
 <input type="hidden" name="Queue" value="<%$Queue%>">
+<& /Elements/TitleBoxStart, title => loc('Scrip Fields') &>
 <TABLE>
 <TR>
 <TD ALIGN=RIGHT>
@@ -45,42 +46,10 @@
 </TR>
 <TR>
 <TD ALIGN=RIGHT>
-<&|/l&>Custom condition</&>:
-</TD>
-<TD>
-<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></TEXTAREA>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
 <&|/l&>Action</&>:
 </TD>
 <TD>
 <& /Admin/Elements/SelectScripAction, Name => "Scrip-$id-ScripAction", Default => $scrip->ActionObj->Id &>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
-<&|/l&>Custom action preparation code</&>:
-</TD>
-<TD>
-<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
-<&|/l&>Custom action cleanup code</&>:
-</TD>
-<TD>
-<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></TEXTAREA>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT>
-<&|/l&>Stage</&>: 
-</TD>
-<TD>
-<& /Admin/Elements/SelectStage, Name => "Scrip-$id-Stage", Default => $scrip->Stage &>
 </TD>
 </TR>
 <TR>
@@ -91,8 +60,55 @@
 <& /Admin/Elements/SelectTemplate, Name => "Scrip-$id-Template", Default => $scrip->TemplateObj->Id, Queue => $Queue &>
 </TD>
 </TR>
+<TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Stage</&>: 
+</TD>
+<TD>
+<& /Admin/Elements/SelectStage, Name => "Scrip-$id-Stage", Default => $scrip->Stage &>
+</TD>
+</TR>
+</table>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+
+<br>
+<& /Elements/TitleBoxStart, title => loc('User Defined conditions and actions') &>
+<table>
+<TR>
+<TD colspan=2>
+<i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
+</TD>
+</TR>
+<TR>
+<TD class=labeltop>
+<&|/l&>Custom condition</&>:
+</TD>
+<TD>
+<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></TEXTAREA>
+</TD>
+</TR>
+<TR>
+<TD class=labeltop>
+<&|/l&>Custom action preparation code</&>:
+</TD>
+<TD>
+<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
+</TD>
+</TR>
+<TR>
+<TD class=labeltop>
+<&|/l&>Custom action cleanup code</&>:
+</TD>
+<TD>
+<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></TEXTAREA>
+</TD>
+</TR>
+</table>
+<& /Elements/TitleBoxEnd &>
 
 <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+
 </FORM>
 <%init>
 my (@actions);

@@ -700,7 +700,7 @@ sub _DecodeLOB {
 }
 
 # {{{ LINKDIRMAP
-# A helper table for relationships mapping to make it easier
+# A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
 use vars '%LINKDIRMAP';
@@ -755,7 +755,8 @@ sub Update {
               my $method = "Set$attribute";
               my ( $code, $msg ) = $self->$method($value);
 
-              push @results, $self->loc("Ticket [_1]", $self->id) . ': ' . $self->loc($attribute) . ': ' . $self->loc_fuzzy($msg);
+	      my($prefix) = ref($self) =~ /RT::(\w+)/;
+	      push @results,  $self->loc("$prefix [_1]", $self->id) . ': ' . $self->loc($attribute) . ': ' . $self->CurrentUser->loc_fuzzy($msg);
 =for loc
                                    "[_1] could not be set to [_2].",       # loc
                                    "That is already the current value",    # loc
@@ -777,7 +778,7 @@ sub Update {
     return @results;
 }
 
-# {{{ Routines dealing with Links and Relations between tickets
+# {{{ Routines dealing with Links between tickets
 
 # {{{ Link Collections
 
@@ -1118,7 +1119,7 @@ sub _AddLink {
 
     unless ($linkid) {
         $RT::Logger->error("Link could not be created: ".$linkmsg);
-        return ( 0, $self->loc("Link could not be created. [_1]", $linkmsg) );
+        return ( 0, $self->loc("Link could not be created") );
     }
 
     my $TransString =

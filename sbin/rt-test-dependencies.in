@@ -133,6 +133,7 @@ Digest::MD5 2.27
 CGI::Cookie 1.20
 Storable 2.08
 Apache::Session 1.53
+XML::RSS
 .
 
 $deps{'MAILGATE'} = [ _( << '.') ];
@@ -198,21 +199,18 @@ if ($args{'download'}) {
     my %modules;
 
     foreach my $key (keys %deps) {
-     
-
-	my @deps = (@{$deps{$key}});
-	while (@deps) {
-    my $mod = shift @deps;
-    my $ver = shift @deps;
-    next if ($mod =~ /^(DBD-|Apache-Request)/);
-    $modules{$mod} = $ver;
-
-    }
+        my @deps = (@{$deps{$key}});
+        while (@deps) {
+            my $mod = shift @deps;
+            my $ver = shift @deps;
+            next if ($mod =~ /^(DBD-|Apache-Request)/);
+            $modules{$mod} = $ver;
+        }
     }
     my @mods = keys %modules;
     CPAN::get();
-        my $moddir = $args{'download'};
-    foreach my $mod(@mods){
+    my $moddir = $args{'download'};
+    foreach my $mod (@mods) {
         $CPAN::Config->{'build_dir'} = $moddir;
         CPAN::get($mod);
     }
@@ -224,7 +222,7 @@ if ($args{'download'}) {
 
         if ($dir =~ /^(.*)-(.*?)$/) {
             print "$1  --  $2\n";
-            `rsync -a $moddir/$dir/*  $moddir/$1`;
+            `svn_load_dirs.pl file:///Users/jesse/mod-repo $1 $moddir/$dir`;
             `rm -rf $moddir/$dir`;
 
         }
@@ -239,63 +237,70 @@ print "perl:\n";
 print "\t5.8.3";
 eval {require 5.008003};
 if ($@) {
-print "...MISSING.\n";
-        eval {require 5.008000};
-        if ($@) {
-            print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
-            die;
-        } 
+    print "...MISSING.\n";
+    eval {require 5.008000};
+    if ($@) {
+        print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
+        die;
+    } 
 
-        eval {require 5.008003};
-        if ($@) {
-            print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
-        }
+    eval {require 5.008003};
+    if ($@) {
+        print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
+    }
 } else {
-        print "...found\n";
+    print "...found\n";
 
 }
 
+print "users:\n";
+print "\trt group (@RTGROUP@)...",      (defined getgrnam("@RTGROUP@")    ? "found" : "MISSING"), "\n";
+print "\tbin owner (@BIN_OWNER@)...",   (defined getpwnam("@BIN_OWNER@")  ? "found" : "MISSING"), "\n";
+print "\tlibs owner (@LIBS_OWNER@)...", (defined getpwnam("@LIBS_OWNER@") ? "found" : "MISSING"), "\n";
+print "\tlibs group (@LIBS_GROUP@)...", (defined getgrnam("@LIBS_GROUP@") ? "found" : "MISSING"), "\n";
+print "\tweb owner (@WEB_USER@)...",    (defined getpwnam("@WEB_USER@")   ? "found" : "MISSING"), "\n";
+print "\tweb group (@WEB_GROUP@)...",   (defined getgrnam("@WEB_GROUP@")  ? "found" : "MISSING"), "\n";
 
-foreach my $type (keys %args)  {
-next unless ($type =~ /^with-(.*?)$/);
-my $type = $1;
-print "$type dependencies:\n";
-	my @deps = (@{$deps{$type}});
-	while (@deps) {
-		my $module = shift @deps;
-		my $version = shift @deps;
-my $ret;
-	$ret =test_dep($module, $version);	
+foreach my $type (keys %args) {
+    next unless ($type =~ /^with-(.*?)$/);
+    my $type = $1;
+    print "$type dependencies:\n";
+    my @deps = (@{$deps{$type}});
+    while (@deps) {
+        my $module = shift @deps;
+        my $version = shift @deps;
+        my $ret;
+        $ret =test_dep($module, $version);	
 
-if ($args{'install'} && !$ret) {
-	resolve_dep($module);		
+        if ($args{'install'} && !$ret) {
+            resolve_dep($module);		
+        }
+    }
 }
-}
-}
+
 sub test_dep {
-	my $module = shift;
-	my $version = shift;
+    my $module = shift;
+    my $version = shift;
 
-	print "\t$module $version";
-	eval "use $module $version" ;
-	if ($@) {
-		my $error = $@;
-		$error =~ s/\n(.*)$//s;
-		print "...MISSING\n";
-			print "\t\t$error\n" if $error =~ /this is only/;
+    print "\t$module $version";
+    eval "use $module $version ()";
+    if ($@) {
+        my $error = $@;
+        $error =~ s/\n(.*)$//s;
+        print "...MISSING\n";
+        print "\t\t$error\n" if $error =~ /this is only/;
 
-		return undef;
-	} else {
-		print "...found\n";
-return 1;
-	}
+        return undef;
+    } else {
+        print "...found\n";
+        return 1;
+    }
 }
 
 sub resolve_dep {
-	my $module = shift;
-	use CPAN;
-	CPAN::Shell->install($module);		
-	
+    my $module = shift;
+    use CPAN;
+    CPAN::Shell->install($module);		
 }
 
 

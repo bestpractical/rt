@@ -4,3991 +4,2850 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: html/Approvals/Elements/Approve:26 html/Approvals/Elements/ShowDependency:49 html/SelfService/Display.html:24 html/Ticket/Display.html:25 html/Ticket/Display.html:29
-#. ($TicketObj->Id, $TicketObj->Subject)
-#. ($Ticket->id, $Ticket->Subject)
-#. ($ticket->Id, $ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+
+
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
-#: html/Search/Elements/SelectPersonType:34 lib/RT/Date.pm:337
-#. ($s, $time_unit)
-#. ($option, $subtype)
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: lib/RT/Tickets_Overlay.pm:948
-#. ($args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
 
-#: lib/RT/Date.pm:373
-#. ($self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %2 %3 %4:%5:%6 %7"
 
-#: lib/RT/Record.pm:1462 lib/RT/Transaction_Overlay.pm:563 lib/RT/Transaction_Overlay.pm:606
-#. ($cf->Name, $new_value->Content)
-#. ($field, $self->NewValue)
-#. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 added"
 msgstr "%1 %2 Malkovich"
 
-#: lib/RT/Date.pm:334
-#. ($s, $time_unit)
 msgid "%1 %2 ago"
 msgstr "%1 %2 ago"
 
-#: lib/RT/Record.pm:1468 lib/RT/Transaction_Overlay.pm:570
-#. ($cf->Name, $old_content, $new_value->Content)
-#. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 Malkovich to %3"
 
-#: lib/RT/Record.pm:1465 lib/RT/Transaction_Overlay.pm:566 lib/RT/Transaction_Overlay.pm:612
-#. ($cf->Name, $old_content)
-#. ($field, $self->OldValue)
-#. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 Malkovich"
 
-#: html/Admin/Elements/EditScrips:43 html/Admin/Elements/ListGlobalScrips:27 html/Ticket/Elements/PreviewScrips:53
-#. ($scrip->ConditionObj->Name, $scrip->ActionObj->Name, $scrip->TemplateObj->Name)
-#. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 Malkovich %3"
 
-#: bin/rt-crontool:168 bin/rt-crontool:175 bin/rt-crontool:181
-#. ("--search-argument", "--search")
-#. ("--condition-argument", "--condition")
-#. ("--action-argument", "--action")
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - A Malkovich to pass to %2"
 
-#: bin/rt-crontool:184
-#. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Malkovich Malkovich to MALKOVICH"
 
-#: bin/rt-crontool:178
-#. ("--action")
 msgid "%1 - Specify the action module you want to use"
 msgstr "%1 - Malkovich the Malkovich Malkovich to use"
 
-#: bin/rt-crontool:172
-#. ("--condition")
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 - Malkovich the Malkovich Malkovich to use"
 
-#: bin/rt-crontool:165
-#. ("--search")
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Malkovich the Malkovich Malkovich to use"
 
-#: lib/RT/ScripAction_Overlay.pm:114
-#. ($self->Id)
 msgid "%1 ScripAction loaded"
 msgstr "%1 Malkovich Malkovich"
 
-#: lib/RT/Record.pm:1498
-#. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%1 Malkovich as a Malkovich %2"
 
-#: lib/RT/Link_Overlay.pm:112 lib/RT/Link_Overlay.pm:119
-#. ($args{'Base'})
-#. ($args{'Target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 Malkovich to be a Malkovich, but can't be Malkovich in the Malkovich"
 
-#: html/Ticket/Elements/ShowDates:52 lib/RT/Transaction_Overlay.pm:469
-#. ($self->BriefDescription , $self->CreatorObj->Name)
-#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "%1 by %2"
 
-#: lib/RT/Transaction_Overlay.pm:525 lib/RT/Transaction_Overlay.pm:701 lib/RT/Transaction_Overlay.pm:710 lib/RT/Transaction_Overlay.pm:713
-#. ($self->Field , ( $self->OldValue || $no_value ) ,  $self->NewValue)
-#. ($self->Field , $q1->Name , $q2->Name)
-#. ($self->Field, $t2->AsString, $t1->AsString)
-#. ($self->Field, $self->OldValue, $self->NewValue)
 msgid "%1 changed from %2 to %3"
 msgstr "%1 Malkovich %2 to %3"
 
-#: lib/RT/Record.pm:760
 msgid "%1 could not be set to %2."
 msgstr "%1 Malkovich be set to %2."
 
-#: lib/RT/Ticket_Overlay.pm:2735
-#. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 couldn't Malkovich to Malkovich. RT's Malkovich be Malkovich."
 
-#: NOT FOUND IN SOURCE
 msgid "%1 highest priority tickets I own..."
 msgstr "%1 Malkovich Malkovich I Malkovich..."
 
-#: html/Elements/MyTickets:26
-#. ($rows)
+
 msgid "%1 highest priority tickets I requested..."
 msgstr "%1 Malkovich Malkovich I Malkovich..."
 
-#: bin/rt-crontool:160
-#. ($0)
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 is a tool to act on Malkovich a Malkovich Malkovich, such as cron."
 
-#: lib/RT/Queue_Overlay.pm:802
-#. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 is no Malkovich a %2 Malkovich."
 
-#: lib/RT/Record.pm:1561
-#. ($TransactionObj->OldValue, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 is no Malkovich a Malkovich Malkovich %2"
 
-#: html/Ticket/Elements/ShowBasics:36 html/Ticket/Elements/ShowBasics:42 html/Ticket/Elements/ShowBasics:47
-#. ($Ticket->TimeEstimated)
-#. ($Ticket->TimeWorked)
-#. ($Ticket->TimeLeft)
 msgid "%1 min"
 msgstr "%1 min"
 
-#: html/User/Elements/DelegateRights:75
-#. (loc($ObjectType =~ /^RT::(.*)$/))
 msgid "%1 rights"
 msgstr "%1 Malkovich"
 
-#: lib/RT/Action/ResolveMembers.pm:41
-#. (ref $self)
 msgid "%1 will resolve all members of a resolved group ticket."
 msgstr "%1 Malkovich Malkovich of a Malkovich Malkovich."
 
-#: lib/RT/Transaction_Overlay.pm:419
-#. ($self)
 msgid "%1: no attachment specified"
 msgstr "%1: no Malkovich Malkovich"
 
-#: html/Scope/Elements/ShowTransaction:90 html/Ticket/Elements/ShowTransactionAttachments:55
-#. ($size)
 msgid "%1b"
 msgstr "%1b"
 
-#: html/Scope/Elements/ShowTransaction:87 html/Ticket/Elements/ShowTransactionAttachments:52
-#. (int( $size / 102.4 ) / 10)
-#. (int($size/102.4)/10)
 msgid "%1k"
 msgstr "%1k"
 
-#: lib/RT/Ticket_Overlay.pm:1248
-#. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' is a Malkovich Malkovich"
 
-#: html/Admin/Elements/EditCustomFieldValues:28 html/Admin/Elements/EditQueueWatchers:28 html/Admin/Elements/EditScrips:34 html/Admin/Elements/EditTemplates:35 html/Admin/Groups/Members.html:51 html/Elements/EditLinks:32 html/Ticket/Elements/EditLinks:32 html/Ticket/Elements/EditPeople:45 html/User/Groups/Members.html:54
 msgid "(Check box to delete)"
 msgstr "(Malkovich to Malkovich)"
 
-#: html/Ticket/Elements/PreviewScrips:49
 msgid "(Check boxes to disable notifications to the listed recipients)"
 msgstr "(Malkovich to Malkovich Malkovich to the Malkovich Malkovich)"
 
-#: html/Ticket/Elements/PreviewScrips:71
 msgid "(Check boxes to enable notifications to the listed recipients)"
 msgstr "(Malkovich to Malkovich Malkovich to the Malkovich Malkovich)"
 
-#: NOT FOUND IN SOURCE
 msgid "(Enter ticket ids or URLs, seperated with spaces)"
 msgstr "(Malkovich Malkovich or URLs, Malkovich Malkovich)"
 
-#: html/Admin/Queues/Modify.html:53 html/Admin/Queues/Modify.html:59
-#. ($RT::CorrespondAddress)
-#. ($RT::CommentAddress)
 msgid "(If left blank, will default to %1"
 msgstr "(If Malkovich, Malkovich to %1"
 
-#: html/Admin/Elements/EditCustomFields:52 html/Admin/Elements/ListGlobalCustomFields:31
 msgid "(No custom fields)"
 msgstr "(No Malkovich)"
 
-#: html/Admin/Groups/Members.html:49 html/User/Groups/Members.html:52
 msgid "(No members)"
 msgstr "(No Malkovich)"
 
-#: html/Admin/Elements/EditScrips:31 html/Admin/Elements/ListGlobalScrips:31
 msgid "(No scrips)"
 msgstr "(No Malkovich)"
 
-#: html/Admin/Elements/EditTemplates:30
 msgid "(No templates)"
 msgstr "(No Malkovich)"
 
-#: html/Ticket/Update.html:66
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
 msgstr "(Malkovich a Malkovich-copy of Malkovich to a Malkovich-Malkovich of Malkovich. Does <b>not</b> Malkovich Malkovich Malkovich Malkovich.)"
 
-#: html/Ticket/Create.html:79
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(Malkovich a Malkovich-copy of Malkovich to a Malkovich-Malkovich of Malkovich Malkovich Malkovich. Malkovich <b>will</b> Malkovich Malkovich.)"
 
-#: html/Ticket/Update.html:62
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
 msgstr "(Malkovich a Malkovich-copy of Malkovich to a Malkovich-Malkovich of Malkovich. Does <b>not</b> Malkovich Malkovich Malkovich Malkovich.)"
 
-#: html/Ticket/Create.html:69
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(Malkovich a Malkovich-copy of Malkovich to a Malkovich-Malkovich of Malkovich. Malkovich <b>will</b> Malkovich Malkovich.)"
 
-#: html/Admin/Groups/index.html:34 html/User/Groups/index.html:32
 msgid "(empty)"
 msgstr "(Malkovich)"
 
-#: html/Admin/Users/index.html:40
 msgid "(no name listed)"
 msgstr "(no Malkovich)"
 
-#: html/Admin/Elements/SelectRights:47 html/Elements/EditCustomField:60 html/Elements/EditCustomFieldSelect:39 html/Elements/SelectCustomFieldValue:29 html/Elements/ShowCustomFields:39 html/Ticket/Elements/EditCustomField:64 lib/RT/Transaction_Overlay.pm:524
 msgid "(no value)"
 msgstr "(no Malkovich)"
 
-#: html/Elements/EditLinks:105 html/Ticket/Elements/BulkLinks:27 html/Ticket/Elements/EditLinks:98
 msgid "(only one ticket)"
 msgstr "(Malkovich)"
 
-#: html/Elements/TicketList:158
 msgid "(pending approval)"
 msgstr "(Malkovich Malkovich)"
 
-#: html/Elements/TicketList:161
 msgid "(pending other Collection)"
 msgstr "(Malkovich Malkovich)"
 
-#: NOT FOUND IN SOURCE
 msgid "(pending other tickets)"
 msgstr "(Malkovich Malkovich)"
 
-#: html/Admin/Users/Modify.html:49
 msgid "(required)"
 msgstr "(Malkovich)"
 
-#: html/Scope/Elements/ShowTransaction:93 html/Ticket/Elements/ShowTransactionAttachments:59
 msgid "(untitled)"
 msgstr "(Malkovich)"
 
-#: NOT FOUND IN SOURCE
 msgid "..."
 msgstr "..."
 
-#: html/Ticket/Elements/ShowBasics:31
 msgid "<% $Ticket->Status%>"
 msgstr "<% $Ticket->Status %>"
 
-#: html/Elements/SelectTicketTypes:26
 msgid "<% $_ %>"
 msgstr "<% $_ %>"
 
-#: docs/design_docs/string-extraction-guide.txt:54 html/Elements/CreateTicket:25 lib/RT/StyleGuide.pod:767
-#. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Malkovich in\">&nbsp;%1"
 
-#: etc/initialdata:203
 msgid "A blank template"
 msgstr "A Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:156 lib/RT/Principal_Overlay.pm:180
 msgid "ACE not found"
 msgstr "Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:830
 msgid "ACEs can only be created and deleted."
 msgstr "Malkovich be Malkovich and Malkovich."
 
-#: bin/rt-commit-handler:754
 msgid "Aborting to avoid unintended ticket modifications.\\n"
 msgstr "Malkovich to Malkovich Malkovich Malkovich Malkovich.\\n"
 
-#: html/User/Elements/Tabs:31
 msgid "About me"
 msgstr "Malkovich me"
 
-#: html/Admin/Users/Modify.html:84
 msgid "Access control"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/EditScrip:56
 msgid "Action"
 msgstr "Malkovich"
 
-#: lib/RT/Scrip_Overlay.pm:148
-#. ($args{'ScripAction'})
 msgid "Action %1 not found"
 msgstr "Malkovich %1 Malkovich"
 
-#: bin/rt-crontool:122
 msgid "Action committed."
 msgstr "Malkovich Malkovich."
 
-#: bin/rt-crontool:118
 msgid "Action prepared..."
 msgstr "Malkovich..."
 
-#: html/Search/Bulk.html:93
 msgid "Add AdminCc"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:89
 msgid "Add Cc"
 msgstr "Add Cc"
 
-#: html/Scope/Update.html:78 html/Ticket/Create.html:122 html/Ticket/Update.html:91
 msgid "Add More Files"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:85
 msgid "Add Requestor"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/AddCustomFieldValue:24
 msgid "Add Value"
 msgstr "Malkovich"
 
-#: html/Admin/Global/Scrip.html:54
 msgid "Add a scrip which will apply to all queues"
 msgstr "Add a Malkovich Malkovich to Malkovich"
 
-#: html/Search/Bulk.html:125
 msgid "Add comments or replies to selected tickets"
 msgstr "Malkovich or Malkovich to Malkovich Malkovich"
 
-#: html/Admin/Groups/Members.html:41 html/User/Groups/Members.html:38
 msgid "Add members"
 msgstr "Malkovich"
 
-#: html/Admin/Queues/People.html:65 html/Ticket/Elements/AddWatchers:27
 msgid "Add new watchers"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:702
-#. ($args{'Type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "Malkovich as a %1 Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:1543
-#. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Malkovich as a %1 Malkovich"
 
-#: html/Admin/Elements/ModifyUser:75 html/Admin/Users/Modify.html:126 html/User/Prefs.html:114
 msgid "Address1"
 msgstr "Malkovich1"
 
-#: html/Admin/Elements/ModifyUser:77 html/Admin/Users/Modify.html:131 html/User/Prefs.html:118
 msgid "Address2"
 msgstr "Malkovich2"
 
-#: html/Ticket/Create.html:74
 msgid "Admin Cc"
 msgstr "Malkovich Cc"
 
-#: etc/initialdata:280
 msgid "Admin Comment"
 msgstr "Malkovich"
 
-#: etc/initialdata:259
 msgid "Admin Correspondence"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Queues/index.html:24 html/Admin/Queues/index.html:27
 msgid "Admin queues"
 msgstr "Malkovich"
 
-#: html/Admin/Global/index.html:25 html/Admin/Global/index.html:27
 msgid "Admin/Global configuration"
 msgstr "Malkovich/Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Admin/Queue/Basics"
 msgstr "Malkovich/Malkovich/Malkovich"
 
-#: etc/initialdata:56 html/Ticket/Elements/ShowPeople:38 lib/RT/ACE_Overlay.pm:88
 msgid "AdminCc"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "AdminCustomFields"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Group_Overlay.pm:146
 msgid "AdminGroup"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:148
 msgid "AdminGroupMembership"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/System.pm:58
 msgid "AdminOwnPersonalGroups"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:69
 msgid "AdminQueue"
 msgstr "Malkovich"
 
-#: lib/RT/System.pm:59
 msgid "AdminUsers"
 msgstr "Malkovich"
 
-#: html/Admin/Queues/People.html:47 html/Ticket/Elements/EditPeople:53
 msgid "Administrative Cc"
 msgstr "Malkovich Cc"
 
-#: html/Elements/SelectDateRelation:35
 msgid "After"
 msgstr "Malkovich"
 
-#: etc/initialdata:348
 msgid "All Approvals Passed"
 msgstr "Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "All Custom Fields"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Queues/index.html:52
 msgid "All Queues"
 msgstr "Malkovich"
 
-#: html/Elements/Tabs:58
 msgid "Approval"
 msgstr "Malkovich"
 
-#: html/Approvals/Display.html:45 html/Approvals/Elements/ShowDependency:41 html/Approvals/index.html:64
-#. ($Ticket->Id, $Ticket->Subject)
-#. ($ticket->id, $msg)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Approval #%1: %2"
 msgstr "Malkovich #%1: %2"
 
-#: html/Approvals/index.html:53
-#. ($ticket->Id)
 msgid "Approval #%1: Notes not recorded due to a system error"
 msgstr "Malkovich #%1: Malkovich Malkovich to a Malkovich"
 
-#: html/Approvals/index.html:51
-#. ($ticket->Id)
 msgid "Approval #%1: Notes recorded"
 msgstr "Malkovich #%1: Malkovich"
 
-#: etc/initialdata:336
 msgid "Approval Passed"
 msgstr "Malkovich"
 
-#: etc/initialdata:359
 msgid "Approval Rejected"
 msgstr "Malkovich Malkovich"
 
-#: html/Approvals/Elements/Approve:43
 msgid "Approve"
 msgstr "Malkovich"
 
-#: etc/initialdata:489 etc/upgrade/2.1.71:148
 msgid "Approver's notes: %1"
 msgstr "Malkovich's Malkovich: %1"
 
-#: lib/RT/Date.pm:414
 msgid "Apr."
 msgstr "Apr."
 
-#: html/Elements/SelectSortOrder:34
 msgid "Ascending"
 msgstr "Malkovich"
 
-#: html/Scope/Update.html:78 html/Search/Bulk.html:140 html/SelfService/Update.html:47 html/Ticket/ModifyAll.html:90 html/Ticket/Update.html:91
 msgid "Attach"
 msgstr "Malkovich"
 
-#: html/SelfService/Create.html:64 html/Ticket/Create.html:118
 msgid "Attach file"
 msgstr "Malkovich"
 
-#: html/Scope/Update.html:67 html/SelfService/Update.html:36 html/Ticket/Create.html:106 html/Ticket/Update.html:70
 msgid "Attached file"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:427
 msgid "Attachment created"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Tickets_Overlay.pm:1371
 msgid "Attachment filename"
 msgstr "Malkovich Malkovich"
 
-#: html/Ticket/Elements/ShowAttachments:25
 msgid "Attachments"
 msgstr "Malkovich"
 
-#: lib/RT/Attributes_Overlay.pm:158
 msgid "Attribute Deleted"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Date.pm:418
 msgid "Aug."
 msgstr "Aug."
 
-#: html/Admin/Elements/ModifyUser:65
 msgid "AuthSystem"
 msgstr "Malkovich"
 
-#: etc/initialdata:206
 msgid "Autoreply"
 msgstr "Malkovich"
 
-#: etc/initialdata:72
 msgid "Autoreply To Requestors"
 msgstr "Malkovich To Malkovich"
 
-#: bin/rt-commit-handler:826
-#. ($val)
 msgid "Bad data in %1"
 msgstr "Malkovich in %1"
 
-#: html/Admin/Elements/CustomFieldTabs:19 html/Admin/Elements/GroupTabs:38 html/Admin/Elements/QueueTabs:38 html/Admin/Elements/UserTabs:37 html/Ticket/Elements/Tabs:91 html/User/Elements/GroupTabs:37
 msgid "Basics"
 msgstr "Malkovich"
 
-#: html/Scope/Update.html:63 html/Ticket/Update.html:64
 msgid "Bcc"
 msgstr "Bcc"
 
-#: html/Admin/CustomFields/GroupRights.html:61 html/Admin/CustomFields/UserRights.html:47 html/Admin/Elements/EditScrip:95 html/Admin/Global/GroupRights.html:84 html/Admin/Global/Template.html:45 html/Admin/Global/UserRights.html:53 html/Admin/Groups/GroupRights.html:72 html/Admin/Groups/Members.html:80 html/Admin/Groups/Modify.html:65 html/Admin/Groups/UserRights.html:54 html/Admin/Queues/GroupRights.html:85 html/Admin/Queues/Template.html:44 html/Admin/Queues/UserRights.html:53 html/User/Groups/Modify.html:55
 msgid "Be sure to save your changes"
 msgstr "Be sure to Malkovich Malkovich"
 
-#: html/Elements/SelectDateRelation:33 lib/RT/CurrentUser.pm:336
 msgid "Before"
 msgstr "Malkovich"
 
-#: etc/initialdata:202
 msgid "Blank"
 msgstr "Malkovich"
 
-#: html/Scope/Elements/ShowHistory:38 html/Scope/Elements/ShowHistory:44 html/Ticket/Elements/ShowHistory:38 html/Ticket/Elements/ShowHistory:44
 msgid "Brief headers"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:24 html/Search/Bulk.html:25
 msgid "Bulk ticket update"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/User_Overlay.pm:1564
 msgid "Can not modify system users"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:68
 msgid "Can this principal see this queue"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:270
 msgid "Can't add a custom field value without a name"
 msgstr "Can't add a Malkovich Malkovich Malkovich a name"
 
-#: lib/RT/Link_Overlay.pm:127
 msgid "Can't link a ticket to itself"
 msgstr "Can't link a Malkovich to Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2712
 msgid "Can't merge into a merged ticket. You should never get this error"
 msgstr "Can't Malkovich a Malkovich. Malkovich Malkovich Malkovich"
 
-#: lib/RT/Record.pm:1081 lib/RT/Record.pm:1159
 msgid "Can't specifiy both base and target"
 msgstr "Can't Malkovich Malkovich and Malkovich"
 
-#: html/autohandler:132
-#. ($msg)
 msgid "Cannot create user: %1"
 msgstr "Malkovich Malkovich: %1"
 
-#: etc/initialdata:50 html/Admin/Queues/People.html:43 html/Scope/Update.html:61 html/SelfService/Create.html:48 html/Ticket/Create.html:64 html/Ticket/Elements/EditPeople:50 html/Ticket/Elements/ShowPeople:34 html/Ticket/Update.html:59 lib/RT/ACE_Overlay.pm:87
 msgid "Cc"
 msgstr "Cc"
 
-#: html/SelfService/Prefs.html:30
 msgid "Change password"
 msgstr "Malkovich"
 
-#: html/Scope/Update.html:70 html/SelfService/Update.html:39 html/Ticket/Create.html:109 html/Ticket/Update.html:73
 msgid "Check box to delete"
 msgstr "Malkovich to Malkovich"
 
-#: html/Admin/Elements/SelectRights:30
 msgid "Check box to revoke right"
 msgstr "Malkovich to Malkovich"
 
-#: html/Elements/EditLinks:121 html/Elements/EditLinks:63 html/Elements/ShowLinks:56 html/Ticket/Create.html:192 html/Ticket/Elements/BulkLinks:42 html/Ticket/Elements/EditLinks:113 html/Ticket/Elements/EditLinks:63 html/Ticket/Elements/ShowLinks:56
 msgid "Children"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:79 html/Admin/Users/Modify.html:136 html/User/Prefs.html:122
 msgid "City"
 msgstr "City"
 
-#: html/Ticket/Elements/ShowDates:47
 msgid "Closed"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Closed Tickets"
 msgstr "Malkovich"
 
-#: html/SelfService/Closed.html:24 html/SelfService/Elements/Tabs:44
 msgid "Closed tickets"
 msgstr "Malkovich"
 
-#: html/Scope/Elements/ShowTransaction:167 html/Ticket/Elements/ShowTransaction:155 html/Ticket/Elements/Tabs:154
 msgid "Comment"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyQueue:44 html/Admin/Queues/Modify.html:57
 msgid "Comment Address"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:88
 msgid "Comment on tickets"
 msgstr "Malkovich on Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:88
 msgid "CommentOnTicket"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:34
 msgid "Comments"
 msgstr "Malkovich"
 
-#: html/Scope/Update.html:53 html/Ticket/ModifyAll.html:69 html/Ticket/Update.html:51
 msgid "Comments (Not sent to requestors)"
 msgstr "Malkovich (Malkovich to Malkovich)"
 
-#: html/Search/Bulk.html:129
 msgid "Comments (not sent to requestors)"
 msgstr "Malkovich (Malkovich to Malkovich)"
 
-#: html/Elements/ViewUser:26
-#. ($name)
 msgid "Comments about %1"
 msgstr "Malkovich %1"
 
-#: html/Admin/Users/Modify.html:204 html/Ticket/Elements/ShowRequestor:45
 msgid "Comments about this user"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:550
 msgid "Comments added"
 msgstr "Malkovich"
 
-#: lib/RT/Action/Generic.pm:149
 msgid "Commit Stubbed"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/EditScrip:40
 msgid "Condition"
 msgstr "Malkovich"
 
-#: bin/rt-crontool:108
 msgid "Condition matches..."
 msgstr "Malkovich Malkovich..."
 
-#: lib/RT/Scrip_Overlay.pm:164
 msgid "Condition not found"
 msgstr "Malkovich Malkovich"
 
-#: html/Elements/Tabs:52
 msgid "Configuration"
 msgstr "Malkovich"
 
-#: html/SelfService/Prefs.html:32
 msgid "Confirm"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:59
 msgid "ContactInfoSystem"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Elements/ModifyTemplate:43 html/Elements/SelectAttachmentField:26 html/Ticket/ModifyAll.html:94
 msgid "Content"
 msgstr "Malkovich"
 
-#: etc/initialdata:271
 msgid "Correspondence"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Correspondence Address"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:546
 msgid "Correspondence added"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Record.pm:1484
 msgid "Could not add new custom field value for ticket. "
 msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich. "
 
-#: lib/RT/Ticket_Overlay.pm:2963 lib/RT/Ticket_Overlay.pm:2971 lib/RT/Ticket_Overlay.pm:2988
 msgid "Could not change owner. "
 msgstr "Malkovich Malkovich. "
 
-#: html/Admin/CustomFields/Modify.html:73 html/Admin/Elements/EditCustomField:84
-#. ($msg)
 msgid "Could not create CustomField"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/User/Groups/Modify.html:76 lib/RT/Group_Overlay.pm:475 lib/RT/Group_Overlay.pm:482
 msgid "Could not create group"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Global/Template.html:74 html/Admin/Queues/Template.html:71
-#. ($msg)
 msgid "Could not create template: %1"
 msgstr "Malkovich Malkovich: %1"
 
-#: lib/RT/Ticket_Overlay.pm:1181 lib/RT/Ticket_Overlay.pm:363
 msgid "Could not create ticket. Queue not set"
 msgstr "Malkovich Malkovich. Malkovich"
 
-#: lib/RT/User_Overlay.pm:230 lib/RT/User_Overlay.pm:244 lib/RT/User_Overlay.pm:253 lib/RT/User_Overlay.pm:262 lib/RT/User_Overlay.pm:271 lib/RT/User_Overlay.pm:285 lib/RT/User_Overlay.pm:295 lib/RT/User_Overlay.pm:471
 msgid "Could not create user"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:680 lib/RT/Ticket_Overlay.pm:1511
 msgid "Could not find or create that user"
 msgstr "Malkovich or Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:741 lib/RT/Ticket_Overlay.pm:1592
 msgid "Could not find that principal"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Admin/Groups/Members.html:87 html/User/Groups/Members.html:89 html/User/Groups/Modify.html:81
 msgid "Could not load group"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:700
-#. ($args{'Type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Malkovich Malkovich Malkovich a %1 Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:1532
-#. ($self->loc($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Malkovich Malkovich Malkovich a %1 Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:799
-#. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Malkovich Malkovich Malkovich as a %1 Malkovich"
 
-#: lib/RT/Group_Overlay.pm:982
 msgid "Couldn't add member to group"
 msgstr "Couldn't Malkovich to Malkovich"
 
-#: lib/RT/Record.pm:1495 lib/RT/Record.pm:1558
-#. ($Msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "Couldn't Malkovich a Malkovich: %1"
 
-#: lib/RT/Record.pm:769
 msgid "Couldn't find row"
 msgstr "Couldn't Malkovich"
 
-#: lib/RT/Group_Overlay.pm:956
 msgid "Couldn't find that principal"
 msgstr "Couldn't Malkovich Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:304
 msgid "Couldn't find that value"
 msgstr "Couldn't Malkovich"
 
-#: lib/RT/CurrentUser.pm:123
-#. ($self->Id)
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "Couldn't load %1 from the Malkovich.\\n"
 
-#: html/Admin/Groups/GroupRights.html:87 html/Admin/Groups/UserRights.html:74
-#. ($id)
 msgid "Couldn't load group %1"
 msgstr "Couldn't Malkovich %1"
 
-#: lib/RT/Link_Overlay.pm:170 lib/RT/Link_Overlay.pm:179 lib/RT/Link_Overlay.pm:206
 msgid "Couldn't load link"
 msgstr "Couldn't Malkovich"
 
-#: html/Admin/Queues/People.html:120
-#. ($id)
 msgid "Couldn't load queue"
 msgstr "Couldn't Malkovich"
 
-#: html/Admin/Queues/GroupRights.html:100 html/Admin/Queues/UserRights.html:71
-#. ($id)
 msgid "Couldn't load queue %1"
 msgstr "Couldn't Malkovich %1"
 
-#: html/Admin/Users/Prefs.html:78
-#. ($id)
 msgid "Couldn't load that user (%1)"
 msgstr "Couldn't Malkovich (%1)"
 
-#: html/SelfService/Display.html:116
-#. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Couldn't Malkovich '%1'"
 
-#: html/Admin/Elements/ModifyUser:85 html/Admin/Users/Modify.html:153 html/User/Prefs.html:134
 msgid "Country"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/CreateUserCalled:25 html/Elements/QuickCreate:23 html/Projects/Elements/OverviewEntry:60 html/Ticket/Create.html:143 html/Ticket/Create.html:204
 msgid "Create"
 msgstr "Malkovich"
 
-#: etc/initialdata:127
 msgid "Create Tickets"
 msgstr "Malkovich"
 
-#: html/Admin/CustomFields/Modify.html:63 html/Admin/Elements/EditCustomField:74
 msgid "Create a CustomField"
 msgstr "Malkovich a Malkovich"
 
-#: html/Admin/Queues/CustomField.html:47
-#. ($QueueObj->Name())
 msgid "Create a CustomField for queue %1"
 msgstr "Malkovich a Malkovich Malkovich %1"
 
-#: NOT FOUND IN SOURCE
 msgid "Create a CustomField which applies to all queues"
 msgstr "Malkovich a Malkovich Malkovich to Malkovich"
 
-#: html/Admin/Groups/Modify.html:102 html/Admin/Groups/Modify.html:76
 msgid "Create a new group"
 msgstr "Malkovich a Malkovich"
 
-#: html/User/Groups/Modify.html:66 html/User/Groups/Modify.html:91
 msgid "Create a new personal group"
 msgstr "Malkovich a Malkovich Malkovich"
 
-#: html/Ticket/Create.html:24 html/Ticket/Create.html:27 html/Ticket/Create.html:36
 msgid "Create a new ticket"
 msgstr "Malkovich a Malkovich"
 
-#: html/Admin/Users/Modify.html:233 html/Admin/Users/Modify.html:290
 msgid "Create a new user"
 msgstr "Malkovich a Malkovich"
 
-#: html/Admin/Queues/Modify.html:103
 msgid "Create a queue"
 msgstr "Malkovich a Malkovich"
 
-#: html/Admin/Queues/Scrip.html:58
-#. ($QueueObj->Name)
 msgid "Create a scrip for queue %1"
 msgstr "Malkovich a Malkovich %1"
 
-#: html/Admin/Global/Template.html:68 html/Admin/Queues/Template.html:64
 msgid "Create a template"
 msgstr "Malkovich a Malkovich"
 
-#: html/SelfService/Create.html:24
 msgid "Create a ticket"
 msgstr "Malkovich a Malkovich"
 
-#: etc/initialdata:129
 msgid "Create new tickets based on this scrip's template"
 msgstr "Malkovich Malkovich on Malkovich's Malkovich"
 
-#: html/SelfService/Create.html:77
 msgid "Create ticket"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:86
 msgid "Create tickets in this queue"
 msgstr "Malkovich in Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:54
 msgid "Create, delete and modify custom fields"
 msgstr "Malkovich, Malkovich and Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:69
 msgid "Create, delete and modify queues"
 msgstr "Malkovich, Malkovich and Malkovich"
 
-#: lib/RT/System.pm:58
 msgid "Create, delete and modify the members of personal groups"
 msgstr "Malkovich, Malkovich and Malkovich the Malkovich of Malkovich"
 
-#: lib/RT/System.pm:59
 msgid "Create, delete and modify users"
 msgstr "Malkovich, Malkovich and Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:86
 msgid "CreateTicket"
 msgstr "Malkovich"
 
-#: html/Elements/SelectDateType:25 html/Ticket/Elements/ShowDates:27 lib/RT/Ticket_Overlay.pm:1275
 msgid "Created"
 msgstr "Malkovich"
 
-#: html/Admin/CustomFields/Modify.html:75 html/Admin/Elements/EditCustomField:87
-#. ($CustomFieldObj->Name())
 msgid "Created CustomField %1"
 msgstr "Malkovich Malkovich %1"
 
-#: html/Elements/EditLinks:27 html/Ticket/Elements/EditLinks:27
 msgid "Current Relationships"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Elements/EditScrips:29
 msgid "Current Scrips"
 msgstr "Malkovich"
 
-#: html/Admin/Groups/Members.html:38 html/User/Groups/Members.html:41
 msgid "Current members"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/SelectRights:28
 msgid "Current rights"
 msgstr "Malkovich"
 
-#: html/Search/Listing.html:51
 msgid "Current search criteria"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Queues/People.html:40 html/Ticket/Elements/EditPeople:44
 msgid "Current watchers"
 msgstr "Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Custom Field #%1"
 msgstr "Malkovich #%1"
 
-#: html/Admin/Elements/GroupTabs:57 html/Admin/Elements/SystemTabs:39 html/Admin/Elements/Tabs:40 html/Admin/Elements/UserTabs:60 html/Admin/Global/index.html:49 html/Admin/Users/Modify.html:188 html/Admin/index.html:37 html/Scope/Elements/ShowSummary:34 html/Ticket/Elements/ShowSummary:35
 msgid "Custom Fields"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/EditScrip:72
 msgid "Custom action cleanup code"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Admin/Elements/EditScrip:64
 msgid "Custom action preparation code"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Admin/Elements/EditScrip:48
 msgid "Custom condition"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Tickets_Overlay.pm:1814
-#. ($CF->Name , $args{OPERATOR} , $args{VALUE})
 msgid "Custom field %1 %2 %3"
 msgstr "Malkovich %1 %2 %3"
 
-#: lib/RT/Tickets_Overlay.pm:1809
-#. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "Malkovich %1 has a Malkovich."
 
-#: lib/RT/Tickets_Overlay.pm:1806
-#. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "Malkovich %1 has no Malkovich."
 
-#: lib/RT/Record.pm:1377
-#. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "Malkovich %1 Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Custom field deleted"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Record.pm:1539
 msgid "Custom field not found"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:420 lib/RT/CustomField_Overlay.pm:858
-#. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Malkovich Malkovich %1 Malkovich be Malkovich Malkovich %2"
 
-#: lib/RT/CustomField_Overlay.pm:314
 msgid "Custom field value could not be deleted"
 msgstr "Malkovich Malkovich Malkovich be Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:426 lib/RT/CustomField_Overlay.pm:864
 msgid "Custom field value could not be found"
 msgstr "Malkovich Malkovich Malkovich be Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:312 lib/RT/CustomField_Overlay.pm:428 lib/RT/CustomField_Overlay.pm:866
 msgid "Custom field value deleted"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Elements/SelectGroups:29 html/Elements/SelectUsers:29 lib/RT/Transaction_Overlay.pm:554
 msgid "CustomField"
 msgstr "Malkovich"
 
-#: html/Scope/Elements/ShowSummary:51 html/SelfService/Display.html:38 html/Ticket/Create.html:169 html/Ticket/Elements/ShowSummary:54 html/Ticket/Elements/Tabs:94 html/Ticket/ModifyAll.html:43
 msgid "Dates"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:422
 msgid "Dec."
 msgstr "Dec."
 
-#: etc/initialdata:207
 msgid "Default Autoresponse template"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: etc/initialdata:281
 msgid "Default admin comment template"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: etc/initialdata:260
 msgid "Default admin correspondence template"
-msgstr "Malkovich Malkovich Malkovich Malkovich"
+msgid "Malkovich Malkovich Malkovich Malkovich"
 
-#: etc/initialdata:272
 msgid "Default correspondence template"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: etc/initialdata:238
 msgid "Default transaction template"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:532
-#. ($type, $self->Field, $self->OldValue, $self->NewValue)
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "Malkovich: %1/%2 Malkovich %3 to %4"
 
-#: html/User/Delegation.html:24 html/User/Delegation.html:27
 msgid "Delegate rights"
 msgstr "Malkovich"
 
-#: lib/RT/System.pm:62
 msgid "Delegate specific rights which have been granted to you."
 msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich to you."
 
-#: lib/RT/System.pm:62
 msgid "DelegateRights"
 msgstr "Malkovich"
 
-#: html/User/Elements/Tabs:37
 msgid "Delegation"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/EditScrips:53 html/Search/Elements/EditFormat:70 html/Search/Elements/EditSearches:14
 msgid "Delete"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/EditScrips:52
 msgid "Delete selected scrips"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:91
 msgid "Delete tickets"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:91
 msgid "DeleteTicket"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:173
 msgid "Deleting this object could break referential integrity"
 msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:329
 msgid "Deleting this object would break referential integrity"
 msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich"
 
-#: lib/RT/User_Overlay.pm:487
 msgid "Deleting this object would violate referential integrity"
 msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich Malkovich"
 
-#: html/Approvals/Elements/Approve:44
 msgid "Deny"
 msgstr "Deny"
 
-#: html/Elements/EditLinks:113 html/Elements/EditLinks:44 html/Elements/ShowLinks:36 html/Ticket/Create.html:190 html/Ticket/Elements/BulkLinks:34 html/Ticket/Elements/EditLinks:105 html/Ticket/Elements/EditLinks:44 html/Ticket/Elements/ShowDependencies:31 html/Ticket/Elements/ShowLinks:36
 msgid "Depended on by"
 msgstr "Malkovich on by"
 
-#: lib/RT/Transaction_Overlay.pm:634
-#. ($value)
 msgid "Dependency by %1 added"
 msgstr "Malkovich by %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:674
-#. ($value)
 msgid "Dependency by %1 deleted"
 msgstr "Malkovich by %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:631
-#. ($value)
 msgid "Dependency on %1 added"
 msgstr "Malkovich on %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:671
-#. ($value)
 msgid "Dependency on %1 deleted"
 msgstr "Malkovich on %1 Malkovich"
 
-#: html/Elements/EditLinks:109 html/Elements/EditLinks:35 html/Elements/SelectLinkType:26 html/Elements/ShowLinks:26 html/Ticket/Create.html:189 html/Ticket/Elements/BulkLinks:30 html/Ticket/Elements/EditLinks:101 html/Ticket/Elements/EditLinks:35 html/Ticket/Elements/ShowDependencies:24 html/Ticket/Elements/ShowLinks:26
 msgid "Depends on"
 msgstr "Malkovich on"
 
-#: html/Elements/SelectSortOrder:34
 msgid "Descending"
 msgstr "Malkovich"
 
-#: html/SelfService/Create.html:72 html/Ticket/Create.html:127
 msgid "Describe the issue below"
 msgstr "Malkovich the Malkovich"
 
-#: html/Admin/CustomFields/Modify.html:15 html/Admin/Elements/AddCustomFieldValue:35 html/Admin/Elements/EditCustomField:38 html/Admin/Elements/EditCustomFieldValues:34 html/Admin/Elements/EditScrip:33 html/Admin/Elements/ModifyQueue:35 html/Admin/Elements/ModifyTemplate:35 html/Admin/Groups/Modify.html:49 html/Admin/Queues/Modify.html:47 html/Search/Elements/EditSearches:9 html/User/Groups/Modify.html:48
 msgid "Description"
 msgstr "Malkovich"
 
-#: html/Ticket/Elements/Tabs:86
 msgid "Display"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:70
 msgid "Display Access Control List"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:76
 msgid "Display Scrip templates for this queue"
 msgstr "Malkovich Malkovich Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:79
 msgid "Display Scrips for this queue"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Scope/Elements/ShowHistory:34 html/Ticket/Elements/ShowHistory:34
 msgid "Display mode"
 msgstr "Malkovich"
 
-#: lib/RT/System.pm:53
 msgid "Do anything and everything"
 msgstr "Do Malkovich and Malkovich"
 
-#: html/Elements/Refresh:29
 msgid "Don't refresh this page."
 msgstr "Don't Malkovich Malkovich."
 
-#: html/Search/Elements/PickRestriction:114
 msgid "Don't show search results"
 msgstr "Don't Malkovich Malkovich"
 
-#: html/Scope/Elements/ShowTransaction:93 html/Ticket/Elements/ShowTransactionAttachments:59
 msgid "Download"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Download all the tickets as a tab delimited file"
 msgstr "Malkovich the Malkovich as a Malkovich Malkovich"
 
-#: html/Elements/SelectDateType:31 html/Projects/Overview.html:15 html/Ticket/Create.html:175 html/Ticket/Elements/EditDates:44 html/Ticket/Elements/ShowDates:43 lib/RT/Ticket_Overlay.pm:1279
 msgid "Due"
 msgstr "Due"
 
-#: bin/rt-commit-handler:753
-#. ($1, $msg)
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
 msgstr "MALKOVICH: Couldn't Malkovich '%1': %2.\\n"
 
-#: html/Admin/Elements/ObjectCustomFields:49
-#. ($Object->Name)
 msgid "Edit Custom Fields for %1"
 msgstr "Malkovich Malkovich %1"
 
-#: html/Search/Bulk.html:147 html/Ticket/ModifyLinks.html:35
 msgid "Edit Relationships"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Queues/Templates.html:41
-#. ($QueueObj->Name)
 msgid "Edit Templates for queue %1"
 msgstr "Malkovich Malkovich %1"
 
-#: html/Admin/Global/index.html:45
 msgid "Edit system templates"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Elements/ModifyQueue:24 html/Admin/Queues/Modify.html:118
-#. ($QueueObj->Name)
-#. ($QueueObj->Id)
 msgid "Editing Configuration for queue %1"
 msgstr "Malkovich Malkovich Malkovich %1"
 
-#: html/Admin/Elements/ModifyUser:24
-#. ($UserObj->Name)
 msgid "Editing Configuration for user %1"
 msgstr "Malkovich Malkovich Malkovich %1"
 
-#: html/Admin/CustomFields/Modify.html:79 html/Admin/Elements/EditCustomField:90
-#. ($CustomFieldObj->Name())
 msgid "Editing CustomField %1"
 msgstr "Malkovich Malkovich %1"
 
-#: html/Admin/Groups/Members.html:31
-#. ($Group->Name)
 msgid "Editing membership for group %1"
 msgstr "Malkovich Malkovich Malkovich %1"
 
-#: html/User/Groups/Members.html:128
-#. ($Group->Name)
 msgid "Editing membership for personal group %1"
 msgstr "Malkovich Malkovich Malkovich Malkovich %1"
 
-#: lib/RT/Record.pm:1096 lib/RT/Record.pm:1173
 msgid "Either base or target must be specified"
 msgstr "Malkovich or Malkovich be Malkovich"
 
-#: html/Admin/Users/Modify.html:52 html/Admin/Users/Prefs.html:45 html/Ticket/Elements/AddWatchers:55 html/User/Prefs.html:43
 msgid "Email"
 msgstr "Malkovich"
 
-#: lib/RT/User_Overlay.pm:210
 msgid "Email address in use"
 msgstr "Malkovich in use"
 
-#: html/Admin/Elements/ModifyUser:41
 msgid "EmailAddress"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:53
 msgid "EmailEncoding"
 msgstr "Malkovich"
 
-#: html/Admin/CustomFields/Modify.html:37 html/Admin/Elements/EditCustomField:50
 msgid "Enabled (Unchecking this box disables this custom field)"
 msgstr "Malkovich (Malkovich Malkovich Malkovich Malkovich Malkovich)"
 
-#: html/Admin/Groups/Modify.html:62 html/User/Groups/Modify.html:52
 msgid "Enabled (Unchecking this box disables this group)"
 msgstr "Malkovich (Malkovich Malkovich Malkovich Malkovich)"
 
-#: html/Admin/Queues/Modify.html:83
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "Malkovich (Malkovich Malkovich Malkovich Malkovich)"
 
-#: NOT FOUND IN SOURCE
 msgid "Enabled Custom Fields"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Queues/index.html:55
 msgid "Enabled Queues"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/EditCustomField:106 html/Admin/Groups/Modify.html:127 html/Admin/Users/Modify.html:333 html/User/Groups/Modify.html:116
-#. (loc_fuzzy($msg))
 msgid "Enabled status %1"
 msgstr "Malkovich %1"
 
-#: lib/RT/CustomField_Overlay.pm:490
 msgid "Enter multiple values"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:491
 msgid "Enter one value"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:148 html/Ticket/Elements/EditLinks:94
 msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
 msgstr "Malkovich or URIs to Malkovich to. Malkovich Malkovich Malkovich Malkovich."
 
-#: html/Elements/Login:39 html/SelfService/Error.html:24 html/SelfService/Error.html:25
 msgid "Error"
 msgstr "Error"
 
-#: lib/RT/Queue_Overlay.pm:611
 msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Malkovich in Malkovich to Malkovich->Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:772
 msgid "Error in parameters to Queue->DelWatcher"
 msgstr "Malkovich in Malkovich to Malkovich->Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:1464
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Malkovich in Malkovich to Malkovich->Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:1626
 msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "Malkovich in Malkovich to Malkovich->Malkovich"
 
-#: etc/initialdata:20
 msgid "Everyone"
 msgstr "Malkovich"
 
-#: bin/rt-crontool:193
 msgid "Example:"
 msgstr "Malkovich:"
 
-#: html/Admin/Elements/ModifyUser:63
 msgid "ExternalAuthId"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:57
 msgid "ExternalContactInfoId"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Users/Modify.html:77
 msgid "Extra info"
 msgstr "Malkovich"
 
-#: lib/RT/User_Overlay.pm:351
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "Malkovich to find 'Malkovich' Malkovich Malkovich."
 
-#: lib/RT/User_Overlay.pm:358
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Malkovich to find 'Malkovich' Malkovich Malkovich"
 
-#: bin/rt-crontool:137
-#. ($modname, $@)
 msgid "Failed to load module %1. (%2)"
 msgstr "Malkovich to Malkovich %1. (%2)"
 
-#: lib/RT/Date.pm:412
 msgid "Feb."
 msgstr "Feb."
 
-#: html/Search/Elements/PickBasics:60 html/Ticket/Create.html:163 html/Ticket/Elements/EditBasics:57 lib/RT/Tickets_Overlay.pm:1273
 msgid "Final Priority"
 msgstr "Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:1270
 msgid "FinalPriority"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Find group whose"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Queues/People.html:56 html/Admin/Users/index.html:50 html/Ticket/Elements/EditPeople:29
 msgid "Find people whose"
 msgstr "Malkovich Malkovich"
 
-#: html/Search/Listing.html:73 html/Search/Results.html:63
 msgid "Find tickets"
 msgstr "Malkovich"
 
-#: html/Ticket/Elements/Tabs:59
 msgid "First"
 msgstr "Malkovich"
 
-#: docs/design_docs/string-extraction-guide.txt:33 lib/RT/StyleGuide.pod:746
 msgid "Foo Bar Baz"
 msgstr "Malkovich"
 
-#: docs/design_docs/string-extraction-guide.txt:24 lib/RT/StyleGuide.pod:737
 msgid "Foo!"
 msgstr "Foo!"
 
-#: html/Search/Bulk.html:84
 msgid "Force change"
 msgstr "Malkovich"
 
-#: html/Search/Listing.html:71 html/Search/Results.html:61
-#. ($ticketcount)
 msgid "Found %quant(%1,ticket)"
 msgstr "Malkovich %quant(%1,Malkovich)"
 
-#: lib/RT/Record.pm:771
 msgid "Found Object"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:43
 msgid "FreeformContactInfo"
 msgstr "Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "FreeformMultiple"
 msgstr "Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "FreeformSingle"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:392
 msgid "Fri."
 msgstr "Fri."
 
-#: html/Scope/Elements/ShowHistory:40 html/Scope/Elements/ShowHistory:50 html/Ticket/Elements/ShowHistory:40 html/Ticket/Elements/ShowHistory:50
 msgid "Full headers"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:600
-#. ($New->Name)
 msgid "Given to %1"
 msgstr "Malkovich to %1"
 
-#: html/Admin/Elements/Tabs:43 html/Admin/index.html:40
 msgid "Global"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/SelectTemplate:37
-#. (loc($Template->Name))
 msgid "Global template: %1"
 msgstr "Malkovich: %1"
 
-#: html/Scope/Search.html:140 html/Tools/Offline.html:57
 msgid "Go"
 msgstr "Go"
 
-#: html/Admin/Groups/index.html:44 html/Admin/Groups/index.html:50 html/Admin/Queues/People.html:58 html/Admin/Queues/People.html:62 html/Admin/Queues/index.html:43 html/Admin/Users/index.html:53 html/Ticket/Elements/EditPeople:31 html/Ticket/Elements/EditPeople:35 html/index.html:69
 msgid "Go!"
 msgstr "Go!"
 
-#: html/Elements/GotoTicket:24 html/SelfService/Elements/GotoTicket:24
 msgid "Goto ticket"
 msgstr "Malkovich"
 
-#: html/Ticket/Elements/AddWatchers:45 html/User/Elements/DelegateRights:77
 msgid "Group"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/CustomFieldTabs:26 html/Admin/Elements/GroupTabs:44 html/Admin/Elements/QueueTabs:60 html/Admin/Elements/SystemTabs:43 html/Admin/Global/index.html:54
 msgid "Group Rights"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:962
 msgid "Group already has member"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Groups/Modify.html:86
-#. ($create_msg)
 msgid "Group could not be created: %1"
 msgstr "Malkovich be Malkovich: %1"
 
-#: lib/RT/Group_Overlay.pm:502
 msgid "Group created"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:1134
 msgid "Group has no such member"
 msgstr "Malkovich no Malkovich"
 
-#: lib/RT/Group_Overlay.pm:942 lib/RT/Queue_Overlay.pm:687 lib/RT/Queue_Overlay.pm:747 lib/RT/Ticket_Overlay.pm:1518 lib/RT/Ticket_Overlay.pm:1598
 msgid "Group not found"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/SelectNewGroupMembers:34 html/Admin/Elements/Tabs:34 html/Admin/Groups/Members.html:63 html/Admin/Queues/People.html:82 html/Admin/Users/Memberships.html:31 html/Admin/index.html:31 html/User/Groups/Members.html:66 lib/RT/CustomField_Overlay.pm:49
 msgid "Groups"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:968
 msgid "Groups can't be members of their members"
 msgstr "Malkovich can't be Malkovich of Malkovich"
 
-#: lib/RT/Interface/CLI.pm:72 lib/RT/Interface/CLI.pm:72
 msgid "Hello!"
 msgstr "Malkovich!"
 
-#: docs/design_docs/string-extraction-guide.txt:40 lib/RT/StyleGuide.pod:753
-#. ($name)
 msgid "Hello, %1"
 msgstr "Malkovich, %1"
 
-#: html/Admin/Elements/GroupTabs:48 html/Admin/Elements/UserTabs:43 html/Scope/Elements/ShowHistory:29 html/Ticket/Elements/ShowHistory:29 html/Ticket/Elements/Tabs:89
 msgid "History"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:67
 msgid "HomePhone"
 msgstr "Malkovich"
 
-#: html/Elements/Tabs:43
 msgid "Homepage"
 msgstr "Malkovich"
 
-#: lib/RT/Base.pm:86
-#. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "I have %quant(%1,Malkovich)."
 
-#: html/Search/Elements/PickBasics:104 html/Ticket/Elements/ShowBasics:26 lib/RT/Tickets_Overlay.pm:1200
 msgid "Id"
 msgstr "Id"
 
-#: html/Admin/Users/Modify.html:43 html/User/Prefs.html:38
 msgid "Identity"
 msgstr "Malkovich"
 
-#: etc/initialdata:414 etc/upgrade/2.1.71:86
 msgid "If an approval is rejected, reject the original and delete pending approvals"
 msgstr "If a Malkovich is Malkovich, Malkovich the Malkovich and Malkovich Malkovich"
 
-#: bin/rt-crontool:189
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "If Malkovich Malkovich, a Malkovich Malkovich Malkovich Malkovich to Malkovich Malkovich Malkovich to RT."
 
-#: html/Admin/Queues/People.html:104 html/Ticket/Modify.html:38 html/Ticket/ModifyAll.html:101 html/Ticket/ModifyPeople.html:37
 msgid "If you've updated anything above, be sure to"
 msgstr "If you've Malkovich Malkovich, be sure to"
 
-#: lib/RT/Record.pm:763
 msgid "Illegal value for %1"
 msgstr "Malkovich Malkovich %1"
 
-#: lib/RT/Record.pm:766
 msgid "Immutable field"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Include disabled custom fields in listing."
 msgstr "Malkovich Malkovich Malkovich in Malkovich."
 
-#: html/Admin/Queues/index.html:42
 msgid "Include disabled queues in listing."
 msgstr "Malkovich Malkovich in Malkovich."
 
-#: html/Admin/Users/index.html:51
 msgid "Include disabled users in search."
 msgstr "Malkovich Malkovich in Malkovich."
 
-#: html/Search/Elements/PickBasics:59 lib/RT/Tickets_Overlay.pm:1249
 msgid "Initial Priority"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:1269 lib/RT/Ticket_Overlay.pm:1271
 msgid "InitialPriority"
 msgstr "Malkovich"
 
-#: lib/RT/ScripAction_Overlay.pm:97
 msgid "Input error"
 msgstr "Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:3412
 msgid "Internal Error"
 msgstr "Malkovich"
 
-#: lib/RT/Record.pm:186
-#. ($id->{error_message})
 msgid "Internal Error: %1"
 msgstr "Malkovich: %1"
 
-#: lib/RT/Group_Overlay.pm:649
 msgid "Invalid Group Type"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Principal_Overlay.pm:127
 msgid "Invalid Right"
 msgstr "Malkovich"
 
-#: lib/RT/Record.pm:768
 msgid "Invalid data"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "Malkovich. Malkovich to 'Malkovich'."
 
-#: lib/RT/Scrip_Overlay.pm:133 lib/RT/Template_Overlay.pm:251
 msgid "Invalid queue"
 msgstr "Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:243 lib/RT/ACE_Overlay.pm:252 lib/RT/ACE_Overlay.pm:258 lib/RT/ACE_Overlay.pm:269 lib/RT/ACE_Overlay.pm:274
 msgid "Invalid right"
 msgstr "Malkovich"
 
-#: lib/RT/Record.pm:161
-#. ($key)
 msgid "Invalid value for %1"
 msgstr "Malkovich Malkovich %1"
 
-#: lib/RT/Record.pm:1390
 msgid "Invalid value for custom field"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:384
 msgid "Invalid value for status"
 msgstr "Malkovich Malkovich"
 
-#: bin/rt-crontool:190
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
 msgstr "It is Malkovich Malkovich Malkovich Malkovich Malkovich be Malkovich to Malkovich."
 
-#: bin/rt-crontool:191
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
 msgstr "It is Malkovich Malkovich a non-Malkovich Malkovich the Malkovich Malkovich and RT Malkovich to Malkovich."
 
-#: bin/rt-crontool:162
 msgid "It takes several arguments:"
 msgstr "It Malkovich Malkovich:"
 
-#: lib/RT/Date.pm:411
 msgid "Jan."
 msgstr "Jan."
 
-#: lib/RT/Group_Overlay.pm:149
 msgid "Join or leave this group"
 msgstr "Join or Malkovich Malkovich"
 
-#: lib/RT/Date.pm:417
 msgid "Jul."
 msgstr "Jul."
 
-#: html/Ticket/Elements/Tabs:100
 msgid "Jumbo"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:416
 msgid "Jun."
 msgstr "Jun."
 
-#: html/Admin/Elements/ModifyUser:51
 msgid "Lang"
 msgstr "Lang"
 
-#: html/Admin/Users/Modify.html:72 html/User/Prefs.html:54
 msgid "Language"
 msgstr "Malkovich"
 
-#: html/Ticket/Elements/Tabs:74
 msgid "Last"
 msgstr "Last"
 
-#: html/Ticket/Elements/EditDates:37 html/Ticket/Elements/ShowDates:39
 msgid "Last Contact"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Last Contact</a>"
 msgstr "Malkovich</a>"
 
-#: html/Elements/SelectDateType:28
 msgid "Last Contacted"
 msgstr "Malkovich"
 
-#: html/Search/Elements/TicketHeader:40
 msgid "Last Notified"
 msgstr "Malkovich"
 
-#: html/Elements/SelectDateType:29
 msgid "Last Updated"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Modify.html:87
 msgid "Let this user access RT"
 msgstr "Malkovich Malkovich RT"
 
-#: html/Admin/Users/Modify.html:91
 msgid "Let this user be granted rights"
 msgstr "Malkovich be Malkovich"
 
-#: lib/RT/Record.pm:1107
 msgid "Link already exists"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Record.pm:1121
 msgid "Link could not be created"
 msgstr "Malkovich be Malkovich"
 
-#: lib/RT/Record.pm:1127
-#. ($TransString)
 msgid "Link created (%1)"
 msgstr "Malkovich (%1)"
 
-#: lib/RT/Record.pm:1188
-#. ($TransString)
 msgid "Link deleted (%1)"
 msgstr "Malkovich (%1)"
 
-#: lib/RT/Record.pm:1194
 msgid "Link not found"
 msgstr "Malkovich"
 
-#: html/Ticket/ModifyLinks.html:24 html/Ticket/ModifyLinks.html:28
-#. ($Ticket->Id)
 msgid "Link ticket #%1"
 msgstr "Malkovich #%1"
 
-#: html/Ticket/Elements/Tabs:98
 msgid "Links"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Modify.html:118 html/User/Prefs.html:107
 msgid "Location"
 msgstr "Malkovich"
 
-#: lib/RT.pm:185
-#. ($RT::LogDir)
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "Malkovich %1 Malkovich or couldn't be Malkovich.\\n RT can't run."
 
-#: html/Elements/Header:74
-#. ("<b>".$session{'CurrentUser'}->Name."</b>")
 msgid "Logged in as %1"
 msgstr "Malkovich in as %1"
 
-#: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:35 html/Elements/Login:44 html/Elements/Login:54 lib/RT/StyleGuide.pod:777
 msgid "Login"
 msgstr "Malkovich"
 
-#: html/Elements/Header:71
 msgid "Logout"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:83
 msgid "Make Owner"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:107
 msgid "Make Status"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:115
 msgid "Make date Due"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:117
 msgid "Make date Resolved"
 msgstr "Malkovich Malkovich"
 
-#: html/Search/Bulk.html:111
 msgid "Make date Started"
 msgstr "Malkovich Malkovich"
 
-#: html/Search/Bulk.html:109
 msgid "Make date Starts"
 msgstr "Malkovich Malkovich"
 
-#: html/Search/Bulk.html:113
 msgid "Make date Told"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:103
 msgid "Make priority"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:105
 msgid "Make queue"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:101
 msgid "Make subject"
 msgstr "Malkovich"
 
-#: html/Admin/index.html:32
 msgid "Manage groups and group membership"
 msgstr "Malkovich and Malkovich Malkovich"
 
-#: html/Admin/index.html:41
 msgid "Manage properties and configuration which apply to all queues"
 msgstr "Malkovich Malkovich and Malkovich Malkovich to Malkovich"
 
-#: html/Admin/index.html:35
 msgid "Manage queues and queue-specific properties"
 msgstr "Malkovich and Malkovich-Malkovich Malkovich"
 
-#: html/Admin/index.html:29
 msgid "Manage users and passwords"
 msgstr "Malkovich and Malkovich"
 
-#: lib/RT/Date.pm:413
 msgid "Mar."
 msgstr "Mar."
 
-#: lib/RT/Date.pm:415
 msgid "May."
 msgstr "May."
 
-#: lib/RT/Transaction_Overlay.pm:647
-#. ($value)
 msgid "Member %1 added"
 msgstr "Malkovich %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:687
-#. ($value)
 msgid "Member %1 deleted"
 msgstr "Malkovich %1 Malkovich"
 
-#: lib/RT/Group_Overlay.pm:979
 msgid "Member added"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:1141
 msgid "Member deleted"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:1145
 msgid "Member not deleted"
 msgstr "Malkovich Malkovich"
 
-#: html/Elements/SelectLinkType:25
 msgid "Member of"
 msgstr "Malkovich of"
 
-#: html/Admin/Elements/GroupTabs:41 html/User/Elements/GroupTabs:41
 msgid "Members"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:644
-#. ($value)
 msgid "Membership in %1 added"
 msgstr "Malkovich in %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:684
-#. ($value)
 msgid "Membership in %1 deleted"
 msgstr "Malkovich in %1 Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2809
 msgid "Merge Successful"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2729
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Malkovich. Couldn't Malkovich"
 
-#: html/Elements/EditLinks:104 html/Ticket/Elements/BulkLinks:26 html/Ticket/Elements/EditLinks:97
 msgid "Merge into"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:141 html/Ticket/Update.html:93
 msgid "Message"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Message body not shown because it is too large or is not plain text."
 msgstr "Malkovich Malkovich Malkovich it is Malkovich or is Malkovich."
 
-#: lib/RT/Ticket_Overlay.pm:2510
 msgid "Message could not be recorded"
 msgstr "Malkovich Malkovich be Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Message recipients"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2513
 msgid "Message recorded"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Record.pm:770
 msgid "Missing a primary key?: %1"
 msgstr "Malkovich a Malkovich?: %1"
 
-#: html/Admin/Users/Modify.html:173 html/User/Prefs.html:71
 msgid "Mobile"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:71
 msgid "MobilePhone"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:71
 msgid "Modify Access Control List"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Admin/Global/index.html:50
 msgid "Modify Custom Fields which apply to all queues"
 msgstr "Malkovich Malkovich Malkovich to Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:74
 msgid "Modify Scrip templates for this queue"
 msgstr "Malkovich Malkovich Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:77
 msgid "Modify Scrips for this queue"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Admin/Queues/CustomField.html:44
-#. ($QueueObj->Name())
 msgid "Modify a CustomField for queue %1"
 msgstr "Malkovich a Malkovich Malkovich %1"
 
-#: NOT FOUND IN SOURCE
 msgid "Modify a CustomField which applies to all queues"
 msgstr "Malkovich a Malkovich Malkovich to Malkovich"
 
-#: html/Admin/Queues/Scrip.html:53
-#. ($QueueObj->Name)
 msgid "Modify a scrip for queue %1"
 msgstr "Malkovich a Malkovich %1"
 
-#: html/Admin/Global/Scrip.html:47
 msgid "Modify a scrip which applies to all queues"
 msgstr "Malkovich a Malkovich Malkovich to Malkovich"
 
-#: html/Ticket/ModifyDates.html:24 html/Ticket/ModifyDates.html:28
-#. ($TicketObj->Id)
 msgid "Modify dates for #%1"
 msgstr "Malkovich Malkovich #%1"
 
-#: html/Ticket/ModifyDates.html:34
-#. ($TicketObj->Id)
 msgid "Modify dates for ticket # %1"
 msgstr "Malkovich Malkovich # %1"
 
-#: html/Admin/Global/GroupRights.html:24 html/Admin/Global/GroupRights.html:27 html/Admin/Global/index.html:55
 msgid "Modify global group rights"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Admin/Global/GroupRights.html:32
 msgid "Modify global group rights."
 msgstr "Malkovich Malkovich Malkovich."
 
-#: html/Admin/Global/UserRights.html:24 html/Admin/Global/UserRights.html:27 html/Admin/Global/index.html:59
 msgid "Modify global user rights"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Global/UserRights.html:32
 msgid "Modify global user rights."
 msgstr "Malkovich Malkovich."
 
-#: lib/RT/Group_Overlay.pm:146
 msgid "Modify group metadata or delete group"
 msgstr "Malkovich Malkovich or Malkovich"
 
-#: html/Admin/Groups/GroupRights.html:24 html/Admin/Groups/GroupRights.html:28 html/Admin/Groups/GroupRights.html:34
-#. ($GroupObj->Name)
 msgid "Modify group rights for group %1"
 msgstr "Malkovich Malkovich Malkovich %1"
 
-#: html/Admin/Queues/GroupRights.html:24 html/Admin/Queues/GroupRights.html:28
-#. ($QueueObj->Name)
 msgid "Modify group rights for queue %1"
 msgstr "Malkovich Malkovich Malkovich %1"
 
-#: lib/RT/Group_Overlay.pm:148
 msgid "Modify membership roster for this group"
 msgstr "Malkovich Malkovich Malkovich Malkovich"
 
-#: lib/RT/System.pm:60
 msgid "Modify one's own RT account"
 msgstr "Malkovich's own RT Malkovich"
 
-#: html/Admin/Queues/People.html:24 html/Admin/Queues/People.html:28
-#. ($QueueObj->Name)
 msgid "Modify people related to queue %1"
 msgstr "Malkovich Malkovich to Malkovich %1"
 
-#: html/Ticket/ModifyPeople.html:24 html/Ticket/ModifyPeople.html:28 html/Ticket/ModifyPeople.html:34
-#. ($Ticket->id)
-#. ($Ticket->Id)
 msgid "Modify people related to ticket #%1"
 msgstr "Malkovich Malkovich to Malkovich #%1"
 
-#: html/Admin/Queues/Scrips.html:45
-#. ($QueueObj->Name)
 msgid "Modify scrips for queue %1"
 msgstr "Malkovich Malkovich %1"
 
-#: html/Admin/Global/Scrips.html:43 html/Admin/Global/index.html:41
 msgid "Modify scrips which apply to all queues"
 msgstr "Malkovich Malkovich to Malkovich"
 
-#: html/Admin/Global/Template.html:24 html/Admin/Global/Template.html:29 html/Admin/Global/Template.html:80 html/Admin/Queues/Template.html:77
-#. (loc($TemplateObj->Name()))
-#. ($TemplateObj->id)
 msgid "Modify template %1"
 msgstr "Malkovich %1"
 
-#: html/Admin/Global/Templates.html:43
 msgid "Modify templates which apply to all queues"
 msgstr "Malkovich Malkovich Malkovich to Malkovich"
 
-#: html/Admin/Groups/Modify.html:96 html/User/Groups/Modify.html:85
-#. ($Group->Name)
 msgid "Modify the group %1"
 msgstr "Malkovich the Malkovich %1"
 
-#: lib/RT/Queue_Overlay.pm:72
 msgid "Modify the queue watchers"
 msgstr "Malkovich the Malkovich"
 
-#: html/Admin/Users/Modify.html:285
-#. ($UserObj->Name)
 msgid "Modify the user %1"
 msgstr "Malkovich the user %1"
 
-#: html/Ticket/ModifyAll.html:36
-#. ($Ticket->Id)
 msgid "Modify ticket # %1"
 msgstr "Malkovich # %1"
 
-#: html/Ticket/Modify.html:24 html/Ticket/Modify.html:27 html/Ticket/Modify.html:33
-#. ($TicketObj->Id)
 msgid "Modify ticket #%1"
 msgstr "Malkovich #%1"
 
-#: lib/RT/Queue_Overlay.pm:90
 msgid "Modify tickets"
 msgstr "Malkovich"
 
-#: html/Admin/Groups/UserRights.html:24 html/Admin/Groups/UserRights.html:28 html/Admin/Groups/UserRights.html:34
-#. ($GroupObj->Name)
 msgid "Modify user rights for group %1"
 msgstr "Malkovich Malkovich Malkovich %1"
 
-#: html/Admin/Queues/UserRights.html:24 html/Admin/Queues/UserRights.html:28
-#. ($QueueObj->Name)
 msgid "Modify user rights for queue %1"
 msgstr "Malkovich Malkovich Malkovich %1"
 
-#: lib/RT/Queue_Overlay.pm:71
 msgid "ModifyACL"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:149
 msgid "ModifyOwnMembership"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:72
 msgid "ModifyQueueWatchers"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:77
 msgid "ModifyScrips"
 msgstr "Malkovich"
 
-#: lib/RT/System.pm:60
 msgid "ModifySelf"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:74
 msgid "ModifyTemplate"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:90
 msgid "ModifyTicket"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:388
 msgid "Mon."
 msgstr "Mon."
 
-#: html/Ticket/Elements/ShowRequestor:40
-#. ($name)
 msgid "More about %1"
 msgstr "Malkovich %1"
 
-#: html/Admin/Elements/PickCustomFields:62
 msgid "Move down"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/PickCustomFields:54
 msgid "Move up"
-msgstr "Malkovich up"
+msgid "Move up"
 
-#: html/Admin/Elements/SelectSingleOrMultiple:26
 msgid "Multiple"
 msgstr "Malkovich"
 
-#: lib/RT/User_Overlay.pm:201
 msgid "Must specify 'Name' attribute"
 msgstr "Malkovich 'Name' Malkovich"
 
-#: html/SelfService/Elements/MyRequests:48
-#. ($friendly_status)
 msgid "My %1 tickets"
 msgstr "My %1 Malkovich"
 
-#: html/Approvals/index.html:24 html/Approvals/index.html:25
 msgid "My approvals"
 msgstr "My Malkovich"
 
-#: html/Admin/CustomFields/Modify.html:12 html/Admin/Elements/AddCustomFieldValue:31 html/Admin/Elements/EditCustomField:33 html/Admin/Elements/EditCustomFieldValues:33 html/Admin/Elements/ModifyTemplate:27 html/Admin/Elements/ModifyUser:29 html/Admin/Groups/Modify.html:43 html/User/Groups/Modify.html:43
 msgid "Name"
 msgstr "Name"
 
-#: lib/RT/User_Overlay.pm:208
 msgid "Name in use"
 msgstr "Name in use"
 
-#: html/Ticket/Elements/ShowDates:52
 msgid "Never"
 msgstr "Malkovich"
 
-#: html/Elements/Quicksearch:29
 msgid "New"
 msgstr "New"
 
-#: html/Admin/Elements/ModifyUser:31 html/Admin/Users/Modify.html:97 html/User/Prefs.html:87
 msgid "New Password"
 msgstr "Malkovich"
 
-#: etc/initialdata:317 etc/upgrade/2.1.71:16
 msgid "New Pending Approval"
 msgstr "Malkovich Malkovich"
 
-#: html/Elements/EditLinks:93 html/Ticket/Elements/EditLinks:93
 msgid "New Relationships"
 msgstr "Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "New Search"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/CustomFieldTabs:43 html/Admin/Queues/CustomField.html:51
 msgid "New custom field"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Elements/GroupTabs:55 html/User/Elements/GroupTabs:51
 msgid "New group"
 msgstr "Malkovich"
 
-#: html/SelfService/Prefs.html:31
 msgid "New password"
 msgstr "Malkovich"
 
-#: lib/RT/User_Overlay.pm:782
 msgid "New password notification sent"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Admin/Elements/QueueTabs:73
 msgid "New queue"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/SelectRights:41
 msgid "New rights"
 msgstr "Malkovich"
 
-#: html/Admin/Global/Scrip.html:39 html/Admin/Global/Scrips.html:38 html/Admin/Queues/Scrip.html:42 html/Admin/Queues/Scrips.html:54
 msgid "New scrip"
 msgstr "Malkovich"
 
-#: html/Admin/Global/Template.html:59 html/Admin/Global/Templates.html:38 html/Admin/Queues/Template.html:57 html/Admin/Queues/Templates.html:49
 msgid "New template"
 msgstr "Malkovich"
 
-#: html/SelfService/Elements/Tabs:47
 msgid "New ticket"
 msgstr "Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2696
 msgid "New ticket doesn't exist"
 msgstr "Malkovich doesn't Malkovich"
 
-#: html/Admin/Elements/UserTabs:57
 msgid "New user"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/CreateUserCalled:25
 msgid "New user called"
 msgstr "Malkovich"
 
-#: html/Admin/Queues/People.html:54 html/Ticket/Elements/EditPeople:28
 msgid "New watchers"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Prefs.html:41
 msgid "New window setting"
 msgstr "Malkovich Malkovich"
 
-#: html/Ticket/Elements/Tabs:70
 msgid "Next"
 msgstr "Next"
 
-#: html/Admin/Elements/ModifyUser:49
 msgid "NickName"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Modify.html:62 html/User/Prefs.html:50
 msgid "Nickname"
 msgstr "Malkovich"
 
-#: html/Admin/CustomFields/Modify.html:78 html/Admin/Elements/EditCustomField:89
 msgid "No CustomField"
 msgstr "No Malkovich"
 
-#: html/Admin/Groups/GroupRights.html:83 html/Admin/Groups/UserRights.html:70
 msgid "No Group defined"
 msgstr "No Malkovich"
 
-#: lib/RT/Tickets_Overlay_SQL.pm:519
 msgid "No Query"
 msgstr "No Malkovich"
 
-#: html/Admin/Queues/GroupRights.html:96 html/Admin/Queues/UserRights.html:67
 msgid "No Queue defined"
 msgstr "No Malkovich"
 
-#: bin/rt-crontool:55
 msgid "No RT user found. Please consult your RT administrator.\\n"
 msgstr "No RT Malkovich. Malkovich Malkovich RT Malkovich.\\n"
 
-#: html/Admin/Global/Template.html:78 html/Admin/Queues/Template.html:75
 msgid "No Template"
 msgstr "No Malkovich"
 
-#: bin/rt-commit-handler:763
 msgid "No Ticket specified. Aborting ticket "
 msgstr "No Malkovich Malkovich. Malkovich "
 
-#: html/Approvals/Elements/Approve:45
 msgid "No action"
 msgstr "No Malkovich"
 
-#: lib/RT/Record.pm:765
 msgid "No column specified"
 msgstr "No Malkovich Malkovich"
 
-#: html/Elements/ViewUser:35 html/Ticket/Elements/ShowRequestor:46
 msgid "No comment entered about this user"
 msgstr "No Malkovich Malkovich Malkovich"
 
-#: lib/RT/Action/Generic.pm:159 lib/RT/Condition/Generic.pm:175 lib/RT/Search/ActiveTicketsInQueue.pm:55 lib/RT/Search/Generic.pm:112
-#. (ref $self)
 msgid "No description for %1"
 msgstr "No Malkovich %1"
 
-#: lib/RT/Users_Overlay.pm:159
 msgid "No group specified"
 msgstr "No Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2471
 msgid "No message attached"
 msgstr "No Malkovich Malkovich"
 
-#: lib/RT/User_Overlay.pm:1000
 msgid "No password set"
 msgstr "No Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:296
 msgid "No permission to create queues"
 msgstr "No Malkovich to Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "No Malkovich to Malkovich in the Malkovich '%1'"
 
-#: lib/RT/User_Overlay.pm:161
 msgid "No permission to create users"
 msgstr "No Malkovich to Malkovich"
 
-#: html/SelfService/Display.html:125
 msgid "No permission to display that ticket"
 msgstr "No Malkovich to Malkovich Malkovich"
 
-#: html/SelfService/Update.html:68
 msgid "No permission to view update ticket"
 msgstr "No Malkovich to Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:734 lib/RT/Ticket_Overlay.pm:1577
 msgid "No principal specified"
 msgstr "No Malkovich Malkovich"
 
-#: html/Admin/Queues/People.html:153 html/Admin/Queues/People.html:163
 msgid "No principals selected."
 msgstr "No Malkovich Malkovich."
 
-#: html/Admin/Queues/index.html:34
 msgid "No queues matching search criteria found."
 msgstr "No Malkovich Malkovich Malkovich Malkovich."
 
-#: html/Admin/Elements/SelectRights:81
 msgid "No rights found"
 msgstr "No Malkovich"
 
-#: html/Admin/Elements/SelectRights:32
 msgid "No rights granted."
 msgstr "No Malkovich."
 
-#: html/Search/Bulk.html:168
 msgid "No search to operate on."
 msgstr "No Malkovich to Malkovich on."
 
-#: lib/RT/Transaction_Overlay.pm:466 lib/RT/Transaction_Overlay.pm:504
 msgid "No transaction type specified"
 msgstr "No Malkovich Malkovich Malkovich"
 
-#: html/Admin/Users/index.html:35
 msgid "No users matching search criteria found."
 msgstr "No Malkovich Malkovich Malkovich Malkovich."
 
-#: bin/rt-commit-handler:643
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "No Malkovich RT Malkovich. RT Malkovich Malkovich. Malkovich Malkovich RT Malkovich.\\n"
 
-#: lib/RT/Record.pm:762
 msgid "No value sent to _Set!\\n"
 msgstr "No Malkovich to _Set!\\n"
 
-#: lib/RT/Record.pm:767
 msgid "Nonexistant field?"
 msgstr "Malkovich Malkovich?"
 
-#: html/Elements/Header:76
 msgid "Not logged in."
 msgstr "Malkovich in."
 
-#: lib/RT/Date.pm:369
 msgid "Not set"
 msgstr "Malkovich"
 
-#: html/NoAuth/Reminder.html:26
 msgid "Not yet implemented."
 msgstr "Malkovich Malkovich."
 
-#: html/Approvals/Elements/Approve:48
 msgid "Notes"
 msgstr "Malkovich"
 
-#: lib/RT/User_Overlay.pm:785
 msgid "Notification could not be sent"
 msgstr "Malkovich Malkovich be sent"
 
-#: etc/initialdata:93
 msgid "Notify AdminCcs"
 msgstr "Malkovich"
 
-#: etc/initialdata:89
 msgid "Notify AdminCcs as Comment"
 msgstr "Malkovich as Malkovich"
 
-#: etc/initialdata:120
 msgid "Notify Other Recipients"
 msgstr "Malkovich Malkovich"
 
-#: etc/initialdata:116
 msgid "Notify Other Recipients as Comment"
 msgstr "Malkovich Malkovich as Malkovich"
 
-#: etc/initialdata:85
 msgid "Notify Owner"
 msgstr "Malkovich"
 
-#: etc/initialdata:81
 msgid "Notify Owner as Comment"
 msgstr "Malkovich as Malkovich"
 
-#: etc/initialdata:361
 msgid "Notify Owner of their rejected ticket"
 msgstr "Malkovich of Malkovich Malkovich"
 
-#: etc/initialdata:350
 msgid "Notify Owner of their ticket has been approved by all approvers"
 msgstr "Malkovich of Malkovich Malkovich Malkovich by Malkovich"
 
-#: etc/initialdata:338
 msgid "Notify Owner of their ticket has been approved by some approver"
 msgstr "Malkovich of Malkovich Malkovich Malkovich by Malkovich"
 
-#: etc/initialdata:319 etc/upgrade/2.1.71:17
 msgid "Notify Owners and AdminCcs of new items pending their approval"
 msgstr "Malkovich and Malkovich of Malkovich Malkovich Malkovich"
 
-#: etc/initialdata:77
 msgid "Notify Requestors"
 msgstr "Malkovich Malkovich"
 
-#: etc/initialdata:103
 msgid "Notify Requestors and Ccs"
 msgstr "Malkovich Malkovich and Ccs"
 
-#: etc/initialdata:98
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Malkovich Malkovich and Ccs as Malkovich"
 
-#: etc/initialdata:112
 msgid "Notify Requestors, Ccs and AdminCcs"
 msgstr "Malkovich Malkovich, Ccs and Malkovich"
 
-#: etc/initialdata:108
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "Malkovich Malkovich, Ccs and Malkovich as Malkovich"
 
-#: lib/RT/Date.pm:421
 msgid "Nov."
 msgstr "Nov."
 
-#: lib/RT/Record.pm:200
 msgid "Object could not be created"
 msgstr "Malkovich Malkovich be Malkovich"
 
-#: lib/RT/Record.pm:219
 msgid "Object created"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:420
 msgid "Oct."
 msgstr "Oct."
 
-#: html/Elements/SelectDateRelation:34
 msgid "On"
 msgstr "On"
 
-#: etc/initialdata:155
 msgid "On Comment"
 msgstr "On Malkovich"
 
-#: etc/initialdata:148
 msgid "On Correspond"
 msgstr "On Malkovich"
 
-#: etc/initialdata:137
 msgid "On Create"
 msgstr "On Malkovich"
 
-#: etc/initialdata:169
 msgid "On Owner Change"
 msgstr "On Malkovich"
 
-#: etc/initialdata:177
 msgid "On Queue Change"
 msgstr "On Malkovich"
 
-#: etc/initialdata:183
 msgid "On Resolve"
 msgstr "On Malkovich"
 
-#: etc/initialdata:161
 msgid "On Status Change"
 msgstr "On Malkovich"
 
-#: etc/initialdata:142
 msgid "On Transaction"
 msgstr "On Malkovich"
 
-#: html/Approvals/Elements/PendingMyApproval:49
-#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter'>")
 msgid "Only show approvals for requests created after %1"
 msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich %1"
 
-#: html/Approvals/Elements/PendingMyApproval:47
-#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>")
 msgid "Only show approvals for requests created before %1"
 msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich %1"
 
-#: html/Elements/Quicksearch:30
 msgid "Open"
 msgstr "Open"
 
-#: html/Ticket/Elements/Tabs:137
 msgid "Open it"
 msgstr "Open it"
 
-#: html/SelfService/Elements/Tabs:41
 msgid "Open tickets"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Prefs.html:40
 msgid "Open tickets (from listing) in a new window"
 msgstr "Malkovich (Malkovich) in a Malkovich"
 
-#: html/Admin/Users/Prefs.html:39
 msgid "Open tickets (from listing) in another window"
 msgstr "Malkovich (Malkovich) in Malkovich"
 
-#: etc/initialdata:132
 msgid "Open tickets on correspondence"
 msgstr "Malkovich on Malkovich"
 
-#: html/Search/Elements/PickRestriction:101
 msgid "Ordering and sorting"
 msgstr "Malkovich and Malkovich"
 
-#: html/Admin/Elements/ModifyUser:45 html/Admin/Users/Modify.html:121 html/User/Prefs.html:110
 msgid "Organization"
 msgstr "Malkovich"
 
-#: html/Approvals/Elements/Approve:32
-#. ($approving->Id, $approving->Subject)
 msgid "Originating ticket: #%1"
 msgstr "Malkovich Malkovich: #%1"
 
-#: html/Admin/Elements/ModifyQueue:54 html/Admin/Queues/Modify.html:68
 msgid "Over time, priority moves toward"
 msgstr "Malkovich, Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:89
 msgid "Own tickets"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:89
 msgid "OwnTicket"
 msgstr "Malkovich"
 
-#: etc/initialdata:38 html/Elements/QuickCreate:13 html/Projects/Overview.html:13 html/Scope/Update.html:47 html/Search/Elements/PickBasics:114 html/SelfService/Elements/MyRequests:29 html/Ticket/Create.html:48 html/Ticket/Elements/EditPeople:42 html/Ticket/Elements/EditPeople:43 html/Ticket/Elements/ShowPeople:26 html/Ticket/Update.html:40 lib/RT/ACE_Overlay.pm:85 lib/RT/Tickets_Overlay.pm:1426
 msgid "Owner"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:588
-#. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Malkovich Malkovich Malkovich %1 to %2"
 
-#: html/Search/Elements/PickRestriction:30
 msgid "Owner is"
 msgstr "Malkovich is"
 
-#: html/Admin/Users/Modify.html:178 html/User/Prefs.html:75
 msgid "Pager"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:73
 msgid "PagerPhone"
 msgstr "Malkovich"
 
-#: html/Elements/EditLinks:117 html/Elements/EditLinks:54 html/Elements/ShowLinks:46 html/Ticket/Create.html:191 html/Ticket/Elements/BulkLinks:38 html/Ticket/Elements/EditLinks:109 html/Ticket/Elements/EditLinks:54 html/Ticket/Elements/ShowLinks:46
 msgid "Parents"
 msgstr "Malkovich"
 
-#: html/Elements/Login:52 html/User/Prefs.html:83
 msgid "Password"
 msgstr "Malkovich"
 
-#: html/NoAuth/Reminder.html:24
 msgid "Password Reminder"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/User_Overlay.pm:1003 lib/RT/User_Overlay.pm:189
 msgid "Password too short"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Users/Modify.html:341 html/User/Prefs.html:213
-#. (loc_fuzzy($msg))
 msgid "Password: %1"
 msgstr "Malkovich: %1"
 
-#: html/Admin/Users/Modify.html:343
 msgid "Passwords do not match."
 msgstr "Malkovich do Malkovich."
 
-#: html/User/Prefs.html:215
 msgid "Passwords do not match. Your password has not been changed"
 msgstr "Malkovich do Malkovich. Malkovich Malkovich Malkovich"
 
-#: html/Scope/Elements/ShowSummary:42 html/Ticket/Elements/ShowSummary:44 html/Ticket/Elements/Tabs:97 html/Ticket/ModifyAll.html:50
 msgid "People"
 msgstr "Malkovich"
 
-#: etc/initialdata:125
 msgid "Perform a user-defined action"
 msgstr "Malkovich a user-Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:230 lib/RT/ACE_Overlay.pm:236 lib/RT/ACE_Overlay.pm:562 lib/RT/ACE_Overlay.pm:572 lib/RT/ACE_Overlay.pm:582 lib/RT/ACE_Overlay.pm:647 lib/RT/Attribute_Overlay.pm:135 lib/RT/Attribute_Overlay.pm:141 lib/RT/Attribute_Overlay.pm:377 lib/RT/Attribute_Overlay.pm:386 lib/RT/Attribute_Overlay.pm:399 lib/RT/CurrentUser.pm:103 lib/RT/CurrentUser.pm:94 lib/RT/CustomField_Overlay.pm:125 lib/RT/CustomField_Overlay.pm:136 lib/RT/CustomField_Overlay.pm:266 lib/RT/CustomField_Overlay.pm:298 lib/RT/CustomField_Overlay.pm:632 lib/RT/CustomField_Overlay.pm:757 lib/RT/CustomField_Overlay.pm:782 lib/RT/Group_Overlay.pm:1096 lib/RT/Group_Overlay.pm:1100 lib/RT/Group_Overlay.pm:1109 lib/RT/Group_Overlay.pm:1167 lib/RT/Group_Overlay.pm:1171 lib/RT/Group_Overlay.pm:1177 lib/RT/Group_Overlay.pm:426 lib/RT/Group_Overlay.pm:523 lib/RT/Group_Overlay.pm:601 lib/RT/Group_Overlay.pm:609 lib/RT/Group_Overlay.pm:706 lib/RT/Group_Overlay.pm:710 lib/RT/Group_Overlay.pm:716 lib/RT/Group_Overlay.pm:901 lib/RT/Group_Overlay.pm:905 lib/RT/Group_Overlay.pm:918 lib/RT/Queue_Overlay.pm:117 lib/RT/Queue_Overlay.pm:135 lib/RT/Queue_Overlay.pm:596 lib/RT/Queue_Overlay.pm:606 lib/RT/Queue_Overlay.pm:620 lib/RT/Queue_Overlay.pm:758 lib/RT/Queue_Overlay.pm:767 lib/RT/Queue_Overlay.pm:780 lib/RT/Queue_Overlay.pm:993 lib/RT/Record.pm:1354 lib/RT/Record.pm:1528 lib/RT/Scrip_Overlay.pm:125 lib/RT/Scrip_Overlay.pm:136 lib/RT/Scrip_Overlay.pm:201 lib/RT/Scrip_Overlay.pm:473 lib/RT/Template_Overlay.pm:284 lib/RT/Template_Overlay.pm:87 lib/RT/Template_Overlay.pm:93 lib/RT/Ticket_Overlay.pm:1449 lib/RT/Ticket_Overlay.pm:1459 lib/RT/Ticket_Overlay.pm:1473 lib/RT/Ticket_Overlay.pm:1610 lib/RT/Ticket_Overlay.pm:1620 lib/RT/Ticket_Overlay.pm:1634 lib/RT/Ticket_Overlay.pm:1751 lib/RT/Ticket_Overlay.pm:2071 lib/RT/Ticket_Overlay.pm:2209 lib/RT/Ticket_Overlay.pm:2377 lib/RT/Ticket_Overlay.pm:2424 lib/RT/Ticket_Overlay.pm:2578 lib/RT/Ticket_Overlay.pm:2636 lib/RT/Ticket_Overlay.pm:2687 lib/RT/Ticket_Overlay.pm:2702 lib/RT/Ticket_Overlay.pm:2901 lib/RT/Ticket_Overlay.pm:2911 lib/RT/Ticket_Overlay.pm:2916 lib/RT/Ticket_Overlay.pm:3139 lib/RT/Ticket_Overlay.pm:3143 lib/RT/Ticket_Overlay.pm:3284 lib/RT/Ticket_Overlay.pm:3406 lib/RT/Transaction_Overlay.pm:454 lib/RT/Transaction_Overlay.pm:461 lib/RT/Transaction_Overlay.pm:490 lib/RT/Transaction_Overlay.pm:497 lib/RT/User_Overlay.pm:1117 lib/RT/User_Overlay.pm:1567 lib/RT/User_Overlay.pm:344 lib/RT/User_Overlay.pm:705 lib/RT/User_Overlay.pm:740 lib/RT/User_Overlay.pm:996
 msgid "Permission Denied"
 msgstr "Malkovich Malkovich"
 
-#: html/User/Elements/Tabs:34
 msgid "Personal Groups"
 msgstr "Malkovich"
 
-#: html/User/Groups/index.html:29 html/User/Groups/index.html:39
 msgid "Personal groups"
 msgstr "Malkovich"
 
-#: html/User/Elements/DelegateRights:36
 msgid "Personal groups:"
 msgstr "Malkovich:"
 
-#: html/Admin/Users/Modify.html:160 html/User/Prefs.html:60
 msgid "Phone numbers"
 msgstr "Malkovich"
 
-#: html/Elements/Header:68 html/Elements/Tabs:55 html/SelfService/Elements/Tabs:50 html/SelfService/Prefs.html:24 html/User/Prefs.html:24 html/User/Prefs.html:27
 msgid "Preferences"
 msgstr "Malkovich"
 
-#: lib/RT/Action/Generic.pm:169
 msgid "Prepare Stubbed"
 msgstr "Malkovich"
 
-#: html/Ticket/Elements/Tabs:62
 msgid "Prev"
 msgstr "Prev"
 
-#: lib/RT/ACE_Overlay.pm:132 lib/RT/ACE_Overlay.pm:207 lib/RT/ACE_Overlay.pm:551
-#. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
 msgstr "Malkovich %1 Malkovich."
 
-#: html/Projects/Overview.html:16 html/Search/Elements/PickBasics:58 html/Search/Elements/PickRestriction:54 html/Ticket/Create.html:162 html/Ticket/Elements/EditBasics:52 html/Ticket/Elements/ShowBasics:50 lib/RT/Tickets_Overlay.pm:1224
 msgid "Priority"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyQueue:50 html/Admin/Queues/Modify.html:64
 msgid "Priority starts at"
 msgstr "Malkovich at"
 
-#: etc/initialdata:25
 msgid "Privileged"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Modify.html:321 html/User/Prefs.html:204
-#. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
 msgstr "Malkovich Malkovich: %1"
 
-#: html/Admin/Users/index.html:82
 msgid "Privileged users"
 msgstr "Malkovich Malkovich"
 
-#: html/Projects/Elements/Tabs:28
 msgid "Projects"
 msgstr "Malkovich"
 
-#: etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
 msgid "Pseudogroup for internal use"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Elements/QuickCreate:10 html/Elements/Quicksearch:28 html/Search/Elements/PickBasics:94 html/Search/Elements/PickRestriction:46 html/SelfService/Create.html:32 html/Ticket/Create.html:38 html/Ticket/Elements/EditBasics:35 html/Ticket/Elements/ShowBasics:54 html/User/Elements/DelegateRights:79 lib/RT/Tickets_Overlay.pm:1065
 msgid "Queue"
 msgstr "Malkovich"
 
-#: html/Admin/Queues/CustomField.html:41 html/Admin/Queues/Scrip.html:49 html/Admin/Queues/Scrips.html:47 html/Admin/Queues/Templates.html:43
-#. ($Queue)
-#. ($id)
 msgid "Queue %1 not found"
 msgstr "Malkovich %1 Malkovich"
 
-#: html/Admin/Elements/ModifyQueue:30 html/Admin/Queues/Modify.html:42
 msgid "Queue Name"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:300
 msgid "Queue already exists"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:309 lib/RT/Queue_Overlay.pm:315
 msgid "Queue could not be created"
 msgstr "Malkovich not be Malkovich"
 
-#: html/Ticket/Create.html:217
 msgid "Queue could not be loaded."
 msgstr "Malkovich be Malkovich."
 
-#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:319 lib/RT/StyleGuide.pod:789
 msgid "Queue created"
 msgstr "Malkovich"
 
-#: html/SelfService/Display.html:72 lib/RT/CustomField_Overlay.pm:133
 msgid "Queue not found"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/Tabs:37 html/Admin/index.html:34
 msgid "Queues"
 msgstr "Malkovich"
 
-#: html/Elements/Quicksearch:24
 msgid "Quick search"
 msgstr "Malkovich"
 
-#: html/Elements/Login:44
-#. ($RT::VERSION)
 msgid "RT %1"
 msgstr "RT %1"
 
-#: docs/design_docs/string-extraction-guide.txt:70 lib/RT/StyleGuide.pod:776
-#. ($RT::VERSION, $RT::rtname)
 msgid "RT %1 for %2"
 msgstr "RT %1 for %2"
 
-#: NOT FOUND IN SOURCE
 msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
 msgstr "RT %1 from <a href=\"http://Malkovich.com\">Malkovich Malkovich, LLC</a>."
 
-#: html/Admin/index.html:24 html/Admin/index.html:25
 msgid "RT Administration"
 msgstr "RT Malkovich"
 
-#: html/Elements/Error:41 html/SelfService/Error.html:40
 msgid "RT Error"
 msgstr "RT Malkovich"
 
-#: html/index.html:50 html/index.html:53
 msgid "RT at a glance"
 msgstr "RT at a Malkovich"
 
-#: html/Elements/PageLayout:85
-#. ($RT::rtname)
 msgid "RT for %1"
 msgstr "RT for %1"
 
-#: NOT FOUND IN SOURCE
 msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent <jesse@bestpractical.com>.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
 msgstr "RT is &copy; Malkovich 1996-%1 Malkovich <Malkovich@Malkovich.com>.  It is Malkovich Malkovich <a href=\"http://www.gnu.org/copyleft/gpl.html\">Malkovich 2 of the Malkovich Malkovich Malkovich.</a>"
 
-#: html/Admin/Users/Modify.html:57 html/Admin/Users/Prefs.html:51 html/User/Prefs.html:47
 msgid "Real Name"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:47
 msgid "RealName"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:641
-#. ($value)
 msgid "Reference by %1 added"
 msgstr "Malkovich by %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:681
-#. ($value)
 msgid "Reference by %1 deleted"
 msgstr "Malkovich by %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:638
-#. ($value)
 msgid "Reference to %1 added"
 msgstr "Malkovich to %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:678
-#. ($value)
 msgid "Reference to %1 deleted"
 msgstr "Malkovich to %1 Malkovich"
 
-#: html/Elements/EditLinks:129 html/Elements/EditLinks:81 html/Elements/ShowLinks:70 html/Ticket/Create.html:194 html/Ticket/Elements/BulkLinks:50 html/Ticket/Elements/EditLinks:121 html/Ticket/Elements/EditLinks:81 html/Ticket/Elements/ShowLinks:70
 msgid "Referred to by"
 msgstr "Malkovich to by"
 
-#: html/Elements/EditLinks:125 html/Elements/EditLinks:72 html/Elements/SelectLinkType:27 html/Elements/ShowLinks:60 html/Ticket/Create.html:193 html/Ticket/Elements/BulkLinks:46 html/Ticket/Elements/EditLinks:117 html/Ticket/Elements/EditLinks:72 html/Ticket/Elements/ShowLinks:60
 msgid "Refers to"
 msgstr "Malkovich to"
 
-#: html/Search/Elements/PickRestriction:26
 msgid "Refine search"
 msgstr "Malkovich"
 
-#: html/Elements/Refresh:35
-#. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Malkovich Malkovich %1 Malkovich."
 
-#: html/Scope/Elements/ShowSummary:57 html/Ticket/Create.html:183 html/Ticket/Elements/ShowSummary:61 html/Ticket/ModifyAll.html:56
 msgid "Relationships"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:95
 msgid "Remove AdminCc"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:91
 msgid "Remove Cc"
 msgstr "Malkovich Cc"
 
-#: html/Search/Bulk.html:87
 msgid "Remove Requestor"
 msgstr "Malkovich Malkovich"
 
-#: html/Scope/Elements/ShowTransaction:161 html/Ticket/Elements/ShowTransaction:145 html/Ticket/Elements/Tabs:123
 msgid "Reply"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:87
 msgid "Reply to tickets"
 msgstr "Malkovich to Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:87
 msgid "ReplyToTicket"
 msgstr "Malkovich"
 
-#: etc/initialdata:44 lib/RT/ACE_Overlay.pm:86
 msgid "Requestor"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Requestor email address"
 msgstr "Malkovich Malkovich"
 
-#: html/SelfService/Create.html:40 html/Ticket/Create.html:56 html/Ticket/Elements/EditPeople:47 html/Ticket/Elements/ShowPeople:30
 msgid "Requestors"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyQueue:60 html/Admin/Queues/Modify.html:74
 msgid "Requests should be due in"
 msgstr "Malkovich be due in"
 
-#: html/Elements/Submit:82
 msgid "Reset"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Modify.html:163 html/User/Prefs.html:63
 msgid "Residence"
 msgstr "Malkovich"
 
-#: html/Ticket/Elements/Tabs:133
 msgid "Resolve"
 msgstr "Malkovich"
 
-#: html/Scope/Update.html:120 html/Ticket/Update.html:129
-#. ($TicketObj->id, $TicketObj->Subject)
-#. ($Ticket->id, $Ticket->Subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Malkovich #%1 (%2)"
 
-#: etc/initialdata:308 html/Elements/SelectDateType:27 lib/RT/Ticket_Overlay.pm:1278
 msgid "Resolved"
 msgstr "Malkovich"
 
-#: html/Scope/Update.html:56
 msgid "Response to requestors"
 msgstr "Malkovich to Malkovich"
 
-#: html/Elements/ListActions:25 html/Search/Elements/NewListActions:25
 msgid "Results"
 msgstr "Malkovich"
 
-#: html/Search/Elements/PickRestriction:105
 msgid "Results per page"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Elements/ModifyUser:32 html/Admin/Users/Modify.html:104 html/User/Prefs.html:94
 msgid "Retype Password"
 msgstr "Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:612
 msgid "Right Delegated"
 msgstr "Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:302
 msgid "Right Granted"
 msgstr "Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:160
 msgid "Right Loaded"
 msgstr "Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:677 lib/RT/ACE_Overlay.pm:692
 msgid "Right could not be revoked"
 msgstr "Malkovich be Malkovich"
 
-#: html/User/Delegation.html:63
 msgid "Right not found"
 msgstr "Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:542 lib/RT/ACE_Overlay.pm:637
 msgid "Right not loaded."
 msgstr "Malkovich Malkovich."
 
-#: lib/RT/ACE_Overlay.pm:688
 msgid "Right revoked"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/UserTabs:46
 msgid "Rights"
 msgstr "Malkovich"
 
-#: html/Admin/CustomFields/GroupRights.html:99 lib/RT/Interface/Web.pm:856
-#. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Malkovich Malkovich be Malkovich %1"
 
-#: html/Admin/CustomFields/GroupRights.html:126 lib/RT/Interface/Web.pm:886
-#. ($object_type)
 msgid "Rights could not be revoked for %1"
 msgstr "Malkovich Malkovich be Malkovich %1"
 
-#: html/Admin/Global/GroupRights.html:50 html/Admin/Queues/GroupRights.html:52
 msgid "Roles"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:393
 msgid "Sat."
 msgstr "Sat."
 
-#: html/Admin/Queues/People.html:104 html/Ticket/Modify.html:38 html/Ticket/ModifyAll.html:101 html/Ticket/ModifyLinks.html:38 html/Ticket/ModifyPeople.html:37
 msgid "Save Changes"
 msgstr "Malkovich"
 
-#: html/Ticket/Elements/PreviewScrips:79
 msgid "Save changes"
 msgstr "Malkovich"
 
-#: html/Admin/Global/Scrip.html:48 html/Admin/Queues/Scrip.html:54
-#. ($id)
-#. ($ARGS{'id'})
 msgid "Scrip #%1"
 msgstr "Malkovich #%1"
 
-#: lib/RT/Scrip_Overlay.pm:180
 msgid "Scrip Created"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/EditScrips:85
 msgid "Scrip deleted"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/QueueTabs:45 html/Admin/Elements/SystemTabs:32 html/Admin/Global/index.html:40
 msgid "Scrips"
 msgstr "Malkovich"
 
-#: html/Admin/Queues/Scrips.html:33
 msgid "Scrips which apply to all queues"
 msgstr "Malkovich Malkovich to Malkovich"
 
-#: html/Elements/SimpleSearch:26 html/Search/Elements/DisplayOptions:61 html/Search/Elements/PickRestriction:126
 msgid "Search"
 msgstr "Malkovich"
 
-#: html/Approvals/Elements/PendingMyApproval:38
 msgid "Search for approvals"
 msgstr "Malkovich Malkovich"
 
-#: bin/rt-crontool:187
 msgid "Security:"
 msgstr "Malkovich:"
 
-#: lib/RT/Queue_Overlay.pm:68
 msgid "SeeQueue"
 msgstr "Malkovich"
 
-#: html/Admin/Groups/index.html:60
 msgid "Select a group"
 msgstr "Malkovich a Malkovich"
 
-#: html/Admin/Users/index.html:24 html/Admin/Users/index.html:27
 msgid "Select a user"
 msgstr "Malkovich a user"
 
-#: html/Admin/Elements/CustomFieldTabs:40
 msgid "Select custom field"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Elements/GroupTabs:53 html/User/Elements/GroupTabs:49
 msgid "Select group"
 msgstr "Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:485
 msgid "Select multiple values"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:486
 msgid "Select one value"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Elements/QueueTabs:70
 msgid "Select queue"
 msgstr "Malkovich"
 
-#: html/Admin/Global/Scrip.html:36 html/Admin/Global/Scrips.html:35 html/Admin/Queues/Scrip.html:39 html/Admin/Queues/Scrips.html:51
 msgid "Select scrip"
 msgstr "Malkovich"
 
-#: html/Admin/Global/Template.html:56 html/Admin/Global/Templates.html:35 html/Admin/Queues/Template.html:54 html/Admin/Queues/Templates.html:46
 msgid "Select template"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/UserTabs:54
 msgid "Select user"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "SelectMultiple"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "SelectSingle"
 msgstr "Malkovich"
 
-#: etc/initialdata:113
 msgid "Send mail to all watchers"
 msgstr "Malkovich to Malkovich"
 
-#: etc/initialdata:109
 msgid "Send mail to all watchers as a \"comment\""
 msgstr "Malkovich to Malkovich as a \"Malkovich\""
 
-#: etc/initialdata:104
 msgid "Send mail to requestors and Ccs"
 msgstr "Malkovich to Malkovich and Ccs"
 
-#: etc/initialdata:99
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Malkovich to Malkovich and Ccs as a Malkovich"
 
-#: etc/initialdata:78
 msgid "Sends a message to the requestors"
 msgstr "Malkovich a Malkovich to the Malkovich"
 
-#: etc/initialdata:117 etc/initialdata:121
 msgid "Sends mail to explicitly listed Ccs and Bccs"
 msgstr "Malkovich to Malkovich Malkovich and Bccs"
 
-#: etc/initialdata:94
 msgid "Sends mail to the administrative Ccs"
 msgstr "Malkovich to the Malkovich Malkovich"
 
-#: etc/initialdata:90
 msgid "Sends mail to the administrative Ccs as a comment"
 msgstr "Malkovich to the Malkovich Malkovich as a Malkovich"
 
-#: etc/initialdata:82 etc/initialdata:86
 msgid "Sends mail to the owner"
 msgstr "Malkovich to the Malkovich"
 
-#: lib/RT/Date.pm:419
 msgid "Sep."
 msgstr "Sep."
 
-#: html/Approvals/Elements/PendingMyApproval:43
 msgid "Show approved requests"
 msgstr "Malkovich Malkovich"
 
-#: html/Ticket/Create.html:152 html/Ticket/Create.html:34
 msgid "Show basics"
 msgstr "Malkovich"
 
-#: html/Approvals/Elements/PendingMyApproval:44
 msgid "Show denied requests"
 msgstr "Malkovich Malkovich"
 
-#: html/Ticket/Create.html:152 html/Ticket/Create.html:34
 msgid "Show details"
 msgstr "Malkovich"
 
-#: html/Approvals/Elements/PendingMyApproval:42
 msgid "Show pending requests"
 msgstr "Malkovich Malkovich"
 
-#: html/Approvals/Elements/PendingMyApproval:45
 msgid "Show requests awaiting other approvals"
 msgstr "Malkovich Malkovich Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Show ticket private commentary"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Show ticket summaries"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:70
 msgid "ShowACL"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:79
 msgid "ShowScrips"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:76
 msgid "ShowTemplate"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:80
 msgid "ShowTicket"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:81
 msgid "ShowTicketComments"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:84
 msgid "Sign up as a ticket Requestor or ticket or queue Cc"
 msgstr "Sign up as a Malkovich Malkovich or Malkovich or Malkovich Cc"
 
-#: lib/RT/Queue_Overlay.pm:85
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr "Sign up as a Malkovich or Malkovich"
 
-#: html/Admin/Elements/ModifyUser:38 html/Admin/Users/Modify.html:210 html/Admin/Users/Prefs.html:31 html/User/Prefs.html:148
 msgid "Signature"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/SelectSingleOrMultiple:25
 msgid "Single"
 msgstr "Malkovich"
 
-#: html/Elements/Header:67
 msgid "Skip Menu"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/AddCustomFieldValue:27 html/Admin/Elements/EditCustomFieldValues:32
 msgid "Sort"
 msgstr "Sort"
 
-#: html/Search/Elements/PickRestriction:109
 msgid "Sort results by"
 msgstr "Malkovich by"
 
-#: NOT FOUND IN SOURCE
 msgid "Squelched message recipients"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/Admin/Elements/EditScrip:80
 msgid "Stage"
 msgstr "Malkovich"
 
-#: html/Elements/SelectDateType:26 html/Ticket/Elements/EditDates:31 html/Ticket/Elements/ShowDates:35
 msgid "Started"
 msgstr "Malkovich"
 
-#: html/Elements/SelectDateType:30 html/Ticket/Create.html:174 html/Ticket/Elements/EditDates:26 html/Ticket/Elements/ShowDates:31
 msgid "Starts"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:81 html/Admin/Users/Modify.html:142 html/User/Prefs.html:126
 msgid "State"
 msgstr "Malkovich"
 
-#: html/Projects/Overview.html:14 html/Scope/Update.html:44 html/Search/Elements/PickBasics:77 html/Search/Elements/PickRestriction:74 html/SelfService/Elements/MyRequests:28 html/SelfService/Update.html:30 html/Ticket/Create.html:42 html/Ticket/Elements/EditBasics:31 html/Ticket/Elements/ShowBasics:30 html/Ticket/Update.html:37 lib/RT/Ticket_Overlay.pm:1272 lib/RT/Tickets_Overlay.pm:1090
 msgid "Status"
 msgstr "Malkovich"
 
-#: etc/initialdata:294
 msgid "Status Change"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:518
-#. ($self->loc($self->OldValue), $self->loc($self->NewValue))
 msgid "Status changed from %1 to %2"
 msgstr "Malkovich Malkovich %1 to %2"
 
-#: html/Ticket/Elements/Tabs:148
 msgid "Steal"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:94
 msgid "Steal tickets"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:94
 msgid "StealTicket"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:594
-#. ($Old->Name)
 msgid "Stolen from %1 "
 msgstr "Malkovich %1 "
 
-#: html/Elements/QuickCreate:7 html/Elements/SelectAttachmentField:25 html/Scope/Update.html:60 html/Search/Bulk.html:133 html/Search/Elements/PickRestriction:43 html/SelfService/Create.html:56 html/SelfService/Elements/MyRequests:27 html/SelfService/Update.html:31 html/Ticket/Create.html:84 html/Ticket/Elements/EditBasics:26 html/Ticket/ModifyAll.html:78 html/Ticket/Update.html:58 lib/RT/Ticket_Overlay.pm:1268 lib/RT/Tickets_Overlay.pm:1169
 msgid "Subject"
 msgstr "Malkovich"
 
-#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:795 lib/RT/Transaction_Overlay.pm:616
-#. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "Malkovich to %1"
 
-#: html/Elements/Submit:75
 msgid "Submit"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:754
 msgid "Succeeded"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:394
 msgid "Sun."
 msgstr "Sun."
 
-#: lib/RT/System.pm:53
 msgid "SuperUser"
 msgstr "Malkovich"
 
-#: html/User/Elements/DelegateRights:76
 msgid "System"
 msgstr "Malkovich"
 
-#: html/Admin/CustomFields/GroupRights.html:125 html/Admin/CustomFields/GroupRights.html:98 html/Admin/CustomFields/UserRights.html:101 html/Admin/CustomFields/UserRights.html:71 html/Admin/Elements/SelectRights:81 lib/RT/ACE_Overlay.pm:566 lib/RT/Interface/Web.pm:855 lib/RT/Interface/Web.pm:885
 msgid "System Error"
 msgstr "Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:615
 msgid "System error. Right not delegated."
 msgstr "Malkovich. Malkovich Malkovich."
 
-#: lib/RT/ACE_Overlay.pm:145 lib/RT/ACE_Overlay.pm:222 lib/RT/ACE_Overlay.pm:305 lib/RT/ACE_Overlay.pm:897
 msgid "System error. Right not granted."
 msgstr "Malkovich. Malkovich Malkovich."
 
-#: html/Admin/CustomFields/GroupRights.html:28 html/Admin/Global/GroupRights.html:34 html/Admin/Groups/GroupRights.html:36 html/Admin/Queues/GroupRights.html:35
 msgid "System groups"
 msgstr "Malkovich"
 
-#: etc/initialdata:41 etc/initialdata:47 etc/initialdata:53
 msgid "SystemRolegroup for internal use"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/CurrentUser.pm:334
 msgid "TEST_STRING"
 msgstr "TEST_MALKOVICH"
 
-#: html/Elements/MyRequests:27 html/Ticket/Elements/Tabs:144
 msgid "Take"
 msgstr "Take"
 
-#: lib/RT/Queue_Overlay.pm:92
 msgid "Take tickets"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:92
 msgid "TakeTicket"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:579
 msgid "Taken"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/EditScrip:88 html/Tools/Offline.html:44
 msgid "Template"
 msgstr "Malkovich"
 
-#: html/Admin/Global/Template.html:90 html/Admin/Queues/Template.html:89
-#. ($TemplateObj->Id())
 msgid "Template #%1"
 msgstr "Malkovich #%1"
 
-#: html/Admin/Elements/EditTemplates:88
 msgid "Template deleted"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Scrip_Overlay.pm:156
 msgid "Template not found"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Template_Overlay.pm:348
 msgid "Template parsed"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/QueueTabs:48 html/Admin/Elements/SystemTabs:35 html/Admin/Global/index.html:44
 msgid "Templates"
 msgstr "Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:764 lib/RT/Record.pm:761
 msgid "That is already the current value"
 msgstr "That is Malkovich the Malkovich"
 
-#: lib/RT/CustomField_Overlay.pm:307
 msgid "That is not a value for this custom field"
 msgstr "That is not a Malkovich Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2082
 msgid "That is the same value"
 msgstr "That is the Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:287 lib/RT/ACE_Overlay.pm:596
 msgid "That principal already has that right"
 msgstr "Malkovich Malkovich Malkovich Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:692
-#. ($args{'Type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Malkovich is Malkovich a %1 Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:1523
-#. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Malkovich is Malkovich a %1 Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:791
-#. ($args{'Type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "That Malkovich is not a %1 Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2078
 msgid "That queue does not exist"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:3148
 msgid "That ticket has unresolved dependencies"
 msgstr "Malkovich Malkovich Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2952
 msgid "That user already owns that ticket"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2924
 msgid "That user does not exist"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/User_Overlay.pm:364
 msgid "That user is already privileged"
 msgstr "Malkovich is Malkovich Malkovich"
 
-#: lib/RT/User_Overlay.pm:385
 msgid "That user is already unprivileged"
 msgstr "Malkovich is Malkovich Malkovich"
 
-#: lib/RT/User_Overlay.pm:377
 msgid "That user is now privileged"
 msgstr "Malkovich is Malkovich"
 
-#: lib/RT/User_Overlay.pm:398
 msgid "That user is now unprivileged"
 msgstr "Malkovich is Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:2945
 msgid "That user may not own tickets in that queue"
 msgstr "Malkovich Malkovich Malkovich in Malkovich"
 
-#: lib/RT/Link_Overlay.pm:201
 msgid "That's not a numerical id"
 msgstr "That's not a Malkovich id"
 
-#: html/Scope/Elements/ShowSummary:27 html/SelfService/Display.html:31 html/Ticket/Create.html:158 html/Ticket/Elements/ShowSummary:27
 msgid "The Basics"
 msgstr "The Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:87
 msgid "The CC of a ticket"
 msgstr "The CC of a Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:88
 msgid "The administrative CC of a ticket"
 msgstr "The Malkovich CC of a Malkovich"
 
-#: bin/rt-crontool:197
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
 msgstr "The Malkovich Malkovich Malkovich Malkovich Malkovich in the Malkovich 'Malkovich' and Malkovich Malkovich to 99 if they haven't Malkovich in 4 Malkovich:"
 
-#: bin/rt-commit-handler:755 bin/rt-commit-handler:765
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "The Malkovich Malkovich Malkovich Malkovich:\\n\\n"
 
-#: lib/RT/Record.pm:764
 msgid "The new value has been set."
 msgstr "The Malkovich Malkovich."
 
-#: lib/RT/ACE_Overlay.pm:85
 msgid "The owner of a ticket"
 msgstr "The Malkovich of a Malkovich"
 
-#: lib/RT/ACE_Overlay.pm:86
 msgid "The requestor of a ticket"
 msgstr "The Malkovich of a Malkovich"
 
-#: html/Admin/Elements/EditUserComments:25
 msgid "These comments aren't generally visible to the user"
 msgstr "Malkovich aren't Malkovich Malkovich to the user"
 
-#: bin/rt-crontool:188
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Malkovich Malkovich the user to Malkovich Malkovich Malkovich Malkovich RT."
 
-#: lib/RT/Transaction_Overlay.pm:237
 msgid "This transaction appears to have no content"
 msgstr "Malkovich Malkovich to have no Malkovich"
 
-#: html/Ticket/Elements/ShowRequestor:48
-#. ($rows)
 msgid "This user's %1 highest priority tickets"
 msgstr "Malkovich's %1 Malkovich Malkovich"
 
-#: lib/RT/Date.pm:391
 msgid "Thu."
 msgstr "Thu."
 
-#: html/Ticket/ModifyAll.html:24 html/Ticket/ModifyAll.html:28
-#. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Malkovich #%1 Malkovich: %2"
 
-#: html/Approvals/Elements/ShowDependency:45
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "Malkovich #%1: %2"
 
-#: lib/RT/Ticket_Overlay.pm:692 lib/RT/Ticket_Overlay.pm:716
-#. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Malkovich %1 Malkovich in Malkovich '%2'"
 
-#: bin/rt-commit-handler:759
-#. ($Ticket->Id)
 msgid "Ticket %1 loaded\\n"
 msgstr "Malkovich %1 Malkovich\\n"
 
-#: html/Search/Bulk.html:224
-#. ($Ticket->Id,$_)
 msgid "Ticket %1: %2"
 msgstr "Malkovich %1: %2"
 
-#: html/Ticket/History.html:24 html/Ticket/History.html:27
-#. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
 msgstr "Malkovich # %1 %2"
 
-#: etc/initialdata:309
 msgid "Ticket Resolved"
 msgstr "Malkovich"
 
-#: html/Search/Elements/PickRestriction:63
 msgid "Ticket attachment"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Tickets_Overlay.pm:1348
 msgid "Ticket content"
 msgstr "Malkovich"
 
-#: lib/RT/Tickets_Overlay.pm:1394
 msgid "Ticket content type"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:563 lib/RT/Ticket_Overlay.pm:577 lib/RT/Ticket_Overlay.pm:588 lib/RT/Ticket_Overlay.pm:703
 msgid "Ticket could not be created due to an internal error"
 msgstr "Malkovich Malkovich be Malkovich to a Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Ticket created"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Ticket deleted"
 msgstr "Malkovich"
 
-#: etc/initialdata:295
 msgid "Ticket status changed"
 msgstr "Malkovich Malkovich"
 
-#: html/Elements/Tabs:46 lib/RT/CustomField_Overlay.pm:46
 msgid "Tickets"
 msgstr "Malkovich"
 
-#: lib/RT/Tickets_Overlay.pm:1572
-#. ($self->loc($args{'TYPE'}), ($args{'BASE'} || $args{'TICKET'}))
 msgid "Tickets %1 %2"
 msgstr "Malkovich %1 %2"
 
-#: lib/RT/Tickets_Overlay.pm:1530
-#. ($self->loc($args{'TYPE'}), ($args{'TARGET'} || $args{'TICKET'}))
 msgid "Tickets %1 by %2"
 msgstr "Malkovich %1 by %2"
 
-#: html/Elements/ViewUser:25
-#. ($name)
 msgid "Tickets from %1"
 msgstr "Malkovich %1"
 
-#: html/Approvals/Elements/ShowDependency:26
 msgid "Tickets which depend on this approval:"
 msgstr "Malkovich Malkovich on Malkovich:"
 
-#: html/Search/Elements/PickBasics:70 html/Ticket/Create.html:165 html/Ticket/Elements/EditBasics:47
 msgid "Time Left"
 msgstr "Malkovich"
 
-#: html/Search/Elements/PickBasics:68 html/Ticket/Create.html:164 html/Ticket/Elements/EditBasics:43
 msgid "Time Worked"
 msgstr "Malkovich"
 
-#: lib/RT/Tickets_Overlay.pm:1321
 msgid "Time left"
 msgstr "Malkovich"
 
-#: html/Elements/Footer:40
 msgid "Time to display"
 msgstr "Time to Malkovich"
 
-#: lib/RT/Tickets_Overlay.pm:1297
 msgid "Time worked"
 msgstr "Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:1273
 msgid "TimeWorked"
 msgstr "Malkovich"
 
-#: bin/rt-commit-handler:401
 msgid "To generate a diff of this commit:"
 msgstr "To Malkovich a diff of Malkovich:"
 
-#: bin/rt-commit-handler:390
 msgid "To generate a diff of this commit:\\n"
 msgstr "To Malkovich a diff of Malkovich:\\n"
 
-#: lib/RT/Ticket_Overlay.pm:1276
 msgid "Told"
 msgstr "Told"
 
-#: etc/initialdata:237
 msgid "Transaction"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:718
-#. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "Malkovich %1 Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:147
 msgid "Transaction Created"
 msgstr "Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
 msgstr "Malkovich->Malkovich couldn't, as you didn't Malkovich a Malkovich id"
 
-#: lib/RT/Transaction_Overlay.pm:774
 msgid "Transactions are immutable"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/Date.pm:389
 msgid "Tue."
 msgstr "Tue."
 
-#: html/Admin/CustomFields/Modify.html:20 html/Admin/Elements/EditCustomField:43 html/Ticket/Elements/AddWatchers:32 html/Ticket/Elements/AddWatchers:43 html/Ticket/Elements/AddWatchers:53 lib/RT/Ticket_Overlay.pm:1274 lib/RT/Tickets_Overlay.pm:1141
 msgid "Type"
 msgstr "Type"
 
-#: lib/RT/ScripCondition_Overlay.pm:103
 msgid "Unimplemented"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Modify.html:67
 msgid "Unix login"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:61
 msgid "UnixUsername"
 msgstr "Malkovich"
 
-#: lib/RT/Attachment_Overlay.pm:246 lib/RT/Record.pm:692
-#. ($self->ContentEncoding)
-#. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "Malkovich Malkovich %1"
 
-#: html/Elements/SelectResultsPerPage:36
 msgid "Unlimited"
 msgstr "Malkovich"
 
-#: etc/initialdata:32
 msgid "Unprivileged"
 msgstr "Malkovich"
 
-#: lib/RT/Transaction_Overlay.pm:575
 msgid "Untaken"
 msgstr "Malkovich"
 
-#: html/Search/Bulk.html:32
 msgid "Update"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Prefs.html:61
 msgid "Update ID"
 msgstr "Malkovich ID"
 
-#: html/Scope/Update.html:50 html/Search/Bulk.html:127 html/Ticket/ModifyAll.html:65 html/Ticket/Update.html:48
 msgid "Update Type"
 msgstr "Malkovich"
 
-#: html/Search/Listing.html:45
 msgid "Update all these tickets at once"
 msgstr "Malkovich Malkovich at once"
 
-#: html/Admin/Users/Prefs.html:48
 msgid "Update email"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Prefs.html:54
 msgid "Update name"
 msgstr "Malkovich"
 
-#: lib/RT/Action/CreateTickets.pm:584 lib/RT/Interface/Web.pm:466
 msgid "Update not recorded."
 msgstr "Malkovich Malkovich."
 
-#: html/Search/Bulk.html:78
 msgid "Update selected tickets"
 msgstr "Malkovich Malkovich"
 
-#: html/Admin/Users/Prefs.html:35
 msgid "Update signature"
 msgstr "Malkovich Malkovich"
 
-#: html/Ticket/ModifyAll.html:62
 msgid "Update ticket"
 msgstr "Malkovich"
 
-#: html/SelfService/Update.html:24 html/SelfService/Update.html:63
-#. ($Ticket->id)
 msgid "Update ticket #%1"
 msgstr "Malkovich #%1"
 
-#: html/Scope/Update.html:122 html/Ticket/Update.html:131
-#. ($TicketObj->id, $TicketObj->Subject)
-#. ($Ticket->id, $Ticket->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "Malkovich #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:582 lib/RT/Interface/Web.pm:464
 msgid "Update type was neither correspondence nor comment."
 msgstr "Malkovich Malkovich Malkovich Malkovich Malkovich."
 
-#: html/Elements/SelectDateType:32 html/Ticket/Elements/ShowDates:51 lib/RT/Ticket_Overlay.pm:1277
 msgid "Updated"
 msgstr "Malkovich"
 
-#: etc/initialdata:124 etc/initialdata:191
 msgid "User Defined"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Prefs.html:58
 msgid "User ID"
 msgstr "User ID"
 
-#: NOT FOUND IN SOURCE
 msgid "User Id"
 msgstr "User Id"
 
-#: html/Admin/Elements/CustomFieldTabs:30 html/Admin/Elements/GroupTabs:46 html/Admin/Elements/QueueTabs:63 html/Admin/Elements/SystemTabs:46 html/Admin/Global/index.html:58
 msgid "User Rights"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Modify.html:274
-#. ($msg)
 msgid "User could not be created: %1"
 msgstr "Malkovich be Malkovich: %1"
 
-#: lib/RT/User_Overlay.pm:305
 msgid "User created"
 msgstr "Malkovich"
 
-#: html/Admin/CustomFields/GroupRights.html:44 html/Admin/Global/GroupRights.html:66 html/Admin/Groups/GroupRights.html:53 html/Admin/Queues/GroupRights.html:68
 msgid "User defined groups"
 msgstr "Malkovich Malkovich"
 
-#: lib/RT/User_Overlay.pm:567 lib/RT/User_Overlay.pm:584
 msgid "User loaded"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Prefs.html:24 html/Admin/Users/Prefs.html:28
 msgid "User view"
 msgstr "Malkovich"
 
-#: html/Admin/Users/Modify.html:47 html/Elements/Login:51 html/Ticket/Elements/AddWatchers:34
 msgid "Username"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/SelectNewGroupMembers:25 html/Admin/Elements/Tabs:31 html/Admin/Groups/Members.html:54 html/Admin/Queues/People.html:67 html/Admin/index.html:28 html/User/Groups/Members.html:57 lib/RT/CustomField_Overlay.pm:48
 msgid "Users"
 msgstr "Malkovich"
 
-#: html/Admin/Users/index.html:65
 msgid "Users matching search criteria"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: lib/RT/Tickets_Overlay_SQL.pm:561
 msgid "Valid Query"
 msgstr "Malkovich"
 
-#: html/Admin/CustomFields/Modify.html:43 html/Admin/Elements/EditCustomField:56
 msgid "Values"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:84
 msgid "Watch"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:85
 msgid "WatchAsAdminCc"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/QueueTabs:41
 msgid "Watchers"
 msgstr "Malkovich"
 
-#: html/Admin/Elements/ModifyUser:55
 msgid "WebEncoding"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:390
 msgid "Wed."
 msgstr "Wed."
 
-#: etc/initialdata:506 etc/upgrade/2.1.71:161
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
 msgstr "When a Malkovich Malkovich by Malkovich, Malkovich Malkovich to the Malkovich"
 
-#: etc/initialdata:470 etc/upgrade/2.1.71:135
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
 msgstr "When a Malkovich Malkovich by Malkovich, Malkovich Malkovich to the Malkovich"
 
-#: etc/initialdata:138
 msgid "When a ticket is created"
 msgstr "When a Malkovich is Malkovich"
 
-#: etc/initialdata:403 etc/upgrade/2.1.71:79
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "When a Malkovich is Malkovich, Malkovich the Malkovich and Malkovich of the Malkovich Malkovich Malkovich"
 
-#: etc/initialdata:143
 msgid "When anything happens"
 msgstr "Malkovich Malkovich"
 
-#: etc/initialdata:184
 msgid "Whenever a ticket is resolved"
 msgstr "Malkovich a Malkovich is Malkovich"
 
-#: etc/initialdata:170
 msgid "Whenever a ticket's owner changes"
 msgstr "Malkovich a Malkovich's Malkovich"
 
-#: etc/initialdata:178
 msgid "Whenever a ticket's queue changes"
 msgstr "Malkovich a Malkovich's Malkovich"
 
-#: etc/initialdata:162
 msgid "Whenever a ticket's status changes"
 msgstr "Malkovich a Malkovich's Malkovich"
 
-#: etc/initialdata:192
 msgid "Whenever a user-defined condition occurs"
 msgstr "Malkovich a user-Malkovich Malkovich"
 
-#: etc/initialdata:156
 msgid "Whenever comments come in"
 msgstr "Malkovich Malkovich in"
 
-#: etc/initialdata:149
 msgid "Whenever correspondence comes in"
 msgstr "Malkovich Malkovich Malkovich in"
 
-#: html/Admin/Users/Modify.html:168 html/User/Prefs.html:67
 msgid "Work"
 msgstr "Work"
 
-#: html/Admin/Elements/ModifyUser:69
 msgid "WorkPhone"
 msgstr "Malkovich"
 
-#: html/Scope/Update.html:49 html/Ticket/Elements/ShowBasics:41 html/Ticket/Update.html:42
 msgid "Worked"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "XXX CHANGEME You are not an authorized user"
 msgstr "MALKOVICH Malkovich a Malkovich"
 
-#: lib/RT/Ticket_Overlay.pm:3055
 msgid "You already own this ticket"
 msgstr "Malkovich Malkovich Malkovich"
 
-#: html/autohandler:142 html/autohandler:150
 msgid "You are not an authorized user"
 msgstr "Malkovich a Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "You can access it with the Download button on the right."
 msgstr "Malkovich it with the Malkovich on the Malkovich."
 
-#: lib/RT/Ticket_Overlay.pm:2937
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Malkovich Malkovich Malkovich Malkovich or Malkovich Malkovich"
 
-#: docs/design_docs/string-extraction-guide.txt:47 lib/RT/StyleGuide.pod:760
-#. ($num, $queue)
 msgid "You found %1 tickets in queue %2"
 msgstr "Malkovich %1 Malkovich in Malkovich %2"
 
-#: html/NoAuth/Logout.html:30
 msgid "You have been logged out of RT."
 msgstr "Malkovich Malkovich of RT."
 
-#: html/SelfService/Display.html:79
 msgid "You have no permission to create tickets in that queue."
 msgstr "Malkovich no Malkovich to Malkovich in that Malkovich."
 
-#: lib/RT/Ticket_Overlay.pm:2091
 msgid "You may not create requests in that queue."
 msgstr "Malkovich Malkovich Malkovich in Malkovich."
 
-#: html/NoAuth/Logout.html:34
 msgid "You're welcome to login again"
 msgstr "You're Malkovich to Malkovich"
 
-#: etc/initialdata:487 etc/upgrade/2.1.71:146
 msgid "Your request has been approved by %1. Other approvals may still be pending."
 msgstr "Malkovich Malkovich Malkovich by %1. Malkovich Malkovich be Malkovich."
 
-#: etc/initialdata:525 etc/upgrade/2.1.71:180
 msgid "Your request has been approved."
 msgstr "Malkovich Malkovich Malkovich."
 
-#: etc/initialdata:430 etc/upgrade/2.1.71:101
 msgid "Your request was rejected."
 msgstr "Malkovich Malkovich."
 
-#: html/autohandler:176
 msgid "Your username or password is incorrect"
 msgstr "Malkovich or Malkovich is Malkovich"
 
-#: html/Admin/Elements/ModifyUser:83 html/Admin/Users/Modify.html:148 html/User/Prefs.html:130
 msgid "Zip"
 msgstr "Zip"
 
-#: html/User/Elements/DelegateRights:58
-#. ($right->PrincipalObj->Object->SelfDescription)
 msgid "as granted to %1"
 msgstr "as Malkovich to %1"
 
-#: html/SelfService/Closed.html:27
 msgid "closed"
 msgstr "Malkovich"
 
-#: html/Elements/SelectCustomFieldOperator:37 html/Elements/SelectMatch:33
 msgid "contains"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "content"
 msgstr "Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "content-type"
 msgstr "Malkovich-type"
 
-#: html/Admin/Elements/ModifyQueue:62 html/Admin/Queues/Modify.html:76 lib/RT/Date.pm:319
 msgid "days"
 msgstr "days"
 
-#: lib/RT/Queue_Overlay.pm:64
 msgid "deleted"
 msgstr "Malkovich"
 
-#: html/Search/Elements/PickBasics:33 html/Search/Elements/PickRestriction:68
 msgid "does not match"
 msgstr "Malkovich"
 
-#: html/Elements/SelectCustomFieldOperator:37 html/Elements/SelectMatch:34
 msgid "doesn't contain"
 msgstr "doesn't Malkovich"
 
-#: html/Elements/SelectEqualityOperator:37
 msgid "equal to"
 msgstr "Malkovich to"
 
-#: NOT FOUND IN SOURCE
 msgid "filename"
 msgstr "Malkovich"
 
-#: html/Elements/SelectCustomFieldOperator:37 html/Elements/SelectEqualityOperator:37
 msgid "greater than"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:196
-#. ($self->Name)
 msgid "group '%1'"
 msgstr "Malkovich '%1'"
 
-#: lib/RT/Date.pm:315
 msgid "hours"
 msgstr "Malkovich"
 
-#: html/Elements/SelectBoolean:31 html/Elements/SelectCustomFieldOperator:37 html/Elements/SelectMatch:35 html/Search/Elements/PickBasics:49 html/Search/Elements/PickBasics:80 html/Search/Elements/PickBasics:97 html/Search/Elements/PickCFs:37 html/Search/Elements/PickRestriction:47 html/Search/Elements/PickRestriction:76 html/Search/Elements/PickRestriction:88
 msgid "is"
 msgstr "is"
 
-#: html/Elements/SelectBoolean:35 html/Elements/SelectCustomFieldOperator:37 html/Elements/SelectMatch:36 html/Search/Elements/PickBasics:50 html/Search/Elements/PickBasics:81 html/Search/Elements/PickBasics:98 html/Search/Elements/PickCFs:38 html/Search/Elements/PickRestriction:48 html/Search/Elements/PickRestriction:77 html/Search/Elements/PickRestriction:89
 msgid "isn't"
 msgstr "isn't"
 
-#: html/Elements/SelectCustomFieldOperator:37 html/Elements/SelectEqualityOperator:37
 msgid "less than"
 msgstr "Malkovich"
 
-#: html/Search/Elements/PickBasics:32 html/Search/Elements/PickRestriction:67
 msgid "matches"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:311
 msgid "min"
 msgstr "min"
 
-#: html/Scope/Update.html:49 html/Ticket/Update.html:42
 msgid "minutes"
 msgstr "Malkovich"
 
-#: bin/rt-commit-handler:764
 msgid "modifications\\n\\n"
 msgstr "Malkovich\\n\\n"
 
-#: lib/RT/Date.pm:327
 msgid "months"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:59
 msgid "new"
 msgstr "new"
 
-#: html/Admin/Elements/PickCustomFields:44 html/Admin/Elements/PickObjects:44
 msgid "no name"
 msgstr "no name"
 
-#: html/Admin/Elements/EditScrips:42
 msgid "no value"
 msgstr "no Malkovich"
 
-#: html/Admin/Elements/EditQueueWatchers:26 html/Ticket/Elements/EditWatchers:27
 msgid "none"
 msgstr "none"
 
-#: html/Elements/SelectEqualityOperator:37
 msgid "not equal to"
 msgstr "Malkovich to"
 
-#: html/SelfService/Elements/MyRequests:61 lib/RT/Queue_Overlay.pm:60
 msgid "open"
 msgstr "open"
 
-#: lib/RT/Group_Overlay.pm:201
-#. ($self->Name, $user->Name)
 msgid "personal group '%1' for user '%2'"
 msgstr "Malkovich '%1' Malkovich '%2'"
 
-#: lib/RT/Group_Overlay.pm:209
-#. ($queue->Name, $self->Type)
 msgid "queue %1 %2"
 msgstr "Malkovich %1 %2"
 
-#: lib/RT/Queue_Overlay.pm:63
 msgid "rejected"
 msgstr "Malkovich"
 
-#: lib/RT/Queue_Overlay.pm:62
 msgid "resolved"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:307
 msgid "sec"
 msgstr "sec"
 
-#: lib/RT/Queue_Overlay.pm:61
 msgid "stalled"
 msgstr "Malkovich"
 
-#: lib/RT/Group_Overlay.pm:204
-#. ($self->Type)
 msgid "system %1"
 msgstr "Malkovich %1"
 
-#: lib/RT/Group_Overlay.pm:215
-#. ($self->Type)
 msgid "system group '%1'"
 msgstr "Malkovich '%1'"
 
-#: html/Elements/Error:42 html/SelfService/Error.html:41
 msgid "the calling component did not specify why"
 msgstr "the Malkovich Malkovich Malkovich Malkovich"
 
-#: NOT FOUND IN SOURCE
 msgid "ticket #%1"
 msgstr "Malkovich #%1"
 
-#: lib/RT/Group_Overlay.pm:212
-#. ($self->Instance, $self->Type)
 msgid "ticket #%1 %2"
 msgstr "Malkovich #%1 %2"
 
-#: lib/RT/Group_Overlay.pm:218
-#. ($self->Id)
 msgid "undescribed group %1"
 msgstr "Malkovich Malkovich %1"
 
-#: lib/RT/Group_Overlay.pm:193
-#. ($user->Object->Name)
 msgid "user %1"
 msgstr "user %1"
 
-#: lib/RT/Date.pm:323
 msgid "weeks"
 msgstr "Malkovich"
 
-#: lib/RT/Date.pm:331
 msgid "years"
 msgstr "Malkovich"
 

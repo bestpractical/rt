@@ -21,24 +21,18 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table>
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><%$Ticket->OwnerObj->Name%></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Requestors</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors &></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Cc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc &></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc &></td>
-  </tr>
-</table>
+%# Released under the terms of version 2 of the GNU Public License
+
+% my $UserMembers = $Group->UserMembersObj;
+% while (my $member = $UserMembers->Next()) {
+<& ShowUserEntry, User => $member &><br>
+% }
+% my $GroupMembers = $Group->MembersObj;
+% $GroupMembers->LimitToGroups();
+% while (my $member = $GroupMembers->Next()) {
+<&|/l&>Group</&>: <%$member->MemberObj->Object->Name%><br>
+% }
+
 <%ARGS>
-$Ticket => undef
+$Group => undef
 </%ARGS>

@@ -35,7 +35,8 @@ use File::Temp qw/tempdir/;
 
 =head1 NAME
 
-  RT::Interface::CLI - helper functions for creating a commandline RT interface
+  RT::EmailParser - helper functions for parsing parts from incoming
+  email messages
 
 =head1 SYNOPSIS
 
@@ -159,37 +160,44 @@ Parse a message stored in a scalar from scalar_ref
 =cut
 
 sub SmartParseMIMEEntityFromScalar {
-    my $self  = shift;
-    my %args = (  Message => undef, Decode => 1, @_ );
-   
+    my $self = shift;
+    my %args = ( Message => undef, Decode => 1, @_ );
 
     my ( $fh, $temp_file );
-    for ( 1 .. 10 ) {
+    eval {
 
-        # on NFS and NTFS, it is possible that tempfile() conflicts
-        # with other processes, causing a race condition. we try to
-        # accommodate this by pausing and retrying.
-        last
-          if ( $fh, $temp_file ) =
-          eval { File::Temp::tempfile( undef, UNLINK => 0 ) };
-        sleep 1;
-    }
-    if ($fh) {
-        binmode $fh;
+        for ( 1 .. 10 ) {
 
-        #thank you, windows                      
-        $fh->autoflush(1);
-        print $fh $args{'Message'};
-        close($fh);
-        if ( -f $temp_file ) {
-            $self->ParseMIMEEntityFromFile($temp_file, $args{'Decode'});
-            unlink($temp_file );
+            # on NFS and NTFS, it is possible that tempfile() conflicts
+            # with other processes, causing a race condition. we try to
+            # accommodate this by pausing and retrying.
+            last
+              if ( $fh, $temp_file ) =
+              eval { File::Temp::tempfile( undef, UNLINK => 0 ) };
+            sleep 1;
         }
-    } #If for some reason we weren't able to parse the message using a temp file      # try it with a scalar
-    if ( !$self->Entity ) {
+        if ($fh) {
+
+            #thank you, windows                      
+            binmode $fh;
+            $fh->autoflush(1);
+            print $fh $args{'Message'};
+            close($fh);
+            if ( -f $temp_file ) {
+
+                # We have to trust the temp file's name -- untaint it
+                $temp_file =~ /(.*)/;
+                $self->ParseMIMEEntityFromFile( $1, $args{'Decode'} );
+                unlink($1);
+            }
+        }
+    };
+
+    #If for some reason we weren't able to parse the message using a temp file
+    # try it with a scalar
+    if ( $@ || !$self->Entity ) {
         $self->ParseMIMEEntityFromScalar( $args{'Message'}, $args{'Decode'} );
     }
-
 
 }
 
@@ -628,8 +636,7 @@ A private instance method which sets up a mime parser to do its job
 sub _SetupMIMEParser {
     my $self   = shift;
     my $parser = shift;
-	
-    #$RT::Logger->crit(  $self->{'AttachmentDir'} );
+    
     # Set up output directory for files:
 
     my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
@@ -648,6 +655,15 @@ sub _SetupMIMEParser {
     # do _not_ store each msg as in-core scalar;
 
     $parser->output_to_core(0);
+
+    # From the MIME::Parser docs:
+    # "Normally, tmpfiles are created when needed during parsing, and destroyed automatically when they go out of scope"
+    # Turns out that the default is to recycle tempfiles
+    # Temp files should never be recycled, especially when running under perl taint checking
+    
+    $parser->tmp_recycling(0);
+    
+
 }
 
 # }}}

@@ -34,10 +34,7 @@ support or training, please write to sales@bestpractical.com
 
         Jesse Vincent
         Best Practical Solutions, LLC
-        March 2004
-
-
-
+        June 2004
 
 
 REQUIRED PACKAGES:
@@ -45,17 +42,17 @@ REQUIRED PACKAGES:
 
 o   Perl 5.8.3 or later (http://www.perl.com).
 
- 	(If you intend to use the FastCGI or SpeedyCGI support, you 
-	 need to make sure that perl has been built with support for 
-	 setgid perl scripts.)`
-
-    Perl versions prior to 5.8.3 contain bugs that could result in data
-    corruption. We recommend strongly that you use 5.8.3 or newer.
+	    Perl versions prior to 5.8.3 contain bugs that could result
+	    in data corruption. We recommend strongly that you use 5.8.3
+	    or newer. RT may function with perl 5.8.0 and later, but
+	    is unsupported in that configuration.
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
         Currently supported:  Mysql 4.0.13 or later. 
                               Postgres 7.2 or later.
                               Oracle 9iR2.
+        Beta-quality support for Informix and SQLite is also available.
+
 
 o   Apache version 1.3.x or 2.x (http://httpd.apache.org) 
     with mod_perl -- (http://perl.apache.org ) 
@@ -70,23 +67,7 @@ o   Apache version 1.3.x or 2.x (http://httpd.apache.org)
 
         mod_perl 1.x must be build with EVERYTHING=1
 
-        RT's FastCGI handler runs setgid to the 'rt' group to
-        protect RT's database password.  You may need to install
-        a special  "suidperl" package or reconfigure your perl
-        setup to support "setuid scripts" if you intend to use RT
-        with FastCGI.
-
-        Debian GNU/* 3.0+: the package which installs suidperl is
-         called perl-suid, and should work without any tweaking.
-
-        FreeBSD 4.2+: the package is called sperl, and should
-         install a suidperl that just works 
-
-        Conectiva Linux 6.0+: suidperl is installed by default when 
-         perl is installed, but the program /bin/suidperl is not setuid. 
-         You must use chmod to make it setuid.
-
-
+        RT's FastCGI handler needs to access RT's configuration file.
 
 o    Various and sundry perl modules
 	A tool included with RT takes care of the installation of
@@ -116,38 +97,31 @@ http://www.bestpractical.com/rt
         ./configure --help to see the list of options
         ./configure (with the flags you want)
 
-3   Satisfy RT's myriad dependencies. 
+3   Make sure that RT has everything it needs to run:
 
-3.1   Check for compliance:
-        
-   perl sbin/rt-test-dependencies \ 
-                --with-<databasename> --with-<web-environment>
+3.1   Check for missing dependencies:
 
-        databasename is one of: mysql, postgres, oracle
-        web-environment is one of: fastcgi, modperl1, modperl2
+        make testdeps        
 
 3.2   If there are unsatisfied dependencies, install them by hand or run:
 
-        perl sbin/rt-test-dependencies \
-                --with-<databasename> --with-<web-environment> --install
-        
+        make fixdeps
 
 3.3   Check to make sure everything was installed properly:
+        
+        make testdeps
 
-        perl sbin/rt-test-dependencies \
-                --with-<databasename> --with-<web-environment>
+        It might sometimes be necessary to run "make fixdeps" several times
+        to install all necessary perl modules.
 
 4   Create a group called 'rt'
 
 5a  FOR A NEW INSTALLATION: 
         
         As root, type:
-                 make install        (replace "make" with the local name for 
-                                 Make, if you need to)
-
+                 make install   
                        
                  make initialize-database 
-
 
         If the make fails, type:
                 make dropdb 
@@ -155,18 +129,29 @@ http://www.bestpractical.com/rt
 
 5b  FOR UPGRADING: (Within the RT 3.x series)
 
-
         Read through the UPGRADING document included in this distribution.
-        It may contain important instructions for updating your database
+        It may contain important instructions which will help you upgrade
+        RT safely.
 
         As root, type: 
-                make upgrade     (replace "make" with the local name for 
-                                  Make, if you need to)
+                make upgrade    
 
         This will build new binaries, config files and libraries without
         overwriting your RT database. 
-        
-        It may then instruct you to update your RT system database objects 
+
+        You may also need to update RT's database.  To find out, type:
+
+           ls etc/upgrade
+
+        For each item in that directory whose name is greater than
+        your previously installed RT version, run:
+            /opt/rt3/sbin/rt-setup-database --action schema \
+                --datadir etc/upgrade/<version>
+            /opt/rt3/sbin/rt-setup-database --action acl \
+                --datadir etc/upgrade/<version>
+            /opt/rt3/sbin/rt-setup-database --action insert \
+                 --datadir etc/upgrade/<version>
+
 
 5c  FOR UPGRADING: (From RT 2.0.x)
 
@@ -196,12 +181,14 @@ http://www.bestpractical.com/rt
 THE WEB INTERFACE
 -----------------
 
-RT's web interface is based around HTML::Mason, which works best with the mod_perl
-perl interpreter within Apache httpd.  Alternatively, support for the FastCGI
-(and plain CGI) interface is also provided as 'bin/mason_handler.fcgi'.
+RT's web interface is based around HTML::Mason, which works well with
+the mod_perl perl interpreter within Apache httpd and FastCGI
 
-Apache 
-        You'll need to add a few lines to your httpd.conf telling it about RT:
+mod_perl
+--------
+
+To install RT with mod_perl, you'll need to add a few lines to your 
+Apache configuration file telling it about RT:
 
 <VirtualHost your.ip.address>
     ServerName your.rt.server.hostname
@@ -220,10 +207,43 @@ Apache
     </Location>
 </VirtualHost>
 
+FastCGI
+-------
+
+Installation with FastCGI is a little bit more complex and is documented 
+in detail at http://wiki.bestpractical.com/index.cgi?FastCGIConfiguration
+
+In the most basic configuration, you can set up your webserver to run
+as a user who is a member of the "rt" unix group so that the FastCGI script
+can read RT's configuration file.  It's important to understand the security
+implications of this configuration, which are discussed in the document
+mentioned above.
+
+To install RT with FastCGI, you'll need to add a few lines to your 
+Apache configuration file telling it about RT:
+
+<VirtualHost rt.example.com>
+
+   # Pass through requests to display images
+   Alias /NoAuth/images/ /opt/rt3/share/html/NoAuth/images/
+   
+   # Tell FastCGI to put its temporary files somewhere sane.
+   FastCgiIpcDir /tmp
+
+   FastCgiServer /opt/rt3/bin/mason_handler.fcgi -idle-timeout 120
+
+   AddHandler fastcgi-script fcgi
+   ScriptAlias / /opt/rt3/bin/mason_handler.fcgi/
+   
+</VirtualHost>
+
 
 
 SETTING UP THE MAIL GATEWAY 
 ---------------------------
+
+RT can accept incoming email using a simple program run as a "pipe" 
+by your mail server.
 
 An alias for the initial queue will need to be made in either your
 global mail aliases file (if you are using NIS) or locally on your
@@ -265,14 +285,15 @@ RT-USERS MAILINGLIST
 To keep up to date on the latest RT tips, techniques and extensions,
 you probably want to join the rt-users mailing list.  Send a message to:
 
-         rt-users-request@lists.fsck.com 
+         rt-users-request@lists.bestpractical.com 
 
 With the body of the message consisting of only the word:
 
         subscribe
 
 If you're interested in hacking on RT, you'll want to subscribe to
-rt-devel@lists.fsck.com.  Subscribe to it with instructions similar to
+rt-devel@lists.bestpractical.com.  Subscribe to it with instructions
+similar to
 those above.
 
 Address questions about the stable release to the rt-users list, and
@@ -289,13 +310,3 @@ For current information about RT, check out the RT website at
 
 You'll find screenshots, a pointer to the current version of RT, contributed 
 patches, and lots of other great stuff.
-
-
-TROUBLESHOOTING
----------------
-
-If the solution to the problem you're running into isn't obvious and you've 
-checked the FAQ, feel free to send mail to rt-users@fsck.com (for released 
-versions of RT) or rt-devel@fsck.com (for development versions).
-
-Thanks!

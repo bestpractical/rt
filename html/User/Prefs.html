@@ -34,7 +34,7 @@
 <TABLE WIDTH=100% BORDER=0>
 <TR>
 
-<TD VALIGN=TOP ROWSPAN=2>
+<TD VALIGN=TOP class="boxcontainer">
 <& /Elements/TitleBoxStart, title => loc('Identity') &>
 
 <input type=hidden name="Name" value="<%$UserObj->Name%>">
@@ -78,7 +78,7 @@
 </table>
 <& /Elements/TitleBoxEnd &>
 </TD>
-<TD VALIGN=TOP>
+<TD VALIGN=TOP class="boxcontainer">
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <& /Elements/TitleBoxStart, title => loc('Password') &>
 <TABLE>
@@ -100,10 +100,7 @@
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 % }
-</TD>
-<TR>
 
-<TD VALIGN=TOP>
 <& /Elements/TitleBoxStart, title => loc('Location') &>
 <table callspacing=0 cellpadding=0>
   <tr>
@@ -142,7 +139,7 @@
 
 
 
-<TD COLSPAN=2 VALIGN=TOP>
+<TD COLSPAN=2 VALIGN=TOP class="boxcontainer">
 %if ($UserObj->Privileged) {
 <BR>
 <& /Elements/TitleBoxStart, title => loc('Signature') &>

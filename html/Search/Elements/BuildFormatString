@@ -8,12 +8,6 @@ unless ($Format) {
     $Format = $RT::DefaultSearchResultFormat;
 }   
     
-# escape the '#' symbols so they won't be parsed as part of a URL
-my $format = $ARGS{'Format'};
-$format =~ s/#/%23/g;
-$format =~ s/&/%26/g;
-    
-
 my @fields = (
     "QueueName",           "OwnerName",
     "id",                  "Status",
@@ -28,7 +22,8 @@ my @fields = (
     "LastUpdatedRelative", "ToldRelative",
     "DueRelative",         "ResolvedRelative",
     "Starts",              "Started",
-    "Created",             "LastUpdated",
+    "Created",             "CreatedBy",
+    "LastUpdated",         "LastUpdatedBy",
     "Told",                "Due",
     "Resolved",            "NEWLINE",
     "RefersTo",	           "ReferredToBy",

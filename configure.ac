@@ -239,7 +239,6 @@ AC_CONFIG_FILES([
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd
  		 bin/mason_handler.svc
- 		 bin/rt-commit-handler
  		 bin/rt-crontool
  		 bin/rt-mailgate
 		 bin/rt

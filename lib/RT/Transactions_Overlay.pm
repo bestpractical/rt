@@ -54,9 +54,10 @@ sub _Init   {
   $self->{'primary_key'} = "id";
   
   # By default, order by the date of the transaction, rather than ID.
-  $self->OrderBy( ALIAS => 'main',
-		  FIELD => 'Created',
-		  ORDER => 'ASC');
+  $self->OrderByCols( { FIELD => 'Created',
+			ORDER => 'ASC' },
+		      { FIELD => 'id',
+			ORDER => 'ASC' } );
 
   return ( $self->SUPER::_Init(@_));
 }

@@ -1,13 +1,25 @@
 <%init>
 my $scrubber = HTML::Scrubber->new();
 
-$scrubber->default( 0,
-    { '*' => 0, id => 1, class => 1, href => 1, face => 1, size => 1, target => 1 } );
+$scrubber->default(
+    0,
+    {
+        '*'    => 0,
+        id     => 1,
+        class  => 1,
+        href   => qr{^(?:http:|ftp:|https:|/)}i, 
+        # Match http, ftp and relative urls
+        face   => 1,
+        size   => 1,
+        target => 1
+    }
+);
 
 $scrubber->deny(qw[*]);
-$scrubber->allow( qw[A B U P BR I HR BR SMALL EM FONT SPAN DIV UL OL LI DL DT DD] );
+$scrubber->allow(
+    qw[A B U P BR I HR BR SMALL EM FONT SPAN DIV UL OL LI DL DT DD]);
 $scrubber->comment(0);
-return($scrubber->scrub($Content));
+return ( $scrubber->scrub($Content) );
 </%init>
 <%args>
 $Content => undef

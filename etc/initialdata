@@ -86,6 +86,14 @@
       Description => 'Sends mail to the owner',              # loc
       ExecModule  => 'Notify',
       Argument    => 'Owner' },
+    { Name        => 'Notify Ccs as Comment',              # loc
+      Description => 'Sends mail to the Ccs as a comment', # loc
+      ExecModule  => 'NotifyAsComment',
+      Argument    => 'Cc' },
+    { Name        => 'Notify Ccs',                                   # loc
+      Description => 'Sends mail to the Ccs',                        # loc
+      ExecModule  => 'Notify',
+      Argument    => 'Cc' },
     { Name        => 'Notify AdminCcs as Comment',                        # loc
       Description => 'Sends mail to the administrative Ccs as a comment', # loc
       ExecModule  => 'NotifyAsComment',
@@ -163,6 +171,13 @@
       ApplicableTransTypes => 'Status',
       ExecModule           => 'AnyTransaction',
 
+    },
+    {
+
+      Name                 => 'On Priority Change',                       # loc
+      Description          => 'Whenever a ticket\'s priority changes',    # loc
+      ApplicableTransTypes => 'Set',
+      ExecModule           => 'PriorityChange',
     },
     {
 

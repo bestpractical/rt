@@ -1848,7 +1848,7 @@ msgid "Current Groups:"
 msgstr "现有群组列表："
 
 #: html/Elements/EditLinks:27 html/Ticket/Elements/EditLinks:27
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "现有关系"
 
 #: NOT FOUND IN SOURCE
@@ -2378,7 +2378,7 @@ msgid "Edit Query"
 msgstr "编辑查询"
 
 #: html/Search/Bulk.html:147 html/Ticket/ModifyLinks.html:35
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "编辑申请单关系"
 
 #: NOT FOUND IN SOURCE
@@ -4125,7 +4125,7 @@ msgid "New Query"
 msgstr "新增查询"
 
 #: html/Elements/EditLinks:93 html/Ticket/Elements/EditLinks:93
-msgid "New Relationships"
+msgid "New Links"
 msgstr "新增关系"
 
 #: NOT FOUND IN SOURCE
@@ -5352,10 +5352,6 @@ msgstr "更新"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "每 %1 分钟更新页面"
-
-#: html/Scope/Elements/ShowSummary:57 html/Ticket/Create.html:183 html/Ticket/Elements/ShowSummary:61 html/Ticket/ModifyAll.html:56
-msgid "Relationships"
-msgstr "关系"
 
 #: NOT FOUND IN SOURCE
 msgid "Remove"

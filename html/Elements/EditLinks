@@ -24,7 +24,7 @@
 <TABLE width=100%>
   <TR>
     <TD VALIGN=TOP WIDTH=50%>
-      <h3><&|/l&>Current Relationships</&></h3>
+      <h3><&|/l&>Current Links</&></h3>
 
 <table>
   <tr>
@@ -90,7 +90,7 @@
 			    
 </TD>
 <TD VALIGN=TOP>
-<h3><&|/l&>New Relationships</&></h3>
+<h3><&|/l&>New Links</&></h3>
 % if (ref($Object) eq 'RT::Ticket') {
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></i><br>
 % } elsif (ref($Object) eq 'RT::Queue') {

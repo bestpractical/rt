@@ -23,7 +23,7 @@
 %# END LICENSE BLOCK
       <TABLE WIDTH="100%" class="ticketsummary" >
       <TR>
-	<TD VALIGN=TOP WIDTH="50%">
+	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
 	  <& /Elements/TitleBoxStart, title => loc('The Basics'), 
 		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
@@ -49,7 +49,7 @@
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
 	</TD>
-	<TD VALIGN=TOP WIDTH="50%">
+	<TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
 
 	  <& /Elements/TitleBoxStart, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
@@ -58,7 +58,7 @@
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>  
-	  <& /Elements/TitleBoxStart, title => loc('Relationships'), 
+	  <& /Elements/TitleBoxStart, title => loc('Links'), 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>

@@ -79,6 +79,7 @@ RT_VAR_PATH		=	@RT_VAR_PATH@
 RT_DOC_PATH		=	@RT_DOC_PATH@
 RT_LOCAL_PATH		=	@RT_LOCAL_PATH@
 LOCAL_ETC_PATH		=	@LOCAL_ETC_PATH@
+LOCAL_LIB_PATH		=	@LOCAL_LIB_PATH@
 LOCAL_LEXICON_PATH	=	@LOCAL_LEXICON_PATH@
 MASON_HTML_PATH		=	@MASON_HTML_PATH@
 MASON_LOCAL_HTML_PATH	=	@MASON_LOCAL_HTML_PATH@
@@ -110,16 +111,14 @@ RT_CRON_BIN		=	$(RT_BIN_PATH)/rt-crontool
 
 # }}}
 
-SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
-				$(DESTDIR)/$(RT_WIN32_FASTCGI_HANDLER)
 
 BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
 				$(DESTDIR)/$(RT_MAILGATE_BIN) \
 				$(DESTDIR)/$(RT_CLI_BIN) \
 				$(DESTDIR)/$(RT_CRON_BIN) \
-				$(SETGID_BINARIES)
+ 				$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
+				$(DESTDIR)/$(RT_WIN32_FASTCGI_HANDLER)
 SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
-
 
 # }}}
 
@@ -254,11 +253,10 @@ fixperms:
 	chmod 0550 $(DESTDIR)/$(CONFIG_FILE)
 	chmod 0550 $(DESTDIR)/$(SITE_CONFIG_FILE)
 
-	# Make the interfaces executable and setgid rt
+	# Make the interfaces executable
 	chown $(BIN_OWNER) $(BINARIES)
 	chgrp $(RTGROUP) $(BINARIES)
 	chmod 0755  $(BINARIES)
-	chmod g+s $(SETGID_BINARIES)
 
 	# Make the web ui readable by all. 
 	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(MASON_HTML_PATH) \
@@ -278,12 +276,6 @@ fixperms:
 				$(DESTDIR)/$(MASON_SESSION_PATH)
 # }}}
 
-fixperms-nosetgid: fixperms
-	@echo "You should never be running RT this way. it's unsafe"
-	chmod 0555 $(SETGID_BINARIES)
-	chmod 0555 $(DESTDIR)/$(CONFIG_FILE)
-	chmod 0555 $(DESTDIR)/$(SITE_CONFIG_FILE)
-
 # {{{ dirs
 dirs:
 	mkdir -p $(DESTDIR)/$(RT_LOG_PATH)
@@ -295,6 +287,7 @@ dirs:
 	mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
 	mkdir -p $(DESTDIR)/$(LOCAL_ETC_PATH)
+	mkdir -p $(DESTDIR)/$(LOCAL_LIB_PATH)
 	mkdir -p $(DESTDIR)/$(LOCAL_LEXICON_PATH)
 # }}}
 
@@ -320,12 +313,6 @@ test:
 
 regression-install: config-install
 	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)/$(CONFIG_FILE)
-
-regression-nosetgid-quiet: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
-	$(PERL) sbin/regression_harness
-
-regression-nosetgid: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
-	$(PERL) lib/t/02regression.t
 
 regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms apachectl
 	$(PERL) lib/t/02regression.t
@@ -447,52 +434,14 @@ license-tag:
 factory: initialize-database
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
 
-commit:
-	aegis -build ; aegis -diff ; aegis -test; aegis -develop_end
-
-integrate:
-	aegis -integrate_begin;	aegis -build; aegis -diff; aegis -test ; aegis -integrate_pass
-
-predist: commit tag-and-tar
-
-tag-and-release-baseline:
-	aegis -cp -ind Makefile -output /tmp/Makefile.tagandrelease; \
-	$(MAKE) -f /tmp/Makefile.tagandrelease tag-and-release-never-by-hand
-
-
-# Running this target in a working directory is 
-# WRONG WRONG WRONG.
-# it will tag the current baseline with the version of RT defined 
-# in the currently-being-worked-on makefile. which is wrong.
-#  you want tag-and-release-baseline
-
-tag-and-release-never-by-hand:
-	aegis --delta-name $(TAG)
-	rm -rf /tmp/$(TAG)
-	mkdir /tmp/$(TAG)
-	cd /tmp/$(TAG); \
-		aegis -cp -ind -delta $(TAG) . ;\
-		make reconfigure;\
-		chmod 600 Makefile;\
-		aegis --report --project rt.$(RT_VERSION_MAJOR) \
-		      --page_width 80 \
-		      --page_length 9999 \
-		      --change $(RT_VERSION_MINOR) --output Changelog Change_Log
-
-	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
-	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
-
-
 reconfigure:
 	aclocal -I m4
 	autoconf
 	chmod 755 ./configure
 	./configure
 
-rpm:
-	(cd ..; tar czvf /usr/src/redhat/SOURCES/rt.tar.gz rt)
-	rpm -ba etc/rt.spec
-
+start-httpd:
+	$(PERL) bin/standalone_httpd 80 &
 
 start-httpd:
 	$(PERL) bin/standalone_httpd 80 &

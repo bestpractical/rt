@@ -39,7 +39,7 @@
 <TABLE WIDTH=100% BORDER=0>
 <TR>
 
-<TD VALIGN=TOP ROWSPAN=2>
+<TD VALIGN=TOP class="boxcontainer">
 <& /Elements/TitleBoxStart, title => loc('Identity') &>
 
 <TABLE>
@@ -111,10 +111,8 @@
 % }
 <& /Elements/TitleBoxEnd &>
 </TD>
-</TR>
-<TR>
 
-<TD VALIGN=TOP>
+<TD VALIGN=TOP class="boxcontainer">
 <& /Elements/TitleBoxStart, title => loc('Location') &>
 <TABLE>
 <TR><TD ALIGN="RIGHT">
@@ -290,8 +288,6 @@ else {
 	$title = loc("Create a new user");
 	$Create = 1;
     }    
-
-    
 
 }
 

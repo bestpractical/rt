@@ -27,14 +27,14 @@
 
   <TABLE WIDTH="100%" class="ticketsummary" >
       <TR>
-        <TD VALIGN=TOP WIDTH="50%">
+        <TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
           <& /Elements/TitleBoxStart, title => loc('The Basics'), 
                 title_class=> 'inverse',  
                 color => "#993333" &>
                 <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
           <& /Elements/TitleBoxEnd &>
 </TD>
-        <TD VALIGN=TOP WIDTH="50%">
+        <TD VALIGN=TOP WIDTH="50%" class="boxcontainer">
           <& /Elements/TitleBoxStart, title => loc("Dates"),
                 title_class=> 'inverse',
                  color => "#663366" &>
@@ -129,7 +129,7 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
 my ( $code, $msg );
 
 #Update the status
-if (     ( defined $ARGS{'Status'} )
+if (     ( defined $ARGS{'Status'} ) and $ARGS{'Status'}
      and ( $ARGS{'Status'} ne $Ticket->Status ) ) {
     ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
     push @results, "$msg";

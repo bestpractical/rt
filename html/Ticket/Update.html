@@ -36,9 +36,9 @@
 
 <tr><td align=right><&|/l&>Status</&>:</td>
 <td>
-<& /Elements/SelectStatus, Name=>"Status", Default => $DefaultStatus &>
+<& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->Status), Default => ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
-<& /Elements/SelectOwner, Name=>"Owner", Default => ($ARGS{'Owner'} || $TicketObj->OwnerObj->Id()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj &>
+<& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj &>
 <&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&></td></tr>
 % my $skip;
 <& /Elements/Callback, _CallbackName => 'BeforeUpdateType', skip => \$skip, %ARGS &>
@@ -135,7 +135,7 @@ if ($DefaultStatus eq 'resolved') {
 # for the convenience:
 
 my ($CommentDefault, $ResponseDefault);
-if (($Action eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
+if ($Action ne 'Respond') {
    $CommentDefault = "SELECTED"; 
 } else {
     $ResponseDefault = "SELECTED";

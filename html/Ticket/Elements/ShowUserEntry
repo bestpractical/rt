@@ -21,24 +21,13 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table>
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><%$Ticket->OwnerObj->Name%></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Requestors</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors &></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Cc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc &></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc &></td>
-  </tr>
-</table>
+%# Released under the terms of version 2 of the GNU Public License
+
+<%$User->Name%>
+% if ($User->EmailAddress && $User->EmailAddress ne $User->Name) {
+&lt;<%$User->EmailAddress%>&gt;
+% }
+
 <%ARGS>
-$Ticket => undef
+$User => undef
 </%ARGS>
