@@ -559,24 +559,40 @@ sub _HasRight {
     }
     
     #If we've cached a win or loss for this lookup say so
-
+    
     #TODO Security +++ check to make sure this is complete and right
     
+    #Construct a hashkey to cache decisions in
+    my $hashkey = "Right:".$args{'Right'}."-".
+      "AppliesTo:".$args{'AppliesTo'} ."-".
+	"Scope:".$args{'Scope'};
 
-	if ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}==1) {
-#	    $RT::Logger->debug("Got a cached positive ACL decision for ". 
-#			       $args{'Right'}.$args{'Scope'}.
-#			       $args{'AppliesTo'}."\n");	    
-	    return ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
-	}
-	elsif ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}==-1) {
-#	    $RT::Logger->debug("Got a cached negative ACL decision for ". 
-#			       $args{'Right'}.$args{'Scope'}.
-#			       $args{'AppliesTo'}."\n");	    
-	    
-	    return(undef);
-	}
-
+    
+#    $RT::Logger->debug($hashkey."\n");
+    
+    #Anything older than two minutes needs to be rechecked
+    my $cache_timeout = (time - 120);
+    
+    
+    if ((defined ($self->{'rights'}{"$hashkey"})) and
+	 ($self->{'rights'}{"$hashkey"} == 1 ) and
+	 ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
+	#  $RT::Logger->debug("Got a cached positive ACL decision for ". 
+	#				       $args{'Right'}.$args{'Scope'}.
+	#				       $args{'AppliesTo'}."\n");	    
+	return ($self->{'rights'}{"$hashkey"});
+    }
+    elsif ((defined ($self->{'rights'}{"$hashkey"})) and
+	   ($self->{'rights'}{"$hashkey"} == -1) and
+	   ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
+	
+	#   $RT::Logger->debug("Got a cached negative ACL decision for ". 
+	#		       $args{'Right'}.$args{'Scope'}.
+	#	       $args{'AppliesTo'}."\n");	    
+	
+	return(undef);
+    }
+    
     my $RightClause = "(RightName = '$args{'Right'}')";
     my $ScopeClause = "(RightScope = '$args{'Scope'}')";
     
@@ -638,9 +654,10 @@ sub _HasRight {
 
     # This query checks to se whether the user has the right as a member of a
     # group
-    my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers, Groups WHERE ".
-      " (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) ".
-	" AND ($GroupPrincipalsClause))";    
+    my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers, Groups".
+      " WHERE " .
+	" (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) ".
+	  " AND ($GroupPrincipalsClause))";    
     
     
     
@@ -648,12 +665,14 @@ sub _HasRight {
     
     # {{{ deal with checking if the user has a right as a member of a group
 
-#    $RT::Logger->debug("Now Trying $query_string_1\n");	
+  #  $RT::Logger->debug("Now Trying $query_string_1\n");	
     $hitcount = $self->_Handle->FetchResult($query_string_1);
     
     #if there's a match, the right is granted
     if ($hitcount) {
-	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
+	$self->{'rights'}{"$hashkey"}{'set'} = time;
+	$self->{'rights'}{"$hashkey"} = 1;
+	
 	return (1);
     }
     
@@ -672,7 +691,8 @@ sub _HasRight {
     $hitcount = $self->_Handle->FetchResult($query_string_2);
     
     if ($hitcount) {
-	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
+	$self->{'rights'}{"$hashkey"}{'set'} = time;
+	$self->{'rights'}{"$hashkey"} = 1;
 	return (1);
     }
     # }}}
@@ -680,7 +700,9 @@ sub _HasRight {
 	
 #	$RT::Logger->debug("No ACL matched $query_string_2\n");
 	#If nothing matched, return 0.
-	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=-1;
+	$self->{'rights'}{"$hashkey"}{'set'} = time;
+	$self->{'rights'}{"$hashkey"} = -1;
+
 	
 	return (undef);
     }
