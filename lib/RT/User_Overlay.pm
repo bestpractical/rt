@@ -278,6 +278,7 @@ sub Create {
 
     #If the create failed.
     unless ($id) {
+        $RT::Handle->Rollback();
         $RT::Logger->error("Could not create a new user - " .join('-'. %args));
 
         return ( 0, $self->loc('Could not create user') );
