@@ -172,8 +172,7 @@ sub Create {
 	
 	foreach $From (@From) {
 	    $self->AddWatcher ( Email => $From->address,
-				Type => "Requestor",
-				Name => $From->phrase||$From->comment);
+				Type => "Requestor");
 	}
     }
     
@@ -1310,13 +1309,16 @@ sub Resolve {
 
 # {{{ sub UpdateTold and _UpdateTold
 
-#TODO: explain why there are two different subs here
+# UpdateTold - updates the told and makes a transaction
 
 sub UpdateTold {
     my $self=shift;
     my $timetaken=shift || 0;
     return($self->_Set('Told','now()',$timetaken,{TransactionType=>'Told',IsSQL=>1}));
 }
+
+# _UpdateTold - updates the told without the transaction, that's
+# useful when we're sending replies.
 
 sub _UpdateTold {
     my $self=shift;

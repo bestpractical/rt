@@ -212,11 +212,14 @@ sub Signature {
     my $self=shift;
     return ($self->SUPER::Signature);
     
-    #TODO this code is never reached. In the future, maybe we'll support 
-    # signatures on disk from here.
+    ## TODO: The stuff below might be a nice feature, but since we don't need it
+    ## at the moment, it's left out.
+
     if (0) {
       my @entry=getpwnam($self->Gecos || $self->UserId);
       my $home=$entry[7];
+## TODO: Check if the commented out line might work better
+#     for my $trythis (@RT::signature) {
       for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
 	if (-r $trythis) {
 	  local($/);
@@ -230,7 +233,6 @@ sub Signature {
       return undef;
     }
   }
-
 }
 # }}}
 

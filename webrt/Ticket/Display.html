@@ -38,61 +38,12 @@ $id=$Ticket->Id;
 
 # Eventually, link up the ticket:
 
-  if (my $l=$ARGS{'Link'}) {
-    # There is some redundant information from the forms now - we'll
-    # ignore one bit of it:
-
-    my $luris=$ARGS{'LinkTo'} || $ARGS{'LinkFrom'};
-    my $ltyp=$ARGS{'LinkType'};
-    if (ref $ltyp) {
-        &mc_comp("/Elements/Error" , Why => "Parameter error");
-        $m->abort;
-    }
-    for my $luri (split (/ /,$luris)) {
-      warn $luri;
-      my ($LinkId, $Message);
-      if ($l eq 'LinkTo') {
-        ($LinkId,$Message)=$Ticket->LinkTo(Target=>$luri, Type=>$ltyp);
-      } elsif ($l eq 'LinkFrom') {
-        ($LinkId,$Message)=$Ticket->LinkFrom(Base=>$luri, Type=>$ltyp);
-      } else {
-        &mc_comp("/Elements/Error" , Why => "Parameter error");
-        $m->abort;
-      }
-      warn $Message;
+&LinkUpIfRequested(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
 
 
-      
-      push(@Actions, $Message);
-    }
-  }
+      # Eventually, update the told, take, steal, kill the ticket:
 
-
-      # Eventually, take the ticket:
-      # TODO: What if there are more Actions?
-      if (exists $ARGS{Action} && $ARGS{Action} eq "Take") {
-         my ($res, $msg)=$Ticket->Take;
-	 push(@Actions, $msg);
-      }
-
-      # Eventually, steal the ticket:
-      # TODO: What if there are more Actions?
-      if (exists $ARGS{Action} && $ARGS{Action} eq "Steal") {
-         my ($res, $msg)=$Ticket->Steal;
-	 push(@Actions, $msg);
-      }
-
-      # Eventually, kill the ticket:
-      if (exists $ARGS{Action} && $ARGS{Action} eq "Kill") {
-         my ($res, $msg)=$Ticket->Kill;
-	 push(@Actions, $msg);
-      }
-
-      # Eventually, touch the Told:
-      if (exists $ARGS{Action} && $ARGS{Action} eq "UpdateTold") {
-         my ($res, $msg)=$Ticket->UpdateTold;
-	 push(@Actions, $msg);
-      }
+&DoAsRequested(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
 
 </%INIT>
 

@@ -41,7 +41,7 @@ sub Create  {
 	$args{Owner}=$User->id;
 	delete $args{Email};
     }
-    if ($args{Email} !~ /\@/ && $args{Email} && $args{Owner}) {
+    if ($args{Email} && $args{Email} !~ /\@/ && $args{Owner}) {
 	delete $args{Email};
     }
   

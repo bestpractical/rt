@@ -195,11 +195,15 @@ $CorrespondAddress=$MailAlias;
 $CommentAddress="!!RT_COMMENT_MAIL_ALIAS!!";
 
 
-#TODO: Mail::Internet might need some configuration.
+## TODO: Mail::Internet might need some configuration.
 
-# This might be the right place to put signatures.  Alternatives are
-# ~/.signature and in the DB (future feature)
-%Signatures=(joe=>"This is joe's signature");
+## This might and might not be the right place to put signatures.
+## Alternatives are ~/.signature and in the DB (only DB supported at
+## the moment).
+#%Signatures=(joe=>"This is joe's signature");
+
+## Places to search for the signature:
+#@Signature=('$home/.signature','$home/.signature.rt','/etc/rt/signatures/$userid');
 
 # }}}
 

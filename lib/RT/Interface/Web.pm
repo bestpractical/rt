@@ -6,6 +6,7 @@
 # interface to RT, and to be used by webrt.cgi / webmux.pl.
 
 package HTML::Mason::Commands;
+use strict;
 
 #{{{ sub Error - calls Error and aborts
 sub Error {
@@ -15,11 +16,12 @@ sub Error {
 
 #{{{ sub LoadTicket - loads a ticket
 sub LoadTicket {
-    return 1 if $Ticket;
-    $Ticket = RT::Ticket->new($session{'CurrentUser'});
+    my $id=shift;
+    my $Ticket = RT::Ticket->new($session{'CurrentUser'});
     unless ($Ticket->Load($id)) {
 	&Error("Could not load ticket $id");
     }
+    return $Ticket;
 }
 
 #{{{ sub CreateOrLoad - will create or load a ticket
@@ -28,13 +30,14 @@ sub CreateOrLoad {
     my %args=@_;
     if ($args{id} eq 'new') { 
 	require MIME::Entity;
-	my ($Trans,$ErrMsg);
 	#TODO in Create_Details.html: priorities and due-date      
-	($id, $Trans, $ErrMsg)=
+	my ($id, $Trans, $ErrMsg)=
 	    $Ticket->Create( 
 			     Queue=>$args{ARGS}->{queue},
 			     Owner=>$args{ARGS}->{ValueOfOwner},
-			     Requestors=>$args{ARGS}->{Requestors} || $session{CurrentUser}->EmailAddress,
+			     Requestor=>($args{ARGS}->{Requestors} 
+					 ? undef : $session{CurrentUser}),
+			     RequestorEmail=>$args{ARGS}->{Requestors}||undef,
 			     Subject=>$args{ARGS}->{Subject},
 			     Status=>$args{ARGS}->{Status}||'open',
 			     MIMEObj => MIME::Entity->build
@@ -59,6 +62,45 @@ sub CreateOrLoad {
     return $Ticket;
 }
 
+sub LinkUpIfRequested {
+    my %args=@_;
+    if (my $l=$args{ARGS}->{'Link'}) {
+	# There is some redundant information from the forms now - we'll
+	# ignore one bit of it:
+	
+	my $luris=$args{ARGS}->{'LinkTo'} || $args{ARGS}->{'LinkFrom'};
+	my $ltyp=$args{ARGS}->{'LinkType'};
+	if (ref $ltyp) {
+	    &mc_comp("/Elements/Error" , Why => "Parameter error");
+	    $m->abort;
+	}
+	for my $luri (split (/ /,$luris)) {
+	    warn $luri;
+	    my ($LinkId, $Message);
+	    if ($l eq 'LinkTo') {
+		($LinkId,$Message)=$args{Ticket}->LinkTo(Target=>$luri, Type=>$ltyp);
+	    } elsif ($l eq 'LinkFrom') {
+		($LinkId,$Message)=$args{Ticket}->LinkFrom(Base=>$luri, Type=>$ltyp);
+	    } else {
+		&mc_comp("/Elements/Error" , Why => "Parameter error");
+		$m->abort;
+	    }
+	    warn $Message;
+	    
+	    push(@{$args{Actions}}, $Message);
+	}
+    }
+}
 
+sub DoAsRequested {
+    my %args=@_;
+    # TODO: What if there are more Actions?
+    if (exists $args{ARGS}->{Action}) {
+	my ($action)=$args{ARGS}->{Action} =~ /^(Steal|Kill|Take|UpdateTold)$/;
+	# This can be done cleaner in perl >5.6.0:
+	my ($res, $msg)=eval('$args{Ticket}->'.$action);
+	push(@{$args{Actions}}, $msg);
+    }
+}
 
 1;
