@@ -2,9 +2,6 @@
 <& /Elements/NavBar, article => $article &>
 
 
-% if ($article->ParentObj->Id) {
-<A href="article.html?id=<%$article->ParentObj->Id%>">[Up to parent article: <%$article->ParentObj->Summary%>]</a><br>
-% } 
 <& /Elements/ArticleHierarchy, parent => $article->Id , Depth => 99 &>
 <HR>
 <& /Elements/ArticleCustomFields, ArticleObj => $article &>

@@ -22,6 +22,10 @@ type="i"
 % }
 <BR>
 <%$article->ContentObj->Body |n%>
+% if ($session->{'currentuser'}->IsEditor) {
+<div align="right"><i><A href="<%$WebPath%>/edit/edit_article.html?id=<%$article->Id%>">Edit</a></i></div>
+%}
+
 % if ($Depth < 99) {
 <& ArticleContentHierarchy, parent => $article->Id , Depth => $Depth &> 
 % }
