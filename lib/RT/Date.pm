@@ -323,6 +323,23 @@ sub AddSeconds {
 
 # }}}
 
+# {{{ sub AddDays
+
+=head2 AddDays $DAYS
+
+Adds 24 hours * $DAYS to the current time
+
+=cut
+
+sub AddDays {
+    my $self = shift;
+    my $days = shift;
+    $self->AddSeconds($days * $DAY);
+    
+}
+
+# }}}
+
 # {{{ sub AddDay
 
 =head2 AddDay

@@ -131,11 +131,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   id 
   Queue  - Either a Queue object or a Queue Name
-  
-  Requestor -- An RT::User object (the ticket\'s requestor)
-  RequestorEmail -- the requestors email address. (if the Requestor object isn't available
-  
-  Requestor -  A list of RT::User objects, email addresses or Names
+  Requestor -  A list of RT::User objects, email addresses or RT user Names
   Cc  - A list of RT::User objects, email addresses or Names
   AdminCc  - A list of RT::User objects, email addresses or Names
   
@@ -161,15 +157,14 @@ sub Create {
     my %args = (id => undef,
 		Queue => undef,
 		Requestor => undef,
-		RequestorEmail => undef,
 		Type => 'ticket',
 		Owner => $RT::Nobody->UserObj,
 		Subject => '[no subject]',
-		InitialPriority => "0",
-		FinalPriority => "0",
+		InitialPriority => undef,
+		FinalPriority => undef,
 		Status => 'new',
 		TimeWorked => "0",
-		Due => "0",
+		Due => undef,
 		MIMEObj => undef,
 		@_);
     
@@ -200,7 +195,33 @@ sub Create {
 	return (0,0,"No permission to create tickets in that queue");
     }
     
+    #Since we have a queue, we can set queue defaults
+    #Initial Priority
+    $args{'InitialPriority'} = $QueueObj->InitialPriority 
+      unless (defined $args{'InitialPriority'});
+	
+    #Final priority 
+    $args{'FinalPriority'} = $QueueObj->FinalPriority 
+      unless (defined $args{'FinalPriority'});
     
+    
+    
+
+
+    #TODO we should see what sort of due date we're getting, rather +
+    # than assuming it's in ISO format.
+    
+    #Set the due date. if we didn't get fed one, use the queue default due in
+    my $due = new RT::Date($self->CurrentUser);
+    unless (defined $args{'Due'}) {
+	  $due->SetToNow;
+	  $due->AddDays($QueueObj->DefaultDueIn);
+      }	
+    else {
+	$due->Set (Format => 'ISO',
+		   Value => $args{'Due'});
+    }	
+
     # {{{ Deal with setting the owner
     
     if (ref($args{'Owner'}) eq 'RT::User') {
@@ -248,13 +269,6 @@ sub Create {
 
     # }}}
 
-
-    #TODO we should see what sort of due date we're getting, rather +
-    # than assuming it's in ISO format.
-    my $due = new RT::Date($self->CurrentUser);
-    $due->Set (Format => 'ISO',
-	       Value => $args{'Due'});
-    
     my $id = $self->SUPER::Create(
 				  Queue => $QueueObj->Id,
 				  Owner => $Owner->Id,
