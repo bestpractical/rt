@@ -23,7 +23,7 @@ char *argv[],*envp[];
   else
     program_name = argv[0];
 
-  if (!(eargv = (char **) malloc ((argc + 3) * sizeof (char *))))
+  if (!(eargv = (char **) malloc ((argc + 4) * sizeof (char *))))
     {
       fprintf (stderr, "%s: Failed to obtain memory.\n", program_name);
       exit (1);                                  /* Trap core dump! */
