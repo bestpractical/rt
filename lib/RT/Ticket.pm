@@ -1,9 +1,10 @@
 # $Header$
-# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #
 
- package RT::Ticket;
+package RT::Ticket;
+
 use RT::Record;
 @ISA= qw(RT::Record);
 
@@ -19,36 +20,12 @@ sub new {
 
 
 
-
-sub _Accessible {
-
-  my $self = shift;  
-  my %Cols = (
-	      EffectiveId => 'read/write',
-	      Queue => 'read/write',
-	      Alias => 'read/write',
-	      Requestors => 'read/write',
-	      Owner => 'read/write',
-	      Subject => 'read/write',
-	      InitialPriority => 'read',
-	      FinalPriority => 'read/write',
-	      Priority => 'read/write',
-	      Status => 'read/write',
-	      TimeWorked => 'read',
-	      DateCreated => 'read',
-	      DateTold => 'read/write',
-	      DateActed => 'read/write',
-	      DateDue => 'read/write'
-	     );
-  return($self->SUPER::_Accessible(@_, %Cols));
+sub create {
+  my $self = shift;
+  return($self->Create(@_);)
 }
 
 sub Create {
-  my $self = shift;
-  return($self->create(@_);)
-}
-
-sub create {
   my $self = shift;
  
   my %args = (id => undef,
@@ -101,9 +78,7 @@ sub SetQueue {
   my ($NewQueue, $NewQueueObj);
   
   if ($NewQueue = shift) {
-    
     #TODO Check to make sure this isn't the current queue.
-        
     #TODO this will clobber the old queue definition. 
       
     use RT::Queue;
@@ -119,15 +94,13 @@ sub SetQueue {
       $self->Untake();
     }
     
-    #TODO: IF THE AREA DOESN'T EXIST IN THE NEW QUEUE, YANK IT.
-    
+    #TODO: IF THE AREA DOESN'T EXIST IN THE NEW QUEUE, YANK IT.    
     else {
       $self->_Set('Queue', $NewQueueObj->Id());
     }
   }
   else {
     return ("No queue specified");
-    #if they're not setting the queueid, just return a queue object
   }
 }
 
@@ -144,16 +117,10 @@ sub GetQueue {
 
 
 
-sub Take {
-  my $self=shift;
-  $self->SetOwner($self->CurrentUser);
-}
 
-sub Untake {
-  my $self=shift;
-  $self->SetOwner("");
-}
-
+#
+# Routines dealing with ownership
+#
 
 sub GetOwner {
   my $self = shift;
@@ -165,12 +132,40 @@ sub GetOwner {
   return ($self->{'owner'});
 }
 
+
+sub Take {
+  my $self=shift;
+  $self->SetOwner($self->CurrentUser);
+}
+
+sub Untake {
+  my $self=shift;
+  $self->SetOwner("");
+}
+
+
+sub Steal {
+  my $self = shift;
+  
+  if (!$self->ModifyPermitted){
+    return ("Permission Denied");
+  }
+  elsif ($self->GetOwner->UserId eq $self->CurrentUser ) {
+    return ("You already own this ticket"); 
+  }
+  else {
+    # TODO: Send a "This ticket was stolen from you" alert
+    return($self->_Set('owner',$self->CurrentUser));
+  }
+  
+  
+}
 sub SetOwner {
   my $self = shift;
   my $NewOwner = shift;
   my ($NewOwnerObj);
+
   use RT::User;
-  
   my $NewOwnerObj = RT::User->new($self->CurrentUser);
   
   if (!$NewOwnerObj->Load($NewOwner)) {
@@ -178,7 +173,7 @@ sub SetOwner {
   }
   
   #new owner can be blank or the name of a new owner.
-  if (($NewOwner != '') and (!$self->Modify_Permitted($NewOwner))) {
+  if (($NewOwner != '') and (!$self->ModifyPermitted($NewOwner))) {
     return ("That user may not own requests in that queue")
   }
   
@@ -198,32 +193,15 @@ sub SetOwner {
     #If we're giving the request to someone other than $self->CurrentUser
     #send them mail
   }
-  $self->_Set('Owner',$NewOwnerObj->Id);
-  
-  
+  $self->_Set('Owner',$NewOwnerObj->Id);  
 }
 
 
+#
+# Routines dealing with status
+#
 
-sub Steal {
-  my $self = shift;
-  
-  if (!$self->CanManipulate($self->CurrentUser)){
-    return ("Permission Denied");
-  }
-  elsif ($self->GetOwner == $self->CurrentUser ) {
-    return ("You already own this ticket"); 
-  }
-  
-  else {
-    # TODO: Send a "This ticket was stolen from you" alert
-    return($self->_set_and_return('owner',$self->CurrentUser));
-  }
-  
-  
-}
-
-sub Status { 
+sub SetStatus { 
   my $self = shift;
   if (@_) {
    my $status = shift;
@@ -243,7 +221,7 @@ sub Status {
     #TODO: we need to check for open parents.
   }
   
-  $self->_set_and_return('status',@_);
+  $self->_Set('status',@_);
 }
 
 sub Kill {
@@ -267,6 +245,10 @@ sub Resolve {
   return ($Self->SetStatus('resolved'));
 }
 
+
+#
+# Routines dealing with requestor metadata
+#
 sub Notify {
   my $self = shift;
   return ($self->DateTold(time()));
@@ -281,10 +263,31 @@ sub Age {
   return("Ticket->Age unimplemented\n");
 }
 
+#
+# Routines dealing with ticket relations
+#
 
+sub Merge {
+  my $self = shift;
+  my $MergeInto = shift;
+  
+  #Make sure this user can modify this ticket
+  #Load $MergeInto as Ticket $Target
+  #If the $Target doesn't exist, return an area
+  #Make sure this user can modify $Target
+  #If I have an owner and the $Target doesn't, set them on the target
+  #If this ticket has an area and the $Target doesn't, set them on the target
+  #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
+  #Merge the requestor lists
+  #Set my effective_sn to the $Target's Effective SN.
+  #Set all my transactions Effective_SN to the $Target's Effective_Sn
+}  
+
+# 
+# Routines dealing with correspondence/comments
+#
 
 #takes a subject, a cc list, a bcc list
-
 sub Comment {
   my $self = shift;
   
@@ -314,7 +317,7 @@ sub Comment {
   return ("This correspondence has been recorded");
 }
 
-sub NewCorrespondence {
+sub Correspond {
   my $self = shift;
     my %args = ( subject => $self->Subject,
 		 sender => $self->CurrentUser,
@@ -346,24 +349,9 @@ sub NewCorrespondence {
 }
 
 
-
-sub _NewTransaction {
-  my $self = shift;
-  my $type = shift;
-  my $data = shift;
-  my $time_taken = shift;
-  my $content = shift;
-
-
-  my $trans = new RT::Transaction($self->CurrentUser);
-  $trans->Create( Ticket => $self->EffectiveSN,
-		  TimeTaken => "$time_taken",
-		  Type => "$type",
-		  Data => "$data",
-		  Content => "$content"
-		);
-  $self->_UpdateTimeTaken($time_taken); 
-}
+#
+# Get the right transactions object. 
+#
 
 sub Transactions {
   my $self = shift;
@@ -378,14 +366,10 @@ sub Transactions {
 
 
 
-#KEYWORDS IS NOT YET IMPLEMENTEd
+#TODO KEYWORDS IS NOT YET IMPLEMENTEd
 sub Keywords {
   my $self = shift;
-  if (!$self->{'article_keys'}) {
-    $self->{'article_keys'} = new RT::Article::Keywords;
-    $self->{'article_keys'}->Limit( FIELD => 'article',
-				    VALUE => $self->id() );
-  }
+  #TODO Implement
   return($self->{'article_keys'});
 }
 
@@ -407,7 +391,9 @@ sub NewKeyword {
 }
 
 
-#LINKS IS NOT YET IMPLEMENTED
+#
+#TODO: Links is not yet implemented
+#
 sub Links {
   my $self= shift;
   
@@ -416,7 +402,6 @@ sub Links {
     $self->{'pointer_to_links_object'}->Limit(FIELD => 'article',
 					      VALUE => $self->id);
   }
-  
   return($self->{'pointer_to_links_object'});
 }
 
@@ -425,15 +410,9 @@ sub NewLink {
   my %args = ( url => '',
 	       title => '',
 	       comment => '',
-	       @_
-	     );
-
+	       @_ );
  
-  print STDERR "in article->newlink\n";
-  
   my $link = new RT::Article::URL;
-  print STDERR "made new link\n";
-  
   $id = $link->create( url => $args{'url'},
 		       title => $args{'title'},
 		       comment => $args{'comment'},
@@ -469,37 +448,80 @@ sub IsRequestor {
 # PRIVATE UTILITY METHODS
 #
 
+sub _NewTransaction {
+  my $self = shift;
+  my $type = shift;
+  my $data = shift;
+  my $time_taken = shift;
+  my $content = shift;
+
+
+  my $trans = new RT::Transaction($self->CurrentUser);
+  $trans->Create( Ticket => $self->EffectiveSN,
+		  TimeTaken => "$time_taken",
+		  Type => "$type",
+		  Data => "$data",
+		  Content => "$content"
+		);
+  $self->_UpdateTimeTaken($time_taken); 
+}
+
+sub _Accessible {
+
+  my $self = shift;  
+  my %Cols = (
+	      EffectiveId => 'read/write',
+	      Queue => 'read/write',
+	      Alias => 'read/write',
+	      Requestors => 'read/write',
+	      Owner => 'read/write',
+	      Subject => 'read/write',
+	      InitialPriority => 'read',
+	      FinalPriority => 'read/write',
+	      Priority => 'read/write',
+	      Status => 'read/write',
+	      TimeWorked => 'read',
+	      DateCreated => 'read',
+	      DateTold => 'read/write',
+	      DateActed => 'read/write',
+	      DateDue => 'read/write'
+	     );
+  return($self->SUPER::_Accessible(@_, %Cols));
+}
 
 sub _UpdateTimeTaken {
   my $self = shift;
   warn("_UpdateTimeTaken not implemented yet.");
-  
 }
 
 sub _UpdateDateActed {
   my $self = shift;
-  $self->SUPER::_set_and_return('date_acted',time);
+  $self->SUPER::_Set('date_acted',time);
 }
-sub _set_and_return {
+
+
+
+
+
+# These methods override DBIx::Record
+
+sub _Value {
   my $self = shift;
-  my (@args);
-  #if the user is trying to display only 
-  if (@_ == undef) {
-    
-    if ($self->Display_Permitted) {
-      #if the user doesn't have display permission, return an error
-      $self->SUPER::_set_and_return($field);
-    }
+  #If the user is only trying to display;
+ if ($self->Display_Permitted) {
+    return ($self::SUPER->_Value(@_));
+  }
     else {
       return(0, "Permission Denied");
     }
-  }
+}
+
+sub _Set {
+  my $self = shift;
+  my (@args);
   #if the user is trying to modify the record
-  
-
-
-  if ($self->Modify_Permitted) {
- 
+  if ($self->ModifyPermitted) {
+    
     my $field = shift;
     my $value = shift;
     my $time_taken = shift if @_;
@@ -507,69 +529,19 @@ sub _set_and_return {
     #TODO: this doesn't work, iirc.
     
     my $content = @_;
-    
-    
+        
     #record what's being done in the transaction
     
     $self->_NewTransaction ($field, $value, $time_taken, $content);
-    
     $self->_UpdateDateActed;
-  
-    $self->SUPER::_set_and_return($field, @_);
-    
+    $self->_Set($field, @_);
     #Figure out where to send mail
-    
-    
-    
   }
   
   else {
     return (0, "Permission Denied");
   }
 }
-
-
-#
-# Actions that don't have a corresponding display component
-#
-
-sub Merge {
-  my $self = shift;
-  my $MergeInto = shift;
-  
-  #Make sure this user can modify this ticket
-
-  #Load $MergeInto as Ticket $Target
-  
-  #If the $Target doesn't exist, return an area
-  
-  
-  #Make sure this user can modify $Target
-  
-  #If I have an owner and the $Target doesn't, set them on the target
-  
-  #If this ticket has an area and the $Target doesn't, set them on the target
-  
-  #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
-  
-  #Give the $Target my requestors
-  #    $old_requestors=$req[$in_serial_num]{'requestors'};
-#    $new_requestors=$req[$in_merge_into]{'requestors'};
-#    @requestors_list=split(/,/ , $old_requestors . ", $new_requestors");
-#    foreach $user (@requestors_list) {
-#	$user =~ s/\s//g;
-#	$user .= "\@$rt::domain" if ! ($user =~ /\@/);
-#	$requestors{$user} = 1;
-#    }
-#    $new_requestors = join(",",sort keys %requestors);
-    
-  #Set my effective_sn to the $Target's Effective SN.
-
-  #Set all my transactions Effective_SN to the $Target's Effective_Sn
-  
-  
-
-}  
 
 #
 #ACCESS CONTROL
@@ -589,7 +561,6 @@ sub DisplayPermitted {
     return(0);
   }
 }
-
 
 sub ModifyPermitted {
   my $self = shift;
