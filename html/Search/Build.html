@@ -115,13 +115,6 @@ my %queues;
 # Clean unwanted junk from the format
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format) if ($Format);
 
-# {{{ At this point, just do the search if asked
-if ( $ARGS{"DoSearch"} ) {
-    $m->comp("Results.html" , Query => $Query, Format => $Format, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
-    $m->abort();
-}
-# }}}
-
 # {{{ If we're asked to delete the current search, make it go away and reset the search parameters
 if ( $ARGS{'Delete'} ) {
     if ( $SearchId =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
@@ -731,6 +724,13 @@ if ( $ARGS{'Save'} ) {
 
 }
 
+# }}}
+
+# {{{ Show the results, if we were asked.
+if ( $ARGS{"DoSearch"} ) {
+    $m->comp("Results.html" , Query => $Query, Format => $Format, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
+    $m->abort();
+}
 # }}}
 
 # {{{ Build a querystring for the tabs
