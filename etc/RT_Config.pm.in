@@ -268,9 +268,6 @@ Set($WebBaseURL , "http://RT::WebBaseURL.not.configured:80");
 Set($WebURL , $WebBaseURL . $WebPath . "/");
 
 # $WebImagesURL points to the base URL where RT can find its images.
-# If you're running the FastCGI version of the RT web interface,
-# you should make RT's WebRT/html/NoAuth/images directory available on
-# a static web server and supply that URL as $WebImagesURL.
 
 Set($WebImagesURL , $WebURL . "NoAuth/images/");
 
