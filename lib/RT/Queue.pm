@@ -341,6 +341,7 @@ sub _AdminCc {
 
 Takes a param hash with the attributes Type and User. User is either a user object or string containing an email address. Returns true if that user or string
 is a queue watcher. Returns undef otherwise
+
 =cut
 
 sub IsWatcher {
