@@ -285,7 +285,7 @@ sub Create {
                        DelegatedBy   => 0,
                        DelegatedFrom => 0 );
     if ( $self->Id ) {
-        return ( 0, $self->loc('That user already has that right') );
+        return ( 0, $self->loc('That principal already has that right') );
     }
 
     my $id = $self->SUPER::Create( PrincipalId   => $princ_obj->id,
@@ -594,7 +594,7 @@ sub Delegate {
                                 DelegatedBy => $self->CurrentUser->PrincipalId,
                                 DelegatedFrom => $self->id );
     if ( $delegated_ace->Id ) {
-        return ( 0, $self->loc('That user already has that right') );
+        return ( 0, $self->loc('That principal already has that right') );
     }
     my $id = $delegated_ace->SUPER::Create(
         PrincipalId   => $princ_obj->Id,
