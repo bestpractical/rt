@@ -34,9 +34,6 @@ use lib "!!RT_ETC_PATH!!";
 #This drags in  RT's config.pm
 use config;
 use Carp;
-# don't think we need this anymore.
-#use DBIx::SearchBuilder::Handle;
-
 
 {  
     package HTML::Mason::Commands;
@@ -78,24 +75,16 @@ use Carp;
     use CGI::Cookie;
     use Date::Parse;
     use HTML::Entities;
+    
     #TODO: make this use DBI
     use Apache::Session::File;
 }
-
-#TODO: need to identify the database user here....
-
 
 my $parser = &RT::Interface::Web::NewParser(allow_globals => [%session]);
 
 my $interp = &RT::Interface::Web::NewInterp(parser=>$parser);
 
 my $ah = &RT::Interface::Web::NewApacheHandler($interp);
-
-# chown !!WEB_USER!!.!!WEB_GROUP!!
-chown ( [getpwnam('!!WEB_USER!!')]->[2], [getgrnam('!!WEB_GROUP!!')]->[2],
-        ($RT::MasonSessionDir, $interp->files_written) ); 
-
-
 
 # Die if WebSessionDir doesn't exist or we can't write to it
 
@@ -133,6 +122,9 @@ sub handler {
 	     };
 	     undef $cookies{'AF_SID'};
 	}
+	  else {
+	     die "RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this directory's permissions are correct.";
+	  }
     }
     
     if ( !$cookies{'AF_SID'} ) {
@@ -142,7 +134,7 @@ sub handler {
 	   -path => '/',);
 	$r->header_out('Set-Cookie', => $cookie);
     }
-
+    
     my $status = $ah->handle_request($r);
     untie %HTML::Mason::Commands::session;
     

@@ -1,12 +1,12 @@
 <%perl>
      my ($ticket, $trans,$attach, $filename);
      my $arg = $m->dhandler_arg;                # get rest of path
-     if ($arg =~ '^(\d+)/(\d+)/') {
+     if ($arg =~ '^(\d+)/(\d+)') {
         $trans = $1;
         $attach = $2;
      }
-     else {
-        Abort("The attachment could not be found. Please contact your RT Administrator");
+    else {
+        Abort("Corrupted attachment URL.");
         }
      my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
      $AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
