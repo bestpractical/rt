@@ -268,10 +268,6 @@ unless ($LastVersion) {
             CorrespondAddress => "rt\@localhost",
             CommentAddress    => "rt-comment\@localhost"
         },
-        {
-            Name              => '__Approvals',
-            Description       => 'A system-internal queue for the approvals system',
-        }
     );
 }
 

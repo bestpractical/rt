@@ -84,8 +84,8 @@ $LogDir = "/var/log/rt";
 # Database driver beeing used. Case matters
 # Valid types are "mysql" and "Pg" 
 
-#$DatabaseType="mysql";
-$DatabaseType="Pg";
+$DatabaseType="mysql";
+#$DatabaseType="Pg";
 
 # The domain name of your database server
 # If you're running mysql and it's on localhost,
@@ -105,7 +105,8 @@ $DatabaseUser='rt_user';
 $DatabasePassword='rt_pass';
 
 
-$DatabaseDBA="pgsql";
+$DatabaseDBA="root";
+#$DatabaseDBA="pgsql";
 $DatabaseDBAPassword="";
 
 # The name of the RT's database on your database server

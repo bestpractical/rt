@@ -23,7 +23,7 @@ CPAN 1.60
 DBI 1.18
 Test::Inline
 Class::ReturnValue 0.21
-DBIx::SearchBuilder 0.62
+DBIx::SearchBuilder 0.70
 DBIx::DataSource 0.02
 Text::Template
 File::Spec 0.8

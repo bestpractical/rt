@@ -544,7 +544,7 @@ sub _AddWatcher {
     }
 
 
-    my ($m_id, $m_msg) = $group->_AddMember($principal->Id);
+    my ($m_id, $m_msg) = $group->_AddMember(PrincipalId => $principal->Id);
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
 

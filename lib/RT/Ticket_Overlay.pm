@@ -429,7 +429,7 @@ sub Create {
     # We denormalize it into the Ticket table too because doing otherwise would 
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
 
-    $self->OwnerGroup->_AddMember( $Owner->PrincipalId );
+    $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId , InsideTransaction => 1);
 
     # {{{ Deal with setting up watchers
 
@@ -966,7 +966,8 @@ sub _AddWatcher {
     }
 
 
-    my ($m_id, $m_msg) = $group->_AddMember($principal->Id);
+    my ( $m_id, $m_msg ) = $group->_AddMember( PrincipalId => $principal->Id,
+                                               InsideTransaction => 1 );
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
 
@@ -2476,7 +2477,9 @@ sub SetOwner {
         return(0, $self->loc("Could not change owner. "). $del_msg);
     }
 
-    my ($add_id,$add_msg) = $self->OwnerGroup->_AddMember($NewOwnerObj->PrincipalId);
+    my ( $add_id, $add_msg ) = $self->OwnerGroup->_AddMember(
+                                       PrincipalId => $NewOwnerObj->PrincipalId,
+                                       InsideTransaction => 1 );
     unless ($add_id) {
         $RT::Handle->Rollback();
         return(0, $self->loc("Could not change owner. "). $add_msg);

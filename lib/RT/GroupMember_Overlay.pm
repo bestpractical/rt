@@ -51,6 +51,7 @@ sub Create {
     my %args = (
         Group  => undef,
         Member => undef,
+        InsideTransaction => undef,
         @_
     );
 
@@ -79,7 +80,7 @@ sub Create {
     # TODO what about the groups key cache?
     RT::User->_InvalidateACLCache();
 
-    $RT::Handle->BeginTransaction();
+    $RT::Handle->BeginTransaction() unless ($args{'InsideTransaction'});
 
     # We really need to make sure we don't add any members to this group
     # that contain the group itself. that would, um, suck. 
@@ -105,7 +106,7 @@ sub Create {
     );
 
     unless ($id) {
-        $RT::Handle->Rollback();
+        $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
         return (undef);
     }
 
@@ -143,17 +144,17 @@ sub Create {
         unless ($other_cached_id) {
             $RT::Logger->err( "Couldn't add " . $args{'Member'}
                   . " as a submember of a supergroup" );
-            $RT::Handle->Rollback();
+            $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
             return (undef);
         }
     } 
 
     unless ($cached_id) {
-        $RT::Handle->Rollback();
+        $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
         return (undef);
     }
 
-    $RT::Handle->Commit();
+    $RT::Handle->Commit() unless ($args{'InsideTransaction'});
 
     return ($id);
 }

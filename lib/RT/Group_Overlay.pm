@@ -754,7 +754,7 @@ sub AddMember {
     }
 
   	} 
-    $self->_AddMember($new_member);
+    $self->_AddMember(PrincipalId => $new_member);
 }
 
 # A helper subroutine for AddMember that bypasses the ACL checks
@@ -763,9 +763,14 @@ sub AddMember {
 # In the dim future, this will all get factored out and life
 # will get better	
 
+# takes a paramhash of { PrincipalId => undef, InsideTransaction }
+
 sub _AddMember {
     my $self = shift;
-    my $new_member = shift;
+    my %args = ( PrincipalId => undef,
+                 InsideTransaction => undef,
+                 @_);
+    my $new_member = $args{'PrincipalId'};
 
     unless ($self->Id) {
         $RT::Logger->crit("Attempting to add a member to a group which wasn't loaded. 'oops'");
@@ -802,7 +807,8 @@ sub _AddMember {
     my $member_object = RT::GroupMember->new( $self->CurrentUser );
     my $id = $member_object->Create(
         Member => $new_member_obj,
-        Group => $self->PrincipalObj
+        Group => $self->PrincipalObj,
+        InsideTransaction => $args{'InsideTransaction'}
     );
     if ($id) {
         return ( 1, $self->loc("Member added") );
