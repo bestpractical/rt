@@ -1,0 +1,22 @@
+<SELECT NAME="<%$Name%>">
+<OPTION VALUE=""
+%unless ($Default) {
+ SELECTED
+%}
+>Don't refresh this page.</OPTION>
+%foreach my $value (@refreshevery) {
+<OPTION VALUE="<%$value%>"
+% if ($value == $Default) {
+SELECTED 
+% }
+>Refresh this page every <%$value/60%> minutes.
+%}
+</SELECT>
+
+<%INIT>
+my @refreshevery = qw(120 300 600 1200 3600 7200);
+</%INIT>
+<%ARGS>
+$Name => undef
+$Default => undef
+</%ARGS>
