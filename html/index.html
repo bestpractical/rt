@@ -53,7 +53,8 @@ if ( $ARGS{'q'} ) {
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 
     if ( $query =~ m/\@/ ) {
-        $session{'tickets'}->LimitRequestor( VALUE    => $query,
+        $session{'tickets'}->LimitWatcher( VALUE    => $query,
+                                            TYPE => 'Requestor',
                                              OPERATOR => '=', );
         $m->redirect("$RT::WebPath/Search/Listing.html");
     }
