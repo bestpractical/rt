@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	4pre1
+RT_VERSION_PATCH	=	4pre2
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -243,8 +243,8 @@ fixperms:
 	chmod -R a+r,a-w $(RT_PATH)
 	( cd $(RT_PATH) && find . -type d -exec chmod a+x {} \; )
 	#  Restricted and special access areas.
-	chown -R $(RTUSER) $(RT_ETC_PATH) $(RT_TRANSACTIONS_PATH)  
-	chgrp -R $(RTGROUP) $(RT_ETC_PATH) $(RT_TRANSACTIONS_PATH)  
+	chown -R $(RTUSER) $(RT_ETC_PATH) $(RT_TRANSACTIONS_PATH) 
+	chgrp -R $(RTGROUP) $(RT_ETC_PATH) $(RT_TRANSACTIONS_PATH)
 	#  Some password & config info is sensitive.
 	chmod -R a-w,o-r $(RT_ETC_PATH)
 	chmod ug+x,o-x $(RT_ETC_PATH)
@@ -254,6 +254,10 @@ fixperms:
 	# Do the same for the templates
 	chmod -R a-w,o-r,u+rw,g+r $(RT_TEMPLATE_PATH)
 	( cd $(RT_TEMPLATE_PATH) && find . -type d -exec chmod ug+x,o-x {} \; )
+	# libraries should be world readable
+	( cd $(RT_LIB_PATH) && find . -type d -exec chmod ugo+rx {} \; )
+	( cd $(RT_LIB_PATH) && find . -type f -exec chmod ugo+r {} \; )
+	
 	#  Individual executable files.
 	chmod 0755 $(RT_PERL_MUX)
 	chown $(RTUSER) $(RT_WRAPPER)
