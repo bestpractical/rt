@@ -1,32 +1,101 @@
 %# The main dispatcher for RT/REST 2.0
 <%INIT>
+require Digest::MD5;
+require MIME::Base64;
+
+# needs discussion on using MD5(pass) as Digest token
+@RT::RESTAuthenticationMethods = qw( WSSE Basic )
+    unless @RT::RESTAuthenticationMethods;
+
 my $realm = $RT::rtname;
 $realm =~ s/[^\w.]//g;
+my $nonce = Digest::MD5::md5_hex($realm . rand());
+my %methods = map {($_ => 1)} @RT::RESTAuthenticationMethods;
 
 # XXX - do Digest auth here too?
-$r->header_out(
+$r->headers_out->add(
     'WWW-Authenticate' => qq(WSSE realm="$realm", profile="UsernameToken")
-);
+) if $methods{WSSE};
+$r->headers_out->add(
+    'WWW-Authenticate' => qq(Digest realm="$realm", stale=false, nonce="", qop="auth", algorithm="MD5")
+) if $methods{Digest};
+$r->headers_out->add(
+    'WWW-Authenticate' => qq(Basic realm="$realm")
+) if $methods{Basic};
+
+$RT::Logger->error($r->header_in('Authorization'));
 
 my $CurrentUser;
+my $headerParts = sub {
+    my $header = $r->header_in($_[0]);
+    $header =~ s/^(?:$_[1]) /", / or return;
+    $header =~ s/"\s*$//; # strip whitespaces after the last "
 
-AUTH: {
-    my $auth = $r->header_in('Authorization');
-    $auth =~ /^WSSE (?=.*\bprofile="UsernameToken")/ or last;
-
-    my $wsse = $r->header_in('X-WSSE');
-    $wsse =~ s/^(?:WSSE|UsernameToken) // or last;
-
-    my %param;
-    foreach my $i (split /,\s*/, $wsse) {
-	my ($k, $v) = split /=/, $i, 2;
-	$v =~ s/^"//; $v =~ s/"$//;
-	$param{lc($k)} = $v;
+    my %parts;
+    foreach my $chunk (split /,\s*/, $header) {
+	my ($k, $v) = split /=/, $chunk, 2;
+	$v =~ s/^"//;
+	$v =~ s/"$//;
+	$parts{lc($k)} = $v;
     }
+    $RT::Logger->error(join(',', %parts));
+    $parts{lc($_)} = delete $parts{$_} for map "$_", keys %parts;
+    return \%parts;
+};
+
+AUTH_Basic: {
+    last if $CurrentUser or !$methods{Basic};
+
+    $r->header_in('Authorization') =~ /^Basic (.+)$/ or last;
+    my ($username, $password) = split(/:/, MIME::Base64::decode_base64($1), 2);
+
+    require RT::CurrentUser;
+    $CurrentUser = RT::CurrentUser->new;
+    $CurrentUser->Load($username) or last;
+    $CurrentUser->IsPassword($password) or undef $CurrentUser;
+}
+
+AUTH_Digest: {
+    last if $CurrentUser or !$methods{Digest};
+
+    my $parts = $headerParts->('Authorization', 'Digest') or last;
+
+    my ($username, $auth_digest, $auth_nonce,
+	$auth_nc, $auth_cnonce, $auth_qop, $auth_uri)
+	= map { defined($_) ? $_ : last AUTH_Digest }
+	    @{$parts}{qw(username response nonce nc cnonce qop uri)};
+
+    # XXX validate $auth_uri
+
+    require RT::CurrentUser;
+    $CurrentUser = RT::CurrentUser->new;
+    $CurrentUser->Load($username) or last;
+
+    my $a1 = Digest::MD5::md5_hex(
+	"$username:$realm:" . $CurrentUser->UserObj->__Value('Password')
+    );
+
+    $auth_digest eq Digest::MD5::md5_hex(
+	join(
+	    ":", 
+	    $a1, $auth_nonce,
+	    $auth_nc, $auth_cnonce, $auth_qop,
+	    Digest::MD5::md5_hex($r->method . ":" . $auth_uri),
+	)
+    ) or undef $CurrentUser;
+}
+
+AUTH_WSSE: {
+    last if $CurrentUser or !$methods{WSSE};
+
+    my $auth = $headerParts->('Authorization', 'WSSE') or last;
+    lc($auth->{profile}) eq 'usernametoken' or last;
+
+    my $wsse = $headerParts->('X-WSSE', qr/WSSE|UsernameToken/) or last;
 
     my ($username, $auth_digest, $auth_nonce, $auth_created)
-	= map { defined($_) ? $_ : last AUTH }
-	    @param{qw(username passworddigest nonce created)};
+	= map { defined($_) ? $_ : last AUTH_WSSE }
+	    @{$wsse}{qw(username passworddigest nonce created)};
 
     require RT::CurrentUser;
     $CurrentUser = RT::CurrentUser->new;
@@ -64,13 +133,48 @@ AUTH: {
 }
 
 if ($CurrentUser and $CurrentUser->Id) {
-    # $m->comp( $m->dhandler_arg ); # XXX - proper delegation goes here
+    my $type = ucfirst(lc($m->dhandler_arg)); # XXX - proper delegation goes here
+    $type =~ s{/.*}{};
+    $type =~ s{s$}{};
+
+    require "RT/${type}s.pm";
+    my $collection = "RT::${type}s"->new($CurrentUser);
+    $collection->UnLimit;
+    my $count = $collection->Count;
+
+    $r->content_type('text/xml');
+    my $entries = '';
+    while (my $entry = $collection->Next) {
+	my %entry = map { $_ => eval { $entry->$_ } || '' }
+	    qw(Id Name Description Content LastUpdated Created);
+	$entries .= <<".";
+  <entry>
+    <title mode="escaped">$entry{Name}</title>
+    <link rel="alternate" type="text/html" href="$RT::WebPath/$type/Display.html?id=$entry{Id}"/>
+    <modified>$entry{LastUpdated}</modified>
+    <issued>$entry{Created}</issued>
+    <created>$entry{Created}</created>
+    <id>rt-fsck.com:$RT::rtname/$entry{Id}</id>
+    <summary mode="escaped">$entry{Description}</summary>
+    <content type="text/html" mode="escaped" xml:base="http://diveintomark.org/archives/2004/04/19/feed-parser-beta-22">
+      <![CDATA[$entry{Content}]]>
+    </content>
+  </entry>
+.
+    }
     print << ".";
 <?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/css" href="$RT::WebPath/REST/2.0/NoAuth/feed.css"?>
 <feed version="0.3" xmlns="http://purl.org/atom/ns#">
-  <title>Ticket search results</title>
-  <modified>2000-01-01T01:01:01Z</modified>
-  <author><name>$RT::rtname</name></author>
+  <title>\u$type search results</title>
+  <author>
+    <name>$RT::Organization</name>
+    <url>$RT::WebURL</url>
+  </author>
+  <tagline mode="escaped">$count results found.</tagline>
+  <id>$nonce</id>
+  <generator url="http://www.bestpractical.com/rt/" version="$RT::VERSION">RT</generator>
+  $entries
 </feed>
 .
 }

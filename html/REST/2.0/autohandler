@@ -1,4 +1,9 @@
 %# Forbid direct access in this directory -- everything goes thru dhandler
+% # If it's a noauth file, don't ask for auth.
+% if ($m->base_comp->path =~ $RT::WebNoAuthRegex ) {
+%     $m->call_next(%ARGS);
+%     $m->abort();
+% }
 % $r->content_type('text/html; charset=utf-8');
 % $m->abort(403);
 <%flags>
