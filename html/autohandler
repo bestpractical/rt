@@ -14,12 +14,12 @@ if (defined ($user) && defined ($pass)){
     $session{'CurrentUser'} = RT::FM::CurrentUser->new();
     $session{'CurrentUser'}->Load($user);
     unless ($session{'CurrentUser'}->id() ) {
-	delete $session{'CurrentUser'};
+	$session{'CurrentUser'} = RT::FM::CurrentUser->new();
 	$m->comp('/Elements/Login', %ARGS, Error=> 'Your username or password is incorrect');
         $m->abort();
     };
     unless ($session{'CurrentUser'}->IsPassword($pass)) {
-	delete $session{'CurrentUser'};
+	$session{'CurrentUser'} = RT::FM::CurrentUser->new();
 	
 	$m->comp('/Elements/Login', Error => 'Your username or password is incorrect', %ARGS);
 	$m->abort();
