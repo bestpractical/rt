@@ -1160,7 +1160,7 @@ EOFORM
 @{[$message->Headers]}
 EOFORM
 
-    if ($message->ContentType =~ m{^(text/plain|message)}) {
+    if ($message->ContentType =~ m{^(text/plain|message|text$)}) {
 	print $message->Content;
     } else {
 	print $message->ContentType, " not shown";
