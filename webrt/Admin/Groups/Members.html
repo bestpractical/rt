@@ -13,7 +13,7 @@
 Add members
 </TD>
 <TD>
-Remove members
+Current members
 </TD>
 </TR>
 
@@ -22,10 +22,14 @@ Remove members
 <& /Admin/Elements/SelectUsers, Name => "AddMembers" &>
 </TD>
 <TD VALIGN=TOP>
+
+(Check box to delete group member)
+<UL>
 % while (my $member = $Group->MembersObj->Next()) {
 <INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->id%>">
-<%$member->UserObj->UserId%> (<%$member->UserObj->RealName%>)
+<LI><%$member->UserObj->UserId%> (<%$member->UserObj->RealName%>)
 % }
+</UL>
 </TD>
 </TR>
 </TABLE>
@@ -53,7 +57,7 @@ foreach $key (keys %ARGS) {
 
 if ($key =~ /^DeleteMember-(\d+)$/) {
     my $id = $1; 
-    my $retval = $Group->DeleteMember();
+    my $retval = $Group->DeleteMember($id);
     push (@results, $retval);
 }
 if ($key =~ /^AddMembers$/) {
