@@ -36,24 +36,24 @@
 	};
 
 if ($Ticket->OwnerObj->id == $RT::Nobody->id) {
-	$actions->{'Take'} = 	{ path => "Display.html?Action=Take&id=".$id,
+	$actions->{'Take'} = 	{ path => "Ticket/Display.html?Action=Take&id=".$id,
 				  title => 'Take'
 				};
 }
 elsif ( $Ticket->OwnerObj->id!=$session{CurrentUser}->id) {
-	$actions->{'Steal'} = 	{ path => "Display.html?Action=Steal&id=".$id,
+	$actions->{'Steal'} = 	{ path => "Ticket/Display.html?Action=Steal&id=".$id,
 				  title => 'Steal' 
 				};
 }
 
 
 if ($Ticket->Status ne 'resolved') {
-	$actions->{'Resolve'} = { path => "Display.html?Action=SetStatus&SetStatus=resolved&id=". $id,
+	$actions->{'Resolve'} = { path => "Ticket/Display.html?Action=SetStatus&SetStatus=resolved&id=". $id,
 			  title => 'Resolve'
 			};
 	}	
 if ($Ticket->Status ne 'open') {	
-	$actions->{'Open'} = { path => "Display.html?Action=SetStatus&SetStatus=open&id=". $id,
+	$actions->{'Open'} = { path => "Ticket/Display.html?Action=SetStatus&SetStatus=open&id=". $id,
 				  title => 'Open'
 			};
 }	

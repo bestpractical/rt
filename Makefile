@@ -205,7 +205,16 @@ dirs:
 	#cp -rp ./etc/* $(RT_ETC_PATH)
 
 libs-install: 
-	cp -rp ./lib/* $(RT_LIB_PATH)    
+	[ -d $(RT_LIB_PATH) ] || mkdir $(RT_LIB_PATH)
+	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
+	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
+	chmod -R 0755 $(RT_LIB_PATH)
+	cp -rp ./lib/generic_templates ./lib/images ./lib/rt $(RT_LIB_PATH)    
+	( cd ./lib; \
+	  $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g;" RT.pm; \
+	  $(PERL) Makefile.PL LIB=$(RT_LIB_PATH) \
+	    && make && make test && make install; \
+	)
 
 html-install:
 	cp -rp ./webrt/* $(MASON_HTML_PATH)
@@ -268,7 +277,7 @@ mux-links:
 
 
 config-replace:
-	-f $(RT_CONFIG) && mv $(RT_CONFIG) $(RT_CONFIG).old
+	[ -f $(RT_CONFIG) ] && mv $(RT_CONFIG) $(RT_CONFIG).old
 	cp -rp ./etc/config.pm $(RT_CONFIG)
 	$(PERL) -p -i -e "\
 	s'!!DB_TYPE!!'$(DB_TYPE)'g;\
