@@ -8,13 +8,13 @@ If you don't have a copy of the GPL, you've been living in a cave,
 but one should be included in this distribution.
 
 
-
 INSTALLATION INSTRUCTIONS
 -------------------------
 
-These instructions are a summary of those at http://www.helgrim.com/rtdocs.
-The docs on the web at www.helgrim.com/rtdocs are likely to be more up to
-date and complete than this readme.  You should consult them before proceeding
+These instructions are a summary of those at http://www.fsck.com/rtfm/
+The docs on the web at www.fsck.com/rtfm/ are likely to be more up to
+date and complete than this document. You should consult them before 
+proceeding.
 
 REQUIRED PACKAGES:
 ------------------
@@ -28,10 +28,7 @@ o   Perl5.005_03 or later with support for setgid perl scripts
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
         Currently supported:    Mysql 3.23.38 or newer. 
 				 (Some older releases had crippling SQL bugs)
-				Postgres 7.1
-	Partially supported:    Oracle 8i
-	(Mysql and Postgres are known to be a more solid base for RT than 
-	Oracle at this time)
+				Postgres 7.1 or newer.
 
 o   Apache + mod_perl -- ( http://perl.apache.org) 
     or A webserver with FastCGI support (www.fastcgi.com)
@@ -99,12 +96,14 @@ GENERAL INSTALLATION
 
 	This will build new binaries, config files and libraries without
 	overwriting your RT database. 
-        
-        It will then instruct you to update your RT system database objects 
-        by running rt/etc/insertdata <version> where <version> is the version 
-        of RT you're upgrading from.
 
-	WARNING: This WILL clobber your existing configuration file!
+        WARNING: This WILL clobber your existing configuration file!
+        
+        The install process will then instruct you to update your RT system 
+        database objects by running rt/etc/insertdata <version> where 
+        <version> is the version of RT you're upgrading from.
+
+        
 	
 5c  FOR UPGRADING (From 1.0.x):
 
