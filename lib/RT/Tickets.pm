@@ -31,6 +31,7 @@ use RT::EasySearch;
               LastUpdated => 'DATE',
               Created => 'DATE',
               Subject => 'STRING',
+	      Type => 'STRING',
               Content => 'TRANSFIELD',
 	      ContentType => 'TRANSFIELD',
 	      WatcherEmail => 'WATCHERFIELD',
@@ -177,6 +178,28 @@ sub LimitSubject {
 }
 
 # }}}
+# {{{ sub LimitType
+
+=head2 LimitType
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of = or !=.
+VALUE is a string to search for in the type of the ticket.
+
+=cut
+
+sub LimitType {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Type',
+                  VALUE => $args{'VALUE'},
+                  OPERATOR => $args{'OPERATOR'},
+                  DESCRIPTION => 'Type ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+                 );
+}
+
+# }}}
+
 # {{{ sub LimitContent
 
 =head LimitContent

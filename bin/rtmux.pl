@@ -9,7 +9,6 @@ $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
 $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
 $ENV{'ENV'} = '' if defined $ENV{'ENV'};
 $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
-$ENV{'TZ'} = 'US/Eastern'; #TODO: Bogus hack to deal with Date::Manip whining
 
 package RT;
 use strict;

@@ -90,7 +90,7 @@ sub Create {
 	      Requestor => undef,
 	      RequestorEmail => undef,
 	      Alias => undef,
-	      Type => undef,
+	      Type => 'ticket',
 	      Owner => $RT::Nobody->UserObj,
 	      Subject => '[no subject]',
 	      InitialPriority => "0",
@@ -161,6 +161,7 @@ sub Create {
 				Priority => $args{'InitialPriority'},
 				Status => $args{'Status'},
 				TimeWorked => $args{'TimeWorked'},
+				Type => $args{'Type'},	
 				Due => $due->ISO
 				
 			       );

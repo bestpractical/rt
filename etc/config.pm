@@ -18,6 +18,9 @@ $host="!!RT_HOST!!";
 # $passwd_min defines the minimum length for user passwords.
 $user_passwd_min = "!!RT_USER_PASSWD_MIN!!";
 
+#Timezone
+$ENV{'TZ'} = 'US/Eastern'; #TODO: Bogus hack to deal with Date::Manip whining
+
 
 # }}}
 
