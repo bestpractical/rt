@@ -377,7 +377,6 @@ CREATE TABLE CustomFieldValues (
   Description varchar(200) NULL  ,
   SortOrder integer NULL  ,
 
-
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,

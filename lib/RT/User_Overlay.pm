@@ -1194,7 +1194,6 @@ sub _HasRight {
 
         push (
             @MetaPrincipalsSubClauses, " ((Groups.Name = 'Owner') AND 
-                                       (PrincipalType = 'Group') AND 
                                        (Groups.Id = PrincipalId))"
         );
     }

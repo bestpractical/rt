@@ -165,7 +165,6 @@ sub DropSetGIDPermissions {
 
 =begin testing
 
-ok (require RT::TestHarness);
 
 ok ($RT::Nobody->Name() eq 'Nobody', "Nobody is nobody");
 ok ($RT::Nobody->Name() ne 'root', "Nobody isn't named root");
