@@ -1,6 +1,6 @@
 %# $Header$
 <FORM ACTION="Listing.html" METHOD="GET">
-<INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<%$session{'tickets'}->FreezeLimits()|u%>
+<INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<%$session{'tickets'}->FreezeLimits()|u%>">
 <& /Elements/TitleBoxStart, title => 'Refine Search'&>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
