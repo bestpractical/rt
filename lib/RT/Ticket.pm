@@ -5,6 +5,7 @@
 
 package RT::Ticket;
 use RT::Record;
+use RT::Link;
 @ISA= qw(RT::Record);
 
 
@@ -798,9 +799,9 @@ sub URIIsLocal {
 sub LinkTo {
     my $self = shift;
     my %args = ( dir => 'F',
-		 base => $self->id,
-		 target => '',
-		 type => '',
+		 Base => $self->id,
+		 Target => '',
+		 Type => '',
 		 @_ );
     $self->_NewLink(%args);
 }
@@ -811,9 +812,9 @@ sub LinkTo {
 sub LinkFrom {
     my $self = shift;
     my %args = ( dir => 'T',
-		 base => '',
-		 target => $self->id,
-		 type => '',
+		 Base => '',
+		 Target => $self->id,
+		 Type => '',
 		 @_);
     $self->_NewLink(target=>$self->id, %args);
 }
@@ -824,28 +825,28 @@ sub LinkFrom {
 sub _NewLink {
   my $self = shift;
   my %args = ( dir => '',
-	       target => '',
-	       base => '',
-	       type => '',
+	       Target => '',
+	       Base => '',
+	       Type => '',
 	       @_ );
  
-  # TODO: fix Link.pm
-  my $link = new RT::Link;
-  my $linkid = $link->Create(%args);
+  # Storing the link in the DB.
+  my $link = RT::Link->new($self->CurrentUser);
+  my $linkid = $link->Create(Target => $args{Target}, Base => $args{Base}, Type => $args{Type});
 
   #Write the transaction
   my $b;
   my $t;
   if ($args{dir} eq 'F') {
-      $b=$args{base};
+      $b=$args{Base};
       $t='THIS';
   } else {
       $b='THIS';
-      $t=$args{target};
+      $t=$args{Target};
   }
   my $Trans = $self->_NewTransaction
       (Type => 'Link',
-       Data => "$b $args{type} $t as of $linkid",
+       Data => "$b $args{Type} $t as of $linkid",
        TimeTaken => 0 # Is this always true?
        );
   
