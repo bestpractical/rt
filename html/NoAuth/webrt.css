@@ -184,19 +184,19 @@ li.topnav-5-major {
 %# style sheet control over the formats
 
 a.currenttopnav-0 {  font-family: Verdana, sans-serif;
-	 font-size: 14px;
+	 font-size: 16px;
          font-weight: bold;
 	 color: #FFFF66;
 	 text-decoration: none;
 	 white-space: nowrap}
 a.currenttopnav-1 {  font-family: Verdana, sans-serif;
-	 font-size: 12px;
+	 font-size: 14px;
          font-weight: bold;
 	 color: #FFFF66;
 	 text-decoration: none;
 	 white-space: nowrap}
 a.currenttopnav-2 {  font-family: Verdana, sans-serif;
-	 font-size: 11px;
+	 font-size: 12px;
          font-weight: normal;
 	 color: #FFFF66;
 	 text-decoration: none;
