@@ -19,7 +19,7 @@ $mode = shift || print_help();
 $dbd = shift || print_help();
 
 @modules = qw(
-DBI 1.16
+DBI 1.18
 DBIx::DataSource 0.02
 DBIx::SearchBuilder 0.40
 HTML::Entities 
@@ -29,6 +29,7 @@ Net::SMTP
 Params::Validate 0.02
 HTML::Mason 0.896
 CGI::Cookie 1.06
+Apache::Cookie
 Apache::Session 1.53
 Date::Parse
 Date::Format 
