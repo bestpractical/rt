@@ -88,10 +88,10 @@ sub Prepare  {
 
   $self->SetPrecedence();
 
-  $self->SetRecipients();
+  $self->SetRecipients() || return 0;
 
- $self->{'Body'} .= 
-    "\n-------------------------------------------- Managed by Request Tracker\n\n";
+  $self->{'Body'} .= 
+      "\n-------------------------------------------- Managed by Request Tracker\n\n";
   
 
 
@@ -279,46 +279,46 @@ sub SetEnvelopeTo {
 
 sub SetRecipients {
   my $self=shift;
-  $self->SetTo();
-  $self->SetCc();
-  $self->SetBcc();
-  $self->SetEnvelopeTo();
+  my $r;
+  $self->SetTo() && $r++;
+  $self->SetCc() && $r++;
+  $self->SetBcc() && $r++;
+  $self->SetEnvelopeTo() && $r++;
+  $r;
 }
 # }}} sub SetRecipients
 
-# {{{ sub SetTo
+# {{{ sub SetHeader
+
+sub SetHeader {
+  my $self = shift;
+  my $field = shift;
+  my $cnt=0;
+  for my $val (@{$self->{$field}}) {
+      $self->TemplateObj->MIMEObj->head->add($field, $val);
+  }
+  return $self->TemplateObj->MIMEObj->head->get($field);
+}
+
+# }}}
+
+# {{{ sub SetTo, Cc, Bcc
 
 sub SetTo {
-  my $self = shift;
-  if (exists $self->{'To'}) {
-      $self->TemplateObj->MIMEObj->head->add('To', $self->{'To'});
-  }
-  return($self->{'To'});
+    my $self=shift;
+    return $self->SetHeader('To', @_);
 }
-
-# }}}
-
-# {{{ sub SetCc
 
 sub SetCc {
-  my $self = shift;
-  if (exists $self->{'Cc'}) {
-      $self->TemplateObj->MIMEObj->head->add('Cc', $self->{'Cc'});
-  }
-  return($self->{'Cc'});
+    my $self=shift;
+    return $self->SetHeader('Cc', @_);
 }
-
-# }}}
-
-# {{{ sub SetBcc
 
 sub SetBcc {
-  my $self = shift;
-  if (exists $self->{'Bcc'}) {
-      $self->TemplateObj->MIMEObj->head->add('Bcc', $self->{'Bcc'});
-  }
-  return($self->{'Bcc'});
+    my $self=shift;
+    return $self->SetHeader('Bcc', @_);
 }
+
 # }}}
 
 # {{{ sub SetPrecedence 
@@ -357,7 +357,10 @@ sub SetSubject {
 # {{{ sub IsApplicable 
 sub IsApplicable  {
   my $self = shift;
-  # More work needs to be done here to avoid duplicates beeing sent.
+
+  # More work needs to be done here to avoid duplicates beeing sent,
+  # and to ensure that there actually are any receipients.
+
   return(1);
 }
 # }}}

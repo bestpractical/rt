@@ -15,34 +15,37 @@ sub SetRecipients {
     # ... they shouldn't be set completely independently from each
     # other.
 
-    $self->Argument =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
+    $arg=$self->Argument;
+    $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
 
-    if ($self->Argument =~ /\bOwner\b/) {
-	$self->{To}=join(",", $self->TicketObj->Owner->Email, $self->{To});
+    if ($arg =~ /\bOwner\b/ && $self->TicketObj->Owner) {
+	push(@{$self->{To}}, $self->TicketObj->Owner->EmailAddress);
     }
 
-    if ($self->Argument =~ /\bRequestor\b/) {
-	$self->{To}=join(",", $self->TicketObj->RequestorsAsString, $self->{To});
+    if ($arg =~ /\bRequestor\b/) {
+	push(@{$self->{To}}, $self->TicketObj->RequestorsAsString);
     }
 
     # Will send to AdminCc as Bcc if there are other receipients, and
     # as To if there aren't
-    if ($self->Argument =~ /\bAdminCc\b/) {
+    if ($arg =~ /\bAdminCc\b/) {
 	if ($` || $') {
-	    $self->{Bcc}=join(",", $self->TicketObj->AdminCcAsString, $self->{Bcc});
+	    push(@{$self->{Bcc}}, $self->TicketObj->AdminCcAsString);
 	} else {
-	    $self->{To}=join(",", $self->TicketObj->AdminCcAsString, $self->{To});
+	    push(@{$self->{To}}), $self->TicketObj->AdminCcAsString);
 	}
     }
 
     # Will use Cc as To if there aren't any To.
-    if ($self->Argument =~ /\bCc\b/) {
-	if ($self->{To}) {
-	    $self->{Cc}=join(",", $self->TicketObj->CcAsString, $self->{Cc});
+    if ($arg =~ /\bCc\b/) {
+	if (@{$self->{To}}) {
+	    push(@{$self->{Cc}}, join(",", $self->TicketObj->CcAsString, $self->{Cc}||undef);
 	} else {
-	    $self->{To}=$self->TicketObj->CcAsString;
+	    push(@{$self->{To}}, $self->TicketObj->CcAsString);
 	}
     }
+
+    return @{$self->{To}};
 }
 
 

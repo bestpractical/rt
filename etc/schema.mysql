@@ -378,7 +378,7 @@ Transaction: {$Transaction->Description}
       Status: {$Ticket->Status}
  Ticket <URL: http://{$WebRT}/ticket/display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------
-{$Transaction->Message()->First()->Content() if $object->{TransactionObj}->Message()->First()}',
+{$Transaction->Message()->First()->Content() if $Transaction->Message()->First()}',
 NULL,20000227191543,NULL,00000000000000);
 
 

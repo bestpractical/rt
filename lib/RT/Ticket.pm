@@ -385,15 +385,14 @@ sub Queue {
 
 sub Owner {
   my $self = shift;
+
+  defined ($self->_Value('Owner')) || return undef;
 	
   #If the owner object ain't loaded yet
-  if (! defined $self->{'owner'})  {
+  if (! exists $self->{'owner'})  {
     require RT::User;
     $self->{'owner'} = new RT::User ($self->CurrentUser);
-    if (defined $self->_Value('Owner')) {
-     $self->{'owner'}->Load($self->_Value('Owner'));
-
-    }
+    $self->{'owner'}->Load($self->_Value('Owner'));
   }
   
   #TODO It feels unwise, but we're returning an empty owner
