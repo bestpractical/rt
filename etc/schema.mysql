@@ -303,7 +303,7 @@ CREATE TABLE Attachments (
   Content LONGBLOB,
   Headers BLOB,
   Creator INT(11),
-  Created TIMESTAMP
+  LastUpdated TIMESTAMP
   
 )\g
 # }}}
@@ -315,10 +315,10 @@ CREATE TABLE Links (
   Base VARCHAR(255),
   Target VARCHAR(255),
   Type char(20) NOT NULL, # 
-  Creator INT(11),
-  Created TIMESTAMP,
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
+  LastUpdated TIMESTAMP,
+  Creator INT(11),
+  Created TIMESTAMP
  
   # Type can be one of:
   # <BASE> DependsOn <TARGET>
@@ -363,11 +363,11 @@ CREATE TABLE Templates (
 # user)
 
   Content BLOB,
-  Creator INT(11),
-  Created TIMESTAMP,
-
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
+  LastUpdated TIMESTAMP,
+  Creator INT(11),
+  Created TIMESTAMP
+
 )\g
 
 # }}}
