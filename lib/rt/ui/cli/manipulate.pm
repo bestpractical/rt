@@ -423,8 +423,7 @@ n";
 	MIMEObj => MIME::Entity->build( Subject => $subject || "",
 					Cc => $cc || "",
 					Bcc => $Bcc || "",
-					Data => $content,
-					From => $CurrentUser->EmailAddress));
+					Data => $content));
     $Message->print;
   }                   
 # }}}
