@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	0
 RT_VERSION_MINOR	=	9
-RT_VERSION_PATCH	=	14
+RT_VERSION_PATCH	=	15
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -138,6 +138,50 @@ RT_MYSQL_DATABASE	=	rt
 RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 
 
+#
+# HTTPD CONFIGURATION
+#
+
+
+#
+# where rt's httpd should look for its images
+#
+
+HTTPD_IMAGES_PATH 	= $(RT_LIB_PATH)/images
+
+#
+# where rt's httpd should keep its logs
+#
+
+HTTPD_LOG_DIR 		= /var/log/
+
+#
+# the error long for rt's httpd
+# 
+
+HTTPD_ERROR_LOG 	= $(HTTPD_LOG_DIR)/rt-httpd-errors
+
+#
+# the access log for rt's httpd
+#
+HTTPD_ACCESS_LOG 	= $(HTTPD_LOG_DIR)/rt-httpd-accesses
+
+#
+# what port the RT webserver should live on
+#
+HTTPD_PORT		= 8080
+
+#
+# what the http document should be on rt's web server
+# 
+HTTPD_ROOT		= /dev/null
+
+# this is the prefix for where the RT cgi binaries should appear to live from 
+# a web browser (the /path/to part of http://my.host/path/to/nph-webrt.cgi)
+
+HTTPD_CGI_PREFIX	= /rt
+
+
 
 ####################################################################
 # No user servicable parts below this line.  Frob at your own risk #
@@ -146,7 +190,7 @@ RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 default:
 	@echo "Read the readme"
 
-install: dirs mux-install libs-install initialize config-replace nondestruct instruct
+install: dirs mux-install libs-install initialize config-replace httpd.conf-replace nondestruct instruct
 
 suid-wrapper:
 	$(CC) etc/suidrt.c -DPERL=\"$(PERL)\" -DRT_PERL_MUX=\"$(RT_PERL_MUX)\" -o $(RT_WRAPPER)
@@ -263,6 +307,20 @@ config-replace:
 	s'!!MAIL_OPTIONS!!'$(MAIL_OPTIONS)'g;\
 	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g;\
 	s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
+
+httpd.conf-replace:
+	mv $(RT_ETC_PATH)/httpd/cern/httpd.conf $(RT_ETC_PATH)/httpd/cern/httpd.conf.old
+	cp -rp ./etc/httpd/cern/httpd.conf $(RT_ETC_PATH)/httpd/cern
+	$(PERL) -p -i -e "\
+        s'!!RTUSER!!'$(RTUSER)'g;\
+        s'!!RTGROUP!!'$(RTGROUP)'g;\
+        s'!!HTTPD_PORT!!'$(HTTPD_PORT)'g;\
+        s'!!HTTPD_ROOT!!'$(HTTPD_ROOT)'g;\
+        s'!!HTTPD_ERROR_LOG!!'$(HTTPD_ERROR_LOG)'g;\
+        s'!!HTTPD_ACCESS_LOG!!'$(HTTPD_ACCESS_LOG)'g;\
+        s'!!RT_CGI_PATH!!'$(RT_CGI_PATH)'g;\
+        s'!!HTTPD_IMAGES_PATH!!'$(HTTPD_IMAGES_PATH)'g;\
+        s'!!HTTPD_CGI_PREFIX!!'$(HTTPD_CGI_PREFIX)'g; " $(RT_ETC_PATH)/httpd/cern/httpd.conf
 
 dist:
 	cvs commit
