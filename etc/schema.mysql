@@ -78,6 +78,7 @@ INSERT into Users (UserId, Gecos, RealName, Password, EmailAddress, Comments, Is
 CREATE TABLE Queues (
  id int(11) AUTO_INCREMENT PRIMARY KEY,
  QueueId CHAR(40) NOT NULL,
+ Description VARCHAR(120),
  CorrespondAddress CHAR(40),
  CommentAddress CHAR(40),
  PermitNonmemberCreate INT,		#let nonmembers create
@@ -106,9 +107,11 @@ CREATE TABLE Watchers (
    Value int(11),
    Scope varchar(16), # Might be "Queue" and "Ticket" as for now
                       # ... might be extended to "Keywords", "Owners", etc.
-   Scrips int(11) # Which (applicable) scrips that are to be watched. 0 = all applicable
+   Template int(11),  # Which template to use to send mail to the Email
+
    Email VARCHAR(255),
-   Type VARCHAR(16), #Requestor, Cc, Bcc, To, ... ++?
+   Quiet INT(1),	# Should we send mail to this one at all.
+   Type VARCHAR(16), 	# Requestor, Cc, Bcc, To, ... ++?
    Creator INT(11),
    Created TIMESTAMP,
    LastUpdatedBy INT(11),
