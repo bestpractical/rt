@@ -1,0 +1,210 @@
+#!/usr/bin/perl -w
+# $Header$
+
+use strict;
+use vars qw($PROMPT $SCHEMA_FILE $SCHEMA_DIR
+	    $ACTION $DEBUG $DB_TYPE $DB_HOME 
+	    $DB_HOST $DB_PORT $DB_DBA $DB_DATABASE $DB_DBA_PASSWORD);
+
+use DBI;
+use DBIx::DataSource qw( create_database drop_database );
+
+
+$|=1; #unbuffer that output.
+
+$DEBUG=0;
+$PROMPT = 1; #by default, should at least *ask* before nuking databases
+$SCHEMA_DIR ="etc";
+$SCHEMA_FILE = "$SCHEMA_DIR/schema.pm"; #hmm
+
+($DB_TYPE, $DB_HOME, $DB_HOST, $DB_PORT, $DB_DBA, $DB_DATABASE, $ACTION) = @ARGV;
+
+
+if ($DEBUG) {
+  print_config_params();
+}
+my $dsn = "dbi:$DB_TYPE:";
+
+if (($DB_TYPE eq 'Pg') or ($DB_TYPE eq 'mysql')) {
+   $dsn .= "dbname=$DB_DATABASE;host=$DB_HOST;port=$DB_PORT";
+}
+elsif ($DB_TYPE eq 'Oracle') {
+   $dsn .= "$DB_DATABASE";
+}
+
+
+if ($ACTION eq 'create') {
+    unless ($DB_TYPE eq 'Oracle') {
+        print "Now creating a database for RT.\n";
+	prompt_for_dba_password();
+	create_db();
+    }
+}
+elsif ($ACTION eq 'drop' ) {
+    unless ($DB_TYPE eq 'Oracle') {
+	print "Now dropping the RT2 database.\n";
+        prompt_for_dba_password();
+        drop_db();
+    }
+}
+elsif ($ACTION eq 'insert' ) {
+    print "Now populating database schema.\n";
+    prompt_for_dba_password();
+    insert_schema();
+}
+elsif ($ACTION eq 'generate') {
+    prompt_for_dba_password();
+    generate_schema();
+}
+else {
+    print STDERR '$ACTION unspecified. Makefile error. It was '.$ACTION ;
+    exit(-1);
+}
+
+
+# {{{ sub prompt_for_dba_password
+
+sub prompt_for_dba_password {
+    print "Enter the $DB_TYPE password for $DB_DBA: ";
+
+    system "stty -echo";
+    $DB_DBA_PASSWORD = scalar(<STDIN>); #keep off commandline
+    system "stty echo";
+    chomp $DB_DBA_PASSWORD;
+
+}
+# }}}
+
+# {{{ sub print_config_params
+sub print_config_params {
+    print <<END;
+Database creation parameters:
+
+DB_TYPE         = $DB_TYPE
+DB_HOME         = $DB_HOME
+DB_HOST         = $DB_HOST
+DB_DBA          = $DB_DBA
+DB_DBA_PASSWORD = <hidden>
+DB_DATABASE     = $DB_DATABASE
+END
+}
+# }}}
+
+# {{{ sub drop_db
+sub drop_db {
+    
+    if ( $PROMPT ) {
+	print <<END;
+
+About to drop $DB_TYPE database $DB_DATABASE.
+WARNING: This will erase all data in $DB_DATABASE.
+If you have an existing RT 2.x installation, this will destroy all your data.
+i
+END
+	exit unless _yesno();
+	
+    }
+    
+
+  print "\nDropping $DB_TYPE database $DB_DATABASE.\n";
+  drop_database( $dsn, $DB_DBA, $DB_DBA_PASSWORD )
+    or warn $DBIx::DataSource::errstr;
+
+
+}
+# }}}
+
+# {{{ sub generate_schema
+sub generate_schema {
+    my @schema = generate_schema_from_hash();
+    print "Generating schema for $DB_TYPE...";
+    
+    system('mv', "$SCHEMA_DIR/schema.$DB_TYPE", "$SCHEMA_DIR/schema.$DB_TYPE.bak")
+      if (-f "$SCHEMA_DIR/schema.$DB_TYPE");
+    open(SCHEMA, ">$SCHEMA_DIR/schema.$DB_TYPE");
+    foreach my $line (@schema) {
+	print SCHEMA "$line;\n";
+    }
+    close(SCHEMA);
+    print "done.\n";
+}
+# }}}
+
+# {{{ sub insert_schema
+sub insert_schema {
+    my (@schema);
+    print "\nCreating database schema.\n";
+   
+    my $dbh = DBI->connect( $dsn, $DB_DBA, $DB_DBA_PASSWORD ) or die $DBI::errstr;    
+    
+    if ( -f "$SCHEMA_DIR/schema.$DB_TYPE") {
+	open (SCHEMA, "<$SCHEMA_DIR/schema.$DB_TYPE");
+	my $statement = "";
+	foreach my $line (<SCHEMA>) {
+	    $statement .= $line;
+	    if ($line =~ /;$/) {
+		$statement =~ s/;$//g;
+		push @schema, $statement;
+		$statement = "";
+	    }
+	}	
+    }	
+    
+    else {
+	 @schema = generate_schema_from_hash();
+     }
+    
+    foreach my $statement (@schema) {
+	print STDERR $statement if $DEBUG;
+	my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+	unless ($sth->execute) {
+	    print STDERR "Problem with statement:\n $statement\n";
+	    die $sth->errstr;
+	}
+    }
+    
+    
+    $dbh->disconnect;
+    print "schema sucessfully inserted\n";
+    
+}
+# }}}
+
+# {{{ sub generate_schema_from_hash
+sub generate_schema_from_hash {
+    my (@schema);
+    
+    require DBIx::DBSchema;    
+    my $schema_href = do "$SCHEMA_FILE" or die $@ || $!;
+    my $schema = DBIx::DBSchema->pretty_read($schema_href);
+    
+    
+    foreach my $statement ( $schema->sql($dsn, $DB_DBA, $DB_DBA_PASSWORD ) ) {
+	print STDERR $statement if $DEBUG;
+	chomp $statement;
+	push @schema, $statement;
+	
+    }
+    return (@schema);
+    
+}
+# }}}
+
+# {{{ sub create_db
+sub create_db {
+    
+    print "\nCreating $DB_TYPE database $DB_DATABASE.\n";
+    create_database( $dsn, $DB_DBA, $DB_DBA_PASSWORD )
+      or die $DBIx::DataSource::errstr;
+
+}
+# }}}
+
+# {{{ sub _yesno
+sub _yesno {
+    print "Proceed [y/N]:";
+    my $x = scalar(<STDIN>);
+    $x =~ /^y/i;
+}
+
+# }}}
