@@ -130,7 +130,7 @@ Errno
 FreezeThaw
 Digest::MD5 2.27
 CGI::Cookie 1.20
-Storable
+Storable 2.08
 Apache::Session 1.53
 .
 
