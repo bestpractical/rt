@@ -19,7 +19,7 @@
         Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
 
      }
-     my $content_type = $AttachmentObj->ContentType || 'text/html';
+     my $content_type = $AttachmentObj->ContentType || 'text/plain';
      SetContentType($content_type);
      $m->out($AttachmentObj->Content); 
      $m->abort; 
