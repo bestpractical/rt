@@ -1,6 +1,6 @@
 <SELECT NAME="<%$Name%>"
 
-%if ($cf->Type =~ /Multiple/) {
+%if ($cf->Type =~ /Multiple$/) {
 MULTIPLE
 % }
 >
