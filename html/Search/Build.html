@@ -248,7 +248,7 @@ foreach my $arg ( keys %ARGS ) {
     if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ) {
 	# We're adding a $1 clause
 	my $field = $1;
-	my $keyword;
+	my ($keyword, $op, $value);
 
 	#figure out if it's a grouping
 	if ( $ARGS{ $field . "Field" } ) {
@@ -257,10 +257,27 @@ foreach my $arg ( keys %ARGS ) {
 	else {
 	    $keyword = $field;
 	}
+
+        $value = $ARGS{'ValueOf' . $field};
+        $op = $ARGS{ $field . 'Op' };
+	if ( $value eq 'NULL' && $op =~ /=/) {
+            if ($op eq '=') {
+                $op = "IS";
+            } elsif ($op eq '!=') {
+                $op = "IS NOT";
+            }
+
+            # This isn't "right", but...
+            # It has to be this way until #5182 is fixed
+            $value = "'NULL'";
+	} else {
+            $value = "'NULL'";
+        }
+
 	my $clause = {
             Key   => $keyword,
-            Op    => $ARGS{ $field . 'Op' },
-            Value => "'$ARGS{'ValueOf' . $field}'"
+            Op    => $op,
+            Value => $value
         };
 	    
 	my $newnode = Tree::Simple->new($clause);
