@@ -26,6 +26,15 @@
 
 =head1 METHODS
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Condition::Generic);
+
+=end testing
+
+
 =cut
 
 package RT::Condition::Generic;
