@@ -165,11 +165,15 @@ sub _parser {
 
   my ($ea,$key,$op,$value) = ("","","","");
 
+  # order of matches in the RE is important.. op should come early,
+  # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
+  # as a keyword or value.
+
   while ($string =~ /(
                       $re_aggreg
+                      |$re_op
                       |$re_keyword
                       |$re_value
-                      |$re_op
                       |$re_paren
                      )/igx ) {
     my $val = $1;
