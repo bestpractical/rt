@@ -220,20 +220,28 @@ sub RequestorsAsString {
 
 sub WatchersAsString {
     my $self=shift;
-    return ($self->Watchers->EmailsAsString() . ", " .
-	    $self->Queue->Watchers->EmailsAsString());
+    return clean ($self->Watchers->EmailsAsString() . ", " .
+		  $self->Queue->Watchers->EmailsAsString());
 }
 
 sub AdminCcAsString {
     my $self=shift;
-    return ($self->AdminCc->EmailsAsString() . ", " .
-	    $self->Queue->AdminCc->EmailsAsString());
+    return clean ($self->AdminCc->EmailsAsString() . ", " .
+		  $self->Queue->AdminCc->EmailsAsString());
   }
 
 sub CcAsString {
     my $self=shift;
-    return ($self->Cc->EmailsAsString() . ", ".
-	    $self->Queue->Cc->EmailsAsString());
+    return clean ($self->Cc->EmailsAsString() . ", ".
+		  $self->Queue->Cc->EmailsAsString());
+}
+
+sub clean {
+    my $i=shift;
+    $i =~ s/^, //;
+    $i =~ s/, $//;
+    $i =~ s/, ,/,/g;
+    return $i;
 }
 
 # }}}
