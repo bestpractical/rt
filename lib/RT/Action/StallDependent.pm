@@ -1,16 +1,8 @@
-# This Action will stall the BASE if a dependency link is created.
+# This Action will stall the BASE if a dependency link is created and if BASE is open.
 
 package RT::Action::StallDependent;
 require RT::Action;
 @ISA=qw|RT::Action|;
-
-#Do what we need to do and send it out.
-
-# {{{ sub Commit 
-sub Commit  {
-# Stall BASE.
-}
-# }}}
 
 #What does this type of Action does
 
@@ -39,7 +31,7 @@ sub Commit {
 	$base=RT::Ticket->new($self->TicketObj->CurrentUser);
 	$base->Load($base_id);
     }
-    $base->Stall;
+    $base->Stall if $base->Status eq 'Open';
     return 0;
 }
 
