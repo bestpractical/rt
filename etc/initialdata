@@ -600,9 +600,8 @@ return 0; # ignore $passed;
     { Name => 'Search - My Requests',
       Description => '[_1] newest unowned tickets', # loc
       Content     =>
-# take care of the loc here for 'Take'
-      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">Take</a>/TITLE:&nbsp;' ",
-
+# 'Take' #loc
+      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">__l{Take}__</a>/TITLE:&nbsp;' ",
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         OrderBy => 'Created',
         Order   => 'DESC' },
