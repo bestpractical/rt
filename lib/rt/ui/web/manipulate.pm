@@ -1,3 +1,4 @@
+# $Header$
 # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #
@@ -35,7 +36,7 @@ sub InitDisplay {
   
   if (!($frames) && (!$rt::ui::web::FORM{'display'})) {
     
-    if ($serial_num > 0) {	
+    if ($serial_num > 0 || $rt::ui::web::FORM{'do_req_create'}) {	
       $rt::ui::web::FORM{'display'} = "History";
     }
     else{
@@ -765,32 +766,16 @@ print "
     if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'comments') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-      print &fdro_murl("display=SetComment","history","<img border=0 src=\"/webrt/comment.gif\" alt=\"[Comment this]\">");
+      print &fdro_murl("display=SetComment","history","<img border=0 src=\"/webrt/comment.gif\" alt=\"[Comment this]\">",
+		       $rt::req[$serial_num]{'trans'}[$temp]{'id'} );
       
-      }
-    if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
-	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-      print &fdro_murl("display=SetReply","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Reply this]\">");
+      print &fdro_murl("display=SetReply","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Send official reply to this comment]\">",
+		       $rt::req[$serial_num]{'trans'}[$temp]{'id'});
+
+      # "FAQ-reply", "Spawn" and "notify"-links should be in here..
     }
   }
     
-    #all of these things can be done from the top/bottom menus. we don't 
-    # need em here
-    if (0) {
-
-    if ($rt::req[$serial_num]{'owner'} eq '') {
-      print &fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take");
-    }
-    if ($rt::req[$serial_num]{'status'} ne 'resolved') {
-      print &fdro_murl("do_req_resolve=true","summary","Resolve");
-    }
-    if ($rt::req[$serial_num]{'status'} ne 'open') {  
-      print &fdro_murl("do_req_open=true","summary","Open");
-    }
-    print " | <A HREF=\"$ScriptURL?display=History&serial_num=" .
-	($serial_num + 1) . "\">Next</A>";
-
-  }
 print "</FONT></TD>
 <TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=\"28\" alt=\"\"></TD>
 </TR>
@@ -826,23 +811,23 @@ sub do_bar {
   
       print "
      <DIV ALIGN=\"CENTER\"> ".
-&fdro_murl("display=SetComment","history","Generic Comment"). " | " .
-&fdro_murl("display=SetReply","history","Generic Reply");
+&fdro_murl("display=SetComment","history","Comment (without quotes)",0). " | " .
+&fdro_murl("display=SetReply","history","Reply (without quotes)",0);
       
       
       if ($rt::req[$serial_num]{'owner'} eq '') {
 	print " | ". 
-&fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take") ;
+&fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take",0) ;
       }
       if ($rt::req[$serial_num]{'status'} ne 'resolved') {
 	
 	print " | ". 
-&fdro_murl("do_req_resolve=true","summary","Resolve");
+&fdro_murl("do_req_resolve=true","summary","Resolve",0);
       }
       if ($rt::req[$serial_num]{'status'} ne 'open') {
 	
 	print " | " . 
-&fdro_murl("do_req_open=true","summary","Open");
+&fdro_murl("do_req_open=true","summary","Open",0);
       }
       print " | <A HREF=\"$ScriptURL?display=History&serial_num=" .
        ($serial_num + 1) . "\">Next</A>";
@@ -1298,8 +1283,9 @@ sub fdro_murl {
   my $custom_content = shift;
   my $target = shift;
   my $description = shift;
+  my $trans = shift;
   
-    $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$rt::req[$serial_num]{'trans'}[$temp]{'id'}&";
+    $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$trans&";
     $url .= $custom_content;
     $url .= "\"";
     $url .= " target=\"$target\"" if ($frames);

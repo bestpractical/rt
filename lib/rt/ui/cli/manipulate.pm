@@ -46,7 +46,19 @@ sub parse_args {
 	print "You don't have permission to display request #$serial_num\n";
       }
     }
-    
+   
+
+    elsif ($ARGV[$i] eq "-publichistory") {
+      $serial_num=int($ARGV[++$i]);
+      if (&rt::can_display_request($serial_num, $current_user)) {
+        &cli_show_req($serial_num);
+        &cli_requestor_history_req($serial_num);
+      }
+      else {
+        print "You don't have permission to display request #$serial_num\n";
+      }
+    } 
+ 
     
 	elsif ($ARGV[$i] eq "-trans") {
 
@@ -271,6 +283,18 @@ sub cli_history_req {
     for ($temp=0; $temp < $total_transactions; $temp++){
 	&print_transaction($temp, $in_serial_num);
     }   
+}
+
+sub cli_requestor_history_req {
+    my ($in_serial_num)=@_;
+    $total_transactions=&rt::transaction_history_in($in_serial_num,$current_user);
+    for ($temp=0; $temp < $total_transactions; $temp++){
+	if ($rt::req[$in_serial_num]{'trans'}[$temp]{'type'} ne 'comment') {
+	        &print_transaction($temp, $in_serial_num);
+	}
+    }
+
+
 }
 
 sub cli_help_req {

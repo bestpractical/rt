@@ -1,0 +1,993 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title>Introduction to using the Request Tracker (RT)</title>
+    <meta NAME="Author" CONTENT="Michael Brader">
+    <meta NAME="Description" CONTENT="An introduction to RT">
+    <meta NAME="Keywords" CONTENT="RT Request Tracker">
+    <style>
+BODY
+{
+  background: #FFFFFF;
+  margin-left: 10%;
+  margin-right: 10%;
+  text-align: left;
+  font-family: sans-serif;
+}
+
+P, LI, UL
+{
+  font-family: sans-serif;
+}
+
+TABLE
+{
+  border-width: thick;
+  border-style: solid;
+  font-family: sans-serif;
+}
+
+TD, TH
+{
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-left: 2em;
+    margin-right: 2em;
+    text-align: left;
+    font-family: sans-serif;
+}
+
+TH
+{
+    text-align: center;
+}
+
+TD.defn-term, TH.defn-term
+{
+    background: #CFCFCF;
+}
+
+TD.defn-definition, TH.defn-definition
+{
+    background: #FCFCFC;
+}
+
+TD.tablewithintable, TH.tablewithintable
+{
+    background: #99FFCC
+    font-size:  smaller;
+}
+
+TH.defn-term, TH.defn-definition
+{
+    font-size: larger;
+}
+
+TD.centre, TH.centre
+{
+    text-align: center;
+}
+
+H1, H2, H3
+{
+    text-align: center;
+    font-family: sans-serif;
+}
+
+DIV.centre
+{
+    text-align: center;
+}
+
+SPAN.centre
+{
+    text-align: center;
+}
+
+SPAN.defn
+{
+    font-weight:    bold;
+    text-align:	    center;
+}
+
+SPAN.output
+{
+    font-family:	fixed;
+}
+
+STRONG.emphasis
+{
+    font-style: italic;
+}
+    </style>
+  </head>
+
+  <body>
+    <h1>RT:Request Tracker</h1>
+  <p>This documentation describes what RT is and how to use it</p>
+
+
+    <h1>How to use this document</h1>
+
+    <p>This page is organised into two parts. <a
+    href="#Section1">First</a>, there is a general section which
+    explains RT as a system without providing any details of the local
+    setup. The <a href="#Section2">second section</a> deals with any
+    local customisations or configurations that may be of interest to
+    local users.
+
+    <p>I've tried to define any new words as I come across
+    them. Further uses of the word should be linked back to the
+    original definition. A definition looks like this:
+
+    <p><a name="DEFNdefn">
+    <table width="80%" border>
+      <tbody>
+	<tr>
+	  <td class="defn-term"><span class="defn">Term</span></td>
+
+	  <td class="defn-definition">Definition of term</td>
+	</tr>
+      </tbody>
+    </table>
+
+    <a name="Section1"><h1>What is RT?</h1>
+
+    <p>Request Tracker tracks requests. Requests are entered into
+    queues either by sending email to a special address or by using
+    the web interface. 
+
+    <p>Alternatively, you could say that RT is a mechanism for
+    managing and archiving email threads with a web interface. 
+
+    <p>RT is both of these. The former describes its use and the
+    latter describes its implementation. There are other interfaces,
+    via email and CLI, but this document focuses on the web interface
+
+    <p><a name="DEFNqueue">
+    <table width="80%" border>
+      <tbody>
+	<tr>
+	  <td class="defn-term"><span class="defn">Queue</span></td>
+
+	  <td class="defn-definition">A queue is a way of grouping
+	  requests. A queue has the following attributes:
+
+	    <ul>
+
+	      <li>A list of members who are authorised to manipulate
+	      requests in this queue.</li>
+
+	      <li>One or more members who are designated
+	      administrators and can configure queue options</li>
+
+	      <li>A mail alias to which new requests or feedback on
+	      existing requests can be sent.</li>
+
+	      <li>Possibly a list of areas which divide the queue into
+	      smaller units</li>
+
+	      <li>A set of configurable options accessible via the web
+	      admin interface with respect to setting up who gets
+	      mailed about what and who can raise requests in this
+	      queue.</li>
+
+	      <li>A set of mail template files which can be configured
+	      to tailor messages sent by RT</li>
+
+	    </ul>
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+
+    <p>When a request is received, it is assigned a unique identifier,
+    a combination of a Site Identifier and a number. For example,
+    <span class="output">[RequestTracker&nbsp;#127]</span>. Usually,
+    the requestor is notified when a request is submitted.
+
+    <p><a name="DEFNrequestor">
+    <table width="80%" border>
+      <tbody>
+	<tr>
+	  <td class="defn-term"><span class="defn">Requestor</span></td>
+
+	  <td class="defn-definition">In RT, the Requestor is the person who
+	  raised the request. A requestor is usually represented as an
+	  email address. This is because the email address of the
+	  sender of a message to an RT queue alias is used to fill in
+	  the requestor field. When a request is raised using the web
+	  interface, the address is obtained from the 'email' field of
+	  the web user configuration.
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+
+    <p>Any change to a request is stored as a transaction.
+
+    <p><a name="DEFNtransaction">
+    <table width="80%" border>
+      <tbody>
+	<tr>
+	  <td class="defn-term"><span class="defn">Transaction</span></td>
+
+	  <td class="defn-definition">A transaction is a stored change
+	  to a request. It may be a comment or a reply, or it may be a
+	  field change in the request headers or a state change. Each
+	  transaction is stored and the transaction history of a
+	  request may be viewed.
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+
+    <p>The other standard fields in a request are:
+
+    <p><a name="DEFNfields">
+    <table width="80%" border>
+      <tbody>
+	<tr>
+	  <a name="DEFNfields-serial_num">
+	  <td class="defn-term"><span class="defn">Serial Number</span></td>
+
+	  <td class="defn-definition">The request's unique
+	  identifier. This is assigned on submission and cannot be
+	  changed.</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-subject">
+	  <td class="defn-term"><span class="defn">Subject</span></td>
+
+	  <td class="defn-definition">This is a text field containing
+	  (hopefully) a one line summary of the problem or
+	  request. This field does not have to be unique and can be
+	  changed at any time</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-area">
+	  <td class="defn-term"><span class="defn">Area</span></td>
+
+	  <td class="defn-definition">Some <a
+	  href="#DEFNqueue">queue</a>s are divided into areas. These
+	  areas simply provide a mechanism to narrow searches and to
+	  group requests into categories. Before defining an area, it
+	  would be wise to consider creating a new <a
+	  href="#DEFNqueue">queue</a>, particularly if requests in a
+	  certain area should be handled in any way different to
+	  requests in the main queue.</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-queue_id">
+	  <td class="defn-term"><span class="defn">Queue</span></td>
+
+	  <td class="defn-definition">The name of the <a
+	  href="#DEFNqueue">queue</a>.</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-requestors">
+	  <td class="defn-term"><span class="defn">Requestors</span></td>
+
+	  <td class="defn-definition">See <a
+	  href="#DEFNrequestor">above</a></td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-owner">
+	  <td class="defn-term"><span class="defn">Owner</span></td>
+
+	  <td class="defn-definition">The owner of a request is the
+	  person who is currently responsible for any action on the
+	  request. You could read this as "assigned to" without losing
+	  any meaning.</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-status">
+	  <td class="defn-term"><span class="defn">Status</span></td>
+
+	  <td class="defn-definition">This field represents the state
+	  of a request. Currently the only states are:
+
+	    <table border>
+	      <thead>
+		<tr>
+		  <th class="tablewithintable">State</th>
+		  <th class="tablewithintable">Meaning</th>
+		</tr>
+	      </thead>
+	      <tbody>
+		<tr>
+		  <td class="tablewithintable">open</td>
+
+		  <td class="tablewithintable">This request is
+		  unresolved and work is progressing.</td>
+		</tr>
+		<tr>
+		  <td class="tablewithintable">stalled</td>
+		  <td class="tablewithintable">This request is
+		  unresolved but work is not progressing.</td>
+		</tr>
+		<tr>
+		  <td class="tablewithintable">resolved</td>
+		  <td class="tablewithintable">This request has been
+		  resolved.</td>
+		</tr>
+		<tr>
+		  <td class="tablewithintable">dead</td>
+		  <td class="tablewithintable">This request has been
+		  removed from the system. This state should only be
+		  used to kill duplicates as requests in this state
+		  lose all <a href="#DEFNtransaction">transaction</a>
+		  information.</td>
+		</tr>
+	      </tbody>
+	    </table>
+	  </td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-date_told">
+	  <td class="defn-term"><span class="defn">Last User
+	  Contact</span></td>
+
+	  <td class="defn-definition">This field contains the date of
+	  the last time the <a href="#DEFNrequestor">requestor</a> was
+	  contacted. Unless set explicitly, this field can be
+	  incorrect.</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-priority">
+	  <td class="defn-term"><span class="defn">Priority</span></td>
+
+	  <td class="defn-definition">The current priority of the
+	  request. Values range from 00 to 99</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-date_due">
+	  <td class="defn-term"><span class="defn">Due</span></td>
+
+	  <td class="defn-definition">The request should be resolved
+	  by this date.</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-date_acted">
+	  <td class="defn-term"><span class="defn">Last acted</span></td>
+
+	  <td class="defn-definition">This is the date the last time
+	  the request was changed.</td>
+
+	</tr>
+	<tr>
+	  <a name="DEFNfields-date_created">
+	  <td class="defn-term"><span class="defn">Created</span></td>
+
+	  <td class="defn-definition">The date the request was
+	  submitted.</td>
+
+	</tr>
+      </tbody>
+    </table>
+
+    <p>In addition to the <a href="#DEFNrequestor">requestor</a>, the
+    <a href="#DEFNqueue-members">queue members</a> are usually also
+    notified via email.
+
+    <p><a name="DEFNqueue-members">
+    <table width="80%" border>
+      <tbody>
+	<tr>
+	  <td class="defn-term"><span class="defn">Queue members</span></td>
+
+	  <td class="defn-definition">Queue members are those people
+	  who have permission to manipulate requests in a <a
+	  href="#DEFNqueue">queue</a></td>
+	</tr>
+      </tbody>
+    </table>
+
+    <p>So, a request is submitted. The <a
+    href="#DEFNrequestor">requestor</a> and the <a
+    href="#DEFNqueue-members">queue members</a> get mail, apparently
+    from the queue mail alias containing the request. If anybody
+    replies to the message, leaving the <a
+    href="#DEFNfields-subject">subject</a> intact, the reply will be
+    filed in RT as a comment on the request, and mailed out to the <a
+    href="#DEFNqueue-members">queue members</a>, and so on and so
+    on. Changes to <a href="#DEFNfields-status">status</a> or other
+    fields can be made via the web interface.
+
+    <p>RT uses the subject line of a message to decide what to do with
+    it. If the subject contains the identifier of a request that
+    already exists, the message becomes a comment. If the subject line
+    contains no identifier, a new request will be
+    created. <strong>Thus you should be careful with the subject
+    header when sending messages to the RT alias to avoid creating new
+    requests where they are not needed.</strong>
+
+    <p>So, once a request is created, what next? You will notice a
+    couple of things about mail sent by RT. First of all, the From
+    address is the mail alias for that queue (though the Real name
+    field is likely to be set to the <a
+    href="#DEFNrequestor">requestor</a>). Thus, if you reply to the
+    message, it is sent back to RT where the reply will be appended to
+    the request and sent to the <a href="#DEFNqueue-members">queue
+    members</a> and the <a href="#DEFNrequestor">requestor</a>. You
+    can also reply to or comment on a request using the web interface.
+
+    <p>Secondly, the subject looks like this:
+
+    <p><span class="output">Subject: [RequestTracker #187] (at-review)
+    Clean up code</span>
+
+    <p>The format of this line is:
+
+    <p><span class="output">Subject: [&lt;Site ID&gt; #&lt;request
+    number&gt;] (&lt;queue name&gt;) &lt;subject&gt;</span>
+
+    <p>If you reply to an RT message without changing the <a
+    href="#DEFNfields-subject">subject</a>, RT knows which request
+    you are referring too. If you change the subject, RT won't know
+    and will assume that you intend to create a new request. Of
+    course, a preceding <span class="output">Re: </span> is ignored.
+
+    <a name="acl"><p>There are four levels of access to any particular
+    queue:
+
+    <p>
+    <ul>
+      <li><strong>No access</strong> - self-explanatory</li>
+
+      <li><strong>Display</strong> - the user can view requests, but
+      cannot modify them.</li>
+
+      <li><strong>Manipulate</strong> - the user can modify requests,
+      that is, change the values of fields or add comments and replies.</li>
+
+      <li><strong>Admin</strong> - like manipulate, but the user can
+      also access the admin interface to change queue properties or
+      add/remove users.</li>
+
+    </ul>
+
+    <h2>What can I do with a request?</h2>
+
+    <p>There are many things that you can do with a request, the most
+    common are commenting and replying. These actions have specific
+    meanings in RT.
+
+    <p><a name="DEFNcomment"><a name="DEFNreply">
+    <table width="80%" border>
+      <tbody>
+	<tr>
+	  <td class="defn-term"><span class="defn">Comment</span></td>
+
+	  <td class="defn-definition">For a given Queue, anyone with
+	  Manipulate privileges or higher may Comment on a Request.
+	  Commenting is the most common way to update a Request.  It
+	  adds a <A href="#DEFNtransaction">Transaction</A> and may or
+	  may not (depending on how the Queue is configured)
+	  automatically send mail to the <A
+	  href="#DEFNrequestor">Requestor</A> or the <a
+	  href="#DEFNqueue-members">queue members</a>.  It is intended
+	  to be used for "internal" correspondence that is not sent to
+	  the user.  Comments would only be sent to the <a
+	  href="#DEFNrequestor">requestor</a> at installations which
+	  have enabled "Notify User on Action" which is not
+	  recommended, because of the sheer volume of mail
+	  involved.</td>
+	</tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Reply</span></td>
+
+	  <td class="defn-definition">Replying to a Request does much
+	  the same thing as Commenting on it does, but it also
+	  explicitly sends email to the <A
+	  href="#DEFNrequestor">Requestor</A>, regardless of how the
+	  Queue is configured. RT will note the time of this
+	  communication in the <a href="#DEFNfields-date_told">Last
+	  User Contact</a> field.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>The most common way to comment or reply to a message is to use
+    email. To comment, simply reply to an RT message or create a new
+    message with the following string in the subject:
+
+    <p><span class="output">[RequestTracker&nbsp;#&lt;request
+    id&gt;]</span>
+
+    <p>To reply, simply reply to the message and Cc: the <a
+    href="#DEFNrequestor">requestor</a>
+
+    <h2>The Web interface: Changing a request</h2>
+
+    <p>While email is the easiest way to <a
+    href="#DEFNcomment">comment</a> on or <a
+    href="#DEFNreply">reply</a> to a request, most other changes are
+    easiest in the web interface.
+
+    <a name="login"><h3>Logging In</h3>
+
+    <p>To log in, you need to (using your browser) go to the <a
+    href="#RTurl">local RT URL</a>. You will be presented with the
+    login screen if:
+
+    <p>
+    <ul>
+      <li>you have not used RT before</li>
+      <li>you have previously logged out</li>
+      <li>You are using RT from a machine you have not used RT from
+      before</li>
+    </ul>
+
+    <p>otherwise you will be presented with the display queue. You
+    need to enter your username and password (your RT password, <b>not
+    your account password</b>) at the relevant prompts. If you are
+    returned to those prompts, then something went wrong, otherwise
+    you should get to the display queue. Note: you must have cookies
+    turned on to log in.
+
+    <a name="query"><h3>The display queue and querying</h3>
+
+    <p>When you first log in, you are presented with a list of all
+    unresolved requests. If you can't easily find the request you
+    want, scroll to the bottom of the RT page where you will find some
+    selection boxes and a button marked "Update Queue filters". You
+    can use these to query the database to narrow your search.
+
+    <p>This is what you'll see if you successfully log in or you click
+    the 'Display Queue' link in RT. A table is presented with various
+    request fields and is filled in with all open bugs in queues where
+    you have display access or better. Some notes about this page:
+
+    <p>
+    <ul>
+
+      <li>The entries in the <a href="#DEFNfields-serial_num">serial
+      number</a> column (the column heading is 'Ser') are clickable
+      links to Request Display Screens.</li>
+
+      <li>The two arrow shaped icons in each column are sorting
+      buttons. If you click on them the display will be sorted by that
+      field in forward (up arrow) or reverse (down arrow) order.</li>
+
+      <li>If the request is overdue (the date set in the <a
+      href="#DEFNfields-date_due">Due Date field</a> has passed), then
+      the entry in that column is displayed in red.</li>
+
+      <li>There is a form at the base of the page for refining the
+      search query. You can select particular queues and/or request
+      states as well as specifying the <a
+      href="#DEFNfields-owner">owner</a>s of the request.</li>
+
+      <li><a name="fourbuttons">Finally there are four links/buttons
+      at the very bottom of the page. They are:
+
+	<p>
+	<ul>
+	  <li>Display Queue - redisplay the queue, forgetting any
+	  filters which have been set.</li>
+
+	  <li>Create Request in Queue - displays the request
+	  submission form for the selected queue</li>
+
+	  <li>Display request # - Allows the selection of individual
+	  requests by <a href="#DEFNfields-serial_num">serial
+	  number</a>.</li>
+
+	  <li>Logout - exits RT</li>
+	</ul>
+      </li>
+    </ul>
+
+    <a name="fields"><h3>The request display and changing fields</h3>
+
+    <p>When you click on a request id in the queue display you are
+    presented with the request display. In the request display, the
+    following are displayed:
+
+    <ul>
+      <li>The same <a href="#fourbuttons">four buttons</a> as at the
+      bottom of the queue display.</li>
+
+      <li>If you have permission, links to make changes to the request
+      (<a href="#DEFNcomment">comment</a>, <a
+      href="#DEFNreply">reply</a>, take, etc.)</li>
+
+      <li>The request headers</li>
+
+      <li>The <a href="#DEFNtransaction">transaction</a> history of
+      the request</li>
+
+      <li>If you have permission, links to make changes to the request
+      (<a href="#DEFNcomment">comment</a>, <a
+      href="#DEFNreply">reply</a>, take, etc.)</li>
+
+      <li>The same buttons as at the bottom of the queue display/</li>
+    </ul>
+
+    <p>To change a request field, simply click on one of the links at
+    the top and bottom of the page or click on the fieldname in the
+    request display. The following table shows the result of these
+    actions.
+
+    <p>
+    <table width="80%" border>
+      <thead>
+        <tr>
+          <th class="defn-term">Link/field</th>
+          <th class="defn-definition">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td class="defn-term"><span class="defn">Comment</span></td>
+
+	  <td class="defn-definition">This link puts you in a form
+	  where you can enter a comment, just as if you had replied to
+	  mail from RT about a particular request. You can Cc: or Bcc:
+	  the comment if you wish.</td>
+	</tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Reply</span></td>
+
+	  <td class="defn-definition">This link puts you in a similar
+	  form to the comment one with two major differences:
+
+            <ol>
+
+              <li>You can change the state of the request from the
+              form.</li>
+
+              <li>The reply is automatically sent to the <a
+              href="#DEFNrequestor">requestor</a>.</li>
+
+            </ol>
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Take</span></td>
+
+	  <td class="defn-definition">Taking a Request assigns it to
+	  the Taker.  Their ID goes into the <A
+	  href="#DEFNfields-Owner">Owner</A> field.  You may only Take
+	  a Request if it is unowned -- if someone else already Owns
+	  the Request, you have to Steal it from them to gain
+	  Ownership.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Untake</span></td>
+
+	  <td class="defn-definition">Untaking a Request removes your
+	  name from the Assigned field, making the Request un-Owned
+	  again.  Useful in cases where you've Taken the wrong
+	  Request, or you've become overburdened, underinformed,
+	  fired, reassigned, amnesiac, promoted, or something else.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Steal</span></td>
+
+	  <td class="defn-definition">Stealing a Request re-assigns an
+	  already Owned request to you, instead of to its current <A
+	  href="#DEFNfields-Owner">Owner</A>.  Useful in cases where
+	  the original Owner (as compared to you) has become
+	  overburdened, underinformed, fired, reassigned, amnesiac,
+	  promoted, or something else.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Give</span></td>
+
+	  <td class="defn-definition">Assign a Request to someone
+	  else, and remove yourself from the Assigned field.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Last User Contact</span></td>
+
+	  <td class="defn-definition">Tells <em>RT</em> that somehow, the
+	  person who made the original Request has been contacted.
+	  Automatically tagged when someone uses the Reply function,
+	  rather than simply Commenting.  Useful when trying to
+	  measure the reponse-time back to users.
+
+            <p>Example: While standing at the buffet, Charlie notices
+            he's standing elbow to elbow with Biff, who sent in a
+            Request that morning.  Charlie tells Biff that he may wish
+            to untoggle his caps lock key if he wants man pages to
+            work for him.  Biff walks away pleased, and after lunch,
+            Charlie notes the interaction in the Request, including
+            the fact that the <A href="#DEFNrequestor">Requestor</A>
+            was notified.  Charlie's boss notices the fast turnaround
+            time and rewards Charlie with a large nerf weapon and
+            permission to use it.
+            </blockquote>
+
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Subject</span></td>
+
+	  <td class="defn-definition">Change the <a
+	  href="#DEFNfields-subject">subject</a> of a request. Note
+	  that RT does not keep track of the former subject. If you
+	  would like it preserved, you are advised to enter a <a
+	  href="#DEFNcomment">comment</a> saying that you have changed
+	  the subject:
+
+            <p>Example: Changed subject from "Can't log in during full
+            moon" to "Werewolf infestation in machine room"
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Queue</span></td>
+
+	  <td class="defn-definition">This is how you move a request
+	  from one queue to another. Simply select the destination
+	  queue from the menu and click. You may move a request from
+	  any queue you can manipulate into any queue you can create
+	  requests in.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Area</span></td>
+
+	  <td class="defn-definition">Assign a Request to a particular
+	  <A href="#DEFNfields-Area">Area</A> within a Queue.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Status</span></td>
+
+	  <td class="defn-definition">You may change the <A
+	  href="#DEFNfields-Status">Status</A> of a Request to one of
+	  the four possible States: Open, Stalled, Resolved, and Dead.
+
+            <p>EX: The Sphinx asked this riddle of a traveller: What
+            is Open in the morning, Stalled in midday, Resolved by
+            evening, and Dead by night?  The traveller responded,
+            "Either metaphorically, Man, or literally, a hyperactive
+            Request."  She was right, but the Sphinx ate her anyhow.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn"><A
+	  href="#DEFNrequestor">Requestor</A></span></td>
+
+	  <td class="defn-definition">You may change the <A
+	  href="#DEFNrequestor">Requestor</A> field if the <A
+	  href="#DEFNrequestor">Requestor</A> or their email address
+	  changes.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Due Date</span></td>
+
+	  <td class="defn-definition">You may change the Due Date to
+	  make it look like all of your requests are getting done
+	  right on time.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Priority</span></td>
+
+	  <td class="defn-definition">You may change the current
+	  and/or Final <A Href="#DEFNfields-Priority">Priority</A> to
+	  reflect changes in the Request's importance in the grand
+	  scheme of things.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Serial number
+	  (merging)</span></td>
+
+	  <td class="defn-definition">If a user opens a Request that
+	  turns out to be redundant, or which contains information
+	  more appropriate to continue an already open Request than to
+	  start one anew, you may merge all the entirety of one
+	  Request into another.
+          </td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Last Action</span></td>
+
+	  <td class="defn-definition">non-clickable</td>
+        </tr>
+        <tr>
+	  <td class="defn-term"><span class="defn">Created</span></td>
+
+	  <td class="defn-definition">non-clickable</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <a name="add"><h3>Creating a new request</h3>
+
+    <p>To add a request, <a href="#login">log in</a> if you haven't
+    already, then look for the button marked "Create request in
+    queue". Once you have found it, select the queue that you would
+    like to add a request to and hit the button (the default queue is
+    the sam queue for system administration requests).
+
+    <p>Fill in the form, making sure that you use an informative <a
+    href="#DEFNfields-subject">subject</a> line and include all
+    relevant information. Fields you should always check are:
+
+    <p><b>Area - </b>Some queues are divided into areas or subqueues
+
+    <p><b>Priority - </b>Each queue can define its own <a
+    href="#DEFNfields-priority">priority</a> scheme
+
+    <p><b>Owner - </b>This is the person currently assigned to deal
+    with this request
+
+    <p><b>Date Due - </b>When this request should be resolved.
+
+    <p><b>Requestor - </b>This should be your email address.
+
+    <a name="update"><h3>Updating an existing request</h3>
+
+    <p>To update a request, either find it in the table and click on
+    its Id number, or if you already know it's number, find the button
+    "Display request #", type in the number of the request and hit the
+    button.
+
+    <a name="exit"><h3>Exit</h3>
+
+    <p>Clicking on this button will log you out of RT and place you
+    back at the Login screen.
+
+    <a name="admin"><h3>Administration web interface</h3>
+
+    <p>If you go to the <a href="#RTadminurl">admin URL</a>, you can
+    change your password or personal details by clicking on the
+    "Modify your user account" button. Enter any new information then
+    press the "Update user" button. You may need to <a
+    href="#login">log in</a> first. If you have admin privileges for a
+    queue, you can change that queue's parameters as well. If you have
+    admin_rt privilege, you can change personal details for any
+    user. You will only be shown those functions which you have
+    permission to perform.
+
+    <a name="ModifyYourAccount"><h3>Modify Your RT Account</h3>
+
+    <p>Hitting this button takes you to a form where you can enter the
+    following details:
+
+    <ul>
+      <li>Real Name - this will appear in any mail sent by RT as a
+      result of your actions</li>
+
+      <li>email - this should be your email address. It should be
+      fully qualified (ie. <span class="output">jesse@fsck.com</span>
+      rather than <span class="output">jesse</span>)</li>
+
+      <li>password - it won't be displayed. To change it, enter the
+      new password in the text box provided.</li>
+
+      <li>phone/office/misc - these are essentially comment fields</li>
+
+    </ul>
+
+    <p>When you have set the fields you require, click on the "Update
+    User" button at the bottom of the page.
+
+    <a name="ModifyUser"><h3>Modify the user called</h3>
+
+    <p>This is the same as <a href="#ModifyYourAccount">modifying your
+    own account</a> except that you can modify anybody's details.
+
+    <a name="CreateUser"><h3>Create a User called</h3>
+
+    <p>Again, this is the same as <a
+    href="#ModifyYourAccount">modifying your own account</a> except
+    that you must fill in a username as well.
+
+    <a name="ModifyQueue"><h3>Modify the Queue called</h3>
+
+    <p>Hitting this button takes you to a form where you can enter the
+    following details:
+
+    <ul>
+      <li>mail alias - the address configured to receive RT mail for
+      the queue.</li>
+
+      <li>initial priority - the default priority given to new requests.</li>
+
+      <li>final priority - the priority to set requests to when they
+      become due</li>
+
+      <li>checkboxes - these checkboxes allow you to customise queue
+      behaviour.
+
+      <ul>
+          <li>Mail request owner on transaction - if this checkbox is
+          checked, the owner of a request is sent mail on every
+          transaction</li>
+
+          <li>Mail request queue members on transaction - similarly,
+          if checked, all queue members are emailed on a
+          transaction.</li>
+
+          <li>Mail requestors on transaction - the requestor is mailed
+          on each transaction. This option is rarely checked.</li>
+
+          <li>Autoreply to requestors on creation - when a requestor
+          submits a request, they receive a form email indicating that
+          their request has been received. </li>
+
+          <li>Mail correspondence to queue members - queue
+          correspondence, that is,
+
+            <ul>
+              <li>replies to rt generated email</li>
+
+              <li>transactions entered by using the Reply links or
+              buttons in the request display.</li>
+            </ul>
+          </li>
+
+          <li>Mail comments to queue members - comments entered by
+          using the comment link in the request display.</li>
+
+          <li>Allow non-members to create requests - If this option is
+          checked, users who are not <a
+          href="#DEFNqueue-members">queue members</a> can create
+          requests. This means that you can set up queues where people
+          with display access can create requests but only queue
+          members may change them.</li>
+
+        </ul>
+      </li>
+
+      <li>Delete the area named - select the area to delete</li>
+
+      <li>Add an area called - add a new area to the queue. Note that
+      only one area can be added at a time from this form.</li>
+
+      <li>Access Control - This is a list of the users that RT knows
+      about and their <a href="#acl">access status</a> for this
+      queue. Each user has a menu of the four access options</li>
+
+    </ul>
+
+    <p>When you have finished setting the options you desire, hit the
+    "Update Queue" button to set the options in the RT database. Use
+    the "Delete Queue" button to delete a queue and the "Main Menu"
+    button to cancel the operation.
+
+    <a name="CreateQueue"><h3>Create a Queue called</h3>
+
+    <p>This is the same as <a href="#ModifyQueue">Modify the Queue
+    called</a> except that you need to specify the name of the new
+    queue. In addition there is some necessary setup (mail aliases and
+    template files) that can not at present be achieved using the web
+    interface.
+
+    <a name="Section2"><h1>Local customisations</h1>
+
+    <h3>Important URLs</h3>
+
+    <p>
+    <ul>
+      <li><a name="RTurl"><a
+      href="!!RT_URL!!">Local URL for RT</a></li>
+
+      <li><a name="RTadminurl"><a
+      href="!!RT_ADMIN_URL!!">Local URL for RT admin interface</a></li>
+
+    </ul>
+
+  </BODY>
+</HTML>

@@ -560,13 +560,13 @@ Queue:
 
     print"<TR><TD align=\"right\">Priority:</TD><TD>";
     
-    &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
+    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio}, "prio");
     print "
 </TD><TD align=\"right\">
 Final priority:
 </TD>
 <TD>";
-    &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
+    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio}, "final_prio");
     print "</TD></TR>
 <TR><TD align=\"right\">Date Due:</TD><TD COLSPAN=5><input type=\"checkbox\" name=\"due\">";
     &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");

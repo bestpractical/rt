@@ -34,6 +34,13 @@ sub template_replace_tokens {
     return ($template);
 }
 
+
+# The return value should specify whether an error has occurred or
+# not, so errors might be returned to the UI. It seems to me the
+# message is discarded anyway, so introducing the same array-scheme as
+# elsewhere could be feasible in 1.0. I want to test the emails using
+# Email::Valid - if and only if the module can be located in @INC.
+
 sub template_mail{
     local ($in_template,$in_queue_id, $in_recipient, $in_cc,
 	   $in_bcc, $in_serial_num, $in_transaction, $in_subject, 
@@ -60,7 +67,7 @@ sub template_mail{
 #    print STDERR "Debug 1\n";
     
     if (!$in_recipient && !$in_cc && !$in_bcc) {
-	return("template_mail: No Recipient Specified!");
+	return(0, "template_mail: No Recipient Specified!");
     }
 
     # The message will be killed by the mailing server if there are no
@@ -80,7 +87,7 @@ sub template_mail{
     $head->add('Subject',"[$rt::rtname \#" . $in_serial_num .
        "] ($in_queue_id) $in_subject");
     $head->add('Reply-To',$temp_mail_alias);
-    $head->add('From',"$rt::users{$in_current_user}{real_name} " .
+    $head->add('From',"$rt::users{$in_current_user}{real_name} via RT" .
        "<$temp_mail_alias>");
     $head->add('Sender',"$in_current_user");
     $head->add('To',$in_recipient);
@@ -89,7 +96,7 @@ sub template_mail{
     $head->add('X-Request-ID',"$in_serial_num");
     $head->add('X-RT-Loop-Prevention',"$rt::rtname");
     $head->add('X-Sender',"$in_current_user");
-    $head->add('X-Managed-By',"Request Tracker ($rt::rtversion)");
+    $head->add('X-Managed-By',"Request Tracker $rt::rtversion (http://www.fsck.com/projects/rt)");
     $precendence && $head->add('Precedence'," $precedence");
 
     $template .= "\n-------------------------------------------- " .
@@ -104,7 +111,7 @@ sub template_mail{
 
     $message->smtpsend();
 
-    return("template_mail: Message Sent");
+    return(1, "template_mail: Message Sent");
 }
 
 1;
