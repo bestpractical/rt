@@ -6,14 +6,13 @@ package RT::ACL;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
 
-# {{{ sub new 
-sub new  {
-  my $pkg= shift;
-  my $self = SUPER::new $pkg;
-  
+# {{{ sub _Init 
+sub _Init  {
+  my $self = shift;
   $self->{'table'} = "ACL";
   $self->{'primary_key'} = "id";
-  return($self);
+  $self->SUPER::_Init(@_);
+  
 }
 # }}}
 
@@ -74,8 +73,13 @@ sub LimitScopeToQueue {
   my $queue = shift;
   
   
+  
   $self->Limit( FIELD =>'RightScope',
+                ENTRYAGGREGATOR => 'OR',
 		VALUE => 'Queue');
+  $self->Limit( FIELD =>'RightScope',
+                ENTRYAGGREGATOR => 'OR',
+		VALUE => 'Ticket');
   
   $self->Limit(ENTRYAGGREGATOR => 'OR',
 	       FIELD => 'RightAppliesTo',
@@ -232,6 +236,7 @@ sub _DoSearch {
     my $self = shift;
     $RT::Logger->debug("Now in ".$self."->_DoSearch");
     my $return = $self->SUPER::_DoSearch(@_);
+    $RT::Logger->debug("In $self ->_DoSearch. return from SUPER::_DoSearch was $return\n");
     $self->_BuildHash();
     return ($return);
 }
@@ -243,14 +248,19 @@ sub _BuildHash {
 
     $RT::Logger->debug("Now in ".$self."->_BuildHash\n");
     while (my $entry = $self->Next) {
-        $RT::Logger->debug("Now building entry for ".$entry ." in ".
-                            $self."->_BuildHash\n");
-        $self->{'as_hash'}->{$entry->RightScope . "-" .
+
+
+
+       my $hashkey = $entry->RightScope . "-" .
                              $entry->RightAppliesTo . "-" . 
                              $entry->RightName . "-" .
                              $entry->PrincipalId . "-" .
-                             $entry->PrincipalType
-                            } = 1;
+                             $entry->PrincipalType;
+
+
+        $RT::Logger->debug("Now building entry for ".$hashkey." in ".
+                            $self."->_BuildHash\n");
+        $self->{'as_hash'}->{"$hashkey"} =1;
 
     }
     $RT::Logger->debug("Done with ".$self."->_BuildHash\n");
@@ -264,6 +274,7 @@ sub _BuildHash {
 =cut
 
 sub HasEntry {
+
     my $self = shift;
     my %args = ( RightScope => undef,
                  RightAppliesTo => undef,
@@ -272,30 +283,33 @@ sub HasEntry {
                  PrincipalType => undef,
                  @_ );
 
+    #if we haven't done the search yet, do it now.
+    $self->_DoSearch();
+
     $RT::Logger->debug("Now in ".$self."->HasEntry\n");
-    use Data::Dumper;
-    $RT::Logger->debug(Dumper($self->{'as_hash'}));
+
     $RT::Logger->debug("Trying to find as_hash-> ".
                             $args{'RightScope'} . "-" .
                              $args{'RightAppliesTo'} . "-" . 
                              $args{'RightName'} . "-" .
                              $args{'PrincipalId'} . "-" .
                              $args{'PrincipalType'}.
-                           " as: '".
-                            $self->{'as_hash'}->{
-                              $args{'RightScope'} . "-" .
-                              $args{'RightAppliesTo'} . "-" . 
-                              $args{'RightName'} . "-" .
-                              $args{'PrincipalId'} . "-" .
-                              $args{'PrincipalType'}}. "'\n"
+		       "..."
                              );
-    return ($self->{'as_hash'}->{$args{'RightScope'} . "-" .
-                             $args{'RightAppliesTo'} . "-" . 
-                             $args{'RightName'} . "-" .
-                             $args{'PrincipalId'} . "-" .
-                             $args{'PrincipalType'}
-                            } );
-
+    
+    if ($self->{'as_hash'}->{ $args{'RightScope'} . "-" .
+			      $args{'RightAppliesTo'} . "-" . 
+			      $args{'RightName'} . "-" .
+			      $args{'PrincipalId'} . "-" .
+			      $args{'PrincipalType'}
+                            } == 1) {
+	$RT::Logger->debug("found.\n");
+	return(1);
+    }
+    else {
+	$RT::Logger->debug("not found.\n");
+	return(undef);
+    }
 }
 
 # }}}

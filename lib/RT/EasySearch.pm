@@ -17,10 +17,16 @@ sub new  {
 
 # {{{ sub _Init 
 sub _Init  {
-  my $self = shift;
-
- $self->{'user'} = shift;
-
+    my $self = shift;
+    
+    $self->{'user'} = shift;
+    
+    if(!defined($self->CurrentUser)) {
+	use Carp;
+	Carp::confess();
+	$RT::Logger->err("$self was created without a CurrentUser\n"); 
+	return(0);
+    }
   $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 # }}}

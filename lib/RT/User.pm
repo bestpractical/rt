@@ -171,6 +171,15 @@ sub Delete  {
 # }}}
 
 # {{{ sub Load 
+
+=head2 Load
+
+Load a user object from the database. Takes a single argument.
+If the argument is numerical, load by the column 'id'. Otherwise, load by
+the "UserId" column which is the user's textual username.
+
+=cut
+
 sub Load  {
     my $self = shift;
     my $identifier = shift || return undef;
@@ -186,9 +195,19 @@ sub Load  {
 # }}}
 
 # {{{ sub LoadByEmail
+
+=head2 LoadByEmail
+
+Tries to load this user object from the database by the user's email address.
+
+
+=cut
+
 sub LoadByEmail {
     my $self=shift;
     # TODO: check the "AlternateEmails" table if this fails.
+    # TODO +++ canonicalize the email address
+
     return $self->LoadByCol("EmailAddress", @_);
 }
 # }}}
@@ -270,7 +289,8 @@ sub Enable {
 
 =head2 GrantQueueRight
 
-A convenience method for ACE::Create that autosets RightScope to 'Queue'
+Grant a queue right to this user.  Takes a paramhash of which the elements
+RightAppliesTo and RightName are important.
 
 =cut
 
@@ -283,7 +303,11 @@ sub GrantQueueRight {
 		 PrincipalType => 'User',
 		 PrincipalId => $self->Id,
 		 @_);
-    
+   
+    require RT::ACE;
+
+    $RT::Logger->debug("$self ->GrantQueueRight ". join(@_)."\n");
+
     my $ace = new RT::ACE($self->CurrentUser);
     
     return ($ace->Create(%args));
@@ -293,9 +317,10 @@ sub GrantQueueRight {
 
 # {{{ GrantGlobalQueueRight
 
-=head2 GrantGloblaQueueRight
+=head2 GrantGlobalQueueRight
 
-A convenience method for ACE::Create that autosets RightScope to 'Queue' and RightAppliesTo to '0'
+Grant a global queue right to this user.  Takes a paramhash.  The only param
+that's important to set is RightName.
 
 =cut
 
@@ -308,7 +333,11 @@ sub GrantGlobalQueueRight {
 		 PrincipalType => 'User',
 		 PrincipalId => $self->Id,
 		 @_);
-    
+   
+    require RT::ACE;
+
+    $RT::Logger->debug("$self ->GrantGlobalQueueRight ". join(@_)."\n");
+
     my $ace = new RT::ACE($self->CurrentUser);
     
     return ($ace->Create(%args));
@@ -320,8 +349,8 @@ sub GrantGlobalQueueRight {
 
 =head2 GrantSystemRight
 
-Grant a right to someone.
-Presets RightScope to 'System' and RightAppliesTo to '0'
+Grant a system right to this user. 
+The only element that's important to set is RightName.
 
 =cut
 sub GrantSystemRight {
@@ -333,7 +362,11 @@ sub GrantSystemRight {
 		 PrincipalType => 'User',
 		 PrincipalId => $self->Id,
 		 @_);
-    
+   
+    require RT::ACE;
+
+    $RT::Logger->debug("$self ->GrantSystemRight ". join(@_)."\n");
+
     my $ace = new RT::ACE($self->CurrentUser);
     
     return ($ace->Create(%args));

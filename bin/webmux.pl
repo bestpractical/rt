@@ -46,6 +46,8 @@ use DBIx::SearchBuilder::Handle;
     use RT::Scrips;
     use RT::Group;
     use RT::Groups;
+    use RT::GroupMember;
+    use RT::GroupMembers;
     use RT::Handle;
     use RT::Interface::Web;    
     use MIME::Entity;

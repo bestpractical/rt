@@ -36,8 +36,9 @@ sub _Accessible  {
 # {{{ sub Create
 sub Create {
     my $self = shift;
-    if $self->CurrentUser->HasSystemRight('ModifyGroups') {
-	die "RT::GroupMember::Create unimplemented";
+    if ( $self->CurrentUser->HasSystemRight('ModifyGroups')) {
+	$RT::Logger->crit( "RT::GroupMember::Create unimplemented");
+	return (undef);
     }
     else {
 	return (0,'Permission Denied');
@@ -56,14 +57,14 @@ sub Add {
 #TODO this routine should delete the currently loaded GroupMember
 sub Delete {
     my $self = shift;
-    die "RT::GroupMember::Delete unimplemented"
+    $RT::Logger->crit("RT::GroupMember::Delete unimplemented");
     
 }
 # }}}
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
-    if $self->CurrentUser->HasSystemRight('ModifyGroups') {
+    if ($self->CurrentUser->HasSystemRight('ModifyGroups')) {
 	
 	$self->$SUPER::_Set(@_);
     }

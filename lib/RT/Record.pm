@@ -31,14 +31,16 @@ sub _Init  {
 # {{{ sub _MyCurrentUser 
 
 sub _MyCurrentUser  {
-  my $self = shift;
-  
-  $self->{'user'} = shift;
-  
-  if(!defined($self->CurrentUser)) {
-    $RT::Logger->err("$self was created without a CurrentUser\n"); 
-    return(0);
-  }
+    my $self = shift;
+    
+    $self->{'user'} = shift;
+    
+    if(!defined($self->CurrentUser)) {
+	use Carp;
+	Carp::confess();
+	$RT::Logger->err("$self was created without a CurrentUser\n"); 
+      return(0);
+    }
 }
 
 # }}}
