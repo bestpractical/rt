@@ -1492,7 +1492,7 @@ msgstr "預設：%1/%2 已自 %3 改為 %4"
 
 #: html/User/Delegation.html:25 html/User/Delegation.html:28
 msgid "Delegate rights"
-msgstr "代表團權限"
+msgstr "代理人權限"
 
 #: lib/RT/System.pm:63
 msgid "Delegate specific rights which have been granted to you."

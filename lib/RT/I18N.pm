@@ -105,7 +105,7 @@ sub Init {
 		    $1 => [Gettext => $File::Find::name],
 		});
 	    },
-	    follow		=> 0,
+	    follow		=> 1,
 	    untaint		=> 1,
 	    untaint_skip	=> 1,
 	}, $RT::LocalLexiconPath );

@@ -49,7 +49,7 @@ ONLOAD="
     <td width="50%" align="right">
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 <SPAN STYLE="display: none"><A HREF="#skipnav"><&|/l&>Skip Menu</&></A> |</SPAN>
-<A  HREF="<%$RT::WebPath%>/User/Prefs.html" ><&|/l&>Preferences</&></A>
+<A  HREF="<%$RT::WebPath%><% $Prefs %>" ><&|/l&>Preferences</&></A>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 &nbsp;|&nbsp;<A  HREF="<%$RT::WebPath%>/NoAuth/Logout.html"><&|/l&>Logout</&></a>
 % }

@@ -152,7 +152,7 @@ span.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 .othertab { margin: 0.2em; background: #efefef; }
 .oddline { background-color : #ccccee; }
 
-UL.topnav LI :focus { font-weight: bold; color: #FF9900; text-color: #FF9900; }
+UL.topnav LI :focus { text-decoration: underline; }
 
 TD.mainbody {
         padding-top: 0.5em;
