@@ -41,7 +41,6 @@ RT_TEMPLATE_PATH	=	$(RT_ETC_PATH)/templates
 #
 
 RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
-RT_WRAPPER		=	$(RT_BIN_PATH)/suid_wrapper
 
 #
 # The following are the names of the various binaries which make up RT 
@@ -99,35 +98,42 @@ RT_USER_PASSWD_MIN	=	5
 
 # Database options
 
-# I'm trying to move from MySQL to a general system. If something
-# still needs mysql, it's sort of broken.
+# DB_HOME is where the Database's commandline tools live
 # Note: $DB_HOME/bin is where the database binary tools are installed.
  
-DB_HOME               = /usr/bin
+DB_HOME               = /usr
 
 # Right now, the only acceptable value for DB_TYPE is mysql.
-# Eventually, pgsql, oracle and sybase should be supported
+# TODO pgsql, oracle and sybase should be supported
+
 DB_TYPE                = mysql
 
-# define DBA to the name of a DB user with permission to
-# create new databases 
+
+
+# Set DBA to the name of a unix account with the proper permissions and 
+# environment to run your commandline SQL tools
+
+# Set DB_DBA to the name of a DB user with permission to create new databases 
+# Set DB_DBA_PASSWORD to that user's password
 DB_DBA                   = root
 DB_DBA_PASSWORD          = yawn
  
 #
-# Set this to the domain name of your Mysql server
+# Set this to the Fully Qualified Domain Name of your database server.
 # If the database is local, rather than on a remote host, using "localhost" 
 # will greatly enhance performance.
-#
+
 DB_HOST		=	localhost
 
 #
 # Set this to the canonical name of the interface RT will be talking to the mysql database on.
 # If you said that the RT_DB_HOST above was "localhost," this should be too.
-# This value will be used by mysql to grant  rt on your RT server access to the Mysql database.
+# This value will be used to grant rt access to the database.
+# If you want to access the RT database from multiple hosts, you'll need
+# to add more database rights. (This is not currently automated)
 #
 
-RT_HOST			=	localhost
+DB_RT_HOST			=	localhost
 
 #
 # set this to the name you want to give to the RT database in mysql
@@ -186,12 +192,9 @@ WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	yes
 
 
 default:
-	@echo "Read the readme"
+	@echo "Read the README"
 
 install: dirs mux-install libs-install initialize config-replace  nondestruct instruct
-
-suid-wrapper:
-	$(CC) etc/suidrt.c -DPERL=\"$(PERL)\" -DRT_PERL_MUX=\"$(RT_PERL_MUX)\" -o $(RT_WRAPPER)
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
@@ -214,14 +217,12 @@ fixperms:
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(RT_CGI_PATH)
 	chmod 0755 $(RT_PERL_MUX)
-	chmod 4111 $(RT_WRAPPER)
-
+	chmod g+s $(RT_PERL_MUX)
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(RT_CGI_PATH)
 	mkdir -p $(RT_ETC_PATH)
 	cp -rp ./etc/* $(RT_ETC_PATH)
-	mkdir -p $(RT_TRANSACTIONS_PATH)
 
 libs-install: 
 	mkdir -p $(RT_LIB_PATH)
@@ -236,14 +237,6 @@ database:
 	su -c "bin/initdb.$(RT_DB) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'" $(DBA)
 
 acls:
-	-$(PERL) -p -i.orig -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
-			else { s'!!RT_HOST!!'$(RT_HOST)'g }\
-		s'!!RT_DB_PASS!!'$(DB_PASS)'g;\
-		s'!!RTUSER!!'$(DB_USER)'g;\
-		s'!!RT_DB_HOST!!'$(DB_HOST)'g;\
-		s'!!RT_DATABASE!!'$(DB_DATABASE)'g;\
-		" $(RT_DB_ACL)
-
 	su -c "bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DB_ACL)'" $(DBA)
 
 mux-install:
@@ -259,28 +252,28 @@ mux-install:
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX)
 
-mux-links: suid-wrapper
+mux-links:
 	rm -f $(RT_BIN_PATH)/$(RT_ACTION_BIN)
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_ACTION_BIN)
+	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_ACTION_BIN)
 
 	rm -f $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
+	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_ADMIN_BIN)
 
 	rm -f $(RT_BIN_PATH)/$(RT_QUERY_BIN)
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_QUERY_BIN)
+	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_QUERY_BIN)
 
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
-	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
+	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 
 
 
 
 	rm -f $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
-	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
+	ln  $(RT_PERL_MUX) $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
 	chmod 4755 $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
 
 	rm -f $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
-	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
+	ln  $(RT_PERL_MUX) $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
 	chmod 4755 $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
 
 config-replace:
@@ -288,7 +281,6 @@ config-replace:
 	cp -rp ./etc/config.pm $(RT_ETC_PATH)
 	$(PERL) -p -i -e "\
 	s'!!RT_PATH!!'$(RT_PATH)'g;\
-        s'!!RT_TRANSACTIONS_PATH!!'$(RT_TRANSACTIONS_PATH)'g;\
         s'!!RT_TEMPLATE_PATH!!'$(RT_TEMPLATE_PATH)'g;\
         s'!!RTUSER!!'$(RTUSER)'g;\
         s'!!RTGROUP!!'$(RTGROUP)'g;\
@@ -305,21 +297,24 @@ config-replace:
 	" $(RT_CONFIG)
 
 
-predist:
+commit:
 	cvs commit
-	cvs tag -F rt-pre$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
-	rm -rf /tmp/rt-pre$(RT_VERSION)
-	cvs export -D now -d /tmp/rt-pre$(RT_VERSION) rt
-	cd /tmp; tar czvf /home/ftp/pub/rt/devel/rt-pre$(RT_VERSION).tar.gz rt-pre$(RT_VERSION)/
-	chmod 644 /home/ftp/pub/rt/devel/rt-pre$(RT_VERSION).tar.gz
-dist:
-	cvs commit
-	cvs tag -F rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
-	rm -rf /tmp/rt-$(RT_VERSION)
-	cvs export -D now -d /tmp/rt-$(RT_VERSION) rt
-	cd /tmp; tar czvf /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz rt-$(RT_VERSION)/
-	cd /home/ftp/pub/rt/devel/
-	rm -rf ./rt.tar.gz
-	ln -s ./rt-$(RT_VERSION).tar.gz ./rt.tar.gz
-	chmod 644 /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz
 
+predist: commit
+	TAG	=	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-pre$(RT_VERSION_PATCH)
+	cvs tag -F $(TAG)
+	rm -rf /tmp/($TAG)
+	cvs export -D now -d /tmp/($TAG) rt
+	cd /tmp; tar czvf /home/ftp/pub/rt/devel/($TAG).tar.gz $(TAG)/
+	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
+
+dist: commit
+	TAG	=	rt-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
+	cvs tag -F $(TAG)
+	rm -rf /tmp/($TAG)
+	cvs export -D now -d /tmp/($TAG) rt
+	cd /tmp; tar czvf /home/ftp/pub/rt/devel/($TAG).tar.gz $(TAG)/
+	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
+	cd /home/ftp/pub/rt/devel/
+	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
+	ln -s ./$(TAG).tar.gz ./rt.tar.gz
