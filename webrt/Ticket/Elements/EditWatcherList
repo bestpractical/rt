@@ -1,0 +1,23 @@
+%# $Header$
+%# Copyright 2000 Tobias Brox <tobix@fsck.com>
+%# Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+
+<ol>
+%while (my $r=$Ws->Next) {
+<form method="post"><input type="hidden" name="id" value="<%$id%>"><input type="hidden" name="Domain" value="<%$Domain%>"><input type="hidden" name="watcher" value="<%$r->id%>"><li><input type="submit" name="action" value="delete"><%$r->Owner && $r->OwnerObj->RealName%><input name="Address" value="<%$r->Email%>"><input type="submit" name=action value="update"></form>
+%}
+</ol>
+<form method="post"><input type="hidden" name="id" value="<%$id%>"><input type="hidden" name="Domain" value="<%$Domain%>">
+%#<input type="hidden" name="WType" value="<%$Type%>">
+<& /Elements/SelectWatcherType, Default=>$Type &>
+<input name="Address" value=""><input type="submit" name="action" value="add"></form>
+
+<%ARGS>
+$id => undef
+$Ws => undef
+$Domain => undef
+$Type => undef
+</%ARGS>
+
+
+
