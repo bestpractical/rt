@@ -1916,7 +1916,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr ""
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Vul tickets of URIs in om deze tickets aan te koppelen. Scheidt meerdere elementen met spaties."
 
 #: lib/RT/CustomField_Overlay.pm:532

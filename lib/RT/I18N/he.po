@@ -1574,7 +1574,7 @@ msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with 
 msgstr ""
 
 #: html/Search/Bulk.html:174
-msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "הכנס פניות או כתובות כדי לקשר פניות אליהן. הפרד ערכים רבים באמצעות רווחים."
 
 #: lib/RT/CustomField_Overlay.pm:532

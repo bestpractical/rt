@@ -121,7 +121,7 @@ my $ticket_page_tabs = {
             path  => "Ticket/ModifyLinks.html?id=" . $id, },
     _F => { title => loc('Jumbo'),
             path  => "Ticket/ModifyAll.html?id=" . $id,
-            seperator => 1
+            separator => 1
  },
 
 };

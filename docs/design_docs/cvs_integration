@@ -85,14 +85,14 @@ marc: I think the idea is to force you to
        mention the ticket closing in the commit message. ()
 
 jesse@FSCK.COM: but yeah, state changing
-       and 'update messages' are seperate concepts that should both be
+       and 'update messages' are separate concepts that should both be
        supported. ()
 
 jesse@FSCK.COM: part of the idea is to
        drag the commit message into the BTS ()
 
 jhawk: Err, I think it quite frequent that I want
-       to put seperate info in both the commit message and the ticket system,
+       to put separate info in both the commit message and the ticket system,
        and entering them at the same time seems cool. ()
 
 jesse@FSCK.COM: ok. noted. I'll see if
