@@ -11,7 +11,24 @@ complete current backup. If you don't have a current backup, you could
 accidentally damage your database and lose data or worse.
 
 
+
+Look for the 
+
+
 ----------------------------------------------------------------------
+
+3.0.7
+=====
+
+All Databases
+-------------
+
+If you are upgrading from versions between 3.0.0 and 3.0.7, inclusive,
+you might find improved performance by adding the following index to
+your database:
+
+CREATE INDEX Links4 ON Links(Type,LocalBase);
+
 
 
 3.0.6

@@ -58,6 +58,7 @@ CREATE TABLE Links (
   
 ) ;
 CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
+CREATE INDEX Links4 ON Links(Type,LocalBase);
 
 --- }}}
 
