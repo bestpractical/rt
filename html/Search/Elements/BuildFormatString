@@ -1,5 +1,6 @@
 <%args>
 $Format => undef
+%cfqueues => undef
 </%args>
 <%init>
 
@@ -30,8 +31,30 @@ my @fields = (
     "Created",             "LastUpdated",
     "Told",                "Due",
     "Resolved",            "NEWLINE",
+    "RefersTo",	           "ReferredToBy",
+    "DependsOn",           "DependedOnBy",
+    "MemberOf",            "HasMember",
     "-",
 );
+
+my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+foreach (keys %cfqueues) {
+    my $id = $_;
+    $id =~ s/^.'*(.*).'*$/$1/;
+    # Gotta load up the $queue object, since queues get stored by name now.
+    my $queue = RT::Queue->new($session{'CurrentUser'});
+    $queue->Load($id);
+    $CustomFields->LimitToQueue($queue->Id);
+}
+$CustomFields->LimitToGlobal;
+
+while ( my $CustomField = $CustomFields->Next ) {
+    my $queuestr;
+    if ($CustomField->QueueObj && $CustomField->QueueObj->Id != 0) {
+	$queuestr = $CustomField->QueueObj->Name . ".";
+    }
+    push @fields, "CustomField." . $queuestr . "{" . $CustomField->Name . "}";
+}
 
 my ( @seen);
 
