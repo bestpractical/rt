@@ -134,13 +134,13 @@ DB_RT_HOST			=	localhost
 # set this to the name you want to give to the RT database in mysql
 #
 
-DB_DATABASE	=	rt
+DB_DATABASE	=	RT
 
 #
 # Set this to the name of the rt database user
 #
 
-DB_RT_USER	=	rt
+DB_RT_USER	=	RT
 
 #
 # Set this to the password used by the rt database user
