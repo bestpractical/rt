@@ -1,3 +1,23 @@
+1 Jan 1998
+----------
+	Extensive changes have been made to rt's internals in preparation for a 1.0 release
+	Mysql serial numbers are now used in place of the reqnum and transactnum c programs.
+	RT's library structure has been extensively reworked to make it more readable and 
+		maintainable. this may have degraded performance slightly. if RT is noticably 
+		slower, I want to know about it.
+	Replaced the C setuid wrapper with a more flexible & stable perl version.
+	Moved RT.pm to the etc directory and restructured it to be more maintainable.
+	Reworked the makefile to concentrate all install-time options in a single location.
+		config.pm, mysql.acl and rtmux.pl will be automatically configured with the values
+		set in the makefile
+	Several typos fixed.
+	Adding comments in webrt no longer opens a spurious window.
+	Soon, CC and Bcc on response/comment will be possible.
+	database interaction has been cleaned up.
+	RT now runs with TAINT checks enabled. this is much safer, but may cause rt to yelp. if it
+		does, please report it.
+
+
 Aug 24, 1997
 ------------
 	The mailing routines now correctly print the To: line.

@@ -1,10 +1,9 @@
-
+$Header $
 RT is (c) 1996,1997 by Jesse Vincent <jrvincent@wesleyan.edu>
 
 RT is distributed under the GNU Public License.
 If you don't have a copy of the GPL, you've been living in a cave,
 but one should be included in this distribution.
-
 
 WARNING:  RT IS BETA SOFTWARE.  VERSIONS OF IT HAVE BEEN RUNNING IN
 SEVERALPLACES FOR OVER A YEAR, HOWEVER I MAKE NO PROMISES AS TO ITS
@@ -15,11 +14,8 @@ Leftbank Operation and by Wesleyan University.
 
 Some code for RT has been derived from Remy Evard's req package.
 Some code for RT has been derived from Reuven Lerner's form-mail.pl
-Some code for RT has been derived from Argonne National Labs' anlpasswd suite
 
-All of these works are either in the public domain or distributed under
-the GPL
-
+All of these works are distributed under the GPL
  
 
 REQUIRED PACKAGES:
@@ -27,15 +23,15 @@ REQUIRED PACKAGES:
 
 o   Perl5.x ( http://www.perl.com ) -- free
 
-o   MySQL ( http://www.tcx.se ) -- free
+o   MySQL 3.20.x ( http://www.tcx.se ) -- free
 
-        FTP mysql from www.tcx.se and follow the INSTALL instructions
+        
+	FTP mysql from www.tcx.se and follow the INSTALL instructions
         contained therein
 
 o   MysqlPerl ( http://www.tcx.se ) -- free
 
-        FTP mysqlperl from www.tcx.se and follow the INSTALL instructions
-        containted therein
+	Mysqlperl is included in the mysql 3.20.x distribution
 
 o   Glimpse 4.0 (http://glimpse.cs.arizona.edu) -- free (detect a trend?)
 
@@ -50,61 +46,50 @@ o   Glimpse 4.0 (http://glimpse.cs.arizona.edu) -- free (detect a trend?)
 INSTALL INSTRUCTIONS
 --------------------
 
- 
-
 With all of the above installed, it's time to do the rather easy job
 of installing RT.  Choose a directory in which you wish to install RT. 
-For the sake of simplicity, we use /usr/local/rt as the installation
-directory.
-
-If you wish to install this software in an alternate location, please
-refer to the section entitled ALTERNATE INSTALLATION.
+For the sake of simplicity, we use /usr/local/rt in our example.
 
 
 GENERAL INSTALLATION
 --------------------
 
- 
-
-1   Unpack this distribution as /usr/local/rt
+1   Unpack this distribution SOMWHERE OTHER THAN  /usr/local/rt
 
         Granted, you've already got it open. To do this cleanly:
 
-        	tar xzvf rt.tar.gz -C /usr/local
+        	tar xzvf rt.tar.gz -C /tmp
 
 2   Create a user rt with primary group rt
 
-3   Check over /usr/local/rt/src/Makefile
+3   Check over /tmp/rt/Makefile
 
-        Mainly, you want to make sure all the paths up top are correct.
-        Specifically, you NEED to change the value for $rtpass to something
-        secret.  After all, you don't want other people logging in and mucking
-        with your request database.  Though it is nice to be able to escalate
-        one's requests secretly ;)
+	There are many variables you NEED to customize for your site.
 
-4a  FOR A NEW INSTALLATION: (If you don't have RT requests you want to keep):
+4a  FOR A NEW INSTALLATION: (If you don't have RT requests you want to keep)
 
         As ROOT: make install
 
-4b  FOR UPGRADING: (After RT version 970802):
+4b  FOR UPGRADING: (From any RT installation NEWER than RT 0.9.1(
 
         As ROOT: make upgrade
 	NOTE: UPGRADE DOES NOT YET EXIST
 	This will compile new RT wrappers and libraries without
-	overwriting your RT database.
+	overwriting your RT database or configuration files.
+
+5   Configure the email and web gateways, as described below. 
+
+6   Add a RT user for yourself.  Add an RT queue.   
+	This must be done as root, as the only user with acls to access rt is root.
+	NOTE: root's password for the web interface is "wordpass" (without the quotes)   
  
 
-SETTING UP THE ALIAS
---------------------
-
-In general, that is about it.  All of the proper files have been
-configured at this point, and you are nearly ready to get the entire
-system up and running.
+SETTING UP THE MAIL GATEWAY 
+---------------------------
 
 An alias for the initial queue will need to be made in either your
 global mail aliases file (if you are using NIS) or locally on your
 machine.
-
  
 Add the following line to /etc/aliases (or your local equivalent) :
 
@@ -119,6 +104,9 @@ Add the following line to /etc/aliases (or your local equivalent) :
 		  recording the message as a transaction
 		  of its own"
 
+The RT Mail Gateway can be used to perform actions on requests.
+For an explanation of how to use the Mail Gateway, send a message to
+any RT alias with the command %RT HELP on a line by itself.     
 
 THE WEB UI
 ----------
@@ -145,7 +133,6 @@ o                       http://host:8080/rt/nph-webrt.cgi/frames
 THE CLI
 -------
 
-
         Binaries for the CLI are located in /usr/local/rt/bin
         You've got:
 
@@ -155,58 +142,7 @@ THE CLI
 
         All three of these programs take --help as an option.
 
-NOTE: The only user with acls to access rt is root.
-NOTE: root's password for the web interface is "wordpass" (without the quotes)
 
- 
-THE MAIL GATEWAY
-----------------
-
-	The RT Mail Gateway can now be used to perform actions on requests. 
-	For an explanation of how to use the Mail Gateway, send a message to
-	any RT address with the command %RT HELP on a line by itself.
-
-
-ALTERNATE INSTALLATION
-----------------------
-
-So you are being daring and attempting to either install RT into a
-place other than /usr/local or you would prefer to use an account/group
-other than "rt". That shouldn't pose a problem, really.  The regular
-installation is rather easy and this only adds a few steps.
-
- 
-1   Unpack this distribution as <<path>/rt
-
-        Granted, you've already got it open. To do this cleanly:
-
-                tar xzvf rt.tar.gz -C <<path>
-
-2   Create a user <<username> with primary group <<groupname>
-
-    Edit the following files to reflect the username and groupname changes:
-
-    o   <<path_to_rt>/lib/routines/RT.pm
-    o   <<path_to_rt>/etc/mysql.acl
-    o   <<path_to_rt>/src/Makefile
-
-3   Edit the following files, changing the path to the RT directory:
-
-
-    o <<path_to_rt>/lib/interfaces/cli_admin.pl
-    o <<path_to_rt>/lib/interfaces/cli_manipulate.pl
-    o <<path_to_rt>/lib/interfaces/cli_queue.pl
-    o <<path_to_rt>/lib/interfaces/mail_gateway.pl
-    o <<path_to_rt>/lib/interfaces/web_admin.pl
-    o <<path_to_rt>/lib/interfaces/web_manipulate.pl
-
-    o <<path_to_rt>/lib/routines/RT.pm
-
-
-4   Follow the instructions above, starting from step 3
-
- 
- 
 RT-USERS MAILINGLIST
 --------------------
 
@@ -234,9 +170,10 @@ A lot of people are responsible for making RT a better program.  Many
 thanks to Lauren Burka, who originally tasked me with writing this beast.
 She forced me to use a database backend.  I've thanked her for it every
 day since.  Rich West rewrote this readme and did some UI hacking.  Adam
-Hirsch, John Adams, Trey Belew, Sean Dague, Nathan Mehl and Kee Hinckley
-have all contributed bug reports or ideas that have helped RT along.  If
-I've left you out, please drop me a line....it wasn't intentional. 
+Hirsch, Kit Kraysha, Robin Garner, Jens Glaser,John Adams, Trey Belew, 
+Sean Dague, Nathan Mehl and Kee Hinckley have all contributed bug reports 
+or ideas that have helped RT along.  If I've left you out, please drop 
+me a line....it wasn't intentional. 
  
         Enjoy
 

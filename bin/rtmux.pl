@@ -1,4 +1,4 @@
-#!/usr/bin/perl -Tw
+#!/usr/bin/perl -T
 #
 #
 # RT is (c) 1997 Jesse Vincent (jesse@fsck.com)

@@ -12,6 +12,9 @@
     #Where you keep you transaction texts
     $transaction_dir="!!RT_TRANSACTIONS_PATH!!";
 
+    #Where you're sticking the glimpse index files;
+    $glimpse_dir= "!!RT_GLIMPSE_PATH!!|";
+
     #Where you keep your templates
     $template_dir="!!RT_TEMPLATE_PATH!!";
 

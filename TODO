@@ -12,11 +12,6 @@ RT Todo List
 
 . Allow sub-requests.
 
-. Installation should use perl for access granting.
-	Remove mysql.acl, etc.
-
-	
-
 . Web interface for requestors.
 . Convert to DBI. (So one could use oracle, mysql, etc.)
 . Simplify Web interface.
