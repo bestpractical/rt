@@ -1352,7 +1352,7 @@ Content: #
          msgstr ""
          
          #: html/Ticket/Elements/EditLinks:28
-         msgid "Current Relationships"
+         msgid "Current Links"
          msgstr "Jelenlegi kapcsolatok"
          
          #: html/Admin/Elements/EditScrips:30
@@ -1630,7 +1630,7 @@ Content: #
          msgstr "Bearbeite benutzerdefinierte Felder fÃ¼r Klasse %1"
          
          #: html/Ticket/ModifyLinks.html:36
-         msgid "Edit Relationships"
+         msgid "Edit Links"
          msgstr "Kapcsolatok módosítása"
          
          #: html/Admin/Queues/Templates.html:41
@@ -2682,7 +2682,7 @@ Content: #
          msgstr ""
          
          #: html/Ticket/Elements/EditLinks:111
-         msgid "New Relationships"
+         msgid "New Links"
          msgstr "Új kapcsolatok"
          
          #: html/Ticket/Elements/Tabs:36
@@ -3433,10 +3433,6 @@ Content: #
          #. ($value/60)
          msgid "Refresh this page every %1 minutes."
          msgstr "%1 percenként frissítse ezt az oldalt."
-         
-         #: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
-         msgid "Relationships"
-         msgstr "Kapcsolatok"
          
          #: html/Search/Bulk.html:93
          msgid "Remove AdminCc"

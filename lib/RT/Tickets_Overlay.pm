@@ -279,7 +279,7 @@ Handle fields which deal with links between tickets.  (MemberOf, DependsOn)
 
 Meta Data:
   1: Direction (From,To)
-  2: Relationship Type (MemberOf, DependsOn,RefersTo)
+  2: Link Type (MemberOf, DependsOn,RefersTo)
 
 =cut
 
@@ -349,7 +349,7 @@ sub _LinkLimit {
 Handle date fields.  (Created, LastTold..)
 
 Meta Data:
-  1: type of relationship.  (Probably not necessary.)
+  1: type of link.  (Probably not necessary.)
 
 =cut
 
@@ -1387,7 +1387,7 @@ sub LimitRequestor {
 =head2 LimitLinkedTo
 
 LimitLinkedTo takes a paramhash with two fields: TYPE and TARGET
-TYPE limits the sort of relationship we want to search on
+TYPE limits the sort of link we want to search on
 
 TYPE = { RefersTo, MemberOf, DependsOn }
 
@@ -1423,7 +1423,7 @@ sub LimitLinkedTo {
 =head2 LimitLinkedFrom
 
 LimitLinkedFrom takes a paramhash with two fields: TYPE and BASE
-TYPE limits the sort of relationship we want to search on
+TYPE limits the sort of link we want to search on
 
 
 BASE is the id or URI of the BASE of the link

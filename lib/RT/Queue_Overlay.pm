@@ -478,7 +478,7 @@ sub CustomFields {
 
 =head2 _CreateQueueGroups
 
-Create the ticket groups and relationships for this ticket. 
+Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->Create _inside of a transaction_
 
 It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.

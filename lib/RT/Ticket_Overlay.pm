@@ -138,7 +138,7 @@ ok(require RT::Ticket, "Loading the RT::Ticket library");
 # }}}
 
 # {{{ LINKTYPEMAP
-# A helper table for relationships mapping to make it easier
+# A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
 use vars '%LINKTYPEMAP';
@@ -170,7 +170,7 @@ use vars '%LINKTYPEMAP';
 # }}}
 
 # {{{ LINKDIRMAP
-# A helper table for relationships mapping to make it easier
+# A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
 use vars '%LINKDIRMAP';
@@ -1320,7 +1320,7 @@ sub Import {
 
 =head2 _CreateTicketGroups
 
-Create the ticket groups and relationships for this ticket. 
+Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->Create _inside of a transaction_
 
 It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.

@@ -1285,7 +1285,7 @@ msgid "Created template %1"
 msgstr "Sjabloon %1 Gecreëerd"
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Huidige Relaties"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1579,7 +1579,7 @@ msgid "Edit Custom Fields for %1"
 msgstr "Wijzig Specifieke Velden voor %1"
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Wijzig Relaties"
 
 #: html/Admin/Queues/Templates.html:41
@@ -2624,7 +2624,7 @@ msgid "New Pending Approval"
 msgstr "Nieuwe Hangende Goedkeuring"
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Nieuwe Relaties"
 
 #: html/Ticket/Elements/Tabs:36
@@ -3380,10 +3380,6 @@ msgstr "Verfijn Zoekopdracht"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Ververs deze pagina elke %1 minuten."
-
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "Relaties"
 
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"

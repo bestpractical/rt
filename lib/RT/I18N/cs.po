@@ -1171,7 +1171,7 @@ msgid "Created template %1"
 msgstr "Vzor %1 vytvořen"
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Aktuální relace"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1441,7 +1441,7 @@ msgid "Edit Custom Fields for %1"
 msgstr "Upravit uživatelské položky pro %1"
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Upravit relace"
 
 #: html/Admin/Queues/Templates.html:41
@@ -2407,7 +2407,7 @@ msgid "New Pending Approval"
 msgstr "Nová probíhající schválení"
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Nové relace"
 
 #: html/Ticket/Elements/Tabs:36
@@ -3123,11 +3123,6 @@ msgstr "Zjemnit vyhledání"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Obnovit tuto stránku %quant(%1,každou,každé,každých) %numf(%1) %quant(%1,minutu,minuty,minut)."
-
-#??? quant
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "Vztahy"
 
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"

@@ -1248,7 +1248,7 @@ msgid "Created template %1"
 msgstr "Luotu pohja %1"
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Tämänhetkiset suhteet"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1538,7 +1538,7 @@ msgid "Edit Custom Fields for %1"
 msgstr "Muokkaa työjonon %1 kenttiä"
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Muokkaa suhteita"
 
 #: html/Admin/Queues/Templates.html:41
@@ -2579,7 +2579,7 @@ msgid "New Pending Approval"
 msgstr ""
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Uusi linkki"
 
 #: html/Ticket/Elements/Tabs:36
@@ -3319,10 +3319,6 @@ msgstr "Päivitä haku"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Päivitä tämä sivu %1 minuutin välein"
-
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "Linkit"
 
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"

@@ -1247,7 +1247,7 @@ msgid "Created template %1"
 msgstr "Plantilla %1 creada"
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Relaciones actuales"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1537,7 +1537,7 @@ msgid "Edit Custom Fields for %1"
 msgstr "Editar campos personalizados para %1"
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Editar relaciones"
 
 #: html/Admin/Queues/Templates.html:41
@@ -2578,7 +2578,7 @@ msgid "New Pending Approval"
 msgstr "Nueva pendiente de aprobación"
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Nuevas relaciones"
 
 #: html/Ticket/Elements/Tabs:36
@@ -3318,10 +3318,6 @@ msgstr "Refinar la búsqueda"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Refrescar esta página cada %1 minutos"
-
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "Relaciones"
 
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"

@@ -65,7 +65,7 @@ unless ($id =~ /^\d+$/ && $to =~ /^\d+$/) {
     goto OUTPUT;
 }
 unless (exists $fields{lc $rel}) {
-    $output = "Invalid relationship: '$rel'.\n";
+    $output = "Invalid link: '$rel'.\n";
     $status = "400 Bad Request";
     goto OUTPUT;
 }

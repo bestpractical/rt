@@ -243,7 +243,6 @@ msgstr "'%1' является неверным значением статуса
 msgid "'%1' not a recognized action. "
 msgstr "Что делать ? : '%1'"
 
-
 #: html/Admin/Elements/EditQueueWatchers:29 html/Admin/Elements/EditScrips:35 html/Admin/Elements/EditTemplates:36 html/Admin/Groups/Members.html:52 html/Ticket/Elements/EditLinks:33 html/Ticket/Elements/EditPeople:46 html/User/Groups/Members.html:55
 msgid "(Check box to delete)"
 msgstr "(Пометьте то, что хотите удалить)"
@@ -411,7 +410,6 @@ msgstr "Добавить еще файлы"
 #: html/Search/Bulk.html:88
 msgid "Add Requestor"
 msgstr "Добавить просителя"
-
 
 #: html/Admin/Global/Scrip.html:55
 msgid "Add a scrip which will apply to all queues"
@@ -1154,7 +1152,7 @@ msgid "Created template %1"
 msgstr "Создан шаблон %1"
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Текущие связи"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1428,7 +1426,7 @@ msgid "Edit Custom Fields for %1"
 msgstr "Изменение дополнительных полей для %1"
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Изменение связей"
 
 #: html/Admin/Queues/Templates.html:41
@@ -2245,7 +2243,6 @@ msgstr "Изменение глобальных прав группы"
 msgid "Modify global group rights."
 msgstr "Изменение глобальных прав группы"
 
-
 #: html/Admin/Global/UserRights.html:25 html/Admin/Global/UserRights.html:28 html/Admin/Global/index.html:60
 msgid "Modify global user rights"
 msgstr "Изменение глобальных прав пользователя"
@@ -2434,7 +2431,7 @@ msgid "New Pending Approval"
 msgstr ""
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Новые связи"
 
 #: html/Ticket/Elements/Tabs:36
@@ -3186,10 +3183,6 @@ msgstr "Улучшить поиск"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Обновлять эту страницу каждые %1 минут."
-
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "Связи"
 
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"

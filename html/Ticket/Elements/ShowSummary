@@ -58,7 +58,7 @@
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>  
-	  <& /Elements/TitleBoxStart, title => loc('Relationships'), 
+	  <& /Elements/TitleBoxStart, title => loc('Links'), 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>

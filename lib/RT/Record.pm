@@ -678,7 +678,7 @@ sub _EncodeLOB {
 
 
 # {{{ LINKDIRMAP
-# A helper table for relationships mapping to make it easier
+# A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
 use vars '%LINKDIRMAP';
@@ -755,7 +755,7 @@ sub Update {
     return @results;
 }
 
-# {{{ Routines dealing with Links and Relations between tickets
+# {{{ Routines dealing with Links between tickets
 
 # {{{ Link Collections
 

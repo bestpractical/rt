@@ -9,8 +9,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-
 #: html/Elements/MyRequests:28 html/Elements/MyTickets:28
 msgid "#"
 msgstr "#"
@@ -1308,7 +1306,7 @@ msgid "Created template %1"
 msgstr "Opprettet malen %1"
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Eksisterende Forhold"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1601,7 +1599,7 @@ msgid "Edit Custom Fields for %1"
 msgstr "Rediger fleksifelt for %1"
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Rediger Forhold"
 
 #: html/Admin/Queues/Templates.html:42
@@ -2651,7 +2649,7 @@ msgid "New Pending Approval"
 msgstr "Ny, Venter på Godkjennelse"
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Nye forhold"
 
 #: html/Ticket/Elements/Tabs:36
@@ -3427,10 +3425,6 @@ msgstr "Redefiner søket"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Last siden pÂ nytt hvert %1 minutt."
-
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:62 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "Forhold"
 
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"
