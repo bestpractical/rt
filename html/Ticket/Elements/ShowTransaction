@@ -122,6 +122,7 @@ $ShowTitleBarCommands => 1
 $RowNum => 1
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
 $UpdatePath => $RT::WebPath."/Ticket/Update.html"
+$EmailRecordPath => $RT::WebPath."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef
 $ShowBody => 1
@@ -183,7 +184,7 @@ if ( $Transaction->Type =~ /EmailRecord$/ ) {
     @DisplayHeaders = qw(To Cc Bcc);
 
     $titlebar_commands .=
-        "[<a target=\"_blank\" href=\"ShowEmailRecord.html?id="
+        "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
       . $Transaction->Ticket
       . "&Transaction="
       . $Transaction->Id
