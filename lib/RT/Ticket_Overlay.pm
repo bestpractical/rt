@@ -2237,9 +2237,11 @@ sub Comment {
     # The "NotifyOtherRecipients" scripAction will look for RT--Send-Cc: and
     # RT-Send-Bcc: headers
 
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',  $args{'CcMessageTo'} )
+    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',
+        RT::User::CanonicalizeEmailAddress(undef, $args{'CcMessageTo'}) )
 	if defined $args{'CcMessageTo'};
-    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc', $args{'BccMessageTo'} )
+    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc',
+        RT::User::CanonicalizeEmailAddress(undef, $args{'BccMessageTo'}) )
 	if defined $args{'BccMessageTo'};
 
     #Record the correspondence (write the transaction)
@@ -2305,9 +2307,11 @@ sub Correspond {
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and RT-Send-Bcc:
     # headers
 
-    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',  $args{'CcMessageTo'} )
+    $args{'MIMEObj'}->head->add( 'RT-Send-Cc',
+        RT::User::CanonicalizeEmailAddress(undef, $args{'CcMessageTo'}) )
 	if defined $args{'CcMessageTo'};
-    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc', $args{'BccMessageTo'} )
+    $args{'MIMEObj'}->head->add( 'RT-Send-Bcc',
+        RT::User::CanonicalizeEmailAddress(undef, $args{'BccMessageTo'}) )
 	if defined $args{'BccMessageTo'};
 
     #Record the correspondence (write the transaction)
