@@ -1,4 +1,4 @@
-	  <TABLE width="100%" border=0 cellpadding=4 cellspacing=0 bgcolor="#336699">
+	  <TABLE width="<%$width%>" border=0 cellpadding=4 cellspacing=0 bgcolor="#336699">
 	    <TR> 
 	      <TH valign=middle align=left bgcolor="#336699"> 
 		<font size=-1 color="#ffffff">
@@ -8,7 +8,7 @@
 		</font>
 	      </TH>
 	      <TH ALIGN="right" valign=middle bgcolor="#336699">
-		<FONT SIZE=-1>
+		<FONT color="#ffffff" SIZE=-1>
 		&nbsp;<%$titleright |n %>
 		</FONT>
 	      </TH>
@@ -18,6 +18,7 @@
 
 	
 <%ARGS>
+$width => "100%"
 $title => undef
 $titleright => undef
 $contentbg => "#ffffff"

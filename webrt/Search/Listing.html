@@ -1,17 +1,9 @@
 %# $Header$
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
-
 <& /Elements/Header, Title => "Ticket Listing / Queue View" &>
-<h1>Search limits</h1>
-%my %restrictions =$session{'tickets'}->DescribeRestrictions();
-%foreach $row (keys %restrictions){
-<%$row%>: <%$restrictions{"$row"}%> <A HREF="/Search/Listing.html?DeleteRestriction=<%$row%>">[delete]</a><br>
-%}
-<BR>
-<A HREF="/Search/Listing.html?ClearRestrictions=1">Clear all restrictions</a>
-%#<& QueueInterpretRestrictionCookies &>
+<H1>RT Queue View</H1>
+
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=1>
-%#<& QueueHeader format="$format" &>
 <TR>
 %foreach (@{Config(\%ARGS, 'QueueListingCols')}) {
    <TH><% $_->{Header} %></TH>
@@ -43,9 +35,24 @@ while (my $Ticket = $session{'tickets'}->Next) {
 %#<& QueueFooter format="$format" &>
 
 <HR>
-
+<TABLE WIDTH="100%">
+<TR>
+<TD VALIGN="TOP">
+<h1>Search limits</h1>
+<A HREF="/Search/Listing.html?ClearRestrictions=1">Clear all restrictions</a>
+<BR>
+<BR>
+%my %restrictions=$session{'tickets'}->DescribeRestrictions();
+%foreach $row (keys %restrictions){
+<%$restrictions{"$row"}%> <A HREF="/Search/Listing.html?DeleteRestriction=<%$row%>">[delete]</a><br>
+%}
+</TD>
+<TD>
+<H1>Restrict Search</H1>
 <& PickRestriction &>
-
+</TD>
+</TR>
+</TABLE>
 
 <%INIT>
 my $cnt = 0;

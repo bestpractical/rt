@@ -16,8 +16,14 @@
 <OPTION>in 90 days</OPTION>
 <OPTION>in 1 year</OPTION>
 </SELECT>
-at <INPUT NAME="<%$menu_prefix%>_Time" VALUE="<%$DefTime%>" size=6><font size=-2>(ex 21:34 or 9:34 PM)</font>
+
+%if ($ShowTime) {
+
+at <INPUT NAME="<%$menu_prefix%>_Time" VALUE="<%$DefTime%>" size=6> GMT <font size=-2>(ex 21:34 or 9:34 PM)</font>
 <FONT COLOR=#FF0000">Note: all times are currently GMT</FONT>
+%}
+
+
 <%init>
 my ($DefDate, $DefTime);
 if ($current > 0) {
@@ -28,7 +34,7 @@ if ($current > 0) {
 
 	$DefDate = "$year-$mon-$mday";
 	
-	$min = sprintf("%2u",$min);
+	$min = sprintf("%#2u",$min);
 	$DefTime = "$hour:$min";
 }
 else {
@@ -39,7 +45,7 @@ else {
 
 <%args>
 
-
+$ShowTime => undef
 $menu_prefix=>''
 $current=>time
 </%args>

@@ -17,23 +17,17 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp", True => "matches", False 
 <li>Queue  <& /Elements/SelectBoolean, Name => "QueueOp" , True => "is", False => "isn't", TrueVal=> '=', FalseVal => '!=' &>
 <& /Elements/SelectQueue, Name => "ValueOfQueue" &>
 
-<li><& /Elements/Checkbox, Name => "LimitCreated" &>
-Created <& /Elements/SelectDateRelation, Name=>"CreatedOp" &>
-<& /Elements/SelectDate, Name  => "ValueOfCreated" &>
+<li>
+<& /Elements/SelectDateType, Name => 'DateType' &>
+<& /Elements/SelectDateRelation, Name=>"DateOp" &>
+<& /Elements/SelectDate, Name  => "ValueOfDate", ShowTime => 0 &>
 
-<li><& /Elements/Checkbox, Name => "LimitLastMessage" &>
-Last correspondence <& /Elements/SelectDateRelation, Name => "LastMessageOp" &>
-<& /Elements/SelectDate, Name  => "ValueOfLastMessage" &>
+<li>Ticket content 
+<& /Elements/SelectBoolean, Name => "ContentOp", True => "matches", 
+	False => "does not match", TrueVal => 'LIKE', FalseVal => 'NOT LIKE' &> <Input Name="ValueOfContent" Size=20>
 
-<li><& /Elements/Checkbox, Name => "LimitLastUpdate" &>
-Last update  <& /Elements/SelectDateRelation, Name=>"LastUpdatedOp" &>
-<& /Elements/SelectDate, Name => "ValueOfLastUpdate" &>
-
-<li>Ticket content  <& /Elements/SelectBoolean, Name => "ContentOp", True => "matches", 
-	False => "does not match", TrueVal => 'LIKE', FalseVal => 'NOT LIKE' &> 
-/<Input Name="ValueOfContent" Size=20>
-
-<li>Status <& /Elements/SelectBoolean, Name => "StatusOp", True => "is", False => "isn't", TrueVal=> '=', FalseVal => '!=' &>  
+<li>Status 
+<& /Elements/SelectBoolean, Name => "StatusOp", True => "is", False => "isn't", TrueVal=> '=', FalseVal => '!=' &>  
 <& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
 <li><& /Elements/Checkbox, Name => "LimitResultsPerPage",  Default=>'checked' &>
@@ -41,6 +35,8 @@ Results per page
 <& /Elements/SelectResultsPerPage, Name => "ValueOfResultsPerPage" &>
 
 </UL>
-<input type=submit>
+<DIV ALIGN=RIGHT>
+<input type=submit name="Search">
+</DIV>
 </FORM>
 
