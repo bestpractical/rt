@@ -332,7 +332,7 @@ you may reply to this message.
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->QueueObj->Name}
-     Subject: {$Transaction->Subject || "(No subject given)"}
+     Subject: {$Transaction->Subject || {$Ticket->Subject} || "(No subject given)"}
        Owner: {$Ticket->OwnerObj->Name}
   Requestors: {$Ticket->Requestors->EmailsAsString()}
       Status: {$Ticket->Status}
