@@ -37,7 +37,7 @@ my @cols = $class->BasicColumns or return;
 
 #$r->content_type( 'application/octet-stream' );
 $r->content_type( 'text/plain' );
-$r->header_out( 'Content-Disposition' => "attachment; filename=$filename" );
+$r->headers_out->{'Content-Disposition'} = "attachment; filename=$filename";
 $m->clear_buffer();
 $m->out(join("\t", "Id", map $_->[1], @cols), "\n");
 foreach my $id (@ids) {
