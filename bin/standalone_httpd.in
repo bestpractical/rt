@@ -155,6 +155,9 @@ sub main_loop {
                 $RT::Logger->crit( "Transaction not committed. Usually indicates a software fault. Data loss may have occurred");
             }
 
+	    # Let's clear out RT's ACL cache. The perf impact should
+	    # be marginal and the consistency is a good thing.
+	    RT::Principal->InvalidateACLCache();
             DBIx::SearchBuilder::Record::Cachable->FlushCache
               if (
                 $RT::WebFlushDbCacheEveryRequest

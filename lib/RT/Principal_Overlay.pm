@@ -61,7 +61,7 @@ use RT::User;
 
 # Set up the ACL cache on startup
 our $_ACL_CACHE;
-_InvalidateACLCache();
+InvalidateACLCache();
 
 # {{{ IsGroup
 
@@ -490,15 +490,15 @@ sub _RolesForObject {
 # {{{ ACL caching
 
 
-# {{{ _InvalidateACLCache
+# {{{ InvalidateACLCache
 
-=head2 _InvalidateACLCache
+=head2 InvalidateACLCache
 
-Cleans out and reinitializes the user rights key cache
+Cleans out and reinitializes the user rights cache
 
 =cut
 
-sub _InvalidateACLCache {
+sub InvalidateACLCache {
     $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
     $_ACL_CACHE->expire_after($RT::ACLCacheLifetime||60);
 

@@ -2527,7 +2527,6 @@ ok(!$id,$msg);
 ok ($id,$msg);
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'ModifyTicket');
 ok ($id,$msg);
-sleep(15);
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 

@@ -134,7 +134,6 @@ ok( $g->Id, "Found 'everybody'");
 my ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 ok ($val, "Granted everybody the right to create tickets - $msg");
 
-sleep(60); # gotta sleep so the remote process' ACL cache times out
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
@@ -168,7 +167,6 @@ ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 
 #($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 #ok ($val, "Granted everybody the right to create tickets - $msg");
-#sleep(60); # gotta sleep so the remote process' ACL cache times out
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
@@ -194,7 +192,6 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket corresponde
 
 ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'ReplyToTicket');
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
-sleep(60); # gotta sleep so the remote process' ACL cache times out
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
@@ -221,7 +218,6 @@ ok( $u->Id != 0, " user exists and was created by ticket correspondence submissi
 
 #($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 #ok ($val, "Granted everybody the right to create tickets - $msg");
-#sleep(60); # gotta sleep so the remote process' ACL cache times out
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
@@ -247,7 +243,6 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket comment sub
 
 ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
-sleep(60); # gotta sleep so the remote process' ACL cache times out
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
