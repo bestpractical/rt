@@ -23,100 +23,122 @@
 %# 
 %# END LICENSE BLOCK
 <TABLE width=100%>
-<TR>
-<TD VALIGN=TOP WIDTH=50%>
-<h3><&|/l&>Current Relationships</&></h3>
-<i><&|/l&>(Check box to delete)</&></i><br>
+  <TR>
+    <TD VALIGN=TOP WIDTH=50%>
+      <h3><&|/l&>Current Relationships</&></h3>
 
-<&|/l&>Depends on</&>:<BR>
-<UL>
+<table>
+  <tr>
+    <td></td>
+    <td><i><&|/l&>(Check box to delete)</&></i></td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Depends on</&>:</td>
+    <td class="value">
 % while (my $link = $Ticket->DependsOn->Next) {
 % my $member = $link->TargetObj;
-<LI>
-<INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
-[<%$member->Status%>]
-
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
+      [<%$member->Status%>]<br>
 % }
-</UL>
-
-<&|/l&>Depended on by</&>:<BR>
-<UL>
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Depended on by</&>:</td>
+    <td class="value">
 % while (my $link = $Ticket->DependedOnBy->Next) {
 % my $member = $link->BaseObj;
-<LI>
-<INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
-[<%$member->Status%>]
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
+      [<%$member->Status%>]<br>
 % }
-</UL>
-
-<&|/l&>Parents</&>:<BR>
-<UL>
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Parents</&>:</td>
+    <td class="value">
 % while (my $link = $Ticket->MemberOf->Next) {
 % my $member = $link->TargetObj;
-<LI>
-<INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
-[<%$member->Status%>]
-
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
+      [<%$member->Status%>]<br>
 % }
-</UL>
-
-<&|/l&>Children</&>:<BR>
-<UL>
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Children</&>:</td>
+    <td class="value">
 % while (my $link = $Ticket->Members->Next) {
-<LI>
-<INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % my $member = $link->BaseObj;
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
-[<%$member->Status%>]
+      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
+      [<%$member->Status%>]<br>
 % }
-</UL>
-
-
-<&|/l&>Refers to</&>:<BR>
-<UL>
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Refers to</&>:</td>
+    <td class="value">
 % while (my $link = $Ticket->RefersTo->Next) {
-<LI>
-<INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
 % if ($link->TargetURI->IsLocal) {
 % my $member = $link->TargetObj;
-
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
+      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
-<A HREF="<%$link->TargetURI->HREF%>"><%$link->Target%></A>
+      <A HREF="<%$link->TargetURI->HREF%>"><%$link->Target%></A><br>
 % }
 %}
-</UL>
-
-<&|/l&>Referred to by</&>:<BR>
-<UL>
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Referred to by</&>:</td>
+    <td class="value">
 % while (my $link = $Ticket->ReferredToBy->Next) {
-<LI>
-<INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+      <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % if ($link->BaseURI->IsLocal) {
 % my $member = $link->BaseObj;
-<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
+      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
-<A HREF="<%$link->BaseURI->HREF%>"><%$link->Base%></A>
+      <A HREF="<%$link->BaseURI->HREF%>"><%$link->Base%></A><br>
 %}
 % }
-</UL>
-
+    </td>
+  </tr>
+</table>
 			    
 </TD>
 <TD VALIGN=TOP>
 <h3><&|/l&>New Relationships</&></h3>
 <i><&|/l&>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</&></i><br>
 <TABLE>
-<TR><TD><&|/l&>Merge into</&>:</TD><TD><input name="<%$Ticket->Id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD></TR>
-<TR><TD><&|/l&>Depends on</&>:</TD><TD><input name="<%$Ticket->Id%>-DependsOn"></TD></TR>
-<TR><TD><&|/l&>Depended on by</&>:</TD><TD><input name="DependsOn-<%$Ticket->Id%>"></TD></TR>
-<TR><TD><&|/l&>Parents</&>:</TD><TD><input name="<%$Ticket->Id%>-MemberOf"></TD></TR>
-<TR><TD><&|/l&>Children</&>:</TD><TD> <input name="MemberOf-<%$Ticket->Id%>"></TD></TR>
-<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$Ticket->Id%>-RefersTo"></TD></TR>
-<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$Ticket->Id%>"></TD></TR>
+  <TR>
+    <TD class="label"><&|/l&>Merge into</&>:</TD>
+    <TD class="entry"><input name="<%$Ticket->Id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Depends on</&>:</TD>
+    <TD class="entry"><input name="<%$Ticket->Id%>-DependsOn"></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Depended on by</&>:</TD>
+    <TD class="entry"><input name="DependsOn-<%$Ticket->Id%>"></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Parents</&>:</TD>
+    <TD class="entry"><input name="<%$Ticket->Id%>-MemberOf"></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Children</&>:</TD>
+    <TD class="entry"> <input name="MemberOf-<%$Ticket->Id%>"></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Refers to</&>:</TD>
+    <TD class="entry"><input name="<%$Ticket->Id%>-RefersTo"></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Referred to by</&>:</TD>
+    <TD class="entry"> <input name="RefersTo-<%$Ticket->Id%>"></TD>
+  </TR>
 </TABLE>
 </TD>
 </TR>

@@ -93,6 +93,12 @@ td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-weight: bold;
 	 color: #0066CC }
 .value {       font-weight: bold; }
+.entry {       font-weight: normal; }
+.label {       font-weight: normal;
+	       text-align: right; }
+.labeltop {       font-weight: normal;
+	       text-align: right;
+	       vertical-align: top }
 .productnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
 	 color: #000000;

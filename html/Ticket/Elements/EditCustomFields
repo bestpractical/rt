@@ -22,35 +22,50 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<table>
+% my @entry_fields;
 % while (my $CustomField = $CustomFields->Next()) {
+%   if ($CustomField->Type =~ /Entry$/) {
+%     push @entry_fields, $CustomField;
+%     next;
+%   }
 % my $Values = $TicketObj->CustomFieldValues($CustomField->id);
-
-<%$CustomField->Name%> - <%loc($CustomField->Type)%><br>
+  <tr>
+    <td class="labeltop">
+      <%$CustomField->Name%>:<br>
+      <i><%loc($CustomField->Type)%></i>
+    </td>
+    <td class="entry">
 % if ($CustomField->Type eq 'FreeformSingle') {
-<input name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Value"
-       value="<%$Values->Count ? $Values->First->Content : ''%>">
+      <input name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Value"
+          value="<%$Values->Count ? $Values->First->Content : ''%>">
 % } elsif ($CustomField->Type eq 'FreeformMultiple') {
-<textarea name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
+      <textarea name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
 %while (my $value = $Values->Next ) {
-<%$value->Content%>
+        <%$value->Content%>
 %}
-</textarea>
+      </textarea>
 % } elsif ($CustomField->Type =~ /^Select/) {
-<select name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Values"
+      <select name="Ticket-<%$TicketObj->Id%>-CustomField-<%$CustomField->Id%>-Values"
         size="5"
-        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>
-        >
+        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>>
 % my $CustomFieldValues = $CustomField->Values();
 % my $selected;
 % while (my $value = $CustomFieldValues->Next) {
-<option value="<%$value->Name%>" 
-        <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
-        ><% $value->Name%></option>
+        <option value="<%$value->Name%>" 
+            <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
+            ><% $value->Name%></option>
 % }
-<option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
-</select>
+        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
+      </select>
 % }
-<br>
+    </td>
+  </tr>
+% }
+</table>
+
+% if (@entry_fields) {
+<& /Ticket/Elements/EditCustomFieldEntries, Prefix => 'AddEntry-', CustomFields => \@entry_fields, TicketObj => $TicketObj &>
 % }
 
 <%INIT>

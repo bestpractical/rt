@@ -22,14 +22,24 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<&|/l&>Owner</&><BR>
-&nbsp;<B><%$Ticket->OwnerObj->Name%></B><BR>
-<&|/l&>Requestors</&><BR>
-&nbsp;<B><%$Ticket->RequestorAddresses%></B><BR>
-<&|/l&>Cc</&><BR>
-&nbsp;<B><%$Ticket->CcAddresses%></B><BR>
-<&|/l&>AdminCc</&><BR>
-&nbsp;<B><%$Ticket->AdminCcAddresses%></B>
+<table>
+  <tr>
+    <td class="label"><&|/l&>Owner</&>:</td>
+    <td class="value"><%$Ticket->OwnerObj->Name%></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Requestors</&>:</td>
+    <td class="value"><%$Ticket->RequestorAddresses%></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Cc</&>:</td>
+    <td class="value"><%$Ticket->CcAddresses%></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>AdminCc</&>:</td>
+    <td class="value"><%$Ticket->AdminCcAddresses%></td>
+  </tr>
+</table>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

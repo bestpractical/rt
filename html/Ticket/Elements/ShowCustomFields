@@ -22,20 +22,30 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<dl>
+<table>
+% my @entry_fields;
 % while (my $CustomField = $CustomFields->Next()) {
+%   if ($CustomField->Type =~ /Entry$/) {
+%     push @entry_fields, $CustomField;
+%     next;
+%   }
 % my $Values = $Ticket->CustomFieldValues($CustomField->Id);
-<dt><%$CustomField->Name%></dt>
-<dd>
+  <tr>
+    <td class="label"><%$CustomField->Name%>:</td>
+    <td class="value">
 % while (my $Value = $Values->Next()) {
 <%$Value->Content%><br>        
 % }
 % unless ($Values->Count()) {
 <i><&|/l&>(no value)</&></i>
 % }
-</dd>
+    </td>
+  </tr>
 % }
-</dl>
+</table>
+% if (@entry_fields) {
+<& /Ticket/Elements/EditCustomFieldEntries, ReadOnly => 1, CustomFields => \@entry_fields, TicketObj => $Ticket &>
+% }
 <%INIT>
 my $CustomFields = $Ticket->QueueObj->CustomFields();
 </%INIT>

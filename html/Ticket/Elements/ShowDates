@@ -23,55 +23,30 @@
 %# 
 %# END LICENSE BLOCK
 <TABLE>
-<TR>
-<TD>
-<&|/l&>Created</&>:
-</TD>
-<TD>
-<% $Ticket->CreatedObj->AsString %> by <% $Ticket->CreatorObj->Name %>
-</TD>
-</TR>
-<TR>
-<TD>
-<&|/l&>Starts</&>: 
-</TD>
-<TD>
-<% $Ticket->StartsObj->AsString %> <BR>
-</TD>
-</TR>
-<TR>
-<TD>
-<&|/l&>Started</&>:
-</TD>
-<TD>
-<% $Ticket->StartedObj->AsString %>
-</TD>
-</TR>
-
-<TR>
-<TD>
-<a href="Display.html?id=<%$Ticket->id%>&Action=SetTold"><&|/l&>Last Contact</&></a>:
-</TD>
-<TD>
-<% $Ticket->ToldObj->AsString %>
-</TD>
-</TR>
-<TR>
-<TD>
-<&|/l&>Due</&>:
-</TD>
-<TD><% $Ticket->DueObj->AsString  %>
-</TD>
-</TR>
-<TR>
-<TD>
-<&|/l&>Updated</&>:
-</TD>
-<TD>
-<A HREF="#lasttrans">
-<% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a>
-</TD>
-</TR>
+  <TR>
+    <TD class="label"><&|/l&>Created</&>:</TD>
+    <TD class="value"><% $Ticket->CreatedObj->AsString %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Starts</&>:</TD>
+    <TD class="value"><% $Ticket->StartsObj->AsString %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Started</&>:</TD>
+    <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><a href="Display.html?id=<%$Ticket->id%>&Action=SetTold"><&|/l&>Last Contact</&></a>:</TD>
+    <TD class="value"><% $Ticket->ToldObj->AsString %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Due</&>:</TD>
+    <TD class="value"><% $Ticket->DueObj->AsString  %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Updated</&>:</TD>
+    <TD class="value"><A HREF="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></TD>
+  </TR>
 </TABLE>
 <%ARGS>
 $Ticket => undef

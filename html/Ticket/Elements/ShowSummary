@@ -48,7 +48,7 @@
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
 	</TD>
-	<TD VALIGN=TOP >
+	<TD VALIGN=TOP>
 
 	  <& /Elements/TitleBoxStart, title => loc("Dates"),
 		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 

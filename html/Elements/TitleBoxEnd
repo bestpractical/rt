@@ -22,7 +22,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-</TD></TR>
+    </TD>
+  </TR>
 </TABLE>
 <%ARGS>
 $title => undef

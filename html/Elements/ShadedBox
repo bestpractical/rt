@@ -22,7 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<div align="left"><span class=label><%$title |n %>: <b><%$content |n %></b></div><br>
+<table>
+  <tr>
+    <td class="label"><%$title |n %>:</td>
+    <td class="value"><%$content |n %></td>
+  </tr>
+</table>
 <%ARGS>
 $title => undef
 $content => "&nbsp;"

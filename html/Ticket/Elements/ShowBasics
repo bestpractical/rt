@@ -23,31 +23,26 @@
 %# 
 %# END LICENSE BLOCK
 <table>
-<tr><td>
-<&|/l&>Id</&> 
-</td><td class="value">
-<%$Ticket->Id %>
-</td></tr>
-<tr><td>
-<&|/l&>Status</&>
-</td><td class="value">
-<&|/l&><% $Ticket->Status%></&>
-</td></tr>
-<tr><td>
-<&|/l&>Worked</&>
-</td><td class="value">
-<&|/l, $TimeWorked &>[_1] min</&>
-</td></tr>
-<tr><td>
-<&|/l&>Priority</&>
-</td><td class="value">
-<%$Ticket->Priority%>/<%$Ticket->FinalPriority %>
-</td></tr>
-<tr><td>
-<&|/l&>Queue</&>
-</td><td class="value">
-<%$Ticket->QueueObj->Name%>
-</td></tr>
+  <tr>
+    <td class="label"><&|/l&>Id</&>:</td>
+    <td class="value"><%$Ticket->Id %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Status</&>:</td>
+    <td class="value"><&|/l&><% $Ticket->Status%></&></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Worked</&>:</td>
+    <td class="value"><&|/l, $TimeWorked &>[_1] min</&></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Priority</&>:</td>
+    <td class="value"><%$Ticket->Priority%>/<%$Ticket->FinalPriority %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Queue</&>:</td>
+    <td class="value"><%$Ticket->QueueObj->Name%></td>
+  </tr>
 </table>
 <%INIT>
 my $TimeWorked = $Ticket->TimeWorked;

@@ -23,55 +23,49 @@
 %# 
 %# END LICENSE BLOCK
 <TABLE>
-<TR>
-<TD COLSPAN=6>
-        <&|/l&>Subject</&><BR>
-        <input name=Subject value="<%$TicketObj->Subject|h%>"  SIZE=50>
-</TD>
-</TR>
-<TR>
-<TD>
-<& /Elements/ShadedBox, 
-        title => loc('Status'),
-        content => $SelectStatus
+  <TR><td>
+    <table>
+      <td class="label"><&|/l&>Subject</&>:</td>
+      <td class="value">
+        <input name=Subject value="<%$TicketObj->Subject|h%>" SIZE=50>
+      </td>
+    </table>
+  </td></TR>
+  <TR><td>
+    <table>
+      <TD>
+        <& /Elements/ShadedBox, 
+            title => loc('Status'),
+            content => $SelectStatus &>
+      </TD>
+      <TD>
+        <& /Elements/ShadedBox,
+	    title => loc('Time Worked'),
+	    content => "<input name=TimeWorked value=\"".$TicketObj->TimeWorked."\" SIZE=5>" &>
+      </TD>
+      <TD>
+        <& /Elements/ShadedBox,
+	    title => loc('Time Left'),
+	    content => "<input name=TimeLeft value=\"".$TicketObj->TimeLeft."\" SIZE=5>" 
 &>
-</TD>
-<TD>
-
-<& /Elements/ShadedBox,
-	title => loc('Time Worked'),
-	content => "<input name=TimeWorked value=\"".$TicketObj->TimeWorked."\" SIZE=5>" 
-&>
-
-</TD>
-<TD>
-<& /Elements/ShadedBox,
-	title => loc('Time Left'),
-	content => "<input name=TimeLeft value=\"".$TicketObj->TimeLeft."\" SIZE=5>" 
-&>
-</TD>
-<TD>
-<& /Elements/ShadedBox,
-	title => loc('Priority'),
-	content => "<input name=Priority value=\"".$TicketObj->Priority."\" SIZE=3>"
-&>
-
-</TD>
-<TD>
-<& /Elements/ShadedBox,
-	title => loc('Final Priority'),
-	content => "<input name=FinalPriority value=\"".$TicketObj->FinalPriority."\" SIZE=3>"
-&>
-
-
-</TD>
-<TD>
-<& /Elements/ShadedBox,
-        title => loc('Queue'),
-        content => "$SelectQueue"
- &>
-</TD>
-</TR>
+      </TD>
+      <TD>
+        <& /Elements/ShadedBox,
+	    title => loc('Priority'),
+	    content => "<input name=Priority value=\"".$TicketObj->Priority."\" SIZE=3>" &>
+      </TD>
+      <TD>
+        <& /Elements/ShadedBox,
+	    title => loc('Final Priority'),
+	    content => "<input name=FinalPriority value=\"".$TicketObj->FinalPriority."\" SIZE=3>" &>
+      </TD>
+      <TD>
+        <& /Elements/ShadedBox,
+            title => loc('Queue'),
+            content => "$SelectQueue" &>
+      </TD>
+    </table>
+  </td></TR>
 </TABLE>
 
 <%INIT>
