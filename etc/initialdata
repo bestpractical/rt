@@ -363,7 +363,7 @@ Other approvals may be pending.
        Name        => "All Approvals Passed",    # loc
        Description =>
          "Notify Owner of their ticket has been approved by all approvers", # loc
-       Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
 
 Greetings,
 
