@@ -289,7 +289,7 @@ sub UpdateArticleCustomFieldValues {
 	#we'll use this for adding and deleting keywords from this object.
 	foreach my $value (@allvalues) {
 		if ($value =~ /\r/) {
-			foreach my $subvalue (split(/\r/,$value) {
+			foreach my $subvalue (split(/\r/,$value)) {
 				$values{$subvalue} = 1;
 			}
 		}
