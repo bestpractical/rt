@@ -34,55 +34,55 @@
 <BR>
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => loc("Create a new ticket") &>
 <TABLE border=0 cellpadding=0 cellspacing=0>
-<TR><TD><&|/l&>Queue</&></TD>
-<TD><% $QueueObj->Name %>
+<TR><TD class=label><&|/l&>Queue</&>:</TD>
+<TD class=value><% $QueueObj->Name %>
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 </TD>
-<TD><&|/l&>Status</&>:
+<TD class=label><&|/l&>Status</&>:
 </TD>
-<TD>
+<TD class=value>
 <& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new' &>
 </TD>
-<TD>
+<TD class=label>
 <&|/l&>Owner</&>:
 </TD>
-<TD>
+<TD class=value>
 <& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||undef &>
 </TD>
 </TR>
 <TR>
-<TD>
+<TD class=label>
 <&|/l&>Requestors</&>:
 </TD>
-<TD COLSPAN=5>
+<TD class=value COLSPAN=5>
 <INPUT Name="Requestors" Value="<% ($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress %>" SIZE=40>
 </TD>
 </TR>
 <TR>
-<TD>
+<TD class=labeltop>
 <&|/l&>Cc</&>:
 </TD>
-<TD COLSPAN=5>
+<TD class=value COLSPAN=5>
 <INPUT NAME="Cc" SIZE=40<% $ARGS{Cc} && " VALUE=\"$ARGS{Cc}\""%>><BR>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
 </TD>
 </TR>
 <TR>
-<TD>
+<TD class=labeltop>
 <&|/l&>Admin Cc</&>:
 </TD>
-<TD COLSPAN=5>
+<TD class=value COLSPAN=5>
 <INPUT NAME="AdminCc" SIZE=40<% $ARGS{AdminCc} && " VALUE=\"$ARGS{AdminCc}\""%>><BR>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
 </TD>
 </TR>
 <TR>
-<TD>
+<TD class=label>
 <&|/l&>Subject</&>:
 </TD>
-<TD COLSPAN=5>
+<TD class=value COLSPAN=5>
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<%$ARGS{Subject} || ''%>">
 </TD>
 </TR>
@@ -93,7 +93,7 @@
 </TR>
 <TR>
 % if (exists $session{'Attachments'}) {
-<TD>
+<TD class=label>
 <&|/l&>Attached file</&>:
 </TD>
 <TD COLSPAN=5>
@@ -108,7 +108,7 @@
 <TD>
 <&|/l&>Attach file</&>:
 </TD>
-<TD COLSPAN=5>
+<TD class=value COLSPAN=5>
 <INPUT TYPE=FILE NAME="Attach">
 <INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
 </TD>
