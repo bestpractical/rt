@@ -246,7 +246,7 @@ sub Content {
 =head2 OriginalContent
 
 Returns the attachment's content as octets before RT's mangling.
-Currently, this just means restoring text/plain content back to its
+Currently, this just means restoring text content back to its
 original encoding.
 
 =cut
@@ -254,7 +254,8 @@ original encoding.
 sub OriginalContent {
   my $self = shift;
 
-  return $self->Content unless $self->ContentType eq 'text/plain';
+  return $self->Content unless (
+     $self->ContentType =~ qr{^(text/plain|message/rfc822)$}i) ;
   my $enc = $self->OriginalEncoding;
 
   my $content;
