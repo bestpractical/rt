@@ -10,12 +10,23 @@
 	  <INPUT TYPE="hidden" NAME="KeywordSelectMagic<% $KeywordSelect->id %>" VALUE="1">
 	    <SELECT NAME="KeywordSelect<% $KeywordSelect->id %>"
 	      <% $KeywordSelect->Single ? "" : " MULTIPLE " %> SIZE=5>
-%   foreach my $kid ( keys %{$Descendents} ) {
+%#
+%#
+%#  All of this cruft is so we have a 'no keyword' selector for single
+%#  keywords that's only selected when there's no value.
+%
+% my $selected_keywords = 0;
+% foreach my $kid ( keys %{$Descendents} ) {
+% my $selected = 0;
+% if ($CurrentKeywords->HasEntry($kid)) { $selected_keywords++; $selected=1;}
 	      <OPTION VALUE="<% $kid %>" 
-		<% $CurrentKeywords->HasEntry($kid) && 'SELECTED'%>>
+		<% $selected && 'SELECTED'%>>
 		<% $Descendents->{$kid} %>
 	      </OPTION>
 %   }
+%   if ( $KeywordSelect->Single) {
+<OPTION VALUE="" <% ($selected_keywords == 0) && 'SELECTED' %> >-</OPTION>
+% }
 	    </SELECT>
       </TD>
 % }
