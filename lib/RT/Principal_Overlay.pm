@@ -101,7 +101,6 @@ sub Object {
 }
 # }}} 
 
-# {{{ ACL Related routines
 
 # {{{ GrantRight 
 
@@ -185,6 +184,108 @@ sub RevokeRight {
 # }}}
 
 
+# {{{ sub Rights
+
+=head2 sub Rights (Objects => undef)
+
+Check to see what rights this user has for the objects in the arrayref Objects
+
+This still hard codes to check to see if a user has queue-level rights
+if we ask about a specific ticket.
+
+Return is unimportant. it just populates the cached.
+
+=cut
+
+sub Rights {
+
+    my $self = shift;
+    my %args = (
+                 Objects     => undef,
+                 @_ );
+
+    if ( $self->Disabled ) {
+        $RT::Logger->err( "Disabled User:  " . $self->id . " failed access check for " . $args{'Right'} );
+        return (undef);
+    }
+
+
+    # If this object is a ticket, we care about ticket roles and queue roles
+    my ( $or_look_at_object_rights, $or_check_roles );
+
+    my @roles;
+
+    foreach my $object (@{$args{'Objects'}}) { 
+          push (@roles, $self->_RolesForObject(ref($object), $object->id));
+    }
+
+
+    if (@roles) {
+        $or_check_roles = " OR ( (".join (' OR ', @roles)." ) ".  
+        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') ";
+
+   } 
+    # {{{ Construct Right Match
+
+    # If an object is defined, we want to look at rights for that object
+   
+    my @look_at_objects;
+
+
+
+    foreach my $obj (@{$args{'Objects'}}) {
+            next unless (UNIVERSAL::can($obj, 'id'));
+            my $type = ref($obj);
+            my $id = $obj->id;
+            push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = $id)"; 
+            }
+
+     
+    # }}}
+
+
+    my $query = "SELECT ACL.RightName, ACL.ObjectType, ACL.ObjectId, CachedGroupMembers.MemberId FROM ACL, Groups, Principals, CachedGroupMembers WHERE  ".
+    # Only find superuser or rights with the name $right
+   # Never find disabled groups.
+   "Principals.Disabled = 0 " .  "AND CachedGroupMembers.Disabled = 0  ".  "AND Principals.id = Groups.id " .  
+    # We always grant rights to Groups
+
+    # See if the principal is a member of the group recursively or _is the rightholder_
+    # never find recursively disabled group members
+    # also, check to see if the right is being granted _directly_ to this principal,
+    #  as is the case when we want to look up group rights
+    "AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = " . $self->Id . " ".
+
+    # Make sure the rights apply to the entire system or to the object in question
+    "AND ( ".join(' OR ', @look_at_objects).") ".
+
+    # limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
+    "AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND ".
+        "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))".
+
+        # have a look at role groups, if there are any
+         $or_check_roles.
+        " ) ";
+
+    #   $RT::Logger->debug("Now Trying $query");	
+    my $acl = $self->_Handle->SimpleQuery($query)->fetchall_arrayref({});
+ 
+
+    my $time = time();
+    foreach my $obj (@{$args{'Objects'}}) {
+            next unless (UNIVERSAL::can($obj, 'id'));
+            my $type = ref($obj);
+            my $id = $obj->id;
+           $_ACL_KEY_CACHE{$type}->{$id}->{$self->Id}->{'_queried'} = $time; 
+    }
+    foreach my $row (@$acl) {
+           $_ACL_KEY_CACHE{$row->{'ObjectType'}}->{$row->{'ObjectId'}}->{$row->{'MemberId'}}->{$row->{'RightName'}} = $time;
+    }
+   
+ 
+}
+
+# }}}
 
 # {{{ sub HasRight
 
@@ -224,6 +325,7 @@ sub HasRight {
                  EquivObjects    => undef,
                  @_ );
 
+
     if ( $self->Disabled ) {
         $RT::Logger->err( "Disabled User:  " . $self->id . " failed access check for " . $args{'Right'} );
         return (undef);
@@ -239,9 +341,6 @@ sub HasRight {
         return (undef) unless (UNIVERSAL::can( $args{'Object'}, 'id' ) );
         push(@{$args{'EquivObjects'}}, $args{Object});
     }
-    elsif ( $args{'ObjectId'} && $args{'ObjectType'} ) {
-        $RT::Logger->crit(Carp::cluck("API not supprted"));
-    }
     else {
         $RT::Logger->crit("$self HasRight called with no valid object");
         return (undef);
@@ -256,178 +355,50 @@ sub HasRight {
     }
 
 
-    # {{{ If we've cached a win or loss for this lookup say so
+    push(@{$args{'EquivObjects'}}, $RT::System)
+        unless ( (ref($args{'Object'}) eq 'RT::System' ) || ( $self->can('_IsOverrideGlobalACL') and $self->_IsOverrideGlobalACL($args{Object})));
 
-    # {{{ Construct a hashkey to cache decisions in
-    my $hashkey = do {
-	no warnings 'uninitialized';
-        
-	# We don't worry about the hash ordering, as this is only
-	# temporarily used; also if the key changes it would be
-	# invalidated anyway.
-        join (
-            ";:;", $self->Id, map {
-                $_,                              # the key of each arguments
-                ($_ eq 'EquivObjects')           # for object arrayref...
-		    ? map(_ReferenceId($_), @{$args{$_}}) # calculate each
-                    : _ReferenceId( $args{$_} ) # otherwise just the value
-            } keys %args
-        );
-    };
-    # }}}
-
-    #Anything older than 60 seconds needs to be rechecked
     my $cache_timeout = ( time - 60 );
+    my $cache_dirty = 0;
+    foreach my $obj (@{$args{'EquivObjects'}}) {
+        
+            next unless (UNIVERSAL::can($obj, 'id'));
+            my $type = ref($obj);
+            my $id = $obj->id;
+                # if this chunk of the ACL cache is too old or non-existent, clean it out.
+           if ( !exists $self->_ACLCache->{$type}->{$id}->{$self->Id}->{'_queried'} ||
+                  $self->_ACLCache->{$type}->{$id}->{$self->Id}->{'_queried'} < $cache_timeout) {
+                delete $self->_ACLCache->{$type}->{$id}->{$self->Id};
+                $cache_dirty = 1;
 
-    # {{{ if we've cached a positive result for this query, return 1
-    if (    ( defined $self->_ACLCache->{"$hashkey"} )
-         && ( $self->_ACLCache->{"$hashkey"}{'val'} == 1 )
-         && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
-         && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
-
-        #$RT::Logger->debug("Cached ACL win for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
-        return ( 1);
     }
-    # }}}
+        return (1) if (
+           $self->_ACLCache->{$type}->{$id}->{$self->Id}->{$args{'Right'}} ||
+           $self->_ACLCache->{'RT::System'}->{'1'}->{$self->Id}->{'SuperUser'});
 
-    #  {{{ if we've cached a negative result for this query return undef
-    elsif (    ( defined $self->_ACLCache->{"$hashkey"} )
-            && ( $self->_ACLCache->{"$hashkey"}{'val'} == -1 )
-            && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
-            && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
 
-        #$RT::Logger->debug("Cached ACL loss decision for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
 
-        return (undef);
     }
-    # }}}
-
-    # }}}
-
-
-
-    #  {{{ Out of date docs
-    
-    #   We want to grant the right if:
-
-
-    #    # The user has the right as a member of a system-internal or 
-    #    # user-defined group
-    #
-    #    Find all records from the ACL where they're granted to a group 
-    #    of type "UserDefined" or "System"
-    #    for the object "System or the object "Queue N" and the group we're looking
-    #    at has the recursive member $self->Id
-    #
-    #    # The user has the right based on a role
-    #
-    #    Find all the records from ACL where they're granted to the role "foo"
-    #    for the object "System" or the object "Queue N" and the group we're looking
-    #   at is of domain  ("RT::Queue-Role" and applies to the right queue)
-    #                             or ("RT::Ticket-Role" and applies to the right ticket)
-    #    and the type is the same as the type of the ACL and the group has
-    #    the recursive member $self->Id
-    #
-
-    # }}}
-
-    my ( $or_look_at_object_rights, $or_check_roles );
-    my $right = $args{'Right'};
-
-    my @roles;
-
-
-    foreach my $object (@{$args{'EquivObjects'}}) { 
-          push (@roles, $self->_RolesForObject(ref($object), $object->id));
-    }
-
-
-    if (@roles) {
-        $or_check_roles = " OR ( (".join (' OR ', @roles)." ) ".  
-        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') ";
-
-   } 
-    # {{{ Construct Right Match
-
-    # If an object is defined, we want to look at rights for that object
-   
-    my @look_at_objects;
-    push (@look_at_objects, "ACL.ObjectType = 'RT::System'")
-        unless $self->can('_IsOverrideGlobalACL') and $self->_IsOverrideGlobalACL($args{Object});
-
-
+    # We didn't find anything. and the cache wasn't fresh enough. let's try once more.
+    if ($cache_dirty) {
+    $self->Rights(Objects => $args{'EquivObjects'});
 
     foreach my $obj (@{$args{'EquivObjects'}}) {
             next unless (UNIVERSAL::can($obj, 'id'));
             my $type = ref($obj);
             my $id = $obj->id;
-            push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = '$id')"; 
-            }
+        return (1) if (
+           $self->_ACLCache->{$type}->{$id}->{$self->Id}->{$args{'Right'}} ||
+           $self->_ACLCache->{'RT::System'}->{'1'}->{$self->Id}->{'SuperUser'});
 
-     
-    # }}}
-
-    # {{{ Build that honkin-big SQL query
-
-    
-
-    my $query = "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  ".
-    # Only find superuser or rights with the name $right
-   "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') ".
-   # Never find disabled groups.
-   "AND Principals.Disabled = 0 " .
-   "AND CachedGroupMembers.Disabled = 0  ".
-    "AND Principals.id = Groups.id " .  # We always grant rights to Groups
-
-    # See if the principal is a member of the group recursively or _is the rightholder_
-    # never find recursively disabled group members
-    # also, check to see if the right is being granted _directly_ to this principal,
-    #  as is the case when we want to look up group rights
-    "AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->Id . "' ".
-
-    # Make sure the rights apply to the entire system or to the object in question
-    "AND ( ".join(' OR ', @look_at_objects).") ".
-
-    # limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
-    "AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND ".
-        "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))".
-
-        # have a look at role groups, if there are any
-         $or_check_roles.
-        " ) ".
-        " LIMIT 1"; #only return one result
-
-    # }}}
-
-    # {{{ Actually check the ACL by performing an SQL query
-    #   $RT::Logger->debug("Now Trying $query");	
-    my $hitcount = $self->_Handle->FetchResult($query);
-    # }}}
-    
-    # {{{ if there's a match, the right is granted 
-    if ($hitcount) {
-
-        # Cache a positive hit.
-        $self->_ACLCache->{"$hashkey"}{'set'} = time;
-        $self->_ACLCache->{"$hashkey"}{'val'} = 1;
-        return (1);
     }
-    # }}}
-    # {{{ If there's no match, the right is not granted
-    else {   
 
-        # 	$RT::Logger->debug("No ACL matched query: $query\n");	
-        # cache a negative hit
-        $self->_ACLCache->{"$hashkey"}{'set'} = time;
-        $self->_ACLCache->{"$hashkey"}{'val'} = -1;
-
-        return (undef);
     }
-    # }}}
+    #    nothing matched.
+    return(0);
+
 }
-
 # }}}
-
 # {{{ _RolesForObject
 
 
@@ -522,7 +493,12 @@ Returns a list uniquely representing an object or normal scalar.
 For scalars, its string value is returned; for objects that has an
 id() method, its class name and Id are returned as a string seperated by a "-".
 
+
+
 =cut
+
+
+# TODO: does _anyone_ use this? autrijus? if not, cut it and I'll yank it on merge
 
 sub _ReferenceId {
     my $scalar = shift;
