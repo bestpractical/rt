@@ -143,7 +143,7 @@ sub frames {
 }
 
 sub cgi_vars_in {
-    my ($buffer,$name, $value);
+    my ($cgi_vars,$buffer,$name, $value, @pairs);
     local($^W) = 0; #we're told that the value =~ lines are uninitialized vals
                     #but they're not.
 # code between the lines was grabbed from form-mail.pl by MIT's the tech
@@ -155,13 +155,10 @@ sub cgi_vars_in {
     if ($ENV{'CONTENT_LENGTH'}) {
 	read(STDIN, $buffer, $ENV{'CONTENT_LENGTH'});
     }
-    if ($buffer) {
-	@pairs = split(/&/, $buffer);
-    }
-    else {
-	
-	@pairs = split(/&/,$ENV{'QUERY_STRING'});
-    }
+	$cgi_vars = $buffer;
+	$cgi_vars .= $$ENV{'QUERY_STRING'};
+	@pairs = split(/&/, $cgi_vars);
+
     
     foreach $pair (@pairs)   {
 	($name, $value) = split(/=/, $pair);
