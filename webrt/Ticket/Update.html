@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<% INIT>
+my $Ticket=RT::Ticket->new($CurrentUser);
+$Ticket->Load($ARGS{'id'});
+</%INIT>
+<TITLE>
+Update Ticket <% $Ticket->Id %>
+</TITLE>
+</HEAD>
+
+<FORM TARGET=ValidateUpdate.html METHOD=POST>
+Subject: <% $Ticket->Subject %> <br>
+Interested Parties:
+	Requestor:<% $Ticket->RequestorAsString %> <br>
+	Cc:<% $Ticket->CcAsString %><br>
+	Bcc: <% $Ticket->BccAsString %> <br>
+
+Time Worked: <input size=4 name="time_worked"> minutes<br>
+Update Type: <select name="type">
+		<option value="private">Private Comments (Invisible to watchers)</option>
+		<option value="public">Public Comments (Visible to watchers)</option>
+		<option value="response">Response (Sent to watchers)</option>
+	</select> <br>
+
+Update Subject: <input name="subject" size=60 value="Re: <% $Ticket->Subject %>"> <br>
+CC Update to: <input name="update_cc" size=40> <br>
+Bcc Update to: <input name="update bcc" size=40> <br>
+<TEXTAREA COLS=80 ROWS=15>
+</TEXTAREA>
+
+<INPUT TYPE=SUBMIT VALUE="Submit Update">
+</FORM>
+</HTML>
+
