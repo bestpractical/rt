@@ -91,6 +91,8 @@ sub Prepare  {
   $self->SetReferences();
   #TODO Set up an In-Reply-To maybe.
 
+  $self->SetPrecedence();
+
  $self->{'Body'} .= 
     "\n-------------------------------------------- Managed by Request Tracker\n\n";
   
@@ -122,6 +124,7 @@ sub SetRTSpecialHeaders {
   $self->{'Header'}->add
     ('RT-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
 
+  $self->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
   return();
 
 }
@@ -168,7 +171,7 @@ sub SetReturnAddress {
 
 my $self = shift;
 
-  # From, RT-Originator (was Sender) and Reply-To
+  # From and Reply-To
   # $self->{comment} should be set if the comment address is to be used.
   my $email_address=$self->{comment} ? 
       $self->{TicketObject}->Queue->CommentAddress :
@@ -178,12 +181,9 @@ my $self = shift;
 
   unless ($self->{'Header'}->get('From')) {
       my $friendly_name=$self->{TransactionObject}->Creator->RealName;
-      $self->{'Header'}->add('From', "$friendly_name <$email_address>");
+      $self->{'Header'}->add('From', "$friendly_name via RT <$email_address>");
       $self->{'Header'}->add('Reply-To', "$email_address");
   }
-  
-
-  $self->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
 
 }
 
@@ -226,6 +226,16 @@ sub SetBcc {
   #TODO Set Bcc
   return($self->{'Bcc'});
 }
+# }}}
+
+# {{{ sub SetPrecedence 
+sub SetPrecedence {
+  
+  my $self = shift;
+  $self->{'Header'}->add('Precedence', "Bulk");
+}
+
+
 # }}}
 
 # {{{ sub SetSubject
