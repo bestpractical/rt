@@ -443,7 +443,7 @@ sub LimitWatcher {
     else {
 	$watcher_type = "Watcher";
     }
-    $desc = "$watcher_type ".$ARGS{'OPERATOR'}." ".$args{'VALUE'};
+    $desc = "$watcher_type ".$args{'OPERATOR'}." ".$args{'VALUE'};
 
 
     $self->Limit (FIELD => 'Watcher',
