@@ -80,6 +80,8 @@ while ( my $Transaction = $Transactions->Next ) {
     $m->comp( 'ShowTransaction',
             %ARGS,
 
+	      AttachPath	  => $AttachPath,
+	      UpdatePath	   => $UpdatePath,
               Ticket               => $Ticket,
               Transaction          => $Transaction,
               ShowHeaders          => $ShowHeaders,
@@ -113,4 +115,7 @@ $Collapsed => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1
 $ShowTitleBarCommands => 1
+$AttachPath => $RT::WebPath."/Ticket/Attachment"
+$UpdatePath => $RT::WebPath."/Ticket/Update.html"
+
 </%ARGS>
