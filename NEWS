@@ -1,3 +1,12 @@
+26 Apr 99
+---------
+
+Incorporated a mailgate fix from lamont lucas
+Integrated ingo's cookies auth patches
+Made web auth configurable.
+Made the IE Cookies hack configurable
+Incorportated Rich West's Auth fixes.
+
 20 Apr 99
 ---------
 Removed vestiges of CERN from the makefile.

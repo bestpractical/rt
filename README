@@ -163,6 +163,10 @@ Apache
         o     you'll find rt at http://host/rt/nph-webrt.cgi and
         o                       http://host/rt/nph-webrt.cgi/frames
 
+
+	If you'd rather use Apache's mod_auth_mysql, check out 
+	"contrib/mod_auth_mysql.README"
+
 CERN:
 	It just works. 
 	
