@@ -1,18 +1,12 @@
-$Header$
-
 RT is (c) 1996-1999 by Jesse Vincent <jesse@fsck.com>
-
 RT is distributed under the GNU Public License.
 
 If you don't have a copy of the GPL, you've been living in a cave,
 but one should be included in this distribution.
 
-WARNING:  RT IS BETA SOFTWARE.  VERSIONS OF IT HAVE BEEN RUNNING AT
-SEVERAL SITES FOR SEVERAL YEARS, HOWEVER I MAKE NO PROMISES AS TO ITS
-STABILITY.
-
-Development of RT has been sponsored in part by Utopia Inc, by The
-Leftbank Operation and by Wesleyan University.
+Development of RT has been sponsored in part by Arepa Inc, Utopia Inc,
+The Leftbank Operation, Wesleyan University and by other contributing
+companies.
 
 Some code for RT has been derived from Remy Evard's req package.
 
@@ -31,7 +25,6 @@ o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- free
 	FTP mysql from www.mysql.com and follow the INSTALL instructions
         contained therein
 
-
 o   GNU Make ( http://www.gnu.org ) -- free
 
 	I know for sure that GNU Make supports the conditionals syntax RT's
@@ -49,7 +42,7 @@ o   Msql-Mysql-modules ( CPAN or ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
 o   CGI.pm ( CPAN or http://www.perl.com ) -- free
 	
 	CGI.pm and CGI::Cookie are used for our basic Form and Cookie processing
-	We recommend that you use at least 2.53 as we know that version wokrs.
+	We recommend that you use at least 2.53 as we know that version works.
 
 o   Digest::MD5 ( CPAN or http://www.perl.com ) -- free
 	
@@ -87,9 +80,6 @@ For the sake of simplicity, we use /usr/local/rt in our example.
 GENERAL INSTALLATION
 --------------------
 
-0   If you are upgrading from .9.1 or earlier, Read README.91UPGRADE before 
-    you touch ANYTHING.
-
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 
         Granted, you've already got it open. To do this cleanly:
@@ -108,16 +98,13 @@ GENERAL INSTALLATION
 5a  FOR A NEW INSTALLATION: (If you don't  have an "rt" database in Mysql)
 
         As root, type:
-		
 		 make install	(replace "make" with the local name for 
 				 GNU Make, if you need to)
-
 
 
 5b  FOR UPGRADING: (From any RT installation NEWER than RT 0.9.2)
 
         As root, type: 
-		
 		make upgrade     (replace "make" with the local name for 
 				  GNU Make, if you need to)
 
@@ -183,7 +170,6 @@ You'll need an alias like the following for action requests:
 
 THE WEB UI
 ----------
-
 If you don't already have an http daemon set up, you will probably want
 to start one to handle the CGI interface.  For now, I'd recommend the Apache
 httpd.  Additionally, you'll need a web browser that supports unless you've 
@@ -199,20 +185,19 @@ Apache
         o     you'll find rt at http://host/rt/webrt.cgi and
         o                       http://host/rt/webrt.cgi/frames
 
-
 	If you'd rather use Apache's mod_auth_mysql, check out 
 	"contrib/mod_auth_mysql.README"
 
 CERN:
 	It just works. 
 	
-	You'' want to tell your server that /webrt/ is an alias for "/path/to/rt/lib/images/" and that
+	You'' want to tell your server that /webrt/ is an alias for 
+	"/path/to/rt/lib/images/" and that
 	/rt is a Script Alias for "/path/to/rt/bin/cgi/"
 
         o     you'll find rt-admin at http://host/rt/nph-admin-webrt.cgi
         o     you'll find rt at http://host/rt/nph-webrt.cgi and
         o                       http://host/rt/nph-webrt.cgi/frames
-
 
 Netscape:
 	You're on your own for configuring it, but it should work just fine.
@@ -220,7 +205,6 @@ Netscape:
 
 THE CLI
 -------
-
         Binaries for the CLI are located in /usr/local/rt/bin
         You've got:
 
@@ -251,6 +235,13 @@ If you're interested in hacking on rt, you;ll want to subscribe to
 rt-devel@lists.fsck.com.  Subscribe to it with instructions similar to those 
 above.
 
+RT WEBSITE
+----------
+
+For current information about RT, check out the RT website at 
+http://www.fsck.com/projects/rt  You'll find screenshots, a pointer
+to the current version of rt, contributed patches and lots of other great
+stuff.
 
 
 CREDITS
@@ -262,11 +253,12 @@ She forced me to use a database backend.  I've thanked her for it every
 day since.  Rich West rewrote this readme and did some UI hacking.  Adam
 Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
 Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
-Gerald Abshez, Dave Hull, Dave Schenet Dave Walton, Jan Okrouhly, Tobias Brox
-Lamont Lucase and Charlie Brady have all contributed bug reports, code or 
-ideas that have helped RT along.  
+John Lengeling, Elmar Knipp, Gerald Abshez, Dave Hull, Dave Schenet,
+Dave Walton, Jan Okrouhly, Tobias Brox, Lamont Lucas, Charlie Brady,
+Robin Shostack, Eric Mumpower, Jerrod Weisman and Adam Hammer 
+have all contributed bug reports, code or ideas that have helped RT along.  
 
-Arepa, Inc., Utopia Inc, Wesleyan University and The Leftbank Operation 
+Arepa, Inc, Utopia Inc, Wesleyan University and The Leftbank Operation 
 have paid me to update RT and release it to the public.  Without their 
 support RT would not exist.  If I've left you out, please drop me a line
 ....it wasn't intentional. 

@@ -1,7 +1,7 @@
 # $Header: /usr/local/cvsroot/rt/Makefile,v 1.69 1999/04/13 07:07:35 jesse Exp O
 # 
 #
-# Request Tracker is Copyright 1997 Jesse Reed Vincent <jesse@fsck.com>
+# Request Tracker is Copyright 1997-9 Jesse Reed Vincent <jesse@fsck.com>
 # RT is distribute under the terms of the GNU Public License
 
 CC			=	gcc
@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	3
+RT_VERSION_PATCH	=	1pre
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -229,8 +229,6 @@ acls:
 
 	su -c "bin/initacls.$(RT_DB) $(DB_HOME) $(RT_DB_HOST) $(DBA) $(DBA_PASSWORD) $(RT_DATABASE) $(RT_DB_ACL)" $(DBA)
 
-
-
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
 	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
@@ -305,3 +303,11 @@ dist:
 	rm -rf ./rt.tar.gz
 	ln -s ./rt-$(RT_VERSION).tar.gz ./rt.tar.gz
 	chmod 644 /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz
+
+
+
+
+
+
+
+

@@ -1,9 +1,0 @@
-
-reporter.pl by rich west <rwest@sarnoff.com>
-You can get the latest version at http://sniper.sarnoff.com:8080/rt.html
-
-
-Another 'in its infancy' project, reporter.pl pulls
-information out of the mySQL database that RT uses and compiles it into a 
-readable format. It is great for generating simplistic metrics, but it does 
-need additional work to generate more metrics as well as web-ified output.

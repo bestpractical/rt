@@ -1,6 +1,8 @@
-Documentation for RT is being written by Adam Hirsch <adam@baz.org>
-It is in the very early stages, but it's more functional than nothing. There
-may be some errors. please send mail to rt-devel@lists.fsck.com with
-anything you find to be in error.
+Documentation for RT is currently being maintained by Michael Brader
+<mbrader@stoic.com.au> and is based on earlier work by Adam Hirsch
+<adam@baz.org> It is in the process of an overhaul and any
+feedback or suggestions are most welcome. If you find any errors or
+omissions, please send mail to rt-devel@fsck.com with anything you
+find to be in error.
 
 	jesse
