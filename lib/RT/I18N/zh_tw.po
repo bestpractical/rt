@@ -1,5 +1,5 @@
 # Traditional Chinese localization catalog for Request Tracker (RT)
-# Copyright (c) 2002 by OurInternet, Inc.
+
 # FIRST AUTHOR: Whiteg Weng <whiteg@elixus.org>, May 2002
 #
 msgid ""

@@ -1,5 +1,5 @@
-# $Header: /raid/cvsroot/rt/bin/webmux.pl,v 1.2.2.1 2002/01/28 05:27:12 jesse Exp $
-# RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
+
+
 
 use strict;
 $ENV{'PATH'}   = '/bin:/usr/bin';                      # or whatever you need

@@ -1,5 +1,5 @@
 # German localization catalog for Request Tracker (RT)
-# Copyright (c) 2002 by Florian Bischof
+
 # FIRST AUTHOR: Florian Bischof <flo@fxb.de>, May 2002
 #
 msgid ""

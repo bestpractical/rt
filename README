@@ -1,11 +1,27 @@
-$Header: /raid/cvsroot/rt/README,v 1.39.2.1 2002/01/25 22:37:49 jesse Exp $
-RT is (c) 1996-2002 by Jesse Vincent <jesse@bestpractical.com>
-
-RT is licensed to you under the terms of version 2 of the GNU General 
-Public License. 
-
-If you don't have a copy of the GPL, you've been living in a cave,
-but one should be included in this distribution.
+# BEGIN LICENSE BLOCK
+# 
+# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# 
+# (Except where explictly superceded by other copyright notices)
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# 
+# Unless otherwise specified, all modifications, corrections or
+# extensions to this work which alter its source code become the
+# property of Best Practical Solutions, LLC when submitted for
+# inclusion in the work.
+# 
+# 
+# END LICENSE BLOCK
 
 
 WARNING
@@ -26,19 +42,16 @@ date and complete than this readme.  You should consult them before proceeding
 REQUIRED PACKAGES:
 ------------------
 
-o   Perl5.005_03 or later with support for setgid perl scripts
+o   Perl5.6.1 or later with support for setgid perl scripts
         RT's command line and mail gateway tools run setgid to the 'rt' group
 	to protect RT's database password.  You may need to install a special 
 	"suidperl" package or reconfigure your perl setup to support
 	 "setuid scripts".
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:    Mysql 3.23.38 or newer. 
+        Currently supported:    Mysql 3.23.51 or newer. 
 				 (Some older releases had crippling SQL bugs)
-				Postgres 7.1
-	Partially supported:    Oracle 8i
-	(Mysql and Postgres are known to be a more solid base for RT than 
-	Oracle at this time)
+				Postgres 7.22
 
 o   Apache + mod_perl -- ( http://perl.apache.org) 
     or A webserver with FastCGI support (www.fastcgi.com)
@@ -96,7 +109,7 @@ GENERAL INSTALLATION
 		make dropdb 
 	and start over from step 5a
 
-5b  FOR UPGRADING: (Within the RT 2.0.x series)
+5b  FOR UPGRADING: (Within the RT 3.0.x series)
 
 	Make a backup of /path/to/rt/etc/config.pm
  
@@ -113,33 +126,7 @@ GENERAL INSTALLATION
 
 	WARNING: This WILL clobber your existing configuration file!
 	
-5c  FOR UPGRADING (From 1.0.x):
-
-	Follow the instructions for installing RT 2.0.
-
-	Once you have installed RT 2.0, download import-1.0-to-2.0
-	from http://www.fsck.com/pub/rt/contrib/2.0/rt-addons
-
-	Edit the configuration defaults in import-1.0-to-2.0
-
-	If you don't set $DEFAULTQUEUE to the name of one of your
-	RT 1.0 queues, THE IMPORT WILL FAIL.
-
-	perl ./import-1.0-to-2.0
-
-	The import tool will do its thing. If you're using postgres, you'll
-	need to execute the following SQL statement within your RT2 database:
-
-	select setval('tickets_id_seq', (select max(id) from tickets));
-	
-	It imports:
-		Queues, Areas, Users, Acls, Mailing Rules, Queue Members,
-		Tickets and Transactions.
-
-	It DOES NOT IMPORT:
-		Attachments removed by stripmime or Templates.
-	
-6   Edit etc/config.pm in your RT installation directory.  In many
+6   Edit etc/RT_Config.pm in your RT installation directory.  In many
     cases sensible defaults have been included. In others, you MUST
     supply a value.
 
