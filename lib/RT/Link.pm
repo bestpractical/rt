@@ -34,40 +34,43 @@ sub _Init  {
 
 # {{{ sub Create 
 
-sub Create  {
-  my $self = shift;
-  my %args = (
-	      Base => undef,
-	      Target => undef,
-	      Type => undef,
-	      @_ # get the real argumentlist
-	     );
- 
+=head2 Create PARAMHASH
 
-  my $BaseURI = $self->CanonicalizeURI($args{'Base'});
-  my $TargetURI = $self->CanonicalizeURI($args{'Target'});
- 
+Create a new link object. Takes 'Base', 'Target' and 'Type'.
+Returns undef on failure or a Link Id on success.
+
+=cut
+
+sub Create  {
+    my $self = shift;
+    my %args = ( Base => undef,
+		 Target => undef,
+		 Type => undef,
+		 @_ # get the real argumentlist
+	       );
     
-  unless (defined $BaseURI) {
-     $RT::Logger->warning ("$self couldn't resolve base:'".$args{'Base'}."' into a URI\n");
-       return (undef);
-   }
-  unless (defined $TargetURI) {
-     $RT::Logger->warning ("$self couldn't resolve target:'".$args{'Target'}."' into a URI\n");
-     return(undef);
-   }
+    my $BaseURI = $self->CanonicalizeURI($args{'Base'});
+    my $TargetURI = $self->CanonicalizeURI($args{'Target'});
     
- my $LocalBase = $self->_IsLocal($BaseURI);
- my $LocalTarget = $self->_IsLocal($TargetURI);
- my $id = $self->SUPER::Create(Base => "$BaseURI",
-                               Target => "$TargetURI",
-                               LocalBase => $LocalBase, 
-                               LocalTarget => $LocalTarget,
-                               Type => $args{'Type'});
-  
-  
+    unless (defined $BaseURI) {
+	$RT::Logger->warning ("$self couldn't resolve base:'".$args{'Base'}.
+			      "' into a URI\n");
+	return (undef);
+    }
+    unless (defined $TargetURI) {
+	$RT::Logger->warning ("$self couldn't resolve target:'".$args{'Target'}.
+			      "' into a URI\n");
+	return(undef);
+    }
     
-  return ($id);
+    my $LocalBase = $self->_IsLocal($BaseURI);
+    my $LocalTarget = $self->_IsLocal($TargetURI);
+    my $id = $self->SUPER::Create(Base => "$BaseURI",
+				  Target => "$TargetURI",
+				  LocalBase => $LocalBase, 
+				  LocalTarget => $LocalTarget,
+				  Type => $args{'Type'});
+    return ($id);
 }
 
 # }}}
@@ -204,13 +207,13 @@ sub TargetIsLocal {
 # }}}
 
 # {{{ sub _IsLocal
-=head2 _IsLocal 
 
-when handed a URI returns the local ticket id if it\'s local. otherwise returns undef.
+=head2 _IsLocal URI 
+
+When handed a URI returns the local ticket id if it\'s local. otherwise returns undef.
 
 =cut
 
-# checks whether an URI is local or not
 sub _IsLocal {
     my $self = shift;
     my $URI=shift;
@@ -334,7 +337,7 @@ sub CanonicalizeURI {
   
     #If the base is an integer, load it as a ticket 
     elsif ( $id =~ /^\d+$/ ) {
-   
+	
 	#$RT::Logger->debug("$self -> CanonicalizeURI was passed $id. It's a ticket id.\n");
 	my $ticket = new RT::Ticket($self->CurrentUser);
 	$ticket->Load($id);

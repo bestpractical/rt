@@ -457,6 +457,11 @@ sub Import {
 	return (0,0,'Invalid value for status');
     }
     
+#    $self->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
+#    $self->{'_AccessibleCache'}{Creator} = { 'read'=>1, 'auto'=>1 };
+#    $self->{'_AccessibleCache'}{LastUpdated} = { 'read'=>1, 'write'=>1 };
+#    $self->{'_AccessibleCache'}{LastUpdatedBy} = { 'read'=>1, 'auto'=>1 };
+    
     my $id = $self->SUPER::Create(
 				  id => $args{'id'},
 				  Queue => $QueueObj->Id,
@@ -473,13 +478,17 @@ sub Import {
 				  LastUpdated => $updated->ISO,
 				  Due => $due->ISO,
 				 );
+
+
+
     #Set the ticket's effective ID now that we've created it.
+    
     my ($val, $msg) = $self->__Set(Field => 'EffectiveId', Value => $id);
     
     unless ($val) {
-	$RT::Logger->err("$self ->Create couldn't set EffectiveId: $msg\n");
+	$RT::Logger->err($self."->Import couldn't set EffectiveId: $msg\n");
     }	
-     
+    
 
     my $watcher;
     foreach $watcher (@{$args{'Cc'}}) {
@@ -490,13 +499,12 @@ sub Import {
     }	
     foreach $watcher (@{$args{'Requestor'}}) {
 	$self->_AddWatcher( Type => 'Requestor', Person => $watcher, Silent => 1);
-   }
+    }
     
     return($self->Id, $ErrStr);
 }
 
 # }}}
-
 
 # {{{ sub Delete
 
@@ -506,7 +514,6 @@ sub Delete {
 	    ' That\'s bad.');
 }
 # }}}
-
 
 # {{{ Routines dealing with watchers.
 
@@ -1885,8 +1892,6 @@ sub AddLink {
     }
     # }}}
     
-    # TODO: URIfy local tickets
-    
     # Storing the link in the DB.
     my $link = RT::Link->new($self->CurrentUser);
     my ($linkid) = $link->Create(Target => $args{Target}, 
@@ -1975,42 +1980,37 @@ sub MergeInto {
     # loaded a ticket. 
     
     
-    
-
-    
     #update this ticket's effective id to the new ticket's id.
-    $RT::Logger->debug("setting $self effective id to ".
-		       $NewTicket->Id()."...");
     my ($id_val, $id_msg) = $self->__Set(Field => 'EffectiveId', 
-				   Value => $NewTicket->Id());
-
+					 Value => $NewTicket->Id());
+    
     unless ($id_val) {
-	$RT::Logger->error("Couldn't set effective ID for ".$self->Id.": $id_msg");
+	$RT::Logger->error("Couldn't set effective ID for ".$self->Id.
+			   ": $id_msg");
 	return(0,"Merge failed. Couldn't set EffectiveId");
     }
- 
+    
     my ($status_val, $status_msg) = $self->__Set(Field => 'Status',
-				   Value => 'resolved');
-
+						 Value => 'resolved');
+    
     unless ($status_val) {
-	$RT::Logger->error("$self couldn't set status to resolved. db may be inconsistent.");
+	$RT::Logger->error("$self couldn't set status to resolved.".
+			   "RT's Database may be inconsistent.");
     }	    
-
+    
     $RT::Logger->debug("adding a merged into link");
     #make a new link: this ticket is merged into that other ticket.
     $self->AddLink( Type =>'MergedInto',
 		    Target => $NewTicket->Id() );
     
     #add all of this ticket's watchers to that ticket.
-    $RT::Logger->debug("transferring the watchers to the new ticket");
     my $watchers = $self->Watchers();
+    
     while (my $watcher = $watchers->Next()) {
-	$RT::Logger->debug("checking to see if new ticket has watcher email" .$watcher->Email() . " and owner ". $watcher->Owner() ."...");
-
 	unless ($NewTicket->IsWatcher ( Type => $watcher->Type(),
 					Email => $watcher->Email(),
 					Id => $watcher->Owner())) {
-	    $RT::Logger->debug("adding watcher to new ticket: email" .$watcher->Email() . " and owner ". $watcher->Owner() ."...");
+	    
 	    $NewTicket->_AddWatcher(Silent => 1, 
 				    Type => $watcher->Type, 
 				    Email => $watcher->Email(),
@@ -2019,15 +2019,14 @@ sub MergeInto {
     }
     
     
-    $RT::Logger->debug("updating old merges...");
     #find all of the tickets that were merged into this ticket. 
     my $old_mergees = new RT::Tickets($self->CurrentUser);
     $old_mergees->Limit( FIELD => 'EffectiveId',
 			 OPERATOR => '=',
 			 VALUE => $self->Id );
+    
+    #   update their EffectiveId fields to the new ticket's id
     while (my $ticket = $old_mergees->Next()) {
-	$RT::Logger->debug("updating ticket ".$ticket->Id );
-	#   update their EffectiveId fields to the new ticket's id
 	my ($val, $msg) = $ticket->__Set(Field => 'EffectiveId', 
 					 Value => $NewTicket->Id());
     }	
@@ -2424,13 +2423,14 @@ sub SetStatus {
 		    RecordTransaction => 0);
     }
     
-  
+
     if ($status eq 'resolved') {
 	#When we resolve a ticket, set the 'Resolved' attribute to now.
 	$self->_Set(Field => 'Resolved',
 		    Value => $now->ISO, 
 		    RecordTransaction => 0);
     }
+    
     
     #Actually update the status
     return($self->_Set(Field => 'Status', 
@@ -2589,20 +2589,20 @@ sub Transactions {
 # {{{ sub _NewTransaction
 
 sub _NewTransaction {
-  my $self = shift;
-  my %args = (TimeTaken => 0,
-	     Type => undef,
-	     OldValue => undef,
-	     NewValue => undef,
-	     Data => undef,
-	     Field => undef,
-	     MIMEObj => undef,
-	     @_);
-  
-  
-  require RT::Transaction;
-  my $trans = new RT::Transaction($self->CurrentUser);
-  my ($transaction, $msg) = 
+    my $self = shift;
+    my %args = ( TimeTaken => 0,
+		 Type => undef,
+		 OldValue => undef,
+		 NewValue => undef,
+		 Data => undef,
+		 Field => undef,
+		 MIMEObj => undef,
+		 @_ );
+    
+    
+    require RT::Transaction;
+    my $trans = new RT::Transaction($self->CurrentUser);
+    my ($transaction, $msg) = 
       $trans->Create( Ticket => $self->Id,
 		      TimeTaken => $args{'TimeTaken'},
 		      Type => $args{'Type'},
@@ -2611,16 +2611,16 @@ sub _NewTransaction {
 		      NewValue => $args{'NewValue'},
 		      OldValue => $args{'OldValue'},
 		      MIMEObj => $args{'MIMEObj'}
-		      );
-
-  $RT::Logger->warning($msg) unless $transaction;
-  
-  $self->_SetLastUpdated;
-
-  if (defined $args{'TimeTaken'} ) {
-    $self->_UpdateTimeTaken($args{'TimeTaken'}); 
-  }
-  return($transaction, $msg, $trans);
+		    );
+    
+    $RT::Logger->warning($msg) unless $transaction;
+    
+    $self->_SetLastUpdated;
+    
+    if (defined $args{'TimeTaken'} ) {
+	$self->_UpdateTimeTaken($args{'TimeTaken'}); 
+    }
+    return($transaction, $msg, $trans);
 }
 
 # }}}
@@ -2629,86 +2629,81 @@ sub _NewTransaction {
 
 # {{{ PRIVATE UTILITY METHODS. Mostly needed so Ticket can be a DBIx::Record
 
-# {{{ sub _Accessible
+# {{{ sub _ClassAccessible
 
-sub _Accessible {
+sub _ClassAccessible {
+    {
+	EffectiveId => { 'read' => 1, 'write' => 1 },
+	Queue => { 'read' => 1, 'write' => 1 },
+	Requestors => { 'read' => 1, 'write' => 1 },
+	Owner => { 'read' => 1, 'write' => 1 },
+	Subject => { 'read' => 1, 'write' => 1 },
+	InitialPriority => { 'read' => 1, 'write' => 1 },
+	FinalPriority => { 'read' => 1, 'write' => 1 },
+	Priority => { 'read' => 1, 'write' => 1 },
+	Status => { 'read' => 1, 'write' => 1 },
+	TimeWorked => { 'read' => 1, 'write' => 1 },
+	TimeLeft => { 'read' => 1, 'write' => 1 },
+	Created => { 'read' => 1, 'auto' => 1 },
+	Creator => { 'read' => 1,  'auto' => 1 },
+	Told => { 'read' => 1, 'write' => 1 },
+	Resolved => {'read' => 1},
+	Starts => { 'read' => 1, 'write' => 1 },
+	Started => { 'read' => 1, 'write' => 1 },
+	Due => { 'read' => 1, 'write' => 1 },
+	Creator => { 'read' => 1, 'auto' => 1 },
+	Created => { 'read' => 1, 'auto' => 1 },
+	LastUpdatedBy => { 'read' => 1, 'auto' => 1 },
+	LastUpdated => { 'read' => 1, 'auto' => 1 }
+    };
 
-  my $self = shift;  
-  my %Cols = (
-	      EffectiveId => 'read/write',
-	      Queue => 'read/write',
-	      Requestors => 'read/write',
-	      Owner => 'read/write',
-	      Subject => 'read/write',
-	      InitialPriority => 'read',
-	      FinalPriority => 'read/write',
-	      Priority => 'read/write',
-	      Status => 'read/write',
-	      TimeWorked => 'read/write',
-	      TimeLeft => 'read/write',
-	      Created => 'read/auto',
-	      Creator => 'auto',
-	      Told => 'read/write',
-	      Resolved => 'read',
-	      Starts => 'read,write',
-	      Started => 'read,write',
-	      Due => 'read/write',
-	      Creator => 'read/auto',
-	      Created => 'read/auto',
-	      LastUpdatedBy => 'read/auto',
-	      LastUpdated => 'read/auto'
-
-
-
-	     );
-  return($self->SUPER::_Accessible(@_, %Cols));
-}
+}    
 
 # }}}
 
 # {{{ sub _Set
 
 sub _Set {
-  my $self = shift;
-  
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
-    return (0, "Permission Denied");
-  }
-
-  my %args = (Field => undef,
-	      Value => undef,
-	      TimeTaken => 0,
-	      RecordTransaction => 1,
-	      TransactionType => 'Set',
-	      @_
-	     );
-  #if the user is trying to modify the record
-  
-  #Take care of the old value we really don't want to get in an ACL loop.
-  # so ask the super::_Value
-  my $Old=$self->SUPER::_Value("$args{'Field'}");
-
-  #Set the new value
-  my ($ret, $msg)=$self->SUPER::_Set(Field => $args{'Field'}, 
-				     Value=> $args{'Value'});
-  
-  #If we can't actually set the field to the value, don't record
-  # a transaction. instead, get out of here.
-  if ($ret==0) {return (0,$msg);}
-  
-  if ($args{'RecordTransaction'} == 1) {
-      
-      my ($Trans, $Msg, $TransObj) =	
-	$self->_NewTransaction(Type => $args{'TransactionType'},
-			       Field => $args{'Field'},
-			       NewValue => $args{'Value'},
-			       OldValue =>  $Old,
-			       TimeTaken => $args{'TimeTaken'},
-			      );
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+    }
+    
+    my %args = (Field => undef,
+		Value => undef,
+		TimeTaken => 0,
+		RecordTransaction => 1,
+		TransactionType => 'Set',
+		@_
+	       );
+    #if the user is trying to modify the record
+    
+    #Take care of the old value we really don't want to get in an ACL loop.
+    # so ask the super::_Value
+    my $Old=$self->SUPER::_Value("$args{'Field'}");
+    
+    #Set the new value
+    my ($ret, $msg)=$self->SUPER::_Set(Field => $args{'Field'}, 
+				       Value=> $args{'Value'});
+    
+    #If we can't actually set the field to the value, don't record
+    # a transaction. instead, get out of here.
+    if ($ret==0) {return (0,$msg);}
+    
+    if ($args{'RecordTransaction'} == 1) {
+	
+	my ($Trans, $Msg, $TransObj) =	
+	  $self->_NewTransaction(Type => $args{'TransactionType'},
+				 Field => $args{'Field'},
+				 NewValue => $args{'Value'},
+				 OldValue =>  $Old,
+				 TimeTaken => $args{'TimeTaken'},
+				);
       return ($Trans,$TransObj->Description);
-  }
-  else {
-      return ($ret, $msg);
+    }
+    else {
+	return ($ret, $msg);
   }
 }
 

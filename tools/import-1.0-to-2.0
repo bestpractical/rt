@@ -17,7 +17,7 @@ my $RT1DATABASE = "rt";
 my $RT1HOST = "localhost";
 my $RT1DATA = "/opt/rt/transactions";
 my $EMAILDOMAIN = "example.com"; # user_id@EMAILDOMAIN for missing RT1 emails
-
+my $DEFAULTQUEUE = 'second'; #Qeuue to put tickets from deleted queues, etc. in.
 my $Debug = 2;
 
 
@@ -71,8 +71,8 @@ MigrateQueues();
 
 MigrateTickets();
 
-print "Ok. We're all done here. Check things over very carefully. Conversion
-is an unproven science.\n";
+print "Ok. We're all done here. Check things over very carefully. 
+Conversion is an unproven science.\n";
 
 exit(0);
 
@@ -360,14 +360,42 @@ sub MigrateTickets {
     print "Importing tickets...\n";
     my $sth = ExecStatement('select * from each_req');
     
+    my @merges;
+
     while (my $row = $sth->fetchrow_hashref()) {
 
 	print "\n".$row->{'serial_num'}.".";
 
+	# {{{ If this ticket is merged, tell RT2.
+	
+	if ($row->{'effective_sn'} and 
+	    ($row->{'effective_sn'} != $row->{'serial_num'})) {
+	    
+	    print "merging into ".$row->{'serial_num'}."...";
+	    
+	    push @merges, { ticket => $row->{'serial_num'},
+			    mergeinto => $row->{'effective_sn'}};
+	    
+	}
+	
+	# }}}
+	
 	my @requestors = split(',',$row->{'requestors'});
 	
 	my $owner = new RT::User($RT::SystemUser);
 	$owner->Load($row->{'owner'});
+
+	
+	my $queue = new RT::Queue($RT::SystemUser);
+	$queue->Load($row->{'queue_id'});
+	unless ($queue->id) {
+	    $row->{'queue_id'} = $DEFAULTQUEUE;
+	}	
+	
+	$row->{'status'} = 'resolved' 
+	  if ($row->{'effective_sn'} and 
+	      ($row->{'effective_sn'} != $row->{'serial_num'}));
+
 
 	my $ticket = new RT::Ticket($RT::SystemUser);
 	my ($id, $msg) = 
@@ -385,13 +413,8 @@ sub MigrateTickets {
 			   Created => $row->{'date_created'},
 			   Updated => $row->{'date_acted'});
 	
-	#
-	#
-	# +++ TODO: deal with merging. effective_sn
-	#
-	#
 
-	my $queue = $ticket->QueueObj();
+	$queue = $ticket->QueueObj();
 	
 	#If the ticket has an area, add it.
 	if ($row->{'area'}) {
@@ -418,26 +441,31 @@ sub MigrateTickets {
 	    my $ObjectKeyword = new RT::ObjectKeyword($RT::SystemUser);
 	    my $result = $ObjectKeyword->Create( Keyword => $areaobj->id,
 						 ObjectType => 'Ticket',
-						 ObjectId => $ticket->Id,
+						 ObjectId => $row->{'serial_num'},
 						 KeywordSelect => $area_sel->Id );
 	}
+
 	
-        MigrateTransactions($ticket);
+        MigrateTransactions($row->{'serial_num'}, $ticket);
+	
+
     }
+    MigrateMerges(@merges);
     
 }
 
-# }}}
+# }}}  
 
 # {{{ sub MigrateTransactions
 
 sub MigrateTransactions {
+    my $ticket_id = shift;
     my $ticket = shift;
     
     print "..transactions: ";
     
     my $sth = ExecStatement('SELECT * FROM transactions where serial_num = '.
-			    $ticket->id);
+			    $ticket_id);
     my $Status = "open";
     my $Queue = "(unknown)";
     my $Area = '';
@@ -508,8 +536,8 @@ sub MigrateTransactions {
 	elsif ( $row->{type} eq 'effective_sn' ) {
 	    $trans_args{'Type'} = "AddLink";
 	    $trans_args{'Field'} ="MemberOf";
-	    $trans_args{'Data'} = "Ticket ". $ticket->Id. 
-	      " $trans_args{'Type'} ticket ". $row->{trans_data};
+	    $trans_args{'Data'} = "Ticket ". $ticket_id. 
+	      " MergedInto ticket ". $row->{trans_data};
 	    
 	} 
 	elsif ( $row->{type} eq 'area' ) {
@@ -692,7 +720,7 @@ sub MigrateTransactions {
 	    $trans->{'_AccessibleCache'}{Creator} = { 'read'=>1, 'auto'=>1 };
 	    	    
 	    my ($transaction, $msg) = 
-	      $trans->Create( Ticket => $ticket->Id,
+	      $trans->Create( Ticket => $ticket_id,
 			      Type => $trans_args{'Type'},
 			      Data => $trans_args{'Data'},
 			      Field => $trans_args{'Field'},
@@ -714,6 +742,41 @@ sub MigrateTransactions {
 	
     }
     print "done.\n";
+}
+
+# }}}
+
+
+# {{{ sub MigrateMerges 
+
+sub MigrateMerges {
+    my @merges = shift;
+    
+    foreach my $row (@merges) {
+	print "Merging ".$row->{'ticket'} ." into ". $row->{'mergeinto'} ."\n";
+	
+	# Store the link in the DB.
+	
+	my $link = RT::Link->new($RT::SystemUser);
+	my ($linkid) = $link->Create(Target => $row->{'mergeinto'},
+				     Base => $row->{'ticket'}, 
+				     Type => 'MergedInto');
+	
+	my $ticket = new RT::Ticket($RT::SystemUser);
+	$ticket->Load($row->{'ticket'});
+	
+	if ($ticket->id != $row->{'ticket'}) {
+	    die "Ticket mismatch ".$ticket->id ." and ".$row->{'ticket'}."\n";
+	}
+	my ($val, $msg) = 
+	  $ticket->__Set(Field => 'EffectiveId', Value => $row->{'mergeinto'});
+    
+	unless ($val) {
+	    $RT::Logger->err(" couldn't set EffectiveId: $msg\n");
+	}	
+    }
+
+
 }
 
 # }}}

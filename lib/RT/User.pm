@@ -605,14 +605,15 @@ sub HasQueueRight {
     }
 
     unless ($QueueId) {
-	$RT::Logger->debug( "$self->HasQueueRight Couldn't find a queue id");
+	require Carp;
+	$RT::Logger->debug(Carp::cluck ("$self->HasQueueRight Couldn't find a queue id"));
     }
 
     # }}}
 
         
-    #  here's where we figure out whether a user has the right we're asking about.
-    #    first we see if they have the right personally for the queue in question. 
+    # Figure out whether a user has the right we're asking about.
+    # first see if they have the right personally for the queue in question. 
     my $retval = $self->_HasRight(Scope => 'Queue',
 				  AppliesTo => $QueueId,
 				  Right => $args{'Right'},
