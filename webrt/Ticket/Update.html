@@ -15,7 +15,10 @@ Subject:
 <TR>
 <TD ALIGN=RIGHT><a href="EditWatchers.html?id=<%$Ticket->Id()%>">Interested Parties:</a>
 </TD>
-<TD><ul>
+<TD>
+%# TODO:
+(Stubbed: You cannot yet set up particular receipients of one email, you can only <a href="EditWatchers.html?id=<%$Ticket->Id()%>">edit the watcher list</a>)
+<ul>
 <li>	Requestor:<% $Ticket->RequestorsAsString %> <br>
 <li>	Cc:<% $Ticket->CcAsString %><br>
 <li>	AdminCc: <% $Ticket->AdminCcAsString %> <br>
