@@ -127,7 +127,7 @@ $COLUMN_MAP = {
     },
     Status => {
         attribute => 'Status',
-        value     => sub { return $_[0]->Status }
+        value     => sub { return loc($_[0]->Status) }
     },
     Subject => {
         attribute => 'Subject',
