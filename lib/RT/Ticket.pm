@@ -164,6 +164,7 @@ sub Create {
 		FinalPriority => undef,
 		Status => 'new',
 		TimeWorked => "0",
+		TimeLeft => 0,
 		Due => undef,
 		MIMEObj => undef,
 		@_);
@@ -213,12 +214,12 @@ sub Create {
     if (defined $args{'Due'}) {
 	$due->Set (Format => 'ISO',
 		   Value => $args{'Due'});
-      }	
-    elsif (defined ($QueueObj->DefaultDueIn)) {
-	  $due->SetToNow;
-	  $due->AddDays($QueueObj->DefaultDueIn);
     }	
-
+    elsif (defined ($QueueObj->DefaultDueIn)) {
+	$due->SetToNow;
+	$due->AddDays($QueueObj->DefaultDueIn);
+    }	
+    
     # {{{ Deal with setting the owner
     
     if (ref($args{'Owner'}) eq 'RT::User') {
@@ -279,6 +280,7 @@ sub Create {
 				  Priority => $args{'InitialPriority'},
 				  Status => $args{'Status'},
 				  TimeWorked => $args{'TimeWorked'},
+				  TimeLeft => $args{'TimeLeft'},
 				  Type => $args{'Type'},	
 				  Due => $due->ISO
 				 );

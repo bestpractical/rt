@@ -183,6 +183,7 @@ CREATE TABLE Users (
   Disabled int2 NOT NULL DEFAULT 0 
 );
 CREATE UNIQUE INDEX Users1 ON Users (Name);
+CREATE UNIQUE INDEX Users2 ON Users (EmailAddress);
 CREATE TABLE Tickets (
   id serial NOT NULL  ,
   EffectiveId integer   ,
