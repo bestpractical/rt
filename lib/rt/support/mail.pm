@@ -94,16 +94,16 @@ sub template_mail{
 
     }
     else {
-      $friendly_name = "$rt::users{"$in_current_user"}{'real_name'} via RT";
+      $friendly_name = $rt::users{"$in_current_user"}{'real_name'}." via RT";
     }
     
     #remove leading space
-    $in_subject =~ /^(\s*)//;
+    $in_subject =~ s/^(\s*)//;
 
     open (MAIL, "|$rt::mailprog $rt::mail_options");
     
     print  MAIL "Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject
-Reply-To: <$temp_mail_alias>
+Reply-To: $friendly_name <$temp_mail_alias>
 From: $friendly_name <$temp_mail_alias>
 To: $in_recipient   
 Cc: $in_cc

@@ -153,19 +153,23 @@ sub parse_headers {
   
   if ($current_user =~/(\S*\@\S*)/) {
     $current_user =$1;
-    $rt::users{$current_user}{real_name}=$`
-      if (!exists $rt::users{$current_user}{real_name});
+    $rt::users{"$current_user"}{'real_name'} = $`.$'
+      if (!exists $rt::users{"$current_user"}{'real_name'});
   }
   if ($current_user =~/<(\S*\@\S*)>/){
     $current_user =$1;
-    $rt::users{$current_user}{real_name}=$'
-      if (!exists $rt::users{$current_user}{real_name});
+    $rt::users{"$current_user"}{'real_name'} = $`.$'
+      if (!exists $rt::users{"$current_user"}{'real_name'});
   }
+  
   if ($current_user =~/<(\S*)>/){
     $current_user =$1;
-    $rt::users{$current_user}{real_name}=$`
-      if (!exists $rt::users{$current_user}{real_name});
+    $rt::users{"$current_user"}{real_name} = $`.$'
+      if (!exists $rt::users{"$current_user"}{'real_name'});
   }
+  
+  
+  
   
   if (!$subject) {
     $subject = "[No Subject Given]";
