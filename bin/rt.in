@@ -150,10 +150,10 @@ sub help {
             my $title = $item->[2]{Title};
             my @titles = ref $title eq 'ARRAY' ? @$title : $title;
 
-            foreach $title (grep $_, @titles) {
-                $help{$title} = $item->[2]{Text};
-            }
+        foreach $title (grep $_, @titles) {
+            $help{$title} = $item->[2]{Text};
         }
+    }
     }
 
     # What does the user want help with?

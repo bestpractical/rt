@@ -384,7 +384,7 @@ sub NiceHeaders {
 Returns this object's headers as a string.  This method specifically
 removes the RT-Send-Bcc: header, so as to never reveal to whom RT sent a Bcc.
 We need to record the RT-Send-Cc and RT-Send-Bcc values so that we can actually send
-out mail. (The mailing rules are separated from the ticket update code by
+out mail. (The mailing rules are seperated from the ticket update code by
 an abstraction barrier that makes it impossible to pass this data directly
 
 =cut
@@ -461,9 +461,9 @@ Returns its value as a string, if the user passes an ACL check
 
 =cut
 
-sub _Value  {
+sub _Value {
 
-    my $self = shift;
+    my $self  = shift;
     my $field = shift;
 
     #if the field is public, return it.

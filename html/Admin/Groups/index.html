@@ -52,11 +52,6 @@
 </FORM>
 <%INIT>
 my $Groups = RT::Groups->new($session{'CurrentUser'});
-
-if ($FindDisabledGroups) {
-  $Groups->{'find_disabled_rows'} = 1;
-}
-
 $Groups->LimitToUserDefinedGroups();
 my $title = loc('Select a group');
 my $caption;

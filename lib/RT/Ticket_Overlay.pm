@@ -317,27 +317,28 @@ sub Create {
 
     my %args = (
         id                 => undef,
-                 EffectiveId     => undef,
-                 Queue           => undef,
-                 Requestor       => undef,
-                 Cc              => undef,
-                 AdminCc         => undef,
-                 Type            => 'ticket',
-                 Owner           => undef,
-                 Subject         => '',
-                 InitialPriority => undef,
-                 FinalPriority   => undef,
-                 Priority   => undef,
-                 Status          => 'new',
-                 TimeWorked      => "0",
-                 TimeLeft        => 0,
-                 TimeEstimated        => 0,
-                 Due             => undef,
-                 Starts          => undef,
-                 Started         => undef,
-                 Resolved        => undef,
-                 MIMEObj         => undef,
-                 _RecordTransaction => 1,
+        EffectiveId        => undef,
+        Queue              => undef,
+        Requestor          => undef,
+        Cc                 => undef,
+        AdminCc            => undef,
+        Type               => 'ticket',
+        Owner              => undef,
+        Subject            => '',
+        InitialPriority    => undef,
+        FinalPriority      => undef,
+        Priority           => undef,
+        Status             => 'new',
+        TimeWorked         => "0",
+        TimeLeft           => 0,
+        TimeEstimated      => 0,
+        Due                => undef,
+        Starts             => undef,
+        Started            => undef,
+        Resolved           => undef,
+        MIMEObj            => undef,
+        _RecordTransaction => 1,
+
         @_
     );
 
@@ -409,26 +410,26 @@ sub Create {
     my $Due = new RT::Date( $self->CurrentUser );
 
     if ( $args{'Due'} ) {
-        $Due->Set( Format => 'ISO', Value  => $args{'Due'} );
+        $Due->Set( Format => 'ISO', Value => $args{'Due'} );
     }
-    elsif (  $QueueObj->DefaultDueIn  ) {
+    elsif ( $QueueObj->DefaultDueIn ) {
         $Due->SetToNow;
         $Due->AddDays( $QueueObj->DefaultDueIn );
     }
 
     my $Starts = new RT::Date( $self->CurrentUser );
     if ( defined $args{'Starts'} ) {
-        $Starts->Set( Format => 'ISO', Value  => $args{'Starts'} );
+        $Starts->Set( Format => 'ISO', Value => $args{'Starts'} );
     }
 
     my $Started = new RT::Date( $self->CurrentUser );
     if ( defined $args{'Started'} ) {
-        $Started->Set( Format => 'ISO', Value  => $args{'Started'} );
+        $Started->Set( Format => 'ISO', Value => $args{'Started'} );
     }
 
     my $Resolved = new RT::Date( $self->CurrentUser );
     if ( defined $args{'Resolved'} ) {
-        $Resolved->Set( Format => 'ISO', Value  => $args{'Resolved'} );
+        $Resolved->Set( Format => 'ISO', Value => $args{'Resolved'} );
     }
 
     #If the status is an inactive status, set the resolved date
@@ -474,8 +475,8 @@ sub Create {
     #to own a ticket, scream about it and make them not the owner
     if (
             ( defined($Owner) )
-         and ( $Owner->Id )
-         and ( $Owner->Id != $RT::Nobody->Id )
+        and ( $Owner->Id )
+        and ( $Owner->Id != $RT::Nobody->Id )
         and (
             !$Owner->HasRight(
                 Object => $QueueObj,
@@ -486,10 +487,10 @@ sub Create {
     {
 
         $RT::Logger->warning( "User "
-                              . $Owner->Name . "("
-                              . $Owner->id
-                              . ") was proposed "
-                              . "as a ticket owner but has no rights to own "
+              . $Owner->Name . "("
+              . $Owner->id
+              . ") was proposed "
+              . "as a ticket owner but has no rights to own "
               . "tickets in "
               . $QueueObj->Name );
 
@@ -516,7 +517,7 @@ sub Create {
         foreach my $watcher (
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
         {
-        my $user = RT::User->new($RT::SystemUser);
+            my $user = RT::User->new($RT::SystemUser);
             $user->LoadOrCreateByEmail($watcher)
               if ( $watcher && $watcher !~ /^\d+$/ );
         }
@@ -526,19 +527,19 @@ sub Create {
 
     my %params = (
         Queue           => $QueueObj->Id,
-                                   Owner           => $Owner->Id,
-                                   Subject         => $args{'Subject'},
-                                   InitialPriority => $args{'InitialPriority'},
-                                   FinalPriority   => $args{'FinalPriority'},
-                                   Priority        => $priority,
-                                   Status          => $args{'Status'},
-                                   TimeWorked      => $args{'TimeWorked'},
-                                   TimeEstimated   => $args{'TimeEstimated'},
-                                   TimeLeft        => $args{'TimeLeft'},
-                                   Type            => $args{'Type'},
-                                   Starts          => $Starts->ISO,
-                                   Started         => $Started->ISO,
-                                   Resolved        => $Resolved->ISO,
+        Owner           => $Owner->Id,
+        Subject         => $args{'Subject'},
+        InitialPriority => $args{'InitialPriority'},
+        FinalPriority   => $args{'FinalPriority'},
+        Priority        => $priority,
+        Status          => $args{'Status'},
+        TimeWorked      => $args{'TimeWorked'},
+        TimeEstimated   => $args{'TimeEstimated'},
+        TimeLeft        => $args{'TimeLeft'},
+        Type            => $args{'Type'},
+        Starts          => $Starts->ISO,
+        Started         => $Started->ISO,
+        Resolved        => $Resolved->ISO,
         Due             => $Due->ISO
     );
 
@@ -581,8 +582,8 @@ sub Create {
     my $create_groups_ret = $self->_CreateTicketGroups();
     unless ($create_groups_ret) {
         $RT::Logger->crit( "Couldn't create ticket groups for ticket "
-                           . $self->Id
-                           . ". aborting Ticket creation." );
+              . $self->Id
+              . ". aborting Ticket creation." );
         $RT::Handle->Rollback();
         return ( 0, 0,
             $self->loc("Ticket could not be created due to an internal error")
@@ -619,19 +620,19 @@ sub Create {
             if ( $type eq 'AdminCc' ) {
 
         # Note that we're using AddWatcher, rather than _AddWatcher, as we
-                # actually _want_ that ACL check. Otherwise, random ticket creators
-                # could make themselves adminccs and maybe get ticket rights. that would
-                # be poor
+        # actually _want_ that ACL check. Otherwise, random ticket creators
+        # could make themselves adminccs and maybe get ticket rights. that would
+        # be poor
                 ( $wval, $wmsg ) = $self->AddWatcher(
                     Type   => $type,
-                                                         $field => $watcher,
+                    $field => $watcher,
                     Silent => 1
                 );
             }
             else {
                 ( $wval, $wmsg ) = $self->_AddWatcher(
                     Type   => $type,
-                                                          $field => $watcher,
+                    $field => $watcher,
                     Silent => 1
                 );
             }
@@ -663,16 +664,16 @@ sub Create {
     # {{{ Add all the custom fields
 
     foreach my $arg ( keys %args ) {
-    next unless ( $arg =~ /^CustomField-(\d+)$/i );
-    my $cfid = $1;
-    foreach
+        next unless ( $arg =~ /^CustomField-(\d+)$/i );
+        my $cfid = $1;
+        foreach
       my $value ( UNIVERSAL::isa($args{$arg}, 'ARRAY') ? @{ $args{$arg} } : ( $args{$arg} ) ) {
         next unless (length($value));
         $self->_AddCustomFieldValue( Field => $cfid,
-                                     Value => $value,
-                                     RecordTransaction => 0
-                                 );
-    }
+                Value             => $value,
+                RecordTransaction => 0
+            );
+        }
     }
 
     # }}}
@@ -681,9 +682,9 @@ sub Create {
 
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-                                                     Type      => "Create",
-                                                     TimeTaken => 0,
-                                                     MIMEObj => $args{'MIMEObj'}
+            Type      => "Create",
+            TimeTaken => 0,
+            MIMEObj   => $args{'MIMEObj'}
         );
 
         if ( $self->Id && $Trans ) {
@@ -2714,7 +2715,7 @@ sub MergeInto {
 
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
-    # by trying to do a separate database query for merge info everytime 
+    # by trying to do a seperate database query for merge info everytime 
     # loaded a ticket. 
 
     #update this ticket's effective id to the new ticket's id.

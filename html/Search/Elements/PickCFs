@@ -23,22 +23,16 @@
 %# END LICENSE BLOCK
 <table cellspacing=0 border=0>
 % while ( my $CustomField = $CustomFields->Next ) {
+
 <tr><td>
 
-% my $name;
-% if ($CustomField->QueueObj) {
-%   $name = "CF." . $CustomField->QueueObj->Name . 
-%	".{" . $CustomField->Name . "}";
-% } else {
-%   $name = "CF." . $CustomField->Name;
-% }
 <% $CustomField->Name %> 
-        <& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
+        <& /Elements/SelectCustomFieldOperator, Name => "CustomFieldOp". $CustomField->id, 
                                     True => loc("is"), 
                                     False => loc("isn't"), 
                                     TrueVal=> '=', FalseVal => '!=' &>
 
-<& /Elements/SelectCustomFieldValue, Name => "ValueOf" . $name,
+<& /Elements/SelectCustomFieldValue, Name => "CustomField".$CustomField->id,
                             CustomField => $CustomField,
                             &>
 </td></tr>
