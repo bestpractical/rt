@@ -1,8 +1,14 @@
-%# BEGIN LICENSE BLOCK;
+%# BEGIN BPS TAGGED BLOCK {{{
 %# 
-%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
 %# 
-%# (Except where explictly superceded by other copyright notices)
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
 %# 
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
@@ -14,24 +20,36 @@
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
 %# 
-%# Unless otherwise specified, all modifications, corrections or
-%# extensions to this work which alter its source code become the
-%# property of Best Practical Solutions, LLC when submitted for
-%# inclusion in the work.
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 %# 
 %# 
-%# END LICENSE BLOCK
-
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $Name => undef
 $Attr => undef
 </%ARGS>
 
-<%perl>
-return ColumnMap($Name, $Attr);
-</%perl>
 
-<%INIT>
+<%ONCE>
 our ( $COLUMN_MAP, $CUSTOM_FIELD_MAP );
 
 sub ColumnMap {
@@ -44,7 +62,6 @@ sub ColumnMap {
     }
 
     # now, let's deal with harder things, like Custom Fields
-
     elsif ( $name =~ /^(?:CF|CustomField).(.*)$/ ) {
         my $field = $1;
         my $cf;
@@ -83,6 +100,28 @@ sub ColumnMap {
             return ($value);
         }
     }
+
+
+}
+
+sub LinkCallback {
+    my $method = shift;
+
+    my $mode            = $RT::Ticket::LINKTYPEMAP{$method}{Mode};
+    my $type            = $RT::Ticket::LINKTYPEMAP{$method}{Type};
+    my $mode_uri        = $mode.'URI';
+    my $mode_is_local   = $mode.'IsLocal';
+    my $local_type      = 'Local'.$mode;
+
+    return sub {
+        map {
+            \'<A HREF="',
+            $_->$mode_uri->Resolver->HREF,
+            \'">',
+            ( $_->$mode_is_local ? $_->$local_type : $_->$mode ),
+            \'</A><BR>',
+        } @{ $_[0]->Links($mode,$type)->ItemsArrayRef }
+    }
 }
 
 $COLUMN_MAP = {
@@ -119,10 +158,10 @@ $COLUMN_MAP = {
                 if (   $Ticket->HasUnresolvedDependencies( Type => 'approval' )
                     or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
                 {
-                    return "<em>" . loc('(pending approval)') . "</em>";
+                    return \'<em>', loc('(pending approval)'), \'</em>';
                 }
                 else {
-                    return "<em>" . loc('(pending other Collection)') . "</em>";
+                    return \'<em>', loc('(pending other Collection)'), \'</em>';
                 }
             }
             else {
@@ -137,10 +176,12 @@ $COLUMN_MAP = {
     },
     InitialPriority => {
         attribute => 'InitialPriority',
+        name => 'Initial Priority',
         value     => sub { return $_[0]->InitialPriority }
     },
     FinalPriority => {
         attribute => 'FinalPriority',
+        name => 'Final Priority',
         value     => sub { return $_[0]->FinalPriority }
     },
     EffectiveId => {
@@ -153,14 +194,17 @@ $COLUMN_MAP = {
     },
     TimeWorked => {
         attribute => 'TimeWorked',
+        title => 'Time Worked',
         value     => sub { return $_[0]->TimeWorked }
     },
     TimeLeft => {
         attribute => 'TimeLeft',
+        title     => 'Time Left',
         value     => sub { return $_[0]->TimeLeft }
     },
     TimeEstimated => {
         attribute => 'TimeEstimated',
+        title => 'Time Estimated',
         value     => sub { return $_[0]->TimeEstimated }
     },
     Requestors => {
@@ -188,7 +232,7 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->CreatedObj->AgeAsString }
     },
     LastUpdatedRelative => {
-        title     => 'LastUpdated',
+        title     => 'Last Updated',
         attribute => 'LastUpdated',
         value     => sub { return $_[0]->LastUpdatedObj->AgeAsString }
     },
@@ -203,7 +247,7 @@ $COLUMN_MAP = {
         value     => sub { 
 	    my $date = $_[0]->DueObj;
 	    if ($date && $date->Unix > 0 && $date->Unix < time()) {
-		return '<span class="overdue">' . $date->AgeAsString . '</span>';
+		return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
 	    } else {
 		return $date->AgeAsString;
 	    }
@@ -228,14 +272,17 @@ $COLUMN_MAP = {
     },
     CreatedBy => {
         attribute => 'CreatedBy',
+        title => 'Created By',
         value     => sub { return $_[0]->CreatorObj->Name }
     },
     LastUpdated => {
         attribute => 'LastUpdated',
+        title     => 'Last Updated',
         value     => sub { return $_[0]->LastUpdatedObj->AsString }
     },
     LastUpdatedBy => {
         attribute => 'LastUpdatedBy',
+        title     => 'Last Updated By',
         value     => sub { return $_[0]->LastUpdatedByObj->Name }
     },
     Told => {
@@ -251,135 +298,10 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->ResolvedObj->AsString }
     },
 
-    DependedOnBy => {
-        value => sub {
-            my $links = $_[0]->DependedOnBy;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    Members => {
-        value => sub {
-            my $links = $_[0]->Members;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    Children => {
-        value => sub {
-            my $links = $_[0]->Members;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    ReferredToBy => {
-        value => sub {
-            my $links = $_[0]->ReferredToBy;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->BaseURI->Resolver->HREF . '">'
-                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-
-    DependsOn => {
-        value => sub {
-            my $links = $_[0]->DependsOn;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    MemberOf => {
-        value => sub {
-            my $links = $_[0]->MemberOf;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    Parents => {
-        value => sub {
-            my $links = $_[0]->MemberOf;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
-    RefersTo => {
-        value => sub {
-            my $links = $_[0]->RefersTo;
-            return (
-                join(
-                    "<br>",
-                    map {
-                            '<A HREF="'
-                          . $_->TargetURI->Resolver->HREF . '">'
-                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
-                          . '</A>'
-                      } @{ $links->ItemsArrayRef }
-                )
-            );
-          }
-    },
+    # Everything from LINKTYPEMAP
+    (map {
+        $_ => { value => LinkCallback( $_ ) }
+    } keys %RT::Ticket::LINKTYPEMAP),
 
     '_CLASS' => {
         value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
@@ -391,4 +313,7 @@ $COLUMN_MAP = {
 
 # }}}
 $m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
-</%INIT>
+</%ONCE>
+<%init>
+return ColumnMap($Name, $Attr);
+</%init>
