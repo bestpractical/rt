@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
 
 =head1 NAME

@@ -96,20 +96,20 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                EffectiveId => '',
-                Queue => '',
+                EffectiveId => '0',
+                Queue => '0',
                 Type => '',
-                IssueStatement => '',
-                Resolution => '',
-                Owner => '',
+                IssueStatement => '0',
+                Resolution => '0',
+                Owner => '0',
                 Subject => '[no subject]',
-                InitialPriority => '',
-                FinalPriority => '',
-                Priority => '',
-                TimeEstimated => '',
-                TimeWorked => '',
+                InitialPriority => '0',
+                FinalPriority => '0',
+                Priority => '0',
+                TimeEstimated => '0',
+                TimeWorked => '0',
                 Status => '',
-                TimeLeft => '',
+                TimeLeft => '0',
                 Told => '',
                 Starts => '',
                 Started => '',
@@ -571,33 +571,33 @@ sub _ClassAccessible {
         id =>
 		{read => 1, type => 'int(11)', default => ''},
         EffectiveId => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Queue => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Type => 
 		{read => 1, write => 1, type => 'varchar(16)', default => ''},
         IssueStatement => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Resolution => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Owner => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Subject => 
 		{read => 1, write => 1, type => 'varchar(200)', default => '[no subject]'},
         InitialPriority => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         FinalPriority => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Priority => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         TimeEstimated => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         TimeWorked => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Status => 
 		{read => 1, write => 1, type => 'varchar(10)', default => ''},
         TimeLeft => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Told => 
 		{read => 1, write => 1, type => 'datetime', default => ''},
         Starts => 
@@ -609,11 +609,11 @@ sub _ClassAccessible {
         Resolved => 
 		{read => 1, write => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         Disabled => 

@@ -126,12 +126,13 @@ sub Create {
     $now->Set( Format => 'unix', Value => time );
     $attribs{'Created'} = $now->ISO() if ( $self->_Accessible( 'Created', 'auto' ) && !$attribs{'Created'});
 
-    $attribs{'Creator'} = $self->CurrentUser->id if ($self->_Accessible( 'Creator', 'auto' ) && !$attribs{'Creator'});
-
+    if ($self->_Accessible( 'Creator', 'auto' ) && !$attribs{'Creator'}) {
+         $attribs{'Creator'} = $self->CurrentUser->id || '0'; 
+    }
     $attribs{'LastUpdated'} = $now->ISO()
       if ( $self->_Accessible( 'LastUpdated', 'auto' ) && !$attribs{'LastUpdated'});
 
-    $attribs{'LastUpdatedBy'} = $self->CurrentUser->id
+    $attribs{'LastUpdatedBy'} = $self->CurrentUser->id || '0'
       if ( $self->_Accessible( 'LastUpdatedBy', 'auto' ) && !$attribs{'LastUpdatedBy'});
 
     my $id = $self->SUPER::Create(%attribs);

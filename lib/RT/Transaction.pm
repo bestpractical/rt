@@ -84,9 +84,9 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                EffectiveTicket => '',
-                Ticket => '',
-                TimeTaken => '',
+                EffectiveTicket => '0',
+                Ticket => '0',
+                TimeTaken => '0',
                 Type => '',
                 Field => '',
                 OldValue => '',
@@ -301,11 +301,11 @@ sub _ClassAccessible {
         id =>
 		{read => 1, type => 'int(11)', default => ''},
         EffectiveTicket => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Ticket => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         TimeTaken => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Type => 
 		{read => 1, write => 1, type => 'varchar(20)', default => ''},
         Field => 
@@ -317,7 +317,7 @@ sub _ClassAccessible {
         Data => 
 		{read => 1, write => 1, type => 'varchar(100)', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
 

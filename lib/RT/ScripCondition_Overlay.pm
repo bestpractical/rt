@@ -22,8 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
-
 =head1 NAME
 
   RT::ScripCondition - RT scrip conditional

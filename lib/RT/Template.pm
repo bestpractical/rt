@@ -88,7 +88,7 @@ sub Create {
                 Description => '',
                 Type => '',
                 Language => '',
-                TranslationOf => '',
+                TranslationOf => '0',
                 Content => '',
 
 		  @_);
@@ -308,15 +308,15 @@ sub _ClassAccessible {
         Language => 
 		{read => 1, write => 1, type => 'varchar(16)', default => ''},
         TranslationOf => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Content => 
 		{read => 1, write => 1, type => 'blob', default => ''},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
 

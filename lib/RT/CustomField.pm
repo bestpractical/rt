@@ -84,9 +84,9 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Type => '',
-                Queue => '',
+                Queue => '0',
                 Description => '',
-                SortOrder => '',
+                SortOrder => '0',
                 Disabled => '0',
 
 		  @_);
@@ -281,17 +281,17 @@ sub _ClassAccessible {
         Type => 
 		{read => 1, write => 1, type => 'varchar(200)', default => ''},
         Queue => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Description => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         Disabled => 

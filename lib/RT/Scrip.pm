@@ -91,16 +91,16 @@ sub Create {
     my $self = shift;
     my %args = ( 
                 Description => '',
-                ScripCondition => '',
-                ScripAction => '',
+                ScripCondition => '0',
+                ScripAction => '0',
                 ConditionRules => '',
                 ActionRules => '',
                 CustomIsApplicableCode => '',
                 CustomPrepareCode => '',
                 CustomCommitCode => '',
                 Stage => '',
-                Queue => '',
-                Template => '',
+                Queue => '0',
+                Template => '0',
 
 		  @_);
     $self->SUPER::Create(
@@ -429,9 +429,9 @@ sub _ClassAccessible {
         Description => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         ScripCondition => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         ScripAction => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         ConditionRules => 
 		{read => 1, write => 1, type => 'text', default => ''},
         ActionRules => 
@@ -445,15 +445,15 @@ sub _ClassAccessible {
         Stage => 
 		{read => 1, write => 1, type => 'varchar(32)', default => ''},
         Queue => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Template => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
 

@@ -83,8 +83,8 @@ sub Create {
                 Base => '',
                 Target => '',
                 Type => '',
-                LocalTarget => '',
-                LocalBase => '',
+                LocalTarget => '0',
+                LocalBase => '0',
 
 		  @_);
     $self->SUPER::Create(
@@ -247,15 +247,15 @@ sub _ClassAccessible {
         Type => 
 		{read => 1, write => 1, type => 'varchar(20)', default => ''},
         LocalTarget => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         LocalBase => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
 

@@ -19,7 +19,7 @@ CREATE SEQUENCE attachments_id_seq;
 CREATE TABLE Attachments (
   id INTEGER DEFAULT nextval('attachments_id_seq'),
   TransactionId integer NOT NULL  ,
-  Parent integer NULL  ,
+  Parent integer NOT NULL DEFAULT 0  ,
   MessageId varchar(160) NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
@@ -27,8 +27,8 @@ CREATE TABLE Attachments (
   ContentEncoding varchar(80) NULL  ,
   Content bytea NULL  ,
   Headers bytea NULL  ,
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -53,13 +53,13 @@ CREATE TABLE Queues (
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
   CommentAddress varchar(120) NULL  ,
-  InitialPriority integer NULL  ,
-  FinalPriority integer NULL  ,
-  DefaultDueIn integer NULL  ,
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  InitialPriority integer NOT NULL DEFAULT 0  ,
+  FinalPriority integer NOT NULL DEFAULT 0  ,
+  DefaultDueIn integer NOT NULL DEFAULT 0  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
@@ -83,12 +83,12 @@ CREATE TABLE Links (
   Base varchar(240) NULL  ,
   Target varchar(240) NULL  ,
   Type varchar(20) NOT NULL  ,
-  LocalTarget integer NULL  ,
-  LocalBase integer NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  LocalTarget integer NOT NULL DEFAULT 0  ,
+  LocalBase integer NOT NULL DEFAULT 0  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -165,10 +165,10 @@ CREATE TABLE ScripConditions (
   Argument varchar(255) NULL  ,
   ApplicableTransTypes varchar(60) NULL  ,
 
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -186,17 +186,17 @@ CREATE SEQUENCE transactions_id_seq;
 
 CREATE TABLE Transactions (
   id INTEGER DEFAULT nextval('transactions_id_seq'),
-  EffectiveTicket integer NULL  ,
-  Ticket integer NULL  ,
-  TimeTaken integer NULL  ,
+  EffectiveTicket integer NOT NULL DEFAULT 0  ,
+  Ticket integer NOT NULL DEFAULT 0  ,
+  TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
   Data varchar(100) NULL  ,
 
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -218,20 +218,20 @@ CREATE SEQUENCE scrips_id_seq;
 CREATE TABLE Scrips (
   id INTEGER DEFAULT nextval('scrips_id_seq'),
   Description varchar(255),
-  ScripCondition integer NULL  ,
-  ScripAction integer NULL  ,
+  ScripCondition integer NOT NULL DEFAULT 0  ,
+  ScripAction integer NOT NULL DEFAULT 0  ,
   ConditionRules text NULL  ,
   ActionRules text NULL  ,
   CustomIsApplicableCode text NULL  ,
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,
   Stage varchar(32) NULL  ,
-  Queue integer NULL  ,
-  Template integer NULL  ,
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  Queue integer NOT NULL DEFAULT 0  ,
+  Template integer NOT NULL DEFAULT 0  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -276,8 +276,8 @@ CREATE SEQUENCE groupmembers_id_seq;
 
 CREATE TABLE GroupMembers (
   id INTEGER DEFAULT nextval('groupmembers_id_seq'),
-  GroupId integer NULL,
-  MemberId integer NULL,  
+  GroupId integer NOT NULL DEFAULT 0,
+  MemberId integer NOT NULL DEFAULT 0,  
   PRIMARY KEY (id)
 
 );
@@ -352,10 +352,10 @@ CREATE TABLE Users (
   Timezone varchar(50) NULL  ,
   PGPKey text NULL,
 
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -381,31 +381,31 @@ CREATE SEQUENCE tickets_id_seq;
 
 CREATE TABLE Tickets (
   id INTEGER DEFAULT nextval('tickets_id_seq'),
-  EffectiveId integer NULL  ,
-  Queue integer NULL  ,
+  EffectiveId integer NOT NULL DEFAULT 0  ,
+  Queue integer NOT NULL DEFAULT 0  ,
   Type varchar(16) NULL  ,
-  IssueStatement integer NULL  ,
-  Resolution integer NULL  ,
-  Owner integer NULL  ,
+  IssueStatement integer NOT NULL DEFAULT 0  ,
+  Resolution integer NOT NULL DEFAULT 0  ,
+  Owner integer NOT NULL DEFAULT 0  ,
   Subject varchar(200) NULL DEFAULT '[no subject]' ,
-  InitialPriority integer NULL  ,
-  FinalPriority integer NULL  ,
-  Priority integer NULL  ,
-  TimeEstimated integer NULL  ,
-  TimeWorked integer NULL  ,
+  InitialPriority integer NOT NULL DEFAULT 0  ,
+  FinalPriority integer NOT NULL DEFAULT 0  ,
+  Priority integer NOT NULL DEFAULT 0  ,
+  TimeEstimated integer NOT NULL DEFAULT 0  ,
+  TimeWorked integer NOT NULL DEFAULT 0  ,
   Status varchar(10) NULL  ,
-  TimeLeft integer NULL  ,
-  Told DATETIME NULL  ,
-  Starts DATETIME NULL  ,
-  Started DATETIME NULL  ,
-  Due DATETIME NULL  ,
-  Resolved DATETIME NULL  ,
+  TimeLeft integer NOT NULL DEFAULT 0  ,
+  Told TIMESTAMP NULL  ,
+  Starts TIMESTAMP NULL  ,
+  Started TIMESTAMP NULL  ,
+  Due TIMESTAMP NULL  ,
+  Resolved TIMESTAMP NULL  ,
 
 
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
@@ -435,10 +435,10 @@ CREATE TABLE ScripActions (
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -462,12 +462,12 @@ CREATE TABLE Templates (
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
-  TranslationOf integer NULL  ,
+  TranslationOf integer NOT NULL DEFAULT 0  ,
   Content text NULL  ,
-  LastUpdated DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  LastUpdated TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -490,10 +490,10 @@ CREATE TABLE TicketCustomFieldValues (
   CustomField int NOT NULL  ,
   Content varchar(255) NULL  ,
 
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );
@@ -514,14 +514,14 @@ CREATE TABLE CustomFields (
   id INTEGER DEFAULT nextval('customfields_id_seq'),
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
-  Queue int NULL ,
+  Queue integer NOT NULL DEFAULT 0 ,
   Description varchar(255) NULL  ,
-  SortOrder integer NULL  ,
+  SortOrder integer NOT NULL DEFAULT 0  ,
 
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
@@ -544,12 +544,12 @@ CREATE TABLE CustomFieldValues (
   CustomField int NOT NULL  ,
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
-  SortOrder integer NULL  ,
+  SortOrder integer NOT NULL DEFAULT 0  ,
 
-  Creator integer NULL  ,
-  Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 
 );

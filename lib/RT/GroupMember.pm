@@ -77,8 +77,8 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                GroupId => '',
-                MemberId => '',
+                GroupId => '0',
+                MemberId => '0',
 
 		  @_);
     $self->SUPER::Create(
@@ -142,9 +142,9 @@ sub _ClassAccessible {
         id =>
 		{read => 1, type => 'int(11)', default => ''},
         GroupId => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         MemberId => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
 
  }
 };

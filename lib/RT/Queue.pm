@@ -87,9 +87,9 @@ sub Create {
                 Description => '',
                 CorrespondAddress => '',
                 CommentAddress => '',
-                InitialPriority => '',
-                FinalPriority => '',
-                DefaultDueIn => '',
+                InitialPriority => '0',
+                FinalPriority => '0',
+                DefaultDueIn => '0',
                 Disabled => '0',
 
 		  @_);
@@ -312,17 +312,17 @@ sub _ClassAccessible {
         CommentAddress => 
 		{read => 1, write => 1, type => 'varchar(120)', default => ''},
         InitialPriority => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         FinalPriority => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         DefaultDueIn => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         Disabled => 

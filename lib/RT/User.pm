@@ -93,6 +93,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(100) 'State'.
   varchar(16) 'Zip'.
   varchar(50) 'Country'.
+  varchar(50) 'Timezone'.
   text 'PGPKey'.
 
 =cut
@@ -130,6 +131,7 @@ sub Create {
                 State => '',
                 Zip => '',
                 Country => '',
+                Timezone => '',
                 PGPKey => '',
 
 		  @_);
@@ -161,6 +163,7 @@ sub Create {
                          State => $args{'State'},
                          Zip => $args{'Zip'},
                          Country => $args{'Country'},
+                         Timezone => $args{'Timezone'},
                          PGPKey => $args{'PGPKey'},
 );
 
@@ -663,6 +666,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item Timezone
+
+Returns the current value of Timezone. 
+(In the database, Timezone is stored as varchar(50).)
+
+
+
+=item SetTimezone VALUE
+
+
+Set Timezone to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Timezone will be stored as a varchar(50).)
+
+
+=cut
+
+
 =item PGPKey
 
 Returns the current value of PGPKey. 
@@ -777,14 +798,16 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'varchar(16)', default => ''},
         Country => 
 		{read => 1, write => 1, type => 'varchar(50)', default => ''},
+        Timezone => 
+		{read => 1, write => 1, type => 'varchar(50)', default => ''},
         PGPKey => 
 		{read => 1, write => 1, type => 'text', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
         LastUpdatedBy => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
 

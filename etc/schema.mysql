@@ -3,7 +3,7 @@
 CREATE TABLE Attachments (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   TransactionId integer NOT NULL  ,
-  Parent integer NULL  ,
+  Parent integer NOT NULL DEFAULT 0  ,
   MessageId varchar(160) NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
@@ -11,7 +11,7 @@ CREATE TABLE Attachments (
   ContentEncoding varchar(80) NULL  ,
   Content LONGTEXT NULL  ,
   Headers LONGTEXT NULL  ,
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -28,12 +28,12 @@ CREATE TABLE Queues (
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
   CommentAddress varchar(120) NULL  ,
-  InitialPriority integer NULL  ,
-  FinalPriority integer NULL  ,
-  DefaultDueIn integer NULL  ,
-  Creator integer NULL  ,
+  InitialPriority integer NOT NULL DEFAULT 0  ,
+  FinalPriority integer NOT NULL DEFAULT 0  ,
+  DefaultDueIn integer NOT NULL DEFAULT 0  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
@@ -49,11 +49,11 @@ CREATE TABLE Links (
   Base varchar(240) NULL  ,
   Target varchar(240) NULL  ,
   Type varchar(20) NOT NULL  ,
-  LocalTarget integer NULL  ,
-  LocalBase integer NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LocalTarget integer NOT NULL DEFAULT 0  ,
+  LocalBase integer NOT NULL DEFAULT 0  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -101,9 +101,9 @@ CREATE TABLE ScripConditions (
   Argument varchar(255) NULL  ,
   ApplicableTransTypes varchar(60) NULL  ,
 
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -113,16 +113,16 @@ CREATE TABLE ScripConditions (
 # {{{ Transactions
 CREATE TABLE Transactions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  EffectiveTicket integer NULL  ,
-  Ticket integer NULL  ,
-  TimeTaken integer NULL  ,
+  EffectiveTicket integer NOT NULL DEFAULT 0  ,
+  Ticket integer NOT NULL DEFAULT 0  ,
+  TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
   Data varchar(100) NULL  ,
 
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -136,19 +136,19 @@ CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 CREATE TABLE Scrips (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Description varchar(255),
-  ScripCondition integer NULL  ,
-  ScripAction integer NULL  ,
+  ScripCondition integer NOT NULL DEFAULT 0  ,
+  ScripAction integer NOT NULL DEFAULT 0  ,
   ConditionRules text NULL  ,
   ActionRules text NULL  ,
   CustomIsApplicableCode text NULL  ,
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,
   Stage varchar(32) NULL  ,
-  Queue integer NULL  ,
-  Template integer NULL  ,
-  Creator integer NULL  ,
+  Queue integer NOT NULL DEFAULT 0  ,
+  Template integer NOT NULL DEFAULT 0  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -176,8 +176,8 @@ CREATE TABLE ACL (
 
 CREATE TABLE GroupMembers (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  GroupId integer NULL,
-  MemberId integer NULL,  #Foreign key to Principals
+  GroupId integer NOT NULL DEFAULT 0,
+  MemberId integer NOT NULL DEFAULT 0,  #Foreign key to Principals
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
@@ -240,9 +240,9 @@ CREATE TABLE Users (
   Timezone varchar(50) NULL  ,
   PGPKey text NULL,
 
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -260,20 +260,20 @@ CREATE INDEX Users4 ON Users (EmailAddress);
 
 CREATE TABLE Tickets (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  EffectiveId integer NULL  ,
-  Queue integer NULL  ,
+  EffectiveId integer NOT NULL DEFAULT 0  ,
+  Queue integer NOT NULL DEFAULT 0  ,
   Type varchar(16) NULL  ,
-  IssueStatement integer NULL  ,
-  Resolution integer NULL  ,
-  Owner integer NULL  ,
+  IssueStatement integer NOT NULL DEFAULT 0  ,
+  Resolution integer NOT NULL DEFAULT 0  ,
+  Owner integer NOT NULL DEFAULT 0  ,
   Subject varchar(200) NULL DEFAULT '[no subject]' ,
-  InitialPriority integer NULL  ,
-  FinalPriority integer NULL  ,
-  Priority integer NULL  ,
-  TimeEstimated integer NULL  ,
-  TimeWorked integer NULL  ,
+  InitialPriority integer NOT NULL DEFAULT 0  ,
+  FinalPriority integer NOT NULL DEFAULT 0  ,
+  Priority integer NOT NULL DEFAULT 0  ,
+  TimeEstimated integer NOT NULL DEFAULT 0  ,
+  TimeWorked integer NOT NULL DEFAULT 0  ,
   Status varchar(10) NULL  ,
-  TimeLeft integer NULL  ,
+  TimeLeft integer NOT NULL DEFAULT 0  ,
   Told DATETIME NULL  ,
   Starts DATETIME NULL  ,
   Started DATETIME NULL  ,
@@ -281,9 +281,9 @@ CREATE TABLE Tickets (
   Resolved DATETIME NULL  ,
 
 
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
@@ -305,9 +305,9 @@ CREATE TABLE ScripActions (
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -323,11 +323,11 @@ CREATE TABLE Templates (
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
-  TranslationOf integer NULL  ,
+  TranslationOf integer NOT NULL DEFAULT 0  ,
   Content blob NULL  ,
   LastUpdated DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
-  Creator integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -342,9 +342,9 @@ CREATE TABLE TicketCustomFieldValues (
   CustomField int NOT NULL  ,
   Content varchar(255) NULL  ,
 
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -357,13 +357,13 @@ CREATE TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
-  Queue int NULL ,
+  Queue integer NOT NULL DEFAULT 0 ,
   Description varchar(255) NULL  ,
-  SortOrder integer NULL  ,
+  SortOrder integer NOT NULL DEFAULT 0  ,
 
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
@@ -378,11 +378,11 @@ CREATE TABLE CustomFieldValues (
   CustomField int NOT NULL  ,
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
-  SortOrder integer NULL  ,
+  SortOrder integer NOT NULL DEFAULT 0  ,
 
-  Creator integer NULL  ,
+  Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  LastUpdatedBy integer NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;

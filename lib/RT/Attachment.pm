@@ -85,7 +85,7 @@ sub Create {
     my $self = shift;
     my %args = ( 
                 TransactionId => '0',
-                Parent => '',
+                Parent => '0',
                 MessageId => '',
                 Subject => '',
                 Filename => '',
@@ -309,7 +309,7 @@ sub _ClassAccessible {
         TransactionId => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Parent => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
         MessageId => 
 		{read => 1, write => 1, type => 'varchar(160)', default => ''},
         Subject => 
@@ -325,7 +325,7 @@ sub _ClassAccessible {
         Headers => 
 		{read => 1, write => 1, type => 'longtext', default => ''},
         Creator => 
-		{read => 1, auto => 1, type => 'int(11)', default => ''},
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
 
