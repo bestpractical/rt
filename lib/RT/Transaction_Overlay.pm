@@ -424,7 +424,7 @@ sub Attachments {
         }
 
         #if they ain't got rights to see, return an empty object
-        else {
+        elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
             unless ( $self->CurrentUserHasRight('ShowTicket') ) {
                 return ( $self->{'attachments'} );
             }
@@ -505,7 +505,7 @@ sub Description {
     }
 
     #if they ain't got rights to see, don't let em
-    else {
+    elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
             return ($self->loc("Permission Denied") );
         }
@@ -541,7 +541,7 @@ sub BriefDescription {
     }
 
     #if they ain't got rights to see, don't let em
-    else {
+    elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
             return ( $self->loc("Permission Denied") );
         }
@@ -861,7 +861,7 @@ sub _Value {
 
 
     #if they ain't got rights to see, don't let em
-    else {
+    elsif ($self->__Value('ObjectType') eq "RT::Ticket") {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
             return (undef);
         }
