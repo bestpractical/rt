@@ -184,9 +184,9 @@ sub RevokeRight {
 # }}}
 
 
-# {{{ sub Rights
+# {{{ sub _PopulateACLCache
 
-=head2 sub Rights (Objects => undef)
+=head2 sub _PopulateACLCache (Objects => undef)
 
 Check to see what rights this user has for the objects in the arrayref Objects
 
@@ -197,7 +197,7 @@ Return is unimportant. it just populates the cached.
 
 =cut
 
-sub Rights {
+sub _PopulateACLCache {
 
     my $self = shift;
     my %args = (
@@ -320,11 +320,10 @@ Returns undef if no ACE was found.
 sub HasRight {
 
     my $self = shift;
-    my %args = ( Right      => undef,
-                 Object     => undef,
-                 EquivObjects    => undef,
+    my %args = ( Right        => undef,
+                 Object       => undef,
+                 EquivObjects => undef,
                  @_ );
-
 
     if ( $self->Disabled ) {
         $RT::Logger->err( "Disabled User:  " . $self->id . " failed access check for " . $args{'Right'} );
@@ -337,9 +336,9 @@ sub HasRight {
         return (undef);
     }
 
-    if ( defined( $args{'Object'} )) {
-        return (undef) unless (UNIVERSAL::can( $args{'Object'}, 'id' ) );
-        push(@{$args{'EquivObjects'}}, $args{Object});
+    if ( defined( $args{'Object'} ) ) {
+        return (undef) unless ( UNIVERSAL::can( $args{'Object'}, 'id' ) );
+        push ( @{ $args{'EquivObjects'} }, $args{Object} );
     }
     else {
         $RT::Logger->crit("$self HasRight called with no valid object");
@@ -347,57 +346,67 @@ sub HasRight {
     }
 
     # If this object is a ticket, we care about ticket roles and queue roles
-    if ( (ref($args{'Object'}) eq 'RT::Ticket') && $args{'Object'}->Id) {
-        # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
-        # and ask all the rest of our questions about the queue.
-        push (@{$args{'EquivObjects'}}, $args{'Object'}->QueueObj);
+    if ( ( ref( $args{'Object'} ) eq 'RT::Ticket' ) && $args{'Object'}->Id ) {
+
+# this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
+# and ask all the rest of our questions about the queue.
+        push ( @{ $args{'EquivObjects'} }, $args{'Object'}->QueueObj );
 
     }
 
-
-    push(@{$args{'EquivObjects'}}, $RT::System)
-        unless ( (ref($args{'Object'}) eq 'RT::System' ) || ( $self->can('_IsOverrideGlobalACL') and $self->_IsOverrideGlobalACL($args{Object})));
+    push ( @{ $args{'EquivObjects'} }, $RT::System )
+      unless ( ( ref( $args{'Object'} ) eq 'RT::System' )
+               || (     $self->can('_IsOverrideGlobalACL')
+                    and $self->_IsOverrideGlobalACL( $args{Object} ) ) );
 
     my $cache_timeout = ( time - 60 );
-    my $cache_dirty = 0;
-    foreach my $obj (@{$args{'EquivObjects'}}) {
-        
-            next unless (UNIVERSAL::can($obj, 'id'));
-            my $type = ref($obj);
-            my $id = $obj->id;
-                # if this chunk of the ACL cache is too old or non-existent, clean it out.
-           if ( !exists $self->_ACLCache->{$type}->{$id}->{$self->Id}->{'_queried'} ||
-                  $self->_ACLCache->{$type}->{$id}->{$self->Id}->{'_queried'} < $cache_timeout) {
-                delete $self->_ACLCache->{$type}->{$id}->{$self->Id};
-                $cache_dirty = 1;
+    my @dirty_objects;
+    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
 
+        next unless ( UNIVERSAL::can( $obj, 'id' ) );
+        my $type = ref($obj);
+        my $id   = $obj->id;
+
+      # if this chunk of the ACL cache is too old or non-existent, clean it out.
+        if ( !exists $self->_ACLCache->{$type}->{$id}->{ $self->Id }->{ '_queried'}
+             || $self->_ACLCache->{$type}->{$id}->{ $self->Id }->{'_queried'} < $cache_timeout ) {
+
+            delete $self->_ACLCache->{$type}->{$id}->{ $self->Id };
+            push ( @dirty_objects, $obj );
+        }
+
+    # SuperUser can now be applied at the object level in addition to the global level.
+    # this simplifies the code significantly
+        if ( $self->_ACLCache->{$type}->{$id}->{ $self->Id }->{ $args{'Right'} }
+             || $self->_ACLCache->{$type}->{$id}->{ $self->Id }->{'SuperUser'} ) {
+            return (1);
+        }
     }
-        return (1) if (
-           $self->_ACLCache->{$type}->{$id}->{$self->Id}->{$args{'Right'}} ||
-           $self->_ACLCache->{'RT::System'}->{'1'}->{$self->Id}->{'SuperUser'});
 
-
-
-    }
     # We didn't find anything. and the cache wasn't fresh enough. let's try once more.
-    if ($cache_dirty) {
-    $self->Rights(Objects => $args{'EquivObjects'});
+    if ($#dirty_objects >= 0) {
+        $self->_PopulateACLCache( Objects => \@dirty_objects );
 
-    foreach my $obj (@{$args{'EquivObjects'}}) {
-            next unless (UNIVERSAL::can($obj, 'id'));
+        foreach my $obj (@dirty_objects) {
+            next unless ( UNIVERSAL::can( $obj, 'id' ) );
             my $type = ref($obj);
-            my $id = $obj->id;
-        return (1) if (
-           $self->_ACLCache->{$type}->{$id}->{$self->Id}->{$args{'Right'}} ||
-           $self->_ACLCache->{'RT::System'}->{'1'}->{$self->Id}->{'SuperUser'});
+            my $id   = $obj->id;
+            if ( $self->_ACLCache->{$type}->{$id}->{ $self->Id }
+                 ->{ $args{'Right'} }
+                 || $self->_ACLCache->{$type}->{$id}->{ $self->Id }->{
+                     'SuperUser'} ) {
+                return (1);
+            }
+
+        }
 
     }
 
-    }
     #    nothing matched.
-    return(0);
+    return (undef);
 
 }
+
 # }}}
 # {{{ _RolesForObject
 
