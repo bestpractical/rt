@@ -1,9 +1,13 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl -T
 #
 #
 # RT is (c) 1997 Jesse Vincent (jesse@fsck.com)
 
 require "ctime.pl";
+
+@main::ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+$ENV{'PATH'} = '/bin:/usr/bin';      
+
 package rt;
 
 #set this to the root of your RT Installation
@@ -36,25 +40,25 @@ elsif ($0 =~ '/rtadmin$') {
   require rt::support::utils;     
   require rt::ui::cli::support;
   require rt::ui::cli::admin;
-  &rt::ui::cli::admin::activate();
+  &rt::ui::cli::activate();
 }
-elsif ($0 =~ '/webrt$') {
+elsif ($0 =~ '/nph-webrt.cgi$') {
   #
   require rt::ui::web::support;
   require rt::ui::web::auth;     
   require rt::ui::web::manipulate;
-  &rt::ui::web::manipulate::activate();
+  &rt::ui::web::activate();
 }
-elsif ($0 =~ '/webadminrt$') {
+elsif ($0 =~ '/nph-admin-webrt.cgi$') {
   #load web-admin
   require rt::ui::web::support;
   require rt::ui::web::auth;
   require rt::support::utils;   
   require rt::ui::web::admin;
-  &rt::ui::web::admin::activate();
+  &rt::ui::web::activate();
 
 }
-elsif ($0 =~ '/rtmailgate$') {
+elsif ($0 =~ '/rt-mailgate$') {
   require rt::database::manipulate;
   require rt::support::utils;      
   require rt::support::mail;

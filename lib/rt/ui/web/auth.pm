@@ -1,5 +1,8 @@
 package WebAuth;
 #$AuthRealm="Default Realm Name";
+require rt::database;
+&rt::connectdb();
+
 sub AuthCheck () {
     my ($AuthRealm) = @_;
     my ($Scheme, $Hash, $Unhash, $Name, $Pass);

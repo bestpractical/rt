@@ -1,8 +1,7 @@
-# This is where RT's preferences are kept track of
+    # This is where RT's preferences are kept track of
     # Since RT runs with taint checks in place, we need to specify
     # a path explicitly.  Unless sendmail is installed elsewhere,
     # there should be no need to change it
-    $ENV{'PATH'} = '/bin:/usr/bin';
 
 
     #  This is now set in rtmux.pl

@@ -44,14 +44,14 @@ sub CheckAuth() {
 }
 sub DisplayForm {
 
-    &RT_UI_Web::header();
+    &rt::ui::web::header();
     print "<h1>WebRT Administrator</h1>";
     
     if ($result) {
 	print "$result<hr>";
     }
     
-    if ((!$RT_UI_Web::FORM{'display'}) or ($RT_UI_Web::FORM{'display'} eq 'Return to Admin Menu')){
+    if ((!$rt::ui::web::FORM{'display'}) or ($rt::ui::web::FORM{'display'} eq 'Return to Admin Menu')){
 	
 	
 	&menu();
@@ -60,40 +60,40 @@ sub DisplayForm {
 
     #nice for debugging
     else {
-	if ($RT_UI_Web::FORM{'display'} eq 'DumpEnv'){
+	if ($rt::ui::web::FORM{'display'} eq 'DumpEnv'){
 
 	    &dump_env();
 
 	}    
-	elsif ($RT_UI_Web::FORM{'display'} eq 'Credits') {
+	elsif ($rt::ui::web::FORM{'display'} eq 'Credits') {
 
 	    &credits();
 
 	}
 	
-	elsif ($RT_UI_Web::FORM{'display'} eq 'Create a User called') {
-	    &FormModifyUser($RT_UI_Web::FORM{'new_user_id'});
+	elsif ($rt::ui::web::FORM{'display'} eq 'Create a User called') {
+	    &FormModifyUser($rt::ui::web::FORM{'new_user_id'});
 	}
-	elsif ($RT_UI_Web::FORM{'display'} eq 'Modify your RT Account') {
+	elsif ($rt::ui::web::FORM{'display'} eq 'Modify your RT Account') {
 	    &FormModifyUser($current_user);
 	}
-	elsif ($RT_UI_Web::FORM{'display'} eq 'Create a Queue called') {
-	    &FormModifyQueue($RT_UI_Web::FORM{'new_queue_id'});
+	elsif ($rt::ui::web::FORM{'display'} eq 'Create a Queue called') {
+	    &FormModifyQueue($rt::ui::web::FORM{'new_queue_id'});
 	}
-	elsif ($RT_UI_Web::FORM{'display'} eq 'Modify the User called'){
-       	    &FormModifyUser($RT_UI_Web::FORM{'user_id'});
+	elsif ($rt::ui::web::FORM{'display'} eq 'Modify the User called'){
+       	    &FormModifyUser($rt::ui::web::FORM{'user_id'});
 	}
-	elsif ($RT_UI_Web::FORM{'display'} eq 'Modify the Queue called'){
-	    &FormModifyQueue($RT_UI_Web::FORM{'queue_id'});
+	elsif ($rt::ui::web::FORM{'display'} eq 'Modify the Queue called'){
+	    &FormModifyQueue($rt::ui::web::FORM{'queue_id'});
 	}
-	elsif ($RT_UI_Web::FORM{'display'} eq 'Delete this Queue'){
-	    &FormDeleteQueue($RT_UI_Web::FORM{'queue_id'});
+	elsif ($rt::ui::web::FORM{'display'} eq 'Delete this Queue'){
+	    &FormDeleteQueue($rt::ui::web::FORM{'queue_id'});
 	}
-	elsif ($RT_UI_Web::FORM{'display'} eq 'Delete this User'){
-	    &FormDeleteUser($RT_UI_Web::FORM{'user_id'});
+	elsif ($rt::ui::web::FORM{'display'} eq 'Delete this User'){
+	    &FormDeleteUser($rt::ui::web::FORM{'user_id'});
 	}    }
    
-   &RT_UI_Web::footer();
+   &rt::ui::web::footer();
 }
 
 sub take_action {
@@ -102,70 +102,70 @@ sub take_action {
     require rt::database::admin;    
     
 
-    if ($RT_UI_Web::FORM{action} eq "Update Queue") {
+    if ($rt::ui::web::FORM{action} eq "Update Queue") {
 	
-      ($flag, $message)=&rt::add_modify_queue_conf($RT_UI_Web::FORM{queue_id}, $RT_UI_Web::FORM{email}, &rt::booleanize($RT_UI_Web::FORM{m_owner_trans}), &rt::booleanize($RT_UI_Web::FORM{m_members_trans}), &rt::booleanize($RT_UI_Web::FORM{m_user_trans}), &rt::booleanize($RT_UI_Web::FORM{m_user_create}), &rt::booleanize($RT_UI_Web::FORM{m_members_correspond}), &rt::booleanize($RT_UI_Web::FORM{m_members_comment}), &rt::booleanize($RT_UI_Web::FORM{allow_user_create}), "$RT_UI_Web::FORM{'initial_prio_tens'}$RT_UI_Web::FORM{'initial_prio_ones'}","$RT_UI_Web::FORM{'final_prio_tens'}$RT_UI_Web::FORM{'final_prio_ones'}", $current_user);
+      ($flag, $message)=&rt::add_modify_queue_conf($rt::ui::web::FORM{queue_id}, $rt::ui::web::FORM{email}, &rt::booleanize($rt::ui::web::FORM{m_owner_trans}), &rt::booleanize($rt::ui::web::FORM{m_members_trans}), &rt::booleanize($rt::ui::web::FORM{m_user_trans}), &rt::booleanize($rt::ui::web::FORM{m_user_create}), &rt::booleanize($rt::ui::web::FORM{m_members_correspond}), &rt::booleanize($rt::ui::web::FORM{m_members_comment}), &rt::booleanize($rt::ui::web::FORM{allow_user_create}), "$rt::ui::web::FORM{'initial_prio_tens'}$rt::ui::web::FORM{'initial_prio_ones'}","$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}", $current_user);
 
 
 	while (($user_id,$value)= each %rt::users) {
-	    $acl_string="acl_" . $RT_UI_Web::FORM{queue_id} . "_" . $user_id;
-	    $acl=$RT_UI_Web::FORM{$acl_string};
+	    $acl_string="acl_" . $rt::ui::web::FORM{queue_id} . "_" . $user_id;
+	    $acl=$rt::ui::web::FORM{$acl_string};
 	    if ($acl eq 'admin') {
-		&rt::add_modify_queue_acl($RT_UI_Web::FORM{queue_id},$user_id,1,1,1,$current_user);
+		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,1,1,$current_user);
 	    }
 	    if ($acl eq 'manip') {
-		&rt::add_modify_queue_acl($RT_UI_Web::FORM{queue_id},$user_id,1,1,0,$current_user);
+		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,1,0,$current_user);
 	    }
 	    if ($acl eq 'disp') {
-		&rt::add_modify_queue_acl($RT_UI_Web::FORM{queue_id},$user_id,1,0,0,$current_user);
+		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,0,0,$current_user);
 	    }
 	    if ($acl eq 'none') {
-		&rt::add_modify_queue_acl($RT_UI_Web::FORM{queue_id},$user_id,0,0,0,$current_user);
+		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,0,0,0,$current_user);
 	    }
 
 	}
     }
 
-    if ($RT_UI_Web::FORM{action} eq "delete_user") {
-	($flag, $message)=&rt::delete_user($RT_UI_Web::FORM{user_id}, $current_user);
+    if ($rt::ui::web::FORM{action} eq "delete_user") {
+	($flag, $message)=&rt::delete_user($rt::ui::web::FORM{user_id}, $current_user);
 	
 	}
-    if ($RT_UI_Web::FORM{action} eq "delete_queue") {
-        ($flag, $message)=&rt::delete_queue($RT_UI_Web::FORM{queue_id}, $current_user);
+    if ($rt::ui::web::FORM{action} eq "delete_queue") {
+        ($flag, $message)=&rt::delete_queue($rt::ui::web::FORM{queue_id}, $current_user);
 
         }       
-    if ($RT_UI_Web::FORM{action} eq "Update User") {
+    if ($rt::ui::web::FORM{action} eq "Update User") {
 
 	
-	($flag, $message)=&rt::add_modify_user_info($RT_UI_Web::FORM{user_id}, $RT_UI_Web::FORM{password}, $RT_UI_Web::FORM{email}, $RT_UI_Web::FORM{phone}, $RT_UI_Web::FORM{office},$RT_UI_Web::FORM{comments}, &rt::booleanize($RT_UI_Web::FORM{admin_rt}), $current_user);
+	($flag, $message)=&rt::add_modify_user_info($rt::ui::web::FORM{user_id}, $rt::ui::web::FORM{password}, $rt::ui::web::FORM{email}, $rt::ui::web::FORM{phone}, $rt::ui::web::FORM{office},$rt::ui::web::FORM{comments}, &rt::booleanize($rt::ui::web::FORM{admin_rt}), $current_user);
 	while (($queue_id,$value)= each %rt::queues) {
 
-	    $acl_string="acl_" . $queue_id . "_" . $RT_UI_Web::FORM{user_id};
-	    $acl=$RT_UI_Web::FORM{$acl_string};
+	    $acl_string="acl_" . $queue_id . "_" . $rt::ui::web::FORM{user_id};
+	    $acl=$rt::ui::web::FORM{$acl_string};
 	    
 	    if ($acl eq 'admin') {
 
-		&rt::add_modify_queue_acl($queue_id,$RT_UI_Web::FORM{user_id},1,1,1,$current_user);
+		&rt::add_modify_queue_acl($queue_id,$rt::ui::web::FORM{user_id},1,1,1,$current_user);
 	    }
 	    if ($acl eq 'manip') {
 
-		&rt::add_modify_queue_acl($queue_id,$RT_UI_Web::FORM{user_id},1,1,0,$current_user);
+		&rt::add_modify_queue_acl($queue_id,$rt::ui::web::FORM{user_id},1,1,0,$current_user);
 	    }
 	    if ($acl eq 'disp') {
 
-		&rt::add_modify_queue_acl($queue_id,$RT_UI_Web::FORM{user_id},1,0,0,$current_user);
+		&rt::add_modify_queue_acl($queue_id,$rt::ui::web::FORM{user_id},1,0,0,$current_user);
 	    }
 	    if ($acl eq 'none') {
-		&rt::add_modify_queue_acl($queue_id,$RT_UI_Web::FORM{user_id},0,0,0,$current_user);
+		&rt::add_modify_queue_acl($queue_id,$rt::ui::web::FORM{user_id},0,0,0,$current_user);
 	    }
 
 	}
     }
-    if ($RT_UI_Web::FORM{delete_area} ) {
-	($flag, $message)=&rt::delete_queue_area($RT_UI_Web::FORM{queue_id}, $RT_UI_Web::FORM{delete_area}, $current_user);
+    if ($rt::ui::web::FORM{delete_area} ) {
+	($flag, $message)=&rt::delete_queue_area($rt::ui::web::FORM{queue_id}, $rt::ui::web::FORM{delete_area}, $current_user);
     }
-    if ($RT_UI_Web::FORM{add_area} ) {
-	($flag, $message)=&rt::add_queue_area($RT_UI_Web::FORM{queue_id}, $RT_UI_Web::FORM{add_area}, $current_user);
+    if ($rt::ui::web::FORM{add_area} ) {
+	($flag, $message)=&rt::add_queue_area($rt::ui::web::FORM{queue_id}, $rt::ui::web::FORM{add_area}, $current_user);
     }
 	return "$message<br>$total_result";	    
     
@@ -177,9 +177,9 @@ sub menu () {
     my ($queue_id,$user_id,$value);
     print "<form action=\"$ScriptURL\" method=\"post\">";
     
-    &RT_UI_Web::new_table("width=100%"); {
-	&RT_UI_Web::new_row("valign=top"); {
-	    &RT_UI_Web::new_col("valign=top align=left"); {
+    &rt::ui::web::new_table("width=100%"); {
+	&rt::ui::web::new_row("valign=top"); {
+	    &rt::ui::web::new_col("valign=top align=left"); {
 		print "\n<H2>User Configuration</H2>";
 		
 		if ($rt::users{$current_user}{admin_rt}) {
@@ -196,23 +196,23 @@ sub menu () {
 		    print "<br>"
 		}
 		print "\n<input type=submit name=display value=\"Modify your RT Account\">";
-	    } &RT_UI_Web::end_col();
-	    &RT_UI_Web::new_col("valign=top align=right"); {
+	    } &rt::ui::web::end_col();
+	    &rt::ui::web::new_col("valign=top align=right"); {
 	    print "\n<H2>Queue Configuration</H2>";
     if ($rt::users{$current_user}{admin_rt}) {
 	print "<input type=Submit name=display value=\"Create a Queue called\"> <input size=15 name=\"new_queue_id\">
 <br>";
 }
-    print "<input type=submit name=display value=\"Modify the Queue called\"><select name=\"queue_id\">";
+    print "<input type=submit name=display value=\"Modify the Queue called\"> <select name=\"queue_id\">";
     while (($queue_id,$value)= each %rt::queues) {
 	#if (&rt::can_admin_queue($queue_id, $current_user)){
 	    print "<option value=\"$queue_id\">$queue_id";
 	#}
     }
     print "</select>";
-	} &RT_UI_Web::end_col();
-	} &RT_UI_Web::end_row();
-    } &RT_UI_Web::end_table();
+	} &rt::ui::web::end_col();
+	} &rt::ui::web::end_row();
+    } &rt::ui::web::end_table();
 	    
     print "</form>";
     
@@ -238,9 +238,9 @@ sub FormModifyUser{
 	print "<h2>Modify the user <b>$user_id</b></h2>";
     }
     
-    &RT_UI_Web::new_table("width=100%"); {
-	&RT_UI_Web::new_row(); {
-	    &RT_UI_Web::new_col("valign=top"); {
+    &rt::ui::web::new_table("width=100%"); {
+	&rt::ui::web::new_row(); {
+	    &rt::ui::web::new_col("valign=top"); {
 
 		print "
 	<form action=\"$ScriptURL\" method=\"post\">
@@ -253,8 +253,8 @@ sub FormModifyUser{
 		print "phone:    <input name=\"phone\" size=30 value=\"$rt::users{$user_id}{phone}\"><br>";
 		print "office:   <input name=\"office\" size=30 value=\"$rt::users{$user_id}{office}\"><br>";
 		print "misc:     <input name=\"comments\" size=30 value=\"$rt::users{$user_id}{comments}\"><br>";
-	    } &RT_UI_Web::end_col();
-	    &RT_UI_Web::new_col("align=right valign=top"); {
+	    } &rt::ui::web::end_col();
+	    &rt::ui::web::new_col("align=right valign=top"); {
 		print "<H2>Access Control</H2>\n";
 		if ($rt::users{$current_user}{admin_rt}) {
 		    print "RT Admin: <input type=\"checkbox\" name=\"admin_rt\" ";
@@ -295,25 +295,25 @@ sub FormModifyUser{
 		    }
 		}
 		
-	    } &RT_UI_Web::end_col();
-	} &RT_UI_Web::end_row();
-    } &RT_UI_Web::end_table();
+	    } &rt::ui::web::end_col();
+	} &rt::ui::web::end_row();
+    } &rt::ui::web::end_table();
     
-    &RT_UI_Web::new_table("width=100%");
-    &RT_UI_Web::new_row();
-    &RT_UI_Web::new_col("align=left");
+    &rt::ui::web::new_table("width=100%");
+    &rt::ui::web::new_row();
+    &rt::ui::web::new_col("align=left");
     print "<input type=\"submit\" name=\"action\" value=\"Update User\">";
-    &RT_UI_Web::end_col();
+    &rt::ui::web::end_col();
     if ($rt::users{$current_user}{admin_rt}) {
-	&RT_UI_Web::new_col("align=center");
+	&rt::ui::web::new_col("align=center");
 	print "<input type=\"submit\" name=\"display\" value=\"Delete this User\">";
-	&RT_UI_Web::end_col();
+	&rt::ui::web::end_col();
     }
-    &RT_UI_Web::new_col("align=right");
+    &rt::ui::web::new_col("align=right");
     print "<input type=\"submit\" name=\"display\" value=\"Return to Admin Menu\">";
-    &RT_UI_Web::end_col();
-    &RT_UI_Web::end_row();
-    &RT_UI_Web::end_table();
+    &rt::ui::web::end_col();
+    &rt::ui::web::end_row();
+    &rt::ui::web::end_table();
 
 
 
@@ -332,9 +332,9 @@ sub FormModifyQueue{
 	print "<h2>Modify the queue <b>$queue_id</b></h2>";
     }
     
-    &RT_UI_Web::new_table("width=100%"); {
-	&RT_UI_Web::new_row(); {
-	    &RT_UI_Web::new_col("valign=top"); {
+    &rt::ui::web::new_table("width=100%"); {
+	&rt::ui::web::new_row(); {
+	    &rt::ui::web::new_col("valign=top"); {
     print "
 <H2>Queue Defaults</H2>
 <form action=\"$ScriptURL\" method=\"post\">
@@ -371,10 +371,10 @@ sub FormModifyQueue{
     print "> Allow non-members to create requests<br>";
 
     print "Initial priority: ";
-    &RT_UI_Web::select_an_int($rt::queues{$queue_id}{default_prio},"initial_prio");
+    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio},"initial_prio");
     print "<br>";
     print "Final priority: ";
-    &RT_UI_Web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
+    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
     print "<br>";
     print "Delete the area <select name=\"delete_area\">
 <option value=\"\">None ";	
@@ -385,33 +385,33 @@ sub FormModifyQueue{
     
     print "<br>Add an area called <input size=\"15\" name=\"add_area\"><br>";
     
-    } &RT_UI_Web::end_col();
-    &RT_UI_Web::new_col("align=right valign=top"); {
+    } &rt::ui::web::end_col();
+    &rt::ui::web::new_col("align=right valign=top"); {
 	print "<H2>Access Control</H2>\n";
     while (($user_id,$value)= each %rt::users) {
 	printf "<tt><b>%15.15s</b></tt>", $user_id;
 	&select_queue_acls($user_id, $queue_id);
     }
-    } &RT_UI_Web::end_col();
-    } &RT_UI_Web::end_row();
-    } &RT_UI_Web::end_table();
+    } &rt::ui::web::end_col();
+    } &rt::ui::web::end_row();
+    } &rt::ui::web::end_table();
 
 
-    &RT_UI_Web::new_table("width=100%");
+    &rt::ui::web::new_table("width=100%");
     if (&rt::can_admin_queue($queue_id, $current_user)){
-	&RT_UI_Web::new_row();
-	&RT_UI_Web::new_col("align=left");
+	&rt::ui::web::new_row();
+	&rt::ui::web::new_col("align=left");
 	print "<input type=\"submit\" name=\"action\" value=\"Update Queue\">";
-	&RT_UI_Web::end_col();
-	&RT_UI_Web::new_col("align=center");
+	&rt::ui::web::end_col();
+	&rt::ui::web::new_col("align=center");
 	print "<input type=\"submit\" name=\"display\" value=\"Delete this Queue\">";
-	&RT_UI_Web::end_col();
+	&rt::ui::web::end_col();
     }
-    &RT_UI_Web::new_col("align=right");
+    &rt::ui::web::new_col("align=right");
     print "<input type=\"submit\" name=\"display\" value=\"Return to Admin Menu\">";
-    &RT_UI_Web::end_col();
-    &RT_UI_Web::end_row();
-    &RT_UI_Web::end_table();
+    &rt::ui::web::end_col();
+    &rt::ui::web::end_row();
+    &rt::ui::web::end_table();
     print"</FORM>";
 }
 
@@ -516,3 +516,5 @@ sub select_queue_acls {
 	print">Display";	
     print "</select><br>";
 }
+
+1;

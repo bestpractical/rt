@@ -61,7 +61,7 @@ RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 default:
 	@echo "Read the readme"
 
-install: dirs initialize nondestruct config-replace mux-replace instruct
+install: dirs mux-install install-libs initialize config-replace nondestruct instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
@@ -85,15 +85,16 @@ glimpse:
 
 dirs:
 	mkdir -p $(RT_BIN_PATH)
-	cp -rp ./bin/rtmux.pl $(RTMUX)
 	mkdir -p $(RT_CGI_PATH)
 	mkdir -p $(RT_ETC_PATH)/templates/queues
 	cp -rp ./etc/* $(RT_ETC_PATH)
-	mkdir -p $(RT_LIB_PATH)
-	cp -rp ./lib/* $(RT_LIB_PATH)
 	mkdir -p $(RT_TRANSACTIONS_PATH)
 	mkdir -p $(RT_ETC_PATH)/templates/queues
 	mkdir -p $(GLIMPSE_PATH)
+
+install-libs:
+	mkdir -p $(RT_LIB_PATH)
+	cp -rp ./lib/* $(RT_LIB_PATH)    
 
 mux-links: 
 	rm -f $(RT_BIN_PATH)/rt
@@ -102,12 +103,12 @@ mux-links:
 	ln -s $(RTMUX) $(RT_BIN_PATH)/rtadmin
 	rm -f $(RT_BIN_PATH)/rtq
 	ln -s  $(RTMUX) $(RT_BIN_PATH)/rtq
+	rm -f $(RT_BIN_PATH)/rt-mailgate
+	ln -s $(RTMUX) $(RT_BIN_PATH)/rt-mailgate   
 	rm -f $(RT_CGI_PATH)/nph-webrt.cgi
 	ln  $(RTMUX) $(RT_CGI_PATH)/nph-webrt.cgi
 	rm -f $(RT_CGI_PATH)/nph-admin-webrt.cgi
 	ln  $(RTMUX) $(RT_CGI_PATH)/nph-admin-webrt.cgi
-	rm -f $(RT_BIN_PATH)/rt-mailgate
-	ln -s $(RTMUX) $(RT_BIN_PATH)/rt-mailgate
 
 
 initialize: database acls
@@ -123,7 +124,8 @@ acls:
 	$(MYSQLDIR)/mysqladmin reload
 
 
-mux-replace:
+mux-install:
+	cp -rp ./bin/rtmux.pl $(RTMUX)  
 	$(PERL) -p -i.orig -e"s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      s'!!RT_VERSION!!'$(RT_VERSION)'g;"  $(RTMUX)
 

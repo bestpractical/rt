@@ -42,11 +42,8 @@ sub template_mail{
     if ($in_recipient eq "") {
 	return("template_mail:No Recipient Specified!");
     }
-    $mailto = "$mailprog -f$rt::mail_alias \"$in_recipient\" >/dev/null 2>/dev/null";
-    $mailto =~ /^(.*)/;  
-    $mailto = $1;          # a nasty hack, but we've gotta untaint things
- #   print STDERR "Debug 2 [$mailto]\n";
-    open (MAIL2, "|$mailto");
+    $ENV{'CDPATH'}="";
+    open (MAIL2, "|$rt::mailprog -f$rt::mail_alias -oi -t  >/dev/null 2>/dev/null");
     print MAIL2"Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject\n";
 
 
