@@ -89,11 +89,7 @@ sub ParseArgs {
        if (!$length) {$length=8;}
        printf "%-${length}.${length}s ", $Ticket->Queue->Id;
      }
-     elsif ($field =~ /^a(\d*)$/){ 
-       $length = $1;
-       if (!$length) {$length=7;}
-       printf "%-${length}.${length}s ", $Ticket->Area;
-     }
+
      elsif ($field =~ /^g(\d*)$/){ 
        $length = $1;
        if (!$length) {$length=6;}
@@ -173,12 +169,6 @@ sub build_query {
 			VALUE => "$status");
     }
     
-    if ($ARGV[$i] eq '-area'){
-      my $area = $ARGV[++$i];
-      $Tickets->Limit( FIELD => 'area',
-			VALUE => "$area");
-    }
-    
     if ($ARGV[$i] eq '-open'){
       $Tickets->Limit( FIELD => 'status',
 			VALUE => "open");
@@ -248,10 +238,9 @@ sub build_query {
            -resolved         lists resolved requests
            -stalled          lists stalled requests
            -dead             lists killed requests
-	   -area <area>	     lists requests in the area <area>
            -orderby <crit>   Sorts requests by <crit>  (one of serial_num, 
                              queue_id, requestors, owner, subject, priority, 
-                             status, date_created, date_due, area)
+                             status, date_created, date_due)
            -format <format> allows you to specify the output of rtq.
                              <format> is a string of the form %xn%xn%xn.  
                              x is any of the commands associated below.  
@@ -266,7 +255,6 @@ sub build_query {
 			     d[10]     due date
                              s[30]     subject
                              t[5]      status
-                             a[7]      area
                              q[8]      queue
                              g[5]      age
                              l[6]      time since last correspondence
@@ -345,12 +333,7 @@ sub print_header {
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Queue";
 	}
-	elsif ($field =~ /^a(\d*)$/){ 
-	  $length = $1;
-	  if (!$length) {$length=7;}
-	  $total_length = $total_length + $length;
-	  printf "%-${length}.${length}s ", "Area";
-	}
+
 	elsif ($field =~ /^g(\d*)$/){ 
 	  $length = $1;
 	  if (!$length) {$length=6;}

@@ -55,8 +55,12 @@ sub Create {
 	      RealName => undef,
 	      Password => undef,
 	      ExternalId => undef,
+	      
 	      EmailAddress => undef,
 	      HomePhone => undef,
+	      WorkPhone => undef,
+	      Address1 => undef,
+	      Address2 => undef,
 	      City => undef,
 	      State => undef,
 	      Zip => undef,
@@ -68,8 +72,8 @@ sub Create {
 	     );
   
   
-
-  return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
+  #Todo we shouldn't do anything if we have no password to start.
+  #return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
   
   my $id = $self->SUPER::Create(%args);
   $self->Load($id);
@@ -122,19 +126,14 @@ sub Delete {
   
 }
 
-sub load {
-  my $self = shift;
-  my ($package, $filename, $line) = caller;
-  print STDERR "RT::User->load called from $package, line $line with arguments (",@_,")\n";
-  return ($self->Load(@_));
-}
+
 sub Load {
   my $self = shift;
   my $identifier = shift;
   my ($package, $filename, $line) = caller;
 #  print STDERR "RT::User->Load called from $package, line $line with arguments (",@_,")\n";
   
-  print STDERR "RT::User->Load: Loading User $identifier\n";
+  #print STDERR "RT::User->Load: Loading User $identifier\n";
   #if it's an int, load by id. otherwise, load by name.
   if ($identifier !~ /\D/) {
     $self->SUPER::LoadById($identifier);

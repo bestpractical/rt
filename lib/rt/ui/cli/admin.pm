@@ -20,148 +20,134 @@ sub activate {
 
 sub ParseArgs {
 
-    for ($i=0;$i<=$#ARGV;$i++) {
-	if ($ARGV[$i] =~ 'q') {
-	    $action=$ARGV[++$i];
-
-	    
-	    if ($action eq "-list") {
-	      &cli_list_queues();
-	    }
-
-	    if ($action eq "-create") {
-	      $queue_id=$ARGV[++$i];
-	      if (!$queue_id) {
-		print "You must specify a queue.\n";
-		exit(0);
-	      }
-	      
-	      &cli_create_queue($queue_id);
-	    }
-	    
-	    if ($action eq "-modify") {
-	      $queue_id=$ARGV[++$i];
-	      if (!$queue_id) {
-		print "You must specify a queue.\n";
-		return(0);
-	      }
-	      &cli_modify_queue($queue_id);
-	    }
-	    
-	    elsif ($action eq "-delete")	{
-	      $queue_id=$ARGV[++$i];
-	      if (!$queue_id) {
-		print "You must specify a queue.\n";
-		exit(0);
-	      }
-	      
-	      &cli_delete_queue($queue_id);
-	    }
-	    
-	    elsif ($action eq "-acl")	{
-	      $queue_id=$ARGV[++$i];
-	      if (!$queue_id) {
-		print "You must specify a queue.\n";
-		return(0);
-	      }
-	      &cli_acl_queue($queue_id);
-	    }	
-	    
-	    elsif ($action eq "-area")	{
-		$area_action=$ARGV[++$i];
-		$area_name=$ARGV[++$i];
-		$queue_id=$ARGV[++$i];
-		if ($area_action =~ 'a') {
-		  ($flag, $message)=&rt::add_queue_area($queue_id, $area_name, $CurrentUser);
-		  print "$message\n"
-		}
-		elsif ($area_action =~  'd') {
-		  ($flag, $message)=&rt::delete_queue_area($queue_id, $area_name, $CurrentUser);
-		  print "$message\n"
-		}	
-	      }
-	  }
-	
-	elsif ($ARGV[$i] =~ 'u') {
-	  use RT::User;
-
-	  $action=$ARGV[++$i];
-
-	  if ($action eq "-modify") {
-	    $user_id=$ARGV[++$i];
-	    if (!$user_id) {
-	      print "You must specify a user.\n";
-	      return(0);
-	    }
-	    &cli_modify_user($user_id);
-	  } 
-	  
-	  elsif  ($action eq "-create") {
-	    $user_id=$ARGV[++$i];
-	    if (!$user_id) {
-	      print "You must specify a user.\n";
-	      return(0);
-	    }
-	    &cli_create_user($user_id);
-	  } 
-
-	  elsif ($action eq "-getpwent") {
-	    $passwd=$ARGV[++$i];
-	    $admin=$ARGV[++$i];
-	    
-	    print "Getpwent is not currently supported. A patch would be appreciated\n";
-	    exit(0);
-	    
-		if (!defined($admin)) {
-		    print "Usage: user -getpwent <password> <administrator> [<users>...]\n";
-		    exit(0);
-		}
-		if (defined($ARGV[$i++])) {
-		   while (my $login=$ARGV[++$i]) {
-		      ($login, $domain) = split('@', $login);
-                      $domain || ($domain = $host);
-                      &add_pwent($domain, getpwnam($login), $CurrentUser);		  
-		   }
-	       } else { 
-		   #Sometimes it really had been useful beeing able to combine while with
-		   #else..  
-		   
-                     &setpwent;
-                     while (&add_pwent($host, getpwent, $CurrentUser))
-                          {;}
-                     &endpwent;
-		   }
-   
-	      }
-
-
-
-	    elsif ($action eq "-delete")	{
-		$user_id=$ARGV[++$i];
-
-                        if (!$user_id) {
-                        print "You must specify a user.\n";
-                        exit(0);
-                        }
-
-		&cli_delete_user($user_id);
-	    }	
-	    
+  for ($i=0;$i<=$#ARGV;$i++) {
+    if ($ARGV[$i] =~ 'q') {
+      $action=$ARGV[++$i];
+      
+      
+      if ($action eq "-list") {
+	&cli_list_queues();
+      }
+      
+      if ($action eq "-create") {
+	$queue_id=$ARGV[++$i];
+	if (!$queue_id) {
+	  print "You must specify a queue.\n";
+	  exit(0);
 	}
-	elsif ($ARGV[$i] =~ 'a')	{
-	    $user_id=$ARGV[++$i];
-	    $queue_id=$ARGV[++$i];
-	    $privs=$ARGV[++$i];
-	    &cli_user_acl($user_id,$queue_id,$privs);
-	}	
 	
-	else{
-	    &cli_help_rt_admin();
-	    exit(0);
+	&cli_create_queue($queue_id);
+      }
+      
+      if ($action eq "-modify") {
+	$queue_id=$ARGV[++$i];
+	if (!$queue_id) {
+	  print "You must specify a queue.\n";
+	  return(0);
 	}
+	&cli_modify_queue($queue_id);
+      }
+      
+      elsif ($action eq "-delete")	{
+	$queue_id=$ARGV[++$i];
+	if (!$queue_id) {
+	  print "You must specify a queue.\n";
+	  exit(0);
+	}
+	
+	&cli_delete_queue($queue_id);
+      }
+      
+      elsif ($action eq "-acl")	{
+	$queue_id=$ARGV[++$i];
+	if (!$queue_id) {
+	  print "You must specify a queue.\n";
+	  return(0);
+	}
+	&cli_acl_queue($queue_id);
+      }	
+      
     }
+    
+    elsif ($ARGV[$i] =~ 'u') {
+      require RT::User;
+      
+      $action=$ARGV[++$i];
+      
+      if ($action eq "-modify") {
+	$user_id=$ARGV[++$i];
+	if (!$user_id) {
+	  print "You must specify a user.\n";
+	  return(0);
+	}
+	&cli_modify_user($user_id);
+      } 
+      
+      elsif  ($action eq "-create") {
+	$user_id=$ARGV[++$i];
+	if (!$user_id) {
+	  print "You must specify a user.\n";
+	  return(0);
+	}
+	&cli_create_user($user_id);
+      } 
+      
+      elsif ($action eq "-getpwent") {
+	$passwd=$ARGV[++$i];
+	$admin=$ARGV[++$i];
+	
+	print "Getpwent is not currently supported. A patch would be appreciated\n";
+	exit(0);
+	
+	if (!defined($admin)) {
+	  print "Usage: user -getpwent <password> <administrator> [<users>...]\n";
+	  exit(0);
+	}
+	if (defined($ARGV[$i++])) {
+	  while (my $login=$ARGV[++$i]) {
+	    ($login, $domain) = split('@', $login);
+	    $domain || ($domain = $host);
+	    &add_pwent($domain, getpwnam($login), $CurrentUser);		  
+	  }
+	} else { 
+	  #Sometimes it really had been useful beeing able to combine while with
+	  #else..  
+	  
+	  &setpwent;
+	  while (&add_pwent($host, getpwent, $CurrentUser))
+	    {;}
+	  &endpwent;
+	}
+	
+      }
+      
+      
+      
+      elsif ($action eq "-delete")	{
+	$user_id=$ARGV[++$i];
+	
+	if (!$user_id) {
+	  print "You must specify a user.\n";
+	  exit(0);
+	}
+	
+	&cli_delete_user($user_id);
+      }	
+      
+    }
+    elsif ($ARGV[$i] =~ 'a')	{
+      $user_id=$ARGV[++$i];
+      $queue_id=$ARGV[++$i];
+      $privs=$ARGV[++$i];
+      &cli_user_acl($user_id,$queue_id,$privs);
+    }	
+    
+    else{
+      &cli_help_rt_admin();
+      exit(0);
+    }
+  }
 }
-   
 
 # Add/Modify users by pwent:
 # This code by tobix...
@@ -214,33 +200,73 @@ sub cli_acl_queue {
    if (($CurrentUser->Id eq $User->Id) or 
        ($CurrentUser->IsAdministrator)) {
      
-    $email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,
-					 $User->EmailAddress);
-    $real_name=&rt::ui::cli::question_string("Real Name",
-					     $User->RealName);
-    $password=&rt::ui::cli::question_string("RT Password (will echo)",
-					    undef);
-    $phone=&rt::ui::cli::question_string("Phone Number",
-					 $User->Phone);
-    $office=&rt::ui::cli::question_string("Office Location",
-					  $User->Office);
-    $comments=&rt::ui::cli::question_string("Misc info about this user",
-					    $User->Comments);
+     $email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,
+					  $User->EmailAddress);
+     $real_name=&rt::ui::cli::question_string("Real Name",
+					      $User->RealName);
+     
+     
+     $password=&rt::ui::cli::question_string("RT Password (will echo)",
+					     undef);
+     $homephone=&rt::ui::cli::question_string("Home Phone Number",
+					      $User->HomePhone);
+     $workphone=&rt::ui::cli::question_string("Work Phone Number",
+					      $User->WorkPhone);
+     
+
+     
+     $address1=&rt::ui::cli::question_string("Address Line 1",
+					 $User->Address1);
+     $address2=&rt::ui::cli::question_string("Address Line 2",
+					 $User->Address2);
+    
+    $city=&rt::ui::cli::question_string("City",
+					 $User->City);
+    
+    $state=&rt::ui::cli::question_string("State",
+				      $User->State);
+    
+    $zip=&rt::ui::cli::question_string("ZIP/Postal Code",
+				      $User->Zip);
+    $country=&rt::ui::cli::question_string("Country",
+					 $User->Country);
+    
+    
+ 
+ 
     
     if ($CurrentUser->IsAdministrator) {
-      $admin_rt=&rt::ui::cli::question_yes_no("Is this user the RT administrator",$User->IsAdministrator);
-    }
-    else {
-      $admin_rt=0;
-    }
-    if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
-      $message = $User->SetEmailAddress($email);
-      $message .= $User->SetRealName($real_name);
-      $message .= $User->SetPassword($password);
-      $message .= $User->SetPhone($phone);
-      $message .= $User->SetOffice($office);
-      $message .= $User->SetComments($comments);
-      $message .= $User->SetIsAdministrator($admin_rt);
+   
+        $gecos=&rt::ui::cli::question_string("UNIX Username",
+					      $User->Gecos);
+	$externalid=&rt::ui::cli::question_string("External ID",
+						 $User->ExternalId);	
+	$admin_rt=&rt::ui::cli::question_yes_no("Is this user the RT administrator",
+						$User->IsAdministrator);
+	$comments=&rt::ui::cli::question_string("Misc info about this user",
+						$User->Comments);
+      }
+     
+     if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
+       $message = $User->SetEmailAddress($email);
+       $message .= $User->SetRealName($real_name);
+       $message .= $User->SetPassword($password);
+       $message .= $User->SetHomePhone($homephone);
+       $message .= $User->SetWorkPhone($workphone);
+       $message .= $User->SetAddress1($address1);
+       $message .= $User->SetAddress2($address2);
+       $message .= $User->SetCity($city);
+       $message .= $User->SetState($state);
+       $message .= $User->SetZip($zip);
+       $message .= $User->SetCountry($country);
+       
+       if ($CurrentUser->IsAdministrator()) {
+	 $message .= $User->SetExternalId($externalid);
+	 $message .= $User->SetComments($comments);
+	 $message .= $User->SetIsAdministrator($admin_rt);
+	 $message .= $User->SetGecos($gecos);
+       }
+
       print "$message\n";
     }
     else {
@@ -255,8 +281,13 @@ sub cli_acl_queue {
  
 sub cli_create_user {
   my $user_id = shift;
-  my $User = new RT::User($CurrentUser);
-  $User->Create($user_id);
+  my $User = RT::User->new($CurrentUser);
+  (my $result, $message)= $User->Create(UserId => $user_id);
+  if (!$result) {
+    print $message;
+    return()
+  }
+  
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_user_helper($User);
 }

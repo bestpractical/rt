@@ -248,7 +248,7 @@ sub ParseArgs {
 	my $id = int($ARGV[++$i]);
 	my $owner = $ARGV[++$i];
 	my $Ticket = &LoadTicket($id);
-	$Message .= $Ticket->Give($owner);
+	$Message .= $Ticket->SetOwner($owner);
       }
       
       elsif ($ARGV[$i] eq "-resolve")	{
@@ -278,21 +278,57 @@ sub ParseArgs {
   
   sub cli_create_req {	
     my ($queue_id,$owner,$Requestors,$status,$priority,$Subject,$final_prio,
-	$Cc, $Bcc, $date_due, $due_string);
+	$Cc, $Bcc, $date_due, $due_string, $Owner);
+
+    require RT::Ticket;
+    my $Ticket = RT::Ticket->new($CurrentUser);
+    
     $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
-    $area=&rt::ui::cli::question_string("Place Request in area",);
-    $owner=&rt::ui::cli::question_string( "Give request to");
+
+    require RT::Queue;
+    my $Queue = RT::Queue->new($CurrentUser);
+    
+    while (!$Queue->Load($queue_id)) {
+      print "That Queue does not exist\n";
+      $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
+    }
+    
+    if (!$Queue->CreatePermitted) {
+      print "You may not create a ticket in that queue";
+    }
+
+    
+  
+    if ($Queue->ModifyPermitted($CurrentUser)) {
+
+      require RT::User;
+      $Owner = RT::User->new($CurrentUser);
+      
+      $owner=&rt::ui::cli::question_string( "Give request to");
+      
+      while (!$Owner->Load($owner) || !$Queue->ModifyPermitted($Owner)) {
+	
+	print "That user doesn't exist or can't own tickets in that queue\n";
+	$owner=&rt::ui::cli::question_string( "Give request to")
+      }
+      
+      
+      $priority=&rt::ui::cli::question_int("Starting Priority",$rt::queues{$queue_id}{'default_prio'});
+      $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
+      $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
+      if ($due_string ne '') {
+	use Date::Manip;
+	$date_due = &ParseDate($due_string);
+      }  
+      
+    }
+
     $Requestor = &rt::ui::cli::question_string("Requestor",);
     $Cc = &rt::ui::cli::question_string("Cc",);
     $Bcc =  &rt::ui::cli::question_string("Bcc",);
     $Subject=&rt::ui::cli::question_string("Subject",);
-    $priority=&rt::ui::cli::question_int("Starting Priority",$rt::queues{$queue_id}{'default_prio'});
-    $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
-    $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
-    if ($due_string ne '') {
-      use Date::Manip;
-      $date_due = &ParseDate($due_string);
-    }  
+  
+ 
     print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
       if(/^\.\n/) {
@@ -311,12 +347,11 @@ sub ParseArgs {
 
 
    # print "Message CC is ". $message->head->get('From');
-    require RT::Ticket;
-    my $Ticket = RT::Ticket->new($CurrentUser);
+
     my ($id, $Transaction, $ErrStr) = $Ticket->Create ( QueueTag => $queue_id,
-			       Area => $area,
+			       
 			       Alias => $alias,
-			       Owner => $owner,
+			       Owner => $Owner->id,
 			       Subject => $Subject,
 			       InitialPriority => $priority,
 			       FinalPriority => $final_priority,
@@ -430,7 +465,6 @@ n";
     -respond <num>	  Respond to <num>
     -subject <num> <sub>  Change <num>'s subject to <sub>
     -queue <num> <queue>  Change <num>'s queue to <queue>
-    -area <num> <area>    Change <num>'s area to <area>
     -prio <num> <int>	  Change <num>'s priority to <int>
     -finalprio <num <int> Change <num>'s final priority to <int>
     -notify <num>	  Note that <num>'s requestor was notified
@@ -489,7 +523,7 @@ sub LoadTicket {
   my $id = shift;
   my ($Ticket,$Status,$Message,$CurrentUser);
   $CurrentUser=&GetCurrentUser;
-  print "Current User is ".$CurrentUser->Id."\n";;
+  #print "Current User is ".$CurrentUser->Id."\n";;
   use RT::Ticket;
   $Ticket = new RT::Ticket ($CurrentUser);
   ($Status, $Message) = $Ticket->Load($id);

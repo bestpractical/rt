@@ -86,11 +86,11 @@ sub Load {
   }	    
 
   if ($identifier !~ /\D/) {
-    $self->SUPER::LoadById($identifier);
+    return($self->SUPER::LoadById($identifier));
   }
   else {
     
-    $self->LoadByCol("QueueId", $identifier);
+    return($self->LoadByCol("QueueId", $identifier));
   }
 
 }
@@ -174,6 +174,18 @@ sub ACL {
  #
 #ACCESS CONTROL
 # 
+
+sub CreatePermitted {
+  my $self = shift;
+  if ($self->PermitNonmemberCreate ||
+      $self->ModifyPermitted(@_)) { 
+    return (1);
+  }
+  else {
+    return (undef);
+  }
+}
+
 sub DisplayPermitted {
   my $self = shift;
 
@@ -196,14 +208,14 @@ sub ModifyPermitted {
   if (!$actor) {
     my $actor = $self->CurrentUser;
   }
-#  if ($self->Queue->ModifyPermitted($actor)) {
- if (1) {   
+  #  if ($self->Queue->ModifyPermitted($actor)) {
+ 
     return(1);
-  }
-  else {
+ 
+ # else {
     #if it's not permitted,
-    return(0);
-  }
+  #  return(0);
+  #}
 }
 
 sub AdminPermitted {

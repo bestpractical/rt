@@ -39,6 +39,8 @@ require "!!RT_ETC_PATH!!/config.pm";
 my $program = $0; 
 $program =~ s/(.*)\///;
 #shift @ARGV;
+
+
 if ($program eq '!!RT_ACTION_BIN!!') {
   # load rt-cli
   require rt::ui::cli::support;
@@ -53,6 +55,15 @@ elsif ($program eq '!!RT_QUERY_BIN!!') {
   &rt::ui::cli::query::activate();
   
 }
+
+elsif ($program eq '!!RT_ADMIN_BIN!!') {
+  #load rt_admin
+  require rt::support::utils;     
+  require rt::ui::cli::support;
+  require rt::ui::cli::admin;
+  &rt::ui::cli::admin::activate();
+}
+
 elsif ($program eq '!!RT_MAILGATE_BIN!!') {
   require RT::Interface::Email;
   &RT::Interface::Email::activate();

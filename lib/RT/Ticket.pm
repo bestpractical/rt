@@ -4,7 +4,6 @@
 #
 
 package RT::Ticket;
-
 use RT::Record;
 @ISA= qw(RT::Record);
 
@@ -250,6 +249,32 @@ sub BccAsString {
 #
 #
 
+sub _Validate {
+  my $self = shift;
+  
+  my $Field = shift;
+  my $Value = shift;
+  
+  if ($Field eq 'Queue') {
+
+    if (!$Value) {
+      return (1);
+    }
+    
+    require RT::Queue;
+    my $QueueObj = RT::Queue->new($self->CurrentUser);
+    my $id = $QueueObj->Load($Value);
+
+    
+    if ($id) {
+      return (1);
+    }
+    else {
+      return (undef);
+    }
+  }
+}
+  
 sub SetQueue {
   my $self = shift;
   my ($NewQueue, $NewQueueObj);
@@ -271,7 +296,7 @@ sub SetQueue {
       $self->Untake();
     }
     
-    #TODO: IF THE AREA DOESN'T EXIST IN THE NEW QUEUE, YANK IT.    
+
     else {
       return($self->_Set('Queue', $NewQueueObj->Id()));
     }
@@ -307,7 +332,6 @@ sub Owner {
     require RT::User;
     $self->{'owner'} = new RT::User ($self->CurrentUser);
     if (defined $self->_Value('Owner')) {
-	print STDERR "Owner is #". $self->_Value('Owner')."\n";
      $self->{'owner'}->Load($self->_Value('Owner'));
 
     }
@@ -520,10 +544,10 @@ sub Merge {
   
   #Make sure this user can modify this ticket
   #Load $MergeInto as Ticket $Target
-  #If the $Target doesn't exist, return an area
+
   #Make sure this user can modify $Target
   #If I have an owner and the $Target doesn't, set them on the target
-  #If this ticket has an area and the $Target doesn't, set them on the target
+  
   #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
   #Merge the requestor lists
   #Set my effective_sn to the $Target's Effective SN.

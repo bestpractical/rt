@@ -173,8 +173,20 @@ sub Description {
   }
   elsif ($self->Type eq 'Set') {
     if ($self->Field eq 'Owner') {
-      return ("Owner changed from " . $self->OldValue ." to ".$self->NewValue ." by ". $self->Creator->UserId);
-    } elsif ($self->Field eq 'Status') {
+      my $New = RT::User->new($CurrentUser);
+      $New->Load($self->NewValue);
+
+      if ($self->OldValue) {
+	my $Old = RT::User->new($CurrentUser);
+	$Old->Load($self->OldValue);
+	return ("Owner changed from " . $Old->UserId ." to ".$New->UserId ." by ". $self->Creator->UserId);
+      }
+      else {
+	return ("Owner set to ".$New->UserId." by ". $self->Creator->UserId);
+      }
+    
+    }
+    elsif ($self->Field eq 'Status') {
       if ($self->NewValue eq 'dead') {
         return ("Request killed by ". $self->Creator->UserId);
       }
