@@ -990,7 +990,7 @@ sub ValuesForObject {
     my $object = shift;
 
 	my $values = new RT::ObjectCustomFieldValues($self->CurrentUser);
-	unless ($self->CurrentUserHasRight('ShowCustomField')) {
+	unless ($self->CurrentUserHasRight('SeeCustomField')) {
         # Return an empty object if they have no rights to see
         return ($values);
     }
