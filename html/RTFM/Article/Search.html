@@ -202,7 +202,7 @@ foreach my $field qw(Name Summary Class) {
 }
 
 
-$m->comp('/Elements/Callback', %ARGS, _Count => $articles->Count);
+$m->comp('/Elements/Callback', %ARGS, _Search => $articles);
 
 </%init>
 
