@@ -3,10 +3,6 @@
     # a path explicitly.  Unless sendmail is installed elsewhere,
     # there should be no need to change it
 
-
-    #Where you keep you transaction texts
-    $transaction_dir="!!RT_TRANSACTIONS_PATH!!";
-
     #Where you keep templates for each of your queues
     $template_dir="!!RT_TEMPLATE_PATH!!";
 
@@ -58,19 +54,20 @@
     # $passwd_min defines the minimum length for user passwords.
     $user_passwd_min = "!!RT_USER_PASSWD_MIN!!";
 
-    #$mail_alias is a generic alias to send mail to for any request
+    #$MailAlias is a generic alias to send mail to for any request
     #already in a queue because of the nature of RT, mail sent to any
     #correspondence address will get put in the right place and mail sent
     #to any comment address will also get sent to the right place.  The
     #queue_dependent ones are only really important for assigning new
     #requests to the correct queue
-    #This is the address that will be listed in From: and Reply-To:
-    #headers of mail tracked by RT
 
-    $mail_alias = "!!RT_MAIL_ALIAS!!";
+    #This is the default address that will be listed in 
+    #From: and Reply-To: headers of mail tracked by RT
+
+    $MailAlias = "!!RT_MAIL_ALIAS!!";
 
 
-    # (TODO) Mail:Internet might need some configuration.
+    #TODO: Mail::Internet might need some configuration.
 
 
     # Define the directory name to be used for images in rt web

@@ -18,8 +18,8 @@ CREATE TABLE acl (
 CREATE TABLE queue_areas (
  id int(11) AUTO_INCREMENT PRIMARY KEY,
   queue CHAR(40) NOT NULL,
-
-  area CHAR(40) NOT NULL
+  area CHAR(40) NOT NULL,
+  description VARCHAR(200)
 )\g
 
 CREATE TABLE users (

@@ -13,30 +13,28 @@ sub new {
   my $self  = {};
   bless ($self, $class);
 
-  $self->{'table'} = "transactions";
+  $self->{'table'} = "queue_areas";
   $self->{'user'} = shift;
   return $self;
 }
 
 
-#take simple args and call MKIA::Database::Record to do the real work.
+#take simple args and call DBIx::Record to do the real work.
 sub create {
   my $self = shift;
 
-  my %args = ( id => '',
-	       effective_sn => '',
-	       serial_num => '',
-               actor => '',
-               type => '',
-	       trans_data => '',
-	       trans_date => '',
-	       content => '',
+  my %args = ( id => undef,
+	       queue => '',
+	       area => '',
+               description => '',
 	       @_
 	     );
-  return (0) if (! $args{'article'});
-  my $id = $self->SUPER::create(article => $args{'article'},
-				url => $args{'url'},
-				title => $args{'title'},
+  # Return 0 if missing any critical values
+  return (0) if ((!$args{'area'}) || (! $args{'queue'}));
+  
+  my $id = $self->SUPER::create(queue => $args{'queue'},
+				area => $args{'area'},
+				description => $args{'description'},
 				comment => $args{'comment'});
   return ($id);
 }
@@ -44,22 +42,18 @@ sub create {
 
 
 #Table specific data accessors/ modifiers
-sub  {
+sub Queue {
   my $self = shift;
-  return($self->_set_and_return('title',@_));
+  return($self->_set_and_return('queue',@_));
 }
 
-sub url {
+sub Area {
   my $self = shift;
-  return($self->_set_and_return('url',@_));
+  return($self->_set_and_return('area',@_));
 }
-sub comment {
+sub Description {
   my $self = shift;
-  return($self->_set_and_return('comment',@_));
+  return($self->_set_and_return('description',@_));
 }
 
-sub article {
-  my $self=shift;
-  return($self->_set_and_return('article',@_));
-}
 1;

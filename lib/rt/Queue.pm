@@ -164,9 +164,15 @@ sub DeleteArea {
 }
 
 sub Areas {
-
+  my $self = shift;
   
-#returns an EasySearch object which enumerates this queue's areas
+  if (!$self->{'areas'}){
+    require RT::Areas;
+    $self->{'areas'} = RT::Areas->new($self->CurrentUser);
+    $self->{'areas'}->Limit(FIELD => 'queue',
+			    VALUE => $self->QueueId);
+  }  
+  #returns an EasySearch object which enumerates this queue's areas
 }
 
 #

@@ -51,34 +51,46 @@ sub EffectiveSm {
   $self->_set_and_return('effective_sn',@_);
 }
 
-sub QueueId {
+sub Queue {
   my $self = shift;
   my ($new_queue, $queue_obj);
   
   #TODO: does this work?
-  if ($new_queue = shift) {
+  if ($NewQueue = shift) {
     #TODO this will clobber the old queue definition. 
     #it should load its own queue object, maybe.
 
+    my $NewQueueObj = RT::Queue->new($self->CurrentUser);
     
-    if (!$self->Queue->load($new_queue)) {
+    if (!$NewQueueObj->load($new_queue)) {
       return (0, "That queue does not exist");
     }
-    if (!$self->Queue->Create_Permitted) {
+    elsif (!$NewQueueObj->Create_Permitted) {
       return (0, "You may not create requests in that queue.");
     }
-
-    #TODO THIS CODE COMES FROM RT 1.0
-    # #if the owner isn't able to manipulate reqs in the new queue
-    #if(!can_manipulate_queue($in_queue, $rt::req[$in_serial_num]{'owner'})) { 
-    #&update_request($in_serial_num,'owner','','_rt_system');
-    #     }
+    elsif (!$NewQueueObj->ModifyPermitted($self->Owner)) {
+      $self->Untake();
+    }
     
     #TODO: IF THE AREA DOESN'T EXIST IN THE NEW QUEUE, YANK IT.
-
-
+    
+    else {
+      $self->_set_and_return('queue_id',$new_queue);
+    }
   }
-  $self->_set_and_return('queue_id',@_);
+  #if they're not setting the queueid, just return a queue object
+  else {
+    
+    if (!$self->{'queue'})  {
+      require RT::Queue;
+      $self->{'queue'} = RT::Queue->new($self->CurrentUser);
+      $self->{'queue'}->load($self->_set_and_return('queue_id'));
+    }
+    return ($self->{'queue'});
+    
+}
+
+    return($self->{'queue'});
 }
 
 
@@ -106,7 +118,7 @@ sub Take {
   $self->Owner($self->CurrentUser);
 }
 
-sub Unake {
+sub Untake {
   my $self=shift;
   $self->Owner("");
 }
@@ -114,6 +126,8 @@ sub Unake {
 
 sub Owner {
   my $self = shift;
+  
+  #TODO: does this take the null owner properly?
   if ($new_owner = shift) {
     #new owner can be blank or the name of a new owner.
     if (($new_owner != '') and (!$self->Modify_Permitted($new_owner))) {
@@ -503,16 +517,7 @@ sub _set_and_return {
 
 
 
-sub Queue {
-  my $self = shift;
-  if (!$self->{'queue'})  {
-    require RT::Queue;
-    $self->{'queue'} = RT::Queue->new($self->CurrentUser);
-    $self->{'queue'}->load($self->QueueId);
-  }
-  return ($self->{'queue'});
-  
-}
+
 
 
 #
@@ -575,15 +580,14 @@ sub Merge {
 #
 #ACCESS CONTROL
 # 
-sub Display_Permitted {
+sub DisplayPermitted {
   my $self = shift;
 
   my $actor = shift;
   if (!$actor) {
-   my $actor = $self->CurrentUser;
- }
+    my $actor = $self->CurrentUser;
+  }
   if ($self->Queue->DisplayPermitted($actor)) {
-    
     return(1);
   }
   else {
@@ -591,7 +595,9 @@ sub Display_Permitted {
     return(0);
   }
 }
-sub Modify_Permitted {
+
+
+sub ModifyPermitted {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
@@ -607,7 +613,7 @@ sub Modify_Permitted {
   }
 }
 
-sub Admin_Permitted {
+sub AdminPermitted {
   my $self = shift;
   my $actor = shift;
   if (!$actor) {
