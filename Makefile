@@ -18,22 +18,26 @@
 
 PERL		    =       /usr/bin/perl
 
-CONFIG_FILE_PATH	=       /opt/rt3/etc
+RT_PREFIX 		= /opt/rt3/
+DBTYPE		=		mysql
+
+CONFIG_FILE_PATH	=       $(RT_PREFIX)/etc
 CONFIG_FILE	     =       $(CONFIG_FILE_PATH)/RT_Config.pm
+RT_LIB_PATH	     =       $(RT_PREFIX)/lib
+MASON_HTML_PATH	 =       $(RT_PREFIX)/local/html
 
-GETPARAM		=       $(PERL) -I/opt/rt3/lib -e'use RT; RT::LoadConfig(); print $${$$RT::{$$ARGV[0]}};'
+GETPARAM		=       $(PERL) -I$(RT_LIB_PATH) -e'use RT; RT::LoadConfig(); print $${$$RT::{$$ARGV[0]}};'
 
-RT_LIB_PATH	     =       /opt/rt3/lib
-MASON_HTML_PATH	 =       /opt/rt3/local/html
 
 DB_DATABASEHOST		=  `${GETPARAM} DatabaseHost`
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
-DBTYPE		=mysql
-TAG			= rtfm-2-snap
+TAG			= rtfm-2-0-beta-1
 
-install: install-lib install-html initdb
+
+upgrade: install-lib install-html
+install: upgrade initdb
 
 html-install: install-html
 
@@ -54,18 +58,17 @@ dropdb: dropdb.$(DBTYPE)
 
 
 initdb.mysql: etc/schema.mysql
-	#/usr/local/mysql/bin/mysql -h $(DB_DATABASEHOST) -u $(DB_RT_USER) -p $(DB_RT_PASS) $(DB_DATABASENAME) < etc/schema.mysql
-	mysql $(DB_DATABASE) < etc/schema.mysql
+	mysql -h $(DB_DATABASEHOST) -u $(DB_RT_USER) -p $(DB_RT_PASS) $(DB_DATABASE) < etc/schema.mysql
 
 initdb.Pg: etc/schema.mysql
-	psql -U pgsql rt3 < etc/schema.Pg
-	psql -U pgsql rt3 < etc/acl.Pg
+	psql -U pgsql $(DB_DATABASE) < etc/schema.Pg
+	psql -U pgsql $(DB_DATABASE) < etc/acl.Pg
 
 acl:
 	grep -i "DROP " etc/drop_schema.Pg | cut -d" " -f 3 |cut -d\; -f 1 |xargs printf "GRANT SELECT, INSERT, UPDATE, DELETE ON %s to $(DB_RT_USER);\n" > etc/acl.Pg
 
 dropdb.Pg: etc/drop_schema.mysql
-	psql -U pgsql rt3 < etc/drop_schema.Pg
+	psql -U pgsql $(DB_DATABASE) < etc/drop_schema.Pg
 
 dropdb.mysql: etc/drop_schema.mysql
 	-mysql  $(DB_DATABASE) < etc/drop_schema.mysql
@@ -87,26 +90,27 @@ regression: dropdb testify-pods install
 
 tag-and-release-baseline:
 	aegis -cp -ind Makefile -output /tmp/Makefile.tagandrelease; \
-	$(MAKE) -f /tmp/Makefile.tagandrelease tag-and-release
+	$(MAKE) -f /tmp/Makefile.tagandrelease tag-and-release-never-by-hand
 
 
 # Running this target in a working directory is 
 # WRONG WRONG WRONG.
 # it will tag the current baseline with the version of RT defined 
 # in the currently-being-worked-on makefile. which is wrong.
-#  you want tag-and-release-baseline
+#you want tag-and-release-baseline
 
-tag-and-release:
-	aegis --delta-name --overwriting $(TAG)
+tag-and-release-never-by-hand:
+	aegis --delta-name $(TAG)
 	rm -rf /tmp/$(TAG)
 	mkdir /tmp/$(TAG)
 	cd /tmp/$(TAG); \
-		aegis -cp -ind -delta $(TAG) . ;\
-		chmod 600 Makefile;\
-	 #       aegis --report --project fm.$(VERSION_MAJOR) \
-	 #	     --page_width 80 \
-	 #	     --page_length 9999 \
-	 #	     --change $(VERSION_MINOR) --output Changelog Change_Log
+			 aegis -cp -ind -delta $(TAG) . ;\
+			 make reconfigure;\
+			 chmod 600 Makefile;\
+			 aegis --report --project rtfm.2.0 \
+				--page_width 80 \
+				--page_length 9999 \
+				--output Changelog Change_Log;
 
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
@@ -120,3 +124,6 @@ apachectl:
 	/usr/sbin/apachectl stop
 	sleep 1
 	/usr/sbin/apachectl start
+
+
+
