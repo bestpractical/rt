@@ -1,0 +1,22 @@
+<& /SelfService/Elements/Header, Title => 'Error' &>
+<& /Elements/TitleBoxStart, title => $Title &>
+<%$Why%>
+<br>
+<font size=-1>
+<%$Details%>
+</font>
+<& /Elements/TitleBoxEnd &>
+</body>
+</HTML>
+
+
+<%args>
+$Code => undef
+$Details => undef
+$Title => "RT Error"
+$Why => "the calling component did not specify why"
+</%args>
+
+<%INIT>
+$RT::Logger->error("WebRT: $Why ($Details)");
+</%INIT>

@@ -13,10 +13,6 @@
 	</TD>
       <TD>
 	<%$Ticket->Id%>
-% if ($Ticket->Name) {
-	(<%$Ticket->Name%>)
-% }
-
 	</TD>
       </TR>
     <TR>	
@@ -121,11 +117,13 @@ if ($id[0] eq 'new') {
     
     my $Queue = new RT::Queue($session{'CurrentUser'});	
     unless ($Queue->Load($ARGS{'Queue'})) {
-	Abort('Queue not found');
+	$m->comp('Error.html', Why => 'Queue not found');
+	$m->abort;
     }
     
     unless ($Queue->CurrentUserHasRight('CreateTicket')) {
-	Abort('You have no permission to create tickets in that queue.');
+	$m->comp('Error.html', Why => 'You have no permission to create tickets in that queue.');
+  	$m->abort; 
     }
     
     my @Requestors = split(/,/,$ARGS{'Requestors'});
@@ -147,7 +145,8 @@ if ($id[0] eq 'new') {
 					       MIMEObj => $MIMEObj	  
 					      );         
     unless ($id && $Trans) {
-	Abort($ErrMsg);
+	$m->comp('Error.html', Why => $ErrMsg);
+   	$m->abort(); 
     }
 
     push(@results, $ErrMsg);
@@ -155,13 +154,17 @@ if ($id[0] eq 'new') {
     # }}}
 }
 else {
-    $Ticket->Load($id[0]) || Abort("Couldn't load ticket '$id'");
+    unless ($Ticket->Load($id[0])) {
+	$m->comp('Error.html', Why =>"Couldn't load ticket '$id'");
+	$m->abort();
+    }
 }
 # }}}
 
 unless ($session{'CurrentUser'}->HasQueueRight ( TicketObj => $Ticket,
 						 Right => 'DisplayTicket')) {
-    Abort("no permission to display that ticket");
+    $m->comp('Error.html', Why => "No permission to display that ticket");
+    $m->abort();
 }
 
 my ($code, $msg);
