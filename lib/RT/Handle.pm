@@ -45,7 +45,9 @@ $self->SUPER::Connect(Host => $RT::DatabaseHost,
 			 User => $RT::DatabaseUser,
 			 Password => $RT::DatabasePassword,
 			 Port => $RT::DatabasePort,
-			 Driver => $RT::DatabaseType);
+			 Driver => $RT::DatabaseType,
+			 RequireSSL => $RT::DatabaseRequireSSL,
+			);
    
 }
 1;

@@ -58,6 +58,10 @@ $DatabasePassword='!!DB_RT_PASS!!';
 # The name of the RT's database on your database server
 $DatabaseName='!!DB_DATABASE!!';
 
+# If you're using Postgres and have compiled in SSL support, 
+# set DatabaseRequireSSL to 1 to turn on SSL communication
+$DatabaseRequireSSL=undef;
+
 # }}}
 
 # {{{ Incoming mail gateway configuration
