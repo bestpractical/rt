@@ -50,9 +50,9 @@
 <input type=submit name="Left" value="<">
 <input type=submit name="Right" value=">">
 <input type=submit name="DeleteClause" value="Delete">
-<input type=submit name="Clear" value="Clear">
 <br>
-%#<input type=submit name="Toggle" DISABLED value="And/Or">
+<input type=submit name="Clear" value="Clear">
+<input type=submit name="Toggle" value="And/Or">
 %#<input type=submit name="EditQuery" value="Advanced">
 </center>
 <& /Elements/TitleBoxEnd &>
@@ -198,12 +198,15 @@ $currentkey = $options[$ARGS{clauses}]->{Key} if $ARGS{clauses};
 # a criterion will get lost otherwise
 if (1) {
 
-    my $key;
+    my ($key, $top);
     if ($currentkey) {
         $key = $currentkey;
+        my ( $prefix, $depth, $num ) = parsekey($key);
+        $top = 1 if $depth == 1;  
     }
     else {
         $key = "{" . '0.0' . "}{Subkey}{1.0}";
+        $top = 1;
     }
     while ( keyexists( $items, $key ) ) {
         $key = nextkey($key);
@@ -228,7 +231,16 @@ if (1) {
 
             setvalue($items, $key, $clause);
             setaggregator( $items, $key, $ARGS{'AndOr'} );
-            $key   = nextkey($key);
+
+            if ($top) {
+                # if the next item is a subkey, put it there
+                my $newkey = appendsubkey( $items, $key );
+                my $oldkey = $key;
+                movecurrent( $items, $newkey, \$oldkey );
+            }
+
+            $currentkey = $key;
+            $key = nextkey($key);
         }
     }
 }
@@ -321,6 +333,14 @@ elsif ( $ARGS{"DeleteClause"} ) {
         push( @actions, [ "error: nothing to delete", -1 ] );
     }
 }
+elsif ( $ARGS{"Toggle"} ) {
+    my $ea = getaggregator( $items, $currentkey);
+    if ($ea eq 'AND') {
+        setaggregator( $items, $currentkey, 'OR' );
+    } else {
+        setaggregator( $items, $currentkey, 'AND' );
+    }
+}
 elsif ( $ARGS{"Clear"} ) {
     $items = ();
 }
@@ -390,7 +410,8 @@ sub build_array {
                     $sendkey = "{$i.$j}";
                 }
                 push @$keys, { Key => $sendkey, Value => $item, EA => $ea };
-                $$Query .= " " . $ea . " " if ( $j > 0 );
+                # no aggregator if it's first
+                $$Query .= " " . $ea . " " if ($j > 0 && $$Query); 
                 $$Query .= "("             if $depth > 0;
                 my $x = $i + 1;
                 build_array( $Query, $subkey, $sendkey, $item->{EA}, 
@@ -407,7 +428,7 @@ sub build_array {
                         $mykey = " " . $i . $j . " ";
                     }
                     $$Query .= " " . $ea . " " if ( $j > 0 );
-                    $$Query .= "$item->{Key} $item->{Op} $item->{Value}";
+                    $$Query .= "$item->{Key} $item->{Op} $item->{Value}" if $item->{Key};
                     push @$keys, { Key => $mykey, Value => $item, EA => $ea };
 
                     if ( $item->{Key} eq "Queue" ) {
@@ -442,6 +463,8 @@ sub ParseQuery {
 
     setvalue($query, "{0.0}", {});
     setvalue($query, "{0.0}{Subkey}", {});
+    setvalue($query, "{0.0}{Subkey}{1.0}", {});
+    setvalue($query, "{0.0}{Subkey}{1.0}{Subkey}", {});
 
     # get the FIELDS from Tickets_Overlay
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
@@ -697,6 +720,7 @@ sub nextkey {
     my ( $prefix, $depth, $num ) = parsekey($key);
 
     my $k = "$depth." . ( $num + 1 );
+    
     return $prefix . "{$k}";
 }
 
@@ -799,15 +823,15 @@ sub fixsubkeys {
     }
 }
 
-#sub getaggregator {
-#    my $hash = shift;
-#    my $key  = shift;
-#
-#    my $parent = parentkey($key);
-#    my $ea = gethash($hash, $parent . "{EA}");
-#
-#    return $ea;
-#}
+sub getaggregator {
+    my $hash = shift;
+    my $key  = shift;
+
+    my $parent = parentkey($key);
+    my $ea = gethash($hash, $parent . "{EA}");
+
+    return $ea;
+}
 
 sub setaggregator {
     my $hash = shift;
