@@ -29,9 +29,10 @@
 
 <%INIT>
 my $groups = new RT::Groups($session{'CurrentUser'});
-$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'System');
+$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => $Domain);
 
 </%INIT>
 <%ARGS>
 $Name => 'groups'
+$Domain => 'UserDefined';
 </%ARGS>
