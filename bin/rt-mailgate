@@ -75,6 +75,9 @@ while (my $flag = shift @ARGV) {
     if (($flag eq '-q') or ($flag eq '--queue')) {
 	$Queue = shift @ARGV;
     } 
+    if ($flag eq '--ticket-id-from-extension') {
+       $TicketId = $ENV{'EXTENSION'};
+    }
     if ($flag eq '--queue-from-extension') {
        $Queue = $ENV{'EXTENSION'};
     }
@@ -110,8 +113,8 @@ my $MessageId = $head->get('Message-Id') ||
 $Subject = $head->get('Subject') || "[no subject]";
 chomp $Subject;
 
-# Get the ticket ID
-$TicketId = ParseTicketId($Subject);
+# Get the ticket ID unless it's already set
+$TicketId = ParseTicketId($Subject) unless ($TicketId);
 
 #Set up a queue object
 my $QueueObj = RT::Queue->new($CurrentUser);
