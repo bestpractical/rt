@@ -103,16 +103,18 @@ my $search;
 my $title = loc("Query Builder");
 
 # {{{ Clear out unwanted data
-if ($NewQuery or $ARGS{'Delete'}) {
+if ( $NewQuery or $ARGS{'Delete'} ) {
+
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
-    $Query = '';
-    $Format = '';
+    $Query       = '';
+    $Format      = '';
     $Description = '';
-    $SearchId = '';
-    $Order = '';
-    $OrderBy = '';
+    $SearchId    = '';
+    $Order       = '';
+    $OrderBy     = '';
     $RowsPerPage = '';
+
     # ($search hasn't been set yet; no need to clear)
 
     # ..then wipe the session out..
@@ -121,6 +123,7 @@ if ($NewQuery or $ARGS{'Delete'}) {
     # ..and the search results.
     $session{'tickets'}->CleanSlate() if defined $session{'tickets'};
 }
+
 # }}}
 
 # {{{ Attempt to load what we can from the session, set defaults
@@ -130,61 +133,72 @@ $search_hash = $session{'CurrentSearchHash'};
 
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
-$Query ||= $search_hash->{'Query'};
-$Format ||= $search_hash->{'Format'};
+$Query       ||= $search_hash->{'Query'};
+$Format      ||= $search_hash->{'Format'};
 $Description ||= $search_hash->{'Description'};
-$SearchId ||= $search_hash->{'SearchId'} || 'new';
-$Order ||= $search_hash->{'Order'} || 'ASC';
-$OrderBy ||= $search_hash->{'OrderBy'} || 'id';
-$RowsPerPage = ($search_hash->{'RowsPerPage'} || 50) unless defined ($RowsPerPage);
+$SearchId    ||= $search_hash->{'SearchId'} || 'new';
+$Order       ||= $search_hash->{'Order'} || 'ASC';
+$OrderBy     ||= $search_hash->{'OrderBy'} || 'id';
+$RowsPerPage = ( $search_hash->{'RowsPerPage'} || 50 )
+  unless defined($RowsPerPage);
 $search ||= $search_hash->{'Object'};
+
 # }}}
 
 my @actions = ();
 my %queues;
 
 # Clean unwanted junk from the format
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format) if ($Format);
+$Format = $m->comp( '/Elements/ScrubHTML', Content => $Format ) if ($Format);
 
 # {{{ If we're asked to delete the current search, make it go away and reset the search parameters
 if ( $ARGS{'Delete'} ) {
+
     # We set $SearchId to 'new' above already, so peek into the %ARGS
     if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         my $obj_type  = $1;
         my $obj_id    = $2;
         my $search_id = $3;
-	
+
         my $container_object;
-        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
-            $container_object =    $session{'CurrentUser'}->UserObj;
+        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id )
+        {
+            $container_object = $session{'CurrentUser'}->UserObj;
         }
-        elsif ($obj_type eq 'RT::Group') {
-            $container_object = RT::Group->new($session{'CurrentUser'});
+        elsif ( $obj_type eq 'RT::Group' ) {
+            $container_object = RT::Group->new( $session{'CurrentUser'} );
             $container_object->Load($obj_id);
         }
 
-        if ($container_object->id ) { 
-	    # We have the object the entry is an attribute on; delete
-	    # the entry..
-	    $container_object->Attributes->DeleteEntry( Name => 'SavedSearch', id   => $search_id);
-	}
+        if ( $container_object->id ) {
+
+            # We have the object the entry is an attribute on; delete
+            # the entry..
+            $container_object->Attributes->DeleteEntry(
+                Name => 'SavedSearch',
+                id   => $search_id
+            );
+        }
 
     }
 }
+
 # }}}
 
 # {{{ If the user wants to copy a search, uncouple from the one that this was based on, but don't erase the $Query or $Format
 if ( $ARGS{'CopySearch'} ) {
-    $SearchId = 'new';
-    $search = undef;
-    $Description = loc("[_1] copy", $Description);
+    $SearchId    = 'new';
+    $search      = undef;
+    $Description = loc( "[_1] copy", $Description );
 }
+
 # }}}
 
 # {{{ if we're asked to revert the current search, we just want to load it
 if ( $ARGS{'Revert'} ) {
     $ARGS{'LoadSavedSearch'} = $SearchId;
 }
+
 # }}}
 
 # {{{ if we're asked to load a search, load it.
@@ -193,15 +207,18 @@ if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
     my $obj_type  = $1;
     my $obj_id    = $2;
     my $search_id = $3;
-    
+
     # We explicitly list out the available types (user and group) and
     # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' ) && ( $obj_id == $session{'CurrentUser'}->id ) ) {
-        $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-	
+    if (   ( $obj_type eq 'RT::User' )
+        && ( $obj_id == $session{'CurrentUser'}->id ) )
+    {
+        $search =
+          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+
     }
-    elsif ($obj_type eq 'RT::Group')  {
-        my $group = RT::Group->new($session{'CurrentUser'});
+    elsif ( $obj_type eq 'RT::Group' ) {
+        my $group = RT::Group->new( $session{'CurrentUser'} );
         $group->Load($obj_id);
         $search = $group->Attributes->WithId($search_id);
     }
@@ -240,56 +257,84 @@ my @current_values = @options[@clauses];
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ne "") {
-	# We're adding a $1 clause
-	my $field = $1;
-	my ($keyword, $op, $value);
+    if (
+        $arg =~ m/^ValueOf(.+)/
+        && ( ref $ARGS{$arg} eq "ARRAY"
+            ? grep { $_ ne "" } @{ $ARGS{$arg} }
+            : $ARGS{$arg} ne "" )
+      )
+    {
 
-	#figure out if it's a grouping
-	if ( $ARGS{ $field . "Field" } ) {
-	    $keyword = $ARGS{ $field . "Field" };
-	}
-	else {
-	    $keyword = $field;
-	}
+        # We're adding a $1 clause
+        my $field = $1;
+        my ( $keyword, $op, $value );
 
-        $value = $ARGS{'ValueOf' . $field};
-        $op = $ARGS{ $field . 'Op' };
-	if ( $value eq 'NULL' && $op =~ /=/) {
-            if ($op eq '=') {
-                $op = "IS";
-            } elsif ($op eq '!=') {
-                $op = "IS NOT";
-            }
-
-            # This isn't "right", but...
-            # It has to be this way until #5182 is fixed
-            $value = "'NULL'";
-	} else {
-            $value = "'$value'";
+        #figure out if it's a grouping
+        if ( $ARGS{ $field . "Field" } ) {
+            $keyword = $ARGS{ $field . "Field" };
+        }
+        else {
+            $keyword = $field;
         }
 
-	my $clause = {
-            Key   => $keyword,
-            Op    => $op,
-            Value => $value
-        };
-	    
-	my $newnode = Tree::Simple->new($clause);
-	if (@current_values) {
-            foreach my $value (@current_values) {
-                my $newindex = $value->getIndex() + 1;
-                $value->insertSibling($newindex, $newnode);
-                $value = $newnode;
+        my ( @ops, @values );
+        if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {
+
+            # we have many keys/values to iterate over, because there is
+            # more than one CF with the same name.
+            @ops    = @{ $ARGS{ $field . 'Op' } };
+            @values = @{ $ARGS{ 'ValueOf' . $field } };
+        }
+        else {
+            @ops    = ( $ARGS{ $field . 'Op' } );
+            @values = ( $ARGS{ 'ValueOf' . $field } );
+        }
+        $RT::Logger->error("Bad Parameters passed into Query Builder")
+          unless @ops == @values;
+
+        for my $i ( 0 .. @ops - 1 ) {
+            my ( $op, $value ) = ( $ops[$i], $values[$i] );
+            next if $value eq "";
+
+            if ( $value eq 'NULL' && $op =~ /=/ ) {
+                if ( $op eq '=' ) {
+                    $op = "IS";
+                }
+                elsif ( $op eq '!=' ) {
+                    $op = "IS NOT";
+                }
+
+                # This isn't "right", but...
+                # It has to be this way until #5182 is fixed
+                $value = "'NULL'";
             }
-	}
-	else {
-	    $tree->getChild(0)->addChild($newnode);
-	    @current_values = $newnode;
-	}
-	$newnode->getParent()->setNodeValue($ARGS{'AndOr'});
+            else {
+                $value = "'$value'";
+            }
+
+            my $clause = {
+                Key   => $keyword,
+                Op    => $op,
+                Value => $value
+            };
+
+            my $newnode = Tree::Simple->new($clause);
+            if (@current_values) {
+                foreach my $value (@current_values) {
+                    my $newindex = $value->getIndex() + 1;
+                    $value->insertSibling( $newindex, $newnode );
+                    $value = $newnode;
+                }
+            }
+            else {
+                $tree->getChild(0)->addChild($newnode);
+                @current_values = $newnode;
+            }
+            $newnode->getParent()->setNodeValue( $ARGS{'AndOr'} );
+        }
     }
 }
+
 # }}}
 
 # {{{ Move things around
@@ -300,8 +345,8 @@ if ( $ARGS{"Up"} ) {
             if ( $value->getIndex() > 0 ) {
                 my $parent = $value->getParent();
                 $parent->removeChild($index);
-                $parent->insertChild($index - 1, $value);
-                $value = $parent->getChild($index - 1);
+                $parent->insertChild( $index - 1, $value );
+                $value = $parent->getChild( $index - 1 );
             }
             else {
                 push( @actions, [ loc("error: can't move up"), -1 ] );
@@ -315,12 +360,12 @@ if ( $ARGS{"Up"} ) {
 elsif ( $ARGS{"Down"} ) {
     if (@current_values) {
         foreach my $value (@current_values) {
-            my $index = $value->getIndex();
+            my $index  = $value->getIndex();
             my $parent = $value->getParent();
-            if ( $value->getIndex() < ($parent->getChildCount - 1) ) {
+            if ( $value->getIndex() < ( $parent->getChildCount - 1 ) ) {
                 $parent->removeChild($index);
-                $parent->insertChild($index + 1, $value);
-                $value = $parent->getChild($index + 1);
+                $parent->insertChild( $index + 1, $value );
+                $value = $parent->getChild( $index + 1 );
             }
             else {
                 push( @actions, [ loc("error: can't move down"), -1 ] );
@@ -334,13 +379,13 @@ elsif ( $ARGS{"Down"} ) {
 elsif ( $ARGS{"Left"} ) {
     if (@current_values) {
         foreach my $value (@current_values) {
-            my $parent = $value->getParent();
+            my $parent      = $value->getParent();
             my $grandparent = $parent->getParent();
-            if (!$grandparent->isRoot) {
+            if ( !$grandparent->isRoot ) {
                 my $index = $parent->getIndex();
                 $parent->removeChild($value);
-                $grandparent->insertChild($index, $value);
-                if ($parent->isLeaf()) {
+                $grandparent->insertChild( $index, $value );
+                if ( $parent->isLeaf() ) {
                     $grandparent->removeChild($parent);
                 }
             }
@@ -357,32 +402,34 @@ elsif ( $ARGS{"Right"} ) {
     if (@current_values) {
         foreach my $value (@current_values) {
             my $parent = $value->getParent();
-            my $index = $value->getIndex();
+            my $index  = $value->getIndex();
             my $newparent;
-            if ($index > 0 ) {
-                my $sibling = $parent->getChild($index - 1);
-                if (ref($sibling->getNodeValue)) {
+            if ( $index > 0 ) {
+                my $sibling = $parent->getChild( $index - 1 );
+                if ( ref( $sibling->getNodeValue ) ) {
                     $parent->removeChild($value);
-                    my $newtree = Tree::Simple->new('AND', $parent);
+                    my $newtree = Tree::Simple->new( 'AND', $parent );
                     $newtree->addChild($value);
-                } else {
+                }
+                else {
                     $parent->removeChild($index);
                     $sibling->addChild($value);
                 }
             }
             else {
                 $parent->removeChild($value);
-                $newparent = Tree::Simple->new('AND', $parent);
+                $newparent = Tree::Simple->new( 'AND', $parent );
                 $newparent->addChild($value);
             }
         }
-    } else {
+    }
+    else {
         push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"DeleteClause"} ) {
     if (@current_values) {
-	$_->getParent()->removeChild($_) for @current_values;
+        $_->getParent()->removeChild($_) for @current_values;
     }
     else {
         push( @actions, [ loc("error: nothing to delete"), -1 ] );
@@ -394,7 +441,7 @@ elsif ( $ARGS{"Toggle"} ) {
         foreach my $value (@current_values) {
             my $parent = $value->getParent();
 
-            if ( $parent->getNodeValue eq 'AND') {
+            if ( $parent->getNodeValue eq 'AND' ) {
                 $parent->setNodeValue('OR');
             }
             else {
@@ -407,83 +454,93 @@ elsif ( $ARGS{"Toggle"} ) {
     }
 }
 elsif ( $ARGS{"Clear"} ) {
-    $tree = Tree::Simple->new(Tree::Simple->ROOT);
+    $tree = Tree::Simple->new( Tree::Simple->ROOT );
 }
+
 # }}}
 
 # {{{ Rebuild $Query based on the additions / movements
-$Query   = "";
-@options = ();
-%queues  = ();
-$optionlist = build_array( \$Query, \@current_values, $tree, \@options, \%queues );
+$Query      = "";
+@options    = ();
+%queues     = ();
+$optionlist =
+  build_array( \$Query, \@current_values, $tree, \@options, \%queues );
 
 sub build_array {
-    my $Query     = shift;
+    my $Query      = shift;
     my $values_ref = shift;
-    my $tree = shift;
-    my ($keys, $queues)    = @_;
+    my $tree       = shift;
+    my ( $keys, $queues ) = @_;
     my $i = 0;
     my $optionlist;
     my $depth = 0;
     my %parens;
 
-    $tree->traverse( sub {
-	my ($_tree) = @_;
+    $tree->traverse(
+        sub {
+            my ($_tree) = @_;
 
-	return if $_tree->getParent->isRoot();
+            return if $_tree->getParent->isRoot();
 
-	push @$keys, $_tree;
-	my $clause = $_tree->getNodeValue();
-	my $str;
-	my $ea = $_tree->getParent()->getNodeValue();
-	if (ref($clause)) {
-	    $str .= $ea . " " if $_tree->getIndex() > 0;
-	    $str .= $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
-	
-	    if ( $clause->{Key} eq "Queue" ) {
-		$queues->{ $clause->{Value} } = 1;
-	    }
-	} else {
-	    $str = $ea if $_tree->getIndex() > 0;
-	}
+            push @$keys, $_tree;
+            my $clause = $_tree->getNodeValue();
+            my $str;
+            my $ea = $_tree->getParent()->getNodeValue();
+            if ( ref($clause) ) {
+                $str .= $ea . " " if $_tree->getIndex() > 0;
+                $str .=
+                  $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
 
-	my $selected;
-	if (grep { $_ == $_tree } @$values_ref ) {
-	    $selected = "SELECTED";
-	}
-	else {
-	    $selected = "";
-	}
+                if ( $clause->{Key} eq "Queue" ) {
+                    $queues->{ $clause->{Value} } = 1;
+                }
+            }
+            else {
+                $str = $ea if $_tree->getIndex() > 0;
+            }
 
-	foreach my $p (keys %parens) {
-	    if ($p > $_tree->getDepth) {
-		$$Query .= ')' x $parens{$p};
-		$parens{$p}--;
-	    }
-	}
+            my $selected;
+            if ( grep { $_ == $_tree } @$values_ref ) {
+                $selected = "SELECTED";
+            }
+            else {
+                $selected = "";
+            }
 
-	$optionlist .= "<option value=$i $selected>" .
-	  ("&nbsp;" x 5 x ($_tree->getDepth() - 1)) . $m->interp->apply_escapes($str, 'h') . "</option>\n";
-	my $parent = $_tree->getParent();
-	if (!($parent->isRoot || $parent->getParent()->isRoot) &&
-	    !ref($parent->getNodeValue())) {
-	    if ( $_tree->getIndex() == 0) {
-		$$Query .= '(';
-		$parens{$_tree->getDepth}++;
-	    }
-	}
-	$$Query .= " " . $str . " ";
+            foreach my $p ( keys %parens ) {
+                if ( $p > $_tree->getDepth ) {
+                    $$Query .= ')' x $parens{$p};
+                    $parens{$p}--;
+                }
+            }
 
-	if ($_tree->getDepth < $depth) {
-	    $$Query .= ')';
-	    $parens{$depth}--;
-	}
+            $optionlist .=
+                "<option value=$i $selected>"
+              . ( "&nbsp;" x 5 x ( $_tree->getDepth() - 1 ) )
+              . $m->interp->apply_escapes( $str, 'h' )
+              . "</option>\n";
+            my $parent = $_tree->getParent();
+            if (   !( $parent->isRoot || $parent->getParent()->isRoot )
+                && !ref( $parent->getNodeValue() ) )
+            {
+                if ( $_tree->getIndex() == 0 ) {
+                    $$Query .= '(';
+                    $parens{ $_tree->getDepth }++;
+                }
+            }
+            $$Query .= " " . $str . " ";
 
-	$i++;
-    });
+            if ( $_tree->getDepth < $depth ) {
+                $$Query .= ')';
+                $parens{$depth}--;
+            }
 
-    foreach my $p (keys %parens) {
-	$$Query .= ") " x $parens{$p};
+            $i++;
+        }
+    );
+
+    foreach my $p ( keys %parens ) {
+        $$Query .= ") " x $parens{$p};
     }
 
     return $optionlist;
@@ -500,18 +557,18 @@ use constant PAREN   => 8;
 use constant KEYWORD => 16;
 
 sub ParseQuery {
-    my $string = shift;
-    my $tree = shift;
+    my $string  = shift;
+    my $tree    = shift;
     my @actions = shift;
-    my $want   = KEYWORD | PAREN;
-    my $last   = undef;
+    my $want    = KEYWORD | PAREN;
+    my $last    = undef;
 
     my $depth = 1;
 
     # make a tree root
-    $$tree = Tree::Simple->new(Tree::Simple->ROOT);
-    my $root = Tree::Simple->new('AND', $$tree);
-    my $lastnode = $root;
+    $$tree = Tree::Simple->new( Tree::Simple->ROOT );
+    my $root       = Tree::Simple->new( 'AND', $$tree );
+    my $lastnode   = $root;
     my $parentnode = $root;
 
     # get the FIELDS from Tickets_Overlay
@@ -525,17 +582,20 @@ sub ParseQuery {
     my $re_aggreg  = qr[(?i:AND|OR)];
     my $re_value   = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
     my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
-    my $re_op      = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)] ;    # long to short
+    my $re_op      =
+      qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]
+      ;    # long to short
     my $re_paren = qr'\(|\)';
 
-    # assume that $ea is AND if it's not set
+    # assume that $ea is AND if it is not set
     my ( $ea, $key, $op, $value ) = ( "AND", "", "", "" );
 
     # order of matches in the RE is important.. op should come early,
     # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
     # as a keyword or value.
 
-    while ( $string =~ /(
+    while (
+        $string =~ /(
                       $re_aggreg
                       |$re_op
                       |$re_keyword
@@ -560,7 +620,15 @@ sub ParseQuery {
             # Error
             # FIXME: I will only print out the highest $want value
             my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions, [ loc("current: $current, want $want, Error near ->$val<- expecting a " . $token . " in '$string'\n"), -1 ];
+            push @actions,
+              [
+                loc(
+"current: $current, want $want, Error near ->$val<- expecting a "
+                      . $token
+                      . " in '$string'\n"
+                ),
+                -1
+              ];
         }
 
         # State Machine:
@@ -569,20 +637,21 @@ sub ParseQuery {
         # Parens are highest priority
         if ( $current & PAREN ) {
             if ( $val eq "(" ) {
-		$depth++;
-		# make a new node that the clauses can be children of
-		$parentnode = Tree::Simple->new($ea, $parentnode);
+                $depth++;
+
+                # make a new node that the clauses can be children of
+                $parentnode = Tree::Simple->new( $ea, $parentnode );
             }
             else {
-		$depth--;
-		$parentnode = $parentnode->getParent();
-		$lastnode = $parentnode;
+                $depth--;
+                $parentnode = $parentnode->getParent();
+                $lastnode   = $parentnode;
             }
 
             $want = KEYWORD | PAREN | AGGREG;
         }
         elsif ( $current & AGGREG ) {
-            $ea = $val;
+            $ea   = $val;
             $want = KEYWORD | PAREN;
         }
         elsif ( $current & KEYWORD ) {
@@ -629,18 +698,18 @@ sub ParseQuery {
         }
 
         if ( $current & VALUE ) {
-	    if ( $key =~ /^CF./ ) {
-	        $key = "'" . $key . "'";
-	    }
+            if ( $key =~ /^CF./ ) {
+                $key = "'" . $key . "'";
+            }
             my $clause = {
                 Key   => $key,
                 Op    => $op,
                 Value => $val
             };
 
-	    # explicity add a child to it
-	    $lastnode = Tree::Simple->new($clause, $parentnode);
-	    $lastnode->getParent()->setNodeValue($ea);
+            # explicity add a child to it
+            $lastnode = Tree::Simple->new( $clause, $parentnode );
+            $lastnode->getParent()->setNodeValue($ea);
 
             ( $ea, $key, $op, $value ) = ( "", "", "", "" );
         }
@@ -671,7 +740,7 @@ sub _match {
 
 sub debug {
     my $message = shift;
-    $m->print($message . "<br>");
+    $m->print( $message . "<br>" );
 }
 
 # }}}
@@ -679,16 +748,22 @@ sub debug {
 # }}}
 
 # {{{ Deal with format changes
-my ($AvailableColumns, $CurrentFormat);
-($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', cfqueues => \%queues, %ARGS, Format => $Format);
+my ( $AvailableColumns, $CurrentFormat );
+( $Format, $AvailableColumns, $CurrentFormat ) = $m->comp(
+    'Elements/BuildFormatString',
+    cfqueues => \%queues,
+    %ARGS, Format => $Format
+);
+
 # }}}
 
 # {{{ if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
 
-    if ($search && $search->id) {
-	# This search is based on a previously loaded search -- so
-	# just update the current search object with new values
+    if ( $search && $search->id ) {
+
+        # This search is based on a previously loaded search -- so
+        # just update the current search object with new values
         $search->SetSubValues(
             Format      => $Format,
             Query       => $Query,
@@ -696,83 +771,102 @@ if ( $ARGS{'Save'} ) {
             OrderBy     => $OrderBy,
             RowsPerPage => $RowsPerPage,
         );
-        $search->SetDescription( $Description );
+        $search->SetDescription($Description);
 
     }
     elsif ( $SearchId eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
-	# We're saving a new search
-	my $obj_type  = $1;
-	my $obj_id    = $2;
- 
 
-	# Find out if we're saving on the user, or a group
+        # We're saving a new search
+        my $obj_type = $1;
+        my $obj_id   = $2;
+
+        # Find out if we're saving on the user, or a group
         my $container_object;
-        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
+        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id )
+        {
             $container_object = $session{'CurrentUser'}->UserObj;
         }
-        elsif ($obj_type eq 'RT::Group') {
-            $container_object = RT::Group->new($session{'CurrentUser'});
+        elsif ( $obj_type eq 'RT::Group' ) {
+            $container_object = RT::Group->new( $session{'CurrentUser'} );
             $container_object->Load($obj_id);
         }
 
-        if ($container_object->id ) { 
-	    # If we got one or the other, add the saerch        
-	    my ( $search_id, $search_msg ) = $container_object->AddAttribute(
-									     Name        => 'SavedSearch',
-									     Description => $Description,
-									     Content     => {
-											     Format      => $Format,
-											     Query       => $Query,
-											     Order       => $Order,
-											     OrderBy     => $OrderBy,
-											     RowsPerPage => $RowsPerPage,
-											    }
-									    );
-	    $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-	    # Build new SearchId
-	    $SearchId = ref( $session{'CurrentUser'}->UserObj ) . '-'
-	      . $session{'CurrentUser'}->UserObj->Id . '-SavedSearch-' . $search->Id;
-	}
-        unless ($search->id) {
-            push @actions, [loc("Can't find a saved search to work with"), 0];
+        if ( $container_object->id ) {
+
+            # If we got one or the other, add the saerch
+            my ( $search_id, $search_msg ) = $container_object->AddAttribute(
+                Name        => 'SavedSearch',
+                Description => $Description,
+                Content     => {
+                    Format      => $Format,
+                    Query       => $Query,
+                    Order       => $Order,
+                    OrderBy     => $OrderBy,
+                    RowsPerPage => $RowsPerPage,
+                }
+            );
+            $search =
+              $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+
+            # Build new SearchId
+            $SearchId =
+                ref( $session{'CurrentUser'}->UserObj ) . '-'
+              . $session{'CurrentUser'}->UserObj->Id
+              . '-SavedSearch-'
+              . $search->Id;
+        }
+        unless ( $search->id ) {
+            push @actions, [ loc("Can't find a saved search to work with"), 0 ];
         }
 
     }
     else {
-	push @actions, [loc("Can't save this search"), 0];
+        push @actions, [ loc("Can't save this search"), 0 ];
     }
 
 }
+
 # }}}
 
 # {{{ If we're modifying an old query, check if it has changed
 my $dirty = 0;
-$dirty = 1 if defined $search and 
-  ($search->SubValue('Format')      ne $Format      or
-   $search->SubValue('Query')       ne $Query       or 
-   $search->SubValue('Order')       ne $Order       or
-   $search->SubValue('OrderBy')     ne $OrderBy     or
-   $search->SubValue('RowsPerPage') ne $RowsPerPage);
+$dirty = 1
+  if defined $search
+  and ($search->SubValue('Format') ne $Format
+    or $search->SubValue('Query')       ne $Query
+    or $search->SubValue('Order')       ne $Order
+    or $search->SubValue('OrderBy')     ne $OrderBy
+    or $search->SubValue('RowsPerPage') ne $RowsPerPage );
+
 # }}}
 
 # {{{ Push the updates into the session so we don't loose 'em
-$search_hash->{'SearchId'} = $SearchId;
-$search_hash->{'Format'} = $Format;
-$search_hash->{'Query'} = $Query;
+$search_hash->{'SearchId'}    = $SearchId;
+$search_hash->{'Format'}      = $Format;
+$search_hash->{'Query'}       = $Query;
 $search_hash->{'Description'} = $Description;
-$search_hash->{'Object'} = $search;
-$search_hash->{'Order'} = $Order;
-$search_hash->{'OrderBy'} = $OrderBy;
+$search_hash->{'Object'}      = $search;
+$search_hash->{'Order'}       = $Order;
+$search_hash->{'OrderBy'}     = $OrderBy;
 $search_hash->{'RowsPerPage'} = $RowsPerPage;
 
 $session{'CurrentSearchHash'} = $search_hash;
+
 # }}}
 
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
-    $m->comp("Results.html" , Query => $Query, Format => $Format, Order => $Order, OrderBy => $OrderBy, Rows => $RowsPerPage);
+    $m->comp(
+        "Results.html",
+        Query   => $Query,
+        Format  => $Format,
+        Order   => $Order,
+        OrderBy => $OrderBy,
+        Rows    => $RowsPerPage
+    );
     $m->abort();
 }
+
 # }}}
 
 # {{{ Build a querystring for the tabs
@@ -780,14 +874,20 @@ if ( $ARGS{"DoSearch"} ) {
 my $QueryString;
 if ($NewQuery) {
     $QueryString = '?NewQuery=1';
-} else {
-    $QueryString = '?' . $m->comp('/Elements/QueryString', 
-            Query => $Query,
-            Format => $Format,
-            Order => $Order,
-            OrderBy => $OrderBy,
-            Rows => $RowsPerPage) if ($Query);
 }
+else {
+    $QueryString = '?'
+      . $m->comp(
+        '/Elements/QueryString',
+        Query   => $Query,
+        Format  => $Format,
+        Order   => $Order,
+        OrderBy => $OrderBy,
+        Rows    => $RowsPerPage
+      )
+      if ($Query);
+}
+
 # }}}
 
 </%INIT>
@@ -804,3 +904,4 @@ $RowsPerPage => undef
 $HideResults => 0
 @clauses => ()
 </%ARGS>
+
