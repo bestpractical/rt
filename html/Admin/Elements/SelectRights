@@ -30,7 +30,7 @@
 
 
     $ACLObj->LimitToObject( Id => $ObjectId, Type => $ObjectType);
-    $ACLObj->LimitToPrincipal( Id => $PrincipalId, Type => $PrincipalType);
+    $ACLObj->LimitToPrincipal( Id => $PrincipalId);#, Type => $PrincipalType);
 
 
     if ($ObjectType eq 'Queue') { 
@@ -47,6 +47,6 @@
 <%ARGS>
 $PrincipalType => undef
 $PrincipalId => undef
-$ObjectId => undef
+$ObjectId => 0
 $ObjectType => undef
 </%ARGS>

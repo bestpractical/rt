@@ -133,7 +133,8 @@ my @groups;
 unless ($LastVersion) {
     @groups = (
         {
-            Name        => 'Everyone',
+            Name        => '',
+            Type        => 'Everyone',
             Domain      => 'SystemInternal',
             Instance    => '',
             Description => 'Pseudogroup for internal use',

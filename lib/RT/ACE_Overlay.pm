@@ -272,15 +272,12 @@ sub Delete {
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    use Data::Dumper;
-    $RT::Logger->debug("Before, the key cache is ". Dumper(RT::User->_ACLCache()));
     RT::User->_InvalidateACLCache();
-    $RT::Logger->debug("Afterwards, the key cache is ". Dumper(RT::User->_ACLCache()));
     if ($val) {
-	return ($val, $self->loc('ACE Deleted'));
+	return ($val, $self->loc('Right revoked'));
     }	
     else {
-	return (0, $self->loc('ACE could not be deleted'));
+	return (0, $self->loc('Right could not be revoked'));
     }
 }
 

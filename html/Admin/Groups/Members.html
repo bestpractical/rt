@@ -41,7 +41,7 @@
 <&|/l&>Groups</&>
 <ul>
 % my $GroupMembers = $Group->MembersObj;
-% $GroupMembers->LimitToSystemGroups();
+% $GroupMembers->LimitToGroups();
 % while (my $member = $GroupMembers->Next()) {
 <LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
 <%$member->MemberObj->Object->Name%>

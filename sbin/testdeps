@@ -21,13 +21,13 @@ $dbd = shift || print_help();
 @modules = qw(
 DBI 1.18
 DBIx::DataSource 0.02
-DBIx::SearchBuilder 0.48
+DBIx::SearchBuilder 0.60
 HTML::Entities 
 MLDBM
 Net::Domain
 Net::SMTP
 Params::Validate 0.02
-HTML::Mason 1.02
+HTML::Mason 1.09
 CGI::Cookie 1.20
 Apache::Session 1.53
 Date::Parse
@@ -43,8 +43,8 @@ Errno
 FreezeThaw
 File::Temp 
 Log::Dispatch 1.6
-Locale::MakeText
-Locale::MakeText::Lexicon
+Locale::Maketext
+Locale::Maketext::Lexicon
 Time::HiRes
 );
 

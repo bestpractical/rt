@@ -51,9 +51,9 @@ sub LimitToUsers {
 # }}}
 
 
-# {{{ LimitToSystemGroups
+# {{{ LimitToGroups
 
-=head2 LimitToSystemGroups
+=head2 LimitToGroups
 
 Limits this search object to Groups who are members of this group.
 This is really useful when you want to haave your UI seperate out
@@ -61,7 +61,7 @@ groups from users for display purposes
 
 =cut
 
-sub LimitToSystemGroups {
+sub LimitToGroups {
     my $self = shift;
 
     my $principals = $self->NewAlias('Principals');

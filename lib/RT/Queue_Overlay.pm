@@ -302,7 +302,7 @@ ok ($group->Id, "Found the AdminCc object for this Queue");
 sub _CreateQueueGroups {
     my $self = shift;
 
-    my @types = qw(Cc AdminCc);
+    my @types = qw(Cc AdminCc Requestor Owner);
 
     foreach my $type (@types) {
         my $type_obj = RT::Group->new($self->CurrentUser);

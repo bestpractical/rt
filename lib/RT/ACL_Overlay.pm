@@ -61,6 +61,9 @@ sub LimitToObject {
 
 Limit the ACL to the principal with PrincipalId Id and PrincipalType Type
 
+Id is not optional.
+Type is.
+
 =cut
 
 sub LimitToPrincipal {
@@ -68,8 +71,9 @@ sub LimitToPrincipal {
     my %args = ( Type => undef,
                  Id => undef,
                  @_);
-
-    $self->Limit(FIELD => 'PrincipalType', OPERATOR=> '=', VALUE => $args{'Type'}, ENTRYAGGREGATOR => 'OR');
+    if (defined $args{'Type'} ){
+        $self->Limit(FIELD => 'PrincipalType', OPERATOR=> '=', VALUE => $args{'Type'}, ENTRYAGGREGATOR => 'OR');
+    }
     $self->Limit(FIELD => 'PrincipalId', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
 
 }
