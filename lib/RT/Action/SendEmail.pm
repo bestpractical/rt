@@ -25,8 +25,6 @@ sub Commit  {
   my $self = shift;
   #send the email
 
-  my @body = grep($_ .= "\n", split(/\n/,$self->{'Body'}));
-
   # We should have some kind of site specific configuration here.  I
   # think the default method for sending an email should be
   # send('sendmail'), but some RT installations might want to use the
@@ -54,7 +52,7 @@ sub Prepare  {
 			    TransactionObj => $self->TransactionObj);
 
   # Header
-  
+
   $self->SetSubject();
 
   # Sets the tag
@@ -74,8 +72,9 @@ sub Prepare  {
 
   $self->SetRecipients() || return 0;
 
-  $self->{'Body'} .= 
-      "\n-------------------------------------------- Managed by Request Tracker\n\n";
+# Todo: add "\n-------------------------------------------- Managed by Request Tracker\n\n" to the message body
+
+  return 1;
   
 }
 
