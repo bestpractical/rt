@@ -9,49 +9,164 @@ use MIME::Entity;
 
 =head1 NAME
 
-  RT::Action::CreateTickets - An Action which users can use to send mail 
-  or can subclassed for more specialized mail sending behavior. 
-  RT::Action::AutoReply is a good example subclass.
+ RT::Action::CreateTickets
+
+Create one or more tickets according to an externally supplied template.
 
 
 =head1 SYNOPSIS
 
-  require RT::Action::CreateTickets;
-  @ISA  = qw(RT::Action::CreateTickets);
-
+ ===Create-Ticket: codereview
+ Subject: Code review for {$Tickets{'TOP'}->Subject}
+ Depended-On-By: {$Tickets{'TOP'}->Id}
+ Content: Someone has created a ticket. you should review and approve it,
+ so they can finish their work
+ ENDOFCONTENT
 
 =head1 DESCRIPTION
 
-Create one or more tickets according to an externally supplied template.
+
+Using the "CreateTickets" ScripAction and mandatory dependencies, RT now has 
+the ability to model complex workflow. When a ticket is created in a queue
+that has a "CreateTickets" scripaction, that ScripAction parses its "Template"
 
 
 
 =head2 FORMAT
 
-===Create-Ticket: <identifier>
-Subject: Some subject
-Owner: <username>
-Requestor: <username>
-Requestor: <username2>
-Requestor: <username3>
-Cc: <username4>
-Cc: <username5>
-AdminCc: <username6>
-AdminCc: <username7>
-CustomField-<Name>: <value>
-Starts: <date>
-Started: <date>
-Due: <date>
-DependsOn: <id>
-DependedOnBy: <id>
-RefersTo: <id>
-ReferredToBy: <id>
-Content-Type: <content-type>
-Content:.....
-...
-ENDCONTENT
+CreateTickets uses the template as a template for an ordered set of tickets 
+to create. The basic format is as follows:
 
 
+ ===Create-Ticket: identifier
+ Param: Value
+ Param2: Value
+ Param3: Value
+ Content: Blah
+ blah
+ blah
+ ENDOFCONTENT
+ ===Create-Ticket: id2
+ Param: Value
+ Content: Blah
+ ENDOFCONTENT
+
+
+Each ===Create-Ticket: section is evaluated as its own 
+Text::Template object, which means that you can embed snippets
+of perl inside the Text::Template using {} delimiters, but that 
+such sections absolutely can not span a ===Create-Ticket boundary.
+
+After each ticket is created, it's stuffed into a hash called %Tickets
+so as to be available during the creation of other tickets during the same 
+ScripAction.  The hash is prepopulated with the ticket which triggered the 
+ScripAction as $Tickets{'TOP'}.  
+
+A simple example:
+
+ ===Create-Ticket: codereview
+ Subject: Code review for {$Tickets{'TOP'}->Subject}
+ Depended-On-By: {$Tickets{'TOP'}->Id}
+ Content: Someone has created a ticket. you should review and approve it,
+ so they can finish their work
+ ENDOFCONTENT
+
+
+
+A convoluted example
+
+ ===Create-Ticket: approval
+ { # Find out who the administrators of the group called "HR" 
+   # of which the creator of this ticket is a member
+    my $name = "HR";
+    q
+    my $groups = RT::Groups->new($RT::SystemUser);
+    $groups->LimitToUserDefinedGroups();
+    $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
+    $groups->WithMember($TransactionObj->CreatorObj->Id);
+ 
+    my $groupid = $groups->First->Id;
+ 
+    my $adminccs = RT::Users->new($RT::SystemUser);
+    $adminccs->WhoHaveRight(Right => "AdminGroup" ObjectType =>"Group", IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, ObjectId => $groupid);
+ 
+     my @admins;
+     while (my $admin = $adminccs->Next) {
+         push (@admins, $admin->EmailAddress); 
+     }
+ }
+ Queue: Approvals
+ Type: Approval
+ AdminCc: {join ("\nAdminCc: ",@admins) }
+ Depended-On-By: {$Tickets{"TOP"}->Id}
+ Refers-To: {$Tickets{"TOP"}->Id}
+ Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
+ Due: {time + 86400}
+ Content-Type: text/plain
+ Content: Your approval is requested for the ticket {$Tickets{"TOP"}->Id}: {$Tickets{"TOP"}->Subject}
+ Blah
+ Blah
+ ENDOFCONTENT
+ ===Create-Ticket: two
+ Subject: Manager approval
+ Depended-On-By: {$Tickets{"TOP"}->Id}
+ Refers-On: {$Tickets{"approval"}->Id}
+ Queue: Approvals
+ Content-Type: text/plain
+ Content: 
+ Your approval is requred for this ticket, too.
+ ENDOFCONTENT
+ 
+=head2 Acceptable fields
+
+A complete list of acceptable fields for this beastie:
+
+
+    *  Queue           => Name or id# of a queue
+       Subject         => A text string
+       Status          => A valid status. defaults to 'new'
+       Due             => Dates can be specified in seconds since the epoch
+                          to be handled literally or in a semi-free textual
+                          format which RT will attempt to parse.
+                        
+                          
+                          
+       Starts          => 
+       Started         => 
+       Resolved        => 
+       Owner           => Username or id of an RT user who can and should own 
+                          this ticket
+   +   Requestor       => Email address
+   +   Cc              => Email address 
+   +   AdminCc         => Email address 
+       TimeWorked      => 
+       TimeEstimated   => 
+       TimeLeft        => 
+       InitialPriority => 
+       FinalPriority   => 
+       Type            => 
+    +  DependsOn       => 
+    +  DependedOnBy    =>
+    +  RefersTo        =>
+    +  ReferredToBy    => 
+    +  Members         =>
+    +  MemberOf        => 
+       Content         => content. Can extend to multiple lines. Everything
+                          within a template after a Content: header is treated
+                          as content until we hit a line containing only 
+                          ENDOFCONTENT
+       ContentType     => the content-type of the Content field
+       CustomField-<id#> => custom field value
+
+    
+     Fields marked with an * are required.
+     Fields marked with a + man have multiple values, simply
+     by repeating the fieldname on a new line with an additional value
+     
+     When parsed, field names are converted to lowercase and have -s stripped.
+
+     Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all 
+     be treated as the same thing.
 
 
 
