@@ -21,11 +21,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Admin/Queue/Basics') &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
     QueueObj => $QueueObj,
     current_tab => $current_tab, 
-    Title => loc('Admin/Queue/Basics') &>
+    Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 
