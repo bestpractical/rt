@@ -51,7 +51,7 @@ if ( defined $session{'tickets'} ) {
 		$session{'tickets'}->PrepForSerialization();
         }
 
-        # Don't $current_toptab = display prev links if we're on the first ticket
+        # Don't display prev links if we're on the first ticket
         if ($item_map->{$Ticket->Id}->{prev}) {
                 $searchtabs->{'_a'} = {
                             class => "nav",
@@ -159,28 +159,28 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 
 my $args = "?" . $m->comp(
     '/Elements/QueryString',
-    Query  => $ARGS{'Query'},
-    Format => $ARGS{'Format'},
-    Rows   => $ARGS{'Rows'}
-  ) if ($ARGS{'Query'});
+    Query  => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
+    Format => $ARGS{'Format'} || $session{'CurrentSearchHash'}->{'Format'},
+    Rows   => $ARGS{'Rows'},
+  ) if ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'});
 
 $tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",
-                 title     => loc('New Query'),
-                 subtabs   => $searchtabs };
+                 title     => loc('New Query')};
 $tabs->{"g"} = { path      => "Search/Build.html$args",
-                 title     => loc('Query Builder'),
-                 subtabs   => $searchtabs };
+                 title     => loc('Query Builder')};
 $tabs->{"h"} = { path      => "Search/Edit.html$args",
                  title     => loc('Advanced'),
                  separator => 1 };
-if ($current_tab =~  "Search/Results.html") {
-$tabs->{"i"} = { path      => "Search/Results.html$args",
-                 title     => loc('Show Results'),
-                 separator => 1 };
-
-$current_tab = "Search/Results.html$args";
-
+if (defined $session{'tickets'} and $session{'tickets'}->Count) {
+  $tabs->{"i"} = { path      => "Search/Results.html$args",
+                   title     => loc('Show Results'),
+                   separator => 1,
+                   subtabs   => $searchtabs };
+  if ($current_tab =~  "Search/Results.html") {
+    $current_tab = "Search/Results.html$args";
+  }
 }
+
 </%INIT>
 
   
