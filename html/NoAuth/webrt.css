@@ -193,9 +193,9 @@ TD.titlebox {
         padding-bottom: 1em;
 }
 
-BLOCKQUOTE.message {
-	font-size: 80%;
-	font-family: "Helvetica", sans-serif;
+SPAN.message {
+	font-size: 100%;
+        font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
 
