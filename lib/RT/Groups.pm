@@ -32,6 +32,12 @@ sub _Init {
   my $self = shift;
   $self->{'table'} = "Groups";
   $self->{'primary_key'} = "id";
+
+  $self->OrderBy( ALIAS => 'main',
+		  FIELD => 'Name',
+		  ORDER => 'ASC');
+
+
   return ( $self->SUPER::_Init(@_));
 }
 # }}}
