@@ -293,7 +293,7 @@ sub UpdateArticleCustomFieldValues {
 	foreach my $value (@allvalues) {
 		$value =~ s/\r\n/\n/gs;
 		if ($value =~ /\n/) {
-			foreach my $subvalue (split(/\r/,$value)) {
+			foreach my $subvalue (split(/\n/,$value)) {
 				$values{$subvalue} = 1;
 			}
 		}
