@@ -311,7 +311,7 @@ commit:
 predist: commit
 	cvs tag -F $(TAG)
 	rm -rf /tmp/$(TAG)
-	cvs export -D now -d /tmp/$(TAG) rt
+	cvs export -D now -d /tmp/$(TAG) -r $(TAG) rt
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
