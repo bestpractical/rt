@@ -1,28 +1,95 @@
-<FORM ACTION="ProcessCreate.html" METHOD="POST">
+%# $Header$
+%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
 
-Create a new ticket in <%$Queue->QueueId%>:
+<& /Elements/Header, Title => "Link up request ".$Ticket->Id &>
 
-<& /Elements/Error, Why => 'Nothing on this page works yet' &>
+<FORM ACTION="Display.html" METHOD="POST">
 
-Owner: <& /Elements/SelectOwner, Name => "ValueOfOwner" &><br>
+<blink>(Warning: work in process - this page probably won't work)</blink><br>
+
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket in queue \"".$Queue->QueueId.'"' &>
+
+%# TODO: Totally ugly&untested code:
+
+<input type="hidden" name="id" value="new">
+% if ($Link eq 'DependsOn') {
+<input type="hidden" name="LinkType" value="DependsOn">
+<input type="hidden" name="LinkFrom" value="<%$LinkFromD%>">
+% if ($Ticket) {
+Request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
+% } else {
+<%$LinkFromD%>
+%}
+should be dependent on this new request:<br><br>
+%} elsif ($Link eq 'MemberOf') {
+<input type="hidden" name="LinkType" value="MemberOf">
+<input type="hidden" name="LinkFrom" value="<%$LinkFromM%>">
+% if ($Ticket) {
+Request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
+% } else {
+<%$LinkFromD%>
+%}
+should become a member of this new request:<br><br>
+%} elsif ($Link eq 'ParentOf') {
+<input type="hidden" name="LinkType" value="MemberOf">
+<input type="hidden" name="LinkTo" value="<%$LinkTo%>">
+The new request entered below should be a member of
+% if ($Ticket) {
+request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
+% } else {
+<%$LinkTo%>
+%}
+<br><br>
+%}
 
 
-Requestors: <INPUT Name="Requestors" SIZE=20>
-Cc: <INPUT NAME="Cc" SIZE=20>
 
-Subject: <INPUT Name="ubject" SIZE=20>
-Status:	<& /Elements/SelectStatus, Name => "Status" &>
+Owner: <& /Elements/SelectOwner, Name => "ValueOfOwner", Queue=>$Queue->Id &><br><br>
 
+Requestors: <INPUT Name="Requestors" SIZE=20><br>
+Cc: <INPUT NAME="Cc" SIZE=20><br>
+
+Subject: <INPUT Name="Subject" SIZE=20><br><br>
+Status:	<& /Elements/SelectStatus, Name => "Status", Default=> 'Open' &>
 
 Upload an attachment: <INPUT TYPE=FILE><br>
 Describe the issue below:<br>
-<TEXTAREA NAME="Content" ROWS=10 COLS=70 WRAP=SOFT>
-</TEXTAREA>
+<TEXTAREA NAME="Content" ROWS=10 COLS=70 WRAP=SOFT></TEXTAREA><br>
 
 
-<INPUT TYPE=SUBMIT VALUE="Submit">
+<INPUT TYPE=SUBMIT VALUE="Submit"><br>
+
+<& /Elements/TitleBoxEnd &>
+
+
+<blink>(blinking messages are really annoying, aren't they? :)</blink><br>
+
+
 <%INIT>
 require RT::Queue;
+require RT::Ticket;
+require RT::Link;
+
 my $Queue = RT::Queue->new($session{'CurrentUser'});
 $Queue->Load($ARGS{'Queue'});
+
+my $Ticket=undef;
+
+# Object orientedness isn't always the best thing - I don't see any
+# other ways of doing the thing below - except making a link object -
+# something I don't want to do (yet).
+my $fid=RT::Link::_IsLocal(undef, $LinkFromD || $LinkFromM || $LinkTo || "");
+if ($fid) {
+  $Ticket=new RT::Ticket($session{'CurrentUser'});
+  $Ticket->Load($fid) || undef $Ticket;
+  &mc_comp("/Elements/Error" , Why => "The specified linking ticket doesn't exist or cannot be loaded") 
+      unless $Ticket;
+}
+
 </%INIT>
+<%ARGS>
+$Link => undef
+$LinkFromM => undef
+$LinkFromD => undef
+$LinkTo => undef
+</%ARGS>
