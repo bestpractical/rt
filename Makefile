@@ -20,7 +20,7 @@ TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 # RT_PATH is the name of the directory you want make to install RT in
 #
 
-RT_PATH			=	/opt/rt
+RT_PATH			=	/opt/rt-1.1
 
 #
 # The rest of these paths are all configurable, but you probably don't want to 
@@ -213,7 +213,7 @@ fixperms:
 	chown -R $(RTUSER) $(RT_PATH)
 	chgrp -R $(RTGROUP) $(RT_PATH)  
 	chmod -R 755 $(RT_LIB_PATH)
-	chmod -R 0700 $(RT_ETC_PATH)
+	chmod -R 0750 $(RT_ETC_PATH)
 	chmod 0755 $(RT_PATH)
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(RT_CGI_PATH)
@@ -235,7 +235,7 @@ initialize: database acls
 
 
 database:
-	su -c "bin/initdb.$(RT_DB) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'" $(DBA)
+	su -c "bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'" $(DBA)
 
 acls:
 	su -c "bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DB_ACL)'" $(DBA)

@@ -11,27 +11,28 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 package RT;
 
-use Strict;
+use strict;
 #this is the RT path
-$rt_dir = "!!RT_PATH!!";
 
 use lib "!!RT_LIB_PATH!!";
+
 require "!!RT_ETC_PATH!!/config.pm";
 
+use Carp;
 use DBIx::Handle;
-use DBIx::Record;
-use DBIx::EasySearch;
-
 
 #TODO: need to identify the database user here....
-DBIx::Handle::Connect($host, $dbname, $rtuser,  $rtpass, $rt_db);
+DBIx::Handle::Connect(Host => $RT::DatabaseHost, 
+		      Database => $RT::DatabaseName, 
+		      User => $RT::DatabaseUser,
+		      Password => $RT::DatabasePassword,
+		      Driver => $RT::DatabaseType);
 
 
 
 require "!!RT_ETC_PATH!!/config.pm";          
 
-$program = shift @ARGV;
-&initialize();
+my $program = shift @ARGV;
 if ($program eq '!!RT_ACTION_BIN!!') {
   # load rt-cli
   require rt::ui::cli::support;
@@ -81,11 +82,3 @@ else {
   print STDERR "RT Has been launched with an illegal launch program ($program)\n";
   exit(1);
 }
-
-
-sub initialize{
-  my ($in_current_user) = @_;
-  $rtversion="!!RT_VERSION!!";
-  return(1,"Welcome to Request Tracker $rtversion");     
-}
-
