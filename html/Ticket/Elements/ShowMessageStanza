@@ -26,6 +26,7 @@ foreach my $stanza (@$Message) {
     if ( ref $stanza eq "ARRAY" ) {
         $m->comp( 'ShowMessageStanza',
                   Depth   => $Depth + 1,
+                  Transaction => $Transaction,
                   Message => $stanza );
     }
     elsif ( ref $stanza eq "HASH" ) {
