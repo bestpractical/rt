@@ -3460,6 +3460,7 @@ sub CustomFieldValues {
     my $cf_values = RT::TicketCustomFieldValues->new( $self->CurrentUser );
     $cf_values->LimitToCustomField($cf->id);
     $cf_values->LimitToTicket($self->Id());
+    $cf_values->OrderBy( FIELD => 'id' );
 
     # @values is a CustomFieldValues object;
     return ($cf_values);

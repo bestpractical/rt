@@ -24,19 +24,15 @@
 <SELECT NAME=<%$Name%>>
 % foreach my $stage (qw(TransactionCreate TransactionBatch)) {
 <OPTION VALUE=<%$stage%>
-print <%$stage%>
-print <%$Default%>
 <% ($stage eq $Default) && 'SELECTED' %>
 ><% loc($stage) %>
 </OPTION>
 % }
-
 <%INIT>
 if ($Default eq '') {
     $Default = 'TransactionCreate';
 }
 </%INIT>
-
 <%ARGS>
 $Default => 'TransactionCreate'
 $Name => 'Stage'

@@ -136,21 +136,21 @@ sub Apply {
     my ($TicketObj, $TransactionObj);
 
     if ( ($TicketObj = $args{'TicketObj'}) ) {
-	$TicketObj->CurrentUser($self->CurrentUser);
+        $TicketObj->CurrentUser($self->CurrentUser);
     }
     else {
-	$TicketObj = RT::Ticket->new($self->CurrentUser);
-	$TicketObj->Load( $args{'Ticket'} )
-	    || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
+        $TicketObj = RT::Ticket->new($self->CurrentUser);
+        $TicketObj->Load( $args{'Ticket'} )
+            || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
     }
 
     if ( ($TransactionObj = $args{'TransactionObj'}) ) {
-	$TransactionObj->CurrentUser($self->CurrentUser);
+        $TransactionObj->CurrentUser($self->CurrentUser);
     }
     else {
-	$TransactionObj = RT::Transaction->new($self->CurrentUser);
-	$TransactionObj->Load( $args{'Transaction'} )
-	    || $RT::Logger->err("$self couldn't load transaction $args{'Transaction'}\n");
+        $TransactionObj = RT::Transaction->new($self->CurrentUser);
+        $TransactionObj->Load( $args{'Transaction'} )
+            || $RT::Logger->err("$self couldn't load transaction $args{'Transaction'}\n");
     }
 
     # {{{ Deal with Scrips
@@ -196,6 +196,9 @@ sub Apply {
         $Scrip->Apply (TicketObj => $TicketObj,
                         TransactionObj => $TransactionObj);
     }
+
+    $TicketObj->CurrentUser( $TicketObj->OriginalUser );
+    $TransactionObj->CurrentUser( $TransactionObj->OriginalUser );
 
     # }}}
 }

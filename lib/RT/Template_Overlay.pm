@@ -375,12 +375,13 @@ sub _ParseContent {
         @_
     );
 
-
+    no warnings 'redefine';
     $T::Ticket      = $args{'TicketObj'};
     $T::Transaction = $args{'TransactionObj'};
     $T::Argument    = $args{'Argument'};
     $T::Requestor   = eval { $T::Ticket->Requestors->UserMembersObj->First->Name };
     $T::rtname      = $RT::rtname;
+    *T::loc         = sub { $T::Ticket->loc(@_) };
 
     # We need to untaint the content of the template, since we'll be working
     # with it

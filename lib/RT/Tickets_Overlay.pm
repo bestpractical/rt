@@ -1600,11 +1600,12 @@ Takes a paramhash of key/value pairs with the following keys:
 
 =over 4
 
-=item KEYWORDSELECT - KeywordSelect id
+=item CUSTOMFIELD - CustomField name or id.  If a name is passed, an additional
+parameter QUEUE may also be passed to distinguish the custom field.
 
-=item OPERATOR - (for KEYWORD only - KEYWORDSELECT operator is always `=')
+=item OPERATOR - The usual Limit operators
 
-=item KEYWORD - Keyword id
+=item VALUE - The value to compare against
 
 =back
 
@@ -1622,7 +1623,13 @@ sub LimitCustomField {
 
     use RT::CustomFields;
     my $CF = RT::CustomField->new( $self->CurrentUser );
-    $CF->Load( $args{CUSTOMFIELD} );
+    if ( $args{CUSTOMFIELD} =~ /^\d+$/) {
+	$CF->Load( $args{CUSTOMFIELD} );
+    }
+    else {
+	$CF->LoadByNameAndQueue( Name => $args{CUSTOMFIELD}, Queue => $args{QUEUE} );
+	$args{CUSTOMFIELD} = $CF->Id;
+    }
 
     #If we are looking to compare with a null value.
     if ( $args{'OPERATOR'} =~ /^is$/i ) {

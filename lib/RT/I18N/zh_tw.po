@@ -17,9 +17,9 @@ msgstr "#%1"
 
 #: html/Approvals/Elements/Approve:26 html/Approvals/Elements/ShowDependency:49 html/SelfService/Display.html:24 html/Ticket/Display.html:25 html/Ticket/Display.html:29
 #. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->Id, $ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($Ticket->id, $Ticket->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -50,7 +50,7 @@ msgstr "%1 %2 %3"
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%7-%2-%3 %4:%5:%6 %1"
 
-#: lib/RT/Ticket_Overlay.pm:3588 lib/RT/Transaction_Overlay.pm:567 lib/RT/Transaction_Overlay.pm:610 lib/RT/Transaction_Vendor.pm:19
+#: lib/RT/Ticket_Overlay.pm:3588 lib/RT/Transaction_Overlay.pm:514 lib/RT/Transaction_Overlay.pm:557 lib/RT/Transaction_Vendor.pm:19
 #. ($cf->Name, $new_value->Content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -63,14 +63,14 @@ msgstr "%2 已新增為 %1"
 msgid "%1 %2 ago"
 msgstr "%1 %2 之前"
 
-#: lib/RT/Ticket_Overlay.pm:3594 lib/RT/Transaction_Overlay.pm:574 lib/RT/Transaction_Vendor.pm:25
+#: lib/RT/Ticket_Overlay.pm:3594 lib/RT/Transaction_Overlay.pm:521 lib/RT/Transaction_Vendor.pm:25
 #. ($cf->Name, $old_value, $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 #. ($field, $old_value, $new_value)
 msgid "%1 %2 changed to %3"
 msgstr "%1 已從 %2 改為 %3"
 
-#: lib/RT/Ticket_Overlay.pm:3591 lib/RT/Transaction_Overlay.pm:570 lib/RT/Transaction_Overlay.pm:616 lib/RT/Transaction_Vendor.pm:22
+#: lib/RT/Ticket_Overlay.pm:3591 lib/RT/Transaction_Overlay.pm:517 lib/RT/Transaction_Overlay.pm:563 lib/RT/Transaction_Vendor.pm:22
 #. ($cf->Name, $old_value)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
@@ -157,13 +157,13 @@ msgstr "別名 %1 需要可用的申請單編號以處理 %3(出自 %2)"
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 看來是個本地物件，卻不在資料庫裡"
 
-#: html/Ticket/Elements/ShowDates:52 lib/RT/Transaction_Overlay.pm:483
+#: html/Ticket/Elements/ShowDates:52 lib/RT/Transaction_Overlay.pm:430
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "%1 (%2)"
 
-#: lib/RT/Transaction_Overlay.pm:537 lib/RT/Transaction_Overlay.pm:702 lib/RT/Transaction_Overlay.pm:711 lib/RT/Transaction_Overlay.pm:714
+#: lib/RT/Transaction_Overlay.pm:484 lib/RT/Transaction_Overlay.pm:649 lib/RT/Transaction_Overlay.pm:658 lib/RT/Transaction_Overlay.pm:661
 #. ($self->Field , ( $self->OldValue || $no_value ) ,  $self->NewValue)
 #. ($self->Field , $q1->Name , $q2->Name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
@@ -171,7 +171,7 @@ msgstr "%1 (%2)"
 msgid "%1 changed from %2 to %3"
 msgstr "%1 的值從 %2 改為 %3"
 
-#: lib/RT/Interface/Web.pm.orig:948 lib/RT/Interface/Web.pm:953
+#: lib/RT/Interface/Web.pm:953
 msgid "%1 could not be set to %2."
 msgstr "無法將 %1 設定為 %2。"
 
@@ -267,7 +267,7 @@ msgstr "%1 會解決在已解決群組裡成員的申請單。"
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "如果 %1 起始申請單依賴於某個鏈結，或是某個鏈結的成員，它將會被延宕。"
 
-#: lib/RT/Transaction_Overlay.pm:435 lib/RT/Transaction_Vendor.pm:37
+#: lib/RT/Transaction_Overlay.pm:382 lib/RT/Transaction_Vendor.pm:37
 #. ($self)
 msgid "%1: no attachment specified"
 msgstr "%1：未指定附件"
@@ -369,7 +369,7 @@ msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件�
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件位址。這<b>將會</b>更改後續的收件者名單。)"
 
-#: html/Ticket/Elements/EditCustomFieldEntries:35 html/Work/Tickets/Elements/EditCustomFieldEntries:39 html/Work/Tickets/Elements/ShowCustomFieldEntries:14
+#: html/Ticket/Elements/EditCustomFieldEntries:35 html/Work/Tickets/Elements/EditCustomFieldEntries:43 html/Work/Tickets/Elements/ShowCustomFieldEntries:14
 msgid "(delete)"
 msgstr "(刪除)"
 
@@ -385,11 +385,11 @@ msgstr "(新增)"
 msgid "(no name listed)"
 msgstr "(沒有列出姓名)"
 
-#: html/Elements/MyRequests:42 html/Elements/MyTickets:44 html/Work/Elements/MyApprovals:37 html/Work/Elements/MyRequests:42 html/Work/Elements/MyTickets:51
+#: html/Elements/MyRequests:42 html/Elements/MyTickets:44 html/Work/Elements/MyApprovals:37 html/Work/Elements/MyRequests:43 html/Work/Elements/MyTickets:52
 msgid "(no subject)"
 msgstr "(沒有主題)"
 
-#: html/Admin/Elements/SelectRights:47 html/Elements/SelectCustomFieldValue:29 html/Ticket/Elements/EditCustomField:64 html/Ticket/Elements/EditCustomFieldValues:52 html/Ticket/Elements/ShowCustomFields:35 html/Work/Elements/EditCustomFieldValues:50 html/Work/Elements/EditCustomFields:32 html/Work/Tickets/Elements/EditCustomFieldValues:33 lib/RT/Transaction_Overlay.pm:536
+#: html/Admin/Elements/SelectRights:47 html/Elements/SelectCustomFieldValue:29 html/Ticket/Elements/EditCustomField:64 html/Ticket/Elements/EditCustomFieldValues:52 html/Ticket/Elements/ShowCustomFields:35 html/Work/Elements/EditCustomFieldValues:50 html/Work/Elements/EditCustomFields:32 html/Work/Tickets/Elements/EditCustomFieldValues:33 lib/RT/Transaction_Overlay.pm:483
 msgid "(no value)"
 msgstr "(無)"
 
@@ -397,11 +397,11 @@ msgstr "(無)"
 msgid "(only one ticket)"
 msgstr "(僅能指定一份申請單)"
 
-#: html/Elements/MyRequests:51 html/Elements/MyTickets:54 html/Work/Elements/List:17 html/Work/Elements/MyRequests:52 html/Work/Elements/MyTickets:66 html/Work/Tickets/Elements/ShowBasics:52
+#: html/Elements/MyRequests:51 html/Elements/MyTickets:54 html/Work/Elements/List:17 html/Work/Elements/MyRequests:53 html/Work/Elements/MyTickets:67 html/Work/Tickets/Elements/ShowBasics:52
 msgid "(pending approval)"
 msgstr "(等待簽核)"
 
-#: html/Elements/MyRequests:53 html/Elements/MyTickets:56 html/Work/Elements/MyRequests:54 html/Work/Elements/MyTickets:68
+#: html/Elements/MyRequests:53 html/Elements/MyTickets:56 html/Work/Elements/MyRequests:55 html/Work/Elements/MyTickets:69
 msgid "(pending other tickets)"
 msgstr "(等待其他申請單)"
 
@@ -409,7 +409,7 @@ msgstr "(等待其他申請單)"
 msgid "(requestor's group)"
 msgstr "(申請人所屬)"
 
-#: html/Admin/Users/Modify.html:49 html/Edit/Users/Info:16
+#: html/Admin/Users/Modify.html:49 html/Edit/Users/Info:26
 msgid "(required)"
 msgstr "(必填)"
 
@@ -601,7 +601,7 @@ msgstr "住址(續)"
 msgid "Adjust Blinking Rate"
 msgstr "調整閃爍速度快慢"
 
-#: NOT FOUND IN SOURCE
+#: html/Edit/Queues/List:12
 msgid "Admin"
 msgstr "管理員"
 
@@ -733,7 +733,7 @@ msgstr "執行其他流程"
 msgid "Alias for"
 msgstr "相當於"
 
-#: html/Edit/Queues/index.html:36 html/Work/Delegates/index.html:13 html/Work/Elements/SelectSearch:11 html/Work/Queues/Select.html:14 html/Work/Queues/index.html:13
+#: html/Work/Delegates/index.html:13 html/Work/Elements/SelectSearch:11 html/Work/Queues/Select.html:14 html/Work/Queues/index.html:13
 msgid "All"
 msgstr "全部"
 
@@ -777,7 +777,7 @@ msgstr "數額"
 msgid "Any Condition"
 msgstr "任意條件"
 
-#: html/Edit/Global/Scrip/List:10 html/Edit/Global/Scrip/Top:74
+#: html/Edit/Global/Scrip/List:10 html/Edit/Global/Scrip/Top:86
 msgid "Apply Template"
 msgstr "引用範本"
 
@@ -890,7 +890,7 @@ msgstr "現有附件"
 msgid "Attachment '%1' could not be loaded"
 msgstr "無法載入附件 '%1'"
 
-#: lib/RT/Transaction_Overlay.pm:443 lib/RT/Transaction_Vendor.pm:50
+#: lib/RT/Transaction_Overlay.pm:390 lib/RT/Transaction_Vendor.pm:50
 msgid "Attachment created"
 msgstr "附件新增完畢"
 
@@ -967,7 +967,7 @@ msgstr "%1 的資料錯誤"
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
 msgstr "附件的處理號碼錯誤。%1 應為 %2\\n"
 
-#: html/Admin/Elements/GroupTabs:38 html/Admin/Elements/QueueTabs:38 html/Admin/Elements/UserTabs:37 html/Edit/Global/autohandler:6 html/Edit/Queues/autohandler:19 html/Edit/Users/index.html:82 html/Ticket/Elements/Tabs:89 html/User/Elements/GroupTabs:37
+#: html/Admin/Elements/GroupTabs:38 html/Admin/Elements/QueueTabs:38 html/Admin/Elements/UserTabs:37 html/Edit/Global/autohandler:6 html/Edit/Queues/autohandler:21 html/Edit/Users/index.html:94 html/Ticket/Elements/Tabs:89 html/User/Elements/GroupTabs:37
 msgid "Basics"
 msgstr "基本資訊"
 
@@ -975,7 +975,7 @@ msgstr "基本資訊"
 msgid "Bcc"
 msgstr "密件副本"
 
-#: html/Admin/Elements/EditScrip:87 html/Admin/Global/GroupRights.html:84 html/Admin/Global/Template.html:45 html/Admin/Global/UserRights.html:53 html/Admin/Global/Workflow.html:46 html/Admin/Groups/GroupRights.html:72 html/Admin/Groups/Members.html:80 html/Admin/Groups/Modify.html:55 html/Admin/Groups/UserRights.html:54 html/Admin/Queues/GroupRights.html:85 html/Admin/Queues/Template.html:44 html/Admin/Queues/UserRights.html:53 html/Admin/Queues/Workflow.html:44 html/User/Groups/Modify.html:55
+#: html/Admin/Elements/EditScrip:95 html/Admin/Global/GroupRights.html:84 html/Admin/Global/Template.html:45 html/Admin/Global/UserRights.html:53 html/Admin/Global/Workflow.html:46 html/Admin/Groups/GroupRights.html:72 html/Admin/Groups/Members.html:80 html/Admin/Groups/Modify.html:55 html/Admin/Groups/UserRights.html:54 html/Admin/Queues/GroupRights.html:85 html/Admin/Queues/Template.html:44 html/Admin/Queues/UserRights.html:53 html/Admin/Queues/Workflow.html:44 html/User/Groups/Modify.html:55
 msgid "Be sure to save your changes"
 msgstr "請別忘了儲存修改。"
 
@@ -1084,7 +1084,7 @@ msgstr "修改申請單"
 msgid "Change password"
 msgstr "更改密碼"
 
-#: html/Edit/Global/Basic/Top:77
+#: html/Edit/Global/Basic/Top:79
 msgid "ChangeOwnerUI"
 msgstr "可否選擇表單承辦人"
 
@@ -1173,11 +1173,11 @@ msgstr "評論(不送給申請人)"
 msgid "Comments about %1"
 msgstr "對 %1 的評論"
 
-#: html/Admin/Users/Modify.html:184 html/Edit/Users/Info:54 html/Ticket/Elements/ShowRequestor:43
+#: html/Admin/Users/Modify.html:184 html/Edit/Users/Info:46 html/Ticket/Elements/ShowRequestor:43
 msgid "Comments about this user"
 msgstr "使用者描述"
 
-#: lib/RT/Transaction_Overlay.pm:554
+#: lib/RT/Transaction_Overlay.pm:501
 msgid "Comments added"
 msgstr "新增評論完畢"
 
@@ -1193,7 +1193,7 @@ msgstr "消除更動完畢"
 msgid "Company Name"
 msgstr "公司名稱"
 
-#: html/Edit/Global/Basic/Top:83
+#: html/Edit/Global/Basic/Top:85
 msgid "CompanySpecific"
 msgstr "各公司獨立顯示"
 
@@ -1265,7 +1265,7 @@ msgstr "回覆"
 msgid "Correspondence Address"
 msgstr "申請單回覆地址"
 
-#: lib/RT/Transaction_Overlay.pm:550
+#: lib/RT/Transaction_Overlay.pm:497
 msgid "Correspondence added"
 msgstr "新增申請單回覆"
 
@@ -1392,7 +1392,7 @@ msgstr "無法從 gpg 回函辨識出該採取的行動\\n"
 msgid "Couldn't find group\\n"
 msgstr "找不到群組\\n"
 
-#: lib/RT/Interface/Web.pm.orig:957 lib/RT/Interface/Web.pm:962
+#: lib/RT/Interface/Web.pm:962
 msgid "Couldn't find row"
 msgstr "找不到此列資料"
 
@@ -1430,10 +1430,10 @@ msgid "Couldn't load Scrips."
 msgstr "無法載入手續。"
 
 #: html/Admin/Groups/GroupRights.html:87 html/Admin/Groups/UserRights.html:74 html/Edit/Global/GroupRight/Add.html:55 html/Edit/Global/GroupRight/Add.html:60 html/Edit/Global/UserRight/Add.html:25 html/Edit/Global/UserRight/Add.html:30 html/Edit/Groups/Member:120 html/Edit/Groups/Members/Add.html:43 html/Edit/Rights/index.html:58 html/Edit/Rights/index.html:63
-#. ($id)
-#. ($Group)
-#. ($Report)
 #. ($ObjectGroup)
+#. ($Report)
+#. ($Group)
+#. ($id)
 msgid "Couldn't load group %1"
 msgstr "無法載入手續 %1"
 
@@ -1447,8 +1447,8 @@ msgid "Couldn't load queue"
 msgstr "無法載入表單"
 
 #: html/Admin/Queues/GroupRights.html:100 html/Admin/Queues/UserRights.html:71 html/Edit/Global/GroupRight/Add.html:51 html/Edit/Global/GroupRight/index.html:82 html/Edit/Global/GroupRight/index.html:87 html/Edit/Global/UserRight/Add.html:21 html/Edit/Global/UserRight/index.html:83 html/Edit/Global/UserRight/index.html:88 html/Edit/Rights/index.html:54
-#. ($id)
 #. ($Queue)
+#. ($id)
 msgid "Couldn't load queue %1"
 msgstr "無法載入表單 %1"
 
@@ -1703,7 +1703,7 @@ msgstr "現有視察員"
 msgid "Custom Field #%1"
 msgstr "自訂欄位 #%1"
 
-#: html/Admin/Elements/QueueTabs:52 html/Admin/Elements/SystemTabs:39 html/Admin/Global/index.html:49 html/Edit/Global/autohandler:7 html/Edit/Queues/autohandler:20 html/Ticket/Elements/ShowSummary:35
+#: html/Admin/Elements/QueueTabs:52 html/Admin/Elements/SystemTabs:39 html/Admin/Global/index.html:49 html/Edit/Global/autohandler:7 html/Edit/Queues/autohandler:22 html/Ticket/Elements/ShowSummary:35
 msgid "Custom Fields"
 msgstr "自訂欄位"
 
@@ -1772,7 +1772,7 @@ msgstr "找不到自訂欄位值"
 msgid "Custom field value deleted"
 msgstr "自訂欄位值刪除成功"
 
-#: html/Admin/Elements/ModifyTemplateAsWorkflow:145 html/Edit/Global/Workflow/Owner.html:90 lib/RT/Transaction_Overlay.pm:558 lib/RT/Transaction_Vendor.pm:5
+#: html/Admin/Elements/ModifyTemplateAsWorkflow:145 html/Edit/Global/Workflow/Owner.html:90 lib/RT/Transaction_Overlay.pm:505 lib/RT/Transaction_Vendor.pm:5
 msgid "CustomField"
 msgstr "自訂欄位"
 
@@ -1780,9 +1780,13 @@ msgstr "自訂欄位"
 msgid "Data error"
 msgstr "資料錯誤"
 
-#: html/Edit/Global/Basic/Top:75
+#: html/Edit/Global/Basic/Top:77
 msgid "DatabaseBindRemote"
 msgstr "容許外部連線"
+
+#: html/Edit/Global/Basic/Top:75
+msgid "DatabaseName"
+msgstr "MySQL資料庫"
 
 #: NOT FOUND IN SOURCE
 msgid "Date of Departure"
@@ -1836,7 +1840,7 @@ msgstr "預設回覆範本"
 msgid "Default transaction template"
 msgstr "預設更動範本"
 
-#: lib/RT/Transaction_Overlay.pm:544
+#: lib/RT/Transaction_Overlay.pm:491
 #. ($type, $self->Field, $self->OldValue, $self->NewValue)
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "預設：%1/%2 已自 %3 改為 %4"
@@ -1873,7 +1877,7 @@ msgstr "代理表單："
 msgid "Delegated Type"
 msgstr "代理表單種類"
 
-#: html/Edit/Users/index.html:86 html/Work/Delegates/Info:31 html/Work/Delegates/List:8 html/Work/Elements/Tab:41 html/Work/Overview/Info:28
+#: html/Edit/Users/index.html:98 html/Work/Delegates/Info:31 html/Work/Delegates/List:8 html/Work/Elements/Tab:41 html/Work/Overview/Info:28
 msgid "Delegates"
 msgstr "代理人"
 
@@ -1933,7 +1937,7 @@ msgstr "刪除申請單"
 msgid "DeleteTicket"
 msgstr "刪除申請單"
 
-#: lib/RT/Transaction_Overlay.pm:189
+#: lib/RT/Transaction_Overlay.pm:136
 msgid "Deleting this object could break referential integrity"
 msgstr "刪除此物件可能破壞參考完整性"
 
@@ -1997,22 +2001,22 @@ msgstr "可接續處理的申請單"
 msgid "Dependencies: \\n"
 msgstr "附屬性：\\n"
 
-#: lib/RT/Transaction_Overlay.pm:638
+#: lib/RT/Transaction_Overlay.pm:585
 #. ($value)
 msgid "Dependency by %1 added"
 msgstr "已加入可接續處理的申請單 %1"
 
-#: lib/RT/Transaction_Overlay.pm:675
+#: lib/RT/Transaction_Overlay.pm:622
 #. ($value)
 msgid "Dependency by %1 deleted"
 msgstr "已移除可接續處理的申請單 %1"
 
-#: lib/RT/Transaction_Overlay.pm:635
+#: lib/RT/Transaction_Overlay.pm:582
 #. ($value)
 msgid "Dependency on %1 added"
 msgstr "已加入需先處理的申請單 %1"
 
-#: lib/RT/Transaction_Overlay.pm:672
+#: lib/RT/Transaction_Overlay.pm:619
 #. ($value)
 msgid "Dependency on %1 deleted"
 msgstr "已移除需先處理的申請單 %1"
@@ -2033,7 +2037,7 @@ msgstr "遞減"
 msgid "Describe the issue below"
 msgstr "在以下欄位描述主題"
 
-#: html/Admin/Elements/AddCustomFieldValue:35 html/Admin/Elements/EditCustomField:38 html/Admin/Elements/EditScrip:33 html/Admin/Elements/ModifyQueue:35 html/Admin/Elements/ModifyTemplate:35 html/Admin/Elements/ModifyTemplateAsWorkflow:192 html/Admin/Groups/Modify.html:48 html/Admin/Queues/Modify.html:47 html/Edit/Global/Workflow/Action:13 html/Edit/Queues/List:8 html/Elements/SelectGroups:26 html/User/Groups/Modify.html:48
+#: html/Admin/Elements/AddCustomFieldValue:35 html/Admin/Elements/EditCustomField:38 html/Admin/Elements/EditScrip:33 html/Admin/Elements/ModifyQueue:35 html/Admin/Elements/ModifyTemplate:35 html/Admin/Elements/ModifyTemplateAsWorkflow:192 html/Admin/Groups/Modify.html:48 html/Admin/Queues/Modify.html:47 html/Edit/Elements/SelectQueues:4 html/Edit/Global/Workflow/Action:13 html/Elements/SelectGroups:26 html/User/Groups/Modify.html:48
 msgid "Description"
 msgstr "描述"
 
@@ -2045,7 +2049,7 @@ msgstr "經辦業務說明"
 msgid "Description:"
 msgstr "描述："
 
-#: html/Work/Tickets/Create.html:132 html/Work/Tickets/Create.html:84 html/Work/Tickets/Elements/EditCustomFields:13 html/Work/Tickets/Elements/EditCustomFields:61 html/Work/Tickets/Elements/ShowCustomFields:14 html/Work/Tickets/Elements/ShowCustomFields:52
+#: html/Work/Tickets/Create.html:132 html/Work/Tickets/Create.html:84 html/Work/Tickets/Elements/EditCustomFields:13 html/Work/Tickets/Elements/EditCustomFields:61 html/Work/Tickets/Elements/ShowCustomFields:14 html/Work/Tickets/Elements/ShowCustomFields:53
 msgid "Details"
 msgstr "細節"
 
@@ -2061,7 +2065,7 @@ msgstr "殘障身分"
 msgid "Disability Type"
 msgstr "殘障類別"
 
-#: html/Edit/Global/GroupRight/List:9 html/Edit/Global/GroupRight/Top:16 html/Edit/Groups/List:11 html/Edit/Groups/Top:19 html/Edit/Queues/Basic/Top:69 html/Edit/Queues/List:17 html/Work/Delegates/Info:48 html/Work/Delegates/Info:53 html/Work/Delegates/List:12 html/Work/Overview/Info:42
+#: html/Edit/Global/GroupRight/List:9 html/Edit/Global/GroupRight/Top:16 html/Edit/Groups/List:11 html/Edit/Groups/Top:19 html/Edit/Queues/Basic/Top:69 html/Edit/Queues/List:15 html/Edit/Queues/List:27 html/Work/Delegates/Info:48 html/Work/Delegates/Info:53 html/Work/Delegates/List:12 html/Work/Overview/Info:42
 msgid "Disabled"
 msgstr "停用"
 
@@ -2236,7 +2240,7 @@ msgstr "有效編號"
 msgid "Either base or target must be specified"
 msgstr "需要指定起始申請單或目的申請單"
 
-#: html/Admin/Users/Modify.html:52 html/Admin/Users/Prefs.html:45 html/Edit/Users/Info:19 html/Edit/Users/List:6 html/Elements/SelectUsers:26 html/Ticket/Elements/AddWatchers:55 html/User/Prefs.html:43 html/Work/Delegates/Info:96 html/Work/Overview/Info:78
+#: html/Admin/Users/Modify.html:52 html/Admin/Users/Prefs.html:45 html/Edit/Elements/SelectUsers:4 html/Edit/Users/List:7 html/Elements/SelectUsers:26 html/Ticket/Elements/AddWatchers:55 html/User/Prefs.html:43 html/Work/Delegates/Info:96 html/Work/Overview/Info:78
 msgid "Email"
 msgstr "電子郵件信箱"
 
@@ -2288,7 +2292,7 @@ msgstr "啟用(取消勾選將停用此表單)"
 msgid "Enabled Custom Fields"
 msgstr "已啟用的自訂欄位"
 
-#: html/Edit/Queues/Basic/Top:74 html/Edit/Queues/List:19
+#: html/Edit/Queues/Basic/Top:74 html/Edit/Queues/List:17 html/Edit/Queues/List:29
 msgid "Enabled Date"
 msgstr "啟用日期"
 
@@ -2300,7 +2304,7 @@ msgstr "啟動日期："
 msgid "Enabled Queues"
 msgstr "已啟用的表單"
 
-#: html/Edit/Queues/Basic/Top:65 html/Edit/Queues/List:15
+#: html/Edit/Queues/Basic/Top:65 html/Edit/Queues/List:13 html/Edit/Queues/List:25
 msgid "Enabled Status"
 msgstr "啟用狀態"
 
@@ -2429,7 +2433,7 @@ msgstr "外部資料庫用戶"
 msgid "ExternalURL"
 msgstr "外部介面網址"
 
-#: html/Admin/Users/Modify.html:72 html/Edit/Users/Info:49
+#: html/Admin/Users/Modify.html:72 html/Edit/Users/Info:41
 msgid "Extra info"
 msgstr "備註"
 
@@ -2518,6 +2522,10 @@ msgstr "尋找/開啟申請單"
 msgid "Find people whose"
 msgstr "尋找人員的"
 
+#: html/Edit/Queues/Top:6
+msgid "Find queues whose"
+msgstr "尋找表單的"
+
 #: html/Search/Listing.html:107 html/Work/Search/index.html:88
 msgid "Find tickets"
 msgstr "尋找申請單"
@@ -2571,7 +2579,7 @@ msgstr "電子表單作業區"
 msgid "Found %quant(%1,ticket)"
 msgstr "找到 %1 張申請單"
 
-#: lib/RT/Interface/Web.pm.orig:959 lib/RT/Interface/Web.pm:964
+#: lib/RT/Interface/Web.pm:964
 msgid "Found Object"
 msgstr "已找到物件"
 
@@ -2635,7 +2643,7 @@ msgstr "性別"
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "取得目前使用者的 pgp 簽章\\n"
 
-#: lib/RT/Transaction_Overlay.pm:604
+#: lib/RT/Transaction_Overlay.pm:551
 #. ($New->Name)
 msgid "Given to %1"
 msgstr "交予 %1"
@@ -2725,7 +2733,7 @@ msgstr "群組名稱"
 msgid "Group Name:"
 msgstr "群組名稱："
 
-#: html/Admin/Elements/GroupTabs:44 html/Admin/Elements/QueueTabs:56 html/Admin/Elements/SystemTabs:43 html/Admin/Global/index.html:54 html/Edit/Global/autohandler:12 html/Edit/Queues/autohandler:25 html/Edit/Users/Group:11 html/Edit/Users/index.html:84
+#: html/Admin/Elements/GroupTabs:44 html/Admin/Elements/QueueTabs:56 html/Admin/Elements/SystemTabs:43 html/Admin/Global/index.html:54 html/Edit/Global/autohandler:12 html/Edit/Queues/autohandler:27 html/Edit/Users/Group:11 html/Edit/Users/index.html:96
 msgid "Group Rights"
 msgstr "群組權限"
 
@@ -2888,11 +2896,11 @@ msgstr "如果此工具程式為 setgid，惡意的本地端用戶即能由此�
 msgid "If you've updated anything above, be sure to"
 msgstr "若您已更新以上資料，請記得按一下"
 
-#: lib/RT/Interface/Web.pm.orig:951 lib/RT/Interface/Web.pm:956
+#: lib/RT/Interface/Web.pm:956
 msgid "Illegal value for %1"
 msgstr "%1 的值錯誤"
 
-#: lib/RT/Interface/Web.pm.orig:954 lib/RT/Interface/Web.pm:959
+#: lib/RT/Interface/Web.pm:959
 msgid "Immutable field"
 msgstr "此欄位值不可更動"
 
@@ -2904,7 +2912,7 @@ msgstr "匯入"
 msgid "Include disabled custom fields in listing."
 msgstr "列出停用的自訂欄位"
 
-#: html/Admin/Queues/index.html:42 html/Edit/Queues/index.html:41
+#: html/Admin/Queues/index.html:42 html/Edit/Queues/Top:9
 msgid "Include disabled queues in listing."
 msgstr "列出停用的表單"
 
@@ -2932,7 +2940,7 @@ msgstr "輸入錯誤"
 msgid "Interest noted"
 msgstr "登記成功"
 
-#: lib/RT/Ticket_Overlay.pm:3885
+#: lib/RT/Ticket_Overlay.pm:3913
 msgid "Internal Error"
 msgstr "內部錯誤"
 
@@ -2953,7 +2961,7 @@ msgstr "錯誤的權限"
 msgid "Invalid Type"
 msgstr "錯誤的類型"
 
-#: lib/RT/Interface/Web.pm.orig:956 lib/RT/Interface/Web.pm:961
+#: lib/RT/Interface/Web.pm:961
 msgid "Invalid data"
 msgstr "錯誤的資料"
 
@@ -3114,11 +3122,11 @@ msgstr "上次更新"
 msgid "Left"
 msgstr "剩餘時間"
 
-#: html/Admin/Users/Modify.html:82 html/Edit/Users/Info:70
+#: html/Admin/Users/Modify.html:82 html/Edit/Users/Info:62
 msgid "Let this user access RT"
 msgstr "允許這名使用者登入"
 
-#: html/Admin/Users/Modify.html:86 html/Edit/Users/Info:76
+#: html/Admin/Users/Modify.html:86 html/Edit/Users/Info:68
 msgid "Let this user be granted rights"
 msgstr "內部成員（具有個人權限）"
 
@@ -3299,12 +3307,12 @@ msgstr "五月"
 msgid "May."
 msgstr "05"
 
-#: lib/RT/Transaction_Overlay.pm:651
+#: lib/RT/Transaction_Overlay.pm:598
 #. ($value)
 msgid "Member %1 added"
 msgstr "成員 %1 新增完畢"
 
-#: lib/RT/Transaction_Overlay.pm:688
+#: lib/RT/Transaction_Overlay.pm:635
 #. ($value)
 msgid "Member %1 deleted"
 msgstr "成員 %1 刪除完畢"
@@ -3337,12 +3345,12 @@ msgstr "隸屬於"
 msgid "Members"
 msgstr "成員"
 
-#: lib/RT/Transaction_Overlay.pm:648
+#: lib/RT/Transaction_Overlay.pm:595
 #. ($value)
 msgid "Membership in %1 added"
 msgstr "所屬群組 %1 加入完畢"
 
-#: lib/RT/Transaction_Overlay.pm:685
+#: lib/RT/Transaction_Overlay.pm:632
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr "所屬群組 %1 移除完畢"
@@ -3371,7 +3379,7 @@ msgstr "信件內文不是純文字，因此無法顯示。"
 msgid "Misc. Expense"
 msgstr "雜費"
 
-#: lib/RT/Interface/Web.pm.orig:958 lib/RT/Interface/Web.pm:963
+#: lib/RT/Interface/Web.pm:963
 msgid "Missing a primary key?: %1"
 msgstr "缺少主鍵值？(%1)"
 
@@ -3665,7 +3673,7 @@ msgstr "表單處理"
 msgid "My approvals"
 msgstr "表單簽核"
 
-#: html/Admin/Elements/AddCustomFieldValue:31 html/Admin/Elements/EditCustomField:33 html/Admin/Elements/ModifyTemplate:27 html/Admin/Elements/ModifyTemplateAsWorkflow:185 html/Admin/Elements/ModifyUser:29 html/Admin/Groups/Modify.html:43 html/Edit/Queues/List:7 html/Edit/Users/Add.html:22 html/Edit/Users/List:5 html/Edit/Users/Search.html:31 html/Elements/SelectGroups:25 html/Elements/SelectUsers:27 html/User/Groups/Modify.html:43 html/Work/Tickets/Cc:18
+#: html/Admin/Elements/AddCustomFieldValue:31 html/Admin/Elements/EditCustomField:33 html/Admin/Elements/ModifyTemplate:27 html/Admin/Elements/ModifyTemplateAsWorkflow:185 html/Admin/Elements/ModifyUser:29 html/Admin/Groups/Modify.html:43 html/Edit/Elements/SelectQueues:3 html/Edit/Queues/List:8 html/Edit/Users/Add.html:22 html/Edit/Users/List:5 html/Edit/Users/Search.html:31 html/Elements/SelectGroups:25 html/Elements/SelectUsers:27 html/User/Groups/Modify.html:43 html/Work/Tickets/Cc:18
 msgid "Name"
 msgstr "名稱"
 
@@ -3689,7 +3697,7 @@ msgstr "從未更動"
 msgid "New"
 msgstr "新建立"
 
-#: html/Admin/Elements/ModifyUser:31 html/Admin/Users/Modify.html:92 html/Edit/Users/Info:41 html/User/Prefs.html:87 html/Work/Preferences/Info:49
+#: html/Admin/Elements/ModifyUser:31 html/Admin/Users/Modify.html:92 html/Edit/Users/Info:33 html/User/Prefs.html:87 html/Work/Preferences/Info:49
 msgid "New Password"
 msgstr "新的密碼"
 
@@ -3793,7 +3801,7 @@ msgstr "下一頁"
 msgid "NickName"
 msgstr "暱稱"
 
-#: html/Admin/Users/Modify.html:62 html/Edit/Users/Info:29 html/User/Prefs.html:50 html/Work/Preferences/Info:26
+#: html/Admin/Users/Modify.html:62 html/User/Prefs.html:50 html/Work/Preferences/Info:26
 msgid "Nickname"
 msgstr "暱稱"
 
@@ -3841,7 +3849,7 @@ msgstr "沒有流程"
 msgid "No action"
 msgstr "暫不處理"
 
-#: lib/RT/Interface/Web.pm.orig:953 lib/RT/Interface/Web.pm:958
+#: lib/RT/Interface/Web.pm:958
 msgid "No column specified"
 msgstr "未指定欄位"
 
@@ -3923,7 +3931,7 @@ msgstr "沒有要進行的查詢"
 msgid "No ticket id specified"
 msgstr "未指定申請單編號"
 
-#: lib/RT/Transaction_Overlay.pm:480 lib/RT/Transaction_Overlay.pm:518
+#: lib/RT/Transaction_Overlay.pm:427 lib/RT/Transaction_Overlay.pm:465
 msgid "No transaction type specified"
 msgstr "未指定更動報告類別"
 
@@ -3939,7 +3947,7 @@ msgstr "找不到符合查詢條件的使用者。"
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "找不到合格的 RT 使用者。RT cvs 處理器已停用。請向 RT 管理者詢問。\\n"
 
-#: lib/RT/Interface/Web.pm.orig:950 lib/RT/Interface/Web.pm:955
+#: lib/RT/Interface/Web.pm:955
 msgid "No value sent to _Set!\\n"
 msgstr "_Set 沒有收到任何值!\\n"
 
@@ -3947,7 +3955,7 @@ msgstr "_Set 沒有收到任何值!\\n"
 msgid "Nobody"
 msgstr "沒有人"
 
-#: lib/RT/Interface/Web.pm.orig:955 lib/RT/Interface/Web.pm:960
+#: lib/RT/Interface/Web.pm:960
 msgid "Nonexistant field?"
 msgstr "欄位不存在？"
 
@@ -4067,7 +4075,7 @@ msgstr "11"
 msgid "November"
 msgstr "十一月"
 
-#: html/Edit/Global/Basic/Top:81
+#: html/Edit/Global/Basic/Top:83
 msgid "OIN104"
 msgstr "104eHRMS 介面"
 
@@ -4153,7 +4161,7 @@ msgstr "僅顯示 %1 之後新增的申請單"
 msgid "Only show approvals for requests created before %1"
 msgstr "僅顯示 %1 之前新增的申請單"
 
-#: html/Edit/Global/GroupRight/List:9 html/Edit/Global/GroupRight/Top:16 html/Edit/Groups/List:11 html/Edit/Groups/Top:18 html/Edit/Queues/Basic/Top:68 html/Edit/Queues/List:17 html/Elements/Quicksearch:30 html/Work/Delegates/Info:48 html/Work/Delegates/Info:51 html/Work/Delegates/List:12 html/Work/Elements/Quicksearch:16 html/Work/Overview/Info:41 html/Work/Tickets/Display.html:51
+#: html/Edit/Global/GroupRight/List:9 html/Edit/Global/GroupRight/Top:16 html/Edit/Groups/List:11 html/Edit/Groups/Top:18 html/Edit/Queues/Basic/Top:68 html/Edit/Queues/List:15 html/Edit/Queues/List:27 html/Elements/Quicksearch:30 html/Work/Delegates/Info:48 html/Work/Delegates/Info:51 html/Work/Delegates/List:12 html/Work/Elements/Quicksearch:16 html/Work/Overview/Info:41 html/Work/Tickets/Display.html:51
 msgid "Open"
 msgstr "開啟"
 
@@ -4197,7 +4205,7 @@ msgstr "選項名稱"
 msgid "Ordering and sorting"
 msgstr "順序與排序方式"
 
-#: html/Admin/Elements/ModifyUser:45 html/Admin/Users/Modify.html:116 html/Edit/Global/Basic/Top:55 html/Elements/SelectUsers:28 html/User/Prefs.html:110 html/Work/Preferences/Info:77
+#: html/Admin/Elements/ModifyUser:45 html/Admin/Users/Modify.html:116 html/Edit/Elements/SelectUsers:7 html/Edit/Global/Basic/Top:55 html/Elements/SelectUsers:28 html/User/Prefs.html:110 html/Work/Preferences/Info:77
 msgid "Organization"
 msgstr "組織名稱"
 
@@ -4251,7 +4259,7 @@ msgstr "承辦人"
 msgid "Owner changed from %1 to %2"
 msgstr "承辦人已從 %1 改為 %2"
 
-#: lib/RT/Transaction_Overlay.pm:592
+#: lib/RT/Transaction_Overlay.pm:539
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "強制將承辦人從 %1 改為 %2"
@@ -4337,7 +4345,7 @@ msgstr "擁有表單權限人員"
 msgid "Perform a user-defined action"
 msgstr "執行使用者自訂的動作"
 
-#: lib/RT/ACE_Overlay.pm:230 lib/RT/ACE_Overlay.pm:236 lib/RT/ACE_Overlay.pm:562 lib/RT/ACE_Overlay.pm:572 lib/RT/ACE_Overlay.pm:582 lib/RT/ACE_Overlay.pm:647 lib/RT/CurrentUser.pm:82 lib/RT/CurrentUser.pm:91 lib/RT/CustomField_Overlay.pm:100 lib/RT/CustomField_Overlay.pm:201 lib/RT/CustomField_Overlay.pm:233 lib/RT/CustomField_Overlay.pm:511 lib/RT/CustomField_Overlay.pm:90 lib/RT/Group_Overlay.pm:1096 lib/RT/Group_Overlay.pm:1100 lib/RT/Group_Overlay.pm:1109 lib/RT/Group_Overlay.pm:1160 lib/RT/Group_Overlay.pm:1164 lib/RT/Group_Overlay.pm:1170 lib/RT/Group_Overlay.pm:423 lib/RT/Group_Overlay.pm:515 lib/RT/Group_Overlay.pm:593 lib/RT/Group_Overlay.pm:601 lib/RT/Group_Overlay.pm:698 lib/RT/Group_Overlay.pm:702 lib/RT/Group_Overlay.pm:708 lib/RT/Group_Overlay.pm:901 lib/RT/Group_Overlay.pm:905 lib/RT/Group_Overlay.pm:918 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:550 lib/RT/Queue_Overlay.pm:564 lib/RT/Queue_Overlay.pm:699 lib/RT/Queue_Overlay.pm:708 lib/RT/Queue_Overlay.pm:721 lib/RT/Queue_Overlay.pm:934 lib/RT/Scrip_Overlay.pm:125 lib/RT/Scrip_Overlay.pm:136 lib/RT/Scrip_Overlay.pm:201 lib/RT/Scrip_Overlay.pm:441 lib/RT/Template_Overlay.pm:284 lib/RT/Template_Overlay.pm:87 lib/RT/Template_Overlay.pm:93 lib/RT/Ticket_Overlay.pm:1386 lib/RT/Ticket_Overlay.pm:1396 lib/RT/Ticket_Overlay.pm:1410 lib/RT/Ticket_Overlay.pm:1544 lib/RT/Ticket_Overlay.pm:1553 lib/RT/Ticket_Overlay.pm:1566 lib/RT/Ticket_Overlay.pm:1915 lib/RT/Ticket_Overlay.pm:2053 lib/RT/Ticket_Overlay.pm:2217 lib/RT/Ticket_Overlay.pm:2286 lib/RT/Ticket_Overlay.pm:2647 lib/RT/Ticket_Overlay.pm:2728 lib/RT/Ticket_Overlay.pm:2832 lib/RT/Ticket_Overlay.pm:2847 lib/RT/Ticket_Overlay.pm:3046 lib/RT/Ticket_Overlay.pm:3056 lib/RT/Ticket_Overlay.pm:3061 lib/RT/Ticket_Overlay.pm:3284 lib/RT/Ticket_Overlay.pm:3288 lib/RT/Ticket_Overlay.pm:3487 lib/RT/Ticket_Overlay.pm:3649 lib/RT/Ticket_Overlay.pm:3701 lib/RT/Ticket_Overlay.pm:3879 lib/RT/Transaction_Overlay.pm:468 lib/RT/Transaction_Overlay.pm:475 lib/RT/Transaction_Overlay.pm:504 lib/RT/Transaction_Overlay.pm:511 lib/RT/User_Overlay.pm:1084 lib/RT/User_Overlay.pm:1532 lib/RT/User_Overlay.pm:692 lib/RT/User_Overlay.pm:727 lib/RT/User_Overlay.pm:983
+#: lib/RT/ACE_Overlay.pm:230 lib/RT/ACE_Overlay.pm:236 lib/RT/ACE_Overlay.pm:562 lib/RT/ACE_Overlay.pm:572 lib/RT/ACE_Overlay.pm:582 lib/RT/ACE_Overlay.pm:647 lib/RT/CurrentUser.pm:82 lib/RT/CurrentUser.pm:91 lib/RT/CustomField_Overlay.pm:100 lib/RT/CustomField_Overlay.pm:201 lib/RT/CustomField_Overlay.pm:233 lib/RT/CustomField_Overlay.pm:511 lib/RT/CustomField_Overlay.pm:90 lib/RT/Group_Overlay.pm:1096 lib/RT/Group_Overlay.pm:1100 lib/RT/Group_Overlay.pm:1109 lib/RT/Group_Overlay.pm:1160 lib/RT/Group_Overlay.pm:1164 lib/RT/Group_Overlay.pm:1170 lib/RT/Group_Overlay.pm:423 lib/RT/Group_Overlay.pm:515 lib/RT/Group_Overlay.pm:593 lib/RT/Group_Overlay.pm:601 lib/RT/Group_Overlay.pm:698 lib/RT/Group_Overlay.pm:702 lib/RT/Group_Overlay.pm:708 lib/RT/Group_Overlay.pm:901 lib/RT/Group_Overlay.pm:905 lib/RT/Group_Overlay.pm:918 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:550 lib/RT/Queue_Overlay.pm:564 lib/RT/Queue_Overlay.pm:699 lib/RT/Queue_Overlay.pm:708 lib/RT/Queue_Overlay.pm:721 lib/RT/Queue_Overlay.pm:934 lib/RT/Scrip_Overlay.pm:125 lib/RT/Scrip_Overlay.pm:136 lib/RT/Scrip_Overlay.pm:201 lib/RT/Scrip_Overlay.pm:441 lib/RT/Template_Overlay.pm:284 lib/RT/Template_Overlay.pm:87 lib/RT/Template_Overlay.pm:93 lib/RT/Ticket_Overlay.pm:1386 lib/RT/Ticket_Overlay.pm:1396 lib/RT/Ticket_Overlay.pm:1410 lib/RT/Ticket_Overlay.pm:1544 lib/RT/Ticket_Overlay.pm:1553 lib/RT/Ticket_Overlay.pm:1566 lib/RT/Ticket_Overlay.pm:1915 lib/RT/Ticket_Overlay.pm:2053 lib/RT/Ticket_Overlay.pm:2217 lib/RT/Ticket_Overlay.pm:2286 lib/RT/Ticket_Overlay.pm:2647 lib/RT/Ticket_Overlay.pm:2728 lib/RT/Ticket_Overlay.pm:2832 lib/RT/Ticket_Overlay.pm:2847 lib/RT/Ticket_Overlay.pm:3046 lib/RT/Ticket_Overlay.pm:3056 lib/RT/Ticket_Overlay.pm:3061 lib/RT/Ticket_Overlay.pm:3284 lib/RT/Ticket_Overlay.pm:3288 lib/RT/Ticket_Overlay.pm:3487 lib/RT/Ticket_Overlay.pm:3649 lib/RT/Ticket_Overlay.pm:3701 lib/RT/Ticket_Overlay.pm:3907 lib/RT/Transaction_Overlay.pm:415 lib/RT/Transaction_Overlay.pm:422 lib/RT/Transaction_Overlay.pm:451 lib/RT/Transaction_Overlay.pm:458 lib/RT/User_Overlay.pm:1084 lib/RT/User_Overlay.pm:1532 lib/RT/User_Overlay.pm:692 lib/RT/User_Overlay.pm:727 lib/RT/User_Overlay.pm:983
 msgid "Permission Denied"
 msgstr "權限不足"
 
@@ -4413,7 +4421,7 @@ msgstr "出發地點"
 msgid "Placeholder"
 msgstr "尚未完工"
 
-#: html/Edit/Elements/PickUsers:31 html/Edit/Elements/PickUsers:44 html/Edit/Elements/SelectCustomFieldType:3 html/Work/Elements/SelectOwner:3 html/Work/Tickets/Elements/EditCustomField:190 html/Work/Tickets/Elements/EditCustomFieldEntry:25 html/Work/Tickets/Elements/EditCustomFieldEntry:36
+#: html/Edit/Elements/PickUsers:31 html/Edit/Elements/PickUsers:44 html/Edit/Elements/SelectCustomFieldType:3 html/Work/Elements/SelectOwner:3 html/Work/Tickets/Elements/EditCustomField:187 html/Work/Tickets/Elements/EditCustomFieldEntry:24 html/Work/Tickets/Elements/EditCustomFieldEntry:35
 msgid "Please Select"
 msgstr "請選擇"
 
@@ -4519,9 +4527,17 @@ msgstr "內部成員"
 msgid "Process Status"
 msgstr "處理狀態"
 
+#: html/Edit/Queues/List:10
+msgid "Project Name"
+msgstr "專案名稱"
+
 #: etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
 msgid "Pseudogroup for internal use"
 msgstr "內部用的虛擬群組"
+
+#: html/Edit/Queues/List:11
+msgid "Public Description"
+msgstr "公開說明"
 
 #: html/Work/Preferences/Info:70
 msgid "Public Info"
@@ -4544,8 +4560,8 @@ msgid "Queue"
 msgstr "表單"
 
 #: html/Admin/Queues/CustomField.html:41 html/Admin/Queues/Scrip.html:49 html/Admin/Queues/Scrips.html:47 html/Admin/Queues/Templates.html:43 html/Admin/Queues/Workflows.html:44
-#. ($id)
 #. ($Queue)
+#. ($id)
 msgid "Queue %1 not found"
 msgstr "找不到表單 %1"
 
@@ -4557,11 +4573,11 @@ msgstr "找不到表單 '%1'\\n"
 msgid "Queue Keyword Selections"
 msgstr "表單關鍵字選取"
 
-#: html/Admin/Elements/ModifyQueue:30 html/Admin/Queues/Modify.html:42 html/Edit/Queues/Basic/Top:13 html/Edit/Queues/Basic/index.html:36 html/Edit/Queues/Global:21 html/Edit/Queues/List:10 html/Edit/Users/Queue:10 html/Work/Delegates/List:6 html/Work/Elements/List:11 html/Work/Queues/List:5 html/Work/Tickets/Create.html:21 html/Work/Tickets/Elements/ShowBasics:6
+#: html/Admin/Elements/ModifyQueue:30 html/Admin/Queues/Modify.html:42 html/Edit/Queues/Basic/Top:13 html/Edit/Queues/Basic/index.html:36 html/Edit/Queues/Global:21 html/Edit/Queues/List:20 html/Edit/Users/Queue:10 html/Work/Delegates/List:6 html/Work/Elements/List:11 html/Work/Queues/List:5 html/Work/Tickets/Create.html:21 html/Work/Tickets/Elements/ShowBasics:6
 msgid "Queue Name"
 msgstr "表單名稱"
 
-#: html/Edit/Queues/List:12 html/Work/Elements/List:25 html/Work/Queues/List:7 html/Work/Tickets/Create.html:34 html/Work/Tickets/Elements/ShowBasics:19
+#: html/Edit/Queues/List:22 html/Work/Elements/List:25 html/Work/Queues/List:7 html/Work/Tickets/Create.html:34 html/Work/Tickets/Elements/ShowBasics:19
 msgid "Queue Owner"
 msgstr "業務承辦人"
 
@@ -4569,7 +4585,7 @@ msgstr "業務承辦人"
 msgid "Queue Priority"
 msgstr "優先等級"
 
-#: html/Edit/Global/GroupRight/Top:24 html/Edit/Global/UserRight/Top:43 html/Edit/Users/Queue:11 html/Edit/Users/index.html:85
+#: html/Edit/Global/GroupRight/Top:24 html/Edit/Global/UserRight/Top:43 html/Edit/Users/Queue:11 html/Edit/Users/index.html:97
 msgid "Queue Rights"
 msgstr "表單權限"
 
@@ -4746,7 +4762,7 @@ msgstr "系統訊息"
 msgid "Read Only"
 msgstr "唯讀"
 
-#: html/Admin/Users/Modify.html:57 html/Admin/Users/Prefs.html:51 html/Edit/Users/Info:24 html/User/Prefs.html:47 html/Work/Preferences/Info:18
+#: html/Admin/Users/Modify.html:57 html/Admin/Users/Prefs.html:51 html/Edit/Elements/SelectUsers:5 html/Edit/Users/List:6 html/User/Prefs.html:47 html/Work/Preferences/Info:18
 msgid "Real Name"
 msgstr "真實姓名"
 
@@ -4758,22 +4774,22 @@ msgstr "真實姓名"
 msgid "Really reject this ticket?"
 msgstr "您確定要駁回這張申請單嗎？"
 
-#: lib/RT/Transaction_Overlay.pm:645
+#: lib/RT/Transaction_Overlay.pm:592
 #. ($value)
 msgid "Reference by %1 added"
 msgstr "已加入 %1 為參考本申請單"
 
-#: lib/RT/Transaction_Overlay.pm:682
+#: lib/RT/Transaction_Overlay.pm:629
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr "已移除 %1 為參考本申請單"
 
-#: lib/RT/Transaction_Overlay.pm:642
+#: lib/RT/Transaction_Overlay.pm:589
 #. ($value)
 msgid "Reference to %1 added"
 msgstr "已加入參考申請單 %1"
 
-#: lib/RT/Transaction_Overlay.pm:679
+#: lib/RT/Transaction_Overlay.pm:626
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr "已移除參考申請單 %1"
@@ -4899,7 +4915,7 @@ msgstr "解決狀態"
 msgid "Resolve"
 msgstr "解決"
 
-#: html/Ticket/Update.html:137 html/Work/Tickets/Update.html:136
+#: html/Ticket/Update.html:137
 #. ($Ticket->id, $Ticket->Subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr "解決申請單 #%1 (%2)"
@@ -4964,12 +4980,12 @@ msgstr "權限撤消完畢"
 msgid "Rights"
 msgstr "權限及代理人"
 
-#: lib/RT/Interface/Web.pm.orig:852 lib/RT/Interface/Web.pm:857
+#: lib/RT/Interface/Web.pm:857
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "無法將權限賦予 %1"
 
-#: lib/RT/Interface/Web.pm.orig:882 lib/RT/Interface/Web.pm:887
+#: lib/RT/Interface/Web.pm:887
 #. ($object_type)
 msgid "Rights could not be revoked for %1"
 msgstr "無法撤消 %1 的權限"
@@ -4994,7 +5010,7 @@ msgstr "交由系統管理員簽核"
 msgid "Run Approval"
 msgstr "簽核執行"
 
-#: html/Edit/Global/Basic/Top:79
+#: html/Edit/Global/Basic/Top:81
 msgid "SMTPDebug"
 msgstr "SMTP 偵錯紀錄"
 
@@ -5056,7 +5072,7 @@ msgstr "手續刪除完畢"
 msgid "Scrips"
 msgstr "手續"
 
-#: html/Edit/Global/autohandler:9 html/Edit/Queues/autohandler:22
+#: html/Edit/Global/autohandler:9 html/Edit/Queues/autohandler:24
 msgid "Scrips "
 msgstr "訊息通知"
 
@@ -5292,7 +5308,7 @@ msgstr "登記成為申請人或副本收件人"
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr "登記成為管理員副本收件人"
 
-#: html/Admin/Elements/ModifyUser:38 html/Admin/Users/Modify.html:190 html/Admin/Users/Prefs.html:31 html/Edit/Users/Info:60 html/User/Prefs.html:148 html/Work/Preferences/Info:113
+#: html/Admin/Elements/ModifyUser:38 html/Admin/Users/Modify.html:190 html/Admin/Users/Prefs.html:31 html/Edit/Users/Info:52 html/User/Prefs.html:148 html/Work/Preferences/Info:113
 msgid "Signature"
 msgstr "簽名檔"
 
@@ -5324,7 +5340,7 @@ msgstr "結果排序方式"
 msgid "SortOrder"
 msgstr "排序順序"
 
-#: html/Work/Elements/List:8 html/Work/Elements/MyApprovals:11
+#: html/Admin/Elements/EditScrip:80 html/Edit/Global/Scrip/Top:75 html/Work/Elements/List:8 html/Work/Elements/MyApprovals:11
 msgid "Stage"
 msgstr "關卡"
 
@@ -5376,7 +5392,7 @@ msgstr "現況"
 msgid "Status Change"
 msgstr "現況改變時"
 
-#: lib/RT/Transaction_Overlay.pm:530
+#: lib/RT/Transaction_Overlay.pm:477
 #. ($self->loc($self->OldValue), $self->loc($self->NewValue))
 msgid "Status changed from %1 to %2"
 msgstr "現況從 %1 改為 %2"
@@ -5397,7 +5413,7 @@ msgstr "強制承辦申請單"
 msgid "StealTicket"
 msgstr "強制承辦申請單"
 
-#: lib/RT/Transaction_Overlay.pm:598
+#: lib/RT/Transaction_Overlay.pm:545
 #. ($Old->Name)
 msgid "Stolen from %1 "
 msgstr "承辦人從 %1 強制更換"
@@ -5410,12 +5426,12 @@ msgstr "子群組"
 msgid "Subject"
 msgstr "主題"
 
-#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:795 lib/RT/Transaction_Overlay.pm:620
+#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:795 lib/RT/Transaction_Overlay.pm:567
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "標題已改為 %1"
 
-#: html/Elements/Submit:58 html/Work/Search/Bulk.html:103
+#: html/Edit/Users/Info:71 html/Elements/Submit:58 html/Work/Search/Bulk.html:103
 msgid "Submit"
 msgstr "送出"
 
@@ -5443,7 +5459,7 @@ msgstr "系統管理員"
 msgid "Sync now"
 msgstr "執行同步"
 
-#: html/Edit/Global/Basic/Top:85
+#: html/Edit/Global/Basic/Top:87
 msgid "Sync104HRMS"
 msgstr "自動同步104HRMS"
 
@@ -5459,7 +5475,7 @@ msgstr "系統"
 msgid "System Defined"
 msgstr "系統定義"
 
-#: html/Admin/Elements/SelectRights:81 lib/RT/ACE_Overlay.pm:566 lib/RT/Interface/Web.pm.orig:851 lib/RT/Interface/Web.pm.orig:881 lib/RT/Interface/Web.pm:856 lib/RT/Interface/Web.pm:886
+#: html/Admin/Elements/SelectRights:81 lib/RT/ACE_Overlay.pm:566 lib/RT/Interface/Web.pm:856 lib/RT/Interface/Web.pm:886
 msgid "System Error"
 msgstr "系統錯誤"
 
@@ -5471,7 +5487,7 @@ msgstr "系統錯誤。設定權限失敗。"
 msgid "System Error. right not granted"
 msgstr "系統錯誤。設定權限失敗。"
 
-#: html/Edit/Users/index.html:83
+#: html/Edit/Users/index.html:95
 msgid "System Rights"
 msgstr "系統權限"
 
@@ -5519,11 +5535,11 @@ msgstr "自行承辦申請單"
 msgid "TakeTicket"
 msgstr "自行承辦申請單"
 
-#: lib/RT/Transaction_Overlay.pm:583
+#: lib/RT/Transaction_Overlay.pm:530
 msgid "Taken"
 msgstr "已受理"
 
-#: html/Admin/Elements/EditScrip:80
+#: html/Admin/Elements/EditScrip:88
 msgid "Template"
 msgstr "範本"
 
@@ -5564,7 +5580,7 @@ msgstr "範本剖析完畢"
 msgid "Templates"
 msgstr "範本"
 
-#: html/Edit/Global/autohandler:8 html/Edit/Queues/autohandler:21
+#: html/Edit/Global/autohandler:8 html/Edit/Queues/autohandler:23
 msgid "Templates "
 msgstr "通知範本"
 
@@ -5572,7 +5588,7 @@ msgstr "通知範本"
 msgid "Templates for %1\\n"
 msgstr "找不到 %1 的範本\\n"
 
-#: lib/RT/Interface/Web.pm.orig:949 lib/RT/Interface/Web.pm:954
+#: lib/RT/Interface/Web.pm:954
 msgid "That is already the current value"
 msgstr "已經是目前欄位的值"
 
@@ -5680,7 +5696,7 @@ msgstr "下列命令會找到 'general' 表單內所有運作中的申請單，�
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "以下命令未被執行：\\n\\n"
 
-#: lib/RT/Interface/Web.pm.orig:952 lib/RT/Interface/Web.pm:957
+#: lib/RT/Interface/Web.pm:957
 msgid "The new value has been set."
 msgstr "新的欄位值設定完成。"
 
@@ -5708,7 +5724,7 @@ msgstr "申請單 %1 %2 (%3)\\n"
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "此工具程式會讓使用者經由 RT 執行任意命令。"
 
-#: lib/RT/Transaction_Overlay.pm:253
+#: lib/RT/Transaction_Overlay.pm:200
 msgid "This transaction appears to have no content"
 msgstr "此項更動報告沒有內容"
 
@@ -5766,7 +5782,7 @@ msgstr "載入申請單 %1\\n"
 msgid "Ticket %1: %2"
 msgstr "申請單 %1：%2"
 
-#: html/Edit/Queues/Basic/Top:30 html/Edit/Queues/List:20 html/Work/Queues/List:9
+#: html/Edit/Queues/Basic/Top:30 html/Edit/Queues/List:30 html/Work/Queues/List:9
 msgid "Ticket Due"
 msgstr "表單處理期限"
 
@@ -5791,7 +5807,7 @@ msgstr "表單運行期限"
 msgid "Ticket Resolved"
 msgstr "申請單已解決"
 
-#: html/Edit/Queues/Basic/Top:20 html/Edit/Queues/Category/List:6 html/Edit/Queues/Category/Top:7 html/Edit/Queues/List:11 html/Edit/Queues/index.html:34 html/Work/Delegates/List:7 html/Work/Delegates/index.html:11 html/Work/Elements/List:12 html/Work/Elements/SelectSearch:9 html/Work/Queues/List:6 html/Work/Queues/Select.html:12 html/Work/Queues/index.html:11 html/Work/Tickets/Create.html:43 html/Work/Tickets/Elements/ShowBasics:34
+#: html/Edit/Queues/Basic/Top:20 html/Edit/Queues/Category/List:6 html/Edit/Queues/Category/Top:7 html/Edit/Queues/List:21 html/Work/Delegates/List:7 html/Work/Delegates/index.html:11 html/Work/Elements/List:12 html/Work/Elements/SelectSearch:9 html/Work/Queues/List:6 html/Work/Queues/Select.html:12 html/Work/Queues/index.html:11 html/Work/Tickets/Create.html:43 html/Work/Tickets/Elements/ShowBasics:34
 msgid "Ticket Type"
 msgstr "表單種類"
 
@@ -5811,7 +5827,7 @@ msgstr "申請單內容類別"
 msgid "Ticket could not be created due to an internal error"
 msgstr "內部錯誤，無法新增申請單"
 
-#: lib/RT/Transaction_Overlay.pm:522
+#: lib/RT/Transaction_Overlay.pm:469
 msgid "Ticket created"
 msgstr "申請單新增完畢"
 
@@ -5819,7 +5835,7 @@ msgstr "申請單新增完畢"
 msgid "Ticket creation failed"
 msgstr "申請單新增失敗"
 
-#: lib/RT/Transaction_Overlay.pm:527
+#: lib/RT/Transaction_Overlay.pm:474
 msgid "Ticket deleted"
 msgstr "申請單刪除完畢"
 
@@ -5922,12 +5938,12 @@ msgstr "頁"
 msgid "Transaction"
 msgstr "更動"
 
-#: lib/RT/Transaction_Overlay.pm:719
+#: lib/RT/Transaction_Overlay.pm:666
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "清除更動報告 %1"
 
-#: lib/RT/Transaction_Overlay.pm:179
+#: lib/RT/Transaction_Overlay.pm:126
 msgid "Transaction Created"
 msgstr "更動報告已新增"
 
@@ -5935,7 +5951,15 @@ msgstr "更動報告已新增"
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
 msgstr "未指定申請單編號，無法新增更動"
 
-#: lib/RT/Transaction_Overlay.pm:774
+#: NOT FOUND IN SOURCE
+msgid "TransactionBatch"
+msgstr "批次更動時"
+
+#: NOT FOUND IN SOURCE
+msgid "TransactionCreate"
+msgstr "新增更動時"
+
+#: lib/RT/Transaction_Overlay.pm:721
 msgid "Transactions are immutable"
 msgstr "不可更改更動報告"
 
@@ -5959,7 +5983,7 @@ msgstr "類別"
 msgid "Unimplemented"
 msgstr "尚無實作"
 
-#: html/Admin/Users/Modify.html:67 html/Edit/Users/Info:34
+#: html/Admin/Users/Modify.html:67
 msgid "Unix login"
 msgstr "外部系統登入帳號"
 
@@ -5980,7 +6004,7 @@ msgstr "全數顯示"
 msgid "Unprivileged"
 msgstr "非內部成員"
 
-#: lib/RT/Transaction_Overlay.pm:579
+#: lib/RT/Transaction_Overlay.pm:526
 msgid "Untaken"
 msgstr "未被受理"
 
@@ -5988,7 +6012,7 @@ msgstr "未被受理"
 msgid "Up"
 msgstr "上一頁"
 
-#: html/Elements/MyTickets:63 html/Search/Bulk.html:32 html/Work/Elements/MyTickets:82 html/Work/Search/Bulk.html:10 html/Work/Tickets/Elements/EditCustomFieldEntries:57
+#: html/Elements/MyTickets:63 html/Search/Bulk.html:32 html/Work/Elements/MyTickets:83 html/Work/Search/Bulk.html:10 html/Work/Tickets/Elements/EditCustomFieldEntries:63
 msgid "Update"
 msgstr "處理"
 
@@ -6012,7 +6036,7 @@ msgstr "更新電子郵件信箱"
 msgid "Update name"
 msgstr "更新帳號"
 
-#: lib/RT/Interface/Web.pm.orig:464 lib/RT/Interface/Web.pm:467
+#: lib/RT/Interface/Web.pm:467
 msgid "Update not recorded."
 msgstr "更新未被記錄"
 
@@ -6037,12 +6061,12 @@ msgstr "更新申請單 # %1"
 msgid "Update ticket #%1"
 msgstr "更新申請單 #%1"
 
-#: html/Ticket/Update.html:139 html/Work/Tickets/Update.html:138
+#: html/Ticket/Update.html:139
 #. ($Ticket->id, $Ticket->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申請單 #%1 (%2)"
 
-#: lib/RT/Interface/Web.pm.orig:462 lib/RT/Interface/Web.pm:465
+#: lib/RT/Interface/Web.pm:465
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的內容並非申請單回覆也不是評論"
 
@@ -6078,7 +6102,7 @@ msgstr "使用者自訂"
 msgid "User ID"
 msgstr "使用者 ID"
 
-#: html/Elements/SelectUsers:25
+#: html/Edit/Elements/SelectUsers:3 html/Elements/SelectUsers:25
 msgid "User Id"
 msgstr "使用者 ID"
 
@@ -6086,7 +6110,7 @@ msgstr "使用者 ID"
 msgid "User Number"
 msgstr "員工編號"
 
-#: html/Admin/Elements/GroupTabs:46 html/Admin/Elements/QueueTabs:59 html/Admin/Elements/SystemTabs:46 html/Admin/Global/index.html:58 html/Edit/Global/autohandler:11 html/Edit/Queues/autohandler:24
+#: html/Admin/Elements/GroupTabs:46 html/Admin/Elements/QueueTabs:59 html/Admin/Elements/SystemTabs:46 html/Admin/Global/index.html:58 html/Edit/Global/autohandler:11 html/Edit/Queues/autohandler:26
 msgid "User Rights"
 msgstr "使用者權限"
 
@@ -6139,7 +6163,7 @@ msgstr "使用者私人資料"
 msgid "UserDefined"
 msgstr "使用者自定"
 
-#: html/Admin/Users/Modify.html:47 html/Edit/Users/Info:14 html/Elements/Login:51 html/Ticket/Elements/AddWatchers:34
+#: html/Admin/Users/Modify.html:47 html/Elements/Login:51 html/Ticket/Elements/AddWatchers:34
 msgid "Username"
 msgstr "帳號"
 
@@ -6171,7 +6195,7 @@ msgstr "以管理員副本收件人身份視察"
 msgid "Watcher loaded"
 msgstr "成功載入視察員資訊"
 
-#: html/Admin/Elements/QueueTabs:41
+#: html/Admin/Elements/QueueTabs:41 html/Edit/Elements/SelectQueues:5
 msgid "Watchers"
 msgstr "視察員"
 
@@ -6264,7 +6288,7 @@ msgstr "流程結束"
 msgid "Workflow deleted"
 msgstr "流程已刪除"
 
-#: html/Edit/Global/autohandler:10 html/Edit/Queues/autohandler:23
+#: html/Edit/Global/autohandler:10 html/Edit/Queues/autohandler:25
 msgid "Workflows"
 msgstr "流程"
 
@@ -6410,7 +6434,7 @@ msgstr "申請單回覆已送出"
 msgid "critical"
 msgstr "嚴重"
 
-#: html/Admin/Elements/ModifyQueue:62 html/Admin/Queues/Modify.html:76 html/Edit/Queues/Basic/Top:34 html/Edit/Queues/List:22 html/Work/Queues/List:11 lib/RT/Date.pm:319
+#: html/Admin/Elements/ModifyQueue:62 html/Admin/Queues/Modify.html:76 html/Edit/Queues/Basic/Top:34 html/Edit/Queues/List:32 html/Work/Queues/List:11 lib/RT/Date.pm:319
 msgid "days"
 msgstr "天"
 
@@ -6527,7 +6551,7 @@ msgstr "沒有名稱"
 msgid "no value"
 msgstr "沒有值"
 
-#: html/Admin/Elements/EditQueueWatchers:26 html/Edit/Groups/Member:40 html/Edit/Groups/Members/Add.html:17 html/Edit/Groups/Members/List:8 html/Edit/Queues/List:22 html/Ticket/Elements/EditWatchers:27 html/Work/Delegates/Info:37 html/Work/Delegates/Info:48 html/Work/Overview/Info:31 html/Work/Queues/List:11 html/Work/Tickets/Elements/EditWatchers:5 html/Work/Tickets/Elements/ShowAttachments:30 html/Work/Tickets/Elements/ShowBasics:27
+#: html/Admin/Elements/EditQueueWatchers:26 html/Edit/Groups/Member:40 html/Edit/Groups/Members/Add.html:17 html/Edit/Groups/Members/List:8 html/Edit/Queues/List:32 html/Ticket/Elements/EditWatchers:27 html/Work/Delegates/Info:37 html/Work/Delegates/Info:48 html/Work/Overview/Info:31 html/Work/Queues/List:11 html/Work/Tickets/Elements/EditWatchers:5 html/Work/Tickets/Elements/ShowAttachments:30 html/Work/Tickets/Elements/ShowBasics:27
 msgid "none"
 msgstr "無"
 

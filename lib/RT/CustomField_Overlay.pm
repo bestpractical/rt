@@ -132,6 +132,12 @@ sub LoadByNameAndQueue {
         @_,
     );
 
+    if ($args{'Queue'} =~ /\D/) {
+	my $QueueObj = RT::Queue->new($self->CurrentUser);
+	$QueueObj->Load($args{'Queue'});
+	$args{'Queue'} = $QueueObj->Id;
+    }
+
     return ( $self->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} ) );
 
 }

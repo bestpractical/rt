@@ -351,7 +351,8 @@ sub HasRight {
 
             unless ($id) {
                 use Carp;
-                $RT::Logger->crit(Carp::cluck("Trying to check $type rights for an unspecified $type"));
+		Carp::cluck("Trying to check $type rights for an unspecified $type");
+                $RT::Logger->crit("Trying to check $type rights for an unspecified $type");
             }
             push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = '$id')"; 
             }

@@ -734,7 +734,7 @@ sub ResetPassword {
 
     my $template = RT::Template->new( $self->CurrentUser );
 
-    if ( $self->IsPrivileged ) {
+    if ( $self->Privileged ) {
         $template->LoadGlobalTemplate('RT_PasswordChange_Privileged');
     }
     else {

@@ -5,7 +5,7 @@
 # 
 # Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -29,7 +29,7 @@ my $LICENSE  = <<EOL;
 
 Copyright (c) 1996-2003 Jesse Vincent <jesse\@bestpractical.com>
 
-(Except where explictly superceded by other copyright notices)
+(Except where explicitly superseded by other copyright notices)
 
 This work is made available to you under the terms of Version 2 of
 the GNU General Public License. A copy of that license should have
