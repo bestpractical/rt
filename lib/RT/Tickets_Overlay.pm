@@ -1686,7 +1686,7 @@ sub _Init  {
 # {{{ sub Count
 sub Count {
   my $self = shift;
-  $self->_ProcessRestrictions if ($self->{'RecalcTicketLimits'} == 1 );
+  $self->_ProcessRestrictions() if ($self->{'RecalcTicketLimits'} == 1 );
   return($self->SUPER::Count());
 }
 # }}}
@@ -1694,7 +1694,7 @@ sub Count {
 # {{{ sub CountAll
 sub CountAll {
   my $self = shift;
-  $self->_ProcessRestrictions if ($self->{'RecalcTicketLimits'} == 1 );
+  $self->_ProcessRestrictions() if ($self->{'RecalcTicketLimits'} == 1 );
   return($self->SUPER::CountAll());
 }
 # }}}
@@ -1729,7 +1729,7 @@ sub ItemsArrayRef {
 sub Next {
 	my $self = shift;
  	
-	$self->_ProcessRestrictions if ($self->{'RecalcTicketLimits'} == 1 );
+	$self->_ProcessRestrictions(BuildItemMap => 1) if ($self->{'RecalcTicketLimits'} == 1 );
 
 	my $Ticket = $self->SUPER::Next();
 	if ((defined($Ticket)) and (ref($Ticket))) {
@@ -1949,12 +1949,23 @@ sub _RestrictionsToClauses {
 
 # {{{ sub _ProcessRestrictions
 
+=head2 _ProcessRestrictions PARAMHASH
+
 # The new _ProcessRestrictions is somewhat dependent on the SQL stuff,
 # but isn't quite generic enough to move into Tickets_Overlay_SQL.
 
+Paramhash takes:
+
+    BuildItemMap 
+        Defaults to undef. If it's true, _ProcessRestrictions will suck in all rows
+        and build up a table of next/prev items for each item found.
+
+=cut
+
 sub _ProcessRestrictions {
     my $self = shift;
-
+    my %args = ( BuildItemMap => undef, 
+                 @_ );
     #Blow away ticket aliases since we'll need to regenerate them for
     #a new search
     delete $self->{'TicketAliases'};
@@ -1976,7 +1987,12 @@ sub _ProcessRestrictions {
 
     $self->{'RecalcTicketLimits'} = 0;
 
+
+    if ($args{'BuildItemMap'}) {
     # Build up a map of first/last/next/prev items, so that we can display search nav quickly
+
+
+
 
     my $items = $self->ItemsArrayRef;
     my $prev = 0 ;
@@ -1993,6 +2009,8 @@ sub _ProcessRestrictions {
     }
     $self->{'item_map'}->{'last'} = $prev;
     }
+ }
+
 }
 
 
