@@ -17,7 +17,7 @@
 #
 #    'PREREQ_PM' => {
 #                     'DBI'                 => 1.13,
-#                     'HTML::Mason'         => 0.89,
+#                     'HTML::Mason'         => 0.895,
 #                     'Date::Manip'         => 0,
 #                     'Date::Format'        => 0,
 #                     'MIME::Entity'        => 5.108,
@@ -41,7 +41,7 @@ $mode = shift || &print_help;
 
 @modules = qw(
 DBI 1.13
-HTML::Mason 0.89
+HTML::Mason 0.895
 Date::Manip
 Date::Format
 MIME::Entity 5.108
@@ -51,6 +51,7 @@ Log::Dispatch 1.6
 HTML::Entities 
 Text::Wrapper
 Text::Template
+Getopt::Long
 DBIx::DataSource
 DBIx::DBSchema 0.14
 DBIx::SearchBuilder 0.13

@@ -141,13 +141,14 @@ my @args =("id=s", \@id,
 
 GetOptions(@args);
 
-#If they want it, print a usage message and get out
+# {{{ If they want it, print a usage message and get out
+
 if ($help) {
     print "This should be a usage message. it will be soon\n";
     exit(0);
 }
 
-
+# }}}
 
 # {{{ Validate any options that were passed in. normalize them.
 
@@ -166,10 +167,8 @@ if ($queue) {
 
 # }}}
 
-
-
-
 # {{{ Check if we're creating, if so, create the ticket and be done
+
 if ($create) {
     debug("Creating a new ticket");
 
@@ -203,6 +202,8 @@ if ($create) {
 		   );
     print $msg . "\n";
 }
+
+# }}}
 
 else {
     #Apply restrictions
@@ -287,12 +288,24 @@ else {
 # }}}
     
     # {{{ Iterate through all tickets we found
-while (my $Ticket = $Tickets->Next()) {
-    debug ("Now working on ticket ". $Ticket->id);
+
+    my ($format, $titles, $code);
     
-    #Run through all the ticket modifications we might want to do
+    #Set up the summary format if we need to
+    if (defined $summary) {
+	my $format_string = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "%id4%subject20";
+	debug ("Show ticket summary with format $format");
+
+	($format, $titles, $code) = BuildListingFormat($format_string);
+    }	
+    printf $format ."\n", eval $titles;
+
+    while (my $Ticket = $Tickets->Next()) {
+	debug ("Now working on ticket ". $Ticket->id);
     
-    # {{{ deal with watchers
+	#Run through all the ticket modifications we might want to do
+	
+	# {{{ deal with watchers
     
     # add / delete requestors
     foreach $value (@requestors) {
@@ -328,8 +341,8 @@ while (my $Ticket = $Tickets->Next()) {
     }	
 
     # }}}
-
-    # {{{ deal with links
+	
+	# {{{ deal with links
 
     # add /delete depends-ons
     
@@ -338,8 +351,8 @@ while (my $Ticket = $Tickets->Next()) {
     # add / delete related-to
     
     # }}}
-
-    # {{{ deal with dates
+	
+	# {{{ deal with dates
 
     #set due 
     
@@ -350,8 +363,8 @@ while (my $Ticket = $Tickets->Next()) {
     #set contacted
     
     # }}}
-
-    # {{{ set other attributes
+	
+	# {{{ set other attributes
     
     #Set priority
 
@@ -364,8 +377,8 @@ while (my $Ticket = $Tickets->Next()) {
     #Set owner
 
     # }}}
-
-    # {{{ Perform ticket comments/replies
+	
+	# {{{ Perform ticket comments/replies
     if ($reply) {
 	debug("Replying to ticket ".$Ticket->Id);
 	
@@ -390,7 +403,7 @@ while (my $Ticket = $Tickets->Next()) {
     }
     
     # }}}
-    # {{{ Display whatever we need to display
+	# {{{ Display whatever we need to display
     # {{{ Display a full ticket listing and history
     if ($history) {
 	#Display the history
@@ -405,19 +418,22 @@ while (my $Ticket = $Tickets->Next()) {
 	    print "You don't have permission to view that ticket.\n";
 	}
     }	
+
     # }}}
     
     # {{{ Display a summary if we need to
     if (defined $summary) {
-	my $format = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "default_format";
-	debug ("Show ticket summary with format $format")
+	debug ("Show ticket summary with format $format");
+	
+	printf $format."\n", eval $code;
+
     }	
-    # }}}
+	# }}}
     
     # }}}
-    
-}
-# }}}
+	
+    }
+    # }}}
     
 }
 
@@ -496,6 +512,7 @@ sub debug {
   If it's handed ! or -, returns !=.  Otherwise returns =.
 
 =cut
+
 sub ParseBooleanOp {
     
     my $op = shift;
@@ -580,6 +597,130 @@ EOFORM
   return();
 }
 # }}}
+
+
+# {{{ sub BuildListingFormat
+sub BuildListingFormat {
+    my $format_string = shift;
+
+    my ($id, @format, @code, @titles);
+    my ($field,$titles,$length, $format);
+
+    my $code = "";
+
+    # {{{ attribs
+    my $attribs = { id => { chars => '4',
+			    justify => 'r',
+			    title => 'id',
+			    value => '$Ticket->id',
+			  },
+		
+		    queue => { chars => '8',
+			       justify => 'l',
+			       title => 'Queue',
+			       value => '$Ticket->QueueObj->id' 
+			     },
+		    subject => { chars => '30',
+				 justify => 'l',
+				 title => 'Subject',
+				 value => '$Ticket->Subject',
+			       },
+		    priority => { chars => '2',
+				  justify => 'r',
+				  title => 'Pri',
+				  value => '$Ticket->Priority',
+				},
+		    final_priority => {  chars => '2',
+					 justify => 'r',
+					 title => 'Fin',
+					 value => '$Ticket->FinalPriority',
+				      },
+		    time_worked => { chars => '6',
+				     justify => 'r',
+				     title => 'Worked',
+				     value => '$Ticket->TimeWorked',
+				   },
+		    time_left => { chars => '5',
+				   justify => 'r',
+				   title => 'Left',
+				   value => '$Ticket->TimeLeft',
+			       
+				 },
+		
+		    status => {  chars => '6',
+				 justify => 'r',
+				 title => 'Status',
+				 value => '$Ticket->Status',
+			      },
+		    owner => {  chars => '10',
+				justify => 'r',
+				title => 'Owner',
+				value => '$Ticket->Owner'
+			     },
+		    requestor => {  chars => '10',
+				    justify => 'r',
+				    title => 'Requestor',
+				    value => '$Ticket->RequestorsAsString'
+				 },
+		    created => {  chars => '12',
+				  justify => 'r',
+				  title => 'Created',
+				  value => '$Ticket->CreatedAsString'
+			       },
+		    updated => {  chars => '12',
+				  justify => 'r',
+				  title => 'Updated',
+				  value => '$Ticket->UpdatedAsString'
+			       },
+		    due => {  chars => '12',
+			      justify => 'r',
+			      title => 'Due',
+			      value => '$Ticket->DueAsString'
+			   },
+		    told => {  chars => '12',
+			       justify => 'r',
+			       title => 'Told',
+			       value => '$Ticket->ToldAsString'
+			    },
+		
+		
+		
+		  };
+    
+    
+    # }}}
+    
+
+    foreach $field (split ('%',$format_string)) {
+	
+	if ($field =~ /^(\D*?)(\d*?)$/) {
+	    $id = $1;
+	    $length = $2;
+	}
+	else {	
+	    debug ("Error parsing $field\n");
+	}
+	if ($length) {
+	    push (@format, "%".$length.".".$length."s ");
+	    
+	    push (@code,  $attribs->{"$id"}->{'value'});
+		  
+	    push (@titles, "'". $attribs->{"$id"}->{title}. "'");
+	}
+	
+	
+    }
+    my $code ="";
+    my $code = join (',', @code);
+    my $format = join (" ", @format);
+    my $titles = join (', ', @titles);
+    
+  
+    return ($format, $titles, $code);
+}
+# }}}
+
+
 
 1;
 
