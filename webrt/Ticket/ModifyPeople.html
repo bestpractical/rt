@@ -3,22 +3,14 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-
-
- 
-%#ACTION="" means submit to self.
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 <& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$TicketObj->Id,   width => "100%" &>
 
 <& Elements/EditPeople, TicketObj => $TicketObj, UserField => $UserField, UserOp => $UserOp, UserString => $UserString &>
 
-
-
-
-<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
 <& /Elements/TitleBoxEnd &>
-
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
 </form>
 
 <%INIT>

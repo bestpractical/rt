@@ -11,15 +11,11 @@
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 
-
-
 <& Elements/EditBasics, TicketObj => $TicketObj &>
-<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
 
-</form>
 <& /Elements/TitleBoxEnd &>
-
-
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
+</form>
 <%INIT>
 
 my $field;

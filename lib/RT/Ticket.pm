@@ -390,7 +390,7 @@ sub _AddWatcher {
     unless ($args{'Silent'}) {
 	$self->_NewTransaction( Type => 'AddWatcher',
 				NewValue => $Watcher->Email,
-				Data => $Watcher->Type);
+				Field => $Watcher->Type);
     }
     
     return ($retval, $msg);
@@ -485,7 +485,7 @@ sub DeleteWatcher {
       else {
           $self->_NewTransaction ( Type => 'DelWatcher',        
                  OldValue => $Watcher->Email,
-                 Data => $Watcher->Type,
+                 Field => $Watcher->Type,
                    );
         $Watcher->Delete();
      }

@@ -374,20 +374,15 @@ sub Description  {
       return "Owner changed from ".$New->UserId." to ".$Old->UserId." by ".$self->Creator->UserId;
 
   }
-  elsif ($self->Type eq 'requestors'){
-    return( "User changed to ".$self->Data." by ".$self->Creator->UserId);
+
+  elsif ($self->Type eq 'AddWatcher'){
+      return( $self->Field." ". $self->NewValue ."added by ".$self->Creator->UserId);
   }
-  elsif ($self->Type eq 'priority') {
-    return( "Priority changed to ".$self->Data." by ".$self->Creator->UserId);
-      }    
-  elsif ($self->Type eq 'final_priority') {
-    return( "Final Priority changed to ".$self->Data." by ".$self->Creator->UserId);
-      }
-  elsif ($self->Type eq 'date_due') {  
-    ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year)=&parse_time(".$self->Data.");
-      $text_time = sprintf ("%s, %s %s %4d %.2d:%.2d:%.2d", $wday, $mon, $mday, $year,$hour,$min,$sec);
-    return( "Date Due changed to $text_time by ".$self->Creator->UserId);
-    }
+  
+  elsif ($self->Type eq 'DelWatcher'){
+      return( $self->Field." ".$self->OldValue ."deleted by ".$self->Creator->UserId);
+  }
+
   elsif ($self->Type eq 'Subject') {
       return( "Subject changed to ".$self->Data." by ".$self->Creator->UserId);
       }
