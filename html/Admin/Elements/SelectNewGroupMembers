@@ -42,8 +42,8 @@
 <%INIT>
 my $users = new RT::Users($session{'CurrentUser'});
 
-$users->Limit(FIELD => 'id', VALUE => $RT::SystemUser->id, OPERATOR => '!=' );
-$users->Limit(FIELD => 'id', VALUE => $RT::Nobody->id, OPERATOR => '!=' );
+$users->Limit(FIELD => 'id', VALUE => $RT::SystemUser->id, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
+$users->Limit(FIELD => 'id', VALUE => $RT::Nobody->id, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND' );
 $users->LimitToPrivileged();
 
 my $groups = new RT::Groups($session{'CurrentUser'});
