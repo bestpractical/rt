@@ -30,9 +30,21 @@
     <td class="label"><&|/l&>Status</&>:</td>
     <td class="value"><&|/l&><% $Ticket->Status%></&></td>
   </tr>
+% if ($Ticket->TimeEstimated) {
+  <tr>
+    <td class="label"><&|/l&>Estimated</&>:</td>
+    <td class="value"><&|/l, $Ticket->TimeEstimated &>[_1] min</&></td>
+  </tr>
+% }
+% if ($Ticket->TimeWorked) {
   <tr>
     <td class="label"><&|/l&>Worked</&>:</td>
-    <td class="value"><&|/l, $TimeWorked &>[_1] min</&></td>
+    <td class="value"><&|/l, $Ticket->TimeWorked &>[_1] min</&></td>
+  </tr>
+% }
+  <tr>
+    <td class="label"><&|/l&>Left</&>:</td>
+    <td class="value"><&|/l, $Ticket->TimeLeft &>[_1] min</&></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Priority</&>:</td>
@@ -43,12 +55,6 @@
     <td class="value"><%$Ticket->QueueObj->Name%></td>
   </tr>
 </table>
-<%INIT>
-my $TimeWorked = $Ticket->TimeWorked;
-if ($Ticket->TimeLeft > 0 ) {
-  $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
-}
-</%INIT>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

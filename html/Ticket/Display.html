@@ -30,8 +30,10 @@
 
 <& /Elements/ListActions, actions => \@Actions &>
 
+<& /Elements/TitleBoxStart, title => loc('Ticket metadata'), contentbg =>
+'#ffffff' &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj &>
-
+<& /Elements/TitleBoxEnd &>
 
 <BR>
 <& /Ticket/Elements/ShowHistory , 

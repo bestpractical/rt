@@ -22,49 +22,43 @@
 %# 
 %# END LICENSE BLOCK
 <TABLE>
-  <TR><td>
-    <table>
+  <TR>
       <td class="label"><&|/l&>Subject</&>:</td>
-      <td class="value">
-        <input name=Subject value="<%$TicketObj->Subject|h%>" SIZE=50>
-      </td>
-    </table>
-  </td></TR>
-  <TR><td>
-    <table>
-      <TD>
-        <& /Elements/ShadedBox, 
-            title => loc('Status'),
-            content => $SelectStatus &>
-      </TD>
-      <TD>
-        <& /Elements/ShadedBox,
-	    title => loc('Time Worked'),
-	    content => "<input name=TimeWorked value=\"".$TicketObj->TimeWorked."\" SIZE=5>" &>
-      </TD>
-      <TD>
-        <& /Elements/ShadedBox,
-	    title => loc('Time Left'),
-	    content => "<input name=TimeLeft value=\"".$TicketObj->TimeLeft."\" SIZE=5>" 
-&>
-      </TD>
-      <TD>
-        <& /Elements/ShadedBox,
-	    title => loc('Priority'),
-	    content => "<input name=Priority value=\"".$TicketObj->Priority."\" SIZE=3>" &>
-      </TD>
-      <TD>
-        <& /Elements/ShadedBox,
-	    title => loc('Final Priority'),
-	    content => "<input name=FinalPriority value=\"".$TicketObj->FinalPriority."\" SIZE=3>" &>
-      </TD>
-      <TD>
-        <& /Elements/ShadedBox,
-            title => loc('Queue'),
-            content => "$SelectQueue" &>
-      </TD>
-    </table>
-  </td></TR>
+      <td class="value"><input name=Subject value="<%$TicketObj->Subject|h%>" SIZE=50></td>
+    </TR>
+
+  <TR>
+      <td class="label"><&|/l&>Status</&>:</td>
+      <td class="value"><%$SelectStatus|n%></td>
+    </TR>
+  <TR>
+      <td class="label"><&|/l&>Queue</&>:</td>
+      <td class="value"><%$SelectQueue|n%></td>
+    </TR>
+  <TR>
+      <td class="label"><&|/l&>Time Estimated</&>:</td>
+      <td class="value"><input name=TimeEstimated value="<%$TicketObj->TimeEstimated|h%>" SIZE="5"></td>
+    </TR>
+  <TR>
+      <td class="label"><&|/l&>Time Worked</&>:</td>
+      <td class="value"><input name=TimeWorked value="<%$TicketObj->TimeWorked|h%>" SIZE="5"></td>
+    </TR>
+  <TR>
+      <td class="label"><&|/l&>Time Left</&>:</td>
+      <td class="value"><input name=TimeLeft value="<%$TicketObj->TimeLeft|h%>" SIZE="5"></td>
+    </TR>
+
+  <TR>
+      <td class="label"><&|/l&>Priority</&>:</td>
+      <td class="value"><input name=Priority value="<%$TicketObj->Priority|h%>" SIZE="5"></td>
+    </TR>
+
+  <TR>
+      <td class="label"><&|/l&>Final Priority</&>:</td>
+      <td class="value"><input name=FinalPriority value="<%$TicketObj->FinalPriority|h%>" SIZE="5"></td>
+    </TR>
+
+
 </TABLE>
 
 <%INIT>
