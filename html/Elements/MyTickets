@@ -26,7 +26,7 @@
         Title => loc("[_1] highest priority tickets I requested...", $rows),
         Format => "'<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus",
 
-        Query => " Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open') AND Priority > 0",
+        Query => " Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open')",
         OrderBy => 'Priority',
         Order => 'DESC',
         Rows => $rows,
@@ -34,6 +34,6 @@
         &>
 </&> 
 <%init>
-my $rows=10;
+my $rows=$MyTicketsLength;
 </%init>
 

@@ -664,6 +664,7 @@ sub Parse {
 	$content = substr($content, index($content, "\n") + 1);
 	$RT::Logger->debug("First: $first");
 	
+	my $queue;
 	foreach my $line (split(/\n/, $content)) {
 	    next unless $line;
 	    $RT::Logger->debug("Line: $line");
