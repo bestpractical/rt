@@ -21,9 +21,7 @@
 <TR VALIGN=TOP>
 <TD VALIGN=CENTER ALIGN=LEFT>
 <font size=+2 color=#ffffff>
-<B>
-<%$Title%>
-</B>
+<B><%$Title%></B>
 </font>
 </TD>
 <TD ALIGN=RIGHT>
@@ -51,6 +49,6 @@ $Why => undef
 $BgColor => '#ffffff'
 </%ARGS>
 <%INIT>
-$Title = "RT/FM".$Title;
+$Title = "RT/FM ".$Title;
 </%INIT>
 
