@@ -24,11 +24,7 @@
 # END LICENSE BLOCK
 
 
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O27 A27 B27] /-/-/-/-/-/-/-/-/-/-/
 PERL			= 	/usr/bin/perl
-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
-PERL			= 	/usr/bin/perl
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 
 CONFIG_FILE_PATH	=	/opt/rt3/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
@@ -295,11 +291,7 @@ test:
 
 regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database testify-pods
 	$(PERL) lib/t/02regression.t
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O294 A294 B294] /-/-/-/-/-/-/-/-/-/-/
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 
-/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O298 A295 B295] /-/-/-/-/-/-/-/-/-/-/
-/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 regression-quiet:
 	$(PERL) sbin/regression_harness
 
@@ -309,10 +301,10 @@ regression-instruct:
 
 # {{{ database-installation
 initialize-database: 
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba root
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba root --prompt-for-dba-password
 
 dropdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba root
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba root --prompt-for-dba-password
 
 
 # }}}

@@ -301,10 +301,10 @@ regression-instruct:
 
 # {{{ database-installation
 initialize-database: 
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba @DB_DBA@
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba @DB_DBA@ --prompt-for-dba-password
 
 dropdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba @DB_DBA@
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba @DB_DBA@ --prompt-for-dba-password
 
 
 # }}}

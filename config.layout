@@ -1,0 +1,36 @@
+##
+##  config.layout -- Pre-defined Installation Path Layouts
+##
+##  Hints:
+##  - layouts can be loaded with configure's --enable-layout=ID option
+##  - when no --enable-layout option is given, the default layout is `RT'
+##  - a trailing plus character (`+') on paths is replaced with a
+##    `/<target>' suffix where <target> is currently hardcoded to 'rt2'.
+##    (This may become a configurable parameter at some point.)
+##
+##  The following variables must _all_ be set:
+##	prefix exec_prefix bindir sbindir sysconfdir mandir libdir
+##	datadir htmldir localstatedir logfiledir masonstatedir
+##	sessionstatedir customdir customhtmldir customlexdir
+##  (This can be seen in m4/rt_layout.m4.)
+##
+
+#   Default RT3 path layout.
+<Layout RT3>
+  prefix:		/opt/rt3
+  exec_prefix:		${prefix}
+  bindir:		${exec_prefix}/bin
+  sbindir:		${exec_prefix}/sbin
+  sysconfdir:		${prefix}/etc
+  mandir:		${prefix}/man
+  libdir:		${prefix}/lib
+  datadir:		${prefix}
+  htmldir:		${datadir}/html
+  localstatedir:	${prefix}/var
+  logfiledir:		${localstatedir}/log
+  masonstatedir:	${localstatedir}/mason_data
+  sessionstatedir:	${localstatedir}/session_data
+  customdir:		${prefix}/local
+  customhtmldir:	${customdir}/html
+  customlexdir:		${customdir}/po
+</Layout>

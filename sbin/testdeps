@@ -98,7 +98,8 @@ Net::SMTP
 Text::Wrapper 
 Date::Parse
 Date::Format 
-File::Temp 
+File::Temp
+Term::ReadKey
 .
 
 $deps{'MASON'} = [ _( << '.') ];
