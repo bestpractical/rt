@@ -85,62 +85,22 @@ else {
     }
 }
 
-ProcessOwnerChanges(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@Actions);
 
-ProcessUpdateMessage(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@Actions);
-
-# update the told, take, steal, kill the ticket:
-ProcessSimpleActions(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
+if (defined $ARGS{'Action'}) {
+  if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+    my $action = $1;
+    my ($res, $msg)=$Ticket->$action();
+    $RT::Logger->debug("Dealing with $action on $Ticket: $res/$msg\n");
+    push(@Actions, $msg);
+  }
+}
+    
+$RT::Logger->debug("About to process things\n");
+ProcessUpdateMessage(ARGSRef=>\%ARGS, Actions=>\@Actions, TicketObj=>$Ticket);
+$RT::Logger->debug("About to process actions\n");
 
 #Process status updates
-ProcessStatusChanges(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
-
-
-# {{{ process links
-if ($ARGS{'DependsOn'}){
-    ($linkid, $message, $tid) = $Ticket->AddLink( Base => $ARGS{'DependsOn'}, Type => 'DependsOn');
-    push @Actions, $message;
-}
-
-if ($ARGS{'DependedOnBy'}){
-    ($linkid, $message, $tid) = $Ticket->AddLink( Target => $ARGS{'DependedOnBy'}, Type => 'DependsOn');
-    push @Actions, $message;
-}
-
-
-if ($ARGS{'MemberOf'}){
-    ($linkid, $message, $tid) = $Ticket->AddLink( Target => $ARGS{'MemberOf'}, Type => 'MemberOf');
-    push @Actions, $message;
-}
-
-
-
-# }}}
-
-
-
-
-
-# {{{ Process ticket links
-
-if ($ARGS{'LinkType'}) {
-    # There is some redundant information from the forms now - we\'ll
-    # ignore one bit of it:
-    
-    if ($ARGS{'Base'} == $Ticket->Id) {
-	for my $target (split(/ /, $ARGS{'Target'})) {
-	    my ( $linkid, $message) =  $Ticket->AddLink(Target => $target, Type => $ARGS{'LinkType'});
-	    push (@Actions, $message);
-       }	
-    }	
-    elsif ($ARGS{'Target'} == $Ticket->Id) {
-	for my $base (split(/ /, $ARGS{'Base'})) {
-	    my ( $linkid, $message)= $Ticket->AddLink(Base => $base, Type => $ARGS{'LinkType'});
-	    push (@Actions, $message);
-	}
-    }
-}
-# }}}
+ProcessTicketBasics(ARGSRef => \%ARGS, Actions=>\@Actions, TicketObj=>$Ticket);
 
 
 </%INIT>

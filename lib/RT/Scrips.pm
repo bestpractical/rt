@@ -83,6 +83,37 @@ sub NewItem  {
 }
 # }}}
 
+# {{{ sub Next 
+
+=head2 Next
+
+Returns the next scrip that this user can see.
+
+=cut
+  
+sub Next {
+    my $self = shift;
+    
+    
+    my $Scrip = $self->SUPER::Next();
+    if ((defined($Scrip)) and (ref($Scrip))) {
+
+	if ($Scrip->CurrentUserHasRight('ShowScrips')) {
+	    return($Scrip);
+	}
+	
+	#If the user doesn't have the right to show this scrip
+	else {	
+	    return($self->Next());
+	}
+    }
+    #if there never was any scrip
+    else {
+	return(undef);
+    }	
+    
+}
+# }}}
 
 1;
 

@@ -70,14 +70,14 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     if ($Ticket->Status ne 'resolved') {
 	$actions->{'Resolve'} = 
 	  { 
-	   path => "Ticket/Display.html?Action=SetStatus&SetStatus=resolved&id=". $id,
+	   path => "Ticket/Display.html?Status=resolved&id=". $id,
 	   title => 'Resolve'
 	  };
     }	
     if ($Ticket->Status ne 'open') {	
 	$actions->{'Open'} = 
 	  { 
-	   path => "Ticket/Display.html?Action=SetStatus&SetStatus=open&id=". $id,
+	   path => "Ticket/Display.html?Status=open&id=". $id,
 	   title => 'Open'
 	  };
     }

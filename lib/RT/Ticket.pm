@@ -2050,21 +2050,15 @@ this ticket's owner
 sub OwnerObj {
     my $self = shift;
     
-
     #If this gets ACLed, we lose on a rights check in User.pm and
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
     
-    #If the owner object ain't loaded yet
-    if (! exists $self->{'owner'})  {
-	require RT::User;
-	$self->{'owner'} = new RT::User ($self->CurrentUser);
-	$self->{'owner'}->Load($self->__Value('Owner'));
-    }
-    
+    $owner = new RT::User ($self->CurrentUser);
+    $owner->Load($self->__Value('Owner'));
     
     #Return the owner object
-    return ($self->{'owner'});
+    return ($owner);
 }
 
 # }}}
@@ -2105,22 +2099,21 @@ sub SetOwner {
 	return (0, "Permission Denied");
     }  
     
-    
     my $NewOwnerObj = RT::User->new($self->CurrentUser);
     my $OldOwnerObj = $self->OwnerObj;
   
     if (!$NewOwnerObj->Load($NewOwner)) {
 	return (0, "That user does not exist");
     }
-  
+    
     #If thie ticket has an owner and it's not the current user
-  
+    
     if (($Type ne 'Steal' ) and	#If we're not stealing
 	($self->OwnerObj->Id != $RT::Nobody->Id ) and #and the owner is set
 	($self->CurrentUser->Id ne $self->OwnerObj->Id())) { #and it's not us
 	return(0, "You can only reassign tickets that you own or that are unowned");
     }
-  
+    
     #If we've specified a new owner and that user can't modify the ticket
     elsif (($NewOwnerObj) and 
 	   (!$NewOwnerObj->HasQueueRight(Right => 'OwnTicket',
@@ -2142,9 +2135,6 @@ sub SetOwner {
 				 TimeTaken => 0,
 				 TransactionType => $Type);
   
-    #Clean out the owner object
-    delete $self->{'owner'};
-
     if ($trans) {
 	$msg = "Owner changed from ".$OldOwnerObj->Name." to ".$NewOwnerObj->Name;
     }
@@ -2166,6 +2156,7 @@ sub Take {
     my $self = shift;
     return ($self->SetOwner($self->CurrentUser->Id, 'Take'));
 }
+
 # }}}
 
 # {{{ sub Untake

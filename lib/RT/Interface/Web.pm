@@ -104,70 +104,36 @@ sub LoadTicket {
 
 # }}}
 
-
-# {{{ sub ProcessSimpleActions
-
-
-sub ProcessSimpleActions {
-    my %args=( ARGS => undef,
-	       Ticket => undef,
-	       Actions => undef,
-	       @_);
-
-    my ($Action);	
-
-    my $Ticket = $args{'Ticket'};
-    my @Actions = $$args{'Actions'};
- 
-    if (defined $args{ARGS}->{'Action'}) {
-	if ($args{ARGS}->{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
-	  $action = $1;
-	my ($res, $msg)=$Ticket->$action();
-	push(@Actions, $msg);
-        }
-    }
-}
-
-# }}}
-
-# {{{ sub ProcessOwnerChanges
-
-sub ProcessOwnerChanges {
-    my %args=@_;
-    if ($args{ARGS}->{'SetOwner'}
-        and ($args{ARGS}->{'SetOwner'} ne $args{Ticket}->OwnerObj->Id())) {
-	my ($Transaction, $Description)=$args{Ticket}->SetOwner($args{ARGS}->{'SetOwner'});
-	push(@{$args{Actions}}, $Description);
-    }
-}
-# }}}
-
 # {{{ sub ProcessUpdateMessage
 sub ProcessUpdateMessage {
-    my %args=@_;
+  #TODO document what else this takes.
+  my %args=( ARGSRef => undef,
+	     Actions => undef,
+	     TicketObj => undef,
+	     @_);
 
     #Make the update content have no 'weird' newlines in it
-    if ($args{ARGS}->{'UpdateContent'}) {
+    if ($args{ARGSRef}->{'UpdateContent'}) {
 	my @UpdateContent = split(/(\r\n|\n|\r)/,$args{ARGS}->{'UpdateContent'});
 	my $Message = MIME::Entity->build 
-	    ( Subject => $args{ARGS}->{'UpdateSubject'} || "",
-	    	      Data => \@UpdateContent);
+	  ( Subject => $args{ARGSRef}->{'UpdateSubject'} || "",
+	    Data => \@UpdateContent);
 	
 	## TODO: Implement public comments
 	if ($args{ARGS}->{'UpdateType'} =~ /^(private|public)$/) {
-	    my ($Transaction, $Description) = $args{Ticket}->Comment
-		( CcMessageTo => $args{ARGS}->{'UpdateCc'},
-		  BccMessageTo => $args{ARGS}->{'UpdateBcc'},
+	    my ($Transaction, $Description) = $args{TicketObj}->Comment
+		( CcMessageTo => $args{ARGSRef}->{'UpdateCc'},
+		  BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
 		  MIMEObj => $Message,
-		  TimeTaken => $args{ARGS}->{'UpdateTimeWorked'});
+		  TimeTaken => $args{ARGSRef}->{'UpdateTimeWorked'});
 	    push(@{$args{Actions}}, $Description);
 	}
 	elsif ($args{ARGS}->{'UpdateType'} eq 'response') {
-	    my ($Transaction, $Description) = $args{Ticket}->Correspond
-		( CcMessageTo => $args{ARGS}->{'UpdateCc'},
-		  BccMessageTo => $args{ARGS}->{'UpdateBcc'},
+	    my ($Transaction, $Description) = $args{TicketObj}->Correspond
+		( CcMessageTo => $args{ARGSRef}->{'UpdateCc'},
+		  BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},
 		  MIMEObj => $Message,
-		  TimeTaken => $args{ARGS}->{'UpdateTimeWorked'});
+		  TimeTaken => $args{ARGSRef}->{'UpdateTimeWorked'});
 	    push(@{$args{Actions}}, $Description);
 	}
     }
