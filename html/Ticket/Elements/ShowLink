@@ -27,12 +27,12 @@
 % if (UNIVERSAL::isa($member, "RT::Ticket")) {
 <%$member->Id%>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<% loc($member->Status) %>]
 % } elsif ( UNIVERSAL::can($member, 'Name')) {
-<%$URI->Resolver->HREF%>: <%$member->Name%>
+<%$URI->Resolver->URI%>: <%$member->Name%>
 % } else {
-<%$URI->Resolver->HREF%>
+<%$URI->Resolver->URI%>
 % }
 % } else {
-<%$URI->Resolver->HREF%>
+<%$URI->Resolver->URI%>
 % }
 </a>
 <%ARGS>
