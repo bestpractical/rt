@@ -198,7 +198,6 @@ msgstr "%1 ist keine gültige Stapel-Id."
 msgid "%1 matches"
 msgstr "%1 enthält"
 
-
 #: html/Ticket/Elements/ShowBasics:36
 #. ($TimeWorked)
 msgid "%1 min"
@@ -1301,7 +1300,7 @@ msgid "Created template %1"
 msgstr ""
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Momentane Beziehungen"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1579,7 +1578,7 @@ msgid "Edit Custom Fields for Class %1"
 msgstr "Bearbeite benutzerdefinierte Felder für Klasse %1"
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Bearbeite Beziehungen"
 
 #: html/Admin/Queues/Templates.html:41
@@ -2338,7 +2337,6 @@ msgstr "Ändern"
 msgid "Modify article #%1"
 msgstr "Ändere Artikel #%1"
 
-
 #: lib/RT/Queue_Overlay.pm:70
 msgid "Modify Access Control List"
 msgstr "Ändere Zugriffskontrollliste"
@@ -2606,7 +2604,6 @@ msgstr "Neuer Artikel"
 msgid "New class"
 msgstr "Neue Klasse"
 
-
 #: html/Admin/Elements/ModifyUser:32 html/Admin/Users/Modify.html:93 html/User/Prefs.html:65
 msgid "New Password"
 msgstr "Neues Passwort"
@@ -2616,7 +2613,7 @@ msgid "New Pending Approval"
 msgstr "Neue wartende Freigaben"
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Neue Beziehungen"
 
 #: html/Ticket/Elements/Tabs:36
@@ -3357,10 +3354,6 @@ msgstr "Suche Verfeinen"
 msgid "Refresh this page every %1 minutes."
 msgstr "Seite alle %1 Minuten aktualisieren."
 
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:60 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "Beziehungen"
-
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"
 msgstr "Entferne AdminCC"
@@ -3777,7 +3770,6 @@ msgstr "Zusammenfassung"
 #: RTFM
 msgid "Summary matches"
 msgstr "Zusammenfassung enthält"
-
 
 #: NOT FOUND IN SOURCE
 msgid "Stalled"

@@ -1305,7 +1305,7 @@ msgid "Created template %1"
 msgstr ""
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "יחסים נוכחיים"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1598,7 +1598,7 @@ msgid "Edit Custom Fields for %1"
 msgstr ""
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr ""
 
 #: html/Admin/Queues/Templates.html:42
@@ -2648,7 +2648,7 @@ msgid "New Pending Approval"
 msgstr ""
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "יחסים חדשים"
 
 #: html/Ticket/Elements/Tabs:36
@@ -3424,10 +3424,6 @@ msgstr "חדד את החיפוש"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "רענן דף זה כל %1 דקות."
-
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:62 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "יחסים עם פניות אחרות"
 
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"

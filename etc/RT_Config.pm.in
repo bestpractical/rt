@@ -249,11 +249,11 @@ Set($LogToFile      , undef);
 Set($LogDir, '@RT_LOG_PATH@');
 Set($LogToFileNamed , "rt.log");    #log to rt.log
 
-# On Solaris, set to ( socket => 'inet' ).  Options here override any
-# other options RT passes to Log::Dispatch::Syslog.  Other interesting
-# flags include facility and logopt.  (See the Log::Dispatch::Syslog
-# documentation for more information.)  (Maybe ident too, if you have
-# multiple RT installations.)
+# On Solaris or UnixWare, set to ( socket => 'inet' ).  Options here
+# override any other options RT passes to Log::Dispatch::Syslog.
+# Other interesting flags include facility and logopt.  (See the
+# Log::Dispatch::Syslog documentation for more information.)  (Maybe
+# ident too, if you have multiple RT installations.)
 
 @LogToSyslogConf = () unless (@LogToSyslogConf);
 

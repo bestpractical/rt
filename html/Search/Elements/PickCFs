@@ -24,14 +24,7 @@
 <table cellspacing=0 border=0>
 % while ( my $CustomField = $CustomFields->Next ) {
 <tr><td>
-
-% my $name;
-% if ($CustomField->QueueObj->id) {
-%   $name = "'CF." . $CustomField->QueueObj->Name . 
-%	".{" . $CustomField->Name . "}'";
-% } else {
-%   $name = "'CF." . $CustomField->Name . "'";
-% }
+% my $name = "'CF." . $CustomField->Name . "'";
 <% $CustomField->Name %> 
         <& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
                                     True => loc("is"), 

@@ -4,8 +4,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -71,7 +69,6 @@ msgstr "%1 couldn't Malkovich to Malkovich. RT's Malkovich be Malkovich."
 
 msgid "%1 highest priority tickets I own..."
 msgstr "%1 Malkovich Malkovich I Malkovich..."
-
 
 msgid "%1 highest priority tickets I requested..."
 msgstr "%1 Malkovich Malkovich I Malkovich..."
@@ -652,7 +649,7 @@ msgstr "Malkovich"
 msgid "Created CustomField %1"
 msgstr "Malkovich Malkovich %1"
 
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Malkovich Malkovich"
 
 msgid "Current Scrips"
@@ -844,7 +841,7 @@ msgstr "MALKOVICH: Couldn't Malkovich '%1': %2.\\n"
 msgid "Edit Custom Fields for %1"
 msgstr "Malkovich Malkovich %1"
 
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Malkovich Malkovich"
 
 msgid "Edit Templates for queue %1"
@@ -1495,7 +1492,7 @@ msgstr "Malkovich"
 msgid "New Pending Approval"
 msgstr "Malkovich Malkovich"
 
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Malkovich Malkovich"
 
 msgid "New Search"
@@ -1956,9 +1953,6 @@ msgstr "Malkovich"
 
 msgid "Refresh this page every %1 minutes."
 msgstr "Malkovich Malkovich %1 Malkovich."
-
-msgid "Relationships"
-msgstr "Malkovich"
 
 msgid "Remove AdminCc"
 msgstr "Malkovich"

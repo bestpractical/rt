@@ -107,7 +107,8 @@
 </table>
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+
 
 </FORM>
 <%init>
@@ -130,6 +131,7 @@ if ( $id eq 'new' ) {
     );
     if ( defined $retval ) {
         push @actions, $msg;
+        $id = $scrip->id;
     }
     else {
         Abort( $msg);

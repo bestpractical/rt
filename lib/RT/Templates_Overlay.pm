@@ -137,5 +137,40 @@ sub NewItem  {
 }
 # }}}
 
+# {{{ sub Next 
+
+=head2 Next
+
+Returns the next template that this user can see.
+
+=cut
+  
+sub Next {
+    my $self = shift;
+    
+    
+    my $templ = $self->SUPER::Next();
+    if ((defined($templ)) and (ref($templ))) {
+        
+        # If it's part of a queue, and the user can read templates in
+        # that queue, or the user can globally read templates, show it
+        if ($templ->Queue && $templ->CurrentUserHasQueueRight('ShowTemplate') or
+            $templ->CurrentUser->HasRight(Object => $RT::System, Right => 'ShowTemplate')) {
+	    return($templ);
+	}
+	
+	#If the user doesn't have the right to show this template
+	else {	
+	    return($self->Next());
+	}
+    }
+    #if there never was any template
+    else {
+	return(undef);
+    }	
+    
+}
+# }}}
+
 1;
 

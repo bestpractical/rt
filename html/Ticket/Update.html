@@ -104,7 +104,7 @@ value="<% $ARGS{UpdateCc} %>"><BR>
 
 
 
-<& /Elements/Submit, Name => 'SubmitTicket' &>
+<& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket' &>
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
 <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
 % }

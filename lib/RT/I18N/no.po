@@ -1,15 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.0.1\n"
+"Project-Id-Version: RT 3.0.11\n"
 "POT-Creation-Date: 2003-04-01 06:06+0200\n"
 "PO-Revision-Date: 2003-05-01 04:47+0200\n"
-"Last-Translator: Marcus Ramberg <marcus@thefeed.no>\n"
+"Last-Translator: Ronny Pettersen <ronny.pettersen@edb.com>\n"
 "Language-Team: RT Norwegian <rt@thefeed.no>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-
 
 #: html/Elements/MyRequests:28 html/Elements/MyTickets:28
 msgid "#"
@@ -79,7 +77,7 @@ msgstr "%1 %2 med mal %3"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 (%2) %3 this ticket\\n"
-msgstr "%1 (%2) %3 denne biletten\\n""
+msgstr "%1 (%2) %3 denne saken\\n"
 
 #: html/Search/Listing.html:57
 #. (($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ))
@@ -101,17 +99,17 @@ msgstr "%1 - Viser statusoppdateringer til STDOUT"
 #: bin/rt-crontool:179
 #. ("--action")
 msgid "%1 - Specify the action module you want to use"
-msgstr "%1 - Oppgi kommandomodulen du ønsker Â bruke"
+msgstr "%1 - Oppgi kommandomodulen du ønsker å bruke"
 
 #: bin/rt-crontool:173
 #. ("--condition")
 msgid "%1 - Specify the condition module you want to use"
-msgstr "%1 - Oppgiv betingelsesmodulen du ønsker Â bruke"
+msgstr "%1 - Oppgi betingelsesmodulen du ønsker å bruke"
 
 #: bin/rt-crontool:166
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
-msgstr "%1 - Oppgi søkemodulen du ønsker Â bruke"
+msgstr "%1 - Oppgi søkemodulen du ønsker å bruke"
 
 #: lib/RT/ScripAction_Overlay.pm:122
 #. ($self->Id)
@@ -289,7 +287,7 @@ msgstr "(Skriv inn referansenummer eller URler, separert med mellomrom)"
 #. ($RT::CorrespondAddress)
 #. ($RT::CommentAddress)
 msgid "(If left blank, will default to %1"
-msgstr "(Standard er %1);H
+msgstr "(Settes til standard %1 hvis blank)"
 
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"
@@ -430,7 +428,7 @@ msgstr "ACEr kan bare opprettes og slettes."
 
 #: bin/rt-commit-handler:755
 msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Avbryter for Â ungÂ uønsket saksendring"
+msgstr "Avbryter for å ungå uånsket saksendring"
 
 #: html/User/Elements/Tabs:32
 msgid "About me"
@@ -491,7 +489,7 @@ msgstr "Legg til et Scrip som gjelder for alle køer"
 
 #: NOT FOUND IN SOURCE
 msgid "Add a keyword selection to this queue"
-msgstr "Legg til et nøkkelordvalg pÂ denne køen"
+msgstr "Legg til et nøkkelordvalg på denne køen"
 
 #: NOT FOUND IN SOURCE
 msgid "Add a new a global scrip"
@@ -779,7 +777,7 @@ msgstr "Bcc"
 
 #: html/Admin/Elements/EditScrip:88 html/Admin/Global/GroupRights.html:85 html/Admin/Global/Template.html:46 html/Admin/Global/UserRights.html:54 html/Admin/Groups/GroupRights.html:73 html/Admin/Groups/Members.html:81 html/Admin/Groups/Modify.html:56 html/Admin/Groups/UserRights.html:55 html/Admin/Queues/GroupRights.html:85 html/Admin/Queues/Template.html:45 html/Admin/Queues/UserRights.html:54 html/User/Groups/Modify.html:56
 msgid "Be sure to save your changes"
-msgstr "Sørg for Â lagre endringene dine"
+msgstr "Sørg for å lagre endringene dine"
 
 #: html/Elements/SelectDateRelation:34 lib/RT/CurrentUser.pm:320
 msgid "Before"
@@ -1308,7 +1306,7 @@ msgid "Created template %1"
 msgstr "Opprettet malen %1"
 
 #: html/Ticket/Elements/EditLinks:28
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Eksisterende Forhold"
 
 #: html/Admin/Elements/EditScrips:30
@@ -1564,7 +1562,7 @@ msgstr "Gjør hva som helst"
 
 #: html/Elements/Refresh:30
 msgid "Don't refresh this page."
-msgstr "Ikke last denne siden pÂ nytt"
+msgstr "Ikke last denne siden på nytt"
 
 #: html/Search/Elements/PickRestriction:114
 msgid "Don't show search results"
@@ -1580,7 +1578,7 @@ msgstr "Innen"
 
 #: NOT FOUND IN SOURCE
 msgid "Due date '%1' could not be parsed"
-msgstr "Innendato '%1' kunne ikke tolkes""
+msgstr "Innendato '%1' kunne ikke tolkes"
 
 #: bin/rt-commit-handler:754
 #. ($1, $msg)
@@ -1601,7 +1599,7 @@ msgid "Edit Custom Fields for %1"
 msgstr "Rediger fleksifelt for %1"
 
 #: html/Ticket/ModifyLinks.html:36
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Rediger Forhold"
 
 #: html/Admin/Queues/Templates.html:42
@@ -1644,7 +1642,7 @@ msgstr "Redigerer Fleksifeltet %1"
 #: html/Admin/Groups/Members.html:32
 #. ($Group->Name)
 msgid "Editing membership for group %1"
-msgstr "Redigerer medlemsskap for gruppen %1""
+msgstr "Redigerer medlemsskap for gruppen %1"
 
 #: html/User/Groups/Members.html:129
 #. ($Group->Name)
@@ -1677,15 +1675,15 @@ msgstr "EpostFormat"
 
 #: html/Admin/Elements/EditCustomField:51
 msgid "Enabled (Unchecking this box disables this custom field)"
-msgstr "Aktivt (Fjern merkingen for Â deaktivere dette fleksifeltet)"
+msgstr "Aktivt (Fjern merkingen for å deaktivere dette fleksifeltet)"
 
 #: html/Admin/Groups/Modify.html:53 html/User/Groups/Modify.html:53
 msgid "Enabled (Unchecking this box disables this group)"
-msgstr "Aktiv (Fjern merkingen for Â deaktivere denne gruppen)"
+msgstr "Aktiv (Fjern merkingen for å deaktivere denne gruppen)"
 
 #: html/Admin/Queues/Modify.html:84
 msgid "Enabled (Unchecking this box disables this queue)"
-msgstr "Aktiv (Fjern merkingen for Â deaktivere denne køen)"
+msgstr "Aktiv (Fjern merkingen for å deaktivere denne køen)"
 
 #: html/Admin/Elements/EditCustomFields:99
 msgid "Enabled Custom Fields"
@@ -1795,7 +1793,7 @@ msgstr "Finn grupper hvor"
 
 #: NOT FOUND IN SOURCE
 msgid "Find new/open tickets"
-msgstr "Finn nye/Âpne saker"
+msgstr "Finn nye/åpne saker"
 
 #: html/Admin/Queues/People.html:57 html/Admin/Users/index.html:46 html/Ticket/Elements/EditPeople:30
 msgid "Find people whose"
@@ -1832,7 +1830,7 @@ msgstr "Tving gjennom endring"
 #: html/Search/Listing.html:106
 #. ($ticketcount)
 msgid "Found %quant(%1,ticket)"
-msgstr "Fant %quant(%1,sak)"
+msgstr "Fant %quant(%1) sak(er)"
 
 #: lib/RT/Interface/Web.pm:902
 msgid "Found Object"
@@ -2107,7 +2105,7 @@ msgstr "Det tar flere parametere:"
 
 #: NOT FOUND IN SOURCE
 msgid "Items pending my approval"
-msgstr "Ting som venter pÂ min godkjenning"
+msgstr "Ting som venter på min godkjenning"
 
 #: lib/RT/Date.pm:411
 msgid "Jan."
@@ -2651,7 +2649,7 @@ msgid "New Pending Approval"
 msgstr "Ny, Venter på Godkjennelse"
 
 #: html/Ticket/Elements/EditLinks:111
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Nye forhold"
 
 #: html/Ticket/Elements/Tabs:36
@@ -2842,7 +2840,7 @@ msgstr "Ingen rettigheter tildelt"
 
 #: html/Search/Bulk.html:149
 msgid "No search to operate on."
-msgstr "Ingen søk Â behandle"
+msgstr "Ingen søk å behandle"
 
 #: NOT FOUND IN SOURCE
 msgid "No ticket id specified"
@@ -3136,7 +3134,7 @@ msgstr "Passordene stemmer ikke overrens. Passordet ble ikke endret"
 
 #: html/Ticket/Elements/ShowSummary:45 html/Ticket/Elements/Tabs:96 html/Ticket/ModifyAll.html:51
 msgid "People"
-msgstr "Folk"
+msgstr "Personer"
 
 #: etc/initialdata:126
 msgid "Perform a user-defined action"
@@ -3377,11 +3375,11 @@ msgstr "RT har behandlet dine kommandoer"
 #: html/Elements/Login:92
 #. ('2003')
 msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT er &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Den er distribuert under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>""
+msgstr "RT er &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Den er distribuert under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
 
 #: NOT FOUND IN SOURCE
 msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT er &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Den er distribuert under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>""
+msgstr "RT er &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Den er distribuert under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
 
 #: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
@@ -3426,11 +3424,7 @@ msgstr "Redefiner søket"
 #: html/Elements/Refresh:36
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
-msgstr "Last siden pÂ nytt hvert %1 minutt."
-
-#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:62 html/Ticket/ModifyAll.html:57
-msgid "Relationships"
-msgstr "Forhold"
+msgstr "Last siden på nytt hvert %1 minutt."
 
 #: html/Search/Bulk.html:93
 msgid "Remove AdminCc"
@@ -3450,11 +3444,11 @@ msgstr "Svar"
 
 #: lib/RT/Queue_Overlay.pm:85
 msgid "Reply to tickets"
-msgstr "Svar pÂ sak"
+msgstr "Svar på sak"
 
 #: lib/RT/Queue_Overlay.pm:85
 msgid "ReplyToTicket"
-msgstr "SvarPÂSak"
+msgstr "SvarPåSak"
 
 #: etc/initialdata:44 html/Ticket/Update.html:40 lib/RT/ACE_Overlay.pm:87
 msgid "Requestor"
@@ -4872,8 +4866,4 @@ msgstr "med malen %1"
 #: lib/RT/Date.pm:331
 msgid "years"
 msgstr "år"
-
-#: NOT FOUND IN SOURCE
-msgid "„Éã„ÉÉ„ÇØ„Éç„Éº„É†"
-msgstr "????"
 

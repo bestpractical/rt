@@ -137,7 +137,7 @@ ok(require RT::Ticket, "Loading the RT::Ticket library");
 # }}}
 
 # {{{ LINKTYPEMAP
-# A helper table for relationships mapping to make it easier
+# A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
 use vars '%LINKTYPEMAP';
@@ -169,7 +169,7 @@ use vars '%LINKTYPEMAP';
 # }}}
 
 # {{{ LINKDIRMAP
-# A helper table for relationships mapping to make it easier
+# A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
 use vars '%LINKDIRMAP';
@@ -553,7 +553,10 @@ sub Create {
           unless ( exists $params{$attr} && $params{$attr} );
     }
 
-    my ( $id, $ticket_message ) = $self->SUPER::Create(%params);
+    # Delete the time worked if we're counting it in the transaction
+    delete $params{TimeWorked} if $args{'_RecordTransaction'};
+    
+    my ($id,$ticket_message) = $self->SUPER::Create( %params);
     unless ($id) {
         $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message );
         $RT::Handle->Rollback();
@@ -681,9 +684,9 @@ sub Create {
 
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => "Create",
-            TimeTaken => 0,
-            MIMEObj   => $args{'MIMEObj'}
+                                                     Type      => "Create",
+                                                     TimeTaken => $args{'TimeWorked'},
+                                                     MIMEObj => $args{'MIMEObj'}
         );
 
         if ( $self->Id && $Trans ) {
@@ -1319,7 +1322,7 @@ sub Import {
 
 =head2 _CreateTicketGroups
 
-Create the ticket groups and relationships for this ticket. 
+Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->Create _inside of a transaction_
 
 It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
@@ -1623,7 +1626,7 @@ sub DeleteWatcher {
         else {
             $RT::Logger->warn("$self -> DeleteWatcher got passed a bogus type");
             return ( 0,
-                     $self->loc('Error in parameters to Ticket->DelWatcher') );
+                     $self->loc('Error in parameters to Ticket->DeleteWatcher') );
         }
     }
 
@@ -3370,8 +3373,6 @@ sub _ClassAccessible {
           TimeEstimated      => { 'read' => 1,  'write' => 1 },
           TimeWorked      => { 'read' => 1,  'write' => 1 },
           TimeLeft        => { 'read' => 1,  'write' => 1 },
-          Created         => { 'read' => 1,  'auto'  => 1 },
-          Creator         => { 'read' => 1,  'auto'  => 1 },
           Told            => { 'read' => 1,  'write' => 1 },
           Resolved        => { 'read' => 1 },
           Type            => { 'read' => 1 },

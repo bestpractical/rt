@@ -1199,7 +1199,7 @@ msgid "Created template %1"
 msgstr "Oprettede template %1"
 
 #: html/Ticket/Elements/EditLinks:27
-msgid "Current Relationships"
+msgid "Current Links"
 msgstr "Nuværende relationer"
 
 #: html/Admin/Elements/EditScrips:29
@@ -1488,7 +1488,7 @@ msgid "Edit Custom Fields for %1"
 msgstr "Editér customer felter for %1"
 
 #: html/Search/Bulk.html:143 html/Ticket/ModifyLinks.html:35
-msgid "Edit Relationships"
+msgid "Edit Links"
 msgstr "Editér forhold"
 
 #: html/Admin/Queues/Templates.html:41
@@ -2478,7 +2478,7 @@ msgid "New Pending Approval"
 msgstr "Ny afventende godkendelse"
 
 #: html/Ticket/Elements/EditLinks:110
-msgid "New Relationships"
+msgid "New Links"
 msgstr "Nye relationer"
 
 #: html/Ticket/Elements/Tabs:35
@@ -3245,10 +3245,6 @@ msgstr "Forfin søgning"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Genindlæs denne side hver %1 minutter"
-
-#: html/Ticket/Create.html:173 html/Ticket/Elements/ShowSummary:61 html/Ticket/ModifyAll.html:56
-msgid "Relationships"
-msgstr "Relationer"
 
 #: html/Search/Bulk.html:97
 msgid "Remove AdminCc"

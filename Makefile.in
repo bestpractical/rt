@@ -443,9 +443,6 @@ reconfigure:
 start-httpd:
 	$(PERL) bin/standalone_httpd 80 &
 
-start-httpd:
-	$(PERL) bin/standalone_httpd 80 &
-
 apachectl:
 	$(APACHECTL) stop
 	sleep 10

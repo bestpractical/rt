@@ -284,7 +284,7 @@ Handle fields which deal with links between tickets.  (MemberOf, DependsOn)
 
 Meta Data:
   1: Direction (From,To)
-  2: Relationship Type (MemberOf, DependsOn,RefersTo)
+  2: Link Type (MemberOf, DependsOn,RefersTo)
 
 =cut
 
@@ -354,7 +354,7 @@ sub _LinkLimit {
 Handle date fields.  (Created, LastTold..)
 
 Meta Data:
-  1: type of relationship.  (Probably not necessary.)
+  1: type of link.  (Probably not necessary.)
 
 =cut
 
@@ -1509,7 +1509,7 @@ sub LimitRequestor {
 =head2 LimitLinkedTo
 
 LimitLinkedTo takes a paramhash with two fields: TYPE and TARGET
-TYPE limits the sort of relationship we want to search on
+TYPE limits the sort of link we want to search on
 
 TYPE = { RefersTo, MemberOf, DependsOn }
 
@@ -1545,7 +1545,7 @@ sub LimitLinkedTo {
 =head2 LimitLinkedFrom
 
 LimitLinkedFrom takes a paramhash with two fields: TYPE and BASE
-TYPE limits the sort of relationship we want to search on
+TYPE limits the sort of link we want to search on
 
 
 BASE is the id or URI of the BASE of the link
@@ -1923,6 +1923,7 @@ sub ItemsArrayRef {
             push ( @{ $self->{'items_array'} }, $item );
         }
         $self->GotoItem($placeholder);
+        $self->{'items_array'} = $self->ItemsOrderBy($self->{'items_array'});
     }
     return ( $self->{'items_array'} );
 }
@@ -2210,15 +2211,15 @@ sub _BuildItemMap {
 
     delete $self->{'item_map'};
     if ($items->[0]) {
-    $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
-    while (my $item = shift @$items ) {
-        my $id = $item->EffectiveId;
-        $self->{'item_map'}->{$id}->{'defined'} = 1;
-        $self->{'item_map'}->{$id}->{prev}  = $prev;
-        $self->{'item_map'}->{$id}->{next}  = $items->[0]->EffectiveId if ($items->[0]);
-        $prev = $id;
-    }
-    $self->{'item_map'}->{'last'} = $prev;
+        $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
+        while (my $item = shift @$items ) {
+            my $id = $item->EffectiveId;
+            $self->{'item_map'}->{$id}->{'defined'} = 1;
+            $self->{'item_map'}->{$id}->{prev}  = $prev;
+            $self->{'item_map'}->{$id}->{next}  = $items->[0]->EffectiveId if ($items->[0]);
+            $prev = $id;
+        }
+        $self->{'item_map'}->{'last'} = $prev;
     }
 } 
 
@@ -2229,14 +2230,14 @@ Returns an a map of all items found by this search. The map is of the form
 
 $ItemMap->{'first'} = first ticketid found
 $ItemMap->{'last'} = last ticketid found
-$ItemMap->{$id}->{prev} = the tikcet id found before $id
-$ItemMap->{$id}->{next} = the tikcet id found after $id
+$ItemMap->{$id}->{prev} = the ticket id found before $id
+$ItemMap->{$id}->{next} = the ticket id found after $id
 
 =cut
 
 sub ItemMap {
     my $self = shift;
-    $self->_BuildItemMap() unless ($self->{'item_map'});
+    $self->_BuildItemMap() unless ($self->{'items_array'} and $self->{'item_map'});
     return ($self->{'item_map'});
 }
 

@@ -47,7 +47,10 @@ if ($size) {
 </%PERL>
 
 <li><font <%$fontsize%>>
-        <A HREF="<%$RT::WebPath%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>"><%$rev->CreatedAsString%> (<% $size %>)</a></font></li>
+<A HREF="<%$RT::WebPath%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
+<&|/l, $rev->CreatedAsString, $size, $rev->CreatorObj->Name &>[_1] ([_2]) by [_3]</&>
+</a>
+</font></li>
 % }
 % $fontsize='size="-2"';
 % }

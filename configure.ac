@@ -28,6 +28,8 @@ AC_PATH_PROG([PERL], [perl], [not found])
 if test "$PERL" = 'not found'; then
 	AC_MSG_ERROR([cannot use $PACKAGE_NAME without perl])
 fi
+
+
 dnl SPEED_BIN
 AC_ARG_WITH(speedycgi,
 	    AC_HELP_STRING([--with-speedycgi=/path/to/speedy],
@@ -52,7 +54,7 @@ AC_SUBST(RTGROUP)
 dnl BIN_OWNER
 AC_ARG_WITH(bin-owner,
 	    AC_HELP_STRING([--with-bin-owner=OWNER],
-	    		   [user that will own rt binaries (default root)]),
+	    		   [user that will own RT binaries (default root)]),
             BIN_OWNER=$withval,
             BIN_OWNER=root)
 AC_SUBST(BIN_OWNER)
@@ -68,7 +70,7 @@ AC_SUBST(LIBS_OWNER)
 dnl LIBS_GROUP
 AC_ARG_WITH(libs-group,
 	    AC_HELP_STRING([--with-libs-group=GROUP],
-	    		   [group that will own rt binaries (default bin)]),
+	    		   [group that will own RT binaries (default bin)]),
             LIBS_GROUP=$withval,
             LIBS_GROUP=bin)
 AC_SUBST(LIBS_GROUP)
@@ -76,11 +78,11 @@ AC_SUBST(LIBS_GROUP)
 dnl DB_TYPE
 AC_ARG_WITH(db-type,
 	    AC_HELP_STRING([--with-db-type=TYPE],
-	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle and Informix are valid)]), 
+	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle, Informix and SQLite are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
 if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' -a "$DB_TYPE" != 'Informix' -a "$DB_TYPE" != 'Sybase' ; then
-	AC_MSG_ERROR([Only Oracle, Informix, Pg and mysql are valid db types])
+	AC_MSG_ERROR([Only Oracle, Informix, Pg, mysql and SQLite are valid db types])
 fi
 AC_SUBST(DB_TYPE)
 

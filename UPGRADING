@@ -10,7 +10,6 @@ contained below.
 WARNING
 *******
 
-
 Before making any changes to your database, always ensure that you have a 
 complete current backup. If you don't have a current backup, you could 
 accidentally damage your database and lose data or worse.

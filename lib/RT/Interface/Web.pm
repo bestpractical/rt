@@ -68,24 +68,10 @@ my @DefaultHandlerArgs = (
 =cut
 
 sub NewApacheHandler {
-    $RT::MasonHandlerClass ||= 'HTML::Mason::ApacheHandler';
-    my $ah = $RT::MasonHandlerClass->new( 
-    
-        comp_root                    => [
-            [ local    => $RT::MasonLocalComponentRoot ],
-            [ standard => $RT::MasonComponentRoot ]
-        ],
-        args_method => "CGI",
-        default_escape_flags => 'h',
-        allow_globals        => [qw(%session)],
-        data_dir => "$RT::MasonDataDir",
-        autoflush => 1,
-        @_
-    );
-
-    $ah->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
-    
-    return ($ah);
+    require HTML::Mason::ApacheHandler;
+    return RT::Interface::Web::NewHandler('HTML::Mason::ApacheHandler',
+                                            args_method => "CGI",
+                                            @_);
 }
 
 # }}}
@@ -99,29 +85,20 @@ sub NewApacheHandler {
 =cut
 
 sub NewCGIHandler {
-    my %args = (
-        @_
-    );
+    return RT::Interface::Web::NewHandler('HTML::Mason::CGIHandler',@_);
+}
 
-    my $handler = HTML::Mason::CGIHandler->new(
-        comp_root                    => [
-            [ local    => $RT::MasonLocalComponentRoot ],
-            [ standard => $RT::MasonComponentRoot ]
-        ],
-        data_dir => "$RT::MasonDataDir",
-        default_escape_flags => 'h',
-        allow_globals        => [qw(%session)],
-        autoflush => 1,
+sub NewHandler {
+    my $class = shift;
+    my $handler = $class->new(
+        @DefaultHandlerArgs,
         @_
     );
   
-
     $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
-
-
-    return ($handler);
-
+    return($handler);
 }
+
 # }}}
 
 
@@ -350,33 +327,55 @@ sub CreateTicket {
         Starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
+    foreach my $arg (%ARGS) {
+        if ($arg =~ /^CustomField-(\d+)(.*?)$/) {
+            next if ($arg =~ /-Magic$/);
+            $create_args{"CustomField-".$1} = $ARGS{"$arg"};
+        }
+    }
+
+    # turn new link lists into arrays, and pass in the proper arguments
+    my (@dependson, @dependedonby, 
+	@parents, @children, 
+	@refersto, @referredtoby);
+
+    foreach my $luri ( split ( / /, $ARGS{"new-DependsOn"} ) ) {
+	$luri =~ s/\s*$//;    # Strip trailing whitespace
+	push @dependson, $luri;
+    }
+    $create_args{'DependsOn'} = \@dependson;
+
+    foreach my $luri ( split ( / /, $ARGS{"DependsOn-new"} ) ) {
+	push @dependedonby, $luri;
+    }
+    $create_args{'DependedOnBy'} = \@dependedonby;
+
+    foreach my $luri ( split ( / /, $ARGS{"new-MemberOf"} ) ) {
+	$luri =~ s/\s*$//;    # Strip trailing whitespace
+	push @parents, $luri;
+    }
+    $create_args{'Parents'} = \@parents;
+
+    foreach my $luri ( split ( / /, $ARGS{"MemberOf-new"} ) ) {
+	push @children, $luri;
+    }
+    $create_args{'Children'} = \@children;
+
+    foreach my $luri ( split ( / /, $ARGS{"new-RefersTo"} ) ) {
+	$luri =~ s/\s*$//;    # Strip trailing whitespace
+	push @refersto, $luri;
+    }
+    $create_args{'RefersTo'} = \@refersto;
+
+    foreach my $luri ( split ( / /, $ARGS{"RefersTo-new"} ) ) {
+	push @referredtoby, $luri;
+    }
+    $create_args{'ReferredToBy'} = \@referredtoby;
+
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ( $id && $Trans ) {
         Abort($ErrMsg);
     }
-    my @linktypes = qw( DependsOn MemberOf RefersTo );
-
-    foreach my $linktype (@linktypes) {
-        foreach my $luri ( split ( / /, $ARGS{"new-$linktype"} ) ) {
-            $luri =~ s/\s*$//;    # Strip trailing whitespace
-            my ( $val, $msg ) = $Ticket->AddLink(
-                Target => $luri,
-                Type   => $linktype
-            );
-            push ( @Actions, $msg ) unless ($val);
-        }
-
-        foreach my $luri ( split ( / /, $ARGS{"$linktype-new"} ) ) {
-            my ( $val, $msg ) = $Ticket->AddLink(
-                Base => $luri,
-                Type => $linktype
-            );
-
-            push ( @Actions, $msg ) unless ($val);
-        }
-    }
-
-    ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
 
     push ( @Actions, split("\n", $ErrMsg) );
     unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
@@ -434,7 +433,8 @@ sub ProcessUpdateMessage {
     );
 
     #Make the update content have no 'weird' newlines in it
-    if ( $args{ARGSRef}->{'UpdateContent'} ||
+    if ( $args{ARGSRef}->{'UpdateTimeWorked'} ||
+	 $args{ARGSRef}->{'UpdateContent'} ||
 	 $args{ARGSRef}->{'UpdateAttachments'}) {
 
         if (
@@ -1042,6 +1042,8 @@ sub ProcessTicketBasics {
         }
     }
 
+    $ARGSRef->{'Status'} ||= $TicketObj->Status;
+    
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $TicketObj,
