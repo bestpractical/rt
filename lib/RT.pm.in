@@ -33,7 +33,6 @@ use RT::System;
 use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $CORE_CONFIG_FILE
         $SITE_CONFIG_FILE
-        $VENDOR_CONFIG_FILE
         $BasePath
         $EtcPath
         $VarPath
@@ -94,7 +93,6 @@ $MasonSessionDir = '@MASON_SESSION_PATH@';
 =item LoadConfig
 
 Load RT's config file. First, go after the core config file. 
-After that, try to load the vendor config.
 After that, go after the site config.
 
 =cut
