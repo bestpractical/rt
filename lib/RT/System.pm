@@ -147,4 +147,15 @@ sub id {
     return (1);
 }
 
+=head2 Load
+
+Since this object is pretending to be an RT::Record, we need a load method.
+It does nothing
+
+=cut
+
+sub Load {
+	return (1);
+}
+
 1;
