@@ -278,6 +278,7 @@ ok( $t->Create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy =>
 ok ( my $id = $t->Id, "Got ticket id");
 ok ($t->RefersTo->First->Target =~ /fsck.com/, "Got refers to");
 ok ($t->ReferredToBy->First->Base =~ /cpan.org/, "Got referredtoby");
+ok ($t->ResolvedObj->Unix == -1, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
 
 =end testing
 
@@ -391,8 +392,8 @@ sub Create {
 
 
     #If the status is an inactive status, set the resolved date
-    if (( grep $args{'Status'}, $QueueObj->InactiveStatusArray ) &&
-        (!defined($args{'Resolved'}))) {
+    if ($QueueObj->IsInactiveStatus($args{'Status'}) && !$args{'Resolved'}) {
+        $RT::Logger->debug("Got a ".$args{'Status'} . "ticket with a resolved of ".$args{'Resolved'});
         $Resolved->SetToNow;
     }
 
