@@ -13,8 +13,16 @@
     sub load_queue_acls {
 	
 	my ($user_id, $queue_id);
-	$sth = $dbh->Query("SELECT queue_acl.queue_id, users.user_id, queue_acl.display, queue_acl.manipulate, queue_acl.admin, users.email, queue_acl.mail FROM queue_acl, users WHERE users.user_id = queue_acl.user_id") or warn "Query had some problem: $Mysql::db_errstr\n";
-	while (@row=$sth->FetchRow) {
+
+
+	$sth = $dbh->prepare("SELECT queue_acl.queue_id,
+	   users.user_id, queue_acl.display, queue_acl.manipulate,
+	   queue_acl.admin, users.email, queue_acl.mail FROM
+	   queue_acl, users WHERE users.user_id = queue_acl.user_id");
+	$sth->execute()
+	    or warn "execute query had some problem: $DBI::errstr\n";
+
+	while (@row=$sth->fetchrow) {
 	    $queue_id=$row[0];
 	    $user_id=$row[1];
 	    if (!&is_a_queue($queue_id)) {next;} #the queue doesn't exist
@@ -28,7 +36,7 @@
 # add $row[6] in the if-statement below (and update ui/*/admin.pm). A
 # more featuristic schema is to let it be a bitmap of what emails he
 # should get. In that case dist_list must be made into a hash ... that
-# seems like WORK to me, so I've postponed it for now.
+# seems like WORK to me, so I've postponed it for now. Tobix.
 	    if ($row[5] and $row[3]) {
 		if ($queues{$queue_id}{'dist_list'}) {
 		    $queues{$queue_id}{'dist_list'} .= ", " . $row[5];
@@ -44,9 +52,10 @@
 sub load_queue_areas {
     
     my ($queue_id, $row);
-    $sth = $dbh->Query("SELECT queue_areas.queue_id, queue_areas.area FROM queue_areas") or warn "Query had some problem: $Mysql::db_errstr\n";
+    $sth = $dbh->prepare("SELECT queue_areas.queue_id, queue_areas.area FROM queue_areas") or warn "prepare query had some problem: $DBI::errstr\n";
+	$rv = $sth->execute or warn "execute query had some problem: $DBI::errstr\n";
 
-    while (@row=$sth->FetchRow) {
+    while (@row=$sth->fetchrow_array) {
         $queue_id=$row[0];
         $area=$row[1];
         if (!&is_a_queue($queue_id)) {next;} #the queue doesn't exist
@@ -60,8 +69,9 @@ sub load_user_info {
     my ($row);
 
     $query_string="SELECT user_id, password, email,  phone, office, comments, admin_rt, real_name FROM users";
-    $sth = $dbh->Query($query_string) or warn "[load_user_info] Query had some problem: $Mysql::db_errstr\n$query_string\n";
-    while (@row=$sth->FetchRow) { 
+    $sth = $dbh->prepare($query_string) or warn "[load_user_info] prepare query had some problem: $DBI::errstr\n$query_string\n";
+    $rv = $sth->execute or warn "[load_user_info] execute query had some problem: $DBI::errstr\n$query_string\n";
+    while (@row=$sth->fetchrow_array) { 
 	$user_id=$row[0];
 	$emails{$row[2]}=$user_id;
 	$users{$user_id}{name}=$user_id;
@@ -90,8 +100,9 @@ sub is_hash_of_password_and_ip {
   
   my $user_id=$dbh->quote($in_user_id);
   $query_string="SELECT password FROM users WHERE user_id = $user_id";
-  $sth = $dbh->Query($query_string) or warn "[is_password] Query had some problem: $Mysql::db_errstr\n$query_string\n";
-  @row=$sth->FetchRow;
+  $sth = $dbh->prepare($query_string) or warn "[is_password] prepare had some problem: $DBI::errstr\n$query_string\n";
+  $rv = $sth->execute or warn "[is_password] execute had some problem: $DBI::errstr\n$query_string\n";
+  @row=$sth->fetchrow_array;
   
   $password=$row[0];
   
@@ -127,7 +138,8 @@ sub is_password {
      my $user_id=$dbh->quote($in_user_id);
     $query_string="SELECT password FROM users WHERE user_id = $user_id";
        
-    $sth = $dbh->Query($query_string) or warn "[is_password] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+    $sth = $dbh->prepare($query_string) or warn "[is_password] prepare had some problem: $DBI::errstr\n$query_string\n";
+    $rv = $sth->execute or warn "[is_password] execute had some problem: $DBI::errstr\n$query_string\n";
     @row=$sth->FetchRow;
 
     $password=$row[0];
@@ -157,8 +169,9 @@ sub is_a_user {
 sub load_queue_conf {
 #    local ($in_queue_id)=@_;
     my ($row,$queue_id);
-    $sth = $dbh->Query("SELECT queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio FROM queues") or warn "Query had some problem: $Mysql::db_errstr\n";
-    while (@row=$sth->FetchRow) {
+	$sth = $dbh->prepare("SELECT queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio FROM queues") or warn "prepare query had some problem: $DBI::errstr\n";
+	$rv = $sth->execute or warn "execute query had some problem: $DBI::errstr\n";
+    while (@row=$sth->fetchrow_array) {
 	$queue_id=$row[0];
 	$queues{$queue_id}{name}=$queue_id;
 	$queues{$queue_id}{mail_alias}=$row[1];

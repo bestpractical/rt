@@ -27,7 +27,7 @@
 
     # before doing a "make install" in /usr/local/rt/src you NEED to change the 
     # password below and change the apropriate line in /usr/local/rt/etc/mysql.acl	
-    $rtpass="!!RT_MYSQL_PASS!!";
+    $rtpass="!!RT_DB_PASS!!";
 
 
     #name of RT installation
@@ -41,10 +41,13 @@
 
     # host is the fqdn of your Mysql server
     # if it's on localhost, leave it blank for enhanced performance
-    $host="!!RT_MYSQL_HOST!!";
+    $host="!!RT_DB_HOST!!";
     
     #$dbname is the name of the RT's database on the Mysql server 
-    $dbname="!!RT_MYSQL_DATABASE!!";
+    $dbname="!!RT_DATABASE!!";
+
+    # $rt_db is the database driver beeing used - i.e. MySQL.
+    $rt_db="!!RT_DB!!";
 
     #$mysql_version determines the order the rt username and password
     #are passed to mysqlperl.  it changed between 3.20 and 3.21

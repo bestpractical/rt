@@ -5,7 +5,7 @@
 # RT is distributed under the terms of the GNU Public License
 
 package rt;
-use Mysql;
+use DBI;
 
 &connectdb();
 
@@ -13,20 +13,17 @@ require rt::support::utils;
 require rt::database::config;
 &rt::read_config();
 
+
 sub connectdb {
-  if ($mysql_version < 3.21) {
+	# Gets the RDBMS and database from the config.
+	$data_source="dbi:$rt_db:dbname=$dbname";
 
-   if (!($dbh = Mysql->Connect($host, $dbname, $rtpass, $rtuser,))){
-           die "[connectdb] Database connect failed: $Mysql::db_errstr\n";
-         }
- }
-  else {
-   if (!($dbh = Mysql->Connect($host, $dbname, $rtuser, $rtpass,))){
-              die "[connectdb] Database connect failed: $Mysql::db_errstr\n";
-      }
+	if (!($dbh = DBI->connect($data_source, $rtuser, $rtpass)))
+	{
+		die "[connectdb] Database connect failed: $DBI::errstr\n";
+	}
 
-   }
-  }
+}
 
 
 #
@@ -66,23 +63,63 @@ sub add_request {
     $status = &rt::quote_wrapper($in_status);
     $current_user = &rt::quote_wrapper($in_current_user);
 
-    
-    $query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
-    
-    $sth = $dbh->Query($query_string) 
-	or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
-   
+	if ($serial_num eq 'NULL')
+	{   
+		$query_string="INSERT INTO each_req (effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
+	}
+	else
+	{
+		$query_string="INSERT INTO each_req (serial__num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
+	}
+
+	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
+	$rv = $sth->execute or warn "[add_request] execute had some problem: $DBI::errstr\n$query_string\n"; 
+
   # if we just assigned the fact a serial number, get it and then set effective serial_num 
   # to the same number
   if ($serial_num eq 'NULL') {
-      $serial_num = $sth->insert_id;   
+
+	#	This is MySQL specific
+	#      $serial_num = $sth->insert_id;
+
+	$serial_num = &get_last_each_req_serial_num;
+
     	$query_string="UPDATE each_req set effective_sn = $serial_num WHERE serial_num = $serial_num";
-	$sth = $dbh->Query($query_string) 
-		or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
+	$rv = $sth->execute  or warn "[add_request] execute had some problem: $DBI::errstr\n$query_string\n";
 	}
     return ($serial_num);
 }
 
+sub get_last_each_req_serial_num
+{
+	my($serial_num);
+
+	# Pull the last inserted sequence value for the each_req table.
+    	$query_string="select last_value from each_req_serial_num_seq";
+	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
+	$rv = $sth->execute  or warn "[add_request] execute had some problem: $DBI::errstr\n$query_string\n";
+
+	@row = $sth->fetchrow_array;
+	$serial_num = $row[0];
+
+	return($serial_num);
+}
+
+sub get_last_transactions_id
+{
+	my($transaction_num);
+
+	# Pull the last inserted sequence value for the transactions table.
+    	$query_string="select last_value from transactions_id_seq";
+	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
+	$rv = $sth->execute  or warn "[add_request] execute had some problem: $DBI::errstr\n$query_string\n";
+
+	@row = $sth->fetchrow_array;
+	$transaction_num = $row[0];
+
+	return($transaction_num);
+}
 
 sub add_transaction {
   
@@ -109,11 +146,17 @@ sub add_transaction {
     $owner=$rt::req[$in_serial_num]{owner};
     &req_in($in_serial_num, $in_current_user);
 
-    $query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES (NULL, $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
-    $sth = $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Mysql::db_errstr\nQuery: $query_string\n";
-    $transaction_num = $sth->insert_id;       
+#	$query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES ('', $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
+	$query_string = "INSERT INTO transactions (effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES ($req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
+	$sth = $dbh->prepare($query_string) or warn "[add transaction] prepare had some problem: $DBI::errstr\nQuery: $query_string\n";
+	$rv = $sth->execute  or warn "[add transaction] execute had some problem: $DBI::errstr\nQuery: $query_string\n";
 
-    
+	# MySQL specific, need more general way of getting the last sequence value.
+	#    $transaction_num = $sth->insert_id;       
+
+	$transaction_num = &get_last_transactions_id;
+
+   
     #if we've got content, mail it away
     if ($in_content) {
 	require rt::database::content;
@@ -156,7 +199,8 @@ sub update_each_req {
     #set the field in the database
     $query_string="UPDATE each_req SET $in_field = $new_value WHERE effective_sn = $in_serial_num";
     #print "update_each_req: $query_string\n\n";
-    $dbh->Query($query_string) or warn "[update_each_req] Query had some problem: $Msql::db_errstr\nQuery: $query_string\n";
+    $sth = $dbh->prepare($query_string) or warn "[update_each_req] prepare had some problem: $DBI::errstr\nQuery: $query_string\n";
+	$rv = $sth->execute or warn "[update_each_req] execute had some problem: $DBI::errstr\nQuery: $query_string\n";	
     return 1;
 }
 
@@ -195,8 +239,9 @@ sub transaction_history_in
     
     #print "reading trans history\n";
     $effective_sn=&normalize_sn($in_serial_num);
-    $sth = $dbh->Query("SELECT id, actor, type, trans_data, trans_date, serial_num, effective_sn from transactions WHERE effective_sn = $effective_sn ORDER BY id") or warn "Query had some problem: $Msql::db_errstr\n";
-    while (@row=$sth->FetchRow) {
+    $sth = $dbh->prepare("SELECT id, actor, type, trans_data, trans_date, serial_num, effective_sn from transactions WHERE effective_sn = $effective_sn ORDER BY id") or warn "prepare had some problem: $DBI::errstr\n";
+	$rv = $sth->execute  or warn "prepare had some problem: $DBI::errstr\n";
+    while (@row=$sth->fetchrow_array) {
 	&parse_transaction_row($counter, $in_current_user, @row);
 	$counter++;
     }
@@ -208,9 +253,10 @@ sub transaction_in {
     my ($query_string);
 
     $query_string = "SELECT id, actor, type, trans_data, trans_date, serial_num, effective_sn from transactions WHERE id = $trans ORDER BY id";
-    $sth = $dbh->Query($query_string) or return( "Query had some problem: $Mysql::db_errstr\nThe query was $query_string");
+    $sth = $dbh->prepare($query_string) or return( "prepare had some problem: $DBI::errstr\nThe query was $query_string");
+	$rv = $sth->execute or return( "prepare had some problem: $DBI::errstr\nThe query was $query_string");
     
-    while (@row=$sth->FetchRow) {
+    while (@row=$sth->fetchrow_array) {
 	&parse_transaction_row($trans, $in_current_user, @row);
     }
     return ($trans);
@@ -341,9 +387,9 @@ sub get_effective_sn {
     my ($in_serial_num) =@_;
     my ($effective_sn);
        #gotta do this damn query to deal w/ merged requests
-    $sth = $dbh->Query("select effective_sn from each_req WHERE serial_num = ". int($in_serial_num))
-	or warn "Query had some problem: $Msql::db_errstr\n";
-    while (@row=$sth->FetchRow) {
+    $sth = $dbh->prepare("select effective_sn from each_req WHERE serial_num = ". int($in_serial_num)) or warn "prepare had some problem: $DBI::errstr\n";
+	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\n";
+    while (@row=$sth->fetchrow_array) {
 	$effective_sn	       	=	$row[0];
     }
     return ($effective_sn);
@@ -358,9 +404,10 @@ sub req_in
 
     
     $query_string = "SELECT serial_num, effective_sn,  queue_id,  area, alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE serial_num = $effective_sn";
-    $sth = $dbh->Query($query_string)  
-	or warn "Query had some problem: $Msql::db_errstr\nQuery String = $query_string\n";
-    while (@row=$sth->FetchRow) {
+    $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\nQuery String = $query_string\n";
+	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\nQuery String = $query_string\n";
+
+    while (@row=$sth->fetchrow_array) {
 	&parse_req_row($in_serial_num, $in_current_user, @row);
     }
 }
@@ -371,10 +418,10 @@ sub get_queue {
     my $temp=0;
     
     $query_string = "SELECT serial_num, effective_sn,  queue_id, area,  alias,  requestors,  owner,  subject,  initial_priority,  final_priority,  priority,  status,  date_created,  date_told,  date_acted,  date_due FROM each_req WHERE $in_criteria";
-    $sth = $dbh->Query($query_string)
-	or warn "Query had some problem: $Msql::db_errstr\n$query_string\n";
+    $sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n$query_string\n";
+	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\n$query_string\n";
 
-    while (@row=$sth->FetchRow) {
+    while (@row=$sth->fetchrow_array) {
 	# we don\'t want to include reqs that have been merged.
 	if ($row[0]==$row[1]) { 
 	    &parse_req_row($temp, $in_current_user, @row);

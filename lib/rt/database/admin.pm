@@ -22,18 +22,19 @@ sub delete_user {
     
     if ($users{$in_current_user}{admin_rt}) {
       if ($in_user_id ne $in_current_user) {
-	$query_string = "DELETE FROM users WHERE user_id = $user_id";
-	$dbh->Query($query_string) or 
-	  return (0, "[delete_user] Query had some problem: $Mysql::db_errstr\n$query_string\n");
-	$query_string = "DELETE FROM queue_acl WHERE user_id = $user_id";
-	$dbh->Query($query_string) or 
-	  return (0, "[delete_user] Query had some problem: $Mysql::db_errstr\n$query_string\n");
+	  $query_string = "DELETE FROM users WHERE user_id = $user_id";
+	  $sth = $dbh->prepare($query_string) or return (0, "[delete_user] prepare had some problem: $DBI::errstr\n$query_string\n");
+	  $sth->execute or return (0, "[delete_user] execute had some problem: $DBI::errstr\n$query_string\n");
+	  $query_string = "DELETE FROM queue_acl WHERE user_id = $user_id";
+	  $sth = $dbh->prepare($query_string) or 
+	      return (0, "[delete_user] Query had some problem: $DBI::errstr\n$query_string\n");
+	  $sth->execute or return (0, "[delete_user] Query had some problem: $DBI::errstr\n$query_string\n");  
 	
-	delete $rt::users{$in_user_id};
-	while (($queue_id,$value)= each %rt::queues) {
-	  delete $rt::queues{$queue_id}{acls}{$in_user_id};
-	}
-	return (1, "User $user_id deleted.");
+	  delete $rt::users{$in_user_id};
+	  while (($queue_id,$value)= each %rt::queues) {
+	      delete $rt::queues{$queue_id}{acls}{$in_user_id};
+	  }
+	  return (1, "User $user_id deleted.");
 	
       }
       else {
@@ -61,9 +62,14 @@ sub delete_queue_area {
     $area=$rt::dbh->quote($in_area);
     if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
       $query_string = "DELETE FROM queue_areas WHERE queue_id = $queue_id AND area = $area";
-      $dbh->Query($query_string) or
-	return (0, "[delete_area] Query had some problem: $Mysql::db_errstr\n$query_string\n");
-      
+
+      $dbh->prepare($query_string) 
+	  or return (0, 
+		     "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
+      $sth->execute 
+	  or return (0, 
+		     "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n"); 
+     
       delete $rt::queues{$in_queue_id}{areas}{$in_area};
       return (1, "Area $in_area in queue $in_queue_id deleted.");
     }
@@ -87,20 +93,31 @@ sub delete_queue {
     
     $queue_id=$rt::dbh->quote($in_queue_id);
     if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
-      $query_string = "DELETE FROM queues WHERE queue_id = $queue_id";
-      $dbh->Query($query_string) or 
-	return (0, "[delete_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
-      $query_string = "DELETE FROM queue_acl WHERE queue_id = $queue_id";
-      $dbh->Query($query_string) or 
-	return (0, "[delete_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
-      $query_string = "DELETE FROM queue_areas WHERE queue_id = $queue_id";
-      $dbh->Query($query_string) or
-	return (0, "[delete_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");  
-      delete $rt::queues{"$in_queue_id"};
-      return (1, "Queue $in_queue_id deleted.");
+	$query_string = "DELETE FROM queues WHERE queue_id = $in_queue_id";
+	$sth = $dbh->prepare($query_string) 
+	    or return (0, 
+		       "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");
+ 	$rv = $sth->execute 
+	    or return (0, 
+		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
+	$query_string = "DELETE FROM queue_acl WHERE queue_id = $in_queue_id";
+        $sth=$dbh->prepare($query_string) 
+	    or return (0, 
+		       "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");
+ 	$rv = $sth->execute 
+	    or return (0, 
+		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
+	$query_string = "DELETE FROM queue_areas WHERE queue_id = $in_queue_id";
+        $sth=$dbh->prepare($query_string) 
+	    or return (0, "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");  
+ 	$rv = $sth->execute 
+	    or return (0, 
+		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
+	delete $rt::queues{"$in_queue_id"};
+	return (1, "Queue $in_queue_id deleted.");
     }
     else {
-      return(0, "You do not have the privileges to delete queue $in_queue_id.");
+	return(0, "You do not have the privileges to delete queue $in_queue_id.");
     }
   }
 }
@@ -127,7 +144,10 @@ sub add_modify_queue_conf {
     
     if ($users{$in_current_user}{admin_rt}) {
       $query_string="INSERT INTO queues (queue_id, mail_alias, m_owner_trans,  m_members_trans, m_user_trans, m_user_create, m_members_corresp,m_members_comment, allow_user_create, default_prio, default_final_prio) VALUES ($queue_id, $mail_alias, $in_m_owner_trans, $in_m_members_trans, $in_m_user_trans, $in_m_user_create, $in_m_members_correspond, $in_m_members_comment, $in_allow_user_create, $in_default_prio, $in_default_final_prio)";
-      $dbh->Query($query_string) or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
+      $sth=$dbh->prepare($query_string) 
+	  or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
+      $sth->execute() 
+	  or return (0, "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string is query\n");
       $< = $>;			#set real to effective uid
       system("cp", "-rp", "$rt_dir/lib/generic_templates","$template_dir/queues/$in_queue_id");
       &rt::load_queue_conf();
@@ -187,15 +207,19 @@ sub add_queue_area {
    $queue_id = $rt::dbh->quote($in_queue_id);
   $area = $rt::dbh->quote($in_area);
   
-  if (($users{$in_current_user}{admin_rt}) or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
-    $query_string="INSERT INTO queue_areas (queue_id, area) VALUES ($queue_id, $area)";
+  if (($users{$in_current_user}{admin_rt}) 
+    or ($queues{$in_queue_id}{acls}{$in_current_user}{admin})) {
+      $query_string="INSERT INTO queue_areas (queue_id, area) VALUES ($queue_id, $area)";
     
-    $dbh->Query($query_string) or return (0, "[add_modify_queue_areas] Query had some problem: $Mysql::db_errstr\n");
-    $rt::queues{$in_queue_id}{areas}{$in_area}=1;
-    return(1,"Area $area has been added to queue $in_queue_id");
+      $sth=$rt::dbh->prepare($query_string) 
+	  or return (0, "[add_modify_queue_areas] prepare had some problem: $DBI::errstr\n");
+      $sth->execute 
+	  or return (0,"[add_modify_queue_areas] execute had some problem: $DBI::errstr\n$query_string\n");
+      $rt::queues{$in_queue_id}{areas}{$in_area}=1;
+      return(1,"Area $area has been added to queue $in_queue_id");
   }
   else {
-    return(0, "You do not have the privileges to add areas to queue $in_queue_id.");
+      return(0, "You do not have the privileges to add areas to queue $in_queue_id.");
   }
 }       
 
@@ -229,8 +253,9 @@ sub add_modify_queue_acl {
       
       #clear the acl
       $query_string = "DELETE FROM queue_acl WHERE queue_id = $queue_id AND user_id = $user_id";
-      $dbh->Query($query_string) or 
-	return (0,"[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
+      $rt::dbh->prepare($query_string) or 
+	return (0,"[add_modify_queue] Query had some problem: $DBI::errstr\n$query_string\n");
+      $rv = $sth->execute or return (0,"[add_modify_queue] execute had some problem: $DBI::errstr\n$query_string\n");
       
       # if we're not granting anything
       if( ! (($in_admin == 0) and ($in_display == 0) and ($in_manipulate == 0)) ) {
@@ -248,7 +273,10 @@ sub add_modify_queue_acl {
     
     elsif (($in_admin == 0) and ($in_display == 0) and ($in_manipulate == 0)) {
       $query_string = "DELETE FROM queue_acl WHERE queue_id = $queue_id AND user_id = $user_id";
-      $dbh->Query($query_string) or return (0,"[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
+      $sth = $dbh->prepare($query_string) 
+	  or return (0,"[add_modify_queue] prepare had some problem: $DBI::errstr\n$query_string\n");
+      $rv = $sth->execute 
+	  or return (0,"[add_modify_queue] execute had some problem: $DBI::errstr\n$query_sring\n");
       delete $rt::queues{$in_queue_id}{acls}{$in_user_id};
       return (1, "User $in_user_id\'s credentials for queue $queue_id have been revoked.");
     }
@@ -272,8 +300,9 @@ sub add_modify_queue_acl {
 	$update_clause =~ s/,(\s),/, /g;
 	$query_string = "UPDATE queue_acl SET $update_clause WHERE queue_id = $queue_id AND user_id = $user_id";
 	$query_string =~ s/,(\s*)WHERE/ WHERE/g;
-	#  print "UPDATING WITH QUERY $query_string\n";	
-	$dbh->Query($query_string) or warn "[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+	#  print "UPDATING WITH QUERY $query_string\n";
+ 	$sth = $dbh->prepare($query_string) or warn "[add_modify_queue] prepare had some problem: $DBI::errstr\n$query_string\n";
+ 	$rv = $sth->execute or warn "[add_modify_queue] execute had some problem: $DBI::errstr\n$query_string\n";
 	delete $rt::queues{$in_queue_id}{acls}{$in_user_id};
 	&rt::load_queue_acls();
 	return (1, "User $in_user_id\'s ACLs for queue $queue_id updated.");
@@ -374,7 +403,11 @@ sub add_modify_user_info {
       
       $query_string="INSERT INTO users (user_id, real_name, password, email, phone,  office, comments, admin_rt) VALUES ($new_user_id, $new_real_name, $new_password, $new_email, $new_phone, $new_office, $new_comments, $in_admin_rt)";
        
-      $dbh->Query($query_string) or warn "[add_modify_user_info] Query had some problem: $Mysql::db_errstr\n";
+      $sth = $dbh->prepare($query_string) 
+	  or warn "[add_modify_user_info] prepare had some problem: $DBI::errstr\n";
+      $sth->execute 
+	  or warn "[add_modify_user_info] execute had some problem: $DBI::errstr\n";
+         
       
       &rt::load_user_info();
       return(1,"User $in_user_id created");

@@ -96,21 +96,33 @@ RT_USER_PASSWD_MIN	=	5
 # instead. Hopefully, it will work straight out of the box.
 # If not, ask for help at rt-users@lists.fsck.com
 
-#
-# Mysql related preferences
-#
-# This is where your mysql binaries are located
-#
 
-MYSQLDIR		=	/usr/bin
+# Database options
 
-# Mysql version can be 3.20, 3.21 or 3.22.  This setting determines the order 
-# $rtuser and $rtpass are passed to MysqlPerl.  
-
-MYSQL_VERSION		= 	3.22
+# I'm trying to move from MySQL to a general system. If something
+# still needs mysql, it's sort of broken.
+ 
+DB_HOME               = /usr/bin
+RT_DB                 = mysql
 
 # define MYSQL_DBADMIN to the name of a MySQL user with permission to
 # create new databases 
+DBA                   = root
+DBA_PASSWORD          = yawn
+ 
+
+#
+# This is where your mysql binaries are located [do we need this??]
+#
+MYSQLDIR		=	/usr/bin
+
+
+# Mysql version can be 3.20, 3.21 or 3.22.  This setting determines the order 
+# $rtuser and $rtpass are passed to MysqlPerl.  
+# [do we need this?]
+
+MYSQL_VERSION		= 	3.22
+
 MYSQL_DBADMIN		=	root
 #
 # If you have defined a password for this Mysql user,

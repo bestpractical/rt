@@ -319,8 +319,8 @@ sub kill {
 # with some 'tmpwatch' functionality in crontab, where all dead
 # requests that hasn't been accessed for one month gets killed. Or
 # what do you think?
-#	$query_string = "DELETE from transactions where effective_sn = $in_serial_num";
-#	$dbh->Query($query_string) or warn "Query had some problem: $Mysql::db_errstr\n";;
+# 	$sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n";
+# 	$rv = $sth->execute or warn "execute had some problem: $DBI::errstr\n";
 	
     $transaction_num=&update_request($in_serial_num,'status','dead', $in_current_user);    
     return ($transaction_num,"Request #$in_serial_num has been killed.");
@@ -368,8 +368,9 @@ sub merge {
 
     $transaction_num=&update_request($in_serial_num,'effective_sn',$in_merge_into, $in_current_user);    
 
-    $query_string = "UPDATE transactions SET effective_sn = $in_merge_into WHERE effective_sn = $in_serial_num";
-    $dbh->Query($query_string) or warn "Query had some problem: $Mysql::db_errstr\n";
+	$query_string = "UPDATE transactions SET effective_sn = $in_merge_into WHERE effective_sn = $in_serial_num";
+	$sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n";
+	$rv = $sth->execute  or warn "execute had some problem: $DBI::errstr\n";
 
     &req_in($in_merge_into,$in_current_user);
     return ($transaction_num,"Request #$in_serial_num has been merged into request #$in_merge_into.");
