@@ -58,8 +58,9 @@ $id ? (
 
 <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object &>
 <%INIT>
-$ObjectType =~ /^RT::(Queue|User|Group)$/
-    or Abort(loc("Object of type [_1] cannot take custom fields", $ObjectType));
+# XXX TODO: Validate here?
+#$ObjectType =~ /^RT::(Queue|User|Group)$/
+#    or Abort(loc("Object of type [_1] cannot take custom fields", $ObjectType));
 
 
 
@@ -72,7 +73,7 @@ my $Object = $ObjectType->new($session{'CurrentUser'});
 my $QualifiedType;
 my $FriendlySubTypes;
 if ($SubType =~/^RT::(.*)$/)  {
-    $FriendlySubTypes = $1."s";
+    $FriendlySubTypes = RT::CustomField->new($session{'CurrentUser'})->FriendlyLookupType($Object->CustomFieldLookupType);
    $QualifiedType = "$Type-$1"; 
 } else {
     $QualifiedType = $Type;
@@ -91,7 +92,8 @@ if ($id) {
 $title =  loc('Edit Custom Fields for [_1]', $Object->Name);
 }
 elsif ($SubType) {
-$title=   loc("Modify Custom Fields which apply to [_1] for all [_2]", loc(lc($FriendlySubTypes)), loc(lc($Types)));
+
+    $title=   loc("Modify Custom Fields which apply to [_1] for all [_2]", loc(lc($FriendlySubTypes)), loc(lc($Types)));
 } else {
  $title =loc("Modify Custom Fields which apply to all [_1]", loc(lc($Types)));
 
