@@ -23,7 +23,7 @@
 %# END LICENSE BLOCK
 <%PERL>
 my $rows = 10;
-my $people = $Ticket->Requestors->MembersObj;
+my $people = $Ticket->Requestors->UserMembersObj;
 while (my $member=$people->Next) {
 my $requestor = $member->MemberObj->Object;
 my $name=$requestor->RealName || $requestor->EmailAddress;	

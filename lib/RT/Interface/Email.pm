@@ -182,14 +182,14 @@ sub MailError {
 
     }
 
- 
+    $RT::Logger->crit($entity->as_string); 
     if ($RT::MailCommand eq 'sendmailpipe') {
         open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);
         print MAIL $entity->as_string;
         close(MAIL);
     }
     else {
-	$entity->send($RT::MailCommand, $RT::MailParams);
+    	$entity->send($RT::MailCommand, $RT::MailParams);
     }
 }
 

@@ -177,7 +177,7 @@ Set($CommentAddress , 'RT_CommentAddressNotSet');
 # Note that you should remove the '-t' from $SendmailArguments
 # if you use 'sendmail rather than 'sendmailpipe'
 
-Set($MailCommand , 'sendmailpipe');
+Set($MailCommand , 'sendmail');
 
 # $SendmailArguments defines what flags to pass to $Sendmail
 # assuming you picked 'sendmail' or 'sendmailpipe' as the $MailCommand above.
