@@ -1,6 +1,5 @@
 # $Header$
 #
-# WebAuth is part of RT: Request Tracker.
 # RT is (c) Copyright 1996-1999 Jesse Vincent
 # RT is distributed under the terms of the GNU General Public License
 #
