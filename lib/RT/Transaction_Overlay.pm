@@ -785,4 +785,12 @@ sub CurrentUserHasRight {
 
 # }}}
 
+# Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
+sub _CacheConfig {
+  {
+     'cache_p'        => 1,
+     'fast_update_p'  => 1,
+     'cache_for_sec'  => 180,
+  }
+}
 1;

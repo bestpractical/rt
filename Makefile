@@ -29,7 +29,7 @@
 
 PERL			= 	/usr/bin/perl
 
-CONFIG_FILE_PATH	=	/opt/rt3/etc
+CONFIG_FILE_PATH	=	/opt/bestpractical.com-rt3//etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
 SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
@@ -55,8 +55,8 @@ LIBS_OWNER 		=	root
 # Group that should own all of RT's libraries, generally root.
 LIBS_GROUP		=	bin
 
-WEB_USER		=	www
-WEB_GROUP		=	www
+WEB_USER		=	nobody
+WEB_GROUP		=	nogroup
 
 # {{{ Files and directories 
 
@@ -66,22 +66,22 @@ WEB_GROUP		=	www
 DESTDIR			=	
 
 
-RT_PATH			=	/opt/rt3
-RT_ETC_PATH		=	/opt/rt3/etc
-RT_BIN_PATH		=	/opt/rt3/bin
-RT_SBIN_PATH		=	/opt/rt3/sbin
-RT_LIB_PATH		=	/opt/rt3/lib
-RT_MAN_PATH		=	/opt/rt3/man
-RT_VAR_PATH		=	/opt/rt3/var
-RT_DOC_PATH		=	/opt/rt3/share/doc
-RT_LOCAL_PATH		=	/opt/rt3/local
-LOCAL_ETC_PATH		=	/opt/rt3/local/etc
-LOCAL_LEXICON_PATH	=	/opt/rt3/local/po
-MASON_HTML_PATH		=	/opt/rt3/share/html
-MASON_LOCAL_HTML_PATH	=	/opt/rt3/local/html
-MASON_DATA_PATH		=	/opt/rt3/var/mason_data
-MASON_SESSION_PATH	=	/opt/rt3/var/session_data
-RT_LOG_PATH	    =       /opt/rt3/var/log
+RT_PATH			=	/opt/bestpractical.com-rt3
+RT_ETC_PATH		=	/opt/bestpractical.com-rt3//etc
+RT_BIN_PATH		=	/opt/bestpractical.com-rt3//bin
+RT_SBIN_PATH		=	/opt/bestpractical.com-rt3//sbin
+RT_LIB_PATH		=	/opt/bestpractical.com-rt3//lib
+RT_MAN_PATH		=	/opt/bestpractical.com-rt3//man
+RT_VAR_PATH		=	/opt/bestpractical.com-rt3//var
+RT_DOC_PATH		=	/opt/bestpractical.com-rt3//share/doc
+RT_LOCAL_PATH		=	/opt/bestpractical.com-rt3//local
+LOCAL_ETC_PATH		=	/opt/bestpractical.com-rt3//local/etc
+LOCAL_LEXICON_PATH	=	/opt/bestpractical.com-rt3//local/po
+MASON_HTML_PATH		=	/opt/bestpractical.com-rt3//share/html
+MASON_LOCAL_HTML_PATH	=	/opt/bestpractical.com-rt3//local/html
+MASON_DATA_PATH		=	/opt/bestpractical.com-rt3//var/mason_data
+MASON_SESSION_PATH	=	/opt/bestpractical.com-rt3//var/session_data
+RT_LOG_PATH	    =       /opt/bestpractical.com-rt3//var/log
 
 # RT_READABLE_DIR_MODE is the mode of directories that are generally meant
 # to be accessable
@@ -166,7 +166,7 @@ DB_RT_HOST		=	localhost
 # set this to the name you want to give to the RT database in 
 # your database server. For Oracle, this should be the name of your sid
 
-DB_DATABASE		=	rt3
+DB_DATABASE		=	bps_rt3
 DB_RT_USER		=	rt_user
 DB_RT_PASS		=	rt_pass
 
