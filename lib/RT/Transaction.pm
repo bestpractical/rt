@@ -102,7 +102,7 @@ sub Create  {
 		$RT::Logger->log(level=>'debug', message=>("Found a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id));
 		if ( $Scope->ScripObj->IsApplicable() ) {
 
-		    $RT::Logger->log(level=>'debug', message=>("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe,$Scope->ScripObj->TemplateObj->id).") at ticket #".$TicketAsSystem->Id));
+		    $RT::Logger->log(level=>'debug', message=>("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe,($Scope->ScripObj->TemplateObj ? $Scope->ScripObj->TemplateObj->id : "")).") at ticket #".$TicketAsSystem->Id));
 
 
 		    $Scope->ScripObj->Prepare() &&   

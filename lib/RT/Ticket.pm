@@ -1033,7 +1033,18 @@ sub _NewLink {
 	       Type => '',
 	       @_ );
 
-  # TODO: Check if the link already exists - we don't want duplicates
+  # {{{ Check if the link already exists - we don't want duplicates
+  my $Links=RT::Links->new($self->CurrentUser);
+  $Links->Limit(FIELD=>'Type',VALUE => $args{Type});
+  $Links->Limit(FIELD=>'Base',VALUE => $args{Base});
+  $Links->Limit(FIELD=>'Target',VALUE => $args{Target});
+  my $l=$Links->First;
+  if ($l) {
+      $RT::Logger->log(level=>'info', 
+		       message=>"Somebody tried to duplicate a link");
+      return ($l->id, "Link already exists", 0);
+  }
+  # }}}
 
   # TODO: URIfy local tickets
  
