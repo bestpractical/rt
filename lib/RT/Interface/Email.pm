@@ -36,8 +36,11 @@ sub activate  {
   $parser->output_to_core(20000);
   
   #Ok. now that we're set up, let's get the stdin.
+  #TODO: Deal with this error better
   my $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
-  
+ 
+
+ 
   # Get the head, a MIME::Head:
   $head = $entity->head;
 
@@ -112,6 +115,7 @@ sub activate  {
    	#print STDERR "ticket correspond done\n"; 
 	}
      else { 
+	#TODO: Send a warning
 	die "Unknown action type: $Action\n";
      }
   }
@@ -158,6 +162,9 @@ sub GetCurrentUser  {
   my $From = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
 
   use Mail::Address;
+  #TODO: probably, we should do something smart here like generate
+  # the ticket as "system"
+
   my ($FromObj) = Mail::Address->parse($From) or die "Couldn't parse From-address";
   my $Name =  ($FromObj->phrase || $FromObj->comment || $FromObj->address);
 
