@@ -137,8 +137,8 @@ sub handler {
 
     RT::Init();
 
-    # We don't need to handle non-text items
-    return -1 if defined( $r->content_type ) && $r->content_type !~ m|^text/|io;
+    # We don't need to handle non-text, non-xml items
+    return -1 if defined( $r->content_type ) && $r->content_type !~ m!(^text/|\bxml\b)!io;
 
     my %session;
     my $status;
