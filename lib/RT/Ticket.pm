@@ -1881,6 +1881,7 @@ sub DeleteLink {
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
 
+
 =cut
 
 sub AddLink {
@@ -1891,7 +1892,7 @@ sub AddLink {
 		 @_ );
     
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
-	return (0, "Permission Denied",0);
+	return (0, "Permission Denied");
     }
     
     if ($args{'Base'} and $args{'Target'}) {
@@ -1947,7 +1948,7 @@ sub AddLink {
        TimeTaken => 0
       );
     
-    return ($linkid, "Link created ($TransString)", $transactionid);
+    return ($Trans, "Link created ($TransString)");
 	
 	
 }
