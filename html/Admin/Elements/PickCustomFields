@@ -22,7 +22,7 @@
 %# 
 %# END LICENSE BLOCK
 % if (@CustomFields == 0) {
-<P><i><&|/l&>(No custom fields)</&></i></P>
+<p><i><&|/l&>(None)</&></i></p>
 % } else {
 <TABLE cellspacing=0 cellpadding=2>
 % my $count;

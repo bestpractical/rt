@@ -22,7 +22,7 @@
 %# 
 %# END LICENSE BLOCK
 % if (@Objects == 0) {
-<P><i><&|/l&>(No objects)</&></i></P>
+<P><i><&|/l&>(None)</&></i></P>
 % } else {
 <TABLE cellspacing=0 cellpadding=2>
 % my $count;

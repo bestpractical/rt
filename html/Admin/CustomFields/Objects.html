@@ -30,24 +30,13 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<TABLE>
-<TR>
-<TD VALIGN=TOP>
-<h2><%$caption%></h2>
-</TD></TR></TABLE>
-<FORM METHOD=GET ACTION="Objects.html">
-<INPUT TYPE=HIDDEN NAME="id" VALUE="<% $id %>">
-<input type="checkbox" name="FindDisabledObjects"> <&|/l&>Include disabled objects in listing.</&>
-<input type=submit value="<&|/l&>Go!</&>">
-</FORM>
-<hr>
 <FORM ACTION="Objects.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME="id" VALUE="<% $id %>">
 <INPUT TYPE=HIDDEN NAME="UpdateObjs" VALUE="1">
 
-<h3><&|/l&>Assigned Objects (uncheck to remove)</&></h3>
+<h2><&|/l&>Selected objects</&></h2>
 <& /Admin/Elements/PickObjects, Objects => \@AssignedObjs, id => $id, Checked => 1 &>
-<h3><&|/l&>Unassigned Objects (check to assign)</&></h3>
+<h2><&|/l&>Unselected objects</&></h2>
 <& /Admin/Elements/PickObjects, Objects => \@UnassignedObjs, id => $id &>
 
 <& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
@@ -67,18 +56,12 @@ my $CollectionClass = $Class.'s';
 my $title = loc('Modify associated objects for [_1]', $CF->Name);
 
 my $Objects = $CollectionClass->new($session{'CurrentUser'});
-my ($caption, @results);
+my (@results);
 my (@AssignedObjs, @UnassignedObjs);
 
 $Objects->UnLimit;
 $Objects->OrderBy( FIELD => 'Name' );
 
-if ($FindDisabledObjects) {
-    $caption = loc("All [_1]", loc($CollectionType));
-    $Objects->{'find_disabled_rows'} = 1;
-} else {
-    $caption = loc("Enabled [_1]", loc($CollectionType));
-}
 
 my $ObjectCFs;
 $ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
