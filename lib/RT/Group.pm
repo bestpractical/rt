@@ -85,34 +85,6 @@ sub GrantQueueRight {
 
 # }}}
 
-# {{{ GrantGlobalQueueRight
-
-=head2 GrantGloblaQueueRight
-
-Grant a global queue right to this group.  Takes a paramhash.  The only param
-that's important to set is RightName.
-
-=cut
-
-sub GrantGlobalQueueRight {
-    
-    my $self = shift;
-    my %args = ( RightScope => 'Queue',
-		 RightName => undef,
-		 RightAppliesTo => 0,
-		 PrincipalType => 'Group',
-		 PrincipalId => $self->Id,
-		 @_);
-   
-    require RT::ACE;
-
-    my $ace = new RT::ACE($self->CurrentUser);
-    
-    return ($ace->Create(%args));
-}
-
-# }}}
-
 # {{{ GrantSystemRight
 
 =head2 GrantSystemRight
@@ -131,7 +103,7 @@ sub GrantSystemRight {
 		 PrincipalId => $self->Id,
 		 @_);
    
-    requre RT::ACE;
+    require RT::ACE;
 
     my $ace = new RT::ACE($self->CurrentUser);
     

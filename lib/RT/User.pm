@@ -311,36 +311,6 @@ sub GrantQueueRight {
 
 # }}}
 
-# {{{ GrantGlobalQueueRight
-
-=head2 GrantGlobalQueueRight
-
-Grant a global queue right to this user.  Takes a paramhash.  The only param
-that's important to set is RightName.
-
-=cut
-
-sub GrantGlobalQueueRight {
-    
-    my $self = shift;
-    my %args = ( RightScope => 'Queue',
-		 RightName => undef,
-		 RightAppliesTo => 0,
-		 PrincipalType => 'User',
-		 PrincipalId => $self->Id,
-		 @_);
-   
-    require RT::ACE;
-
-    $RT::Logger->debug("$self ->GrantGlobalQueueRight ". join(@_)."\n");
-
-    my $ace = new RT::ACE($self->CurrentUser);
-    
-    return ($ace->Create(%args));
-}
-
-# }}}
-
 # {{{ GrantSystemRight
 
 =head2 GrantSystemRight

@@ -1,15 +1,96 @@
+  <& /Admin/Elements/Header, Title => 'Modify System ACLS' &>
 
-foreach person with rights:
+  
+<& /Elements/ListActions, actions => \@results &>
+  <FORM METHOD=POST>
+      
 
-Person
 
-        Right   [del]
+<h2>Modify ACLS for system</h2>
+      <TABLE>
+	<TR>
+	  <TD>
+	    <h3><a href="../Users/">Users</a></h3>
+	  </TD>
+	  <TD>
+	    <h3><a href="../Groups/">Groups</a></h3>
+	  </TD>
+	</TR>
+	<TR>
+	  <TD>
+    <TABLE>
+        
+
+%	while (my $UserObj = $Users->Next()) {
+  <TR ALIGN=RIGHT> 
+	<TD VALIGN=TOP>
 
 
-Find people to grant rights:
+	    <% $UserObj->UserId %>
+		  </TD>
+		<TD>
+	    <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj, 
+                                  PrincipalType => 'User',
+                                  Scope => 'System' &>
 
-Find people by <people search criteria>
+		</TD>
+	      </TR>
+% }
+	    </TABLE>
+	  </TD>
+	  <TD>
+	    <TABLE>
+% while (my $GroupObj = $Groups->Next()) {
+	      
+	      <TR ALIGN=RIGHT> 
+		<TD VALIGN=TOP>
+		  <% $GroupObj->Name %>
+		</TD>
+		<TD>
+	    <& /Admin/Elements/SelectRights, PrincipalObj => $GroupObj, 
+                                   PrincipalType => 'Group',
+                                   Scope => 'System' &>
+		</TD>
+	      </TR>
+	
+% }
+	      </TABLE>
+	      </TD>
+    </TR>
+      </TABLE>
+      <P>Be careful to hold down your control or apple key when selecting rights, to make sure that you don't 
+remove rights that were granted previously.
+	</P>
+      
+      <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
+  </FORM>
+  
+  <%INIT>
+ 
+   #Update the acls.
+ my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
 
-<found person>  Right: <right selector>
+        
+    # {{{ do basic initialization.
+    
+  
+  # Find out which users we want to display ACL selects for
+  my $Users = new RT::Users($session{'CurrentUser'});
+    # $Users->LimitToPrivileged();
+  $Users->UnLimit();
 
-                                <submit>
+  # Find out which groups we want to display ACL selects for.
+  my $Groups = new RT::Groups($session{'CurrentUser'});
+  #TODO: limit this to non-pseudogroups
+  $Groups->UnLimit();
+
+  # }}}
+    
+  
+
+  
+  </%INIT>
+
+<%ARGS>
+@CheckACL => undef
+</%ARGS>

@@ -20,34 +20,40 @@ use vars qw (%SCOPE
 # {{{ Descriptions of rights
 # Queue rights are the sort of queue rights that can only be granted
 # to real people or groups
-%QUEUERIGHTS = ( See => 'Can this principal see this queue',
-		 Explore => 'Look at this queue\'s configuration, watchers, etc',
+%QUEUERIGHTS = ( 
+         SeeQueue => 'Can this principal see this queue',
+		 ExploreQueue => 'Look at this queue\'s configuration, watchers, etc',
 		 ListQueue => 'Display a listing of ticket',
-		 ModifyWatchers => 'Modify the queue watchers',
-		 ModifyACL => 'Modify this queue\'s ACL',
-		 CreateTemplates => 'Create email templates for this queue',
-		 ModifyTemplates => 'Modify email templates for this queue',
-		 ShowTemplates => 'Display email templates for this queue',
-		 ModifyScripScopes => 'Modify ScripScopes for this queue',
+         AdminQueue => 'Create, delete and modify queues', 
+         
+         ModifyACL => 'Modify this queue\'s ACL',
+         ModifyQueueWatchers => 'Modify the queue watchers',
+		
+         CreateTemplate => 'Create email templates for this queue',
+		 ModifyTemplate => 'Modify email templates for this queue',
+		 ShowTemplate => 'Display email templates for this queue',
+
+         ModifyScripScopes => 'Modify ScripScopes for this queue',
 		 ShowScripScopes => 'Display ScripScopes for this queue',
-		 ShowTicket => 'Show ticket summaries',
+
+         ShowTicket => 'Show ticket summaries',
 		 ShowTicketHistory => 'Show ticket histories',
 		 ShowTicketComments => 'Show ticket private commentary',
-		 CreateTickets => 'Create tickets in this queue',
-		 ReplyToTickets => 'Reply to tickets',
-		 CommentOnTickets => 'Comment on tickets',
-		 OwnTickets => 'Own tickets',
-		 ModifyTickets => 'Modify tickets',
-		 DeleteTickets => 'Delete tickets'
-	       );	
+		 CreateTicket => 'Create tickets in this queue',
+         ReplyToTicket => 'Reply to tickets',
+		 CommentOnTicket => 'Comment on tickets',
+		 OwnTicket => 'Own tickets',
+		 ModifyTicket => 'Modify tickets',
+		 DeleteTicket => 'Delete tickets'
+      );	
 
 
 # System rights are rights granted to the whole system
-%SYSTEMRIGHTS = (AdminQueues => 'Create, delete and modify queues', 
+%SYSTEMRIGHTS = (
 		  AdminGroups => 'Create, delete and modify groups',
 		  AdminUsers => 'Create, Delete and Modify users',
-		  ModifySelf => 'Modify one\'s own RT account',
-		  ModifySystemACL => 'Modify system ACLs',
+	      ModifySelf => 'Modify one\'s own RT account',
+	      ModifySystemACL => 'Modify system ACLs',
 
 		);
 

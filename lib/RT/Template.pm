@@ -105,7 +105,7 @@ sub Create {
     my $QueueObj = new RT::Queue($self->CurrentUser);
     $QueueObj->Load($args{'Queue'}) || return (0,'Invalid queue');
 
-    unless ($QueueObj->CurrentUserHasRight('CreateTemplates')) {
+    unless ($QueueObj->CurrentUserHasRight('CreateTemplate')) {
      return (0, "Permission Denied");
     }
    

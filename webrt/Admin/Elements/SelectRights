@@ -1,0 +1,52 @@
+<INPUT TYPE=HIDDEN NAME="CheckACL"  VALUE="<%$ACLDesc%>">
+      
+    <SELECT SIZE=5  MULTIPLE  NAME="ACL-<%$ACLDesc%>">
+            
+% foreach $right (sort keys %Rights) {
+      <OPTION VALUE="<%$right%>"  
+	<%  $ACLObj->HasEntry(PrincipalId=> $PrincipalObj->Id , 
+				  PrincipalType => $PrincipalType, 
+				  RightName => "$right", 
+				  RightScope => $Scope, 
+				  RightAppliesTo => $AppliesTo) 
+	  && 'SELECTED'  %>
+	><%$right%></OPTION>
+% }
+    </SELECT>
+    
+    
+    
+<%INIT>
+    my ($right, $ACLDesc, $AppliesTo, %Rights);
+   
+       
+    my $ACLObj = new RT::ACL($session{'CurrentUser'});
+    my $ACE = new RT::ACE($session{'CurrentUser'});
+
+    if ($Scope eq 'Queue') { 
+        $AppliesTo = $QueueObj->Id;
+        $ACLObj->LimitScopeToQueue($AppliesTo);
+        %Rights = $ACE->QueueRights();
+    } 
+    elsif ($Scope eq 'System') {
+        $AppliesTo = 0;
+        $ACLObj->LimitScopeToSystem();
+        %Rights =  ( $ACE->SystemRights , $ACE->QueueRights());
+    }
+
+    if ($PrincipalType eq 'Group') {
+        $ACLObj->LimitPrincipalToGroup($PrincipalObj->Id);
+    } 
+    elsif ($PrincipalType eq 'User') {
+        $ACLObj->LimitPrincipalToUser($PrincipalObj->Id);
+    } 
+    
+    $ACLDesc = "$PrincipalType-".$PrincipalObj->Id."-$Scope-$AppliesTo";
+</%INIT>
+    
+<%ARGS>
+$PrincipalType => undef
+$PrincipalObj => undef
+$Scope => undef
+$QueueObj => undef
+</%ARGS>

@@ -54,7 +54,7 @@ sub ParseArgs  {
       $Ticket=&LoadTicket($id);
       if ($Ticket) {
 	  
-	  if ($Ticket->CurrentUserHasRight("Show")) {
+	  if ($Ticket->CurrentUserHasRight("ShowTicket")) {
 	    &ShowSummary($Ticket);
 	    print "\n";
 	    &ShowHistory($Ticket);
@@ -71,7 +71,7 @@ sub ParseArgs  {
       my $id=int($ARGV[++$i]);
       my $Ticket = &LoadTicket($id);
       
-      if ($Ticket->CurrentUserHasRight("Show")) {
+      if ($Ticket->CurrentUserHasRight("ShowTicket")) {
 	&ShowSummary($id);
 	&ShowRequestorHistory($id);
       }

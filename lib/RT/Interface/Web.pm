@@ -6,8 +6,6 @@
 ## interface to RT
 
 package RT::Interface::Web;
-use strict;
-
 
 # {{{ sub NewParser
 
@@ -64,9 +62,12 @@ sub NewApacheHandler {
     return($ah);
 }
 
+# }}}
+
 package HTML::Mason::Commands;
 
-# {{{ sub Error - calls Error and aborts
+# {{{ sub Abort
+# Error - calls Error and aborts
 sub Abort {
     &mc_comp("/Elements/Error" , Why => shift);
     $m->abort;
@@ -188,6 +189,8 @@ sub ProcessSimpleActions {
 }
 # }}}
 
+# {{{ sub ProcessOwnerChangeRequest
+
 sub ProcessOwnerChangeRequest {
     my %args=@_;
     if ($args{ARGS}->{'SetOwner'}
@@ -196,6 +199,7 @@ sub ProcessOwnerChangeRequest {
 	push(@{$args{Actions}}, $Description);
     }
 }
+# }}}
 
 # {{{ sub ProcessUpdateMessage
 sub ProcessUpdateMessage {
@@ -229,6 +233,8 @@ sub ProcessUpdateMessage {
 }
 # }}}
 
+# {{{ sub ProcessStatusChangeQuery 
+
 sub ProcessStatusChangeQuery {
     my %args=@_;
     if ($args{ARGS}->{'SetStatus'} and ($args{ARGS}->{'SetStatus'} ne $args{Ticket}->Status())) {
@@ -236,6 +242,8 @@ sub ProcessStatusChangeQuery {
 	push(@{$args{Actions}}, $Description);
     }
 }
+
+# }}}
 
 # {{{ sub ProcessSearchQuery
 
@@ -329,6 +337,7 @@ sub ProcessSearchQuery {
 }
 # }}}
 
+# {{{ sub Config 
 # TODO: This might eventually read the cookies, user configuration
 # information from the DB, queue configuration information from the
 # DB, etc.
@@ -339,6 +348,145 @@ sub Config {
   return $args->{$key} || $RT::WebOptions{$key};
 }
 
+# }}}
+
+# {{{ sub ProcessACLChanges
+
+sub ProcessACLChanges {
+ #   my $self = shift;
+
+    my (@CheckACL, %ARGS);
+    
+    my $ACLref= shift;
+    my $ARGSref = shift;
+
+    @CheckACL = @$ACLref;
+    %ARGS = %$ARGSref;
+    
+    my $ACL;
+    foreach $ACL (@CheckACL) {
+	
+	my ($Principal);
+	
+	# Parse out what we're really talking about. 
+	# it would be good to make this code generic enough to apply
+	# to system rights too
+	
+	if ($ACL =~ /^(.*?)-(\d+)-(.*?)-(\d+)/) {
+	    my $PrincipalType = $1;
+	    my $PrincipalId = $2;
+	    my $Scope = $3;
+	    my $AppliesTo = $4;
+	    
+	    # {{{ Create an object called Principal
+	    # so we can do rights operations
+	    
+	    if ($PrincipalType  eq 'User' ) {
+		$Principal = new RT::User($session{'CurrentUser'});
+	    } elsif ($PrincipalType eq 'Group') {
+		$Principal = new RT::Group($session{'CurrentUser'});
+	    } else {
+		Abort("$PrincipalType unknown principal type")
+	    }	
+	    
+	    $Principal->Load($PrincipalId) ||
+	      Abort("$PrincipalType $PrincipalId couldn't be loaded");
+	    
+	    # }}}
+	    
+	    # {{{ load up an RT::ACL object with the same current vals of this ACL
+	    
+	    my $CurrentACL = new RT::ACL($session{'CurrentUser'});
+	    if ($Scope eq 'Queue') {
+		$CurrentACL->LimitScopeToQueue($AppliesTo);
+	    } elsif ($Scope eq 'System') {
+		$CurrentACL->LimitScopeToSystem();
+	    }
+	    
+	    $CurrentACL->LimitPrincipalToType($PrincipalType);
+	    $CurrentACL->LimitPrincipalToId($PrincipalId);
+	    
+	    # }}}
+	    
+	    # {{{ Get the values of the select we're working with 
+	    # into an array. it will contain all the new rights that have 
+	    # been granted
+	    
+	    
+	    #Hack to turn the ACL returned into an array
+	    my @rights = ref($ARGS{"ACL-$ACL"}) eq 'ARRAY' ?
+	      @{$ARGS{"ACL-$ACL"}} : ($ARGS{"ACL-$ACL"});
+	    
+	    # }}}
+	    
+	    # {{{ Add any rights we need. at the same time, build up
+	    # a hash of what rights have been selected 
+	    
+	    my ($right,%rights);
+	    foreach $right (@rights) {
+		
+		
+		$RT::Logger->debug ("Now handling right $right\n");
+		
+		
+		#if the right that's been selected wasn't there before, add it.
+		unless ($CurrentACL->HasEntry(RightScope => "$Scope",
+					      RightName => "$right",
+					      RightAppliesTo => "$AppliesTo", 
+					      PrincipalType => $PrincipalType ,
+					      PrincipalId => $Principal->Id )) {
+		    
+		    #TODO Deal with system rights
+		    #Add new entry to list of rights.
+		    $RT::Logger->debug("Granting queue $AppliesTo right $right to ".
+				       $Principal->id.	 
+				       " for queue $AppliesTo\n"); 
+		    if ($Scope eq 'Queue') {
+			$Principal->GrantQueueRight( RightAppliesTo => $AppliesTo,
+						     RightName => "$right" );
+			push (@results, "Granted queue $AppliesTo right $right to ".
+			      $Principal->id.	 
+			      " for queue $AppliesTo\n");
+		    }
+		    elsif ($Scope eq 'System') {
+			$Principal->GrantSystemRight( RightAppliesTo => $AppliesTo,
+						      RightName => "$right" );
+			push (@results, "Granted system right $right to ".
+			      $Principal->id. "\n");	 
+	
+		    }
+		}
+		# Build up a hash of rights, so that we can easily check
+		# to make sure the user has not turned off any rights.
+		
+		$rights{"$right"} = 1;
+		
+	    }
+	    # }}}
+	    
+	    # {{{ remove any rights that have been deleted
+	    while ($right = $CurrentACL->Next()) {
+		#If @rights doesn't contain what $entry does, then the user has
+		# removed that right.
+		
+		unless ($rights{$right->RightName}) {
+		    #yank the entry out of  the ACL
+		    $right->Delete();
+		    push (@results, "Revoked ".$right->RightName. "\n");
+		}
+		
+		
+	    }
+	    # }}}
+	    
+	    
+	}
+    }
+    
+    return (@results);
+}
+
+# }}}
 
 
 1;

@@ -1,6 +1,8 @@
   <& /Admin/Elements/Header, Title => 'Modify ACLS for queue '. $QueueObj-QueueId &>
+  
+<& /Elements/ListActions, actions => \@results &>
   <FORM METHOD=POST>
-    <INPUT TYPE=HIDDEN NAME=Queue VALUE="<% $QueueObj->id %>">
+    <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
       
 
 
@@ -27,8 +29,10 @@
 	    <% $UserObj->UserId %>
 		  </TD>
 		<TD>
-	    <& Elements/SelectQueueRightsForUser, UserObj => $UserObj, QueueObj => $QueueObj, 
-	    QueueRights => \%QueueRights &>
+	    <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj, 
+                                  PrincipalType => 'User',
+                                  Scope => 'Queue',
+                                  QueueObj => $QueueObj &>
 		</TD>
 	      </TR>
 % }
@@ -43,8 +47,10 @@
 		  <% $GroupObj->Name %>
 		</TD>
 		<TD>
-	    <& Elements/SelectQueueRightsForGroup, GroupObj => $GroupObj, QueueObj => $QueueObj, 
-	    QueueRights => \%QueueRights &>
+	    <& /Admin/Elements/SelectRights, PrincipalObj => $GroupObj, 
+                                   PrincipalType => 'Group',
+                                   QueueObj => $QueueObj,
+                                   Scope => 'Queue' &>
 		</TD>
 	      </TR>
 	
@@ -61,7 +67,10 @@ remove rights that were granted previously.
   </FORM>
   
   <%INIT>
-    
+ 
+   #Update the acls.
+ my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
+
     # {{{ Deal with setting up the display of current rights.
     
     # {{{ do basic initialization.
@@ -70,7 +79,6 @@ remove rights that were granted previously.
     my ($GroupObj);
   
   my ($right);
-  my %QueueRights = RT::ACE->QueueRights;
   
   
   if (!defined $id) {
@@ -93,133 +101,12 @@ remove rights that were granted previously.
 
   # }}}
     
-    # {{{ Put together a list of rights already granted for this queue
-  
-  my $AdminCcRights = new RT::ACL($session{'CurrentUser'});
-  $AdminCcRights->LimitScopeToQueue($QueueObj->id);
-  $AdminCcRights->LimitPrincipalToType('AdminCc');
-  
-  my $CcRights = new RT::ACL($session{'CurrentUser'});
-  $CcRights->LimitScopeToQueue($QueueObj->id);
-  $CcRights->LimitPrincipalToType('Cc');
-  
-  my $RequestorRights = new RT::ACL($session{'CurrentUser'});
-  $RequestorRights->LimitScopeToQueue($QueueObj->id);
-  $RequestorRights->LimitPrincipalToType('Requestor');
-  
-  # }}}
   
   # }}}
     
-  # {{{ Deal with any changes made to the ACL 
 
-  my $ACL;
-  foreach $ACL (@CheckACL) {
-      
-      my ($Principal);
-      
-      # Parse out what we're really talking about. 
-      # it would be good to make this code generic enough to apply
-      # to system rights too
-      
-      if ($ACL =~ /^(.*?)-(\d+)-Queue-(\d+)/) {
-	  my $PrincipalType = $1;
-	  my $PrincipalId = $2;
-	  my $AppliesTo = $3;
 
-	  # {{{ Create an object called Principal
-	  # so we can do rights operations
-	  
-	  if ($PrincipalType  eq 'User' ) {
-	      $Principal = new RT::User($session{'CurrentUser'});
-	  }
-	  elsif ($PrincipalType eq 'Group') {
-	      $Principal = new RT::Group($session{'CurrentUser'});
-           }
-	  else {
-	      Abort("$PrincipalType unknown principal type")
-	  }	
-	  
-	  $Principal->Load($PrincipalId) ||
-	    Abort("$PrincipalType $PrincipalId couldn't be loaded");
-	  
-	  # }}}
-	  
-	  # {{{ load up an RT::ACL object with the same current vals of this ACL
-	  
-	  my $CurrentACL = new RT::ACL($session{'CurrentUser'});
-	  $CurrentACL->LimitScopeToQueue($AppliesTo);
-	  $CurrentACL->LimitPrincipalToType($PrincipalType);
-	  $CurrentACL->LimitPrincipalToId($PrincipalId);
-	  
-	  # }}}
-	  
-	  # {{{ Get the values of the select we're working with 
-	  # into an array. it will contain all the new rights that have 
-	  # been granted
-	  
-	  
-	  #Hack to turn the ACL returned into an array
-	  my @rights = ref($ARGS{"ACL-$ACL"}) eq 'ARRAY' ?
-	    @{$ARGS{"ACL-$ACL"}} : ($ARGS{"ACL-$ACL"});
-	  
-	  # }}}
-	  
-	  # {{{ Add any rights we need. at the same time, build up
-	  # a hash of what rights have been selected 
 
-	  my ($right,%rights);
-	  foreach $right (@rights) {
-
-	      
-	      $RT::Logger->debug ("Now handling right $right\n");
-	      
-	      
-	      #if the right that's been selected wasn't there before, add it.
-	      unless ($CurrentACL->HasEntry(RightScope => "Queue",
-					    RightName => "$right",
-					    RightAppliesTo => "$AppliesTo", 
-					    PrincipalType => $PrincipalType ,
-					    PrincipalId => $Principal->Id )) {
-		  
-		  #TODO Deal with system rights
-		  #Add new entry to list of rights.
-		  $RT::Logger->debug("Granting queue $AppliesTo right $right to ".
-				     $Principal->id.	 
-				     " for queue $AppliesTo\n"); 
-		  $Principal->GrantQueueRight( RightAppliesTo => $AppliesTo,
-					       RightScope => "Queue",
-					       RightName => "$right" );
-		  
-	      }
-	      
-	      # Build up a hash of rights, so that we can easily check
-	      # to make sure the user has not turned off any rights.
-	      
-	      $rights{"$right"} = 1;
-	      
-	  }
-	  # }}}
-	  
-	  # {{{ remove any rights that have been deleted
-	  while ($right = $CurrentACL->Next()) {
-	      #If @rights doesn't contain what $entry does, then the user has
-	      # removed that right.
-	      
-	      unless ($rights{$right->RightName}) {
-		  #yank the entry out of  the ACL
-		  $right->Delete();
-	      }
-	      
-	      
-	  }
-	  # }}}
-	  
-	  
-      }
-  }
-
-  # }}}
   
   </%INIT>
 

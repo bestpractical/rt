@@ -1,4 +1,4 @@
-#$Header$
+# $Header$
 
 package RT::Queue;
 use RT::Record;
@@ -40,7 +40,7 @@ sub Create  {
   my %args = (@_); 
   
   #Check them ACLs
-  return (0, "No permission to create queues") unless ($self->CurrentUser->HasSystemRight('AdminQueues'));
+  return (0, "No permission to create queues") unless ($self->CurrentUser->HasSystemRight('AdminQueue'));
   
   #TODO better input validation
 
@@ -69,7 +69,7 @@ sub Delete  {
   die ("Queue->Delete not implemented yet");
   
   return(0, "You do not have the privileges to delete queues")
-	unless ($self->CurrentUserHasRight('AdminQueues'));
+	unless ($self->CurrentUserHasRight('AdminQueue'));
 	  
   #TODO:  DO ALL THESE
   #Find all the tickets in this queue.
@@ -112,7 +112,7 @@ Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 sub Watchers {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('Explore')) {
+  unless ($self->CurrentUserHasRight('ExploreQueue')) {
     return (0, "Permission Denied");
   }
 
@@ -148,7 +148,7 @@ sub WatchersAsString {
     my $self=shift;
 
     return (0, "Permission Denied")
-      unless ($self->CurrentUserHasRight('Explore'));
+      unless ($self->CurrentUserHasRight('ExploreQueue'));
     
     return _CleanAddressesAsString ($self->Watchers->EmailsAsString() . ", " .
 				    $self->QueueObj->Watchers->EmailsAsString());
@@ -173,7 +173,7 @@ sub AdminCcAsString {
     my $self=shift;
     
     return (0, "Permission Denied")
-      unless ($self->CurrentUserHasRight('Explore'));
+      unless ($self->CurrentUserHasRight('ExploreQueue'));
         
     return _CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
 		  $self->QueueObj->AdminCc->EmailsAsString());
@@ -194,7 +194,7 @@ sub CcAsString {
     my $self=shift;
     
     return (0, "Permission Denied")
-      unless ($self->CurrentUserHasRight('Explore'));
+      unless ($self->CurrentUserHasRight('ExploreQueue'));
         
     return _CleanAddressesAsString ($self->Cc->EmailsAsString() . ", ".
 				    $self->QueueObj->Cc->EmailsAsString());
@@ -236,7 +236,7 @@ sub Cc {
   my $self = shift;
 
   return (0, "Permission Denied")
-    unless ($self->CurrentUserHasRight('Explore'));
+    unless ($self->CurrentUserHasRight('ExploreQueue'));
 
 
   if (! defined ($self->{'Cc'})) {
@@ -263,7 +263,7 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 sub AdminCc {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('Explore')) {
+  unless ($self->CurrentUserHasRight('ExploreQueue')) {
     return (0, "Permission Denied");
   }
   if (! defined ($self->{'AdminCc'})) {
@@ -295,7 +295,7 @@ sub IsWatcher {
 		User => undef);
     
     return (0, "Permission Denied")
-      unless ($self->CurrentUserHasRight('Explore'));
+      unless ($self->CurrentUserHasRight('ExploreQueue'));
     
     $RT::Logger->warn( "Queue::IsWatcher unimplemented");
     return (0);
