@@ -81,7 +81,8 @@ if ( $ARGS{'q'} ) {
         $m->comp("/Search/Listing.html");
         return();
     }
-    $session{'tickets'}->LimitSubject( VALUE    =>  $query, OPERATOR => 'LIKE' );
+    $session{'tickets'}->LimitSubject( VALUE    =>  $query, 
+                                       OPERATOR => 'LIKE' );
         $m->comp("/Search/Listing.html");
 
     return();
