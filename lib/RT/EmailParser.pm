@@ -601,6 +601,13 @@ Takes a single parameter, an email address.
 Returns true if that address matches the $RTAddressRegexp.  
 Returns false, otherwise.
 
+=begin testing
+
+is(RT::EmailParser::IsRTAddress("","rt\@example.com"),1, "Regexp matched rt address" );
+is(RT::EmailParser::IsRTAddress("","frt\@example.com"),undef, "Regexp didn't match non-rt address" );
+
+=end testing
+
 =cut
 
 sub IsRTAddress {
@@ -617,11 +624,36 @@ sub IsRTAddress {
     }
 }
 
-=for testing
-is(RT::EmailParser::IsRTAddress("","rt\@example.com"),1, "Regexp matched rt address" );
-is(RT::EmailParser::IsRTAddress("","frt\@example.com"),undef, "Regexp didn't match non-rt address" );
+# }}}
+
+
+# {{{ CullRTAddresses
+
+=item CullRTAddresses ARRAY
+
+Takes a single argument, an array of email addresses.
+Returns the same array with any IsRTAddress()es weeded out.
+
+=begin testing
+
+@before = ("rt\@example.com", "frt\@example.com");
+@after = ("frt\@example.com");
+ok(eq_array(RT::EmailParser::CullRTAddresses("",@before),@after), "CullRTAddresses only culls RT addresses");
+
+=end testing
 
 =cut
+
+sub CullRTAddresses {
+    my $self = shift;
+    my @addresses= (@_);
+    my @addrlist;
+
+    foreach my $addr( @{$addresses} ) {
+      push (@addrlist, $addr)    unless IsRTAddress("", $addr);
+    }
+    return (@addrlist);
+}
 
 # }}}
 

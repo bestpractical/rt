@@ -32,6 +32,8 @@ use vars qw/@ISA/;
 
 use MIME::Words qw(encode_mimeword);
 
+use RT::EmailParser;
+
 =head1 NAME
 
 RT::Action::SendEmail - An Action which users can use to send mail 
@@ -90,10 +92,15 @@ sub Commit {
     $RT::Logger->info($msgid." #".$self->TicketObj->id."/".$self->TransactionObj->id." - Scrip ". $self->ScripObj->id ." ".$self->ScripObj->Description);
     #send the email
 
+        # Weed out any RT addresses. We really don't want to talk to ourselves!
+        @{$self->{'To'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'To'}});
+        @{$self->{'Cc'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'Cc'}});
+        @{$self->{'Bcc'}} = RT::EmailParser::CullRTAddresses("", @{$self->{'Bcc'}});
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
 
     if ( defined $self->TransactionObj->Attachments->First() ) {
+
         my $squelch = $self->TransactionObj->Attachments->First->GetHeader( 'RT-Squelch-Replies-To');
 
         if ($squelch) {
