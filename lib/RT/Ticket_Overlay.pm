@@ -2675,6 +2675,7 @@ sub AddLink {
 # {{{ sub MergeInto
 
 =head2 MergeInto
+
 MergeInto take the id of the ticket to merge this ticket into.
 
 =cut
@@ -3630,6 +3631,22 @@ sub Transactions {
 sub TransactionCustomFields {
     my $self = shift;
     return $self->QueueObj->TicketTransactionCustomFields;
+}
+
+# Do name => id mapping (if needed) before falling back to
+# RT::Record's CustomFieldValues
+sub CustomFieldValues {
+    my $self = shift;
+    my $field = shift;
+    unless ($field =~ /^\d+$/) {
+	my $cf = RT::CustomField->new($self->CurrentUser);
+	$cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
+	unless( $cf->id ) {
+            $cf->LoadByNameAndQueue(Name => $field, Queue => '0');
+        }
+	$field = $cf->id;
+    }
+    return $self->SUPER::CustomFieldValues($field);
 }
 
 sub _LookupTypes {

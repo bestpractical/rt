@@ -1591,7 +1591,7 @@ sub FirstCustomFieldValue {
 =item CustomFieldValues FIELD
 
 Return a ObjectCustomFieldValues object of all values of CustomField FIELD for this ticket.  
-Takes a field id or name.
+Takes a field id.
 
 
 =cut
