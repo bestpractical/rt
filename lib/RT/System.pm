@@ -81,7 +81,10 @@ $RIGHTS = {
     AdminUsers     => 'Create, delete and modify users',              # loc_pair
     ModifySelf     => "Modify one's own RT account",                  # loc_pair
     DelegateRights =>
-      "Delegate specific rights which have been granted to you."      # loc_pair
+      "Delegate specific rights which have been granted to you.",     # loc_pair
+    ShowConfigTab => "show Configuration tab",     # loc_pair
+    LoadSavedSearch => "allow loading of saved searches",     # loc_pair
+    CreateSavedSearch => "allow creation of saved searches",      # loc_pair
 };
 
 # Tell RT::ACE that this sort of object can get acls granted
