@@ -89,12 +89,14 @@
 
 	</TABLE>
 <TABLE BORDER=0 CELLSPACING=0>
+% my ($i);
 %while (my $Transaction = $Transactions->Next) {
-
+% $i++;
 %	if ($Transactions->IsLast) {
 	<a name="lasttrans">
 % 	}
 	<& /Ticket/Elements/ShowTransaction, Transaction => $Transaction, 
+					     RowNum => $i,
 					     Ticket => $Ticket &>
 
 %}
