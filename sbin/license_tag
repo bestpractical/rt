@@ -57,7 +57,7 @@ File::Find::find({ no_chdir => 1, wanted => \&tag_pm}, 'lib');
 File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'html');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
-tag_makefile ('Makefile');
+tag_makefile ('Makefile.in');
 tag_makefile ('README');
 
 
