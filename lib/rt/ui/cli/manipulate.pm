@@ -31,23 +31,29 @@ sub ParseArgs {
     }
     elsif (($ARGV[$i] eq "-history") || ($ARGV[$i] eq "-show")){
       my $id=int($ARGV[++$i]);
-      my $Request = &LoadTicket($id);
+      my ($Ticket);
       
-      if ($Request->DisplayPermitted) {
-	&ShowSummary($Request);
-	&ShowHistory($Request);
-      }
-      else {
-	print "You don't have permission to view that ticket.\n";
-      }
+      $Ticket=&LoadTicket($id);
+     if ($Ticket) {
+	  
+	  if ($Ticket->DisplayPermitted) {
+	    &ShowSummary($Ticket);
+	    &ShowHistory($Ticket);
+	  }
+	  else {
+	    print "You don't have permission to view that ticket.\n";
+	  }
+	}
+    
+
     }
     
     
     elsif ($ARGV[$i] eq "-publichistory") {
       my $id=int($ARGV[++$i]);
-      my $Request = &LoadTicket($id);
+      my $Ticket = &LoadTicket($id);
       
-      if ($Request->DisplayPermitted) {
+      if ($Ticket->DisplayPermitted) {
 	&ShowSummary($id);
 	&ShowRequestorHistory($id);
       }
@@ -60,173 +66,166 @@ sub ParseArgs {
     elsif ($ARGV[$i] eq "-trans") {
       
       my $tid = int($ARGV[++$i]);
-	my $Transaction = RT::Transaction->new($CurrentUser->UserId);
-	$Transaction->Load($tid);
+      my $Transaction = RT::Transaction->new($CurrentUser->UserId);
+      $Transaction->Load($tid);
       &ShowTransaction($Transaction);	
-	
-      }
       
-      elsif ($ARGV[$i] eq "-comment")	{
+      }
+    
+    elsif ($ARGV[$i] eq "-comment")	{
 	my $id = int($ARGV[++$i]);
-	my $Request=&LoadTicket($id);
-	&cli_comment_req($Request);
+	my $Ticket=&LoadTicket($id);
+	&cli_comment_req($Ticket);
       }
       
       elsif ($ARGV[$i] eq "-respond") {
 	my $id = int($ARGV[++$i]);
-	my $Request=&LoadTicket($id);
-	&cli_respond_req($Request);
+	my $Ticket=&LoadTicket($id);
+	&cli_respond_req($Ticket);
       }      	
       elsif ($ARGV[$i] eq "-take")	{
 	my $id = int($ARGV[++$i]);
-       	my $Request = &LoadTicket($id);
-	$Message .= $Request->take($id, $CurrentUser->UserId);
+       	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->Take();
       }
       
       elsif ($ARGV[$i] eq "-stall")	{
 	my $id = int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
-	$Message .= $Request->stall ($id, $CurrentUser->UserId);
+	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->Stall();
 	
       }
       
       elsif ($ARGV[$i] eq "-kill")	{
 	$id=int($ARGV[++$i]);
-	my $Request=&LoadTicket($id);
-
-	$response=&rt::ui::cli::question_string("Type 'yes' if you REALLY want to KILL request \#$id",);
-	if ($response eq 'yes') { 
-	  $Message .= $Request->Kill();
-
-
-	}
-	else {
-	  $Message .= "Kill aborted.\n";
-	  
-	}
+	my $Ticket=&LoadTicket($id);
+	
+	$Message .= $Ticket->Kill();
+	
+	
+	
       }
       
       elsif ($ARGV[$i] eq "-steal")	{
 	$id=int($ARGV[++$i]);
 	
-	my $Request=&LoadTicket($id);
-	$Message .= $Request->Steal();
+	my $Ticket=&LoadTicket($id);
+	$Message .= $Ticket->Steal();
 	
       }
       
       elsif ($ARGV[$i] eq "-user")	{
 	my $id = int($ARGV[++$i]);
 	my $new_user = $ARGV[++$i];
-	my $Request = &LoadTicket($id);
+	my $Ticket = &LoadTicket($id);
 	
-	$Message .= $Request->Requestors($new_user);
+	$Message .= $Ticket->SetRequestors($new_user);
       }
       
       elsif ($ARGV[$i] eq "-untake")	{
 	my $id=int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
+	my $Ticket = &LoadTicket($id);
 
-	$Message .= $Request->untake();
+	$Message .= $Ticket->Untake();
 
       }
       
       elsif ($ARGV[$i] eq "-subject")	{
 	my $id = int($ARGV[++$i]);
 	my $subject = $ARGV[++$i];
-	my $Request = &LoadTicket($id);
-        $Request->Subject ($subject);
+	my $Ticket = &LoadTicket($id);
+        $Ticket->SetSubject($subject);
 
       }
       
       elsif ($ARGV[$i] eq "-queue")	{
 	my $id=int($ARGV[++$i]);
 	my $queue=$ARGV[++$i];
-	my $Request = &LoadTicket($id);
-	$Message .= $Request->Queue($queue);
+	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->SetQueue($queue);
 	
       }
       elsif ($ARGV[$i] eq "-area")	{
 	my $id=int($ARGV[++$i]);
 	my $area=$ARGV[++$i];
-	my $Request = &LoadTicket($id);
-	$Message .= $Request->Area($area);
+	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->SetArea($area);
       }
-      
+    
       elsif ($ARGV[$i] eq "-merge")	{
 	my $id=int($ARGV[++$i]);
 	my $merge_into=int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
+	my $Ticket = &LoadTicket($id);
 
-	$Message .= $Request->Merge($merge_into);
+	$Message .= $Ticket->Merge($merge_into);
       }
 
       elsif ($ARGV[$i] eq "-due")	{
 	my $id=int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
+	my $Ticket = &LoadTicket($id);
 	
 	my $due_string=$ARGV[++$i];
-	my $due_date = &rt::date_parse($due_string);
+	my $due_date = &rt::DateParse($due_string);
 	
-	$Message .= $Request->DateDue($id, $due_date, $CurrentUser->UserId);
+	$Message .= $Ticket->SetDateDue($id, $due_date, $CurrentUser->UserId);
 
 	}
       
       elsif ($ARGV[$i] eq "-prio") {
 	my $id=int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
+	my $Ticket = &LoadTicket($id);
 	my $priority=int($ARGV[++$i]);
-	$Message=$Request->Priority($priority);
+	$Message=$Ticket->SetPriority($priority);
 
       }
       
       elsif ($ARGV[$i] eq "-finalprio") {
 	my $id = int($ARGV[++$i]);
 	my $priority = int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
-	$Message .= $Request->FinalPriority($priority);
+	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->SetFinalPriority($priority);
 
       }
       elsif ($ARGV[$i] eq "-notify") {
 	my $id = int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
-	$Message .= $Request->Notify();
+	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->Notify();
 
       }
       
       elsif ($ARGV[$i] eq "-give")	{
 	my $id = int($ARGV[++$i]);
 	my $owner = $ARGV[++$i];
-	my $Request = &LoadTicket($id);
-	$Message .= $Request->Give($owner);
+	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->Give($owner);
       }
       
       elsif ($ARGV[$i] eq "-resolve")	{
 	my $id = int($ARGV[++$i]);
-	my $Request = &LoadTicket($id);
-	$Message .= $Request->Resolve();
-	
+	my $Ticket = &LoadTicket($id);
+	$Message .= $Ticket->Resolve();
       }
       
       elsif ($ARGV[$i] eq "-open")	{
 	$id=int($ARGV[++$i]);
-	$Request=&LoadTicket($id);
-	$Message .= $Request->Open; 
+	$Ticket=&LoadTicket($id);
+	$Message .= $Ticket->Open; 
       }
       
-      else {
-	&ShowHelp;
-      }
-      next;
+    else {
+      &ShowHelp;
     }
-    print "$Message\n";
+    next;
   }
+  print "$Message\n";
+}
   
   
   
   
   
   sub cli_create_req {	
-    my ($queue_id,$owner,$requestors,$status,$priority,$subject,$final_prio,$date_due);
+    my ($queue_id,$owner,$requestors,$status,$priority,$subject,$final_prio,$date_due, $due_string);
     $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     $area=&rt::ui::cli::question_string("Place Request in area",);
     $owner=&rt::ui::cli::question_string( "Give request to");
@@ -236,7 +235,8 @@ sub ParseArgs {
     $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
     $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
     if ($due_string ne '') {
-      $date_due = &rt::date_parse($due_string);
+      use RT::Utils;
+      $date_due = &RT::Utils::DateParse($due_string);
     }  
     print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
@@ -247,17 +247,20 @@ sub ParseArgs {
 	$content .= $_;
       }
     }	 
-    my $Request = RT::Request->new($CurrentUser->UserId);
-    my $id = $Request->Create ( queue => $queue,
-				area => $area,
-				alias => $alias,
-				requestors => $requestors,
-				owner => $owner,
-				subject => $subject,
-				initial_priority => $priority,
-				final_priority => $final_priority,
-				status => 'open',
-				date_due => $date_due);
+    use RT::Ticket;
+    my $Ticket = RT::Ticket->new($CurrentUser->UserId);
+    my $id = $Ticket->Create ( Queue => $queue,
+			       Area => $area,
+			       Alias => $alias,
+			       Requestors => $requestors,
+			       Owner => $owner,
+			       Subject => $subject,
+			       InitialPriority => $priority,
+			       FinalPriority => $final_priority,
+			       Status => 'open',
+			       DateDue => $date_due,
+			       Content => $content
+			     );
     printf("Request %s created",$id);
   }
   
@@ -278,10 +281,10 @@ sub ParseArgs {
       }
     }
     
-    my $Request = &LoadTicket($id);
-    $Message =$Request->Comment(subject => "$subject",
+    my $Ticket = &LoadTicket($id);
+    $Message =$Ticket->Comment(subject => "$subject",
 				content => "$content",
-				cc => "$cc"
+				cc => "$cc",
 				bcc => "$bcc",
 				sender => $CurrentUser->UserId);
     print $Message;
@@ -304,26 +307,26 @@ n";
 	$content .= $_;
       }
     }
-    my $Request = &LoadTicket($id);
-    $Message = $Request->NewCorrespondence(subject => "$subject",
+    my $Ticket = &LoadTicket($id);
+    $Message = $Ticket->NewCorrespondence(subject => "$subject",
 					   content => "$content",
-					   cc => "$cc"
+					   cc => "$cc",
 					   bcc => "$bcc",
 					   sender => $CurrentUser->UserId);
     print $Message;
   }                   
   
   sub ShowHistory {
-    my $Request = shift;
+    my $Ticket = shift;
     my $Transaction;
-    while ($Transaction = $Request->Transactions->Next) {
+    while ($Transaction = $Ticket->Transactions->Next) {
       &ShowTransaction($Transaction);
     }   
   }
   sub ShowRequestorHistory {
-    my $Request = shift;
+    my $Ticket = shift;
     my $Transaction;
-    while ($Transaction = $Request->Transactions->Next) {
+    while ($Transaction = $Ticket->Transactions->Next) {
       if ($Transaction->Type ne 'comment') {
 	&ShowTransaction($Transaction);
       }
@@ -331,7 +334,7 @@ n";
   }
   
   sub ShowHelp {
-    print "
+    print <<EOFORM
     
     RT CLI Flags and their arguments
     -----------------------------------------------
@@ -356,57 +359,56 @@ n";
     -notify <num>	  Note that <num>'s requestor was notified
     -merge <num1> <num2>  Merge <num1> into <num2>
     -trans <ser> <trans>  Display ticket <ser> transaction <trans>
-    -kill <num>           Permanently remove <num> from the database\n";
+    -kill <num>           Permanently remove <num> from the database
+EOFORM
     
   }
   
   sub ShowSummary {
-    my $Request = shift;
+    my $Ticket = shift;
 
     use Time::Local;
-    
-
-print << EOFORM;    
-       Serial Number:@{[$Request->Id]}
-               Queue:@{[$Request->Queue->Id]}
-                Area:@{[$Request->Area]}
-          Requestors:@{[$Request->Requestors]}
-               Owner:@{[$Request->Owner]}
-             Subject:@{[$Request->Subject]}
-      Final Priority:@{[$Request->FinalPriority]}
-    Current Priority:@{[$Request->Priority]}
-              Status:@{[$Request->Status]}
-             Created:@{[localtime($Request->DateCreated]}) (@{[$Request->Age ago]})
-        Last Contact:@{[localtime($Request->DateTold]}) (@{[$Request->SinceTold ago]})
-	         Due:@{[localtime($Request->DateDue]})
+    print <<EOFORM
+       Serial Number:@{[$Ticket->Id]}
+               Queue:@{[$Ticket->Queue->QueueId]}
+                Area:$Ticket->Area
+          Requestors:@{[$Ticket->Requestors]}
+               Owner:@{[$Ticket->Owner->UserId]}
+             Subject:@{[$Ticket->Subject]}
+      Final Priority:@{[$Ticket->FinalPriority]}
+    Current Priority:@{[$Ticket->Priority]}
+              Status:@{[$Ticket->Status]}
+             Created:@{[localtime($Ticket->DateCreated)]}) (@{[$Ticket->Age]}) ago)
+        Last Contact:@{[localtime($Ticket->DateTold)]}) (@{[$Ticket->SinceTold]} ago)
+	         Due:@{[localtime($Ticket->DateDue)]})
 
 EOFORM
-    
 }
-  sub ShowTransaction {
-    my $transaction = shift;
-    
-    print <<EOFORM;
+sub ShowTransaction {
+  my $transaction = shift;
+  
+  print <<EOFORM
 ==========================================================================
 Date: @{[$transaction->DateAsString]} (@{[$transaction->TimeWorked]} minutes)
 @{[$transaction->Description]}
 @{[$transaction->Content]}
-EOFORM    
-  }
+EOFORM
+}
   
 sub LoadTicket {
   my $id = shift;
-  my ($Request,$Status,$Message);
+  my ($Ticket,$Status,$Message);
   
   use RT::Ticket;
-  $Request = RT::Ticket->new($CurrentUser->UserId);
-  ($Status, $Message) = $Request->Load($id);
+  $Ticket = RT::Ticket->new($CurrentUser->UserId);
+  ($Status, $Message) = $Ticket->Load($id);
   if (!$Status) {
-    return (0, "The request could not be loaded");
-  }
+    print ("The request could not be loaded");
+    return (0);
+ }
   else {
-    return ($Request);
+    return ($Ticket);
   
+  }
 }
-
 1;

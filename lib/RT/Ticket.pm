@@ -22,7 +22,7 @@ sub new {
 
 sub create {
   my $self = shift;
-  return($self->Create(@_);)
+  return($self->Create(@_));
 }
 
 sub Create {
@@ -50,7 +50,6 @@ sub Create {
   my $ErrStr = $self->SUPER::Create(Id => $args{'id'},
 				EffectiveId => $args{'EffectiveId'},
 				Queue => $args{'Queue'},
-				Area => $args{'Area'},
 				Alias => $args{'Alias'},
 				Requestors => $args{'Requestors'},
 				Owner => $args{'Owner'},
@@ -87,7 +86,7 @@ sub SetQueue {
     if (!$NewQueueObj->Load($NewQueue)) {
       return (0, "That queue does not exist");
     }
-    elsif (!$NewQueueObj->Create_Permitted) {
+    elsif (!$NewQueueObj->CreatePermitted) {
       return (0, "You may not create requests in that queue.");
     }
     elsif (!$NewQueueObj->ModifyPermitted($self->Owner)) {
@@ -104,7 +103,7 @@ sub SetQueue {
   }
 }
 
-sub GetQueue {
+sub Queue {
   my $self = shift;
   if (!$self->{'queue'})  {
     require RT::Queue;
@@ -122,7 +121,7 @@ sub GetQueue {
 # Routines dealing with ownership
 #
 
-sub GetOwner {
+sub Owner {
   my $self = shift;
   if (!$self->{'owner'})  {
     require RT::User;
@@ -150,7 +149,7 @@ sub Steal {
   if (!$self->ModifyPermitted){
     return ("Permission Denied");
   }
-  elsif ($self->GetOwner->UserId eq $self->CurrentUser ) {
+  elsif ($self->Owner->UserId eq $self->CurrentUser ) {
     return ("You already own this ticket"); 
   }
   else {
@@ -166,7 +165,7 @@ sub SetOwner {
   my ($NewOwnerObj);
 
   use RT::User;
-  my $NewOwnerObj = RT::User->new($self->CurrentUser);
+  $NewOwnerObj = RT::User->new($self->CurrentUser);
   
   if (!$NewOwnerObj->Load($NewOwner)) {
     return (0, "That user does not exist");
@@ -177,10 +176,10 @@ sub SetOwner {
     return ("That user may not own requests in that queue")
   }
   
-  elsif ($NewOwnerObj->Id eq $self->GetOwner->Id) {
+  elsif ($NewOwnerObj->Id eq $self->Owner->Id) {
     return("That user already owns that request");
   }
-  elsif (($self->CurrentUser ne $self->GetOwner()) and ($self->GetOwner != '')) {
+  elsif (($self->CurrentUser ne $self->Owner()) and ($self->Owner != '')) {
     return("You can only reassign tickets that you own or that are unowned");
   }
   
@@ -398,9 +397,9 @@ sub Links {
   my $self= shift;
   
   if (! $self->{'pointer_to_links_object'}) {
-    $self->{'pointer_to_links_object'} = new RT::Article::URLs;
-    $self->{'pointer_to_links_object'}->Limit(FIELD => 'article',
-					      VALUE => $self->id);
+#    $self->{'pointer_to_links_object'} = new RT::Article::URLs;
+#    $self->{'pointer_to_links_object'}->Limit(FIELD => 'article',
+#					      VALUE => $self->id);
   }
   return($self->{'pointer_to_links_object'});
 }
@@ -508,8 +507,8 @@ sub _UpdateDateActed {
 sub _Value {
   my $self = shift;
   #If the user is only trying to display;
- if ($self->Display_Permitted) {
-    return ($self::SUPER->_Value(@_));
+  if ($self->DisplayPermitted) {
+    return ($self->SUPER::_Value(@_));
   }
     else {
       return(0, "Permission Denied");

@@ -1,159 +1,4 @@
-package rt;
-
-sub untaint {
-	my $data = shift;
-   if ($data =~ /^([-\@\w.]+)$/) {
-               $data = $1;                     # $data now untainted
-           } else {
-               die "Bad data in $data";        # log this somewhere
-           }
-	return ($data);
-}
-
-#
-#can the named user modify the named queue
-sub can_manipulate_request {
-    my ($in_serial_num, $in_user) =@_;
-    &req_in($in_serial_num,$in_user);
-    if (&can_manipulate_queue($rt::req[$in_serial_num]{'queue_id'},$in_user)) {
-	return(1);
-    }
-    else {
-	return(0);
-    }
-}
-
-#can the named user display the named queue
-sub can_display_request {
-    my ($in_serial_num, $in_user) =@_;
-    &req_in($in_serial_num,$in_user);
-    if (&can_display_queue($rt::req[$in_serial_num]{'queue_id'},$in_user)) {
-	return(1);
-    }
-    else {
-	return(0);
-    }
-}
-
-
-sub can_create_request {
-    my $in_queue = shift;
-    my $in_user = shift;
-  
-    if ($queues{$in_queue}{'acls'}{$in_user}{'manipulate'}) {
-	return(1);
-}
-    if ($queues{$in_queue}{'allow_user_create'}) {
-	return(2);
-    }
-
-    else {
-	return(0);
-    }
-}
-
-sub can_manipulate_queue {
-    my ($in_queue, $in_user) =@_;
-
-    if ($queues{$in_queue}{acls}{$in_user}{manipulate}) {
-	return(1);
-    }
-	elsif ($users{$in_user}{admin_rt}) {
-	return (2);
-    }
-
-    else {
-	return(0);
-    }
-}
-
-
-
-sub can_display_queue {
-    my ($in_queue, $in_user) =@_;
-    if ($queues{$in_queue}{acls}{$in_user}{display}) {
-	return(1);
-    }
-    elsif ($users{$in_user}{admin_rt}) {
-	return (2);
-    }
-
-    else {
-	return(0);
-    }
-}
-
-sub can_admin_queue {
-    my ($in_queue, $in_user) =@_;
-    if ($queues{$in_queue}{acls}{$in_user}{admin}) {
-	return(1);
-    }
-    elsif ($users{$in_user}{admin_rt}) {
-	return (2);
-    }
-
-    else {
-	return(0);
-    }
-}
-
-sub is_not_a_requestor{
-    my($address,$serial_num) =@_;
-    if (($address !~ /\@/) and (exists $users{$address})) {
-      $address=$users{$address}{email}
-    }
-    if ($req[$serial_num]{'requestors'} =~ /(^|\s|,)$address(,|\s|\b)/i) {
-	return(0);
-    }
-    else {
-	return(1);
-    }
-    
-}
-
-sub dist_list {
-    my ($in_action, $in_queue, $in_serial_num)=@_;
-    &rt::req_in($in_serial_num);
-    my $action = $in_action eq 'new' ? "correspond" : $in_action;
-    my @dist_list;
-    push(@dist_list, $queues{$in_queue}{dist_list}) 
-	if ($queues{$in_queue}{"m_members_$action"} &&
-	    $queues{$in_queue}{dist_list});
-    push(@dist_list, $req[$in_serial_num]{owner})
-	if (($queues{$in_queue}{"m_owner_$action"} || 
-	     $queues{$in_queue}{m_owner_trans}) &&
-	    $req[$in_serial_num]{owner});
-    push(@dist_list, $req[$in_serial_num]{requestors})	
-	if (($queues{$in_queue}{"m_user_$action"} || 
-	     $queues{$in_queue}{m_user_trans}) &&
-	    $req[$in_serial_num]{requestors});
-    return join(', ', @dist_list);
-}
-
-sub is_owner {
-    my($serial_num,$user) =@_;
-    if ($req[$serial_num]{'owner'} eq $user) {
-	return(1);
-    }
-    else {
-	return(0);
-    }
-    
-}
-
-
-#normalize_sn takes care of opersations on reqs which have been merged
-sub normalize_sn {
-    my ($in_serial_num)=@_;
-    my ($effective_sn);
-    $effective_sn=&get_effective_sn($in_serial_num);
-    $effective_sn=int($effective_sn);
-    return($effective_sn);
-}
-
-#
-# return something's boolean value
-#
+package RT::Utils;
 
 sub booleanize {
 my ($in_val)=@_;
@@ -169,12 +14,14 @@ my ($in_val)=@_;
 #
 # quote_content
 # will generate the content of a transaction...prefixed.
+# TODO: Update this for 1.1
 #
-sub quote_content {
+sub QuoteContent {
     my $transaction = shift;
     my $current_user = shift;
     my $answer = shift;
     my ($trans, $body, $headers);
+
     $trans=&rt::transaction_in($transaction,$current_user);
 
     $body=$rt::req[$serial_num]{'trans'}[$trans]{'content'};
@@ -218,12 +65,10 @@ sub quote_content {
 
     # Lets add the reply
     if (defined $reply) {
-	# Remind the user that he doesn't blindly send an inappropriate autoanswer
-	$body .= "
+      
+      # Remind the user that he doesn't blindly send an inappropriate autoanswer
+      $body .= ""
 
-[REMOVE THIS LINE]
-[REMEMBER TO CHECK THE ANSWER BELOW THOROUGHLY]
-[IS IT REALLY THE RIGHT ANSWER TO THIS QUESTION?]\n$$answer";
     }
 
     # Let's see if we can figure out the users signature...
@@ -253,7 +98,7 @@ sub quote_content {
 #Adapted from ctime.pl
 #
 
-sub parse_time {
+sub ParseTime {
     local($time) = @_;
     local($[) = 0;
     local($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst);
@@ -287,7 +132,7 @@ sub parse_time {
 # Date_diff from req-1.2.7 by Remy Evard (remy@ccs.neu.edu)
 # Hacked by jesse vincent to deal with negative time
 #	
-sub date_diff {
+sub DateDiff {
 
     local($old, $new) = @_;
     local($diff, $minute, $hour, $day, $week, $month, $year, $s, $string, $negative="");
@@ -332,7 +177,7 @@ sub date_diff {
 }
 
 
-sub template_read {
+sub TemplateLoad {
     
     local ($in_template, $in_queue) =@_;
     local ($template_content="");
@@ -353,7 +198,7 @@ sub template_read {
 
 
 
-sub date_parse {
+sub DateParse {
     my ($date_string) = shift;
 
     my ($now_wday, $now_mon, $now_mday, $now_hour, $now_min, $now_sec, $now_TZ, $now_year, $time);   
@@ -412,7 +257,7 @@ sub date_parse {
 
 }
 
-sub getmonth {
+sub GetMonth {
     my ($monthword) = shift;
     if ($monthword =~ /jan/i) {
 	return(1);
@@ -457,27 +302,6 @@ sub getmonth {
     
 }
 
-# make sure we're using full e-mail addresses rather than username w/o
-# the domain part
-sub norm_requestors
-{
-my $reqs = shift;
-my %nreqs;
-my $err = "ERROR: Incorrect requestor(s): '$reqs'";
-
-   $reqs =~ s/\s//g;
-#i think we should allow empty requestors
-#   return ('',$err) if ! $reqs;
-   @l = split(/,/,$reqs);
-   for( @l )
-   {
-	$_ .= "\@$rt::domain" if ! /\@/;
-	$nreqs{$_} = 1;
-   }
-   $res = join(",",sort keys %nreqs);
-#   return ('',$err) if ! $res;
-   return ($res,'');
-}
 
 1;
  

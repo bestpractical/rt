@@ -22,18 +22,18 @@ sub new {
 }
 
 sub _Accessible {
-  my $self = shift;  
+  my $self = shift;
   my %Cols = (
-	     UserId => 'read/write',
-	     Gecos => 'read/write',
-	     RealName=> 'read/write',
-	     Password=> 'write',
-	     EmailAddress=> 'read/write',
-	     Phone=> 'read/write',
-	     Office=> 'read/write',
-	     Comments=> 'read/write',
-	     IsAdministrator => 'read/write'
-	    );
+	      UserId => 'read/write',
+	      Gecos => 'read/write',
+	      RealName=> 'read/write',
+	      Password=> 'write',
+	      EmailAddress=> 'read/write',
+	      Phone=> 'read/write',
+	      Office=> 'read/write',
+	      Comments=> 'read/write',
+	      IsAdministrator => 'read/write'
+	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
 
@@ -104,17 +104,17 @@ sub Delete {
   
 }
 
-sub Load {
-  my $self = shift;
-  return ($self->load(@_));
-}
 sub load {
+  my $self = shift;
+  return ($self->Load(@_));
+}
+sub Load {
   my $self = shift;
   my $identifier = shift;
 
   #if it's an int, load by id. otherwise, load by name.
   if ($identifier !~ /\D/) {
-    $self->SUPER::load($identifier);
+    $self->SUPER::Load($identifier);
   }
   else {
 
@@ -126,7 +126,7 @@ sub load {
 sub IsPassword { 
   my $self = shift;
   my $value = shift;
-  if ($value = $self->_Get('Password')) {
+  if ($value = $self->_Value('Password')) {
     return (1);
   }
   else {

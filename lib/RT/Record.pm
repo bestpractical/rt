@@ -14,9 +14,7 @@ sub new {
 
 sub _Init {
   my $self = shift;
-  $self->SUPER::Init( 'Handle' => $RT::Handle);
-  
-  $self->{'DBIxHandle'} = $RT::Handle;
+  $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 
 sub Create {

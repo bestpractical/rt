@@ -7,7 +7,7 @@ sub activate {
   require RT::User;  
   ($current_user,undef)=getpwuid($<);
   $CurrentUser = new RT::User($current_user);
-  if (!$CurrentUser->load($current_user)) {
+  if (!$CurrentUser->Load($current_user)) {
     print "You have no RT access.\n";
     return();
   }
@@ -185,7 +185,7 @@ sub cli_acl_queue {
  sub cli_modify_user{
    my $user_id = shift;
    my $User;
-   $User = new RT::User($CurrentUser->GetUserId);
+   $User = new RT::User($CurrentUser->UserId);
    if (!$User->Load($user_id)){
      print "That user does not exist.\n";
      return(0);
@@ -201,24 +201,24 @@ sub cli_acl_queue {
 
    my ($email, $real_name, $password, $phone, $office, $admin_rt, $comments, $message);
    
-   if (($CurrentUser->GetUserId eq $User->GetUserId) or 
-       ($CurrentUser->GetIsAdministrator)) {
+   if (($CurrentUser->UserId eq $User->UserId) or 
+       ($CurrentUser->IsAdministrator)) {
      
     $email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,
-					 $User->GetEmailAddress);
+					 $User->EmailAddress);
     $real_name=&rt::ui::cli::question_string("Real Name",
-					     $User->GetRealName);
+					     $User->RealName);
     $password=&rt::ui::cli::question_string("RT Password (will echo)",
 					    undef);
     $phone=&rt::ui::cli::question_string("Phone Number",
-					 $User->GetPhone);
+					 $User->Phone);
     $office=&rt::ui::cli::question_string("Office Location",
-					  $User->GetOffice);
+					  $User->Office);
     $comments=&rt::ui::cli::question_string("Misc info about this user",
-					    $User->GetComments);
+					    $User->Comments);
     
     if ($CurrentUser->IsAdministrator) {
-      $admin_rt=&rt::ui::cli::question_yes_no("Is this user the RT administrator",$User->GetIsAdministrator);
+      $admin_rt=&rt::ui::cli::question_yes_no("Is this user the RT administrator",$User->IsAdministrator);
     }
     else {
       $admin_rt=0;
@@ -277,31 +277,31 @@ sub cli_modify_queue_helper {
   
   
   $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@somewhere.com)" , 
-					    $Queue->GetCorrespondAddress);
+					    $Queue->CorrespondAddress);
   $comment_alias=&rt::ui::cli::question_string("Queue comments alias (ex: support\@somewhere.com)" ,
-					       $Queue->GetCommentAddress);
+					       $Queue->CommentAddress);
   
   $m_owner_trans=&rt::ui::cli::question_yes_no("Mail request owner on transaction",
-					       $Queue->GetMailOwnerOnTransaction);
+					       $Queue->MailOwnerOnTransaction);
   
   $m_members_trans=&rt::ui::cli::question_yes_no("Mail queue members on transaction",
-						 $Queue->GetMailMembersOnTransaction);
+						 $Queue->MailMembersOnTransaction);
   $m_user_trans=&rt::ui::cli::question_yes_no("Mail requestors on transaction",
-					      $Queue->GetMailRequestorOnTransaction);
+					      $Queue->MailRequestorOnTransaction);
   
   $m_user_create=&rt::ui::cli::question_yes_no("Autoreply to requestor on creation",
-					       $Queue->GetMailRequestorOnCreation);
+					       $Queue->MailRequestorOnCreation);
   $m_members_correspond=&rt::ui::cli::question_yes_no("Mail correspondence to queue members",
-						      $Queue->GetMailMembersOnCorrespondence);
+						      $Queue->MailMembersOnCorrespondence);
   
   $m_members_comment=&rt::ui::cli::question_yes_no("Mail queue members on comment",
-						   $Queue->GetMailMembersOnComment);
+						   $Queue->MailMembersOnComment);
   $allow_user_create=&rt::ui::cli::question_yes_no("Allow non-queue members to create requests",
-						   $Queue->GetPermitNonmemberCreate);
+						   $Queue->PermitNonmemberCreate);
   $default_prio=&rt::ui::cli::question_int("Default request priority (1-100)",
-					   $Queue->GetInitialPriority);
+					   $Queue->InitialPriority);
   $default_final_prio=&rt::ui::cli::question_int("Default final request priority (1-100)",
-						 $Queue->GetFinalPriority);
+						 $Queue->FinalPriority);
   
   if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
     $message = $Queue->SetCorrespondAddress($mail_alias);
