@@ -1,4 +1,4 @@
-<& /Elements/Header, Title => 'Modify people related to ticket # ' . $Ticket->id &>
+<& /Elements/Header, Title => "Ticket #".$Ticket->Id ." Jumbo update: ".$Ticket->Subject &>
 <& /Ticket/Elements/Tabs, Ticket => $Ticket  &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -59,8 +59,10 @@ Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>">
 
 my $Ticket = LoadTicket($id);
 
-my @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
 my @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+my @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+my @okresults = ProcessTicketObjectKeywords(TicketObj => $TicketObj, ARGSRef => \%ARGS);
+
 my @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
 my @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 ProcessUpdateMessage(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@results);
@@ -68,7 +70,7 @@ ProcessUpdateMessage(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@results);
 push @results, @wresults;
 push @results, @dresults;
 push @results, @lresults;
-
+push @results, @okresults;
 </%INIT>
 
 

@@ -6,64 +6,82 @@
 
   my $tabs = {
 		 A => { title => 'Display',
-			     path => "Ticket/Display.html?id=".$id,
-			   },
+			path => "Ticket/Display.html?id=".$id,
+		      },
+	      
+	      Ab => { title => 'History',
+		      path => "Ticket/History.html?id=".$id,
+		       },
+	      B => { title => 'Basics',
+		     path => "Ticket/Modify.html?id=".$id,
+		   },
+	      
+	      C => { title => 'Dates',
+		     path => "Ticket/ModifyDates.html?id=".$id,
+		   },
+	      
+	      D => { title => 'People',
+		     path => "Ticket/ModifyPeople.html?id=".$id,
+		   },
+	      E => { title => 'Links',
+		     path => "Ticket/ModifyLinks.html?id=".$id,
+		   },
+	      F => { title => 'Jumbo',
+		     path => "Ticket/ModifyAll.html?id=".$id,
+		   },
+	      
+	     };
 
-		 Ab => { title => 'History',
-			     path => "Ticket/History.html?id=".$id,
-			   },
-		 B => { title => 'Basics',
-			  path => "Ticket/Modify.html?id=".$id,
-			},
+my $actions;
+if ($Ticket->CurrentUserHasRight('CommentOnTicket')) {
+    $actions->{'Comment'} = 
+      { 
+       title => 'Comment',
+	path => "Ticket/Update.html?Action=Comment&id=".$id,
+      }
+  };
 
-		 C => { title => 'Dates',
-			  path => "Ticket/ModifyDates.html?id=".$id,
-			},
+if ($Ticket->CurrentUserHasRight('ReplyToTicket')) {
+    $actions->{'Reply'} = 
+      { 
+       title => 'Reply',
+       path => "Ticket/Update.html?Action=Respond&id=".$id,
+      }
+  };
 
-
-		 D => { title => 'People',
-			  path => "Ticket/ModifyPeople.html?id=".$id,
-			},
-		 E => { title => 'Links',
-			  path => "Ticket/ModifyLinks.html?id=".$id,
-			},
-		 F => { title => 'Jumbo',
-			  path => "Ticket/ModifyAll.html?id=".$id,
-			},
-
-	};
-
-    my $actions = {
-		 F => { title => 'Comment',
-	 	        path => "Ticket/Update.html?Action=Comment&id=".$id,
-			   },
-		 G => { title => 'Reply',
-			path => "Ticket/Update.html?Action=Respond&id=".$id,
-		      }
-	};
-
-if ($Ticket->OwnerObj->id == $RT::Nobody->id) {
-	$actions->{'Take'} = 	{ path => "Ticket/Display.html?Action=Take&id=".$id,
-				  title => 'Take'
-				};
+if ($Ticket->CurrentUserHasRight('OwnTicket')) {
+    if ($Ticket->OwnerObj->id == $RT::Nobody->id)  {
+	$actions->{'Take'} = 	
+	  { 
+	   path => "Ticket/Display.html?Action=Take&id=".$id,
+	   title => 'Take'
+	  };
+    }
+    elsif ( $Ticket->OwnerObj->id!=$session{CurrentUser}->id) {
+	$actions->{'Steal'} = 	
+	  { 
+	   path => "Ticket/Display.html?Action=Steal&id=".$id,
+	   title => 'Steal' 
+	  };
+    }
 }
-elsif ( $Ticket->OwnerObj->id!=$session{CurrentUser}->id) {
-	$actions->{'Steal'} = 	{ path => "Ticket/Display.html?Action=Steal&id=".$id,
-				  title => 'Steal' 
-				};
+
+if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
+    if ($Ticket->Status ne 'resolved') {
+	$actions->{'Resolve'} = 
+	  { 
+	   path => "Ticket/Display.html?Action=SetStatus&SetStatus=resolved&id=". $id,
+	   title => 'Resolve'
+	  };
+    }	
+    if ($Ticket->Status ne 'open') {	
+	$actions->{'Open'} = 
+	  { 
+	   path => "Ticket/Display.html?Action=SetStatus&SetStatus=open&id=". $id,
+	   title => 'Open'
+	  };
+    }
 }
-
-
-if ($Ticket->Status ne 'resolved') {
-	$actions->{'Resolve'} = { path => "Ticket/Display.html?Action=SetStatus&SetStatus=resolved&id=". $id,
-			  title => 'Resolve'
-			};
-	}	
-if ($Ticket->Status ne 'open') {	
-	$actions->{'Open'} = { path => "Ticket/Display.html?Action=SetStatus&SetStatus=open&id=". $id,
-				  title => 'Open'
-			};
-}	
 
 </%INIT>
 
