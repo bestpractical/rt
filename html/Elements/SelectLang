@@ -48,6 +48,7 @@ my (@lang, %lang_to_desc);
 foreach my $lang (map { s/:://; s/_/-/g; $_ } grep { /^\w+::$/ } keys %RT::I18N::) {
     next if $lang =~ /i-default|en-us/;
     my $desc = I18N::LangTags::List::name($lang);
+    next unless ($desc);
     $desc =~ s/(.*) (.*)/$2 ($1)/;
     $lang_to_desc{$lang} = $desc;
 }
