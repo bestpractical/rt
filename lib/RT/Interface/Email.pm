@@ -54,7 +54,7 @@ sub activate  {
   if ($IsALoop) {
     $RT::Logger->log(level=>$IsALoop>1 ? 'critical' : 'error',
 		     message=>$LoopMsg);
-    $head->add('RT-Loop-Alarm', $LoopMsg)
+    $head->add('RT-Mailing-Loop-Alarm', $LoopMsg)
   }
   
   if ($Subject =~ s/\[$RT::rtname \#(\d+)\]//i) {
