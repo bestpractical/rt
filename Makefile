@@ -270,7 +270,7 @@ database-acl:
 createdb: 
 	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb create 
 
-insert-schema:
+insert-schema: etc-install
 	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb insert
 
 insert-baseline-data:
@@ -350,7 +350,7 @@ bin-install:
 
 
 factory: createdb insert-schema
-	cd lib; $(PERL) sbin/factory  $(DB_DATABASE) RT
+	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
 
 commit:
 	aegis -build ; aegis -diff ; aegis -test; aegis --development_end

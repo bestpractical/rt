@@ -316,7 +316,7 @@ CREATE TABLE TicketCustomFieldValues (
   CustomField int NOT NULL  ,
   Content varchar(255) NULL  ,
 
-  CreatedBy integer NULL  ,
+  Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
@@ -335,7 +335,7 @@ CREATE TABLE CustomFields (
   Description varchar(200) NULL  ,
   SortOrder integer NULL  ,
 
-  CreatedBy integer NULL  ,
+  Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
@@ -353,7 +353,7 @@ CREATE TABLE CustomFieldValues (
   SortOrder integer NULL  ,
 
 
-  CreatedBy integer NULL  ,
+  Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,

@@ -45,7 +45,7 @@ sub StatusArray {
 Returns true if VALUE is a valid status.  Otherwise, returns 0
 
 =for testing
-my $q = new RT::Queue($RT::SystemUser);
+my $q = RT::Queue->new($RT::SystemUser);
 ok($q->IsValidStatus('new')== 1, 'New is a valid status');
 ok($q->IsValidStatus('f00')== 0, 'f00 is not a valid status');
 

@@ -76,7 +76,6 @@ sub LimitToDeleted {
 }
 # }}}
 
-
 # {{{ sub Limit 
 
 =head2 Limit PARAMHASH
@@ -95,6 +94,8 @@ sub Limit {
    return $self->SUPER::Limit(%args);
 }
 
+# }}}
+
 # {{{ sub CurrentUser 
 
 =head2 CurrentUser
@@ -108,7 +109,57 @@ sub CurrentUser  {
   return ($self->{'user'});
 }
 # }}}
+
+# {{{ sub ItemsArrayRef
+
+=item ItemsArrayRef
+
+Return this object's ItemsArray.
+If it has a SortOrder attribute, sort the array by SortOrder.
+Otherwise, if it has a "Name" attribute, sort alphabetically by Name
+Otherwise, just give up and return it in the order it came from the db.
+
+=cut
+
+=begin testing
+
+my $queues = RT::Queues->new($RT::SystemUser);
+$queues->UnLimit();
+my $items = $queues->ItemsArrayRef();
+my @items = @{$items};
+
+ok($queues->NewItem->_Accessible('Name','read'));
+my @sorted = sort {$a->Name cmp $b->Name} @items;
+
+my @sorted_ids = map {$_->id } @sorted;
+my @items_ids = map {$_->id } @items;
+
+
+is ($sorted[0]->Name, $items[0]->Name);
+is ($sorted[-1]->Name, $items[-1]->Name);
+is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name");;
+
+=end testing
+
+sub ItemsArrayRef {
+    my $self = shift;
+    my $items;
     
+    if ($self->NewItem()->_Accessible('SortOrder','read')) {
+        $items = sort { $a->SortOrder <=> $b->SortOrder } @{$self->SUPER::ItemsArrayRef()};
+    }
+    elsif ($self->NewItem()->_Accessible('name','read')) {
+        $items = sort { $a->Name cmp $b->Name } @{$self->SUPER::ItemsArrayRef()};
+    }
+    else {
+        $titems = $self->SUPER::ItemsArrayRef();
+    }
+
+    return($items);
+
+}
+
+# }}}
 
 1;
 
