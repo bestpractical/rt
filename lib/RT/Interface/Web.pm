@@ -214,9 +214,12 @@ sub loc {
         UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
         return($session{'CurrentUser'}->loc(@_));
     }
-    else  {
-        my $u = RT::CurrentUser->new($RT::SystemUser);
+    elsif ( my $u = eval { RT::CurrentUser->new($RT::SystemUser) } ) {
         return ($u->loc(@_));
+    }
+    else {
+	# pathetic case -- SystemUser is gone.
+	return $_[0];
     }
 }
 

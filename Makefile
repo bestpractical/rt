@@ -27,7 +27,7 @@
 #
 
 
-PERL			= 	/usr/bin/perl
+PERL			= 	/usr/local/bin/perl
 
 CONFIG_FILE_PATH	=	/opt/rt3/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm

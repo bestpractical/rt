@@ -442,7 +442,7 @@ sub _Create {
         Description => undef,
         Domain      => undef,
         Type        => undef,
-        Instance    => undef,
+        Instance    => '0',
         InsideTransaction => undef,
         @_
     );
@@ -464,7 +464,7 @@ sub _Create {
         Description => $args{'Description'},
         Type        => $args{'Type'},
         Domain      => $args{'Domain'},
-        Instance    => $args{'Instance'}
+        Instance    => ($args{'Instance'} || '0')
     );
     my $id = $self->Id;
     unless ($id) {

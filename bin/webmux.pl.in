@@ -116,7 +116,7 @@ if ( $CGI::MOD_PERL)  {
 	unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
 }
 
-my $ah = &RT::Interface::Web::NewApacheHandler() if $CGI::MOD_PERL;
+my $ah = &RT::Interface::Web::NewApacheHandler(@RT::MasonParameters) if $CGI::MOD_PERL;
 
 sub handler {
     ($r) = @_;

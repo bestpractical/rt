@@ -27,7 +27,7 @@ use strict;
 use File::Basename;
 require ('@RT_BIN_PATH@/webmux.pl');
 
-my $h = &RT::Interface::Web::NewCGIHandler();
+my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
 
 # Enter CGI::Fast mode, which should also work as a vanilla CGI script.
 require CGI::Fast;

@@ -142,7 +142,7 @@ sub insert_schema {
         open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $RT::DatabaseType );
 
         my $statement = "";
-        foreach my $line (<SCHEMA>, <SCHEMA_LOCAL>) {
+        foreach my $line (<SCHEMA>,  <SCHEMA_LOCAL>) {
             $line =~ s/\#.*//g;
             $line =~ s/--.*//g;
             $statement .= $line;
@@ -153,10 +153,13 @@ sub insert_schema {
             }
         }
 
+	local $SIG{__WARN__} = sub {};
+	my $is_local = 0; # local/etc/schema needs to be nonfatal. 
         foreach my $statement (@schema) {
+	    if ($statement =~ /^\s*;$/) { $is_local = 1; next; }
             print STDERR "SQL: $statement\n" if defined $args{'debug'};
             my $sth = $dbh->prepare($statement) or die $dbh->errstr;
-            unless ( $sth->execute ) {
+            unless ( $sth->execute or $is_local ) {
                 die "Problem with statement:\n $statement\n" . $sth->errstr;
             }
         }

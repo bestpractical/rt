@@ -80,7 +80,8 @@ Return only SystemInternal Groups, such as "privileged" "unprivileged" and "ever
 sub LimitToSystemInternalGroups {
     my $self = shift;
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'SystemInternal');
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
+    # All system internal groups have the same instance. No reason to limit down further
+    #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '0');
 }
 
 
@@ -98,7 +99,8 @@ Return only UserDefined Groups
 sub LimitToUserDefinedGroups {
     my $self = shift;
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
-    $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
+    # All user-defined groups have the same instance. No reason to limit down further
+    #$self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '');
 }
 
 
@@ -231,7 +233,7 @@ sub WithRight {
     my $self = shift;
     my %args = ( Right                  => undef,
                  Object =>              => undef,
-                 IncludeSystemRights    => undef,
+                 IncludeSystemRights    => 1,
                  IncludeSuperusers      => undef,
                  @_ );
 
@@ -241,11 +243,11 @@ sub WithRight {
     # {{{ Find only rows where the right granted is the one we're looking up or _possibly_ superuser 
     $self->Limit( ALIAS           => $acl,
                   FIELD           => 'RightName',
-                  OPERATOR        => '=',
-                  VALUE           => $args{Right},
+                  OPERATOR        => ($args{Right} ? '=' : 'IS NOT'),
+                  VALUE           => $args{Right} || 'NULL',
                   ENTRYAGGREGATOR => 'OR' );
 
-    if ( $args{'IncludeSuperusers'} ) {
+    if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
         $self->Limit( ALIAS           => $acl,
                       FIELD           => 'RightName',
                       OPERATOR        => '=',
@@ -254,7 +256,8 @@ sub WithRight {
     }
     # }}}
 
-    my ($or_check_ticket_roles, $or_check_roles, $or_look_at_object);
+    my ($or_check_ticket_roles, $or_check_roles);
+    my $which_object = "$acl.ObjectType = 'RT::System'";
 
     if ( defined $args{'Object'} ) {
         if ( ref($args{'Object'}) eq 'RT::Ticket' ) {
@@ -274,12 +277,18 @@ sub WithRight {
                 " AND main.Type = $acl.PrincipalType AND main.id = $groupprinc.id) ";
         }
 
-        $or_look_at_object =
-            " OR ($acl.ObjectType = '" . ref($args{'Object'}) . "'" .
+	if ( $args{'IncludeSystemRights'} ) {
+	    $which_object .= ' OR ';
+	}
+	else {
+	    $which_object = '';
+	}
+        $which_object .=
+            " ($acl.ObjectType = '" . ref($args{'Object'}) . "'" .
             " AND $acl.ObjectId = " . $args{'Object'}->Id . ") ";
     }
 
-    $self->_AddSubClause( "WhichObject", "($acl.ObjectType = 'RT::System' $or_look_at_object)" );
+    $self->_AddSubClause( "WhichObject", "($which_object)" );
 
     $self->_AddSubClause( "WhichGroup",
         qq{

@@ -156,14 +156,26 @@ http://www.bestpractical.com/rt
 
 5b  FOR UPGRADING: (Within the RT 3.0.x series)
 
+
+        Read through the UPGRADING document included in this distribution.
+        It may contain important instructions for updating your database
+
         As root, type: 
-                make upgrade     (replace "make" with the local name for 
+                make install     (replace "make" with the local name for 
                                   Make, if you need to)
 
         This will build new binaries, config files and libraries without
         overwriting your RT database. 
         
         It may then instruct you to update your RT system database objects 
+
+5c  FOR UPGRADING: (From RT 2.0.x)
+
+    Download the RT2 to RT3 migration tools from:
+
+    http://bestpractical.com/pub/rt/devel/rt2-to-rt3.tar.gz
+
+    Follow the included instructions.
 
 6   Edit etc/RT_SiteConfig.pm in your RT installation directory, by specifying
     any values you need to change from the defaults in etc/RT_Config.pm

@@ -197,7 +197,7 @@ BEGIN {
 warn "Begin listening on $ENV{'FCGI_SOCKET_PATH'}\n";
 
 require CGI::Fast;
-my $h = &RT::Interface::Web::NewCGIHandler();
+my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
 
 RT::Init();
 
