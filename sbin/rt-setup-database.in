@@ -373,15 +373,52 @@ sub insert_data {
         }
         print "done.\n";
     }
+    if (@Queues) {
+        print "Creating queues...";
+        for $item (@Queues) {
+            my $new_entry = new RT::Queue($CurrentUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            print "(Error: $msg)" unless ($return);
+            print $return. ".";
+        }
+        print "done.\n";
+    }
     if (@ACL) {
         print "Creating ACL...";
         for my $item (@ACL) {
 
-            my $princ = RT::User->new($CurrentUser);
-            $princ->Load( $item->{'UserId'} );
-            my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
-                                                      Right => $item->{'Right'},
-                                                      Object => $RT::System );
+	    my ($princ, $object);
+
+	    # Global rights or Queue rights?
+	    if ($item->{'Queue'}) {
+                $object = RT::Queue->new($CurrentUser);
+                $object->Load( $item->{'Queue'} );
+	    } else {
+		$object = $RT::System;
+	    }
+
+	    # Group rights or user rights?
+	    if ($item->{'GroupDomain'}) {
+                $princ = RT::Group->new($CurrentUser);
+	        if ($item->{'GroupDomain'} eq 'UserDefined') {
+                  $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
+	        } elsif ($item->{'GroupDomain'} eq 'RT::Queue-Role' &&
+			 $item->{'Queue'}) {
+                  $princ->LoadQueueRoleGroup( Type => $item->{'GroupType'},
+					      Queue => $object->id);
+	        } else {
+                  $princ->Load( $item->{'GroupId'} );
+	        }
+	    } else {
+		$princ = RT::User->new($CurrentUser);
+		$princ->Load( $item->{'UserId'} );
+	    }
+
+	    # Grant it
+	    my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
+                                                     Right => $item->{'Right'},
+                                                     Object => $object );
+
             if ($return) {
                 print $return. ".";
             }
@@ -390,16 +427,6 @@ sub insert_data {
 
             }
 
-        }
-        print "done.\n";
-    }
-    if (@Queues) {
-        print "Creating queues...";
-        for $item (@Queues) {
-            my $new_entry = new RT::Queue($CurrentUser);
-            my ( $return, $msg ) = $new_entry->Create(%$item);
-            print "(Error: $msg)" unless ($return);
-            print $return. ".";
         }
         print "done.\n";
     }
