@@ -7,28 +7,67 @@ my $first_row = ($Tickets->FirstRow()+1);
 
 $Tickets->RowsPerPage(0);
 $Tickets->FirstRow(1);
+my @rows;
+my %known_cfs;
 
-my @attrs = qw( QueueObj->Name Id Priority Subject OwnerObj->Name 
-                RequestorsAsString DueAsString ToldObj->AsString 
-                CreatedObj->AsString ResolvedObj->AsString );
+my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLeft Priority FinalPriority OwnerObj->Name 
+                Requestors->MemberEmailAddressesAsString DueObj->ISO ToldObj->ISO
+                CreatedObj->ISO ResolvedObj->ISO );
 
     $r->content_type('application/vnd.ms-excel');
-    my $header = "";
-    my $tabbed_output = '';
-    foreach my $attr (@attrs) {
-	$header .= $attr . "\t";
-    }
-    $header =~ s'Obj-.(AsString|Name)''g;
-    $tabbed_output .= $header . "\n";
     while ( my $Ticket = $Tickets->Next()) {
-	my $line = '';
+       my $row;
  	foreach my $attr (@attrs) {
-	    $line .= eval "\$Ticket->$attr()"; 
-            $line .= "\t";
+                my $method = '$Ticket->'.$attr.'()';
+	    $row->{$attr} = eval $method;
+            if ($@) {die "Failed to find $attr - ". $@}; 
 	}
-	$tabbed_output .= $line . "\n";
+
+        my $cfs = $Ticket->QueueObj->CustomFields();
+        while (my $cf = $cfs->Next) {
+                my @content;
+               my $values = $Ticket->CustomFieldValues($cf->Id);
+               while (my $value = $values->Next) {
+                       push @content, $value->Content;
+               }
+                $row->{'CustomField-'.$cf->Id} = join(', ',@content);
+                if ($row->{'CustomField-'.$cf->Id}) {
+                        $known_cfs{$cf->Id} = $cf->Name;
+                }
+        }
+        push @rows, $row;
+
+
     }
-$m->out($tabbed_output);
+{ 
+my @header;
+    foreach my $attr (@attrs) {
+        my $label = $attr;
+        $label =~ s'Obj-.(AsString|Name)''g;
+	push @header, $label;
+    }
+    foreach my $id (sort keys %known_cfs) {
+        push @header, $known_cfs{$id}; 
+    }
+
+$m->out(join("\t", @header));
+$m->out("\n");
+}
+foreach my $row (@rows) {
+        my @row;
+        foreach my $attr(@attrs) {
+                $RT::Logger->crit("Looking at $attr");
+                push @row, $row->{"$attr"};
+        }
+    foreach my $id (sort keys %known_cfs) {
+                push @row, $row->{'CustomField-'.$id};
+        }
+        
+        $m->out(join("\t",@row));
+        $m->out("\n");
+}
+
+
 $m->abort();
 $Tickets->RowsPerPage($per_page);
 $Tickets->FirstRow($first_row);
