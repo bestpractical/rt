@@ -63,6 +63,7 @@ sub Create  {
 		 OldValue => undef,
 		 NewValue => undef,
 		 MIMEObj => undef,
+		 ActivateScrips => 1,
 		 @_
 	       );
     
@@ -79,22 +80,25 @@ sub Create  {
 				  Field => $args{'Field'},
 				  OldValue => $args{'OldValue'},
 				  NewValue => $args{'NewValue'},
+				  Created => $args{'Created'}
 				 );
     $self->Load($id);
     $self->_Attach($args{'MIMEObj'})
       if defined $args{'MIMEObj'};
     
-    
-    #We're really going to need a non-acled ticket for the scrips to work
-    my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
-    $TicketAsSystem->Load($args{'Ticket'}) || 
-      $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
-    
-    my $TransAsSystem = RT::Transaction->new($RT::SystemUser);
-    $TransAsSystem->Load($self->id) ||
-      $RT::Logger->err("$self couldn't load a copy of itself as superuser\n");
-    
-    # {{{ Deal with Scrips
+    #Provide a way to turn off scrips if we need to
+    if ($args{'ActivateScrips'}) {
+
+	#We're really going to need a non-acled ticket for the scrips to work
+	my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
+	$TicketAsSystem->Load($args{'Ticket'}) || 
+	  $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
+	
+	my $TransAsSystem = RT::Transaction->new($RT::SystemUser);
+	$TransAsSystem->Load($self->id) ||
+	  $RT::Logger->err("$self couldn't load a copy of itself as superuser\n");
+	
+	# {{{ Deal with Scrips
     
     #Load a scripscopes object
     use RT::Scrips;
@@ -188,6 +192,9 @@ sub Create  {
     }
 
     # }}}
+	
+    }
+
     return ($id, "Transaction Created");
 }
 

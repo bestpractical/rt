@@ -12,12 +12,12 @@
 #	importing merged tickets
 
 
-my $RT1USER = "bje";
-my $RT1PASSWORD = undef;
+my $RT1USER = "root";
+my $RT1PASSWORD = 'password';
 my $RT1DATABASE = "rt";
 my $RT1HOST = "localhost";
-my $RT1DATA = "/var/opt/rt";
-my $EMAILDOMAIN = "apnic.net";	# user_id@EMAILDOMAIN for missing RT1 emails
+my $RT1DATA = "/opt/rt/transactions";
+my $EMAILDOMAIN = "example.com"; # user_id@EMAILDOMAIN for missing RT1 emails
 
 my $Debug = 2;
 
@@ -31,7 +31,9 @@ use lib "!!RT_ETC_PATH!!";
 
 use RT::Interface::CLI  qw(CleanEnv LoadConfig DBConnect 
 			   GetCurrentUser GetMessageContent);
-
+use Date::Format;
+use MIME::Entity;
+use MIME::Parser;
 use RT::User;
 use RT::Queue;
 use RT::Ticket;
@@ -68,6 +70,8 @@ MigrateQueues();
 #  import queue ACLs for RT1 queues.
 
 #  import tickets from RT1.
+MigrateTickets();
+
 #  foreach ticket, 
 #  get the ticket core data
 #  get the ticket transaction data
@@ -86,23 +90,30 @@ sub MigrateQueues {
     #Iterate through our queues and create new queue objects
     while (my @row = $sth->fetchrow_array()) {
 	my $queue = RT::Queue->new($RT::SystemUser);
-	my ($val, $msg) = $queue->Create(Name => $row[0],
-					 Description => 'Imported from RT 1.0',
-					 CorrespondAddress => $row[1],
-					 CommentAddress => $row[2],
-					  InitialPriority => $row[3],
-					 FinalPriority => $row[4],
-					 DefaultDueIn => $row[5]);
 	
-
-	if ($val == 0) {
-	    print "Can't add queue $row[0]: $msg\n";
-	    next;
+	# Try to load up the current queue by name. avoids duplication.
+	$queue->Load($row[0]);
+	
+	#if the queue isn't there, create one.
+	unless ($queue->id) {
+	    my ($val, $msg) = $queue->Create(Name => $row[0],
+					     Description => 'Imported from RT 1.0',
+					     CorrespondAddress => $row[1],
+					     CommentAddress => $row[2],
+					     InitialPriority => $row[3],
+					     FinalPriority => $row[4],
+					     DefaultDueIn => $row[5]);
+	    
+	    
+	    if ($val == 0) {
+		warn "Can't add queue $row[0]: $msg\nContinuing...";
+	    }
+	    else {
+		print "Added ".$queue->Name;	
+	    }
 	}
-
-	print "Added ".$queue->Name;	
-
-	# TODO Add scrips to mimic RT1's behavior
+	
+	# Add scrips to mimic RT1's behavior
 	if ($row[6]) { #m_owner_trans
 
 	    my $scrip = new RT::Scrip($RT::SystemUser);
@@ -258,17 +269,23 @@ sub MigrateTickets {
     my $sth = ExecStatement('select * from each_req');
     
     while (my $row = $sth->fetchrow_hashref()) {
+
+	my @requestors = split(',',$row->{'requestors'});
+
+	my $owner = new RT::User($RT::SystemUser);
+	$owner->Load($row->{'owner'});
+
 	my $ticket = new RT::Ticket($RT::SystemUser);
 	my ($id, $msg) = 
 	  $ticket->Import( id => $row->{'serial_num'},
 			   Queue => $row->{'queue_id'},
 			   Status => $row->{'status'},
-			   Requestors => $row->{'requestors'},
-			   Owner => $row->{'owner'},
+			   Requestor => @requestors,
+			   Owner => $owner->id,
 			   Subject => $row->{'subject'},
-			   Priority => $row->{'Priority'},
-			   FinalPriority => $row->{'FinalPriority'},
-			   InitialPriority => $row->{'InitialPriority'},
+			   Priority => $row->{'priority'},
+			   FinalPriority => $row->{'final_priority'},
+			   InitialPriority => $row->{'initial_priority'},
 			   Due => $row->{'date_due'},
 			   Told => $row->{'date_told'},
 			   Created => $row->{'date_created'},
@@ -314,14 +331,7 @@ sub ImportTransactions {
     while (my $row = $sth->fetchrow_hashref()) {  
 	my (%trans_args, $MIMEObj, $trans_file);
 	
-	# {{{ Set the transaction date
-	if ( exists($row->{trans_date}) ) {
-	    my $created = new RT::Date($RT::SystemUser);
-	    $created->Set( Format=>'unix', Value=>$row->{'trans_date'});
-	    $trans_args{'Created'} = $created->ISO;
-	}
 
-	# }}}
 	
 	warn "transaction $row->{id}\n" if $Debug;
 	
@@ -367,7 +377,7 @@ sub ImportTransactions {
 	    $new_user->Load($row->{'trans_data'});
 	    $trans_args{'NewValue'} = $new_user->Id;
 	    
-	    my $actor = new RT::User($RT::System);
+	    my $actor = new RT::User($RT::SystemUser);
 	    $actor->Load($row->{'actor'});
 	    
 	    #take/give
@@ -431,9 +441,10 @@ sub ImportTransactions {
 	
 
 
-	my $filename = $row->{serial_num}.$row->{id};
+	my $filename = $row->{serial_num}.".".$row->{id};
 
 	if ( $load_content ) {
+	    warn "Loading Content";
 	    my $file = 
 	      time2str("$RT1DATA/%Y/%b/%e/",$row->{trans_date},'PST');
 
@@ -452,7 +463,7 @@ sub ImportTransactions {
 	    
 	    $trans_file = -e $file ? $file : -e $file2 ? $file2 : -e $file3 ? $file3 : '' or
 	      warn "none of $file, $file2 or $file3 exist\n";
-	    
+	    warn "Content is in $trans_file\n";
 	}
 	
 	# {{{ if we need to get the content out of the database
@@ -537,12 +548,12 @@ sub ImportTransactions {
 	    
 	    # {{{ Figure out who's the transaction actor. create a user if we need to
 	    my $User = new RT::User($RT::SystemUser);
-	    $User->LoadByCol( "UserId", $row->{'actor'} );
+	    $User->Load( $row->{'actor'} );
 	    unless ($User->Id) {
 		my $Address = $row->{'actor'};
-		$Address .= $EMAILDOMAIN unless $Address =~ /\@/;
+		$Address .= "\@$EMAILDOMAIN" unless $Address =~ /\@/;
 		
-		my ($Val, $Message) = $User->Create(UserId => $row->{'actor'},
+		my ($Val, $Message) = $User->Create(Name => $row->{'actor'},
 						    EmailAddress => $Address,
 						    Password => undef,
 						    Privileged => 0,
@@ -556,11 +567,19 @@ sub ImportTransactions {
 	    
 	    # }}}
 	    
+
+	    die "We couldn't find or create ".$row->{'actor'}
+	      unless ($User->Id);
+	    
 	    my $trans = new RT::Transaction($User);
 	    
 	    # Allow us to set the 'Created' attribute. 
 	    
 	    $trans->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
+	    
+	    my $created = new RT::Date($RT::SystemUser);
+	    $created->Set( Format=>'unix', Value=>$row->{'trans_date'});
+	    
 	    my ($transaction, $msg) = 
 	      $trans->Create( Ticket => $ticket->Id,
 			      Type => $trans_args{'Type'},
@@ -568,8 +587,9 @@ sub ImportTransactions {
 			      Field => $trans_args{'Field'},
 			      NewValue => $trans_args{'NewValue'},
 			      OldValue => $trans_args{'OldValue'},
-			      MIMEObj => $trans_args{'MIMEObj'},
-			      Created => $trans_args{'Created'}
+			      MIMEObj => $MIMEObj,
+			      Created => $created->ISO,
+			      ActivateScrips => 0
 			    );
 	    
 	    die("Couldn't create transaction for ".$row->{'id'} . "\n$msg\n") 

@@ -329,7 +329,9 @@ sub Create {
 
 =head2 Import PARAMHASH
 
-Import a ticket. Doesn\'t create a transaction. doesn\'t supply queue defaults, etc.
+Import a ticket. 
+Doesn\'t create a transaction. 
+Doesn\'t supply queue defaults, etc.
 
 Returns: TICKETID
 
@@ -404,7 +406,6 @@ sub Import {
     
     # }}}
 
-
     # {{{ Deal with setting the owner
     
     if (ref($args{'Owner'}) eq 'RT::User') {
@@ -457,8 +458,7 @@ sub Import {
     }
     
     my $id = $self->SUPER::Create(
-				  id => $args{'id'}.
-				  
+				  id => $args{'id'},
 				  Queue => $QueueObj->Id,
 				  Owner => $Owner->Id,
 				  Subject => $args{'Subject'},
@@ -2083,7 +2083,7 @@ be a single KeywordObject, automatically removes the old value.
  Issues: probably doesn't enforce the depth restrictions or make sure that keywords
 are coming from the right part of the tree. really should.
 
-=cusub AddKeyword {
+sub AddKeyword {
     my $self = shift;
     my %args = ( KeywordSelect => undef,  # id of a keyword select record
 		 Keyword => undef, #id of the keyword to add
