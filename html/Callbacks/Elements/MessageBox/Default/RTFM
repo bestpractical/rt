@@ -1,0 +1,9 @@
+%foreach my $arg (keys %ARGS) {
+%
+% if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
+%        my $art = RT::FM::Article->new($session{'CurrentUser'});       
+%        $art->Load($1);
+<& /RTFM/Article/Elements/Preformatted, Article => $art &>
+% }
+% }
+% return(1);

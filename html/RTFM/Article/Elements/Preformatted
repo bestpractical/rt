@@ -1,0 +1,27 @@
+#<%$Article->Id%>: <%$Article->Name%>
+<%'-' x length("#".$Article->Id.": ".$Article->Name) %>
+
+<% $Article->Summary%> 
+
+%my $cfs = $Article->ClassObj->CustomFields;  
+% while (my $cf = $cfs->Next) {
+
+% my $values = $Article->CustomFieldValues($cf->Id);
+% if ($cf->Type eq 'TextSingle') {
+% my $value = $values->First; 
+% my $content = $value->Content;
+<%$cf->Name%>:
+<%'-' x length($cf->Name) %>
+<%$content%>
+$ } else {
+% my $val = $values->Next;
+<%$cf->Name%>: <%$val%>
+% while ($val = $values->Next) { 
+% my $content = $val->Content;
+<%' ' x length($cf->Name)%>  <%$content%>
+% } 
+% }
+% }
+<%args>
+$Article
+</%args>

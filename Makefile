@@ -34,6 +34,8 @@ TAG			= rtfm-2-snap
 
 install: install-lib install-html initdb
 
+html-install: install-html
+
 install-html:
 	-mkdir $(MASON_HTML_PATH)/RTFM
 	cp -rp html/* $(MASON_HTML_PATH)/

@@ -1,0 +1,42 @@
+% foreach my $arg (keys %ARGS) {
+% if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
+% my $art = RT::FM::Article->new($session{'CurrentUser'});
+% $art->Load($1);
+% if ($art->Id) { 
+<input type="hidden" name="<%$ARGS{'id'}%>-RefersTo" value="<%$art->URI%>">
+% }
+
+% }
+%}
+Search for RTFM articles matching <input size=20 name="RTFM_Content"> <br>
+Reply with the RTFM article named <input size=20 name="RTFM_ArticleNamed">
+<input type=submit value="Go">
+% while (my $article = $articles_content->Next) {
+<%$article->Name%>: <%$article->Summary%><br>
+%}
+
+% while (my $article = $articles_basics->Next) {
+<%$article->Name%>: <%$article->Summary%> <input type=submit name="RTFM-Include-Article-<%$article->Id%>" value="Go"><br>
+%}
+<%init>
+use RT::FM::ArticleCollection;
+
+my $articles_content =
+  RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $articles_basics = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+if ( $ARGS{'RTFM_Content'} ) {
+    $articles_content->LimitToCustomFieldValue( VALUE => $ARGS{'RTFM_Content'},
+                                                OPERATOR => 'LIKE' );
+
+    $articles_basics->Limit( SUBCLAUSE       => 'all',
+                             FIELD           => 'Name',
+                             OPERATOR        => 'LIKE',
+                             VALUE           => $ARGS{'RTFM_Content'},
+                             ENTRYAGGREGATOR => "OR" );
+    $articles_basics->Limit( SUBCLAUSE       => 'all',
+                             FIELD           => 'Summary',
+                             OPERATOR        => 'LIKE',
+                             VALUE           => $ARGS{'RTFM_Content'},
+                             ENTRYAGGREGATOR => "OR" );
+}
+</%init>
