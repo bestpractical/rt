@@ -47,6 +47,7 @@ RT_PATH			=	/opt/rt2
 
 RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
+RT_CONFIG_PATH		=	$(RT_ETC_PATH)
 RT_BIN_PATH		=	$(RT_PATH)/bin
 RT_MAN_PATH		=	$(RT_PATH)/man
 MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
@@ -71,7 +72,7 @@ RT_READABLE_DIR_MODE	=	0755
 
 
 # The location of your rt configuration file
-RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
+RT_CONFIG		=	$(RT_CONFIG_PATH)/config.pm
 
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
 RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
@@ -363,7 +364,7 @@ bin-install:
 	$(PERL) -p -i -e "s'!!RT_PATH!!'"$(RT_PATH)"'g;\
 				s'!!PERL!!'"$(PERL)"'g;\
 			      	s'!!RT_VERSION!!'"$(RT_VERSION)"'g;\
-				s'!!RT_ETC_PATH!!'"$(RT_ETC_PATH)"'g;\
+				s'!!RT_ETC_PATH!!'"$(RT_CONFIG_PATH)"'g;\
 				s'!!RT_LIB_PATH!!'"$(RT_LIB_PATH)"'g;"\
 		$(DESTDIR)/$(RT_MODPERL_HANDLER) \
 		$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
