@@ -168,8 +168,8 @@ sub Create {
         #if the current attachment contains nulls and the 
         #database doesn't support embedded nulls
 
-        if (    ( !$RT::Handle->BinarySafeBLOBs )
-             && ( $Body =~ /\x00/ ) ) {
+        if ( $RT::AlwaysUseBase64 or
+	     ( !$RT::Handle->BinarySafeBLOBs ) && ( $Body =~ /\x00/ ) ) {
 
             # set a flag telling us to mimencode the attachment
             $ContentEncoding = 'base64';
@@ -208,9 +208,11 @@ sub Create {
         if ( $ContentEncoding eq 'base64' ) {
 
             # base64 encode the attachment
+            Encode::_utf8_off($Body);
             $Body = MIME::Base64::encode_base64($Body);
 
         } elsif ($ContentEncoding eq 'quoted-printable') {
+       	    Encode::_utf8_off($Body);
             $Body = MIME::QuotedPrint::encode($Body);
         }
 
@@ -253,15 +255,23 @@ before returning it.
 
 sub Content {
   my $self = shift;
+  my $decode_utf8 = (($self->ContentType eq 'text/plain') ? 1 : 0);
+
   if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
       return $self->_Value(
 	  'Content',
-	  decode_utf8 => (($self->ContentType eq 'text/plain') ? 1 : 0)
+	  decode_utf8 => $decode_utf8,
       );
   } elsif ( $self->ContentEncoding eq 'base64' ) {
-      return MIME::Base64::decode_base64($self->_Value('Content'));
+      return ( $decode_utf8
+        ? Encode::decode_utf8(MIME::Base64::decode_base64($self->_Value('Content')))
+        : MIME::Base64::decode_base64($self->_Value('Content'))
+      );
   } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
-      return MIME::QuotedPrint::decode($self->_Value('Content'));
+      return ( $decode_utf8
+        ? Encode::decode_utf8(MIME::QuotedPrint::decode($self->_Value('Content')))
+        : MIME::QuotedPrint::decode($self->_Value('Content'))
+      );
   } else {
       return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
   }
