@@ -33,6 +33,32 @@ sub RT::Action::SendEmail::SendMessage {
 # create a regular ticket
 
 my $parser = RT::EmailParser->new();
+
+
+# Let's test to make sure a multipart/report is processed correctly
+my $content =  `cat @RT_LIB_PATH@/t/data/multipart-report` || die "couldn't find new content";
+# be as much like the mail gateway as possible.
+use RT::Interface::Email;
+                                  
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+
+ok ($tick->Transactions->First->Content =~ /The original message was received/, "It's the bounce");
+
+
+# make sure it fires scrips.
+is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
+
+undef @scrips_fired;
+
+
+
+
 $parser->ParseMIMEEntityFromScalar('From: root@localhost
 To: rt@example.com
 Subject: This is a test of new ticket creation as an unknown user
@@ -102,6 +128,9 @@ ok ($id, $msg);
 $parser->ParseMIMEEntityFromScalar($content);
 ($id, $msg) = $tick->Correspond(MIMEObj => $parser->Entity);
 ok ($id, $msg);
+
+
+
 
 
 # we need to swap out SendMessage to test the new things we care about;

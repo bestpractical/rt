@@ -133,7 +133,9 @@ sub Create {
 	    =~ /^.*\bfilename="(.*)"$/ ? $1 : ''
     };
 
-    if ( $Attachment->parts ) {
+    # If a message has no bodyhandle, that means that it has subparts (or appears to)
+    # and we should act accordingly.  
+    unless ( defined $Attachment->bodyhandle ) {
         $id = $self->SUPER::Create(
             TransactionId => $args{'TransactionId'},
             Parent        => 0,
