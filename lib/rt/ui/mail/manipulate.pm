@@ -25,9 +25,11 @@ sub activate {
   #get all that rt stuff squared away.
     &rt::initialize($current_user);
   
-  #take all those actions
-  
+  # Check if the requestors/users email is known 
+  # (ideally some strong autentication should be used):
+  $current_user=$rt::emails{$current_user} if exists $rt::emails{$current_user};
  
+  #take all those actions
   
   $content=&parse_actions($current_user,$serial_num, $content);
   
@@ -46,7 +48,8 @@ sub activate {
 								    $current_user,'','',$subject,
 								    $queues{"$in_queue"}{'default_final_prio'},
 								    $queues{"$in_queue"}{'default_prio'},'open',
-								    $rt::time,0,0,$content,$current_user);
+	   $rt::time,0,0,$content,$current_user,$cc,$bcc
+	  );
       
     }
     else {
@@ -128,12 +131,12 @@ sub parse_headers {
   $current_user = $replyto || $from || $sender;
   
   
-  if ($current_user =~/(\S*\@\S*)/) {
+  if ($current_user =~/<(\S*\@\S*)>/){
     $current_user =$1;
     $rt::users{$current_user}{real_name}=$`
       if (!exists $rt::users{$current_user}{real_name});
   }
-  if ($current_user =~/<(\S*\@\S*)>/){
+  if ($current_user =~/(\S*\@\S*)/) {
     $current_user =$1;
     $rt::users{$current_user}{real_name}=$'
       if (!exists $rt::users{$current_user}{real_name});
@@ -144,6 +147,9 @@ sub parse_headers {
       if (!exists $rt::users{$current_user}{real_name});
   }
   
+  
+  
+    
   if (!$subject) {
     $subject = "[No Subject Given]";
   }
@@ -180,7 +186,7 @@ sub parse_actions {
   my ($real_serial_num) = shift;
   
   my ($body) = shift;
-  my ($trans, $message, $serial_num, $line, $original_line, $current_user);
+  my ($trans, $message, $serial_num, $line, $original_line);
   
   foreach $line (split(/\n/,$body)) {
     my $count, @arg;
@@ -195,9 +201,6 @@ sub parse_actions {
       
       
       while ($line) {
-        
-	#this replaces a silly loop.
-	#@arg=();
         
 	#parse for doublequoted strings
         if ($line =~ /^\"(.?)\"\s?(.*)/) {
@@ -236,6 +239,12 @@ sub parse_actions {
         
       }
       
+      #deal with (B)CC commands
+      if ($arg[0] =~ /^(b?)cc$/i) {
+	shift @arg;
+	my $tmp=join(' ', @arg);
+	$1 ? ($bcc = $tmp) : ($cc = $tmp);
+      }
       
       #deal with HELP commands
       if ($arg[0] =~ /help/i) {
@@ -301,7 +310,15 @@ sub parse_actions {
         
         %RT SET user <num> <email>
         will set request <num>'s requestor(s) to the comma-delineated,
-        quote-enclosed string <email>.";
+        quote-enclosed string <email>.
+
+        %RT CC email[, email[, email...]]
+        Send a CC to those people
+
+        %RT BCC email[, email[, email...]]
+        Send a BCC to those people
+
+";
       }
       
       #deal with PASS commands
