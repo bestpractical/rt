@@ -24,7 +24,7 @@
 
 <& /Elements/TicketList, 
         Title => loc("[_1] highest priority tickets I requested...", $rows),
-        Query => "SELECT '<a href=\"/Ticket/Display.html?id=##id##\">##id##</a>/TITLE:#', '<a href=\"/Ticket/Display.html?id=##id##\">##Subject##</a>/TITLE:Subject', QueueName, ExtendedStatus WHERE Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open')"
+        Query => "SELECT '<a href=\"/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus WHERE Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open')"
         &>
 <%init>
 my $rows=10;

@@ -55,6 +55,7 @@ sub _InitSQL {
   $self->{'_sql_localdepth'}    = 0;
   $self->{'_sql_query'}         = '';
   $self->{'_sql_looking_at'}    = {};
+  $self->{'_sql_columns_to_display'} = [];
 
 }
 
@@ -403,7 +404,7 @@ ok ($id, $msg);
 
 my @cols =  $tix->DisplayColumns;
 
-ok ($cols[0] == 'id', "We're  displaying the ticket id");
+ok ($cols[0]->{'attribute'} == 'id', "We're  displaying the ticket id");
 ok ($cols[1] == undef, "We're  displaying the ticket id");
 
 
@@ -417,8 +418,8 @@ ok ($id, $msg);
 
 my @cols =  $tix->DisplayColumns;
 
-ok ($cols[0] == 'id', "We're only displaying the ticket id");
-ok ($cols[1] == 'Status', "We're only displaying the ticket id");
+ok ($cols[0]->{'attribute'} == 'id', "We're only displaying the ticket id");
+ok ($cols[1]->{'attribute'} == 'Status', "We're only displaying the ticket id");
 
 my $query = qq[SELECT id, Status, '<A href="/Ticket/Display.html?id=##id##">Subject, this: ##Subject##</a>' WHERE Status = 'open'];
 
@@ -430,8 +431,8 @@ ok ($id, $msg);
 
 my @cols =  $tix->DisplayColumns;
 
-ok ($cols[0] == 'id', "We're only displaying the ticket id");
-ok ($cols[1] == 'Status', "We're only displaying the ticket id");
+ok ($cols[0]->{'attribute'} == 'id', "We're only displaying the ticket id");
+ok ($cols[1]->{'attribute'} == 'Status', "We're only displaying the ticket id");
 
 
 
@@ -503,6 +504,34 @@ sub FromSQL {
 
 }
 
+=head2 Query
+
+Returns the query that this object was initialized with
+
+=begin testing
+
+my $query = "SELECT id, Status WHERE Status = 'open'";
+
+my $tix = RT::Tickets->new($RT::SystemUser);
+
+my ($id, $msg)  = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+my $newq = $tix->Query();
+
+is ($query, $newq);
+
+=end testing
+
+=cut
+
+sub Query {
+    my $self = shift;
+    return ($self->{_sql_query}); 
+}
+
+
 =head2 _DisplayColumn COL
 
 Add COL to this search's list of "Columns to display"
@@ -520,9 +549,40 @@ What else?
 
 sub _DisplayColumn {
     my $self = shift;
-    my $col = shift;
-    push @{$self->{'columns_to_display'}}, $col;
+    my $col  = shift;
 
+    my $colref;
+    if ( $col =~ s/\/STYLE:(.*?)$//io ) {
+        $colref->{'style'} = $1;
+    }
+    if ( $col =~ s/\/CLASS:(.*?)$//io ) {
+        $colref->{'class'} = $1;
+    }
+    if ( $col =~ s/\/TITLE:(.*?)$//io ) {
+        $colref->{'title'} = $1;
+    }
+    if ( $col =~ /__(.*?)__/gio ) {
+        my @subcols;
+        while ( $col =~ s/^(.*?)__(.*?)__//o ) {
+            push ( @subcols, $1 ) if ($1);
+            push ( @subcols, "__$2__" );
+            $colref->{'attribute'} = $col;
+        }
+        push ( @subcols, $col );
+        @{ $colref->{'output'} } = @subcols;
+    }
+    else {
+        @{ $colref->{'output'} } = ( "__" . $col . "__" );
+        $colref->{'attribute'} = $col;
+    }
+
+    if ( !$colref->{'title'} && grep { /^__(.*?)__$/io }
+        @{ $colref->{'output'} } )
+    {
+        $colref->{'title'}     = $1;
+        $colref->{'attribute'} = $1;
+    }
+    push @{ $self->{'_sql_columns_to_display'} }, $colref;
 
 }
 
@@ -534,7 +594,7 @@ Returns an array of the columns to show in the printed results of this object
 
 sub DisplayColumns {
     my $self = shift;
-    return (@{$self->{'columns_to_display'}});
+    return (@{$self->{'_sql_columns_to_display'}});
 }
 
 

@@ -25,14 +25,36 @@
 <& /Ticket/Elements/Tabs, 
     current_tab => 'Search/Listing.html', 
     Title => $title &>
+<%perl>
+my $sql = qq{ SELECT 
+'<B><A HREF="/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#'
+'<B><A HREF="/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+Status, 
+QueueName, 
+OwnerName, 
+Priority, 
+'__NEWLINE__',
+'',
+'<small>__Requestors__</small>',
+'<small>__CreatedRelative__</small>',
+'<small>__ToldRelative__</small>',
+'<small>__LastUpdatedRelative__</small>',
+'<small>__TimeLeft__</small>' WHERE  Status != 'resolved'};
+</%PERL>
+
+<hr>
 
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
+
+<& /Elements/TicketList, Query => $sql, AllowSorting => 1 &>
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& Elements/TicketHeader, %ARGS &>
+
+
+%#<& Elements/TicketHeader, %ARGS &>
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
-<& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
+%#<& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
 %}
 </TABLE>
 <div align=center>

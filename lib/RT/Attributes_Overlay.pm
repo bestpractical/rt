@@ -120,6 +120,25 @@ sub Named {
     return (@attributes);   
 }
 
+=head2 DeleteEntry { Name =>   Value => }
+
+Deletes the attribute with the matching name and value
+
+=cut
+
+
+sub DeleteEntry {
+    my $self = shift;
+    my %args = ( Name => undef,
+                 Content => undef,
+                 @_);
+
+    foreach my $attr ($self->Named($args{'Name'})){ 
+        $attr->Delete if ($attr->Content eq $args{'Content'});
+    }
+    $self->_DoSearch();
+    return (1, $self->loc('Attribute Deleted'));
+}
 
 
 # {{{ LimitToObject 

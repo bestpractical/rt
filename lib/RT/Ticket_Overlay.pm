@@ -1646,7 +1646,9 @@ is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
 
 my ($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
 ok($ret, "Removed nobody as a squelched recipient - ".$msg);
-is($#returned, -1, "The ticket has no squelched recipients");
+@returned = $t->SquelchMailTo();
+is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned));
+
 
 =end testing
 
@@ -1688,14 +1690,8 @@ sub UnsquelchMailTo {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-# TODO: the user also needs to have ShowTicket to make this work. will that ever be an issue?
-    my @attributes = $self->SquelchMailTo();
-    foreach my $attribute (@attributes) {
-        if ( $attribute->Content eq $address ) {
-            $attribute->Delete();
-        }
-    }
-    return ( 1, $self->loc("Record Deleted") );
+    my ($val, $msg) = $self->Attributes->DeleteEntry ( Name => 'SquelchMailTo', Content => $address);
+    return ($val, $msg);
 }
 
 
