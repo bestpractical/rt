@@ -2613,7 +2613,7 @@ sub _AddLink {
 
     # Don't write the transaction if we're doing this on create
     if ( $args{'Silent'} ) {
-        return ( 1, $Msg );
+        return ( $val, $Msg );
     }
     else {
 	my $remote_uri = RT::URI->new( $RT::SystemUser );
@@ -2625,7 +2625,7 @@ sub _AddLink {
 				   Field => $LINKDIRMAP{$args{'Type'}}->{$direction},
 				   NewValue =>  $remote_uri->URI || $remote_link,
 				   TimeTaken => 0 );
-        return ( $Trans, $Msg );
+        return ( $val, $Msg );
     }
 
 }
