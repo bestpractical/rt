@@ -128,7 +128,6 @@ sub help {
             foreach $title (grep $_, @titles) {
                 $help{$title} = $item->[2]{Text};
             }
-        }
     }
 
     # What does the user want help with?
