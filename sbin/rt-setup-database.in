@@ -404,7 +404,8 @@ sub insert_data {
         my ( $return, $msg ) = $new_entry->Create(%$item);
 
         foreach my $value ( @{$values} ) {
-            $new_entry->AddValue($value);
+                my ($eval, $emsg) = $new_entry->AddValue(%$value);
+                print "(Error: $emsg)\n"  unless ($eval);
         }
 
         print "(Error: $msg)\n" unless ($return);
