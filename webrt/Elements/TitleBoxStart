@@ -1,0 +1,24 @@
+	  <TABLE width="100%" border=0 cellpadding=4 cellspacing=0 bgcolor="#336699">
+	    <TR> 
+	      <TH valign=middle align=left bgcolor="#336699"> 
+		<font size=-1 color="#ffffff">
+		  <b>
+		    <%$title%>
+		  </b>
+		</font>
+	      </TH>
+	      <TH ALIGN="right" valign=middle bgcolor="#336699">
+		<FONT SIZE=-1>
+		&nbsp;<%$titleright%>
+		</FONT>
+	      </TH>
+	    </TR>	
+	    <TR> 
+	      <TD COLSPAN=2 bgcolor="<%$contentbg%>" valign=top width="100%">
+
+	
+<%ARGS>
+$title => undef
+$titleright => undef
+$contentbg => "#ffffff"
+</%ARGS>
