@@ -1,0 +1,44 @@
+<& /Elements/Header, Ttite => 'Edit custom field' &>
+<& /Elements/NavBar&>
+
+<& /Elements/ShowResults, results => \@results &>
+
+<form action=edit_user.html method=post>
+<input type=hidden name=EditUser value=<%$user->Id%>>
+
+
+Username: <input size=40 maxsize=200 value="<%$user->Name%>" name="RT::FM::User-<%$user->Id%>-Name"><BR>
+Friendly Name: <input size=40 maxsize=200 value="<%$user->RealName%>" name="RT::FM::User-<%$user->Id%>-RealName"><BR>
+EmailAddress: <input size=40 maxsize=200 value="<%$user->EmailAddress%>" name="RT::FM::User-<%$user->Id%>-EmailAddress"><BR>
+Password: 
+<input size=8 maxsize=200 value="" name="RT::FM::User-<%$user->Id%>-Password"><BR>
+<input type="hidden" name="RT::FM::User-<%$user->Id%>-IsEditor-magic" value="1">
+RTFM Editor <input type="checkbox" value="1" name="RT::FM::User-<%$user->Id%>-IsEditor" <%$user->IsEditor ? 'CHECKED' : '' %>><BR>
+<input type="hidden" name="RT::FM::User-<%$user->Id%>-IsAdministrator-magic" value="1">
+RTFM Administrator <input type="checkbox" value="1" name="RT::FM::User-<%$user->Id%>-IsAdministrator" <% $user->IsAdministrator ? 'CHECKED' : '' %>><BR>
+
+<div align=right>
+<input type=submit name="Delete-RT::FM::User-<%$user->id%>" value=Delete>
+</div>
+<input type=submit>
+</body>
+</html>
+<%INIT>
+my @results = UpdateUsers(ARGSRef => \%ARGS);
+
+my $user = new RT::FM::User($session{'CurrentUser'});
+$user->Load($EditUser);
+
+unless ($user->Id) {
+        Abort("Couldn't find the custom field '$EditUser'");
+}
+
+if ($ARGS{'Delete-RT::FM::User-'.$user->Id}) {
+	$user->Delete();
+	Abort('User deleted');
+}
+
+</%INIT>
+<%ARGS>
+$EditUser => undef
+</%ARGS>

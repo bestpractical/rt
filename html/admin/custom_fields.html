@@ -1,0 +1,24 @@
+<& /Elements/Header, Title => 'Edit custom fields' &>
+<& /Elements/NavBar &>
+% while (my $cf = $custom_fields->Next) {
+<%$cf->Name%> <%$cf->Description%> <%$cf->Type%> <a href="edit_custom_field.html?EditCustomField=<%$cf->Id%>">[edit]</a><BR>
+% }
+
+<a href="create_custom_field.html">Create a new custom field</a>
+<%INIT>
+
+
+if ($ARGS{'Create'}) {
+	my $cust = RT::FM::CustomField->new($session{'CurrentUser'});
+	my ($val, $msg) = $cust->Create( Name => $ARGS{'Name'},
+				       Description => $ARGS{'Description'},
+				       Type => $ARGS{'Type'}
+				     );
+	unless ($val) {
+		Abort($msg);
+	}
+}
+
+my $custom_fields = new RT::FM::CustomFieldCollection($session{'CurrentUser'});
+$custom_fields->UnLimit();
+</%INIT>

@@ -1,0 +1,37 @@
+<& /Elements/Header, Title => $article->Summary &>
+<& /Elements/NavBar &>
+
+<%join ('<BR>',@results)|n%>
+<form method="post" action="edit_article.html" enctype="form/multipart">
+<input type=hidden name="EditArticle" value="<%$article->Id%>">
+<input type=hidden name="id" value="<%$article->Id%>">
+<h1><%$article->Summary%></h1>
+<HR>
+Summary: <input size=70 name="RT::FM::Article-<%$article->Id%>-Summary" value="<%$article->Summary%>"><BR>
+
+Parent: <& /Elements/ArticleSelect, Name => "RT::FM::Article-".$article->Id . "-Parent", Default => $article->ParentObj->Id &><BR>
+
+<& /Elements/ArticleSelectCustomFields, ArticleObj => $article &>
+<BR>
+<textarea cols=70 rows=20 name="RT::FM::Article-<%$article->Id%>-Content"><%$article->ContentObj->Body%></textarea>
+<br>
+<input type=submit>
+</form>
+
+<div align=right>
+<a href="../article.html?id=<%$article->Id%>">[Display article]</a>
+</div>
+</body>
+</html>
+
+<%INIT>
+
+my @results = UpdateArticles(ARGSRef => \%ARGS);
+my $article = new RT::FM::Article($session{'CurrentUser'});
+$article->Load($id);
+
+
+</%INIT>
+<%ARGS>
+$id => 0
+</%ARGS>

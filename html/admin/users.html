@@ -1,0 +1,28 @@
+<& /Elements/Header, Title => 'Edit custom fields' &>
+<& /Elements/NavBar &>
+% while (my $user = $users->Next) {
+<%$user->Name%> <a href="edit_user.html?EditUser=<%$user->Id%>">[edit]</a><BR>
+% }
+
+<a href="create_user.html">Create a new user</a>
+<%INIT>
+
+
+if ($ARGS{'Create'}) {
+	my $cust = RT::FM::User->new($session{'CurrentUser'});
+	my ($val, $msg) = $cust->Create( Name => $ARGS{'Name'},
+					 RealName => $ARGS{'RealName'},
+					 EmailAddress => $ARGS{'EmailAddress'},
+					Password => $ARGS{'Password'},
+					IsAdministrator => $ARGS{'IsAdministrator'},
+					IsEditor => $ARGS{'IsEditor'}
+
+				     );
+	unless ($val) {
+		Abort($msg);
+	}
+}
+
+my $users = new RT::FM::UserCollection($session{'CurrentUser'});
+$users->UnLimit();
+</%INIT>
