@@ -1142,7 +1142,7 @@ sub ProcessTicketCustomFieldUpdates {
                 my @values =
                   ( ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) 
                   ? @{ $ARGSRef->{$arg} }
-                  : ( $ARGSRef->{$arg} );
+                  : split /\n/, $ARGSRef->{$arg} ;
                 if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
                     foreach my $value (@values) {
                         next unless length($value);
