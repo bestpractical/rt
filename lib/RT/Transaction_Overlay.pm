@@ -597,6 +597,11 @@ sub BriefDescription {
             elsif ( $self->Field eq 'HasMember' ) {
                 return $self->loc( "Member [_1] added", $value );
             }
+#!!pape:description_for_merge {{
+            elsif ( $self->Field eq 'MergedInto' ) {
+                return $self->loc( "Merged into [_1]", $value );
+            }
+#!!pape:description_for_merge }}
         }
         else {
             return ( $self->Data );
