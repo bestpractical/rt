@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Be sure that you have the RT binaries in the path before starting this test script.
+
+# Create a new request (ok, this syntax is downright ugly ... we
+# should consider making a better cli, but it's not prioritied anyway)
+echo -e "general\n\n\n\n\ntobiasb@funcom.com\ntobiasb@funcom.com\n\nblah test\naafaefwfwfe\n" | rt -create
+
+# ... TODO ...
