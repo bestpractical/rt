@@ -11,7 +11,6 @@
 
   use RT::Template;
 
-
 =head1 DESCRIPTION
 
 
@@ -30,17 +29,6 @@ no warnings qw(redefine);
 
 use MIME::Entity;
 use MIME::Parser;
-
-
-# {{{ sub _Init
-
-sub _Init {
-    my $self = shift;
-    $self->{'table'} = "Templates";
-    return ( $self->SUPER::_Init(@_) );
-}
-
-# }}}
 
 # {{{ sub _Accessible 
 

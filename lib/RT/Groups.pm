@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Groups';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Group item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Group(@_));
+    return(RT::Group->new($self->CurrentUser));
 }
 
         eval "require RT::Groups_Overlay";

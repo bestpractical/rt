@@ -24,7 +24,7 @@ RT::Transaction
 
 package RT::Transaction;
 use RT::Record; 
-use RT::Tickets;
+use RT::Ticket;
 
 
 use vars qw( @ISA );
@@ -134,14 +134,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item TicketObj
 
-Returns the Tickets Object which has the id returned by Ticket
+Returns the Ticket Object which has the id returned by Ticket
 
 
 =cut
 
 sub TicketObj {
 	my $self = shift;
-	my $Ticket = new RT::Tickets($self->CurrentUser);
+	my $Ticket =  RT::Ticket->new($self->CurrentUser);
 	$Ticket->Load($self->Ticket());
 	return($Ticket);
 }

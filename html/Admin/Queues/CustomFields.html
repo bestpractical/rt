@@ -1,0 +1,22 @@
+<& /Admin/Elements/Header, Title => 'Edit Custom Fields for '.$Queue->Name &>
+<& /Admin/Elements/QueueTabs, id => $Queue->id &>
+
+<& /Elements/TitleBoxStart, title => 'Edit Custom Fields for '.$Queue->Name &>
+<UL>
+<LI><A href="CustomField.html?create=1&Queue=<%$Queue->id%>">Create a new Custom Field</A><BR><BR>
+
+%while  (my $CustomFieldObj = $CustomFields->Next) { 
+
+<LI><A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id()%>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a><BR>
+
+%}
+
+<& /Elements/TitleBoxEnd &>
+<%INIT>
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load($id);
+my $CustomFields = $Queue->CustomFields;
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

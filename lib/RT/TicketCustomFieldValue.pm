@@ -24,8 +24,8 @@ RT::TicketCustomFieldValue
 
 package RT::TicketCustomFieldValue;
 use RT::Record; 
-use RT::CustomFields;
-use RT::Tickets;
+use RT::CustomField;
+use RT::Ticket;
 
 
 use vars qw( @ISA );
@@ -102,14 +102,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item TicketObj
 
-Returns the Tickets Object which has the id returned by Ticket
+Returns the Ticket Object which has the id returned by Ticket
 
 
 =cut
 
 sub TicketObj {
 	my $self = shift;
-	my $Ticket = new RT::Tickets($self->CurrentUser);
+	my $Ticket =  RT::Ticket->new($self->CurrentUser);
 	$Ticket->Load($self->Ticket());
 	return($Ticket);
 }
@@ -134,14 +134,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item CustomFieldObj
 
-Returns the CustomFields Object which has the id returned by CustomField
+Returns the CustomField Object which has the id returned by CustomField
 
 
 =cut
 
 sub CustomFieldObj {
 	my $self = shift;
-	my $CustomField = new RT::CustomFields($self->CurrentUser);
+	my $CustomField =  RT::CustomField->new($self->CurrentUser);
 	$CustomField->Load($self->CustomField());
 	return($CustomField);
 }

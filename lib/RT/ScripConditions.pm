@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'ScripConditions';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::ScripCondition item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::ScripCondition(@_));
+    return(RT::ScripCondition->new($self->CurrentUser));
 }
 
         eval "require RT::ScripConditions_Overlay";

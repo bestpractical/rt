@@ -66,7 +66,7 @@ use vars qw (%SCOPES
 
 # System rights are rights granted to the whole system
 %SYSTEMRIGHTS = (
-                SuperUser => 'Do anything and everything',
+        SuperUser => 'Do anything and everything',
 		AdminGroups => 'Create, delete and modify groups',
 	    AdminUsers => 'Create, Delete and Modify users',
 		ModifySelf => 'Modify one\'s own RT account',

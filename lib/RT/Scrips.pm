@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Scrips';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Scrip item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Scrip(@_));
+    return(RT::Scrip->new($self->CurrentUser));
 }
 
         eval "require RT::Scrips_Overlay";

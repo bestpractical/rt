@@ -10,19 +10,18 @@ BEGIN {
         use RT;
         RT::LoadConfig();
 }
-use RT::Handle;
 use DBIx::DataSource qw( create_database drop_database );
 
 $| = 1;    #unbuffer that output.
 
-$DEBUG  = 0;
+$DEBUG = 1;
 
 $ACTION = shift @ARGV;
 
+require RT::Handle;
 my $Handle = RT::Handle->new($RT::DatabaseType);
 $Handle->BuildDSN;
 my $DSN = $Handle->DSN;
-
 
 if ( $ACTION eq 'create' ) {
     print "Now creating a database for RT.\n";
@@ -47,8 +46,6 @@ else {
     print STDERR '$ACTION unspecified. Makefile error. It was ' . $ACTION;
     exit(-1);
 }
-
-
 
 # {{{ sub drop_db
 sub drop_db {
@@ -81,8 +78,8 @@ sub insert_schema {
     my $dbh = DBI->connect( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword )
       or die $DBI::errstr;
 
-    if ( -f $RT::EtcPath."/schema.".$RT::DatabaseType ) {
-        open( SCHEMA, "<".$RT::EtcPath."/schema.".$RT::DatabaseType );
+    if ( -f $RT::EtcPath . "/schema." . $RT::DatabaseType ) {
+        open( SCHEMA, "<" . $RT::EtcPath . "/schema." . $RT::DatabaseType );
         my $statement = "";
         foreach my $line (<SCHEMA>) {
             $statement .= $line;
@@ -128,7 +125,9 @@ sub generate_schema {
     my $schema_href = do "$schema_file" or die $@ || $!;
     my $schema = DBIx::DBSchema->pretty_read($schema_href);
 
-    foreach my $statement ( $schema->sql( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) ) {
+    foreach my $statement (
+        $schema->sql( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) )
+    {
         print $statement;
     }
 
@@ -156,28 +155,31 @@ sub _yesno {
 
 # {{{ insert_acls 
 sub insert_acl {
-        my @acl;
+    my @acl;
     if ( $RT::DatabaseType =~ /^oracle$/i ) {
-        do $RT::EtcPath."acl.Oracle" || die "Couldn't find ACLS for Oracle\n".$@;;
+        do $RT::EtcPath . "acl.Oracle"
+          || die "Couldn't find ACLS for Oracle\n" . $@;
+        ;
     }
     elsif ( $RT::DatabaseType =~ /^pg$/i ) {
-        do $RT::EtcPath."acl.Pg" || die "Couldn't find ACLS for Pg\n".$@;
+        do $RT::EtcPath . "acl.Pg" || die "Couldn't find ACLS for Pg\n" . $@;
     }
     elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
-        do $RT::EtcPath."acl.mysql" || die "Couldn't find ACLS for mysql\n".$@;
+        do $RT::EtcPath . "acl.mysql"
+          || die "Couldn't find ACLS for mysql\n" . $@;
     }
     else {
         die "Unknown RT database type";
     }
 
     my $dbh = DBI->connect( $DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword );
-        foreach my $statement (acl()) {
-            print STDERR $statement if $DEBUG;
-            my $sth = $dbh->prepare($statement) or die $dbh->errstr;
-            unless ( $sth->execute ) {
-                die "Problem with statement:\n $statement\n" . $sth->errstr;
-            }
+    foreach my $statement ( acl() ) {
+        print STDERR $statement if $DEBUG;
+        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+        unless ( $sth->execute ) {
+            die "Problem with statement:\n $statement\n" . $sth->errstr;
         }
+    }
 
 }
 

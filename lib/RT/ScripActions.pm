@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'ScripActions';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::ScripAction item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::ScripAction(@_));
+    return(RT::ScripAction->new($self->CurrentUser));
 }
 
         eval "require RT::ScripActions_Overlay";

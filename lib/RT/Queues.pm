@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Queues';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Queue item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Queue(@_));
+    return(RT::Queue->new($self->CurrentUser));
 }
 
         eval "require RT::Queues_Overlay";

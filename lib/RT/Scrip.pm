@@ -24,10 +24,10 @@ RT::Scrip
 
 package RT::Scrip;
 use RT::Record; 
-use RT::ScripConditions;
-use RT::Queues;
-use RT::Templates;
-use RT::ScripActions;
+use RT::ScripCondition;
+use RT::Queue;
+use RT::Template;
+use RT::ScripAction;
 
 
 use vars qw( @ISA );
@@ -110,14 +110,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item ScripConditionObj
 
-Returns the ScripConditions Object which has the id returned by ScripCondition
+Returns the ScripCondition Object which has the id returned by ScripCondition
 
 
 =cut
 
 sub ScripConditionObj {
 	my $self = shift;
-	my $ScripCondition = new RT::ScripConditions($self->CurrentUser);
+	my $ScripCondition =  RT::ScripCondition->new($self->CurrentUser);
 	$ScripCondition->Load($self->ScripCondition());
 	return($ScripCondition);
 }
@@ -142,14 +142,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item ScripActionObj
 
-Returns the ScripActions Object which has the id returned by ScripAction
+Returns the ScripAction Object which has the id returned by ScripAction
 
 
 =cut
 
 sub ScripActionObj {
 	my $self = shift;
-	my $ScripAction = new RT::ScripActions($self->CurrentUser);
+	my $ScripAction =  RT::ScripAction->new($self->CurrentUser);
 	$ScripAction->Load($self->ScripAction());
 	return($ScripAction);
 }
@@ -192,14 +192,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item QueueObj
 
-Returns the Queues Object which has the id returned by Queue
+Returns the Queue Object which has the id returned by Queue
 
 
 =cut
 
 sub QueueObj {
 	my $self = shift;
-	my $Queue = new RT::Queues($self->CurrentUser);
+	my $Queue =  RT::Queue->new($self->CurrentUser);
 	$Queue->Load($self->Queue());
 	return($Queue);
 }
@@ -224,14 +224,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item TemplateObj
 
-Returns the Templates Object which has the id returned by Template
+Returns the Template Object which has the id returned by Template
 
 
 =cut
 
 sub TemplateObj {
 	my $self = shift;
-	my $Template = new RT::Templates($self->CurrentUser);
+	my $Template =  RT::Template->new($self->CurrentUser);
 	$Template->Load($self->Template());
 	return($Template);
 }

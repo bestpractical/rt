@@ -15,6 +15,11 @@
 		 D => { title => 'Templates',
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },
+
+                 E => { title => 'Custom Fields',
+                        path => 'Admin/Queues/CustomFields.html?id='.$id,
+                        },
+
 		 F => { title => 'Group Rights',
 			  path => "Admin/Queues/GroupRights.html?id=".$id,
 			},	

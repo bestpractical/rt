@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Links';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Link item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Link(@_));
+    return(RT::Link->new($self->CurrentUser));
 }
 
         eval "require RT::Links_Overlay";

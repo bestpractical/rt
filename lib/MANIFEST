@@ -2,7 +2,6 @@ MANIFEST
 MANIFEST.SKIP
 Makefile.PL
 t/regression.t
-RT.pm
 RT/ACE.pm
 RT/ACE_Overlay.pm
 RT/ACL.pm
@@ -22,13 +21,15 @@ RT/Attachments.pm
 RT/Attachments_Overlay.pm
 RT/Condition/AnyTransaction.pm
 RT/Condition/Generic.pm
-RT/Condition/NewDependency.pm
 RT/Condition/StatusChange.pm
 RT/CurrentUser.pm
 RT/CustomField.pm
 RT/CustomFieldValue.pm
 RT/CustomFieldValues.pm
+RT/CustomFieldValues_Overlay.pm
+RT/CustomField_Overlay.pm
 RT/CustomFields.pm
+RT/CustomFields_Overlay.pm
 RT/Date.pm
 RT/Group.pm
 RT/GroupMember.pm
@@ -53,8 +54,8 @@ RT/Queues_Overlay.pm
 RT/Record.pm
 RT/Scrip.pm
 RT/ScripAction.pm
-RT/ScripAction_Overlay.pm
 RT/ScripActions.pm
+RT/ScripAction_Overlay.pm
 RT/ScripActions_Overlay.pm
 RT/ScripCondition.pm
 RT/ScripCondition_Overlay.pm
@@ -72,6 +73,7 @@ RT/TestHarness.pm
 RT/Ticket.pm
 RT/TicketCustomFieldValue.pm
 RT/TicketCustomFieldValues.pm
+RT/TicketCustomFieldValues_Overlay.pm
 RT/Ticket_Overlay.pm
 RT/Tickets.pm
 RT/Tickets_Overlay.pm

@@ -15,7 +15,7 @@ WriteMakefile(
 
     sub top_targets {
         my ($self) = @_;
-        my $out = "POD2TEST_EXE = ../sbin/extract_pod_tests\n";
+        my $out = "POD2TEST_EXE = ".$self->{PERL}." ../sbin/extract_pod_tests\n";
 
         $out .= $self->SUPER::top_targets(@_);
 

@@ -34,6 +34,14 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'CustomFields';
     $self->{'primary_key'} = 'id';
+
+
+
+  # By default, order by name
+  $self->OrderBy( ALIAS => 'main',
+                  FIELD => 'SortOrder',
+                  ORDER => 'ASC');
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +54,7 @@ Returns an empty new RT::CustomField item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::CustomField(@_));
+    return(RT::CustomField->new($self->CurrentUser));
 }
 
         eval "require RT::CustomFields_Overlay";

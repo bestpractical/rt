@@ -35,15 +35,15 @@ sub _Init {
 }
 # }}}
 
-# {{{ sub LimitToQueueOrGlobal 
+# {{{ sub LimitToGlobalOrQueue 
 
-=item LimitToQueueOrGlobal QUEUEID
+=item LimitToGlobalOrQueue QUEUEID
 
 Limits the set of custom fields found to global custom fields or those tied to the queue with ID QUEUEID 
 
 =cut
 
-sub LimitToQueueOrGlobal {
+sub LimitToGlobalOrQueue {
     my $self = shift;
     my $queue = shift;
     $self->LimitToQueue($queue);

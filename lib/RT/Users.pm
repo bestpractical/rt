@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Users';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::User item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::User(@_));
+    return(RT::User->new($self->CurrentUser));
 }
 
         eval "require RT::Users_Overlay";

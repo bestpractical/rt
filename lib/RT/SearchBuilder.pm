@@ -123,8 +123,9 @@ Otherwise, just give up and return it in the order it came from the db.
 
 =begin testing
 
-my $queues = RT::Queues->new($RT::SystemUser);
-$queues->UnLimit();
+use_ok(RT::Queues);
+ok(my $queues = RT::Queues->new($RT::SystemUser), 'Created a queues object');
+ok( $queues->UnLimit(),'Unlimited the result set of the queues object');
 my $items = $queues->ItemsArrayRef();
 my @items = @{$items};
 

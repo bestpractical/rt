@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'ACL';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::ACE item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::ACE(@_));
+    return(RT::ACE->new($self->CurrentUser));
 }
 
         eval "require RT::ACL_Overlay";

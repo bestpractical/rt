@@ -161,15 +161,13 @@ upgrade-instruct:
 	@echo "Congratulations. RT has been upgraded. You should now check-over"
 	@echo "$(RT_CONFIG) for any necessarysite customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
-	@echo "	   $(RT_ETC_PATH)/insertdata <version>"
+	@echo "	   $(RT_SBIN_PATH)/insertdata <version>"
 	@echo "where <version> is the version of RT you're upgrading from."
 
 
-upgrade: dirs config-replace upgrade-noclobber  upgrade-instruct
+upgrade: dirs upgrade-noclobber  upgrade-instruct
 
-upgrade-noclobber: insert-install libs-install html-install bin-install nondestruct
-
-
+upgrade-noclobber: libs-install html-install bin-install  fixperms
 
 
 # {{{ dependencies
@@ -250,7 +248,7 @@ config-install:
 test: 
 	$(PERL) -Ilib lib/t/smoke.t
 
-regression: regression-instruct dropdb initialize-database
+regression: libs-install bin-install regression-instruct dropdb initialize-database
 	(cd ./lib; $(PERL) Makefile.PL && make testifypods && $(PERL) t/regression.t)
 		
 regression-instruct:
@@ -289,7 +287,6 @@ libs-install:
 			      INSTALLMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
 			      INSTALLMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
 	    && make \
-	    && make test \
 	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
 	    			  s'!!RT_CONFIG!!'$(CONFIG_FILE_PATH)'g;" \
 				  			blib/lib/RT.pm ; \
@@ -301,7 +298,7 @@ libs-install:
 
 # {{{ html-install
 html-install:
-	cp -rp ./webrt/* $(DESTDIR)/$(MASON_HTML_PATH)
+	cp -rp ./html/* $(DESTDIR)/$(MASON_HTML_PATH)
 # }}}
 
 # {{{ etc-install
@@ -348,6 +345,7 @@ bin-install:
 		$(BINARIES)
 # }}}
 
+# {{{ Best Practical Build targets -- no user servicable parts inside
 
 factory: createdb insert-schema
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
@@ -358,13 +356,30 @@ commit:
 integrate:
 	aegis -build; aegis -dist; aegis -test ; aegis -integrate_pass
 
-predist: commit
-	cvs tag -r $(BRANCH) -F $(TAG)
+predist: commit tag-and-tar
+
+tag-and-release-baseline:
+	aegis -cp -ind Makefile -output /tmp/Makefile.tagandrelease; \
+	make -f /tmp/Makefile.tagandrelease tag-and-release
+
+
+# Running this target in a working directory is 
+# WRONG WRONG WRONG.
+# it will tag the current baseline with the version of RT defined 
+# in the currently-being-worked-on makefile. which is wrong.
+#  you want tag-and-release-baseline
+
+tag-and-release:
+	aegis --delta-name $(TAG)
 	rm -rf /tmp/$(TAG)
-	cvs co -d /tmp/$(TAG) -r $(TAG) rt
-	cd /tmp/$(TAG); chmod 600 Makefile; /usr/local/bin/cvs2cl.pl \
-		--no-wrap --separate-header \
-		--window 120
+	mkdir /tmp/$(TAG)
+	cd /tmp/$(TAG); \
+		aegis -cp -ind -delta $(TAG) . ;\
+		chmod 600 Makefile;\
+		aegis --report --project rt.$(RT_VERSION_MAJOR) \
+		      --cols 80 \
+		      --change $(RT_VERSION_MINOR) --output Changelog Change_Log
+
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
@@ -372,7 +387,9 @@ dist: commit predist
 	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
 	ln -s ./$(TAG).tar.gz /home/ftp/pub/rt/devel/rt.tar.gz
 
-
 rpm:
 	(cd ..; tar czvf /usr/src/redhat/SOURCES/rt.tar.gz rt)
 	rpm -ba etc/rt.spec
+
+
+# }}}

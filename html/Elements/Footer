@@ -1,0 +1,20 @@
+<div class="bpscredits">
+RT <%$RT::VERSION%> from <a href="http://bestpractical.com">Best Practical Solutions, LLC</a>.
+</div>
+% if ($Debug) {
+<HR>
+<b>Time to display: <%time - $m->{'rt_base_time'} %></b>
+% }
+% if ($Debug >= 2 ) {
+% require Data::Dumper;
+% my $d = Data::Dumper->new([\%ARGS], [qw(%ARGS)]);
+<pre>
+<%$d->Dump() %>
+</pre>
+% }
+</BODY>
+</HTML>
+
+<%ARGS>
+$Debug => 0
+</%ARGS>

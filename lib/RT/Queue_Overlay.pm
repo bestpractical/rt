@@ -28,6 +28,8 @@ use vars (@STATUS);
 
 @STATUS = qw(new open stalled resolved dead); 
 
+# {{{ StatusArray
+
 =head2 StatusArray
 
 Returns an array of all statuses for this queue
@@ -39,6 +41,9 @@ sub StatusArray {
     return (@STATUS);
 }
 
+# }}}
+
+# {{{ IsValidStatus
 
 =head2 IsValidStatus VALUE
 
@@ -60,15 +65,6 @@ sub IsValidStatus {
 
 }
 	
-
-
-
-# {{{  sub _Init 
-sub _Init  {
-    my $self = shift;
-    $self->{'table'} = "Queues";
-    return ($self->SUPER::_Init(@_));
-}
 # }}}
 
 # {{{ sub _Accessible 
@@ -235,13 +231,38 @@ sub Templates {
     my $templates = RT::Templates->new($self->CurrentUser);
 
     if ($self->CurrentUserHasRight('ShowTemplate')) {
-	$templates->LimitToQueue($self->id);
+    	$templates->LimitToQueue($self->id);
     }
     
     return ($templates); 
 }
 
 # }}}
+
+# {{{ Dealing with custom fields
+
+# {{{ CustomFields
+
+=item CustomFields
+
+Returns an RT::CustomFields object containing all global custom fields, as well as those tied to this queue
+
+=cut
+
+sub CustomFields {
+    my $self = shift;
+
+        my $cfs = RT::CustomFields->new( $self->CurrentUser );
+    if ($self->CurrentUserHasRight('SeeQueue')) {
+        $cfs->LimitToGlobalOrQueue( $self->Id );
+    }
+    return ($cfs);
+}
+
+# }}}
+
+# }}}
+
 
 # {{{ Dealing with watchers
 
@@ -269,6 +290,7 @@ sub Watchers {
 # }}}
 
 # {{{ sub WatchersAsString
+
 =head2 WatchersAsString
 
 Returns a string of all queue watchers email addresses concatenated with ','s.

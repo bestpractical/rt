@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Templates';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Template item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Template(@_));
+    return(RT::Template->new($self->CurrentUser));
 }
 
         eval "require RT::Templates_Overlay";

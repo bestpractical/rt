@@ -2,17 +2,16 @@
 #$Header: /raid/RT/polysched/sbin/factory,v 1.2 2001/12/07 03:51:09 jesse Exp $
 use DBI;
 
-my $database = shift;
+my $database  = shift;
 my $namespace = shift;
 
 my $CollectionBaseclass = 'RT::SearchBuilder';
-my $RecordBaseclass = 'RT::Record';
+my $RecordBaseclass     = 'RT::Record';
 
-my $driver = 'mysql';
+my $driver   = 'mysql';
 my $hostname = 'localhost';
-my $user = 'root';
+my $user     = 'root';
 my $password = '';
-
 
 my $Attribution = "# \$Header\$
 
@@ -25,90 +24,90 @@ my $Attribution = "# \$Header\$
 
 my $dsn = "DBI:$driver:database=$database;host=$hostname";
 
+my $dbh = DBI->connect( $dsn, $user, $password );
 
-
-my $dbh = DBI->connect($dsn, $user, $password);
-
- 
 #get all tables out of database
 my @tables = $dbh->tables();
 
-my (%tablemap, $typemap);
+my ( %tablemap, $typemap, %modulemap );
 
 foreach my $table (@tables) {
-	$tablemap{$table} = $table;
-        if ($table =~ /^(.*)s$/) {
-	        $tablemap{$1} = $table;
-        }
+    $tablemap{$table}  = $table;
+    $modulemap{$table} = $table;
+    if ( $table =~ /^(.*)s$/ ) {
+        $tablemap{$1}  = $table;
+        $modulemap{$1} = $1;
+    }
 }
 $tablemap{'CreatedBy'} = 'User';
 $tablemap{'UpdatedBy'} = 'User';
 
-$typemap{'id'} = 'ro';
-$typemap{'Creator'} = 'auto';
-$typemap{'Created'} = 'auto';
-$typemap{'Updated'} = 'auto';
-$typemap{'UpdatedBy'} = 'auto';
-$typemap{'LastUpdated'} = 'auto';
+$typemap{'id'}            = 'ro';
+$typemap{'Creator'}       = 'auto';
+$typemap{'Created'}       = 'auto';
+$typemap{'Updated'}       = 'auto';
+$typemap{'UpdatedBy'}     = 'auto';
+$typemap{'LastUpdated'}   = 'auto';
 $typemap{'LastUpdatedBy'} = 'auto';
-
 
 foreach my $table (@tables) {
 
     my $tablesingle = $table;
     $tablesingle =~ s/s$//;
-    my $tableplural = $tablesingle."s";
+    my $tableplural = $tablesingle . "s";
 
-    if ($tablesingle eq 'ACL') {
+    if ( $tablesingle eq 'ACL' ) {
         $tablesingle = "ACE";
         $tableplural = "ACL";
     }
 
     my %requirements;
 
-    my $CollectionClassName = $namespace."::".$tableplural;
-    my $RecordClassName = $namespace."::".$tablesingle;
-    
+    my $CollectionClassName = $namespace . "::" . $tableplural;
+    my $RecordClassName     = $namespace . "::" . $tablesingle;
+
     my $path = $namespace;
     $path =~ s/::/\//g;
-    
-    my $RecordClassPath = $path."/".$tablesingle.".pm";
-    my $CollectionClassPath = $path."/".$tableplural.".pm";
 
+    my $RecordClassPath     = $path . "/" . $tablesingle . ".pm";
+    my $CollectionClassPath = $path . "/" . $tableplural . ".pm";
 
-    
     #create a collection class
     my $CreateInParams;
     my $CreateOutParams;
     my $ClassAccessible = "";
-    my $FieldsPod = "";
-    my $CreatePod = "";
+    my $FieldsPod       = "";
+    my $CreatePod       = "";
+    my %fields;
     my $sth = $dbh->prepare("DESCRIBE $table");
     $sth->execute;
-    while (my $row = $sth->fetchrow_hashref()) {
-		my $field = $row->{'Field'};
-		my $type = $row->{'Type'};
-		my $default = $row->{'Default'};
-		
-		#generate the 'accessible' datastructure
-	
-		if ($typemap{$field} eq 'auto' ) {
-			$ClassAccessible .= "        $field => 
+
+    while ( my $row = $sth->fetchrow_hashref() ) {
+        my $field   = $row->{'Field'};
+        my $type    = $row->{'Type'};
+        my $default = $row->{'Default'};
+        $fields{$field} = 1;
+
+        #generate the 'accessible' datastructure
+
+        if ( $typemap{$field} eq 'auto' ) {
+            $ClassAccessible .= "        $field => 
 		{read => 1, auto => 1,";
-		}
-		elsif ($typemap{$field} eq 'ro' ) {	
-			$ClassAccessible .= "        $field =>
+        }
+        elsif ( $typemap{$field} eq 'ro' ) {
+            $ClassAccessible .= "        $field =>
 		{read => 1,";
-		} else {
-			$ClassAccessible .= "        $field => 
+        }
+        else {
+            $ClassAccessible .= "        $field => 
 		{read => 1, write => 1,";
 
-		}
-		
-		$ClassAccessible .= " type => '$type', default => '$default'},\n";
+        }
 
-		#generate pod for the accessible fields
-		$FieldsPod .= "
+        $ClassAccessible .= " type => '$type', default => '$default'},\n";
+
+        #generate pod for the accessible fields
+        $FieldsPod .= "
 =item $field
 
 Returns the current value of $field. 
@@ -116,8 +115,8 @@ Returns the current value of $field.
 
 ";
 
-unless ($typemap{$field} eq 'auto' || $typemap{$field} eq 'ro') {
-$FieldsPod .= "
+        unless ( $typemap{$field} eq 'auto' || $typemap{$field} eq 'ro' ) {
+            $FieldsPod .= "
 
 =item Set$field VALUE
 
@@ -127,49 +126,51 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, $field will be stored as a $type.)
 
 ";
-}
+        }
 
-$FieldsPod .= "
+        $FieldsPod .= "
 =cut
 
 ";
 
-if ($tablemap{$field}) { 
-$FieldsPod .= "
+        if ( $modulemap{$field} ) {
+            $FieldsPod .= "
 =item ${field}Obj
 
-Returns the $tablemap{$field} Object which has the id returned by $field
+Returns the $modulemap{$field} Object which has the id returned by $field
 
 
 =cut
 
 sub ${field}Obj {
 	my \$self = shift;
-	my \$$field = new ${namespace}::$tablemap{$field}(\$self->CurrentUser);
+	my \$$field =  ${namespace}::$modulemap{$field}->new(\$self->CurrentUser);
 	\$$field->Load(\$self->$field());
 	return(\$$field);
 }
 ";
-$requirements{$tablemap{$field}} = "use ${namespace}::$tablemap{$field};";
+            $requirements{ $tablemap{$field} } =
+              "use ${namespace}::$modulemap{$field};";
 
-}
+        }
 
-		unless ($typemap{$field} eq 'auto' || $field eq 'id') {
-		#generate create statement
-		$CreateInParams .= "                $field => '$default',\n";
-                $CreateOutParams .= "                         $field => \$args{'$field'},\n";
+        unless ( $typemap{$field} eq 'auto' || $field eq 'id' ) {
 
+            #generate create statement
+            $CreateInParams .= "                $field => '$default',\n";
+            $CreateOutParams .=
+              "                         $field => \$args{'$field'},\n";
 
-		#gerenate pod for the create statement	
-		$CreatePod .= "  $type '$field'";
-		$CreatePod .= " defaults to '$default'" if ($default);
-		$CreatePod .= ".\n";
+            #gerenate pod for the create statement	
+            $CreatePod .= "  $type '$field'";
+            $CreatePod .= " defaults to '$default'" if ($default);
+            $CreatePod .= ".\n";
 
-		}
+        }
 
-	}
+    }
 
-        $Create = "
+    $Create = "
 sub Create {
     my \$self = shift;
     my \%args = ( 
@@ -180,12 +181,11 @@ $CreateOutParams);
 
 }
 ";
-	$CreatePod .= "\n=cut\n\n";
+    $CreatePod .= "\n=cut\n\n";
 
+    my $CollectionClass = $Attribution .
 
-my $CollectionClass = $Attribution .
-
-"
+      "
 
 =head1 NAME
 
@@ -214,6 +214,20 @@ sub _Init {
     my \$self = shift;
     \$self->{'table'} = '$table';
     \$self->{'primary_key'} = 'id';
+
+";
+
+    if ( $fields{'SortOrder'} ) {
+
+        $CollectionClass .= "
+
+  # By default, order by name
+  \$self->OrderBy( ALIAS => 'main',
+                  FIELD => 'SortOrder',
+                  ORDER => 'ASC');
+";
+    }
+    $CollectionClass .= "
     return ( \$self->SUPER::_Init(\@_) );
 }
 
@@ -226,13 +240,11 @@ Returns an empty new $RecordClassName item
 
 sub NewItem {
     my \$self = shift;
-    return(new $RecordClassName(\@_));
+    return($RecordClassName->new(\$self->CurrentUser));
 }
 " . MagicImport($CollectionClassName);
 
-
-
-my $RecordClassHeader = $Attribution ."
+    my $RecordClassHeader = $Attribution . "
 
 =head1 NAME
 
@@ -251,10 +263,10 @@ package $RecordClassName;
 use $RecordBaseclass; 
 ";
 
-foreach my $key (keys %requirements) {
-	$RecordClassHeader .= $requirements{$key} . "\n";
-}
-$RecordClassHeader .="
+    foreach my $key ( keys %requirements ) {
+        $RecordClassHeader .= $requirements{$key} . "\n";
+    }
+    $RecordClassHeader .= "
 
 use vars qw( \@ISA );
 \@ISA= qw( $RecordBaseclass );
@@ -268,11 +280,7 @@ sub _Init {
 
 ";
 
-
-
-
-
-my $RecordClass = "
+    my $RecordClass = "
 
 $RecordClassHeader
 
@@ -297,30 +305,26 @@ $ClassAccessible
 
 " . MagicImport($RecordClassName);
 
+    print "About to make $RecordClassPath, $CollectionClassPath\n";
+    `mkdir -p $path`;
 
-print "About to make $RecordClassPath, $CollectionClassPath\n";
-`mkdir -p $path`;
+    open( RECORD, ">$RecordClassPath" );
+    print RECORD $RecordClass;
+    close(RECORD);
 
-open (RECORD, ">$RecordClassPath");
-print RECORD $RecordClass;
-close (RECORD);
-
-open (COL, ">$CollectionClassPath");
-print COL $CollectionClass;
-close($COL);
+    open( COL, ">$CollectionClassPath" );
+    print COL $CollectionClass;
+    close($COL);
 
 }
-
-
-
 
 sub MagicImport {
     my $class = shift;
 
-#if (exists \$warnings::{unimport})  {
-#        no warnings qw(redefine);
+    #if (exists \$warnings::{unimport})  {
+    #        no warnings qw(redefine);
 
-    my $content =  "
+    my $content = "
         eval \"require @{[$class]}_Overlay\";
         if (\$@ && \$@ !~ /^Can't locate/) {
             die \$@;
@@ -356,8 +360,8 @@ so that perl does not kick and scream when you redefine a subroutine or variable
 1;
 ";
 
-return $content;
+    return $content;
 }
 
 # }}}
-	
+

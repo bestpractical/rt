@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'TicketCustomFieldValues';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::TicketCustomFieldValue item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::TicketCustomFieldValue(@_));
+    return(RT::TicketCustomFieldValue->new($self->CurrentUser));
 }
 
         eval "require RT::TicketCustomFieldValues_Overlay";

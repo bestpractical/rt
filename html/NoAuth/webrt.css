@@ -33,7 +33,11 @@ H1, H2, H3 {
 
 
 DIV.endmatter { margin-left: -7% }
-
+.bpscredits {margin-top 1em;
+             text-align: right; 
+             color: #666666;
+	     font-size: 60%;
+             }
 
 
 A { font-weight: bold; 

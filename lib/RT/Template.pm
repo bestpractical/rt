@@ -24,7 +24,7 @@ RT::Template
 
 package RT::Template;
 use RT::Record; 
-use RT::Queues;
+use RT::Queue;
 
 
 use vars qw( @ISA );
@@ -113,14 +113,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item QueueObj
 
-Returns the Queues Object which has the id returned by Queue
+Returns the Queue Object which has the id returned by Queue
 
 
 =cut
 
 sub QueueObj {
 	my $self = shift;
-	my $Queue = new RT::Queues($self->CurrentUser);
+	my $Queue =  RT::Queue->new($self->CurrentUser);
 	$Queue->Load($self->Queue());
 	return($Queue);
 }

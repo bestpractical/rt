@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Attachments';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Attachment item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Attachment(@_));
+    return(RT::Attachment->new($self->CurrentUser));
 }
 
         eval "require RT::Attachments_Overlay";

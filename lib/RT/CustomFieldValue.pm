@@ -24,7 +24,7 @@ RT::CustomFieldValue
 
 package RT::CustomFieldValue;
 use RT::Record; 
-use RT::CustomFields;
+use RT::CustomField;
 
 
 use vars qw( @ISA );
@@ -104,14 +104,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =item CustomFieldObj
 
-Returns the CustomFields Object which has the id returned by CustomField
+Returns the CustomField Object which has the id returned by CustomField
 
 
 =cut
 
 sub CustomFieldObj {
 	my $self = shift;
-	my $CustomField = new RT::CustomFields($self->CurrentUser);
+	my $CustomField =  RT::CustomField->new($self->CurrentUser);
 	$CustomField->Load($self->CustomField());
 	return($CustomField);
 }

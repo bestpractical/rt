@@ -17,7 +17,6 @@ BEGIN {
 }
 use Carp;
 
-use RT::Handle;
 use RT::User;
 use RT::CurrentUser;
 
@@ -26,6 +25,7 @@ my $LastVersion = shift || undef;
 my $LastMinorVersion = undef;
 
 #connect to the db
+require RT::Handle;
 $RT::Handle = RT::Handle->new();
 $RT::Handle->Connect();
 

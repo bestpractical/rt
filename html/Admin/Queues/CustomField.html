@@ -1,0 +1,64 @@
+<& /Admin/Elements/Header, title => "Modify Custom Field ".$CustomFieldObj->id&>
+<& /Admin/Elements/QueueTabs, id => $Queue &>
+<& /Elements/ListActions, actions => \@results &>
+
+<& /Elements/TitleBoxStart, title => $title &>
+
+<FORM METHOD=GET ACTION="CustomField.html">
+<INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
+<INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
+
+Name: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
+Description: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
+Type: <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
+<BR>
+<H2>Values</H2>
+<BR>
+<font size=-1>
+<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
+<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+</font>
+<& /Elements/TitleBoxEnd&>
+<&/Elements/Submit&>
+</FORM>
+
+
+
+<%INIT>
+
+my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
+my  ($title, @results, $id);
+
+if ($create) {
+  $title = "Create a CustomField";
+  $id = 'new';
+}
+else {
+  if ($CustomField eq 'new') {
+      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue, Name => $Name);
+      Abort("Could not create CustomField: $msg") unless ($val);
+     push @results, $msg;
+     $title = 'Created CustomField ' . $CustomFieldObj->Name(); 
+    }
+    else {
+       $CustomFieldObj->Load($CustomField) || Abort('No CustomField');
+      $title = 'Editing CustomField ' . $CustomFieldObj->Name(); 
+    }
+
+    my @aresults = ProcessCustomFieldUpdates ( 
+                        CustomFieldObj => $CustomFieldObj,
+                        ARGSRef => \%ARGS );
+    push @results, @aresults;
+
+    $id = $CustomFieldObj->id;
+}
+
+
+
+</%INIT>
+<%ARGS>
+$Queue => undef
+$CustomField => undef
+$create => undef
+$Name => undef
+</%ARGS>

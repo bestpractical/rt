@@ -1,0 +1,15 @@
+<ul>
+% while (my $v = $values->Next) {
+<li>
+<input type="checkbox" name="CustomField-<%$CustomField->Id%>-DeleteValue" value="<%$v->id%>">
+<%$v->Name%>
+<i>(<%$v->Description%>)</i>
+<font size=-1 color="#cccccc">Sort key: <%$v->SortOrder%></font></li>
+% }
+</ul>
+<%init>
+my $values = $CustomField->Values();
+</%init>
+<%args>
+$CustomField => undef
+</%args>

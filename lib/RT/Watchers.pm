@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Watchers';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Watcher item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Watcher(@_));
+    return(RT::Watcher->new($self->CurrentUser));
 }
 
         eval "require RT::Watchers_Overlay";

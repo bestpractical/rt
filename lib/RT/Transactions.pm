@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Transactions';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Transaction item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Transaction(@_));
+    return(RT::Transaction->new($self->CurrentUser));
 }
 
         eval "require RT::Transactions_Overlay";

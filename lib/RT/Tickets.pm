@@ -34,6 +34,8 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = 'Tickets';
     $self->{'primary_key'} = 'id';
+
+
     return ( $self->SUPER::_Init(@_) );
 }
 
@@ -46,7 +48,7 @@ Returns an empty new RT::Ticket item
 
 sub NewItem {
     my $self = shift;
-    return(new RT::Ticket(@_));
+    return(RT::Ticket->new($self->CurrentUser));
 }
 
         eval "require RT::Tickets_Overlay";
