@@ -154,8 +154,8 @@ sub Create  {
 	my $TempUser2 =RT::User->new($RT::SystemUser);
 	$TempUser2->LoadByEmail($args{'EmailAddress'});
 	return(0, 'Email in use') 
-	  if ((defined $args{'EmailAddress'}) and 
-	      (defined $TempUser2->EmailAddress) and
+	  if (( $args{'EmailAddress'}) and 
+	      ( $TempUser2->EmailAddress) and
 	      ($TempUser2->EmailAddress eq $args{'EmailAddress'}));
 	
     }
