@@ -282,7 +282,7 @@ Comments and replies
 	     --source <path>
                 Specify the path to the source file for this ticket update
 
-	      --no-edit
+	      --noedit
                 Don't invoke \$EDITOR to edit the content of this update
 
 

@@ -656,7 +656,6 @@ sub ProcessTicketBasics {
   # {{{ Set basic fields 
   my @attribs = qw(
 		   Queue 
-		   Owner 
 		   Subject 
 		   FinalPriority 
 		   Priority 
@@ -669,7 +668,21 @@ sub ProcessTicketBasics {
 				    Object => $TicketObj, 
 				    ARGSRef => $ARGSRef);
 
-
+  
+  # We special case owner changing, so we can use ForceOwnerChange
+   if ( defined ($ARGSRef->{'Owner'}) && 
+	($TicketObj->Owner != $ARGSRef->{'Owner'}) ) {
+       my ($ChownType);
+       if ($ARGSRef->{'ForceOwnerChange'}) {
+	   $ChownType = "Force";
+       } else {
+	   $ChownType = "Give";
+       }
+       
+       my ($val, $msg) = $TicketObj->SetOwner($ARGSRef->{'Owner'}, $ChownType);
+       push (@results, "$msg");
+   }
+  
   # }}}
   
   return (@results);

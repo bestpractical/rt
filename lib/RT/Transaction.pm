@@ -587,6 +587,13 @@ sub BriefDescription  {
 	return( "Taken");
     }
     
+    elsif ($self->Type eq "Force") {
+        my $Old = RT::User->new($self->CurrentUser);
+        $Old->Load($self->OldValue);
+        my $New = RT::User->new($self->CurrentUser);
+        $New->Load($self->NewValue);
+	return "Owner forcibly changed from ".$Old->Name . " to ". $New->Name;
+    }
     elsif ($self->Type eq "Steal") {
 	my $Old = RT::User->new($self->CurrentUser);
 	$Old->Load($self->OldValue);

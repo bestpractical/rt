@@ -96,7 +96,8 @@ if ($Transaction->Type =~ /^(Create|Correspond|Comment$)/) {
 	else {
 		$bgcolor="#339999";
 	}
-} elsif ($Transaction->Type =~ /^(Take|Untake|Steal|Give|AddWatcher|DelWatcher)$/) {
+} elsif (($Transaction->Field =~ /^Owner$/) or 
+	 ($Transaction->Type =~ /^(AddWatcher|DelWatcher)$/)) {
 	$bgcolor="#333399";
 
 } elsif ($Transaction->Type =~ /^(AddLink|DeleteLink)$/) {

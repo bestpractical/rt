@@ -2340,7 +2340,7 @@ sub SetOwner {
     
     #If thie ticket has an owner and it's not the current user
     
-    if (($Type ne 'Steal' ) and	#If we're not stealing
+    if (($Type ne 'Steal' ) and ($Type ne 'Force') and	#If we're not stealing
 	($self->OwnerObj->Id != $RT::Nobody->Id ) and #and the owner is set
 	($self->CurrentUser->Id ne $self->OwnerObj->Id())) { #and it's not us
 	return(0, "You can only reassign tickets that you own or that are unowned");
