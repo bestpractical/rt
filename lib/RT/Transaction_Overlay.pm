@@ -919,18 +919,44 @@ sub FriendlyObjectType {
     return $self->loc($type);
 }
 
+=head2 UpdateCustomFields
+    
+    Takes a hash of 
+
+    CustomField-<<Id>> => Value
+        or 
+
+    Object-RT::Transaction-CustomField-<<Id>> => Value parameters to update
+    this transaction's custom fields
+
+=cut
+
 sub UpdateCustomFields {
     my $self = shift;
-    my (%args) = @_;
+    my %args = (@_);
 
-    my $args_ref = $args{ARGSRef} or return;
+    # This method used to have an API that took a hash of a single
+    # value "ARGSRef", which was a reference to a hash of arguments.
+    # This was insane. The next few lines of code preserve that API
+    # while giving us something saner.
+       
 
-    foreach my $arg ( keys %$args_ref ) {
+    # TODO: 3.6: DEPRECATE OLD API
+
+    my $args; 
+
+    if ($args{'ARGSRef'}) { 
+        $args = $args{ARGSRef};
+    } else {
+        $args = \%args;
+    }
+
+    foreach my $arg ( keys %$args ) {
         next
           unless ( $arg =~
-            /^(?:Object-RT::Transaction--)?CustomField-(\d+).*?(?<!-Magic)$/ );
+            /^(?:Object-RT::Transaction--)?CustomField-(\d+)/ );
         my $cfid   = $1;
-        my $values = $args_ref->{$arg};
+        my $values = $args->{$arg};
         foreach
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
