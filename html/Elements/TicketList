@@ -48,6 +48,7 @@
 % if ($ShowHeader) {
 <& /Elements/CollectionAsTable/Header, 
     Format => \@Format, 
+    FormatString => $Format,
     AllowSorting => $AllowSorting, 
     Order => $Order, 
     Query => $Query,
