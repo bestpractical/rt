@@ -223,22 +223,23 @@ $CommentAddress='RT::CommentAddress.not.set';
 #Sendmail Configuration
 
 # $MailCommand defines which method RT will use to try to send mail
-# We know that 'sendmail' works fairly well.
-# If 'sendmail' doesn't work well for you, try 'sendmailpipe' 
-# But note that you have to configure $SendmailPath and add a -t 
-# to $SendmailArguments
+# We know that 'sendmailpipe' works fairly well.
+# If 'sendmailpipe' doesn't work well for you, try 'sendmail' 
+#
+# Note that you should remove the '-t' from $SendmailArguments 
+# if you use 'sendmail rather than 'sendmailpipe'
 
-$MailCommand = 'sendmail';
+$MailCommand = 'sendmailpipe';
 
 # $SendmailArguments defines what flags to pass to $Sendmail
 # assuming you picked 'sendmail' or 'sendmailpipe' as the $MailCommand above.
 # If you picked 'sendmailpipe', you MUST add a -t flag to $SendmailArguments
 
 # These options are good for most sendmail wrappers and workalikes
-$SendmailArguments="-oi";
+$SendmailArguments="-oi -t";
 
 # These arguments are good for sendmail brand sendmail 8 and newer
-#$SendmailArguments="-oi -ODeliveryMode=b -OErrorMode=m";
+#$SendmailArguments="-oi -t -ODeliveryMode=b -OErrorMode=m";
 
 # If you selected 'sendmailpipe' above, you MUST specify the path
 # to your sendmail binary in $SendmailPath.  
@@ -278,7 +279,8 @@ $UseFriendlyToLine = 0;
 
 $LogToScreen = 'error';
 $LogToFile = 'error';
-$LogToFileNamed = "$LogDir/rt.log.".$$.".".$<; #log to rt.log.<pid>.<user>
+#$LogToFileNamed = "$LogDir/rt.log.".$$.".".$<; #log to rt.log.<pid>.<user>
+$LogToFileNamed = "$LogDir/rt.log".$<; #log to rt.log.user;
 
 # }}}
 
