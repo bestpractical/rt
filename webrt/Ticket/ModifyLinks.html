@@ -96,6 +96,7 @@ Referred to by:<BR>
 <TD VALIGN=TOP>
 <h3>New Relationships</h3>
 <i>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</i><br>
+Merge into:<input name="<%$Ticket->Id%>-MergeInto"> <i>(only one ticket)</i><BR>
 Depends on:<input name="<%$Ticket->Id%>-DependsOn"><BR>
 Depended on by:<input name="DependsOn-<%$Ticket->Id%>"><BR>
 
@@ -173,6 +174,12 @@ foreach my $linktype (@linktypes) {
 	
 	push @result, $msg;
     }
+}
+
+#Merge if we need to
+if ($ARGS{$Ticket->Id."-MergeInto"}) {
+	my ($val, $msg) = $Ticket->MergeInto($ARGS{$Ticket->Id."-MergeInto"});
+	push @result, $msg;
 }
 
 my $DependsOn = $Ticket->DependsOn();
