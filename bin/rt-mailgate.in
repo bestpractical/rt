@@ -455,7 +455,7 @@ if ( $content !~ /^(ok|not ok)/ ) {
 
     # It's not the server's fault if the mail is bogus. We just want to know that
     # *something* came out of the server.
-    die <<EOF
+    warn <<EOF;
 RT server error.
 
 The RT server which handled your email did not behave as expected. It
@@ -464,7 +464,12 @@ said:
 $content
 EOF
 
+exit EX_TEMPFAIL;
+
 }
+
+exit;
+
 
 sub check_failure {
     my $r = shift;
@@ -496,6 +501,7 @@ Usual invocation (from MTA):
 
     rt-mailgate --action (correspond|comment) --queue queuename
                 --url http://your.rt.server/
+                [ --debug ]
                 [ --extension (queue|action|ticket)
 
 See C<man rt-mailgate> for more.
@@ -526,6 +532,10 @@ submitted to will be set to the value of $EXTENSION. By specifying
 "ticket", $EXTENSION will be interpreted as the id of the ticket this message
 is related to.  "action" will allow the user to specify either "comment" or
 "correspond" in the address extension.
+
+=item C<--debug> OPTIONAL
+
+Print debugging output to standard error
 
 
 =head1 DESCRIPTION

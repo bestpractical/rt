@@ -153,6 +153,7 @@ sub MailError {
 		Subject => 'There has been an error',
 		Explanation => 'Unexplained error',
 		MIMEObj => undef,
+        Attach => undef,
 		LogLevel => 'crit',
 		@_);
 
@@ -175,7 +176,13 @@ sub MailError {
         $mimeobj->sync_headers();
         $entity->add_part($mimeobj);
     }
-    
+   
+    if ($args{'Attach'}) {
+        $entity->attach(Data => $args{'Attach'}, Type => 'message/rfc822');
+
+    }
+
+ 
     if ($RT::MailCommand eq 'sendmailpipe') {
         open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);
         print MAIL $entity->as_string;
@@ -363,9 +370,33 @@ sub ParseAddressFromHeader{
 
 =head2 Gateway ARGSREF
 
+
+Takes parameters:
+
+    action
+    queue
+    message
+
+
 This performs all the "guts" of the mail rt-mailgate program, and is
 designed to be called from the web interface with a message, user
 object, and so on.
+
+Returns:
+
+    An array of:
+    
+    (status code, message, optional ticket object)
+
+    status code is a numeric value.
+
+    for temporary failures, status code should be -75
+
+    for permanent failures which are handled by RT, status code should be 0
+    
+    for succces, the status code should be 1
+
+
 
 =cut
 
@@ -382,7 +413,9 @@ sub Gateway {
     unless ( $args{'action'} =~ /^(comment|correspond|action)$/ ) {
 
         # Can't safely loc this. What object do we loc around?
-        return ( 0, "Invalid 'action' parameter", undef );
+        $RT::Logger->crit("Mail gateway called with an invalid action paramenter '".$args{'action'}."' for queue '".$args{'queue'}."'");
+
+        return ( -75, "Invalid 'action' parameter", undef );
     }
 
     my $parser = RT::EmailParser->new();
@@ -395,19 +428,39 @@ sub Gateway {
         last if ( $fh, $temp_file ) = eval { File::Temp::tempfile(undef, UNLINK => 0) };
         sleep 1;
     }
-    unless ($fh) {
-        return (0, "Unable to create a temporary file to store the message in. Temporary failure");
+    if ($fh) {
+        binmode $fh;    #thank you, windows
+        $fh->autoflush(1);
+        print $fh $args{'message'};
+        close($fh);
+
+        if ( -f $temp_file ) {
+            $parser->ParseMIMEEntityFromFile($temp_file);
+            File::Temp::unlink0( $fh, $temp_file );
+            if ($parser->Entity) {
+                delete $args{'message'};
+            }
+        }
+
     }
 
-    binmode $fh;    #thank you, windows
-    $fh->autoflush(1);
-    print $fh $args{'message'};
-    close($fh);
+    #If for some reason we weren't able to parse the message using a temp file 
+    # try it with a scalar
+    if ($args{'message'}) {
+        $parser->ParseMIMEEntityFromScalar($args{'message'});
 
-    delete $args{'message'};
-    $parser->ParseMIMEEntityFromFile($temp_file);
-    File::Temp::unlink0( $fh, $temp_file )
-      || return ( 0, "Failed to unlink a temporary file for the message" );
+    } 
+
+    if (!$parser->Entity()) {
+        MailError(
+            To          => $RT::OwnerEmail,
+            Subject     => "RT Bounce: Unparseable message",
+            Explanation => "RT couldn't process the message below",
+            Attach     => $args{'message'}
+        );
+
+        return(0,"Failed to parse this message. Something is likely badly wrong with the message");
+    }
 
     my $Message = $parser->Entity();
     my $head    = $Message->head;
@@ -440,13 +493,7 @@ sub Gateway {
 
     # We can safely have no queue of we have a known-good ticket
     unless ( $args{'ticket'} || $SystemQueueObj->id ) {
-        MailError(
-            To          => $RT::OwnerEmail,
-            Subject     => "RT Bounce: $Subject",
-            Explanation => "RT couldn't find the queue: " . $args{'queue'},
-            MIMEObj     => $Message
-        );
-        return ( 0, "RT couldn't find the queue: " . $args{'queue'}, undef );
+        return ( -75, "RT couldn't find the queue: " . $args{'queue'}, undef );
     }
 
     # Authentication Level
@@ -699,7 +746,7 @@ EOT
         );
         $RT::Logger->crit( $args{'action'} . " type unknown for $MessageId" );
         return (
-            0,
+            -75,
             "Configuration error: "
               . $args{'action'}
               . " not a recognized action",

@@ -34,7 +34,10 @@ my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway(\%ARGS);
 <%flags>
 inherit => undef # inhibit UTF8 conversion done in /autohandler
 </%flags>
-%    if ($status) {
+% if ($status == -75 ) {
+temporary failure
+% }
+%    elsif ($status == 1) {
 ok
 %        if ( $Ticket->Id ) {
 Ticket: <% $Ticket->Id %>
