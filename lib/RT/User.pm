@@ -279,17 +279,84 @@ sub SetRandomPassword  {
     }
     
     my $pass = $self->GenerateRandomPassword(6,8);
+
+    # If we have "notify user on 
+
     my ($val, $msg) = $self->SetPassword($pass);
     
     #If we got an error return the error.
     return (0, $msg) unless ($val);
     
-    #TODO: figure out how to send the user email with his/her password.
-    
     #Otherwise, we changed the password, lets return it.
     return (1, $pass);
     
 }
+
+# }}}
+
+
+# {{{ sub ResetPassword
+
+=head2 ResetPassword
+
+Returns status, [ERROR or new password].  Resets this user\'s password to
+a randomly generated pronouncable password and emails them, using a 
+global template called "RT_PasswordChange", which can be overridden
+with global templates "RT_PasswordChange_Privileged" or "RT_PasswordChange_NonPrivileged" 
+for privileged and Non-privileged users respectively.
+
+=cut
+
+sub ResetPassword {
+    my $self = shift;
+    
+    unless ($self->CurrentUserCanModify('Password')) {
+	return (0, "Permission Denied");
+    }
+    my ($status, $pass) = $self->SetRandomPassword();
+
+    unless ($status) {
+	return (0, "$pass");
+    }
+    
+    my $template = RT::Template->new($self->CurrentUser);
+
+
+    if ($self->IsPrivileged) {
+	$template->LoadGlobalTemplate('RT_PasswordChange_Privileged');
+    } 
+    else {
+	$template->LoadGlobalTemplate('RT_PasswordChange_Privileged');
+    }	
+    
+    unless ($template->Id) {
+	$template->LoadGlobalTemplate('RT_PasswordChange');
+    }	
+    
+    unless ($template->Id) {
+	$RT::Logger->crit("$self tried to send ".$self->Name." a password reminder ".
+			  "but couldn't find a password change template");
+    }	
+
+    my $notification =  RT::Action::SendPasswordEmail->new(TemplateObj => $template,
+							   Argument => $pass);
+    
+    $notification->SetTo($self->EmailAddress);
+
+    my ($ret);
+    $ret = $notification->Prepare();
+    if ($ret) {
+	$ret = $notification->Commit();
+    }
+    
+    if ($ret) {
+	return(1, 'New password notification sent');
+    }	else {
+	return (0, 'Notification could not be sent');
+    }	
+    
+}
+
 
 # }}}
 
