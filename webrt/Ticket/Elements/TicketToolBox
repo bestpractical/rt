@@ -1,23 +1,29 @@
-<%$take%> <%$open%> | <a href="Modify.html?id=<%$id%>">Modify</a> | <a href="Update.html?Action=Comment&id=<%$id%>">Comment</a> 
-
+<%$take|n%> <%$open|n%> <%$resolve|n%>
+<BR>
 
 <%ARGS>
 $Ticket = undef
 </%ARGS>
 <%INIT>
-my $subj=$Ticket->Subject||"(No subject given)";
 my $id=$Ticket->Id;
 my $can_open=($Ticket->Status ne 'open');
-my $can_take=($Ticket->OwnerObj->id == $RT::Nobody);
+my $can_resolve=($Ticket->Status ne 'resolved');
+my $can_take=($Ticket->OwnerObj->id == $RT::Nobody->id);
 my $can_steal=!$can_take && $Ticket->OwnerObj->id!=$session{CurrentUser}->id;
-my $take="";
-my $open="";
+my ($open, $take, $resolve);
+
 if ($can_take) {
-	$take="<a href=\"Display.html?Action=Take&id=$id\">Take</a> /";
+	$take="<a href=\"Display.html?Action=Take&id=$id\">Take</a> |";
 } elsif ($can_steal) {
-	$take="<blink><strong><a href=\"Display.html?Action=Steal&id=$id\">Steal</a></strong></blink> /";
+	$take="<strong><a href=\"Display.html?Action=Steal&id=$id\">Steal</a></strong> |";
+}
+
+if (0) { # no code to deal with this.
+if ($can_resolve) {
+$resolve="<a href=\"Display.html?Action=SetStatus&SetStatus=resolved&id=$id\">Resolve</a> |";
 }
 if ($can_open) {
-	$open="<a href=\"Display.html?Action=SetStatus&SetStatus=open&id=$id\">Open</a> /";
+	$open="<a href=\"Display.html?Action=SetStatus&SetStatus=open&id=$id\">Open</a> |";
+}
 }
 </%INIT>
