@@ -137,6 +137,60 @@ sub EscapeUTF8  {
 
 # }}}
 
+# {{{ WebCanonicalizeInfo
+
+=head2 WebCanonicalizeInfo();
+
+Different web servers set different environmental varibles. This
+function must return something suitable for REMOTE_USER. By default,
+just downcase $ENV{'REMOTE_USER'}
+
+=cut
+
+sub WebCanonicalizeInfo {
+    my $user;
+
+    if ( defined $ENV{'REMOTE_USER'} ) {
+	$user = lc ( $ENV{'REMOTE_USER'} ) if( length($ENV{'REMOTE_USER'}) );
+    }
+
+    return $user;
+}
+
+# }}}
+
+# {{{ WebExternalAutoInfo
+
+=head2 WebExternalAutoInfo($user);
+
+Returns a hash of user attributes, used when WebExternalAuto is set.
+
+=cut
+
+sub WebExternalAutoInfo {
+    my $user = shift;
+
+    my %user_info;
+
+    $user_info{'Privileged'} = 1;
+
+    if ($^O !~ /^(?:riscos|MacOS|MSWin32|dos|os2)$/) {
+	# Populate fields with information from Unix /etc/passwd
+
+	my ($comments, $realname) = (getpwnam($user))[5, 6];
+	$user_info{'Comments'} = $comments if defined $comments;
+	$user_info{'RealName'} = $realname if defined $realname;
+    }
+    elsif ($^O eq 'MSWin32' and eval 'use Net::AdminMisc; 1') {
+	# Populate fields with information from NT domain controller
+    }
+
+    # and return the wad of stuff
+    return {%user_info};
+}
+
+# }}}
+
 
 package HTML::Mason::Commands;
 use strict;

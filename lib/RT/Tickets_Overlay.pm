@@ -122,6 +122,9 @@ my %dispatch =
     LINKFIELD	    => \&_LinkFieldLimit,
     CUSTOMFIELD    => \&_CustomFieldLimit,
   );
+my %can_bundle =
+  ( WATCHERFIELD => "yeps",
+  );
 
 # Default EntryAggregator per type
 my %DefaultEA = (
@@ -154,6 +157,7 @@ my %DefaultEA = (
 # into Tickets_Overlay_SQL.
 sub FIELDS   { return \%FIELDS   }
 sub dispatch { return \%dispatch }
+sub can_bundle { return \%can_bundle }
 
 # Bring in the clowns.
 require RT::Tickets_Overlay_SQL;
@@ -541,14 +545,29 @@ sub _WatcherLimit {
 #    $aggregator = 'AND';
 #  }
 
-
-  $self->_SQLLimit(ALIAS => $users,
-		   FIELD => $rest{SUBKEY} || 'EmailAddress',
-		   VALUE           => $value,
-		   OPERATOR        => $op,
-		   CASESENSITIVE   => 0,
-		   @rest,
-		  );
+  if (ref $field) { # gross hack
+    my @bundle = @$field;
+    $self->_OpenParen;
+    for my $chunk (@bundle) {
+      ($field,$op,$value,@rest) = @$chunk;
+      $self->_SQLLimit(ALIAS => $users,
+   		   FIELD => $rest{SUBKEY} || 'EmailAddress',
+   		   VALUE           => $value,
+   		   OPERATOR        => $op,
+   		   CASESENSITIVE   => 0,
+   		   @rest,
+   		  );
+    }
+    $self->_CloseParen;
+  } else {
+     $self->_SQLLimit(ALIAS => $users,
+   		   FIELD => $rest{SUBKEY} || 'EmailAddress',
+   		   VALUE           => $value,
+   		   OPERATOR        => $op,
+   		   CASESENSITIVE   => 0,
+   		   @rest,
+   		  );
+  }
 
   # {{{ Tie to groups for tickets we care about
   $self->_SQLLimit(ALIAS => $groups,
