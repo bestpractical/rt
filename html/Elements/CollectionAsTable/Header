@@ -47,7 +47,7 @@ foreach my $col (@Format) {
 	$item = 0;
     }
     else {
-        $m->out('<TH align="center">');
+        $m->out('<TH class="collection-as-table">');
         my $title = $col->{title};
         $title =~ s/^__(.*)__$/$1/o;
         $title = ( $m->comp('/Elements/RT__Ticket/ColumnMap', 
