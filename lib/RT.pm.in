@@ -203,6 +203,7 @@ sub InitLogging {
         die ("Log file $filename couldn't be written or created.\n RT can't run.");
     }
 
+    package Log::Dispatch::File;
     require Log::Dispatch::File;
 
 
@@ -220,6 +221,7 @@ sub InitLogging {
 		       ));
     }
     if ($RT::LogToScreen) {
+	package Log::Dispatch::Screen;
 	require Log::Dispatch::Screen;
 	$RT::Logger->add(Log::Dispatch::Screen->new
 		     ( name => 'screen',
@@ -233,6 +235,7 @@ sub InitLogging {
 		     ));
     }
     if ($RT::LogToSyslog) {
+	package Log::Dispatch::Syslog;
 	require Log::Dispatch::Syslog;
 	$RT::Logger->add(Log::Dispatch::Syslog->new
 		     ( name => 'syslog',

@@ -154,6 +154,10 @@ sub main_loop {
                 $RT::Handle->ForceRollback;
                 $RT::Logger->crit( "Transaction not committed. Usually indicates a software fault. Data loss may have occurred");
             }
+
+            DBIx::SearchBuilder::Record::Cachable->FlushCache if UNIVERSAL::can(
+                'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache'
+            );
         }
 
     }
