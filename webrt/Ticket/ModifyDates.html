@@ -44,26 +44,22 @@ my @date_fields = qw(
         );
 #Run through each field in this list. update the value if apropriate
 foreach $field (@date_fields) {
-        my ($code, $msg);
-            my $check = "
-               my \$DateObj = RT::Date->new(\$session{'CurrentUser'});
-	       #If it's something other than just whitespace
-	       if (\$ARGS{'$field'.'_Date'} ne '') {
-               \$DateObj->Set(Format => 'unknown',
-                              Value => \$ARGS{'$field'. '_Date'});
-              if ((defined \$DateObj->Unix) and 
-                  (\$DateObj->Unix ne \$TicketObj->@{[$field]}Obj->Unix)) {
-                      (\$code, \$msg) = \$TicketObj->Set$field(\$DateObj->ISO);
-                      push \@results, \"\$msg\";
-                  }
-		}
-            ";
-	eval $check;
-	if ($@) {
-	    $RT::Logger->err("Web/Ticket/Modify.html Date $field update failed ".$@."\n");
+    my ($code, $msg);
+    
+    my $DateObj = RT::Date->new($session{'CurrentUser'});
+    #If it's something other than just whitespace
+    if ($ARGS{$field.'_Date'} ne '') {
+	$DateObj->Set(Format => 'unknown',
+		      Value => $ARGS{$field. '_Date'});
+	my $obj = $field."Obj";
+	if ( (defined $DateObj->Unix) and 
+	     ($DateObj->Unix ne $TicketObj->$obj->Unix()) ) {
+	    my $method = "Set$field";
+	    my ($code, $msg) = $TicketObj->$method($DateObj->ISO);
+	    push @results, "$msg";
 	}
-	
     }
+}
 
 # }}}
 

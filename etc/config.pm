@@ -23,9 +23,13 @@ $Organization = "example.com";
 $MinimumPasswordLength = "5";
 
 # What timezone is your RT server in? Currently used to process dates like
-# "Tomorrow at 4pm." Once we have per-user timezones, this will just be a 
-# default.
-$ENV{'TZ'} = 'US/Eastern'; #TODO: Bogus hack to deal with Date::Manip whining
+# "Tomorrow at 4pm."
+
+# Once we have per-user timezones, this will just be a  default.
+
+$Timezone =  'US/Eastern'; 
+
+$ENV{'TZ'} = $Timezone; #TODO: Bogus hack to deal with Date::Manip whining
 
 
 # RootDir is the root of the RT installation
@@ -139,7 +143,7 @@ $Logger->add(Log::Dispatch::File->new
 	     ));
 $Logger->add(Log::Dispatch::Screen->new
 	     ( name => 'screen',
-	       min_level => 'debug',
+	       min_level => 'error',
 	       stderr => 1
 	     ));
 

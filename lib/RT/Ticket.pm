@@ -5,7 +5,7 @@
 
 =head1 NAME
 
-  RT::Ticket - RT's ticket object
+  RT::Ticket - RT ticket object
 
 =head1 SYNOPSIS
 

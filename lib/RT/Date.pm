@@ -79,7 +79,7 @@ sub Set {
     elsif ($args{'Format'} =~ /^(sql|datemanip|iso)$/i) {
 	
 	if (($args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/) ||
-        ($args{'Value'} =~ /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) ||
+	    ($args{'Value'} =~ /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) ||
 	    ($args{'Value'} =~ /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/) ||
 	    ($args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/)) {
 	    
@@ -98,7 +98,16 @@ sub Set {
             if ($mon == -1) {
 	            $self->Unix(-1);
 	        } else {
-		    $self->Unix(timegm($sec,$min,$hours,$mday,$mon,$year));
+
+		    #Dateamnip strings aren't in GMT.
+		    if ($args{'Format'} =~ /^datemanip$/i) {
+			$self->Unix(timelocal($sec,$min,$hours,$mday,$mon,$year));
+		    }
+		    #ISO and SQL dates are in GMT
+		    else {
+			$self->Unix(timegm($sec,$min,$hours,$mday,$mon,$year));
+		    }
+		    
 		    $self->Unix(-1) unless $self->Unix;
 		}
    }  
@@ -112,10 +121,16 @@ sub Set {
     elsif ($args{'Format'} =~ /^unknown$/i) {
         require Date::Manip;
         #Convert it to an ISO format string 
-        my $date = Date::Manip::ParseDate($args{'Value'});
-        #mmm. recursion.
+        
+	my $date = Date::Manip::ParseDate($args{'Value'});
+        
+	#This date has now been set to a date in the _local_ timezone.
+	#since ISO dates are known to be in GMT (for RT's purposes);
+	
 	$RT::Logger->debug("RT::Date used date manip to make ".$args{'Value'} . " $date\n");
-        return ($self->Set( Format => 'ISO', Value => "$date"));
+        
+	
+	return ($self->Set( Format => 'datemanip', Value => "$date"));
     }                                                    
     else {
 	die "Unknown Date format: ".$args{'Format'}."\n";
@@ -130,7 +145,7 @@ sub Set {
 
 =head2 SetToMidnight
 
-Sets the date to midnight (at the beginning of the day)
+Sets the date to midnight (at the beginning of the day) GMT
 Returns the unixtime at midnight.
 
 =cut
@@ -273,20 +288,15 @@ sub AgeAsString {
 
 =head2 sub AsString
 
-Takes nothing
-
-Returns the object's time as a string
+Returns the object\'s time as a string with the current timezone.
 
 =cut
-
-*stringify = \&AsString;
-*Stringify = \&AsString;
-
 
 sub AsString {
     my $self = shift;
     return ("Not set") if ($self->Unix <= 0);
-    return ($self->ISO);
+
+    return (scalar(localtime($self->Unix)));
 }
 # }}}
 
@@ -378,6 +388,22 @@ sub ISO {
 
 # }}}
 
+
+# {{{ sub LocalTimezone 
+=head2 LocalTimezone
+
+  Returns the current timezone. For now, draws off a system timezone, RT::Timezone. Eventually, this may
+pull from a 'Timezone' attribute of the CurrentUser
+
+=cut
+
+sub LocalTimezone {
+    my $self = shift;
+    
+    return ($RT::Timezone);
+}
+
+# }}}
 
 
 
