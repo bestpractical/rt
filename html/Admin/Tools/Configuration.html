@@ -1,6 +1,11 @@
 <%init>
 require  Module::Versions::Report;
 my $title = loc('System Configuration');
+unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+ Abort(loc('This feature is only available to system administrators'));
+} 
+
+
 </%init>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/ToolTabs, 
@@ -9,10 +14,6 @@ my $title = loc('System Configuration');
     Title => $title &>
 
 
-
-% unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-% Abort(loc('This feature is only available to system administrators'));
-% } 
 
 
 <h2><&|/l&>Loaded perl modules</&></h2>
