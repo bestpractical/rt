@@ -29,7 +29,7 @@ as private comments
 
 correspond means that any mail sent through this gateway will be 
 treateded as mail to or from the requestor. If you want tickets to be 
-autocreated through this interface, comment is the right choice.
+autocreated through this interface, correspond is the right choice.
 
 action is for rt's mail action mode.
 
@@ -108,198 +108,234 @@ if it's a new ticket (only makes sense on correspond aliases)
   #take all those actions
   $content=&parse_actions($current_user,$serial_num, $content);
   
-  #flip the content around..we should just MIME the sucker instead
+  #flip the content around.
   &munge_content($content);
   
   if ($in_action eq 'actions') {
     exit(0);
   }
   elsif ($in_action eq 'correspond') {
-
-    #If we're creating a new ticket
-    if (!$serial_num) {
-      ($serial_num,$transaction_num, $message)=&rt::add_new_request(
-		$in_queue, $area, $current_user,'','',$subject,
-		$rt::queues{"$in_queue"}{'default_final_prio'},
-		$rt::queues{"$in_queue"}{'default_prio'},'open',
-		$rt::time,0,0,$content,$current_user);
-
-      # If $return_tid = 1, just return the serial number of the ticket created
-      print "$serial_num\n" if ($return_tid == 1);
-      print "Ticket='$serial_num' Queue='$in_queue' Area='$area' Sender='$current_user' Precedence='$precedence'\n" if ($verbose);
-    }
-
-    #If we're corresponding on an existing ticket
-    else {
-      #If the user isn't a requestor, notify the requestor
-      $notify_requestor = (&rt::is_not_a_requestor($current_user, $serial_num));
       
-      #Add the correspondence, being careful to force the ticket to open.
-      ($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,
-							  "open", $notify_requestor, $current_user);
-      
-      
-      # If $return_tid = 1, just return the serial number of the ticket corresponded on
-      print "$serial_num\n" if ($return_tid == 1);
-      
-      # If it's verbose, load the ticket and examine it and generate the verbose response
-      
-      if ($verbose) {
-	&rt::req_in($serial_num,'_rt_system');
-	print "Ticket='$serial_num' Queue='".$rt::req[$serial_num]{'queue'}."' Area='".$rt::req[$serial_num]{'area'}."' Sender='$current_user' Precedence='$precedence'\n" if ($verbose);
+      #If we're creating a new ticket
+      if (!$serial_num) {
+	  ($serial_num,$transaction_num, $message) = &rt::add_new_request(
+                       $in_queue, $area, $current_user,'','', $subject,
+                       $rt::queues{"$in_queue"}{'default_final_prio'},
+	        	       $rt::queues{"$in_queue"}{'default_prio'},'open',
+		               $rt::time, 0, 0, $content, $current_user, 
+                       $squelch_replies);
+	  
+	  # If $return_tid = 1, just return the serial number of the ticket
+	  # created
+	  print "$serial_num\n" if ($return_tid == 1);
+	  print "Ticket='$serial_num' Queue='$in_queue' Area='$area'".
+	    " Sender='$current_user' Precedence='$precedence'\n" if ($verbose);
       }
       
-    }
+      #If we're corresponding on an existing ticket
+      else {
+	  #If the user isn't a requestor, notify the requestor
+	  $notify_requestor = (&rt::is_not_a_requestor($current_user, 
+						       $serial_num));
+	  
+
+	  if ($squelch_replies) {
+	      $notify_requestor = 0;
+	  }
+
+	  #Add the correspondence, being careful to force the ticket to open.
+	  ($transaction_num,$message)=
+	    &rt::add_correspondence($serial_num,$content, "$subject","" ,"" ,
+				    "open", $notify_requestor, $current_user);
+	  
+	  
+	  # If $return_tid = 1, just return the serial number of the ticket
+	  # corresponded on
+	  print "$serial_num\n" if ($return_tid == 1);
+	  
+	  # If it's verbose, load the ticket and examine it and generate the
+	  # verbose response
+	  
+	  if ($verbose) {
+	      &rt::req_in($serial_num,'_rt_system');
+	      print "Ticket='$serial_num' Queue='". 
+		$rt::req[$serial_num]{'queue'}.
+		  "' Area='".$rt::req[$serial_num]{'area'}.
+		    "' Sender='$current_user' Precedence='$precedence'\n" ;
+	  }
+	  
+      }
   }
   elsif ($in_action eq 'comment') {
-	if (!$serial_num) {
+      if (!$serial_num) {
 	  $edited_content = "
 You did not specify a ticket number for these comments. Please resubmit them
 with a ticket number.  Your comments appear below.
 
 $content.
 ";
-	  &rt::template_mail('error', '_rt_system', "$current_user", '', '', "", 
-			     "$transaction_num", "RT Error: $subject", 
-			     "$current_user", "$edited_content");
 	  
+	  unless ($squelch_replies) {
+	      &rt::template_mail('error', '_rt_system', "$current_user", '', 
+				 '', "", "$transaction_num",
+				 "RT Error: $subject", 
+				 "$current_user", 
+				 "$edited_content");
+	  }
+	  
+
 	  print "0\n" if ($return_tid == 1);
 	  # Verbose will return a ticket Id of 0 which means "you're screwed"
-	  print "Ticket='$serial_num' Queue='$in_queue' Area='$area' Sender='$current_user' Precedence='$precedence'\n" if ($verbose);
+	  print "Ticket='$serial_num' Queue='$in_queue' Area='$area'".
+	    " Sender='$current_user' Precedence='$precedence'\n" if ($verbose);
 	  exit(0);
-	}
-	
-	
-	if ($debug) {print "Now commenting on request \# $serial_num\n";}
-	($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject","" ,"" ,$current_user);
-	print "$serial_num\n" if ($return_tid == 1);
       }
+      
+      
+      if ($debug) {print "Now commenting on request \# $serial_num\n";}
+      ($transaction_num,$message)=
+	&rt::comment($serial_num,$content,"$subject","" ,"" ,$current_user);
+      print "$serial_num\n" if ($return_tid == 1);
+  }
   
   # if there's been an error, mail the user with the message
   if ($transaction_num == 0) {
-    $edited_content = "There has been an error with your request:\n$message\n\nYour message is reproduced below:\n\n$content\n";
-    &rt::template_mail('error', '_rt_system', "$current_user", '', '', 
-		       "$serial_num", "$transaction_num", 
-		       "RT Error: $subject", "$current_user", "$edited_content");
+      $edited_content = "There has been an error with your request:\n$message\n\nYour message is reproduced below:\n\n$content\n";
+
+      unless ($squelch_replies) {
+	  &rt::template_mail('error', '_rt_system', "$current_user", '', '', 
+			     "$serial_num", "$transaction_num", 
+			     "RT Error: $subject", "$current_user", 
+			     "$edited_content");
+      }
   }
   
 
-  # if we've got actions to deal with. this happens unless someone screwed up badly above
+  # if we've got actions to deal with. this happens unless someone screwed 
+  #up badly above
+  
   if ($response) {
-    &send_rt_response($current_user);
+      &send_rt_response($current_user);
   }
 }
 
 # {{{ sub read_mail_from_stdin
 sub read_mail_from_stdin {
-  local $content;
-  while (<STDIN>){
-    $content .= $_;
-  }
-  return ($content);
+    local $content;
+    while (<STDIN>){
+	$content .= $_;
+    }
+    return ($content);
 }
 # }}}
 
 # {{{ sub munge_content
 sub munge_content {
-  $content =~ s/^(From )/\>$1/mg;
-  ($headers, $body) = split (/\n\n/, $content, 2);
-  $content = $body . "\n\n--- Headers Follow ---\n\n" . $headers;
-  
+    $content =~ s/^(From )/\>$1/mg;
+    ($headers, $body) = split (/\n\n/, $content, 2);
+    $content = $body . "\n\n--- Headers Follow ---\n\n" . $headers;
+    
 }
 # }}}
 
 # {{{ sub parse_headers
 sub parse_headers {
-  my ($content) ="@_";
-  
-  $precedence = 'first-class';
+    my ($content) ="@_";
+    
+    $precedence = 'first-class';
+    
+    ($headers, $body) = split (/\n\n/, $content, 2);
+    
+    foreach $line (split (/\n(?!\s)/,$headers)) {
+	
+	if ($line =~/^X-RT-Loop-Prevention: $rt::rtname/g) {
+	    die ("RT has recieved mail from itself. Goodnight.");
+	}
+	
+	elsif (($line =~ /^Subject:(.*)\[$rt::rtname\s*\#(\d+)\]\s*(.*)/i) and 
+	       (!$subject)){
+	    $serial_num=$2;
+	    &rt::req_in($serial_num,$current_user);
+	    $subject=$3;
+	    $subject =~ s/\($rt::req[$serial_num]{'queue_id'}\)//i;
+	}
+	
+	elsif (($line =~ /^Subject: (.*)/s) and (!$subject)){
+	    $subject=$1;
+	}
+	
+	elsif (($line =~ /^Reply-To: (.*)/s)) {
+	    $replyto = $1;
+	}
+	
+	elsif ($line =~ /^From: (.*)/s) {
+	    $from = $1;
+	}
+	
+	elsif ($line =~ /^Sender: (.*)/s){
+	    $sender = $1;
+	    
+	}
+	elsif ($line =~ /^Date: (.*)/s) {
+	    $time_in_text = $1;
+	}
+	elsif ($line =~ /^Precedence: (.*)/s) {
+	    $precedence = $1;
+	}
+	
+    }
+    
+    $current_user = $replyto || $from || $sender;
+    
+    
+    #Get the real name of the current user from the replyto/from/sender/etc
+    
+    $name_temp  = $current_user;
 
-  ($headers, $body) = split (/\n\n/, $content, 2);
+    if ($current_user =~/(\S*\@\S*)/) {
+	$current_user =$1;
+    }
+    if ($current_user =~/<(\S*\@\S*)>/){
+	$current_user =$1;
+    }
+    if ($current_user =~/<(\S*)>/){
+	$current_user =$1;
+    }
+    
+    $rt::users{"$current_user"}{'real_name'} = $name_temp;
+    $rt::users{"$current_user"}{'real_name'} =~ s/(\S*)\@(\S*)//;
+    $rt::users{"$current_user"}{'real_name'} =~ s/<(.*?)>//;
+    
+    if (!$subject) {
+	$subject = "[No Subject Given]";
+    }
+    
+    $subject =~ s/\s\s/ /g;
+    
+    if (($precedence =~ /^junk/i) or 
+	($precedence =~ /^bulk/)) {
+	$squelch_replies = 1;
+    }
+    else {
+	$squelch_replies = 0;
+    }
 
-  foreach $line (split (/\n(?!\s)/,$headers)) {
-    
-    if ($line =~/^X-RT-Loop-Prevention: $rt::rtname/g) {
-      die ("RT has recieved mail from itself. Goodnight.");
+    if (($current_user =~ /^postmaster/i) or 
+	($current_user =~ /^mailer-daemon/i)) {
+	
+	#TODO perform a magic warning here..(auto-submit a req?)
+	exit(0);
     }
     
-    elsif (($line =~ /^Subject:(.*)\[$rt::rtname\s*\#(\d+)\]\s*(.*)/i) and (!$subject)){
-      $serial_num=$2;
-      &rt::req_in($serial_num,$current_user);
-      $subject=$3;
-      $subject =~ s/\($rt::req[$serial_num]{'queue_id'}\)//i;
+    elsif ($current_user =~/^$rt::mail_alias/g) {
+	#TODO perform a magic warning here..(auto-submit a req?)
+	#if we don't do this, rt mail will loop. which is VERY VERY BAD
+	if ($debug) {
+	    print "This mail came from RT. good night.\n";
+	}
+	exit(0);
     }
     
-    elsif (($line =~ /^Subject: (.*)/s) and (!$subject)){
-      $subject=$1;
-    }
-    
-    elsif (($line =~ /^Reply-To: (.*)/s)) {
-      $replyto = $1;
-    }
-
-    elsif ($line =~ /^From: (.*)/s) {
-      $from = $1;
-    }
-  
-    elsif ($line =~ /^Sender: (.*)/s){
-      $sender = $1;
-      
-    }
-    elsif ($line =~ /^Date: (.*)/s) {
-      $time_in_text = $1;
-    }
-    elsif ($line =~ /^Precedence: (.*)/s) {
-      $precedence = $1;
-    }
-    
-  }
-  
-  $current_user = $replyto || $from || $sender;
-  
-  
-  #Get the real name of the current user from the replyto/from/sender/etc
-
-  $name_temp  = $current_user;
-
-  
-
-  if ($current_user =~/(\S*\@\S*)/) {
-    $current_user =$1;
-  }
-  if ($current_user =~/<(\S*\@\S*)>/){
-    $current_user =$1;
-  }
-  if ($current_user =~/<(\S*)>/){
-    $current_user =$1;
-  }
-  
-   $rt::users{"$current_user"}{'real_name'} = $name_temp;
-  $rt::users{"$current_user"}{'real_name'} =~ s/(\S*)\@(\S*)//;
-  $rt::users{"$current_user"}{'real_name'} =~ s/<(.*?)>//;
-  
-  
-  if (!$subject) {
-    $subject = "[No Subject Given]";
-  }
-  
-  
-  $subject =~ s/\s\s/ /g;
-  if (($current_user =~ /^postmaster/i) or ($current_user =~ /^mailer-daemon/i)) {
-    
-    #TODO perform a magic warning here..(auto-submit a req?)
-    exit(0);
-  }
-    
-  elsif ($current_user =~/^$rt::mail_alias/g) {
-    #TODO perform a magic warning here..(auto-submit a req?)
-    #if we don't do this, rt mail will loop. which is VERY VERY BAD
-    if ($debug) {
-      print "This mail came from RT. good night.\n";
-      }
-    exit(0);
-  }
-  
 }
 # }}}
 
@@ -310,7 +346,8 @@ sub parse_actions {
   my ($real_serial_num) = shift;
   
   my ($body) = shift;
-  my ($trans, $message, $serial_num, $line, $original_line, $current_user, $authenticated_user);
+  my ($trans, $message, $serial_num, $line, $original_line, $current_user, 
+      $authenticated_user);
   
   foreach $line (split(/\n/,$body)) {
     my $count, @arg;
@@ -340,8 +377,7 @@ sub parse_actions {
           $arg[$count++]=$1;
           
           $line = $2;
-	  #		if ($debug) {print "singlequote: $1 is arg $count\nline is $line\n.";}
-        }
+      }
         
 	#parse for delineation w/ whitespace
         elsif ($line =~ s/^(\S*)\s(.*)/$2/) {
@@ -666,13 +702,17 @@ sub send_rt_response {
     
     print "$response\n" if $debug;
     if ($response) {
-      ($message)=&rt::template_mail ('act_response','_rt_system',
-				     $user,"","",0,0,"RT Actions Complete",
-				     "$user","$response");
+	unless ($squelch_replies) {
+	    ($message)=&rt::template_mail ('act_response','_rt_system',
+					   $user,"","",0,0,
+					   "RT Actions Complete",
+					   "$user","$response");
+	}
     }
     print "$message\n" if $debug;
     
   }
 
 # }}}
-  1;
+
+1;

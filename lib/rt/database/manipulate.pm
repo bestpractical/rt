@@ -15,47 +15,54 @@ sub add_new_request {
     my $in_owner = shift;
     my $in_subject  = shift;
     my $in_final_priority  = shift;
-    my $in_priority  = shift;
-    my $in_status  = shift;
+    my $in_priority = shift;
+    my $in_status = shift;
     my $in_date_created  = shift;
     my $in_date_told  = shift;
     my $in_date_due  = shift;
     my $in_content = shift;
     my $in_current_user = shift;
-
+    my $squelch_replies = shift;
     my $msg;
         
     my ($transaction_num, $serial_num);
     
     if (!&can_create_request($in_queue_id, $in_current_user)) {
-	return (0,0,"You don't have permission to create requests in this queue");
+	return (0,0,"You don't have permission to create requests in this queue. Either you're not a queue member or non-members aren't allowed to create requests in this queue.");
     }
     
     ($in_requestors,$msg) = &norm_requestors($in_requestors);
     return (0,0,$msg) if $msg;
     
     #add the fact to each_req    
-    $serial_num=&add_request($in_queue_id, $in_area, $in_requestors, $in_alias, $in_owner, $in_subject, 
-			     $in_final_priority, $in_priority, $in_status, $in_date_created, 
-			     $in_date_told, $in_date_due, $in_current_user);
+    $serial_num=&add_request($in_queue_id, $in_area, $in_requestors, $in_alias,
+                            $in_owner, $in_subject, $in_final_priority, 
+                            $in_priority, $in_status, $in_date_created, 
+			                $in_date_told, $in_date_due, $in_current_user);
     
     # note the creation in the transaction log
-    $transaction_num=&add_transaction($serial_num, $in_current_user, 'create','',$in_content,$time,1,$in_current_user);
+    $transaction_num=&add_transaction($serial_num, $in_current_user, 'create',
+                                       '',$in_content,$time,1,$in_current_user);
 
     if ($queues{$in_queue_id}{m_members_correspond}) {
-      &rt::template_mail ('correspondence',$in_queue_id,"$queues{$in_queue_id}{'dist_list'}","","", 
-			  "$serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
+      &rt::template_mail ('correspondence',$in_queue_id,
+                          "$queues{$in_queue_id}{'dist_list'}","","", 
+			              "$serial_num" ,"$transaction_num","$in_subject", 
+                          "$in_current_user",'');
     }
     
     if ( $queues{$in_queue_id}{m_user_create}) {
-	&rt::template_mail ('autoreply',$in_queue_id,"$in_requestors","","","$serial_num",
-			    "$transaction_num","$in_subject","_rt_system",'');
+        unless ($squelch_replies) {
+        	&rt::template_mail ('autoreply',$in_queue_id,"$in_requestors","","",
+                                "$serial_num", "$transaction_num","$in_subject",
+                                "_rt_system",'');
+        }
     }
 
-    if( $in_owner )
-    {
-	&rt::template_mail('give',$in_queue_id,$rt::users{$in_owner}{email},"","", "$serial_num" ,
-			   "$transaction_num","$in_subject","$in_current_user",'');
+    if( $in_owner ) {
+    	&rt::template_mail('give',$in_queue_id,$rt::users{$in_owner}{email},
+                           "","", "$serial_num" ,"$transaction_num",
+                           "$in_subject", "$in_current_user",'');
 
     }
 
@@ -302,6 +309,10 @@ sub merge {
     my ($new_requestors, $old_requestors, @requestors_list, $user); 
     my ($transaction_num);
     my %requestors;
+
+    $in_serial_num = &rt::normailize_sn($in_serial_num);
+    $in_merge_into = &rt::normailize_sh($in_merge_into);
+
     if (!(&can_manipulate_request($in_serial_num,$in_current_user)) or (!(&can_manipulate_request($in_merge_into,$in_current_user)))) {
       return (0,"You don't have permission to modify both requests you wish to merge");
     }

@@ -1,3 +1,11 @@
+Nov 2 2000
+----------
+
+ RT now properly honors Precedence: bulk and Precedence: junk headers.
+        
+ Fix for problems with merging merged tickets
+                -All thanks to Jan Okrouhly <okrouhly@civ.zcu.cz>
+
 Oct 8 2000
 ----------
 
