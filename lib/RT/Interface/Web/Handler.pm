@@ -99,7 +99,7 @@ sub NewApacheHandler {
 
 sub NewApache2Handler {
     require MasonX::Apache2Handler;
-    return NewHandler('MasonX::Apache2Handler', @_);
+    return NewHandler('MasonX::Apache2Handler', args_method => "CGI", @_);
 }
 
 # }}}
