@@ -52,7 +52,7 @@ sub Prepare  {
         return undef;
     }
     else {
-        return (!);
+        return (1);
     }
 }
 # }}}
