@@ -55,7 +55,7 @@ sub SetRecipients {
 	$To = join(',',@To);
     }
     else {
-	$To = '"Undisclosed recipients";';
+	$To = 'Undisclosed recipients: ;';
     }
     
     $Cc = join(',',@Cc);
