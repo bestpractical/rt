@@ -210,6 +210,7 @@ EOF
 # }}}
 
 # {{{ PickMode
+
 sub PickMode {
     my ($user,$group, $queue, $system, $keyword, $listusers, 
 	$listgroups, $listqueues, $help);
@@ -312,7 +313,7 @@ sub AdminUser {
 	
 	
 	#modify the user if we need to
-	my @attributes = ('Name', 'Gecos', 'Password',
+	my @attributes = ('Name', 'Gecos',
 			  'EmailAddress', 'Privileged', 'Comments', 'Signature',
 			  'Organization', 'RealName', 'NickName',  
 			  'ExternalContactInfoId', 'ContactInfoSystem', 
@@ -330,7 +331,12 @@ sub AdminUser {
 		
 	    }
 	}		
-	    
+	
+	if (exists ($args{'Password'})) {
+	    my ($code, $msg);
+	    ($code, $msg) = $user_obj->SetPassword($args{'Password'});
+	    print "User ". $user_obj->Name. ' Password: '. $msg;
+	}
 	
 	#Check if we need to display the user
 	if ($args{'display'}) {
