@@ -17,19 +17,29 @@ All of these works are distributed under the GPL
 REQUIRED PACKAGES:
 ------------------
 
+o   An MTA (Mail Transfer Agent), i.e. sendmail -- free.
+
+        RT 1.0.x needs to pipe the mail to some program that can send mail,
+	i.e. /usr/lib/sendmail. The installation guide below also assumes
+	that the _same computer_ as RT is running at is capable of
+	_receiving_ mail. It is possible to get it running with a remote
+	mailserver, i.e. by using fetchmail to fetch new mail from the
+	mailserver, or to let the mailserver execute RT remotely, i.e.
+	through ssh.
+
 o   Perl5.x ( http://www.perl.com ) -- free
 	
 	RT is written almost entirely in perl.
 
-o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- free
+o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- sort of free
         
 	FTP mysql from www.mysql.com and follow the INSTALL instructions
-        contained therein
-
+        contained therein. RT 1.0.x cannot be used with other DBMS'es.
+	
 o   GNU Make ( http://www.gnu.org ) -- free
 
 	I know for sure that GNU Make supports the conditionals syntax RT's
-	Makefile uses. I can't be sure about anything else.  If you don't have 
+	Makefile uses. I can't be sure about anything else.  If you don't have
 	GNU Make, but feel reasonably comfortable with Makefiles, you probably
 	can get by without it.
 
@@ -41,9 +51,12 @@ o   Msql-Mysql-modules ( ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
 	See the Msql-Mysql-modules documentation for more information.
 
 o   CGI.pm ( http://www.perl.com ) -- free
-	
-	CGI.pm and CGI::Cookie are used for our basic Form and Cookie processing
-	We recommend that you use at least 2.53 as we know that version works.
+
+	CGI.pm and CGI::Cookie are used for our basic Form and Cookie
+	processing. We recommend that you use at least 2.53 as we know that
+	version works. If RT complains that it's missing CGI::Vars after
+	installation, your CGI.pm is probably too old.
+
 
 o   Digest::MD5 ( http://www.perl.com ) -- free
 	
