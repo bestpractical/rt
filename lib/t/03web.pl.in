@@ -101,7 +101,7 @@ $query =~ s/\s*$//g;
 # collapse other whitespace
 $query =~ s/\s+/ /g;
 
-is ($query, "( Subject LIKE 'aaa' ) AND ( Subject LIKE 'bbb' )");
+is ($query, "Subject LIKE 'aaa' AND Subject LIKE 'bbb'");
 
 # - new items go one level down
 # - add items at currently selected level

@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
-# Copyright (c) 1996-2004 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,14 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
-
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
 RT is an enterprise-grade issue tracking system. It allows
 organizations to keep track of their to-do lists, who is working
 on which tasks, what's already been done, and when tasks were
@@ -29,8 +50,9 @@ completed. It is available under the terms of version 2 of the GNU
 General Public License (GPL), so it doesn't cost anything to set
 up and use.
 
-RT is commercially supported software. To purchase consulting services, 
-support or training, please write to sales@bestpractical.com
+RT is commercially supported software. To purchase support, training,
+custom development or professional services, please write to
+sales@bestpractical.com. 
 
         Jesse Vincent
         Best Practical Solutions, LLC
@@ -48,10 +70,11 @@ o   Perl 5.8.3 or later (http://www.perl.com).
 	    is unsupported in that configuration.
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:  Mysql 4.0.13 or later. 
+        Currently supported:  Mysql 4.0.13 or later with InnoDB support.
                               Postgres 7.2 or later.
                               Oracle 9iR2.
-        Beta-quality support for Informix and SQLite is also available.
+                              SQLite 3.0. (Not recommended for production)
+        Beta-quality support for Informix is also available.
 
 
 o   Apache version 1.3.x or 2.x (http://httpd.apache.org) 
@@ -82,9 +105,10 @@ o    Various and sundry perl modules
 GENERAL INSTALLATION
 --------------------
 
-This is a rough guide to installing RT. For more detail, you'll want 
-to read 'Chapter 2: Installing' in RT's manual, available at
-http://www.bestpractical.com/rt 
+This is a rough guide to installing RT. For more detail, you'll
+want to read a more comprehensive installation guide at:
+
+    http://wiki.bestpractical.com/index.cgi?InstallationGuides
 
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 
@@ -195,9 +219,6 @@ Apache configuration file telling it about RT:
     DocumentRoot /opt/rt3/share/html
     AddDefaultCharset UTF-8
 
-    # This line applies to Apache2+mod_perl2 only:
-    RedirectMatch permanent (.*)/$ $1/index.html
-
     PerlModule Apache::DBI
     PerlRequire /opt/rt3/bin/webmux.pl
 
@@ -265,14 +286,15 @@ rt-comment: "|/opt/rt3/bin/rt-mailgate --queue general --action comment --url ht
 BUGS
 ----
 
-To report a bug, send email to rt-3.0-bugs@fsck.com.
+To report a bug, send email to rt-bugs@fsck.com.
 
 GETTING HELP
 ------------
 
 If RT is mission-critical for you or if you use it heavily, we recommend that
 you purchase a commercial support contract.  Details on support contracts
-are available at http://www.bestpractical.com.
+are available at http://www.bestpractical.com or by writing to
+sales@bestpractical.com.
 
 If you're interested in having RT extended or customized or would like more
 information about commercial support options, please send email to 
@@ -293,8 +315,7 @@ With the body of the message consisting of only the word:
 
 If you're interested in hacking on RT, you'll want to subscribe to
 rt-devel@lists.bestpractical.com.  Subscribe to it with instructions
-similar to
-those above.
+similar to those above.
 
 Address questions about the stable release to the rt-users list, and
 questions about the development version to the rt-devel list.  If you feel
@@ -307,6 +328,7 @@ RT WEBSITE
 
 For current information about RT, check out the RT website at 
         http://www.bestpractical.com/  
+
 
 You'll find screenshots, a pointer to the current version of RT, contributed 
 patches, and lots of other great stuff.

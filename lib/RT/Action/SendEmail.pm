@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
 
 package RT::Action::SendEmail;
@@ -116,16 +138,21 @@ sub Prepare {
       if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
-    # If we don't have any 'To' header, drop in the pseudo-to header.
+    # If we don't have any 'To' header (but do have other recipients), drop in
+    # the pseudo-to header.
     $self->SetHeader( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
       if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
-        and ( !$MIMEObj->head->get('To') ) );
+        and ( !$MIMEObj->head->get('To') ) ) and ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc'));
 
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
 
     # try to convert message body from utf-8 to $RT::EmailOutputEncoding
     $self->SetHeader( 'Content-Type', 'text/plain; charset="utf-8"' );
+
+    # fsck.com #5959: Since RT sends 8-bit mail, we should say so.
+    $self->SetHeader( 'Content-Transfer-Encoding','8-bit');
+
 
     RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $RT::EmailOutputEncoding,
         'mime_words_ok' );
@@ -263,7 +290,7 @@ sub SendMessage {
       . $MIMEObj->head->get('Bcc') );
     $success =~ s/\n//gi;
 
-    $self->RecordOutgoingMailTransaction($MIMEObj);
+    $self->RecordOutgoingMailTransaction($MIMEObj) if ($RT::RecordOutgoingEmail);
 
     $RT::Logger->info($success);
 
@@ -273,6 +300,7 @@ sub SendMessage {
 # }}}
 
 # {{{ AddAttachments 
+
 =head2 AddAttachments
 
 Takes any attachments to this transaction and attaches them to the message
@@ -315,6 +343,7 @@ sub AddAttachments {
             Data     => $attach->OriginalContent,
             Filename => $self->MIMEEncodeString( $attach->Filename,
                 $RT::EmailOutputEncoding ),
+            'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
             Encoding => '-SUGGEST'
         );
     }
@@ -324,6 +353,7 @@ sub AddAttachments {
 # }}}
 
 # {{{ RecordOutgoingMailTransaction
+
 =head2 RecordOutgoingMailTransaction MIMEObj
 
 Record a transaction in RT with this outgoing message for future record-keeping purposes
@@ -335,6 +365,27 @@ Record a transaction in RT with this outgoing message for future record-keeping 
 sub RecordOutgoingMailTransaction {
     my $self = shift;
     my $MIMEObj = shift;
+           
+
+    my @parts = $MIMEObj->parts;
+    my @attachments;
+    my @keep;
+    foreach my $part (@parts) {
+        my $attach = $part->head->get('RT-Attachment');
+        if ($attach) {
+            $RT::Logger->debug("We found an attachment. we want to not record it.");
+            push @attachments, $attach;
+        } else {
+            $RT::Logger->debug("We found a part. we want to record it.");
+            push @keep, $part;
+        }
+    }
+    $MIMEObj->parts(\@keep);
+    foreach my $attachment (@attachments) {
+        $MIMEObj->head->add('RT-Attachment', $attachment);
+    }
+
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, 'utf-8', 'mime_words_ok' );
 
     my $transaction = RT::Transaction->new($self->TransactionObj->CurrentUser);
 
@@ -348,7 +399,14 @@ sub RecordOutgoingMailTransaction {
     }
 
 
-    my ($id, $msg) = $transaction->Create( Ticket => $self->TicketObj->Id, Type => $type, Data => $MIMEObj->head->get('Message-Id'), MIMEObj => $MIMEObj, ActivateScrips => 0);
+      
+    my ( $id, $msg ) = $transaction->Create(
+        Ticket         => $self->TicketObj->Id,
+        Type           => $type,
+        Data           => $MIMEObj->head->get('Message-Id'),
+        MIMEObj        => $MIMEObj,
+        ActivateScrips => 0
+    );
 
 
 }
@@ -428,28 +486,67 @@ sub RemoveInappropriateRecipients {
 
     my @blacklist;
 
+    my @types = qw/To Cc Bcc/;
+
     # Weed out any RT addresses. We really don't want to talk to ourselves!
-    @{ $self->{'To'} } =
-      RT::EmailParser::CullRTAddresses( "", @{ $self->{'To'} } );
-    @{ $self->{'Cc'} } =
-      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Cc'} } );
-    @{ $self->{'Bcc'} } =
-      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Bcc'} } );
+    foreach my $type (@types) {
+        @{ $self->{$type} } =
+          RT::EmailParser::CullRTAddresses( "", @{ $self->{$type} } );
+    }
 
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
 
-    if ( defined $self->TransactionObj->Attachments->First() ) {
+    if ( $self->TransactionObj->Attachments->First() ) {
+        if (
+            $self->TransactionObj->Attachments->First->GetHeader(
+                'RT-DetectedAutoGenerated')
+          )
+        {
+
+            # What do we want to do with this? It's probably (?) a bounce
+            # caused by one of the watcher addresses being broken.
+            # Default ("true") is to redistribute, for historical reasons.
+
+            if ( !$RT::RedistributeAutoGeneratedMessages ) {
+
+                # Don't send to any watchers.
+                @{ $self->{'To'} }  = ();
+                @{ $self->{'Cc'} }  = ();
+                @{ $self->{'Bcc'} } = ();
+
+            }
+            elsif ( $RT::RedistributeAutoGeneratedMessages eq 'privileged' ) {
+
+                # Only send to "privileged" watchers.
+                #
+
+                foreach my $type (@types) {
+
+                    foreach my $addr ( @{ $self->{$type} } ) {
+                        my $user = RT::User->new($RT::SystemUser);
+                        $user->LoadByEmail($addr);
+                        @{ $self->{$type} } =
+                          grep ( !/^\Q$addr\E$/, @{ $self->{$type} } )
+                          if ( !$user->Privileged );
+
+                    }
+                }
+
+            }
+
+        }
+
         my $squelch =
           $self->TransactionObj->Attachments->First->GetHeader(
             'RT-Squelch-Replies-To');
 
         if ($squelch) {
-            @blacklist = split ( /,/, $squelch );
+            @blacklist = split( /,/, $squelch );
         }
     }
 
-# Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
+    # Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
     my @non_recipients = $self->TicketObj->SquelchMailTo;
     foreach my $attribute (@non_recipients) {
         push @blacklist, $attribute->Content;
@@ -460,10 +557,10 @@ sub RemoveInappropriateRecipients {
 
     foreach my $person_to_yank (@blacklist) {
         $person_to_yank =~ s/\s//g;
-        @{ $self->{'To'} } = grep ( !/^$person_to_yank$/, @{ $self->{'To'} } );
-        @{ $self->{'Cc'} } = grep ( !/^$person_to_yank$/, @{ $self->{'Cc'} } );
-        @{ $self->{'Bcc'} } =
-          grep ( !/^$person_to_yank$/, @{ $self->{'Bcc'} } );
+        foreach my $type (@types) {
+            @{ $self->{$type} } =
+              grep ( !/^\Q$person_to_yank\E$/, @{ $self->{$type} } );
+        }
     }
 }
 

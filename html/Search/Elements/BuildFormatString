@@ -1,36 +1,93 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
 <%args>
 $Format => undef
 %cfqueues => undef
+$Face => undef
+$Size => undef
+$Link => undef
+$Title => undef
+$AddCol => undef
+$RemoveCol => undef
+$ColUp => undef
+$ColDown => undef
+$SelectDisplayColumns => undef
+$CurrentDisplayColumns => undef
 </%args>
 <%init>
 
 unless ($Format) {         
     $Format = $RT::DefaultSearchResultFormat;
 }   
-    
-my @fields = (
-    "QueueName",           "OwnerName",
-    "id",                  "Status",
-    "Subject",             "ExtendedStatus",
-    "Priority",            "InitialPriority",
-    "FinalPriority",       "EffectiveId",
-    "Type",                "TimeWorked",
-    "TimeLeft",            "TimeEstimated",
-    "Requestors",          "Cc",
-    "AdminCc",             "StartsRelative",
-    "StartedRelative",     "CreatedRelative",
-    "LastUpdatedRelative", "ToldRelative",
-    "DueRelative",         "ResolvedRelative",
-    "Starts",              "Started",
-    "Created",             "CreatedBy",
-    "LastUpdated",         "LastUpdatedBy",
-    "Told",                "Due",
-    "Resolved",            "NEWLINE",
-    "RefersTo",	           "ReferredToBy",
-    "DependsOn",           "DependedOnBy",
-    "MemberOf",            "Members",
-    "Parents",             "Children",
-    "-",
+   
+
+# All the things we can display in the format string by default
+my @fields = qw(
+    QueueName        
+    OwnerName
+    id               Status
+    Subject          ExtendedStatus
+    Priority         InitialPriority
+    FinalPriority    Type
+    TimeWorked       TimeLeft
+    TimeEstimated    Requestors
+    Cc               AdminCc
+    StartsRelative   StartedRelative
+    CreatedRelative  LastUpdatedRelative
+    ToldRelative     DueRelative
+    ResolvedRelative Starts
+    Started          Created
+    CreatedBy        LastUpdated
+    LastUpdatedBy    Told
+    Due              Resolved
+    NEWLINE          RefersTo
+    ReferredToBy     DependsOn
+    DependedOnBy     MemberOf
+    Members          Parents
+    Children         -
 );
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
@@ -72,8 +129,8 @@ foreach my $field (@format) {
     push @seen, \%column;
 }
 
-if ( $ARGS{"RemoveCol"} ) {
-    my $index  = $ARGS{'CurrentDisplayColumns'};
+if ( $RemoveCol ) {
+    my $index  = $CurrentDisplayColumns;
     my $column = $seen[$index];
     if ($index) {
         delete $seen[$index];
@@ -85,9 +142,9 @@ if ( $ARGS{"RemoveCol"} ) {
         }
     }
 }
-elsif ( $ARGS{"AddCol"} ) {
-    if ( defined $ARGS{'SelectDisplayColumns'} ) {
-	my $selected = $ARGS{'SelectDisplayColumns'};
+elsif ( $AddCol ) {
+    if ( defined $SelectDisplayColumns ) {
+	my $selected = $SelectDisplayColumns;
 	my @columns;
 	if (ref($selected) eq 'ARRAY') {
 	    @columns = @$selected;
@@ -96,74 +153,73 @@ elsif ( $ARGS{"AddCol"} ) {
 	}
 	foreach my $col (@columns) {
 	    my %column = ();
-	    $column{Column} = $fields[ $col ];
-	    
-	    if ( $ARGS{Face} eq "Bold" ) {
-		$column{Prefix} .= "<B>";
-	    }
-	    if ( $ARGS{Face} eq "Italic" ) {
-		$column{Prefix} .= "<I>";
-	    }
-	    if ( $ARGS{Size} ) {
-		$column{Prefix} .= "<" . $ARGS{Size} . ">";
-	    }
-	    if ( $ARGS{Link} eq "Display" ) {
-		$column{Prefix} .= "<A HREF=\"".$RT::WebPath."/Ticket/Display.html?id=__id__\">";
-	    }
-	    elsif ( $ARGS{Link} eq "Take" ) {
-		$column{Prefix} .=
-		    "<A HREF=\"".$RT::WebPath."/Ticket/Display.html?Action=Take&id=__id__\">";
-	    }
-    
-	    my $suffix;
-	    if ( $ARGS{'Link'} eq "Display" || $ARGS{'Link'} eq "Take" ) {
-		$column{Suffix} .= "</a>";
-	    }
-	    if ( $ARGS{Size} ) {
-		$column{Suffix} .= "</" . $ARGS{Size} . ">";
-	    }
-	    if ( $ARGS{Face} eq "Italic" ) {
-		$column{Suffix} .= "</I>";
-	    }
-	    if ( $ARGS{Face} eq "Bold" ) {
-		$column{Suffix} .= "</B>";
-	    }
-	    if ( $ARGS{Title} ) {
-		$column{Suffix} .= "/TITLE:" . $ARGS{Title};
-	    }
-	    push @seen, \%column;
-	}
+	    $column{Column} = $col;
+
+    if ( $Face eq "Bold" ) {
+        $column{Prefix} .= "<B>";
+        $column{Suffix} .= "</B>";
     }
+    if ( $Face eq "Italic" ) {
+        $column{Prefix} .= "<I>";
+        $column{Suffix} .= "</I>";
+    }
+    if ($Size) {
+        $column{Prefix} .= "<" . $m->interp->apply_escapes( $Size,  'h' ) . ">";
+        $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
+    }
+    if ( $Link eq "Display" ) {
+        $column{Prefix} .=
+          "<A HREF=\"" . $RT::WebPath . "/Ticket/Display.html?id=__id__\">";
+        $column{Suffix} .= "</a>";
+    }
+    elsif ( $Link eq "Take" ) {
+        $column{Prefix} .=
+            "<A HREF=\""
+          . $RT::WebPath
+          . "/Ticket/Display.html?Action=Take&id=__id__\">";
+        $column{Suffix} .= "</a>";
+    }
+
+    if ($Title) {
+        $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $Title, 'h' );
+    }
+    push @seen, \%column;
 }
-elsif ( $ARGS{"ColUp"} ) {
-    my $index = $ARGS{'CurrentDisplayColumns'};
+}
+}
+elsif ( $ColUp ) {
+    my $index = $CurrentDisplayColumns;
     if ( defined $index && ( $index - 1 ) >= 0 ) {
         my $column = $seen[$index];
         $seen[$index]       = $seen[ $index - 1 ];
         $seen[ $index - 1 ] = $column;
-        $ARGS{CurrentDisplayColumns}     = $index - 1;
+        $CurrentDisplayColumns     = $index - 1;
     }
 }
-elsif ( $ARGS{"ColDown"} ) {
-    my $index = $ARGS{'CurrentDisplayColumns'};
+elsif ( $ColDown ) {
+    my $index = $CurrentDisplayColumns;
     if ( defined $index && ( $index + 1 ) < scalar @seen ) {
         my $column = $seen[$index];
         $seen[$index]       = $seen[ $index + 1 ];
         $seen[ $index + 1 ] = $column;
-        $ARGS{CurrentDisplayColumns}     = $index + 1;
+        $CurrentDisplayColumns     = $index + 1;
     }
 }
 
-$Format = "";
+
+my @format_string;
 foreach my $field (@seen) {
     next unless $field;
-    $Format .= ", \n" if $Format;
-    $Format .= "'";
-    $Format .= $field->{Prefix};
-    $Format .= "__" . $field->{Column} . "__" if ( $field->{Column} ne "<blank>" ) ;
-    $Format .= $field->{Suffix};
-    $Format .= "'";
+    my $row = "'" . $field->{Prefix};
+    $row .= "__" . $m->interp->apply_escapes( $field->{Column}, 'h' ) . "__"
+      unless ( $field->{Column} eq "<blank>" );
+    $row .= $field->{Suffix} . "'";
+    push( @format_string, $row );
 }
+
+$Format = join(",\n", @format_string);
+
+
 return($Format, \@fields, \@seen);
 
 </%init>

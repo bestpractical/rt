@@ -1,8 +1,14 @@
-%# BEGIN LICENSE BLOCK
+%# BEGIN BPS TAGGED BLOCK {{{
 %# 
-%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
 %# 
-%# (Except where explictly superceded by other copyright notices)
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
 %# 
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
@@ -14,74 +20,80 @@
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
 %# 
-%# Unless otherwise specified, all modifications, corrections or
-%# extensions to this work which alter its source code become the
-%# property of Best Practical Solutions, LLC when submitted for
-%# inclusion in the work.
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 %# 
 %# 
-%# END LICENSE BLOCK
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html".$QueryString, 
     Title => $title,
     Format => $Format,
     Query => $Query,
-    Rows => $ARGS{'Rows'},
-    OrderBy => $ARGS{'OrderBy'}
+    Order => $Order,
+    OrderBy => $OrderBy,
+    Rows => $RowsPerPage
 &>
 
-<table width=100%>
-<tr>
-<td valign=top class="boxcontainer">
 <FORM METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
 <input type=hidden name=SearchId value="<%$SearchId%>">
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
+<table width=100% border="0" cellpadding="5">
+<tr valign="top">
+<td class="boxcontainer" rowspan="2" width="65%">
 <& Elements/PickCriteria, query => $Query, cfqueues => \%queues &>
 <& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
-
 </td>
-<td valign=top class="boxcontainer">
-<& /Elements/TitleBoxStart, title => loc("Query") . ": " .$Description &>
-<& Elements/NewListActions, actions => \@actions &>
-<select size=10 name=clauses style="width : 100%">
-<%$optionlist|n%>
-</select>
-<center>
-<input type=submit name="Up" value="^">
-<input type=submit name="Down" value="v">
-<input type=submit name="Left" value="<">
-<input type=submit name="Right" value=">">
-<input type=submit name="DeleteClause" value="Delete">
-<br>
-<input type=submit name="Clear" value="Clear">
-<input type=submit name="Toggle" value="And/Or">
-%#<input type=submit name="EditQuery" value="Advanced">
-</center>
-<& /Elements/TitleBoxEnd &>
-</form>
-<br>
-<FORM METHOD="POST" ACTION="Build.html" NAME="SavedSearch">
-<input type=hidden name=Query value="<%$Query%>">
-<input type=hidden name=Format value="<%$Format%>">
-<& Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty &>
-</FORM>
+
+<td>
+<& Elements/EditQuery,
+    %ARGS,
+    actions => \@actions,
+    optionlist => $optionlist,
+    Description => $Description &>
+</td>
+</tr>
+
+<tr valign="top">
+<td>
+<& Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty, SearchId => $SearchId &>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class="boxcontainer">
+
+<& Elements/DisplayOptions, %ARGS, Format=> $Format,
+AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat, RowsPerPage => $RowsPerPage, OrderBy => $OrderBy, Order => $Order &>
 </td>
 </tr>
 <tr>
 <td colspan=2 class="boxcontainer">
-
-<FORM METHOD="POST" ACTION="Build.html" NAME="EditFormat">
-<input type=hidden name=Query value="<%$Query%>">
-<input type=hidden name=Format value="<%$Format%>">
-<input type=hidden name=SearchId value="<%$SearchId%>">
-<& Elements/DisplayOptions, %ARGS, Format=> $Format,
-AvailableColumns => $AvailableColumns,  CurrentFormat => $CurrentFormat &>
-</FORM>
+<& /Elements/Submit, Caption => loc("Do the Search"), Label => loc('Search'), Name => 'DoSearch'&>
 </td>
 </tr>
 </table>
+</FORM>
 
 <%INIT>
 use Tree::Simple;
@@ -90,27 +102,43 @@ my $search_hash = {};
 my $search;
 my $title = loc("Query Builder");
 
-if ($NewQuery) {
-    # Wipe everything clear if we want a new search
+# {{{ Clear out unwanted data
+if ($NewQuery or $ARGS{'Delete'}) {
+    # Wipe all data-carrying variables clear if we want a new
+    # search, or we're deleting an old one..
     $Query = '';
     $Format = '';
     $Description = '';
-    $SearchId = 'new';
-    undef $session{'CurrentSearchHash'};
-    $session{'tickets'}->CleanSlate() if defined $session{'tickets'};
-} else {
-    # Otherwise, attempt to load what we can from the session
-    # We don't read or write to the session again until the end
-    $search_hash = $session{'CurrentSearchHash'};
+    $SearchId = '';
+    $Order = '';
+    $OrderBy = '';
+    $RowsPerPage = '';
+    # ($search hasn't been set yet; no need to clear)
 
-    # These five variables are what define a search
-    $Query ||= $search_hash->{'Query'};
-    $Format ||= $search_hash->{'Format'};
-    $Description ||= $search_hash->{'Description'};
-    $SearchId ||= $search_hash->{'SearchId'} || 'new';
-    $ARGS{'OrderBy'} ||= $search_hash->{'OrderBy'} || 'id';
-    $search ||= $search_hash->{'Object'};
+    # ..then wipe the session out..
+    undef $session{'CurrentSearchHash'};
+
+    # ..and the search results.
+    $session{'tickets'}->CleanSlate() if defined $session{'tickets'};
 }
+# }}}
+
+# {{{ Attempt to load what we can from the session, set defaults
+
+# We don't read or write to the session again until the end
+$search_hash = $session{'CurrentSearchHash'};
+
+# These variables are what define a search_hash; this is also
+# where we give sane defaults.
+$Query ||= $search_hash->{'Query'};
+$Format ||= $search_hash->{'Format'};
+$Description ||= $search_hash->{'Description'};
+$SearchId ||= $search_hash->{'SearchId'} || 'new';
+$Order ||= $search_hash->{'Order'} || 'ASC';
+$OrderBy ||= $search_hash->{'OrderBy'} || 'id';
+$RowsPerPage = ($search_hash->{'RowsPerPage'} || 50) unless defined ($RowsPerPage);
+$search ||= $search_hash->{'Object'};
+# }}}
 
 my @actions = ();
 my %queues;
@@ -120,7 +148,8 @@ $Format = $m->comp('/Elements/ScrubHTML', Content => $Format) if ($Format);
 
 # {{{ If we're asked to delete the current search, make it go away and reset the search parameters
 if ( $ARGS{'Delete'} ) {
-    if ( $SearchId =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+    # We set $SearchId to 'new' above already, so peek into the %ARGS
+    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         my $obj_type  = $1;
         my $obj_id    = $2;
         my $search_id = $3;
@@ -138,14 +167,6 @@ if ( $ARGS{'Delete'} ) {
 	    # We have the object the entry is an attribute on; delete
 	    # the entry..
 	    $container_object->Attributes->DeleteEntry( Name => 'SavedSearch', id   => $search_id);
-
-	    # And wipe the slate clean
-	    $Format = '';
-	    $Query  = '';
-	    $SearchId = 'new';
-	    undef $search;
-	    $Description = '';
-	    $session{'tickets'}->CleanSlate() if defined $session{'tickets'};
 	}
 
     }
@@ -185,11 +206,14 @@ if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
         $search = $group->Attributes->WithId($search_id);
     }
 
-    # We have a $search and now; import the other 4
+    # We have a $search and now; import the others
     $SearchId    = $ARGS{'LoadSavedSearch'};
     $Description = $search->Description;
     $Format      = $search->SubValue('Format');
     $Query       = $search->SubValue('Query');
+    $Order       = $search->SubValue('Order');
+    $OrderBy     = $search->SubValue('OrderBy');
+    $RowsPerPage = $search->SubValue('RowsPerPage');
 }
 
 # }}}
@@ -210,17 +234,16 @@ $Query  = "";
 %queues = ();
 
 # Build the optionlist from the tree, so we can do additions and movements based on it
-$optionlist = build_array( \$Query, $ARGS{clauses}, $tree, \@options, \%queues );
+$optionlist = build_array( \$Query, \@clauses, $tree, \@options, \%queues );
 
-my $currentkey;
-$currentkey = $options[$ARGS{clauses}] if defined $ARGS{clauses};
+my @current_values = @options[@clauses];
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ) {
+    if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ne "") {
 	# We're adding a $1 clause
 	my $field = $1;
-	my $keyword;
+	my ($keyword, $op, $value);
 
 	#figure out if it's a grouping
 	if ( $ARGS{ $field . "Field" } ) {
@@ -229,149 +252,160 @@ foreach my $arg ( keys %ARGS ) {
 	else {
 	    $keyword = $field;
 	}
+
+        $value = $ARGS{'ValueOf' . $field};
+        $op = $ARGS{ $field . 'Op' };
+	if ( $value eq 'NULL' && $op =~ /=/) {
+            if ($op eq '=') {
+                $op = "IS";
+            } elsif ($op eq '!=') {
+                $op = "IS NOT";
+            }
+
+            # This isn't "right", but...
+            # It has to be this way until #5182 is fixed
+            $value = "'NULL'";
+	} else {
+            $value = "'$value'";
+        }
+
 	my $clause = {
             Key   => $keyword,
-            Op    => $ARGS{ $field . 'Op' },
-            Value => "'$ARGS{'ValueOf' . $field}'"
+            Op    => $op,
+            Value => $value
         };
 	    
 	my $newnode = Tree::Simple->new($clause);
-	if ($currentkey) {
-	    my $newindex = $currentkey->getIndex() + 1;
-	    if ($currentkey->getParent()->getParent()->isRoot()) {
-		my $newparent = Tree::Simple->new($ARGS{'AndOr'});
-		$newparent->addChild($newnode);
-		$newnode = $newparent;
-	    }
-	    else {
-		$currentkey->getParent()->setNodeValue($ARGS{'AndOr'});
-	    }
-	    $currentkey->insertSibling($newindex, $newnode);
-	    $currentkey = $newnode;
+	if (@current_values) {
+            foreach my $value (@current_values) {
+                my $newindex = $value->getIndex() + 1;
+                $value->insertSibling($newindex, $newnode);
+                $value = $newnode;
+            }
 	}
 	else {
-	    my $newparent = Tree::Simple->new($ARGS{'AndOr'});
-	    $newparent->addChild($newnode);
-	    $tree->getChild(0)->addChild($newparent);
-	    $currentkey = $newparent;
+	    $tree->getChild(0)->addChild($newnode);
+	    @current_values = $newnode;
 	}
+	$newnode->getParent()->setNodeValue($ARGS{'AndOr'});
     }
 }
 # }}}
 
 # {{{ Move things around
 if ( $ARGS{"Up"} ) {
-    if ($currentkey) {
-	my $index = $currentkey->getIndex();
-	if ( $currentkey->getIndex() > 0 ) {
-	    my $parent = $currentkey->getParent();
-	    $parent->removeChild($index);
-	    $parent->insertChild($index - 1, $currentkey);
-	    $currentkey = $parent->getChild($index - 1);
-	}
-        else {
-            push( @actions, [ "error: can't move up", -1 ] );
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $index = $value->getIndex();
+            if ( $value->getIndex() > 0 ) {
+                my $parent = $value->getParent();
+                $parent->removeChild($index);
+                $parent->insertChild($index - 1, $value);
+                $value = $parent->getChild($index - 1);
+            }
+            else {
+                push( @actions, [ loc("error: can't move up"), -1 ] );
+            }
         }
     }
     else {
-        push( @actions, [ "error: nothing to move", -1 ] );
+        push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"Down"} ) {
-    if ($currentkey) {
-	my $index = $currentkey->getIndex();
-	my $parent = $currentkey->getParent();
-	if ( $currentkey->getIndex() < ($parent->getChildCount - 1) ) {
-	    $parent->removeChild($index);
-	    $parent->insertChild($index + 1, $currentkey);
-	    $currentkey = $parent->getChild($index + 1);
-	}
-        else {
-            push( @actions, [ "error: can't move down", -1 ] );
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $index = $value->getIndex();
+            my $parent = $value->getParent();
+            if ( $value->getIndex() < ($parent->getChildCount - 1) ) {
+                $parent->removeChild($index);
+                $parent->insertChild($index + 1, $value);
+                $value = $parent->getChild($index + 1);
+            }
+            else {
+                push( @actions, [ loc("error: can't move down"), -1 ] );
+            }
         }
     }
     else {
-        push( @actions, [ "error: nothing to move", -1 ] );
+        push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"Left"} ) {
-    if ($currentkey) {
-	my $parent = $currentkey->getParent();
-	my $grandparent = $parent->getParent();
-	if (!$grandparent->isRoot) {
-	    my $index = $parent->getIndex();
-	    $parent->removeChild($currentkey);
-	    $grandparent->insertChild($index, $currentkey);
-	    if ($parent->isLeaf()) {
-		$grandparent->removeChild($parent);
-	    }
-        }
-        else {
-            push( @actions, [ "error: can't move left", -1 ] );
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $parent = $value->getParent();
+            my $grandparent = $parent->getParent();
+            if (!$grandparent->isRoot) {
+                my $index = $parent->getIndex();
+                $parent->removeChild($value);
+                $grandparent->insertChild($index, $value);
+                if ($parent->isLeaf()) {
+                    $grandparent->removeChild($parent);
+                }
+            }
+            else {
+                push( @actions, [ loc("error: can't move left"), -1 ] );
+            }
         }
     }
     else {
-        push( @actions, [ "error: nothing to move", -1 ] );
+        push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"Right"} ) {
-    if ($currentkey) {
-	my $parent = $currentkey->getParent();
-	my $index = $currentkey->getIndex();
-	my $newparent;
-	if ($index > 0 ) {
-	    my $sibling = $parent->getChild($index - 1);
-	    if (ref($sibling->getNodeValue)) {
-		$parent->removeChild($currentkey);
-		my $newtree = Tree::Simple->new('AND', $parent);
-		$newtree->addChild($currentkey);
-	    } else {
-		$parent->removeChild($index);
-		$sibling->addChild($currentkey);
-	    }
-	}
-	else {
-	    $parent->removeChild($currentkey);
-	    $newparent = Tree::Simple->new('AND', $parent);
-	    $newparent->addChild($currentkey);
-	}
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $parent = $value->getParent();
+            my $index = $value->getIndex();
+            my $newparent;
+            if ($index > 0 ) {
+                my $sibling = $parent->getChild($index - 1);
+                if (ref($sibling->getNodeValue)) {
+                    $parent->removeChild($value);
+                    my $newtree = Tree::Simple->new('AND', $parent);
+                    $newtree->addChild($value);
+                } else {
+                    $parent->removeChild($index);
+                    $sibling->addChild($value);
+                }
+            }
+            else {
+                $parent->removeChild($value);
+                $newparent = Tree::Simple->new('AND', $parent);
+                $newparent->addChild($value);
+            }
+        }
     } else {
-        push( @actions, [ "error: nothing to move", -1 ] );
+        push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"DeleteClause"} ) {
-    if ($currentkey) {
-	$currentkey->getParent()->removeChild($currentkey);
+    if (@current_values) {
+	$_->getParent()->removeChild($_) for @current_values;
     }
     else {
-        push( @actions, [ "error: nothing to delete", -1 ] );
+        push( @actions, [ loc("error: nothing to delete"), -1 ] );
     }
 }
 elsif ( $ARGS{"Toggle"} ) {
     my $ea;
-    if ($currentkey) {
-	my $value = $currentkey->getNodeValue();
-	my $parent = $currentkey->getParent();
-	my $parentvalue = $parent->getNodeValue();
-	if (ref($value)) {
-	    if ( $parentvalue eq 'AND') {
-		$parent->setNodeValue('OR');
-	    }
-	    else {
-		$parent->setNodeValue('AND');
-	    }
-	}
-	else {
-	    if ($value eq 'AND') {
-		$currentkey->setNodeValue('OR');
-	    }
-	    else {
-		$currentkey->setNodeValue('AND');
-	    }
-	}
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $value = $value->getNodeValue();
+            my $parent = $value->getParent();
+            my $parentvalue = $parent->getNodeValue();
+
+            if ( $parentvalue eq 'AND') {
+                $parent->setNodeValue('OR');
+            }
+            else {
+                $parent->setNodeValue('AND');
+            }
+        }
     }
     else {
-        push( @actions, [ "error: nothing to toggle", -1 ] );
+        push( @actions, [ loc("error: nothing to toggle"), -1 ] );
     }
 }
 elsif ( $ARGS{"Clear"} ) {
@@ -383,11 +417,11 @@ elsif ( $ARGS{"Clear"} ) {
 $Query   = "";
 @options = ();
 %queues  = ();
-$optionlist = build_array( \$Query, $currentkey, $tree, \@options, \%queues );
+$optionlist = build_array( \$Query, \@current_values, $tree, \@options, \%queues );
 
 sub build_array {
     my $Query     = shift;
-    my $currentkey = shift;
+    my $values_ref = shift;
     my $tree = shift;
     my ($keys, $queues)    = @_;
     my $i = 0;
@@ -416,7 +450,7 @@ sub build_array {
 	}
 
 	my $selected;
-	if ($_tree == $currentkey) {
+	if (grep { $_ == $_tree } @$values_ref ) {
 	    $selected = "SELECTED";
 	}
 	else {
@@ -431,7 +465,7 @@ sub build_array {
 	}
 
 	$optionlist .= "<option value=$i $selected>" .
-	  ("&nbsp;" x 5 x ($_tree->getDepth() - 1)) . "$str</option>\n";
+	  ("&nbsp;" x 5 x ($_tree->getDepth() - 1)) . $m->interp->apply_escapes($str, 'h') . "</option>\n";
 	my $parent = $_tree->getParent();
 	if (!($parent->isRoot || $parent->getParent()->isRoot) &&
 	    !ref($parent->getNodeValue())) {
@@ -528,7 +562,7 @@ sub ParseQuery {
             # Error
             # FIXME: I will only print out the highest $want value
             my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions, [ "current: $current, want $want, Error near ->$val<- expecting a " . $token . " in '$string'\n", -1 ];
+            push @actions, [ loc("current: $current, want $want, Error near ->$val<- expecting a " . $token . " in '$string'\n"), -1 ];
         }
 
         # State Machine:
@@ -588,12 +622,12 @@ sub ParseQuery {
                 $val = "'$val'";
             }
 
-            push @actions, [ "Unknown field: $key", -1 ] unless $class;
+            push @actions, [ loc("Unknown field: $key"), -1 ] unless $class;
 
             $want = PAREN | AGGREG;
         }
         else {
-            push @actions, [ "I'm lost", -1 ];
+            push @actions, [ loc("I'm lost"), -1 ];
         }
 
         if ( $current & VALUE ) {
@@ -616,14 +650,14 @@ sub ParseQuery {
         $last = $current;
     }    # while
 
-    push @actions, [ "Incomplete query", -1 ]
+    push @actions, [ loc("Incomplete query"), -1 ]
       unless ( ( $want | PAREN ) || ( $want | KEYWORD ) );
 
-    push @actions, [ "Incomplete Query", -1 ]
+    push @actions, [ loc("Incomplete Query"), -1 ]
       unless ( $last && ( $last | PAREN ) || ( $last || VALUE ) );
 
     # This will never happen, because the parser will complain
-    push @actions, [ "Mismatched parentheses", -1 ]
+    push @actions, [ loc("Mismatched parentheses"), -1 ]
       unless $depth == 1;
 }
 
@@ -648,39 +682,21 @@ sub debug {
 
 # {{{ Deal with format changes
 my ($AvailableColumns, $CurrentFormat);
-($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', cfqueues => \%queues, %ARGS);
+($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', cfqueues => \%queues, %ARGS, Format => $Format);
 # }}}
-
-# {{{ If we're modifying an old query, check if it has changed
-my $dirty = 0;
-if ($SearchId =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/) {
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-    
-    my $oldsearch;
-    if (   ( $obj_type eq 'RT::User' ) && ( $obj_id == $session{'CurrentUser'}->id ) ) {
-        $oldsearch = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-    }
-    elsif ($obj_type eq 'RT::Group')  {
-        my $group = RT::Group->new($session{'CurrentUser'});
-        $group->Load($obj_id);
-        $oldsearch = $group->Attributes->WithId($search_id);
-    }
-    $dirty = 1 if $oldsearch->SubValue('Format') ne $Format
-      or $oldsearch->SubValue('Query') ne $Query;
-}
-#}}}
 
 # {{{ if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
 
     if ($search && $search->id) {
-	# This search is based on a previously loades search -- so
+	# This search is based on a previously loaded search -- so
 	# just update the current search object with new values
         $search->SetSubValues(
-            Format => $Format,
-            Query  => $Query,
+            Format      => $Format,
+            Query       => $Query,
+            Order       => $Order,
+            OrderBy     => $OrderBy,
+            RowsPerPage => $RowsPerPage,
         );
         $search->SetDescription( $Description );
 
@@ -694,7 +710,7 @@ if ( $ARGS{'Save'} ) {
 	# Find out if we're saving on the user, or a group
         my $container_object;
         if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
-            $container_object =    $session{'CurrentUser'}->UserObj;
+            $container_object = $session{'CurrentUser'}->UserObj;
         }
         elsif ($obj_type eq 'RT::Group') {
             $container_object = RT::Group->new($session{'CurrentUser'});
@@ -707,8 +723,11 @@ if ( $ARGS{'Save'} ) {
 									     Name        => 'SavedSearch',
 									     Description => $Description,
 									     Content     => {
-											     Format => $Format,
-											     Query  => $Query
+											     Format      => $Format,
+											     Query       => $Query,
+											     Order       => $Order,
+											     OrderBy     => $OrderBy,
+											     RowsPerPage => $RowsPerPage,
 											    }
 									    );
 	    $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
@@ -726,7 +745,16 @@ if ( $ARGS{'Save'} ) {
     }
 
 }
+# }}}
 
+# {{{ If we're modifying an old query, check if it has changed
+my $dirty = 0;
+$dirty = 1 if defined $search and 
+  ($search->SubValue('Format')      ne $Format      or
+   $search->SubValue('Query')       ne $Query       or 
+   $search->SubValue('Order')       ne $Order       or
+   $search->SubValue('OrderBy')     ne $OrderBy     or
+   $search->SubValue('RowsPerPage') ne $RowsPerPage);
 # }}}
 
 # {{{ Push the updates into the session so we don't loose 'em
@@ -735,14 +763,16 @@ $search_hash->{'Format'} = $Format;
 $search_hash->{'Query'} = $Query;
 $search_hash->{'Description'} = $Description;
 $search_hash->{'Object'} = $search;
-$search_hash->{'OrderBy'} = $ARGS{'OrderBy'};
+$search_hash->{'Order'} = $Order;
+$search_hash->{'OrderBy'} = $OrderBy;
+$search_hash->{'RowsPerPage'} = $RowsPerPage;
 
 $session{'CurrentSearchHash'} = $search_hash;
 # }}}
 
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
-    $m->comp("Results.html" , Query => $Query, Format => $Format, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
+    $m->comp("Results.html" , Query => $Query, Format => $Format, Order => $Order, OrderBy => $OrderBy, Rows => $RowsPerPage);
     $m->abort();
 }
 # }}}
@@ -755,8 +785,10 @@ if ($NewQuery) {
 } else {
     $QueryString = '?' . $m->comp('/Elements/QueryString', 
             Query => $Query,
-	    Format => $Format,
-	    Rows =>$ARGS{'Rows'}) if ($Query);
+            Format => $Format,
+            Order => $Order,
+            OrderBy => $OrderBy,
+            Rows => $RowsPerPage) if ($Query);
 }
 # }}}
 
@@ -768,5 +800,9 @@ $SearchId => undef
 $Query => undef
 $Format => undef 
 $Description => undef
+$Order => undef
+$OrderBy => undef
+$RowsPerPage => undef
 $HideResults => 0
+@clauses => ()
 </%ARGS>

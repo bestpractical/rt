@@ -1,9 +1,15 @@
 #!@PERL@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -15,14 +21,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
-
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
 use strict;
 use Carp;
 
@@ -65,7 +86,7 @@ GetOptions( "search=s"        => \$search,
             "help"            => \$help,
             "verbose|v"       => \$verbose );
 
-help() if $help or not @ARGV or not $action;
+help() if $help or not $search or not $action;
 
 # We _must_ have a search object
 load_module($search);
@@ -75,15 +96,19 @@ load_module($condition) if ($condition);
 # load template if specified
 my $template_obj;
 if ($template_id) {
-    $template_obj = RT::Template->new($RT::Nobody);
-    $template_obj->LoadById($template_id);
+    $template_obj = RT::Template->new($CurrentUser);
+    $template_obj->Load($template_id);
 }
 
 #At the appointed time:
 
 #find a bunch of tickets
 my $tickets = RT::Tickets->new($CurrentUser);
-my $search  = $search->new( TicketsObj => $tickets, Argument => $search_arg );
+my $search  = $search->new(
+    TicketsObj  => $tickets,
+    Argument    => $search_arg,
+    CurrentUser => $CurrentUser
+);
 
 $search->Prepare();
 
@@ -92,12 +117,13 @@ my $tickets = $search->TicketsObj;
 
 #for each ticket we've found
 while ( my $ticket = $tickets->Next() ) {
-    print "\n" . $ticket->Id() . ": " if ($verbose);
+    print $ticket->Id() . ": " if ($verbose);
 
     # perform some more advanced check
     if ($condition) {
         my $condition_obj = $condition->new( TicketObj => $ticket,
-                                             Argument  => $condition_arg );
+                                             Argument  => $condition_arg,
+                                             CurrentUser => $CurrentUser );
 
         # if the condition doesn't apply, get out of here
 
@@ -106,9 +132,12 @@ while ( my $ticket = $tickets->Next() ) {
     }
 
     #prepare our action
-    my $action_obj = $action->new( TicketObj => $ticket,
-				   TemplateObj => $template_obj,
-                                   Argument  => $action_arg );
+    my $action_obj = $action->new(
+        TicketObj   => $ticket,
+        TemplateObj => $template_obj,
+        Argument    => $action_arg,
+        CurrentUser => $CurrentUser
+    );
 
     #if our preparation, move onto the next ticket
     next unless ( $action_obj->Prepare );
@@ -116,7 +145,7 @@ while ( my $ticket = $tickets->Next() ) {
 
     #commit our action.
     next unless ( $action_obj->Commit );
-    print loc("Action committed.") if ($verbose);
+    print loc("Action committed.\n") if ($verbose);
 }
 
 # {{{ load_module 
@@ -194,19 +223,17 @@ sub help {
       )
       . "\n\n";
 
-    print " bin/rt-cron-tool \\\n";
-    print
-      "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print
-      "  --condition RT::Condition::UntouchedInHours --condition-arg 4 \\\n";
+    print " bin/rt-crontool \\\n";
+    print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
+    print "  --condition RT::Condition::UntouchedInHours --condition-arg 4 \\\n";
     print "  --action RT::Action::SetPriority --action-arg 99 \\\n";
     print "  --verbose\n";
 
     print "\n";
-    print loc("Escalate tickets");
-    print "rt-crontool \\\n";
-    print " --search RT::Search::ActiveTicketsInQueue  --search-arg thequeuename \\\n";
-    print " --action RT::Action::EscalatePriority \\\n";
+    print loc("Escalate tickets"). "\n";
+    print " bin/rt-crontool \\\n";
+    print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
+    print "  --action RT::Action::EscalatePriority\n";
  
  
  

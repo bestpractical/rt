@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,20 +20,48 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+#
+
+package RT::Principal;
+
 use strict;
+use warnings;
 
 no warnings qw(redefine);
-use vars qw(%_ACL_KEY_CACHE);
+
+use Cache::Simple::TimedExpiry;
+
+
 
 use RT::Group;
 use RT::User;
+
+# Set up the ACL cache on startup
+our $_ACL_CACHE;
+_InvalidateACLCache();
 
 # {{{ IsGroup
 
@@ -219,28 +253,31 @@ Returns undef if no ACE was found.
 sub HasRight {
 
     my $self = shift;
-    my %args = ( Right      => undef,
-                 Object     => undef,
-                 EquivObjects    => undef,
-                 @_ );
+    my %args = (
+        Right        => undef,
+        Object       => undef,
+        EquivObjects => undef,
+        @_
+    );
 
     if ( $self->Disabled ) {
-        $RT::Logger->err( "Disabled User:  " . $self->id . " failed access check for " . $args{'Right'} );
+        $RT::Logger->err( "Disabled User:  "
+              . $self->id
+              . " failed access check for "
+              . $args{'Right'} );
         return (undef);
     }
 
     if ( !defined $args{'Right'} ) {
-        require Carp;
-        $RT::Logger->debug( Carp::cluck("HasRight called without a right") );
+        $RT::Logger->crit("HasRight called without a right");
         return (undef);
     }
 
-    if ( defined( $args{'Object'} )) {
-        return (undef) unless (UNIVERSAL::can( $args{'Object'}, 'id' ) );
-        push(@{$args{'EquivObjects'}}, $args{Object});
-    }
-    elsif ( $args{'ObjectId'} && $args{'ObjectType'} ) {
-        $RT::Logger->crit(Carp::cluck("API not supprted"));
+    if (   defined( $args{'Object'} )
+        && UNIVERSAL::can( $args{'Object'}, 'id' )
+        && $args{'Object'}->id )
+    {
+        push( @{ $args{'EquivObjects'} }, $args{Object} );
     }
     else {
         $RT::Logger->crit("$self HasRight called with no valid object");
@@ -248,88 +285,50 @@ sub HasRight {
     }
 
     # If this object is a ticket, we care about ticket roles and queue roles
-    if ( (ref($args{'Object'}) eq 'RT::Ticket') && $args{'Object'}->Id) {
-        # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
-        # and ask all the rest of our questions about the queue.
-        push (@{$args{'EquivObjects'}}, $args{'Object'}->QueueObj);
+    if ( ( ref( $args{'Object'} ) eq 'RT::Ticket' ) && $args{'Object'}->Id ) {
+
+# this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
+# and ask all the rest of our questions about the queue.
+        push( @{ $args{'EquivObjects'} }, $args{'Object'}->QueueObj );
 
     }
-
 
     # {{{ If we've cached a win or loss for this lookup say so
 
     # {{{ Construct a hashkey to cache decisions in
     my $hashkey = do {
-	no warnings 'uninitialized';
-        
-	# We don't worry about the hash ordering, as this is only
-	# temporarily used; also if the key changes it would be
-	# invalidated anyway.
-        join (
-            ";:;", $self->Id, map {
-                $_,                              # the key of each arguments
-                ($_ eq 'EquivObjects')           # for object arrayref...
-		    ? map(_ReferenceId($_), @{$args{$_}}) # calculate each
-                    : _ReferenceId( $args{$_} ) # otherwise just the value
-            } keys %args
+        no warnings 'uninitialized';
+
+        # We don't worry about the hash ordering, as this is only
+        # temporarily used; also if the key changes it would be
+        # invalidated anyway.
+        join(
+            ";:;",
+            $self->Id,
+            map {
+                $_,    # the key of each arguments
+                  ( $_ eq 'EquivObjects' )    # for object arrayref...
+                  ? map( _ReferenceId($_), @{ $args{$_} } )    # calculate each
+                  : _ReferenceId( $args{$_} )    # otherwise just the value
+              } keys %args
         );
     };
-    # }}}
 
-    #Anything older than 60 seconds needs to be rechecked
-    my $cache_timeout = ( time - 60 );
+    # }}}
 
     # {{{ if we've cached a positive result for this query, return 1
-    if (    ( defined $self->_ACLCache->{"$hashkey"} )
-         && ( $self->_ACLCache->{"$hashkey"}{'val'} == 1 )
-         && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
-         && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
 
-        #$RT::Logger->debug("Cached ACL win for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
-        return ( 1);
+    my $cached_answer = $_ACL_CACHE->fetch($hashkey);
+
+    # Returns undef on cache miss
+    if ( defined $cached_answer ) {
+        if ( $cached_answer == 1 ) {
+            return (1);
+        }
+        elsif ( $cached_answer == -1 ) {
+            return (0);
+        }
     }
-    # }}}
-
-    #  {{{ if we've cached a negative result for this query return undef
-    elsif (    ( defined $self->_ACLCache->{"$hashkey"} )
-            && ( $self->_ACLCache->{"$hashkey"}{'val'} == -1 )
-            && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
-            && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
-
-        #$RT::Logger->debug("Cached ACL loss decision for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
-
-        return (undef);
-    }
-    # }}}
-
-    # }}}
-
-
-
-    #  {{{ Out of date docs
-    
-    #   We want to grant the right if:
-
-
-    #    # The user has the right as a member of a system-internal or 
-    #    # user-defined group
-    #
-    #    Find all records from the ACL where they're granted to a group 
-    #    of type "UserDefined" or "System"
-    #    for the object "System or the object "Queue N" and the group we're looking
-    #    at has the recursive member $self->Id
-    #
-    #    # The user has the right based on a role
-    #
-    #    Find all the records from ACL where they're granted to the role "foo"
-    #    for the object "System" or the object "Queue N" and the group we're looking
-    #   at is of domain  ("RT::Queue-Role" and applies to the right queue)
-    #                             or ("RT::Ticket-Role" and applies to the right ticket)
-    #    and the type is the same as the type of the ACL and the group has
-    #    the recursive member $self->Id
-    #
-
-    # }}}
 
     my ( $or_look_at_object_rights, $or_check_roles );
     my $right = $args{'Right'};
@@ -337,119 +336,108 @@ sub HasRight {
     # {{{ Construct Right Match
 
     # If an object is defined, we want to look at rights for that object
-   
+
     my @look_at_objects;
-    push (@look_at_objects, "ACL.ObjectType = 'RT::System'")
-        unless $self->can('_IsOverrideGlobalACL') and $self->_IsOverrideGlobalACL($args{Object});
+    push( @look_at_objects, "ACL.ObjectType = 'RT::System'" )
+      unless $self->can('_IsOverrideGlobalACL')
+      and $self->_IsOverrideGlobalACL( $args{Object} );
 
+    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+        next unless ( UNIVERSAL::can( $obj, 'id' ) );
+        my $type = ref($obj);
+        my $id   = $obj->id;
 
+        unless ($id) {
+            use Carp;
+            Carp::cluck(
+                "Trying to check $type rights for an unspecified $type");
+            $RT::Logger->crit(
+                "Trying to check $type rights for an unspecified $type");
+        }
+        push @look_at_objects,
+          "(ACL.ObjectType = '$type' AND ACL.ObjectId = '$id')";
+    }
 
-    foreach my $obj (@{$args{'EquivObjects'}}) {
-            next unless (UNIVERSAL::can($obj, 'id'));
-            my $type = ref($obj);
-            my $id = $obj->id;
-
-            unless ($id) {
-                use Carp;
-		Carp::cluck("Trying to check $type rights for an unspecified $type");
-                $RT::Logger->crit("Trying to check $type rights for an unspecified $type");
-            }
-            push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = '$id')"; 
-            }
-
-     
     # }}}
 
     # {{{ Build that honkin-big SQL query
 
-    
+    my $query_base =
+      "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  " .
 
-    my $query_base = "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  ".
-    # Only find superuser or rights with the name $right
-   "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') ".
-   # Never find disabled groups.
-   "AND Principals.Disabled = 0 " .
-   "AND CachedGroupMembers.Disabled = 0  ".
-    "AND Principals.id = Groups.id " .  # We always grant rights to Groups
+      # Only find superuser or rights with the name $right
+      "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') " .
 
-    # See if the principal is a member of the group recursively or _is the rightholder_
-    # never find recursively disabled group members
-    # also, check to see if the right is being granted _directly_ to this principal,
-    #  as is the case when we want to look up group rights
-    "AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->Id . "' ".
+      # Never find disabled groups.
+      "AND Principals.Disabled = 0 "
+      . "AND CachedGroupMembers.Disabled = 0  "
+      . "AND Principals.id = Groups.id "
+      .    # We always grant rights to Groups
 
-    # Make sure the rights apply to the entire system or to the object in question
-    "AND ( ".join(' OR ', @look_at_objects).") ";
+# See if the principal is a member of the group recursively or _is the rightholder_
+# never find recursively disabled group members
+# also, check to see if the right is being granted _directly_ to this principal,
+#  as is the case when we want to look up group rights
+"AND  Principals.id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '"
+      . $self->Id . "' "
+      .
 
+  # Make sure the rights apply to the entire system or to the object in question
+      "AND ( " . join( ' OR ', @look_at_objects ) . ") ";
 
+# The groups query does the query based on group membership and individual user rights
 
-    # The groups query does the query based on group membership and individual user rights
+    my $groups_query = $query_base .
 
-	my $groups_query = $query_base . 
+# limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
+"AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND "
+      . "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))"
+      .
 
-    # limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
-    "AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND ".
-        "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))".
+      " ) ";
+    $self->_Handle->ApplyLimits( \$groups_query, 1 );    #only return one result
 
-        " ) ";
-        $self->_Handle->ApplyLimits(\$groups_query, 1); #only return one result
-        
     my @roles;
-    foreach my $object (@{$args{'EquivObjects'}}) { 
-          push (@roles, $self->_RolesForObject(ref($object), $object->id));
+    foreach my $object ( @{ $args{'EquivObjects'} } ) {
+        push( @roles, $self->_RolesForObject( ref($object), $object->id ) );
     }
 
     # The roles query does the query based on roles
     my $roles_query;
     if (@roles) {
-	 $roles_query = $query_base . "AND ".
-            " ( (".join (' OR ', @roles)." ) ".  
-        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') "; 
-        $self->_Handle->ApplyLimits(\$roles_query, 1); #only return one result
+        $roles_query =
+            $query_base . "AND " . " ( ("
+          . join( ' OR ', @roles ) . " ) "
+          . " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') ";
+        $self->_Handle->ApplyLimits( \$roles_query, 1 ); #only return one result
 
-   }
-
-
+    }
 
     # }}}
 
     # {{{ Actually check the ACL by performing an SQL query
-    #   $RT::Logger->debug("Now Trying $groups_query");	
+    #   $RT::Logger->debug("Now Trying $groups_query");
     my $hitcount = $self->_Handle->FetchResult($groups_query);
 
     # }}}
-    
-    # {{{ if there's a match, the right is granted 
-    if ($hitcount) {
 
-        # Cache a positive hit.
-        $self->_ACLCache->{"$hashkey"}{'set'} = time;
-        $self->_ACLCache->{"$hashkey"}{'val'} = 1;
+    # {{{ if there's a match, the right is granted
+    if ($hitcount) {
+        $_ACL_CACHE->set( $hashkey => 1 );
         return (1);
     }
-    # }}}
-    # {{{ If there's no match on groups, try it on roles
-    else {   
 
-    	$hitcount = $self->_Handle->FetchResult($roles_query);
+    # Now check the roles query
+    $hitcount = $self->_Handle->FetchResult($roles_query);
 
-        if ($hitcount) {
-
-            # Cache a positive hit.
-            $self->_ACLCache->{"$hashkey"}{'set'} = time;
-            $self->_ACLCache->{"$hashkey"}{'val'} = 1;
-            return (1);
-	    }
-
-        else {
-            # cache a negative hit
-            $self->_ACLCache->{"$hashkey"}{'set'} = time;
-            $self->_ACLCache->{"$hashkey"}{'val'} = -1;
-
-            return (undef);
-	    }
+    if ($hitcount) {
+        $_ACL_CACHE->set( $hashkey => 1 );
+        return (1);
     }
-    # }}}
+
+    # We failed to find an acl hit
+    $_ACL_CACHE->set( $hashkey => -1 );
+    return (undef);
 }
 
 # }}}
@@ -491,23 +479,6 @@ sub _RolesForObject {
 
 # {{{ ACL caching
 
-# {{{ _ACLCache
-
-=head2 _ACLCache
-
-# Function: _ACLCache
-# Type    : private instance
-# Args    : none
-# Lvalue  : hash: ACLCache
-# Desc    : Returns a reference to the Key cache hash
-
-=cut
-
-sub _ACLCache {
-    return(\%_ACL_KEY_CACHE);
-}
-
-# }}}
 
 # {{{ _InvalidateACLCache
 
@@ -518,7 +489,9 @@ Cleans out and reinitializes the user rights key cache
 =cut
 
 sub _InvalidateACLCache {
-    %_ACL_KEY_CACHE = ();
+    $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
+    $_ACL_CACHE->expire_after($RT::ACLCacheLifetime||60);
+
 }
 
 # }}}

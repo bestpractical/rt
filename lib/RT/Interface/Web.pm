@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
 ## Portions Copyright 2000 Tobias Brox <tobix@fsck.com>
 
 ## This is a library of static subs to be used by the Mason web
@@ -43,63 +65,6 @@ use_ok(RT::Interface::Web);
 package RT::Interface::Web;
 use strict;
 
-
-
-my @DefaultHandlerArgs = (
-
-    comp_root => [
-        [ local    => $RT::MasonLocalComponentRoot ],
-        [ standard => $RT::MasonComponentRoot ]
-    ],
-    default_escape_flags => 'h',
-    data_dir             => "$RT::MasonDataDir",
-    allow_globals        => [qw(%session)],
-    autoflush            => 1
-
-);
-
-# {{{ sub NewApacheHandler 
-
-=head2 NewApacheHandler
-
-  Takes extra options to pass to HTML::Mason::ApacheHandler->new
-  Returns a new Mason::ApacheHandler object
-
-=cut
-
-sub NewApacheHandler {
-    require HTML::Mason::ApacheHandler;
-    return RT::Interface::Web::NewHandler('HTML::Mason::ApacheHandler',
-                                            args_method => "CGI",
-                                            @_);
-}
-
-# }}}
-
-# {{{ sub NewCGIHandler 
-
-=head2 NewCGIHandler
-
-  Returns a new Mason::CGIHandler object
-
-=cut
-
-sub NewCGIHandler {
-    return RT::Interface::Web::NewHandler('HTML::Mason::CGIHandler',@_);
-}
-
-sub NewHandler {
-    my $class = shift;
-    my $handler = $class->new(
-        @DefaultHandlerArgs,
-        @_
-    );
-  
-    $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
-    return($handler);
-}
-
-# }}}
 
 
 # {{{ EscapeUTF8
@@ -125,6 +90,24 @@ sub EscapeUTF8  {
         Encode::_utf8_on($$ref);
 
 
+}
+
+# }}}
+
+# {{{ EscapeURI
+
+=head2 EscapeURI SCALARREF
+
+Escapes URI component according to RFC2396
+
+=cut
+
+use Encode qw();
+sub EscapeURI {
+    my $ref = shift;
+    $$ref = Encode::encode_utf8( $$ref );
+    $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
+    Encode::_utf8_on( $$ref );
 }
 
 # }}}
@@ -327,17 +310,36 @@ sub CreateTicket {
         Starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
-    foreach my $arg (%ARGS) {
-        if ($arg =~ /^CustomField-(\d+)(.*?)$/) {
+    foreach my $arg (keys %ARGS) {
             next if ($arg =~ /-Magic$/);
-            $create_args{"CustomField-".$1} = $ARGS{"$arg"};
+       #Object-RT::Ticket--CustomField-3-Values
+        if ($arg =~ /^Object-RT::Transaction--CustomField-/) {
+            $create_args{$arg} = $ARGS{$arg};
+        }
+        elsif ($arg =~ /^Object-RT::Ticket--CustomField-(\d+)(.*?)$/) {
+            my $cfid = $1;
+            my $cf = RT::CustomField->new( $session{'CurrentUser'});
+            $cf->Load($cfid);
+
+            if ($cf->Type eq 'FreeformMultiple') {
+                $ARGS{$arg} =~ s/\r\n/\n/g;
+                $ARGS{$arg} = [split('\n', $ARGS{$arg})];
+            }
+
+            if ( $arg =~ /-Upload$/ ) {
+                $create_args{"CustomField-".$cfid} = _UploadedFile($arg);
+            }
+            else {
+                $create_args{"CustomField-".$cfid} = $ARGS{"$arg"};
+            }
         }
     }
 
-    # turn new link lists into arrays, and pass in the proper arguments
-    my (@dependson, @dependedonby, 
-	@parents, @children, 
-	@refersto, @referredtoby);
+
+    # XXX TODO This code should be about six lines. and badly needs refactoring.
+ 
+    # {{{ turn new link lists into arrays, and pass in the proper arguments
+    my (@dependson, @dependedonby, @parents, @children, @refersto, @referredtoby);
 
     foreach my $luri ( split ( / /, $ARGS{"new-DependsOn"} ) ) {
 	$luri =~ s/\s*$//;    # Strip trailing whitespace
@@ -371,7 +373,9 @@ sub CreateTicket {
 	push @referredtoby, $luri;
     }
     $create_args{'ReferredToBy'} = \@referredtoby;
-
+    # }}}
+  
+ 
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ( $id && $Trans ) {
         Abort($ErrMsg);
@@ -826,19 +830,6 @@ sub ParseDateToISO {
 
 # }}}
 
-# {{{ sub Config 
-# TODO: This might eventually read the cookies, user configuration
-# information from the DB, queue configuration information from the
-# DB, etc.
-
-sub Config {
-    my $args = shift;
-    my $key  = shift;
-    return $args->{$key} || $RT::WebOptions{$key};
-}
-
-# }}}
-
 # {{{ sub ProcessACLChanges
 
 sub ProcessACLChanges {
@@ -1030,6 +1021,7 @@ sub ProcessTicketBasics {
       TimeEstimated
       TimeWorked
       TimeLeft
+      Type
       Status
       Queue
     );
@@ -1042,7 +1034,10 @@ sub ProcessTicketBasics {
         }
     }
 
-    $ARGSRef->{'Status'} ||= $TicketObj->Status;
+
+   # Status isn't a field that can be set to a null value.
+   # RT core complains if you try
+    delete $ARGSRef->{'Status'} unless ($ARGSRef->{'Status'});
     
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
@@ -1146,16 +1141,11 @@ sub ProcessObjectCustomFieldUpdates {
 			}
 		    }
 		    elsif ( $arg =~ /-Upload$/ ) {
-			my $cgi_object = $m->cgi_object;
-			my $fh = $cgi_object->upload($arg) or next;
-			my $upload_info = $cgi_object->uploadInfo($fh);
-			my $filename = "$fh";
-			$filename =~ s#^.*[\\/]##;
+                        my $value_hash = _UploadedFile($arg) or next;
+
 			my ( $val, $msg ) = $Object->AddCustomFieldValue(
-			    Field => $cf,
-			    Value => $filename,
-			    LargeContent => do { local $/; scalar <$fh> },
-			    ContentType => $upload_info->{'Content-Type'},
+                            %$value_hash,
+                            Field => $cf,
 			);
 			push ( @results, $msg );
 		    }
@@ -1275,8 +1265,8 @@ sub ProcessTicketWatchers {
         }
 
         # Delete watchers in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
-            my ( $code, $msg ) = $Ticket->DeleteWatcher( Type => $ARGSRef->{$key}, PrincipalId => $1 );
+        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {	    
+            my ( $code, $msg ) = $Ticket->DeleteWatcher( Email => $ARGSRef->{$key}, Type => $1 );
             push @results, $msg;
         }
 
@@ -1463,6 +1453,35 @@ sub ProcessRecordLinks {
     }
 
     return (@results);
+}
+
+# {{{ sub _UploadedFile
+
+=head2 _UploadedFile ( $arg );
+
+Takes a CGI parameter name; if a file is uploaded under that name,
+return a hash reference suitable for AddCustomFieldValue's use:
+C<( Value => $filename, LargeContent => $content, ContentType => $type )>.
+
+Returns C<undef> if no files were uploaded in the C<$arg> field.
+
+=cut
+
+sub _UploadedFile {
+    my $arg = shift;
+    my $cgi_object = $m->cgi_object;
+    my $fh = $cgi_object->upload($arg) or return undef;
+    my $upload_info = $cgi_object->uploadInfo($fh);
+
+    my $filename = "$fh";
+    $filename =~ s#^.*[\\/]##;
+    binmode($fh);
+
+    return {
+        Value => $filename,
+        LargeContent => do { local $/; scalar <$fh> },
+        ContentType => $upload_info->{'Content-Type'},
+    };
 }
 
 eval "require RT::Interface::Web_Vendor";

@@ -1,21 +1,84 @@
 #!@PERL@ -w
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+package RT::Mason;
 
 use strict;
+use vars '$Handler';
 
-require ('@RT_BIN_PATH@/webmux.pl');
+BEGIN { require ('@RT_BIN_PATH@/webmux.pl') };
 
 use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
 use Socket;
 
-$SIG{CHLD} = "IGNORE"; # reap child processes
+$SIG{CHLD} = 'IGNORE'; # reap child processes
+$SIG{HUP} = sub {
+    # on a "kill -HUP", we first close our socket handles.
+    close Remote;
+    close HTTPDaemon;
+
+    # and then, on systems implementing fork(), we make sure
+    # we are running with a new pid, so another -HUP will still
+    # work on the new process.
+    require Config;
+    if ($Config::Config{d_fork} and my $pid = fork()) {
+        # finally, allow ^C on the parent process to terminate
+        # the children.
+        waitpid($pid, 0); exit;
+    }
+
+    # do the exec. if $0 is not executable, try running it with $^X.
+    exec { $0 } ( ((-x $0) ? () : ($^X)), $0, @ARGV );
+};
 
 
 RT::Init();
 
 my $port = shift || '8080';
-if ( @RT::MasonParameters) {} # Shut up the warnings;
-my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
 
 main_loop($port);
 
@@ -34,8 +97,7 @@ sub main_loop {
     while (1) {
 
         for ( ; accept( Remote, HTTPDaemon ); close Remote ) {
-
-	    fork and next;
+            Module::Refresh->refresh if $RT::DevelMode;
 
             *STDIN  = *Remote;
             *STDOUT = *Remote;
@@ -55,17 +117,19 @@ sub main_loop {
             my ( $method, $request_uri, $proto, undef ) = split;
 
             #$request_uri =~ s#\\#/#g;
-            $RT::Logger->info("<- $peername: $_");
+            $RT::Logger->info("<- $peername: $_\n");
             my ( $file, undef, $query_string ) =
               ( $request_uri =~ /([^?]*)(\?(.*))?/ );    # split at ?
             #$file =~ s/%([\dA-Fa-f]{2})/chr(hex($1))/eg;  # decode url-escaped entities
 
             last if ( $method !~ /^(GET|POST|HEAD)$/ );
 
+            $query_string = '' if !defined $query_string;
+
             build_cgi_env( method       => $method,
                            query_string => $query_string,
                            path         => $file,
-                           method       => $method,
+                           protocol     => $proto,
                            port         => $port,
                            peername     => $peername,
                            peeraddr     => $peeraddr,
@@ -77,20 +141,23 @@ sub main_loop {
 
             print "HTTP/1.0 200 OK\n";    # probably OK by now
 
-            if ( ( !$h->interp->comp_exists( $cgi->path_info ) )
-                && ($h->interp->comp_exists( $cgi->path_info . "/index.html" ) )
+            if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
+                && ($Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) )
               ) {
                 $cgi->path_info( $cgi->path_info . "/index.html" );
             }
 
-            eval { $h->handle_cgi_object($cgi); };
+            eval { $Handler->handle_cgi_object($cgi); };
             $RT::Logger->crit($@) if ($@);
 
             if ( $RT::Handle->TransactionDepth ) {
                 $RT::Handle->ForceRollback;
                 $RT::Logger->crit( "Transaction not committed. Usually indicates a software fault. Data loss may have occurred");
             }
-	    exit(); # our forked process
+
+            DBIx::SearchBuilder::Record::Cachable->FlushCache if UNIVERSAL::can(
+                'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache'
+            );
         }
 
     }

@@ -194,6 +194,14 @@ AC_ARG_WITH(apachectl,
             APACHECTL=`which apachectl`)
 AC_SUBST(APACHECTL)
 
+dnl RT's "maintainer mode"
+AC_ARG_WITH(devel-mode,
+            AC_HELP_STRING([--with-devel-mode],
+                           [Turn on development aids that might hurt you in production]),
+
+            RT_DEVEL_MODE="1", 
+            RT_DEVEL_MODE="0")
+AC_SUBST(RT_DEVEL_MODE)
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in
 dnl files are changed to use the new names.
@@ -227,6 +235,7 @@ AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 dnl Configure the output files, and generate them.
 
 AC_CONFIG_FILES([
+		 sbin/rt-dump-database
 		 sbin/rt-setup-database
                  sbin/rt-test-dependencies
                  Makefile
@@ -237,6 +246,10 @@ AC_CONFIG_FILES([
                  lib/t/02regression.t
                  lib/t/03web.pl
                  lib/t/04_send_email.pl
+		 lib/t/05cronsupport.pl
+		 lib/t/06mailgateway.pl
+		 lib/t/07acl.pl
+		 lib/t/08web_cf.pl
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd
@@ -244,6 +257,8 @@ AC_CONFIG_FILES([
  		 bin/rt-crontool
  		 bin/rt-mailgate
 		 bin/rt
- 		 bin/webmux.pl]
-                )
+ 		 bin/webmux.pl],
+		[chmod ug+x sbin/rt-test-dependencies
+		 chmod ug+x sbin/rt-setup-database]
+               )
 AC_OUTPUT

@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
 # Major Changes:
 
 # - Decimated ProcessRestrictions and broke it into multiple
@@ -55,9 +77,13 @@ ok (require RT::Tickets);
 =end testing
 
 =cut
+
+package RT::Tickets;
+
 use strict;
 no warnings qw(redefine);
 use vars qw(@SORTFIELDS);
+use RT::CustomFields;
 
 
 # Configuration Tables:
@@ -84,6 +110,7 @@ my %FIELDS =
     RefersTo        => ['LINK' => To => 'RefersTo',],
     HasMember	    => ['LINK' => From => 'MemberOf',],
     DependentOn     => ['LINK' => From => 'DependsOn',],
+    DependedOnBy     => ['LINK' => From => 'DependsOn',],
     ReferredToBy    => ['LINK' => From => 'RefersTo',],
 #   HasDepender	    => ['LINK',],
 #   RelatedTo	    => ['LINK',],
@@ -95,12 +122,13 @@ my %FIELDS =
     LastUpdated	    => ['DATE' => 'LastUpdated',],
     Created	    => ['DATE' => 'Created',],
     Subject	    => ['STRING',],
-    Type	    => ['STRING',],
     Content	    => ['TRANSFIELD',],
     ContentType	    => ['TRANSFIELD',],
     Filename        => ['TRANSFIELD',],
     TransactionDate => ['TRANSDATE',],
+    Updated => ['TRANSDATE',],
     Requestor       => ['WATCHERFIELD' => 'Requestor',],
+    Requestors       => ['WATCHERFIELD' => 'Requestor',],
     Cc              => ['WATCHERFIELD' => 'Cc',],
     AdminCc         => ['WATCHERFIELD' => 'AdminCC',],
     Watcher	    => ['WATCHERFIELD'],
@@ -125,7 +153,7 @@ my %dispatch =
     WATCHERFIELD    => \&_WatcherLimit,
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     LINKFIELD	    => \&_LinkFieldLimit,
-    CUSTOMFIELD     => \&_CustomFieldLimit,
+    CUSTOMFIELD    => \&_CustomFieldLimit,
   );
 my %can_bundle =
   ( WATCHERFIELD => "yeps",
@@ -246,7 +274,7 @@ sub _EnumLimit {
     $o->Load( $value );
     $value = $o->Id;
   }
-  $sb->_SQLLimit( FIELD => $field,,
+  $sb->_SQLLimit( FIELD => $field,
 	      VALUE => $value,
 	      OPERATOR => $op,
 	      @rest,
@@ -455,6 +483,7 @@ Meta Data:
 
 =cut
 
+# This routine should really be factored into translimit.
 sub _TransDateLimit {
   my ($sb,$field,$op,$value,@rest) = @_;
 
@@ -465,19 +494,9 @@ sub _TransDateLimit {
   $sb->{_sql_trattachalias} = $sb->NewAlias ('Attachments')
     unless defined $sb->{_sql_trattachalias};
 
-  $sb->_OpenParen;
 
   # Join Transactions To Attachments
-  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
-
-  my $d = new RT::Date( $sb->CurrentUser );
-  $d->Set( Format => 'ISO', Value => $value);
-   $value = $d->ISO;
+  $sb->_OpenParen;
 
   #Search for the right field
   $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
@@ -487,6 +506,20 @@ sub _TransDateLimit {
 		 CASESENSITIVE => 0,
 		 @rest
 		);
+
+  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+	     ALIAS2 => $sb->{_transalias}, FIELD2 => 'id');
+
+  # Join Transactions to Tickets
+  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
+	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'ObjectId');
+
+  $sb->Limit( ALIAS => $sb->{_sql_transalias}, FIELD => 'ObjectType', VALUE => 'RT::Ticket');
+
+
+  my $d = new RT::Date( $sb->CurrentUser );
+  $d->Set( Format => 'ISO', Value => $value);
+   $value = $d->ISO;
 
   $sb->_CloseParen;
 }
@@ -533,25 +566,18 @@ sub _TransLimit {
   # them all into the same subclause when you have (A op B op C) - the
   # way they get parsed in the tree they're in different subclauses.
 
-  my ($sb,$field,$op,$value,@rest) = @_;
+  my ($self,$field,$op,$value,@rest) = @_;
 
-  $sb->{_sql_transalias} = $sb->NewAlias ('Transactions')
-    unless defined $sb->{_sql_transalias};
-  $sb->{_sql_trattachalias} = $sb->NewAlias ('Attachments')
-    unless defined $sb->{_sql_trattachalias};
+  $self->{_sql_transalias} = $self->NewAlias ('Transactions')
+    unless defined $self->{_sql_transalias};
+  $self->{_sql_trattachalias} = $self->NewAlias ('Attachments')
+    unless defined $self->{_sql_trattachalias};
 
-  $sb->_OpenParen;
 
-  # Join Transactions To Attachments
-  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
+    $self->_OpenParen;
 
   #Search for the right field
-  $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
+  $self->_SQLLimit(ALIAS => $self->{_sql_trattachalias},
 		 FIELD =>    $field,
 		 OPERATOR => $op,
 		 VALUE =>    $value,
@@ -559,7 +585,18 @@ sub _TransLimit {
 		 @rest
 		);
 
-  $sb->_CloseParen;
+
+  $self->_SQLJoin( ALIAS1 => $self->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+	     ALIAS2 => $self->{_sql_transalias}, FIELD2 => 'id');
+
+  # Join Transactions to Tickets
+  $self->_SQLJoin( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'}, # Why not use "id" here?
+	     ALIAS2 => $self->{_sql_transalias}, FIELD2 => 'ObjectId');
+
+    $self->Limit( ALIAS => $self->{_sql_transalias}, FIELD => 'ObjectType', VALUE => 'RT::Ticket', ENTRYAGGREGATOR => 'AND');
+
+
+    $self->_CloseParen;
 
 }
 
@@ -570,80 +607,139 @@ Handle watcher limits.  (Requestor, CC, etc..)
 Meta Data:
   1: Field to query on
 
+
+=begin testing
+
+# Test to make sure that you can search for tickets by requestor address and
+# by requestor name.
+
+my ($id,$msg);
+my $u1 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u1->Create( Name => 'RequestorTestOne', EmailAddress => 'rqtest1@example.com');
+ok ($id,$msg);
+my $u2 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u2->Create( Name => 'RequestorTestTwo', EmailAddress => 'rqtest2@example.com');
+ok ($id,$msg);
+
+my $t1 = RT::Ticket->new($RT::SystemUser);
+my ($trans);
+($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', Requestor => [$u1->EmailAddress]);
+ok ($id, $msg);
+
+my $t2 = RT::Ticket->new($RT::SystemUser);
+($id,$trans,$msg) =$t2->Create (Queue => 'general', Subject => 'Requestor test one', Requestor => [$u2->EmailAddress]);
+ok ($id, $msg);
+
+
+my $t3 = RT::Ticket->new($RT::SystemUser);
+($id,$trans,$msg) =$t3->Create (Queue => 'general', Subject => 'Requestor test one', Requestor => [$u2->EmailAddress, $u1->EmailAddress]);
+ok ($id, $msg);
+
+
+my $tix1 = RT::Tickets->new($RT::SystemUser);
+$tix1->FromSQL('Requestor.EmailAddress LIKE "rqtest1" OR Requestor.EmailAddress LIKE "rqtest2"');
+
+is ($tix1->Count, 3);
+
+my $tix2 = RT::Tickets->new($RT::SystemUser);
+$tix2->FromSQL('Requestor.Name LIKE "TestOne" OR Requestor.Name LIKE "TestTwo"');
+
+is ($tix2->Count, 3);
+
+
+my $tix3 = RT::Tickets->new($RT::SystemUser);
+$tix3->FromSQL('Requestor.EmailAddress LIKE "rqtest1"');
+
+is ($tix3->Count, 2);
+
+my $tix4 = RT::Tickets->new($RT::SystemUser);
+$tix4->FromSQL('Requestor.Name LIKE "TestOne" ');
+
+is ($tix4->Count, 2);
+
+# Searching for tickets that have two requestors isn't supported
+# There's no way to differentiate "one requestor name that matches foo and bar"
+# and "two requestors, one matching foo and one matching bar"
+
+# my $tix5 = RT::Tickets->new($RT::SystemUser);
+# $tix5->FromSQL('Requestor.Name LIKE "TestOne" AND Requestor.Name LIKE "TestTwo"');
+# 
+# is ($tix5->Count, 1);
+# 
+# my $tix6 = RT::Tickets->new($RT::SystemUser);
+# $tix6->FromSQL('Requestor.EmailAddress LIKE "rqtest1" AND Requestor.EmailAddress LIKE "rqtest2"');
+# 
+# is ($tix6->Count, 1);
+
+
+=end testing
+
 =cut
 
 sub _WatcherLimit {
-  my ($self,$field,$op,$value,@rest) = @_;
-  my %rest = @rest;
+    my $self  = shift;
+    my $field = shift;
+    my $op    = shift;
+    my $value = shift;
+    my %rest  = (@_);
 
-  $self->_OpenParen;
-
-  my $groups	    = $self->NewAlias('Groups');
-  my $groupmembers  = $self->NewAlias('CachedGroupMembers');
-  my $users	    = $self->NewAlias('Users');
-
-
-  #Find user watchers
-#  my $subclause = undef;
-#  my $aggregator = 'OR';
-#  if ($restriction->{'OPERATOR'} =~ /!|NOT/i ){
-#    $subclause = 'AndEmailIsNot';
-#    $aggregator = 'AND';
-#  }
-
-  if (ref $field) { # gross hack
-    my @bundle = @$field;
     $self->_OpenParen;
-    for my $chunk (@bundle) {
-      ($field,$op,$value,@rest) = @$chunk;
-      $self->_SQLLimit(ALIAS => $users,
-   		   FIELD => $rest{SUBKEY} || 'EmailAddress',
-   		   VALUE           => $value,
-   		   OPERATOR        => $op,
-   		   CASESENSITIVE   => 0,
-   		   @rest,
-   		  );
+
+    # Find out what sort of watcher we're looking for
+    my $fieldname;
+    if (ref $field) {
+        $fieldname = $field->[0]->[0]; 
+    } else {
+        $fieldname = $field;
     }
+    my $meta = $FIELDS{$fieldname};
+    my $type = ( defined $meta->[1] ? $meta->[1] : undef );
+
+
+    # We only want _one_ clause for all of requestors, cc, admincc
+    # It's less flexible than what we used to do, but now it sort of actually works. (no huge cartesian products that hose the db)
+    my $groups       = $self->{'watcherlimit_'.('global')."_groups"} ||=  $self->NewAlias('Groups');
+    my $groupmembers = $self->{'watcherlimit_'.('global')."_groupmembers"} ||=  $self->NewAlias('CachedGroupMembers');
+    my $users        = $self->{'watcherlimit_'.('global')."_users"} ||= $self->NewAlias('Users');
+
+
+    # Use regular joins instead of SQL joins since we don't want the joins inside ticketsql or we get a huge cartesian product
+    $self->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'RT::Ticket-Role', ENTRYAGGREGATOR => 'AND');
+    $self->Join( ALIAS1 => $groups, FIELD1 => 'Instance', ALIAS2 => 'main', FIELD2 => 'id');
+    $self->Join( ALIAS1 => $groups, FIELD1 => 'id', ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
+    $self->Join( ALIAS1 => $groupmembers, FIELD1 => 'MemberId', ALIAS2 => $users, FIELD2 => 'id');
+    
+
+    # If we're looking for multiple watchers of a given type,
+    # TicketSQL will be handing it to us as an array of clauses in
+    # $field
+    if ( ref $field ) {    # gross hack
+        $self->_OpenParen;
+        for my $chunk (@$field) {
+            ( $field, $op, $value, %rest ) = @$chunk;
+            $self->_SQLLimit(
+                ALIAS         => $users,
+                FIELD         => $rest{SUBKEY} || 'EmailAddress',
+                VALUE         => $value,
+                OPERATOR      => $op,
+                CASESENSITIVE => 0,
+                %rest);
+        }
+        $self->_CloseParen;
+    }
+    else {
+        $self->_SQLLimit(
+            ALIAS         => $users,
+            FIELD         => $rest{SUBKEY} || 'EmailAddress',
+            VALUE         => $value,
+            OPERATOR      => $op,
+            CASESENSITIVE => 0,
+            %rest);
+    }
+
+    $self->_SQLLimit( ALIAS => $groups, FIELD => 'Type', VALUE => $type, ENTRYAGGREGATOR => 'AND') if ($type); 
+
     $self->_CloseParen;
-  } else {
-     $self->_SQLLimit(ALIAS => $users,
-   		   FIELD => $rest{SUBKEY} || 'EmailAddress',
-   		   VALUE           => $value,
-   		   OPERATOR        => $op,
-   		   CASESENSITIVE   => 0,
-   		   @rest,
-   		  );
-  }
-
-  # {{{ Tie to groups for tickets we care about
-  $self->_SQLLimit(ALIAS => $groups,
-		   FIELD => 'Domain',
-		   VALUE => 'RT::Ticket-Role',
-		   ENTRYAGGREGATOR => 'AND');
-
-  $self->_SQLJoin(ALIAS1 => $groups, FIELD1 => 'Instance',
-	      ALIAS2 => 'main',   FIELD2 => 'id');
-  # }}}
-
-  # If we care about which sort of watcher
-  my $meta = $FIELDS{$field};
-  my $type = ( defined $meta->[1] ? $meta->[1] : undef );
-
-  if ( $type ) {
-    $self->_SQLLimit(ALIAS => $groups,
-		     FIELD => 'Type',
-		     VALUE => $type,
-		     ENTRYAGGREGATOR => 'AND');
-  }
-
-  $self->_SQLJoin (ALIAS1 => $groups,  FIELD1 => 'id',
-	       ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
-
-  $self->_SQLJoin( ALIAS1 => $groupmembers, FIELD1 => 'MemberId',
-	       ALIAS2 => $users, FIELD2 => 'id');
-
- $self->_CloseParen;
-
 }
 
 =head2 _WatcherMembershipLimit
@@ -820,103 +916,117 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-  my ($self,$_field,$op,$value,@rest) = @_;
+    my ( $self, $_field, $op, $value, @rest ) = @_;
 
   my %rest = @rest;
   my $field = $rest{SUBKEY} || die "No field specified";
 
   # For our sanity, we can only limit on one queue at a time
-  my $queue = undef;
-  # Ugh.    This will not do well for things with underscores in them
+  my $queue = 0;
 
-  use RT::CustomFields;
-  my $CF = RT::CustomFields->new( $self->CurrentUser );
-  #$CF->Load( $cfid} );
-
-  my $q;
-  if ($field =~ /^(.+?)\.{(.+)}$/) {
-    my $q = RT::Queue->new($self->CurrentUser);
-    $q->Load($1);
+    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+    $queue =  $1;
     $field = $2;
-    $CF->LimitToQueue( $q->Id );
-    $queue = $q->Id;
-  } else {
+   }
     $field = $1 if $field =~ /^{(.+)}$/; # trim { }
-    $CF->LimitToGlobal;
-  }
-  $CF->FindAllRows;
 
-  my $cfid = 0;
 
-  # this is pretty inefficient for huge numbers of CFs...
-  while ( my $CustomField = $CF->Next ) {
-    if (lc $CustomField->Name eq lc $field) {
-      $cfid = $CustomField->Id;
-      last;
+
+# If we're trying to find custom fields that don't match something, we want tickets
+# where the custom field has no value at all
+
+    my $null_columns_ok;
+    if ( ( $op =~ /^IS$/i ) or ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
+        $null_columns_ok = 1;
     }
-  }
-  die "No custom field named $field found\n"
-    unless $cfid;
 
-#   use RT::CustomFields;
-#   my $CF = RT::CustomField->new( $self->CurrentUser );
-#   $CF->Load( $cfid );
+    my $cfid = 0;
+    if ($queue) {
+
+    my $q = RT::Queue->new( $self->CurrentUser );
+    $q->Load($queue) if ($queue);
+
+    my $cf;
+    if ( $q->id ) {
+        $cf = $q->CustomField($field);
+    }
+    else {
+        $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
+    }
+
+     $cfid = $cf->id;
+
+    }
 
 
-  my $null_columns_ok;
+    my $TicketCFs;
 
-  my $TicketCFs;
   # Perform one Join per CustomField
-  if ($self->{_sql_keywordalias}{$cfid}) {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid};
-  } else {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid} =
-      $self->_SQLJoin( TYPE   => 'left',
-		   ALIAS1 => 'main',
-		   FIELD1 => 'id',
-		   TABLE2 => 'ObjectCustomFieldValues',
-		   FIELD2 => 'ObjectId' );
+    if ( $self->{_sql_object_cf_alias}{$cfid} ) {
+    $TicketCFs = $self->{_sql_object_cf_alias}{$cfid};
   }
+    else {
+        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid} = $self->Join(
+            TYPE   => 'left',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'ObjectId'
+        );
 
-  $self->_OpenParen;
+    $self->Limit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD => 'ObjectType',
+        VALUE => ref($self->NewItem), # we want a single item, not a collection
+        ENTRYAGGREGATOR => 'AND'
+    );
 
-  $self->_SQLLimit( ALIAS      => $TicketCFs,
-		    FIELD      => 'ObjectType',
-		    VALUE      => ref($self),
-		);
+    if ($cfid) {
+    $self->Limit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD           => 'CustomField',
+        VALUE           => $cfid,
+        ENTRYAGGREGATOR => 'AND'
+    );
+    } else {
+    my $cfalias = $self->Join(
+        ALIAS1        => $TicketCFs,
+        FIELD1           => 'CustomField',
+        TABLE2          => 'CustomFields',
+        FIELD2          => 'id'
+    );
+    $self->Limit(
+        LEFTJOIN        => $cfalias,
+        FIELD           => 'Name',
+        VALUE           => $field,
+    );
 
-  $self->_SQLLimit( ALIAS      => $TicketCFs,
-		    FIELD      => 'Content',
-		    OPERATOR   => $op,
-		    VALUE      => $value,
-		    QUOTEVALUE => 1,
-		    @rest );
 
-  if (   $op =~ /^IS$/i
-	 or ( $op eq '!=' ) ) {
-    $null_columns_ok = 1;
+    }
+    }
+
+    $self->_OpenParen if ($null_columns_ok);
+
+    $self->_SQLLimit(
+        ALIAS      => $TicketCFs,
+        FIELD      => 'Content',
+        OPERATOR   => $op,
+        VALUE      => $value,
+        QUOTEVALUE => 1,
+        @rest
+    );
+    if ($null_columns_ok) {
+        $self->_SQLLimit(
+            ALIAS           => $TicketCFs,
+            FIELD           => 'Content',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
+            ENTRYAGGREGATOR => 'OR',
+        );
   }
-
-  #If we're trying to find tickets where the keyword isn't somethng,
-  #also check ones where it _IS_ null
-
-  if ( $op eq '!=' ) {
-    $self->_SQLLimit( ALIAS           => $TicketCFs,
-		      FIELD           => 'Content',
-		      OPERATOR        => 'IS',
-		      VALUE           => 'NULL',
-		      QUOTEVALUE      => 0,
-		      ENTRYAGGREGATOR => 'OR', );
-  }
-
-  $self->_SQLLimit( LEFTJOIN => $TicketCFs,
-		    FIELD    => 'CustomField',
-		    VALUE    => $cfid,
-		    ENTRYAGGREGATOR => 'OR' );
-
-
-
-  $self->_CloseParen;
+    $self->_CloseParen if ($null_columns_ok);
 
 }
 
@@ -1797,7 +1907,6 @@ sub LimitCustomField {
                  QUOTEVALUE    => 1,
                  @_ );
 
-    use RT::CustomFields;
     my $CF = RT::CustomField->new( $self->CurrentUser );
     if ( $args{CUSTOMFIELD} =~ /^\d+$/) {
 	$CF->Load( $args{CUSTOMFIELD} );

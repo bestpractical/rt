@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
 =head1 NAME
 
   RT::Transaction - RT\'s transaction object
@@ -47,6 +69,9 @@ ok(require RT::Transaction);
 =end testing
 
 =cut
+
+
+package RT::Transaction;
 
 use strict;
 no warnings qw(redefine);
@@ -126,11 +151,11 @@ sub Create {
 
 
     #Provide a way to turn off scrips if we need to
-        $RT::Logger->debug('About to think about scrips for transaction' .$self->Id);            
+        $RT::Logger->debug('About to think about scrips for transaction #' .$self->Id);
     if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Ticket' ) {
        $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
 
-        $RT::Logger->debug('About to prepare scrips for transaction' .$self->Id);            
+        $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
 
         $self->{'scrips'}->Prepare(
             Stage       => 'TransactionCreate',
@@ -139,7 +164,7 @@ sub Create {
             Transaction => $self->id,
         );
         if ($args{'CommitScrips'} ) {
-            $RT::Logger->debug('About to commit scrips for transaction' .$self->Id);
+            $RT::Logger->debug('About to commit scrips for transaction #' .$self->Id);
             $self->{'scrips'}->Commit();
         }
     }
@@ -742,7 +767,7 @@ sub IsInbound {
 
 # }}}
 
-sub _ClassAccessible {
+sub _OverlayAccessible {
     {
 
         id => { read => 1, type => 'int(11)', default => '' },
@@ -900,21 +925,27 @@ sub FriendlyObjectType {
 }
 
 sub UpdateCustomFields {
-    my ($self, %args) = @_;
+    my $self = shift;
+    my (%args) = @_;
+
     my $args_ref = $args{ARGSRef} or return;
 
     foreach my $arg ( keys %$args_ref ) {
-        $arg =~ /^(?:Transaction)?CustomField-(\d+).*?(?<!-Magic)$/ or next;
-	my $cfid = $1;
-	my $values = $args_ref->{$arg};
-	foreach my $value ( UNIVERSAL::isa($values, 'ARRAY') ? @$values : $values ) {
-	    next unless length($value);
-	    $self->_AddCustomFieldValue(
-		Field => $cfid,
-		Value => $value,
-		RecordTransaction => 0,
-	    );
-	}
+        next
+          unless ( $arg =~
+            /^(?:Object-RT::Transaction--)?CustomField-(\d+).*?(?<!-Magic)$/ );
+        my $cfid   = $1;
+        my $values = $args_ref->{$arg};
+        foreach
+          my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
+        {
+            next unless length($value);
+            $self->_AddCustomFieldValue(
+                Field             => $cfid,
+                Value             => $value,
+                RecordTransaction => 0,
+            );
+        }
     }
 }
 

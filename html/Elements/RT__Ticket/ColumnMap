@@ -1,0 +1,302 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$Name => undef
+$Attr => undef
+</%ARGS>
+
+
+<%INIT>
+our ( $COLUMN_MAP );
+
+sub ColumnMap {
+    my $name = shift;
+    my $attr = shift;
+
+    # First deal with the simple things from the map
+    if ( $COLUMN_MAP->{$name} ) {
+        return ( $COLUMN_MAP->{$name}->{$attr} );
+    }
+
+    # now, let's deal with harder things, like Custom Fields
+
+    elsif ( $name =~ /^(?:CF|CustomField)\.\{(.+)\}$/ ) {
+        my $field = $1;
+
+        if ( $attr eq 'attribute' ) {
+            return (undef);
+        }
+        elsif ( $attr eq 'title' ) {
+            return ( $field );
+        }
+        elsif ( $attr eq 'value' ) {
+	    # Display custom field contents, separated by newlines.
+            # For Image custom fields we also show a thumbnail here.
+            return sub {
+                my $values = $_[0]->CustomFieldValues($field);
+                return map {
+                    (
+                        ($_->CustomFieldObj->Type eq 'Image')
+                            ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
+                            : $_->Content
+                    ),
+                    \'<br>',
+                } @{ $values->ItemsArrayRef }
+	    };
+        }
+    }
+}
+
+sub LinkCallback {
+    my $method = shift;
+
+    my $mode            = $RT::Ticket::LINKTYPEMAP{$method}{Mode};
+    my $mode_uri        = $mode.'URI';
+    my $mode_is_local   = $mode.'IsLocal';
+    my $local_type      = 'Local'.$mode;
+
+    return sub {
+        map {
+            \'<A HREF="',
+            $_->$mode_uri->Resolver->HREF,
+            \'">',
+            ( $_->$mode_is_local ? $_->$local_type : $_->$mode ),
+            \'</A><BR>',
+        } @{ $_[0]->$method->ItemsArrayRef }
+    }
+}
+
+$COLUMN_MAP = {
+    QueueName => {
+        attribute => 'Queue',
+        title     => 'Queue',
+        value     => sub { return $_[0]->QueueObj->Name }
+    },
+    OwnerName => {
+        title     => 'Owner',
+        attribute => 'Owner',
+        value     => sub { return $_[0]->OwnerObj->Name }
+    },
+    id => {
+        attribute => 'id',
+        align     => 'right',
+        value     => sub { return $_[0]->id }
+    },
+    Status => {
+        attribute => 'Status',
+        value     => sub { return $_[0]->Status }
+    },
+    Subject => {
+        attribute => 'Subject',
+        value => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" }
+    },
+    ExtendedStatus => {
+        title     => 'Status',
+        attribute => 'Status',
+        value     => sub {
+            my $Ticket = shift;
+
+            if ( $Ticket->HasUnresolvedDependencies ) {
+                if (   $Ticket->HasUnresolvedDependencies( Type => 'approval' )
+                    or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
+                {
+                    return \'<em>', loc('(pending approval)'), \'</em>';
+                }
+                else {
+                    return \'<em>', loc('(pending other Collection)'), \'</em>';
+                }
+            }
+            else {
+                return loc( $Ticket->Status );
+            }
+
+          }
+    },
+    Priority => {
+        attribute => 'Priority',
+        value     => sub { return $_[0]->Priority }
+    },
+    InitialPriority => {
+        attribute => 'InitialPriority',
+        name => 'Initial Priority',
+        value     => sub { return $_[0]->InitialPriority }
+    },
+    FinalPriority => {
+        attribute => 'FinalPriority',
+        name => 'Final Priority',
+        value     => sub { return $_[0]->FinalPriority }
+    },
+    EffectiveId => {
+        attribute => 'EffectiveId',
+        value     => sub { return $_[0]->EffectiveId }
+    },
+    Type => {
+        attribute => 'Type',
+        value     => sub { return $_[0]->Type }
+    },
+    TimeWorked => {
+        attribute => 'TimeWorked',
+        title => 'Time Worked',
+        value     => sub { return $_[0]->TimeWorked }
+    },
+    TimeLeft => {
+        attribute => 'TimeLeft',
+        title     => 'Time Left',
+        value     => sub { return $_[0]->TimeLeft }
+    },
+    TimeEstimated => {
+        attribute => 'TimeEstimated',
+        title => 'Time Estimated',
+        value     => sub { return $_[0]->TimeEstimated }
+    },
+    Requestors => {
+        value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+    },
+    Cc => {
+        value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
+    },
+    AdminCc => {
+        value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
+    },
+    StartsRelative => {
+        title     => 'Starts',
+        attribute => 'Starts',
+        value     => sub { return $_[0]->StartsObj->AgeAsString }
+    },
+    StartedRelative => {
+        title     => 'Started',
+        attribute => 'Started',
+        value     => sub { return $_[0]->StartedObj->AgeAsString }
+    },
+    CreatedRelative => {
+        title     => 'Created',
+        attribute => 'Created',
+        value     => sub { return $_[0]->CreatedObj->AgeAsString }
+    },
+    LastUpdatedRelative => {
+        title     => 'Last Updated',
+        attribute => 'LastUpdated',
+        value     => sub { return $_[0]->LastUpdatedObj->AgeAsString }
+    },
+    ToldRelative => {
+        title     => 'Told',
+        attribute => 'Told',
+        value     => sub { return $_[0]->ToldObj->AgeAsString }
+    },
+    DueRelative => {
+        title     => 'Due',
+        attribute => 'Due',
+        value     => sub { 
+	    my $date = $_[0]->DueObj;
+	    if ($date && $date->Unix > 0 && $date->Unix < time()) {
+		return \'<span class="overdue">' . $date->AgeAsString . \'</span>';
+	    } else {
+		return $date->AgeAsString;
+	    }
+	}
+    },
+    ResolvedRelative => {
+        title     => 'Resolved',
+        attribute => 'Resolved',
+        value     => sub { return $_[0]->ResolvedObj->AgeAsString }
+    },
+    Starts => {
+        attribute => 'Starts',
+        value     => sub { return $_[0]->StartsObj->AsString }
+    },
+    Started => {
+        attribute => 'Started',
+        value     => sub { return $_[0]->StartedObj->AsString }
+    },
+    Created => {
+        attribute => 'Created',
+        value     => sub { return $_[0]->CreatedObj->AsString }
+    },
+    CreatedBy => {
+        attribute => 'CreatedBy',
+        title => 'Created By',
+        value     => sub { return $_[0]->CreatorObj->Name }
+    },
+    LastUpdated => {
+        attribute => 'LastUpdated',
+        title     => 'Last Updated',
+        value     => sub { return $_[0]->LastUpdatedObj->AsString }
+    },
+    LastUpdatedBy => {
+        attribute => 'LastUpdatedBy',
+        title     => 'Last Updated By',
+        value     => sub { return $_[0]->LastUpdatedByObj->Name }
+    },
+    Told => {
+        attribute => 'Told',
+        value     => sub { return $_[0]->ToldObj->AsString }
+    },
+    Due => {
+        attribute => 'Due',
+        value     => sub { return $_[0]->DueObj->AsString }
+    },
+    Resolved => {
+        attribute => 'Resolved',
+        value     => sub { return $_[0]->ResolvedObj->AsString }
+    },
+
+    # Everything from LINKTYPEMAP
+    (map {
+        $_ => { value => LinkCallback( $_ ) }
+    } keys %RT::Ticket::LINKTYPEMAP),
+
+    '_CLASS' => {
+        value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
+    },
+
+};
+
+
+
+# }}}
+$m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
+return ColumnMap($Name, $Attr);
+</%INIT>

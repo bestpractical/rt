@@ -1,8 +1,14 @@
-%# BEGIN LICENSE BLOCK
+%# BEGIN BPS TAGGED BLOCK {{{
 %# 
-%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
 %# 
-%# (Except where explictly superceded by other copyright notices)
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
 %# 
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
@@ -14,49 +20,61 @@
 %# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 %# General Public License for more details.
 %# 
-%# Unless otherwise specified, all modifications, corrections or
-%# extensions to this work which alter its source code become the
-%# property of Best Practical Solutions, LLC when submitted for
-%# inclusion in the work.
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 %# 
 %# 
-%# END LICENSE BLOCK
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
 <& /Elements/TitleBoxStart, title => loc("Quick search"), bodyclass => "" &>
 
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>                       
 <tr>                                                                          
-       <th align=left><&|/l&>Queue</&></th>                                         
-       <th align=right><font size=-1><&|/l&>New</&></font></th>
-       <th align=right><font size=-1><&|/l&>Open</&></font></th>          
+       <th class="collection-as-table" align=left><&|/l&>Queue</&></th>                                         
+       <th class="collection-as-table" align=right><&|/l&>New</&></th>
+       <th class="collection-as-table" align=right><&|/l&>Open</&></th>          
 </tr>
 
 <%PERL>
 my $i;
 while (my $queue = $Queues->Next) {
+       next unless ($queue->CurrentUserHasRight('ShowTicket'));
+
         my $new_q = "Queue = '".$queue->Name."' AND Status = 'new'";
         my $open_q = "Queue = '".$queue->Name."' AND Status = 'open'";
         my $all_q = "Queue = '".$queue->Name."' AND (Status = 'open' OR Status = 'new')";
 
-
-     $Tickets->ClearRestrictions;                                           
-     $Tickets->LimitStatus(VALUE => "open");                                
-     $Tickets->LimitQueue(VALUE => $queue->Name, OPERATOR => '=');            
+    $Tickets->FromSQL($open_q);
      my $open = $Tickets->Count();
 
-     $Tickets->ClearRestrictions;                                           
-     $Tickets->LimitStatus(VALUE => "new");
-     $Tickets->LimitQueue(VALUE => $queue->Name, OPERATOR => '=');            
+        $Tickets->FromSQL($new_q);
      my $new = $Tickets->Count();
-
 
 
 
 </%PERL>
 % $i++;                                                                         
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
-<td><A HREF="Search/Results.html?Query=<%$all_q%>&Rows=50" TITLE="<% $queue->Description %>"><%$queue->Name%></a></TD>
-<td align="right"><A HREF="Search/Results.html?Query=<%$new_q%>&Rows=50"><%$new%></a></TD>
-<td align="right"><A HREF="Search/Results.html?Query=<%$open_q%>&Rows=50"><%$open%></a></TD>
+<td><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$all_q%>&Rows=50" TITLE="<% $queue->Description %>"><%$queue->Name%></a></TD>
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$new_q%>&Rows=50"><%$new%></a></TD>
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Results.html?Query=<%$open_q%>&Rows=50"><%$open%></a></TD>
 </TR>
 % }
 </TABLE>

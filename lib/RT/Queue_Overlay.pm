@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,14 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
-
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
 =head1 NAME
 
   RT::Queue - an RT Queue object
@@ -43,18 +64,20 @@ use RT::Queue;
 
 =cut
 
+
+package RT::Queue;
+
 use strict;
 no warnings qw(redefine);
 
-use vars qw(@STATUS @ACTIVE_STATUS @INACTIVE_STATUS $RIGHTS);
+use vars qw(@DEFAULT_ACTIVE_STATUS @DEFAULT_INACTIVE_STATUS $RIGHTS);
+
 use RT::Groups;
 use RT::ACL;
-use RT::EmailParser;
+use RT::Interface::Email;
 
-
-@ACTIVE_STATUS = qw(new open stalled);
-@INACTIVE_STATUS = qw(resolved rejected deleted);
-@STATUS = (@ACTIVE_STATUS, @INACTIVE_STATUS);
+@DEFAULT_ACTIVE_STATUS = qw(new open stalled);
+@DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
 
 # $self->loc('new'); # For the string extractor to get a string to localize
 # $self->loc('open'); # For the string extractor to get a string to localize
@@ -159,7 +182,12 @@ Returns an array of all ActiveStatuses for this queue
 
 sub ActiveStatusArray {
     my $self = shift;
-    return (@ACTIVE_STATUS);
+    if (@RT::ActiveStatus) {
+    	return (@RT::ActiveStatus)
+    } else {
+        $RT::Logger->warning("RT::ActiveStatus undefined, falling back to deprecated defaults");
+        return (@DEFAULT_ACTIVE_STATUS);
+    }
 }
 
 # }}}
@@ -174,7 +202,12 @@ Returns an array of all InactiveStatuses for this queue
 
 sub InactiveStatusArray {
     my $self = shift;
-    return (@INACTIVE_STATUS);
+    if (@RT::InactiveStatus) {
+    	return (@RT::InactiveStatus)
+    } else {
+        $RT::Logger->warning("RT::InactiveStatus undefined, falling back to deprecated defaults");
+        return (@DEFAULT_INACTIVE_STATUS);
+    }
 }
 
 # }}}
@@ -189,7 +222,7 @@ Returns an array of all statuses for this queue
 
 sub StatusArray {
     my $self = shift;
-    return (@STATUS);
+    return ($self->ActiveStatusArray(), $self->InactiveStatusArray());
 }
 
 # }}}
@@ -271,10 +304,26 @@ sub IsInactiveStatus {
 
 # {{{ sub Create
 
+
+
+
 =head2 Create
 
 Create takes the name of the new queue 
 If you pass the ACL check, it creates the queue and returns its queue id.
+
+=begin testing
+
+my $queue = RT::Queue->new($RT::SystemUser);
+my ($id, $val) = $queue->Create( Name => 'Test1');
+ok($id, $val);
+
+($id, $val) = $queue->Create( Name => '66');
+ok(!$id, $val);
+
+
+=end testing
+
 
 =cut
 
@@ -388,20 +437,14 @@ sub ValidateName {
     my $tempqueue = new RT::Queue($RT::SystemUser);
     $tempqueue->Load($name);
 
-    #If we couldn't load it :)
-    unless ( $tempqueue->id() ) {
-        return (1);
-    }
-
     #If this queue exists, return undef
-    #Avoid the ACL check.
     if ( $tempqueue->Name() ) {
         return (undef);
     }
 
     #If the queue doesn't exist, return 1
     else {
-        return (1);
+        return ($self->SUPER::ValidateName($name));
     }
 
 }
@@ -457,7 +500,7 @@ Returns an RT::CustomFields object containing all global custom fields, as well 
 
 =cut
 
-# XXX XXX - this should become TicketCustomFields
+# XXX TODO - this should become TicketCustomFields
 
 sub CustomFields {
     my $self = shift;
@@ -609,7 +652,7 @@ sub AddWatcher {
             }
         }
      else {
-            $RT::Logger->warn( "$self -> AddWatcher got passed a bogus type");
+            $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
             return ( 0, $self->loc('Error in parameters to Queue->AddWatcher') );
         }
     }
@@ -661,7 +704,7 @@ sub _AddWatcher {
              my $new_user = RT::User->new($RT::SystemUser);
 
             my ( $Address, $Name ) =  
-               RT::EmailParser::ParseAddressFromHeader('', $args{'Email'});
+               RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
 
             my ( $Val, $Message ) = $new_user->Create(
                 Name => $Address,
@@ -770,7 +813,7 @@ sub DeleteWatcher {
             }
         }
         else {
-            $RT::Logger->warn( "$self -> DeleteWatcher got passed a bogus type");
+            $RT::Logger->warning( "$self -> DeleteWatcher got passed a bogus type");
             return ( 0, $self->loc('Error in parameters to Queue->DeleteWatcher') );
         }
     }
