@@ -21,7 +21,7 @@ $mode = shift || &print_help;
 DBI 1.13
 DBIx::DataSource 0.02
 DBIx::DBSchema 0.14
-DBIx::SearchBuilder 0.19
+DBIx::SearchBuilder 0.20
 HTML::Entities 
 HTML::Mason 0.895
 CGI::Cookie 1.06
@@ -34,6 +34,7 @@ Getopt::Long
 Tie::IxHash 
 Text::Wrapper 
 Text::Template
+File::Spec 0.8
 File::Temp 
 Log::Dispatch 1.6
 );

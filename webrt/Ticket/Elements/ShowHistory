@@ -4,7 +4,7 @@
 %	if ($Transactions->IsLast) {
 	<a name="lasttrans">
 % 	}
-	<& ShowTransaction, Transaction => $Transaction, FullHeaders => $FullHeaders &>
+	    <& ShowTransaction, Transaction => $Transaction, FullHeaders => $FullHeaders, Collapsed => $Collapsed &>
 <BR>
 %}
 
@@ -17,4 +17,5 @@ my $Transactions = $Ticket->Transactions;
 $Ticket => undef
 $ShowHeaders => undef
 $FullHeaders => undef
+$Collapsed => undef
 </%ARGS>

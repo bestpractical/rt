@@ -138,8 +138,9 @@ sub MembersObj {
 
 =head2 AddMember
 
-AddMember adds a user to this group.  It takes a user id and 
-returns true on successful addition or null on failure.
+AddMember adds a user to this group.  It takes a user id.
+Returns a two value array. the first value is true on successful 
+addition or 0 on failure.  The second value is a textual status msg.
 
 =cut
 
@@ -214,6 +215,8 @@ sub HasMember {
 Takes the user id of a member.
 If the current user has apropriate rights,
 removes that GroupMember from this group.
+Returns a two value array. the first value is true on successful 
+addition or 0 on failure.  The second value is a textual status msg.
 
 =cut
 

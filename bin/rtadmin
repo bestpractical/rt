@@ -34,7 +34,7 @@ PickMode();
 
 sub Help {
 
-# {{{ help_acl
+    # {{{ help_acl
 my $help_acl ="
         Access control
 	--grant-right <right> 
@@ -43,20 +43,22 @@ my $help_acl ="
           --groupid <group>
 	--list-rights";
 # }}}
-
-# {{{ help_keyword_sel
+    
+    # {{{ help_keyword_sel
 my $help_keyword_sel = "
        Keyword Selections
-       --add-keyword-select [name]
+       --add-keyword-select
+       --modify-keyword-select <name>
+          --name <name>
           --root <keyword>
           --single 
           --multiple
           --depth  <int>
-        --delete-keyword-select [name]";
 
+        --delete-keyword-select <name>";
 # }}}
-
-# {{{ help_scrip
+    
+    # {{{ help_scrip
 my $help_scrip = "
         Scrips
         --create-scrip
@@ -67,8 +69,8 @@ my $help_scrip = "
         --delete-scrip <id>
 	--list-scrips";
 # }}}
-
-# {{{ help_template  
+    
+    # {{{ help_template  
 my $help_template = "      
         Templates
         --delete-template [<id>|<name>]
@@ -84,8 +86,8 @@ my $help_template = "
          --list-templates";
 
 # }}}
-
-
+    
+    
 print <<EOF;
 
 USAGE:  rtadmin --user <userid> [Userflags]
@@ -429,7 +431,7 @@ sub AdminQueue {
         AdminTemplates($queue_obj->Id());
         AdminScrips($queue_obj->Id());
 	AdminRights($queue_obj->Id());
-	
+	AdminKeywordSelects($queue_obj->Id());
 
 	#Check if we need to delete the queue
 	if ($args{'delete'}) {
@@ -443,9 +445,76 @@ sub AdminQueue {
 # }}}
 
 
-# {{{ AdminKeyword
-sub AdminKeyword {
+# {{{ AdminKeywords
+sub AdminKeywords {
     my $keyword = shift;
+}
+# }}}
+
+# {{{ AdminKeywordSelects
+sub AdminKeywordSelects {
+    my $queue = shift;
+    # O for queue means global
+
+    my %args;
+    GetOptions(\%args, 'add-keyword-select','delete-keyword-select=s',
+	       'modify-keyword-select=s', 
+	       'keyword-select-Keyword|ks-keyword=s', 
+	       'keyword-select-Single|ks-single', 
+	       'keyword-select-Multiple|ks-multiple', 
+	       'keyword-select-Depth|ks-depth=i', 
+	       'keyword-select-Name|ks-name=s'
+	      );
+
+    # sanitize single vs multiple.
+    if ($args{'keyword-select-Multiple'}) {
+	$args{'keyword-select-Single'} = 0;
+    }
+    
+    use RT::KeywordSelect;
+    my $keysel_obj = new RT::KeywordSelect($CurrentUser);
+    if ($args{'add-keyword-select'}) {
+	
+	my ($val, $msg) = $keysel_obj->Create( Keyword => $args{'keyword-select-Keyword'},
+					       Depth => $args{'keyword-select-Depth'},
+					       Single => $args{'keyword-select-Single'},
+					       Name => $args{'keyword-select-Name'},
+					       ObjectType => 'Ticket',
+					       ObjectField => 'Queue',
+					       ObjectValue => $queue);
+	print $msg ."\n";
+    }	
+    elsif ($args{'modify-keyword-select'}) {
+	$keysel_obj->LoadByName(Name => $args{'modify-keyword-select'},
+				Queue => $queue
+			       );
+	
+	unless ($keysel_obj->Id()) {
+	    print "Keyword select not found\n";
+	    return();
+	}	
+	my @attributes = qw( Name Keyword Single Depth );
+	foreach my $attrib (@attributes) {
+	    if ( (exists ($args{"keyword-select-$attrib"})) and
+		 ($keysel_obj->$attrib() ne $args{"keyword-select-$attrib"})) {
+		
+		my $method = "Set$attrib";
+		my ($val, $msg) = $keysel_obj->$method($args{"keyword-select-$attrib"});
+				
+		print "Keyword select ".$keysel_obj->Name. " $attrib:  $msg\n";	    }
+	}
+
+
+    }	
+
+    
+    elsif ($args{'delete-keyword-select'}) {
+$keysel_obj->LoadByName(Name => $args{'delete-keyword-select'},
+				Queue => $queue);
+
+	$keysel_obj->Delete();
+	
+    }
 }
 # }}}
 
@@ -537,6 +606,7 @@ sub AdminSystem {
     AdminTemplates(0);
     AdminScrips(0);
     AdminRights(0);
+    AdminKeywordSelects(0);
 }
 # }}}
 

@@ -97,6 +97,7 @@ sub _Accessible {
 		ObjectType  => 'read/write', # currently only C<Ticket>
 		ObjectField => 'read/write', #optional, currently only C<Queue>
 		ObjectValue => 'read/write', #constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
+		Deleted => 'read/write'
 	       );
     return($self->SUPER::_Accessible(@_, %Cols));  
 }
@@ -168,28 +169,37 @@ sub Create {
 		 ObjectField => undef,
 		 ObjectValue => undef,
 		 @_);
-
-    if ( $args{'Keyword'} && $args{'Keyword'} !~ /^\d+$/ ) {
-	#TODO +++ never die in core code. return failure.
-	$RT::Logger->debug("Keyword ".$args{'Keyword'} ." is not an integer.");
-	return(undef);
-    }
+# TODO +++ ACL
+#    unless ($self->CurrentUserHasRight('ModifyKeywordSelects')) {
+#        $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
+#	return (undef, 'Permission denied');
+#    }
 
     my $Keyword = new RT::Keyword($self->CurrentUser);
-    $Keyword->Load($args{'Keyword'});
-    $args{'Name'} = $Keyword->Name if  (!$args{'Name'});
+    
+    if ( $args{'Keyword'} && $args{'Keyword'} !~ /^\d+$/ ) {
+	$Keyword->LoadByPath($args{'Keyword'});
+    }	
+    else {
+	$Keyword->Load($args{'Keyword'});
+    }
 
-    #TODO: ACL check here +++
+    unless ($Keyword->Id) {
+	$RT::Logger->debug("Keyword ".$args{'Keyword'} ." not found\n");
+	return(undef, 'Keyword not found');
+    }
+    
+    $args{'Name'} = $Keyword->Name if  (!$args{'Name'});
     
     return($self->SUPER::Create( Name => $args{'Name'},
-				 Keyword => $args{'Keyword'},
+				 Keyword => $Keyword->Id,
 				 Single => $args{'Single'},
 				 Depth => $args{'Depth'},
 				 ObjectType => $args{'ObjectType'},
 				 ObjectField => $args{'ObjectField'},
 				 ObjectValue => $args{'ObjectValue'}));
-
-
+    
+    
 }
 # }}}
 
@@ -197,7 +207,7 @@ sub Create {
 
 =item Delete
 
-Delete this keyword select object. Does not currently remove keywords from tickets
+Delete this keyword select object. Does not remove keywords from tickets
 
 =cut
 
@@ -207,7 +217,10 @@ sub Delete {
         $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
 	return (undef);
     }
-    return($self->SUPER::Delete());
+    
+    
+    
+    return($self->SetDeleted(1));
 
 }
 # }}}
@@ -300,14 +313,15 @@ sub HasRight {
     my %args = ( Right => undef,
                  Principal => undef,
                  @_ );
-    
-    if ($self->SUPER::_Value('Queue') > 0) {
+
+    if (($self->__Value('ObjectField') eq 'Queue') and
+	($self->__Value('ObjectValue') >0 )) {
         return ( $args{'Principal'}->HasQueueRight( 
-		      Right => $args{'Right'},
-		      Queue => $self->SUPER::_Value('Queue') )); 
+						   Right => $args{'Right'},
+						   Queue => $self->SUPER::_Value('Queue') )); 
     }
     else {
-        return( $args{'Principal'}->HasSystemRight( Right => $args{'Right'}) );
+        return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
     }
 }
 # }}}

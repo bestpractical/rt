@@ -11,7 +11,7 @@ use RT::ObjectKeywords;
 
 @ISA = qw(RT::Record);
 
-# {{{ Core modules
+# {{{ Core methods
 sub _Init {
     my $self = shift;
     $self->{'table'} = "Keywords";
@@ -94,6 +94,86 @@ sub Create {
 			 Parent => $args{'Parent'}
 			);
 }
+
+# }}}
+
+# {{{ sub LoadByPath 
+
+=head2 LoadByPath STRING
+
+LoadByPath takes a string.  Whatever character starts the string is assumed to be a delimter.  The routine parses the keyword path description and tries to load the keyword
+described by that path.  It returns a numerical status and a textual message.
+A non-zero status means 'Success'.
+
+=cut
+
+sub LoadByPath {
+    my $self = shift;
+
+    my $path = shift;
+    
+    my $delimiter = substr($path,0,1);
+    $RT::Logger->debug("Delimiter is $delimiter");
+    my @path_elements = split($delimiter, $path);
+    
+    #throw awya the first bogus path element
+    shift @path_elements;
+    
+    my $parent = 0;
+    my ($tempkey);
+    #iterate through all the path elements loading up a
+    #keyword object. when we're done, this object becomes 
+    #whatever the last tempkey object was.
+    while (my $name = shift @path_elements) {
+	
+	$tempkey = new RT::Keyword($self->CurrentUser);
+	$RT::Logger->debug("Going to load $name which was begat by $parent\n");
+	my $loaded = $tempkey->LoadByNameAndParentId($name, $parent);
+	
+	#Set the new parent for loading its child.
+	$parent = $tempkey->Id;
+	
+	#If the parent Id is 0, then we're not recursing through the tree
+	# time to bail
+	return (0, "Couldn't find keyword") if ($tempkey->id == 0);
+
+    }	
+    #Now that we're through with the loop, the last keyword loaded
+    # is the the one we wanted.
+    #we shouldn't need to explicitly load it like this. but we do *sigh*.
+    # once we get data caching, it won't matter so much.
+    
+    $self->Load($tempkey->Id);
+    
+    return (1, 'Keyword loaded');
+}
+
+
+# }}}
+
+# {{{ LoadByNameAndParentId
+=head2 LoadByNameAndParentId NAME PARENT_ID
+  
+Takes two arguments, a keyword name and a parent id. Loads a keyword into 
+  the current object.
+
+=cut
+  
+sub LoadByNameAndParentId {
+    my $self = shift;
+    my $name = shift;
+    my $parentid = shift;
+    
+    my $val = $self->LoadByCols( Name => $name, Parent => $parentid);
+    if ($self->Id) {
+	$RT::Logger->debug("Found keyword ".$self->Name."!\n");
+	return ($self->Id, 'Keyword loaded');
+    }	
+    else {
+	$RT::Logger->debug("not Found keyword ".$name."!\n");
+	return (0, 'Keyword could not be found');
+    }
+  }
 
 # }}}
 
