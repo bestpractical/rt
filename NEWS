@@ -1,3 +1,62 @@
+17 jul 99
+---------
+
+I've integrated my RT into the development branch rt 1.1, the version
+is tagged as 1.1pre.1. I don't have the overview of whom other others
+deserves credits for this - I've picked up quite a few patches from
+the dev-list.
+
+Generally:
+==========
+Now a correspondence-official template is required, so when upgrading
+you will have to copy your correspondence-template to
+correspondence-official for each queue you have (I will eventually put
+it into the Makefile). The correspondence-official is for mailing the
+correspondence to the requestor, when the same correspondence is
+mailed to the queue members or request owner, the correspondence
+template is used.
+
+If somebody that doesn't have reply access tries to reply, the reply
+will be changed to a comment.
+
+Killing requests doesn't kill requests anymore. I intend to move this
+to a "cleanup" procedure instead.
+
+Mail-gate:
+==========
+If you create a request by mail, you can now add 
+
+%RT CC (receipiant-list)
+
+and/or
+
+%RT BCC (receipiant-list)
+
+to the mail body, and RT will send Cc's or Bcc's of the request to the
+receipiants.
+
+Easier authentication; it will recognize users on their emails, not
+only the user_id. So, if a mail user sends an email with the
+from-email matching the email of the user stored in DB, he will
+automaticly be authenticated. Eventually, stronger authentication is
+required, e.g. pgp (for mail, and ssl for web).
+
+WebRT:
+======
+There are more queue filter options, it's possible to sort by area,
+and it's possible to limit the number of output. The requestor-field
+has grown a bit to allow people enter emails there.
+
+Now replies and comments with quotes will (hopefully!) be better to
+handle; wide (>76) messages are wrapped before it is quoted, and the
+reply/comment-box will never again be narrower than the message
+quoted.
+
+The history view has been altered a lot. Now it's possible to change
+all the request attributes directly from the history view, witch
+should speed up work with WebRT considerably. The drawback is that the
+interface is uglier.
+
 7 Jul 99
 --------
 
