@@ -288,6 +288,27 @@ sub ProcessSearchQuery {
     }
 
     # }}}   
+    # {{{ Limit KeywordSelects
+    foreach my $KeywordSelectId (
+      map { /^KeywordSelect(\d+)$/; $1 }
+        grep { /^KeywordSelect(\d+)$/; }
+          keys %{$args{ARGS}}
+    ) {
+      my $form = $args{ARGS}->{"KeywordSelect$KeywordSelectId"};
+      my $oper = $args{ARGS}->{"KeywordSelectOp$KeywordSelectId"};
+      foreach my $KeywordId ( ref($form) ? @{ $form } : ( $form ) ) {
+       if ($KeywordId) {
+        $session{'tickets'}->LimitKeyword(
+                                           KEYWORDSELECT => $KeywordSelectId,
+                                           OPERATOR => $oper,
+                                           KEYWORD => $KeywordId,
+                                         );
+         }
+      }
+
+    }
+    # }}}
+
 }
 # }}}
 

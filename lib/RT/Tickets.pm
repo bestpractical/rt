@@ -50,7 +50,7 @@ use RT::EasySearch;
 	      ContentType => 'TRANSFIELD',
 	      Watcher => 'WATCHERFIELD',
 	      LinkedTo => 'LINKFIELD',
-	      
+              Keyword => 'KEYWORDFIELD'
 	    );
 
 # }}}
@@ -96,7 +96,7 @@ sub Limit {
     my $index = $self->_NextIndex;
     
     #make the TicketRestrictions hash the equivalent of whatever we just passed in;
-    %{$self->{'TicketRestrictions'}{"$index"}} = %args;
+    %{$self->{'TicketRestrictions'}{$index}} = %args;
     
     
     $self->{'RecalcTicketLimits'} = 1;
@@ -596,6 +596,51 @@ sub LimitTimeLeft {
 
 # }}}
 
+
+# {{{ sub LimitKeyword
+
+=head2 KEY=>VALUE, ...
+
+Takes a list of key/value pairs with the following keys:
+
+=over 4
+
+=item KEYWORDSELECT - KeywordSelect id
+
+=item OPERATOR - (for KEYWORD only - KEYWORDSELECT operator is always `=')
+
+=item KEYWORD - Keyword id
+
+=back
+
+=cut
+
+sub LimitKeyword {
+    my $self = shift;
+    my %args = ( KEYWORD => undef,
+                 KEYWORDSELECT => undef,
+		 OPERATOR => '=',
+		 DESCRIPTION => undef,
+		 FIELD => 'Keyword',
+		 @_
+	       );
+
+    use RT::KeywordSelect;
+    my $KeywordSelect = RT::KeywordSelect->new($self->CurrentUser);
+    $KeywordSelect->Load($args{KEYWORDSELECT});
+    use RT::Keyword;
+    my $Keyword = RT::Keyword->new($self->CurrentUser);
+    $Keyword->Load($args{KEYWORD});
+    $args{'DESCRIPTION'} ||= $KeywordSelect->Name. " $args{OPERATOR} ". $Keyword->Name;
+    
+    my $index = $self->_NextIndex;
+    %{$self->{'TicketRestrictions'}{$index}} = %args;
+    
+    $self->{'RecalcTicketLimits'} = 1;
+    return ($index);
+}
+# }}}
+
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
@@ -661,10 +706,32 @@ sub DescribeRestrictions  {
     my ($row, %listing);
     
     foreach $row (keys %{$self->{'TicketRestrictions'}}) {
-	$listing{$row} = $self->{'TicketRestrictions'}{"$row"}{'DESCRIPTION'};
+	$listing{$row} = $self->{'TicketRestrictions'}{$row}{'DESCRIPTION'};
     }
     return (%listing);
 }
+# }}}
+
+# {{{ sub RestrictionValues
+
+=head2 RestrictionValues FIELD
+
+Takes a restriction field and returns a list of values this field is restricted
+to.
+
+=cut
+
+sub RestrictionValues {
+    my $self = shift;
+    my $field = shift;
+    map $self->{'TicketRestrictions'}{$_}{'VALUE'},
+      grep {
+             $self->{'TicketRestrictions'}{$_}{'FIELD'} eq $field
+             && $self->{'TicketRestrictions'}{$_}{'OPERATOR'} eq "="
+           }
+        keys %{$self->{'TicketRestrictions'}};
+}
+
 # }}}
 
 # {{{ sub ClearRestrictions
@@ -695,7 +762,7 @@ Removes that restriction from the session's limits.
 sub DeleteRestriction {
     my $self = shift;
     my $row = shift;
-    delete $self->{'TicketRestrictions'}{"$row"};
+    delete $self->{'TicketRestrictions'}{$row};
     
     $self->{'RecalcTicketLimits'} = 1;
     #make the underlying easysearch object forget all its preconceptions
@@ -716,55 +783,55 @@ sub _ProcessRestrictions {
 
     my $row;
     foreach $row (keys %{$self->{'TicketRestrictions'}}) {
-
+        my $restriction = $self->{'TicketRestrictions'}{$row};
 	# {{{ if it's an int
 	
-	if ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'INT' ) {
-	    if ($self->{'RecalcTicketLimits'}{"$row"}{'OPERATOR'} eq '=') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	if ($TYPES{$restriction->{'FIELD'}} eq 'INT' ) {
+	    if ($restriction->{'OPERATOR'} eq '=') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			      );
 	    }
-	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '!=') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    elsif ($restriction->{'OPERATOR'} eq '!=') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '!=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
-	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '>') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    elsif ($restriction->{'OPERATOR'} eq '>') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '>',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
-	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '<') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    elsif ($restriction->{'OPERATOR'} eq '<') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '<',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );	
 	    }
 	}
 	# }}}
 	# {{{ if it's an enum
-	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'ENUM') {
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'ENUM') {
 	    
-	    if ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '=') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    if ($restriction->{'OPERATOR'} eq '=') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'OR',
 			      OPERATOR => '=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
-	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '!=') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    elsif ($restriction->{'OPERATOR'} eq '!=') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '!=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
 	    
@@ -772,54 +839,54 @@ sub _ProcessRestrictions {
 	# }}}
 	# {{{ if it's a date
 
-	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'DATE') {
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'DATE') {
 	    
-	    if ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '=') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    if ($restriction->{'OPERATOR'} eq '=') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
-	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '>') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    elsif ($restriction->{'OPERATOR'} eq '>') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '>',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
-	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '<') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    elsif ($restriction->{'OPERATOR'} eq '<') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => '<',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }	    
 	}
 	# }}}
  	# {{{ if it's a string
 
-	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'STRING') {
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'STRING') {
 	    
-	    if ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq '=') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    if ($restriction->{'OPERATOR'} eq '=') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'OR',
 			      OPERATOR => '=',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
-	    elsif ($self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} eq 'LIKE') {
-		$self->SUPER::Limit( FIELD => $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
+	    elsif ($restriction->{'OPERATOR'} eq 'LIKE') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => 'LIKE',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
 	}
 
 	# }}}
 	# {{{ if it's Transaction content that we're hunting for
-	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'TRANSFIELD') {
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'TRANSFIELD') {
 
 	    #Basically, we want to make sure that the limits apply to the same attachment,
 	    #rather than just another attachment for the same ticket, no matter how many 
@@ -845,9 +912,9 @@ sub _ProcessRestrictions {
 	    #Search for the right field
 	    $self->SUPER::Limit(ALIAS => $self->{'TicketAliases'}{'TransFieldAttachAlias'},
 				  ENTRYAGGREGATOR => 'AND',
-				  FIELD =>    $self->{'TicketRestrictions'}{"$row"}{'FIELD'},
-				  OPERATOR => $self->{'TicketRestrictions'}{"$row"}{'OPERATOR'} ,
-				  VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'VALUE'} );
+				  FIELD =>    $restriction->{'FIELD'},
+				  OPERATOR => $restriction->{'OPERATOR'} ,
+				  VALUE =>    $restriction->{'VALUE'} );
 	    
 
 	}
@@ -861,28 +928,28 @@ sub _ProcessRestrictions {
 	# takes TARGET or BASE which is the TARGET or BASE id that we're searching for
 	# takes TYPE which is the type of link we're looking for.
 
-	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'LINKFIELD') {
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'LINKFIELD') {
 
 	    
 	    my $LinkAlias = $self->NewAlias ('Links');
 
 	    
 	    #Make sure we get the right type of link, if we're restricting it
-	    if ($self->{'TicketRestrictions'}{"$row"}{'TYPE'}) {
+	    if ($restriction->{'TYPE'}) {
 		$self->SUPER::Limit(ALIAS => $LinkAlias,
 				    ENTRYAGGREGATOR => 'AND',
 				    FIELD =>   'Type',
 				    OPERATOR => '=',
-				    VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'TYPE'} );
+				    VALUE =>    $restriction->{'TYPE'} );
 	    }
 	    
 	    #If we're trying to limit it to things that are target of
-	    if ($self->{'TicketRestrictions'}{"$row"}{'TARGET'}) {
+	    if ($restriction->{'TARGET'}) {
 		$self->SUPER::Limit(ALIAS => $LinkAlias,
 				    ENTRYAGGREGATOR => 'AND',
 				    FIELD =>   'LocalTarget',
 				    OPERATOR => '=',
-				    VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'TARGET'} );
+				    VALUE =>    $restriction->{'TARGET'} );
 
 		
 		#If we're searching on target, join the base to ticket.id
@@ -895,12 +962,12 @@ sub _ProcessRestrictions {
 
 	    }
 	    #If we're trying to limit it to things that are base of
-	    elsif ($self->{'TicketRestrictions'}{"$row"}{'BASE'}) {
+	    elsif ($restriction->{'BASE'}) {
 		$self->SUPER::Limit(ALIAS => $LinkAlias,
 				    ENTRYAGGREGATOR => 'AND',
 				    FIELD =>   'LocalBase',
 				    OPERATOR => '=',
-				    VALUE =>    $self->{'TicketRestrictions'}{"$row"}{'BASE'} );
+				    VALUE =>    $restriction->{'BASE'} );
 		
 		#If we're searching on base, join the target to ticket.id
 		$self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
@@ -913,7 +980,7 @@ sub _ProcessRestrictions {
 		
 	# }}}
 	# {{{ if it's a watcher that we're hunting for
-	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'WATCHERFIELD') {
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'WATCHERFIELD') {
 	    my $Watch = $self->NewAlias('Watchers');
 
 	    #TODO use this to allow searching on things like email addresses.
@@ -937,20 +1004,51 @@ sub _ProcessRestrictions {
 	    $self->SUPER::Limit( ALIAS => $Watch,
 				 FIELD => 'Owner',
 				 ENTRYAGGREGATOR => 'OR',
-				 VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
-				 OPERATOR => $self->{'TicketRestrictions'}{"$row"}{'OPERATOR'}
+				 VALUE => $restriction->{'VALUE'},
+				 OPERATOR => $restriction->{'OPERATOR'}
 			       );
 	    
 	    #If we only want a specific type of watchers, then limit it to that
-	    if ($self->{'TicketRestrictions'}{"$row"}{'TYPE'}) {
+	    if ($restriction->{'TYPE'}) {
 		$self->SUPER::Limit( ALIAS => $Watch,
 				     FIELD => 'Type',
 				     ENTRYAGGREGATOR => 'OR',
-				     VALUE => $self->{'TicketRestrictions'}{"$row"}{'TYPE'},
+				     VALUE => $restriction->{'TYPE'},
 				     OPERATOR => '=');
 	    }
 	}
 	# }}}
+	# {{{ keyword
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'KEYWORDFIELD') {
+            my $ObjKeywordsAlias = $self->NewAlias('ObjectKeywords');
+            $self->Join(
+                         ALIAS1 => 'main',
+                         FIELD1 => 'id',
+                         ALIAS2 => $ObjKeywordsAlias,
+                         FIELD2 => 'ObjectId'
+                       );
+            $self->SUPER::Limit(
+                                 ALIAS => $ObjKeywordsAlias,
+                                 FIELD => 'Keyword',
+                                 VALUE => $restriction->{'KEYWORD'},
+                                 OPERATOR => $restriction->{'OPERATOR'},
+                                 ENTRYAGGREGATOR => 'AND',
+                               );
+            $self->SUPER::Limit(
+                                 ALIAS => $ObjKeywordsAlias,
+                                 FIELD => 'KeywordSelect',
+                                 VALUE => $restriction->{'KEYWORDSELECT'},
+                                 ENTRYAGGREGATOR => 'AND',
+                               );
+            $self->SUPER::Limit(
+                                 ALIAS => $ObjKeywordsAlias,
+                                 FIELD => 'ObjectType',
+                                 VALUE => 'Ticket',
+                                 ENTRYAGGREGATOR => 'AND',
+                               );
+        }
+        # }}}
+
     }
     $self->{'RecalcTicketLimits'} = 0;
 }

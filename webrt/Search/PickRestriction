@@ -32,6 +32,19 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp", True => "matches", False 
 <& /Elements/SelectBoolean, Name => "StatusOp", True => "is", False => "isn't", TrueVal=> '=', FalseVal => '!=' &>  
 <& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
+% while ( my $KeywordSelect = $KeywordSelects->Next ) {
+%   my $Descendents = $KeywordSelect->KeywordObj->Descendents;
+<li><% $KeywordSelect->Name %>
+<& /Elements/SelectBoolean, Name => "KeywordSelectOp". $KeywordSelect->id, True => "is", False => "isn't", TrueVal=> '=', FalseVal => '!=' &>
+%#TODO: move the keywordSelect select out ot a seperate file
+<SELECT NAME="KeywordSelect<% $KeywordSelect->id %>">
+<OPTION VALUE="">-</OPTION>
+%   foreach my $kid ( keys %{$Descendents} ) {
+<OPTION VALUE="<% $kid %>"><% $Descendents->{$kid} %></OPTION>
+%   }
+</SELECT>
+% }
+
 <li><& /Elements/Checkbox, Name => "LimitResultsPerPage",  Default=>'checked' &>
 Results per page
 <& /Elements/SelectResultsPerPage, Name => "ValueOfResultsPerPage" &>
@@ -47,3 +60,13 @@ Results per page
 <& /Elements/Submit &>
 
 </FORM>
+
+
+ <%INIT>
+ my $KeywordSelects = new RT::KeywordSelects $session{'CurrentUser'};
+ foreach ( $session{'tickets'}->RestrictionValues('Queue') ) {
+        $KeywordSelects->LimitToQueue($_);
+ }
+
+ $KeywordSelects->IncludeGlobals;
+</%INIT>
