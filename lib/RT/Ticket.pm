@@ -450,6 +450,7 @@ sub Import {
 		Due => undef,
 		Created => undef,
 		Updated => undef,
+	Resolved => undef,
 		Told => undef,
 		@_);
     
@@ -557,6 +558,7 @@ sub Import {
 				  Created => $args{'Created'},
 				  Told => $args{'Told'},
 				  LastUpdated => $args{'Updated'},
+	Resolved => $args{Resolved},
 				  Due => $args{'Due'},
 				 );
 
