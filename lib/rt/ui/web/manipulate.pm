@@ -465,31 +465,69 @@ sub display_queue {
     $reverse = ' DESC'; 
   }
   
-  if ($rt::ui::web::FORM{'q_sort'} eq "Date Due") {
+  if ($rt::ui::web::FORM{'q_sort'} eq "date_due") {
     if ($order_ops){
       $order_ops .= ", ";
     }
     $order_ops .= "date_due";
   }
-  if ($rt::ui::web::FORM{'q_sort'} eq "Timestamp") {       
+  if ($rt::ui::web::FORM{'q_sort'} eq "timestamp") {       
     if ($order_ops){
       $order_ops .= ", ";
     }
-    $order_ops .= "date_acted"; 
+    $order_ops .= "date_told"; 
   }
-  if ($rt::ui::web::FORM{'q_sort'} eq "Ticket Number") {       
+  if ($rt::ui::web::FORM{'q_sort'} eq "number") {       
     if ($order_ops){
       $order_ops .= ", ";
     }
     $order_ops .= "serial_num"; 
   }
-  if ($rt::ui::web::FORM{'q_sort'} eq "Priority") {       
+  if ($rt::ui::web::FORM{'q_sort'} eq "priority") {       
     if ($order_ops){
       $order_ops .= ", ";
     }
     $order_ops .= "priority"; 
   }
-  if ($rt::ui::web::FORM{'q_sort'} eq "User") {       
+
+  if ($rt::ui::web::FORM{'q_sort'} eq "owner") {       
+    if ($order_ops){
+      $order_ops .= ", ";
+    }
+    $order_ops .= "owner"; 
+  }
+  if ($rt::ui::web::FORM{'q_sort'} eq "status") {       
+    if ($order_ops){
+      $order_ops .= ", ";
+    }
+    $order_ops .= "status"; 
+  }
+  if ($rt::ui::web::FORM{'q_sort'} eq "age") {       
+    if ($order_ops){
+      $order_ops .= ", ";
+    }
+    $order_ops .= "date_created"; 
+  } 
+
+  if ($rt::ui::web::FORM{'q_sort'} eq "subject") {       
+    if ($order_ops){
+      $order_ops .= ", ";
+    }
+    $order_ops .= "subject"; 
+  } 
+  if ($rt::ui::web::FORM{'q_sort'} eq "queue") {       
+    if ($order_ops){
+      $order_ops .= ", ";
+    }
+    $order_ops .= "queue_id"; 
+  } 
+  if ($rt::ui::web::FORM{'q_sort'} eq "area") {       
+    if ($order_ops){
+      $order_ops .= ", ";
+    }
+    $order_ops .= "area"; 
+  } 
+  if ($rt::ui::web::FORM{'q_sort'} eq "user") {       
     if ($order_ops){
       $order_ops .= ", ";
     }
@@ -549,25 +587,26 @@ sub display_queue {
   if ($rt::ui::web::FORM{'refresh'} >=1) {
   print "<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"". $rt::ui::web::FORM{'refresh'}."\">";
   }
-  
+  $query = $ENV{'QUERY_STRING'};
+  $query =~ s/q_sort=(.*?)\&//;
   print "<!-- Query String 
 $query_string
 -->
-<font size=$QUEUE_FONT>
+<font size=$QUEUE_FONT">
 <TABLE cellpadding=4 border=1 width=100% bgcolor=\"\#bbbbbb\">
 
 <TR>
-       <TH><FONT SIZE=-1>Ser</FONT></TH>
-       <TH><FONT SIZE=-1>Queue</FONT></TH>
-       <TH><FONT SIZE=-1>Owner</FONT></TH>
-       <TH><FONT SIZE=-1>Pri</FONT></TH>
-       <TH><FONT SIZE=-1>Status</FONT></TH>
-       <TH><FONT SIZE=-1>Told</FONT></TH>
-       <TH><FONT SIZE=-1>Area</FONT></TH>
-       <TH><FONT SIZE=-1>Age</FONT></TH>
-       <TH><FONT SIZE=-1>Due</FONT></TH>
-       <TH><FONT SIZE=-1>Requestor</FONT></TH>
-       <TH><FONT SIZE=-1>Subject</FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=number\&$query\">Ser</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=queue\&$query\">Queue</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=owner\&$query\">Owner</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=priority\&$query\">Pri</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=status\&$query\">Status</FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=timestamp\&$query\">Told</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=area\&$query\">Area</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=age\&$query\">Age</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=date_due\&$query\">Due</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=user\&$query\">Requestor</a></FONT></TH>
+       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=subject\&$query\">Subject</a></FONT></TH>
  </TR>
 ";
   
@@ -649,6 +688,20 @@ $query_string
 </TD>";
   }
   print "
+</TR>
+<TR>
+<TD COLSPAN=11>";
+  $query = $ENV{'QUERY_STRING'};
+  if ($query =~ s/q_reverse=true//) {
+    #our conditional affected variables. bad coding style. but speedy
+  }
+  else {
+    $query .=  "\&q_reverse=true";
+  }
+print"
+<center><A HREF=\"$ScriptURL?$query\">Reverse sort the queue</a>
+</center>
+</TD>
 </TR>
 </TABLE>
 </font>
