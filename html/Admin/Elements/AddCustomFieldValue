@@ -22,9 +22,22 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<&|/l&>SortOrder</&>: <input name="CustomField-<% $CustomField->Id %>-AddValue-SortOrder" size="5"><BR>
-<&|/l&>Name</&>: <input size=20 name="CustomField-<% $CustomField->Id %>-AddValue-Name"><BR>
-<&|/l&>Description</&>: <input size="60" name="CustomField-<% $CustomField->Id %>-AddValue-Description"><BR>
+
+<b><&|/l&>Add Value</&></b></b></b></b>
+<TABLE BORDER="0">
+<TR><TD><small>
+<&|/l&>Sort</&>:<br>
+<input name="CustomField-<% $CustomField->Id %>-AddValue-SortOrder" size="5">
+</TD>
+<TD><small>
+<&|/l&>Name</&>:<br>
+<input size=20 name="CustomField-<% $CustomField->Id %>-AddValue-Name">
+</TD>
+<TD><small>
+<&|/l&>Description</&>:<br>
+<input size="60" name="CustomField-<% $CustomField->Id %>-AddValue-Description">
+</TD></TR>
+</TABLE>
 
 <%init>
 </%init>

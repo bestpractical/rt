@@ -29,15 +29,32 @@
 <INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
 <INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
 
-<&|/l&>Name</&>: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
-<&|/l&>Description</&>: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
-<&|/l&>Type</&>: <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &><BR>
+<TABLE WIDTH="100%" BORDER="0">
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Name</&>:
+</TD><TD>
+<input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Description</&>:
+</TD><TD>
+<input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Type</&>:
+</TD><TD>
+<& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
+</TD></TR>
+<TR><TD>
+</TD><TD>
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+</TD></TR>
+</TABLE>
 
 <P>
 % if ($CustomFieldObj->Id and $CustomFieldObj->Type =~ /Select/) {
-<H2><&|/l&>Values</&></H2>
+<h2><&|/l&>Values</&></h2>
 <font size=-1>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
 <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>

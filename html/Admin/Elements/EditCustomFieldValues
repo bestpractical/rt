@@ -22,13 +22,17 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<i><&|/l&>(Check box to delete)</&></i>
 <ul>
 % while (my $v = $values->Next) {
 <li>
+<font size=-1 color="#336699"><%$v->SortOrder%>:</font>
 <input type="checkbox" name="CustomField-<%$CustomField->Id%>-DeleteValue" value="<%$v->id%>">
 <%$v->Name%>
+% if ($v->Description) {
 <i>(<%$v->Description%>)</i>
-<font size=-1 color="#cccccc"><&|/l&>Sort key</&>: <%$v->SortOrder%></font></li>
+% }
+</li>
 % }
 </ul>
 <%init>

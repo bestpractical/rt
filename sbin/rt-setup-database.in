@@ -1,27 +1,27 @@
 #!@PERL@ -w
 # BEGIN LICENSE BLOCK
-# 
+#
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-# 
+#
 # (Except where explictly superceded by other copyright notices)
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
-# 
+#
+#
 # Unless otherwise specified, all modifications, corrections or
 # extensions to this work which alter its source code become the
 # property of Best Practical Solutions, LLC when submitted for
 # inclusion in the work.
-# 
-# 
+#
+#
 # END LICENSE BLOCK
 
 use strict;
@@ -47,7 +47,6 @@ use RT::Queue;
 use RT::ScripCondition;
 use RT::CustomField;
 use RT::Scrip;
-
 
 RT::LoadConfig();
 use Term::ReadKey;
@@ -97,7 +96,7 @@ if ( $args{'action'} eq 'init' ) {
     print "Now inserting RT core system objects\n";
     insert_initial_data();
     print "Now inserting RT data\n";
-    insert_data($RT::EtcPath . "/initialdata");
+    insert_data( $RT::EtcPath . "/initialdata" );
 }
 elsif ( $args{'action'} eq 'drop' ) {
     unless ( $dbh =
@@ -109,8 +108,8 @@ elsif ( $args{'action'} eq 'drop' ) {
     }
     drop_db();
 }
-elsif ($args{'action'} eq 'insert') {
-        insert_data($args{'datafile'});
+elsif ( $args{'action'} eq 'insert' ) {
+    insert_data( $args{'datafile'} );
 }
 else {
     print STDERR '$0 called with an invalid --action parameter';
@@ -309,27 +308,25 @@ sub insert_initial_data {
     print "done.\n";
     $RT::Handle->dbh->disconnect();
 
-
 }
-
 
 # load some sort of data into the database
 
 sub insert_data {
-        my $datafile = shift;
+    my $datafile = shift;
+
     #Connect to the database and get RT::SystemUser and RT::Nobody loaded
     RT::Init;
 
     my $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByName('RT_System');
 
+    if ( $datafile eq $RT::EtcPath . "/initialdata" ) {
 
-   if ($datafile eq $RT::EtcPath . "/initialdata" )  {
+        print "Creating Superuser  ACL...";
 
-    print "Creating Superuser  ACL...";
-
-    my $superuser_ace = RT::ACE->new($CurrentUser);
-    $superuser_ace->_BootstrapCreate(
+        my $superuser_ace = RT::ACE->new($CurrentUser);
+        $superuser_ace->_BootstrapCreate(
                              PrincipalId => ACLEquivGroupId( $CurrentUser->Id ),
                              PrincipalType => 'Group',
                              RightName     => 'SuperUser',
@@ -341,125 +338,142 @@ sub insert_data {
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     # @groups, @users, @acl, @queues, @ScripActions, @ScripConditions, @templates
 
-
     require $datafile
       || die "Couldn't find initial data for import\n" . $@;
 
-    print "Creating groups...";
-    foreach $item (@Groups) {
-        my $new_entry = RT::Group->new($CurrentUser);
-        my ( $return, $msg ) = $new_entry->_Create(%$item);
-        print "(Error: $msg)" unless ($return);
-        print $return. ".";
-    }
-    print "done.\n";
-
-    print "Creating users...";
-    foreach $item (@Users) {
-        my $new_entry = new RT::User($CurrentUser);
-        my ( $return, $msg ) = $new_entry->Create(%$item);
-        print "(Error: $msg)" unless ($return);
-        print $return. ".";
-    }
-    print "done.\n";
-
-    print "Creating ACL...";
-    for my $item (@ACL) {
-
-        my $princ = RT::User->new($CurrentUser);
-        $princ->Load( $item->{'UserId'} );
-        my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
-                                                      Right => $item->{'Right'},
-                                                      Object => $RT::System );
-        if ($return) {
+    if (@Groups) {
+        print "Creating groups...";
+        foreach $item (@Groups) {
+            my $new_entry = RT::Group->new($CurrentUser);
+            my ( $return, $msg ) = $new_entry->_Create(%$item);
+            print "(Error: $msg)" unless ($return);
             print $return. ".";
         }
-        else {
-            print $msg . ".";
+        print "done.\n";
+    }
+    if (@Users) {
+        print "Creating users...";
+        foreach $item (@Users) {
+            my $new_entry = new RT::User($CurrentUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            print "(Error: $msg)" unless ($return);
+            print $return. ".";
+        }
+        print "done.\n";
+    }
+    if (@ACL) {
+        print "Creating ACL...";
+        for my $item (@ACL) {
+
+            my $princ = RT::User->new($CurrentUser);
+            $princ->Load( $item->{'UserId'} );
+            my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
+                                                      Right => $item->{'Right'},
+                                                      Object => $RT::System );
+            if ($return) {
+                print $return. ".";
+            }
+            else {
+                print $msg . ".";
+
+            }
 
         }
-
+        print "done.\n";
     }
-    print "done.\n";
-
-    print "Creating queues...";
-    for $item (@Queues) {
-        my $new_entry = new RT::Queue($CurrentUser);
-        my ( $return, $msg ) = $new_entry->Create(%$item);
-        print "(Error: $msg)" unless ($return);
-        print $return. ".";
+    if (@Queues) {
+        print "Creating queues...";
+        for $item (@Queues) {
+            my $new_entry = new RT::Queue($CurrentUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            print "(Error: $msg)" unless ($return);
+            print $return. ".";
+        }
+        print "done.\n";
     }
-    print "done.\n";
-    print "Creating custom fields...";
-    for $item (@CustomFields) {
-        my $new_entry = new RT::CustomField($CurrentUser);
-        my $values    = $item->{'Values'};
-        delete $item->{'Values'};
-        my $q     = $item->{'Queue'};
-        my $q_obj = RT::Queue->new($CurrentUser);
-        $q_obj->Load($q);
-        if ($q_obj->Id) {
+    if (@CustomFields) {
+        print "Creating custom fields...";
+        for $item (@CustomFields) {
+            my $new_entry = new RT::CustomField($CurrentUser);
+            my $values    = $item->{'Values'};
+            delete $item->{'Values'};
+            my $q     = $item->{'Queue'};
+            my $q_obj = RT::Queue->new($CurrentUser);
+            $q_obj->Load($q);
+            if ( $q_obj->Id ) {
                 $item->{'Queue'} = $q_obj->Id;
-        }
-        elsif ($q == 0)  {
+            }
+            elsif ( $q == 0 ) {
                 $item->{'Queue'} = 0;
-        } else {
-                print "(Error: Could not find queue " . $q . ")\n" unless ($q_obj->Id );
+            }
+            else {
+                print "(Error: Could not find queue " . $q . ")\n"
+                  unless ( $q_obj->Id );
                 next;
+            }
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+
+            foreach my $value ( @{$values} ) {
+                my ( $eval, $emsg ) = $new_entry->AddValue(%$value);
+                print "(Error: $emsg)\n" unless ($eval);
+            }
+
+            print "(Error: $msg)\n" unless ($return);
+            print $return. ".";
         }
-        my ( $return, $msg ) = $new_entry->Create(%$item);
 
-        foreach my $value ( @{$values} ) {
-                my ($eval, $emsg) = $new_entry->AddValue(%$value);
-                print "(Error: $emsg)\n"  unless ($eval);
+        print "done.\n";
+    }
+
+    if (@ScripActions) {
+        print "Creating ScripActions...";
+
+        for $item (@ScripActions) {
+            my $new_entry = RT::ScripAction->new($CurrentUser);
+            my $return    = $new_entry->Create(%$item);
+            print $return. ".";
         }
 
-        print "(Error: $msg)\n" unless ($return);
-        print $return. ".";
+        print "done.\n";
     }
 
-    print "done.\n";
-    print "Creating ScripActions...";
+    if (@ScripConditions) {
+        print "Creating ScripConditions...";
 
-    for $item (@ScripActions) {
-        my $new_entry = RT::ScripAction->new($CurrentUser);
-        my $return    = $new_entry->Create(%$item);
-        print $return. ".";
-    }
-
-    print "done.\n";
-    print "Creating ScripConditions...";
-
-    for $item (@ScripConditions) {
-        my $new_entry = RT::ScripCondition->new($CurrentUser);
-        my $return    = $new_entry->Create(%$item);
-        print $return. ".";
-    }
-
-    print "done.\n";
-
-    print "Creating templates...";
-
-    for $item (@Templates) {
-        my $new_entry = new RT::Template($CurrentUser);
-        my $return    = $new_entry->Create(%$item);
-        print $return. ".";
-    }
-    print "done.\n";
-
-    print "Creating scrips...";
-
-    for $item (@Scrips) {
-        my $new_entry = new RT::Scrip($CurrentUser);
-        my ($return, $msg)    = $new_entry->Create(%$item);
-        if ($return) {
-         print $return. ".";
-        } else {
-          print "(Error: $msg)\n";  
+        for $item (@ScripConditions) {
+            my $new_entry = RT::ScripCondition->new($CurrentUser);
+            my $return    = $new_entry->Create(%$item);
+            print $return. ".";
         }
-    }
-    print "done.\n";
 
+        print "done.\n";
+    }
+
+    if (@Templates) {
+        print "Creating templates...";
+
+        for $item (@Templates) {
+            my $new_entry = new RT::Template($CurrentUser);
+            my $return    = $new_entry->Create(%$item);
+            print $return. ".";
+        }
+        print "done.\n";
+    }
+    if (@Scrips) {
+        print "Creating scrips...";
+
+        for $item (@Scrips) {
+            my $new_entry = new RT::Scrip($CurrentUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            if ($return) {
+                print $return. ".";
+            }
+            else {
+                print "(Error: $msg)\n";
+            }
+        }
+        print "done.\n";
+    }
     $RT::Handle->Disconnect();
 
 }
@@ -479,27 +493,31 @@ sub ACLEquivGroupId {
     return ( $equiv_group->Id );
 }
 
-
 sub help {
 
-print <<EOF;
+    print <<EOF;
 
 $0: Set up RT's database
 
---action        init
-                drop
-                insert
-                        --datafile /path/to/datafile
+--action        init    Initialize the database
+                drop    Drop the database. 
+                        This will ERASE ALL YOUR DATA
+                insert  Insert data into RT's database. 
+                        By default, will use RT's installation data.
+                        To use a local or supplementary datafile, specify it
+                        using the '--datafile' option below.
+                        
 
 
---dba                           dba_username
---dba-password                  dba's_password
+--datafile /path/to/datafile
+
+--dba                           dba's username
+--dba-password                  dba's password
 --prompt-for-dba-password       Ask for the database administrator's password interactively
 
 
 EOF
 
 }
- 
 
 1;
