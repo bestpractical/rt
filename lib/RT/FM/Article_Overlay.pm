@@ -196,6 +196,91 @@ sub Create {
 
 # }}}
 
+
+=head2 Delete
+
+Delete all its transactions
+Delete all its custom field values
+Delete all its relationships
+Delete this article.
+
+=begin testing
+
+my $newart = RT::FM::Article->new($RT::SystemUser);
+$newart->Create(Name => 'DeleteTest', Class => '1');
+my $id = $newart->Id;
+
+ok($id, "New article has an id");
+
+
+my $article = RT::FM::Article->new($RT::SystemUser);
+$article->Load($id);
+ok ($article->Id, "Found the article");
+my ($val, $msg) = $article->Delete();
+ok ($val, "Article Deleted: $msg");
+
+my $a2 = RT::FM::Article->new($RT::SystemUser);
+$a2->Load($id);
+ok (!$a2->Id, "Did not find the article");
+
+
+=end testing
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    $RT::Handle->BeginTransaction();
+    my $linksto = $self->_Links(Field => 'Target');
+    my $linksfrom = $self->_Links(Field => 'Base');
+    my $cfvalues = $self->CustomFieldValues;
+    my $txns = $self->Transactions;
+    
+    while (my $item = $linksto->Next) {
+        my ($val, $msg) = $item->Delete();
+        unless ($val) {
+            $RT::Logger->crit(ref($item).": $msg");
+            $RT::Handle->Rollback();
+            return (0, $self->loc('Internal Error'));
+        }
+    }
+
+    while (my $item = $linksfrom->Next) {
+        my ($val, $msg) = $item->Delete();
+        unless ($val) {
+            $RT::Logger->crit(ref($item).": $msg");
+            $RT::Handle->Rollback();
+            return (0, $self->loc('Internal Error'));
+        }
+    }
+    while (my $item = $txns->Next) {
+        my ($val, $msg) = $item->Delete();
+        unless ($val) {
+            $RT::Logger->crit(ref($item).": $msg");
+            $RT::Handle->Rollback();
+            return (0, $self->loc('Internal Error'));
+        }
+    }
+
+    while (my $item = $cfvalues->Next) {
+        my ($val, $msg) = $item->Delete();
+        unless ($val) {
+            $RT::Logger->crit(ref($item).": $msg");
+            $RT::Handle->Rollback();
+            return (0, $self->loc('Internal Error'));
+        }
+    }
+
+    $self->SUPER::Delete();
+    $RT::Handle->Commit();
+    return (1, $self->loc('Article Deleted'));
+
+}
+
 # {{{ Children
 
 =item Children
@@ -668,22 +753,23 @@ The following routines deal with custom fields and their values
 
 # {{{ CustomFieldValues
 
-=item CustomFieldValues CUSTOMFIELD_ID
+=item CustomFieldValues [ CUSTOMFIELD_ID ]
 
 Returns an RT::FM::CustomFieldObjectValueCollection object containing
-the values of CustomField CUSTOMFIELDID for this Article
+the values of CustomField CUSTOMFIELD_ID for this Article. if no CUSTOMFIELD_ID is specified, returns ALL customfield values.
 
 
 =cut
 
 sub CustomFieldValues {
     my $self = shift;
-    my $customfield = shift;
+    my $customfield;
+    $customfield  = shift if (@_);
     
     my $cfovc = new RT::FM::ArticleCFValueCollection($self->CurrentUser);
     if ($self->CurrentUserHasRight('ShowArticle')) {
     $cfovc->LimitToArticle($self->Id);
-    $cfovc->LimitToCustomField($customfield);
+    $cfovc->LimitToCustomField($customfield) if ($customfield);
     }
     return ($cfovc);
 }
