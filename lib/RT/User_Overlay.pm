@@ -75,6 +75,10 @@ sub _ClassAccessible {
                 {read => 1, write => 1, public => 1, admin => 1,type => 'varchar(30)', default => ''},
         Gecos => 
                 {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(16)', default => ''},
+
+        PGPKey => {
+                {read => 1, write => 1, public => 1, admin => 1, type => 'text', default => ''},
+        },
         HomePhone => 
                 {read => 1, write => 1, type => 'varchar(30)', default => ''},
         WorkPhone => 

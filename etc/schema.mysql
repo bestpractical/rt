@@ -226,6 +226,7 @@ CREATE TABLE Users (
   State varchar(100) NULL  ,
   Zip varchar(16) NULL  ,
   Country varchar(50) NULL  ,
+  PGPKey text NULL,
 
   Creator integer NULL  ,
   Created DATETIME NULL  ,

@@ -71,6 +71,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(100) 'State'.
   varchar(16) 'Zip'.
   varchar(50) 'Country'.
+  text 'PGPKey'.
   smallint(6) 'Disabled'.
 
 =cut
@@ -108,6 +109,7 @@ sub Create {
                 State => '',
                 Zip => '',
                 Country => '',
+                PGPKey => '',
                 Disabled => '0',
 
 		  @_);
@@ -139,6 +141,7 @@ sub Create {
                          State => $args{'State'},
                          Zip => $args{'Zip'},
                          Country => $args{'Country'},
+                         PGPKey => $args{'PGPKey'},
                          Disabled => $args{'Disabled'},
 );
 
@@ -641,6 +644,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item PGPKey
+
+Returns the current value of PGPKey. 
+(In the database, PGPKey is stored as text.)
+
+
+
+=item SetPGPKey VALUE
+
+
+Set PGPKey to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, PGPKey will be stored as a text.)
+
+
+=cut
+
+
 =item Creator
 
 Returns the current value of Creator. 
@@ -755,6 +776,8 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'varchar(16)', default => ''},
         Country => 
 		{read => 1, write => 1, type => 'varchar(50)', default => ''},
+        PGPKey => 
+		{read => 1, write => 1, type => 'text', default => ''},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => ''},
         Created => 
