@@ -121,7 +121,7 @@ sub handler {
     
     #This is all largely cut and pasted from mason's session_handler.pl
     
-    my %cookies = Apache::Cookie::Parse($r->header_in('Cookie'));
+    my %cookies = Apache::Cookie::parse($r->header_in('Cookie'));
     
     eval { 
 	tie %HTML::Mason::Commands::session, 'Apache::Session::File',
