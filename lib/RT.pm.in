@@ -59,10 +59,6 @@ $LocalPath = '@RT_LOCAL_PATH@';
 $LocalEtcPath = '@LOCAL_ETC_PATH@';
 $LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
 
-
-# This directory should be writable by your rt group
-$LogDir = '@RT_LOG_PATH@';
-                         
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
 $MasonComponentRoot = '@MASON_HTML_PATH@';
@@ -164,7 +160,7 @@ sub InitLogging {
         die ("Log directory $RT::LogDir not found or couldn't be written.\n RT can't run.");
     }
 
-	my $filename = $RT::LogToFileNamed || "$RT::LogDir/rt.log";
+	my $filename = "$RT::LogDir/$RT::LogToFileNamed";
     require Log::Dispatch::File;
 
 

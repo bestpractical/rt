@@ -228,7 +228,7 @@ Set($NotifyActor, 0);
 # {{{ Logging
 
 # Logging.  The default is to log anything except debugging
-# information to a logfile.  Check the Log::Dispatch POD for
+# information to syslog.  Check the Log::Dispatch POD for
 # information about how to get things by syslog, mail or anything
 # else, get debugging info in the log, etc.
 
@@ -244,7 +244,8 @@ Set($NotifyActor, 0);
 Set($LogToSyslog    , 'debug');
 Set($LogToScreen    , 'error');
 Set($LogToFile      , undef);
-Set($LogToFileNamed , "$LogDir/rt.log");    #log to rt.log.<pid>.<user>
+Set($LogDir, '@RT_LOG_PATH@');
+Set($LogToFileNamed , "rt.log");    #log to rt.log
 
 # }}}
 
