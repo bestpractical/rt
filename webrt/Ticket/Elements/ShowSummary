@@ -2,31 +2,28 @@
       $Ticket = undef
       </%ARGS>
       
-      <& /Elements/TitleBoxStart, title => $Ticket->Subject, titleright=> "<a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?id=".$Ticket->Id."\">Update</a> "&>
       
       
-      <TABLE>
+      <TABLE WIDTH="100%" >
       <TR>
-	<TD VALIGN=TOP WIDTH="50%" HEIGHT="100%">
+	<TD VALIGN=TOP WIDTH="50%">
 	  <& /Elements/TitleBoxStart, title => 'The Basics'  &>
 	  <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	</TD>
-	<TD VALIGN=TOP HEIGHT="100%">
+	<TD VALIGN=TOP WIDTH="50%">
 	  
 	  <& /Elements/TitleBoxStart, title => "Dates" &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	  </TD>
 	</TR>
-      <TR>
-	<TD COLSPAN=2>
+	</TABLE>
 	  <& /Elements/TitleBoxStart, title => 'People' &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
-	</TD>
-      </TR>
 
+     <TABLE WIDTH="100%">
       <TR>
 	<TD WIDTH="50%">
 	  <& /Elements/TitleBoxStart, title => 'Unresolved Dependencies', titleright => '<A HREF="">[As search]</a>' &>
@@ -39,9 +36,7 @@
 	  <& /Elements/TitleBoxEnd &>	
 	</TD>
       </TR>
-
     </TABLE>
       
-      <& /Elements/TitleBoxEnd &>
       
  

@@ -19,20 +19,18 @@
       </TR>
     </TABLE>
 
-    
 
 % $attachments->GotoFirstItem();
 %  while (my $message=$attachments->Next) {
 
 
 
-<pre><font size=-1>
+<pre>
 <%$message->Headers%>
-</font>
 </pre>
 
 %   if ($message->ContentType =~ m{^(text/plain|message)}) {
-<BLOCKQUOTE.message>
+<BLOCKQUOTE>
 <%$message->Content%>
 </BLOCKQUOTE>
 %    } 
@@ -41,7 +39,6 @@
 Attachment: <A HREF=""><% $message->ContentType %></a>
 %    }
 % }
-
 
     <& /Elements/TitleBoxEnd &>
 

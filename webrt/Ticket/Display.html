@@ -3,13 +3,18 @@
 
 <& /Elements/Header, Title => "WebRT Ticket View" &>
 
+
 <& /Ticket/Elements/ToolBar, Ticket => $Ticket&>
+
+  <& /Elements/TitleBoxStart, title => $Ticket->Subject, titleright=> "<a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?id=".$Ticket->Id."\">Update</a> "&>
+
 
 <& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
 
 
 <& /Ticket/Elements/ShowHistory , Ticket => $Ticket &> 
 
+<& /Elements/TitleBoxEnd &>
 <& /Elements/Footer &>
 
 
