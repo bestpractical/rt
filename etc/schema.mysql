@@ -71,12 +71,21 @@ CREATE TABLE Scrips (
 
 # {{{ Values for Scrips
 
-# Short about the default available actions; (this should be in some docs)
+# Short about the default available actions for subscriptions; (this should be in some docs)
 
 # Action    - base class for any scrips.
 #   SendEmail - standard thing, mails away a template
 #     Notify  - sends away a template to the recipient in the Scrips Argument 
 #     AutoReply - sends an autoreply 
+
+# Short about the default available link actions available;
+
+# Action
+#   StallDependent - stalls the dependent upon a DependsOn linking action.
+#   OpenDependent - when a DependsOn is resolved, the dependent should be opened.
+#   Spam - upon correspondance to a group ticket, sends to all member requestors.
+#   ResolveMembers - when a Group Ticket is resolved, all Members should be resolved.
+#   ResolveGroupTicket - resolve the Group Ticket when all Members are resolved.
 
 INSERT INTO Scrips VALUES (1,'Autoreply', 
 			  'Sends an automatic response to the requestor when a ticket was created',
@@ -109,6 +118,25 @@ INSERT INTO Scrips VALUES (7, 'NotifyAllWatchersOnResolve',
 INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
 			  'Sends mail to owner when anything happens',
 			  'Any','Notify',2,'AdminCc',1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (9, 'StallDependentOnLink', 
+		           'Stalls the dependent when a DependsOn link is made',
+			   'Link', 'StallDependent',NULL,NULL,1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (10, 'OpenDependentOnResolve', 
+		           'Opens the dependent when the DependsOn is resolved',
+			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (11, 'ResolveMember', 
+		           'Resolves all members when MemberOf is resolved',
+			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (12, 'ResolveGroupTicket', 
+		           'Resolves the group ticket when all members are resolved',
+			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (13, 'Spam', 'Spams people',
+			   'Correspondance', 'Spam',4,NULL,1,NULL,1,NULL);
 
 INSERT INTO Scrips VALUES (255, 'PlaceHolder', 'Custom Scrips should have higher ID', 'None', 
 			  NULL, NULL, NULL, NULL, NULL, NULL, NULL);
