@@ -37,8 +37,8 @@ sub acl {
       ScripActions
       templates_id_seq
       Templates
-      ticketcustomfieldvalues_id_s
-      TicketCustomFieldValues
+      objectcustomfieldvalues_id_s
+      ObjectCustomFieldValues
       customfields_id_seq
       CustomFields
       customfieldvalues_id_seq
