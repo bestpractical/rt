@@ -153,9 +153,9 @@ sub cgi_vars_in {
 
     # Split the name-value pairs
     if ($ENV{'CONTENT_LENGTH'}) {
-	read(STDIN, $buffer, $ENV{'CONTENT_LENGTH'});
+	read(STDIN, $cgi_vars, $ENV{'CONTENT_LENGTH'});
+	$cgi_vars .= "&";
     }
-	$cgi_vars = $buffer;
 	$cgi_vars .= $$ENV{'QUERY_STRING'};
 	@pairs = split(/&/, $cgi_vars);
 
@@ -182,7 +182,7 @@ sub cgi_vars_in {
 	# actually open a filehandle.
 
 	# Uncomment for debugging purposes
-	 # print STDERR "A gnarled troll tells you that $name was set to $value\n";
+	 print STDERR "A gnarled troll tells you that $name was set to $value\n";
 	$FORM{$name} = $value;
 	
     }
