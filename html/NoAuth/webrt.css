@@ -310,12 +310,18 @@ span.title { font-size: 1.6em;
              color: #ffffff;}
 span.productname { font-size: 2em;
              color: #0066cc;}
-SPAN.titleboxtitle {
+SPAN.titleboxtitle, SPAN.titleboxclose {
         font-size: 80%;
         color: #ffffff;
 	 vertical-align: middle;
 	 text-align: left;
         }
+SPAN.titleboxtitle a {
+        color: #ffffff;
+}
+SPAN.titleboxtitle a:after {
+	content: "...";
+}
 
 SPAN.titleboxright {
         font-size: 0.8em;

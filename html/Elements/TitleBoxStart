@@ -54,10 +54,10 @@
     <TH 
         <%$color && "style=\"color: $color;\""|n%>
         <%$class ? "class=\"$class\"" : "class=\"titlebox\""|n%>>
+      <span class="titleboxclose">
+        <a href="#" onClick="hideshow('<%$id%>')">X</A></span>&nbsp;
       <span class="titleboxtitle">
-    <a href="#" onClick="hideshow('<%$id%>')">X</A>&nbsp;
-        <b>
-         <% $title_href && "<A CLASS=\"$title_class\" HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
+        <b><% $title_href && "<A $title_class HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
       </span>
     </TH>
     <TH  
@@ -83,4 +83,6 @@ $color => "#336699"
 </%ARGS>
 <%init>
 my $id = rand(2000);
+
+$title_class = "CLASS=\"$title_class\"" if $title_class;
 </%init>

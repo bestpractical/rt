@@ -322,8 +322,8 @@ msgstr ""
 
 #: html/Elements/MyRequests:25
 #. ($rows)
-msgid "%1 newest unowned tickets..."
-msgstr "前 %1 份待认领的申请单..."
+msgid "%1 newest unowned tickets"
+msgstr "前 %1 份待认领的申请单"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 not shown"

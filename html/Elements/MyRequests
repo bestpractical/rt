@@ -44,7 +44,7 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 <&|/Elements/TitleBox, 
-        title => loc("[_1] newest unowned tickets...", $rows),
+        title => loc("[_1] newest unowned tickets", $rows),
 	title_href => "Search/Results.html".$QueryString &>
 <& /Elements/TicketList, 
         Format => "'<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"$RT::WebPath/Ticket/Display.html?Action=Take&id=__id__\">".loc('Take')."</a>/TITLE:&nbsp;' ",

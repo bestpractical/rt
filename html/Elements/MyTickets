@@ -47,7 +47,6 @@
 	title => loc('[_1] highest priority tickets I own', $rows),
 	title_href => "Search/Results.html".$QueryString &>
 <& /Elements/TicketList, 
-        Title => loc("[_1] highest priority tickets I requested...", $rows),
         Format => "'<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus",
 
         Query => $Query,
