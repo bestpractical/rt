@@ -22,9 +22,13 @@ sub new  {
 }
 # }}}
 
+# TODO:
+# This sub will return wrong if the one entering the request
+# (i.e. through the cli) is a different person than the real
+# requestor.
 sub IsInbound {
   my $self=shift;
-  return ($self->TicketObj->IsRequestor($self->Owner));
+  return ($self->TicketObj->IsRequestor($self->Creator));
 }
 
 #This is "Create Transaction"
