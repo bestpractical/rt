@@ -576,7 +576,7 @@ sub GraceTimeAsString {
     if ($self->Due) {
 	my $now=Date::Kronos->new(cal_type=>'Unix');
 	my $diff=$now - $self->DueObj;
-	return $diff->stringify;
+	return $diff->stringify or warn;
     } else {
 	return "Forever";
     }
@@ -585,6 +585,7 @@ sub GraceTimeAsString {
 
 # {{{ sub DueObj
 sub DueObj {
+    $self->Due || return undef;
     require Date::Kronos;
     my $self=shift;
     my $time=Date::Kronos->new;
@@ -595,8 +596,9 @@ sub DueObj {
 
 # {{{ sub ToldObj
 sub ToldObj {
-    require Date::Kronos;
     my $self=shift;
+    return undef unless $self->Told;
+    require Date::Kronos;
     my $time=Date::Kronos->new;
     $time->Gregorian->sql_timestamp($self->Told);
     return $time;
@@ -609,8 +611,9 @@ sub LongSinceToldAsString {
     require Date::Kronos;
     if ($self->Told) {
 	my $now=Date::Kronos->new(cal_type=>'Unix');
+	warn $now->stringify();
 	my $diff=$now - $self->ToldObj;
-	return $diff->stringify;
+	return $diff->Unix->stringify || warn;
     } else {
 	return "Never";
     }
@@ -622,7 +625,7 @@ sub ToldAsString {
   my $self = shift;
   if ($self->Told) {
       my $time=$self->ToldObj;
-      return $time->Gregorian->stringify();
+      return $time->Gregorian->stringify() || warn;
   }
   else {
     return("Never");

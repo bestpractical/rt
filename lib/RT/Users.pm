@@ -19,6 +19,7 @@ sub new  {
 # }}}
 
 # {{{ sub Limit 
+# Why do we need this?  I thought "AND" was default, anyway?
 sub Limit  {
   my $self = shift;
 my %args = ( ENTRYAGGREGATOR => 'AND',
@@ -29,6 +30,7 @@ my %args = ( ENTRYAGGREGATOR => 'AND',
 # }}}
 
 # {{{ sub NewItem 
+# What is this?
 sub NewItem  {
   my $self = shift;
   my $Handle = shift;
@@ -37,5 +39,11 @@ sub NewItem  {
   return($item);
 }
 # }}}
+
+sub LimitToEmail {
+    my $self=shift;
+    $self->Limit(FIELD=>'EmailAddress', VALUE=>shift);
+}
+
   1;
 

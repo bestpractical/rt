@@ -251,7 +251,7 @@ sub GetCurrentUser  {
 					   Password => "Default", #TODO FIX THIS
 					   CanManipulate => 0,
 					   IsAdministrator => 0,
-					   Comments => "Autocreated by RT::Mailgate on ticket submission"
+					   Comments => undef
 					  );
     
     if (!$Val) {

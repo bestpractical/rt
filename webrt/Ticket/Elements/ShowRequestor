@@ -1,0 +1,8 @@
+% for (my $w=$Ticket->Requestors->Next) {
+%	if (my $u=$w->UserObj) {
+<& /Elements/ViewUser, User=>$u &>
+% } }
+
+<%ARGS>
+$Ticket=>undef
+</%ARGS>

@@ -139,10 +139,7 @@ sub Delete  {
 sub Load  {
   my $self = shift;
   my $identifier = shift || return undef;
-  my ($package, $filename, $line) = caller;
-#  print STDERR "RT::User->Load called from $package, line $line with arguments (",@_,")\n";
-  
-  #print STDERR "RT::User->Load: Loading User $identifier\n";
+
   #if it's an int, load by id. otherwise, load by name.
   if ($identifier !~ /\D/) {
     $self->SUPER::LoadById($identifier);
@@ -153,6 +150,12 @@ sub Load  {
   }
 }
 # }}}
+
+sub LoadByEmail {
+    my $self=shift;
+    # TODO: check the "AlternateEmails" table first.
+    return $self->LoadByCol("EmailAddress", @_);
+}
 
 #used to check if a password is correct
 # {{{ sub IsPassword

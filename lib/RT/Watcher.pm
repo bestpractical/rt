@@ -25,28 +25,37 @@ sub new  {
 
 # {{{ sub Create 
 sub Create  {
-  my $self = shift;
-  my %args = (
-	      Email => undef,
-	      Value => undef,
-	      Scope => undef,
-	      Type => undef,
-	      Owner => 0,
-	      Quiet => 0,
-	      @_ # get the real argumentlist
-	     );
+    # Args {{{
+    my $self = shift;
+    my %args = (
+		Email => undef,
+		Value => undef,
+		Scope => undef,
+		Type => undef,
+		Quiet => 0,
+		@_ # get the real argumentlist
+		);
   
-  
+    # }}} (Args)
 
-  my $id = $self->SUPER::Create(%args);
-  $self->Load($id);
+    # {{{ Create & Load
+    my $id = $self->SUPER::Create(%args);
+    $self->Load($id);
   
-  #TODO: this is horrificially wasteful. we shouldn't commit 
-  # to the db and then instantly turn around and load the same data
+    #TODO: this is horrificially wasteful. we shouldn't commit 
+    # to the db and then instantly turn around and load the same data
 
-  #DEAL WITH USER ID
+    # }}}
+
+
+    # {{{ DEAL WITH USER ID
+    my $User=RT::User->new($self->CurrentUser);
+    if ($User->LoadByEmail($args{Email})) {
+	$self->_Set('Owner', $User->id);
+    }
+    # }}}
   
-  return (1,"Interest noted");
+    return (1,"Interest noted");
 }
 # }}}
  
@@ -66,21 +75,17 @@ sub Load  {
 
 # {{{ sub UserObj 
 sub UserObj  {
-  my $self = shift;
-  if (!defined $self->{'UserObj'}) {
-    require RT::User;
-    $self->{'UserObj'} = new RT::User($self->CurrentUser);
-    #If we don't have an Email attribute, load the Owner Object
-    
-    if (!defined($self->SUPER::Email)) { #the SUPER is so we don't get in a loop
-                                         #with $self->Email
-      $self->{'UserObj'}->Load($self->Owner);
+    my $self = shift;
+    if (!defined $self->{'UserObj'}) {
+	require RT::User;
+	$self->{'UserObj'} = RT::User->new($self->CurrentUser);
+	if ($self->Owner) {
+	    $self->{'UserObj'}->Load($self->Owner);
+	} else {
+	    return undef;
+	}
     }
-    else {
-      $self->{'UserObj'}->Load($self->Email);
-    }
-  }
-  return ($self->{'UserObj'});
+    return ($self->{'UserObj'});
 }
 # }}}
 

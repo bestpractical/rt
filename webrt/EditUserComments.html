@@ -1,0 +1,10 @@
+<& /Elements/Header, Title => "Comments about $name" &>
+<FORM METHOD=POST>
+<TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %></TEXTAREA>
+</FORM>
+<%INIT>
+require RT::User;
+my $user=RT::User::new($session{CurrentUser});
+$user->Load($ARGS{id});
+my $name=$user->RealName || $user->EmailAddress;
+</%INIT>

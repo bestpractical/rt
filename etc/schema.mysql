@@ -232,10 +232,9 @@ CREATE TABLE Watchers (
    Value INT(11),	# Which Queue or Ticket this Watcher Watches.
    Email VARCHAR(255),  # Where this Watch should send mail. If null, use Owner->EmailAddress
    Quiet INT(1),	# Should we send mail to this one at all.
-   Owner INT(11),	# TODO: We're not dealing with this yet. For now, it's always 0
-			# A reference to the users table. If it's for a Cc or AdminCc who doesn't
-			# have an RT account, Owner should be 0
-
+   Owner INT(11),	# A reference to the users table. If it's for a Cc or AdminCc who doesn't
+			# have an RT account, Owner should be 0.  OwnerObj->EmailAddress is 
+			# usually equal to Email.  Owner will be automaticly set by Watchers->Create.
    Creator INT(11),
    Created DATETIME,
    LastUpdatedBy INT(11),

@@ -16,6 +16,7 @@
 	  <& /Elements/TitleBoxStart, title => 'People' &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
       </TD>
        </TR>
