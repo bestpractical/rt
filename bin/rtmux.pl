@@ -1,26 +1,28 @@
-#!/usr/bin/perl -T
+#!/usr/bin/perl -w
 #
 # $Header$
 # RT is (c) 1997 Jesse Vincent (jesse@fsck.com)
 
-require "ctime.pl";
 $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
 $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
 $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
 $ENV{'ENV'} = '' if defined $ENV{'ENV'};
 $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
-package rt;
+package RT;
 
+use Strict;
 #this is the RT path
 $rt_dir = "!!RT_PATH!!";
 
-push (@INC, "!!RT_LIB_PATH!!");
+use lib "!!RT_LIB_PATH!!";
 require "!!RT_ETC_PATH!!/config.pm";
 
 use DBIx::Handle;
 use DBIx::Record;
 use DBIx::EasySearch;
+
+
 #TODO: need to identify the database user here....
 DBIx::Handle::Connect($host, $dbname, $rtuser,  $rtpass, $rt_db);
 
@@ -84,10 +86,6 @@ else {
 sub initialize{
   my ($in_current_user) = @_;
   $rtversion="!!RT_VERSION!!";
-  $rtusernum=(getpwnam($rtuser))[2];
-    $rtgroupnum=(getgrnam($rtgroup))[2];
-  $time=time();
-    umask(0022);
-    return(1,"Welcome to Request Tracker $rtversion");     
+  return(1,"Welcome to Request Tracker $rtversion");     
 }
 

@@ -21,8 +21,9 @@ sub Limit {
 
 sub NewItem {
   my $self = shift;
+  my $Handle = shift;
   my $item;
-  $item = new RT::ACE($self->{'user'});
+  $item = new RT::ACE($self->{'user'}, $Handle);
   return($item);
 }
   1;

@@ -21,8 +21,9 @@ my %args = ( ENTRYAGGREGATOR => 'AND',
 
 sub NewItem {
   my $self = shift;
+  my $Handle = shift;
   my $item;
-  $item = new RT::Queue($self->{'user'});
+  $item = new RT::Queue($self->{'user'}, $Handle);
   return($item);
 }
   1;
