@@ -21,7 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=<%$Wrap%> NAME="<%$Name%>"><& /Elements/Callback, %ARGS &><% $Default %><%$message%><%$IncludeSignature ? $signature : ''%></TEXTAREA>
+<TEXTAREA COLS=<%$Width%> ROWS=<%$Height%> WRAP=<%$Wrap%> NAME="<%$Name%>"><& /Elements/Callback, %ARGS &><% $Default %><%$message%><%$IncludeSignature ? $signature : ''%></TEXTAREA>
 <%INIT>
 
 my ($message);
@@ -33,7 +33,7 @@ if ($QuoteTransaction) {
 }
 
 my $signature = '';
-if ($session{'CurrentUser'}->UserObj->Signature) {
+if ($IncludeSignature && $session{'CurrentUser'}->UserObj->Signature) {
 	$signature = "-- \n".$session{'CurrentUser'}->UserObj->Signature;
 }
 
@@ -42,8 +42,9 @@ if ($session{'CurrentUser'}->UserObj->Signature) {
 $QuoteTransaction => undef
 $Name => 'Content'
 $Default => ''
-$Width => $RT::MessageBoxWidth
-$Wrap => $RT::MessageBoxWrap
+$Width => $RT::MessageBoxWidth || 72
+$Height => $RT::MessageBoxHeight || 15
+$Wrap => $RT::MessageBoxWrap || 'HARD'
 $IncludeSignature => 1
 </%ARGS>
 
