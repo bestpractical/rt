@@ -555,7 +555,7 @@ $query_string
 #    print "<pre>";
 #    print "Num   !  Owner   Age     Told    Due     Status   User    Subject\n";
 #    print "<HR SIZE=1>";
-	&RT_UI_Web::new_table("cellpadding=4 width=100% bgcolor=\"\#bbbbbb\""); {
+	&RT_UI_Web::new_table("cellpadding=4 border=1 width=100% bgcolor=\"\#bbbbbb\""); {
     for ($temp=0;$temp<$count;$temp++){
 
 
