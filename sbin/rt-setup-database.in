@@ -87,10 +87,13 @@ if ( $args{'action'} eq 'init' ) {
         print "...skipped as ".$args{'dba'} ." is not " . $RT::DatabaseUser . " or we're working with Oracle.\n";
     }
 
-    $dbh->disconnect;
-    $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
-      || die $DBI::errstr;
+    
+    # SQLite can't deal with the disconnect/reconnect
+    unless ($RT::DatabaseType eq 'SQLite') {
 
+        $dbh->disconnect;
+        $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} ) || die $DBI::errstr;
+    }
     print "Now populating database schema.\n";
     insert_schema();
     print "Now inserting database ACLs\n";
@@ -364,7 +367,7 @@ sub insert_initial_data {
         exit(1);
     }
     print "done.\n";
-    $RT::Handle->Disconnect();
+    $RT::Handle->Disconnect() unless ($RT::DatabaseType eq 'SQLite');
 
 }
 
@@ -561,7 +564,7 @@ sub insert_data {
         }
         print "done.\n";
     }
-    $RT::Handle->Disconnect();
+    $RT::Handle->Disconnect() unless ($RT::DatabaseType eq 'SQLite');
 
 }
 

@@ -116,6 +116,7 @@ Term::ReadKey
 Text::Autoformat
 Text::Quoted 1.3
 Scalar::Util
+Module::Versions::Report
 .
 
 $deps{'MASON'} = [ _( << '.') ];

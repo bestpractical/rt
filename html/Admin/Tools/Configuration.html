@@ -7,6 +7,14 @@ my $title = loc('System Configuration');
     current_tab => 'Admin/Tools/Configuration.html',
     current_subtab => 'Admin/Tools/Configuration.html', 
     Title => $title &>
+
+
+
+% unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+% Abort(loc('This feature is only available to system administrators'));
+% } 
+
+
 <h2><&|/l&>Loaded perl modules</&></h2>
 <pre>
 % my $report =  Module::Versions::Report::report();
