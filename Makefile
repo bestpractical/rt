@@ -18,7 +18,7 @@
 
 PERL 			= /usr/bin/perl
 
-INSTALL 		= /bin/sh ./install-sh
+INSTALL 		= /bin/sh ./install-sh -c
 RT_PREFIX		= /opt/rt3
 
 CONFIG_FILE_PATH	= $(RT_PREFIX)/etc
