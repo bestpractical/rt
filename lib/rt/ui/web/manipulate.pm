@@ -852,7 +852,7 @@ sub display_summary {
 
 <TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
 <TR>
-<TD>
+<TD VALIGN=TOP>
 
 <TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
 
@@ -916,9 +916,8 @@ $rt::req[$in_serial_num]{'owner'}
 </TD>
 </TR> 
 </TABLE>
-</TD></TR>
-<TR>
-<TD>
+</TD>
+<TD VALIGN=TOP>
 <TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
 
 <TR VALIGN=\"TOP\">
