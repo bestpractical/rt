@@ -75,7 +75,9 @@ if ($ARGS{'id'} eq 'new') {
     delete $ARGS{'Queue'};
 
     push(@Actions, $ErrMsg);
-
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+      Abort("No permission to view newly created ticket #".$Ticket->id.".");
+    }
     # }}}
 }
 
