@@ -48,30 +48,41 @@
 <OPTION <% !$Default && "SELECTED" %> VALUE=""><%$DefaultLabel%></OPTION>
 %}
 <OPTION <% ($RT::Nobody->Id() == $Default) && "SELECTED" %> VALUE="<%$RT::Nobody->Id%>"><%$RT::Nobody->Name%></OPTION>
-%while ( my $User = $Users->Next())  {
+%foreach my $User (@users)  {
 <OPTION <% ($User->Id == $Default)         && "SELECTED" %> VALUE="<%$User->Id()%>"><%$User->Name()%></OPTION>
 %}
 </SELECT>
 
 <%INIT>
-my $Users = RT::Users->new($session{CurrentUser});
-my $object;
-
+my @objects;
+my @users;
 
 if ($TicketObj) {
-        $object = $TicketObj;
+        @objects = ($TicketObj);
 }
 elsif ($QueueObj) {
-        $object = $QueueObj;
+        @objects = ($QueueObj);
+} 
+else {
+        my $Queues = RT::Queues->new($session{CurrentUser});
+	while (my $Queue = $Queues->Next()) {
+	      push( @objects, $Queue );
+        }
 }
-if ($object) {
+
+my %user_uniq_hash;
+foreach my $object (@objects) {
+	my $Users = RT::Users->new($session{CurrentUser});
         $Users->WhoHaveRight(Right => 'OwnTicket',
                      Object => $object,
                      IncludeSystemRights => 1,
                      IncludeSuperusers => 1);
-} else {
-        $Users->LimitToPrivileged;
+        while (my $User = $Users->Next()) {
+	      $user_uniq_hash{$User->Id()} = $User;
+        }
 }
+
+@users = values %user_uniq_hash;
 </%INIT>
 
 <%ARGS>
