@@ -31,6 +31,17 @@
 
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
+<script>
+function hideshow(num) {
+    idstring = "element-" + num;
+    chunk = document.getElementById(idstring);
+    if ( chunk.style.display == "none")  {
+    chunk.style.display = "show";
+    } else {
+        chunk.style.display = "none";
+    }
+}   
+</script>
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>"
 % if ($Focus) {

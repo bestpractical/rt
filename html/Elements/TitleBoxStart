@@ -33,6 +33,7 @@
         <%$color && "style=\"color: $color;\""|n%>
         <%$class ? "class=\"$class\"" : "class=\"titlebox\""|n%>>
       <span class="titleboxtitle">
+    <a href="#" onClick="hideshow('<%$id%>')">X</A>&nbsp;
         <b>
          <% $title_href && "<A CLASS=\"$title_class\" HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
       </span>
@@ -43,8 +44,8 @@
       <span class="titleboxright"><%$titleright ? $titleright : '&nbsp;' |n %></span>
     </TH>
   </TR>
-  <tr>
-    <td bgcolor="<%$contentbg%>" colspan="2" class="<%defined($bodyclass) ? $bodyclass :  $class|n%>">
+  <tr id="element-<%$id%>">
+    <td bgcolor="<%$contentbg%>" colspan="3" class="<%defined($bodyclass) ? $bodyclass :  $class|n%>">
 <%ARGS>
 $width => "100%"
 $class =>  undef
@@ -58,3 +59,6 @@ $titleright => undef
 $contentbg => "#dddddd"
 $color => "#336699"
 </%ARGS>
+<%init>
+my $id = rand(2000);
+</%init>
