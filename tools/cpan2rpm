@@ -64,23 +64,19 @@ die "Build directory $builddir doesn't look like an RPM build root\n"
 
 process($package,$release);
 
-print join("",@report)."\n";
+print join("\n",@report)."\n";
 
 sub process {
   my ($infile,$release)=@_;
 
-  # don't go through dependencies on something we've already dealt with
   
-  return() if ($seen->{$infile});
-  $seen->{$infile} = 1;
 
-  # Convert our installation list into an unbundled one
+# Convert our installation list into an unbundled one
   unbundle($infile);
 
   print "Building $infile\n";
 
-    my $status = cpan2rpm($infile,$builddir,$release);
-    push (@report, $status);
+    cpan2rpm($infile,$builddir,$release);
 
 }
 
@@ -91,18 +87,13 @@ sub process {
 sub unbundle {
   my ($item) = @_;
 
-
   if ($item=~/Bundle::/) {
-
     my $obj=CPAN::Shell->expand('Bundle',$item);
 
     foreach my $kid ($obj->contains) {
-      	# Have we already seen this item?
-     	process($kid,$release) unless $seen->{$kid};
+     	process($kid,$release);
     }
   }
-
-  return($seen);
 }
 
 
@@ -141,9 +132,6 @@ sub fetch_source {
  
   my $dist = $CPAN::META->instance('CPAN::Distribution',$obj->cpan_file);
 
-  $dist->make;
-
-   build_prereqs( $dist->prereq_pm());
 
   my($local_wanted) =
        MM->catfile($CPAN::Config->{keep_source_where},
@@ -157,6 +145,15 @@ sub fetch_source {
   $dist->{localfile} = $local_file;
 
   $dist->verifyMD5 if ($CPAN::META->has_inst('MD5'));
+
+
+  # Find all the prereqs for this distribution, then build em.
+  # TODO this should be somewhere else
+
+  $dist->make;
+  build_prereqs( $dist->prereq_pm());
+
+
 
   my $infile=basename($obj->cpan_file);
 
@@ -178,7 +175,11 @@ sub build_specfile($$$) {
 
   my $source=basename($obj->cpan_file);
 
-  my ($name,$version)=($source=~/(.*)-(.*)\.tar\.gz/);
+  # don't go through dependencies on something we've already dealt with
+  return() if ($seen->{$source});
+  $seen->{$source} = 1; 
+
+my ($name,$version)=($source=~/(.*)-(.*)\.tar\.gz/);
   return "Couldn't get a name for $source\n" if !$name;
   return "Couldn't get a version for $source\n" if !$version; 
   
@@ -236,15 +237,15 @@ EOF
   close(SPEC);
 
   system("rpm -ba $builddir/SPECS/perl-$name.spec >/dev/null") == 0
-    or return "RPM of $source failed with : $!\n";
+    or push (@report,  "RPM of $source failed with : $!\n"); 
  
-  system("rpm -Uvh $builddir/RPMS/$ARCH/perl-$name-\*.$ARCH.rpm") == 0
+  system("rpm -Uvh $builddir/RPMS/$ARCH/perl-$name-$version-$release.$ARCH.rpm") == 0
     or warn "RPM of $source could not be installed: $!\n";
 
-  return "Built $name-$version-$release.$ARCH.rpm\n";
+  push (@report,  "Built perl-$name-$version-$release.$ARCH.rpm");
 }
 
-sub ExtractRpmMacro($$) {
+sub ExtractRpmMacro {
   my ($file,$macro) = @_;
 
   my $handle=new IO::File;
