@@ -1,7 +1,7 @@
 % my $name=$User->RealName || $User->EmailAddress;
 <& /Elements/TitleBoxStart, 
 	title => "Earlier requests from $name",
-	titleright=> "<a href=\"$RT::WebURL/EditComments.html?id=".$User->id."\">Comments about $name</a>" &>
+	titleright=> "<a href=\"$RT::WebURL/EditUserComments.html?id=".$User->id."\">Comments about $name</a>" &>
 <TABLE WIDTH="100%">
 <tr>
 <td halign=left valign=top>

@@ -1,4 +1,4 @@
-<& /Elements/Header &>
+%# This one should be in the templates, IMO: <& /Elements/Header &>
 <% $m->call_next %>
 <& /Elements/Footer &>
 

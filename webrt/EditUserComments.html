@@ -1,10 +1,19 @@
 <& /Elements/Header, Title => "Comments about $name" &>
+Be a little bit careful about writing too much shit here:
 <FORM METHOD=POST>
-<TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %></TEXTAREA>
+<input type="hidden" name="id" value="$id">
+<TEXTAREA COLS=60 ROWS=15 WRAP=SOFT NAME="Comments"><% $user->Comments %></TEXTAREA>
+<input type=submit>
 </FORM>
+
+
 <%INIT>
 require RT::User;
-my $user=RT::User::new($session{CurrentUser});
-$user->Load($ARGS{id});
+my $user=RT::User->new($session{CurrentUser});
+$user->Load($ARGS{id}) || die "Couldn't load user";
 my $name=$user->RealName || $user->EmailAddress;
+my $id=$user->Id;
+if ($ARGS{Comments}) {
+  $user->_Set($ARGS{Comments});
+}
 </%INIT>
