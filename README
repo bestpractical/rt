@@ -40,13 +40,14 @@ o   Perl5.005_03 or later with support for setgid perl scripts ( http://www.perl
 	package or reconfigure your perl setup to support "setuid scripts".
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:    Mysql 3.23, Postgres 7.1, Oracle 8i
+        Currently supported:    Mysql 3.23, Postgres 7.1
+	Partially supported:    Oracle 8i
 	(Mysql is known to be a more solid base for RT than postgres and oracle
 	 at this time)
 
 o   Apache + mod_perl -- ( http://perl.apache.org) 
 
-o    Various and sundry perl modules (see below) 
+o    Various and sundry perl modules
 	
 
 INSTALLATION INSTRUCTIONS
@@ -75,11 +76,16 @@ GENERAL INSTALLATION
 2.2   If there are unsatisfied dependencies, install them by hand or run
 	make fixdeps
 	
-       (You may need to install Apache::Session and Apache::DBI by hand)
+       (You may need to install Apache::Session and Apache::DBI by hand.
+	If RT doesn't find a recent enough DBD::mysql it will attempt to
+	install the latest release, which, at this time is a broken beta.
+
+	You might need to install Msql-Mysql-Modules by hand.
+	perl -MCPAN -e'install DBD::mysql::Install' should do it for you.
+       )
 
 2.3   Check to make sure everything was installed properly:
 	make testdeps
-
 
 3   Create a group called 'rt'
 
@@ -94,6 +100,9 @@ GENERAL INSTALLATION
 		 make install	(replace "make" with the local name for 
 				 Make, if you need to)
 
+	If the make fails, type:
+		make dropdb 
+	and start over from step 5a
 
 5b  FOR UPGRADING: (Within the RT 2.0.x series)
         

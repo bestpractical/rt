@@ -114,7 +114,8 @@ sub ProcessUpdateMessage {
 
     #Make the update content have no 'weird' newlines in it
     if ($args{ARGSRef}->{'UpdateContent'}) {
-	my @UpdateContent = split(/(\r\n|\n|\r)/,$args{ARGS}->{'UpdateContent'});
+	my @UpdateContent = split(/(\r\n|\n|\r)/,
+				  $args{ARGSRef}->{'UpdateContent'});
 	my $Message = MIME::Entity->build 
 	  ( Subject => $args{ARGSRef}->{'UpdateSubject'} || "",
 	    Data => \@UpdateContent);
@@ -128,7 +129,7 @@ sub ProcessUpdateMessage {
 		  TimeTaken => $args{ARGSRef}->{'UpdateTimeWorked'});
 	    push(@{$args{Actions}}, $Description);
 	}
-	elsif ($args{ARGS}->{'UpdateType'} eq 'response') {
+	elsif ($args{ARGSRef}->{'UpdateType'} eq 'response') {
 	    my ($Transaction, $Description) = $args{TicketObj}->Correspond
 		( CcMessageTo => $args{ARGSRef}->{'UpdateCc'},
 		  BccMessageTo => $args{ARGSRef}->{'UpdateBcc'},

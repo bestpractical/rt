@@ -90,14 +90,11 @@ if (defined $ARGS{'Action'}) {
   if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
     my $action = $1;
     my ($res, $msg)=$Ticket->$action();
-    $RT::Logger->debug("Dealing with $action on $Ticket: $res/$msg\n");
     push(@Actions, $msg);
   }
 }
     
-$RT::Logger->debug("About to process things\n");
 ProcessUpdateMessage(ARGSRef=>\%ARGS, Actions=>\@Actions, TicketObj=>$Ticket);
-$RT::Logger->debug("About to process actions\n");
 
 #Process status updates
 ProcessTicketBasics(ARGSRef => \%ARGS, Actions=>\@Actions, TicketObj=>$Ticket);

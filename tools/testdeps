@@ -44,7 +44,7 @@ Log::Dispatch 1.6
 
 
 if ($dbd =~ /mysql/i) {
-	push @modules, ('DBD::mysql',''); 
+	push @modules, ('DBD::mysql','2.0416'); 
 }
 elsif ($dbd =~ /oracle/i) {
 	push @modules, ('DBD::Oracle','');
