@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -d:DProf 
 #
 # $Header$
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
@@ -97,8 +97,8 @@ my ( @id,
 # }}}
 # {{{    args
 my @args =("id=s", \@id,
-	   "limit_queue=s", \@limit_queue,
-	   "limit_status=s", \@limit_status,
+	   "limit-queue=s", \@limit_queue,
+	   "limit-status=s", \@limit_status,
 	   "limit-owner=s", \@limit_owner,
 	   "limit-priority=s", \@limit_priority,
 	       "limit-final-priority=s", \@limit_final_priority,
@@ -191,38 +191,54 @@ else {
     my $Tickets = new RT::Tickets($CurrentUser);
     
     # {{{ Limit our search
-if (@id) {
-}
-if (@limit_status){
-}
-if (@limit_owner) {
-}
-if (@limit_priority){
-}
-if (@limit_final_priority){
-}
-if (@limit_requestor){
-}
-if (@limit_subject){
-}
-if (@limit_body){
-}
-if (@limit_created){
-}
-if (@limit_due){
-}
-if (@limit_starts){
-}
-if (@limit_started){
-}
-if ($limit_first){
-}
-if ($limit_rows){
-}
+    my $value; #to use when iterating through restrictions
+    if (@id) {
+	foreach $value (@id) {
+	    if ($value =~ /^\d+$/) {
+		$Tickets->LimitId(
+				 VALUE => "$value",
+				 OPERATOR => '=');
+	    }	
+	}
+    }	
+    if (@limit_status){
+	foreach $value (@limit_status) {
+	    if ($value =~ /^(new|open|stalled|resolved|dead)$/) {
+		$Tickets->LimitStatus(
+				 VALUE => "$value",
+				 OPERATOR => '=');
+	    }	
+	}
+    }
+    if (@limit_owner) {
+    }
+    if (@limit_priority){
+    }
+    if (@limit_final_priority){
+    }
+    if (@limit_requestor){
+    }
+    if (@limit_subject){
+    }
+    if (@limit_body){
+    }
+    if (@limit_created){
+    }
+    if (@limit_due){
+    }
+    if (@limit_starts){
+    }
+    if (@limit_started){
+    }
+    if ($limit_first){
+    }
+    if ($limit_rows){
+    }
 # }}}
     
     # {{{ Iterate through all tickets we found
 while (my $Ticket = $Tickets->Next()) {
+    debug ("Now working on ticket ". $Ticket->id);
     
     #Run through all the ticket modifications we might want to do
     
@@ -240,6 +256,15 @@ while (my $Ticket = $Tickets->Next()) {
     if ($history) {
 	#Display the history
 	debug("Show history for ".$Ticket->id);
+	
+	if ($Ticket->CurrentUserHasRight("ShowTicket")) {
+	    &ShowSummary($Ticket);
+	    print "\n";
+	    &ShowHistory($Ticket);
+	}
+	else {
+	    print "You don't have permission to view that ticket.\n";
+	}
     }	
     
     #Display a summary if we need to
@@ -291,6 +316,76 @@ sub debug {
 	print STDERR "$val\n";
     }
 }
+
+
+# {{{ sub ShowSummary 
+sub ShowSummary  {
+    my $Ticket = shift;
+
+
+    print <<EOFORM;
+Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->QueueObj->QueueId]}
+      Subject: @{[$Ticket->Subject]}
+   Requestors: @{[$Ticket->RequestorsAsString]}
+           Cc: @{[$Ticket->CcAsString]}
+     Admin Cc: @{[$Ticket->AdminCcAsString]}
+        Owner: @{[$Ticket->OwnerObj->UserId]}
+     Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
+          Due: @{[$Ticket->DueAsString]}
+      Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->AgeAsString]})
+ Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->LongSinceToldAsString]})
+  Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedBy]}
+	         
+EOFORM
+
+   while (my $l=$Ticket->Children->Next) {
+       print $l->BaseObj->id," (",$l->BaseObj->Subject,") is  ",$l->Type," this ticket\n";
+   }
+   while (my $l=$Ticket->Parents->Next) {
+       print "This ticket is ",$l->Type," ",$l->TargetObj->Id," (",$l->TargetObj->Subject,")\n";
+   }
+}
+# }}}
+
+# {{{ sub ShowHistory 
+sub ShowHistory  {
+    my $Ticket = shift;
+    my $Transaction;    
+    my $Transactions = $Ticket->Transactions;
+
+    while ($Transaction = $Transactions->Next) {
+      &ShowTransaction($Transaction);
+    }   
+  }
+# }}}
+
+# {{{ sub ShowTransaction 
+sub ShowTransaction  {
+  my $transaction = shift;
+  
+print <<EOFORM;
+==========================================================================
+Date: @{[$transaction->CreatedAsString]} (@{[$transaction->TimeTaken]} minutes)
+@{[$transaction->Description]}
+EOFORM
+    ;
+  my $attachments=$transaction->Attachments();
+  while (my $message=$attachments->Next) {
+    print <<EOFORM;
+--------------------------------------------------------------------------
+@{[$message->Headers]}
+EOFORM
+
+    if ($message->ContentType =~ m{^(text/plain|message)}) {
+	print $message->Content;
+    } else {
+	print $message->ContentType, " not shown";
+    }
+  }
+  print "\n";
+  return();
+}
+# }}}
 
 1;
 
