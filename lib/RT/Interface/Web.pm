@@ -112,7 +112,8 @@ does a css-busting but minimalist escaping of whatever html you're passing in.
 
 sub EscapeUTF8  {
         my  $ref = shift;
-        my $val = (Encode::is_utf8($$ref) ? Encode::encode_utf8($$ref) : $$ref);                                                                                                                                
+        my $val = $$ref;
+        use bytes;
         $val =~ s/&/&#38;/g;
         $val =~ s/</&lt;/g; 
         $val =~ s/>/&gt;/g;
@@ -121,6 +122,8 @@ sub EscapeUTF8  {
         $val =~ s/"/&#34;/g;
         $val =~ s/'/&#39;/g;
         $$ref = $val;
+        Encode::_utf8_on($$ref);
+
 
 }
 

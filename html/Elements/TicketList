@@ -545,7 +545,7 @@ foreach my $column (@Format) {
             }
         }
         else {
-            $m->out($subcol);
+            $m->out( Encode::decode_utf8($subcol) );
         }
     }
     $m->out('</td>');
