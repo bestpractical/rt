@@ -63,6 +63,7 @@ if ($key =~ /^DeleteMember-(\d+)$/) {
 my @AddMembers = (ref $AddMembers eq 'ARRAY') ? @{$AddMembers} : ($AddMembers);
 
 foreach my $member (@AddMembers) {
+    next unless ($member);
     my ($val, $msg) = $Group->AddMember($member);
     push (@results, $msg);
 }
