@@ -37,7 +37,7 @@
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>  
-	  <& /Elements/TitleBoxStart, title => 'People', color => "#3663399" &>
+	  <& /Elements/TitleBoxStart, title => 'People', color => "#333399" &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>

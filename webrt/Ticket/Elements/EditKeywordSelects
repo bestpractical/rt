@@ -1,4 +1,4 @@
-<& /Elements/TitleBoxStart, title => 'Keywords' &>
+<& /Elements/TitleBoxStart, title => 'Keywords', color =>"#993333"&>
 <TABLE>
     <TR>
 % while ( my $KeywordSelect = $KeywordSelects->Next ) {

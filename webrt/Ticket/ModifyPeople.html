@@ -1,11 +1,11 @@
-<& /Elements/Header, title => 'Modify people related to ticket # ' . $Ticket->id &>
+<& /Elements/Header, Title => 'Modify people related to ticket # ' . $Ticket->id &>
 <& /Ticket/Elements/Tabs, Ticket => $Ticket  &>
 
 <& /Elements/ListActions, actions => \@results &>
 
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
-<& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$Ticket->Id,   width => "100%", color=> "#36633" &>
+<& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$Ticket->Id,   width => "100%", color=> "#333399" &>
 
 <TABLE>
 <TR>
@@ -38,7 +38,7 @@ Administrative Cc:
 </TABLE>
 
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#36633" &>
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#333399" &>
 </form>
 
 <%INIT>

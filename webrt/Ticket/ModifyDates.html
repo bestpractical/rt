@@ -1,4 +1,4 @@
-<& /Elements/Header, title => 'Modify dates for ticket #'. $TicketObj->Id &>
+<& /Elements/Header, Title => 'Modify dates for ticket #'. $TicketObj->Id &>
 <& /Ticket/Elements/Tabs, Ticket => $TicketObj &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -9,11 +9,11 @@
 %#ACTION="" means submit to self.
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
-<& /Elements/TitleBoxStart, title => 'Modify dates for ticket #'.$TicketObj->Id,  width => "100%" &>
+<& /Elements/TitleBoxStart, title => 'Modify dates for ticket #'.$TicketObj->Id,  width => "100%", color => "#663366"  &>
 
 <& Elements/EditDates, TicketObj => $TicketObj &>
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit &>
+<& /Elements/Submit, color => "#663366" &>
 </form>
 
 

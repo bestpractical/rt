@@ -1,10 +1,10 @@
-<& /Elements/Header &>
+<& /Elements/Header, Title => 'Modify ticket #'.$TicketObj->Id &>
 <& /Ticket/Elements/Tabs, Ticket => $TicketObj  &>
 
 <& /Elements/ListActions, actions => \@results &>
 
 <& /Elements/TitleBoxStart, title => 'Modify ticket #'.$TicketObj->Id, 
-  width => "100%" &>
+  color=> "#993333", width => "100%" &>
 
  
 %#ACTION="" means submit to self.
@@ -14,7 +14,8 @@
 <& Elements/EditBasics, TicketObj => $TicketObj &>
 
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
+<& Elements/EditKeywordSelects, TicketObj=>$TicketObj &>
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#993333" &>
 </form>
 <%INIT>
 
