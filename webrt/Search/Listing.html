@@ -13,6 +13,10 @@
 <%PERL>
 
 my $i;
+
+
+      
+$session{'tickets'}->RedoSearch();
 while (my $Ticket = $session{'tickets'}->Next) {
  $i++;
  if ($i % 2) {

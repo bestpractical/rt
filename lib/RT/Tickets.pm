@@ -711,6 +711,14 @@ sub NewItem  {
 }
 # }}}
 
+# {{{ sub Count
+sub Count {
+  my $self = shift;
+  $self->_ProcessRestrictions if ($self->{'RecalcTicketLimits'} == 1 );
+  return($self->SUPER::Count());
+}
+# }}}
+
 # {{{ sub Next 
 sub Next {
 	my $self = shift;
