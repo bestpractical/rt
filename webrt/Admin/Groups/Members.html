@@ -29,7 +29,7 @@ Current members
 <LI><i>(No members)</i>
 % } else {
 % while (my $member = $Group->MembersObj->Next()) {
-<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->id%>">
+<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->UserObj->id%>">
 <%$member->UserObj->Name%> (<%$member->UserObj->RealName%>)
 % }
 % }
@@ -53,12 +53,12 @@ foreach $key (keys %ARGS) {
 
 if ($key =~ /^DeleteMember-(\d+)$/) {
     my $id = $1; 
-    my $retval = $Group->DeleteMember($id);
-    push (@results, $retval);
+    my ($val,$msg) = $Group->DeleteMember($id);
+    push (@results, $msg);
 }
 if ($key =~ /^AddMembers$/) {
-    my $retval = $Group->AddMember($ARGS{"$key"});
-    push (@results, $retval);
+    my ($val, $msg) = $Group->AddMember($ARGS{"$key"});
+    push (@results, $msg);
 }
 }
 

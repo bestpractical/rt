@@ -124,6 +124,7 @@ Returns an RT::GroupMembers object of this group's members.
 sub MembersObj {
     my $self = shift;
     unless (defined $self->{'members_obj'}) {
+	use RT::GroupMembers;
         $self->{'members_obj'} = new RT::GroupMembers($self->CurrentUser);
         $self->{'members_obj'}->LimitToGroup($self->id);
     }
@@ -146,21 +147,28 @@ sub AddMember {
     my $self = shift;
     my $new_member = shift;
 
-    #TODO --- make sure new_member is an RT::User object
+    my $new_member_obj = new RT::User($self->CurrentUser);
+    $new_member_obj->Load($new_member);
+    
+    unless ($new_member_obj->Id) {
+	$RT::Logger->debug("Couldn't find user $new_member");
+	return(0, "Couldn't find user");
+    }	
 
 
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
         #User has no permission to be doing this
-        return(undef);
+        return(0, "Permission Denied");
     }
-    if ($self->HasMember($new_member)) {
+    if ($self->HasMember($new_member_obj->Id)) {
         #User is already a member of this group. no need to add it
-        return(undef);
+        return(0, "Group already has member");
     }
-
+    
     my $member_object = new RT::GroupMember($self->CurrentUser);
-    $member_object->Create( UserId => $new_member, GroupId => $self->id );
-
+    $member_object->Create( UserId => $new_member_obj->Id, 
+			    GroupId => $self->id );
+    return(1, "Member added");
 }
 
 # }}}
@@ -203,7 +211,8 @@ sub HasMember {
 
 =head2 DeleteMember
 
-Takes the id of a GroupMember object. If the current user has apropriate rights,
+Takes the user id of a member.
+If the current user has apropriate rights,
 removes that GroupMember from this group.
 
 =cut
@@ -212,24 +221,37 @@ sub DeleteMember {
     my $self = shift;
     my $member = shift;
 
+    my $member_user_obj = new RT::User($self->CurrentUser);
+    $member_user_obj->Load($member);
+    
+    unless ($member_user_obj->Id) {
+	$RT::Logger->debug("Couldn't find user $member");
+	return(0, "User not found");
+    }	
+
 
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
         #User has no permission to be doing this
-        return(undef);
+        return(0,"Permission denied");
     }
     my $member_obj = new RT::GroupMember($self->CurrentUser);
-    $member_obj->Load($member) ||
-        return(undef);  #couldn't load member object
-   
-    #check ot make sure we're deleting members from the same group.
-    if ($member_obj->GroupId != $self->id) {
-        $RT::Logger->warn("$self: ".$self->CurrentUser->Name." tried to delete member $member from the wrong group (".$self->id.").\n");
-    }
+    $member_obj->LoadByCols ( UserId => $member_user_obj->Id,
+			      GroupId => $self->Id ) ||
+				return(0, "Couldn't load member");  #couldn't load member object
+    
+    #If we couldn't load it, return undef.
+    unless ($member_obj->Id()) {
+	return (0, "Group has no such member");
+    }	
+    
     #Now that we've checked ACLs and sanity, delete the groupmember
-
-   return ($member_obj->Delete());
-
-
+    my $val = $member_obj->Delete();
+    if ($val) {
+	return ($val, "Member deleted");
+    }
+    else {
+	return (0, "Member not deleted");
+    }
 }
 
 # }}}

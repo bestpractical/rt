@@ -144,8 +144,11 @@ Group Configuration for --group <groupid>
 	--delete
 	--display
 
+	--name <new name>
 	--description <new description>
-	--groupid <new groupid>
+
+
+
 	--add-member <userid>
 	--delete-member <userid>
 	--list-members	
@@ -246,7 +249,6 @@ sub PickMode {
 }	
 
 # }}}
-
 
 # {{{ AdminUser
 
@@ -355,7 +357,6 @@ sub AdminUser {
 
 # }}}
 
-
 # {{{ AdminQueue
 
 sub AdminQueue {
@@ -442,15 +443,94 @@ sub AdminQueue {
 # }}}
 
 
+# {{{ AdminKeyword
 sub AdminKeyword {
     my $keyword = shift;
 }
+# }}}
 
+# {{{ AdminGroup
 sub AdminGroup {
     my $group = shift;
 
-}
+    my (%args);
 
+    GetOptions(\%args,
+	       'create', 'delete', 'display',
+	       'Name', 'Description',
+	       	       
+	       'add-member=s@', 'delete-member=s@',
+	       'list-members'
+	       );
+
+
+    use RT::Group;
+    my $group_obj = new RT::Group($CurrentUser);
+    unless ($group) {
+	print "Group not specified.\n";
+	return();
+    }	
+    
+    #Create the group if we need to
+    if ($args{'create'}) {
+	my ($val, $msg) = $group_obj->create( Name => $args{'Name'},
+					      Description => $args{'Description'} );
+	print $msg ."\n";
+    }	
+    #otherwise we load it
+    else {
+	$group_obj->Load($group);
+    }	
+    
+    #If we have no group object, get the hell out
+    unless ($group_obj->Id) {
+	print "Group not found.\n";
+    }
+
+    if ($args{'delete'}) {
+	my ($val, $msg) = $group_obj->Delete();
+	print $msg ."\n";
+	return();
+    }	
+
+
+    
+    #modify if we need to
+    my @attributes = qw(Name Description
+			
+		       );
+    foreach my $attrib (@attributes) {
+	if ( (exists ($args{"$attrib"})) and
+	     ($group_obj->$attrib() ne $args{"$attrib"})) {
+		
+	    my $method = "Set$attrib";
+	    my ($val, $msg) = $group_obj->$method($args{"$attrib"});
+	    print "Group ".$group_obj->Name. " $attrib:  $msg\n";
+	    
+	    }
+    }		
+    
+    foreach my $user (@{$args{'add-member'}}) {
+	my ($val, $msg) = $group_obj->AddMember($user);
+	print $msg. "\n";
+    }
+    foreach my $user (@{$args{'delete-member'}}) {
+	my ($val, $msg) = $group_obj->DeleteMember($user);
+	print $msg ."\n";
+    }
+    
+    if ($args{'list-members'}) {
+	my $members = $group_obj->MembersObj();
+	while (my $member = $members->Next()) {
+	    print $member->UserObj->Name() ."\n";
+	}
+    }	
+    
+}
+# }}}
+
+
+# {{{ AdminSystem
 sub AdminSystem {
     print "In AdminSystem\n";
 
@@ -458,7 +538,7 @@ sub AdminSystem {
     AdminScrips(0);
     AdminRights(0);
 }
-
+# }}}
 
 # {{{ sub AdminTemplates
 
@@ -614,7 +694,6 @@ sub AdminScrips {
     }	
 }	
 
-
 # }}}
 
 # {{{ sub AdminRights
@@ -722,6 +801,7 @@ sub AdminRights {
 	    print "ACE deleted\n";
 	    
 	}
+
 	# }}}
 	
 	# {{{ grant rights that need granting
