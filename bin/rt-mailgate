@@ -478,11 +478,10 @@ sub GetCurrentUser  {
 	$CurrentUser->LoadByName($Address);
     }
     
-
+    
     unless ($CurrentUser->Id) {
 	#If it fails, create a user
-	
-	
+		
 	my $NewUser = RT::User->new($RT::SystemUser);
 	
 	my ($Val, $Message) = 
@@ -509,14 +508,16 @@ sub GetCurrentUser  {
 	$CurrentUser->LoadByEmail($Address);
 	
 	unless ($CurrentUser->id) {
-		$RT::Logger->warn("Couldn't load user '$Address'.".
-			          " Defaulting to nobody");
-
-	$CurrentUser->Load($RT::Nobody->Id);
+	    $RT::Logger->warn("Couldn't load user '$Address'.".
+			      " Defaulting to nobody");
+	    
+	    $CurrentUser->Load($RT::Nobody->Id);
+	}
     }
+ 
     return ($CurrentUser);
+    
 }
-
 # }}}
 
 # {{{ ParseCcAddressesFromHead 

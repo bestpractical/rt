@@ -145,7 +145,7 @@ sub handler {
     
     
     my $status = $ah->handle_request($r);
-    
+    tied(%HTML::Mason::Commands::session)->make_modified(); 
     untie %HTML::Mason::Commands::session;
     
     return $status;
