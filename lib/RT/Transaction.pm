@@ -1,5 +1,5 @@
 # $Header$
-# Copyright 1999-2000 Jesse Vincent <jesse@fsck.com>
+# Copyright 1999-2001 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 
 =head1 NAME
@@ -14,8 +14,8 @@
 =head1 DESCRIPTION
 
 
-Each RT::Transaction describes an atomic change to a ticket object or 
-an update to an RT::Ticket object.
+Each RT::Transaction describes an atomic change to a ticket object 
+or an update to an RT::Ticket object.
 It can have arbitrary MIME attachments.
 
 
@@ -24,6 +24,7 @@ It can have arbitrary MIME attachments.
 =cut
 
 package RT::Transaction;
+
 use RT::Record;
 @ISA= qw(RT::Record);
     
@@ -224,7 +225,6 @@ sub Message  {
 
     my $self = shift;
     
-    use RT::Attachments;
     if (!defined ($self->{'message'}) ){
 	
 	$self->{'message'} = new RT::Attachments($self->CurrentUser);
@@ -241,20 +241,60 @@ sub Message  {
 
 =head2 Content
 
-If this transaction has attached mime objects, returns the first one.
+If this transaction has attached mime objects, returns the first text/ part.
 Otherwise, returns undef.
 
 =cut
 
 sub Content {
     my $self = shift;
-    if ($self->Message->First) {
-	return ($self->Message->First->Content);
-    }
-    else {
+
+
+    # If we don\'t have any content, return undef now.
+    unless ($self->Message->First) {
 	return (undef);
+    }	
+    
+    # Get the set of toplevel attachments to this transaction.
+    my $MIMEObj = $self->Message->First();
+    
+    # If it's a message or a plain part, just return the
+    # body. 
+    if ($MIMEObj->ContentType() =~ '^(text|message)/') {
+	return ($MIMEObj->Content());
     }
-}
+    
+    # If it's a multipart object, first try returning the first 
+    # text/plain part. 
+    
+    if ($MIMEObj->ContentType() =~ '^multipart/') {
+	my $plain_parts = $MIMEObj->Children();
+	$plain_parts->ContentType(VALUE => 'text/plain');
+	
+	# If we actully found a part, return its content
+	if ($plain_parts->First) {
+	    return ($plain_parts->First->Content);		
+	}	
+	
+	# If that fails, return the  first text/ or message/ part 
+	# which has some content.
+    
+	else {
+	    my $all_parts = $MIMEObj->Children();
+	    while (my $part = $all_parts->Next) {
+		if (($part->ContentType() =~ '^(text|message)/') and
+		    ($part->Content())) {
+		    return ($part->Content);
+		}	
+	    }
+	}	
+
+    }
+    # If all else fails, return a message that we couldn't find
+    # any content
+    
+    return ('This transaction appears to have no content');
+}	
 
 # }}}
 
@@ -311,11 +351,19 @@ sub Attachments  {
     
     $Attachments->Limit(FIELD => 'TransactionId',
 			VALUE => $self->Id);
-    
+
+    # Get the attachments in the order they're put into
+    # the database.  Arguably, we should be returning a tree
+    # of attachments, not a set...but no current app seems to need
+    # it. 
+
+    $Attachments->OrderBy(ALIAS => 'main', 
+			  FIELD => 'Id',
+			  ORDER => 'asc');
+
     if ($Types) {
-	$Attachments->Limit(FIELD => 'ContentType',
-			    VALUE => "$Types",
-			    OPERATOR => "LIKE");
+	$Attachments->ContentType( VALUE => "$Types",
+				   OPERATOR => "LIKE");
     }
     
     
@@ -668,4 +716,5 @@ sub CurrentUserHasRight {
 }
 
 # }}}
+
 1;
