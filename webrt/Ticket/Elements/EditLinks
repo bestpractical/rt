@@ -4,6 +4,19 @@
 
 <TABLE>
 <TR>
+<TD VALIGN=TOP>
+<h3>New Relationships</h3>
+<i>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</i><br>
+<TABLE>
+<TR><TD>Merge into:</TD><TD><input name="<%$Ticket->Id%>-MergeInto"> <i>(only one ticket)</i></TD></TR>
+<TR><TD>Depends on:</TD><TD><input name="<%$Ticket->Id%>-DependsOn"></TD></TR>
+<TR><TD>Depended on by:</TD><TD><input name="DependsOn-<%$Ticket->Id%>"></TD></TR>
+<TR><TD>Parents:</TD><TD><input name="<%$Ticket->Id%>-MemberOf"></TD></TR>
+<TR><TD>Children:</TD><TD> <input name="MemberOf-<%$Ticket->Id%>"></TD></TR>
+<TR><TD>Refers to:</TD><TD><input name="<%$Ticket->Id%>-RefersTo"></TD></TR>
+<TR><TD>Referred to by:</TD><TD> <input name="RefersTo-<%$Ticket->Id%>"></TD></TR>
+</TABLE>
+</TD>
 <TD VALIGN=TOP WIDTH=50%>
 <h3>Current Relationships</h3>
 <i>(Check boxes to delete)</i><br>
@@ -31,7 +44,7 @@ Depended on by:<BR>
 % }
 </UL>
 
-SuperTickets:<BR>
+Parents:<BR>
 <UL>
 % while (my $link = $Ticket->MemberOf->Next) {
 % my $member = $link->TargetObj;
@@ -43,7 +56,7 @@ SuperTickets:<BR>
 % }
 </UL>
 
-SubTickets:<BR>
+Children:<BR>
 <UL>
 % while (my $link = $Ticket->Members->Next) {
 <LI>
@@ -55,7 +68,7 @@ SubTickets:<BR>
 </UL>
 
 
-References:<BR>
+Refers to:<BR>
 <UL>
 % while (my $link = $Ticket->RefersTo->Next) {
 <LI>
@@ -86,29 +99,8 @@ Referred to by:<BR>
 
 			    
 </TD>
-<TD VALIGN=TOP>
-<h3>New Relationships</h3>
-<i>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</i><br>
-Merge into:<input name="<%$Ticket->Id%>-MergeInto"> <i>(only one ticket)</i><BR>
-Depends on:<input name="<%$Ticket->Id%>-DependsOn"><BR>
-Depended on by:<input name="DependsOn-<%$Ticket->Id%>"><BR>
-
-		
-Parents:<input name="<%$Ticket->Id%>-MemberOf"><BR>
-Children: <input name="MemberOf-<%$Ticket->Id%>"><BR>
-
-RefersTo:<input name="<%$Ticket->Id%>-RefersTo"><BR>
-Referred to by: <input name="RefersTo-<%$Ticket->Id%>"><BR>
-
-
-</TD>
 </TR>
 </TABLE>
-
-
-
-
-
 
 
       

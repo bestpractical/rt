@@ -29,7 +29,7 @@ Parents:<BR>
 Children:<BR>
 <& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
 <BR>
-References:<BR>
+Refers to:<BR>
 <UL>
 % while (my $Link = $Ticket->RefersTo->Next) {
 <LI>
