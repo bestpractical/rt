@@ -3,16 +3,16 @@
 <TR>
 <TD VALIGN=TOP>
 
-<h3>Owner</h3>
-Owner: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, Default => $Ticket->OwnerObj->Id &>
 <h3>New watchers</h3>
 Find people whose<BR>
 <& /Elements/SelectUsers &>
+<input type=submit name="OnlySearchForPeople" value="Go!">
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
-        UserOp => $UserOp, UserField => $UserField &>
-
+        UserOp => $UserOp, UserField => $UserField &> 
 </TD><TD VALIGN=TOP>
+<h3>Owner</h3>
+Owner: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, Default => $Ticket->OwnerObj->Id &>
 <h3>Current watchers</h3>
 (Check box to delete)<br>
 

@@ -1,23 +1,45 @@
 <BR>
+<%$msg%><br>
+
 Add new watchers:<br>
 
-% if ($msg) {
-<%$msg%>
-% } elsif ($Users) {
-<ul>
+<table>
+% if ($Users) {
+<tr><td>
+Type
+</td><td>
+Username
+</td></tr>
 % while (my $u = $Users->Next ) {
-<li><&/Elements/SelectWatcherType, Name => "WatcherTypeUser".$u->Id &> <%$u->Name%>
-(<%$u->RealName%>)
+<tr><td><&/Elements/SelectWatcherType, Name => "WatcherTypeUser".$u->Id &></td><td><%$u->Name%> (<%$u->RealName%>)</td></tr>
 % }
-</ul>
 % }
+
+<td><td>
+Type
+</td><td>
+Email
+</td></tr>
+<tr><td>
+<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail1" &>
+</td><td>
+<input name="WatcherAddressEmail1" size=15>
+</td></tr>
+<tr><td>
+<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail2" &> 
+</td><td>
+<input name="WatcherAddressEmail2" size=15>
+</td></tr>
+<tr><td>
+<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail3" &>
+</td><td>
+<input name="WatcherAddressEmail3" size=15>
+</td></tr>
+</table>
 
 <%INIT>
 my ($msg, $Users);
-if (!$ARGS{'UserString'}) {
-$msg = "No users selected.";
- }
-else {
+if ($ARGS{'UserString'}) {
     $Users = new RT::Users($session{'CurrentUser'});
     $Users->Limit(FIELD => $ARGS{'UserField'},
                  VALUE => $ARGS{'UserString'},

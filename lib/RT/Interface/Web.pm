@@ -604,8 +604,18 @@ sub ProcessTicketWatchers {
 	my ($code, $msg) = $Ticket->DeleteWatcher($1);
 	push @results, $msg;
       }
-      
-      # Add new watchers
+
+      # Add new wathchers by email address      
+      elsif ( ($ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
+	      ($key =~ /^WatcherTypeEmail(\d*)$/) ) {
+	#They're in this order because otherwise $1 gets clobbered :/
+	my ($code, $msg) = 
+	  $Ticket->AddWatcher(Type => $ARGSRef->{$key}, 
+			      Email => $ARGSRef->{"WatcherAddressEmail".$1});
+	push @results, $msg;
+      }
+
+      # Add new  watchers by owner
       elsif ( ($ARGSRef->{$key} =~ /^(AdminCc|Cc|Requestor)$/) and
 	      ($key =~ /^WatcherTypeUser(\d*)$/) ) {
 	#They're in this order because otherwise $1 gets clobbered :/

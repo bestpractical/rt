@@ -74,15 +74,18 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
 
+my (@wresults, @results, @okresults, @dresults, @lresults);
 
-my @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
-my @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-my @okresults = ProcessTicketObjectKeywords(TicketObj => $Ticket, ARGSRef => \%ARGS);
+unless ($OnlySearchForPeople) {
+    @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    @okresults = ProcessTicketObjectKeywords(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-my @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
-my @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-ProcessUpdateMessage(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@results);
+    @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    ProcessUpdateMessage(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@results);
 
+}
 push @results, @wresults;
 push @results, @dresults;
 push @results, @lresults;
@@ -92,6 +95,7 @@ push @results, @okresults;
 
 
 <%ARGS>
+$OnlySearchForPeople => undef
 $UserField => undef
 $UserOp => undef
 $UserString => undef
