@@ -44,7 +44,7 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 <TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >
-<TD rowspan="2" valign="top" bgcolor="<%$bgcolor%>"><A NAME="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</A>&nbsp;</TD>
+<TD rowspan="2" valign="top" bgcolor="<%$bgcolor%>"><A NAME="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</A><% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %></TD>
 <TD>&nbsp&nbsp;</TD>
 <TD><font size=-2><% $transdate|n %></font>&nbsp;</TD>
 % my $desc = $Transaction->BriefDescription;
@@ -73,6 +73,7 @@ $EmailRecordPath => $RT::WebPath."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef
 $ShowBody => 1
+$LastTransaction => 0
 </%ARGS>
 
 <%INIT>
