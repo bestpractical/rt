@@ -1,0 +1,18 @@
+<%$ACE->UserObj->UserId%> (<%$ACE->UserObj->RealName%>)
+<UL>
+%while(my $ACE = $ACL->Next) {
+
+<LI><checkbox name="delete_ace_<%$ACE->id%>"> <%$ACE->RightName%> (<%$ACE->UserObj->RealName%>)
+
+%}
+</UL>
+
+<%INIT>
+my $ACL = new RT::ACL($session{'CurrentUser'});
+$ACL->LimitToScopeQueue($QueueObj->id);
+$ACL->LimitToPrincipalToUser($PrincipalId);
+</%INIT>
+<%ARGS>
+$PrincipalId => undef
+$QueueObj => undef
+</%ARGS>

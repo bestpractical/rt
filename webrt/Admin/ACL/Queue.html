@@ -1,7 +1,7 @@
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=QueueId VALUE="<%$Queue->id%>">
 
-
+<pre>
 Get the acl for this queue and princtype admincc
 get the acl for this queue and princtype cc
 get the acl for this queue and princtype requestor
@@ -30,11 +30,15 @@ Requestor
 User1...Usern
 
         rights [del]
+</pre>
 
-Find users
+%#Iterate through all users with rights in this queu
+<& ../Elements/QueueRightsForUser, QueueObj => $Queue, PrincipalId => $User->Id &>
+
+Find users:<br>
 <& /Elements/SelectUsers &>
-
-Grant rights:
+<br>
+Grant rights:<br>
 
 <& ../Elements/GrantQueueRightsTo,  
                               UserString => $UserString,
