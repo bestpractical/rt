@@ -391,6 +391,10 @@ sub FromSQL {
                          VALUE => 'ticket');
   }
 
+  # We never ever want to show deleted tickets
+  $self->SUPER::Limit(FIELD => 'Status' , OPERATOR => '!=', VALUE => 'deleted');
+
+
   # set SB's dirty flag
   $self->{'must_redo_search'} = 1;
   $self->{'RecalcTicketLimits'} = 0;                                           
