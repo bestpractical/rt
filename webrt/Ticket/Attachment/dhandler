@@ -1,5 +1,4 @@
-<%$AttachmentObj->Content%>
-<%init>
+<%perl>
      my ($ticket, $trans,$attach, $filename);
      my $arg = $m->dhandler_arg;                # get rest of path
      if ($arg =~ '^(\d+)/(\d+)/(\d+)/(.*)$') {
@@ -22,5 +21,7 @@
      }
      my $content_type = $AttachmentObj->ContentType || 'text/html';
      $r->content_type($content_type);
-</%init>
+     $m->out($AttachmentObj->Content); 
+     $m->abort; 
+</%perl>
 
