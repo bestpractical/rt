@@ -837,6 +837,7 @@ sub ProcessTicketLinks {
     foreach my $linktype (@linktypes) {
       
       for my $luri (split (/ /,$ARGSRef->{$Ticket->Id."-$linktype"})) {
+	$luri =~ s/\s*$//; # Strip trailing whitespace
 	my ($val, $msg) = $Ticket->AddLink( Target => $luri,
 					    Type => $linktype);
 	push @results, $msg;
