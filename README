@@ -25,7 +25,8 @@ o   An MTA (Mail Transfer Agent), i.e. sendmail -- free.
 	_receiving_ mail. It is possible to get it running with a remote
 	mailserver, i.e. by using fetchmail to fetch new mail from the
 	mailserver, or to let the mailserver execute RT remotely, i.e.
-	through ssh.
+	through ssh, or by having the data directory (transactions) at NFS,
+	and letting RT access the database remotely.
 
 o   Perl5.x ( http://www.perl.com ) -- free
 	
