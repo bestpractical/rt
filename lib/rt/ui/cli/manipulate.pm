@@ -389,7 +389,7 @@ sub cli_create_req  {
 							Subject => $Subject,
 							InitialPriority => $priority,
 							FinalPriority => $final_priority,
-							Status => 'open',
+							Status => 'new',
 							Due => $due_iso,
 							MIMEObj => $Message			
 						      );

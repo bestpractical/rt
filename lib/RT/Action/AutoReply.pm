@@ -15,7 +15,6 @@ sub Describe  {
 sub Commit  {
   my $self = shift;
 
-
   #
   # Here's where you'd do any special things you want to 
   # to on commit.
@@ -90,13 +89,6 @@ sub SetReturnAddress {
 }
 
 # }}}
-
-# {{{ sub SetPrecedence 
-sub SetPrecedence {
-  my $self = shift;
-  $self->TemplateObj->MIMEObj->head->add('Precedence', "Bulk");
-}
-
 
 # {{{ sub IsApplicable 
 sub IsApplicable  {

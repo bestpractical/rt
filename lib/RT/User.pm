@@ -43,7 +43,7 @@ sub _Accessible  {
 	      FreeformContactInfo => 'read/write',
 	      Organization => 'public/read/write',
 	      Disabled => 'public/read', #To modify this attribute, we have helper
-				  #methods
+	      #methods
 	      Privileged => 'read/write',
 	      # }}}
 	      
@@ -362,9 +362,10 @@ sub GrantSystemRight {
 =head2 HasQueueRight
 
 Takes a paramhash which can contain
-three items:
+these items:
     TicketObj => RT::Ticket or QueueObj => RT::Queue or Queue => integer
-    and Right => 'Right' 
+    IsRequestor => undef, (for bootstrapping create)
+    Right => 'Right' 
 
 
 Returns 1 if this user has the right specified in the paramhash. for the queue
@@ -379,6 +380,7 @@ sub HasQueueRight {
     my %args = ( TicketObj => undef,
                  QueueObj => undef,
 		 Queue => undef,
+		 IsRequestor => undef,
 		 Right => undef,
 		 @_);
     
@@ -406,6 +408,7 @@ sub HasQueueRight {
 
 	$QueueId = $args{'TicketObj'}->QueueObj->Id;
 	
+
 	if ($args{'TicketObj'}->IsRequestor($self)) {#user is requestor
 	    $IsRequestor = 1;
 	}	
@@ -420,12 +423,22 @@ sub HasQueueRight {
 	    $IsOwner = 1;
 	}
     }
-    
+
     else {
     	use Carp;
 	Carp::confess();
 	$RT::Logger->debug("$self ->HasQueueRight found no valid queue id.");
     }
+
+
+    #we use this so that "CreateTicket" rights can be granted to the requestor
+    if ($args{'IsRequestor'}) {
+	$IsRequestor=1;
+	$RT::Logger->debug("The user in question is the requestor\n");
+	
+    }	
+    
+
     
     my $retval = $self->_HasRight(Scope => 'Queue',
 				  AppliesTo => $QueueId,
@@ -436,7 +449,7 @@ sub HasQueueRight {
 				  IsRequestor => $IsRequestor
 				 );
     if (defined $retval) {
-#	$RT::Logger->debug("Got a return value: $retval\n");
+	#	$RT::Logger->debug("Got a return value: $retval\n");
 	return ($retval);
     }
     #if they don't have the queue right, see if they have the system right.
@@ -553,7 +566,7 @@ sub _HasRight {
     }
     elsif (!defined $args{'AppliesTo'}) {
         use Carp;
-        $RT::Lobber->debug(Carp::confess."\n");
+        $RT::Lobber->debug(Carp::cluck."\n");
     	$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
     	return(undef);
     }
@@ -597,6 +610,7 @@ sub _HasRight {
 	return(undef);
     }
     
+    
     my $RightClause = "(RightName = '$args{'Right'}')";
     my $ScopeClause = "(RightScope = '$args{'Scope'}')";
     
@@ -631,68 +645,100 @@ sub _HasRight {
 	" (GroupMembers.UserId = ".$self->Id."))";
     
     
-    # A bunch of magic statements that make the metagroups listed
+
+
+    # {{{ A bunch of magic statements that make the metagroups listed
     # work. basically, we if the user falls into the right group,
     # we add the type of ACL check needed
+    my (@MetaPrincipalsSubClauses, $MetaPrincipalsClause);
+    
+
     if ($args{'IsAdminCc'}) {
-	$GroupPrincipalsClause .= " OR ((Groups.Name = 'AdminCc') AND 
+	push (@MetaPrincipalsSubClauses,  "((Groups.Name = 'AdminCc') AND 
                                        (PrincipalType = 'Group') AND 
-                                       (Groups.Id = PrincipalId))";
+                                       (Groups.Id = PrincipalId))");
     }
     if ($args{'IsCc'}) {
-	$GroupPrincipalsClause .= " OR ((Groups.Name = 'Cc') AND 
+	push (@MetaPrincipalsSubClauses, " ((Groups.Name = 'Cc') AND 
                                        (PrincipalType = 'Group') AND 
-                                       (Groups.Id = PrincipalId))";
+                                       (Groups.Id = PrincipalId))");
     }
     if ($args{'IsRequestor'}) {
-	$GroupPrincipalsClause .= " OR ((Groups.Name = 'Requestor') AND 
+	push (@MetaPrincipalsSubClauses,  " ((Groups.Name = 'Requestor') AND 
                                        (PrincipalType = 'Group') AND 
-                                       (Groups.Id = PrincipalId))";
+                                       (Groups.Id = PrincipalId))");
     }
     if ($args{'IsOwner'}) {
-	$GroupPrincipalsClause .= "OR ((Groups.Name = 'Owner') AND 
+	
+	push (@MetaPrincipalsSubClauses, " ((Groups.Name = 'Owner') AND 
                                        (PrincipalType = 'Group') AND 
-                                       (Groups.Id = PrincipalId))";
+                                       (Groups.Id = PrincipalId))");
     }
 
+    # }}}
 
-    # This query checks to se whether the user has the right as a member of a
-    # group
-    my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers, Groups".
-      " WHERE " .
-	" (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) ".
-	  " AND ($GroupPrincipalsClause))";    
-    
-    
-    
-    my ($hitcount);
-    
-    # {{{ deal with checking if the user has a right as a member of a group
+    my ($GroupRightsQuery, $MetaGroupRightsQuery, $IndividualRightsQuery, $hitcount);
 
-  #  $RT::Logger->debug("Now Trying $query_string_1\n");	
-    $hitcount = $self->_Handle->FetchResult($query_string_1);
+    # {{{ If there are any metaprincipals to be checked
+    if (@MetaPrincipalsSubClauses) {
+	#chop off the leading or
+	#TODO redo this with an array and a join
+	$MetaPrincipalsClause = join (" OR ", @MetaPrincipalsSubClauses);
+	
+	$MetaGroupRightsQuery =  "SELECT COUNT(ACL.id) FROM ACL, Groups".
+	  " WHERE " .
+	    " ($ScopeClause) AND ($RightClause) AND ($MetaPrincipalsClause)";
+	
+	# {{{ deal with checking if the user has a right as a member of a metagroup
+    
+    #  $RT::Logger->debug("Now Trying $GroupRightsQuery\n");	
+    $hitcount = $self->_Handle->FetchResult($MetaGroupRightsQuery);
     
     #if there's a match, the right is granted
     if ($hitcount) {
 	$self->{'rights'}{"$hashkey"}{'set'} = time;
 	$self->{'rights'}{"$hashkey"} = 1;
-	
 	return (1);
     }
     
- #   $RT::Logger->debug("No ACL matched $query_string_1\n");	
+    $RT::Logger->debug("No ACL matched $MetaGroupRightsQuery\n");	
+    
+    # }}}    
+	
+    }
+    # }}}
+
+    # {{{ deal with checking if the user has a right as a member of a group
+    # This query checks to se whether the user has the right as a member of a
+    # group
+    $GroupRightsQuery = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers, Groups".
+      " WHERE " .
+	" (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) ".
+	  " AND ($GroupPrincipalsClause))";    
+    
+    #  $RT::Logger->debug("Now Trying $GroupRightsQuery\n");	
+    $hitcount = $self->_Handle->FetchResult($GroupRightsQuery);
+    
+    #if there's a match, the right is granted
+    if ($hitcount) {
+	$self->{'rights'}{"$hashkey"}{'set'} = time;
+	$self->{'rights'}{"$hashkey"} = 1;
+	return (1);
+    }
+    
+    $RT::Logger->debug("No ACL matched $GroupRightsQuery\n");	
     
     # }}}
 
     # {{{ Check to see whether the user has a right as an individual
     
     # This query checks to see whether the current user has the right directly
-    my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE ".
-      " (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) " .
-	" AND ($PrincipalsClause))";
+    $IndividualRightsQuery = "SELECT COUNT(ACL.id) FROM ACL WHERE ".
+      " ((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) " .
+	" AND ($PrincipalsClause)";
 
     
-    $hitcount = $self->_Handle->FetchResult($query_string_2);
+    $hitcount = $self->_Handle->FetchResult($IndividualRightsQuery);
     
     if ($hitcount) {
 	$self->{'rights'}{"$hashkey"}{'set'} = time;
@@ -700,9 +746,13 @@ sub _HasRight {
 	return (1);
     }
     # }}}
-    else {
+
+    else { #If the user just doesn't have the right
 	
-#	$RT::Logger->debug("No ACL matched $query_string_2\n");
+	$RT::Logger->debug("No ACL matched $IndividualRightsQuery\n");
+	use Carp;
+	Carp::cluck();
+	
 	#If nothing matched, return 0.
 	$self->{'rights'}{"$hashkey"}{'set'} = time;
 	$self->{'rights'}{"$hashkey"} = -1;
@@ -824,6 +874,7 @@ sub _Value  {
   elsif ($self->CurrentUser->Id == $self->Id) {	
       return($self->SUPER::_Value($field));
   }
+
 }
   
 # }}}

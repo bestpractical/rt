@@ -5,7 +5,7 @@
 %while  (my $Scrip = $Scrips->Next) {
 <OPTION VALUE=<%$Scrip->Id%>
 <% $Scrip->Id == $Default && 'SELECTED' %>
-><%$Scrip->Name%>(<%$Scrip->Description%>)
+><%$Scrip->Name%>
 </OPTION>
 %}
 </SELECT>

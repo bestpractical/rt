@@ -174,7 +174,7 @@ sub Create {
 		@_);
     
     #TODO Load queue defaults +++ v2.0
-        
+    
     if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
 	$Queue=RT::Queue->new($self->CurrentUser);
 	$Queue->Load($args{'Queue'});
@@ -194,8 +194,9 @@ sub Create {
     
     #Check the ACLS
     unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
+					      IsRequestor => 'true',
 					      QueueObj => $Queue )) {
-	return (0,0,"Permission Denied");
+	return (0,0,"No permission to create tickets in that queue");
     }
     
     
@@ -266,18 +267,19 @@ sub Create {
     
     #Load 'er up.
     $self->Load($id);
-
-    $RT::Logger->debug("Now adding a ticket: ". join(":",%args));
+    
+    
+    $RT::Logger->debug("Now adding watchers. ");
 
     my $watcher;
     foreach $watcher (@{$args{'Cc'}}) {
-	$self->AddCc( Person => $watcher, Silent => 1);
+	$self->_AddWatcher( Type => 'Cc', Person => $watcher, Silent => 1);
     }	
     foreach $watcher (@{$args{'AdminCc'}}) {
-	$self->AddAdminCc( Person => $watcher, Silent => 1);
+	$self->_AddWatcher( Type => 'AdminCc', Person => $watcher, Silent => 1);
     }	
     foreach $watcher (@{$args{'Requestor'}}) {
-	$self->AddRequestor( Person => $watcher, Silent => 1);
+	$self->_AddWatcher( Type => 'Requestor', Person => $watcher, Silent => 1);
     }
     
 
@@ -288,8 +290,7 @@ sub Create {
     
     # Logging
     if ($self->Id && $Trans) {
-	$ErrStr='Ticket #'.$self->Id." (".$self->Subject . ")"
-	  . " created in queue ". $self->QueueObj->QueueId;
+	$ErrStr='Ticket #'.$self->Id . " created in queue ". $Queue->QueueId;
 	
 	$RT::Logger->info($ErrStr);
     } 
@@ -323,73 +324,79 @@ If the watcher you\'re trying to set has an RT account, set the Owner paremeter 
 =cut
 
 sub AddWatcher {
-   my $self = shift;
-   my %args = (
-
-	       Type => undef,
-	       Silent => undef,
-	       Email => undef,
-	       Owner => 0,
-	       Person => undef,
-	       @_ );
-
-   $RT::Logger->debug("Now adding a watcher: ". join(":",%args));
-   
-   unless ($self->CurrentUserHasRight('ModifyTicket')) {
-       return (0, "Permission Denied");
-   }
-   
-   
-   #clear the watchers cache
-   $self->{'watchers_cache'} = undef;
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+	
+    }
+    
+    return ($self->_AddWatcher(@_));
+}
 
 
-   if (defined $args{'Person'}) {
-       #if it's an RT::User object, pull out the id and shove it in Owner
-       if (ref ($args{'Person'}) =~ /RT::User/) {
-	   $args{'Owner'} = $args{'Person'}->id;
-       }	
-       #if it's an int, shove it in Owner
-       elsif ($args{'Person'} =~ /^\d+$/) {
-	   $args{'Owner'} = $args{'Person'};
-       }
-       #if it's an email address, shove it in Email
+#This contains the meat of AddWatcher. but can be called from a routine like
+# Create, which doesn't need the additional acl check
+sub _AddWatcher {
+    my $self = shift;
+    my %args = (
+		Type => undef,
+		Silent => undef,
+		Email => undef,
+		Owner => 0,
+		Person => undef,
+		@_ );
+    
+    $RT::Logger->debug("Now adding a watcher: ");
+    
+    
+    #clear the watchers cache
+    $self->{'watchers_cache'} = undef;
+    
+    
+    if (defined $args{'Person'}) {
+	#if it's an RT::User object, pull out the id and shove it in Owner
+	if (ref ($args{'Person'}) =~ /RT::User/) {
+	    $args{'Owner'} = $args{'Person'}->id;
+	}	
+	#if it's an int, shove it in Owner
+	elsif ($args{'Person'} =~ /^\d+$/) {
+	    $args{'Owner'} = $args{'Person'};
+	}
+	#if it's an email address, shove it in Email
        else {
 	   $args{'Email'} = $args{'Person'};
        }	
-       
-       
-   }	
-   
-
-   if ($args{'Owner'} == 0) {
-       my $User = new RT::User($RT::SystemUser);
-       $User->LoadByEmail($args{'Email'});
-       if ($User->id > 0) {
-	   $args{'Owner'} = $User->id;
-	   $args{'Email'} = undef;
+    }	
+    
+    if ($args{'Owner'} == 0) {
+	my $User = new RT::User($RT::SystemUser);
+	$User->LoadByEmail($args{'Email'});
+	if ($User->id > 0) {
+	    $args{'Owner'} = $User->id;
+	    $args{'Email'} = undef;
        }	
-   }
-
-   
-   #If we have an email address, try to resolve it to an owner
-   
-   require RT::Watcher;
-   my $Watcher = new RT::Watcher ($self->CurrentUser);
-   my ($retval, $msg) = ($Watcher->Create( Value => $self->Id,
-					   Scope => 'Ticket',
-					   Email => $args{'Email'},
-					   Type => $args{'Type'},
-					   Owner => $args{'Owner'},
-					 ));
-   
-   unless ($args{'Silent'}) {
-       $self->_NewTransaction( Type => 'AddWatcher',
-			       NewValue => $Watcher->Email,
-			       Data => $Watcher->Type);
-   }
-   
-   return ($retval, $msg);
+    }
+    
+    
+    #If we have an email address, try to resolve it to an owner
+    
+    require RT::Watcher;
+    my $Watcher = new RT::Watcher ($self->CurrentUser);
+    my ($retval, $msg) = ($Watcher->Create( Value => $self->Id,
+					    Scope => 'Ticket',
+					    Email => $args{'Email'},
+					    Type => $args{'Type'},
+					    Owner => $args{'Owner'},
+					  ));
+    
+    unless ($args{'Silent'}) {
+	$self->_NewTransaction( Type => 'AddWatcher',
+				NewValue => $Watcher->Email,
+				Data => $Watcher->Type);
+    }
+    
+    return ($retval, $msg);
 }
 
 # }}}
@@ -2097,9 +2104,10 @@ sub _Accessible {
 	      Resolved => 'read',
 	      Starts => 'read,write',
 	      Started => 'read,write',
-	      LastUpdated => 'read/auto',
-	      LastUpdatedBy => 'read/auto',
-	      Due => 'read/write'
+	      Due => 'read/write',
+	      LastUpdated => 'read/auto/public',
+	      LastUpdatedBy => 'read/auto/public'
+
 
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
@@ -2169,12 +2177,19 @@ sub _Value  {
   my $self = shift;
   my $field = shift;
 
- #If the current user doesn't have ACLs, don't let em at it.  
- 
- unless ($self->CurrentUserHasRight('ShowTicket')) {
-    return (0, "Permission Denied");
+  
+  #if the field is public, return it.
+  if ($self->_Accessible($field, 'public')) {
+      $RT::Logger->debug("Skipping ACL check for $field\n");
+      return($self->SUPER::_Value($field));
+      
   }
   
+  #If the current user doesn't have ACLs, don't let em at it.  
+  
+  unless ($self->CurrentUserHasRight('ShowTicket')) {
+      return (0, "Permission Denied");
+  }
   return($self->SUPER::_Value($field));
   
 }
@@ -2195,11 +2210,11 @@ sub _UpdateTimeTaken {
   my $Minutes = shift;
   my ($Total);
    
-  $Total = $self->_Value("TimeWorked");
+  $Total = $self->SUPER::_Value("TimeWorked");
   $Total = ($Total || 0) + ($Minutes || 0);
-  $self->_Set(Field => "TimeWorked", 
-	      Value => $Total, 
-	      RecordTransaction => 0);
+  $self->SUPER::_Set(Field => "TimeWorked", 
+		     Value => $Total);
+
   return ($Total);
 }
 

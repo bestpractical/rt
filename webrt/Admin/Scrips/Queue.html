@@ -9,16 +9,20 @@
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=Queue VALUE=<%$Queue%>>
 
-<ul>
+<UL>
 % while (my  $ScripScope  = $ScripScopes->Next ) {
+	
+<LI>	Scrip: <& /Admin/Elements/SelectScrip,  Name => 'ScripForScope-'.$ScripScope->Id, Default => $ScripScope->Scrip &>
+	  Template: <& /Admin/Elements/SelectTemplate, Name => 'TemplateForScope-'.$ScripScope->Id, Default => $ScripScope->Template &>
 
-<li><& Elements/EditScripScope, ScripScope => $ScripScope &>
-
+</LI>
 % }
 </ul>
 Add a scrip to this queue:
 <ul>
-<li><& Elements/AddScripScope, Queue=> $Queue &>
+<li>Scrip: <& /Admin/Elements/SelectScrip, Name => 'NewScopeScrip' &>
+Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScopeTemplate', DefaultQueue => $Queue &>
+
 </ul>
 <& /Elements/Submit &>
 </FORM>

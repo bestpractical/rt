@@ -78,7 +78,11 @@ sub Create  {
     #TODO this MUST be as the "System" principal or it all breaks
     my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
     $TicketAsSystem->Load($args{'Ticket'}) || 
-      $RT::Logger->err("RT::Transaction couldn't load $args{'Ticket'}\n");
+      $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
+
+    my $TransAsSystem = RT::Transaction->new($RT::SystemUser);
+    $TransAsSystem->Load($self->id) ||
+      $RT::Logger->err("$self couldn't load a copy of itself as superuser\n");
     
     # {{{ Deal with Scrips
     
@@ -90,8 +94,8 @@ sub Create  {
     $PossibleScrips->LimitToGlobal(); # or to "global"
     my $ScripsAlias = $PossibleScrips->NewAlias(Scrips);
     
-  $PossibleScrips->Join(ALIAS1 => 'main',  FIELD1 => 'Scrip',
-			   ALIAS2 => $ScripsAlias, FIELD2=> 'id');
+    $PossibleScrips->Join(ALIAS1 => 'main',  FIELD1 => 'Scrip',
+			  ALIAS2 => $ScripsAlias, FIELD2=> 'id');
     
     
     #We only want things where the scrip applies to this sort of transaction
@@ -120,47 +124,47 @@ sub Create  {
       #TODO: properly deal with errors raised in this scrip loop
 	
       #$RT::Logger->debug("$self now dealing with ".$Scrip->Id. "\n");      
-      eval {
-	local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
-	
-
+	eval {
+	  local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
+	  
+	  
         #Load the scrip's action;
-
-	$Scrip->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
-		                     TransactionObj => $self);
-	
-	
-	#If it's applicable, prepare and commit it
-	$RT::Logger->debug ("$self: Checking $Scrip ".$Scrip->ScripObj->id. " (ScripScope: ".$Scrip->id .")\n");
-	
-	if ( $Scrip->ScripObj->IsApplicable() ) {
 	  
-	  $RT::Logger->debug ("$self: Preparing $Scrip\n");
+	  $Scrip->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
+				       TransactionObj => $TransAsSystem);
 	  
-	  #TODO: handle some errors here
 	  
-	  $Scrip->ScripObj->Prepare() &&   
-	    $Scrip->ScripObj->Commit() &&
-	      $RT::Logger->info("$self: Committed $Scrip\n");
+	  #If it's applicable, prepare and commit it
+	  $RT::Logger->debug ("$self: Checking $Scrip ".$Scrip->ScripObj->id. " (ScripScope: ".$Scrip->id .")\n");
 	  
-	  #We're done with it. lets clean up.
-	  #TODO: why the fuck do we need to do this? 
-	  $Scrip->ScripObj->DESTROY();
-	}
-	
-	
+	  if ( $Scrip->ScripObj->IsApplicable() ) {
+	      
+	      $RT::Logger->debug ("$self: Preparing $Scrip\n");
+	      
+	      #TODO: handle some errors here
+	      
+	      $Scrip->ScripObj->Prepare() &&   
+		$Scrip->ScripObj->Commit() &&
+		  $RT::Logger->info("$self: Committed $Scrip\n");
+	      
+	      #We're done with it. lets clean up.
+	      #TODO: why the fuck do we need to do this? 
+	      $Scrip->ScripObj->DESTROY();
+	  }
+	  
+	  
 	else {
-	  #TODO: why the fuck does this not catch all
-	  # ScripObjs we create. and why do we explictly need to destroy them?
-	  $Scrip->ScripObj->DESTROY;
+	    #TODO: why the fuck does this not catch all
+	    # ScripObjs we create. and why do we explictly need to destroy them?
+	    $Scrip->ScripObj->DESTROY;
 	}
       }	
     }
-  
-  # }}}
+    
+    # }}}
     return ($id, "Transaction Created");
 }
-
+  
 # }}}
 
 # {{{ Routines dealing with Attachments
@@ -249,6 +253,7 @@ sub _Attach  {
   return ($Attachment, "Attachment created");
   
 }
+
 # }}}
 
 # }}}

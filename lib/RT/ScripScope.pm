@@ -138,10 +138,7 @@ sub _Set {
 sub _Value {
     my $self = shift;
     
-    unless ($self->CurrentUserHasRight('ShowScripScopes')) {
-        $RT::Logger->debug("CurrentUser can't show ScripScopes for ".$self->Queue."\n");
-	return (undef);
-    }
+
     return $self->SUPER::_Value(@_);
 }
 # }}}

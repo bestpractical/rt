@@ -33,6 +33,7 @@ use vars qw (%SCOPES
 	  );
 
 # {{{ Descriptions of rights
+
 # Queue rights are the sort of queue rights that can only be granted
 # to real people or groups
 %QUEUERIGHTS = ( 
@@ -71,7 +72,6 @@ use vars qw (%SCOPES
 		 ModifySystemACL => 'Modify system ACLs',
 
 		);
-
 
 # }}}
 

@@ -23,11 +23,11 @@ sub Commit  {
   # We should have some kind of site specific configuration here.  I
   # think the default method for sending an email should be
   # send('sendmail'), but some RT installations might want to use the
-  # smtpsend method anyway.  If you need support for other mailers,
-  # it's very easy to subclass Mail::Mailer::mail - but you should
-  # probably talk with Graham Barr first.
+  # smtpsend method anyway. 
 
+  # If there are no recipients, don't try to send the message.
 
+  $RT::Logger->debug("Sending message to ".$self->EnvelopeTo."\n");
   
   $self->TemplateObj->MIMEObj->make_singlepart;
 
@@ -37,6 +37,7 @@ sub Commit  {
   $RT::Logger->debug("$self: RT::Action::SendEmail is calling a hardcoded sendmail 8 commandline\n");
   open (MAIL, "|$RT::SendmailCommand $RT::SendmailArguments");
   print MAIL $self->TemplateObj->MIMEObj->as_string;
+  $RT::Logger->debug("Just sent:\n\n".$self->TemplateObj->MIMEObj->as_string."\n");
   close(MAIL);
   
 
@@ -366,10 +367,8 @@ sub SetBcc {
 
 sub SetPrecedence {
   my $self = shift;
-  # No - this should only be set for the AutoReply!
-  # Disagree. this should be set for any message which RT sets 
-  # the recipeients for. -jesse
-  $self->TemplateObj->MIMEObj->head->add('Precedence', "Bulk");
+
+  $self->TemplateObj->MIMEObj->head->add('Precedence', "bulk");
 }
 
 # }}}
@@ -408,6 +407,23 @@ sub SetSubjectToken {
   $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub")
       unless $sub =~ /\Q$tag\E/;
 }
+
+# }}}
+
+# {{{ sub EnvelopeTo
+=head2 EnvelopeTo
+
+Returns the message's envelope To.
+
+=cut
+
+sub EnvelopeTo {
+    my $self = shift;
+    
+    return($self->{'EnvelopeTo'});
+
+}
+
 
 # }}}
 
