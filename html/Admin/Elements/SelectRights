@@ -24,7 +24,7 @@
 <INPUT TYPE=HIDDEN NAME="CheckACL"  VALUE="<%$ACLDesc%>">
      <TABLE BORDER=0>
 <TR>
-<TD valign=top width="180"> 
+<TD valign=top width="180" align="left"> 
 <h3><&|/l&>Current rights</&></h3>
 % if ($ACLObj->Count() > 0) {
 <i>(<&|/l&>Check box to revoke right</&>)</i> <BR>
@@ -71,6 +71,7 @@
 
     $ACLObj->LimitToObject( $Object);
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);
+    $ACLObj->OrderBy(FIELD=>'RightName'); 
 
     if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
         %Rights = %{$Object->AvailableRights};
