@@ -340,8 +340,8 @@ CREATE TABLE ObjectCustomFieldValues (
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NOT NULL,	    # Final target of the Object
   ObjectId int NOT NULL  ,		    # New -- Replaces Ticket
+  SortOrder integer NOT NULL DEFAULT 0  ,
 
-  Current BOOL DEFAULT 1,		    # New -- whether the value was current
   Content varchar(255) NULL  ,
   LargeContent LONGTEXT NULL,		    # New -- to hold 255+ strings
   ContentType varchar(80) NULL,		    # New -- only text/* gets searched
@@ -351,6 +351,7 @@ CREATE TABLE ObjectCustomFieldValues (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) ;
 
