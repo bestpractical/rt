@@ -1,3 +1,20 @@
+26 Jan 1998
+-----------
+
+	RT 0.9.8 is a lot more robust than 0.9.7.  I've played with this version a lot more
+	than other recent releases.  A lot of tiny little bugs that just made things hard have been
+	eradicated.  This version doesn't change anything major.  However, a lot of the changes made in
+	0.9.5, 0.9.6 and 0.9.7 now actually work.  There shouldn't be any more taint complaints.
+	Also, the web UI now sports an additional button bar for the most frequently used buttons.
+	A lot of the silly stuff i was doing with procedure calls to make html tables has been wiped.
+	that should make things a bit speedier.  
+	WebRT will now tell you who you're logged in as.
+	make upgrade (for upgrades from .9.5 or greater) now works
+	transaction reporting by mail is now more verbose
+	mailgate will now drop mail loops from postmaster.
+	and many other small bug fixes that have been nagging me for the past 6 months.
+	
+
 1 Jan 1998
 ----------
 	Extensive changes have been made to rt's internals in preparation for a 1.0 release
