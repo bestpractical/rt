@@ -268,6 +268,23 @@ sub LimitStatus {
 
 # }}}
 
+# {{{ sub IgnoreType 
+
+=head2 IgnoreType 
+
+If called, this search will not automatically limit the set of results found
+to tickets of type "Ticket". Tickets of other types, such as "project" and 
+"approval" will be found.
+
+=cut
+
+sub IgnoreType {
+    my $self = shift;
+    $self->LimitType(VALUE => '__any');
+}
+
+# }}}
+
 # {{{ sub LimitType
 
 =head2 LimitType
@@ -275,6 +292,8 @@ sub LimitStatus {
 Takes a paramhash with the fields OPERATOR and VALUE.
 OPERATOR is one of = or !=, it defaults to "=".
 VALUE is a string to search for in the type of the ticket.
+
+
 
 =cut
 
@@ -1164,8 +1183,13 @@ sub _ProcessRestrictions {
     foreach $row (keys %{$self->{'TicketRestrictions'}}) {
         my $restriction = $self->{'TicketRestrictions'}{$row};
 	# {{{ if it's an int
-	
-	if ($TYPES{$restriction->{'FIELD'}} eq 'INT' ) {
+
+    if ($restriction->{'FIELD'} eq 'Type' && $restriction{'VALUE'} eq '__any') {
+        $self->{'looking_at_type'} = 1;
+    }
+
+
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'INT' ) {
 	    if ($restriction->{'OPERATOR'} =~ /^(=|!=|>|<|>=|<=)$/) {
 		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',

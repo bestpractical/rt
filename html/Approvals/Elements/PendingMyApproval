@@ -26,6 +26,7 @@
 <table width="100%">
 % my ($i, $class);
 % while (my $ticket = $tickets->Next() ) {
+% next if (! $ARGS{'ShowDependent'} && $ticket->HasUnresolvedDependencies );
 % $i++; 
 % $class = ($i%2) ?  "oddline" : "evenline";
 <& Approve, ticket => $ticket &>
@@ -39,6 +40,7 @@
         && "checked"%>> <&|/l&>Show pending requests</&><br>
 <input type=checkbox value="1" name="ShowResolved" <%$ARGS{'ShowResolved'} && "checked"%>> <&|/l&>Show approved requests</&><br>
 <input type=checkbox value="1" name="ShowRejected" <%$ARGS{'ShowRejected'} && "checked"%>> <&|/l&>Show denied requests</&><br>
+<input type=checkbox value="1" name="ShowDependent" <%$ARGS{'ShowDependent'} && "checked"%>> <&|/l&>Show requests awaiting other approvals</&><br>
 
 <&|/l,"<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>"&>Only show approvals for requests created before [_1]</&><br>
 
@@ -47,6 +49,7 @@
 
 <%init>
 my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
+$tickets->IgnoreType;
 $tickets->LimitOwner( VALUE => $session{'CurrentUser'}->Id );
 $tickets->Limit( FIELD      => 'Type', VALUE => 'approval' );
 
