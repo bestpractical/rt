@@ -101,4 +101,13 @@ $web_auth_mechanism = "!!WEB_AUTH_MECHANISM!!";
 
 $web_auth_cookies_allow_no_path = "!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!";
 
+
+#  This is the default locale used by RT when deciding what version of the strings
+# to show you
+$DefaultLocale = "!!DEFAULT_LOCALE!!";
+
+# This is the directory that .po files live in.
+
+$LocalePath = "!!LOCALE_PATH!!";
+# 
 1;

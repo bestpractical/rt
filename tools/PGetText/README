@@ -1,0 +1,49 @@
+PGetText - pure perl i18n routines
+
+PGetText provides the same functionality as GNU gettext does, but it is written in pure perl and doesn't require any system locale stuff.
+
+All your need is one of DBM-compatible modules (GDBM_File, DB_File, SDBM_File etc)
+
+The package includes two scripts - MsgFormat which compiles GNU gettext compatible .po messages files into messages database and XText - very basic string extractor.
+
+Perl script localization using PGetText consists of 3 simple steps:
+
+1. Make .po file
+
+Take all messages:
+
+ XText < myscript > myscript.po
+
+Then edit myscript.po as you like and write translations into msgstr fields
+
+2. Compile messages database
+
+ MsgFormat /usr/local/myscript/locale ru-koi8 < myscript.po
+
+This will put messages database  ru-koi8 into /usr/local/myscript/locale directory.
+
+3. Make appropriate changes in your script.
+
+place following before any gettext() calls   
+
+	use Locale::PGetText;
+
+  	Locale::PGetText::setLocaleDir('/usr/local/myscript/locale');
+  	Locale::PGetText::setLanguage('ru-koi8r');
+
+And than put gettext() where you need it
+
+example: instead of 
+	
+	print "Hello world";
+
+put
+	print gettext("Hello world");
+
+
+
+
+Copyright (C) 1999 Mike Shoyher
+
+<msh@corbina.net>, <msh@apache.lexa.ru>
+http://www.corbina.net/~msh

@@ -25,6 +25,15 @@ use Carp;
 use DBIx::Handle;
 
 
+# {{{  Lets load up the Locale managment stuff
+#TODO get a few files to try some translations
+#use Locale::PGetText;
+
+#Locale::PGetText::setLocaleDir("$RT::LocalePath");
+#Locale::PGetText::setLanguage("$RT::DefaultLocale");
+
+# }}}
+
 #TODO: need to identify the database user here....
 $Handle = new DBIx::Handle;
 

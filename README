@@ -37,7 +37,7 @@ documentation, send a mail to rt-docs@fsck.com
 REQUIRED PACKAGES:
 ------------------
 
-o   Perl5.x ( http://www.perl.com ) -- free
+o   Perl5.x ( http://www.perl.com )
 	
 	RT is written almost entirely in perl.
 
@@ -48,60 +48,62 @@ o   A DB backend; MySQL is recommended ( http://www.mysql.com ) -- semifree
         only MySQL is supported, but the work of porting to other
         backends should be rather trivial.
 
-o   GNU Make ( http://www.gnu.org ) -- free
+o   GNU Make ( http://www.gnu.org )
 
 	I know for sure that GNU Make supports the conditionals syntax RT's
 	Makefile uses. I can't be sure about anything else.  If you don't have 
 	GNU Make, but feel reasonably comfortable with Makefiles, you probably
 	can get by without it.
 
-o   Msql-Mysql-modules ( CPAN or ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
+o   Msql-Mysql-modules ( CPAN or ftp://ftp.mysql.com/pub/mysql/Contrib )
 
 	Please note that Msql-Mysql-modules requires DBD to be
 	installed to function. See the Msql-Mysql-modules
 	documentation for more information.
 
-o   CGI.pm ( CPAN or http://www.perl.com ) -- free
+o   CGI.pm ( CPAN or http://www.perl.com )
 	
 	CGI.pm and CGI::Cookie are used for our basic Form and Cookie processing
 	We recommend that you use at least 2.53 as we know that version works.
 
-o   Digest::MD5 ( CPAN or http://www.perl.com ) -- free
+o   Digest::MD5 ( CPAN or http://www.perl.com )
 	
 	Digest::MD5 is a perl module used for generating MD5 hashes 
 	of files or strings, in this case, the password hashes used by 
 	the Web interface. It is required for web authentication to work.
 
-o   Text::Wrapper ( CPAN or http://www.perl.com ) -- free
+o   Text::Wrapper ( CPAN or http://www.perl.com )
 
 	For quoting and eventually wrapping messages in the WebRT
 	reply textarea.
 
-o   Mail::Internet ( CPAN or http://www.perl.com ) -- free
+o   Mail::Internet ( CPAN or http://www.perl.com )
 
 	For sending email. Earlier versions used an external mail
 	program (like sendmail). Mail::Internet usually works right
 	out of the box, but if it doesn't, complain to
 	rt-devel@lists.fsck.com.
 
-o   MIME::Tools ( CPAN or http://www.perl.com ) -- free
+o   MIME::Tools ( CPAN or http://www.perl.com )
 	
 	For parsing incoming mail messages.
 
 o   Libwww-perl / LWP::UserAgent and HTTP::Request 
-	( http://www.perl.com or CPAN ) -- free
+	( http://www.perl.com or CPAN )
 
 	You will only eventually need this if you need RT to maintain
 	links from external web-based databases.
 
 o   DBIx::Record and DBIx::EasySearch
-        ( ftp://ftp.fsck.com/pub/rt/devel ) -- free
+        ( ftp://ftp.fsck.com/pub/rt/devel ) 
 
 	These will be used for RT's new Object interface...
 
-o   HTML::Mason (CPAN) -- free
+o   HTML::Mason (CPAN) 
 	For the web ui
 
+o Locale::PGetText
+	Used by RT for localization
 
 o   Apache + mod_perl -- free, optional 
 	You might choose to run without a Web UI, and you can choose

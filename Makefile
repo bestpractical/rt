@@ -29,6 +29,7 @@ RT_PATH			=	/opt/rt-1.3
 RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
+RT_LOCALE_PATH		=	$(RT_ETC_PATH)/locale
 WEBRT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
 WEBRT_HTML_PATH		=	$(RT_PATH)/WebRT/html
 WEBRT_DATA_PATH		=       $(RT_PATH)/WebRT/data
@@ -160,6 +161,12 @@ DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 
 WEB_IMAGE_PATH			=	/webrt
 
+
+#
+# TODO: Doc me
+#
+DEFAULT_LOCALE		= 	"en"
+
 ####################################################################
 # No user servicable parts below this line.  Frob at your own risk #
 ####################################################################
@@ -167,15 +174,15 @@ WEB_IMAGE_PATH			=	/webrt
 default:
 	@echo "Read the README"
 
-install: dirs initialize libs-install html-install config-replace mux-install mux-links fixperms instruct
+install: dirs initialize upgrade instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "From here on in, you should refer to the users guide."
 
-upgrade: libs-install config-replace mux-install nondestruct
+upgrade: config-replace upgrade-noclobber
 
-upgrade-noclobber: libs-install html-install mux-install nondestruct
+upgrade-noclobber: libs-install html-install mux-install i18n-install nondestruct
 
 nondestruct: mux-links fixperms
 
@@ -196,6 +203,7 @@ dirs:
 	mkdir -p $(WEBRT_CGI_PATH)
 	mkdir -p $(RT_ETC_PATH)
 	cp -rp ./etc/* $(RT_ETC_PATH)
+	mkdir -p $(RT_LOCALE_PATH)
 
 libs-install: 
 	mkdir -p $(RT_LIB_PATH)
@@ -206,6 +214,11 @@ html-install:
 	mkdir -p $(WEBRT_HTML_PATH)
 	cp -rp ./webrt/* $(WEBRT_HTML_PATH)
 	chmod -R 0755 $(WEBRT_HTML_PATH)
+
+i18n-install:
+	mkdir -p $(RT_LOCALE_PATH)
+	cp -rp ./share/i18n/* $(RT_LOCALE_PATH)
+	chmod -R 0755 $(RT_LOCALE_PATH)
 
 initialize: database acls
 
@@ -274,6 +287,8 @@ config-replace:
 	s'!!RT_USER_PASSWD_MIN!!'$(RT_USER_PASSWD_MIN)'g;\
         s'!!RT_HOST!!'$(RT_HOST)'g;\
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
+	s'!!DEFAULT_LOCALE!!'$(DEFAULT_LOCALE)'g;\
+	s'!!LOCALE_PATH!!'$(RT_LOCALE_PATH)'g;\
 	s'!!WEB_IMAGE_PATH!!'$(WEB_IMAGE_PATH)'g;\
 	s'!!WEB_AUTH_MECHANISM!!'$(WEB_AUTH_MECHANISM)'g;\
 	s'!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!'$(WEB_AUTH_COOKIES_ALLOW_NO_PATH)'g;\
