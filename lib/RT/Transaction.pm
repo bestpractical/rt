@@ -66,6 +66,14 @@ sub Create {
 				Created => undef
 			       );
   $self->Load($id);
+
+  #Load a scrips object
+  #Iterate through each script and check it's applicability.
+   #If it's applicable, prepare and commit it.
+
+
+
+
   return ($id, "Transaction Created");
 }
 

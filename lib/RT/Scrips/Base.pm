@@ -29,11 +29,15 @@ sub _Init {
   $self->{'Type'} = $args{'Type'};
 }
 
+
+
+
 #Access Scripwide data
 sub Argument {
   my $self = shift;
   return($self->{'Argument'});
 }
+
 sub Ticket {
   my $self = shift;
   return($self->{'Ticket'});
@@ -79,3 +83,8 @@ sub Prepare {
 }
 
 
+#If this rule applies to this transaction, return true.
+sub Applicable {
+  my $self = shift;
+  return(undef);
+}
