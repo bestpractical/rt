@@ -221,5 +221,4 @@ config-replace:
         s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
 
 dist:
-	mkdir /tmp/rt-$(RT_VERSION)
 	cvs co -d /tmp/rt-$(RT_VERSION) rt
