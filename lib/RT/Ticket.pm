@@ -894,39 +894,37 @@ sub ValidateQueue {
 # {{{ sub SetQueue  
 
 sub SetQueue {
-  my $self = shift;
-  my ($NewQueue, $NewQueueObj);
-
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
-    return (0, "Permission Denied");
-  }
-  
-  if ($NewQueue = shift) {
+    my $self = shift;
+    
+    my $NewQueue = shift;
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+    }
+    
+    
     #TODO Check to make sure this isn't the current queue.
     #TODO this will clobber the old queue definition. 
-      
+    
     use RT::Queue;
-    $NewQueueObj = RT::Queue->new($self->CurrentUser);
+    my $NewQueueObj = RT::Queue->new($self->CurrentUser);
+    $NewQueueObj->Load($NewQueue);
     
-    if (!$NewQueueObj->Load($NewQueue)) {
-      return (0, "That queue does not exist");
-    }
-    elsif (!$self->CurrentUser->HasQueueRight(Right =>'CreateTicket',
-					       QueueObj => $NewQueueObj )) {
-      return (0, "You may not create requests in that queue.");
-    }
-    elsif (!$NewOwnerObj->HasQueueRight(Right=> 'CreateTicket',  
-                                         QueueObj => $NewQueueObj)) {
-      $self->Untake();
+    unless ($NewQueueObj->Id()) {
+	return (0, "That queue does not exist");
     }
     
-    else {
-      return($self->_Set(Field => 'Queue', Value => $NewQueueObj->Id()));
+    unless ($self->CurrentUser->HasQueueRight(Right =>'CreateTicket',
+					      QueueObj => $NewQueueObj )) {
+	return (0, "You may not create requests in that queue.");
     }
-  }
-  else {
-    return (0,"No queue specified");
-  }
+    
+    unless ($self->OwnerObj->HasQueueRight(Right=> 'CreateTicket',  
+					   QueueObj => $NewQueueObj)) {
+	$self->Untake();
+    }
+    
+    return($self->_Set(Field => 'Queue', Value => $NewQueueObj->Id()));
+    
 }
 
 # }}}
@@ -942,19 +940,12 @@ Takes nothing. returns this ticket's queue object
 sub QueueObj {
     my $self = shift;
 
+    require RT::Queue;
+    $queue = RT::Queue->new($self->CurrentUser);
+    #We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
+    my ($result) = $queue->Load($self->SUPER::_Value('Queue'));
     
-    if (!defined $self->{'queue'})  {
-	require RT::Queue;
-	if (!($self->{'queue'} = RT::Queue->new($self->CurrentUser))) {
-	    $RT::Logger->Crit("RT::Queue->new(". $self->CurrentUser. 
-			      ") returned false");
-	    return(undef);
-	}	
-	#We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
-	my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
-	
-    }
-    return ($self->{'queue'});
+    return ($queue);
 }
 
 
