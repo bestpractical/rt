@@ -54,19 +54,17 @@ sub Create  {
           return (0, "No user or email addres specified");
       }
 
-    #If we've got an Email and no owner, try to tie it to the user's account
-    my $User=RT::User->new($self->CurrentUser);
-    if (!$args{Owner} && $User->LoadByEmail($args{Email})) {
-    	$args{Owner}=$User->id;
-    	delete $args{Email};
+   #if we only have an email address, try to resolve it to an owner
+    if ($args{'Owner'} == 0) {
+        my $User = new RT::User($RT::SystemUser);
+        $User->LoadByEmail($args{'Email'});
+        if ($User->id > 0) {
+            $args{'Owner'} = $User->id;
+   	    delete $args{'Email'};
+       }
     }
+
     
-    #TODO: figure out why this code is here
-    # it appears to nuke unqualfied email addresses if and only
-    # if there is an owner
-    if ($args{Email} && $args{Email} !~ /\@/ && $args{Owner}) {
-	delete $args{Email};
-    }
 
    #Make sure we've got a valid type
    #TODO --- move this to ValidateType 
@@ -77,13 +75,14 @@ sub Create  {
     }
 
     my $id = $self->SUPER::Create(%args);
-    $self->Load($id);
-  
-    #TODO: this is horrificially wasteful. we shouldn't commit 
-    # to the db and then instantly turn around and load the same data
-
-    return (1,"Interest noted");
+    if ($id) {
+      return (1,"Interest noted");
+    }
+    else {
+	return (0, "Error adding watcher");
+    }
 }
+ 
 # }}}
 
 # {{{ sub Load 

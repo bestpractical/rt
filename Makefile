@@ -1,12 +1,12 @@
 # $Header$
-# Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+# Request Tracker is Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
 # RT is distributed under the terms of the GNU General Public License
 
 PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	49_01
+RT_VERSION_PATCH	=	50
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)

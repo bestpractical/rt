@@ -34,11 +34,11 @@ print "Creating system user...";
 my $RT_System = new RT::User($CurrentUser); 
 
 my ($val, $msg) = $RT_System->_BootstrapCreate(
-		     Name => 'RT_System',
-		     RealName => 'The RT System itself',
-		     Comments =>  'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-		     Privileged => '2',
-		     Creator => '1');
+					       Name => 'RT_System',
+					       RealName => 'The RT System itself',
+					       Comments =>  'Do not delete or modify this user. It is integral to RT\'s internal database structures',
+					       Privileged => '2',
+					       Creator => '1');
 
 if ($val) {
     print "done.\n";
@@ -76,7 +76,7 @@ my @users = (
 	      'to RT\'s internal data structures',
 	      Privileged => '2',
 	     },
-
+	     
 	     { 
 	      Name => 'root',
 	      Gecos => 'root',
@@ -89,7 +89,6 @@ my @users = (
 	    );
 
 # }}}
-
 
 # {{{ Groups 
 
@@ -219,18 +218,6 @@ my @ScripActions = (
 		     Argument =>          'All'
 		    },
 		    
-		    {
-		     Name =>	           'StallDependant (broken)',
-		     Description =>        'Stalls the dependent tickets',
-		     ExecModule =>	   'StallDependent',
-		     Argument => ''
-		    },
-		    {
-		     Name =>		   'OpenDependant (broken)',
-		     Description =>        'Opens the dependent tickets',
-		     ExecModule =>	   'OpenDependent',
-		     Argument => ''
-		    }
 		    
 		   );
 
@@ -275,32 +262,16 @@ my @ScripConditions = (
 			Description =>	   'Whenever a ticket\'s status changes',
 			ApplicableTransTypes => 		   'Status',
 			ExecModule =>	   'AnyTransaction',
-
+			
 		       },
 		       {
 			Name =>		   'OnResolve', 
-			Description =>	   'Whenever a ticket\'s status changes to resolved.', 
+			Description =>	   'Whenever a ticket is resolved.', 
 			ApplicableTransTypes => 		   'Status',
-			ExecModule =>	   'OnResolve'
+			ExecModule =>	   'StatusChange',
+			Argument => 'resolved'
+
 		       },
-		       {
-			
-			Name =>			   'OnLink', 
-			Description =>	           'When a DependsOn link is made',
-			ApplicableTransTypes => 	   'Link',
-			ExecModule =>	          'OnNewDependency'
-			
-		       },
-		       
-		       {
-			
-			Name =>			   'OnResolve',
-			Description =>	           'When a ticket is resolved',
-			ApplicableTransTypes => 	   'Status', 
-			ExecModule =>		   'OnResolve'
-		       }
-		       
-		       
 		       
 		      );
 
@@ -360,8 +331,6 @@ Transaction: {$Transaction->Description}
                   Name => 'AdminCorrespondence',
                   Description => 'Default admin correspondence template',
                   Content => 'Subject: {$Transaction->Message()->First()->Subject}
-
-{$Transaction->IsInbound() ? "In" : "Out"}bound correspondence:
 
 <URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
 
@@ -484,7 +453,7 @@ print "done.\n";
 
 print "Creating templates...";
 
-    use RT::Template;
+use RT::Template;
 for $item (@templates) {
     my $new_entry = new RT::Template($CurrentUser);
     my $return = $new_entry->Create(%$item);

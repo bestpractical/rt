@@ -8,10 +8,16 @@
 
 =head1 SYNOPSIS
 
-  use RT::Condition::Generic;
-  my $foo = new RT::Condition::IsApplicable( TransactionObj => $tr, TicketObj => $ti, ScripObj => $scr, Argument => $arg, Type => $type);
-  if ($foo->IsApplicable) {
-    # do something
+    use RT::Condition::Generic;
+    my $foo = new RT::Condition::IsApplicable( 
+		TransactionObj => $tr, 
+		TicketObj => $ti, 
+		ScripObj => $scr, 
+		Argument => $arg, 
+		Type => $type);
+
+    if ($foo->IsApplicable) {
+ 	   # do something
     }
 
 
@@ -43,7 +49,7 @@ sub _Init  {
 	       ScripObj => undef,
 	       TemplateObj => undef,
 	       Argument => undef,
-	       Type => undef,
+	       ApplicableTransTypes => undef,
 	       @_ );
   
   
@@ -51,13 +57,20 @@ sub _Init  {
   $self->{'ScripObj'} = $args{'ScripObj'};
   $self->{'TicketObj'} = $args{'TicketObj'};
   $self->{'TransactionObj'} = $args{'TransactionObj'};
-  $self->{'Type'} = $args{'Type'};
+  $self->{'ApplicableTransTypes'} = $args{'ApplicableTypes'};
 }
 # }}}
 
 # Access Scripwide data
 
 # {{{ sub Argument 
+
+=head2 Argument
+
+Return the optional argument associated with this ScripCondition
+
+=cut
+
 sub Argument  {
   my $self = shift;
   return($self->{'Argument'});
@@ -65,6 +78,13 @@ sub Argument  {
 # }}}
 
 # {{{ sub TicketObj
+
+=head2 TicketObj
+
+Return the ticket object we're talking about
+
+=cut
+
 sub TicketObj  {
   my $self = shift;
   return($self->{'TicketObj'});
@@ -72,6 +92,13 @@ sub TicketObj  {
 # }}}
 
 # {{{ sub TransactionObj
+
+=head2 TransactionObj
+
+Return the transaction object we're talking about
+
+=cut
+
 sub TransactionObj  {
   my $self = shift;
   return($self->{'TransactionObj'});
@@ -79,9 +106,16 @@ sub TransactionObj  {
 # }}}
 
 # {{{ sub Type
-sub Type  {
+
+=head2 Type 
+
+
+
+=cut
+
+sub ApplicalbeTransTypes  {
   my $self = shift;
-  return($self->{'Type'});
+  return($self->{'ApplicableTransTypes'});
 }
 # }}}
 

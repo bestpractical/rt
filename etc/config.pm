@@ -108,8 +108,10 @@ $CommentAddress="RT::CommentAddress.not.set";
 $SendmailCommand="/usr/sbin/sendmail";
 
 #What arguments should be passed to sendmail
+
 #These options are good for most sendmail wrappers and workalikes
 $SendmailArguments="-oi -t  ";
+
 #For sendmail 8, you want the following options
 #$SendmailArguments="-oi -t -ODeliveryMode=b -OErrorMode=m";
 

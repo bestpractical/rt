@@ -71,11 +71,11 @@ sub Commit  {
   $RT::Logger->debug("$self: RT::Action::SendEmail is calling a hardcoded sendmail 8 commandline\n");
   open (MAIL, "|$RT::SendmailCommand $RT::SendmailArguments");
   print MAIL $self->TemplateObj->MIMEObj->as_string;
-  $RT::Logger->debug("Just sent:\n\n".$self->TemplateObj->MIMEObj->as_string."\n");
+  #$RT::Logger->debug("Just sent:\n\n".$self->TemplateObj->MIMEObj->as_string."\n");
   close(MAIL);
   
 
-#  $self->TemplateObj->MIMEObj->send('sendmail') || die "Could not send mail (check the FAQ)";
+  #$self->TemplateObj->MIMEObj->send('sendmail') || die "Could not send mail (check the FAQ)";
   #  $self->TemplateObj->MIMEObj->smtpsend(Host => 'localhost') || die "could not send email";
   
   $RT::Logger->debug("$self: Message sent\n");

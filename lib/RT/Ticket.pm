@@ -275,12 +275,15 @@ sub Create {
 
     my $watcher;
     foreach $watcher (@{$args{'Cc'}}) {
+	$RT::Logger->debug('Adding a watcher: $watcher');
 	$self->_AddWatcher( Type => 'Cc', Person => $watcher, Silent => 1);
     }	
     foreach $watcher (@{$args{'AdminCc'}}) {
+	$RT::Logger->debug('Adding a watcher: $watcher');
 	$self->_AddWatcher( Type => 'AdminCc', Person => $watcher, Silent => 1);
     }	
     foreach $watcher (@{$args{'Requestor'}}) {
+	$RT::Logger->debug('Adding a watcher: $watcher');
 	$self->_AddWatcher( Type => 'Requestor', Person => $watcher, Silent => 1);
    }
     
@@ -382,21 +385,11 @@ sub _AddWatcher {
        }	
     }	
 
-    #If we only have an email address, try to resolve it to an owner   
-    if ($args{'Owner'} == 0) {
-	my $User = new RT::User($RT::SystemUser);
-	$User->LoadByEmail($args{'Email'});
-	if ($User->id > 0) {
-	    $args{'Owner'} = $User->id;
-	    $args{'Email'} = undef;
-       }	
-    }
-    
-    
  
     
     require RT::Watcher;
     my $Watcher = new RT::Watcher ($self->CurrentUser);
+    $RT::Logger->debug("about to hand off to the Watcher object: email: ".$args{'Email'} . " owner: ".$args{'Owner'} ."\n");
     my ($retval, $msg) = ($Watcher->Create( Value => $self->Id,
 					    Scope => 'Ticket',
 					    Email => $args{'Email'},
@@ -2390,7 +2383,7 @@ sub _Value  {
   
   #if the field is public, return it.
   if ($self->_Accessible($field, 'public')) {
-      $RT::Logger->debug("Skipping ACL check for $field\n");
+      #$RT::Logger->debug("Skipping ACL check for $field\n");
       return($self->SUPER::_Value($field));
       
   }

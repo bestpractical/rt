@@ -549,7 +549,7 @@ sub _Value  {
     
     #if the field is public, return it.
     if ($self->_Accessible($field, 'public')) {
-	$RT::Logger->debug("Skipping ACL check for $field\n");
+	#$RT::Logger->debug("Skipping ACL check for $field\n");
 	return($self->__Value($field));
 	
     }

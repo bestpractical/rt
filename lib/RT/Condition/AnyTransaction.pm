@@ -1,6 +1,6 @@
 # $Header$
-# Copyright 2000  Jesse Vincent <jesse@fsck.com> 
-# Released under the terms of the GNU Public License
+# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com> 
+# Released under the terms of the GNU General Public License
 
 package RT::Condition::AnyTransaction;
 require RT::Condition::Generic;

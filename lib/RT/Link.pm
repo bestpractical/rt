@@ -324,7 +324,7 @@ sub CanonicalizeURI {
 	$ticket->Load($id);
 	#If we couldn't find a ticket, return undef.
 	return undef unless (defined $ticket->Id);
-	$RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");
+	#$RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");
 	return ($ticket->URI);
     }
     #If it's a remote URI, we're going to punt for now
@@ -335,12 +335,12 @@ sub CanonicalizeURI {
     #If the base is an integer, load it as a ticket 
     elsif ( $id =~ /^\d+$/ ) {
    
-	$RT::Logger->debug("$self -> CanonicalizeURI was passed $id. It's a ticket id.\n");
+	#$RT::Logger->debug("$self -> CanonicalizeURI was passed $id. It's a ticket id.\n");
 	my $ticket = new RT::Ticket($self->CurrentUser);
 	$ticket->Load($id);
 	#If we couldn't find a ticket, return undef.
 	return undef unless (defined $ticket->Id);
-	$RT::Logger->debug("$self returned ".$ticket->URI ." (id #)\n");
+	#$RT::Logger->debug("$self returned ".$ticket->URI ." (id #)\n");
 	return ($ticket->URI);
     }
 
