@@ -17,5 +17,6 @@
       ApplicableTransTypes => 'Set',
       ExecModule           => 'PriorityChange',
     },
+);
 
 1;
