@@ -34,5 +34,4 @@ my @status = $queue->StatusArray();
 <%ARGS>
 $Name => undef
 $Default => undef
- 
 </%ARGS>
