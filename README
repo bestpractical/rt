@@ -72,10 +72,6 @@ o Libwww-perl / LWP::UserAgent and HTTP::Request
 	You will only eventually need this if you need RT to maintain
 	links from external web-based databases.
 
-
-SOON-TO-BE-REQUIRED PACKAGES
-----------------------------
-
 o DBIx::Record and DBIx::EasySearch
         ( ftp://ftp.fsck.com/pub/DBIx ) -- free
 
