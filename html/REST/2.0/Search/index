@@ -8,7 +8,7 @@
   </author>
   <link rel="alternate" type="text/html" href="<% $RT::WebURL %>"/>
   <tagline mode="escaped"><% $count %> results found.</tagline>
-  <id>rt-fsck.com://<% $Path %></id>
+  <id>rt-fsck.com://<% $RT::rtname %>/<% $Path %></id>
   <modified><% $modified %></modified>
   <generator url="http://www.bestpractical.com/rt/" version="<% $RT::VERSION %>">RT</generator>
 % foreach my $entry (@entries) {
@@ -18,7 +18,7 @@
     <modified><% $entry->{LastUpdated} %></modified>
     <issued><% $entry->{Created} %></issued>
     <created><% $entry->{Created} %></created>
-    <id>rt-fsck.com:$RT::rtname/<% $entry->{Id} %></id>
+    <id>rt-fsck.com://<% $RT::rtname %>/<% $Path %>/<% $entry->{Id} %></id>
     <summary mode="escaped"><% $entry->{Description} %></summary>
     <content type="text/plain" mode="escaped"><% $entry->{Content} %></content>
   </entry>
