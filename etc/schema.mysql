@@ -8,6 +8,9 @@
 # the makefile should call up some init scrips that uses an RT api or the (admin)
 # cli to add the data.
 
+# I think it might make sense replacing "TIMESTAMP" with "DATETIME"
+# for mysql.  Yes, indeed, I'll do that right away.
+
 # {{{ Core entities (Queues, Tickets, Transactions, Attachments, Links)
 
 # {{{ TABLE Queues 
@@ -22,9 +25,9 @@ CREATE TABLE Queues (
  FinalPriority INT,
  DefaultDueIn INT,		#reqs in this queue are due in X days by default
   Creator INT(11),
-  Created TIMESTAMP,
+  Created DATETIME,
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
+  LastUpdated DATETIME
 )\g
 
 # }}}
@@ -59,10 +62,10 @@ CREATE TABLE Tickets (
   Due INT, #TODO: Make a date type
 
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP,
+  LastUpdated DATETIME,
 
   Creator INT(11),
-  Created TIMESTAMP
+  Created DATETIME
 ) \g
 
 # }}}
@@ -80,7 +83,7 @@ CREATE TABLE Transactions (
   NewValue VARCHAR(255),
   Data CHAR(100),
   Creator INT(11),
-  Created TIMESTAMP
+  Created DATETIME
   
 )\g
 
@@ -98,7 +101,7 @@ CREATE TABLE Attachments (
   Content LONGBLOB,
   Headers BLOB,
   Creator INT(11),
-  LastUpdated TIMESTAMP
+  LastUpdated DATETIME
   
 )\g
 # }}}
@@ -111,9 +114,9 @@ CREATE TABLE Links (
   Target VARCHAR(255),
   Type char(20) NOT NULL, # 
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP,
+  LastUpdated DATETIME,
   Creator INT(11),
-  Created TIMESTAMP
+  Created DATETIME
  
   # Type can be one of:
   # <BASE> DependsOn <TARGET>
@@ -174,9 +177,9 @@ CREATE TABLE Users (
   IsAdministrator INT,
 
   Creator INT(11),
-  Created TIMESTAMP,
+  Created DATETIME,
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
+  LastUpdated DATETIME
 )\g
 
 # }}}
@@ -227,9 +230,9 @@ CREATE TABLE Watchers (
 			# have an RT account, Owner should be 0
 
    Creator INT(11),
-   Created TIMESTAMP,
+   Created DATETIME,
    LastUpdatedBy INT(11),
-   LastUpdated TIMESTAMP
+   LastUpdated DATETIME
 )\g
 
 # }}}
@@ -256,9 +259,9 @@ CREATE TABLE Scrips (
   Argument VARCHAR(255),    #an argument to pass in.
 
   Creator INT(11),
-  Created TIMESTAMP,
+  Created DATETIME,
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP  
+  LastUpdated DATETIME  
 )\g
 
 # }}}
@@ -344,9 +347,9 @@ CREATE TABLE ScripScope (
   Template INT(11), #Template Id or 0 for default template
 
   Creator INT(11),
-  Created TIMESTAMP,
+  Created DATETIME,
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP  
+  LastUpdated DATETIME  
 )\g
 
 # Put all scrips at all queues:
@@ -383,9 +386,9 @@ CREATE TABLE Templates (
 
   Content BLOB,
   LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP,
+  LastUpdated DATETIME,
   Creator INT(11),
-  Created TIMESTAMP
+  Created DATETIME
 
 )\g
 
@@ -427,7 +430,7 @@ INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL,
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->Queue->QueueId}
         Area: (stubbed!)               
-     Subject: {$Transaction->Message()->First()->Subject}
+     Subject: {my $z=$Transaction->Message()->First(); $z && $z->Subject}
        Owner: {$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
@@ -513,7 +516,7 @@ NULL,20000227191745,NULL,00000000000000);
 #create table AutoReplies (
 #  Email varchar(255),
 #  Template int,
-#  Created TIMESTAMP
+#  Created DATETIME
 #);
 
 # }}}
