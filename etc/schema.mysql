@@ -139,14 +139,37 @@ CREATE TABLE Links (
 
 # {{{ Table Users 
 
- # Actually I think the best way is to only store only what is
- # essential for RT, and let
- # all other data be stored externally in any system of choise.  Hm.'
+ # Jesse thinks that contact information is needed here because RT
+ # should be able to stand on its own.  Tobix don't think that it's
+ # needed...
 
- # nope. RT should be able to stand on its own.
+ # Tobix: I can't see any need for RT to know anything about
+ # which phone number, home address, etc a user has.  I think it might
+ # make sense to let the system be able to store an URL to some page
+ # showing information like this, but since RT is not going to phone the
+ # user or send him a paper letter, there is no need for RT to know this
+ # extra contact information.  
 
- # ATOH, A Plugin authentication system which replaces this table
- # would clearly be the best and only right thing.  We have to fix that for RT 2.1
+ # Tobix: Also, contact information doesn't always fit a strict schema.  
+ # It's becoming more common today to have a cellphone than to have work
+ # phone and home phone.  Somebody want to have a fax number, an ICQ
+ # number, a beeper and all that kind of weird contact information.
+ # All together, I actually think it makes more sense to
+ # have a freetext field for contact information in a system like RT!
+ # Though it makes more sense to point the user over to an external
+ # system containing such information.  Most organizations have an
+ # external system keeping track of their employees and contacts.
+
+ # Tobix: A plugin authentication (and address book) system is clearly
+ # be the best and only right thing.  We have to fix that for RT 2.1.
+ # It must be possible to mix different authentication systems - both
+ # in such a way that one user might be in one system and another user
+ # in another system, and such that some information about a user might
+ # be in one system, and other in another system. 
+
+ # Tobix: This table should always be one of the configurable (and
+ # default) authentication modules.  The main authentication system
+ # must also be capable to store new users.
 
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -172,6 +195,8 @@ CREATE TABLE Users (
  
  # I disagree. They're needed. -jrv
 
+ # For what?  Will you let RT dial up the requestors? :) -- TobiX
+
   HomePhone VARCHAR(30),
   WorkPhone VARCHAR(30),
   Address1 VARCHAR(200),
@@ -189,7 +214,7 @@ CREATE TABLE Users (
 )\g
 
 # }}}
-
+	
 # {{{ AlternateEmails (stubbed!)
 # Create Table AlternateEmails (
 #    id int,
@@ -229,6 +254,8 @@ INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments
 # }}}
 
 # {{{ Table ACL {
+
+# TODO: Comments or documentation needed here :)
 
 CREATE TABLE ACL (
 	id int primary key auto_increment,
