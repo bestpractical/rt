@@ -61,10 +61,6 @@
 <&|/l, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>To inquire about support, training, custom development or licensing, please contact [_1].</&><br>
 % }
 </div>
-% if ($Debug) {
-<HR>
-<b><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></b>
-% }
 % if ($Debug >= 2 ) {
 % require Data::Dumper;
 % my $d = Data::Dumper->new([\%ARGS], [qw(%ARGS)]);
@@ -72,6 +68,7 @@
 <%$d->Dump() %>
 </pre>
 % }
+<div class="page-stats"><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></div>
 % if ($Menu) {
 </TD>
 </TR>

@@ -136,6 +136,7 @@ Mail::Mailer 1.57
 Net::SMTP
 Text::Wrapper 
 Time::ParseDate
+Time::HiRes 
 File::Temp
 Term::ReadKey
 Text::Autoformat
@@ -175,7 +176,6 @@ Getopt::Long 2.24
 
 $deps{'DEV'} = [ _( << '.') ];
 Regexp::Common
-Time::HiRes 
 Test::Inline 
 Apache::Test
 HTML::Form
