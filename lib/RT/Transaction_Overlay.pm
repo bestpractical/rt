@@ -70,6 +70,9 @@ ok(require RT::Transaction);
 
 =cut
 
+
+package RT::Transaction;
+
 use strict;
 no warnings qw(redefine);
 
@@ -764,7 +767,7 @@ sub IsInbound {
 
 # }}}
 
-sub _ClassAccessible {
+sub _OverlayAccessible {
     {
 
         id => { read => 1, type => 'int(11)', default => '' },

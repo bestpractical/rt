@@ -133,6 +133,9 @@ ok($t3->CustomFieldValues($testcf->Id)->Count == 1,
 
 =cut
 
+
+package RT::Ticket;
+
 use strict;
 no warnings qw(redefine);
 
@@ -3326,9 +3329,9 @@ sub DESTROY {
 
 # {{{ PRIVATE UTILITY METHODS. Mostly needed so Ticket can be a DBIx::Record
 
-# {{{ sub _ClassAccessible
+# {{{ sub _OverlayAccessible
 
-sub _ClassAccessible {
+sub _OverlayAccessible {
     {
         EffectiveId       => { 'read' => 1,  'write' => 1,  'public' => 1 },
           Queue           => { 'read' => 1,  'write' => 1 },

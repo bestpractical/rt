@@ -65,6 +65,9 @@ ok (require RT::Transactions);
 
 =cut
 
+
+package RT::Transactions;
+
 use strict;
 no warnings qw(redefine);
 

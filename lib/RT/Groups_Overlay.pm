@@ -70,6 +70,9 @@ ok (require RT::Groups);
 
 =cut
 
+
+package RT::Groups;
+
 use strict;
 no warnings qw(redefine);
 

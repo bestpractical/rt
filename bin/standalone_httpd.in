@@ -49,13 +49,13 @@ package RT::Mason;
 use strict;
 use vars '$Handler';
 
-require ('@RT_BIN_PATH@/webmux.pl');
+BEGIN { require ('@RT_BIN_PATH@/webmux.pl') };
 
 use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 
 use Socket;
 
-$SIG{CHLD} = "IGNORE"; # reap child processes
+$SIG{CHLD} = 'IGNORE'; # reap child processes
 $SIG{HUP} = sub {
     # on a "kill -HUP", we first close our socket handles.
     close Remote;
@@ -97,7 +97,7 @@ sub main_loop {
     while (1) {
 
         for ( ; accept( Remote, HTTPDaemon ); close Remote ) {
-
+            Module::Refresh->refresh if $RT::DevelMode;
 
             *STDIN  = *Remote;
             *STDOUT = *Remote;

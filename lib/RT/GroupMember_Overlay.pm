@@ -72,6 +72,9 @@ ok (require RT::GroupMember);
 
 =cut
 
+
+package RT::GroupMember;
+
 use strict;
 no warnings qw(redefine);
 use RT::CachedGroupMembers;

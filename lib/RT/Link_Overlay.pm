@@ -76,6 +76,9 @@ ok (UNIVERSAL::isa($link, 'DBIx::SearchBuilder::Record'));
 
 =cut
 
+
+package RT::Link;
+
 use strict;
 no warnings qw(redefine);
 

@@ -65,6 +65,9 @@ ok (require RT::Queues);
 
 =cut
 
+
+package RT::Queues;
+
 use strict;
 no warnings qw(redefine);
 

@@ -65,6 +65,9 @@ ok(require RT::ACL);
 
 =cut
 
+
+package RT::ACL;
+
 use strict;
 no warnings qw(redefine);
 

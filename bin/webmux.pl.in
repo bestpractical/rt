@@ -73,7 +73,10 @@ use HTML::Mason;    # brings in subpackages: Parser, Interp, etc.
 use vars qw($Nobody $SystemUser $Handler $r);
 
 #This drags in RT's config.pm
-RT::LoadConfig();
+BEGIN {
+    RT::LoadConfig();
+    if ($RT::DevelMode) { require Module::Refresh; }
+}
 
 use Carp;
 
@@ -101,8 +104,6 @@ sub handler {
     local $SIG{__WARN__};
     local $SIG{__DIE__};
 
-    RT::Init();
-
     # We don't need to handle non-text, non-xml items
     if ($r->content_type =~ m/^httpd\b.*\bdirectory/i) {
         use File::Spec::Unix;
@@ -113,6 +114,9 @@ sub handler {
 	$r->content_type =~ m!(^text/|\bxml\b)!i or return -1;
     }
 
+    Module::Refresh->refresh if $RT::DevelMode;
+
+    RT::Init();
 
     my %session;
     my $status;

@@ -81,6 +81,9 @@ is ($names[0] , 'TestAttr');
 
 =cut
 
+
+package RT::Attributes;
+
 use strict;
 no warnings qw(redefine);
 

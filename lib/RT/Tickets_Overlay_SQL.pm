@@ -43,10 +43,11 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
+package RT::Tickets;
+
 use strict;
 use warnings;
-
-use RT::Tickets;
 
 # Import configuration data from the lexcial scope of __PACKAGE__ (or
 # at least where those two Subroutines are defined.)

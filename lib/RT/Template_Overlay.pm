@@ -66,6 +66,9 @@ ok(require RT::Template);
 
 =cut
 
+
+package RT::Template;
+
 use strict;
 no warnings qw(redefine);
 
