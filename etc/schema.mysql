@@ -51,8 +51,13 @@ CREATE TABLE Tickets (
   Priority INT DEFAULT 0,
   Status VARCHAR(10), #For now, One of" Open, Stalled, Resolved, Dead
   TimeWorked INT DEFAULT 0,
+  TimeLeft INT DEFAULT 0,
+  
   Told DATETIME,
+  StartsBy DATETIME,
+  Started DATETIME,
   Due DATETIME,
+  Resolved DATETIME,
 
   LastUpdatedBy INT(11),
   LastUpdated DATETIME,

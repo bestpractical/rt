@@ -72,7 +72,16 @@ sub Set {
 	    
 	    #timegm expects month as 0->11
 	    $mon--;
+	
+	    #now that we've parsed it, deal with the case where everything
+	    #was 0
+            if ($mon == -1) {
+	        $self->{'time'} = 0;
+       		 return($self->Unix());
+    	    }
+
 	    
+ 
 	    $self->{'time'} = timegm($sec,$min,$hours,$mday,$mon,$year);
 	}
 	else {
@@ -224,7 +233,7 @@ Returns the object's time as a string
 
 sub AsString {
     my $self = shift;
-    return ("Never") if ($self->Unix == -1);
+    return ("Not set") if ($self->Unix <= 0);
     return ($self->ISO);
 }
 # }}}

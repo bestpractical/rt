@@ -770,6 +770,67 @@ sub DueObj {
 }
 # }}}
 
+
+# {{{ sub ResolvedObj
+sub ResolvedObj {
+  my $self = shift;
+
+  my $time = new RT::Date($self->CurrentUser);
+  $time->Set(Format => 'sql', Value => $self->Resolved);
+  return $time;
+}
+# }}}
+
+# {{{ sub Start
+=head2 Start
+
+Takes a date in ISO format or undef
+Returns a transaction id and a message
+Start is used by PM, RT's Project Managment app.
+The client calls "Start" to note that the project was started on the date in $date.
+A null date means "now"
+
+=cut
+
+sub Start {
+my $self = shift;
+my $time = shift || 0;
+
+#We create a date object to catch date weirdness
+my $time_obj = new RT::Date($self->CurrentUser());
+if ($time != 0)  {
+$time_obj->Set(Format => 'ISO', Value => $value);
+}
+else {
+$time_obj->SetToNow();
+}
+return ($self->_Set('Started', $time_obj->ISO));
+
+}
+#}}}
+
+# {{{ sub StartedObj
+sub StartedObj {
+  my $self = shift;
+
+  my $time = new RT::Date($self->CurrentUser);
+  $time->Set(Format => 'sql', Value => $self->Started);
+  return $time;
+}
+# }}}
+
+# {{{ sub StartsObj
+sub StartsObj {
+  my $self = shift;
+
+  my $time = new RT::Date($self->CurrentUser);
+  $time->Set(Format => 'sql', Value => $self->Starts);
+  return $time;
+}
+# }}}
+
+
+
 # {{{ sub ToldObj
 
 sub ToldObj {
@@ -1405,7 +1466,14 @@ sub SetStatus {
     #&open_parents($in_serial_num, $in_current_user) || $transaction_num=0; 
     #TODO: we need to check for open parents.
   }
-  
+ 
+  #When we resolve a ticket, set the 'Resolved' attribute to now.
+  my $now = new RT::Date($self->CurrentUser);
+  $now->SetToNow();
+
+  #Use SUPER::_Set here so we don't record a transaction;
+  $self->SUPER::_Set('Resolved',$now->ISO);
+
   return($self->_Set('Status',$status, 0,{TransactionType=>$action}));
 }
 # }}}
@@ -1548,9 +1616,13 @@ sub _Accessible {
 	      Priority => 'read/write',
 	      Status => 'read/write',
 	      TimeWorked => 'read',
+	      TimeLeft => 'read/write',
 	      Created => 'read/auto',
 	      Creator => 'auto',
 	      Told => 'read',
+	      Resolved => 'read',
+	      Starts => 'read',
+	      Started => 'read',
 	      LastUpdated => 'read/auto',
 	      LastUpdatedBy => 'read/auto',
 	      Due => 'read/write'

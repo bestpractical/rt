@@ -7,17 +7,15 @@ use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
 
 
-# {{{ sub new 
-sub new  {
-  my $pkg= shift;
-  my $self = SUPER::new $pkg;
-  
+# {{{ sub _Init 
+sub _Init  {
+  my $self = shift;
   $self->{'table'} = "Users";
   $self->{'primary_key'} = "id";
-  return($self);
+  $self->SUPER::_Init(@_);
+  
 }
 # }}}
-
 # {{{ sub Limit 
 # Why do we need this?  I thought "AND" was default, anyway?
 sub Limit  {
