@@ -378,11 +378,9 @@ sub IsApplicable {
     };
     if ($@) {
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
-            $self->ConditionObj->DESTROY;
         return (undef);
     }
 
-            $self->ConditionObj->DESTROY;
             return ($return);
 
 }
@@ -414,11 +412,9 @@ sub Prepare {
     };
     if ($@) {
         $RT::Logger->error( "Scrip Prepare " . $self->Id . " died. - " . $@ );
-        $self->ActionObj->DESTROY();
         return (undef);
     }
         unless ($return) {
-            $self->ActionObj->DESTROY();
         }
         return ($return);
 }
@@ -449,8 +445,6 @@ sub Commit {
     $args{'TicketObj'}->Load( $args{'TicketObj'}->Id );
 
     if ($@) {
-        $self->ActionObj->DESTROY();
-        $self->ConditionObj->DESTROY();
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
         return (undef);
     }
@@ -462,16 +456,6 @@ sub Commit {
 }
 
 # }}}
-
-# }}}
-
-# {{{ sub DESTROY
-sub DESTROY {
-    my $self = shift;
-    $self->{'ActionObj'} = undef;
-    $self->ActionObj->DESTROY();
-    $self->ConditionObj->DESTROY();
-}
 
 # }}}
 

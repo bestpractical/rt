@@ -44,6 +44,7 @@ ok (require RT::Action::Generic);
 package RT::Action::Generic;
 
 use strict;
+use Scalar::Util;
 
 # {{{ sub new 
 sub new  {
@@ -81,6 +82,15 @@ sub _Init  {
   $self->{'TransactionObj'} = $args{'TransactionObj'};
   $self->{'TemplateObj'} = $args{'TemplateObj'};
   $self->{'Type'} = $args{'Type'};
+    Scalar::Util::weaken($self->{'ScripObj'});
+    Scalar::Util::weaken($self->{'TicketObj'});
+    Scalar::Util::weaken($self->{'TemplateObj'});
+    Scalar::Util::weaken($self->{'TransactionObj'});
+
+
+
+
+
 }
 # }}}
 
