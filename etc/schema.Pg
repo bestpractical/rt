@@ -136,7 +136,7 @@ CREATE TABLE Groups (
   Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
-  Instance varchar(64),
+  Instance integer,
   PRIMARY KEY (id)
 
 );

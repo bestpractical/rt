@@ -77,8 +77,8 @@ CREATE TABLE Groups (
 	Description 	VARCHAR(255) DEFAULT NULL,
 	Domain		VARCHAR(64) DEFAULT '',
 	Type		VARCHAR(64) DEFAULT '',
---	Instance	INTEGER DEFAULT 0 NOT NULL,
-	Instance	VARCHAR(64) DEFAULT '' NOT NULL,
+	Instance	INTEGER DEFAULT 0 NOT NULL,
+--	Instance	VARCHAR(64) DEFAULT '' NOT NULL,
         PRIMARY KEY (id)
 );
 CREATE INDEX Groups1 ON Groups (Domain, Instance, Type, id);

@@ -8,3 +8,14 @@ your database:
    CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
 
    CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
+
+If you have a Postgres database, the following changes to your
+database can improve performance:
+
+  ALTER TABLE groups rename instance to instance1;
+  ALTER TABLE groups add instance int;
+  UPDATE  groups SET instance = instance::text::int where btrim(instance) <> ''
+  ALTER TABLE groups drop column instance1;
+
+
+
