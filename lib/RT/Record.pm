@@ -481,24 +481,25 @@ sub _Set {
         Value => $args{'Value'},
         IsSQL => $args{'IsSQL'}
     );
+        my ($status, $msg) =  $ret->as_array();
+
+        # @values has two values, a status code and a message.
+
     # $ret is a Class::ReturnValue object. as such, in a boolean context, it's a bool
     # we want to change the standard "success" message
-    if ($ret) {
-        my @values = $ret->as_array;
-        # @values has two values, a status code and a message.
-        pop @values;
-        push @values,
+    if ($status) {
+        $msg =
           $self->loc(
             "[_1] changed from [_2] to [_3]",
             $args{'Field'},
             ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
-            '"' . $self->__Value( $args{'Field'} . '"' )
+            '"' . $self->__Value( $args{'Field'}) . '"' 
           );
+      } else {
 
-        $ret->as_array(@values);     
+          $msg = $self->CurrentUser->loc_fuzzy($msg);
     }
-
-    return ($ret);
+    return wantarray ? ($status, $msg) : $ret;     
 
 }
 
@@ -891,16 +892,12 @@ sub Update {
         next if ( $value eq $self->$attribute() );
         my $method = "Set$attribute";
         my ( $code, $msg ) = $self->$method($value);
-
         my ($prefix) = ref($self) =~ /RT::(\w+)/;
 
         # Default to $id, but use name if we can get it.
         my $label = $self->id;
         $label = $self->Name if (UNIVERSAL::can($self,'Name'));
-
-        push @results,
-          $self->loc( "$prefix [_1]", $label ) . ': '
-          . $self->CurrentUser->loc_fuzzy($msg);
+        push @results, $self->loc( "$prefix [_1]", $label ) . ': '. $msg;
 
 =for loc
                                    "[_1] could not be set to [_2].",       # loc
