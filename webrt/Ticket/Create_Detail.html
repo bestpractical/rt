@@ -60,7 +60,7 @@ Status:	<& /Elements/SelectStatus, Name => "Status", Default=> 'Open' &>
 %# TODO in Display.html or a more proper place:
 Upload an attachment (not implemented yet): <INPUT TYPE=FILE><br>
 Describe the issue below:<br>
-<TEXTAREA NAME="Content" ROWS=10 COLS=70 WRAP=SOFT></TEXTAREA><br>
+<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 
 
 <INPUT TYPE=SUBMIT VALUE="Submit"><br>
@@ -102,4 +102,5 @@ $Link => undef
 $LinkFromM => undef
 $LinkFromD => undef
 $LinkTo => undef
+$QuoteTransaction => undef
 </%ARGS>

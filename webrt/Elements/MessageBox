@@ -1,4 +1,4 @@
-<TEXTAREA COLS=80 ROWS=15 NAME="<%$Name%>"><% $Default %></TEXTAREA>
+<TEXTAREA COLS=75 ROWS=15 WRAP=SOFT NAME="<%$Name%>"><% $Default %></TEXTAREA>
 
 <%ARGS>
 $QuoteTransaction => undef
