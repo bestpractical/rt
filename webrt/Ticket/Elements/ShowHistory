@@ -1,9 +1,9 @@
 %while (my $Transaction = $Ticket->Transactions->Next) {
 % $FullHeaders=1 if ($ShowHeaders eq $Transaction->Id);
 %	if ($Ticket->Transactions->IsLast) {
-	<a name="last<%$Ticket->Id%>">&nbsp;</a>	
+	<a name="lasttrans">
 % 	}
-	<& ShowTransaction, Transaction => $Transaction, FullHeaders => $FullHeaders &>;
+	<& ShowTransaction, Transaction => $Transaction, FullHeaders => $FullHeaders &>
 <BR>
 %}
 

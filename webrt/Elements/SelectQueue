@@ -3,12 +3,17 @@
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
 % while (my $queue=$q->Next) {
-<OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->QueueId%> (<%$queue->Description%>)</OPTION>
+<OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->QueueId%>
+%   if (($Verbose) and ($queue->Description) ){
+(<%$queue->Description%>)
+%  }
+</OPTION>
 % }
 </SELECT>
 
 <%ARGS>
 $Name => undef
+$Verbose => undef
 $Default => undef
 </%ARGS>
 

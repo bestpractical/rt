@@ -19,7 +19,7 @@ TD, TH { /* ns workaround */
   font-family: "Helvetica", sans-serif;
 }
 
-H1, H2 { 
+H1, H2, H3 { 
   margin-top: 0.2em;
   color: #336699;
   font-family: "Helvetica", sans-serif;
@@ -27,10 +27,6 @@ H1, H2 {
   clear: both;
 }
 
-H3 {
-  font-family: "Helvetica", sans-serif;
-  color: #336699;
-}
 
 DIV.endmatter { margin-left: -7% }
 
@@ -53,6 +49,9 @@ SPAN.date { font-size: 0.8em }
 
 SPAN.attribution {
   font-weight: bold
+}
+
+SPAN.label { font-size: 0.8em; 
 }
 
 BLOCKQUOTE {

@@ -1,21 +1,54 @@
- <TABLE WIDTH="100%">
-      <TR>
-	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => 'Due' , content => $Ticket->Due ? $Ticket->DueAsString : "-" &>
-	</TD>
-	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => 'Last Update' , content => $Ticket->LastUpdated ? ($Ticket->LastUpdatedAsString ." by ".$Ticket->LastUpdatedByObj->UserId) : "Never" &>
-	</TD>
+<TABLE>
+<TR>
+<TD>
+Created:
+</TD>
+<TD>
+<% $Ticket->CreatedObj->AsString %>
+</TD>
+</TR>
+<TR>
+<TD>
+Starts: 
+</TD>
+<TD>
+<% $Ticket->StartsObj->AsString %> <BR>
+</TD>
+</TR>
+<TR>
+<TD>
+Started:
+</TD>
+<TD>
+<% $Ticket->StartedObj->AsString %>
+</TD>
+</TR>
 
-	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => '<a href="Display.html?id='.$Ticket->id.'&Action=SetTold">Last Contact</a>' , content => $Ticket->Told ? $Ticket->ToldAsString : "Never" &>
-	</TD>
-	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => 'Created' , content => $Ticket->CreatedAsString &>
-	</TD>
-      </TR>
-    </TABLE>
-
+<TR>
+<TD
+<a href="Display.html?id='.$Ticket->id.'&Action=SetTold">Last Contact</a>:
+</TD>
+<TD>
+<% $Ticket->Told ? $Ticket->ToldObj->AsString : "Never"%>
+</TD>
+</TR>
+<TR>
+<TD>
+Due:
+</TD>
+<TD><% $Ticket->Due ? $Ticket->DueAsString : "-" %>
+</TD>
+</TR>
+<TR>
+<TD>
+Updated:
+</TD>
+<TD>
+<A HREF="#lasttrans">
+<% $Ticket->LastUpdated ? ($Ticket->LastUpdatedAsString ." <BR> by ".$Ticket->LastUpdatedByObj->UserId) : "Never" |h%></a>
+</TD>
+</TR>
+</TABLE>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

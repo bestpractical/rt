@@ -1,0 +1,34 @@
+%# $Header$
+%# Copyright 2000 Tobias Brox <tobix@fsck.com>
+%# Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+
+<ul>
+%while (my $r=$Watchers->Next) {
+<input type="hidden" name="id" value="<%$id%>">
+<input type="hidden" name="Scope" value="<%$Scope%>">
+<input type="hidden" name="WatcherId" value="<%$r->id%>">
+<li>
+<input type="submit" name="action" value="delete">
+%# If this watcher is a real user. TODO THIS LOGIC IS WRONG
+%# all watchers have an owner. it's if this watcher doesn't
+%# have an EmailAddress attributed that we wanna know
+%if ($r->Owner) {
+<a href="<%$RT::WebPath%>/Admin/Users/Display.html?id=<%$r->OwnerObj->id%>">
+        <%$r->OwnerObj->RealName%>
+</a>
+%}
+<%$r->Email%>
+%}
+</ol>
+<%INIT>
+my $Watchers = $TicketObj->Watchers;
+</%INIT>
+<%ARGS>
+$id => undef
+$TicketObj => undef
+$Scope => undef
+$Type => undef
+</%ARGS>
+
+
+

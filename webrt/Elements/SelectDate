@@ -1,4 +1,4 @@
-<INPUT NAME="<%$menu_prefix%>_Date" VALUE="<%$DefDate%>" size=10> <font size =-2>(ex 2000-08-21 or 8-21)</font>
+<INPUT NAME="<%$menu_prefix%>_Date" VALUE="<%$DefDate%>" size=10> 
 <SELECT NAME="<%$menu_prefix%>_DateSelect">
 <OPTION VALUE="-365">1 year ago</option>
 <OPTION VALUE="-90">90 days ago</OPTION>

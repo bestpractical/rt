@@ -1,44 +1,42 @@
       <TABLE WIDTH="100%" >
       <TR>
-	<TD VALIGN=TOP WIDTH="50%">
+	<TD VALIGN=TOP >
 	  <& /Elements/TitleBoxStart, title => 'The Basics'  &>
 	  <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
+	<BR>
+	  <& /Elements/TitleBoxStart, title => '<a href="EditWatchers.html?id='.$Ticket->id.'">People</a>' &>
+	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxEnd &>
+	<BR>
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+
+  <& /Elements/TitleBoxStart, title => 'References', titleright => '<a href="LinkIt.html?id='.$Ticket->Id.'">[New Link]</a>' &>
+	<& /Ticket/Elements/ShowReferences, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxEnd &>	
+	<BR>
+	  <& /Elements/TitleBoxStart, title => 'Dependencies', titleright => '' &>
+	  <& /Ticket/Elements/ShowDependencies, Ticket => $Ticket &>
+	<& /Elements/TitleBoxEnd &>
+
 	</TD>
-	<TD VALIGN=TOP WIDTH="50%">
+	<BR>
+	<TD VALIGN=TOP >
 	  
 	  <& /Elements/TitleBoxStart, title => "Dates" &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
-	  </TD>
-	</TR>
-	<TD COLSPAN=2>
-	  <& /Elements/TitleBoxStart, title => '<a href="EditWatchers.html?id='.$Ticket->id.'">People</a>' &>
-	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+	<BR>
 
-      </TD>
-       </TR>
-        <TR>
-        <TD WIDTH="50%" VALIGN=TOP ROWSPAN=2>
           <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', titleright => "<A HREF=\"$RT::WebPath/Ticket/Create_Detail.html?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>" &>
 	SuperTickets:<BR>	
 	<& /Ticket/Elements/ShowMemberOf, Ticket => $Ticket &>	<BR>
 	SubTickets:<BR>
 	<& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
-	</TD>
 
-	<TD WIDTH="50%" VALIGN=TOP>
-	  <& /Elements/TitleBoxStart, title => 'Dependencies', titleright => '' &>
-	  <& /Ticket/Elements/ShowDependencies, Ticket => $Ticket &>
-	<& /Elements/TitleBoxEnd &>
-        <BR>
-	  <& /Elements/TitleBoxStart, title => 'References', titleright => '<a href="LinkIt.html?id='.$Ticket->Id.'">[New Link]</a>' &>
-	<& /Ticket/Elements/ShowReferences, Ticket => $Ticket &>
 	
-	  <& /Elements/TitleBoxEnd &>	
+	
 	</TD>
       </TR>
     </TABLE>

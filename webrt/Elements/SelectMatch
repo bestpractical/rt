@@ -7,9 +7,9 @@
 
 <%ARGS>
 $Name => undef
-$Like => undef
-$True => undef
-$False => undef
+$Like => 'contains'
+$True => 'is'
+$False => "isn't"
 $Default => undef
 </%ARGS>
 <%INIT>

@@ -1,0 +1,45 @@
+<TABLE>
+<TD>
+Starts: 
+</TD>
+<TD>
+<& /Elements/SelectDate, menu_prefix => 'Starts', current => $TicketObj->StartsObj->Unix &>
+
+</TD>
+</TR>
+<TR>
+<TD>
+Started:
+</TD>
+<TD>
+<& /Elements/SelectDate, menu_prefix => 'Started', current => $TicketObj->StartedObj->Unix &>
+
+
+</TD>
+</TR>
+
+<TR>
+<TD>
+Last Contact:
+</TD>
+<TD>
+<& /Elements/SelectDate, menu_prefix => 'Told', current => $TicketObj->ToldObj->Unix &>
+
+</TD>
+</TR>
+<TR>
+<TD>
+Due:
+</TD>
+<TD>
+
+<& /Elements/SelectDate, menu_prefix => 'Due', current => $TicketObj->DueObj->Unix &>
+
+</TD>
+</TR>
+
+</TABLE>
+<%ARGS>
+$TicketObj => undef
+</%ARGS>
+

@@ -1,14 +1,11 @@
     <div align="left"> 
- 
-	<b>
-	  <font size=-2><%$title |n %></font>
-	</b>
+	  <span class=label><%$title |n %></span>
 	<br>
-	<%$content |n %>&nbsp;
+	<b><%$content |n %></b>
  
       
     </div>
 <%ARGS>
 $title => undef
-$content => undef
+$content => "&nbsp;"
 </%ARGS>

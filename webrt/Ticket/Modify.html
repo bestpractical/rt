@@ -1,1 +1,23 @@
-TODO: It should be possible to modify any ticket metadata here.
+<& /Elements/Header &>
+<h1>Modify a ticket</h1>
+
+<& Elements/ModifyTicket, TicketObj => $TicketObj, %ARGS  &>
+
+<%INIT>
+
+my @Actions;
+
+use RT::Ticket;
+use MIME::Entity;
+use RT::Interface::Web;
+
+my $TicketObj = new RT::Ticket($session{'CurrentUser'});
+$TicketObj->Load($id) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
+
+
+</%INIT>
+
+
+<%ARGS>
+$id => undef
+</%ARGS>

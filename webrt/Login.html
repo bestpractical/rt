@@ -18,6 +18,7 @@ contentbg=>"#cccccc" &>
 % # arrays rather than multiple hash keys
 % my $key; my $val;
 % foreach $key (keys %ARGS) {
+%  if (($key ne 'user') and ($key ne 'pass')) {
 % 	if (ref($ARGS{$key}) =~ /ARRAY/) {
 % 		foreach $val (@{$ARGS{$key}}) {
 <input type=hidden name="<%$key %>" value="<% $val %>">
@@ -26,6 +27,7 @@ contentbg=>"#cccccc" &>
 %	else {
 <input type="hidden" name="<% $key %>" value="<% $ARGS{$key} %>">
 % 	}
+% }
 %}
 
 </FORM>

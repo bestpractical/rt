@@ -1,0 +1,11 @@
+Owner: <& /Elements/SelectOwner, Name => 'Owner', Default => $TicketObj->OwnerObj->Id &>
+
+<& EditWatchers, TicketObj => $TicketObj &>
+<& AddWatchers, TicketObj => $TicketObj, UserString => $UserString,
+        UserOp => $UserOp, UserField => $UserField &>
+<%ARGS>
+$TicketObj => undef
+$UserOp => undef
+$UserString =>undef
+$UserField => undef
+</%ARGS>

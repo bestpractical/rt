@@ -1,0 +1,46 @@
+<& /Elements/TitleBoxStart, title => 'Ticket #'.$TicketObj->Id, 
+  width => "100%",
+  titleright => "<a href=\"Display.html?id=".$TicketObj->Id."\">Abort Modification.</a>" &>
+ 
+<%$ARGS{'UserString'}%> is the string
+%#ACTION="" means submit to self.
+<FORM METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
+<TABLE WIDTH=100%>
+<TR>
+<TD COLSPAN=2>
+
+
+<& EditBasics, TicketObj => $TicketObj &>
+</TD>
+</TR>
+
+<TR>
+<TD>
+<& /Elements/TitleBoxStart, title => 'People', &>
+<& EditPeople, TicketObj => $TicketObj, UserField => $UserField, UserOp => $UserOp, UserString => $UserString &>
+<& /Elements/TitleBoxEnd &>
+
+</TD>
+<TD>
+<& /Elements/TitleBoxStart, title => 'Dates' &>
+<& EditDates, TicketObj => $TicketObj &>
+<& /Elements/TitleBoxEnd &>
+</TD>
+</TR>
+</TABLE>
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
+
+</form>
+<& /Elements/TitleBoxEnd &>
+
+<%INIT>
+#$TicketObj->Load($TicketObj->Id);
+</%INIT>
+
+<%ARGS>
+$UserField => undef
+$UserOp => undef
+$UserString => undef
+$TicketObj => undef
+</%ARGS>

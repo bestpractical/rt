@@ -1,0 +1,64 @@
+<TABLE>
+<TR>
+<TD COLSPAN=6>
+<& /Elements/ShadedBox, 
+        title => 'Subject', 
+        content => "<input name=Subject value=\"".$TicketObj->Subject."\"  SIZE=70>"
+&>
+</TD>
+</TR>
+<TR>
+<TD>
+<& /Elements/ShadedBox, 
+        title => 'Status',
+        content => $SelectStatus
+&>
+</TD>
+<TD>
+
+<& /Elements/ShadedBox,
+	title => 'Time Worked',
+	content => "<input name=TimeWorked value=\"".$TicketObj->TimeWorked."\" SIZE=5>" 
+&>
+
+</TD>
+<TD>
+<& /Elements/ShadedBox,
+	title => 'Time Left',
+	content => "<input name=TimeLeft value=\"".$TicketObj->TimeLeft."\" SIZE=5>" 
+&>
+</TD>
+<TD>
+<& /Elements/ShadedBox,
+	title => 'Priority',
+	content => "<input name=Priority value=\"".$TicketObj->Priority."\" SIZE=2>"
+&>
+
+</TD>
+<TD>
+<& /Elements/ShadedBox,
+	title => 'Final Priority',
+	content => "<input name=FinalPriority value=\"".$TicketObj->FinalPriority."\" SIZE=2>"
+&>
+
+
+</TD>
+<TD>
+<& /Elements/ShadedBox,
+        title => 'Queue',
+        content => "$SelectQueue"
+ &>
+</TD>
+</TR>
+</TABLE>
+
+<%INIT>
+#It's hard to do this inline, so we'll preload the html of the selectstatus in here.
+my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default=> $TicketObj->Status);
+my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$TicketObj->QueueObj->Id);
+
+</%INIT>
+<%ARGS>
+
+$TicketObj => undef
+</%ARGS>

@@ -1,0 +1,9 @@
+Find people whose 
+<select name="UserField">
+<option value="UserId">User Id
+<option value="EmailAddress">Email
+<option value="RealName">Name
+<option value="Organization">Organization
+</select>
+<& /Elements/SelectMatch, Name=> 'UserOp' &>
+<input size=8 name="UserString">

@@ -21,25 +21,25 @@ are used; persons replying to mail might typically send reply to all
 receipients - which is bad because RT might duplicate the reply to
 those persons.
 
-<& /Ticket/Elements/EditWatcherList, Watchers=>$Requestors, Type=>'Requestor', Domain=>'Ticket', id=>$id &>
+<& /Ticket/Elements/EditWatcherList, Watchers=>$Requestors, Type=>'Requestor', Scope=>'Ticket', id=>$id &>
 
 %# Edit Cc receipients
 <h1>Carbon Copies</h1> 
 
 Users or addresses which should get carbon copies of correspondence on this
 ticket<br>
-<& /Ticket/Elements/EditWatcherList, Watchers=>$Ccs, Type=>'Cc', Domain=>'Ticket', id=>$id &>
+<& /Ticket/Elements/EditWatcherList, Watchers=>$Ccs, Type=>'Cc', Scope=>'Ticket', id=>$id &>
 
 <h1>Administrative Ccs</h1> 
 
 Users or addresses who should get copies of correspondence and private notes on
 this ticket<br>
-<& /Ticket/Elements/EditWatcherList, Watchers=>$AdminCcs, Type=>'AdminCc', Domain=>'Ticket', id=>$id &>
+<& /Ticket/Elements/EditWatcherList, Watchers=>$AdminCcs, Type=>'AdminCc', Scope=>'Ticket', id=>$id &>
 
 <h1>Queue Watchers for <%$Queue->QueueId%></h1>
 <table><th>Ccs<th>AdminCcs<tr>
-<td><& /Ticket/Elements/EditWatcherList, Watchers=>$QueueCc, Type=>'Cc', Domain=>'Queue', id=>$id &></td>
-<td><& /Ticket/Elements/EditWatcherList, Watchers=>$QueueAdminCcs, Type=>'AdminCc', Domain=>'Queue', id=>$id &></td>
+<td><& /Ticket/Elements/EditWatcherList, Watchers=>$QueueCc, Type=>'Cc', Scope=>'Queue', id=>$id &></td>
+<td><& /Ticket/Elements/EditWatcherList, Watchers=>$QueueAdminCcs, Type=>'AdminCc', Scope=>'Queue', id=>$id &></td>
 </table>
 
 <%ARGS>
@@ -49,7 +49,7 @@ $WatcherId => undef
 $RealName => undef
 $Address => undef
 $WatcherType => undef
-$Domain => 'Ticket'
+$Scope => 'Ticket'
 </%ARGS>
 
 <%INIT>
@@ -88,8 +88,8 @@ if ($action) {
      die "No watcher to delete" unless $WatcherObj;
      $WatcherObj->Delete;
    } elsif ($action eq "add") {
-     my $d=eval "\$$Domain";
-     die "Domain $Domain didn't eval" unless $d;
+     my $d=eval "\$$Scope";
+     die "Scope $Scope didn't eval" unless $d;
      $d->AddWatcher(Type => $WatcherType, Email => $Address);
    }
 }
