@@ -1,5 +1,5 @@
 
-%if ($depth >= 5) {
+%if ($Depth >= 5) {
 <OL
 % if ($Depth == 5 ) {
 type="1"
