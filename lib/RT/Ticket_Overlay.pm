@@ -3388,7 +3388,7 @@ sub _AddCustomFieldValue {
         $cf->Load( $args{'Field'}->id );
     }
     elsif ($args{'Field'} =~ /\D/) {
-        $cf->LoadByCols( Name => $args{'Field'}, Queue => $self->QueueObj->Id );
+        $cf->LoadByNameAndQueue( Name => $args{'Field'}, Queue => $self->QueueObj->Id );
     }
     else {
         $cf->Load( $args{'Field'} );
