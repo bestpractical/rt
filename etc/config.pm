@@ -179,24 +179,27 @@ $MasonDataDir = "!!MASON_DATA_PATH!!";
      # mailinglists
      QueueListingCols => 
       [
-       { Header     => 'Ticket Id',
+       { Header     => 'Id',
 	 TicketLink => 1,
 	 TicketAttribute => 'Id'
 	 },
 
-       { Header     => 'Take it!',
-	 TicketLink => 1,
-	 Constant   => 'Take',
-	 ExtraLinks => '&Action=Take'
+      { Header     => 'Subject',
+	 TicketAttribute => 'Subject'
+	 }
+       { Header => 'Requestor(s)',
+	 TicketAttribute => 'RequestorsAsString'
 	 },
+       { Header => 'Status',
+	 TicketAttribute => 'Status'
+	 },
+
 
        { Header => 'Queue',
 	 TicketAttribute => 'QueueObj->QueueId'
 	 },
 
-       { Header => 'Status',
-	 TicketAttribute => 'Status'
-	 },
+
 
        { Header => 'Told',
 	 TicketAttribute => 'LongSinceToldAsString'
@@ -215,17 +218,14 @@ $MasonDataDir = "!!MASON_DATA_PATH!!";
        { Header => 'Owner',
 	 TicketAttribute => 'OwnerObj->UserId'
        },
-
-       # TODO: We need a link here to a page containing this
-       # requestors activity (ticket listing) and notes/similar stored
-       # about the requestor
-       { Header => 'Requestor(s)',
-	 TicketAttribute => 'RequestorsAsString'
+   
+ 
+       { Header     => 'Take',
+	 TicketLink => 1,
+	 Constant   => 'Take',
+	 ExtraLinks => '&Action=Take'
 	 },
 
-       { Header     => 'Subject',
-	 TicketAttribute => 'Subject'
-	 }
       ]
      );
 
