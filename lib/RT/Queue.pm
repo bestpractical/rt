@@ -36,9 +36,7 @@ sub _Accessible  {
 sub create  {
   my $self = shift;
 
-#  print STDERR "In RT::Queue::create.pm\n";
   my $id = $self->SUPER::Create(QueueId => @_);
-#  print STDERR "Loading $id\n";
   $self->LoadById($id);
   
 }
@@ -95,7 +93,6 @@ sub Load  {
     return($self->SUPER::LoadById($identifier));
   }
   else {
-    
     return($self->LoadByCol("QueueId", $identifier));
   }
 
@@ -214,6 +211,15 @@ sub Watchers  {
 # Routines which deal with this queues acls 
 #
 
+
+sub Grant {
+  my $self = shift;
+  my $principal_type = shift;
+  my $principal_id = shift;
+  my $right = shift;
+
+}
+
 #returns an EasySearch of ACEs everyone who has anything to do with this queue.
 # {{{ sub ACL 
 sub ACL  {
@@ -230,14 +236,6 @@ sub ACL  {
 # }}}
 
 
-#
-# Really need to figure out how to do 
-# acl lookups. perhaps the best thing to do is to extend easysearch to build an accessable hash of objects
-#
-
-
-
-#
 #
  #
 #ACCESS CONTROL

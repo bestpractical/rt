@@ -236,6 +236,34 @@ sub Signature {
 # }}}
 
 
+# {{{ sub HasSystemRight
+sub HasSystemRight {
+  my $self = shift;
+  my $right = shift;
+
+  my $RightClause = "(Right = '$right') OR (Right = 'SuperUser')";
+  my $ScopeClause = "(Scope = 'System')";
+  my $PrincipalsClause =   "(PrincipalType = 'User') AND ((PrincipalId = $actor) OR (PrincipalId = 0))";
+    
+  $GroupPrincipalsClause = "((PrincipalType = 'Group') AND (PrincipalId = GroupMembers.Id) AND (GroupMembers.UserId = $actor))";
+  
+  my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers WHERE (($ScopeClause) AND ($RightClause) AND ($GroupPrincipalsClause))";    
+  
+  my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE (($ScopeClause) AND ($RightClause) AND ($PrincipalsClause))";
+  
+  my ($hitcount);
+  
+  $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_1);
+  
+  #if there's a match, the right is granted
+  return (1) if ($hitcount);
+  
+  $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_2);
+  return (1) if ($hitcount);
+  
+  return(0);
+}
+
 
 
 1;

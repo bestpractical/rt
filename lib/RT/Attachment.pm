@@ -137,7 +137,9 @@ sub Create  {
 
 # {{{ UTILITIES
 
-# {{{ sub Quote - it might be possible to use the Mail::Internet
+# {{{ sub Quote 
+
+# - it might be possible to use the Mail::Internet
 # utility methods ... but I do have a slight feeling that we'd rather
 # want to keep the old stuff I've made for rt1 ... or what? :)
 
@@ -151,10 +153,6 @@ sub Quote {
 	$body=$self->Content;
 
 	# Do we need any preformatting (wrapping, that is) of the message?
-
-	# Remove trailing headers (from 1.0, this one might probably
-	# be gutted)
-	$body =~ s/--- Headers Follow ---\n\n(.*)$//s;
 
 	# Remove quoted signature.
 	$body =~ s/\n-- (.*)$//s;

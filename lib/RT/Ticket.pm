@@ -7,6 +7,7 @@ package RT::Ticket;
 use RT::Record;
 use RT::Link;
 use RT::Links;
+use Carp;
 
 @ISA= qw(RT::Record);
 
@@ -115,10 +116,11 @@ sub Create {
     $args{'Queue'}=$q->id;
   }
 
+  #Can't create a ticket without a queue.
   unless ($args{'Queue'}) {
-      warn "Queue not set!";
-      # Defaulting it to 'general':
-      $args{'Queue'}=1;
+    $RT::Logger->log(level=>'warning', 
+		     message=>"No queue given for ticket create request '".$args{'Subject'}."'");
+    return (0, 0,'Queue not set');
   }
 
   my $id = $self->SUPER::Create(Id => $args{'id'},
@@ -137,43 +139,45 @@ sub Create {
   
   #Load 'er up.
   $self->Load($id);
+
   #Now that we know the self
-  (my $code, my $message) = $self->SUPER::_Set("EffectiveId",$id);
-  if ($code == 0) {
-    warn $message;
+  (my $error, my $message) = $self->SUPER::_Set("EffectiveId",$id);
+  if ($error == 0) {
+    $RT::Logger->log(level=>'warning', 
+			 message=>"Couldn't set EffectiveId for Ticket $id: $message.");
     return (0, 0, $message);
   }
 
 
   if (defined $args{Requestor} || defined $args{RequestorEmail}) {
-      my %watcher=(Type=>'Requestor');
-      if (defined $args{RequestorEmail}) {
-	  $watcher{Email} = $args{RequestorEmail};
+    my %watcher=(Type=>'Requestor');
+    if (defined $args{RequestorEmail}) {
+      $watcher{Email} = $args{RequestorEmail};
+    }
+    if (defined $args{Requestor}) {
+      $watcher{Owner}=$args{Requestor}->Id;
+      if  ( $args{RequestorEmail} && 
+	    $args{RequestorEmail} eq $args{Requestor}->EmailAddress 
+	  ) {
+	delete $watcher{Email};
       }
-      if (defined $args{Requestor}) {
-	  $watcher{Owner}=$args{Requestor}->Id;
-	  if  ( $args{RequestorEmail} && 
-		$args{RequestorEmail} eq $args{Requestor}->EmailAddress 
-		) {
-	      delete $watcher{Email};
-	  }
-      }
-      $self->AddWatcher(%watcher);
+    }
+    $self->AddWatcher(%watcher);
   } 
   if (defined $args{'MIMEObj'}) {
     my $head = $args{'MIMEObj'}->head;
     
     require Mail::Address;
-
+    
     unless (defined $args{'Requestor'} || defined $args{'RequestorEmail'}) {
-	#Add the requestor to the list of watchers
-	my $FromLine = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
-	my @From = Mail::Address->parse($FromLine);
-	
-	foreach $From (@From) {
-	    $self->AddWatcher ( Email => $From->address,
-				Type => "Requestor");
-	}
+      #Add the requestor to the list of watchers
+      my $FromLine = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
+      my @From = Mail::Address->parse($FromLine);
+      
+      foreach $From (@From) {
+	$self->AddWatcher ( Email => $From->address,
+			    Type => "Requestor");
+      }
     }
     
     my @Cc = Mail::Address->parse($head->get('Cc'));
@@ -536,8 +540,15 @@ sub AdminCc {
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 sub IsWatcher {
 my $self = shift;
-die "Ticket::IsWatcher unimplemented\n";
-#TODO Implement
+
+my @args = (Type => 'Requestor',
+	    Id => undef);
+
+
+carp "Ticket::IsWatcher unimplemented\n";
+return (0);
+#TODO Implement. this sub should perform an SQL match along the lines of the ACL check
+
 }
 # }}}
 
@@ -549,7 +560,8 @@ sub IsRequestor {
 
   my $mail;
 
-  #TODO this can be done _properly_ with a simple SQL query.
+  #TODO uncomment the line below and blow away the rest of the sub once IsWatcher is done.
+  #return ($self->IsWatcher(Type => 'Requestor', Id => $whom);
 
   if (ref $whom eq "Mail::Address") {
     $mail=$whom->Address;
@@ -569,22 +581,27 @@ sub IsRequestor {
 };
 
 # }}}
+
 # {{{ sub IsCc
 
-#TODO Implement
 sub IsCc {
   my $self = shift;
-  return (0);
+  my $cc = shift;
+  
+  return ($self->IsWatcher( Type => 'Cc', Identifier => $cc ));
   
 }
 
 # }}}
+
 # {{{ sub IsAdminCc
 
-#TODO Implement
 sub IsAdminCc {
   my $self = shift;
-  return(0);
+  my $bcc = shift;
+  
+  return ($self->IsWatcher( Type => 'Bcc', Identifier => $bcc ));
+  
 }
 
 # }}}
@@ -600,7 +617,10 @@ sub IsAdminCc {
 sub ValidateQueue {
   my $self = shift;
   my $Value = shift;
+  
+  #TODO I don't think this should be here. We shouldn't allow anything to have an undef queue,
   if (!$Value) {
+    carp " RT:::Queue::ValidateQueue called with a null value. this isn't ok.";
     return (1);
   }
   
@@ -645,7 +665,6 @@ sub SetQueue {
       $self->Untake();
     }
     
-
     else {
       return($self->_Set('Queue', $NewQueueObj->Id()));
     }
@@ -710,38 +729,38 @@ sub GraceTimeAsString {
 
 # {{{ sub DueObj
 sub DueObj {
-    $self->Due || return undef;
-    require Date::Kronos;
-    my $self=shift;
-    my $time=Date::Kronos->new;
-    $time->Gregorian->sql_timestamp($self->Due);
-    return $time;
+  $self->Due || return undef;
+  require Date::Kronos;
+  my $self = shift;
+  my $time = Date::Kronos->new;
+  $time->Gregorian->sql_timestamp($self->Due);
+  return $time;
 }
 # }}}
 
 # {{{ sub ToldObj
 sub ToldObj {
-    my $self=shift;
-    return undef unless $self->Told;
-    require Date::Kronos;
-    my $time=Date::Kronos->new;
-    $time->Gregorian->sql_timestamp($self->Told);
-    return $time;
+  my $self = shift;
+  return undef unless $self->Told;
+  require Date::Kronos;
+  my $time = Date::Kronos->new;
+  $time->Gregorian->sql_timestamp($self->Told);
+  return $time;
 }
 # }}}
 
 # {{{ sub LongSinceToldAsString
 # TODO This should be called SinceToldAsString
 sub LongSinceToldAsString {
-    my $self=shift;
-    require Date::Kronos;
-    if ($self->Told) {
-	my $now=Date::Kronos->new(cal_type=>'Unix');
-	my $diff=$now - $self->ToldObj;
-	return $diff->Unix->stringify;
-    } else {
-	return "Never";
-    }
+  my $self = shift;
+  require Date::Kronos;
+  if ($self->Told) {
+    my $now=Date::Kronos->new(cal_type=>'Unix');
+    my $diff=$now - $self->ToldObj;
+    return $diff->Unix->stringify;
+  } else {
+    return "Never";
+  }
 }
 
 
@@ -749,8 +768,8 @@ sub LongSinceToldAsString {
 sub ToldAsString {
   my $self = shift;
   if ($self->Told) {
-      my $time=$self->ToldObj;
-      return $time->Gregorian->stringify() || warn;
+    my $time=$self->ToldObj;
+    return $time->Gregorian->stringify() || warn;
   }
   else {
     return("Never");
@@ -762,12 +781,12 @@ sub ToldAsString {
 
 # {{{ sub LastUpdatedByObj
 sub LastUpdatedByObj {
-    my $self=shift;
-    unless (exists $self->{LastUpdatedByObj}) {
-	$self->{LastUpdatedByObj}=RT::User->new;
-	$self->{LastUpdatedByObj}->Load($self->LastUpdatedBy);
-    }
-    return $self->{LastUpdatedByObj};
+  my $self=shift;
+  unless (exists $self->{LastUpdatedByObj}) {
+    $self->{LastUpdatedByObj}=RT::User->new;
+    $self->{LastUpdatedByObj}->Load($self->LastUpdatedBy);
+  }
+  return $self->{LastUpdatedByObj};
 }
 # }}}
 
@@ -788,8 +807,6 @@ sub Comment {
 	      TimeTaken => 0,
 	      @_ );
 
-  my $MIMEObj=$args{MIMEObj}; # For convenience
-    
   unless ($self->CurrentUserHasRight('CommentOnTicket')) {
     return (0, "Permission Denied");
   }
@@ -797,13 +814,13 @@ sub Comment {
   my $Trans = $self->_NewTransaction( Type => 'Comment',
 				      Data => $MIMEObj->head->get('subject'),
 				      TimeTaken => $args{'TimeTaken'},
-				      MIMEObj => $MIMEObj
+				      MIMEObj => $args{'MIMEObj'}
 				    );
   
   if ($args{'CcMessageTo'} || 
       $args{'BccMessageTo'} ) {
-      #send a copy of the correspondence to the CC list and BCC list
-      warn "Stub!";
+      #TODO send a copy of the correspondence to the CC list and BCC list
+    warn "RT::Ticket::Comment needs to send mail to explicit CCs and BCCs";
   }
   
   return ($Trans, "The comment has been recorded");
@@ -835,28 +852,17 @@ sub Correspond {
 	   TimeTaken => $args{'TimeTaken'},
 	   MIMEObj=> $args{'MIMEObj'}     
 	   );
-
-  # Probably this ones will be a part of the MIMEObj above, and not
-  # parts of %args.  In the Scrips, a new MIMEObj is created, so
-  # the (B)CCs won't be sent.  Maybe the SendEmail should be adjusted
-  # to import those header fields?  At the other hand, with incoming
-  # mail we can assume that Bccs and Ccs from the header is already
-  # sent, so it's rather a bug in the cli that the ccs and bccs are in
-  # the MIMEObj instead of %args..
   
-  # This is no longer true. -- jv
-
-
   if ($args{BccMessageTo} || 
       $args{CcMessageTo}) {
       warn "stub"
-  }
-
+    }
+  
   unless ($Trans) {
       # TODO ... check what errors might be catched here, and deal
-      # better with it
-      warn;
-      return ($Trans, "correspondence (probably) NOT sent", $args{'MIMEObj'});
+    # better with it
+    warn;
+    return ($Trans, "correspondence (probably) NOT sent", $args{'MIMEObj'});
   }
 
   my $T=RT::Transaction->new($self->CurrentUser);
@@ -1123,8 +1129,10 @@ sub Owner {
     $self->{'owner'}->Load($self->_Value('Owner'));
   }
   
-  #TODO It feels unwise, but we're returning an empty owner
-  # object rather than undef.
+  # We return an empty owner object rather than undef because a ticket
+  # without an owner may have Owner methods called on it.  Is this moot now that
+  # nobody is an explicit user
+  
   
   #Return the owner object
   return ($self->{'owner'});
@@ -1137,51 +1145,6 @@ sub OwnerAsString {
   my $self = shift;
   return($self->Owner->EmailAddress);
 
-}
-
-# }}}
-
-# {{{ sub Take
-sub Take {
-  my $self = shift;
-  my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Take');
-  return ($trans, 
-	  $trans 
-	  ? "Ticket taken"
-	  : $msg);
-}
-# }}}
-
-# {{{ sub Untake
-sub Untake {
-  my $self = shift;
-  my ($trans,$msg)=$self->SetOwner($RT::Nobody, 'Untake');
-  return ($trans, 
-	  $trans 
-	  ? "Ticket untaken"
-	  : $msg);
-}
-# }}}
-
-# {{{ sub Steal 
-
-sub Steal {
-  my $self = shift;
-  
-  if (!$self->CurrentUserHasRight('ModifyTicket')){
-    return (0,"Permission Denied");
-  }
-  elsif ($self->Owner->Id eq $self->CurrentUser->Id ) {
-    return (0,"You already own this ticket"); 
-  }
-  else {
-      my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Steal'); 
-      return ($trans, 
-	      $trans 
-	      ? "Ticket stolen"
-	      : $msg);
-  }
-    
 }
 
 # }}}
@@ -1246,6 +1209,53 @@ sub SetOwner {
 }
 
 # }}}
+
+# {{{ sub Take
+sub Take {
+  my $self = shift;
+  my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Take');
+  return ($trans, 
+	  $trans 
+	  ? "Ticket taken"
+	  : $msg);
+}
+# }}}
+
+# {{{ sub Untake
+sub Untake {
+  my $self = shift;
+  my ($trans,$msg)=$self->SetOwner($RT::Nobody, 'Untake');
+  return ($trans, 
+	  $trans 
+	  ? "Ticket untaken"
+	  : $msg);
+}
+# }}}
+
+# {{{ sub Steal 
+
+sub Steal {
+  my $self = shift;
+  
+  if (!$self->CurrentUserHasRight('ModifyTicket')){
+    return (0,"Permission Denied");
+  }
+  elsif ($self->Owner->Id eq $self->CurrentUser->Id ) {
+    return (0,"You already own this ticket"); 
+  }
+  else {
+      my ($trans,$msg)=$self->SetOwner($self->CurrentUser->Id, 'Steal'); 
+      return ($trans, 
+	      $trans 
+	      ? "Ticket stolen"
+	      : $msg);
+  }
+    
+}
+
+# }}}
+
+
 
 # }}}
 
@@ -1554,9 +1564,6 @@ sub HasRight {
     
     my $query_string_2 = "SELECT COUNT(ACL.id) FROM ACL WHERE (($ScopeClause) AND ($RightClause) AND ($PrincipalsClause))";
     
-#    print $query_string_1."\n";
-#    print $query_string_2."\n";
-
     my ($hitcount);
     
     $hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_1);

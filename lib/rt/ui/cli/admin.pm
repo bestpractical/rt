@@ -212,17 +212,6 @@ sub add_pwent  {
 }
 # }}}
 
-# {{{ sub cli_acl_queue 
-sub cli_acl_queue  {
-    my ($queue_id)=@_;
-
-    print "ACLs for queue \"$queue_id\"\n";
-    while (($user_id,$value)= each %rt::users) {
-	print "$user_id:";
-	&cli_print_acl($user_id,$queue_id);
-    }
-}
-# }}}
 
 # {{{ sub cli_modify_user
 sub cli_modify_user {
@@ -445,65 +434,6 @@ sub cli_delete_user  {
 }
 # }}}
 
-# {{{ sub cli_user_acl 
-sub cli_user_acl  {
-    my ($user_id,$queue_id,$privs) =@_;
-    my ($display, $manipulate, $admin, $message);
-    if (!$user_id) {
-	print "You must specify a user.\n";
-	return(0);
-    }
-    elsif (!&rt::is_a_user($user_id)){
-	print "That user does not exist.\n";
-	return(0);
-    }
-
-    elsif (!$queue_id){
-	print "$user_id\'s ACL\n";
-	while (($queue_id,$value)= each %rt::queues) {
-	    print "$queue_id: ";
-	    &cli_print_acl($user_id,$queue_id);
-	}
-	return(0);
-	
-    }
-    elsif (!(&rt::is_a_queue($queue_id))){
-	print "That queue does not exist.\n";
-        return(0);
-    }
-    
-    elsif (!$in_privs) {
-	$display=&rt::ui::cli::question_yes_no("Can this user access this queue",$rt::queues{$queue_id}{acls}{$user_id}{display});
-	if ($display) {
-	    $manipulate=&rt::ui::cli::question_yes_no("Can this user manipulate requests in this queue",$rt::queues{$queue_id}{acls}{$user_id}{manipulate});
-	    if ($manipulate) {
-		$admin=&rt::ui::cli::question_yes_no("Is this user the administrator for this queue",$rt::queues{$queue_id}{acls}{$user_id}{admin});
-	    }
-	    else {
-		$admin=0;
-	    }
-	}
-	else {
-	    $manipulate=0;
-	    $admin=0;
-	}
-
-	if (&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)) {
-	    ($result,$message)=&rt::add_modify_queue_acl($queue_id, $user_id, $display, $manipulate, $admin, $CurrentUser);
-	    print "$message\n";
-	}
-	else {
-	    print "User ACL modifications aborted\n";
-	}
-	
-    }
-    else {
-	print "command line privilege parsing not yet implemented\n";
-    }
-    return(1);
-}
-# }}}
-
 # {{{ sub cli_list_queues 
 sub cli_list_queues  {
   use RT::Queues;
@@ -518,40 +448,33 @@ sub cli_list_queues  {
 }
 # }}}
 
-# {{{ sub cli_print_acl 
-sub cli_print_acl  {
-  my  $user_id =  shift;
-  my  $queue_id  = shift;
-  
-  my $ACE = new RT::ACE($CurrentUser);
-  
-  if (!&rt::is_a_queue($queue_id)){
-    print "$queue_id: That queue does not exist. (You should never see this error)\n";
-    return(0);
+
+sub ACLAdd {
+  my $action = shift;
+  my $princtype = shift;
+  my $princid = shift;
+  my $right = shift;
+  my $scope = shift;
+  my $object = shift;
+
+  if ($action =~ /add/) {
+    use RT::ACE;
+    my $ACE = new RT::ACE;
+    $ACE->Create( PrincipalType => $princtype,
+		  PrincipalId => $princid,
+		  Right => $right,
+		  Scope => $scope,
+		  AppliesTo => $object);
+
   }
-  #print "Queue: $queue_id \n";
-  if (&rt::can_display_queue($queue_id,$user_id)){
-    print " Display";
+
+  elsif ($action =~ /del/) {
+  
   }
   else {
-    print "        ";
+    print "$action not a valid action\n";
+    return();
   }
-  if (&rt::can_manipulate_queue($queue_id,$user_id)){
-    print "   Manipulate";
-  }
-  else {
-    print "             ";
-  }
-  if (&rt::can_admin_queue($queue_id,$user_id)){
-    print "   Admin\n";
-  }
-  else {
-    print "         \n";
-  }
-  
-    
-}
-# }}}
 
 # {{{ sub cli_help_rt_admin
 sub cli_help_rt_admin {
@@ -564,8 +487,12 @@ user
                     data in the /etc/passwd file. If no users are 
 		    specified, ALL of /etc/passwd will be processed.
 
-acl <user> <queue> set user <user>'s privileges for queue <queue>
-                   if <queue> is ommitted, list user <user>'s ACLs
+
+
+acl (add|del) <principal type> <principal id> <right> <scope> <object>
+
+
+
 
 queue -create <queue>              create a new queue called <queue>
       -modify <queue>              modify <queue>'s settings

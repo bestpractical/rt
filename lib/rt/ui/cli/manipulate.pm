@@ -309,11 +309,11 @@ sub cli_create_req  {
     require RT::Queue;
     my $Queue = RT::Queue->new($CurrentUser);
     
-    while (!$Queue->Load($queue_id)) {
+    while ($Queue->Load($queue_id) eq undef ) {
       print "That Queue does not exist\n";
-      $queue_id=&rt::ui::cli::question_string("Place Request in queue",) || "general";
+      $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     }
-    
+   
     if (!$Queue->CurrentUserHasRight("CreateTicket")) {
       print "You may not create a ticket in that queue";
     }
@@ -562,8 +562,7 @@ EOFORM
 --------------------------------------------------------------------------
 @{[$message->Headers]}
 EOFORM
-    my ($test1, $test2)=$message->Quote;
-    print "TEST: ", $$test1, $test2,"\n\n\n\n";
+
     if ($message->ContentType =~ m{^(text/plain|message)}) {
 	print $message->Content;
     } else {

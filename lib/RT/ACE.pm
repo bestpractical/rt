@@ -40,14 +40,9 @@ sub GrantQueueRight {
     return (0, 'Scope must be queue for queue rights');
   }
   
-  # IF the AppliesTo is 0, check if the actor can GrantGlobalQueueACLs
-  if ($args->{'AppliesTo'} == 0) {
-    
-    # if the user can't do it, return a (0, 'No permission to grant rights');
-  }
-  # Otherwise instantiate the queue Object and and check if this user
-  # can grant queue ACLs. We do this in case they call it by name
-  else {
+
+  #unless $self->CurrentUser->id has 'ModifyQueueACL' for (queue == $args->{'AppliesTo'})
+  {
     # if the user can't do it, return a (0, 'No permission to grant rights');
   }
   
@@ -61,7 +56,7 @@ sub GrantGlobalQueueRight {
   my $self = shift;
   my $args = ( AppliesTo => 0,
 	       @_);
- 
+
   return ($self->GrantQueueRight($args));
 }
 
