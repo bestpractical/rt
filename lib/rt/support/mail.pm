@@ -75,25 +75,26 @@ sub template_mail{
     # The message will be killed by the mailing server if there are no
     # mail alias - and for the _rt_system there aren't really a
     # mail_alias:
-    if (! $rt::mail_alias) {
     	$temp_mail_alias = $rt::queues{"$in_queue_id"}{'mail_alias'}; 
-	}    
-    else {
-	$temp_mail_alias = $rt::mail_alias;
+	if (!$rt::queues{"$in_queue_id"}{'mail_alias'}) {
+		$temp_mail_alias = $rt::mail_alias;
+	}
+	else {
+		$temp_mail_alias = $rt::queues{"$in_queue_id"}{'mail_alias'}
 	}
 
 open (MAIL, "|$rt::mailprog $rt::mail_options");
 
     print  MAIL "Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject
 Reply-To: $temp_mail_alias
-From: $rt::users{$in_current_user}{real_name} <$temp_mail_alias>
+From: $rt::users{"$in_current_user"}{'real_name'} via RT <$temp_mail_alias>
 To: $in_recipient   
 Cc: $in_cc
 Bcc: $in_bcc
 X-Request-ID: $in_serial_num
 X-RT-Loop-Prevention: $rt::rtname
 X-Sender: $in_current_user
-X-Managed-By: Request Tracker ($rt::rtversion)
+X-Managed-By: Request Tracker $rt::rtversion (http://www.fsck.com/projects/rt)
 Precedence: $precedence 
 
 $template
