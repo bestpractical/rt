@@ -61,7 +61,7 @@ sub SetRecipients {
     }
     
     unless (@To) {
-	push (@To,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."': ;");
+	push (@To,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."':;");
     }
     
     
