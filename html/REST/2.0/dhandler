@@ -12,22 +12,23 @@ $realm =~ s/[^\w.]//g;
 my $nonce = Digest::MD5::md5_hex($realm . rand());
 my %methods = map {($_ => 1)} @RT::RESTAuthenticationMethods;
 
-# XXX - do Digest auth here too?
-$r->headers_out->add(
+my $header_out = sub {
+    $ENV{FCGI_ROLE} ? $r->header_out(@_) : $r->headers_out->add(@_);
+};
+
+$header_out->(
     'WWW-Authenticate' => qq(WSSE realm="$realm", profile="UsernameToken")
 ) if $methods{WSSE};
-$r->headers_out->add(
+$header_out->(
     'WWW-Authenticate' => qq(Digest realm="$realm", stale=false, nonce="", qop="auth", algorithm="MD5")
 ) if $methods{Digest};
-$r->headers_out->add(
+$header_out->(
     'WWW-Authenticate' => qq(Basic realm="$realm")
 ) if $methods{Basic};
 
-$RT::Logger->error($r->header_in('Authorization'));
-
 my $CurrentUser;
 my $headerParts = sub {
-    my $header = $r->header_in($_[0]);
+    my $header = $r->header_in($_[0]) || $ENV{$_[0]};
     $header =~ s/^(?:$_[1]) /", / or return;
     $header =~ s/"\s*$//; # strip whitespaces after the last "
 
@@ -46,7 +47,8 @@ my $headerParts = sub {
 AUTH_Basic: {
     last if $CurrentUser or !$methods{Basic};
 
-    $r->header_in('Authorization') =~ /^Basic (.+)$/ or last;
+    ($r->header_in('Authorization') || $ENV{'Authorization'})
+         =~ /^Basic (.+)$/ or last;
     my ($username, $password) = split(/:/, MIME::Base64::decode_base64($1), 2);
 
     require RT::CurrentUser;
@@ -87,10 +89,6 @@ AUTH_Digest: {
 
 AUTH_WSSE: {
     last if $CurrentUser or !$methods{WSSE};
-
-    my $auth = $headerParts->('Authorization', 'WSSE') or last;
-    lc($auth->{profile}) eq 'usernametoken' or last;
-
     my $wsse = $headerParts->('X-WSSE', qr/WSSE|UsernameToken/) or last;
 
     my ($username, $auth_digest, $auth_nonce, $auth_created)
