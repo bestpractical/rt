@@ -80,15 +80,6 @@ CREATE TABLE Queues (
  QueueId CHAR(40) NOT NULL,
  CorrespondAddress CHAR(40),
  CommentAddress CHAR(40),
-# Those subscription field are not used in RT 1.1 as I see it.
-# I think we should modify the Scrips system so it by default
-# respects those fields.
- MailOwnerOnTransaction INT,             # notify owner on transaction
- MailMembersOnTransaction INT,		# notify list members on transaction
- MailRequestorOnTransaction INT,	# notify requestor on transaction
- MailRequestorOnCreation INT,		# notify user on creation
- MailMembersOnCorrespondence INT,		# notify members on creation
- MailMembersOnComment INT,		# notify members on comment
  PermitNonmemberCreate INT,		#let nonmembers create
  InitialPriority INT,
  FinalPriority INT,
@@ -115,8 +106,9 @@ CREATE TABLE Watchers (
    Value int(11),
    Scope varchar(16), # Might be "Queue" and "Ticket" as for now
                       # ... might be extended to "Keywords", "Owners", etc.
+   Scrips int(11) # Which (applicable) scrips that are to be watched. 0 = all applicable
    Email VARCHAR(255),
-   Type VARCHAR(16), #Requestor, Cc, Bcc ... ++?
+   Type VARCHAR(16), #Requestor, Cc, Bcc, To, ... ++?
    Creator INT(11),
    Created TIMESTAMP,
    LastUpdatedBy INT(11),
