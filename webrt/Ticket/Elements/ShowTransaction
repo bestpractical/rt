@@ -1,12 +1,10 @@
 <!-- Transaction <%$Ticket->Id%>/<%$Transaction->Id%> -->
 <& /Elements/TitleBoxStart, 
 	title => 
-$Transaction->CreatedAsString. " " . 
-$TicketString .
-$Transaction->Description.  
-$TimeTaken,
+		$Transaction->CreatedAsString. " " .  $TicketString . 
+ 		$Transaction->Description.  $TimeTaken,
 
-	titleright=> $Transaction->Message->First ? ($RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "[<a class='inverse' href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Respond\">Reply</a>] [<a class='inverse' href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&Action=Comment\">Comment</a>]</a>") : "" &>
+	titleright=> $titlebar_commands &>
 
 % unless ($Collapsed) {
 
@@ -73,5 +71,22 @@ if ($Transaction->TimeTaken > 0) {
 	$TimeTaken = " (". $Transaction->TimeTaken." min) "
 }
 my $attachments = $Transaction->Attachments;
+
+my $titlebar_commands='';
+
+if ($Transaction->Content) {
+	if ($Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket')) {
+		$titlebar_commands .= 
+	  	  "[<a class='inverse' href=\"Update.html?id=".
+		  $Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id.
+		  "&Action=Respond\">Reply</a>] ";
+	}
+	if ($Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket')) {
+	     $titlebar_commands .= 
+	     "[<a class='inverse' href=\"Update.html?id=".$Transaction->Ticket. 
+	     "&QuoteTransaction=".$Transaction->Id.
+	     "&Action=Comment\">Comment</a>]";
+	}
+}
 
 </%INIT>

@@ -1,0 +1,27 @@
+<%perl>
+     my ($ticket, $trans,$attach, $filename);
+     my $arg = $m->dhandler_arg;                # get rest of path
+     if ($arg =~ '^(\d+)/(\d+)') {
+        $trans = $1;
+        $attach = $2;
+     }
+    else {
+        Abort("Corrupted attachment URL.");
+        }
+     my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
+     $AttachmentObj->Load($attach) || Abort("Attachment '$attach' could not be loaded");
+
+
+     unless ($AttachmentObj->id) {
+        Abort("Bad attachment id. Couldn't find attachment '$attach'\n");
+    }
+     unless ($AttachmentObj->TransactionId() == $trans ) {
+        Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
+
+     }
+     my $content_type = $AttachmentObj->ContentType || 'text/plain';
+     SetContentType($content_type);
+     $m->out($AttachmentObj->Content); 
+     $m->abort; 
+</%perl>
+

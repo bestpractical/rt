@@ -93,7 +93,8 @@
 %	if ($Transactions->IsLast) {
 	<a name="lasttrans">
 % 	}
-	<& Elements/ShowTransaction, Transaction => $Transaction&>
+	<& /Ticket/Elements/ShowTransaction, Transaction => $Transaction, 
+					     Ticket => $Ticket &>
 
 <BR>
 %}
