@@ -43,34 +43,61 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title =>loc('Update ticket #[_1]', $Ticket->id) &>
+<& /SelfService/Elements/Header, 
+    Title =>loc('Update ticket #[_1]', $Ticket->id) 
+&>
 
 
 <FORM ACTION="Display.html" METHOD=POST ENCTYPE="multipart/form-data">
 <input type=hidden name="UpdateType" value="response">
-
-<&|/l&>Status</&>: <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)",loc($DefaultStatus)) &><br>
-<&|/l&>Subject</&>: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>"> <br>
+<input TYPE="hidden" NAME="id" VALUE="<%$Ticket->Id%>">
 <table>
-<tr>
+    <tr>
+        <td class="label">
+            <&|/l&>Status</&>
+        </td>
+        <td class="value">
+            <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)",loc($DefaultStatus)) &>
+        </td>
+    </tr>
+    <tr>
+        <td class="label">
+            <&|/l&>Subject</&>
+        </td>
+        <td class="value">
+            <input name="UpdateSubject" size=60 value="<% $Ticket->Subject %>">
+        </td>
+
+    </tr>
 % if (exists $session{'Attachments'}) {
-<TD>
-<&|/l&>Attached file</&>:
-</TD>
-<TD COLSPAN=5>
-<&|/l&>Check box to delete</&><BR>
+<tr>
+    <TD class="label">
+    <&|/l&>Attached file</&>
+    </TD>
+    <TD COLSPAN=5 class="value">
+    <&|/l&>Check box to delete</&><BR>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+    <input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
 % } # end of foreach
-</TD>
+    </TD>
 </TR>
-<TR>
 % } # end of if
-<tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><input type="hidden" name="UpdateAttach" value="1">
-</td></tr>
+<tr>
+    <td class"label">
+        <&|/l&>Attach</&>
+    </td>
+    <td class="value">
+            <input name="Attach" type="file">
+            <input type="hidden" name="UpdateAttach" value="1">
+    </td>
+  </tr>
 </table>
-<& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
-		<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>"><br>
+<& /Ticket/Elements/EditCustomFields,  TicketObj => $Ticket &>
+<& /Elements/MessageBox, 
+    Name => "UpdateContent", 
+    QuoteTransaction => $ARGS{QuoteTransaction} 
+    &>
+    <br>
 
 
 <& /Elements/Submit &>
@@ -82,14 +109,14 @@
 
 my $Ticket = LoadTicket($id);
 
-my $title = loc("Update ticket #[_1]", $Ticket->id);
+my $title = loc( "Update ticket #[_1]", $Ticket->id );
 
 $DefaultStatus = $Ticket->Status() unless ($DefaultStatus);
 
 
-Abort(loc("No permission to view update ticket")) 
-	unless ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') ); 
+Abort( loc("No permission to view update ticket") )
+  unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
+    or $Ticket->CurrentUserHasRight('ModifyTicket') );
 
 </%INIT>
 

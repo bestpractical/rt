@@ -192,6 +192,9 @@ if ( $id[0] eq 'new' ) {
         delete $session{'Attachments'};
     }
 
+    my @cfupdates = ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
+    push (@results, @cfupdates);
+
     # }}}
 
     my $Transactions = $Ticket->Transactions;
