@@ -78,6 +78,9 @@ $TicketObj => undef
 </%ARGS>
 
 <%INIT>
+
+$m->comp('/Elements/Callback', _CallbackName => 'Initial', TicketObj => $TicketObj, ARGSRef => \%ARGS);
+
 my ($linkid, $message, $tid, @Actions, $Tickets);  
 
 unless ($id || $TicketObj) {
