@@ -418,7 +418,6 @@ sub Gateway {
     my $Subject = $head->get('Subject') || '';
     chomp $Subject;
 
-
     $args{'ticket'} ||= $parser->ParseTicketId($Subject);
 
     my $SystemTicket;
@@ -478,6 +477,8 @@ sub Gateway {
                                                   Ticket => $SystemTicket,
                                                   Queue  => $SystemQueueObj );
 
+	# If a module returns a "-1" then we discard the ticket, so.
+        $AuthStat = -1 if $NewAuthStat == -1;
         # You get the highest level of authentication you were assigned.
         last if $AuthStat == -1;
         $AuthStat = $NewAuthStat if $NewAuthStat > $AuthStat;
