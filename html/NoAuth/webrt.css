@@ -604,6 +604,17 @@ TD.collection-as-table {  text-align: left;
                           padding-right: .5em;
                         }
 
+textarea.signature {
+    width: 100%;
+}
+textarea.comments {
+    width: 100%;
+}
+
+textarea.messagebox {
+    width: 100%;
+}
+
 %# Provide a callback for adding/modifying the style sheet.
 %# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
 %#   "latter specified rule wins"

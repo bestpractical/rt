@@ -45,10 +45,16 @@
 %# END BPS TAGGED BLOCK }}}
 <SELECT NAME="<%$Name%>">
 %if ($DefaultValue) {
-<OPTION <% !$Default && "SELECTED" %> VALUE=""><%$DefaultLabel%></OPTION>
+<OPTION <% !$Default ? "SELECTED" : '' %> VALUE=""><%$DefaultLabel%></OPTION>
 %}
 %foreach my $User ( @users)  {
-<OPTION <% ($User->Id == $Default)         && "SELECTED" %> VALUE="<%$User->Id()%>"><%$User->Name()%></OPTION>
+<OPTION <% ($User->Id == $Default) ? "SELECTED" : ''%>
+%if ($ValueAttribute eq 'id') {
+    value="<%$User->id%>"
+%} elsif ($ValueAttribute eq 'Name') {
+    value="<%$User->Name%>"
+%}
+><%$User->Name()%></OPTION>
 %}
 </SELECT>
 <%INIT>
@@ -97,5 +103,6 @@ $User => undef
 $TicketObj => undef
 $DefaultValue => 1
 $DefaultLabel => "-"
+$ValueAttribute => 'id'
 $cfqueues => undef
 </%ARGS>

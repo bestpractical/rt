@@ -108,7 +108,7 @@
 					  FalseVal => '!=' 
 &> 
 </td><td>
-<& /Elements/SelectOwner, Name => "ValueOfActor" &>
+<& /Elements/SelectOwner, Name => "ValueOfActor", ValueAttribute => 'Name' &>
 </td>
 </tr>
 <tr>

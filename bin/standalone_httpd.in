@@ -44,170 +44,23 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Mason;
 
+use warnings;
 use strict;
-use vars '$Handler';
 
-BEGIN { require ('@RT_BIN_PATH@/webmux.pl') };
-
-use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
-
-use Socket;
-
-$SIG{CHLD} = 'IGNORE'; # reap child processes
-$SIG{HUP} = sub {
-    # on a "kill -HUP", we first close our socket handles.
-    close Remote;
-    close HTTPDaemon;
-
-    # and then, on systems implementing fork(), we make sure
-    # we are running with a new pid, so another -HUP will still
-    # work on the new process.
-    require Config;
-    if ($Config::Config{d_fork} and my $pid = fork()) {
-        # finally, allow ^C on the parent process to terminate
-        # the children.
-        waitpid($pid, 0); exit;
-    }
-
-    # do the exec. if $0 is not executable, try running it with $^X.
-    exec { $0 } ( ((-x $0) ? () : ($^X)), $0, @ARGV );
-};
-
+BEGIN {
+    use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+    use RT;
+    RT::LoadConfig();
+    if ($RT::DevelMode) { require Module::Refresh; }
+}
 
 RT::Init();
 
-my $port = shift || '8080';
+use RT::Interface::Web::Standalone;
 
-main_loop($port);
-
-sub main_loop {
-    my $port = shift;
-    my $tcp  = getprotobyname('tcp');
-
-    socket( HTTPDaemon, PF_INET, SOCK_STREAM, $tcp ) or die "socket: $!";
-    setsockopt( HTTPDaemon, SOL_SOCKET, SO_REUSEADDR, pack( "l", 1 ) )
-      or warn "setsockopt: $!";
-    bind( HTTPDaemon, sockaddr_in( $port, INADDR_ANY ) ) or die "bind: $!";
-    listen( HTTPDaemon, SOMAXCONN ) or die "listen: $!";
-
-    print("You can connect to your RT server at http://localhost:$port/\n");
-
-    while (1) {
-
-        for ( ; accept( Remote, HTTPDaemon ); close Remote ) {
-            Module::Refresh->refresh if $RT::DevelMode;
-
-            binmode *Remote, ':utf8';
-            *STDIN  = *Remote;
-            *STDOUT = *Remote;
-
-            my $remote_sockaddr = getpeername(STDIN);
-            my ( undef, $iaddr ) = sockaddr_in($remote_sockaddr);
-            my $peername = gethostbyaddr( $iaddr, AF_INET ) || "localhost";
-            my $peeraddr = inet_ntoa($iaddr) || "127.0.0.1";
-
-            my $local_sockaddr = getsockname(STDIN);
-            my ( undef, $localiaddr ) = sockaddr_in($local_sockaddr);
-            my $localname = gethostbyaddr( $localiaddr, AF_INET )
-              || "localhost";
-            my $localaddr = inet_ntoa($localiaddr) || "127.0.0.1";
-
-            chomp( $_ = <STDIN> );
-            my ( $method, $request_uri, $proto, undef ) = split;
-
-            #$request_uri =~ s#\\#/#g;
-            $RT::Logger->info("<- $peername: $_\n");
-            my ( $file, undef, $query_string ) =
-              ( $request_uri =~ /([^?]*)(\?(.*))?/ );    # split at ?
-            #$file =~ s/%([\dA-Fa-f]{2})/chr(hex($1))/eg;  # decode url-escaped entities
-
-            last if ( $method !~ /^(GET|POST|HEAD)$/ );
-
-            $query_string = '' if !defined $query_string;
-
-            build_cgi_env( method       => $method,
-                           query_string => $query_string,
-                           path         => $file,
-                           protocol     => $proto,
-                           port         => $port,
-                           peername     => $peername,
-                           peeraddr     => $peeraddr,
-                           localname    => $localname,
-                           request_uri  => $request_uri );
-
-            RT::ConnectToDatabase();
-            my $cgi = CGI->new();
-
-            print "HTTP/1.0 200 OK\n";    # probably OK by now
-
-            if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
-                && ($Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) )
-              ) {
-                $cgi->path_info( $cgi->path_info . "/index.html" );
-            }
-
-            eval { $Handler->handle_cgi_object($cgi); };
-            $RT::Logger->crit($@) if ($@);
-
-	    RT::Interface::Web::Handler->CleanupRequest();
-        }
-
-    }
-
-}
+my $server = RT::Interface::Web::Standalone->new;
+$server->port(shift @ARGV) if ($ARGV[0]);
+$server->run();
 
 
-
-sub build_cgi_env {
-        my %args = ( query_string => '',
-                     path => '',
-                     port => undef,
-                     protocol => undef,
-                     localname => undef,
-                     method => undef,
-                     remote_name => undef,
- 
-
-                        @_);
-                    
-        foreach my $var qw(USER_AGENT CONTENT_LENGTH CONTENT_TYPE
-          COOKIE SERVER_PORT SERVER_PROTOCOL SERVER_NAME
-          PATH_INFO REQUEST_URI REQUEST_METHOD REMOTE_ADDR
-          REMOTE_HOST QUERY_STRING SERVER_SOFTWARE) {
-            delete $ENV{$var};
-          }
-        while (<STDIN>) {
-            s/[\r\l\n\s]+$//;
-            if( /^([\w\-]+): (.+)/i) {
-                my $tag = uc($1);
-                $tag =~ s/^COOKIES$/COOKIE/;
-                my $val = $2;
-                $tag =~ s/-/_/g;
-                $tag = "HTTP_".$tag unless (grep /^$tag$/, qw(CONTENT_LENGTH CONTENT_TYPE COOKIE));
-                if ($ENV{$tag}) {
-                $ENV{$tag} .= "; $val";
-                }
-                else {
-                $ENV{$tag} = $val;
-                }
-            } 
-            last if (/^$/);
-        }
-
-
-        $ENV{SERVER_PROTOCOL} = $args{protocol};
-        $ENV{SERVER_PORT}     = $args{port};
-        $ENV{SERVER_NAME}     = $args{'localname'};
-        $ENV{SERVER_URL}      = "http://".$args{'localname'}.":".$args{'port'}."/";
-        $ENV{PATH_INFO}       = $args{'path'};
-        $ENV{REQUEST_URI}     = $args{'request_uri'};
-        $ENV{REQUEST_METHOD}  = $args{method};
-        $ENV{REMOTE_ADDR}     = $args{'peeraddr'};
-        $ENV{REMOTE_HOST}     = $args{'peername'};
-        $ENV{QUERY_STRING}    = $args{'query_string'};
-        $ENV{SERVER_SOFTWARE} = "rt-standalone/$RT::VERSION";
-
-        CGI::initialize_globals();
-} 

@@ -400,7 +400,7 @@ sub loc {
 
 sub loc_fuzzy {
     my $self = shift;
-    return '' if $_[0] eq '';
+    return '' if (!$_[0] ||  $_[0] eq '');
 
     # XXX: work around perl's deficiency when matching utf8 data
     return $_[0] if Encode::is_utf8($_[0]);
