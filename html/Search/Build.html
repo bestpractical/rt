@@ -58,36 +58,28 @@
 <input type=hidden name=SearchId value="<%$SearchId%>">
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
-<table width=100%>
-<tr>
-<td valign=top class="boxcontainer">
+<table width=100% border="0" cellpadding="5">
+<tr valign="top">
+<td class="boxcontainer" rowspan="2" width="65%">
 <& Elements/PickCriteria, query => $Query, cfqueues => \%queues &>
 <& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
-
 </td>
-<td valign=top class="boxcontainer">
-<& /Elements/TitleBoxStart, title => loc("Query") . ": " .$Description &>
-<& Elements/NewListActions, actions => \@actions &>
-<select size="10" name="clauses" style="width: 100%">
-<%$optionlist|n%>
-</select>
-</td></tr><tr><td bgcolor="#dddddd" colspan="2">
-<center>
-<input type=submit name="Up" value="^">
-<input type=submit name="Down" value="v">
-<input type=submit name="Left" value="<">
-<input type=submit name="Right" value=">">
-<input type=submit name="DeleteClause" value="Delete">
-<br />
-<input type=submit name="Clear" value="Clear">
-<input type=submit name="Toggle" value="And/Or">
-%#<input type=submit name="EditQuery" value="Advanced">
-</center>
-<& /Elements/TitleBoxEnd &>
-<br>
+
+<td>
+<& Elements/EditQuery,
+    %ARGS,
+    actions => \@actions,
+    optionlist => $optionlist,
+    Description => $Description &>
+</td>
+</tr>
+
+<tr valign="top">
+<td>
 <& Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty, SearchId => $SearchId &>
 </td>
 </tr>
+
 <tr>
 <td colspan=2 class="boxcontainer">
 
@@ -242,10 +234,9 @@ $Query  = "";
 %queues = ();
 
 # Build the optionlist from the tree, so we can do additions and movements based on it
-$optionlist = build_array( \$Query, $ARGS{clauses}, $tree, \@options, \%queues );
+$optionlist = build_array( \$Query, \@clauses, $tree, \@options, \%queues );
 
-my $currentkey;
-$currentkey = $options[$ARGS{clauses}] if defined $ARGS{clauses};
+my @current_values = @options[@clauses];
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
@@ -285,16 +276,16 @@ foreach my $arg ( keys %ARGS ) {
         };
 	    
 	my $newnode = Tree::Simple->new($clause);
-	if ($currentkey) {
-	    my $newindex = $currentkey->getIndex() + 1;
-	    if (!$currentkey->getParent->getParent()->isRoot()) {
-	    }
-	    $currentkey->insertSibling($newindex, $newnode);
-	    $currentkey = $newnode;
+	if (@current_values) {
+            foreach my $value (@current_values) {
+                my $newindex = $value->getIndex() + 1;
+                $value->insertSibling($newindex, $newnode);
+                $value = $newnode;
+            }
 	}
 	else {
 	    $tree->getChild(0)->addChild($newnode);
-	    $currentkey = $newnode;
+	    @current_values = $newnode;
 	}
 	$newnode->getParent()->setNodeValue($ARGS{'AndOr'});
     }
@@ -303,108 +294,118 @@ foreach my $arg ( keys %ARGS ) {
 
 # {{{ Move things around
 if ( $ARGS{"Up"} ) {
-    if ($currentkey) {
-	my $index = $currentkey->getIndex();
-	if ( $currentkey->getIndex() > 0 ) {
-	    my $parent = $currentkey->getParent();
-	    $parent->removeChild($index);
-	    $parent->insertChild($index - 1, $currentkey);
-	    $currentkey = $parent->getChild($index - 1);
-	}
-        else {
-            push( @actions, [ "error: can't move up", -1 ] );
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $index = $value->getIndex();
+            if ( $value->getIndex() > 0 ) {
+                my $parent = $value->getParent();
+                $parent->removeChild($index);
+                $parent->insertChild($index - 1, $value);
+                $value = $parent->getChild($index - 1);
+            }
+            else {
+                push( @actions, [ loc("error: can't move up"), -1 ] );
+            }
         }
     }
     else {
-        push( @actions, [ "error: nothing to move", -1 ] );
+        push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"Down"} ) {
-    if ($currentkey) {
-	my $index = $currentkey->getIndex();
-	my $parent = $currentkey->getParent();
-	if ( $currentkey->getIndex() < ($parent->getChildCount - 1) ) {
-	    $parent->removeChild($index);
-	    $parent->insertChild($index + 1, $currentkey);
-	    $currentkey = $parent->getChild($index + 1);
-	}
-        else {
-            push( @actions, [ "error: can't move down", -1 ] );
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $index = $value->getIndex();
+            my $parent = $value->getParent();
+            if ( $value->getIndex() < ($parent->getChildCount - 1) ) {
+                $parent->removeChild($index);
+                $parent->insertChild($index + 1, $value);
+                $value = $parent->getChild($index + 1);
+            }
+            else {
+                push( @actions, [ loc("error: can't move down"), -1 ] );
+            }
         }
     }
     else {
-        push( @actions, [ "error: nothing to move", -1 ] );
+        push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"Left"} ) {
-    if ($currentkey) {
-	my $parent = $currentkey->getParent();
-	my $grandparent = $parent->getParent();
-	if (!$grandparent->isRoot) {
-	    my $index = $parent->getIndex();
-	    $parent->removeChild($currentkey);
-	    $grandparent->insertChild($index, $currentkey);
-	    if ($parent->isLeaf()) {
-		$grandparent->removeChild($parent);
-	    }
-        }
-        else {
-            push( @actions, [ "error: can't move left", -1 ] );
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $parent = $value->getParent();
+            my $grandparent = $parent->getParent();
+            if (!$grandparent->isRoot) {
+                my $index = $parent->getIndex();
+                $parent->removeChild($value);
+                $grandparent->insertChild($index, $value);
+                if ($parent->isLeaf()) {
+                    $grandparent->removeChild($parent);
+                }
+            }
+            else {
+                push( @actions, [ loc("error: can't move left"), -1 ] );
+            }
         }
     }
     else {
-        push( @actions, [ "error: nothing to move", -1 ] );
+        push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"Right"} ) {
-    if ($currentkey) {
-	my $parent = $currentkey->getParent();
-	my $index = $currentkey->getIndex();
-	my $newparent;
-	if ($index > 0 ) {
-	    my $sibling = $parent->getChild($index - 1);
-	    if (ref($sibling->getNodeValue)) {
-		$parent->removeChild($currentkey);
-		my $newtree = Tree::Simple->new('AND', $parent);
-		$newtree->addChild($currentkey);
-	    } else {
-		$parent->removeChild($index);
-		$sibling->addChild($currentkey);
-	    }
-	}
-	else {
-	    $parent->removeChild($currentkey);
-	    $newparent = Tree::Simple->new('AND', $parent);
-	    $newparent->addChild($currentkey);
-	}
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $parent = $value->getParent();
+            my $index = $value->getIndex();
+            my $newparent;
+            if ($index > 0 ) {
+                my $sibling = $parent->getChild($index - 1);
+                if (ref($sibling->getNodeValue)) {
+                    $parent->removeChild($value);
+                    my $newtree = Tree::Simple->new('AND', $parent);
+                    $newtree->addChild($value);
+                } else {
+                    $parent->removeChild($index);
+                    $sibling->addChild($value);
+                }
+            }
+            else {
+                $parent->removeChild($value);
+                $newparent = Tree::Simple->new('AND', $parent);
+                $newparent->addChild($value);
+            }
+        }
     } else {
-        push( @actions, [ "error: nothing to move", -1 ] );
+        push( @actions, [ loc("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"DeleteClause"} ) {
-    if ($currentkey) {
-	$currentkey->getParent()->removeChild($currentkey);
+    if (@current_values) {
+	$_->getParent()->removeChild($_) for @current_values;
     }
     else {
-        push( @actions, [ "error: nothing to delete", -1 ] );
+        push( @actions, [ loc("error: nothing to delete"), -1 ] );
     }
 }
 elsif ( $ARGS{"Toggle"} ) {
     my $ea;
-    if ($currentkey) {
-	my $value = $currentkey->getNodeValue();
-	my $parent = $currentkey->getParent();
-	my $parentvalue = $parent->getNodeValue();
+    if (@current_values) {
+        foreach my $value (@current_values) {
+            my $value = $value->getNodeValue();
+            my $parent = $value->getParent();
+            my $parentvalue = $parent->getNodeValue();
 
-	if ( $parentvalue eq 'AND') {
-            $parent->setNodeValue('OR');
-	}
-        else {
-	    $parent->setNodeValue('AND');
-	}
+            if ( $parentvalue eq 'AND') {
+                $parent->setNodeValue('OR');
+            }
+            else {
+                $parent->setNodeValue('AND');
+            }
+        }
     }
     else {
-        push( @actions, [ "error: nothing to toggle", -1 ] );
+        push( @actions, [ loc("error: nothing to toggle"), -1 ] );
     }
 }
 elsif ( $ARGS{"Clear"} ) {
@@ -416,11 +417,11 @@ elsif ( $ARGS{"Clear"} ) {
 $Query   = "";
 @options = ();
 %queues  = ();
-$optionlist = build_array( \$Query, $currentkey, $tree, \@options, \%queues );
+$optionlist = build_array( \$Query, \@current_values, $tree, \@options, \%queues );
 
 sub build_array {
     my $Query     = shift;
-    my $currentkey = shift;
+    my $values_ref = shift;
     my $tree = shift;
     my ($keys, $queues)    = @_;
     my $i = 0;
@@ -449,7 +450,7 @@ sub build_array {
 	}
 
 	my $selected;
-	if ($_tree == $currentkey) {
+	if (grep { $_ == $_tree } @$values_ref ) {
 	    $selected = "SELECTED";
 	}
 	else {
@@ -464,7 +465,7 @@ sub build_array {
 	}
 
 	$optionlist .= "<option value=$i $selected>" .
-	  ("&nbsp;" x 5 x ($_tree->getDepth() - 1)) . "$str</option>\n";
+	  ("&nbsp;" x 5 x ($_tree->getDepth() - 1)) . $m->interp->apply_escapes($str, 'h') . "</option>\n";
 	my $parent = $_tree->getParent();
 	if (!($parent->isRoot || $parent->getParent()->isRoot) &&
 	    !ref($parent->getNodeValue())) {
@@ -561,7 +562,7 @@ sub ParseQuery {
             # Error
             # FIXME: I will only print out the highest $want value
             my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions, [ "current: $current, want $want, Error near ->$val<- expecting a " . $token . " in '$string'\n", -1 ];
+            push @actions, [ loc("current: $current, want $want, Error near ->$val<- expecting a " . $token . " in '$string'\n"), -1 ];
         }
 
         # State Machine:
@@ -621,12 +622,12 @@ sub ParseQuery {
                 $val = "'$val'";
             }
 
-            push @actions, [ "Unknown field: $key", -1 ] unless $class;
+            push @actions, [ loc("Unknown field: $key"), -1 ] unless $class;
 
             $want = PAREN | AGGREG;
         }
         else {
-            push @actions, [ "I'm lost", -1 ];
+            push @actions, [ loc("I'm lost"), -1 ];
         }
 
         if ( $current & VALUE ) {
@@ -649,14 +650,14 @@ sub ParseQuery {
         $last = $current;
     }    # while
 
-    push @actions, [ "Incomplete query", -1 ]
+    push @actions, [ loc("Incomplete query"), -1 ]
       unless ( ( $want | PAREN ) || ( $want | KEYWORD ) );
 
-    push @actions, [ "Incomplete Query", -1 ]
+    push @actions, [ loc("Incomplete Query"), -1 ]
       unless ( $last && ( $last | PAREN ) || ( $last || VALUE ) );
 
     # This will never happen, because the parser will complain
-    push @actions, [ "Mismatched parentheses", -1 ]
+    push @actions, [ loc("Mismatched parentheses"), -1 ]
       unless $depth == 1;
 }
 
@@ -803,4 +804,5 @@ $Order => undef
 $OrderBy => undef
 $RowsPerPage => undef
 $HideResults => 0
+@clauses => ()
 </%ARGS>
