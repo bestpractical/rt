@@ -145,8 +145,10 @@ sub ProcessOwnerChanges {
 # {{{ sub ProcessUpdateMessage
 sub ProcessUpdateMessage {
     my %args=@_;
+
+    #Make the update content have no 'weird' newlines in it
     if ($args{ARGS}->{'UpdateContent'}) {
-	my @UpdateContent = split(/\r/,$args{ARGS}->{'UpdateContent'}."\n");
+	my @UpdateContent = split(/(\r\n|\n|\r)/,$args{ARGS}->{'UpdateContent'});
 	my $Message = MIME::Entity->build 
 	    ( Subject => $args{ARGS}->{'UpdateSubject'} || "",
 	    	      Data => \@UpdateContent);
@@ -573,6 +575,7 @@ sub UpdateRecordObject {
     if ((defined $ARGSRef->{"$attribute"}) and 
 	($ARGSRef->{"$attribute"} ne $object->$attribute())) {
 
+      $ARGSRef->{"$attribute"} =~   s/\r\n/\n/gs;
       
       my $method = "Set$attribute";
       my ($code, $msg) = $object->$method($ARGSRef->{"$attribute"});

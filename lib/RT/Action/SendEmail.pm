@@ -56,7 +56,7 @@ sub Commit  {
     
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
-   
+    
     if (defined $self->TransactionObj->Message->First()) { 
     my $headers = $self->TransactionObj->Message->First->Headers();
     if ($headers =~ /^RT-Squelch-Replies-To: (.*?)$/si) {
@@ -72,12 +72,12 @@ sub Commit  {
 	    }
 	}
     }
-    }
+  }
     $self->TemplateObj->MIMEObj->make_singlepart;
     $self->TemplateObj->MIMEObj->send($RT::MailCommand, $RT::MailParams) || 
       $RT::Logger->crit("$self: Could not send mail for ".$self->TransactionObj . "\n");
-}
-    
+  }
+
 
 # }}}
 
@@ -89,16 +89,16 @@ sub Prepare  {
   # This actually populates the MIME::Entity fields in the Template Object
   
   unless ($self->TemplateObj) {
-      $RT::Logger->warning("No template object handed to $self\n");
+    $RT::Logger->warning("No template object handed to $self\n");
   }
   
   unless ($self->TransactionObj) {
-      $RT::Logger->warning("No transaction object handed to $self\n");
-      
+    $RT::Logger->warning("No transaction object handed to $self\n");
+    
   }
   
   unless ($self->TicketObj) {
-      $RT::Logger->warning("No ticket object handed to $self\n");
+    $RT::Logger->warning("No ticket object handed to $self\n");
       
   }
   
@@ -110,15 +110,15 @@ sub Prepare  {
   # Header
   
   $self->SetSubject();
-
+  
   $self->SetSubjectToken();
- 
+  
   $self->SetRecipients();  
   
   $self->SetReturnAddress();
 
   $self->SetRTSpecialHeaders();
-
+  
   return 1;
   
 }
@@ -254,7 +254,6 @@ sub SetHeader {
   my $field = shift;
   my $val = shift;
 
-  my $cnt=0;
   $self->TemplateObj->MIMEObj->head->add($field, $val);
   return $self->TemplateObj->MIMEObj->head->get($field);
 }
@@ -324,29 +323,37 @@ the transaction's subject.
 sub SetSubject {
   my $self = shift;
   unless ($self->TemplateObj->MIMEObj->head->get('Subject')) {
-      my $message=$self->TransactionObj->Message->First;
-      my $ticket=$self->TicketObj->Id;
-
-      my $subject;
-
-      if ($self->{'Subject'}) {
-	$subject = $self->{'Subject'};
-      }
-      elsif ($message) {
-          $subject = ($message->Headers =~ /^Subject: (.*)$/m);
+    my $message=$self->TransactionObj->Message;
+    my $ticket=$self->TicketObj->Id;
+    
+    my $subject;
+    
+    if ($self->{'Subject'}) {
+      $subject = $self->{'Subject'};
+    }
+    elsif (($message->First()) &&
+	   ($message->First->Headers)) {
+      $header = $message->First->Headers();
+      $header =~ s/\n\s+/ /g; 
+      if ( $header =~ /^Subject: (.*?)$/m ) {
+	$subject = $1;
       }
       else {
-          $subject = $self->TicketObj->Subject();
+	$subject = $self->TicketObj->Subject();
       }
       
-     $subject =~ s/\n//;
-     chomp $subject;
+    }
+    else {
+      $subject = $self->TicketObj->Subject();
+    }
+    
+    $subject =~ s/(\r\n|\n|\s)/ /gi;
 
-     $self->TemplateObj->MIMEObj->head->add('Subject',$subject);
-
-  }
-
-  
+    chomp $subject;
+    print STDERR "Subject is '$subject'\n";
+    $self->SetHeader('Subject',$subject);
+    
+    }
   return($subject);
 }
 # }}}
@@ -360,14 +367,14 @@ sub SetSubject {
 =cut
 
 sub SetSubjectToken {
-    my $self=shift;
-    my $tag = "[$RT::rtname #".$self->TicketObj->id."]";
-    my $sub = $self->TemplateObj->MIMEObj->head->get('Subject');
-    unless ($sub =~ /\Q$tag\E/) {
-        chomp $sub;
-	$sub =~ s/\n//g;
-        $self->TemplateObj->MIMEObj->head->replace('Subject', "$tag $sub");
-    }
+  my $self=shift;
+  my $tag = "[$RT::rtname #".$self->TicketObj->id."]";
+  my $sub = $self->TemplateObj->MIMEObj->head->get('Subject');
+  unless ($sub =~ /\Q$tag\E/) {
+    $sub =~ s/(\r\n|\n|\s)/ /gi;
+    chomp $sub;
+    $self->TemplateObj->MIMEObj->head->replace('Subject', "$tag $sub");
+  }
 }
 
 # }}}
@@ -381,5 +388,4 @@ __END__
 # }}}
 
 1;
-
 
