@@ -121,6 +121,10 @@ sub GrantRight {
         $args{'Object'} = $RT::System;
     }
 
+    unless ($args{'Right'}) {
+        return(0, $self->loc("Invalid Right"));
+    }
+
 
     #ACL check handled in ACE.pm
     my $ace = RT::ACE->new( $self->CurrentUser );

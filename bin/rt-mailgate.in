@@ -33,8 +33,8 @@ rt-mailgate - Mail interface to RT3.
 
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: root@localhost
-To: rt@fsck.com
+From: root\@localhost
+To: rt\@fsck.com
 Subject: This is a test of new ticket creation
 
 Blah!
@@ -50,10 +50,14 @@ my $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the ticket");
 
+
+
+
+
 ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
-From: jesse@fsck.com
-To: rt@fsck.com
+From: doesnotexist\@fsck.com
+To: rt\@fsck.com
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
@@ -67,8 +71,40 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 my $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject ne 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
+my $u = RT::User->new($RT::SystemUser);
+$u->Load('doesnotexist@fsck.com');
+ok( $u->Id == 0, " user does not exist and was not created by failed ticket submission");
 
-die;
+
+my $g = RT::Group->new($RT::SystemUser);
+$g->LoadSystemInternalGroup('Everyone');
+ok( $g->Id, "Found 'everybody'");
+
+my ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
+ok ($val, "Granted everybody the right to create tickets - $msg");
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost/ --queue general --action correspond"), "Opened the mailgate - $@");
+print MAIL <<EOF;
+From: doesnotexist\@fsck.com
+To: rt\@fsck.com
+Subject: This is a test of new ticket creation as an unknown user
+
+Blah!
+Foob!
+EOF
+close (MAIL);
+
+$tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+ok ($tick->Subject eq 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
+my $u = RT::User->new($RT::SystemUser);
+$u->Load('doesnotexist@fsck.com');
+ok( $u->Id != 0, " user does not exist and was not created by failed ticket submission");
+
+($val,$msg) = $g->PrincipalObj->RevokeRight(Right => 'CreateTicket');
+ok ($val, $msg);
 
 =end testing
 

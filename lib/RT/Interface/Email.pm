@@ -29,6 +29,7 @@ package RT::Interface::Email;
 use strict;
 use Mail::Address;
 use MIME::Entity;
+use MIME::Parser;
 
 BEGIN {
     use Exporter ();
@@ -322,7 +323,7 @@ sub CreateUser {
 
     return $CurrentUser;
 }
-	    
+# }}}	    
 # {{{ ParseCcAddressesFromHead 
 
 =head2 ParseCcAddressesFromHead HASHREF
@@ -444,10 +445,71 @@ object, and so on.
 =cut
 
 sub Gateway {
-    my ( $Item, $CurrentUser, $AuthStat, $Queue, $Action, $TicketId ) = @_;
+    my %args = ( message => undef,
+                 queue   => 1,
+                 action  => 'correspond',
+                 ticket  => undef,
+                 @_ );
+
+    # This needs to be moved to the email package
+    my ( $Item, $Head ) = ParseMIMEEntity($args{'message'});
+
+    my ( $CurrentUser, $AuthStat, $TicketId, $status, $error );
+
+    # Authentication Level
+    # 0 - User may not do anything (Not used at the moment)
+    # 1 - Normal user
+    # 2 - User is allowed to specify status updates etc. a la
+    #     enhanced-mailgate
+
+    push @RT::MailPlugins, "Auth::MailFrom"    # Since this needs loading
+      unless @RT::MailPlugins;
+
+    for (@RT::MailPlugins) {
+        my $Code;
+        my $NewAuthStat;
+        if ( ref($_) eq "CODE" ) {
+            $Code = $_;
+        }
+        else {
+            $_ = "RT::Interface::Email::$_" unless /^RT::Interface::Email::/;
+            eval "require $_;";
+            if ($@) {
+                die ("Couldn't load module $_: $@");
+                next;
+            }
+            no strict 'refs';
+            if ( !defined( $Code = *{ $_ . "::GetCurrentUser" }{CODE} ) ) {
+                die ("No GetCurrentUser code found in $_ module");
+                next;
+            }
+        }
+
+        ( $CurrentUser, $NewAuthStat ) =
+          $Code->( $Item, $CurrentUser, $AuthStat );
+
+        # You get the highest level of authentication you were assigned.
+        last if $AuthStat == -1;
+        $AuthStat = $NewAuthStat if $NewAuthStat > $AuthStat;
+    }
+
+    if ( !$CurrentUser or !$CurrentUser->Id or $AuthStat == -1 ) {
+
+        # If the plugins refused to create one, they lose.
+        MailError(
+            Subject     => "Could not load a valid user",
+            Explanation => <<EOT,
+RT could not load a valid user, and RT's configuration does not allow
+for the creation of a new user for your email.
+EOT
+            MIMEObj  => $Item,
+            LogLevel => 'error' )
+          unless $AuthStat == -1;
+        return(0, "Could not load a valid user", undef);
+    }
 
     my $Ticket = new RT::Ticket->new($CurrentUser);
-    my $head = $Item->head;
+    my $head   = $Item->head;
 
     my $ErrorsTo = ParseErrorsToAddressFromHead($head);
 
@@ -455,23 +517,28 @@ sub Gateway {
     $RT::Logger->debug("Sending errors to $ErrorsTo for message $MessageId\n");
 
     #Pull apart the subject line
-    my $Subject = $head->get('Subject') || "[no subject]";
+    my $Subject = $head->get('Subject') || '';
     chomp $Subject;
 
     # Get the ticket ID
-    $TicketId ||= ParseTicketId($Subject);
+    if ($args{'ticket'}) {
+    $TicketId = $args{'ticket'};
+    }
+    else {
+    $TicketId = ParseTicketId($Subject);
+    }
     $RT::Logger->debug( "Mail has subject $Subject and ticket ID is $TicketId\n");
 
     #Set up a queue object
     my $QueueObj = RT::Queue->new($CurrentUser);
-    $QueueObj->Load( $Queue || 1 );
+    $QueueObj->Load( $args{'queue'} || 1 );
     unless ( $QueueObj->id ) {
         $RT::Logger->debug("Can't load the queue\n");
         MailError( To          => $RT::OwnerEmail,
                    Subject     => "RT Bounce: $Subject",
-                   Explanation => "RT couldn't find the queue: $Queue",
+                   Explanation => "RT couldn't find the queue: ".$args{'queue'},
                    MIMEObj     => $Item );
-        return ( 0, "RT couldn't find the queue: $Queue", $Ticket );
+        return ( 0, "RT couldn't find the queue: ".$args{'queue'}, $Ticket );
     }
 
     # {{{ Lets check for mail loops of various sorts.
@@ -542,7 +609,7 @@ sub Gateway {
     if ( !defined($TicketId) ) {
 
         # {{{ Create a new ticket
-        if ( $Action =~ /correspond/ ) {
+        if ( $args{'action'} =~ /correspond/ ) {
 
             #    open a new ticket
             my @Requestors = ( $CurrentUser->id );
@@ -555,7 +622,7 @@ sub Gateway {
             }
 
             my ( $id, $Transaction, $ErrStr ) = $Ticket->Create(
-                                                      Queue     => $Queue,
+                                                      Queue     => $QueueObj,
                                                       Subject   => $Subject,
                                                       Requestor => \@Requestors,
                                                       Cc        => \@Cc,
@@ -576,14 +643,15 @@ sub Gateway {
             MailError(
                  To          => $ErrorsTo,
                  Subject     => "No ticket id specified",
-                 Explanation => "$Action aliases require a TicketId to work on",
+                 Explanation => $args{'action'}." aliases require a TicketId to work on",
                  MIMEObj     => $Item );
 
             $RT::Logger->crit(
-                     "$Action aliases require a TicketId to work on " . "(from "
+                     $args{'action'}." aliases require a TicketId to work on " . "(from "
                        . $CurrentUser->UserObj->EmailAddress . ") "
                        . $MessageId );
-            return ( 0, "$Action aliases require a Ticket Id to work on", $Ticket );
+            return ( 0, $args{'action'}." aliases require a Ticket Id to work on",
+                     $Ticket );
         }
     }
 
@@ -592,7 +660,7 @@ sub Gateway {
     else {
 
         #   If the action is comment, add a comment.
-        if ( $Action =~ /comment/i ) {
+        if ( $args{'action'} =~ /comment/i ) {
 
             $Ticket->Load($TicketId);
             unless ( $Ticket->Id ) {
@@ -614,12 +682,12 @@ sub Gateway {
                            Subject     => "Comment not recorded",
                            Explanation => $msg,
                            MIMEObj     => $Item );
-                return ( 0, "Comment not recorded" , $Ticket);
+                return ( 0, "Comment not recorded", $Ticket );
             }
         }
 
         # If the message is correspondence, add it to the ticket
-        elsif ( $Action =~ /correspond/i ) {
+        elsif ( $args{'action'} =~ /correspond/i ) {
             $Ticket->Load($TicketId);
 
             #TODO: Check for error conditions
@@ -640,17 +708,18 @@ sub Gateway {
             #Return mail to the sender with an error
             MailError( To          => $ErrorsTo,
                        Subject     => "RT Configuration error",
-                       Explanation => "'$Action' not a recognized action."
+                       Explanation => "'".$args{'action'}."' not a recognized action."
                          . " Your RT administrator has misconfigured "
                          . "the mail aliases which invoke RT",
                        MIMEObj => $Item );
-            $RT::Logger->crit("$Action type unknown for $MessageId");
-            return ( 0, "Configuration error: $Action not a recognized action", $Ticket );
+            $RT::Logger->crit($args{'action'}." type unknown for $MessageId");
+            return ( 0, "Configuration error: ".$args{'action'}." not a recognized action",
+                     $Ticket );
 
         }
 
     }
-    return (1, "Success", $Ticket);
+    return ( 1, "Success", $Ticket );
 }
 
 1;

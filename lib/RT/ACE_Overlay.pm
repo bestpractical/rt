@@ -211,6 +211,7 @@ sub Create {
 
     # }}}
 
+
     if ($args{'Object'} && ($args{'ObjectId'} || $args{'ObjectType'})) {
         use Carp;
         $RT::Logger->crit(Carp::cluck("ACE::Create called with an ObjectType or an ObjectId"));
@@ -270,6 +271,9 @@ sub Create {
         }
     }
 
+    unless ( $args{'RightName'} ) {
+        return ( 0, $self->loc('Invalid right') );
+    }
     # }}}
 
     # Make sure the right doesn't already exist.
