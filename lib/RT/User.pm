@@ -581,7 +581,7 @@ sub HasQueueRight {
 		 Right => undef,
 		 @_);
     
-    my ($Requestor, $Cc, $AdminCc);
+    my ($IsRequestor, $IsCc, $IsAdminCc, $IsOwner);
     
     if (defined $args{'Queue'}) {
 	$args{'QueueObj'} = new RT::Queue($self->CurrentUser);

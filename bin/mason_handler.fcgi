@@ -79,7 +79,8 @@ use Carp;
     use CGI::Cookie;
     use Date::Parse;
     use HTML::Entities;
-    
+    use Text::Wrapper;
+ 
     #TODO: make this use DBI
     use Apache::Session::File;
     use CGI::Fast;
