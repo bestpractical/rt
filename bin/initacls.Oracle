@@ -1,0 +1,8 @@
+#!/bin/sh
+# Place Holder
+# Future 
+#	create proper data management schema
+#	with a data entry user with no DDL privileges
+# 	does not tie in easily with the way mysql and pg work
+exit;
+

@@ -1,0 +1,47 @@
+Hi Jesse,
+	In the Makefile oracle needs to be Oracle
+	to maintain naming convention of DBD::Oracle
+		DB_TYPE                 =       Oracle
+
+	This means all the files I sent you need a capital "O" also
+
+	In trying to get it to run I did the following:
+
+	HACKS in rtmux.pl
+		- added 
+			$ENV{'ORACLE_HOME'} = '/opt/oracle/product/8.0.5';
+		- even though my Apache has this env variable set in httpd.conf (I think)
+		  and other DBI programs run
+
+	HACKS in Handle.pm
+		- Changed
+  			$dsn = "dbi:$args{'Driver'}:$args{'Database'}:$args{'Host'}";
+		  to
+  			$dsn = "dbi:$args{'Driver'}:$args{'Database'}";
+
+	Which got me to the following in rt.log
+
+	"This doesn't work - use the mod_perl version (webmux.pl) or mail 
+	tobix@fsck.com for updates about the work on a CGI version at 
+	/home/apache/cgi-bin/webrt.cgi line 98."
+
+	As I do not have mod_perl installed on this webserver I have to stop here
+	for now.
+
+	Please forgive the plethora of emails, however, I am unsure as to when I
+	will be able to squeak some more time out and do not want anyone to repeat work 
+	already done.
+
+	Since it appears to be a slow week I will look into line 98 in rtmux.pl if
+	I have the time.
+HTH
+Dave
+
+		
+-- 
+Dave Morgan
+Senior Database Administrator
+Internet Barter Inc.
+www.bartertrust.com
+408-982-8774
+
