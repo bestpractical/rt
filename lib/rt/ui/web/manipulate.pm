@@ -762,7 +762,7 @@ $time
 </TD>
 <TD ALIGN=\"RIGHT\" VALIGN=\"CENTER\"><FONT color=\"\#ffffff\">&nbsp;";
 
-    if ($rt::can_manipulate_request($seri al_num, $current_user)) {
+    if (&rt::can_manipulate_request($serial_num, $current_user)) {
     
 
     if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
@@ -851,7 +851,7 @@ sub do_bar {
 
 
 sub display_summary {
-  my $in_serial_num) = shift;
+  my $in_serial_num = shift;
   my ($bg_color, $fg_color);
   
   
