@@ -1,6 +1,6 @@
+# $Header$
 # Copyright 2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
-# $Id$ 
 #
 #
 package RT::Attachment;
@@ -20,8 +20,6 @@ sub new  {
   return ($self);
 }
 # }}}
-
-
 
 # {{{ sub _Accessible 
 sub _Accessible  {
