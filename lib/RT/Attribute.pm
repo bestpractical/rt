@@ -69,6 +69,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'Name'.
   varchar(255) 'Description'.
   text 'Content'.
+  varchar(16) 'ContentType'.
   varchar(64) 'ObjectType'.
   int(11) 'ObjectId'.
 
@@ -83,6 +84,7 @@ sub Create {
                 Name => '',
                 Description => '',
                 Content => '',
+                ContentType => '',
                 ObjectType => '',
                 ObjectId => '',
 
@@ -91,6 +93,7 @@ sub Create {
                          Name => $args{'Name'},
                          Description => $args{'Description'},
                          Content => $args{'Content'},
+                         ContentType => $args{'ContentType'},
                          ObjectType => $args{'ObjectType'},
                          ObjectId => $args{'ObjectId'},
 );
@@ -157,6 +160,24 @@ Returns the current value of Content.
 Set Content to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Content will be stored as a text.)
+
+
+=cut
+
+
+=head2 ContentType
+
+Returns the current value of ContentType. 
+(In the database, ContentType is stored as varchar(16).)
+
+
+
+=head2 SetContentType VALUE
+
+
+Set ContentType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ContentType will be stored as a varchar(16).)
 
 
 =cut
@@ -246,6 +267,8 @@ sub _CoreAccessible {
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Content => 
 		{read => 1, write => 1, type => 'text', default => ''},
+        ContentType => 
+		{read => 1, write => 1, type => 'varchar(16)', default => ''},
         ObjectType => 
 		{read => 1, write => 1, type => 'varchar(64)', default => ''},
         ObjectId => 

@@ -395,6 +395,7 @@ CREATE TABLE Attributes (
   Name varchar(255) NOT NULL  ,
   Description varchar(255) NULL  ,
   Content LONGTEXT NULL  ,
+  ContentType varchar(16),
   ObjectType varchar(25) NOT NULL  ,
   ObjectId INTEGER default 0,
   Creator integer NULL  ,

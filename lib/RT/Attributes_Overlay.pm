@@ -118,10 +118,28 @@ sub Named {
     return (@attributes);   
 }
 
-=head2 DeleteEntry { Name =>   Value => }
+=head2 WithId ID
 
-Deletes the attribute with the matching name and value
+Returns the RT::Attribute objects with the id ID
 
+XXX TODO XXX THIS NEEDS A BETTER ACL CHECK
+
+=cut
+
+sub WithId {
+    my $self = shift;
+    my $id = shift;
+
+    my $attr = RT::Attribute->new($self->CurrentUser);
+    $attr->LoadByCols( id => $id );
+    return($attr);
+}
+
+=head2 DeleteEntry { Name =>   Content => , id => }
+
+Deletes the attribute with
+    the  matching name 
+ and the matching content or id
 =cut
 
 
@@ -129,10 +147,12 @@ sub DeleteEntry {
     my $self = shift;
     my %args = ( Name => undef,
                  Content => undef,
+                 id => undef,
                  @_);
 
     foreach my $attr ($self->Named($args{'Name'})){ 
         $attr->Delete if ($attr->Content eq $args{'Content'});
+        $attr->Delete if ($attr->id eq $args{'id'});
     }
     $self->_DoSearch();
     return (1, $self->loc('Attribute Deleted'));

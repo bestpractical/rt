@@ -414,6 +414,7 @@ CREATE TABLE Attributes (
   Name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
   Content text,
+  ContentType varchar(16),
   ObjectType varchar(64),
   ObjectId integer, # foreign key to anything
   Creator integer NOT NULL DEFAULT 0  ,

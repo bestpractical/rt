@@ -84,6 +84,7 @@ my @tables = $dbh->tables();
 my ( %tablemap, $typemap, %modulemap );
 
 foreach my $table (@tables) {
+    $table =~ s/\`//g;
     next if ($table eq 'sessions');
         $table = ucfirst($table);
         $table =~ s/field/Field/;
