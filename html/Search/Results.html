@@ -29,28 +29,22 @@
     Query => $Query,
     Rows => $ARGS{'Rows'} &>
 <hr>
-about to be
-%unless  ( $HideResults) {
-Looking at results
 <& /Elements/TicketList, 
-    Query => $ARGS{'Query'},
+    Query => $Query,
     AllowSorting => 1,
-    OrderBy => $ARGS{'OrderBy'},
-    Order => $ARGS{'Order'},
-    Rows => $ARGS{'Rows'},
-    FirstRow => $ARGS{'FirstRow'},
+    OrderBy => $OrderBy,
+    Order => $Order,
+    Rows => $Rows,
+    Page => $Page,
     Format => $Format,
-    
     BaseURL => $RT::WebPath."/Search/Results.html?"
 
    &>
 <div align=right>
-<a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a>
-<a href="Results.tsv"><&|/l&>spreadsheet</&></a>
-<a href="Results.tsv"><&|/l&>RSS</&></a>
+<a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a><br>
+<a href="Results.tsv"><&|/l&>spreadsheet</&></a><br>
+<a href="Results.tsv"><&|/l&>RSS</&></a><br>
 </div>
-% }
-
 <%INIT>
 my ($title, $ticketcount);
 $session{'i'}++;
@@ -64,8 +58,6 @@ if ( $session{'tickets'}->Query()) {
 } else {
     $title = loc("Find tickets");
 }
-
-$ARGS{Format} = $Format;
 
 my $tabformat = $Format;
 $tabformat =~ s/#/%23/g;
@@ -81,4 +73,7 @@ $Query => undef
 $Format => undef 
 $HideResults => 0
 $Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>
