@@ -165,4 +165,5 @@ else {
 <%ARGS>
 $user => undef
 $pass => undef
+$menu => undef
 </%ARGS>

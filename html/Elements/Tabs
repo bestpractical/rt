@@ -22,65 +22,42 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table border=0 cellspacing=0 width="100%">
-<tr> 
-    <td class="darkblue">&nbsp;</td>
-    <td class="darkblue"><span class="topnav">|
-% foreach $tab (sort keys %{$toptabs}) {
-<A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>"
-% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
-class="currenttopnav"
-% } else {
-class="topnav"
-% } 
-><% $toptabs->{$tab}->{'title'}%></A> |
-% }
-</span><br>
-<br>
-% if ($tabs_scalar) {
-<span class=nav><% $tabs_scalar |n%></span>
-<BR><br>
-% }
-% if ($tabs) {
-<span class="nav">| 
-% foreach $tab (sort keys %{$tabs}) {
-<A HREF="<% $RT::WebPath."/". $tabs->{$tab}->{'path'} |n%>" 
-% if ($current_tab eq $tabs->{$tab}->{'path'}) {
- class='currentnav'
-% } else {
- class='nav'
-% } 
-><%$tabs->{$tab}->{'title'}%></a> |
-%  }
-</span><br><br>
-% }
-% if ($subtabs_scalar) {
-<% $subtabs_scalar |n%>
-% }
-% if ($subtabs) {
-<span class="subnav">| 
-% foreach my $subtab (sort keys %{$subtabs}) {
-<A HREF="<% $RT::WebPath ."/". $subtabs->{$subtab}->{'path'}|n%>" 
-% if ($current_subtab eq $subtabs->{$subtab}->{'path'}) {
-class='currentsubnav'
-% } else {
-class='subnav'
-% } 
-><%$subtabs->{$subtab}->{'title'}%></A> |
-% }
-</span>
-% }
-</td>
-<td class="darkblue">&nbsp;</td>
-<TD class="darkblueright">
+<table border=0 cellspacing=0 width="100%" height="100%">
 
+%# "New ticket in" and "Goto Ticket" fields
+<tr>
+<td class="darkblue" >&nbsp;</td>
+<td class="darkblue" colspan=2>
+<table>
 <span class="topactions">
 % foreach $action (sort keys %{$topactions}) {
+<td class="darkblueright">
 <%$topactions->{"$action"}->{'html'} |n %>
+</td>
 % }
 </span>
+</table>
+</td>
+</tr>
 
+% if ($tabs_scalar or $actions) {
+<tr>
+<td class="darkblue" >&nbsp;</td>
+<TD class="darkblue">
+<table width=100%>
+<tr>
+% }
+
+%# Tabs_scalar
+% if ($tabs_scalar) {
+<TD class="darkblue">
+<span class=nav><% $tabs_scalar |n%></span>
+</TD>
+% }
+
+%# Actions
 % if ($actions) {
+<TD class="darkblueright">
 <span class="nav">| 
 % foreach $action (sort keys %{$actions}) {
 % if ($actions->{"$action"}->{'html'}) {
@@ -100,11 +77,95 @@ class='subnav'
 <%$subactions->{"$action"}->{'html'} |n%> |
 %  }
 </span>
+</TD>
 % }
-      </TD>
+
+% if ($tabs_scalar or $actions) {
+</tr>
+</table>
+</td></tr>
+% }
+
+%# Vertical menu
+<TR>
+<TD class="darkblue" rowspan="2" width=130>
+<table border=0 cellspacing=0>
+<tr> 
+  <td class="darkblue">&nbsp;</td>
+  <td class="darkblue" colspan=3>
+  <span class="topnav">
+% foreach $tab (sort keys %{$toptabs}) {
+<A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>"
+% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
+class="currenttopnav"
+% } else {
+class="topnav"
+% } 
+><% $toptabs->{$tab}->{'title'}%></A><br>
+% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
+% if ($tabs) {
+</td></tr>
+<tr>
+<td></td>
+<td width=5></td>
+<td colspan=2>
+<span class="nav">
+% foreach $tab (sort keys %{$tabs}) {
+<A HREF="<% $RT::WebPath."/". $tabs->{$tab}->{'path'} |n%>" 
+% if ($current_tab eq $tabs->{$tab}->{'path'}) {
+ class='currentnav'
+% } else {
+ class='nav'
+% } 
+><%$tabs->{$tab}->{'title'}%></a><br>
+% if ($current_tab eq $tabs->{$tab}->{'path'}) {
+% if ($subtabs_scalar) {
+<% $subtabs_scalar |n%>
+% }
+% if ($subtabs) {
+</td></tr>
+<span class="subnav">
+<tr>
+<td></td>
+<td></td>
+<td width=10></td>
+<td>
+% foreach my $subtab (sort keys %{$subtabs}) {
+<A HREF="<% $RT::WebPath ."/". $subtabs->{$subtab}->{'path'}|n%>" 
+% if ($current_subtab eq $subtabs->{$subtab}->{'path'}) {
+class='currentsubnav'
+% } else {
+class='subnav'
+% }
+><%$subtabs->{$subtab}->{'title'}%></A><br>
+% }
+</span>
+</td></tr>
+<tr>
+<td></td>
+<td width=5></td>
+<td colspan=2>
+% }
+% }
+% }
+</span>
+</td></tr>
+<tr> 
+  <td class="darkblue">&nbsp;</td>
+  <td class="darkblue" colspan=3>
+  <span class="topnav">
+% }
+% }
+% }
+</span>
+</td></tr>
+</td>
     </TR>
   </TABLE>
-<BR>
+</TD>
+</TR>
+<TR valign=top height=100%>
+<TD>
 
 <%INIT>
 my ($tab, $action);

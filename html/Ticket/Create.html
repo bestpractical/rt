@@ -34,7 +34,6 @@
 [<a class="currenttab"><&|/l&>Show basics</&></a>] [<A HREF="#detail"><&|/l&>Show details</&></a>]
 <BR>
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => loc("Create a new ticket") &>
-<div align=right><input type=submit value="<&|/l&>Create</&>"></div>
 <TABLE border=0 cellpadding=0 cellspacing=0>
 <TR><TD><&|/l&>Queue</&></TD>
 <TD><% $QueueObj->Name %>
@@ -169,14 +168,7 @@
 <TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " VALUE=\"$ARGS{TimeLeft}\"" %>></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
-<BR>
-<BR>
-
-<& /Elements/TitleBoxEnd &>
-
-</TD>
-
-<TD VALIGN="TOP">
+<br>
 <& /Elements/TitleBoxStart, title => loc("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
@@ -187,6 +179,9 @@
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <BR>
+</TD>
+
+<TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => loc('Relationships'), 
 	title_class=> 'inverse',  
 	titleright => '', color=> "#336633" &>
@@ -215,6 +210,10 @@
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+
+</td>
+</tr>
+</table>
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});

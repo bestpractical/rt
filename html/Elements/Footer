@@ -22,6 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+% if ($Menu) {
+</TD>
+</TR>
+</TABLE>
+% }
 <BR><BR>
 <div class="bpscredits">
 &#187;&#124;&#171; <&|/l, $RT::VERSION &>RT [_1] from <a href="http://bestpractical.com">Best Practical Solutions, LLC</a>.</&>
@@ -39,7 +44,9 @@
 % }
 </BODY>
 </HTML>
+% $m->abort();
 
 <%ARGS>
 $Debug => 0
+$Menu => 1
 </%ARGS>

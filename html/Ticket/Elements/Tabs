@@ -22,7 +22,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab, tabs_scalar => $tabs_scalar, current_toptab => "Search/Listing.html" &> <%INIT>
+<& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab, tabs_scalar => $tabs_scalar, current_toptab => "Search/Listing.html" &> 
+
+<%INIT>
 	
   my $id = $Ticket->id();
   my $tabs_scalar = '';

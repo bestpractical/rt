@@ -40,17 +40,40 @@
 <TD VALIGN=TOP ROWSPAN=2>
 <& /Elements/TitleBoxStart, title => loc('Identity') &>
 
-<&|/l&>Username</&>: <input name="Name" value="<%$UserObj->Name%>"> <b><&|/l&>(required)</&></b> <BR>
-<&|/l&>Email</&>: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"><BR>
-<&|/l&>Real Name</&>: <input name="RealName" value="<%$UserObj->RealName%>"> <BR>
-<&|/l&>Nickname</&>: <input name="NickName" value="<%$UserObj->NickName%>">
-<BR>
-<&|/l&>Unix login</&>: <input name="Gecos" value="<%$UserObj->Gecos%>">
-<BR>
-<&|/l&>Extra info</&>: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>
+<TABLE>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Username</&>:
+</TD><TD>
+<input name="Name" value="<%$UserObj->Name%>"> <b><&|/l&>(required)</&></b>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Email</&>:
+</TD><TD>
+<input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Real Name</&>: 
+</TD><TD>
+<input name="RealName" value="<%$UserObj->RealName%>">
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Nickname</&>: 
+</TD><TD>
+<input name="NickName" value="<%$UserObj->NickName%>">
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Unix login</&>: 
+</TD><TD>
+<input name="Gecos" value="<%$UserObj->Gecos%>">
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Extra info</&>: 
+</TD><TD>
+<textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>
+</TD></TR>
+</TABLE>
 <& /Elements/TitleBoxEnd &>
-</TD>
-<TD VALIGN=TOP>
+
 <& /Elements/TitleBoxStart, title => loc('Access control') &>
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>>
@@ -85,44 +108,79 @@
 
 <TD VALIGN=TOP>
 <& /Elements/TitleBoxStart, title => loc('Location') &>
-<&|/l&>Organization</&>: <input name="Organization" value="<%$UserObj->Organization%>">
-<BR>
-<&|/l&>Address1</&>: <input name="Address1" value="<%$UserObj->Address1%>">
-<BR>
-<&|/l&>Address2</&>: <input name="Address2" value="<%$UserObj->Address2%>">
-<BR>
-<&|/l&>City</&>: <input name="City" value="<%$UserObj->City%>" size=14>
+<TABLE>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Organization</&>: 
+</TD><TD>
+<input name="Organization" value="<%$UserObj->Organization%>">
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Address1</&>: 
+</TD><TD>
+<input name="Address1" value="<%$UserObj->Address1%>">
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Address2</&>: 
+</TD><TD>
+<input name="Address2" value="<%$UserObj->Address2%>">
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>City</&>: 
+</TD><TD>
+<input name="City" value="<%$UserObj->City%>" size=14>
 
-<&|/l&>State</&>: <input name="State" value="<%$UserObj->State%>" size=3>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>State</&>: 
+</TD><TD>
+<input name="State" value="<%$UserObj->State%>" size=3>
 
-<&|/l&>Zip</&>: <input name="Zip" value="<%$UserObj->Zip%>" size=9>
-<BR>
-<&|/l&>Country</&>: <input name="Country" value="<%$UserObj->Country%>">
-<BR>
-
-
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Zip</&>: 
+</TD><TD>
+<input name="Zip" value="<%$UserObj->Zip%>" size=9>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Country</&>: 
+</TD><TD>
+<input name="Country" value="<%$UserObj->Country%>">
+</TD></TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/TitleBoxStart, title => loc('Phone numbers') &>
+<TABLE>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Residence</&>: 
+</TD><TD>
+<input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13><br>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Work</&>: 
+</TD><TD>
+<input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13><br>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Mobile</&>: 
+</TD><TD>
+<input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13><br>
+</TD></TR>
+<TR><TD ALIGN="RIGHT">
+<&|/l&>Pager</&>: 
+</TD><TD>
+<input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13><br>
 <& /Elements/TitleBoxEnd &>
 </TD>
-</TR>
+
 <TR>
-<TD COLSPAN=2 VALIGN=TOP>
-
-
-<& /Elements/TitleBoxStart, title => loc('Phone numbers') &>
-<&|/l&>Residence</&>: <input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13>
-
-<&|/l&>Work</&>: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13>
-
-<&|/l&>Mobile</&>: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13>
-
-<&|/l&>Pager</&>: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
-<& /Elements/TitleBoxEnd &>
-<BR>
+</TR>
+</TABLE>
+<TR>
+<TD colspan="2">
 <& /Elements/TitleBoxStart, title => loc('Comments about this user') &>
-<TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL><%$UserObj->Comments%></TEXTAREA>
+<TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL><%$UserObj->Comments%>
+</TEXTAREA>
 <& /Elements/TitleBoxEnd &>
-
-
 %if ($UserObj->Privileged) {
 <BR>
 <& /Elements/TitleBoxStart, title => loc('Signature') &>
@@ -132,14 +190,12 @@
 % }
 
 </TD>
-
 </TR>
 </TABLE>
 
 
 <& /Elements/Submit &>
 </form>
-
 
 <%INIT>
 

@@ -25,7 +25,6 @@
 <& /Admin/Elements/Tabs, subtabs => $subtabs,
 			 current_tab => 'Admin/Users/', 
                          current_subtab => $current_subtab &>
-<hr>
 <%INIT>
 my $subtabs = {
 	       Queues => { title => loc('Basics'),
