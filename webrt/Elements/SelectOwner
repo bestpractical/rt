@@ -1,29 +1,20 @@
 <SELECT NAME="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
 %while ( my $User = $Users->Next())  {
-%# if ($User->Privileged) { #TODO use a proper queue-level ACL check ++++
+% if ((!defined $QueueObj) || ($QueueObj->HasRight( Principal => $User, Right => 'OwnTickets'))){
 <OPTION VALUE="<%$User->Id()%>" <% ($User->Id() == $Default) && "SELECTED" %>><%$User->UserId()%></OPTION>
-%# }
+% }
 %}
-
 </SELECT>
 
+<%INIT>
+my $Users = RT::Users->new($session{CurrentUser});
+$Users->LimitToPrivileged;
+</%INIT>
+
 <%ARGS>
-$Queue => undef
+$QueueObj => undef
 $Name => undef
 $Default => undef
 $User => undef
 </%ARGS>
-
-<%INIT>
-
-use RT::Users;
-
-# TODO: respect the ACLs
-
-my $Users = RT::Users->new($session{CurrentUser});
-$Users->Limit( FIELD => 'id',
-		OPERATOR => "!=",
-	        VALUE => $RT::SystemUser->Id()
-		);
-</%INIT>

@@ -9,7 +9,8 @@
 
 <TABLE>
 <TR><TD>Queue</TD>
-<TD><& /Elements/SelectNewTicketQueue, Name=>"Queue", Verbose => 'True' &></TD>
+<TD><& /Elements/SelectNewTicketQueue,  Name => "Queue", Verbose => 'True', Default => $Queue &>
+</TD>
 <TD>Status:
 </TD>
 <TD>
@@ -19,7 +20,7 @@
 Owner: 
 </TD>
 <TD>
-<& /Elements/SelectOwner, Name => "ValueOfOwner" &>
+<& /Elements/SelectOwner, Name => "ValueOfOwner", QueueObj => $QueueObj &>
 </TD>
 </TR>
 <TR>
@@ -97,12 +98,15 @@ Describe the issue below:<br>
 
 </FORM>
 
-
+<%INIT>
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue) || Abort("Queue could not be loaded.");
+</%INIT>
 
 <%ARGS>
 $DependsOn => undef
 $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
-
+$Queue => undef
 </%ARGS>

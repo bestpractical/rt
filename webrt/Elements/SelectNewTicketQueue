@@ -1,7 +1,5 @@
 %# $Header$
-
 <SELECT NAME ="<%$Name%>">
-<OPTION VALUE="">-</OPTION>
 % while (my $queue=$q->Next) {
 % if ($queue->CurrentUserHasRight('CreateTicket')) {
 <OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->QueueId%>
@@ -12,7 +10,6 @@
 %  }
 % }
 </SELECT>
-
 <%ARGS>
 $Name => 'Queue'
 $Verbose => undef

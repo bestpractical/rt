@@ -1,10 +1,13 @@
+<TABLE>
+<TR>
+<TD VALIGN=TOP>
 <TABLE cellspacing=1>
 <TR>
 % foreach $tab (sort keys %{$toptabs}) {
 <TD ALIGN=CENTER>
 <font size=+1>
 % if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
-[<% $toptabs->{$tab}->{'title'}%>]
+<B>[<% $toptabs->{$tab}->{'title'}%>]</B>
 % } else {
 [<A HREF="<%$RT::WebPath%>/<% $toptabs->{$tab}->{'path'}%>"><% $toptabs->{$tab}->{'title'}%></A>]
 
@@ -15,15 +18,27 @@
 </TR>
 </TABLE>
 
-<BR>
+</TD>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<TABLE><TR>
+% foreach $action (sort keys %{$topactions}) {
+<TD><%$topactions->{"$action"}->{'html'} |n %></TD>
+% }
+</TR>
+</TABLE>
+</TD>
+</TR>
 
+<TR>
+<TD VALIGN=TOP>
 % if ($tabs) {
-<TABLE>	
+
+<TABLE CELLSPACING=0 CELLPADDING=0 BORDER=0>	
 <TR>
 % foreach $tab (sort keys %{$tabs}) {
-<TD ALIGN=CENTER>
+<TD ALIGN=CENTER VALIGN=TOP>
 % if ($current_tab eq $tabs->{$tab}->{'path'}) {
-[<% $tabs->{$tab}->{'title'}%>]
+<B>[<% $tabs->{$tab}->{'title'}%>]</B>
 % } else {
 [<A HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}%></A>]
 </TD>
@@ -33,7 +48,27 @@
 </TABLE>
 %}
 
-<BR>
+</TD>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0><TR>
+% if ($actions) {
+%  foreach $action (sort keys %{$actions}) {
+<TD VALIGN=TOP>
+% if ($actions->{"$action"}->{'html'}) {
+<%$actions->{"$action"}->{'html'} |n%>
+% } else {
+[<A HREF="<%$RT::WebPath%>/<% $actions->{$action}->{'path'}%>"><% $actions->{$action}->{'title'}%></A>]
+% }
+</TD>
+%  }
+% }
+</TR>
+</TABLE>
+</TD>
+</TR>
+
+<TR>
+<TD>
 % if ($subtabs) {
 <TABLE>	
 <TR>
@@ -45,23 +80,41 @@
 </TR>
 </TABLE>
 %}
-
+</TD>
+<TD ALIGN=RIGHT>
+<TABLE><TR>
+% if ($subactions) {
+%  foreach $action (sort keys %{$subactions}) {
+<TD>
+<%$subactions->{"$action"}->{'html'} |n%>
+</TD>
+%  }
+% }
+</TABLE>
+</TD>
+</TR>
+</TABLE>
 <%INIT>
-my ($tab);
+my ($tab, $action);
 my $toptabs = {    A => { title => 'Home',
                            path => '',
                          },
                     B => { title => 'Search',
                         path => 'Search/Listing.html'
                       },
-                    C => { title => 'New Ticket',
-                           path => 'Ticket/Create.html'
-                      },
+
                     D => { title => 'Administration',
                            path => 'Admin/'
                          }
                  };
                     
+
+my $topactions = {
+	A => { html => $m->scomp('/Elements/CreateTicket')	
+		},
+	B => { html => $m->scomp('/Elements/GotoTicket') 
+		}
+	};
 </%INIT>
 <%ARGS>
 $current_toptab =>  "none"
@@ -69,5 +122,7 @@ $current_tab => "none"
 $current_subtab => "none"
 $tabs => undef
 $subtabs => undef
+$actions => undef
+$subactions => undef
 </%ARGS>
 

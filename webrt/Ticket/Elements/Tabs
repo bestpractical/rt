@@ -1,4 +1,4 @@
-<& /Elements/Tabs, tabs => $tabs, current_tab => $current_tab &>
+<& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab &>
 <hr>
 <%INIT>
   my $tabs = {
@@ -20,13 +20,17 @@
 		 E => { title => 'Edit Links',
 			  path => "Ticket/ModifyLinks.html?id=".$id,
 			},
+
+	};
+    my $actions = {
 		 F => { title => 'Comment',
-			     path => "Ticket/Update.html?Action=Comment&id=".$id,
+	 	        path => "Ticket/Update.html?Action=Comment&id=".$id,
 			   },
 		 G => { title => 'Reply',
-				path => "Ticket/Update.html?Action=Respond&id=".$id,
+			path => "Ticket/Update.html?Action=Respond&id=".$id,
 		      }
-};
+	};
+
 </%INIT>
 
   
