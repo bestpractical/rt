@@ -1,4 +1,4 @@
-
+%# $Header$
 <& /Elements/Footer &>
 
 <%INIT>
@@ -29,13 +29,13 @@ elsif (defined ($user) && defined ($pass)){
     $session{'CurrentUser'}->Load($user);
     unless ($session{'CurrentUser'}->id() ) {
 	delete $session{'CurrentUser'};
-	$m->comp('/NoAuth/Login.html', %ARGS, Error=> 'Your username or password is incorrect');
+	$m->comp('/Elements/Login', %ARGS, Error=> 'Your username or password is incorrect');
         $m->abort();
     };
     unless ($session{'CurrentUser'}->IsPassword($pass)) {
 	delete $session{'CurrentUser'} ;
 	
-	$m->comp('/NoAuth/Login.html', Error => 'Your username or password is incorrect', %ARGS);
+	$m->comp('/Elements/Login', Error => 'Your username or password is incorrect', %ARGS);
 	$m->abort();
     }
     unless  ($session{'CurrentUser'}->Privileged) {
@@ -50,7 +50,7 @@ elsif (defined ($user) && defined ($pass)){
     
 }
 else {
-    $m->comp('/NoAuth/Login.html', %ARGS);
+    $m->comp('/Elements/Login', %ARGS);
 }
 </%INIT>
 
