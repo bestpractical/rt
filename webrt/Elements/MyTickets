@@ -1,6 +1,7 @@
 <& /Elements/TitleBoxStart, title => "Tickets I own..." &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
+<TH>#</TH>
 <TH>Subject</TH>
 <TH>Queue</TH>
 <TH>Status</TH>
@@ -8,9 +9,12 @@
 </TR>
 % while (my $Ticket = $MyTickets->Next) {
 <TR>
+<TD ALIGN=RIGHT>
+<%$Ticket->Id%>
+</TD>
 <TD>
 <A HREF="<% $RT::WebPath %>/Ticket/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Id%>: <%$Ticket->Subject%>
+<%$Ticket->Subject%>
 </A>
 </TD>
 <TD>
