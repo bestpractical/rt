@@ -259,12 +259,10 @@ before returning it.
 sub Content {
   my $self = shift;
   if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
-      if ($self->ContentType eq 'text/plain') {
-	  my $content = $self->_Value( 'Content', decode_utf8 => 0);
-#	  Encode::_utf8_on($content); # XXX - this line is needed, but we don't know why.
-	  return Encode::decode_utf8($content);
-      }
-      return $self->_Value( 'Content', decode_utf8 => 0);
+      return $self->_Value(
+	  'Content',
+	  decode_utf8 => (($self->ContentType eq 'text/plain') ? 1 : 0)
+      );
   } elsif ( $self->ContentEncoding eq 'base64' ) {
       return MIME::Base64::decode_base64($self->_Value('Content'));
   } else {
