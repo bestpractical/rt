@@ -1,6 +1,6 @@
 # BEGIN LICENSE BLOCK
 # 
-#  Copyright (c) 2002 Jesse Vincent <jesse@bestpractical.com>
+#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
 #  
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of version 2 of the GNU General Public License 
@@ -78,6 +78,14 @@ course).
 
 You probably want to discuss rtfm on rt-devel@lists.fsck.com at this point. 
 (Send mail to rt-devel-request@lists.fsck.com to subscribe)
+
+Bug reports can be sent to rtfm-bugs@fsck.com. 
+You can look at open bug reports at
+
+        http://rt3.fsck.com/NoAuth/Buglist.html?q=rtfm
+
+Log in as guest/guest to see the content of bug reports
+
 
         Best,
         Jesse Vincent

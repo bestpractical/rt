@@ -1,6 +1,6 @@
 # BEGIN LICENSE BLOCK
 # 
-#  Copyright (c) 2002 Jesse Vincent <jesse@bestpractical.com>
+#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
 #  
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of version 2 of the GNU General Public License 
@@ -24,7 +24,7 @@ DBTYPE		=		mysql
 CONFIG_FILE_PATH	=       $(RT_PREFIX)/etc
 CONFIG_FILE	     =       $(CONFIG_FILE_PATH)/RT_Config.pm
 RT_LIB_PATH	     =       $(RT_PREFIX)/lib
-MASON_HTML_PATH	 =       $(RT_PREFIX)/local/html
+MASON_HTML_PATH	 =       $(RT_PREFIX)/share/html
 
 GETPARAM		=       $(PERL) -I$(RT_LIB_PATH) -e'use RT; RT::LoadConfig(); print $${$$RT::{$$ARGV[0]}};'
 
@@ -33,7 +33,7 @@ DB_DATABASEHOST		=  `${GETPARAM} DatabaseHost`
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
-TAG			= rtfm-2-0-beta-5
+TAG			= rtfm-2-0-beta-6
 
 
 upgrade: install-lib install-html
@@ -60,9 +60,15 @@ dropdb: dropdb.$(DBTYPE)
 
 
 initdb.mysql: etc/schema.mysql
+	@echo "-------------------------------------------------------------"
+	@echo "You will be prompted for $(DB_RT_USER)'s mysql password below"
+	@echo "-------------------------------------------------------------"
 	mysql -h $(DB_DATABASEHOST) -u $(DB_RT_USER) -p $(DB_RT_PASS) $(DB_DATABASE) < etc/schema.mysql
 
 initdb.Pg: etc/schema.mysql
+	@echo "-------------------------------------------------------------"
+	@echo "You will be prompted for $(DB_RT_USER)'s postgres password below"
+	@echo "-------------------------------------------------------------"
 	psql -U pgsql $(DB_DATABASE) < etc/schema.Pg
 	psql -U pgsql $(DB_DATABASE) < etc/acl.Pg
 
