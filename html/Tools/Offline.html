@@ -61,7 +61,7 @@ use RT::Action::CreateTickets;
 my $action = new RT::Action::CreateTickets;
 my $string;
 
-if ($ARGS{'Parse'}) {
+if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     $ARGS{'string'} = "";
     my $cgi_object = $m->cgi_object;
     my $fh = $cgi_object->upload('Template');
