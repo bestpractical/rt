@@ -471,6 +471,12 @@ sub Create {
         $params{$attr} = $args{$attr} if ($args{$attr});
     }
 
+    # Delete null integer parameters
+    foreach my $attr qw(TimeWorked TimeLeft TimeEstimated InitialPriority FinalPriority) {
+        delete $params{$attr}  unless (exists $params{$attr} && $params{$attr});
+    }
+
+
     my $id = $self->SUPER::Create( %params);
     #Set the ticket's effective ID now that we've created it.
     my ( $val, $msg ) = $self->__Set( Field => 'EffectiveId', Value => $id );
