@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	0
 RT_VERSION_MINOR	=	9
-RT_VERSION_PATCH	=	15
+RT_VERSION_PATCH	=	16
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -328,3 +328,5 @@ dist:
 	rm -rf /tmp/rt-$(RT_VERSION)
 	cvs export -D now -d /tmp/rt-$(RT_VERSION) rt
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz rt-$(RT_VERSION)/
+	ln -s ./rt-$(RT_VERSION).tar.gz ./rt.tar.gz
+	chmod 644 /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz

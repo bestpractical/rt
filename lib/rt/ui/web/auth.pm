@@ -39,8 +39,8 @@ sub AuthForceLogout () {
 WWW-Authenticate: Basic realm=\"$AuthRealm\"
 Content Type: text/html
 
-<html><head><title>Logged out</title></head><body>You have been logged out of RT.  To log back in, please click <a HREF=\"$rt::ui::web::ScriptURL\"> here.</a>
-</body></html>
+<html><head><title>Logged out</title></head><body bgcolor=\"#ffffff\"><center><TABLE WIDTH=\"80%\" border=0 cellpadding=20><TR><TD>You have been logged out of RT.  To log back in, please click <a HREF=\"$rt::ui::web::ScriptURL\"> here.</a>
+</TD></TR></TABLE></center></body></html>
 ";
 
 }                           

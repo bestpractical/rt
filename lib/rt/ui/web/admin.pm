@@ -53,7 +53,7 @@ sub DisplayForm {
 	print "$result<hr>";
     }
     
-    if ((!$rt::ui::web::FORM{'display'}) or ($rt::ui::web::FORM{'display'} eq 'Return to Admin Menu')){
+    if ((!$rt::ui::web::FORM{'display'}) or ($rt::ui::web::FORM{'display'} eq 'Return to Main Menu')){
 	
 	
 	&menu();
@@ -179,22 +179,15 @@ sub menu () {
     my ($queue_id,$user_id,$value);
 
 
-    print "<table width=100%>
-<tr>
-<td align=left>
-<H2>RT Web Administrator</H2>
-</td>
-<td align=right><H2>Main Menu</H2></td></tr>
-</TABLE>
-";
-   
-    print "<form action=\"$ScriptURL\" method=\"post\">";
+    &page_head("Main Menu");
     
-    &rt::ui::web::new_table("width=100%"); {
-	&rt::ui::web::new_row("valign=top"); {
-	    &rt::ui::web::new_col("valign=top align=left"); {
-		print "\n<H2>User Configuration</H2>\n";
-		
+    print "
+<form action=\"$ScriptURL\" method=\"post\">
+
+<table width=100%><TR VALIGN=TOP><TD VALIGN=TOP ALIGN=LEFT>
+
+<H2>User Configuration</H2>\n";
+    
 		if ($rt::users{$current_user}{admin_rt}) {
 		    
 		    print "
@@ -208,10 +201,13 @@ sub menu () {
 		    print "</select>\n<br>\n";
 	
 		}
-		print "\n<input type=submit name=display value=\"Modify your RT Account\">";
-	    } &rt::ui::web::end_col();
-	    &rt::ui::web::new_col("valign=top align=right"); {
-	    print "\n<H2>Queue Configuration</H2>";
+		print "
+<input type=submit name=display value=\"Modify your RT Account\">
+
+</TD>
+<TD VALIGN=TOP ALIGN=RIGHT>
+
+<H2>Queue Configuration</H2>";
     if ($rt::users{$current_user}{admin_rt}) {
 	print "<input type=Submit name=display value=\"Create a Queue called\"> <input size=15 name=\"new_queue_id\">
 <br>";
@@ -223,9 +219,7 @@ sub menu () {
 	#}
     }
     print "</select>\n";
-	} &rt::ui::web::end_col();
-	} &rt::ui::web::end_row();
-    } &rt::ui::web::end_table();
+	print "</TD></TR></TABLE>";
 	    
     print "</form>\n";
     
@@ -238,29 +232,25 @@ sub menu () {
 sub FormModifyUser{
     my ($user_id) = @_;
 
-    print "<table width=100%><tr><td align=left><H2>RT Web Administrator</H2></td><td align=right>";
-   
-    if (!&rt::is_a_user($user_id)) {
-	print "<h2>Create a new user called <b>$user_id</b></h2>\n"
-	}
+      if (!&rt::is_a_user($user_id)) {
+	&page_head("Create a new user called <b>$user_id</b>");
+      }
     elsif  ($user_id eq $current_user){
-	print "<h2>Modify your own attributes</h2>\n";
-    }
-    
-    
+      &page_head("Modify your own attributes");
+      }
     else {
-	print "<h2>Modify the user <b>$user_id</b></h2>";
+      &page_head("Modify the user <b>$user_id</b>");
     }
     
-    print "</td></tr></table>\n<hr>\n";
+  
+    print "
+<TABLE WIDTH=100%>
+ <TR>
+  <TD VALIGN=TOP>
 
-    &rt::ui::web::new_table("width=100%"); {
-	&rt::ui::web::new_row(); {
-	    &rt::ui::web::new_col("valign=top"); {
 
+<H2>User Configuration</H2>
 
-		print "
-<TABLE BGCOLOR=black width=100% cellpadding=5><TR><TD><FONT COLOR=white><H1>User Configuration</H!></FONT></TD></TR></TABLE>
 <form action=\"$ScriptURL\" method=\"post\">
 <input type=\"hidden\" name=\"user_id\" value=\"$user_id\" >
 <table>
@@ -314,10 +304,10 @@ misc:
 </tr>
 </table>
 ";
-
-	    } &rt::ui::web::end_col();
-	    &rt::ui::web::new_col("align=right valign=top"); {
-		print "<TABLE BGCOLOR=black width=100% cellpadding=5><TR><TD align=right><FONT COLOR=white><H1>Access Control</H!></FONT></TD></TR></TABLE>\n<br>\n";
+	print "</TD>
+<TD ALIGN=RIGHT VALIGN=TOP>
+<H2>Access Control</H2>
+<br>\n";
 		if ($rt::users{$current_user}{admin_rt}) {
 		    print "RT Admin: <input type=\"checkbox\" name=\"admin_rt\" ";
 		    print "checked" if ($rt::users{$user_id}{admin_rt});
@@ -356,27 +346,23 @@ misc:
 			}
 		    }
 		}
-		
-	    } &rt::ui::web::end_col();
-	} &rt::ui::web::end_row();
-    } &rt::ui::web::end_table();
+	
+	print "</TD></TR></TABLE>\n";	
     
-    &rt::ui::web::new_table("width=100%");
-    &rt::ui::web::new_row();
-    &rt::ui::web::new_col("align=left");
-    print "<input type=\"submit\" name=\"action\" value=\"Update User\">\n";
-    &rt::ui::web::end_col();
-    if ($rt::users{$current_user}{admin_rt}) {
-	&rt::ui::web::new_col("align=center");
-	print "<input type=\"submit\" name=\"display\" value=\"Delete this User\">\n";
-	&rt::ui::web::end_col();
-    }
-    &rt::ui::web::new_col("align=right");
-    print "<input type=\"submit\" name=\"display\" value=\"Return to Admin Menu\">\n";
-    &rt::ui::web::end_col();
-    &rt::ui::web::end_row();
-    &rt::ui::web::end_table();
 
+    print "<TABLE WIDTH=100% BGCOLOR=\"#DDDDDD\" BORDER=0 CELLSPACING=0 CELLPADDING=3><TR><TD ALIGN=LEFT WIDTH=33%>
+<input type=\"submit\" name=\"action\" value=\"Update User\">
+</TD>\n";
+    if ($rt::users{$current_user}{admin_rt}) {
+	print "<TD ALIGN=CENTER WIDTH=33%>
+	<input type=\"submit\" name=\"display\" value=\"Delete this User\">\n
+</TD>";
+    }
+
+    print "<TD ALIGN=RIGHT>
+<input type=\"submit\" name=\"display\" value=\"Return to Main Menu\">
+</TD></TR></TABLE>
+";
 
 
 print "</FORM>";
@@ -385,60 +371,35 @@ print "</FORM>";
 
 sub FormModifyQueue{
     my ($queue_id) = @_;
-    print "<table width=100%>
-<tr>
-<td align=left>
-<H2>RT Web Administrator</H2>
-</td>
-<td align=right>
-";    
     if (!&rt::is_a_queue($queue_id)) {
-	print "<h2>Create a new queue called <b>$queue_id</b></h2>\n"
+	&page_head("Create a new queue called <b>$queue_id</b>");
 
 	}
     else {
-	print "<h2>Modify the queue <b>$queue_id</b></h2>\n";
+	&page_head("Modify the queue <b>$queue_id</b>");
     }
-    print "</td></tr>
-</TABLE>";
-    &rt::ui::web::new_table("width=100%"); {
-	&rt::ui::web::new_row(); {
-	    &rt::ui::web::new_col("valign=top"); {
+
+
     print "
-<TABLE BGCOLOR=black width=100% cellpadding=5><TR><TD><FONT COLOR=white><H1>Queue Configuration</H!></FONT></TD></TR></TABLE>
+<TABLE WIDTH=\"100%\" border=0 cellspacing=5>
+
+<TR>
+<TD ALIGN=LEFT VALIGN=TOP>
+
+<H2>
+Queue Configuration
+</H2>
+
 <form action=\"$ScriptURL\" method=\"post\">
 <input type=\"hidden\" name=\"queue_id\" value=\"$queue_id\" >
 
 <table>
-<tr>
-<td>
-Queue name:
-</td>
-<td>
-$queue_id
-</td>
-</tr>
-<tr>
-<td>
-mail alias:
-</td>
-<td>
-<input name=\"email\" size=30 value=\"$rt::queues{$queue_id}{mail_alias}\">
-</td>
-</tr>
-<tr>
-<td>
-Initial priority:
-</td>
-<td> ";
+<tr><td>Queue name:</td><td>$queue_id</td></tr>
+<tr><td>mail alias:</td><td><input name=\"email\" size=30 value=\"$rt::queues{$queue_id}{mail_alias}\"></td></tr>
+<tr><td>Initial priority:</td><td> ";
     &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio},"initial_prio");
-    print "</td>
-</tr>
-<tr>
-<td>
-Final priority:
-</td>
-<td>";
+    print "</td></tr>
+<tr><td>Final priority:</td><td>";
     &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
     print "</td></tr></table>\n";
 
@@ -478,51 +439,55 @@ Final priority:
     }
     print "</select>\n";
     
-    print "<br>Add an area called <input size=\"15\" name=\"add_area\"><br>\n";
-    
-    } &rt::ui::web::end_col();
-    &rt::ui::web::new_col("align=right valign=top"); {
-	print "<TABLE BGCOLOR=black width=100% cellpadding=5><TR><TD align=right><FONT COLOR=white><H1>Access Control</H!></FONT></TD></TR></TABLE>\n";
+    print "<br>Add an area called <input size=\"15\" name=\"add_area\"><br>
+</TD>
+
+
+<TD ALIGN=RIGHT VALIGN=TOP>
+<H2>
+Access Control
+</H2>
+
+";
     while (($user_id,$value)= each %rt::users) {
       print "<A HREF=\"$ScriptURL?display=Modify+the+User+called&user_id=$user_id\">$user_id</a>:";
 
 	&select_queue_acls($user_id, $queue_id);
     }
-    } &rt::ui::web::end_col();
-    } &rt::ui::web::end_row();
-    } &rt::ui::web::end_table();
+    print "</TD></TR></TABLE>";
 
 
-    &rt::ui::web::new_table("width=100%");
+    print "<TABLE WIDTH=100% BGCOLOR=\"#DDDDDD\" BORDER=0 CELLSPACING=0 CELLPADDING=>";
+
     if (&rt::can_admin_queue($queue_id, $current_user)){
-	&rt::ui::web::new_row();
-	&rt::ui::web::new_col("align=left");
-	print "<input type=\"submit\" name=\"action\" value=\"Update Queue\">\n";
-	&rt::ui::web::end_col();
-	&rt::ui::web::new_col("align=center");
-	print "<input type=\"submit\" name=\"display\" value=\"Delete this Queue\">\n";
-	&rt::ui::web::end_col();
+
+      print "
+<TR>
+<TD ALIGN=LEFT WIDTH=33%>
+<input type=\"submit\" name=\"action\" value=\"Update Queue\">
+</TD>
+<TD ALIGN=CENTER>
+<input type=\"submit\" name=\"display\" value=\"Delete this Queue\">
+</TD>";
     }
-    &rt::ui::web::new_col("align=right");
-    print "<input type=\"submit\" name=\"display\" value=\"Return to Admin Menu\">\n";
-    &rt::ui::web::end_col();
-    &rt::ui::web::end_row();
-    &rt::ui::web::end_table();
-    print"</FORM>\n";
+    
+    
+    print "<TD ALIGN=RIGHT WIDTH=33%>
+<input type=\"submit\" name=\"display\" value=\"Return to Main Menu\">
+</TD>
+</TR>
+</TABLE>
+</FORM>\n";
+
 }
 
 
 
 sub FormDeleteUser {
     my ($user_id) = @_;
-    
-    print "<table width=100%>
-<tr>
-<td align=left>
-<H2>RT Web Administrator</H2>
-</td>
-<td align=right>
-<H2>Confirm Deletion of  user <b>$user_id</b></h2></TD></TR></TABLE>
+    &page_head("Confirm Deletion of user <b>$user_id</b>");
+    print "
+
 <form action=\"$ScriptURL\" method=\"post\">
 <input type=\"hidden\" name=\"user_id\" value=\"$user_id\" >
 <input type=\"hidden\" name=\"action\" value=\"delete_user\">
@@ -540,13 +505,9 @@ sub FormDeleteUser {
 sub FormDeleteQueue{
     my ($queue_id) = @_;
     
-    print "<table width=100%>
-<tr>
-<td align=left>
-<H2>RT Web Administrator</H2>
-</td>
-<td align=right>
-<H2>Confirm Deletion of queue $queue_id</H2></td></tr></table>
+    &page_head("Confirm deletion of queue $queue_id");
+
+    print "
 <form action=\"$ScriptURL\" method=\"post\">
 <input type=\"hidden\" name=\"queue_id\" value=\"$queue_id\" >
 <input type=\"hidden\" name=\"action\" value=\"delete_queue\">
@@ -564,6 +525,19 @@ sub FormDeleteQueue{
 
 
 
+sub page_head {
+my $page_title = shift; 
+
+print <<EOF;
+<table width=100% cellpadding=5 cellspacing=0 border=0>
+<tr bgcolor=\"#dddddd\">
+<td align=left valign=center>
+<FONT SIZE=+2><A HREF="$ScriptURL">RT Web Administrator</A></FONT>
+</td>
+<td align=right valign=center>
+<FONT SIZE=+2>$page_title</FONT></td></tr></table>
+EOF
+}
 
 
 
