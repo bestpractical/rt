@@ -2173,7 +2173,8 @@ sub MergeInto {
 	my ($val, $msg) = $ticket->__Set(Field => 'EffectiveId', 
 					 Value => $NewTicket->Id());
     }	
-    
+    $NewTicket->_SetLastUpdated;
+
     return ($TransactionObj, "Merge Successful");
 }  
 
