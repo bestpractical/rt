@@ -1121,6 +1121,9 @@ sub ProcessObjectCustomFieldUpdates {
 			# We don't care about the magic, if there's really a values element;
 			next if ($ARGSRef->{$1.'-Value'} || $ARGSRef->{$1.'-Values'}) ;
 
+                        # "Empty" values does not mean anything for Image and Binary fields
+                        next if $CustomFieldObj->Type =~ /^(?:Image|Binary)$/;
+
 			$arg = $1."-Values";
 			$ARGSRef->{$1."-Values"} = undef;
 		    
