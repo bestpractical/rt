@@ -6,9 +6,6 @@ package RT::ACL;
 use DBIx::EasySearch;
 @ISA= qw(DBIx::EasySearch);
 
-my @TicketRights = qw(Destroy Display Update Resolve
-
-
 # {{{ sub new 
 sub new  {
   my $pkg= shift;
@@ -30,185 +27,170 @@ sub Limit  {
 }
 # }}}
 
-# {{{ sub LimitToQueueACL
-
-sub LimitToQueueACL {
-}
-
-# }}}
-
-
-# {{{ sub LimitPrincipals
-sub LimitPrincipals {
-  my $self = shift;
-  my $user = shift;
-  my $ticket = shift;
-  
-  $self->LimitPrinicpalsToUser($user);
-  $self->LimitPrincipalsToWatchers($user);
-  if (defined $self->Ticket) {
-    $self->LimitPrincipalsToOwner($user, $ticket);
-  }
-  
-}
-# }}}
-
-# {{{ sub LimitPrinicpalsToUser 
-
-sub LimitPrincipalsToUser {
-  my $self = shift;
-  my $user = shift;
-  
-  
-  return (" ( ACE.PrincipalScope = 'User') AND 
-	    ( ACE.PrincipalId = $user OR ACE.PrincipalId = 0))");
-}
-
-# }}}
-
-# {{{ sub LimitPrincipalsToOwner
-sub LimitPrincipalsToOwner {
-  my $self = shift;
-  my $user = shift;
-  my $ticket = shift
-  return (" ( ACE.PrinciaplScope = 'Owner') AND ( Tickets.Owner = $user ) AND ( Tickets.Id = $ticket)");
-}
-# }}}
-
-# {{{ sub LimitPrincipalsToWatchers
-sub LimitPrincipalsToWatchers {
-  my $self = shift;
-  my $user = shift;
-  return ("( ACE.PrincipalScope = Watchers.Scope ) AND 
-           ( ACE.PrincipalType = Watchers.Type ) AND 
-           ( ACL.PrincipalId = Watchers.Value ) AND 
-  	   ( Watchers.Owner = $User )");
-}
-
-# }}}
-
-# {{{ sub LimitToQueueObjects 
-sub LimitToQueueObjects {
-  my $self = shift;
-  my $queue = shift if (@_);
-  
-  $QueueObject = "(ACE.ObjectType = 'Queue') and ( ACE.ObjectId = 0";
-  if (defined $queue) {
-    $QueueObject .= "OR ACE.ObjectId = ".$self->quote($queue) ;
-  }
-  
-  $QueueObject .= ")";
- 
-  return ("($QueueObject)");
-}
-
-# }}}
-
-# This select statement would figure out if A user has $Right at the queue level
-
-SELECT ACE.id from ACE, Watchers, Tickets WHERE ( 
-	     $QueueObject
-	     AND ( ACE.Right = $Right) 
-	     AND ($Principals))
-
-# This select statement would figure outif a user has $Right for the "System"
-
-SELECT ACE.id from ACE, Watchers, Tickets WHERE ( 
-	     ($SystemObject) AND ( ACE.Right = $Right ) AND ($Principals))
-
-
-# {{{ sub LimitToRight 
-sub LimitToRight {
-  my $self = shift;
-  my $right = shift;
-  my $RightClause = "(ACE.Right = ."$self->quote($right)".)";
-}  
-# }}}
-
-# {{{ sub LimitToSystemObjects
-sub LimitToSystemObjects {
-  my $self = shift;
-  
-  $SystemObject = "( ACE.ObjectType = 'System' )";
-
-}
-
-# }}}
 
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
   my $Handle = shift;
   my $item;
-  $item = new RT::ACE($self->CurrentUser, $Handle);
+  use RT::ACE;
+  $item = new RT::ACE($self->CurrentUser);
   return($item);
 }
 # }}}
 
+=head1 RT::ACL
 
-#does this apply to a queue or something else
-sub Scope {
+RT::ACL is a subclass of DBIx::RecordSet
+
+=head1 Getting records out
+  
+RT::ACL uses the standard DBIx::EasySearch mechanisms for getting data out
+=head2 next
+
+List off the ACL that's been specified (like any DBIx::RecordSet
+
+=head1 Limit the ACL to a specific scope
+
+There are three real scopes right now:
+
+=item Queue is for rights that apply to a single queue
+
+=item AllQueues is for rights that apply to all queues
+
+=item System is for rights that apply to the System (rights that aren't queue related)
+
+
+=head2 RT::ACL::LimitScopeToQueue($queue_id)
+
+Limit the ACL to just a given queue when supplied with an integer queue id.
+
+=cut
+
+sub LimitScopeToQueue {
   my $self = shift;
-  my $scope =shift;
+  my $queue = shift;
+  
+  
+  $self->Limit( FIELD =>'Scope',
+		VALUE => 'Queue');
+  
+  $self->Limit(ENTRYAGGREGATOR => 'OR',
+	       FIELD => 'AppliesTo',
+	       VALUE => $queue );
+  
 }
-		    
 
-#if you're concerned about queue level rights, specify the queue
-sub AppliesTo {
+=head2 RT::ACL::LimitScopeToAllQueues()
+
+Limit the ACL to global queue rights. (Rights granted across all queues)
+=cut
+
+sub LimitScopeToQueue {
   my $self = shift;
-  my $AppliesTo = shift;
+  
+  $self->Limit( FIELD =>'Scope',
+		VALUE => 'Queue');
+  
+  $self->Limit(ENTRYAGGREGATOR => 'OR',
+	       FIELD => 'AppliesTo',
+	       VALUE => 0 );
 }
 
-#if you're concerned about ticket_level rights,  specify the ticket
-sub TicketIs {
-my $self = shift;
-my $TicketObj = shift;
 
+=head2 RT::ACL::LimitScopeToSystem()
 
+Limit the ACL to system rights
+
+=cut 
+
+sub LimitScopeToQueue {
+  my $self = shift;
+  
+  $self->Limit( FIELD =>'Scope',
+		VALUE => 'System');
 }
 
-sub PrincipalTypeIs {
-my $self = shift;
-#principal type is one of 
-#User,<userid>
-#Group,<groupip>
-#TicketOwner,NULL
-#TicketRequestor,NULL
-#TicketCc,NULL
-#TicketAdminCc,NULL
-#Everyone,NULL
-}
-sub PrincipalIdIs {
-my $self = shift;
-#principal is a userid.  
-my $PrincipalObj = shift;
-}
 
-sub RightIs {
-my $self = shift;
-#right is a textual identifier of a right;
-my $right = shift;
+=head2 RT::ACL::LimitRightTo($right)
 
+Limits the search to the right $right.
+$right is a right listed in perldoc RT::ACE
 
+=cut
 
+sub LimitScopeToQueue {
+  my $self = shift;
+  my $right = shift;
+  
+  $self->Limit(ENTRYAGGREGATOR => 'OR',
+	       FIELD => 'Right',
+	       VALUE => $right );
+  
 }
 
-sub IsPermitted {
-my $self = shift;
-#this code will DTRT and figure out if  
-#the principal is a member of any relevant groups, such as ticket watchers
-# or rt's eventual groups system. 
+=head1 Limit to a specifc set of principals
+
+=head2 LimitPrincipalToUser($user_id)
+
+Limit the ACL to a just a specific user
+
+=cut
+
+sub LimitPrincipalsToUser {
+  my $self = shift;
+  my $user = shift;
+  
+  $self->Limit(ENTRYAGGREGATOR => 'OR',
+	       FIELD => 'PrincipalType',
+	       VALUE => 'User' );
+  
+  $self->Limit(ENTRYAGGREGATOR => 'OR',
+	       FIELD => 'PrincipalId',
+	       VALUE => $user );
+  
+}
 
 
+=head2 LimitPrincipalToGroup($group_id)
+  
+Limit the ACL to just a specific group
 
+=cut
+  
+sub LimitPrincipalsToGroup {
+  my $self = shift;
+  my $group = shift;
+  
+  $self->Limit(ENTRYAGGREGATOR => 'OR',
+	       FIELD => 'PrincipalType',
+	       VALUE => 'Group' );
 
+  $self->Limit(ENTRYAGGREGATOR => 'OR',
+	       FIELD => 'PrincipalId',
+	       VALUE => $group );
 
-#return(1) if permitted;
-#return(undef) otherwise;
+}
+=head2 LimitPrincipalToType($type)
+
+Limit the ACL to just a specific principal type
+
+$type is one of:
+  TicketOwner
+  TicketRequestor
+  TicketCc
+  TicketAdminCc
+  Everyone
+
+=cut
+
+sub LimitPrincipalsToType {
+  my $self=shift;
+  my $type=shift;  
+  $self->Limit(ENTRYAGGREGATOR => 'OR',
+	       FIELD => 'PrincipalType',
+	       VALUE => $type );
 }
 
 
 1;
-
-
-
