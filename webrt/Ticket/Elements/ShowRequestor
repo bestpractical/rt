@@ -12,11 +12,13 @@ $tickets->OrderBy(FIELD => 'Priority',
 		  ORDER => 'DESC');
 </%PERL>
 
+% unless ($user->Privileged) {
 <& /Elements/TitleBoxStart, 
 	title => "<a class='inverse' href=\"$RT::WebPath/Admin/Users/Modify.html?id=".$user->id."\">More about $name</a>" &>
 
 Comments about this user:<BR>
 <B><% ($user->Comments || "No comment entered about this user") %></B><BR>
+
 This user's 25 highest priority tickets:<BR>
 <UL>
 %while (my $w=$tickets->Next) {
@@ -25,7 +27,7 @@ This user's 25 highest priority tickets:<BR>
 </UL>
 <& /Elements/TitleBoxEnd &>
 
-
+% }
 % }
 %}
 <%ARGS>
