@@ -6,12 +6,14 @@
 <b><%$result%></b><br>
 %}
 
-
-<& /Elements/TitleBoxStart, title => 'Editing Configuration for user '.$UserObj->UserId &>
+<& /Elements/TitleBoxStart, title => $title &>
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST>
+%if ($Create) {
+<INPUT TYPE=HIDDEN NAME=id VALUE="new">
+% } else {
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
-
+% }
 
 <TABLE WIDTH=100% BORDER=0>
 <TR>
@@ -19,19 +21,19 @@
 <TD VALIGN=TOP ROWSPAN=2>
 <& /Elements/TitleBoxStart, title => 'Identity' &>
 RT UserId: <input name="UserId" value="<%$UserObj->UserId%>">
-
+<BR>
 Name: <input name="RealName" value="<%$UserObj->RealName%>">
 <BR>
 Nickname: <input name="NickName" value="<%$UserObj->NickName%>">
 <BR>
+Email: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"> <BR>
 Unix login: <input name="Gecos" value="<%$UserObj->Gecos%>">
 <BR>
-Email Address: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"><BR>
 Extra info: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>
 <& /Elements/TitleBoxEnd &>
 </TD>
 <TD VALIGN=TOP>
-<& /Elements/TitleBoxStart, title => 'Password' &>
+<& /Elements/TitleBoxStart, title => 'Change Password' &>
 	    New Password: <input type=password name="Pass1">
 <BR>Retype Password: <input type=password name="Pass2"><BR>
 <& /Elements/TitleBoxEnd &>
@@ -102,13 +104,19 @@ Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 <%INIT>
 use RT::Interface::Web;
 my $UserObj = new RT::User($session{'CurrentUser'});
+my ($title);
 
-if ($CreateUser) {
-
-$UserObj->Create();
+if ($Create) {
+    $title = "Create a new user";
+} 
+else {
+if ($id eq 'new') {
+    $UserObj->Create( UserId => $UserId );
 }
 else {
 $UserObj->Load($id) || $UserObj->Load($UserId) || $m->comp('/Elements/Error', Why => "Couldn't load user '$UserId'");
+}
+    $title = "Modify the user ". $UserObj->UserId;
 }
 
 my @fields = qw(UserId Comments Signature EmailAddress FreeformContactInfo 
@@ -174,5 +182,5 @@ $Zip  => undef
 $Country => undef
 $Pass1 => undef
 $Pass2=> undef
-$CreateUser=> undef
+$Create=> undef
 </%ARGS>

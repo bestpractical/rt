@@ -4,10 +4,16 @@
 
 
 
-<& /Elements/TitleBoxStart, title => 'Editing Configuration for queue '.$QueueObj->Id &>
+<& /Elements/TitleBoxStart, title => $title &>
+
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Queues/Modify.html" METHOD=POST>
+%if ($Create ) {
+<INPUT TYPE=HIDDEN NAME=id VALUE="new">
+% } else {
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
+% }
+
 <TABLE>
 <TR><TD ALIGN=RIGHT>
 Queue Name: 
@@ -55,15 +61,21 @@ Requests should be due in:
 <%INIT>
 use RT::Interface::Web;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-
+my $title;
 
 if ($Create) {
-
-    $QueueObj->Create();
+    $title = "Create a queue";
 }
 
 else {
-$QueueObj->Load($id) || $QueueObj->Load($QueueId) || Abort('/Elements/Error', Why => "Couldn't load queue '$QueueId'");
+    if ($id eq 'new') {
+        $QueueObj->Create(QueueId => $QueueId);
+     }
+     else {
+        $QueueObj->Load($id) || $QueueObj->Load($QueueId) || Abort("Couldn't load queue '$QueueId'");
+    }
+        $title = 'Editing Configuration for queue '.$QueueObj->QueueId;
+    
 }
 
 my @fields = qw(Description CorrespondAddress CommentAddress QueueId 
