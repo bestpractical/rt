@@ -1,5 +1,6 @@
 <& /Elements/Header, Title=>"User view" &>
 
+DEBUG: <%join(',',keys %session)%>
 <& /Elements/ViewUser, User=>$u &>
 
 %if ($session{CurrentUser} && ($session{CurrentUser}->Id == $id)) {
@@ -10,6 +11,11 @@
 <input type="submit" value="Update signature">
 </form>
 	  <& /Elements/TitleBoxEnd &>
+	  <form method=post>
+	  Open tickets (from listing) in another window: <input type="checkbox" name="NewWindowOption" <%exists $session{NewWindowOption} && "CHECKED"%>><br>
+	  Open tickets (from listing) in a new window: <input type="checkbox" name="AlwaysNewWindowOption" <%exists $session{AlwaysNewWindowOption} && "CHECKED"%>><br>
+	  <input type="submit" name="NewWindowSetting" value="New window setting">
+	  </form>
 %}
 
 	<& /Elements/TitleBoxStart, title => 'Email'  &>
@@ -64,6 +70,20 @@ $RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
 if ($UserId) {
 my ($val, $msg)=$u->SetUserId($UserId);
 $RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
+}
+
+if ($ARGS{NewWindowSetting}) {
+if ($ARGS{NewWindowOption}) {
+$session{NewWindowOption}=1;
+} else {
+delete $session{NewWindowOption};
+}
+if ($ARGS{AlwaysNewWindowOption}) {
+$session{NewWindowOption}=1;
+$session{AlwaysNewWindowOption}=1;
+} else {
+delete $session{AlwaysNewWindowOption};
+}
 }
 
 </%INIT>

@@ -1,6 +1,10 @@
 % my $l=$Column->{TicketLink}; if ($l) {
 <a href="<% $l!=1 ? $l : "../Ticket/Display.html?" %>id=<%$Ticket->Id%><%$Column->{ExtraLinks}||""%>"
-%if (exists $session{NewWindowOption}) {
+
+%# TODO: Is it right to store this in the %session?  Maybe it would be
+%# better to store misc. user preferences in the DB?
+
+%if ($session{NewWindowOption}) {
 TARGET="TicketDisplay<% $session{AlwaysNewWindowOption} && (time() . rand(1024)) %>"
 %}
 >
@@ -10,9 +14,6 @@ TARGET="TicketDisplay<% $session{AlwaysNewWindowOption} && (time() . rand(1024))
 % if ($l) {
 </a>
 % }
-
-
-
 
 <%ARGS>
 $Ticket => undef

@@ -55,6 +55,10 @@ Update Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subje
 </FORM>
 
 <%INIT>
+
+## Things needed in the template - we'll do the processing here, just
+## for the convinience:
+
 my $Action=$ARGS{DefaultAction} || "Response";
 my $PublicCommentDefault=$Action eq "PublicComment" ? "SELECTED" : "";
 my $CommentDefault=$Action eq "Comment" ? "SELECTED" : "";
@@ -65,4 +69,5 @@ $Ticket->Load($ARGS{'id'});
 my $MessageURI;
 $MessageURI=$ARGS{MessageLinkPrefix} . $ARGS{MessageLink}
 if $ARGS{MessageLink};
+
 </%INIT>

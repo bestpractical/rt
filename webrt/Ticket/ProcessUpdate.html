@@ -12,76 +12,29 @@
 <& /Ticket/Elements/ShowHistory , Ticket => $Ticket &> 
 <& /Elements/TitleBoxEnd &>
 
-<%args>
-$id => undef
-$SetStatus => undef
-$SetOwner => undef
-$UpdateSubject => undef
-$UpdateComment =>  undef
-$Transaction => undef
-$Description => undef
-</%args>
-
 <%init>
 
 my @Actions;
-
-
-  if (!$ARGS{'id'}) {
-    &mc_comp("/Elements/Error" , Why => "No ticket specified");
-    $m->abort;
-  }
 
 use RT::Ticket;
 use RT::CurrentUser;
 use MIME::Entity;
 use RT::Interface::Web;
 
+my $Ticket = LoadTicket($ARGS{id});
 
-my $Ticket = RT::Ticket->new($session{'CurrentUser'});
-$Ticket->Load($ARGS{id}) || die "Could not load $ARGS{id}...?!?";
+# This should be done first, so the new owner gets all information
+ProcessOwnerChangeRequest(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@Actions);
 
+ProcessUpdateMessage(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@Actions);
 
-# This one should be first, so the new owner gets all information
-    if ($ARGS{'SetOwner'}
-        and ($ARGS{'SetOwner'} ne $Ticket->Owner->Id())) {
-    ($Transaction, $Description)=$Ticket->SetOwner($ARGS{'SetOwner'});
-    push(@Actions, $Description);
-}
-   
-
-if ($ARGS{'UpdateContent'}) {
-my @UpdateContent = split(/\r/,$ARGS{'UpdateContent'}."\n");
-my $Message = MIME::Entity->build ( Subject => $ARGS{'UpdateSubject'} || "",
-				    Cc => $ARGS{'UpdateCc'} || "",
-				    Bcc => $ARGS{'UpdateBcc'} || "",
-				    Data => \@UpdateContent);
-						
-
-# TODO: Implement public comments
-if ($ARGS{'UpdateType'} =~ /^(private|public)$/) {
-    ($Transaction, $Description) = $Ticket->Comment( CcMessageTo => $ARGS{'UpdateCc'},
-						     BccMessageTo => $ARGS{'UpdateBcc'},
-						     MIMEObj => $Message,
-						     TimeTaken => $ARGS{'UpdateTimeWorked'});
-    push(@Actions, $Description);
-  }
-elsif ($ARGS{'UpdateType'} eq 'response') {
-    ($Transaction, $Description) = $Ticket->Correspond( CcMessageTo => $ARGS{'UpdateCc'},
-						     BccMessageTo => $ARGS{'UpdateBcc'},
-						     MIMEObj => $Message,
-						     TimeTaken => $ARGS{'UpdateTimeWorked'});
-    push(@Actions, $Description);
-  }
-}
+my $Transaction;
+my $Description;
 
 if ($ARGS{'Take'}) {
+    ## TODO: Remove this temporary debugline:
+    warn "This code shouldn't be here; called from: ".$ENV{HTTP_REFERER};
     ($Transaction, $Description)=$Ticket->Take();
-    push(@Actions, $Description);
-}
-
-if ($ARGS{'SetStatus'} and ($ARGS{'SetStatus'} ne $Ticket->Status())) {
-    ($Transaction, $Description)=$Ticket->SetStatus($ARGS{'SetStatus'});
     push(@Actions, $Description);
 }
 

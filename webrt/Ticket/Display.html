@@ -62,7 +62,7 @@ $id=$Ticket->Id;
 
 # Eventually, update the told, take, steal, kill the ticket:
 
-&ProcessActions(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
+&ProcessSimpleActions(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
 
 </%INIT>
 

@@ -97,13 +97,60 @@ sub LinkUpIfRequested {
 ## the eval is not needed in perl 5.6.0.  Eventually the sub should
 ## accept more than one Action, and it should handle Actions with
 ## arguments.
-sub ProcessActions {
+sub ProcessSimpleActions {
     my %args=@_;
     # TODO: What if there are more Actions?
     if (exists $args{ARGS}->{Action}) {
 	my ($action)=$args{ARGS}->{Action} =~ /^(Steal|Kill|Take|UpdateTold)$/;
 	my ($res, $msg)=eval('$args{Ticket}->'.$action);
 	push(@{$args{Actions}}, $msg);
+    }
+}
+
+sub ProcessOwnerChangeRequest {
+    my %args=@_;
+    if ($args{ARGS}->{'SetOwner'}
+        and ($args{ARGS}->{'SetOwner'} ne $args{Ticket}->Owner->Id())) {
+	my ($Transaction, $Description)=$args{Ticket}->SetOwner($args{ARGS}->{'SetOwner'});
+	push(@{$args{Actions}}, $Description);
+    }
+}
+
+sub ProcessUpdateMessage {
+    my %args=@_;
+    if ($args{ARGS}->{'UpdateContent'}) {
+	my @UpdateContent = split(/\r/,$args{ARGS}->{'UpdateContent'}."\n");
+	my $Message = MIME::Entity->build 
+	    ( Subject => $args{ARGS}->{'UpdateSubject'} || "",
+	      Cc => $args{ARGS}->{'UpdateCc'} || "",
+	      Bcc => $args{ARGS}->{'UpdateBcc'} || "",
+	      Data => \@UpdateContent);
+	
+	## TODO: Implement public comments
+	if ($args{ARGS}->{'UpdateType'} =~ /^(private|public)$/) {
+	    my ($Transaction, $Description) = $args{Ticket}->Comment
+		( CcMessageTo => $args{ARGS}->{'UpdateCc'},
+		  BccMessageTo => $args{ARGS}->{'UpdateBcc'},
+		  MIMEObj => $Message,
+		  TimeTaken => $args{ARGS}->{'UpdateTimeWorked'});
+	    push(@{$args{Actions}}, $Description);
+	}
+	elsif ($args{ARGS}->{'UpdateType'} eq 'response') {
+	    my ($Transaction, $Description) = $args{Ticket}->Correspond
+		( CcMessageTo => $args{ARGS}->{'UpdateCc'},
+		  BccMessageTo => $args{ARGS}->{'UpdateBcc'},
+		  MIMEObj => $Message,
+		  TimeTaken => $args{ARGS}->{'UpdateTimeWorked'});
+	    push(@{$args{Actions}}, $Description);
+	}
+    }
+}
+
+sub ProcessStatusChangeQuery {
+    my %args=@_;
+    if ($args{ARGS}->{'SetStatus'} and ($args{ARGS}->{'SetStatus'} ne $args{Ticket}->Status())) {
+	my ($Transaction, $Description)=$args{Ticket}->SetStatus($args{ARGS}->{'SetStatus'});
+	push(@{$args{Actions}}, $Description);
     }
 }
 
