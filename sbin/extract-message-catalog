@@ -1,8 +1,14 @@
-#!/usr/bin/env perl
+#!/usr/bin/env perl -w
 
 use strict;
+use File::Find;
 use File::Copy;
 use Regexp::Common;
+use Carp;
+
+use vars qw ($DEBUG);
+
+$DEBUG = 1;
 
 @ARGV = <lib/RT/I18N/*.po> unless @ARGV;
 
@@ -19,13 +25,14 @@ sub update {
     my (%Lexicon, %file);
     my $out = '';
 
-    open _, "lib/RT/I18N/$lang.po" or die $!;
-    while (<_>) {
+    
+    open LEXICON, "lib/RT/I18N/$lang.po" or warn $@;
+    while (<LEXICON>) {
 	if (1 .. /^$/) { $out .= $_; next }
 
-	my $msgid = <_>;
-	my $msgstr = <_>;
-	<_>;
+	my $msgid = <LEXICON>;
+	my $msgstr = <LEXICON>;
+	<LEXICON>;
 	chomp $msgid;
 	chomp $msgstr;
 	$msgid =~ s/^msgid "(.*)"$/$1/ or die $msgid;
@@ -34,23 +41,36 @@ sub update {
     }
 
     local $/;
+    print "Done reading lexicon \n";
 
-    for (<*/*>, <*/*/*>, <*/*/*/*>, <*/*/*/*/*>, <*/*/*/*/*/*>) {
-	my $r = $_; open _, $_ or die $!; $_ = <_>;
+    File::Find::find({wanted => \&extract_strings_from_code}, '.');
 
+    sub extract_strings_from_code {
+	my $file = $_;
+	return if ($File::Find::dir =~ 'lib/blib|lib/t/autogen');
+	return if ($_ =~ /.bak$|~|,D|,B$/);
+	return if ($_ =~ /^#/);
+	print "Looking at $File::Find::name\n";
+	my $r = $File::Find::name; 
+	open _, $file or die $!; $_ = <_>; $r =~ s'^./'';
 	while (s!<&\|/l.*?&>(.*?)</&>!!s) {
-	    my $u = $1; $u =~ s/\\'/\'/g; $file{$u} .= " $r";
+	    my $u = $1; 
+            $u =~ s/\\'/\'/g; 
+            $file{$u} .= " $r";
 	}
 
 	while (s!loc\(($RE{delimited}{-delim=>"'"}{-esc}{-keep})!!s) {
-	    my $u = substr($1, 1, -1); $u =~ s/\\'/\'/g; $file{$u} .= " $r";
+	    my $u = substr($1, 1, -1); 
+            $u =~ s/\\'/\'/g; 
+            $file{$u} .= " $r";
 	}
 
 	while (s!loc\(($RE{delimited}{-delim=>'"'}{-esc}{-keep})!!s) {
-	    my $u = substr($1, 1, -1); $u =~ s/\\'/\'/g; $file{$u} .= " $r";
+	    my $u = substr($1, 1, -1); 
+            $u =~ s/\\'/\'/g; 
+            $file{$u} .= " $r";
 	}
     }
-
     foreach (sort keys %file) {
 	my $k = $file{$_};
 
@@ -86,3 +106,6 @@ sub update {
 
     return 1;
 }
+
+# pull strings out of the code.
+

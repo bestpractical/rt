@@ -49,6 +49,8 @@ Create takes a hash of values and creates a row in the database:
   varchar(25) 'RightName'.
   varchar(25) 'ObjectType'.
   int(11) 'ObjectId'.
+  int(11) 'DelegatedBy'.
+  int(11) 'DelegatedFrom'.
 
 =cut
 
@@ -63,6 +65,8 @@ sub Create {
                 RightName => '',
                 ObjectType => '',
                 ObjectId => '0',
+                DelegatedBy => '0',
+                DelegatedFrom => '0',
 
 		  @_);
     $self->SUPER::Create(
@@ -71,6 +75,8 @@ sub Create {
                          RightName => $args{'RightName'},
                          ObjectType => $args{'ObjectType'},
                          ObjectId => $args{'ObjectId'},
+                         DelegatedBy => $args{'DelegatedBy'},
+                         DelegatedFrom => $args{'DelegatedFrom'},
 );
 
 }
@@ -176,6 +182,42 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item DelegatedBy
+
+Returns the current value of DelegatedBy. 
+(In the database, DelegatedBy is stored as int(11).)
+
+
+
+=item SetDelegatedBy VALUE
+
+
+Set DelegatedBy to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, DelegatedBy will be stored as a int(11).)
+
+
+=cut
+
+
+=item DelegatedFrom
+
+Returns the current value of DelegatedFrom. 
+(In the database, DelegatedFrom is stored as int(11).)
+
+
+
+=item SetDelegatedFrom VALUE
+
+
+Set DelegatedFrom to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, DelegatedFrom will be stored as a int(11).)
+
+
+=cut
+
+
 
 sub _ClassAccessible {
     {
@@ -191,6 +233,10 @@ sub _ClassAccessible {
         ObjectType => 
 		{read => 1, write => 1, type => 'varchar(25)', default => ''},
         ObjectId => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        DelegatedBy => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        DelegatedFrom => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
 
  }

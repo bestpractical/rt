@@ -3,6 +3,8 @@ no warnings qw(redefine);
 use RT::Group;
 use RT::User;
 
+# {{{ IsGroup
+
 =head2 IsGroup
 
 Returns true if this principal is a group. 
@@ -19,6 +21,8 @@ sub IsGroup {
         return undef;
     }
 }
+
+# }}}
 
 # {{{ IsUser
 
@@ -90,8 +94,6 @@ sub GrantRight {
                 ObjectId => 0,
                 @_);
 
-
-
     #ACL check handled in ACE.pm
     my $ace = RT::ACE->new( $self->CurrentUser );
 
@@ -101,7 +103,7 @@ sub GrantRight {
 
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
-    if ($type eq 'User') {
+    if ($type eq 'Usdasdasdssdasaddassadaser') {
         my $equiv_group = RT::Group->new($self->CurrentUser);
         $equiv_group->LoadACLEquivalenceGroup($self);
         unless ($equiv_group->Id) {
@@ -172,7 +174,7 @@ sub RevokeRight {
 
 
         unless ($ace->Id) {
-            return(0, $self->loc("ACE could not be found"));
+            return(0, $self->loc("ACE not found"));
         }
         return($ace->Delete);
     }

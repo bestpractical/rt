@@ -37,4 +37,6 @@ use File::Find;
 File::Find::find({wanted => \&wanted}, 't/autogen');
 sub wanted { /^autogen.*\.t\z/s && require $_; }
 
+File::Find::find({wanted => \&wanted_regression}, 't/regression');
+sub wanted_regression { /^*\.t\z/s && require $_; }
 

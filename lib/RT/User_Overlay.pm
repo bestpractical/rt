@@ -984,7 +984,7 @@ sub HasGroupRight {
     my $Group_id = $args{'GroupObj'}->Id if ($args{'GroupObj'});
 
     # Figure out whether a user has the right we're asking about.
-    my $retval = $self->_HasRight(
+    my $retval = $self->HasRight(
         ObjectType => 'Group',
         ObjectId => $Group_id,
         Right     => $args{'Right'},
@@ -1188,14 +1188,14 @@ sub HasQueueRight {
 
     # Figure out whether a user has the right we're asking about.
     if (defined $args{'TicketObj'} && $args{'TicketObj'}->Id) {
-        $retval = $self->_HasRight(
+        $retval = $self->HasRight(
          Right     => $args{'Right'},
          ObjectType  => 'Ticket',
          ObjectId    => $args{'TicketObj'}->Id
         );
     }
     elsif (defined $args{'QueueObj'} && $args{'QueueObj'}->Id) {
-        $retval = $self->_HasRight(
+        $retval = $self->HasRight(
          Right     => $args{'Right'},
          ObjectType  => 'Queue',
          ObjectId    => $args{'QueueObj'}->Id
@@ -1233,28 +1233,18 @@ sub HasSystemRight {
             "$self RT::User::HasSystemRight was passed in no right.");
         return (undef);
     }
-    return ( $self->_HasRight( Right => $right));
+    return ( $self->HasRight( Right => $right));
 
 }
 
 # }}}
 
-# {{{ sub _HasRight
+# {{{ sub HasRight
 
-=head2 sub _HasRight (Right => 'right' Ticket => 'ticketid', Queue => 'queueid')
+=head2 sub HasRight (Right => 'right' ObjectType => undef,  ObjectId => undef)
 
-_HasRight is a private helper method for checking a user's rights. It takes
-several options:
-
-=item Right is a textual right name
-
-=item Scope is a textual scope name. (As of July these were Queue, Ticket and System)
-
-=item AppliesTo is the numerical Id of the object identified in the scope. For tickets, this is the queue #. for queues, this is the queue #
-
-=item ExtendedPrincipals is an  SQL select clause which assumes that the only
-table in play is ACL.  It's used by HasQueueRight to pass in which 
-metaprincipals apply. Actually, it's probably obsolete. TODO: remove it.
+Checks to see whether the this user has the right "Right" for the Object
+of type ObjectType which has the id ObjectId
 
 Returns 1 if a matching ACE was found.
 
@@ -1262,7 +1252,7 @@ Returns undef if no ACE was found.
 
 =cut
 
-sub _HasRight {
+sub HasRight {
 
     my $self = shift;
     my %args = (
@@ -1282,7 +1272,7 @@ sub _HasRight {
 
     if ( !defined $args{'Right'} ) {
         require Carp;
-        $RT::Logger->debug(Carp::cluck("_HasRight called without a right"));
+        $RT::Logger->debug(Carp::cluck("HasRight called without a right"));
         return (undef);
     }
 

@@ -260,7 +260,7 @@ test:
 	$(PERL) -Ilib lib/t/smoke.t
 
 regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database
-	(cd ./lib; $(PERL) Makefile.PL && make testifypods && $(PERL) t/regression.t)
+	(cd ./lib; $(PERL) Makefile.PL && make testifypods && $(PERL) t/02regression.t)
 		
 regression-instruct:
 	@echo "About to wipe your database for a regression test. ABORT NOW with Control-C"
@@ -369,9 +369,17 @@ bin-install:
 	$(PERL) -p -i -e " s'!!PERL!!'"$(PERL)"'g;\
 				s'!!RT_LIB_PATH!!'"$(RT_LIB_PATH)"'g;"\
 		$(BINARIES)
+
+
+
+
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside
+
+regenerate-catalogs:
+	$(PERL) sbin/extract-message-catalog
+
 
 factory: createdb insert-schema
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
@@ -409,10 +417,6 @@ tag-and-release:
 
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
-
-dist: commit predist
-	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
-	ln -s ./$(TAG).tar.gz /home/ftp/pub/rt/devel/rt.tar.gz
 
 rpm:
 	(cd ..; tar czvf /usr/src/redhat/SOURCES/rt.tar.gz rt)

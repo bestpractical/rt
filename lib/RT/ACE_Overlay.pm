@@ -25,11 +25,11 @@ use RT::Principal;
 
 
 use vars qw (%SCOPES
-   	     %QUEUERIGHTS
-	     %SYSTEMRIGHTS
-             %GROUPRIGHTS
-	     %LOWERCASERIGHTNAMES
-	    ); 
+  %QUEUERIGHTS
+  %SYSTEMRIGHTS
+  %GROUPRIGHTS
+  %LOWERCASERIGHTNAMES
+);
 
 %SCOPES = (
 	   System => 'System-level right',
@@ -150,7 +150,7 @@ sub LoadByValues {
       return (0, $self->loc("ACE not found"));
   }
   # if we could
-  return ($self->Id, $self->loc("ACE Loaded"));
+  return ($self->Id, $self->loc("Right Loaded"));
   
 }
 
@@ -167,138 +167,419 @@ PARAMS is a parameter hash with the following elements:
    RightName => the name of a right. in any case
    ObjectType => "System" | "Queue" | "Group"
    ObjectId => a queue id, group id or undef
+   DelegatedBy => The Principal->Id of the user delegating the right
+   DelegatedFrom => The id of the ACE which this new ACE is delegated from
 
 =cut
 
 sub Create {
     my $self = shift;
-    my %args = ( PrincipalId => undef,
-         PrincipalType => undef,
-		 RightName => undef,
-		 ObjectType => undef,
-		 ObjectId => undef,
-		 @_
-	       );
-    
+    my %args = (
+        PrincipalId   => undef,
+        PrincipalType => undef,
+        RightName     => undef,
+        ObjectType    => undef,
+        ObjectId      => undef,
+        @_
+    );
+
     # {{{ Validate the principal
     my $princ_obj = RT::Principal->new($RT::SystemUser);
-    $princ_obj->Load($args{'PrincipalId'});
-    my $princ_id = $princ_obj->Id();
-    
-    unless ($princ_id) {
-	return (0, $self->loc('Principal [_1] not found.', $args{'PrincipalId'}));
+    $princ_obj->Load( $args{'PrincipalId'} );
+
+    # Rights never get granted to users. they get granted to their 
+    # ACL equivalence groups
+   if ($args{'PrincipalType'} eq 'User') {
+        my $equiv_group = RT::Group->new($self->CurrentUser);
+        $equiv_group->LoadACLEquivalenceGroup($princ_obj);
+        unless ($equiv_group->Id) {
+            $RT::Logger->crit("No ACL equiv group for princ ".$self->ObjectId);
+            return(0,$self->loc('System Error. Right not granted.'));
+        }
+        $princ_obj = $equiv_group->PrincipalObj();
+        $args{'PrincipalType'} = 'Group';
+
+    }
+
+    unless ($princ_obj->id) {
+        return ( 0,
+            $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} ) );
     }
 
     # }}}
-    
-    
-    # {{{ Check the ACL
-    if ($args{'ObjectType'} eq 'System') {
-	
-	unless ($self->CurrentUserHasSystemRight('ModifyACL')) {
-	    return(0, $self->loc("Permission Denied"));
-	}
-    }
-    
-    elsif ($args{'ObjectType'} eq 'Queue') {
-	    unless ($self->CurrentUserHasQueueRight( Queue => $args{'ObjectId'}, Right => 'ModifyACL')) {
-	        return (0, $self->loc('Permission Denied'));
-	    }
-    }
-    elsif ($args{'ObjectType'} eq 'Group') {
-	    unless ($self->CurrentUserHasGroupRight( Group => $args{'ObjectId'}, Right => 'AdminGroup')) {
-	        return (0, $self->loc('Permission Denied'));
-	    }
-    }
+
     #If it's not a scope we recognise, something scary is happening.
-    else {
-	$RT::Logger->err("RT::ACE->Create got an object type it didn't recognize: ".  $args{'ObjectType'}." Bailing. \n");
-	    return(0,$self->loc("System error. Unable to grant rights."));
+    unless ($args{'ObjectType'} =~ /^(?:Group|Queue|System)$/) {
+        $RT::Logger->err(
+            "RT::ACE->Create got an object type it didn't recognize: "
+              . $args{'ObjectType'}
+              . " Bailing. \n" );
+        return ( 0, $self->loc("System error. Right not granted.") );
     }
+
+    # {{{ Check the ACL
+
+
+    if ( $args{'ObjectType'} eq 'System' ) {
+        unless ( $self->CurrentUserHasSystemRight('ModifyACL') ) {
+            return ( 0, $self->loc("Permission Denied") );
+        }
+    }
+
+    elsif ( $args{'ObjectType'} eq 'Queue' ) {
+        unless (
+            $self->CurrentUserHasQueueRight(
+                Queue => $args{'ObjectId'},
+                Right => 'ModifyACL'
+            )
+          )
+        {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
+    elsif ( $args{'ObjectType'} eq 'Group' ) {
+        unless (
+            $self->CurrentUserHasGroupRight(
+                Group => $args{'ObjectId'},
+                Right => 'AdminGroup'
+            )
+          )
+        {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
+
 
     # }}}
 
     # {{{ Canonicalize and check the right name
-    $args{'RightName'} = $self->CanonicalizeRightName($args{'RightName'});
-    
-    #check if it's a valid RightName
-    if ($args{'ObjectType'} eq 'Queue') {
-	unless (exists $QUEUERIGHTS{$args{'RightName'}}) {
-	    return(0, $self->loc('Invalid right'));
-	}	
-	}	
-    elsif ($args{'ObjectType' eq 'Group'}) {
-	unless (exists $GROUPRIGHTS{$args{'RightName'}}) {
-	    return(0, $self->loc('Invalid right'));
-	}		    
-    }	
-    elsif ($args{'ObjectType' eq 'System'}) {
-	unless (exists $SYSTEMRIGHTS{$args{'RightName'}}) {
-	    return(0, $self->loc('Invalid right'));
-	}		    
-    }	
-    # }}}
-    
-    # Make sure the right doesn't already exist.
-    $self->LoadByCols (PrincipalId => $princ_id,
-              PrincipalType => $args{'PrincipalType'},
-		       RightName => $args{'RightName'},
-		       ObjectType => $args {'ObjectType'},
-		       ObjectId => $args{'ObjectId'}
-		      );
-    if ($self->Id) {
-	    return (0, $self->loc('That user already has that right'));
-    }	
+    $args{'RightName'} = $self->CanonicalizeRightName( $args{'RightName'} );
 
-    my $id = $self->SUPER::Create( PrincipalId => $princ_id,
-                   PrincipalType => $args{'PrincipalType'},
-				   RightName => $args{'RightName'},
-				   ObjectType => $args {'ObjectType'},
-				   ObjectId => $args{'ObjectId'}
-				 );
-    
-   
+    #check if it's a valid RightName
+    if ( $args{'ObjectType'} eq 'Queue' ) {
+        unless ( exists $QUEUERIGHTS{ $args{'RightName'} } ) {
+            return ( 0, $self->loc('Invalid right') );
+        }
+    }
+    elsif ( $args{ 'ObjectType' eq 'Group' } ) {
+        unless ( exists $GROUPRIGHTS{ $args{'RightName'} } ) {
+            return ( 0, $self->loc('Invalid right') );
+        }
+    }
+    elsif ( $args{ 'ObjectType' eq 'System' } ) {
+        unless ( exists $SYSTEMRIGHTS{ $args{'RightName'} } ) {
+            return ( 0, $self->loc('Invalid right') );
+        }
+    }
+
+    # }}}
+
+    # Make sure the right doesn't already exist.
+    $self->LoadByCols(
+        PrincipalId   => $princ_obj->id,
+        PrincipalType => $args{'PrincipalType'},
+        RightName     => $args{'RightName'},
+        ObjectType    => $args{'ObjectType'},
+        ObjectId      => $args{'ObjectId'},
+        DelegatedBy   => 0,
+        DelegatedFrom   => 0
+    );
+    if ( $self->Id ) {
+        return ( 0, $self->loc('That user already has that right') );
+    }
+
+    my $id = $self->SUPER::Create(
+        PrincipalId   => $princ_obj->id,
+        PrincipalType => $args{'PrincipalType'},
+        RightName     => $args{'RightName'},
+        ObjectType    => $args{'ObjectType'},
+        ObjectId      => $args{'ObjectId'},
+        DelegatedBy   => 0,
+        DelegatedFrom   => 0
+    );
+
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
     RT::User->_InvalidateACLCache();
 
-    if ($id > 0 ) {
-	    return ($id, $self->loc('Right Granted') );
+    if ( $id > 0 ) {
+        return ( $id, $self->loc('Right Granted') );
     }
     else {
-	    return(0, $self->loc('System Error. right not granted'));
+        return ( 0, $self->loc('System error. Right not granted.') );
     }
 }
 
 # }}}
 
+# {{{ sub Delegate
+
+=head2 Delegate <PARAMS>
+
+This routine delegates the current ACE to a principal specified by the
+B<PrincipalId>  parameter.
+
+Returns an error if the current user doesn't have the right to be delegated
+or doesn't have the right to delegate rights.
+
+Always returns a tuple of (ReturnValue, Message)
+
+=begin testing
+
+my $user_a = RT::User->new($RT::SystemUser);
+$user_a->Create( Name => 'DelegationA', Privileged => 1);
+ok ($user_a->Id, "Created delegation user a");
+
+my $user_b = RT::User->new($RT::SystemUser);
+$user_b->Create( Name => 'DelegationB', Privileged => 1);
+ok ($user_b->Id, "Created delegation user b");
+
+my $q = RT::Queue->new($RT::SystemUser);
+$q->Create(Name =>'DelegationTest');
+ok ($q->Id, "Created a delegation test queue");
+
+#ok($user_a->HasSystemRight('AdminPersonalGroup')    ,"user a has the right 'AdminPersonalGroups' directly");
+
+my $a_delegates = RT::Group->new($user_a);
+$a_delegates->CreatePersonalGroup(Name => 'Delegates');
+#ok( $a_delegates->Id   ,"user a creates a personal group 'Delegates'");
+#ok( $a_delegates->AddMember($user_b->PrincipalId)   ,"user a adds user b to personal group 'delegates'");
+ok( !$user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)    ,"user b does not have the right to OwnTicket' in queue 'DelegationTest'");
+#ok(  $user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user a has the right to 'OwnTicket' in queue 'DelegationTest'");
+ok(!$user_a->HasSystemRight('DelegateRights')    ,"user a does not have the right 'delegate rights'");
+
+
+TODO: {
+
+    local $TODO = "ACL Delegation testing, once we finish implementing ACL delegation";
+
+# ok(    ,"user a tries and fails to delegate the right 'ownticket' in queue 'DelegationTest' to personal group 'delegates'");
+# ok(    ,"user a is granted the right to 'delegate rights'");
+# ok(    ,"user a tries and succeeds to delegate the right 'ownticket' in queue 'DelegationTest' to personal group 'delegates'");
+# ok(  $user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user b has the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"user a removes b from pg 'delegates'");
+# ok(  !$user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user b does not have the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"user a adds user b to personal group 'delegates'");
+# ok(   $user_b>-HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id) ,"user b has the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"user a revokes pg 'delegates' right to 'OwnTickets' in queue 'DelegationTest'");
+# ok( ! $user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)   ,"user b does not have the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"user a grants pg 'delegates' right to 'OwnTickets' in queue 'DelegationTest'");
+
+# ok(    ,"rt::system revokes user a's right to 'OwnTickets' in queue 'DelegationTest'");
+
+# ok( !$user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)    ,"user a does not have the right to own tickets in queue 'DelegationTest'");
+
+# ok( !$user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)   ,"user b does not have the right to own tickets in queue 'DelegationTest'");
+
+# ok(    ,"rt::system grants user a's right to 'OwnTickets' in queue 'DelegationTest'");
+
+# ok( $user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)   ,"user a has the right to own tickets in queue 'DelegationTest'");
+
+# ok(  !$user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user b does not have the right to own tickets in queue 'DelegationTest'");
+
+# ok(    ,"create a group del1");
+# ok(    ,"create a group del2");
+# ok(    ,"make del2 a member of del1");
+# ok(    ,"create a group del2a");
+# ok(    ,"make del2a a member of del2");
+# ok(    ,"create a group del2b");
+# ok(    ,"make del2b a member of del2");
+# ok(    ,"make 'user a' a member of del2b");
+# ok(    ,"make 'user a' a member of del2");
+
+
+# ok(    ,"revoke user a's right to 'OwnTicket' in queue 'DelegationTest'");
+# ok( !$user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)    ,"make sure that user a can't own tickets in queue 'DelegationTest'");
+# ok(    ,"grant del1  the right to 'OwnTicket' in queue 'DelegationTest'");
+# ok(  $user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"make sure that user a can own tickets in queue 'DelegationTest'");
+
+# ok(    ,"user a tries and succeeds to delegate the right 'ownticket' in queue 'DelegationTest' to personal group 'delegates'");
+# ok(  $user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user b has the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"remove user a from group del2b");
+# ok(  $user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user a has the right to own tickets in queue 'DelegationTest'");
+# ok( $user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)    ,"user b has the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"remove user a from group del2");
+# ok(  !$user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user a does not have the right to own tickets in queue 'DelegationTest' ");
+# ok(  !$user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user b does not have the right to own tickets in queue 'DelegationTest' ");
+
+
+# ok(    ,"make user a a member of group del2");
+# ok(    ,"grant the right 'own tickets' in queue 'DelegationTest' to group del2");
+# ok(    ,"user a tries and succeeds to delegate the right 'ownticket' in queue 'DelegationTest' to personal group 'delegates'");
+# ok( $user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)   ,"user b has the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"revoke del2's right 'own tickets' in queue 'DelegationTest'");
+# ok(  !$user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user a does not have the right to own tickets in queue 'DelegationTest'");
+# ok(  !$user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)   ,"user b does not have the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"grant the right 'own tickets' in queue 'DelegationTest' to group del2");
+# ok(    ,"user a tries and succeeds to delegate the right 'ownticket' in queue 'DelegationTest' to personal group 'delegates'");
+# ok( $user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)    ,"user b has the right to own tickets in queue 'DelegationTest'");
+# ok(    ,"remove user a from group del2");
+# ok(  !$user_a->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)  ,"user a does not have the right to own tickets in queue 'DelegationTest'");
+# ok(  !$user_b->HasRight(RightName => 'OwnTicket', ObjectType => 'Queue', ObjectId => $q->Id)   ,"user b does not have the right to own tickets in queue 'DelegationTest'");
+
+}
+
+
+=end testing
+
+=cut
+
+sub Delegate {
+    my $self = shift;
+    my %args = (
+        PrincipalId   => undef,
+        @_
+    );
+
+    # {{{ Validate the principal
+    my $princ_obj = RT::Principal->new($RT::SystemUser);
+    $princ_obj->Load( $args{'PrincipalId'} );
+
+    unless ($princ_obj->Id) {
+        return ( 0,
+            $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} ) );
+    }
+
+    # }}}
+
+    # {{{ Canonicalize and check the right name
+    $args{'RightName'} = $self->CanonicalizeRightName( $args{'RightName'} );
+
+    #check if it's a valid RightName
+    if ( $args{'ObjectType'} eq 'Queue' ) {
+        unless ( exists $QUEUERIGHTS{ $args{'RightName'} } ) {
+            return ( 0, $self->loc('Invalid right') );
+        }
+    }
+    elsif ( $args{ 'ObjectType' eq 'Group' } ) {
+        unless ( exists $GROUPRIGHTS{ $args{'RightName'} } ) {
+            return ( 0, $self->loc('Invalid right') );
+        }
+    }
+    elsif ( $args{ 'ObjectType' eq 'System' } ) {
+        unless ( exists $SYSTEMRIGHTS{ $args{'RightName'} } ) {
+            return ( 0, $self->loc('Invalid right') );
+        }
+    }
+
+    # }}}
+
+    # {{{ Check the ACL
+
+
+    # First, we check to se if the user is delegating rights and
+    # they have the permission to
+    unless($self->CurrentUserHasSystemRight('DelegateRights')) { 
+            return ( 0, $self->loc("Permission Denied") );
+    }
+
+    unless ($self->PrincipalObj->IsGroup && 
+            $self->PrincipalObj->Object->HasMemberRecursively($self->CurrentUser->PrincipalId)) {
+            return ( 0, $self->loc("Permission Denied") );
+    }
+
+    # }}}
+
+    # Make sure the right doesn't already exist.
+    $self->LoadByCols(
+        PrincipalId   => $princ_obj->Id,
+        PrincipalType => 'Group', 
+        RightName     => $self->RightName,
+        ObjectType    => $self->ObjectType,
+        ObjectId      => $self->ObjectId,
+        DelegatedBy   => $self->CurrentUser->PrincipalId,
+        DelegatedFrom   => $self->id
+    );
+    if ( $self->Id ) {
+        return ( 0, $self->loc('That user already has that right') );
+    }
+
+    my $id = $self->SUPER::Create(
+        PrincipalId   => $princ_obj->Id,
+        PrincipalType => 'Group',             # do we want to hardcode this?
+        RightName     => $self->RightName,
+        ObjectType    => $self->ObjectType,
+        ObjectId      => $self->ObjectId,
+        DelegatedBy   => $self->CurrentUser->PrincipalId,
+        DelegatedFrom => $self->id );
+
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+    # TODO what about the groups key cache?
+    RT::User->_InvalidateACLCache();
+
+    if ( $id > 0 ) {
+        return ( $id, $self->loc('Right Delegated') );
+    }
+    else {
+        return ( 0, $self->loc('System error. Right not delegated.') );
+    }
+}
+
+# }}}
 
 # {{{ sub Delete 
 
-=head2 Delete
+=head2 Delete { InsideTransaction => undef}
 
-Delete this object. This method should ONLY ever be called from RT::User or RT::Group
+Delete this object. This method should ONLY ever be called from RT::User or RT::Group (or from itself)
+If this is being called from within a transaction, specify a true value for the parameter InsideTransaction.
+Really, DBIx::SearchBuilder should use and/or fake subtransactions
+
+This routine will also recurse and delete any delegations of this right
 
 =cut
 
 sub Delete {
     my $self = shift;
-    
-    unless ($self->CurrentUserHasRight('ModifyACL')) {
-	return (0, $self->loc('Permission Denied'));
+    my %args = ( InsideTransaction => undef,
+                 @_ 
+                 );
+
+    my $InsideTransaction = $args{'InsideTransaction'};
+
+
+    unless ($self->Id) {
+        return (0, $self->loc('Right not loaded.'));
+    }
+
+    # A user can delete an ACE if the current user has the right to modify it and it's not a delegated ACE
+    # or if it's a delegated ACE and it was delegated by the current user
+    unless ( ($self->CurrentUserHasRight('ModifyACL') && $self->DelegatedBy == 0) ||
+           ($self->DelegatedBy == $self->CurrentUser->PrincipalId ) ) {
+	    return (0, $self->loc('Permission Denied'));
     }	
     
-    
+    $RT::Handle->BeginTransaction() unless $InsideTransaction;
+
+    my $delegated_from_this = RT::ACL->new($RT::SystemUser);
+    $delegated_from_this->Limit(FIELD => 'DelegatedFrom',
+                                OPERATOR => '=',
+                                VALUE => $self->Id);
+
+    my $delete_succeeded = 1;
+    my $submsg;
+    while (my $delegated_ace = $delegated_from_this->Next && $delete_succeeded) {
+         ($delete_succeeded, $submsg) =  $delegated_ace->Delete(InsideTransaction => 1);
+    }
+
+    unless ($delete_succeeded) {
+        $RT::Handle->Rollback() unless $InsideTransaction;
+        return ( 0, $self->loc('Right could not be revoked') );
+    }
+
     my ($val,$msg) = $self->SUPER::Delete(@_);
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
     RT::User->_InvalidateACLCache();
+
     if ($val) {
-	return ($val, $self->loc('Right revoked'));
-    }	
+        $RT::Handle->Commit() unless $InsideTransaction;
+        return ( $val, $self->loc('Right revoked') );
+    }
     else {
-	return (0, $self->loc('Right could not be revoked'));
+        $RT::Handle->Rollback() unless $InsideTransaction;
+        return ( 0, $self->loc('Right could not be revoked') );
     }
 }
 

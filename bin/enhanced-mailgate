@@ -282,7 +282,7 @@ elsif (!defined($TicketId)) {
 		       Explanation => $ErrStr,
 		       MIMEObj => $entity
 		     );
-	    $RT::Logger->error(loc("Create failed: [_1]/[_2]/[_3]", $id, $Transaction, $ErrStr ));
+	    $RT::Logger->error("Create failed: [_1]/[_2]/[_3]", $id, $Transaction, $ErrStr );
 	}	
     }
     # }}}

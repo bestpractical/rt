@@ -32,6 +32,7 @@ my @tables = $dbh->tables();
 my ( %tablemap, $typemap, %modulemap );
 
 foreach my $table (@tables) {
+    next if ($table eq 'sessions');
     $tablemap{$table}  = $table;
     $modulemap{$table} = $table;
     if ( $table =~ /^(.*)s$/ ) {
@@ -51,7 +52,7 @@ $typemap{'LastUpdated'}   = 'auto';
 $typemap{'LastUpdatedBy'} = 'auto';
 
 foreach my $table (@tables) {
-
+    next if ($table eq 'sessions');
     my $tablesingle = $table;
     $tablesingle =~ s/s$//;
     my $tableplural = $tablesingle . "s";

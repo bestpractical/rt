@@ -155,6 +155,8 @@ CREATE TABLE ACL (
   RightName varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
   ObjectId integer NOT NULL default 0,
+  DelegatedBy integer NOT NULL default 0, #foreign key to principals with a userid
+  DelegatedFrom integer NOT NULL default 0, #foreign key to ACL
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
@@ -347,6 +349,7 @@ CREATE TABLE CustomFields (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
+# }}}
 
 # {{{ CustomFieldValues 
 
@@ -366,8 +369,15 @@ CREATE TABLE CustomFieldValues (
 
 # }}}
 
+# {{{ Sessions
+
+# sessions is used by Apache::Session to keep sessions in the database.
+# We should have a reaper script somewhere.
+
 CREATE TABLE sessions (
     id char(32) NOT NULL,
     a_session TEXT,
     PRIMARY KEY (id)
 );
+
+# }}}

@@ -380,7 +380,7 @@ sub AddWatcher {
         }
      else {
             $RT::Logger->warn( "$self -> AddWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Ticket->AddWatcher') );
+            return ( 0, $self->loc('Error in parameters to Queue->AddWatcher') );
         }
     }
 

@@ -106,7 +106,7 @@ RT/User.pm
 RT/User_Overlay.pm
 RT/Users.pm
 RT/Users_Overlay.pm
-t/harness.t
-t/regression.t
-t/smoke.t
+t/01harness.t
+t/02regression.t
+t/00smoke.t
 test.pl

@@ -62,4 +62,54 @@ be revoked
           this may mean that we need to actually loop through and check
           a bunch of possible delegations. Or can we craft a "has delegated 
           right" ACL check.
-             
+          
+
+
+
+
+
+
+ACL 1 Group Q has the right to Frob ObjectI.
+ACL 2 User A has the right "DelegateRights"
+
+Group Q has the member Group S
+Group S has the member Group R
+Group S has the member Group T
+Group R has the member user A
+Group T has the member user A
+
+User A delegates to  Group P the right to Frob  ObjectI
+
+        New ACL rule:
+
+        ACL 3: Group P has the right to Frob ObjectI 
+                     as delegated from ACL1 by User A
+
+
+In the case where ACL1 is revoked:
+
+        find all acls which are delegated from ACL1.
+                Delete them
+
+In the case where User A is removed from group R
+
+        Get the list of all groups that A was in by way of group R before the removal
+        Get the list of all groups that A is in _after_ the removal.
+
+        Find all the ACEs granted to each group that A is no longer in.
+        For each ACE in that list, find all the rights that A has delegated.
+                Whack them.        
+
+In the case where Group S is removed from group Q
+
+
+        Get a list of all groups that S was in by way of Q before the removal
+        Call this list O.
+
+        For each user X who's a member of S (directly or indirectly):
+        Get a list of  all groups that X is in after removal.
+        For each group in O that X is no longer a member of:
+                Find all ACEs granted to O
+                For each ACE, look up all the delegations that X has made.
+                        For each delegation 
+                                WHACK IT

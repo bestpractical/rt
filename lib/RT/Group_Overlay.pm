@@ -429,42 +429,46 @@ sub _CreateACLEquivalenceGroup {
 
 A helper subroutine which creates a personal group. Generally,
 personal groups are used for ACL delegation and adding to ticket roles
-
+PrincipalId defaults to the current user's principal id.
 
 =cut
 
 sub CreatePersonalGroup {
     my $self = shift;
-    my %args = ( Name => undef,
-		 Description => undef,
-		 PrincipalId => undef,
-		@_);
+    my %args = (
+        Name        => undef,
+        Description => undef,
+        PrincipalId => $self->CurrentUser->PrincipalId,
+        @_
+    );
 
+    if ( $self->CurrentUser->PrincipalId == $args{'PrincipalId'} ) {
 
-   if ($self->CurrentUser->PrincipalId == $args{'PrincipalId'}) {
+        unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups') ) {
+            $RT::Logger->warning( $self->CurrentUser->Name
+                  . " Tried to create a group without permission." );
+            return ( 0, $self->loc('Permission Denied') );
+        }
 
-    unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups') ) {
-        $RT::Logger->warning( $self->CurrentUser->Name
-              . " Tried to create a group without permission." );
-        return ( 0, $self->loc('Permission Denied') );
+    }
+    else {
+        unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
+            $RT::Logger->warning( $self->CurrentUser->Name
+                  . " Tried to create a group without permission." );
+            return ( 0, $self->loc('Permission Denied') );
+        }
+
     }
 
-    } else {
-    	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
-       	 $RT::Logger->warning( $self->CurrentUser->Name
-              . " Tried to create a group without permission." );
-        return ( 0, $self->loc('Permission Denied') );
-    }
-
-
-	
-    }	
-
-
-    return($self->_Create( Domain => 'Personal', Type => '', 
-			   Instance => $args{'PrincipalId'}, 
-		           Name => $args{'Name'}, 
-			   Description => $args{'Description'}));
+    return (
+        $self->_Create(
+            Domain      => 'Personal',
+            Type        => '',
+            Instance    => $args{'PrincipalId'},
+            Name        => $args{'Name'},
+            Description => $args{'Description'}
+        )
+    );
 }
 
 # }}}
