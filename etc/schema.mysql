@@ -54,28 +54,28 @@ CREATE TABLE Scrips (
 
 
 # {{{ Values for Scrips
-INSERT INTO Scrips VALUES (1,'Autoreply','Sends an automatic response to the requestor when a ticket was created',
-			  'Create','AutoReply',1,'$Requestor',0,NULL,0,NULL);
+INSERT INTO Scrips VALUES (1,'Autoreply', 'Sends an automatic response to the requestor when a ticket was created',
+			  'Create','AutoReply',1,'',0,NULL,0,NULL);
 
 INSERT INTO Scrips VALUES (2,'NotifyOwnerOnTransaction','Sends mail to owner when anything happens',
-			  'Any','SendEmail',2,'$Owner',0,NULL,0,NULL);
+			  'Any','Notify',2,'Owner',0,NULL,0,NULL);
 
 INSERT INTO Scrips VALUES (4,'NotifyAdminWatchersOnCorrespond','Sends mail to administrative watchers when email comes in',
-			  'Correspond','NotifyWatchers',3,'Admin',0,NULL,0,NULL);
+			  'Correspond','Notify',3,'Admin',0,NULL,0,NULL);
 INSERT INTO Scrips VALUES (6, 'NotifyRegularWatchersOnCorrespond', 'Send mail to non-administrative watchers whenever correspondence comes in',
-			  'Correspond','NotifyWatchers',5,'Regular',0,NULL,0,NULL);
+			  'Correspond','Notify',5,'Requestors',0,NULL,0,NULL);
 
 INSERT INTO Scrips VALUES (3, 'NotifyAllWatchersOnCorrespond', 'Send mail to all watchers whenever correspondence comes in',
-			  'Correspond','NotifyWatchers',5,'All',1,0,1,0);
+			  'Correspond','Notify',5,'All',1,0,1,0);
 
 INSERT INTO Scrips VALUES (7, 'NotifyAdminWatchersOnComment', 'Send mail to administrative watchers whenever comments come in',
-			  'Comment','NotifyWatchers',5,'Admin',1,0,1,0);
+			  'Comment','Notify',5,'Admin',1,0,1,0);
 
 INSERT INTO Scrips VALUES (8, 'NotifyAllWatchersOnStatus', 'Send mail to watchers whenever a ticket\'s status changes',
-			  'Status','NotifyWatchers',5,'All',1,0,1,0);
+			  'Status','Notify',5,'All',1,0,1,0);
 
 INSERT INTO Scrips VALUES (9, 'NotifyAllWatchersOnResolve', 'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
-			  'Status','NotifyWatchersOnResolve',6,'All',1,0,1,0);
+			  'Status','NotifyOnResolve',6,'All',1,0,1,0);
 
 
 # }}}

@@ -194,6 +194,26 @@ sub Watchers {
 }
 # }}}
 
+# {{{ sub WatchersAsString
+
+#TODO genericise this routine and use it for CcAsString, AdminCcAsString,
+# Requestors as string
+
+sub WatchersAsString {
+  my $self = shift;
+  if (!defined $self->{'WatchersAsString'}) {
+    $self->{'WatchersAsString'} = "";
+    while (my $watcher = $self->Watchers->Next) {
+      $self->{'WatchersAsString'} .= $watcher->Email.", ";    
+     }
+    $self->{'WatchersAsString'} =~ s/, $//;
+  }
+  return ( $self->{'WatchersAsString'});
+  
+}
+
+# }}}
+
 # {{{ sub Requestors
 sub Requestors {
   my $self = shift;
@@ -215,18 +235,10 @@ sub RequestorsAsString {
     $self->{'RequestorsAsString'} = "";
     while (my $requestor = $self->Requestors->Next) {
       $self->{'RequestorsAsString'} .= $requestor->Email.", ";    
- 
-
-    }
-
+     }
     $self->{'RequestorsAsString'} =~ s/, $//;
-    
-#    print STDERR "R as S is ". $self->{'RequestorsAsString'} ."\n";
   }
-  
-
   return ( $self->{'RequestorsAsString'});
-  
 }
 
 # }}}
@@ -292,7 +304,6 @@ sub AdminCcAsString {
 }
 
 # }}}  
-
 
 # {{{ sub ValidateQueue
 
@@ -367,6 +378,7 @@ sub Queue {
 #
 
 # {{{ sub Owner
+
 sub Owner {
   my $self = shift;
 	
@@ -386,6 +398,16 @@ sub Owner {
   #Return the owner object
   return ($self->{'owner'});
 }
+
+# }}}
+
+# {{{ sub OwnerAsString 
+sub OwnerAsString {
+  my $self = shift;
+  return($self->Owner->EmailAddress);
+
+}
+
 # }}}
 
 # {{{ sub Take
