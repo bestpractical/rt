@@ -3,10 +3,10 @@
 <LI><a href="article.html?id=<%$article->Id%>"><% $article->Summary %></a>
 <BR>
 <%$article->Content |n%>
-</LI>
 % if ($Depth > 0) {
 <& ArticleHierarchy, parent => $article->Id , Depth => $Depth &> 
 % }
+</LI>
 % }
 </UL>
 <%INIT>
