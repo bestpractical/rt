@@ -40,7 +40,7 @@ database can improve performance:
 
   ALTER TABLE groups rename instance to instance1;
   ALTER TABLE groups add instance int;
-  UPDATE  groups SET instance = instance1::text::int where btrim(instance) <> ''
+  UPDATE groups SET instance = instance1::text::int where btrim(instance1) <> '';
   ALTER TABLE groups drop column instance1;
 
 
