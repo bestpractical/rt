@@ -43,6 +43,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 RT is an enterprise-grade issue tracking system. It allows
 organizations to keep track of their to-do lists, who is working
 on which tasks, what's already been done, and when tasks were
@@ -175,6 +176,9 @@ want to read a more comprehensive installation guide at:
                 --datadir etc/upgrade/<version>
             /opt/rt3/sbin/rt-setup-database --action insert \
                  --datadir etc/upgrade/<version>
+
+        Some of these commands will generate errors related to missing files.
+        That just means that no action was needed.
 
 
 5c  FOR UPGRADING: (From RT 2.0.x)
