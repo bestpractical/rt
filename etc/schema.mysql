@@ -8,10 +8,10 @@ CREATE TABLE KeywordSelects (
   ObjectField varchar(32) NULL  ,
   ObjectValue varchar(255) NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id),
-  INDEX (Keyword),
-  INDEX (ObjectType, ObjectField, ObjectValue)
+  PRIMARY KEY (id)
 );
+CREATE INDEX KeywordSelects1 ON KeywordSelects (Keyword);
+CREATE INDEX KeywordSelects2 ON KeywordSelects (ObjectType, ObjectField, ObjectValue);
 CREATE TABLE Attachments (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   TransactionId integer NOT NULL  ,
@@ -25,9 +25,10 @@ CREATE TABLE Attachments (
   Headers LONGTEXT NULL  ,
   Creator integer NULL  ,
   Created DATETIME NULL  ,
-  PRIMARY KEY (id),
-  INDEX (TransactionId)
+  PRIMARY KEY (id)
 );
+CREATE INDEX Attachments1 ON Attachments (Parent);
+CREATE INDEX Attachments2 ON Attachments (TransactionId);
 CREATE TABLE Queues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(40) NOT NULL  ,
@@ -42,9 +43,9 @@ CREATE TABLE Queues (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id),
-  UNIQUE (Name)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX Queues1 ON Queues (Name);
 CREATE TABLE Links (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Base varchar(240) NULL  ,
@@ -56,17 +57,17 @@ CREATE TABLE Links (
   LastUpdated DATETIME NULL  ,
   Creator integer NULL  ,
   Created DATETIME NULL  ,
-  PRIMARY KEY (id),
-  UNIQUE (Base, Target, Type)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
 CREATE TABLE Groups (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(16) NULL  ,
   Description varchar(64) NULL  ,
   Pseudo integer NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id),
-  UNIQUE (Name)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX Groups1 ON Groups (Name);
 CREATE TABLE Watchers (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Type varchar(16) NULL  ,
@@ -79,9 +80,9 @@ CREATE TABLE Watchers (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
-  PRIMARY KEY (id),
-  INDEX (Scope, Value, Type, Owner)
+  PRIMARY KEY (id)
 );
+CREATE INDEX Watchers1 ON Watchers (Scope, Value, Type, Owner);
 CREATE TABLE ScripConditions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NULL  ,
@@ -109,6 +110,8 @@ CREATE TABLE Transactions (
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 );
+CREATE INDEX Transactions1 ON Transactions (Ticket);
+CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 CREATE TABLE Scrips (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   ScripCondition integer NULL  ,
@@ -129,38 +132,38 @@ CREATE TABLE ACL (
   RightName varchar(25) NULL  ,
   RightScope varchar(25) NULL  ,
   RightAppliesTo integer NULL  ,
-  PRIMARY KEY (id),
-  INDEX (RightScope, RightAppliesTo, RightName, PrincipalType, PrincipalId)
+  PRIMARY KEY (id)
 );
+CREATE INDEX ACL1 ON ACL (RightScope, RightAppliesTo, RightName, PrincipalType, PrincipalId);
 CREATE TABLE GroupMembers (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   GroupId integer NULL  ,
   UserId integer NULL  ,
-  PRIMARY KEY (id),
-  UNIQUE (GroupId, UserId)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, UserId);
 CREATE TABLE ObjectKeywords (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Keyword integer NOT NULL  ,
   KeywordSelect integer NOT NULL  ,
   ObjectType varchar(32) NOT NULL  ,
   ObjectId integer NOT NULL  ,
-  PRIMARY KEY (id),
-  UNIQUE (ObjectId, ObjectType, KeywordSelect, Keyword),
-  INDEX (ObjectId, ObjectType),
-  INDEX (Keyword)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX ObjectKeywords1 ON ObjectKeywords (ObjectId, ObjectType, KeywordSelect, Keyword);
+CREATE INDEX ObjectKeywords2 ON ObjectKeywords (ObjectId, ObjectType);
+CREATE INDEX ObjectKeywords3 ON ObjectKeywords (Keyword);
 CREATE TABLE Keywords (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NOT NULL  ,
   Description varchar(255) NULL  ,
   Parent integer NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id),
-  UNIQUE (Name, Parent),
-  INDEX (Name),
-  INDEX (Parent)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX Keywords1 ON Keywords (Name, Parent);
+CREATE INDEX Keywords2 ON Keywords (Name);
+CREATE INDEX Keywords3 ON Keywords (Parent);
 CREATE TABLE Users (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(120) NOT NULL  ,
@@ -196,10 +199,10 @@ CREATE TABLE Users (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id),
-  UNIQUE (Name),
-  INDEX (EmailAddress)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX Users1 ON Users (Name);
+CREATE INDEX Users2 ON Users (EmailAddress);
 CREATE TABLE Tickets (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   EffectiveId integer NULL  ,
@@ -225,10 +228,12 @@ CREATE TABLE Tickets (
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id),
-  INDEX (Queue, Status),
-  INDEX (id, Status)
+  PRIMARY KEY (id)
 );
+CREATE INDEX Tickets1 ON Tickets (Queue, Status);
+CREATE INDEX Tickets2 ON Tickets (Owner);
+CREATE INDEX Tickets3 ON Tickets (EffectiveId);
+CREATE INDEX Tickets4 ON Tickets (id, Status);
 CREATE TABLE ScripActions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NULL  ,

@@ -7,7 +7,8 @@ CREATE TABLE KeywordSelects (
   ObjectType varchar(32) NOT NULL  ,
   ObjectField varchar(32)   ,
   ObjectValue varchar(255)   ,
-  Disabled int2 NOT NULL DEFAULT 0 
+  Disabled int2 NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
 );
 CREATE INDEX KeywordSelects1 ON KeywordSelects (Keyword);
 CREATE INDEX KeywordSelects2 ON KeywordSelects (ObjectType, ObjectField, ObjectValue);
@@ -23,9 +24,11 @@ CREATE TABLE Attachments (
   Content TEXT   ,
   Headers TEXT   ,
   Creator integer   ,
-  Created timestamp   
+  Created timestamp   ,
+  PRIMARY KEY (id)
 );
-CREATE INDEX Attachments1 ON Attachments (TransactionId);
+CREATE INDEX Attachments1 ON Attachments (Parent);
+CREATE INDEX Attachments2 ON Attachments (TransactionId);
 CREATE TABLE Queues (
   id serial NOT NULL  ,
   Name varchar(40) NOT NULL  ,
@@ -39,7 +42,8 @@ CREATE TABLE Queues (
   Created timestamp   ,
   LastUpdatedBy integer   ,
   LastUpdated timestamp   ,
-  Disabled int2 NOT NULL DEFAULT 0 
+  Disabled int2 NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX Queues1 ON Queues (Name);
 CREATE TABLE Links (
@@ -52,14 +56,16 @@ CREATE TABLE Links (
   LastUpdatedBy integer   ,
   LastUpdated timestamp   ,
   Creator integer   ,
-  Created timestamp   
+  Created timestamp   ,
+  PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
 CREATE TABLE Groups (
   id serial NOT NULL  ,
   Name varchar(16)   ,
   Description varchar(64)   ,
-  Pseudo integer NOT NULL DEFAULT 0 
+  Pseudo integer NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX Groups1 ON Groups (Name);
 CREATE TABLE Watchers (
@@ -73,8 +79,10 @@ CREATE TABLE Watchers (
   Creator integer   ,
   Created timestamp   ,
   LastUpdatedBy integer   ,
-  LastUpdated timestamp   
+  LastUpdated timestamp   ,
+  PRIMARY KEY (id)
 );
+CREATE INDEX Watchers1 ON Watchers (Scope, Value, Type, Owner);
 CREATE TABLE ScripConditions (
   id serial NOT NULL  ,
   Name varchar(255)   ,
@@ -85,7 +93,8 @@ CREATE TABLE ScripConditions (
   Creator integer   ,
   Created timestamp   ,
   LastUpdatedBy integer   ,
-  LastUpdated timestamp   
+  LastUpdated timestamp   ,
+  PRIMARY KEY (id)
 );
 CREATE TABLE Transactions (
   id serial NOT NULL  ,
@@ -98,8 +107,11 @@ CREATE TABLE Transactions (
   NewValue varchar(255)   ,
   Data varchar(100)   ,
   Creator integer   ,
-  Created timestamp   
+  Created timestamp   ,
+  PRIMARY KEY (id)
 );
+CREATE INDEX Transactions1 ON Transactions (Ticket);
+CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 CREATE TABLE Scrips (
   id serial NOT NULL  ,
   ScripCondition integer   ,
@@ -110,7 +122,8 @@ CREATE TABLE Scrips (
   Creator integer   ,
   Created timestamp   ,
   LastUpdatedBy integer   ,
-  LastUpdated timestamp   
+  LastUpdated timestamp   ,
+  PRIMARY KEY (id)
 );
 CREATE TABLE ACL (
   id serial NOT NULL  ,
@@ -118,12 +131,15 @@ CREATE TABLE ACL (
   PrincipalType varchar(25)   ,
   RightName varchar(25)   ,
   RightScope varchar(25)   ,
-  RightAppliesTo integer   
+  RightAppliesTo integer   ,
+  PRIMARY KEY (id)
 );
+CREATE INDEX ACL1 ON ACL (RightScope, RightAppliesTo, RightName, PrincipalType, PrincipalId);
 CREATE TABLE GroupMembers (
   id serial NOT NULL  ,
   GroupId integer   ,
-  UserId integer   
+  UserId integer   ,
+  PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, UserId);
 CREATE TABLE ObjectKeywords (
@@ -131,7 +147,8 @@ CREATE TABLE ObjectKeywords (
   Keyword integer NOT NULL  ,
   KeywordSelect integer NOT NULL  ,
   ObjectType varchar(32) NOT NULL  ,
-  ObjectId integer NOT NULL  
+  ObjectId integer NOT NULL  ,
+  PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX ObjectKeywords1 ON ObjectKeywords (ObjectId, ObjectType, KeywordSelect, Keyword);
 CREATE INDEX ObjectKeywords2 ON ObjectKeywords (ObjectId, ObjectType);
@@ -141,7 +158,8 @@ CREATE TABLE Keywords (
   Name varchar(255) NOT NULL  ,
   Description varchar(255)   ,
   Parent integer   ,
-  Disabled int2 NOT NULL DEFAULT 0 
+  Disabled int2 NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX Keywords1 ON Keywords (Name, Parent);
 CREATE INDEX Keywords2 ON Keywords (Name);
@@ -180,10 +198,11 @@ CREATE TABLE Users (
   Created timestamp   ,
   LastUpdatedBy integer   ,
   LastUpdated timestamp   ,
-  Disabled int2 NOT NULL DEFAULT 0 
+  Disabled int2 NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX Users1 ON Users (Name);
-CREATE UNIQUE INDEX Users2 ON Users (EmailAddress);
+CREATE INDEX Users2 ON Users (EmailAddress);
 CREATE TABLE Tickets (
   id serial NOT NULL  ,
   EffectiveId integer   ,
@@ -208,8 +227,13 @@ CREATE TABLE Tickets (
   LastUpdated timestamp   ,
   Creator integer   ,
   Created timestamp   ,
-  Disabled int2 NOT NULL DEFAULT 0 
+  Disabled int2 NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
 );
+CREATE INDEX Tickets1 ON Tickets (Queue, Status);
+CREATE INDEX Tickets2 ON Tickets (Owner);
+CREATE INDEX Tickets3 ON Tickets (EffectiveId);
+CREATE INDEX Tickets4 ON Tickets (id, Status);
 CREATE TABLE ScripActions (
   id serial NOT NULL  ,
   Name varchar(255)   ,
@@ -219,7 +243,8 @@ CREATE TABLE ScripActions (
   Creator integer   ,
   Created timestamp   ,
   LastUpdatedBy integer   ,
-  LastUpdated timestamp   
+  LastUpdated timestamp   ,
+  PRIMARY KEY (id)
 );
 CREATE TABLE Templates (
   id serial NOT NULL  ,
@@ -233,5 +258,6 @@ CREATE TABLE Templates (
   LastUpdated timestamp   ,
   LastUpdatedBy integer   ,
   Creator integer   ,
-  Created timestamp   
+  Created timestamp   ,
+  PRIMARY KEY (id)
 );

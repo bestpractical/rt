@@ -136,7 +136,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [ [] ],
-  'index' => [ ['Queue', 'Status'], [ 'id', 'Status' ] ],
+  'index' => [ ['Queue', 'Status'], ['Owner'], ['EffectiveId'], [ 'id', 'Status' ] ],
 },
 
 'GroupMembers' => {
@@ -193,7 +193,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [  ],
-  'index' => [  ],
+  'index' => [ ['Ticket'], ['EffectiveTicket'] ],
 },
 
 'ScripActions' => {
@@ -272,7 +272,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [  ],
-  'index' => [ ['TransactionId'] ],
+  'index' => [ ['Parent'], ['TransactionId'] ],
 },
 
 'Templates' => {
