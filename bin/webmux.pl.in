@@ -44,7 +44,6 @@ use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
 BEGIN {
     if ($CGI::MOD_PERL) {
 	require HTML::Mason::ApacheHandler;
-	HTML::Mason::ApacheHandler->import( args_method => 'CGI' );
     }
     else {
 	require HTML::Mason::CGIHandler;
