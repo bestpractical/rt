@@ -129,7 +129,7 @@ _Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customiz
 
 These overlay files can contain new subs or subs to replace existing subs in this module.
 
-If you'll be working with perl 5.6.0 or greater, each of these files should begin with the line 
+Each of these files should begin with the line 
 
    no warnings qw(redefine);
 
