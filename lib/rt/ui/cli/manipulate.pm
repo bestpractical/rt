@@ -399,7 +399,7 @@ sub cli_comment_req  {
 						     TimeTaken => $TimeTaken
 						   );
     
-    print $Description;
+    print $Description, "\n";
   }
 # }}}  
   
