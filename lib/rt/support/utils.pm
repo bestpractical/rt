@@ -152,7 +152,7 @@ sub quote_content {
     my $max=0;
     
     # Remove trailing headers
-    $body =~ s/--- Headers Follow ---\n\n//s;
+    $body =~ s/--- Headers Follow ---\n\n(.*)$//s;
 
     # Remove quoted signature.
     $body =~ s/\n-- (.*)$//s;
