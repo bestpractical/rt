@@ -450,6 +450,7 @@ sub LongSinceUpdateAsString {
 # }}} Datehandling
 
 # {{{ sub _Set 
+#
 sub _Set {
     my $self = shift;
 
@@ -893,7 +894,7 @@ sub Update {
     return @results;
 }
 
-# {{{ Routines dealing with Links between tickets
+# {{{ Routines dealing with Links
 
 # {{{ Link Collections
 
@@ -1312,6 +1313,10 @@ sub _DeleteLink {
 
 # }}}
 
+# }}}
+
+# {{{ Routines dealing with transactions
+
 # {{{ sub _NewTransaction
 
 =head2 _NewTransaction  PARAMHASH
@@ -1416,7 +1421,8 @@ sub Transactions {
 }
 
 # }}}
-
+# }}}
+#
 # {{{ Routines dealing with custom fields
 
 sub CustomFields {
@@ -1726,6 +1732,8 @@ sub CustomFieldValues {
     }
     return ($cf_values);
 }
+
+# }}}
 
 # }}}
 
