@@ -23,9 +23,8 @@ sub new  {
 # }}}
 
 sub IsInbound {
-  ;
   my $self=shift;
-  return ($self->Ticket->IsRequestor($self->Owner));
+  return ($self->IsRequestor($self->Owner));
 }
 
 #This is "Create Transaction"
