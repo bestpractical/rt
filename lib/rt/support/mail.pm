@@ -116,9 +116,11 @@ Precedence: $precedence
 
 $template
 -------------------------------------------- Managed by Request Tracker\n";
-    close (MAIL);
-    
-    return("template_mail:Message Sent");
+    if (close (MAIL)) {
+      return("template_mail:Message Sent");
+    } else {
+      die "Could not send mail :( $!";
+    }
   }
 
 1;
