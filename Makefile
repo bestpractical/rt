@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	73
+RT_VERSION_PATCH	=	74
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -143,8 +143,7 @@ DB_RT_PASS      =      rt_pass
 # The user your webserver runs as. needed so that webrt can cache mason
 # objectcode
 
-#WEB_USER			=	nobody
-WEB_USER			=	www-data
+WEB_USER			=	nobody
 WEB_GROUP			=	rt
 
 # }}}
