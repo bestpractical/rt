@@ -1121,8 +1121,11 @@ sub ProcessTicketCustomFieldUpdates {
 
     # For each of those tickets
     foreach my $tick ( keys %custom_fields_to_mod ) {
-        my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
-        $Ticket->Load($tick);
+        my $Ticket = $args{'TicketObj'};
+	if (!$Ticket or $Ticket->id != $tick) {
+	    $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
+	    $Ticket->Load($tick);
+	}
 
         # For each custom field  
         foreach my $cf ( keys %{ $custom_fields_to_mod{$tick} } ) {

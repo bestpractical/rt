@@ -46,7 +46,7 @@ my $CustomFields = $TicketObj->QueueObj->CustomFields();
 $m->comp('/Elements/Callback', TicketObj => $TicketObj, CustomFields => $CustomFields, %ARGS);
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-my @cf_results = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
+my @cf_results = ProcessTicketCustomFieldUpdates(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 push (@results, @cf_results);
 
 # TODO: display the results, even if we can't display the ticket
