@@ -21,9 +21,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table cellspacing=0 border=0>
 % while ( my $CustomField = $CustomFields->Next ) {
-<tr><td>
+<tr><td class=label>
 
 % my $name;
 % if ($CustomField->QueueObj->id) {
@@ -33,17 +32,19 @@
 %   $name = "'CF." . $CustomField->Name . "'";
 % }
 <% $CustomField->Name %> 
-        <& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
-                                    True => loc("is"), 
-                                    False => loc("isn't"), 
-                                    TrueVal=> '=', FalseVal => '!=' &>
-
+</td>
+<td>
+<& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
+                            True => loc("is"), 
+                            False => loc("isn't"), 
+                            TrueVal=> '=', FalseVal => '!=' &>
+</td>
+<td>
 <& /Elements/SelectCustomFieldValue, Name => "ValueOf" . $name,
                             CustomField => $CustomField,
                             &>
 </td></tr>
 % }
-</table>
 
 <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});

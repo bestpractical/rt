@@ -34,20 +34,12 @@
       </table>
     </td></tr>
   <tr>
-    <td>
+    <td colspan=3>
       <hr>
     </td>
   </tr>
-  <tr>
-    <td valign=top>
-      <& PickBasics &>
-    </td>
-  </tr>
-  <tr>
-    <td valign=top>
-    <& PickCFs, cfqueues => \%cfqueues &>
-    </td>
-  </tr>
+  <& PickBasics &>
+  <& PickCFs, cfqueues => \%cfqueues &>
   <tr><td>&nbsp;</td></tr>
 </table>
 

@@ -21,7 +21,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table cellspacing=0 border=0>
 <tr><td>
 % foreach my $field (@fields) {
 <tr><td align=right>
@@ -144,7 +143,6 @@
 % }
 </td></tr>
 % }
-</table>
 
 <%INIT>
 my @fields = ('Attachment',
