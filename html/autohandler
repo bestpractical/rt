@@ -93,7 +93,7 @@ elsif ( $RT::WebExternalAuth ) {
 	if ($RT::WebExternalAuto and !$session{'CurrentUser'}->Id() ) {
 	    # Create users on-the-fly
 	    
-	    my $UserObj = RT::User->new(RT::CurrentUser->new('root'));
+	    my $UserObj = RT::User->new(RT::CurrentUser->new('RT_System'));
 	    
 	    my ($val, $msg) = $UserObj->Create(
 					       %{ref($RT::AutoCreate) ? $RT::AutoCreate : {}},
