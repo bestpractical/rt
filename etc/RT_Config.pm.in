@@ -432,4 +432,24 @@ Set($AmbiguousDayInPast , 1);
 
 # }}}
 
+
+# {{{ Development Mode
+#
+# RT comes with a "Development mode" setting. 
+# This setting, as a convenience for developers, turns on 
+# all sorts of development options that you most likely don't want in 
+# production:
+#
+# * Turns off Mason's 'static_source' directive. By default, you can't 
+#   edit RT's web ui components on the fly and have RT magically pick up
+#   your changes. (It's a big performance hit)
+#
+#  * More to come
+#
+
+Set(DeveloperlMode => '@RT_DEVEL_MODE@');
+
+# }}}
+
+
 1;

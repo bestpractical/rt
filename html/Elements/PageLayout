@@ -78,7 +78,7 @@
           <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
 </div>
 <div class="mainbody">
-
+%$m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 <%INIT>
 
   foreach my $tab (sort keys %{$toptabs}) {

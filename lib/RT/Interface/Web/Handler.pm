@@ -53,7 +53,9 @@ sub DefaultHandlerArgs  { (
     default_escape_flags => 'h',
     data_dir             => "$RT::MasonDataDir",
     allow_globals        => [qw(%session)],
-    autoflush            => 1
+    # Turn off static source if we're not in developer mode.
+    static_source        => ($RT::DevelMode ? '0' : '1'), 
+    autoflush            => 0
 ) };
 
 # {{{ sub new 

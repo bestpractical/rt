@@ -116,6 +116,10 @@ while ( my $Transaction = $Transactions->Next ) {
               AttachmentContent    => $trans_content,
               LastTransaction      => $Transactions->IsLast
  );
+
+# manually flush the content buffer after each txn, so the user sees
+# some update
+$m->flush_buffer(); 
 }
 
 </%perl>
