@@ -312,9 +312,26 @@ $WebImagesURL = $WebURL."/NoAuth/images/";
 $LogoURL = $WebImagesURL."/rt.jpg";
 
 # If $WebExternalAuth is defined, RT will defer to the environment's
-# REMOTE_USER variable.
+# REMOTE_USER variable. If $WebExternalOnly is undefined, the user is
+# allowed a chance of fallback.
 
 $WebExternalAuth = undef;
+
+
+# TODO: WHAT DOES THIS MEAN, AUTRIJUS?
+
+$WebExternalOnly = undef;
+
+# $WebExternalGecos means to match 'gecos' field as the user identity;
+# useful with mod_auth_pwcheck and IIS Integrated Windows logon.
+
+$WebExternalGecos = undef;
+
+# $WebExternalAuto will create users under the same name as REMOTE_USER
+# upon login, if it's missing in the Users table.
+
+$WebExternalAuto = undef;
+
 
 
 #This is from tobias' prototype web search UI. it may stay and it may go.

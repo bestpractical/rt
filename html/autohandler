@@ -18,8 +18,7 @@ unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 
 # Set the proper encoding for the current language handle
 SetContentType("text/html; charset=".$session{'CurrentUser'}->LanguageHandle->encoding);
-$RT::Logger->debug("Language encoding is ".  $session{'CurrentUser'}->LanguageHandle->encoding);
-
+#$RT::Logger->debug("Language encoding is ".  $session{'CurrentUser'}->LanguageHandle->encoding);
 
 #if it's a noauth file, don't ask for auth.
 if ($m->base_comp->path =~ '^/NoAuth/') {
@@ -29,20 +28,69 @@ if ($m->base_comp->path =~ '^/NoAuth/') {
 
 # If RT is configured for external auth, let's get REMOTE_USER
 # We intentionally don't test for REMOTE_USER to meet our policy
-elsif ($RT::WebExternalAuth){
+elsif ($RT::WebExternalAuth and length($ENV{'REMOTE_USER'})) {
+    my $orig_user = $user;
 
     $user = $ENV{'REMOTE_USER'};
     $session{'CurrentUser'} = RT::CurrentUser->new();
-    $session{'CurrentUser'}->Load($user);
-    unless ($session{'CurrentUser'}->id() ) {
-        $m->comp('/Elements/Login', %ARGS, Error=> loc('You are not an authorized user'));
-        $m->abort();
+    my $load_method = $RT::WebExternalGecos ? 'LoadByGecos' : 'Load';
+    
+    if ($^O eq 'MSWin32' and $RT::WebExternalGecos) {
+    	my $NodeName = Win32::NodeName();
+    	$user =~ s/^\Q$NodeName\E\\//i;
+    }
+
+    $session{'CurrentUser'}->$load_method($user);
+
+    if ($RT::WebExternalAuto and !$session{'CurrentUser'}->Id() ) {
+	# Create users on-the-fly with default attributes
+
+	my $UserObj = RT::User->new(RT::CurrentUser->new('root'));
+
+	my ($val, $msg) = $UserObj->Create(
+	    %{ref($RT::AutoCreate) ? $RT::AutoCreate : {}},
+	    Name	 => $user,
+	    Gecos	 => $user,
+	);
+
+	if ($val) {
+	    $UserObj->SetPrivileged(1);
+
+	    if ($^O !~ /^(?:riscos|MacOS|MSWin32|dos|os2)$/) {
+		# Populate fields with information from Unix /etc/passwd
+
+		my ($comments, $realname) = (getpwnam($user))[5, 6];
+		$UserObj->SetComments($comments) if defined $comments;
+		$UserObj->SetRealName($realname) if defined $realname;
+	    }
+	    elsif ($^O eq 'MSWin32' and eval 'use Net::AdminMisc; 1') {
+		# Populate fields with information from NT domain controller
+	    }
+
+	    $session{'CurrentUser'}->Load($user);
+	}
+	else {
+	    delete $session{'CurrentUser'};
+	    $m->comp('/Elements/Login', %ARGS, Error=> loc('Cannot create user: [_1]', $msg));
+	    $m->abort() if $RT::WebExternalOnly;
+	}
+    }
+
+    unless ( $session{'CurrentUser'}->Id() ) {
+        delete $session{'CurrentUser'};
+        $user = $orig_user;
+
+	if ( $RT::WebExternalOnly ) {	        
+	    $m->comp('/Elements/Login', %ARGS, Error=> loc('You are not an authorized user'));
+	    $m->abort();
+	}
     }
 }
- 
+
+delete $session{'CurrentUser'} unless defined $session{'CurrentUser'}->Id;
+
 # If the user is loging in, let's authenticate
-elsif (defined ($user) && defined ($pass)){
-    
+if (!$session{'CurrentUser'} && defined ($user) && defined ($pass) ){
     $session{'CurrentUser'} = RT::CurrentUser->new();
     $session{'CurrentUser'}->Load($user);
     unless ($session{'CurrentUser'}->id() ) {
@@ -54,7 +102,7 @@ elsif (defined ($user) && defined ($pass)){
 	delete $session{'CurrentUser'};
 	
 	$m->comp('/Elements/Login', Error => loc('Your username or password is incorrect'), %ARGS);
-	$m->abort();
+	$m->abort(); 
     }
 }
   

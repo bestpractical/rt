@@ -1,7 +1,7 @@
-RT/MasonCGIHandler.pm
 MANIFEST
 MANIFEST.SKIP
 Makefile.PL
+RT.pm
 RT/ACE.pm
 RT/ACE_Overlay.pm
 RT/ACL.pm
@@ -11,6 +11,7 @@ RT/Action/Generic.pm
 RT/Action/Notify.pm
 RT/Action/NotifyAsComment.pm
 RT/Action/OpenDependent.pm
+RT/Action/README.hackers
 RT/Action/ResolveMembers.pm
 RT/Action/SendEmail.pm
 RT/Action/SendPasswordEmail.pm
@@ -48,9 +49,11 @@ RT/Handle.pm
 RT/I18N.pm
 RT/I18N/en.pm
 RT/I18N/en_us.pm
+RT/I18N/en_us.po
 RT/I18N/fr.pm
 RT/I18N/i_default.pm
 RT/I18N/zh_tw.pm
+RT/I18N/zh_tw.po
 RT/Interface/CLI.pm
 RT/Interface/Email.pm
 RT/Interface/Web.pm
@@ -58,6 +61,7 @@ RT/Link.pm
 RT/Link_Overlay.pm
 RT/Links.pm
 RT/Links_Overlay.pm
+RT/MasonCGIHandler.pm
 RT/Principal.pm
 RT/Principal_Overlay.pm
 RT/Principals.pm
@@ -100,4 +104,7 @@ RT/User.pm
 RT/User_Overlay.pm
 RT/Users.pm
 RT/Users_Overlay.pm
+t/harness.t
 t/regression.t
+t/smoke.t
+test.pl

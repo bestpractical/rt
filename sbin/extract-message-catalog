@@ -1,45 +1,88 @@
 #!/usr/bin/env perl
 
+use strict;
 use File::Copy;
-
-my $lang = shift || 'zh_tw';
-open SRC, "lib/RT/I18N/$lang.pm" or die $!;
-my (%file, %dict);
-my $out;
-
-while (<SRC>) { $out .= $_; last if /split/ }
-while (<SRC>) { 
-    last if /___/;
-    next if /^#/;
-    chomp;
-    $dict{$_} = substr(<SRC>, 0, -1);
-}
-
-local $/;
 use Regexp::Common;
 
-for (<*/*>, <*/*/*>, <*/*/*/*>, <*/*/*/*/*>, <*/*/*/*/*/*>) {
-    my $r = $_; open _, $_ or die $!; $_ = <_>;
-    while (s!<&\|/[1l].*?&>(.*?)(?:</&>|<&|/[1l]&>)!!sg) {
-	my $u = $1; $u =~ s/\\'/\'/g; $file{$u} .= " $r"
+@ARGV = <lib/RT/I18N/*.po> unless @ARGV;
+
+foreach my $lang (@ARGV) {
+    $lang =~ s|.*/||; $lang =~ s|\.po$||;
+    eval { update($lang) } or warn $@;
+}
+
+sub update {
+    my $lang = shift;
+
+    print "Updating $lang...\n";
+    
+    my (%Lexicon, %file);
+    my $out = '';
+
+    open _, "lib/RT/I18N/$lang.po" or die $!;
+    while (<_>) {
+	if (1 .. /^$/) { $out .= $_; next }
+
+	my $msgid = <_>;
+	my $msgstr = <_>;
+	<_>;
+	chomp $msgid;
+	chomp $msgstr;
+	$msgid =~ s/^msgid "(.*)"$/$1/ or die $msgid;
+	$msgstr =~ s/^msgstr "(.*)"$/$1/ or die $msgstr;
+	$Lexicon{$msgid}=$msgstr;
     }
-    while (s!loc\(($RE{delimited}{-delim=>"'"}{-esc}{-keep})!!s) { my $u = substr($1, 1, -1); $u =~ s/\\'/\'/g; $file{$u} .= " $r" }
-    while (s!loc\(($RE{delimited}{-delim=>'"'}{-esc}{-keep})!!s) { my $u = substr($1, 1, -1); $u =~ s/\\'/\'/g; $file{$u} .= " $r" }
-#    while (s!loc\(\'\s*(.*?)\'!!s) { my $u = $1; $u =~ s/\\'/\'/g; $file{$u} .= " $r" }
+
+    local $/;
+
+    for (<*/*>, <*/*/*>, <*/*/*/*>, <*/*/*/*/*>, <*/*/*/*/*/*>) {
+	my $r = $_; open _, $_ or die $!; $_ = <_>;
+
+	while (s!<&\|/l.*?&>(.*?)</&>!!s) {
+	    my $u = $1; $u =~ s/\\'/\'/g; $file{$u} .= " $r";
+	}
+
+	while (s!loc\(($RE{delimited}{-delim=>"'"}{-esc}{-keep})!!s) {
+	    my $u = substr($1, 1, -1); $u =~ s/\\'/\'/g; $file{$u} .= " $r";
+	}
+
+	while (s!loc\(($RE{delimited}{-delim=>'"'}{-esc}{-keep})!!s) {
+	    my $u = substr($1, 1, -1); $u =~ s/\\'/\'/g; $file{$u} .= " $r";
+	}
+    }
+
+    foreach (sort keys %file) {
+	my $k = $file{$_};
+
+	s/\\/\\\\/g;
+	s/\"/\\"/g;
+	s/\[_(\d+)\]/%$1/g;
+	s/~([\[\]])/$1/g;
+
+	$file{$_} = $k;
+	$Lexicon{$_} ||= '';
+    }
+
+    my $is_english = ($lang =~/^en(?:[^A-Za-z]|$)/);
+
+    delete $file{''};
+    foreach (sort keys %Lexicon) {
+	my $f = $file{$_};
+	my $nospace = $_;
+	$nospace =~ s/ +$//;
+
+	if (!$Lexicon{$_} and $Lexicon{$nospace}) {
+	    $Lexicon{$_} = $Lexicon{$nospace} . (' ' x (length($_) - length($nospace)));
+	}
+
+	next if !length($Lexicon{$_}) and $is_english;
+
+	$out .= "#:$f\nmsgid \"$_\"\nmsgstr \"$Lexicon{$_}\"\n\n";
+    }
+
+    open _, ">lib/RT/I18N/$lang.po" or die $!;
+    print _ $out;
+    close _;
+
+    return 1;
 }
-
-delete $file{''};
-foreach (sort keys %file) {
-    $out .= "#$file{$_}\n$_\n$dict{$_}\n";
-}
-
-while (<SRC>) {
-    $out .= "___\n";
-    $out .= $_;
-}
-
-close SRC;
-
-open TARGET, ">lib/RT/I18N/$lang.pm" or die $!;
-print TARGET $out;
-exit;
