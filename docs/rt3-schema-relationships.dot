@@ -1,0 +1,81 @@
+digraph g {
+graph [
+rankdir = "LR",
+concentrate = true,
+ratio = auto
+];
+node [
+fontsize = "18",
+shape = record, fontsize = 18
+];
+edge [
+];
+
+"acl" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"acl" -> "principals" [label="ACL.PrincipalId -> Principals.Id"];
+"acl" -> "principals" [label="ACL.DelegatedBy -> Principals.Id"];
+"acl" -> "acl" [label="ACL.DelegatedFrom -> ACL.Id"];
+
+"attachments" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"attachments" -> "transactions" [label="Attachments.TransactionId -> Transactions.Id"];
+"attachments" -> "attachments" [label="Attachments.Parent -> Attachments.id"];
+
+"cachedgroupmembers" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"cachedgroupmembers" -> "groups" [label="CachedGroupMembers.GroupId -> Groups.id"];
+"cachedgroupmembers" -> "principals" [label="CachedGroupMembers.MemberId -> Principals.Id"];
+"cachedgroupmembers" -> "cachedgroupmembers" [label="CachedGroupMembers.Via -> CachedGroupMembers.id"];
+"cachedgroupmembers" -> "groups" [label="CachedGroupMembers.ImmediateParentId -> Groups.id"];
+
+"customfields" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"customfields" -> "queues" [label="CustomFields.Queue -> Queues.id"];
+
+"customfieldvalues" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"customfieldvalues" -> "customfields" [label="CustomFieldValues.CustomField -> CustomFields.id"];
+
+"groupmembers" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"groupmembers" -> "groups" [label="GroupMembers.GroupId => Groups.Id"];
+"groupmembers" -> "principals" [label="GroupMembers.MemberId => Principals.Id"];
+
+"groups" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"groups" -> "principals" [label="Groups.id -> Principals.id"];
+
+"links" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"links" -> "tickets" [label="Links.LocalBase => Tickets.id (usually)"];
+"links" -> "tickets" [label="Links.LocalTarget => Tickets.id (usually)"];
+
+"principals" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+
+
+"queues" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+
+"scripactions" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+
+"scripconditions" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+
+"scrips" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"scrips" -> "scripconditions" [label="Scrips.ScripCondition -> ScripConditions.id"];
+"scrips" -> "scripactions" [label="Scrips.ScripAction -> ScripActions.id"];
+"scrips" -> "templates" [label="Scrips.Template -> Templates.id"];
+"scrips" -> "queues" [label="Scrips.Queue -> Queues.id"];
+
+"templates" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"templates" -> "queues" [label ="Templates.Queue -> Queues.id" ];
+
+"ticketcustomfieldvalues" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"ticketcustomfieldvalues" -> "tickets" [label="TicketCustomFieldValues.Ticket -> Tickets.id"];
+"ticketcustomfieldvalues" -> "customfields" [label="TicketCustomFieldValues.CustomField -> CustomFields.id"];
+
+"tickets" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"tickets" -> "tickets" [label="Tickets.EffectiveId -> Tickets.id"];
+"tickets" -> "queues" [label="Tickets.Queue -> Queues.id"];
+"tickets" -> "principals" [label="Tickets.Owner -> Principals.id"];
+
+"transactions" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"transactions" -> "tickets" [label="Transactions.Ticket -> Tickets.Id"];
+
+"users" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+
+"users" -> "principals" [label="Users.id -> Principals.id"];
+
+
+}
