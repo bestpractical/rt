@@ -42,7 +42,7 @@ TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 
 
 # This is the group that all of the installed files will be chgrp'ed to.
-RTGROUP			=	rt
+RTGROUP			=	@RTGROUP@
 
 
 # User which should own rt binaries.
@@ -204,10 +204,10 @@ upgrade-noclobber: libs-install html-install bin-install  fixperms
 
 # {{{ dependencies
 testdeps:
-	$(PERL) ./sbin/testdeps -warn $(DB_TYPE)
+	$(PERL) ./sbin/testdeps --with-$(DB_TYPE)
 
 fixdeps:
-	$(PERL) ./sbin/testdeps -fix $(DB_TYPE)
+	$(PERL) ./sbin/testdeps --install --with-$(DB_TYPE)
 
 #}}}
 
@@ -434,6 +434,12 @@ tag-and-release-never-by-hand:
 
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
+
+
+reconfigure:
+	aclocal -I m4
+	autoconf
+	./configure
 
 rpm:
 	(cd ..; tar czvf /usr/src/redhat/SOURCES/rt.tar.gz rt)

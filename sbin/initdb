@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
@@ -25,7 +25,7 @@
 # END LICENSE BLOCK
 
 use strict;
-use vars qw($PROMPT $DEBUG $VERSION $Handle $Nobody $SystemUser $item);
+use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
 
 use lib "/opt/rt3/lib";
 
@@ -51,24 +51,28 @@ use Getopt::Long;
 
 my %args;
 
-GetOptions (\%args, 'action=s', 'dba=s', 'dba-password=s');
+GetOptions (\%args, 'action=s', 'dba=s', 'dba-password=s', 'force', 'debug');
 
 $| = 1;    #unbuffer that output.
 
-$DEBUG = 0;
 
 
 require RT::Handle;
 my $Handle = RT::Handle->new($RT::DatabaseType);
 $Handle->BuildDSN;
 my $dbh;
+
+unless ($args{'action'} ) {
+	die;
+	help();
+}
 if ($args{'action'} eq 'init') {
     $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} )
       || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
     print "Now creating a database for RT.\n";
     create_db();
 
-
+    $dbh->disconnect;
     $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
       || die $DBI::errstr;
 
@@ -87,7 +91,6 @@ elsif ( $args{'action'} eq 'drop' ) {
         warn "Database doesn't appear to exist. Aborting database drop.";
         exit(0);
     }
-    print "Now dropping the RT2 database.\n";
     drop_db();
 }
 else {
@@ -104,6 +107,7 @@ sub insert_schema {
         open( SCHEMA, "<" . $RT::EtcPath . "/schema." . $RT::DatabaseType );
         my $statement = "";
         foreach my $line (<SCHEMA>) {
+		$line =~ s/\#.*//g;
             $statement .= $line;
             if ( $line =~ /;$/ ) {
                 $statement =~ s/;$//g;
@@ -113,7 +117,7 @@ sub insert_schema {
         }
 
         foreach my $statement (@schema) {
-            print STDERR $statement if $DEBUG;
+            print STDERR $statement if $args{'debug'};
             my $sth = $dbh->prepare($statement) or die $dbh->errstr;
             unless ( $sth->execute ) {
                 die "Problem with statement:\n $statement\n" . $sth->errstr;
@@ -134,7 +138,7 @@ sub insert_schema {
 # {{{ sub drop_db
 sub drop_db {
     return if ( $RT::DatabaseType eq 'SQLite' );
-    if ($PROMPT) {
+    unless ($args{'force'}) {
         print <<END;
 
 About to drop $RT::DatabaseType database $RT::DatabaseName.
@@ -194,7 +198,7 @@ sub insert_acl {
 
     my @acl = acl($dbh);
     foreach my $statement (@acl) {
-        print STDERR $statement if $DEBUG;
+        print STDERR $statement if $args{'debug'};
         my $sth = $dbh->prepare($statement) or die $dbh->errstr;
         unless ( $sth->execute ) {
             die "Problem with statement:\n $statement\n" . $sth->errstr;

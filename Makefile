@@ -24,7 +24,11 @@
 # END LICENSE BLOCK
 
 
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O27 A27 B27] /-/-/-/-/-/-/-/-/-/-/
 PERL			= 	/usr/bin/perl
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+PERL			= 	/usr/bin/perl
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 
 CONFIG_FILE_PATH	=	/opt/rt3/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
@@ -35,7 +39,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)";\
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	47
+RT_VERSION_PATCH	=	48
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -204,10 +208,10 @@ upgrade-noclobber: libs-install html-install bin-install  fixperms
 
 # {{{ dependencies
 testdeps:
-	$(PERL) ./sbin/testdeps -warn $(DB_TYPE)
+	$(PERL) ./sbin/testdeps --with-$(DB_TYPE)
 
 fixdeps:
-	$(PERL) ./sbin/testdeps -fix $(DB_TYPE)
+	$(PERL) ./sbin/testdeps --install --with-$(DB_TYPE)
 
 #}}}
 
@@ -291,7 +295,11 @@ test:
 
 regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database testify-pods
 	$(PERL) lib/t/02regression.t
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O294 A294 B294] /-/-/-/-/-/-/-/-/-/-/
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O298 A295 B295] /-/-/-/-/-/-/-/-/-/-/
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 regression-quiet:
 	$(PERL) sbin/regression_harness
 
@@ -434,6 +442,12 @@ tag-and-release-never-by-hand:
 
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
+
+
+reconfigure:
+	aclocal -I m4
+	autoconf
+	./configure
 
 rpm:
 	(cd ..; tar czvf /usr/src/redhat/SOURCES/rt.tar.gz rt)
