@@ -1,6 +1,7 @@
 <& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab &>
 
 <%PERL>
+if (defined $session{'tickets'}) {
 my $items = $session{'tickets'}->ItemsArrayRef();
 my @indexs = grep(($items->[$_]->id == $Ticket->Id), 0 .. $#{$items});
 if ($indexs[0]) {
@@ -10,7 +11,7 @@ if ($indexs[0]) {
 <A HREF="Display.html?id=<%$items->[$indexs[0]+1]->id%>">Next &gt;&gt;</a>
 <A HREF="Display.html?id=<%$items->[-1]->id%>">Last &gt;|</a>
 % }
-
+%}
 <%INIT>
 	
   my $id = $Ticket->id();
