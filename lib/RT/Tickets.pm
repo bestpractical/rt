@@ -30,6 +30,7 @@ use RT::Ticket;
 	      Creator => 'ENUM',
 	      LastUpdatedBy => 'ENUM',
 	      Owner => 'ENUM',
+	      EffectiveId => 'INT',
 	      id => 'INT',
 	      InitialPriority => 'INT',
 	      FinalPriority => 'INT',
