@@ -1,0 +1,169 @@
+#!/usr/bin/perl
+# BEGIN LICENSE BLOCK
+# 
+#
+# 
+# END LICENSE BLOCK
+
+my $LICENSE  = <<EOL;
+
+ Copyright (c) 2002 Jesse Vincent <jesse\@bestpractical.com>
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of version 2 of the GNU General Public License 
+ as published by the Free Software Foundation.
+
+ A copy of that license should have arrived with this
+ software, but in any event can be snarfed from www.gnu.org.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+EOL
+
+use File::Find;
+
+my @MAKE = qw(Makefile);
+
+File::Find::find({ no_chdir => 1, wanted => \&tag_pm}, 'lib');
+File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'html');
+File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
+File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
+tag_makefile ('Makefile');
+tag_makefile ('README');
+
+
+sub tag_mason {
+        my $pm = $_;
+        next unless (-f $pm);
+        open(FILE,"<$pm") || die "Failed to open $pm";
+        my $file = (join "", <FILE>); 
+        close (FILE);
+        my $pmlic = $LICENSE;
+        $pmlic =~ s/^/%# /mg;
+
+
+        print "$pm - ";
+        if ($file =~ /^%# BEGIN LICENSE BLOCK/ms) {
+                print "has license section";
+             $file =~ s/^%# BEGIN LICENSE BLOCK(.*?)%# END LICENSE BLOCK/%# BEGIN LICENSE BLOCK\n$pmlic%# END LICENSE BLOCK/ms;
+             
+
+        } else {
+                print "no license section";
+             $file ="%# BEGIN LICENSE BLOCK\n$pmlic%# END LICENSE BLOCK\n". $file;
+        }
+        $file =~ s/%# END LICENSE BLOCK(\n+)/%# END LICENSE BLOCK\n\n/mg;
+        print "\n";
+        
+        
+
+
+        open (FILE, ">$pm") || die "couldn't write new file";
+        print FILE $file;
+        close FILE;
+
+}
+
+
+sub tag_makefile {
+        my $pm = shift;
+        open(FILE,"<$pm") || die "Failed to open $pm";
+        my $file = (join "", <FILE>); 
+        close (FILE);
+        my $pmlic = $LICENSE;
+        $pmlic =~ s/^/# /mg;
+
+
+        print "$pm - ";
+        if ($file =~ /^# BEGIN LICENSE BLOCK/ms) {
+                print "has license section";
+             $file =~ s/^# BEGIN LICENSE BLOCK(.*?)# END LICENSE BLOCK/# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK/ms;
+             
+
+        } else {
+                print "no license section";
+             $file ="# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK\n". $file;
+        }
+        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n\n/mg;
+        print "\n";
+        
+        
+
+
+        open (FILE, ">$pm") || die "couldn't write new file";
+        print FILE $file;
+        close FILE;
+
+}
+
+
+sub tag_pm {
+        my $pm = $_;
+        next unless $pm =~ /\.pm\z/s;
+        open(FILE,"<$pm") || die "Failed to open $pm";
+        my $file = (join "", <FILE>); 
+        close (FILE);
+        my $pmlic = $LICENSE;
+        $pmlic =~ s/^/# /mg;
+
+
+        print "$pm - ";
+        if ($file =~ /^# BEGIN LICENSE BLOCK/ms) {
+                print "has license section";
+             $file =~ s/^# BEGIN LICENSE BLOCK(.*?)# END LICENSE BLOCK/# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK/ms;
+             
+
+        } else {
+                print "no license section";
+             $file ="# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK\n". $file;
+        }
+        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n\n/mg;
+        print "\n";
+        
+        
+
+
+        open (FILE, ">$pm") || die "couldn't write new file";
+        print FILE $file;
+        close FILE;
+
+}
+
+
+sub tag_script {
+        my $pm = $_;
+        return unless (-f $pm);
+        open(FILE,"<$pm") || die "Failed to open $pm";
+        my $file = (join "", <FILE>); 
+        close (FILE);
+        my $pmlic = $LICENSE;
+        $pmlic =~ s/^/# /msg;
+
+        print "$pm - ";
+        if ($file =~ /^# BEGIN LICENSE BLOCK/ms) {
+                print "has license section";
+             $file =~ s/^# BEGIN LICENSE BLOCK(.*?)# END LICENSE BLOCK/# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK/ms;
+             
+
+        } else {
+                print "no license section";
+                if ($file =~ /^(#!.*?)\n/) {
+
+            my  $lic ="# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK\n";
+                $file =~ s/^(#!.*?)\n/$1\n$lic/; 
+
+                } 
+        }
+        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n\n/mg;
+        print "\n";
+        
+
+        open (FILE, ">$pm") || die "couldn't write new file";
+        print FILE $file;
+        close FILE;
+
+}
+
