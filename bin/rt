@@ -180,10 +180,10 @@ Limit the set of records returned:
 
 --id=[first][-][last]
   Specify a single ticket, a range, or to start with (n-) or end with (-n)
-a speciifc ticket.
+a specific ticket.
   
   --limit-queue=<queue>
-	  --limit-status=[!](new|open|stalled|resolved|dead)
+	  --limit-status=[!](new|open|stalled|resolved)
 
 	  --limit-owner=[!]<userid>
 	  --limit-priority=[starts][-][ends]
