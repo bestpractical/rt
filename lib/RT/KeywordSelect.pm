@@ -259,13 +259,9 @@ sub HasRight {
                  @_ );
     
     if ($self->SUPER::_Value('Queue') > 0) {
-        return ( $args{'Principal'}->HasQueueRight(
-                      Right => $args{'Right'},
-                      Queue => $self->SUPER::_Value('Queue'),
-                      Principal => $args{'Principal'}
-                      ) 
-                );
-
+        return ( $args{'Principal'}->HasQueueRight( 
+		      Right => $args{'Right'},
+		      Queue => $self->SUPER::_Value('Queue') )); 
     }
     else {
         return( $args{'Principal'}->HasSystemRight( Right => $args{'Right'}) );

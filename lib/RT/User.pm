@@ -587,17 +587,19 @@ sub _HasRight {
     my $cache_timeout = (time - 120);
     
     
-    if ((defined ($self->{'rights'}{"$hashkey"})) and
-	 ($self->{'rights'}{"$hashkey"} == 1 ) and
-	 ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
+    if ((defined $self->{'rights'}{"$hashkey"}) &&
+	    ($self->{'rights'}{"$hashkey"} == 1 ) &&
+        (defined $self->{'rights'}{"$hashkey"}{'set'} ) &&
+	    ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
 	#  $RT::Logger->debug("Got a cached positive ACL decision for ". 
 	#			       $args{'Right'}.$args{'Scope'}.
 	#		       $args{'AppliesTo'}."\n");	    
 	return ($self->{'rights'}{"$hashkey"});
     }
-    elsif ((defined ($self->{'rights'}{"$hashkey"})) and
-	   ($self->{'rights'}{"$hashkey"} == -1) and
-	   ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
+    elsif ((defined $self->{'rights'}{"$hashkey"}) &&
+	       ($self->{'rights'}{"$hashkey"} == -1)  &&
+           (defined $self->{'rights'}{"$hashkey"}{'set'}) &&
+	       ($self->{'rights'}{"$hashkey"}{'set'} > $cache_timeout)) {
 	
 	#   $RT::Logger->debug("Got a cached negative ACL decision for ". 
 	#		       $args{'Right'}.$args{'Scope'}.

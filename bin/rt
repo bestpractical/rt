@@ -82,6 +82,7 @@ my ( @id,
      @dependson,
      @memberof, 
      @relatedto,
+     @keywords,
      $time_taken,
      $verbose,
      $debug,
@@ -126,6 +127,7 @@ my @args =("id=s", \@id,
 	   "reply|respond", \$reply,
 	   "source=s", \$source,
 	   "edit!", \$edit,
+	   "keywords=s", @keyword,
 	   "depends-on=s", \@dependson,
 	   "member-of=s", \@memberof, 
 	   "related-to=s", \@relatedto,
@@ -307,41 +309,70 @@ else {
 	
 	# {{{ deal with watchers
     
-    # add / delete requestors
-    foreach $value (@requestors) {
-	if ($value =~ /^(\W?)(.*)$/) {
-	    my $op = $1;
-	    my $addr = $2;
-	    
-	    $Ticket->AddRequestor(Email => $addr) if ($op eq '+');
-	    $Ticket->DeleteWatcher( $addr) if ($op eq '-');
-	}	
-    }
-
-    # add / delete ccs
-    foreach $value (@cc) {
-	if ($value =~ /^(\W?)(.*)$/) {
-	    my $op = $1;
-	    my $addr = $2;
-	    
-	    $Ticket->AddCc(Email => $addr) if ($op eq '+');
-	    $Ticket->DeleteWatcher($addr) if ($op eq '-');
-	}	
-    }	
-
-    # add / delete adminccs
-    foreach $value (@admincc) {
-	if ($value =~ /^(\W?)(.*)$/) {
-	    my $op = $1;
-	    my $addr = $2;
-	    
-	    $Ticket->AddAdminCc(Email => $addr) if ($op eq '+');
-	    $Ticket->DeleteWatcher($addr) if ($op eq '-');
-	}	
-    }	
-
-    # }}}
+	# add / delete requestors
+	foreach $value (@requestors) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $addr = $2;
+		
+		$Ticket->AddRequestor(Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher( $addr) if ($op eq '-');
+	    }	
+	}
 	
+	# add / delete ccs
+	foreach $value (@cc) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $addr = $2;
+		
+		$Ticket->AddCc(Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher($addr) if ($op eq '-');
+	    }	
+	}	
+	
+	# add / delete adminccs
+	foreach $value (@admincc) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $addr = $2;
+		
+		$Ticket->AddAdminCc(Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher($addr) if ($op eq '-');
+	    }	
+	}	
+	
+	# }}}
+	
+	# {{{ Deal with ticket keywords
+
+	my $KeywordSelects = $Ticket->QueueObj->KeywordSelectsObj();
+
+	foreach $value (@keyword) {
+	    if ($value =~ /^(\W?)(.*?)\/(.*)$/) {
+		my $op = $1;
+		my $select = $2;
+		my $key = $3;
+		
+		while (my $ks = $KeywordSelects->Next) {
+		    next unless ($ks->Name =~ /$select/);
+		    
+		    my $kids = $ks->KeywordObj->Descendents;
+		    foreach my $kid (keys %{$kids}) {
+			next unless ($kids{$key} =~ /^$key$/);
+			
+			$Ticket->AddKeyword(KeywordSelect => $ks->id,
+					    Keyword => $key) if ($op eq '-');
+			
+			$Ticket->AddKeyword(KeywordSelect => $is->id,
+					    Keyword => $key) if ($op eq '+');
+		    }
+		    
+		}
+	    }
+	}
+	# }}}
+
 	# {{{ deal with links
 
     # add /delete depends-ons
@@ -548,6 +579,8 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
   Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedBy]}
 	         
 EOFORM
+
+#TODO List off all keyword selects and selected values.
 
    while (my $l=$Ticket->Children->Next) {
        print $l->BaseObj->id," (",$l->BaseObj->Subject,") is  ",$l->Type," this ticket\n";

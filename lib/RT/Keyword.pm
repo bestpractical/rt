@@ -11,6 +11,7 @@ use RT::ObjectKeywords;
 
 @ISA = qw(RT::Record);
 
+# {{{ Core modules
 sub _Init {
     my $self = shift;
     $self->{'table'} = "Keywords";
@@ -27,13 +28,13 @@ sub _Accessible {
     return ($self->SUPER::_Accessible( @_, %cols));
     
 }
+# }}}
 
 =head1 NAME
 
  RT::Keyword - Manipulate an RT::Keyword record
 
 =head1 SYNOPSIS
-
   use RT::Keyword;
 
   my $keyword = RT::Keyword->new($CurrentUser);
@@ -57,6 +58,10 @@ An B<RT::Keyword> object is an arbitrary string.
 
 Takes a single argument, an RT::CurrentUser object.  Instantiates a new
 (uncreated) RT::Keyword object.
+
+=cut
+
+# {{{ sub Create
 
 =item Create KEY => VALUE, ...
 
@@ -90,6 +95,10 @@ sub Create {
 			);
 }
 
+# }}}
+
+# {{{ sub Set
+
 =item Set KEY => VALUE
 
 =cut
@@ -99,8 +108,14 @@ sub Set {
     my $self = shift;
     my $field = shift;
     my $value = shift;
+    
+    die "RT::Keyword::Set should be removed";
+
     $self->_Set( Field=>$field, Value=>$value );
 }
+# }}}
+
+# {{{ sub Delete
 
 =item Delete
 
@@ -117,6 +132,9 @@ sub Delete {
     $self->SUPER::Delete(@_);
 }
 
+# }}}
+
+# {{{ sub Path
 
 =item Path
 
@@ -137,6 +155,40 @@ sub Path {
     
 }
 
+# }}}
+
+# {{{ sub RelativePath 
+
+=head2 RelativePath KEYWORD_OBJ
+
+Takes a keyword object.  Returns this keyword's path relative to that
+keyword.  
+
+=item Bugs
+
+Currently assumes that the "other" keyword is a predecessor of this keyword
+
+=cut
+
+sub RelativePath {
+    my $self = shift;
+    my $OtherKey = shift;
+    
+    my $OtherPath = $OtherKey->Path();
+    
+    my $MyPath = $self->Path;
+
+    $MyPath =~ s/^$OtherPath//g;
+
+    return ($MyPath);
+    
+    
+}
+
+
+# }}}
+
+# {{{ sub ParentObj
 
 =item ParentObj
 
@@ -152,6 +204,10 @@ sub ParentObj {
     return ($ParentObj);
 }
 
+# }}}
+
+# {{{ sub Children
+
 =item Children
 
 Return an RT::Keywords object  this Object's children.
@@ -166,13 +222,16 @@ sub Children {
     return ($Children);
 }
 
+# }}}
+
+# {{{ sub Descendents
 
 =item Descendents [ NUM_GENERATIONS [ EXCLUDE_HASHREF ]  ]
 
 Returns an ordered (see L<Tie::IxHash>) hash reference of the descendents of
 this keyword, possibly limited to a given number of generations.  The keys
 are B<RT::Keyword> I<id>s, and the values are strings containing the I<Name>s
-of all relevant B<RT::Keyword>s.
+of those B<RT::Keyword>s.
 
 =cut
 
@@ -201,44 +260,8 @@ sub Descendents {
     return(\%results);
 }
 
-=item TicketDescendents TICKET_ID
+# }}}
 
-Like the I<Descendents> method, except only returns those keywords which are
-associated with an B<RT::Ticket> record via an B<RT::ObjectKeyword> record.
-
-=cut
-
-sub TicketDescendents {
-    my $self = shift;
-    my $ticket = shift;
-  my $Descendents = $self->Descendents;
-    my %results;
-    tie %results, 'Tie::IxHash';
-    %results = map { $_ => $Descendents->{$_} }
-      grep { $self->TicketObjectKeyword( $_, $ticket ) }
-	keys %{$Descendents};
-    return (\%results);
-}
-
-=item TicketObjectKeyword KEYWORD_ID TICKET_ID
-
-Returns the B<RT::ObjectKeyword> object for the given ticket and keyword
-descendent (not this keyword), or false if the given ticket is not associated
-with the keyword descendent.
-
-=cut
-
-sub TicketObjectKeyword {
-    my $self = shift;
-    my $kid = shift;
-    my $ticket = shift;
-    my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
-    
-    $ObjectKeyword->LoadByCols(Keyword => $kid, 
-			       ObjectType => 'Ticket', 
-			       ObjectId => $ticket);
-    return($ObjectKeyword);
-}
 
 =back
 
