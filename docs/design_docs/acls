@@ -1,9 +1,9 @@
 $Header$
 
 
-#
+
 # {{{ Requirements 
-#
+
 Here's the rough scheme I was thinking of for RT2 acls. Thoughts? I think
 it's a lot more flexible than RT 1.0, but not so crazily complex that
 it will be impossible to implement.  One of the "interesting" features
@@ -15,86 +15,33 @@ in design-docs/acls
 Who can rights be granted to:
 
 	users whose id is <foo>
-	users who are watchers of type <requestor/cc/admincc> for <global/queue/ticket> <id>
+	users who are watchers of type <requestor/cc/admincc> for <queue/ticket> <id>
+	users who are watchers of type <requestor/cc/admincc> for <this ticket / this queue>
 
 
 what scope do these rights apply to
 	queue <id>
-	ticket <id>
-	global
+	system
 	
 
 What rights can be granted
 	Display Ticket
 	Manipulate Ticket
 		Only users with manipulate ticket level access will see comments
-
-	Resolve Ticket
-
+	Maniplulate Ticket Status
 	Create Ticket	
 
-	Admin watchers 
-		in the ticket scope, this governs watcher admin for the ticket
-		In the queue scope, this governs watcher admin for the queue or any ticket in the queue
-		In the global scope, this governs watcher admin for any ticket or queue
-
+	Admin Queue Watchers 
+	Admin Ticket Watchers
 	Admin user accounts
-		Only effective in the global scope.
-		
 	Admin scrips
-		Only effective in the global scope.
-
 	Admin scripscopes
-		No effect in the ticket scope
-		In the queue scope, this governs scripscope admin for the queue
-		In the global scope, this governs scripscope admin for any queue/ the global context
-
-	Admin ACLS
-		at the ticket level governs acls for a given ticket
-		at the queue level, governs acls for a given queue  or any ticket in that queue
-		at the global level, grants the user supreme power.
-
+	Admin Queue ACLS
+	Admin System ACLs
 
 # }}}
 
 
-
-CREATE TABLE ACE (
-	id int not null primary_key autoincrement,
-	PrinicpalId INT(11),
-	PrincipalType VARCHAR(16),
-	PrincipalScope VARCHAR(16),
-	ObjectType VARCHAR(16),
-	ObjectId  INT,
-	Right VARCHAR(16)
-)
-
-
-
-$PrincipalClause = " ( ACE.PrincipalScope = 'User') AND 
-		      ( ACE.PrincipalId = ".$self->CurrentUser->Id." OR ACE.PrincipalId = 0) )
-	         OR ( ( ACE.PrinciaplScope = 'Owner') AND 
-		      ( Tickets.Owner = ".$self->CurrentUser->Id .") AND	
-		      ( Tickets.Id = ".$self->Id. ") )
-	         OR ( ( ACE.PrincipalScope = Watchers.Scope ) AND 
-		      ( ACE.PrincipalType = Watchers.Type ) AND 
-		      ( ACL.PrincipalId = Watchers.Value ) AND 
-		      ( Watchers.Owner = ".$self->CurrentUser->Id."))";
-
-
-
-# This select statement would figure out if A user has permissions for something at the queue level
-
-SELECT ACE.id from ACE, Watchers, Tickets WHERE ( 
-		 ( ACE.ObjectType = 'Queue' and (ACE.ObjectId = $self->id OR ACE.ObjectId = 0))
-	     AND ( ACE.Right = $Right) 
-	     AND ($PrincipalClause))
-
-# This select statement would figure outif a usr had permissions of type $Type for the "System"
-
-	
-
-#
 # {{{ Prinicpals  These are the entities in your Access Control Element
 #
 
@@ -128,8 +75,7 @@ Principal: What user does this right apply to
 
 # }}}
 
-
-#  {{{ Object: What object does this right apply to
+# {{{ Object: What object does this right apply to
 
 	Object is composed of an ObjectType and an ObjectId
 
@@ -141,19 +87,21 @@ Principal: What user does this right apply to
 	
 # }}}
 
-
 # {{{ Right: (What does this entry give the principal the right to do)
 
 
 
 	For the Object System:
 		System::SetACL
+		System::AdminScrips
 
 		User::Display
 		User::Create
 		User::Destroy
 		User::Modify
-		User::SetPassword						
+		User::SetPassword
+
+
 
 	For the Object "Queue":
 		Queue::Admin
@@ -183,34 +131,70 @@ Principal: What user does this right apply to
 
 # }}}
 
-#
+
+# {{{ Implementation:
+
+# {{{ SQL Schema 
+CREATE TABLE ACL (
+	id int not null primary_key autoincrement,
+	PrinicpalId INT(11),
+	PrincipalType VARCHAR(16),
+	PrincipalScope VARCHAR(16),
+	ObjectType VARCHAR(16),
+	ObjectId  INT,
+	Right VARCHAR(16)
+);
+
+# }}}
+
+# {{{ perl implementation of rights searches
+
+sub Principals {
+if (defined $Ticket) {
+	return "($UserPrincipal) OR ($OwnerPrincipal) OR ($WatchersPrincipal)";
+	}
+else {
+	return 	 "($UserPrincipal) OR ($WatchersPrincipal)";
+	}  
+}
+	
+$Principals = " ($UserPrincipal) OR ($OwnerPrincipal) OR ($WatchersPrincipal)";
+
+$UserPrincipal = " ( ACE.PrincipalScope = 'User') AND 
+		   ( ACE.PrincipalId = $User OR ACE.PrincipalId = 0)";
+
+$OwnerPrincipal = " ( ACE.PrinciaplScope = 'Owner') AND 
+		      ( Tickets.Owner = "$User ) AND	
+		      ( Tickets.Id = $Ticket)";
+
+$WatchersPrincipal = " ( ACE.PrincipalScope = Watchers.Scope ) AND 
+		      ( ACE.PrincipalType = Watchers.Type ) AND 
+		      ( ACL.PrincipalId = Watchers.Value ) AND 
+		      ( Watchers.Owner = $User )";
+
+$QueueObject = "( ACE.ObjectType = 'Queue' and (ACE.ObjectId = $Queue OR ACE.ObjectId = 0)";
+
+$SystemObject = "( ACE.ObjectType = 'System' )";
+
+
+# This select statement would figure out if A user has $Right at the queue level
+
+SELECT ACE.id from ACE, Watchers, Tickets WHERE ( 
+	     $QueueObject
+	     AND ( ACE.Right = $Right) 
+	     AND ($Principals))
+
+# This select statement would figure outif a user has $Right for the "System"
+
+SELECT ACE.id from ACE, Watchers, Tickets WHERE ( 
+	     ($SystemObject) AND ( ACE.Right = $Right ) AND ($Principals))
+
+# }}}
+
+# }}}
+
 # {{{ Examples
 #
-
-
-Principal, 	 	Object,		Granularity,	Right, 			Value		Action
-
-#Let user 2 admin all acls
-User:2,			System,		NULL,		SetACL,			NULL,		Grant
-
-#Don't let user 2 admin acls for queue 3
-User:2,			Queue,		3,		SetACL,			NULL,		Deny
-
-#Let all users see tickets in queue 5
-User:Any,		Queue,		5,		DisplayTicket,		NULL,		Grant
-
-#Let all users create tickets in all queues
-User:Any,		Queue,		Any,		CreateTicket,		NULL,		Grant
-
-#Prevent user 20 from creating tickets in all queues
-User:20,		Queue,		Any,		CreateTicket,		NULL,		Deny
-
-#Let the watchers of any ticket see that ticket
-TicketWatchers:,	Queue,		Any,		DisplayTicket,		NULL,		Grant
-
-#Allow all requestors of tickets in queue 6 to resolve tickets there
-TicketRequestors:,	Queue,		6,		SetSicketStatus,	Resolved,		Grant	
-
 
 # }}}	
 
