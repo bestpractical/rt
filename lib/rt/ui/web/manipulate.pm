@@ -546,12 +546,15 @@ sub display_queue {
   #we subtract 1 from the refresh rate so that the default value is -1..which 
   #means never refresh...as 0 should...but 0 means refresh now.
   $rt::ui::web::FORM{'refresh'} =   $rt::ui::web::FORM{'refresh'}-1;
+  if ($rt::ui::web::FORM{'refresh'} >=1) {
+  print "<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"". $rt::ui::web::FORM{'refresh'}."\">";
+  }
+  
   print "<!-- Query String 
 $query_string
 -->
 <font size=$QUEUE_FONT>
 <TABLE cellpadding=4 border=1 width=100% bgcolor=\"\#bbbbbb\">
-<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"". $rt::ui::web::FORM{'refresh'}."\">
 
 <TR>
        <TH><FONT SIZE=-1>Ser</FONT></TH>
