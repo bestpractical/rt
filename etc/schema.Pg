@@ -7,9 +7,9 @@ CREATE TABLE FM_Classes (
 
   SortOrder integer NULL  ,
   Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 );
 
@@ -25,9 +25,9 @@ CREATE TABLE FM_ClassCustomFields (
   CustomField integer not NULL  ,
 
   Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
         
 );
@@ -45,9 +45,9 @@ CREATE TABLE FM_CustomFields (
   Description varchar(200) NULL  ,
   SortOrder integer NULL  ,
   Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 );
 
@@ -62,12 +62,12 @@ CREATE TABLE FM_Articles (
   Summary varchar(255) NULL  ,
   SortOrder integer NULL  ,
   Class integer NULL,
-  Parent integer NULL.
+  Parent integer NULL,
   URI varchar(255),
   Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 );
 
@@ -81,9 +81,9 @@ CREATE TABLE FM_CustomFieldValues (
   Description varchar(255) NULL  ,
   SortOrder integer NULL  ,
   Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 );
 --- }}}
@@ -97,9 +97,9 @@ CREATE TABLE FM_ArticleCFValues (
   CustomField int NOT NULL  ,
   Content int NOT NULL,
   Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
   
   );
@@ -120,9 +120,9 @@ CREATE TABLE FM_Content (
   Body text NULL  ,
 
   Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
+  LastUpdated TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 );
 
@@ -135,7 +135,7 @@ CREATE TABLE FM_Transactions (
   Article integer NULL  ,
   ChangeLog text NULL  ,
   Creator integer NULL  ,
-  Created DATETIME NULL  ,
+  Created TIMESTAMP NULL  ,
   PRIMARY KEY (id)
 );
 
