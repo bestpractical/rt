@@ -106,7 +106,7 @@ push @results, @okresults;
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.
 
-unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
+unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
    Abort("No permission to view ticket");
 }
 
