@@ -39,6 +39,22 @@ my $Attributes = new RT::Attributes($CurrentUser);
 
 ok(require RT::Attributes);
 
+my $root = RT::User->new($RT::SystemUser);
+ok (UNIVERSAL::isa($root, 'RT::User'));
+$root->Load('root');
+ok($root->id, "Found a user for root");
+
+my $attr = $root->Attributes;
+
+ok (UNIVERSAL::isa($attr,'RT::Attributes'), 'got the attributes object');
+
+ok($root->AddAttribute(Name => 'TestAttr', Content => 'The attribute has content')); 
+
+my @names = $attr->Names;
+
+is ($names[0] , 'TestAttr');
+
+
 =end testing
 
 =cut
@@ -47,11 +63,52 @@ use strict;
 no warnings qw(redefine);
 
 
-=head2 Next
+sub _DoSearch {
+    my $self = shift;
+    $self->SUPER::_DoSearch();
+    $self->_BuildAccessTable();
+}
 
-Hand out the next Attribute that was found
+
+sub _BuildAccessTable {
+    my $self = shift;
+    while (my $attr = $self->Next) {
+        push @{$self->{'attr'}->{$attr->Name}}, $attr;
+    }
+}
+
+
+sub _AttrHash {
+    my $self = shift;
+    $self->_DoSearch if ($self->{'must_redo_search'});
+
+    return ($self->{'attr'});
+}
+
+=head2 Names
+
+Returns a list of the Names of all attributes for this object. 
 
 =cut
+
+sub Names {
+    my $self = shift;
+    return (keys %{$self->_AttrHash});
+}
+
+=head2 Named STRING
+
+Returns an array of all the RT::Attribute objects with the name STRING
+
+=cut
+
+sub Named {
+    my $self = shift;
+    my $name = shift;
+    return($self->_AttrHash->{$name});
+
+}
+
 
 
 # {{{ LimitToObject 

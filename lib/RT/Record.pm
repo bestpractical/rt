@@ -85,6 +85,50 @@ sub _PrimaryKeys {
 
 # }}}
 
+=head2 Attributes
+
+Return this object's attributes as an RT::Attributes object
+
+=cut
+
+sub Attributes {
+    my $self = shift;
+    
+    unless ($self->{'attributes'}) {
+        $self->{'attributes'} = RT::Attributes->new($self->CurrentUser);     
+       $self->{'attributes'}->LimitToObject($self); 
+    }
+    return ($self->{'attributes'}); 
+
+}
+
+
+=head2 AddAttribute { Name, Description, Content }
+
+Adds a new attribute for this object.
+
+=cut
+
+sub AddAttribute {
+    my $self = shift;
+    my %args = ( Name        => undef,
+                 Description => undef,
+                 Content     => undef,
+                 @_ );
+
+    my $attr = RT::Attribute->new( $self->CurrentUser );
+    my ( $id, $msg ) = $attr->Create( ObjectType  => ref($self),
+                                      ObjectId    => $self->Id,
+                                      Name        => $args{'Name'},
+                                      Description => $args{'Description'},
+                                      Content     => $args{'Content'} );
+
+    $self->Attributes->RedoSearch;
+    
+    return ($id, $msg);
+}
+
+
 # {{{ sub _Handle 
 sub _Handle {
     my $self = shift;
@@ -194,6 +238,9 @@ DB is case sensitive
 sub LoadByCols {
     my $self = shift;
     my %hash = (@_);
+
+    # We don't want to hang onto this
+    delete $self->{'attributes'};
 
     # If this database is case sensitive we need to uncase objects for
     # explicit loading

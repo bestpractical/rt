@@ -228,7 +228,7 @@ sub Action {
 sub DESTROY {
     my $self=shift;
     $self->{'_TicketObj'} = undef;
-    $self->Action = undef;
+    $self->{'Action'} = undef;
     $self->{'TemplateObj'} = undef;
 }
 # }}}
