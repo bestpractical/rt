@@ -61,7 +61,12 @@
 % }
 </ul>
 </&>
-
+<&|/Elements/TitleBox, title => loc('Options'), bodyclass => "" &>
+<form method="POST" action="MyRT.html">
+<&|/l&>Summary rows</&>:<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>">
+<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save' &>
+</form>
+</&>
 % for my $pane (@panes) {
 <&|/Elements/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
 <& /Widgets/SelectionBox:show, self => $pane &>
@@ -78,6 +83,15 @@ unless (exists $session{'my_rt_portlets'}) {
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $d_portlets->Content);
 }
 
+if ($ARGS{SummaryRows}) {
+    $user->SetPreferences('SummaryRows', $ARGS{SummaryRows});
+    push @actions, loc ('Preferences saved for [_1].', loc('summary rows'));
+}
+else {
+    $ARGS{SummaryRows} = $user->Preferences('SummaryRows', $RT::DefaultSummaryRows);
+}
+
+
 my $portlets = $session{'my_rt_portlets'};
 
 my %allowed_components = map {$_ => 1}
@@ -87,18 +101,19 @@ my @items;
 push @items, map {["component-$_", $_]} sort keys %allowed_components;
 
 my $sys = RT::System->new($session{'CurrentUser'});
+my @objs = ($sys);
 
-unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
-					   Object=> $RT::System )) {
-    return;
+if ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
+				       Object=> $RT::System )) {
+    my $groups = RT::Groups->new($session{'CurrentUser'});
+    $groups->LimitToUserDefinedGroups;
+    $groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
+			Recursively => 1);
+    push @objs, ($user, @{$groups->ItemsArrayRef()});
 }
 
-my $groups = RT::Groups->new($session{'CurrentUser'});
-$groups->LimitToUserDefinedGroups;
-$groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
-                    Recursively => 1);
 my @sys_searches;
-for my $object ($sys, $user, @{$groups->ItemsArrayRef()}) {
+for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
 	my ($desc, $search) = @$_;
 	if ($object eq $sys) {
