@@ -1,5 +1,5 @@
+% if ($members->Count) {
 <UL>
-% my $members = $Ticket->Members;
 % while (my $member = $members->Next) {
 <LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Subject%> [<%$member->Status%>]<br>
 % if ($depth < 8) {
@@ -7,13 +7,15 @@
 % }
 % }
 </UL>
+% }
 
 <%INIT>
-#TODO perf this is stupid and wasteful but i'm sleepy and spacey
-for (my $i; $i < $depth; $i++) {
-$dstring .= '|';
-}
+
+$dstring = '|'x$depth;
+my $members = $Ticket->Members;
+
 </%INIT>
+
 <%ARGS>
 $dstring => ""
 $Ticket => undef

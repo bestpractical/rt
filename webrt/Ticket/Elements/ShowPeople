@@ -1,8 +1,11 @@
-	  <& /Elements/ShadedBox, title => 'Owner' , content => $Ticket->OwnerObj->UserId &>
-	  <& /Elements/ShadedBox, title => 'Requestors' , content => $Ticket->RequestorsAsString &>
-	  <& /Elements/ShadedBox, title => 'Cc' , content => $Ticket->CcAsString &>
-	  <& /Elements/ShadedBox, title => 'AdminCc' , content => $Ticket->AdminCcAsString &>
-
+Owner<BR>
+&nbsp;<B><%$Ticket->OwnerObj->UserId%></B><BR>
+Requestors<BR>
+&nbsp;<B><%$Ticket->RequestorsAsString%></B><BR>
+Cc<BR>
+&nbsp;<B><%$Ticket->CcAsString%></B><BR>
+AdminCc<BR>
+&nbsp;<B><%$Ticket->AdminCcAsString%></B>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

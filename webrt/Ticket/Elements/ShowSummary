@@ -21,30 +21,12 @@
 	
 
 	<BR>
-	  <& /Elements/TitleBoxStart, title => 'Dependencies', 
+	  <& /Elements/TitleBoxStart, title => 'Relationships', 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#339933" &>
-	  <& /Ticket/Elements/ShowDependencies, Ticket => $Ticket &>
+	  <& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
 	<& /Elements/TitleBoxEnd &>
-	<BR>
-          <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', 
-		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		titleright => "<A CLASS='inverse' HREF=\"$RT::WebPath/Ticket/Create.html?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>", color => "#339966" &>
-	SuperTickets:<BR>	
-	<& /Ticket/Elements/ShowMemberOf, Ticket => $Ticket &>	<BR>
-	SubTickets:<BR>
-		    <& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
-	<BR>
-	<& /Elements/TitleBoxStart, title => 'References',
-		title_href =>"$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		 titleright => "[<a class='inverse' href=\"$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id."\">New Link</a>]", color => "#339999" &>
-	<& /Ticket/Elements/ShowReferences, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>	
-
 	</TD>
 	<BR>
 	<TD VALIGN=TOP >
