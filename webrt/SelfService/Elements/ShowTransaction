@@ -37,7 +37,7 @@
 </TR>
 </TABLE>
 
-%   if ($message->ContentType =~ m{^(text/plain|message)} && length($message->Content)<13456) {
+%   if ($message->ContentType =~ m{^(text/plain|message|text$)} && length($message->Content)<13456) {
 <pre>
 %#TODO We're now HTML escaping the message content, but should
 %#TODO probably deal with converting links
