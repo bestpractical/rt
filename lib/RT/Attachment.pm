@@ -37,7 +37,7 @@ sub _Init  {
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
-	      TransactionId => 'read',
+	      TransactionId => 'read/public',
 	      MessageId => 'read',
 	      ContentType => 'read',
 	      Subject => 'read',
