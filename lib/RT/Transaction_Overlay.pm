@@ -242,52 +242,13 @@ sub Content {
         @_
     );
 
-    my $content = undef;
-
-    # If we don\'t have any content, return undef now.
-    unless ( $self->Attachments->First ) {
-        return (undef);
+    my $content;
+    my $content_obj = $self->ContentObj;
+    if ($content_obj) {
+        $content = $content_obj->Content;
     }
 
-    # Get the set of toplevel attachments to this transaction.
-    my $MIMEObj = $self->Attachments->First();
-
-    # If it's a message or a plain part, just return the
-    # body. 
-    if ( $MIMEObj->ContentType() =~ '^(text|message)(/|$)' ) {
-        $content = $MIMEObj->Content();
-    }
-
-    # If it's a multipart object, first try returning the first 
-    # text/plain part. 
-
-    elsif ( $MIMEObj->ContentType() =~ '^multipart/' ) {
-        my $plain_parts = $MIMEObj->Children();
-        $plain_parts->ContentType( VALUE => 'text/plain' );
-
-        # If we actully found a part, return its content
-        if ( $plain_parts->First && $plain_parts->First->Content ne '' ) {
-            $content = $plain_parts->First->Content;
-        }
-
-        # If that fails, return the  first text/ or message/ part 
-        # which has some content.
-
-        else {
-            my $all_parts = $MIMEObj->Children();
-            while ( ( $content == undef ) && ( my $part = $all_parts->Next ) ) {
-                if ( ( $part->ContentType() =~ '^(text|message)(/|$)' )
-                    and ( $part->Content() ) )
-                {
-                    $content = $part->Content;
-                }
-            }
-        }
-
-    }
-
-    # If all else fails, return a message that we couldn't find
-    # any content
+    # If all else fails, return a message that we couldn't find any content
     else {
         $content = $self->loc('This transaction appears to have no content');
     }
@@ -321,6 +282,66 @@ sub Content {
     }
 
     return ($content);
+}
+
+# }}}
+
+# {{{ ContentObj
+
+=head2 ContentObj 
+
+Returns the RT::Attachment object which contains the content for this Transaction
+
+=cut
+
+
+
+sub ContentObj {
+
+    my $self = shift;
+
+    # If we don\'t have any content, return undef now.
+    unless ( $self->Attachments->First ) {
+        return (undef);
+    }
+
+    # Get the set of toplevel attachments to this transaction.
+    my $Attachment = $self->Attachments->First();
+
+    # If it's a message or a plain part, just return the
+    # body.
+    if ( $Attachment->ContentType() =~ '^(text|message)(/|$)' ) {
+        return ($Attachment);
+    }
+
+    # If it's a multipart object, first try returning the first
+    # text/plain part.
+
+    elsif ( $Attachment->ContentType() =~ '^multipart/' ) {
+        my $plain_parts = $Attachment->Children();
+        $plain_parts->ContentType( VALUE => 'text/plain' );
+
+        # If we actully found a part, return its content
+        if ( $plain_parts->First && $plain_parts->First->Content ne '' ) {
+            return ( $plain_parts->First );
+        }
+
+        # If that fails, return the  first text/ or message/ part
+        # which has some content.
+
+        else {
+            my $all_parts = $Attachment->Children();
+            while ( my $part = $all_parts->Next ) {
+                if (( $part->ContentType() =~ '^(text|message)(/|$)' ) &&  $part->Content()  ) {
+                    return ($part);
+                }
+            }
+        }
+
+    }
+
+    # We found no content. suck
+    return (undef);
 }
 
 # }}}

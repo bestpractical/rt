@@ -142,7 +142,6 @@ sub LoadAction  {
     my $module = $1;
     my $type = "RT::Action::". $module;
  
-    $RT::Logger->debug("now requiring $type\n"); 
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
     $self->{'Action'}  = $type->new ( 'ScripActionObj' => $self, 

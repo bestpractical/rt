@@ -220,8 +220,6 @@ sub Next {
 
         #If the user doesn't have the right to show this ACE
         else {
-            use Carp;
-            $RT::Logger->debug(Carp::cluck);
             return ( $self->Next() );
         }
     }

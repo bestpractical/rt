@@ -206,7 +206,7 @@ sub _parser {
 
       my $class;
       my ($stdkey) = grep { /^$key$/i } (keys %FIELDS);
-      if (exists $FIELDS{$stdkey}) {
+      if ($stdkey && exists $FIELDS{$stdkey}) {
         $class = $FIELDS{$key}->[0];
         $key = $stdkey;
       }

@@ -151,7 +151,6 @@ sub LoadCondition  {
     my $module = $1;
     my $type = "RT::Condition::". $module;
     
-    $RT::Logger->debug("now requiring $type\n"); 
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
     $self->{'Condition'}  = $type->new ( 'ScripConditionObj' => $self, 
