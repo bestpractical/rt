@@ -17,7 +17,7 @@ package RT::Mason;
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 use HTML::Mason::ApacheHandler;
 
-use vars qw($VERSION %session $Nobody $SystemUser);
+use vars qw($VERSION %session $Nobody $SystemUser $r);
 
 # List of modules that you want to use from components (see Admin
 # manual for details)
@@ -83,7 +83,7 @@ use Carp;
     # Set this page's content type to whatever we are called with
     sub SetContentType {
 	my $type = shift;
-	$r->content_type($type);
+	$RT::Mason::r->content_type($type);
     }
 
 }
@@ -112,7 +112,7 @@ die "Can't read and write $RT::MasonSessionDir"
 
 
 sub handler {
-    my ($r) = @_;
+    ($r) = @_;
     
     RT::Init();
  
