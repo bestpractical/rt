@@ -166,7 +166,7 @@ sub help {
 # Displays a list of objects that match some specified condition.
 
 sub list {
-    my ($q, $type, %data, $orderby);
+    my ($q, $type, %data);
     my $bad = 0;
 
     while (@ARGV) {
@@ -179,7 +179,7 @@ sub list {
             $bad = 1, last unless get_var_argument(\%data);
         }
         elsif (/^-o$/) {
-            $orderby = shift @ARGV;
+            $data{orderby} = shift @ARGV;
         }
         elsif (/^-([isl])$/) {
             $data{format} = $1;
@@ -209,7 +209,7 @@ sub list {
     }
     return help("list", $type) if $bad;
 
-    my $r = submit("$REST/search/$type", { query => $q, %data, orderby => $orderby || "" });
+    my $r = submit("$REST/search/$type", { query => $q, %data });
     print $r->content;
 }
 
