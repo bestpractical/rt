@@ -221,10 +221,17 @@ $WebBaseURL = "http://RT::WebBaseURL.not.configured:80";
 $WebURL = $WebBaseURL . $WebPath . "/";
 
 
+
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 # (this should be autoconfigured during 'make install' or 'make upgrade')
 
 $MasonComponentRoot = "!!MASON_HTML_PATH!!";
+
+# $MasonLocalComponentRoot is where your rt instance keeps its site-local
+# mason html files.
+# (this should be autoconfigured during 'make install' or 'make upgrade')
+
+$MasonLocalComponentRoot = "!!MASON_LOCAL_HTML_PATH!!";
 
 # $MasonDataDir Where mason keeps its datafiles
 # (this should be autoconfigured during 'make install' or 'make upgrade')

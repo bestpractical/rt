@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	95
+RT_VERSION_PATCH	=	96
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -41,6 +41,12 @@ RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
+
+
+# RT allows sites to overlay the default web ui with 
+# local customizations Those files can be placed in MASON_LOCAL_HTML_PATH
+
+MASON_LOCAL_HTML_PATH	=	$(RT_PATH)/local/WebRT/html
 
 # RT needs to be able to write to MASON_DATA_PATH and MASON_SESSION_PATH
 # RT will create and chown these directories. Don't just set them to /tmp
@@ -221,9 +227,9 @@ fixperms:
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 	# Make the web ui readable by all. 
-	chmod -R  u+rwX,go-w,go+rX $(MASON_HTML_PATH)
-	chown -R $(LIBS_OWNER) $(MASON_HTML_PATH)
-	chgrp -R $(LIBS_GROUP) $(MASON_HTML_PATH)
+	chmod -R  u+rwX,go-w,go+rX $(MASON_HTML_PATH) $(MASON_HTML_PATH)
+	chown -R $(LIBS_OWNER) $(MASON_HTML_PATH) $(MASON_LOCAL_HTML_PATH)
+	chgrp -R $(LIBS_GROUP) $(MASON_HTML_PATH) $(MASON_LOCAL_HTML_PATH)
 
 	# Make the web ui's data dir writable
 	chmod 0700  $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
@@ -236,6 +242,7 @@ dirs:
 	mkdir -p $(RT_ETC_PATH)
 	mkdir -p $(RT_LIB_PATH)
 	mkdir -p $(MASON_HTML_PATH)
+	mkdir -p $(MASON_LOCAL_HTML_PATH)
 
 libs-install: 
 	[ -d $(RT_LIB_PATH) ] || mkdir $(RT_LIB_PATH)
@@ -327,6 +334,7 @@ config-replace:
 	s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
 	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
 	s'!!MASON_HTML_PATH!!'$(MASON_HTML_PATH)'g;\
+	s'!!MASON_LOCAL_HTML_PATH!!'$(MASON_LOCAL_HTML_PATH)'g;\
 	s'!!MASON_SESSION_PATH!!'$(MASON_SESSION_PATH)'g;\
 	s'!!MASON_DATA_PATH!!'$(MASON_DATA_PATH)'g;\
 	s'!!RT_LOG_PATH!!'$(RT_LOG_PATH)'g;\

@@ -42,7 +42,8 @@ sub NewParser {
 
 sub NewInterp {
     my %params = ( allow_recursive_autohandlers => 1,
-                   comp_root => "$RT::MasonComponentRoot",
+                   comp_root => [ [local => $RT::MasonLocalComponentRoot] , 
+ 			 	  [standard => $RT::MasonComponentRoot] ] , 
                    data_dir => "$RT::MasonDataDir",
                    parser => undef,
                    @_);
