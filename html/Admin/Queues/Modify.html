@@ -104,6 +104,7 @@ if ($Create) {
 } else {
     if ($id eq 'new') {
        my ($val, $msg) =  $QueueObj->Create(Name => $Name);
+       delete $session{'create_in_queues'};
        if ($val == 0 ) {
            Abort("$msg");
 	}
@@ -119,6 +120,7 @@ if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
 }
 if ($QueueObj->Id()) {
+    delete $session{'create_in_queues'};
 my @attribs= qw(Description CorrespondAddress CommentAddress Name 
                 InitialPriority FinalPriority DefaultDueIn);
 

@@ -470,7 +470,7 @@ while (my $link = $links->Next) {
 	    _reopen	=> 0,
 	);
     }
-    elsif ($obj->Type eq 'code') {
+    elsif (0) { # code tickets can be dangerous # $obj->Type eq 'code') {
 	my $code = $obj->Transactions->First->Content;
 	my $rv;
 
