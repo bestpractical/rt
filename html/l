@@ -22,5 +22,6 @@
 %# 
 %# END LICENSE BLOCK
 % my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
-% $m->print($hand->maketext($m->content, @_));
+% my $text = $hand->maketext($m->content, @_);
+% $m->print(Encode::is_utf8($text) ? $text : Encode::decode_utf8($text));
 % return(1);

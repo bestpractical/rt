@@ -23,7 +23,7 @@
 %# END LICENSE BLOCK
 <%INIT>
 local *session;
-Encode::_utf8_on($ARGS{$_}) foreach (keys %ARGS);
+$ARGS{$_} = Encode::decode_utf8($ARGS{$_}) foreach (keys %ARGS);
 
 if ($ARGS{'Debug'}) {
         require Time::HiRes;
@@ -33,7 +33,7 @@ if ($ARGS{'Debug'}) {
 else {
         $m->{'rt_base_time'} = time;
 }
-$m->comp('/Elements/SetupSessionCookie');
+$m->comp('/Elements/SetupSessionCookie', %ARGS);
 
 unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
     $session{'CurrentUser'} = RT::CurrentUser->new();
@@ -112,6 +112,9 @@ elsif ($RT::WebExternalAuth and length($ENV{'REMOTE_USER'})) {
 
 delete $session{'CurrentUser'}
     unless $session{'CurrentUser'} and defined $session{'CurrentUser'}->Id;
+
+# Process per-page authentication callbacks
+$m->comp('/Elements/Callback', %ARGS, _CallbackName => 'Auth');
 
 # If the user is logging in, let's authenticate
 if (!$session{'CurrentUser'} && defined ($user) && defined ($pass) ){

@@ -189,11 +189,22 @@ sub Commit {
         }
     }
     else {
-        if ( $RT::MailCommand eq 'sendmail' ) {
-            $RT::MailParams = $RT::SendmailArguments;
-        }
+	my @mailer_args = ($RT::MailCommand);
+	local $ENV{MAILADDRESS};
 
-        unless ( $MIMEObj->send( $RT::MailCommand, $RT::MailParams ) ) {
+        if ( $RT::MailCommand eq 'sendmail' ) {
+	    push @mailer_args, $RT::SendmailArguments;
+        }
+        elsif ( $RT::MailCommand eq 'smtp' ) {
+	    $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');
+	    push @mailer_args, (Server => $RT::SMTPServer);
+	    push @mailer_args, (Debug => $RT::SMTPDebug);
+        }
+	else {
+	    push @mailer_args, $RT::MailParams;
+	}
+
+        unless ( $MIMEObj->send( @mailer_args ) ) {
             $RT::Logger->crit($msgid.  "Could not send mail." );
             return (0);
         }

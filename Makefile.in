@@ -345,25 +345,25 @@ insert-approval-data:
 # {{{ libs-install
 libs-install: 
 	[ -d $(DESTDIR)/$(RT_LIB_PATH) ] || mkdir $(DESTDIR)/$(RT_LIB_PATH)
-	cp -rp lib/* $(DESTDIR)/$(RT_LIB_PATH)
+	-cp -rp lib/* $(DESTDIR)/$(RT_LIB_PATH)
 # }}}
 
 # {{{ html-install
 html-install:
 	[ -d $(DESTDIR)/$(MASON_HTML_PATH) ] || mkdir $(DESTDIR)/$(MASON_HTML_PATH)
-	cp -rp ./html/* $(DESTDIR)/$(MASON_HTML_PATH)
+	-cp -rp ./html/* $(DESTDIR)/$(MASON_HTML_PATH)
 # }}}
 
 # {{{ doc-install
 doc-install:
-	cp -rp ./README $(DESTDIR)/$(RT_DOC_PATH)
+	-cp -rp ./README $(DESTDIR)/$(RT_DOC_PATH)
 # }}}
 
 # {{{ etc-install
 
 etc-install:
 	mkdir -p $(DESTDIR)/$(RT_ETC_PATH)
-	cp -rp \
+	-cp -rp \
 		etc/acl.* \
 		etc/initialdata \
 		etc/schema.* \
@@ -374,7 +374,7 @@ etc-install:
 
 sbin-install:
 	mkdir -p $(DESTDIR)/$(RT_SBIN_PATH)
-	cp -rp \
+	-cp -rp \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
 		$(DESTDIR)/$(RT_SBIN_PATH)
@@ -384,7 +384,7 @@ sbin-install:
 
 bin-install:
 	mkdir -p $(DESTDIR)/$(RT_BIN_PATH)
-	cp -rp \
+	-cp -rp \
 		bin/rt-mailgate \
 		bin/mason_handler.fcgi \
 		bin/mason_handler.svc \
@@ -468,7 +468,7 @@ rpm:
 
 
 apachectl:
-	/usr/sbin/apachectl stop
+	apachectl stop
 	sleep 3
-	/usr/sbin/apachectl start
+	apachectl start
 # }}}

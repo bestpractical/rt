@@ -33,7 +33,7 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
     eval {
         tie %session, $session_class,
-          ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
+          $SessionCookie || ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
           $backends{$RT::DatabaseType} ? {
             Handle     => $RT::Handle->dbh,
             LockHandle => $RT::Handle->dbh,
@@ -72,3 +72,6 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
     } 
     return();
 </%init>
+<%args>
+$SessionCookie => ''
+</%args>
