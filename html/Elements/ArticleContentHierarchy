@@ -1,19 +1,23 @@
 <A NAME="#<%$article->Id%>">
 
+%if ($depth >= 5) {
 <OL
-% if ($Depth == 1 ) {
+% if ($Depth == 5 ) {
 type="1"
-% } elsif ($Depth == 2) {
+% } elsif ($Depth == 6) {
 type="a"
-%} elsif ($Depth == 3) {
+%} elsif ($Depth == 7) {
 type="i"
 %}
 >
+% }
+
 % while (my $article = $articles->Next()) {
-<LI>
+<BR>
 % if ($Depth < 5) {
 <H<%$Depth%>><% $article->Summary %></H<%$Depth%>>
 % } else {
+<LI>
 <% $article->Summary %>
 % }
 <BR>
@@ -21,9 +25,13 @@ type="i"
 % if ($Depth < 99) {
 <& ArticleContentHierarchy, parent => $article->Id , Depth => $Depth &> 
 % }
+% if ($Depth >= 5) {
 </LI>
+%}
 % }
+% if ($Depth >= 5) {
 </OL>
+%}
 <%INIT>
 $Depth++;
 my $articles = new RT::FM::ArticleCollection($session{'CurrentUser'});
