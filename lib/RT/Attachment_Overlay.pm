@@ -48,14 +48,7 @@ use strict;
 no warnings qw(redefine);
 
 use MIME::Base64;
-
-# {{{ sub _Init
-sub _Init  {
-    my $self = shift; 
-    $self->{'table'} = "Attachments";
-    return($self->SUPER::_Init(@_));
-}
-# }}}
+use MIME::QuotedPrint;
 
 # {{{ sub _ClassAccessible 
 sub _ClassAccessible {
@@ -121,8 +114,7 @@ sub Create {
 
     #if we didn't specify a ticket, we need to bail
     if ( $args{'TransactionId'} == 0 ) {
-        $RT::Logger->crit(
-"RT::Attachment->Create couldn't, as you didn't specify a transaction\n" );
+        $RT::Logger->crit( "RT::Attachment->Create couldn't, as you didn't specify a transaction\n" );
         return (0);
 
     }
@@ -189,6 +181,11 @@ sub Create {
             #cut the max attchment size by 25% (for mime-encoding overhead.
             $RT::Logger->debug("Max size is $MaxSize\n");
             $MaxSize = $MaxSize * 3 / 4;
+        # Some databases (postgres) can't handle non-utf8 data 
+        } elsif (    !$RT::Handle->BinarySafeBLOBs
+                  && $Attachment->mime_type !~ /text\/plain/gi
+                  && !Encode::is_utf8( $Body, 1 ) ) {
+              $ContentEncoding = 'quoted-printable';
         }
 
         #if the attachment is larger than the maximum size
@@ -206,11 +203,7 @@ sub Create {
             elsif ($RT::DropLongAttachments) {
 
                 # drop the attachment on the floor
-                $RT::Logger->info( "$self: Dropped an attachment of size "
-                                   . length($Body) . "\n"
-                                   . "It started: "
-                                   . substr( $Body, 0, 60 )
-                                   . "\n" );
+                $RT::Logger->info( "$self: Dropped an attachment of size " . length($Body) . "\n" . "It started: " . substr( $Body, 0, 60 ) . "\n" );
                 return (undef);
             }
         }
@@ -221,7 +214,11 @@ sub Create {
             # base64 encode the attachment
             $Body = MIME::Base64::encode_base64($Body);
 
+        } elsif ($ContentEncoding eq 'quoted-printable') {
+            $Body = MIME::QuotedPrint::encode($Body);
         }
+
+
         my $id = $self->SUPER::Create( TransactionId => $args{'TransactionId'},
                                        ContentType   => $Attachment->mime_type,
                                        ContentEncoding => $ContentEncoding,
@@ -269,6 +266,8 @@ sub Content {
       );
   } elsif ( $self->ContentEncoding eq 'base64' ) {
       return MIME::Base64::decode_base64($self->_Value('Content'));
+  } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
+      return MIME::QuotedPrint::decode($self->_Value('Content'));
   } else {
       return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
   }
@@ -299,6 +298,8 @@ sub OriginalContent {
       $content = $self->_Value('Content', decode_utf8 => 0);
   } elsif ( $self->ContentEncoding eq 'base64' ) {
       $content = MIME::Base64::decode_base64($self->_Value('Content', decode_utf8 => 0));
+  } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
+      return MIME::QuotedPrint::decode($self->_Value('Content', decode_utf8 => 0));
   } else {
       return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
   }

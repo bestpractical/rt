@@ -199,4 +199,29 @@ sub iso8859_redef_sendmessage {
 
     }';
 }
+
+
+
+my $content =  `cat ./lib/t/data/multipart-alternative-with-umlaut` || die "couldn't find new content";
+
+$parser->ParseMIMEEntityFromScalar($content);
+
+
+# be as much like the mail gateway as possible.
+&umlauts_redef_sendmessage;
+
+RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+
+ok ($tick->Transactions->First->Content =~ /causes Error/, "We recorded the content right as text-plain");
+ok ($tick->Transactions->First->Attachments->Count ==3 , "Has three attachments, presumably a text-plain, a text-html and a multipart alternative");
+
+sub umlauts_redef_sendmessage {
+    no warnings qw/redefine/;
+    eval 'sub RT::Action::SendEmail::SendMessage { }';
+}
 1;
