@@ -40,7 +40,9 @@ o   Perl5.005_03 or later with support for setgid perl scripts ( http://www.perl
 	package or reconfigure your perl setup to support "setuid scripts".
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:    Mysql 3.23, Postgres 7.1
+        Currently supported:    Mysql 3.23.38 or newer. 
+				 (Some older releases had crippling SQL bugs)
+				Postgres 7.1
 	Partially supported:    Oracle 8i
 	(Mysql and Postgres are known to be a more solid base for RT than 
 	Oracle at this time)

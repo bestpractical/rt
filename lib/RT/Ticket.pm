@@ -392,26 +392,14 @@ sub Import {
 
     # {{{ Deal with setting the owner
     
-    if (ref($args{'Owner'}) eq 'RT::User') {
-	$Owner = $args{'Owner'};
+    if ((ref($args{'Owner'}) and (ref($args{'Owner'}))) eq 'RT::User') {
+      $Owner = $args{'Owner'};
     }
     #If we've been handed an integer (aka an Id for the users table 
     elsif ($args{'Owner'} =~ /^\d+$/) {
 	$Owner = new RT::User($self->CurrentUser);
 	$Owner->Load($args{'Owner'});
 	
-    }
-    #If we can't handle it, call it nobody
-    else {
-	if (ref($args{'Owner'})) {
-	    $RT::Logger->warning("$ticket ->Create called with an Owner of ".
-		 "type ".ref($args{'Owner'}) .". Defaulting to nobody.\n");
-	}
-	else { 
-	    $RT::Logger->warning("$self ->Create called with an ".
-				 "unknown datatype for Owner: ".$args{'Owner'} .
-				 ". Defaulting to Nobody.\n");
-	}
     }
     
     #If we have a proposed owner and they don't have the right 

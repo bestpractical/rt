@@ -607,6 +607,8 @@ sub HasQueueRight {
     unless ($QueueId) {
 	require Carp;
 	$RT::Logger->debug(Carp::cluck ("$self->HasQueueRight Couldn't find a queue id"));
+	require Data::Dumper;
+	$RT::Logger->debug(Dumper(\%args));
     }
 
     # }}}
