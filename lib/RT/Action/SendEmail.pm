@@ -116,7 +116,7 @@ sub Prepare {
       if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
-    # If we don't have any 'To' header (but do have other reciepients), drop in
+    # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
     $self->SetHeader( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
       if ( $self->{'PseudoTo'} && ( @{ $self->{'PseudoTo'} } )
