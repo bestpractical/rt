@@ -181,8 +181,7 @@ sub SetReferences {
 
   $self->TemplateObj->MIMEObj->head->add
     ('In-Reply-To', "<rt-".$self->TicketObj->id().
-     "-".
-     $self->TransactionObj->id()."\@".$RT::rtname.">");
+     "\@".$RT::rtname.">");
 
 
   # TODO $RT::rtname should be replaced by $RT::hostname to form valid

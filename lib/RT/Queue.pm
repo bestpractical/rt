@@ -178,8 +178,7 @@ sub WatchersAsString {
     return (0, "Permission Denied")
       unless ($self->CurrentUserHasRight('ExploreQueue'));
     
-    return ($self->_CleanAddressesAsString ($self->Watchers->EmailsAsString() . ", " .
-				    $self->QueueObj->Watchers->EmailsAsString()));
+    return ($self->_CleanAddressesAsString ($self->Watchers->EmailsAsString() ));
 }
 
 # {{{ sub AdminCcAsString 
@@ -197,8 +196,7 @@ sub AdminCcAsString {
     return (0, "Permission Denied")
       unless ($self->CurrentUserHasRight('ExploreQueue'));
         
-    return ($self->_CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
-		  $self->QueueObj->AdminCc->EmailsAsString()));
+    return ($self->_CleanAddressesAsString ($self->AdminCc->EmailsAsString() ));
   }
 
 # }}}
@@ -218,8 +216,7 @@ sub CcAsString {
     return (0, "Permission Denied")
       unless ($self->CurrentUserHasRight('ExploreQueue'));
         
-    return _CleanAddressesAsString ($self->Cc->EmailsAsString() . ", ".
-				    $self->QueueObj->Cc->EmailsAsString());
+    return ($self->_CleanAddressesAsString ($self->Cc->EmailsAsString() ));
 }
 
 # }}}

@@ -50,7 +50,7 @@ my $program = $0;
 
 $program =~ s/(.*)\///;
 
-elsif ($program eq '!!RT_ADMIN_BIN!!') {
+if ($program eq '!!RT_ADMIN_BIN!!') {
   #load rt_admin
   require rt::support::utils;     
   require rt::ui::cli::support;
