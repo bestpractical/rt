@@ -1,8 +1,6 @@
-<html>
-<head>
-<title><%$article->Summary%>
-</title>
-<body>
+<& /Elements/Header, Title => $article->Summary &>
+<& /Elements/NavBar &>
+
 <%join ('<BR>',@results)|n%>
 <form method="post" action="edit_article.html" enctype="form/multipart">
 <input type=hidden name="EditArticle" value="<%$article->Id%>">

@@ -31,6 +31,8 @@ $MasonSessionDir = "/var/run/rtfm";
 # Where mason stores its cruft
 $MasonDataDir = "/var/run/rtfm/mason";
 
+$WebPath = "/fm";
+
 # Where mason looks for local components
 $RT::FM::MasonLocalComponentRoot = "/home/jesse/projects/fm/local/html";
 

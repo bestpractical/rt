@@ -1,13 +1,10 @@
-<html>
-<head>
-<title><%$article->Summary%>
-</title>
-<body>
+<& /Elements/Header, Title => $article->Summary &>
+<& /Elements/NavBar, article => $article &>
 
 
-<h1><%$article->Summary%></h1>
+% if ($article->ParentObj->Id) {
 <A href="article.html?id=<%$article->ParentObj->Id%>">[Up to parent article: <%$article->ParentObj->Summary%>]</a><br>
-
+% } 
 <& /Elements/ArticleHierarchy, parent => $article->Id , Depth => 1&>
 <HR>
 <& /Elements/ArticleCustomFields, ArticleObj => $article &>
@@ -15,11 +12,6 @@
 <HR>
 <%$article->ContentObj->Body%>
 
-
-<div align=right><a href="articles.html">Article listing</a>
-<a href="search.html">Search</a>
-<a href="manage/create_article.html?Parent=<%$article->Id%>">New subarticle</a>
-<a href="manage/edit_article.html?id=<%$article->Id%>">Edit me</a></div>
 </body>
 </html>
 

@@ -1,3 +1,5 @@
+<& /Elements/Header, Title => 'Search for articles' &>
+<& /Elements/NavBar &>
 %if ($articles->Count) {
 % while (my $article = $articles->Next) {
 <A href="article.html?id=<%$article->Id%>">#<%$article->Id%> <%$article->Summary%></a> (Updated <%$article->UpdatedObj->AsString%>)<br>

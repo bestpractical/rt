@@ -1,3 +1,5 @@
+<& /Elements/Header, Title => 'Edit custom fields' &>
+<& /Elements/NavBar &>
 % while (my $cf = $custom_fields->Next) {
 <%$cf->Name%> <%$cf->Description%> <%$cf->Type%> <a href="edit_custom_field.html?EditCustomField=<%$cf->Id%>">[edit]</a><BR>
 % }
