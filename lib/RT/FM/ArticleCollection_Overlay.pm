@@ -223,12 +223,8 @@ sub LimitCustomField {
         @_
     );
 
-    #lets get all those values in an array. regardless of # of entries
-    #we'll use this for adding and deleting keywords from this object.
-    my @values =
-      ref( $args{'VALUE'} ) ? @{ $args{'VALUE'} } : ( $args{'VALUE'} );
 
-    foreach my $value (@values) {
+        my $value = $args{'VALUE'};
         next unless $value;    #strip out total blank wildcards
         my $ObjectValuesAlias = $self->Join(
             TYPE   => 'left',
@@ -237,26 +233,39 @@ sub LimitCustomField {
             TABLE2 => 'ObjectCustomFieldValues',
             FIELD2 => 'ObjectId'
         );
-        $self->Limit( ALIAS=> $ObjectValuesAlias, FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
 
         if ( $args{'FIELD'} ) {
+
+            my $field_id;
+
+            if (UNIVERSAL::isa($args{'FIELD'} ,'RT::CustomField')) {
+                    $field_id = $args{'FIELD'}->id;
+            } elsif($args{'FIELD'} =~ /^\d+$/) {
+                    $field_id = $args{'FIELD'};
+            }
+            if ($field_id) {
+            $self->Limit( LEFTJOIN           => $ObjectValuesAlias, FIELD           => 'CustomField', VALUE           => $args{'FIELD'}, ENTRYAGGREGATOR => 'OR');
+            # Could convert the above to a non-left join and also enable the thing below
+            #$self->SUPER::Limit( ALIAS           => $ObjectValuesAlias, FIELD           => 'CustomField', OPERATOR        => 'IS', VALUE           => 'NULL', QUOTEVALUE      => 0, ENTRYAGGREGATOR => 'OR',);
+        } else {
+            # Search for things by name if the cf was specced by name.
+            my $fields = $self->NewAlias('CustomFields');
+            $self->Join( TYPE => 'left',
+                        ALIAS1 => $ObjectValuesAlias , FIELD1 => 'CustomField',
+                          ALIAS2 => $fields, FIELD2=> 'id');
+            $self->Limit(ALIAS => $fields,
+                        FIELD => 'Name',
+                        VALUE => $args{'FIELD'},
+                        ENTRYAGGREGATOR  => 'OR');
             $self->Limit(
-                ALIAS           => $ObjectValuesAlias,
-                FIELD           => 'CustomField',
-                VALUE           => $args{'FIELD'},
-                ENTRYAGGREGATOR => 'OR'
+                ALIAS => $fields,
+                FIELD => 'LookupType',
+                VALUE =>
+                  RT::FM::Article->new($RT::SystemUser)->CustomFieldLookupType()
             );
 
-            $self->SUPER::Limit(
-                ALIAS           => $ObjectValuesAlias,
-                FIELD           => 'CustomField',
-                OPERATOR        => 'IS',
-                VALUE           => 'NULL',
-                QUOTEVALUE      => 0,
-                ENTRYAGGREGATOR => 'OR',
-            );
         }
-
+    }
       #If we're trying to find articles where a custom field value doesn't match
       # something, be sure to find  things where it's null
 
@@ -283,12 +292,12 @@ sub LimitCustomField {
                 ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
             );
             $self->SUPER::Limit(
-                ALIAS           => $ObjectValuesAlias,
+                ALIAS        => $ObjectValuesAlias,
                 FIELD           => 'Content',
                 OPERATOR        => 'IS',
                 VALUE           => 'NULL',
                 QUOTEVALUE      => 0,
-                ENTRYAGGREGATOR => 'OR',
+                ENTRYAGGREGATOR => 'AND',
             );
         }
         else {
@@ -301,7 +310,6 @@ sub LimitCustomField {
                 ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'},
             );
         }
-    }
 }
 
 # }}}

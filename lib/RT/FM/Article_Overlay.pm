@@ -94,7 +94,7 @@ sub Create {
 
             my ( $cfid, $cfmsg ) = $self->_AddCustomFieldValue(
                                                           Field   => $1,
-                                                          Content => $val,
+                                                          Value => $val,
                                                           RecordTransaction => 0
             );
 

@@ -12,12 +12,12 @@ ok ($root->Id, "Loaded root");
 my $cl = RT::FM::Class->new($root);
 ok (UNIVERSAL::isa($cl, 'RT::FM::Class'), "the new class is a class");
 
-my ($id, $msg) = $cl->Create(Name => 'Test', Description => 'A test class');
+my ($id, $msg) = $cl->Create(Name => 'Test-'.$$, Description => 'A test class');
 
 ok ($id, $msg);
 
 # no duplicate class names should be allowed
-($id, $msg) = $cl->Create(Name => 'Test', Description => 'A test class');
+($id, $msg) = $cl->Create(Name => 'Test-'.$$, Description => 'A test class');
 
 ok (!$id, $msg);
 
@@ -29,7 +29,7 @@ ok (!$id, $msg);
 
 
 
-$cl->Load('Test');
+$cl->Load('Test-'.$$);
 ok($cl->id, "Loaded the class we want");
 
 
@@ -44,10 +44,10 @@ ok ($u->Id, "Created a new user");
 $cl = RT::FM::Class->new($u);
 ok (UNIVERSAL::isa($cl, 'RT::FM::Class'), "the new class is a class");
 
-($id, $msg) = $cl->Create(Name => 'Test-nobody', Description => 'A test class');
+($id, $msg) = $cl->Create(Name => 'Test-nobody'.$$, Description => 'A test class');
 
 ok (!$id, $msg. "- Can not create classes as a random new user - " .$u->Id);
 $u->PrincipalObj->GrantRight(Right =>'AdminClass', Object => $RT::FM::System);
-($id, $msg) = $cl->Create(Name => 'Test-nobody', Description => 'A test class');
+($id, $msg) = $cl->Create(Name => 'Test-nobody-'.$$, Description => 'A test class');
 
 ok ($id, $msg. "- Can create classes as a random new user after ACL grant");
