@@ -317,8 +317,8 @@ sub GrantQueueRight {
    
     require RT::ACE;
 
-    $RT::Logger->debug("$self ->GrantQueueRight right:". $args{'RightName'} .
-		       " applies to queue ".$args{'RightAppliesTo'}."\n");
+#    $RT::Logger->debug("$self ->GrantQueueRight right:". $args{'RightName'} .
+#		       " applies to queue ".$args{'RightAppliesTo'}."\n");
     
     my $ace = new RT::ACE($self->CurrentUser);
     
@@ -347,7 +347,7 @@ sub GrantSystemRight {
    
     require RT::ACE;
     
-    $RT::Logger->debug("$self ->GrantSystemRight ". join(@_)."\n");
+#    $RT::Logger->debug("$self ->GrantSystemRight ". join(@_)."\n");
     
     my $ace = new RT::ACE($self->CurrentUser);
     
@@ -436,7 +436,7 @@ sub HasQueueRight {
 				  IsRequestor => $IsRequestor
 				 );
     if (defined $retval) {
-	$RT::Logger->debug("Got a return value: $retval\n");
+#	$RT::Logger->debug("Got a return value: $retval\n");
 	return ($retval);
     }
     #if they don't have the queue right, see if they have the system right.
@@ -564,15 +564,15 @@ sub _HasRight {
     
 
 	if ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}==1) {
-	    $RT::Logger->debug("Got a cached positive ACL decision for ". 
-			       $args{'Right'}.$args{'Scope'}.
-			       $args{'AppliesTo'}."\n");	    
+#	    $RT::Logger->debug("Got a cached positive ACL decision for ". 
+#			       $args{'Right'}.$args{'Scope'}.
+#			       $args{'AppliesTo'}."\n");	    
 	    return ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
 	}
 	elsif ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}==-1) {
-	    $RT::Logger->debug("Got a cached negative ACL decision for ". 
-			       $args{'Right'}.$args{'Scope'}.
-			       $args{'AppliesTo'}."\n");	    
+#	    $RT::Logger->debug("Got a cached negative ACL decision for ". 
+#			       $args{'Right'}.$args{'Scope'}.
+#			       $args{'AppliesTo'}."\n");	    
 	    
 	    return(undef);
 	}
@@ -648,7 +648,7 @@ sub _HasRight {
     
     # {{{ deal with checking if the user has a right as a member of a group
 
-    $RT::Logger->debug("Now Trying $query_string_1\n");	
+#    $RT::Logger->debug("Now Trying $query_string_1\n");	
     $hitcount = $self->_Handle->FetchResult($query_string_1);
     
     #if there's a match, the right is granted
@@ -657,7 +657,7 @@ sub _HasRight {
 	return (1);
     }
     
-    $RT::Logger->debug("No ACL matched $query_string_1\n");	
+ #   $RT::Logger->debug("No ACL matched $query_string_1\n");	
     
     # }}}
 
@@ -678,7 +678,7 @@ sub _HasRight {
     # }}}
     else {
 	
-	$RT::Logger->debug("No ACL matched $query_string_2\n");
+#	$RT::Logger->debug("No ACL matched $query_string_2\n");
 	#If nothing matched, return 0.
 	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=-1;
 	

@@ -19,23 +19,18 @@ use vars qw($VERSION $Handle $SystemUser $Root);
 
 $VERSION="1.3.3";
 
-use lib "/opt/rt-1.3/lib";
-use lib "/opt/rt-1.3/etc";
+use lib "/opt/rt2/lib";
+use lib "/opt/rt2/etc";
 
 #This drags in  RT's config.pm
 use config;
 use Carp;
-use DBIx::Handle;
+use RT::Handle;
 
 
-$Handle = new DBIx::Handle;
+$Handle = new  RT::Handle($RT::DatabaseType);
 
-$Handle->Connect(Host => $RT::DatabaseHost, 
-		     Database => $RT::DatabaseName, 
-		     User => $RT::DatabaseUser,
-		     Password => $RT::DatabasePassword,
-		     Driver => $RT::DatabaseType);
-
+$Handle->Connect();
 
 #Load up a user object for actions taken by RT itself
 use RT::CurrentUser;
@@ -50,12 +45,14 @@ my  $Message = MIME::Entity->build ( Subject => "This is a subject",
 
 print STDERR time."\n";
 use RT::Ticket;
+
+        my @requestors = ('rt-test@fsck.com', 'root@localhost', 'rt-test@eruditorum.org');
 	my $ticket = RT::Ticket->new($SystemUser);
 	$ticket->Create(Queue => 'general',
 		Subject => "This is a subject",
 		Status => "Open",
 		Owner => $Root->UserObj,
-		Requestor => $SystemUser->UserObj,
+		Requestor => \@requestors,
 		MIMEObj => $Message);
 
 $RT::Handle->Disconnect();

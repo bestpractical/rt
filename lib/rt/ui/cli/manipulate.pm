@@ -298,7 +298,7 @@ sub ParseArgs  {
 
 sub cli_create_req  {	
     my ($queue_id,$owner,$Requestors,$status,$priority,$Subject,$final_prio, $due,
-	$Cc, $Bcc, $date_due,$due_iso, $due_string, $Owner);
+	$Cc, $AdminCc, $date_due,$due_iso, $due_string, $Owner);
 
     require RT::Ticket;
     my $Ticket = RT::Ticket->new($CurrentUser);
@@ -355,10 +355,14 @@ sub cli_create_req  {
 
     $Requestor = &rt::ui::cli::question_string("Requestor",);
     $Cc = &rt::ui::cli::question_string("Cc",);
-    $Bcc =  &rt::ui::cli::question_string("Bcc",);
+    $AdminCc =  &rt::ui::cli::question_string("AdminCc",);
     $Subject=&rt::ui::cli::question_string("Subject",);
   
- 
+    my @Requestors = split(/,/,$Requestor);
+    my @Cc = split(/,/,$Cc);
+    my @AdminCc = split(/,/,$AdminCc);
+    
+    
     print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
       if(/^\.\n/) {
@@ -372,19 +376,22 @@ sub cli_create_req  {
     $Message = MIME::Entity->build ( Subject => $Subject||"",
 				     From => $Requestor||"",
 				     Cc => $Cc||"",
-				     Bcc => $Bcc||"",
+				     Bcc => $AdminCc||"",
 				     Data => $content||"");
 
 
     my ($id, $Transaction, $ErrStr) = $Ticket->Create ( Queue => $queue_id,
-#			       Alias => $alias,
-			       Owner => $Owner->id,
-			       Subject => $Subject,
-			       InitialPriority => $priority,
-			       FinalPriority => $final_priority,
-			       Status => 'open',
-			       Due => $due_iso,
-	      		       MIMEObj => $Message			
+							Alias => $alias,
+							Requestor => \@Requestors,
+							Cc => \@Cc,
+							AdminCc => \@AdminCc,
+							Owner => $Owner->id,
+							Subject => $Subject,
+							InitialPriority => $priority,
+							FinalPriority => $final_priority,
+							Status => 'open',
+							Due => $due_iso,
+							MIMEObj => $Message			
 						      );
     if ($id == 0) {
 	print "Ticket creation aborted: $ErrStr\n";

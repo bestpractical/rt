@@ -13,10 +13,14 @@
 
 <& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
 <& /Elements/TitleBoxEnd &>
-<h1>Ticket History</h1>
 
+<& /Elements/TitleBoxStart, title =>'Ticket History' &>
+      
+      
 <& /Ticket/Elements/ShowHistory , Ticket => $Ticket, ShowHeaders => $ARGS{'ShowHeaders'} &> 
 
+
+<& /Elements/TitleBoxEnd &>
 <& /Elements/TitleBoxEnd &>
 
 
@@ -28,9 +32,8 @@ $Create => undef
 
 <%INIT>
 
-
-my ($linkid, $message, $tid, $Ticket, @Actions);  
-
+  
+  my ($linkid, $message, $tid, $Ticket, @Actions);  
 
 $Ticket = new RT::Ticket($session{'CurrentUser'});
 
@@ -50,6 +53,11 @@ if ($ARGS{'id'} eq 'new') {
 	Abort('You have no permission to create tickets in that queue.');
     }
     
+    my @Requestors = split(/,/,$ARGS{'Requestors'});
+    my @Cc = split(/,/,$ARGS{'Cc'});
+    my @AdminCc = split(/,/,$ARGS{'AdminCc'});
+    
+    
     require MIME::Entity;
     my $MIMEObj = MIME::Entity->build(Subject => $ARGS{Subject},
 				      From => $ARGS{Requestors},
@@ -58,18 +66,19 @@ if ($ARGS{'id'} eq 'new') {
 				     );
     
     #TODO in Create_Details.html: priorities and due-date      
-    my ($id, $Trans, $ErrMsg)= $Ticket->Create( 
-					       Queue=>$ARGS{queue},
+    my ($id, $Trans, $ErrMsg)= $Ticket->Create(Queue=>$ARGS{queue},
 					       Owner=>$ARGS{ValueOfOwner},
-					       RequestorEmail=>$ARGS{Requestors},
+					       Requestor=> \@Requestors,
+					       Cc => \@Cc,
+					       AdminCc => \@AdminCc,
 					       Subject=>$ARGS{Subject},
 					       Status=>$ARGS{Status},
 					       MIMEObj => $MIMEObj	  
 					      );         
     unless ($id && $Trans) {
 	Abort($ErrMsg);
-	
     }
+
     push(@Actions, $ErrMsg);
 
     # }}}

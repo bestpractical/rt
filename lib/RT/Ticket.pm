@@ -127,21 +127,26 @@ sub LoadByURI {
 
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
-    id 
-    Queue  - Either a Queue object or a QueueId
-    Requestor -- A requestor object, if available.  Eventually taken from the MIME object.
-    RequestorEmail -- the requestors email.  Eventually taken from Requestor or the MIME object
-    Alias  -- unused
-    Type --unused
-    Owner -- is this a user id or a a username?
-    Subject -- A string describing the subject of the ticket
-    InitialPriority -- an integer from 0 to 99
-    FinalPriority -- an integer from 0 to 99
-    Status -- a textual tag. one of 'open' 'stalled' 'resolved' for now
-    TimeWorked -- an integer
-    Told -- a unix time. time of last contact (stubbed!)
-    Due -- a unix time or an RT::Time object describing the due date (stubbed!)
-    MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
+  id 
+  Queue  - Either a Queue object or a QueueId
+  
+  Requestor -- An RT::User object (the ticket\'s requestor)
+  RequestorEmail -- the requestors email address. (if the Requestor object isn't available
+  
+  Requestor -  A list of RT::User objects, email addresses or UserIds
+  Cc  - A list of RT::User objects, email addresses or UserIds
+  AdminCc  - A list of RT::User objects, email addresses or UserIds
+  
+  Alias  -- The ticket\'s textual alias
+  Type -- The ticket\'s type. ignore this for now
+  Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
+  Subject -- A string describing the subject of the ticket
+  InitialPriority -- an integer from 0 to 99
+  FinalPriority -- an integer from 0 to 99
+  Status -- a textual tag. one of \'new\', \'open\' \'stalled\' \'resolved\' for now
+  TimeWorked -- an integer
+  Due -- an ISO date describing the ticket\'s due date and time in GMT
+  MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
 
 Returns: TICKETID, Transaction Object, Error Message
 
@@ -194,7 +199,7 @@ sub Create {
     }
     
     
-    # Deal with setting the owner
+    # {{{ Deal with setting the owner
     if (ref($args{'Owner'}) eq 'RT::User') {
 	$Owner = $args{'Owner'};
     }
@@ -236,7 +241,9 @@ sub Create {
 	$Owner->Load($RT::Nobody->UserObj->Id);
     }	
 	    
-    
+    # }}}
+
+
     #TODO we should see what sort of due date we're getting, rather +
     # than assuming it's in ISO format.
     my $due = new RT::Date($self->CurrentUser);
@@ -255,65 +262,29 @@ sub Create {
 				  TimeWorked => $args{'TimeWorked'},
 				  Type => $args{'Type'},	
 				  Due => $due->ISO
-				  
 				 );
     
     #Load 'er up.
     $self->Load($id);
 
-    
-    #TODO make sure this is doing the right thing +++
-    if (defined $args{Requestor} || defined $args{RequestorEmail}) {
-	
-	my %watcher=(Type=>'Requestor');
-	if (defined $args{RequestorEmail}) {
-            $watcher{Email} = $args{RequestorEmail};
-	}
-	if (defined $args{Requestor}) {
-            $watcher{Owner}=$args{Requestor}->Id;
-            if  ( $args{RequestorEmail} && 
-                  $args{RequestorEmail} eq $args{Requestor}->EmailAddress 
-                ) {
-		delete $watcher{Email};
-            }
-	}
-	$self->AddWatcher(%watcher);
-    } 
-    if (defined $args{'MIMEObj'}) {
-	my $head = $args{'MIMEObj'}->head;
-	
-	require Mail::Address;
-	
-	#If an explicit requestor wasn't passed in then look in the mail message
-	# for one
-	unless (defined $args{'Requestor'} || defined $args{'RequestorEmail'}) {
+    $RT::Logger->debug("Now adding a ticket: ". join(":",%args));
 
-	    # Suck out the person who sent the mail. add it as a requestor for the ticket
-	    my $FromLine = $head->get('Reply-To') || 
-	      $head->get('From') || 
-		$head->get('Sender');
-
-	    my @From = Mail::Address->parse($FromLine);
-	    
-	    foreach $From (@From) {
-		$self->AddWatcher ( Email => $From->address,
-				    Type => "Requestor");
-	    }
-	}
-	
-	#Add all the CCs that are in the email message passed in
-	my @Cc = Mail::Address->parse($head->get('Cc'));
-	foreach $Cc (@Cc) {
-            $self->AddWatcher ( Email => $Cc->address,
-				Type => "Cc");
-	}
-	
+    my $watcher;
+    foreach $watcher (@{$args{'Cc'}}) {
+	$self->AddCc( Person => $watcher, Silent => 1);
+    }	
+    foreach $watcher (@{$args{'AdminCc'}}) {
+	$self->AddAdminCc( Person => $watcher, Silent => 1);
+    }	
+    foreach $watcher (@{$args{'Requestor'}}) {
+	$self->AddRequestor( Person => $watcher, Silent => 1);
     }
+    
+
     #Add a transaction for the create
-    my ($Trans, $Msg, $TransObj) = 
-      $self->_NewTransaction(Type => "Create",
-			     TimeTaken => 0, 
-			     MIMEObj=>$args{'MIMEObj'});
+    my ($Trans, $Msg, $TransObj) = $self->_NewTransaction(Type => "Create",
+							  TimeTaken => 0, 
+							  MIMEObj=>$args{'MIMEObj'});
     
     # Logging
     if ($self->Id && $Trans) {
@@ -354,27 +325,71 @@ If the watcher you\'re trying to set has an RT account, set the Owner paremeter 
 sub AddWatcher {
    my $self = shift;
    my %args = (
-	       Email => undef,
+
 	       Type => undef,
+	       Silent => undef,
+	       Email => undef,
 	       Owner => 0,
+	       Person => undef,
 	       @_ );
 
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
-    return (0, "Permission Denied");
-  }
+   $RT::Logger->debug("Now adding a watcher: ". join(":",%args));
+   
+   unless ($self->CurrentUserHasRight('ModifyTicket')) {
+       return (0, "Permission Denied");
+   }
+   
    
    #clear the watchers cache
    $self->{'watchers_cache'} = undef;
 
-  require RT::Watcher;
-  my $Watcher = new RT::Watcher ($self->CurrentUser);
-  return($Watcher->Create( Value => $self->Id,
-                           Scope => 'Ticket',
-                            Email => $args{'Email'},
-                            Type => $args{'Type'},
-                            Owner => $args{'Owner'},
-                            ));
-  
+
+   if (defined $args{'Person'}) {
+       #if it's an RT::User object, pull out the id and shove it in Owner
+       if (ref ($args{'Person'}) =~ /RT::User/) {
+	   $args{'Owner'} = $args{'Person'}->id;
+       }	
+       #if it's an int, shove it in Owner
+       elsif ($args{'Person'} =~ /^\d+$/) {
+	   $args{'Owner'} = $args{'Person'};
+       }
+       #if it's an email address, shove it in Email
+       else {
+	   $args{'Email'} = $args{'Person'};
+       }	
+       
+       
+   }	
+   
+
+   if ($args{'Owner'} == 0) {
+       my $User = new RT::User($RT::SystemUser);
+       $User->LoadByEmail($args{'Email'});
+       if ($User->id > 0) {
+	   $args{'Owner'} = $User->id;
+	   $args{'Email'} = undef;
+       }	
+   }
+
+   
+   #If we have an email address, try to resolve it to an owner
+   
+   require RT::Watcher;
+   my $Watcher = new RT::Watcher ($self->CurrentUser);
+   my ($retval, $msg) = ($Watcher->Create( Value => $self->Id,
+					   Scope => 'Ticket',
+					   Email => $args{'Email'},
+					   Type => $args{'Type'},
+					   Owner => $args{'Owner'},
+					 ));
+   
+   unless ($args{'Silent'}) {
+       $self->_NewTransaction( Type => 'AddWatcher',
+			       NewValue => $Watcher->Email,
+			       Data => $Watcher->Type);
+   }
+   
+   return ($retval, $msg);
 }
 
 # }}}
