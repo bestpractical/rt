@@ -31,21 +31,26 @@
 % } else {
 <TABLE>
 <TR>
-<TH>
+<TD>
 <i><&|/l&>(Check box to delete)</&></i>
-</TH>
-<TH>
-</TH>
+</TD>
+<TD>
+</TD>
 </TR>
 % my $count;
 % while (my $TemplateObj = $Templates->Next) { 
+%   my $scrips = new RT::Scrips($session{'CurrentUser'});
+%   $scrips->Limit (ENTRYAGGREGATOR => 'OR',
+%	     FIELD => 'Template',
+%	     VALUE => $TemplateObj->Id);
 <TR>
 <TD>
 <input type="checkbox" name="DeleteTemplate-<%$TemplateObj->Id%>">
 </TD>
 <TD>
 <A HREF="Template.html?Queue=<%$id%>&Template=<%$TemplateObj->id()%>">
-<B><% loc($TemplateObj->Name) %></B></A>
+<B><% loc($TemplateObj->Name) %></B></A> <i>(<% loc('Used by [quant,_1,script]', $scrips->Count) %>)</i>
+
 <br><% loc($TemplateObj->Description) %>
 </TD>
 </TR>
@@ -83,8 +88,15 @@ foreach my $key (keys %ARGS) {
     my $id = $1;
     my $TemplateObj = RT::Template->new($session{'CurrentUser'});
     $TemplateObj->Load($id);
+    my $scrips = new RT::Scrips($session{'CurrentUser'});
+    $scrips->Limit (ENTRYAGGREGATOR => 'OR',
+		    FIELD => 'Template',
+		    VALUE => $TemplateObj->Id);
     my ($retval, $msg) = $TemplateObj->Delete;
     if ($retval) {
+	if ($scrips->Count) {
+	    push @actions, loc('WARNING: Deleted template was used by [quant,_1,script]', $scrips->Count);
+	}
       push @actions, loc("Template deleted");
     }
     else {
