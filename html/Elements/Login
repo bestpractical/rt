@@ -22,6 +22,16 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<%INIT>
+if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
+    $r->content_type("text/plain");
+    $m->error_format("text");
+    $m->out("RT/$RT::VERSION 400 Credentials required\n");
+    $m->out("\n$Error\n") if $Error;
+    $m->abort;
+}
+</%INIT>
+
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
 <DIV ALIGN=CENTER>
@@ -33,7 +43,6 @@
 <BR>
 <& /Elements/TitleBoxStart, width=> "40%", titleright => loc("RT [_1]", $RT::VERSION), title => loc('Login') ,
 contentbg=>"#cccccc" &>
-
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <FORM METHOD=POST ACTION="<% (UNIVERSAL::can($r, 'uri') && ($r->uri) =~ m!.*/(.*)!) %>" >
@@ -82,24 +91,9 @@ href="/NoAuth/Reminder.html">send you a reminder</a>.
 <HR>
 <&|/l, '2003'&>RT is &copy; Copyright 1996-[_1] Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href="http://www.gnu.org/copyleft/gpl.html">Version 2 of the GNU General Public License.</a></&>
 
-
 <%ARGS>
 $user => ""
 $pass => undef
 $goto => undef
 $Error => undef
 </%ARGS>
-
-<%INIT>
-if ($session{'SessionType'} eq 'REST') {
-        $r->content_type('text/plain');
-        if ($Error) {
-                $m->out($Error);
-        } else {
-                $m->out(loc("Not logged in"));
-        }
-        $m->abort();
-}
-
-
-</%INIT>

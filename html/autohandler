@@ -36,19 +36,6 @@ else {
 }
 $m->comp('/Elements/SetupSessionCookie');
 
-
-if ($ARGS{'SessionType'}) {
-        $session{'SessionType'} = $ARGS{'SessionType'};
-} else {
-        $session{'SessionType'} = 'Web';
-}
-
-if ($session{'SessionType'} =~ /REST/i) {
-        $m->error_format('text');
-} else {
-        $m->error_format('html');
-}
-
 unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
     $session{'CurrentUser'} = RT::CurrentUser->new();
 }
@@ -56,15 +43,15 @@ unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 # Set the proper encoding for the current language handle
 $r->content_type("text/html; charset=utf-8");
 
-#if it's a noauth file, don't ask for auth.
-if ( ($m->base_comp->path =~ '^(/+)NoAuth/') 
- or ($m->base_comp->path =~ '^(/+)REST/([\d\.]+)/NoAuth/')) {
-        $m->call_next();
-	$m->abort();
+# If it's a noauth file, don't ask for auth.
+if ($m->base_comp->path =~ '^/+NoAuth/' ||
+    $m->base_comp->path =~ '^/+REST/\d+\.\d+/NoAuth/')
+{
+    $m->call_next();
+    $m->abort();
 }
 
 # If RT is configured for external auth, let's get REMOTE_USER
-# We intentionally don't test for REMOTE_USER to meet our policy
 elsif ($RT::WebExternalAuth and length($ENV{'REMOTE_USER'})) {
     my $orig_user = $user;
 
@@ -127,32 +114,29 @@ elsif ($RT::WebExternalAuth and length($ENV{'REMOTE_USER'})) {
 delete $session{'CurrentUser'}
     unless $session{'CurrentUser'} and defined $session{'CurrentUser'}->Id;
 
-# If the user is loging in, let's authenticate
+# If the user is logging in, let's authenticate
 if (!$session{'CurrentUser'} && defined ($user) && defined ($pass) ){
     $session{'CurrentUser'} = RT::CurrentUser->new();
     $session{'CurrentUser'}->Load($user);
-    unless ($session{'CurrentUser'}->id() ) {
-	delete $session{'CurrentUser'};
-	$m->comp('/Elements/Login', %ARGS, Error=> loc('Your username or password is incorrect'));
+
+    if (!$session{'CurrentUser'}->id() ||
+        !$session{'CurrentUser'}->IsPassword($pass))
+    {
+        delete $session{'CurrentUser'};
+        $m->comp('/Elements/Login', %ARGS,
+                 Error => loc('Your username or password is incorrect'));
         $m->abort();
-    };
-    unless ($session{'CurrentUser'}->IsPassword($pass)) {
-	delete $session{'CurrentUser'};
-	
-	$m->comp('/Elements/Login', %ARGS, Error => loc('Your username or password is incorrect'), %ARGS);
-	$m->abort(); 
     }
 }
   
-
-#If we've got credentials, lets serve the file up.
+# If we've got credentials, let's serve the file up.
 if ( (defined $session{'CurrentUser'}) and 
      ( $session{'CurrentUser'}->Id) ) {
     
     # Process per-page global callbacks
     $m->comp('/Elements/Callback', %ARGS);
 
-    # If the user isn\'t privileged, they can only see SelfService
+    # If the user isn't privileged, they can only see SelfService
     if ((! $session{'CurrentUser'}->Privileged) and
 	($m->base_comp->path !~ '^(/+)SelfService/') ) {
 	$m->comp('/SelfService/index.html');
@@ -163,14 +147,11 @@ if ( (defined $session{'CurrentUser'}) and
     }
 }
 
-
-
-#If we have no credentials
+# If we have no credentials
 else {
     $m->comp('/Elements/Login', %ARGS);
     $m->abort();
 }
-
 </%INIT>
 <& /Elements/Footer, %ARGS &>
 <%ARGS>
