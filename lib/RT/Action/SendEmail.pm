@@ -57,7 +57,7 @@ sub Commit  {
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
    
-    if ($defined $self->TransactionObj->Message->First()) { 
+    if (defined $self->TransactionObj->Message->First()) { 
     my $headers = $self->TransactionObj->Message->First->Headers();
     if ($headers =~ /^RT-Squelch-Replies-To: (.*?)$/si) {
   	my $blacklist = $1;
