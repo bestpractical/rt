@@ -466,7 +466,7 @@ NULL,20000227191745,NULL,00000000000000);
 
 
 INSERT INTO Templates VALUES (5,'Default Administrative Comment template', NULL, NULL,
-'Subject: [Comment] {$Transaction->Message()->First()->Subject}
+'Subject: [Comment] {my $s=$Transaction->Message()->First()->Subject; $s =~ /\[Comment\]//g; $s;}
 Reply-To: {$Ticket->Queue->CommentAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminCcAsString}
