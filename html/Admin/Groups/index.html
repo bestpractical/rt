@@ -25,7 +25,8 @@
 <& /Admin/Elements/GroupTabs, current_tab => 'Admin/Groups/',
     current_subtab => 'Admin/Groups/', 
     Title => $title &>
-<%$caption%>:<BR> <UL> %if ($Groups->Count == 0) {
+<%$caption%>:<BR> <UL> 
+%if ($Groups->Count == 0) {
 <LI> <i><&|/l&>No groups matching search criteria found.</&></i>
 % }
 %my @ids;
