@@ -150,6 +150,10 @@ sub Prepare {
     # try to convert message body from utf-8 to $RT::EmailOutputEncoding
     $self->SetHeader( 'Content-Type', 'text/plain; charset="utf-8"' );
 
+    # fsck.com #5959: Since RT sends 8-bit mail, we should say so.
+    $self->SetHeader( 'Content-Transfer-Encoding','8-bit');
+
+
     RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $RT::EmailOutputEncoding,
         'mime_words_ok' );
     $self->SetHeader( 'Content-Type', 'text/plain; charset="' . $RT::EmailOutputEncoding . '"' );
