@@ -9,8 +9,8 @@ RTUSER			=	rt
 RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
-RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	12
+RT_VERSION_MINOR	=	3
+RT_VERSION_PATCH	=	0
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -19,7 +19,7 @@ TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 # RT_PATH is the name of the directory you want make to install RT in
 #
 
-RT_PATH			=	/opt/rt-1.1
+RT_PATH			=	/opt/rt-1.3
 
 #
 # The rest of these paths are all configurable, but you probably don't want to 
@@ -44,15 +44,6 @@ RT_ACTION_BIN		=	rt
 RT_QUERY_BIN		=	rtq
 RT_ADMIN_BIN		=	rtadmin
 RT_MAILGATE_BIN		=	rt-mailgate
-
-#
-# The names of the web binaries. In older versions of RT, these were 
-# nph- scripts. which work just fine, except when you want to use them
-# with an SSL server.  If you want the scripts to work the old way, append 
-# nph- before "webrt.cgi" and "admin-webrt.cgi"
-#
-RT_WEB_QUERY_BIN	=	webrt.cgi
-RT_WEB_ADMIN_BIN	=	admin-webrt.cgi
 
 #
 # The location of your rt configuration file
@@ -239,8 +230,6 @@ mux-install:
 				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
-				s'!!RT_WEB_QUERY_BIN!!'$(RT_WEB_QUERY_BIN)'g;\
-				s'!!RT_WEB_ADMIN_BIN!!'$(RT_WEB_ADMIN_BIN)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX)
 
@@ -259,14 +248,6 @@ mux-links:
 
 
 
-
-	rm -f $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
-	ln  $(RT_PERL_MUX) $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
-	chmod 4755 $(RT_CGI_PATH)/$(RT_WEB_QUERY_BIN)
-
-	rm -f $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
-	ln  $(RT_PERL_MUX) $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
-	chmod 4755 $(RT_CGI_PATH)/$(RT_WEB_ADMIN_BIN)
 
 config-replace:
 	mv $(RT_ETC_PATH)/config.pm $(RT_ETC_PATH)/config.pm.old
