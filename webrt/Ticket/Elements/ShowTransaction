@@ -39,9 +39,11 @@ unless ($Collapsed) {
 
 	 my $wrapper = new Text::Wrapper (columns=>85);
 	 $content = $wrapper->wrap($content);
+         $content =~ s/&/&amp;/g;
 	 $content =~ s/</&lt;/g;
 	 $content =~ s/>/&gt;/g;
-	 $content =~ s!((?:http|https|ftp|mailto):\S*?)([\s"']|&lt;)!<A HREF=\"$1\">$1</A>$2!g;
+         $content =~ s!((?:http|https|ftp|mailto):\S*?)([\s"']|&gt;|\.[\n])!<A HREF=\"$1\" TARGET=new>$1</A>$2!g;
+
 
      }
      else {
