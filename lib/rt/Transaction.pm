@@ -58,8 +58,8 @@ sub comment {
   return($self->_set_and_return('comment',@_));
 }
 
-sub article {
+sub content {
   my $self=shift;
-  return($self->_set_and_return('article',@_));
+  return($self->_set_and_return('content',@_));
 }
 1;
