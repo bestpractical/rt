@@ -145,7 +145,7 @@ sub AddAttribute {
                                       Description => $args{'Description'},
                                       Content     => $args{'Content'} );
 
-    $self->Attributes->RedoSearch;
+    $self->Attributes->_DoSearch;
     
     return ($id, $msg);
 }
