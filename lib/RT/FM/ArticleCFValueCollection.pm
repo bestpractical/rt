@@ -8,11 +8,11 @@
 
 =head1 NAME
 
-  RT::FM::DeltaCollection -- Class Description
+  RT::FM::ArticleCFValueCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::FM::DeltaCollection
+  use RT::FM::ArticleCFValueCollection
 
 =head1 DESCRIPTION
 
@@ -21,17 +21,17 @@
 
 =cut
 
-package RT::FM::DeltaCollection;
+package RT::FM::ArticleCFValueCollection;
 
 use RT::FM::SearchBuilder;
-use RT::FM::Delta;
+use RT::FM::ArticleCFValue;
 
 use base qw(RT::FM::SearchBuilder);
 
 
 sub _Init {
     my $self = shift;
-    $self->{'table'} = 'FM_Deltas';
+    $self->{'table'} = 'FM_ArticleCFValues';
     $self->{'primary_key'} = 'id';
 
 
@@ -41,21 +41,21 @@ sub _Init {
 
 =item NewItem
 
-Returns an empty new RT::FM::Delta item
+Returns an empty new RT::FM::ArticleCFValue item
 
 =cut
 
 sub NewItem {
     my $self = shift;
-    return(RT::FM::Delta->new($self->CurrentUser));
+    return(RT::FM::ArticleCFValue->new($self->CurrentUser));
 }
 
-        eval "require RT::FM::DeltaCollection_Overlay";
+        eval "require RT::FM::ArticleCFValueCollection_Overlay";
         if ($@ && $@ !~ /^Can't locate/) {
             die $@;
         };
 
-        eval "require RT::FM::DeltaCollection_Local";
+        eval "require RT::FM::ArticleCFValueCollection_Local";
         if ($@ && $@ !~ /^Can't locate/) {
             die $@;
         };
@@ -77,7 +77,7 @@ If you'll be working with perl 5.6.0 or greater, each of these files should begi
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::FM::DeltaCollection_Overlay, RT::FM::DeltaCollection_Local
+RT::FM::ArticleCFValueCollection_Overlay, RT::FM::ArticleCFValueCollection_Local
 
 =cut
 

@@ -63,7 +63,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'CustomField'.
   varchar(255) 'Content'.
   int(11) 'SortOrder'.
-  int(11) 'CreatedBy'.
+  int(11) 'Creator'.
   datetime 'Created'.
   int(11) 'UpdatedBy'.
   datetime 'Updated'.
@@ -81,7 +81,7 @@ sub Create {
                 CustomField => undef,
                 Content => undef,
                 SortOrder => undef,
-                CreatedBy => undef,
+                Creator => undef,
                 Created => undef,
                 UpdatedBy => undef,
                 Updated => undef,
@@ -93,7 +93,7 @@ sub Create {
                          CustomField => $args{'CustomField'},
                          Content => $args{'Content'},
                          SortOrder => $args{'SortOrder'},
-                         CreatedBy => $args{'CreatedBy'},
+                         Creator => $args{'Creator'},
                          Created => $args{'Created'},
                          UpdatedBy => $args{'UpdatedBy'},
                          Updated => $args{'Updated'},
@@ -248,33 +248,33 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item CreatedBy
+=item Creator
 
-Returns the current value of CreatedBy. 
-(In the database, CreatedBy is stored as int(11).)
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
 
 
-=item SetCreatedBy VALUE
+=item SetCreator VALUE
 
-Set CreatedBy to VALUE. 
+Set Creator to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, CreatedBy will be stored as a int(11).)
+(In the database, Creator will be stored as a int(11).)
 
 =cut
 
 
-=item CreatedByObj
+=item CreatorObj
 
-Returns the User Object which has the id returned by CreatedBy
+Returns the User Object which has the id returned by Creator
 
 
 =cut
 
-sub CreatedByObj {
+sub CreatorObj {
 	my $self = shift;
-	my $CreatedBy = new RT::FM::User($self->CurrentUser);
-	$CreatedBy->Load($self->CreatedBy());
-	return($CreatedBy);
+	my $Creator = new RT::FM::User($self->CurrentUser);
+	$Creator->Load($self->Creator());
+	return($Creator);
 }
 
 =item Created
@@ -345,7 +345,7 @@ sub _ClassAccessible {
         CustomField => {'read' => 1, 'write' => 1},
         Content => {'read' => 1, 'write' => 1},
         SortOrder => {'read' => 1, 'write' => 1},
-        CreatedBy => {'read' => 1, 'write' => 1},
+        Creator => {'read' => 1, 'write' => 1},
         Created => {'read' => 1, 'write' => 1},
         UpdatedBy => {'read' => 1, 'write' => 1},
         Updated => {'read' => 1, 'write' => 1},

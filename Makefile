@@ -29,7 +29,7 @@ MASON_HTML_PATH	 =       `$(GETPARAM) "MasonComponentRoot"`
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
-
+DBTYPE		=mysql
 TAG			= rtfm-2-snap
 
 install: install-lib initdb
@@ -40,12 +40,27 @@ install-lib:
 factory:
 	cd lib; $(PERL) ../tools/factory.mysql $(DB_DATABASE) RT::FM
 
-initdb: etc/schema.mysql
+
+initdb: initdb.$(DBTYPE)
+
+dropdb: dropdb.$(DBTYPE)
+
+
+initdb.mysql: etc/schema.mysql
 	mysql  $(DB_DATABASE) < etc/schema.mysql
 
-dropdb: etc/drop_schema.mysql
-	-mysql  $(DB_DATABASE) < etc/drop_schema.mysql
+initdb.Pg: etc/schema.mysql
+	psql -U pgsql rt3 < etc/schema.Pg
+	psql -U pgsql rt3 < etc/acl.Pg
 
+acl:
+	grep -i "DROP " etc/drop_schema.Pg | cut -d" " -f 3 |cut -d\; -f 1 |xargs printf "GRANT SELECT, INSERT, UPDATE, DELETE ON %s to $(DB_RT_USER);\n" > etc/acl.Pg
+
+dropdb.Pg: etc/drop_schema.mysql
+	psql -U pgsql rt3 < etc/drop_schema.Pg
+
+dropdb.mysql: etc/drop_schema.mysql
+	-mysql  $(DB_DATABASE) < etc/drop_schema.mysql
 
 POD2TEST_EXE = tools/extract_pod_tests
 
@@ -88,4 +103,6 @@ tag-and-release:
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
-
+clean:
+	find .  -type f -name \*~ |xargs rm
+	find lib/t/autogen -type f |xargs rm

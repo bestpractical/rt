@@ -32,8 +32,8 @@
 =cut
 
 package RT::FM::SearchBuilder;
-use DBIx::SearchBuilder;
-@ISA= qw(DBIx::SearchBuilder);
+use RT::SearchBuilder;
+@ISA= qw(RT::SearchBuilder);
 
 # {{{ sub _Init 
 sub _Init  {
@@ -45,7 +45,7 @@ sub _Init  {
 	Carp::confess("$self was created without a CurrentUser");
 	return(0);
     }
-    $self->SUPER::_Init( 'Handle' => $RT::FM::Handle);
+    $self->SUPER::_Init( 'Handle' => $RT::Handle);
 }
 # }}}
 
@@ -131,7 +131,7 @@ sub CurrentUser  {
 # {{{ sub _Handle
 sub _Handle  {
   my $self = shift;
-  return($RT::FM::Handle);
+  return($RT::Handle);
 }
 # }}}
 1;

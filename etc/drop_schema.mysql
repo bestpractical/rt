@@ -3,7 +3,7 @@ DROP TABLE FM_ClassCustomFields ;
 DROP TABLE FM_CustomFields ;
 DROP TABLE FM_Articles ;
 DROP TABLE FM_CustomFieldValues ;
-DROP TABLE FM_ArticleCustomFieldValues ;
+DROP TABLE FM_ArticleCFValues ;
 DROP TABLE FM_Content ;
 DROP TABLE FM_Transactions ;
 DROP TABLE FM_Deltas ;

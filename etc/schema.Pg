@@ -1,7 +1,7 @@
-# {{{ FM_Classes
+--- {{{ FM_Classes
 
 CREATE TABLE FM_Classes (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
   Name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
 
@@ -15,12 +15,12 @@ CREATE TABLE FM_Classes (
 
 
 
-# }}}
+--- }}}
 
-# {{{ FM_ClassCustomFields
+--- {{{ FM_ClassCustomFields
 CREATE TABLE FM_ClassCustomFields (
 
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
   Class integer not NULL  ,
   CustomField integer not NULL  ,
 
@@ -34,12 +34,12 @@ CREATE TABLE FM_ClassCustomFields (
 
 
 
-# }}}
+--- }}}
 
-# {{{ FM_CustomField
+--- {{{ FM_CustomField
 
 CREATE TABLE FM_CustomFields (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
   Description varchar(200) NULL  ,
@@ -51,18 +51,18 @@ CREATE TABLE FM_CustomFields (
   PRIMARY KEY (id)
 );
 
-# }}}
+--- }}}
 
 
-# {{{ FM_Articles
+--- {{{ FM_Articles
 
 CREATE TABLE FM_Articles (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
   Name varchar(255) NULL  ,
   Summary varchar(255) NULL  ,
   SortOrder integer NULL  ,
   Class integer NULL,
-  Parent integer NULL,
+  Parent integer NULL.
 
   Creator integer NULL  ,
   Created DATETIME NULL  ,
@@ -71,11 +71,11 @@ CREATE TABLE FM_Articles (
   PRIMARY KEY (id)
 );
 
-# }}}
+--- }}}
 
-# {{{ FM_CustomFieldValues 
+--- {{{ FM_CustomFieldValues 
 CREATE TABLE FM_CustomFieldValues (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
   CustomField int NOT NULL  ,
   Name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
@@ -86,12 +86,12 @@ CREATE TABLE FM_CustomFieldValues (
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
 );
-# }}}
+--- }}}
 
-# {{{ FM_ArticleCFValues
+--- {{{ FM_ArticleCFValues
 
 CREATE TABLE FM_ArticleCFValues (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
 
   Article int NOT NULL  ,
   CustomField int NOT NULL  ,
@@ -104,22 +104,20 @@ CREATE TABLE FM_ArticleCFValues (
   
   );
 
-# {{{ FM_Content
+
 CREATE TABLE FM_Content (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
 
 
   Summary varchar(255) NULL  ,
 
-
-  Parent integer NULL  ,
   Filename varchar(255) NULL  ,
 
   ContentType varchar(80) NULL  ,
   ContentEncoding varchar(80) NULL  ,
   MessageId varchar(160) NULL  ,
-  Headers LONGBLOB NULL  ,
-  Body LONGBLOB NULL  ,
+  Headers text NULL  ,
+  Body text NULL  ,
 
   Creator integer NULL  ,
   Created DATETIME NULL  ,
@@ -128,12 +126,12 @@ CREATE TABLE FM_Content (
   PRIMARY KEY (id)
 );
 
-# }}}
+--- }}}
 
-# {{{ FM_Transactions
+--- {{{ FM_Transactions
 
 CREATE TABLE FM_Transactions (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
   Article integer NULL  ,
   ChangeLog text NULL  ,
   Creator integer NULL  ,
@@ -141,11 +139,11 @@ CREATE TABLE FM_Transactions (
   PRIMARY KEY (id)
 );
 
-# }}}
-# {{{ FM_Deltas
+--- }}}
+--- {{{ FM_Deltas
 
 CREATE TABLE FM_Deltas (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id SERIAL,
   Transaction integer NULL  ,
   Type varchar(64) NULL  ,
   CustomField int NULL  ,
@@ -154,4 +152,4 @@ CREATE TABLE FM_Deltas (
   PRIMARY KEY (id)
 );
 
-# }}}
+--- }}}

@@ -38,4 +38,25 @@ use RT::Record;
 
 @ISA= qw(RT::Record);
 
+
+=head2 Load <id | Name >
+
+Loads an object, either by name or by id. If the value is an integer, it
+presumes it's an id.
+
+=cut 
+
+sub Load {
+    my $self = shift;
+    my $id = shift;
+
+    if ($id =~ /^(\d+)$/) {
+        $self->SUPER::Load($id);
+    } else {
+        $self->LoadByCols( Name => $id);
+    }
+}
+
+
+
 1;
