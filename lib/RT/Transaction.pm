@@ -30,25 +30,27 @@ TODO: Document what gets passed to this
 =cut
 
 sub Create  {
-  my $self = shift;
-  my %args = ( id => undef,
-	       TimeTaken => 0,
-	       Ticket => 0 ,
-	       Type => 'undefined',
-	       Data => '',
-	       Field => undef,
-	       OldValue => undef,
-	       NewValue => undef,
-	       MIMEObj => undef,
-	       @_
+    my $self = shift;
+    my %args = ( id => undef,
+		 TimeTaken => 0,
+		 Ticket => 0 ,
+		 Type => 'undefined',
+		 Data => '',
+		 Field => undef,
+		 OldValue => undef,
+		 NewValue => undef,
+		 MIMEObj => undef,
+		 @_
 	       );
-  
-  #if we didn't specify a ticket, we need to bail
-  unless ( $args{'Ticket'} ) {
-    return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
-  }
-  
-  #lets create our parent object
+    
+    #if we didn't specify a ticket, we need to bail
+    unless ( $args{'Ticket'} ) {
+	return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
+    }
+    
+    
+    
+    #lets create our transaction
     my $id = $self->SUPER::Create(Ticket => $args{'Ticket'},
 				  EffectiveTicket  => $args{'Ticket'},
 				  TimeTaken => $args{'TimeTaken'},
@@ -143,30 +145,48 @@ sub Create  {
     }
   
   # }}}
-  return ($id, "Transaction Created");
+    return ($id, "Transaction Created");
 }
 # }}}
 
 # {{{ Routines dealing with Attachments
 
 # {{{ sub Message 
-sub Message  {
- my $self = shift;
-  
-  use RT::Attachments;
- if (!defined ($self->{'message'}) ){
-   
-   $self->{'message'} = new RT::Attachments($self->CurrentUser);
-   $self->{'message'}->Limit(FIELD => 'TransactionId',
-			     VALUE => $self->Id);
 
-   $self->{'message'}->ChildrenOf(0);
- } 
- return($self->{'message'});
+=head2 Message
+
+  Returns the RT::Attachment Object which is the top-level message object
+for this transaction
+
+=cut
+
+sub Message  {
+
+    my $self = shift;
+    
+    use RT::Attachments;
+    if (!defined ($self->{'message'}) ){
+	
+	$self->{'message'} = new RT::Attachments($self->CurrentUser);
+	$self->{'message'}->Limit(FIELD => 'TransactionId',
+				  VALUE => $self->Id);
+	
+	$self->{'message'}->ChildrenOf(0);
+    } 
+    return($self->{'message'});
 }
 # }}}
 
 # {{{ sub Attachments 
+=head2 Attachments
+
+  Returns all the RT::Attachment objects which are attached
+to this transaction. Takes an optional parameter, which is
+a ContentType that Attachments should be restricted to.
+
+=cut
+
+
 sub Attachments  {
   my $self = shift;
   if (@_) {
@@ -181,7 +201,7 @@ sub Attachments  {
 
   if ($Types) {
     $Attachments->Limit(FIELD => 'ContentType',
-			VALUE => "%$Types%",
+			VALUE => "$Types",
 			OPERATOR => "LIKE");
   }
   
@@ -192,6 +212,13 @@ sub Attachments  {
 # }}}
 
 # {{{ sub _Attach 
+
+=head2 _Attach
+
+A private method used to attach a mime object to this transaction.
+
+=cut
+
 sub _Attach  {
   my $self = shift;
   my $MIMEObject = shift;
@@ -215,17 +242,33 @@ sub _Attach  {
 # {{{ Routines dealing with Transaction Attributes
 
 # {{{ sub TicketObj
+
+=head2 TicketObj
+
+Returns this transaction's ticket object.
+
+=cut
+
 sub TicketObj {
-    my $self=shift;
-    my $ticket=new RT::Ticket($self->CurrentUser);
-    return $self->{'TicketObj'}
-        if exists $self->{'TicketObj'};
-    $ticket->Load($self->Ticket);
-    return $self->{'TicketObj'}=$ticket;
+    my $self = shift;
+    if (! exists $self->{'TicketObj'}) {
+	$self->{'TicketObj'} = new RT::Ticket($self->CurrentUser);
+	$self->{'TicketObj'}->Load($self->Ticket);
+    }
+    
+    return $self->{'TicketObj'};
 }
 # }}}
 
 # {{{ sub Description 
+
+=head2 Description
+
+Returns a text string which describes this transaction
+
+=cut
+
+
 sub Description  {
   my $self = shift;
   if (!defined($self->Type)) {
@@ -355,12 +398,12 @@ sub _Accessible  {
 
 # {{{ sub IsInbound
 
-# TODO:  This sub will return wrong if the one entering the request
-# (i.e. through the cli) is a different person than the real
-# requestor. --tobix
-# Arguably, that's the right action, as the goal of this routine
-# is to notify the requestor if someone other than the requestor
-# performs an action, right?  -- jesse
+=head2 IsInbound
+
+Returns true if the creator of the transaction is a requestor of the ticket.
+Returns false otherwise
+
+=cut
 
 sub IsInbound {
   my $self=shift;
@@ -371,9 +414,30 @@ sub IsInbound {
 
 # }}}
 
-# {{{ Routines dealing with ACCESS CONTROL
+=head2 CurrentUserHasRight
 
-# }}}
+Calls $self->TicketObj->CurrentUserHasRight with the argument list
+passed in here.
+
+=cut
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    return ($self->TicketObj->CurrentUserHasRight(@_));
+}
+
+=head2 HasRight
+
+Calls $self->TicketObj->HasRight with the argument list
+passed in here.
+
+=cut
+
+
+sub HasRight {
+    my $self = shift;
+    return ($self->TicketObj->HasRight(@_));
+}
 
 
 1;

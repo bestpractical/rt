@@ -1022,7 +1022,15 @@ sub TimeWorkedAsString {
 
 # {{{ sub Comment
 
-#takes a subject, a cc list, a bcc list
+=head2 Comment
+
+Comment on this ticket.
+Takes a hashref with the follwoing attributes:
+
+    BccMessageTo, CcMesageTo, MimeObj, TimeTaken
+
+=cut
+
 sub Comment {
   my $self = shift;
   
@@ -1045,7 +1053,7 @@ sub Comment {
   if ($args{'CcMessageTo'} || 
       $args{'BccMessageTo'} ) {
       #TODO send a copy of the correspondence to the CC list and BCC list
-    warn "RT::Ticket::Comment needs to send mail to explicit CCs and BCCs";
+    $RT::Logger->warn( "RT::Ticket::Comment needs to send mail to explicit CCs and BCCs");
   }
   
   return ($Trans, "The comment has been recorded");
@@ -1054,6 +1062,15 @@ sub Comment {
 # }}}
 
 # {{{ sub Correspond
+
+=head2 Correspond
+
+Correspond on this ticket.
+Takes a hashref with the follwoing attributes:
+
+    BccMessageTo, CcMesageTo, MimeObj, TimeTaken
+
+=cut
 
 sub Correspond {
   my $self = shift;
@@ -1081,23 +1098,22 @@ sub Correspond {
   
   if ($args{BccMessageTo} || 
       $args{CcMessageTo}) {
-      warn "stub"
+        $RT::Logger->warn("RT::Ticket->Correspond doesn't yet send CCs and Bccs"); 
     }
   
   unless ($Trans) {
       $RT::Logger->err("$self couldn't init a transaction ($msg)\n");
       return ($Trans, "correspondence (probably) NOT sent", $args{'MIMEObj'});
   }
-  
-  #TODO: Where does this get set. it sounds dicey
-  #TODO: the right way to do this is to check $Ticket->IsRequestor($TransObj->Creator); 
-  #TODO: except that don't work yet.
-  unless ($TransObj->IsInbound) {
+ 
+  #Set the last told date to now if this isn't mail from the requestor.
+  #Note that this will wrongly ack mail from any non-requestor as a "told"
 
+  unless ($TransObj->IsInbound) {
       $self->_SetTold;
   }
   
-  return ($Trans, "correspondence sent", $args{'MIMEObj'});
+  return ($Trans, "correspondence sent");
 }
 
 # }}}
@@ -1120,7 +1136,7 @@ sub Keywords {
 
 # {{{ sub NewKeyword
 
-# TODO: keywords not implemented?
+# TODO: keywords not implemented
 sub NewKeyword {
   my $self = shift;
   my $keyid = shift;
@@ -1518,6 +1534,8 @@ Takes two arguments:
      the Id or UserId of the owner 
 and  (optionally) the type of the SetOwner Transaction. It defaults
 to 'Give'.  'Steal' is also a valid option.
+
+=cut
 
 sub SetOwner {
   my $self = shift;
