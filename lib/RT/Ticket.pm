@@ -1050,6 +1050,7 @@ sub SetStarted {
     return ($self->_Set(Field => 'Started', Value =>$time_obj->ISO));
     
 }
+
 # }}}
 
 # {{{ sub StartedObj
@@ -2076,56 +2077,54 @@ sub Steal {
 
 # {{{ Routines dealing with status
 
-
 # {{{ sub SetStatus
 
+=head2 SetStatus [STATUS]
+
+Set this ticket's status. STATUS can be one of: new, open, stalled, resolved or dead.
+
+=cut
+
 sub SetStatus { 
-  my $self = shift;
-  my $status = shift;
-  my $action = 
-    $status =~ /new/i ? 'New' :
-      $status =~ /open/i ? 'Open' :
-	$status =~ /stalled/i ? 'Stall' :
-	  $status =~ /resolved/i ? 'Resolve' :
-	    $status =~ /dead/i ? 'Kill' : 'huh?';
-  
-  if ($action eq 'huh?') {
-    return (0,"The status '$status' is not valid.");
-  }
+    my $self = shift;
+    my $status = shift;
 
+    #Check ACL
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (undef);
+    }
 
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
-      return (undef);
-  }
-  
-	  #TODO check ACL
+    #Make sure the status passed in is valid
+    unless ($status =~ /^(new|open|stalled|resolved|dead)$/) {
+	return (0,"The status '$status' is not valid.");
+    }
+    
 
-  my $now = new RT::Date($self->CurrentUser);
-  $now->SetToNow();
-
-  #If we're changing the status from new, record that we've started
-  if (($self->Status =~ /new/) && ($status ne 'new')) {
- 	#Set the Started time to "now"
+     
+    my $now = new RT::Date($self->CurrentUser);
+    $now->SetToNow();
+    
+    #If we're changing the status from new, record that we've started
+    if (($self->Status =~ /new/) && ($status ne 'new')) {
+	#Set the Started time to "now"
 	$self->_Set(Field => 'Started',
-		   Value => $now->ISO,
-		   RecordTransaction => 0);
-  }
-
+		    Value => $now->ISO,
+		    RecordTransaction => 0);
+    }
+    
   
-  if ($status eq 'resolved') {
-      #TODO: this needs ACLing
-      
-      #When we resolve a ticket, set the 'Resolved' attribute to now.
-      $self->_Set(Field => 'Resolved',
-		  Value => $now->ISO, 
-		  RecordTransaction => 0);
-  }
-  
-  #Actually update the status
-  return($self->_Set(Field => 'Status', 
-		     Value => $status,
-		     TimeTaken => 0,
-		     TransactionType => 'Status'));
+    if ($status eq 'resolved') {
+	#When we resolve a ticket, set the 'Resolved' attribute to now.
+	$self->_Set(Field => 'Resolved',
+		    Value => $now->ISO, 
+		    RecordTransaction => 0);
+    }
+    
+    #Actually update the status
+    return($self->_Set(Field => 'Status', 
+		       Value => $status,
+		       TimeTaken => 0,
+		       TransactionType => 'Status'));
 }
 
 # }}}
@@ -2143,6 +2142,7 @@ sub Kill {
   return ($self->SetStatus('dead'));
   # TODO: garbage collection
 }
+
 # }}}
 
 # {{{ sub Stall
@@ -2157,6 +2157,7 @@ sub Stall {
   my $self = shift;
   return ($self->SetStatus('stalled'));
 }
+
 # }}}
 
 # {{{ sub Open
@@ -2171,6 +2172,7 @@ sub Open {
   my $self = shift;
   return ($self->SetStatus('open'));
 }
+
 # }}}
 
 # {{{ sub Resolve
@@ -2185,6 +2187,7 @@ sub Resolve {
   my $self = shift;
   return ($self->SetStatus('resolved'));
 }
+
 # }}}
 
 # }}}

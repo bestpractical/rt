@@ -48,18 +48,25 @@ my @fields = qw(
         );
 
 #run through each field in this list. update the value if apropriate
-foreach $field (@fields) {
-my ($code, $msg);
-my $check = "if ((defined \$ARGS{$field}) and 
-                 (\$ARGS{$field} ne \$TicketObj->$field)) {
-                  (\$code, \$msg) = \$TicketObj->Set$field(\$ARGS{'$field'});
-                  push \@results, \"\$msg\";
-                   }";
 
-            eval $check;
-            if ($@)  {
-		$RT::Logger->err("Web/Ticket/Modify.html: $@\n");
-	    }   
+# If we were smart or awake, we'd create a method with this API and just use it
+# If we were even smarter, we'd use the _Accessable has from the method instead of @fields
+# thus greatly simplifying the interface creator's job.
+
+# UpdateObject ( Object => $TiceketObj, Fields => \@fields, Results => \@results, Args => $ARGS);
+
+
+foreach $field (@fields) {
+
+    if ((defined $ARGS{"$field"}) and 
+	($ARGS{"$field"} ne $TicketObj->$field())) {
+	
+	my $method = "Set$field";
+	
+	my ($code, $msg) = $TicketObj->$method($ARGS{"$field"});
+	push @results, "$msg";
+    }
+ 
 }
 
 # }}}
