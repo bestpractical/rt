@@ -26,6 +26,8 @@ LoadConfig();
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 DBConnect();
 
+#Drop setgid permissions
+RT::DropSetGIDPermissions();
 
 use RT::Ticket;
 use RT::Queue;

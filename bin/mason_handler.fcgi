@@ -104,9 +104,12 @@ die "Can't read and write $RT::MasonSessionDir"
   unless (( -d _ ) and ( -r _ ) and ( -w _ ));
 
 
-# Response loop
 RT::Init();
 
+#Drop setgidness
+RT::DropSetGIDPermissions();
+
+# Response loop
 while (my $cgi = new CGI::Fast) {
     
     $HTML::Mason::Commands::ContentType = 'text/html';

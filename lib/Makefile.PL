@@ -6,11 +6,11 @@ WriteMakefile(
     'VERSION_FROM' => 'RT.pm', # finds $VERSION
     'PREREQ_PM' => {
                      'DBI'                 => 1.16,
-                     'DBIx::SearchBuilder' => 0.40,
+                     'DBIx::SearchBuilder' => '0.40',
                      'Date::Parse'         => 0,
                      'Date::Format'        => 0,
                      'MIME::Entity'        => 5.108,
-                     'Mail::Mailer'        => 1.20,
+                     'Mail::Mailer'        => '1.20',
                      'Log::Dispatch'       => 1.6,
                      'HTML::Entities'      => 0,
                      'Text::Wrapper'       => 0,

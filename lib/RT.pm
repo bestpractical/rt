@@ -98,6 +98,21 @@ sub Nobody {
     return ($Nobody);
 }
 
+
+=head2 DropSetGIDPermissions
+
+Drops setgid permissions.
+
+=cut
+
+sub DropSetGIDPermissions {
+    # Now that we got the config read in, we have the database 
+    # password and don't need to be setgid
+    # make the effective group the real group
+    $) = $(;
+}
+
+
 =head1 NAME
 
 RT - Request Tracker
