@@ -58,5 +58,26 @@ sub Load {
 }
 
 
+=head2 _ClassAccessible
+
+Return this object's _ClassAccessible.
+
+If we're running on RT 3.1 or newer, we need defer to the superclass
+
+If we're running 3.0, dispatch to the CoreAccessible.
+
+
+
+=cut
+
+sub _ClassAccessible {
+    my $self = shift;
+
+    if ($RT::VERSION =~ /^3.0/)  {
+        $self->_CoreAccessible(); 
+    } else  {
+        $self->SUPER::_ClassAccessible(); 
+    }
+}
 
 1;

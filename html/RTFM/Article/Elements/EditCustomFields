@@ -33,8 +33,8 @@
 %}
 </textarea>
 % } 
-%  elsif ($CustomField->Type eq 'TextSingle') {
-<textarea rows="10" cols="60"name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Value">
+%  elsif ($CustomField->Type =~ /(?:Text)/) {
+<textarea rows="35" cols="70"name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Value">
 %while (my $value = $Values->Next ) {
 <%$value->Content%>
 %}

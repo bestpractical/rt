@@ -19,6 +19,7 @@
 package RT::FM;
 use strict;
 use vars qw/$System/;
+use RT::FM::System;
 
 
 # Create a system object for RTFM

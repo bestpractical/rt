@@ -23,12 +23,20 @@
 <td valign=top><b><%$cf->Name%></b></td>
 <td>
 <% ($cf->Type !~ /Single$/) && '<ul>' |n%>
-%   while (my $value = $values->Next) {
-%       my $content;
-%       if ( $value) {$content = $value->Content};
-%       if ($cf->Type =~ /^(FreeForm|Text)/) {
-%           $content = "<pre>".$content."</pre>" unless ($content =~ /<(.{1,5})>/);
-%       }
+<%perl>
+   while (my $value = $values->Next) {
+       my $content;
+       if ( $value) {
+        $content = $value->Content;
+
+    if ($cf->Type =~ /^WikiText/) {
+        $content = $value->WikiFormattedContent();
+    }
+      elsif ($cf->Type =~ /^(FreeForm|Text)/) {
+           $content = "<pre>".$content."</pre>" unless ($content =~ /<(.{1,5})>/);
+       }
+        }
+</%perl>
 <%($cf->Type !~ /Single$/) && '<li>'|n%>
 <%$content|n%>
 % }

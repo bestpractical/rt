@@ -65,9 +65,9 @@
 </textarea>
 
 % } 
-%  elsif ($CustomField->Type eq 'TextSingle') {
+%  elsif ($CustomField->Type =~ /(?:TextSingle)$/) {
 
-<textarea rows="10" cols="60"name="CustomField-<%$CustomField->Id%>">
+<textarea rows="30" cols="70" name="CustomField-<%$CustomField->Id%>">
 <%exists $cfcontent{$CustomField->Id} && $cfcontent{$CustomField->Id}%></textarea>
 
 % } 

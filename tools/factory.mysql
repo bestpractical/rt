@@ -28,20 +28,30 @@ my $dbh = DBI->connect( $dsn, $user, $password );
 #get all tables out of database
 my @tables = $dbh->tables();
 
+@tables = grep { /^FM_/i } @tables;
 my ( %tablemap, $typemap, %modulemap );
 
 foreach my $table (@tables) {
-        
-    next if ($table eq 'sessions');
+        print "We're looking at $table\n";
+
+    $table =~ s/customfield/CustomField/gi;
+    $table =~ s/value/Value/gi;
+    $table =~ s/cfvalue/CFValue/gi;
+
+
+
     $tablemap{$table}  = $table;
     $modulemap{$table} = $table;
     if ( 
-    $table =~ /^FM_(Class)es$/ 
+    $table =~ /^FM_(Class)es$/i 
     || 
-    $table =~ /^FM_(.*)(s?)$/ 
+    $table =~ /^FM_(.*)(s?)$/i 
     ) {
-        $tablemap{$1}  = $table;
-        $modulemap{$1} = $1;
+        my $item = $1;
+        $item = ucfirst($item);
+        $tablemap{$item}  = $table;
+        $modulemap{$item} = $item;
+        print "Shoving $item into the map as a pointer to $table\n";
     }
 }
 $tablemap{'CreatedBy'} = 'User';
@@ -57,20 +67,24 @@ $typemap{'LastUpdatedBy'} = 'auto';
 
 foreach my $table (@tables) {
     next if ($table eq 'sessions');
-    next unless ($table =~ /^FM_/);
+
+        print "We're looking at $table\n";
+
+
     my $tablesingle = $table;
-    $tablesingle =~ s/^FM_//g;
-    if ($tablesingle =~ /^Classes$/) {
+    $tablesingle =~ s/^FM_//gi;
+    $tablesingle = ucfirst($tablesingle);
+    $tablesingle =~ s/customfield/CustomField/gi;
+    $tablesingle =~ s/value/Value/gi;
+    $tablesingle =~ s/cfvalue/CFValue/gi;
+    if ($tablesingle =~ /^Classes$/i) {
         $tablesingle = "Class";
     } else {
         $tablesingle =~ s/s$//;
     }
     my $tableplural = $tablesingle . "Collection";
 
-    if ( $tablesingle eq 'ACL' ) {
-        $tablesingle = "ACE";
-        $tableplural = "ACL";
-    }
+
 
     my %requirements;
 
@@ -143,6 +157,8 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 ";
+
+print "Checking module map for $field\n";
 
         if ( $modulemap{$field} ) {
             $FieldsPod .= "
@@ -306,7 +322,7 @@ $Create
 
 $FieldsPod
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
 $ClassAccessible

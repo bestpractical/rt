@@ -17,6 +17,7 @@
 %# END LICENSE BLOCK
 
 <%init>
+use RT::FM;
 use RT::FM::ArticleCollection;
 use RT::FM::ClassCollection;
 use RT::FM::CustomFieldCollection;

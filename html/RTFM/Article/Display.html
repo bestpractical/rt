@@ -29,8 +29,11 @@
 <%init>
 
 my $article = RT::FM::Article->new($session{'CurrentUser'}); 
-
-$article->Load($id);
+if ($Name) {
+    $article->LoadByCols(Name => $Name);
+} elsif ($id) {
+    $article->Load($id);
+}
 unless ($article->Id) {
     $m->comp("/RTFM/Elements/Error", Why => loc("Article not found"));
 }
@@ -48,4 +51,5 @@ my $cfs = $article->ClassObj->CustomFields;
 
 <%args>
 $id => undef
+$Name => undef
 </%args>

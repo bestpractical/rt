@@ -81,7 +81,7 @@ sub ValidateName {
 
 use vars qw( @TYPES);
 
-@TYPES = qw(SelectSingle SelectMultiple FreeformSingle FreeformMultiple TextSingle);
+@TYPES = qw(SelectSingle SelectMultiple FreeformSingle FreeformMultiple TextSingle WikiTextSingle);
 
 
 # {{{ Create

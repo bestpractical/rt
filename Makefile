@@ -53,6 +53,8 @@ install-html:
 	  $(INSTALL)  -m 0644 html/$$f	$(MASON_HTML_PATH)/$$f ; \
 	done
 
+libs-install: install-lib
+
 install-lib:
 	for dir in `cd ./lib/ && find . -type d -print`; do \
 	  $(INSTALL) -d -m 0755 $(RT_LIB_PATH)/$$dir ; \

@@ -22,6 +22,21 @@ use strict;
 
 use RT::FM::ArticleCollection;
 
+use Text::WikiFormat;
+%RT::FM::WikiTags = (
+
+);
+
+%RT::FM::WikiOpts = (
+        prefix => 'Display.html?Name=',
+
+        extended => '1'
+ );
+
+
+
+
+
 =head2 Create { } 
 
     add a custom field value to an article
@@ -88,6 +103,15 @@ sub Create {
     my $ret = $self->SUPER::Create(%args);
     return ($ret, $self->loc("Value added"));
  }
+
+
+sub WikiFormattedContent {
+    my $self = shift;
+  return Text::WikiFormat::format($self->Content , \%RT::FM::WikiTags, \%RT::FM::WikiOpts);
+    
+
+}
+
 
 1;
 
