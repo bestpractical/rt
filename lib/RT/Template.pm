@@ -328,6 +328,11 @@ sub _ClassAccessible {
             die $@;
         };
 
+        eval "require RT::Template_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Template_Vendor.pm}) {
+            die $@;
+        };
+
         eval "require RT::Template_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Template_Local.pm}) {
             die $@;
@@ -340,7 +345,7 @@ sub _ClassAccessible {
 
 This class allows "overlay" methods to be placed
 into the following files _Overlay is for a System overlay by the original author,
-while _Local is for site-local customizations.  
+_Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customizations.  
 
 These overlay files can contain new subs or subs to replace existing subs in this module.
 
@@ -350,7 +355,7 @@ If you'll be working with perl 5.6.0 or greater, each of these files should begi
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Template_Overlay, RT::Template_Local
+RT::Template_Overlay, RT::Template_Vendor, RT::Template_Local
 
 =cut
 

@@ -194,10 +194,25 @@ Apache
     PerlModule Apache::DBI
     PerlRequire /opt/rt3/bin/webmux.pl
 
+    # this section applies to Apache 1 only
     <Location />
         SetHandler perl-script
         PerlHandler RT::Mason
     </Location>
+
+    # this section applies to Apache2+mod_perl2 only
+    <FilesMatch "\.html$">
+        SetHandler perl-script
+        PerlHandler RT::Mason
+    </FilesMatch>
+    <LocationMatch "/Attachment/">
+        SetHandler perl-script
+        PerlHandler RT::Mason
+    </LocationMatch>
+    <LocationMatch "/REST/">
+        SetHandler perl-script
+        PerlHandler RT::Mason
+    </LocationMatch>
 </VirtualHost>
 
 

@@ -158,7 +158,8 @@ sub Commit {
               if (    $transaction_content_obj
                    && $transaction_content_obj->Id == $attach->Id );
             $MIMEObj->attach( Type => $attach->ContentType,
-                              Data => $attach->Content );
+                              Data => $attach->Content,
+                              Filename => $attach->Filename );
         }
 
     }
@@ -594,6 +595,8 @@ sub SetHeaderAsEncoding {
 
 # }}}
 
+eval "require RT::Action::SendEmail_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm});
 eval "require RT::Action::SendEmail_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm});
 

@@ -176,9 +176,10 @@ sub ItemsArrayRef {
 
 # }}}
 
+eval "require RT::SearchBuilder_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Vendor.pm});
 eval "require RT::SearchBuilder_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/SearchBuilder_Local.pm});
-
 
 1;
 

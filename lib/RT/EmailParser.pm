@@ -235,8 +235,9 @@ sub _PostProcessNewEntity {
     # ... and subject too
     {
 	my $head = $self->Head;
-	$head->replace('Subject',
-		       RT::I18N::DecodeMIMEWordsToUTF8( $head->get('Subject') ) );
+	foreach my $field (qw(Subject From CC)) {
+	    $head->replace($field, RT::I18N::DecodeMIMEWordsToUTF8( $head->get($field) ) );
+	}
     }
 
 
@@ -748,6 +749,9 @@ sub _SetupMIMEParser {
     $parser->output_to_core(50000);
 }
 # }}}
+
+eval "require RT::EmailParser_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Vendor.pm});
 eval "require RT::EmailParser_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/EmailParser_Local.pm});
 

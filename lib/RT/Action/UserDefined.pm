@@ -62,9 +62,10 @@ sub Commit {
     return ($retval);
 }
 
+eval "require RT::Action::UserDefined_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/UserDefined_Vendor.pm});
 eval "require RT::Action::UserDefined_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/UserDefined_Local.pm});
-
 
 1;
 

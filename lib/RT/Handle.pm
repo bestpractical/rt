@@ -92,4 +92,9 @@ $RT::DatabaseHost = undef unless (defined $RT::DatabaseHost && $RT::DatabaseHost
 
 }
 
+eval "require RT::Handle_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Vendor.pm});
+eval "require RT::Handle_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Local.pm});
+
 1;

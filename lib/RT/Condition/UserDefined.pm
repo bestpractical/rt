@@ -48,6 +48,8 @@ sub IsApplicable {
     return ($retval);
 }
 
+eval "require RT::Condition::UserDefined_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/UserDefined_Vendor.pm});
 eval "require RT::Condition::UserDefined_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/UserDefined_Local.pm});
 

@@ -88,6 +88,8 @@ sub loc {
     return($self->CurrentUser->loc(@_));
 }
 
+eval "require RT::Base_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Vendor.pm});
 eval "require RT::Base_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Base_Local.pm});
 

@@ -55,6 +55,9 @@ sub IsApplicable {
         return(undef);
     }
 }
+
+eval "require RT::Condition::BeforeDue_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/BeforeDue_Vendor.pm});
 eval "require RT::Condition::BeforeDue_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/BeforeDue_Local.pm});
 

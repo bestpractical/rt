@@ -123,6 +123,7 @@ sub Set {
     }
 
     elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
+	$args{'Value'} =~ s!/!-!g;
 
         if (( $args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
             || ( $args{'Value'} =~
@@ -548,9 +549,9 @@ sub LocalTimezone {
 
 # }}}
 
-        eval "require RT::Date_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Date_Local.pm}) {
-            die $@;
-        };
+eval "require RT::Date_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Date_Vendor.pm});
+eval "require RT::Date_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Date_Local.pm});
 
 1;

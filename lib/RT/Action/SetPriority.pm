@@ -53,6 +53,8 @@ sub Commit {
 
 }
 
+eval "require RT::Action::SetPriority_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SetPriority_Vendor.pm});
 eval "require RT::Action::SetPriority_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SetPriority_Local.pm});
 

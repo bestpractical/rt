@@ -352,7 +352,8 @@ sub HasRight {
     # If an object is defined, we want to look at rights for that object
    
     my @look_at_objects;
-    push (@look_at_objects, "ACL.ObjectType = 'RT::System'");
+    push (@look_at_objects, "ACL.ObjectType = 'RT::System'")
+        unless $self->can('_IsOverrideGlobalACL') and $self->_IsOverrideGlobalACL($args{Object});
 
 
 

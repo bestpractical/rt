@@ -630,9 +630,9 @@ EOT
 return ( 1, "Success", $Ticket );
 }
 
+eval "require RT::Interface::Email_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email_Vendor.pm});
 eval "require RT::Interface::Email_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email_Local.pm}) {
-    die $@;
-};
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email_Local.pm});
 
 1;

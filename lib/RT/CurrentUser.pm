@@ -366,6 +366,8 @@ sub loc_fuzzy {
 }
 # }}}
 
+eval "require RT::CurrentUser_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Vendor.pm});
 eval "require RT::CurrentUser_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Local.pm});
 

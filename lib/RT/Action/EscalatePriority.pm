@@ -135,8 +135,9 @@ sub Commit {
    }
 }
 
+eval "require RT::Action::EscalatePriority_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/EscalatePriority_Vendor.pm});
 eval "require RT::Action::EscalatePriority_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/EscalatePriority_Local.pm});
-
 
 1;

@@ -166,9 +166,16 @@ sub SetMIMEEntityToEncoding {
         my ( $mime_type, $charset ) =
           ( $head->mime_type, $head->mime_attr("content-type.charset") || "" );
 
-        # the entity is not text, nothing to do with it.
+        # the entity is not text; convert at least MIME word encoded attachment filename
         # TODO: should we be converting ANY text/ type? autrijus?
-        return unless ( $mime_type =~ /^text\/plain$/ );
+        if ($mime_type !~ /^text\/plain$/) {
+            foreach my $attr (qw(content-type.name content-disposition.filename)) {
+                if (my $name = $head->mime_attr($attr)) {
+                    $head->mime_attr($attr => DecodeMIMEWordsToUTF8($name));
+                }
+            }
+            return;
+        }
 
         # the entity is text and has charset setting, try convert
         # message body into $enc
@@ -280,6 +287,8 @@ sub DecodeMIMEWordsToUTF8 {
 	my ($prefix, $charset, $encoding, $enc_str, $trailing) =
 	    (shift, shift, shift, shift, shift);
 
+        $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
+
 	if ($encoding eq 'Q' or $encoding eq 'q') {
 	    use MIME::QuotedPrint;
 	    $enc_str =~ tr/_/ /;		# Observed from Outlook Express
@@ -306,9 +315,10 @@ sub DecodeMIMEWordsToUTF8 {
 
 # }}}
 
+eval "require RT::I18N_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Vendor.pm});
 eval "require RT::I18N_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Local.pm});
-
 
 1;  # End of module.
 

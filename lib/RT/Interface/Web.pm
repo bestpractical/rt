@@ -1339,9 +1339,9 @@ sub ProcessTicketLinks {
 
 # }}}
 
+eval "require RT::Interface::Web_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web_Vendor.pm});
 eval "require RT::Interface::Web_Local";
-if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web_Local.pm}) {
-    die $@;
-};
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web_Local.pm});
 
 1;

@@ -38,7 +38,7 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $EtcPath
         $VarPath
         $LocalPath
-	$LocalEtcPath
+        $LocalEtcPath
         $LocalLexiconPath
         $LogDir
         $MasonComponentRoot

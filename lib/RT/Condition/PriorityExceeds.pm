@@ -48,9 +48,10 @@ sub IsApplicable {
     }
 }
 
+eval "require RT::Condition::PriorityExceeds_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/PriorityExceeds_Vendor.pm});
 eval "require RT::Condition::PriorityExceeds_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/PriorityExceeds_Local.pm});
-
 
 1;
 

@@ -222,9 +222,9 @@ sub HREF {
     }
 }
 
-
+eval "require RT::URI::fsck_com_rt_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/fsck_com_rt_Vendor.pm});
 eval "require RT::URI::fsck_com_rt_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/fsck_com_rt_Local.pm});
-
 
 1;

@@ -54,3 +54,10 @@ definitely spam - 1.5x more hits than required - then it is dropped on
 the floor; otherwise, it is passed on as normal.
 
 =cut
+
+eval "require RT::Interface::Email::Filter::SpamAssassin_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email/Filter/SpamAssassin_Vendor.pm});
+eval "require RT::Interface::Email::Filter::SpamAssassin_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email/Filter/SpamAssassin_Local.pm});
+
+1;

@@ -27,6 +27,11 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::I18N);
 
+eval "require RT::I18N::i_default_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N/i_default_Vendor.pm});
+eval "require RT::I18N::i_default_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N/i_default_Local.pm});
+
 1;
 
 __END__
@@ -42,9 +47,9 @@ of Whatever::en, but for every case where a key gets you a string
 (as opposed to a coderef) from %Whatever::en::Lexicon and
 %Whatever::fr::Lexicon, you could make %Whatever::i_default::Lexicon 
 be the concatenation of them both.  So: "file '[_1]' not found.\n" and
-"fichier '[_1]' non trouvé\n" could make for an
+"fichier '[_1]' non trouve\n" could make for an
 %Whatever::i_default::Lexicon entry of
-"file '[_1]' not found\nfichier '[_1]' non trouvé.\n".
+"file '[_1]' not found\nfichier '[_1]' non trouve.\n".
 
 There may be entries, however, where that is undesirable.
 And in any case, it's not feasable once you have an _AUTO lexicon

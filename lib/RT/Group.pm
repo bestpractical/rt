@@ -223,6 +223,11 @@ sub _ClassAccessible {
             die $@;
         };
 
+        eval "require RT::Group_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Group_Vendor.pm}) {
+            die $@;
+        };
+
         eval "require RT::Group_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Group_Local.pm}) {
             die $@;
@@ -235,7 +240,7 @@ sub _ClassAccessible {
 
 This class allows "overlay" methods to be placed
 into the following files _Overlay is for a System overlay by the original author,
-while _Local is for site-local customizations.  
+_Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customizations.  
 
 These overlay files can contain new subs or subs to replace existing subs in this module.
 
@@ -245,7 +250,7 @@ If you'll be working with perl 5.6.0 or greater, each of these files should begi
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Group_Overlay, RT::Group_Local
+RT::Group_Overlay, RT::Group_Vendor, RT::Group_Local
 
 =cut
 

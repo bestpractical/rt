@@ -48,6 +48,8 @@ sub IsApplicable {
     }
 }
 
+eval "require RT::Condition::OwnerChange_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/OwnerChange_Vendor.pm});
 eval "require RT::Condition::OwnerChange_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/OwnerChange_Local.pm});
 
