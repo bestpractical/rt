@@ -158,9 +158,8 @@ sub GetCurrentUser  {
   my $From = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
 
   use Mail::Address;
-  my @Address = Mail::Address->parse($From);
-  my $FromObj = shift @Address;
-  my $Name =  ($FromObj->phrase || $FromObj->comment);
+  my ($FromObj) = Mail::Address->parse($From) || die "Couldn't parse From-address";
+  my $Name =  ($FromObj->phrase || $FromObj->comment || $FromObj->address);
 
   
   #Now we've got a parsed mime object. 
