@@ -3,7 +3,29 @@
 
 # This is where RT's preferences are kept track of
 
+# Most (if not all?) $RT:: global variables should be here.  I'd
+# suggest putting session information in another Namespace (main:: or
+# RT::main or maybe something like that).
+
 package RT;
+use Log::Dispatch;
+use Log::Dispatch::File;
+#use strict;
+
+#use vars qw/%SitePolicy $dirmode $transactionmode $DatabasePassword $rtname $domain $host $DatabaseHost $DatabaseUser $RT::DatabaseName $DatabaseType $user_passwd_min $MailAlias $WebrtImagePath $web_auth_mechanism $web_auth_cookies_allow_no_path $DefaultLocale $LocalePath $Nobody $Logger/;
+
+# Logging.  The default is to log anything except debugging
+# information to a logfile.  Check the Log::Dispatch POD for
+# information about how to get things by syslog, mail or anything
+# else, get debugging info in the log, etc.
+
+$Logger=Log::Dispatch->new;
+$Logger->add(Log::Dispatch::File->new
+	     ( name=>'rtlog',
+	       min_level=>'info',
+	       filename=>'!!RT_LOGFILE!!',
+	       mode=>'append'
+	      ));
 
 # Different "tunable" configuration options should be in this hash:
 %SitePolicy=
@@ -162,9 +184,12 @@ $DefaultLocale = "!!DEFAULT_LOCALE!!";
 
 $LocalePath = "!!LOCALE_PATH!!";
 
-# Hackers only:
+##### THINGS BELOW SHOULD ONLY BE MODIFIED BY REAL HACKERS! :)
 
 $Nobody=2;
+$SIG{__WARN__}=sub {$RT::Logger->log(level=>'warn',message=>$_[0])};
+$SIG{__DIE__}= sub {$RT::Logger->log(level=>'crit',message=>$_[0])};
+
 
 1;
 
