@@ -7,13 +7,13 @@
 sub delete_user {
  
     my  ($in_user_id,$in_current_user) = @_;
-    my ($query_string,$update_clause);
+    my ($query_string,$update_clause, $user_id);
 
     if (!(&is_a_user($in_user_id))){
 	return(0,"User $in_user_id does not exist!");
     }
     else {
-	$in_user_id=$rt::dbh->quote($in_user_id);
+	$user_id=$rt::dbh->quote($in_user_id);
 
 	if ($users{$in_current_user}{admin_rt}) {
 	    if ($user_id ne $in_current_user) {
@@ -28,7 +28,7 @@ sub delete_user {
 		while (($queue_id,$value)= each %rt::queues) {
 		    delete $rt::queues{$queue_id}{acls}{$user_id};
 		}
-		return (1, "User $in_user_id deleted.");
+		return (1, "User $user_id deleted.");
 		
 	    }
 	    else {
@@ -199,14 +199,23 @@ sub add_modify_queue_acl {
 # don't lock yourself out
         $in_admin = 1 if $in_user_id eq $in_current_user && ! $in_admin && $queues{$in_queue_id}{acls}{$in_current_user}{admin};
 	if (!($queues{$in_queue_id}{acls}{$in_user_id}{display})){
-	    $query_string="INSERT INTO queue_acl (queue_id, user_id, display, manipulate, admin) VALUES ($queue_id, $user_id, $in_display, $in_manipulate, $in_admin)";
-	    $dbh->Query($query_string) or return (0, "[add_modify_queue_acl] Query had some problem: $Mysql::db_errstr\n");
-	    $queues{$in_queue_id}{acls}{$in_user_id}{display}=$in_display;
-	    $queues{$in_queue_id}{acls}{$in_user_id}{manipulate}=$in_manipulate;
-	    $queues{$in_queue_id}{acls}{$in_user_id}{admin}=$in_admin;
-	    return(1,"User $user_id has been granted permissions to queue $in_queue_id");   
-	}
-	elsif (($in_admin == 0) and ($in_display == 0) and ($in_manipulate == 0)) {
+ 
+
+           $query_string = "DELETE FROM queue_acl WHERE queue_id = $queue_id AND user_id = $user_id";
+           $dbh->Query($query_string) or return (0,"[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
+           if( ! (($in_admin == 0) and ($in_display == 0) and ($in_manipulate == 0)) )
+	     {
+	       $query_string="INSERT INTO queue_acl (queue_id, user_id, display, manipulate, admin) VALUES ($queue_id, $user_id, $in_display, $in_manipulat
+e, $in_admin)";
+	       $dbh->Query($query_string) or return (0, "[add_modify_queue_acl] Query had some problem: $Mysql::db_errstr\n");
+	       
+	       
+	       $queues{$in_queue_id}{acls}{$in_user_id}{display}=$in_display;
+	       $queues{$in_queue_id}{acls}{$in_user_id}{manipulate}=$in_manipulate;
+	       $queues{$in_queue_id}{acls}{$in_user_id}{admin}=$in_admin;
+	       return(1,"User $user_id has been granted permissions to queue $in_queue_id");   
+	     }
+	   elsif (($in_admin == 0) and ($in_display == 0) and ($in_manipulate == 0)) {
 	    $query_string = "DELETE FROM queue_acl WHERE queue_id = $queue_id AND user_id = $user_id";
 	    $dbh->Query($query_string) or return (0,"[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
 	    delete $rt::queues{$in_queue_id}{acls}{$in_user_id};

@@ -167,9 +167,9 @@ sub select_a_date{
     if (!$default) { # if we don't supply a default, say it will be done next week
 	$default=$rt::time+604800;
     }
-    ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year)=&rt::parse_time($default); 
-    ($temp, $temp, $temp, $temp, $temp, $temp, $temp, $now_year)=&rt::parse_time($rt::time); 
-    print "<select name=\"".$name."_mday\">\n";
+   
+   ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $now_year)=&rt::parse_time($rt::time);
+  print "<select name=\"".$name."_mday\">\n";
     for ($counter=1;$counter<=31;$counter++) {
 	print "<option";
 	if ($mday==$counter) {print " SELECTED";}
@@ -186,7 +186,7 @@ sub select_a_date{
 	print "<option value=\"".($counter-1900)."\" "; #apparently, timelocal
 	                                            #likes dates to be 2 digits
 	                                            #that sucks
-	if ($year==$counter) {print " SELECTED";}
+	if ($now_year==$counter) {print " SELECTED";}
 	print ">$counter\n";
     }
     print "</select>\n"; 
@@ -243,6 +243,7 @@ sub content_header {
     }
     print "Content-type: text/html\n\n";
     print "<HTML>\n";
+    print "<head><title>WebRT</title></head>\n";
     $header_printed=1;
 }
 sub content_footer {

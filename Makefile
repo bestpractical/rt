@@ -91,7 +91,9 @@ RT_USER_PASSWD_MIN	=	5
 # need to remove some or all of the flags we're passing here.  However, nobody
 # should be running a version of sendmail < 8.8
 #
-
+# If you're not running sendmail, you want to start off with your local sendmail
+# "surrogate" with MAIL_OPTIONS set to -t
+#
 MAIL_PROGRAM		= 	/usr/lib/sendmail
 MAIL_OPTIONS		=	-oi -t -ODeliveryMode=b -OErrorMode=m
 
@@ -109,6 +111,14 @@ MYSQLDIR		=	/opt/mysql/bin
 MYSQL_VERSION		= 	3.22
 
 #
+# You need to insert your "root" password for mysql to allow
+# RT to create its databases.  Remove this password from this Makefile 
+# AS SOON AS MAKE INSTALL FINISHES
+#
+#
+ROOT_MYSQL_PASS		=	
+
+#
 # this password is what RT will use to authenticate itself to mysql
 # change this password so nobody else can get into your rt databases
 # (be sure not to use #, @ or $ characters)
@@ -122,6 +132,13 @@ RT_MYSQL_PASS           =       My!word%z0t
 #
 
 RT_MYSQL_HOST		=	
+
+#
+# Set this to the FQDN of your RT server.  It'll be used by mysql to grant 
+# rt on your RT server ACLS to the Mysql database.
+#
+
+RT_HOST			=
 
 #
 # set this to the name you want to give to the RT database in mysql
@@ -232,17 +249,17 @@ initialize: database acls
 
 database:
 #	$(MYSQLDIR)/mysqladmin drop $(RT_MYSQL_DATABASE)
-	-$(MYSQLDIR)/mysqladmin create $(RT_MYSQL_DATABASE)
-	$(MYSQLDIR)/mysql $(RT_MYSQL_DATABASE) < etc/schema      
+	-$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root -p$(ROOT_MYSQL_PASS) create $(RT_MYSQL_DATABASE)
+	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u root -p$(ROOT_MYSQL_PASS) $(RT_MYSQL_DATABASE) < etc/schema      
 
 acls:
-	-$(PERL) -p -e "if ('$(RT_MYSQL_HOST)' eq '') { s'!!RT_MYSQL_HOST!!'localhost'g}\
-			else { s'!!RT_MYSQL_HOST!!'$(RT_MYSQL_HOST)'g }\
+	-$(PERL) -p -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
+			else { s'!!RT_HOST!!'$(RT_HOST)'g }\
 		s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
 		s'!!RTUSER!!'$(RTUSER)'g;\
 		s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
 		" $(RT_MYSQL_ACL) | $(MYSQLDIR)/mysql mysql
-	$(MYSQLDIR)/mysqladmin reload
+	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root -p$(ROOT_MYSQL_PASS) reload
 
 
 mux-install:

@@ -117,10 +117,10 @@ sub take_action {
 	    
 
 	    if ($acl eq 'admin') {
-		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,1,1,$current_user);
+		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,0,0,1,$current_user);
 	    }
 	    if ($acl eq 'manip') {
-		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,1,0,$current_user);
+		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,0,1,0,$current_user);
 	    }
 	    if ($acl eq 'disp') {
 		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,0,0,$current_user);
@@ -152,11 +152,11 @@ sub take_action {
 	    
 	    if ($acl eq 'admin') {
 
-		&rt::add_modify_queue_acl($queue_id,$rt::ui::web::FORM{user_id},1,1,1,$current_user);
+		&rt::add_modify_queue_acl($queue_id,$rt::ui::web::FORM{user_id},0,0,1,$current_user);
 	    }
 	    if ($acl eq 'manip') {
 
-		&rt::add_modify_queue_acl($queue_id,$rt::ui::web::FORM{user_id},1,1,0,$current_user);
+		&rt::add_modify_queue_acl($queue_id,$rt::ui::web::FORM{user_id},0,1,0,$current_user);
 	    }
 	    if ($acl eq 'disp') {
 

@@ -2,4 +2,4 @@
 DELETE FROM user WHERE user like '!!RTUSER!!';
 DELETE FROM db where db LIKE '!!RT_MYSQL_DATABASE!!';
 INSERT INTO db VALUES ('%','!!RT_MYSQL_DATABASE!!','!!RTUSER!!','Y','Y','Y','Y','N','N');
-INSERT INTO user VALUES ('!!RT_MYSQL_HOST!!','!!RTUSER!!',password('!!RT_MYSQL_PASS!!'),'N','N','N','N','N','N','N','N','N','N');
+INSERT INTO user VALUES ('!!RT_HOST!!','!!RTUSER!!',password('!!RT_MYSQL_PASS!!'),'N','N','N','N','N','N','N','N','N','N');

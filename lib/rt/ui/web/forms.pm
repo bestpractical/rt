@@ -7,6 +7,9 @@ package rt::ui::web;
 
 sub FormQueueOptions{
     local($^W) = 0; # Lots of form fields that may or may not exist give bogus errors
+    my @qs;
+    
+
     print "<form action=\"$ScriptURL\" method=\"get\"";
     if ($frames){ 
         print "target=\"queue\"";
@@ -36,7 +39,10 @@ sub FormQueueOptions{
 <option value=\"\">Any\n";
     foreach $queue (sort keys %rt::queues) {
         if ($queue) {
-        if (&rt::can_display_queue($queue, $current_user)) {
+        if (&rt::can_display_queue($queue, $current_user) == 1 ) {
+	    push @qs, $queue;
+
+
             print "<option";
             if($queue eq $rt::ui::web::FORM{q_queue}) {  print " SELECTED";}
             print ">$queue\n";
@@ -55,25 +61,38 @@ sub FormQueueOptions{
 <td valign=\"top\">
 <font size=\"-1\">
 <b>Owner</b>: <INPUT TYPE=\"checkbox\" NAME=\"q_unowned\" VALUE=\"true\"";
+
+    $rt::ui::web::FORM{'q_unowned'} = '' if ! defined $rt::ui::web::FORM{'q_unowned'};
+    $rt::ui::web::FORM{'q_owned_by'} = '' if ! defined $rt::ui::web::FORM{'q_owned_by'};
+
     print "CHECKED" if $rt::ui::web::FORM{'q_unowned'};
     print "> None ";
 
     print "<INPUT TYPE=\"checkbox\" NAME=\"q_owned_by\" VALUE=\"true\"";
     print "CHECKED" if $rt::ui::web::FORM{'q_owned_by'};
-    print "> <select name=\"q_owner\">
-	<option value=\"\">Nobody ";	
-    
-    if (!$FORM{'q_owner'}) {
-      $FORM{'q_owner'} = $current_user;
-    }
+ 
+  print "> <select name=\"q_owner\">";
+
+    $rt::ui::web::FORM{'q_owner'} = $current_user if ! $rt::ui::web::FORM{'q_owner'};
+
     foreach $user_id (sort keys %rt::users ) {
-	
-	print "<option ";
-	if ($FORM{'q_owner'} eq $user_id) {
-	    print "SELECTED";
+	if( $rt::ui::web::FORM{q_queue} )
+	{
+		next if &rt::can_display_queue($rt::ui::web::FORM{q_queue},$user_id) != 1;
+	else
+	{
+		my $u = 0;
+		for( @qs )
+		{
+			next if &rt::can_display_queue($_, $user_id) != 1;
+			$u = 1;
+			last;
+		}
+		next if ! $u;
 	}
-	    print ">$user_id\n";
-	
+	print "<option ";
+	print "SELECTED" if $user_id eq $rt::ui::web::FORM{'q_owner'};
+	print ">$user_id\n";	
     }
 	print "</select>
 
@@ -81,7 +100,9 @@ sub FormQueueOptions{
 <font size=\"-1\">
 <b>User</b>: <INPUT TYPE=\"radio\" NAME=\"q_user\" VALUE=\"\"";
  
-   print "CHECKED" if (!$rt::ui::web::FORM{'q_user'});
+   $rt::ui::web::FORM{'q_user'} = '' if ! defined $rt::ui::web::FORM{'q_user'};
+
+   print "CHECKED" if (!$rt::ui::web::FORM{'q_user'}) || (!$rt::ui::web::FORM{'q_user_other'});
     print "> Any ";
     
     print "<INPUT TYPE=\"radio\" NAME=\"q_user\" VALUE=\"other\"";

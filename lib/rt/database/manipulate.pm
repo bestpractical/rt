@@ -161,13 +161,16 @@ sub add_correspondence {
     
     #if it's coming from somebody other than the user, send them a copy
     if ( (&is_not_a_requestor($in_current_user,$in_serial_num))) {
-	    &update_each_req($effective_sn, 'date_told', $rt::time);
+	    &update_each_req($in_serial_num, 'date_told', $rt::time);
 	    $tem=&rt::template_mail('correspondence', $queue_id, "$requestors", $in_cc, $in_bcc, "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
     }
     
     if ($queues{$queue_id}{m_members_correspond}) {
       &rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}","","", "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
     }
+     $effective_sn=&normalize_sn($in_serial_num);
+     &update_each_req($effective_sn, 'date_acted', $time); #make now the last acted time
+
   
     return ($transaction_num,"This correspondence has been recorded.");
   }
@@ -205,7 +208,9 @@ sub comment {
 	
     }
     
-    
+    $effective_sn=&normalize_sn($in_serial_num);
+     &update_each_req($effective_sn, 'date_acted', $time); #make now the last acted time
+
     return ($transaction_num,"Your comments have been recorded.");
 }
 
@@ -334,7 +339,12 @@ sub change_queue {
 	&update_request($in_serial_num,'area','',$in_current_user);
     }
 	$transaction_num=&update_request($in_serial_num,'queue_id',$in_queue, $in_current_user);
-	$transaction_num=&update_request($in_serial_num,'owner','','_rt_system');
+    if (! $transaction_num) {
+      return (0,"Specify a different queue.");
+    }
+    
+       &update_request($in_serial_num,'owner','','_rt_system');
+
 	return ($transaction_num,"Request #$in_serial_num moved to queue $in_queue.");
 }
 

@@ -1,3 +1,6 @@
+# $Version$
+#
+
 package rt;
 
 #####
@@ -48,7 +51,7 @@ sub template_mail{
     open (MAIL, "|$rt::mailprog $rt::mail_options");
 
     print  MAIL "Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject
- From: $rt::mail_alias
+From: $rt::mail_alias
 Reply-To: $rt::mail_alias
 To: $in_recipient   
 Cc: $in_cc

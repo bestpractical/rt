@@ -2,69 +2,72 @@ package rt::ui::mail::manipulate;
 
 sub activate {
 
-#uncomment for a debugging version
-$debug = 0;
-
-$area = ""; #TODO: we may wamt to be able to set the area on the command line
-
-$content=&read_mail_from_stdin();
-$in_queue=$ARGV[0];
-$in_action=$ARGV[1];
-
-if (!$in_queue){
+  #uncomment for a debugging version
+  $debug = 0;
+  
+  $area = ""; #TODO: we may wamt to be able to set the area on the command line
+  
+  $content=&read_mail_from_stdin();
+  $in_queue=$ARGV[0];
+  $in_action=$ARGV[1];
+  
+  if (!$in_queue){
     $in_queue="general";
-}   
-if (!$in_action){
-	$in_action='correspond';
-} 
-
-
-if ($debug) {print "Now at parse headers\n";}
-&parse_headers($content); 
-
-#get all that rt stuff squared away.
-if ($debug) {print "Now at rt::initialize\n";}
-&rt::initialize($current_user);
-
-#take all those actions
-
-if ($debug) {print "Now at &parse_actions\n";}
-
-$content=&parse_actions($current_user,$content);
-
-#flip the content around..we should just MIME the sucker instead
-if ($debug) { print "Now at &munge_content\n";}
-&munge_content($content);
-
-if ($in_action eq 'actions') {
+  }   
+  if (!$in_action){
+    $in_action='correspond';
+  } 
+  
+  
+  if ($debug) {print "Now at parse headers\n";}
+  &parse_headers($content); 
+  
+  #get all that rt stuff squared away.
+  if ($debug) {print "Now at rt::initialize\n";}
+  &rt::initialize($current_user);
+  
+  #take all those actions
+  
+  if ($debug) {print "Now at &parse_actions\n";}
+  
+  $content=&parse_actions($current_user,$content);
+  
+  #flip the content around..we should just MIME the sucker instead
+  if ($debug) { print "Now at &munge_content\n";}
+  &munge_content($content);
+  
+  if ($in_action eq 'actions') {
     exit(0);
-}
-elsif ($in_action eq 'correspond') {
+  }
+  elsif ($in_action eq 'correspond') {
     if (!$serial_num) {
-	#WE REALLY SHOULD PARSE THE TIME OUT OF THE DATE HEADER...BUT FOR NOW
-	# THE CURRENT TIME IS GOOD ENOUGH
-	if ($debug) { print "Adding a new transaction\n";}
-	($serial_num,$transaction_num, $message)=&rt::add_new_request($in_queue,$area,$current_user,'','',$subject,$queues{$in_queue}{'default_final_prio'},$queues{$in_queue}{'default_prio'},'open',$rt::time,0,0,$content,$current_user);
-	$edited_content = "There has been an error with your request:\n" . $message . "\n\nYour message is reproduced below\n\n".$content;
-	
-	# if there's been an error, mail the user with the message
-	if ($serial_num == 0) {
-	    if ($debug) {print "Dammit. the new transaction didn't get added\n$edited_content";}
-	    &rt::template_mail ('error','_rt_system',$current_user,"","",0,0,"RT Error","$in_current_user","$edited_content");
-	}
+      #WE REALLY SHOULD PARSE THE TIME OUT OF THE DATE HEADER...BUT FOR NOW
+      # THE CURRENT TIME IS GOOD ENOUGH
+      if ($debug) { print "Adding a new transaction\n";}
+      ($serial_num,$transaction_num, $message)=&rt::add_new_request($in_queue,$area,$current_user,'','',$subject,$queues{$in_queue}{'default_final_prio'},$queues{$in_queue}{'default_prio'},'open',$rt::time,0,0,$content,$current_user);
+      
+      
     }   
     else {
-	($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",1,$current_user);
-	
+      ($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",1,$current_user);
+      
     }
-}
-elsif ($in_action eq 'comment') {
+  }
+  elsif ($in_action eq 'comment') {
     if ($debug) {print "Now commenting on request \# $serial_num\n";}
     ($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject", , ,$current_user);
-}
-
-
-
+  }
+  
+  # if there's been an error, mail the user with the message
+  if ($transaction_num == 0) {
+    $edited_content = "There has been an error with your request:\n" . $message  . "\n\nYour message is reproduced below:\n\n".$content;
+    if ($debug) {print "Dammit. the new $in_action didn't get added\n$edited_content";}
+    &rt::template_mail('error', '_rt_system', "$current_user", '', '', "$serial_num", "$transaction_num", "RT Error: $subject", "$current_user", "$edited_content");
+  }
+  
+  
+  
+  
 }
 sub read_mail_from_stdin {
     local $content;
@@ -487,3 +490,5 @@ statements in the order you enter them.
     return ($parsed_body);
 }
 1;
+
+

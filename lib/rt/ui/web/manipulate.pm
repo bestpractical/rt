@@ -290,7 +290,15 @@ sub takeaction {
 	$due_date=0;
       }
       ($serial_num,$transaction_num,$StatusMsg)=&rt::add_new_request($rt::ui::web::FORM{'queue_id'},$rt::ui::web::FORM{'area'},$rt::ui::web::FORM{'requestors'},$rt::ui::web::FORM{'alias'},$rt::ui::web::FORM{'owner'},$rt::ui::web::FORM{'subject'},"$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}","$rt::ui::web::FORM{'prio_tens'}$rt::ui::web::FORM{'prio_ones'}",$rt::ui::web::FORM{'status'},$rt::time,0,$date_due, $rt::ui::web::FORM{'content'},$current_user); 
-      &rt::req_in($serial_num,$current_user);
+      
+      if( ! $serial_num && ! $transaction_num )
+	{
+	  $rt::ui::web::FORM{'display'} = '';
+	}
+      else
+	{
+	  &rt::req_in($serial_num,$current_user);
+	}
     }
     if ($current_user) {
       if ($rt::ui::web::FORM{'do_req_prio'}){
@@ -337,7 +345,8 @@ sub takeaction {
       }
       if ($rt::ui::web::FORM{'do_req_merge'}) {
 	($trans, $StatusMsg)=&rt::merge($serial_num,$rt::ui::web::FORM{'req_merge_into'},$current_user);
-      }
+   	$serial_num = $rt::ui::web::FORM{'req_merge_into'} if $trans;
+   }
       
       if ($rt::ui::web::FORM{'do_req_kill'}){
 	($trans, $StatusMsg)=&rt::kill($serial_num, $current_user);
@@ -374,6 +383,10 @@ sub takeaction {
       }
       if ($rt::ui::web::FORM{'do_req_queue'}){
 	($trans, $StatusMsg)=&rt::change_queue ($serial_num, $rt::ui::web::FORM{'queue'}, $current_user);
+	if( $trans && ! &rt::can_display_queue($rt::ui::web::FORM{'queue'},$current_user) )
+	  {
+	    $rt::ui::web::FORM{'display'} = 'Queue';
+	  }
       }
       
       
@@ -749,7 +762,8 @@ $time
 </TD>
 <TD ALIGN=\"RIGHT\" VALIGN=\"CENTER\"><FONT color=\"\#ffffff\">&nbsp;";
 
-
+    if ($rt::can_manipulate_request($seri al_num, $current_user)) {
+    
 
     if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'comments') or
@@ -761,7 +775,8 @@ $time
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
       print &fdro_murl("display=SetReply","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Reply]\">");
     }
-
+  }
+    
     #all of these things can be done from the top/bottom menus. we don't 
     # need em here
     if (0) {
@@ -807,6 +822,8 @@ print "</FONT></TD>
 
 sub do_bar {
   my $serial_num = shift;
+  my $temp;
+  
       print "
      <DIV ALIGN=\"CENTER\"> ".
 &fdro_murl("display=SetComment","history","Comment"). " | " .
@@ -834,7 +851,7 @@ sub do_bar {
 
 
 sub display_summary {
-  my ($in_serial_num)=@_;
+  my $in_serial_num) = shift;
   my ($bg_color, $fg_color);
   
   
