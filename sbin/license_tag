@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 
-# {{{ BEGIN BPS TAGGED BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
 #  
@@ -45,7 +45,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# }}} END BPS TAGGED BLOCK
+# END BPS TAGGED BLOCK }}}
 my $LICENSE  = <<'EOL';
 
 COPYRIGHT:
@@ -116,16 +116,16 @@ sub tag_mason {
 
 
         print "$pm - ";
-        if ($file =~ /^%# {{{ BEGIN BPS TAGGED BLOCK/ms) {
+        if ($file =~ /^%# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
-             $file =~ s/^%# {{{ BEGIN BPS TAGGED BLOCK(.*?)%# }}} END BPS TAGGED BLOCK/%# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic%# }}} END BPS TAGGED BLOCK/ms;
+             $file =~ s/^%# BEGIN BPS TAGGED BLOCK {{{(.*?)%# END BPS TAGGED BLOCK }}}/%# BEGIN BPS TAGGED BLOCK {{{\n$pmlic%# END BPS TAGGED BLOCK }}}/ms;
              
 
         } else {
                 print "no license section";
-             $file ="%# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic%# }}} END BPS TAGGED BLOCK\n". $file;
+             $file ="%# BEGIN BPS TAGGED BLOCK {{{\n$pmlic%# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/%# }}} END BPS TAGGED BLOCK(\n+)/%# }}} END BPS TAGGED BLOCK\n/mg;
+        $file =~ s/%# END BPS TAGGED BLOCK }}}(\n+)/%# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
         
         
@@ -148,16 +148,16 @@ sub tag_makefile {
 
 
         print "$pm - ";
-        if ($file =~ /^# {{{ BEGIN BPS TAGGED BLOCK/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
-             $file =~ s/^# {{{ BEGIN BPS TAGGED BLOCK(.*?)# }}} END BPS TAGGED BLOCK/# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic# }}} END BPS TAGGED BLOCK/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
              
 
         } else {
                 print "no license section";
-             $file ="# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic# }}} END BPS TAGGED BLOCK\n". $file;
+             $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
         
         
@@ -181,16 +181,16 @@ sub tag_pm {
 
 
         print "$pm - ";
-        if ($file =~ /^# {{{ BEGIN BPS TAGGED BLOCK/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
-             $file =~ s/^# {{{ BEGIN BPS TAGGED BLOCK(.*?)# }}} END BPS TAGGED BLOCK/# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic# }}} END BPS TAGGED BLOCK/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
              
 
         } else {
                 print "no license section";
-             $file ="# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic# }}} END BPS TAGGED BLOCK\n". $file;
+             $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
         
         
@@ -213,21 +213,21 @@ sub tag_script {
         $pmlic =~ s/^/# /msg;
 
         print "$pm - ";
-        if ($file =~ /^# {{{ BEGIN BPS TAGGED BLOCK/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
-             $file =~ s/^# {{{ BEGIN BPS TAGGED BLOCK(.*?)# }}} END BPS TAGGED BLOCK/# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic# }}} END BPS TAGGED BLOCK/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
              
 
         } else {
                 print "no license section";
                 if ($file =~ /^(#!.*?)\n/) {
 
-            my  $lic ="# {{{ BEGIN BPS TAGGED BLOCK\n$pmlic# }}} END BPS TAGGED BLOCK\n";
+            my  $lic ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}\n";
                 $file =~ s/^(#!.*?)\n/$1\n$lic/; 
 
                 } 
         }
-        $file =~ s/# }}} END BPS TAGGED BLOCK(\n+)/# }}} END BPS TAGGED BLOCK\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
         
 

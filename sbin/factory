@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# {{{ BEGIN BPS TAGGED BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
 #  
@@ -43,7 +43,7 @@
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# }}} END BPS TAGGED BLOCK
+# END BPS TAGGED BLOCK }}}
 use DBI;
 
 my $database  = shift;
@@ -59,7 +59,7 @@ my $password = '';
 
 
 my $LicenseBlock = << '.';
-# {{{ BEGIN BPS TAGGED BLOCK
+# BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
 #  
@@ -103,7 +103,7 @@ my $LicenseBlock = << '.';
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
 # 
-# }}} END BPS TAGGED BLOCK
+# END BPS TAGGED BLOCK }}}
 .
 
 my $Attribution = << '.';
