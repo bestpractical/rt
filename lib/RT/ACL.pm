@@ -1,4 +1,5 @@
 package RT::Articles;
+use DBIx::EasySearch;
 @ISA= qw(DBIx::EasySearch);
 
 

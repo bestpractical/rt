@@ -1,4 +1,7 @@
+#$Header$
+
 package RT::Queue;
+use RT::Record;
 @ISA= qw(RT::Record);
 
 sub new {

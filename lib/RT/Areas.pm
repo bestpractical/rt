@@ -1,4 +1,6 @@
+#$Header$
 package RT::Areas;
+use DBIx::EasySearch;
 @ISA= qw(DBIx::EasySearch);
 
 

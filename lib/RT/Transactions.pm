@@ -1,4 +1,8 @@
+#$Header$
 package RT::Transactions;
+
+use DBIx::EasySearch;
+
 @ISA= qw(DBIx::EasySearch);
 
 

@@ -4,22 +4,17 @@ package rt::ui::cli::admin;
 
 
 sub activate {
+  my $Handle = shift;
   my ($current_user, $tmp);
 
   require RT::User;  
   ($current_user,$tmp)=getpwuid($<);
-  $CurrentUser = new RT::User($current_user);
+  $CurrentUser = new RT::User($current_user,$Handle);
   $CurrentUser->load($current_user);
   
+  print "Your email address is",$CurrentUser->EmailAddress,"\n";
   
-  ($value, $message)=&rt::initialize($CurrentUser->UserId);
-  if ($value == 0) {
-    print "$message\n";
-    exit(0);
-  } 
-  else {
-    print "$message\n";
-  }
+
   &parse_args;
 }
 
@@ -109,7 +104,7 @@ sub parse_args {
 		    print "Usage: user -getpwent <password> <administrator> [<users>...]\n";
 		    exit(0);
 		}
-		if (defined($ARGV[i+1])) {
+		if (defined($ARGV[$i++])) {
 		   while (my $login=$ARGV[++$i]) {
 		      ($login, $domain) = split('@', $login);
                       $domain || ($domain = $host);

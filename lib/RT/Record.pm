@@ -1,6 +1,7 @@
 #$Header$
 
 package RT::Record;
+use DBIx::Record;
 @ISA= qw(DBIx::Record);
 
 sub new {
@@ -39,7 +40,7 @@ sub _set_and_return {
   #if the user is trying to display only {
   if (@_ == undef) {
     
-    if ($self->Display_Permitted) {
+    if ($self->DisplayPermitted) {
       #if the user doesn't have display permission, return an error
       $self->SUPER::_set_and_return($field);
     }
@@ -49,7 +50,7 @@ sub _set_and_return {
   }
   #if the user is trying to modify the record
   else {
-    if ($self->Modify_Permitted) {
+    if ($self->ModifyPermitted) {
       #instantiate a transaction 
       #record what's being done in the transaction
  

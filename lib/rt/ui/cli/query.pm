@@ -3,114 +3,123 @@
 # This software is redistributable under the terms of the GNU GPL
 #
 
-  {
-    package rt::ui::cli::query;
-    
-    sub activate {
-      
-      ($current_user,$tmp)=getpwuid($<);
-      $CurrentUser = new RT::User($current_user);
-      $CurrentUser->load($current_user);
-      
-      &parse_args;
-    }
-    
-    
-    $criteria=&build_query();
-    $count=&rt::get_queue($criteria,$CurrentUser->UserId);
-    if (!$format_string) {
-      $format_string = "%n%p%o%g%l%t%r%s";
-    }
-    
-    &print_header($format_string);
-    
-    while ($Request = $Query->Next) {
-      #do this because we're redefining the format string internally each run.
-      my ($format_string) = $format_string;
-      
-      while ($format_string) {
-	($field, $format_string) = split (/\%/, $format_string,2);  
-	
-	if  ($field =~ /^n(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=6;}
-	  printf "%-${length}.${length}s ", $Request->Id;
-	}
-	elsif ($field =~ /^d(\d*)$/){
-	  my $length = $1;
-	  if ($Request->DateDue > 0) {
-	    my $date = localtime($Request->DateDue);
-	    $date =~ s/\d*:\d*:\d*//;	
-	    if ($length < 1) {$length=5;}
-            printf "%-${length}.${length}s ", $date;
-	  }
-	  else {
-	    printf  "%-${length}.${length}s ", "none";
-	  }
-        }
-	elsif ($field =~ /^p(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=2;}
-	  printf "%-${length}.${length}d ", $Request->Priority;
-	}
-	elsif ($field =~ /^r(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=9;}
-	  printf "%-${length}.${length}s ", $Request->Requestors;
-	}
-	elsif ($field =~ /^o(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=8;}
-	  printf "%-${length}.${length}s ", $Request->Owner;
-	}
-	
-	elsif ($field =~ /^s(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=30;}
-	  printf "%-${length}.${length}s ", $Request->Subject;
-	}
-	elsif ($field =~ /^t(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=5;}
-	  printf "%-${length}.${length}s ", $Request->Status;
-	}
-	elsif ($field =~ /^q(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=8;}
-	  printf "%-${length}.${length}s ", $Request->Queue->Id;
-	}
-	elsif ($field =~ /^a(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=7;}
-	  printf "%-${length}.${length}s ", $Request->Area;
-	}
-	elsif ($field =~ /^g(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=6;}
-	  printf "%-${length}.${length}s ", $Request->Age;
-	}
-	elsif ($field =~ /^l(\d*)$/){ 
-	  $length = $1;
-	  if ($length < 1) {$length=6;}
-	  printf "%-${length}.${length}s ", $Request->SinceTold;
-	}
-	elsif ($field =~ /^w(.)$/) {
-	  if ($1 eq 't') { print "\t";}
-	  if ($1 eq 's') { print " ";}
-	  if ($1 eq 'n') {print "\n";}
-	}
-	else {
-	  print $field;
-	}
-      }
-      print "\n";
-    }
-  }
-  sub build_query {
+ package rt::ui::cli::query;
+ 
+ sub activate {
+   
+   use RT::User;
+   print STDERR "foo\n";
+   ($current_user,$tmp)=getpwuid($<);
+   
+   $CurrentUser = new RT::User($current_user);
+   $CurrentUser->load($current_user);
+   
+   print STDERR "bar\n";
+   print STDERR "You are coming in as ".$CurrentUser->UserId."\n";
+   
+   &parse_args;
+ }
+ 
+ 
+ my $Requests=&build_query();
+
+ $count=&rt::get_queue($criteria,$CurrentUser->UserId);
+ if (!$format_string) {
+   $format_string = "%n%p%o%g%l%t%r%s";
+ }
+ 
+ &print_header($format_string);
+ 
+ while (my $Request = $Query->Next) {
+   #do this because we're redefining the format string internally each run.
+   my ($format_string) = $format_string;
+   
+   while ($format_string) {
+     ($field, $format_string) = split (/\%/, $format_string,2);  
+     
+     if  ($field =~ /^n(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=6;}
+       printf "%-${length}.${length}s ", $Request->Id;
+     }
+     elsif ($field =~ /^d(\d*)$/){
+       my $length = $1;
+       if ($Request->DateDue > 0) {
+	 my $date = localtime($Request->DateDue);
+	 $date =~ s/\d*:\d*:\d*//;	
+	 if (!$length) {$length=5;}
+	 printf "%-${length}.${length}s ", $date;
+       }
+       else {
+	 printf  "%-${length}.${length}s ", "none";
+       }
+     }
+     elsif ($field =~ /^p(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=2;}
+       printf "%-${length}.${length}d ", $Request->Priority;
+     }
+     elsif ($field =~ /^r(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=9;}
+       printf "%-${length}.${length}s ", $Request->Requestors;
+     }
+     elsif ($field =~ /^o(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=8;}
+       printf "%-${length}.${length}s ", $Request->Owner;
+     }
+     
+     elsif ($field =~ /^s(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=30;}
+       printf "%-${length}.${length}s ", $Request->Subject;
+     }
+     elsif ($field =~ /^t(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=5;}
+       printf "%-${length}.${length}s ", $Request->Status;
+     }
+     elsif ($field =~ /^q(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=8;}
+       printf "%-${length}.${length}s ", $Request->Queue->Id;
+     }
+     elsif ($field =~ /^a(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=7;}
+       printf "%-${length}.${length}s ", $Request->Area;
+     }
+     elsif ($field =~ /^g(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=6;}
+       printf "%-${length}.${length}s ", $Request->Age;
+     }
+     elsif ($field =~ /^l(\d*)$/){ 
+       $length = $1;
+       if (!$length) {$length=6;}
+       printf "%-${length}.${length}s ", $Request->SinceTold;
+     }
+     elsif ($field =~ /^w(.)$/) {
+       if ($1 eq 't') { print "\t";}
+       if ($1 eq 's') { print " ";}
+       if ($1 eq 'n') {print "\n";}
+     }
+     else {
+       print $field;
+     }
+   }
+   print "\n";
+ }
+ 
+ sub build_query {
     local ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
+    if (!$ARGV) {
+      return();
+    }
     if (($ARGV[0] eq '-help')  or ($ARGV[0] eq '--help') or ($ARGV[0] eq '-h')) {
       &usage();
-      exit(0);
+#      exit(0);
     }
     
     my $Requests = RT::Tickets->new($CurrentUser);
@@ -216,7 +225,7 @@
       }
     }    
     
-
+  
     #DEAL WITH DEFAULTS
 
     if (!$query_string) {
@@ -232,7 +241,7 @@
       $query_string .= " DESC";
     }
     
-    return ($query_string);
+    return ($Requests);
   }
   sub usage {
     print <<EOFORM;
@@ -287,92 +296,94 @@ EOFORM
 
 
 
-}
-
+  }
+  
 
 sub print_header {
     my($format_string) =@_;
-    my ($field, $length,$total_length);
+    my ($field, $length);
+
+    my $total_length = 0;
     while ($format_string) {
 	($field, $format_string) = split (/%/, $format_string,2);  
 	
 	if ($field =~ /^n(\d*)$/){ 
 	    $length = $1;
-		if ($length < 1) {$length=6;}
+	    if (!$length) {$length=6;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Num";
 	}
         elsif ($field =~ /^d(\d*)$/){
             $length = $1;
-                if ($length < 1) {$length=5;}
+                if (!$length) {$length=5;}
             $total_length = $total_length + $length;
             printf "%-${length}.${length}s ", "Due";
         }
 	elsif ($field =~ /^p(\d*)$/){ 
 	    $length = $1;
-		if ($length < 1) {$length=2;}
+		if (!$length) {$length=2;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "!";
 	}
 	elsif ($field =~ /^r(\d*)$/){ 
 	    $length = $1;
-		if ($length < 1) {$length=9;}
+		if (!$length) {$length=9;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Requestor";
 	}
 	elsif ($field =~ /^o(\d*)$/){ 
 	    $length = $1;
-		if ($length < 1) {$length=8;}
+		if (!$length) {$length=8;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Owner";
 	}
 
 	elsif ($field =~ /^s(\d*)$/){ 
 	    $length = $1;
-		if ($length < 1) {$length=20;}
+		if (!$length) {$length=20;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Subject";
 	}
 	elsif ($field =~ /^t(\d*)$/){ 
 	    $length = $1;
-		if ($length < 1) {$length=5;}
+		if (!$length) {$length=5;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "State";
 	}
 
 	elsif ($field =~ /^q(\d*)$/){ 
 	    $length = $1;
-		if ($length < 1) {$length=8;}
+		if (!$length) {$length=8;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Queue";
 	}
 	elsif ($field =~ /^a(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=7;}
-	    $total_length = $total_length + $length;
-	    printf "%-${length}.${length}s ", "Area";
+	  $length = $1;
+	  if (!$length) {$length=7;}
+	  $total_length = $total_length + $length;
+	  printf "%-${length}.${length}s ", "Area";
 	}
 	elsif ($field =~ /^g(\d*)$/){ 
-	    $length = $1;
-		if ($length < 1) {$length=6;}
+	  $length = $1;
+	  if (!$length) {$length=6;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Age";
 	}
 	elsif ($field =~ /^l(\d*)$/){ 
 	    $length = $1;
-		if ($length < 1) {$length=6;}
+		if (!$length) {$length=6;}
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Told";
 	}
 	elsif ($field =~ /^w(.)$/) {
 	  if ($1 eq 't') { print "\t";}
 	    if ($1 eq 's') { print " ";}
-	    if ($1 eq 'n') {print "\n";}
+	  if ($1 eq 'n') {print "\n";}
 	}
 	else {
-	    print $field;
+	  print $field;
 	}
-
+	
       }
     print "\n";
     for ($temp=0;$temp<$total_length;$temp++){
@@ -380,5 +391,5 @@ sub print_header {
     }
     print "\n";
   }
-}
+
 1;

@@ -5,17 +5,21 @@
 
 
 package RT::User;
-
+use RT::Record;
 @ISA= qw(RT::Record);
 
 sub new {
+  print STDERR "entering new User\n";
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
   $self->{'table'} = "users";
   $self->{'user'} = shift;
-  return $self;
+  $self->{'DBIxHandle'} = shift;
+  print STDERR "Calling Super::NEW\n";
+#  $self->SUPER::new($proto, @_);
+  return($self);
 }
 
 sub create {
@@ -99,11 +103,12 @@ sub load {
   my $self = shift;
   my $identifier = shift;
   #TODO i'm blanking on the is an int function
-  if ($identifier == ($identifier+0)) {
+  if ($identifier eq int($identifier)) {
     $self->SUPER::load($identifier);
   }
   else {
-    $self->load_by_col("UserId",$identifier);
+    print STDERR "loading UserId = $identifier \n";
+    $self->LoadByCol("UserId",$identifier);
   }
 }
 
@@ -162,7 +167,17 @@ sub IsAdministrator {
 };
 
 
+sub DisplayPermitted {
+  my $self = shift;
+  #TODO: Implement
+  return(1);
+}
 
- 
+sub ModifyPermitted {
+  my $self = shift;
+  #TODO: Implement
+  return(1);
+}
+
 1;
  

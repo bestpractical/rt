@@ -9,7 +9,6 @@
 
 package RT;
 
-print STDERR "config.pm required\n";
 #Where you keep templates for each of your queues
 $template_dir="!!RT_TEMPLATE_PATH!!";
 

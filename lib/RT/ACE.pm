@@ -1,6 +1,7 @@
 #$Header$
 
 package RT::ACE;
+use RT::Record;
 @ISA= qw(RT::Record);
 
 sub new {

@@ -7,8 +7,6 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'table'} = "each_req";
-  $self->{'user'} = shift;
   return $self;
 }
 

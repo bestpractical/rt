@@ -1,4 +1,5 @@
 package RT::Tickets;
+use DBIx::EasySearch;
 @ISA= qw(DBIx::EasySearch);
 
 

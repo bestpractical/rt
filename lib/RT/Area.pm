@@ -5,7 +5,9 @@
 # This code is not used yet.
 #
 package RT::Area;
+use RT::Record;
 @ISA= qw(RT::Record);
+
 
 sub new {
   my $proto = shift;

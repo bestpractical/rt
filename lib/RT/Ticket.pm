@@ -5,6 +5,7 @@
 
 
 package RT::Ticket;
+use RT::Record;
 @ISA= qw(RT::Record);
 
 sub new {

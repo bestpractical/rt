@@ -3,6 +3,7 @@
 # This software is redistributable under the terms of the GNU GPL
 
 package RT::Users;
+use DBIx::EasySearch;
 @ISA= qw(DBIx::EasySearch);
 
 

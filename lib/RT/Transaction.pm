@@ -4,6 +4,7 @@
 #
 #
 package RT::Transaction;
+use RT::Record;
 @ISA= qw(RT::Record);
 
 sub new {
