@@ -54,6 +54,7 @@ my ( @id,
      @limit_hasmember,
      @limit_refersto,
      @limit_referredtoby,
+     @limit_keyword,
      
      @limit_due,
      @limit_starts,
@@ -113,6 +114,7 @@ my @args =("id=s" => \@id,
 	   "limit-created=s" => \@limit_created,
 	   "limit-due=s" =>	\@limit_due,
  	   "limit-last-updated=s" => \@limit_lastupdated,
+	   "limit-keyword=s" => \@limit_keyword,
 
 	   "limit-member-of=s" => \@limit_memberof,
 	   "limit-has-member=s" => \@limit_hasmember,
@@ -190,6 +192,7 @@ a speciifc ticket.
 	  --limit-requestor=[!]<userid>|<email>
 	  --limit-subject=[!]<text>
 	  --limit-body=[!]<text>
+	  --limit-keyword=[!]<select>/<keyword>
         
        Links
           --limit-member-of=<ticketid>
@@ -383,6 +386,7 @@ else {
     
     # {{{ Limit our search
     my $value;			#to use when iterating through restrictions
+    my $queue_id;		#to use when limiting by keyword
     
     # {{{ limit on id
 
@@ -442,8 +446,40 @@ else {
 	    $RT::Logger->debug ("Limiting queue to $op ".$queue_obj->Name);
 	    $Tickets->LimitQueue(VALUE => $queue_obj->Name,
 				 OPERATOR => $op);
+	    $queue_id=$queue_obj->id;
 	}	
     }	
+
+    # {{{ limit on keyword
+    foreach $value (@limit_keyword) {
+	if ($value =~ /^(\W?)(.*?)\/(.*)$/i) {
+	    my $op = $1;
+	    my $select = $2;
+	    my $keyword = $3;
+
+	    $op = ParseBooleanOp($op);
+
+	    # load the keyword select
+	    my $keyselect = RT::KeywordSelect->new($RT::SystemUser);
+	    unless ($keyselect->LoadByName(Name=>$select, Queue=>$queue_id)) {
+		$RT::Logger->debug("KeywordSelect '$select' not found");
+		print STDERR "KeywordSelect '$select' not fount\n";
+		exit(-1);
+	    }
+
+	    # load the keyword
+	    my $k = RT::Keyword->new($RT::SystemUser);
+	    unless ($k->LoadByNameAndParentId($keyword, $keyselect->Keyword)) {
+		$RT::Logger->debug("Keyword '$keyword' not found");
+		print STDERR "Keyword '$keyword' not found\n";
+		exit(-1);
+	    }
+	    $Tickets->LimitKeyword(OPERATOR => $op,
+	                           KEYWORDSELECT => $keyselect->id,
+				   KEYWORD => $k->id);
+	    $RT::Logger->debug ("Limiting keyword to $op ".$k->Path);
+	}
+    }
     # }}}
     # {{{ limit on owner
     foreach $value (@limit_owner) {
