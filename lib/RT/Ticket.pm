@@ -131,9 +131,9 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   id 
   Queue  - Either a Queue object or a Queue Name
-  Requestor -  A list of RT::User objects, email addresses or RT user Names
-  Cc  - A list of RT::User objects, email addresses or Names
-  AdminCc  - A list of RT::User objects, email addresses or Names
+  Requestor -  A reference to a list of RT::User objects, email addresses or RT user Names
+  Cc  - A reference to a list of RT::User objects, email addresses or Names
+  AdminCc  - A reference to a  list of RT::User objects, email addresses or Names
   
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
@@ -142,6 +142,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   FinalPriority -- an integer from 0 to 99
   Status -- a textual tag. one of \'new\', \'open\' \'stalled\' \'resolved\' for now
   TimeWorked -- an integer
+  TimeLeft -- an integer
+  Starts -- an ISO date describing the ticket\'s start date and time in GMT
   Due -- an ISO date describing the ticket\'s due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
 
@@ -171,6 +173,7 @@ sub Create {
 		TimeWorked => "0",
 		TimeLeft => 0,
 		Due => undef,
+		Starts => undef,
 		MIMEObj => undef,
 		@_);
 
@@ -226,6 +229,13 @@ sub Create {
 	$due->AddDays($QueueObj->DefaultDueIn);
     }	
     
+    my $starts = new RT::Date($self->CurrentUser);
+    if (defined $args{'Starts'}) {
+	$starts->Set (Format => 'ISO',
+		   Value => $args{'Starts'});
+    }
+
+	
     # {{{ Deal with setting the owner
     
     if (ref($args{'Owner'}) eq 'RT::User') {
@@ -292,6 +302,7 @@ sub Create {
 				  TimeWorked => $args{'TimeWorked'},
 				  TimeLeft => $args{'TimeLeft'},
 				  Type => $args{'Type'},	
+				  Starts => $starts->ISO,
 				  Due => $due->ISO
 				 );
     #Set the ticket's effective ID now that we've created it.
@@ -330,7 +341,7 @@ sub Create {
 
 
     foreach my $key (keys %args) {
-	
+
 	next unless ($key =~ /^KeywordSelect-(.*)$/);
 	
 	my $ks = $1;
@@ -1372,6 +1383,7 @@ sub DueAsString {
 =head2 GraceTimeAsString
 
 Return the time until this ticket is due as a string
+
 =cut
 
 sub GraceTimeAsString {

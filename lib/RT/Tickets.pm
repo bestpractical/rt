@@ -1081,10 +1081,24 @@ sub _ProcessRestrictions {
 			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }
+	    elsif ($restriction->{'OPERATOR'} eq '!=') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
+			      ENTRYAGGREGATOR => 'AND',
+			      OPERATOR => '!=',
+			      VALUE => $restriction->{'VALUE'},
+			    );
+	    }
 	    elsif ($restriction->{'OPERATOR'} eq 'LIKE') {
 		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
 			      OPERATOR => 'LIKE',
+			      VALUE => $restriction->{'VALUE'},
+			    );
+	    }
+	    elsif ($restriction->{'OPERATOR'} eq 'NOT LIKE') {
+		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
+			      ENTRYAGGREGATOR => 'AND',
+			      OPERATOR => 'NOT LIKE',
 			      VALUE => $restriction->{'VALUE'},
 			    );
 	    }

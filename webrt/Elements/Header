@@ -2,6 +2,7 @@
 <HTML>
 <HEAD>
 <TITLE><%$Title%></TITLE>
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 
 %# TODO this gets called from error. but I have no idea what it might
 %# be used for. can we whack it?  -jesse

@@ -5,8 +5,8 @@
 <& /Elements/Tabs, current_toptab => "Ticket/Create.html" &>
 <FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
+<A NAME="top">
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket"&>
-
 <TABLE>
 <TR><TD>Queue</TD>
 <TD><% $QueueObj->Name %>
@@ -40,7 +40,14 @@ Cc:
  <INPUT NAME="Cc" SIZE=40>
 </TD>
 </TR>
-
+<TR>
+<TD>
+Admin Cc:
+</TD>
+<TD COLSPAN=5>
+ <INPUT NAME="AdminCc" SIZE=40>
+</TD>
+</TR>
 <TR>
 <TD>
 Subject:
@@ -49,32 +56,6 @@ Subject:
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
 </TD>
 </TR>
-%# I'm diking these out until we get things a bit more settled. (post 2.0)
-%  if (0) {
-<TR>
-<TD>
-Relationships
-</TD>
-<TD COLSPAN=5>
-<TABLE>
-<TR>
-<TD>
-Depended on by:<BR><input size=5 name="DependsOn" value="<% $DependsOn %>">
-</TD>
-<TD>
-Depends on:
-<BR>
-<input size=5 name="DependedOnBy" value="<% $DependedOnBy %>">
-</TD>
-<TD>Subticket of:<BR>
-<input size=5 name="MemberOf" value="<% $MemberOf %>">
-</TD>
-</TR>
-</TABLE>
-
-</TD>
-</TR>
-% }
 <TR>
 <TD>
 Attach file:
@@ -97,14 +78,108 @@ Describe the issue below:<br>
 </TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
+<DIV ALIGN="RIGHT">[<A HREF="#detail">Show details</a>]</DIV>
 <& /Elements/Submit, Label => "Create ticket"&>
 
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
 
+<A NAME="detail">
+<DIV ALIGN="RIGHT">
+[<A HREF="#top">Hide details</a>]
+</DIV>
+<TABLE WIDTH="100%" BORDER=0>
+<TR>
+<TD WIDTH="50%" VALIGN=TOP>
+
+	  <& /Elements/TitleBoxStart, title => 'The Basics', 
+		title_class=> 'inverse',  
+		color => "#993333" &>
+<TABLE BORDER=0>
+<TR><TD ALIGN=RIGHT>Priority:</TD><TD><input size=3 name="InitialPriority" value="<%$QueueObj->InitialPriority%>"></TD></TR>
+<TR><TD ALIGN=RIGHT>Final Priority:</TD><TD><input size=3 name="FinalPriority" value="<%$QueueObj->FinalPriority%>"></TD></TR>
+<TR><TD ALIGN=RIGHT>Time Worked:</TD><TD><input size=3 name="TimeWorked"></TD></TR>
+<TR><TD ALIGN=RIGHT>Time Left:</TD><TD><input size=3 name="TimeLeft"></TD></TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<BR>
+<BR>
+
+
+ <& /Elements/TitleBoxStart, 
+		title_class=> 'inverse',  
+		title => "Keyword Selections", color => "#993300"
+  &>
+<TABLE BORDER=0>
+% while ( my $KeywordSelect = $KeywordSelects->Next ) {
+%   my $Descendents = $KeywordSelect->KeywordObj->Descendents;
+     <TR><TD ALIGN=RIGHT>
+	<% $KeywordSelect->Name %></TD><TD>
+	  <INPUT TYPE="hidden" NAME="KeywordSelectMagic<% $KeywordSelect->id %>" VALUE="1">
+	    <SELECT NAME="KeywordSelect-<% $KeywordSelect->id %>"
+	      <% $KeywordSelect->Single ? "" : " MULTIPLE " %> SIZE=5>
+%#
+%#  All of this cruft is so we have a 'no keyword' selector for single
+%#  keywords that's only selected when there's no value.
+%
+% foreach my $kid ( keys %{$Descendents} ) {
+	      <OPTION VALUE="<% $kid %>"><% $Descendents->{$kid} %></OPTION>
+%   }
+%   if ( $KeywordSelect->Single) {
+<OPTION VALUE="" SELECTED>(empty)</OPTION>
+% }
+	    </SELECT>
+      </TD></TR>
+% }
+  
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+
+</TD>
+
+<TD VALIGN="TOP">
+<& /Elements/TitleBoxStart, title => "Dates",
+		title_class=> 'inverse',  
+		 color => "#663366" &>
+
+<TABLE BORDER=0>
+<TR><TD ALIGN=RIGHT>Starts:</TD><TD><input size=10 name="Starts"></TD></TR>
+<TR><TD ALIGN=RIGHT>Due:</TD><TD><input size=10 name="Due"></TD></TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<BR>
+<& /Elements/TitleBoxStart, title => 'Relationships', 
+	title_class=> 'inverse',  
+	titleright => '', color=> "#336633" &>
+
+<i>(Enter ticket ids or URLs, seperated with spaces)</i>
+<TABLE BORDER=0>
+<TR><TD ALIGN=RIGHT>Depends on</TD><TD><input size=10 name="new-DependsOn"></TD></TR>
+<TR><TD ALIGN=RIGHT>Depended on by</TD><TD><input size=10 name="DependsOn-new"></TD></TR>
+<TR><TD ALIGN=RIGHT>Parents</TD><TD><input size=10 name="new-MemberOf"></TD></TR>
+<TR><TD ALIGN=RIGHT>Children</TD><TD><input size=10 name="MemberOf-new"></TD></TR>
+<TR><TD ALIGN=RIGHT>Refers to</TD><TD><input size=10 name="new-RefersTo"></TD></TR>
+<TR><TD ALIGN=RIGHT>Referred to by</TD><TD><input size=10 name="RefersTo-new"></TD></TR>
+
+
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<BR>
+
+<& /Elements/Submit, Label => "Create ticket"&>
+</TD>
+</TR>
+</TABLE>
 </FORM>
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort("Queue could not be loaded.");
+my $KeywordSelects = $QueueObj->KeywordSelects;
+
 </%INIT>
 
 <%ARGS>

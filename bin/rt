@@ -168,7 +168,7 @@ if ($help) {
 
 print <<EOUSAGE;
 
-Limt the set of records returned:
+Limit the set of records returned:
 
 --id=[first][-][last]
   Specify a single ticket, a range, or to start with (n-) or end with (-n)

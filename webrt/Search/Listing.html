@@ -62,7 +62,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <& /Elements/TitleBoxStart, title => 'Search Criteria'&>
 
 <A HREF="<% $RT::WebPath%>/Search/Listing.html?ClearRestrictions=1">New search</a><br>
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">Bookmark this search</a>
+<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">Bookmarkable URL for this search</a>
 <BR>
 <BR>
 %my %restrictions=$session{'tickets'}->DescribeRestrictions();

@@ -49,14 +49,14 @@ $DatabasePort="!!DB_PORT!!";
 
 
 #The name of the database user (inside the database) 
-$DatabaseUser="!!DB_RT_USER!!";
+$DatabaseUser='!!DB_RT_USER!!';
 
 # Password the DatabaseUser should use to access the database
-$DatabasePassword="!!DB_RT_PASS!!";
+$DatabasePassword='!!DB_RT_PASS!!';
 
 
 # The name of the RT's database on your database server
-$DatabaseName="!!DB_DATABASE!!";
+$DatabaseName='!!DB_DATABASE!!';
 
 # }}}
 

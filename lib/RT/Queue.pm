@@ -68,12 +68,12 @@ If you pass the ACL check, it creates the queue and returns its queue id.
 sub Create  {
     my $self = shift;
     my %args = ( Name => undef,
-		 CorrespondAddress => undef,
-		 Description => undef,
-		 CommentAddress => undef,
-		 InitialPriority => undef,
-		 FinalPriority =>  undef,
-		 DefaultDueIn =>  undef,
+		 CorrespondAddress => '',
+		 Description => '',
+		 CommentAddress => '',
+		 InitialPriority => "0",
+		 FinalPriority =>  "0",
+		 DefaultDueIn =>  "0",
 		 @_); 
     
     unless ($self->CurrentUser->HasSystemRight('AdminQueue')) {    #Check them ACLs

@@ -10,12 +10,17 @@
 
 
 <BR>
-<& /Ticket/Elements/ShowHistory , Ticket => $Ticket, Collapsed => 0, ShowHeaders => $ARGS{'ShowHeaders'} &> 
+<& /Ticket/Elements/ShowHistory , 
+      Ticket => $Ticket, 
+      Collapsed => $ARGS{'Collapsed'}, 
+      ShowHeaders => $ARGS{'ShowHeaders'} &> 
 
-
+  
 <%ARGS>
 $id => undef
 $Create => undef
+$ShowHeaders => undef
+$Collapsed => undef
 </%ARGS>
 
 <%INIT>
@@ -40,7 +45,13 @@ if ($ARGS{'id'} eq 'new') {
     unless ($Queue->CurrentUserHasRight('CreateTicket')) {
 	Abort('You have no permission to create tickets in that queue.');
     }
+   
+    my $due = new RT::Date($session{'CurrentUser'});
+    $due->Set(value => $ARGS{'Due'});
+    my $starts = new RT::Date($session{'CurrentUser'});
+    $starts->Set(value => $ARGS{'Starts'});
     
+ 
     my @Requestors = split(/,/,$ARGS{'Requestors'});
     my @Cc = split(/,/,$ARGS{'Cc'});
     my @AdminCc = split(/,/,$ARGS{'AdminCc'});
@@ -52,20 +63,48 @@ if ($ARGS{'id'} eq 'new') {
 				  AttachmentFieldName => 'Attach');
  
 				  
-    #TODO in Create_Details.html: priorities and due-date      
-    my ($id, $Trans, $ErrMsg)= $Ticket->Create(Queue=>$ARGS{Queue},
-					       Owner=>$ARGS{ValueOfOwner},
-					       Requestor=> \@Requestors,
-					       Cc => \@Cc,
-					       AdminCc => \@AdminCc,
-					       Subject=>$ARGS{Subject},
-					       Status=>$ARGS{Status},
-					       MIMEObj => $MIMEObj	  
-					      );         
+    my %create_args = ( 
+		       Queue=>$ARGS{Queue},
+		       Owner=>$ARGS{ValueOfOwner},
+		       InitialPriority=> $ARGS{InitialPriority},
+		       FinalPriority=> $ARGS{FinalPriority},
+		       TimeLeft => $ARGS{TimeLeft},
+		       TimeWorked => $ARGS{TimeWorked},
+		       Requestor=> \@Requestors,
+		       Cc => \@Cc,
+		       AdminCc => \@AdminCc,
+		       Subject=>$ARGS{Subject},
+		       Status=>$ARGS{Status},
+		       Due => $due->ISO,
+		       Starts => $starts->ISO,
+		       MIMEObj => $MIMEObj	  
+		      );         
+
+    
+    # we need to get any KeywordSelect-<integer> fields into %create_args..
+    grep { $_ =~ /^KeywordSelect-/ && {$create_args{$_} = $ARGS{$_}}} %ARGS;
+
+    my ($id, $Trans, $ErrMsg)= $Ticket->Create(%create_args);
     unless ($id && $Trans) {
 	Abort($ErrMsg);
     }
-
+    my @linktypes = qw( DependsOn MemberOf RefersTo );
+    
+    foreach my $linktype (@linktypes) {
+      foreach my $luri (split (/ /,$ARGS{"new-$linktype"})) {
+	$luri =~ s/\s*$//; # Strip trailing whitespace
+	my ($val, $msg) = $Ticket->AddLink( Target => $luri,
+					    Type => $linktype);
+	push @Actions, $msg;
+      }
+      
+      foreach my $luri (split (/ /,$ARGS{"$linktype-new"})) {
+	my ($val, $msg) = $Ticket->AddLink( Base => $luri,
+					    Type => $linktype);
+	
+	push @Actions, $msg;
+      }
+    }
     # don't try to change queue to the current queue
     delete $ARGS{'Queue'};
 
@@ -81,7 +120,6 @@ else {
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 	Abort("No permission to view ticket");
     }
-}
 
 
 if (defined $ARGS{'Action'}) {
@@ -98,7 +136,7 @@ ProcessUpdateMessage(ARGSRef=>\%ARGS, Actions=>\@Actions, TicketObj=>$Ticket);
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 
 push (@Actions, @BasicActions);
-
+}
 </%INIT>
 
 
