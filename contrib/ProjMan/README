@@ -19,9 +19,17 @@ ProjMan is Copyright (c) 2000 Tobias Brox <tobix@fsck.com>
     Mass Ave, Cambridge, MA 02139, USA.
 
 
-I'm slowly starting to hack a Project Management system built at the
-top of RT2.  Those hacks are actually beeing used locally, but they
-are not (yet) wrapped or released for public usage.
+I'm slowly starting to hack a Project Management system built at the top of
+RT2.  Those hacks are actually beeing used locally, but only some very few
+features are implemented, and this product is not wrapped or released for
+public usage, though I would be happy if anybody actually care for the
+product.  It's kind of a prototype system, the target is that it should work
+in a minimum of development time, and to gain useful experiences about
+project management.  The careful designing will eventually have to come
+later - either as a complete rewrite of the code, or a gradually evolution.
+
+This product requires a running RT and perl 5.6.0 or higher - it breaks with
+perl 5.005.
 
 There should eventually be a Makefile here.  Though, I don't have much
 working experience with Makefiles, distributions and wrapping, so
