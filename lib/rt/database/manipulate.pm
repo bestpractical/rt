@@ -311,7 +311,7 @@ sub merge {
     my %requestors;
 
     $in_serial_num = &rt::normalize_sn($in_serial_num);
-    $in_merge_into = &rt::normalize_sh($in_merge_into);
+    $in_merge_into = &rt::normalize_sn($in_merge_into);
 
     if (!(&can_manipulate_request($in_serial_num,$in_current_user)) or (!(&can_manipulate_request($in_merge_into,$in_current_user)))) {
       return (0,"You don't have permission to modify both requests you wish to merge");
