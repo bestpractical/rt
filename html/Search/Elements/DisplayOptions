@@ -49,7 +49,9 @@ SELECTED
 <td class=label>
 <&|/l&>Rows per page</&>:
 </td><td>
-<input name="RowsPerPage" value="<%$RowsPerPage%>" size=5></input>
+<& /Elements/SelectResultsPerPage, 
+    Name => "RowsPerPage", 
+    Default => $RowsPerPage &>
 </td>
 </tr>
 </table>
