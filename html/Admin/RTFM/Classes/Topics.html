@@ -16,10 +16,10 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Admin/Elements/ClassTabs, id => $ClassObj->id, Title => $title, current_tab => "RTFM/Admin/Classes/Topics.html?id=$id" &>
+<& /Admin/RTFM/Elements/ClassTabs, id => $ClassObj->id, Title => $title, current_tab => "Admin/RTFM/Classes/Topics.html?id=$id" &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/RTFM/Admin/Classes/Topics.html" method="POST">
+<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html" method="POST">
 <input type="hidden" name="id" value="<%$ClassObj->Id%>">
 
 % if (!$Modify) {
@@ -64,7 +64,7 @@ $topic
 %     $Action = "";
 <& .edit, topic => $topic &>
 %   } else {
-<a href="<%$RT::WebPath%>/RTFM/Admin/Classes/Topics.html?id=<%$ClassObj->Id%>&Modify=<%$topic->Id%>"
+<a href="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html?id=<%$ClassObj->Id%>&Modify=<%$topic->Id%>"
    title="<%$topic->Description%>"><%$topic->Name || loc("(no name)") %></a>
 %   }
 % }

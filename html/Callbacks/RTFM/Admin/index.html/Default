@@ -1,0 +1,12 @@
+<%args>
+$id => undef
+$tabs => undef
+</%args>
+<%init>
+        $tabs->{RTFM} = {
+        title => loc('RTFM'),
+            path  => "Admin/RTFM/index.html",
+            description => loc('Manage RTFM classes and permissions')
+        };
+
+</%init>

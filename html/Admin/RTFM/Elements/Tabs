@@ -15,5 +15,32 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
+<& /Admin/Elements/Tabs, 
+    subtabs => $tabs, 
+    current_tab => 'Admin/RTFM/index.html', 
+    current_subtab => $current_tab, 
+    Title => $Title &>
+<%INIT>
+  my $tabs = { Classes => { title => loc('Classes'),
+			  path => 'Admin/RTFM/Classes/index.html',
+			},
+	       Global => { title => loc('Global'),
+			   path => 'Admin/RTFM/Global/index.html',
+			 },
+	     };
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+    }
+  }
 
-<& /RTFM/Admin/Elements/Tabs, Title => loc('RTFM Administration') &>
+</%INIT>
+
+
+<%ARGS>
+$subtabs => undef
+$current_tab => undef
+$current_subtab => undef
+$Title => undef
+</%ARGS>

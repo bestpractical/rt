@@ -16,7 +16,7 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Admin/Elements/ClassTabs, id => $ClassObj->id, current_tab =>
+<& /Admin/RTFM/Elements/ClassTabs, id => $ClassObj->id, current_tab =>
 $current_subtab, Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -24,7 +24,7 @@ $current_subtab, Title => $title &>
 
 
 
-<FORM ACTION="<%$RT::WebPath%>/RTFM/Admin/Classes/Modify.html" METHOD=POST>
+<FORM ACTION="<%$RT::WebPath%>/Admin/RTFM/Classes/Modify.html" METHOD=POST>
 %if ($Create ) {
 <INPUT TYPE=HIDDEN NAME=id VALUE="new">
 % } else {
@@ -106,10 +106,10 @@ unless ($Create ? $Disabled : $ClassObj->Disabled()) {
 
 my $current_subtab;
 if ($Create == 1) {
-    $current_subtab = "RTFM/Admin/Classes/Modify.html?Create=1";
+    $current_subtab = "Admin/RTFM/Classes/Modify.html?Create=1";
 
 } else { 
-    $current_subtab = "RTFM/Admin/Classes/Modify.html?id=$id";
+    $current_subtab = "Admin/RTFM/Classes/Modify.html?id=$id";
 
 }
 

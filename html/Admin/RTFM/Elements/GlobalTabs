@@ -15,10 +15,10 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-
-<& /RTFM/Admin/Elements/Tabs, 
+<& /Elements/Header, Title => $Title &>
+<& /Admin/RTFM/Elements/Tabs, 
     subtabs => $tabs, 
-    current_tab => 'RTFM/Admin/Global/index.html', 
+    current_tab => 'Admin/RTFM/Global/index.html', 
     current_subtab => $current_tab, 
     Title => $Title &>
 <%INIT>
@@ -27,10 +27,10 @@ my $tabs;
    $tabs = {
 
                  F => { title => loc('Group Rights'),
-                          path => "RTFM/Admin/Global/GroupRights.html",
+                          path => "Admin/RTFM/Global/GroupRights.html",
                         },      
                  G => { title => loc('User Rights'),
-                          path => "RTFM/Admin/Global/UserRights.html",
+                          path => "Admin/RTFM/Global/UserRights.html",
                         },
 
 

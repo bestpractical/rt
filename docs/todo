@@ -1,5 +1,22 @@
 TODO
 
+
+Upgrades
+
+    Document RTFM 2.0 -> new upgrade procedure
+
+
+
+Admin
+
+    Move administrative menus underneath the core RT admin menus
+
+    Add menus to associate custom fields with a given class
+    
+
+Testing
+
+
 Links:
 
 
@@ -9,9 +26,7 @@ Links:
 
 Custom fields:
 
-    File upload custom fields
-
-
+    Add back wikitext fields
 
 Hierarchy:
 

@@ -16,44 +16,31 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Admin/Elements/ClassTabs, id => $id, Title => loc('Modify group rights for Class [_1]', $ClassObj->Name) &>
+<& /Admin/RTFM/Elements/ClassTabs, id => $id , Title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
-  <FORM METHOD=POST ACTION="GroupRights.html">
+  <FORM METHOD=POST ACTION="UserRights.html">
     <INPUT TYPE=HIDDEN NAME=id VALUE="<% $ClassObj->id %>">
       
-<& /Elements/TitleBoxStart, title => loc('Modify group rights for Class [_1]', $ClassObj->Name) &>
+<& /Elements/TitleBoxStart, title => loc('Modify user rights for class [_1]', $ClassObj->Name) &>
       
-<h1><&|/l&>System groups</&></h1>
 <TABLE>
-% $Groups = RT::Groups->new($session{'CurrentUser'});
-% $Groups->LimitToSystemInternalGroups();
-%	while (my $Group = $Groups->Next()) {
+        
+%	while (my $Member = $Users->Next()) {
+% my $UserObj = $Member->MemberObj->Object();
+% my $group = RT::Group->new($session{'CurrentUser'});
+% $group->LoadACLEquivalenceGroup($Member->MemberObj);
   <TR ALIGN=RIGHT> 
 	<TD VALIGN=TOP>
-	    <% loc($Group->Type) %>
+	    <% $UserObj->Name %>
 		  </TD>
 	  <TD>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId, Object => $ClassObj  &>
+	    <& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
+        Object => $ClassObj  &>
 	  </TD>
 	</TR>
 % }
-</TABLE>
-<h1><&|/l&>User defined groups</&></h1>
-<TABLE>
-% $Groups = RT::Groups->new($session{'CurrentUser'});
-% $Groups->LimitToUserDefinedGroups();    
-%	while (my $Group = $Groups->Next()) {
-  <TR ALIGN=RIGHT> 
-	<TD VALIGN=TOP>
-	    <% $Group->Name %>
-		  </TD>
-	  <TD>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId, Object => $ClassObj  &>
-	  </TD>
-	</TR>
-% }
-</TABLE>
+      </TABLE>
             
       <& /Elements/TitleBoxEnd &>
       <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
@@ -62,6 +49,14 @@
   
 <%INIT>
  
+  #Update the acls.
+
+  my @results =  ProcessACLChanges(\%ARGS);
+
+
+# {{{ Deal with setting up the display of current rights.
+
+
 
 if (!defined $id) {
     $m->comp("/RTFM/Elements/Error", Why => loc("No Class defined"));
@@ -70,16 +65,20 @@ if (!defined $id) {
 my $ClassObj = RT::FM::Class->new($session{'CurrentUser'});
 $ClassObj->Load($id) || $m->comp("/RTFM/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
 
-my $Groups;
-  #Update the acls.
+# Find out which users we want to display ACL selects for
+my $Privileged = RT::Group->new($session{'CurrentUser'});
+$Privileged->LoadSystemInternalGroup('Privileged');
+my $Users = $Privileged->MembersObj();
+
+    
   
-  my ( $ACL);
-
-  my @results =  ProcessACLChanges(\%ARGS);
-
+# }}}
     
 </%INIT>
 
 <%ARGS>
 $id => undef
+$UserString => undef
+$UserOp => undef
+$UserField => undef
 </%ARGS>

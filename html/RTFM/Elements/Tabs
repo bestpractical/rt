@@ -46,7 +46,7 @@ my $second_tabs = { 'aab' => { title => loc('Overview'),
                     'atopics' => { title => loc('Topics'),
                                    path => 'RTFM/Topics.html'},
                     'd' => { title => loc('Configuration'),
-                             path  => 'RTFM/Admin/index.html' } 
+                             path  => 'Admin/RTFM/index.html' } 
                   };
 
 my $topactions = {

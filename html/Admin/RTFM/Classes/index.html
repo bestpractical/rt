@@ -16,7 +16,7 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Admin/Elements/ClassTabs, current_tab => 'RTFM/Admin/Classes/', current_subtab => 'RTFM/Admin/Classes/', Title => loc("Select a Class") &>
+<& /Admin/RTFM/Elements/ClassTabs, current_tab => 'Admin/RTFM/Classes/', current_subtab => 'Admin/RTFM/Classes/', Title => loc("Select a Class") &>
 
 
 <TABLE>
@@ -37,7 +37,7 @@
 <TR>
 <TD VALIGN=TOP>
 
-<FORM METHOD=POST ACTION="<% $RT::WebPath %>/RTFM/Admin/Classes/index.html">
+<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/RTFM/Classes/index.html">
 
 <input type="checkbox" name="FindDisabledClasses" value="1"> <&|/l&>Include disabled classes in listing.</&>
 <BR>
