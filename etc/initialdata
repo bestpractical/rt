@@ -1,6 +1,6 @@
 # Initial data for a fresh RT3 Installation.
 
-my @users = (
+ @Users = (
     {  Name     => 'Nobody',
        RealName => 'Nobody in particular',
        Comments => 'Do not delete or modify this user. It is integral '
@@ -15,7 +15,7 @@ my @users = (
        Comments     => 'SuperUser',
        Privileged   => '1', } );
 
-my @groups = (
+ @Groups = (
     { Name        => '',
       Type        => 'Everyone',                        # loc
       Domain      => 'SystemInternal',
@@ -59,12 +59,12 @@ my @groups = (
       Description => 'Pseudogroup for internal use',        # loc
     }, );
 
-my @queues = ( {  Name              => 'General',
+ @Queues = ( {  Name              => 'General',
                   Description       => 'The default queue',
                   CorrespondAddress => "",
                   CommentAddress    => "", }, );
 
-my @ScripActions = (
+ @ScripActions = (
 
     {  Name        => 'AutoreplyToRequestors',               # loc
        Description =>
@@ -127,7 +127,7 @@ my @ScripActions = (
          'Create new tickets based on this scrip\'s template',             # loc
        ExecModule => 'CreateTickets', }, );
 
-my @ScripConditions = (
+ @ScripConditions = (
     { Name                 => 'On Create',                                # loc
       Description          => 'When a ticket is created',                 # loc
       ApplicableTransTypes => 'Create',
@@ -189,7 +189,7 @@ my @ScripConditions = (
 
     }, );
 
-my @templates = (
+ @Templates = (
     { Queue       => '0',
       Name        => 'Blank',                                             # loc
       Description => 'A blank template',                                  # loc
@@ -302,7 +302,7 @@ further questions or concerns, please respond to this message.
 '
     } );
 
-my @acl = (
+ @ACL = (
     { UserId => 'Nobody',                       # - principalId
       Right  => 'OwnTicket', },
 

@@ -26,6 +26,7 @@
 
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
+use vars qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates);
 
 use lib "@RT_LIB_PATH@";
 
@@ -325,11 +326,11 @@ if (!$args{'datafile'}) {
 	$args{'datafile'} = $RT::EtcPath . "/initialdata";
 }
 
-do $args{'datafile'}
+require $args{'datafile'}
           || die "Couldn't find initial data for import\n" . $@;
 
 print "Creating groups...";
-foreach $item (@groups) {
+foreach $item (@Groups) {
     my $new_entry = RT::Group->new($CurrentUser);
     my ( $return, $msg ) = $new_entry->_Create(%$item);
     print "(Error: $msg)" unless ($return);
@@ -338,7 +339,7 @@ foreach $item (@groups) {
 print "done.\n";
 
 print "Creating users...";
-foreach $item (@users) {
+foreach $item (@Users) {
     my $new_entry = new RT::User($CurrentUser);
     my ( $return, $msg ) = $new_entry->Create(%$item);
     print "(Error: $msg)" unless ($return);
@@ -347,7 +348,7 @@ foreach $item (@users) {
 print "done.\n";
 
 print "Creating ACL...";
-for my $item (@acl) {
+for my $item (@ACL) {
 
     my $princ = RT::User->new($CurrentUser);
     $princ->Load( $item->{'UserId'} );
@@ -366,7 +367,7 @@ for my $item (@acl) {
 print "done.\n";
 
 print "Creating queues...";
-for $item (@queues) {
+for $item (@Queues) {
     my $new_entry = new RT::Queue($CurrentUser);
     my ( $return, $msg ) = $new_entry->Create(%$item);
     print "(Error: $msg)" unless ($return);
@@ -395,7 +396,7 @@ print "done.\n";
 
 print "Creating templates...";
 
-for $item (@templates) {
+for $item (@Templates) {
     my $new_entry = new RT::Template($CurrentUser);
     my $return    = $new_entry->Create(%$item);
     print $return. ".";

@@ -180,7 +180,7 @@ instruct:
 	@echo "Next, you need to initialize RT's database by running" 
 	@echo " 'make initialize-database' or by executing "       
 	@echo " '$(RT_SBIN_PATH)/rt-initialize-database --action init \ "
-	@echo "     --dba $(DB_DBA) --dba-password <your dba password>'"
+	@echo "     --dba $(DB_DBA) --prompt-for-dba-password'"
 	@echo "You must now configure it by editing $(SITE_CONFIG_FILE)."
 	@echo "From here on in, you should refer to the administrator's guide."
 
@@ -336,6 +336,7 @@ etc-install:
 	mkdir -p $(DESTDIR)/$(RT_ETC_PATH)
 	cp -rp \
 		etc/acl.* \
+		etc/initialdata \
 		etc/schema.* \
 		$(DESTDIR)/$(RT_ETC_PATH)
 # }}}
