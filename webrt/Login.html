@@ -1,9 +1,12 @@
-<FORM METHOD=POST ACTION="<% $r->uri %>?<% scalar($r->args) %>">
+<FORM METHOD=POST ACTION="<% $r->uri %>">
 Right now, if your username matches your password, it auths you. isn't that sweet of it?<br>
 <input name=user value="<%$user%>"> <br>
 <input type=password name=pass>
 <input type=submit>
-
+% # Preserving all the old parameters
+% my @z=$r->args; while (1) { my ($k, $v)=(shift @z, shift @z); last unless $k;
+<input type="hidden" name="<% $k %>" value="<% $v %>">
+% }
 </FORM>
 
 
