@@ -223,7 +223,7 @@ sub FormSetArea{
     if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $current_user)) {
        foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
 	    print "<option ";
-		print "SELECTED" if ($user_id eq $rt::req[$serial_num]{area});
+		print "SELECTED" if ($area eq $rt::req[$serial_num]{area});
 		print ">$area\n";
 	    }
     }
@@ -406,7 +406,7 @@ Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'sub
 </pre>
 <input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
 <font size=\"$MESSAGE_FONT\">
-<br><textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
+<br><textarea rows=15 cols=78 name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
 </font>
@@ -424,9 +424,9 @@ sub FormCreate{
 	if (&rt::can_create_request($queue, $current_user)) {
 	    print "<option>$queue\n";
 	}
-	else {
-	print "<!-- $current_user can't make a req in $queue\n\n-->";    
-	}
+#	else {
+#	print "<!-- $current_user can't make a req in $queue\n\n-->";    
+#	}
 }
     print"</select>
 <input type=\"hidden\" name=\"display\" value=\"Create_Step2\">
@@ -519,7 +519,7 @@ Final priority:
 </TD></TR>
 <TR><TD valign=\"top\" align=\"right\">Content:</TD><TD COLSPAN=5>
 <font size=\"-1\">
-<textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
+<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>
 $template
 </textarea>
 </TD></TR>
@@ -558,7 +558,7 @@ Bcc:	 <input name=\"bcc\">
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
 <input type=\"hidden\" name=\"do_req_comment\" value=\"true\">
 <br><font size=\"$MESSAGE_FONT\">
-<textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
+<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
 </font>

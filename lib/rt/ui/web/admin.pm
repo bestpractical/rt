@@ -452,10 +452,6 @@ Queue Configuration
    
 
 	 
-    print "<input type=\"checkbox\" name=\"allow_user_create\" ";
-    print "CHECKED" if ($rt::queues{$queue_id}{allow_user_create});
-    print ">Allow non-members to create requests<br>\n";
-    
     print "<hr><H2>Areas</h2>\n";
  
     print "Delete the area <select name=\"delete_area\">

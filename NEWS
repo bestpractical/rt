@@ -8,6 +8,17 @@ Removed some legacy support for glimpse searching
 
 Fix for [fsck #115] The web ticket list should now wrap reasonably, so it's 
 	printable.
+Fix for [fsck #85] Now properly generate precedence headers
+
+Fix for [fsck #88] WebUI area SELECT bug.
+
+Fix for [fsck #90] A small html bug in WebRT		
+
+Fix for [fsck #92] "Allow non-members to create requests" appeared twice
+	in the WebAdmin
+
+Fix for [fsck #94] web ui forms are now 78 chars wide
+
 7 Jul 99
 --------
 
