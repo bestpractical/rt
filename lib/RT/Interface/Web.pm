@@ -45,13 +45,11 @@ sub NewParser {
 
 sub NewInterp {
     my %params = (
-        allow_recursive_autohandlers => 1,
         comp_root                    => [
             [ local    => $RT::MasonLocalComponentRoot ],
             [ standard => $RT::MasonComponentRoot ]
         ],
         data_dir => "$RT::MasonDataDir",
-        parser   => undef,
         @_
     );
 
@@ -78,6 +76,37 @@ sub NewApacheHandler {
     my $ah = new HTML::Mason::ApacheHandler( interp => $interp );
     return ($ah);
 }
+
+# }}}
+
+
+# {{{ sub NewMason11ApacheHandler
+
+=head2 NewMason11ApacheHandler
+
+  Returns a new Mason::ApacheHandler object
+
+=cut
+
+sub NewMaosn11ApacheHandler {
+        my %args = ( default_escape_flags => 'h',
+                    allow_globals        => [%session],
+        comp_root                    => [
+            [ local    => $RT::MasonLocalComponentRoot ],
+            [ standard => $RT::MasonComponentRoot ]
+        ],
+        data_dir => "$RT::MasonDataDir",
+        args_method => 'CGI'
+    );
+    my $ah = new HTML::Mason::ApacheHandler(%args);
+    return ($ah);
+}
+
+# }}}
+
+
+
+
 
 # }}}
 
