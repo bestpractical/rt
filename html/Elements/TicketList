@@ -31,11 +31,13 @@
     Rows => $Rows,
     Page => $Page,
     OrderBy => $OrderBy , 
-    BaseURL => $BaseURL  &> 
+    BaseURL => $BaseURL,
+    maxitems => \$maxitems &> 
+
 % my $i;
 % while (my $record = $Collection->Next) {
 % $i++;
-<& .Row, Format => \@Format, i => $i, record => $record &>
+<& .Row, Format => \@Format, i => $i, record => $record, maxitems => $maxitems &>
 % }
 </TABLE>
 % if ($ShowNavigation) {
@@ -60,6 +62,7 @@ my $next =  $m->comp('/Elements/QueryString', Query => $Query,
 % }
 % }
 <%INIT>
+my $maxitems;
 
 use vars qw($COLUMN_MAP $CUSTOM_FIELD_MAP);
 
@@ -440,6 +443,7 @@ $BaseURL => undef
 $Query => undef
 $Rows => undef
 $Page => undef
+$maxitems => undef
 </%ARGS>
 <TR>
 <%perl>
@@ -448,9 +452,14 @@ $Page => undef
 
 my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page );
 
+my $item = 0;
+$$maxitems = 0;
 foreach my $col (@Format) {
+    $item++;
+    $$maxitems = $item if $item > $$maxitems;
     if ( $col->{title} eq 'NEWLINE' ) {
         $m->out('</TR>       <TR>');
+	$item = 0;
     }
     else {
         $m->out('<TH align="center">');
@@ -492,15 +501,23 @@ foreach my $col (@Format) {
 $i => undef
 @Format => undef
 $record => undef
+$maxitems => undef
 </%ARGS>
 <%PERL>
 $m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
+my $item;
 foreach my $column (@Format) {
     if ( $column->{title} eq 'NEWLINE' ) {
+	while ($item < $maxitems) {
+	    $m->out("<td>&nbsp;</td>\n");
+	    $item++;
+	}
+	$item = 0;
         $m->out('</TR>');
         $m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
         next;
     }
+    $item++;
     $m->out('<td align="left">');
     foreach my $subcol ( @{ $column->{output} } ) {
         if ( $subcol =~ /^__(.*?)__$/o ) {
