@@ -19,7 +19,7 @@ char *argv[],*envp[];
   int    i;
   char  *program_name;
   char **eargv;
-  
+  char **cleanenvp; 
   if (program_name = strrchr (argv[0], '/'))   /* Get root program name */
     program_name++;
   else
@@ -30,18 +30,24 @@ char *argv[],*envp[];
       fprintf (stderr, "%s: Failed to obtain memory.\n", program_name);
       exit (1);                                  /* Trap core dump! */
     }
+
+  if (! (cleanenvp = (char ** ) malloc (sizeof (char * )))) {
+	      fprintf (stderr, "%s: Failed to obtain memory.\n", program_name);
+      exit (1);                                  /* Trap core dump! */
+    }
+
   eargv[0]= PERL;
   eargv[1] = "-T";
   eargv[2] = RT_PERL_MUX;
   eargv[3] = program_name;
 
-
+  cleanenvp[0] = "PATH=/usr/bin";
   for (i = 1; i < argc; i++)
     eargv[i+3] = argv[i];
 
   eargv[i+3] = NULL;
 
-  execve(PERL, eargv, envp);
+  execve(PERL, eargv, cleanenvp);
   fprintf (stderr, "%s: Failed to launch RT program.\n", program_name);
   perror (program_name);
 }

@@ -1,3 +1,9 @@
+August 31 2000
+--------------
+
+setuid wrapper now _really_ stomps ENV
+
+
 July 18 2000
 ------------
 
