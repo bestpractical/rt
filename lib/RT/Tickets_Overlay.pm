@@ -345,7 +345,7 @@ sub _DateLimit {
   my ($sb,$field,$op,$value,@rest) = @_;
 
   die "Invalid Date Op: $op"
-    unless $op eq "<" or $op eq "=" or $op eq ">";
+     unless $op =~ /^(=|!=|>|<|>=|<=)$/;
 
   my $meta = $FIELDS{$field};
   die "Incorrect Meta Data for $field"
