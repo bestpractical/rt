@@ -8,7 +8,21 @@
 # the makefile should call up some init scrips that uses an RT api or the (admin)
 # cli to add the data.
 
-# {{{ Table QueueACL
+# {{{ Table ACL {
+
+CREATE TABLE ACL (
+	id int not null primary_key autoincrement,
+	PrinicpalId INT(11),
+	PrincipalType VARCHAR(16),
+	PrincipalScope VARCHAR(16),
+	ObjectType VARCHAR(16),
+	ObjectId  INT,
+	Right VARCHAR(16)
+);
+
+# }}}
+
+# {{{ OBSOLETE Table QueueACL
 CREATE TABLE QueueACL (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Queue INT,
@@ -131,9 +145,8 @@ delete from ScripScope where id=8;
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   UserId VARCHAR(120) NOT NULL,
- 
- # What is `Gecos', anyway?
-  Gecos CHAR(16),
+
+  Gecos CHAR(16), #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
   RealName VARCHAR(120),
   Password VARCHAR(40), 			
   ExternalId VARCHAR(100),
