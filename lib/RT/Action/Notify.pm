@@ -55,7 +55,7 @@ sub SetRecipients {
 	$To = join(',',@To);
     }
     else {
-	$To = "'$arg of $RT::rtname Ticket #".$self->TicketObj->id.":' ;";
+	$To = "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."': ;";
     }
     
     $Cc = join(',',@Cc);
