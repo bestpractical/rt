@@ -31,6 +31,21 @@ rt-mailgate - Mail interface to RT3.
 
 use RT::I18N;
 
+# Make sure that when we call the mailgate wrong, it tempfails
+
+ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://bad.address"), "Opened the mailgate - The error below is expected - $@");
+print MAIL <<EOF;
+From: root\@localhost
+To: rt\@example.com
+Subject: This is a test of new ticket creation
+
+Foob!
+EOF
+close (MAIL);
+
+# Check the return value
+is ( $? >> 8, 75, "The error message above is expected The mail gateway exited with a failure. yay");
+
 
 # {{{ Test new ticket creation by root who is privileged and superuser
 
@@ -44,6 +59,9 @@ Blah!
 Foob!
 EOF
 close (MAIL);
+
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 use RT::Tickets;
 my $tickets = RT::Tickets->new($RT::SystemUser);
@@ -69,6 +87,8 @@ Blah!
 Foob!
 EOF
 close (MAIL);
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
@@ -104,6 +124,8 @@ Blah!
 Foob!
 EOF
 close (MAIL);
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 
 $tickets = RT::Tickets->new($RT::SystemUser);
@@ -136,6 +158,8 @@ Blah!
 Foob!
 EOF
 close (MAIL);
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 $u = RT::User->new($RT::SystemUser);
 $u->Load('doesnotexist-2@example.com');
@@ -158,6 +182,8 @@ Blah!
 Foob!
 EOF
 close (MAIL);
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 
 $u = RT::User->new($RT::SystemUser);
@@ -184,6 +210,9 @@ Foob!
 EOF
 close (MAIL);
 
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
+
 $u = RT::User->new($RT::SystemUser);
 $u->Load('doesnotexist-3@example.com');
 ok( $u->Id == 0, " user does not exist and was not created by ticket comment submission");
@@ -207,6 +236,8 @@ Foob!
 EOF
 close (MAIL);
 
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 $u = RT::User->new($RT::SystemUser);
 $u->Load('doesnotexist-3@example.com');
@@ -237,6 +268,9 @@ ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."
 $entity->print(\*MAIL);
 
 close (MAIL);
+
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
@@ -301,6 +335,9 @@ bye
 EOF
 close (MAIL);
 
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
+
 my $unitickets = RT::Tickets->new($RT::SystemUser);
 $unitickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $unitickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
@@ -331,6 +368,9 @@ Content-Type: text/plain; charset="utf-8"
 bye
 EOF
 close (MAIL);
+
+#Check the return value
+is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
 my $tickets2 = RT::Tickets->new($RT::SystemUser);
 $tickets2->OrderBy(FIELD => 'id', ORDER => 'DESC');
