@@ -251,11 +251,12 @@ CREATE TABLE Attachments (
 # }}}
 
 # {{{ TABLE Links
+
 CREATE TABLE Links (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  Base int(11),
-  Target int(11),
-  Type char(20) NOT NULL, # "Depends on", "Member of" 
+  Base VARCHAR(255),
+  Target VARCHAR(255),
+  Type char(20) NOT NULL, # 
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
@@ -265,6 +266,7 @@ CREATE TABLE Links (
   # <BASE> DependsOn <TARGET>
   # <BASE> MemberOf <TARGET>
   # <BASE> MergedInto <TARGET>
+  # <BASE> RefersTo <TARGET>
 
   # One possible Idea: Turn base into URIs
   # fsck.com-rt://instancename/ticket/<id>
