@@ -3,7 +3,7 @@
 <TR>
 <TD valign=top>
 <h3><&|/l&>New rights</&></h3> 
-<SELECT SIZE=5  MULTIPLE  NAME="GrantACE-<%$ACLDesc%>">
+<SELECT SIZE=5  MULTIPLE  NAME="GrantRight-<%$ACLDesc%>">
 % foreach $right (sort keys %Rights) {
       <OPTION VALUE="<%$right%>"  
 	><% loc($right) %></OPTION>
@@ -16,7 +16,7 @@
 <i>(<&|/l&>Check box to revoke right</&>)</i> <BR>
 % while (my $right = $ACLObj->Next()) {
 % if ($right->RightName) {
-<input type=checkbox value="<%$right->Id%>" name="RevokeACE"> <% loc($right->RightName) %><br>
+<input type=checkbox value="<%$right->Id%>" name="RevokeRight-<%$ACLDesc%>-<%$right->RightName%>"> <% loc($right->RightName) %><br>
 % }
 %  }
 </TD>
@@ -24,35 +24,29 @@
 </TABLE>
 <%INIT>
     my ($right, $ACLDesc, $AppliesTo, %Rights);
-   
        
     my $ACLObj = new RT::ACL($session{'CurrentUser'});
     my $ACE = new RT::ACE($session{'CurrentUser'});
 
-    if ($Scope eq 'Queue') { 
-        $AppliesTo = $QueueObj->Id;
-        $ACLObj->LimitToQueue($AppliesTo);
+
+    $ACLObj->LimitToObject( Id => $ObjectId, Type => $ObjectType);
+    $ACLObj->LimitToPrincipal( Id => $PrincipalId, Type => $PrincipalType);
+
+
+    if ($ObjectType eq 'Queue') { 
         %Rights = $ACE->QueueRights();
     } 
-    elsif ($Scope eq 'System') {
-        $AppliesTo = 0;
-        $ACLObj->LimitToSystem();
+    elsif ($ObjectType eq 'System') {
         %Rights =  ( $ACE->SystemRights , $ACE->QueueRights());
     }
 
-    if ($PrincipalType eq 'Group') {
-        $ACLObj->LimitPrincipalToGroup($PrincipalObj->Id);
-    } 
-    elsif ($PrincipalType eq 'User') {
-        $ACLObj->LimitPrincipalToUser($PrincipalObj->Id);
-    } 
     
-    $ACLDesc = "$PrincipalType-".$PrincipalObj->Id."-$Scope-$AppliesTo";
+    $ACLDesc = "$PrincipalType-$PrincipalId-$ObjectType-$ObjectId";
 </%INIT>
     
 <%ARGS>
 $PrincipalType => undef
-$PrincipalObj => undef
-$Scope => undef
-$QueueObj => undef
+$PrincipalId => undef
+$ObjectId => undef
+$ObjectType => undef
 </%ARGS>

@@ -962,10 +962,10 @@ ok($q->Id, "Loaded the first queue");
 
 
 ok (!$q->CurrentUserHasRight('CreateTicket'), "Some random user doesn't have the right to create tickets");
-ok (my ($gval, $gmsg) = $new_user->PrincipalObj->GrantQueueRight(Right => 'CreateTicket', ObjectId => $q->Id), "Granted the random user the right to create tickets");
+ok (my ($gval, $gmsg) = $new_user->PrincipalObj->GrantRight(ObjectType => 'Queue', Right => 'CreateTicket', ObjectId => $q->Id), "Granted the random user the right to create tickets");
 ok ($gval, "Grant succeeded - $gmsg");
 ok ($q->CurrentUserHasRight('CreateTicket'), "The user can create tickets after we grant him the right");
-ok (my ($gval, $gmsg) = $new_user->PrincipalObj->RevokeQueueRight(Right => 'CreateTicket', ObjectId => $q->Id), "revoked the random user the right to create tickets");
+ok (my ($gval, $gmsg) = $new_user->PrincipalObj->RevokeRight(ObjectType => 'Queue', Right => 'CreateTicket', ObjectId => $q->Id), "revoked the random user the right to create tickets");
 ok ($gval, "Revocation succeeded - $gmsg");
 ok (!$q->CurrentUserHasRight('CreateTicket'), "The user can't create tickets anymore");
 
@@ -984,7 +984,7 @@ my $group = RT::Group->new($RT::SystemUser);
 $group->CreateSystemGroup(Name => 'ACLTest');
 ok($group->Id, "Created a new group Ok");
 # Grant a group the right to modify tickets in a queue
-ok(my ($gv,$gm) = $group->PrincipalObj->GrantQueueRight(ObjectId => $q->Id, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
+ok(my ($gv,$gm) = $group->PrincipalObj->GrantRight(ObjectType => 'Queue', ObjectId => $q->Id, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
 ok($gv,"Grant succeeed - $gm");
 # Add the user to the group
 ok( my ($aid, $amsg) = $group->AddMember($new_user->PrincipalId), "Added the member to the group");
@@ -1033,7 +1033,7 @@ ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket')
 
 
 # Grant queue admin cc the right to modify ticket in the queue 
-ok(my ($qv,$qm) = $q_as_system->AdminCc->PrincipalObj->GrantQueueRight(ObjectId => $q_as_system->Id, Right => 'ModifyTicket'),"Granted the queue adminccs the right to modify tickets");
+ok(my ($qv,$qm) = $q_as_system->AdminCc->PrincipalObj->GrantRight(ObjectType => 'Queue', ObjectId => $q_as_system->Id, Right => 'ModifyTicket'),"Granted the queue adminccs the right to modify tickets");
 ok($qv, "Granted the right successfully - $qm");
 
 # Add the user as a queue admincc
@@ -1065,7 +1065,7 @@ ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket')
 
 
 # Revoke the right to modify ticket in the queue 
-ok(my ($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeQueueRight(ObjectId => $q_as_system->Id, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
+ok(my ($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeRight(ObjectType => 'Queue', ObjectId => $q_as_system->Id, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
 ok($rqv, "Revoked the right successfully - $rqm");
 
 # Grant system admin cc the right to modify ticket 

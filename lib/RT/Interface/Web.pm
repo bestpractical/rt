@@ -591,172 +591,49 @@ sub Config {
 # {{{ sub ProcessACLChanges
 
 sub ProcessACLChanges {
-    my $ACLref  = shift;
     my $ARGSref = shift;
 
-    my @CheckACL = @$ACLref;
     my %ARGS     = %$ARGSref;
 
     my ( $ACL, @results );
 
-    # {{{ Add rights
-    foreach $ACL (@CheckACL) {
-        my ($Principal);
 
-        next unless ($ACL);
+    foreach my $arg (keys %ARGS) {
+        if ($arg =~ /GrantRight-(.*?)-(\d+)-(.*?)-(\d+)$/) {
+            my $principal_id = $2;
+            my $object_type = $3;
+            my $object_id = $4;
+            my $rights = $ARGS{$arg};
 
-        # Parse out what we're really talking about. 
-        if ( $ACL =~ /^(.*?)-(\d+)-(.*?)-(\d+)/ ) {
-            my $PrincipalType = $1;
-            my $PrincipalId   = $2;
-            my $Scope         = $3;
-            my $AppliesTo     = $4;
+            my $principal = RT::Principal->new($session{'CurrentUser'});
+            $principal->Load($principal_id);
 
-            # {{{ Create an object called Principal
-            # so we can do rights operations
-
-            if ( $PrincipalType eq 'User' ) {
-                $Principal = new RT::User( $session{'CurrentUser'} );
-            }
-            elsif ( $PrincipalType eq 'Group' ) {
-                $Principal = new RT::Group( $session{'CurrentUser'} );
-            }
-            else {
-                Abort("$PrincipalType unknown principal type");
-            }
-
-            $Principal->Load($PrincipalId)
-              || Abort("$PrincipalType $PrincipalId couldn't be loaded");
-
-            # }}}
-
-            # {{{ load up an RT::ACL object with the same current vals of this ACL
-
-            my $CurrentACL = new RT::ACL( $session{'CurrentUser'} );
-            if ( $Scope eq 'Queue' ) {
-                $CurrentACL->LimitToQueue($AppliesTo);
-            }
-            elsif ( $Scope eq 'System' ) {
-                $CurrentACL->LimitToSystem();
-            }
-
-            $CurrentACL->LimitPrincipalToType($PrincipalType);
-            $CurrentACL->LimitPrincipalToId($PrincipalId);
-
-            # }}}
-
-            # {{{ Get the values of the select we're working with 
-            # into an array. it will contain all the new rights that have 
-            # been granted
-            #Hack to turn the ACL returned into an array
-            my @rights =
-              ref( $ARGS{"GrantACE-$ACL"} ) eq 'ARRAY'
-              ? @{ $ARGS{"GrantACE-$ACL"} }
-              : ( $ARGS{"GrantACE-$ACL"} );
-
-            # }}}
-
-            # {{{ Add any rights we need.
-
+            my @rights = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
             foreach my $right (@rights) {
                 next unless ($right);
-
-                #if the right that's been selected wasn't there before, add it.
-                unless (
-                    $CurrentACL->HasEntry(
-                        RightScope     => "$Scope",
-                        RightName      => "$right",
-                        RightAppliesTo => "$AppliesTo",
-                        PrincipalType  => $PrincipalType,
-                        PrincipalId    => $Principal->Id
-                    )
-                  )
-                {
-
-                    #Add new entry to list of rights.
-                    if ( $Scope eq 'Queue' ) {
-                        my $Queue = new RT::Queue( $session{'CurrentUser'} );
-                        $Queue->Load($AppliesTo);
-                        unless ( $Queue->id ) {
-                            Abort("Couldn't find a queue called $AppliesTo");
-                        }
-
-                        my ( $val, $msg ) = $Principal->GrantQueueRight(
-                            RightAppliesTo => $Queue->id,
-                            Right      => "$right"
-                        );
-
-                        if ($val) {
-                            push ( @results,
-                                "Granted right $right to "
-                                  . $Principal->Name
-                                  . " for queue "
-                                  . $Queue->Name );
-                        }
-                        else {
-                            push ( @results, $msg );
-                        }
-                    }
-                    elsif ( $Scope eq 'System' ) {
-                        my ( $val, $msg ) = $Principal->GrantSystemRight(
-                            RightAppliesTo => $AppliesTo,
-                            Right      => "$right"
-                        );
-                        if ($val) {
-                            push ( @results, "Granted system right '$right' to "
-                                  . $Principal->Name );
-                        }
-                        else {
-                            push ( @results, $msg );
-                        }
-                    }
-                }
+                my ($val, $msg) = $principal->GrantRight(ObjectType => $object_type, ObjectId => $object_id, Right => $right);
+                push (@results, $msg);
             }
-
-            # }}}
         }
+       elsif ($arg =~ /RevokeRight-(.*?)-(\d+)-(.*?)-(\d+)-(.*?)$/) {
+            my $principal_id = $2;
+            my $object_type = $3;
+            my $object_id = $4;
+            my $right = $5;
+
+            my $principal = RT::Principal->new($session{'CurrentUser'});
+            $principal->Load($principal_id);
+            next unless ($right);
+            my ($val, $msg) = $principal->RevokeRight(ObjectType => $object_type, ObjectId => $object_id, Right => $right);
+            push (@results, $msg);
+        }
+
+
     }
-
-    # }}} Add rights
-
-    # {{{ remove any rights that have been deleted
-
-    my @RevokeACE =
-      ref( $ARGS{"RevokeACE"} ) eq 'ARRAY' 
-      ? @{ $ARGS{"RevokeACE"} }
-      : ( $ARGS{"RevokeACE"} );
-
-    foreach my $aceid (@RevokeACE) {
-
-        my $right = RT::ACE->new( $session{'CurrentUser'} );
-        $right->Load($aceid);
-        next unless ( $right->id );
-
-        my $phrase = "Revoked "
-          . $right->PrincipalType . " "
-          . $right->PrincipalObj->Name
-          . "'s right to "
-          . $right->RightName;
-
-        if ( $right->RightScope eq 'System' ) {
-            $phrase .= ' across all queues.';
-        }
-        else {
-            $phrase .= ' for the queue ' . $right->AppliesToObj->Name . '.';
-        }
-        my ( $val, $msg ) = $right->Delete();
-        if ($val) {
-            push ( @results, $phrase );
-        }
-        else {
-            push ( @results, $msg );
-        }
-    }
-
-    # }}}
 
     return (@results);
-}
+
+    }
 
 # }}}
 

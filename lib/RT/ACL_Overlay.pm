@@ -1,6 +1,6 @@
 # $Header: /raid/cvsroot/rt/lib/RT/ACL.pm,v 1.2 2001/11/06 23:04:14 jesse Exp $
 # Distributed under the terms of the GNU GPL
-# Copyright (c) 2000 Jesse Vincent <jesse@fsck.com>
+# Copyright (c) 1996-2002 Jesse Vincent <jesse@fsck.com>
 
 =head1 NAME
 
@@ -26,28 +26,55 @@ ok(require RT::ACL);
 
 no warnings qw(redefine);
 
-# {{{ sub _Init 
-sub _Init  {
-  my $self = shift;
-  $self->{'table'} = "ACL";
-  $self->{'primary_key'} = "id";
-  return ( $self->SUPER::_Init(@_));
-  
-}
-# }}}
-
-# {{{ sub NewItem 
-sub NewItem  {
-  my $self = shift;
-  return(RT::ACE->new($self->CurrentUser));
-}
-# }}}
 
 =head2 Next
 
 Hand out the next ACE that was found
 
 =cut
+
+
+# {{{ LimitToObject 
+
+=head2 LimitToObject { Type => undef, Id => undef }
+
+Limit the ACL to the Object with ObjectId Id and ObjectType Type
+
+=cut
+
+sub LimitToObject {
+    my $self = shift;
+    my %args = ( Type => undef,
+                 Id => undef,
+                 @_);
+
+    $self->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => $args{'Type'}, ENTRYAGGREGATOR => 'OR');
+    $self->Limit(FIELD => 'ObjectId', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
+
+}
+
+# }}}
+
+# {{{ LimitToPrincipal 
+
+=head2 LimitToPrincipal { Type => undef, Id => undef }
+
+Limit the ACL to the principal with PrincipalId Id and PrincipalType Type
+
+=cut
+
+sub LimitToPrincipal {
+    my $self = shift;
+    my %args = ( Type => undef,
+                 Id => undef,
+                 @_);
+
+    $self->Limit(FIELD => 'PrincipalType', OPERATOR=> '=', VALUE => $args{'Type'}, ENTRYAGGREGATOR => 'OR');
+    $self->Limit(FIELD => 'PrincipalId', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
+
+}
+
+# }}}
 
 # {{{ sub Next 
 sub Next {
@@ -77,167 +104,6 @@ sub Next {
 # }}}
 
 
-=head1 Limit the ACL to a specific scope
-
-There are two real scopes right now:
-
-=item Queue is for rights that apply to a single queue
-
-=item System is for rights that apply to the System (rights that aren't queue related)
-
-
-=head2 LimitToQueue
-
-Takes a single queueid as its argument.
-
-Limit the ACL to just a given queue when supplied with an integer queue id.
-
-=cut
-
-sub LimitToQueue {
-    my $self = shift;
-    my $queue = shift;
-    
-    
-    
-    $self->Limit( FIELD =>'RightScope',
-		  ENTRYAGGREGATOR => 'OR',
-		  VALUE => 'Queue');
-    $self->Limit( FIELD =>'RightScope',
-		  ENTRYAGGREGATOR => 'OR',
-		VALUE => 'Ticket');
-    
-    $self->Limit(ENTRYAGGREGATOR => 'OR',
-		 FIELD => 'RightAppliesTo',
-		 VALUE => $queue );
-  
-}
-
-
-=head2 LimitToSystem()
-
-Limit the ACL to system rights
-
-=cut 
-
-sub LimitToSystem {
-  my $self = shift;
-  
-  $self->Limit( FIELD =>'RightScope',
-		VALUE => 'System');
-}
-
-
-=head2 LimitRightTo
-
-Takes a single RightName as its only argument.
-Limits the search to the right $right.
-$right is a right listed in perldoc RT::ACE
-
-=cut
-
-sub LimitRightTo {
-  my $self = shift;
-  my $right = shift;
-  
-  $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'RightName',
-	       VALUE => $right );
-  
-}
-
-=head1 Limit to a specifc set of principals
-
-=head2 LimitPrincipalToUser
-
-Takes a single userid as its only argument.
-Limit the ACL to a just a specific user.
-
-=cut
-
-sub LimitPrincipalToUser {
-  my $self = shift;
-  my $user = shift;
-  
-  $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'PrincipalType',
-	       VALUE => 'User' );
-  
-  $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'PrincipalId',
-	       VALUE => $user );
-  
-}
-
-
-=head2 LimitPrincipalToGroup
-
-Takes a single group as its only argument.
-Limit the ACL to just a specific group.
-
-=cut
-  
-sub LimitPrincipalToGroup {
-  my $self = shift;
-  my $group = shift;
-  
-  $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'PrincipalType',
-	       VALUE => 'Group' );
-
-  $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'PrincipalId',
-	       VALUE => $group );
-
-}
-
-=head2 LimitPrincipalToType($type)
-
-Takes a single argument, $type.
-Limit the ACL to just a specific principal type
-
-$type is one of:
-  TicketOwner
-  TicketRequestor
-  TicketCc
-  TicketAdminCc
-  Everyone
-  User
-  Group
-
-=cut
-
-sub LimitPrincipalToType {
-  my $self=shift;
-  my $type=shift;  
-  $self->Limit(ENTRYAGGREGATOR => 'OR',
-		FIELD => 'PrincipalType',
-		VALUE => $type );
-}
-
-
-=head2 LimitPrincipalToId 
-
-Takes a single argument, the numeric Id of the principal to limit this ACL to. Repeated calls to this 
-function will broaden the scope of the search to include all principals listed.
-
-=cut
-
-sub LimitPrincipalToId {
-    my $self = shift;
-    my $id = shift;
-
-    if ($id =~ /^\d+$/) {
-	$self->Limit(ENTRYAGGREGATOR => 'OR',
-		     FIELD => 'PrincipalId',
-		     VALUE => $id );
-    }
-    else {
-	$RT::Logger->warn($self."->LimitPrincipalToId called with '$id' as an id");
-	return undef;
-    }
-}
-
 
 #wrap around _DoSearch  so that we can build the hash of returned
 #values 
@@ -256,11 +122,7 @@ sub _BuildHash {
     my $self = shift;
 
     while (my $entry = $self->Next) {
-       my $hashkey = $entry->RightScope . "-" .
-                             $entry->RightAppliesTo . "-" . 
-                             $entry->RightName . "-" .
-                             $entry->PrincipalId . "-" .
-                             $entry->PrincipalType;
+       my $hashkey = $entry->ObjectType . "-" .  $entry->ObjectId . "-" .  $entry->RightName . "-" .  $entry->PrincipalId . "-" .  $entry->PrincipalType;
 
         $self->{'as_hash'}->{"$hashkey"} =1;
 
