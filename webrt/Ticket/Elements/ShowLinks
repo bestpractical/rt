@@ -16,7 +16,7 @@ Depended on by:<BR>
 [<%$member->Status%>]
 % }
 </UL>
-SuperTickets:<BR>	
+Parents:<BR>	
 <UL>
 % while (my $Link = $Ticket->MemberOf->Next) {
 % my $member = $Link->TargetObj;
@@ -26,7 +26,7 @@ SuperTickets:<BR>
 % }
 </UL>
 
-SubTickets:<BR>
+Children:<BR>
 <& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
 <BR>
 References:<BR>
