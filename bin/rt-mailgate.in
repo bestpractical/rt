@@ -407,7 +407,7 @@ use LWP::UserAgent;
 use constant EX_TEMPFAIL => 75;
 
 my %opts;
-GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "extension=s" );
+GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "extension=s", "timeout=i" );
 
 if ( $opts{help} ) {
     require Pod::Usage;
@@ -445,6 +445,7 @@ warn "Connecting to $full_url" if $opts{'debug'};
 
 
 
+$ua->timeout(exists($opts{'timeout'}) ? $opts{'timeout'} : 180);
 my $r = $ua->post( $full_url, {%args} );
 check_failure($r);
 
@@ -502,7 +503,10 @@ Usual invocation (from MTA):
     rt-mailgate --action (correspond|comment) --queue queuename
                 --url http://your.rt.server/
                 [ --debug ]
-                [ --extension (queue|action|ticket)
+                [ --extension (queue|action|ticket) ]
+                [ --timeout seconds ]
+
+
 
 See C<man rt-mailgate> for more.
 
@@ -536,6 +540,12 @@ is related to.  "action" will allow the user to specify either "comment" or
 =item C<--debug> OPTIONAL
 
 Print debugging output to standard error
+
+
+=item C<--timeout> OPTIONAL
+
+Configure the timeout for posting the message to the web server.  The
+default timeout is 3 minutes (180 seconds).
 
 
 =head1 DESCRIPTION
