@@ -143,34 +143,30 @@ sub IsApplicable  {
 # that don't matter much to anybody else.
 
 sub SetRTSpecialHeaders {
-  my $self = shift;
+    my $self = shift;
     
-  unless ($self->TemplateObj->MIMEObj->head->get('RT-Action')) {
-    $self->TemplateObj->MIMEObj->head->add('RT-Action', $self->Describe);
-  }
-  
-  unless ($self->TemplateObj->MIMEObj->head->get('RT-Scrip')) {
-    $self->TemplateObj->MIMEObj->head->add('RT-Scrip', $self->{'ScripObj'}->Description);
-  }
-  
-  $self->TemplateObj->MIMEObj->head->add('RT-Ticket-ID', $self->TicketObj->id());
-  $self->TemplateObj->MIMEObj->head->add('RT-Loop-Prevention', $RT::rtname);
-
-  $self->TemplateObj->MIMEObj->head->add
-    ('RT-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
-
-  $self->TemplateObj->MIMEObj->head->add('RT-Originator', $self->TransactionObj->Creator->EmailAddress);
-  return();
-
+    
+    
+    $self->TemplateObj->MIMEObj->head->add('RT-Ticket', $RT::rtname. " #".$self->TicketObj->id());
+    $self->TemplateObj->MIMEObj->head->add
+      ('Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
+    
+    $self->TemplateObj->MIMEObj->head->add('RT-Originator', $self->TransactionObj->Creator->EmailAddress);
+    return();
+    
 }
 
 # }}}
 
 # {{{ sub SetReferences
 
-# This routine will set the References: and In-Reply-To headers,
+=head2 SetReferences 
+  
+  # This routine will set the References: and In-Reply-To headers,
 # autopopulating it with all the correspondence on this ticket so
-# far. This should make RT responses threadable. Yay!
+# far. This should make RT responses threadable.
+
+=cut
 
 sub SetReferences {
   my $self = shift;
@@ -186,12 +182,6 @@ sub SetReferences {
      "-".
      $self->TransactionObj->id()."\@".$RT::rtname.">");
 
-  # Changed this one to In-Reply-To.  References are mostly used in
-  # News.  For email messages one reference is usually enough, and we
-  # set it up by In-Reply-To rather than References.  This is mostly
-  # IMO as RFC822 (unfortunately) isn't very clear at this.  I'm not
-  # familiar with how this is threated in eventual follow-ups of
-  # rfc822 --TobiX
 
   # TODO $RT::rtname should be replaced by $RT::hostname to form valid
   # message-ids (ref rfc822)
@@ -211,18 +201,18 @@ sub SetReferences {
 sub SetMessageID {
   my $self = shift;
 
-  # TODO this one might be sort of broken.  If we have several scrips
+  # TODO this one might be sort of broken.  If we have several scrips +++
   # sending several emails to several different persons, we need to
   # pull out different message-ids.  I'd suggest message ids like
   # "rt-ticket#-transaction#-scrip#-receipient#"
 
   # TODO $RT::rtname should be replaced by $RT::hostname to form valid
   # message-ids (ref rfc822)
-
+  
   $self->TemplateObj->MIMEObj->head->add
     ('Message-ID', "<rt-".$self->TicketObj->id().
      "-".
-     $self->TransactionObj->id()."\@".$RT::rtname.">")
+     $self->TransactionObj->id()."." .rand(20) . "\@".$RT::rtname.">")
       unless $self->TemplateObj->MIMEObj->head->get('Message-ID');
 }
 
@@ -237,11 +227,6 @@ sub SetContentType {
   # TODO do we really need this with MIME::Entity? I think it autosets
   # it -- jesse
 
-  # I guess it can autoset Content-Type if it's different from
-  # text/plain, but MIME::Entity has no way to determinate what
-  # charset a template is written in.  I should know most about this
-  # issue; my maid uses ISO-8859-4 and my gf uses KOI-8. :) --TobiX
-
   # The Template's Content-Type is used when nothing else is set.
 
   # TODO by default, we should peek at the Content-Type of the
@@ -250,7 +235,7 @@ sub SetContentType {
   # content-type than text/plain.  Eventually we should fix the
   # template system so the original message always will be a separate
   # MIME part.
-
+  
   unless ($self->TemplateObj->MIMEObj->head->get('Content-Type')) {
       $self->TemplateObj->MIMEObj->head->add('Content-Type', 'text/plain; charset=ISO-8859-1');
   }
@@ -273,13 +258,13 @@ sub SetReturnAddress {
   
   
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
-    my $friendly_name=$self->TransactionObj->Creator->RealName;
-    # TODO: this "via RT" should really be site-configurable.
-    $self->TemplateObj->MIMEObj->head->add('From', "$friendly_name via RT <$email_address>");
+      my $friendly_name=$self->TransactionObj->Creator->RealName;
+      # TODO: this "via RT" should really be site-configurable.
+      $self->TemplateObj->MIMEObj->head->add('From', "$friendly_name via RT <$email_address>");
   }
   
   unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
-    $self->TemplateObj->MIMEObj->head->add('Reply-To', "$email_address");
+      $self->TemplateObj->MIMEObj->head->add('Reply-To', "$email_address");
   }
   
 }
@@ -344,21 +329,38 @@ sub SetHeader {
 
 sub SetTo {
     my $self=shift;
-    return $self->SetHeader('To', 'jesse',@_);
+    my $addresses = shift;
+    return $self->SetHeader('To',$addresses);
 }
 # }}}
 
 # {{{ sub SetCc
+=head2 SetCc
+
+Takes a string that is the addresses you want to Cc
+
+=cut
+
 sub SetCc {
     my $self=shift;
-    return $self->SetHeader('Cc', @_);
+    my $addresses = shift;
+
+    return $self->SetHeader('Cc', $addresses);
 }
 # }}}
 
 # {{{ sub SetBcc
+
+=head2 SetBcc
+
+Takes a string that is the addresses you want to Bcc
+
+=cut
 sub SetBcc {
     my $self=shift;
-    return $self->SetHeader('Bcc', @_);
+    my $addresses = shift;
+
+    return $self->SetHeader('Bcc', $addresses);
 }
 
 # }}}
@@ -375,7 +377,13 @@ sub SetPrecedence {
 
 # {{{ sub SetSubject
 
-# This routine sets the subject. it does not add the rt tag. that gets done elsewhere
+=head2 SetSubject
+
+This routine sets the subject. it does not add the rt tag. that gets done elsewhere
+If $self->{'Subject'} is already defined, it uses that. otherwise, it tries to get
+the transaction's subject.
+
+=cut 
 
 sub SetSubject {
   my $self = shift;
@@ -397,14 +405,17 @@ sub SetSubject {
 
 # {{{ sub SetSubjectToken
 
-# This routine fixes the RT tag in the subject.  It might be
-# overridden only in some rare cases.
+=head2 SetSubjectToken
+
+ This routine fixes the RT tag in the subject. It's unlikely that you want to overwrite this.
+
+=cut
 
 sub SetSubjectToken {
-  my $self=shift;
-  my $tag = "[$RT::rtname #".$self->TicketObj->id."]";
-  my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
-  $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub")
+    my $self=shift;
+    my $tag = "[$RT::rtname #".$self->TicketObj->id."]";
+    my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
+    $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub")
       unless $sub =~ /\Q$tag\E/;
 }
 
@@ -419,9 +430,7 @@ Returns the message's envelope To.
 
 sub EnvelopeTo {
     my $self = shift;
-    
     return($self->{'EnvelopeTo'});
-
 }
 
 

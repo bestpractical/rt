@@ -33,7 +33,8 @@ my @results = ('');
 foreach $field (@fields) {
     my ($code, $msg);
     my $check = "if ((defined \$ARGS{'$field'}) and (\$ARGS{'$field'} ne \$TemplateObj->$field))
-    {        (\$code, \$msg) = \$TemplateObj->Set$field(\$ARGS{'$field'});
+    {   \$ARGS{'$field'} =~ s/\\r\\n/\\n/g;     
+        (\$code, \$msg) = \$TemplateObj->Set$field(\$ARGS{'$field'});
 
     push \@results, \$msg;  }";
     $RT::Logger->debug("$check");

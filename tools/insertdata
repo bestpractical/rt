@@ -133,10 +133,12 @@ my @scrips = (
 	       Name => 'Autoreply', 
 	       Description =>  'Sends an automatic response to the requestor when a ticket was created',
 	       Type=>  'Create',
-	       ExecModule => 'AutoReply',
+	       ExecModule => 'SendEmail',
 	       DefaultTemplate => '1',
 	       Argument => ''
 	      },
+
+
 	      {
 	       Name =>			   'NotifyOwnerOnTransaction',
 	       Description =>   'Sends mail to owner when anything happens',
@@ -147,21 +149,22 @@ my @scrips = (
 	      },
 	      {
 	       
-	       Name =>			   'NotifyAdminWatchersOnCorrespond',
-	       Description =>			  'Sends mail to administrative watchers when email comes in',
-	       Type => 			  'Correspond,Create',
-	       ExecModule =>			   'SendEmail',
-	       DefaultTemplate =>			   '3',
-	       Argument =>			   ''},
+	       Name =>	          'NotifyAdminWatchersOnCorrespond',
+	       Description =>	  'Sends mail to administrative watchers when email comes in',
+	       Type => 		  'Correspond,Create',
+	       ExecModule =>	  'SendEmail',
+	       DefaultTemplate => '3',
+	       Argument =>        ''
+	      },
 	      
 	      
 	      {
 	       
-	       Name =>			   'NotifyRegularWatchersOnCorrespond', 
-	       Description =>			  'Send "official" mail to (external) Cc watchers and (external) requestors whenever correspondence comes in',
-	       Type => 			   'Correspond',
-	       ExecModule =>			   'SendEmail',
-	       DefaultTemplate =>			   '4',
+	       Name =>             'NotifyWatchersOnCorrespond', 
+	       Description =>      'Send "official" mail to requestors when correspondence comes in',
+	       Type => 'Correspond',
+	       ExecModule =>  'SendEmail',
+	       DefaultTemplate =>   '4',
 	       Argument =>			   ''
 	      },
 	      
@@ -177,7 +180,7 @@ my @scrips = (
 	      
 	      {
 	       
-	       Name =>			   'NotifyAllWatchersOnStatus', 
+	       Name =>			   'NotifyWatchersOnStatus', 
 	       Description =>			   'Send mail to watchers whenever a ticket\'s status changes',
 	       Type => 			   'Resolve/Stall/Open/Kill',
 	       ExecModule =>			   'SendEmail',
@@ -266,10 +269,14 @@ my @templates = (
                 Queue   => '1',
                 Alias => 'Autoreply',
 				Title => 'Default Autoresponse Template', 
-				Content => 'To: {$Ticket->RequestorsAsString}
+				Content => 
+'To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
 Bcc: {$Ticket->AdminCcAsString}
+From: Request Tracker <{$Ticket->QueueObj->CorrespondAddress}>
+Reply-To: {$Ticket->QueueObj->CorrespondAddress}
 Subject: AutoReply: {$Ticket->Subject}
+
 
        Greetings,
         This message has been automatically generated in response to your
@@ -294,7 +301,7 @@ problem. To do so, you may reply to this message.
                 Queue   => '1',
                 Alias => 'Transaction', 
                   Title => 'Default transaction template',
-                  Content => 'Reply-To: {$Ticket->QueueObj->CommentAddress} (Replies will be entered as comments)
+                  Content => 'Reply-To: <{$Ticket->QueueObj->CommentAddress}> Replies will be entered as comments
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
