@@ -396,6 +396,8 @@ testify-pods:
 regenerate-catalogs:
 	$(PERL) sbin/extract-message-catalog
 
+license-tag:
+	$(PERL) sbin/license_tag
 
 factory: createdb insert-schema
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
