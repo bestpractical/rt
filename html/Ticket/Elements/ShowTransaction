@@ -53,7 +53,9 @@ unless ($Collapsed) {
 	   eval {$headers =~ s/^([^:]+)(?=:)/loc($1)/em; } # we eval here to catch errors when 5.6 panics
       }
      # 13456 is a random # of about the biggest size we want to see inline text
-     my $MAX_INLINE_BODY = 13456;
+     # It's here to catch anyone who hasn't updated RT_Config.pm since this
+     # constant was moved out there.
+     my $MAX_INLINE_BODY = $RT::MaxInlineBody || 13456;
      if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
 				    $message->ContentLength < $MAX_INLINE_BODY ) {
          require Text::Quoted;

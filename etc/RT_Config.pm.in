@@ -310,6 +310,12 @@ Set($WebExternalAuto , undef);
 
 # Set($WebSessionClass , 'Apache::Session::File');
 
+# $MaxInlineBody is the maximum attachment size that we want to see
+# inline when viewing a transaction. 13456 is a random sane-sounding
+# default.
+
+Set($MaxInlineBody, 13456);
+
 # }}}
 
 # {{{ RT UTF-8 Settings
