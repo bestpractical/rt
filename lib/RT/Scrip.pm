@@ -104,11 +104,11 @@ sub LoadAction  {
   my $type = "RT::Action::". $self->Action;
   
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
-  $self->{'ScriptObject'}  = $type->new ( TicketObj => $args{'TicketObj'},
-					 TransactionObj => $args{'TransactionObj'},
-					  TemplateObj => $self->TemplateObj,
-					  Argument => $self->Argument,
-					 Type => $self->Type,
+  $self->{'ScriptObject'}  = $type->new ( 'TicketObj' => $args{'TicketObj'},
+					  'TransactionObj' => $args{'TransactionObj'},
+					  'TemplateObj' => $self->TemplateObj,
+					  'Argument' => $self->Argument,
+					  'Type' => $self->Type,
 				       );
 }
 # }}}
@@ -118,7 +118,7 @@ sub TemplateObj {
   my $self = shift;
   if (!$self->{'TemplateObj'})  {
     require RT::Scrip;
-    $self->{'TemplateObj'} = RT::TemplateObj->new($self->CurrentUser);
+    $self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
     $self->{'TemplateObj'}->load($self->Template());
   
   }
