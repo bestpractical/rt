@@ -5,9 +5,6 @@ unless ((defined $Default) or
 	($current <= 0)) {
 	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
                                             localtime($current);
-	$mon++;
-	$year+=1900;
-
         $Default = sprintf("%04d-%02d-%02d %02d:%02d",                         
                            $year+1900,$mon+1,$mday,                            
                            $hour,$min);   
