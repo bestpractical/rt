@@ -5,7 +5,7 @@
 ##  - layouts can be loaded with configure's --enable-layout=ID option
 ##  - when no --enable-layout option is given, the default layout is `RT'
 ##  - a trailing plus character (`+') on paths is replaced with a
-##    `/<target>' suffix where <target> is currently hardcoded to 'rt2'.
+##    `/<target>' suffix where <target> is currently hardcoded to 'rt3'.
 ##    (This may become a configurable parameter at some point.)
 ##
 ##  The following variables must _all_ be set:

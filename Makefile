@@ -30,8 +30,6 @@ CONFIG_FILE_PATH	=	/opt/rt3/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
 SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
-GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)";\
-		   print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
@@ -74,7 +72,7 @@ RT_MAN_PATH		=	/opt/rt3/man
 RT_VAR_PATH		=	/opt/rt3/var
 RT_LOCAL_PATH		=	/opt/rt3/local
 LOCAL_LEXICON_PATH	=	/opt/rt3/local/po
-MASON_HTML_PATH		=	/opt/rt3/html
+MASON_HTML_PATH		=	/opt/rt3/share/html
 MASON_LOCAL_HTML_PATH	=	/opt/rt3/local/html
 MASON_DATA_PATH		=	/opt/rt3/var/mason_data
 MASON_SESSION_PATH	=	/opt/rt3/var/session_data
@@ -426,6 +424,7 @@ tag-and-release-never-by-hand:
 	mkdir /tmp/$(TAG)
 	cd /tmp/$(TAG); \
 		aegis -cp -ind -delta $(TAG) . ;\
+		make reconfigure;\
 		chmod 600 Makefile;\
 		aegis --report --project rt.$(RT_VERSION_MAJOR) \
 		      --page_width 80 \
@@ -439,6 +438,7 @@ tag-and-release-never-by-hand:
 reconfigure:
 	aclocal -I m4
 	autoconf
+	chmod 755 ./configure
 	./configure
 
 rpm:

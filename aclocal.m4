@@ -69,14 +69,16 @@ AC_DEFUN([RT_LAYOUT],[
 		rt_layout_name=no
 	else
 		pldconf=./config.pld
-		changequote({,})
-		sed -e "1,/[  ]*<[lL]ayout[   ]*$2[   ]*>[    ]*/d" \
-		    -e '/[    ]*<\/Layout>[   ]*/,$d' \
-		    -e "s/^[  ]*//g" \
-		    -e "s/:[  ]*/=\'/g" \
-		    -e "s/[   ]*$/'/g" \
-		    $1 > $pldconf
-		changequote([,])
+		$PERL  -p -e "\$layout = '$2';"  -e '
+		s/.*<Layout\s+$layout>//gims; 
+		s/\<\/Layout\>.*$//gism; 
+		s/^#.*$//;
+		s/^\s+//gi;
+		s/\s+$/\n/gi;
+		# m4 will not let us just use $1, we need @S|@1
+		s/^\s*(.*?)\s*:\s*(.*)$/\(test "x\@S|@@S|@1" = "xNONE" || test "x\@S|@@S|@1" = "x") && @S|@1=@S|@2/gi;
+		 ' < $1 > $pldconf
+
 		if test -s $pldconf; then
 			rt_layout_name=$2
 			. $pldconf
@@ -116,7 +118,7 @@ AC_DEFUN([RT_LAYOUT],[
 		else
 			rt_layout_name=no
 		fi
-		rm $pldconf
+		#rm $pldconf
 	fi
 	RT_SUBST_EXPANDED_ARG(prefix)
 	RT_SUBST_EXPANDED_ARG(exec_prefix)

@@ -61,7 +61,7 @@ $LogDir = '/opt/rt3/var/log';
                          
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
-$MasonComponentRoot = '/opt/rt3/html';
+$MasonComponentRoot = '/opt/rt3/share/html';
 
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local
 # mason html files.
