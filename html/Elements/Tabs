@@ -46,6 +46,9 @@ my $basetabs = {     A => { title => loc('Homepage'),
                     B => { title => loc('Tickets'),
                         path => 'Search/Build.html'
                       },
+                    C => { title => loc('Tools'),
+                           path => 'Tools/Offline.html'
+                         },
                     E => { title => loc('Configuration'),
                            path => 'Admin/'
                          },

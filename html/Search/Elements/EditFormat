@@ -12,7 +12,7 @@ Format:
 </td>
 <tr>
 <td valign=top>
-<select size="6" name="SelectDisplayColumns">
+<select size="6" name="SelectDisplayColumns" multiple>
 % my $i = 0;
 % while ($i < scalar @$AvailableColumns) {
 % my $field = $AvailableColumns->[$i];

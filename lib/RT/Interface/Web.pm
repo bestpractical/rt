@@ -68,6 +68,7 @@ sub NewApacheHandler {
         default_escape_flags => 'h',
         allow_globals        => [qw(%session)],
         data_dir => "$RT::MasonDataDir",
+        autoflush => 1,
         @_
     );
 
@@ -98,7 +99,8 @@ sub NewCGIHandler {
         ],
         data_dir => "$RT::MasonDataDir",
         default_escape_flags => 'h',
-        allow_globals        => [qw(%session)]
+        allow_globals        => [qw(%session)],
+        autoflush => 1,
     );
   
 
@@ -917,52 +919,12 @@ sub UpdateRecordObject {
         @_
     );
 
-    my (@results);
+    my $Object = $args{'Object'};
+    my @results = $Object->Update(AttributesRef => $args{'AttributesRef'},
+				  ARGSRef       => $args{'ARGSRef'},
+				  AttributePrefix => undef,
+				  );
 
-    my $object     = $args{'Object'};
-    my $attributes = $args{'AttributesRef'};
-    my $ARGSRef    = $args{'ARGSRef'};
-    foreach my $attribute (@$attributes) {
-        my $value;
-        if ( defined $ARGSRef->{$attribute} ) {
-            $value = $ARGSRef->{$attribute};
-        }
-        elsif (
-              defined( $args{'AttributePrefix'} )
-              && defined(
-                  $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute }
-              )
-          ) {
-            $value = $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute };
-
-        } else {
-                next;
-        }
-
-            $value =~ s/\r\n/\n/gs;
-
-        if ($value ne $object->$attribute()){
-
-              my $method = "Set$attribute";
-              my ( $code, $msg ) = $object->$method($value);
-
-              push @results, loc($attribute) . ': ' . loc_fuzzy($msg);
-=for loc
-                                   "[_1] could not be set to [_2].",       # loc
-                                   "That is already the current value",    # loc
-                                   "No value sent to _Set!\n",             # loc
-                                   "Illegal value for [_1]",               # loc
-                                   "The new value has been set.",          # loc
-                                   "No column specified",                  # loc
-                                   "Immutable field",                      # loc
-                                   "Nonexistant field?",                   # loc
-                                   "Invalid data",                         # loc
-                                   "Couldn't find row",                    # loc
-                                   "Missing a primary key?: [_1]",         # loc
-                                   "Found Object",                         # loc
-=cut
-          };
-    }
     return (@results);
 }
 

@@ -101,6 +101,7 @@ DBIx::SearchBuilder 0.97
 Text::Template
 File::Spec 0.8
 HTML::Entities 
+HTML::Scrubber 0.08
 Net::Domain
 Log::Dispatch 2.0
 Locale::Maketext 1.06

@@ -21,6 +21,7 @@
 # 
 # 
 # END LICENSE BLOCK
+
 =head1 NAME
 
   RT::Queue - an RT Queue object
@@ -75,8 +76,9 @@ $RIGHTS = {
     ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
     ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
 
-    ShowTicket         => 'Show ticket summaries',                    # loc_pair
-    ShowTicketComments => 'Show ticket private commentary',           # loc_pair
+    ShowTicket         => 'See ticket summaries',                    # loc_pair
+    ShowTicketComments => 'See ticket private commentary',           # loc_pair
+    ShowOutgoingEmail => 'See exact outgoing email messages and their recipeients',           # loc_pair
 
     Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
     WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair

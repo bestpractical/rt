@@ -41,17 +41,20 @@
 
    &>
 <div align=right>
-<a href="Bulk.html<%$QueryString%>"><&|/l&>Update all these tickets at once</&></a><br>
-<a href="Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a><br>
-<a href="Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a><br>
-<a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Download</&></a><br>
+<a href="Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br>
+<a href="Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
+<a href="Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a> |
+<a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Work offline</&></a><br>
 </div>
 <%INIT>
 my ($title, $ticketcount);
 $session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless
-($session{'tickets'});
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
 $session{'tickets'}->FromSQL($Query) if ($Query);
+
+
+
+
 
 if ( $session{'tickets'}->Query()) {
     $ticketcount = $session{tickets}->CountAll();
@@ -60,11 +63,13 @@ if ( $session{'tickets'}->Query()) {
     $title = loc("Find tickets");
 }
 
-my $tabformat = $Format;
-$tabformat =~ s/#/%23/g;
-$tabformat =~ s/&/%26/g;
-my $QueryString =
-"?Query=$Query&Format=$tabformat&Rows=".$ARGS{'Rows'}."&Page=".$ARGS{'Page'};
+my $QueryString = "?".$m->comp('/Elements/QueryString',
+				Query => $Query,
+				Format => $Format,
+				Rows => $ARGS{'Rows'},
+				Page => $ARGS{'Page'});	
+
+
 
 </%INIT>
 <%CLEANUP>

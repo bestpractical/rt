@@ -67,10 +67,6 @@ sub _Init {
                  ALIAS2 => $self->{'princalias'},
                  FIELD2 => 'id' );
 
-    $self->Limit( ALIAS    => $self->{'princalias'},
-                  FIELD    => 'PrincipalType',
-                  OPERATOR => '=',
-                  VALUE    => 'User' );
     return (@result);
 }
 

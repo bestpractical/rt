@@ -646,6 +646,9 @@ sub BriefDescription {
             elsif ( $self->Field eq 'HasMember' ) {
                 return $self->loc( "Member [_1] added", $value );
             }
+            elsif ( $self->Field eq 'MergedInto' ) {
+                return $self->loc( "Merged into [_1]", $value );
+            }
         }
         else {
             return ( $self->Data );
@@ -799,6 +802,19 @@ sub _Value {
             return (undef);
         }
     }
+    elsif ( $self->__Value('Type') eq 'CommentEmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowTicketComments')
+            && $self->CurrentUserHasRight('ShowOutgoingEmail') ) {
+            return (undef);
+        }
+
+    }
+    elsif ( $self->__Value('Type') eq 'EmailRecord' ) {
+        unless ( $self->CurrentUserHasRight('ShowOutgoingEmail')) {
+            return (undef);
+        }
+
+    }
 
     #if they ain't got rights to see, don't let em
     else {
@@ -906,4 +922,12 @@ sub _LookupTypes {
     "RT::Queue-RT::Ticket-RT::Transaction";
 }
 
+# Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
+sub _CacheConfig {
+  {
+     'cache_p'        => 1,
+     'fast_update_p'  => 1,
+     'cache_for_sec'  => 6000,
+  }
+}
 1;

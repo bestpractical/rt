@@ -1,0 +1,78 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, Title => loc("Offline upload") &>
+<& Elements/Tabs, 
+    current_tab => "Tools/Offline.html", 
+    Title => loc("Offline edits") &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<FORM>
+<textarea name=string cols=90 rows=30>
+<%$string%>
+</textarea>
+<& /Elements/Submit, Label => loc('Upload'), Caption => loc("Upload your changes"), color => "#993333" &>
+
+</FORM>
+
+<%INIT>
+
+my @results;
+use RT::Action::CreateTickets;
+my $action = new RT::Action::CreateTickets;
+my $string;
+
+if ($ARGS{'string'}) {
+    $action->Parse($ARGS{string});
+    push @results, $action->CreateByTemplate();
+    push @results, $action->UpdateByTemplate();
+    $string = $ARGS{string};
+} else {
+    if ($ARGS{'Query'}) {
+	my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+	$Tickets->FromSQL($ARGS{'Query'});
+	
+	while (my $t = $Tickets->Next) {
+	    $string .= "===Update-Ticket: " . $t->Id . "\n";
+	    $string .= $action->GetUpdateTemplate($t);
+	    $string .= "" . "\n";
+	}
+	
+	$string .= "" . "\n";
+	$string .= "===# DO NOT EDIT BELOW THIS LINE#===\n";
+	$string .= "" . "\n";
+	
+	while (my $t = $Tickets->Next) {
+	    $string .= "===# DO NOT EDIT #===\n";
+		$string .= "===Base-Ticket: " . $t->Id . "\n";
+	    $string .= $action->GetBaseTemplate($t);
+	    $string .= "===# DO NOT EDIT #===\n";
+		$string .= "" . "\n";
+	}
+    } else {
+	$string .= "===Create-Ticket: ticket1\n";
+	$string .= $action->GetCreateTemplate();
+    }
+}
+</%INIT>

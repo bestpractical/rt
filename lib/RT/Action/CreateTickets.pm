@@ -287,8 +287,12 @@ perl(1).
 my %LINKTYPEMAP = (
     MemberOf => { Type => 'MemberOf',
                   Mode => 'Target', },
+    Parents => { Type => 'MemberOf',
+		 Mode => 'Target', },
     Members => { Type => 'MemberOf',
                  Mode => 'Base', },
+    Children => { Type => 'MemberOf',
+		  Mode => 'Base', },
     HasMember => { Type => 'MemberOf',
                    Mode => 'Base', },
     RefersTo => { Type => 'RefersTo',
@@ -375,8 +379,9 @@ sub CreateByTemplate {
 
 	my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%$ticketargs);
 
-	push @results, $T::Tickets{$template_id}->loc("Ticket [_1]", $T::Tickets{$template_id}->Id) . ': ' .$msg;
-
+	foreach my $res (split('\n', $msg)) {
+	    push @results, $T::Tickets{$template_id}->loc("Ticket [_1]", $T::Tickets{$template_id}->Id) . ': ' .$res;
+	}
 	if (!$id) {
 	    if ($self->TicketObj) {
 		$msg = "Couldn't create related ticket $template_id for ".
@@ -708,7 +713,9 @@ sub GetUpdateTemplate {
     $string .= "FinalPriority: " . $t->FinalPriority . "\n";
 
     foreach my $type (sort keys %LINKTYPEMAP) {
-	if ($type eq "HasMember") {
+	# don't display duplicates
+	if ($type eq "HasMember" || $type eq "Members"
+	    || $type eq "MemberOf") {
 	    next;
 	}
 	$string .= "$type: ";
@@ -779,8 +786,13 @@ sub GetCreateTemplate {
     $string .= "InitialPriority: \n";
     $string .= "FinalPriority: \n";
 
-    foreach (keys %LINKTYPEMAP) {
-	$string .= "$_: \n";
+    foreach my $type (keys %LINKTYPEMAP) {
+	# don't display duplicates
+	if ($type eq "HasMember" || $type eq 'Members' 
+	    || $type eq 'MemberOf') {
+	    next;
+	}
+	$string .= "$type: \n";
     }
     return $string;
 }

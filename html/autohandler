@@ -64,8 +64,7 @@ unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 $r->content_type("text/html; charset=utf-8");
 
 # If it's a noauth file, don't ask for auth.
-if ($m->base_comp->path =~ '^/+NoAuth/' ||
-    $m->base_comp->path =~ '^/+REST/\d+\.\d+/NoAuth/')
+if ($m->base_comp->path =~ $RT::WebNoAuthRegex )
 {
     $m->call_next(%ARGS);
     $m->abort();
@@ -117,6 +116,7 @@ elsif ( $RT::WebExternalAuth ) {
 				       'HomePhone', 'WorkPhone', 'MobilePhone',
 				       'PagerPhone', 'Address1', 'Address2', 'City',
 				       'State', 'Zip', 'Country') {
+               $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'NewUser');
 		    
 		    my $method = "Set$attribute";
 		    $UserObj->$method($new_user_info->{$attribute}) 

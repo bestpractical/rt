@@ -2,7 +2,6 @@
 $query => undef
 $per_page => 25
 $page => 1
-
 </%args>
 <%init>
 my $tix = RT::Tickets->new($session{'CurrentUser'});
@@ -10,6 +9,7 @@ $tix->FromSQL($query);
 my $i;
 </%init>
 <& Elements/Header &>
+%# {{{ javascript
 <script>
 var oldcurrent;
 var oldcurrentcolor;
@@ -47,6 +47,7 @@ function hide(num) {
     chunk.style.display = "none";
 }
 </script>
+%#  }}}
 % if ($tix->Count) {
 <font size="-1">
 Found <%$tix->Count%> tickets.
@@ -72,18 +73,18 @@ href="Search.html?query=<%$query|un%>&page=<%$page+1%>&per_page=<%$per_page%>">P
 </center>
 <br>
 <table width="100%" cellspacing=0 cellpadding="3">
-% while (my $ticket = $tix->Next) {
+% while ( my $ticket = $tix->Next) {
 % $i++;
-<tr id="ticket<%$ticket->Id%>"
- onclick="window.open('Work.html?id=<%$ticket->Id%>','View'); hilite(<%$ticket-Id%>);"
+<tr id="ticket<% $ticket->id %>"
+ onclick="window.open('Work.html?id=<%$ticket->id%>','View'); hilite(<%$ticket->Id%>);"
  class="<%$i%2 ? 'evenline' : 'oddline'%>">
 <td rowspan="2" align="right">
-	<a href="Work.html?id=<%$ticket->Id%>" 
+	<a href="Work.html?id=<%$ticket->id%>" 
     onClick="hilite(<%$ticket->Id%>)" 
-    target="View" ><span
-    id="id-<%$ticket->Id%>"><%$ticket->Id%></span></a></td>
+    target="View" ><span id="id-<%$ticket->Id%>"><%$ticket->Id%></span></a></td>
 <td colspan="4" wrap="1"><font size="-2">
-	<a href="Work.html?id=<%$ticket->Id%>" target="View"
+	<a href="Work.html?id=<%$ticket->Id%>" 
+		target="View"
     onClick="hilite(<%$ticket->Id%>)" 
     
     >

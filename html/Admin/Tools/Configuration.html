@@ -1,0 +1,53 @@
+<%init>
+require  Module::Versions::Report;
+my $title = loc('System Configuration');
+unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+ Abort(loc('This feature is only available to system administrators'));
+} 
+
+
+</%init>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/ToolTabs, 
+    current_tab => 'Admin/Tools/Configuration.html',
+    current_subtab => 'Admin/Tools/Configuration.html', 
+    Title => $title &>
+
+
+
+
+<h2><&|/l&>Loaded perl modules</&></h2>
+<pre>
+% my $report =  Module::Versions::Report::report();
+% my @report = grep { /v\d/ } split("\n",$report);
+<%join('<br>', @report)|n%>
+
+
+</pre>
+
+<h2><&|/l&>RT Variables</&></h2>
+<table>
+%{
+%no strict qw/refs/;
+
+%foreach my $key (sort keys %{*RT::}) {
+% next unless (${'RT::'.$key} );
+% next if (ref ${'RT::'.$key} );
+<tr><td>RT::<%$key%></td>
+<td>
+% if ($key =~ /Password/i) { 
+<i>Password not printed</i>
+% } else {
+<%${'RT::'.$key} %>
+% }
+</td>
+</tr>
+% }
+%}
+</table>
+
+<h2><&|/l&>Perl configuration</&></h2>
+% require Config;
+<pre>
+<%Config::myconfig()%>
+</pre>

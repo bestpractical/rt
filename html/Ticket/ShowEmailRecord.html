@@ -1,0 +1,26 @@
+<%attr>
+AutoFlush => 0
+</%attr>
+<%args>
+$Attachment => undef
+$Transaction => undef
+</%ARGS>
+<%init>
+     my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
+     $AttachmentObj->Load($Attachment) || Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
+
+
+     unless ($AttachmentObj->id) {
+        Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
+    }
+     unless ($AttachmentObj->TransactionId() == $Transaction ) {
+        Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
+     }
+$r->content_type('text/plain');
+</%init>
+<pre>
+<%$AttachmentObj->Headers%>
+
+<%$AttachmentObj->Content%>
+</pre>
+%$m->abort();

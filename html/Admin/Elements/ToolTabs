@@ -21,36 +21,36 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title&>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Edit.html?".$QueryString, 
-    Title => $title,
-    Format => $Format,
-    Query => $Query,
-    Rows => $ARGS{'Rows'} &>
-
-<& Elements/NewListActions, actions => \@actions &>
-
-<form method="post" action="Build.html">
-<input type="hidden" name="SearchId" value="<%$SearchId%>">
-<textarea name="Query" rows="8" cols="72"><%$Query%></textarea>
-<br>
-<textarea name="Format" rows="8" cols="72"><%$Format%></textarea>
-<br>
-<& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => loc("Apply your changes")&>
-</form>
+<& /Admin/Elements/Tabs, subtabs => $tabs, 
+    current_tab => 'Admin/Tools/', 
+    current_subtab => $current_tab, 
+    Title => $Title &>
 
 <%INIT>
-my $title = loc("Edit Query");
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
-my $QueryString = $m->comp('/Elements/QueryString', Query=>$Query,Format=>$Format,Rows=>$ARGS{'Rows'});
+  my $tabs = {
+                
+               A => { title => loc('System Configuration'),
+                           path => 'Admin/Tools/Configuration.html',
+                      }
 
+};
+
+  # Now let callbacks add their extra tabs
+  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"subtabs"} = $subtabs;
+      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+    }
+  }
 </%INIT>
 
-
+  
 <%ARGS>
-$Query => undef
-$Format => undef
-$SearchId => 'new'
-@actions => undef
+$id => undef
+$current_tab => undef
+$subtabs => undef
+$current_subtab => undef
+$Title => undef
 </%ARGS>
