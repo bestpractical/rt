@@ -91,6 +91,7 @@ sub _Accessible  {
 # }}}
 
 # {{{ sub Create 
+
 sub Create  {
   my $self = shift;
   my %args = (#TODO: insert argument list 
@@ -125,6 +126,7 @@ sub Create  {
 
   return (1,"User created");
 }
+
 # }}}
 
 # {{{ sub Delete 
@@ -261,9 +263,10 @@ user will fail.
 sub Disable {
         my $self = shift;
 			   if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
-				   return($self->_Set('Disabled',1));
+				   return($self->_Set(Field => 'Disabled', Value => 1));
 			   }
 }
+
 # }}}
 
 # {{{ sub Enable
@@ -280,7 +283,7 @@ sub Enable {
 	my $self = shift;
 	
 	if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
-	  return($self->_Set('Disabled',0));
+	  return($self->_Set(Field => 'Disabled', Value => 0));
 }
 }
 
@@ -328,16 +331,17 @@ Returns undef if they don't
 sub HasTicketRight {
 	my $self = shift;
 	my %args = ( TicketObj => undef,
-			 Right => undef,
-			 @_);
+		     Right => undef,
+		     @_);
 
 	#Check to make sure that the ticketobj is really a ticketobject	
 	unless (ref ($args{'TicketObj'}) =~ /^RT::Ticket/) {
 		$RT::Logger->debug("RT::User::HasTicketRight was passed $args{'TicketObj'} as a ticket object. It's type is ".ref($args{'TicketObj'})."\n ");
 	}
 	
+
 	return ($self->_HasRight(Scope => 'Ticket',
-				AppliesTo => $args{'TicketObj'}->Queue->Id,
+				AppliesTo => $args{'TicketObj'}->QueueObj->Id,
 				Right => "$args{'Right'}"));
 	
 }
@@ -358,8 +362,13 @@ sub HasSystemRight {
 	my $self = shift;
 	my %args = ( Right => 'undef',
 				 @_);
-	
+
+	if (!defined $args{'Right'}) {
+		$RT::Logger->debug("RT::User::HasSystemRight was passed in no right. this won't do");
+		return(0);
+	}	
 	return ($self->_HasRight ( Scope => 'System',
+				   AppliesTo => 0,
 				   Right => $args{'Right'}));
 	
 }
@@ -395,22 +404,35 @@ sub _HasRight {
 	
 	my $self = shift;
 	my %args = ( Right => undef,
-			 Scope => undef,
-			 AppliesTo => 0,
-			 ExtendedPrincipals => undef,
-			 @_);
-	
+	 	     Scope => undef,
+		     AppliesTo => undef,
+		     ExtendedPrincipals => undef,
+		     @_);
+		
 
 	if ($self->Disabled) {
 		$RT::Logger->debug ("Disabled User:  ".$self->UserId." failed access check for ".$args{'Right'}." to object ".$args{'Scope'}."/".$args{'AppliesTo'}."\n");
 		return (undef);
 	}
 
+	if (!defined $args{'Right'}) {
+		$RT::Logger->debug("_HasRight called without a right\n");
+		return(0);
+	}
+	elsif (!defined $args{'Scope'}) {
+		$RT::Logger->debug("_HasRight called without a scope\n");
+		return(0)
+	}
+	elsif (!defined $args{'AppliesTo'}) {
+		$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
+		return(0)
+	}
+
 	#If we've cached a win or loss for this lookup say so
 	#TODO Security +++ check to make sure this is complete and right
-	if (defined ($self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"})) {
-	    
-	    return  ($self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"});
+	if (defined ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"})) {
+	    #$RT::Logger->debug("Got a cached ACL decision for ".$args{'Right'}.$args{'Scope'}.$args{'AppliesTo'}."\n");	    
+	    return  ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
 	}
 
 	my $RightClause = "(Right = '$args{'Right'}')";
@@ -453,7 +475,7 @@ sub _HasRight {
   
 	#if there's a match, the right is granted
 	if ($hitcount) {
-	    $self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"}=1;
+	    $self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
 	    return (1);
 	}
 #	$RT::Logger->debug("No ACL matched $query_string_1\n");	
@@ -462,12 +484,12 @@ sub _HasRight {
 	
 	$hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_2);
 	if ($hitcount) {
-	    $self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"}=1;
+	    $self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=1;
 	    return (1);
 	}
 		
 	$RT::Logger->debug("No ACL matched $query_string_2\n")	;
-	$self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"}=0;
+	$self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"}=0;
 	return(0);
 }
 

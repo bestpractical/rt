@@ -78,12 +78,12 @@ sub PrintRow {
       $length = $1;
       my $Owner;
       if (!$length) {$length=8;}
-      if ($Ticket->Owner) {
-	$Owner = $Ticket->Owner->UserId;
+      if (defined $Ticket->Owner) {
+	$Owner = $Ticket->OwnerObj->UserId;
       }
       else {
-	$Owner = "Nobody";
-      }
+	$Owner = "Error!";
+	}
       printf "%-${length}.${length}s ", $Owner;
     }
     
@@ -100,7 +100,7 @@ sub PrintRow {
     elsif ($field =~ /^q(\d*)$/){ 
       $length = $1;
       if (!$length) {$length=8;}
-      printf "%-${length}.${length}s ", $Ticket->Queue->Id;
+      printf "%-${length}.${length}s ", $Ticket->QueueObj->Id;
     }
     
     elsif ($field =~ /^g(\d*)$/){ 
@@ -153,26 +153,26 @@ sub build_query  {
     
     if ($ARGV[$i] eq '-queue') {
       my $queue_id = $ARGV[++$i];
-      $Tickets->NewRestriction( FIELD => 'queue',
+      $Tickets->NewRestriction( FIELD => 'Queue',
 			VALUE => "$queue_id");
     }
     
     if ($ARGV[$i] eq '-owner') {
       my $owner = $ARGV[++$i];
-      $Tickets->NewRestriction( FIELD => 'owner',
+      $Tickets->NewRestriction( FIELD => 'Owner',
 			VALUE => "$owner");
       
     }
     
     if ($ARGV[$i] eq '-unowned'){
-      $Tickets->NewRestriction( FIELD => 'owner',
-			VALUE => "");
+      $Tickets->NewRestriction( FIELD => 'Owner',
+			VALUE => $RT::Nobody->Id);
       
     }
     if ($ARGV[$i] =~ '-prio'){
       my $operator = $ARGV[++$i];
       my $priority = $ARGV[++$i];
-      $Tickets->NewRestriction( FIELD => 'priority',
+      $Tickets->NewRestriction( FIELD => 'Priority',
 			OPERATOR => "$operator",
 			VALUE => "$priority");
     }
@@ -180,33 +180,31 @@ sub build_query  {
     if ($ARGV[$i] =~ '-stat'){
       my $status = $ARGV[++$i];
       print "Got some status\n";
-      $Tickets->NewRestriction( FIELD => 'status',
+      $Tickets->NewRestriction( FIELD => 'Status',
 			VALUE => "$status");
     }
     
     if ($ARGV[$i] eq '-open'){
-      $Tickets->NewRestriction( FIELD => 'status',
-			VALUE => "open");
+      $Tickets->NewRestriction(FIELD => 'Status', VALUE => 'open');
     }
     if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
-      $Tickets->NewRestriction( FIELD => 'status',
+      $Tickets->NewRestriction( FIELD => 'Status',
 			VALUE => "resolved");
       
       
     }
     if ($ARGV[$i] eq '-dead'){
-      $Tickets->NewRestriction( FIELD => 'status',
+      $Tickets->NewRestriction( FIELD => 'Status',
 			VALUE => "dead");
     }    
     
     if ($ARGV[$i] eq '-stalled'){
-      $Tickets->NewRestriction( FIELD => 'status',
-			VALUE => "stalled");
+      $Tickets->NewRestriction (FIELD => 'Status', VALUE => 'stalled');
     }
     
     if ($ARGV[$i] eq '-user') {
       my $requestors = $ARGV[++$i];
-      $Tickets->NewRestriction( FIELD => 'requestors',
+      $Tickets->NewRestriction( FIELD => 'Requestors',
 			VALUE => "%$requestors%",
 			OPERATOR => 'LIKE');
     }

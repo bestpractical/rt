@@ -258,8 +258,8 @@ sub SetReturnAddress {
   # From and Reply-To
   # $self->{comment} should be set if the comment address is to be used.
   my $email_address=$self->{comment} ? 
-    $self->TicketObj->Queue->CommentAddress :
-      $self->TicketObj->Queue->CorrespondAddress
+    $self->TicketObj->QueueObj->CommentAddress :
+      $self->TicketObj->QueueObj->CorrespondAddress
 	or warn "Can't find email address for queue?";
   
   

@@ -72,8 +72,8 @@ sub SetReturnAddress {
   # From and Reply-To
   # If we don't have a CorrespondAddress, we should RT's default 
   # correspond address
-  my $email_address = $self->TicketObj->Queue->CorrespondAddress ? 
-    $self->TicketObj->Queue->CorrespondAddress :
+  my $email_address = $self->TicketObj->QueueObj->CorrespondAddress ? 
+    $self->TicketObj->QueueObj->CorrespondAddress :
       $RT::CorrespondAddress
 	or warn "Can't find email address for queue?";
   

@@ -19,7 +19,7 @@ sub SetRecipients {
     $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
 
     if ($arg =~ /\bOwner\b/ && $self->TicketObj->Owner) {
-	push(@{$self->{To}}, $self->TicketObj->Owner->EmailAddress);
+	push(@{$self->{To}}, $self->TicketObj->OwnerObj->EmailAddress);
     }
 
     if ($arg =~ /\bRequestor\b/) {

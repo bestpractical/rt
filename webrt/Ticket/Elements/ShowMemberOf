@@ -1,6 +1,6 @@
 % while (my $Link = $Ticket->MemberOf->Next) {
 % my $member_of = $Link->TargetObj;
-<a href="/Ticket/Display.html?id=<%$member_of->Id%>"><%$member_of->Id%></a>: (<%$member_of->Owner->UserId%>) <%$member_of->Subject%> [<%$member_of->Status%>]<br>
+<a href="/Ticket/Display.html?id=<%$member_of->Id%>"><%$member_of->Id%></a>: (<%$member_of->OwnerObj->UserId%>) <%$member_of->Subject%> [<%$member_of->Status%>]<br>
 % }
 
 

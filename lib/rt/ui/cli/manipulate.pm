@@ -539,12 +539,12 @@ sub ShowSummary  {
 
 
     print <<EOFORM;
-Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->Queue->QueueId]}
+Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->QueueObj->QueueId]}
       Subject: @{[$Ticket->Subject]}
    Requestors: @{[$Ticket->RequestorsAsString]}
            Cc: @{[$Ticket->CcAsString]}
      Admin Cc: @{[$Ticket->AdminCcAsString]}
-        Owner: @{[$Ticket->Owner->UserId]}
+        Owner: @{[$Ticket->OwnerObj->UserId]}
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
           Due: @{[$Ticket->DueAsString]}
       Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->AgeAsString]})

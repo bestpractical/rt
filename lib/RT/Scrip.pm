@@ -170,63 +170,6 @@ sub DESTROY {
 
 # ACCESS CONTROL
 
-# {{{ sub DisplayPermitted 
-sub DisplayPermitted  {
-  my $self = shift;
-
-  my $actor = shift;
-  if (!$actor) {
-   my $actor = $self->CurrentUser;
- }
-#  if ($self->Queue->DisplayPermitted($actor)) {
- if (1){   
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-# }}}
-
-# {{{ sub ModifyPermitted 
-sub ModifyPermitted  {
-  my $self = shift;
-  my $actor = shift;
-  if (!$actor) {
-    my $actor = $self->CurrentUser;
-  }
-#  if ($self->Queue->ModifyPermitted($actor)) {
- if (1) {   
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-# }}}
-
-# {{{ sub AdminPermitted 
-sub AdminPermitted  {
-  my $self = shift;
-  my $actor = shift;
-  if (!$actor) {
-    my $actor = $self->CurrentUser;
-  }
-
-
-#  if ($self->ACL->AdminPermitted($actor)) {
- if (1) {   
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-# }}}
-
 
 1;
 

@@ -143,25 +143,54 @@ sub LongSinceUpdateAsString {
 # {{{ sub _Set 
 sub _Set  {
   my $self = shift;
-  my $field = shift;
+
+  my %args = ( Field => undef,
+	       Value => undef,
+	       IsSQL => undef,
+	       @_ );
+
+
   #if the user is trying to modify the record
-  $RT::Logger->err("in RT::Record::Set for $self ".$self->Id ."\n"); 
+  if ((!defined ($args{'Field'})) || (!defined ($args{'Value'}))) {
+  $RT::Logger->debug("in RT::Record::Set for $self ".$self->Id ."'". $args{'Field'}."' '".$args{'Value'}."'\n"); 
+   use Carp;
+   confess;
+   }
 
-  use RT::Date;
-  my $now = new RT::Date($self->CurrentUser);
-  $now->SetToNow();
-  
-  $error_condition = $self->_Handle->UpdateTableValue($self->{'table'}, 'LastUpdated',$now->ISO,$self->id)
-    if ($self->_Accessible('LastUpdated','auto'));
-
-  $self->SUPER::_Set('LastUpdatedBy', $self->CurrentUser->id)
-    if ($self->_Accessible('LastUpdatedBy','auto'));
-  $self->SUPER::_Set($field, @_);
+  $self->_SetLastUpdated;
+  $self->SUPER::_Set(Field => $args{'Field'},
+		     Value => $args{'Value'},
+		     IsSQL => $args{'IsSQL'});
   
   
 }
 # }}}
 
+# {{{ sub _SetLastUpdated
+
+=head2 _SetLastUpdated
+
+This routine updates the LastUpdated and LastUpdatedBy columns of the row in question
+It takes no options. Arguably, this is a bug
+
+=cut
+
+sub _SetLastUpdated {
+	my $self = shift;
+  use RT::Date;
+  my $now = new RT::Date($self->CurrentUser);
+  $now->SetToNow();
+
+  #TODO this should be using _Set not UpdateTableValue. it's a stupid ++
+  # short circuiting
+  $error_condition = $self->_Handle->UpdateTableValue($self->{'table'}, 'LastUpdated',$now->ISO,$self->id)
+    if ($self->_Accessible('LastUpdated','auto'));
+
+  $self->SUPER::_Set(Field => 'LastUpdatedBy', Value => $self->CurrentUser->id)
+    if ($self->_Accessible('LastUpdatedBy','auto'));
+}
+
+# }}}
 # {{{ sub Creator 
 
 =head2 Creator and CreatorObj

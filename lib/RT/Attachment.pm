@@ -218,63 +218,6 @@ sub NiceHeaders {
 # }}}
 
 # {{{ ACCESS CONTROL
-# 
-# {{{ sub DisplayPermitted 
-sub DisplayPermitted  {
-  my $self = shift;
-
-  my $actor = shift;
-  if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
-  }
-  if (1) {
-#  if ($self->Queue->DisplayPermitted($actor)) {
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-# }}}
-
-# {{{ sub ModifyPermitted 
-sub ModifyPermitted  {
-  my $self = shift;
-  my $actor = shift;
-  if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
-  }
-  if ($self->Queue->ModifyPermitted($actor)) {
-    
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-# }}}
-
-# {{{ sub AdminPermitted 
-sub AdminPermitted  {
-  my $self = shift;
-  my $actor = shift;
-  if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
-  }
-
-
-  if ($self->Queue->AdminPermitted($actor)) {
-    
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-# }}}
 
 # }}}
 1;

@@ -467,18 +467,18 @@ in the subject line of all future correspondence about this
 problem. To do so, you may reply to this message.
                         Thank you,
                         The Support Group
-                        {$Ticket->Queue()->CorrespondAddress()}
+                        {$Ticket->QueueObj()->CorrespondAddress()}
 -------------------------------------------------------------------------
 {$Transaction->Message()->First()->Content()}',
 NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'));
 
 INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL,
-'Reply-To: {$Ticket->Queue->CommentAddress} (Replies will be entered as comments)
+'Reply-To: {$Ticket->QueueObj->CommentAddress} (Replies will be entered as comments)
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
-       Queue: {$Ticket->Queue->QueueId}
+       Queue: {$Ticket->QueueObj->QueueId}
      Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
-       Owner: {$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"}
+       Owner: {$Ticket->Owner ? $Ticket->OwnerObj->UserId : "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
@@ -508,7 +508,7 @@ NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'))
 
 INSERT INTO Templates VALUES (5,'Default Administrative Comment template', NULL, NULL,
 'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\[Comment\]//g; $s;}
-Reply-To: {$Ticket->Queue->CommentAddress}
+Reply-To: {$Ticket->QueueObj->CommentAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->AdminCcAsString}
 {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
@@ -519,7 +519,7 @@ NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'))
 
 INSERT INTO Templates VALUES (6,'Status Change', NULL, NULL,
 'Subject: Status Changed to: {$Transaction->NewValue}
-Reply-To: {$Ticket->Queue->CorrespondAddress}
+Reply-To: {$Ticket->QueueObj->CorrespondAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->WatchersAsString}
 {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id}
@@ -528,7 +528,7 @@ NULL,to_date('2000/02/27','YYYY/MM/DD'),NULL,to_date('2000/02/27','YYYY/MM/DD'))
 
 INSERT INTO Templates VALUES (7,'Ticket Resolved', NULL, NULL,
 'Subject: Ticket Resolved
-Reply-To: {$Ticket->Queue->CorrespondAddress}
+Reply-To: {$Ticket->QueueObj->CorrespondAddress}
 Content-Type: text/plain; charset=ISO-8859-1
 To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}

@@ -78,7 +78,7 @@ sub NewRestriction {
   %{$self->{'restrictions'}{"$index"}} = (TABLE => 'Tickets',
 	      FIELD => undef,
 	      VALUE => undef,	
-	      ENTRYAGGREGATOR => undef,
+	      ENTRYAGGREGATOR => 'or',
 	      OPERATOR => '=',
 	      @_);
  }

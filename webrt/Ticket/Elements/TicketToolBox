@@ -8,8 +8,8 @@ $Ticket = undef
 my $subj=$Ticket->Subject||"(No subject given)";
 my $id=$Ticket->Id;
 my $can_open=($Ticket->Status ne 'open');
-my $can_take=($Ticket->Owner->id == $RT::Nobody);
-my $can_steal=!$can_take && $Ticket->Owner->id!=$session{CurrentUser}->id;
+my $can_take=($Ticket->OwnerObj->id == $RT::Nobody);
+my $can_steal=!$can_take && $Ticket->OwnerObj->id!=$session{CurrentUser}->id;
 my $take="";
 my $open="";
 if ($can_take) {

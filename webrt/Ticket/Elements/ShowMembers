@@ -1,6 +1,6 @@
 % while (my $Link = $Ticket->Members->Next) {
 % my $member = $Link->BaseObj;
-<font face="courier"><%$dstring%>-</font> <a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->Owner->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+<font face="courier"><%$dstring%>-</font> <a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % if ($depth < 8) {
 <&/Ticket/Elements/ShowMembers, Ticket => $member, depth => ($depth+1) &> 
 % }

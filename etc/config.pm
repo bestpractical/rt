@@ -130,7 +130,7 @@ $Logger->add(Log::Dispatch::Screen->new
 	 },
 
        { Header => 'Queue',
-	 TicketAttribute => 'Queue->QueueId'
+	 TicketAttribute => 'QueueObj->QueueId'
 	 },
 
        { Header => 'Status',
@@ -152,7 +152,7 @@ $Logger->add(Log::Dispatch::Screen->new
        # TODO: It would be nice with a link here to the Owner and all
        # other request owned by this Owner.
        { Header => 'Owner',
-	 TicketAttribute => 'Owner->UserId'
+	 TicketAttribute => 'OwnerObj->UserId'
        },
 
        # TODO: We need a link here to a page containing this

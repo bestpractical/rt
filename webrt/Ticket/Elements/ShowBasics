@@ -9,7 +9,7 @@
 	  <& /Elements/ShadedBox, title => 'Time Worked' , content => $Ticket->TimeWorked ." minutes" &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Queue', content=> $Ticket->Queue->QueueId &>
+	  <& /Elements/ShadedBox, title => 'Queue', content=> $Ticket->QueueObj->QueueId &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
 	  <& /Elements/ShadedBox, title => 'Priority', content=> $Ticket->Priority."/".$Ticket->FinalPriority &>

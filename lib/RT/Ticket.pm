@@ -92,13 +92,13 @@ sub Create {
 	      RequestorEmail => undef,
 	      Alias => undef,
 	      Type => undef,
-	      Owner => undef,
-	      Subject => undef,
-	      InitialPriority => 0,
-	      FinalPriority => 0,
-	      Status => 'open',
-	      TimeWorked => 0,
-	      Due => 0,
+	      Owner => $RT::Nobody->UserObj,
+	      Subject => '[no subject]',
+	      InitialPriority => "0",
+	      FinalPriority => "0",
+	      Status => 'new',
+	      TimeWorked => "0",
+	      Due => "0",
 	      MIMEObj => undef,
 	      @_);
 
@@ -170,13 +170,16 @@ sub Create {
   $self->Load($id);
 
   #Now that we know the self
-  (my $error, my $message) = $self->SUPER::_Set("EffectiveId",$id);
+  (my $error, my $message) = $self->_Set(Field => "EffectiveId", 
+					 Value => $id,
+					 RecordTransaction => 0);
   if ($error == 0) {
-    $RT::Logger->warning("Couldn't set EffectiveId for Ticket $id: $message.");
-    return (0, 0, $message);
+      $RT::Logger->warning("Couldn't set EffectiveId for Ticket $id: $message.");
+      return (0, 0, $message);
   }
 
 
+  #TODO make sure this is doing the right thing +++
   if (defined $args{Requestor} || defined $args{RequestorEmail}) {
     my %watcher=(Type=>'Requestor');
     if (defined $args{RequestorEmail}) {
@@ -216,15 +219,14 @@ sub Create {
     
   }
   #Add a transaction for the create
-  my $Trans;
-  ($Trans,$ErrStr) = $self->_NewTransaction(Type => "Create",
+  my ($Trans, $Msg, $TransObj) = $self->_NewTransaction(Type => "Create",
 					    TimeTaken => 0, 
 					    MIMEObj=>$args{'MIMEObj'});
   
   # Logging
   if ($self->Id && $Trans) {
       $ErrStr='New request #'.$self->Id." (".$self->Subject.") created in queue ".
-	  $self->Queue->QueueId;
+	  $self->QueueObj->QueueId;
 
       $RT::Logger->log(level=>'info', 
 		       message=>$ErrStr);
@@ -235,7 +237,7 @@ sub Create {
 
   # Hmh ... shouldn't $ErrStr be the second return argument?
   # Eventually, are all the callers updated?
-  return($self->Id, $Trans, $ErrStr);
+  return($self->Id, $TransObj->Id, $ErrStr);
 }
 
 # }}}
@@ -433,7 +435,7 @@ WatchersAsString ...
 sub WatchersAsString {
     my $self=shift;
     return _CleanAddressesAsString ($self->Watchers->EmailsAsString() . ", " .
-		  $self->Queue->Watchers->EmailsAsString());
+		  $self->QueueObj->Watchers->EmailsAsString());
 }
 
 =head2 AdminCcAsString
@@ -452,7 +454,7 @@ sub WatchersAsString {
 sub AdminCcAsString {
     my $self=shift;
     return _CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
-		  $self->Queue->AdminCc->EmailsAsString());
+		  $self->QueueObj->AdminCc->EmailsAsString());
   }
 
 =head2 CcAsString
@@ -470,7 +472,7 @@ sub AdminCcAsString {
 sub CcAsString {
     my $self=shift;
     return _CleanAddressesAsString ($self->Cc->EmailsAsString() . ", ".
-		  $self->Queue->Cc->EmailsAsString());
+		  $self->QueueObj->Cc->EmailsAsString());
 }
 
 =head2 _CleanAddressesAsString
@@ -690,12 +692,12 @@ sub SetQueue {
     elsif (!$NewQueueObj->CurrentUserHasRight('CreateTickets')) {
       return (0, "You may not create requests in that queue.");
     }
-    elsif (!$NewQueueObj->HasRight('CreateTickets',$self->Owner)) {
+    elsif (!$NewQueueObj->HasRight('CreateTickets',$self->OwnerObj)) {
       $self->Untake();
     }
     
     else {
-      return($self->_Set('Queue', $NewQueueObj->Id()));
+      return($self->_Set(Field => 'Queue', Value => $NewQueueObj->Id()));
     }
   }
   else {
@@ -705,20 +707,26 @@ sub SetQueue {
 
 # }}}
 
-# {{{ sub Queue
+# {{{ sub QueueObj
 
-sub Queue {
+=head2 QueueObj
+
+Takes nothing. returns this ticket's queue object
+
+=cut
+
+sub QueueObj {
   my $self = shift;
-
-  if (!$self->{'queue'})  {
+  if (!defined $self->{'queue'})  {
     require RT::Queue;
     $self->{'queue'} = RT::Queue->new($self->CurrentUser);
-    $self->{'queue'}->Load($self->_Value('Queue'));
+    #We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
+    my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
+
   }
   return ($self->{'queue'});
 }
 
-*QueueObj=\&Queue;
 
 # }}}
 
@@ -806,7 +814,7 @@ $time_obj->SetToNow();
 }
 #Now that we're starting, open this ticket
 $self->Open;
-return ($self->_Set('Started', $time_obj->ISO));
+return ($self->_Set(Field => 'Started', Value =>$time_obj->ISO));
 
 }
 #}}}
@@ -919,7 +927,7 @@ sub Comment {
     return (0, "Permission Denied");
   }
   #Record the correspondence (write the transaction)
-  my $Trans = $self->_NewTransaction( Type => 'Comment',
+  my ($Trans, $Msg, $TransObj) = $self->_NewTransaction( Type => 'Comment',
 				      Data => $args{MIMEObj}->head->get('subject'),
 				      TimeTaken => $args{'TimeTaken'},
 				      MIMEObj => $args{'MIMEObj'}
@@ -954,7 +962,7 @@ sub Correspond {
   }
 
   #Record the correspondence (write the transaction)
-  my ($Trans,$msg) = $self->_NewTransaction
+  my ($Trans,$msg, $TransObj) = $self->_NewTransaction
           (Type => 'Correspond',
 	   Data => $args{'MIMEObj'}->head->get('subject'),
 	   TimeTaken => $args{'TimeTaken'},
@@ -1297,7 +1305,7 @@ sub _NewLink {
       $b=$args{Base};
   }
   my $TransString="$b $args{Type} $t as of $linkid";
-  my $Trans = $self->_NewTransaction
+  my ($Trans, $Msg, $TransObj) = $self->_NewTransaction
       (Type => 'Link',
        Data => $TransString,
        TimeTaken => 0 # Is this always true?
@@ -1316,7 +1324,15 @@ sub _NewLink {
 
 # {{{ sub Owner
 
-sub Owner {
+=head2 OwnerObj
+
+Takes nothing and returns an RT::User object of 
+this ticket's owner
+
+=cut
+
+#TODO ACL ++
+sub OwnerObj {
   my $self = shift;
 
   defined ($self->_Value('Owner')) || return undef;
@@ -1342,7 +1358,7 @@ sub Owner {
 # {{{ sub OwnerAsString 
 sub OwnerAsString {
   my $self = shift;
-  return($self->Owner->EmailAddress);
+  return($self->OwnerObj->EmailAddress);
 
 }
 
@@ -1354,13 +1370,12 @@ sub SetOwner {
   my $self = shift;
   my $NewOwner = shift;
   my $Type = shift || "Give";
-  my $more_params={TransactionType=>$Type};
   my ($NewOwnerObj);
 
    $RT::Logger->debug("in RT::Ticket->SetOwner()");
   
   $NewOwnerObj = RT::User->new($self->CurrentUser);
-  my $OldOwnerObj = $self->Owner;
+  my $OldOwnerObj = $self->OwnerObj;
   
   if (!$NewOwnerObj->Load($NewOwner)) {
 	return (0, "That user does not exist");
@@ -1369,8 +1384,8 @@ sub SetOwner {
   #If thie ticket has an owner and it's not the current user
 
   if (($Type ne 'Steal' ) and  #If we're not stealing
-      ($self->Owner->Id != $RT::Nobody->Id ) and  #and the owner is set
-      ($self->CurrentUser->Id ne $self->Owner->Id())) { #and it's not us
+      ($self->OwnerObj->Id != $RT::Nobody->Id ) and  #and the owner is set
+      ($self->CurrentUser->Id ne $self->OwnerObj->Id())) { #and it's not us
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
 
@@ -1384,12 +1399,17 @@ sub SetOwner {
   
   #If the ticket has an owner and it's the new owner, we don't need
   #To do anything
-  elsif (($self->Owner) and ($NewOwnerObj->Id eq $self->Owner->Id)) {
+  elsif (($self->OwnerObj) and ($NewOwnerObj->Id eq $self->OwnerObj->Id)) {
     return(0, "That user already owns that request");
   }
   
   
- my ($trans,$msg)=$self->_Set('Owner',$NewOwnerObj->Id,0,$more_params);
+ my ($trans,$msg)=$self->_Set(Field => 'Owner',
+			      Value => $NewOwnerObj->Id, 
+			      TimeTaken => 0,
+			      TransactionType => $Type);
+
+  delete $self->{'owner'};
   return ($trans, 
 	  ($trans 
 	  ? ("Owner changed from ".$OldOwnerObj->UserId." to ".$NewOwnerObj->UserId)
@@ -1429,7 +1449,7 @@ sub Steal {
   if (!$self->CurrentUserHasRight('ModifyTicket')){
     return (0,"Permission Denied");
   }
-  elsif ($self->Owner->Id eq $self->CurrentUser->Id ) {
+  elsif ($self->OwnerObj->Id eq $self->CurrentUser->Id ) {
     return (0,"You already own this ticket"); 
   }
   else {
@@ -1454,30 +1474,46 @@ sub SetStatus {
   my $self = shift;
   my $status = shift;
   my $action = 
-      $status =~ 'new' ? 'New' :
-      $status =~ 'open' ? 'Open' :
-      $status =~ 'stalled' ? 'Stall' :
-      $status =~ 'resolved' ? 'Resolve' :
-	$status =~ 'dead' ? 'Kill' : 'huh?';
+      $status =~ /new/i ? 'New' :
+      $status =~ /open/i ? 'Open' :
+      $status =~ /stalled/i ? 'Stall' :
+      $status =~ /resolved/i ? 'Resolve' :
+	$status =~ /dead/i ? 'Kill' : 'huh?';
   
   if ($action eq 'huh?') {
-    return (0,"That status is not valid.");
+    return (0,"The status '$status' is not valid.");
   }
+
+  my $now = new RT::Date($self->CurrentUser);
+  $now->SetToNow();
+
+  #If we're changing the status from new, record that we've started
+  if (($self->Status =~ /new/) && ($status ne 'new')) {
+ 	#Set the Started time to "now"
+	$self->_Set(Field => 'Started',
+		   Value => $now->ISO,
+		   RecordTransaction => 0);
+  }
+
   
   if ($status eq 'resolved') {
 
+    #TODO: this needs ACLing
+    #When we resolve a ticket, set the 'Resolved' attribute to now.
+
+      $self->_Set(Field => 'Resolved',
+		  Value => $now->ISO, 
+		  RecordTransaction => 0);
     #&open_parents($in_serial_num, $in_current_user) || $transaction_num=0; 
     #TODO: we need to check for open parents.
   }
  
-  #When we resolve a ticket, set the 'Resolved' attribute to now.
-  my $now = new RT::Date($self->CurrentUser);
-  $now->SetToNow();
 
-  #Use SUPER::_Set here so we don't record a transaction;
-  $self->SUPER::_Set('Resolved',$now->ISO);
 
-  return($self->_Set('Status',$status, 0,{TransactionType=>$action}));
+  return($self->_Set(Field => 'Status', 
+		     Value => $status,
+		     TimeTaken => 0,
+		     TransactionType => 'Status'));
 }
 # }}}
 
@@ -1496,7 +1532,7 @@ sub Stall {
 }
 # }}}
 
-# {{{ sub Owner
+# {{{ sub Open
 sub Open {
   my $self = shift;
   return ($self->SetStatus('open'));
@@ -1521,9 +1557,11 @@ sub UpdateTold {
     my $timetaken=shift || 0;
     my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow(); 
-    #TODO: Update _Set's syntax. we need to deal with the ugly format.
-    return($self->_Set('Told',$now->ISO,$timetaken,
-			{TransactionType=>'Told'}));
+
+    return($self->_Set(Field => 'Told', 
+		       Value => $now->ISO,
+		       TimeTaken => $timetaken,
+		       TransactionType => 'Told'));
 }
 
 # _UpdateTold - updates the told without the transaction, that's
@@ -1533,7 +1571,9 @@ sub _UpdateTold {
     my $self=shift;
     my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow();
-    return($self->SUPER::_Set('Told',$now->ISO,1));
+    return($self->_Set(Field => 'Told', 
+		       Value => $now->ISO, 
+		       UpdateTransaction => 0));
 }
 
 # }}}
@@ -1588,12 +1628,12 @@ sub _NewTransaction {
 
   warn $msg unless $transaction;
   
-  $self->_UpdateDateActed;
+  $self->_SetLastUpdated;
   
   if (defined $args{'TimeTaken'} ) {
     $self->_UpdateTimeTaken($args{'TimeTaken'}); 
   }
-  return($transaction,$msg);
+  return($transaction, $msg, $trans);
 }
 
 # }}}
@@ -1642,49 +1682,42 @@ sub _Accessible {
 sub _Set {
   my $self = shift;
   
-  $RT::Logger->debug("now in _Set\n"); 
+
   unless ($self->CurrentUserHasRight('ModifyTicket')) {
     return (0, "Permission Denied");
   }
-  
+
+  my %args = (Field => undef,
+	      Value => undef,
+	      TimeTaken => 0,
+	      RecordTransaction => 1,
+	      TransactionType => 'Set',
+	      @_
+	     );
   #if the user is trying to modify the record
-  my $Field = shift;
-  my $Value = shift;
-  my $TimeTaken = shift || 0;
   
-  # Generally, more options that are needed for doing the
-  # transaction correct.  I'm just using "TransactionType" which
-  # usually differs from "Set".  I'd agree "MoreOptions" seems a bit
-  # kludgy, the "new" calling style should have been used instead 
-  # -- 
-    # TobiX
-
-  #This feels hopelessly kludgy. can we figure out a nicer way to do it?
-
-  my $MoreOptions = shift if @_;
-  
-  unless (ref $MoreOptions) {
-    $MoreOptions={TransactionType=>$MoreOptions};
-  }
-  
-  #Take care of the old value
-  my $Old=$self->_Value("$Field") || undef;
-  
+  #Take care of the old value we really don't want to get in an ACL loop. so ask the super::_Value
+  my $Old=$self->SUPER::_Value("$args{'Field'}");
   #Set the new value
-  my ($ret, $msg)=$self->SUPER::_Set($Field, $Value);
+  my ($ret, $msg)=$self->SUPER::_Set(Field => $args{'Field'}, 
+				     Value=> $args{'Value'});
   
   #record the transaction
   $ret or return (0,$msg);
-  my $Trans =	$self->_NewTransaction 
-    (Type => $MoreOptions->{'TransactionType'}||"Set",
-     Field => $Field,
-     NewValue => $Value || undef,
-     OldValue =>  $Old,
-     TimeTaken => $TimeTaken || 0,
-    );
-  return ($Trans,"$Field changed from ".($Old||"(nothing)")." to ".($Value||"(nothing)"));
-  
-  
+    
+  if ($args{'RecordTransaction'} == 1) {
+      my ($Trans, $Msg, $TransObj) =	$self->_NewTransaction 
+	(Type => $args{'TransactionType'},
+	 Field => $args{'Field'},
+	 NewValue => $args{'Value'},
+	 OldValue =>  $Old,
+	 TimeTaken => $args{'TimeTaken'},
+	);
+      return ($Trans,$TransObj->Description);
+  }
+  else {
+      return ($ret, $msg);
+  }
 }
 
 # }}}
@@ -1720,16 +1753,20 @@ sub _UpdateTimeTaken {
    
   $Total = $self->_Value("TimeWorked");
   $Total = ($Total || 0) + ($Minutes || 0);
-  $self->SUPER::_Set("TimeWorked", $Total);
+  $self->_Set(Field => "TimeWorked", 
+	      Value => $Total, 
+	      RecordTransaction => 0);
   return ($Total);
 }
 
 # }}}
 
-# {{{ sub _UpdateDateActed
-sub _UpdateDateActed {
+# {{{ sub _SetLastUpdated
+sub _SetLastUpdated {
   my $self = shift;
-  $self->SUPER::_Set();
+
+  #TODO ACL this ++
+  $self->SUPER::_SetLastUpdated();
 }
 # }}}
 
@@ -1761,14 +1798,14 @@ sub HasRight {
 	unless ((defined $args{'Principal'}) and (ref($args{'Principal'}))) {
 		$RT::Logger->warn("Principal attrib undefined for Ticket::HasRight");
 	}
-        
+       
 	return($args{'Principal'}->HasTicketRight(TicketObj => $self, 
-											  Right => $args{'Right'}));
+						  Right => $args{'Right'}));
 	
 	    
 	#TODO this needs to move into User.pm's 'hasTicketRight'
 
-    $PrincipalsClause .= " OR (PrincipalType = 'Owner') "  if ($actor == $self->Owner->Id);
+    $PrincipalsClause .= " OR (PrincipalType = 'Owner') "  if ($actor == $self->OwnerObj->Id);
     $PrincipalsClause .= "OR (PrincipalType = 'TicketRequestor') " if ($self->IsRequestor($actor));
     $PrincipalsClause .= "OR (PrincipalType = 'TicketCc') " if  ($self->IsCc($actor));
     $PrincipalsClause .= "OR (PrincipalType = 'TicketAdminCc') " if ($self->IsAdminCc($actor));
@@ -1776,5 +1813,6 @@ sub HasRight {
 
 # }}}
 
+# }}}
 
 1;

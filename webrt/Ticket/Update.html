@@ -31,7 +31,8 @@ Status:
 <& /Elements/SelectStatus, Name=>"SetStatus", Default => $Ticket->Status() &> 
 
 Owner:  
-<& /Elements/SelectOwner, Name=>"SetOwner", Default => ($Ticket->Owner ? $Ticket->Owner->Id() : $RT::Nobody), Queue => $Ticket->Queue() &>
+<& /Elements/SelectOwner, Name=>"SetOwner", Default => $Ticket->OwnerObj->Id(), Queue => $Ticket->QueueObj &>
+
 
 Time Worked: 
 <input size=4 name="UpdateTimeWorked"> minutes<br>

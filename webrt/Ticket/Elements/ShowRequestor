@@ -1,8 +1,9 @@
-% for (my $w=$Ticket->Requestors->Next) {
-%	if (my $u=$w->UserObj) {
+% while (($w=$Ticket->Requestors->Next) && (ref $w)) {
+%if (my $u=$w->UserObj) {
 <& /Elements/ViewUser, User=>$u &>
 % } }
 
 <%ARGS>
+$w => undef
 $Ticket=>undef
 </%ARGS>

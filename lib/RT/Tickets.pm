@@ -80,7 +80,6 @@ sub Status  {
 		 VALUE => "%$Status%",
 		 ENTRYAGGREGATOR => 'or'
 		);
-    print " VALUE => %$Status% \n";
   }
 }
 # }}}

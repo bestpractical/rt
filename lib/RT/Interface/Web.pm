@@ -126,7 +126,7 @@ sub ProcessSimpleActions {
 sub ProcessOwnerChangeRequest {
     my %args=@_;
     if ($args{ARGS}->{'SetOwner'}
-        and ($args{ARGS}->{'SetOwner'} ne $args{Ticket}->Owner->Id())) {
+        and ($args{ARGS}->{'SetOwner'} ne $args{Ticket}->OwnerObj->Id())) {
 	my ($Transaction, $Description)=$args{Ticket}->SetOwner($args{ARGS}->{'SetOwner'});
 	push(@{$args{Actions}}, $Description);
     }

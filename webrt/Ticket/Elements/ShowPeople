@@ -1,7 +1,7 @@
  <TABLE WIDTH="100%">
       <TR>
 	<TD VALIGN=TOP WIDTH="25%">
-	  <& /Elements/ShadedBox, title => 'Owner' , content => $Ticket->Owner->UserId &>
+	  <& /Elements/ShadedBox, title => 'Owner' , content => $Ticket->OwnerObj->UserId &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="25%">
 	  <& /Elements/ShadedBox, title => 'Requestors' , content => $Ticket->RequestorsAsString &>

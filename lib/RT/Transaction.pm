@@ -30,7 +30,7 @@ sub Create  {
     my %args = ( id => undef,
 		 TimeTaken => 0,
 		 Ticket => 0 ,
-		 Type => '',
+		 Type => 'undefined',
 		 Data => '',
 		 Field => undef,
 		 OldValue => undef,
@@ -59,22 +59,20 @@ sub Create  {
       if defined $args{'MIMEObj'};
         
     #We're really going to need a non-acled ticket for the scrips to work
-    use RT::Ticket;
     #TODO this MUST be as the "System" principal or it all breaks
-    my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
+    my $TicketAsSystem = RT::Ticket->new($RT::SystemUser->UserObj);
     $TicketAsSystem->Load($args{'Ticket'}) || $RT::Logger->err("RT::Transaction couldn't load $args{'Ticket'}\n");
    
-    $RT::Logger->err("RT::Transaction::Create is about to limit to queue: ".$TicketAsSystem->Queue."\n"); 
     # Deal with Scrips
     
     #Load a scrips object
     use RT::ScripScopes;
     my $ScripScopes = RT::ScripScopes->new($RT::SystemUser);
-    $ScripScopes->LimitToQueue($TicketAsSystem->QueueObj->Id); #Limit it to queue 0 or $Ticket->QueueId
+    $ScripScopes->LimitToQueue($TicketAsSystem->QueueObj->Id); #Limit it to queue 0 or $Ticket->QueueObj->Id
     
     #Load a ScripsScopes object
     #Iterate through each script and check it's applicability.
-    $RT::Logger->debug("Searching for scrips for transaction #".$self->Id." (".$self->Type()."), ticket #".$TicketAsSystem->Id);
+    $RT::Logger->debug("Searching for scrips for transaction #".$self->Id." (".$self->Type()."), ticket #".$TicketAsSystem->Id."\n");
    
     while (my $Scope = $ScripScopes->Next()) {
 	
@@ -100,18 +98,18 @@ sub Create  {
 					     TransactionObj => $self);
 	
 		#If it's applicable, prepare and commit it
-		$RT::Logger->debug("Found a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id);
+		$RT::Logger->debug("Found a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id."\n");
 
 		if ( $Scope->ScripObj->IsApplicable() ) {
 
-		    $RT::Logger->debug("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe,($Scope->ScripObj->TemplateObj ? $Scope->ScripObj->TemplateObj->id : "")).") at ticket #".$TicketAsSystem->Id);
+		    $RT::Logger->debug("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe,($Scope->ScripObj->TemplateObj ? $Scope->ScripObj->TemplateObj->id : "")).") at ticket #".$TicketAsSystem->Id."\n");
 
 
 		    #TODO: handle some errors here
 
 		    $Scope->ScripObj->Prepare() &&   
 		    $Scope->ScripObj->Commit() &&
-		    $RT::Logger->info("Successfully executed a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id);
+		    $RT::Logger->info("Successfully executed a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id."\n");
 		   
 		    #We're done with it. lets clean up.
 		    #TODO: why the fuck do we need to do this? 
@@ -215,7 +213,7 @@ sub Description  {
   if ($self->Type eq 'Create'){
     return("Request created by ".$self->Creator->UserId);
   }
-  elsif ($self->Type =~ /Set|Stall|Open|Resolve|Kill/) {
+  elsif ($self->Type =~ /Status/) {
     if ($self->Field eq 'Status') {
       if ($self->NewValue eq 'dead') {
         return ("Request killed by ". $self->Creator->UserId);
@@ -359,61 +357,6 @@ sub IsInbound {
 
 # {{{ Routines dealing with ACCESS CONTROL
 
-# {{{ sub DisplayPermitted 
-sub DisplayPermitted  {
-  my $self = shift;
-
-  my $actor = shift;
-  if (!$actor) {
- #   my $actor = $self->CurrentUser->Id();
-  }
-  if (1) {
-#  if ($self->Queue->DisplayPermitted($actor)) {
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-# }}}
-
-# {{{ sub ModifyPermitted 
-sub ModifyPermitted  {
-  my $self = shift;
-  my $actor = shift;
-  if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
-  }
-  if ($self->Queue->ModifyPermitted($actor)) {
-    
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
-# }}}
-
-# {{{ sub AdminPermitted 
-sub AdminPermitted  {
-  my $self = shift;
-  my $actor = shift;
-  if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
-  }
-
-
-  if ($self->Queue->AdminPermitted($actor)) {
-    
-    return(1);
-  }
-  else {
-    #if it's not permitted,
-    return(0);
-  }
-}
 # }}}
 
 # }}}

@@ -16,7 +16,7 @@ if ($^S) {
 }
 &mc_comp("/Elements/Error", 
 		Why=>"Internal Error", 
-		Details=>"You might ask your local RT admin what <pre>$_[0]</pre> means.  ",
+		Details=>"$_[0]",
 		Code=>500);
 	$RT::Logger->log(message=>$_[0], level=>'crit');
 	$RT::Logger->remove('rtmail');
