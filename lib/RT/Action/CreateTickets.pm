@@ -773,7 +773,7 @@ sub Parse {
         foreach my $line ( split( /\n/, $args{'Content'} ) ) {
             $line =~ s/\r$//;
             $RT::Logger->debug("Line: $line");
-            if ( $line =~ /^===$/ ) {
+            if ( $line =~ /^===/ ) {
                 if ( $template_id && !$queue && $args{'Queue'} ) {
                     $self->{'templates'}->{$template_id} .= "Queue: $args{'Queue'}\n";
                 }
@@ -826,6 +826,9 @@ sub Parse {
                 $self->{'templates'}->{$template_id} .= $line . "\n";
             }
         }
+	if ( $template_id && !$queue && $args{'Queue'} ) {
+	    $self->{'templates'}->{$template_id} .= "Queue: $args{'Queue'}\n";
+	}
     }
     elsif ( substr( $args{'Content'}, 0, 2 ) =~ /^id$/i ) {
         $RT::Logger->debug("Line: id");
