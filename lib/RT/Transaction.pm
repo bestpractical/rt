@@ -427,8 +427,17 @@ sub Description  {
 	return ($self->Data);
     }
     elsif ($self->Type eq 'Set') {
-	return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
-    }	
+	if ($self->Field eq 'Queue') {
+	    my $q1 = new RT::Queue($self->CurrentUser);
+	    $q1->Load($self->OldValue);
+	    my $q2 = new RT::Queue($self->CurrentUser);
+	    $q2->Load($self->NewValue);
+	    return ($self->Field . " changed from " . $q1->Name . " to ".$q2->Name."\n");
+	}
+	else {
+	    return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
+	}	
+    }
     else {
 	return ("Generic: ". $self->Type ."/". $self->Field . " changed from " . $self->OldValue . 
 		" to ".$self->NewValue."\n");

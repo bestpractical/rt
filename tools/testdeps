@@ -15,10 +15,8 @@ use strict;
 
 use vars qw($mode $dbd $module @modules);
 
-$mode = shift || &print_help;
-if (@ARGV) {
-	$dbd = shift;
-}
+$mode = shift || print_help();
+$dbd = shift || print_help();
 
 @modules = qw(
 DBI 1.13
@@ -91,6 +89,8 @@ DBTYPE is one of:
 	oracle, pg, mysql
 
 EOF
+
+exit(0);
 }
 
 sub resolve_dependency {
