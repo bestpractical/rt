@@ -109,9 +109,10 @@ sub take_action {
 	foreach $user_id( sort keys %rt::users) {
 	    
 	    $acl_string="acl_" . $rt::ui::web::FORM{queue_id} . "_" . $user_id;
-	    $acl=$rt::ui::web::FORM{$acl_string};
+	    $acl=$rt::ui::web::FORM{"$acl_string"};
 	    
 	    
+		print STDERR "ACL is $acl -- Aclstring is $acl_string\n";
 
 	    if ($acl eq 'admin') {
 		&rt::add_modify_queue_acl($rt::ui::web::FORM{queue_id},$user_id,1,1,1,$current_user);
@@ -381,7 +382,9 @@ misc:
 			else {
 			    print "This should never appear (NO ACLS!)\n";
 			}
-		    }
+		    
+		    print "<BR>\n";
+			}
 		}
 	
 	print "</TD></TR></TABLE>\n";	
@@ -607,7 +610,7 @@ Be careful not to leave yourself authenticated from a public terminal
 sub select_queue_acls {
     my ($user_id, $queue_id) = @_;
     my $flag = 0;
-    
+
 	print "<select name=\"acl_". $queue_id . "_" .$user_id. "\">\n";
 
 	print "<option value=\"admin\"";
