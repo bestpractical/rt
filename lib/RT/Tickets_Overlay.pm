@@ -1,26 +1,26 @@
 # BEGIN LICENSE BLOCK
-# 
+#
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-# 
+#
 # (Except where explictly superceded by other copyright notices)
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
-# 
+#
+#
 # Unless otherwise specified, all modifications, corrections or
 # extensions to this work which alter its source code become the
 # property of Best Practical Solutions, LLC when submitted for
 # inclusion in the work.
-# 
-# 
+#
+#
 # END LICENSE BLOCK
 # Major Changes:
 
@@ -111,7 +111,7 @@ my %FIELDS =
   );
 
 # Mapping of Field Type to Function
-my %dispatch = 
+my %dispatch =
   ( ENUM	    => \&_EnumLimit,
     INT		    => \&_IntLimit,
     LINK	    => \&_LinkLimit,
@@ -161,10 +161,10 @@ require RT::Tickets_Overlay_SQL;
 
 # {{{ sub SortFields
 
-@SORTFIELDS = qw(id Status 
+@SORTFIELDS = qw(id Status
 		 Queue Subject
          Owner Created Due Starts Started
-         Told 
+         Told
 		 Resolved LastUpdated Priority TimeWorked TimeLeft);
 
 =head2 SortFields
@@ -462,7 +462,7 @@ sub _TransLimit {
             #on. We put them in TicketAliases so that they get nuked
             #when we redo the join.
 
-  # In the SQL, we might have 
+  # In the SQL, we might have
   #       (( Content = foo ) or ( Content = bar AND Content = baz ))
   # The AND group should share the same Alias.
 
@@ -594,7 +594,7 @@ sub _WatcherLimit {
 sub _LinkFieldLimit {
   my $restriction;
   my $self;
-  my $LinkAlias; 
+  my $LinkAlias;
   my %args;
   if ($restriction->{'TYPE'}) {
     $self->SUPER::Limit(ALIAS => $LinkAlias,
@@ -715,7 +715,7 @@ sub _CustomFieldLimit {
 		    QUOTEVALUE => 1,
 		    @rest );
 
-  if (   $op =~ /^IS$/i 
+  if (   $op =~ /^IS$/i
 	 or ( $op eq '!=' ) ) {
     $null_columns_ok = 1;
   }
@@ -1338,7 +1338,7 @@ sub LimitLinkedTo {
 		TYPE => undef,
 		 @_);
 
-    $self->Limit( 
+    $self->Limit(
 		 FIELD => 'LinkedTo',
 		 BASE => undef,
 		 TARGET => ($args{'TARGET'} || $args{'TICKET'}),
@@ -1690,6 +1690,15 @@ sub Count {
 }
 # }}}
 
+# {{{ sub CountAll
+sub CountAll {
+  my $self = shift;
+  $self->_ProcessRestrictions if ($self->{'RecalcTicketLimits'} == 1 );
+  return($self->SUPER::CountAll());
+}
+# }}}
+
+
 # {{{ sub ItemsArrayRef
 
 =head2 ItemsArrayRef
@@ -1866,7 +1875,7 @@ sub _RestrictionsToClauses {
     #print Dumper($restriction),"\n";
 
       # We need to reimplement the subclause aggregation that SearchBuilder does.
-      # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main', 
+      # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main',
       # Then SB AND's the different Subclauses together.
 
       # So, we want to group things into Subclauses, convert them to
@@ -1889,7 +1898,7 @@ sub _RestrictionsToClauses {
       $realfield = "CF"
     }
 
-    die "I don't know about $field yet" 
+    die "I don't know about $field yet"
       unless (exists $FIELDS{$realfield} or $restriction->{CUSTOMFIELD});
 
     my $type = $FIELDS{$realfield}->[0];
@@ -1947,7 +1956,7 @@ sub _ProcessRestrictions {
     #Blow away ticket aliases since we'll need to regenerate them for
     #a new search
     delete $self->{'TicketAliases'};
-    delete $self->{'items_array'};                                                                                                                            
+    delete $self->{'items_array'};                                                                                                                   
     my $sql = $self->{_sql_query}; # Violating the _SQL namespace
     if (!$sql||$self->{'RecalcTicketLimits'}) {
       #  "Restrictions to Clauses Branch\n";
