@@ -351,7 +351,6 @@ sub ParseArgs {
     
     use MIME::Entity;
 
-    # I managed to avoid an annoying warning this way:
     $Message = MIME::Entity->build ( Subject => $subject || "",
 				     Cc => $cc || "",
 				     Bcc => $Bcc || "",
@@ -365,7 +364,7 @@ sub ParseArgs {
   }
   
   sub cli_respond_req {
-    my $id =  shift;
+    my $Ticket =  shift;
     my ($subject,$content,$trans,$message,$cc,$bcc );
     
     $subject=&rt::ui::cli::question_string("Subject",);
@@ -381,12 +380,12 @@ n";
 	$content .= $_;
       }
     }
-    my $Ticket = &LoadTicket($id);
-    my ($Trans, $Message) = $Ticket->NewCorrespondence(subject => "$subject",
-					   content => "$content",
-					   cc => "$cc",
-					   bcc => "$bcc",
-					   sender => $CurrentUser->EmailAddress);
+    my ($Trans, $Message) = $Ticket->Correspond
+	(MIMEObj=>MIME::Entity->build( Subject => $subject || "",
+				       Cc => $cc || "",
+				       Bcc => $Bcc || "",
+				       Data => $content,
+				       From => $CurrentUser->EmailAddress));
     print $Message;
   }                   
   

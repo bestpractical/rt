@@ -575,40 +575,33 @@ sub Correspond {
 		 TimeTaken => 0,
 		 @_ );
   
-  # Shouldn't those be members of %args?
-  my ($Cc, $Bcc, $Sender);
   #For ease of processing
   my $MIME = $args{'MIMEObj'};
   
   if (! defined ($MIME)) {
-    return("No correspondence attached");
+    return(0,"No correspondence attached");
   }
+
   #Record the correspondence (write the transaction)
   my $Trans = $self->_NewTransaction(Type => 'Correspond',
 			 Data => $MIME->head->get('subject'),
-			 TimeTaken => $args{'TimeTaken'}
+			 TimeTaken => $args{'TimeTaken'},
+			 MIMEEntity=> $MIME     
 			);
 
-  $Trans->Attach($MIME);
+  # Probably this ones will be a part of the MIMEEntity above, and not
+  # parts of %args.  In the Scrips, a new MIMEEntity is created, so
+  # the (B)CCs won't be sent.  Maybe the SendEmail should be adjusted
+  # to import those header fields?  At the other hand, with incoming
+  # mail we can assume that Bccs and Ccs from the header is already
+  # sent, so it's rather a bug in the cli that the ccs and bccs are in
+  # the MIMEEntity instead of %args..
 
-
-  
-  #Send a copy to the queue members, if necessary
-  
-  #Send a copy to the owner if necesary
-
-  # Where did $Sender come from?
-  if (!$self->IsRequestor($Sender)) {
-    #Send a copy of the correspondence to the user
-    #Flip the date_told to now
-    #If we've sent the correspondence to the user, flip the note the date_told
+  if ($args{Bcc} || $args{Cc}) {
+      warn "stub"
   }
   
-  elsif ($Bcc || $Cc ) {
-    #send a copy of the correspondence to the CC list and BCC list
-  }
-  
-  return ($Trans, "CODE STUBBED - correspondence not sent");
+  return ($Trans, "correspondence (probably) sent");
 }
 
 
