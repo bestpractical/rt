@@ -582,7 +582,7 @@ else {
     
     #Set up the summary format if we need to
     if (defined $summary) {
-	my $format_string = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "%id4%subject20";
+	my $format_string = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "%id4%status4%queue7%subject40%requestor16";
 
 	($format, $titles, $code) = BuildListingFormat($format_string);
         printf "$format\n", eval "$titles";
@@ -1192,7 +1192,7 @@ sub BuildListingFormat {
 		    queue => { chars => '8',
 			       justify => 'l',
 			       title => 'Queue',
-			       value => '$Ticket->QueueObj->id' 
+			       value => '$Ticket->QueueObj->Name' 
 			     },
 		    subject => { chars => '30',
 				 justify => 'l',
