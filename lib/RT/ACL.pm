@@ -42,7 +42,6 @@ sub Limit  {
 }
 # }}}
 
-
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
@@ -63,20 +62,49 @@ Deals with collections of RT::ACE objects
 
 =head2 Next
 
-List off the ACL that's been specified
+Hand out the next ACE that was found
+
+=cut
+
+
+# {{{ sub Next 
+sub Next {
+    my $self = shift;
+    
+    my $ACE = $self->SUPER::Next();
+    if ((defined($ACE)) and (ref($ACE))) {
+	
+	if ( $ACE->CurrentUserHasRight('ShowACL') or
+	     $ACE->CurrentUserHasRight('ModifyACL')
+	   ) {
+	    return($ACE);
+	}
+	
+	#If the user doesn't have the right to show this ACE
+	else {	
+	    return($self->Next());
+	}
+    }
+    #if there never was any ACE
+    else {
+	return(undef);
+    }	
+    
+}
+
+# }}}
+
 
 =head1 Limit the ACL to a specific scope
 
-There are three real scopes right now:
+There are two real scopes right now:
 
 =item Queue is for rights that apply to a single queue
-
-=item AllQueues is for rights that apply to all queues
 
 =item System is for rights that apply to the System (rights that aren't queue related)
 
 
-=head2 LimitScopeToQueue
+=head2 LimitToQueue
 
 Takes a single queueid as its argument.
 
@@ -84,51 +112,33 @@ Limit the ACL to just a given queue when supplied with an integer queue id.
 
 =cut
 
-sub LimitScopeToQueue {
-  my $self = shift;
-  my $queue = shift;
-  
-  
-  
-  $self->Limit( FIELD =>'RightScope',
-                ENTRYAGGREGATOR => 'OR',
-		VALUE => 'Queue');
-  $self->Limit( FIELD =>'RightScope',
-                ENTRYAGGREGATOR => 'OR',
+sub LimitToQueue {
+    my $self = shift;
+    my $queue = shift;
+    
+    
+    
+    $self->Limit( FIELD =>'RightScope',
+		  ENTRYAGGREGATOR => 'OR',
+		  VALUE => 'Queue');
+    $self->Limit( FIELD =>'RightScope',
+		  ENTRYAGGREGATOR => 'OR',
 		VALUE => 'Ticket');
-  
-  $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'RightAppliesTo',
-	       VALUE => $queue );
+    
+    $self->Limit(ENTRYAGGREGATOR => 'OR',
+		 FIELD => 'RightAppliesTo',
+		 VALUE => $queue );
   
 }
 
-=head2 LimitScopeToAllQueues
 
-Takes no arguments
-Limit the ACL to global queue rights. (Rights granted across all queues)
-
-=cut
-
-sub LimitScopeToAllQueues {
-  my $self = shift;
-  
-  $self->Limit( FIELD =>'RightScope',
-		VALUE => 'Queue');
-  
-  $self->Limit(ENTRYAGGREGATOR => 'OR',
-	       FIELD => 'RightAppliesTo',
-	       VALUE => 0 );
-}
-
-
-=head2 LimitScopeToSystem()
+=head2 LimitToSystem()
 
 Limit the ACL to system rights
 
 =cut 
 
-sub LimitScopeToSystem {
+sub LimitToSystem {
   my $self = shift;
   
   $self->Limit( FIELD =>'RightScope',
@@ -198,6 +208,7 @@ sub LimitPrincipalToGroup {
 	       VALUE => $group );
 
 }
+
 =head2 LimitPrincipalToType($type)
 
 Takes a single argument, $type.

@@ -61,22 +61,38 @@ sub Create  {
     
     
     #TODO +++ validate input 
+    #TODO: Allow loading Template, ScripAction and ScripCondition by name
+
+    require RT::ScripAction;
+    my $action = new RT::ScripAction($self->CurrentUser);
+    $action->Load($args{'ScripAction'});
+    return (0, "Action ".$args{'ScripAction'}." not found") unless $action->Id;
+
+    require RT::Template;
+    my $template = new RT::Template($self->CurrentUser);
+    $template->Load($args{'Template'});
+    return (0, 'Template not found') unless $template->Id;
+
+    require RT::ScripCondition;
+    my $condition = new RT::ScripCondition($self->CurrentUser);
+    $condition->Load($args{'ScripCondition'});
+    return (0, 'Condition not found') unless $condition->Id;
+
 
     unless ($self->CurrentUserHasRight('ModifyScrips')) {
-	return (undef);
+	return (0, 'Permission Denied');
     }
     
     my $id = $self->SUPER::Create(Queue => $args{'Queue'},
-				  Template => $args{'Template'},
-				  ScripCondition => $args{'ScripCondition'},
+				  Template => $template->Id,
+				  ScripCondition => $condition->id,
 				  Stage => $args{'Stage'},
-				  ScripAction => $args{'ScripAction'}
+				  ScripAction => $action->Id
 				 );
-    return ($id); 
+    return ($id, 'Scrip Created'); 
 }
 
 # }}}
-
 
 # {{{ sub QueueObj
 
@@ -289,9 +305,9 @@ sub HasRight {
                  Principal => undef,
                  @_ );
     
-    if ($self->SUPER::_Value('Queue') > 0) {
+    if ((defined $self->SUPER::_Value('Queue')) and ($self->SUPER::_Value('Queue') != 0)) {
         return ( $args{'Principal'}->HasQueueRight(
-                      Right => $args{'Right'},
+		      Right => $args{'Right'},
                       Queue => $self->SUPER::_Value('Queue'),
                       Principal => $args{'Principal'}
                       ) 
@@ -299,7 +315,7 @@ sub HasRight {
 
     }
     else {
-        return( $args{'Principal'}->HasSystemRight( Right => $args{'Right'}) );
+        return( $args{'Principal'}->HasSystemRight( $args{'Right'}) );
     }
 }
 # }}}

@@ -33,6 +33,59 @@ PickMode();
 # {{{ Help
 
 sub Help {
+
+# {{{ help_acl
+my $help_acl ="
+        Access control
+	--grant-right <right> 
+	--revoke-right <right>
+	  --userid <user>
+          --groupid <group>
+	--list-rights";
+# }}}
+
+# {{{ help_keyword_sel
+my $help_keyword_sel = "
+       Keyword Selections
+       --add-keyword-select [name]
+          --root <keyword>
+          --single 
+          --multiple
+          --depth  <int>
+        --delete-keyword-select [name]";
+
+# }}}
+
+# {{{ help_scrip
+my $help_scrip = "
+        Scrips
+        --create-scrip
+           --condition <condition name or id>
+           --action <action name or id>
+           --template <template name or id>
+
+        --delete-scrip <id>
+	--list-scrips";
+# }}}
+
+# {{{ help_template  
+my $help_template = "      
+        Templates
+        --delete-template [<id>|<name>]
+        --display-template [<id>|<name>]
+
+         --create-template
+         --modify-template [<id>|<name>]
+           Flags for --create-template and --modify-template
+           --template-name
+           --template-description
+           --template-edit-content
+         
+         --list-templates";
+
+# }}}
+
+
 print <<EOF;
 
 USAGE:  rtadmin --user <userid> [Userflags]
@@ -114,78 +167,25 @@ Queue Configuration for --queue <queueid>
 	--add-admincc <email address>
 	--delete-admincc <email address>
 	
-	--add-keyword-select [name]
-            --root <keyword>
-            --single 
-            --multiple
-            --depth  <int>
-            
-	--delete-keyword-select [name]
-	
 
-	--scrip [<id>] (id needed for delete or modify)
-           --delete
-           --create
-           --condition <condition name or id>
-           --action <action name or id>
-           --template <template name or id>
+$help_acl
 
-	--list-scrips
+$help_keyword_sel
 
-        --delete-template [<id>|<name>]
-        --display-template [<id>|<name>]
+$help_template
 
-         --create-template
-         --modify-template [<id>|<name>]
-           Flags for --create-template and --modify-template
-           --template-name
-           --template-description
-           --template-edit
-         
-         --list-templates
-
-	--grant-user <userid> <right>
-	--grant-group <groupid> <right>
-
-	--list-user-rights <user>
-	--list-users-with-right <right>
-
-	--list-group-rights <group>
-	--list-groups-with-right <right>
-
-	--revoke-user <userid> <right>
-	--revoke-group <groupid> <right>
+$help_scrip
 
 
 System configuration for --system 
-	--add-keyword-select [name] [root keyword] [<single|multiple>] [depth]
-	--delete-keyword-select [name]
-	--list-keyword-selects	
 
-	--list-templates
+$help_acl
 
-	--add-scrip <condition> <action> <template>
-	--delete-scrip <condition> <action> <template>
-	--list-scrips
+$help_keyword_sel
 
-	--grant-user <userid> <right>
-	--grant-group <groupid> <right>
-	
-	--list-user-rights <user>
-	--list-users-with-right
+$help_template
 
-	--list-group-rights <group>
-	--list-groups-with-right
-	
-	--revoke-user <userid> <right>
-	--revoke-group <groupid> <right>	
-
-
-
-Template Configuration for --template 
-
-
-
+$help_scrip
 
 
 Keyword configuration for --keyword  <fully qualified name>
@@ -195,8 +195,17 @@ Keyword configuration for --keyword  <fully qualified name>
 	--name
 	--description
 
-
 EOF
+
+
+
+
+
+
+
+
+
+
 
 }
 
@@ -326,7 +335,6 @@ sub AdminUser {
 	}		
 	    
 	
-	print "About to display, if we can do that\n";
 	#Check if we need to display the user
 	if ($args{'display'}) {
 	    foreach my $attrib (@attributes) {
@@ -418,6 +426,9 @@ sub AdminQueue {
 	}	
        	
         AdminTemplates($queue_obj->Id());
+        AdminScrips($queue_obj->Id());
+	AdminRights($queue_obj->Id());
+	
 
 	#Check if we need to delete the queue
 	if ($args{'delete'}) {
@@ -431,8 +442,6 @@ sub AdminQueue {
 # }}}
 
 
-
-
 sub AdminKeyword {
     my $keyword = shift;
 }
@@ -444,9 +453,14 @@ sub AdminGroup {
 
 sub AdminSystem {
     print "In AdminSystem\n";
+
     AdminTemplates(0);
+    AdminScrips(0);
+    AdminRights(0);
 }
 
+
+# {{{ sub AdminTemplates
 
 sub AdminTemplates {
     my $queue = shift;
@@ -469,7 +483,7 @@ sub AdminTemplates {
 	    $templates->LimitToQueue($queue);
 	}	
 	else {
-	    $templates->LimitToSystem();
+	    $templates->LimitToGlobal();
 	}	
 	while (my $template = $templates->Next) {
 	    print $template->Id.": ".$template->Name." - " . $template->Description ."\n";
@@ -478,6 +492,7 @@ sub AdminTemplates {
     else {
 	print "Did not want to list templates\n";
     }
+
     # }}}
 
     require RT::Template;	
@@ -541,3 +556,190 @@ sub AdminTemplates {
 	print $template->Name . "\n". $template->Description ."\n". $template->Content."\n";
     }	
 }	
+
+# }}}
+
+# {{{ sub AdminScrips
+
+sub AdminScrips {
+    my $queue = shift;
+    #Queue = 0 means 'global';
+
+    my %args;
+
+    
+    GetOptions(\%args, 'list-scrips', 'create-scrip','modify-scrip=s',
+	       'scrip-action=s', 'scrip-template=s', 'scrip-condition=s',
+	       'delete-scrip=s');
+
+    
+    # {{{ List entries
+    if ($args{'list-scrips'}) {
+	print "Scrips for $queue\n";
+	require RT::Scrips;
+	my $scrips = new RT::Scrips($CurrentUser);
+	if ($queue != 0) {
+	    $scrips->LimitToQueue($queue);
+	}	
+	else {
+	    $scrips->LimitToGlobal();
+	}	
+	while (my $scrip = $scrips->Next) {
+	    print $scrip->Id.": If ".
+	      $scrip->ConditionObj->Name." then " .
+		$scrip->ActionObj->Name." with template " .
+		  $scrip->TemplateObj->Name."\n";
+	}	
+    }
+    # }}}
+
+    require RT::Scrip;
+    my $scrip = new RT::Scrip($CurrentUser);
+    if ($args{'delete-scrip'}) {
+	$scrip->Load($args{'delete-scrip'});
+	unless ($scrip->id) {
+	    print "Couldn't load scrip";
+	      return(undef);
+	}
+	my ($val, $msg) = $scrip->Delete();
+	print "$msg\n";
+    }
+    elsif ($args{'create-scrip'}) {
+	my ($val, $msg) = $scrip->Create( ScripAction => $args{'scrip-action'},
+					  ScripCondition => $args{'scrip-condition'},
+					  Template => $args{'scrip-template'},
+					  Queue => $queue);
+
+	print "$msg\n";
+    }	
+}	
+
+
+# }}}
+
+# {{{ sub AdminRights
+
+sub AdminRights {
+    my $queue = shift;
+    #Queue = 0 means 'global';
+
+    my ($scope, $appliesto);
+    if ($queue == 0) {
+	$scope = 'System';
+	$appliesto = 0;
+    }	
+    else {
+	$scope =  'Queue';
+	$appliesto = $queue;
+    }	
+
+    my %args;    
+    GetOptions(\%args, 
+	       'grant-right|add-right|new-right|create-right=s@',
+	       'revoke-right|del-right|delete-right=s@',
+	       'list-rights', 'userid=s@', 'groupid=s@',
+	      );
+    
+    
+    # {{{ List entries
+    if ($args{'list-rights'}) {
+	require RT::ACL;
+	my $acl = new RT::ACL($CurrentUser);
+	if ($queue != 0) {
+	    $acl->LimitToQueue($queue);
+	}	
+	else {
+	    $acl->LimitToSystem();
+	}	
+	while (my $ace = $acl->Next) {
+	    print $ace->RightScope;
+	    
+	    #Print the queue name if we have it.
+	    print " " . $ace->AppliesToObj->Name if (defined $ace->AppliesToObj);
+	    
+	    print ": ". $ace->PrincipalType . " " .$ace->PrincipalObj->Name .
+	      " has right " . $ace->RightName ."\n";
+	      
+	}	
+    }
+    # }}}
+
+    require RT::ACE;    
+
+    # {{{ Build up an array of principals
+    my (@principals);
+    my $i = 0;
+    foreach my $group (@{$args{'groupid'}}) { 
+
+
+	my $princ = new RT::Group($CurrentUser);
+	$princ->Load("$group");
+	if ($princ->id) {
+	    $principals[$i]->{'type'} = 'Group';
+	    $principals[$i]->{'id'} = $princ->id();
+	    $i++;
+	}	
+	else {
+	    print "Could not find group $group\n";
+	}	
+    }	
+
+
+    foreach my $user (@{$args{'userid'}}) { 
+	my $princ = new RT::User($CurrentUser);
+	$princ->Load("$user");
+	if ($princ->id) {
+	    $principals[$i]->{'type'} = 'User';
+	    $principals[$i]->{'id'} = $princ->id();
+	    $i++;
+	}	
+	else {
+	    print "Could not find user $user.\n";
+	    }
+    }
+    # }}}
+
+
+    foreach my $principal (@principals) {
+
+	# {{{ Delete rights that need deleting
+	foreach my $right (@{$args{'revoke-right'}}) {
+	    my $ace = new RT::ACE($CurrentUser);
+	    $RT::Logger->debug("Trying to delete a right: $right \n");
+	    my ($val, $msg) = $ace->LoadByValues( RightName => $right,
+						  RightScope => $scope,
+						  PrincipalType => $principal->{'type'},
+						  PrincipalId => $principal->{'id'},
+						  RightAppliesTo => $appliesto);
+	    
+	    unless ($val) {
+		print "Right $right not found for" . $principal->{'type'} . " " .
+		  $principal->{'id'} . " in scope $scope ($appliesto)\n";
+		next;
+	    }	
+	    $ace->Delete;
+	    #TODO: check some return values
+	    print "ACE deleted\n";
+	    
+	}
+	# }}}
+	
+	# {{{ grant rights that need granting
+	foreach my $right (@{$args{'grant-right'}}) {
+	    my $ace = new RT::ACE($CurrentUser);
+	    my ($val, $msg) = $ace->Create(RightName => $right,
+					   PrincipalType => $principal->{'type'},
+					   PrincipalId => $principal->{'id'},
+					   RightScope => $scope,
+					   RightAppliesTo => $appliesto);
+	    
+	    print $msg . "\n";
+	}
+
+	# }}}
+    }	
+
+}
+
+
+# }}}

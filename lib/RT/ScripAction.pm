@@ -76,24 +76,27 @@ sub Load  {
     my $self = shift;
     my $identifier = shift;
     
-    my $template = shift;
+    
+    
     
     if (!$identifier) {
 	return (undef);
     }	    
     
-  if ($identifier !~ /\D/) {
-      $self->SUPER::LoadById($identifier);
-  }
-    else {
-	$RT::Logger->crit("$self -> Load called with a bogus id '$identifier'\n");
-	return(undef);
+    if ($identifier !~ /\D/) {
+	$self->SUPER::LoadById($identifier);
     }
-    
-    # Set the template Id to the passed in template
+    else {
+	$self->LoadByCol('Name', $identifier);
+	
+    }
+
+    if (@_) {
+	# Set the template Id to the passed in template    
+	my $template = shift;
+	
 	$self->{'Template'} = $template;
-    
-    
+    }
 }
 # }}}
 

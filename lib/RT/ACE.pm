@@ -23,9 +23,9 @@ use RT::Record;
 use vars qw (%SCOPES
    	     %QUEUERIGHTS
 	     %SYSTEMRIGHTS
+	     %LOWERCASERIGHTNAMES
+
 	    ); 
-
-
 
 %SCOPES = (
 	   System => 'System-level right',
@@ -39,8 +39,8 @@ use vars qw (%SCOPES
 %QUEUERIGHTS = ( 
 		SeeQueue => 'Can this principal see this queue',
 		AdminQueue => 'Create, delete and modify queues', 
-		
-		ModifyACL => 'Modify this queue\'s ACL',
+		ShowACL => 'Display Access Control List',
+		ModifyACL => 'Modify Access Control List',
 		ModifyQueueWatchers => 'Modify the queue watchers',
                 ModifyKeywordSelects => 'Modify keyword selections for this queue',
 
@@ -71,7 +71,6 @@ use vars qw (%SCOPES
 		 AdminGroups => 'Create, delete and modify groups',
 		 AdminUsers => 'Create, Delete and Modify users',
 		 ModifySelf => 'Modify one\'s own RT account',
-		 ModifySystemACL => 'Modify system ACLs',
 
 		);
 
@@ -85,9 +84,20 @@ use vars qw (%SCOPES
 			               AdminCc => 'The administrative CC of a ticket',
 			 );
 
-
 # }}}
 
+# {{{ We need to build a hash of all rights, keyed by lower case names
+
+#since you can't do case insensitive hash lookups
+
+foreach $right (keys %QUEUERIGHTS) {
+    $LOWERCASERIGHTNAMES{lc $right}=$right;
+}
+foreach $right (keys %SYSTEMRIGHTS) {
+    $LOWERCASERIGHTNAMES{lc $right}=$right;
+}
+
+# }}}
 
 # {{{ sub _Init
 sub _Init  {
@@ -97,7 +107,61 @@ sub _Init  {
 }
 # }}}
 
+# {{{ sub LoadByValues
+
+=head2 LoadByValues PARAMHASH
+
+Load an ACE by specifying a paramhash with the following fields:
+
+              PrincipalId => undef,
+	      PrincipalType => undef,
+	      RightName => undef,
+	      RightScope => undef,
+	      RightAppliesTo => undef,
+
+=cut
+
+sub LoadByValues {
+  my $self = shift;
+  my %args = (PrincipalId => undef,
+	      PrincipalType => undef,
+	      RightName => undef,
+	      RightScope => undef,
+	      RightAppliesTo => undef,
+	      @_);
+  
+  $self->LoadByCols (PrincipalId => $args{'PrincipalId'},
+		     PrincipalType => $args{'PrincipalType'},
+		     RightName => $args{'RightName'},
+		     RightScope => $args{'RightScope'},
+		     RightAppliesTo => $args{'RightAppliesTo'}
+		    );
+  
+  #If we couldn't load it.
+  unless ($self->Id) {
+      return (0, "ACE not found");
+  }
+  # if we could
+  return ($self->Id, "ACE Loaded");
+  
+}
+
+# }}}
+
+
 # {{{ sub Create
+
+=head2 Create <PARAMS>
+
+PARAMS is a parameter hash with the following elements:
+
+   PrincipalType => "Queue"|"User"
+   PrincipalId => an intentifier you can use to ->Load a user or group
+   RightName => the name of a right. in any case
+   RightScope => "System" | "Queue"
+   RightAppliesTo => a queue id or undef
+
+=cut
 
 sub Create {
     my $self = shift;
@@ -109,23 +173,48 @@ sub Create {
 		 @_
 	       );
     
+    # {{{ Validate the principal
+    my ($princ_obj);
+    if ($args{'PrincipalType'} eq 'Group') {
+	$princ_obj = new RT::User($RT::SystemUser);
+	
+    }	
+    elsif ($args{'PrincipalType'} eq 'User') {
+	require RT::Group;
+	$princ_obj = new RT::Group($RT::SystemUser);
+    }
+    else {
+	return (0, 'Principal type '.$args{'PrincipalType'} . ' is invalid.');
+    }	
+    
+    $princ_obj->Load($args{'PrincipalId'});
+    my $princ_id = $princ_obj->Id();
+    
+    unless ($princ_id) {
+	return (0, 'Principal '.$args{'PrincipalId'}.' not found.');
+    }
+
+    # }}}
+
+    # {{{ Check the scope
     if ($args{'RightScope'} eq 'System') {
 	
-	unless ($self->CurrentUser->HasSystemRight('ModifySystemACL')) {
+	unless ($self->CurrentUser->HasSystemRight('ModifyACL')) {
 	    $RT::Logger->error("No permission to grant rights");
 	    return(undef);
 	}
 	
-	#TODO check if it's a valid RightName/Principaltype
+
     }
     elsif ($args{'RightScope'} eq 'Queue') {
    	
-    unless ($self->CurrentUser->HasQueueRight( Queue => $args{'RightAppliesTo'},
-						  Right => 'ModifyQueueACL')) {
+	unless ($self->CurrentUser->HasQueueRight( Queue => $args{'RightAppliesTo'},
+						   Right => 'ModifyACL')) {
 	    return (0, 'No permission to grant rights');
 	}
+	#TODO allow loading of queues by name.
+
 	
-	#TODO check if it's a valid RightName/Principaltype
 	
     }
     #If it's not a scope we recognise, something scary is happening.
@@ -134,9 +223,38 @@ sub Create {
 			 $args{'RightScope'}." Bailing. \n");
 	return(0,"System error. Unable to grant rights.");
     }
+
+    # }}}
+
+    # {{{ Canonicalize and check the right name
+    $args{'RightName'} = $self->CanonicalizeRightName($args{'RightName'});
     
+    #check if it's a valid RightName
+    if ($args{'RightScope'} eq 'Queue') {
+	unless (exists $QUEUERIGHTS{$args{'RightName'}}) {
+	    return(0, 'Invalid right');
+	}	
+	}	
+    elsif ($args{'RightScope' eq 'System'}) {
+	unless (exists $SYSTEMRIGHTS{$args{'RightName'}}) {
+	    return(0, 'Invalid right');
+	}		    
+    }	
+    # }}}
+    
+    # Make sure the right doesn't already exist.
+    $self->LoadByCols (PrincipalId => $princ_id,
+		       PrincipalType => $args{'PrincipalType'},
+		       RightName => $args{'RightName'},
+		       RightScope => $args {'RightScope'},
+		       RightAppliesTo => $args{'RightAppliesTo'}
+		      );
+    if ($self->Id) {
+	return (0, 'That user already has that right');
+    }	
+
     $RT::Logger->debug("$self ->Create Granting ". $args{'RightName'} ." to ".  $args{'PrincipalId'}."\n");
-    my $id = $self->SUPER::Create( PrincipalId => $args{'PrincipalId'},
+    my $id = $self->SUPER::Create( PrincipalId => $princ_id,
 				   PrincipalType => $args{'PrincipalType'},
 				   RightName => $args{'RightName'},
 				   RightScope => $args {'RightScope'},
@@ -152,6 +270,7 @@ sub Create {
 	return(undef);
     }
 }
+
 # }}}
 
 # {{{ sub _BootstrapRight 
@@ -184,6 +303,29 @@ sub _BootstrapRight {
 	return(undef);
     }
     
+}
+
+# }}}
+
+# {{{ sub CanonicalizeRightName
+
+=head2 CanonicalizeRightName <RIGHT>
+
+Takes a queue or system right name in any case and returns it in
+the correct case. If it's not found, will return undef.
+
+=cut
+
+sub CanonicalizeRightName {
+    my $self = shift;
+    my $right = shift;
+    $right = lc $right;
+    if (exists $LOWERCASERIGHTNAMES{"$right"}) {
+	return ($LOWERCASERIGHTNAMES{"$right"});
+    }
+    else {
+	return (undef);
+    }
 }
 
 # }}}
@@ -232,6 +374,69 @@ sub _Accessible  {
 }
 # }}}
 
+# {{{ sub AppliesToObj
+
+=head2 AppliesToObj
+
+If the AppliesTo is a queue, returns the queue object. If it's 
+the system object, returns undef. If the user has no rights, returns undef.
+
+=cut
+
+sub AppliesToObj {
+    my $self = shift;
+    if ($self->RightScope eq 'Queue') {
+	my $appliesto_obj = new RT::Queue($self->CurrentUser);
+	$appliesto_obj->Load($self->RightAppliesTo);
+	return($appliesto_obj);
+    }
+    elsif ($self->RightScope eq 'System') {
+	return (undef);
+    }	
+    else {
+	$RT::Logger->warning("$self -> AppliesToObj called for an object ".
+			     "of an unknown scope:" . $self->RightScope);
+	return(undef);
+    }
+}	
+
+# }}}
+
+# {{{ sub PrincipalObj
+
+=head2 PrincipalObj
+
+If the AppliesTo is a group, returns the group object.
+If the AppliesTo is a user, returns the user object.
+Otherwise, it logs a warning and returns undef.
+
+=cut
+
+sub PrincipalObj {
+    my $self = shift;
+    my ($princ_obj);
+
+    if ($self->PrincipalType eq 'Group') {
+	use RT::Group;
+	$princ_obj = new RT::Group($self->CurrentUser);
+    }
+    elsif ($self->PrincipalType eq 'User') {
+	$princ_obj = new RT::User($self->CurrentUser);
+    }
+    else {
+	$RT::Logger->warning("$self -> PrincipalObj called for an object ".
+			     "of an unknown principal type:" . 
+			     $self->PrincipalType ."\n");
+	return(undef);
+    }
+#    $RT::Logger->debug("Loading Principal ".$self->PrincipalId ."\n");
+    $princ_obj->Load($self->PrincipalId);
+    return($princ_obj);
+
+}	
+
+# }}}
+
 # {{{ sub _Set
 
 sub _Set {
@@ -240,13 +445,34 @@ sub _Set {
 }
 
 # }}}
+
+# {{{ sub CurrentUserHasRight
+sub CurrentUserHasRight {
+    my $self = shift;
+    my $right = shift;
+    if ($self->RightScope eq 'System') {
+	return $self->CurrentUser->HasSystemRight($right);
+    }
+    elsif ($self->RightScope eq 'Queue') {
+	return $self->CurrentUser->HasQueueRight( Queue => $self->RightAppliesTo,
+						  Right => $right );
+    }	
+    else {
+	$RT::Logger->warning("$self: Trying to check an acl for a scope we ".
+			     "don't understand:" . $self->RightScope ."\n");
+	return undef;
+    }
+}	
+# }}}
+
+
 1;
 
 __DATA__
 
 # {{{ POD
 
-=head1 RT::ACE
+=head1 Out of date docs
 
 =head2 Table Structure
 
@@ -345,7 +571,7 @@ Modify Queue Attributes for <queue>
 
 Modify Queue ACL for queue <queue>
 
-	Name: ModifyQueueACL
+	Name: ModifyACL
 	Principals: <user> <group>
 
 
@@ -393,7 +619,7 @@ Modify Self
 
 Modify System ACL
 
-	Name: ModifySystemACL		  
+	Name: ModifyACL		  
 	Principals: <user> <group>
 
 =head1 The Principal Side of the ACE

@@ -85,8 +85,7 @@ sub Load  {
       $self->SUPER::LoadById($identifier);
   }
     else {
-	$RT::Logger->crit("$self -> Load called with a bogus id '$identifier'\n");
-	return(undef);
+	$self->LoadByCol('Name', $identifier);
     }
 }
 # }}}

@@ -105,6 +105,35 @@ sub _Value  {
 
 # }}}
 
+# {{{ sub Load
+
+=head2 Load <identifer>
+
+Load a template, either by number or by name
+
+=cut
+
+sub Load  {
+    my $self = shift;
+    my $identifier = shift;
+    
+    
+    
+    
+    if (!$identifier) {
+	return (undef);
+    }	    
+    
+    if ($identifier !~ /\D/) {
+	$self->SUPER::LoadById($identifier);
+    }
+    else {
+	$self->LoadByCol('Name', $identifier);
+	
+    }
+}
+# }}}
+
 # {{{ sub Create
 
 =head2 Create
@@ -158,6 +187,7 @@ sub Create {
     return ($result);
 
 }
+
 # }}}
 
 # {{{ sub MIMEObj
@@ -244,7 +274,6 @@ sub QueueObj {
     }
     return ($self->{'queue'});
 }
-
 
 # }}}
 

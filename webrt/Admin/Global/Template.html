@@ -1,11 +1,11 @@
 <& /Admin/Elements/Header, title => "Modify template ".$TemplateObj->id&>
-<& /Admin/Elements/QueueTabs, id => $id &>
+<& /Admin/Elements/SystemTabs &>
 <& /Elements/ListActions, actions => @results &>
 
 <& /Elements/TitleBoxStart, title => "Modify Template ".$TemplateObj->id &>
 
 <FORM METHOD=POST ACTION="Template.html">
-<INPUT TYPE=HIDDEN name="id" value="<%$TemplateObj->id%>">
+<INPUT TYPE=HIDDEN name="template" value="<%$TemplateObj->id%>">
 Name: <input name="Name" VALUE="<%$TemplateObj->Name%>" SIZE=20><BR>
 Description <input name="Description" VALUE="<%$TemplateObj->Description%>" SIZE=80><BR>
 
@@ -46,6 +46,5 @@ foreach $field (@fields) {
 
 </%INIT>
 <%ARGS>
-$id => undef
 $template => undef
 </%ARGS>

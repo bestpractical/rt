@@ -640,10 +640,7 @@ sub HasQueueRight {
     }
 
     unless ($QueueId) {
-	use Data::Dumper;
-	$RT::Logger->debug( "\n\n\n".Dumper(%args)."\n");
-    	require Carp;
-	$RT::Logger->debug( Carp::cluck() . "$self ->HasQueueRight found no valid queue id.");
+	$RT::Logger->debug( "$self->HasQueueRight Couldn't find a queue id");
     }
 
     #If the user wants to create a ticket, that would make them a requestor
@@ -774,8 +771,6 @@ sub _HasRight {
     	return(undef);
     }
     elsif (!defined $args{'AppliesTo'}) {
-        use Carp;
-        $RT::Logger->debug(Carp::cluck."\n");
     	$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
     	return(undef);
     }

@@ -234,7 +234,7 @@ sub ProcessSearchQuery {
 	($args{ARGS}->{'ValueOfResultsPerPage'})) {
 	$session{'tickets'}->Rows($args{ARGS}->{'ValueOfResultsPerPage'});
     }
-    
+
     # }}}
     # {{{ Limit owner
     if ($args{ARGS}->{'ValueOfOwner'} ne '' ) {
@@ -381,9 +381,9 @@ sub ProcessACLChanges {
 	    
 	    my $CurrentACL = new RT::ACL($session{'CurrentUser'});
 	    if ($Scope eq 'Queue') {
-		$CurrentACL->LimitScopeToQueue($AppliesTo);
+		$CurrentACL->LimitToQueue($AppliesTo);
 	    } elsif ($Scope eq 'System') {
-		$CurrentACL->LimitScopeToSystem();
+		$CurrentACL->LimitToSystem();
 	    }
 	    
 	    $CurrentACL->LimitPrincipalToType($PrincipalType);

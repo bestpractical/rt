@@ -25,7 +25,7 @@ $PrimaryTemplates->LimitToQueue($DefaultQueue);
 }
 
 my $OtherTemplates = RT::Templates->new($session{'CurrentUser'});
-$OtherTemplates->LimitToSystem($DefaultQueue);
+$OtherTemplates->LimitToGlobal($DefaultQueue);
 
 </%INIT>
 <%ARGS>
