@@ -1158,7 +1158,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 RT_VERSION_MAJOR=2
 RT_VERSION_MINOR=1
-RT_VERSION_PATCH=45
+RT_VERSION_PATCH=46
 
 
 

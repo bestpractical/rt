@@ -36,7 +36,7 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $VENDOR_CONFIG_FILE
 );
 
-$VERSION = '2.1.45';
+$VERSION = '2.1.46';
 $CORE_CONFIG_FILE = "/opt/rt3/etc/RT_Config.pm";
 $SITE_CONFIG_FILE = "/opt/rt3/etc/RT_SiteConfig.pm";
 

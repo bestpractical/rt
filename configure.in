@@ -5,7 +5,7 @@ AC_INIT(RT, 3.0, rt-3.0-bugs@fsck.com)
 dnl version numbers
 RT_VERSION_MAJOR=2
 RT_VERSION_MINOR=1
-RT_VERSION_PATCH=45
+RT_VERSION_PATCH=46
 
 AC_SUBST(RT_VERSION_MAJOR)
 AC_SUBST(RT_VERSION_MINOR)
@@ -231,5 +231,8 @@ AC_ARG_WITH(web-group,
             WEB_GROUP=www)
 AC_SUBST(WEB_GROUP)
 
-AC_OUTPUT(Makefile, etc/RT_Config.pm, sbin/initdb, lib/RT.pm)
+AC_OUTPUT(Makefile)
+AC_OUTPUT(etc/RT_Config.pm)
+AC_OUTPUT(sbin/initdb)
+AC_OUTPUT(lib/RT.pm)
 
