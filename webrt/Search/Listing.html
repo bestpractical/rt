@@ -89,8 +89,18 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">Bookmarkable URL for this search</a>
 <BR>
 <BR>
-%my %restrictions=$session{'tickets'}->DescribeRestrictions();
-%foreach $row (keys %restrictions){
+% my %restrictions=$session{'tickets'}->DescribeRestrictions();
+% my %seen_restrictions=();
+% foreach $row (keys %restrictions){
+%  my $tmp=$restrictions{"$row"};
+%  if( ! defined( $seen_restrictions{"$tmp"} ) ){
+<%$restrictions{"$row"}%> <A HREF="<% $RT::WebPath%>/Search/Listing.html?DeleteRestriction=<%$row%>">[delete]</a><br>
+%   } else {
+%     $session{'tickets'}->DeleteRestriction($row);
+<b>Deleted Duplicate Restriction <i><%$tmp%></i></b><br>
+% }
+% $seen_restrictions{"$tmp"}++;
+
 <%$restrictions{"$row"}%> <A HREF="<% $RT::WebPath %>/Search/Listing.html?DeleteRestriction=<%$row%>">[delete]</a><br>
 %}
 <& /Elements/TitleBoxEnd&>
