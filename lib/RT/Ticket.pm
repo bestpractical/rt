@@ -9,6 +9,8 @@ use RT::Link;
 use RT::Links;
 @ISA= qw(RT::Record);
 
+# {{{ POD
+
 =head1 NAME
 
  Ticket - Manipulate an RT Ticket Object
@@ -29,21 +31,12 @@ This module lets you manipulate RT's most key object. The Ticket.
 
 =cut
 
-# {{{ sub new
-
-sub new {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->{'table'} = "Tickets";
-  $self->_Init(@_);
-  return ($self);
-}
+=over 10
 
 # }}}
 
-=over 10
+# {{{ sub new
+
 
 =item Create (ARGS)
 
@@ -71,6 +64,20 @@ Returns: TICKETID, Transaction Object, Error Message
 
 =cut
 
+
+
+sub new {
+  my $proto = shift;
+  my $class = ref($proto) || $proto;
+  my $self  = {};
+  bless ($self, $class);
+  $self->{'table'} = "Tickets";
+  $self->_Init(@_);
+  return ($self);
+}
+
+# }}}
+
 # {{{ sub Create
 
 sub Create {
@@ -90,7 +97,6 @@ sub Create {
 	      FinalPriority => 0,
 	      Status => 'open',
 	      TimeWorked => 0,
-	      Created => time(),
 	      Told => 0,
 	      Due => 0,
 	      MIMEEntity => undef,
@@ -122,7 +128,6 @@ sub Create {
 				Priority => $args{'InitialPriority'},
 				Status => $args{'Status'},
 				TimeWorked => $args{'TimeWorked'},
-				Created => undef,
 				Told => $args{'Told'},
 				Due => $args{'Due'}
 			       );
@@ -601,6 +606,7 @@ sub Untake {
 # }}}
 
 # {{{ sub Steal 
+
 sub Steal {
   my $self = shift;
   
@@ -616,6 +622,7 @@ sub Steal {
   }
     
 }
+
 # }}}
 
 # {{{ sub SetOwner
@@ -734,7 +741,7 @@ sub Resolve {
 
 # {{{ Date printing routines
 
-# Created and LastUpdated belongs to the RT::Record layer (and maybe even deeper)
+# Created and LastUpdated belongs to the DBIx::Record layer (and maybe even deeper)
 
 # {{{ sub DueAsString 
 sub DueAsString {
@@ -846,6 +853,7 @@ sub Comment {
 # }}}
 
 # {{{ sub Correspond
+
 sub Correspond {
   my $self = shift;
   my %args = ( CcMessageTo => undef,
@@ -886,6 +894,7 @@ sub Correspond {
   
   return ($Trans, "correspondence (probably) sent", $MIME);
 }
+
 # }}}
 
 # }}}
@@ -1016,6 +1025,7 @@ sub LinkFrom {
 # }}}
 
 # {{{ sub _NewLink
+
 sub _NewLink {
   my $self = shift;
   my %args = ( dir => '',
@@ -1116,7 +1126,7 @@ sub _NewTransaction {
 # }}}
 
 # {{{ UTILITY METHODS
-    
+
 # {{{ sub IsRequestor
 sub IsRequestor {
   my $self = shift;
@@ -1165,9 +1175,9 @@ sub _Accessible {
 	      Priority => 'read/write',
 	      Status => 'read/write',
 	      TimeWorked => 'read',
-	      Created => 'read',
+	      Created => 'read/auto',
 	      Told => 'read',
-	      LastUpdated => 'read',
+	      LastUpdated => 'read/auto',
 	      LastUpdatedBy => 'read',
 	      Due => 'read/write'
 
