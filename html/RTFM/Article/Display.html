@@ -12,7 +12,8 @@
 <td>
 % if ($cf->Type eq 'TextSingle') { 
 % my $value = $values->First;
-% my $content = $value->Content;
+% my $content;
+% if ( $value) {$content = $value->Content};
 % $content =~ s/\n/<br>/gi;
 <%$content%>
 % } else {
