@@ -19,21 +19,23 @@
 PERL		    =       /usr/bin/perl
 
 RT_PREFIX 		= /opt/rt3/
-DBTYPE		=		mysql
 
 CONFIG_FILE_PATH	=       $(RT_PREFIX)/etc
 CONFIG_FILE	     =       $(CONFIG_FILE_PATH)/RT_Config.pm
 RT_LIB_PATH	     =       $(RT_PREFIX)/lib
 RT_LEXICON_PATH	     =       $(RT_PREFIX)/local/po
 MASON_HTML_PATH	 =       $(RT_PREFIX)/share/html
+RT_SBIN_PATH	=	$(RT_PREFIX)/sbin/
 
 GETPARAM		=       $(PERL) -I$(RT_LIB_PATH) -e'use RT; RT::LoadConfig(); print $${$$RT::{$$ARGV[0]}};'
 
 
+DBTYPE		=		`${GETPARAM} DatabaseType`
 DB_DATABASEHOST		=  `${GETPARAM} DatabaseHost`
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
+DB_DBA			= root
 TAG			= rtfm-2-0RC1
 
 
@@ -50,7 +52,7 @@ install-html:
 
 install-lib:
 	cp -rp lib/* $(RT_LIB_PATH)
-	chmod -R 755 $(RT_LIB_PATH)
+	chmod -R 755 $(RT_LIB_PATH);
 
 install-lexicon:
 	cp -rp po/* $(RT_LEXICON_PATH)
@@ -61,29 +63,15 @@ factory:
 regenerate-catalogs:
 	$(PERL) ../rt/sbin/extract-message-catalog po/*/*
 
-initdb: initdb.$(DBTYPE)
+initdb: 
+	$(PERL) $(RT_SBIN_PATH)/rt-setup-database --action schema --datadir ./etc/ --dba $(DB_DBA) --prompt-for-dba-password
+	$(PERL) $(RT_SBIN_PATH)/rt-setup-database --action acl --datadir ./etc/ --dba $(DB_DBA) --prompt-for-dba-password
 
-dropdb: dropdb.$(DBTYPE)
 
-
-initdb.mysql: etc/schema.mysql
-	@echo "-------------------------------------------------------------"
-	@echo "You will be prompted for $(DB_RT_USER)'s mysql password below"
-	@echo "-------------------------------------------------------------"
-	mysql -h $(DB_DATABASEHOST) -u $(DB_RT_USER) -p $(DB_RT_PASS) $(DB_DATABASE) < etc/schema.mysql
-
-initdb.Pg: etc/schema.mysql
-	@echo "-------------------------------------------------------------"
-	@echo "You will be prompted for $(DB_RT_USER)'s postgres password below"
-	@echo "-------------------------------------------------------------"
-	psql -U pgsql $(DB_DATABASE) < etc/schema.Pg
-	psql -U pgsql $(DB_DATABASE) < etc/acl.Pg
-
-acl:
-	grep -i "DROP " etc/drop_schema.Pg | cut -d" " -f 3 |cut -d\; -f 1 |xargs printf "GRANT SELECT, INSERT, UPDATE, DELETE ON %s to $(DB_RT_USER);\n" > etc/acl.Pg
+dropdb: 
 
 dropdb.Pg: etc/drop_schema.mysql
-	psql -U pgsql $(DB_DATABASE) < etc/drop_schema.Pg
+	psql -U ${DB_DBA} $(DB_DATABASE) < etc/drop_schema.Pg
 
 dropdb.mysql: etc/drop_schema.mysql
 	-mysql  $(DB_DATABASE) < etc/drop_schema.mysql

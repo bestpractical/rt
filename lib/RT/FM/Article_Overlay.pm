@@ -420,7 +420,7 @@ RT tickets.
 
 my ($id, $msg);
 
-
+$RT::Handle->SimpleQuery("DELETE FROM Links");
 
 my $article_a = RT::FM::Article->new($RT::SystemUser);
 ($id, $msg) = $article_a->Create( Class => 'ArticleTest', Summary => "ArticleTestlink1");
@@ -446,7 +446,7 @@ ok($refers_to_b->First->BaseObj->isa('RT::FM::Article'), "Yep. its an article");
 
 # Make sure that Article A's "RefersTo" links object refers to this article"
 my $referred_To_by_a = $article_a->RefersTo;
-ok($referred_To_by_a->Count == 1, "Found one thing referring to b".$referred_To_by_a->Count);
+ok($referred_To_by_a->Count == 1, "Found one thing referring to b ".$referred_To_by_a->Count. "-".$referred_To_by_a->First->id . " - ".$referred_To_by_a->Last->id);
 my $first = $referred_To_by_a->First;
 ok ($first->isa(RT::Link), "IT's an RT link - ref ".ref($first) );
 ok ($first->TargetObj->Id == $article_b->Id, "Its target is B - " . $first->TargetObj->Id);
@@ -464,9 +464,9 @@ use RT::Ticket;
 
 
 my $tick = RT::Ticket->new($RT::SystemUser);
-$tick->Load('1');
-ok ($tick->Id, "Found ticket 1");
-ok ($tick->URI =~ /\/1$/, "The ticket uri ends in /1");
+$tick->Create(Subject => "Article link test ", Queue => 'General');
+$tick->Load($tick->Id);
+ok ($tick->Id, "Found ticket ".$tick->id);
 ($id, $msg) = $article_a->AddLink(Type => 'RefersTo', Target => $tick->URI);
 ok($id,$msg);
 
@@ -479,7 +479,7 @@ my $tix = RT::Tickets->new($RT::SystemUser);
 ok ($tix, "Got an RT::Tickets object");
 ok ($tix->LimitReferredToBy($article_a->URI)); 
 ok ($tix->Count == 1, "Found one ticket linked to that article");
-ok ($tix->First->Id == 1, "It's even the right one");
+ok ($tix->First->Id == $tick->id, "It's even the right one");
 
 
 
@@ -512,9 +512,9 @@ is ($tix2->First->BaseObj->URI ,$article_a->URI);
 
 # Delete the link from the RT side.
 my $t2 = RT::Ticket->new($RT::SystemUser);
-$t2->Load(1);
+$t2->Load($tick->Id);
 ($id, $msg)= $t2->DeleteLink( Base => $article_a->URI, Type => 'RefersTo');
-ok ($id, $msg . " - $id");
+ok ($id, $msg . " - $id - $msg");
 
 # it's actually deleted
 my $tix3 = RT::Links->new($RT::SystemUser);

@@ -69,6 +69,7 @@ sub LimitName {
     
     my %args = ( FIELD => 'Name',
                  OPERATOR => 'LIKE',
+                 CASESENSITIVE => 0,
                  VALUE => undef,
                  @_);
 
@@ -102,6 +103,7 @@ sub LimitSummary {
     
     my %args = ( FIELD => 'Summary',
                  OPERATOR => 'LIKE',
+                 CASESENSITIVE => 0,
                  VALUE => undef,
                  @_);
 

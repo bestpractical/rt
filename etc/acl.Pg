@@ -1,18 +1,36 @@
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Classes to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_ClassCustomFields to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_CustomFields to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Articles to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_CustomFieldValues to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_ArticleCFValues to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Content to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Transactions to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Deltas to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Classes_id_seq to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_ClassCustomFields_id_seq to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_CustomFields_id_seq to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Articles_id_seq to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_CustomFieldValues_id_seq to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_ArticleCFValues_id_seq to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Content_id_seq to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Transactions_id_seq to rt;
-GRANT SELECT, INSERT, UPDATE, DELETE ON FM_Deltas_id_seq to rt;
+
+sub acl {
+    my $dbh = shift;
+
+    my @acls;
+
+    my @tables = qw (
+fm_classes_id_seq
+FM_Classes 
+FM_ClassCustomFields_id_seq 
+FM_ClassCustomFields 
+FM_CustomFields_id_seq 
+FM_CustomFields 
+FM_Articles_id_seq 
+FM_Articles 
+FM_CustomFieldValues_id_seq 
+FM_CustomFieldValues 
+FM_ArticleCFValues_id_seq 
+FM_ArticleCFValues 
+FM_Transactions_id_seq 
+FM_Transactions 
+
+    );
+
+    # if there's already an rt_user, drop it.
+    foreach my $table (@tables) {
+        push @acls,
+          "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to "
+          . $RT::DatabaseUser . ";";
+
+    }
+    return (@acls);
+}
+1;
+
+

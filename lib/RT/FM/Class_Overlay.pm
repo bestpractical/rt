@@ -157,7 +157,7 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Description => '',
-                SortOrder => '',
+                SortOrder => '0',
     @_);
 
     unless ($self->CurrentUser->HasRight(Right => 'AdminClass', Object => $RT::FM::System) ) {
@@ -204,17 +204,12 @@ my $cf1 = RT::FM::CustomField->new($RT::SystemUser);
 ($id, $msg) =$cf1->Create(Name => "ListTest1", Type => "SelectMultiple");
 ok ($id, $msg);
 ok($cf1->AddToClass($class->Id));
-ok($class->CustomFields->Count == 1, "The class has 1 custom field");
-
+ok($class->CustomFields->Count == 1, "The class has 1 custom field - ");
 my $cf2 = RT::FM::CustomField->new($RT::SystemUser);
 ($id, $msg) =$cf2->Create(Name => "ListTest2", Type => "SelectMultiple");
 ok ($id, $msg);
 
 # We're not going to do global custom fields
-
-#ok($cf2->AddToClass(0));
-#ok($class->CustomFields->Count == 2, "The class has 1 custom field and one global custom field");
-#ok ($class->CustomFields->HasEntry($cf2->Id), "The class knows that it has the global cf specifically");
 
 ok ($class->CustomFields->HasEntry($cf1->Id), "The class knows that it has the local cf specifically");
 ok (!$class->CustomFields->HasEntry(9899), "The class knows that it doesn't have some random cf");

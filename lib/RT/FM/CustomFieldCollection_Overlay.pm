@@ -50,8 +50,9 @@ sub LimitToClass {
                  OPERATOR        => '=',
                  VALUE           => $class,
                  ENTRYAGGREGATOR => 'OR' );
-
-    $self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');
+    
+    # This doesn't work on postgres. 
+    #$self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');
 
     }
 
