@@ -22,12 +22,12 @@
 
 my $Ticket = LoadTicket($id);
 
-my $title = "Update ticket #" . $Ticket->id;
+my $title = loc("Update ticket #[_1]", $Ticket->id);
 
 $DefaultStatus = $Ticket->Status() unless ($DefaultStatus);
 
 
-Abort("No permission to view update ticket") 
+Abort(loc("No permission to view update ticket")) 
 	unless ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') ); 
 

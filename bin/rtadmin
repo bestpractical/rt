@@ -9,7 +9,7 @@ use Getopt::Long qw(:config pass_through);
 
 use lib "!!RT_LIB_PATH!!";
 
-use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent);
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
 
 #Clean out all the nasties from the environment
 CleanEnv();

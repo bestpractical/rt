@@ -58,7 +58,7 @@ use MIME::Entity;
 
 use lib "!!RT_LIB_PATH!!";
 
-use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent);
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
 
 use vars
   qw(@MAILER $TMPDIR $FILE_PREFIX $LASTDIR_FILE $HASH_FILE $VERSION_FILE             $MESSAGE_FILE $MAIL_FILE $DEBUG $MAILTO $REPLYTO $id $MODULE_NAME

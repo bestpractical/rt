@@ -35,8 +35,7 @@ elsif ($RT::WebExternalAuth){
     $session{'CurrentUser'} = RT::CurrentUser->new();
     $session{'CurrentUser'}->Load($user);
     unless ($session{'CurrentUser'}->id() ) {
-        delete $session{'CurrentUser'};
-        $m->comp('/Elements/Login', %ARGS, Error=> 'You are not an authorized user');
+        $m->comp('/Elements/Login', %ARGS, Error=> loc('You are not an authorized user'));
         $m->abort();
     }
 }
@@ -48,13 +47,13 @@ elsif (defined ($user) && defined ($pass)){
     $session{'CurrentUser'}->Load($user);
     unless ($session{'CurrentUser'}->id() ) {
 	delete $session{'CurrentUser'};
-	$m->comp('/Elements/Login', %ARGS, Error=> 'Your username or password is incorrect');
+	$m->comp('/Elements/Login', %ARGS, Error=> loc('Your username or password is incorrect'));
         $m->abort();
     };
     unless ($session{'CurrentUser'}->IsPassword($pass)) {
 	delete $session{'CurrentUser'};
 	
-	$m->comp('/Elements/Login', Error => 'Your username or password is incorrect', %ARGS);
+	$m->comp('/Elements/Login', Error => loc('Your username or password is incorrect'), %ARGS);
 	$m->abort();
     }
 }

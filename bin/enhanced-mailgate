@@ -43,6 +43,7 @@ use RT::Interface::Email  qw(CleanEnv
                              ParseCcAddressesFromHead
                              ParseSenderAddressFromHead
                              ParseErrorsToAddressFromHead
+                             loc
 			    );
  
 
@@ -129,7 +130,7 @@ my $MessageId = $head->get('Message-Id') ||
   "<no-message-id-".time.rand(2000)."\@.$RT::rtname>";
 
 #Pull apart the subject line
-$Subject = $head->get('Subject') || "[no subject]";
+$Subject = $head->get('Subject') || "";
 chomp $Subject;
 
 # Get the ticket ID

@@ -102,7 +102,7 @@ sub Type  {
 # {{{ sub Commit 
 sub Commit  {
   my $self = shift;
-  return(0,"Commit Stubbed");
+  return(0, $self->loc("Commit Stubbed"));
 }
 # }}}
 
@@ -112,7 +112,7 @@ sub Commit  {
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return ("No description for " . ref $self);
+  return $self->loc("No description for [_1]", ref $self);
 }
 # }}}
 
@@ -122,7 +122,7 @@ sub Describe  {
 # {{{ sub Prepare 
 sub Prepare  {
   my $self = shift;
-  return (0,"Prepare Stubbed");
+  return (0, $self->loc("Prepare Stubbed"));
 }
 # }}}
 

@@ -209,7 +209,7 @@ sub Create {
     }
     else {
         my $QueueObj = new RT::Queue( $self->CurrentUser );
-        $QueueObj->Load( $args{'Queue'} ) || return ( 0, 'Invalid queue' );
+        $QueueObj->Load( $args{'Queue'} ) || return ( 0, $self->loc('Invalid queue') );
 
         unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
             return (undef);
@@ -242,7 +242,7 @@ sub Delete {
     my $self = shift;
 
     unless ( $self->CurrentUserHasRight('ModifyTemplate') ) {
-        return ( 0, 'Permission Denied' );
+        return ( 0, $self->loc('Permission Denied') );
     }
 
     return ( $self->SUPER::Delete(@_) );
@@ -292,7 +292,7 @@ sub Parse {
     # Unfold all headers
     $self->{'MIMEObj'}->head->unfold();
 
-    return ( 1, "Template parsed" );
+    return ( 1, $self->loc("Template parsed") );
    
 
 }

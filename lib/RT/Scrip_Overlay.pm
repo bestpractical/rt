@@ -69,7 +69,7 @@ sub Create  {
       
     if ($args{'Queue'} == 0 ) { 
 	unless ($self->CurrentUser->HasSystemRight('ModifyScrips')) {
-	    return (0, 'Permission Denied');
+	    return (0, $self->loc('Permission Denied'));
  	}	
     }
     else {

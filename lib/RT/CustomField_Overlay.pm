@@ -110,7 +110,7 @@ sub AddValue {
 		     @_ );
 
     unless ($args{'Name'}) {
-        return(0, "Can't add a custom field value without a name");
+        return(0, $self->loc("Can't add a custom field value without a name"));
     }
 	my $newval = RT::CustomFieldValue->new($self->CurrentUser);
 	return($newval->Create(
@@ -141,17 +141,17 @@ sub DeleteValue {
 	my $val_to_del = RT::CustomFieldValue->new($self->CurrentUser);
 	$val_to_del->Load($id);
 	unless ($val_to_del->Id) {
-		return (0, "Couldn't find that value");
+		return (0, $self->loc("Couldn't find that value"));
 	}
 	unless ($val_to_del->CustomField == $self->Id) {
-		return (0, "That is not a value for this custom field");
+		return (0, $self->loc("That is not a value for this custom field"));
 	}
 
 	my $retval = $val_to_del->Delete();
     if ($retval) {
-        return ($retval, "Custom field value deleted");
+        return ($retval, $self->loc("Custom field value deleted"));
     } else {
-        return(0, "Custom field value could not be deleted");
+        return(0, $self->loc("Custom field value could not be deleted"));
     }
 }
 
@@ -251,15 +251,15 @@ sub DeleteValueForTicket {
                                                 CustomField => $self->Id );
     # check ot make sure we found it
     unless ($oldval->Id) {
-        return(0,"Custom field value '".$args{'Content'}."' could not be found for custom field '". $self->Name."'.");
+        return(0, $self->loc("Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->Name));
     }
     # delete it
 
     my $ret = $oldval->Delete();
     unless ($ret) {
-        return(0,"Custom field value could not be found");
+        return(0, $self->loc("Custom field value could not be found"));
     }
-    return(1, "Custom field value deleted");
+    return(1, $self->loc("Custom field value deleted"));
 }
 
 
@@ -386,13 +386,13 @@ sub _Set {
         && ( $self->SUPER::_Value('Queue') == 0 ) )
     {
         unless ( $self->CurrentUser->HasSystemRight('AdminCustomFields') ) {
-            return ( 0, 'Permission Denied' );
+            return ( 0, $self->loc('Permission Denied') );
         }
     }
     else {
 
         unless ( $self->CurrentUserHasQueueRight('AdminCustomFields') ) {
-            return ( 0, 'Permission Denied' );
+            return ( 0, $self->loc('Permission Denied') );
         }
     }
     return ( $self->SUPER::_Set(@_) );

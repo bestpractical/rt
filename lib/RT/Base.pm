@@ -4,9 +4,34 @@ package RT::Base;
 
 use vars qw(@EXPORT);
 
-@EXPORT=qw(loc);
+@EXPORT=qw(loc CurrentUser);
 
 =head1 FUNCTIONS
+
+
+
+# {{{ sub CurrentUser 
+
+=head2 CurrentUser
+
+If called with an argument, sets the current user to that user object.
+This will affect ACL decisions, etc.  
+Returns the current user
+
+=cut
+
+sub CurrentUser {
+    my $self = shift;
+
+    if (@_) {
+        $self->{'user'} = shift;
+    }
+    return ( $self->{'user'} );
+}
+
+# }}}
+
+
 
 =item loc LOC_STRING
 
@@ -25,8 +50,10 @@ In english, this would return:
 
 sub loc {
     my $self = shift;
-    unless ($self->can(CurrentUser)) {
-        return ("Critical error: $self has no CurrentUser");
+    unless ($self->CurrentUser) {
+        use Carp;
+        Carp::confess("No currentuser");
+        return ("Critical error:$self has no CurrentUser", $self);
     }
     return($self->CurrentUser->loc(@_));
 }

@@ -528,7 +528,7 @@ sub BriefDescription {
     }
 
     if ( !defined( $self->Type ) ) {
-        return ("No transaction type specified");
+        return $self->loc("No transaction type specified");
     }
 
     if ( $self->Type eq 'Create' ) {

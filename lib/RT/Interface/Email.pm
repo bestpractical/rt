@@ -31,6 +31,7 @@ BEGIN {
       &ParseCcAddressesFromHead
       &ParseSenderAddressFromHead
       &ParseErrorsToAddressFromHead
+      &loc
 
       &debug);
 }
@@ -292,6 +293,10 @@ sub MailError {
 
 # }}}
 
+{
+
+    my $CurrentUser; # shared betwen GetCurrentUser and loc
+
 # {{{ sub GetCurrentUser 
 
 sub GetCurrentUser {
@@ -305,7 +310,7 @@ sub GetCurrentUser {
     my ( $Address, $Name ) = ParseSenderAddressFromHead($head);
 
     #Get us a currentuser object to work with. 
-    my $CurrentUser = RT::CurrentUser->new();
+    $CurrentUser = RT::CurrentUser->new();
 
 
     #This will apply local address canonicalization rules
@@ -438,6 +443,22 @@ sub GetCurrentUser {
 }
 
 # }}}
+
+# {{{ sub loc 
+
+=head2 loc
+
+  Synonym of $CurrentUser->loc().
+
+=cut
+
+sub loc {
+    die "No current user yet" unless $CurrentUser;
+    return $CurrentUser->loc(@_);
+}
+# }}}
+
+}
 
 # {{{ ParseCcAddressesFromHead 
 

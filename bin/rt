@@ -12,7 +12,7 @@ package RT;
 
 use Getopt::Long;
 
-use RT::Interface::CLI  qw(CleanEnv GetCurrentUser GetMessageContent);
+use RT::Interface::CLI  qw(CleanEnv GetCurrentUser GetMessageContent loc);
 
 #Clean out all the nasties from the environment
 CleanEnv();
@@ -1179,75 +1179,75 @@ sub BuildListingFormat {
     # {{{ attribs
     my $attribs = { id => { chars => '4',
 			    justify => 'r',
-			    title => 'id',
+			    title => loc('id'),
 			    value => '$Ticket->id',
 			  },
 		    
 		    queue => { chars => '8',
 			       justify => 'l',
-			       title => 'Queue',
+			       title => loc('Queue'),
 			       value => '$Ticket->QueueObj->Name' 
 			     },
 		    subject => { chars => '30',
 				 justify => 'l',
-				 title => 'Subject',
+				 title => loc('Subject'),
 				 value => '$Ticket->Subject',
 			       },
 		    priority => { chars => '2',
 				  justify => 'r',
-				  title => 'Pri',
+				  title => loc('Pri'),
 				  value => '$Ticket->Priority',
 				},
 		    final_priority => {  chars => '2',
 					 justify => 'r',
-					 title => 'Fin',
+					 title => loc('Fin'),
 					 value => '$Ticket->FinalPriority',
 				      },
 		    time_worked => { chars => '6',
 				     justify => 'r',
-				     title => 'Worked',
+				     title => loc('Worked'),
 				     value => '$Ticket->TimeWorked',
 				   },
 		    time_left => { chars => '5',
 				   justify => 'r',
-				   title => 'Left',
+				   title => loc('Left'),
 				   value => '$Ticket->TimeLeft',
 			       
 				 },
 		
 		    status => {  chars => '6',
 				 justify => 'r',
-				 title => 'Status',
+				 title => loc('Status'),
 				 value => '$Ticket->Status',
 			      },
 		    owner => {  chars => '10',
 				justify => 'r',
-				title => 'Owner',
+				title => loc('Owner'),
 				value => '$Ticket->OwnerObj->Name'
 			     },
 		    requestor => {  chars => '10',
 				    justify => 'r',
-				    title => 'Requestor',
+				    title => loc('Requestor'),
 				    value => '$Ticket->RequestorAddresses'
 				 },
 		    created => {  chars => '12',
 				  justify => 'r',
-				  title => 'Created',
+				  title => loc('Created'),
 				  value => '$Ticket->CreatedAsString'
 			       },
 		    updated => {  chars => '12',
 				  justify => 'r',
-				  title => 'Updated',
+				  title => loc('Updated'),
 				  value => '$Ticket->LastUpdatedAsString'
 			       },
 		    due => {  chars => '12',
 			      justify => 'r',
-			      title => 'Due',
+			      title => loc('Due'),
 			      value => '$Ticket->DueAsString'
 			   },
 		    told => {  chars => '12',
 			       justify => 'r',
-			       title => 'Told',
+			       title => loc('Told'),
 			       value => '$Ticket->ToldAsString'
 			    },
 		

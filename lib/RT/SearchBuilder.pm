@@ -37,7 +37,7 @@ sub _Init  {
     unless(defined($self->CurrentUser)) {
 	use Carp;
 	Carp::confess("$self was created without a CurrentUser");
-	$RT::Logger->err(loc("[_1] was created without a CurrentUser\n", $self)); 
+	$RT::Logger->err("$self was created without a CurrentUser");
 	return(0);
     }
     $self->SUPER::_Init( 'Handle' => $RT::Handle);

@@ -379,7 +379,7 @@ sub AddWatcher {
     # bail
     else {
         unless ( $self->CurrentUserHasRight('ModifyQueueWatcher') ) {
-            return ( 0, "Permission Denied" );
+            return ( 0, $self->loc("Permission Denied") );
         }
     }
 
@@ -536,7 +536,7 @@ sub DeleteWatcher {
     # and the current user  doesn't have 'ModifyQueueWathcers' bail
     else {
         unless ( $self->CurrentUserHasRight('ModifyQueueWatchers') ) {
-            return ( 0, "Permission Denied" );
+            return ( 0, $self->loc("Permission Denied") );
         }
     }
 

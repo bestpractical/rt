@@ -106,8 +106,9 @@ sub Limit {
 		 DESCRIPTION => undef,
 		 @_
 	       );
-   $args{'DESCRIPTION'} = "Autodescribed: ".$args{'FIELD'} . $args{'OPERATOR'} . $args{'VALUE'},
-    if (!defined $args{'DESCRIPTION'}) ;
+    $args{'DESCRIPTION'} = $self->loc(
+	"Autodescribed: [_1][_2][_3]", $args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'}
+    ) if (!defined $args{'DESCRIPTION'}) ;
 
     my $index = $self->_NextIndex;
     
@@ -206,7 +207,9 @@ sub LimitQueue {
     $self->Limit (FIELD => 'Queue',
 		  VALUE => $queue->id(),
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Queue ' .  $args{'OPERATOR'}. " ". $queue->Name
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Queue'), $args{'OPERATOR'}, $queue->Name,
+		  ),
 		 );
     
 }
@@ -229,7 +232,9 @@ sub LimitStatus {
     $self->Limit (FIELD => 'Status',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Status ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Status'), $args{'OPERATOR'}, $self->loc($args{'VALUE'})
+		  ),
 		 );
 }
 
@@ -253,7 +258,9 @@ sub LimitType {
     $self->Limit (FIELD => 'Type',
                   VALUE => $args{'VALUE'},
                   OPERATOR => $args{'OPERATOR'},
-                  DESCRIPTION => 'Type ' .  $args{'OPERATOR'}. " ". $args{'Limit'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Type'), $args{'OPERATOR'}, $args{'Limit'},
+		  ),
                  );
 }
 
@@ -279,7 +286,9 @@ sub LimitSubject {
     $self->Limit (FIELD => 'Subject',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Subject ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Subject'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 
@@ -308,7 +317,9 @@ sub LimitId {
     $self->Limit (FIELD => 'id',
                   VALUE => $args{'VALUE'},
                   OPERATOR => $args{'OPERATOR'},
-                  DESCRIPTION => 'Id ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Id'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
                  );
 }
 
@@ -330,7 +341,9 @@ sub LimitPriority {
     $self->Limit (FIELD => 'Priority',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Priority'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 
@@ -353,7 +366,9 @@ sub LimitInitialPriority {
     $self->Limit (FIELD => 'InitialPriority',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Initial Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Initial Priority'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 
@@ -375,7 +390,9 @@ sub LimitFinalPriority {
     $self->Limit (FIELD => 'FinalPriority',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Final Priority ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Final Priority'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 
@@ -397,7 +414,9 @@ sub LimitTimeWorked {
     $self->Limit (FIELD => 'TimeWorked',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Time worked ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Time worked'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 
@@ -419,7 +438,9 @@ sub LimitTimeLeft {
     $self->Limit (FIELD => 'TimeLeft',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Time left ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Time left'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 
@@ -444,7 +465,9 @@ sub LimitContent {
     $self->Limit (FIELD => 'Content',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Ticket content ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Ticket content'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 
@@ -465,7 +488,9 @@ sub LimitContentType {
     $self->Limit (FIELD => 'ContentType',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Ticket content type ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Ticket content type'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 # }}}
@@ -494,7 +519,9 @@ sub LimitOwner {
     $self->Limit (FIELD => 'Owner',
 		  VALUE => $owner->Id,
 		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => 'Owner ' .  $args{'OPERATOR'}. " ". $owner->Name()
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Owner'), $args{'OPERATOR'}, $owner->Name(),
+		  ),
 		 );
     
 }
@@ -531,14 +558,14 @@ sub LimitWatcher {
     else {
 	$watcher_type = "Watcher";
     }
-    $desc = "$watcher_type ".$args{'OPERATOR'}." ".$args{'VALUE'};
-
 
     $self->Limit (FIELD => 'Watcher',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
 		  TYPE => $args{'TYPE'},
-		  DESCRIPTION => "$desc"
+		  DESCRIPTION => join(
+		   ' ', $self->loc($watcher_type), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
 		 );
 }
 
@@ -621,7 +648,9 @@ sub LimitLinkedTo {
 		  BASE => undef,
 		  TARGET => ($args{'TARGET'} || $args{'TICKET'}),
 		  TYPE => $args{'TYPE'},
-		  DESCRIPTION => "Tickets ".$args{'TYPE'}." by ".($args{'TARGET'} || $args{'TICKET'})
+		  DESCRIPTION => $self->loc(
+		   "Tickets [_1] by [_2]", $self->loc($args{'TYPE'}), ($args{'TARGET'} || $args{'TICKET'})
+		  ),
 		);
 }
 
@@ -654,7 +683,9 @@ sub LimitLinkedFrom {
 		  TARGET => undef,
 		  BASE => ($args{'BASE'} || $args{'TICKET'}),
 		  TYPE => $args{'TYPE'},
-		  DESCRIPTION => "Tickets " .($args{'BASE'} || $args{'TICKET'}) ." ".$args{'TYPE'}
+		  DESCRIPTION => $self->loc(
+		   "Tickets [_1] [_2]", $self->loc($args{'TYPE'}), ($args{'BASE'} || $args{'TICKET'})
+		  ),
 		);
 }
 

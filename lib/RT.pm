@@ -31,7 +31,7 @@ sub LoadConfig {
     my $config_file = "!!RT_CONFIG!!";
     # We don't have a configuration file yet. 
     # localizing here would suck.
-    #require $config_file || die loc("Couldn't load RT config file '[_1]' [_2]", $config_file, $@);
+    #require $config_file || die $self->loc("Couldn't load RT config file '[_1]' [_2]", $config_file, $@);
     require $config_file || die ("Couldn't load RT config file  $config_file $@");
 }
 
@@ -81,7 +81,7 @@ sub InitLogging {
 
     unless (-d $RT::LogDir && -w $RT::LogDir) {
         # localizing here would be hard when we don't have a current user yet
-        # die loc("Log directory [_1] not found or couldn't be written.\n RT can't run.", $RT::LogDir);
+        # die $self->loc("Log directory [_1] not found or couldn't be written.\n RT can't run.", $RT::LogDir);
         die ("Log directory $RT::LogDir not found or couldn't be written.\n RT can't run.");
     }
 

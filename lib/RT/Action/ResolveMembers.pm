@@ -12,7 +12,7 @@ require RT::Links;
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return (ref $self . " will resolve all members of a resolved group ticket.");
+  return $self->loc("[_1] will resolve all members of a resolved group ticket.", ref $self);
 }
 # }}}
 

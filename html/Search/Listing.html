@@ -27,10 +27,10 @@ my ($order);
 class="currenttab"
 % }
 HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$attr%>&TicketsSortOrder=<%$order%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">
-<%$col->{Header}%>
+<% loc($col->{Header}) %>
 </A>
 % } else {
-<% $col->{Header} %>
+<% loc($col->{Header}) %>
 % }
 </TH>
 %}

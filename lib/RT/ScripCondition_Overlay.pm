@@ -80,7 +80,7 @@ No API available for deleting things just yet.
 
 sub Delete  {
     my $self = shift;
-    return(0,'Unimplemented');
+    return(0, $self->loc('Unimplemented'));
 }
 # }}}
 

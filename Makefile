@@ -67,6 +67,8 @@ RT_READABLE_DIR_MODE	=	0755
 RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
 RT_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.fcgi
+# RT_WIN32_FASTCGI_HANDLER is the mason handler script for FastCGI
+RT_WIN32_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.svc
 # RT's CLI
 RT_CLI_BIN		=	$(RT_BIN_PATH)/rt
 # RT's admin CLI
@@ -356,6 +358,7 @@ bin-install:
 		bin/rt-mailgate \
 		bin/enhanced-mailgate \
 		bin/mason_handler.fcgi \
+		bin/mason_handler.svc \
 		bin/webmux.pl \
 		bin/rt-commit-handler \
 		$(DESTDIR)/$(RT_BIN_PATH)

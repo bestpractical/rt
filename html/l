@@ -1,2 +1,3 @@
-% my $hand = $session{'CurrentUser'}->LanguageHandle;
-<%$hand->maketext($m->content, @_)%>
+% my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
+% $m->print($hand->maketext($m->content, @_));
+% return(1);

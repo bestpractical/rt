@@ -21,7 +21,7 @@ RT::LoadConfig();
 
 package RT::Mason;
 use HTML::Mason;    # brings in subpackages: Parser, Interp, etc.
-use HTML::Mason::CGIHandler;
+use RT::MasonCGIHandler;
 
 use vars qw( $CGI);
 

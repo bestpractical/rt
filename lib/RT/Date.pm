@@ -28,7 +28,13 @@ ok (require RT::Date);
 
 
 package RT::Date;
+
 use Time::Local;
+
+use RT::Base;
+@ISA = qw/RT::Base/;
+
+
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 
 $MINUTE = 60;
@@ -45,6 +51,7 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
+  $self->_MyCurrentUser(@_);
   $self->Unix(0);
   return $self;
 }
@@ -68,6 +75,14 @@ where we let the user do whatever they want.
 
 If $args->{'Value'}  is 0, assumes you mean never.
 
+=begin testing
+
+use_ok(RT::Date);
+my $date = RT::Date->new($RT::SystemUser);
+$date->Set(Format => 'unix', Value => '0');
+ok ($date->ISO eq '1970-01-01 00:00:00', "Set a date to midnight 1/1/1970 GMT");
+
+=end testing
 
 =cut
 
@@ -245,31 +260,31 @@ sub DurationAsString{
     
     my ($negative, $s);
     
-    $negative = 'ago' if ($duration < 0);
+    $negative = $self->loc('ago') if ($duration < 0);
 
     $duration = abs($duration);
 
     if($duration < $MINUTE) {
 	$s=$duration;
-	$string="sec";
+	$string=$self->loc("sec");
     } elsif($duration < (2 * $HOUR)) {
 	$s = int($duration/$MINUTE);
-	$string="min";
+	$string=$self->loc("min");
     } elsif($duration < (2 * $DAY)) {
 	$s = int($duration/$HOUR);
-	$string="hours";
+	$string=$self->loc("hours");
     } elsif($duration < (2 * $WEEK)) {
 	$s = int($duration/$DAY);
-	$string="days";
+	$string=$self->loc("days");
     } elsif($duration < (2 * $MONTH)) {
 	$s = int($duration/$WEEK);
-	$string="weeks";
+	$string=$self->loc("weeks");
     } elsif($duration < $YEAR) {
 	$s = int($duration/$MONTH);
-	$string="months";
+	$string=$self->loc("months");
     } else {
 	$s = int($duration/$YEAR);
-	$string="years";
+	$string=$self->loc("years");
     }
     
     return ("$s $string $negative");
@@ -303,7 +318,7 @@ Returns the object\'s time as a string with the current timezone.
 
 sub AsString {
     my $self = shift;
-    return ("Not set") if ($self->Unix <= 0);
+    return ($self->loc("Not set")) if ($self->Unix <= 0);
 
     return (scalar(localtime($self->Unix)));
 }
@@ -431,6 +446,20 @@ sub LocalTimezone {
 
 # }}}
 
+# {{{ sub _MyCurrentUser 
 
+sub _MyCurrentUser {
+    my $self = shift;
+
+    $self->CurrentUser(@_);
+    if ( !defined( $self->CurrentUser ) ) {
+        use Carp;
+        Carp::cluck();
+        $RT::Logger->err("$self was created without a CurrentUser");
+        return (0);
+    }
+}
+
+# }}}
 
 1;

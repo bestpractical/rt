@@ -10,7 +10,7 @@ require RT::Action::Generic;
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return (ref $self . " will stall a [local] BASE if it's dependent [or member] of a linked up request.");
+  return $self->loc("[_1] will stall a [local] BASE if it's dependent [or member] of a linked up request.", ref $self);
 }
 # }}}
 

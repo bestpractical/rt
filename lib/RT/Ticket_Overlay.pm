@@ -364,7 +364,7 @@ sub Create {
     # }}}
 
     unless ( $self->ValidateStatus( $args{'Status'} ) ) {
-        return ( 0, 0, 'Invalid value for status' );
+        return ( 0, 0, $self->loc('Invalid value for status') );
     }
 
     if ( $args{'Status'} eq 'resolved' ) {
@@ -592,7 +592,7 @@ sub Import {
     # }}}
 
     unless ( $self->ValidateStatus( $args{'Status'} ) ) {
-        return ( 0, "'$args{'Status'}' is an invalid value for status" );
+        return ( 0, $self->loc("'[_1]' is an invalid value for status", $args{'Status'}) );
     }
 
     $self->{'_AccessibleCache'}{Created}       = { 'read' => 1, 'write' => 1 };
@@ -1493,7 +1493,7 @@ sub SetStarted {
     my $time = shift || 0;
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, self->loc("Permission Denied") );
     }
 
     #We create a date object to catch date weirdness
@@ -1673,7 +1673,7 @@ sub Comment {
     unless ( ( $self->CurrentUserHasRight('CommentOnTicket') )
         or ( $self->CurrentUserHasRight('ModifyTicket') ) )
     {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     unless ( $args{'MIMEObj'} ) {
@@ -2045,7 +2045,7 @@ sub AddLink {
     $old_link->Load( $args{'Base'}, $args{'Type'}, $args{'Target'} );
     if ( $old_link->Id ) {
         $RT::Logger->debug("$self Somebody tried to duplicate a link");
-        return ( $old_link->id, "Link already exists", 0 );
+        return ( $old_link->id, $self->loc("Link already exists"), 0 );
     }
 
     # }}}
@@ -2074,7 +2074,7 @@ sub AddLink {
         TimeTaken => 0
     );
 
-    return ( $Trans, "Link created ($TransString)" );
+    return ( $Trans, $self->loc("Link created ([_1])", $TransString) );
 
 }
 

@@ -20,7 +20,7 @@ BEGIN {
     # your exported package globals go here,
     # as well as any optionally exported functions
     @EXPORT_OK   = qw(&CleanEnv 
-		      &GetCurrentUser &GetMessageContent &debug);
+		      &GetCurrentUser &GetMessageContent &debug &loc);
 }
 
 =head1 NAME
@@ -32,7 +32,7 @@ BEGIN {
   use lib "/path/to/rt/libraries/";
 
   use RT::Interface::CLI  qw(CleanEnv 
-	  		   GetCurrentUser GetMessageContent);
+	  		   GetCurrentUser GetMessageContent loc);
 
   #Clean out all the nasties from the environment
   CleanEnv();
@@ -48,6 +48,8 @@ BEGIN {
 
   #Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
+
+  print loc('Hello!'); # Synonym of $CuurentUser->loc('Hello!');
 
 =head1 DESCRIPTION
 
@@ -81,6 +83,9 @@ sub CleanEnv {
 
 
 
+{
+
+    my $CurrentUser; # shared betwen GetCurrentUser and loc
 
 # {{{ sub GetCurrentUser 
 
@@ -90,15 +95,14 @@ sub CleanEnv {
 loaded with that user.  if the current user isn't found, returns a copy of RT::Nobody.
 
 =cut
+
 sub GetCurrentUser  {
-    
-    my ($Gecos, $CurrentUser);
     
     require RT::CurrentUser;
     
     #Instantiate a user object
     
-    $Gecos=(getpwuid($<))[0];
+    my $Gecos=(getpwuid($<))[0];
 
     #If the current user is 0, then RT will assume that the User object
     #is that of the currentuser.
@@ -109,9 +113,28 @@ sub GetCurrentUser  {
     unless ($CurrentUser->Id) {
 	$RT::Logger->debug("No user with a unix login of '$Gecos' was found. ");
     }
+
     return($CurrentUser);
 }
 # }}}
+
+
+# {{{ sub loc 
+
+=head2 loc
+
+  Synonym of $CurrentUser->loc().
+
+=cut
+
+sub loc {
+    die "No current user yet" unless $CurrentUser;
+    return $CurrentUser->loc(@_);
+}
+# }}}
+
+}
+
 
 # {{{ sub GetMessageContent
 

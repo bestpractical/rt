@@ -352,9 +352,9 @@ sub MakeMIMEEntity {
         Data    => [ $args{'Body'} ]
     );
 
-    my $cgi_object = CGIObject();
+    my $cgi_object = $RT::Mason::CGI;
 
-    my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} );
+    my $filehandle = eval { $cgi_object->upload( $args{'AttachmentFieldName'} ) } or return;
 
     use File::Temp qw(tempfile tempdir);
 

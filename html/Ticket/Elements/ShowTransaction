@@ -75,7 +75,7 @@ if ($size) {
 	$size = $size ."b";
     }
 </%PERL>
-<font size=-1><A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>">Download <%$message->Filename|| '(untitled)'%></a> <% $size %></font>
+<font size=-1><A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>"><&|/l&>Download</&> <%$message->Filename|| '(untitled)'%></a> <% $size %></font>
 % }
 </TD>
 </TR>

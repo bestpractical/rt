@@ -78,9 +78,9 @@ my $Ticket = LoadTicket($id);
 
 
 if ($DefaultStatus eq 'resolved') {
-	$title = "Resolve";
+	$title = loc("Resolve");
 } else {
-	$title = "Update";
+	$title = loc("Update");
 }
 
 $title .= " ticket #" . $Ticket->id . " (" .$Ticket->Subject.")";

@@ -78,9 +78,9 @@ CREATE TABLE Groups (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(16) NULL  ,
   Description varchar(64) NULL  ,
-  Domain varchar(255),
-  Type varchar(255),
-  Instance varchar(255),
+  Domain varchar(64),
+  Type varchar(64),
+  Instance varchar(64),
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
