@@ -280,10 +280,17 @@ sub UpdateArticleCustomFieldValues {
 	
 	# Lets get a hash of the possible values to work with
 	my $allvalues = $ARGSRef->{'RT::FM::Article-'.$Article->Id.'-CustomField-'.$CustomField->Id.'-AllValues'} || [];
-	
+
+	# Get an array of all possible values
+	my @allvalues =  ref($allvalues) ? @{$allvalues} : ( $allvalues );
+
+
 	#lets get all those values in a hash. regardless of # of entries
 	#we'll use this for adding and deleting keywords from this object.
-	my %values = map { $_=>1 } ref($allvalues) ? @{$allvalues} : ( $allvalues );
+	foreach my $value (@allvalues) {
+		$values{$value} = 1;
+	}
+	
 	
 	# Load up the ObjectKeywords for this CustomField for this ticket
 	my $CurrentValuesObj = $Article->CustomFieldValues($CustomField->id);
