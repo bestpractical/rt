@@ -327,6 +327,7 @@ sub Create {
         $RT::Logger->debug( $args{'Queue'} . " not a recognised queue object.");
     }
 ;
+
     #Can't create a ticket without a queue.
     unless ( defined($QueueObj) && $QueueObj->Id ) {
         $RT::Logger->debug("$self No queue given for ticket creation.");

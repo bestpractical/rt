@@ -411,6 +411,9 @@ sub LastUpdatedByObj {
 # }}}
 
 
+require Encode::compat if $] < 5.007001;
+require Encode;
+
 sub __Value {
     my $self  = shift;
     my $field = shift;
@@ -424,12 +427,8 @@ sub __Value {
 
     return('') if ( !defined($value) || $value eq '');
 
-    if ( $args{'decode_utf8'} ) {
-        return $self->DecodeUTF8($value);
-    }
-    else {
-        return $value;
-    }
+    Encode::_utf8_on($value) if $args{'decode_utf8'};
+    return $value;
 }
 
 # Set up defaults for DBIx::SearchBuilder::Record::Cachable
@@ -448,24 +447,6 @@ sub _CacheConfig {
 
 =cut
 
-sub DecodeUTF8 {
-    my $self = shift;
-    my $value = shift;
-        if ( $] >= 5.007003 and eval { require Encode; 1 } ) {
-            return Encode::decode_utf8($value);
-        }
-        elsif ( $] >= 5.006001 ) {
-            return pack( 'U0A*', $value );
-        }
-        elsif ( $] >= 5.006 ) {
-            eval '$value =~ tr/\0-\xFF//CU';    # avoid syntax error
-            return $value;
-        }
-        else {
-            return $value;
-        }
-
-}
 eval "require RT::Record_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Local.pm});
 

@@ -71,8 +71,7 @@
 
     {  Name        => 'Autoreply To Requestors',    # loc
        Description =>
-'Always sends a message to the requestors independent of message sender'
-       ,                                            # loc
+'Always sends a message to the requestors independent of message sender' ,                                            # loc
        ExecModule => 'Autoreply',
        Argument   => 'Requestor' },
     { Name        => 'Notify Requestors',                    # loc
@@ -131,7 +130,8 @@
        ExecModule => 'CreateTickets', },
     { Name        => 'Open Tickets',
       Description => 'Open tickets on correspondence',                    # loc
-      ExecModule  => 'AutoOpen' }, );
+      ExecModule  => 'AutoOpen' },
+);
 
 @ScripConditions = (
     { Name                 => 'On Create',                                # loc
@@ -331,7 +331,41 @@ batch-process all your pending approvals.
 -------------------------------------------------------------------------
 {$Transaction->Content()}
 '
-    }, );
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Passed",    # loc
+       Description =>
+         "Notify Owner of their ticket has been approved by some approver", # loc
+       Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+
+Greetings,
+
+Your ticket has been approved by somebody.  Other approvals may be pending.
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "All Approvals Passed",    # loc
+       Description =>
+         "Notify Owner of their ticket has been approved by all approvers", # loc
+       Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+
+Greetings,
+
+Your ticket has been approved by somebody.  Other approvals may be pending.
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Rejected",    # loc
+       Description =>
+         "Notify Owner of their rejected ticket", # loc
+       Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+
+Greetings,
+
+Your ticket has been rejected.  Have a nice day.
+'
+    },
+);
 
 # }}}
 
@@ -367,8 +401,13 @@ batch-process all your pending approvals.
 "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
        ,    # loc
        Queue          => '___Approvals',
-       ScripCondition => 'On Create',
-       ScripAction    => 'Notify AdminCcs',
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
+	    $self->TicketObj->Type eq 'approval'	and
+	    $self->TransactionObj->Field eq 'Status'	and
+	    $self->TransactionObj->NewValue eq 'open'
+       ],
+       ScripAction    => 'Notify Owner',
        Template       => 'New Pending Approval' },
     {  Description =>
 "If an approval is rejected, reject the original and delete pending approvals"
@@ -376,23 +415,25 @@ batch-process all your pending approvals.
        Queue            => '___Approvals',
        ScripCondition   => 'On Status Change',
        ScripAction      => 'User Defined',
-       CustomCommitCode => q[
+       CustomPrepareCode => q[
 # ------------------------------------------------------------------- #
-return(1) unless ( lc($self->TransactionObj->NewValue) eq "rejected" or
+return(0) unless ( lc($self->TransactionObj->NewValue) eq "rejected" or
 	           lc($self->TransactionObj->NewValue) eq "deleted" );
 
+my $rejected = 0;
 my $links = $self->TicketObj->DependedOnBy;
 foreach my $link (@{ $links->ItemsArrayRef }) {
     my $obj = $link->BaseObj;
     if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
 	if ($obj->Type eq 'ticket') {
-	    $obj->Correspond(
+	    $obj->Comment(
 		Content	=> $self->loc("Your request was rejected."),
 	    );
 	    $obj->SetStatus(
 		Status	=> 'rejected',
 		Force	=> 1,
 	    );
+	    $rejected = 1;
 	}
 	else {
 	    $obj->SetStatus(
@@ -414,63 +455,78 @@ foreach my $link (@{ $links->ItemsArrayRef }) {
     }
 }
 
-return 1;
+# Now magically turn myself into a Requestor Notify object...
+require RT::Action::Notify; bless($self, 'RT::Action::Notify');
+$self->{Argument} = 'Requestor'; $self->Prepare;
+
+return $rejected;
 # ------------------------------------------------------------------- #
 	],
-       CustomPrepareCode => '1',
-       Template          => 'Admin Comment', },
+       CustomCommitCode => '"never needed"',
+       Template          => 'Approval Rejected', },
     {  Description =>
-"When a ticket has been approved by any approver, add correspondence to the original ticket"
-       ,    # loc
+"When a ticket has been approved by any approver, add correspondence to the original ticket",    # loc
        Queue             => '___Approvals',
        ScripCondition    => 'On Resolve',
        ScripAction       => 'User Defined',
-       CustomPrepareCode => 'return(1);',
-       CustomCommitCode  => q[
+       CustomPrepareCode => q[
 # ------------------------------------------------------------------- #
-return(1) unless ($self->TicketObj->Type eq 'approval');
+return(0) unless ($self->TicketObj->Type eq 'approval');
+
+my $note;
+my $t = $self->TicketObj->Transactions;
+while (my $o = $t->Next) {
+    $note .= $o->Content . "\n" if $o->ContentObj;
+}
 
 foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
-    $obj->Correspond(
+    $obj->Comment(
 	Content => $self->loc( "Your request has been approved by [_1]. Other approvals may still be pending.", # loc
 	    $self->TransactionObj->CreatorObj->Name,
 	) . "\n" . $self->loc( "Approver's notes: [_1]", # loc
-	    $self->TicketObj->Transactions->Last->Content,
+	    $note
 	),
-	_reopen	=> 0,
     );
 }
+
+# Now magically turn myself into a Requestor Notify object...
+require RT::Action::Notify; bless($self, 'RT::Action::Notify');
+$self->{Argument} = 'Requestor'; $self->Prepare;
 
 return 1;
 # ------------------------------------------------------------------- #
 	],
-       Template => 'Admin Comment' },
+       CustomCommitCode => '"never needed"',
+       Template => 'Approval Passed' },
     {  Description =>
 "When a ticket has been approved by all approvers, add correspondence to the original ticket"
        ,    # loc
        Queue             => '___Approvals',
        ScripCondition    => 'On Resolve',
        ScripAction       => 'User Defined',
-       CustomPrepareCode => 'return(1);',
-       CustomCommitCode  => q[
+       CustomPrepareCode  => q[
 # ------------------------------------------------------------------- #
 # Find all the tickets that depend on this (that this is approving)
 
 my $Ticket = $self->TicketObj;
 my @TOP    = $Ticket->AllDependedOnBy( Type => 'ticket' );
 my $links  = $Ticket->DependedOnBy;
+my $passed = 0;
 
 while (my $link = $links->Next) {
     my $obj = $link->BaseObj;
     next if ($obj->HasUnresolvedDependencies( Type => 'approval' ));
 
     if ($obj->Type eq 'ticket') {
-	$obj->Correspond(
+	$obj->Comment(
 	    Content	=> $self->loc("Your request has been approved."),
-	    _reopen	=> 0,
 	);
+	$passed = 1;
     }
-    elsif (0) { # code tickets can be dangerous # $obj->Type eq 'code') {
+    elsif ($obj->Type eq 'approval') {
+	$obj->SetStatus( Status => 'open', Force => 1 );
+    }
+    elsif ($RT::UseCodeTickets and $obj->Type eq 'code') {
 	my $code = $obj->Transactions->First->Content;
 	my $rv;
 
@@ -489,10 +545,15 @@ while (my $link = $links->Next) {
     }
 }
 
-return 1;
+# Now magically turn myself into a Requestor Notify object...
+require RT::Action::Notify; bless($self, 'RT::Action::Notify');
+$self->{Argument} = 'Requestor'; $self->Prepare;
+
+return $passed;
 # ------------------------------------------------------------------- #
 	],
-       Template => 'Admin Comment', },
+       CustomCommitCode => '"never needed"',
+       Template => 'All Approvals Passed', },
 
 );
 

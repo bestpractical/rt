@@ -329,24 +329,34 @@ sub Commit {
     use bytes;
 
     # Create all the tickets we care about
-
-    $T::Tickets{'TOP'} = $T::TOP = $self->TicketObj;
+    return(1) unless $self->TicketObj->Type eq 'ticket';
 
     foreach my $template_id ( @{ $self->{'template_order'} } ) {
+	$T::Tickets{'TOP'} = $T::TOP = $self->TicketObj;
+	$RT::Logger->debug("Workflow: processing $template_id of $T::TOP");
 
 	$T::ID = $template_id;
+
         my $template = Text::Template->new(
-                                  TYPE   => 'STRING',
-                                  SOURCE => $self->{'templates'}->{$template_id}
+	      TYPE   => 'STRING',
+	      SOURCE => $self->{'templates'}->{$template_id}
         );
+
+	$RT::Logger->debug("Workflow: evaluating\n$self->{templates}{$template_id}");
 
 	my $err;
         my $filled_in = $template->fill_in( PACKAGE => 'T', BROKEN => sub {
 	    $err = { @_ }->{error};
 	} );
 
+	$RT::Logger->debug("Workflow: yielding\n$filled_in");
+
 	if ($err) {
 	    $RT::Logger->error("Ticket creation failed for ".$self->TicketObj->Id." ".$err);
+	    while (my ($k, $v) = each %T::X) {
+		$RT::Logger->debug("Eliminating $template_id from ${k}'s parents.");
+		delete $v->{$template_id};
+	    }
 	    next;
 	}
 
@@ -357,15 +367,16 @@ sub Commit {
                 my $value = $2;
                 my $tag = lc ($1);
                 $tag =~ s/-//g;
-                    if (defined ($args{$tag})) { #if we're about to get a second value, make it an array
-                        $args{$tag} = [$args{$tag}];
-                    }
-                    if (ref($args{$tag})) { #If it's an array, we want to push the value
-                        push @{$args{$tag}}, $value;
-                    }
-                    else { #if there's nothing there, just set the value
-                        $args{ $tag } = $value;
-                    }
+
+		if (ref($args{$tag})) { #If it's an array, we want to push the value
+		    push @{$args{$tag}}, $value;
+		}
+		elsif (defined ($args{$tag})) { #if we're about to get a second value, make it an array
+		    $args{$tag} = [$args{$tag}, $value];
+		}
+		else { #if there's nothing there, just set the value
+		    $args{ $tag } = $value;
+		}
 
                 if ( $tag eq 'content' ) { #just build up the content
                         # convert it to an array
@@ -376,79 +387,85 @@ sub Commit {
                         }
                 }
             }
-            }
+	}
 
-            foreach my $date qw(due starts started resolved) {
-                my $dateobj = RT::Date->new($RT::SystemUser);
-                if ($args{$date} =~ /^\d+$/) {
-                    $dateobj->Set(Format => 'unix', Value => $args{$date});
-                } else {
-                    $dateobj->Set(Format => 'unknown', Value => $args{$date});
-                }
-                $args{$date} = $dateobj->ISO;
-            }
-            my $mimeobj = MIME::Entity->new();
-            $mimeobj->build(Type => $args{'contenttype'},
-                            Data => $args{'content'});
-            # Now we have a %args to work with. 
-            # Make sure we have at least the minimum set of 
-            # reasonable data and do our thang
-            $T::Tickets{$template_id} ||= RT::Ticket->new($RT::SystemUser);
+	foreach my $date qw(due starts started resolved) {
+	    my $dateobj = RT::Date->new($RT::SystemUser);
+	    next unless $args{$date};
+	    if ($args{$date} =~ /^\d+$/) {
+		$dateobj->Set(Format => 'unix', Value => $args{$date});
+	    } else {
+		$dateobj->Set(Format => 'unknown', Value => $args{$date});
+	    }
+	    $args{$date} = $dateobj->ISO;
+	}
+	my $mimeobj = MIME::Entity->new();
+	$mimeobj->build(Type => $args{'contenttype'},
+			Data => $args{'content'});
+	# Now we have a %args to work with. 
+	# Make sure we have at least the minimum set of 
+	# reasonable data and do our thang
+	$T::Tickets{$template_id} ||= RT::Ticket->new($RT::SystemUser);
+	$RT::Logger->debug("Assiging $template_id with $T::Tickets($template_id)");
 
-	    # Deferred processing	
-	    push @links, (
-		$T::Tickets{$template_id}, {
-		    DependsOn		=> $args{'dependson'},
-		    DependedOnBy	=> $args{'dependedonby'},
-		    RefersTo		=> $args{'refersto'},
-		    ReferredToBy	=> $args{'referredtoby'},
-		    Members		=> $args{'members'},
-		    MemberOf		=> $args{'memberof'},
-		}
-	    );
+	# Deferred processing	
+	push @links, (
+	    $T::Tickets{$template_id}, {
+		DependsOn		=> $args{'dependson'},
+		DependedOnBy	=> $args{'dependedonby'},
+		RefersTo		=> $args{'refersto'},
+		ReferredToBy	=> $args{'referredtoby'},
+		Members		=> $args{'members'},
+		MemberOf		=> $args{'memberof'},
+	    }
+	);
 
-	    push @postponed, (
-		# Status is postponed so we don't violate dependencies
-		$T::Tickets{$template_id}, {
-		    Status		=> $args{'status'},
-		}
-	    );
+	push @postponed, (
+	    # Status is postponed so we don't violate dependencies
+	    $T::Tickets{$template_id}, {
+		Status		=> $args{'status'},
+	    }
+	);
 
-            my %ticketargs = ( Queue => $args{'queue'},
-                          Subject=> $args{'subject'},
-                        Status => 'new',
-                        Due => $args{'due'},
-                        Starts => $args{'starts'},
-                        Started => $args{'started'},
-                        Resolved => $args{'resolved'},
-                        Owner => $args{'owner'},
-                        Requestor => $args{'requestor'},
-                        Cc => $args{'cc'},
-                        AdminCc=> $args{'admincc'},
-                        TimeWorked =>$args{'timeworked'},
-                        TimeEstimated =>$args{'timeestimated'},
-                        TimeLeft =>$args{'timeleft'},
-                        InitialPriority => $args{'initialpriority'},
-                        FinalPriority => $args{'finalpriority'},
-                        Type => $args{'type'}, 
-                        MIMEObj => $mimeobj);
+	$args{'requestor'} ||= $self->TicketObj->Requestors->MemberEmailAddresses;
 
-    
-            map {
-                /^customfield-(\d+)$/
-                  && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
-            } keys(%args);
-            my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%ticketargs);
-            unless($id) {
-                $RT::Logger->error("Couldn't create a related ticket for ".$self->TicketObj->Id." ".$msg);
-            }
+	my %ticketargs = ( Queue => $args{'queue'},
+		      Subject=> $args{'subject'},
+		    Status => 'new',
+		    Due => $args{'due'},
+		    Starts => $args{'starts'},
+		    Started => $args{'started'},
+		    Resolved => $args{'resolved'},
+		    Owner => $args{'owner'},
+		    Requestor => $args{'requestor'},
+		    Cc => $args{'cc'},
+		    AdminCc=> $args{'admincc'},
+		    TimeWorked =>$args{'timeworked'},
+		    TimeEstimated =>$args{'timeestimated'},
+		    TimeLeft =>$args{'timeleft'},
+		    InitialPriority => $args{'initialpriority'},
+		    FinalPriority => $args{'finalpriority'},
+		    Type => $args{'type'}, 
+		    MIMEObj => $mimeobj);
 
-        }
+
+	map {
+	    /^customfield-(\d+)$/
+	      && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
+	} keys(%args);
+	my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%ticketargs);
+	unless($id) {
+	    $RT::Logger->error("Couldn't create a related ticket for ".$self->TicketObj->Id." ".$msg);
+	}
+
+	$T::Tickets{$template_id}->SetOriginObj($self->TicketObj)
+	    if $T::Tickets{$template_id}->can('SetOriginObj');
+    }
 
     # postprocessing: add links
 
     while (my $ticket = shift(@links)) {
-	$RT::Logger->debug("Handling links for $ticket");
+	$RT::Logger->debug("Handling links for " . $ticket->Id);
 	my %args = %{shift(@links)};
 
 	foreach my $type ( keys %LINKTYPEMAP ) {
@@ -457,8 +474,9 @@ sub Commit {
 		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
 	    {
 
-		$RT::Logger->debug("Building link for $link: $T::Tickets{$link}");
-		$link = $T::Tickets{$link}->Id if exists $T::Tickets{$link};
+		$RT::Logger->debug("Building $type link for $link: $T::Tickets{$link}");
+		next unless exists $T::Tickets{$link};
+		$link = $T::Tickets{$link}->Id;
 
 		my ( $wval, $wmsg ) = $ticket->AddLink(
 		    Type                          => $LINKTYPEMAP{$type}->{'Type'},
@@ -466,6 +484,7 @@ sub Commit {
 		    Silent                        => 1
 		);
 
+		$RT::Logger->warning("AddLink thru $link failed: $wmsg") unless $wval;
 		# push @non_fatal_errors, $wmsg unless ($wval);
 	    }
 

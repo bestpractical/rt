@@ -565,6 +565,12 @@ sub SetSubjectToken {
 sub SetHeaderAsEncoding {
     my $self = shift;
     my ( $field, $enc ) = ( shift, shift );
+
+    if ($field eq 'From' and $RT::SMTPFrom) {
+        $self->TemplateObj->MIMEObj->head->replace( $field, $RT::SMTPFrom );
+	return;
+    }
+
     my $value = $self->TemplateObj->MIMEObj->head->get($field);
 
     # don't bother if it's us-ascii

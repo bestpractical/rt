@@ -21,6 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<& /Elements/Callback, %ARGS, error => $error &>
 <& /Elements/Header, Code => $Code, Why => $Why &>
 <& /Elements/Tabs &>
 <& /Elements/TitleBoxStart, class=> "error",  title => $Title &>

@@ -29,9 +29,11 @@
     subtabs => $subtabs, 
     Title => $title &>
 
+% if (!$QueueObj->Disabled) { # Global scrips does not apply to disabled queues
 <h2><&|/l&>Scrips which apply to all queues</&></h2>
 <& /Admin/Elements/ListGlobalScrips &>
 <BR> 
+% }
 <& /Admin/Elements/EditScrips, title => $title, %ARGS &>
 <%init>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});

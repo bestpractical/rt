@@ -367,6 +367,7 @@ sub _ParseContent {
     $T::Ticket      = $args{'TicketObj'};
     $T::Transaction = $args{'TransactionObj'};
     $T::Argument    = $args{'Argument'};
+    $T::Requestor   = eval { $T::Ticket->Requestors->UserMembersObj->First->Name };
     $T::rtname      = $RT::rtname;
 
     # We need to untaint the content of the template, since we'll be working
@@ -379,6 +380,9 @@ sub _ParseContent {
     );
 
     my $retval = $template->fill_in( PACKAGE => 'T' );
+
+    # MIME::Parser has problems dealing with high-bit utf8 data.
+    Encode::_utf8_off($retval);
     return ($retval);
 }
 

@@ -51,13 +51,12 @@ use strict;
 
 =head2 NewApacheHandler
 
-  Takes a Mason::Interp object
+  Takes extra options to pass to HTML::Mason::ApacheHandler->new
   Returns a new Mason::ApacheHandler object
 
 =cut
 
 sub NewApacheHandler {
-    my $interp = shift;
     my $ah = new HTML::Mason::ApacheHandler( 
     
         comp_root                    => [
@@ -67,7 +66,8 @@ sub NewApacheHandler {
         args_method => "CGI",
         default_escape_flags => 'h',
         allow_globals        => [qw(%session)],
-        data_dir => "$RT::MasonDataDir"
+        data_dir => "$RT::MasonDataDir",
+        @_
     );
 
     $ah->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
@@ -879,7 +879,7 @@ sub UpdateRecordObject {
         }
 
             $value =~ s/\r\n/\n/gs;
-        $value = $object->DecodeUTF8($value);
+	# $value = $object->DecodeUTF8($value); # XXX - investigate!
         if ($value ne $object->$attribute()){
 
               my $method = "Set$attribute";

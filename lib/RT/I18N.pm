@@ -30,8 +30,8 @@ RT::I18N - a base class for localization of RT
 package RT::I18N;
 
 use strict;
-use Locale::Maketext 1.01;
-use Locale::Maketext::Lexicon 0.10;
+use Locale::Maketext 1.04;
+use Locale::Maketext::Lexicon 0.22;
 use base ('Locale::Maketext::Fuzzy');
 use vars qw( %Lexicon );
 
@@ -78,48 +78,22 @@ ok(RT::I18N->Init);
 sub Init {
     # Load language-specific functions
     foreach my $language ( glob(substr(__FILE__, 0, -3) . "/*.pm")) {
-        if ($language =~ /^([-\w.\/\\]+)$/) {
+        if ($language =~ /^([-\w.\/\\~:]+)$/) {
             require $1;
         }
         else {
 	    warn("$language is tainted. not loading");
         } 
     }
+
     # Acquire all .po files and iterate them into lexicons
-    my @languages = map {
-	m|/(\w+).po$|g
-    } glob(substr(__FILE__, 0, -3) . "/*.po");
-
-    Locale::Maketext::Lexicon->import({ map {
-	$_ => [Gettext => "$_.po"]
-    } @languages });
-
-    # allow user to override lexicons using local/po/...
-    if (-d $RT::LocalLexiconPath) {
-	require File::Find;
-	File::Find::find( {
-	    wanted		=> sub {
-		return unless /(\w+)\.po$/;
-		Locale::Maketext::Lexicon->import({
-		    $1 => [Gettext => $File::Find::name],
-		});
-	    },
-	    follow		=> ($^O ne 'MSWin32'),
-	    untaint		=> ($^O ne 'MSWin32'),
-	    untaint_skip	=> ($^O ne 'MSWin32'),
-	}, $RT::LocalLexiconPath );
-    }
-
-    # Force UTF8 flag on if we're sure it's utf8 already
-    foreach my $lang (@languages) {
-        my $pkg = __PACKAGE__ . "::$lang";
-        my $obj = RT::I18N->get_handle($lang);
-        next unless $obj->encoding eq 'utf-8';
-
-        no strict 'refs';
-        my $lexicon = \%{"$pkg\::Lexicon"};
-        Encode::_utf8_on( $lexicon->{$_} ) for keys %{$lexicon};
-    }
+    Locale::Maketext::Lexicon->import({
+	_decode	=> 1,
+	'*'	=> [
+	    Gettext => (substr(__FILE__, 0, -3) . "/*.po"),
+	    Gettext => "$RT::LocalLexiconPath/*/*.po",
+	],
+    });
 
     return 1;
 }
@@ -145,60 +119,12 @@ ok($en->encoding eq 'utf-8', "The encoding ".$en->encoding." is 'utf-8'");
 
 =cut
 
-{
 
-sub encoding { 
+sub encoding { 'utf-8' }
+
+sub maketext {
     my $self = shift;
-
-    if ( $self->maketext('__Content-Type') =~ /charset=\s*([-\w]+)/i ) {
-        my $encoding = $1;
-
-	# Doesn't make any sense if it's already utf8
-	if ($encoding =~ /^utf-?8$/i) {
-	    no strict 'refs';
-
-	    if ($] >= 5.007001) {
-		*{ ref($self) . '::maketext' } = sub {
-		    my $self = shift;
-		    my @args;
-		    foreach (@_) {
-			my $arg = $_;
-			Encode::_utf8_on($arg);
-			push @args, $arg;
-		    }
-
-		    my $val = $self->SUPER::maketext(@args);
-		    Encode::_utf8_on( $val );
-		    return $val;
-		};
-	    }
-	    else {
-		# 5.6.x is 1)stupid 2)special case.
-		*{ ref($self) . '::maketext' } = sub {
-		    my $self = shift;
-		    my @args;
-		    foreach my $arg (@_) {
-			push @args, pack( 'C*', unpack('C*', $arg) );
-		    }
-
-		    return pack( 'U*', unpack('U0U*', $self->SUPER::maketext(@args) ) );
-		};
-	    }
-
-            return ('utf-8');
-	}
-
-	no warnings 'redefine';
-	no strict 'refs';
-	*{ ref($self) . '::maketext' } = sub {
-	    my $self = shift;
-	    return Encode::decode( $encoding, $self->SUPER::maketext(@_) );
-	};
-
-	return ('utf-8');
-    }
-}
-
+    $self->SUPER::maketext( map { Encode::_utf8_on(my $arg = $_); $arg } @_ );
 }
 
 # {{{ SetMIMEEntityToUTF8

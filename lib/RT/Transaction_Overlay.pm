@@ -129,7 +129,8 @@ sub Create {
 
         $PossibleScrips->LimitToQueue( $TicketAsSystem->QueueObj->Id )
           ;                                  #Limit it to  $Ticket->QueueObj->Id
-        $PossibleScrips->LimitToGlobal();    # or to "global"
+        $PossibleScrips->LimitToGlobal()
+	    unless $TicketAsSystem->QueueObj->Disabled;    # or to "global"
 
 
         $PossibleScrips->Limit(FIELD => "Stage", VALUE => "TransactionCreate");
