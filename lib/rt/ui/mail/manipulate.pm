@@ -376,14 +376,11 @@ sub parse_actions {
 	#		($trans,  $message)=&rt::resolve($serial_num, $current_user);
 	# batch them up and do them at the very end.
 	if (!$arg[1]) { $arg[1] = $real_serial_num; }
-		@resolve_nums = (@resolve_nums,$arg[1]);
-         	$message = "Batching resolve of $resolve_nums[$#resolve_nums].";
-	}
-	else {
-	  $message = "No ticket number found.";
-	}
-	
-      }
+	@resolve_nums = (@resolve_nums,$arg[1]);
+       	$message = "Batching resolve of $resolve_nums[$#resolve_nums].";
+
+	}	
+      
       
         
       #deal with KILL commands
