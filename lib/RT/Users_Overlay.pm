@@ -195,7 +195,7 @@ sub LimitToPrivileged {
 
 ok(my $users = RT::Users->new($RT::SystemUser));
 ok( $users->WhoHaveRight(Object =>$RT::System, Right =>'SuperUser'));
-ok($users->Count == 2, "There are two superusers - Found ". $users->Count);
+ok($users->Count == 1, "There is one privileged superuser - Found ". $users->Count);
 # TODO: this wants more testing
 
 

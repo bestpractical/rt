@@ -33,7 +33,7 @@ use vars qw/@ISA/;
 =head2 SetRecipients
 
 Sets the recipients of this meesage to Owner, Requestor, AdminCc, Cc or All. 
-Explicitly B<does not> notify the creator of the transaction.
+Explicitly B<does not> notify the creator of the transaction by default
 
 =cut
 
@@ -105,10 +105,17 @@ sub SetRecipients {
 
     #Strip the sender out of the To, Cc and AdminCc and set the 
     # recipients fields used to build the message by the superclass.
-
-    @{ $self->{'To'} }  = grep ( !/^$creator$/, @To );
-    @{ $self->{'Cc'} }  = grep ( !/^$creator$/, @Cc );
-    @{ $self->{'Bcc'} } = grep ( !/^$creator$/, @Bcc );
+    # unless a flag is set 
+    if ($RT::NotifyActor) {
+        @{ $self->{'To'} }  = @To;
+        @{ $self->{'Cc'} }  = @Cc;
+        @{ $self->{'Bcc'} } = @Bcc;
+    }
+    else {
+        @{ $self->{'To'} }  = grep ( !/^$creator$/, @To );
+        @{ $self->{'Cc'} }  = grep ( !/^$creator$/, @Cc );
+        @{ $self->{'Bcc'} } = grep ( !/^$creator$/, @Bcc );
+    }
     @{ $self->{'PseudoTo'} } = @PseudoTo;
     return (1);
 
