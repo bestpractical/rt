@@ -244,7 +244,7 @@ sub _PopulateACLCache {
     # }}}
 
 
-    my $query = "SELECT ACL.RightName, ACL.ObjectType, ACL.ObjectId, CachedGroupMembers.MemberId FROM ACL, Groups, Principals, CachedGroupMembers WHERE  ".
+    my $query = "SELECT DISTINCT ACL.RightName, ACL.ObjectType, ACL.ObjectId, CachedGroupMembers.MemberId FROM ACL, Groups, Principals, CachedGroupMembers WHERE  ".
     # Only find superuser or rights with the name $right
    # Never find disabled groups.
    "Principals.Disabled = 0 " .  "AND CachedGroupMembers.Disabled = 0  ".  "AND Principals.id = Groups.id " .  
@@ -266,8 +266,6 @@ sub _PopulateACLCache {
         # have a look at role groups, if there are any
          $or_check_roles.
         " ) ";
-
-    #   $RT::Logger->debug("Now Trying $query");	
     my $acl = $self->_Handle->SimpleQuery($query)->fetchall_arrayref({});
  
 
@@ -278,8 +276,9 @@ sub _PopulateACLCache {
             my $id = $obj->id;
            $_ACL_KEY_CACHE{$type}->{$id}->{$self->Id}->{'_queried'} = $time; 
     }
+
     foreach my $row (@$acl) {
-           $_ACL_KEY_CACHE{$row->{'ObjectType'}}->{$row->{'ObjectId'}}->{$row->{'MemberId'}}->{$row->{'RightName'}} = $time;
+           $_ACL_KEY_CACHE{$row->{objecttype}}->{$row->{objectid}}->{$row->{memberid}}->{$row->{rightname}} = $time;
     }
    
  
@@ -325,6 +324,8 @@ sub HasRight {
                  EquivObjects => undef,
                  @_ );
 
+    use Data::Dumper;
+
     if ( $self->Disabled ) {
         $RT::Logger->err( "Disabled User:  " . $self->id . " failed access check for " . $args{'Right'} );
         return (undef);
@@ -345,6 +346,7 @@ sub HasRight {
         return (undef);
     }
 
+    $RT::Logger->crit("HasRight: does ".$self->Id." have right ".$args{'Right'}. " on ".ref($args{'Object'}) . " ".$args{'Object'}->Id. "?");
     # If this object is a ticket, we care about ticket roles and queue roles
     if ( ( ref( $args{'Object'} ) eq 'RT::Ticket' ) && $args{'Object'}->Id ) {
 
@@ -366,6 +368,7 @@ sub HasRight {
         next unless ( UNIVERSAL::can( $obj, 'id' ) );
         my $type = ref($obj);
         my $id   = $obj->id;
+
 
       # if this chunk of the ACL cache is too old or non-existent, clean it out.
         if ( !exists $self->_ACLCache->{$type}->{$id}->{ $self->Id }->{ '_queried'}
@@ -391,10 +394,12 @@ sub HasRight {
             next unless ( UNIVERSAL::can( $obj, 'id' ) );
             my $type = ref($obj);
             my $id   = $obj->id;
+
             if ( $self->_ACLCache->{$type}->{$id}->{ $self->Id }
                  ->{ $args{'Right'} }
                  || $self->_ACLCache->{$type}->{$id}->{ $self->Id }->{
                      'SuperUser'} ) {
+
                 return (1);
             }
 
