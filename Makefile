@@ -242,5 +242,5 @@ dist:
 	cvs commit
 	cvs tag -F rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 	rm -rf /tmp/rt-$(RT_VERSION)
-	cvs export rt
+	cvs export -D now rt
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz rt-$(RT_VERSION)/
