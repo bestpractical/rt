@@ -125,6 +125,7 @@ $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
+$UpdatePath => $RT::WebPath."/Ticket/Update.html"
 $Attachments => undef
 $AttachmentContent => undef
 </%ARGS>
@@ -178,13 +179,13 @@ my $titlebar_commands='&nbsp;';
 if ($Attachments->[0] && $ShowTitleBarCommands) {
 	if ($Ticket->CurrentUserHasRight('ReplyToTicket')) {
 		$titlebar_commands .= 
-	  	  "[<a href=\"Update.html?id=".
+	  	  "[<a href=\"".$UpdatePath."?id=".
 		  $Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id.
 		  "&Action=Respond\">". loc('Reply') ."</a>]&nbsp;";
 	}
 	if ($Ticket->CurrentUserHasRight('CommentOnTicket')) {
 	     $titlebar_commands .= 
-	     "[<a href=\"Update.html?id=".$Transaction->Ticket. 
+	     "[<a href=\"".$UpdatePath."?id=".$Transaction->Ticket. 
 	     "&QuoteTransaction=".$Transaction->Id.
 	     "&Action=Comment\">". loc('Comment') ."</a>]";
 	}
