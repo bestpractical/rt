@@ -237,23 +237,28 @@ sub cli_create_user {
 
 sub cli_create_queue {
   my $queue_id = shift;
+  require RT::Queue;
   my $Queue = new RT::Queue($CurrentUser->UserId);
   $Queue->Create($queue_id);
   #TODO. this is wasteful. we should just be passing around a queue object
-  &cli_modify_queue($Queue->QueueId);
+  &cli_modify_queue_helper($Queue->QueueId);
 }
 
 
 sub cli_modify_queue {
-    my $queue_id = shift;
-    my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans, $m_members_correspond, 
-	$m_user_create, $m_members_comment, $allow_user_create,$default_prio, 
-	$default_final_prio, $Queue, $comment_alias);
+  my $queue_id = shift;
+  use RT::Queue;
+  $Queue = new RT::Queue($CurrentUser->UserId);
+  $Queue->load($queue_id);
+  &cli_modify_queue_helper($Queue);
+}
 
-    # get a new queue object and fill it.
-    $Queue = new RT::Queue($CurrentUser->UserId);
-    $Queue->load($queue_id);
-    
+sub cli_modify_queue_helper {
+  my $queue_id = shift;
+  my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans, $m_members_correspond, 
+      $m_user_create, $m_members_comment, $allow_user_create,$default_prio, 
+      $default_final_prio, $Queue, $comment_alias);
+
 
 
     $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@somewhere.com)" , $Queue->CorrespondAlias);
