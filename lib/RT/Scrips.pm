@@ -28,6 +28,7 @@ sub Limit {
 	       @_);
   $self->SUPER::Limit(%args);
 }
+
 sub LimitToType {
   my $self = shift;
   my $type = shift;
@@ -35,6 +36,10 @@ sub LimitToType {
 		FIELD => 'Type',
 		VALUE => "$type")
       if defined $type;
+  $self->Limit (ENTRYAGGREGATOR => 'OR',
+		FIELD => 'Type',
+		VALUE => "Correspondence")
+      if $type eq "Create";
   $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Type',
 		VALUE => 'any');
