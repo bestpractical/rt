@@ -205,5 +205,29 @@ sub ModifyPermitted  {
 }
 # }}}
 
+# {{{ sub Signature {
+sub Signature {
+    my $self=shift;
+    return ($self->SUPER::Signature)
+	if ($self->SUPER::Signature);
+    my @entry=getpwnam($self->Gecos || $self->UserId);
+    my $home=$entry[7];
+    for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
+	if (-r $trythis) {
+	    local($/);
+	    undef $/;
+	    open(SIGNATURE, "<$trythis"); 
+	    $signature=<SIGNATURE>;
+	    close(SIGNATURE);
+	    return $signature;
+	}
+    }
+    return undef;
+}
+#}}}
+ 
+
+
+
 1;
  
