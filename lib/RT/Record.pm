@@ -107,6 +107,19 @@ sub _PrimaryKeys {
 
 # }}}
 
+=head2 Delete
+
+Delete this record object from the database.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    my ($rv, $msg) = $self->SUPER::Delete;
+    $msg ||= $self->loc("Object deleted");
+    return ($rv, $msg);
+}
+
 =head2 Attributes
 
 Return this object's attributes as an RT::Attributes object
