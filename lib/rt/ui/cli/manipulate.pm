@@ -447,7 +447,7 @@ n";
 					Cc => $cc || "",
 					Bcc => $Bcc || "",
 					Data => $content));
-    $Message->print;
+    print "$Message\n";
   }                   
 # }}}
   

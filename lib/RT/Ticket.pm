@@ -856,7 +856,7 @@ sub Correspond {
       warn "stub"
   }
   
-  return ($Trans, "correspondence (probably) sent");
+  return ($Trans, "correspondence (probably) sent", $MIME);
 }
 # }}}
 
