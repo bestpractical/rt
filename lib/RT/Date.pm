@@ -270,7 +270,7 @@ sub AddSeconds {
     my $self = shift;
     my $delta = shift;
     
-    $self->Set($self->Unix + $delta);
+    $self->Set(Format => 'unix', Value => ($self->Unix + $delta));
     
     return ($self->Unix);
     

@@ -53,7 +53,7 @@ CREATE TABLE Tickets (
   TimeLeft INT DEFAULT 0,
   
   Told DATETIME,
-  StartsBy DATETIME,
+  Starts DATETIME,
   Started DATETIME,
   Due DATETIME,
   Resolved DATETIME,

@@ -1,9 +1,9 @@
-WARNING: BROKEN: <SELECT NAME="<%$Name%>">
+<SELECT NAME="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
 %while ( my $User = $Users->Next())  {
-% if ($User->CanManipulate) { #TODO use a proper queue-level ACL check ++++
+%# if ($User->CanManipulate) { #TODO use a proper queue-level ACL check ++++
 <OPTION VALUE="<%$User->Id()%>" <% ($User->Id() == $Default) && "SELECTED" %>><%$User->UserId()%></OPTION>
-% }
+%# }
 %}
 
 </SELECT>
