@@ -8,8 +8,8 @@ Sorry, there is quite some of the functionality below that doesn't work yet.  Wh
 	Owner is  <& /Elements/SelectBoolean, Name => "NegateOwner", True => "isn't", False => "is", Default=> "False" &>  
 	<& /Elements/SelectOwner, Name => "ValueOfOwner" &>
 
-<li><& /Elements/Checkbox, Name => "LimitRequestor" &> 
-	Requestor email address <& /Elements/SelectBoolean, Name => "NegateRequestor", False => "matches", True => "does not match" &> 
+<li><& /Elements/Checkbox, Name => "LimitRequestorByEmail" &> 
+	Requestor email address <& /Elements/SelectMatch, Name => "NegateRequestor", False => "matches", True => "does not match", Like => "Contains" &> 
 	<INPUT Name="ValueOfRequestor" SIZE=20>
 
 <li><& /Elements/Checkbox, Name => "LimitSubject" &>

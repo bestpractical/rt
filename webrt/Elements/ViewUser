@@ -1,11 +1,14 @@
 % my $name=$User->RealName || $User->EmailAddress;
 <& /Elements/TitleBoxStart, 
-	title => "Earlier requests from $name",
+	title => "<a href=\"$RT::WebURL/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">Earlier requests from $name</a>",
 	titleright=> "<a href=\"$RT::WebURL/EditUserComments.html?id=".$User->id."\">Comments about $name</a>" &>
 <TABLE WIDTH="100%">
 <tr>
 <td halign=left valign=top>
-	nothing here yet :(</td>
+%while (my $w=$as_requestor->Next) {
+	<a href="<%$RT::WebURL%>/Ticket/Display.html?id=<%$w->Value%>"><%$w->Value%></a>
+%}
+</td>
 <td align=right valign=top>
 	<% $User->Comments || "No comment entered about this user" %>
 </tr>
@@ -15,3 +18,10 @@
 <%ARGS>
 $User=>undef
 </%ARGS>
+
+<%INIT>
+my $as_requestor=RT::Watchers->new;
+$as_requestor->Limit(FIELD=>'Scope', VALUE=>'Ticket');
+$as_requestor->Limit(FIELD=>'Type', VALUE=>'Requestor');
+$as_requestor->Limit(FIELD=>'Owner', VALUE=>$User->Id);
+</%INIT>

@@ -8,7 +8,7 @@
 	</TD>
 
 	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
-	  <& /Elements/ShadedBox, title => 'Last Contact' , content => $Ticket->Told &>
+	  <& /Elements/ShadedBox, title => 'Last Contact' , content => $Ticket->Told ? $Ticket->ToldAsString : "Never" &>
 	</TD>
 	<TD WIDTH="25%" VALIGN=TOP ALIGN=CENTER>
 	  <& /Elements/ShadedBox, title => 'Created' , content => $Ticket->CreatedAsString &>

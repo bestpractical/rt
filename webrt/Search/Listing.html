@@ -60,7 +60,7 @@ if ($ARGS{'LimitOwner'} and $ARGS{'ValueOfOwner'}) {
 				      );
 }
 
-  if ($ARGS{'LimitRequestor'}) {
+  if ($ARGS{'LimitRequestorByEmail'}) {
     my $oper = $ARGS{'NegateRequestor'} ? "!=" : "=";
     my $alias=$session{'tickets'}->NewRestriction 
         (FIELD => 'Email',
@@ -70,6 +70,8 @@ if ($ARGS{'LimitOwner'} and $ARGS{'ValueOfOwner'}) {
 	 EXT_LINKFIELD => 'Value');
     # TODO:
     # THIS BREAKS.  NewRestriction doesn't return alias.  More work is needed here.. :/
+    # Possible idea; add SET_ALIAS as a method to the Limit, allowing
+    # a join to be performed with a custom-set alias
     $session{'tickets'}->NewRestriction
         (FIELD => 'Scope',
          VALUE => 'Ticket',
