@@ -4,14 +4,13 @@ package RT::Scrips;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
 
-
 # Removed the new() method.  It's redundant, we'll use
 # RT::EasySearch::new instead.
 
 # {{{ sub _Init
 sub _Init { 
   my $self = shift;
-  $self->{'table'} = "Scrips";
+  $self->{'table'} = "ScripScope";
   $self->{'primary_key'} = "id";
   $self->SUPER::_Init(@_);
 }
@@ -26,21 +25,17 @@ sub Limit  {
 }
 # }}}
 
-# {{{ sub LimitToType 
-sub LimitToType  {
+# {{{ sub LimitToQueue 
+sub LimitToQueue  {
   my $self = shift;
-  my $type = shift;
+  my $queue = shift;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Type',
-		VALUE => "$type")
-      if defined $type;
+		FIELD => 'Queue',
+		VALUE => "$queue")
+      if defined $queue;
   $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Type',
-		VALUE => "Correspondence")
-      if $type eq "Create";
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Type',
-		VALUE => 'any');
+		FIELD => 'Queue',
+		VALUE => 0);
   
 }
 # }}}
@@ -54,8 +49,8 @@ sub NewItem  {
   my $self = shift;
   my $item;
 
-  use RT::Scrip;
-  $item = new RT::Scrip();
+  use RT::ScripScope;
+  $item = new RT::ScripScope();
   return($item);
 }
 # }}}
