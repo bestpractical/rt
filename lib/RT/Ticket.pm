@@ -1013,6 +1013,14 @@ sub _Set {
     my $TimeTaken = shift if @_;
     
     #TODO: what the hell are moreoptions?
+
+    # Generally, more options that are needed for doing the
+    # transaction correct.  I'm just using "TransactionType" which
+    # usually differs from "Set".  I'd agree "MoreOptions" seems a bit
+    # kludgy, the "new" calling style should have been used instead 
+    # -- 
+    # TobiX
+
     my $MoreOptions = shift if @_;
     
     $TimeTaken = 0 if (!defined $TimeTaken);

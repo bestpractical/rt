@@ -31,13 +31,13 @@ sub Prepare  {
 
 sub Commit {
     my $self = shift;
+    my ($base_id)=$self->TransactionObj->Data =~ /^([^ ]*)/;
     my $base;
-    if ($self->TransactionObj->Data =~ /^THIS/) {
+    if ($base_id eq "THIS") {
 	$base=$self->TicketObj;
     } else {
-	# TODO:
-	# Get the BASE ticket object
-	die "stub!";
+	$base=RT::Ticket->new($self->TicketObj->CurrentUser);
+	$base->Load($base_id);
     }
     $base->Stall;
     return 0;
@@ -54,7 +54,7 @@ sub IsApplicable  {
   # 1:
   $self->TransactionObj->Data =~ /^[^ ]* DependsOn / || return 0;
   
-  return 0;
+  return 1;
 }
 # }}}
 
