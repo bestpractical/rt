@@ -277,7 +277,7 @@ sub test_dep {
 	my $version = shift;
 
 	print "\t$module $version";
-	eval "use $module $version" ;
+	eval "use $module $version ()";
 	if ($@) {
 		my $error = $@;
 		$error =~ s/\n(.*)$//s;
