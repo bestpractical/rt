@@ -197,8 +197,8 @@ sub Quote {
     $max+=2;
 
     ## Let's see if we can figure out the users signature...
-    $body .= "\n\n-- \n" . $self->{'user'}->Signature
-	if $self->{'user'}->Signature;
+    $body .= "\n\n-- \n" . $self->{'user'}->UserObj->Signature
+	if $self->{'user'}->UserObj->Signature;
     return (\$body, $max);
 }
 # }}}

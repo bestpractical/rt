@@ -38,6 +38,16 @@ sub _Init  {
 }
 # }}}
 
+# {{{ sub UserObj
+sub UserObj {
+    my $self = shift;
+    my $id=$self->id;
+    my $u=RT::User->new($self);
+    $u->Load($id) || die "Couldn't find myself in the user db?";
+    return $u;
+}
+# }}}
+
 # {{{ sub _Accessible 
 sub _Accessible  {
   my $self = shift;

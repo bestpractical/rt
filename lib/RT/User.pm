@@ -205,7 +205,7 @@ sub ModifyPermitted  {
 }
 # }}}
 
-# {{{ sub Signature {
+# {{{ sub Signature 
 sub Signature {
     my $self=shift;
     return ($self->SUPER::Signature)
