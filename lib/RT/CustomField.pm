@@ -72,6 +72,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'Queue'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
+  smallint(6) 'Disabled'.
 
 =cut
 
@@ -86,6 +87,7 @@ sub Create {
                 Queue => '',
                 Description => '',
                 SortOrder => '',
+                Disabled => '0',
 
 		  @_);
     $self->SUPER::Create(
@@ -94,6 +96,7 @@ sub Create {
                          Queue => $args{'Queue'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
+                         Disabled => $args{'Disabled'},
 );
 
 }
@@ -249,6 +252,24 @@ Returns the current value of LastUpdated.
 =cut
 
 
+=item Disabled
+
+Returns the current value of Disabled. 
+(In the database, Disabled is stored as smallint(6).)
+
+
+
+=item SetDisabled VALUE
+
+
+Set Disabled to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Disabled will be stored as a smallint(6).)
+
+
+=cut
+
+
 
 sub _ClassAccessible {
     {
@@ -273,6 +294,8 @@ sub _ClassAccessible {
 		{read => 1, auto => 1, type => 'int(11)', default => ''},
         LastUpdated => 
 		{read => 1, auto => 1, type => 'datetime', default => ''},
+        Disabled => 
+		{read => 1, write => 1, type => 'smallint(6)', default => '0'},
 
  }
 };
