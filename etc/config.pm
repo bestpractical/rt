@@ -289,6 +289,9 @@ $TicketBaseURI = "fsck.com-rt://$Organization/$rtname/ticket/";
 # (All currently unimplemented.)
 %URI2HTTP=
     (
+      'http' => sub {return @_;},
+      'https' => sub {return @_;},
+      'ftp' => sub {return @_;},
      'fsck.com-rt' => sub {warn "stub!";},
      'mozilla.org-bugzilla' => sub {warn "stub!"},
      'fsck.com-kb' => sub {warn "stub!"}

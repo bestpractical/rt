@@ -1,14 +1,27 @@
+<UL>
 % while (my $Link = $Ticket->RefersTo->Next) {
+<LI>
+% if ($Link->TargetIsLocal) {
 % my $member = $Link->TargetObj;
+
 <a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+% } else {
+<A HREF="<%$Link->TargetAsHREF%>"><%$Link->Target%></A>
 % }
+%}
+
+
 
 % while (my $Link = $Ticket->ReferedToBy->Next) {
+<LI>
+% if ($Link->BaseIsLocal) {
 % my $member = $Link->BaseObj;
 <a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+% } else {
+<A HREF="<%$Link->BaseAsHREF%>"><%$Link->Base%></A>
+%}
 % }
-
-
+</UL>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

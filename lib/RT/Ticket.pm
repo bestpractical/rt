@@ -1568,7 +1568,8 @@ sub LinkTo {
 		 Target => '',
 		 Type => '',
 		 @_ );
-    $self->_NewLink(%args);
+   return( $self->_NewLink(%args));
+    
 }
 
 # }}}
@@ -1589,7 +1590,7 @@ sub LinkFrom {
 		 Target => $self->URI,
 		 Type => '',
 		 @_);
-    $self->_NewLink(%args);
+    return($self->_NewLink(%args));
 }
 
 # }}}
