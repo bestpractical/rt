@@ -488,10 +488,10 @@ sub _Set {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    $self->_NewTransaction( Type       => 'Core',
+    $self->_NewTransaction( Type       => 'Set',
                             Field      => $args{'Field'},
-                            NewContent => $args{'Value'},
-                            OldContent => $self->__Value( $args{'Field'} ) );
+                            NewValue => $args{'Value'},
+                            OldValue => $self->__Value( $args{'Field'} ) );
 
     return ( $self->SUPER::_Set(%args) );
 

@@ -99,7 +99,7 @@ ok($id,$msg);
 ($id, $msg) = $article_a->AddLink( Type => 'RefersTo', Target => $article_b->URI);
 ok($id,$msg);
 
-# Make sure that Article B's "ReferredToBy" links object refers to to this article"
+# Make sure that Article Bs "ReferredToBy" links object refers to to this article
 my $refers_to_b = $article_b->ReferredToBy;
 ok($refers_to_b->Count == 1, "Found one thing referring to b");
 my $first = $refers_to_b->First;
@@ -215,18 +215,18 @@ ok($art->URIObj);
 ok($art->__Value('URI') eq $art->URIObj->URI, "The uri in the db is set correctly");
 
 
-
+my $art_id = $art->id;
 $art = RT::FM::Article->new($RT::SystemUser);
-$art->Load(1);
-ok ($art->Id == 1, "Loaded article 1");
+$art->Load($art_id);
+ok ($art->Id == $art_id, "Loaded article 1");
 my $s =$art->Summary;
 ($val, $msg) = $art->SetSummary("testFoo");
 ok ($val, $msg);
 ok ($art->Summary eq 'testFoo', "The Summary was set to foo");
 my $t = $art->Transactions();
 my $trans = $t->Last;
-ok ($trans->Type eq 'Core', "It's a core transaction");
+ok ($trans->Type eq 'Set', "It's a Set transaction");
 ok ($trans->Field eq 'Summary', "it is about setting the Summary");
-ok ($trans->NewContent eq 'testFoo', "The new content is 'foo'");
-ok ($trans->OldContent, "There was some old value");
+is  ($trans->NewValue , 'testFoo', "The new content is 'foo'");
+is ($trans->OldValue,$s, "the old value was preserved");
 
