@@ -1,27 +1,19 @@
 
-<& /Elements/Header, Title=>"Update Ticket" &>
+<& /Elements/Header, Title=>"Update Ticket ".$Ticket->Id.": ".$Ticket->Subject  &>
 <& /Elements/Tabs &>
-<H1> Update ticket <% $Ticket->Id %> (<%$Action%>)</H1>
+<& /Elements/TitleBoxStartm title => 'Update ticket ".$Ticket->Id &>
+
 <FORM ACTION="ProcessUpdate.html" METHOD=POST>
 
 <TABLE>
 <TR>
-<TD ALIGN=RIGHT>
-Subject:
-</TD>
-<TD> <% $Ticket->Subject %>
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT><a href="EditWatchers.html?id=<%$Ticket->Id()%>">Interested Parties:</a>
+<TD ALIGN=RIGHT>Interested Parties
 </TD>
 <TD>
-%# TODO:
-(Stubbed: You cannot yet set up particular receipients of one email, you can only <a href="EditWatchers.html?id=<%$Ticket->Id()%>">edit the watcher list</a>)
 <ul>
-<li>	Requestor:<% $Ticket->RequestorsAsString %> <br>
-<li>	Cc:<% $Ticket->CcAsString %><br>
-<li>	AdminCc: <% $Ticket->AdminCcAsString %> <br>
+<li>	Requestor:<% $Ticket->RequestorsAsString %> 
+<li>	Cc:<% $Ticket->CcAsString %>
+<li>	AdminCc: <% $Ticket->AdminCcAsString %> 
 </ul>
 </TD>
 </TR>
@@ -40,7 +32,7 @@ Time Worked:
 Update Type: <select name="UpdateType">
 		<option value="private" <%$CommentDefault%>>Private Comments (NOT SENT, and invisible to watchers)</option>
 		<option value="public" <%$PublicCommentDefault%>>Public Comments (NOT SENT, but visible to watchers) <B>CURRENTLY NONEXISTENT</B> </option>
-		<option value="response" <%$ResponseDefault%>>Response (SENT TO EXTERNAL WATCHERS)</option>
+		<option value="response" <%$ResponseDefault%>>Response (SENT TO REQUESTORS)</option>
 	</select> <br>
 
 Update Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subject %>"> <br>
@@ -54,6 +46,7 @@ Update Subject: <input name="UpdateSubject" size=60 value="Re: <% $Ticket->Subje
 <INPUT TYPE=SUBMIT VALUE="Comment/Reply/Update">
 </FORM>
 
+<& /Elements/TitleBoxEnd &>
 <%INIT>
 
 ## Things needed in the template - we'll do the processing here, just
