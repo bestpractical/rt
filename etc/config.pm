@@ -343,9 +343,7 @@ $MasonSessionDir = "!!MASON_SESSION_PATH!!";
 
      # Here you can modify the list view.  Be aware that the web
      # interface might crash if TicketAttribute is wrongly set.
-     # Consult the docs (if somebody is going to write them?) your
-     # local RT hacker or eventually the rt-users / rt-devel
-     # mailinglists
+     
      QueueListingCols => 
       [
        { Header     => 'Id',

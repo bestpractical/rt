@@ -32,10 +32,10 @@ CREATE INDEX Attachments2 ON Attachments (TransactionId);
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId);
 CREATE TABLE Queues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(40) NOT NULL  ,
+  Name varchar(120) NOT NULL  ,
   Description varchar(120) NULL  ,
-  CorrespondAddress varchar(40) NULL  ,
-  CommentAddress varchar(40) NULL  ,
+  CorrespondAddress varchar(120) NULL  ,
+  CommentAddress varchar(120) NULL  ,
   InitialPriority integer NULL  ,
   FinalPriority integer NULL  ,
   DefaultDueIn integer NULL  ,

@@ -160,11 +160,11 @@ my $gratuitous = {
 'Queues' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'Name', 'varchar', '', '40', '', '', #Textual 'name' for this queue
+    'Name', 'varchar', '', '120', '', '', #Textual 'name' for this queue
     'Description', 'varchar', 'NULL', '120', '', '', #Textual descr. of this
     #queue
-    'CorrespondAddress', 'varchar', 'NULL', '40', '', '',
-    'CommentAddress', 'varchar', 'NULL', '40', '', '',
+    'CorrespondAddress', 'varchar', 'NULL', '120', '', '',
+    'CommentAddress', 'varchar', 'NULL', '120', '', '',
     'InitialPriority', 'integer', 'NULL', '', '', '',
     'FinalPriority', 'integer', 'NULL', '', '', '',
     'DefaultDueIn', 'integer', 'NULL', '', '', '',
