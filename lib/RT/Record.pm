@@ -124,6 +124,29 @@ sub Delete {
     } 
 }
 
+=head2 ObjectTypeStr
+
+Returns a string which is this object's type.  The type is the class,
+without the "RT::" prefix.
+
+=begin testing
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+my $group = RT::Group->new($RT::SystemUser);
+is($ticket->ObjectTypeStr, 'Ticket', "Ticket returns correct typestring");
+is($group->ObjectTypeStr, 'Group', "Group returns correct typestring");
+
+=end testing
+
+=cut
+
+sub ObjectTypeStr {
+    my $self = shift;
+    my $type = ref($self);
+    $type =~ s/^.*::(\w+)$/$1/;
+    return $type;
+}
+
 =head2 Attributes
 
 Return this object's attributes as an RT::Attributes object
