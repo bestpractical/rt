@@ -86,13 +86,17 @@ sub Init {
         } 
     }
 
+    my @lang = @RT::LexiconLanguages;
+    @lang = ('*') unless @lang;
+
     # Acquire all .po files and iterate them into lexicons
     Locale::Maketext::Lexicon->import({
-	_decode	=> 1,
-	'*'	=> [
-	    Gettext => (substr(__FILE__, 0, -3) . "/*.po"),
-	    Gettext => "$RT::LocalLexiconPath/*/*.po",
-	],
+	_decode	=> 1, map {
+	    $_	=> [
+		Gettext => (substr(__FILE__, 0, -3) . "/$_.po"),
+		Gettext => "$RT::LocalLexiconPath/*/$_.po",
+	    ],
+	} @lang
     });
 
     return 1;
@@ -121,11 +125,6 @@ ok($en->encoding eq 'utf-8', "The encoding ".$en->encoding." is 'utf-8'");
 
 
 sub encoding { 'utf-8' }
-
-sub maketext {
-    my $self = shift;
-    $self->SUPER::maketext( map { Encode::_utf8_on(my $arg = $_); $arg } @_ );
-}
 
 # {{{ SetMIMEEntityToUTF8
 

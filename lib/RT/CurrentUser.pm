@@ -350,8 +350,7 @@ sub loc {
 	return $_[0] unless grep { exists $_->{$_[0]} } @{ $handle->_lex_refs };
     }
 
-    my $text = $handle->maketext(@_);
-    return(Encode::is_utf8($text) ? $text : Encode::decode_utf8($text));
+    return $handle->maketext(@_);
 }
 
 sub loc_fuzzy {

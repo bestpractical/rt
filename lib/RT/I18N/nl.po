@@ -1,5 +1,9 @@
 msgid ""
 msgstr ""
+"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: html/Elements/MyRequests:28 html/Elements/MyTickets:28
 msgid "#"
@@ -148,7 +152,7 @@ msgstr "%1 kon niet veranderd worden naar %2"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 couldn't init a transaction (%2)\\n"
-msgstr "%1 kon geen transactie initiëren (%2)"
+msgstr "%1 kon geen transactie initiÃ«ren (%2)"
 
 #: lib/RT/Ticket_Overlay.pm:2813
 #. ($self)
@@ -340,7 +344,7 @@ msgstr "(geen waarde)"
 
 #: html/Ticket/Elements/EditLinks:116
 msgid "(only one ticket)"
-msgstr "(slechts één ticket)"
+msgstr "(slechts Ã©Ã©n ticket)"
 
 #: html/Elements/MyRequests:52 html/Elements/MyTickets:55
 msgid "(pending approval)"
@@ -413,7 +417,7 @@ msgstr "ACE niet gevonden"
 
 #: lib/RT/ACE_Overlay.pm:831
 msgid "ACEs can only be created and deleted."
-msgstr "ACEs kunnen allen gecreëerd of verwijderd worden."
+msgstr "ACEs kunnen allen gecreÃ«erd of verwijderd worden."
 
 #: bin/rt-commit-handler:755
 msgid "Aborting to avoid unintended ticket modifications.\\n"
@@ -702,7 +706,7 @@ msgstr "Aanhechting '%1' kon niet geladen worden"
 
 #: lib/RT/Transaction_Overlay.pm:443
 msgid "Attachment created"
-msgstr "Aanhechting gecreëerd"
+msgstr "Aanhechting gecreÃ«erd"
 
 #: lib/RT/Tickets_Overlay.pm:1189
 msgid "Attachment filename"
@@ -979,28 +983,28 @@ msgstr "Kon eigenaar niet wijzigen. "
 #: html/Admin/Elements/EditCustomField:68 html/Admin/Elements/EditCustomFields:166
 #. ($msg)
 msgid "Could not create CustomField"
-msgstr "Kon SpecifiekVeld niet creëren"
+msgstr "Kon SpecifiekVeld niet creÃ«ren"
 
 #: html/User/Groups/Modify.html:77 lib/RT/Group_Overlay.pm:474 lib/RT/Group_Overlay.pm:481
 msgid "Could not create group"
-msgstr "Kon groep niet creëren"
+msgstr "Kon groep niet creÃ«ren"
 
 #: html/Admin/Global/Template.html:75 html/Admin/Queues/Template.html:72
 #. ($msg)
 msgid "Could not create template: %1"
-msgstr "Kon sjabloon niet creëren: %1"
+msgstr "Kon sjabloon niet creÃ«ren: %1"
 
 #: lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:333
 msgid "Could not create ticket. Queue not set"
-msgstr "Kon ticket niet creëren. Rij niet ingesteld"
+msgstr "Kon ticket niet creÃ«ren. Rij niet ingesteld"
 
 #: lib/RT/User_Overlay.pm:208 lib/RT/User_Overlay.pm:220 lib/RT/User_Overlay.pm:238 lib/RT/User_Overlay.pm:414
 msgid "Could not create user"
-msgstr "Kon gebruiker niet creëren"
+msgstr "Kon gebruiker niet creÃ«ren"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not create watcher for requestor"
-msgstr "Kon toeschouwer niet creëren voor verzoeker"
+msgstr "Kon toeschouwer niet creÃ«ren voor verzoeker"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not find a ticket with id %1"
@@ -1012,7 +1016,7 @@ msgstr "Kon groep %1 niet vinden. "
 
 #: lib/RT/Queue_Overlay.pm:621 lib/RT/Ticket_Overlay.pm:1422
 msgid "Could not find or create that user"
-msgstr "Kon deze gebruiker niet vinden of creëren"
+msgstr "Kon deze gebruiker niet vinden of creÃ«ren"
 
 #: lib/RT/Queue_Overlay.pm:682 lib/RT/Ticket_Overlay.pm:1501
 msgid "Could not find that principal"
@@ -1053,7 +1057,7 @@ msgstr "Kon lid niet toevoegen aan groep"
 #: lib/RT/Ticket_Overlay.pm:3468 lib/RT/Ticket_Overlay.pm:3524
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
-msgstr "Kon geen transactie creëren: %1"
+msgstr "Kon geen transactie creÃ«ren: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't figure out what to do from gpg's reply\\n"
@@ -1143,15 +1147,15 @@ msgstr "Land"
 
 #: html/Admin/Elements/CreateUserCalled:26 html/Ticket/Create.html:135 html/Ticket/Create.html:195
 msgid "Create"
-msgstr "Creëer"
+msgstr "CreÃ«er"
 
 #: etc/initialdata:128
 msgid "Create Tickets"
-msgstr "Creëer Tickets"
+msgstr "CreÃ«er Tickets"
 
 #: html/Admin/Elements/EditCustomField:58
 msgid "Create a CustomField"
-msgstr "Creëer een SpecifiekVeld"
+msgstr "CreÃ«er een SpecifiekVeld"
 
 #: html/Admin/Queues/CustomField.html:48
 #. ($QueueObj->Name())
@@ -1164,11 +1168,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new Custom Field"
-msgstr "Creëer een niuew Specifiek Veld"
+msgstr "CreÃ«er een niuew Specifiek Veld"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new global Scrip"
-msgstr "Creëer een nieuw globaal Scrip"
+msgstr "CreÃ«er een nieuw globaal Scrip"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new global scrip"
@@ -1176,52 +1180,52 @@ msgstr ""
 
 #: html/Admin/Groups/Modify.html:67 html/Admin/Groups/Modify.html:93
 msgid "Create a new group"
-msgstr "Creëer een nieuwe groep"
+msgstr "CreÃ«er een nieuwe groep"
 
 #: html/User/Groups/Modify.html:67 html/User/Groups/Modify.html:92
 msgid "Create a new personal group"
-msgstr "Creëer een nieuwe persoonlijke groep"
+msgstr "CreÃ«er een nieuwe persoonlijke groep"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new queue"
-msgstr "Creëer een nieuwe rij"
+msgstr "CreÃ«er een nieuwe rij"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new scrip"
-msgstr "Creëer een nieuw scrip"
+msgstr "CreÃ«er een nieuw scrip"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new template"
-msgstr "Creëer een nieuw template"
+msgstr "CreÃ«er een nieuw template"
 
 #: html/SelfService/Create.html:30 html/Ticket/Create.html:25 html/Ticket/Create.html:28 html/Ticket/Create.html:36
 msgid "Create a new ticket"
-msgstr "Creëer een nieuw ticket"
+msgstr "CreÃ«er een nieuw ticket"
 
 #: html/Admin/Users/Modify.html:214 html/Admin/Users/Modify.html:241
 msgid "Create a new user"
-msgstr "Creëer een nieuwe gebruiker"
+msgstr "CreÃ«er een nieuwe gebruiker"
 
 #: html/Admin/Queues/Modify.html:103
 msgid "Create a queue"
-msgstr "Creëer een rij"
+msgstr "CreÃ«er een rij"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a queue called"
-msgstr "Creëer een rij genaamd"
+msgstr "CreÃ«er een rij genaamd"
 
 #: html/SelfService/Create.html:25 html/SelfService/Create.html:27
 msgid "Create a request"
-msgstr "Creëer een verzoek"
+msgstr "CreÃ«er een verzoek"
 
 #: html/Admin/Queues/Scrip.html:59
 #. ($QueueObj->Name)
 msgid "Create a scrip for queue %1"
-msgstr "Creëer een scrip voor rij %1"
+msgstr "CreÃ«er een scrip voor rij %1"
 
 #: html/Admin/Global/Template.html:69 html/Admin/Queues/Template.html:65
 msgid "Create a template"
-msgstr "Creëer een sjabloon"
+msgstr "CreÃ«er een sjabloon"
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1 / %2 / %3 "
@@ -1233,23 +1237,23 @@ msgstr ""
 
 #: etc/initialdata:130
 msgid "Create new tickets based on this scrip's template"
-msgstr "Creëer nieuwe tickets gebaseerd op het sjabloon van dit scrip"
+msgstr "CreÃ«er nieuwe tickets gebaseerd op het sjabloon van dit scrip"
 
 #: html/SelfService/Create.html:81
 msgid "Create ticket"
-msgstr "Creëer ticket"
+msgstr "CreÃ«er ticket"
 
 #: lib/RT/Queue_Overlay.pm:84
 msgid "Create tickets in this queue"
-msgstr "Creëer tickets in deze rij"
+msgstr "CreÃ«er tickets in deze rij"
 
 #: lib/RT/Queue_Overlay.pm:72
 msgid "Create, delete and modify custom fields"
-msgstr "Creëer, verwijder en wijzig specifieke velden"
+msgstr "CreÃ«er, verwijder en wijzig specifieke velden"
 
 #: lib/RT/Queue_Overlay.pm:68
 msgid "Create, delete and modify queues"
-msgstr "Creëer, verwijder en wijzig rijen"
+msgstr "CreÃ«er, verwijder en wijzig rijen"
 
 #: NOT FOUND IN SOURCE
 msgid "Create, delete and modify the members of any user's personal groups"
@@ -1257,28 +1261,28 @@ msgstr ""
 
 #: lib/RT/System.pm:59
 msgid "Create, delete and modify the members of personal groups"
-msgstr "Creëer, verwijder en wijzig de leden van persoonlijke groepen"
+msgstr "CreÃ«er, verwijder en wijzig de leden van persoonlijke groepen"
 
 #: lib/RT/System.pm:60
 msgid "Create, delete and modify users"
-msgstr "Creëer, verwijder en wijzig gebruikers"
+msgstr "CreÃ«er, verwijder en wijzig gebruikers"
 
 #: lib/RT/Queue_Overlay.pm:84
 msgid "CreateTicket"
-msgstr "CreëerTicket"
+msgstr "CreÃ«erTicket"
 
 #: html/Elements/SelectDateType:26 html/Ticket/Elements/ShowDates:27 lib/RT/Ticket_Overlay.pm:1167
 msgid "Created"
-msgstr "Gecreëerd"
+msgstr "GecreÃ«erd"
 
 #: html/Admin/Elements/EditCustomField:71
 #. ($CustomFieldObj->Name())
 msgid "Created CustomField %1"
-msgstr "SpecifiekVeld %1 gecreëerd"
+msgstr "SpecifiekVeld %1 gecreÃ«erd"
 
 #: NOT FOUND IN SOURCE
 msgid "Created template %1"
-msgstr "Sjabloon %1 Gecreëerd"
+msgstr "Sjabloon %1 GecreÃ«erd"
 
 #: html/Ticket/Elements/EditLinks:28
 msgid "Current Relationships"
@@ -1453,19 +1457,19 @@ msgstr "VerwijderTicket"
 
 #: lib/RT/Transaction_Overlay.pm:187
 msgid "Deleting this object could break referential integrity"
-msgstr "Het verwijderen van dit object zou de referentiële integriteit kunnen ondermijnen"
+msgstr "Het verwijderen van dit object zou de referentiÃ«le integriteit kunnen ondermijnen"
 
 #: lib/RT/Queue_Overlay.pm:292
 msgid "Deleting this object would break referential integrity"
-msgstr "Het verwijderen van dit object zou de referentiële integriteit ondermijnen"
+msgstr "Het verwijderen van dit object zou de referentiÃ«le integriteit ondermijnen"
 
 #: lib/RT/User_Overlay.pm:430
 msgid "Deleting this object would violate referential integrity"
-msgstr "Het verwijderen van dit object zou de referentiële integriteit ondermijnen"
+msgstr "Het verwijderen van dit object zou de referentiÃ«le integriteit ondermijnen"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object would violate referential integrity."
-msgstr "Het verwijderen van dit object zou de referentiële integriteit ondermijnen"
+msgstr "Het verwijderen van dit object zou de referentiÃ«le integriteit ondermijnen"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object would violate referential integrity. That's bad."
@@ -1781,7 +1785,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Finish Approval"
-msgstr "Beëindig Goedkeuring"
+msgstr "BeÃ«indig Goedkeuring"
 
 #: html/Ticket/Elements/Tabs:58
 msgid "First"
@@ -1901,11 +1905,11 @@ msgstr ""
 #: html/Admin/Groups/Modify.html:77
 #. ($create_msg)
 msgid "Group could not be created: %1"
-msgstr "Groep kon niet gecreërd worden: %1"
+msgstr "Groep kon niet gecreÃ«rd worden: %1"
 
 #: lib/RT/Group_Overlay.pm:497
 msgid "Group created"
-msgstr "Groep gecreërd"
+msgstr "Groep gecreÃ«rd"
 
 #: lib/RT/Group_Overlay.pm:1133
 msgid "Group has no such member"
@@ -2003,11 +2007,11 @@ msgstr "Neem inactieve gebruiker op in de zoek opdracht"
 
 #: lib/RT/Tickets_Overlay.pm:1067
 msgid "Initial Priority"
-msgstr "Initiële Prioriteit"
+msgstr "InitiÃ«le Prioriteit"
 
 #: lib/RT/Ticket_Overlay.pm:1161 lib/RT/Ticket_Overlay.pm:1163
 msgid "InitialPriority"
-msgstr "InitiëlePrioriteit"
+msgstr "InitiÃ«lePrioriteit"
 
 #: lib/RT/ScripAction_Overlay.pm:105
 msgid "Input error"
@@ -2173,12 +2177,12 @@ msgstr "Koppeling bestaat al"
 
 #: lib/RT/Ticket_Overlay.pm:2709
 msgid "Link could not be created"
-msgstr "Koppeling kon niet gecreëerd worden"
+msgstr "Koppeling kon niet gecreÃ«erd worden"
 
 #: lib/RT/Ticket_Overlay.pm:2717 lib/RT/Ticket_Overlay.pm:2727
 #. ($TransString)
 msgid "Link created (%1)"
-msgstr "Koppeling gecreëerd (%1)"
+msgstr "Koppeling gecreÃ«erd (%1)"
 
 #: lib/RT/Ticket_Overlay.pm:2638
 #. ($TransString)
@@ -2766,16 +2770,16 @@ msgstr "Geen wachtwoord ingesteld"
 
 #: lib/RT/Queue_Overlay.pm:259
 msgid "No permission to create queues"
-msgstr "Geen rechten om rijen te creëren"
+msgstr "Geen rechten om rijen te creÃ«ren"
 
 #: lib/RT/Ticket_Overlay.pm:341
 #. ($QueueObj->Name)
 msgid "No permission to create tickets in the queue '%1'"
-msgstr "Geen rechten om tickets te creëren in de rij '%1'"
+msgstr "Geen rechten om tickets te creÃ«ren in de rij '%1'"
 
 #: lib/RT/User_Overlay.pm:151
 msgid "No permission to create users"
-msgstr "Geen rechten om gebruikers te creëren"
+msgstr "Geen rechten om gebruikers te creÃ«ren"
 
 #: html/SelfService/Display.html:174
 msgid "No permission to display that ticket"
@@ -2855,11 +2859,11 @@ msgstr "Niet gezet"
 
 #: html/NoAuth/Reminder.html:27
 msgid "Not yet implemented."
-msgstr "Nog niet geïmplementeerd."
+msgstr "Nog niet geÃ¯mplementeerd."
 
 #: html/Admin/Groups/Rights.html:25
 msgid "Not yet implemented...."
-msgstr "Nog niet geïmplementeerd...."
+msgstr "Nog niet geÃ¯mplementeerd...."
 
 #: html/Approvals/Elements/Approve:50
 msgid "Notes"
@@ -2927,11 +2931,11 @@ msgstr ""
 
 #: lib/RT/Record.pm:157
 msgid "Object could not be created"
-msgstr "Object kon niet gecreëerd worden"
+msgstr "Object kon niet gecreÃ«erd worden"
 
 #: lib/RT/Record.pm:176
 msgid "Object created"
-msgstr "Object gecreëerd"
+msgstr "Object gecreÃ«erd"
 
 #: lib/RT/Date.pm:420
 msgid "Oct."
@@ -2980,12 +2984,12 @@ msgstr "Bij Transactie"
 #: html/Approvals/Elements/PendingMyApproval:50
 #. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter'>")
 msgid "Only show approvals for requests created after %1"
-msgstr "Toon alleen goedkeuringen voor verzoeken gecreëerd na %1"
+msgstr "Toon alleen goedkeuringen voor verzoeken gecreÃ«erd na %1"
 
 #: html/Approvals/Elements/PendingMyApproval:48
 #. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>")
 msgid "Only show approvals for requests created before %1"
-msgstr "Toon alleen goedkeuringen voor verzoeken gecreëerd voor %1"
+msgstr "Toon alleen goedkeuringen voor verzoeken gecreÃ«erd voor %1"
 
 #: html/Elements/Quicksearch:31
 msgid "Open"
@@ -3093,7 +3097,7 @@ msgstr "Mensen"
 
 #: etc/initialdata:126
 msgid "Perform a user-defined action"
-msgstr "Verricht een gebruiker gedefiniëerde actie"
+msgstr "Verricht een gebruiker gedefiniÃ«erde actie"
 
 #: lib/RT/ACE_Overlay.pm:231 lib/RT/ACE_Overlay.pm:237 lib/RT/ACE_Overlay.pm:563 lib/RT/ACE_Overlay.pm:573 lib/RT/ACE_Overlay.pm:583 lib/RT/ACE_Overlay.pm:648 lib/RT/CurrentUser.pm:83 lib/RT/CurrentUser.pm:92 lib/RT/CustomField_Overlay.pm:445 lib/RT/CustomField_Overlay.pm:451 lib/RT/Group_Overlay.pm:1095 lib/RT/Group_Overlay.pm:1099 lib/RT/Group_Overlay.pm:1108 lib/RT/Group_Overlay.pm:1159 lib/RT/Group_Overlay.pm:1163 lib/RT/Group_Overlay.pm:1169 lib/RT/Group_Overlay.pm:426 lib/RT/Group_Overlay.pm:518 lib/RT/Group_Overlay.pm:596 lib/RT/Group_Overlay.pm:604 lib/RT/Group_Overlay.pm:701 lib/RT/Group_Overlay.pm:705 lib/RT/Group_Overlay.pm:711 lib/RT/Group_Overlay.pm:904 lib/RT/Group_Overlay.pm:908 lib/RT/Group_Overlay.pm:921 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:550 lib/RT/Queue_Overlay.pm:564 lib/RT/Queue_Overlay.pm:699 lib/RT/Queue_Overlay.pm:708 lib/RT/Queue_Overlay.pm:721 lib/RT/Queue_Overlay.pm:931 lib/RT/Scrip_Overlay.pm:126 lib/RT/Scrip_Overlay.pm:137 lib/RT/Scrip_Overlay.pm:197 lib/RT/Scrip_Overlay.pm:430 lib/RT/Template_Overlay.pm:284 lib/RT/Template_Overlay.pm:88 lib/RT/Template_Overlay.pm:94 lib/RT/Ticket_Overlay.pm:1341 lib/RT/Ticket_Overlay.pm:1351 lib/RT/Ticket_Overlay.pm:1365 lib/RT/Ticket_Overlay.pm:1518 lib/RT/Ticket_Overlay.pm:1527 lib/RT/Ticket_Overlay.pm:1540 lib/RT/Ticket_Overlay.pm:1875 lib/RT/Ticket_Overlay.pm:2013 lib/RT/Ticket_Overlay.pm:2177 lib/RT/Ticket_Overlay.pm:2244 lib/RT/Ticket_Overlay.pm:2596 lib/RT/Ticket_Overlay.pm:2668 lib/RT/Ticket_Overlay.pm:2762 lib/RT/Ticket_Overlay.pm:2777 lib/RT/Ticket_Overlay.pm:2910 lib/RT/Ticket_Overlay.pm:3139 lib/RT/Ticket_Overlay.pm:3337 lib/RT/Ticket_Overlay.pm:3499 lib/RT/Ticket_Overlay.pm:3551 lib/RT/Ticket_Overlay.pm:3716 lib/RT/Transaction_Overlay.pm:468 lib/RT/Transaction_Overlay.pm:475 lib/RT/Transaction_Overlay.pm:504 lib/RT/Transaction_Overlay.pm:511 lib/RT/User_Overlay.pm:1334 lib/RT/User_Overlay.pm:562 lib/RT/User_Overlay.pm:597 lib/RT/User_Overlay.pm:853 lib/RT/User_Overlay.pm:941
 msgid "Permission Denied"
@@ -3707,7 +3711,7 @@ msgstr "Toon verzoeken die wachten op andere goedkeuringen"
 
 #: lib/RT/Queue_Overlay.pm:81
 msgid "Show ticket private commentary"
-msgstr "Toon ticket privé commentaar"
+msgstr "Toon ticket privÃ© commentaar"
 
 #: lib/RT/Queue_Overlay.pm:79
 msgid "Show ticket summaries"
@@ -4255,11 +4259,11 @@ msgstr "Transactie %1 gezuiverd"
 
 #: lib/RT/Transaction_Overlay.pm:177
 msgid "Transaction Created"
-msgstr "Transactie Gecreëerd"
+msgstr "Transactie GecreÃ«erd"
 
 #: lib/RT/Transaction_Overlay.pm:89
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
-msgstr "Transactie->Creëer kon niet, aangezien u geen ticket id gespecificeerd heeft"
+msgstr "Transactie->CreÃ«er kon niet, aangezien u geen ticket id gespecificeerd heeft"
 
 #: lib/RT/Transaction_Overlay.pm:701
 msgid "Transactions are immutable"
@@ -4279,7 +4283,7 @@ msgstr "Type"
 
 #: lib/RT/ScripCondition_Overlay.pm:104
 msgid "Unimplemented"
-msgstr "Niet geïmplementeerd"
+msgstr "Niet geÃ¯mplementeerd"
 
 #: html/Admin/Users/Modify.html:68
 msgid "Unix login"
@@ -4387,7 +4391,7 @@ msgstr "Gebruiker '%1' niet gevonden\\n"
 
 #: etc/initialdata:125 etc/initialdata:191
 msgid "User Defined"
-msgstr "Gebruiker Gedifiniëerd"
+msgstr "Gebruiker GedifiniÃ«erd"
 
 #: html/Admin/Users/Prefs.html:59
 msgid "User ID"
@@ -4412,7 +4416,7 @@ msgstr "Gebruiker aangemaakt"
 
 #: html/Admin/Global/GroupRights.html:67 html/Admin/Groups/GroupRights.html:54 html/Admin/Queues/GroupRights.html:68
 msgid "User defined groups"
-msgstr "Door gebruiker gedefiniëerde groepen"
+msgstr "Door gebruiker gedefiniÃ«erde groepen"
 
 #: NOT FOUND IN SOURCE
 msgid "User notified"
@@ -4508,7 +4512,7 @@ msgstr "Wanneer de status van een ticket verandert"
 
 #: etc/initialdata:192
 msgid "Whenever a user-defined condition occurs"
-msgstr "Wanneer een door de gebruiker gedifiniëerde voorwaarde gebeurt"
+msgstr "Wanneer een door de gebruiker gedifiniÃ«erde voorwaarde gebeurt"
 
 #: etc/initialdata:156
 msgid "Whenever comments come in"
@@ -4812,8 +4816,4 @@ msgstr "met sjabloon %1"
 #: lib/RT/Date.pm:331
 msgid "years"
 msgstr "jaren"
-
-#: NOT FOUND IN SOURCE
-msgid "ãƒ‹ãƒƒã‚¯ãƒãƒ¼ãƒ "
-msgstr ""
 

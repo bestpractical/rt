@@ -46,7 +46,7 @@ TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
 
 
 # This is the group that all of the installed files will be chgrp'ed to.
-RTGROUP			=	www
+RTGROUP			=	rt
 
 
 # User which should own rt binaries.
@@ -358,6 +358,7 @@ html-install:
 
 # {{{ doc-install
 doc-install:
+	[ -d $(DESTDIR)/$(RT_DOC_PATH) ] || mkdir $(DESTDIR)/$(RT_DOC_PATH)
 	-cp -rp ./README $(DESTDIR)/$(RT_DOC_PATH)
 # }}}
 

@@ -1,8 +1,8 @@
-msgid ""
-msgstr ""
-
 # Copyright (c) 2002 Jesse Vincent <jesse@bestpractical.com>
 #
+
+msgid ""
+msgstr ""
 "Project-Id-Version: RT 3.0.rc3\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
 "PO-Revision-Date: 2003-03-19 02:00+0800\n"
@@ -11,6 +11,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
 #: html/Elements/MyRequests:27 html/Elements/MyTickets:27
 msgid "#"
 msgstr "n°"

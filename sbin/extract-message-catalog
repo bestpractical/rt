@@ -60,7 +60,7 @@ foreach my $str ( sort keys %{$FILECAT} ) {
 
 # update all language dictionaries
 foreach my $dict (@ARGV) {
-    $dict = "lib/RT/I18N/$dict.po" unless -f $dict;
+    $dict = "lib/RT/I18N/$dict.po" unless -f $dict or $dict =~ m!/!;
 
     my $lang = $dict;
     $lang =~ s|.*/||;
@@ -161,16 +161,15 @@ sub update {
     my ( %Lexicon, %Header);
     my $out = '';
 
-    unless (-w $file) {
+    unless (!-e $file or -w $file) {
 	warn "Can't write to $lang, skipping...\n";
 	return;
     }
 
     print "Updating $lang...\n";
 
-    open LEXICON, $file or die $!;
-
-    my @lines = (<LEXICON>);
+    my @lines;
+    @lines = (<LEXICON>) if open (LEXICON, $file);
     @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
     while (@lines) {
         my $msghdr = "";
