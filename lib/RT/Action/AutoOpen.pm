@@ -48,8 +48,7 @@ sub Prepare  {
     my $self = shift;
     # if the ticket is already open or the ticket is new and the message is more mail from the 
     # requestor, don't reopen it.
-    if (     (($self->TicketObj->Status eq 'new') &&   $self->TransactionObj->IsInbound  ) 
-         ||  ( $self->TicketObj->Status eq 'open')) {
+    if (($self->TicketObj->Status ne 'open') &&   $self->TransactionObj->IsInbound  ) {
         return undef;
     }
     else {

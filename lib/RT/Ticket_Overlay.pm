@@ -2899,6 +2899,26 @@ Takes two arguments:
 and  (optionally) the type of the SetOwner Transaction. It defaults
 to 'Give'.  'Steal' is also a valid option.
 
+=begin testing
+
+my $root = RT::User->new($RT::SystemUser);
+$root->Load('root');
+ok ($root->Id, "Loaded the root user");
+my $t = RT::Ticket->new($RT::SystemUser);
+$t->Load(1);
+$t->SetOwner('root');
+ok ($t->OwnerObj->Name eq 'root' , "Root owns the ticket");
+$t->Steal();
+ok ($t->OwnerObj->id eq $RT::SystemUser->id , "SystemUser owns the ticket");
+my $txns = RT::Transactions->new($RT::SystemUser);
+$txns->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$txns->Limit(FIELD => 'Ticket', VALUE => '1');
+my $steal  = $txns->First;
+ok($steal->OldValue == $root->Id , "Stolen from root");
+ok($steal->NewValue == $RT::SystemUser->Id , "Stolen by the systemuser");
+
+=end testing
+
 =cut
 
 sub SetOwner {
@@ -2991,15 +3011,14 @@ sub SetOwner {
 
 
 
-    my $trans;
+     my   ( $trans, $msg, undef) = $self->_NewTransaction(
+                                               Type => $Type,
+                                               Field     => 'Owner',
+                                               NewValue  => $NewOwnerObj->Id,
+                                               OldValue  => $OldOwnerObj->Id,
+                                               TimeTaken => 0
+        );
 
-    ( $trans, $msg ) = $self->_Set(
-        Field           => 'Owner',
-        UpdateTicket    => 0,
-        Value           => $NewOwnerObj->Id,
-        TimeTaken       => 0,
-        TransactionType => $Type
-    );
     if ($trans) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]", $OldOwnerObj->Name,  $NewOwnerObj->Name);
         # TODO: make sure the trans committed properly

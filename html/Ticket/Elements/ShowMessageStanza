@@ -32,7 +32,7 @@ foreach my $stanza (@$Message) {
     elsif ( ref $stanza eq "HASH" ) {
         my $content = $stanza->{raw};
         RT::Interface::Web::EscapeUTF8(\$content);
-         $m->comp('/Elements/Callback', content_ref  => \$content, %ARGS);
+        $content =  $m->scomp('/Elements/Callback', content => $content, %ARGS);
                 $content =~ s/\n/<br>/gi;
 
 </%perl>
