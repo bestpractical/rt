@@ -106,24 +106,6 @@ my $gratuitous = {
   'index' => [  ],
 },
 
-'Scrips' => {
-  'columns' => [
-    'id', 'serial', '', '', '', '',
-    'Name', 'varchar', 'NULL', '255', '', '',
-    'Description', 'varchar', 'NULL', '255', '', '',
-    'Type', 'varchar', 'NULL', '60', '', '',
-    'ExecModule', 'varchar', 'NULL', '60', '', '',
-    'DefaultTemplate', 'integer', 'NULL', '', '', '',
-    'Argument', 'varchar', 'NULL', '255', '', '',
-    'Creator', 'integer', 'NULL', '', '', '',
-    'Created', 'timestamp', 'NULL', '', '', '',
-    'LastUpdatedBy', 'integer', 'NULL', '', '', '',
-    'LastUpdated', 'timestamp', 'NULL', '', '', '',
-  ],
-  'primary_key' => 'id',
-  'unique' => [  ],
-  'index' => [  ],
-},
 
 'Tickets' => {
   'columns' => [
@@ -160,8 +142,8 @@ my $gratuitous = {
 'GroupMembers' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'GroupId', 'integer', 'NULL', '', '', '',
-    'UserId', 'integer', 'NULL', '', '', '',
+    'GroupId', 'integer', 'NULL', '', '', '', #foreign key, Groups::id
+    'UserId', 'integer', 'NULL', '', '', '', #foreign key, Users::id
   ],
   'primary_key' => 'id',
   'unique' => [ ['GroupId', 'UserId']  ],
@@ -171,13 +153,15 @@ my $gratuitous = {
 'Queues' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'QueueId', 'varchar', '', '40', '', '',
-    'Description', 'varchar', 'NULL', '120', '', '',
+    'QueueId', 'varchar', '', '40', '', '', #Textual 'name' for this queue
+    'Description', 'varchar', 'NULL', '120', '', '', #Textual descr. of this
+    #queue
     'CorrespondAddress', 'varchar', 'NULL', '40', '', '',
     'CommentAddress', 'varchar', 'NULL', '40', '', '',
     'InitialPriority', 'integer', 'NULL', '', '', '',
     'FinalPriority', 'integer', 'NULL', '', '', '',
     'DefaultDueIn', 'integer', 'NULL', '', '', '',
+
     'Creator', 'integer', 'NULL', '', '', '',
     'Created', 'timestamp', 'NULL', '', '', '',
     'LastUpdatedBy', 'integer', 'NULL', '', '', '',
@@ -191,16 +175,42 @@ my $gratuitous = {
 'Transactions' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'EffectiveTicket', 'integer', 'NULL', '', '', '',
-    'Ticket', 'integer', 'NULL', '', '', '',
-    'TimeTaken', 'integer', 'NULL', '', '', '',
+    'EffectiveTicket', 'integer', 'NULL', '', '', '', 
+    'Ticket', 'integer', 'NULL', '', '', '',  #Foreign key Ticket::id
+    'TimeTaken', 'integer', 'NULL', '', '', '', #Time spent on this trans in min
     'Type', 'varchar', 'NULL', '20', '', '',
-    'Field', 'varchar', 'NULL', '40', '', '',
-    'OldValue', 'varchar', 'NULL', '255', '', '',
+    'Field', 'varchar', 'NULL', '40', '', '', #If it's a "Set" transaction, what
+    #field was set.
+    'OldValue', 'varchar', 'NULL', '255', '', '', 
     'NewValue', 'varchar', 'NULL', '255', '', '',
     'Data', 'varchar', 'NULL', '100', '', '',
+
+
     'Creator', 'integer', 'NULL', '', '', '',
     'Created', 'timestamp', 'NULL', '', '', '',
+  ],
+  'primary_key' => 'id',
+  'unique' => [  ],
+  'index' => [  ],
+},
+
+'Scrips' => {
+  'columns' => [
+    'id', 'serial', '', '', '', '',
+    'Name', 'varchar', 'NULL', '255', '', '',  # Alias
+    'Description', 'varchar', 'NULL', '255', '', '', #Textual description
+    'Type', 'varchar', 'NULL', '60', '', '',    #Transaction types this scrip
+    # acts on. comma or / delimited is just great.
+    'ExecModule', 'varchar', 'NULL', '60', '', '', #This calles RT::Action::___
+    'DefaultTemplate', 'integer', 'NULL', '', '', '', #If the scripscope doesn't
+     #Spec a template, what do we want to use
+    'Argument', 'varchar', 'NULL', '255', '', '', #We can pass a single argument
+    #to the scrip. sometimes, it's who to send mail to.
+
+    'Creator', 'integer', 'NULL', '', '', '',
+    'Created', 'timestamp', 'NULL', '', '', '',
+    'LastUpdatedBy', 'integer', 'NULL', '', '', '',
+    'LastUpdated', 'timestamp', 'NULL', '', '', '',
   ],
   'primary_key' => 'id',
   'unique' => [  ],
@@ -210,9 +220,10 @@ my $gratuitous = {
 'ScripScope' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'Scrip', 'integer', 'NULL', '', '', '',
-    'Queue', 'integer', 'NULL', '', '', '',
-    'Template', 'integer', 'NULL', '', '', '',
+    'Scrip', 'integer', 'NULL', '', '', '', #Foreign key Scrips::id
+    'Queue', 'integer', 'NULL', '', '', '', #Foreign key Queues::id
+    'Template', 'integer', 'NULL', '', '', '', #Foreign key Templates::id
+
     'Creator', 'integer', 'NULL', '', '', '',
     'Created', 'timestamp', 'NULL', '', '', '',
     'LastUpdatedBy', 'integer', 'NULL', '', '', '',
@@ -226,14 +237,15 @@ my $gratuitous = {
 'Attachments' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
-    'TransactionId', 'integer', '', '', '', '',
-    'Parent', 'integer', 'NULL', '', '', '',
-    'MessageId', 'varchar', 'NULL', '160', '', '',
-    'Subject', 'varchar', 'NULL', '255', '', '',
+    'TransactionId', 'integer', '', '', '', '', #Foreign key Transactions::Id
+    'Parent', 'integer', 'NULL', '', '', '', # Attachments::Id
+    'MessageId', 'varchar', 'NULL', '160', '', '', #RFC822 messageid, if any
+    'Subject', 'varchar', 'NULL', '255', '', '', 
     'Filename', 'varchar', 'NULL', '255', '', '',
     'ContentType', 'varchar', 'NULL', '80', '', '',
     'Content', 'blob', 'NULL', '', '', '',
     'Headers', 'blob', 'NULL', '', '', '',
+
     'Creator', 'integer', 'NULL', '', '', '',
     'Created', 'timestamp', 'NULL', '', '', '',
   ],
@@ -245,17 +257,19 @@ my $gratuitous = {
 'Templates' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
+    'Queue', 'integer', 'NOT NULL', '', '0', '',
+    'Alias', 'varchar', '', '40', '', '',
     'Title', 'varchar', 'NULL', '120', '', '',
     'Language', 'varchar', 'NULL', '16', '', '',
     'TranslationOf', 'integer', 'NULL', '', '', '',
     'Content', 'blob', 'NULL', '', '', '',
-    'LastUpdatedBy', 'integer', 'NULL', '', '', '',
     'LastUpdated', 'timestamp', 'NULL', '', '', '',
+    'LastUpdatedBy', 'integer', 'NULL', '', '', '',
     'Creator', 'integer', 'NULL', '', '', '',
     'Created', 'timestamp', 'NULL', '', '', '',
   ],
   'primary_key' => 'id',
-  'unique' => [  ],
+  'unique' => [ ['Alias'] ],
   'index' => [  ],
 }
 
