@@ -156,6 +156,13 @@ sub Create {
     defined($Subject) or $Subject = '';
     chomp($Subject);
 
+    #Get the Message-id
+    my $MessageId = $Attachment->head->get( 'Message-Id', 0 );
+    defined($MessageId) or $MessageId = '';
+    chomp ($MessageId);
+    $MessageId =~ s/^<(.*)>$/$1/go;
+
+
     #Get the filename
     my $Filename = $Attachment->head->recommended_filename || eval {
 	${ $Attachment->head->{mail_hdr_hash}{'Content-Disposition'}[0] }
@@ -171,6 +178,7 @@ sub Create {
             Parent        => 0,
             ContentType   => $Attachment->mime_type,
             Headers => $Attachment->head->as_string,
+            MessageId => $MessageId,
             Subject => $Subject);
         
         unless ($id) {
@@ -202,7 +210,9 @@ sub Create {
                                                   Headers       =>  $Attachment->head->as_string,
                                        Subject       =>  $Subject,
                                        Content         => $Body,
-                                       Filename => $Filename, );
+                                       Filename => $Filename, 
+                                        MessageId => $MessageId
+                                    );
         unless ($id) {
             $RT::Logger->crit("Attachment insert failed - ".$RT::Handle->dbh->errstr);
         }
