@@ -148,13 +148,20 @@ CREATE TABLE Links (
  # need it to be site-configurable what information we want to store
  # about our users.
 
+ # Actually I think the best way is to only store only what is
+ # essential for RT (RealName, id, password, UserId and Lang), and let
+ # all other data be stored externally in any system of choise.  Hm.
+ # ATOH, A Plugin authentication system would clearly be the best and
+ # only right thing.  We have to fix that for RT 2.1
+
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   UserId VARCHAR(120) NOT NULL,
 
   Gecos CHAR(16), #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
   RealName VARCHAR(120),
-  Password VARCHAR(40), 			
+  Lang VARCHAR(16), # Preffered language - to be used by L10N (not there, yet)
+  Password VARCHAR(40),
   ExternalId VARCHAR(100),
 
  # I'm a bit uncertain if we have this one right.
