@@ -143,7 +143,7 @@ my ($n, $s) = $ticket->$action(MIMEObj => $ent,
 $output = $s;
 if ($k->{Status}) {
    my  ($status_n, $status_s) = $ticket->SetStatus($k->{'Status'} );   
-  $output .= $status_s;
+  $output .= "\n".$status_s;
 }
 
 OUTPUT:
