@@ -202,10 +202,8 @@ $COLUMN_MAP = {
         attribute => 'Due',
         value     => sub { 
 	    my $date = $_[0]->DueObj;
-	    my $now = new RT::Date($RT::SystemUser);
-	    $now->SetToNow();
 	    my $class;
-	    if ($date && $date->Unix > 0 && $date->Unix < $now->Unix) {
+	    if ($date && $date->Unix > 0 && $date->Unix < time()) {
 		$class = 'overdue';
 	    }
 	    return '<span class="' . $class . '">' . $date->AgeAsString . '</span>';
