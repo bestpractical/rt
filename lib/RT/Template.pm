@@ -1,6 +1,7 @@
 # $Header$
-# Copyright 2000 Tobias Brox <tobix@cpan.org> and  Jesse Vincent <jesse@fsck.com>
-# Released under the terms of the GNU Public License
+# Copyright 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
+# Released under the terms of the GNU General Public License
 
 =head1 NAME
 
@@ -27,37 +28,38 @@ ok(require RT::Template);
 
 package RT::Template;
 use RT::Record;
+use MIME::Entity;
+use MIME::Parser;
 
-@ISA= qw(RT::Record);
-
+@ISA = qw(RT::Record);
 
 # {{{ sub _Init
 
 sub _Init {
-  my $self = shift;
-  $self->{'table'} = "Templates";
-  return($self->SUPER::_Init(@_));
+    my $self = shift;
+    $self->{'table'} = "Templates";
+    return ( $self->SUPER::_Init(@_) );
 }
 
 # }}}
 
 # {{{ sub _Accessible 
 
-sub _Accessible  {
-  my $self = shift;
-  my %Cols = (
-	      id => 'read',
-	      Name => 'read/write',
-	      Description => 'read/write',
-	      Type => 'read/write', #Type is one of Action or Message
-	      Content => 'read/write',
-	      Queue => 'read/write',
-	      Creator => 'read/auto',
-	      Created => 'read/auto',
-	      LastUpdatedBy => 'read/auto',
-	      LastUpdated => 'read/auto'
-	     );
-  return $self->SUPER::_Accessible(@_, %Cols);
+sub _Accessible {
+    my $self = shift;
+    my %Cols = (
+        id            => 'read',
+        Name          => 'read/write',
+        Description   => 'read/write',
+        Type          => 'read/write',    #Type is one of Action or Message
+        Content       => 'read/write',
+        Queue         => 'read/write',
+        Creator       => 'read/auto',
+        Created       => 'read/auto',
+        LastUpdatedBy => 'read/auto',
+        LastUpdated   => 'read/auto'
+    );
+    return $self->SUPER::_Accessible( @_, %Cols );
 }
 
 # }}}
@@ -65,21 +67,24 @@ sub _Accessible  {
 # {{{ sub _Set
 
 sub _Set {
-  my $self = shift;
-  # use super::value or we get acl blocked
-  if ((defined $self->SUPER::_Value('Queue')) && ($self->SUPER::_Value('Queue') == 0 )) {
-      unless ($self->CurrentUser->HasSystemRight('ModifyTemplate')) {
-	  return (0, 'Permission Denied');
-      }	
-  }
-  else {
-      
-      unless ($self->CurrentUserHasQueueRight('ModifyTemplate')) {
-	  return (0, 'Permission Denied');
-      }
-  }
-  return($self->SUPER::_Set(@_));
-     
+    my $self = shift;
+
+    # use super::value or we get acl blocked
+    if ( ( defined $self->SUPER::_Value('Queue') )
+        && ( $self->SUPER::_Value('Queue') == 0 ) )
+    {
+        unless ( $self->CurrentUser->HasSystemRight('ModifyTemplate') ) {
+            return ( 0, 'Permission Denied' );
+        }
+    }
+    else {
+
+        unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
+            return ( 0, 'Permission Denied' );
+        }
+    }
+    return ( $self->SUPER::_Set(@_) );
+
 }
 
 # }}}
@@ -93,25 +98,27 @@ Returns its value as a string, if the user passes an ACL check
 
 =cut
 
-sub _Value  {
+sub _Value {
 
-  my $self = shift;
-  my $field = shift;
+    my $self  = shift;
+    my $field = shift;
 
-  #If the current user doesn't have ACLs, don't let em at it.  
-  #use super::value or we get acl blocked
-  if ((!defined $self->__Value('Queue')) || ($self->__Value('Queue') == 0 )) {
-      unless ($self->CurrentUser->HasSystemRight('ShowTemplate')) {
-	  return (undef);
-      }	
-  }
-  else {
-      unless ($self->CurrentUserHasQueueRight('ShowTemplate')) {
-	  return (undef);
-      }
-  }
-  return($self->__Value($field));
-  
+    #If the current user doesn't have ACLs, don't let em at it.  
+    #use super::value or we get acl blocked
+    if ( ( !defined $self->__Value('Queue') )
+        || ( $self->__Value('Queue') == 0 ) )
+    {
+        unless ( $self->CurrentUser->HasSystemRight('ShowTemplate') ) {
+            return (undef);
+        }
+    }
+    else {
+        unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
+            return (undef);
+        }
+    }
+    return ( $self->__Value($field) );
+
 }
 
 # }}}
@@ -124,22 +131,23 @@ Load a template, either by number or by name
 
 =cut
 
-sub Load  {
-    my $self = shift;
+sub Load {
+    my $self       = shift;
     my $identifier = shift;
-    
-    if (!$identifier) {
-	return (undef);
-    }	    
-    
-    if ($identifier !~ /\D/) {
-	$self->SUPER::LoadById($identifier);
+
+    if ( !$identifier ) {
+        return (undef);
+    }
+
+    if ( $identifier !~ /\D/ ) {
+        $self->SUPER::LoadById($identifier);
     }
     else {
-	$self->LoadByCol('Name', $identifier);
-	
+        $self->LoadByCol( 'Name', $identifier );
+
     }
 }
+
 # }}}
 
 # {{{ sub LoadGlobalTemplate
@@ -151,10 +159,10 @@ Load the global tempalte with the name NAME
 =cut
 
 sub LoadGlobalTemplate {
-	my $self = shift;
-	my $id = shift;
-	
-	return ($self->LoadQueueTemplate(Queue => 0, Name => $id));
+    my $self = shift;
+    my $id   = shift;
+
+    return ( $self->LoadQueueTemplate( Queue => 0, Name => $id ) );
 }
 
 # }}}
@@ -169,12 +177,15 @@ Loads the Queue template named NAME for Queue QUEUE.
 
 sub LoadQueueTemplate {
     my $self = shift;
-    my %args = (Queue => undef,
-    		Name => undef);
+    my %args = (
+        Queue => undef,
+        Name  => undef
+    );
 
-    return($self->LoadByCols( Name => $args{'Name'}, Queue => {'Queue'}));	
-  
+    return ( $self->LoadByCols( Name => $args{'Name'}, Queue => {'Queue'} ) );
+
 }
+
 # }}}
 
 # {{{ sub Create
@@ -195,34 +206,36 @@ unknown database failure.
 
 sub Create {
     my $self = shift;
-    my %args = ( Content => undef,
-                 Queue => 0,
-                 Description => '[no description]',
-                 Type => 'Action', #By default, template are 'Action' templates
-                 Name => undef,
-                 @_
-                );
-    
-    
-    if ($args{'Queue'} == 0 ) { 
-	unless ($self->CurrentUser->HasSystemRight('ModifyTemplate')) {
-	    return (undef);
- 	}	
+    my %args = (
+        Content     => undef,
+        Queue       => 0,
+        Description => '[no description]',
+        Type => 'Action',    #By default, template are 'Action' templates
+        Name => undef,
+        @_
+    );
+
+    if ( $args{'Queue'} == 0 ) {
+        unless ( $self->CurrentUser->HasSystemRight('ModifyTemplate') ) {
+            return (undef);
+        }
     }
     else {
-	my $QueueObj = new RT::Queue($self->CurrentUser);
-	$QueueObj->Load($args{'Queue'}) || return (0,'Invalid queue');
-	
-	unless ($QueueObj->CurrentUserHasRight('ModifyTemplate')) {
-	    return (undef);
-	}	
+        my $QueueObj = new RT::Queue( $self->CurrentUser );
+        $QueueObj->Load( $args{'Queue'} ) || return ( 0, 'Invalid queue' );
+
+        unless ( $QueueObj->CurrentUserHasRight('ModifyTemplate') ) {
+            return (undef);
+        }
     }
 
-    my $result = $self->SUPER::Create( Content => $args{'Content'},
-                                       Queue   => $args{'Queue'},,
-                                       Description   => $args{'Description'},
-				       Name   => $args{'Name'}
-                                     );
+    my $result = $self->SUPER::Create(
+        Content => $args{'Content'},
+        Queue   => $args{'Queue'},
+        ,
+        Description => $args{'Description'},
+        Name        => $args{'Name'}
+    );
 
     return ($result);
 
@@ -240,96 +253,99 @@ Delete this template.
 
 sub Delete {
     my $self = shift;
-    
-    unless ($self->CurrentUserHasRight('ModifyTemplate')) {
-	return (0, 'Permission Denied');
-    }
-    
-    return ($self->SUPER::Delete(@_));
-}
 
+    unless ( $self->CurrentUserHasRight('ModifyTemplate') ) {
+        return ( 0, 'Permission Denied' );
+    }
+
+    return ( $self->SUPER::Delete(@_) );
+}
 
 # }}}
 
 # {{{ sub MIMEObj
 sub MIMEObj {
-  my $self = shift;
-  return ($self->{'MIMEObj'});
+    my $self = shift;
+    return ( $self->{'MIMEObj'} );
 }
+
 # }}}
 
 # {{{ sub Parse 
 
-# This routine performs Text::Template parsing on thte template and then imports the 
-# results into the MIME::Entity's namespace, where we can do real work with them.
+=item Parse
+
+ This routine performs Text::Template parsing on thte template and then imports the 
+ results into a MIME::Entity so we can really use it
+ It returns a tuple of (val, message)
+ If val is 0, the message contains an error message
+
+=cut
 
 sub Parse {
-  my $self = shift;
+    my $self = shift;
 
-  #We're passing in whatever we were passed. it's destined for _ParseContent
-  my $content = $self->_ParseContent(@_);
- 
+    #We're passing in whatever we were passed. it's destined for _ParseContent
+    my $content = $self->_ParseContent(@_);
 
-  
-  #Lets build our mime Entity
-  use MIME::Entity;
-  $self->{'MIMEObj'}= MIME::Entity->new();
+    #Lets build our mime Entity
 
-  $self->{'MIMEObj'}->build(Type => 'multipart/mixed');
+    my $parser = MIME::Parser->new();
 
-  my ($body, $headers);
-  
-  if ($content =~ /^(\S*?):(.*?)\n/s) {
-     ($headers, $body) = split(/\n\n/,$content,2);
-  }
-  else {
-     $body = $content;
-  }
+    ### Should we forgive normally-fatal errors?
+    $parser->ignore_errors(1);
+    $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
+    $error = ( $@ || $parser->last_error );
 
-  $self->{'MIMEObj'}->attach(Data => $body);
-  
-  if ($headers) {
-    foreach $header (split(/\n/,$headers)) {
-      (my $key, my $value) = (split(/: /,$header,2));
-      chomp $key;
-      chomp $value;
-      $self->{'MIMEObj'}->head->fold_length($key,10000);
-      $self->{'MIMEObj'}->head->add($key, $value);
+    if ($error) {
+        $RT::Logger->error("$error");
+        return ( 0, $error );
     }
-  }
+
+    # Unfold all headers
+    $self->{'MIMEObj'}->head->unfold();
+
+    return ( 1, "Template parsed" );
+   
+
 }
 
 # }}}
 
 # {{{ sub _ParseContent
 
-# Perform Template substitutions on the Body
+# Perform Template substitutions on the template
 
-sub _ParseContent  {
-  my $self=shift;
-  my %args = ( Argument => undef,
-	       TicketObj => undef,
-	       TransactionObj => undef,
-	       @_);
+sub _ParseContent {
+    my $self = shift;
+    my %args = (
+        Argument       => undef,
+        TicketObj      => undef,
+        TransactionObj => undef,
+        @_
+    );
 
-  # Might be subject to change
-  require Text::Template;
-  
-  $T::Ticket = $args{'TicketObj'};
-  $T::Transaction = $args{'TransactionObj'};
-  $T::Argument = $args{'Argument'};
-  $T::rtname=$RT::rtname;
-  $T::WebRT=$RT::WebRT;
+    # Might be subject to change
+    use Text::Template;
 
-  # We need to untaint the content of the template, since we'll be working
-  # with it
-  my $content = $self->Content();
-  $content =~ s/^(.*)$/$1/;  
-  $template=Text::Template->new(TYPE=>STRING, 
-				SOURCE=>$content);
-  
-  return ($template->fill_in(PACKAGE=>T));
+    $T::Ticket      = $args{'TicketObj'};
+    $T::Transaction = $args{'TransactionObj'};
+    $T::Argument    = $args{'Argument'};
+    $T::rtname      = $RT::rtname;
+
+    # We need to untaint the content of the template, since we'll be working
+    # with it
+    my $content = $self->Content();
+    $content =~ s/^(.*)$/$1/;
+    $template = Text::Template->new(
+        TYPE   => STRING,
+        SOURCE => $content
+    );
+
+    my $retval = $template->fill_in( PACKAGE => T );
+    return ($retval);
 }
+
 # }}}
 
 # {{{ sub QueueObj
@@ -342,18 +358,19 @@ Takes nothing. returns this ticket's queue object
 
 sub QueueObj {
     my $self = shift;
-    if (!defined $self->{'queue'})  {
-	require RT::Queue;
-	$self->{'queue'} = RT::Queue->new($self->CurrentUser);
-	
-	unless ($self->{'queue'}) {
-	    $RT::Logger->crit("RT::Queue->new(". $self->CurrentUser. ") returned false");
-	    return(undef);
-	}
-	my ($result) = $self->{'queue'}->Load($self->__Value('Queue'));
-	
+    if ( !defined $self->{'queue'} ) {
+        require RT::Queue;
+        $self->{'queue'} = RT::Queue->new( $self->CurrentUser );
+
+        unless ( $self->{'queue'} ) {
+            $RT::Logger->crit(
+                "RT::Queue->new(" . $self->CurrentUser . ") returned false" );
+            return (undef);
+        }
+        my ($result) = $self->{'queue'}->Load( $self->__Value('Queue') );
+
     }
-    return ($self->{'queue'});
+    return ( $self->{'queue'} );
 }
 
 # }}}
@@ -365,9 +382,10 @@ sub QueueObj {
 Helper function to call the template's queue's CurrentUserHasQueueRight with the passed in args.
 
 =cut
+
 sub CurrentUserHasQueueRight {
     my $self = shift;
-    return($self->QueueObj->CurrentUserHasRight(@_));
+    return ( $self->QueueObj->CurrentUserHasRight(@_) );
 }
 
 # }}}
