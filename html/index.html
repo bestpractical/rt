@@ -47,7 +47,8 @@ if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 
     if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        $m->redirect("$RT::WebPath/Ticket/Display.html?id=$1");
+        $m->comp("/Ticket/Display.html" , id=> $1);
+        return();
     }
 
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
@@ -56,26 +57,35 @@ if ( $ARGS{'q'} ) {
         $session{'tickets'}->LimitWatcher( VALUE    => $query,
                                             TYPE => 'Requestor',
                                              OPERATOR => '=', );
-        $m->redirect("$RT::WebPath/Search/Listing.html");
+        $m->comp("/Search/Listing.html");
+
+        return();
     }
 
     #
     # Any search on queue name or subject will be for new/open tickets
     # only.
     #
+
     $session{'tickets'}->LimitStatus( VALUE    => $_,
                                       OPERATOR => '=', ) for qw(open new);
+
+
 
     my $queue = RT::Queue->new( $session{'CurrentUser'} );
     if ( $queue->Load($query) && $queue->Id ) {
         $session{'tickets'}->LimitQueue( VALUE    => $queue->Id,
                                          OPERATOR => '=', );
-        $m->redirect("$RT::WebPath/Search/Listing.html");
-    }
-    $session{'tickets'}->LimitSubject( VALUE    =>  $query,
-                                       OPERATOR => 'LIKE' );
 
-    $m->redirect("$RT::WebPath/Search/Listing.html");
+
+        $m->comp("/Search/Listing.html");
+        return();
+    }
+    $session{'tickets'}->LimitSubject( VALUE    =>  $query, OPERATOR => 'LIKE' );
+        $m->comp("/Search/Listing.html");
+
+    return();
+
 }
 
 if ($ARGS{'HomeRefreshInterval'}) {
