@@ -417,16 +417,19 @@ sub IsApplicable {
 	    $RT::Logger->error( "Unknown Scrip stage:" . $self->Stage );
 	    return (undef);
 	}
-
+	my $ConditionObj = $self->ConditionObj;
 	foreach my $TransactionObj ( @Transactions ) {
+	    # in TxnBatch stage we can select scrips that are not applicable to all txns
+	    my $txn_type = $TransactionObj->Type;
+	    next unless( $ConditionObj->ApplicableTransTypes =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
 	    # Load the scrip's Condition object
-	    $self->ConditionObj->LoadCondition(
+	    $ConditionObj->LoadCondition(
 		ScripObj       => $self,
 		TicketObj      => $args{'TicketObj'},
 		TransactionObj => $TransactionObj,
 	    );
 
-            if ( $self->ConditionObj->IsApplicable() ) {
+            if ( $ConditionObj->IsApplicable() ) {
 	        # We found an application Transaction -- return it
                 $return = $TransactionObj;
                 last;
