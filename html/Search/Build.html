@@ -24,7 +24,10 @@
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html".$QueryString, 
-    Title => $title, %ARGS &>
+    Title => $title,
+    Format => $Format,
+    Query => $Query,
+    Rows => $ARGS{'Rows'} &>
 
 <FORM METHOD="GET">
 <input type=hidden name=Query value="<%$Query%>">
@@ -1050,7 +1053,12 @@ else {
     $search_hash->{Query}       = '';
 }
 
-my $QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}";
+$Format =~ s/#/%23/g;
+$Format =~ s/&/%26/g;
+my $QueryString;
+if ($Query) {
+  $QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}";
+}
 
 </%INIT>
 

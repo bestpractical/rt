@@ -23,8 +23,11 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title&>
 <& /Ticket/Elements/Tabs, 
-    current_tab => 'Search/Edit.html', 
-    Title => $title &>
+    current_tab => "Search/Edit.html".$QueryString, 
+    Title => $title,
+    Format => $Format,
+    Query => $Query,
+    Rows => $ARGS{'Rows'} &>
 
 <& Elements/NewListActions, actions => \@actions &>
 
@@ -38,6 +41,12 @@
 
 <%INIT>
 my $title = "Edit Query";
+
+$Format =~ s/#/%23/g;
+$Format =~ s/&/%26/g;
+
+my $QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}";
+
 </%INIT>
 
 

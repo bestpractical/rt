@@ -23,8 +23,11 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => 'Search/Results.html', 
-    Title => $title, %ARGS &>
+    current_tab => "Search/Results.html".$QueryString, 
+    Title => $title,
+    Format => $Format,
+    Query => $Query,
+    Rows => $ARGS{'Rows'} &>
 <hr>
 about to be
 %unless  ( $HideResults) {
@@ -38,7 +41,7 @@ Looking at results
     FirstRow => $ARGS{'FirstRow'},
     Format => $Format,
     
-    BaseURL => $RT::WebPath."/Search/Listing.html?"
+    BaseURL => $RT::WebPath."/Search/Results.html?"
 
    &>
 <div align=right>
@@ -63,6 +66,11 @@ if ( $session{'tickets'}->Query()) {
 }
 
 $ARGS{Format} = $Format;
+
+my $tabformat = $Format;
+$tabformat =~ s/#/%23/g;
+$tabformat =~ s/&/%26/g;
+my $QueryString = "?Query=$Query&Format=$tabformat&Rows=$ARGS{'Rows'}";
 
 </%INIT>
 <%CLEANUP>
