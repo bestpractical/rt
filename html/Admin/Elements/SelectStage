@@ -44,7 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <SELECT NAME=<%$Name%>>
-% foreach my $stage (qw(TransactionCreate TransactionBatch Disabled)) {
+% foreach my $stage (@stages) {
 <OPTION VALUE=<%$stage%>
 <% ($stage eq $Default) && 'SELECTED' %>
 ><% loc($stage) %>
@@ -54,6 +54,9 @@
 if ($Default eq '') {
     $Default = 'TransactionCreate';
 }
+my @stages = 'TransactionCreate';
+push @stages, 'TransactionBatch' if $RT::UseTransactionBatch;
+push @stages, 'Disabled';
 </%INIT>
 <%ARGS>
 $Default => 'TransactionCreate'
