@@ -47,7 +47,7 @@ use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
                                    #set private_tempfiles
 
 BEGIN {
-    if ($mod_perl::VERSION >= 1.9908) {
+    if ($mod_perl::VERSION && ($mod_perl::VERSION >= 1.9908)) {
 	require Apache::RequestUtil;
 	no warnings 'redefine';
 	my $sub = *Apache::request{CODE};

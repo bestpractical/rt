@@ -10,7 +10,8 @@ use Socket;
 
 RT::Init();
 
-my $port = 4711;
+my $port = shift || '8080';
+if ( @RT::MasonParameters) {} # Shut up the warnings;
 my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
 
 main_loop($port);
@@ -48,12 +49,11 @@ sub main_loop {
             chomp( $_ = <STDIN> );
             my ( $method, $request_uri, $proto, undef ) = split;
 
-            $request_uri =~ s#\\#/#g;
+            #$request_uri =~ s#\\#/#g;
             $RT::Logger->info("<- $peername: $_");
             my ( $file, undef, $query_string ) =
               ( $request_uri =~ /([^?]*)(\?(.*))?/ );    # split at ?
-            $file =~
-              s/%([\dA-Fa-f]{2})/chr(hex($1))/eg;  # decode url-escaped entities
+            #$file =~ s/%([\dA-Fa-f]{2})/chr(hex($1))/eg;  # decode url-escaped entities
 
             last if ( $method !~ /^(GET|POST|HEAD)$/ );
 
@@ -106,9 +106,12 @@ sub build_cgi_env {
 
                         @_);
                     
-        foreach my $var qw(USER_AGENT CONTENT_LENGTH CONTENT_TYPE) {
+        foreach my $var qw(USER_AGENT CONTENT_LENGTH CONTENT_TYPE
+          COOKIE SERVER_PORT SERVER_PROTOCOL SERVER_NAME
+          PATH_INFO REQUEST_URI REQUEST_METHOD REMOTE_ADDR
+          REMOTE_HOST QUERY_STRING SERVER_SOFTWARE) {
             delete $ENV{$var};
-        }
+          }
         while (<STDIN>) {
             s/[\r\l\n\s]+$//;
             /^User-Agent: (.+)/i      and $ENV{USER_AGENT}     = $1;
