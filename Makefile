@@ -282,8 +282,8 @@ mux-install:
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
 				s'!!WEBRT_CGI_BIN!!'$(WEBRT_CGI_BIN)'g;\
-				s'!!WEBRT_HTML_PATH!!'$($WEBRT_HTML_PATH)'g;\
-				s'!!WEBRT_DATA_PATH!!'$($WEBRT_DATA_PATH)'g;\
+				s'!!WEBRT_HTML_PATH!!'$(WEBRT_HTML_PATH)'g;\
+				s'!!WEBRT_DATA_PATH!!'$(WEBRT_DATA_PATH)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" $(RT_PERL_MUX) $(RT_WEB_MUX)
 
