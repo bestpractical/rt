@@ -795,7 +795,8 @@ sub Disabled {
 
 =head2 DeepMembersObj
 
-Returns an RT::CachedGroupMembers object of this group's members.
+Returns an RT::CachedGroupMembers object of this group's members,
+including all members of subgroups.
 
 =cut
 
@@ -848,7 +849,7 @@ sub UserMembersObj {
 
 =head2 MembersObj
 
-Returns an RT::CachedGroupMembers object of this group's members.
+Returns an RT::GroupMembers object of this group's direct members.
 
 =cut
 
@@ -1170,6 +1171,58 @@ sub _DeleteMember {
         $RT::Logger->debug("Failed to delete group ".$self->Id." member ". $member_id);
         return ( 0, $self->loc("Member not deleted" ));
     }
+}
+
+# }}}
+
+# {{{ sub _CleanupInvalidDelegations
+
+=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
+
+Revokes all ACE entries delegated by members of this group which are
+inconsistent with their current delegation rights.  Does not perform
+permission checks.  Should only ever be called from inside the RT
+library.
+
+If called from inside a transaction, specify a true value for the
+InsideTransaction parameter.
+
+Returns a true value if the deletion succeeded; returns a false value
+and logs an internal error if the deletion fails (should not happen).
+
+=cut
+
+# XXX Currently there is a _CleanupInvalidDelegations method in both
+# RT::User and RT::Group.  If the recursive cleanup call for groups is
+# ever unrolled and merged, this code will probably want to be
+# factored out into RT::Principal.
+
+sub _CleanupInvalidDelegations {
+    my $self = shift;
+    my %args = ( InsideTransaction => undef,
+		  @_ );
+
+    unless ( $self->Id ) {
+	$RT::Logger->warning("Group not loaded.");
+	return (undef);
+    }
+
+    my $in_trans = $args{InsideTransaction};
+
+    # TODO: Can this be unrolled such that the number of DB queries is constant rather than linear in exploded group size?
+    my $members = $self->DeepMembersObj();
+    $members->LimitToUsers();
+    $RT::Handle->BeginTransaction() unless $in_trans;
+    while ( my $member = $members->Next()) {
+	my $ret = $member->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1,
+								 Object => $args{Object});
+	unless ($ret) {
+	    $RT::Handle->Rollback() unless $in_trans;
+	    return (undef);
+	}
+    }
+    $RT::Handle->Commit() unless $in_trans;
+    return(1);
 }
 
 # }}}

@@ -700,7 +700,7 @@ sub _Delete {
     while ( my $delegated_ace = $delegated_from_this->Next ) {
         ( $delete_succeeded, $submsg ) =
           $delegated_ace->_Delete( InsideTransaction => 1 );
-        last if ($delete_succeeded);
+        last unless ($delete_succeeded);
     }
 
     unless ($delete_succeeded) {
@@ -710,18 +710,23 @@ sub _Delete {
 
     my ( $val, $msg ) = $self->SUPER::Delete(@_);
 
-    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    # TODO what about the groups key cache?
-    RT::Principal->InvalidateACLCache();
+    # If we're revoking delegation rights (see above), we may need to
+    # revoke all rights delegated by the recipient.
+    if ($val and ($self->RightName() eq 'DelegateRights' or
+		  $self->RightName() eq 'SuperUser')) {
+	$val = $self->PrincipalObj->_CleanupInvalidDelegations( InsideTransaction => 1 );
+    }
 
     if ($val) {
+	#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+	# TODO what about the groups key cache?
+	RT::Principal->InvalidateACLCache();
         $RT::Handle->Commit() unless $InsideTransaction;
         return ( $val, $self->loc('Right revoked') );
     }
-    else {
-        $RT::Handle->Rollback() unless $InsideTransaction;
-        return ( 0, $self->loc('Right could not be revoked') );
-    }
+
+    $RT::Handle->Rollback() unless $InsideTransaction;
+    return ( 0, $self->loc('Right could not be revoked') );
 }
 
 # }}}

@@ -53,42 +53,53 @@ $Warning => undef
 </%ARGS>
 
 <%PERL>
-$m->out( '<TR class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
+$m->out('<TR class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
 my $item;
 foreach my $column (@Format) {
     if ( $column->{title} eq 'NEWLINE' ) {
-	while ($item < $maxitems) {
-	    $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
-	    $item++;
-	}
-	$item = 0;
+        while ( $item < $maxitems ) {
+            $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
+            $item++;
+        }
+        $item = 0;
         $m->out('</TR>');
-        $m->out( '<TR class="' . 
-               ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
+        $m->out('<TR class="'
+              . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' )
+              . '" >' );
         next;
     }
     $item++;
-    $m->out('<td class="collection-as-table">');
+    $m->out('<td class="collection-as-table" ');
+    $m->out( 'align="' . $column->{align} . '"' ) if ( $column->{align} );
+    $m->out('>');
     foreach my $subcol ( @{ $column->{output} } ) {
         if ( $subcol =~ /^__(.*?)__$/o ) {
-            my $col = $1;
-            my $value = $m->comp('/Elements/RT__Ticket/ColumnMap', Name => $col, Attr => 'value');
+            my $col   = $1;
+            my $value = $m->comp(
+                '/Elements/RT__Ticket/ColumnMap',
+                Name => $col,
+                Attr => 'value'
+            );
 
-            if ( $value && ref($value)) {
-		# All HTML snippets are returned by the callback function
-		# as scalar references.  Data fetched from the objects are
-		# plain scalars, and needs to be escaped properly.
-		$m->out( 
-		    map { ref($_) ? $$_ : $m->interp->apply_escapes( $_ => 'h' ) }
-		    &{ $value } ( $record, $i )
-	        );
-            } else {
-		# Simple value; just escape it.
+            if ( $value && ref($value) ) {
+
+                # All HTML snippets are returned by the callback function
+                # as scalar references.  Data fetched from the objects are
+                # plain scalars, and needs to be escaped properly.
+                $m->out(
+                    map {
+                        ref($_) ? $$_ : $m->interp->apply_escapes( $_ => 'h' )
+                      } &{$value}( $record, $i )
+                );
+            }
+            else {
+
+                # Simple value; just escape it.
                 $m->out( $m->interp->apply_escapes( $value => 'h' ) );
             }
         }
         else {
-            $m->out( $subcol );
+            $m->out($subcol);
         }
     }
     $m->out('</td>');

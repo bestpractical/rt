@@ -226,7 +226,11 @@ sub Import {
     my %args = ( ContentEncoding => 'none',
 
 		 @_ );
-    return($self->SUPER::Create(@_));
+
+
+ ($args{'ContentEncoding'}, $args{'Content'}) = $self->_EncodeLOB($args{'Content'}, $args{'MimeType'});
+
+    return($self->SUPER::Create(%args));
 }
 
 # {{{ sub Content

@@ -60,14 +60,18 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     }
 
     my $colref;
-    if ( $col =~ s/\/STYLE:(.*?)$//io ) {
+
+    if ( $col =~ s!/STYLE:([^/]+)!!io ) {
         $colref->{'style'} = $1;
     }
-    if ( $col =~ s/\/CLASS:(.*?)$//io ) {
+    if ( $col =~ s!/CLASS:([^/]+)!!io ) {
         $colref->{'class'} = $1;
     }
-    if ( $col =~ s/\/TITLE:(.*?)$//io ) {
+    if ( $col =~ s!/TITLE:([^/]+)!!io ) {
         $colref->{'title'} = $1;
+    }
+    if ( $col =~ s!/ALIGN:([^\/]+)!!io ) {
+        $colref->{'align'} = $1;
     }
     if ( $col =~ /__(.*?)__/gio ) {
         my @subcols;
