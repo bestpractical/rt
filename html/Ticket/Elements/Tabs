@@ -156,12 +156,25 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
     };
 }
 }
-$tabs->{"g"} = { path      => 'Search/Build.html',
-                 title     => loc('Build Query'),
+
+# escape the '#' symbols so they won't be parsed as part of a URL
+my $format = $ARGS{'Format'};
+$format =~ s/#/%23/g;
+my $args = "?Query=$ARGS{'Query'}&Format=$format&Rows=$ARGS{'Rows'}";
+
+$tabs->{"f"} = { path      => "Search/Build.html",
+                 title     => loc('New Query'),
                  subtabs   => $searchtabs };
-$tabs->{"h"} = { path      => 'Search/Edit.html',
-                 title     => loc('Edit by hand'),
+$tabs->{"g"} = { path      => "Search/Build.html$args",
+                 title     => loc('Query Builder'),
+                 subtabs   => $searchtabs };
+$tabs->{"h"} = { path      => "Search/Edit.html$args",
+                 title     => loc('Advanced'),
                  separator => 1 };
+$tabs->{"i"} = { path      => "Search/Show.html$args",
+                 title     => loc('Show Results'),
+                 separator => 1 };
+
 </%INIT>
 
   

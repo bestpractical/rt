@@ -21,45 +21,27 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<SELECT NAME ="<%$Name%>">
+% if ($AllowNull) {
+<OPTION VALUE="">-</OPTION>
+% }
+%for my $option (@types) {
+<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%loc($option)%></OPTION>
+%}
+</SELECT>
 
-<& /Elements/TitleBoxStart, title => loc('Add Criteria')&>
-<table width=100% cellspacing=0 cellpadding=0 border=0>
-<tr><td width=100%>
-<& SelectAndOr, Name => "AndOr" &>
-</td></tr>
-<tr>
-<td valign=top>
-  <table width=100%>
-    <tr>
-      <td valign=top>
-        <& PickBasics &>
-      </td>
-    </tr>
-  </table>
-</td>
-</tr>
-
-<tr>
-<td valign=top>
-<table width=100%>
-<tr>
-<td valign=top>
-<& PickPeople &>
-</td>
-</tr>
-<tr>
-<td valign=top>
-<& PickCFs, cfqueues => \%cfqueues &>
-</td>
-</tr>
-</table>
-</td></tr>
-</table>
-
-<& /Elements/TitleBoxEnd &>
-
+<%INIT>
+my @types;
+if ($Scope =~ 'queue') {
+   @types = qw(Cc AdminCc);
+}
+else { 
+   @types = qw(Requestor Cc AdminCc Watcher Owner Creator LastUpdatedBy);
+}
+</%INIT>
 <%ARGS>
-$addquery => 0
-$query => undef
-%cfqueues => undef
+$AllowNull => 1
+$Default=>undef
+$Scope => 'ticket'
+$Name => 'WatcherType'
 </%ARGS>

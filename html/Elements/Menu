@@ -56,7 +56,7 @@
 % } else {
 % $sep=0;
 % }
-<li style="<%$style%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>" style="font-size: <%$size%>;" class="<%$class%>" 
+<li style="<%$style%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>" style="font-size: <%$size%>;" class="<%$class%>" 
 <%($class eq 'currenttopnav') ? "name='focus'" : ""|n %> 
 <% !$level && "accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></A>
 %# Second-level items
@@ -75,6 +75,7 @@
 <%INIT>
 my ($tab, $subtab, $class, $size, $padding);
 my $basesize=16;
+
 </%INIT>
 
 <%ARGS>

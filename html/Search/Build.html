@@ -23,8 +23,8 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => 'Search/Build.html', 
-    Title => $title &>
+    current_tab => "Search/Build.html$args", 
+    Title => $title, %ARGS &>
 
 <FORM METHOD="GET">
 <input type=hidden name=Query value="<%$Query%>">
@@ -32,7 +32,7 @@
 <tr>
 <td valign=top>
 <& Elements/NewPickRestriction, query => $Query, cfqueues => \%queues, %ARGS &>
-<& /Elements/Submit, Caption => "Add additional restrictions", Label => loc('Add'), Name => 'AddClause'&>
+<& /Elements/Submit, Caption => "Add additional criteria", Label => loc('Add'), Name => 'AddClause'&>
 </td>
 <td valign=top>
 <& /Elements/TitleBoxStart, title => loc("Query") . ": " .$search_hash->{'Description'} &>
@@ -45,9 +45,10 @@
 <input type=submit name="Down" value="v">
 <input type=submit name="Left" value="<">
 <input type=submit name="Right" value=">">
+<br>
 <input type=submit name="Toggle" DISABLED value="And/Or">
 <input type=submit name="DeleteClause" value="Delete">
-<input type=submit name="EditQuery" value="Edit">
+<input type=submit name="EditQuery" value="Advanced">
 </center>
 <& /Elements/TitleBoxEnd &>
 <br>
@@ -940,6 +941,18 @@ Priority,
 '<small>__LastUpdatedRelative__</small>',
 '<small>__TimeLeft__</small>'};
 }
+
+$ARGS{'Query'} = $Query;
+
+# escape the '#' symbols so they won't be parsed as part of a URL
+my $format = $ARGS{'Format'};
+$format =~ s/#/%23/g;
+my $args;
+
+if ($ARGS{'Query'}) {
+    $args = "?Query=$ARGS{'Query'}&Format=$format&Rows=$ARGS{'Rows'}";
+}
+
 </%INIT>
 
 <%ARGS>

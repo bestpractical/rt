@@ -23,8 +23,8 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => 'Search/Build.html', 
-    Title => $title &>
+    current_tab => 'Search/Show.html', 
+    Title => $title, %ARGS &>
 <hr>
 about to be
 %unless  ( $HideResults) {

@@ -25,7 +25,7 @@
 <table cellpadding=0 cellspacing=0 border=0>
 <tr><td>
 <table cellspacing=0 border=0>
-% foreach my $field (@fields1) {
+% foreach my $field (@fields) {
 <tr><td align=right>
 % if ($field eq "Attachment") {
 <& /Elements/SelectAttachmentField, Name => 'AttachmentField' &>
@@ -55,27 +55,27 @@
 &>  
 </td><td>
 <INPUT Name="ValueOfLinks" value="" SIZE=5>
-%} elsif ($field =~ m/.*Priority/ || $field =~ m/Time.*/) {
-<&|/l&><%$field%></&>
+%} elsif ($field eq "Priority") {
+<SELECT NAME="PriorityField">
+<OPTION VALUE="Priority"><&|/l&>Priority</&></OPTION>
+<OPTION VALUE="InitialPriority"><&|/l&>Initial Priority</&></OPTION>
+<OPTION VALUE="FinalPriority"><&|/l&>Final Priority</&></OPTION>
+</SELECT>
 </td><td>
-<& /Elements/SelectEqualityOperator, Name => $field . "Op" &>
+<& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
 </td><td>
-<INPUT Name="<%"ValueOf" . $field%>" SIZE=5>
-% } else {
-<&|/l&><%$field%></&>
+<INPUT Name="ValueOfPriority" SIZE=5>
+%} elsif ($field =~ m/Time.*/) {
+<SELECT NAME="TimeField">
+<OPTION VALUE="TimeWorked"><&|/l&>Time Worked</&></OPTION>
+<OPTION VALUE="TimeEstimated"><&|/l&>Time Estimated</&></OPTION>
+<OPTION VALUE="TimeLeft"><&|/l&>Time Left</&></OPTION>
+</SELECT>
 </td><td>
-<& /Elements/SelectMatch, Name => "$field" . "Op" &>
+<& /Elements/SelectEqualityOperator, Name => "TimeOp" &>
 </td><td>
-<INPUT Name="<%"ValueOf" . $field%>" value=""SIZE=20>
-% }
-</td></tr>
-% }
-
-</td></tr>
-
-% foreach my $field (@fields2) {
-<tr><td align=right>
-% if ($field eq "Status") {
+<INPUT Name="ValueOfTime" SIZE=5>
+% } elsif ($field eq "Status") {
 <&|/l&>Status</&>
 </td><td>
 <& /Elements/SelectBoolean, Name => "StatusOp", 
@@ -122,19 +122,13 @@
 </table>
 
 <%INIT>
-my @fields1 = ('Subject',
-	       'Attachment',
-	       'Dates',
-	       'TimeLeft',
-	       'TimeWorked',
-	       'Links',
-	       );
-
-my @fields2 = ('Queue',
-	       'Status',
-	       'Priority',
-	       'InitialPriority',
-	       'FinalPriority',
-	       'id',
-	       );
+my @fields = ('Attachment',
+	      'Dates',
+	      'Time',
+	      'Links',
+	      'Queue',
+	      'Status',
+	      'Priority',
+	      'id',
+	      );
 </%INIT>

@@ -25,19 +25,21 @@
 <table cellspacing=0 border=0>
 % foreach my $field (@fields) {
 <tr><td class="label">
-% if ($field eq "Owner" || 
-%     $field eq "Creator" || 
-%     $field eq "LastUpdatedBy") {
-<&|/l&><%$field%></&> 
+% if ($field eq "Actor") {
+<SELECT NAME="ActorField">
+<OPTION VALUE="Owner"><&|/l&>Owner</&></OPTION>
+<OPTION VALUE="Creator"><&|/l&>Creator</&></OPTION>
+<OPTION VALUE="LastUpdatedBy"><&|/l&>LastUpdatedBy</&></OPTION>
+</SELECT>
 </td><td>
-<& /Elements/SelectBoolean, Name => $field . "Op", 
+<& /Elements/SelectBoolean, Name => "ActorOp", 
 					  TrueVal=> '=', 
 					  FalseVal => '!=' 
 &> 
 </td><td>
-<& /Elements/SelectOwner, Name => "ValueOf" . $field &>
+<& /Elements/SelectOwner, Name => "ValueOfActor" &>
 % } elsif ($field eq 'Watcher') {
-<& /Elements/SelectWatcherType, Name => 'WatcherField', Default => 'Requestor' &>
+<& SelectPersonType, Name => 'WatcherField', Default => 'Requestor' &>
 </td><td>
 <& /Elements/SelectMatch, Name => "WatcherOp" &>
 </td><td>
@@ -56,9 +58,7 @@
 </table>
 
 <%INIT>
-my @fields = ('Owner',
-	      'Creator',
-	      'LastUpdatedBy',
+my @fields = ('Actor',
 	      'Watcher',
 	      );
 </%INIT>

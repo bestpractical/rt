@@ -22,9 +22,10 @@
 %# 
 %# END LICENSE BLOCK
 <SELECT NAME="<%$Name%>">
-<OPTION VALUE="Content"><&|/l&>content</&></OPTION>
-<OPTION VALUE="ContentType"><&|/l&>content-type</&></OPTION>
-<OPTION VALUE="Filename"><&|/l&>filename</&></OPTION>
+<OPTION VALUE="Subject"><&|/l&>Subject</&></OPTION>
+<OPTION VALUE="Content"><&|/l&>Content</&></OPTION>
+<OPTION VALUE="ContentType"><&|/l&>Content-Type</&></OPTION>
+<OPTION VALUE="Filename"><&|/l&>Filename</&></OPTION>
 </SELECT>
 <%ARGS>
 $Name => 'AttachmentField'
