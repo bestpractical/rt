@@ -74,7 +74,17 @@ foreach my $class (@classes) {
     my $objects = "RT::$class"->new($RT::SystemUser);
     $objects->{find_disabled_rows} = 1;
     $objects->UnLimit;
-    $objects->OrderBy( FIELD => 'Id' );
+
+    if ($class eq 'CustomFields') {
+        $objects->OrderByCols(
+            { FIELD => 'LookupType' },
+            { FIELD => 'SortOrder' },
+            { FIELD => 'Id' },
+        );
+    }
+    else {
+        $objects->OrderBy( FIELD => 'Id' );
+    }
 
     if ($LocalOnly) {
         next if $class eq 'ACL'; # XXX - would go into infinite loop - XXX
@@ -116,7 +126,7 @@ foreach my $class (@classes) {
 	    }
 	}
 
-	if ($class eq 'Users') {
+	if ($class eq 'Users' and defined $obj->Privileged) {
 	    $rv->{Privileged} = int($obj->Privileged);
 	}
 	elsif ($class eq 'CustomFields') {
@@ -145,13 +155,14 @@ foreach my $class (@classes) {
 print(<< ".");
 no strict; use XML::Simple; *_ = XMLin(do { local \$/; readline(DATA) }, ForceArray => [qw(
  @classes Values
-)]); *\$_=( \$_{\$_} || [] ) for keys \%_; 1; # vim: filetype=xml
+)], NoAttr => 1, SuppressEmpty => ''); *\$_ = (\$_{\$_} || []) for keys \%_; 1; # vim: ft=xml
 __DATA__
 .
 
 print XMLout(
     { map { ($_ => ($RV{$_} || [])) } @classes },
     RootName => 'InitialData',
-    AttrIndent => 1,
+    NoAttr => 1,
+    SuppressEmpty => '',
     XMLDecl => '<?xml version="1.0" encoding="UTF-8"?>',
 );
