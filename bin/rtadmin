@@ -659,7 +659,7 @@ sub AdminGroup {
 
     #Create the group if we need to
     if ($args{'create'}) {
-	my ($val, $msg) = $group_obj->create( Name => $args{'Name'},
+	my ($val, $msg) = $group_obj->Create( Name => $args{'Name'},
 					      Description => $args{'Description'} );
 	print $msg ."\n";
     }	
