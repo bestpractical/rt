@@ -287,7 +287,8 @@ sub Content {
 	$plain_parts->ContentType(VALUE => 'text/plain');
 	
 	# If we actully found a part, return its content
-	if ($plain_parts->First) {
+	if ($plain_parts->First && 
+        $plain_parts->First->Content ne '') {
 	    $content = $plain_parts->First->Content;		
 	}	
 	
