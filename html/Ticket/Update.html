@@ -26,10 +26,11 @@
 <& /Ticket/Elements/Tabs, Ticket => $Ticket &>
 <& /Elements/TitleBoxStart, title => $title &>
 
-<FORM ACTION="/Ticket/Update.html?<%($ARGS{QuoteTransaction}) && "QuoteTransaction=$ARGS{QuoteTransaction}&"%><%($Action) && "Action=$Action"%>" NAME="TicketUpdate" 
+<FORM ACTION="<%$RT::WebPath%>/Ticket/Update.html?<%($ARGS{QuoteTransaction}) && "QuoteTransaction=$ARGS{QuoteTransaction}&"%><%($Action) && "Action=$Action"%>" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
 <input type="hidden" name="DefaultStatus" value="<% $ARGS{DefaultStatus} %>">
 <font size=-1>
+
 <TABLE>
 <TR><TD>
 <a href="ModifyPeople.html?id=<%$Ticket->Id%>"><&|/l&>Ticket watchers</&></A></TD><TD align=right>
