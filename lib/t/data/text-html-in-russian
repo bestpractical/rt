@@ -1,25 +1,25 @@
-From rickt@sergeant.org  Tue Jun 17 20:39:13 2003
-Return-Path: <rickt@sergeant.org>
+From rickt@other-example.com  Tue Jun 17 20:39:13 2003
+Return-Path: <rickt@other-example.com>
 X-Original-To: info
-Delivered-To: mitya@vh.demos.su
-Received: from demos.su (mx.demos.su [194.87.0.32])
-	by vh.demos.su (Postfix) with ESMTP id 8D77B16E6BD
+Delivered-To: mitya@vh.example.com
+Received: from example.com (mx.example.com [194.87.0.32])
+	by vh.example.com (Postfix) with ESMTP id 8D77B16E6BD
 	for <info>; Tue, 17 Jun 2003 20:39:05 +0400 (MSD)
-Received: from hotline@demos.su
-  by demos.su (CommuniGate Pro GROUP 4.1b7/D)
+Received: from hotline@example.com
+  by example.com (CommuniGate Pro GROUP 4.1b7/D)
   with GROUP id 76033026; Tue, 17 Jun 2003 20:38:00 +0400
-Received: by demos.su (CommuniGate Pro PIPE 4.1b7/D)
+Received: by example.com (CommuniGate Pro PIPE 4.1b7/D)
   with PIPE id 76033052; Tue, 17 Jun 2003 20:38:00 +0400
 Received: from [217.132.49.75] (HELO compuserve.com)
-  by demos.su (CommuniGate Pro SMTP 4.1b7/D)
-  with SMTP id 76032971 for info@demos.su; Tue, 17 Jun 2003 20:37:41 +0400
+  by example.com (CommuniGate Pro SMTP 4.1b7/D)
+  with SMTP id 76032971 for info@example.com; Tue, 17 Jun 2003 20:37:41 +0400
 Date: Wed, 18 Jun 2003 01:41:01 +0000
-From: Учебный Центр <rickt@sergeant.org>
+From: Учебный Центр <rickt@other-example.com>
 Subject: Приглашаем руководителя, начальников подразделений на тренинг                                                         YXLWLJ3LPT9UHuLyGTzyuKQc06eIZ96Y6RVTCZFt
-To: Info <info@demos.su>
-References: <0ID97EGL951H1907@demos.su>
-In-Reply-To: <0ID97EGL951H1907@demos.su>
-Message-ID: <HDE46LIK8GGJJ72I@sergeant.org>
+To: Info <info@example.com>
+References: <0ID97EGL951H1907@example.com>
+In-Reply-To: <0ID97EGL951H1907@example.com>
+Message-ID: <HDE46LIK8GGJJ72I@other-example.com>
 MIME-Version: 1.0
 Content-Type: text/html; charset=Windows-1251
 Content-Transfer-Encoding: 8bit
