@@ -647,6 +647,9 @@ sub ParseQuery {
 	    $ea = 'AND' if !$ea;
             $keystring = "{0.0}" . $keystring;
 
+	    if ( $key =~ /^CF./ ) {
+	        $key = "'" . $key . "'";
+	    }
             my $clause = {
                 Key   => $key,
                 Op    => $op,
