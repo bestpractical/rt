@@ -91,13 +91,8 @@ sub Load  {
     }
     
     # Set the template Id to the passed in template
-  # or fall back to the default for this Action
-    if (defined $template) {
 	$self->{'Template'} = $template;
-    }
-    else {
-	$self->{'Template'} = $self->DefaultTemplate();
-    }
+    
     
 }
 # }}}

@@ -44,7 +44,7 @@ sub _Accessible  {
 	      Organization => 'public/read/write',
 	      Disabled => 'public/read', #To modify this attribute, we have helper
 	      #methods
-	      Privileged => 'read/write',
+	      Privileged => 'read/write', # 0=no 1=user 2=system
 	      # }}}
 	      
 	      # {{{ Names
@@ -120,11 +120,6 @@ sub Create  {
     
     #If the create failed.
     return (undef) if ($id == 0);
-    
-    $self->Load($id);
-    
-    #TODO: this is horrificially wasteful. we shouldn't commit 
-    # to the db and then instantly turn around and load the same data
     
     
     if ($args{'SendWelcomeMessage'}) {

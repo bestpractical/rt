@@ -78,6 +78,11 @@ sub Create  {
   push @_, 'Creator', $self->{'user'}->id
 	if $self->_Accessible('Creator', 'auto');
   my $id = $self->SUPER::Create(@_);
+
+  if ($id) {
+      $self->Load($id);
+  }
+  
   return($id);
 
 }
@@ -168,9 +173,7 @@ sub _Set  {
 
   #if the user is trying to modify the record
   if ((!defined ($args{'Field'})) || (!defined ($args{'Value'}))) {
-  $RT::Logger->debug("in RT::Record::Set for $self ".$self->Id ."'". $args{'Field'}."' '".$args{'Value'}."'\n"); 
-   use Carp;
-   confess;
+    $args{'Value'} = 0; 
    }
 
   $self->_SetLastUpdated;

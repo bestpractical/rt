@@ -81,6 +81,8 @@ sub Create {
     my $retval = $self->SUPER::Create(Name => $args{'Name'},
 				      Description => $args{'Description'},
 				      Pseudo => $args{'Pseudo'});
+
+
     return ($retval);
 }
 # }}}
@@ -229,6 +231,8 @@ sub GrantQueueRight {
    
     require RT::ACE;
 
+
+    #TODO +++ ACL this
     my $ace = new RT::ACE($self->CurrentUser);
     
     return ($ace->Create(%args));
@@ -273,7 +277,7 @@ sub _Set {
 	$self->$SUPER::_Set(@_);
     }
     else {
-	return (0, "Permission Denied");
+	return (undef);
     }
 
 }

@@ -137,6 +137,23 @@ sub LimitToPrivileged {
 
 # }}}
 
+# {{{ LimitToSystem
+
+=head2 LimitToSystem
+
+Limits to users who can be granted rights, but who should
+never have their rights modified by a user or be made members of groups.
+
+=cut
+
+sub LimitToSystem {
+    my $self = shift;
+    $self->Limit( FIELD => 'Privileged',
+                  OPERATOR => '=',
+                  VALUE => '2');
+}
+
+# }}}
 # {{{ HasQueueRight
 
 =head2 HasQueueRight

@@ -1,18 +1,32 @@
 
 <& /Admin/Elements/Header, Title => 'RT Admin/Groups' &>
+<& /Admin/Elements/Tabs &>
 
-<TABLE WIDTH=100%>
-<TR>
-<TD VALIGN=TOP>
-<h1>Create</h1>
-<FORM METHOD=get ACTION="<% $RT::WebPath %>/Admin/Groups/Modify.html">
-<input type=hidden name="CreateGroup" value="true">
-Create a Group called <INPUT NAME="Name" size=10><input type=submit>
-</form>
-</TD>
-<TD VALIGN=TOP>
-<h1>Modify</h1>
-<& /Admin/Elements/SelectModifyGroup &>
-</TD>
-</TR>
-</TABLE>
+<H1>Edit groups</h1>
+
+Pseudogroups:<BR>
+<UL>
+%while ( $Group = $PseudoGroups->Next) {
+<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->id%>: <%$Group->Name%></a><BR>
+%}
+
+</UL>
+
+Groups:<BR>
+<UL>
+<LI><A HREF="Modify.html?Create=1">Create a new group</A><BR><BR></LI>
+%while ( $Group = $Groups->Next) {
+<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->id%>: <%$Group->Name%></a><BR>
+%}
+</UL>
+
+<%INIT>
+my ($Group);
+my $PseudoGroups = new RT::Groups($session{'CurrentUser'});
+$PseudoGroups->LimitToPseudo;
+my $Groups = new RT::Groups($session{'CurrentUser'});
+$Groups->LimitToReal;
+
+</%INIT>
+<%ARGS>
+</%ARGS>

@@ -198,6 +198,7 @@ sub Message  {
 # }}}
 
 # {{{ sub Attachments 
+
 =head2 Attachments
 
   Returns all the RT::Attachment objects which are attached
@@ -245,6 +246,7 @@ sub Attachments  {
   return($Attachments);
 
 }
+
 # }}}
 
 # {{{ sub _Attach 
@@ -507,17 +509,16 @@ sub _Value  {
     if ($self->SUPER::_Value('Type') eq 'Comment') {
         
         
-	unless ($self->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
+	unless ($self->CurrentUserHasRight('ShowTicketComments')) {
 	    return (0, "Permission Denied");
 	}
     }	
     #if they ain't got rights to see, don't let em
     else {
-	unless ($self->TicketObj->CurrentUserHasRight('ShowTicket')) {
+	unless ($self->CurrentUserHasRight('ShowTicketHistory')) {
 	    return (0, "Permission Denied");
 	}
     }	
-    
     
     return($self->SUPER::_Value($field));
     

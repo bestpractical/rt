@@ -1,9 +1,9 @@
 <& /Admin/Elements/Header, Title => "RT/Admin/Edit the group ". $Group->Name &>
-
+<& /Admin/Elements/GroupTabs, id => $Group->id &>
 <& /Elements/ListActions, actions => \@results &>
 
 
-<& /Elements/TitleBoxStart, title => 'Editing configuration for group '.$Group->Id &>
+<& /Elements/TitleBoxStart, title => 'Editing membership for group '.$Group->Name &>
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Groups/Members.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
@@ -18,10 +18,10 @@ Remove members
 </TR>
 
 <TR>
-<TD>
+<TD VALIGN=TOP>
 <& /Admin/Elements/SelectUsers, Name => "AddMembers" &>
 </TD>
-<TD>
+<TD VALIGN=TOP>
 % while (my $member = $Group->MembersObj->Next()) {
 <INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->id%>">
 <%$member->UserObj->UserId%> (<%$member->UserObj->RealName%>)

@@ -31,7 +31,7 @@ $RT_System->Create(
 		     UserId => 'RT_System',
 		     RealName => 'The RT System itself',
 		     Comments =>  'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-		     Privileged => '1',
+		     Privileged => '2',
 		     Creator => '1');
 
 
@@ -45,7 +45,7 @@ my @users = (
 	      RealName => 'Nobody in particular',
 	      Comments => 'Do not delete or modify this user. It is integral ' .
 	      'to RT\'s internal data structures',
-	      Privileged => '1',
+	      Privileged => '2',
 	     },
 
 	     { 

@@ -1,0 +1,46 @@
+<& /Admin/Elements/Header, Title => 'Modify System ACLS' &>
+<& /Admin/Elements/SystemTabs &>
+  
+<& /Elements/ListActions, actions => \@results &>
+  <FORM METHOD=POST>
+      
+
+<h2>Modify global rights for users</h2>
+<TABLE>
+%	while (my $UserObj = $Users->Next()) {
+  <TR ALIGN=RIGHT> 
+	<TD VALIGN=TOP>
+
+
+	    <A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$UserObj->id%>"><% $UserObj->UserId %></A>
+		  </TD>
+		<TD>
+	    <& /Admin/Elements/SelectRights, PrincipalObj => $UserObj, 
+                                  PrincipalType => 'User',
+                                  Scope => 'System' &>
+
+		</TD>
+	      </TR>
+% }
+	    </TABLE>
+      <P>Be careful to hold down your control or apple key when selecting rights, to make sure that you don't 
+remove rights that were granted previously.
+	</P>
+      
+      <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
+  </FORM>
+  
+<%INIT>
+ 
+ my @results =  ProcessACLChanges(\@CheckACL, \%ARGS);
+
+ # Find out which users we want to display ACL selects for
+ my $Users = new RT::Users($session{'CurrentUser'});
+
+ $Users->LimitToPrivileged();
+  
+</%INIT>
+
+<%ARGS>
+@CheckACL => undef
+</%ARGS>

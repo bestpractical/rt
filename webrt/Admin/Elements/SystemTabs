@@ -10,11 +10,12 @@
 	       Templates => { title => 'Templates',
 			path => 'Admin/Global/Templates.html',
 		      },
-		 
-	       ACL => { title => 'ACL',
-			path => 'Admin/Global/ACL.html',
+	        GroupRights => { title => 'Group Rights',
+			        path => 'Admin/Global/GroupRights.html',
+		      },
+	        UserRights => { title => 'User Rights',
+			        path => 'Admin/Global/UserRights.html',
 		      }
-		 
 
 };
 </%INIT>

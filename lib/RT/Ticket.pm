@@ -241,7 +241,7 @@ sub Create {
 	$Owner = new RT::User($self->CurrentUser);
 	$Owner->Load($RT::Nobody->UserObj->Id);
     }	
-	    
+
     # }}}
 
 
@@ -265,10 +265,7 @@ sub Create {
 				  Due => $due->ISO
 				 );
     
-    #Load 'er up.
-    $self->Load($id);
-    
-    
+     
     $RT::Logger->debug("Now adding watchers. ");
 
     my $watcher;
@@ -280,7 +277,7 @@ sub Create {
     }	
     foreach $watcher (@{$args{'Requestor'}}) {
 	$self->_AddWatcher( Type => 'Requestor', Person => $watcher, Silent => 1);
-    }
+   }
     
 
     #Add a transaction for the create

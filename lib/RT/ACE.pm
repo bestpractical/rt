@@ -38,7 +38,6 @@ use vars qw (%SCOPES
 # to real people or groups
 %QUEUERIGHTS = ( 
 		SeeQueue => 'Can this principal see this queue',
-		ExploreQueue => 'Look at this queue\'s configuration, watchers, etc',
 		AdminQueue => 'Create, delete and modify queues', 
 		
 		ModifyACL => 'Modify this queue\'s ACL',
@@ -48,12 +47,13 @@ use vars qw (%SCOPES
 		ModifyTemplate => 'Modify email templates for this queue',
 		ShowTemplate => 'Display email templates for this queue',
 		
-		ModifyScripScopes => 'Modify ScripScopes for this queue',
-		ShowScripScopes => 'Display ScripScopes for this queue',
+		ModifyScrips => 'Modify ScripScopes for this queue',
+		ShowScrips => 'Display ScripScopes for this queue',
 
 		ShowTicket => 'Show ticket summaries',
 		ShowTicketHistory => 'Show ticket histories',
 		ShowTicketComments => 'Show ticket private commentary',
+
 		CreateTicket => 'Create tickets in this queue',
 		ReplyToTicket => 'Reply to tickets',
 		CommentOnTicket => 'Comment on tickets',

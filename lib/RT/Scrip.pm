@@ -74,6 +74,7 @@ sub Create  {
 				 );
     return ($id); 
 }
+
 # }}}
 
 
@@ -217,6 +218,7 @@ sub IsApplicable {
 # }}}
 
 # {{{ sub _Set
+
 # does an acl check and then passes off the call
 sub _Set {
     my $self = shift;
@@ -227,6 +229,7 @@ sub _Set {
     }
     return $self->SUPER::_Set(@_);
 }
+
 # }}}
 
 # {{{ sub _Value
@@ -234,7 +237,11 @@ sub _Set {
 sub _Value {
     my $self = shift;
     
-
+    unless ($self->CurrentUserHasRight('ShowScrips')) {
+        $RT::Logger->debug("CurrentUser can't modify Scrips for ".$self->Queue."\n");
+	return (undef);
+    }
+    
     return $self->SUPER::_Value(@_);
 }
 # }}}

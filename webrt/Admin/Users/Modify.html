@@ -20,6 +20,7 @@
 
 <TD VALIGN=TOP ROWSPAN=2>
 <& /Elements/TitleBoxStart, title => 'Identity' &>
+
 RT UserId: <input name="UserId" value="<%$UserObj->UserId%>">
 <BR>
 Name: <input name="RealName" value="<%$UserObj->RealName%>">
@@ -33,7 +34,9 @@ Extra info: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->Free
 <& /Elements/TitleBoxEnd &>
 </TD>
 <TD VALIGN=TOP>
-<& /Elements/TitleBoxStart, title => 'Change Password' &>
+<& /Elements/TitleBoxStart, title => 'Access control' &>
+<INPUT TYPE=CHECKBOX NAME="Privileged" VALUE="1" <%$PrivilegedChecked%>> Privileged user. (Can
+be granted rights.)<BR>
 	    New Password: <input type=password name="Pass1">
 <BR>Retype Password: <input type=password name="Pass2"><BR>
 <& /Elements/TitleBoxEnd &>
@@ -102,9 +105,9 @@ Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 
 
 <%INIT>
-use RT::Interface::Web;
+
 my $UserObj = new RT::User($session{'CurrentUser'});
-my ($title);
+my ($title, $PrivilegedChecked);
 
 if ($Create) {
     $title = "Create a new user";
@@ -114,38 +117,55 @@ if ($id eq 'new') {
     $UserObj->Create( UserId => $UserId );
 }
 else {
-$UserObj->Load($id) || $UserObj->Load($UserId) || $m->comp('/Elements/Error', Why => "Couldn't load user '$UserId'");
+    $UserObj->Load($id) || $UserObj->Load($UserId) || Abort("Couldn't load user '$UserId'");
+
 }
     $title = "Modify the user ". $UserObj->UserId;
+    
 }
-
+{
 my @fields = qw(UserId Comments Signature EmailAddress FreeformContactInfo 
 		Organization RealName NickName Lang EmailEncoding WebEncoding 
 		ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
 		AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
-		Address2 City State Zip Country
-                );
+		Address2 City State Zip Country 
+       );
 
 
 #Run through each field in this list. update the value if apropriate
 my $field;
 foreach $field (@fields) {
 my ($code, $msg);
-my $check = "if ((defined \$$field) and (\$$field !~ \$UserObj->$field)) {
+my $check = "if ((defined \$$field) and ( \$UserObj->$field ne \$$field )) {;;
   (\$code, \$msg) = \$UserObj->Set$field(\$$field);
 
      push \@results, \$msg;
-   }";
+   }
+   ";
 eval $check;
 
 }
+}
+
+
+if  ( $Privileged != $UserObj->Privileged) {
+my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
+     push @results, $msg;;
+}
+
+
+
 #TODO: make this report errors properly
-if ((defined $Pass1)  and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
+if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
 my ($code, $msg);
 ($code, $msg) = $UserObj->SetPassword($Pass1);
 push @results, $msg;
 }
 
+
+if ($UserObj->Privileged()) {  
+    $PrivilegedChecked = "CHECKED";
+}
 
 </%INIT>
 
@@ -162,6 +182,7 @@ $FreeformContactInfo => undef
 $Organization  => undef
 $RealName  => undef
 $NickName  => undef
+$Privileged => undef
 $Lang  => undef
 $EmailEncoding  => undef
 $WebEncoding => undef

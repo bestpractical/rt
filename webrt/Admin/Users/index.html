@@ -33,10 +33,10 @@ UserId like: <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"><BR>
 <%INIT>
 my ($user);
 my $users = new RT::Users($session{'CurrentUser'});
-$users->Limit(FIELD => 'id',
-              VALUE => $RT::SystemUser->id,
-              OPERATOR => '!=' );
 
+if ((!defined $IdLine) and (!defined ($EmailLike) ) {
+    $users->LimitToPrivileged();
+}
 if (defined $IdLike) {
 $users->Limit(FIELD => 'UserId',
               VALUE => $IdLike,

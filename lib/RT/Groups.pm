@@ -20,6 +20,7 @@ use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
 
 # {{{ sub _Init
+
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "Groups";
@@ -34,6 +35,45 @@ sub Limit  {
   my %args = ( ENTRYAGGREGATOR => 'AND',
 	       @_);
   $self->SUPER::Limit(%args);
+}
+# }}}
+
+
+# {{{ LimitToReal
+
+=head2 LimitToReal
+
+Make this groups object return only "real" groups, which can be
+granted rights and have members assigned to them
+
+=cut
+
+sub LimitToReal {
+    my $self = shift;
+
+    return ($self->Limit( FIELD => 'Pseudo',
+			  VALUE => '0',
+			  OPERATOR => '='));
+
+}
+# }}}
+
+# {{{ sub LimitToPseudo
+
+=head2 LimitToPseudo
+
+Make this groups object return only "pseudo" groups, which can be
+granted rights but whose membership lists are determined dynamically.
+
+=cut
+  
+  sub LimitToPseudo {
+    my $self = shift;
+
+    return ($self->Limit( FIELD => 'Pseudo',
+			  VALUE => '1',
+			  OPERATOR => '='));
+
 }
 # }}}
 
