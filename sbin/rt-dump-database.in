@@ -52,7 +52,7 @@ use XML::Simple;
 RT::LoadConfig();
 RT::Init();
 
-my $LocalOnly = shift || 1;
+my $LocalOnly = @ARGV ? shift(@ARGV) : 1;
 
 my %RV;
 my %Ignore = (
