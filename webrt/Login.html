@@ -21,6 +21,11 @@ $goto => undef
 # How do we deal with this?  Do we want to keep some session
 # information or what?
 
+# Why do we want to blow away the session like this?
+# wait. do you mean that when a user logs in with the same cookie we had before,
+# that it should wipe the session data or that when the same user was logged in
+# from somewhere else that it should blow away their old session?
+if (0) {
 my $o=tied(%HTML::Mason::Commands::session);
 if ($o) {
   $o->delete;
@@ -29,5 +34,5 @@ if ($o) {
   delete $session{CurrentUser}
     if exists $session{CurrentUser};
 }
-
+}
 </%INIT>

@@ -8,8 +8,6 @@ Development of RT has been sponsored in part by Arepa Inc, Utopia Inc,
 The Leftbank Operation, Wesleyan University and by other contributing
 companies.
 
-Some code for RT has been derived from Remy Evard's req package.
-
 All of these works are distributed under the GPL
 
 
@@ -127,7 +125,7 @@ o   Log::Dispatch (CPAN)
 	around this by making a symlink.  Anyway, if you can track down the
 	real reason why those are called, I'd be very happy.
 
-o   Locale::Maketext (CPAN)
+o   Locale::Maketext (CPAN) -- not in use yet
 	Will probably be used by RT for localization in the future.
 
 o   Apache + mod_perl -- free, optional 
@@ -269,7 +267,7 @@ ServerName your.rt.server.hostname
 PerlRequire /opt/rt/bin/webmux.pl
 <Location />
  SetHandler perl-script
- PerlHandler HTML::Mason
+ PerlHandler RT::Mason
 </Location>
 </VirtualHost>
 

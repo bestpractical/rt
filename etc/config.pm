@@ -231,7 +231,7 @@ $Nobody=2;
 $SIG{__WARN__} = sub {$RT::Logger->log(level=>'warning',message=>$_[0])};
 $SIG{__DIE__}  = sub {
     if ($^S) {
-	$RT::Logger->log(level=>'warn',message=>"died during an eval: $_[0]");
+	$RT::Logger->log(level=>'warning',message=>"died during an eval: $_[0]");
 	die @_;
     }
     $RT::Logger->log(level=>'crit',message=>$_[0]); 

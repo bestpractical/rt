@@ -174,7 +174,7 @@ sub Create {
       $RT::Logger->log(level=>'info', 
 		       message=>$ErrStr);
   } else {
-      $RT::Logger->log(level=>'warn', 
+      $RT::Logger->log(level=>'warning', 
 		       message=>"New request couldn't be successfully made; $ErrStr");
   }
 
