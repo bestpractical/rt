@@ -822,7 +822,8 @@ sub LinkFrom {
 # {{{ sub _NewLink
 sub _NewLink {
   my $self = shift;
-  my %args = ( target => '',
+  my %args = ( dir => '',
+	       target => '',
 	       base => '',
 	       type => '',
 	       @_ );
@@ -832,9 +833,17 @@ sub _NewLink {
   my $linkid = $link->Create(%args);
 
   #Write the transaction
+  my $b,$t;
+  if ($args{dir} eq 'F') {
+      $b=$args{base};
+      $t='THIS';
+  } else {
+      $b='THIS';
+      $t=$args{target};
+  }
   my $Trans = $self->_NewTransaction
       (Type => 'Link',
-       Data => "$args{dir} $args{type} $args{base} $args{target} $linkid",
+       Data => "$b $args{type} $t as of $linkid",
        TimeTaken => 0 # Is this always true?
        );
   
