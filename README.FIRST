@@ -1,0 +1,17 @@
+$Header$
+
+WARNING:
+
+Since RT 0.9.1, the codebase and database format have undergone incompatible 
+changes.  This version of the installation package does NOT come with an easy
+upgrade path from 0.9.1 or before.  I recommend that anyone using 0.9.1 or 
+earlier wait for 0.9.5 before attempting an upgrade.
+
+Because of the numerous changes between RT 0.9.1 and 0.9.4, I strongly recommend
+that this version of RT be tested extensively before opening it up to user 
+requests.  It should be significantly more stable than 0.9.1, but new buglets
+may have crept into my code when I wasn't looking.  As always, I look forward to
+any comments you may have.
+
+	Jesse
+	jrvincent@wesleyan.edu
