@@ -1,12 +1,11 @@
 % while (my $cf = $custom_fields->Next) {
 <%$cf->Name%>: 
-
+<ul>
 % my $values_obj = $ArticleObj->CustomFieldValues($cf->Id);
 % while (my $value = $values_obj->Next) {
-
-<%$ value->FriendlyContent %>
+<li><%$ value->FriendlyContent %>
 % }
-
+</ul>
 % }
 <%INIT>
 my $custom_fields = new RT::FM::CustomFieldCollection($session{'CurrentUser'});

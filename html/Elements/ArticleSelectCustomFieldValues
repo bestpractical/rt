@@ -1,7 +1,7 @@
 <SELECT NAME="<%$Name%>"
 
 %if ($cf->Type =~ /Multiple$/) {
-MULTIPLE
+MULTIPLE SIZE="<%$Size%>"
 % }
 >
 % foreach my $item (@{$cf->ValuesObj->ItemsArrayRef}) {
@@ -15,6 +15,6 @@ MULTIPLE
 <%ARGS>
 $cf => undef
 $Name => 'Type'
-$Size => undef
+$Size => 5
 $Selected => undef
 </%ARGS>
