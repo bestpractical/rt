@@ -308,12 +308,7 @@ predist: commit
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/($TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
-dist: commit
-	cvs tag -F $(TAG)
-	rm -rf /tmp/($TAG)
-	cvs export -D now -d /tmp/($TAG) rt
-	cd /tmp; tar czvf /home/ftp/pub/rt/devel/($TAG).tar.gz $(TAG)/
-	chmod 644 /home/ftp/pub/rt/devel/rt-$(VERSION).tar.gz
+dist: commit predist
 	cd /home/ftp/pub/rt/devel/
 	rm -rf /home/ftp/pub/rt/devel/rt.tar.gz
 	ln -s ./rt-$(VERSION).tar.gz ./rt.tar.gz
