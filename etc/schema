@@ -85,3 +85,28 @@ CREATE TABLE transactions (
   trans_data CHAR(100),
   trans_date INT
 ) \g
+
+
+CREATE TABLE links (
+  serial_num INT,
+  foreign_id INT,
+  foreign_db INT
+);
+
+CREATE TABLE relships (
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+
+# Different types might be handled differently by the code. Currently
+# 'dependency' and 'knowledgelink' is the only supported.
+
+  type varchar, 
+
+# The base_url references remote DBs. The type-dependent code should
+# create valid URLs. I have tried to make generic templates, making a
+# completely generic support for "links", but it got too messy with
+# too many exceptions, option bitmaps, different URLs for different
+# purposes, etc.
+
+  base_url varchar
+);
+
