@@ -23,6 +23,8 @@ RT::FM::ArticleCFValue
 
 package RT::FM::ArticleCFValue;
 use RT::FM::Record; 
+use RT::FM::CustomField;
+use RT::FM::Article;
 
 
 use base qw( RT::FM::Record );
@@ -96,6 +98,20 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item ArticleObj
+
+Returns the Article Object which has the id returned by Article
+
+
+=cut
+
+sub ArticleObj {
+	my $self = shift;
+	my $Article =  RT::FM::Article->new($self->CurrentUser);
+	$Article->Load($self->Article());
+	return($Article);
+}
+
 =item CustomField
 
 Returns the current value of CustomField. 
@@ -113,6 +129,20 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+
+=item CustomFieldObj
+
+Returns the CustomField Object which has the id returned by CustomField
+
+
+=cut
+
+sub CustomFieldObj {
+	my $self = shift;
+	my $CustomField =  RT::FM::CustomField->new($self->CurrentUser);
+	$CustomField->Load($self->CustomField());
+	return($CustomField);
+}
 
 =item Content
 

@@ -27,12 +27,6 @@ use Text::WikiFormat;
 
 );
 
-%RT::FM::WikiOpts = (
-        prefix => 'Display.html?Name=',
-
-        extended => '1'
- );
-
 
 
 
@@ -81,8 +75,6 @@ sub Create {
 
 
     # }}}
-
-
 # {{{ Validate the content
 
 
@@ -98,8 +90,6 @@ sub Create {
     }
     # }}}
 
-
-
     my $ret = $self->SUPER::Create(%args);
     return ($ret, $self->loc("Value added"));
  }
@@ -107,7 +97,12 @@ sub Create {
 
 sub WikiFormattedContent {
     my $self = shift;
-  return Text::WikiFormat::format($self->Content , \%RT::FM::WikiTags, \%RT::FM::WikiOpts);
+    my %wiki_options = (
+        prefix => 'Display.html?Class='.$self->ArticleObj->ClassObj->id.'&Name=',
+        extended => '1'
+ );
+
+  return Text::WikiFormat::format($self->Content , \%RT::FM::WikiTags, \%wiki_options);
     
 
 }

@@ -16,16 +16,15 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Article/Elements/Tabs, id => $id, Title => $title, current_subtab => 'RTFM/Article/Display.html?id='.$id &>
+<& /RTFM/Article/Elements/Tabs, 
+    id => $id, 
+    Title => $title, 
+    current_subtab => 'RTFM/Article/Display.html?id='.$id &>
 <emp><%$article->Summary%></emp>
 <br><br><br>
-  <& /Elements/TitleBoxStart, title => loc('Custom Fields'), title_class=> 'inverse',  color => "#993333" &>
   <& Elements/ShowCustomFields, article => $article &>
-<& /Elements/TitleBoxEnd &> 
 <br>
-    <& /Elements/TitleBoxStart, title => loc('Links'), title_class=> 'inverse',  titleright => '', color=> "#336633" &> 
 <& Elements/ShowLinks, article => $article &>
-<& /Elements/TitleBoxEnd &>
 <%init>
 
 my $article = RT::FM::Article->new($session{'CurrentUser'}); 
@@ -35,20 +34,26 @@ if ($Name) {
     $article->Load($id);
 }
 unless ($article->Id) {
-    $m->comp("/RTFM/Elements/Error", Why => loc("Article not found"));
+    if ($ARGS{'Name'}) {
+        $m->comp('Edit.html',%ARGS );
+        return();
+    }
+    else {
+        $m->comp("/Elements/Error", Why => loc("Article not found"));
+    }
+
 }
 
 unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj, 
                                            Right => 'ShowArticle')) {
     $m->comp("/RTFM/Elements/Error", Why => loc("Permission Denied"));
 }
+my $title =  loc( "Article #[_1]: [_2]", $article->Id, $article->Name);
 
-my $cfs = $article->ClassObj->CustomFields;
 
+$id = $article->id;
 
-   my $title =  loc( "Article #[_1]: [_2]", $article->Id, $article->Name);
 </%init>
-
 <%args>
 $id => undef
 $Name => undef

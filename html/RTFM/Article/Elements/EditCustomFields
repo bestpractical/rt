@@ -18,56 +18,36 @@
 
 <table>
 % while (my $CustomField = $CustomFields->Next) {
-% my $Values = $ArticleObj->CustomFieldValues($CustomField->id);
+% my $Content = $CFContent->{$CustomField->Id};
 <tr>
-<td valign="top" align="right"><B><%$CustomField->Name%></b><br><small><i>(<%$CustomField->Type%>)</i></small></td>
+<td valign="top" align="right">
+<B><%$CustomField->Name%></b><br>
+<small><i>(<%$CustomField->Type%>)</i></small>
+</td>
 <td valign="top">
-% if ($CustomField->Type eq 'FreeformSingle') {
-<input name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Value"
-       value="<%$Values->First->Content%>">
-% }
-%  elsif ($CustomField->Type eq 'FreeformMultiple') {
-<textarea name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
-%while (my $value = $Values->Next ) {
-<%$value->Content%>
-%}
-</textarea>
-% } 
-%  elsif ($CustomField->Type =~ /(?:Text)/) {
-<textarea rows="35" cols="70"name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Value">
-%while (my $value = $Values->Next ) {
-<%$value->Content%>
-%}
-</textarea>
-% } 
-% elsif ($CustomField->Type =~ /^Select/) {
-% my $CustomFieldValues = $CustomField->ValuesObj();
-<select name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Values"
-        size="5"
-        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>
-        >
-% while (my $value = $CustomFieldValues->Next) {
-<option value="<%$value->Name%>" 
-        <% $Values->HasEntryWithContent($value->Name) && 'SELECTED' %>
-        ><% $value->Name%></option>
-% }
-<option value="" <%$Values->Count == 0 && 'SELECTED' %>><&|/l&>(no value)</&></option>
-</select>
-% }
+<& EditCustomField, CustomFieldObj => $CustomField, 
+                    ClassObj => $ClassObj,
+                    ArticleObj => $ArticleObj, 
+                    Content => $Content,
+                    id => $id,
+                    %ARGS
+                     &>
 </TD>
 </TR>
 % }
 </TABLE>
-
 <%INIT>
 my $CustomFields;
-if ($ClassObj) {
-        $CustomFields = $ClassObj->CustomFields();
-        } else {
-        $CustomFields = $ArticleObj->ClassObj->CustomFields();
-        }
+if ($ArticleObj->ClassObj->id) {
+    $CustomFields = $ArticleObj->ClassObj->CustomFields();
+}
+else {
+    $CustomFields = $ClassObj->CustomFields();
+}
 </%INIT>
 <%ARGS>
 $ArticleObj => undef
 $ClassObj => undef
+$CFContent => undef
+$id => undef
 </%ARGS>

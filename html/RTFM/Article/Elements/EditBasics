@@ -22,7 +22,7 @@
  <&|/l&>Name</&>
 </td>
 <td>
-<input name=Name value="<%$ArticleObj->Name|h%>"  SIZE=50>
+<input name=Name value="<%$ArticleObj->Name || $ARGS{'Name'} |h%>"  SIZE=50>
 </TD>
 </TR>
 <TR>
@@ -30,7 +30,7 @@
  <&|/l&>Summary</&>
 </td>
 <td>
-<input name=Summary value="<%$ArticleObj->Summary|h%>"  SIZE=50>
+<input name=Summary value="<%$ArticleObj->Summary || $ARGS{'Summary'} |h%>"  SIZE=50>
 </TD>
 </TR>
 <TR>
@@ -38,16 +38,20 @@
 <&|/l&>Class</&>
 </TD>
 <TD>
-<&/RTFM/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
+% if ($EditClass) {
+<& /RTFM/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
+% } else {
+<%$ClassObj->Name%>
+<input type="hidden" Name="Class" value="<%$ClassObj->Id%>">
+% }
 </TD>
 </TR>
 </TABLE>
 
 <%INIT>
-#It's hard to do this inline, so we'll preload the html of the selectstatus in here.
-
 </%INIT>
 <%ARGS>
-
+$EditClass => 1
+$ClassObj => undef
 $ArticleObj => undef
 </%ARGS>

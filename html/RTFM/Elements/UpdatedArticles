@@ -33,7 +33,7 @@
 </TD>
 <TD>
 <A HREF="<% $RT::WebPath %>/RTFM/Article/Display.html?id=<%$Article->Id%>">
-        <%$Article->Summary || loc('(no Summary)')%>
+        <%$Article->Name || loc('(no Name)')%>
 </A>
 </TD>
 <TD>

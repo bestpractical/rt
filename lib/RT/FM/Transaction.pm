@@ -23,6 +23,7 @@ RT::FM::Transaction
 
 package RT::FM::Transaction;
 use RT::FM::Record; 
+use RT::FM::Article;
 
 
 use base qw( RT::FM::Record );
@@ -104,6 +105,20 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+
+=item ArticleObj
+
+Returns the Article Object which has the id returned by Article
+
+
+=cut
+
+sub ArticleObj {
+	my $self = shift;
+	my $Article =  RT::FM::Article->new($self->CurrentUser);
+	$Article->Load($self->Article());
+	return($Article);
+}
 
 =item ChangeLog
 

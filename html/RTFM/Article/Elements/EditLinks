@@ -16,22 +16,19 @@
 %# 
 %# END LICENSE BLOCK
 
-<TABLE width=100%>
-<TR>
-<TD VALIGN=TOP WIDTH=50%>
-<h3><&|/l&>Current Relationships</&></h3>
-<i><&|/l&>(Check box to delete)</&></i><br>
-
-<&|/l&>Refers to</&>:<BR>
+<TABLE>
+<TD VALIGN=TOP>
+<i><&|/l&>Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces.</&></i><br>
+<i><&|/l&>(Check boxes to delete)</&></i><br>
+<TABLE>
+<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$id%>-RefersTo"><br>
 <UL>
 % my $refersto = $ArticleObj->RefersTo;
-
 % while (my $link = $refersto->Next) {
 % my $member = $link->TargetURI;
 <LI>
 <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
 % if ($link->TargetURI->IsLocal) {
-
 <a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
 % if (UNIVERSAL::can($member->Object, 'Name')) {
 <%$member->Object->Name%>
@@ -44,8 +41,9 @@
 % }
 %}
 </UL>
-
-<&|/l&>Referred to by</&>:<BR>
+</TD></TR>
+<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$id%>">
+<br>
 <UL>
 % my $referredtoby = $ArticleObj->ReferredToBy;
 % while (my $link = $referredtoby->Next) {
@@ -66,14 +64,8 @@
 % }
 </UL>
 
-			    
-</TD>
-<TD VALIGN=TOP>
-<h3><&|/l&>New Relationships</&></h3>
-<i><&|/l&>Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces.</&></i><br>
-<TABLE>
-<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$ArticleObj->Id%>-RefersTo"></TD></TR>
-<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$ArticleObj->Id%>"></TD></TR>
+
+</TD></TR>
 </TABLE>
 </TD>
 </TR>
@@ -83,4 +75,5 @@
       
 <%ARGS>
 $ArticleObj => undef
+$id => undef
 </%ARGS>

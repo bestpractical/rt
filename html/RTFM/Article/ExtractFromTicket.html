@@ -17,7 +17,7 @@
 %# END LICENSE BLOCK
 
 <& /RTFM/Elements/Tabs, Title => loc('Extract article from ticket #[_1] into class [_2]',$Ticket, $ClassObj->Name) &> 
-<form action="Create.html" method="post">
+<form action="Edit.html" method="post">
 <input type="hidden" name="Class" value="<%$ARGS{'Class'}%>">
 <input type="hidden" name="Summary" value="<%$ticket->Subject%>">
 <input type="hidden" name="new-RefersTo" value="<%$ticket->URI%>">

@@ -1,19 +1,19 @@
 # BEGIN LICENSE BLOCK
-# 
+#
 #  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
-#  
+#
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of version 2 of the GNU General Public License 
+#  it under the terms of version 2 of the GNU General Public License
 #  as published by the Free Software Foundation.
-# 
+#
 #  A copy of that license should have arrived with this
 #  software, but in any event can be snarfed from www.gnu.org.
-# 
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-# 
+#
 # END LICENSE BLOCK
 
 use strict;
@@ -28,9 +28,7 @@ use RT::Links;
 use RT::URI::fsck_com_rtfm;
 use RT::FM::TransactionCollection;
 
-
 # {{{ Create
-
 
 =item Create PARAMHASH
 
@@ -84,118 +82,172 @@ is ($at->Summary, $article->Summary);
 
 =cut
 
-
-
-
 sub Create {
     my $self = shift;
-    my %args = ( 
-                Name => '',
-                Summary => '',
-                Class => '0',
-                CustomFields => { },
-                Links => { },
-		  @_);
+    my %args = ( Name         => '',
+                 Summary      => '',
+                 Class        => '0',
+                 CustomFields => {},
+                 Links        => {},
+                 @_ );
+
+    use Data::Dumper;
+    $RT::Logger->crit(Dumper \%args);
 
     my $class = RT::FM::Class->new($RT::SystemUser);
-    $class->Load($args{'Class'});
-    unless ($class->Id) {
-        return(0,$self->loc('Invalid Class'));
+    $class->Load( $args{'Class'} );
+    unless ( $class->Id ) {
+        return ( 0, $self->loc('Invalid Class') );
     }
 
-    unless ($class->CurrentUserHasRight('CreateArticle')) { 
-        return(0, $self->loc("Permission Denied"));
+    unless ( $class->CurrentUserHasRight('CreateArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
     }
 
+    return (undef,$self->loc('Name in use')) unless $self->ValidateName($args{'Name'});
 
     $RT::Handle->BeginTransaction();
-    my ($id, $msg) =  $self->SUPER::Create(
-                         Name => $args{'Name'},
-                         Class => $class->Id,
-                         Summary => $args{'Summary'},
-			);
+    my ( $id, $msg ) = $self->SUPER::Create( Name    => $args{'Name'},
+                                             Class   => $class->Id,
+                                             Summary => $args{'Summary'}, );
     unless ($id) {
         $RT::Handle->Rollback();
-        return (undef, $msg);
+        return ( undef, $msg );
     }
 
-    #ADd ccustom fields
+    # {{{ Add custom fields
 
+    foreach my $key ( keys %args ) {
+        next unless ( $key =~ /^CustomField-(.*)$/ );
+        my $cf   = $1;
+        my @vals =
+          ref( $args{$key} ) eq 'ARRAY' ? @{ $args{$key} } : ( $args{$key} );
+        foreach my $val (@vals) {
 
-    foreach my $key (keys %args) {
-    next unless ($key =~ /^CustomField-(.*)$/);
-        my $cf = $1;
-    my @vals = ref( $args{$key} ) eq 'ARRAY' ? @{ $args{$key} } : ( $args{$key} );
-    foreach my $val (@vals) {
+            my ( $cfid, $cfmsg ) = $self->_AddCustomFieldValue(
+                                                          Field   => $1,
+                                                          Content => $val,
+                                                          RecordTransaction => 0
+            );
 
-        my ( $cfid, $cfmsg ) = $self->_AddCustomFieldValue(
-            Field             => $1,
-            Content             => $val,
-            RecordTransaction => 0
-        );
-
-        unless ($cfid) {
-            $RT::Handle->Rollback();
-            return ( undef, $cfmsg );
-        }
-    }
-
-
-
-    }
-    #Add relationships
-
-
-    foreach my $type (keys %args) {
-    next unless ($type =~ /^(RefersTo-new|new-RefersTo)$/);
-    my @vals = ref( $args{$type} ) eq 'ARRAY' ? @{ $args{$type} } : ( $args{$type} );
-    foreach my $val (@vals) {
-        my ($base, $target);
-        if ($type =~ /^new-(.*)$/ ) {
-            $type = $1;
-            $base = undef;
-            $target = $val;
-        }
-        elsif ($type =~ /^(.*)-new$/ ) {
-            $type = $1;
-            $base = $val;
-            $target = undef;
+            unless ($cfid) {
+                $RT::Handle->Rollback();
+                return ( undef, $cfmsg );
+            }
         }
 
+    }
 
-        my ( $linkid, $linkmsg ) = $self->AddLink(
-            Type               => $type,
-            Target             => $target,
-            Base             => $base,
-            RecordTransaction => 0
-        );
+    # }}}
+    # {{{ Add relationships
 
-        unless ($linkid) {
-            $RT::Handle->Rollback();
-            return ( undef, $linkmsg );
+    foreach my $type ( keys %args ) {
+        next unless ( $type =~ /^(RefersTo-new|new-RefersTo)$/ );
+        my @vals =
+          ref( $args{$type} ) eq 'ARRAY' ? @{ $args{$type} } : ( $args{$type} );
+        foreach my $val (@vals) {
+            my ( $base, $target );
+            if ( $type =~ /^new-(.*)$/ ) {
+                $type   = $1;
+                $base   = undef;
+                $target = $val;
+            }
+            elsif ( $type =~ /^(.*)-new$/ ) {
+                $type   = $1;
+                $base   = $val;
+                $target = undef;
+            }
+
+            my ( $linkid, $linkmsg ) = $self->AddLink( Type   => $type,
+                                                       Target => $target,
+                                                       Base   => $base,
+                                                       RecordTransaction => 0 );
+
+            unless ($linkid) {
+                $RT::Handle->Rollback();
+                return ( undef, $linkmsg );
+            }
         }
+
     }
 
-
-
-        # Process custom field values
-    }
-
+    # }}}
 
     # We override the URI lookup. the whole reason
     # we have a URI column is so that joins on the links table
     # aren't expensive and stupid
-    $self->__Set(Field => 'URI', Value =>$self->URI);
-    
-    $self->_NewTransaction(Type => 'Create');
+    $self->__Set( Field => 'URI', Value => $self->URI );
+
+    $self->_NewTransaction( Type => 'Create' );
 
     $RT::Handle->Commit();
 
-    return($id, $msg);
+    return ( $id, $msg );
 }
 
 # }}}
 
+# {{{ ValidateName
+
+=head2 ValidateName NAME
+
+Takes a string name. Returns true if that name isn't in use by another article
+
+Empty names are permitted.
+
+
+=begin testing
+
+my  $a1 = RT::FM::Article->new($RT::SystemUser);
+my ($id, $msg)  = $a1->Create(Class => 1, Name => 'ValidateNameTest');
+ok ($id, $msg);
+
+
+
+my  $a2 = RT::FM::Article->new($RT::SystemUser);
+($id, $msg)  = $a2->Create(Class => 1, Name => 'ValidateNameTest');
+ok (!$id, $msg);
+
+my  $a3 = RT::FM::Article->new($RT::SystemUser);
+($id, $msg)  = $a3->Create(Class => 1, Name => 'ValidateNameTest2');
+ok ($id, $msg);
+($id, $msg) =$a3->SetName('ValidateNameTest');
+
+ok (!$id, $msg);
+
+($id, $msg) =$a3->SetName('ValidateNametest2');
+
+ok ($id, $msg);
+
+
+
+
+=end testing
+
+
+=cut
+
+sub ValidateName {
+    my $self = shift;
+    my $name = shift;
+
+    if (!$name) {
+        return(1);
+    }
+
+    my $temp = RT::FM::Article->new($RT::SystemUser);
+    $temp->LoadByCols(Name => $name);
+    if ($temp->id && $temp->id != $self->id) {
+        return(undef);
+    }
+
+    return(1);
+
+}
+
+# }}}
+
+# {{{ Delete 
 
 =head2 Delete
 
@@ -235,51 +287,53 @@ sub Delete {
     }
 
     $RT::Handle->BeginTransaction();
-    my $linksto = $self->_Links(Field => 'Target');
-    my $linksfrom = $self->_Links(Field => 'Base');
+    my $linksto   = $self->_Links( Field => 'Target' );
+    my $linksfrom = $self->_Links( Field => 'Base' );
     my $cfvalues = $self->CustomFieldValues;
-    my $txns = $self->Transactions;
-    
-    while (my $item = $linksto->Next) {
-        my ($val, $msg) = $item->Delete();
+    my $txns     = $self->Transactions;
+
+    while ( my $item = $linksto->Next ) {
+        my ( $val, $msg ) = $item->Delete();
         unless ($val) {
-            $RT::Logger->crit(ref($item).": $msg");
+            $RT::Logger->crit( ref($item) . ": $msg" );
             $RT::Handle->Rollback();
-            return (0, $self->loc('Internal Error'));
+            return ( 0, $self->loc('Internal Error') );
         }
     }
 
-    while (my $item = $linksfrom->Next) {
-        my ($val, $msg) = $item->Delete();
+    while ( my $item = $linksfrom->Next ) {
+        my ( $val, $msg ) = $item->Delete();
         unless ($val) {
-            $RT::Logger->crit(ref($item).": $msg");
+            $RT::Logger->crit( ref($item) . ": $msg" );
             $RT::Handle->Rollback();
-            return (0, $self->loc('Internal Error'));
+            return ( 0, $self->loc('Internal Error') );
         }
     }
-    while (my $item = $txns->Next) {
-        my ($val, $msg) = $item->Delete();
+    while ( my $item = $txns->Next ) {
+        my ( $val, $msg ) = $item->Delete();
         unless ($val) {
-            $RT::Logger->crit(ref($item).": $msg");
+            $RT::Logger->crit( ref($item) . ": $msg" );
             $RT::Handle->Rollback();
-            return (0, $self->loc('Internal Error'));
+            return ( 0, $self->loc('Internal Error') );
         }
     }
 
-    while (my $item = $cfvalues->Next) {
-        my ($val, $msg) = $item->Delete();
+    while ( my $item = $cfvalues->Next ) {
+        my ( $val, $msg ) = $item->Delete();
         unless ($val) {
-            $RT::Logger->crit(ref($item).": $msg");
+            $RT::Logger->crit( ref($item) . ": $msg" );
             $RT::Handle->Rollback();
-            return (0, $self->loc('Internal Error'));
+            return ( 0, $self->loc('Internal Error') );
         }
     }
 
     $self->SUPER::Delete();
     $RT::Handle->Commit();
-    return (1, $self->loc('Article Deleted'));
+    return ( 1, $self->loc('Article Deleted') );
 
 }
+
+# }}}
 
 # {{{ Children
 
@@ -293,12 +347,12 @@ routine will not recurse and will not find grandchildren, great-grandchildren, u
 
 sub Children {
     my $self = shift;
-    my $kids = new RT::FM::ArticleCollection($self->CurrentUser);
+    my $kids = new RT::FM::ArticleCollection( $self->CurrentUser );
 
-    unless ($self->CurrentUserHasRight('ShowArticle')){
-        $kids->LimitToParent($self->Id);
+    unless ( $self->CurrentUserHasRight('ShowArticle') ) {
+        $kids->LimitToParent( $self->Id );
     }
-    return($kids);
+    return ($kids);
 }
 
 # }}}
@@ -320,33 +374,32 @@ et.
 
 sub AddLink {
     my $self = shift;
-    my %args = (
-        Target => '',
-        Base   => '',
-        Type   => 'RefersTo',
-        RecordTransaction => 1,
-        @_
-    );
+    my %args = ( Target            => '',
+                 Base              => '',
+                 Type              => 'RefersTo',
+                 RecordTransaction => 1,
+                 @_ );
 
     unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-
-    my ($link_type, $link_pointer);
+    my ( $link_type, $link_pointer );
 
     if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug( "$self tried to delete a link. both base and target were specified");
+        $RT::Logger->debug(
+             "$self tried to delete a link. both base and target were specified"
+        );
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
-        $link_type = "ReferredToBy";
-        $link_pointer = $args{'Base'};
+        $link_type      = "ReferredToBy";
+        $link_pointer   = $args{'Base'};
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
-        $link_type = "RefersTo";
+        $link_type    = "RefersTo";
         $link_pointer = $args{'Target'};
     }
     else {
@@ -355,18 +408,21 @@ sub AddLink {
 
     # {{{ We don't want references to ourself
     if ( $args{'Base'} eq $args{'Target'} ) {
-        $RT::Logger->debug("Trying to link ".$args{'Base'} . " to ".$args{'Target'});
+        $RT::Logger->debug(
+                 "Trying to link " . $args{'Base'} . " to " . $args{'Target'} );
         return ( 0, $self->loc("Can't link a ticket to itself") );
     }
 
     # }}}
 
-    # If the base isn't a URI, make it a URI. 
-    # If the target isn't a URI, make it a URI. 
+    # If the base isn't a URI, make it a URI.
+    # If the target isn't a URI, make it a URI.
 
     # {{{ Check if the link already exists - we don't want duplicates
     my $old_link = new RT::Link( $self->CurrentUser );
-    $old_link->LoadByParams( Base=> $args{'Base'}, Type => $args{'Type'}, Target =>$args{'Target'} );
+    $old_link->LoadByParams( Base   => $args{'Base'},
+                             Type   => $args{'Type'},
+                             Target => $args{'Target'} );
     if ( $old_link->Id ) {
         $RT::Logger->debug("$self Somebody tried to duplicate a link");
         return ( $old_link->id, $self->loc("Link already exists"), 0 );
@@ -376,32 +432,28 @@ sub AddLink {
 
     # Storing the link in the DB.
     my $link = RT::Link->new( $self->CurrentUser );
-    my ($linkid) = $link->Create(
-        Target => $args{Target},
-        Base   => $args{Base},
-        Type   => $args{Type}
-    );
-
-
+    my ($linkid) = $link->Create( Target => $args{Target},
+                                  Base   => $args{Base},
+                                  Type   => $args{Type} );
 
     unless ($linkid) {
         return ( 0, $self->loc("Link could not be created") );
     }
 
-    my $TransString =
-      "$args{'Base'} $args{Type} $args{'Target'}";
+    my $TransString = "$args{'Base'} $args{Type} $args{'Target'}";
 
     # Don't write the transaction if we're doing this on create
     if ( $args{'RecordTransaction'} ) {
 
         #Write the transaction
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => 'Link',
-            Field     => $link_type,
-           NewContent      => $link_pointer
+                                                     Type       => 'Link',
+                                                     Field      => $link_type,
+                                                     NewContent => $link_pointer
         );
         return ( $Trans, $self->loc( "Link created ([_1])", $TransString ) );
-    } else {
+    }
+    else {
         return ( 1, $self->loc( "Link created ([_1])", $TransString ) );
     }
 }
@@ -536,8 +588,7 @@ ok ($id, $msg);
 
 =cut
 
-
-# {{{ sub DeleteLink 
+# {{{ sub DeleteLink
 
 =head2 DeleteLink
 
@@ -549,33 +600,31 @@ be replaced with this ticket\'s id
 
 sub DeleteLink {
     my $self = shift;
-    my %args = (
-        Base   => undef,
-        Target => undef,
-        Type   => undef,
-        @_
-    );
+    my %args = ( Base   => undef,
+                 Target => undef,
+                 Type   => undef,
+                 @_ );
 
     #check acls
     unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
-        return ( 0, $self->loc('Permission Denied'))
+        return ( 0, $self->loc('Permission Denied') );
     }
 
     #we want one of base and target. we don't care which
     #but we only want _one_
-    my ($link_type, $link_pointer);
+    my ( $link_type, $link_pointer );
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target\n");
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
-        $link_type = "ReferredToBy";
-        $link_pointer = $args{'Base'};
+        $link_type      = "ReferredToBy";
+        $link_pointer   = $args{'Base'};
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
-        $link_type = "RefersTo";
+        $link_type    = "RefersTo";
         $link_pointer = $args{'Target'};
     }
     else {
@@ -584,21 +633,35 @@ sub DeleteLink {
     }
 
     my $link = new RT::Link( $self->CurrentUser );
-    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" ); 
-    $link->LoadByParams( Base=> $args{'Base'}, Type => $args{'Type'}, Target => $args{'Target'} );
+    $RT::Logger->debug( "Trying to load link: "
+                        . $args{'Base'} . " "
+                        . $args{'Type'} . " "
+                        . $args{'Target'}
+                        . "\n" );
+    $link->LoadByParams( Base   => $args{'Base'},
+                         Type   => $args{'Type'},
+                         Target => $args{'Target'} );
 
-    #it's a real link. 
+    #it's a real link.
     if ( $link->id ) {
         my $linkid = $link->Id;
         $RT::Logger->debug( "We're going to delete link " . $link->id . "\n" );
         $link->Delete();
 
-        my $TransString = "Ticket $args{'Base'} no longer $args{Type} ticket $args{'Target'}.";
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction( Type      => 'Link', Field     => $link_type, OldContent      => $link_pointer );
+        my $TransString =
+          "Ticket $args{'Base'} no longer $args{Type} ticket $args{'Target'}.";
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+                                                     Type       => 'Link',
+                                                     Field      => $link_type,
+                                                     OldContent => $link_pointer
+        );
 
-        return ( $linkid, $self->loc("Link deleted ([_1])", $args{'Base'}. " ".$args{'Type'}. " ". $args{'Target'}));
+        return ( $linkid,
+                 $self->loc( "Link deleted ([_1])",
+                             $args{'Base'} . " "
+                               . $args{'Type'} . " "
+                               . $args{'Target'} ) );
     }
-
 
     #if it's not a link we can find
     else {
@@ -618,12 +681,12 @@ which this article refers to
 
 =cut
 
-
 sub RefersTo {
     my $self = shift;
-    return $self->_Links(Field => 'Base', Type => 'RefersTo');
+    return $self->_Links( Field => 'Base', Type => 'RefersTo' );
 
 }
+
 # }}}
 
 # {{{ sub ReferredToBy
@@ -635,43 +698,37 @@ which refer to this article.
 
 =cut
 
-
 sub ReferredToBy {
     my $self = shift;
-    return $self->_Links(Field => 'Target', Type => 'RefersTo');
+    return $self->_Links( Field => 'Target', Type => 'RefersTo' );
 
 }
 
 # }}}
 
-# {{{ sub _Links 
-
+# {{{ sub _Links
 
 sub _Links {
     my $self = shift;
-    my %args = (    Field => undef,
-                    Type => undef,
-                @_);
+    my %args = ( Field => undef,
+                 Type  => undef,
+                 @_ );
 
+    my $search = new RT::Links( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('ShowArticle') ) {
 
-        my $search = new RT::Links( $self->CurrentUser );
-        if ( $self->CurrentUserHasRight('ShowArticle') ) {
-
-            $search->Limit( FIELD => $args{'Field'}, VALUE => $self->URI );
-            $search->Limit( FIELD => 'Type', VALUE => $args{'Type'} ) if ($args{'Type'});
-        }
-    return ( $search );
+        $search->Limit( FIELD => $args{'Field'}, VALUE => $self->URI );
+        $search->Limit( FIELD => 'Type', VALUE => $args{'Type'} )
+          if ( $args{'Type'} );
+    }
+    return ($search);
 }
-
-# }}} 
-
-
-
 
 # }}}
 
+# }}}
 
-# {{{ sub URI 
+# {{{ sub URI
 
 =head2 URI
 
@@ -697,18 +754,17 @@ ok($art->__Value('URI') eq $art->URI, "The uri in the db is set correctly");
 sub URI {
     my $self = shift;
 
-    unless ($self->CurrentUserHasRight('ShowArticle')) {
+    unless ( $self->CurrentUserHasRight('ShowArticle') ) {
         return $self->loc("Permission Denied");
     }
 
-    my $uri = RT::URI::fsck_com_rtfm->new($self->CurrentUser);
-    return($uri->URIForObject($self));
+    my $uri = RT::URI::fsck_com_rtfm->new( $self->CurrentUser );
+    return ( $uri->URIForObject($self) );
 }
 
 # }}}
 
-
-# {{{ sub URIObj 
+# {{{ sub URIObj
 
 =head2 URIObj
 
@@ -733,12 +789,12 @@ ok($art->__Value('URI') eq $art->URIObj->URI, "The uri in the db is set correctl
 
 sub URIObj {
     my $self = shift;
-    my $uri = RT::URI->new($self->CurrentUser);
-    if ($self->CurrentUserHasRight('ShowArticle')) {
+    my $uri  = RT::URI->new( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('ShowArticle') ) {
         $uri->FromObject($self);
     }
 
-    return($uri);
+    return ($uri);
 }
 
 # }}}
@@ -764,12 +820,12 @@ the values of CustomField CUSTOMFIELD_ID for this Article. if no CUSTOMFIELD_ID 
 sub CustomFieldValues {
     my $self = shift;
     my $customfield;
-    $customfield  = shift if (@_);
-    
-    my $cfovc = new RT::FM::ArticleCFValueCollection($self->CurrentUser);
-    if ($self->CurrentUserHasRight('ShowArticle')) {
-    $cfovc->LimitToArticle($self->Id);
-    $cfovc->LimitToCustomField($customfield) if ($customfield);
+    $customfield = shift if (@_);
+
+    my $cfovc = new RT::FM::ArticleCFValueCollection( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('ShowArticle') ) {
+        $cfovc->LimitToArticle( $self->Id );
+        $cfovc->LimitToCustomField($customfield) if ($customfield);
     }
     return ($cfovc);
 }
@@ -843,7 +899,7 @@ sub AddCustomFieldValue {
 sub _AddCustomFieldValue {
     my $self = shift;
     my %args = ( Field             => undef,
-                 Content            => undef,
+                 Content           => undef,
                  RecordTransaction => 1,
                  @_ );
 
@@ -857,29 +913,29 @@ sub _AddCustomFieldValue {
         $cf->Load( $args{'Field'} );
     }
 
-
-    unless ($cf->ValidForClass($self->__Value('Class')) ) {
-        return( 0, $self->loc("Custom field [_1] not valid for that article", $args{'Field'}));
+    unless ( $cf->ValidForClass( $self->__Value('Class') ) ) {
+        return ( 0,
+                 $self->loc( "Custom field [_1] not valid for that article",
+                             $args{'Field'} ) );
     }
 
     unless ( $cf->Id ) {
         return ( 0,
                  $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
+
     # }}}
 
-
-
-    # Load up a ArticleCFValueCollection object for this custom field 
-    my $values = $self->CustomFieldValues($cf->Id);
-
+    # Load up a ArticleCFValueCollection object for this custom field
+    my $values = $self->CustomFieldValues( $cf->Id );
 
     # If the custom field only accepts a single value, delete the existing
     # value and record a "changed from foo to bar" transaction
     if ( $cf->SingleValue ) {
-        # {{{ We need to whack any old values here.  In most cases, the custom field should
-        # only have one value to delete.  In the pathalogical case, this custom field
-        # used to be a multiple and we have many values to whack....
+
+# {{{ We need to whack any old values here.  In most cases, the custom field should
+# only have one value to delete.  In the pathalogical case, this custom field
+# used to be a multiple and we have many values to whack....
         my $cf_values = $values->Count;
 
         if ( $cf_values > 1 ) {
@@ -897,14 +953,14 @@ sub _AddCustomFieldValue {
                         return ( 0, $msg );
                     }
                     my ( $TransactionId, $Msg, $TransactionObj ) =
-                      $self->_NewTransaction( Type     => 'Custom',
-                                              Field    => $cf->Id,
-                                              OldContent=> $old_value );
+                      $self->_NewTransaction( Type       => 'Custom',
+                                              Field      => $cf->Id,
+                                              OldContent => $old_value );
                 }
             }
         }
-        # }}}
 
+        # }}}
 
         # {{{ Add a new custom field value
         my $value = $cf->ValuesForArticle( $self->Id )->First;
@@ -914,14 +970,18 @@ sub _AddCustomFieldValue {
         }
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForArticle(
-                                                       Article  => $self->Id,
-                                                       Content => $args{'Content'}
+                                                     Article => $self->Id,
+                                                     Content => $args{'Content'}
         );
 
-     
         unless ($new_value_id) {
-            return ( 0, $self->loc( "Could not add new custom field value for Article. [_1] ", $value_msg ) );
+            return (
+                  0,
+                  $self->loc(
+                      "Could not add new custom field value for Article. [_1] ",
+                      $value_msg ) );
         }
+
         # }}}
 
         # {{{ Kill the old value
@@ -938,17 +998,21 @@ sub _AddCustomFieldValue {
             }
 
         }
-        # }}} 
+
+        # }}}
 
         # {{{ Record the "Changed" transaction
         if ( $args{'RecordTransaction'} ) {
             my ( $TransactionId, $Msg, $TransactionObj ) =
-              $self->_NewTransaction( Type     => 'Custom',
-                                      Field    => $cf->Id,
+              $self->_NewTransaction( Type       => 'Custom',
+                                      Field      => $cf->Id,
                                       OldContent => $old_value,
                                       NewContent => $new_value->Content );
         }
-        return ( 1, $self->loc( "Custom field value changed from '[_1]' to '[_2]'", $old_value, $new_value->Content ) );
+        return ( 1,
+                 $self->loc( "Custom field value changed from '[_1]' to '[_2]'",
+                             $old_value, $new_value->Content ) );
+
         # }}}
     }
 
@@ -956,24 +1020,37 @@ sub _AddCustomFieldValue {
     else {
 
         # {{{ Add a custom field value
-        my ($new_value_id, $new_value_msg) = $cf->AddValueForArticle( Article  => $self->Id, Content => $args{'Content'});
+        my ( $new_value_id, $new_value_msg ) = $cf->AddValueForArticle(
+                                                     Article => $self->Id,
+                                                     Content => $args{'Content'}
+        );
 
         unless ($new_value_id) {
-            return ( 0, $self->loc( "Could not add new custom field value for Article. [_1]", $new_value_msg) );
+            return (
+                   0,
+                   $self->loc(
+                       "Could not add new custom field value for Article. [_1]",
+                       $new_value_msg ) );
         }
+
         # }}}
 
         # {{{ Record a tranaction
         if ( $args{'RecordTransaction'} ) {
             my ( $TransactionId, $Msg, $TransactionObj ) =
-              $self->_NewTransaction( Type     => 'Custom',
-                                      Field    => $cf->Id,
+              $self->_NewTransaction( Type       => 'Custom',
+                                      Field      => $cf->Id,
                                       NewContent => $args{'Content'} );
             unless ($TransactionId) {
-                return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg) );
+                return ( 0,
+                         $self->loc( "Couldn't create a transaction: [_1]", $Msg
+                         ) );
             }
         }
-        return ( $new_value_id , $self->loc( "[_1] added as a value for [_2]", $args{'Content'}, $cf->Name ) );
+        return ( $new_value_id,
+                 $self->loc( "[_1] added as a value for [_2]",
+                             $args{'Content'},
+                             $cf->Name ) );
 
         # }}}
     }
@@ -1001,10 +1078,8 @@ sub DeleteCustomFieldValue {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-
     my $cf = RT::FM::CustomField->new($RT::SystemUser);
-    $cf->Load($args{'Field'});
-
+    $cf->Load( $args{'Field'} );
 
     #Load up the ObjectKeyword we\'re talking about
     my $CFObjectValue = new RT::FM::ArticleCFValue( $self->CurrentUser );
@@ -1012,19 +1087,22 @@ sub DeleteCustomFieldValue {
                                 CustomField => $cf->Id,
                                 Article     => $self->id() );
 
-
     #if we can\'t find it, bail
     unless ( $CFObjectValue->id ) {
-        return ( undef, $self->loc( "Couldn't load custom field [_1] value [_2] while trying to delete it.", $cf->Id, $args{'Content'} ) );
+        return (
+            undef,
+            $self->loc(
+"Couldn't load custom field [_1] value [_2] while trying to delete it.",
+                $cf->Id,
+                $args{'Content'} ) );
     }
 
     #record transaction here.
     $RT::Handle->BeginTransaction();
     my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
-                                                  Type       => 'Custom',
-                                                  Field      => $CFObjectValue->CustomField,
-                                                  OldContent => $args{'Content'}
-    );
+                                           Type  => 'Custom',
+                                           Field => $CFObjectValue->CustomField,
+                                           OldContent => $args{'Content'} );
     unless ($TransactionId) {
         $RT::Handle->Rollback();
         $RT::Logger->crit("Somehow, couldn't add a transaction. aiee");
@@ -1042,12 +1120,12 @@ sub DeleteCustomFieldValue {
     $RT::Handle->Commit();
     return ( 1,
              $self->loc( "Value [_1] deleted from custom field [_2].",
-                         $CFObjectValue->Content, $cf->Name ) );
+                         $CFObjectValue->Content,
+                         $cf->Name ) );
 
 }
 
 # }}}
-
 
 # }}}
 
@@ -1059,18 +1137,17 @@ Returns true if the current user has the right for this article, for the whole s
 
 =cut
 
-
 sub CurrentUserHasRight {
-    my $self = shift;
+    my $self  = shift;
     my $right = shift;
 
-    return ($self->CurrentUser->HasRight( Right => $right,
-                                          Object => $self, 
-                                          EquivObjects => [$RT::FM::System, $self->ClassObj]  ));
+    return ( $self->CurrentUser->HasRight(
+                            Right        => $right,
+                            Object       => $self,
+                            EquivObjects => [ $RT::FM::System, $self->ClassObj ]
+             ) );
 
 }
-
-
 
 # }}}
 
@@ -1092,30 +1169,30 @@ Data
 
 sub _NewTransaction {
     my $self = shift;
-    my %args = ( Type     => undef,
-                 Field    => '',
+    my %args = ( Type       => undef,
+                 Field      => '',
                  OldContent => '',
                  NewContent => '',
-                 ChangeLog     => '',
+                 ChangeLog  => '',
                  @_ );
 
-
-    my $trans = RT::FM::Transaction->new($self->CurrentUser);
-    $trans->Create( Article => $self -> Id,
-                    Type => $args{'Type'},
-                    Field => $args{'Field'},
+    my $trans = RT::FM::Transaction->new( $self->CurrentUser );
+    $trans->Create( Article    => $self->Id,
+                    Type       => $args{'Type'},
+                    Field      => $args{'Field'},
                     OldContent => $args{'OldContent'},
                     NewContent => $args{'NewContent'},
-                    ChangeLog => $args{'ChangeLog'} );  
+                    ChangeLog  => $args{'ChangeLog'} );
+
     #something bad happened;
-    unless ($trans->Id) {
-        $RT::Logger->crit($self ." could not create a transaction for ".%args);
-        return (undef, $self->loc("Internal error"), $trans);
-    }   
+    unless ( $trans->Id ) {
+        $RT::Logger->crit(
+                       $self . " could not create a transaction for " . %args );
+        return ( undef, $self->loc("Internal error"), $trans );
+    }
 
-    return ($trans->id,$self->loc("Transaction recorded"), $trans);
+    return ( $trans->id, $self->loc("Transaction recorded"), $trans );
 }
-
 
 # }}}
 
@@ -1127,21 +1204,21 @@ this object is an _empty_ TransactionCollection
 =cut
 
 sub Transactions {
-    my $self = shift;
-    my $transactions = RT::FM::TransactionCollection->new($self->CurrentUser);
+    my $self         = shift;
+    my $transactions = RT::FM::TransactionCollection->new( $self->CurrentUser );
 
     if ( $self->CurrentUserHasRight('ShowArticleHistory') ) {
-        $transactions->Limit(FIELD => 'Article',
-                             OPERATOR => '=',
-                             VALUE => $self->Id);
+        $transactions->Limit( FIELD    => 'Article',
+                              OPERATOR => '=',
+                              VALUE    => $self->Id );
     }
-   
-    return ($transactions); 
+
+    return ($transactions);
 
 }
 
-
 # {{{ _Set
+
 =head2 _Set { Field => undef, Value => undef
 
 Internal helper method to record a transaction as we update some core field of the article
@@ -1193,11 +1270,12 @@ Return "PARAM" for this object. if the current user doesn't have rights, returns
 
 =cut
 
-sub _Value { 
+sub _Value {
     my $self = shift;
-    my $arg = shift;
-    unless (   ($arg eq 'Class') || ( $self->CurrentUserHasRight('ShowArticle') ) ) {
-        return ( undef);
+    my $arg  = shift;
+    unless (    ( $arg eq 'Class' )
+             || ( $self->CurrentUserHasRight('ShowArticle') ) ) {
+        return (undef);
     }
     return $self->SUPER::_Value($arg);
 }

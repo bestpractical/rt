@@ -23,6 +23,7 @@ RT::FM::ClassCustomField
 
 package RT::FM::ClassCustomField;
 use RT::FM::Record; 
+use RT::FM::CustomField;
 use RT::FM::Class;
 
 
@@ -128,6 +129,20 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+
+=item CustomFieldObj
+
+Returns the CustomField Object which has the id returned by CustomField
+
+
+=cut
+
+sub CustomFieldObj {
+	my $self = shift;
+	my $CustomField =  RT::FM::CustomField->new($self->CurrentUser);
+	$CustomField->Load($self->CustomField());
+	return($CustomField);
+}
 
 =item Creator
 

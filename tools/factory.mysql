@@ -43,11 +43,7 @@ foreach my $table (@tables) {
 
     $tablemap{$table}  = $table;
     $modulemap{$table} = $table;
-    if ( 
-    $table =~ /^FM_(Class)es$/i 
-    || 
-    $table =~ /^FM_(.*)(s?)$/i 
-    ) {
+    if ( $table =~ /^FM_(Class)es$/i || $table =~ /^FM_(.*?)(s?)$/i ) {
         my $item = $1;
         $item = ucfirst($item);
         $tablemap{$item}  = $table;
@@ -162,6 +158,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 print "Checking module map for $field\n";
 
         if ( $modulemap{$field} ) {
+print " found it!\n";
             $FieldsPod .= "
 =item ${field}Obj
 

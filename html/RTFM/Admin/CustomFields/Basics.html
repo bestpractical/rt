@@ -23,13 +23,25 @@ current_tab => $current_subtab, Title => $title &>
 
 <FORM METHOD="POST" ACTION="Basics.html">
 <INPUT TYPE=HIDDEN NAME="id" VALUE="<%$id %>">
+<table>
+<tr>
+<td class="label"><&|/l&>Name</&></td>
+<td><input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20></td></tr>
+<tr>
+<td class="label"><&|/l&>Description</&></td>
+<td><input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80></td>
+</tr>
 
-<&|/l&>Name</&>: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
-<&|/l&>Description</&>: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
-<&|/l&>Type</&>: <& /RTFM/Admin/Elements/SelectCustomFieldType, Name => "Type",
-Default => $CustomFieldObj->Type &><br>
-<&|/l&>Sort Order</&>: <input name="SortOrder"
-VALUE="<%$CustomFieldObj->SortOrder%>" SIZE=6><BR>
+<tr>
+<td class="label"><&|/l&>Type</&></td>
+<td><& /RTFM/Admin/Elements/SelectCustomFieldType, 
+        Name => "Type", 
+        Default => $CustomFieldObj->Type &>
+</td>
+</tr>
+<tr>
+<td clas="label"><&|/l&>Sort Order</&></td>
+<td><input name="SortOrder" VALUE="<%$CustomFieldObj->SortOrder%>" SIZE=6></td>
 <BR>
 % if ($CustomFieldObj->Id && $CustomFieldObj->Type =~ /^Select/i) {
 <H2><&|/l&>Values</&></H2>

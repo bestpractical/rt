@@ -28,7 +28,13 @@ my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 
 my $customfields = RT::FM::CustomFieldCollection->new( $session{'CurrentUser'} );
 if ( $ARGS{'Class'} ) {
-    $customfields->LimitToClass( $ARGS{'Class'} );
+    my @Classes =
+      ( ref $ARGS{'Class'} eq 'ARRAY' )
+      ? @{ $ARGS{'Class'} }
+      : ( $ARGS{'Class'} );
+    foreach my $class (@Classes) {
+        $customfields->LimitToClass($class);
+    }
 }
 else {
     $customfields->UnLimit();
@@ -123,8 +129,6 @@ foreach my $field ( keys %cfs ) {
 
 
 foreach my $field qw(Name Summary Class) {
-    
-
 
    my @MatchLike = (ref $ARGS{ $field."~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."~" } } : ( $ARGS{$field."~" } );
    my @NoMatchLike = (ref $ARGS{ $field."!~" } eq 'ARRAY' ) ? @{ $ARGS{ $field."!~" } } : ( $ARGS{$field."!~" } );
@@ -154,6 +158,7 @@ foreach my $field qw(Name Summary Class) {
 
         # preprocess Classes, so we can search on class
         if ( $field eq 'Class' ) {
+            $RT::Logger->crit("Checking for a class of $value");
             my $class = RT::FM::Class->new($RT::SystemUser);
             $class->Load($value);
             $value = $class->Id;

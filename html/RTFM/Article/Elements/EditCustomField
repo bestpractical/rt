@@ -1,0 +1,52 @@
+% if ($CustomFieldObj->Type eq 'FreeformSingle') {
+<input name="Article-<%$id%>-CustomField-<%$CustomFieldObj->Id%>-Value"
+       value="<%$Values->First->Content%>">
+% }
+%  elsif ($CustomFieldObj->Type eq 'FreeformMultiple') {
+<textarea name="Article-<%$id%>-CustomField-<%$CustomFieldObj->Id%>-Values">
+%while (my $value = $Values->Next ) {
+<%$value->Content%>
+%}
+</textarea>
+% } 
+%  elsif ($CustomFieldObj->Type =~ /(?:Text)/) {
+% my $name = "Article-$id-CustomField-".$CustomFieldObj->Id."-Value";
+<textarea rows="25" cols="70" name="<%$name%>">
+% my $content;
+%while (my $value = $Values->Next ) {
+% $content .= $value->Content;
+%}
+<%$content || $ARGS{$name}%>
+</textarea>
+% } 
+% elsif ($CustomFieldObj->Type =~ /^Select/) {
+% my $CustomFieldValues = $CustomFieldObj->ValuesObj();
+<select name="Article-<%$id%>-CustomField-<%$CustomFieldObj->Id%>-Values"
+        size="5"
+        <%$CustomFieldObj->Type eq 'SelectMultiple' && 'MULTIPLE'%>
+        >
+% while (my $value = $CustomFieldValues->Next) {
+<option value="<%$value->Name%>" 
+        <% $Values->HasEntryWithContent($value->Name) && 'SELECTED' %>
+        ><% $value->Name%></option>
+% }
+<option value="" <%$Values->Count == 0 && 'SELECTED' %>><&|/l&>(no value)</&></option>
+</select>
+% }
+<%INIT>
+
+if (!$Values ) {
+if ($ArticleObj) { 
+    $Values = $ArticleObj->CustomFieldValues($CustomFieldObj->id);
+} else {
+    $Values = RT::FM::ArticleCFValues->new($session{'CurrentUser'});
+}
+
+}
+</%INIT>
+<%ARGS>
+$id => undef
+$ArticleObj => undef
+$CustomFieldObj => undef
+$Values => undef
+</%ARGS>

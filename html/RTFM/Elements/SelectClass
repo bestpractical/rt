@@ -61,6 +61,6 @@ my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
 $Classes->UnLimit;
 
 my $d = new RT::FM::Class($session{'CurrentUser'});
-$d->Load($Default);
+$d->Load($Default[0]);
 
 </%INIT>
