@@ -244,7 +244,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 my $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
-ok ($tick->Transactions->First->Content =~ /causes Error/, "We recorded the content right as text-plain");
+ok ($tick->Transactions->First->Attachments->First->Content =~ /causes Error/, "We recorded the content as containing 'causes error'");
+ok ($tick->Transactions->First->Attachments->First->ContentType =~ /text\/html/, "We recorded the content as text/html");
 ok ($tick->Transactions->First->Attachments->Count ==1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
 sub text_html_umlauts_redef_sendmessage {
@@ -334,8 +335,7 @@ sub text_plain_russian_redef_sendmessage {
                  my $subject  = $MIME->head->get("subject");
                 chomp($subject);
 
-                 my $expected_subject = "=?KOI8-R?B?W2V4YW1wbGUuY29tICM2XSDUxdPUINTF09Q=?=";
-                ok( $subject =~        /^=\?KOI8-R\?B\?W2V4YW1wbGUuY29tICM3XSDUxdPUINTF09Q=\?=/ , "The $subject is encoded correctly");
+                ok( $subject =~        /^=\?KOI8-R\?B\?W2V4YW1wbGUuY39tICM3XSDUxdPUINTF09Q=\?=/ , "The $subject is encoded correctly");
                  }';
 }
 

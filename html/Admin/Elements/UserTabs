@@ -30,7 +30,7 @@
 my $tabs;
 my $subtabs;
 if ($id) {
-$tabs->{'this'} = { title => $UserObj->Name,
+$tabs->{'this'} = { title => eval { $UserObj->Name },
 
 			   path => "Admin/Users/Modify.html?id=".$id,
 subtabs => {

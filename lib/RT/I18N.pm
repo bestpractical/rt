@@ -177,6 +177,10 @@ sub SetMIMEEntityToEncoding {
 	}
     }
 
+    # If this is a textual entity, we'd need to preserve its original encoding
+    $head->add( "X-RT-Original-Encoding" => $charset )
+	if $head->mime_attr('content-type.charset') or $head->mime_type =~ /^text/;
+
     return unless ( $head->mime_type =~ /^text\/plain$/i );
 
     my $body = $entity->bodyhandle;
@@ -210,7 +214,6 @@ sub SetMIMEEntityToEncoding {
         $head->mime_attr( "content-type" => 'text/plain' )
           unless ( $head->mime_attr("content-type") );
         $head->mime_attr( "content-type.charset" => $enc );
-        $head->add( "X-RT-Original-Encoding" => $charset );
         $entity->bodyhandle($new_body);
     }
 }
@@ -305,8 +308,14 @@ sub _FindOrGuessCharset {
 	return $head->mime_attr("content-type.charset");
     }
 
-    my $body = $entity->bodyhandle or return;
-    return _GuessCharset( $head->as_string . $body->as_string );
+    if ( $head->mime_type =~ m{^text/}) {
+	my $body = $entity->bodyhandle or return;
+	return _GuessCharset( $head->as_string . $body->as_string );
+    }
+    else {
+	# potentially binary data -- don't guess the body
+	return _GuessCharset( $head->as_string );
+    }
 }
 
 # }}}

@@ -223,7 +223,7 @@ sub Message {
 
 =head2 Content PARAMHASH
 
-If this transaction has attached mime objects, returns the first text/ part.
+If this transaction has attached mime objects, returns the first text/plain part.
 Otherwise, returns undef.
 
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
@@ -308,7 +308,7 @@ sub ContentObj {
 
     # If it's a message or a plain part, just return the
     # body.
-    if ( $Attachment->ContentType() =~ '^(text|message)(/|$)' ) {
+    if ( $Attachment->ContentType() =~ '^(text/plain$|message/)' ) {
         return ($Attachment);
     }
 
@@ -324,13 +324,13 @@ sub ContentObj {
             return ( $plain_parts->First );
         }
 
-        # If that fails, return the  first text/ or message/ part
+        # If that fails, return the  first text/plain or message/ part
         # which has some content.
 
         else {
             my $all_parts = $Attachment->Children();
             while ( my $part = $all_parts->Next ) {
-                if (( $part->ContentType() =~ '^(text|message)(/|$)' ) &&  $part->Content()  ) {
+                if (( $part->ContentType() =~ '^(text/plain$|message/)' ) &&  $part->Content()  ) {
                     return ($part);
                 }
             }

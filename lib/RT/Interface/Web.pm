@@ -1056,6 +1056,9 @@ sub ProcessTicketCustomFieldUpdates {
         # For each custom field  
         foreach my $cf ( keys %{ $custom_fields_to_mod{$tick} } ) {
 
+	    my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
+	    $CustomFieldObj->LoadById($cf);
+
             foreach my $arg ( keys %{$ARGSRef} ) {
                 # since http won't pass in a form element with a null value, we need
                 # to fake it
@@ -1092,7 +1095,7 @@ sub ProcessTicketCustomFieldUpdates {
                         push ( @results, $msg );
                     }
                 }
-                elsif ( $arg =~ /-Values/ ) {
+                elsif ( $arg =~ /-Values$/ and $CustomFieldObj->Type !~ /Entry/) {
                     my $cf_values = $Ticket->CustomFieldValues($cf);
 
                     my %values_hash;
@@ -1123,6 +1126,30 @@ sub ProcessTicketCustomFieldUpdates {
 
                     }
                 }
+                elsif ( $arg =~ /-Values$/ ) {
+                    my $cf_values = $Ticket->CustomFieldValues($cf);
+
+		    # keep everything up to the point of difference, delete the rest
+		    my $delete_flag;
+		    foreach my $old_cf (@{$cf_values->ItemsArrayRef}) {
+			if (!$delete_flag and @values and $old_cf->Content eq $values[0]) {
+			    shift @values;
+			    next;
+			}
+
+			$delete_flag ||= 1;
+			$old_cf->Delete;
+		    }
+
+		    # now add/replace extra things, if any
+		    foreach my $value (@values) {
+			my ( $val, $msg ) = $Ticket->AddCustomFieldValue(
+			    Field => $cf,
+			    Value => $value
+			);
+			push ( @results, $msg );
+		    }
+		}
                 else {
                     push ( @results, "User asked for an unknown update type for custom field " . $cf->Name . " for ticket " . $Ticket->id );
                 }
