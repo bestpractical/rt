@@ -55,6 +55,9 @@ else {
 
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
 % while (my $Transaction = $Transactions->Next) {
+% my $skip = 0;
+% $m->comp('/Elements/Callback', _CallbackName => 'SkipTransaction', Transaction => $Transaction, skip => \$skip, %ARGS);
+% next if $skip;
 % $i++;
 %	if ($Transactions->IsLast) {
 	<a name="lasttrans"></a>

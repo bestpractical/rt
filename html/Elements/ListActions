@@ -26,6 +26,9 @@
 <UL>
 % foreach my $action (@actions) {
 % next unless ($action);
+% my $skip = 0;
+% $m->comp('/Elements/Callback', _CallbackName => 'ModifyRow', row => \$action, skip => \$skip, %ARGS);
+% next if $skip;
 <LI><%$action%></LI>
 % }
 </UL>
