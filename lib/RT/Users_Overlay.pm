@@ -49,19 +49,33 @@ ok(require RT::Users);
 no warnings qw(redefine);
 
 # {{{ sub _Init 
-sub _Init  {
-  my $self = shift;
-  $self->{'table'} = "Users";
-  $self->{'primary_key'} = "id";
+sub _Init {
+    my $self = shift;
+    $self->{'table'} = 'Users';
+        $self->{'primary_key'} = 'id';
 
-  # By default, order by name
-  $self->OrderBy( ALIAS => 'main',
-		  FIELD => 'Name',
-		  ORDER => 'ASC');
 
-  return ($self->SUPER::_Init(@_));
-  
+
+    my @result =          $self->SUPER::_Init(@_);
+    # By default, order by name
+    $self->OrderBy( ALIAS => 'main',
+                    FIELD => 'Name',
+                    ORDER => 'ASC' );
+
+    $self->{'princalias'} = $self->NewAlias('Principals');
+
+    $self->Join( ALIAS1 => 'main',
+                 FIELD1 => 'id',
+                 ALIAS2 => $self->{'princalias'},
+                 FIELD2 => 'ObjectId' );
+
+    $self->Limit( ALIAS    => $self->{'princalias'},
+                  FIELD    => 'PrincipalType',
+                  OPERATOR => '=',
+                  VALUE    => 'User' );
+    return (@result);
 }
+
 # }}}
 
 # {{{ sub _DoSearch 
@@ -75,19 +89,38 @@ we're explicitly trying to see them.
 
 sub _DoSearch {
     my $self = shift;
-    
+
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
-    unless($self->{'find_disabled_rows'}) {
-	$self->LimitToEnabled();
+    unless ( $self->{'find_disabled_rows'} ) {
+        $self->LimitToEnabled();
     }
-    
-    return($self->SUPER::_DoSearch(@_));
-    
+
+    return ( $self->SUPER::_DoSearch(@_) );
+
+}
+
+# }}}
+# {{{ sub LimitToEnabled
+
+=head2 LimitToEnabled
+
+Only find items that haven\'t been disabled
+
+=cut
+
+sub LimitToEnabled {
+    my $self = shift;
+
+    $self->Limit( ALIAS    => $self->{'princalias'},
+                  FIELD    => 'Disabled',
+                  VALUE    => '0',
+                  OPERATOR => '=' );
 }
 
 # }}}
 
 # {{{ LimitToEmail
+
 =head2 LimitToEmail
 
 Takes one argument. an email address. limits the returned set to
@@ -98,7 +131,7 @@ that email address
 sub LimitToEmail {
     my $self = shift;
     my $addr = shift;
-    $self->Limit(FIELD => 'EmailAddress', VALUE => "$addr");
+    $self->Limit( FIELD => 'EmailAddress', VALUE => "$addr" );
 }
 
 # }}}
@@ -113,30 +146,23 @@ to members of a given group
 =cut
 
 sub MemberOfGroup {
-    my $self = shift;
+    my $self  = shift;
     my $group = shift;
-    
-    return $self->loc("No group specified") if (!defined $group);
+
+    return $self->loc("No group specified") if ( !defined $group );
 
     my $groupalias = $self->NewAlias('CachedGroupMembers');
-    my $princalias = $self->NewAlias('Principals');
 
-    $self->Join( ALIAS1 => 'main', FIELD1 => 'id', 
-	         ALIAS2 => $princalias,  FIELD2 => 'ObjectId');
-	$self->Join (ALIAS1 => $princalias, FIELD1 => id,
-				 ALIAS2 => $groupalias, FIELD2 => 'MemberId');
+    # Join the principal to the groups table
+    $self->Join( ALIAS1 => $self->{'princalias'},
+                 FIELD1 => id,
+                 ALIAS2 => $groupalias,
+                 FIELD2 => 'MemberId' );
 
-	$self->Limit(ALIAS => $princalias,
-				 FIELD => 'PrincipalType',
-				 OPERATOR => '=',
-				 VALUE => 'User');
-
-		    
-    $self->Limit (ALIAS => "$groupalias",
-		  FIELD => 'GroupId',
-		  VALUE => "$group",
-		  OPERATOR => "="
-		 );
+    $self->Limit( ALIAS    => "$groupalias",
+                  FIELD    => 'GroupId',
+                  VALUE    => "$group",
+                  OPERATOR => "=" );
 }
 
 # }}}
@@ -152,12 +178,12 @@ Limits to users who can be made members of ACLs and groups
 sub LimitToPrivileged {
     my $self = shift;
 
-	my $priv = RT::Group->new($self->CurrentUser);
-	$priv->LoadSystemInternalGroup('Privileged');
-	unless ($priv->Id) {
-		$RT::Logger->crit("Couldn't find a privileged users group");
-	}
-	$self->MemberOfGroup($priv->PrincipalId);
+    my $priv = RT::Group->new( $self->CurrentUser );
+    $priv->LoadSystemInternalGroup('Privileged');
+    unless ( $priv->Id ) {
+        $RT::Logger->crit("Couldn't find a privileged users group");
+    }
+    $self->MemberOfGroup( $priv->PrincipalId );
 }
 
 # }}}
@@ -189,15 +215,13 @@ In the future, we'll also allow these parameters:
 sub WhoHaveRight {
 
     my $self = shift;
-    my %args = (
-        Right                  => undef,
-        ObjectType             => undef,
-        ObjectId               => undef,
-        IncludeSystemRights    => undef,
-        IncludeSuperusers      => undef,
-        IncludeSubgroupMembers => 1,
-        @_
-    );
+    my %args = ( Right                  => undef,
+                 ObjectType             => undef,
+                 ObjectId               => undef,
+                 IncludeSystemRights    => undef,
+                 IncludeSuperusers      => undef,
+                 IncludeSubgroupMembers => 1,
+                 @_ );
 
     my $users      = 'main';
     my $groups     = $self->NewAlias('Groups');
@@ -205,12 +229,12 @@ sub WhoHaveRight {
     my $groupprinc = $self->NewAlias('Principals');
     my $acl        = $self->NewAlias('ACL');
     my $cgm;
-    if ($args{'IncludeSubgroupMembers'} ) {
-        $cgm        = $self->NewAlias('CachedGroupMembers');
-     }
-     else {
-        $cgm        = $self->NewAlias('GroupMembers');
-     }
+    if ( $args{'IncludeSubgroupMembers'} ) {
+        $cgm = $self->NewAlias('CachedGroupMembers');
+    }
+    else {
+        $cgm = $self->NewAlias('GroupMembers');
+    }
 
     # Find all users who have this right OR all users who are members of groups 
     # which have this right for this object
@@ -246,63 +270,50 @@ sub WhoHaveRight {
 
     }
 
-    $self->Join(
-        ALIAS1 => $users,
-        FIELD1 => 'id',
-        ALIAS2 => $userprinc,
-        FIELD2 => 'ObjectId'
-    );
+    $self->Join( ALIAS1 => $users,
+                 FIELD1 => 'id',
+                 ALIAS2 => $userprinc,
+                 FIELD2 => 'ObjectId' );
 
-    $self->Join(
-        ALIAS1 => $cgm,
-        FIELD1 => 'MemberId',
-        ALIAS2 => $userprinc,
-        FIELD2 => 'Id'
-    );
+    $self->Join( ALIAS1 => $cgm,
+                 FIELD1 => 'MemberId',
+                 ALIAS2 => $userprinc,
+                 FIELD2 => 'Id' );
 
-    $self->Join(
-        ALIAS1 => $cgm,
-        FIELD1 => 'GroupId',
-        ALIAS2 => $groupprinc,
-        FIELD2 => 'Id'
-    );
+    $self->Join( ALIAS1 => $cgm,
+                 FIELD1 => 'GroupId',
+                 ALIAS2 => $groupprinc,
+                 FIELD2 => 'Id' );
 
-    $self->Limit(
-        ALIAS    => $userprinc,
-        FIELD    => 'PrincipalType',
-        OPERATOR => '=',
-        VALUE    => 'User'
-    );
+    $self->Limit( ALIAS    => $userprinc,
+                  FIELD    => 'PrincipalType',
+                  OPERATOR => '=',
+                  VALUE    => 'User' );
 
     if ( $args{'IncludeSuperusers'} ) {
-        $self->Limit(
-            ALIAS    => $acl,
-            FIELD    => 'RightName',
-            OPERATOR => '=',
-            VALUE    => 'SuperUser',
-	    ENTRYAGGREGATOR => 'OR'
-        );
+        $self->Limit( ALIAS           => $acl,
+                      FIELD           => 'RightName',
+                      OPERATOR        => '=',
+                      VALUE           => 'SuperUser',
+                      ENTRYAGGREGATOR => 'OR' );
     }
 
-    $self->Limit(
-        ALIAS           => $acl,
-        FIELD           => 'RightName',
-        OPERATOR        => '=',
-        VALUE           => $args{Right},
-        ENTRYAGGREGATOR => 'OR'
-    );
+    $self->Limit( ALIAS           => $acl,
+                  FIELD           => 'RightName',
+                  OPERATOR        => '=',
+                  VALUE           => $args{Right},
+                  ENTRYAGGREGATOR => 'OR' );
 
     $self->_AddSubClause( "WhichRight",
-        "($acl.ObjectType = 'System' $or_look_at_object_rights)" );
+                     "($acl.ObjectType = 'System' $or_look_at_object_rights)" );
     $self->_AddSubClause( "WhichGroup",
-        "( ($acl.PrincipalId = $groupprinc.Id AND $groupprinc.ObjectId = $groups.Id AND $acl.PrincipalType = 'Group' AND "
+"( ($acl.PrincipalId = $groupprinc.Id AND $groupprinc.ObjectId = $groups.Id AND $acl.PrincipalType = 'Group' AND "
           . "($groups.Domain = 'SystemInternal' OR $groups.Domain = 'UserDefined' OR $groups.Domain = 'ACLEquivalence')) $or_check_roles)"
     );
 
 }
 
 # }}}
-
 
 1;
 
