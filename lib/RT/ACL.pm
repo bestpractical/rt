@@ -41,14 +41,14 @@ sub NewItem  {
 
 =head1 RT::ACL
 
-RT::ACL is a subclass of DBIx::RecordSet
+Deals with collections of RT::ACE objects
 
 =head1 Getting records out
-  
-RT::ACL uses the standard DBIx::EasySearch mechanisms for getting data out
-=head2 next
 
-List off the ACL that's been specified (like any DBIx::RecordSet
+
+=head2 Next
+
+List off the ACL that's been specified
 
 =head1 Limit the ACL to a specific scope
 
@@ -61,7 +61,9 @@ There are three real scopes right now:
 =item System is for rights that apply to the System (rights that aren't queue related)
 
 
-=head2 LimitScopeToQueue($queue_id)
+=head2 LimitScopeToQueue
+
+Takes a single queueid as its argument.
 
 Limit the ACL to just a given queue when supplied with an integer queue id.
 
@@ -81,9 +83,11 @@ sub LimitScopeToQueue {
   
 }
 
-=head2 LimitScopeToAllQueues()
+=head2 LimitScopeToAllQueues
 
+Takes no arguments
 Limit the ACL to global queue rights. (Rights granted across all queues)
+
 =cut
 
 sub LimitScopeToAllQueues {
@@ -112,8 +116,9 @@ sub LimitScopeToSystem {
 }
 
 
-=head2 LimitRightTo($right)
+=head2 LimitRightTo
 
+Takes a single RightName as its only argument.
 Limits the search to the right $right.
 $right is a right listed in perldoc RT::ACE
 
@@ -131,9 +136,10 @@ sub LimitRightTo {
 
 =head1 Limit to a specifc set of principals
 
-=head2 LimitPrincipalToUser($user_id)
+=head2 LimitPrincipalToUser
 
-Limit the ACL to a just a specific user
+Takes a single userid as its only argument.
+Limit the ACL to a just a specific user.
 
 =cut
 
@@ -152,9 +158,10 @@ sub LimitPrincipalsToUser {
 }
 
 
-=head2 LimitPrincipalToGroup($group_id)
-  
-Limit the ACL to just a specific group
+=head2 LimitPrincipalToGroup
+
+Takes a single group as its only argument.
+Limit the ACL to just a specific group.
 
 =cut
   
@@ -173,6 +180,7 @@ sub LimitPrincipalsToGroup {
 }
 =head2 LimitPrincipalToType($type)
 
+Takes a single argument, $type.
 Limit the ACL to just a specific principal type
 
 $type is one of:
@@ -181,6 +189,8 @@ $type is one of:
   TicketCc
   TicketAdminCc
   Everyone
+  User
+  Group
 
 =cut
 

@@ -119,7 +119,8 @@ DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 # The user your webserver runs as. needed so that webrt can cache mason
 # objectcode
 
-WEB_USER			=	nobody
+#WEB_USER			=	nobody
+WEB_USER			=	www-data
 WEB_GROUP			=	rt
 
 # }}}

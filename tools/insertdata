@@ -76,8 +76,8 @@ my @acl = (
 my @queues = ( 
 	      { QueueId => 'general',
 		Description => 'The default queue',
-		CorrespondAddress => 'rt\@localhost',
-		CommentAddress => 'rt-comment\@localhost'
+		CorrespondAddress => "rt\@localhost",
+		CommentAddress => "rt-comment\@localhost"
 	      }
 	     );
 
@@ -335,7 +335,7 @@ further questions or concerns, simply respond to this message.
 
 
 
-print "Now adding users...";
+print "Creating users...";
 use RT::User;
 foreach $item (@users) {
    my $new_entry = new RT::User($CurrentUser);
@@ -345,7 +345,7 @@ foreach $item (@users) {
 
 print "done.\n";
 
-print "Now adding ACL...";
+print "Creating ACL...";
 use RT::ACE;
 for $item (@acl) {
     my $new_entry = new RT::ACE($CurrentUser);
@@ -355,7 +355,7 @@ for $item (@acl) {
 print "done.\n";
 
 
-print "Now adding queues...";
+print "Creating queues...";
     use RT::Queue;
 for $item (@queues) {
     my $new_entry = new RT::Queue($CurrentUser);
@@ -364,7 +364,7 @@ for $item (@queues) {
 }
 
 print "done.\n";
-print "Now adding scrips...";
+print "Creating scrips...";
 
     use RT::Scrip;
 for $item (@scrips) {
@@ -378,13 +378,13 @@ for $item (@scrips) {
 print "done.\n";
 
 
-print "Now adding templates...";
+print "Creating templates...";
 
     use RT::Template;
 for $item (@templates) {
     my $new_entry = new RT::Template($CurrentUser);
     my $return = $new_entry->Create(%$item);
-    print $return;
+    print $return.".";
 }
 print "done.\n";
 

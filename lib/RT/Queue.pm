@@ -521,7 +521,7 @@ sub CurrentUserHasRight {
 
 # {{{ sub HasRight
 
-=head2 CurrentUserHasRight
+=head2 HasRight
 
 Takes a param hash with the fields 'Right' and 'Principal'.
 Principal defaults to the current user.

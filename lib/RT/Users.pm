@@ -47,7 +47,7 @@ that email address
 
 sub LimitToEmail {
     my $self=shift;
-    my $addr=shift
+    my $addr=shift;
     $self->Limit(FIELD => 'EmailAddress', VALUE => "$addr");
 }
 
@@ -137,22 +137,22 @@ sub HasQueueRight {
 
 
     $self->Limit(ALIAS => $acl_alias,
-		 FIELD => 'RightAppliesTo'
+		 FIELD => 'RightAppliesTo',
 		 OPERATOR => '=',
 		 VALUE => "$queue");
 
 
     $self->Limit(ALIAS => $acl_alias,
-		 FIELD => 'RightScope'
+		 FIELD => 'RightScope',
 		 OPERATOR => '=',
-		 ENTRYAGGREGATOR => 'OR'
+		 ENTRYAGGREGATOR => 'OR',
 		 VALUE => 'Queue');
 
 
     $self->Limit(ALIAS => $acl_alias,
-		 FIELD => 'RightScope'
+		 FIELD => 'RightScope',
 		 OPERATOR => '=',
-		 ENTRYAGGREGATOR => 'OR'
+		 ENTRYAGGREGATOR => 'OR',
 		 VALUE => 'Ticket');
 
 
@@ -160,12 +160,12 @@ sub HasQueueRight {
     if (defined ($right)) {
 	
 	$self->Limit(ALIAS => $acl_alias,
-		     FIELD => 'RightName'
+		     FIELD => 'RightName',
 		     OPERATOR => '=',
 		     VALUE => "$right");
 	
 	
-       );
+       };
 
 
 }
@@ -200,7 +200,7 @@ sub HasSystemRight {
 		 VALUE => 'User');
 
     $self->Limit(ALIAS => $acl_alias,
-		 FIELD => 'RightScope'
+		 FIELD => 'RightScope',
 		 OPERATOR => '=',
 		 VALUE => 'System');
 
@@ -208,11 +208,12 @@ sub HasSystemRight {
     #TODO: is this being initialized properly if the right isn't there?
     if (defined ($right)) {
 	$self->Limit(ALIAS => $acl_alias,
-		     FIELD => 'RightName'
+		     FIELD => 'RightName',
 		     OPERATOR => '=',
 		     VALUE => "$right");
 	
-       );
+       }
+
     
 }
 

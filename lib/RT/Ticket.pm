@@ -102,13 +102,13 @@ sub Create {
 	      MIMEObj => undef,
 	      @_);
 
-  #TODO Load queue defaults
+  #TODO Load queue defaults +++
 
   
   if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
     $Queue=RT::Queue->new($self->CurrentUser);
     $Queue->Load($args{'Queue'});
-    #TODO error check this and return 0 if it's not loading properly
+    #TODO error check this and return 0 if it's not loading properly +++
   }
   elsif (ref($args{'Queue'}) eq 'RT::Queue') {
 	$Queue = $args{'Queue'};
@@ -122,24 +122,40 @@ sub Create {
     return (0, 0,'Queue not set');
   }
 
-  if ( !defined($args{'Owner'})) {
-	#TODO this shouldn't need to exist
-	$Owner = $RT::Nobody->UserObj;
-  }
-  elsif ( (defined($args{'Owner'})) && (!ref($args{'Owner'})) ) {
-    
-    $Owner=RT::User->new($self->CurrentUser);
-    $Owner->Load($args{'Owner'});
-    #TODO error check this and return 0 if it's not loading properly
-  }
-  elsif (ref($args{'Owner'}) eq 'RT::User') {
-        $Owner = $args{'Owner'};
-  }
-  else {
-        $RT::Logger->err($args{'Owner'} . " not a recognised user object.");
-   }
 
-   #TODO: return an error if the owner can't own tickets in this queue ACL +++ 
+
+  # Deal with setting the owner
+
+
+  if (ref($args{'Owner'}) eq 'RT::User') {
+    $Owner = $args{'Owner'};
+  }
+  #If we've been handed an integer (aka an Id for the users table 
+  elsif ($args{'Owner'} =~ /^\d+$/) {
+    $Owner = new RT::User($self->CurrentUser);
+    $Owner->Load($args{'Owner'});
+
+  }
+  #If we can't handle it, call it nobody
+  else {
+    if (ref($args{'Owner'})) {
+         $RT::Logger->warning("Ticket $ticket  ->Create called with an Owner of type ".ref($args{'Owner'}) .". Defaulting to nobody.\n");
+    }
+    else { 
+        $RT::Logger->warning("Ticket $ticket ->Create called with an unrecognised datatype for Owner: ".$args{'Owner'} .". Defaulting to Nobody.\n");
+    }
+    $Owner = new RT::User($self->CurrentUser);
+    $Owner->Load($RT::Nobody->UserObj->Id);
+  }
+
+    unless ($Queue->HasRight(Principal => $Owner,
+                             Right     => 'OwnTickets')) {
+        $RT::Logger->warning("$self user ".$Owner->Id ." was proposed as a ticket owner but has no rights to own tickets in this queue\n");
+        $Owner = undef;
+        $Owner = new RT::User($self->CurrentUser);
+        $Owner->Load($RT::Nobody->UserObj->Id);
+
+   }
 
    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
     return (0,0,"Permission Denied");
@@ -632,7 +648,7 @@ my @args = (Type => 'Requestor',
 	    User => undef);
 
 
-$RT::Logger->warn( "Ticket::IsWatcher unimplemented");
+$RT::Logger->warning( "Ticket::IsWatcher unimplemented");
 return (0);
 #TODO Implement. this sub should perform an SQL match along the lines of the ACL check
 
@@ -729,7 +745,7 @@ sub ValidateQueue {
   
   #TODO I don't think this should be here. We shouldn't allow anything to have an undef queue,
   if (!$Value) {
-    $RT::Logger->warn( " RT:::Queue::ValidateQueue called with a null value. this isn't ok.");
+    $RT::Logger->warning( " RT:::Queue::ValidateQueue called with a null value. this isn't ok.");
     return (1);
   }
   
@@ -1081,7 +1097,7 @@ sub Comment {
   if ($args{'CcMessageTo'} || 
       $args{'BccMessageTo'} ) {
       #TODO send a copy of the correspondence to the CC list and BCC list
-    $RT::Logger->warn( "RT::Ticket::Comment needs to send mail to explicit CCs and BCCs");
+    $RT::Logger->warning( "RT::Ticket::Comment needs to send mail to explicit CCs and BCCs");
   }
   
   return ($Trans, "The comment has been recorded");
@@ -1126,7 +1142,7 @@ sub Correspond {
   
   if ($args{BccMessageTo} || 
       $args{CcMessageTo}) {
-        $RT::Logger->warn("RT::Ticket->Correspond doesn't yet send CCs and Bccs"); 
+        $RT::Logger->warning("RT::Ticket->Correspond doesn't yet send CCs and Bccs"); 
     }
   
   unless ($Trans) {
@@ -2042,7 +2058,7 @@ sub HasRight {
 	 	     @_);
 
 	unless ((defined $args{'Principal'}) and (ref($args{'Principal'}))) {
-		$RT::Logger->warn("Principal attrib undefined for Ticket::HasRight");
+		$RT::Logger->warning("Principal attrib undefined for Ticket::HasRight");
 	}
        
 	return($args{'Principal'}->HasTicketRight(TicketObj => $self, 

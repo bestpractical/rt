@@ -111,7 +111,7 @@ sub Create  {
   my $id = $self->SUPER::Create(%args);
 
   #If the create failed.
-  return (0, 'User creation failed') if ($id == 0);
+  return (0) if ($id == 0);
 
   $self->Load($id);
   
@@ -124,7 +124,7 @@ sub Create  {
       #TODO: Send the user a "welcome message"  see [fsck.com #290]
   }
 
-  return (1,"User created");
+  return ($id);
 }
 
 # }}}
