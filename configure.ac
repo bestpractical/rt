@@ -54,7 +54,7 @@ AC_SUBST(RTGROUP)
 dnl BIN_OWNER
 AC_ARG_WITH(bin-owner,
 	    AC_HELP_STRING([--with-bin-owner=OWNER],
-	    		   [user that will own rt binaries (default root)]),
+	    		   [user that will own RT binaries (default root)]),
             BIN_OWNER=$withval,
             BIN_OWNER=root)
 AC_SUBST(BIN_OWNER)
@@ -70,7 +70,7 @@ AC_SUBST(LIBS_OWNER)
 dnl LIBS_GROUP
 AC_ARG_WITH(libs-group,
 	    AC_HELP_STRING([--with-libs-group=GROUP],
-	    		   [group that will own rt binaries (default bin)]),
+	    		   [group that will own RT binaries (default bin)]),
             LIBS_GROUP=$withval,
             LIBS_GROUP=bin)
 AC_SUBST(LIBS_GROUP)
