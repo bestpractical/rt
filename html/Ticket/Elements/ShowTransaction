@@ -82,7 +82,7 @@ unless ($Collapsed) {
 	<PRE>
 <%$headers%>
 </PRE>
-<& ShowMessageStanza, Depth => 0, Message => $quoted &>
+<& ShowMessageStanza, Depth => 0, Message => $quoted, Transaction => $Transaction &>
 </span>
       </TD>
       <TD VALIGN=TOP ALIGN=RIGHT>

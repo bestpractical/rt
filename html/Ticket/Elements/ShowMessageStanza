@@ -46,4 +46,5 @@ my @colors = ('#000000', '#660000', '#006600', '#000066', '#cc0000', '#00cc00', 
 <%ARGS>
 $Message => undef
 $Depth => 0
+$Transaction => undef
 </%ARGS>
