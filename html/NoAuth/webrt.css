@@ -155,7 +155,7 @@ UL.topnav LI :focus { text-decoration: underline; }
 
 TD.mainbody {
         padding-top: 0.5em;
-        padding-left: 0.5em;
+        padding-left: 0em;
         padding-right: 1em;
         margin-left: 1em;
         margin-right: 1em;
@@ -253,8 +253,8 @@ a:focus {text-decoration: underline }
 A IMG { color: white } /* The only way to hide the border in NS 4.x */
 
 a:link {  text-decoration: none}
+a:visited {  text-decoration: none}  
 a:hover {  text-decoration: underline}
-a:visited {  text-decoration: none}
 /* a:focus { background-color: #ccccee } */
 
 .hide {
@@ -272,14 +272,14 @@ span.productname { font-size: 2em;
 SPAN.titleboxtitle {
         font-size: 1.1em;
         color: #ffffff;
-	 vertical-align: center;
+	 vertical-align: middle;
 	 text-align: left;
         }
 
 SPAN.titleboxright {
         font-size: 0.8em;
         color: #ffffff;
-	 vertical-align: center;
+	 vertical-align: middle;
 	 text-align: right;
         }
 
@@ -334,5 +334,5 @@ ul.topnav {
 
 <%init>
 $r->content_type('text/css');
-#$r->header_out('Expires' ,'+30m');
+$r->header_out('Expires' ,'+30m');
 </%init>

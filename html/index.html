@@ -43,49 +43,38 @@
 </TR>
 </TABLE>
 <%init>
-if ($ARGS{'q'}) {
-        my $query = $ARGS{'q'};
+if ( $ARGS{'q'} ) {
+    my $query = $ARGS{'q'};
 
-        if ($query =~ m/^\s*(\d+)\s*$/) {
-                $m->redirect("$RT::WebPath/Ticket/Display.html?id=$1");
-        }
+    if ( $query =~ m/^\s*(\d+)\s*$/ ) {
+        $m->redirect("$RT::WebPath/Ticket/Display.html?id=$1");
+    }
 
-        $session{'tickets'} ||= RT::Tickets->new($session{'CurrentUser'});
-        $session{'tickets'}->ClearRestrictions;
+    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 
-        if ($query =~ m/\@/) {
-                $session{'tickets'}->LimitRequestor(
-                    VALUE    =>  $query,
-                    OPERATOR => '=',
-                );
-                $m->redirect("$RT::WebPath/Search/Listing.html");
-        }
+    if ( $query =~ m/\@/ ) {
+        $session{'tickets'}->LimitRequestor( VALUE    => $query,
+                                             OPERATOR => '=', );
+        $m->redirect("$RT::WebPath/Search/Listing.html");
+    }
 
-        #
-        # Any search on queue name or subject will be for new/open tickets 
-        # only.
-        #
-        $session{'tickets'}->LimitStatus(
-                VALUE    => $_,
-                OPERATOR => '=',
-        ) for qw(open new);
+    #
+    # Any search on queue name or subject will be for new/open tickets
+    # only.
+    #
+    $session{'tickets'}->LimitStatus( VALUE    => $_,
+                                      OPERATOR => '=', ) for qw(open new);
 
+    my $queue = RT::Queue->new( $session{'CurrentUser'} );
+    if ( $queue->Load($query) && $queue->Id ) {
+        $session{'tickets'}->LimitQueue( VALUE    => $queue->Id,
+                                         OPERATOR => '=', );
+        $m->redirect("$RT::WebPath/Search/Listing.html");
+    }
+    $session{'tickets'}->LimitSubject( VALUE    =>  $query,
+                                       OPERATOR => 'LIKE' );
 
-	my $queue = RT::Queue->new($session{'CurrentUser'});	
-	if ($queue->Load($query)) {
-		$session{'tickets'}->LimitQueue(
-			VALUE    => $queue->Id,
-			OPERATOR => '=',
-		);
-		$m->redirect("$RT::WebPath/Search/Listing.html");
-        }
-        
-        $session{'tickets'}->LimitSubject(
-                VALUE    => '%' . $query . '%',
-                OPERATOR => 'LIKE',
-        );
-        
-        $m->redirect("$RT::WebPath/Search/Listing.html");      
+    $m->redirect("$RT::WebPath/Search/Listing.html");
 }
 
 if ($ARGS{'HomeRefreshInterval'}) {

@@ -107,9 +107,9 @@ sub Create {
     my $self = shift;
     my %args = (
         Queue                  => 0,
-        Template               => undef, # name or id
-        ScripAction            => undef, # name or id
-        ScripCondition         => undef, # name or id
+        Template               => 0, # name or id
+        ScripAction            => 0, # name or id
+        ScripCondition         => 0, # name or id
         Stage                  => 'TransactionCreate',
         Description            => undef,
         CustomPrepareCode      => undef,
@@ -142,18 +142,18 @@ sub Create {
 
     require RT::ScripAction;
     my $action = new RT::ScripAction( $self->CurrentUser );
-    $action->Load( $args{'ScripAction'} );
+    $action->Load( $args{'ScripAction'} || '0' );
     return ( 0, $self->loc( "Action [_1] not found", $args{'ScripAction'} ) )
       unless $action->Id;
 
     require RT::Template;
     my $template = new RT::Template( $self->CurrentUser );
-    $template->Load( $args{'Template'} );
+    $template->Load( $args{'Template'}||'0' );
     return ( 0, $self->loc('Template not found') ) unless $template->Id;
 
     require RT::ScripCondition;
     my $condition = new RT::ScripCondition( $self->CurrentUser );
-    $condition->Load( $args{'ScripCondition'} );
+    $condition->Load( $args{'ScripCondition'}||'0' );
 
     unless ( $condition->Id ) {
         return ( 0, $self->loc('Condition not found') );
