@@ -898,7 +898,7 @@ sub ThawLimits {
 		($self->{'TicketRestrictions'},
 		$self->{'restriction_index'}
 		) = FreezeThaw::thaw($in);
-	}
+	};
 	$RT::Logger->error( $@ ) if $@;
 
 }
