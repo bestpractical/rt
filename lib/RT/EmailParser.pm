@@ -196,12 +196,12 @@ sub ParseMIMEEntityFromFileHandle {
     #Now we've got a parsed mime object. 
 
     # try to convert text parts into utf-8 charset
-    $self->_SetMIMEEntityToUtf8( $self->{'entity'} );
+    RT::I18N::SetMIMEEntityToUTF8( $self->{'entity'} );
     # ... and subject too
     {
 	my $head = $self->Head;
 	$head->replace('Subject',
-		       $self->_DecodeMIMEWordsUTF8( $head->get('Subject') ) );
+		       RT::I18N::DecodeMIMEWordsToUTF8( $head->get('Subject') ) );
     }
 
 
@@ -714,130 +714,5 @@ sub _SetupMIMEParser {
     $parser->output_to_core(50000);
 }
 # }}}
-
-# {{{ _SetMIMEEntityToUtf8
-
-=head2 _SetMIMEEntityToUtf8 $entity
-
-A private instance method which will try to translate entity body into utf8
-
-=cut
-
-sub _SetMIMEEntityToUtf8 {
-    my $self = shift;
-    my $entity = shift;
-
-    if ($entity->is_multipart) {
-	$self->_SetMIMEEntityToUtf8($_) foreach $entity->parts;
-    } else {
-	my ($head, $body) = ($entity->head, $entity->bodyhandle);
-	my ($mime_type, $charset) =
-	    ($head->mime_type, $head->mime_attr("content-type.charset"));
-	$RT::Logger->debug("MIME type and charset of MIME Entity is " .
-			   "'$mime_type' and '$charset'");
-
-	# the entity is not text, nothing to do with it.
-	return unless ($mime_type eq 'text/plain');
-
-	# the entity is text and has charset setting, try convert it
-	# into utf8
-	my @lines;
-	if ($charset) {
-	    # charset is specified, we'll use it to convert message body
-	    use Encode;
-	    @lines = $body->as_lines;
-	    Encode::from_to($lines[$_], $charset, "utf8") foreach (0..$#lines);
-	} 
-	# TODO: This block is left here for anybody is interested in
-	# completing it.
-	#
-	# The idea is to guess what the message body is and convert
-	# into utf-8.  But I don't know what to do if $charset is not
-	# specified.  Maybe someone have ideas. :)
-	#
-	# plasma <plasmaball@pchome.com.tw>
-	elsif (0) {
-	    # TODO: this part is NEVER tested.
-	    use Encode::Guess;
-	    Encode::Guess->set_suspects($charset);
-	    my $decoder = Encode::Guess->guess($body->as_string);
-
-	    if (ref $decoder) {
-		# convert to utf8 is ok, replace the original body with
-		# the utf-8 body
-		@lines = map { $decoder->decode($_) } $body->as_lines;
-	    }
-	    # on failure, $decoder now contains an error message.
-	    else {
-		$RT::Logger->debug("Cannot Encode::Guess: $decoder");
-		return;
-	    }
-	}
-
-	# if empty body, no need to replace it with a new body.
-	if (@lines) {
-	    my $new_body = new MIME::Body::InCore \@lines;
-	    # set up the new entity
-	    $head->mime_attr("content-type.charset" => 'utf-8');
-	    $entity->bodyhandle($new_body);
-	}
-    }
-}
-
-# }}}
-
-# {{{ _SetMIMEEntityToUtf8
-
-=head2 _DecodeMIMEWordsUTF8 $raw
-
-A private instance method which mimics MIME::Words::decode_mimewords,
-but only limited functionality.  This function returns utf-8 string.
-
-It returns the decoded string, or the original string if it's not
-encoded.  Since the subroutine converts specified string into utf-8
-charset, it should not alter a subject written in English.
-
-Why not use MIME::Words directly?  Because it fails in RT when I
-tried.  Maybe it's ok now.
-
-=cut
-
-sub _DecodeMIMEWordsUTF8 {
-    my $self = shift;
-    my $str = shift;
-
-    @_ = $str =~ m/([^=]*)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/g;
-
-    return ($str, '') unless (@_);
-
-    $str = "";
-    while (@_) {
-	my ($prefix, $charset, $encoding, $enc_str, $trailing) =
-	    (shift, shift, shift, shift, shift);
-
-	if ($encoding eq 'Q' or $encoding eq 'q') {
-	    use MIME::QuotedPrint;
-	    $enc_str =~ tr/_/ /;		# Observed from Outlook Express
-	    $enc_str = decode_qp($enc_str);
-	} elsif ($encoding eq 'B' or $encoding eq 'b') {
-	    use MIME::Base64;
-	    $enc_str = decode_base64($enc_str);
-	} else {
-	    $RT::Logger->warn("EmailParser::_DecodeMIMEWordsUTF8 got a " .
-			      "strange encoding: $encoding.");
-	}
-
-	# now we have got a decoded subject, try to convert into
-	# utf-8 charset
-	unless ($charset =~ m/utf-8/i) {
-	    use Encode;
-	    Encode::from_to($enc_str, $charset, "utf8");
-	}
-
-	$str .= $prefix . $enc_str . $trailing;
-    }
-
-    return ($str)
-}
 
 1;

@@ -99,7 +99,7 @@ if ($size) {
 	$size = $size ."b";
     }
 </%PERL>
-<font size=-1><A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>"><&|/l&>Download</&> <%$message->Filename|| '(untitled)'%></a> <% $size %></font>
+<font size=-1><A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>"><&|/l&>Download</&> <% $message->Filename|| loc('(untitled)') %></a> <% $size %></font>
 % }
 </TD>
 </TR>
@@ -173,13 +173,13 @@ if ($Transaction->Message->First && $ShowTitleBarCommands) {
 		$titlebar_commands .= 
 	  	  "[<a href=\"Update.html?id=".
 		  $Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id.
-		  "&Action=Respond\">Reply</a>]&nbsp;";
+		  "&Action=Respond\">". loc('Reply') ."</a>]&nbsp;";
 	}
 	if ($Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket')) {
 	     $titlebar_commands .= 
 	     "[<a href=\"Update.html?id=".$Transaction->Ticket. 
 	     "&QuoteTransaction=".$Transaction->Id.
-	     "&Action=Comment\">Comment</a>]";
+	     "&Action=Comment\">". loc('Comment') ."</a>]";
 	}
 }
 

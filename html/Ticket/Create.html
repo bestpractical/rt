@@ -26,7 +26,7 @@
 
 <& /Elements/Header, Title => loc("Create a new ticket") &>
 <& /Elements/Tabs, current_toptab => "Ticket/Create.html" &>
-<FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
+<FORM ACTION="/Ticket/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <A NAME="top">
 	
@@ -84,12 +84,32 @@
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
 </TD>
 </TR>
+% while( my $cf = $CFs->Next() ) {
+<TR><TD ALIGN=LEFT VALIGN="top"><%$cf->Name%>:</TD>
+<TD><% $cf->Description && '<i>'.$cf->Description . '</i><br>'%> <& /Ticket/Elements/EditCustomFieldValues, Name => 'CustomField-'.$cf->Id, CustomField => $cf &>
+</TD>
+</TR>
+% }
 <TR>
+% if (exists $session{'Attachments'}) {
+<TD>
+<&|/l&>Attached file</&>:
+</TD>
+<TD COLSPAN=5>
+<&|/l&>Check box to delete</&><BR>
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+% }
+</TD>
+</TR>
+<TR>
+% }
 <TD>
 <&|/l&>Attach file</&>:
 </TD>
 <TD COLSPAN=5>
 <INPUT TYPE=FILE NAME="Attach">
+<INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
 </TD>
 </TR>
 <TR>
@@ -181,7 +201,36 @@
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+my $CFs = $QueueObj->CustomFields();
 
+# {{{ deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+	delete $session{'Attachments'}{$1};
+    }
+}
+
+# delete temporary storage entry to make WebUI clean if no attachmens left
+delete $session{'Attachments'} unless scalar keys %{$session{'Attachments'}};
+# }}}
+
+# {{{ store the uploaded attachment in session
+if ($ARGS{'Attach'}) {			# attachment?
+    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+    my $attachment = MakeMIMEEntity(
+        Subject             => "$ARGS{'Attach'}",
+        Body                => "",
+        AttachmentFieldName => 'Attach'
+    );
+    $session{'Attachments'} = { %{$session{'Attachments'}},
+				$ARGS{'Attach'} => $attachment };
+}
+# }}}
+
+if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
+    $m->comp('Display.html', %ARGS);
+    $m->abort();
+}
 </%INIT>
 
 <%ARGS>

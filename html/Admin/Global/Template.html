@@ -40,7 +40,7 @@
 
 <& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description => $TemplateObj->Description, Content => $TemplateObj->Content &>
 
-<& /Elements/TitleBoxEnd&>
+<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
 </FORM>
 
@@ -58,13 +58,13 @@ if ($create) {
 else {
   if ($template eq 'new') {
       my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
-      Abort(loc("Could not create template: [_1]",$msg)) unless ($val);
+      Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;
-     $title = loc('Created template [_1]', $TemplateObj->Name()); 
+     $title = loc('Created template [_1]', loc($TemplateObj->Name())); 
     }
     else {
        $TemplateObj->Load($template) || Abort(loc('No Template'));
-      $title = loc('Editing template [_1]', $TemplateObj->Name()); 
+      $title = loc('Editing template [_1]', loc($TemplateObj->Name())); 
     }
   
     

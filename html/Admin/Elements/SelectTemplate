@@ -29,13 +29,13 @@
 %while  (my $Template = $PrimaryTemplates->Next) {
 <OPTION VALUE=<%$Template->Id%>
 <% ($Template->Id == $Default) && 'SELECTED' %>
-><%$Template->Name%>
+><% loc($Template->Name) %>
 </OPTION>
 %}
 %while  (my $Template = $OtherTemplates->Next) {
 <OPTION VALUE=<%$Template->Id%>
 <% ($Template->Id == $Default)  && 'SELECTED'%>
->Global template: <%$Template->Name%>
+><&|/l, loc($Template->Name) &>Global template: [_1]</&>
 </OPTION>
 %}
 </SELECT>

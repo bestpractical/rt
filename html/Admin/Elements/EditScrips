@@ -46,8 +46,8 @@
 <a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><&|/l&>Edit</&></a>
 </TD>
 <TD>
-<%$scrip->Description%><BR>
-<font size="-1"><% $scrip->ConditionObj->Name %> <% $scrip->ActionObj->Name %> <&|/l, $scrip->TemplateObj->Name &>with template [_1]</&></font>
+<% loc($scrip->Description) %><BR>
+<font size="-1"><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></font>
 </TD>
 </TR>
 %   }
@@ -70,7 +70,7 @@ if ($id)  {
 }
 
 if ($QueueObj->id) {                         
-       $Scrips->LimitToQueue($id);
+	$Scrips->LimitToQueue($id);
 }                                            
 else {                                       
         $Scrips->LimitToGlobal();

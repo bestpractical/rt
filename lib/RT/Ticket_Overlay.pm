@@ -2891,8 +2891,10 @@ sub _AddCustomFieldValue {
             }
         }
 
-        my $value     = $cf->ValuesForTicket( $self->Id )->First;
-        my $old_value = $value->Content();
+        my $old_value;
+        if (my $value = $cf->ValuesForTicket( $self->Id )->First) {
+	    $old_value = $value->Content();
+	}
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForTicket(
             Ticket  => $self->Id,
@@ -2910,10 +2912,12 @@ sub _AddCustomFieldValue {
         $new_value->Load($value_id);
 
         # now that adding the new value was successful, delete the old one
-        my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $value->Content);
-        unless ($val) { 
-                  return (0,$msg);
-        }
+	if ($oldvalue) {
+	    my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $oldvalue);
+	    unless ($val) { 
+			return (0,$msg);
+	    }
+	}
 
 	if ($args{'RecordTransaction'}) {
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(

@@ -28,7 +28,7 @@ while (my $member=$people->Next) {
 my $requestor = $member->MemberObj->Object;
 my $name=$requestor->RealName || $requestor->EmailAddress;	
 my $tickets = RT::Tickets->new($session{'CurrentUser'});
-$tickets->LimitRequestor(VALUE => $member->MemberId ); # the principal id
+$tickets->LimitWatcher(TYPE => 'Requestor', VALUE => $member->MemberId ); # the principal id
 $tickets->LimitStatus( VALUE => 'open');
 $tickets->LimitStatus( VALUE => 'new');
 $tickets->RowsPerPage(25);

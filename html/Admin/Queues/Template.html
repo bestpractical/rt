@@ -44,7 +44,7 @@
 <&|/l&>Name</&>:
 </TD>
 <TD>
-<input name="Name" VALUE="<%$TemplateObj->Name%>" SIZE=20><BR>
+<input name="Name" VALUE="<% loc($TemplateObj->Name) %>" SIZE=20><BR>
 </TD>
 </TR>
 <TR>
@@ -52,7 +52,7 @@
 <&|/l&>Description</&>: 
 </TD>
 <TD>
-<input name="Description" VALUE="<%$TemplateObj->Description%>" SIZE=80><BR>
+<input name="Description" VALUE="<% loc($TemplateObj->Description) %>" SIZE=80><BR>
 </TD>
 </TR>
 <TR>
@@ -85,11 +85,11 @@ else {
       my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
       Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;
-     $title = loc('Created template [_1]', $TemplateObj->Name()); 
+     $title = loc('Created template [_1]', loc($TemplateObj->Name())); 
     }
     else {
        $TemplateObj->Load($template) || Abort(loc('No Template'));
-      $title = loc('Editing template [_1]', $TemplateObj->Name()); 
+      $title = loc('Editing template [_1]', loc($TemplateObj->Name())); 
     }
   
     

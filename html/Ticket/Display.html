@@ -64,7 +64,9 @@ if ($ARGS{'id'} eq 'new') {
     unless ($Queue->CurrentUserHasRight('CreateTicket')) {
 	Abort('You have no permission to create tickets in that queue.');
     }
-   ( $Ticket, @Actions) = CreateTicket(%ARGS);
+    ($Ticket, @Actions) =
+       CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+    delete $session{'Attachments'};
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
       Abort("No permission to view newly created ticket #".$Ticket->id.".");
     }

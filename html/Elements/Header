@@ -65,9 +65,9 @@
 $r->header_out('Pragma' => 'no-cache');
 $r->header_out('Cache-control' => 'no-cache');
 if ($Title) {
-        $Title = "RT for $RT::rtname: ".$Title;
+        $Title = loc("RT for [_1]: [_2]", $RT::rtname, $Title);
 } else {
-        $Title = "RT for $RT::rtname";
+        $Title = loc("RT for [_1]", $RT::rtname);
 }
 </%INIT>
 

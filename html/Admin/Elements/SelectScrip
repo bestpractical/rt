@@ -27,9 +27,9 @@
 <% $Default eq undef && 'SELECTED' %>
 >-</OPTION>
 %while  (my $Scrip = $Scrips->Next) {
-<OPTION VALUE=<%$Scrip->Id%>
+<OPTION VALUE=<% $Scrip->Id %>
 <% $Scrip->Id == $Default && 'SELECTED' %>
-><%$Scrip->Name%>
+><% loc($Scrip->Name) %>
 </OPTION>
 %}
 </SELECT>

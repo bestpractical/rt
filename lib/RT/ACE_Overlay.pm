@@ -66,29 +66,29 @@ use vars qw (%SCOPES
 
 # XXX TODO Can't localize these outside of having an object around.
 %QUEUERIGHTS = ( 
-		SeeQueue => 'Can this principal see this queue',
-		AdminQueue => 'Create, delete and modify queues', 
-		ShowACL => 'Display Access Control List',
-		ModifyACL => 'Modify Access Control List',
-		ModifyQueueWatchers => 'Modify the queue watchers',
-        AdminCustomFields => 'Create, delete and modify custom fields',
-        ModifyTemplate => 'Modify email templates for this queue',
-		ShowTemplate => 'Display email templates for this queue',
+		SeeQueue => 'Can this principal see this queue',					# loc_pair
+		AdminQueue => 'Create, delete and modify queues', 					# loc_pair
+		ShowACL => 'Display Access Control List',							# loc_pair
+		ModifyACL => 'Modify Access Control List',							# loc_pair
+		ModifyQueueWatchers => 'Modify the queue watchers',					# loc_pair
+        AdminCustomFields => 'Create, delete and modify custom fields',		# loc_pair
+        ModifyTemplate => 'Modify Scrip templates for this queue',			# loc_pair
+		ShowTemplate => 'Display Scrip templates for this queue',			# loc_pair
 
-		ModifyScrips => 'Modify Scrips for this queue',
-		ShowScrips => 'Display Scrips for this queue',
+		ModifyScrips => 'Modify Scrips for this queue',						# loc_pair
+		ShowScrips => 'Display Scrips for this queue',						# loc_pair
 
-		ShowTicket => 'Show ticket summaries',
-		ShowTicketComments => 'Show ticket private commentary',
+		ShowTicket => 'Show ticket summaries',								# loc_pair
+		ShowTicketComments => 'Show ticket private commentary',				# loc_pair
 
-		Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',
-		WatchAsAdminCc => 'Sign up as a ticket or queue AdminCc',
-		CreateTicket => 'Create tickets in this queue',
-		ReplyToTicket => 'Reply to tickets',
-		CommentOnTicket => 'Comment on tickets',
-		OwnTicket => 'Own tickets',
-		ModifyTicket => 'Modify tickets',
-		DeleteTicket => 'Delete tickets'
+		Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',		# loc_pair
+		WatchAsAdminCc => 'Sign up as a ticket or queue AdminCc', 			# loc_pair
+		CreateTicket => 'Create tickets in this queue',						# loc_pair
+		ReplyToTicket => 'Reply to tickets',								# loc_pair
+		CommentOnTicket => 'Comment on tickets',							# loc_pair
+		OwnTicket => 'Own tickets',											# loc_pair
+		ModifyTicket => 'Modify tickets',									# loc_pair
+		DeleteTicket => 'Delete tickets'									# loc_pair
 
 	       );	
 
@@ -96,28 +96,28 @@ use vars qw (%SCOPES
 # System rights are rights granted to the whole system
 # XXX TODO Can't localize these outside of having an object around.
 %SYSTEMRIGHTS = (
-        SuperUser => 'Do anything and everything',
-	AdminAllPersonalGroups => "Create, delete and modify the members of any user's personal groups",
-	AdminOwnPersonalGroups => 'Create, delete and modify the members of personal groups',
-	    AdminUsers => 'Create, delete and modify users',
-		ModifySelf => "Modify one's own RT account",
-        DelegateRights => "Delegate specific rights which have been granted to you."
+        SuperUser => 'Do anything and everything',							# loc_pair
+		AdminAllPersonalGroups => "Create, delete and modify the members of any user's personal groups", # loc_pair
+		AdminOwnPersonalGroups => 'Create, delete and modify the members of personal groups', # loc_pair
+	    AdminUsers => 'Create, delete and modify users',					# loc_pair
+		ModifySelf => "Modify one's own RT account",						# loc_pair
+        DelegateRights => "Delegate specific rights which have been granted to you." # loc_pair
 		);
 
 %GROUPRIGHTS = (
-       AdminGroup 	=> 'Modify group metadata. Delete group',
-       AdminGroupMembership => 'Modify membership roster for this group',
-       ModifyOwnMembership => 'Join or leave this group'
+       AdminGroup 	=> 'Modify group metadata or delete group',				# loc_pair
+       AdminGroupMembership => 'Modify membership roster for this group',	# loc_pair
+       ModifyOwnMembership => 'Join or leave this group'					# loc_pair
 );
 
 # }}}
 
 # {{{ Descriptions of principals
 
-%TICKET_METAPRINCIPALS = ( Owner => 'The owner of a ticket',
-            			   Requestor => 'The requestor of a ticket',
-		            	   Cc => 'The CC of a ticket',
-			               AdminCc => 'The administrative CC of a ticket',
+%TICKET_METAPRINCIPALS = ( Owner => 'The owner of a ticket',				# loc_pair
+            			   Requestor => 'The requestor of a ticket',		# loc_pair
+		            	   Cc => 'The CC of a ticket',						# loc_pair
+			               AdminCc => 'The administrative CC of a ticket',	# loc_pair
 			 );
 
 # }}}

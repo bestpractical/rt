@@ -155,7 +155,7 @@ sub tag_pm {
         
 
 
-        open (FILE, ">$pm") || die "couldn't write new file";
+        open (FILE, ">$pm") || die "couldn't write new file $pm";
         print FILE $file;
         close FILE;
 

@@ -150,30 +150,29 @@ sub loc {
 # }}}
 
 
-# {{{ loc_match
+# {{{ loc_fuzzy
 
-=head2 loc_match ARRAY
+=head2 loc_fuzzy STRING
 
-loc_match is for handling localizations of messages that may already
+loc_fuzzy is for handling localizations of messages that may already
 contain interpolated variables, typically returned from libraries
 outside RT's control.  It takes the message string and extracts the
 variable array automatically by matching against the candidate entries
-passed as rest of @_.
+inside the lexicon file.
 
 =cut
 
-sub loc_match {
+sub loc_fuzzy {
     my $msg  = shift;
     
-    foreach my $entry (@_) {
-	my $regex = quotemeta($entry);
-	$regex =~ s/\\\[_\d\\\]/(.*?)/;
-	if (my @matched = ($msg =~ /^$regex$/)) {
-	    return loc($entry, @matched);
-	}
+    if ($session{'CurrentUser'} && 
+        UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
+        return($session{'CurrentUser'}->loc_fuzzy($msg));
     }
-
-    return $msg;
+    else  {
+        my $u = RT::CurrentUser->new($RT::SystemUser);
+        return ($u->loc_fuzzy($msg));
+    }
 }
 
 # }}}
@@ -227,8 +226,15 @@ sub CreateTicket {
         From                => $ARGS{'From'},
         Cc                  => $ARGS{'Cc'},
         Body                => $ARGS{'Content'},
-        AttachmentFieldName => 'Attach'
+#        AttachmentFieldName => 'Attach'
     );
+
+    if ($ARGS{'Attachments'}) {
+	$RT::Logger->debug("before adding attachments: ". scalar($MIMEObj->parts));
+	$MIMEObj->make_multipart;
+	$MIMEObj->add_part($_) foreach values %{$ARGS{'Attachments'}};
+	$RT::Logger->debug("after adding attachments: ". scalar($MIMEObj->parts));
+    }
 
     my %create_args = (
         Queue           => $ARGS{'Queue'},
@@ -278,7 +284,7 @@ sub CreateTicket {
         }
     }
 
-    push ( @Actions, $ErrMsg );
+    push ( @Actions, split("\n", $ErrMsg) );
     unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
         Abort( "No permission to view newly created ticket #"
             . $Ticket->id . "." );
@@ -448,6 +454,7 @@ sub MakeMIMEEntity {
     }
 
     $Message->make_singlepart();
+    RT::I18N::SetMIMEEntityToUTF8($Message); # convert text parts into utf-8
     return ($Message);
 
 }
@@ -795,9 +802,8 @@ sub UpdateRecordObject {
               my $method = "Set$attribute";
               my ( $code, $msg ) = $object->$method($value);
 
-              push @results,
-            loc($attribute) . ': ' . loc_match(
-                                   $msg,
+              push @results, loc($attribute) . ': ' . loc_fuzzy($msg);
+=for loc
                                    "[_1] could not be set to [_2].",       # loc
                                    "That is already the current value",    # loc
                                    "No value sent to _Set!\n",             # loc
@@ -810,7 +816,7 @@ sub UpdateRecordObject {
                                    "Couldn't find row",                    # loc
                                    "Missing a primary key?: [_1]",         # loc
                                    "Found Object",                         # loc
-            );
+=cut
           };
     }
     return (@results);

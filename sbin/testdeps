@@ -50,7 +50,8 @@ HTML::Entities
 Net::Domain
 Log::Dispatch 1.6
 Locale::Maketext
-Locale::Maketext::Lexicon 0.09
+Locale::Maketext::Lexicon 0.091
+Locale::Maketext::Fuzzy
 MIME::Entity 5.108
 Mail::Mailer 1.20
 Net::SMTP

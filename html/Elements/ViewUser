@@ -46,7 +46,7 @@ $User=>undef
 my $name=$User->RealName || $User->EmailAddress;	
 
 my $tickets = new RT::Tickets($session{'CurrentUser'});
-$tickets->LimitRequestor(VALUE => $User->EmailAddress);
+$tickets->LimitWatcher(TYPE => 'Requestor', VALUE => $User->EmailAddress);
 
 
 </%INIT>

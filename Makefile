@@ -31,7 +31,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	36
+RT_VERSION_PATCH	=	37
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -84,6 +84,8 @@ RT_READABLE_DIR_MODE	=	0755
 
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
 RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
+# RT_MODPERL2_HANDLER is the mason handler script for mod_perl2
+RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/modperl2.pl
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
 RT_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.fcgi
 # RT_WIN32_FASTCGI_HANDLER is the mason handler script for FastCGI
@@ -105,6 +107,7 @@ SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_MAILGATE_BIN) \
 				$(DESTDIR)/$(RT_CLI_ADMIN_BIN)
 
 BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
+				$(DESTDIR)/$(RT_MODPERL2_HANDLER) \
 				$(DESTDIR)/$(RT_CRON_BIN) \
 				$(SETGID_BINARIES)
 SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
@@ -310,6 +313,9 @@ insert-schema: etc-install
 insert-baseline-data:
 	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/insertdata
 
+insert-approval-data:
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/insert_approval_scrips
+
 # }}}
 
 # {{{ libs-install
@@ -348,6 +354,7 @@ sbin-install:
 		sbin/initdb \
 		sbin/testdeps \
 		sbin/insertdata \
+		sbin/insert_approval_scrips \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 	$(PERL) -p -i -e " s'!!PERL!!'"$(PERL)"'g;\
 				s'!!RT_LIB_PATH!!'"$(RT_LIB_PATH)"'g;"\
@@ -367,6 +374,7 @@ bin-install:
 		bin/enhanced-mailgate \
 		bin/mason_handler.fcgi \
 		bin/mason_handler.svc \
+		bin/modperl2.pl \
 		bin/webmux.pl \
 		bin/rt-crontool \
 		bin/rt-commit-handler \

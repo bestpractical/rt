@@ -52,7 +52,7 @@
 <%INIT>
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitRequestor(VALUE => $session{'CurrentUser'}->EmailAddress);
+$MyTickets->LimitWatcher(TYPE => 'Requestor', VALUE => $session{'CurrentUser'}->EmailAddress);
 
 foreach my $status (@status) {
 

@@ -179,7 +179,7 @@ sub SelfDescription {
 		return $self->loc("system group '[_1]'",$self->Type);
 	}
 	else {
-		return $self->loc("undescripbed group [_1]",$self->Id);
+		return $self->loc("undescribed group [_1]",$self->Id);
 	}
 }
 

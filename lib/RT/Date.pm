@@ -355,9 +355,7 @@ sub AsString {
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($self->Unix);
 
-    my $date = $self->loc("[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]", $self->GetWeekday($wday), $self->GetMonth($$mon), $mday, $hour,$min,$sec, ($yday+1900));
-
-    return (scalar(localtime($self->Unix)));
+    return $self->loc("[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]", $self->GetWeekday($wday), $self->GetMonth($$mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900));
 }
 # }}}
 

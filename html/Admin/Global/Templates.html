@@ -33,7 +33,7 @@
 <UL>
 %while  (my $TemplateObj = $Templates->Next) { 
 
-<LI><A HREF="Template.html?template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Name%>: <%$TemplateObj->Description%></a><BR>
+<LI><A HREF="Template.html?template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<% loc($TemplateObj->Name) %>: <% loc($TemplateObj->Description) %></a><BR>
 
 %}
 <UL>

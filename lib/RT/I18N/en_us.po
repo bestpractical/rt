@@ -1,20 +1,20 @@
-#: lib/RT/Date.pm:402
+#: lib/RT/Date.pm:400
 msgid "Apr."
 msgstr "Apr"
 
-#: lib/RT/Date.pm:406
+#: lib/RT/Date.pm:404
 msgid "Aug."
 msgstr "Aug"
 
-#: lib/RT/Date.pm:410
+#: lib/RT/Date.pm:408
 msgid "Dec."
 msgstr "Dec"
 
-#: lib/RT/Date.pm:400
+#: lib/RT/Date.pm:398
 msgid "Feb."
 msgstr "Feb"
 
-#: lib/RT/Date.pm:380
+#: lib/RT/Date.pm:378
 msgid "Fri."
 msgstr "Fri"
 
@@ -22,35 +22,35 @@ msgstr "Fri"
 msgid "Homepage"
 msgstr "Home"
 
-#: lib/RT/Date.pm:399
+#: lib/RT/Date.pm:397
 msgid "Jan."
 msgstr "Jan"
 
-#: lib/RT/Date.pm:405
+#: lib/RT/Date.pm:403
 msgid "Jul."
 msgstr "Jul"
 
-#: lib/RT/Date.pm:404
+#: lib/RT/Date.pm:402
 msgid "Jun."
 msgstr "Jun"
 
-#: lib/RT/Date.pm:401
+#: lib/RT/Date.pm:399
 msgid "Mar."
 msgstr "Mar"
 
-#: lib/RT/Date.pm:403
+#: lib/RT/Date.pm:401
 msgid "May."
 msgstr "May"
 
-#: lib/RT/Date.pm:376
+#: lib/RT/Date.pm:374
 msgid "Mon."
 msgstr "Mon"
 
-#: lib/RT/Date.pm:409
+#: lib/RT/Date.pm:407
 msgid "Nov."
 msgstr "Nov"
 
-#: lib/RT/Date.pm:408
+#: lib/RT/Date.pm:406
 msgid "Oct."
 msgstr "Oct"
 
@@ -62,27 +62,27 @@ msgstr "Open"
 msgid "Residence"
 msgstr "Home"
 
-#: lib/RT/Date.pm:381
+#: lib/RT/Date.pm:379
 msgid "Sat."
 msgstr "Sat"
 
-#: lib/RT/Date.pm:407
+#: lib/RT/Date.pm:405
 msgid "Sep."
 msgstr "Sep"
 
-#: lib/RT/Date.pm:382
+#: lib/RT/Date.pm:380
 msgid "Sun."
 msgstr "Sun"
 
-#: lib/RT/Date.pm:379
+#: lib/RT/Date.pm:377
 msgid "Thu."
 msgstr "Thu"
 
-#: lib/RT/Date.pm:377
+#: lib/RT/Date.pm:375
 msgid "Tue."
 msgstr "Tue"
 
-#: lib/RT/Date.pm:378
+#: lib/RT/Date.pm:376
 msgid "Wed."
 msgstr "Wed"
 

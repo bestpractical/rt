@@ -1184,7 +1184,7 @@ sub _ProcessRestrictions {
         my $restriction = $self->{'TicketRestrictions'}{$row};
 	# {{{ if it's an int
 
-    if ($restriction->{'FIELD'} eq 'Type' && $restriction{'VALUE'} eq '__any') {
+    if ($restriction->{'FIELD'} eq 'Type' and $restriction->{'VALUE'} eq '__any') {
         $self->{'looking_at_type'} = 1;
     }
 

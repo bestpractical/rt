@@ -115,6 +115,8 @@ sub Commit  {
 	$self->SetHeader('Bcc', join(',', @{$self->{'Bcc'}})) 
 	  if (@{$self->{'Bcc'}});;
     
+    $self->SetHeader('Content-Type', 'text/plain;charset="utf-8"');
+
     my $MIMEObj = $self->TemplateObj->MIMEObj;
     
 
@@ -178,24 +180,24 @@ sub Prepare  {
       
   }
   
-  
-  $self->TemplateObj->Parse(Argument => $self->Argument,
-			    TicketObj => $self->TicketObj, 
-			    TransactionObj => $self->TransactionObj);
-  
-  # Header
-  
-  $self->SetSubject();
-  
-  $self->SetSubjectToken();
-  
-  $self->SetRecipients();  
-  
-  $self->SetReturnAddress();
 
-  $self->SetRTSpecialHeaders();
-  
-  return 1;
+  my ($result, $message) =
+      $self->TemplateObj->Parse(Argument => $self->Argument,
+				TicketObj => $self->TicketObj, 
+				TransactionObj => $self->TransactionObj);
+  if ($result) {
+      # Header
+      $self->SetSubject();
+      $self->SetSubjectToken();
+      $self->SetRecipients();  
+      $self->SetReturnAddress();
+      $self->SetRTSpecialHeaders();
+      # Utf-8 related header
+      $self->SetHeaderAsUTF8('Subject');
+      $self->SetHeaderAsUTF8('From');
+  }
+
+  return $result;
   
 }
 
@@ -338,7 +340,7 @@ sub SetHeader {
   chomp $val;                                                                  
   chomp $field;                                                                
   $self->TemplateObj->MIMEObj->head->fold_length($field,10000);     
-  $self->TemplateObj->MIMEObj->head->add($field, $val);
+  $self->TemplateObj->MIMEObj->head->replace($field, $val);
   return $self->TemplateObj->MIMEObj->head->get($field);
 }
 
@@ -369,6 +371,7 @@ sub SetTo {
 # }}}
 
 # {{{ sub SetCc
+
 =head2 SetCc
 
 Takes a string that is the addresses you want to Cc
@@ -478,6 +481,41 @@ sub SetSubjectToken {
 # }}}
 
 # }}}
+
+# {{{
+
+=head 2 SetHeaderAsUTF8
+
+ This routine needs a header field name and will set it into utf-8
+ charset encoding
+
+=cut
+
+sub SetHeaderAsUTF8 {
+    my $self = shift;
+    my $field = shift;
+    my $value = $self->TemplateObj->MIMEObj->head->get($field);
+
+    return unless $value =~ /[^\x20-\x7e]/; # don't bother if it's us-ascii
+
+    chomp $value;
+    $value =~ s/\s*$//;
+    $value = $self->_encode_qp($value);
+    $self->TemplateObj->MIMEObj->head->replace($field, $value);
+}
+
+# }}}
+
+sub _encode_qp {
+    my $self = shift;
+    my $str = shift;
+
+    my $valid = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'()+,-./:=?";
+    # I don't want to reinvent wheel but MIME::QuotedPrint refuse to work here.
+    $str = join"",map{(index($valid,chr$_)!=-1)?chr$_:sprintf("=%02X", $_)}unpack("C*",$str);
+    return "=?UTF-8?Q?$str?=";
+}
+
 
 __END__
 

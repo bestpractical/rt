@@ -421,5 +421,18 @@ $TicketBaseURI = "fsck.com-rt://$Organization/$rtname/ticket/";
 
 # }}}
 
+# {{{ RT UTF-8 Settings
+
+# An array that contains default encodings used to guess which charset
+# an attachment uses if not specified.  Must be recognized by
+# Encode::Guess.
+
+@EmailInputEncodings = (qw(big5 gb2312));
+
+# The charset for localized email.  Must be recognized by Encode.
+
+$EmailOutputEncoding = 'utf-8';
+
+# }}}
 
 1;

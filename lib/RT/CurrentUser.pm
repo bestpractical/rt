@@ -376,6 +376,11 @@ sub loc {
     my $self = shift;
     return($self->LanguageHandle->maketext(@_));
 }
+
+sub loc_fuzzy {
+    my $self = shift;
+    return($self->LanguageHandle->maketext_fuzzy(@_));
+}
 # }}}
 
 

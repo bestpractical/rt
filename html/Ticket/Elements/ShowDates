@@ -69,7 +69,7 @@
 </TD>
 <TD>
 <A HREF="#lasttrans">
-<% $Ticket->LastUpdated ? ($Ticket->LastUpdatedAsString ." by ".$Ticket->LastUpdatedByObj->Name) : "Never" | h %></a>
+<% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a>
 </TD>
 </TR>
 </TABLE>

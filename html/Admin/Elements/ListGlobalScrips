@@ -28,6 +28,10 @@
 with template <% $scrip->TemplateObj->Name %>
 <BR>
 %   }
+%   if (!$count) {
+<font size="-1"><&|/l&>(No scrips)</&></font>
+%   }
+
 <%init>
 my $Scrips = new RT::Scrips ($session{'CurrentUser'});
 $Scrips->LimitToGlobal();
