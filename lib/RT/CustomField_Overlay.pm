@@ -55,6 +55,64 @@ for (@TYPES) { $TYPES{$_} = 1};
 =cut
 
 
+
+=item Create PARAMHASH
+
+Create takes a hash of values and creates a row in the database:
+
+  varchar(200) 'Name'.
+  varchar(200) 'Type'.
+  int(11) 'Queue'.
+  varchar(255) 'Description'.
+  int(11) 'SortOrder'.
+  smallint(6) 'Disabled'.
+
+=cut
+
+
+
+
+sub Create {
+    my $self = shift;
+    my %args = ( 
+                Name => '',
+                Type => '',
+                Queue => '0',
+                Description => '',
+                SortOrder => '0',
+                Disabled => '0',
+
+		  @_);
+
+    
+
+    if (  ! $args{'Queue'} ) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AdminCustomFields') ) {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
+    else {
+        my $queue = RT::Queue->new($self->CurrentUser);
+        $queue->Load($args{'Queue'});
+        unless ($queue->Id) {
+            return (0, $self->loc("Queue not found"));
+        }
+        unless ( $queue->CurrentUserHasRight('AdminCustomFields') ) {
+            return ( 0, $self->loc('Permission Denied') );
+        }
+    }
+    $self->SUPER::Create(
+                         Name => $args{'Name'},
+                         Type => $args{'Type'},
+                         Queue => $args{'Queue'},
+                         Description => $args{'Description'},
+                         SortOrder => $args{'SortOrder'},
+                         Disabled => $args{'Disabled'},
+);
+
+}
+
+
 # {{{ sub LoadByNameAndQueue
 
 =head2  LoadByNameAndQueue (Queue => QUEUEID, Name => NAME)

@@ -284,7 +284,7 @@ sub ParseCcAddressesFromHead {
     
     foreach my $AddrObj (@ToObjs, @CcObjs) {
 	my $Address = $AddrObj->address;
-	$Address = $args{'CurrentUser'}->CanonicalizeEmailAddress($Address);
+	$Address = $args{'CurrentUser'}->UserObj->CanonicalizeEmailAddress($Address);
  	next if ($args{'CurrentUser'}->EmailAddress =~ /^$Address$/i);
 	next if ($args{'QueueObj'}->CorrespondAddress =~ /^$Address$/i);
 	next if ($args{'QueueObj'}->CommentAddress =~ /^$Address$/i);
