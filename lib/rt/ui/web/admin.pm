@@ -45,62 +45,55 @@ sub CheckAuth() {
     }
 }
 sub DisplayForm {
-
-    &rt::ui::web::header();
-#    print "<h1>WebRT Administrator</h1>";
+  
+  &rt::ui::web::header();
+  #    print "<h1>WebRT Administrator</h1>";
+  
+  if ($result ne '') {
+    print "$result<hr>";
+  }
+  
+  
+  if ($rt::ui::web::FORM{'display'} eq 'DumpEnv'){
     
-    if ($result ne '') {
-	print "$result<hr>";
-    }
+    &dump_env();
     
-    if ((!$rt::ui::web::FORM{'display'}) or ($rt::ui::web::FORM{'display'} eq 'Return to Main Menu')){
-	
-	
-	&menu();
-
-    }
-
-    #nice for debugging 
-    else {
-	if ($rt::ui::web::FORM{'display'} eq 'DumpEnv'){
-
-	    &dump_env();
-
-	}    
-	elsif ($rt::ui::web::FORM{'display'} eq 'Credits') {
-
-	    &credits();
-
-	}
-	
-	elsif (($rt::ui::web::FORM{'display'} eq 'Create a User called') && ($rt::ui::web::FORM{'new_user_id'})){
-	    &FormModifyUser($rt::ui::web::FORM{'new_user_id'});
-	}
-	elsif ($rt::ui::web::FORM{'display'} eq 'Modify your RT Account') {
-	    &FormModifyUser($current_user);
-	}
-	elsif (($rt::ui::web::FORM{'display'} eq 'Create a Queue called') && ($rt::ui::web::FORM{'new_queue_id'})) {
-	    &FormModifyQueue($rt::ui::web::FORM{'new_queue_id'});
-	}
-	elsif ($rt::ui::web::FORM{'display'} eq 'Modify the User called') {
-       	    &FormModifyUser($rt::ui::web::FORM{'user_id'});
-	}
-	elsif ($rt::ui::web::FORM{'display'} =~ /(View|Modify) the Queue called/){
-	    &FormModifyQueue($rt::ui::web::FORM{'queue_id'});
-	}
-	elsif ($rt::ui::web::FORM{'display'} eq 'Delete this Queue'){
-	    &FormDeleteQueue($rt::ui::web::FORM{'queue_id'});
-	}
-	elsif ($rt::ui::web::FORM{'display'} eq 'Delete this User'){
-	    &FormDeleteUser($rt::ui::web::FORM{'user_id'});
-	}    
- 	else {
-		&menu();
-	} 
- }
-   
-   &rt::ui::web::footer();
+  }    
+  elsif ($rt::ui::web::FORM{'display'} eq 'Credits') {
+    
+    &credits();
+    
+  }
+  
+  elsif (($rt::ui::web::FORM{'display'} eq 'Create a User called') && ($rt::ui::web::FORM{'new_user_id'})){
+    &FormModifyUser($rt::ui::web::FORM{'new_user_id'});
+  }
+  elsif ($rt::ui::web::FORM{'display'} eq 'Modify your RT Account') {
+    &FormModifyUser($current_user);
+  }
+  elsif (($rt::ui::web::FORM{'display'} eq 'Create a Queue called') && ($rt::ui::web::FORM{'new_queue_id'})) {
+    &FormModifyQueue($rt::ui::web::FORM{'new_queue_id'});
+  }
+  elsif (($rt::ui::web::FORM{'action'} eq "Update User") or ($rt::ui::web::FORM{'display'} eq 'Modify the User called')) {
+    &FormModifyUser($rt::ui::web::FORM{'user_id'});
+  }
+  elsif (($rt::ui::web::FORM{action} eq "Update Queue") or ($rt::ui::web::FORM{'display'} =~ /(View|Modify) the Queue called/)){
+    &FormModifyQueue($rt::ui::web::FORM{'queue_id'});
+  }
+  elsif ($rt::ui::web::FORM{'display'} eq 'Delete this Queue'){
+    &FormDeleteQueue($rt::ui::web::FORM{'queue_id'});
+  }
+  elsif ($rt::ui::web::FORM{'display'} eq 'Delete this User'){
+    &FormDeleteUser($rt::ui::web::FORM{'user_id'});
+  }    
+  else {
+    &menu();
+  } 
+  
+  
+  &rt::ui::web::footer();
 }
+
 
 sub take_action {
     my ($queue_id,$acl,$acl_string,$user_id,$value);
@@ -616,11 +609,6 @@ sub select_queue_acls {
     my $flag = 0;
     
 	print "<select name=\"acl_". $queue_id . "_" .$user_id. "\">\n";
-	print "<option value=\"none\"";
-	if (!&rt::can_display_queue($queue_id,$user_id)){
-	    print "SELECTED";
-	}
-	print ">No Access\n";
 
 	print "<option value=\"admin\"";
 	if ((&rt::can_admin_queue($queue_id,$user_id))== 1){
@@ -634,13 +622,20 @@ sub select_queue_acls {
 	    print "SELECTED";
 	    $flag = 1;
 	}
-	print">Manipulate-flag is $flag\n";
+	print">Manipulate\n";
 	print "<option value=\"disp\"";
 	if (! $flag && (&rt::can_display_queue($queue_id,$user_id))==1){
 	    print "SELECTED";
 	}
 	print">Display\n";	
+	print "<option value=\"none\"";
+	if (! $flag && !&rt::can_display_queue($queue_id,$user_id)){
+	    print "SELECTED";
+	}
+	print ">No Access\n";
+
     print "</select><br>\n";
 }
 
 1;
+

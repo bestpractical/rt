@@ -1,3 +1,52 @@
+15 Jan 99
+---------
+
+Lots of misc updates to fix small bugs.
+Fixed several acls bugs.
+the web admin no longer dumps you to the main menu quite as gratuitously.
+
+
+
+2.  Made comments and replies update date_acted.
+
+	-- Dave Walton
+
+Ok.. I know this is being picky, but, in rt/lib/ui/web/support.pm, the
+subroutine "content_header", at line 290, should have:
+    print "<head><title>WebRT</title></head>\n";
+-Rich
+
+Oh, one other.
+
+8.  etc/mysql.acl, line 5
+The RT_MYSQL_HOST entry on that line doesn't make any sense
+when MySQL is on a different host than RT.  That should be
+RT_HOST, or some such thing.
+
+Dave
+
+After just upgrading to Apache 1.3.0 from 1.2.5, I figured I would make it
+known that, in the file <apache_src_dir>/src/main/util_script.c, you have
+to define SECURITY_HOLE_PASS_AUTHORIZATION to allow for RT's authorization
+to work properly.
+-Rich
+
+On Tue, Oct 06, 1998 at 09:19:07PM -0700, Dave Walton wrote:
+> I just discovered that if there is an error in add_correspondence, the
+> mail interface discards the incoming mail without comment.  To
+> correct this, I took the following steps:
+>
+In mail.pm, there's a space before :
+  
+From: $rt::mail_alias
+
+This causes problems in some mail clients, putting the From: line on the
+same line as the subject.  If the spaces are removed this is fixed.
+  
+Regards,
+From: "Andrew Foster" <adf@fl.net.au>
+
+
 19 Nov 98
 ---------
 

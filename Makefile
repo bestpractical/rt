@@ -103,7 +103,7 @@ MAIL_OPTIONS		=	-oi -t -ODeliveryMode=b -OErrorMode=m
 # This is where your mysql binaries are located
 #
 
-MYSQLDIR		=	/opt/mysql/bin
+MYSQLDIR		=	/usr/bin
 
 # Mysql version can be 3.20, 3.21 or 3.22.  This setting determines the order 
 # $rtuser and $rtpass are passed to MysqlPerl.  
@@ -111,12 +111,13 @@ MYSQLDIR		=	/opt/mysql/bin
 MYSQL_VERSION		= 	3.22
 
 #
-# You need to insert your "root" password for mysql to allow
+# You can insert your "root" password for mysql to allow
 # RT to create its databases.  Remove this password from this Makefile 
 # AS SOON AS MAKE INSTALL FINISHES
 #
+# Alternatively, leave it commented and be prompted
 #
-ROOT_MYSQL_PASS		=	My!word%z0t	
+#ROOT_MYSQL_PASS		=	My!word%z0t	
 
 #
 # this password is what RT will use to authenticate itself to mysql
