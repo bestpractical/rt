@@ -325,10 +325,57 @@ sub NiceHeaders {
     my $self=shift;
     my $hdrs="";
     for (split(/\n/,$self->Headers)) {
-	$hdrs.="$_\n"
-	    if /^(To|From|Cc|Date|Subject): /i
+	    $hdrs.="$_\n" if /^(To|From|RT-Send-Cc|Cc|Date|Subject): /i
     }
     return $hdrs;
+}
+# }}}
+
+# {{{ sub Headers
+
+=head2 Headers
+
+Returns this object's headers as a string.  This method specifically
+removes the RT-Send-Bcc: header, so as to never reveal to whom RT sent a Bcc.
+We need to record the RT-Send-Cc and RT-Send-Bcc values so that we can actually send
+out mail. (The mailing rules are seperated from the ticket update code by
+an abstraction barrier that makes it impossible to pass this data directly
+
+=cut
+
+sub Headers {
+    my $self = shift;
+    my $hdrs="";
+    for (split(/\n/,$self->SUPER::Headers)) {
+	    $hdrs.="$_\n" unless /^(RT-Send-Bcc): /i
+    }
+    return $hdrs;
+}
+
+
+# }}}
+
+# {{{ sub GetHeader
+
+=head2 GetHeader ( 'Tag')
+
+Returns the value of the header Tag as a string. This bypasses the weeding out
+done in Headers() above.
+
+=cut
+
+sub GetHeader {
+    my $self = shift;
+    my $tag = shift;
+    foreach my $line (split(/\n/,$self->SUPER::Headers)) {
+        $RT::Logger->debug( "Does $line match $tag\n");
+        if ($line =~ /^($tag):\s+(.*)$/i) { #if we find the header, return its value
+            return ($1);
+        }
+    }
+    
+    # we found no header. return an empty string
+    return undef;
 }
 # }}}
 
