@@ -7,7 +7,7 @@ Serial Number: <%$Ticket->Id%>   Status:<%$Ticket->Status%> Worked: <%$Ticket->T
    Requestors: <%$Ticket->RequestorsAsString%>
            Cc: <%$Ticket->CcAsString%>
           Bcc: <%$Ticket->AdminCcAsString%>
-        Owner: <%$Ticket->Owner->UserId%>
+        Owner: <%$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"%>
      Priority: <%$Ticket->Priority%> / <%$Ticket->FinalPriority%>
           Due: <%$Ticket->DueAsString%>
       Created: <%$Ticket->CreatedAsString%> (<%$Ticket->Age%>) ago)
