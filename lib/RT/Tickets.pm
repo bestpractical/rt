@@ -48,7 +48,7 @@ use RT::EasySearch;
 	      Type => 'STRING',
               Content => 'TRANSFIELD',
 	      ContentType => 'TRANSFIELD',
-	      WatcherEmail => 'WATCHERFIELD',
+	      Watcher => 'WATCHERFIELD',
 	      LinkedTo => 'LINKFIELD',
 	      
 	    );
@@ -338,16 +338,24 @@ sub LimitFinalPriority {
    
 sub LimitWatcher {
     my $self = shift;
-    my %args = (@_);
-    my ($field, $desc);
+    my %args = ( OPERATOR => '=',
+		 VALUE => undef,
+		 TYPE => undef,
+		@_);
+
+
+    #build us up a description
+    my ($watcher_type, $desc);
     if ($args{'TYPE'}) {
-	$field = $args{'TYPE'};
+	$watcher_type = $args{'TYPE'};
     }
     else {
-	$field = "Watcher";
+	$watcher_type = "Watcher";
     }
-    $desc = "$field ".$ARGS{'OPERATOR'}." ".$args{'VALUE'};
-    $self->Limit (FIELD => 'WatcherEmail',
+    $desc = "$watcher_type ".$ARGS{'OPERATOR'}." ".$args{'VALUE'};
+
+
+    $self->Limit (FIELD => 'Watcher',
 		  VALUE => $args{'VALUE'},
 		  OPERATOR => $args{'OPERATOR'},
 		  TYPE => $args{'TYPE'},
@@ -880,6 +888,8 @@ sub _ProcessRestrictions {
 	# {{{ if it's a watcher that we're hunting for
 	elsif ($TYPES{$self->{'TicketRestrictions'}{"$row"}{'FIELD'}} eq 'WATCHERFIELD') {
 	    my $Watch = $self->NewAlias('Watchers');
+
+	    #TODO use this to allow searching on things like email addresses.
 	    my $User = $self->NewAlias('Users');
 
 	    #Join watchers to users
@@ -897,20 +907,20 @@ sub _ProcessRestrictions {
 			  OPERATOR => '=');
 
 	    #Limit it to the address we want
-	    $self->SUPER::Limit( ALIAS => $User,
-			  FIELD => 'EmailAddress',
-			  ENTRYAGGREGATOR => 'OR',
-			  VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
-			  OPERATOR => $self->{'TicketRestrictions'}{"$row"}{'OPERATOR'}
-			);
-
+	    $self->SUPER::Limit( ALIAS => $Watch,
+				 FIELD => 'Owner',
+				 ENTRYAGGREGATOR => 'OR',
+				 VALUE => $self->{'TicketRestrictions'}{"$row"}{'VALUE'},
+				 OPERATOR => $self->{'TicketRestrictions'}{"$row"}{'OPERATOR'}
+			       );
+	    
 	    #If we only want a specific type of watchers, then limit it to that
 	    if ($self->{'TicketRestrictions'}{"$row"}{'TYPE'}) {
 		$self->SUPER::Limit( ALIAS => $Watch,
-			      FIELD => 'Type',
-			      ENTRYAGGREGATOR => 'OR',
-			      VALUE => $self->{'TicketRestrictions'}{"$row"}{'TYPE'},
-			      OPERATOR => '=');
+				     FIELD => 'Type',
+				     ENTRYAGGREGATOR => 'OR',
+				     VALUE => $self->{'TicketRestrictions'}{"$row"}{'TYPE'},
+				     OPERATOR => '=');
 	    }
 	}
 	# }}}
