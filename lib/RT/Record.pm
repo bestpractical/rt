@@ -798,11 +798,9 @@ sub _DecodeLOB {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
     if ( $ContentType eq 'text/plain' ) {
-        return Encode::decode_utf8($Content);
+       $Content = Encode::decode_utf8($Content) unless Encode::is_utf8($Content);
     }
-    else {
         return ($Content);
-    }
 }
 
 # {{{ LINKDIRMAP

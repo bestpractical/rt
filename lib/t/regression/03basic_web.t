@@ -48,10 +48,9 @@ my $string = "I18N Web Testing זרו";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
 $agent->field('Subject' => "Foo");
 $agent->field('Content' => $string);
-ok($agent->submit(), "Created new ticket with $string");
+ok($agent->submit(), "Created new ticket with $string as Content");
 
 ok( $agent->{'content'} =~ qr{$string} , "Found the content");
-
 $agent->get($url."Ticket/Create.html?Queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form(3);
@@ -60,7 +59,7 @@ my $string = "I18N Web Testing זרו";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
 $agent->field('Subject' => $string);
 $agent->field('Content' => "BAR");
-ok($agent->submit(), "Created new ticket with $string");
+ok($agent->submit(), "Created new ticket with $string as Subject");
 
 ok( $agent->{'content'} =~ qr{$string} , "Found the content");
 
