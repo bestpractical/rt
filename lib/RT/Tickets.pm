@@ -1120,8 +1120,14 @@ sub _ProcessRestrictions {
     delete $self->{'TicketAliases'};
 
     my $row;
-    
-    
+   
+    # here, we make sure we don't get any tickets that have been merged  into other tickets
+    # (Ticket Id == Ticket EffectiveId
+    $self->SUPER::Limit( FIELD => 'EffectiveId', 
+			 OPERATOR => '=',
+			 QUOTEVALUE => 0,
+			 VALUE => 'main.id');   #TODO, we shouldn't be hard coding the tablename to main.
+ 
     foreach $row (keys %{$self->{'TicketRestrictions'}}) {
         my $restriction = $self->{'TicketRestrictions'}{$row};
 	# {{{ if it's an int
