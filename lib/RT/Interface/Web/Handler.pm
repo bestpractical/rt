@@ -1,6 +1,6 @@
 package RT::Interface::Web::Handler;
 
-my @DefaultHandlerArgs = (
+sub DefaultHandlerArgs  { (
     comp_root => [
         [ local    => $RT::MasonLocalComponentRoot ],
         [ standard => $RT::MasonComponentRoot ]
@@ -9,7 +9,7 @@ my @DefaultHandlerArgs = (
     data_dir             => "$RT::MasonDataDir",
     allow_globals        => [qw(%session)],
     autoflush            => 1
-);
+) };
 
 # {{{ sub new 
 
@@ -120,7 +120,7 @@ sub NewCGIHandler {
 sub NewHandler {
     my $class = shift;
     my $handler = $class->new(
-        @DefaultHandlerArgs,
+        DefaultHandlerArgs(),
         @_
     );
   
