@@ -4,6 +4,7 @@
 # Request Tracker is Copyright 1997 Jesse Reed Vincent <jesse@fsck.com>
 # RT is distribute under the terms of the GNU Public License
 
+CC			=	gcc
 PERL			= 	/usr/bin/perl
 RTUSER			=	rt
 RTGROUP			=	rt
@@ -12,6 +13,7 @@ RT_VERSION		=	0.9.7
 #
 # RT_PATH is the name of the directory you want make to install RT in
 #
+
 RT_PATH			=	/opt/rt
 
 #
@@ -93,10 +95,10 @@ RT_MYSQL_PASS           =       My!word%z0t
 
 #
 # Set this to the domain name of your Mysql server
-# leave this blank if the mysql database is on localhost
+# leave this blank for enhanced speed if the mysql database is on localhost
 #
 
-RT_MYSQL_HOST		=	localhost
+RT_MYSQL_HOST		=	
 
 #
 # set this to the name you want to give to the RT database in mysql
@@ -170,10 +172,11 @@ database:
 	$(MYSQLDIR)/mysql $(RT_MYSQL_DATABASE) < etc/schema      
 
 acls:
-	-$(PERL) -p -e "s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
+	-$(PERL) -p -e "if ('$(RT_MYSQL_HOST)' eq '') { s'!!RT_MYSQL_HOST!!'localhost'g}\
+			else { s'!!RT_MYSQL_HOST!!'$(RT_MYSQL_HOST)'g }\
+		s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
 		s'!!RTUSER!!'$(RTUSER)'g;\
 		s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
-		s'!!RT_MYSQL_HOST!!'$(RT_MYSQL_HOST)'g;\
 		" $(RT_MYSQL_ACL) | $(MYSQLDIR)/mysql mysql
 	$(MYSQLDIR)/mysqladmin reload
 

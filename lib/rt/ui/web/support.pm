@@ -226,7 +226,7 @@ sub footer {
 
 	
 	print "<center>
-<a href=\"$rt::ui::web::ScriptURL?display=Logout\">Be careful not to leave yourself logged in from a <b>public terminal</b></a><br>
+You are currently authenticated as $current_user. <br><a href=\"$rt::ui::web::ScriptURL?display=Logout\">Be careful not to leave yourself logged in from a <b>public terminal</b></a><br>
 Please report all bugs to <a href=\"mailto:jesse\@fsck.com\">Jesse Vincent</a>
 </center>\n";
     }
