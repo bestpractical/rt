@@ -70,27 +70,26 @@
     my $ACE = new RT::ACE($session{'CurrentUser'});
 
 
-    $ACLObj->LimitToObject( Id => $ObjectId, Type => $ObjectType);
+    $ACLObj->LimitToObject( $Object);
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);
 
-    if ($ObjectType eq 'Group') { 
+    if (ref($Object) eq 'RT::Group') { 
         %Rights = $ACE->GroupRights();
     } 
 
-    elsif ($ObjectType eq 'Queue') { 
+    elsif (ref($Object) eq 'RT::Queue') { 
         %Rights = $ACE->QueueRights();
     } 
-    elsif ($ObjectType eq 'System') {
+    elsif (ref($Object) eq 'RT::System') {
         %Rights =  ( $ACE->SystemRights , $ACE->QueueRights(),$ACE->GroupRights());
     }
 
     
-    $ACLDesc = "$PrincipalId-$ObjectType-$ObjectId";
+    $ACLDesc = "$PrincipalId-".ref($Object)."-".$Object->Id;
 </%INIT>
     
 <%ARGS>
 $PrincipalType => undef
 $PrincipalId => undef
-$ObjectId => 0
-$ObjectType => undef
+$Object =>undef
 </%ARGS>

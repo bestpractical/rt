@@ -139,7 +139,7 @@ Limits the set of groups found to role groups for queue QUEUE_ID
 sub LimitToRolesForQueue {
     my $self = shift;
     my $queue = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'QueueRole');
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Queue-Role');
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => $queue);
 }
 
@@ -156,7 +156,7 @@ Limits the set of groups found to role groups for Ticket Ticket_ID
 sub LimitToRolesForTicket {
     my $self = shift;
     my $Ticket = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'TicketRole');
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::Ticket-Role');
     $self->Limit(FIELD => 'Instance', OPERATOR => '=', VALUE => '$Ticket');
 }
 
@@ -172,7 +172,7 @@ Limits the set of groups found to role groups for System System_ID
 
 sub LimitToRolesForSystem {
     my $self = shift;
-    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'SystemRole');
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'RT::System-Role');
 }
 
 # }}}

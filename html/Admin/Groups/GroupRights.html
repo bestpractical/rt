@@ -43,8 +43,7 @@
 	  <TD>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         PrincipalType => 'Group',
-        ObjectType  => 'Group', 
-        ObjectId => $GroupObj->Id  &>
+        Object => $GroupObj  &>
 	  </TD>
 	</TR>
 % }
@@ -61,8 +60,7 @@
 	  <TD>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
         PrincipalType => 'Group',
-        ObjectType  => 'Group', 
-        ObjectId => $GroupObj->Id  &>
+        Object => $GroupObj  &>
 	  </TD>
 	</TR>
 % }

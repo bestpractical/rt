@@ -190,14 +190,15 @@ sub LimitToPrivileged {
 
 # {{{ WhoHaveRight
 
-=head2 WhoHaveRight { Right => 'name', ObjectType => 'type', ObjectId => 'id', IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
+=head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
 
 =begin testing
 
 ok(my $users = RT::Users->new($RT::SystemUser));
-ok( $users->WhoHaveRight(ObjectType =>'System', Right =>'SuperUser'));
+ok( $users->WhoHaveRight(Object =>$RT::System, Right =>'SuperUser'));
 ok($users->Count == 2, "There are two superusers - Found ". $users->Count);
 # TODO: this wants more testing
+
 
 =end testing
 
@@ -206,7 +207,6 @@ find all users who the right Right for this group, either individually
 or as members of groups
 
 
-In the future, we'll also allow these parameters:
 
 
 
@@ -216,12 +216,17 @@ sub WhoHaveRight {
 
     my $self = shift;
     my %args = ( Right                  => undef,
-                 ObjectType             => undef,
-                 ObjectId               => undef,
+                 Object =>              => undef,
                  IncludeSystemRights    => undef,
                  IncludeSuperusers      => undef,
                  IncludeSubgroupMembers => 1,
                  @_ );
+
+
+    if (defined $args{'ObjectType'} || defined $args{'ObjectId'}) {
+        $RT::Logger->crit("$self WhoHaveRight called with the Obsolete ObjectId/ObjectType API");
+        return(undef);
+    }
 
     my $users      = 'main';
     my $groups     = $self->NewAlias('Groups');
@@ -239,34 +244,32 @@ sub WhoHaveRight {
     # Find all users who have this right OR all users who are members of groups 
     # which have this right for this object
 
-    if ( $args{'ObjectType'} eq 'Ticket' ) {
+    if ( defined $args{'Object'} ) {
+    if ( ref($args{'Object'}) eq 'RT::Ticket' ) {
         $or_check_ticket_roles =
-          " OR ( $groups.Domain = 'TicketRole' AND $groups.Instance = '"
-          . $args{'ObjectId'} . "') ";
+          " OR ( $groups.Domain = 'RT::Ticket-Role' AND $groups.Instance = '"
+          . $args{'Object'}->Id . "') ";
 
         # If we're looking at ticket rights, we also want to look at the associated queue rights.
         # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
-        my $tick = RT::Ticket->new($RT::SystemUser);
-        $tick->Load( $args{'ObjectId'} );
-        $args{'ObjectType'} = 'Queue';
-        $args{'ObjectId'}   = $tick->QueueObj->Id();
+        $args{'Object'}   = $args{'Object'}->QueueObj;
 
     }
-    if ( $args{'ObjectType'} eq 'Queue' ) {
+    # TODO XXX This really wants some refactoring
+    if ( ref($args{'Object'}) eq 'RT::Queue' ) {
         $or_check_roles =
-          " OR ( ( ($groups.Domain = 'QueueRole' AND $groups.Instance = '"
-          . $args{'ObjectId'}
+          " OR ( ( ($groups.Domain = 'RT::Queue-Role' AND $groups.Instance = '"
+          . $args{'Object'}->Id
           . "') $or_check_ticket_roles ) "
           . " AND $groups.Type = $acl.PrincipalType AND $groups.Id = $groupprinc.ObjectId AND $groupprinc.PrincipalType = 'Group') ";
     }
 
-    if ( defined $args{'ObjectType'} ) {
         $or_look_at_object_rights =
           " OR ($acl.ObjectType = '"
-          . $args{'ObjectType'}
+          . ref($args{'Object'})
           . "'  AND $acl.ObjectId = '"
-          . $args{'ObjectId'} . "') ";
+          . $args{'Object'}->Id . "') ";
 
     }
 
@@ -305,7 +308,7 @@ sub WhoHaveRight {
                   ENTRYAGGREGATOR => 'OR' );
 
     $self->_AddSubClause( "WhichRight",
-                     "($acl.ObjectType = 'System' $or_look_at_object_rights)" );
+                     "($acl.ObjectType = 'RT::System' $or_look_at_object_rights)" );
     $self->_AddSubClause( "WhichGroup",
 "( ($acl.PrincipalId = $groupprinc.Id AND $groupprinc.ObjectId = $groups.Id AND $acl.PrincipalType = 'Group' AND "
           . "($groups.Domain = 'SystemInternal' OR $groups.Domain = 'UserDefined' OR $groups.Domain = 'ACLEquivalence')) $or_check_roles)"

@@ -42,8 +42,7 @@
 	  <TD>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $Member->MemberObj->Id,
         PrincipalType => 'User', 
-        ObjectType  => 'Group', 
-        ObjectId => $GroupObj->Id  &>
+        Object => $GroupObj  &>
 	  </TD>
 	</TR>
 % }

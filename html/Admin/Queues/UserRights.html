@@ -43,8 +43,7 @@
 		  </TD>
 	  <TD>
 	    <& /Admin/Elements/SelectRights, PrincipalId=> $group->PrincipalId,
-        ObjectType  => 'Queue', 
-        ObjectId => $QueueObj->Id  &>
+        Object => $QueueObj  &>
 	  </TD>
 	</TR>
 % }

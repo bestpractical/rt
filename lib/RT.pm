@@ -22,11 +22,13 @@
 # 
 # 
 # END LICENSE BLOCK
-package RT;
-use RT::CurrentUser;
-use strict;
 
-use vars qw($VERSION $SystemUser $Nobody $Handle $Logger);
+package RT;
+use strict;
+use RT::CurrentUser;
+use RT::System;
+
+use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger);
 
 $VERSION = '!!RT_VERSION!!';
 
@@ -77,7 +79,9 @@ sub Init {
     #RT's "nobody user" is a genuine database user. its ID lives here.
     $Nobody = new RT::CurrentUser();
     $Nobody->LoadByName('Nobody');
-   
+  
+    $System = RT::System->new();
+
    InitLogging(); 
 }
 

@@ -42,8 +42,7 @@
 		  </TD>
 	  <TD>
 	    <& /Admin/Elements/SelectRights, PrincipalId => $group->PrincipalId,
-        ObjectType  => 'System', 
-        ObjectId => '0'  &>
+        Object => $RT::System  &>
 	  </TD>
 	</TR>
 % }

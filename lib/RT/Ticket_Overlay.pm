@@ -330,8 +330,8 @@ sub Create {
     }
 
     #Now that we have a queue, Check the ACLS
-    unless ( $self->CurrentUser->HasQueueRight( Right    => 'CreateTicket',
-                                                QueueObj => $QueueObj )
+    unless ( $self->CurrentUser->HasRight( Right    => 'CreateTicket',
+                                                Object => $QueueObj )
       ) {
         return ( 0, 0,
                  $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->Name ) );
@@ -412,7 +412,7 @@ sub Create {
     if (     ( defined($Owner) )
          and ( $Owner->Id )
          and ( $Owner->Id != $RT::Nobody->Id )
-         and ( !$Owner->HasQueueRight( QueueObj => $QueueObj,
+         and ( !$Owner->HasRight( Object => $QueueObj,
                                        Right    => 'OwnTicket' ) )
       ) {
 
@@ -661,9 +661,9 @@ sub Import {
 
     #Now that we have a queue, Check the ACLS
     unless (
-        $self->CurrentUser->HasQueueRight(
+        $self->CurrentUser->HasRight(
             Right    => 'CreateTicket',
-            QueueObj => $QueueObj
+            Object => $QueueObj
         )
       )
     {
@@ -695,8 +695,8 @@ sub Import {
         ( defined($Owner) )
         and ( $Owner->Id != $RT::Nobody->Id )
         and (
-            !$Owner->HasQueueRight(
-                QueueObj => $QueueObj,
+            !$Owner->HasRight(
+                Object => $QueueObj,
                 Right    => 'OwnTicket'
             )
         )
@@ -856,7 +856,7 @@ sub _CreateTicketGroups {
 
     foreach my $type (@types) {
         my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateRoleGroup(Domain => 'TicketRole',
+        my ($id, $msg) = $type_obj->CreateRoleGroup(Domain => 'RT::Ticket-Role',
                                                        Instance => $self->Id, 
                                                        Type => $type);
         unless ($id) {
@@ -1475,9 +1475,9 @@ sub SetQueue {
         return ( 0, $self->loc('That is the same value') );
     }
     unless (
-        $self->CurrentUser->HasQueueRight(
+        $self->CurrentUser->HasRight(
             Right    => 'CreateTicket',
-            QueueObj => $NewQueueObj
+            Object => $NewQueueObj
         )
       )
     {
@@ -1485,9 +1485,9 @@ sub SetQueue {
     }
 
     unless (
-        $self->OwnerObj->HasQueueRight(
+        $self->OwnerObj->HasRight(
             Right    => 'OwnTicket',
-            QueueObj => $NewQueueObj
+            Object => $NewQueueObj
         )
       )
     {
@@ -2569,10 +2569,9 @@ sub SetOwner {
     elsif (
         ($NewOwnerObj)
         and (
-            !$NewOwnerObj->HasQueueRight(
+            !$NewOwnerObj->HasRight(
                 Right     => 'OwnTicket',
-                QueueObj  => $self->QueueObj,
-                TicketObj => $self
+                Object => $self
             )
         )
       )
@@ -3474,8 +3473,8 @@ sub HasRight {
     }
 
     return (
-        $args{'Principal'}->HasQueueRight(
-            TicketObj => $self,
+        $args{'Principal'}->HasRight(
+            Object => $self,
             Right     => $args{'Right'}
           )
     );

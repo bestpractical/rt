@@ -113,11 +113,10 @@ A convoluted example
     my $adminccs = RT::Users->new($RT::SystemUser);
     $adminccs->WhoHaveRight(
 	Right => "AdminGroup",
-	ObjectType =>"Group",
+	Object =>$groups->First,
 	IncludeSystemRights => undef,
 	IncludeSuperusers => 0,
 	IncludeSubgroupMembers => 0,
-	ObjectId => $groupid,
     );
  
      my @admins;
@@ -229,7 +228,7 @@ my $approvals =
    my $groupid = $groups->First->Id;
 
    my $adminccs = RT::Users->new($RT::SystemUser);
-   $adminccs->WhoHaveRight(Right => "AdminGroup" ObjectType =>"Group", IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, ObjectId => $groupid);
+   $adminccs->WhoHaveRight(Right => "AdminGroup", IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, Object => $groups->First);
 
     my @admins;
     while (my $admin = $adminccs->Next) {

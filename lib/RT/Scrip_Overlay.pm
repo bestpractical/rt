@@ -122,7 +122,7 @@ sub Create {
     $args{'Queue'} ||= 0;		# avoid undef sneaking in
 
     if ( $args{'Queue'} == 0 ) {
-        unless ( $self->CurrentUser->HasSystemRight('ModifyScrips') ) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'ModifyScrips') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
     }
@@ -213,7 +213,7 @@ sub QueueObj {
     if (!$self->{'QueueObj'})  {
 	require RT::Queue;
 	$self->{'QueueObj'} = RT::Queue->new($self->CurrentUser);
-	$self->{'QueueObj'}->Load($self->Queue);
+	$self->{'QueueObj'}->Load($self->__Value('Queue'));
     }
     return ($self->{'QueueObj'});
 }
@@ -486,16 +486,15 @@ sub HasRight {
                  @_ );
     
     if ((defined $self->SUPER::_Value('Queue')) and ($self->SUPER::_Value('Queue') != 0)) {
-        return ( $args{'Principal'}->HasQueueRight(
+        return ( $args{'Principal'}->HasRight(
 						   Right => $args{'Right'},
-						   Queue => $self->SUPER::_Value('Queue'),
-						   Principal => $args{'Principal'}
+						   Object => $self->QueueObj
 						  ) 
 	       );
 	
     }
     else {
-        return( $args{'Principal'}->HasSystemRight( $args{'Right'}) );
+        return( $args{'Principal'}->HasRight( Object => $RT::System, Right =>  $args{'Right'}) );
     }
 }
 # }}}

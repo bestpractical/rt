@@ -134,8 +134,8 @@ use RT::Group;
             PrincipalId        => ACLEquivGroupId($CurrentUser->Id),
             PrincipalType  => 'Group',
             RightName      => 'SuperUser',
-            ObjectType     => 'System',
-            ObjectId => '0');
+            ObjectType     => 'RT::System',
+            ObjectId => '1');
 
 # {{{ Groups 
 
@@ -166,28 +166,28 @@ unless ($LastVersion) {
         {
             Name        => '',
             Type        => 'Owner',				# loc
-            Domain      => 'SystemRole',
+            Domain      => 'RT::System-Role',
             Instance    => '',
             Description => 'SystemRolegroup for internal use',	# loc
         },
         {
             Name        => '',
             Type        => 'Requestor',				# loc
-            Domain      => 'SystemRole',
+            Domain      => 'RT::System-Role',
             Instance    => '',
             Description => 'SystemRolegroup for internal use',	# loc
         },
         {
             Name        => '',
             Type        => 'Cc',				# loc
-            Domain      => 'SystemRole',
+            Domain      => 'RT::System-Role',
             Instance    => '',
             Description => 'SystemRolegroup for internal use',	# loc
         },
         {
             Name        => '',
             Type        => 'AdminCc',				# loc
-            Domain      => 'SystemRole',
+            Domain      => 'RT::System-Role',
             Instance    => '',
             Description => 'Pseudogroup for internal use',	# loc
         },
@@ -250,15 +250,11 @@ unless ($LastVersion) {
         { 
             UserId    => 'Nobody', # - principalId
             Right      => 'OwnTicket',
-            ObjectType     => 'System',
-            ObjectId => '0'
         },
 
         {
             UserId    => 'root', # - principalid
             Right      => 'SuperUser',
-            ObjectType     => 'System',
-            ObjectId => '0'
         },
 
     );
@@ -270,7 +266,7 @@ for $item (@acl) {
 
     my $princ = RT::User->new($CurrentUser);
     $princ->Load($item->{'UserId'});
-    my ($return, $msg) = $princ->PrincipalObj->GrantRight(Right => $item->{'Right'}, ObjectType => $item->{'ObjectType'}, ObjectId => $item->{'ObjectId'});
+    my ($return, $msg) = $princ->PrincipalObj->GrantRight(Right => $item->{'Right'}, Object=> $RT::System);
     if ($return) {
 	    print $return. "."; 
     } else {	

@@ -412,7 +412,7 @@ sub _Set {
     if ( ( defined $self->SUPER::_Value('Queue') )
         && ( $self->SUPER::_Value('Queue') == 0 ) )
     {
-        unless ( $self->CurrentUser->HasSystemRight('AdminCustomFields') ) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AdminCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
     }
@@ -451,7 +451,7 @@ sub _Value {
     if ( ( !defined $self->__Value('Queue') )
         || ( $self->__Value('Queue') == 0 ) )
     {
-        unless ( $self->CurrentUser->HasSystemRight('SeeQueue') ) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'SeeQueue') ) {
             return (undef);
         }
     }

@@ -149,16 +149,14 @@ mysql supported foreign keys with cascading deletes.
 sub Delete {
     my $self = shift;
 
-    my $err = $self->SUPER::Delete();
-    unless ($err) {
-        $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->Id );
-        return (undef);
-    }
     
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
         my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
 
+        $deletable->Limit( FIELD    => 'id',
+                           OPERATOR => '!=',
+                           VALUE    => $self->id );
         $deletable->Limit( FIELD    => 'Via',
                            OPERATOR => '=',
                            VALUE    => $self->id );
@@ -172,13 +170,21 @@ sub Delete {
             }
         }
     }
+    my $err = $self->SUPER::Delete();
+    unless ($err) {
+        $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->Id );
+        return (undef);
+    }
 
     # Unless $self->GroupObj still has the member recursively $self->MemberObj
     # (Since we deleted the database row above, $self no longer counts)
     unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberObj ) ) {
+
+
         #   Find all ACEs granted to $self->GroupId
         my $acl = RT::ACL->new($RT::SystemUser);
         $acl->LimitToPrincipal( Id => $self->GroupId );
+
 
         while ( my $this_ace = $acl->Next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace

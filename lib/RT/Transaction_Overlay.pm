@@ -728,9 +728,9 @@ sub CurrentUserHasRight {
     my $self  = shift;
     my $right = shift;
     return (
-        $self->CurrentUser->HasQueueRight(
+        $self->CurrentUser->HasRight(
             Right     => "$right",
-            TicketObj => $self->TicketObj
+            Object => $self->TicketObj
           )
     );
 }

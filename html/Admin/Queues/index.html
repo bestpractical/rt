@@ -28,7 +28,7 @@
 
 <& /Elements/TitleBoxStart, title => loc("Select a queue") &>
 
-% if ($session{'CurrentUser'}->HasSystemRight('AdminQueue')) {
+% if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue')) {
 <P><A HREF="<%$RT::WebPath%>/Admin/Queues/Modify.html?Create=1"><&|/l&>Create a new queue</&></A><BR><BR></P>
 % }
 

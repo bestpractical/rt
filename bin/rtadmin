@@ -847,10 +847,12 @@ sub AdminRights {
         require RT::ACL;
         my $acl = new RT::ACL($CurrentUser);
         if ( $queue != 0 ) {
-            $acl->LimitToObject(Type => "Queue", Id=>$queue);
+                my $queue_obj = RT::Queue->new($CurrentUser);
+                $queue_obj->Load($queue);
+            $acl->LimitToObject($queue_obj);
         }
         else {
-            $acl->LimitToObject(Type => 'System');
+            $acl->LimitToObject($RT::System);
         }
         while ( my $ace = $acl->Next ) {
             print $ace->ObjectType;

@@ -104,7 +104,7 @@ sub Object {
 
 # {{{ GrantRight 
 
-=head2 GrantRight  { Right => RIGHTNAME, ObjectType => undef, ObjectId => 0 }
+=head2 GrantRight  { Right => RIGHTNAME, Object => undef }
 
 A helper function which calls RT::ACE->Create
 
@@ -113,9 +113,17 @@ A helper function which calls RT::ACE->Create
 sub GrantRight {
     my $self = shift;
     my %args = ( Right => undef,
+                ObjectId => undef,
                 ObjectType => undef,
-                ObjectId => 0,
+                Object => undef,
                 @_);
+
+
+    #if we haven't specified any sort of right, we're talking about a global right
+    if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
+        $args{'Object'} = $RT::System;
+    }
+
 
     #ACL check handled in ACE.pm
     my $ace = RT::ACE->new( $self->CurrentUser );
@@ -126,6 +134,7 @@ sub GrantRight {
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
         return ( $ace->Create(RightName => $args{'Right'},
+                          Object => $args{'Object'},
                           ObjectType => $args{'ObjectType'},
                           ObjectId => $args{'ObjectId'},
                           PrincipalType =>  $type,
@@ -136,7 +145,7 @@ sub GrantRight {
 
 # {{{ RevokeRight
 
-=head2 RevokeRight { Right => "RightName", ObjectType => "object type", ObjectId => "object id" }
+=head2 RevokeRight { Right => "RightName", Object => "object" }
 
 Delete a right that a user has 
 
@@ -147,19 +156,25 @@ sub RevokeRight {
     my $self = shift;
     my %args = (
         Right      => undef,
+        Object => undef,
         ObjectType => undef,
-        ObjectId   => 0,
+        ObjectId => undef,
         @_
     );
 
+    #if we haven't specified any sort of right, we're talking about a global right
+    if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
+        $args{'Object'} = $RT::System;
+    }
     #ACL check handled in ACE.pm
     my $type = $self->_GetPrincipalTypeForACL();
 
     my $ace = RT::ACE->new( $self->CurrentUser );
     $ace->LoadByValues(
         RightName     => $args{'Right'},
-        ObjectType    => $args{'ObjectType'},
-        ObjectId      => $args{'ObjectId'},
+        Object    => $args{'Object'},
+                          ObjectType => $args{'ObjectType'},
+                          ObjectId => $args{'ObjectId'},
         PrincipalType => $type,
         PrincipalId   => $self->Id
     );

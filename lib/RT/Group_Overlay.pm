@@ -164,15 +164,15 @@ sub SelfDescription {
 		$user->Load($self->Instance);
 		return $self->loc("personal group '[_1]' for user '[_2]'",$self->Name, $user->Name);
 	}
-	elsif ($self->Domain eq 'SystemRole') {
+	elsif ($self->Domain eq 'RT::System-Role') {
 		return $self->loc("system [_1]",$self->Type);
 	}
-	elsif ($self->Domain eq 'QueueRole') {
+	elsif ($self->Domain eq 'RT::Queue-Role') {
 		my $queue = RT::Queue->new($self->CurrentUser);
 		$queue->Load($self->Instance);
 		return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
 	}
-	elsif ($self->Domain eq 'TicketRole') {
+	elsif ($self->Domain eq 'RT::Ticket-Role') {
 		return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
 	}
 	elsif ($self->Domain eq 'SystemInternal') {
@@ -320,7 +320,7 @@ sub LoadTicketGroup {
     my %args = (Ticket => undef,
                 Type => undef,
                 @_);
-        $self->LoadByCols( Domain => 'TicketRole',
+        $self->LoadByCols( Domain => 'RT::Ticket-Role',
                            Instance =>$args{'Ticket'}, 
                            Type => $args{'Type'}
                            );
@@ -347,7 +347,7 @@ sub LoadQueueGroup {
     my %args = (Queue => undef,
                 Type => undef,
                 @_);
-        $self->LoadByCols( Domain => 'QueueRole',
+        $self->LoadByCols( Domain => 'RT::Queue-Role',
                            Instance =>$args{'Queue'}, 
                            Type => $args{'Type'}
                            );
@@ -981,7 +981,6 @@ sub HasMemberRecursively {
                           "isn't an RT::Principal. It's $principal");
         return(undef);
     }
-
     my $member_obj = RT::CachedGroupMember->new( $self->CurrentUser );
     $member_obj->LoadByCols( MemberId => $principal->Id,
                              GroupId => $self->PrincipalId ,
@@ -1059,7 +1058,6 @@ sub _DeleteMember {
     $member_obj->LoadByCols( MemberId  => $member_id,
                              GroupId => $self->PrincipalId);
 
-    #$RT::Logger->debug("Loaded the RT::GroupMember object ".$member_obj->id);
 
     #If we couldn't load it, return undef.
     unless ( $member_obj->Id() ) {
@@ -1128,11 +1126,11 @@ sub CurrentUserHasRight {
 
 
     if ($self->Id && 
-		$self->CurrentUser->HasGroupRight( Group => $self->Id, 
+		$self->CurrentUser->HasRight( Object => $self,
 										   Right => $right )) {
         return(1);
    }
-    elsif ( $self->CurrentUser->HasSystemRight( $right )) {
+    elsif ( $self->CurrentUser->HasRight(Object => $RT::System, Right =>  $right )) {
 		return (1);
     } else {
         return(undef);

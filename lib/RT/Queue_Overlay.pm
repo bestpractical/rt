@@ -203,7 +203,7 @@ sub Create {
         @_
     );
 
-    unless ( $self->CurrentUser->HasSystemRight('AdminQueue') )
+    unless ( $self->CurrentUser->HasRight(Right => 'AdminQueue', Object => $RT::System) )
     {    #Check them ACLs
         return ( 0, $self->loc("No permission to create queues") );
     }
@@ -422,7 +422,7 @@ sub _CreateQueueGroups {
         my $type_obj = RT::Group->new($self->CurrentUser);
         my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
                                                      Type => $type,
-                                                     Domain => 'QueueRole');
+                                                     Domain => 'RT::Queue-Role');
         unless ($id) {
             $RT::Logger->error("Couldn't create a Queue group of type '$type' for ticket ".
                                $self->Id.": ".$msg);
@@ -930,8 +930,8 @@ sub HasRight {
 
     }
     return (
-        $args{'Principal'}->HasQueueRight(
-            QueueObj => $self,
+        $args{'Principal'}->HasRight(
+            Object => $self,
             Right    => $args{'Right'}
           )
     );

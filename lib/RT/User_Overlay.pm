@@ -146,7 +146,7 @@ sub Create {
     );
 
     #Check the ACL
-    unless ( $self->CurrentUserHasRight('AdminUsers') ) {
+    unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return ( 0, $self->loc('No permission to create users') );
     }
 
@@ -920,7 +920,7 @@ user will fail. The user will appear in no user listings.
 
 sub SetDisabled {
     my $self = shift;
-    unless ( $self->CurrentUserHasRight('AdminUsers') ) {
+    unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return (0, $self->loc('Permission Denied'));
     }
     return $self->PrincipalObj->SetDisabled(@_);
@@ -1015,19 +1015,15 @@ sub HasGroupRight {
 
     # {{{ Validate and load up the GroupId
     unless ( ( defined $args{'GroupObj'} ) and ( $args{'GroupObj'}->Id ) ) {
-        require Carp;
-        $RT::Logger->debug( Carp::cluck("$self->HasGroupRight Couldn't find a Group id for". $args{'GroupObj'}) );
         return undef;
     }
 
     # }}}
 
-    my $Group_id = $args{'GroupObj'}->Id if ($args{'GroupObj'});
 
     # Figure out whether a user has the right we're asking about.
     my $retval = $self->HasRight(
-        ObjectType => 'Group',
-        ObjectId => $Group_id,
+        Object => $args{'GroupObj'},
         Right     => $args{'Right'},
     );
 
@@ -1038,20 +1034,9 @@ sub HasGroupRight {
 
 # }}}
 
-# {{{ sub HasQueueRight
+# {{{ sub Rights testing
 
-=head2 HasQueueRight
-
-Takes a paramhash which can contain
-these items:
-    TicketObj => RT::Ticket or QueueObj => RT::Queue or Queue => integer
-    Right => 'Right' 
-
-
-Returns 1 if this user has the right specified in the paramhash. for the queue
-passed in.
-
-Returns undef if they don't
+=head2 Rights testing
 
 
 =begin testing
@@ -1063,7 +1048,7 @@ my $rootq = RT::Queue->new($root);
 $rootq->Load(1);
 ok($rootq->Id, "Loaded the first queue");
 
-ok ($rootq->CurrentUserHasRight('CreateTicket'), "Root can create tickets");
+ok ($rootq->CurrentUser->HasRight(Right=> 'CreateTicket', Object => $rootq), "Root can create tickets");
 
 my $new_user = RT::User->new($RT::SystemUser);
 my ($id, $msg) = $new_user->Create(Name => 'ACLTest');
@@ -1075,15 +1060,15 @@ $q->Load(1);
 ok($q->Id, "Loaded the first queue");
 
 
-ok (!$q->CurrentUserHasRight('CreateTicket'), "Some random user doesn't have the right to create tickets");
-ok (my ($gval, $gmsg) = $new_user->PrincipalObj->GrantRight(ObjectType => 'Queue', Right => 'CreateTicket', ObjectId => $q->Id), "Granted the random user the right to create tickets");
+ok (!$q->CurrentUser->HasRight(Right => 'CreateTicket', Object => $q), "Some random user doesn't have the right to create tickets");
+ok (my ($gval, $gmsg) = $new_user->PrincipalObj->GrantRight( Right => 'CreateTicket', Object => $q), "Granted the random user the right to create tickets");
 ok ($gval, "Grant succeeded - $gmsg");
 
 
-ok ($q->CurrentUserHasRight('CreateTicket'), "The user can create tickets after we grant him the right");
-ok (my ($gval, $gmsg) = $new_user->PrincipalObj->RevokeRight(ObjectType => 'Queue', Right => 'CreateTicket', ObjectId => $q->Id), "revoked the random user the right to create tickets");
+ok ($q->CurrentUser->HasRight(Right => 'CreateTicket', Object => $q), "The user can create tickets after we grant him the right");
+ok (my ($gval, $gmsg) = $new_user->PrincipalObj->RevokeRight( Right => 'CreateTicket', Object => $q), "revoked the random user the right to create tickets");
 ok ($gval, "Revocation succeeded - $gmsg");
-ok (!$q->CurrentUserHasRight('CreateTicket'), "The user can't create tickets anymore");
+ok (!$q->CurrentUser->HasRight(Right => 'CreateTicket', Object => $q), "The user can't create tickets anymore");
 
 
 
@@ -1094,26 +1079,26 @@ my $new_tick = RT::Ticket->new($RT::SystemUser);
 my ($tickid, $tickmsg) = $new_tick->Create(Subject=> 'ACL Test', Queue => 'General');
 ok($tickid, "Created ticket: $tickid");
 # Make sure the user doesn't have the right to modify tickets in the queue
-ok (!$new_user->HasQueueRight( TicketObj => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+ok (!$new_user->HasRight( Object => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 # Create a new group
 my $group = RT::Group->new($RT::SystemUser);
 $group->CreateUserDefinedGroup(Name => 'ACLTest');
 ok($group->Id, "Created a new group Ok");
 # Grant a group the right to modify tickets in a queue
-ok(my ($gv,$gm) = $group->PrincipalObj->GrantRight(ObjectType => 'Queue', ObjectId => $q->Id, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
+ok(my ($gv,$gm) = $group->PrincipalObj->GrantRight( Object => $q, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
 ok($gv,"Grant succeeed - $gm");
 # Add the user to the group
 ok( my ($aid, $amsg) = $group->AddMember($new_user->PrincipalId), "Added the member to the group");
 ok ($aid, "Member added to group: $amsg");
 # Make sure the user does have the right to modify tickets in the queue
-ok ($new_user->HasQueueRight( TicketObj => $new_tick, Right => 'ModifyTicket'), "User can modify the ticket with group membership");
+ok ($new_user->HasRight( Object => $new_tick, Right => 'ModifyTicket'), "User can modify the ticket with group membership");
 
 
 # Remove the user from the group
 ok( my ($did, $dmsg) = $group->DeleteMember($new_user->PrincipalId), "Deleted the member from the group");
 ok ($did,"Deleted the group member: $dmsg");
 # Make sure the user doesn't have the right to modify tickets in the queue
-ok (!$new_user->HasQueueRight( TicketObj => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+ok (!$new_user->HasRight( Object => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 
 my $q_as_system = RT::Queue->new($RT::SystemUser);
@@ -1128,7 +1113,7 @@ ok($new_tick2->QueueObj->id eq $q_as_system->Id, "Created a new ticket in queue 
 
 
 # make sure that the user can't do this without subgroup membership
-ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 # Create a subgroup
 my $subgroup = RT::Group->new($RT::SystemUser);
@@ -1142,24 +1127,24 @@ ok ($said, "Added the subgroup as a member of the group");
 my ($usaid, $usamsg) =  $subgroup->AddMember($new_user->PrincipalId);
 ok($usaid,"Added the user ".$new_user->Id."to the subgroup");
 # Make sure the user does have the right to modify tickets in the queue
-ok ($new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket with subgroup membership");
+ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket with subgroup membership");
 
 #  {{{ Deal with making sure that members of subgroups of a disabled group don't have rights
 
 my ($id, $msg);
  ($id, $msg) =  $group->SetDisabled(1);
  ok ($id,$msg);
-ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket when the group ".$group->Id. " is disabled");
+ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket when the group ".$group->Id. " is disabled");
  ($id, $msg) =  $group->SetDisabled(0);
 ok($id,$msg);
 # Test what happens when we disable the group the user is a member of directly
 
 ($id, $msg) =  $subgroup->SetDisabled(1);
  ok ($id,$msg);
-ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket when the group ".$subgroup->Id. " is disabled");
+ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket when the group ".$subgroup->Id. " is disabled");
  ($id, $msg) =  $subgroup->SetDisabled(0);
  ok ($id,$msg);
-ok ($new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket without group membership");
+ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket without group membership");
 
 # }}}
 
@@ -1167,12 +1152,12 @@ ok ($new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'),
 my ($usrid, $usrmsg) =  $subgroup->DeleteMember($new_user->PrincipalId);
 ok($usrid,"removed the user from the group - $usrmsg");
 # Make sure the user doesn't have the right to modify tickets in the queue
-ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 
 
 # Grant queue admin cc the right to modify ticket in the queue 
-ok(my ($qv,$qm) = $q_as_system->AdminCc->PrincipalObj->GrantRight(ObjectType => 'Queue', ObjectId => $q_as_system->Id, Right => 'ModifyTicket'),"Granted the queue adminccs the right to modify tickets");
+ok(my ($qv,$qm) = $q_as_system->AdminCc->PrincipalObj->GrantRight( Object => $q_as_system, Right => 'ModifyTicket'),"Granted the queue adminccs the right to modify tickets");
 ok($qv, "Granted the right successfully - $qm");
 
 # Add the user as a queue admincc
@@ -1180,12 +1165,12 @@ ok ((my $add_id, $add_msg) = $q_as_system->AddWatcher(Type => 'AdminCc', Princip
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
-ok ($new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket as an admincc");
+ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket as an admincc");
 # Remove the user from the role  group
 ok ((my $del_id, $del_msg) = $q_as_system->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
-ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 
 # Add the user as a ticket admincc
@@ -1193,17 +1178,17 @@ ok ((my $uadd_id, $uadd_msg) = $new_tick2->AddWatcher(Type => 'AdminCc', Princip
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
-ok ($new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket as an admincc");
+ok ($new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket as an admincc");
 
 # Remove the user from the role  group
 ok ((my $del_id, $del_msg) = $new_tick2->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->PrincipalId)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
-ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+ok (!$new_user->HasRight( Object => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 
 # Revoke the right to modify ticket in the queue 
-ok(my ($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeRight(ObjectType => 'Queue', ObjectId => $q_as_system->Id, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
+ok(my ($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeRight( Object => $q_as_system, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
 ok($rqv, "Revoked the right successfully - $rqm");
 
 # Grant system admin cc the right to modify ticket 
@@ -1233,81 +1218,36 @@ ok($rqv, "Revoked the right successfully - $rqm");
 
 =cut
 
-sub HasQueueRight {
-    my $self = shift;
-    my %args = (
-        TicketObj   => undef,
-        QueueObj    => undef,
-        Queue       => undef,
-        Right       => undef,
-        @_
-    );
-
-    if ( defined $args{'Queue'} ) {
-        $args{'QueueObj'} = new RT::Queue( $self->CurrentUser );
-        $args{'QueueObj'}->Load( $args{'Queue'} );
-    }
-
-    my $retval;
-
-    # Figure out whether a user has the right we're asking about.
-    if (defined $args{'TicketObj'} && $args{'TicketObj'}->Id) {
-        $retval = $self->HasRight(
-         Right     => $args{'Right'},
-         ObjectType  => 'Ticket',
-         ObjectId    => $args{'TicketObj'}->Id
-        );
-    }
-    elsif (defined $args{'QueueObj'} && $args{'QueueObj'}->Id) {
-        $retval = $self->HasRight(
-         Right     => $args{'Right'},
-         ObjectType  => 'Queue',
-         ObjectId    => $args{'QueueObj'}->Id
-        );
-    }
-    else {
-        require Carp;
-        $RT::Logger->err( Carp::cluck("$self->HasQueueRight Couldn't find a queue id for". $args{'QueueObj'}) );
-        return undef;
-    }
-    return ($retval);
-
-}
-
 # }}}
 
-# {{{ sub HasSystemRight
-
-=head2 HasSystemRight
-
-takes an array of a single value and a paramhash.
-The single argument is the right being passed in.
-
-Returns 1 if this user has the listed 'right'. Returns undef if this user doesn't.
-
-=cut
-
-sub HasSystemRight {
-    my $self  = shift;
-    my $right = shift;
-
-    unless ( defined $right ) {
-
-        $RT::Logger->warn( "$self RT::User::HasSystemRight was passed in no right.");
-        return (undef);
-    }
-    return ( $self->HasRight( Right => $right));
-
-}
-
-# }}}
 
 # {{{ sub HasRight
 
-=head2 sub HasRight (Right => 'right' ObjectType => undef,  ObjectId => undef)
+=head2 sub HasRight (Right => 'right' Object => undef)
+
 
 Checks to see whether the this user has the right "Right" for the Object
-of type ObjectType which has the id ObjectId
+specified. If the Object parameter is omitted, checks to see whether the 
+user has the right globally.
+
+This still hard codes to check to see if a user has queue-level rights
+if we ask about a specific ticket.
+
+
+This takes the params:
+
+    Right => name of a right
+
+    And either:
+
+    Object => an RT style object (->id will get its id)
+
+    or 
+
+    ObjectId => id #
+    ObjectType => an object type
+
+
 
 Returns 1 if a matching ACE was found.
 
@@ -1319,14 +1259,34 @@ sub HasRight {
 
     my $self = shift;
     my %args = ( Right      => undef,
-                 ObjectType => undef,
-                 ObjectId   => undef,
+                 Object     => undef,
+                 ObjectId     => undef,
+                 ObjectType     => undef,
                  @_ );
 
+
+    my ($object_id, $object_type) ;
+    if ( defined( $args{'Object'} ) && UNIVERSAL::can( $args{'Object'}, 'id' ) )
+    {
+        $object_id   = $args{'Object'}->id;
+        $object_type = ref( $args{'Object'} );
+    }
+    elsif ( $args{'ObjectId'} && $args{'ObjectType'} ) {
+        $object_id   = $args{'ObjectId'};
+        $object_type = $args{'ObjectType'};
+
+    }
+    else {
+        $RT::Logger->crit("$self HasRight called with no valid object");
+        return (undef);
+    }
+
+
     if ( $self->PrincipalObj->Disabled ) {
-        $RT::Logger->err( "Disabled User:  " . $self->Name . " failed access check for " . $args{'Right'} . " for "
-                          . $args{'ObjectType'} . " "
-                          . $args{'ObjectId'} );
+        $RT::Logger->err( "Disabled User:  " . $self->Name . " failed access check for " . $args{'Right'} );
+        if ($object_type) {
+            $RT::Logger->err ( " for $object_type $object_id");
+        } 
         return (undef);
     }
 
@@ -1375,7 +1335,6 @@ sub HasRight {
     # }}}
 
 
-    #$RT::Logger->debug("Checking the user right ". $args{'Right'} . "for ". $args{'ObjectType'} . " ".$args{'ObjectId'} );
 
     #  {{{ Out of date docs
     
@@ -1394,8 +1353,8 @@ sub HasRight {
     #
     #    Find all the records from ACL where they're granted to the role "foo"
     #    for the object "System" or the object "Queue N" and the group we're looking
-    #   at is of domain  ("QueueRole" and applies to the right queue)
-    #                             or ("TicketRole" and applies to the right ticket)
+    #   at is of domain  ("RT::Queue-Role" and applies to the right queue)
+    #                             or ("RT::Ticket-Role" and applies to the right ticket)
     #    and the type is the same as the type of the ACL and the group has
     #    the recursive member $self->Id
     #
@@ -1411,16 +1370,17 @@ sub HasRight {
 
 
     # {{{ If this object is a ticket , we want to look at ticket roles
-    if ( $args{'ObjectType'} eq 'Ticket' ) {
-          push (@roles, $self->_RolesForObject(Type => $args{'ObjectType'}, Id => $args{'ObjectId'}));
+    if ( $object_type eq 'RT::Ticket' ) {
+          push (@roles, $self->_RolesForObject($object_type, $object_id));
 
         # {{{ If we're looking at ticket rights, we also want to look at the associated queue rights.
         # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
-        my $tick = RT::Ticket->new($RT::SystemUser);
-        $tick->Load( $args{'ObjectId'} );
-        $args{'ObjectType'} = 'Queue';
-        $args{'ObjectId'}   = $tick->QueueObj->Id();
+        my $ticket = RT::Ticket->new($RT::SystemUser);
+        $ticket->Load($object_id);
+        $args{'Object'}   = $ticket->QueueObj;
+        $object_type = ref($args{'Object'});
+        $object_id = $args{'Object'}->Id;
         # }}}
 
     }
@@ -1429,8 +1389,8 @@ sub HasRight {
 
     # {{{ If we're looking at a queue, we want to check queue roles
     # We don't want to do an "elsif" here because ticket rights above transmute into queue rights
-    if ( $args{'ObjectType'} eq 'Queue' ) {
-          push (@roles, $self->_RolesForObject(Type => $args{'ObjectType'}, Id => $args{'ObjectId'}));
+    if ( $object_type eq 'RT::Queue' ) {
+          push (@roles, $self->_RolesForObject( $object_type, $object_id));
 
         $or_check_roles = " OR ( (".join (' OR ', @roles)." ) ".  
         " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.ObjectId AND Principals.PrincipalType = 'Group') ";
@@ -1439,9 +1399,9 @@ sub HasRight {
 
     
     # {{{ If an object is defined, we want to look at rights for that object
-    if ( defined $args{'ObjectType'} ) {
+    if ( $object_type && $object_id) {
         $or_look_at_object_rights =
-          " OR (ACL.ObjectType = '" . $args{'ObjectType'} . "'  AND ACL.ObjectId = '" . $args{'ObjectId'} . "') ";
+          " OR (ACL.ObjectType = '" . $object_type . "'  AND ACL.ObjectId = '" . $object_id . "') ";
 
     }
     # }}}
@@ -1463,7 +1423,7 @@ sub HasRight {
    "AND Principals.Id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '" . $self->PrincipalId . "' ". 
 
     # Make sure the rights apply to the entire system or to the object in question
-    "AND (   ACL.ObjectType = 'System' $or_look_at_object_rights ) ".
+    "AND (   ACL.ObjectType = 'RT::System' $or_look_at_object_rights ) ".
 
     # limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
     "AND ( (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND ".
@@ -1507,19 +1467,20 @@ sub HasRight {
 
 # {{{ _RolesForObject
 
-=head2 _RolesForObject   Type => ,  Id => 
 
-Returns an SQL clause finding role groups for Objects of Type Type and Id Id
+
+=head2 _RolesForObject( $object_type, $object_id)
+
+Returns an SQL clause finding role groups for Objects
 
 =cut
 
 
 sub _RolesForObject {
     my $self = shift;
-    my %args = (Type => undef,
-                Id => undef,
-                @_);
-    my $clause = "(Groups.Domain = '".$args{'Type'}."Role' AND Groups.Instance = '" . $args{'Id'} . "') ";
+    my $type = shift;
+    my $id = shift;
+    my $clause = "(Groups.Domain = '".$type."-Role' AND Groups.Instance = '" . $id. "') ";
 
     return($clause);
 }
@@ -1540,7 +1501,7 @@ sub CurrentUserCanModify {
     my $self  = shift;
     my $right = shift;
 
-    if ( $self->CurrentUserHasRight('AdminUsers') ) {
+    if ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return (1);
     }
 
@@ -1552,7 +1513,7 @@ sub CurrentUserCanModify {
 
     #If the current user is trying to modify themselves
     elsif ( ( $self->id == $self->CurrentUser->id )
-        and ( $self->CurrentUserHasRight('ModifySelf') ) )
+        and ( $self->CurrentUser->HasRight(Right => 'ModifySelf', Object => $RT::System) ) )
     {
         return (1);
     }
@@ -1580,7 +1541,7 @@ sub CurrentUserHasRight {
     my $self  = shift;
     my $right = shift;
 
-    return ( $self->CurrentUser->HasSystemRight($right) );
+    return ( $self->CurrentUser->HasRight(Right => $right, Object => $RT::System) );
 }
 
 # }}}
@@ -1617,7 +1578,7 @@ sub _Set {
 
 # }}}
 
-#  {{{ sub _Value 
+# {{{ sub _Value 
 
 =head2 _Value
 
@@ -1651,7 +1612,7 @@ sub _Value {
     }
 
     #If the user has the admin users right, return the field
-    elsif ( $self->CurrentUserHasRight('AdminUsers') ) {
+    elsif ( $self->CurrentUser->HasRight(Right =>'AdminUsers', Object => $RT::System) ) {
         return ( $self->SUPER::_Value($field) );
     }
     else {

@@ -59,20 +59,20 @@ Hand out the next ACE that was found
 
 # {{{ LimitToObject 
 
-=head2 LimitToObject { Type => undef, Id => undef }
+=head2 LimitToObject $object
 
-Limit the ACL to the Object with ObjectId Id and ObjectType Type
+Limit the ACL to rights for the object $object. It needs to be an RT::Record class.
 
 =cut
 
 sub LimitToObject {
     my $self = shift;
-    my %args = ( Type => undef,
-                 Id => undef,
-                 @_);
-
-    $self->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => $args{'Type'}, ENTRYAGGREGATOR => 'OR');
-    $self->Limit(FIELD => 'ObjectId', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
+    my $obj = shift;
+    unless (defined($obj) && ref($obj) && UNIVERSAL::can($obj, 'id')) {
+    return undef;
+    }
+    $self->Limit(FIELD => 'ObjectType', OPERATOR=> '=', VALUE => ref($obj), ENTRYAGGREGATOR => 'OR');
+    $self->Limit(FIELD => 'ObjectId', OPERATOR=> '=', VALUE => $obj->id, ENTRYAGGREGATOR => 'OR');
 
 }
 
@@ -208,26 +208,31 @@ sub DelegatedFrom {
 # {{{ sub Next 
 sub Next {
     my $self = shift;
-    
+
     my $ACE = $self->SUPER::Next();
-    if ((defined($ACE)) and (ref($ACE))) {
-	
-	if ( $ACE->CurrentUserHasRight('ShowACL') or
-	     $ACE->CurrentUserHasRight('ModifyACL')
-	   ) {
-	    return($ACE);
-	}
-	
-	#If the user doesn't have the right to show this ACE
-	else {	
-	    return($self->Next());
-	}
+    if ( ( defined($ACE) ) and ( ref($ACE) ) ) {
+
+        if ( $self->CurrentUser->HasRight( Right  => 'ShowACL',
+                                           Object => $ACE->Object )
+             or $self->CurrentUser->HasRight( Right  => 'ModifyACL',
+                                              Object => $ACE->Object )
+          ) {
+            return ($ACE);
+        }
+
+        #If the user doesn't have the right to show this ACE
+        else {
+            use Carp;
+            $RT::Logger->debug(Carp::cluck);
+            return ( $self->Next() );
+        }
     }
+
     #if there never was any ACE
     else {
-	return(undef);
-    }	
-    
+        return (undef);
+    }
+
 }
 
 # }}}

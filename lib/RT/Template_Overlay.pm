@@ -82,7 +82,7 @@ sub _Set {
     if ( ( defined $self->SUPER::_Value('Queue') )
         && ( $self->SUPER::_Value('Queue') == 0 ) )
     {
-        unless ( $self->CurrentUser->HasSystemRight('ModifyTemplate') ) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'ModifyTemplate') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
     }
@@ -131,7 +131,7 @@ sub _Value {
     if ( ( !defined $self->__Value('Queue') )
         || ( $self->__Value('Queue') == 0 ) )
     {
-        unless ( $self->CurrentUser->HasSystemRight('ShowTemplate') ) {
+        unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'ShowTemplate') ) {
             return (undef);
         }
     }
@@ -239,7 +239,7 @@ sub Create {
     );
 
     if ( $args{'Queue'} == 0 ) {
-        unless ( $self->CurrentUser->HasSystemRight('ModifyTemplate') ) {
+        unless ( $self->CurrentUser->HasRight(Right =>'ModifyTemplate', Object => $RT::System) ) {
             return (undef);
         }
     }
