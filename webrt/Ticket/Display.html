@@ -6,11 +6,13 @@
 
 <& /Ticket/Elements/ToolBar, Ticket => $Ticket&>
 
-  <& /Elements/TitleBoxStart, title => $Ticket->Subject, titleright=> "<a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?id=".$Ticket->Id."\">Update</a> "&>
+  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Ticket->Subject, titleright=> "<a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?id=".$Ticket->Id."\">Update</a> "&>
 
 
 <& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
+<& /Elements/TitleBoxEnd &>
 
+<h1>Ticket History</h1>
 
 <& /Ticket/Elements/ShowHistory , Ticket => $Ticket &> 
 

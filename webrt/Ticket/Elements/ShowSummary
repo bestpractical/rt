@@ -18,13 +18,14 @@
 	  <& /Elements/TitleBoxEnd &>
 	  </TD>
 	</TR>
-	</TABLE>
+	<TD COLSPAN=2>
 	  <& /Elements/TitleBoxStart, title => 'People' &>
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 
-     <TABLE WIDTH="100%">
-      <TR>
+      </TD>
+       </TR>
+        <TR>
 	<TD WIDTH="50%">
 	  <& /Elements/TitleBoxStart, title => 'Unresolved Dependencies', titleright => '<A HREF="">[As search]</a>' &>
 	  This ticket has no unresoved dependencies
