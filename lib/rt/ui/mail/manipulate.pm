@@ -111,7 +111,7 @@ if it's a new ticket (only makes sense on correspond aliases)
   #flip the content around.
   &munge_content($content);
   
-  if ($in_action eq 'actions') {
+  if ($in_action =~ 'action') {
     exit(0);
   }
   elsif ($in_action eq 'correspond') {
