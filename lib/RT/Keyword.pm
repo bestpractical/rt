@@ -39,10 +39,12 @@ sub _Accessible {
 
   my $keyword = RT::Keyword->new($CurrentUser);
   $keyword->Create( Name => 'tofu',
+		    Description => 'fermented soy beans',
 		  );
 
   my $keyword = RT::Keyword->new($CurrentUser);
   $keyword->Create( Name   => 'beast',
+		    Description => 'a wild animal',
 		    Parent => 2,
 		  );
 
@@ -82,17 +84,24 @@ sub Create {
 		Description => undef,
 		Parent => 0,
 		@_);
-
-
+    
+    
     #TODO check for ACLs+++
     if ( $args{'Parent'} && $args{'Parent'} !~ /^\d+$/ ) {
 	$RT::Logger->err( "can't yet specify parents by name, sorry: ". $args{'Parent'});
+	return(0,'Parent must be specified by id');
     }
     
-    $self->SUPER::Create(Name => $args{'Name'},
-			 Description => $args{'Description'},
-			 Parent => $args{'Parent'}
-			);
+    my $val = $self->SUPER::Create(Name => $args{'Name'},
+				   Description => $args{'Description'},
+				   Parent => $args{'Parent'}
+				  );
+    if ($val) {
+	return ($val, 'Keyword created');
+    }
+    else {
+	return(0,'Could not create keyword');
+    }	
 }
 
 # }}}
@@ -113,7 +122,6 @@ sub LoadByPath {
     my $path = shift;
     
     my $delimiter = substr($path,0,1);
-    $RT::Logger->debug("Delimiter is $delimiter");
     my @path_elements = split($delimiter, $path);
     
     #throw awya the first bogus path element
@@ -127,7 +135,7 @@ sub LoadByPath {
     while (my $name = shift @path_elements) {
 	
 	$tempkey = new RT::Keyword($self->CurrentUser);
-	$RT::Logger->debug("Going to load $name which was begat by $parent\n");
+
 	my $loaded = $tempkey->LoadByNameAndParentId($name, $parent);
 	
 	#Set the new parent for loading its child.
@@ -135,7 +143,7 @@ sub LoadByPath {
 	
 	#If the parent Id is 0, then we're not recursing through the tree
 	# time to bail
-	return (0, "Couldn't find keyword") if ($tempkey->id == 0);
+	return (0, "Couldn't find keyword") unless ($tempkey->id());
 
     }	
     #Now that we're through with the loop, the last keyword loaded
@@ -166,11 +174,9 @@ sub LoadByNameAndParentId {
     
     my $val = $self->LoadByCols( Name => $name, Parent => $parentid);
     if ($self->Id) {
-	$RT::Logger->debug("Found keyword ".$self->Name."!\n");
 	return ($self->Id, 'Keyword loaded');
     }	
     else {
-	$RT::Logger->debug("not Found keyword ".$name."!\n");
 	return (0, 'Keyword could not be found');
     }
   }

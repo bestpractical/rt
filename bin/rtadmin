@@ -194,21 +194,13 @@ $help_scrip
 
 
 Keyword configuration for --keyword  <fully qualified name>
-	--list-children [<optional-depth>]
-  	--create
-	--delete
-	--name
-	--description
+	--list-children
+  	--create-child <name>
+	--delete 
+	--name <new name>
+	--description <new description>
 
 EOF
-
-
-
-
-
-
-
-
 
 
 
@@ -239,7 +231,7 @@ sub PickMode {
     elsif ($group)      { AdminGroup($group) }
     elsif ($queue)      { AdminQueue($queue) }
     elsif ($system)     { AdminSystem($system) }
-    elsif ($keyword)    { AdminKeyword($keyword) }
+    elsif ($keyword)    { AdminKeywords($keyword) }
     elsif ($listusers)  { ListUsers() }
     elsif ($listgroups) { ListGroups()  }
     elsif ($listqueues) { ListQueues() }
@@ -448,6 +440,82 @@ sub AdminQueue {
 # {{{ AdminKeywords
 sub AdminKeywords {
     my $keyword = shift;
+    
+    my %args;
+    GetOptions(\%args, 'list-children', 'create-child=s', 'delete', 'Name=s', 'Description=s');
+    
+    use RT::Keyword;
+    
+    my $key_obj = new RT::Keyword($CurrentUser);
+    my $key_id;
+    
+    #If we're dealing with the root of the keyword list
+    if ($keyword eq '/') {
+	$key_id=0;
+    }	
+    else {
+	my ($val, $msg) = $key_obj->LoadByPath( $keyword );
+	unless ($val) {
+	    print $msg ."\n";
+	}
+	$key_id = $key_obj->Id();
+    }	
+    
+    if ($args{'create-child'}) {
+	my $child = new RT::Keyword($CurrentUser);
+	
+	my ($val, $msg) = $child->Create( Parent => $key_id,
+					  Name => $args{'create-child'},
+					);
+	print $msg ."\n";
+    }	
+    
+    elsif ($args{'list-children'}) {
+	my $keywords;
+	if ($key_obj->id) {
+	    $keywords = $key_obj->Children();
+	}	
+	#If we didn't actually have a keyword object, we need to create our own Keywords object.
+	else {
+	    $keywords = new RT::Keywords($CurrentUser);
+	    $keywords->LimitToParent(0); 
+	}
+	
+	while (my $key=$keywords->Next) {
+	    print $key->Name;
+	    if ($key->Description) {
+		print " (" . $key->Description .")";
+	    }	
+	    print "\n";
+	}	
+	      
+
+    }	
+    
+    #Else we wanna do some modification.
+    else {
+	
+	#If we didn't load a keyword, get out
+	return(undef) unless ($key_obj->Id);
+	
+	
+	my @attributes = qw( Name Description );
+	foreach my $attrib (@attributes) {
+	    if ( (exists ($args{"$attrib"})) and
+		 ($key_obj->$attrib() ne $args{"$attrib"})) {
+		
+		my $method = "Set$attrib";
+		my ($val, $msg) = $key_obj->$method($args{"$attrib"});
+		
+		print "Keyword ".$key_obj->Name. " $attrib:  $msg\n";	    }
+	}
+	
+	if ($args{'delete'}) {
+	    $key_obj->Delete();
+	    
+	}
+	
+    }
 }
 # }}}
 
@@ -509,9 +577,9 @@ sub AdminKeywordSelects {
 
     
     elsif ($args{'delete-keyword-select'}) {
-$keysel_obj->LoadByName(Name => $args{'delete-keyword-select'},
+	$keysel_obj->LoadByName(Name => $args{'delete-keyword-select'},
 				Queue => $queue);
-
+	
 	$keysel_obj->Delete();
 	
     }
