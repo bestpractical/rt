@@ -26,6 +26,8 @@ sub _Init   {
  
   $self->{'table'} = "Links";
   $self->{'primary_key'} = "id";
+
+
   return ( $self->SUPER::_Init(@_));
 }
 # }}}
@@ -45,6 +47,25 @@ sub Limit  {
 	my $dummy = $self->NewItem();
 	  $uri = $dummy->CanonicalizeURI($args{'VALUE'});
     }
+
+
+    # If we're limiting by target, order by base
+    # (Order by the thing that's changing)
+
+    if ( ($args{'FIELD'} eq 'Target') or 
+	 ($args{'FIELD'} eq 'LocalTarget') ) {
+	$self->OrderBy (ALIAS => 'main',
+			FIELD => 'Base',
+			ORDER => 'ASC');
+    }
+    elsif ( ($args{'FIELD'} eq 'Base') or 
+	    ($args{'FIELD'} eq 'LocalBase') ) {
+	$self->OrderBy (ALIAS => 'main',
+			FIELD => 'Target',
+			ORDER => 'ASC');
+    }
+    
+
     $self->SUPER::Limit(%args);
 }
 # }}}
