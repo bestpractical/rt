@@ -1,5 +1,10 @@
 <TABLE WIDTH=100% BGCOLOR="#336699" CELLSPACING=0 BORDER=0 CELLPADDING=0 >
 <TR>
+% if ($Reset) {
+<TD>
+<INPUT TYPE=RESET VALUE="<%$ResetLabel%>">
+</TD>
+%}
 <TD>
 &nbsp;
 </TD>
@@ -14,4 +19,6 @@
 <%ARGS>
 $Caption => undef
 $Label => 'Submit'
+$Reset => undef
+$ResetLabel => 'Reset'
 </%ARGS>

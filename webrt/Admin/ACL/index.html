@@ -4,19 +4,12 @@
 Edit ACL for:
 <ul>
 % while (my $queue = $Queues->Next) {
-<li><A HREF="Queue.html?Queue=<%$queue->id%>"><%$queue->id%>: <%$queue->QueueId%>
-(<%$queue->Description%></a>
+<li><A HREF="Queue.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->QueueId%>
+(<%$queue->Description%>)</a>
 % }
 </ul>
 
-        System
 
-        Queue <name>
-        Queue global
-
-        Users whose <username/email> matches ________
-        "Everyone"
-        Me
 <%INIT>
 my $Queues = new RT::Queues($session{'CurrentUser'});
 $Queues->UnLimit;

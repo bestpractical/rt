@@ -128,6 +128,7 @@ sub Create  {
 # }}}
 
 # {{{ sub Delete 
+
 #This should probably not ever exist. deleting users 
 #would hose the schema.
 sub Delete  {
@@ -306,7 +307,7 @@ sub GrantQueueRight {
    
     require RT::ACE;
 
-    $RT::Logger->debug("$self ->GrantQueueRight ". join(@_)."\n");
+    $RT::Logger->debug("$self ->GrantQueueRight right:". $args{'RightName'} ." applies to queue ".$args{'RightAppliesTo'}."\n");
 
     my $ace = new RT::ACE($self->CurrentUser);
     
@@ -377,7 +378,13 @@ sub GrantSystemRight {
 
 # {{{ sub HasQueueRight
 
-=head2 HasQueueRight( QueueObj => RT::Queue, Right => 'Right' )
+=head2 HasQueueRight
+
+Takes a paramhash which can contain
+three items:
+    TicketObj => RT::Ticket or QueueObj => RT::Queue
+    and Right => 'Right' 
+
 
 Returns 1 if this user has the right specified in the paramhash. for the queue
 passed in.
@@ -387,41 +394,6 @@ Returns undef if they don't
 =cut
 
 sub HasQueueRight {
-    my $self = shift;
-    my %args = ( QueueObj => undef,
-		 Right => undef,
-		 @_);
-    
-    unless (ref ($args{'QueueObj'}) =~ /^RT::Queue/) {
-	$RT::Logger->debug("RT::User::HasQueueRight was passed ".
-			   "$args{'QueueObj'} as a queue object");
-    }
-    
-    return ($self->_HasRight(Scope => 'Queue',
-			     AppliesTo => $args{'QueueObj'}->Id,
-			     Right => "$args{'Right'}"));
-    
-}
-
-# }}}
-
-# {{{ sub HasTicketRight
-
-=head2 HasTicketRight
-
-Takes a paramhash which can contain
-three items:
-    TicketObj => RT::Ticket or QueueObj => RT::Queue
-    and Right => 'Right' 
-
-Returns 1 if this user has the ticket right specified for the ticket object
-passed in.
-
-Returns undef if they don't
-
-=cut
-
-sub HasTicketRight {
     my $self = shift;
     my %args = ( TicketObj => undef,
                  QueueObj => undef,
@@ -442,9 +414,10 @@ sub HasTicketRight {
 	Carp::Confess;
 	$RT::Logger->debug("$self ->HasTicketRight didn't find a valid queue id.");
     }
-    return ($self->_HasRight(Scope => 'Ticket',
+    return ($self->_HasRight(Scope => 'Queue',
 			     AppliesTo => $QueueId,
 			     Right => "$args{'Right'}"));
+    
     
 }
 

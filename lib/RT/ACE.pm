@@ -6,14 +6,13 @@ use RT::Record;
 
 use vars qw (%SCOPE 
    	     %QUEUERIGHTS
-	     %TICKETRIGHTS
 	     %SYSTEMRIGHTS
 	     %METAPRINCIPALS
 	    ); 
 
 
 
-%SCOPES = (Ticket => 'Rights that apply to the tickets in a queue', 
+%SCOPES = (
 	   System => 'System-level right',
 	   Queue => 'Queue-level right'
 	  );
@@ -31,33 +30,27 @@ use vars qw (%SCOPE
 		 ShowTemplates => 'Display email templates for this queue',
 		 ModifyScripScopes => 'Modify ScripScopes for this queue',
 		 ShowScripScopes => 'Display ScripScopes for this queue',
-	       );
+		 ShowTicket => 'Show ticket summaries',
+		 ShowTicketHistory => 'Show ticket histories',
+		 ShowTicketComments => 'Show ticket private commentary',
+		 CreateTickets => 'Create tickets in this queue',
+		 ReplyToTickets => 'Reply to tickets',
+		 CommentOnTickets => 'Comment on tickets',
+		 OwnTickets => 'Own tickets',
+		 ModifyTickets => 'Modify tickets',
+		 DeleteTickets => 'Delete tickets'
+	       );	
+
 
 # System rights are rights granted to the whole system
-%SYSTEMRIGHTS = ( CreateQueue => 'Create queues',
-		  DeleteQueue => 'Delete queues',
-          AdminGroups => 'Create, delete and modify groups',
-		  ModifyScripScopes => 'Modify global ScripScopes',
-		  ShowScripScopes => 'Display global ScripScopes',
+%SYSTEMRIGHTS = (AdminQueues => 'Create, delete and modify queues', 
+		  AdminGroups => 'Create, delete and modify groups',
 		  AdminUsers => 'Create, Delete and Modify users',
 		  ModifySelf => 'Modify one\'s own RT account',
 		  ModifySystemACL => 'Modify system ACLs',
 
 		);
 
-#Ticket rights are the sort of queue rights that can be granted to 
-#principals and metaprincipals
-
-%TICKETRIGHTS = ( Show => 'Show ticket summary',
-        		  ShowHistory => 'Show ticket history',
-	        	  ShowComments => 'Show ticket private commentary',
-		          Create => 'Create a ticket in this queue',
-        		  Reply => 'Reply to ticket',
-	           	  Comment => 'Comment on ticket',
-        		  Own => 'Own a ticket',
-	        	  Modify => 'Modify ticket',
-        		  Delete => 'Delete ticket'
-		);
 
 # }}}
 
@@ -99,18 +92,24 @@ sub Create {
 	       );
     
     if ($args{'RightScope'} eq 'System') {
-	return (0, 'No permission to grant rights')
-	  unless ($self->CurrentUser->HasSystemRight('ModifySystemACL'));
+	
+	unless ($self->CurrentUser->HasSystemRight('ModifySystemACL')) {
+	    $RT::Logger->error("No permission to grant rights");
+	    return(undef);
+	}
 	
 	#TODO check if it's a valid RightName/Principaltype
     }
     elsif (($args{'RightScope'} eq 'Queue') and
 	   ($args{'RightAppliesTo'} eq '0')) {
-	return (0, 'No permission to grant rights')
-	  unless ($self->CurrentUser->HasSystemRight('ModifySystemACL'));
 	
-	#TODO check if it's a valid RightName/Principaltype
+	unless ($self->CurrentUser->HasSystemRight('ModifySystemACL')) {
+	      $RT::Logger->err("No permission to grant rights");
+	      return (undef);
+	  }
 
+	#TODO check if it's a valid RightName/Principaltype
+	
     }
     elsif ($args{'RightScope'} eq 'Queue') {
 	#TODO add logic here
@@ -123,20 +122,14 @@ sub Create {
 	#TODO check if it's a valid RightName/Principaltype
 	
     }
-    elsif ($args{'RightScope'} eq 'Ticket') {
-	#TODO add logic here
- 
-	#TODO check if it's a valid ticket right
-	#TODO check if it's a valid PrincipalType/Id
-	
-   }
     #If it's not a scope we recognise, something scary is happening.
     else {
 	$RT::Logger->err("RT::ACE->Create got a scope it didn't recognize: ".
-			 $args{'RightScope'}."\n");
+			 $args{'RightScope'}." Bailing. \n");
 	return(0,"System error. Unable to grant rights.");
     }
     
+    $RT::Logger->debug("$self ->Create Granting ". $args{'RightName'} ." to ".  $args{'PrincipalId'}."\n");
     my $id = $self->SUPER::Create( PrincipalId => $args{'PrincipalId'},
 				   PrincipalType => $args{'PrincipalType'},
 				   RightName => $args{'RightName'},
@@ -185,20 +178,6 @@ sub _BootstrapRight {
 	return(undef);
     }
     
-}
-
-# }}}
-
-# {{{ sub TicketRights
-
-=head2 TicketRights
-
-Returns a hash of all the possible rights at the ticket scope
-
-=cut
-
-sub TicketRights {
-	return (%TICKETRIGHTS);
 }
 
 # }}}
@@ -267,6 +246,7 @@ __DATA__
 
 PrincipalType, PrincipalId, Right,Scope,AppliesTo
 
+=head1 The docs are out of date. so you know.
 
 =head1 Scopes
 
@@ -427,6 +407,5 @@ Modify System ACL
   Everyone,NULL
 
 =cut
-
 
 # }}}

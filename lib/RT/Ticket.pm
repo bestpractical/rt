@@ -228,7 +228,7 @@ sub Create {
     #to own a ticket, scream about it and make them not the owner
     if ((defined ($Owner)) and
 	($Owner->Id != $RT::Nobody->Id) and 
-	(!$self->HasRight(Principal => $Owner, Right => 'Own'))) {
+	(!$self->HasRight(Principal => $Owner, Right => 'OwnTickets'))) {
 	
 	$RT::Logger->warning("$self user ".$Owner->UserId . "(".$Owner->id .") was proposed ".
 			     "as a ticket owner but has no rights to own ".
@@ -244,7 +244,7 @@ sub Create {
     }	
 	    
 	    
-    unless ($self->CurrentUser->HasTicketRight(Right => 'Create',
+    unless ($self->CurrentUser->HasQueuetRight(Right => 'CreateTickets',
 					       QueueObj => $Queue )) {
 	return (0,0,"Permission Denied");
     }
@@ -371,7 +371,7 @@ sub AddWatcher {
 	       Owner => 0,
 	       @_ );
 
-  unless ($self->CurrentUserHasRight('Modify')) {
+  unless ($self->CurrentUserHasRight('ModifyTickets')) {
     return (0, "Permission Denied");
   }
  
@@ -456,7 +456,7 @@ sub DeleteWatcher {
     my ($Watcher);
    
     #Check ACLs 
-    unless ($self->CurrentUserHasRight('Modify')) {
+    unless ($self->CurrentUserHasRight('ModifyTickets')) {
         return (0, "Permission Denied");
     }
     
@@ -512,7 +512,7 @@ Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 sub Watchers {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('Show')) {
+  unless ($self->CurrentUserHasRight('ShowTickets')) {
     return (0, "Permission Denied");
   }
 
@@ -641,7 +641,7 @@ Returns this ticket's Requestors as an RT::Watchers object
 sub Requestors {
   my $self = shift;
 
-  unless ($self->CurrentUserHasRight('Show')) {
+  unless ($self->CurrentUserHasRight('ShowTickets')) {
     return (0, "Permission Denied");
   }
   require RT::Watchers;
@@ -655,6 +655,7 @@ sub Requestors {
   return($self->{'Requestors'});
   
 }
+
 # }}}
 
 # {{{ sub Cc
@@ -670,7 +671,7 @@ sub Cc {
   my $self = shift;
 
   
-  unless ($self->CurrentUserHasRight('Show')) {
+  unless ($self->CurrentUserHasRight('ShowTickets')) {
     return (0, "Permission Denied");
   }
 
@@ -698,7 +699,7 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 sub AdminCc {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('Show')) {
+  unless ($self->CurrentUserHasRight('ShowTickets')) {
     return (0, "Permission Denied");
   }
   if (! defined ($self->{'AdminCc'})) {
@@ -855,7 +856,7 @@ sub SetQueue {
   my $self = shift;
   my ($NewQueue, $NewQueueObj);
 
-  unless ($self->CurrentUserHasRight('Modify')) {
+  unless ($self->CurrentUserHasRight('ModifyTickets')) {
     return (0, "Permission Denied");
   }
   
@@ -869,11 +870,11 @@ sub SetQueue {
     if (!$NewQueueObj->Load($NewQueue)) {
       return (0, "That queue does not exist");
     }
-    elsif (!$self->CurrentUser->HasTicketRight(Right =>'Create',
+    elsif (!$self->CurrentUser->HasQueueRight(Right =>'CreateTickets',
 					       QueueObj => $NewQueueObj )) {
       return (0, "You may not create requests in that queue.");
     }
-    elsif (!$NewOwnerObj->HasTicketRight(Right=> 'Create',  
+    elsif (!$NewOwnerObj->HasQueueRight(Right=> 'CreateTickets',  
                                          QueueObj => $NewQueueObj)) {
       $self->Untake();
     }
@@ -1173,7 +1174,7 @@ sub Comment {
 	      TimeTaken => 0,
 	      @_ );
 
-  unless ($self->CurrentUserHasRight('Comment')) {
+  unless ($self->CurrentUserHasRight('CommentOnTickets')) {
     return (0, "Permission Denied");
   }
   #Record the correspondence (write the transaction)
@@ -1213,7 +1214,7 @@ sub Correspond {
 	       TimeTaken => 0,
 	       @_ );
 
-  unless ($self->CurrentUserHasRight('Reply')) {
+  unless ($self->CurrentUserHasRight('ReplyToTickets')) {
       return (0, "Permission Denied");
   }
   
@@ -1288,11 +1289,13 @@ sub NewKeyword {
 # }}}
 
 # {{{ sub HasKeyword
+
 sub HasKeyword {
   my $self = shift;
   
   die "HasKeyword stubbed";
 }
+
 # }}}
 # }}}
 
@@ -1348,7 +1351,6 @@ sub MemberOf {
    return ($self->{'memberof'});
 
 }
-
 
 # }}}
 
@@ -1707,7 +1709,7 @@ sub SetOwner {
   
   #If we've specified a new owner and that user can't modify the ticket
   elsif (($NewOwnerObj) and 
-	 (!$NewOwnerObj->HasTicketRight(Right => 'OwnTicket',
+	 (!$NewOwnerObj->HasQueuetRight(Right => 'OwnTickets',
 					TicketObj => $self))
 	) {
       return (0, "That user may not own requests in that queue");
@@ -1782,7 +1784,7 @@ current user. Even if it's owned by another user.
 sub Steal {
   my $self = shift;
   
-  if (!$self->CurrentUserHasRight('Modify')){
+  if (!$self->CurrentUserHasRight('ModifyTickets')){
       return (0,"Permission Denied");
   }
   elsif ($self->OwnerObj->Id eq $self->CurrentUser->Id ) {
@@ -1927,7 +1929,7 @@ transactions on this ticket
 sub Transactions {
     my $self = shift;
     
-    unless ($self->CurrentUserHasRight('ShowHistory')) {
+    unless ($self->CurrentUserHasRight('ShowTicketHistory')) {
 	return (0, "Permission Denied");
     }
     
@@ -2023,7 +2025,7 @@ sub _Accessible {
 sub _Set {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('Modify')) {
+  unless ($self->CurrentUserHasRight('ModifyTickets')) {
     return (0, "Permission Denied");
   }
 
@@ -2080,7 +2082,7 @@ sub _Value  {
 
  #If the current user doesn't have ACLs, don't let em at it.  
  
- unless ($self->CurrentUserHasRight('Show')) {
+ unless ($self->CurrentUserHasRight('ShowTickets')) {
     return (0, "Permission Denied");
   }
   
@@ -2160,16 +2162,10 @@ sub HasRight {
 		$RT::Logger->warning("Principal attrib undefined for Ticket::HasRight");
 	}
        
-	return($args{'Principal'}->HasTicketRight(TicketObj => $self, 
+	return($args{'Principal'}->HasQueueRight(TicketObj => $self, 
 						  Right => $args{'Right'}));
 	
 	    
-	#TODO this needs to move into User.pm's 'hasTicketRight'
-
-    $PrincipalsClause .= " OR (PrincipalType = 'Owner') "  if ($actor == $self->OwnerObj->Id);
-    $PrincipalsClause .= "OR (PrincipalType = 'TicketRequestor') " if ($self->IsRequestor($actor));
-    $PrincipalsClause .= "OR (PrincipalType = 'TicketCc') " if  ($self->IsCc($actor));
-    $PrincipalsClause .= "OR (PrincipalType = 'TicketAdminCc') " if ($self->IsAdminCc($actor));
 }
 
 # }}}

@@ -44,7 +44,7 @@ sub Create  {
   my %args = (@_); 
   
   #Check them ACLs
-  return (0, "No permission to create queues") unless ($self->CurrentUser->HasSystemRight(Right => 'CreateQueue'));
+  return (0, "No permission to create queues") unless ($self->CurrentUser->HasSystemRight('AdminQueues'));
   
   #TODO better input validation
 
@@ -72,8 +72,8 @@ sub Delete  {
   
   die ("Queue->Delete not implemented yet");
   
-      return(0, "You do not have the privileges to delete queues")
-	unless ($self->CurrentUserHasRight('DeleteQueue'));
+  return(0, "You do not have the privileges to delete queues")
+	unless ($self->CurrentUserHasRight('AdminQueues'));
 	  
   #TODO:  DO ALL THESE
   #Find all the tickets in this queue.

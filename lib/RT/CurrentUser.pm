@@ -173,19 +173,6 @@ sub IsPassword {
 
 # {{{ Convenient ACL methods
 
-=head2 HasTicketRight
-
-calls $self->UserObj->HasTicketRight with the arguments passed in
-
-=cut
-
-sub HasTicketRight {
-    my $self = shift;
-    return ($self->UserObj->HasTicketRight(@_));
-}
-
-
-
 =head2 HasQueueRight
 
 calls $self->UserObj->HasQueueRight with the arguments passed in

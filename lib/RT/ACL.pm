@@ -234,9 +234,9 @@ sub LimitPrincipalToId {
 #values 
 sub _DoSearch {
     my $self = shift;
-    $RT::Logger->debug("Now in ".$self."->_DoSearch");
+   # $RT::Logger->debug("Now in ".$self."->_DoSearch");
     my $return = $self->SUPER::_DoSearch(@_);
-    $RT::Logger->debug("In $self ->_DoSearch. return from SUPER::_DoSearch was $return\n");
+  #  $RT::Logger->debug("In $self ->_DoSearch. return from SUPER::_DoSearch was $return\n");
     $self->_BuildHash();
     return ($return);
 }
@@ -246,7 +246,7 @@ sub _DoSearch {
 sub _BuildHash {
     my $self = shift;
 
-    $RT::Logger->debug("Now in ".$self."->_BuildHash\n");
+ #   $RT::Logger->debug("Now in ".$self."->_BuildHash\n");
     while (my $entry = $self->Next) {
 
 
@@ -258,12 +258,11 @@ sub _BuildHash {
                              $entry->PrincipalType;
 
 
-        $RT::Logger->debug("Now building entry for ".$hashkey." in ".
-                            $self."->_BuildHash\n");
+#       $RT::Logger->debug("Now building entry for ".$hashkey." in ". $self."->_BuildHash\n");
         $self->{'as_hash'}->{"$hashkey"} =1;
 
     }
-    $RT::Logger->debug("Done with ".$self."->_BuildHash\n");
+#    $RT::Logger->debug("Done with ".$self."->_BuildHash\n");
 }
 
 
@@ -286,16 +285,16 @@ sub HasEntry {
     #if we haven't done the search yet, do it now.
     $self->_DoSearch();
 
-    $RT::Logger->debug("Now in ".$self."->HasEntry\n");
+#    $RT::Logger->debug("Now in ".$self."->HasEntry\n");
 
     $RT::Logger->debug("Trying to find as_hash-> ".
-                            $args{'RightScope'} . "-" .
-                             $args{'RightAppliesTo'} . "-" . 
-                             $args{'RightName'} . "-" .
-                             $args{'PrincipalId'} . "-" .
-                             $args{'PrincipalType'}.
+		       $args{'RightScope'} . "-" .
+		       $args{'RightAppliesTo'} . "-" . 
+		       $args{'RightName'} . "-" .
+		       $args{'PrincipalId'} . "-" .
+		       $args{'PrincipalType'}.
 		       "..."
-                             );
+		      );
     
     if ($self->{'as_hash'}->{ $args{'RightScope'} . "-" .
 			      $args{'RightAppliesTo'} . "-" . 

@@ -1,85 +1,66 @@
-  <& /Admin/Elements/Header, Title => 'RT ACL Administration' &>
+  <& /Admin/Elements/Header, Title => 'Modify ACLS for queue '. $QueueObj-QueueId &>
   <FORM METHOD=POST>
     <INPUT TYPE=HIDDEN NAME=Queue VALUE="<% $QueueObj->id %>">
       
+
+
+<h2>Modify ACLS for queue <a href="../Queues/Modify.html?id=1"><%$QueueObj->QueueId%></a></h2>
       <TABLE>
-	<%PERL>
-	#Iterate through all users with rights in this queu
-	while (my $UserObj = $Users->Next()) {
-	    my $UserACLObj = new RT::ACL($session{'CurrentUser'});
-	    
-	    $UserACLObj->LimitScopeToQueue($QueueObj->Id);
-	    $UserACLObj->LimitPrincipalToUser($UserObj->Id);
-	</%PERL>
 	<TR>
 	  <TD>
+	    <h3><a href="../Users/">Users</a></h3>
+	  </TD>
+	  <TD>
+	    <h3><a href="../Groups/">Groups</a></h3>
+	  </TD>
+	</TR>
+	<TR>
+	  <TD>
+    <TABLE>
+        
+
+%	while (my $UserObj = $Users->Next()) {
+  <TR ALIGN=RIGHT> 
+	<TD VALIGN=TOP>
+
+
 	    <% $UserObj->UserId %>
+		  </TD>
+		<TD>
+	    <& Elements/SelectQueueRightsForUser, UserObj => $UserObj, QueueObj => $QueueObj, 
+	    QueueRights => \%QueueRights &>
+		</TD>
+	      </TR>
+% }
+	    </TABLE>
 	  </TD>
 	  <TD>
-
-	    <INPUT TYPE=HIDDEN NAME="CheckACL" 
-		   VALUE="User-<%$UserObj->Id%>-Queue-<%$QueueObj->Id%>">
-	      <SELECT SIZE=5  MULTIPLE 
-		      NAME="ACL-User-<%$UserObj->Id%>-Queue-<%$QueueObj->Id%>">
-
-% foreach $right (keys %TicketRights) {
-
-		<OPTION VALUE="Ticket-<%$right%>"
-		  <% $UserACLObj->HasEntry(PrincipalId => $UserObj->Id ,
-					   PrincipalType => 'User',
-					   RightName => "$right", 
-					   RightScope => 'Ticket', 
-					   RightAppliesTo => $QueueObj->Id)
-		  && 'SELECTED' %>
-		  >Ticket:<%$right%></OPTION>
-% }
-%foreach $right (keys %QueueRights) {
-		    <OPTION VALUE="Queue-<%$right%>"
-		  <%  $UserACLObj->HasEntry(PrincipalId=> $UserObj->Id , 
-					    PrincipalType => 'User', 
-					    RightName => "$right", 
-					    RightScope => 'Queue', 
-					    RightAppliesTo => $QueueObj->Id) 
-		    && 'SELECTED'  %>
-		  >Queue:<%$right%></OPTION>
-% }
-	      </SELECT>
-	    
-	  </TD>
-	</TR>
+	    <TABLE>
+% while ($GroupObj = $Groups->Next()) {
+	      
+	      <TR ALIGN=RIGHT> 
+		<TD VALIGN=TOP>
+		  <% $GroupObj->Name %>
+		</TD>
+		<TD>
+	    <& Elements/SelectQueueRightsForGroup, GroupObj => $GroupObj, QueueObj => $QueueObj, 
+	    QueueRights => \%QueueRights &>
+		</TD>
+	      </TR>
 	
 % }
+	      </TABLE>
+	      </TD>
+    </TR>
       </TABLE>
+      <P>Be careful to hold down your control or apple key when selecting rights, to make sure that you don't 
+remove rights that were granted previously.
+	</P>
       
-      <TABLE>
-	
-%#Iterate through all users with rights in this queu
-%while ($GroupObj = $Groups->Next()) {
-	<TR>
-	  <TD>
-	    <% $GroupObj->Name %>
-	  </TD>
-	  <TD>
-	    <INPUT TYPE=HIDDEN NAME="CheckACL" 
-		   VALUE="Group-<%$GroupObj->Id%>-Queue-<%$QueueObj->Id%>">
-	      <SELECT SIZE=5 MULTIPLE 
-		      NAME="ACL-Group-<%$GroupObj->Id%>-<%$QueueObj->Id%>">
-% foreach $right (keys %TicketRights) {
-		<OPTION VALUE="Ticket-<%$right%>">Ticket:<%$right%></OPTION>
-% }
-%foreach $right (keys %QueueRights) {
-		<OPTION VALUE="Queue-<%$right%>">Queue:<%$right%></OPTION>
-%}
-	      </SELECT>
-	  </TD>
-	</TR>
-	
-% }
-      </TABLE>
-    <& /Elements/Submit &>
+      <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
   </FORM>
   
-<%INIT>
+  <%INIT>
     
     # {{{ Deal with setting up the display of current rights.
     
@@ -89,17 +70,16 @@
     my ($GroupObj);
   
   my ($right);
-  my %TicketRights = RT::ACE->TicketRights;
   my %QueueRights = RT::ACE->QueueRights;
   
   
-  if (!defined $Queue) {
+  if (!defined $id) {
       Abort("No Queue defined");
   }
   
   my $QueueObj = new RT::Queue($session{'CurrentUser'});
-  $QueueObj->Load($Queue) ||
-    Abort("Couldn't load queue $Queue");
+  $QueueObj->Load($id) ||
+    Abort("Couldn't load queue $id");
   
   # Find out which users we want to display ACL selects for
   my $Users = new RT::Users($session{'CurrentUser'});
@@ -153,8 +133,8 @@
 	  if ($PrincipalType  eq 'User' ) {
 	      $Principal = new RT::User($session{'CurrentUser'});
 	  }
-      elsif ($PrincipalType eq 'Group') {
-           $Principal = new RT::Group($session{'CurrentUser'});
+	  elsif ($PrincipalType eq 'Group') {
+	      $Principal = new RT::Group($session{'CurrentUser'});
            }
 	  else {
 	      Abort("$PrincipalType unknown principal type")
@@ -188,15 +168,15 @@
 	  # {{{ Add any rights we need. at the same time, build up
 	  # a hash of what rights have been selected 
 
-	  my ($entry,%rights);
-	  foreach $entry (@rights) {
-	      my ($scope, $right);
+	  my ($right,%rights);
+	  foreach $right (@rights) {
 
-	      $RT::Logger->debug ("Now handling right $entry\n");
-	      ($scope, $right) = split(/-/,$entry,2);
+	      
+	      $RT::Logger->debug ("Now handling right $right\n");
+	      
 	      
 	      #if the right that's been selected wasn't there before, add it.
-	      unless ($CurrentACL->HasEntry(RightScope => "$scope",
+	      unless ($CurrentACL->HasEntry(RightScope => "Queue",
 					    RightName => "$right",
 					    RightAppliesTo => "$AppliesTo", 
 					    PrincipalType => $PrincipalType ,
@@ -204,11 +184,11 @@
 		  
 		  #TODO Deal with system rights
 		  #Add new entry to list of rights.
-		  $RT::Logger->debug("Granting queue right $entry to ".
+		  $RT::Logger->debug("Granting queue $AppliesTo right $right to ".
 				     $Principal->id.	 
 				     " for queue $AppliesTo\n"); 
 		  $Principal->GrantQueueRight( RightAppliesTo => $AppliesTo,
-					       RightScope => "$scope",
+					       RightScope => "Queue",
 					       RightName => "$right" );
 		  
 	      }
@@ -216,23 +196,23 @@
 	      # Build up a hash of rights, so that we can easily check
 	      # to make sure the user has not turned off any rights.
 	      
-	      $rights{"$entry"} = 1;
+	      $rights{"$right"} = 1;
 	      
 	  }
 	  # }}}
 	  
 	  # {{{ remove any rights that have been deleted
-	  while ($entry = $CurrentACL->Next()) {
+	  while ($right = $CurrentACL->Next()) {
 	      #If @rights doesn't contain what $entry does, then the user has
 	      # removed that right.
 	      
-	      unless ($rights{$entry->RightScope."-".$entry->RightName}) {
+	      unless ($rights{$right->RightName}) {
 		  #yank the entry out of  the ACL
-	  $entry->Delete();
+		  $right->Delete();
 	      }
 	      
 	      
-	  }	
+	  }
 	  # }}}
 	  
 	  
@@ -244,7 +224,7 @@
   </%INIT>
 
 <%ARGS>
-$Queue = undef
+$id = undef
 $UserString => undef
 $UserOp => undef
 $UserField => undef

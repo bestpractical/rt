@@ -1,5 +1,5 @@
 <& /Elements/Tabs, tabs => \@tabs, basepath => 'Admin' &>
-
+<hr>
 <%INIT>
 my ($tab);
 my @tabs = qw(Users Groups Queues Scrips Templates ACL);
