@@ -498,7 +498,7 @@ sub MigrateTransactions {
 	$trans_args{'Field'} = '';
 	
 	# {{{ Convert transaction type from RT1 to RT2
-	if ( $row->{type} eq 'create' ) {
+	if ( ( $row->{type} eq 'create' ) or ($row->{'type'} eq 'import') ) {
 	    $load_content = 1;
 	    $trans_args{'Type'} = "Create";
 	} 
