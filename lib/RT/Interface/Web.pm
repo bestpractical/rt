@@ -869,7 +869,6 @@ sub ProcessACLChanges {
                 $obj = $object_type->new($session{'CurrentUser'});
                 $obj->Load($object_id);      
             } else {
-		die;
                 push (@results, loc("System Error"). ': '.
                                 loc("Rights could not be revoked for [_1]", $object_type));
                 next;
@@ -1183,7 +1182,7 @@ sub ProcessTicketCustomFieldUpdates {
 		    }
 		}
                 else {
-                    push ( @results, "User asked for an unknown update type for custom field " . $cf->Name . " for ticket " . $Ticket->id );
+                    push ( @results, "User asked for an unknown update type for custom field " . $CustomFieldObj->Name . " for ticket " . $Ticket->id );
                 }
             }
         }
@@ -1345,6 +1344,7 @@ sub ProcessTicketLinks {
 
     my $Ticket  = $args{'TicketObj'};
     my $ARGSRef = $args{'ARGSRef'};
+
 
     my (@results) = ProcessRecordLinks(RecordObj => $Ticket,
 				       ARGSRef => $ARGSRef);
