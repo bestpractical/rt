@@ -162,7 +162,7 @@ sub Create  {
 	}
       }	
     }
-    
+
     # }}}
     return ($id, "Transaction Created");
 }
@@ -431,7 +431,6 @@ sub _Accessible  {
 	      OldValue => 'read',
 	      Creator => 'read/auto',
 	      Created => 'read/auto',
-	      LastUpdated => 'read/auto'
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);
 }

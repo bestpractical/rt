@@ -56,22 +56,32 @@ sub _Handle  {
 
 # {{{ sub Create 
 sub Create  {
-  my $self = shift;
-      if ($self->_Accessible('Created', 'auto')) {
-	my $now = new RT::Date($self->CurrentUser);
-	$now->Set(Format=> 'unix', Value => time);
-	   push @_, 'Created', $now->ISO();
-	}
-  push @_, 'Creator', $self->{'user'}->id
-	if $self->_Accessible('Creator', 'auto');
-  my $id = $self->SUPER::Create(@_);
+    my $self = shift;
+    my $now = new RT::Date($self->CurrentUser);
+    $now->Set(Format=> 'unix', Value => time);
+    push @_, 'Created', $now->ISO()
+      if ($self->_Accessible('Created', 'auto'));
+	
 
-  if ($id) {
-      $self->Load($id);
-  }
-  
-  return($id);
+    push @_, 'Creator', $self->{'user'}->id
+      if $self->_Accessible('Creator', 'auto');
+    
+    push @_, 'LastUpdated', $now->ISO()
+      if ($self->_Accessible('LastUpdated', 'auto'));
 
+    push @_, 'LastUpdatedBy', $self->{'user'}->id
+      if $self->_Accessible('LastUpdatedBy', 'auto');
+    
+    
+
+   my $id = $self->SUPER::Create(@_);
+    
+    if ($id) {
+	$self->Load($id);
+    }
+    
+    return($id);
+    
 }
 # }}}
 

@@ -44,7 +44,11 @@ sub _Accessible  {
 	      Description => 'read/write',
 	      Type => 'read/write', #Type is one of Action or Message
 	      Content => 'read/write',
-	      Queue => 'read/write'
+	      Queue => 'read/write',
+	      Creator => 'read/auto',
+	      Created => 'read/auto',
+	      LastUpdatedBy => 'read/auto',
+	      LastUpdated => 'read/auto'
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);
 }

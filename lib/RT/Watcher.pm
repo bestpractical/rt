@@ -177,7 +177,11 @@ sub _Accessible  {
 	      Value => 'read/write',
 	      Type => 'read/write',
 	      Quiet => 'read/write',
-	      Owner => 'read/write'	      
+	      Owner => 'read/write',	      
+	      Creator => 'read/auto',
+	      Created => 'read/auto',
+	      LastUpdatedBy => 'read/auto',
+	      LastUpdated => 'read/auto'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }

@@ -97,8 +97,6 @@ sub KeywordObj {
 }
 
 
-=back
-
 =item KeywordSelectObj 
 
 Returns an B<RT::KeywordSelect> object of the KeywordSelect associated with this ObjectKeyword.
@@ -113,12 +111,12 @@ sub KeywordSelectObj {
 }
 
 
-=back
-
 
 =item KeywordRelativePath
 
 Returns a string of the Keyword's path relative to this ObjectKeyword's KeywordSelect
+
+
 
 =cut
 
@@ -128,6 +126,8 @@ sub KeywordRelativePath {
               $self->KeywordSelectObj->KeywordObj->Path));
     
 }
+
+=back
 
 =head1 AUTHOR
 

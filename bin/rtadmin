@@ -358,10 +358,10 @@ sub AdminQueue {
     my %args;
 
     GetOptions(\%args,
-	       'create', 'delete', 'display',
-	       'Name', 'CorrespondAddress', 'Description',
-	       'CommentAddress', 'InitialPriority', 'FinalPriority',
-	       'DefaultDueIn',
+	       'create', 'disable', 'display',
+	       'Name=s', 'CorrespondAddress=s', 'Description=s',
+	       'CommentAddress=s', 'InitialPriority=n', 'FinalPriority=n',
+	       'DefaultDueIn=n',
 	       
 	       'add-cc=s', 'add-admin-cc=s', 'delete-cc=s', 'delete-admin-cc=s',
 	       'create-template'
@@ -391,7 +391,7 @@ sub AdminQueue {
 	$queue_obj->Load($queue);
 	
 	unless ($queue_obj->id) {
-	    print "Queue '$queue' not found";
+	    print "Queue '$queue' not found\n";
 	    return();
 	}	
 		
@@ -426,8 +426,8 @@ sub AdminQueue {
 	AdminKeywordSelects($queue_obj->Id());
 
 	#Check if we need to delete the queue
-	if ($args{'delete'}) {
-	    my ($val, $msg) = $queue_obj->Delete();
+	if ($args{'disable'}) {
+	    my ($val, $msg) = $queue_obj->Disable();
 	    print "$msg\n";
 	}	
 	

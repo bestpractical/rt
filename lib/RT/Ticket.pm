@@ -2198,8 +2198,11 @@ sub _Accessible {
 	      Starts => 'read,write',
 	      Started => 'read,write',
 	      Due => 'read/write',
-	      LastUpdated => 'read/auto/public',
-	      LastUpdatedBy => 'read/auto/public'
+	      Creator => 'read/auto',
+	      Created => 'read/auto',
+	      LastUpdatedBy => 'read/auto',
+	      LastUpdated => 'read/auto'
+
 
 
 	     );

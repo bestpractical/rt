@@ -157,11 +157,15 @@ sub _TicketObj {
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
-          LocalBase => 'read',
-          LocalTarget => 'read',
+	      LocalBase => 'read',
+	      LocalTarget => 'read',
 	      Base => 'read',
 	      Target => 'read',
 	      Type => 'read',
+	      Creator => 'read/auto',
+	      Created => 'read/auto',
+	      LastUpdatedBy => 'read/auto',
+	      LastUpdated => 'read/auto'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }

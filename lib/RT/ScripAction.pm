@@ -38,8 +38,12 @@ sub _Accessible  {
     my %Cols = ( Name  => 'read/write',
 		 Description => 'read/write',
 		 ExecModule  => 'read/write',
-		 Argument  => 'read/write'
-	       );
+		 Argument  => 'read/write',
+		 Creator => 'read/auto',
+		 Created => 'read/auto',
+		 LastUpdatedBy => 'read/auto',
+		 LastUpdated => 'read/auto'
+       );
     return($self->SUPER::_Accessible(@_, %Cols));
 }
 # }}}

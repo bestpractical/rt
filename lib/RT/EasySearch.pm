@@ -45,6 +45,42 @@ sub _Init  {
 }
 # }}}
 
+# {{{ sub LimitToEnabled
+
+=head2 LimitToEnabled
+
+Only find items that haven\'t been disabled
+
+=cut
+
+sub LimitToEnabled {
+    my $self = shift;
+    
+    $self->Limit( FIELD => 'Disabled',
+		  VALUE => '0',
+		  OPERATOR => '=' );
+}
+# }}}
+
+# {{{ sub LimitToDisabled
+
+=head2 LimitToDeleted
+
+Only find items that have been deleted.
+
+=cut
+
+sub LimitToDeleted {
+    my $self = shift;
+    
+    $self->{'find_disabled_rows'} = 1;
+    $self->Limit( FIELD => 'Disabled',
+		  OPERATOR => '=',
+		  VALUE => '1'
+		);
+}
+# }}}
+
 # {{{ sub CurrentUser 
 sub CurrentUser  {
   my $self = shift;

@@ -38,7 +38,13 @@ sub _Accessible  {
 		 CommentAddress =>  'read/write',
 		 InitialPriority =>  'read/write',
 		 FinalPriority =>  'read/write',
-		 DefaultDueIn =>  'read/write'
+		 DefaultDueIn =>  'read/write',
+		 Creator => 'read/auto',
+		 Created => 'read/auto',
+		 LastUpdatedBy => 'read/auto',
+		 LastUpdated => 'read/auto',
+		 Disabled => 'read/write',
+		 
 	       );
     return($self->SUPER::_Accessible(@_, %Cols));
 }
@@ -84,35 +90,22 @@ sub Create  {
 
 # }}}
 
-# {{{ sub Delete
+# {{{ sub Disable
 
-=head2 Delete
+=head2 Disable
 
-Delete this queue. takes a single argument which is either a queue id
-or a queue object. All tickets in this queue will be moved to the queue
-passed in
+Disable this queue. Takes no arguments.  After this is called, this queue will
+no longer show up in lists of Queues to search for.
+
 
 =cut
 
-sub Delete  {
+sub Disable {
     my $self = shift;
     my $newqueue = shift;
     # this function needs to move all requests into some other queue!
 
-
-    unless ($self->CurrentUserHasRight('AdminQueue')) {
-	return(0, "You do not have the privileges to delete queues");
-    }
-
-    $RT::Logger->crit("$self ->Delete not implemented\n");
-    return(0,"Queue->Delete not implemented yet");
-    
-    #TODO:  DO ALL THESE +++ before 2.0
-    #Find all the tickets in this queue.
-    #Go through the tickets and change their queue to $newqueue
-    #Blow away all of the queue acls for this queue.
-    #Remove the queue object
-    return (1, "Queue ".$self->Name." deleted.");
+    return($self->SetDisabled(1));
     
 }
 
@@ -226,6 +219,7 @@ sub Watchers {
     }	
     return($watchers);
 }
+
 # }}}
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
@@ -379,8 +373,6 @@ sub IsWatcher {
 		 @_
 	       );
     
-    use Carp;
-    Carp::cluck; 
     my %cols = ('Type' => $args{'Type'},
 		'Scope' => 'Queue',
 		'Value' => $self->Id
@@ -405,9 +397,6 @@ sub IsWatcher {
 
 
     my ($description);
-    use Data::Dumper;
-    print STDERR "Checking watchers for queue. cols is:". Dumper(%cols);
-
     $description = join(":",%cols);
     
     #If we've cached a positive match...
