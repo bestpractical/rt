@@ -38,13 +38,13 @@ $Default => undef
 </%ARGS>
 <%INIT>
 my ($TrueDefault, $FalseDefault, $LikeDefault, $NotLikeDefault);
-if ($Default && $Default !~ /true/i) {
+if ($Default && $Default =~ /false/i) {
 	$FalseDefault = "SELECTED";
 }
-elsif ($Default && $Default !~ /false/i) {
+elsif ($Default && $Default =~ /true/i) {
 	$TrueDefault = "SELECTED";
 } 
-elsif ($Default && $Default !~ /notlike/i) {
+elsif ($Default && $Default =~ /notlike/i) {
 	$NotLikeDefault = "SELECTED";
 }
 else {
