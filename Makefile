@@ -33,7 +33,7 @@ DB_DATABASEHOST		=  `${GETPARAM} DatabaseHost`
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
-TAG			= rtfm-2-0-beta-1
+TAG			= rtfm-2-0-beta-2
 
 
 upgrade: install-lib install-html
