@@ -182,13 +182,13 @@ sub _CoreAccessible {
     {
      
         id =>
-		{read => 1, type => 'int(11)', default => ''},
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         PrincipalType => 
-		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+		{read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
         ObjectId => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
+		{read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Disabled => 
-		{read => 1, write => 1, type => 'smallint(6)', default => '0'},
+		{read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
 
  }
 };
@@ -220,7 +220,7 @@ _Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customiz
 
 These overlay files can contain new subs or subs to replace existing subs in this module.
 
-If you'll be working with perl 5.6.0 or greater, each of these files should begin with the line 
+Each of these files should begin with the line 
 
    no warnings qw(redefine);
 
