@@ -29,14 +29,14 @@ Started:
 <a href="Display.html?id='.$Ticket->id.'&Action=SetTold">Last Contact</a>:
 </TD>
 <TD>
-<% $Ticket->Told ? $Ticket->ToldObj->AsString : "Never"%>
+<% $Ticket->ToldObj->AsString "%>
 </TD>
 </TR>
 <TR>
 <TD>
 Due:
 </TD>
-<TD><% $Ticket->Due ? $Ticket->DueAsString : "-" %>
+<TD><% $Ticket->DueObj->AsString  %>
 </TD>
 </TR>
 <TR>

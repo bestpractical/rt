@@ -96,14 +96,12 @@ sub Set {
 	    #now that we've parsed it, deal with the case where everything
 	    #was 0
             if ($mon == -1) {
-	        $self->{'time'} = -1;
-		return($self->Unix());
-    	    }
-	    
-	    
-	    
-	    $self->{'time'} = timegm($sec,$min,$hours,$mday,$mon,$year);
-	}
+	            $self->{'time'} = -1;
+	        } else {
+                $self->{'time'} = timegm($sec,$min,$hours,$mday,$mon,$year);
+                $self->{'time'} = -1 unless $self->{'time'};
+             }
+   }  
 	else {
 	    use Carp;
 	    Carp::cluck;
@@ -321,7 +319,7 @@ sub ISO {
     my $self=shift;
     my    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst, $date) ;
     
-    return ('0000-00-00 00:00:00') if ($self->Unix == -1);
+    return ('1970-01-01 00:00:00') if ($self->Unix == -1);
 
     #  0    1    2     3     4    5     6     7     8
     ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($self->Unix);
