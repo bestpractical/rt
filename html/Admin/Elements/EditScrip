@@ -114,6 +114,7 @@ if ( $id eq 'new' ) {
     );
     if ( defined $retval ) {
         push @actions, $msg;
+        $id = $scrip->id;
     }
     else {
         Abort( $msg);
