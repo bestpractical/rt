@@ -1507,61 +1507,66 @@ Email (the email address of an existing wathcer)
 sub DeleteWatcher {
     my $self = shift;
 
-    my %args = ( Type => undef,
+    my %args = ( Type        => undef,
                  PrincipalId => undef,
-                 Email => undef,
+                 Email       => undef,
                  @_ );
 
-    unless ($args{'PrincipalId'} || $args{'Email'} ) {
-        return(0, $self->loc("No principal specified"));
+    unless ( $args{'PrincipalId'} || $args{'Email'} ) {
+        return ( 0, $self->loc("No principal specified") );
     }
-    my $principal = RT::Principal->new($self->CurrentUser);
-    if ($args{'PrincipalId'} ) {
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    if ( $args{'PrincipalId'} ) {
 
-        $principal->Load($args{'PrincipalId'});
-    } else {
-        my $user = RT::User->new($self->CurrentUser);
-        $user->LoadByEmail($args{'Email'});
-        $principal->Load($user->Id);
+        $principal->Load( $args{'PrincipalId'} );
     }
+    else {
+        my $user = RT::User->new( $self->CurrentUser );
+        $user->LoadByEmail( $args{'Email'} );
+        $principal->Load( $user->Id );
+    }
+
     # If we can't find this watcher, we need to bail.
-    unless ($principal->Id) {
-        return(0, $self->loc("Could not find that principal"));
+    unless ( $principal->Id ) {
+        return ( 0, $self->loc("Could not find that principal") );
     }
 
-    my $group = RT::Group->new($self->CurrentUser);
-    $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->Id);
-    unless ($group->id) {
-        return(0,$self->loc("Group not found"));
+    my $group = RT::Group->new( $self->CurrentUser );
+    $group->LoadTicketRoleGroup( Type => $args{'Type'}, Ticket => $self->Id );
+    unless ( $group->id ) {
+        return ( 0, $self->loc("Group not found") );
     }
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
-        #  If it's an AdminCc and they don't have 
+    if ( $self->CurrentUser->PrincipalId eq $args{'PrincipalId'} ) {
+
+        #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( $args{'Type'} eq 'AdminCc' ) {
-            unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied'))
+            unless (    $self->CurrentUserHasRight('ModifyTicket')
+                     or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
+                return ( 0, $self->loc('Permission Denied') );
             }
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
-            unless ( $self->CurrentUserHasRight('ModifyTicket')
-                or $self->CurrentUserHasRight('Watch') ) {
-                return ( 0, $self->loc('Permission Denied'))
+        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) )
+        {
+            unless (    $self->CurrentUserHasRight('ModifyTicket')
+                     or $self->CurrentUserHasRight('Watch') ) {
+                return ( 0, $self->loc('Permission Denied') );
             }
         }
         else {
-            $RT::Logger->warn( "$self -> DeleteWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Ticket->DelWatcher') );
+            $RT::Logger->warn("$self -> DeleteWatcher got passed a bogus type");
+            return ( 0,
+                     $self->loc('Error in parameters to Ticket->DelWatcher') );
         }
     }
 
-    # If the watcher isn't the current user 
+    # If the watcher isn't the current user
     # and the current user  doesn't have 'ModifyTicket' bail
     else {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
@@ -1571,37 +1576,90 @@ sub DeleteWatcher {
 
     # }}}
 
-
     # see if this user is already a watcher.
 
-    unless ( $group->HasMember($principal)) {
-        return ( 0, 
-        $self->loc('That principal is not a [_1] for this ticket', $args{'Type'}) );
+    unless ( $group->HasMember($principal) ) {
+        return ( 0,
+                 $self->loc( 'That principal is not a [_1] for this ticket',
+                             $args{'Type'} ) );
     }
 
-    my ($m_id, $m_msg) = $group->_DeleteMember($principal->Id);
+    my ( $m_id, $m_msg ) = $group->_DeleteMember( $principal->Id );
     unless ($m_id) {
-        $RT::Logger->error("Failed to delete ".$principal->Id.
-                           " as a member of group ".$group->Id."\n".$m_msg);
+        $RT::Logger->error( "Failed to delete "
+                            . $principal->Id
+                            . " as a member of group "
+                            . $group->Id . "\n"
+                            . $m_msg );
 
-        return ( 0,    $self->loc('Could not remove that principal as a [_1] for this ticket', $args{'Type'}) );
+        return (0,
+                $self->loc(
+                    'Could not remove that principal as a [_1] for this ticket',
+                    $args{'Type'} ) );
     }
 
     unless ( $args{'Silent'} ) {
-        $self->_NewTransaction(
-            Type     => 'DelWatcher',
-            OldValue => $principal->Id,
-            Field    => $args{'Type'}
-        );
+        $self->_NewTransaction( Type     => 'DelWatcher',
+                                OldValue => $principal->Id,
+                                Field    => $args{'Type'} );
     }
 
-    return ( 1, $self->loc("[_1] is no longer a [_2] for this ticket.", $principal->Object->Name, $args{'Type'} ));
+    return ( 1,
+             $self->loc( "[_1] is no longer a [_2] for this ticket.",
+                         $principal->Object->Name,
+                         $args{'Type'} ) );
 }
 
 
 
-
 # }}}
+
+
+=head2 SquelchMailTo [EMAIL]
+
+Takes an optional email address to never email about updates to this ticket.
+
+
+Returns an array of the RT::Attribute objects for this ticket's 'SquelchMailTo' attributes.
+
+=begin testing
+
+my $t = RT::Ticket->new($RT::SystemUser);
+ok($t->Create(Queue => 'general', Subject => 'SquelchTest'));
+
+is($#{$t->SquelchMailTo}, -1, "The ticket has no squelched recipients");
+
+my @returned = $t->SquelchMailTo('nobody@example.com');
+
+is($#returned, 0, "The ticket has one squelched recipients");
+
+my @names = $t->Attributes->Names;
+is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
+@returned = $t->SquelchMailTo('nobody@example.com');
+
+
+is($#returned, 0, "The ticket has one squelched recipients");
+
+@names = $t->Attributes->Names;
+is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
+
+
+=end testing
+
+=cut
+
+sub SquelchMailTo {
+    my $self = shift;
+    if (@_) {
+        my $attr = shift;
+        $self->AddAttribute(Name => 'SquelchMailTo', Content => $attr) 
+ unless  grep { $_->Content eq $attr } $self->Attributes->Named('SquelchMailTo');
+
+    }
+    my @attributes = $self->Attributes->Named('SquelchMailTo'); 
+    return(@attributes);
+}
+
 
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string

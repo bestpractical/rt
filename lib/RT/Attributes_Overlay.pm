@@ -65,6 +65,7 @@ no warnings qw(redefine);
 
 sub _DoSearch {
     my $self = shift;
+    $RT::Logger->crit("We're redoing the search");
     $self->SUPER::_DoSearch();
     $self->_BuildAccessTable();
 }
@@ -72,7 +73,9 @@ sub _DoSearch {
 
 sub _BuildAccessTable {
     my $self = shift;
+    delete $self->{'attr'};
     while (my $attr = $self->Next) {
+        $RT::Logger->crit("We're building the attr table for ".$attr->Name);
         push @{$self->{'attr'}->{$attr->Name}}, $attr;
     }
 }
@@ -81,7 +84,9 @@ sub _BuildAccessTable {
 sub _AttrHash {
     my $self = shift;
     $self->_DoSearch if ($self->{'must_redo_search'});
-
+    unless ($self->{'attr'}) {
+        $self->{'attr'}->{'__none'} = RT::Attribute->new($self->CurrentUser);
+    }
     return ($self->{'attr'});
 }
 
@@ -93,7 +98,10 @@ Returns a list of the Names of all attributes for this object.
 
 sub Names {
     my $self = shift;
-    return (keys %{$self->_AttrHash});
+    my @keys =  keys %{$self->_AttrHash};
+    return(@keys);
+
+
 }
 
 =head2 Named STRING
@@ -105,8 +113,11 @@ Returns an array of all the RT::Attribute objects with the name STRING
 sub Named {
     my $self = shift;
     my $name = shift;
-    return($self->_AttrHash->{$name});
-
+    my @attributes; 
+    if ($self->_AttrHash) {
+        @attributes = @{($self->_AttrHash->{$name}||[])};
+    }
+    return (@attributes);   
 }
 
 
