@@ -115,6 +115,7 @@ my ($id, $msg) = $class->Create(Name =>'ArticleTest');
 ok ($id, $msg);
 
 
+
 my $article = RT::FM::Article->new($user);
 ok (UNIVERSAL::isa($article, 'RT::FM::Article'));
 ok (UNIVERSAL::isa($article, 'RT::FM::Record'));
@@ -345,10 +346,10 @@ ok($refers_to_b->First->BaseObj->isa('RT::FM::Article'), "Yep. its an article");
 
 # Make sure that Article A's "RefersTo" links object refers to this article"
 my $referred_To_by_a = $article_a->RefersTo;
-ok($referred_To_by_a->Count == 1, "Found one thing referring to b");
+ok($referred_To_by_a->Count == 1, "Found one thing referring to b".$referred_To_by_a->Count);
 my $first = $referred_To_by_a->First;
 ok ($first->isa(RT::Link), "IT's an RT link - ref ".ref($first) );
-ok ($first->TargetObj->Id == $article_b->Id, "Its target is B");
+ok ($first->TargetObj->Id == $article_b->Id, "Its target is B - " . $first->TargetObj->Id);
 ok ($first->BaseObj->Id == $article_a->Id, "Its base is A");
 
 ok($referred_To_by_a->First->BaseObj->isa('RT::FM::Article'), "Yep. its an article");
@@ -596,6 +597,39 @@ sub URI {
 
 # }}}
 
+
+# {{{ sub URIObj 
+
+=head2 URIObj
+
+Returns this article's URI
+
+
+=begin testing
+
+my ($id,$msg);
+my $art = RT::FM::Article->new($RT::SystemUser);
+($id, $msg) = $art->Create (Class => 'ArticleTest');
+ok ($id,$msg);
+
+ok($art->URIObj);
+ok($art->__Value('URI') eq $art->URIObj->URI, "The uri in the db is set correctly");
+
+
+=end testing
+
+         
+=cut
+
+sub URIObj {
+    my $self = shift;
+    my $uri = RT::URI->new($self->CurrentUser);
+    $uri->FromObject($self);
+    return($uri);
+}
+
+# }}}
+
 # {{{ Custom Fields
 
 =head2 Custom Fields
@@ -628,7 +662,7 @@ sub CustomFieldValues {
 
 # {{{ AddCustomFieldValue
 
-=item AddCustomFieldValue { Field => FIELD, Value => VALUE }
+=item AddCustomFieldValue { Field => FIELD, Content => VALUE }
 
 VALUE can either be a CustomFieldValue object or a string.
 FIELD can be a CustomField object OR a CustomField ID.
@@ -667,7 +701,7 @@ ok ($id, "This cf is good for the class ".$art->ClassObj->Name);
 ($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "Test1");
 ok ($id, $msg);
 ($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "Test1");
-ok (!$id, "Can't add a duplicate value to a custom field that's a 'select multiple' - $msg");
+ok (!$id, "Can add a duplicate value to a custom field that's a 'select multiple' - $msg");
 
 ($id, $msg) = $art->AddCustomFieldValue( Field => "Test", Content => "Testy");
 ok ($id, $msg);
@@ -758,8 +792,11 @@ sub _AddCustomFieldValue {
 
 
         # {{{ Add a new custom field value
-        my $value     = $cf->ValuesForArticle( $self->Id )->First;
-        my $old_value = $value->Content();
+        my $value = $cf->ValuesForArticle( $self->Id )->First;
+        my $old_value;
+        if ( $cf_values == 1 ) {
+            $old_value = $value->Content();
+        }
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForArticle(
                                                        Article  => $self->Id,
@@ -773,18 +810,19 @@ sub _AddCustomFieldValue {
         # }}}
 
         # {{{ Kill the old value
-        my $new_value = RT::ArticleCustomFieldValue->new( $self->CurrentUser );
+        my $new_value = RT::FM::ArticleCFValue->new( $self->CurrentUser );
         $new_value->Load($new_value_id);
 
         # now that adding the new value was successful, delete the old one
-        my ( $val, $msg ) = $cf->DeleteValueForArticle(Article  => $self->Id,
-                                                      Content => $value->Content
-        );
-        unless ($val) {
-            return ( 0, $msg );
+        if ( defined $old_value ) {
+            my ( $val, $msg ) = $cf->DeleteValueForArticle(Article => $self->Id,
+                                                           Content => $old_value
+            );
+            unless ($val) {
+                return ( 0, $msg );
+            }
+
         }
-
-
         # }}} 
 
         # {{{ Record the "Changed" transaction
@@ -815,12 +853,12 @@ sub _AddCustomFieldValue {
             my ( $TransactionId, $Msg, $TransactionObj ) =
               $self->_NewTransaction( Type     => 'CustomField',
                                       Field    => $cf->Id,
-                                      NewValue => $args{'Value'} );
+                                      NewValue => $args{'Content'} );
             unless ($TransactionId) {
                 return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg) );
             }
         }
-        return ( $new_value_id , $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name ) );
+        return ( $new_value_id , $self->loc( "[_1] added as a value for [_2]", $args{'Content'}, $cf->Name ) );
 
         # }}}
     }
@@ -831,7 +869,7 @@ sub _AddCustomFieldValue {
 
 # {{{ DeleteCustomFieldValue
 
-=item DeleteCustomFieldValue
+=item DeleteCustomFieldValue { CustomField => undef, Content => undef } 
   
   Takes a paramhash. Deletes the Keyword denoted by the I<Keyword> parameter from this
   ticket's object keywords.
@@ -840,20 +878,20 @@ sub _AddCustomFieldValue {
 
 sub DeleteCustomFieldValue {
     my $self = shift;
-    my %args = ( Value => undef,
-		 CustomField => undef,
+    my %args = ( Content => undef,
+		 Field => undef,
 		 @_ );
 
     #Load up the ObjectKeyword we\'re talking about
-    my $CFObjectValue = new RT::FM::CustomFieldObjectValue($self->CurrentUser);
-    $CFObjectValue->LoadByCols( Content  => $args{'Value'},
-			        CustomField => $args{'CustomField'},
+    my $CFObjectValue = new RT::FM::ArticleCFValue($self->CurrentUser);
+    $CFObjectValue->LoadByCols( Content  => $args{'Content'},
+			        CustomField => $args{'Field'},
 			        Article => $self->id()
 			      );
     
     #if we can\'t find it, bail
     unless ($CFObjectValue->id) {
-	return (undef, $self->loc("Couldn't load custom field valuewhile trying to delete it."));
+	return (undef, $self->loc("Couldn't load custom field [_1] value [_2] while trying to delete it.",$args{'Field'}, $args{'Content'}));
     };
     
     #record transaction here.
@@ -861,7 +899,7 @@ sub DeleteCustomFieldValue {
     $CFObjectValue->Delete();
    
     # TODO XXX error check
-    return (1, $self->loc("Value [_1] deleted from custom field [_2].",$CFObjectValue->Name, $args{'CustomField'}));
+    return (1, $self->loc("Value [_1] deleted from custom field [_2].",$CFObjectValue->Content, $args{'Field'}));
     
 }
 

@@ -22,13 +22,39 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+% if ($Lite) {
+<INPUT NAME="<%$Name%>" size=25 DEFAULT="<%$d->Name%>">
+% } else {
 <SELECT NAME ="<%$Name%>">
-%for my $option (RT::FM::CustomField->Types) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% loc($option) %></OPTION>
-%}
+% if ($ShowNullOption) {
+<OPTION VALUE="">-</OPTION>
+% }
+% while (my $Class=$Classes->Next) {
+% if ($ShowAllClasses || $Class->CurrentUserHasRight('CreateArticle')) {
+<OPTION VALUE="<%$Class->Id%>" <%($Class->Id == $Default) && 'SELECTED'%>><%$Class->Name%>
+%   if (($Verbose) and ($Class->Description) ){
+(<%$Class->Description%>)
+%  }
+</OPTION>
+% }
+% }
 </SELECT>
-
+% }
 <%ARGS>
-$Default=>undef
-$Name => 'Type'
+$ShowNullOption => 1
+$ShowAllClasses => 1
+$Name => undef
+$Verbose => undef
+$Default => undef
+$Lite => 0
 </%ARGS>
+
+<%INIT>
+
+my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
+$Classes->UnLimit;
+
+my $d = new RT::FM::Class($session{'CurrentUser'});
+$d->Load($Default);
+
+</%INIT>

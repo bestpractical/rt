@@ -2,14 +2,16 @@ no warnings qw/redefine/;
 
 use RT::FM::System;
 use RT::FM::CustomFieldCollection;
+use RT::ACL;
 
 # {{{ This object provides ACLs
 
 use vars qw/$RIGHTS/;
-my $RIGHTS = {
+$RIGHTS = {
 
     SeeClass            => 'See that this class exists', #loc_pair
     CreateArticle       => 'Create articles in this class', #loc_pair
+    ShowArticle       => 'See articles in this class', #loc_pair
     ModifyArticle       => 'Modify or delete articles in this class', #loc_pair
     AdminClass          => 'Modify metadata and custom fields for this class', #loc_pair
     ShowACL             => 'Display Access Control List',             # loc_pair
@@ -18,6 +20,10 @@ my $RIGHTS = {
 
 # TODO: This should be refactored out into an RT::ACLedObject or something
 # stuff the rights into a hash of rights that can exist.
+
+# Tell RT::ACE that this sort of object can get acls granted
+$RT::ACE::OBJECT_TYPES{'RT::FM::Class'} = 1;
+ 
 
 foreach my $right ( keys %{$RIGHTS} ) {
     $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;

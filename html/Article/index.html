@@ -1,0 +1,17 @@
+<& /Elements/Header, title => "Temporary article search" &>
+<& /RTFM/Elements/Tabs&>
+
+Temporary all-articles search:
+<ul>
+% while (my $article = $articles->Next) {
+
+<li><a href="Display.html?id=<%$article->Id%>">#<%$article->id%>: <%$article->Name%></a>
+<br><font size="-1"><%$article->Summary%></font>
+</li>
+
+% }
+</ul>
+<%init>
+my $articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
+$articles->UnLimit;
+</%init>

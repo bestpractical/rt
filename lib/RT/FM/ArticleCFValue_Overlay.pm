@@ -50,9 +50,6 @@ sub Create {
 # {{{ Validate the content
 
 
-    if( length( $args{'Content'} > 250 ) ) {
-        $RT::Logger->warning( "Large value custom fields are not currently supported - ");
-    }
 
     unless ( defined $args{'Content'} ) {
         return ( 0, "Content not set" );
@@ -63,20 +60,10 @@ sub Create {
     unless ( $cf->ValidateValueForArticle( Value => $args{'Content'}, Article => $args{'Article'} ) ) {
         return ( 0, $self->loc("Invalid value for this custom field") );
     }
-# }}}
+    # }}}
 
 
 
-    my $content_obj = RT::FM::Content->new($self->CurrentUser);
-
-    my $content = $args{'Content'};
-
-    my ($cid,$cmsg) = $content_obj->Create( Summary => "$content" );
-    unless ($cid) {
-        return($cid, $cmsg);
-       } 
-
-    $args{'Content'} = $cid;
     my $ret = $self->SUPER::Create(%args);
     return ($ret, $self->loc("Value added"));
  }

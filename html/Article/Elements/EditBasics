@@ -22,13 +22,38 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<SELECT NAME ="<%$Name%>">
-%for my $option (RT::FM::CustomField->Types) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% loc($option) %></OPTION>
-%}
-</SELECT>
+<TABLE>
+<TR>
+<TD>
+ <&|/l&>Name</&>
+</td>
+<td>
+<input name=Name value="<%$ArticleObj->Name|h%>"  SIZE=50>
+</TD>
+</TR>
+<TR>
+<TD>
+ <&|/l&>Summary</&>
+</td>
+<td>
+<input name=Summary value="<%$ArticleObj->Summary|h%>"  SIZE=50>
+</TD>
+</TR>
+<TR>
+<TD>
+<&|/l&>Class</&>
+</TD>
+<TD>
+<&/RTFM/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
+</TD>
+</TR>
+</TABLE>
 
+<%INIT>
+#It's hard to do this inline, so we'll preload the html of the selectstatus in here.
+
+</%INIT>
 <%ARGS>
-$Default=>undef
-$Name => 'Type'
+
+$ArticleObj => undef
 </%ARGS>

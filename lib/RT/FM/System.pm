@@ -19,10 +19,14 @@ In the future, there will probably be other API goodness encapsulated here.
 
 
 package RT::FM::System;
+use RT::ACL;
 use base qw /RT::Base/;
 use strict;
 use vars qw/ $RIGHTS/;
 
+
+# Tell RT::ACE that this sort of object can get acls granted
+$RT::ACE::OBJECT_TYPES{'RT::FM::Class'} = 1;
 
 
 # System rights are rights granted to the whole system

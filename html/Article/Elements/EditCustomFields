@@ -1,0 +1,80 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+
+
+% while (my $CustomField = $CustomFields->Next) {
+% my $Values = $ArticleObj->CustomFieldValues($CustomField->id);
+% while (my $val = $Values->Next) {
+<%$val->Content%>
+% }
+
+<%$CustomField->Name%> - <%$CustomField->Type%><br>
+% if ($CustomField->Type eq 'FreeformSingle') {
+
+<input name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Value"
+       value="<%$Values->First->Content%>">
+
+
+% } elsif ($CustomField->Type eq 'FreeformMultiple') {
+
+<textarea name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
+%while (my $value = $Values->Next ) {
+<%$value->Content%>
+%}
+</textarea>
+
+% } 
+%  elsif ($CustomField->Type eq 'TextSingle') {
+
+<textarea rows="10" cols="60"name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Values">
+%while (my $value = $Values->Next ) {
+<%$value->Content%>
+%}
+</textarea>
+
+% } 
+% elsif ($CustomField->Type =~ /^Select/) {
+% my $CustomFieldValues = $CustomField->ValuesObj();
+
+<select name="Article-<%$ArticleObj->Id%>-CustomField-<%$CustomField->Id%>-Values"
+        size="5"
+        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>
+        >
+% while (my $value = $CustomFieldValues->Next) {
+<option value="<%$value->Name%>" 
+        <% $Values->HasEntryWithContent($value->Name) && 'SELECTED' %>
+        ><% $value->Name%></option>
+% }
+<option value="" <%$Values->Count == 0 && 'SELECTED' %>><&|/l&>(no value)</&></option>
+</select>
+% }
+% }
+
+<%INIT>
+my $CustomFields = $ArticleObj->ClassObj->CustomFields();
+</%INIT>
+<%ARGS>
+$ArticleObj => undef
+</%ARGS>

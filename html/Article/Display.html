@@ -1,0 +1,75 @@
+<& /RTFM/Elements/Header, Title => loc('Article #[_1]',$id) &>
+<& /RTFM/Article/Elements/Tabs, id => $id  &>
+  
+
+<h1><&|/l,$article->Id, $article->Name &>Article #[_1]: [_2]</&></h1>
+<table>
+<tr>
+<td>Summary</td>
+<td><%$article->Summary%></td>
+</tr>
+% while (my $cf = $cfs->Next) {
+% my $values = $article->CustomFieldValues($cf->Id);
+<tr>
+<td><b><%$cf->Name%></b></td>
+<td>
+% if ($cf->Type eq 'TextSingle') { 
+% my $value = $values->First;
+% my $content = $value->Content;
+% $content =~ s/\n/<br>/gi;
+<%$content%>
+$ } else {
+<ul>
+% while (my $value = $values->Next) {
+% my $content = $value->Content;
+% $content =~ s/\n/<br>/gi;
+<li><%$content%></li>
+% }
+</ul>
+% }
+
+</td>
+</tr>
+%} 
+
+</table>
+<h2>Links</h2>
+
+This article refers to:
+<ul>
+% my $refersto = $article->RefersTo;
+% while (my $uri = $refersto->Next()) {
+<li><%$uri->TargetObj->URI%></li>
+% }
+</ul>
+This article is referred to by:
+<ul>
+% my $referredtoby = $article->ReferredToBy;
+% while (my $uri = $referredtoby->Next()) {
+<li><%$uri->TargetObj->URI%></li>
+% }
+</ul>
+
+
+<%init>
+
+my $article = RT::FM::Article->new($session{'CurrentUser'}); 
+
+$article->Load($id);
+unless ($article->Id) {
+    Abort(loc("Article not found"));
+}
+
+unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj, 
+                                           Right => 'ShowArticle')) {
+    Abort(loc("Permission Denied"));
+}
+
+my $cfs = $article->ClassObj->CustomFields;
+
+
+</%init>
+
+<%args>
+$id => undef
+</%args>

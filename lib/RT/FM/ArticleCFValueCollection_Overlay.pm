@@ -40,5 +40,33 @@ sub LimitToArticle {
 
 # }}}
 
+# {{{ sub HasEntry
+
+=item HasEntryWithContent CONTENT
+
+If this Collection has an entry with content  exactly matching Content , returns that entry. Otherwise returns
+undef
+
+=cut
+
+sub HasEntryWithContent {
+    my $self = shift;
+    my $content = shift;
+   
+    my @items = grep {$_->Content eq  $content } @{$self->ItemsArrayRef};
+   
+    if ($#items > 1) {
+        die "$self HasEntry had a list with more than one of $item in it. this can never happen";
+    }
+    
+    if ($#items == -1 ) {
+        return undef;
+    }
+    else {
+        return ($items[0]);
+    }   
+
+}
+
 
 1;

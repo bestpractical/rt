@@ -21,6 +21,44 @@ no warnings qw/redefine/;
 use RT::FM::CustomFieldValueCollection;
 use RT::FM::ArticleCFValueCollection;
 use RT::FM::ClassCustomFieldCollection;
+use RT::ACL;
+
+use vars qw/$RIGHTS/;
+$RIGHTS = {
+
+    AdminValues          => 'Modify values for this custom field', #loc_pair
+    AdminCustomField          => 'Modify metadata for this custom field', #loc_pair
+    ShowACL             => 'Display Access Control List',             # loc_pair
+    ModifyACL           => 'Modify Access Control List',              # loc_pair
+};
+
+# TODO: This should be refactored out into an RT::ACLedObject or something
+# stuff the rights into a hash of rights that can exist.
+
+# Tell RT::ACE that this sort of object can get acls granted
+$RT::ACE::OBJECT_TYPES{'RT::FM::CustomField'} = 1;
+
+
+foreach my $right ( keys %{$RIGHTS} ) {
+    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+}
+
+
+=head2 AvailableRights
+
+Returns a hash of available rights for this object. The keys are the right names and the values are a description of what t
+he rights do
+
+=cut
+
+sub AvailableRights {
+    my $self = shift;
+    return($RIGHTS);
+}
+
+# }}}
+
+
 
 =head2 ValidateName new_name
 
@@ -42,7 +80,7 @@ sub ValidateName {
 
 use vars qw( @TYPES);
 
-@TYPES = qw(SelectSingle SelectMultiple FreeformSingle FreeformMultiple MIMESingle MIMEMultiple );
+@TYPES = qw(SelectSingle SelectMultiple FreeformSingle FreeformMultiple TextSingle);
 
 
 # {{{ Create
@@ -274,8 +312,7 @@ ok ($o->ValidateType('SelectSingle'), "SelectSingle");
 ok ($o->ValidateType('SelectMultiple'), "SelectMultiple");
 ok ($o->ValidateType('FreeformSingle'), "FreeformSingle");
 ok ($o->ValidateType('FreeformMultiple'), "FreeformMultiple");
-ok ($o->ValidateType('MIMESingle'), "MIMESingle");
-ok ($o->ValidateType('MIMEMultiple'), "MIMEMultiple");
+ok ($o->ValidateType('TextSingle'), "TextSingle");
 ok (!$o->ValidateType('BlahgSingle'), "BlahgSingle");
 ok (!$o->ValidateType('BlahgMultiple'), "BlahgMultiple");
 
@@ -324,7 +361,7 @@ sub SingleValue {
 
 =item ValuesForArticle TICKET
 
-Returns a RT::ArticleCustomFieldValues object of this Field's values for TICKET.
+Returns a RT::ArticleCFValueCollection object of this Field's values for TICKET.
 Article is a ticket id.
 
 
@@ -383,7 +420,7 @@ sub DeleteValueForArticle {
                  Content => undef,
                  @_ );
 
-    my $oldval = RT::ArticleCustomFieldValue->new( $self->CurrentUser );
+    my $oldval = RT::ArticleCFValue->new( $self->CurrentUser );
     $oldval->LoadByArticleContentAndCustomField( Article      => $args{'Article'},
                                                 Content     => $args{'Content'},
                                                 CustomField => $self->Id );
@@ -487,13 +524,13 @@ sub ValidateValueForArticle {
         return(undef);
     }
 
+
+    # Make sure we don't add duplicates
     
     my $article_values = $self->ValuesForArticle($args{'Article'});
-  
-    my @article_values = @{$article_values->ItemsArrayRef};
 
     # get the actual values for the custom field as an array and see if it has this entry
-    my @values = grep { $_->ContentObj->Summary =~ /^$args{'Value'}$/i} @{$article_values->ItemsArrayRef};
+    my @values = grep { $_->Content eq $args{'Value'}} @{$article_values->ItemsArrayRef};
     if (shift @values) {
         return undef;
     } else {

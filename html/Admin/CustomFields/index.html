@@ -1,0 +1,17 @@
+<& /RTFM/Admin/Elements/Header, Title => loc("Admin Custom Fields") &>
+<& /RTFM/Admin/Elements/Tabs, current_tab => 'RTFM/Admin/CustomFields/' &>
+
+<UL>
+<LI><A href="Basics.html?create=1"><&|/l&>Create a new Custom Field</&></A><BR><BR>
+
+%while  (my $CustomFieldObj = $CustomFields->Next) { 
+
+<LI>
+<A HREF="Basics.html?CustomField=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id()%>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a><BR>
+
+%}
+
+<%INIT>
+my $CustomFields = RT::FM::CustomFieldCollection->new($session{'CurrentUser'});
+$CustomFields->UnLimit();
+</%INIT>
