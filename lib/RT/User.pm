@@ -25,23 +25,59 @@ sub new  {
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
+	      # {{{ Core RT info
 	      UserId => 'read/write',
-	      Gecos => 'read/write',
-	      RealName => 'read/write',
 	      Password => 'write',
-	      ExternalId => 'read/write',
+	      Comments => 'read/write',
+	      Signature => 'read/write',
 	      EmailAddress => 'read/write',
-	      HomePhone => 'read/write',
+	      FreeformContactInfo => 'read/write',
+	      Organization => 'read/write',
+	      CanManipulate => 'read/write',
+	      # }}}
+	      
+	      # {{{ Names
+	      
+	      RealName => 'read/write',
+	      NickName => 'read/write',
+	      # }}}
+	      
+	      
+	      
+	      # {{{ Localization and Internationalization
+	      Lang VARCHAR(16), # Preferred language - to be used by L10N (not there, yet)
+	      EmailEncoding => 'read/write',
+	      WebEncoding => 'read/write',
+	      # }}}
+	      
+	      # {{{ External ContactInfo Linkage
+	      ExternalContactInfoId => 'read/write',
+	      ContactInfoSystem => 'read/write',
+	      # }}}
+	      
+	      # {{{ User Authentication identifier
+	      ExternalAuthId => 'read/write',
+	      #Authentication system used for user 
+	      AuthSystem => 'read/write',
+	      Gecos => 'read/write', #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
+	      # }}}
+	      
+	      # {{{ Telephone numbers
+	      HomePhone =>  'read/write',
 	      WorkPhone => 'read/write',
+	      MobilePhone => 'read/write',
+	      PagerPhone => 'read/write',
+	      # }}}
+	      
+	      # {{{ Paper Address
 	      Address1 => 'read/write',
 	      Address2 => 'read/write',
 	      City => 'read/write',
 	      State => 'read/write',
 	      Zip => 'read/write',
 	      Country => 'read/write',
-	      Comments => 'read/write',
-	      CanManipulate => 'read/write',
-	      IsAdministrator => 'read/write',
+	      # }}}
+	      
 	      Creator => 'read/auto',
 	      Created => 'read/auto',
 	      LastUpdatedBy => 'read/auto',
@@ -54,33 +90,16 @@ sub _Accessible  {
 # {{{ sub Create 
 sub Create  {
   my $self = shift;
-  my %args = (
-	      UserId => undef,
-	      Password => undef,
-	      Gecos => undef,
-	      RealName => undef,
-	      Password => undef,
-	      ExternalId => undef,
-	      
-	      EmailAddress => undef,
-	      HomePhone => undef,
-	      WorkPhone => undef,
-	      Address1 => undef,
-	      Address2 => undef,
-	      City => undef,
-	      State => undef,
-	      Zip => undef,
-	      Country => undef,
-	      Comments => undef,
-	      CanManipulate => undef,
-	      IsAdministrator => undef,
-	      @_ # get the real argumentlist
+  my %args = ( @_ # get the real argumentlist
 	     );
   
   
   #Todo we shouldn't do anything if we have no password to start.
   #return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
   
+  #TODO Specify some sensible defaults.
+  #TODO check ACLs
+
   my $id = $self->SUPER::Create(%args);
   $self->Load($id);
   
@@ -94,13 +113,15 @@ sub Create  {
 # {{{ sub Delete 
 sub Delete  {
   my $self = shift;
+
   my $new_owner = shift;
-  
+
+  #TODO: check ACLS  
   #TODO: Here, we should take all this admin's tickets that
   #      are stalled or open and reassign them to $new_owner;
   #      additionally, we should nuke this user's acls
 
-  
+
 
   my ($query_string,$update_clause, $user_id);
   
@@ -147,7 +168,7 @@ sub Load  {
 
 sub LoadByEmail {
     my $self=shift;
-    # TODO: check the "AlternateEmails" table first.
+    # TODO: check the "AlternateEmails" table if this fails.
     return $self->LoadByCol("EmailAddress", @_);
 }
 
