@@ -36,7 +36,7 @@
     <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
   </TR>
   <TR>
-    <TD class="label"><&|/l&>Last Contact</&>:</TD>
+    <TD class="label"><&|/l&><a href="Display.html?id=<%$Ticket->id%>&Action=SetTold">Last Contact</a></&>:</TD>
     <TD class="value"><% $Ticket->ToldObj->AsString %></TD>
   </TR>
   <TR>
