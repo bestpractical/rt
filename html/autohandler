@@ -23,8 +23,11 @@
 %# END LICENSE BLOCK
 <%INIT>
 local *session;
-foreach (keys %ARGS) {
-        $ARGS{$_} = Encode::decode('utf-8',$ARGS{$_}, Encode::FB_PERLQQ) ;
+foreach my $key (keys %ARGS) {
+        if (ref($ARGS{$key})) {
+        @{$ARGS{$key}} = map {  Encode::decode('utf-8',$_, Encode::FB_PERLQQ)}  @{$ARGS{$key}}; 
+        }
+        $ARGS{$key} = Encode::decode('utf-8',$ARGS{$key}, Encode::FB_PERLQQ) ;
 }
 if ($ARGS{'Debug'}) {
         require Time::HiRes;
