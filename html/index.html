@@ -25,12 +25,15 @@
 <& /Elements/Tabs, 
     current_toptab => '', 
     Title=>loc("RT at a glance") &>
+<& /Elements/ListActions, actions => \@results &>    
 <TABLE BORDER=0 WIDTH=100%>
 <TR VALIGN=TOP>
 <TD WIDTH=70%>
 <& /Elements/MyTickets &>
 <BR>
 <& /Elements/MyRequests &>
+<BR>
+<& /Elements/QuickCreate &>
 </TD>
 <TD>
 <& /Elements/Quicksearch &>
@@ -43,6 +46,20 @@
 </TR>
 </TABLE>
 <%init>
+
+my @results;
+
+if ($ARGS{'QuickCreate'} ) {
+    my $ticket = RT::Ticket->new($session{'CurrentUser'});
+    my ($tid, $trans, $tmsg) = $ticket->Create(Queue => $ARGS{'Queue'},
+                    Owner => $ARGS{'Owner'},
+                    Subject => $ARGS{'Subject'});
+
+
+    push (@results, $tmsg);
+}
+
+
 if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 

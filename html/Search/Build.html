@@ -32,7 +32,10 @@
 <table width=100%>
 <tr>
 <td valign=top>
-<tr><td valign=top>
+<& Elements/NewPickRestriction, query => $Query, cfqueues => \%queues, %ARGS &>
+<& /Elements/Submit, Caption => "Add additional restrictions", Label => loc('Add'), Name => 'AddClause'&>
+</td>
+<td valign=top>
 <& /Elements/TitleBoxStart, title => loc("Query") . ": " .$search_hash->{'Description'} &>
 <& Elements/NewListActions, actions => \@actions &>
 <select size=10 name=clauses <select style="width : 100%">
@@ -52,10 +55,6 @@
 <& Elements/EditSearches, CurrentSearch => $search_hash &>
 <br>
 <& Elements/DisplayOptions, Format=> ($Format||$search_hash->{'Format'}), %ARGS &>
-</td><td valign=top>
-<& Elements/NewPickRestriction, query => $Query, cfqueues => \%queues, %ARGS &>
-
-<& /Elements/Submit, Caption => "Add additional restrictions", Label => loc('Add'), Name => 'AddClause'&>
 </td>
 </tr>
 </table>
@@ -201,7 +200,9 @@ build_array(\$Query, $items, "", "", 0, \@options);
 our $currentkey = "";
 $currentkey = $options[$selectedclause]->{Key} if $selectedclause;
 
-if ($ARGS{"AddClause"}) {
+# We can't check for the addclause button because hitting return in
+# a criterion will get lost otherwise
+if (1) { #$ARGS{"AddClause"}) {
     my %hash = %$items;
     my $key;
     if ($currentkey) {
@@ -235,6 +236,7 @@ if ($ARGS{"AddClause"}) {
     }
 }
 
+# {{{ Move things around 
 if ($ARGS{"Up"}) {
     if ($currentkey) {
         my %hash = %$items;
@@ -327,6 +329,8 @@ if ($ARGS{"Up"}) {
         push(@actions, ["error: nothing to delete", -1]);
     }
 }
+# }}}
+
 
 $Query = "";
 @options = ();

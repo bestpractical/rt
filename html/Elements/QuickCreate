@@ -1,0 +1,25 @@
+<& /Elements/TitleBoxStart, title => loc('Quick ticket creation') &>
+<form method="post" action="<%$RT::WebPath%>/index.html">
+<input type="hidden" name="QuickCreate" value="1">
+<table>
+<tr>
+<td>
+<font size="-2"><&|/l&>Subject</&>:<br><input size="15" name="Subject"></font>
+</td>
+<td>
+<font size="-2"><&|/l&>Queue</&>:<br><& /Elements/SelectQueue, Name => 'Queue', Default => 'Todo'  &></font>
+</td>
+<td>
+<font size="-2"><&|/l&>Owner</&>:<br>
+<select type="select" name="Owner">  
+<option value="<%$session{'CurrentUser'}->id%>" SELECTED><%$session{'CurrentUser'}->Name %></option>
+<option value="<%$RT::Nobody->id%>"><%loc('Nobody')%></option>
+</select>
+</font>
+</td>
+</tr>
+%#<tr><td colspan="3"><font size="-2"><textarea cols="50" rows="3"></textarea></font></td></tr>
+</table>
+<div align="right"><input type="submit" value="<%loc('Create')%>"></div>
+</form>
+<& /Elements/TitleBoxEnd &>
