@@ -73,7 +73,11 @@ sub activate  {
     
     # Set up output directory for files:
     $parser->output_dir("$AttachmentDir");
-    
+  
+    #If someone includes a message, don't extract it
+    $parser->extract_nested_messages(0);
+
+   
     # Set up the prefix for files with auto-generated names:
     $parser->output_prefix("part");
 
