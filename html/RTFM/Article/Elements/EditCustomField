@@ -1,6 +1,6 @@
 % if ($CustomFieldObj->Type eq 'FreeformSingle') {
 <input name="Article-<%$id%>-CustomField-<%$CustomFieldObj->Id%>-Value"
-       value="<%$Values->First->Content%>">
+       value="<%$Values->First && $Values->First->Content%>">
 % }
 %  elsif ($CustomFieldObj->Type eq 'FreeformMultiple') {
 <textarea name="Article-<%$id%>-CustomField-<%$CustomFieldObj->Id%>-Values">
