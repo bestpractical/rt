@@ -182,7 +182,8 @@ sub SetMIMEEntityToEncoding {
         my @lines = $body->as_lines or return;
 
         if ( !$charset ) {
-            if ( @RT::EmailInputEncodings
+            if ( !Encode::is_utf8( $body->as_string )
+		 and @RT::EmailInputEncodings
                  and eval { require Encode::Guess; 1 } ) {
                 Encode::Guess->set_suspects(@RT::EmailInputEncodings);
                 my $decoder = Encode::Guess->guess( $body->as_string );

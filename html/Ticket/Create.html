@@ -225,6 +225,7 @@ if ($ARGS{'Attach'}) {			# attachment?
         Body                => "",
         AttachmentFieldName => 'Attach'
     );
+
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
 				$ARGS{'Attach'} => $attachment };
 }

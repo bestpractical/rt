@@ -136,7 +136,10 @@ sub Create {
     chomp($Subject);
 
     #Get the filename
-    my $Filename = $Attachment->head->recommended_filename;
+    my $Filename = $Attachment->head->recommended_filename || eval {
+	${ $Attachment->head->{mail_hdr_hash}{'Content-Disposition'}[0] }
+	    =~ /^.*\bfilename="(.*)"$/ ? $1 : ''
+    };
 
     if ( $Attachment->parts ) {
         $id = $self->SUPER::Create(

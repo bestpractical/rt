@@ -57,6 +57,7 @@ use strict;
 =cut
 
 sub NewApacheHandler {
+    require HTML::Mason::ApacheHandler;
     my $ah = new HTML::Mason::ApacheHandler( 
     
         comp_root                    => [
@@ -452,6 +453,8 @@ sub MakeMIMEEntity {
         );
     }
 
+    RT::I18N::SetMIMEEntityToUTF8($Message); # convert text parts into utf-8
+
     my $cgi_object = $m->cgi_object;
 
     if (my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
@@ -477,10 +480,11 @@ sub MakeMIMEEntity {
     $filename = "$filehandle" unless defined($filename);
                    
     $filename =~ s#^.*[\\/]##;
+
     $Message->attach(
         Path     => $temp_file,
-        Filename => $filename,
-        Type     => $uploadinfo->{'Content-Type'}
+        Filename => Encode::decode_utf8($filename),
+        Type     => $uploadinfo->{'Content-Type'},
     );
     close($fh);
 
@@ -489,7 +493,6 @@ sub MakeMIMEEntity {
     }
 
     $Message->make_singlepart();
-    RT::I18N::SetMIMEEntityToUTF8($Message); # convert text parts into utf-8
     return ($Message);
 
 }

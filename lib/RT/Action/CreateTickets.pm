@@ -331,6 +331,8 @@ sub Commit {
     # Create all the tickets we care about
     return(1) unless $self->TicketObj->Type eq 'ticket';
 
+    %T::Tickets = ();
+
     foreach my $template_id ( @{ $self->{'template_order'} } ) {
 	$T::Tickets{'TOP'} = $T::TOP = $self->TicketObj;
 	$RT::Logger->debug("Workflow: processing $template_id of $T::TOP");
@@ -406,7 +408,6 @@ sub Commit {
 	# Make sure we have at least the minimum set of 
 	# reasonable data and do our thang
 	$T::Tickets{$template_id} ||= RT::Ticket->new($RT::SystemUser);
-	$RT::Logger->debug("Assiging $template_id with $T::Tickets($template_id)");
 
 	# Deferred processing	
 	push @links, (
@@ -449,15 +450,21 @@ sub Commit {
 		    MIMEObj => $mimeobj);
 
 
-	map {
-	    /^customfield-(\d+)$/
-	      && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
-	} keys(%args);
-	my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%ticketargs);
-	unless($id) {
-	    $RT::Logger->error("Couldn't create a related ticket for ".$self->TicketObj->Id." ".$msg);
+	foreach my $key (keys(%args)) {
+	    $key =~ /^customfield-(\d+)$/ or next;
+	    $ticketargs{ "CustomField-" . $1 } = $args{$key};
 	}
 
+	my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%ticketargs);
+	if (!$id) {
+	    $RT::Logger->error(
+		"Couldn't create related ticket $template_id for ".
+		$self->TicketObj->Id." ".$msg
+	    );
+	    next;
+	}
+
+	$RT::Logger->debug("Assigned $template_id with $id");
 	$T::Tickets{$template_id}->SetOriginObj($self->TicketObj)
 	    if $T::Tickets{$template_id}->can('SetOriginObj');
     }
@@ -473,9 +480,11 @@ sub Commit {
 	    foreach my $link (
 		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
 	    {
-
-		$RT::Logger->debug("Building $type link for $link: $T::Tickets{$link}");
-		next unless exists $T::Tickets{$link};
+		if (!exists $T::Tickets{$link}) {
+		    $RT::Logger->debug("Skipping $type link for $link (non-existent)");
+		    next;
+		}
+		$RT::Logger->debug("Building $type link for $link: " . $T::Tickets{$link}->Id);
 		$link = $T::Tickets{$link}->Id;
 
 		my ( $wval, $wmsg ) = $ticket->AddLink(

@@ -318,9 +318,15 @@ sub Parse {
     my $parser = MIME::Parser->new();
 
     # Setup output directory for files. from RT::EmailParser::_SetupMIMEParser
-    my $AttachmentDir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
-    # Set up output directory for files:
-    $parser->output_dir("$AttachmentDir");
+    if (my $AttachmentDir = eval { File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 ) }) {
+	# Set up output directory for files:
+	$parser->output_dir("$AttachmentDir");
+    }
+    else {
+	# On some situations TMPDIR is non-writable. sad but true.
+	$parser->output_to_core(1);
+	$parser->tmp_to_core(1);
+    }
     #If someone includes a message, don't extract it
     $parser->extract_nested_messages(1);
     # Set up the prefix for files with auto-generated names:
