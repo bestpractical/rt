@@ -46,7 +46,7 @@ $Logger->add(Log::Dispatch::File->new
 	       min_level=>'info',
 	       filename=>'!!RT_LOGFILE!!',
 	       mode=>'append',
-	       callback => sub {%p=@_; return "$p{message}\n"}
+	       callback => sub {my %p=@_; return "$p{message}\n"}
 	      ));
 
 # }}}
