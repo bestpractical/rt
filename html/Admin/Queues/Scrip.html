@@ -40,7 +40,7 @@ my $subtabs = {
             path => "Admin/Queues/Scrips.html?id=".$QueueObj->id,
                },                                                                             
      B => { title => loc('New scrip'),                                                        
-            path => "Admin/Queues/Scrip.html?Create=1&Queue=".$QueueObj->id,
+            path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id,
             separator => 1,                                                                   
                }, 
           };   
@@ -54,7 +54,7 @@ if ($id) {
     $subtabs->{"C"} = { title => loc("#[_1]",$QueueObj->id),
 			path => "Admin/Queues/Scrip.html?id=$id&Queue=".$QueueObj->id };
 } else {
-    $current_subtab = "Admin/Queues/Scrip.html?Create=1&Queue=".$QueueObj->id;
+    $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id;
     $title = loc("Create a scrip for queue [_1]", $QueueObj->Name);
 }
                                                                                              
