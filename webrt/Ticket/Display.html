@@ -97,8 +97,9 @@ if (defined $ARGS{'Action'}) {
 ProcessUpdateMessage(ARGSRef=>\%ARGS, Actions=>\@Actions, TicketObj=>$Ticket);
 
 #Process status updates
-ProcessTicketBasics(ARGSRef => \%ARGS, Actions=>\@Actions, TicketObj=>$Ticket);
+my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 
+push (@Actions, @BasicActions);
 
 </%INIT>
 

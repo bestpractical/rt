@@ -95,6 +95,7 @@ sub Commit  {
 	unless ($MIMEObj->head->get('To') ||
 		$MIMEObj->head->get('Cc') || 
 		$MIMEObj->head->get('Bcc') ) {
+	    $RT::Logger->info('$self: No recipients found. Not sending.\n');
 	    return(0);
 	}
 	

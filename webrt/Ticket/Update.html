@@ -38,10 +38,10 @@ AdminCc:
 <& /Elements/TitleBoxEnd &>
 
 Status:
-<& /Elements/SelectStatus, Name=>"SetStatus", Default => $DefaultStatus &> 
+<& /Elements/SelectStatus, Name=>"Status", Default => $DefaultStatus &> 
 
 Owner:  
-<& /Elements/SelectOwner, Name=>"SetOwner", Default => $Ticket->OwnerObj->Id(), Queue => $Ticket->QueueObj &>
+<& /Elements/SelectOwner, Name=>"Owner", Default => $Ticket->OwnerObj->Id(), Queue => $Ticket->QueueObj &>
 
 
 Time Worked: 
