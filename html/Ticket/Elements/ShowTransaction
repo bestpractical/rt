@@ -90,7 +90,7 @@ if ($size) {
 	$size = loc("[_1]b", $size);
     }
 </%PERL>
-<font size=-1><A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>"><&|/l&>Download</&> <% $message->Filename|| loc('(untitled)') %></a> <% $size %></font>
+<font size=-1><A HREF="<%$RT::WebPath%>/Ticket/Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>"><&|/l&>Download</&> <% $message->Filename|| loc('(untitled)') %></a> <% $size %></font>
 % }
 </TD>
 </TR>
