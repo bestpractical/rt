@@ -328,14 +328,16 @@ sub _FindScrips {
     );
 
     #We only want things where the scrip applies to this sort of transaction
-    $self->Limit(
-        ALIAS           => $ConditionsAlias,
-        FIELD           => 'ApplicableTransTypes',
-        OPERATOR        => 'LIKE',
-        VALUE           => $args{'Type'},
-        ENTRYAGGREGATOR => 'OR',
-      )
-      if $args{'Type'};
+    # TransactionBatch stage can define list of transaction
+    foreach( split /\s*,\s*/, ($args{'Type'} || '') ) {
+	$self->Limit(
+	    ALIAS           => $ConditionsAlias,
+	    FIELD           => 'ApplicableTransTypes',
+	    OPERATOR        => 'LIKE',
+	    VALUE           => $_,
+	    ENTRYAGGREGATOR => 'OR',
+	)
+    }
 
     # Or where the scrip applies to any transaction
     $self->Limit(
