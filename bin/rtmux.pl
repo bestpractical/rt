@@ -53,29 +53,6 @@ elsif ($program eq '!!RT_QUERY_BIN!!') {
   &rt::ui::cli::query::activate();
   
 }
-elsif ($program eq '!!RT_ADMIN_BIN!!') {
-  #load rt_admin
-  require rt::support::utils;     
-  require rt::ui::cli::support;
-  require rt::ui::cli::admin;
-  &rt::ui::cli::admin::activate();
-}
-elsif ($program eq '!!RT_WEB_QUERY_BIN!!') {
-  # WebRT
-  require rt::ui::web::support;
-  require rt::ui::web::auth;     
-  require rt::ui::web::manipulate;
-  &rt::ui::web::activate();
-}
-elsif ($program eq '!!RT_WEB_ADMIN_BIN!!') {
-  #load web-admin
-  require rt::ui::web::support;
-  require rt::ui::web::auth;
-  require rt::support::utils;   
-  require rt::ui::web::admin;
-  &rt::ui::web::activate();
-
-}
 elsif ($program eq '!!RT_MAILGATE_BIN!!') {
 
   require rt::support::utils;      
