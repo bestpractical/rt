@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	0
 RT_VERSION_MINOR	=	99
-RT_VERSION_PATCH	=	6pre4
+RT_VERSION_PATCH	=	6pre5
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -100,7 +100,9 @@ MAIL_PROGRAM		= 	/usr/lib/sendmail
 MAIL_OPTIONS		=	-oi -t -ODeliveryMode=b -OErrorMode=m
 
 
-#The following mail options are best for sendmail emulators or pre 8.8 versions of sendmail
+# The following mail options are best for sendmail emulators or 
+# pre 8.8 versions of sendmail
+
 #MAIL_OPTIONS		=	-oi -t
 
 #
@@ -171,14 +173,19 @@ RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 
 #TODO: NONE OF THIS IS LIVE YET.
 
-# WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use for the 
-# web ui.  Valid choices are: "cookies" and "external".  Cookies uses http cookies to keep track of
-# authentication. External means that you will have configured your web server to prompt for the user's 
+# WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use 
+# for the web ui.  Valid choices are: "cookies" and "external".  Cookies 
+# uses http cookies to keep track of authentication. External means that 
+# you will have configured your web server to prompt for the user's 
 # credentials and authenticate them before RT ever sees the request.
 
 WEB_AUTH_MECHANISM		=	cookies
 
-WEB_AUTH_COOKIES_SSL_ONLY	=	no
+# WEB_AUTH_COOKIES_ALLOW_NO_PATH allows RT users to check a box which sends
+# their authentication cookies to any CGI on the server.  This could be a 
+# security hole. You'll _never_ want to enable it, unless you've got clients
+# with IE4.01sp1..which chokes unless this is enabled.
+
 WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	no
 
 ####################################################################
@@ -312,6 +319,8 @@ config-replace:
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
         s'!!MAIL_PROGRAM!!'$(MAIL_PROGRAM)'g;\
 	s'!!MAIL_OPTIONS!!'$(MAIL_OPTIONS)'g;\
+	s'!!WEB_AUTH_MECHANISM!!'$(WEB_AUTH_MECHANISM)'g;\
+	s'!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!'$(WEB_AUTH_COOKIES_ALLOW_NO_PATH)'g;\
 	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g; " $(RT_CONFIG)
 
 

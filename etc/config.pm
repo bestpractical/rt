@@ -73,4 +73,22 @@
     $mail_options = "!!MAIL_OPTIONS!!";
 
 
+    # WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use
+    # for the web ui.  Valid choices are: "cookies" and "external".  Cookies
+    # uses http cookies to keep track of authentication. External means that
+    # you will have configured your web server to prompt for the user's
+    # credentials and authenticate them before RT ever sees the request.
+    
+    $web_auth_mechanism = "!!WEB_AUTH_MECHANISM!!";
+    
+    
+    
+    
+    # WEB_AUTH_COOKIES_ALLOW_NO_PATH allows RT users to check a box which sends
+    # their authentication cookies to any CGI on the server.  This could be a
+    # security hole. You'll _never_ want to enable it, unless you have clients
+    # with IE4.01sp1..which chokes unless this is enabled.
+    
+    $web_auth_cookies_allow_no_path = "!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!";
+
 1;

@@ -1,6 +1,6 @@
 # $Header$
-# (c) 1997 Jesse Vincent
-# jesse@fsck.com
+# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# This software is redistributable under the terms of the GNU GPL
 #
 {
 
@@ -16,7 +16,7 @@ $frames=&rt::ui::web::frames();
 &rt::ui::web::cgi_vars_in();
 &initialize_sn();
 ($value, $message)=&rt::initialize('web_not_authenticated_yet');
-&CheckAuth();
+&rt::ui::web::check_auth();
 &InitDisplay();
 &takeaction();
 
@@ -30,41 +30,7 @@ if ($serial_num > 0) {
 return(0);
 }
 
-sub CheckAuth() {
-    my ($name,$pass);
-    
-    require rt::database::config;	
-    
-    $AuthRealm="WebRT for $rt::rtname";
-    
-    
-    ($name, $pass)=&WebAuth::AuthCheck($AuthRealm);
-    
-    #if the user's password is bad
-    if (!(&rt::is_password($name, $pass))) {
-      
-      &WebAuth::AuthForceLogin($AuthRealm);
-      exit(0);
-    }
-    
-    #if the user isn't even authenticating
-    elsif ($name eq '') {
-      &WebAuth::AuthForceLogin($AuthRealm);
-      exit(0)
-    }
-    
-    #if the user is trying to log out
-    if ($rt::ui::web::FORM{'display'} eq 'Logout') {
-      &WebAuth::AuthForceLogin($AuthRealm);
-      exit(0);
-    }
-    else { #authentication has succeeded
-      $current_user = $name;
-     
-    }
-    
-    
-}
+
 sub InitDisplay {
   
   if ($rt::ui::web::FORM{'display'} eq 'SetNotify') { # #this is an ugly hack, but to get the <select>

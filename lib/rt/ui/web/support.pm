@@ -1,5 +1,52 @@
 package rt::ui::web;
 
+sub check_auth() {
+    my ($name,$pass);
+    
+    # If we're doing external authentication
+
+    if ($rt::web_auth_mechanism =~ /external/i) {
+      $current_user = $ENV{REMOTE_USER};                                        
+      &WebAuth::Headers_Authenticated();  
+      return (0);
+      
+    }
+    
+    else {
+          
+    require rt::database::config;	
+    
+    $AuthRealm="WebRT for $rt::rtname";
+    
+    
+    ($name, $pass)=&WebAuth::AuthCheck($AuthRealm);
+    
+    #if the user's password is bad
+    if (!(&rt::is_password($name, $pass))) {
+      
+      &WebAuth::AuthForceLogin($AuthRealm);
+      exit(0);
+    }
+    
+    #if the user isn't even authenticating
+    elsif ($name eq '') {
+      &WebAuth::AuthForceLogin($AuthRealm);
+      exit(0)
+    }
+    
+    #if the user is trying to log out
+    if ($rt::ui::web::FORM{'display'} eq 'Logout') {
+      &WebAuth::AuthForceLogin($AuthRealm);
+      exit(0);
+    }
+    else { #authentication has succeeded
+      $current_user = $name;
+      
+    }
+  }    
+    
+}
+
 sub print_html{
     my ($value) = shift;
     $value =~ s/</&lt;/g;
@@ -204,28 +251,16 @@ sub header {
 	return();
     }
     print "Content-type: text/html\n\n";
-    print "<HTML>\n";
-    print "<head><title>WebRT</title></head>\n";
-    print "<BODY  bgcolor=\"#ffffff\">\n";
+    print '<HTML>
+<head><title>WebRT</title>
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+</head>
+<BODY  bgcolor="#ffffff">
+';
     #   if (!&frames()) {
     #	#&head_foot_options;
     #	print "<hr>";
     #    }
-    $header_printed=1; #this is so we only print one header...even if we call header twide
-}
-sub header_black {
-    if ($header_printed) {
-	return();
-    }
-    print "Content-type: text/html\n\n";
-    print "<HTML>\n";
-    print "<head><title>WebRT</title></head>\n";
-    print "<BODY bgcolor=\"#000000\">\n";
-    if (!&frames()) {
-	#&head_foot_options;
-	print "<hr>\n";
-	
-    }
     $header_printed=1; #this is so we only print one header...even if we call header twide
 }
 
@@ -248,7 +283,9 @@ sub content_header {
     }
     print "Content-type: text/html\n\n";
     print "<HTML>\n";
-    print "<head><title>WebRT</title></head>\n";
+    print "<head><title>WebRT</title>
+<META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">
+</head>\n";
     $header_printed=1;
 }
 sub content_footer {
