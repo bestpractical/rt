@@ -164,8 +164,8 @@ sub SetMIMEEntityToEncoding {
 
     my $charset = _FindOrGuessCharset($entity) or return;
     # one and only normalization
-    $charset = 'utf-8' if $charset eq 'utf8';
-    $enc     = 'utf-8' if $enc     eq 'utf8';
+    $charset = 'utf-8' if $charset =~ /^utf-?8$/i;
+    $enc     = 'utf-8' if $enc     =~ /^utf-?8$/i;
 
     SetMIMEHeadToEncoding(
 	$entity->head,

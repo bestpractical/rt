@@ -1,0 +1,8 @@
+<%init>
+my $title = loc('System Tools');
+</%init>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/ToolTabs, 
+    current_tab => 'Admin/Tools/index.html',
+    current_subtab => 'Admin/Tools/Configuration.html', 
+    Title => $title &>

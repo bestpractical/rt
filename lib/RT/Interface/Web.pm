@@ -68,6 +68,7 @@ sub NewApacheHandler {
         default_escape_flags => 'h',
         allow_globals        => [qw(%session)],
         data_dir => "$RT::MasonDataDir",
+        autoflush => 1,
         @_
     );
 
@@ -98,7 +99,8 @@ sub NewCGIHandler {
         ],
         data_dir => "$RT::MasonDataDir",
         default_escape_flags => 'h',
-        allow_globals        => [qw(%session)]
+        allow_globals        => [qw(%session)],
+        autoflush => 1,
     );
   
 

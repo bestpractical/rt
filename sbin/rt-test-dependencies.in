@@ -97,7 +97,7 @@ Digest::MD5 2.27
 DBI 1.37
 Test::Inline
 Class::ReturnValue 0.40
-DBIx::SearchBuilder 0.95
+DBIx::SearchBuilder 0.97
 Text::Template
 File::Spec 0.8
 HTML::Entities 
@@ -154,25 +154,25 @@ WWW::Mechanize
 .
 
 $deps{'FASTCGI'} = [ _( << '.') ];
-CGI
+CGI 2.92
 FCGI
 CGI::Fast 
 .
 
 $deps{'SPEEDYCGI'} = [ _( << '.') ];
-CGI
+CGI 2.92
 CGI::SpeedyCGI
 .
 
 
 $deps{'MODPERL1'} = [ _( << '.') ];
-CGI
+CGI 2.92
 Apache::Request
 Apache::DBI 0.92
 .
 
 $deps{'MODPERL2'} = [ _( << '.') ];
-CGI 2.89
+CGI 2.92
 Apache::DBI
 .
 

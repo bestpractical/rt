@@ -76,6 +76,20 @@ sub _Init {
 
 # }}}
 
+=head2 PrincipalsAlias
+
+Returns the string that represents this Users object's primary "Principals" alias.
+
+
+=cut
+
+sub PrincipalsAlias {
+    my $self = shift;
+    return($self->{'princalias'});
+
+}
+
+
 # {{{ sub _DoSearch 
 
 =head2 _DoSearch

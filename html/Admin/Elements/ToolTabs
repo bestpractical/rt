@@ -21,29 +21,19 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'Admin/', 
-    current_tab => $current_tab, 
+<& /Admin/Elements/Tabs, subtabs => $tabs, 
+    current_tab => 'Admin/Tools/', 
+    current_subtab => $current_tab, 
     Title => $Title &>
 
 <%INIT>
-  my $tabs = { A => { title => loc('Users'),
-			  path => 'Admin/Users/',
-			},
-	       B => { title => loc('Groups'),
-			   path => 'Admin/Groups/',
-			 },
-	       C => { title => loc('Queues'),
-			   path => 'Admin/Queues/',
-			 },
-	       D => { 'title' => loc('Global'),
-			   path => 'Admin/Global/',
-			 },
-	       E => { 'title' => loc('Tools'),
-			   path => 'Admin/Tools/',
-			 },
-	     };
+  my $tabs = {
+                
+               A => { title => loc('System Configuration'),
+                           path => 'Admin/Tools/Configuration.html',
+                      }
+
+};
 
   # Now let callbacks add their extra tabs
   $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
@@ -54,13 +44,13 @@
       $tabs->{$tab}->{"current_subtab"} = $current_subtab;
     }
   }
-
 </%INIT>
 
-
+  
 <%ARGS>
-$subtabs => undef
+$id => undef
 $current_tab => undef
+$subtabs => undef
 $current_subtab => undef
 $Title => undef
 </%ARGS>

@@ -804,11 +804,9 @@ It is important not to localize  the names of rights or statuses within RT's cor
 
 This is for new programs, modules, specific APIs, or anything else.
 
-Contact for core team is the slashcode-development mailing list.
-
 =over 4
 
-=item Present idea to core team
+=item Present idea to rt-devel
 
 We may know of a better way to approach the problem, or know of an
 existing way to deal with it, or know someone else is working on it. 
@@ -816,9 +814,9 @@ This is mostly informal, but a fairly complete explanation for the need
 and use of the code should be provided.
 
 
-=item Present complete specs to core team
+=item Present complete specs to rt-devel
 
-The complete proposed API to the core team should be submitted for
+The complete proposed API  should be submitted for
 approval and discussion.  For web and command-line programs, present the
 functionality and interface (op codes, command-lin switches, etc.).
 
@@ -827,13 +825,8 @@ boilerplate and fill it in.  You can make changes later if necessary,
 but fill it in as much as you can.
 
 
-=item Announce any changes to interface
 
-If the way it works or how it is called is going to change, notify the core
-team.
-
-
-=item Prepare for core review
+=item Prepare for code review
 
 When you are done, the code will undergo a code review by a member of
 the core team, or someone picked by the core team.  This is not to
@@ -842,9 +835,6 @@ you understand your code, that we understand your code, that it won't
 break other code, that it follows the documentation and existing
 proposal.  It is to check for possible optimizations or better ways of
 doing it.
-
-For members of the core team, one or more other members of the team will
-perform the review.
 
 Note that all code is expected to follow the coding principles and style
 guide contained in this document.
