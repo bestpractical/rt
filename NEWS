@@ -1,3 +1,6 @@
+8 mar 99
+--------
+fixed make acls bogosity where it choked if you had a password 
 3 Mar 99
 --------
 Fixed a spacing bug in the mail interface

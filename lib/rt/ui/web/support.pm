@@ -132,7 +132,7 @@ sub cgi_vars_in {
 	# actually open a filehandle.
 
 	# Uncomment for debugging purposes
-	  print STDERR "A gnarled troll tells you that $name was set to $value\n";
+	 # print STDERR "A gnarled troll tells you that $name was set to $value\n";
 	$FORM{$name} = $value;
 	
     }
