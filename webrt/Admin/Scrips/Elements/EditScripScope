@@ -1,0 +1,7 @@
+<& /Admin/Elements/SelectScrip,  Name => 'ScripForScope-'.$ScripScope->Id, Default => $ScripScope->Scrip &>
+<& /Admin/Elements/SelectTemplate, Name => 'TemplateForScope-'.$ScripScope->Id, Default => $ScripScope->Template &>
+
+
+<%ARGS>
+$ScripScope => undef
+</%ARGS>

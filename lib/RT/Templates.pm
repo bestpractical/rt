@@ -21,7 +21,43 @@ sub _Init {
 }
 # }}}
 
+# {{{ LimitToNotInQueue
 
+=head2 LimitToNotInQueue
+
+Takes a queue id # and limits the returned set of templates to those which 
+aren't that queue's templates.
+
+=cut
+
+sub LimitToNotInQueue {
+    my $self = shift;
+    my $queue_id = shift;
+    $self->Limit(FIELD => 'Queue',
+                 VALUE => "$queue_id",
+                 OPERATOR => '!='
+                );
+}
+# }}}
+
+# {{{ LimitToQueue
+
+=head2 LimitToQueue
+
+Takes a queue id # and limits the returned set of templates to that queue's
+templates
+
+=cut
+
+sub LimitToQueue {
+    my $self = shift;
+    my $queue_id = shift;
+    $self->Limit(FIELD => 'Queue',
+                 VALUE => "$queue_id",
+                 OPERATOR => '='
+                );
+}
+# }}}
 
 # {{{ sub NewItem 
 

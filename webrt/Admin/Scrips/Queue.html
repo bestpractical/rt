@@ -1,0 +1,101 @@
+<& /Admin/Elements/Header, Title => 'Edit scrips' &>
+
+
+
+
+<& /Elements/ListActions, actions => \@actions &>
+<h1><%$description%></h1>
+
+<FORM METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=Queue VALUE=<%$Queue%>>
+
+<ul>
+% while (my  $ScripScope  = $ScripScopes->Next ) {
+
+<li><& Elements/EditScripScope, ScripScope => $ScripScope &>
+
+% }
+</ul>
+Add a scrip to this queue:
+<ul>
+<li><& Elements/AddScripScope, Queue=> $Queue &>
+</ul>
+<& /Elements/Submit &>
+</FORM>
+<%init>
+my (@actions, $description);
+
+
+my $ScripScopes = new RT::ScripScopes ($session{'CurrentUser'});
+unless ($Queue =~ /^\d+$/) {
+        Abort("$Queue isn't a valid Queue id.");
+        }
+
+
+unless ($ScripScopes->LimitToQueue($Queue)) {
+        Abort("Couldn't load ScripScopes.");
+        }
+
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue);
+
+if ($QueueObj->id) {
+    $description = "Modify scrips for queue '". $QueueObj->QueueId ."'";
+    }
+else {
+    $description = "Modify global scrips";
+    }
+
+
+if ($NewScopeScrip and $NewScopeTemplate) {
+  my $NewScripScope = new RT::ScripScope($session{'CurrentUser'});
+
+   my $retval = $NewScripScope->Create ( Scrip => $NewScopeScrip,
+                                         Queue => $Queue,
+                                         Template => $NewScopeTemplate);
+    if (defined $retval) {
+        push @actions, "Scrip added to queue";
+    }
+    else {
+        push @actions, "Scrip could not be added to queue";
+     }
+}
+
+# {{{ deal with modifying and deleting existing scrips
+my ($key );
+foreach $key (keys %ARGS) {
+    if ($key =~ /^ScripForScope-(\d*)$/) {
+         my $id = $1;
+         my $scripscope = new RT::ScripScope($session{'CurrentUser'});
+         $scripscope->Load($id);
+
+
+         if ( ( $ARGS{"ScripForScope-".$id} eq "") and
+              ( $ARGS{"TemplateForScope-".$id} eq "") ) {
+            $scripscope->Delete;
+         }
+            
+
+        else {
+          if ($ARGS{"ScripForScope-".$id} ne $scripscope->Scrip) {
+           my ($code,$msg) = 
+              $scripscope->SetScrip($ARGS{"ScripForScope-".$id});
+           push @actions, $msg;
+          }
+
+          if ($ARGS{"STemplateForScope-".$id} ne $scripscope->Template) {
+           my ($code,$msg) = 
+              $scripscope->SetTemplate($ARGS{"TemplateForScope-".$id});
+           push @actions, $msg;
+         }
+       }	
+    }
+}
+# }}}
+</%init>
+
+<%ARGS>
+$NewScopeScrip => undef
+$NewScopeTemplate => undef
+$Queue => undef         #some identifier that a Queue could 
+</%ARGS>

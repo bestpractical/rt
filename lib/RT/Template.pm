@@ -23,27 +23,108 @@ sub new {
 # }}}
 
 
+
 # {{{ sub _Accessible 
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      id => 'read',
+          Alias => 'read/write',
 	      Title => 'read/write',
 	      Content => 'read/write',
-	      Creator => 'read',
-	      Created => 'read',
-	      LastUpdatedBy => 'read',
-	      LastUpdated => 'read'
+          Queue => 'read/write'
 	     );
   return $self->SUPER::_Accessible(@_, %Cols);
 }
 # }}}
 
-# {{{ sub DisplayPermitted 
-sub DisplayPermitted  {
-    return 1;
+# {{{ sub _Set
+
+sub _Set {
+  my $self = shift;
+
+  unless ($self->CurrentUserHasQueueRight('ModifyTemplates')) {
+    return (0, "Permission Denied");
+  }
+
+  return($self->SUPER::_Set(@_));
+  
 }
+
 # }}}
+
+# {{{ sub _Value 
+
+=head2 _Value
+
+Takes the name of a table column.
+Returns its value as a string, if the user passes an ACL check
+
+=cut
+
+sub _Value  {
+
+  my $self = shift;
+  my $field = shift;
+
+ #If the current user doesn't have ACLs, don't let em at it.  
+
+ unless ($self->CurrentUserHasQueueRight('ShowTemplates')) {
+    return (0, "Permission Denied");
+  }
+
+  return($self->SUPER::_Value($field));
+
+}
+
+# }}}
+
+
+
+# {{{ sub Create
+
+=head2 Create
+
+Takes a paramhash of Content, Queue, Title and Alias.
+Alias should be a unique string identifying this Template.
+Title and Content should be the template's title and content.
+Queue should be 0 for a global template and the queue # for a queue-specific 
+template.
+
+Returns the Template's id # if the create was successful. Returns undef for
+unknown database failure.
+
+
+=cut
+
+sub Create {
+    my $self = shift;
+    my %args = ( Content => undef,
+                 Queue => undef,
+                 Title => '[no title]',
+                 Alias => undef,
+                 @_
+                );
+
+    my $QueueObj = new RT::Queue($self->CurrentUser);
+    $QueueObj->Load($args{'Queue'}) || return (0,'Invalid queue');
+
+    unless ($QueueObj->CurrentUserHasRight('CreateTemplates')) {
+     return (0, "Permission Denied");
+    }
+   
+    #TODO+++ check the queue for validity. check the alias for uniqueness.
+
+    my $result = $self->SUPER::Create( Content => "$args{'Content'}",
+                                       Queue   => "$args{'Queue'}",
+                                       Title   => "$args{'Title'}",
+                                       Alias   => "$args{'Alias'}"
+                                      );
+
+    return ($result);
+
+}
+
 
 # {{{ sub MIMEObj
 sub MIMEObj {
@@ -109,5 +190,39 @@ sub _ParseContent  {
   return ($template->fill_in(PACKAGE=>T));
 }
 # }}}
+
+# {{{ sub QueueObj
+
+=head2 QueueObj
+
+Takes nothing. returns this ticket's queue object
+
+=cut
+
+sub QueueObj {
+  my $self = shift;
+  if (!defined $self->{'queue'})  {
+    require RT::Queue;
+    $self->{'queue'} = RT::Queue->new($self->CurrentUser)
+      or die "RT::Queue->new(". $self->CurrentUser. ") returned false";
+    #We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
+    my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
+
+  }
+  return ($self->{'queue'});
+}
+
+
+# }}}
+
+=head2 CurrentUserHasQueueRight
+
+Helper function to call the template's queue's CurrentUserHasQueueRight with the passed in args.
+
+=cut
+sub CurrentUserHasQueueRight {
+    my $self = shift;
+    return($self->QueueObj->CurrentUserHasRight(@_));
+}
 
 1;

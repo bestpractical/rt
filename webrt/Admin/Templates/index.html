@@ -5,13 +5,21 @@
 <INPUT TYPE=SUBMIT VALUE="Create"> <B>TODO</B>
 </FORM>
 <H1>Select a template to modify</H1>
-%while  (my $TemplateObj = $Templates->Next) {
 
-<A HREF="Modify.html?id=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>:
-<%$TemplateObj->Title%></a><BR>
+%while (my $Queue = $Queues->Next) {
+<h2><%$Queue->QueueId%></h2>
+<i><%$Queue->Description%></i><br>
+
+%my $Templates = $Queue->Templates;
+%while  (my $TemplateObj = $Templates->Next) { 
+
+<A HREF="Modify.html?id=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Alias%>: <%$TemplateObj->Title%></a><BR>
 
 %}
+%}
 <%INIT>
-my $Templates = new RT::Templates($session{'CurrentUser'});
-$Templates->UnLimit;
+
+my $Queues = new RT::Queues($session{'CurrentUser'});
+$Queues->UnLimit;
+
 </%INIT>

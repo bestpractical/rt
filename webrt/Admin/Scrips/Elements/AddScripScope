@@ -1,0 +1,7 @@
+
+<& /Admin/Elements/SelectScrip, Name => 'NewScopeScrip' &>
+<& /Admin/Elements/SelectTemplate, Name => 'NewScopeTemplate', DefaultQueue => $Queue &>
+
+<%ARGS>
+$Queue => undef
+</%ARGS>

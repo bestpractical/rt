@@ -25,7 +25,7 @@ $TemplateObj->Load($id) || &Abort('No Template');
 # Deal with updating individual fields where we're doing something to watch
 # what goes in and out
     
-my @fields = qw( Title Content );
+my @fields = qw( Title Content Queue Alias);
 
 #Run through each field in this list. update the value if apropriate
 my ($field);

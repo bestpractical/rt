@@ -75,8 +75,9 @@ sub Create  {
     #Load a scripscopes object
     use RT::ScripScopes;
     my $PossibleScrips = RT::ScripScopes->new($RT::SystemUser);
-    $PossibleScrips->LimitToQueue($TicketAsSystem->QueueObj->Id); #Limit it to queue 0 or $Ticket->QueueObj->Id
     
+    $PossibleScrips->LimitToQueue($TicketAsSystem->QueueObj->Id); #Limit it to  $Ticket->QueueObj->Id
+    $PossibleScrips->LimitToGlobal(); # or to "global"
     my $ScripsAlias = $PossibleScrips->NewAlias(Scrips);
     
   $PossibleScrips->Join(ALIAS1 => 'main',  FIELD1 => 'Scrip',

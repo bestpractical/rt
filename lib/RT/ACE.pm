@@ -25,7 +25,10 @@ use vars qw (%SCOPE
 		 ListQueue => 'Display a listing of ticket',
 		 ModifyWatchers => 'Modify the queue watchers',
 		 ModifyACL => 'Modify this queue\'s ACL',
-		 CreateTicket => 'Create a ticket in this queue'
+		 CreateTicket => 'Create a ticket in this queue',
+         CreateTemplates => 'Create email templates for this queue',
+         ModifyTemplates => 'Modify email templates for this queue',
+         ShowTemplates => 'Display email templates for this queue',
 	   );
 
 # System rights are rights granted to the whole system
@@ -33,7 +36,8 @@ use vars qw (%SCOPE
 		  DeleteQueue => 'Delete queues',
 		  AdminUsers => 'Create, Delete and Modify users',
 		  ModifySelf => 'Modify one\'s own RT account',
-		  ModifySystemACL => 'Modify system ACLs'
+		  ModifySystemACL => 'Modify system ACLs',
+
 		);
 
 #Ticket rights are the sort of queue rights that can be granted to 

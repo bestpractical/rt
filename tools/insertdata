@@ -219,7 +219,8 @@ my @scrips = (
 # {{{ Templates
 my @templates = (
 {
-#				id => 1,
+                Queue   => '1',
+                Alias => 'Autoreply',
 				Title => 'Default Autoresponse Template', 
 				Content => 'To: {$Ticket->RequestorsAsString}
 Cc: {$Ticket->CcAsString}
@@ -246,6 +247,8 @@ problem. To do so, you may reply to this message.
 
 {
 #                  id => 2,
+                Queue   => '1',
+                Alias => 'Transaction', 
                   Title => 'Default transaction template',
                   Content => 'Reply-To: {$Ticket->QueueObj->CommentAddress} (Replies will be entered as comments)
 
@@ -262,7 +265,9 @@ Transaction: {$Transaction->Description}
 
 
 {
-#                  id => 3,
+
+                  Queue   => '1',
+                  Alias => 'AdminCorrespondence',
                   Title => 'Default admin correspondence template',
                   Content => 'Subject: {$Transaction->Message()->First()->Subject}
 Content-Type: text/plain; charset=ISO-8859-1
@@ -276,7 +281,8 @@ To: {$Ticket->AdminCcAsString}
 
 
 {
-#                  id => 4,
+                  Queue   => '1',
+                  Alias => 'Correspondence',
                   Title => 'Default correspondence template',
                   Content =>  'Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
 To: {$Ticket->RequestorsAsString}
@@ -287,7 +293,8 @@ Content-Type: text/plain; charset=ISO-8859-1
 
 
 {
-#                  id => 5,
+                  Queue   => '1',
+                  Alias => 'AdminComment',
                   Title => 'Default admin comment template',
                   Content =>  'Subject: [Comment] {my $z=$Transaction->Message()->First(); return "(...)" unless $z; my $s=$z->Subject; $s =~ s/\\[Comment\\]//g; $comment =~ s/^Re//i; $s;}
 Reply-To: {$Ticket->QueueObj->CommentAddress}
@@ -302,8 +309,8 @@ This is a comment.  It is not sent to the Requestor(s):
 
 
 {
-
-#                  id => 6,
+                  Queue   => '1',
+                  Alias => 'StatusChange',
                   Title => 'Ticket status changed',
                   Content =>  'Subject: Status Changed to: {$Transaction->NewValue}
 Reply-To: {$Ticket->QueueObj->CorrespondAddress}
@@ -317,7 +324,8 @@ To: {$Ticket->WatchersAsString}
 
 {
 
-#                  id => 7,
+                 Queue => '1',
+                 Alias => 'Resolved',
                   Title => 'Ticket Resolved',
                   Content => 'Subject: Ticket Resolved
 Reply-To: {$Ticket->QueueObj->CorrespondAddress}

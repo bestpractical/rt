@@ -49,6 +49,23 @@ sub LimitToQueue  {
 		FIELD => 'Queue',
 		VALUE => "$queue")
       if defined $queue;
+  
+}
+# }}}
+
+# {{{ sub LimitToGlobal
+
+=head2 LimitToGlobal
+
+Makes sure that 
+Scopes it pulls out apply to all queues (or another that you've selected with
+another call to this method or LimitToQueue
+
+=cut
+
+sub LimitToGlobal  {
+   my $self = shift;
+ 
   $self->Limit (ENTRYAGGREGATOR => 'OR',
 		FIELD => 'Queue',
 		VALUE => 0);

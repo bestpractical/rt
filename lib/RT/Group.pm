@@ -42,7 +42,7 @@ sub Create {
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
-    if $self->CurrentUser->HasRight('ModifyGroups') {
+    if ($self->CurrentUser->HasSystemRight('ModifyGroups')) {
 	
 	$self->$SUPER::_Set(@_);
     }

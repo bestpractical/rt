@@ -28,45 +28,31 @@ sub _Accessible  {
 # }}}
 
 # {{{ sub Create 
+
+=head2 Create
+
+Creates a new entry in the ScripScopes table. Takes a paramhash with three
+fields, Queue, Template and Scrip.
+
+=cut
+
 sub Create  {
   my $self = shift;
-  die "RT::Scrip->create stubbed\n";
-  my $id = $self->SUPER::Create(Name => @_);
-  $self->LoadById($id);
-  
+  my %args = ( Queue => undef,
+               Template => undef,
+               Scrip => undef,
+               @_
+             );
+
+  #TODO +++ validate input 
+  my $id = $self->SUPER::Create(Queue => $args{'Queue'},
+                                Template => $args{'Template'},
+                                Scrip => $args{'Scrip'}
+                                );
+ return ($id); 
 }
 # }}}
 
-# {{{ sub delete 
-sub delete  {
-  my $self = shift;
-  my ($query_string,$update_clause);
-  
-  die ("ScripScope->Delete not implemented yet");
-}
-# }}}
-
-# {{{ sub Load 
-sub Load  {
-  my $self = shift;
-  
-  my $identifier = shift;
-  if (!$identifier) {
-    return (undef);
-  }	    
-
-  if ($identifier !~ /\D/) {
-    $self->SUPER::LoadById($identifier);
-  }
-  else {
-    die "This code is never reached ;)";  
-  }
-
-  $self
-  
- 
-}
-# }}}
 
 # {{{ sub ScripObj
 sub ScripObj {
@@ -74,15 +60,15 @@ sub ScripObj {
   if (!$self->{'ScripObj'})  {
     require RT::Scrip;
     $self->{'ScripObj'} = RT::Scrip->new($self->CurrentUser);
-    $self->{'ScripObj'}->Load($self->_Value('Scrip'), $self->_Value('Template'));
+    #TODO: why are we loading scrips with templates like this. 
+    # two seperate methods might make more sense
+    $self->{'ScripObj'}->Load($self->Scrip, $self->Template);
   }
   return ($self->{'ScripObj'});
 }
 
 # }}}
 #
-# ACCESS CONTROL
-# 
 
 # {{{ sub DESTROY
 sub DESTROY {

@@ -474,6 +474,50 @@ sub DeleteWatcher {
 
 # }}}
 
+# {{{ sub Templates
+
+=head2 Templates
+
+Returns an RT::Templates object of all of this queue's templates.
+
+=cut
+
+sub Templates {
+    my $self = shift;
+    my $templates = RT::Templates->new($self->CurrentUser);
+    $templates->LimitToQueue($self->id);
+    return ($templates); 
+}
+
+# }}}
+
+# {{{ sub AddScripScope
+
+=head2 AddScripScope
+
+Adds a scrip to this queue's list of scrips to try.
+Takes a param hash consiting of "Scrip" and "Template" which are references
+to the "Scrips" and "Templates" queue, respectively.
+
+=cut
+sub AddScripScope {
+    my $self= shift;
+    my %args = ( Scrip => undef,
+                 Template => undef,
+                 @_ );
+    
+    require RT::ScripScope;
+    my $new_scope = new RT::ScripScope($self->CurrentUser);
+    
+    #TODO: +++ check Scrip and template values;
+
+    my $retval =  $new_scope->Create( Scrip => $args{'Scrip'},
+                        Queue => $self->id,
+                        Template => $args{'Template'}
+                       );
+     return ($retval);
+}
+# }}}
 
 # {{{ sub ACL 
 
