@@ -105,11 +105,11 @@ RT_USER_PASSWD_MIN	=	5
  
 DB_HOME               = /usr
 
-# Right now, the only acceptable value for DB_TYPE is mysql.
-# TODO pgsql, oracle and sybase should be supported
+# Right now, the only working value for DB_TYPE is mysql.  If you're using
+# Postgresql _and_ you're a hacker, you might want to try "Pg" as well.
+# Please submit necessary patches to rt11@fsck.com
 
 DB_TYPE                =	mysql
-
 
 
 # Set DBA to the name of a unix account with the proper permissions and 
