@@ -19,6 +19,11 @@ accidentally damage your database and lose data or worse.
 
 UPGRADING FROM 3.0.x - Changes:
 
+= Installation =
+
+We recommend you move your existing /opt/rt3 tree completely out
+of the way before installating the newversion of RT, to make sure
+that you don't inadvertently leave old files hanging around.
 
 = Rights changes =
 
