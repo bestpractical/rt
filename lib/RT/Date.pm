@@ -211,10 +211,10 @@ sub DiffAsString {
     my $other = shift;
 
 
-    if ($other == 0) {
+    if ($other < 1) {
 	return ("");
     }
-    if ($self->Unix == 0) {
+    if ($self->Unix < 1) {
 	return("");
     }
     my $diff = $self->Diff($other);
