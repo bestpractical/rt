@@ -1,38 +1,38 @@
-# {{{ BEGIN BPS TAGGED BLOCK
-# 
+# BEGIN BPS TAGGED BLOCK {{{
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -41,8 +41,8 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
-# }}} END BPS TAGGED BLOCK
+#
+# END BPS TAGGED BLOCK }}}
 # Major Changes:
 
 # - Decimated ProcessRestrictions and broke it into multiple
@@ -78,6 +78,8 @@ ok (require RT::Tickets);
 
 =cut
 
+package RT::Tickets;
+
 use strict;
 
 package RT::Tickets;
@@ -86,112 +88,119 @@ no warnings qw(redefine);
 use vars qw(@SORTFIELDS);
 use RT::CustomFields;
 
-
 # Configuration Tables:
 
 # FIELDS is a mapping of searchable Field name, to Type, and other
 # metadata.
 
-my %FIELDS =
-  ( Status	    => ['ENUM'],
-    Queue	    => ['ENUM' => 'Queue',],
-    Type	    => ['ENUM',],
-    Creator	    => ['ENUM' => 'User',],
-    LastUpdatedBy   => ['ENUM' => 'User',],
-    Owner	    => ['ENUM' => 'User',],
-    EffectiveId	    => ['INT',],
-    id		    => ['INT',],
-    InitialPriority => ['INT',],
-    FinalPriority   => ['INT',],
-    Priority	    => ['INT',],
-    TimeLeft	    => ['INT',],
-    TimeWorked	    => ['INT',],
-    MemberOf	    => ['LINK' => To => 'MemberOf', ],
-    DependsOn	    => ['LINK' => To => 'DependsOn',],
-    RefersTo        => ['LINK' => To => 'RefersTo',],
-    HasMember	    => ['LINK' => From => 'MemberOf',],
-    DependentOn     => ['LINK' => From => 'DependsOn',],
-    DependedOnBy     => ['LINK' => From => 'DependsOn',],
-    ReferredToBy    => ['LINK' => From => 'RefersTo',],
-#   HasDepender	    => ['LINK',],
-#   RelatedTo	    => ['LINK',],
-    Told	    => ['DATE' => 'Told',],
-    Starts	    => ['DATE' => 'Starts',],
-    Started	    => ['DATE' => 'Started',],
-    Due		    => ['DATE' => 'Due',],
-    Resolved	    => ['DATE' => 'Resolved',],
-    LastUpdated	    => ['DATE' => 'LastUpdated',],
-    Created	    => ['DATE' => 'Created',],
-    Subject	    => ['STRING',],
-    Content	    => ['TRANSFIELD',],
-    ContentType	    => ['TRANSFIELD',],
-    Filename        => ['TRANSFIELD',],
-    TransactionDate => ['TRANSDATE',],
-    Requestor       => ['WATCHERFIELD' => 'Requestor',],
-    Requestors       => ['WATCHERFIELD' => 'Requestor',],
-    Cc              => ['WATCHERFIELD' => 'Cc',],
-    AdminCc         => ['WATCHERFIELD' => 'AdminCC',],
-    Watcher	    => ['WATCHERFIELD'],
-    LinkedTo	    => ['LINKFIELD',],
-    CustomFieldValue =>['CUSTOMFIELD',],
-    CF              => ['CUSTOMFIELD',],
-  );
+my %FIELDS = (
+    Status          => ['ENUM'],
+    Queue           => [ 'ENUM' => 'Queue', ],
+    Type            => [ 'ENUM', ],
+    Creator         => [ 'ENUM' => 'User', ],
+    LastUpdatedBy   => [ 'ENUM' => 'User', ],
+    Owner           => [ 'ENUM' => 'User', ],
+    EffectiveId     => [ 'INT', ],
+    id              => [ 'INT', ],
+    InitialPriority => [ 'INT', ],
+    FinalPriority   => [ 'INT', ],
+    Priority        => [ 'INT', ],
+    TimeLeft        => [ 'INT', ],
+    TimeWorked      => [ 'INT', ],
+    MemberOf        => [ 'LINK' => To => 'MemberOf', ],
+    DependsOn       => [ 'LINK' => To => 'DependsOn', ],
+    RefersTo        => [ 'LINK' => To => 'RefersTo', ],
+    HasMember       => [ 'LINK' => From => 'MemberOf', ],
+    DependentOn     => [ 'LINK' => From => 'DependsOn', ],
+    DependedOnBy    => [ 'LINK' => From => 'DependsOn', ],
+    ReferredToBy    => [ 'LINK' => From => 'RefersTo', ],
+
+    #   HasDepender	    => ['LINK',],
+    #   RelatedTo	    => ['LINK',],
+    Told             => [ 'DATE'            => 'Told', ],
+    Starts           => [ 'DATE'            => 'Starts', ],
+    Started          => [ 'DATE'            => 'Started', ],
+    Due              => [ 'DATE'            => 'Due', ],
+    Resolved         => [ 'DATE'            => 'Resolved', ],
+    LastUpdated      => [ 'DATE'            => 'LastUpdated', ],
+    Created          => [ 'DATE'            => 'Created', ],
+    Subject          => [ 'STRING', ],
+    Content          => [ 'TRANSFIELD', ],
+    ContentType      => [ 'TRANSFIELD', ],
+    Filename         => [ 'TRANSFIELD', ],
+    TransactionDate  => [ 'TRANSDATE', ],
+    Updated          => [ 'TRANSDATE', ],
+    Requestor        => [ 'WATCHERFIELD'    => 'Requestor', ],
+    Requestors       => [ 'WATCHERFIELD'    => 'Requestor', ],
+    Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
+    AdminCc          => [ 'WATCHERFIELD'    => 'AdminCC', ],
+    Watcher          => ['WATCHERFIELD'],
+    LinkedTo         => [ 'LINKFIELD', ],
+    CustomFieldValue => [ 'CUSTOMFIELD', ],
+    CF               => [ 'CUSTOMFIELD', ],
+    RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ],
+    CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ],
+    AdminCCGroup     => [ 'MEMBERSHIPFIELD' => 'AdminCc', ],
+    WatcherGroup     => [ 'MEMBERSHIPFIELD', ],
+);
 
 # Mapping of Field Type to Function
-my %dispatch =
-  ( ENUM	    => \&_EnumLimit,
-    INT		    => \&_IntLimit,
-    LINK	    => \&_LinkLimit,
-    DATE	    => \&_DateLimit,
-    STRING	    => \&_StringLimit,
-    TRANSFIELD	    => \&_TransLimit,
-    TRANSDATE	    => \&_TransDateLimit,
+my %dispatch = (
+    ENUM            => \&_EnumLimit,
+    INT             => \&_IntLimit,
+    LINK            => \&_LinkLimit,
+    DATE            => \&_DateLimit,
+    STRING          => \&_StringLimit,
+    TRANSFIELD      => \&_TransLimit,
+    TRANSDATE       => \&_TransDateLimit,
     WATCHERFIELD    => \&_WatcherLimit,
-    LINKFIELD	    => \&_LinkFieldLimit,
-    CUSTOMFIELD    => \&_CustomFieldLimit,
-  );
-my %can_bundle =
-  ( WATCHERFIELD => "yeps",
-  );
+    MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
+    LINKFIELD       => \&_LinkFieldLimit,
+    CUSTOMFIELD     => \&_CustomFieldLimit,
+);
+my %can_bundle = ( WATCHERFIELD => "yeps", );
 
 # Default EntryAggregator per type
 # if you specify OP, you must specify all valid OPs
 my %DefaultEA = (
-                 INT		=> 'AND',
-                 ENUM		=> { '=' => 'OR',
-				     '!='=> 'AND'
-				   },
-                 DATE		=> { '=' => 'OR',
-				     '>='=> 'AND',
-				     '<='=> 'AND',
-				     '>' => 'AND',
-				     '<' => 'AND'
-				   },
-                 STRING		=> { '=' => 'OR',
-				     '!='=> 'AND',
-				     'LIKE'=> 'AND',
-				     'NOT LIKE'	=> 'AND'
-				   },
-                 TRANSFIELD	=> 'AND',
-                 TRANSDATE	=> 'AND',
-                 LINK           => 'OR',
-                 LINKFIELD	=> 'AND',
-                 TARGET		=> 'AND',
-                 BASE		=> 'AND',
-                 WATCHERFIELD	=> { '=' => 'OR',
-				     '!='=> 'AND',
-				     'LIKE'=> 'OR',
-				     'NOT LIKE'	=> 'AND'
-				   },
+    INT  => 'AND',
+    ENUM => {
+        '='  => 'OR',
+        '!=' => 'AND'
+    },
+    DATE => {
+        '='  => 'OR',
+        '>=' => 'AND',
+        '<=' => 'AND',
+        '>'  => 'AND',
+        '<'  => 'AND'
+    },
+    STRING => {
+        '='        => 'OR',
+        '!='       => 'AND',
+        'LIKE'     => 'AND',
+        'NOT LIKE' => 'AND'
+    },
+    TRANSFIELD   => 'AND',
+    TRANSDATE    => 'AND',
+    LINK         => 'OR',
+    LINKFIELD    => 'AND',
+    TARGET       => 'AND',
+    BASE         => 'AND',
+    WATCHERFIELD => {
+        '='        => 'OR',
+        '!='       => 'AND',
+        'LIKE'     => 'OR',
+        'NOT LIKE' => 'AND'
+    },
 
-                 CUSTOMFIELD	=> 'OR',
-                );
-
+    CUSTOMFIELD => 'OR',
+);
 
 # Helper functions for passing the above lexically scoped tables above
 # into Tickets_Overlay_SQL.
-sub FIELDS   { return \%FIELDS   }
-sub dispatch { return \%dispatch }
+sub FIELDS     { return \%FIELDS }
+sub dispatch   { return \%dispatch }
 sub can_bundle { return \%can_bundle }
 
 # Bring in the clowns.
@@ -200,10 +209,10 @@ require RT::Tickets_Overlay_SQL;
 # {{{ sub SortFields
 
 @SORTFIELDS = qw(id Status
-		 Queue Subject
-         Owner Created Due Starts Started
-         Told
-		 Resolved LastUpdated Priority TimeWorked TimeLeft);
+  Queue Subject
+  Owner Created Due Starts Started
+  Told
+  Resolved LastUpdated Priority TimeWorked TimeLeft);
 
 =head2 SortFields
 
@@ -212,13 +221,11 @@ Returns the list of fields that lists of tickets can easily be sorted by
 =cut
 
 sub SortFields {
-	my $self = shift;
-	return(@SORTFIELDS);
+    my $self = shift;
+    return (@SORTFIELDS);
 }
 
-
 # }}}
-
 
 # BEGIN SQL STUFF *********************************
 
@@ -254,26 +261,27 @@ Meta Data:
 =cut
 
 sub _EnumLimit {
-  my ($sb,$field,$op,$value,@rest) = @_;
+    my ( $sb, $field, $op, $value, @rest ) = @_;
 
-  # SQL::Statement changes != to <>.  (Can we remove this now?)
-  $op = "!=" if $op eq "<>";
+    # SQL::Statement changes != to <>.  (Can we remove this now?)
+    $op = "!=" if $op eq "<>";
 
-  die "Invalid Operation: $op for $field"
-    unless $op eq "=" or $op eq "!=";
+    die "Invalid Operation: $op for $field"
+      unless $op eq "=" or $op eq "!=";
 
-  my $meta = $FIELDS{$field};
-  if (defined $meta->[1]) {
-    my $class = "RT::" . $meta->[1];
-    my $o = $class->new($sb->CurrentUser);
-    $o->Load( $value );
-    $value = $o->Id;
-  }
-  $sb->_SQLLimit( FIELD => $field,,
-	      VALUE => $value,
-	      OPERATOR => $op,
-	      @rest,
-	    );
+    my $meta = $FIELDS{$field};
+    if ( defined $meta->[1] ) {
+        my $class = "RT::" . $meta->[1];
+        my $o     = $class->new( $sb->CurrentUser );
+        $o->Load($value);
+        $value = $o->Id;
+    }
+    $sb->_SQLLimit(
+        FIELD    => $field,
+        VALUE    => $value,
+        OPERATOR => $op,
+        @rest,
+    );
 }
 
 =head2 _IntLimit
@@ -287,19 +295,18 @@ Meta Data:
 =cut
 
 sub _IntLimit {
-  my ($sb,$field,$op,$value,@rest) = @_;
+    my ( $sb, $field, $op, $value, @rest ) = @_;
 
-  die "Invalid Operator $op for $field"
-    unless $op =~ /^(=|!=|>|<|>=|<=)$/;
+    die "Invalid Operator $op for $field"
+      unless $op =~ /^(=|!=|>|<|>=|<=)$/;
 
-  $sb->_SQLLimit(
-	     FIELD => $field,
-	     VALUE => $value,
-	     OPERATOR => $op,
-	     @rest,
-	    );
+    $sb->_SQLLimit(
+        FIELD    => $field,
+        VALUE    => $value,
+        OPERATOR => $op,
+        @rest,
+    );
 }
-
 
 =head2 _LinkLimit
 
@@ -432,64 +439,67 @@ Meta Data:
 =cut
 
 sub _DateLimit {
-  my ($sb,$field,$op,$value,@rest) = @_;
+    my ( $sb, $field, $op, $value, @rest ) = @_;
 
-  die "Invalid Date Op: $op"
-     unless $op =~ /^(=|>|<|>=|<=)$/;
+    die "Invalid Date Op: $op"
+      unless $op =~ /^(=|>|<|>=|<=)$/;
 
-  my $meta = $FIELDS{$field};
-  die "Incorrect Meta Data for $field"
-    unless (defined $meta->[1]);
+    my $meta = $FIELDS{$field};
+    die "Incorrect Meta Data for $field"
+      unless ( defined $meta->[1] );
 
-  require Time::ParseDate;
-  use POSIX 'strftime';
+    require Time::ParseDate;
+    use POSIX 'strftime';
 
-  # FIXME: Replace me with RT::Date( Type => 'unknown' ...)
-  my $time = Time::ParseDate::parsedate( $value,
-			UK => $RT::DateDayBeforeMonth,
-			PREFER_PAST => $RT::AmbiguousDayInPast,
-			PREFER_FUTURE => !($RT::AmbiguousDayInPast),
-                        FUZZY => 1
-				       );
+    # FIXME: Replace me with RT::Date( Type => 'unknown' ...)
+    my $time = Time::ParseDate::parsedate(
+        $value,
+        UK            => $RT::DateDayBeforeMonth,
+        PREFER_PAST   => $RT::AmbiguousDayInPast,
+        PREFER_FUTURE => !($RT::AmbiguousDayInPast),
+        FUZZY         => 1
+    );
 
-  if ($op eq "=") {
-    # if we're specifying =, that means we want everything on a
-    # particular single day.  in the database, we need to check for >
-    # and < the edges of that day.
+    if ( $op eq "=" ) {
 
-    my $daystart = strftime("%Y-%m-%d %H:%M",
-			    gmtime($time - ( $time % 86400 )));
-    my $dayend   = strftime("%Y-%m-%d %H:%M",
-			    gmtime($time + ( 86399 - $time % 86400 )));
+        # if we're specifying =, that means we want everything on a
+        # particular single day.  in the database, we need to check for >
+        # and < the edges of that day.
 
-    $sb-> _OpenParen;
+        my $daystart =
+          strftime( "%Y-%m-%d %H:%M", gmtime( $time - ( $time % 86400 ) ) );
+        my $dayend = strftime( "%Y-%m-%d %H:%M",
+            gmtime( $time + ( 86399 - $time % 86400 ) ) );
 
-    $sb->_SQLLimit(
-		   FIELD => $meta->[1],
-		   OPERATOR => ">=",
-		   VALUE => $daystart,
-		   @rest,
-		  );
+        $sb->_OpenParen;
 
-    $sb->_SQLLimit(
-		   FIELD => $meta->[1],
-		   OPERATOR => "<=",
-		   VALUE => $dayend,
-		   @rest,
-		   ENTRYAGGREGATOR => 'AND',
-		  );
+        $sb->_SQLLimit(
+            FIELD    => $meta->[1],
+            OPERATOR => ">=",
+            VALUE    => $daystart,
+            @rest,
+        );
 
-    $sb-> _CloseParen;
+        $sb->_SQLLimit(
+            FIELD    => $meta->[1],
+            OPERATOR => "<=",
+            VALUE    => $dayend,
+            @rest,
+            ENTRYAGGREGATOR => 'AND',
+        );
 
-  } else {
-    $value = strftime("%Y-%m-%d %H:%M", gmtime($time));
-    $sb->_SQLLimit(
-		   FIELD => $meta->[1],
-		   OPERATOR => $op,
-		   VALUE => $value,
-		   @rest,
-		  );
-  }
+        $sb->_CloseParen;
+
+    }
+    else {
+        $value = strftime( "%Y-%m-%d %H:%M", gmtime($time) );
+        $sb->_SQLLimit(
+            FIELD    => $meta->[1],
+            OPERATOR => $op,
+            VALUE    => $value,
+            @rest,
+        );
+    }
 }
 
 =head2 _StringLimit
@@ -502,19 +512,19 @@ Meta Data:
 =cut
 
 sub _StringLimit {
-  my ($sb,$field,$op,$value,@rest) = @_;
+    my ( $sb, $field, $op, $value, @rest ) = @_;
 
-  # FIXME:
-  # Valid Operators:
-  #  =, !=, LIKE, NOT LIKE
+    # FIXME:
+    # Valid Operators:
+    #  =, !=, LIKE, NOT LIKE
 
-  $sb->_SQLLimit(
-	     FIELD => $field,
-	     OPERATOR => $op,
-	     VALUE => $value,
-	     CASESENSITIVE => 0,
-	     @rest,
-	    );
+    $sb->_SQLLimit(
+        FIELD         => $field,
+        OPERATOR      => $op,
+        VALUE         => $value,
+        CASESENSITIVE => 0,
+        @rest,
+    );
 }
 
 =head2 _TransDateLimit
@@ -528,27 +538,56 @@ Meta Data:
 
 =cut
 
+# This routine should really be factored into translimit.
 sub _TransDateLimit {
-  my ($sb,$field,$op,$value,@rest) = @_;
+    my ( $sb, $field, $op, $value, @rest ) = @_;
 
-  # See the comments for TransLimit, they apply here too
-  $sb->_SetupTransactionJoins();
+    # See the comments for TransLimit, they apply here too
 
-  $sb->_OpenParen;
-  my $d = new RT::Date( $sb->CurrentUser );
-  $d->Set( Format => 'ISO', Value => $value);
-   $value = $d->ISO;
+    $sb->{_sql_transalias} = $sb->NewAlias('Transactions')
+      unless defined $sb->{_sql_transalias};
+    $sb->{_sql_trattachalias} = $sb->NewAlias('Attachments')
+      unless defined $sb->{_sql_trattachalias};
 
-  #Search for the right field
-  $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
-		 FIELD =>    'Created',
-		 OPERATOR => $op,
-		 VALUE =>    $value,
-		 CASESENSITIVE => 0,
-		 @rest
-		);
+    # Join Transactions To Attachments
+    $sb->_OpenParen;
 
-  $sb->_CloseParen;
+    #Search for the right field
+    $sb->_SQLLimit(
+        ALIAS         => $sb->{_sql_trattachalias},
+        FIELD         => 'Created',
+        OPERATOR      => $op,
+        VALUE         => $value,
+        CASESENSITIVE => 0,
+        @rest
+    );
+
+    $sb->_SQLJoin(
+        ALIAS1 => $sb->{_sql_trattachalias},
+        FIELD1 => 'TransactionId',
+        ALIAS2 => $sb->{_transalias},
+        FIELD2 => 'id'
+    );
+
+    # Join Transactions to Tickets
+    $sb->_SQLJoin(
+        ALIAS1 => 'main',
+        FIELD1 => $sb->{'primary_key'},     # UGH!
+        ALIAS2 => $sb->{_sql_transalias},
+        FIELD2 => 'ObjectId'
+    );
+
+    $sb->Limit(
+        ALIAS => $sb->{_sql_transalias},
+        FIELD => 'ObjectType',
+        VALUE => 'RT::Ticket'
+    );
+
+    my $d = new RT::Date( $sb->CurrentUser );
+    $d->Set( Format => 'ISO', Value => $value );
+    $value = $d->ISO;
+
+    $sb->_CloseParen;
 }
 
 =head2 _TransLimit
@@ -561,55 +600,81 @@ Meta Data:
 =cut
 
 sub _TransLimit {
-  # Content, ContentType, Filename
 
-  # If only this was this simple.  We've got to do something
-  # complicated here:
+    # Content, ContentType, Filename
 
-            #Basically, we want to make sure that the limits apply to
-            #the same attachment, rather than just another attachment
-            #for the same ticket, no matter how many clauses we lump
-            #on. We put them in TicketAliases so that they get nuked
-            #when we redo the join.
+    # If only this was this simple.  We've got to do something
+    # complicated here:
 
-  # In the SQL, we might have
-  #       (( Content = foo ) or ( Content = bar AND Content = baz ))
-  # The AND group should share the same Alias.
+    #Basically, we want to make sure that the limits apply to
+    #the same attachment, rather than just another attachment
+    #for the same ticket, no matter how many clauses we lump
+    #on. We put them in TicketAliases so that they get nuked
+    #when we redo the join.
 
-  # Actually, maybe it doesn't matter.  We use the same alias and it
-  # works itself out? (er.. different.)
+    # In the SQL, we might have
+    #       (( Content = foo ) or ( Content = bar AND Content = baz ))
+    # The AND group should share the same Alias.
 
-  # Steal more from _ProcessRestrictions
+    # Actually, maybe it doesn't matter.  We use the same alias and it
+    # works itself out? (er.. different.)
 
-  # FIXME: Maybe look at the previous FooLimit call, and if it was a
-  # TransLimit and EntryAggregator == AND, reuse the Aliases?
+    # Steal more from _ProcessRestrictions
 
-  # Or better - store the aliases on a per subclause basis - since
-  # those are going to be the things we want to relate to each other,
-  # anyway.
+    # FIXME: Maybe look at the previous FooLimit call, and if it was a
+    # TransLimit and EntryAggregator == AND, reuse the Aliases?
 
-  # maybe we should not allow certain kinds of aggregation of these
-  # clauses and do a psuedo regex instead? - the problem is getting
-  # them all into the same subclause when you have (A op B op C) - the
-  # way they get parsed in the tree they're in different subclauses.
+    # Or better - store the aliases on a per subclause basis - since
+    # those are going to be the things we want to relate to each other,
+    # anyway.
 
-  my ($sb,$field,$op,$value,@rest) = @_;
+    # maybe we should not allow certain kinds of aggregation of these
+    # clauses and do a psuedo regex instead? - the problem is getting
+    # them all into the same subclause when you have (A op B op C) - the
+    # way they get parsed in the tree they're in different subclauses.
 
-    $sb->_SetupTransactionJoins();
+    my ( $self, $field, $op, $value, @rest ) = @_;
 
-  $sb->_OpenParen;
+    $self->{_sql_transalias} = $self->NewAlias('Transactions')
+      unless defined $self->{_sql_transalias};
+    $self->{_sql_trattachalias} = $self->NewAlias('Attachments')
+      unless defined $self->{_sql_trattachalias};
 
-  #Search for the right field
-  $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
-		 FIELD =>    $field,
-		 OPERATOR => $op,
-		 VALUE =>    $value,
-		 CASESENSITIVE => 0,
-		 @rest
-		);
+    $self->_OpenParen;
 
+    #Search for the right field
+    $self->_SQLLimit(
+        ALIAS         => $self->{_sql_trattachalias},
+        FIELD         => $field,
+        OPERATOR      => $op,
+        VALUE         => $value,
+        CASESENSITIVE => 0,
+        @rest
+    );
 
-  $sb->_CloseParen;
+    $self->_SQLJoin(
+        ALIAS1 => $self->{_sql_trattachalias},
+        FIELD1 => 'TransactionId',
+        ALIAS2 => $self->{_sql_transalias},
+        FIELD2 => 'id'
+    );
+
+    # Join Transactions to Tickets
+    $self->_SQLJoin(
+        ALIAS1 => 'main',
+        FIELD1 => $self->{'primary_key'},     # Why not use "id" here?
+        ALIAS2 => $self->{_sql_transalias},
+        FIELD2 => 'ObjectId'
+    );
+
+    $self->Limit(
+        ALIAS           => $self->{_sql_transalias},
+        FIELD           => 'ObjectType',
+        VALUE           => 'RT::Ticket',
+        ENTRYAGGREGATOR => 'AND'
+    );
+
+    $self->_CloseParen;
 
 }
 
@@ -700,28 +765,50 @@ sub _WatcherLimit {
 
     # Find out what sort of watcher we're looking for
     my $fieldname;
-    if (ref $field) {
-        $fieldname = $field->[0]->[0]; 
-    } else {
+    if ( ref $field ) {
+        $fieldname = $field->[0]->[0];
+    }
+    else {
         $fieldname = $field;
     }
     my $meta = $FIELDS{$fieldname};
     my $type = ( defined $meta->[1] ? $meta->[1] : undef );
 
+# We only want _one_ clause for all of requestors, cc, admincc
+# It's less flexible than what we used to do, but now it sort of actually works. (no huge cartesian products that hose the db)
+    my $groups = $self->{ 'watcherlimit_' . ('global') . "_groups" } ||=
+      $self->NewAlias('Groups');
+    my $groupmembers =
+      $self->{ 'watcherlimit_' . ('global') . "_groupmembers" } ||=
+      $self->NewAlias('CachedGroupMembers');
+    my $users = $self->{ 'watcherlimit_' . ('global') . "_users" } ||=
+      $self->NewAlias('Users');
 
-    # We only want _one_ clause for all of requestors, cc, admincc
-    # It's less flexible than what we used to do, but now it sort of actually works. (no huge cartesian products that hose the db)
-    my $groups       = $self->{'watcherlimit_'.('global')."_groups"} ||=  $self->NewAlias('Groups');
-    my $groupmembers = $self->{'watcherlimit_'.('global')."_groupmembers"} ||=  $self->NewAlias('CachedGroupMembers');
-    my $users        = $self->{'watcherlimit_'.('global')."_users"} ||= $self->NewAlias('Users');
-
-
-    # Use regular joins instead of SQL joins since we don't want the joins inside ticketsql or we get a huge cartesian product
-    $self->Limit( ALIAS => $groups, FIELD => 'Domain', VALUE => 'RT::Ticket-Role', ENTRYAGGREGATOR => 'AND');
-    $self->Join( ALIAS1 => $groups, FIELD1 => 'Instance', ALIAS2 => 'main', FIELD2 => 'id');
-    $self->Join( ALIAS1 => $groups, FIELD1 => 'id', ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
-    $self->Join( ALIAS1 => $groupmembers, FIELD1 => 'MemberId', ALIAS2 => $users, FIELD2 => 'id');
-    
+# Use regular joins instead of SQL joins since we don't want the joins inside ticketsql or we get a huge cartesian product
+    $self->Limit(
+        ALIAS           => $groups,
+        FIELD           => 'Domain',
+        VALUE           => 'RT::Ticket-Role',
+        ENTRYAGGREGATOR => 'AND'
+    );
+    $self->Join(
+        ALIAS1 => $groups,
+        FIELD1 => 'Instance',
+        ALIAS2 => 'main',
+        FIELD2 => 'id'
+    );
+    $self->Join(
+        ALIAS1 => $groups,
+        FIELD1 => 'id',
+        ALIAS2 => $groupmembers,
+        FIELD2 => 'GroupId'
+    );
+    $self->Join(
+        ALIAS1 => $groupmembers,
+        FIELD1 => 'MemberId',
+        ALIAS2 => $users,
+        FIELD2 => 'id'
+    );
 
     # If we're looking for multiple watchers of a given type,
     # TicketSQL will be handing it to us as an array of clauses in
@@ -736,7 +823,8 @@ sub _WatcherLimit {
                 VALUE         => $value,
                 OPERATOR      => $op,
                 CASESENSITIVE => 0,
-                %rest);
+                %rest
+            );
         }
         $self->_CloseParen;
     }
@@ -747,71 +835,225 @@ sub _WatcherLimit {
             VALUE         => $value,
             OPERATOR      => $op,
             CASESENSITIVE => 0,
-            %rest);
+            %rest
+        );
     }
 
-    $self->_SQLLimit( ALIAS => $groups, FIELD => 'Type', VALUE => $type, ENTRYAGGREGATOR => 'AND') if ($type); 
+    $self->_SQLLimit(
+        ALIAS           => $groups,
+        FIELD           => 'Type',
+        VALUE           => $type,
+        ENTRYAGGREGATOR => 'AND'
+      )
+      if ($type);
 
     $self->_CloseParen;
 }
 
-sub _LinkFieldLimit {
-  my $restriction;
-  my $self;
-  my $LinkAlias;
-  my %args;
-  if ($restriction->{'TYPE'}) {
-    $self->SUPER::Limit(ALIAS => $LinkAlias,
-			ENTRYAGGREGATOR => 'AND',
-			FIELD =>   'Type',
-			OPERATOR => '=',
-			VALUE =>    $restriction->{'TYPE'} );
-  }
+=head2 _WatcherMembershipLimit
 
-   #If we're trying to limit it to things that are target of
-  if ($restriction->{'TARGET'}) {
-    # If the TARGET is an integer that means that we want to look at
-    # the LocalTarget field. otherwise, we want to look at the
-    # "Target" field
-    my ($matchfield);
-    if ($restriction->{'TARGET'} =~/^(\d+)$/) {
-      $matchfield = "LocalTarget";
-    } else {
-      $matchfield = "Target";
+Handle watcher membership limits, i.e. whether the watcher belongs to a
+specific group or not.
+
+Meta Data:
+  1: Field to query on
+
+SELECT DISTINCT main.*
+FROM
+    Tickets main,
+    Groups Groups_1,
+    CachedGroupMembers CachedGroupMembers_2,
+    Users Users_3
+WHERE (
+    (main.EffectiveId = main.id)
+) AND (
+    (main.Status != 'deleted')
+) AND (
+    (main.Type = 'ticket')
+) AND (
+    (
+	(Users_3.EmailAddress = '22')
+	    AND
+	(Groups_1.Domain = 'RT::Ticket-Role')
+	    AND
+	(Groups_1.Type = 'RequestorGroup')
+    )
+) AND
+    Groups_1.Instance = main.id
+AND
+    Groups_1.id = CachedGroupMembers_2.GroupId
+AND
+    CachedGroupMembers_2.MemberId = Users_3.id
+ORDER BY main.id ASC
+LIMIT 25
+=cut
+
+sub _WatcherMembershipLimit {
+    my ( $self, $field, $op, $value, @rest ) = @_;
+    my %rest = @rest;
+
+    $self->_OpenParen;
+
+    my $groups       = $self->NewAlias('Groups');
+    my $groupmembers = $self->NewAlias('CachedGroupMembers');
+    my $users        = $self->NewAlias('Users');
+    my $memberships  = $self->NewAlias('CachedGroupMembers');
+
+    if ( ref $field ) {    # gross hack
+        my @bundle = @$field;
+        $self->_OpenParen;
+        for my $chunk (@bundle) {
+            ( $field, $op, $value, @rest ) = @$chunk;
+            $self->_SQLLimit(
+                ALIAS    => $memberships,
+                FIELD    => 'GroupId',
+                VALUE    => $value,
+                OPERATOR => $op,
+                @rest,
+            );
+        }
+        $self->_CloseParen;
     }
-    $self->SUPER::Limit(ALIAS => $LinkAlias,
-			ENTRYAGGREGATOR => 'AND',
-			FIELD =>   $matchfield,
-			OPERATOR => '=',
-			VALUE =>    $restriction->{'TARGET'} );
-    #If we're searching on target, join the base to ticket.id
-    $self->_SQLJoin( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
-		 ALIAS2 => $LinkAlias,
-		 FIELD2 => 'LocalBase');
-  }
-  #If we're trying to limit it to things that are base of
-  elsif ($restriction->{'BASE'}) {
-    # If we're trying to match a numeric link, we want to look at
-    # LocalBase, otherwise we want to look at "Base"
-    my ($matchfield);
-    if ($restriction->{'BASE'} =~/^(\d+)$/) {
-      $matchfield = "LocalBase";
-    } else {
-      $matchfield = "Base";
+    else {
+        $self->_SQLLimit(
+            ALIAS    => $memberships,
+            FIELD    => 'GroupId',
+            VALUE    => $value,
+            OPERATOR => $op,
+            @rest,
+        );
     }
 
-    $self->SUPER::Limit(ALIAS => $LinkAlias,
-			ENTRYAGGREGATOR => 'AND',
-			FIELD => $matchfield,
-			OPERATOR => '=',
-			VALUE =>    $restriction->{'BASE'} );
-    #If we're searching on base, join the target to ticket.id
-    $self->_SQLJoin( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
-		 ALIAS2 => $LinkAlias,
-		 FIELD2 => 'LocalTarget')
-  }
+    # {{{ Tie to groups for tickets we care about
+    $self->_SQLLimit(
+        ALIAS           => $groups,
+        FIELD           => 'Domain',
+        VALUE           => 'RT::Ticket-Role',
+        ENTRYAGGREGATOR => 'AND'
+    );
+
+    $self->Join(
+        ALIAS1 => $groups,
+        FIELD1 => 'Instance',
+        ALIAS2 => 'main',
+        FIELD2 => 'id'
+    );
+
+    # }}}
+
+    # If we care about which sort of watcher
+    my $meta = $FIELDS{$field};
+    my $type = ( defined $meta->[1] ? $meta->[1] : undef );
+
+    if ($type) {
+        $self->_SQLLimit(
+            ALIAS           => $groups,
+            FIELD           => 'Type',
+            VALUE           => $type,
+            ENTRYAGGREGATOR => 'AND'
+        );
+    }
+
+    $self->Join(
+        ALIAS1 => $groups,
+        FIELD1 => 'id',
+        ALIAS2 => $groupmembers,
+        FIELD2 => 'GroupId'
+    );
+
+    $self->Join(
+        ALIAS1 => $groupmembers,
+        FIELD1 => 'MemberId',
+        ALIAS2 => $users,
+        FIELD2 => 'id'
+    );
+
+    $self->Join(
+        ALIAS1 => $memberships,
+        FIELD1 => 'MemberId',
+        ALIAS2 => $users,
+        FIELD2 => 'id'
+    );
+
+    $self->_CloseParen;
+
 }
 
+sub _LinkFieldLimit {
+    my $restriction;
+    my $self;
+    my $LinkAlias;
+    my %args;
+    if ( $restriction->{'TYPE'} ) {
+        $self->SUPER::Limit(
+            ALIAS           => $LinkAlias,
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'Type',
+            OPERATOR        => '=',
+            VALUE           => $restriction->{'TYPE'}
+        );
+    }
+
+    #If we're trying to limit it to things that are target of
+    if ( $restriction->{'TARGET'} ) {
+
+        # If the TARGET is an integer that means that we want to look at
+        # the LocalTarget field. otherwise, we want to look at the
+        # "Target" field
+        my ($matchfield);
+        if ( $restriction->{'TARGET'} =~ /^(\d+)$/ ) {
+            $matchfield = "LocalTarget";
+        }
+        else {
+            $matchfield = "Target";
+        }
+        $self->SUPER::Limit(
+            ALIAS           => $LinkAlias,
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => $matchfield,
+            OPERATOR        => '=',
+            VALUE           => $restriction->{'TARGET'}
+        );
+
+        #If we're searching on target, join the base to ticket.id
+        $self->_SQLJoin(
+            ALIAS1 => 'main',
+            FIELD1 => $self->{'primary_key'},
+            ALIAS2 => $LinkAlias,
+            FIELD2 => 'LocalBase'
+        );
+    }
+
+    #If we're trying to limit it to things that are base of
+    elsif ( $restriction->{'BASE'} ) {
+
+        # If we're trying to match a numeric link, we want to look at
+        # LocalBase, otherwise we want to look at "Base"
+        my ($matchfield);
+        if ( $restriction->{'BASE'} =~ /^(\d+)$/ ) {
+            $matchfield = "LocalBase";
+        }
+        else {
+            $matchfield = "Base";
+        }
+
+        $self->SUPER::Limit(
+            ALIAS           => $LinkAlias,
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => $matchfield,
+            OPERATOR        => '=',
+            VALUE           => $restriction->{'BASE'}
+        );
+
+        #If we're searching on base, join the target to ticket.id
+        $self->_SQLJoin(
+            ALIAS1 => 'main',
+            FIELD1 => $self->{'primary_key'},
+            ALIAS2 => $LinkAlias,
+            FIELD2 => 'LocalTarget'
+        );
+    }
+}
 
 =head2 KeywordLimit
 
@@ -823,118 +1065,117 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-  my ($self,$_field,$op,$value,@rest) = @_;
+    my ( $self, $_field, $op, $value, @rest ) = @_;
 
-  my %rest = @rest;
-  my $field = $rest{SUBKEY} || die "No field specified";
+    my %rest  = @rest;
+    my $field = $rest{SUBKEY} || die "No field specified";
 
-  # For our sanity, we can only limit on one queue at a time
-  my $queue = 0;
+    # For our sanity, we can only limit on one queue at a time
+    my $queue = 0;
 
-
-  if ($field =~ /^(.+?)\.{(.+)}$/) {
-    $queue =  $1;
-    $field = $2;
-   }
-    $field = $1 if $field =~ /^{(.+)}$/; # trim { }
-
-    my $q = RT::Queue->new($self->CurrentUser);
-    $q->Load($queue) if ($queue);
-
-    my $cf;
-    if ($q->id) {
-        $cf = $q->CustomField($field);
+    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+        $queue = $1;
+        $field = $2;
     }
-    else { 
-        $cf = RT::CustomField->new($self->CurrentUser);
-        $cf->LoadByNameAndQueue(Queue => '0', Name => $field);
+    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
+
+# If we're trying to find custom fields that don't match something, we want tickets
+# where the custom field has no value at all
+
+    my $null_columns_ok;
+    if ( ( $op =~ /^IS$/i ) or ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
+        $null_columns_ok = 1;
     }
 
+    my $cfid = 0;
+    if ($queue) {
 
+        my $q = RT::Queue->new( $self->CurrentUser );
+        $q->Load($queue) if ($queue);
 
+        my $cf;
+        if ( $q->id ) {
+            $cf = $q->CustomField($field);
+        }
+        else {
+            $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
+        }
 
+        $cfid = $cf->id;
 
-  my $cfid = $cf->id;
+    }
 
-  die "No custom field named $field found\n" unless $cfid;
+    my $TicketCFs;
 
+    # Perform one Join per CustomField
+    if ( $self->{_sql_object_cf_alias}{$cfid} ) {
+        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid};
+    }
+    else {
+        $TicketCFs = $self->{_sql_object_cf_alias}{$cfid} = $self->Join(
+            TYPE   => 'left',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'ObjectId'
+        );
 
+        $self->Limit(
+            LEFTJOIN => $TicketCFs,
+            FIELD    => 'ObjectType',
+            VALUE    => ref( $self->NewItem )
+            ,    # we want a single item, not a collection
+            ENTRYAGGREGATOR => 'AND'
+        );
 
-  my $null_columns_ok;
+        if ($cfid) {
+            $self->Limit(
+                LEFTJOIN        => $TicketCFs,
+                FIELD           => 'CustomField',
+                VALUE           => $cfid,
+                ENTRYAGGREGATOR => 'AND'
+            );
+        }
+        else {
+            my $cfalias = $self->Join(
+                ALIAS1 => $TicketCFs,
+                FIELD1 => 'CustomField',
+                TABLE2 => 'CustomFields',
+                FIELD2 => 'id'
+            );
+            $self->Limit(
+                LEFTJOIN => $cfalias,
+                FIELD    => 'Name',
+                VALUE    => $field,
+            );
 
-  my $TicketCFs;
-  # Perform one Join per CustomField
-  if ($self->{_sql_keywordalias}{$cfid}) {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid};
-  } else {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid} =
-      $self->_SQLJoin( TYPE   => 'left',
-		   ALIAS1 => 'main',
-		   FIELD1 => 'id',
-		   TABLE2 => 'TicketCustomFieldValues',
-		   FIELD2 => 'Ticket' );
-  }
+        }
+    }
 
-  $self->_OpenParen;
+    $self->_OpenParen if ($null_columns_ok);
 
-  $self->_SQLLimit( ALIAS      => $TicketCFs,
-		    FIELD      => 'Content',
-		    OPERATOR   => $op,
-		    VALUE      => $value,
-		    QUOTEVALUE => 1,
-		    @rest );
-
-
-   # If we're trying to find custom fields that don't match something, we want tickets
-   # where the custom field has no value at all
-
-  if (   ($op =~ /^IS$/i) || ($op =~ /^NOT LIKE$/i) || ( $op eq '!=' ) ) {
-    $null_columns_ok = 1;
-  }
-    
-
-  if ( $null_columns_ok && $op !~ /IS/i && uc $value ne "NULL") {
-    $self->_SQLLimit( ALIAS           => $TicketCFs,
-		      FIELD           => 'Content',
-		      OPERATOR        => 'IS',
-		      VALUE           => 'NULL',
-		      QUOTEVALUE      => 0,
-		      ENTRYAGGREGATOR => 'OR', );
-  }
-
-  $self->_SQLLimit( LEFTJOIN => $TicketCFs,
-		    FIELD    => 'CustomField',
-		    VALUE    => $cfid,
-		    ENTRYAGGREGATOR => 'OR' );
-
-
-
-  $self->_CloseParen;
+    $self->_SQLLimit(
+        ALIAS      => $TicketCFs,
+        FIELD      => 'Content',
+        OPERATOR   => $op,
+        VALUE      => $value,
+        QUOTEVALUE => 1,
+        @rest
+    );
+    if ($null_columns_ok) {
+        $self->_SQLLimit(
+            ALIAS           => $TicketCFs,
+            FIELD           => 'Content',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
+            ENTRYAGGREGATOR => 'OR',
+        );
+    }
+    $self->_CloseParen if ($null_columns_ok);
 
 }
-
-sub _SetupTransactionJoins {
-    my $self = shift;
-    # Join Transactions to Tickets
-    $self->{_sql_transalias} ||= $self->Join(
-        TYPE => 'LEFT',
-        ALIAS1 => 'main',
-        FIELD1 => $self->{'primary_key'},    # UGH!
-        TABLE2 => 'Transactions',
-        FIELD2 => 'ObjectId'
-    );
-
-    # Join Transactions To Attachments
-    $self->{_sql_trattachalias} ||= $self->Join(
-        TYPE => 'LEFT',
-        TABLE2 => 'Attachments',
-        FIELD2 => 'TransactionId',
-        ALIAS1 => $self->{_sql_transalias},
-        FIELD1 => 'id'
-    );
-
-}
-
 
 # End Helper Functions
 
@@ -950,33 +1191,35 @@ Takes a paramhash with the fields FIELD, OPERATOR, VALUE and DESCRIPTION
 Generally best called from LimitFoo methods
 
 =cut
+
 sub Limit {
     my $self = shift;
-    my %args = ( FIELD => undef,
-		 OPERATOR => '=',
-		 VALUE => undef,
-		 DESCRIPTION => undef,
-		 @_
-	       );
-    $args{'DESCRIPTION'} = $self->loc(
-	"[_1] [_2] [_3]", $args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'}
-    ) if (!defined $args{'DESCRIPTION'}) ;
+    my %args = (
+        FIELD       => undef,
+        OPERATOR    => '=',
+        VALUE       => undef,
+        DESCRIPTION => undef,
+        @_
+    );
+    $args{'DESCRIPTION'} = $self->loc( "[_1] [_2] [_3]",
+        $args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'} )
+      if ( !defined $args{'DESCRIPTION'} );
 
     my $index = $self->_NextIndex;
 
-    #make the TicketRestrictions hash the equivalent of whatever we just passed in;
+ #make the TicketRestrictions hash the equivalent of whatever we just passed in;
 
-    %{$self->{'TicketRestrictions'}{$index}} = %args;
+    %{ $self->{'TicketRestrictions'}{$index} } = %args;
 
     $self->{'RecalcTicketLimits'} = 1;
 
-    # If we're looking at the effective id, we don't want to append the other clause
-    # which limits us to tickets where id = effective id
-    if ($args{'FIELD'} eq 'EffectiveId') {
+# If we're looking at the effective id, we don't want to append the other clause
+# which limits us to tickets where id = effective id
+    if ( $args{'FIELD'} eq 'EffectiveId' ) {
         $self->{'looking_at_effective_id'} = 1;
     }
 
-    if ($args{'FIELD'} eq 'Type') {
+    if ( $args{'FIELD'} eq 'Type' ) {
         $self->{'looking_at_type'} = 1;
     }
 
@@ -985,9 +1228,6 @@ sub Limit {
 
 # }}}
 
-
-
-
 =head2 FreezeLimits
 
 Returns a frozen string suitable for handing back to ThawLimits.
@@ -995,18 +1235,18 @@ Returns a frozen string suitable for handing back to ThawLimits.
 =cut
 
 sub _FreezeThawKeys {
-    'TicketRestrictions',
-    'restriction_index',
-    'looking_at_effective_id',
-    'looking_at_type'
+    'TicketRestrictions', 'restriction_index', 'looking_at_effective_id',
+      'looking_at_type';
 }
 
 # {{{ sub FreezeLimits
 
 sub FreezeLimits {
-	my $self = shift;
-	require FreezeThaw;
-	return (FreezeThaw::freeze(@{$self}{$self->_FreezeThawKeys}));
+    my $self = shift;
+    require Storable;
+    require MIME::Base64;
+    MIME::Base64::base64_encode(
+        Storable::freeze( \@{$self}{ $self->_FreezeThawKeys } ) );
 }
 
 # }}}
@@ -1017,25 +1257,26 @@ Take a frozen Limits string generated by FreezeLimits and make this tickets
 object have that set of limits.
 
 =cut
+
 # {{{ sub ThawLimits
 
 sub ThawLimits {
-	my $self = shift;
-	my $in = shift;
-	
-	#if we don't have $in, get outta here.
-	return undef unless ($in);
+    my $self = shift;
+    my $in   = shift;
 
-    	$self->{'RecalcTicketLimits'} = 1;
+    #if we don't have $in, get outta here.
+    return undef unless ($in);
 
-	require FreezeThaw;
-	
-	#We don't need to die if the thaw fails.
-	
-	eval {
-		@{$self}{$self->_FreezeThawKeys} = FreezeThaw::thaw($in);
-	};
-	$RT::Logger->error( $@ ) if $@;
+    $self->{'RecalcTicketLimits'} = 1;
+
+    require Storable;
+    require MIME::Base64;
+
+    #We don't need to die if the thaw fails.
+    @{$self}{ $self->_FreezeThawKeys } =
+      eval { @{ Storable::thaw( MIME::Base64::base64_decode($in) ) }; };
+
+    $RT::Logger->error($@) if $@;
 
 }
 
@@ -1056,16 +1297,18 @@ VALUE is a queue id or Name.
 
 sub LimitQueue {
     my $self = shift;
-    my %args = (VALUE => undef,
-		OPERATOR => '=',
-		@_);
+    my %args = (
+        VALUE    => undef,
+        OPERATOR => '=',
+        @_
+    );
 
     #TODO  VALUE should also take queue names and queue objects
     #TODO FIXME why are we canonicalizing to name, not id, robrt?
-    if ($args{VALUE} =~ /^\d+$/) {
-      my $queue = new RT::Queue($self->CurrentUser);
-      $queue->Load($args{'VALUE'});
-      $args{VALUE} = $queue->Name;
+    if ( $args{VALUE} =~ /^\d+$/ ) {
+        my $queue = new RT::Queue( $self->CurrentUser );
+        $queue->Load( $args{'VALUE'} );
+        $args{VALUE} = $queue->Name;
     }
 
     # What if they pass in an Id?  Check for isNum() and convert to
@@ -1073,15 +1316,16 @@ sub LimitQueue {
 
     #TODO check for a valid queue here
 
-    $self->Limit (FIELD => 'Queue',
-		  VALUE => $args{VALUE},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{VALUE},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'Queue',
+        VALUE       => $args{VALUE},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION =>
+          join( ' ', $self->loc('Queue'), $args{'OPERATOR'}, $args{VALUE}, ),
+    );
 
 }
+
 # }}}
 
 # {{{ sub LimitStatus
@@ -1096,15 +1340,18 @@ VALUE is a status.
 
 sub LimitStatus {
     my $self = shift;
-    my %args = ( OPERATOR => '=',
-                  @_);
-    $self->Limit (FIELD => 'Status',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Status'), $args{'OPERATOR'}, $self->loc($args{'VALUE'})
-		  ),
-		 );
+    my %args = (
+        OPERATOR => '=',
+        @_
+    );
+    $self->Limit(
+        FIELD       => 'Status',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Status'), $args{'OPERATOR'},
+            $self->loc( $args{'VALUE'} ) ),
+    );
 }
 
 # }}}
@@ -1146,16 +1393,18 @@ VALUE is a string to search for in the type of the ticket.
 
 sub LimitType {
     my $self = shift;
-    my %args = (OPERATOR => '=',
-		VALUE => undef,
-		@_);
-    $self->Limit (FIELD => 'Type',
-                  VALUE => $args{'VALUE'},
-                  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Type'), $args{'OPERATOR'}, $args{'Limit'},
-		  ),
-                 );
+    my %args = (
+        OPERATOR => '=',
+        VALUE    => undef,
+        @_
+    );
+    $self->Limit(
+        FIELD       => 'Type',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION =>
+          join( ' ', $self->loc('Type'), $args{'OPERATOR'}, $args{'Limit'}, ),
+    );
 }
 
 # }}}
@@ -1177,13 +1426,14 @@ VALUE is a string to search for in the subject of the ticket.
 sub LimitSubject {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'Subject',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Subject'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'Subject',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join(
+            ' ', $self->loc('Subject'), $args{'OPERATOR'}, $args{'VALUE'},
+        ),
+    );
 }
 
 # }}}
@@ -1205,16 +1455,18 @@ VALUE is a ticket Id to search for
 
 sub LimitId {
     my $self = shift;
-    my %args = (OPERATOR => '=',
-                @_);
+    my %args = (
+        OPERATOR => '=',
+        @_
+    );
 
-    $self->Limit (FIELD => 'id',
-                  VALUE => $args{'VALUE'},
-                  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Id'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-                 );
+    $self->Limit(
+        FIELD       => 'id',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION =>
+          join( ' ', $self->loc('Id'), $args{'OPERATOR'}, $args{'VALUE'}, ),
+    );
 }
 
 # }}}
@@ -1232,13 +1484,14 @@ VALUE is a value to match the ticket\'s priority against
 sub LimitPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'Priority',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Priority'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'Priority',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Priority'),
+            $args{'OPERATOR'}, $args{'VALUE'}, ),
+    );
 }
 
 # }}}
@@ -1257,13 +1510,14 @@ VALUE is a value to match the ticket\'s initial priority against
 sub LimitInitialPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'InitialPriority',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Initial Priority'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'InitialPriority',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Initial Priority'), $args{'OPERATOR'},
+            $args{'VALUE'}, ),
+    );
 }
 
 # }}}
@@ -1281,13 +1535,14 @@ VALUE is a value to match the ticket\'s final priority against
 sub LimitFinalPriority {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'FinalPriority',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Final Priority'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'FinalPriority',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Final Priority'),
+            $args{'OPERATOR'}, $args{'VALUE'}, ),
+    );
 }
 
 # }}}
@@ -1305,13 +1560,14 @@ VALUE is a value to match the ticket's TimeWorked attribute
 sub LimitTimeWorked {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'TimeWorked',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Time worked'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'TimeWorked',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Time worked'),
+            $args{'OPERATOR'}, $args{'VALUE'}, ),
+    );
 }
 
 # }}}
@@ -1329,13 +1585,14 @@ VALUE is a value to match the ticket's TimeLeft attribute
 sub LimitTimeLeft {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'TimeLeft',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Time left'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'TimeLeft',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Time left'),
+            $args{'OPERATOR'}, $args{'VALUE'}, ),
+    );
 }
 
 # }}}
@@ -1353,16 +1610,18 @@ OPERATOR is one of =, LIKE, NOT LIKE or !=.
 VALUE is a string to search for in the body of the ticket
 
 =cut
+
 sub LimitContent {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'Content',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Ticket content'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'Content',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Ticket content'),
+            $args{'OPERATOR'}, $args{'VALUE'}, ),
+    );
 }
 
 # }}}
@@ -1376,16 +1635,18 @@ OPERATOR is one of =, LIKE, NOT LIKE or !=.
 VALUE is a string to search for in the body of the ticket
 
 =cut
+
 sub LimitFilename {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'Filename',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Attachment filename'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'Filename',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Attachment filename'), $args{'OPERATOR'},
+            $args{'VALUE'}, ),
+    );
 }
 
 # }}}
@@ -1402,14 +1663,16 @@ VALUE is a content type to search ticket attachments for
 sub LimitContentType {
     my $self = shift;
     my %args = (@_);
-    $self->Limit (FIELD => 'ContentType',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Ticket content type'), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'ContentType',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION => join( ' ',
+            $self->loc('Ticket content type'), $args{'OPERATOR'},
+            $args{'VALUE'}, ),
+    );
 }
+
 # }}}
 
 # }}}
@@ -1428,19 +1691,22 @@ VALUE is a user id.
 
 sub LimitOwner {
     my $self = shift;
-    my %args = ( OPERATOR => '=',
-                 @_);
+    my %args = (
+        OPERATOR => '=',
+        @_
+    );
 
-    my $owner = new RT::User($self->CurrentUser);
-    $owner->Load($args{'VALUE'});
+    my $owner = new RT::User( $self->CurrentUser );
+    $owner->Load( $args{'VALUE'} );
+
     # FIXME: check for a valid $owner
-    $self->Limit (FIELD => 'Owner',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc('Owner'), $args{'OPERATOR'}, $owner->Name(),
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => 'Owner',
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        DESCRIPTION =>
+          join( ' ', $self->loc('Owner'), $args{'OPERATOR'}, $owner->Name(), ),
+    );
 
 }
 
@@ -1449,7 +1715,6 @@ sub LimitOwner {
 # {{{ Limiting watchers
 
 # {{{ sub LimitWatcher
-
 
 =head2 LimitWatcher
 
@@ -1469,43 +1734,45 @@ $t1->Create(Queue => 'general', Subject => "LimitWatchers test", Requestors => \
 
 sub LimitWatcher {
     my $self = shift;
-    my %args = ( OPERATOR => '=',
-		 VALUE => undef,
-		 TYPE => undef,
-		@_);
-
+    my %args = (
+        OPERATOR => '=',
+        VALUE    => undef,
+        TYPE     => undef,
+        @_
+    );
 
     #build us up a description
-    my ($watcher_type, $desc);
-    if ($args{'TYPE'}) {
-	$watcher_type = $args{'TYPE'};
+    my ( $watcher_type, $desc );
+    if ( $args{'TYPE'} ) {
+        $watcher_type = $args{'TYPE'};
     }
     else {
-	$watcher_type = "Watcher";
+        $watcher_type = "Watcher";
     }
 
-    $self->Limit (FIELD => $watcher_type,
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
-		  TYPE => $args{'TYPE'},
-		  DESCRIPTION => join(
-		   ' ', $self->loc($watcher_type), $args{'OPERATOR'}, $args{'VALUE'},
-		  ),
-		 );
+    $self->Limit(
+        FIELD       => $watcher_type,
+        VALUE       => $args{'VALUE'},
+        OPERATOR    => $args{'OPERATOR'},
+        TYPE        => $args{'TYPE'},
+        DESCRIPTION => join( ' ',
+            $self->loc($watcher_type),
+            $args{'OPERATOR'}, $args{'VALUE'}, ),
+    );
 }
-
 
 sub LimitRequestor {
     my $self = shift;
     my %args = (@_);
-  my ($package, $filename, $line) = caller;
-    $RT::Logger->error("Tickets->LimitRequestor is deprecated. please rewrite call at  $package - $filename: $line");
-    $self->LimitWatcher(TYPE => 'Requestor', @_);
+    my ( $package, $filename, $line ) = caller;
+    $RT::Logger->error(
+"Tickets->LimitRequestor is deprecated. please rewrite call at  $package - $filename: $line"
+    );
+    $self->LimitWatcher( TYPE => 'Requestor', @_ );
 
 }
 
 # }}}
-
 
 # }}}
 
@@ -1530,22 +1797,24 @@ TARGET is the id or URI of the TARGET of the link
 sub LimitLinkedTo {
     my $self = shift;
     my %args = (
-		TICKET => undef,
-		TARGET => undef,
-		TYPE => undef,
-		 @_);
+        TICKET => undef,
+        TARGET => undef,
+        TYPE   => undef,
+        @_
+    );
 
     $self->Limit(
-		 FIELD => 'LinkedTo',
-		 BASE => undef,
-		 TARGET => ($args{'TARGET'} || $args{'TICKET'}),
-		 TYPE => $args{'TYPE'},
-		 DESCRIPTION => $self->loc(
-		   "Tickets [_1] by [_2]", $self->loc($args{'TYPE'}), ($args{'TARGET'} || $args{'TICKET'})
-		  ),
-		);
+        FIELD       => 'LinkedTo',
+        BASE        => undef,
+        TARGET      => ( $args{'TARGET'} || $args{'TICKET'} ),
+        TYPE        => $args{'TYPE'},
+        DESCRIPTION => $self->loc(
+            "Tickets [_1] by [_2]",
+            $self->loc( $args{'TYPE'} ),
+            ( $args{'TARGET'} || $args{'TICKET'} )
+        ),
+    );
 }
-
 
 # }}}
 
@@ -1565,62 +1834,71 @@ BASE is the id or URI of the BASE of the link
 
 sub LimitLinkedFrom {
     my $self = shift;
-    my %args = ( BASE => undef,
-		 TICKET => undef,
-		 TYPE => undef,
-		 @_);
+    my %args = (
+        BASE   => undef,
+        TICKET => undef,
+        TYPE   => undef,
+        @_
+    );
 
     # translate RT2 From/To naming to RT3 TicketSQL naming
     my %fromToMap = qw(DependsOn DependentOn
-		       MemberOf  HasMember
-		       RefersTo  ReferredToBy);
+      MemberOf  HasMember
+      RefersTo  ReferredToBy);
 
     my $type = $args{'TYPE'};
-    $type = $fromToMap{$type} if exists($fromToMap{$type});
+    $type = $fromToMap{$type} if exists( $fromToMap{$type} );
 
-    $self->Limit( FIELD => 'LinkedTo',
-		  TARGET => undef,
-		  BASE => ($args{'BASE'} || $args{'TICKET'}),
-		  TYPE => $type,
-		  DESCRIPTION => $self->loc(
-		   "Tickets [_1] [_2]", $self->loc($args{'TYPE'}), ($args{'BASE'} || $args{'TICKET'})
-		  ),
-		);
+    $self->Limit(
+        FIELD       => 'LinkedTo',
+        TARGET      => undef,
+        BASE        => ( $args{'BASE'} || $args{'TICKET'} ),
+        TYPE        => $type,
+        DESCRIPTION => $self->loc(
+            "Tickets [_1] [_2]",
+            $self->loc( $args{'TYPE'} ),
+            ( $args{'BASE'} || $args{'TICKET'} )
+        ),
+    );
 }
-
 
 # }}}
 
 # {{{ LimitMemberOf
 sub LimitMemberOf {
-    my $self = shift;
+    my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedTo ( TARGET=> "$ticket_id",
-			   TYPE => 'MemberOf',
-			  );
+    $self->LimitLinkedTo(
+        TARGET => "$ticket_id",
+        TYPE   => 'MemberOf',
+    );
 
 }
+
 # }}}
 
 # {{{ LimitHasMember
 sub LimitHasMember {
-    my $self = shift;
-    my $ticket_id =shift;
-    $self->LimitLinkedFrom ( BASE => "$ticket_id",
-			     TYPE => 'HasMember',
-			     );
+    my $self      = shift;
+    my $ticket_id = shift;
+    $self->LimitLinkedFrom(
+        BASE => "$ticket_id",
+        TYPE => 'HasMember',
+    );
 
 }
+
 # }}}
 
 # {{{ LimitDependsOn
 
 sub LimitDependsOn {
-    my $self = shift;
+    my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedTo ( TARGET => "$ticket_id",
-                           TYPE => 'DependsOn',
-			   );
+    $self->LimitLinkedTo(
+        TARGET => "$ticket_id",
+        TYPE   => 'DependsOn',
+    );
 
 }
 
@@ -1629,25 +1907,26 @@ sub LimitDependsOn {
 # {{{ LimitDependedOnBy
 
 sub LimitDependedOnBy {
-    my $self = shift;
+    my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedFrom (  BASE => "$ticket_id",
-                               TYPE => 'DependentOn',
-			     );
+    $self->LimitLinkedFrom(
+        BASE => "$ticket_id",
+        TYPE => 'DependentOn',
+    );
 
 }
 
 # }}}
 
-
 # {{{ LimitRefersTo
 
 sub LimitRefersTo {
-    my $self = shift;
+    my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedTo ( TARGET => "$ticket_id",
-                           TYPE => 'RefersTo',
-			   );
+    $self->LimitLinkedTo(
+        TARGET => "$ticket_id",
+        TYPE   => 'RefersTo',
+    );
 
 }
 
@@ -1656,11 +1935,12 @@ sub LimitRefersTo {
 # {{{ LimitReferredToBy
 
 sub LimitReferredToBy {
-    my $self = shift;
+    my $self      = shift;
     my $ticket_id = shift;
-    $self->LimitLinkedFrom (  BASE=> "$ticket_id",
-                               TYPE => 'ReferredTo',
-			     );
+    $self->LimitLinkedFrom(
+        BASE => "$ticket_id",
+        TYPE => 'ReferredTo',
+    );
 
 }
 
@@ -1688,56 +1968,64 @@ the need to pass in a FIELD argument.
 sub LimitDate {
     my $self = shift;
     my %args = (
-                  FIELD => undef,
-		  VALUE => undef,
-		  OPERATOR => undef,
+        FIELD    => undef,
+        VALUE    => undef,
+        OPERATOR => undef,
 
-                  @_);
+        @_
+    );
 
     #Set the description if we didn't get handed it above
-    unless ($args{'DESCRIPTION'} ) {
-	$args{'DESCRIPTION'} = $args{'FIELD'} . " " .$args{'OPERATOR'}. " ". $args{'VALUE'} . " GMT"
+    unless ( $args{'DESCRIPTION'} ) {
+        $args{'DESCRIPTION'} =
+            $args{'FIELD'} . " "
+          . $args{'OPERATOR'} . " "
+          . $args{'VALUE'} . " GMT";
     }
 
-    $self->Limit (%args);
+    $self->Limit(%args);
 
 }
 
 # }}}
 
-
-
-
 sub LimitCreated {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Created', @_);
+    $self->LimitDate( FIELD => 'Created', @_ );
 }
+
 sub LimitDue {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Due', @_);
+    $self->LimitDate( FIELD => 'Due', @_ );
 
 }
+
 sub LimitStarts {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Starts', @_);
+    $self->LimitDate( FIELD => 'Starts', @_ );
 
 }
+
 sub LimitStarted {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Started', @_);
+    $self->LimitDate( FIELD => 'Started', @_ );
 }
+
 sub LimitResolved {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Resolved', @_);
+    $self->LimitDate( FIELD => 'Resolved', @_ );
 }
+
 sub LimitTold {
     my $self = shift;
-    $self->LimitDate( FIELD => 'Told', @_);
+    $self->LimitDate( FIELD => 'Told', @_ );
 }
+
 sub LimitLastUpdated {
     my $self = shift;
-    $self->LimitDate( FIELD => 'LastUpdated', @_);
+    $self->LimitDate( FIELD => 'LastUpdated', @_ );
 }
+
 #
 # {{{ sub LimitTransactionDate
 
@@ -1754,21 +2042,25 @@ VALUE is a date and time in ISO format in GMT
 sub LimitTransactionDate {
     my $self = shift;
     my %args = (
-                  FIELD => 'TransactionDate',
-		  VALUE => undef,
-		  OPERATOR => undef,
+        FIELD    => 'TransactionDate',
+        VALUE    => undef,
+        OPERATOR => undef,
 
-                  @_);
+        @_
+    );
 
     #  <20021217042756.GK28744@pallas.fsck.com>
     #    "Kill It" - Jesse.
 
     #Set the description if we didn't get handed it above
-    unless ($args{'DESCRIPTION'} ) {
-	$args{'DESCRIPTION'} = $args{'FIELD'} . " " .$args{'OPERATOR'}. " ". $args{'VALUE'} . " GMT"
+    unless ( $args{'DESCRIPTION'} ) {
+        $args{'DESCRIPTION'} =
+            $args{'FIELD'} . " "
+          . $args{'OPERATOR'} . " "
+          . $args{'VALUE'} . " GMT";
     }
 
-    $self->Limit (%args);
+    $self->Limit(%args);
 
 }
 
@@ -1798,64 +2090,73 @@ parameter QUEUE may also be passed to distinguish the custom field.
 
 sub LimitCustomField {
     my $self = shift;
-    my %args = ( VALUE        => undef,
-                 CUSTOMFIELD   => undef,
-                 OPERATOR      => '=',
-                 DESCRIPTION   => undef,
-                 FIELD         => 'CustomFieldValue',
-                 QUOTEVALUE    => 1,
-                 @_ );
+    my %args = (
+        VALUE       => undef,
+        CUSTOMFIELD => undef,
+        OPERATOR    => '=',
+        DESCRIPTION => undef,
+        FIELD       => 'CustomFieldValue',
+        QUOTEVALUE  => 1,
+        @_
+    );
 
     my $CF = RT::CustomField->new( $self->CurrentUser );
-    if ( $args{CUSTOMFIELD} =~ /^\d+$/) {
-	$CF->Load( $args{CUSTOMFIELD} );
+    if ( $args{CUSTOMFIELD} =~ /^\d+$/ ) {
+        $CF->Load( $args{CUSTOMFIELD} );
     }
     else {
-	$CF->LoadByNameAndQueue( Name => $args{CUSTOMFIELD}, Queue => $args{QUEUE} );
-	$args{CUSTOMFIELD} = $CF->Id;
+        $CF->LoadByNameAndQueue(
+            Name  => $args{CUSTOMFIELD},
+            Queue => $args{QUEUE}
+        );
+        $args{CUSTOMFIELD} = $CF->Id;
     }
 
     #If we are looking to compare with a null value.
     if ( $args{'OPERATOR'} =~ /^is$/i ) {
-      $args{'DESCRIPTION'} ||= $self->loc("Custom field [_1] has no value.", $CF->Name);
+        $args{'DESCRIPTION'} ||=
+          $self->loc( "Custom field [_1] has no value.", $CF->Name );
     }
     elsif ( $args{'OPERATOR'} =~ /^is not$/i ) {
-      $args{'DESCRIPTION'} ||= $self->loc("Custom field [_1] has a value.", $CF->Name);
+        $args{'DESCRIPTION'} ||=
+          $self->loc( "Custom field [_1] has a value.", $CF->Name );
     }
 
     # if we're not looking to compare with a null value
     else {
-        $args{'DESCRIPTION'} ||= $self->loc("Custom field [_1] [_2] [_3]",  $CF->Name , $args{OPERATOR} , $args{VALUE});
+        $args{'DESCRIPTION'} ||= $self->loc( "Custom field [_1] [_2] [_3]",
+            $CF->Name, $args{OPERATOR}, $args{VALUE} );
     }
 
     my $q = "";
-    if ($CF->Queue) {
-      my $qo = new RT::Queue( $self->CurrentUser );
-      $qo->load( $CF->Queue );
-      $q = $qo->Name;
+    if ( $CF->Queue ) {
+        my $qo = new RT::Queue( $self->CurrentUser );
+        $qo->load( $CF->Queue );
+        $q = $qo->Name;
     }
 
     my @rest;
     @rest = ( ENTRYAGGREGATOR => 'AND' )
-      if ($CF->Type eq 'SelectMultiple');
+      if ( $CF->Type eq 'SelectMultiple' );
 
-    $self->Limit( VALUE => $args{VALUE},
-		  FIELD => "CF.".( $q
-			     ? $q . ".{" . $CF->Name . "}"
-			     : $CF->Name
-			   ),
-		  OPERATOR => $args{OPERATOR},
-		  CUSTOMFIELD => 1,
-		  @rest,
-		);
-
+    $self->Limit(
+        VALUE => $args{VALUE},
+        FIELD => "CF."
+          . (
+              $q
+            ? $q . ".{" . $CF->Name . "}"
+            : $CF->Name
+          ),
+        OPERATOR    => $args{OPERATOR},
+        CUSTOMFIELD => 1,
+        @rest,
+    );
 
     $self->{'RecalcTicketLimits'} = 1;
 }
 
 # }}}
 # }}}
-
 
 # {{{ sub _NextIndex
 
@@ -1867,8 +2168,9 @@ Keep track of the counter for the array of restrictions
 
 sub _NextIndex {
     my $self = shift;
-    return ($self->{'restriction_index'}++);
+    return ( $self->{'restriction_index'}++ );
 }
+
 # }}}
 
 # }}}
@@ -1876,14 +2178,14 @@ sub _NextIndex {
 # {{{ Core bits to make this a DBIx::SearchBuilder object
 
 # {{{ sub _Init
-sub _Init  {
+sub _Init {
     my $self = shift;
-    $self->{'table'} = "Tickets";
-    $self->{'RecalcTicketLimits'} = 1;
+    $self->{'table'}                   = "Tickets";
+    $self->{'RecalcTicketLimits'}      = 1;
     $self->{'looking_at_effective_id'} = 0;
-    $self->{'looking_at_type'} = 0;
-    $self->{'restriction_index'} =1;
-    $self->{'primary_key'} = "id";
+    $self->{'looking_at_type'}         = 0;
+    $self->{'restriction_index'}       = 1;
+    $self->{'primary_key'}             = "id";
     delete $self->{'items_array'};
     delete $self->{'item_map'};
     delete $self->{'columns_to_display'};
@@ -1892,24 +2194,26 @@ sub _Init  {
     $self->_InitSQL;
 
 }
+
 # }}}
 
 # {{{ sub Count
 sub Count {
-  my $self = shift;
-  $self->_ProcessRestrictions() if ($self->{'RecalcTicketLimits'} == 1 );
-  return($self->SUPER::Count());
+    my $self = shift;
+    $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
+    return ( $self->SUPER::Count() );
 }
+
 # }}}
 
 # {{{ sub CountAll
 sub CountAll {
-  my $self = shift;
-  $self->_ProcessRestrictions() if ($self->{'RecalcTicketLimits'} == 1 );
-  return($self->SUPER::CountAll());
+    my $self = shift;
+    $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
+    return ( $self->SUPER::CountAll() );
 }
-# }}}
 
+# }}}
 
 # {{{ sub ItemsArrayRef
 
@@ -1928,51 +2232,56 @@ sub ItemsArrayRef {
         my $placeholder = $self->_ItemsCounter;
         $self->GotoFirstItem();
         while ( my $item = $self->Next ) {
-            push ( @{ $self->{'items_array'} }, $item );
+            push( @{ $self->{'items_array'} }, $item );
         }
         $self->GotoItem($placeholder);
-        $self->{'items_array'} = $self->ItemsOrderBy($self->{'items_array'});
+        $self->{'items_array'} = $self->ItemsOrderBy( $self->{'items_array'} );
     }
     return ( $self->{'items_array'} );
 }
+
 # }}}
 
 # {{{ sub Next
 sub Next {
-	my $self = shift;
- 	
-	$self->_ProcessRestrictions() if ($self->{'RecalcTicketLimits'} == 1 );
+    my $self = shift;
 
-	my $Ticket = $self->SUPER::Next();
-	if ((defined($Ticket)) and (ref($Ticket))) {
+    $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
 
-    	    #Make sure we _never_ show deleted tickets
-	    #TODO we should be doing this in the where clause.
-	    #but you can't do multiple clauses on the same field just yet :/
+    my $Ticket = $self->SUPER::Next();
+    if ( ( defined($Ticket) ) and ( ref($Ticket) ) ) {
 
-	    if ($Ticket->__Value('Status') eq 'deleted') {
-		return($self->Next());
-	    }
-            # Since Ticket could be granted with more rights instead
-            # of being revoked, it's ok if queue rights allow
-            # ShowTicket.  It seems need another query, but we have
-            # rights cache in Principal::HasRight.
-  	    elsif ($Ticket->QueueObj->CurrentUserHasRight('ShowTicket') ||
-                   $Ticket->CurrentUserHasRight('ShowTicket')) {
-		return($Ticket);
-	    }
+        #Make sure we _never_ show deleted tickets
+        #TODO we should be doing this in the where clause.
+        #but you can't do multiple clauses on the same field just yet :/
 
-	    #If the user doesn't have the right to show this ticket
-	    else {	
-		return($self->Next());
-	    }
-	}
-	#if there never was any ticket
-	else {
-		return(undef);
-	}	
+        if ( $Ticket->__Value('Status') eq 'deleted' ) {
+            return ( $self->Next() );
+        }
+
+        # Since Ticket could be granted with more rights instead
+        # of being revoked, it's ok if queue rights allow
+        # ShowTicket.  It seems need another query, but we have
+        # rights cache in Principal::HasRight.
+        elsif ($Ticket->QueueObj->CurrentUserHasRight('ShowTicket')
+            || $Ticket->CurrentUserHasRight('ShowTicket') )
+        {
+            return ($Ticket);
+        }
+
+        #If the user doesn't have the right to show this ticket
+        else {
+            return ( $self->Next() );
+        }
+    }
+
+    #if there never was any ticket
+    else {
+        return (undef);
+    }
 
 }
+
 # }}}
 
 # }}}
@@ -2001,16 +2310,17 @@ is a description of the purpose of that TicketRestriction
 
 =cut
 
-sub DescribeRestrictions  {
+sub DescribeRestrictions {
     my $self = shift;
 
-    my ($row, %listing);
+    my ( $row, %listing );
 
-    foreach $row (keys %{$self->{'TicketRestrictions'}}) {
-	$listing{$row} = $self->{'TicketRestrictions'}{$row}{'DESCRIPTION'};
+    foreach $row ( keys %{ $self->{'TicketRestrictions'} } ) {
+        $listing{$row} = $self->{'TicketRestrictions'}{$row}{'DESCRIPTION'};
     }
     return (%listing);
 }
+
 # }}}
 
 # {{{ sub RestrictionValues
@@ -2023,14 +2333,13 @@ to.
 =cut
 
 sub RestrictionValues {
-    my $self = shift;
+    my $self  = shift;
     my $field = shift;
-    map $self->{'TicketRestrictions'}{$_}{'VALUE'},
-      grep {
-             $self->{'TicketRestrictions'}{$_}{'FIELD'} eq $field
-             && $self->{'TicketRestrictions'}{$_}{'OPERATOR'} eq "="
-           }
-        keys %{$self->{'TicketRestrictions'}};
+    map $self->{'TicketRestrictions'}{$_}{'VALUE'}, grep {
+             $self->{'TicketRestrictions'}{$_}{'FIELD'}    eq $field
+          && $self->{'TicketRestrictions'}{$_}{'OPERATOR'} eq "="
+      }
+      keys %{ $self->{'TicketRestrictions'} };
 }
 
 # }}}
@@ -2047,8 +2356,8 @@ sub ClearRestrictions {
     my $self = shift;
     delete $self->{'TicketRestrictions'};
     $self->{'looking_at_effective_id'} = 0;
-    $self->{'looking_at_type'} = 0;
-    $self->{'RecalcTicketLimits'} =1;
+    $self->{'looking_at_type'}         = 0;
+    $self->{'RecalcTicketLimits'}      = 1;
 }
 
 # }}}
@@ -2062,13 +2371,13 @@ Removes that restriction from the session's limits.
 
 =cut
 
-
 sub DeleteRestriction {
     my $self = shift;
-    my $row = shift;
+    my $row  = shift;
     delete $self->{'TicketRestrictions'}{$row};
 
     $self->{'RecalcTicketLimits'} = 1;
+
     #make the underlying easysearch object forget all its preconceptions
 }
 
@@ -2079,89 +2388,93 @@ sub DeleteRestriction {
 # Convert a set of oldstyle SB Restrictions to Clauses for RQL
 
 sub _RestrictionsToClauses {
-  my $self = shift;
+    my $self = shift;
 
-  my $row;
-  my %clause;
-  foreach $row (keys %{$self->{'TicketRestrictions'}}) {
-    my $restriction = $self->{'TicketRestrictions'}{$row};
-    #use Data::Dumper;
-    #print Dumper($restriction),"\n";
+    my $row;
+    my %clause;
+    foreach $row ( keys %{ $self->{'TicketRestrictions'} } ) {
+        my $restriction = $self->{'TicketRestrictions'}{$row};
 
-      # We need to reimplement the subclause aggregation that SearchBuilder does.
-      # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main',
-      # Then SB AND's the different Subclauses together.
+        #use Data::Dumper;
+        #print Dumper($restriction),"\n";
 
-      # So, we want to group things into Subclauses, convert them to
-      # SQL, and then join them with the appropriate DefaultEA.
-      # Then join each subclause group with AND.
+     # We need to reimplement the subclause aggregation that SearchBuilder does.
+     # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main',
+     # Then SB AND's the different Subclauses together.
 
-    my $field = $restriction->{'FIELD'};
-    my $realfield = $field;	# CustomFields fake up a fieldname, so
-                                # we need to figure that out
+        # So, we want to group things into Subclauses, convert them to
+        # SQL, and then join them with the appropriate DefaultEA.
+        # Then join each subclause group with AND.
 
-    # One special case
-    # Rewrite LinkedTo meta field to the real field
-    if ($field =~ /LinkedTo/) {
-      $realfield = $field = $restriction->{'TYPE'};
+        my $field = $restriction->{'FIELD'};
+        my $realfield = $field;    # CustomFields fake up a fieldname, so
+                                   # we need to figure that out
+
+        # One special case
+        # Rewrite LinkedTo meta field to the real field
+        if ( $field =~ /LinkedTo/ ) {
+            $realfield = $field = $restriction->{'TYPE'};
+        }
+
+        # Two special case
+        # Handle subkey fields with a different real field
+        if ( $field =~ /^(\w+)\./ ) {
+            $realfield = $1;
+        }
+
+        die "I don't know about $field yet"
+          unless ( exists $FIELDS{$realfield} or $restriction->{CUSTOMFIELD} );
+
+        my $type = $FIELDS{$realfield}->[0];
+        my $op   = $restriction->{'OPERATOR'};
+
+        my $value = (
+            grep  { defined }
+              map { $restriction->{$_} } qw(VALUE TICKET BASE TARGET)
+        )[0];
+
+        # this performs the moral equivalent of defined or/dor/C<//>,
+        # without the short circuiting.You need to use a 'defined or'
+        # type thing instead of just checking for truth values, because
+        # VALUE could be 0.(i.e. "false")
+
+        # You could also use this, but I find it less aesthetic:
+        # (although it does short circuit)
+        #( defined $restriction->{'VALUE'}? $restriction->{VALUE} :
+        # defined $restriction->{'TICKET'} ?
+        # $restriction->{TICKET} :
+        # defined $restriction->{'BASE'} ?
+        # $restriction->{BASE} :
+        # defined $restriction->{'TARGET'} ?
+        # $restriction->{TARGET} )
+
+        my $ea = $restriction->{ENTRYAGGREGATOR} || $DefaultEA{$type} || "AND";
+        if ( ref $ea ) {
+            die "Invalid operator $op for $field ($type)"
+              unless exists $ea->{$op};
+            $ea = $ea->{$op};
+        }
+
+        # Each CustomField should be put into a different Clause so they
+        # are ANDed together.
+        if ( $restriction->{CUSTOMFIELD} ) {
+            $realfield = $field;
+        }
+
+        exists $clause{$realfield} or $clause{$realfield} = [];
+
+        # Escape Quotes
+        $field =~ s!(['"])!\\$1!g;
+        $value =~ s!(['"])!\\$1!g;
+        my $data = [ $ea, $type, $field, $op, $value ];
+
+        # here is where we store extra data, say if it's a keyword or
+        # something.  (I.e. "TYPE SPECIFIC STUFF")
+
+        #print Dumper($data);
+        push @{ $clause{$realfield} }, $data;
     }
-
-    # Two special case
-    # CustomFields have a different real field
-    if ($field =~ /^CF\./) {
-      $realfield = "CF"
-    }
-
-    die "I don't know about $field yet"
-      unless (exists $FIELDS{$realfield} or $restriction->{CUSTOMFIELD});
-
-    my $type = $FIELDS{$realfield}->[0];
-    my $op   = $restriction->{'OPERATOR'};
-
-    my $value = ( grep { defined }
-		  map { $restriction->{$_} } qw(VALUE TICKET BASE TARGET))[0];
-
-    # this performs the moral equivalent of defined or/dor/C<//>,
-    # without the short circuiting.You need to use a 'defined or'
-    # type thing instead of just checking for truth values, because
-    # VALUE could be 0.(i.e. "false")
-
-    # You could also use this, but I find it less aesthetic:
-    # (although it does short circuit)
-    #( defined $restriction->{'VALUE'}? $restriction->{VALUE} :
-    # defined $restriction->{'TICKET'} ?
-    # $restriction->{TICKET} :
-    # defined $restriction->{'BASE'} ?
-    # $restriction->{BASE} :
-    # defined $restriction->{'TARGET'} ?
-    # $restriction->{TARGET} )
-
-    my $ea = $restriction->{ENTRYAGGREGATOR} || $DefaultEA{$type} || "AND";
-    if ( ref $ea ) {
-      die "Invalid operator $op for $field ($type)"
-	unless exists $ea->{$op};
-      $ea = $ea->{$op};
-    }
-
-    # Each CustomField should be put into a different Clause so they
-    # are ANDed together.
-    if ($restriction->{CUSTOMFIELD}) {
-      $realfield = $field;
-    }
-
-    exists $clause{$realfield} or $clause{$realfield} = [];
-    # Escape Quotes
-    $field =~ s!(['"])!\\$1!g;
-    $value =~ s!(['"])!\\$1!g;
-    my $data = [ $ea, $type, $field, $op, $value ];
-
-    # here is where we store extra data, say if it's a keyword or
-    # something.  (I.e. "TYPE SPECIFIC STUFF")
-
-    #print Dumper($data);
-    push @{$clause{$realfield}}, $data;
-  }
-  return \%clause;
+    return \%clause;
 }
 
 # }}}
@@ -2177,29 +2490,30 @@ sub _RestrictionsToClauses {
 
 sub _ProcessRestrictions {
     my $self = shift;
-    
+
     #Blow away ticket aliases since we'll need to regenerate them for
     #a new search
     delete $self->{'TicketAliases'};
-    delete $self->{'items_array'};                                                                                                                   
+    delete $self->{'items_array'};
     delete $self->{'item_map'};
     delete $self->{'raw_rows'};
     delete $self->{'rows'};
     delete $self->{'count_all'};
- 
-    my $sql = $self->{_sql_query}; # Violating the _SQL namespace
-    if (!$sql||$self->{'RecalcTicketLimits'}) {
-      #  "Restrictions to Clauses Branch\n";
-      my $clauseRef = eval { $self->_RestrictionsToClauses; };
-      if ($@) {
-	$RT::Logger->error( "RestrictionsToClauses: " . $@ );
-	$self->FromSQL("");
-      } else {
-	$sql = $self->ClausesToSQL($clauseRef);
-	$self->FromSQL($sql);
-      }
-    }
 
+    my $sql = $self->{_sql_query};    # Violating the _SQL namespace
+    if ( !$sql || $self->{'RecalcTicketLimits'} ) {
+
+        #  "Restrictions to Clauses Branch\n";
+        my $clauseRef = eval { $self->_RestrictionsToClauses; };
+        if ($@) {
+            $RT::Logger->error( "RestrictionsToClauses: " . $@ );
+            $self->FromSQL("");
+        }
+        else {
+            $sql = $self->ClausesToSQL($clauseRef);
+            $self->FromSQL($sql);
+        }
+    }
 
     $self->{'RecalcTicketLimits'} = 0;
 
@@ -2215,22 +2529,22 @@ sub _BuildItemMap {
     my $self = shift;
 
     my $items = $self->ItemsArrayRef;
-    my $prev = 0 ;
+    my $prev  = 0;
 
     delete $self->{'item_map'};
-    if ($items->[0]) {
+    if ( $items->[0] ) {
         $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
-        while (my $item = shift @$items ) {
+        while ( my $item = shift @$items ) {
             my $id = $item->EffectiveId;
             $self->{'item_map'}->{$id}->{'defined'} = 1;
-            $self->{'item_map'}->{$id}->{prev}  = $prev;
-            $self->{'item_map'}->{$id}->{next}  = $items->[0]->EffectiveId if ($items->[0]);
+            $self->{'item_map'}->{$id}->{prev}      = $prev;
+            $self->{'item_map'}->{$id}->{next}      = $items->[0]->EffectiveId
+              if ( $items->[0] );
             $prev = $id;
         }
         $self->{'item_map'}->{'last'} = $prev;
     }
-} 
-
+}
 
 =head2 ItemMap
 
@@ -2245,14 +2559,13 @@ $ItemMap->{$id}->{next} = the ticket id found after $id
 
 sub ItemMap {
     my $self = shift;
-    $self->_BuildItemMap() unless ($self->{'items_array'} and $self->{'item_map'});
-    return ($self->{'item_map'});
+    $self->_BuildItemMap()
+      unless ( $self->{'items_array'} and $self->{'item_map'} );
+    return ( $self->{'item_map'} );
 }
 
-
-
-
 =cut
+
 
 }
 
@@ -2267,7 +2580,6 @@ sub ItemMap {
 You don't want to serialize a big tickets object, as the {items} hash will be instantly invalid _and_ eat lots of space
 
 =cut
-
 
 sub PrepForSerialization {
     my $self = shift;
