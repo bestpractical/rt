@@ -24,14 +24,13 @@
 %# END LICENSE BLOCK
 <tr bgcolor="#b9b9ff">
 <td colspan=2><font size="3">
-<a href="<%$RT::WebPath%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("Approval #[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a>
-</font></td>
+<a href="<%$RT::WebPath%>/Approvals/Display.html?id=<%$ticket->Id%>"><% loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject) %></a> (<%loc($ticket->Status)%>)</font></td>
 </tr>
 % if ($ShowApproving) {
 %     foreach my $approving ( $ticket->AllDependedOnBy( Type => 'ticket' ) ) {
 <tr bgcolor="#e9e9e9">
 <td colspan=2>
-<a href="/Ticket/Display.html?id=<% $approving->Id %>"><&|/l, $approving->Id, $approving->Subject &>Originating ticket: #[_1]</&></a>
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<% $approving->Id %>"><&|/l, $approving->Id, $approving->Subject &>Originating ticket: #[_1]</&></a>
 </td>
 </tr>
 <tr><td colspan=2>
