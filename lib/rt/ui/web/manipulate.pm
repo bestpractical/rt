@@ -55,13 +55,12 @@ sub InitDisplay {
     }
     
     if ($frames) {
-      
-      if ((!($ENV{'CONTENT_LENGTH'}) && !($ENV{'QUERY_STRING'}) )) {
+  if ((!($rt::ui::web::FORM{'display'}) )) {      
 	&frame_display_queue();
       }
       
     }
-  
+ 
 
 
 }
@@ -85,13 +84,7 @@ sub DisplayForm {
   
   else {   
     
-    if ($rt::ui::web::FORM{'display'} eq 'Credits') {
-      &credits();
-      return();
-    }
-    
-    
-        elsif ($rt::ui::web::FORM{'display'} eq 'ReqOptions') {
+        if ($rt::ui::web::FORM{'display'} eq 'ReqOptions') {
 	  &display_commands();
 	  return();
         } 
@@ -118,8 +111,7 @@ sub DisplayForm {
     if (($rt::ui::web::FORM{'display'} !~ 'Create') and 
 	($rt::ui::web::FORM{'display'} ne 'Queue') and 
 	($rt::ui::web::FORM{'display'} ne 'ReqOptions') and 
-	($rt::ui::web::FORM{'display'} ne 'DumpEnv') and 
-	($rt::ui::web::FORM{'display'} ne 'Credits')) {
+	($rt::ui::web::FORM{'display'} ne 'DumpEnv')) {
       #	    print "<h1>Request Number $serial_num</h1>\n";
       if ($rt::ui::web::FORM{'message'}) {
 	print "$rt::ui::web::FORM{'message'}<br>\n";
@@ -184,6 +176,10 @@ sub DisplayForm {
     elsif ($rt::ui::web::FORM{'display'} eq 'SetDateDue') {
       &FormSetDateDue();
     }
+   elsif ($rt::ui::web::FORM{'display'} eq 'Blank') {
+      exit(0);
+    }
+
   }
   
   if ($rt::ui::web::FORM{'display'} eq 'History') {
@@ -216,13 +212,13 @@ sub frame_display_request {
 <frameset rows=\"20,80\" name=\"body\" border=\"0\">
 <frameset cols=\"45,55\" name=\"reqtop\" border\"0\">
 <frame src=\"$ScriptURL?display=ReqOptions&amp;serial_num=$serial_num\" name=\"req_buttons\" scrolling=\"no\">
-<frame src=\"$ScriptURL?serial_num=$serial_num\" name=\"summary\">
+<frame src=\"$ScriptURL?display=Blank&serial_num=$serial_num\" name=\"summary\">
 </frameset>";
     if ($serial_num) {
       print "<frame src=\"$ScriptURL?display=History&amp;serial_num=$serial_num\" name=\"history\">";
     }
     else {
-      print "<frame src=\"$ScriptURL?display=Credits\" name=\"history\">\n";  
+      print "<frame src=\"$ScriptURL?display=Blank\" name=\"history\">\n";  
     }
     print "</frameset>
 ";
@@ -1091,29 +1087,6 @@ else {
 
 
 
-sub credits{
-    print "
-
-<TABLE BORDER=0>
-<TR><TD>
-<A HREF=\"http://fsck.com/projects/rt\"><img border=0 src=\"/webrt/rt.jpeg\" ALT=\"[RT Now!]\"></a>
-</TD><TD VALIGN=\"BOTTOM\">
-
-<font size=\"-1\">
-This is Request Tracker version $rt::rtversion.<br><br>
-Development was initially comissioned by <a href=\"http://www.utopia.com\">Utopia Inc</a>.  Further work has been funded by <a href=\"http://www.leftbank.com\">The Leftbank Operation</a>. and <a href=\"http://www.wesleyan.edu\">Wesleyan University.</a>
-<br>
-This program is redistributable under the terms of the <A HREF=\"http://www.gnu.org/copyleft\"><b>GNU GPL.</b></a>
-
-<br>
-Copyright &copy; 1996-1999
-<a href=\"http://www.fsck.com/~jesse/\">Jesse Vincent</a>.
-</font>
-</TD></TR></TABLE>
-";
-   
-
-}
 sub initialize_sn {
     
   if ((!$rt::ui::web::FORM{'serial_num'}) and (!$frames))

@@ -1,6 +1,7 @@
 4 May 99
 --------
 With lots of help from Charlie Brady, resolved some cookie-auth bugs
+Fixed some problems with frames and cookies
 
 Bumped version to .99.7
 

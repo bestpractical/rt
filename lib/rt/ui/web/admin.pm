@@ -34,11 +34,6 @@ sub DisplayForm {
     &dump_env();
     
   }    
-  elsif ($rt::ui::web::FORM{'display'} eq 'Credits') {
-    
-    &credits();
-    
-  }
   
   elsif (($rt::ui::web::FORM{'display'} eq 'Create a User called') && ($rt::ui::web::FORM{'new_user_id'})){
     &FormModifyUser($rt::ui::web::FORM{'new_user_id'});
@@ -561,7 +556,7 @@ sub things_to_do {
 <hr>
 <center>
 <font size=\"-1\">
-<a href=\"$ScriptURL\">Restart</a> | <a href=\"$ScriptURL?display=Credits\">About</a> | <a href=\"$ScriptURL?display=Logout\">Logout</a>
+<a href=\"$ScriptURL\">Restart</a> | <a href=\"$ScriptURL?display=Logout\">Logout</a>
 <br>
 </font>
 </CENTER>
