@@ -1,56 +1,77 @@
-#: html/Admin/Users/Modify.html
-msgid "Residence"
-msgstr "Home"
+msgid "Mon."
+msgstr "Mon"
 
-#: html/Elements/monthMenu
+msgid "Tue."
+msgstr "Tue"
+
+msgid "Wed."
+msgstr "Wed"
+
+msgid "Thu."
+msgstr "Thu"
+
+msgid "Fri."
+msgstr "Fri"
+
+msgid "Sat."
+msgstr "Sat"
+
+msgid "Sun."
+msgstr "Sun"
+
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Apr."
 msgstr "Apr"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Aug."
 msgstr "Aug"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Dec."
 msgstr "Dec"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Feb."
 msgstr "Feb"
 
-#: html/Elements/Tabs
+#: html/Elements/Tabs html/Elements/Tabs,D
 msgid "Homepage"
 msgstr "Home"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Jan."
 msgstr "Jan"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Jul."
 msgstr "Jul"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Jun."
 msgstr "Jun"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Mar."
 msgstr "Mar"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "May."
 msgstr "May"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Nov."
 msgstr "Nov"
 
-#: html/Elements/monthMenu
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Oct."
 msgstr "Oct"
 
-#: html/Elements/monthMenu
+#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+msgid "Residence"
+msgstr "Home"
+
+#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
 msgid "Sep."
 msgstr "Sep"
 

@@ -247,47 +247,58 @@ sub DiffAsString {
 
 # {{{ sub DurationAsString
 
+
 =head2 DurationAsString
 
 Takes a number of seconds. returns a string describing that duration
 
 =cut
 
-sub DurationAsString{
+sub DurationAsString {
 
-    my $self=shift;
+    my $self     = shift;
     my $duration = shift;
-    
-    my ($negative, $s);
-    
-    $negative = $self->loc('ago') if ($duration < 0);
+
+    my ( $negative, $s );
+
+    $negative = 1 if ( $duration < 0 );
 
     $duration = abs($duration);
 
-    if($duration < $MINUTE) {
-	$s=$duration;
-	$string=$self->loc("sec");
-    } elsif($duration < (2 * $HOUR)) {
-	$s = int($duration/$MINUTE);
-	$string=$self->loc("min");
-    } elsif($duration < (2 * $DAY)) {
-	$s = int($duration/$HOUR);
-	$string=$self->loc("hours");
-    } elsif($duration < (2 * $WEEK)) {
-	$s = int($duration/$DAY);
-	$string=$self->loc("days");
-    } elsif($duration < (2 * $MONTH)) {
-	$s = int($duration/$WEEK);
-	$string=$self->loc("weeks");
-    } elsif($duration < $YEAR) {
-	$s = int($duration/$MONTH);
-	$string=$self->loc("months");
-    } else {
-	$s = int($duration/$YEAR);
-	$string=$self->loc("years");
+    if ( $duration < $MINUTE ) {
+        $s         = $duration;
+        $time_unit = $self->loc("sec");
     }
-    
-    return ("$s $string $negative");
+    elsif ( $duration < ( 2 * $HOUR ) ) {
+        $s         = int( $duration / $MINUTE );
+        $time_unit = $self->loc("min");
+    }
+    elsif ( $duration < ( 2 * $DAY ) ) {
+        $s         = int( $duration / $HOUR );
+        $time_unit = $self->loc("hours");
+    }
+    elsif ( $duration < ( 2 * $WEEK ) ) {
+        $s         = int( $duration / $DAY );
+        $time_unit = $self->loc("days");
+    }
+    elsif ( $duration < ( 2 * $MONTH ) ) {
+        $s         = int( $duration / $WEEK );
+        $time_unit = $self->loc("weeks");
+    }
+    elsif ( $duration < $YEAR ) {
+        $s         = int( $duration / $MONTH );
+        $time_unit = $self->loc("months");
+    }
+    else {
+        $s         = int( $duration / $YEAR );
+        $time_unit = $self->loc("years");
+    }
+    if ($negative) {
+        return $self->loc( "[_1] [_2] ago", $s, $time_unit );
+    }
+    else {
+        return $self->loc( "[_1] [_2]", $s, $time_unit );
+    }
 }
 
 # }}}
@@ -320,8 +331,62 @@ sub AsString {
     my $self = shift;
     return ($self->loc("Not set")) if ($self->Unix <= 0);
 
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($self->Unix);
+
+    my $date = $self->loc("[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]", $self->GetWeekday($wday), $self->GetMonth($$mon), $mday, $hour,$min,$sec, ($yday+1900));
+
     return (scalar(localtime($self->Unix)));
 }
+# }}}
+
+# {{{ GetWeekday
+=head2 GetWeekday DAY
+
+Takes an integer day of week and returns a localized string for that day of week
+
+=cut
+
+sub GetWeekday {
+    my $self = shift;
+    my $dow = shift;
+    
+    return $self->loc('Mon.') if ($dow == 0);
+    return $self->loc('Tue.') if ($dow == 1);
+    return $self->loc('Wed.') if ($dow == 2);
+    return $self->loc('Thu.') if ($dow == 3);
+    return $self->loc('Fri.') if ($dow == 4);
+    return $self->loc('Sat.') if ($dow == 5);
+    return $self->loc('Sun.') if ($dow == 6);
+}
+
+# }}}
+
+# {{{ GetMonth
+=head2 GetMonth DAY
+
+Takes an integer month and returns a localized string for that month 
+
+=cut
+
+sub GetMonth {
+    my $self = shift;
+   my $mon = shift;
+
+    # We do this rather than an array so that we don't call localize 12x what we need to
+    return $self->loc('Jan.') if ($mon == 0);
+    return $self->loc('Feb.') if ($mon == 1);
+    return $self->loc('Mar.') if ($mon == 2);
+    return $self->loc('Apr.') if ($mon == 3);
+    return $self->loc('May.') if ($mon == 4);
+    return $self->loc('Jun.') if ($mon == 5);
+    return $self->loc('Jul.') if ($mon == 6);
+    return $self->loc('Aug.') if ($mon == 7);
+    return $self->loc('Sep.') if ($mon == 8);
+    return $self->loc('Oct.') if ($mon == 9);
+    return $self->loc('Nov.') if ($mon == 10);
+    return $self->loc('Dec.') if ($mon == 11);
+}
+
 # }}}
 
 # {{{ sub AddSeconds

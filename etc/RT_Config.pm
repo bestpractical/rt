@@ -386,12 +386,6 @@ $WebExternalAuto = undef;
        },
    
  
-       { Header     => 'Take',
-	 TicketLink => 1,
-	 Constant   => 'Take',
-	 ExtraLinks => '&Action=Take'
-	 },
-
       ]
      );
 
