@@ -17,22 +17,13 @@ warn "Your Mail::Mailer might need patching" if ($Mail::Mailer::VERSION eq 1.19)
 # We use _Init from RT::Action
 # }}}
 
-
-
-
-#
 # Scrip methods
-#
-
-
-#Do what we need to do and send it out.
 
 # {{{ sub Commit 
+#Do what we need to do and send it out.
 sub Commit  {
   my $self = shift;
   #send the email
-
-  print STDERR "About to Commit a mail message\n";
 
   my @body = grep($_ .= "\n", split(/\n/,$self->{'Body'}));
 
@@ -51,7 +42,6 @@ sub Commit  {
 }
 # }}}
 
-
 # {{{ sub Prepare 
 
 sub Prepare  {
@@ -63,18 +53,12 @@ sub Prepare  {
 			    TicketObj => $self->TicketObj, 
 			    TransactionObj => $self->TransactionObj);
 
-
   # Header
   
-  # Maybe it's better to separate out _all_ headers/group of headers
-  # to make it easier to customize subclasses?  nah ... 
-
-  # Yes, actually --jesse ;)
-
   $self->SetSubject();
 
-  # Set's the tag
-  $self->FixSubject();
+  # Sets the tag
+  $self->SetSubjectToken();
 
   $self->SetReturnAddress();
 
@@ -93,11 +77,22 @@ sub Prepare  {
   $self->{'Body'} .= 
       "\n-------------------------------------------- Managed by Request Tracker\n\n";
   
-
-
 }
 
 # }}}
+
+# {{{ sub IsApplicable 
+sub IsApplicable  {
+  my $self = shift;
+
+  # More work needs to be done here to avoid duplicates beeing sent,
+  # and to ensure that there actually are any receipients.
+
+  return(1);
+}
+# }}}
+
+# {{{ Deal with message headers 
 
 # {{{ sub SetRTSpecialHeaders
 
@@ -125,6 +120,7 @@ sub SetRTSpecialHeaders {
   return();
 
 }
+
 # }}}
 
 # {{{ sub SetReferences
@@ -160,6 +156,7 @@ sub SetReferences {
   # TODO We should always add References headers for all message-ids
   # of previous messages related to this ticket.
 }
+
 # }}}
 
 # {{{ sub SetMessageID
@@ -280,14 +277,13 @@ sub SetEnvelopeTo {
 sub SetRecipients {
   my $self=shift;
   my $r=0;
-  print STDERR "Setting up receipient header fields";
   $self->SetTo() && $r++;
   $self->SetCc() && $r++;
   $self->SetBcc() && $r++;
   $self->SetEnvelopeTo() && $r++;
-  print STDERR "Done setting up receipient header fields, $r";
-  $r;
+  return ($r);
 }
+
 # }}} sub SetRecipients
 
 # {{{ sub SetHeader
@@ -304,18 +300,22 @@ sub SetHeader {
 
 # }}}
 
-# {{{ sub SetTo, Cc, Bcc
+# {{{ sub SetTo
 
 sub SetTo {
     my $self=shift;
     return $self->SetHeader('To', @_);
 }
+# }}}
 
+# {{{ sub SetCc
 sub SetCc {
     my $self=shift;
     return $self->SetHeader('Cc', @_);
 }
+# }}}
 
+# {{{ sub SetBcc
 sub SetBcc {
     my $self=shift;
     return $self->SetHeader('Bcc', @_);
@@ -324,12 +324,14 @@ sub SetBcc {
 # }}}
 
 # {{{ sub SetPrecedence 
+
 sub SetPrecedence {
   my $self = shift;
   # No - this should only be set for the AutoReply!
-#  $self->TemplateObj->MIMEObj->head->add('Precedence', "Bulk");
+  # Disagree. this should be set for any message which RT sets 
+  # the recipeients for. -jesse
+  $self->TemplateObj->MIMEObj->head->add('Precedence', "Bulk");
 }
-
 
 # }}}
 
@@ -355,30 +357,23 @@ sub SetSubject {
 }
 # }}}
 
-# {{{ sub FixSubject - sets the RT tag
+# {{{ sub SetSubjectToken
 
 # This routine fixes the RT tag in the subject.  It might be
 # overridden only in some rare cases.
 
-sub FixSubject {
+sub SetSubjectToken {
   my $self=shift;
   my $tag = "[$RT::rtname #".$self->TicketObj->id."]";
   my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
   $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub")
       unless $sub =~ /\Q$tag\E/;
 }
+
 # }}}
 
-# {{{ sub IsApplicable 
-sub IsApplicable  {
-  my $self = shift;
-
-  # More work needs to be done here to avoid duplicates beeing sent,
-  # and to ensure that there actually are any receipients.
-
-  return(1);
-}
 # }}}
+
 
 __END__
 

@@ -115,5 +115,20 @@ sub IsApplicable  {
 }
 # }}}
 
+# {{{ sub DESTROY
+sub DESTROY {
+    my $self = shift;
 
+    # We need to clean up all the references that might maybe get
+    # oddly circular
+    $self->{'TemplateObj'} =undef
+    $self->{'TicketObj'} = undef;
+    $self->{'TransactionObj'} = undef;
+    $self->{'ScripObj'} = undef;
+
+
+     
+}
+
+# }}}
 1;

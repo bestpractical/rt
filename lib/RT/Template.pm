@@ -71,8 +71,6 @@ sub Parse {
 
   $self->{'MIMEObj'}->build(Type => 'multipart/mixed');
 
-
-
   (my $headers, my $body) = split(/\n\n/,$content,2);
 
   $self->{'MIMEObj'}->attach(Data => $body);
@@ -82,8 +80,6 @@ sub Parse {
     $self->{'MIMEObj'}->head->add($key, $value);
   }
   
-#  $self->{'MIMEObj'}->print;
-  print STDERR "Leaving RT::Template::Parse\n"
 }
 
 # }}}
@@ -114,8 +110,5 @@ sub _ParseContent  {
   return ($template->fill_in(PACKAGE=>T));
 }
 # }}}
-
-
-
 
 1;

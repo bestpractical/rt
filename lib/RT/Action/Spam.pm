@@ -1,9 +1,11 @@
+# $Header$
+
 # This Action will spam all "subrequestors" when correspondence is added to a Group Ticket.
 
 package RT::Action::Spam;
 require RT::Action::SendEmail;
 require RT::Links;
-@ISA=qw|RT::Action::SendEmail|;
+@ISA=qw(RT::Action::SendEmail);
 
 #Do what we need to do and send it out.
 
@@ -16,13 +18,17 @@ sub Describe  {
 }
 # }}}
 
-
+# {{{ sub Prepare
 sub Prepare {
-    # we'll deal with everything in the commit sub
+    # we'll deal with everything in the commit sub -Tobix
+    # Why? is there no preparation that needs doing? 
+    # Preparation work _should_ be here. -jesse
     return 1;
 }
+# }}}
 
-sub FixSubject {
+# {{{ sub SetSubjectToken
+sub SetSubjectToken {
   my $self=shift;
   my $tag = "[$RT::rtname #".$self->{TicketId}."]";
   my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
@@ -30,6 +36,9 @@ sub FixSubject {
   $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub");
 }
 
+# }}}
+
+# {{{ sub Commit
 sub Commit {
 
     my $self = shift;
@@ -60,7 +69,7 @@ sub Commit {
 
     return $cnt;
 }
-
+# }}}
 
 1;
 

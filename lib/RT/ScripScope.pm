@@ -37,7 +37,6 @@ sub Create  {
 }
 # }}}
 
-
 # {{{ sub delete 
 sub delete  {
   my $self = shift;
@@ -46,7 +45,6 @@ sub delete  {
   die ("ScripScope->Delete not implemented yet");
 }
 # }}}
-
 
 # {{{ sub Load 
 sub Load  {
@@ -69,8 +67,6 @@ sub Load  {
  
 }
 # }}}
-
-
 
 # {{{ sub ScripObj
 sub ScripObj {
@@ -144,6 +140,12 @@ sub AdminPermitted  {
 }
 # }}}
 
+# {{{ sub DESTROY
+sub DESTROY {
+    my $self = shift;
+    $self->{'ScripObj'} = undef;
+}
+#}}}
 
 1;
 

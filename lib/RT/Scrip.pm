@@ -106,19 +106,19 @@ sub LoadAction  {
   my $type = "RT::Action::". $self->Action;
   
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
-  $self->{'ScriptObject'}  = $type->new ( 'ScripObj' => $self, 
-					  'TicketObj' => $args{'TicketObj'},
+  $self->{'Action'}  = $type->new ( 'ScripObj' => $self, 
+				    'TicketObj' => $args{'TicketObj'},
 					  'TransactionObj' => $args{'TransactionObj'},
 					  'TemplateObj' => $self->TemplateObj,
 					  'Argument' => $self->Argument,
 					  'Type' => $self->Type,
-				       );
+				  );
 }
 # }}}
 
 # {{{ sub TemplateObj
 sub TemplateObj {
-  my $self = shift;
+    my $self = shift;
   if (!$self->{'TemplateObj'})  {
     require RT::Template;
     $self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
@@ -135,7 +135,7 @@ sub TemplateObj {
 # {{{ sub Prepare 
 sub Prepare  {
   my $self = shift;
-  return ($self->{'ScriptObject'}->Prepare());
+  return ($self->{'Action'}->Prepare());
   
 }
 # }}}
@@ -143,7 +143,8 @@ sub Prepare  {
 # {{{ sub Commit 
 sub Commit  {
   my $self = shift;
-  return ($self->{'ScriptObject'}->Commit());
+  return($self->{'Action'}->Commit());
+
   
 }
 # }}}
@@ -151,7 +152,7 @@ sub Commit  {
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return ($self->{'ScriptObject'}->Describe());
+  return ($self->{'Action'}->Describe());
   
 }
 # }}}
@@ -159,8 +160,16 @@ sub Describe  {
 # {{{ sub IsApplicable 
 sub IsApplicable  {
   my $self = shift;
-  return ($self->{'ScriptObject'}->IsApplicable());
+  return ($self->{'Action'}->IsApplicable());
   
+}
+# }}}
+
+# {{{ sub DESTROY
+sub DESTROY {
+    my $self=shift;
+    $self->{'Action'} = undef;
+    $self->{'TemplateObj'} = undef;
 }
 # }}}
 

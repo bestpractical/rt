@@ -91,7 +91,7 @@ sub Create {
 				Due => $args{'Due'}
 			       );
   
-  print STDERR "Id is $id\n";
+
   #Load 'er up.
   $self->Load($id);
   #Now that we know the self
@@ -187,6 +187,7 @@ sub AddRequestor {
   my $self = shift;
   return ($self->AddWatcher ( Type => 'Requestor', @_));
 }
+
 # }}}
 
 # {{{ sub AddCc
@@ -568,6 +569,7 @@ sub Steal {
 # }}}
 
 # {{{ sub SetOwner
+
 sub SetOwner {
   my $self = shift;
   my $NewOwner = shift;
@@ -580,7 +582,7 @@ sub SetOwner {
   $NewOwnerObj = RT::User->new($self->CurrentUser);
   
   if (!$NewOwnerObj->Load($NewOwner)) {
-    print STDERR "That user does not exist\n";
+    
     return (0, "That user does not exist");
   }
   
@@ -592,7 +594,7 @@ sub SetOwner {
   if ($Type ne 'Steal' and 
       $self->Owner->Id!=$RT::Nobody and 
       $self->CurrentUser->Id ne $self->Owner->Id()) {
-    print STDERR  "You can only reassign tickets that you own or that are unowned\n";
+    
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
   #If we've specified a new owner and that user can't modify the ticket
@@ -620,6 +622,7 @@ sub SetOwner {
 
   return($self->_Set('Owner',$NewOwnerObj->Id,0,$more_params));
 }
+
 # }}}
 
 # }}}
@@ -1082,6 +1085,7 @@ sub IsRequestor {
 # {{{ PRIVATE UTILITY METHODS
 
 # {{{ sub _Accessible
+
 sub _Accessible {
 
   my $self = shift;  
@@ -1106,6 +1110,7 @@ sub _Accessible {
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
+
 # }}}
 
 # {{{ sub _UpdateTimeTaken

@@ -83,21 +83,31 @@ sub Create  {
 	# TODO: Agreed - jesse. It'll probably wait until after the 2.0 
 	# TODO  release unless it appears to be a serious perf bottleneck.
 	
-	next if ($Scope->ScripObj->Type && $Scope->ScripObj->Type !~ /(Any)|(\b$args{'Type'}\b)/);
-	#TODO: properly deal with errors raised in this scrip loop
-
-	# eval {
-	#Load the scrip's action;
-	$Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
-				     TemplateObj => $Scope->ScripObj->TemplateObj,
-				     TransactionObj => $self);
-	
-	#If it's applicable, prepare and commit it
-	if ( $Scope->ScripObj->IsApplicable() ) {
-	    $Scope->ScripObj->Prepare() || next;   
-	    $Scope->ScripObj->Commit();
+	if ($Scope->ScripObj->Type && 
+	    $Scope->ScripObj->Type =~ /(Any)|(\b$args{'Type'}\b)/) {
+	    #TODO: properly deal with errors raised in this scrip loop
+	    
+	    eval {
+		#Load the scrip's action;
+		$Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
+					     TemplateObj => $Scope->ScripObj->TemplateObj,
+					     TransactionObj => $self);
+		
+		#If it's applicable, prepare and commit it
+		if ( $Scope->ScripObj->IsApplicable() ) {
+		    $Scope->ScripObj->Prepare() &&   
+		    $Scope->ScripObj->Commit();
+		   
+		    #We're done with it. lets clean up.
+		    #TODO: why the fuck do we need to do this? 
+		    $Scope->ScropObj->DESTROY();
+		}
+	    }
 	}
-    }
+	#TODO: why the fuck does this not catch all
+ 	# ScripObjs we create. and why do we explictly need to destroy them?
+	$Scope->ScripObj->DESTROY;
+    }    
     return ($id, "Transaction Created");
 }
 # }}}
@@ -401,4 +411,5 @@ sub AdminPermitted  {
 # }}}
 
 # }}}
+
 1;

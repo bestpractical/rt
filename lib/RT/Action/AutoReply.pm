@@ -14,7 +14,7 @@ sub Describe  {
 # {{{ sub Commit 
 sub Commit  {
   my $self = shift;
-  print STDERR "AutoReply Commiting\n";
+
 
   #
   # Here's where you'd do any special things you want to 
@@ -100,6 +100,10 @@ sub SetPrecedence {
 
 # {{{ sub IsApplicable 
 sub IsApplicable  {
+    my $self = shift;
+
+    #TODO: clean up this coding style.
+    
     return 1
     # TODO: Check the AutoReplies table if we have already sent an
     # autoreply.
