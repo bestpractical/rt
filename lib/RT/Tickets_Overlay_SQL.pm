@@ -304,14 +304,14 @@ sub FromSQL {
   return(0,$@) if $@;
 
   # We only want to look at EffectiveId's (mostly) for these searches.
+  unless (exists $self->{_sql_looking_at}{'effectiveid'}) {
   $self->SUPER::Limit( FIELD           => 'EffectiveId',
                      ENTRYAGGREGATOR => 'AND',
                      OPERATOR        => '=',
                      QUOTEVALUE      => 0,
                      VALUE           => 'main.id'
-    );    #TODO, we shouldn't be hard
-      #coding the tablename to main.
-
+    );    #TODO, we shouldn't be hard #coding the tablename to main.
+    }
   # FIXME: Need to bring this logic back in
 
   #      if ($self->_isLimited && (! $self->{'looking_at_effective_id'})) {

@@ -2804,20 +2804,41 @@ sub MergeInto {
         return ( 0, $self->loc("Merge failed. Couldn't set EffectiveId") );
     }
 
-    my ( $status_val, $status_msg ) = $self->__Set(
-        Field => 'Status',
-        Value => 'resolved'
-    );
+    my ( $status_val, $status_msg ) = $self->__Set( Field => 'Status', Value => 'resolved');
 
     unless ($status_val) {
         $RT::Logger->error( $self->loc("[_1] couldn't set status to resolved. RT's Database may be inconsistent.", $self) );
     }
 
+
+    # update all the links that point to that old ticket
+    my $old_links_to = RT::Links->new($self->CurrentUser);
+    $old_links_to->Limit(FIELD => 'Target', VALUE => $self->URI);
+
+    while (my $link = $old_links_to->Next) {
+        if ($link->Base eq $NewTicket->URI) {
+            $link->Delete;
+        } else {
+            $link->SetTarget($NewTicket->URI);
+        }
+
+    }
+
+    my $old_links_from = RT::Links->new($self->CurrentUser);
+    $old_links_from->Limit(FIELD => 'Base', VALUE => $self->URI);
+
+    while (my $link = $old_links_from->Next) {
+        if ($link->Target eq $NewTicket->URI) {
+            $link->Delete;
+        } else {
+            $link->SetBase($NewTicket->URI);
+        }
+
+    }
+
+
     #make a new link: this ticket is merged into that other ticket.
-    $self->AddLink(
-        Type   => 'MergedInto',
-        Target => $NewTicket->Id()
-    );
+    $self->AddLink( Type   => 'MergedInto', Target => $NewTicket->Id());
 
     #add all of this ticket's watchers to that ticket.
     my $requestors = $self->Requestors->MembersObj;
