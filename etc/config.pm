@@ -247,11 +247,12 @@ $SendmailPath = "/usr/sbin/sendmail";
 
 # RT can optionally set a "Friendly" 'To:' header when sending messages to 
 # Ccs or AdminCcs (rather than having a blank 'To:' header.
+
 # This feature DOES NOT WORK WITH SENDMAIL[tm] BRAND SENDMAIL
 # If you are using sendmail, rather than postfix, qmail, exim or some other MTA,
 # you _must_ disable this option.
 
-$UseFriendlyToLine = 1;
+$UseFriendlyToLine = 0;
 
 
 # }}}
