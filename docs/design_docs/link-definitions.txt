@@ -53,6 +53,10 @@ For 2.0, those Linking actions should be supported:
  semantical problem here, as it's doesn't make sense to say that "Stabilize
  the mail server" is a Member Of "Buy more disk", "Upgrade (whatever MTA is
  beeing used)" and "install the latest Linux kernel".
+ 
+ Links doesn't make sense at all, and it might break the reply stuff
+ seriously if it's done recursively.  The status changes won't be affected
+ anyway.
 
 
 3. Merge link (connecting)
@@ -69,8 +73,19 @@ For 2.0, those Linking actions should be supported:
  "send" button twice in a web environment) or that we don't care much about
  giving the requestor individual follow-up (typically "internal" requestors,
  etc.)
+ 
+ 
+4. No Action link (linking)
+
+ BASE is somewhat related to TARGET
+
+ No special actions will be taken.
+ 
+ Loops might maybe make sense.
+
 
 For 2.1, it should be very easy to set up site-specific link action types.
+We should also consider to include more linking actions in the box.
 
 
 An example stolen from John Rouillard.  Eventually the [comments] should be
