@@ -19,7 +19,7 @@ if ($id) {
                 C => { title => loc('Basics'),
                        path  => "Admin/CustomFields/Modify.html?id=" . $id,
                 },
-                D => { title => loc('Applies To'),
+                D => { title => loc('Applies to'),
                        path  => "Admin/CustomFields/Objects.html?id=" . $id,
                 },
 
