@@ -449,6 +449,17 @@ sub Create {
 
     # }}}
 
+    # We attempt to load or create each of the people who might have a role for this ticket
+    # _outside_ the transaction, so we don't get into ticket creation races
+    foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
+     next unless (defined $args{$type});
+        foreach my $watcher ( ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
+        my $user = RT::User->new($RT::SystemUser);
+        $user->LoadOrCreateByEmail($watcher) if ($watcher !~ /^\d+$/);
+        }
+    }
+
+
     $RT::Handle->BeginTransaction();
 
     my %params =( Queue           => $QueueObj->Id,
@@ -515,8 +526,7 @@ sub Create {
 
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
         next unless (defined $args{$type});
-        foreach my $watcher (
-                  ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
+        foreach my $watcher ( ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
 
 	    # we reason that all-digits number must be a principal id, not email
 	    # this is the only way to can add
@@ -1393,40 +1403,21 @@ sub _AddWatcher {
 
 
     my $principal = RT::Principal->new($self->CurrentUser);
+    if ($args{'Email'}) {
+        my $user = RT::User->new($self->CurrentUser);
+        my ($pid, $msg) = $user->LoadOrCreateByEmail($args{'Email'});
+        if ($pid) {
+            $args{'PrincipalId'} = $pid; 
+        }
+    }
     if ($args{'PrincipalId'}) {
         $principal->Load($args{'PrincipalId'});
     } 
-    elsif ($args{'Email'}) {
 
-        my $user = RT::User->new($self->CurrentUser);
-        $user->LoadByEmail($args{'Email'});
-
-        unless ($user->Id) {
-            $user->Load($args{'Email'});
-        }
-        if ($user->Id) { # If the user exists
-            $principal->Load($user->PrincipalId);
-        } else {
-        
-        # if the user doesn't exist, we need to create a new user
-             my $new_user = RT::User->new($RT::SystemUser);
-
-            my ( $Val, $Message ) = $new_user->Create(
-                Name => $args{'Email'},
-                EmailAddress => $args{'Email'},
-                RealName     => $args{'Email'},
-                Privileged   => 0,
-                Comments     => 'Autocreated when added as a watcher');
-            unless ($Val) { 
-                $RT::Logger->error("Failed to create user ".$args{'Email'} .": " .$Message);
-                # Deal with the race condition of two account creations at once
-                $new_user->LoadByEmail($args{'Email'});
-            }
-            $principal->Load($new_user->PrincipalId);
-        }
-    } 
+ 
     # If we can't find this watcher, we need to bail.
     unless ($principal->Id) {
+            $RT::Logger->error("Could not load create a user with the email address '".$args{'Email'}. "' to add as a watcher for ticket ".$self->Id);
         return(0, $self->loc("Could not find or create that user"));
     }
 

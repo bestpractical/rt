@@ -323,6 +323,8 @@ sub Create {
 
 # }}}
 
+
+
 # {{{ SetPrivileged
 
 =head2 SetPrivileged BOOL
@@ -548,6 +550,62 @@ sub LoadByEmail {
     #$RT::Logger->debug("Trying to load an email address: $address\n");
     return $self->LoadByCol( "EmailAddress", $address );
 }
+
+# }}}
+
+# {{{ LoadOrCreateByEmail 
+
+=head2 LoadOrCreateByEmail ADDRESS
+
+Attempts to find a user who has the provided email address. If that fails, creates an unprivileged user with
+the provided email address. and loads them.
+
+Returns a tuple of the user's id and a status message.
+0 will be returned in place of the user's id in case of failure.
+
+=cut
+
+sub LoadOrCreateByEmail {
+    my $self = shift;
+    my $email = shift;
+
+        my ($val, $message);
+
+        $self->LoadByEmail($email);
+        $message = $self->loc('User loaded');
+        unless ($self->Id) {
+            ( $val, $message ) = $self->Create(
+                Name => $email,
+                EmailAddress => $email,
+                RealName     => $email,
+                Privileged   => 0,
+                Comments     => 'Autocreated when added as a watcher');
+            unless ($val) {
+                # Deal with the race condition of two account creations at once
+                $self->LoadByEmail($email);
+                unless ($self->Id) {
+                    sleep 5;
+                    $self->LoadByEmail($email);
+                }
+                if ($self->Id) {
+                    $RT::Logger->error("Recovered from creation failure due to race condition");
+                    $message = $self->loc("User loaded");
+                }
+                else {
+                    $RT::Logger->crit("Failed to create user ".$email .": " .$message);
+                }
+            }
+        }
+
+        if ($self->Id) {
+            return($self->Id, $message);
+        }
+        else {
+            return(0, $message);
+        }
+
+
+    }
 
 # }}}
 
