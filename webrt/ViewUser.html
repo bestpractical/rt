@@ -1,17 +1,17 @@
-%# Header and footer set by autoload
+%# Header and footer set by autohandler
 <& /Elements/ViewUser, User=>$u &>
-%if ($session{CurrentUser}->Id eq $id) {
-	  <& /Elements/TitleBoxStart, title => 'Signature'  &>
+%if ($session{CurrentUser} && ($session{CurrentUser}->Id == $id)) {
+	<& /Elements/TitleBoxStart, title => 'Signature'  &>
 <form method=post>
 <input type="hidden">
-<TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $session{CurrentUser}->Signature %></TEXTAREA><br>
+<TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $session{CurrentUser}->Signature %></TEXTAREA><br><br>
 <input type="submit" value="Update signature">
 </form>
 	  <& /Elements/TitleBoxEnd &>
 %}
 
 <%ARGS>
-$id => $session{CurrentUser}->Id
+$id => $session{CurrentUser} ? $session{CurrentUser}->Id : 0
 $Signature => undef
 </%ARGS>
 
@@ -20,6 +20,10 @@ require RT::User;
 my $u=RT::User->new;
 $u->Load($id) || die "Couldn't load that user ($id)";
 if ($Signature) {
+
+# TODO: I think those comments are from before we found out that we
+# were trying to use "persistant" DBI handles:
+
 # This blows up here, haven't discovered why ... it works excellent
 # when I'm into the perl debugger using the cli
 #$session{CurrentUser}->SetSignature($Signature);

@@ -83,6 +83,7 @@ sub Create  {
 	# TODO: Agreed - jesse. It'll probably wait until after the 2.0 
 	# TODO  release unless it appears to be a serious perf bottleneck.
 	
+	$RT::Logger->log(level=>'debug', message=>("Trying out ".$Scope->ScripObj->Name." (".$Scope->ScripObj->Type.")"));
 	if ($Scope->ScripObj->Type && 
 	    $Scope->ScripObj->Type =~ /(Any)|(\b$args{'Type'}\b)/) {
 

@@ -36,9 +36,9 @@ sub Prepare  {
   # For example:
 
   # $self->{'Header'}->add('RT-Action-Type', "Autoreply");
-  
+
   #You _always_ need to run SUPER::Prepare();
-  return ($self->SUPER::Prepare());
+  return $self->SUPER::Prepare();
 }
 # }}}
 
