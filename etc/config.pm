@@ -207,15 +207,13 @@ sub LookupExternalUserInfo {
 
 # {{{ Outgoing mail configuration
 
-#$MailAlias is a generic alias to send mail to for any request
-#already in a queue.  
+# RT is designed such that any mail which already has a ticket-id associated
+# with it will get to the right place automatically.
 
-#RT is designed such that any mail which already has a ticket-id associated
-#with it will get to the right place automatically.
-
-#This is the default address that will be listed in 
-#From: and Reply-To: headers of mail tracked by RT unless overridden
-#by a queue specific address
+# $CorrespondAddress and $CommentAddress are the default addresses 
+# that will be listed in From: and Reply-To: headers of correspondence
+# and comment mail tracked by RT, unless overridden by a queue-specific
+# address. 
 
 $CorrespondAddress='RT::CorrespondAddress.not.set';
 
