@@ -1278,42 +1278,42 @@ MimeObj, TimeTaken
 =cut
 
 sub Correspond {
-  my $self = shift;
-  my %args = (
-	      MIMEObj => undef,
-	       TimeTaken => 0,
-	       @_ );
-
-  unless (($self->CurrentUserHasRight('ReplyToTicket')) or
-	  ($self->CurrentUserHasRight('ModifyTicket'))) {
-      return (0, "Permission Denied");
-  }
-  
-  unless ($args{'MIMEObj'}) {
-      return(0,"No correspondence attached");
-  }
-
-  #Record the correspondence (write the transaction)
-  my ($Trans,$msg, $TransObj) = $self->_NewTransaction
-    (Type => 'Correspond',
-     Data => $args{'MIMEObj'}->head->get('subject'),
-     TimeTaken => $args{'TimeTaken'},
-     MIMEObj=> $args{'MIMEObj'}     
-    );
-  
-  unless ($Trans) {
-      $RT::Logger->err("$self couldn't init a transaction ($msg)\n");
-      return ($Trans, "correspondence (probably) NOT sent", $args{'MIMEObj'});
-  }
- 
-  #Set the last told date to now if this isn't mail from the requestor.
-  #Note that this will wrongly ack mail from any non-requestor as a "told"
-
-  unless ($TransObj->IsInbound) {
-      $self->_SetTold;
-  }
-  
-  return ($Trans, "correspondence sent");
+    my $self = shift;
+    my %args = (
+		MIMEObj => undef,
+		TimeTaken => 0,
+		@_ );
+    
+    unless (($self->CurrentUserHasRight('ReplyToTicket')) or
+	    ($self->CurrentUserHasRight('ModifyTicket'))) {
+	return (0, "Permission Denied");
+    }
+    
+    unless ($args{'MIMEObj'}) {
+	return(0,"No correspondence attached");
+    }
+    
+    #Record the correspondence (write the transaction)
+    my ($Trans,$msg, $TransObj) = $self->_NewTransaction
+      (Type => 'Correspond',
+       Data => $args{'MIMEObj'}->head->get('subject'),
+       TimeTaken => $args{'TimeTaken'},
+       MIMEObj=> $args{'MIMEObj'}     
+      );
+    
+    unless ($Trans) {
+	$RT::Logger->err("$self couldn't init a transaction ($msg)\n");
+	return ($Trans, "correspondence (probably) NOT sent", $args{'MIMEObj'});
+    }
+    
+    #Set the last told date to now if this isn't mail from the requestor.
+    #Note that this will wrongly ack mail from any non-requestor as a "told"
+    
+    unless ($TransObj->IsInbound) {
+	$self->_SetTold;
+    }
+    
+    return ($Trans, "correspondence sent");
 }
 
 # }}}
@@ -1972,9 +1972,9 @@ sub _SetTold {
     my $self=shift;
     my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow();
-    return($self->_Set(Field => 'Told', 
-		       Value => $now->ISO, 
-		       RecordTransaction => 0));
+    #use __Set to get no ACLs ;)
+    return($self->__Set(Field => 'Told', 
+		       Value => $now->ISO);
 }
 
 # }}}
