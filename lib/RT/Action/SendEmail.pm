@@ -336,6 +336,9 @@ sub RecordOutgoingMailTransaction {
     my $self = shift;
     my $MIMEObj = shift;
 
+
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, 'utf-8', 'mime_words_ok' );
+
     my $transaction = RT::Transaction->new($self->TransactionObj->CurrentUser);
 
     # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
@@ -348,6 +351,7 @@ sub RecordOutgoingMailTransaction {
     }
 
 
+      
     my ($id, $msg) = $transaction->Create( Ticket => $self->TicketObj->Id, Type => $type, Data => $MIMEObj->head->get('Message-Id'), MIMEObj => $MIMEObj, ActivateScrips => 0);
 
 
