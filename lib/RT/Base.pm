@@ -23,6 +23,7 @@
 # END LICENSE BLOCK
 package RT::Base;
 use Carp;
+use Scalar::Util;
 
 use strict;
 use vars qw(@EXPORT);
@@ -48,11 +49,12 @@ sub CurrentUser {
 
     if (@_) {
         $self->{'user'} = shift;
+        Scalar::Util::weaken($self->{'user'}) if (ref($self->{'user'}) &&
+                                                    $self->{'user'} == $self );
     }
 
-    unless ( $self->{'user'} ) {
-        $RT::Logger->err(
-                  "$self was created without a CurrentUser\n" . Carp::cluck() );
+    unless ( ref( $self->{'user'}) ) {
+        $RT::Logger->err( "$self was created without a CurrentUser\n" . Carp::cluck() );
         return (0);
         die;
     }
