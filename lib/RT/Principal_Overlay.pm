@@ -334,19 +334,6 @@ sub HasRight {
     my ( $or_look_at_object_rights, $or_check_roles );
     my $right = $args{'Right'};
 
-    my @roles;
-
-
-    foreach my $object (@{$args{'EquivObjects'}}) { 
-          push (@roles, $self->_RolesForObject(ref($object), $object->id));
-    }
-
-
-    if (@roles) {
-        $or_check_roles = " ( (".join (' OR ', @roles)." ) ".  
-        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') ";
-
-   } 
     # {{{ Construct Right Match
 
     # If an object is defined, we want to look at rights for that object
@@ -388,25 +375,40 @@ sub HasRight {
     # Make sure the rights apply to the entire system or to the object in question
     "AND ( ".join(' OR ', @look_at_objects).") ";
 
-	my $groups_query = $query_base . 
 
+
+    # The groups query does the query based on group membership and individual user rights
+
+	my $groups_query = $query_base . 
 
     # limit the result set to groups of types ACLEquivalence (user)  UserDefined, SystemInternal and Personal
     "AND ( (  ACL.PrincipalId = Principals.id AND ACL.PrincipalType = 'Group' AND ".
         "(Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal'))".
 
-        " ) ";
+        " ) LIMIT 1";
         
-	my $roles_query = $query_base . "AND ".$or_check_roles;
+    my @roles;
+    foreach my $object (@{$args{'EquivObjects'}}) { 
+          push (@roles, $self->_RolesForObject(ref($object), $object->id));
+    }
 
-	$roles_query .= " LIMIT 1"; #only return one result
-	$groups_query  .= " LIMIT 1"; #only return one result
+    # The roles query does the query based on roles
+    my $roles_query;
+    if (@roles) {
+	 $roles_query = $query_base . "AND ".
+            " ( (".join (' OR ', @roles)." ) ".  
+        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') LIMIT 1";
+
+   }
+
+
 
     # }}}
 
     # {{{ Actually check the ACL by performing an SQL query
     #   $RT::Logger->debug("Now Trying $groups_query");	
     my $hitcount = $self->_Handle->FetchResult($groups_query);
+
     # }}}
     
     # {{{ if there's a match, the right is granted 
@@ -423,21 +425,21 @@ sub HasRight {
 
     	$hitcount = $self->_Handle->FetchResult($roles_query);
 
-    if ($hitcount) {
+        if ($hitcount) {
 
-        # Cache a positive hit.
-        $self->_ACLCache->{"$hashkey"}{'set'} = time;
-        $self->_ACLCache->{"$hashkey"}{'val'} = 1;
-        return (1);
-	}
+            # Cache a positive hit.
+            $self->_ACLCache->{"$hashkey"}{'set'} = time;
+            $self->_ACLCache->{"$hashkey"}{'val'} = 1;
+            return (1);
+	    }
 
         else {
-        # cache a negative hit
-        $self->_ACLCache->{"$hashkey"}{'set'} = time;
-        $self->_ACLCache->{"$hashkey"}{'val'} = -1;
+            # cache a negative hit
+            $self->_ACLCache->{"$hashkey"}{'set'} = time;
+            $self->_ACLCache->{"$hashkey"}{'val'} = -1;
 
-        return (undef);
-	}
+            return (undef);
+	    }
     }
     # }}}
 }
