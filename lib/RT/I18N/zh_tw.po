@@ -372,10 +372,6 @@ msgstr "(點選欲啟用通知的收件人)"
 
 #: html/Ticket/Create.html:187
 msgid "(Enter ticket ids or URLs, separated with spaces)"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "(Enter ticket ids or URLs, seperated with spaces)"
 msgstr "(鍵入申請單編號或網址，以空白分隔)"
 
 #: html/Admin/Queues/Modify.html:53 html/Admin/Queues/Modify.html:59
@@ -2024,7 +2020,7 @@ msgstr "預設自動回應範本"
 
 #: html/Tools/Offline.html:36
 msgid "Default Queue"
-msgstr ""
+msgstr "預設表單"
 
 #: NOT FOUND IN SOURCE
 msgid "Default Value"
@@ -2934,7 +2930,7 @@ msgstr "性別"
 
 #: html/Tools/Offline.html:53
 msgid "Get template from file"
-msgstr ""
+msgstr "取出檔案裡的範本"
 
 #: NOT FOUND IN SOURCE
 msgid "Getting the current user from a pgp sig\\n"
@@ -3217,7 +3213,7 @@ msgstr "若簽核單遭到駁回，則連帶駁回原申請單，並刪除其他
 
 #: html/Tools/Offline.html:40
 msgid "If no queue is specified, create tickets in this queue."
-msgstr ""
+msgstr "申請單若沒有指定表單，則將它新增在此表單內"
 
 #: bin/rt-crontool:189
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
@@ -3249,7 +3245,7 @@ msgstr "列出停用的自訂欄位"
 
 #: html/Admin/Groups/index.html:42
 msgid "Include disabled groups in listing."
-msgstr ""
+msgstr "列出停用的群組"
 
 #: html/Admin/Queues/index.html:42
 msgid "Include disabled queues in listing."

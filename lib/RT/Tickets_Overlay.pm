@@ -990,8 +990,13 @@ sub _FreezeThawKeys {
 
 sub FreezeLimits {
 	my $self = shift;
-	require FreezeThaw;
-	return (FreezeThaw::freeze(@{$self}{$self->_FreezeThawKeys}));
+	require Storable;
+	require MIME::Base64;
+	MIME::Base64::base64_encode(
+	    Storable::freeze(
+		\@{$self}{$self->_FreezeThawKeys}
+	    )
+	);
 }
 
 # }}}
@@ -1013,13 +1018,14 @@ sub ThawLimits {
 
     	$self->{'RecalcTicketLimits'} = 1;
 
-	require FreezeThaw;
-	
+	require Storable;
+	require MIME::Base64;
+
 	#We don't need to die if the thaw fails.
-	
-	eval {
-		@{$self}{$self->_FreezeThawKeys} = FreezeThaw::thaw($in);
+	@{$self}{$self->_FreezeThawKeys} = eval {
+	    @{Storable::thaw( MIME::Base64::base64_decode($in) )};
 	};
+	
 	$RT::Logger->error( $@ ) if $@;
 
 }
