@@ -297,6 +297,20 @@ CREATE TABLE Templates (
 );
 
 
+CREATE SEQUENCE OBJECTCUSTOMFIELDS_seq;
+CREATE TABLE ObjectCustomFields (
+	id		NUMBER(11,0)
+                 CONSTRAINT ObjectCustomFields_Key PRIMARY KEY,
+        CustomField       NUMBER(11,0)  NOT NULL,
+        ObjectId              NUMBER(11,0)  NOT NULL,
+	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Created		DATE,
+	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LastUpdated	DATE
+);
+
+
 CREATE SEQUENCE OBJECTCUSTOMFIELDVALUES_seq;
 CREATE TABLE ObjectCustomFieldValues (
 	id		NUMBER(11,0) 
