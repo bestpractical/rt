@@ -51,7 +51,7 @@ RT_WEB_MUX		=	$(RT_BIN_PATH)/webmux.pl
 # the Log::Dispatch POD.
 #
 
-RT_LOGFILE              = $(RT_PATH)/rt.log
+RT_LOGFILE	      = $(RT_PATH)/rt.log
 
 #
 # The following are the names of the various binaries which make up RT 
@@ -76,7 +76,7 @@ RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
 # (otherwise, mail for existing tickets won't get put in the right place
 #
 
-RT_MAIL_TAG		=	change-this-string-or-perish
+RT_MAIL_TAG		=	rt2.fsck.com
 
 #
 # RT_MAIL_ALIAS is the main mail alias for the RT system.  It should probably be
@@ -84,11 +84,11 @@ RT_MAIL_TAG		=	change-this-string-or-perish
 # (note that the \ before the @ is required)
 #
 
-RT_MAIL_ALIAS		=	rt\@your.domain.is.not.yet.set
+RT_MAIL_ALIAS		=	rt2\@fsck.com
 
 # All mail to RT_MAIL_COMMENT_ALIAS should generate a COMMENT rather than a REPLY.
 
-RT_COMMENT_MAIL_ALIAS		=	rt-comment\@your.domain.is.not.yet.set
+RT_COMMENT_MAIL_ALIAS		=	rt2-comment\@fsck.com
 
 # Consult the README file to see how you set up the rt and rt-comment
 # mailing aliases.
@@ -111,13 +111,13 @@ RT_USER_PASSWD_MIN	=	5
 # DB_HOME is where the Database's commandline tools live
 # Note: $DB_HOME/bin is where the database binary tools are installed.
  
-DB_HOME               = /usr
+DB_HOME	       = /opt/mysql
 
 # Right now, the only working value for DB_TYPE is mysql.  If you're using
 # Postgresql _and_ you're a hacker, you might want to try "Pg" as well.
 # Please submit necessary patches to rt11@fsck.com
 
-DB_TYPE                =	mysql
+DB_TYPE	        =	mysql
 
 
 # Set DBA to the name of a unix account with the proper permissions and 
@@ -126,8 +126,8 @@ DB_TYPE                =	mysql
 # I don't think this should be needed.  At least not with mysql!
 # Set DB_DBA to the name of a DB user with permission to create new databases 
 # Set DB_DBA_PASSWORD to that user's password
-DB_DBA                   =	root
-DB_DBA_PASSWORD          =	
+DB_DBA	           =	root
+DB_DBA_PASSWORD	  =	
  
 #
 # Set this to the Fully Qualified Domain Name of your database server.
@@ -150,19 +150,19 @@ DB_RT_HOST			=	localhost
 # set this to the name you want to give to the RT database in mysql
 #
 
-DB_DATABASE	=	RT
+DB_DATABASE	=	RT2
 
 #
 # Set this to the name of the rt database user
 #
 
-DB_RT_USER	=	RT
+DB_RT_USER	=	RT2
 
 #
 # Set this to the password used by the rt database user
 #
 
-DB_RT_PASS      =       password
+DB_RT_PASS      =      $ecret
 
 
 #
@@ -186,7 +186,7 @@ WEB_IMAGE_PATH			=	/webrt
 # to get it right.  It might eventually be changed later in the
 # config.pm file.
 
-WEB_PATH                        =       /webrt
+WEB_PATH	                =       /webrt
 
 # hostname and domainname
 # todo: docs about when, how and where they will be used
@@ -222,8 +222,8 @@ all:
 	@echo "Read the readme."
 
 fixperms:
-        chown -R $(RTUSER) $(RT_PATH)
-        chgrp -R $(RTGROUP) $(RT_PATH)  
+	chown -R $(RTUSER) $(RT_PATH)
+	chgrp -R $(RTGROUP) $(RT_PATH)  
 	chmod 0755 $(RT_PATH)
 	chmod -R 755 $(RT_LIB_PATH)
 	chmod -R 0750 $(RT_ETC_PATH)
@@ -264,9 +264,9 @@ database:
 acls:
 	$(PERL) -p -i.orig -e " s'!!DB_TYPE!!'$(DB_TYPE)'g;\
 				s'!!DB_HOST!!'$(DB_HOST)'g;\
-			        s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
-			        s'!!DB_RT_HOST!!'$(DB_RT_HOST)'g;\
-			        s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
+				s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
+				s'!!DB_RT_HOST!!'$(DB_RT_HOST)'g;\
+				s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
 				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
 
 	sh bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
@@ -312,19 +312,19 @@ config-replace:
 	$(PERL) -p -i -e "\
 	s'!!DB_TYPE!!'$(DB_TYPE)'g;\
 	s'!!DB_HOST!!'$(DB_HOST)'g;\
-        s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
-        s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
-        s'!!RT_LOGFILE!!'$(RT_LOGFILE)'g;\
-        s'!!RT_USER!!'$(RT_USER)'g;\
-        s'!!RT_GROUP!!'$(RT_GROUP)'g;\
+	s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
+	s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
+	s'!!RT_LOGFILE!!'$(RT_LOGFILE)'g;\
+	s'!!RT_USER!!'$(RT_USER)'g;\
+	s'!!RT_GROUP!!'$(RT_GROUP)'g;\
 	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
 	s'!!RT_PATH!!'$(RT_PATH)'g;\
-        s'!!RT_MAIL_TAG!!'$(RT_MAIL_TAG)'g;\
+	s'!!RT_MAIL_TAG!!'$(RT_MAIL_TAG)'g;\
 	s'!!RT_USER_PASSWD_MIN!!'$(RT_USER_PASSWD_MIN)'g;\
-        s'!!RT_HOST!!'$(RT_HOST)'g;\
-        s'!!RT_DOMAIN!!'$(RT_DOMAIN)'g;\
-        s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
-        s'!!RT_COMMENT_MAIL_ALIAS!!'$(RT_COMMENT_MAIL_ALIAS)'g;\
+	s'!!RT_HOST!!'$(RT_HOST)'g;\
+	s'!!RT_DOMAIN!!'$(RT_DOMAIN)'g;\
+	s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
+	s'!!RT_COMMENT_MAIL_ALIAS!!'$(RT_COMMENT_MAIL_ALIAS)'g;\
 	s'!!DEFAULT_LOCALE!!'$(DEFAULT_LOCALE)'g;\
 	s'!!LOCALE_PATH!!'$(RT_LOCALE_PATH)'g;\
 	s'!!WEB_PATH!!'$(WEB_PATH)'g;\
