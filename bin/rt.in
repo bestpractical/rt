@@ -202,7 +202,7 @@ sub list {
     }
     return help("list", $type) if $bad;
 
-    my $r = submit("$REST/search/$type", { query => $q, %data });
+    my $r = submit("$REST/search/$type", { query => $q, %data, orderby => $orderby });
     print $r->content;
 }
 
