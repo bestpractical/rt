@@ -5,17 +5,30 @@
 % }  else { 
 <& /Elements/TitleBoxStart, title => 'Advanced Search Criteria'&>
 <form action="Search.html" method="GET">
-<br>Class is <& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size =>
-5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
-and is not <& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1,
-Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
+<br>
+<table>
+<tr valign="middle">
+<td>
+Class is
+</td>
+<td>
+<& /RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
+</td>
+<td>
+and is not
+</td>
+<td>
+<& /RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &> 
+</td>
+</tr>
+</table>
 <br>Name matches 
 <input name="Name~" value="<%$ARGS{'Name~'}%>">
-and does not match 
+and not 
 <input name="Name!~" value="<%$ARGS{'Name!~'}%>">
 <br>Summary matches 
 <input Summary="Summary~" value="<%$ARGS{'Summary~'}%>">
-and does not match 
+and not 
 <input Summary="Summary!~" value="<%$ARGS{'Summary!~'}%>">
 
 <br>Created between
@@ -50,7 +63,7 @@ Which are referred to by <input type=text size=50 name="ReferredToBy" value="<%$
     Name => $matches,
     Values => $ARGS{$matches} &>
     </td>
-    <td>and doesn't match</td>
+    <td>and not</td>
     <td valign="top">
 <& /RTFM/Article/Elements/SearchByCustomField, 
     Field => $field, 

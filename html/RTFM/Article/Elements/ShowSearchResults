@@ -1,10 +1,54 @@
-<ul>
+% if ($articles->Count){
+
+<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
+<TR>
+<TH ALIGN="left">id</TH ALIGN="left">
+<TH ALIGN="left">Name</TH ALIGN="left">
+<TH ALIGN="left">Class</TH ALIGN="left">
+<TH ALIGN="left">Created</TH ALIGN="left">
+<TH ALIGN="left">Modified</TH ALIGN="left">
+</TR>
+<TR>
+<TH ALIGN="left" class="tickeTH ALIGN="left"eader">&nbsp;</TH ALIGN="left">
+</TR>
+
+
 % while (my $article = $articles->Next) {
-<li><a href="Display.html?id=<%$article->Id%>">#<%$article->id%>: <%$article->Name%></a>
-<br><font size="-1"><%$article->Summary%></font>
-</li>
+%$i++;
+<SPAN class="search">
+<TR
+% if ($i%2) {
+CLASS="oddline"
+% } else {
+CLASS="evenline"
 % }
-</ul>
+>
+<TD ROWSPAN="2">
+<B>
+<a href="Display.html?id=<%$article->Id%>">#<%$article->id%></a>
+</B></TD>
+<TD><B>
+<a href="Display.html?id=<%$article->Id%>"><%$article->Name%></a>
+</B></TD>
+<TD><%$article->ClassObj->Name%></TD>
+<TD><SMALL><%$article->CreatedObj->AgeAsString || '-'%></SMALL></TD>
+<TD><SMALL><%$article->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
+</TR>
+<TR
+% if ($i%2) {
+CLASS="oddline"
+% } else {
+CLASS="evenline"
+% }
+><TD COLSPAN="4"><small><%$article->Summary%></small></TD>
+</TR>
+</SPAN>
+% }
+</table>
+% }
+<%init>
+my $i;
+</%init>
 <%args>
 $articles => undef
 </%args>
