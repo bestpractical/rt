@@ -24,7 +24,7 @@ sub new  {
 
 sub IsInbound {
   my $self=shift;
-  return ($self->IsRequestor($self->Owner));
+  return ($self->Ticket->IsRequestor($self->Owner));
 }
 
 #This is "Create Transaction"

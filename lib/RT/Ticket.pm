@@ -212,6 +212,7 @@ sub WatcherClassAsString {
 	  if ($watcher->Type =~ /\b$class\b/)
     }
   }
+  $self->{'WatchersAsString'}=join(",",@w);
   return ( $self->{'WatchersAsString'});
   
 }
