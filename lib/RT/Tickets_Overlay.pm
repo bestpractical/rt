@@ -1947,7 +1947,7 @@ sub LimitReferredToBy {
     my $ticket_id = shift;
     $self->LimitLinkedFrom(
         BASE => "$ticket_id",
-        TYPE => 'ReferredTo',
+        TYPE => 'ReferredToBy',
     );
 
 }
