@@ -1,5 +1,5 @@
-<& /Admin/Elements/Header, Title => 'Modify user' &>
-    <h1>Modify a user</h1>
+<& /Admin/Elements/Header, Title => 'Modify user '. $UserObj->UserId &>
+<& /Admin/Elements/Tabs &>
 
 
 %foreach $result (@results) {
@@ -12,55 +12,92 @@
 <FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
 
-UserId: <input name="UserId" value="<%$UserObj->UserId%>">
-<BR>
-New Password: <input type=password name="Pass1"><BR>
-Retype Password: <input type=password name="Pass2"><BR>
 
-Comments: <TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL>
-<%$UserObj->Comments%>
-</TEXTAREA>
+<TABLE WIDTH=100% BORDER=0>
+<TR>
 
+<TD VALIGN=TOP ROWSPAN=2>
+<& /Elements/TitleBoxStart, title => 'Identity' &>
+RT UserId: <input name="UserId" value="<%$UserObj->UserId%>">
+
+Name: <input name="RealName" value="<%$UserObj->RealName%>">
 <BR>
-Signature: <TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD>
-<%$UserObj->Signature%>
-</TEXTAREA>
-<BR>
-EmailAddress: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
-<BR>
-FreeformContactInfo: <input name="FreeformContactInfo" value="<%$UserObj->FreeformContactInfo%>">
-<BR>
-Organization: <input name="Organization" value="<%$UserObj->Organization%>">
-<BR>
-RealName: <input name="RealName" value="<%$UserObj->RealName%>">
-<BR>
-NickName: <input name="NickName" value="<%$UserObj->NickName%>">
+Nickname: <input name="NickName" value="<%$UserObj->NickName%>">
 <BR>
 Unix login: <input name="Gecos" value="<%$UserObj->Gecos%>">
 <BR>
-HomePhone: <input name="HomePhone" value="<%$UserObj->HomePhone%>">
-<BR>
-WorkPhone: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>">
-<BR>
-MobilePhone: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>">
-<BR>
-PagerPhone: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>">
+Email Address: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"><BR>
+Extra info: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>
+<& /Elements/TitleBoxEnd &>
+</TD>
+<TD VALIGN=TOP>
+<& /Elements/TitleBoxStart, title => 'Password' &>
+	    New Password: <input type=password name="Pass1">
+<BR>Retype Password: <input type=password name="Pass2"><BR>
+<& /Elements/TitleBoxEnd &>
+</TD>
+<TR>
+
+<TD VALIGN=TOP>
+<& /Elements/TitleBoxStart, title => 'Location' &>
+Organization: <input name="Organization" value="<%$UserObj->Organization%>">
 <BR>
 Address1: <input name="Address1" value="<%$UserObj->Address1%>">
 <BR>
 Address2: <input name="Address2" value="<%$UserObj->Address2%>">
 <BR>
-City: <input name="City" value="<%$UserObj->City%>">
-<BR>
-State: <input name="State" value="<%$UserObj->State%>">
-<BR>
-Zip: <input name="Zip" value="<%$UserObj->Zip%>">
+City: <input name="City" value="<%$UserObj->City%>" size=14>
+
+State: <input name="State" value="<%$UserObj->State%>" size=3>
+
+Zip: <input name="Zip" value="<%$UserObj->Zip%>" size=9>
 <BR>
 Country: <input name="Country" value="<%$UserObj->Country%>">
 <BR>
+
+
+<& /Elements/TitleBoxEnd &>
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=2 VALIGN=TOP>
+
+
+<& /Elements/TitleBoxStart, title => 'Phone numbers' &>
+Home: <input name="HomePhone" value="<%$UserObj->HomePhone%>" size=13>
+
+Work: <input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size=13>
+
+Mobile: <input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size=13>
+
+Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
+<& /Elements/TitleBoxEnd &>
+<BR>
+<& /Elements/TitleBoxStart, title => 'Comments about this user' &>
+<TEXTAREA name="Comments" COLS=80 ROWS=5 WRAP=VIRTUAL>
+<%$UserObj->Comments%>
+</TEXTAREA>
+<& /Elements/TitleBoxEnd &>
+
+
+%if ($UserObj->Privileged) {
+<BR>
+<& /Elements/TitleBoxStart, title => 'Signature' &>
+<TEXTAREA COLS=80 ROWS=5 name="Signature" WRAP=HARD>
+<%$UserObj->Signature%>
+</TEXTAREA>
+<& /Elements/TitleBoxEnd &>
+% }
+
+</TD>
+
+</TR>
+</TABLE>
+
+<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </form>
-<& /Elements/TitleBoxEnd &>
+
 
 <%INIT>
 use RT::Interface::Web;

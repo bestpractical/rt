@@ -1,0 +1,25 @@
+<& /Admin/Elements/Header, Title => 'Edit templates for '.$Queue->QueueId &>
+<& /Admin/Elements/QueueTabs &>
+
+<& /Elements/TitleBoxStart, title => 'Edit templates for '.$Queue->QueueId &>
+<UL>
+<LI><A href="CreateTemplate.html">Create a new template (needs code)</A><BR><BR>
+
+
+%while  (my $TemplateObj = $Templates->Next) { 
+
+<LI><A HREF="Template.html?id=<%$id%>&template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<%$TemplateObj->Alias%>: <%$TemplateObj->Title%></a><BR>
+
+%}
+
+<& /Elements/TitleBoxEnd &>
+<%INIT>
+
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load($id);
+my $Templates = $Queue->Templates;
+
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

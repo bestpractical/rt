@@ -1,0 +1,21 @@
+<& /Admin/Elements/Tabs, subtabs => $subtabs &>
+<hr>
+<%INIT>
+  my $subtabs = {
+	
+	       Scrips => { title => 'Scrips',
+			   path => 'Admin/Global/Scrips.html',
+			 },
+
+	       ACL => { title => 'ACL',
+			path => 'Admin/Global/ACL.html',
+		      }
+		 
+
+};
+</%INIT>
+
+  
+<%ARGS>
+$id => undef
+</%ARGS>

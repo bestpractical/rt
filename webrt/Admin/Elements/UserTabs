@@ -1,0 +1,26 @@
+<& /Admin/Elements/Tabs, subtabs => $subtabs &>
+<hr>
+<%INIT>
+my $subtabs = { A => { title => 'Create',
+                        path => 'Admin/Users/Create.html',
+                      },
+             Groups => { title => 'Search',
+                         path => 'Admin/Users/Search.html',
+                       },
+             Queues => { title => 'Queues',
+                         path => 'Admin/Queues/',
+                       },
+             Scrips => { title => 'Scrips',
+                         path => 'Admin/Scrips/',
+                       },
+             Templates => { title => 'Templates',
+                         path => 'Admin/Templates/',
+                       },
+             ACL => { title => 'ACL',
+                         path => 'Admin/ACL/',
+                       }
+
+           };
+</%INIT>
+
+

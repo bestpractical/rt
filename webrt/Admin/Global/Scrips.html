@@ -1,0 +1,93 @@
+<& /Admin/Elements/Header, Title => 'Edit scrips' &>
+<& /Admin/Elements/SystemTabs &>
+
+<& /Elements/ListActions, actions => \@actions &>
+
+<& /Elements/TitleBoxStart, title => "Modify global scrips" &>
+  
+  <FORM METHOD=POST>
+    <INPUT TYPE=HIDDEN NAME=Queue VALUE=<%$Queue%>>
+
+% if ($Scrips->Count > 0 ) {
+<TABLE>
+<TR>
+<TD>Delete
+</TD>
+<TD>
+</TR>
+
+%   while (my $scrip = $Scrips->Next ) {
+<TR>
+<TD>
+<INPUT TYPE="CHECKBOX" NAME="DeleteScrip-<%$scrip->Id%>">
+</TD>
+<TD>
+<% $scrip->ConditionObj->Name %> 
+<% $scrip->ActionObj->Name %> 
+<% $scrip->TemplateObj->Alias %>
+</TD>
+</TR>
+%   }
+
+</TABLE>
+
+% }
+Add a scrip which will apply to all queues:
+<ul>
+<li>Condition: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
+	  Action: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
+	  Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', DefaultQueue => $Queue &>
+
+</ul>
+
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit &>
+</FORM>
+<%init>
+my (@actions, $description);
+
+my $Scrips = new RT::Scrips ($session{'CurrentUser'});
+$Scrips->LimitToGlobal();
+
+
+
+
+if ($NewScripAction and $NewScripCondition) {
+    my $NewScrip = new RT::Scrip($session{'CurrentUser'});
+    
+    my $retval = $NewScrip->Create ( ScripAction => $NewScripAction,
+				     ScripCondition => $NewScripCondition,
+				     Stage => 'TransactionCreate',
+				     Queue => $Queue,
+				     Template => $NewScripTemplate);
+    if (defined $retval) {
+        push @actions, "Scrip added.";
+    }
+    else {
+        push @actions, "Scrip could not be added";
+    }
+}
+
+# {{{ deal with modifying and deleting existing scrips
+my ($key );
+foreach $key (keys %ARGS) {
+	# {{{ if we're trying to delete the scrip
+    if ($key =~ /^DeleteScrip-(\d+)/) {
+            my $id = $1;
+	        my $scrip = new RT::Scrip($session{'CurrentUser'});
+	        $scrip->Load($id);
+            $scrip->Delete;
+	}
+	# }}}
+
+    
+}
+# }}}
+</%init>
+
+<%ARGS>
+$NewScripCondition => undef
+$NewScripAction => undef
+$NewScripTemplate => undef
+$Queue => undef         #some identifier that a Queue could 
+</%ARGS>

@@ -1,17 +1,22 @@
-
 <& /Admin/Elements/Header, Title => 'RT Admin/Queues' &>
+<& /Admin/Elements/Tabs &>
+<& /Elements/TitleBoxStart, title => 'Select a queue' &>
+<UL>
+<LI><A HREF="<% $RT::WebPath %>/Admin/Queues/Modify.html?Create=1">Create new a queue.</A>
 
-<TABLE WIDTH=100%>
-<TR>
-<TD VALIGN=TOP>
-<h1>Create</h1>
-<FORM METHOD=get ACTION="<% $RT::WebPath %>/Admin/Queues/Create.html">
-Create a queue called <INPUT NAME="QueueId" size=10><input type=submit>
-</form>
-</TD>
-<TD VALIGN=TOP>
-<h1>Modify</h1>
-<& /Admin/Elements/SelectModifyQueue &>
-</TD>
-</TR>
-</TABLE>
+%while ( $queue = $queues->Next) {
+<LI><A HREF="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->QueueId%></a><BR>
+%}
+
+</UL>
+
+<& /Elements/TitleBoxEnd &>
+
+<%INIT>
+my ($queue);
+my $queues = new RT::Queues($session{'CurrentUser'});
+$queues->UnLimit;
+</%INIT>
+<%ARGS>
+</%ARGS>
+

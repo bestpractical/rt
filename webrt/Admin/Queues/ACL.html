@@ -1,12 +1,13 @@
   <& /Admin/Elements/Header, Title => 'Modify ACLS for queue '. $QueueObj->QueueId &>
-  
+<& /Admin/Elements/QueueTabs, id => $id &>  
 <& /Elements/ListActions, actions => \@results &>
+
   <FORM METHOD=POST>
     <INPUT TYPE=HIDDEN NAME=id VALUE="<% $QueueObj->id %>">
       
 
 
-<h2>Modify ACLS for queue <a href="../Queues/Modify.html?id=1"><%$QueueObj->QueueId%></a></h2>
+<& /Elements/TitleBoxStart, title => 'Modify ACLS for queue '.$QueueObj->QueueId &>
       <TABLE>
 	<TR>
 	  <TD>
@@ -17,7 +18,7 @@
 	  </TD>
 	</TR>
 	<TR>
-	  <TD>
+	  <TD VALIGN=TOP>
     <TABLE>
         
 
@@ -38,7 +39,7 @@
 % }
 	    </TABLE>
 	  </TD>
-	  <TD>
+	  <TD VALIGN=LEFT>
 	    <TABLE>
 % while ($GroupObj = $Groups->Next()) {
 	      
@@ -64,6 +65,7 @@ remove rights that were granted previously.
 	</P>
       
       <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
+      <& /Elements/TitleBoxEnd &>
   </FORM>
   
   <%INIT>

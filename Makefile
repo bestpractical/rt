@@ -279,6 +279,7 @@ config-replace:
 	s'!!MASON_HTML_PATH!!'$(MASON_HTML_PATH)'g;\
 	s'!!MASON_DATA_PATH!!'$(MASON_DATA_PATH)'g;\
 	s'!!RT_LOG_PATH!!'$(RT_LOG_PATH)'g;\
+	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
 	" $(RT_CONFIG)
 
 

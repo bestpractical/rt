@@ -1,13 +1,13 @@
 <& /Admin/Elements/Header, Title => 'Edit scrips' &>
-
+<& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
 
 <& /Elements/ListActions, actions => \@actions &>
 
-<h1><%$description%></h1>
+<& /Elements/TitleBoxStart, title => $description &>
   
   <FORM METHOD=POST>
-    <INPUT TYPE=HIDDEN NAME=Queue VALUE=<%$Queue%>>
-
+    <INPUT TYPE=HIDDEN NAME=id VALUE=<%$id%>>
+% if ($Scrips->Count > 0 ) {
 <TABLE>
 <TR>
 <TD>Delete
@@ -27,31 +27,32 @@
 </TR>
 % }
 </TABLE>
-
+% }
 
 Add a scrip to this queue:
 <ul>
 <li>Condition: <& /Admin/Elements/SelectScripCondition, Name => 'NewScripCondition' &>
 	  Action: <& /Admin/Elements/SelectScripAction, Name => 'NewScripAction' &>
-	  Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', DefaultQueue => $Queue &>
+	  Template: <& /Admin/Elements/SelectTemplate, Name => 'NewScripTemplate', DefaultQueue => $id &>
 
 </ul>
+<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </FORM>
 <%init>
 my (@actions, $description);
 
 my $Scrips = new RT::Scrips ($session{'CurrentUser'});
-unless ($Queue =~ /^\d+$/) {
-    Abort("$Queue isn't a valid Queue id.");
+unless ($id =~ /^\d+$/) {
+    Abort("$id isn't a valid Queue id.");
 }
 
-unless ($Scrips->LimitToQueue($Queue)) {
+unless ($Scrips->LimitToQueue($id)) {
     Abort("Couldn't load Scrips.");
         }
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue);
+$QueueObj->Load($id);
 
 if ($QueueObj->id) {
     $description = "Modify scrips for queue '". $QueueObj->QueueId ."'";
@@ -67,7 +68,7 @@ if ($NewScripAction and $NewScripCondition) {
     my $retval = $NewScrip->Create ( ScripAction => $NewScripAction,
 				     ScripCondition => $NewScripCondition,
 				     Stage => 'TransactionCreate',
-				     Queue => $Queue,
+				     Queue => $id,
 				     Template => $NewScripTemplate);
     if (defined $retval) {
         push @actions, "Scrip added to queue";
@@ -98,5 +99,5 @@ foreach $key (keys %ARGS) {
 $NewScripCondition => undef
 $NewScripAction => undef
 $NewScripTemplate => undef
-$Queue => undef         #some identifier that a Queue could 
+$id => undef         #some identifier that a Queue could 
 </%ARGS>

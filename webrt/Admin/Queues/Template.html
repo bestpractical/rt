@@ -1,0 +1,51 @@
+<& /Admin/Elements/Header, title => "Modify template ".$TemplateObj->id&>
+<& /Admin/Elements/QueueTabs, id => $id &>
+<& /Elements/ListActions, actions => @results &>
+
+<& /Elements/TitleBoxStart, title => "Modify Template ".$TemplateObj->id &>
+
+<FORM METHOD=POST ACTION="Modify.html">
+<INPUT TYPE=HIDDEN name="id" value="<%$TemplateObj->id%>">
+Name: <input name="Alias" VALUE="<%$TemplateObj->Alias%>" SIZE=20><BR>
+Title: <input name="Title" VALUE="<%$TemplateObj->Title%>" SIZE=80><BR>
+
+<TEXTAREA NAME=Content ROWS=25 COLS=80 WRAP=SOFT>
+<%$TemplateObj->Content%>
+</TEXTAREA>
+
+<& /Elements/TitleBoxEnd&>
+<&/Elements/Submit&>
+</FORM>
+
+
+
+<%INIT>
+
+my $TemplateObj = new RT::Template($session{'CurrentUser'});
+$TemplateObj->Load($template) || Abort('No template specified');
+
+# Deal with updating individual fields where we're doing something to watch
+# what goes in and out
+    
+my @fields = qw( Title Content Queue Alias);
+
+#Run through each field in this list. update the value if apropriate
+my ($field);
+my @results = ('');
+foreach $field (@fields) {
+    my ($code, $msg);
+    my $check = "if ((defined \$ARGS{'$field'}) and (\$ARGS{'$field'} ne \$TemplateObj->$field))
+    {   \$ARGS{'$field'} =~ s/\\r\\n/\\n/g;     
+        (\$code, \$msg) = \$TemplateObj->Set$field(\$ARGS{'$field'});
+
+    push \@results, \$msg;  }";
+    $RT::Logger->debug("$check");
+    eval $check || push @results, $@;
+    
+}
+
+</%INIT>
+<%ARGS>
+$id => undef
+$template => undef
+</%ARGS>

@@ -1,0 +1,23 @@
+<& /Admin/Elements/Tabs, subtabs => $subtabs &>
+<hr>
+<%INIT>
+  my $subtabs = {
+		 A => { title => 'Basics',
+			     path => "Admin/Queues/Modify.html?id=".$id,
+			   },
+		 B => { title => 'ACL',
+			  path => "Admin/Queues/ACL.html?id=".$id,
+			},
+		 C => { title => 'Scrips',
+			     path => "Admin/Queues/Scrips.html?id=".$id,
+			   },
+		 D => { title => 'Templates',
+				path => "Admin/Queues/Templates.html?id=".$id,
+			      }
+};
+</%INIT>
+
+  
+<%ARGS>
+$id => undef
+</%ARGS>

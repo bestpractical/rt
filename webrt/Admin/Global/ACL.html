@@ -1,12 +1,12 @@
-  <& /Admin/Elements/Header, Title => 'Modify System ACLS' &>
-
+<& /Admin/Elements/Header, Title => 'Modify System ACLS' &>
+<& /Admin/Elements/SystemTabs &>
   
 <& /Elements/ListActions, actions => \@results &>
   <FORM METHOD=POST>
       
 
 
-<h2>Modify ACLS for system</h2>
+<h2>Modify global ACLs</h2>
       <TABLE>
 	<TR>
 	  <TD>
@@ -17,7 +17,7 @@
 	  </TD>
 	</TR>
 	<TR>
-	  <TD>
+	  <TD VALIGN=TOP>
     <TABLE>
         
 
@@ -38,7 +38,7 @@
 % }
 	    </TABLE>
 	  </TD>
-	  <TD>
+	  <TD VALIGN=TOP>
 	    <TABLE>
 % while (my $GroupObj = $Groups->Next()) {
 	      

@@ -1,26 +1,24 @@
-<& /Elements/Tabs, tabs => $tabs &>
+<& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs &>
 <hr>
+  
 <%INIT>
-my $tabs = { Users => { title => 'Users',
-                        path => 'Admin/Users/',
-                      },
-             Groups => { title => 'Groups',
-                         path => 'Admin/Groups/',
-                       },
-             Queues => { title => 'Queues',
-                         path => 'Admin/Queues/',
-                       },
-             Scrips => { title => 'Scrips',
-                         path => 'Admin/Scrips/',
-                       },
-             Templates => { title => 'Templates',
-                         path => 'Admin/Templates/',
-                       },
-             ACL => { title => 'ACL',
-                         path => 'Admin/ACL/',
-                       }
-
-           };
+  my $tabs = { Users => { title => 'Users',
+			  path => 'Admin/Users/',
+			},
+	       Groups => { title => 'Groups',
+			   path => 'Admin/Groups/',
+			 },
+	       Queues => { title => 'Queues',
+			   path => 'Admin/Queues/',
+			 },
+	       System => { 'title' => 'Global',
+			   path => 'Admin/Global/',
+			 }
+	       
+	     };
 </%INIT>
 
 
+<%ARGS>
+$subtabs => undef
+</%ARGS>

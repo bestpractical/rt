@@ -1,6 +1,5 @@
-<& /Admin/Elements/Header, Title => 'Modify a queue' &>
-    <h1>Modify a queue</h1>
-
+<& /Admin/Elements/Header, title => 'Modify a queue' &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->id &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -47,15 +46,25 @@ Requests should be due in:
 </TD>
 </TR>
 </TABLE>
+<& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 </form>
-<& /Elements/TitleBoxEnd &>
+
+
 
 <%INIT>
 use RT::Interface::Web;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($id) || $QueueObj->Load($QueueId) || Abort('/Elements/Error', Why => "Couldn't load queue '$QueueId'");
 
+
+if ($Create) {
+
+    $QueueObj->Create();
+}
+
+else {
+$QueueObj->Load($id) || $QueueObj->Load($QueueId) || Abort('/Elements/Error', Why => "Couldn't load queue '$QueueId'");
+}
 
 my @fields = qw(Description CorrespondAddress CommentAddress QueueId 
                 InitialPriority FinalPriority DefaultDueIn);
@@ -82,10 +91,10 @@ $id => undef
 $result => undef
 @results => undef
 $QueueId => undef
+$Create => undef
 $Description => undef
 $CorrespondAddress => undef
 $CommentAddress => undef
-
 $InitialPriority => undef
 $FinalPriority => undef
 $DefaultDueIn => undef

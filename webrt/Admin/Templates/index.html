@@ -1,12 +1,11 @@
 <& /Admin/Elements/Header, Title => 'Templates '&>
 
-<H1>Create a template</H1>
-<FORM METHOD=POST ACTION="Create.html">
-<INPUT TYPE=SUBMIT VALUE="Create"> <B>TODO</B>
-</FORM>
-<H1>Select a template to modify</H1>
+<UL>
+<LI><A href="Create.html">Create a new template</A>
+
 
 %while (my $Queue = $Queues->Next) {
+
 <h2><%$Queue->QueueId%></h2>
 <i><%$Queue->Description%></i><br>
 
