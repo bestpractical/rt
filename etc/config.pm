@@ -310,11 +310,11 @@ $WebURL = $WebBaseURL . $WebPath . "/";
 # you should make RT's WebRT/html/NoAuth/images directory available on 
 # a static web server and supply that URL as $WebImagesURL.
 
-$WebImagesURL = $WebURL."/NoAuth/images/";
+$WebImagesURL = $WebURL."NoAuth/images/";
 
 # $RTLogoURL points to the URL of the RT logo displayed in the web UI
 
-$LogoURL = $WebImagesURL."/rt.jpg";
+$LogoURL = $WebImagesURL."rt.jpg";
 
 # If $WebExternalAuth is defined, RT will defer to the environment's
 # REMOTE_USER variable.
