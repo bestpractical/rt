@@ -643,7 +643,6 @@ sub LimitDate {
 	$args{'DESCRIPTION'} = $args{'FIELD'} . " " .$args{'OPERATOR'}. " ". $args{'VALUE'} . " GMT"
     }
 
-    print "Limiting ". join(';', %args) ."\n";
     $self->Limit (%args);
 
 }

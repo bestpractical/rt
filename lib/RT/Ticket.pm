@@ -354,12 +354,54 @@ If the watcher you\'re trying to set has an RT account, set the Owner paremeter 
 
 sub AddWatcher {
     my $self = shift;
-    
-    unless ($self->CurrentUserHasRight('ModifyTicket')) {
-	return (0, "Permission Denied");
+    my %args = ( Email => undef,
+		 Type => undef,
+		 Owner => undef,
+		 @_
+	       );
+
+    # {{{ Check ACLS
+    #If the watcher we're trying to add is for the current user
+    if (($args{'Email'} eq $self->CurrentUser->EmailAddress) or
+	($args{'Owner'} eq $self->CurrentUser->Id)) {
+	
+	#  If it's an AdminCc and they don't have 
+	#   'WatchAsAdminCc' or 'ModifyTicket', bail
+	if ($args{'Type'} eq 'AdminCc') {
+	    unless ($self->CurrentUserHasRight('ModifyTicket') or 
+		    $self->CurrentUserHasRight('WatchAsAdminCc')) {
+		return(0, 'Permission denied');
+	    }
+	}
+
+	#  If it's a Requestor or Cc and they don't have
+	#   'Watch' or 'ModifyTicket', bail
+	elsif (($args{'Type'} eq 'Cc') or 
+	       ($args{'Type'} eq 'Requestor')) {
+		   
+	    unless ($self->CurrentUserHasRight('ModifyTicket') or 
+		    $self->CurrentUserHasRight('Watch')) {
+		return(0, 'Permission denied');
+	    }
+	}
+	else {
+	    $RT::Logger->warn("$self -> AddWatcher hit code".
+			      " it never should. We got passed ".
+			      " a type of ". $args{'Type'});
+	    return (0,'Error in parameters to TicketAddWatcher');
+	}
     }
-    
-    return ($self->_AddWatcher(@_));
+    # If the watcher isn't the current user 
+    # and the current user  doesn't have 'ModifyTicket'
+    # bail
+    else {
+	unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	    return (0, "Permission Denied");
+	}
+    }
+    # }}}
+
+    return ($self->_AddWatcher(%args));
 }
 
 
@@ -375,7 +417,6 @@ sub _AddWatcher {
 		Person => undef,
 		@_ );
     
-    $RT::Logger->debug("Now adding a watcher: ");
     
     
     #clear the watchers cache
@@ -469,11 +510,13 @@ sub AddAdminCc {
 
 # {{{ sub DeleteWatcher
 
-=head2 DeleteWatcher
+=head2 DeleteWatcher id [type]
 
 DeleteWatcher takes a single argument which is either an email address 
-or a watcher id.  It removes that watcher
-from this Ticket\'s list of watchers.
+or a watcher id.  
+If the first argument is an email address, you need to specify the watcher type you're talking
+about as the second argument. Valid values are 'Requestor', 'Cc' or 'AdminCc'.
+It removes that watcher from this Ticket\'s list of watchers.
 
 
 =cut
@@ -482,54 +525,152 @@ from this Ticket\'s list of watchers.
 sub DeleteWatcher {
     my $self = shift;
     my $id = shift;
+
+    my $type;
     
-    my ($Watcher);
+    $type = shift if (@_);
     
-    #Check ACLs 
-    unless ($self->CurrentUserHasRight('ModifyTicket')) {
-        return (0, "Permission Denied");
+    my $Watcher = new RT::Watcher($self->CurrentUser);
+    
+    #If it\'s a numeric watcherid
+    if ($id =~ /^(\d*)$/) {
+	$Watcher->Load($id);
     }
     
+    #Otherwise, we'll assume it's an email address
+    elsif ($type) {
+	my ($result, $msg) = 
+	  $Watcher->LoadByValue( Email => $id,
+				 Scope => 'Ticket',
+				 Value => $self->id,
+				 Type => $type);
+	return (0,$msg) unless ($result);
+    }
+    
+    else {
+	return(0,"Can\'t delete a watcher by email address without specifying a type");
+    }
+    
+    # {{{ Check ACLS 
+
+    #If the watcher we're trying to delete is for the current user
+    if ($Watcher->Email eq $self->CurrentUser->EmailAddress) {
+		
+	#  If it's an AdminCc and they don't have 
+	#   'WatchAsAdminCc' or 'ModifyTicket', bail
+	if ($Watcher->Type eq 'AdminCc') {
+	    unless ($self->CurrentUserHasRight('ModifyTicket') or 
+		    $self->CurrentUserHasRight('WatchAsAdminCc')) {
+		return(0, 'Permission denied');
+	    }
+	}
+
+	#  If it's a Requestor or Cc and they don't have
+	#   'Watch' or 'ModifyTicket', bail
+	elsif (($Watcher->Type eq 'Cc') or 
+	       ($Watcher->Type eq 'Requestor')) {
+		   
+	    unless ($self->CurrentUserHasRight('ModifyTicket') or 
+		    $self->CurrentUserHasRight('Watch')) {
+		return(0, 'Permission denied');
+	    }
+	}
+	else {
+	    $RT::Logger->warn("$self -> DeleteWatcher hit code".
+			      " it never should. We got passed ".
+			      " a type of ". $args{'Type'});
+	    return (0,'Error in parameters to $self DeleteWatcher');
+	}
+    }
+    # If the watcher isn't the current user 
+    # and the current user  doesn't have 'ModifyTicket'
+    # bail
+    else {
+	unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	    return (0, "Permission Denied");
+	}
+    }	
+    
+    # }}}
+    
+    unless (($Watcher->Scope eq 'Ticket') and
+	    ($Watcher->Value == $self->id) ) {
+	return (0, "Not a watcher for this ticket");
+    }
+
+
     #Clear out the watchers hash.
     $self->{'watchers'} = undef;
     
-    #If it's a numeric watcherid
-    if ($id =~ /^(\d*)$/) { 
-	$Watcher = new RT::Watcher($self->CurrentUser);
-	$Watcher->Load($id);
-	if (($Watcher->Scope  ne 'Ticket') or
-	    ($Watcher->Value != $self->id) ) {
-	    return (0, "Not a watcher for this ticket");
-	}
-	#If we've validated that it is a watcher for this ticket 
-	else {
-	    $self->_NewTransaction ( Type => 'DelWatcher',        
-				     OldValue => $Watcher->Email,
-				     Field => $Watcher->Type,
-				     
-				   );
-	    $Watcher->Delete();
-	}
-	return(1, "Watcher deleted");
+    #If we\'ve validated that it is a watcher for this ticket 
+    $self->_NewTransaction ( Type => 'DelWatcher',        
+			     OldValue => $Watcher->Email,
+			     Field => $Watcher->Type,
+			   );
+    
+    my $retval = $Watcher->Delete();
+    
+    unless ($retval) {
+	return(0,"Watcher could not be deleted. Database inconsistency possible.");
     }
-    #Otherwise, we'll assume it's an email address
-    else {
-	#Iterate throug all the watchers looking for this email address
-	#it may be faster to speed this up with a custom query
-	my $watchers = $self->Watchers();
-	while ($Watcher = $watchers->Next) {
-	    if ($Watcher->Email =~ /^$id$/) {
-		$self->_NewTransaction ( Type => 'DelWatcher',
-					 OldValue => $Watcher->Email,
-					 Field => $Watcher->Type,
-				       );
-		$Watcher->Delete();
-		
-	    }
-	}
-	return(1,'Watcher deleted');
-    }
+    
+    return(1, "Watcher deleted");
 }
+
+# {{{ sub DeleteRequestor
+
+=head2 DeleteRequestor EMAIL
+
+Takes an email address. It calls DeleteWatcher with a preset 
+type of 'Requestor'
+
+
+=cut
+
+sub DeleteRequestor {
+   my $self = shift;
+   my $id = shift;
+   return ($self->DeleteWatcher ($id, 'Requestor'))
+}
+
+# }}}
+
+# {{{ sub DeleteCc
+
+=head2 DeleteCc EMAIL
+
+Takes an email address. It calls DeleteWatcher with a preset 
+type of 'Cc'
+
+
+=cut
+
+sub DeleteCc {
+   my $self = shift;
+   my $id = shift;
+   return ($self->DeleteWatcher ($id, 'Cc'))
+}
+
+# }}}
+
+# {{{ sub DeleteAdminCc
+
+=head2 DeleteAdminCc EMAIL
+
+Takes an email address. It calls DeleteWatcher with a preset 
+type of 'AdminCc'
+
+
+=cut
+
+sub DeleteAdminCc {
+   my $self = shift;
+   my $id = shift;
+   return ($self->DeleteWatcher ($id, 'AdminCc'))
+}
+
+# }}}
+
 
 # }}}
 

@@ -350,7 +350,6 @@ sub SetSubject {
     $subject =~ s/(\r\n|\n|\s)/ /gi;
 
     chomp $subject;
-    print STDERR "Subject is '$subject'\n";
     $self->SetHeader('Subject',$subject);
     
     }

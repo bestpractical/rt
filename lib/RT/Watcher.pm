@@ -37,6 +37,20 @@ sub _Init {
 # }}}
 
 # {{{ sub Create 
+
+=head2 Create PARAMHASH
+
+Create a new watcher object with the following Attributes:
+
+Scope:  Ticket or Queue
+Value: Ticket or queue id
+Type: Requestor, Cc or AdminCc.  Requestor is not supported for a scope of 'Queue'
+Email: The email address of the watcher.  If the email address maps to an RT User, this is resolved
+to an Owner object instead.
+Owner: The RT user id of the 'owner' of this watcher object. 
+
+=cut
+
 sub Create  {
     my $self = shift;
     my %args = (
@@ -68,15 +82,12 @@ sub Create  {
 
    #Make sure we've got a valid type
    #TODO --- move this to ValidateType 
-   unless ($args{'Type'} =~ /^Requestor$/i ||
-          $args{'Type'} =~ /^AdminCc$/i ||
-          $args{'Type'} =~ /^Cc$/i) {
-   	return (0, "Invalid Type");
-    }
+    return (0, "Invalid Type")
+      unless ($args{'Type'} =~ /^(Requestor|Cc|AdminCc)$/i);
 
     my $id = $self->SUPER::Create(%args);
     if ($id) {
-      return (1,"Interest noted");
+	return (1,"Interest noted");
     }
     else {
 	return (0, "Error adding watcher");
@@ -86,6 +97,12 @@ sub Create  {
 # }}}
 
 # {{{ sub Load 
+=head2 Load ID
+
+Loads a watcher by the primary key of the watchers table ($Watcher->id)
+
+=cut
+
 sub Load  {
   my $self = shift;
   my $identifier = shift;
@@ -97,6 +114,65 @@ sub Load  {
 	return (0, "That's not a numerical id");
   }
 }
+# }}}
+
+# {{{ sub LoadByValue
+
+=head2 LoadByValue PARAMHASH
+
+LoadByValue takes a parameter hash with the following attributes:
+
+  Email, Owner, Scope, Type, Value
+
+The same rules enforced at create are enforced by Load.
+
+Returns a tuple of (retval, msg). Retval is 1 on success and 0 on failure.
+msg describes what happened in a human readable form.
+
+=cut
+
+sub LoadByValue {
+    my $self = shift;
+    my %args = ( Email => undef, 
+		 Owner => undef,
+		 Scope => undef,
+		 Type => undef,
+		 Value => undef,
+		 @_);
+    
+    #TODO: all this code is being copied from Create. that's silly
+    
+    #Do we have someone this applies to?
+    unless (($args{'Owner'} =~ /^(\d*)$/)|| ($args{'Email'} =~ /\@/)) {
+	return (0, "No user or email addres specified");
+      }
+    
+    #if we only have an email address, try to resolve it to an owner
+    if ($args{'Owner'} == 0) {
+        my $User = new RT::User($RT::SystemUser);
+        $User->LoadByEmail($args{'Email'});
+        if ($User->id > 0) {
+            $args{'Owner'} = $User->id;
+   	    delete $args{'Email'};
+	}
+    }
+    
+    if (defined ($args{'Type'}) and $args{'Type'} !~ /^(Requestor|Cc|AdminCc)$/i) {
+	return (0, "Invalid Type");
+    }
+    
+    $self->LoadByCols( Type => $args{'Type'},
+		       Value => $args{'Value'},
+		       Email => $args{'Email'},
+		       Owner => $args{'Owner'},
+		       Scope => $args{'Scope'},
+		     );
+    unless ($self->Id) {
+	return(0, "Couldn't find that watcher");
+    }
+    return (1, "Watcher loaded");
+}
+
 # }}}
 
 # {{{ sub OwnerObj 

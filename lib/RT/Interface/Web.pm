@@ -633,6 +633,7 @@ sub ProcessTicketBasics {
 }
 
 # }}}
+
 # {{{ sub ProcessTicketWatchers
 
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
@@ -646,6 +647,7 @@ sub ProcessTicketWatchers {
 		 ARGSRef => undef,
 		 @_
 	       );
+    my (@results);
     
     my $Ticket = $args{'TicketObj'};
     my $ARGSRef = $args{'ARGSRef'};
@@ -672,7 +674,6 @@ sub ProcessTicketWatchers {
     
 
     # }}}
-    my (@results);
 
     return (@results);
 }

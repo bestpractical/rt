@@ -547,7 +547,7 @@ else {
 		my $addr = $2;
 		
 		$Ticket->AddRequestor(Email => $addr) if ($op eq '+');
-		$Ticket->DeleteWatcher( $addr) if ($op eq '-');
+		$Ticket->DeleteRequestor( $addr) if ($op eq '-');
 	    }	
 	}
 	
@@ -557,7 +557,7 @@ else {
 		my $op = $1;
 		my $addr = $2;
 		$Ticket->AddCc(Email => $addr) if ($op eq '+');
-		$Ticket->DeleteWatcher($addr) if ($op eq '-');
+		$Ticket->DeleteCc($addr) if ($op eq '-');
 	    }	
 	}	
 	
@@ -568,7 +568,7 @@ else {
 		my $op = $1;
 		my $addr = $2;
 		$Ticket->AddAdminCc(Email => $addr) if ($op eq '+');
-		$Ticket->DeleteWatcher($addr) if ($op eq '-');
+		$Ticket->DeleteAdminCc($addr) if ($op eq '-');
 	    }	
 	}	
 

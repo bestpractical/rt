@@ -47,13 +47,14 @@ use vars qw (%SCOPES
 		
 		ModifyTemplate => 'Modify email templates for this queue',
 		ShowTemplate => 'Display email templates for this queue',
-		
 		ModifyScrips => 'Modify Scrips for this queue',
 		ShowScrips => 'Display Scrips for this queue',
 
 		ShowTicket => 'Show ticket summaries',
 		ShowTicketComments => 'Show ticket private commentary',
 
+		Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',
+		WatchAsAdminCc => 'Sign up as a ticket or queue AdminCc',
 		CreateTicket => 'Create tickets in this queue',
 		ReplyToTicket => 'Reply to tickets',
 		CommentOnTicket => 'Comment on tickets',
@@ -457,9 +458,6 @@ sub PrincipalObj {
 
 # }}}
 
-
-
-
 # {{{ ACL related methods
 
 # {{{ sub _Set
@@ -594,8 +592,6 @@ sub HasRight {
 
 # }}}
 
-
-
 1;
 
 __DATA__
@@ -608,7 +604,7 @@ __DATA__
 
 PrincipalType, PrincipalId, Right,Scope,AppliesTo
 
-=head2 The docs are out of date. so you know.
+=head1 The docs are out of date. so you know.
 
 =head1 Scopes
 
