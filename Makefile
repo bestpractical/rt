@@ -341,7 +341,7 @@ predist: commit
 	cvs co -D now -d /tmp/$(TAG) -r rt-1-1 rt
 	cd /tmp/$(TAG); /usr/local/bin/cvs2cl.pl \
 		--no-wrap --follow rt-1-1 --separate-header \
-		-l "-d'18 months'" --window 120
+		--window 120
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
