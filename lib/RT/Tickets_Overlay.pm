@@ -577,7 +577,7 @@ sub _TransDateLimit {
         FIELD2 => 'ObjectId'
     );
 
-    $sb->Limit(
+    $sb->SUPER::Limit(
         ALIAS => $sb->{_sql_transalias},
         FIELD => 'ObjectType',
         VALUE => 'RT::Ticket'
@@ -667,7 +667,7 @@ sub _TransLimit {
         FIELD2 => 'ObjectId'
     );
 
-    $self->Limit(
+    $self->SUPER::Limit(
         ALIAS           => $self->{_sql_transalias},
         FIELD           => 'ObjectType',
         VALUE           => 'RT::Ticket',
@@ -785,7 +785,7 @@ sub _WatcherLimit {
       $self->NewAlias('Users');
 
 # Use regular joins instead of SQL joins since we don't want the joins inside ticketsql or we get a huge cartesian product
-    $self->Limit(
+    $self->SUPER::Limit(
         ALIAS           => $groups,
         FIELD           => 'Domain',
         VALUE           => 'RT::Ticket-Role',
@@ -1079,6 +1079,7 @@ sub _CustomFieldLimit {
     }
     $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
 
+
 # If we're trying to find custom fields that don't match something, we want tickets
 # where the custom field has no value at all
 
@@ -1120,8 +1121,7 @@ sub _CustomFieldLimit {
             TABLE2 => 'ObjectCustomFieldValues',
             FIELD2 => 'ObjectId'
         );
-
-        $self->Limit(
+        $self->SUPER::Limit(
             LEFTJOIN => $TicketCFs,
             FIELD    => 'ObjectType',
             VALUE    => ref( $self->NewItem )
@@ -1130,7 +1130,7 @@ sub _CustomFieldLimit {
         );
 
         if ($cfid) {
-            $self->Limit(
+            $self->SUPER::Limit(
                 LEFTJOIN        => $TicketCFs,
                 FIELD           => 'CustomField',
                 VALUE           => $cfid,
@@ -1144,7 +1144,7 @@ sub _CustomFieldLimit {
                 TABLE2 => 'CustomFields',
                 FIELD2 => 'id'
             );
-            $self->Limit(
+            $self->SUPER::Limit(
                 LEFTJOIN => $cfalias,
                 FIELD    => 'Name',
                 VALUE    => $field,
@@ -1174,6 +1174,8 @@ sub _CustomFieldLimit {
         );
     }
     $self->_CloseParen if ($null_columns_ok);
+
+
 
 }
 
@@ -2500,7 +2502,7 @@ sub _ProcessRestrictions {
     delete $self->{'rows'};
     delete $self->{'count_all'};
 
-    my $sql = $self->{_sql_query};    # Violating the _SQL namespace
+    my $sql = $self->Query;    # Violating the _SQL namespace
     if ( !$sql || $self->{'RecalcTicketLimits'} ) {
 
         #  "Restrictions to Clauses Branch\n";
