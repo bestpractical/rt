@@ -332,6 +332,14 @@ httpd.conf-replace:
         s'!!HTTPD_IMAGES_PATH!!'$(HTTPD_IMAGES_PATH)'g;\
         s'!!HTTPD_CGI_PREFIX!!'$(HTTPD_CGI_PREFIX)'g; " $(RT_ETC_PATH)/httpd/cern/httpd.conf
 
+
+predist:
+	cvs commit
+	cvs tag -F rt-pre$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
+	rm -rf /tmp/rt-pre$(RT_VERSION)
+	cvs export -D now -d /tmp/rt-pre$(RT_VERSION) rt
+	cd /tmp; tar czvf /home/ftp/pub/rt/devel/rt-pre(RT_VERSION).tar.gz rt-pre$(RT_VERSION)/
+	chmod 644 /home/ftp/pub/rt/devel/rt-pre$(RT_VERSION).tar.gz
 dist:
 	cvs commit
 	cvs tag -F rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
