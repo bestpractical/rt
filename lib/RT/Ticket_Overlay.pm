@@ -1746,6 +1746,8 @@ PrincipalId is an RT::Principal id, and Email is an email address.
 Returns true if the specified principal (or the one corresponding to the
 specified address) is a member of the group Type for this ticket.
 
+XX TODO: This should be Memoized. 
+
 =cut
 
 sub IsWatcher {
