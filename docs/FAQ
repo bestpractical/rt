@@ -1,5 +1,7 @@
 
   FAQ
+
+   RT_MAIL_TAG
   
    what should RT_MAIL_TAG be, and why?
           
@@ -10,9 +12,7 @@
           RT_MAIL_TAG is "circus."
           
    Sends OUT? What about receives? the makefile implies that it's needed
-          on
-          
-          incoming mail, as well.
+          on incoming mail, as well.
           
           every piece of mail that it's supposed to parse correctly and
           add to an existing ticket will need that token as well.
@@ -25,6 +25,21 @@
    If they are going to have 2 seperate queues, one for internal IT and
           one for servers accessed from outside sources, will everyone
           use the same MAIL_TAG?
+
           yes. the same tag and the same ordinal system across both
           queues. (i.e. req's 4, 5, and 6 are in queue Foo. The next
           person to open a req in queue Bar will get given number 7.)
+
+
+   KNOWN ERRORS AND TRAPS
+
+   "Could not send mail"?
+
+	  We use the Mail::Internet send sub for sending mail, with
+	  sendmail as the argument.  Check the Mail::Internet and
+          Mail::Mailer PODs.  If you're a hacker, check the source.
+
+   "You need Mailtools 1.14"?
+
+          Check if you have the most recent version of Mailtools
+          (Mail::Internet, Mail::Mailer, etc), available from CPAN.
