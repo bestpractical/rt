@@ -140,6 +140,7 @@ my %DefaultEA = (
 				   },
                  TRANSFIELD	=> 'AND',
                  TRANSDATE	=> 'AND',
+                 LINK => 'AND',
                  LINKFIELD	=> 'AND',
                  TARGET		=> 'AND',
                  BASE		=> 'AND',
@@ -1950,7 +1951,7 @@ sub _RestrictionsToClauses {
     # defined $restriction->{'TARGET'} ?
     # $restriction->{TARGET} )
 
-    my $ea = $restriction->{ENTRYAGGREGATOR} || $DefaultEA{$type};
+    my $ea = $restriction->{ENTRYAGGREGATOR} || $DefaultEA{$type} || "AND";
     if ( ref $ea ) {
       die "Invalid operator $op for $field ($type)"
 	unless exists $ea->{$op};
