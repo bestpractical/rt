@@ -1,0 +1,26 @@
+<%$AttachmentObj->Content%>
+<%init>
+     my ($ticket, $trans,$attach, $filename);
+     my $arg = $m->dhandler_arg;                # get rest of path
+     if ($arg =~ '^(\d+)/(\d+)/(\d+)/(.*)$') {
+        $ticket = $1;
+        $trans = $2;
+        $attach = $3;
+        $filename = $4;    
+     }
+     else {
+        Abort("The attachment could not be found. Please contact your RT Administrator");
+        }
+     my $AttachmentObj = new RT::Attachment($session{'CurrentUser'});
+     $AttachmentObj->Load($attach) || Abort('Attachment could not be loaded');
+
+     unless ($AttachmentObj->TransactionId() == $trans ) {
+        Abort("Bad transaction number for attachment.");
+     }
+     unless ($AttachmentObj->TransactionObj->Ticket() == $ticket) {
+        Abort("Bad ticket number for attachment. Should be ". $AttachmentObj->TransactionObj->TicketObj());
+     }
+     my $content_type = $AttachmentObj->ContentType || 'text/html';
+     $r->content_type($content_type);
+</%init>
+
