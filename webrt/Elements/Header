@@ -16,5 +16,5 @@ $Title => 'WebRT'
 $BgColor => 'white'
 </%ARGS>
 <%INIT>
-$Title = "WebRT: ".$Title;
+$Title = "WebRT/$RT::rtname: ".$Title;
 </%INIT>

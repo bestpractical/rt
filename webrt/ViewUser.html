@@ -1,4 +1,5 @@
-%# Header and footer set by autohandler
+<& /Elements/Header, Title=>"User view" >
+
 <& /Elements/ViewUser, User=>$u &>
 %if ($session{CurrentUser} && ($session{CurrentUser}->Id == $id)) {
 	<& /Elements/TitleBoxStart, title => 'Signature'  &>

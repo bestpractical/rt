@@ -1,5 +1,4 @@
-%# This one should be in the templates, IMO: 
-<& /Elements/Header &>
+%# Remember to put this in all .html templates: <& /Elements/Header &>
 <% $m->call_next %>
 <& /Elements/Footer &>
 
