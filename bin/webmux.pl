@@ -21,7 +21,19 @@ use lib "!!RT_ETC_PATH!!";
 use config;
 use Carp;
 use DBIx::Handle;
-
+use DBIx::Handle;
+use RT::Ticket;
+use RT::Tickets;
+use RT::Transaction;
+use RT::Transactions;
+use RT::User;
+use RT::Users;
+use RT::CurrentUser;
+use RT::Template;
+use RT::Templates;
+use RT::Queue;
+use RT::Queues;
+use MIME::Entity;
 
 #TODO: need to identify the database user here....
 $RT::Handle = new DBIx::Handle;
