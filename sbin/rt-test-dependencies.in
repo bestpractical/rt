@@ -222,7 +222,7 @@ if ($args{'download'}) {
 
         if ($dir =~ /^(.*)-(.*?)$/) {
             print "$1  --  $2\n";
-            `rsync -a $moddir/$dir/*  $moddir/$1`;
+            `svn_load_dirs.pl file:///Users/jesse/mod-repo $1 $moddir/$dir`;
             `rm -rf $moddir/$dir`;
 
         }
