@@ -538,6 +538,21 @@ sub SetQueue {
 }
 # }}}
 
+# {{{ sub VerboseSubject (not tested)
+sub VerboseSubject {
+    my $self=shift;
+    return $self->Subject || "(Ticket has no subject)";
+}
+# }}}
+
+# {{{ sub HTMLSubject (not tested)
+sub HTMLSubject {
+    require HTML::Entities;
+    my $self=shift;
+    return encode_entities($self->VerboseSubject, '^A-Za-z0-9');
+}
+# }}}
+
 # {{{ sub Queue
 sub Queue {
   my $self = shift;
