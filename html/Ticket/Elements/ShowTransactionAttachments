@@ -1,0 +1,174 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<%perl>
+# Find all the attachments which have parent $Parent
+# For each of these attachments
+foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
+
+    # {{{    show the headers
+    my $headers = $message->Headers;
+    chomp $headers;
+
+    # localize the common headers (like 'Subject:'), too.
+    $headers =~ s/^([^:]+)(?=:)/loc($1)/em;
+    $m->comp(
+        'ShowMessageHeaders',
+        Headers        => $headers,
+        Transaction    => $Transaction,
+        DisplayHeaders => \@DisplayHeaders
+    );
+
+    # }}}
+    # {{{ if there's any size at all, show the download link
+    my $size = $message->ContentLength;
+    if ($size) {
+        
+</%perl> 
+<div class="downloadattachment">
+<%perl>
+
+     #     show a download link
+     if ( $size > 1024 ) {
+         $size = loc( "[_1]k", int( $size / 102.4 ) / 10 );
+     }
+     else {
+        $size = loc( "[_1]b", $size );
+     }
+        
+</%PERL> 
+<A HREF="<%$AttachPath%>/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename | u%>"><&|/l&>Download</&><%$message->Filename || loc('(untitled)') %></a> 
+<div class="downloadcontenttype">
+<%$message->ContentType%> <% $size %> 
+</div> 
+</div>
+%}
+
+% # }}}
+<div class="messagebody">
+<%perl>
+# {{{   if it's got content-disposition inline, show it inline
+    my $content;
+
+    # If it's text
+    if ( $message->ContentType =~ m{^(text|message)}i ) {
+
+        if (
+
+            # it's a toplevel object
+            !$ParentObj
+
+            # or its parent isn't a multipart alternative
+            || ( $ParentObj->ContentType !~ m{^multipart/alternative$}i )
+
+            # or it's of our prefered alterative type
+            || (
+                (
+                    $RT::PreferRichText
+                    && ( $message->ContentType =~ m{^text/(?:html|enriched)$} )
+                )
+                || ( !$RT::PreferRichText
+                    && ( $message->ContentType !~ m{^text/(?:html|enriched)$} )
+                )
+            )
+          )
+        {
+
+            if ( $AttachmentContent->{ $message->id } ) {
+                $content = $AttachmentContent->{ $message->id }->Content;
+            }
+            else {
+                $content = $message->Content;
+            }
+
+            # if it's a text/html clean the body and show it
+            if ( $message->ContentType =~ m{^text/(?:html|enriched)$}i ) {
+                $content =
+                  $m->comp( '/Elements/ScrubHTML', Content => $content );
+                $m->out( $content );
+            }
+
+            # if it's a text/plain show the body
+            elsif ( $message->ContentType =~ m{^(text|message|text)}i ) {
+
+                eval { $content = Text::Quoted::extract($content); };
+                if ($@) { 1; }
+
+                $m->comp(
+                    'ShowMessageStanza',
+                    Depth       => 0,
+                    Message     => $content,
+                    Transaction => $Transaction
+                );
+            }
+        }
+
+    }
+        # if it's an image, show it as an image
+        elsif ( $message->ContentType =~ /^image\//i ) {
+            $m->out('<img src="'
+                  . $AttachPath . '/'
+                  . $Transaction->Id . '/'
+                  . $message->Id
+                  . '/">' );
+        }
+
+
+    # }}}
+
+    $m->comp( 'ShowTransactionAttachments', %ARGS,
+          Parent    => $message->id,
+          ParentObj => $message );
+
+
+}
+</%PERL>
+</div>
+<%ARGS>
+$Ticket => undef
+$Transaction => undef
+$ShowHeaders => 0
+$Collapsed => undef
+$ShowTitleBarCommands => 1
+$RowNum => 1
+$AttachPath => $RT::WebPath."/Ticket/Attachment"
+$UpdatePath => $RT::WebPath."/Ticket/Update.html"
+$EmailRecordPath => $RT::WebPath."/Ticket/ShowEmailRecord.html"
+$Attachments => undef
+$AttachmentContent => undef
+$ShowBody => 1
+$Parent => 0
+$ParentObj => 0
+</%ARGS>
+<%INIT>
+my @DisplayHeaders=qw( _all);
+
+if ( $Transaction->Type =~ /EmailRecord$/ ) {
+    @DisplayHeaders = qw(To Cc Bcc);
+}
+
+# If the transaction has anything attached to it at all
+elsif (!$ShowHeaders)  {
+        @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
+}
+</%INIT>

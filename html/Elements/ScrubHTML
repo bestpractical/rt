@@ -5,7 +5,7 @@ $scrubber->default( 0,
     { '*' => 0, id => 1, class => 1, href => 1, face => 1, size => 1, target => 1 } );
 
 $scrubber->deny(qw[*]);
-$scrubber->allow( qw[A B U P BR I HR BR SMALL EM FONT SPAN DIV] );
+$scrubber->allow( qw[A B U P BR I HR BR SMALL EM FONT SPAN DIV UL OL LI DL DT DD] );
 $scrubber->comment(0);
 return($scrubber->scrub($Content));
 </%init>

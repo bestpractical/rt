@@ -101,6 +101,7 @@ use Carp;
     use Time::ParseDate;
     use HTML::Entities;
     use HTML::Scrubber;
+    use Text::Quoted;
 }
 
 

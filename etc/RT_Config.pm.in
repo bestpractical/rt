@@ -298,6 +298,14 @@ Set($MessageBoxWrap, "HARD");
 # sent in a request (although there is probably more to it than that)
 Set($TrustHTMLAttachments , undef);
 
+
+# If PreferRichText is set to a true value, RT will show HTML/Rich text
+# messages in preference to their plaintext alternatives. RT "scrubs" the 
+# html to show only a minimal subset of HTML to avoid possible contamination
+# by cross-site-scripting attacks.
+
+Set($PreferRichText, undef);
+
 # If $WebExternalAuth is defined, RT will defer to the environment's
 # REMOTE_USER variable.
 

@@ -105,6 +105,19 @@ SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 text-align: right;
          }
 
+div.messagebody {
+    padding: 2em; 
+
+}
+
+
+div.downloadattachment {
+    font size: 10px;
+    text-align: right;
+
+}
+
+
 td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 11px;
 	 background-position: left top;
