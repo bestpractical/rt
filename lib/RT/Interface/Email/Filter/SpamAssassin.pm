@@ -29,13 +29,13 @@ my $spamtest = Mail::SpamAssassin->new();
 sub GetCurrentUser {
     my $item = shift;
     my $status = $spamtest->check ($item);
-    return (0, undef) unless $status->is_spam();
+    return (undef, 0) unless $status->is_spam();
     eval { $status->rewrite_mail() };
     if ($status->get_hits > $status->get_required_hits()*1.5) { 
         # Spammy indeed
-        return (-1, undef);
+        return (undef, -1);
     }
-    return (0, undef);
+    return (undef, 0);
 }
 
 =head1 NAME
