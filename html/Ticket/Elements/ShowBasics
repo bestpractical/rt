@@ -3,7 +3,7 @@
 	<TD VALIGN=TOP WIDTH="20%">
 	  <& /Elements/ShadedBox, title => loc('Id') , content => $Ticket->Id &>
 	</TD>
-	<TD VALIGN=TOP WIDTH="20%"> <& /Elements/ShadedBox, title => loc('Status') , content => $Ticket->Status &>
+	<TD VALIGN=TOP WIDTH="20%"> <& /Elements/ShadedBox, title => loc('Status') , content => loc($Ticket->Status) &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
         <& /Elements/ShadedBox, title => loc('Worked') , content => loc('[_1] min', $TimeWorked) &>

@@ -21,7 +21,7 @@
 <TD>
 <%$Ticket->QueueObj->Name%>
 </TD><TD>
-<%$Ticket->Status%>
+<%loc($Ticket->Status)%>
 </TD><TD>
 <%$Ticket->OwnerObj->Name%>
 </TD>

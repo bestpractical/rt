@@ -14,6 +14,7 @@ use lib "!!RT_LIB_PATH!!";
 BEGIN {
         use RT;
         RT::LoadConfig();
+	RT::InitLogging();
 }
 use Carp;
 
@@ -192,14 +193,14 @@ unless ($LastVersion) {
     @acl = (    
         {
             UserId    => '2',
-            RightName      => 'OwnTicket',
+            Right      => 'OwnTicket',
             ObjectType     => 'System',
             ObjectId => '0'
         },
 
         {
             UserId    => '3',
-            RightName      => 'SuperUser',
+            Right      => 'SuperUser',
             ObjectType     => 'System',
             ObjectId => '0'
         }
@@ -496,8 +497,8 @@ print "Creating Superuser  ACL...";
 use RT::ACE;
         my $superuser_ace = RT::ACE->new($CurrentUser);
         $superuser_ace->_BootstrapCreate(
-            PrincipalId        => '1',
-            PrincipalType  => 'User',
+            PrincipalId        => '2',
+            PrincipalType  => 'Group',
             RightName      => 'SuperUser',
             ObjectType     => 'System',
             ObjectId => '0');
@@ -524,11 +525,17 @@ foreach $item (@users) {
 print "done.\n";
 print "Creating ACL...";
 for $item (@acl) {
-    my $new_entry = new RT::ACE($CurrentUser);
 
-    #Using an internal function. this should never be used outside of the bootstrap script
-    my $return = $new_entry->_BootstrapCreate(%$item);
-    print $return. ".";
+    my $princ = RT::User->new($CurrentUser);
+    $princ->Load($item->{'UserId'});
+    my ($return, $msg) = $princ->PrincipalObj->GrantRight(Right => $item->{'Right'}, ObjectType => $item->{'ObjectType'}, ObjectId => $item->{'ObjectId'});
+    if ($return) {
+	    print $return. "."; 
+    } else {	
+	    print $msg . ".";
+
+    }
+ 
 }
 print "done.\n";
 

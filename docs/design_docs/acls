@@ -2,96 +2,49 @@
 
 Does principal baz have right foo for object bar
 
-        Joey (PrincipalId 12) ModifyTicket for Queue 6
-
-        SELECT * from ACL, CachedGroupMembers WHERE
-                ( ACL.PrincipalId = CachedGroupMembers.GroupId AND
-                  CachedGroupMembers.MemberId = '12') 
-            AND ACL.RightName = ModifyTicket
-            AND ( ACL.ObjectType = 'Queue' AND ACL.ObjectId = '6')
-
-
-
-        Joey (PrincipalId 12) ModifyTicket for Ticket 23 which is in Queue 6
-
-        SELECT * from ACL, Groups, CachedGroupMembers WHERE
-
-                ACL.GroupId = CachedGroupMembers.GroupId  # join group members to the ACL
-            AND ACL.GroupId = Groups.Id      # join the group to the groupmembers
-            AND CachedGroupMembers.MemberId = '12'        # the user we care about is part of the group 
-                                                          #   that this ACE governs 
-            AND (
-                         ( Groups.Domain = 'Ticket' AND Groups.Instance = '23') 
-
-            AND ( ACL.ObjectType = 'Queue' AND ACL.ObjectId = '6')
-
-
-            AND ACL.RightName = 'ModifyTicket'
-
-
-
-    If this group has the right and the user is a member of this group or that other group which has the same type as this group, then we grant the right
-
-
-Idea 1:
-    SELECT DISTINCT ACL.* from ACL, Groups, Groups Groups_2, CachedGroupMembers WHERE 
-
-        ( ACL.ObjectType = Queue AND ACL.ObjectId = 6 AND ACL.GroupId = Groups.Id AND ACL.Right='ThisRight' ) 
-
-    AND ((     Groups.Domain ="Queue" 
-          AND Groups.Instance = "6" 
-          AND Groups_2.Type = Groups.Type
-        
-          AND  (  ( Groups_2.Domain='Ticket' AND Groups_2.Instance = '23'  ) 
-                 OR  ( Groups2.Domain = 'Queue' and Groups2.Instance = '6' ) )
-         AND CachedGroupMembers.GroupId = Groups_2.Id 
-        )
-
-        OR (Groups.Domain = 'System' AND CachedGroupMembers.GroupId = Groups.Id)
-        )
-        
-        
-        AND CachedGroupsMembers.MemberId = '12' #That's joey
-
-
-
-
-
-
-
-
-
-
-
-
-
-Idea 2:
-    SELECT * from ACL, Groups, Groups Groups_2, CachedGroupMembers WHERE 
-
-        ACL.ObjectType = Queue AND ACL.ObjectId = 6 AND
-        ACL.Right='ThisRight' and ACL.GroupId = Groups.Id 
-        AND Groups.Domain ="Queue" and Groups.Instance = "6"
-
-
-        AND Groups_2.Type = Groups.Type AND Groups_2.Domain='Ticket' AND Groups_2.Instance = '23' 
-        AND CachedGroupMembers.GroupId = Groups_2.Id AND CachedGroupsMembers.MemberId = '12' #That's joey
-
-
-
 What rights does user baz have for object bar
 
-Which principals have right foo for object bar
+# {{{ Which principals have right foo for object bar
+
+
+if ($args{'ObjectType'} eq 'Ticket') {
+     $or_check_ticket_roles = " OR ( Groups.Domain = 'TicketRole' AND Groups.Instance = '".$args{'ObjectId'}."') ";
+     # If we're looking at ticket rights, we also want to look at the associated queue rights.
+     # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
+     # and ask all the rest of our questions about the queue.
+     my $tick = RT::Ticket->new($RT::SystemUser);
+     $tick->Load($args{'ObjectId'});
+     $args{'ObjectType'} = 'Queue';
+     $args{'ObjectId'} = $tick->QueueObj->Id();
+
+}
+if ($args{'ObjectType'} eq 'Queue') {
+     $or_check_roles = " OR ( ( (Groups.Domain = 'QueueRole' AND Groups.Instance = '".$args{'ObjectId'}."') $or_check_ticket_roles ) 
+                            AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.ObjectId AND Principals.PrincipalType = 'Group') ";
+}
+
+if (defined $args{'ObjectType'} ) {
+     $or_look_at_object_rights = " OR (ACL.ObjectType = '".$args{'ObjectType'}."'  AND ACL.ObjectId = '".$args{'ObjectId'}."') ";
+
+}
+
+my $query = "SELECT Users.*  from ACL, Groups, Users, Principals, Principals UserPrinc, CachedGroupMembers  WHERE  
+        Users.id = UserPrinc.ObjectId AND UserPrinc.PrincipalType = 'User' AND
+        Principals.Id = CachedGroupMembers.GroupId AND 
+        CachedGroupMembers.MemberId = UserPrinc.ObjectId AND 
+        UserPrinc.PrincipalType = 'User'  AND
+        (ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') AND
+        (ACL.ObjectType = 'System' $or_look_at_object_rights) AND 
+        (
+                (ACL.PrincipalId = Principals.Id AND 
+                 Principals.ObjectId = Groups.Id AND 
+                 ACL.PrincipalType = 'Group' AND 
+                 (Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence')
+                ) 
+           $or_check_roles
+        )";
+
+# }}}
 
 What objects does principal baz have right foo for
-
-
-
-
-Schema
-------
-
-GroupId
-RightName
-ObjectType
-ObjectId
-
+;

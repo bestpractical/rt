@@ -162,13 +162,37 @@ sub LoadUserDefinedGroup {
 
 # }}}
 
+# {{{ sub LoadACLEquivalenceGroup 
+
+=head2 LoadACLEquivalenceGroup  PRINCIPAL
+
+Loads a user's acl equivalence group. Takes a principal object.
+ACL equivalnce groups are used to simplify the acl system. Each user
+has one group that only he is a member of. Rights granted to the user
+are actually granted to that group. This greatly simplifies ACL checks.
+While this results in a somewhat more complex setup when creating users
+and granting ACLs, it _greatly_ simplifies acl checks.
+
+
+
+=cut
+
+sub LoadACLEquivalenceGroup {
+    my $self       = shift;
+    my $princ = shift;
+
+        $self->LoadByCols( "Domain" => 'ACLEquivalence',
+                            "Type" => 'UserEquiv',
+                           "Instance" => $princ->Id);
+}
+
+# }}}
+
 # {{{ sub LoadPersonalGroup 
 
 =head2 LoadPersonalGroup {Name => NAME, User => USERID}
 
-Loads a system group from the database. The only argument is
-the group's name.
-
+Loads a personal group from the database. 
 
 =cut
 
@@ -358,9 +382,50 @@ sub CreateUserDefinedGroup {
 
 # }}}
 
+# {{{ _CreateACLEquivalenceGroup
+
+=head2 _CreateACLEquivalenceGroup { Principal }
+
+A helper subroutine which creates a group containing only 
+an individual user. This gets used by the ACL system to check rights.
+Yes, it denormalizes the data, but that's ok, as we totally win on performance.
+
+=cut
+
+sub _CreateACLEquivalenceGroup { 
+    my $self = shift;
+    my $princ = shift;
+ 
+      my $id = $self->_Create( Domain => 'ACLEquivalence', 
+                           Type => 'UserEquiv',
+                           Name => 'User '. $princ->Object->Id,
+                           Description => 'ACL equiv. for user '.$princ->Object->Id,
+                           Instance => $princ->Id);
+      unless ($id) {
+        $RT::Logger->crit("Couldn't create ACL equivalence group");
+        return undef;
+      }
+    
+       # We use stashuser so we don't get transactions inside transactions
+       # and so we bypass all sorts of cruft we don't need
+       my $aclstash = RT::GroupMember->new($self->CurrentUser);
+       my $stash_id =  $aclstash->_StashUser(Group => $self->PrincipalObj,
+                                             Member => $princ);
+
+      unless ($stash_id) {
+        $RT::Logger->crit("Couldn't add the user to his own acl equivalence group:".$add_msg);
+        # We call super delete so we don't get acl checked.
+        $self->SUPER::Delete();
+        return(undef);
+      }
+    return ($id);
+}
+
+# }}}
+
 # {{{ CreatePersonalGroup
 
-=head2 CreatePersonalGroup { Name => "name", Description => "Description"}
+=head2 CreatePersonalGroup { PrincipalId => PRINCIPAL_ID, Name => "name", Description => "Description"}
 
 A helper subroutine which creates a personal group. Generally,
 personal groups are used for ACL delegation and adding to ticket roles
@@ -370,13 +435,36 @@ personal groups are used for ACL delegation and adding to ticket roles
 
 sub CreatePersonalGroup {
     my $self = shift;
+    my %args = ( Name => undef,
+		 Description => undef,
+		 PrincipalId => undef,
+		@_);
 
-    unless ( $self->CurrentUserHasRight('CreatePersonalGroup') ) {
+
+   if ($self->CurrentUser->PrincipalId == $args{'PrincipalId'}) {
+
+    unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups') ) {
         $RT::Logger->warning( $self->CurrentUser->Name
               . " Tried to create a group without permission." );
         return ( 0, $self->loc('Permission Denied') );
     }
-    return($self->_Create( Domain => 'Personal', Type => '', Instance => '', @_));
+
+    } else {
+    	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
+       	 $RT::Logger->warning( $self->CurrentUser->Name
+              . " Tried to create a group without permission." );
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+
+	
+    }	
+
+
+    return($self->_Create( Domain => 'Personal', Type => '', 
+			   Instance => $args{'PrincipalId'}, 
+		           Name => $args{'Name'}, 
+			   Description => $args{'Description'}));
 }
 
 # }}}
@@ -566,10 +654,23 @@ sub AddMember {
     my $new_member = shift;
 
 
+
+    if ($self->Domain eq 'Personal') {
+   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
+    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
+        		return ( 0, $self->loc('Permission Denied') );
+    		}
+    	} else {
+        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
+   	    		 return ( 0, $self->loc('Permission Denied') );
+    		}
+    	}
+	}
+	
+	else {	
     # We should only allow membership changes if the user has the right 
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
-
     unless ( ($new_member == $self->CurrentUser->PrincipalId &&
 	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
 	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
@@ -577,7 +678,7 @@ sub AddMember {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-   
+  	} 
     $self->_AddMember($new_member);
 }
 
@@ -596,7 +697,11 @@ sub _AddMember {
         return(0, $self->loc("Group not found"));
     }
 
-    $RT::Logger->debug("About to add $new_member to group".$self->id);
+    unless ($new_member =~ /^\d+$/) {
+        $RT::Logger->crit("_AddMember called with a parameter that's not an integer.");
+    }
+
+    $RT::Logger->debug("About to add ".$new_member." to group".$self->id);
 
     my $new_member_obj = RT::Principal->new( $self->CurrentUser );
     $new_member_obj->Load($new_member);
@@ -735,13 +840,25 @@ sub DeleteMember {
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
 
+    if ($self->Domain eq 'Personal') {
+   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
+    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
+        		return ( 0, $self->loc('Permission Denied') );
+    		}
+    	} else {
+        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
+   	    		 return ( 0, $self->loc('Permission Denied') );
+    		}
+    	}
+	}
+	else {
     unless ( ($new_member == $self->CurrentUser->PrincipalId &&
 	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
 	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
-
+	}
     $self->_DeleteMember($member_id);
 }
 
@@ -790,29 +907,34 @@ sub _DeleteMember {
 sub _Set {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('AdminGroup') ) {
-        return ( 0, 'Permission Denied' );
-    }
-
+	if ($self->Domain eq 'Personal') {
+   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
+    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
+        		return ( 0, $self->loc('Permission Denied') );
+    		}
+    	} else {
+        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
+   	    		 return ( 0, $self->loc('Permission Denied') );
+    		}
+    	}
+	}
+	else {
+    	unless ( $self->CurrentUserHasRight('AdminGroup') ) {
+        	return ( 0, $self->loc('Permission Denied') );
+    	}
+	}
     return ( $self->SUPER::_Set(@_) );
-
 }
 
 # }}}
 
 
+
+
 =item CurrentUserHasRight RIGHTNAME
 
-Returns true if the current user has the specified right for this group
+Returns true if the current user has the specified right for this group.
 
-Per-Group rights are:
-    AdminGroup
-    AdminGroupMembership
-    ModifyOwnMembership 
-   
-System rights is all per-group rights and:
-    CreatePersonalGroup
-    CreateUserDefinedGroup
 
     TODO: we don't deal with membership visibility yet
 
@@ -825,16 +947,14 @@ sub CurrentUserHasRight {
 
 
 
-    if ($self->Id && $self->CurrentUser->HasGroupRight( Group => $self->Id, Right => $right )) {
-	$RT::Logger->debug($self->CurrentUser->Name . " has the right $right for group ". $self->Id);
+    if ($self->Id && 
+		$self->CurrentUser->HasGroupRight( Group => $self->Id, 
+										   Right => $right )) {
         return(1);
    }
-    elsif ( $self->CurrentUser->HasSystemRight(  Right => $right )) {
-	$RT::Logger->debug($self->CurrentUser->Name . " has the right $right systemwide");
-	return (1);
-    }
-    else {
-	$RT::Logger->debug($self->CurrentUser->Name . " doesn't have the right $right");
+    elsif ( $self->CurrentUser->HasSystemRight( $right )) {
+		return (1);
+    } else {
         return(undef);
     }
 

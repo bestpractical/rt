@@ -825,7 +825,7 @@ sub AdminRights {
             $acl->LimitToQueue($queue);
         }
         else {
-            $acl->LimitToSystem();
+            $acl->LimitToObject(Type => 'System');
         }
         while ( my $ace = $acl->Next ) {
             print $ace->ObjectType;

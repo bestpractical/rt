@@ -35,83 +35,80 @@ use RT::ACE;
 
 # {{{ sub _Accessible 
 
-sub _Accessible {
-    my $self = shift;
-    my %Cols = (
 
-        # {{{ Core RT info
-        Name                => 'public/read/write/admin',
-        Password            => 'write',
-        Comments            => 'read/write/admin',
-        Signature           => 'read/write',
-        EmailAddress        => 'public/read/write',
-        PagerEmailAddress   => 'read/write',
-        FreeformContactInfo => 'read/write',
-        Organization        => 'public/read/write/admin',
-        Disabled            =>
-          'public/read/write/admin',   #To modify this attribute, we have helper
-                                       #methods
+sub _ClassAccessible {
+    {
+     
+        id =>
+                {read => 1, type => 'int(11)', default => ''},
+        Name => 
+                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(120)', default => ''},
+        Password => 
+                { write => 1, type => 'varchar(40)', default => ''},
+        Comments => 
+                {read => 1, write => 1, admin => 1, type => 'blob', default => ''},
+        Signature => 
+                {read => 1, write => 1, type => 'blob', default => ''},
+        EmailAddress => 
+                {read => 1, write => 1, public => 1,  type => 'varchar(120)', default => ''},
+        FreeformContactInfo => 
+                {read => 1, write => 1, type => 'blob', default => ''},
+        Organization => 
+                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(200)', default => ''},
+        RealName => 
+                {read => 1, write => 1, public => 1, type => 'varchar(120)', default => ''},
+        NickName => 
+                {read => 1, write => 1, public => 1, type => 'varchar(16)', default => ''},
+        Lang => 
+                {read => 1, write => 1, public => 1, type => 'varchar(16)', default => ''},
+        EmailEncoding => 
+                {read => 1, write => 1, public => 1, type => 'varchar(16)', default => ''},
+        WebEncoding => 
+                {read => 1, write => 1, public => 1, type => 'varchar(16)', default => ''},
+        ExternalContactInfoId => 
+                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(100)', default => ''},
+        ContactInfoSystem => 
+                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(30)', default => ''},
+        ExternalAuthId => 
+                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(100)', default => ''},
+        AuthSystem => 
+                {read => 1, write => 1, public => 1, admin => 1,type => 'varchar(30)', default => ''},
+        Gecos => 
+                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(16)', default => ''},
+        HomePhone => 
+                {read => 1, write => 1, type => 'varchar(30)', default => ''},
+        WorkPhone => 
+                {read => 1, write => 1, type => 'varchar(30)', default => ''},
+        MobilePhone => 
+                {read => 1, write => 1, type => 'varchar(30)', default => ''},
+        PagerPhone => 
+                {read => 1, write => 1, type => 'varchar(30)', default => ''},
+        Address1 => 
+                {read => 1, write => 1, type => 'varchar(200)', default => ''},
+        Address2 => 
+                {read => 1, write => 1, type => 'varchar(200)', default => ''},
+        City => 
+                {read => 1, write => 1, type => 'varchar(100)', default => ''},
+        State => 
+                {read => 1, write => 1, type => 'varchar(100)', default => ''},
+        Zip => 
+                {read => 1, write => 1, type => 'varchar(16)', default => ''},
+        Country => 
+                {read => 1, write => 1, type => 'varchar(50)', default => ''},
+        Creator => 
+                {read => 1, auto => 1, type => 'int(11)', default => ''},
+        Created => 
+                {read => 1, auto => 1, type => 'datetime', default => ''},
+        LastUpdatedBy => 
+                {read => 1, auto => 1, type => 'int(11)', default => ''},
+        LastUpdated => 
+                {read => 1, auto => 1, type => 'datetime', default => ''},
+        Disabled => 
+                {read => 1, write => 1, public => 1, admin =>1, type => 'smallint(6)', default => '0'},
 
-        # }}}
+ }
+};
 
-        # {{{ Names
-
-        RealName => 'public/read/write',
-        NickName => 'public/read/write',
-
-        # }}}
-
-        # {{{ Localization and Internationalization
-        Lang          => 'public/read/write',
-        EmailEncoding => 'public/read/write',
-        WebEncoding   => 'public/read/write',
-
-        # }}}
-
-        # {{{ External ContactInfo Linkage
-        ExternalContactInfoId => 'public/read/write/admin',
-        ContactInfoSystem     => 'public/read/write/admin',
-
-        # }}}
-
-        # {{{ User Authentication identifier
-        ExternalAuthId => 'public/read/write/admin',
-
-        #Authentication system used for user 
-        AuthSystem => 'public/read/write/admin',
-        Gecos      =>
-          'public/read/write/admin',    #Gecos is the name of the fields in a
-            # unix passwd file. In this case, it refers to "Unix Username"
-            # }}}
-
-        # {{{ Telephone numbers
-        HomePhone   => 'read/write',
-        WorkPhone   => 'read/write',
-        MobilePhone => 'read/write',
-        PagerPhone  => 'read/write',
-
-        # }}}
-
-        # {{{ Paper Address
-        Address1 => 'read/write',
-        Address2 => 'read/write',
-        City     => 'read/write',
-        State    => 'read/write',
-        Zip      => 'read/write',
-        Country  => 'read/write',
-
-        # }}}
-
-        # {{{ Core DBIx::Record Attributes
-        Creator       => 'read/auto',
-        Created       => 'read/auto',
-        LastUpdatedBy => 'read/auto',
-        LastUpdated   => 'read/auto'
-
-          # }}}
-    );
-    return ( $self->SUPER::_Accessible( @_, %Cols ) );
-}
 
 # }}}
 
@@ -197,7 +194,17 @@ sub Create {
         $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
         return ( 0, $self->loc('Could not create user') );
     }
-                                    
+
+
+    my $aclstash = RT::Group->new($self->CurrentUser);
+    my $stash_id = $aclstash->_CreateACLEquivalenceGroup($principal);
+
+    unless ($stash_id) {
+        $RT::Handle->Rollback();
+        $self->crit("Couldn't stash the user in groumembers");
+        return ( 0, $self->loc('Could not create user') );
+    }
+
     $RT::Handle->Commit;
 
     $RT::Logger->debug("Adding the user as a member of everyone"); 
@@ -362,6 +369,16 @@ sub _BootstrapCreate {
         $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
         return ( 0, 'Could not create user' );
     }
+
+    my $aclstash = RT::Group->new($self->CurrentUser);
+    my $stash_id  = $aclstash->_CreateACLEquivalenceGroup($principal);
+
+    unless ($stash_id) {
+        $RT::Handle->Rollback();
+        $RT::Logger->crit("Couldn't stash the user in groupmembers");
+        return ( 0, $self->loc('Could not create user') );
+    }
+
                                     
     $RT::Handle->Commit();
 
@@ -921,6 +938,25 @@ sub PrincipalId {
 
 # }}}
 
+
+=head2 ACLEquivalenceGroupObj 
+
+Returns the ACLEquivalenceGroup object for this user. returns an empty RT::ACLEquivalenceGroup
+if there's no ACLEquivalenceGroup object matching this user. 
+The response is cached. ACLEquivalenceGroupObj should never ever change.
+
+=begin testing
+
+ok(my $u = RT::User->new($RT::SystemUser));
+ok($u->Load(1), "Loaded the first user");
+ok($u->ACLEquivalenceGroupObj->ObjectId == 1, "user 1 is the first ACLEquivalenceGroup");
+ok($u->ACLEquivalenceGroupObj->ACLEquivalenceGroupType eq 'User' , "ACLEquivalenceGroup 1 is a user, not a group");
+
+=end testing
+
+=cut
+
+
 # {{{ ACL Related routines
 
 # {{{ sub HasGroupRight
@@ -1007,7 +1043,6 @@ ok($rootq->Id, "Loaded the first queue");
 
 ok ($rootq->CurrentUserHasRight('CreateTicket'), "Root can create tickets");
 
-
 my $new_user = RT::User->new($RT::SystemUser);
 my ($id, $msg) = $new_user->Create(Name => 'ACLTest');
 
@@ -1021,6 +1056,8 @@ ok($q->Id, "Loaded the first queue");
 ok (!$q->CurrentUserHasRight('CreateTicket'), "Some random user doesn't have the right to create tickets");
 ok (my ($gval, $gmsg) = $new_user->PrincipalObj->GrantRight(ObjectType => 'Queue', Right => 'CreateTicket', ObjectId => $q->Id), "Granted the random user the right to create tickets");
 ok ($gval, "Grant succeeded - $gmsg");
+
+
 ok ($q->CurrentUserHasRight('CreateTicket'), "The user can create tickets after we grant him the right");
 ok (my ($gval, $gmsg) = $new_user->PrincipalObj->RevokeRight(ObjectType => 'Queue', Right => 'CreateTicket', ObjectId => $q->Id), "revoked the random user the right to create tickets");
 ok ($gval, "Revocation succeeded - $gmsg");
@@ -1308,11 +1345,6 @@ sub _HasRight {
     # The user has the right as an individual
 	
     $RT::Logger->debug("Checking the user right ". $args{'Right'} . "for ". $args{'ObjectType'} . " ".$args{'ObjectId'} );
-    my $user_query = 
-        $self->_GenerateHasRightAsUserQuery(ObjectType => $args{'ObjectType'}, 
-            ObjectId => $args{'ObjectId'}, Right => $args{'Right'});
-
-
 
 #    # The user has the right as a member of a system-internal or 
 #    # user-defined group
@@ -1357,16 +1389,14 @@ if (defined $args{'ObjectType'} ) {
 
 }
 
-my $query = "
-SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers  WHERE  
+my $query = "SELECT COUNT(ACL.id) from ACL, Groups, Principals, CachedGroupMembers  WHERE  
    (ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') AND Principals.Id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '".$self->PrincipalId."' AND
     (   ACL.ObjectType = 'System' $or_look_at_object_rights ) AND 
     (
-        (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND (Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined')) 
+        (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND (Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence')) 
            $or_check_roles ) ";
 
 
-$query .= " UNION $user_query";
 
 # Handle system group membership
 
@@ -1395,50 +1425,6 @@ $query .= " UNION $user_query";
 
 # }}}
 
-# {{{ _GenerateHasRightAsUserQuery
-
-=head2 _GenerateHasRightAsUserQuery  { Right =>undef, ObjectType => undef, ObjectId => undef }
-
-Returns the SQL for a query about whether the user has the right in
-question for the object specified. 
-
-OjectType is "Queue" or "Group" 
-
-If both ticket and queue are ommitted,
-only checks whether the user has the right "systemwide"
-
-
-=cut
-
-
-sub _GenerateHasRightAsUserQuery {
-    my $self = shift;
-    my %args = ( Right => undef,
-                 ObjectType => undef,
-                 ObjectId => undef,
-                 @_);
-	
-   
-
-    my $right = $args{'Right'};
-    my $obj_id = $args{'ObjectId'};
-    my $obj_type = $args{'ObjectType'};
-
-    my $user_query = "SELECT ACL.id from ACL, Principals WHERE  (ACL.RightName = '$right' OR ACL.RightName = 'SuperUser') AND ACL.PrincipalType = 'User' ";
-    $user_query .= " AND ( Principals.PrincipalType = 'User' AND Principals.ObjectId = ".$self->Id." AND ACL.PrincipalId = Principals.Id )";
-    # We always want to look at system acls
-    $user_query .= " AND ( (ACL.ObjectType = 'System') ";
-
-    # Sometimes we want to loon at queue ACLs
-    if (defined $obj_id) {
-        $user_query .= " OR (ACL.ObjectType = '$obj_type' AND ACL.ObjectId = '$obj_id' )";
-    }
-    $user_query .=")";
-
-    return ($user_query);
-
-}
-# }}}
 # {{{ sub CurrentUserCanModify
 
 =head2 CurrentUserCanModify RIGHT
@@ -1558,7 +1544,8 @@ sub _Value {
     }
 
     #If the user wants to see their own values, let them
-    elsif ( $self->CurrentUser->Id == $self->Id ) {
+    # TODO figure ouyt a better way to deal with this
+   elsif ( $self->CurrentUser->Id == $self->Id ) {
         return ( $self->SUPER::_Value($field) );
     }
 

@@ -20,6 +20,7 @@ sub IsGroup {
     }
 }
 
+# {{{ IsUser
 
 =head2 IsUser 
 
@@ -37,6 +38,10 @@ sub IsUser {
         return undef;
     }
 }
+
+# }}}
+
+# {{{ Object
 
 =head2 Object
 
@@ -64,6 +69,7 @@ sub Object {
 
 
 }
+# }}} 
 
 # {{{ ACL Related routines
 
@@ -90,14 +96,33 @@ sub GrantRight {
     my $ace = RT::ACE->new( $self->CurrentUser );
 
     $RT::Logger->debug("About to grant the right ".$args{'Right'}. " to ". $self->PrincipalType ." ". $self->Id ." for ".$args{'ObjectType'} . " ". $args{'ObjectId'});
-    return ( $ace->Create(RightName => $args{'Right'},
+
+    my $type = $self->_GetPrincipalTypeForACL();
+
+    # If it's a user, we really want to grant the right to their 
+    # user equivalence group
+    if ($type eq 'User') {
+        my $equiv_group = RT::Group->new($self->CurrentUser);
+        $equiv_group->LoadACLEquivalenceGroup($self);
+        unless ($equiv_group->Id) {
+            $RT::Logger->crit("No ACL equiv group for princ ".$self->ObjectId);
+            return(0,$self->loc('System Error. Right not granted.'));
+        }
+        return ( 
+            $equiv_group->PrincipalObj->GrantRight(Right => $args{'Right'},
+                          ObjectType => $args{'ObjectType'},
+                          ObjectId => $args{'ObjectId'}) );
+
+    }
+    else {
+        return ( $ace->Create(RightName => $args{'Right'},
                           ObjectType => $args{'ObjectType'},
                           ObjectId => $args{'ObjectId'},
-                          PrincipalType =>  $self->_GetPrincipalTypeForACL(),
+                          PrincipalType =>  $type,
                           PrincipalId => $self->Id
                           ) );
+    }
 }
-
 # }}}
 
 # {{{ RevokeRight
@@ -119,32 +144,47 @@ sub RevokeRight {
     );
 
     #ACL check handled in ACE.pm
+    my $type = $self->_GetPrincipalTypeForACL();
 
-    my $ace = RT::ACE->new( $self->CurrentUser );
-    $ace->LoadByValues( RightName => $args{'Right'},
+    # If it's a user, we really want to grant the right to their 
+    # user equivalence group
+    if ($type eq 'User') {
+        my $equiv_group = RT::Group->new($self->CurrentUser);
+        $equiv_group->LoadACLEquivalenceGroup($self);
+        unless ($equiv_group->Id) {
+            $RT::Logger->crit("No ACL equiv group for princ ".$self->ObjectId);
+            return(0,$self->loc('System Error. Right not granted.'));
+        }
+        return ( 
+            $equiv_group->PrincipalObj->RevokeRight(Right => $args{'Right'},
+                          ObjectType => $args{'ObjectType'},
+                          ObjectId => $args{'ObjectId'}) );
+
+    }
+    else {
+
+        my $ace = RT::ACE->new( $self->CurrentUser );
+        $ace->LoadByValues( RightName => $args{'Right'},
                         ObjectType => $args{'ObjectType'},
                         ObjectId => $args{'ObjectId'},
-                        PrincipalType => $self->_GetPrincipalTypeForACL(),
+                        PrincipalType => $type,
                         PrincipalId => $self->Id);
 
 
-    unless ($ace->Id) {
-        return(0, $self->loc("ACE could not be found"));
+        unless ($ace->Id) {
+            return(0, $self->loc("ACE could not be found"));
+        }
+        return($ace->Delete);
     }
-    return($ace->Delete);
-
 }
 
 # }}}
-
-
-
 
 # {{{ _GetPrincipalTypeForACL
 
 =head2 _GetPrincipalTypeForACL
 
-Gets the principal type. if it's a user, it's a user. if it's a group and it has a Type, 
+Gets the principal type. if it's a user, it's a user. if it's a role group and it has a Type, 
 return that. if it has no type, return group.
 
 =cut
@@ -152,7 +192,7 @@ return that. if it has no type, return group.
 sub _GetPrincipalTypeForACL {
     my $self = shift;
     my $type;    
-    if ($self->PrincipalType eq 'Group' && $self->Object->Type) {
+    if ($self->PrincipalType eq 'Group' && $self->Object->Domain =~ /Role$/) {
         $type = $self->Object->Type;
     }
     else {

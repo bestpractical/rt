@@ -10,13 +10,14 @@
         
 %	while (my $Member = $Users->Next()) {
 % my $UserObj = $Member->MemberObj->Object();
+% my $group = RT::Group->new($session{'CurrentUser'});
+% $group->LoadACLEquivalenceGroup($Member->MemberObj);
   <TR ALIGN=RIGHT> 
 	<TD VALIGN=TOP>
 	    <% $UserObj->Name %>
 		  </TD>
 	  <TD>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Member->MemberObj->Id,
-        PrincipalType => 'User', 
+	    <& /Admin/Elements/SelectRights, PrincipalId => $group->PrincipalId,
         ObjectType  => 'System', 
         ObjectId => '0'  &>
 	  </TD>

@@ -160,6 +160,66 @@ sub Create {
 
 # }}}
 
+# {{{ sub _StashUser
+
+=head2 _StashUser PRINCIPAL
+
+Create { Group => undef, Member => undef }
+
+Creates an entry in the groupmembers table, which lists a user
+as a member of himself. This makes ACL checks a whole bunch easier.
+This happens once on user create and never ever gets yanked out.
+
+PRINCIPAL is expected to be an RT::Principal object for a user
+
+This routine expects to be called inside a transaction by RT::User->Create
+
+=cut
+
+sub _StashUser {
+    my $self = shift;
+    my %args = (
+        Group  => undef,
+        Member => undef,
+        @_
+    );
+
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+    # TODO what about the groups key cache?
+    RT::User->_InvalidateACLCache();
+
+
+    # We really need to make sure we don't add any members to this group
+    # that contain the group itself. that would, um, suck. 
+    # (and recurse infinitely)  Later, we can add code to check this in the 
+    # cache and bail so we can support cycling directed graphs
+
+    my $id = $self->SUPER::Create(
+        GroupId  => $args{'Group'}->Id,
+        MemberId => $args{'Member'}->Id,
+    );
+
+    unless ($id) {
+        return (undef);
+    }
+
+    my $cached_member = RT::CachedGroupMember->new( $self->CurrentUser );
+    my $cached_id     = $cached_member->Create(
+        Member          => $args{'Member'},
+        Group           => $args{'Group'},
+        ImmediateParent => $args{'Group'},
+        Via             => '0'
+    );
+
+    unless ($cached_id) {
+        return (undef);
+    }
+
+    return ($id);
+}
+
+# }}}
+
 # {{{ sub Delete
 
 =head2 Delete
@@ -260,7 +320,5 @@ sub GroupObj {
 }
 
 # }}}
-
-1;
 
 1;

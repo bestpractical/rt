@@ -104,7 +104,15 @@ sub InitLogging {
 	$RT::Logger->add(Log::Dispatch::Screen->new
 		     ( name => 'screen',
 		       min_level => $RT::LogToScreen,
-			 callbacks => sub {my %p=@_; return "[".$p{level}."]: $p{message}\n"},
+			 callbacks => sub { my %p = @_;
+                                my ($package, $filename, $line) = caller(5);
+				if ($p{level} eq 'debug') {
+
+                                return "[".gmtime(time)."] [".$p{level}."]: $p{message}\n" }
+				else {
+                                return "[".gmtime(time)."] [".$p{level}."]: $p{message} ($filename:$line)\n"}
+				},
+             
 		       stderr => 1
 		     ));
     }

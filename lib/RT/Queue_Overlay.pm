@@ -28,6 +28,16 @@ use RT::Groups;
 
 @STATUS = qw(new open stalled resolved dead);
 
+
+# $self->loc('new'); # For the string extractor to get a string to localize
+# $self->loc('open'); # For the string extractor to get a string to localize
+# $self->loc('stalled'); # For the string extractor to get a string to localize
+# $self->loc('resolved'); # For the string extractor to get a string to localize
+# $self->loc('dead''); # For the string extractor to get a string to localize
+
+
+
+
 # {{{ StatusArray
 
 =head2 StatusArray

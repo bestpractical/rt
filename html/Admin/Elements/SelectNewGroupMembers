@@ -17,7 +17,7 @@ $users->Limit(FIELD => 'id', VALUE => $RT::Nobody->id, OPERATOR => '!=' );
 $users->LimitToPrivileged();
 
 my $groups = new RT::Groups($session{'CurrentUser'});
-$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'System');
+$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
 
 
 </%INIT>

@@ -7,7 +7,7 @@
 <%$Value->Content%><br>        
 % }
 % unless ($Values->Count()) {
-<i>No Values</i>
+<i><&|/l&>(no value)</&></i>
 % }
 </dd>
 % }

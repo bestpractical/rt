@@ -1,0 +1,110 @@
+<& /Elements/Header, Title => $title &>
+<& /User/Elements/GroupTabs, GroupObj => $Group &>
+<& /Elements/ListActions, actions => \@results &>
+
+
+<& /Elements/TitleBoxStart, title => $title &>
+
+<FORM ACTION="<%$RT::WebPath%>/User/Groups/Members.html" METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
+<TABLE WIDTH="100%">
+<TR>
+<TD>
+<&|/l&>Add members</&>
+</TD>
+<TD>
+<&|/l&>Current members</&>
+</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP>
+<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers" &>
+</TD>
+<TD VALIGN=TOP>
+
+% if ($Group->MembersObj->Count == 0 ) {
+<i><&|/l&>(No members)</&></i>
+% } else {
+<i><&|/l&>(Check box to delete group member)</&></i>
+<br>
+<br>
+<&|/l&>Users</&>
+% my $UserMembers = $Group->MembersObj;
+% $UserMembers->LimitToUsers();
+<UL>
+% while (my $member = $UserMembers->Next()) {
+<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
+<%$member->MemberObj->Object->Name%> (<%$member->MemberObj->Object->RealName%>)
+% }
+</ul>
+<&|/l&>Groups</&>
+<ul>
+% my $GroupMembers = $Group->MembersObj;
+% $GroupMembers->LimitToGroups();
+% while (my $member = $GroupMembers->Next()) {
+<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
+<%$member->MemberObj->Object->Name%>
+% }
+% }
+</UL>
+</TD>
+</TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit &>
+</form>
+
+
+<%INIT>
+
+my $Group = new RT::Group($session{'CurrentUser'});
+$Group->Load($id) ;
+
+unless ($Group->id) {
+    Abort(loc('Could not load group'));
+}
+
+my (@results);
+
+foreach my $key (keys %ARGS) {
+
+if ($key =~ /^DeleteMember-(\d+)$/) {
+    my $mem_id = $1; 
+    my ($val,$msg) = $Group->DeleteMember($mem_id);
+    push (@results, $msg);
+}
+}
+
+# Make sure AddMembers is always an array
+my @AddMembers = (ref $AddMembers eq 'ARRAY') ? @{$AddMembers} : ($AddMembers);
+
+foreach my $member (@AddMembers) {
+    next unless ($member);
+
+    my $principal;
+
+    if ($member =~ /^Group-(\d+)$/) {
+        $principal = RT::Group->new($session{'CurrentUser'});
+        $principal->Load($1);
+    } elsif ($member =~ /^User-(\d+)$/) {
+        $principal = RT::User->new($session{'CurrentUser'});
+        $principal->Load($1);
+    } else {
+        next;
+    }
+
+
+    my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
+    push (@results, $msg);
+}
+
+
+my $title = loc('Editing membership for personal group [_1]', $Group->Name);
+
+</%INIT>
+
+<%ARGS>
+$AddMembers => undef
+$id => undef
+</%ARGS>

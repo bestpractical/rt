@@ -1,0 +1,87 @@
+<& /Elements/Header, Title => $title &>
+
+<& /User/Elements/GroupTabs, GroupObj => $Group &>
+<& /Elements/ListActions, actions => \@results &>
+
+
+<& /Elements/TitleBoxStart, title => $title &>
+
+<FORM ACTION="<%$RT::WebPath%>/User/Groups/Modify.html" METHOD=POST>
+
+%unless ($Group->Id) {
+<INPUT TYPE=HIDDEN NAME=id VALUE="new">
+% } else {
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
+% }
+<TABLE>
+<TR><TD ALIGN=RIGHT>
+<&|/l&>Name</&>:
+</TD>
+<TD><INPUT name="Name" value="<%$Group->Name%>"></TD>
+</TR><TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD></TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+
+<& /Elements/Submit &>
+</form>
+<%INIT>
+
+my ($title);
+my (@results);
+
+my $Group = RT::Group->new($session{'CurrentUser'});
+
+if ($Create) {
+    $title = loc("Create a new personal group");
+} 
+
+else {
+    
+    if ($id eq 'new' ) {
+	
+        my ($id, $msg) = $Group->CreatePersonalGroup(Name => "$Name", 
+					PrincipalId => $session{'CurrentUser'}->PrincipalId);
+        unless ($id) {
+		Abort (loc("Coould not create group"));
+	}
+	$id = $Group->Id;
+    }
+    else {
+	$Group->Load($id) || Abort(loc('Could not load group'));
+    }
+
+
+    if ($id) {
+	$title = loc("Modify the group [_1]", $Group->Name);
+
+    }	
+
+    # If the create failed
+    else {
+	$title = loc("Create a new personal group");
+	$Create = 1;
+    }    
+    
+}
+
+if ($id) {
+    
+    my @fields = qw(Description Name );
+    my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
+					    Object => $Group,
+					    ARGSRef => \%ARGS );
+    push (@results,@fieldresults);
+}
+
+
+</%INIT>
+
+
+<%ARGS>
+$Create => undef
+$Name => undef
+$Description => undef
+$id => undef
+</%ARGS>

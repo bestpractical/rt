@@ -74,7 +74,8 @@ use vars qw (%SCOPES
 # XXX TODO Can't localize these outside of having an object around.
 %SYSTEMRIGHTS = (
         SuperUser => 'Do anything and everything',
-		AdminGroup => 'Create, delete and modify groups',
+	AdminAllPersonalGroups => "Create, delete and modify the members of any user's personal groups",
+	AdminOwnPersonalGroups => 'Create, delete and modify the members of personal groups',
 	    AdminUsers => 'Create, delete and modify users',
 		ModifySelf => "Modify one's own RT account",
 

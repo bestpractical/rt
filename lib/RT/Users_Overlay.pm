@@ -84,9 +84,9 @@ sub LimitToEmail {
 
 # {{{ MemberOfGroup
 
-=head2 MemberOfGroup
+=head2 MemberOfGroup PRINCIPAL_ID
 
-takes one argument, a group id number. Limits the returned set
+takes one argument, a group's principal id. Limits the returned set
 to members of a given group
 
 =cut
@@ -97,11 +97,20 @@ sub MemberOfGroup {
     
     return $self->loc("No group specified") if (!defined $group);
 
-    my $groupalias = $self->NewAlias('GroupMembers');
+    my $groupalias = $self->NewAlias('CachedGroupMembers');
+    my $princalias = $self->NewAlias('Principals');
 
     $self->Join( ALIAS1 => 'main', FIELD1 => 'id', 
-		 ALIAS2 => "$groupalias", FIELD2 => 'Name');
-    
+	         ALIAS2 => $princalias,  FIELD2 => 'ObjectId');
+	$self->Join (ALIAS1 => $princalias, FIELD1 => id,
+				 ALIAS2 => $groupalias, FIELD2 => 'MemberId');
+
+	$self->Limit(ALIAS => $princalias,
+				 FIELD => 'PrincipalType',
+				 OPERATOR => '=',
+				 VALUE => 'User');
+
+		    
     $self->Limit (ALIAS => "$groupalias",
 		  FIELD => 'GroupId',
 		  VALUE => "$group",
@@ -121,32 +130,70 @@ Limits to users who can be made members of ACLs and groups
 
 sub LimitToPrivileged {
     my $self = shift;
-    $self->Limit( FIELD => 'Privileged',
-                  OPERATOR => '=',
-                  VALUE => '1');
+
+	my $priv = RT::Group->new($self->CurrentUser);
+	$priv->LoadSystemInternalGroup('Privileged');
+	unless ($priv->Id) {
+		$RT::Logger->crit("Couldn't find a privileged users group");
+	}
+	$self->MemberOfGroup($priv->PrincipalId);
 }
 
 # }}}
 
+# {{{ WhoHaveGroupRight
 
+=head2 WhoHaveRight { Right => 'name', ObjectId => 'id', IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
 
-# {{{ LimitToSystem
-
-=head2 LimitToSystem
-
-Limits to users who can be granted rights, but who should
-never have their rights modified by a user or be made members of groups.
 
 =cut
 
-sub LimitToSystem {
-    my $self = shift;
-    $self->Limit( FIELD => 'Privileged',
-                  OPERATOR => '=',
-                  VALUE => '2');
-}
 
+sub WhoHaveRight {
+
+    my $self = shift;
+    my %args = ( Right => undef,
+                 ObjectType => undef,
+                 ObjectId => undef,
+                 IncludeSystemRights => undef, 
+                 IncludeSuperusers => undef,
+                 IncludeSubgroupMembers => undef, 
+                 @_);
+
+
+# find all users who the right Right for this group, either individually
+# or as members of groups
+
+
+}
 # }}}
+
+# {{{ WhoHaveRight
+
+=head2 WhoHaveRight { Right => 'name', ObjectType => 'type', ObjectId => 'id', IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef }
+
+
+=cut
+
+
+sub WhoHaveRight {
+
+    my $self = shift;
+    my %args = ( Right => undef,
+                 ObjectType => undef,
+                 ObjectId => undef,
+                 IncludeSystemRights => undef, 
+                 IncludeSuperusers => undef,
+                 IncludeSubgroupMembers => undef, 
+                 @_);
+
+
+ # Find all users who have this right OR all users who are members of groups 
+ # which have this right for this object
+
+}
+# }}}
+
 
 # {{{ HasQueueRight
 

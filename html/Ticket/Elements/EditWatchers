@@ -2,7 +2,7 @@
 <ul>
 %# Print out a placeholder if there are none.
 %if ($Members->Count == 0 ) {
-<li><i>none</i>
+<li><i><&|/l&>none</&></i>
 % }
 
 

@@ -1,0 +1,17 @@
+<& /User/Elements/Tabs, subtabs => $subtabs, current_tab => 'User/Groups/' &>
+<hr>
+<%INIT>
+my $subtabs = { 
+             Basics => { title => loc('Basics'),
+                         path => "User/Groups/Modify.html?id=". $GroupObj->id
+                       },
+
+	     Members=>  { title => loc('Members'),
+                         path => "User/Groups/Members.html?id=".$GroupObj->id },
+
+	};
+
+</%INIT>
+<%ARGS>
+$GroupObj => undef
+</%ARGS>

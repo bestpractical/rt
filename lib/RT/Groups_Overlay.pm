@@ -84,21 +84,22 @@ sub LimitToUserDefinedGroups {
 
 # {{{ LimiToPersonalGroups
 
-=head2 LimitToPersonalGroupsForUser USER_ID
+=head2 LimitToPersonalGroupsFor PRINCIPAL_ID
 
-Return only Personal Groups for the user whose id is USER_ID
+Return only Personal Groups for the user whose principal id 
+is PRINCIPAL_ID
 
 =cut
 
 
-sub LimitToPersonalGroupsForUser {
+sub LimitToPersonalGroupsFor {
     my $self = shift;
-    my $user = shift;
+    my $princ = shift;
 
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'Personal');
     $self->Limit(   FIELD => 'Instance',   
                     OPERATOR => '=', 
-                    VALUE => $user,
+                    VALUE => $princ,
                     ENTRY_AGGREGATOR => 'OR');
 }
 

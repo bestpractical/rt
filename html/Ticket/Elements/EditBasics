@@ -1,7 +1,7 @@
 <TABLE>
 <TR>
 <TD COLSPAN=6>
-        Subject<BR>
+        <&|/l&>Subject</&><BR>
         <input name=Subject value="<%$TicketObj->Subject|h%>"  SIZE=50>
 </TD>
 </TR>

@@ -599,10 +599,10 @@ sub ProcessACLChanges {
 
 
     foreach my $arg (keys %ARGS) {
-        if ($arg =~ /GrantRight-(.*?)-(\d+)-(.*?)-(\d+)$/) {
-            my $principal_id = $2;
-            my $object_type = $3;
-            my $object_id = $4;
+        if ($arg =~ /GrantRight-(\d+)-(.*?)-(\d+)$/) {
+            my $principal_id = $1;
+            my $object_type = $2;
+            my $object_id = $3;
             my $rights = $ARGS{$arg};
 
             my $principal = RT::Principal->new($session{'CurrentUser'});
@@ -615,11 +615,11 @@ sub ProcessACLChanges {
                 push (@results, $msg);
             }
         }
-       elsif ($arg =~ /RevokeRight-(.*?)-(\d+)-(.*?)-(\d+)-(.*?)$/) {
-            my $principal_id = $2;
-            my $object_type = $3;
-            my $object_id = $4;
-            my $right = $5;
+       elsif ($arg =~ /RevokeRight-(\d+)-(.*?)-(\d+)-(.*?)$/) {
+            my $principal_id = $1;
+            my $object_type = $2;
+            my $object_id = $3;
+            my $right = $4;
 
             my $principal = RT::Principal->new($session{'CurrentUser'});
             $principal->Load($principal_id);

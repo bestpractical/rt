@@ -11,7 +11,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	12
+RT_VERSION_PATCH	=	13
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -230,7 +230,7 @@ fixperms:
 
 fixperms-nosetgid: fixperms
 	@echo "You should never be running RT this way. it's unsafe"
-	chmod -s $(SETGID_BINARIES)
+	chmod 555 $(SETGID_BINARIES)
 	chmod 0555 $(DESTDIR)/$(CONFIG_FILE)
 
 # {{{ dirs

@@ -30,7 +30,7 @@
 
 
     $ACLObj->LimitToObject( Id => $ObjectId, Type => $ObjectType);
-    $ACLObj->LimitToPrincipal( Id => $PrincipalId);#, Type => $PrincipalType);
+    $ACLObj->LimitToPrincipal( Id => $PrincipalId);
 
     if ($ObjectType eq 'Group') { 
         %Rights = $ACE->GroupRights();
@@ -44,7 +44,7 @@
     }
 
     
-    $ACLDesc = "$PrincipalType-$PrincipalId-$ObjectType-$ObjectId";
+    $ACLDesc = "$PrincipalId-$ObjectType-$ObjectId";
 </%INIT>
     
 <%ARGS>
