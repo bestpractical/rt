@@ -41,14 +41,22 @@
 % if ($ShowNavigation) {
 <hr>
 <&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
-% # The format needs escaping before we pass it out. specifically, we need to escape things tahmason things are kosher in urls
-% $Format =~ s/#/%23/g;
-% $Format =~ s/&/%26/g;
-% if ($Page != 1) {
-<A href="<%$BaseURL%>?Page=<%$Page-1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Previous Page</&></a>
+
+<%perl>
+my $prev =  $m->comp('/Elements/QueryString', Query => $Query,
+                                Format => $Format,
+                                Rows => $Rows,
+                                Page => ($Page-1));
+my $next =  $m->comp('/Elements/QueryString', Query => $Query,
+                                Format => $Format,
+                                Rows => $Rows,
+                                Page => ($Page+1));
+</%perl>
+% if ($Page > 1) {
+<A href="<%$BaseURL%><%$prev%><&|/l&>Previous Page</&></a>
 % }
 % if (($Page * $Rows) < $TotalFound) {
-<A href="<%$BaseURL%>Page=<%$Page+1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Next Page</&></a>
+<A href="<%$BaseURL%><%$next%><&|/l&>Next Page</&></a>
 % }
 % }
 <%INIT>
@@ -56,6 +64,8 @@
 use vars qw($COLUMN_MAP $CUSTOM_FIELD_MAP);
 
 $Format ||= $RT::DefaultSearchResultFormat;
+# Scrub the html of the format string to remove any potential nasties.
+$Format = $m->comp('/Elements/ScrubHTML, Content => $Format);
 
 $Rows ||= '25'; # we need a positive value
 
@@ -405,7 +415,10 @@ $Page => undef
 </%ARGS>
 <TR>
 <%perl>
-my @generic_query_args = ( 'Query=' . $Query, 'Rows=' . $Rows, 'Page=' . $Page );
+
+
+
+my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page );
 
 foreach my $col (@Format) {
     if ( $col->{title} eq 'NEWLINE' ) {
@@ -415,17 +428,25 @@ foreach my $col (@Format) {
         $m->out('<TH align="center">');
         my $title = $col->{title};
         $title =~ s/^__(.*)__$/$1/o;
-        $title = ( ColumnMap($title, 'title')  || $title );
-        if ( $AllowSorting && $col->{'attribute'} && ColumnMap($col->{'attribute'},'attribute')) {
-            my @query_args = @generic_query_args;
-            push @query_args, ( "OrderBy=" . ( ColumnMap($col->{'attribute'}, 'attribute') || $col->{'attribute'} ) );
-            push @query_args,
-              ( "Order=" . ( $ARGS{'Order'} eq 'ASC'  
-              ? 'DESC'
-              : 'ASC' ));
-            $m->out( '<a href="' . $BaseURL . '&'
-                . join ( '&', @query_args ) . '">'
-                . loc($title) . '</a>' );
+        $title = ( ColumnMap( $title, 'title' ) || $title );
+        if (   $AllowSorting
+            && $col->{'attribute'}
+            && ColumnMap( $col->{'attribute'}, 'attribute' ) )
+        {
+
+            $m->out(
+                '<a href="' . $BaseURL 
+                  . $m->comp(
+                    '/Elements/QueryString',
+                    %generic_query_args,
+                    OrderBy => (
+                        ColumnMap( $col->{'attribute'}, 'attribute' )
+                          || $col->{'attribute'}
+                    ),
+                    Order => ( $ARGS{'Order'} eq 'ASC' ? 'DESC' : 'ASC' )
+                  ).
+                  '">' . loc($title) . '</a>'
+            );
         }
         else {
             $m->out( loc($title) );

@@ -1,0 +1,7 @@
+<%init>
+my @params;
+while ( (my $key, my $value) = each %ARGS ){
+	push @params, $key."=".$m->interp->apply_escapes($value,'u');
+}
+return(join('&',@params));
+</%init>

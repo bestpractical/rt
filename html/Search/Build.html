@@ -79,9 +79,9 @@ my $title = loc("Query Builder");
 my @actions        = ();
 my %queues;
 
+$ARGS{'Format'} = $Format = $m->comp('/Elements/ScrubHTML', Content => $Format) if ($Format);
+
 if ( $ARGS{"DoSearch"} ) {
-    $Format =~ s/%23/#/g;
-    $Format =~ s/%26/&/g;
     $m->comp( "Results.html", Query   => $Query, Format  => $Format, OrderBy => $ARGS{OrderBy}, Rows    => $ARGS{RowsPerPage});
     $m->abort();
 }
@@ -106,7 +106,6 @@ if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
     my $obj_id    = $2;
     my $search_id = $3;
 
-    # XXX TODO This will only let users save personal searches
     # We explicitly list out the available types and
     # don't trust user input here
     if (   ( $obj_type eq 'RT::User' ) && ( $obj_id == $session{'CurrentUser'}->id ) ) {
@@ -1075,14 +1074,12 @@ if ( $ARGS{'Delete'} ) {
 
 # }}}
 
-# Escape the format (need more than standard mason url escaping)
-$Format =~ s/#/%23/g;
-$Format =~ s/&/%26/g;
-
 # Build a querystring for the tabs
 
 my $QueryString;
-$QueryString = "?Query=$Query&Format=$Format&Rows=$ARGS{'Rows'}" if ($Query);
+$QueryString = $m->comp('/Elements/QueryString', Query => $Query,
+	Format => $Format,
+	Rows =>$ARGS{'Rows'}) if ($Query);
 
 </%INIT>
 
