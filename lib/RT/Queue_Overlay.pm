@@ -182,7 +182,7 @@ sub ActiveStatusArray {
     if (@RT::ActiveStatus) {
     	return (@RT::ActiveStatus)
     } else {
-        $RT::Logger->warn("RT::ActiveStatus undefined, falling back to deprecated defaults");
+        $RT::Logger->warning("RT::ActiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_ACTIVE_STATUS);
     }
 }
@@ -202,7 +202,7 @@ sub InactiveStatusArray {
     if (@RT::InactiveStatus) {
     	return (@RT::InactiveStatus)
     } else {
-        $RT::Logger->warn("RT::InactiveStatus undefined, falling back to deprecated defaults");
+        $RT::Logger->warning("RT::InactiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_INACTIVE_STATUS);
     }
 }
@@ -649,7 +649,7 @@ sub AddWatcher {
             }
         }
      else {
-            $RT::Logger->warn( "$self -> AddWatcher got passed a bogus type");
+            $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
             return ( 0, $self->loc('Error in parameters to Queue->AddWatcher') );
         }
     }
@@ -810,7 +810,7 @@ sub DeleteWatcher {
             }
         }
         else {
-            $RT::Logger->warn( "$self -> DeleteWatcher got passed a bogus type");
+            $RT::Logger->warning( "$self -> DeleteWatcher got passed a bogus type");
             return ( 0, $self->loc('Error in parameters to Queue->DeleteWatcher') );
         }
     }
