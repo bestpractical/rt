@@ -62,7 +62,19 @@ sub Create {
                 ContentEncoding => '',
 
           @_);
-    ($args{'ContentEncoding'}, $args{'LargeContent'}) = $self->_EncodeLOB($args{'LargeContent'}, $args{'ContentType'}) if ($args{'LargeContent'}); 
+
+   
+    if( $args{'Content'} && length($args{'Content'}) > 255 && !$args{'LargeContent'} ) {
+
+        $args{'LargeContent'} = $args{'Content'};
+        $args{'Content'} = '';
+        $args{'ContentType'} = 'text/plain';
+    }
+
+    ( $args{'ContentEncoding'}, $args{'LargeContent'} ) =
+      $self->_EncodeLOB( $args{'LargeContent'}, $args{'ContentType'} )
+      if ( $args{'LargeContent'} );
+
     $self->SUPER::Create(
                          CustomField => $args{'CustomField'},
                          ObjectType => $args{'ObjectType'},
@@ -133,6 +145,25 @@ sub LoadByObjectContentAndCustomField {
 			 );
 
 }
+
+
+=head2 Content
+
+Return this custom field's content. If there's no "regular"
+content, try "LargeContent"
+
+=cut
+
+
+sub Content {
+    my $self = shift;
+    my $content = $self->SUPER::Content();
+    if (!$content && $self->ContentType eq 'text/plain') {
+       $content = $self->LargeContent(); 
+    }
+    return($content);
+}
+
 
 sub Delete {
     my $self = shift;
