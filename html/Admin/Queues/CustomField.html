@@ -22,74 +22,27 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, title => loc("Modify Custom Field [_1]", $CustomFieldObj->id)&>
-<& /Admin/Elements/QueueTabs, id => $Queue &>
-<& /Elements/ListActions, actions => \@results &>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->Id &>
 
-<& /Elements/TitleBoxStart, title => $title &>
-
-<FORM METHOD=GET ACTION="CustomField.html">
-<INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
-<INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
-
-<&|/l&>Name</&>: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
-<&|/l&>Description</&>: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
-<&|/l&>Type</&>: <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
-<BR>
-% if ($CustomFieldObj->Id and $CustomFieldObj->Type =~ /Select/) {
-<H2><&|/l&>Values</&></H2>
-<BR>
-<font size=-1>
-<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
-<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
-</font>
-% }
-<& /Elements/TitleBoxEnd&>
-<&/Elements/Submit&>
-</FORM>
-
-
+<& /Admin/Elements/EditCustomField, title => $title,  %ARGS &>
 
 <%INIT>
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue);
 
-my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-my  ($title, @results, $id);
+my $title;
 
-if (! $CustomField ) { 
-  $title = loc("Create a CustomField");
-  $id = 'new';
-} else {
-
-    if ($CustomField eq 'new') {
-      my ($val, $msg) =  $CustomFieldObj->Create(Queue => $Queue, 
-                                                 Name => $Name, 
-                                                 Type => $Type,
-                                                 Description => $Description,
-						 );
-      Abort(loc("Could not create CustomField", $msg)) unless ($val);
-     push @results, $msg;
-     $CustomFieldObj->SetSortOrder($CustomFieldObj->id);
-     $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
-    } else {
-       $CustomFieldObj->Load($CustomField) || Abort(loc('No CustomField'));
-      $title = loc('Editing CustomField [_1]', $CustomFieldObj->Name()); 
-
-      my @aresults = ProcessCustomFieldUpdates ( 
-                        CustomFieldObj => $CustomFieldObj,
-                        ARGSRef => \%ARGS );
-     push @results, @aresults;
-    }
-
-
-$id = $CustomFieldObj->id;
+unless($QueueObj->id) {
+    Abort(loc("Queue [_1] not found", $Queue));
 }
-
-
+if ($CustomField) {
+    $title = loc('Modify a CustomField for queue [_1]', $QueueObj->Name()); 
+}else {
+    $title = loc('Create a CustomField for queue [_1]', $QueueObj->Name()); 
+}
 </%INIT>
 <%ARGS>
-$Queue => undef
 $CustomField => undef
-$Type => undef
-$Description => undef
-$Name => undef
+$Queue => undef
 </%ARGS>

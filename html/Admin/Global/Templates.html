@@ -22,30 +22,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Edit system templates') &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/SystemTabs &>
+<& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
+</form>
+<%init>
 
-<& /Elements/TitleBoxStart, title => loc('Edit system templates') &>
-<P><A href="Template.html?create=1&Queue=0"><&|/l&>Create a new template</&></A>
+my $title = loc("Modify templates which apply to all queues");
 
-<P>
-<&|/l&>Templates</&>:<BR>
-<UL>
-%while  (my $TemplateObj = $Templates->Next) { 
+my (@actions);
 
-<LI><A HREF="Template.html?template=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>/<% loc($TemplateObj->Name) %>: <% loc($TemplateObj->Description) %></a><BR>
+</%init>
 
-%}
-</UL>
-</P>
 
-<& /Elements/TitleBoxEnd &>
-<%INIT>
 
-my $Templates = RT::Templates->new($session{'CurrentUser'});
-$Templates->LimitToGlobal();
-
-</%INIT>
 <%ARGS>
 $id => undef
 </%ARGS>

@@ -1,0 +1,105 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/ListActions, actions => \@actions &>
+
+<FORM METHOD=GET ACTION="Templates.html">
+<INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
+<& /Elements/TitleBoxStart, title => $title &>
+
+<P><A href="Template.html?create=1&Queue=<%$id%>"><&|/l&>Create a new template</&></A>
+
+<P><&|/l&>Current Templates</&>:</P>
+% if ($Templates->Count == 0 ) {
+<P><i><&|/l&>(No templates)</&></i></P>
+% } else {
+<TABLE>
+<P><i><&|/l&>(Check box to delete)</&></i></P>
+
+% my $count;
+% while (my $TemplateObj = $Templates->Next) { 
+
+<TR>
+<TD>
+<input type="checkbox" name="DeleteTemplate-<%$TemplateObj->Id%>">
+</TD>
+<TD>
+<A HREF="Template.html?Queue=<%$id%>&Template=<%$TemplateObj->id()%>"><&|/l&>Edit</&></A>
+</TD>
+
+<TD>
+<%$TemplateObj->id%>/<% $TemplateObj->Name %>: <% $TemplateObj->Description %>
+</TD>
+</TR>
+
+% }
+</TABLE>
+% }
+
+<& /Elements/Submit &>
+<& /Elements/TitleBoxEnd &>
+</FORM>
+
+<%INIT>
+my $Templates = RT::Templates->new($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+my @actions;
+
+if ($id)  {
+        $QueueObj->Load($id);                        
+}
+
+if ($QueueObj->id) {
+	$Templates->LimitToQueue($id);
+}                                            
+else {                                       
+        $Templates->LimitToGlobal();
+}                                           
+
+# {{{ deal with deleting existing templates
+foreach my $key (keys %ARGS) {
+  # {{{ if we're trying to delete the template
+  if ($key =~ /^DeleteTemplate-(\d+)/) {
+    my $id = $1;
+    my $TemplateObj = RT::Template->new($session{'CurrentUser'});
+    $TemplateObj->Load($id);
+    my ($retval, $msg) = $TemplateObj->Delete;
+    if ($retval) {
+      push @actions, loc("Template deleted");
+    }
+    else {
+      push @actions, $msg;
+    }
+  }
+  # }}}
+}
+# }}}
+</%INIT>
+<%ARGS>
+$id => 0
+$title => undef
+$Move => undef
+$Source => undef
+$Template => undef
+</%ARGS>

@@ -1,0 +1,228 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/ListActions, actions => \@actions &>
+<& /Elements/TitleBoxStart, title => $title &>
+
+<TABLE>
+<TR>
+<TD VALIGN=TOP>
+
+<FORM METHOD=GET ACTION="CustomFields.html">
+<INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
+<P><A href="CustomField.html?create=1&Queue=<%$id%>"><&|/l&>Create a new Custom Field</&></A>
+
+% if ($id) {
+<BR>
+<&|/l, $m->scomp('/Elements/SelectQueue', Name => 'Source') &>Override current custom fields with fields from [_1]</&>
+<INPUT TYPE="Submit" VALUE="<&|/l&>Go!</&>">
+</FORM>
+<FORM METHOD=GET ACTION="CustomFields.html">
+<INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
+% }
+
+<P>
+<input type="checkbox" name="FindDisabledCustomFields"> <&|/l&>Include disabled custom fields in listing.</&>
+<input type=submit value="<&|/l&>Go!</&>">
+</FORM>
+
+<P>
+<%$caption%>:<BR>
+</TD></TR></TABLE>
+% if ($CustomFields->Count == 0 ) {
+<P><i><&|/l&>(No custom fields)</&></i></P>
+% } else {
+<TABLE>
+
+<TR>
+<TD ROWSPAN="<% $CustomFields->Count %>">
+<UL>
+% while (my $CustomFieldObj = $CustomFields->Next) { 
+<LI><A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id%>/<% loc($CustomFieldObj->Type) %>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></A></LI>
+% }
+</UL>
+</TD>
+
+% my $count;
+% while (my $CustomFieldObj = $CustomFields->Next) { 
+%  # show 'move up' unless it's the first item
+%  if ($count++) {
+<TR><TD>
+<a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>
+%  } else {
+<TD ALIGN=RIGHT>
+%  }
+
+%  # show 'move down' unless it's the last item
+%  if (!$CustomFields->IsLast) {
+%  $m->print(' | ') if $count > 1;
+<a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>
+%  }
+</TD></TR>
+% }
+
+</TD>
+</TR>
+</TABLE>
+% }
+
+<& /Elements/TitleBoxEnd &>
+
+<%INIT>
+my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+my $caption;
+
+if ($id)  {
+        $QueueObj->Load($id);                        
+}
+
+if ($QueueObj->id) {
+	$CustomFields->LimitToQueue($id);
+}                                            
+else {                                       
+        $CustomFields->LimitToGlobal();
+}                                           
+
+if ($FindDisabledCustomFields) {
+    $caption = loc("All Custom Fields");
+    $CustomFields->{'find_disabled_rows'} = 1;
+} else {
+    $caption = loc("Enabled Custom Fields");
+}
+
+# {{{ deal with moving sortorder of custom fields
+if ($CustomField and $Move) {
+    my $SourceObj = RT::CustomField->new($session{'CurrentUser'});
+    $SourceObj->Load($CustomField) || Abort(loc('No CustomField'));
+
+    my $TargetObj;
+    my $target_order = $SourceObj->SortOrder + $Move;
+    while (my $CustomFieldObj = $CustomFields->Next) { 
+	my $this_order = $CustomFieldObj->SortOrder;
+
+	# if we have an exact match, finish the loop now
+	($TargetObj = $CustomFieldObj, last) if $this_order == $target_order;
+
+	# otherwise, we need to apropos toward the general direction
+	# ... first, check the sign is correct
+	next unless ($this_order - $SourceObj->SortOrder) * $Move > 0;
+
+	# ... next, see if we already have a candidate
+	if ($TargetObj) {
+	    # ... if yes, compare the delta and choose the smaller one
+	    my $orig_delta = abs($TargetObj->SortOrder - $target_order);
+	    my $this_delta = abs($this_order - $target_order);
+	    next if $orig_delta < $this_delta;
+	}
+
+	$TargetObj = $CustomFieldObj;
+    }
+
+    if ($TargetObj) {
+	# swap their sort order
+	my ($s, $t) = ($SourceObj->SortOrder, $TargetObj->SortOrder);
+	$TargetObj->SetSortOrder($s);
+	$SourceObj->SetSortOrder($t);
+	# because order changed, we must redo search for subsequent uses
+	$CustomFields->RedoSearch;
+    }
+
+    $CustomFields->GotoFirstItem;
+}
+# }}}
+
+# {{{ now process the 'copy queue' action
+my @actions;
+if ($Source and $Source ne $id) {
+    my $SourceQueue = RT::Queue->new($session{'CurrentUser'});
+    $SourceQueue->Load($Source) || Abort(loc("Couldn't load queue"));
+    my $SourceCustomFields = RT::CustomFields->new($session{'CurrentUser'});
+    $SourceCustomFields->LimitToQueue($SourceQueue->id);
+
+    # delete old fields
+    foreach my $CustomFieldObj ( @{$CustomFields->ItemsArrayRef} ) { 
+	$CustomFieldObj->Delete;
+    }
+
+    # add new fields
+    while (my $SourceCustomFieldObj = $SourceCustomFields->Next) {
+	my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
+	my ($val, $msg) =  $CustomFieldObj->Create(
+	    id => $SourceCustomFieldObj->id,
+	    Queue => $id,
+	    Name => $SourceCustomFieldObj->Name,
+	    Type => $SourceCustomFieldObj->Type,
+	    Description => $SourceCustomFieldObj->Description,
+	);
+	Abort(loc("Could not create CustomField") . ": $msg") unless ($val);
+	push @actions, $msg;
+
+	$CustomFieldObj->SetSortOrder($SourceCustomFieldObj->SortOrder);
+
+	# add new values
+	my $values = $SourceCustomFieldObj->Values();
+	while (my $v = $values->Next) {
+	    my ( $addval, $addmsg ) = $CustomFieldObj->AddValue(
+		Name => $v->Name,
+		Description => $v->Description,
+		SortOrder => $v->SortOrder
+	    );
+	}
+    }
+
+    # because content changed, we must redo search for subsequent uses
+    $CustomFields->RedoSearch;
+    $CustomFields->GotoFirstItem;
+}
+# }}}
+
+# {{{ deal with deleting existing custom fields
+foreach my $key (keys %ARGS) {
+  # {{{ if we're trying to delete the custom field
+  if ($key =~ /^DeleteCustomField-(\d+)/) {
+    my $id = $1;
+    my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
+    $CustomFieldObj->Load($id);
+    my ($retval, $msg) = $CustomFieldObj->Delete;
+    if ($retval) {
+      push @actions, loc("Custom field deleted");
+    }
+    else {
+      push @actions, $msg;
+    }
+  }
+  # }}}
+}
+# }}}
+
+</%INIT>
+<%ARGS>
+$id => 0
+$title => undef
+$Move => undef
+$Source => undef
+$CustomField => undef
+$FindDisabledCustomFields => undef
+</%ARGS>

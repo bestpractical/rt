@@ -467,5 +467,16 @@ sub _Value {
 }
 
 # }}}
+# {{{ sub SetDisabled
+
+=head2 SetDisabled
+
+Takes a boolean.
+1 will cause this custom field to no longer be avaialble for tickets.
+0 will re-enable this queue
+
+=cut
+
+# }}}
 
 1;

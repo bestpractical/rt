@@ -23,23 +23,13 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id &>
+<& /Admin/Elements/SystemTabs &>
 
-<& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
+<& /Admin/Elements/EditCustomFields, title => $title, %ARGS &>
 
 <%INIT>
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($id);
-
-my $title;
-
-if ($QueueObj->id) {
-    $title = loc("Edit Templates for queue [_1]", $QueueObj->Name);
-} else {
-    Abort(loc("Queue [_1] not found",$id));
-}
-
+my $title = loc("Modify Custom Fields which apply to all queues");
 </%INIT>
 <%ARGS>
-$id => undef         #some identifier that a Queue could 
+$id => undef
 </%ARGS>

@@ -22,8 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
-
 package RT;
 use strict;
 use RT::I18N;

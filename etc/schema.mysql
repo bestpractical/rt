@@ -359,6 +359,7 @@ CREATE TABLE CustomFields (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 

@@ -22,8 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
-
 PERL			= 	/usr/bin/perl
 
 CONFIG_FILE_PATH	=	/opt/rt3/etc
@@ -396,7 +394,7 @@ regenerate-catalogs:
 license-tag:
 	$(PERL) sbin/license_tag
 
-factory: initdb 
+factory: initialize-database
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
 
 commit:

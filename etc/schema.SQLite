@@ -357,7 +357,8 @@ CREATE TABLE CustomFields (
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL 
+  LastUpdated DATETIME NULL ,
+  Disabled int2 NOT NULL DEFAULT 0 
   
 ) ;
 

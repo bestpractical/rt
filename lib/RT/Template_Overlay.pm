@@ -277,7 +277,7 @@ Delete this template.
 sub Delete {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('ModifyTemplate') ) {
+    unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 

@@ -396,7 +396,7 @@ regenerate-catalogs:
 license-tag:
 	$(PERL) sbin/license_tag
 
-factory: initdb 
+factory: initialize-database
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
 
 commit:

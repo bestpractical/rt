@@ -139,6 +139,8 @@ else {
                  OPERATOR => $ARGS{'UserOp'});
      }
 
+$Groups = new RT::Groups($session{'CurrentUser'});
+$Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
 </%INIT>
 
 <%ARGS>

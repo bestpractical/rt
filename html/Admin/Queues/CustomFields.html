@@ -22,92 +22,28 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
-<& /Admin/Elements/QueueTabs, id => $Queue->id &>
-<& /Elements/ListActions, actions => \@results &>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/QueueTabs, id => $QueueObj->id &>
 
-<& /Elements/TitleBoxStart, title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
-
-<FORM METHOD=GET ACTION="CustomFields.html">
-<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0><TR><TD>
-<UL>
-<LI><A href="CustomField.html?create=1&Queue=<%$Queue->id%>"><&|/l&>Create a new Custom Field</&></A><BR><BR>
-
-% while (my $CustomFieldObj = $CustomFields->Next) { 
-
-<LI><A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id%>/<% loc($CustomFieldObj->Type) %>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a>
-<BR>
-
-%}
-
-<& /Elements/TitleBoxEnd &>
-</FORM>
+<h2><&|/l&>Custom Fields which apply to all queues</&></h2>
+<& /Admin/Elements/ListGlobalCustomFields &>
+<BR> 
+<& /Admin/Elements/EditCustomFields, title => $title, %ARGS &>
 
 <%INIT>
-my $Queue = new RT::Queue($session{'CurrentUser'});
-$Queue->Load($id);
-if ($CustomField and $Move) {
-    my $SourceObj = RT::CustomField->new($session{'CurrentUser'});
-    $SourceObj->Load($CustomField) || Abort(loc('No CustomField'));
-    my $target_order = $SourceObj->SortOrder + $Move;
-    my $CustomFields = $Queue->CustomFields;
-    my $TargetObj;
-    while (my $CustomFieldObj = $CustomFields->Next) { 
-	$TargetObj = $CustomFieldObj
-	    if $CustomFieldObj->SortOrder == $target_order;
-    }
-    if ($TargetObj) {
-	# swap their sort order
-	$SourceObj->SetSortOrder($target_order);
-	$TargetObj->SetSortOrder($target_order - $Move);
-    }
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($id);
+
+my $title;
+
+if ($QueueObj->id) {
+    $title = loc("Edit Custom Fields for queue [_1]", $QueueObj->Name);
+} else {
+    Abort(loc("Queue [_1] not found",$id));
 }
-my $CustomFields = $Queue->CustomFields;
 
-# now process the 'copy queue' action.
-my @results;
-if ($Source and $Source ne $id) {
-    my $SourceQueue = new RT::Queue($session{'CurrentUser'});
-    $SourceQueue->Load($Source);
-    my $SourceCustomFields = $SourceQueue->CustomFields;
-
-    # delete old fields
-    foreach my $CustomFieldObj ( @{$CustomFields->ItemsArrayRef} ) { 
-	$CustomFieldObj->Delete;
-    }
-
-    # add new fields
-    while (my $SourceCustomFieldObj = $SourceCustomFields->Next) {
-	my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-	my ($val, $msg) =  $CustomFieldObj->Create(
-	    id => $SourceCustomFieldObj->id,
-	    Queue => $id,
-	    Name => $SourceCustomFieldObj->Name,
-	    Type => $SourceCustomFieldObj->Type,
-	    Description => $SourceCustomFieldObj->Description,
-	);
-	Abort(loc("Could not create CustomField") . ": $msg") unless ($val);
-	push @results, $msg;
-
-	$CustomFieldObj->SetSortOrder($SourceCustomFieldObj->SortOrder);
-
-	# add new values
-	my $values = $SourceCustomFieldObj->Values();
-	while (my $v = $values->Next) {
-	    my ( $addval, $addmsg ) = $CustomFieldObj->AddValue(
-		Name => $v->Name,
-		Description => $v->Description,
-		SortOrder => $v->SortOrder
-	    );
-	    # push ( @results, $addmsg );
-	}
-    }
-}
 
 </%INIT>
 <%ARGS>
-$id => undef
-$Move => undef
-$Source => undef
-$CustomField => undef
+$id => undef         #some identifier that a Queue could 
 </%ARGS>

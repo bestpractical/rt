@@ -22,24 +22,17 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id &>
+%   my $count = 0;
+%   while (my $CustomFieldObj = $CustomFields->Next) { 
+%   $count++;
+<font size="-1"><%$CustomFieldObj->id%>/<% loc($CustomFieldObj->Type) %>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></font>
+<BR>
+%   }
+%   if (!$count) {
+<font size="-1"><&|/l&>(No custom fields)</&></font>
+%   }
 
-<& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
-
-<%INIT>
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($id);
-
-my $title;
-
-if ($QueueObj->id) {
-    $title = loc("Edit Templates for queue [_1]", $QueueObj->Name);
-} else {
-    Abort(loc("Queue [_1] not found",$id));
-}
-
+<%init>
+my $CustomFields = new RT::CustomFields ($session{'CurrentUser'});
+$CustomFields->LimitToGlobal();
 </%INIT>
-<%ARGS>
-$id => undef         #some identifier that a Queue could 
-</%ARGS>
