@@ -86,11 +86,6 @@ if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a
 fi
 AC_SUBST(DB_TYPE)
 
-dnl Require InnoDB support with mysql
-if test "$DB_TYPE" = 'mysql'; then
-	test `mysqladmin variables | grep have_innodb | grep YES -c` = '0' && AC_MSG_ERROR([MySQL must have InnoDB support])
-fi
-
 dnl DATABASE_ENV_PREF
 if test "$DB_TYPE" = 'Oracle'; then
 	test "x$ORACLE_HOME" = 'x' && AC_MSG_ERROR([Please declare the ORACLE_HOME environment variable])
