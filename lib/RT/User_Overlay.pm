@@ -1030,7 +1030,13 @@ sub SetPassword {
     }
     else {
         $password = $self->_GeneratePassword($password);
-        return ( $self->SUPER::SetPassword( $password));
+        my ( $val, $msg ) = $self->SUPER::SetPassword($password);
+        if ($val) {
+            return ( 1, $self->loc("Password changed") );
+        }
+        else {
+            return ( $val, $msg );
+        }
     }
 
 }
