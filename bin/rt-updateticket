@@ -1,0 +1,2 @@
+#!/bin/sh
+curl  --silent --show-error --cookie $HOME/.rt/cookies-$RTSERVER -Fcontent=\<-  http://$RTSERVER/REST/update

@@ -7,7 +7,7 @@
 <& /Elements/TitleBoxEnd &>
 % }
 <BR>
-<& /Elements/TitleBoxStart, width=> "40%", titleright => loc("RT [_1] for [_2]", $RT::VERSION, $RT::rtname), title => loc('Login') ,
+<& /Elements/TitleBoxStart, width=> "40%", titleright => loc("RT [_1]", $RT::VERSION), title => loc('Login') ,
 contentbg=>"#cccccc" &>
 
 
@@ -64,4 +64,11 @@ $Error => undef
 </%ARGS>
 
 <%INIT>
+if ($Error && $session{'SessionType'} eq 'REST') {
+        $r->content_type('text/plain');
+        $m->out($Error);
+        $m->abort();
+}
+
+
 </%INIT>

@@ -203,7 +203,7 @@ unless ($LastVersion) {
             Right      => 'SuperUser',
             ObjectType     => 'System',
             ObjectId => '0'
-        }
+        },
 
     );
 }
@@ -220,6 +220,10 @@ unless ($LastVersion) {
             Description       => 'The default queue',
             CorrespondAddress => "rt\@localhost",
             CommentAddress    => "rt-comment\@localhost"
+        },
+        {
+            Name              => '__Approvals',
+            Description       => 'A system-internal queue for the approvals system',
         }
     );
 }
@@ -241,81 +245,81 @@ unless ($LastVersion) {
             Argument   => 'Requestor'
         },
         {
-            Name        => 'NotifyRequestors',
+            Name        => 'Notify Requestors',
             Description => 'Sends a message to the requestors',
             ExecModule  => 'Notify',
             Argument    => 'Requestor'
         },
         {
-            Name        => 'NotifyOwnerAsComment',
+            Name        => 'Notify Owner as Comment',
             Description => 'Sends mail to the owner',
             ExecModule  => 'NotifyAsComment',
             Argument    => 'Owner'
         },
         {
-            Name        => 'NotifyOwner',
+            Name        => 'Notify Owner',
             Description => 'Sends mail to the owner',
             ExecModule  => 'Notify',
             Argument    => 'Owner'
         },
         {
-            Name        => 'NotifyAdminCcsAsComment',
+            Name        => 'Notify AdminCcs as Comment',
             Description => 'Sends mail to the administrative Ccs as a comment',
             ExecModule  => 'NotifyAsComment',
             Argument    => 'AdminCc'
         },
         {
-            Name        => 'NotifyAdminCcs',
+            Name        => 'Notify AdminCcs',
             Description => 'Sends mail to the administrative Ccs',
             ExecModule  => 'Notify',
             Argument    => 'AdminCc'
         },
 
         {
-            Name        => 'NotifyRequestorsAndCcsAsComment',
+            Name        => 'Notify Requestors and Ccs as Comment',
             Description => 'Send mail to requestors and Ccs as a comment',
             ExecModule  => 'NotifyAsComment',
             Argument    => 'Requestor,Cc'
         },
 
         {
-            Name        => 'NotifyRequestorsAndCcs',
+            Name        => 'Notify Requestors and Ccs',
             Description => 'Send mail to requestors and Ccs',
             ExecModule  => 'Notify',
             Argument    => 'Requestor,Cc'
         },
 
         {
-            Name        => 'NotifyAllWatchersAsComment',
-            Description => 'Send mail to all watchers',
+            Name        => 'Notify Requestors, Ccs and AdminCcs as Comment',
+            Description => 'Send mail to all watchers as a "comment"',
             ExecModule  => 'NotifyAsComment',
             Argument    => 'All'
         },
         {
-            Name        => 'NotifyAllWatchers',
+            Name        => 'Notify Requestors, Ccs and AdminCcs',
             Description => 'Send mail to all watchers',
             ExecModule  => 'Notify',
             Argument    => 'All'
         },
         {
-            Name        => 'NotifyOtherRecipientsAsComment',
+            Name        => 'Notify Other Recipients as Comment',
             Description => 'Sends mail to explicitly listed Ccs and Bccs',
             ExecModule  => 'NotifyAsComment',
             Argument    => 'OtherRecipients'
         },
         {
-            Name        => 'NotifyOtherRecipients',
+            Name        => 'Notify Other Recipients',
             Description => 'Sends mail to explicitly listed Ccs and Bccs',
             ExecModule  => 'Notify',
             Argument    => 'OtherRecipients'
         },
         {
-            Name        => 'UserDefined',
+            Name        => 'User Defined',
             Description => 'Perform a user-defined action',
             ExecModule  => 'UserDefined',
         },
         {
-            Name        => 'CreateTickets',
+            Name        => 'Create Tickets',
             Description => 'Create new tickets based on this scrip\'s template',
             ExecModule  => 'CreateTickets',
         },
@@ -330,21 +334,21 @@ my @ScripConditions;
 unless ($LastVersion) {
     @ScripConditions = (
         {
-            Name                 => 'OnCreate',
+            Name                 => 'On Create',
             Description          => 'When a ticket is created',
             ApplicableTransTypes => 'Create',
             ExecModule           => 'AnyTransaction',
         },
 
         {
-            Name                 => 'OnTransaction',
+            Name                 => 'On Transaction',
             Description          => 'When anything happens',
             ApplicableTransTypes => 'Any',
             ExecModule           => 'AnyTransaction',
         },
         {
 
-            Name                 => 'OnCorrespond',
+            Name                 => 'On Correspond',
             Description          => 'Whenever correspondence comes in',
             ApplicableTransTypes => 'Correspond',
             ExecModule           => 'AnyTransaction',
@@ -352,14 +356,14 @@ unless ($LastVersion) {
 
         {
 
-            Name                 => 'OnComment',
+            Name                 => 'On Comment',
             Description          => 'Whenever comments come in',
             ApplicableTransTypes => 'Comment',
             ExecModule           => 'AnyTransaction'
         },
         {
 
-            Name                 => 'OnStatus',
+            Name                 => 'On Status Change',
             Description          => 'Whenever a ticket\'s status changes',
             ApplicableTransTypes => 'Status',
             ExecModule           => 'AnyTransaction',
@@ -367,7 +371,7 @@ unless ($LastVersion) {
         },
         {
 
-            Name                 => 'OnOwnerChange',
+            Name                 => 'On Owner Change',
             Description          => 'Whenever a ticket\'s owner changes',
             ApplicableTransTypes => 'Set',
             ExecModule           => 'OwnerChange',
@@ -375,14 +379,14 @@ unless ($LastVersion) {
         },
         {
 
-            Name                 => 'OnQueueChange',
+            Name                 => 'On Queue Change',
             Description          => 'Whenever a ticket\'s queue changes',
             ApplicableTransTypes => 'Set',
             ExecModule           => 'QueueChange',
 
         },
         {
-            Name                 => 'OnResolve',
+            Name                 => 'On Resolve',
             Description          => 'Whenever a ticket is resolved',
             ApplicableTransTypes => 'Status',
             ExecModule           => 'StatusChange',
@@ -391,7 +395,7 @@ unless ($LastVersion) {
         },
 
         {
-            Name                 => 'UserDefined',
+            Name                 => 'User Defined',
             Description          => 'Whenever a user-defined condition occurs',
             ApplicableTransTypes => 'Any',
             ExecModule           => 'UserDefined'

@@ -20,4 +20,13 @@ $Why => loc("the calling component did not specify why")
 
 <%INIT>
 $RT::Logger->error("WebRT: $Why ($Details)");
+if ( $session{'SessionType'} eq 'REST' ) {
+    $r->content_type('text/plain');
+    $m->out( "Error: " . $Why . "\n" );
+    $m->out( $Details . "\n" );
+    $m->abort();
+}
+else {
+    $r->content_type('text/html');
+}
 </%INIT>

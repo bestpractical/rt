@@ -1,0 +1,33 @@
+<%init>
+$r->content_type('text/plain');
+my $parser = MIME::Parser->new();
+$parser->output_to_core(1);
+$parser->tmp_to_core(1);
+my $entity = $parser->parse_data($content);
+
+my $header_id = $entity->head->get('ticket',0);
+unless ($id || $header_id) {
+        Abort(loc("Ticket id not found"));
+}
+
+my $ticket = RT::Ticket->new($session{'CurrentUser'});
+$ticket->Load($id||$header_id);
+
+unless ($ticket->id) {
+        Abort(loc("Ticket not found"));
+}
+
+my $update_type = ($entity->head->get('updatetype',0) || 'comment');
+
+my ($val, $msg);
+if ($update_type =~ /(respond|reply)/ ){
+        ($val, $msg) = $ticket->Correspond( MIMEObj => $entity);
+} else {
+        ($val, $msg) = $ticket->Comment( MIMEObj => $entity);
+}
+</%init>
+<%$msg%>
+<%args>
+$id => undef
+$content => undef;
+</%args>

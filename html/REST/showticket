@@ -1,0 +1,46 @@
+<%init>
+$r->content_type('text/plain');
+my $ticket = RT::Ticket->new($session{'CurrentUser'});
+$ticket->Load($id);
+</%init>
+Queue: <%$ticket->QueueObj->Name%>
+Owner: <%$ticket->OwnerObj->Name%>
+%foreach my $attr qw(id Subject Status Created Starts Started Resolved LastUpdated Due Priority InitialPriority FinalPriority TimeWorked TimeLeft TimeEstimated ) {
+<%$attr%>: <%$ticket->$attr()%>
+%}
+% foreach my $watchertype qw(Requestors Cc AdminCc) {
+% my $obj = $ticket->$watchertype->MembersObj();
+% while (my $item = $obj->Next) {
+% my $user = $item->MemberObj->Object;
+<%$watchertype%>: <%$user->Name%> <%$user->EmailAddress && "<".$user->EmailAddress.">"%>
+% }
+% }
+% foreach my $linktype qw(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy) {
+% my $links = $ticket->$linktype();
+% while (my $link = $links->Next) {
+% if ( $RT::Ticket::LINKTYPEMAP{$linktype}->{'Mode'} eq 'Base') {
+<%$ linktype%>: <%$link->BaseIsLocal? $link->LocalBase : $link->Base%>
+% } else {
+<%$ linktype%>: <%$link->TargetIsLocal? $link->LocalTarget : $link->Target%>
+% }
+% }
+% }
+% my $transactions = $ticket->Transactions();
+% while (my $trans = $transactions->Next())  {
+
+Date: <%$trans->CreatedObj->AsString%>
+From: <%$trans->CreatorObj->Name%> <%$trans->CreatorObj->EmailAddress && "<".$trans->CreatorObj->EmailAddress.">"%>
+%if ($trans->Subject) {
+Subject: <%$trans->Subject%>
+% }
+Description: <%$trans->BriefDescription%>
+% my $attachments = $trans->Attachments;
+% while (my $attach = $attachments->Next) {
+Attachment: <%$ticket->Id%>-<%$trans->Id%>-<%$attach->Id%> <%$attach->Filename%> <%$attach->ContentType%> (<%length($attach->Content)%> bytes)
+% }
+<%$trans->Content%>
+% }
+% $m->abort();
+<%args>
+$id => undef
+</%args>

@@ -237,8 +237,8 @@ $q->Create(Name => 'WorkflowTest');
 ok ($q->Id, "Created workflow test queue");
 
 my $scrip = RT::Scrip->new($RT::SystemUser);
-my ($sval, $smsg) =$scrip->Create( ScripCondition => 'OnTransaction',
-                ScripAction => 'CreateTickets',
+my ($sval, $smsg) =$scrip->Create( ScripCondition => 'On Transaction',
+                ScripAction => 'Create Tickets',
                 Template => 'Approvals',
                 Queue => $q->Id);
 ok ($sval, $smsg);
@@ -278,8 +278,6 @@ sub Commit {
     $T::Tickets{'TOP'} = $self->TicketObj;
 
     foreach my $template_id ( @{ $self->{'template_order'} } ) {
-        $RT::Logger->debug("Template id is $template_id");
-        $RT::Logger->debug("Template content is ".$self->{'templates'}->{$template_id});
 
         
         $T::Tickets{$template_id} = RT::Ticket->new($RT::SystemUser);
@@ -364,7 +362,6 @@ sub Commit {
                   && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
             } keys(%args);
             my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%ticketargs);
-             $RT::Logger->debug("Related ticket: $id - $msg");
             unless($id) {
                 $RT::Logger->error("Couldn't create a related ticket for ".$self->TicketObj->Id." ".$msg);
             }

@@ -25,19 +25,6 @@ ok (require RT::Links);
 
 no warnings qw(redefine);
 
-
-# {{{ sub _Init  
-sub _Init   {
-  my $self = shift;
- 
-  $self->{'table'} = "Links";
-  $self->{'primary_key'} = "id";
-
-
-  return ( $self->SUPER::_Init(@_));
-}
-# }}}
-
 # {{{ sub Limit 
 sub Limit  {
     my $self = shift;
@@ -76,11 +63,5 @@ sub Limit  {
 }
 # }}}
 
-# {{{ sub NewItem 
-sub NewItem  {
-    my $self = shift;
-    return(RT::Link->new($self->CurrentUser));
-}
-# }}}
-  1;
+1;
 

@@ -1,0 +1,2 @@
+#!/bin/sh
+curl --cookie ~/.rt/cookies-$RTSERVER  "http://$RTSERVER/REST/attachment?arg=$1"

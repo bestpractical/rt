@@ -2,12 +2,6 @@
 <HTML>
 <HEAD>
 <TITLE><%$Title%></TITLE>
-
-%# TODO this gets called from error. but I have no idea what it might
-%# be used for. can we whack it?  -jesse
-% if ($Code) {
-<META HTTP-EQUIV VALUE="<%$Code%> <%$Why%>">
-% }
 % if ($Refresh > 0) {
 <META HTTP-EQUIV="REFRESH" CONTENT="<%$Refresh%>">
 % }
@@ -29,12 +23,12 @@
 <TD ALIGN=RIGHT>
 <font color="#ffffff" size=-2>
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
-<&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b></&>
-<BR>
 <A class='inverse' HREF="<%$RT::WebPath%>/User/Prefs.html" ><&|/l&>Preferences</&></A>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
- | <A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html"><&|/l&>Logout</&></a>
+&nbsp;|&nbsp;<A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html"><&|/l&>Logout</&></a>
 % }
+<BR>
+<&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b></&>
 % } else {
 <&|/l&>Not logged in.</&>
 % }
@@ -44,18 +38,22 @@
 </TABLE>
 <BR>
 % }
+<%INIT>
+
+$r->header_out('Pragma' => 'no-cache');
+$r->header_out('Cache-control' => 'no-cache');
+if ($Title) {
+        $Title = "RT for $RT::rtname: ".$Title;
+} else {
+        $Title = "RT for $RT::rtname";
+}
+</%INIT>
+
 <%ARGS>
-$Title => 'WebRT'
+$Title => undef
 $Code => undef
 $Refresh => undef
 $Why => undef
 $BgColor => '#ffffff'
 $ShowBar => 1
 </%ARGS>
-<%INIT>
-
-$r->header_out('Pragma' => 'no-cache');
-$r->header_out('Cache-control' => 'no-cache');
-$Title = "RT/$RT::rtname: ".$Title;
-</%INIT>
-

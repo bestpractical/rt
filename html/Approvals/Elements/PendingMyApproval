@@ -1,0 +1,17 @@
+<h2><&|/l&>Items pending my approval</&></h2>
+<table width="100%">
+% my ($i, $class);
+% while (my $ticket = $tickets->Next() ) {
+% $i++; 
+% $class = ($i%2) ?  "oddline" : "evenline";
+<& Approve, ticket => $ticket &>
+% }
+</table>
+<%init>
+my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
+$tickets->LimitOwner( VALUE  => $session{'CurrentUser'}->Id );
+$tickets->Limit( FIELD       => 'Type', VALUE => 'approval' );
+$tickets->LimitStatus( VALUE => 'open' );
+$tickets->LimitStatus( VALUE => 'new' );
+$tickets->LimitStatus( VALUE => 'stalled' );
+</%init>

@@ -1,6 +1,10 @@
 BODY, TD {font-family: Helvetica, Arial, sans-serif}
 TD {border-color: #cccccc }
 
+.currenttab { margin: 0.2em; background: #336699; }
+.othertab { margin: 0.2em; background: #efefef; }
+.oddline { background-color : #eeeeee; }
+
 TH { font-size: 80%;
      font-weight: bold;
      font-color: #336699; }
@@ -49,7 +53,7 @@ A { font-weight: bold;
       		color: #000000;
 	    /* border: none -- breaks NS 4.x */ }
 
-.currenttab { color: #999999; }
+.currenttab { color: #ffffff;}
 .othertab { color: #336699; }
 
 .inverse { color: #ffffff; }
@@ -66,6 +70,20 @@ A IMG { color: white } /* The only way to hide the border in NS 4.x */
 }
 
 SPAN.date { font-size: 0.8em }
+
+SPAN.titleboxtitle {
+        font-size: 1.2em;
+        color: #ffffff;
+        }
+
+
+
+
+SPAN.titleboxright {
+        font-size: 1.2em;
+        color: #ffffff;
+        }
+
 
 SPAN.attribution {
   font-weight: bold;
@@ -107,8 +125,7 @@ IMG {
 P.map-also { font-style: italic; margin-left: 15%; text-align: right }
 
 .oddline { 
-background-color : #eeeeee;
-
+        background-color : #eeeeee;
 }
 
 <%init>

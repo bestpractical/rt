@@ -12,6 +12,11 @@ else {
 }
 $m->comp('/Elements/SetupSessionCookie');
 
+
+if ($ARGS{'SessionType'}) {
+        $session{'SessionType'} = $ARGS{'SessionType'};
+}
+
 unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
     $session{'CurrentUser'} = RT::CurrentUser->new();
 }

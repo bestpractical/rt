@@ -1,0 +1,16 @@
+<tr <%$class && "class=\"$class\""%>>
+        <td><%$ticket->Id%></td><td><a href="<%$RT::WebPath%>/Approvals/Display.html?id=<%$ticket->Id%>"><%$ticket->Subject%></a></td>
+<td><input type="radio" name="Approval-<%$ticket->Id%>-Action" value="approve"><&|/l&>Approve</&></td>
+<td><input type="radio" name="Approval-<%$ticket->Id%>-Action" value="deny"><&|/l&>Deny</&></td>
+<td><input type="radio" name="Approval-<%$ticket->Id%>-Action" value="none" checked><&|/l&>No action</&></td>
+</tr>
+<tr <%$class && "class=\"$class\""%>>
+<td><&|/l&>Notes</&></td>
+<td colspan="4">
+<textarea name="Approval-<%$ticket->Id%>-Notes" rows=2 cols=70></textarea>
+</td>
+</tr>
+<%args>
+$ticket => undef
+$class => undef
+</%args>

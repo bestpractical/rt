@@ -55,9 +55,10 @@
 <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)</&></font></i>
 </td></tr>
 <tr><td align=right><&|/l&>Attach</&>:</td><td><input name="UpdateAttachment" type="file"></td></tr>
-</table>
-<& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
+<tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td><& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
+</td></tr>
 		<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>"><br>
+</table>
 
 
 

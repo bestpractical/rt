@@ -1,0 +1,2 @@
+#!/bin/sh
+curl  --silent --show-error -D $HOME/.rt/cookies-$RTSERVER -FSessionType=REST -Fuser=$RTUSER -Fpass=\<$HOME/.rt/password-localhost http://$RTSERVER/REST/login;

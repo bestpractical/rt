@@ -93,6 +93,28 @@ ok(require RT::Ticket, "Loading the RT::Ticket library");
 
 # }}}
 
+# Relationships table
+
+use vars (%LINKTYPEMAP);
+
+%LINKTYPEMAP = (
+    MemberOf => { Type => 'MemberOf',
+                  Mode => 'Target', },
+    Members => { Type => 'MemberOf',
+                   Mode => 'Base', },
+    HasMember => { Type => 'MemberOf',
+                   Mode => 'Base', },
+    RefersTo => { Type => 'RefersTo',
+                  Mode => 'Target', },
+    ReferredToBy => { Type => 'RefersTo',
+                      Mode => 'Base', },
+    DependsOn => { Type => 'DependsOn',
+                   Mode => 'Target', },
+    DependedOnBy => { Type => 'DependsOn',
+                      Mode => 'Base', },
+
+);
+
 # {{{ sub Load
 
 =head2 Load
@@ -438,41 +460,14 @@ sub Create {
     # {{{ Deal with setting up links
 
 
-    my %linktypemap =( 
-        MemberOf => {
-            Type => 'MemberOf',
-            Mode => 'Target',
-        },
-        HasMember => {
-            Type => 'MemberOf',
-            Mode => 'Base',
-        },
-        RefersTo => {
-            Type => 'RefersTo',
-            Mode => 'Target',
-        },
-        ReferredToBy => {
-            Type => 'RefersTo',
-            Mode => 'Base',
-        },
-        DependsOn => {
-            Type => 'DependsOn',
-            Mode => 'Target',
-        },
-        DependedOnBy => {
-            Type => 'DependsOn',
-            Mode => 'Base',
-        },
-
-   ); 
-    foreach my $type ( keys %linktypemap ) {
+    foreach my $type ( keys %LINKTYPEMAP ) {
         next unless (defined $args{$type});
         foreach my $link (
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
         {
             my ( $wval, $wmsg ) = $self->AddLink(
-                Type                          => $linktypemap{$type}->{'Type'},
-                $linktypemap{$type}->{'Mode'} => $link,
+                Type                          => $LINKTYPEMAP{$type}->{'Type'},
+                $LINKTYPEMAP{$type}->{'Mode'} => $link,
                 Silent                        => 1
             );
 
@@ -2426,7 +2421,7 @@ sub SetOwner {
     # Delete the owner in the owner group, then add a new one
     # TODO: is this safe? it's not how we really want the API to work 
     # for most things, but it's fast.
-    my ($del_id, $del_msg) = $self->OwnerGroup->Members->First->Delete();
+    my ($del_id, $del_msg) = $self->OwnerGroup->MembersObj->First->Delete();
     unless ($del_id) {
         $RT::Handle->Rollback();
         return(0, $self->loc("Could not change owner. "). $del_msg);
@@ -2437,19 +2432,40 @@ sub SetOwner {
         $RT::Handle->Rollback();
         return(0, $self->loc("Could not change owner. "). $add_msg);
     }
-    
-    my ( $trans, $msg ) = $self->_Set(
+   
+    # We call set twice with slightly different arguments, so 
+    # as to not have an SQL transaction span two RT transactions
+
+    my ( $val, $msg ) = $self->_Set(
         Field           => 'Owner',
+        RecordTransaction => 0,
         Value           => $NewOwnerObj->Id,
         TimeTaken       => 0,
         TransactionType => $Type
     );
 
-    if ($trans) {
-        $msg = "Owner changed from " . $OldOwnerObj->Name . " to " . $NewOwnerObj->Name;
+    unless ($val) {
+        $RT::Handle->Rollback;
+        return(0, $self->loc("Could not change owner. "). $msg);
     }
+
     $RT::Handle->Commit();
-    $RT::Logger->crit("RT::Ticket->SetOwner lets a transaction span across scrips. this is DANGEROUS AND MUST CHANGE");
+
+
+
+    my $trans;
+
+    ( $trans, $msg ) = $self->_Set(
+        Field           => 'Owner',
+        UpdateTicket    => 0,
+        Value           => $NewOwnerObj->Id,
+        TimeTaken       => 0,
+        TransactionType => $Type
+    );
+    if ($trans) {
+        $msg = $self->loc( "Owner changed from [_1] to [_2]", $OldOwnerObj->Name,  $NewOwnerObj->Name);
+        # TODO: make sure the trans committed properly
+    }
     return ( $trans, $msg );
 
 }
@@ -2544,6 +2560,27 @@ sub ValidateStatus {
 
 Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
 
+=begin testing
+
+my $tt = RT::Ticket->new($RT::SystemUser);
+my ($id, $tid, $msg)= $tt->Create(Queue => 'general',
+            Subject => 'test');
+ok($id, $msg);
+ok($tt->Status eq 'new', "New ticket is created as new");
+
+($id, $msg) = $tt->SetStatus('open');
+ok($id, $msg);
+ok ($msg =~ /open/i, "Status message is correct");
+($id, $msg) = $tt->SetStatus('resolved');
+ok($id, $msg);
+ok ($msg =~ /resolved/i, "Status message is correct");
+($id, $msg) = $tt->SetStatus('resolved');
+ok(!$id,$msg);
+
+
+=end testing
+
+
 =cut
 
 sub SetStatus {
@@ -2580,10 +2617,12 @@ sub SetStatus {
     }
 
     #Actually update the status
-    return ( $self->_Set( Field           => 'Status',
+   my ($val, $msg)= $self->_Set( Field           => 'Status',
                           Value           => $status,
                           TimeTaken       => 0,
-                          TransactionType => 'Status' ) );
+                          TransactionType => 'Status'  );
+
+    return($val,$msg);
 }
 
 # }}}
@@ -3073,41 +3112,47 @@ sub _Set {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my %args = (
-        Field             => undef,
-        Value             => undef,
-        TimeTaken         => 0,
-        RecordTransaction => 1,
-        TransactionType   => 'Set',
-        @_
-    );
+    my %args = ( Field             => undef,
+                 Value             => undef,
+                 TimeTaken         => 0,
+                 RecordTransaction => 1,
+                 UpdateTicket      => 1,
+                 TransactionType   => 'Set',
+                 @_ );
+
+    unless ($args{'UpdateTicket'} || $args{'RecordTransaction'}) {
+        $RT::Logger->error("Ticket->_Set called without a mandate to record an update or update the ticket");
+        return(0, $self->loc("Internal Error"));
+    }
 
     #if the user is trying to modify the record
 
     #Take care of the old value we really don't want to get in an ACL loop.
     # so ask the super::_Value
     my $Old = $self->SUPER::_Value("$args{'Field'}");
+    
+    my ($ret, $msg);
+    if ( $args{'UpdateTicket'}  ) {
 
-    #Set the new value
-    my ( $ret, $msg ) = $self->SUPER::_Set(
-        Field => $args{'Field'},
-        Value => $args{'Value'}
-    );
-
-    #If we can't actually set the field to the value, don't record
-    # a transaction. instead, get out of here.
-    if ( $ret == 0 ) { return ( 0, $msg ); }
+        #Set the new value
+        ( $ret, $msg ) = $self->SUPER::_Set( Field => $args{'Field'},
+                                                Value => $args{'Value'} );
+    
+        #If we can't actually set the field to the value, don't record
+        # a transaction. instead, get out of here.
+        if ( $ret == 0 ) { return ( 0, $msg ); }
+    }
 
     if ( $args{'RecordTransaction'} == 1 ) {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => $args{'TransactionType'},
-            Field     => $args{'Field'},
-            NewValue  => $args{'Value'},
-            OldValue  => $Old,
-            TimeTaken => $args{'TimeTaken'},
+                                               Type => $args{'TransactionType'},
+                                               Field     => $args{'Field'},
+                                               NewValue  => $args{'Value'},
+                                               OldValue  => $Old,
+                                               TimeTaken => $args{'TimeTaken'},
         );
-        return ( $Trans, $TransObj->Description );
+        return ( $Trans, scalar $TransObj->Description );
     }
     else {
         return ( $ret, $msg );

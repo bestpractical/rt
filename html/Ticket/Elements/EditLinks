@@ -1,22 +1,9 @@
 %# $Header: /raid/cvsroot/rt/webrt/Ticket/Elements/EditLinks,v 1.2 2001/11/06 23:07:10 jesse Exp $
-%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+%# Copyright 1996-2002 Jesse Vincent <jesse@fsck.com>
 
 
-<TABLE>
+<TABLE width=100%>
 <TR>
-<TD VALIGN=TOP>
-<h3><&|/l&>New Relationships</&></h3>
-<i><&|/l&>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</&></i><br>
-<TABLE>
-<TR><TD><&|/l&>Merge into</&>:</TD><TD><input name="<%$Ticket->Id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD></TR>
-<TR><TD><&|/l&>Depends on</&>:</TD><TD><input name="<%$Ticket->Id%>-DependsOn"></TD></TR>
-<TR><TD><&|/l&>Depended on by</&>:</TD><TD><input name="DependsOn-<%$Ticket->Id%>"></TD></TR>
-<TR><TD><&|/l&>Parents</&>:</TD><TD><input name="<%$Ticket->Id%>-MemberOf"></TD></TR>
-<TR><TD><&|/l&>Children</&>:</TD><TD> <input name="MemberOf-<%$Ticket->Id%>"></TD></TR>
-<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$Ticket->Id%>-RefersTo"></TD></TR>
-<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$Ticket->Id%>"></TD></TR>
-</TABLE>
-</TD>
 <TD VALIGN=TOP WIDTH=50%>
 <h3><&|/l&>Current Relationships</&></h3>
 <i><&|/l&>(Check box to delete)</&></i><br>
@@ -98,6 +85,19 @@
 </UL>
 
 			    
+</TD>
+<TD VALIGN=TOP>
+<h3><&|/l&>New Relationships</&></h3>
+<i><&|/l&>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</&></i><br>
+<TABLE>
+<TR><TD><&|/l&>Merge into</&>:</TD><TD><input name="<%$Ticket->Id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD></TR>
+<TR><TD><&|/l&>Depends on</&>:</TD><TD><input name="<%$Ticket->Id%>-DependsOn"></TD></TR>
+<TR><TD><&|/l&>Depended on by</&>:</TD><TD><input name="DependsOn-<%$Ticket->Id%>"></TD></TR>
+<TR><TD><&|/l&>Parents</&>:</TD><TD><input name="<%$Ticket->Id%>-MemberOf"></TD></TR>
+<TR><TD><&|/l&>Children</&>:</TD><TD> <input name="MemberOf-<%$Ticket->Id%>"></TD></TR>
+<TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$Ticket->Id%>-RefersTo"></TD></TR>
+<TR><TD><&|/l&>Referred to by</&>:</TD><TD> <input name="RefersTo-<%$Ticket->Id%>"></TD></TR>
+</TABLE>
 </TD>
 </TR>
 </TABLE>

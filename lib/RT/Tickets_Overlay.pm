@@ -126,6 +126,10 @@ sub Limit {
         $self->{'looking_at_effective_id'} = 1;
     }
 
+    if ($args{'FIELD'} eq 'Type') {
+        $self->{'looking_at_type'} = 1;
+    }
+
     return ($index);
 }
 
@@ -1476,6 +1480,11 @@ sub _ProcessRestrictions {
               OPERATOR => '=',
               QUOTEVALUE => 0,
               VALUE => 'main.id');   #TODO, we shouldn't be hard coding the tablename to main.
+      } 
+     if ($self->_isLimited && (! $self->{'looking_at_type'})) {
+        $self->SUPER::Limit( FIELD => 'Type', 
+              OPERATOR => '=',
+              VALUE => 'ticket'); 
       } 
     $self->{'RecalcTicketLimits'} = 0;
 }

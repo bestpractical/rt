@@ -1,0 +1,396 @@
+Return-Path: <Xxxxxx_Yyyyyyy@some.net>
+Delivered-To: jesse@pallas.eruditorum.org
+Received: by pallas.eruditorum.org (Postfix)
+	id B5D3E1123A; Fri, 12 Jul 2002 11:35:27 -0400 (EDT)
+Delivered-To: rt-2.0-bugs@pallas.eruditorum.org
+Received: from postman.some.net (postman.some.net [193.0.0.199])
+	by pallas.eruditorum.org (Postfix) with SMTP id 2736011234
+	for <rt-2.0-bugs@fsck.com>; Fri, 12 Jul 2002 11:35:27 -0400 (EDT)
+Received: (qmail 11615 invoked by uid 0); 12 Jul 2002 15:35:26 -0000
+Received: from x22.some.net (HELO x22.some.net.some.net) (193.0.1.22)
+  by postman.some.net with SMTP; 12 Jul 2002 15:35:26 -0000
+Date: Fri, 12 Jul 2002 17:35:26 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+To: rt-0.0-bugs@fsck.com
+Subject: Example MIME within MIME within MIME message
+Message-ID: <Pine.LNX.4.44.0207121734250.25020-120000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="12654081-192303556-1026488126=:25020"
+X-Spam-Status: No, hits=4.0 required=7.0
+	tests=DOUBLE_CAPSWORD,MIME_NULL_BLOCK,MIME_MISSING_BOUNDARY
+	version=2.31
+Content-Length: 11478
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+  Send mail to mime@docserver.cac.washington.edu for more info.
+
+--12654081-192303556-1026488126=:25020
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+MIME is fun at times.
+
+
+-- 
+                             Xxxxxx Yyyyyyy                            SOME
+                   Systems/Network Engineer                             NCC
+                 www.some.net - PGP000C8B1B             Operations/Security
+
+--12654081-192303556-1026488126=:25020
+Content-Type: MULTIPART/Digest; BOUNDARY="12654081-2102091261-1026488126=:25020"
+Content-ID: <Pine.LNX.4.44.0207121734322.25020@x22.some.net>
+Content-Description: Digest of 2 messages
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+  Send mail to mime@docserver.cac.washington.edu for more info.
+
+--12654081-2102091261-1026488126=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121734320.25020@x22.some.net>
+Content-Description: first outer message (fwd)
+
+Date: Fri, 12 Jul 2002 17:32:37 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: first outer message
+Message-ID: <Pine.LNX.4.44.0207121732180.25020-120000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="12654081-113777422-1026487957=:25020"
+
+
+--12654081-113777422-1026487957=:25020
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+first outer message
+
+--12654081-113777422-1026487957=:25020
+Content-Type: MULTIPART/Digest; BOUNDARY="12654081-387266385-1026487957=:25020"
+Content-ID: <Pine.LNX.4.44.0207121732222.25020@x22.some.net>
+Content-Description: Digest of 2 messages
+
+--12654081-387266385-1026487957=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121732220.25020@x22.some.net>
+Content-Description: middle message (fwd)
+
+Date: Fri, 12 Jul 2002 17:31:45 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: middle message
+Message-ID: <Pine.LNX.4.44.0207121731190.25020-120000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="12654081-1711788944-1026487905=:25020"
+
+
+--12654081-1711788944-1026487905=:25020
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+This is the first middle message
+
+
+--12654081-1711788944-1026487905=:25020
+Content-Type: MULTIPART/Digest; BOUNDARY="12654081-1221085552-1026487905=:25020"
+Content-ID: <Pine.LNX.4.44.0207121731262.25020@x22.some.net>
+Content-Description: Digest of 2 messages
+
+--12654081-1221085552-1026487905=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121731260.25020@x22.some.net>
+Content-Description: This is the inner-most message (fwd)
+
+Date: Fri, 12 Jul 2002 17:30:31 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: This is the inner-most message
+Message-ID: <Pine.LNX.4.44.0207121730070.25020-100000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+inner-msg
+
+
+
+--12654081-1221085552-1026487905=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121731261.25020@x22.some.net>
+Content-Description: another inner message (need two before pine will do the mime-digest thing) (fwd)
+
+Date: Fri, 12 Jul 2002 17:31:12 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: another inner message (need two before pine will do the mime-digest
+ thing)
+Message-ID: <Pine.LNX.4.44.0207121730480.25020-100000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+again
+
+
+
+--12654081-1221085552-1026487905=:25020--
+--12654081-1711788944-1026487905=:25020--
+
+--12654081-387266385-1026487957=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121732221.25020@x22.some.net>
+Content-Description: middle message (fwd)
+
+Date: Fri, 12 Jul 2002 17:32:05 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: middle message
+Message-ID: <Pine.LNX.4.44.0207121731470.25020-120000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="12654081-1731270459-1026487925=:25020"
+
+
+--12654081-1731270459-1026487925=:25020
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+This is the second middle message
+
+
+--12654081-1731270459-1026487925=:25020
+Content-Type: MULTIPART/Digest; BOUNDARY="12654081-128832654-1026487925=:25020"
+Content-ID: <Pine.LNX.4.44.0207121731502.25020@x22.some.net>
+Content-Description: Digest of 2 messages
+
+--12654081-128832654-1026487925=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121731500.25020@x22.some.net>
+Content-Description: This is the inner-most message (fwd)
+
+Date: Fri, 12 Jul 2002 17:30:31 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: This is the inner-most message
+Message-ID: <Pine.LNX.4.44.0207121730070.25020-100000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+inner-msg
+
+
+
+--12654081-128832654-1026487925=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121731501.25020@x22.some.net>
+Content-Description: another inner message (need two before pine will do the mime-digest thing) (fwd)
+
+Date: Fri, 12 Jul 2002 17:31:12 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: another inner message (need two before pine will do the mime-digest
+ thing)
+Message-ID: <Pine.LNX.4.44.0207121730480.25020-100000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+again
+
+
+
+--12654081-128832654-1026487925=:25020--
+--12654081-1731270459-1026487925=:25020--
+
+--12654081-387266385-1026487957=:25020--
+--12654081-113777422-1026487957=:25020--
+
+--12654081-2102091261-1026488126=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121734321.25020@x22.some.net>
+Content-Description: 2nd outer message (fwd)
+
+Date: Fri, 12 Jul 2002 17:32:54 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: 2nd outer message
+Message-ID: <Pine.LNX.4.44.0207121732380.25020-120000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="12654081-1955637437-1026487974=:25020"
+
+
+--12654081-1955637437-1026487974=:25020
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+2nd outer message
+
+
+--12654081-1955637437-1026487974=:25020
+Content-Type: MULTIPART/Digest; BOUNDARY="12654081-362457126-1026487974=:25020"
+Content-ID: <Pine.LNX.4.44.0207121732412.25020@x22.some.net>
+Content-Description: Digest of 2 messages
+
+--12654081-362457126-1026487974=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121732410.25020@x22.some.net>
+Content-Description: middle message (fwd)
+
+Date: Fri, 12 Jul 2002 17:31:45 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: middle message
+Message-ID: <Pine.LNX.4.44.0207121731190.25020-120000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="12654081-1711788944-1026487905=:25020"
+
+
+--12654081-1711788944-1026487905=:25020
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+This is the first middle message
+
+
+--12654081-1711788944-1026487905=:25020
+Content-Type: MULTIPART/Digest; BOUNDARY="12654081-1221085552-1026487905=:25020"
+Content-ID: <Pine.LNX.4.44.0207121731262.25020@x22.some.net>
+Content-Description: Digest of 2 messages
+
+--12654081-1221085552-1026487905=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121731260.25020@x22.some.net>
+Content-Description: This is the inner-most message (fwd)
+
+Date: Fri, 12 Jul 2002 17:30:31 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: This is the inner-most message
+Message-ID: <Pine.LNX.4.44.0207121730070.25020-100000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+inner-msg
+
+
+
+--12654081-1221085552-1026487905=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121731261.25020@x22.some.net>
+Content-Description: another inner message (need two before pine will do the mime-digest thing) (fwd)
+
+Date: Fri, 12 Jul 2002 17:31:12 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: another inner message (need two before pine will do the mime-digest
+ thing)
+Message-ID: <Pine.LNX.4.44.0207121730480.25020-100000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+again
+
+
+
+--12654081-1221085552-1026487905=:25020--
+--12654081-1711788944-1026487905=:25020--
+
+--12654081-362457126-1026487974=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121732411.25020@x22.some.net>
+Content-Description: middle message (fwd)
+
+Date: Fri, 12 Jul 2002 17:32:05 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: middle message
+Message-ID: <Pine.LNX.4.44.0207121731470.25020-120000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="12654081-1731270459-1026487925=:25020"
+
+
+--12654081-1731270459-1026487925=:25020
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+This is the second middle message
+
+
+--12654081-1731270459-1026487925=:25020
+Content-Type: MULTIPART/Digest; BOUNDARY="12654081-128832654-1026487925=:25020"
+Content-ID: <Pine.LNX.4.44.0207121731502.25020@x22.some.net>
+Content-Description: Digest of 2 messages
+
+--12654081-128832654-1026487925=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121731500.25020@x22.some.net>
+Content-Description: This is the inner-most message (fwd)
+
+Date: Fri, 12 Jul 2002 17:30:31 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: This is the inner-most message
+Message-ID: <Pine.LNX.4.44.0207121730070.25020-100000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+inner-msg
+
+
+
+--12654081-128832654-1026487925=:25020
+Content-Type: MESSAGE/RFC822; CHARSET=US-ASCII
+Content-ID: <Pine.LNX.4.44.0207121731501.25020@x22.some.net>
+Content-Description: another inner message (need two before pine will do the mime-digest thing) (fwd)
+
+Date: Fri, 12 Jul 2002 17:31:12 +0200 (CEST)
+From: Xxxxxx Yyyyyyy <Xxxxxx_Yyyyyyy@some.net>
+X-X-Sender: bc@x22.some.net
+To: Xxxxxx_Yyyyyyy@some.net
+Subject: another inner message (need two before pine will do the mime-digest
+ thing)
+Message-ID: <Pine.LNX.4.44.0207121730480.25020-100000@x22.some.net>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+
+again
+
+
+
+--12654081-128832654-1026487925=:25020--
+--12654081-1731270459-1026487925=:25020--
+
+--12654081-362457126-1026487974=:25020--
+--12654081-1955637437-1026487974=:25020--
+
+--12654081-2102091261-1026488126=:25020--
+--12654081-192303556-1026488126=:25020--
+

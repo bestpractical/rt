@@ -6,18 +6,18 @@
         CELLPADDING="2">
 <TR>
 <TD valign=middle align=left bgcolor="<%$color%>">
-        <font size=-1 color="#ffffff">
+        <span class="titleboxtitle">
         <b>
          <% $title_href && "<A CLASS=\"$title_class\" HREF=\"$title_href\">"|n%><%$title |n %><%  $title_href && "</A>" |n%></b>
-         </font>
+         </span>
 </TD>
 <TD  ALIGN="right" 
      VALIGN=middle 
      COLSPAN=2       
      BGCOLOR="<%$color%>">
-     <FONT color="#ffffff" SIZE=-1>
+        <span class="titleboxright">
         <%$titleright |n %>
-     </FONT>
+        </span>
      &nbsp;
 </TD>
 </TR>

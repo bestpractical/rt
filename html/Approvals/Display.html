@@ -1,0 +1,49 @@
+<& /Elements/Header, Title =>  $title &>
+
+<& Elements/Tabs, current_tab => "Approvals/Display.html" &>
+<form method=post action="<%$RT::WebPath%>/Approvals/">
+<& /Elements/TitleBoxStart, title => $title &>
+<table width=100%>
+<& Elements/Approve, ticket => $Ticket &>
+</table>
+<& /Elements/TitleBoxEnd&>
+<& /Elements/Submit&>
+</form>
+<& /Ticket/Elements/ShowSummary, Ticket => $Ticket &>
+
+<& /Ticket/Elements/ShowHistory , Ticket => $Ticket, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0 &>
+<br>
+
+<h2><&|/l&>Tickets which depend on this approval:</&></h2>
+
+<table widht=100%>
+<TR>
+<TD WIDTH="50">&nbsp;</TD><TD>
+% my $approving = $Ticket->DependedOnBy();
+% while (my $link = $approving->Next()) {
+%    next unless ($link->BaseIsLocal());
+<h3>#<%$link->BaseObj->Id%>: <%$link->BaseObj->Subject%></h3>
+<font size="-1">
+<& /Ticket/Elements/ShowSummary, Ticket => $link->BaseObj &>    
+
+%#<& /Ticket/Elements/ShowHistory , Ticket => $link->BaseObj, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0 &>
+</font>     
+
+<BR><HR><BR>
+% }
+</TD>
+</TR>
+</TABLE>
+
+<%init>
+my $Ticket = LoadTicket($id);
+
+my $title = loc("Approval #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
+
+
+
+
+</%init>
+<%ARGS>
+$id => undef
+</%ARGS>

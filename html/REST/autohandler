@@ -1,0 +1,5 @@
+<%init>
+$r->content_type('text/plain');
+$m->call_next();
+$m->abort();
+</%init>

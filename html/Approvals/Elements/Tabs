@@ -1,0 +1,10 @@
+<& /Elements/Tabs, tabs => $tabs &>
+<%INIT>
+</%INIT>
+
+  
+<%ARGS>
+$tabs => undef
+$current_tab => undef
+
+</%ARGS>

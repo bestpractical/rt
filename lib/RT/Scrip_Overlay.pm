@@ -24,8 +24,8 @@ ok($q->Id, "Created a scriptest queue");
 
 my $s1 = RT::Scrip->new($RT::SystemUser);
 my ($val, $msg) =$s1->Create( Queue => $q->Id,
-             ScripAction => 'UserDefined',
-             ScripCondition => 'UserDefined',
+             ScripAction => 'User Defined',
+             ScripCondition => 'User Defined',
              CustomIsApplicableCode => 'if ($self->TicketObj->Subject =~ /fire/) { return (1);} else { return(0)}',
              CustomPrepareCode => 'return 1',
              CustomCommitCode => '$self->TicketObj->SetPriority("87");',
