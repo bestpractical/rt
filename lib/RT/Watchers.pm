@@ -45,6 +45,19 @@ sub LimitToRequestors {
   $self->LimitToType("Requestor");
 }
 
+# Return a (reference to a) list of emails
+sub Emails {
+    my $self = shift;
+    my $type = shift;
+    $self->LimitToType($type)
+	if $type;
+    my @list;
+    while (my $w=$self->Next()) {
+	push(@list, $w->Email);
+    }
+    return \@list;
+}
+
 sub LimitToCc {
   my $self = shift;
   $self->LimitToType("Cc");
@@ -64,4 +77,7 @@ sub NewItem {
   return($item);
 }
 1;
+
+
+
 
