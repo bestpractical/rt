@@ -221,7 +221,7 @@ print"
 <B>
 <center><input type=\"submit\" value =\"Update Queue Filters\"></center>
 </B>
-
+</table>
 <input type=\"hidden\" name=\"display\" value=\"Queue\">
 </form>
 ";
@@ -582,9 +582,7 @@ Final priority:
 </TD></TR>
 <TR><TD valign=\"top\" align=\"right\">Content:</TD><TD COLSPAN=5>
 <font size=\"-1\">
-<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>
-$template
-</textarea>
+<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>$template</textarea>
 </TD></TR>
 </TABLE>
 </font>
