@@ -31,7 +31,6 @@
 
 <%INIT>
 my $Users = RT::Users->new($session{CurrentUser});
-$Users->LimitToPrivileged;
 my $object;
 
 
@@ -46,6 +45,8 @@ if ($object) {
                      Object => $object,
                      IncludeSystemRights => 1,
                      IncludeSuperusers => 1);
+} else {
+        $Users->LimitToPrivileged;
 }
 </%INIT>
 

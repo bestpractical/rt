@@ -213,8 +213,6 @@ create table CachedGroupMembers (
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
 CREATE INDEX GrouMem  on CachedGroupMembers (GroupId,MemberId);
-CREATE INDEX CachedGroupMembers3 ON CachedGroupMembers(GroupId);
-CREATE INDEX CachedGroupMembers4 ON CachedGroupMembers (MemberId);
 # }}}
 
 # {{{ Users
