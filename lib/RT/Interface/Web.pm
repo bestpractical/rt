@@ -223,7 +223,11 @@ sub ProcessUpdateMessage {
     #Make the update content have no 'weird' newlines in it
     if ($args{ARGSRef}->{'UpdateContent'}) {
 
-	my $Message = 
+     if ($args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject()) {
+	$args{ARGSRef}->{'UpdateSubject'} = undef;
+     }
+
+     my $Message = 
 	  MakeMIMEEntity(
 			 Subject => $args{ARGSRef}->{'UpdateSubject'},
 			 Body => $args{ARGSRef}->{'UpdateContent'},
