@@ -17,7 +17,7 @@
 <TD ALIGN=RIGHT>
 % if ($session{'CurrentUser'} ) {
 Signed in as <b><%$session{'CurrentUser'}->UserId%></b>.<BR>
-[<A HREF="<%$RT::WebPath%>/User/Prefs.html" >Preferences</A>] [<A HREF="<%$RT::WebPath%>/Logout.html">Logout</a>]
+[<A HREF="<%$RT::WebPath%>/User/Prefs.html" >Preferences</A>] [<A HREF="<%$RT::WebPath%>/NoAuth/Logout.html">Logout</a>]
 % } else {
 Not logged in.
 % }

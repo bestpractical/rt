@@ -28,13 +28,13 @@ elsif (defined ($user) && defined ($pass)){
     $session{'CurrentUser'} = RT::CurrentUser->new();
     unless ($session{'CurrentUser'}->Load($user)) {
 	$session{'CurrentUser'} = undef;
-	$m->comp('/Login.html', %ARGS, Error=> 'Your username or password is incorrect');
+	$m->comp('/NoAuth/Login.html', %ARGS, Error=> 'Your username or password is incorrect');
         $m->abort();
     };
     unless ($session{'CurrentUser'}->IsPassword($pass)) {
 	$session{'CurrentUser'} = undef;
 	
-	$m->comp('/Login.html', Error => 'Your username or password is incorrect', %ARGS);;;
+	$m->comp('/NoAuth/Login.html', Error => 'Your username or password is incorrect', %ARGS);
 	$m->abort();
     }
     if  (!$session{'CurrentUser'}->Privileged) {
@@ -50,7 +50,7 @@ elsif (defined ($user) && defined ($pass)){
     }
 }
 else {
-    $m->comp('/Login.html', %ARGS);
+    $m->comp('/NoAuth/Login.html', %ARGS);
 }
 </%INIT>
 
