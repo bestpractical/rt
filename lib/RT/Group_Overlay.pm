@@ -511,7 +511,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 sub CreateUserDefinedGroup {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('CreateGroup') ) {
+    unless ( $self->CurrentUserHasRight('AdminGroup') ) {
         $RT::Logger->warning( $self->CurrentUser->Name
               . " Tried to create a group without permission." );
         return ( 0, $self->loc('Permission Denied') );
