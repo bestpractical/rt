@@ -127,6 +127,9 @@ SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 vertical-align: top;
 	 text-align: right;
          }
+.overdue {
+	 color: red;
+}
 
 div.messagebody {
     padding: 2em; 
