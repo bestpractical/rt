@@ -372,7 +372,7 @@ msgid "Enabled status %1"
 msgstr "Statut active %1"
 
 #: html/RTFM/Article/Create.html:88 html/RTFM/Article/Elements/EditLinks:73
-msgid "Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces."
+msgid "Enter Articles or URIs to link Articles to. Separate multiple entries with spaces."
 msgstr "Entrer les Articles ou les URI auxquelles lier les articles. Séparer les valeurs multiples par des espaces."
 
 #: html/Callbacks/RTFM/Ticket/Elements/Tabs/Default:21
@@ -672,7 +672,7 @@ msgid "Select custom field"
 msgstr "Sélectionner un champ personnalisé"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:65 html/RTFM/Article/Elements/ShowSearchCriteria:68
-msgid "Seperate multiple URLs with spaces"
+msgid "Separate multiple URLs with spaces"
 msgstr "Séparer les URLs multiples par des espaces"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:22

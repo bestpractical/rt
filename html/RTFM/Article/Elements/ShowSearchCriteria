@@ -62,10 +62,10 @@
 ($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
 <br>
 <&|/l&>Which refer to</&> <input type=text size=50 name="RefersTo" value="<%$RefersTo%>">
-<i><&|/l&>Seperate multiple URLs with spaces</&></i>
+<i><&|/l&>Separate multiple URLs with spaces</&></i>
 <br>
 <&|/l&>Which are referred to by </&> <input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>">
-<i><&|/l&>Seperate multiple URLs with spaces</&></i>
+<i><&|/l&>Separate multiple URLs with spaces</&></i>
 
 
 <table>

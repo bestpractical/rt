@@ -18,7 +18,7 @@
 
 <TABLE>
 <TD VALIGN=TOP>
-<i><&|/l&>Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces.</&></i><br>
+<i><&|/l&>Enter Articles or URIs to link Articles to. Separate multiple entries with spaces.</&></i><br>
 <i><&|/l&>(Check boxes to delete)</&></i><br>
 <TABLE>
 <TR><TD><&|/l&>Refers to</&>:</TD><TD><input name="<%$id%>-RefersTo"><br>

@@ -391,7 +391,7 @@ msgid "Enabled status %1"
 msgstr "啟用狀態 %1"
 
 #: html/RTFM/Article/Create.html:88 html/RTFM/Article/Elements/EditLinks:73
-msgid "Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces."
+msgid "Enter Articles or URIs to link Articles to. Separate multiple entries with spaces."
 msgstr "鍵入欲鏈結到的文章或網址，以空白分開。"
 
 #: html/RTFM/Article/ExtractIntoClass.html:19
@@ -699,7 +699,7 @@ msgid "Select custom field"
 msgstr "選擇自訂欄位"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:65 html/RTFM/Article/Elements/ShowSearchCriteria:68
-msgid "Seperate multiple URLs with spaces"
+msgid "Separate multiple URLs with spaces"
 msgstr "網址間以空白隔開"
 
 #: html/RTFM/Article/Elements/ShowSearchCriteria:22
