@@ -119,7 +119,7 @@ CREATE TABLE ScripConditions (
 # {{{ Transactions
 CREATE TABLE Transactions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  ObjectType varchar(64),
+  ObjectType varchar(64) NOT NULL,
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
@@ -351,7 +351,7 @@ CREATE TABLE Templates (
 CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
-  ObjectType varchar(255) NULL,		    # Final target of the Object
+  ObjectType varchar(255) NOT NULL,		    # Final target of the Object
   ObjectId int NOT NULL  ,		    # New -- Replaces Ticket
 
   Current BOOL DEFAULT 1,		    # New -- whether the value was current
@@ -367,8 +367,8 @@ CREATE TABLE ObjectCustomFieldValues (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectId,Content); 
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectId); 
 
 # }}}
 
@@ -380,8 +380,13 @@ CREATE TABLE CustomFields (
   Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
   Pattern varchar(255) NULL  ,	# New -- Must validate against this
+  Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
+
+  ObjectType varchar(255) NOT NULL,
+  IntermediateType varchar(255) NOT NULL,
+  ParentType varchar(255) NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -398,10 +403,8 @@ CREATE TABLE CustomFields (
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
-  ObjectType varchar(255) NULL,
-  IntermediateType varchar(255) NULL,
-  ParentType varchar(255) NULL,
   ParentId integer NOT NULL,
+  SortOrder integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,

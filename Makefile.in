@@ -209,9 +209,12 @@ upgrade-instruct:
 	@echo "$(CONFIG_FILE) for any necessary site customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
 	@echo "   ls etc/upgrade"
-	@echo "For each file in that directory whose name is greater than"
+	@echo ""
+	@echo "For each item in that directory whose name is greater than"
 	@echo "your previously installed RT version, run:"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action insert --datafile etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action schema --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action acl --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action insert --datadir etc/upgrade/<version>"
 
 
 upgrade: config-install dirs files-install fixperms upgrade-instruct

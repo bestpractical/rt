@@ -28,6 +28,9 @@
     map => $map, 
     AllowSorting => $AllowSorting, 
     Order => $Order, 
+    Query => $Query,
+    Rows => $Rows,
+    Page => $Page,
     OrderBy => $OrderBy , 
     BaseURL => $BaseURL  &> 
 % my $i;
@@ -36,7 +39,7 @@
 <& .Row, Format => \@Format, i => $i, record => $record, map => $map &>
 % }
 </TABLE>
-
+% if ($ShowNavigation) {
 <&|/l, $Page, int($TotalFound/$Rows)&>Page [_1] of [_2]</&>
 % if ($Page != 1) {
 <A href="<%$BaseURL%>?Page=<%$Page-1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Previous Page</&></a>
@@ -44,10 +47,10 @@
 % if (($Page * $Rows) < $TotalFound) {
 <A href="<%$BaseURL%>Page=<%$Page+1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Next Page</&></a>
 % }
-
-
-
+% }
 <%INIT>
+
+$Format = $RT::DefaultSearchResultFormat unless $Format;
 
 $Rows = '25' unless ($Rows); # we need a positive value
 # {{{ item map
@@ -219,6 +222,7 @@ $Order =>undef
 $OrderBy => undef
 $BaseURL => undef
 $Format => $RT::DefaultSearchResultFormat
+$ShowNavigation => 1
 </%ARGS>
 %#### SUB COMPONENTS
 %#
@@ -231,9 +235,14 @@ $map => undef
 $AllowSorting => undef
 $Order=>undef
 $BaseURL => undef
+$Query => undef
+$Rows => undef
+$Page => undef
 </%ARGS>
 <TR>
 <%perl>
+my @generic_query_args = ( 'Query=' . $Query, 'Rows=' . $Rows, 'Page=' . $Page );
+
 foreach my $col (@Format) {
     if ( $col->{title} eq 'NEWLINE' ) {
         $m->out('</TR>       <TR>');
@@ -244,7 +253,7 @@ foreach my $col (@Format) {
         $title =~ s/^__(.*)__$/$1/o;
         $title = ( $map->{$title}->{title} || $title );
         if ( $AllowSorting && $col->{'attribute'} ) {
-            my @query_args;
+            my @query_args = @generic_query_args;
             push @query_args,
               ( "OrderBy="
               . ( $map->{ $col->{'attribute'} }->{'attribute'}

@@ -1155,6 +1155,13 @@ sub _DeleteMember {
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
+    my %args = (
+        Field => undef,
+        Value => undef,
+	TransactionType   => 'Set',
+	RecordTransaction => 1,
+        @_
+    );
 
 	if ($self->Domain eq 'Personal') {
    		if ($self->CurrentUser->PrincipalId == $self->Instance) {
@@ -1172,7 +1179,22 @@ sub _Set {
         	return ( 0, $self->loc('Permission Denied') );
     	}
 	}
-    return ( $self->SUPER::_Set(@_) );
+
+    my ($ret, $msg) = ( $self->SUPER::_Set(@_) );
+
+    if ( $args{'RecordTransaction'} == 1 ) {
+
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+                                               Type => $args{'TransactionType'},
+                                               Field     => $args{'Field'},
+                                               NewValue  => $args{'Value'},
+                                               OldValue  => $self->SUPER::_Value("$args{'Field'}"),
+        );
+        return ( $Trans, scalar $TransObj->Description );
+    }
+    else {
+        return ( $ret, $msg );
+    }
 }
 
 # }}}

@@ -68,10 +68,9 @@ sub _Init {
 Create takes a hash of values and creates a row in the database:
 
   int(11) 'CustomField'.
-  varchar(255) 'ObjectType'.
-  varchar(255) 'IntermediateType'.
-  varchar(255) 'ParentType'.
   int(11) 'ParentId'.
+  int(11) 'SortOrder'.
+  int(11) 'SortOrder'.
 
 =cut
 
@@ -82,18 +81,16 @@ sub Create {
     my $self = shift;
     my %args = ( 
                 CustomField => '0',
-                ObjectType => '',
-                IntermediateType => '',
-                ParentType => '',
                 ParentId => '0',
+                SortOrder => '0',
+                SortOrder => '0',
 
 		  @_);
     $self->SUPER::Create(
                          CustomField => $args{'CustomField'},
-                         ObjectType => $args{'ObjectType'},
-                         IntermediateType => $args{'IntermediateType'},
-                         ParentType => $args{'ParentType'},
                          ParentId => $args{'ParentId'},
+                         SortOrder => $args{'SortOrder'},
+                         SortOrder => $args{'SortOrder'},
 );
 
 }
@@ -141,60 +138,6 @@ sub CustomFieldObj {
 	return($CustomField);
 }
 
-=head2 ObjectType
-
-Returns the current value of ObjectType. 
-(In the database, ObjectType is stored as varchar(255).)
-
-
-
-=head2 SetObjectType VALUE
-
-
-Set ObjectType to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ObjectType will be stored as a varchar(255).)
-
-
-=cut
-
-
-=head2 IntermediateType
-
-Returns the current value of IntermediateType. 
-(In the database, IntermediateType is stored as varchar(255).)
-
-
-
-=head2 SetIntermediateType VALUE
-
-
-Set IntermediateType to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, IntermediateType will be stored as a varchar(255).)
-
-
-=cut
-
-
-=head2 ParentType
-
-Returns the current value of ParentType. 
-(In the database, ParentType is stored as varchar(255).)
-
-
-
-=head2 SetParentType VALUE
-
-
-Set ParentType to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ParentType will be stored as a varchar(255).)
-
-
-=cut
-
-
 =head2 ParentId
 
 Returns the current value of ParentId. 
@@ -208,6 +151,24 @@ Returns the current value of ParentId.
 Set ParentId to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, ParentId will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 SortOrder
+
+Returns the current value of SortOrder. 
+(In the database, SortOrder is stored as int(11).)
+
+
+
+=head2 SetSortOrder VALUE
+
+
+Set SortOrder to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, SortOrder will be stored as a int(11).)
 
 
 =cut
@@ -257,13 +218,9 @@ sub _CoreAccessible {
 		{read => 1, type => 'int(11)', default => ''},
         CustomField => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
-        ObjectType => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
-        IntermediateType => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
-        ParentType => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         ParentId => 
+		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        SortOrder => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},

@@ -24,12 +24,13 @@
 <&|/Elements/TitleBox, title => loc('[_1] highest priority tickets I own', $rows) &>
 <& /Elements/TicketList, 
         Title => loc("[_1] highest priority tickets I requested...", $rows),
-        Format => "'<a href=\"/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus",
+        Format => "'<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus",
 
-        Query => " Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open')",
+        Query => " Owner = '".$session{'CurrentUser'}->Id."' AND ( Status = 'new' OR Status = 'open') AND Priority > 0",
         OrderBy => 'Priority',
         Order => 'DESC',
-        Rows => $rows
+        Rows => $rows,
+        ShowNavigation => 0
         &>
 </&> 
 <%init>

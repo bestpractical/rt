@@ -43,10 +43,20 @@
 <&|/l&>Name</&>:
 </TD>
 <TD><INPUT name="Name" value="<%$Group->Name%>"></TD>
-</TR><TR>
+</TR>
+<TR>
 <TD ALIGN=RIGHT>
 <&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Description%>" size=60></TD>
-</TR><TR>
+</TR>
+% my $CFs = $Group->CustomFields;
+% while (my $CF = $CFs->Next) {
+<TR><TD ALIGN="RIGHT">
+<% $CF->Name %>
+</TD><TD>
+<& /Ticket/Elements/EditCustomField, CustomField => $CF &>
+</TD></TR>
+% }
+<TR>
 <TD COLSPAN=2>
 <INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this group)</&><BR>

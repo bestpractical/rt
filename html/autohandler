@@ -28,6 +28,12 @@ $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
 
 local *session unless $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
+
+# Disable AutoFlush using an attribute
+if ($m->request_comp->attr_exists('AutoFlush')) {
+    $m->autoflush($m->request_comp->attr('AutoFlush'));
+}
+
 %ARGS = map {
     # if they've passed multiple values, they'll be an array. if they've 
     # passed just one, a scalar whatever they are, mark them as utf8

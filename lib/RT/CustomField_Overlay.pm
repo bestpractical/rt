@@ -24,24 +24,39 @@
 use strict;
 no warnings qw(redefine);
 
-use vars qw(@TYPES %TYPES);
+use vars qw(@TYPES %TYPES $RIGHTS);
 
 use RT::CustomFieldValues;
 use RT::ObjectCustomFieldValues;
 
 # Enumerate all valid types for this custom field
 @TYPES = (
-    'SelectSingle',	# loc
-    'SelectMultiple',	# loc
-    'FreeformSingle',	# loc
-    'FreeformMultiple', # loc
+    'Freeform',	# loc
+    'Text',     # loc
+    'Select',	# loc
+    'Image',    # loc
+    'Binary',   # loc
 );
 
 # Populate a hash of types of easier validation
 for (@TYPES) { $TYPES{$_} = 1};
 
+$RIGHTS = {
+    SeeCustomField            => 'Can this principal see this custom field',       # loc_pair
+    AdminCustomField          => 'Create, delete and modify custom fields',        # loc_pair
+};
 
+# Tell RT::ACE that this sort of object can get acls granted
+$RT::ACE::OBJECT_TYPES{'RT::CustomField'} = 1;
 
+foreach my $right ( keys %{$RIGHTS} ) {
+    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+}
+
+sub AvailableRights {
+    my $self = shift;
+    return($RIGHTS);
+}
 
 =head1 NAME
 
@@ -77,14 +92,25 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Type => '',
-		MaxValues => 0,
+		MaxValues => '0',
 		Pattern  => '',
                 Description => '',
                 SortOrder => '0',
                 Disabled => '0',
+		ObjectType  => '',
+		IntermediateType  => '',
+		ParentType  => '',
+		Repeated  => '0',
 
 		  @_);
 
+    if ($args{TypeComposite}) {
+	@args{'Type', 'MaxValues'} = split(/-/, $args{TypeComposite}, 2);
+    }
+    if ($args{ObjectTypeComposite}) {
+	@args{'ObjectType', 'IntermediateType', 'ParentType'}
+	    = split(/-/, $args{ObjectTypeComposite}, 3);
+    }
     
     if ( !exists $args{'Queue'}) {
 	# do nothing -- things below are strictly backward compat
@@ -112,6 +138,10 @@ sub Create {
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
                          Disabled => $args{'Disabled'},
+			 ObjectType => $args{'ObjectType'},
+			 IntermediateType => $args{'IntermediateType'},
+			 ParentType => $args{'ParentType'},
+			 Repeated => $args{'Repeated'},
 );
 
     return $rv unless exists $args{'Queue'};
@@ -301,6 +331,11 @@ sub Values {
     return ($cf_values);
 }
 
+sub ValuesObj {
+    my $self = shift;
+    return $self->Values(@_);
+}
+
 # }}}
 
 # }}}
@@ -433,33 +468,59 @@ sub Types {
 # }}}
 
 
-=head2 FriendlyType [TYPE]
+=head2 FriendlyType [TYPE, MAX_VALUES]
 
 Returns a localized human-readable version of the custom field type.
 If a custom field type is specified as the parameter, the friendly type for that type will be returned
 
 =cut
 
+my %FriendlyTypes = (
+    Select => [
+        'Select multiple values',	# loc
+        'Select one value',		# loc
+        'Select up to [_1] values',	# loc
+    ],
+    Freeform => [
+        'Enter multiple values',	# loc
+        'Enter one value',		# loc
+        'Enter up to [_1] values',	# loc
+    ],
+    Text => [
+        'Enter multiple text areas',	# loc
+        'Enter one text area',		# loc
+        'Enter up to [_1] text areas',	# loc
+    ],
+    Image => [
+        'Upload multiple images',	# loc
+        'Upload one image',		# loc
+        'Upload up to [_1] images',	# loc
+    ],
+    Binary => [
+        'Upload multiple files',	# loc
+        'Upload one files',		# loc
+        'Upload up to [_1] files',	# loc
+    ],
+);
+
 sub FriendlyType {
     my $self = shift;
 
-    my $type = shift || $self->Type;
+    my $type = @_ ? shift : $self->Type;
+    my $max  = @_ ? shift : $self->MaxValues;
 
-    if ( $type eq 'SelectSingle' ) {
-        return ( $self->loc('Select one value') );
-    }
-    elsif ( $type eq 'SelectMultiple' ) {
-        return ( $self->loc('Select multiple values') );
-    }
-    elsif ( $type eq 'FreeformSingle' ) {
-        return ( $self->loc('Enter one value') );
-    }
-    elsif ( $type eq 'FreeformMultiple' ) {
-        return ( $self->loc('Enter multiple values') );
+    if (my $friendly_type = $FriendlyTypes{$type}[$max>2 ? 2 : $max]) {
+	return ( $self->loc( $friendly_type, $max ) );
     }
     else {
-        return ( $self->loc( $self->Type ) );
+        return ( $self->loc( $type ) );
     }
+}
+
+sub FriendlyTypeComposite {
+    my $self = shift;
+    my $composite = shift || $self->TypeComposite;
+    return $self->FriendlyType(split(/-/, $composite, 2));
 }
 
 
@@ -594,6 +655,121 @@ sub Queue {
 
 sub SetQueue {
     return 0;
+}
+
+sub SetTypeComposite {
+    my $self = shift;
+    my $composite = shift;
+    my ($type, $max_values) = split(/-/, $composite, 2);
+    $self->SetType($type);
+    $self->SetMaxValues($max_values);
+}
+
+sub SetObjectTypeComposite {
+    my $self = shift;
+    my $composite = shift;
+    my ($o_type, $i_type, $p_type) = split(/-/, $composite, 3);
+    $self->SetObjectType("$o_type");
+    $self->SetIntermediateType("$i_type");
+    $self->SetParentType("$p_type");
+}
+
+sub TypeComposite {
+    my $self = shift;
+    join('-', $self->Type, $self->MaxValues);
+}
+
+sub ObjectTypeComposite {
+    my $self = shift;
+    join('-', $self->ObjectType, $self->IntermediateType, $self->ParentType);
+}
+
+sub TypeComposites {
+    my $self = shift;
+    return map { ("$_-1", "$_-0") } $self->Types;
+}
+
+sub ObjectTypeComposites {
+    my $self = shift;
+    qw(
+	RT::Ticket--RT::Queue
+	RT::User--
+	RT::Group--
+    );
+}
+
+my @FriendlyObjectTypes = (
+    "[_1] objects",		    # loc
+    "[_2]'s [_1] objects",	    # loc
+    "[_3]'s [_2]'s [_1] objects",   # loc
+);
+
+sub FriendlyObjectType {
+    my $self = shift;
+    my $o_type = @_ ? shift : $self->ObjectType;
+    my $i_type = @_ ? shift : $self->IntermediateType;
+    my $p_type = @_ ? shift : $self->ParentType;
+    my @types = map { s/^RT::// ? $self->loc($_) : $_ }
+		grep {defined and length}
+		$o_type, $i_type, $p_type or return;
+    return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
+}
+
+sub FriendlyObjectTypeComposite {
+    my $self = shift;
+    my $composite = shift || $self->ObjectTypeComposite;
+    return $self->FriendlyObjectType(split(/-/, $composite, 3));
+}
+
+sub AddToParent {
+    my $self  = shift;
+    my $object = shift;
+    my $composite = shift || ref($object)."--";
+    my $id = $object->Id || 0;
+
+    unless ($self->ObjectTypeComposite eq $composite) {
+	return ( 0, $self->loc('Object type mismatch') );
+    }
+
+    unless ( $object->CurrentUserHasRight('AdminCustomFields') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
+
+    $ObjectCF->LoadByCols( ParentId => $id, CustomField => $self->Id );
+    if ( $ObjectCF->Id ) {
+        return ( 0, $self->loc("That is already the current value") );
+    }
+    my ( $id, $msg ) =
+      $ObjectCF->Create( ParentId => $id, CustomField => $self->Id );
+
+    return ( $id, $msg );
+}
+
+sub RemoveFromParent {
+    my $self = shift;
+    my $object = shift;
+    my $composite = shift || ref($object)."--";
+    my $id = $object->Id || 0;
+
+    unless ($self->ObjectTypeComposite eq $composite) {
+	return ( 0, $self->loc('Object type mismatch') );
+    }
+
+    unless ( $object->CurrentUserHasRight('AdminCustomFields') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
+
+    $ObjectCF->LoadByCols( ParentId => $id, CustomField => $self->Id );
+    unless ( $ObjectCF->Id ) {
+        return ( 0, $self->loc("This custom field does not apply to that object") );
+    }
+    my ( $id, $msg ) = $ObjectCF->Delete;
+
+    return ( $id, $msg );
 }
 
 1;

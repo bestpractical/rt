@@ -34,8 +34,11 @@ $tabs->{'this'} = { title => eval { $UserObj->Name },
 
 			   path => "Admin/Users/Modify.html?id=".$id,
 subtabs => {
-	       Queues => { title => loc('Basics'),
+	       Basics => { title => loc('Basics'),
 			   path => "Admin/Users/Modify.html?id=".$id
+			 },
+	       History => { title => loc('History'),
+			   path => "Admin/Users/History.html?id=".$id
 			 },
 #	       Scrips => { title => loc('Rights'),
 #			   path => "Admin/Users/Rights.html?id=".$id
@@ -50,6 +53,9 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUse
 			   };
   $tabs->{"B"} = { title => loc('New user'),
   		     	path => "Admin/Users/Modify.html?Create=1",
+			   };
+  $tabs->{"C"} = { title => loc('Custom Fields'),
+  		     	path => "Admin/Users/CustomFields.html",
 			separator => 1,
 			   };
 }

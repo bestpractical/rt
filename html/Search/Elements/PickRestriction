@@ -35,7 +35,7 @@
 
 <li>
 <& /Elements/SelectWatcherType, Name => "WatcherRole", AllowNull => 0 &>
-<&|/l&> email address</&> 
+<&|/l&>email address</&> 
 <& /Elements/SelectMatch, Name => "WatcherRoleOp" &>
 <INPUT Name="ValueOfWatcherRole" SIZE=20>
 

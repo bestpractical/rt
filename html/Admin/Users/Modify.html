@@ -179,6 +179,20 @@
 <TR>
 </TR>
 </TABLE>
+<& /Elements/TitleBoxStart, title => loc('Custom Fields') &>
+<TABLE>
+% my $CFs = $UserObj->CustomFields;
+% while (my $CF = $CFs->Next) {
+<TR><TD ALIGN="RIGHT">
+<% $CF->Name %>
+</TD><TD>
+<& /Ticket/Elements/EditCustomField, CustomField => $CF &>
+</TD></TR>
+% }
+<TR>
+</TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
 <TR>
 <TD colspan="2">
 <& /Elements/TitleBoxStart, title => loc('Comments about this user') &>

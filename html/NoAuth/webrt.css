@@ -331,7 +331,9 @@ ul.topnav {
 	margin-bottom:0;
 }
 
-
+<%flags>
+inherit => undef
+</%flags>
 <%init>
 $r->content_type('text/css');
 $r->header_out('Expires' ,'+30m');

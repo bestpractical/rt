@@ -1,0 +1,19 @@
+<& /Admin/Elements/Header, Title => loc('Select a Custom Field') &>
+<& /Admin/Elements/CustomFieldTabs, current_tab => 'Admin/CustomFields/', 
+    current_subtab => 'Admin/CustomFields/',
+    Title => loc('Select a Custom Field') &>
+
+<UL>
+%while  (my $CustomFieldObj = $CustomFields->Next) { 
+%    $CustomFieldObj->CurrentUserHasRight('AdminCustomField') or next;
+
+<LI>
+<A HREF="Modify.html?id=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a> (<%$CustomFieldObj->FriendlyObjectTypeComposite%>)<BR>
+
+%}
+
+<%INIT>
+my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
+$CustomFields->UnLimit();
+$CustomFields->OrderByCols(map { +{ FIELD => $_ } } qw( ObjectType IntermediateType ParentType ) );
+</%INIT>

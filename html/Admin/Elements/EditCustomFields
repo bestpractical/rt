@@ -21,74 +21,48 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/ListActions, actions => \@actions &>
+<& /Elements/ListActions, actions => \@results &>
 
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
 <h2><%$caption%></h2>
 </TD></TR></TABLE>
-% if ($CustomFields->Count == 0 ) {
-<P><i><&|/l&>(No custom fields)</&></i></P>
-% } else {
-<TABLE cellspacing=0 cellpadding=2>
-% my $count;
-% while (my $CustomFieldObj = $CustomFields->Next) { 
-<TR>
-  <TD valign="TOP">
-% if ($CustomFieldObj->Name) {
-    <A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><b><%$CustomFieldObj->Name%></b></a><br>
-% } else {
-    <A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><i>(<%loc("no name")%>)</i></a><br>
-% }
-    <%$CustomFieldObj->Description%>
-  </TD>
-  <TD valign="TOP">
-    <i><% $CustomFieldObj->FriendlyType %></i>
-  </TD>
-%  # show 'move up' unless it's the first item
-%  if ($count++) {
-  <TD valign="TOP">
-    <a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>
-%  } else {
-  <TD valign="TOP" ALIGN=RIGHT>
-%  }
-
-%  # show 'move down' unless it's the last item
-%  if (!$CustomFields->IsLast) {
-%  $m->print(' | ') if $count > 1;
-    <a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>
-%  }
-</TD>
-</TR>
-% }
-
-</TABLE>
-% }
 <FORM METHOD=GET ACTION="CustomFields.html">
-% if ($id) {
-<INPUT TYPE="Hidden" NAME="id" VALUE="<%$id%>">
-% }
+<INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>">
+<INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>">
 <input type="checkbox" name="FindDisabledCustomFields"> <&|/l&>Include disabled custom fields in listing.</&>
 <input type=submit value="<&|/l&>Go!</&>">
+</FORM>
+<hr>
+<FORM ACTION="CustomFields.html" METHOD=POST>
+<INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>">
+<INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>">
+<INPUT TYPE=HIDDEN NAME="UpdateCFs" VALUE="1">
+
+% if ($Object->Id) {
+<h3>Global Custom Fields</h3>
+<& PickCustomFields, CustomFields => \@GlobalCFs, ReadOnly => 1 &>
+% }
+<h3>Associated Custom Fields (uncheck to unassociate)</h3>
+<& PickCustomFields, CustomFields => \@AssociatedCFs, id => $Object->Id, Checked => 1 &>
+<h3>Unassociated Custom Fields (check to associate)</h3>
+<& PickCustomFields, CustomFields => \@UnassociatedCFs, id => $Object->Id &>
+
+<& /Elements/Submit &>
 </FORM>
 
 
 <%INIT>
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 my $caption;
+my @results;
+my (@GlobalCFs, @AssociatedCFs, @UnassociatedCFs);
 
-if ($id)  {
-        $QueueObj->Load($id);                        
-}
-
-if ($QueueObj->id) {
-	$CustomFields->LimitToQueue($id);
-}                                            
-else {                                       
-        $CustomFields->LimitToGlobal();
-}                                           
+# XXX - exception: by "RT::Queue" fields on UI we really mean "RT::Ticket" fields.
+my $composite = "$ObjectType--";
+$composite = 'RT::Ticket--RT::Queue' if $composite eq 'RT::Queue--';
+$CustomFields->LimitToComposite($composite);
 
 if ($FindDisabledCustomFields) {
     $caption = loc("All Custom Fields");
@@ -138,76 +112,60 @@ if ($CustomField and $Move) {
 }
 # }}}
 
-# {{{ now process the 'copy queue' action
-my @actions;
-if ($Source and $Source ne $id) {
-    my $SourceQueue = RT::Queue->new($session{'CurrentUser'});
-    $SourceQueue->Load($Source) || Abort(loc("Couldn't load queue"));
-    my $SourceCustomFields = RT::CustomFields->new($session{'CurrentUser'});
-    $SourceCustomFields->LimitToQueue($SourceQueue->id);
+my $id = $Object->Id;
+my ($GlobalCFs, $ObjectCFs);
+$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs->LimitToParentAndComposite(Parent => $Object, Composite => $composite);
 
-    # delete old fields
-    foreach my $CustomFieldObj ( @{$CustomFields->ItemsArrayRef} ) { 
-	$CustomFieldObj->Delete;
+if ($id) {
+    $GlobalCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
+    $GlobalCFs->LimitToParentAndComposite(ParentType => ref($Object), Composite => $composite);
+}
+
+while (my $cf = $CustomFields->Next) { 
+    my $cf_id = $cf->Id;
+
+    if ($GlobalCFs and $GlobalCFs->HasEntryForCustomField($cf_id)) {
+	push @GlobalCFs, $cf;
+	next;
     }
 
-    # add new fields
-    while (my $SourceCustomFieldObj = $SourceCustomFields->Next) {
-	my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-	my ($val, $msg) =  $CustomFieldObj->Create(
-	    id => $SourceCustomFieldObj->id,
-	    Queue => $id,
-	    Name => $SourceCustomFieldObj->Name,
-	    Type => $SourceCustomFieldObj->Type,
-	    Description => $SourceCustomFieldObj->Description,
-	);
-	Abort(loc("Could not create CustomField") . ": $msg") unless ($val);
-	push @actions, $msg;
-
-	$CustomFieldObj->SetSortOrder($SourceCustomFieldObj->SortOrder);
-
-	# add new values
-	my $values = $SourceCustomFieldObj->Values();
-	while (my $v = $values->Next) {
-	    my ( $addval, $addmsg ) = $CustomFieldObj->AddValue(
-		Name => $v->Name,
-		Description => $v->Description,
-		SortOrder => $v->SortOrder
-	    );
+    if ($UpdateCFs) {
+	# Go through and delete all the custom field relationships that this object
+	# no longer has
+	my $key = "Object-$id-CF-$cf_id";
+	if ($ARGS{$key}) {
+	    push @AssociatedCFs, $cf;
+	    if (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
+		my ($val, $msg) = $cf->AddToParent($Object, $composite);
+		push (@results, $msg);
+	    }
+	    # my ($val, $msg) = $cf->SetSortOrderForObject(Object => $Object, SortOrder => $ARGS{"Object-$id-CF-$cf_id-SortOrder"});
+	}
+	else {
+	    push @UnassociatedCFs, $cf;
+	    if ($ObjectCFs->HasEntryForCustomField($cf_id)) {
+		my ($val, $msg) = $cf->RemoveFromParent($Object, $composite);
+		push (@results, $msg);
+	    }
 	}
     }
-
-    # because content changed, we must redo search for subsequent uses
-    $CustomFields->RedoSearch;
-    $CustomFields->GotoFirstItem;
-}
-# }}}
-
-# {{{ deal with deleting existing custom fields
-foreach my $key (keys %ARGS) {
-  # {{{ if we're trying to delete the custom field
-  if ($key =~ /^DeleteCustomField-(\d+)/) {
-    my $id = $1;
-    my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-    $CustomFieldObj->Load($id);
-    my ($retval, $msg) = $CustomFieldObj->Delete;
-    if ($retval) {
-      push @actions, loc("Custom field deleted");
+    elsif ($ObjectCFs->HasEntryForCustomField($cf_id)) {
+	push @AssociatedCFs, $cf;
     }
     else {
-      push @actions, $msg;
+	push @UnassociatedCFs, $cf;
     }
-  }
-  # }}}
 }
-# }}}
 
 </%INIT>
 <%ARGS>
-$id => 0
 $title => undef
 $Move => undef
 $Source => undef
 $CustomField => undef
 $FindDisabledCustomFields => undef
+$UpdateCFs => 0
+$Object
+$ObjectType
 </%ARGS>

@@ -440,7 +440,7 @@ sub NiceHeaders {
     my $hdrs = "";
     my @hdrs = split(/\n/,$self->Headers);
     while (my $str = shift @hdrs) {
-	    next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Date|Subject): /i;
+	    next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Bcc:Date|Subject): /i;
 	    $hdrs .= $str . "\n";
 	    $hdrs .= shift( @hdrs ) . "\n" while ($hdrs[0] =~ /^[ \t]+/);
     }
@@ -581,5 +581,14 @@ sub ContentLength {
 }
 
 # }}}
+
+# Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
+sub _CacheConfig {
+    {
+        'cache_p'         => 1,
+          'fast_update_p' => 1,
+          'cache_for_sec' => 180,
+    }
+}
 
 1;

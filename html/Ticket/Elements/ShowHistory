@@ -39,7 +39,7 @@ if ($ShowHeaders &&  $ShowHeaders == $Ticket->Id ) {
       . "</a>] <b>["
       . loc("Full headers") . "]</b>";
 }
-else {
+elsif ($ShowHeaderModes) {
     $titleright .= "<b>["
       . loc("Brief headers")
       . "]</b> [<A HREF=\""
@@ -48,6 +48,9 @@ else {
       . $Ticket->Id . "&id="
       . $Ticket->id . "\">"
       . loc("Full headers") . "</a>]";
+}
+else {
+    $titleright = '';
 }
 </%perl>
 <& /Elements/TitleBoxStart, title => $title, titleright => $titleright, bodyclass=> ''&>
@@ -83,4 +86,5 @@ $Collapsed => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1
 $ShowTitleBarCommands => 1
+$ShowHeaderModes => 1
 </%ARGS>

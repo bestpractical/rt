@@ -1,0 +1,74 @@
+User/Group CF and Txn UI first.
+===============================
+Object<=>CF Edit interface; separate CFs into different kinds:
+    Currently only All-User, All-Group, All-Queue and some-Queue
+    To be created and picked on the "User->CF" and "Group->CF" tabs
+    use code from rtfm's ClassCustomFields as a base of ObjectCustomFields
+CF display for User and Group
+Binary CFs.
+Finish Txn display for User and Group
+ACL for per-CF editing
+    AdminThis ACL for CFs controls CF data and metadata, but _not_ where it applies
+    AdminCF ACL for Objects controls what CFs applies here, but _not_ CF's contents
+
+
+
+> As part of this work, Best Practical will provide a metadata system for
+> User and Groups akin to RT's current "CustomFields" system for tickets.
+> Best Practical will add new search functionality to allow CUSTOMER customer
+> support staff to search for users based on site-configurable metadata
+> about users and their organizations.
+> RT will be extended to track custom field changes on each type of object
+> that supports custom fields.
+> Best Practical will develop new user interface to display the history of
+> each User and Group object, including all changes to custom fields.
+> User Display
+> RT's User display will be enhanced to include display and editing of
+> custom fields, as well as display of group memberships.
+> Group Display
+> RT's Group display will be enhanced to include display and editing of
+> custom fields.
+
+The above goes together.  Highly interested.  2-3 weeks of work.  12k.
+
+> User and Group searching
+> The results of user and group searches will be downloadable as tab
+> delimited data, containing a list of columns to be specified at a later
+> time.
+
+I think you have done this already?  2 days of work, 1k.
+
+> Custom Field Functionality
+> Best Practical will extend RT's custom fields system to support
+> per-field access control.. Staff will be able to grant members of groups
+> as well as individual end-users the right to:
+> * See a custom field
+> * Edit a custom field's values for the object it applies to
+> * Manage a custom field
+>   Each Custom field that applies to users will be available for all
+> users
+>  Each Custom fields that applies to groups will be available for all
+> groups
+
+Quite interested. 2 weeks of work. 10k.
+
+> Custom fields will be extended to support several new data types:
+>         large freeform text
+>         uploaded documents, including images
+
+Trivial. 2 days of work, 1k.
+
+> Ticket Searching
+> RT's standard search functionality will be extended to support the
+> ability to find tickets that have a requestor who is a member of a
+> user-specified group.
+
+Trivial. 1 day of work, $500 or so.
+
+> Ticket Display
+> When viewing a ticket, RT currently displays a box containing metadata
+> about each requestor who is not a local staff member. Best Practical
+> will extend this box to list the requestor's group memberships.
+
+Not very interested. 2 days of work, 1k.
+

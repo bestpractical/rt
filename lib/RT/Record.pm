@@ -585,6 +585,103 @@ sub _Accessible  {
 
 }
 
+# {{{ sub _NewTransaction
+
+=head2 _NewTransaction  PARAMHASH
+
+Private function to create a new RT::Transaction object for this ticket update
+
+=cut
+
+sub _NewTransaction {
+    my $self = shift;
+    my %args = (
+        TimeTaken => undef,
+        Type      => undef,
+        OldValue  => undef,
+        NewValue  => undef,
+        Data      => undef,
+        Field     => undef,
+        MIMEObj   => undef,
+        ActivateScrips => 1,
+        CommitScrips => 1,
+        @_
+    );
+
+    require RT::Transaction;
+    my $trans = new RT::Transaction( $self->CurrentUser );
+    my ( $transaction, $msg ) = $trans->Create(
+	ObjectId  => $self->Id,
+	ObjectType => ref($self),
+        TimeTaken => $args{'TimeTaken'},
+        Type      => $args{'Type'},
+        Data      => $args{'Data'},
+        Field     => $args{'Field'},
+        NewValue  => $args{'NewValue'},
+        OldValue  => $args{'OldValue'},
+        MIMEObj   => $args{'MIMEObj'},
+        ActivateScrips => $args{'ActivateScrips'},
+        CommitScrips => $args{'CommitScrips'},
+    );
+
+    # Rationalize the object since we may have done things to it during the caching.
+    $self->Load($self->Id);
+
+    $RT::Logger->warning($msg) unless $transaction;
+
+    $self->_SetLastUpdated;
+
+    if ( defined $args{'TimeTaken'} ) {
+        $self->_UpdateTimeTaken( $args{'TimeTaken'} );
+    }
+    if ( $RT::UseTransactionBatch and $transaction ) {
+	    push @{$self->{_TransactionBatch}}, $trans;
+    }
+    return ( $transaction, $msg, $trans );
+}
+
+# }}}
+
+# {{{ sub Transactions 
+
+=head2 Transactions
+
+  Returns an RT::Transactions object of all transactions on this ticket
+
+=cut
+
+sub Transactions {
+    my $self = shift;
+
+    use RT::Transactions;
+    my $transactions = RT::Transactions->new( $self->CurrentUser );
+
+    #If the user has no rights, return an empty object
+    $transactions->Limit(
+	FIELD => 'ObjectId',
+	VALUE => $self->id,
+    );
+    $transactions->Limit(
+	FIELD    => 'ObjectType',
+	VALUE    => ref($self),
+    );
+
+    return ($transactions);
+}
+
+# }}}
+
+sub CustomFields {
+    my $self = shift;
+    my $cfs = RT::CustomFields->new( $self->CurrentUser );
+    $cfs->UnLimit;
+    $cfs->LimitToComposite(ref($self).'--');
+    $cfs->LimitToGlobalOrParentId($self->Id);
+    return $cfs;
+}
+
+
+
 
 eval "require RT::Record_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Vendor.pm});

@@ -78,10 +78,6 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
     } 
 
-    # since If-Modified-Since makes no sense for RT, we explicitly kills cache
-    $r->header_out('Pragma' => 'no-cache');
-    $r->header_out('Cache-control' => 'no-cache, no-store');
-
     return();
 </%init>
 <%args>

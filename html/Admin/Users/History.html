@@ -21,16 +21,24 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<SELECT NAME ="<%$Name%>">
-%for my $option ($cf->TypeComposites) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyTypeComposite($option) %></OPTION>
-%}
-</SELECT>
-<%INIT>
-my $cf = RT::CustomField->new($session{'CurrentUser'});
+<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/UserTabs, 
+    id => $id, 
+    UserObj => $UserObj,
+    current_subtab => $current_tab, 
+    Title => $title &>
 
+<& /Ticket/Elements/ShowHistory,
+    Ticket => $UserObj,
+    ShowHeaderModes => 0,
+&>
+
+<%INIT>
+my $current_tab = 'Admin/Users/History.html?id='.$id;
+my $UserObj = new RT::User($session{'CurrentUser'});
+$UserObj->Load($id) || Abort("Couldn't load user '$id'");
+my $title = loc("History of the user [_1]", $UserObj->Name);
 </%INIT>
 <%ARGS>
-$Default=>undef
-$Name => 'TypeComposite'
+$id => undef
 </%ARGS>

@@ -58,80 +58,28 @@ use RT::ACE;
 # {{{ sub _Accessible 
 
 
-sub _ClassAccessible {
+sub _OverlayAccessible {
     {
-     
-        id =>
-                {read => 1, type => 'int(11)', default => ''},
-        Name => 
-                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(120)', default => ''},
-        Password => 
-                { write => 1, type => 'varchar(40)', default => ''},
-        Comments => 
-                {read => 1, write => 1, admin => 1, type => 'blob', default => ''},
-        Signature => 
-                {read => 1, write => 1, type => 'blob', default => ''},
-        EmailAddress => 
-                {read => 1, write => 1, public => 1,  type => 'varchar(120)', default => ''},
-        FreeformContactInfo => 
-                {read => 1, write => 1, type => 'blob', default => ''},
-        Organization => 
-                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(200)', default => ''},
-        RealName => 
-                {read => 1, write => 1, public => 1, type => 'varchar(120)', default => ''},
-        NickName => 
-                {read => 1, write => 1, public => 1, type => 'varchar(16)', default => ''},
-        Lang => 
-                {read => 1, write => 1, public => 1, type => 'varchar(16)', default => ''},
-        EmailEncoding => 
-                {read => 1, write => 1, public => 1, type => 'varchar(16)', default => ''},
-        WebEncoding => 
-                {read => 1, write => 1, public => 1, type => 'varchar(16)', default => ''},
-        ExternalContactInfoId => 
-                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(100)', default => ''},
-        ContactInfoSystem => 
-                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(30)', default => ''},
-        ExternalAuthId => 
-                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(100)', default => ''},
-        AuthSystem => 
-                {read => 1, write => 1, public => 1, admin => 1,type => 'varchar(30)', default => ''},
-        Gecos => 
-                {read => 1, write => 1, public => 1, admin => 1, type => 'varchar(16)', default => ''},
 
-        PGPKey => {
-                {read => 1, write => 1, public => 1, admin => 1, type => 'text', default => ''},
-        },
-        HomePhone => 
-                {read => 1, write => 1, type => 'varchar(30)', default => ''},
-        WorkPhone => 
-                {read => 1, write => 1, type => 'varchar(30)', default => ''},
-        MobilePhone => 
-                {read => 1, write => 1, type => 'varchar(30)', default => ''},
-        PagerPhone => 
-                {read => 1, write => 1, type => 'varchar(30)', default => ''},
-        Address1 => 
-                {read => 1, write => 1, type => 'varchar(200)', default => ''},
-        Address2 => 
-                {read => 1, write => 1, type => 'varchar(200)', default => ''},
-        City => 
-                {read => 1, write => 1, type => 'varchar(100)', default => ''},
-        State => 
-                {read => 1, write => 1, type => 'varchar(100)', default => ''},
-        Zip => 
-                {read => 1, write => 1, type => 'varchar(16)', default => ''},
-        Country => 
-                {read => 1, write => 1, type => 'varchar(50)', default => ''},
-        Creator => 
-                {read => 1, auto => 1, type => 'int(11)', default => ''},
-        Created => 
-                {read => 1, auto => 1, type => 'datetime', default => ''},
-        LastUpdatedBy => 
-                {read => 1, auto => 1, type => 'int(11)', default => ''},
-        LastUpdated => 
-                {read => 1, auto => 1, type => 'datetime', default => ''},
+        Name                    => { public => 1,  admin => 1 },
+          Password              => { read   => 0,  admin => 1 },
+          EmailAddress          => { public => 1 },
+          Organization          => { public => 1,  admin => 1 },
+          RealName              => { public => 1 },
+          NickName              => { public => 1 },
+          Lang                  => { public => 1 },
+          EmailEncoding         => { public => 1 },
+          WebEncoding           => { public => 1 },
+          ExternalContactInfoId => { public => 1,  admin => 1 },
+          ContactInfoSystem     => { public => 1,  admin => 1 },
+          ExternalAuthId        => { public => 1,  admin => 1 },
+          AuthSystem            => { public => 1,  admin => 1 },
+          Gecos                 => { public => 1,  admin => 1 },
+          PGPKey                => { public => 1,  admin => 1 },
 
- }
-};
+    }
+}
+
 
 
 # }}}
@@ -1519,6 +1467,8 @@ sub _Set {
     my %args = (
         Field => undef,
         Value => undef,
+	TransactionType   => 'Set',
+	RecordTransaction => 1,
         @_
     );
 
@@ -1538,7 +1488,19 @@ sub _Set {
         Value => $args{'Value'}
     );
 
-    return ( $ret, $msg );
+    if ( $args{'RecordTransaction'} == 1 ) {
+
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+                                               Type => $args{'TransactionType'},
+                                               Field     => $args{'Field'},
+                                               NewValue  => $args{'Value'},
+                                               OldValue  => $self->SUPER::_Value("$args{'Field'}"),
+        );
+        return ( $Trans, scalar $TransObj->Description );
+    }
+    else {
+        return ( $ret, $msg );
+    }
 }
 
 # }}}
@@ -1588,6 +1550,9 @@ sub _Value {
 
 # }}}
 
+sub CustomFieldValues {
+    # XXX
+}
 
 1;
 

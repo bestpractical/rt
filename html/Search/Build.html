@@ -80,6 +80,8 @@ my @actions        = ();
 my %queues;
 
 if ( $ARGS{"DoSearch"} ) {
+    $Format =~ s/%23/#/g;
+    $Format =~ s/%26/&/g;
     $m->comp( "Results.html", Query   => $Query, Format  => $Format, OrderBy => $ARGS{OrderBy}, Rows    => $ARGS{RowsPerPage});
     $m->abort();
 }
@@ -340,9 +342,7 @@ while ( my $val = shift @options ) {
     my $selected;
 
     next unless ( $val->{Value}->{Key} || $val->{Value}->{Subkey} );
-    if ( exists $val->{Value}->{EA} && $val->{Value}->{EA} ne "" ) {
-        $ea = $val->{Value}->{EA};
-    }
+    $ea = $val->{EA};
 
     if ( $depth > 0 ) {
         if ( $key eq $currentkey ) {
@@ -378,10 +378,6 @@ sub build_array {
         my $j = 0;
         while ( my $item = $items->{ $i + ( $j / 10 ) } ) {
 
-            if ( !$ea ) {
-                $ea = $item->{EA};
-            }
-
             my $depth = $i;
 
             my $subkey = $item->{Subkey};
@@ -393,11 +389,12 @@ sub build_array {
                 else {
                     $sendkey = "{$i.$j}";
                 }
-                push @$keys, { Key => $sendkey, Value => $item };
+                push @$keys, { Key => $sendkey, Value => $item, EA => $ea };
                 $$Query .= " " . $ea . " " if ( $j > 0 );
                 $$Query .= "("             if $depth > 0;
                 my $x = $i + 1;
-                build_array( $Query, $subkey, $sendkey, $ea, $x, $keys, , $queues );
+                build_array( $Query, $subkey, $sendkey, $item->{EA}, 
+			     $x, $keys, , $queues );
                 $$Query .= ")" if $depth > 0;
             }
             else {
@@ -411,7 +408,7 @@ sub build_array {
                     }
                     $$Query .= " " . $ea . " " if ( $j > 0 );
                     $$Query .= "$item->{Key} $item->{Op} $item->{Value}";
-                    push @$keys, { Key => $mykey, Value => $item };
+                    push @$keys, { Key => $mykey, Value => $item, EA => $ea };
 
                     if ( $item->{Key} eq "Queue" ) {
                         $queues->{ $item->{Value} } = 1;

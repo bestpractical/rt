@@ -70,8 +70,12 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'Type'.
   int(11) 'MaxValues'.
   varchar(255) 'Pattern'.
+  smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
+  varchar(255) 'ObjectType'.
+  varchar(255) 'IntermediateType'.
+  varchar(255) 'ParentType'.
   smallint(6) 'Disabled'.
 
 =cut
@@ -86,8 +90,12 @@ sub Create {
                 Type => '',
                 MaxValues => '',
                 Pattern => '',
+                Repeated => '0',
                 Description => '',
                 SortOrder => '0',
+                ObjectType => '',
+                IntermediateType => '',
+                ParentType => '',
                 Disabled => '0',
 
 		  @_);
@@ -96,8 +104,12 @@ sub Create {
                          Type => $args{'Type'},
                          MaxValues => $args{'MaxValues'},
                          Pattern => $args{'Pattern'},
+                         Repeated => $args{'Repeated'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
+                         ObjectType => $args{'ObjectType'},
+                         IntermediateType => $args{'IntermediateType'},
+                         ParentType => $args{'ParentType'},
                          Disabled => $args{'Disabled'},
 );
 
@@ -186,6 +198,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 Repeated
+
+Returns the current value of Repeated. 
+(In the database, Repeated is stored as smallint(6).)
+
+
+
+=head2 SetRepeated VALUE
+
+
+Set Repeated to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Repeated will be stored as a smallint(6).)
+
+
+=cut
+
+
 =head2 Description
 
 Returns the current value of Description. 
@@ -217,6 +247,60 @@ Returns the current value of SortOrder.
 Set SortOrder to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, SortOrder will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 ObjectType
+
+Returns the current value of ObjectType. 
+(In the database, ObjectType is stored as varchar(255).)
+
+
+
+=head2 SetObjectType VALUE
+
+
+Set ObjectType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ObjectType will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 IntermediateType
+
+Returns the current value of IntermediateType. 
+(In the database, IntermediateType is stored as varchar(255).)
+
+
+
+=head2 SetIntermediateType VALUE
+
+
+Set IntermediateType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, IntermediateType will be stored as a varchar(255).)
+
+
+=cut
+
+
+=head2 ParentType
+
+Returns the current value of ParentType. 
+(In the database, ParentType is stored as varchar(255).)
+
+
+
+=head2 SetParentType VALUE
+
+
+Set ParentType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ParentType will be stored as a varchar(255).)
 
 
 =cut
@@ -290,10 +374,18 @@ sub _CoreAccessible {
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         Pattern => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Repeated => 
+		{read => 1, write => 1, type => 'smallint(6)', default => '0'},
         Description => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        ObjectType => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        IntermediateType => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        ParentType => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 

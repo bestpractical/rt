@@ -1,4 +1,4 @@
-%# BEGIN LICENSE BLOCK
+%# BEGIN LICENSE BLOCK;
 %# 
 %# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
@@ -21,12 +21,45 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<%$content |n%>
+% use Data::Dumper;
+<table>
+% foreach my $header (@headers) {
+% next unless ($display_headers{'_all'} || $display_headers{lc($header->{'Tag'})});
+<tr>
+<td align="right" class="message-header-key"><pre><%$header->{'Tag'}%>:</pre></td>
+<td class="message-header-value"><%$header->{'Value'}|n%></td>
+</td>
+</tr>
+% }
+</table>
 <%INIT>
 my $content = $Headers;
 RT::Interface::Web::EscapeUTF8(\$content);
 $m->comp('/Elements/Callback', content => \$content, %ARGS);
+
+
+my @lines = split (/\n/,$content);
+my $in_header = 0;
+my @headers =();
+foreach (@lines) {
+    if (/^(\S+):\s+(.*)$/) {
+        push (@headers, { Tag => $1, Value => $2} ); 
+    } elsif ($headers[-1]) {
+        $headers[-1]->{'Value'} .= $_;
+    } else {
+
+        push (@headers, { Tag => $_, Value => ''} ); 
+    }
+
+}
+
+my %display_headers;
+
+map { $display_headers{lc($_)} = 1 } @$DisplayHeaders;
+
+
 </%INIT>
 <%ARGS>
 $Headers => undef
+$DisplayHeaders => undef
 </%ARGS>

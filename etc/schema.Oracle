@@ -1,6 +1,7 @@
 CREATE SEQUENCE ATTACHMENTS_seq;
 CREATE TABLE Attachments (
-  	id 		NUMBER(11,0) PRIMARY KEY,
+  	id 		NUMBER(11,0) 
+			CONSTRAINT Attachments_Key PRIMARY KEY,
   	TransactionId	NUMBER(11,0) NOT NULL,
 	Parent 		NUMBER(11,0) DEFAULT 0 NOT NULL, 
   	MessageId 	VARCHAR2(160),
@@ -13,15 +14,15 @@ CREATE TABLE Attachments (
 	Creator 	NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Created 	DATE
 );
-CREATE INDEX Attachments1 ON Attachments (Parent);
 CREATE INDEX Attachments2 ON Attachments (TransactionId);
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId);
 
 
 CREATE SEQUENCE QUEUES_seq;
 CREATE TABLE Queues (
-	id 			NUMBER(11,0) PRIMARY KEY,
-	Name 			VARCHAR2(200) UNIQUE NOT NULL,
+	id 			NUMBER(11,0) 
+		CONSTRAINT Queues_Key PRIMARY KEY,
+	Name 			VARCHAR2(200) CONSTRAINT Queues_Name_Unique UNIQUE NOT NULL,
 	Description 		VARCHAR2(255),
 	CorrespondAddress 	VARCHAR2(120),
 	CommentAddress 		VARCHAR2(120),
@@ -34,13 +35,14 @@ CREATE TABLE Queues (
 	LastUpdated		DATE,
 	Disabled 		NUMBER(11,0) DEFAULT 0 NOT NULL
 );
--- CREATE UNIQUE INDEX Queues1 ON Queues (Name);
+ CREATE  INDEX Queues1 ON Queues (lower(Name));
 CREATE INDEX Queues2 ON Queues (Disabled);
 
 
 CREATE SEQUENCE LINKS_seq;
 CREATE TABLE Links (
-  	id 		NUMBER(11,0) PRIMARY KEY,
+  	id 		NUMBER(11,0) 
+		CONSTRAINT Links_Key PRIMARY KEY,
 	Base 		VARCHAR2(240),
 	Target 		VARCHAR2(240),
   	Type 		VARCHAR2(20) NOT NULL,
@@ -59,17 +61,19 @@ CREATE INDEX Links4 ON Links(Type,LocalBase);
 
 CREATE SEQUENCE PRINCIPALS_seq;
 CREATE TABLE Principals (
-	id		NUMBER(11,0) PRIMARY KEY,
+	id		NUMBER(11,0) 
+		CONSTRAINT Principals_Key PRIMARY KEY,
 	PrincipalType	VARCHAR2(16),
 	ObjectId	NUMBER(11,0),
 	Disabled	NUMBER(11,0) DEFAULT 0 NOT NULL
 );
-CREATE INDEX Principals2 ON Principals (ObjectId);
+CREATE UNIQUE  INDEX Principals2 ON Principals (ObjectId);
 
 
 CREATE SEQUENCE GROUPS_seq;
 CREATE TABLE Groups (
-	id 		NUMBER(11,0) PRIMARY KEY,
+	id 		NUMBER(11,0) 
+		CONSTRAINT Groups_Key PRIMARY KEY,
 	Name 		VARCHAR2(200),
 	Description 	VARCHAR2(255),
 	Domain		VARCHAR2(64),
@@ -77,13 +81,14 @@ CREATE TABLE Groups (
 	Instance	NUMBER(11,0) DEFAULT 0 -- NOT NULL
 --	Instance	VARCHAR2(64)
 );
-CREATE INDEX Groups1 ON Groups (Domain, Instance, Type, id);
-CREATE INDEX Groups2 ON Groups (Type, Instance, Domain);
+CREATE INDEX Groups1 ON Groups (lower( Domain), Instance, lower(Type), id);
+CREATE INDEX Groups2 ON Groups (lower(Type), Instance, lower(Domain));
 
 
 CREATE SEQUENCE SCRIPCONDITIONS_seq;
 CREATE TABLE ScripConditions (
- 	id 			NUMBER(11, 0) PRIMARY KEY,
+ 	id 			NUMBER(11, 0) 
+		CONSTRAINT ScripConditions_Key PRIMARY KEY,
 	Name 			VARCHAR2(200),
 	Description 		VARCHAR2(255),
 	ExecModule		VARCHAR2(60),
@@ -98,7 +103,8 @@ CREATE TABLE ScripConditions (
 
 CREATE SEQUENCE TRANSACTIONS_seq;
 CREATE TABLE Transactions (
-  	id 			NUMBER(11,0) PRIMARY KEY,
+  	id 			NUMBER(11,0) 
+		CONSTRAINT Transactions_Key PRIMARY KEY,
   	EffectiveTicket 	NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Ticket 			NUMBER(11,0) DEFAULT 0 NOT NULL,
   	TimeTaken 		NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -116,7 +122,8 @@ CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 
 CREATE SEQUENCE SCRIPS_seq;
 CREATE TABLE Scrips (
-  	id 		NUMBER(11,0) PRIMARY KEY,	
+  	id 		NUMBER(11,0) 
+		CONSTRAINT Scrips_Key PRIMARY KEY,	
 	Description	VARCHAR2(255),
 	ScripCondition 	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	ScripAction	NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -137,7 +144,8 @@ CREATE TABLE Scrips (
 
 CREATE SEQUENCE ACL_seq;
 CREATE TABLE ACL (
-	id 		NUMBER(11,0) PRIMARY KEY,
+	id 		NUMBER(11,0) 
+		CONSTRAINT ACL_Key PRIMARY KEY,
 	PrincipalType 	VARCHAR2(25) NOT NULL,
 	PrincipalId 	NUMBER(11,0) NOT NULL,
 	RightName	VARCHAR2(25) NOT NULL,
@@ -151,7 +159,8 @@ CREATE INDEX ACL1 ON ACL(RightName, ObjectType, ObjectId, PrincipalType, Princip
 
 CREATE SEQUENCE GROUPMEMBERS_seq;
 CREATE TABLE GroupMembers (
-	id 		NUMBER(11,0) PRIMARY KEY,
+	id 		NUMBER(11,0) 
+		CONSTRAINT GroupMembers_Key PRIMARY KEY,
 	GroupId 	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	MemberId 	NUMBER(11,0) DEFAULT 0 NOT NULL
 );
@@ -160,7 +169,8 @@ CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, MemberId);
 
 CREATE SEQUENCE CachedGroupMembers_seq;
 CREATE TABLE CachedGroupMembers (
-	id		NUMBER(11,0) PRIMARY KEY,
+	id		NUMBER(11,0) 
+		CONSTRAINT CachedGroupMembers_Key PRIMARY KEY,
 	GroupId		NUMBER(11,0),
 	MemberId	NUMBER(11,0),
 	Via		NUMBER(11,0),
@@ -173,8 +183,10 @@ CREATE INDEX GrouMem ON CachedGroupMembers (GroupId, MemberId);
 
 CREATE SEQUENCE USERS_seq;
 CREATE TABLE Users (
-  	id 			NUMBER(11,0) PRIMARY KEY,
-  	Name 			VARCHAR2(200) NOT NULL,
+  	id 			NUMBER(11,0) 
+		CONSTRAINT Users_Key PRIMARY KEY,
+  	Name 			VARCHAR2(200) CONSTRAINT Users_Name_Unique 
+		unique  NOT NULL,
   	Password 		VARCHAR2(40),
   	Comments 		CLOB,
   	Signature 		CLOB,
@@ -209,14 +221,15 @@ CREATE TABLE Users (
   	LastUpdated 		DATE
 );
 -- CREATE UNIQUE INDEX Users1 ON Users (Name);
-CREATE INDEX Users2 ON Users (Name);
-CREATE INDEX Users3 ON Users (id, EmailAddress);
-CREATE INDEX Users4 ON Users (EmailAddress);
+
+CREATE INDEX Users2 ON Users( LOWER(name));
+CREATE INDEX Users4 ON Users (lower(EmailAddress));
 
 
 CREATE SEQUENCE TICKETS_seq;
 CREATE TABLE Tickets (
-  	id			NUMBER(11, 0) PRIMARY KEY,
+       id                      NUMBER(11, 0) 
+               CONSTRAINT Tickets_Key PRIMARY KEY,
   	EffectiveId		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Queue 			NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Type 			VARCHAR2(16), 		
@@ -244,7 +257,6 @@ CREATE TABLE Tickets (
 );
 CREATE INDEX Tickets1 ON Tickets (Queue, Status);
 CREATE INDEX Tickets2 ON Tickets (Owner);
-CREATE INDEX Tickets3 ON Tickets (EffectiveId);
 CREATE INDEX Tickets4 ON Tickets (id, Status);
 CREATE INDEX Tickets5 ON Tickets (id, EffectiveId);
 CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type);
@@ -252,7 +264,8 @@ CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type);
 
 CREATE SEQUENCE SCRIPACTIONS_seq;
 CREATE TABLE ScripActions (
-  id		NUMBER(11,0) PRIMARY KEY,
+  id		NUMBER(11,0) 
+		CONSTRAINT ScripActions_Key PRIMARY KEY,
   Name		VARCHAR2(200),
   Description	VARCHAR2(255),
   ExecModule	VARCHAR2(60),
@@ -266,7 +279,8 @@ CREATE TABLE ScripActions (
 
 CREATE SEQUENCE TEMPLATES_seq;
 CREATE TABLE Templates (
-  	id 		NUMBER(11,0) PRIMARY KEY,
+  	id 		NUMBER(11,0) 
+		CONSTRAINT Templates_Key PRIMARY KEY,
 	Queue 		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Name		VARCHAR2(200) NOT NULL,
 	Description	VARCHAR2(255),
@@ -283,7 +297,8 @@ CREATE TABLE Templates (
 
 CREATE SEQUENCE TICKETCUSTOMFIELDVALUES_seq;
 CREATE TABLE TicketCustomFieldValues (
-	id		NUMBER(11,0) PRIMARY KEY,
+	id		NUMBER(11,0) 
+		CONSTRAINT TicketCustomFieldValues_Key PRIMARY KEY,
 	Ticket		NUMBER(11,0),
 	CustomField	NUMBER(11,0) NOT NULL,
 	Content		VARCHAR2(255),
@@ -298,7 +313,8 @@ CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ti
 
 CREATE SEQUENCE CUSTOMFIELDS_seq;
 CREATE TABLE CustomFields (
-	id		NUMBER(11,0) PRIMARY KEY,
+	id		NUMBER(11,0) 
+		CONSTRAINT CustomFields_Key PRIMARY KEY,
 	Name		VARCHAR2(200),
 	Type		VARCHAR2(200),
 	Queue		NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -315,7 +331,8 @@ CREATE INDEX CustomFields1 ON CustomFields (Disabled, Queue);
 
 CREATE SEQUENCE CUSTOMFIELDVALUES_seq;
 CREATE TABLE CustomFieldValues (
-	id		NUMBER(11,0) PRIMARY KEY,
+	id		NUMBER(11,0) 
+		CONSTRAINT CustomFieldValues_Key PRIMARY KEY,
 	CustomField	NUMBER(11,0),
 	Name		VARCHAR2(200),
 	Description	VARCHAR2(255),
@@ -343,9 +360,13 @@ CREATE TABLE Attributes (
 	LastUpdated		DATE,
 );
 
+CREATE INDEX Attributes1 on Attributes(Name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+
 
 CREATE TABLE sessions (
-	id		VARCHAR2(32) PRIMARY KEY,
+	id		VARCHAR2(32) 
+		CONSTRAINT Sessions_Key PRIMARY KEY,
 	a_session	CLOB,
 	LastUpdated	DATE
 );

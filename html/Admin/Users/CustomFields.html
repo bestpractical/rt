@@ -21,16 +21,4 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<SELECT NAME ="<%$Name%>">
-%for my $option ($cf->TypeComposites) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyTypeComposite($option) %></OPTION>
-%}
-</SELECT>
-<%INIT>
-my $cf = RT::CustomField->new($session{'CurrentUser'});
-
-</%INIT>
-<%ARGS>
-$Default=>undef
-$Name => 'TypeComposite'
-</%ARGS>
+<& /Admin/Elements/ObjectCustomFields, %ARGS, ObjectType => 'RT::User' &>

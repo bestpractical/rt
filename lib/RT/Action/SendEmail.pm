@@ -339,7 +339,15 @@ sub RecordOutgoingMailTransaction {
 
     # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
 
-    my ($id, $msg) = $transaction->Create( Ticket => $self->TicketObj->Id, Type => 'EmailRecord', Data => $MIMEObj->head->get('Message-Id'), MIMEObj => $MIMEObj, ActivateScrips => 0);
+    my $type;
+    if ($self->TransactionObj->Type eq 'Comment') {
+        $type = 'CommentEmailRecord';
+    } else {
+        $type = 'EmailRecord';
+    }
+
+
+    my ($id, $msg) = $transaction->Create( Ticket => $self->TicketObj->Id, Type => $type, Data => $MIMEObj->head->get('Message-Id'), MIMEObj => $MIMEObj, ActivateScrips => 0);
 
 
 }

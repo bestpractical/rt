@@ -148,6 +148,87 @@ sub _DoSearch {
 }
 
 # }}}
+
+# {{{ sub Next 
+
+=head2 Next
+
+Returns the next custom field that this user can see.
+
+=cut
+  
+sub Next {
+    my $self = shift;
+    
+    
+    my $CF = $self->SUPER::Next();
+    if ((defined($CF)) and (ref($CF))) {
+
+	if ($CF->CurrentUserHasRight('SeeCustomField')) {
+	    return($CF);
+	}
+	
+	#If the user doesn't have the right to show this queue
+	else {	
+	    return($self->Next());
+	}
+    }
+    #if there never was any queue
+    else {
+	return(undef);
+    }	
+    
+}
+# }}}
+
+sub LimitToParentId  {
+    my $self = shift;
+    my $id = shift || 0;
+ 
+    $self->Limit( FIELD => 'ParentId', VALUE => "$id" );
+}
+
+sub LimitToObjectType  {
+    my $self = shift;
+    my $o_type = shift;
+ 
+    $self->Limit( FIELD => 'ObjectType', VALUE => "$o_type" );
+}
+
+sub LimitToComposite  {
+    my $self = shift;
+    my $composite = shift;
+    my ($o_type, $i_type, $p_type) = split(/-/, $composite, 3);
+ 
+    $self->Limit( FIELD => 'ObjectType', VALUE => "$o_type" );
+    $self->Limit( FIELD => 'IntermediateType', VALUE => "$i_type" );
+    $self->Limit( FIELD => 'ParentType', VALUE => "$p_type" );
+}
+
+sub LimitToGlobalOrParentId {
+    my $self = shift;
+    my $id = shift || 0;
+
+    my $object_cfs = $self->NewAlias('ObjectCustomFields');
+    $self->Join( ALIAS1 => 'main',
+                FIELD1 => 'id',
+                ALIAS2 => $object_cfs,
+                FIELD2 => 'CustomField' );
+    $self->Limit( ALIAS           => $object_cfs,
+                 FIELD           => 'ParentId',
+                 OPERATOR        => '=',
+                 VALUE           => $id,
+                 ENTRYAGGREGATOR => 'OR' );
+    $self->Limit( ALIAS           => $object_cfs,
+                 FIELD           => 'ParentId',
+                 OPERATOR        => '=',
+                 VALUE           => 0,
+                 ENTRYAGGREGATOR => 'OR' ) if $id;
+    
+    # This doesn't work on postgres. 
+    #$self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');
+
+}
   
 1;
 

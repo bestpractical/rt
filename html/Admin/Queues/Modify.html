@@ -21,11 +21,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => loc('Admin/Queue/Basics') &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
     QueueObj => $QueueObj,
     current_tab => $current_tab, 
-    Title => loc('Admin/Queue/Basics') &>
+    Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -137,7 +137,7 @@ my @attribs= qw(Description CorrespondAddress CommentAddress Name
   }
   if  ( ($SetEnabled) and ( $Disabled != $QueueObj->Disabled) ) { 
       my  ($code, $msg) = $QueueObj->SetDisabled($Disabled);
-      push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+      push @results, loc('Enabled status: [_1]', loc_fuzzy($msg));
   }
   
   if ($QueueObj->Disabled()) {

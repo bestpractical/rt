@@ -7,7 +7,7 @@ SELECTED
 </OPTION>
 %# if ($Depth < $MaxDepth) {
 % while (my $link = $tasks->Next()) {
-<& SelectProjectTaskEntry, Root=> $link->BaseObj, Depth => ($Depth+1), MaxDepth => $MaxDepth, Project => $Project, Default => $Default &>
+<& SelectProjectTaskEntry, Root=> $link, Depth => ($Depth+1), MaxDepth => $MaxDepth, Project => $Project, Default => $Default &>
 % }
 %# }
 % }
@@ -20,5 +20,6 @@ $Default => undef
 </%ARGS>
 
 <%INIT>
-my $tasks = $Root->Members();
+my $tasks = RT::Tickets->new($session{'CurrentUser'});
+$tasks->FromSQL('MemberOf = '. $Root->id);
 </%INIT>

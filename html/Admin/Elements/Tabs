@@ -37,8 +37,14 @@
 	       C => { title => loc('Queues'),
 			   path => 'Admin/Queues/',
 			 },
-	       D => { 'title' => loc('Global'),
+	       D => { 'title' => loc('Custom Fields'),
+			   path => 'Admin/CustomFields/',
+			 },
+	       E => { 'title' => loc('Global'),
 			   path => 'Admin/Global/',
+			 },
+	       F => { 'title' => loc('Tools'),
+			   path => 'Admin/Tools/',
 			 },
 	     };
 

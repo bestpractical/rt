@@ -13,56 +13,10 @@ accidentally damage your database and lose data or worse.
 
 UPGRADING FROM 3.0.x - Changes:
 
-Now, if you want RT to automatically create new users upon ticket submission, you MUST grant 'Everyone' the right to create tickets.
+Now, if you want RT to automatically create new users upon ticket
+submission, you MUST grant 'Everyone' the right to create tickets.
 Granting this right only to "Unprivileged Users" is now insufficient.
 
-
-
-
-----------------------------------------------------------------------
-
-3.0.7
-=====
-
-All Databases
--------------
-
-If you are upgrading from versions between 3.0.0 and 3.0.7, inclusive,
-you might find improved performance by adding the following index to
-your database:
-
-CREATE INDEX Links4 ON Links(Type,LocalBase);
-
-
-
-3.0.6
-=====
-
-
-All Databases
--------------
-
-If you are upgrading from versions between 3.0.0 and 3.0.6, inclusive,
-you might find improved performance by adding the following indices to
-your database:
-
-   CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
-   CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
-
-   CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
-
-
-
-Postgres
---------
-
-If you have a Postgres database, the following changes to your
-database can improve performance:
-
-  ALTER TABLE groups rename instance to instance1;
-  ALTER TABLE groups add instance int;
-  UPDATE groups SET instance = instance1::text::int where btrim(instance1) <> '';
-  ALTER TABLE groups drop column instance1;
 
 
 

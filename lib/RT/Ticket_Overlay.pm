@@ -3849,110 +3849,6 @@ sub _SetTold {
 
 # }}}
 
-# {{{ sub Transactions 
-
-=head2 Transactions
-
-  Returns an RT::Transactions object of all transactions on this ticket
-
-=cut
-
-sub Transactions {
-    my $self = shift;
-
-    use RT::Transactions;
-    my $transactions = RT::Transactions->new( $self->CurrentUser );
-
-    #If the user has no rights, return an empty object
-    if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        my $tickets = $transactions->NewAlias('Tickets');
-        $transactions->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'ObjectId',
-            ALIAS2 => $tickets,
-            FIELD2 => 'id'
-        );
-        $transactions->Limit(
-            ALIAS => $tickets,
-            FIELD => 'EffectiveId',
-            VALUE => $self->id()
-        );
-	$transactions->Limit(
-	    FIELD    => 'ObjectType',
-	    VALUE    => ref($self),
-	);
-
-        # if the user may not see comments do not return them
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            $transactions->Limit(
-                FIELD    => 'Type',
-                OPERATOR => '!=',
-                VALUE    => "Comment"
-            );
-        }
-    }
-
-    return ($transactions);
-}
-
-# }}}
-
-# {{{ sub _NewTransaction
-
-=head2 _NewTransaction  PARAMHASH
-
-Private function to create a new RT::Transaction object for this ticket update
-
-=cut
-
-sub _NewTransaction {
-    my $self = shift;
-    my %args = (
-        TimeTaken => 0,
-        Type      => undef,
-        OldValue  => undef,
-        NewValue  => undef,
-        Data      => undef,
-        Field     => undef,
-        MIMEObj   => undef,
-        ActivateScrips => 1,
-        CommitScrips => 1,
-        @_
-    );
-
-    require RT::Transaction;
-    my $trans = new RT::Transaction( $self->CurrentUser );
-    my ( $transaction, $msg ) = $trans->Create(
-        Ticket    => $self->Id,
-        TimeTaken => $args{'TimeTaken'},
-        Type      => $args{'Type'},
-        Data      => $args{'Data'},
-        Field     => $args{'Field'},
-        NewValue  => $args{'NewValue'},
-        OldValue  => $args{'OldValue'},
-        MIMEObj   => $args{'MIMEObj'},
-        ActivateScrips => $args{'ActivateScrips'},
-        CommitScrips => $args{'CommitScrips'},
-    );
-
-    # Rationalize the object since we may have done things to it during the caching.
-    $self->Load($self->Id);
-
-    $RT::Logger->warning($msg) unless $transaction;
-
-    $self->_SetLastUpdated;
-
-    if ( defined $args{'TimeTaken'} ) {
-        $self->_UpdateTimeTaken( $args{'TimeTaken'} );
-    }
-    if ( $RT::UseTransactionBatch and $transaction ) {
-	    push @{$self->{_TransactionBatch}}, $trans;
-    }
-    return ( $transaction, $msg, $trans );
-}
-
-# }}}
-
 =head2 TransactionBatch
 
   Returns an array reference of all transactions created on this ticket during
@@ -4204,6 +4100,54 @@ sub HasRight {
 }
 
 # }}}
+
+# }}}
+
+# {{{ sub Transactions 
+
+=head2 Transactions
+
+  Returns an RT::Transactions object of all transactions on this ticket
+
+=cut
+
+sub Transactions {
+    my $self = shift;
+
+    use RT::Transactions;
+    my $transactions = RT::Transactions->new( $self->CurrentUser );
+
+    #If the user has no rights, return an empty object
+    if ( $self->CurrentUserHasRight('ShowTicket') ) {
+        my $tickets = $transactions->NewAlias('Tickets');
+        $transactions->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'ObjectId',
+            ALIAS2 => $tickets,
+            FIELD2 => 'id'
+        );
+        $transactions->Limit(
+            ALIAS => $tickets,
+            FIELD => 'EffectiveId',
+            VALUE => $self->id()
+        );
+	$transactions->Limit(
+	    FIELD    => 'ObjectType',
+	    VALUE    => ref($self),
+	);
+
+        # if the user may not see comments do not return them
+        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+            $transactions->Limit(
+                FIELD    => 'Type',
+                OPERATOR => '!=',
+                VALUE    => "Comment"
+            );
+        }
+    }
+
+    return ($transactions);
+}
 
 # }}}
 

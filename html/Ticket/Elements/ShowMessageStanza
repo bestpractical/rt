@@ -21,8 +21,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+% if (ref($Message)) {
+<font color="<%$colors[$Depth]%>">
 <%perl>
-if (ref($Message)) {
 foreach my $stanza (@$Message) {
     if ( ref $stanza eq "ARRAY" ) {
         $m->comp( 'ShowMessageStanza',
@@ -37,9 +38,10 @@ foreach my $stanza (@$Message) {
                 $content =~ s/\n/<br>/gi;
 
 </%perl>
-<font color="<%$colors[$Depth]%>"><%$content |n%><br></font>
+<%$content |n%><br>
 %       }
-% }
+% } # end foreach
+</font>
 % } else {
 % my $content = $Message;
 %        RT::Interface::Web::EscapeUTF8(\$content);
