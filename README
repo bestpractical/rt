@@ -26,6 +26,12 @@ Buglist at  <URL:http://fsck.com/rt2/NoAuth/Buglist.html>.
 
 To report a bug, send an email to rt-2.0-bugs@fsck.com.
 
+INSTALLATION INSTRUCTIONS
+-------------------------
+
+These instructions are a summary of those at http://www.helgrim.com/rtdocs.
+The docs on the web at www.helgrim.com/rtdocs are likely to be more up to
+date and complete than this readme.  You should consult them before proceeding
 
 REQUIRED PACKAGES:
 ------------------
@@ -50,13 +56,6 @@ o   Apache + mod_perl -- ( http://perl.apache.org)
 
 o    Various and sundry perl modules
 		
-
-INSTALLATION INSTRUCTIONS
--------------------------
-
-With all of the above installed, it's time to do the rather easy job
-of installing RT.  Choose a directory in which you wish to install RT. 
-For the sake of simplicity, we use /usr/local/rt in our example.
 
 
 GENERAL INSTALLATION
@@ -104,15 +103,17 @@ GENERAL INSTALLATION
 	and start over from step 5a
 
 5b  FOR UPGRADING: (Within the RT 2.0.x series)
-        
+
+	Make a backup of /path/to/rt/etc/config.pm
+ 
         As root, type: 
 		make upgrade     (replace "make" with the local name for 
 				  Make, if you need to)
 
-	This will build new RT wrappers, config files and libraries without
+	This will build new binaries, config files and libraries without
 	overwriting your RT database.
 
-	WARNING: Note that this will clobber your configuration file!
+	WARNING: This will clobber your existing configuration file!
 	
 5c  FOR UPGRADING (From 1.0.x):
 
@@ -132,7 +133,6 @@ GENERAL INSTALLATION
 	need to execute the following SQL statement within your RT2 database:
 
 	select setval('tickets_id_seq', (select max(id) from tickets));
-
 	
 	It imports:
 		Queues, Areas, Users, Acls, Mailing Rules, Queue Members,
@@ -149,23 +149,13 @@ GENERAL INSTALLATION
 
 8   Stop and start your webserver, so it picks up your configuration changes.
 
-9   Using rtadmin, or the web interface add a RT user for yourself. 
-    This must be done as root, as no other user has permission to do anything inside RT yet.
-    Right now, root's password is 'password'. You should change that too.
-	
-	Commandline instructions:
-
-            [root@host bin]# ./rtadmin --user <username> --create --password="<password>"
-
-	Web instructions:
-	    Log into the web ui as root
-	    Click on "Administration"	
-	    Click on "Users"
-	    Click on "Create a new user"
-
     NOTE: root's password for the web interface is "password" 
     (without the quotes.)  Not changing this is a SECURITY risk
     
+9   Configure RT per the instructions at http://www.helgrim.com/rtdocs.
+    Until you do this, RT will not be able to send or recieve email,
+    nor will it be more than marginally functional.  This is not an
+    optional step.
 
 
 SETTING UP THE MAIL GATEWAY 
@@ -205,6 +195,7 @@ Apache
 DocumentRoot /path/to/rt2/WebRT/html
 ServerName your.rt.server.hostname
 PerlModule Apache::DBI
+PerlFreshRestart On
 PerlRequire /path/to/rt2/bin/webmux.pl
 <Location />
  SetHandler perl-script
@@ -236,7 +227,6 @@ THE CLI
                 "rtadmin" (modify queues, users and acls)
 
         Both of these programs take --help as an option.
-	
 
 
 GETTING HELP
