@@ -73,10 +73,8 @@ sub Prepare  {
 
   $self->SetSubject();
 
-  my $tag = "[$RT::rtname #".$self->TicketObj->id."]";
-  my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
-  $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub")
-      unless $sub =~ /\Q$tag\E/;
+  # Set's the tag
+  $self->FixSubject();
 
   $self->SetReturnAddress();
 
@@ -355,6 +353,19 @@ sub SetSubject {
 
   return($self->{'Subject'});
 }
+# }}}
+
+# {{{ sub FixSubject - sets the RT tag
+
+# This routine fixes the RT tag in the subject.  It might be
+# overridden only in some rare cases.
+
+sub FixSubject {
+  my $self=shift;
+  my $tag = "[$RT::rtname #".$self->TicketObj->id."]";
+  my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
+  $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub")
+      unless $sub =~ /\Q$tag\E/;
 # }}}
 
 # {{{ sub IsApplicable 
