@@ -1128,6 +1128,12 @@ sub _CustomFieldLimit {
             ,    # we want a single item, not a collection
             ENTRYAGGREGATOR => 'AND'
         );
+        $self->SUPER::Limit(
+            LEFTJOIN => $TicketCFs,
+            FIELD    => 'Disabled',
+            OPERATOR    => '=',
+            VALUE => '0',
+            ENTRYAGGREGATOR => 'AND');
 
         if ($cfid) {
             $self->SUPER::Limit(
