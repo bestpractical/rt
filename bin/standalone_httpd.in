@@ -56,6 +56,7 @@ use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 use Socket;
 
 $SIG{CHLD} = "IGNORE"; # reap child processes
+$SIG{HUP} = sub { exec($^X, $0, @ARGV) };
 
 
 RT::Init();
