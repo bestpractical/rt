@@ -21,18 +21,32 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<select name="GroupField">
-% foreach my $col (RT::Group->BasicColumns) {
-<option value="<% $col->[0] %>"><% loc($col->[1]) %>
-% }
-% while (my $CF = $CFs->Next) {
-<option value="CustomField-<% $CF->Id %>"><&|/l&>CustomField</&>: <% $CF->Name %>
-% }
-</select>
-<& /Elements/SelectMatch, Name=> 'GroupOp' &>
-<input size=8 name="GroupString">
-<%INIT>
-my $CFs = RT::CustomFields->new($session{'CurrentUser'});
-$CFs->LimitToChildType('RT::Group');
-$CFs->OrderBy( FIELD => 'Name' );
-</%INIT>
+<%perl>
+my ($class, $filename, @ids);
+my $arg = $m->dhandler_arg;                # get rest of path
+if ($arg =~ /^(\w+)\/([,\d]+)(?:\/([^\/]+))?/) {
+    $class = "RT::$1";
+    $filename = $3 || lc("$1s.txt");
+    @ids = sort split(/,+/, $2);
+}
+else {
+    Abort("Corrupted tabular URL.");
+}
+
+my @cols = $class->BasicColumns or return;
+
+#$r->content_type( 'application/octet-stream' );
+$r->content_type( 'text/plain' );
+$r->header_out( 'Content-Disposition' => "attachment; filename=$filename" );
+$m->clear_buffer();
+$m->out(join("\t", "Id", map $_->[1], @cols), "\n");
+foreach my $id (@ids) {
+    my $obj = $class->new;
+    $obj->Load($id) or next;
+    $m->out(join("\t", map $obj->$_, "Id", map $_->[0], @cols), "\n");
+}
+$m->abort; 
+</%perl>
+<%attr>
+AutoFlush => 0
+</%attr>

@@ -34,11 +34,16 @@
 %if ($users->Count == 0) {
 <LI> <i><&|/l&>No users matching search criteria found.</&></i>
 % }
+%my @ids;
 %while ( $user = $users->Next) {
+%    push @ids, $user->Id;
 <LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->Name || loc('(no name listed)')%></a></LI>
 %}
-
 </UL>
+%if (my $ids = join(',', @ids)) {
+<em>(<a href="/Download/Tabular/User/<% $ids %>/users.txt"><&|/l&>Download as a tab-delimited file</&></a>)</em><br>
+%}
+
 <br><br>
 <FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Users/index.html">
 
@@ -56,27 +61,26 @@ if ($FindDisabledUsers) {
 	$users->{'find_disabled_rows'} = 1;
 }
 
-unless (defined $UserString) {
-    $users->LimitToPrivileged();
-    $caption = loc("Privileged users");
-}
-else {
+if (length $UserString) {
     $caption = loc("Users matching search criteria");
-
-  if (length $UserString) {
     if ($UserField =~ /^CustomField-(\d+)/) {
 	$users->LimitCustomField(
 	    CUSTOMFIELD => $1,
 	    OPERATOR => $UserOp,
-	    VALUE => $UserString
+	    VALUE => $UserString,
 	); 
     }
     else {
-	$users->Limit( FIELD => $UserField,
-		        OPERATOR => $UserOp,
-		       VALUE => $UserString); 
+	$users->Limit(
+	    FIELD => $UserField,
+	    OPERATOR => $UserOp,
+	    VALUE => $UserString,
+	); 
     }
 }
+else {
+    $caption = loc("Privileged users");
+    $users->LimitToPrivileged;
 }
 </%INIT>
 <%ARGS>

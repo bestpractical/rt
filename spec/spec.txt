@@ -1,6 +1,6 @@
 
 Finish iterative editing of Binary/image/textarea CFs
-Finish Txn display for User and Group
+Finish Txn display for User and Group (referentialise OldReference etc)
 ACL for per-CF editing (UI done, needs to verify API)
 Requestor-is-of-group ticket search
 

@@ -1550,6 +1550,15 @@ sub _Value {
 
 # }}}
 
+sub BasicColumns {
+    (
+	[ Name => 'User Id' ],
+	[ EmailAddress => 'Email' ],
+	[ RealName => 'Name' ],
+	[ Organization => 'Organization' ],
+    );
+}
+
 1;
 
 

@@ -22,10 +22,9 @@
 %# 
 %# END LICENSE BLOCK
 <select name="UserField">
-<option value="Name"><&|/l&>User Id</&>
-<option value="EmailAddress"><&|/l&>Email</&>
-<option value="RealName"><&|/l&>Name</&>
-<option value="Organization"><&|/l&>Organization</&>
+% foreach my $col (RT::User->BasicColumns) {
+<option value="<% $col->[0] %>"><% loc($col->[1]) %>
+% }
 % while (my $CF = $CFs->Next) {
 <option value="CustomField-<% $CF->Id %>"><&|/l&>CustomField</&>: <% $CF->Name %>
 % }

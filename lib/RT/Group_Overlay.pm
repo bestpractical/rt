@@ -1282,5 +1282,13 @@ sub PrincipalId {
 }
 
 # }}}
+
+sub BasicColumns {
+    (
+	[ Name => 'Name' ],
+	[ Description => 'Description' ],
+    );
+}
+
 1;
 
