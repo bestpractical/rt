@@ -7,7 +7,9 @@
  *
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 int main (argc, argv, envp)
 int argc;
@@ -33,8 +35,12 @@ char *argv[],*envp[];
   eargv[2] = RT_PERL_MUX;
   eargv[3] = program_name;
 
+
   for (i = 1; i < argc; i++)
     eargv[i+3] = argv[i];
+
+  eargv[i+3] = NULL;
+
   execve(PERL, eargv, envp);
   fprintf (stderr, "%s: Failed to launch RT program.\n", program_name);
   perror (program_name);
