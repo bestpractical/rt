@@ -1,7 +1,8 @@
 <HTML>
 <HEAD>
-<% INIT>
-my $Ticket=RT::Ticket->new($CurrentUser);
+<%INIT>
+use RT::Ticket;
+my $Ticket=RT::Ticket->new($RT::CurrentUser);
 $Ticket->Load($ARGS{'id'});
 </%INIT>
 <TITLE>
