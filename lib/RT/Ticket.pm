@@ -852,7 +852,6 @@ sub ValidateQueue {
     return (1);
   }
   
-  require RT::Queue;
   my $QueueObj = RT::Queue->new($self->CurrentUser);
   my $id = $QueueObj->Load($Value);
   
@@ -872,11 +871,12 @@ sub SetQueue {
     my $self = shift;
     my $NewQueue = shift;
 
+    #Redundant. ACL gets checked in _Set;
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied");
     }
-    
-    use RT::Queue;
+   
+ 
     my $NewQueueObj = RT::Queue->new($self->CurrentUser);
     $NewQueueObj->Load($NewQueue);
     
@@ -896,7 +896,10 @@ sub SetQueue {
 					   QueueObj => $NewQueueObj)) {
 	$self->Untake();
     }
-    
+
+    #Delete self->QueueObj's stored object. so we don't cache old values    
+    delete $self->{'queue_obj'};
+
     return($self->_Set(Field => 'Queue', Value => $NewQueueObj->Id()));
     
 }
@@ -914,12 +917,13 @@ Takes nothing. returns this ticket's queue object
 sub QueueObj {
     my $self = shift;
     
-    my $queue = RT::Queue->new($self->CurrentUser);
-    #We call __Value so that we can avoid the ACL decision and some deep recursion
-    my ($result) = $queue->Load($self->__Value('Queue'));
-    
-    #TODO some error checking here.
-    return ($queue);
+    unless ($self->{'queue_obj'}) { 
+    	$self->{'queue_obj'} = RT::Queue->new($self->CurrentUser);
+    	#We call __Value so that we can avoid the ACL decision and some deep recursion
+    	my ($result) = $self->{'queue_obj'}->Load($self->__Value('Queue'));
+	#TODO check errors on that.
+    } 
+    return ($self->{'queue_obj'});
 }
 
 
