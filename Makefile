@@ -393,7 +393,7 @@ commit:
 predist: commit
 	cvs tag -r $(BRANCH) -F $(TAG)
 	rm -rf /tmp/$(TAG)
-	cvs co -D now -d /tmp/$(TAG) -r $(TAG) rt
+	cvs co -d /tmp/$(TAG) -r $(TAG) rt
 	cd /tmp/$(TAG); chmod 600 Makefile; /usr/local/bin/cvs2cl.pl \
 		--no-wrap --follow $(BRANCH) --separate-header \
 		--window 120
