@@ -1,4 +1,5 @@
 %# BEGIN LICENSE BLOCK
+:wq
 %# 
 %# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
 %# 
@@ -22,21 +23,23 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% foreach my $stanza  (@$Message) {
-% if (ref $stanza eq "ARRAY") { 
-%        $m->comp('ShowMessageStanza', Depth => $Depth+1, Message => $stanza);
-% }
-% elsif (ref $stanza eq "HASH") { 
-% my $content = $stanza->{raw};
-%         $content =~ s/&/&amp;/g;
-%         $content =~ s/</&lt;/g;
-%         $content =~ s/>/&gt;/g;
-%         $content =~ s/\n/<br>\n/g;
-%         $content =~ s!((?:http|https|ftp|mailto):\S*?)([\s"']|&gt;|\.[\n]|$)!<A HREF=\"$1\" TARGET=new>$1</A>$2!g;
+<%perl>
+foreach my $stanza (@$Message) {
+    if ( ref $stanza eq "ARRAY" ) {
+        $m->comp( 'ShowMessageStanza',
+                  Depth   => $Depth + 1,
+                  Message => $stanza );
+    }
+    elsif ( ref $stanza eq "HASH" ) {
+        my $content = $stanza->{raw};
+         $m->comp('/Elements/Callback', content_ref  => \$content, %ARGS);
+</%perl>
 <font color="<%$colors[$Depth]%>"><%$content |n%><br></font>
-% }
+%       }
 % }
 <%INIT>
+use URI::URL;
+my $server = 'fsck.com';
 my @colors = ('#000000', '#660000', '#006600', '#000066', '#cc0000', '#00cc00', '#0000cc', '#ff0000', '#00ff00', '#0000ff');
 </%INIT>
 <%ARGS>

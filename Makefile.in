@@ -467,6 +467,6 @@ rpm:
 
 apachectl:
 	/usr/sbin/apachectl stop
-	sleep 1
+	sleep 3
 	/usr/sbin/apachectl start
 # }}}

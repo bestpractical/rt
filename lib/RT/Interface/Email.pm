@@ -284,11 +284,11 @@ sub ParseCcAddressesFromHead {
     
     foreach my $AddrObj (@ToObjs, @CcObjs) {
 	my $Address = $AddrObj->address;
-	$Address = RT::CanonicalizeAddress($Address);
+	$Address = $args{'CurrentUser'}->CanonicalizeEmailAddress($Address);
  	next if ($args{'CurrentUser'}->EmailAddress =~ /^$Address$/i);
 	next if ($args{'QueueObj'}->CorrespondAddress =~ /^$Address$/i);
 	next if ($args{'QueueObj'}->CommentAddress =~ /^$Address$/i);
-	next if (RT::IsRTAddress($Address));
+	next if (RT::EmailParser::IsRTAddress(undef, $Address));
 	
 	push (@Addresses, $Address);
     }
