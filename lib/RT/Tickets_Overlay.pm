@@ -1781,6 +1781,32 @@ sub CountAll {
 # }}}
 
 
+# {{{ sub ItemsArrayRef
+
+=head2 ItemsArrayRef
+
+Returns a reference to the set of all items found in this search
+
+=cut
+
+sub ItemsArrayRef {
+    my $self = shift;
+    my @items;
+
+    unless ( $self->{'items_array'} ) {
+
+        my $placeholder = $self->_ItemsCounter;
+        $self->GotoFirstItem();
+        while ( my $item = $self->Next ) {
+            push ( @{ $self->{'items_array'} }, $item );
+        }
+        $self->GotoItem($placeholder);
+        $self->{'items_array'} = $self->ItemsOrderBy($self->{'items_array'});
+    }
+    return ( $self->{'items_array'} );
+}
+# }}}
+
 # {{{ sub Next
 sub Next {
 	my $self = shift;
@@ -2063,15 +2089,15 @@ sub _BuildItemMap {
 
     delete $self->{'item_map'};
     if ($items->[0]) {
-    $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
-    while (my $item = shift @$items ) {
-        my $id = $item->EffectiveId;
-        $self->{'item_map'}->{$id}->{'defined'} = 1;
-        $self->{'item_map'}->{$id}->{prev}  = $prev;
-        $self->{'item_map'}->{$id}->{next}  = $items->[0]->EffectiveId if ($items->[0]);
-        $prev = $id;
-    }
-    $self->{'item_map'}->{'last'} = $prev;
+        $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
+        while (my $item = shift @$items ) {
+            my $id = $item->EffectiveId;
+            $self->{'item_map'}->{$id}->{'defined'} = 1;
+            $self->{'item_map'}->{$id}->{prev}  = $prev;
+            $self->{'item_map'}->{$id}->{next}  = $items->[0]->EffectiveId if ($items->[0]);
+            $prev = $id;
+        }
+        $self->{'item_map'}->{'last'} = $prev;
     }
 } 
 
@@ -2082,14 +2108,14 @@ Returns an a map of all items found by this search. The map is of the form
 
 $ItemMap->{'first'} = first ticketid found
 $ItemMap->{'last'} = last ticketid found
-$ItemMap->{$id}->{prev} = the tikcet id found before $id
-$ItemMap->{$id}->{next} = the tikcet id found after $id
+$ItemMap->{$id}->{prev} = the ticket id found before $id
+$ItemMap->{$id}->{next} = the ticket id found after $id
 
 =cut
 
 sub ItemMap {
     my $self = shift;
-    $self->_BuildItemMap() unless ($self->{'item_map'});
+    $self->_BuildItemMap() unless ($self->{'items_array'} and $self->{'item_map'});
     return ($self->{'item_map'});
 }
 

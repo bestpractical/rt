@@ -172,7 +172,7 @@ Find all matching rows, regardless of whether they are disabled or not
 =cut
 
 sub FindAllRows {
-  shift->{'find_disabled_rows'} = 1;
+    shift->{'find_disabled_rows'} = 1;
 }
 
 # {{{ sub Limit 
@@ -186,11 +186,38 @@ match lower(colname) agaist lc($val);
 =cut
 
 sub Limit {
-	my $self = shift;
-	my %args = ( CASESENSITIVE => 1,
-		     @_ );
+    my $self = shift;
+    my %args = ( CASESENSITIVE => 1,
+                 @_ );
 
-   return $self->SUPER::Limit(%args);
+    return $self->SUPER::Limit(%args);
+}
+
+# }}}
+
+# {{{ sub ItemsOrderBy
+
+=item ItemsOrderBy
+
+If it has a SortOrder attribute, sort the array by SortOrder.
+Otherwise, if it has a "Name" attribute, sort alphabetically by Name
+Otherwise, just give up and return it in the order it came from the
+db.
+
+=cut
+
+sub ItemsOrderBy {
+    my $self = shift;
+    my $items = shift;
+  
+    if ($self->NewItem()->_Accessible('SortOrder','read')) {
+        $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
+    }
+    elsif ($self->NewItem()->_Accessible('Name','read')) {
+        $items = [ sort { lc($a->Name) cmp lc($b->Name) } @{$items} ];
+    }
+
+    return $items;
 }
 
 # }}}
@@ -199,11 +226,8 @@ sub Limit {
 
 =item ItemsArrayRef
 
-Return this object's ItemsArray.
-If it has a SortOrder attribute, sort the array by SortOrder.
-Otherwise, if it has a "Name" attribute, sort alphabetically by Name
-Otherwise, just give up and return it in the order it came from the db.
-
+Return this object's ItemsArray, in the order that ItemsOrderBy sorts
+it.
 
 =begin testing
 
@@ -235,18 +259,7 @@ sub ItemsArrayRef {
     my $self = shift;
     my @items;
     
-    if ($self->NewItem()->_Accessible('SortOrder','read')) {
-        @items = sort { $a->SortOrder <=> $b->SortOrder } @{$self->SUPER::ItemsArrayRef()};
-    }
-    elsif ($self->NewItem()->_Accessible('Name','read')) {
-        @items = sort { lc($a->Name) cmp lc($b->Name) } @{$self->SUPER::ItemsArrayRef()};
-    }
-    else {
-        @items = @{$self->SUPER::ItemsArrayRef()};
-    }
-
-    return(\@items);
-
+    return $self->ItemsOrderBy($self->SUPER::ItemsArrayRef());
 }
 
 # }}}
