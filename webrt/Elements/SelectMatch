@@ -1,0 +1,32 @@
+%# $Header$
+
+%# This is cut'n'paste from boolean, therefore the wicked "true",
+%# "false" ... hum ... this should really be fixed up.
+
+<SELECT NAME ="<%$Name%>">
+<OPTION VALUE="Like" <%$LikeDefault%>><%$Like%></OPTION>
+<OPTION VALUE="!=" <%$TrueDefault%>><%$True%></OPTION>
+<OPTION VALUE="" <%$FalseDefault%>><%$False%></OPTION>
+</SELECT>
+
+<%ARGS>
+$Name => undef
+$Like => undef
+$True => undef
+$False => undef
+$Default => undef
+$TrueDefault => undef
+$FalseDefault => undef
+$LikeDefault => undef
+</%ARGS>
+
+<%INIT>
+if ($Default && $Default !~ /true/i) {
+	$FalseDefault = "SELECTED";
+}
+elsif ($Default !~ /false/i) {
+	$TrueDefault = "SELECTED";
+} else {
+	$LikeDefault = "SELECTED";
+}
+</%INIT>
