@@ -107,6 +107,7 @@ CREATE TABLE relships (
 # too many exceptions, option bitmaps, different URLs for different
 # purposes, etc.
 
-  base_url varchar
+  base_url varchar,
+  title varchar
 );
 

@@ -33,6 +33,36 @@
 	}
      }
 
+     sub load_relationships {
+	 # should load all entries in the `relationship' table into some
+	 # %rt::relship hash.
+	 my $rv=0;
+
+	 # I wanted to use sth->fetchrow_hashref, but it's not
+	 # portable due to uppercase/lowercase differences in
+	 # different DBMSes. I'll keep UPPERCASE for data fetched
+	 # directly from the DB, MixedCase for bitmap data, etc, and
+	 # maybe eventually lowercase for extra options or similar.
+	 
+	 my @relshipkeys=('ID','TYPE','BASE_URL','TITLE');
+	 
+	 my $sth = $dbh->prepare('SELECT '.join(',',@relshipkeys).' FROM relship');
+	 $rv = $sth ? $sth->execute() : 0;
+	 $rv || warn "[load_relationships] query had some problem: $DBI::errstr\n$query_string\n";
+	 while (my $row=$sth->fetchrow_arrayref) {
+	     my $id=$row->[0];
+	     my $i=0;
+	     for (@relshipkeys) {
+		 $relship{$id}{$_}=$row->[$i++];
+	     }
+	     
+	     $relship{$relship{$id}{TITLE}}=$relship{$id};
+	 }
+	 $sth->finish;
+     }
+
+  
+
     
     sub load_queue_acls {
 	
