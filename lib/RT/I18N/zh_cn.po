@@ -16,10 +16,10 @@ msgid "#%1"
 msgstr "#%1"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
-#. ($TicketObj->Id, $TicketObj->Subject)
 #. ($Ticket->id, $Ticket->Subject)
-#. ($ticket->Id, $ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($ticket->Id, $ticket->Subject)
+#. ($TicketObj->Id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -50,7 +50,7 @@ msgstr "%1 #%2"
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: lib/RT/Tickets_Overlay.pm:1058
+#: lib/RT/Tickets_Overlay.pm.orig:1008
 #. ($args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
@@ -60,7 +60,7 @@ msgstr "%1 %2 %3"
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%7-%2-%3 %4:%5:%6 %1"
 
-#: lib/RT/Record.pm:1587 lib/RT/Transaction_Overlay.pm:588 lib/RT/Transaction_Overlay.pm:631
+#: lib/RT/Record.pm:1602 lib/RT/Transaction_Overlay.pm:588 lib/RT/Transaction_Overlay.pm:631
 #. ($cf->Name, $new_value->Content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -72,14 +72,14 @@ msgstr "%2 已新增为 %1"
 msgid "%1 %2 ago"
 msgstr "%1 %2 之前"
 
-#: lib/RT/Record.pm:1593 lib/RT/Transaction_Overlay.pm:595
-#. ($cf->Name, $old_content, $new_value->Content)
+#: lib/RT/Record.pm:1609 lib/RT/Transaction_Overlay.pm:595
+#. ($cf->Name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 已从 %2 改为 %3"
 
-#: lib/RT/Record.pm:1590 lib/RT/Transaction_Overlay.pm:591 lib/RT/Transaction_Overlay.pm:637
-#. ($cf->Name, $old_content)
+#: lib/RT/Record.pm:1606 lib/RT/Transaction_Overlay.pm:591 lib/RT/Transaction_Overlay.pm:637
+#. ($cf->Name, $old_value->Content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 deleted"
@@ -90,8 +90,8 @@ msgid "%1 %2 of group %3"
 msgstr "%3 群组的 %1 %2"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:49 html/Ticket/Elements/PreviewScrips:98
-#. ($scrip->ConditionObj->Name, $scrip->ActionObj->Name, $scrip->TemplateObj->Name)
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
+#. ($scrip->ConditionObj->Name, $scrip->ActionObj->Name, $scrip->TemplateObj->Name)
 msgid "%1 %2 with template %3"
 msgstr "条件：%1 | 动作：%2 | 模板：%3"
 
@@ -104,11 +104,11 @@ msgstr "%1 (%2) %3 这份申请单\\n"
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) - %3"
 
-#: html/SelfService/Update.html:52 html/Ticket/Elements/EditBasics:87 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
-#. ($Ticket->Status())
-#. ($TicketObj->Status)
+#: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:87 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:65
+#. (loc($DefaultStatus))
+#. (loc($TicketObj->Status))
 #. ($TicketObj->OwnerObj->Name())
-#. ($DefaultStatus)
+#. (loc($Ticket->Status()))
 msgid "%1 (Unchanged)"
 msgstr "%1 (未更改)"
 
@@ -143,6 +143,9 @@ msgstr "%1 - 指定欲使用的条件模块"
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - 指定欲使用的查询模块"
 
+     $RT::VERSION, 
+     '2004', 
+    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: html/Elements/Footer:58
 #. ('&#187;&#124;&#171;', 
      $RT::VERSION, 
@@ -160,7 +163,7 @@ msgstr "加载手续 %1"
 msgid "%1 Total"
 msgstr "共 %1 笔"
 
-#: lib/RT/Record.pm:1623
+#: lib/RT/Record.pm:1639
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "新增 %1 作为 %2 的值"
@@ -210,7 +213,7 @@ msgstr "无法将 %1 设定为 %2。"
 msgid "%1 couldn't init a transaction (%2)\\n"
 msgstr "%1 无法初始更新 (%2)\\n"
 
-#: lib/RT/Ticket_Overlay.pm:2702
+#: lib/RT/Ticket_Overlay.pm:2706
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 无法将现况设成已解决。RT 数据库内容可能不一致。"
@@ -256,8 +259,7 @@ msgstr "%1 已不再是此表单的 %2。"
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 已不再是此申请单的 %2。"
 
-#: lib/RT/Record.pm:1686
-#. ($TransactionObj->OldValue, $cf->Name)
+#: NOT FOUND IN SOURCE
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 已不再是自订字段 %2 的值。"
 
@@ -283,7 +285,7 @@ msgstr "前 %1 份待认领的申请单"
 msgid "%1 not shown"
 msgstr "没有显示 %1"
 
-#: lib/RT/CustomField_Overlay.pm:750
+#: lib/RT/CustomField_Overlay.pm:801
 msgid "%1 objects"
 msgstr "%1 对象"
 
@@ -329,17 +331,17 @@ msgstr "%1 会解决在已解决群组里成员的申请单。"
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "如果 %1 起始申请单依赖于某个链接，或是某个链接的成员，它将会被延宕。"
 
-#: lib/RT/CustomField_Overlay.pm:751
+#: lib/RT/CustomField_Overlay.pm:802
 msgid "%1's %2 objects"
 msgstr "%1 内的 %2 对象"
 
-#: lib/RT/CustomField_Overlay.pm:752
+#: lib/RT/CustomField_Overlay.pm:803
 msgid "%1's %2's %3 objects"
 msgstr "%1 内的 %2 的 %3 对象"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:56
-#. ($Object->Name)
 #. ($object->Name)
+#. ($Object->Name)
 msgid "%1's saved searches"
 msgstr "%1 已储存的查询"
 
@@ -362,7 +364,7 @@ msgstr "%1k 字节"
 msgid "%quant(%1,result) found"
 msgstr "找到 %1 项结果"
 
-#: lib/RT/Ticket_Overlay.pm:1113
+#: lib/RT/Ticket_Overlay.pm:1118
 #. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' 不是一个合法的状态值"
@@ -485,7 +487,7 @@ msgstr "(没有列出姓名)"
 msgid "(no subject)"
 msgstr "(没有主题)"
 
-#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomField:82 html/Elements/EditCustomFieldSelect:61 html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:64 html/Ticket/Elements/EditCustomField:85 lib/RT/Transaction_Overlay.pm:549
+#: html/Admin/Elements/SelectRights:72 html/Elements/EditCustomFieldSelect:60 html/Elements/SelectCustomFieldValue:51 html/Elements/ShowCustomFields:64 lib/RT/Transaction_Overlay.pm:549
 msgid "(no value)"
 msgstr "(无)"
 
@@ -570,11 +572,11 @@ msgstr "无法删除 ACE"
 msgid "ACE could not be found"
 msgstr "找不到 ACE"
 
-#: lib/RT/ACE_Overlay.pm:181 lib/RT/Principal_Overlay.pm:214
+#: lib/RT/ACE_Overlay.pm:181 lib/RT/Principal_Overlay.pm:224
 msgid "ACE not found"
 msgstr "找不到 ACE 设定"
 
-#: lib/RT/ACE_Overlay.pm:855
+#: lib/RT/ACE_Overlay.pm:861
 msgid "ACEs can only be created and deleted."
 msgstr "祇能新增或删除 ACE 设定。"
 
@@ -711,6 +713,10 @@ msgstr "新增成员"
 msgid "Add new watchers"
 msgstr "新增视察员"
 
+#: lib/RT/CustomField_Overlay.pm:81
+msgid "Add, delete and modify custom field values for objects"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "AddNextState"
 msgstr "新增下一项关卡"
@@ -720,7 +726,7 @@ msgstr "新增下一项关卡"
 msgid "Added principal as a %1 for this queue"
 msgstr "单位已新增为此表单的 %1"
 
-#: lib/RT/Ticket_Overlay.pm:1407
+#: lib/RT/Ticket_Overlay.pm:1412
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "单位已新增为此申请单的 %1"
@@ -941,7 +947,7 @@ msgstr "任意条件"
 msgid "Applies To"
 msgstr "套用于"
 
-#: html/Admin/CustomFields/Modify.html:72 html/Admin/Elements/CustomFieldTabs:83
+#: adm_cfs_tabs.patch:128 adm_cfs_tabs.patch:136 html/Admin/CustomFields/Modify.html:73 html/Admin/Elements/CustomFieldTabs:83
 msgid "Applies to"
 msgstr "套用于"
 
@@ -1058,15 +1064,15 @@ msgstr "指派及移除自订字段"
 msgid "AssignCustomFields"
 msgstr "指派自订字段"
 
-#: html/Search/Bulk.html:161 html/SelfService/Update.html:69 html/Ticket/ModifyAll.html:112 html/Ticket/Update.html:114
+#: html/Search/Bulk.html:164 html/SelfService/Update.html:87 html/Ticket/ModifyAll.html:115 html/Ticket/Update.html:114
 msgid "Attach"
 msgstr "附件"
 
-#: html/SelfService/Create.html:86 html/Ticket/Create.html:140
+#: html/SelfService/Create.html:92 html/Ticket/Create.html:140
 msgid "Attach file"
 msgstr "附加档案"
 
-#: html/SelfService/Update.html:58 html/Ticket/Create.html:128 html/Ticket/Update.html:92
+#: html/SelfService/Update.html:75 html/Ticket/Create.html:128 html/Ticket/Update.html:92
 msgid "Attached file"
 msgstr "现有附件"
 
@@ -1079,7 +1085,7 @@ msgstr "无法加载附件 '%1'"
 msgid "Attachment created"
 msgstr "附件新增完毕"
 
-#: lib/RT/Tickets_Overlay.pm:1487
+#: lib/RT/Tickets_Overlay.pm.orig:1431 lib/RT/Tickets_Overlay.pm:1655
 msgid "Attachment filename"
 msgstr "附件档名"
 
@@ -1087,7 +1093,7 @@ msgstr "附件档名"
 msgid "Attachments"
 msgstr "附件"
 
-#: lib/RT/Attributes_Overlay.pm:189
+#: lib/RT/Attributes_Overlay.pm.orig:189 lib/RT/Attributes_Overlay.pm.rej:59 lib/RT/Attributes_Overlay.pm.rej:77 lib/RT/Attributes_Overlay.pm:170
 msgid "Attribute Deleted"
 msgstr "已删除该属性"
 
@@ -1163,7 +1169,7 @@ msgstr "%1 的数据错误"
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
 msgstr "附件的处理号码错误。%1 应为 %2\\n"
 
-#: html/Admin/Elements/CustomFieldTabs:64 html/Admin/Elements/GroupTabs:60 html/Admin/Elements/QueueTabs:60 html/Admin/Elements/UserTabs:58 html/Ticket/Elements/Tabs:113 html/User/Elements/GroupTabs:59
+#: html/Admin/Elements/CustomFieldTabs:65 html/Admin/Elements/GroupTabs:60 html/Admin/Elements/QueueTabs:60 html/Admin/Elements/UserTabs:58 html/Ticket/Elements/Tabs:113 html/User/Elements/GroupTabs:59
 msgid "Basics"
 msgstr "基本信息"
 
@@ -1175,7 +1181,7 @@ msgstr "批次签核"
 msgid "Bcc"
 msgstr "密件副本"
 
-#: html/Admin/CustomFields/GroupRights.html:88 html/Admin/CustomFields/UserRights.html:74 html/Admin/Elements/EditScrip:95
+#: html/Admin/CustomFields/GroupRights.html:91 html/Admin/CustomFields/UserRights.html:74 html/Admin/Elements/EditScrip:95
 msgid "Be sure to save your changes"
 msgstr "请别忘了储存修改。"
 
@@ -1219,7 +1225,7 @@ msgstr "可放入书签的网址"
 msgid "Brief headers"
 msgstr "精简标头档"
 
-#: html/Search/Bulk.html:46 html/Search/Bulk.html:47 x:28
+#: html/Search/Bulk.html:46 html/Search/Bulk.html:47
 msgid "Bulk ticket update"
 msgstr "更新整批申请单"
 
@@ -1239,11 +1245,11 @@ msgstr "无法更改系统使用者"
 msgid "Can this principal see this queue"
 msgstr "该单位是否能查阅此表单"
 
-#: lib/RT/CustomField_Overlay.pm:295
+#: lib/RT/CustomField_Overlay.pm:323
 msgid "Can't add a custom field value without a name"
 msgstr "不能新增没有名称的自订字段值"
 
-#: html/Search/Build.html:739
+#: html/Search/Build.html:737
 msgid "Can't find a saved search to work with"
 msgstr "找不到已储存的查询"
 
@@ -1255,11 +1261,11 @@ msgstr "申请单不能链接自己。"
 msgid "Can't merge into a merged ticket. You should never get this error"
 msgstr "不能整合进已整合过的申请单。这个错误不该发生。"
 
-#: html/Search/Build.html:744
+#: html/Search/Build.html:742
 msgid "Can't save this search"
 msgstr "无法储存此项查询"
 
-#: lib/RT/Record.pm:1201 lib/RT/Record.pm:1279
+#: lib/RT/Record.pm:1209 lib/RT/Record.pm:1287
 msgid "Can't specifiy both base and target"
 msgstr "不能同时指定起始申请单与目的申请单"
 
@@ -1267,7 +1273,7 @@ msgstr "不能同时指定起始申请单与目的申请单"
 msgid "Cancel"
 msgstr "取消"
 
-#: html/autohandler:154
+#: html/autohandler:148
 #. ($msg)
 msgid "Cannot create user: %1"
 msgstr "无法新增使用者：%1"
@@ -1288,7 +1294,7 @@ msgstr "分类管理"
 msgid "Category"
 msgstr "分类"
 
-#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:70 html/Ticket/Create.html:85 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:81 lib/RT/ACE_Overlay.pm:112
+#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:85 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:81 lib/RT/ACE_Overlay.pm:112
 msgid "Cc"
 msgstr "副本"
 
@@ -1316,7 +1322,7 @@ msgstr "可否选择表单承办人"
 msgid "Check All"
 msgstr "全部选取"
 
-#: html/SelfService/Update.html:61 html/Ticket/Create.html:131 html/Ticket/Update.html:95
+#: html/SelfService/Update.html:78 html/Ticket/Create.html:131 html/Ticket/Update.html:95
 msgid "Check box to delete"
 msgstr "选择欲删除的项目"
 
@@ -1472,7 +1478,7 @@ msgstr "连络信息系统"
 msgid "Contacted date '%1' could not be parsed"
 msgstr "无法解读联络日期 '%1'"
 
-#: html/Admin/Elements/ModifyTemplate:65 html/Elements/SelectAttachmentField:48 html/Ticket/ModifyAll.html:116
+#: html/Admin/Elements/ModifyTemplate:65 html/Elements/SelectAttachmentField:48 html/Ticket/ModifyAll.html:119
 msgid "Content"
 msgstr "内容"
 
@@ -1516,15 +1522,20 @@ msgstr "不能新增自订字段的值 "
 msgid "Could not add new custom field value for ticket. %1 "
 msgstr "不能新增自订字段的值。%1 "
 
-#: lib/RT/Record.pm:1609
+#: lib/RT/Record.pm:1624
 msgid "Could not add new custom field value. "
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2938 lib/RT/Ticket_Overlay.pm:2946 lib/RT/Ticket_Overlay.pm:2963
+#: lib/RT/Record.pm:1577
+#. (, $value_msg)
+msgid "Could not add new custom field value. %1 "
+msgstr ""
+
+#: lib/RT/Ticket_Overlay.pm:2967 lib/RT/Ticket_Overlay.pm:2975 lib/RT/Ticket_Overlay.pm:2992
 msgid "Could not change owner. "
 msgstr "不能更改承办人。 "
 
-#: html/Admin/CustomFields/Modify.html:118
+#: html/Admin/CustomFields/Modify.html:119
 #. ($msg)
 msgid "Could not create CustomField"
 msgstr "无法新增自订字段"
@@ -1555,7 +1566,7 @@ msgstr "无法新增项目"
 msgid "Could not create template: %1"
 msgstr "无法新增模板：%1"
 
-#: lib/RT/Ticket_Overlay.pm:1046 lib/RT/Ticket_Overlay.pm:391
+#: lib/RT/Ticket_Overlay.pm:1051 lib/RT/Ticket_Overlay.pm:396
 msgid "Could not create ticket. Queue not set"
 msgstr "无法新增申请单。尚未指定表单。"
 
@@ -1579,11 +1590,11 @@ msgstr "找不到编号 %1 的申请单"
 msgid "Could not find group %1."
 msgstr "找不到群组 %1。"
 
-#: lib/RT/Queue_Overlay.pm:725 lib/RT/Ticket_Overlay.pm:1375
+#: lib/RT/Queue_Overlay.pm:725 lib/RT/Ticket_Overlay.pm:1380
 msgid "Could not find or create that user"
 msgstr "找不到或无法新增该名使用者"
 
-#: lib/RT/Queue_Overlay.pm:786 lib/RT/Ticket_Overlay.pm:1456
+#: lib/RT/Queue_Overlay.pm:786 lib/RT/Ticket_Overlay.pm:1461
 msgid "Could not find that principal"
 msgstr "找不到该单位"
 
@@ -1604,7 +1615,7 @@ msgstr "无法加载群组"
 msgid "Could not make that principal a %1 for this queue"
 msgstr "无法将该单位设为此表单的 %1。"
 
-#: lib/RT/Ticket_Overlay.pm:1396
+#: lib/RT/Ticket_Overlay.pm:1401
 #. ($self->loc($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "无法将该单位设为此申请单的 %1。"
@@ -1626,7 +1637,7 @@ msgstr "无法设定使用者信息"
 msgid "Couldn't add member to group"
 msgstr "无法新增成员至群组"
 
-#: lib/RT/Record.pm:1620 lib/RT/Record.pm:1683
+#: lib/RT/Record.pm:1636 lib/RT/Record.pm:1695
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "无法新增更动报告"
@@ -1647,7 +1658,7 @@ msgstr "找不到此列数据"
 msgid "Couldn't find that principal"
 msgstr "找不到该单位"
 
-#: lib/RT/CustomField_Overlay.pm:329
+#: lib/RT/CustomField_Overlay.pm:357
 msgid "Couldn't find that value"
 msgstr "找不到该值"
 
@@ -1669,7 +1680,7 @@ msgstr "无法从使用者数据库加载 %1。\\n"
 msgid "Couldn't load Class %1"
 msgstr "无法加载类别 %1"
 
-#: html/Admin/CustomFields/GroupRights.html:104
+#: html/Admin/CustomFields/GroupRights.html:107
 #. ($id)
 msgid "Couldn't load CustomField %1"
 msgstr "无法加载自订字段 %1"
@@ -1722,7 +1733,7 @@ msgstr "无法加载模板"
 msgid "Couldn't load that user (%1)"
 msgstr "无法加载该名使用者(%1)"
 
-#: html/SelfService/Display.html:138
+#: html/SelfService/Display.html:126
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "无法加载申请单 '%1'"
@@ -1731,7 +1742,7 @@ msgstr "无法加载申请单 '%1'"
 msgid "Country"
 msgstr "国家"
 
-#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:132 html/Admin/Groups/Modify.html:87 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:68 html/Ticket/Create.html:165 html/Ticket/Create.html:226 html/User/Groups/Modify.html:77
+#: html/Admin/Elements/CreateUserCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:132 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:68 html/Ticket/Create.html:165 html/Ticket/Create.html:226
 msgid "Create"
 msgstr "新增"
 
@@ -1747,7 +1758,7 @@ msgstr "新增申请单"
 msgid "Create User:"
 msgstr "新增成员："
 
-#: html/Admin/CustomFields/Modify.html:108 html/Admin/Elements/EditCustomField:96
+#: html/Admin/CustomFields/Modify.html:109 html/Admin/Elements/EditCustomField:96
 msgid "Create a CustomField"
 msgstr "新增自订字段"
 
@@ -1796,7 +1807,7 @@ msgstr "新增模板"
 msgid "Create a new ticket"
 msgstr "新增申请单"
 
-#: html/Admin/Users/Modify.html:253 html/Admin/Users/Modify.html:310
+#: html/Admin/Users/Modify.html:251 html/Admin/Users/Modify.html:308
 msgid "Create a new user"
 msgstr "新增使用者"
 
@@ -1825,7 +1836,7 @@ msgstr "为 %1 表单新增手续"
 msgid "Create a template"
 msgstr "新增模板"
 
-#: html/SelfService/Create.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "提出申请单"
 
@@ -1849,7 +1860,7 @@ msgstr "建立新项目"
 msgid "Create new tickets based on this scrip's template"
 msgstr "依据此项手续内的模版，新增申请单"
 
-#: html/SelfService/Create.html:99
+#: html/SelfService/Create.html:105
 msgid "Create ticket"
 msgstr "新增申请单"
 
@@ -1885,11 +1896,11 @@ msgstr ""
 msgid "CreateTicket"
 msgstr "新增申请单"
 
-#: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1140
+#: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1145
 msgid "Created"
 msgstr "新增日"
 
-#: html/Admin/CustomFields/Modify.html:120 html/Admin/Elements/EditCustomField:117
+#: html/Admin/CustomFields/Modify.html:121 html/Admin/Elements/EditCustomField:117
 #. ($CustomFieldObj->Name())
 msgid "Created CustomField %1"
 msgstr "自订字段 %1 新增成功"
@@ -1991,28 +2002,26 @@ msgstr "动作前执行程序"
 msgid "Custom condition"
 msgstr "自订条件"
 
-#: cover_db/structure/88846e2a7106bcfc5af89bc8673bbecd:1012 lib/RT/Tickets_Overlay.pm:1929
+#: lib/RT/Tickets_Overlay.pm.orig:1873
 #. ($CF->Name , $args{OPERATOR} , $args{VALUE})
-#. ($CF->Name, $args{'OPERATOR'}, $args{'VALUE'})
 msgid "Custom field %1 %2 %3"
 msgstr "自订字段 %1 %2 %3"
 
-#: lib/RT/Record.pm:1508
-#. ($args{'Field'})
+#: NOT FOUND IN SOURCE
 msgid "Custom field %1 does not apply to this object"
 msgstr "自订字段 %1 不适用于此对象"
 
-#: cover_db/structure/88846e2a7106bcfc5af89bc8673bbecd:1007 lib/RT/Tickets_Overlay.pm:1924
+#: lib/RT/Tickets_Overlay.pm.orig:1868 lib/RT/Tickets_Overlay.pm:2130
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "自订字段 %1 已有值"
 
-#: cover_db/structure/88846e2a7106bcfc5af89bc8673bbecd:1002 lib/RT/Tickets_Overlay.pm:1921
+#: lib/RT/Tickets_Overlay.pm.orig:1865 lib/RT/Tickets_Overlay.pm:2126
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "自订字段 %1 没有值"
 
-#: lib/RT/Record.pm:1502
+#: lib/RT/Record.pm:1509
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "找不到自订字段 %1"
@@ -2021,11 +2030,11 @@ msgstr "找不到自订字段 %1"
 msgid "Custom field deleted"
 msgstr "自订字段已删除"
 
-#: lib/RT/Record.pm:1664
+#: lib/RT/CustomField_Overlay.pm:249 lib/RT/Record.pm:1677
 msgid "Custom field not found"
 msgstr "找不到自订字段"
 
-#: lib/RT/CustomField_Overlay.pm:442 lib/RT/CustomField_Overlay.pm:880
+#: lib/RT/CustomField_Overlay.pm:1015
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "无法从自订字段 %2 中找到 %1 这个字段值"
@@ -2034,15 +2043,15 @@ msgstr "无法从自订字段 %2 中找到 %1 这个字段值"
 msgid "Custom field value changed from %1 to %2"
 msgstr "自订字段值从 %1 改为 %2"
 
-#: lib/RT/CustomField_Overlay.pm:339
+#: lib/RT/CustomField_Overlay.pm:367
 msgid "Custom field value could not be deleted"
 msgstr "无法删除自订字段值"
 
-#: lib/RT/CustomField_Overlay.pm:448 lib/RT/CustomField_Overlay.pm:886
+#: lib/RT/CustomField_Overlay.pm:1021
 msgid "Custom field value could not be found"
 msgstr "找不到自订字段值"
 
-#: lib/RT/CustomField_Overlay.pm:337 lib/RT/CustomField_Overlay.pm:450 lib/RT/CustomField_Overlay.pm:888
+#: lib/RT/CustomField_Overlay.pm:1023 lib/RT/CustomField_Overlay.pm:365
 msgid "Custom field value deleted"
 msgstr "自订字段值删除成功"
 
@@ -2066,7 +2075,7 @@ msgstr "MySQL数据库"
 msgid "Date of Departure"
 msgstr "出发日期"
 
-#: html/SelfService/Display.html:60 html/Ticket/Create.html:191 html/Ticket/Elements/ShowSummary:76 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
+#: html/SelfService/Display.html:61 html/Ticket/Create.html:191 html/Ticket/Elements/ShowSummary:76 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
 msgid "Dates"
 msgstr "日期"
 
@@ -2319,11 +2328,11 @@ msgstr "需先处理"
 msgid "Descending"
 msgstr "递减"
 
-#: html/SelfService/Create.html:94 html/Ticket/Create.html:149
+#: html/SelfService/Create.html:100 html/Ticket/Create.html:149
 msgid "Describe the issue below"
 msgstr "在以下字段描述主题"
 
-#: html/Admin/CustomFields/Modify.html:60 html/Admin/Elements/AddCustomFieldValue:57 html/Admin/Elements/EditCustomField:60 html/Admin/Elements/EditCustomFieldValues:56 html/Admin/Elements/EditScrip:56 html/Admin/Elements/ModifyTemplate:57 html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69 html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
+#: html/Admin/CustomFields/Modify.html:61 html/Admin/Elements/AddCustomFieldValue:57 html/Admin/Elements/EditCustomField:60 html/Admin/Elements/EditCustomFieldValues:56 html/Admin/Elements/EditScrip:56 html/Admin/Elements/ModifyTemplate:57 html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69 html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
 msgid "Description"
 msgstr "描述"
 
@@ -2427,7 +2436,7 @@ msgstr "下载以 Tab 分隔的档案"
 msgid "Dr."
 msgstr "博士"
 
-#: html/Elements/SelectDateType:53 html/Ticket/Create.html:197 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1144
+#: html/Elements/SelectDateType:53 html/Ticket/Create.html:197 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1149
 msgid "Due"
 msgstr "到期日"
 
@@ -2460,7 +2469,7 @@ msgstr "编辑 %1 的自订字段"
 msgid "Edit Custom Fields for queue %1"
 msgstr "编辑表单 %1 的自订字段"
 
-#: html/Search/Bulk.html:199 html/Ticket/ModifyLinks.html:57
+#: html/Search/Bulk.html:173 html/Ticket/ModifyLinks.html:57
 msgid "Edit Links"
 msgstr "编辑申请单关系"
 
@@ -2522,7 +2531,7 @@ msgstr "编辑表单 %1 的设定"
 msgid "Editing Configuration for user %1"
 msgstr "编辑使用者 %1 的设定"
 
-#: html/Admin/CustomFields/Modify.html:124 html/Admin/Elements/EditCustomField:120
+#: html/Admin/CustomFields/Modify.html:125 html/Admin/Elements/EditCustomField:120
 #. ($CustomFieldObj->Name())
 msgid "Editing CustomField %1"
 msgstr "编辑自订字段 %1"
@@ -2553,7 +2562,7 @@ msgstr "最高学历"
 msgid "EffectiveId"
 msgstr "有效编号"
 
-#: lib/RT/Record.pm:1216 lib/RT/Record.pm:1293
+#: lib/RT/Record.pm:1224 lib/RT/Record.pm:1301
 msgid "Either base or target must be specified"
 msgstr "需要指定起始申请单或目的申请单"
 
@@ -2593,7 +2602,7 @@ msgstr "抵达地点"
 msgid "Enable Delegates"
 msgstr "代理激活"
 
-#: html/Admin/CustomFields/Modify.html:82 html/Admin/Elements/EditCustomField:72
+#: html/Admin/CustomFields/Modify.html:83 html/Admin/Elements/EditCustomField:72
 msgid "Enabled (Unchecking this box disables this custom field)"
 msgstr "启用(取消勾选将停用此自订字段)"
 
@@ -2625,12 +2634,12 @@ msgstr "已启用的表单"
 msgid "Enabled Status"
 msgstr "启用状态"
 
-#: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:149 html/Admin/Users/Modify.html:351 html/User/Groups/Modify.html:138
+#: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:149 html/Admin/Users/Modify.html:349 html/User/Groups/Modify.html:138
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
 msgstr "启用状态 %1"
 
-#: html/Admin/CustomFields/Modify.html:142 html/Admin/Queues/Modify.html:162
+#: html/Admin/CustomFields/Modify.html:143 html/Admin/Queues/Modify.html:162
 #. (loc_fuzzy($msg))
 msgid "Enabled status: %1"
 msgstr "启用状态: %1"
@@ -2643,7 +2652,7 @@ msgstr "试用期满日"
 msgid "English Name"
 msgstr "英文姓名"
 
-#: lib/RT/CustomField_Overlay.pm:512
+#: lib/RT/CustomField_Overlay.pm:530
 msgid "Enter multiple values"
 msgstr "键入多重项目"
 
@@ -2655,7 +2664,7 @@ msgstr "键入欲将对象连结至的对象或 URI。项目之间请以空白�
 msgid "Enter one or more conditions below to search for users"
 msgstr "键入下列单一或复式条件，查询用户数据"
 
-#: lib/RT/CustomField_Overlay.pm:513
+#: lib/RT/CustomField_Overlay.pm:531
 msgid "Enter one value"
 msgstr "键入单一项目"
 
@@ -2667,11 +2676,11 @@ msgstr "键入欲将表单连结至的对象或 URI。项目之间请以空白�
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "键入欲将申请单连结至的对象或 URI。项目之间请以空白隔开。"
 
-#: html/Search/Bulk.html:200
+#: html/Search/Bulk.html:174
 msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
 msgstr "键入申请单可链接到的申请单编号或网址。项目之间请以空白隔开。"
 
-#: lib/RT/CustomField_Overlay.pm:514
+#: lib/RT/CustomField_Overlay.pm:532
 msgid "Enter up to %1 values"
 msgstr "键入最多 %1 个值"
 
@@ -2723,11 +2732,11 @@ msgstr "表单->新增视察员的参数有误"
 msgid "Error in parameters to Queue->DeleteWatcher"
 msgstr "表单->删除视察员的参数有误"
 
-#: lib/RT/Ticket_Overlay.pm:1328
+#: lib/RT/Ticket_Overlay.pm:1333
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "申请单->新增视察员的参数有误"
 
-#: lib/RT/Ticket_Overlay.pm:1490
+#: lib/RT/Ticket_Overlay.pm:1495
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "申请单->删除视察员的参数有误"
 
@@ -2836,15 +2845,15 @@ msgstr "字段类别"
 msgid "Filename"
 msgstr "档名"
 
-#: lib/RT/CustomField_Overlay.pm:517
+#: lib/RT/CustomField_Overlay.pm:535
 msgid "Fill in multiple text areas"
 msgstr "填入多个文字框"
 
-#: lib/RT/CustomField_Overlay.pm:518
+#: lib/RT/CustomField_Overlay.pm:536
 msgid "Fill in one text area"
 msgstr "填入一个文字框"
 
-#: lib/RT/CustomField_Overlay.pm:519
+#: lib/RT/CustomField_Overlay.pm:537
 msgid "Fill in up to %1 text areas"
 msgstr "填入最多 %1 个文字框"
 
@@ -2864,11 +2873,11 @@ msgstr "筛选列表："
 msgid "Fin"
 msgstr "最终"
 
-#: html/Search/Elements/PickBasics:162 html/Ticket/Create.html:185 html/Ticket/Elements/EditBasics:79 lib/RT/Tickets_Overlay.pm:1389
+#: html/Search/Elements/PickBasics:162 html/Ticket/Create.html:185 html/Ticket/Elements/EditBasics:79 lib/RT/Tickets_Overlay.pm.orig:1333 lib/RT/Tickets_Overlay.pm:1551
 msgid "Final Priority"
 msgstr "最终顺位"
 
-#: lib/RT/Ticket_Overlay.pm:1135
+#: lib/RT/Ticket_Overlay.pm:1140
 msgid "FinalPriority"
 msgstr "最终顺位"
 
@@ -3071,7 +3080,7 @@ msgstr "全域签核"
 msgid "Go"
 msgstr "执行"
 
-#: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73 html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84 html/Admin/Queues/index.html:65 html/Admin/Users/index.html:75 html/Search/Results.html:76 html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57 html/index.html:91 x:163
+#: html/Admin/Groups/index.html:67 html/Admin/Groups/index.html:73 html/Admin/Queues/People.html:80 html/Admin/Queues/People.html:84 html/Admin/Queues/index.html:65 html/Admin/Users/index.html:75 html/Search/Results.html:76 html/Ticket/Elements/EditPeople:53 html/Ticket/Elements/EditPeople:57 html/index.html:91
 msgid "Go!"
 msgstr "执行"
 
@@ -3123,7 +3132,7 @@ msgstr "群组名称"
 msgid "Group Name:"
 msgstr "群组名称："
 
-#: html/Admin/Elements/CustomFieldTabs:67 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
+#: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
 msgid "Group Rights"
 msgstr "群组权限"
 
@@ -3164,7 +3173,7 @@ msgstr "群组 %1 新增完毕"
 msgid "Group has no such member"
 msgstr "群组没有这个成员"
 
-#: lib/RT/Group_Overlay.pm:968 lib/RT/Queue_Overlay.pm:732 lib/RT/Queue_Overlay.pm:792 lib/RT/Ticket_Overlay.pm:1382 lib/RT/Ticket_Overlay.pm:1462
+#: lib/RT/Group_Overlay.pm:968 lib/RT/Queue_Overlay.pm:732 lib/RT/Queue_Overlay.pm:792 lib/RT/Ticket_Overlay.pm:1387 lib/RT/Ticket_Overlay.pm:1467
 msgid "Group not found"
 msgstr "找不到群组"
 
@@ -3280,7 +3289,7 @@ msgstr "住宿费"
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "我有 %quant(%1,份固体搅拌器)。"
 
-#: html/Search/Build.html:630
+#: html/Search/Build.html:628
 msgid "I'm lost"
 msgstr ""
 
@@ -3292,7 +3301,7 @@ msgstr "身分证号"
 msgid "ID Type"
 msgstr "身分类别"
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1316
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm.orig:1260 lib/RT/Tickets_Overlay.pm:1476
 msgid "Id"
 msgstr "编号"
 
@@ -3316,7 +3325,7 @@ msgstr "申请单若没有指定表单，则将它新增在此表单内"
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr "如果此工具程序为 setgid，恶意的本地端用户即能由此取得 RT 的管理员权限。"
 
-#: html/Admin/Queues/People.html:126 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:123 html/Ticket/ModifyPeople.html:59
+#: html/Admin/Queues/People.html:126 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:128 html/Ticket/ModifyPeople.html:59
 msgid "If you've updated anything above, be sure to"
 msgstr "若您已更新以上数据，请记得按一下"
 
@@ -3352,11 +3361,11 @@ msgstr "列出停用的表单"
 msgid "Include disabled users in search."
 msgstr "列出停用的使用者"
 
-#: html/Search/Build.html:656
+#: html/Search/Build.html:654
 msgid "Incomplete Query"
 msgstr ""
 
-#: html/Search/Build.html:653
+#: html/Search/Build.html:651
 msgid "Incomplete query"
 msgstr ""
 
@@ -3364,11 +3373,11 @@ msgstr ""
 msgid "Indirect Employee"
 msgstr "直接/间接员工"
 
-#: html/Search/Elements/PickBasics:161 lib/RT/Tickets_Overlay.pm:1365
+#: html/Search/Elements/PickBasics:161 lib/RT/Tickets_Overlay.pm.orig:1309 lib/RT/Tickets_Overlay.pm:1526
 msgid "Initial Priority"
 msgstr "初始优先顺位"
 
-#: lib/RT/Ticket_Overlay.pm:1134 lib/RT/Ticket_Overlay.pm:1136
+#: lib/RT/Ticket_Overlay.pm:1139 lib/RT/Ticket_Overlay.pm:1141
 msgid "InitialPriority"
 msgstr "初始优先顺位"
 
@@ -3380,11 +3389,11 @@ msgstr "输入错误"
 msgid "Interest noted"
 msgstr "登记成功"
 
-#: lib/RT/Ticket_Overlay.pm:3386
+#: lib/RT/Ticket_Overlay.pm:3416
 msgid "Internal Error"
 msgstr "内部错误"
 
-#: lib/RT/Record.pm:277
+#: lib/RT/Record.pm:279
 #. ($id->{error_message})
 msgid "Internal Error: %1"
 msgstr "内部错误：%1"
@@ -3393,7 +3402,7 @@ msgstr "内部错误：%1"
 msgid "Invalid Group Type"
 msgstr "错误的群组类别"
 
-#: lib/RT/Principal_Overlay.pm:161
+#: lib/RT/Principal_Overlay.pm:166
 msgid "Invalid Right"
 msgstr "错误的权限"
 
@@ -3413,20 +3422,20 @@ msgstr "错误的承办人。改为预设承办人‘nobody’。"
 msgid "Invalid queue"
 msgstr "错误的表单"
 
-#: lib/RT/ACE_Overlay.pm:268 lib/RT/ACE_Overlay.pm:277 lib/RT/ACE_Overlay.pm:283 lib/RT/ACE_Overlay.pm:294 lib/RT/ACE_Overlay.pm:299
+#: lib/RT/ACE_Overlay.pm:274 lib/RT/ACE_Overlay.pm:283 lib/RT/ACE_Overlay.pm:289 lib/RT/ACE_Overlay.pm:300 lib/RT/ACE_Overlay.pm:305
 msgid "Invalid right"
 msgstr "错误的权限"
 
-#: lib/RT/Record.pm:252
+#: lib/RT/Record.pm:254
 #. ($key)
 msgid "Invalid value for %1"
 msgstr "%1 的值错误"
 
-#: lib/RT/Record.pm:1515
+#: lib/RT/Record.pm:1528
 msgid "Invalid value for custom field"
 msgstr "错误的自订字段值"
 
-#: lib/RT/Ticket_Overlay.pm:408
+#: lib/RT/Ticket_Overlay.pm:413
 msgid "Invalid value for status"
 msgstr "错误的状态值"
 
@@ -3594,25 +3603,25 @@ msgstr "限制表单为 %1 到 %2"
 msgid "Link a Queue"
 msgstr "申请表单连结"
 
-#: lib/RT/Record.pm:1227
+#: lib/RT/Record.pm:1235
 msgid "Link already exists"
 msgstr "此链接已存在"
 
-#: lib/RT/Record.pm:1241
+#: lib/RT/Record.pm:1249
 msgid "Link could not be created"
 msgstr "无法新增链接"
 
-#: lib/RT/Record.pm:1247
+#: lib/RT/Record.pm:1255
 #. ($TransString)
 msgid "Link created (%1)"
 msgstr "链接(%1)新增完毕"
 
-#: lib/RT/Record.pm:1308
+#: lib/RT/Record.pm:1316
 #. ($TransString)
 msgid "Link deleted (%1)"
 msgstr "链接(%1)删除完毕"
 
-#: lib/RT/Record.pm:1314
+#: lib/RT/Record.pm:1322
 msgid "Link not found"
 msgstr "找不到链接"
 
@@ -3653,7 +3662,7 @@ msgstr "已加载的 Perl 模块"
 msgid "Location"
 msgstr "位置"
 
-#: lib/RT.pm:202
+#: lib/RT.pm:204
 #. ($RT::LogDir)
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "登入目录 %1 找不到或无法写入\\n。无法执行 RT。"
@@ -3683,7 +3692,7 @@ msgstr "注销"
 msgid "Long-term contractor"
 msgstr "长期契约员工"
 
-#: lib/RT/CustomField_Overlay.pm:775
+#: lib/RT/CustomField_Overlay.pm:840
 msgid "Lookup type mismatch"
 msgstr "对应的类别不符"
 
@@ -3844,15 +3853,15 @@ msgstr "所属群组"
 msgid "Memberships of the user %1"
 msgstr "使用者 %1 的所属群组"
 
-#: lib/RT/Ticket_Overlay.pm:2783
+#: lib/RT/Ticket_Overlay.pm:2812
 msgid "Merge Successful"
 msgstr "整合完毕"
 
-#: lib/RT/Ticket_Overlay.pm:2695
+#: lib/RT/Ticket_Overlay.pm:2699
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "整合失败。无法设定 EffectiveId"
 
-#: lib/RT/Ticket_Overlay.pm:2703
+#: lib/RT/Ticket_Overlay.pm:2707
 msgid "Merge failed. Couldn't set Status"
 msgstr ""
 
@@ -3865,7 +3874,7 @@ msgstr "整合进"
 msgid "Merged into %1"
 msgstr "已整合进 %1"
 
-#: html/Search/Bulk.html:162 html/Ticket/Update.html:116
+#: html/Search/Bulk.html:165 html/Ticket/Update.html:116
 msgid "Message"
 msgstr "讯息"
 
@@ -3873,11 +3882,11 @@ msgstr "讯息"
 msgid "Message body not shown because it is too large or is not plain text."
 msgstr "信件内文不是纯文字，因此无法显示。"
 
-#: lib/RT/Ticket_Overlay.pm:2374
+#: lib/RT/Ticket_Overlay.pm:2379
 msgid "Message could not be recorded"
 msgstr "无法纪录讯息"
 
-#: lib/RT/Ticket_Overlay.pm:2377
+#: lib/RT/Ticket_Overlay.pm:2382
 msgid "Message recorded"
 msgstr "讯息纪录成功"
 
@@ -3889,7 +3898,7 @@ msgstr "此申请单的相关讯息不会寄送给..."
 msgid "Misc. Expense"
 msgstr "杂费"
 
-#: html/Search/Build.html:660
+#: html/Search/Build.html:658
 msgid "Mismatched parentheses"
 msgstr ""
 
@@ -4036,7 +4045,7 @@ msgstr "更改全域设定的使用者权限。"
 msgid "Modify group metadata or delete group"
 msgstr "更改群组数据及删除群组"
 
-#: html/Admin/CustomFields/GroupRights.html:161
+#: html/Admin/CustomFields/GroupRights.html:164
 #. ($CustomFieldObj->Name)
 msgid "Modify group rights for custom field %1"
 msgstr "更改自订字段 %1 的群组权限"
@@ -4098,7 +4107,7 @@ msgstr "更改群组 %1"
 msgid "Modify the queue watchers"
 msgstr "更改表单视察员"
 
-#: html/Admin/Users/Modify.html:305
+#: html/Admin/Users/Modify.html:303
 #. ($UserObj->Name)
 msgid "Modify the user %1"
 msgstr "更改使用者 %1"
@@ -4147,6 +4156,10 @@ msgstr "更改适用于所有表单的流程"
 #: lib/RT/Queue_Overlay.pm:94
 msgid "ModifyACL"
 msgstr "更改权限清单"
+
+#: lib/RT/CustomField_Overlay.pm:81
+msgid "ModifyCustomField"
+msgstr ""
 
 #: lib/RT/Group_Overlay.pm:174
 msgid "ModifyOwnMembership"
@@ -4242,7 +4255,7 @@ msgstr "表单签核"
 msgid "My saved searches"
 msgstr "我已储存的查询"
 
-#: html/Admin/CustomFields/Modify.html:57 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/User/Groups/Modify.html:65
+#: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/User/Groups/Modify.html:65
 msgid "Name"
 msgstr "名称"
 
@@ -4294,7 +4307,7 @@ msgstr "新增查询"
 msgid "New Watchers"
 msgstr "新增视察员"
 
-#: html/Admin/Elements/CustomFieldTabs:94 html/Admin/Queues/CustomField.html:73
+#: html/Admin/Elements/CustomFieldTabs:93 html/Admin/Queues/CustomField.html:73
 msgid "New custom field"
 msgstr "新增自订字段"
 
@@ -4338,7 +4351,7 @@ msgstr "新增模板"
 msgid "New ticket"
 msgstr "提出申请单"
 
-#: lib/RT/Ticket_Overlay.pm:2672
+#: lib/RT/Ticket_Overlay.pm:2676
 msgid "New ticket doesn't exist"
 msgstr "没有新申请单"
 
@@ -4394,11 +4407,11 @@ msgstr "否"
 msgid "No Class defined"
 msgstr "尚未定义类别"
 
-#: html/Admin/CustomFields/Modify.html:123 html/Admin/Elements/EditCustomField:119
+#: html/Admin/CustomFields/Modify.html:124 html/Admin/Elements/EditCustomField:119
 msgid "No CustomField"
 msgstr "无自订字段"
 
-#: html/Admin/CustomFields/GroupRights.html:100
+#: html/Admin/CustomFields/GroupRights.html:103
 msgid "No CustomField defined"
 msgstr "尚未定义自订字段"
 
@@ -4467,7 +4480,7 @@ msgstr "未指定群组"
 msgid "No groups matching search criteria found."
 msgstr "找不到符合查询条件的群组。"
 
-#: lib/RT/Ticket_Overlay.pm:2335
+#: lib/RT/Ticket_Overlay.pm:2340
 msgid "No message attached"
 msgstr "没有附上讯息"
 
@@ -4479,7 +4492,7 @@ msgstr "没有设定口令"
 msgid "No permission to create queues"
 msgstr "没有新增表单的权限"
 
-#: lib/RT/Ticket_Overlay.pm:404
+#: lib/RT/Ticket_Overlay.pm:409
 #. ($QueueObj->Name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "没有在表单 '%1' 新增申请单的权限"
@@ -4488,15 +4501,15 @@ msgstr "没有在表单 '%1' 新增申请单的权限"
 msgid "No permission to create users"
 msgstr "没有新增使用者的权限"
 
-#: html/SelfService/Display.html:147
+#: html/SelfService/Display.html:135
 msgid "No permission to display that ticket"
 msgstr "没有显示该申请单的权限"
 
-#: html/SelfService/Update.html:90
+#: html/SelfService/Update.html:117
 msgid "No permission to view update ticket"
 msgstr "没有检视申请单更新的权限"
 
-#: lib/RT/Queue_Overlay.pm:779 lib/RT/Ticket_Overlay.pm:1441
+#: lib/RT/Queue_Overlay.pm:779 lib/RT/Ticket_Overlay.pm:1446
 msgid "No principal specified"
 msgstr "未指定单位"
 
@@ -4520,7 +4533,7 @@ msgstr "找不到权限"
 msgid "No rights granted."
 msgstr "没有选定权限"
 
-#: html/Search/Bulk.html:220 x:126
+#: html/Search/Bulk.html:194
 msgid "No search to operate on."
 msgstr "没有要进行的查询"
 
@@ -4696,7 +4709,7 @@ msgstr "确定"
 msgid "OR"
 msgstr ""
 
-#: lib/RT/Record.pm:291
+#: lib/RT/Record.pm:293
 msgid "Object could not be created"
 msgstr "无法新增对象"
 
@@ -4704,7 +4717,7 @@ msgstr "无法新增对象"
 msgid "Object could not be deleted"
 msgstr ""
 
-#: lib/RT/Record.pm:310
+#: lib/RT/Record.pm:312
 msgid "Object created"
 msgstr "对象新增完毕"
 
@@ -4718,7 +4731,7 @@ msgstr ""
 msgid "Object of type %1 cannot take custom fields"
 msgstr "自订字段不适用于类别为 %1 的对象"
 
-#: lib/RT/CustomField_Overlay.pm:800
+#: lib/RT/CustomField_Overlay.pm:875
 msgid "Object type mismatch"
 msgstr "对象类别不符"
 
@@ -4913,7 +4926,7 @@ msgstr "承办申请单"
 msgid "OwnTicket"
 msgstr "承办申请单"
 
-#: etc/initialdata:38 html/Elements/QuickCreate:58 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:69 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm:1542
+#: etc/initialdata:38 html/Elements/QuickCreate:58 html/Search/Elements/PickBasics:101 html/SelfService/Elements/MyRequests:51 html/Ticket/Create.html:69 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm.orig:1486 lib/RT/Tickets_Overlay.pm:1716
 msgid "Owner"
 msgstr "承办人"
 
@@ -4921,7 +4934,7 @@ msgstr "承办人"
 msgid "Owner changed from %1 to %2"
 msgstr "承办人已从 %1 改为 %2"
 
-#: lib/RT/Ticket_Overlay.pm:490
+#: lib/RT/Ticket_Overlay.pm:495
 msgid "Owner could not be set."
 msgstr "无法设定承办人。"
 
@@ -4987,12 +5000,12 @@ msgstr ""
 msgid "Password too short"
 msgstr "口令太短"
 
-#: html/Admin/Users/Modify.html:359 html/User/Prefs.html:232
+#: html/Admin/Users/Modify.html:357 html/User/Prefs.html:232
 #. (loc_fuzzy($msg))
 msgid "Password: %1"
 msgstr "口令：%1"
 
-#: html/Admin/Users/Modify.html:361
+#: html/Admin/Users/Modify.html:359
 msgid "Passwords do not match."
 msgstr "口令确认失败。"
 
@@ -5024,7 +5037,7 @@ msgstr "执行使用者自订的动作"
 msgid "Perl configuration"
 msgstr "Perl 设定"
 
-#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:587 lib/RT/ACE_Overlay.pm:597 lib/RT/ACE_Overlay.pm:607 lib/RT/ACE_Overlay.pm:672 lib/RT/Attribute_Overlay.pm:159 lib/RT/Attribute_Overlay.pm:165 lib/RT/Attribute_Overlay.pm:403 lib/RT/Attribute_Overlay.pm:412 lib/RT/Attribute_Overlay.pm:425 lib/RT/CurrentUser.pm:116 lib/RT/CurrentUser.pm:125 lib/RT/CustomField_Overlay.pm:150 lib/RT/CustomField_Overlay.pm:161 lib/RT/CustomField_Overlay.pm:291 lib/RT/CustomField_Overlay.pm:323 lib/RT/CustomField_Overlay.pm:654 lib/RT/CustomField_Overlay.pm:779 lib/RT/CustomField_Overlay.pm:804 lib/RT/Group_Overlay.pm:1122 lib/RT/Group_Overlay.pm:1126 lib/RT/Group_Overlay.pm:1135 lib/RT/Group_Overlay.pm:1193 lib/RT/Group_Overlay.pm:1197 lib/RT/Group_Overlay.pm:1203 lib/RT/Group_Overlay.pm:452 lib/RT/Group_Overlay.pm:549 lib/RT/Group_Overlay.pm:627 lib/RT/Group_Overlay.pm:635 lib/RT/Group_Overlay.pm:732 lib/RT/Group_Overlay.pm:736 lib/RT/Group_Overlay.pm:742 lib/RT/Group_Overlay.pm:927 lib/RT/Group_Overlay.pm:931 lib/RT/Group_Overlay.pm:944 lib/RT/Queue_Overlay.pm:1038 lib/RT/Queue_Overlay.pm:140 lib/RT/Queue_Overlay.pm:158 lib/RT/Queue_Overlay.pm:641 lib/RT/Queue_Overlay.pm:651 lib/RT/Queue_Overlay.pm:665 lib/RT/Queue_Overlay.pm:803 lib/RT/Queue_Overlay.pm:812 lib/RT/Queue_Overlay.pm:825 lib/RT/Record.pm:1479 lib/RT/Record.pm:1653 lib/RT/Scrip_Overlay.pm:149 lib/RT/Scrip_Overlay.pm:160 lib/RT/Scrip_Overlay.pm:225 lib/RT/Scrip_Overlay.pm:536 lib/RT/Template_Overlay.pm:112 lib/RT/Template_Overlay.pm:118 lib/RT/Template_Overlay.pm:309 lib/RT/Ticket_Overlay.pm:1313 lib/RT/Ticket_Overlay.pm:1323 lib/RT/Ticket_Overlay.pm:1337 lib/RT/Ticket_Overlay.pm:1474 lib/RT/Ticket_Overlay.pm:1484 lib/RT/Ticket_Overlay.pm:1498 lib/RT/Ticket_Overlay.pm:1615 lib/RT/Ticket_Overlay.pm:1935 lib/RT/Ticket_Overlay.pm:2073 lib/RT/Ticket_Overlay.pm:2241 lib/RT/Ticket_Overlay.pm:2288 lib/RT/Ticket_Overlay.pm:2442 lib/RT/Ticket_Overlay.pm:2544 lib/RT/Ticket_Overlay.pm:2584 lib/RT/Ticket_Overlay.pm:2663 lib/RT/Ticket_Overlay.pm:2677 lib/RT/Ticket_Overlay.pm:2876 lib/RT/Ticket_Overlay.pm:2886 lib/RT/Ticket_Overlay.pm:2891 lib/RT/Ticket_Overlay.pm:3114 lib/RT/Ticket_Overlay.pm:3118 lib/RT/Ticket_Overlay.pm:3259 lib/RT/Ticket_Overlay.pm:3380 lib/RT/Transaction_Overlay.pm:479 lib/RT/Transaction_Overlay.pm:486 lib/RT/Transaction_Overlay.pm:515 lib/RT/Transaction_Overlay.pm:522 lib/RT/User_Overlay.pm:1025 lib/RT/User_Overlay.pm:1152 lib/RT/User_Overlay.pm:1602 lib/RT/User_Overlay.pm:369 lib/RT/User_Overlay.pm:730 lib/RT/User_Overlay.pm:769
+#: lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:267 lib/RT/ACE_Overlay.pm:593 lib/RT/ACE_Overlay.pm:603 lib/RT/ACE_Overlay.pm:613 lib/RT/ACE_Overlay.pm:678 lib/RT/Attribute_Overlay.pm:159 lib/RT/Attribute_Overlay.pm:165 lib/RT/Attribute_Overlay.pm:403 lib/RT/Attribute_Overlay.pm:412 lib/RT/Attribute_Overlay.pm:425 lib/RT/CurrentUser.pm:116 lib/RT/CurrentUser.pm:125 lib/RT/CustomField_Overlay.pm:140 lib/RT/CustomField_Overlay.pm:157 lib/RT/CustomField_Overlay.pm:168 lib/RT/CustomField_Overlay.pm:319 lib/RT/CustomField_Overlay.pm:351 lib/RT/CustomField_Overlay.pm:672 lib/RT/CustomField_Overlay.pm:844 lib/RT/CustomField_Overlay.pm:879 lib/RT/CustomField_Overlay.pm:924 lib/RT/CustomField_Overlay.pm:996 lib/RT/Group_Overlay.pm:1122 lib/RT/Group_Overlay.pm:1126 lib/RT/Group_Overlay.pm:1135 lib/RT/Group_Overlay.pm:1193 lib/RT/Group_Overlay.pm:1197 lib/RT/Group_Overlay.pm:1203 lib/RT/Group_Overlay.pm:452 lib/RT/Group_Overlay.pm:549 lib/RT/Group_Overlay.pm:627 lib/RT/Group_Overlay.pm:635 lib/RT/Group_Overlay.pm:732 lib/RT/Group_Overlay.pm:736 lib/RT/Group_Overlay.pm:742 lib/RT/Group_Overlay.pm:927 lib/RT/Group_Overlay.pm:931 lib/RT/Group_Overlay.pm:944 lib/RT/Queue_Overlay.pm:1038 lib/RT/Queue_Overlay.pm:140 lib/RT/Queue_Overlay.pm:158 lib/RT/Queue_Overlay.pm:641 lib/RT/Queue_Overlay.pm:651 lib/RT/Queue_Overlay.pm:665 lib/RT/Queue_Overlay.pm:803 lib/RT/Queue_Overlay.pm:812 lib/RT/Queue_Overlay.pm:825 lib/RT/Scrip_Overlay.pm:149 lib/RT/Scrip_Overlay.pm:160 lib/RT/Scrip_Overlay.pm:225 lib/RT/Scrip_Overlay.pm:539 lib/RT/Template_Overlay.pm:112 lib/RT/Template_Overlay.pm:118 lib/RT/Template_Overlay.pm:309 lib/RT/Ticket_Overlay.pm:1318 lib/RT/Ticket_Overlay.pm:1328 lib/RT/Ticket_Overlay.pm:1342 lib/RT/Ticket_Overlay.pm:1479 lib/RT/Ticket_Overlay.pm:1489 lib/RT/Ticket_Overlay.pm:1503 lib/RT/Ticket_Overlay.pm:1620 lib/RT/Ticket_Overlay.pm:1940 lib/RT/Ticket_Overlay.pm:2078 lib/RT/Ticket_Overlay.pm:2246 lib/RT/Ticket_Overlay.pm:2293 lib/RT/Ticket_Overlay.pm:2447 lib/RT/Ticket_Overlay.pm:2548 lib/RT/Ticket_Overlay.pm:2588 lib/RT/Ticket_Overlay.pm:2667 lib/RT/Ticket_Overlay.pm:2681 lib/RT/Ticket_Overlay.pm:2905 lib/RT/Ticket_Overlay.pm:2915 lib/RT/Ticket_Overlay.pm:2920 lib/RT/Ticket_Overlay.pm:3143 lib/RT/Ticket_Overlay.pm:3147 lib/RT/Ticket_Overlay.pm:3289 lib/RT/Ticket_Overlay.pm:3410 lib/RT/Transaction_Overlay.pm:479 lib/RT/Transaction_Overlay.pm:486 lib/RT/Transaction_Overlay.pm:515 lib/RT/Transaction_Overlay.pm:522 lib/RT/User_Overlay.pm:1025 lib/RT/User_Overlay.pm:1152 lib/RT/User_Overlay.pm:1602 lib/RT/User_Overlay.pm:369 lib/RT/User_Overlay.pm:730 lib/RT/User_Overlay.pm:769
 msgid "Permission Denied"
 msgstr "权限不足"
 
@@ -5184,12 +5197,12 @@ msgstr "前一页"
 msgid "Pri"
 msgstr "优先顺位"
 
-#: lib/RT/ACE_Overlay.pm:157 lib/RT/ACE_Overlay.pm:232 lib/RT/ACE_Overlay.pm:576
+#: lib/RT/ACE_Overlay.pm:157 lib/RT/ACE_Overlay.pm:238 lib/RT/ACE_Overlay.pm:582
 #. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
 msgstr "找不到单位 %1。"
 
-#: html/Search/Elements/PickBasics:160 html/Ticket/Create.html:184 html/Ticket/Elements/EditBasics:74 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1340
+#: html/Search/Elements/PickBasics:160 html/Ticket/Create.html:184 html/Ticket/Elements/EditBasics:74 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm.orig:1284 lib/RT/Tickets_Overlay.pm:1500
 msgid "Priority"
 msgstr "优先顺位"
 
@@ -5205,7 +5218,7 @@ msgstr "隐私设定："
 msgid "Privileged"
 msgstr "内部成员"
 
-#: html/Admin/Users/Modify.html:339 html/User/Prefs.html:223
+#: html/Admin/Users/Modify.html:337 html/User/Prefs.html:223
 #. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
 msgstr "内部成员状态：%1"
@@ -5258,7 +5271,7 @@ msgstr "查询"
 msgid "Query Builder"
 msgstr "建立查询"
 
-#: html/Elements/QuickCreate:55 html/Elements/Quicksearch:50 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:59 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1181
+#: html/Elements/QuickCreate:55 html/Elements/Quicksearch:50 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:59 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm.orig:1125 lib/RT/Tickets_Overlay.pm:1332
 msgid "Queue"
 msgstr "表单"
 
@@ -5308,7 +5321,7 @@ msgstr "表单已存在"
 msgid "Queue could not be created"
 msgstr "无法新增表单"
 
-#: html/Ticket/Create.html:239
+#: html/Ticket/Create.html:239 lib/t/regression/01ticket_link_searching.t:18
 msgid "Queue could not be loaded."
 msgstr "无法加载表单"
 
@@ -5320,7 +5333,7 @@ msgstr "表单新增完毕"
 msgid "Queue is not specified."
 msgstr "未指定表单。"
 
-#: html/SelfService/Display.html:94 lib/RT/CustomField_Overlay.pm:158
+#: html/SelfService/Display.html:95 lib/RT/CustomField_Overlay.pm:165
 msgid "Queue not found"
 msgstr "找不到表单"
 
@@ -5608,7 +5621,7 @@ msgstr "申请人"
 msgid "RequestorAddresses"
 msgstr "申请人地址"
 
-#: html/SelfService/Create.html:62 html/Ticket/Create.html:77 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
+#: html/SelfService/Create.html:63 html/Ticket/Create.html:77 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
 msgid "Requestors"
 msgstr "申请人"
 
@@ -5642,7 +5655,7 @@ msgstr "解决"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "解决申请单 #%1 (%2)"
 
-#: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1143
+#: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1148
 msgid "Resolved"
 msgstr "已解决"
 
@@ -5674,11 +5687,11 @@ msgstr "复原"
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
 msgstr "在 %4 (%5) 的范围内找不到 %2 %3 的 %1 权限\\n"
 
-#: lib/RT/ACE_Overlay.pm:637
+#: lib/RT/ACE_Overlay.pm:643
 msgid "Right Delegated"
 msgstr "权限代理完毕"
 
-#: lib/RT/ACE_Overlay.pm:327
+#: lib/RT/ACE_Overlay.pm:333
 msgid "Right Granted"
 msgstr "权限设定完毕"
 
@@ -5686,7 +5699,7 @@ msgstr "权限设定完毕"
 msgid "Right Loaded"
 msgstr "权限加载完毕"
 
-#: lib/RT/ACE_Overlay.pm:702 lib/RT/ACE_Overlay.pm:717
+#: lib/RT/ACE_Overlay.pm:708 lib/RT/ACE_Overlay.pm:723
 msgid "Right could not be revoked"
 msgstr "无法撤消权限"
 
@@ -5694,11 +5707,11 @@ msgstr "无法撤消权限"
 msgid "Right not found"
 msgstr "找不到权限"
 
-#: lib/RT/ACE_Overlay.pm:567 lib/RT/ACE_Overlay.pm:662
+#: lib/RT/ACE_Overlay.pm:573 lib/RT/ACE_Overlay.pm:668
 msgid "Right not loaded."
 msgstr "权限并未加载。"
 
-#: lib/RT/ACE_Overlay.pm:713
+#: lib/RT/ACE_Overlay.pm:719
 msgid "Right revoked"
 msgstr "权限撤消完毕"
 
@@ -5706,12 +5719,12 @@ msgstr "权限撤消完毕"
 msgid "Rights"
 msgstr "权限及代理人"
 
-#: html/Admin/CustomFields/GroupRights.html:126 lib/RT/Interface/Web.pm:844
+#: html/Admin/CustomFields/GroupRights.html:129 lib/RT/Interface/Web.pm:868
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "无法将权限赋予 %1"
 
-#: html/Admin/CustomFields/GroupRights.html:153 lib/RT/Interface/Web.pm:873 pat:101
+#: html/Admin/CustomFields/GroupRights.html:156 lib/RT/Interface/Web.pm:897
 #. ($object_type)
 msgid "Rights could not be revoked for %1"
 msgstr "无法撤消 %1 的权限"
@@ -5764,7 +5777,7 @@ msgstr "星期六"
 msgid "Save"
 msgstr "储存"
 
-#: html/Admin/Global/Template.html:67 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html:240 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:123 html/Ticket/ModifyDates.html:60 html/Ticket/ModifyLinks.html:60 html/Ticket/ModifyPeople.html:59
+#: html/Admin/Global/Template.html:67 html/Admin/Groups/Modify.html:87 html/Admin/Queues/Modify.html:111 html/Admin/Queues/People.html:126 html/Admin/Users/Modify.html:238 html/SelfService/Prefs.html:58 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:127 html/Ticket/ModifyDates.html:60 html/Ticket/ModifyLinks.html:60 html/Ticket/ModifyPeople.html:59 html/User/Groups/Modify.html:77
 msgid "Save Changes"
 msgstr "储存更改"
 
@@ -5890,7 +5903,7 @@ msgstr "选择"
 msgid "Select All"
 msgstr "全选"
 
-#: html/Admin/CustomFields/index.html:46 html/Admin/CustomFields/index.html:49
+#: adm_cfs_tabs.patch:85 adm_cfs_tabs.patch:90 html/Admin/CustomFields/index.html:46 html/Admin/CustomFields/index.html:49
 msgid "Select a Custom Field"
 msgstr "选择自订字段"
 
@@ -5902,6 +5915,10 @@ msgstr "选择群组"
 msgid "Select a queue"
 msgstr "选择表单"
 
+#: html/SelfService/CreateTicketInQueue.html:48
+msgid "Select a queue for your new ticket"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "Select a queue to link to"
 msgstr "请选择欲连结表单"
@@ -5910,7 +5927,7 @@ msgstr "请选择欲连结表单"
 msgid "Select a user"
 msgstr "选择使用者"
 
-#: html/Admin/Elements/CustomFieldTabs:91
+#: adm_cfs_tabs.patch:143 html/Admin/Elements/CustomFieldTabs:90
 msgid "Select custom field"
 msgstr "选择自订字段"
 
@@ -5934,11 +5951,11 @@ msgstr ""
 msgid "Select group"
 msgstr "选择群组"
 
-#: lib/RT/CustomField_Overlay.pm:507
+#: lib/RT/CustomField_Overlay.pm:525
 msgid "Select multiple values"
 msgstr "选择多重项目"
 
-#: lib/RT/CustomField_Overlay.pm:508
+#: lib/RT/CustomField_Overlay.pm:526
 msgid "Select one value"
 msgstr "选择单一项目"
 
@@ -5954,7 +5971,7 @@ msgstr "选择手续"
 msgid "Select template"
 msgstr "选择模板"
 
-#: lib/RT/CustomField_Overlay.pm:509
+#: lib/RT/CustomField_Overlay.pm:527
 msgid "Select up to %1 values"
 msgstr "选择最多 %1 个值"
 
@@ -6146,7 +6163,7 @@ msgstr "登记成为申请人或副本收件人"
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr "登记成为管理员副本收件人"
 
-#: html/Admin/Users/Modify.html:230 html/User/Prefs.html:167
+#: html/Admin/Users/Modify.html:229 html/User/Prefs.html:167
 msgid "Signature"
 msgstr "签名档"
 
@@ -6226,7 +6243,7 @@ msgstr "无法解读起始日期 '%1"
 msgid "State"
 msgstr "州"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:52 html/Ticket/Create.html:63 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1137 lib/RT/Tickets_Overlay.pm:1206
+#: html/Search/Elements/PickBasics:87 html/SelfService/Elements/MyRequests:50 html/SelfService/Update.html:57 html/Ticket/Create.html:63 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1142 lib/RT/Tickets_Overlay.pm.orig:1150 lib/RT/Tickets_Overlay.pm:1360
 msgid "Status"
 msgstr "现况"
 
@@ -6264,7 +6281,7 @@ msgstr "承办人从 %1 强制更换"
 msgid "Subgroup"
 msgstr "子群组"
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:154 html/SelfService/Create.html:78 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:53 html/Ticket/Create.html:105 html/Ticket/Elements/EditBasics:48 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:80 lib/RT/Ticket_Overlay.pm:1133 lib/RT/Tickets_Overlay.pm:1285
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:154 html/SelfService/Create.html:79 html/SelfService/Elements/MyRequests:49 html/SelfService/Update.html:65 html/Ticket/Create.html:105 html/Ticket/Elements/EditBasics:48 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:80 lib/RT/Ticket_Overlay.pm:1138 lib/RT/Tickets_Overlay.pm.orig:1229 lib/RT/Tickets_Overlay.pm:1442
 msgid "Subject"
 msgstr "主题"
 
@@ -6321,7 +6338,7 @@ msgstr "系统设定"
 msgid "System Defined"
 msgstr "系统定义"
 
-#: html/Admin/CustomFields/GroupRights.html:125 html/Admin/CustomFields/GroupRights.html:152 html/Admin/CustomFields/UserRights.html:128 html/Admin/CustomFields/UserRights.html:98 html/Admin/Elements/SelectRights:106 lib/RT/ACE_Overlay.pm:591 lib/RT/Interface/Web.pm:843 lib/RT/Interface/Web.pm:872 pat:100
+#: html/Admin/CustomFields/GroupRights.html:128 html/Admin/CustomFields/GroupRights.html:155 html/Admin/CustomFields/UserRights.html:128 html/Admin/CustomFields/UserRights.html:98 html/Admin/Elements/SelectRights:106 lib/RT/ACE_Overlay.pm:597 lib/RT/Interface/Web.pm:867 lib/RT/Interface/Web.pm:896
 msgid "System Error"
 msgstr "系统错误"
 
@@ -6341,11 +6358,11 @@ msgstr "系统权限"
 msgid "System Tools"
 msgstr "系统工具"
 
-#: lib/RT/ACE_Overlay.pm:640
+#: lib/RT/ACE_Overlay.pm:646
 msgid "System error. Right not delegated."
 msgstr "系统错误。权限代理失败。"
 
-#: lib/RT/ACE_Overlay.pm:170 lib/RT/ACE_Overlay.pm:247 lib/RT/ACE_Overlay.pm:330 lib/RT/ACE_Overlay.pm:922
+#: lib/RT/ACE_Overlay.pm:170 lib/RT/ACE_Overlay.pm:253 lib/RT/ACE_Overlay.pm:336 lib/RT/ACE_Overlay.pm:928
 msgid "System error. Right not granted."
 msgstr "系统错误。设定权限失败。"
 
@@ -6353,7 +6370,7 @@ msgstr "系统错误。设定权限失败。"
 msgid "System error. Unable to grant rights."
 msgstr "系统错误。无法设定权限。"
 
-#: html/Admin/CustomFields/GroupRights.html:55 html/Admin/Global/GroupRights.html:56 html/Admin/Groups/GroupRights.html:58 html/Admin/Queues/GroupRights.html:57
+#: html/Admin/CustomFields/GroupRights.html:58 html/Admin/Global/GroupRights.html:56 html/Admin/Groups/GroupRights.html:58 html/Admin/Queues/GroupRights.html:57
 msgid "System groups"
 msgstr "系统群组"
 
@@ -6446,19 +6463,19 @@ msgstr "找不到 %1 的模板\\n"
 msgid "Text"
 msgstr "文字"
 
-#: lib/RT/CustomField_Overlay.pm:786 lib/RT/Record.pm:883
+#: lib/RT/CustomField_Overlay.pm:851 lib/RT/Record.pm:883
 msgid "That is already the current value"
 msgstr "已经是目前字段的值"
 
-#: lib/RT/CustomField_Overlay.pm:332
+#: lib/RT/CustomField_Overlay.pm:360
 msgid "That is not a value for this custom field"
 msgstr "这不是该自订字段的值"
 
-#: lib/RT/Ticket_Overlay.pm:1946
+#: lib/RT/Ticket_Overlay.pm:1951
 msgid "That is the same value"
 msgstr "同样的值"
 
-#: lib/RT/ACE_Overlay.pm:312 lib/RT/ACE_Overlay.pm:621
+#: lib/RT/ACE_Overlay.pm:318 lib/RT/ACE_Overlay.pm:627
 msgid "That principal already has that right"
 msgstr "这项单位已经拥有该权限"
 
@@ -6467,7 +6484,7 @@ msgstr "这项单位已经拥有该权限"
 msgid "That principal is already a %1 for this queue"
 msgstr "这项单位已经是这个表单的 %1"
 
-#: lib/RT/Ticket_Overlay.pm:1387
+#: lib/RT/Ticket_Overlay.pm:1392
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "这项单位已经是这份申请单的 %1"
@@ -6481,11 +6498,11 @@ msgstr "这项单位不是这个表单的 %1"
 msgid "That principal is not a %1 for this ticket"
 msgstr "这项单位不是这份申请单的 %1"
 
-#: lib/RT/Ticket_Overlay.pm:1942
+#: lib/RT/Ticket_Overlay.pm:1947
 msgid "That queue does not exist"
 msgstr "此表单不存在"
 
-#: lib/RT/Ticket_Overlay.pm:3123
+#: lib/RT/Ticket_Overlay.pm:3152
 msgid "That ticket has unresolved dependencies"
 msgstr "这份申请单有尚未解决的附属申请单"
 
@@ -6493,11 +6510,11 @@ msgstr "这份申请单有尚未解决的附属申请单"
 msgid "That user already has that right"
 msgstr "使用者已具有该项权限"
 
-#: lib/RT/Ticket_Overlay.pm:2927
+#: lib/RT/Ticket_Overlay.pm:2956
 msgid "That user already owns that ticket"
 msgstr "该使用者已经承办这份申请单"
 
-#: lib/RT/Ticket_Overlay.pm:2899
+#: lib/RT/Ticket_Overlay.pm:2928
 msgid "That user does not exist"
 msgstr "使用者不存在"
 
@@ -6521,7 +6538,7 @@ msgstr "这名使用者已加入非内部成员群组"
 msgid "That user is now unprivilegedileged"
 msgstr "这名使用者已加入非内部成员群组"
 
-#: lib/RT/Ticket_Overlay.pm:2920
+#: lib/RT/Ticket_Overlay.pm:2949
 msgid "That user may not own tickets in that queue"
 msgstr "使用者可能没有承办表单里的申请单"
 
@@ -6573,7 +6590,7 @@ msgstr "该使用者不会看见这些评论"
 msgid "Third-"
 msgstr "三"
 
-#: lib/RT/CustomField_Overlay.pm:811
+#: lib/RT/CustomField_Overlay.pm:886
 msgid "This custom field does not apply to that object"
 msgstr "此自订字段不适用于该对象"
 
@@ -6643,7 +6660,7 @@ msgstr "申请单 #%1: %2"
 msgid "Ticket %1"
 msgstr "申请单 %1"
 
-#: lib/RT/Ticket_Overlay.pm:726 lib/RT/Ticket_Overlay.pm:746
+#: lib/RT/Ticket_Overlay.pm:731 lib/RT/Ticket_Overlay.pm:751
 #. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "申请单 #%1 成功新增于 '%2' 表单"
@@ -6652,7 +6669,7 @@ msgstr "申请单 #%1 成功新增于 '%2' 表单"
 msgid "Ticket %1 loaded\\n"
 msgstr "加载申请单 %1\\n"
 
-#: html/Search/Bulk.html:295
+#: html/Search/Bulk.html:269
 #. ($Ticket->Id,$_)
 msgid "Ticket %1: %2"
 msgstr "申请单 %1：%2"
@@ -6698,15 +6715,15 @@ msgstr "表单种类"
 msgid "Ticket attachment"
 msgstr "申请单附件"
 
-#: lib/RT/Tickets_Overlay.pm:1464
+#: lib/RT/Tickets_Overlay.pm.orig:1408 lib/RT/Tickets_Overlay.pm:1630
 msgid "Ticket content"
 msgstr "申请单内容"
 
-#: lib/RT/Tickets_Overlay.pm:1510
+#: lib/RT/Tickets_Overlay.pm.orig:1454 lib/RT/Tickets_Overlay.pm:1679
 msgid "Ticket content type"
 msgstr "申请单内容类别"
 
-#: lib/RT/Ticket_Overlay.pm:588 lib/RT/Ticket_Overlay.pm:602 lib/RT/Ticket_Overlay.pm:613 lib/RT/Ticket_Overlay.pm:734
+#: lib/RT/Ticket_Overlay.pm:593 lib/RT/Ticket_Overlay.pm:607 lib/RT/Ticket_Overlay.pm:618 lib/RT/Ticket_Overlay.pm:739
 msgid "Ticket could not be created due to an internal error"
 msgstr "内部错误，无法新增申请单"
 
@@ -6755,12 +6772,12 @@ msgstr ""
 msgid "Tickets"
 msgstr "申请单"
 
-#: lib/RT/Tickets_Overlay.pm:1688
+#: lib/RT/Tickets_Overlay.pm.orig:1632
 #. ($self->loc($args{'TYPE'}), ($args{'BASE'} || $args{'TICKET'}))
 msgid "Tickets %1 %2"
 msgstr "申请单 %1 %2"
 
-#: lib/RT/Tickets_Overlay.pm:1646
+#: lib/RT/Tickets_Overlay.pm.orig:1590
 #. ($self->loc($args{'TYPE'}), ($args{'TARGET'} || $args{'TICKET'}))
 msgid "Tickets %1 by %2"
 msgstr "申请单 %1 (%2)"
@@ -6793,15 +6810,15 @@ msgstr "剩馀时间"
 msgid "Time Worked"
 msgstr "处理时间"
 
-#: lib/RT/Tickets_Overlay.pm:1437
+#: lib/RT/Tickets_Overlay.pm.orig:1381 lib/RT/Tickets_Overlay.pm:1601
 msgid "Time left"
 msgstr "剩馀时间"
 
-#: html/Elements/Footer:66
+#: html/Elements/Footer:71
 msgid "Time to display"
 msgstr "显示时间"
 
-#: lib/RT/Tickets_Overlay.pm:1413
+#: lib/RT/Tickets_Overlay.pm.orig:1357 lib/RT/Tickets_Overlay.pm:1576
 msgid "Time worked"
 msgstr "已处理时间"
 
@@ -6809,7 +6826,7 @@ msgstr "已处理时间"
 msgid "TimeLeft"
 msgstr "剩馀时间"
 
-#: lib/RT/Ticket_Overlay.pm:1138
+#: lib/RT/Ticket_Overlay.pm:1143
 msgid "TimeWorked"
 msgstr "已处理时间"
 
@@ -6830,7 +6847,7 @@ msgstr "如果有支持、教育训练及定制开发的需要，请连络 %1。
 msgid "Todo"
 msgstr "待办事项"
 
-#: lib/RT/Ticket_Overlay.pm:1141
+#: lib/RT/Ticket_Overlay.pm:1146
 msgid "Told"
 msgstr "告知日期"
 
@@ -6875,7 +6892,7 @@ msgstr "批次更动时"
 msgid "TransactionCreate"
 msgstr "新增更动时"
 
-#: lib/RT/Transaction_Overlay.pm:799
+#: lib/RT/Transaction_Overlay.pm:787
 msgid "Transactions are immutable"
 msgstr "不可更改更动报告"
 
@@ -6895,7 +6912,7 @@ msgstr "星期二"
 msgid "Tue."
 msgstr "星期二"
 
-#: html/Admin/CustomFields/Modify.html:65 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1139 lib/RT/Tickets_Overlay.pm:1257
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1144 lib/RT/Tickets_Overlay.pm.orig:1201 lib/RT/Tickets_Overlay.pm:1414
 msgid "Type"
 msgstr "类别"
 
@@ -6911,13 +6928,13 @@ msgstr "外部系统登入帐号"
 msgid "UnixUsername"
 msgstr "外部系统登入帐号"
 
-#: lib/RT/Attachment_Overlay.pm:272 lib/RT/Record.pm:798
+#: lib/RT/Attachment_Overlay.pm:276 lib/RT/Record.pm:800
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr "不可解的内容文字编码方式 %1"
 
-#: html/Search/Build.html:625
+#: html/Search/Build.html:623
 msgid "Unknown field: $key"
 msgstr ""
 
@@ -6953,11 +6970,11 @@ msgstr "未命名的查询"
 msgid "Up"
 msgstr "上一页"
 
-#: html/Search/Bulk.html:54 x:35
+#: html/Search/Bulk.html:54
 msgid "Update"
 msgstr "处理"
 
-#: html/Search/Bulk.html:204
+#: html/Search/Bulk.html:178
 msgid "Update All"
 msgstr "全部更新"
 
@@ -6989,11 +7006,11 @@ msgstr "批次更新申请单"
 msgid "Update name"
 msgstr "更新帐号"
 
-#: lib/RT/Action/CreateTickets.pm:734 lib/RT/Interface/Web.pm:454
+#: lib/RT/Action/CreateTickets.pm:734 lib/RT/Interface/Web.pm:491
 msgid "Update not recorded."
 msgstr "更新未被记录"
 
-#: html/Search/Bulk.html:99 x:92
+#: html/Search/Bulk.html:99
 msgid "Update selected tickets"
 msgstr "更新选择的申请单"
 
@@ -7009,7 +7026,7 @@ msgstr "更新申请单"
 msgid "Update ticket # %1"
 msgstr "更新申请单 # %1"
 
-#: html/SelfService/Update.html:46 html/SelfService/Update.html:85
+#: html/SelfService/Update.html:112 html/SelfService/Update.html:47
 #. ($Ticket->id)
 msgid "Update ticket #%1"
 msgstr "更新申请单 #%1"
@@ -7019,11 +7036,11 @@ msgstr "更新申请单 #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:732 lib/RT/Interface/Web.pm:452
+#: lib/RT/Action/CreateTickets.pm:732 lib/RT/Interface/Web.pm:489
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的内容并非申请单回复也不是评论"
 
-#: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72 lib/RT/Ticket_Overlay.pm:1142
+#: html/Elements/SelectDateType:54 html/Ticket/Elements/ShowDates:72 lib/RT/Ticket_Overlay.pm:1147
 msgid "Updated"
 msgstr "前次更新"
 
@@ -7031,27 +7048,27 @@ msgstr "前次更新"
 msgid "Upload"
 msgstr "上载"
 
-#: lib/RT/CustomField_Overlay.pm:527
+#: lib/RT/CustomField_Overlay.pm:545
 msgid "Upload multiple files"
 msgstr "上载多个档案"
 
-#: lib/RT/CustomField_Overlay.pm:522
+#: lib/RT/CustomField_Overlay.pm:540
 msgid "Upload multiple images"
 msgstr "上载多份图片"
 
-#: lib/RT/CustomField_Overlay.pm:528
+#: lib/RT/CustomField_Overlay.pm:546
 msgid "Upload one file"
 msgstr "上载一个档案"
 
-#: lib/RT/CustomField_Overlay.pm:523
+#: lib/RT/CustomField_Overlay.pm:541
 msgid "Upload one image"
 msgstr "上载一份图片"
 
-#: lib/RT/CustomField_Overlay.pm:529
+#: lib/RT/CustomField_Overlay.pm:547
 msgid "Upload up to %1 files"
 msgstr "上载最多 %1 个档案"
 
-#: lib/RT/CustomField_Overlay.pm:524
+#: lib/RT/CustomField_Overlay.pm:542
 msgid "Upload up to %1 images"
 msgstr "上载最多 %1 份图片"
 
@@ -7071,7 +7088,7 @@ msgstr "使用者 %1 %2：%3\\n"
 msgid "User %1 Password: %2\\n"
 msgstr "使用者 %1 口令：%2\\n"
 
-#: lib/RT/Ticket_Overlay.pm:491
+#: lib/RT/Ticket_Overlay.pm:496
 #. ($args{'Owner'})
 msgid "User '%1' could not be found."
 msgstr "找不到使用者 '%1'。"
@@ -7104,7 +7121,7 @@ msgstr "使用者 ID"
 msgid "User Number"
 msgstr "员工编号"
 
-#: html/Admin/Elements/CustomFieldTabs:71 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
+#: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
 msgid "User Rights"
 msgstr "使用者权限"
 
@@ -7116,12 +7133,12 @@ msgstr "使用者设定"
 msgid "User Shift"
 msgstr "员工班别"
 
-#: pat:360
+#: lib/RT/Interface/Web.pm:1250
 #. ($cf->Name, $class, $Object->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "使用者试图在 %2 对象 #%3 的自订字段 %1 上执行未知的更新操作"
 
-#: html/Admin/Users/Modify.html:294
+#: html/Admin/Users/Modify.html:292
 #. ($msg)
 msgid "User could not be created: %1"
 msgstr "无法新增使用者：%1"
@@ -7138,7 +7155,7 @@ msgstr "使用者 %1 新增完毕"
 msgid "User created: %1 (%2)"
 msgstr "使用者 %1 (%2) 新增完毕"
 
-#: html/Admin/CustomFields/GroupRights.html:71 html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75 html/Admin/Queues/GroupRights.html:90
+#: html/Admin/CustomFields/GroupRights.html:74 html/Admin/Global/GroupRights.html:88 html/Admin/Groups/GroupRights.html:75 html/Admin/Queues/GroupRights.html:90
 msgid "User defined groups"
 msgstr "使用者定义的群组"
 
@@ -7186,7 +7203,7 @@ msgstr "合理的查询"
 msgid "ValueOfQueue"
 msgstr "选择表单"
 
-#: html/Admin/CustomFields/Modify.html:88 html/Admin/Elements/EditCustomField:78
+#: html/Admin/CustomFields/Modify.html:89 html/Admin/Elements/EditCustomField:78
 msgid "Values"
 msgstr "字段值"
 
@@ -7322,11 +7339,11 @@ msgstr "XXX CHANGEME 您是未经授权的使用者"
 msgid "Yes"
 msgstr "是"
 
-#: lib/RT/Ticket_Overlay.pm:3030
+#: lib/RT/Ticket_Overlay.pm:3059
 msgid "You already own this ticket"
 msgstr "您已是这份申请单的承办人"
 
-#: html/autohandler:164 html/autohandler:172
+#: html/autohandler:158 html/autohandler:166
 msgid "You are not an authorized user"
 msgstr "您不是被授权的使用者"
 
@@ -7334,7 +7351,7 @@ msgstr "您不是被授权的使用者"
 msgid "You can access it with the Download button on the right."
 msgstr "您可以按右方的‘下载’键来取得。"
 
-#: lib/RT/Ticket_Overlay.pm:2912
+#: lib/RT/Ticket_Overlay.pm:2941
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "祇能重新指派您所承办或是没有承办人的申请单"
 
@@ -7351,11 +7368,11 @@ msgstr "您会在表单 %2 找到 %1 的申请单"
 msgid "You have been logged out of RT."
 msgstr "您已注销 RT。"
 
-#: html/SelfService/Display.html:101
+#: html/SelfService/Display.html:102
 msgid "You have no permission to create tickets in that queue."
 msgstr "您没有在该表单新增申请单的权限。"
 
-#: lib/RT/Ticket_Overlay.pm:1955
+#: lib/RT/Ticket_Overlay.pm:1960
 msgid "You may not create requests in that queue."
 msgstr "您不能在该表单中提出申请。"
 
@@ -7395,7 +7412,7 @@ msgstr "您的申请单已被 %1 驳回。"
 msgid "Your request was rejected."
 msgstr "您的申请单已被驳回。"
 
-#: html/autohandler:199
+#: html/autohandler:193
 msgid "Your username or password is incorrect"
 msgstr "您的帐号或口令有误"
 
@@ -7464,7 +7481,7 @@ msgstr "申请单回复已送出"
 msgid "critical"
 msgstr "严重"
 
-#: html/Search/Build.html:565
+#: html/Search/Build.html:563
 #. ( . $token . " in '$string'\n")
 msgid "current: $current, want $want, Error near ->$val<- expecting a "
 msgstr ""
@@ -7537,7 +7554,7 @@ msgstr ""
 msgid "error: nothing to move"
 msgstr ""
 
-#: html/Search/Build.html:408
+#: html/Search/Build.html:406
 msgid "error: nothing to toggle"
 msgstr ""
 
