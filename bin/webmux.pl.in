@@ -104,14 +104,12 @@ sub handler {
     RT::Init();
 
     # We don't need to handle non-text, non-xml items
-    defined( $r->content_type ) or return -1;
-
     if ($r->content_type =~ m/^httpd\b.*\bdirectory/i) {
         # Our DirectoryIndex is always index.html, regardless of httpd settings
         $r->filename( $r->filename . 'index.html' );
     }
-    elsif ($r->content_type !~ m!(^text/|\bxml\b)!i) {
-        return -1;
+    elsif (defined( $r->content_type )) {
+	$r->content_type =~ m!(^text/|\bxml\b)!i or return -1;
     }
 
 
