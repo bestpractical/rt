@@ -203,7 +203,7 @@ sub Content {
     if ( $args{'Quote'} ) {
 
         # Remove quoted signature.
-        $content =~ s/\n-- \n(.*)$//s;
+        $content =~ s/\n-- \n(.*?)$//s;
 
         # What's the longest line like?
         my $max = 0;
@@ -793,7 +793,7 @@ sub _CacheConfig {
   {
      'cache_p'        => 1,
      'fast_update_p'  => 1,
-     'cache_for_sec'  => 180,
+     'cache_for_sec'  => 6000,
   }
 }
 1;
