@@ -44,8 +44,7 @@
 <%PERL>
 
 unless ($Collapsed) {
-    $attachments->GotoFirstItem;
-    while ( my $message = $attachments->Next ) {
+ foreach my $message (@$Attachments) { 
 
         my $quoted;
         my $headers = $message->Headers;
@@ -74,9 +73,7 @@ unless ($Collapsed) {
       <TD>&nbsp;&nbsp;</TD>
       <TD COLSPAN=3 VALIGN=TOP>
 <span class="message">
-	<PRE>
 <& ShowMessageHeaders, Headers => $headers, Transaction => $Transaction, DisplayHeaders => \@DisplayHeaders &>
-</PRE>
 % if ($ShowBody) {
 % if (!length($quoted) && $message->ContentType =~ m#^text/#) {
 <blockquote><i>
@@ -121,6 +118,7 @@ $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
 $AttachPath => $RT::WebPath."/Ticket/Attachment"
+$Attachments => undef
 $ShowBody => 1
 </%ARGS>
 
@@ -166,10 +164,12 @@ if ( $Ticket->Id != $Transaction->Ticket ) {
 if ( $Transaction->TimeTaken > 0 ) {
     $TimeTaken = $Transaction->TimeTaken . " min";
 }
-my $attachments = $Transaction->Attachments;
-$attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId)
-);
 
+unless ($Attachments) { 
+    my $attachments = $Transaction->Attachments;
+    $attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
+    $Attachments = $attachments->ItemsArrayRef();
+}
 my $titlebar_commands = '&nbsp;';
 
 my @DisplayHeaders=qw ( _all);
@@ -198,7 +198,7 @@ else {
         @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
     }
 
-    if ( $Transaction->Attachments->First && $ShowTitleBarCommands ) {
+    if ( $Attachments->[0] && $ShowTitleBarCommands ) {
         if ( $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"Update.html?id="

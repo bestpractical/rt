@@ -1,5 +1,6 @@
 <%args>
 $Format => undef
+%cfqueues => undef
 </%args>
 <%init>
 

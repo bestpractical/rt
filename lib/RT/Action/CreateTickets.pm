@@ -309,12 +309,15 @@ sub Commit {
     my $self = shift;
     my (@links, @postponed);
 
+    my @results;
+
     # XXX: cargo cult programming that works. i'll be back.
     use bytes;
 
     # Create all the tickets we care about
     return(1) unless $self->TicketObj->Type eq 'ticket';
 
+    my @results;
     %T::Tickets = ();
 
     foreach my $template_id ( @{ $self->{'template_order'} } ) {

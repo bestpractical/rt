@@ -62,7 +62,7 @@ sub _OverlayAccessible {
     {
 
         Name                    => { public => 1,  admin => 1 },
-          Password              => { read   => 0,  admin => 1 },
+          Password              => { read   => 0 },
           EmailAddress          => { public => 1 },
           Organization          => { public => 1,  admin => 1 },
           RealName              => { public => 1 },
@@ -160,7 +160,13 @@ sub Create {
         return ( 0, $self->loc('No permission to create users') );
     }
 
+
+    unless ($self->CanonicalizeUserInfo(\%args)) {
+        return ( 0, $self->loc("Could not set user info") );
+    }
+
     $args{'EmailAddress'} = $self->CanonicalizeEmailAddress($args{'EmailAddress'});
+
     # if the user doesn't have a name defined, set it to the email address
     $args{'Name'} = $args{'EmailAddress'} unless ($args{'Name'});
 
@@ -623,6 +629,32 @@ sub CanonicalizeEmailAddress {
         $email =~ s/$RT::CanonicalizeEmailAddressMatch/$RT::CanonicalizeEmailAddressReplace/gi;
     }
     return ($email);
+}
+
+
+# }}}
+
+# {{{ sub CanonicalizeUserInfo
+
+
+
+=item CanonicalizeUserInfo HASH of ARGS
+
+# CanonicalizeUserInfo can convert all User->Create options.
+# it takes a hashref of all the params sent to User->Create and
+# returns that same hash, by default nothing is done.
+
+# This function is intended to allow users to have their info looked up via
+# an outside source and modified upon creation.
+
+=cut
+
+sub CanonicalizeUserInfo {
+    my $self = shift;
+    my $args = shift;
+    my $success = 1;
+
+    return ($success);
 }
 
 

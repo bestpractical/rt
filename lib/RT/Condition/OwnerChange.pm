@@ -50,9 +50,7 @@ my ($val, $msg) =$s1->Create( Queue => $q->Id,
              CustomIsApplicableCode => '',
              CustomPrepareCode => 'return 1',
              CustomCommitCode => '
-                   $RT::Logger->crit("Before, prio is ".$self->TicketObj->Priority);
                     $self->TicketObj->SetPriority($self->TicketObj->Priority+1);
-                   $RT::Logger->crit("After, prio is ".$self->TicketObj->Priority);
                 return(1);
             ',
              Template => 'Blank'

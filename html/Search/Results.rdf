@@ -38,3 +38,43 @@ $Tickets->FromSQL($ARGS{'Query'});
 $m->out($rss->as_string);
 $m->abort();
 </%INIT>
+<%INIT>
+
+my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+$Tickets->FromSQL($ARGS{'Query'});
+    $r->content_type('xml/rss');
+
+
+
+        # create an RSS 1.0 file (http://purl.org/rss/1.0/)
+        use XML::RSS;
+        my $rss = new XML::RSS (version => '1.0');
+        $rss->channel(
+          title        => "$RT::rtname: Syndicated Search",
+          link         => $RT::WebURL,
+          description  => "",
+          dc => {
+          },
+          syn => {
+            updatePeriod     => "hourly",
+            updateFrequency  => "1",
+            updateBase       => "1901-01-01T00:00+00:00",
+          },
+        );
+
+
+    while ( my $Ticket = $Tickets->Next()) {
+       my $row;
+        $rss->add_item(
+          title       =>  $Ticket->Subject,
+          link        => $RT::WebURL."/Ticket/Display.html?id=".$Ticket->id,
+          description => $Ticket->Transactions->First->Content,
+          dc => {
+            subject  => $Ticket->Subject,
+            creator  => $Ticket->CreatorObj->RealName . "<".$Ticket->CreatorObj->EmailAddress.">",
+          },
+        );
+    }
+$m->out($rss->as_string);
+$m->abort();
+</%INIT>

@@ -155,7 +155,7 @@ UL.topnav LI :focus { text-decoration: underline; }
 
 TD.mainbody {
         padding-top: 0.5em;
-        padding-left: 0em;
+        padding-left: 1em;
         padding-right: 1em;
         margin-left: 1em;
         margin-right: 1em;
@@ -331,6 +331,10 @@ ul.topnav {
 	margin-bottom:0;
 }
 
+%# Provide a callback for adding/modifying the style sheet.
+%# http://www.w3.org/TR/REC-CSS1 - section 3.2, says:
+%#   "latter specified rule wins"
+<& /Elements/Callback &>
 <%flags>
 inherit => undef
 </%flags>

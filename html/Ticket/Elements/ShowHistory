@@ -57,16 +57,43 @@ else {
 % }
 
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
-% while (my $Transaction = $Transactions->Next) {
-% my $skip = 0;
-% $m->comp('/Elements/Callback', _CallbackName => 'SkipTransaction', Transaction => $Transaction, skip => \$skip, %ARGS);
-% next if $skip;
-% $i++;
-%	if ($Transactions->IsLast) {
-	<a name="lasttrans"></a>
-% 	}
-	    <& ShowTransaction, Ticket => $Ticket, Transaction => $Transaction, ShowHeaders => $ShowHeaders, Collapsed => $Collapsed, RowNum => $i, ShowTitleBarCommands => $ShowTitleBarCommands, %ARGS &>
-% }
+<%perl>
+my @attachments = @{$Attachments->ItemsArrayRef()};
+
+
+
+
+
+while ( my $Transaction = $Transactions->Next ) {
+    my $skip = 0;
+    $m->comp( '/Elements/Callback',
+              _CallbackName => 'SkipTransaction',
+              Transaction   => $Transaction,
+              skip          => \$skip,
+              %ARGS );
+    next if $skip;
+    $i++;
+
+    $m->out('<a name="lasttrans"></a>') if ( $Transactions->IsLast );
+
+    my @trans_attachments = grep { $_->TransactionId == $Transaction->Id } @attachments;
+
+   
+    #Args is first because we're clobbering the "Attachments" parameter 
+    $m->comp( 'ShowTransaction',
+            %ARGS,
+
+              Ticket               => $Ticket,
+              Transaction          => $Transaction,
+              ShowHeaders          => $ShowHeaders,
+              Collapsed            => $Collapsed,
+              RowNum               => $i,
+              ShowTitleBarCommands => $ShowTitleBarCommands,
+              Attachments          => \@trans_attachments,
+ );
+}
+
+</%perl>
 </TABLE>
 % if ($ShowDisplayModes or $ShowTitle) {
 <& /Elements/TitleBoxEnd &>
@@ -77,10 +104,13 @@ my $Transactions = $Ticket->Transactions;
 my $i;
 
 
+$Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
+
 </%INIT>
 <%ARGS>
 $URIFile => 'Display.html'
 $Ticket => undef
+$Attachments => undef
 $ShowHeaders => undef
 $Collapsed => undef
 $ShowTitle => 1

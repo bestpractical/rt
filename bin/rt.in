@@ -30,6 +30,7 @@ use strict;
 
 use Cwd;
 use LWP;
+use Text::ParseWords;
 use HTTP::Request::Common;
 
 # We derive configuration information from hardwired defaults, dotfiles,
@@ -75,6 +76,7 @@ my $idlist = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 my %handlers = (
 #   handler     => [ ...aliases... ],
     version     => ["version", "ver"],
+    shell       => ["shell"],
     logout      => ["logout"],
     help        => ["help", "man"],
     show        => ["show", "cat"],
@@ -86,24 +88,45 @@ my %handlers = (
     grant       => ["grant", "revoke"],
 );
 
-# Once we find and call an appropriate handler, we're done.
-
-my (%actions, $action);
+my %actions;
 foreach my $fn (keys %handlers) {
     foreach my $alias (@{ $handlers{$fn} }) {
         $actions{$alias} = \&{"$fn"};
     }
 }
-if (@ARGV && exists $actions{$ARGV[0]}) {
-    $action = shift @ARGV;
+
+# Once we find and call an appropriate handler, we're done.
+
+sub handler {
+    my $action;
+
+    if (@ARGV && exists $actions{$ARGV[0]}) {
+        $action = shift @ARGV;
+    }
+    $actions{$action || "help"}->($action || ());
 }
-$actions{$action || "help"}->($action || ());
+
+handler();
 exit;
 
 # Handler functions.
 # ------------------
 #
 # The following subs are handlers for each entry in %actions.
+
+sub shell {
+    $|=1;
+    print "rt> ";
+    while (<>) {
+        chomp;
+        next if /^#/ || /^\s*$/;
+
+        @ARGV = shellwords($_);
+        handler();
+        print "rt> ";
+    }
+    print "\n";
+}
 
 sub version {
     print "rt $VERSION\n";
@@ -113,18 +136,21 @@ sub logout {
     submit("$REST/logout") if defined $session->cookie;
 }
 
+my %help;
 sub help {
     my ($action, $type) = @_;
-    my (%help, $key);
+    my $key;
 
     # What help topics do we know about?
-    local $/ = undef;
-    foreach my $item (@{ Form::parse(<DATA>) }) {
-        my $title = $item->[2]{Title};
-        my @titles = ref $title eq 'ARRAY' ? @$title : $title;
+    if (!%help) {
+        local $/ = undef;
+        foreach my $item (@{ Form::parse(<DATA>) }) {
+            my $title = $item->[2]{Title};
+            my @titles = ref $title eq 'ARRAY' ? @$title : $title;
 
-        foreach $title (grep $_, @titles) {
-            $help{$title} = $item->[2]{Text};
+            foreach $title (@titles) {
+                $help{$title} = $item->[2]{Text};
+            }
         }
     }
 
@@ -166,7 +192,7 @@ sub help {
 # Displays a list of objects that match some specified condition.
 
 sub list {
-    my ($q, $type, %data, $orderby);
+    my ($q, $type, %data);
     my $bad = 0;
 
     while (@ARGV) {
@@ -179,7 +205,7 @@ sub list {
             $bad = 1, last unless get_var_argument(\%data);
         }
         elsif (/^-o$/) {
-            $orderby = shift @ARGV;
+            $data{orderby} = shift @ARGV;
         }
         elsif (/^-([isl])$/) {
             $data{format} = $1;
@@ -209,7 +235,7 @@ sub list {
     }
     return help("list", $type) if $bad;
 
-    my $r = submit("$REST/search/$type", { query => $q, %data, orderby => $orderby || "" });
+    my $r = submit("$REST/search/$type", { query => $q, %data });
     print $r->content;
 }
 
@@ -451,7 +477,7 @@ sub edit {
 
     if ($output) {
         print $text;
-        exit;
+        return;
     }
 
     my $synerr = 0;
@@ -477,7 +503,7 @@ EDIT:
             }
             else {
                 print $r->content;
-                exit -1;
+                return;
             }
         }
         print $r->content;
@@ -506,7 +532,7 @@ sub comment {
             if (/-a/) {
                 unless (-f $ARGV[0] && -r $ARGV[0]) {
                     whine "Cannot read attachment: '$ARGV[0]'.";
-                    exit -1;
+                    return;
                 }
                 push @files, shift @ARGV;
             }
@@ -544,6 +570,7 @@ sub comment {
             Attachment => [ @files ],
             TimeWorked => $wtime || '',
             Text       => $msg || '',
+            Status => ''
         }
     ];
 
@@ -555,7 +582,7 @@ sub comment {
 
         do {
             my $ntext = vi($text);
-            exit if ($error && $ntext eq $text);
+            return if ($error && $ntext eq $text);
             $text = $ntext;
             $form = Form::parse($text);
             $error = 0;
@@ -567,7 +594,7 @@ sub comment {
                 goto NEXT;
             }
             elsif (!@$o) {
-                exit;
+                return;
             }
             @files = @{ vsplit($k->{Attachment}) };
 

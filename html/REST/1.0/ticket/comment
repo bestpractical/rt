@@ -141,6 +141,10 @@ my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                BccMessageTo => $bcc,
                                TimeTaken => $k->{TimeWorked} || 0);
 $output = $s;
+if ($k->{Status}) {
+   my  ($status_n, $status_s) = $ticket->SetStatus($k->{'Status'} );   
+  $output .= "\n".$status_s;
+}
 
 OUTPUT:
 </%INIT>

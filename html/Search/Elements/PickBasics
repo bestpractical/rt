@@ -99,7 +99,7 @@
 					TrueVal=> '=', 
 					FalseVal => '!=' &>
 </td><td>
-<& /Elements/SelectQueue, Name => "ValueOfQueue" &>
+<& /Elements/SelectQueue, Name => "ValueOfQueue", NamedValues => 1 &>
 % } elsif ($field eq "id") {
 <&|/l&>Id</&>
 </td><td>

@@ -32,14 +32,17 @@
 
 <& /Elements/TitleBoxStart, title => loc('Ticket metadata'), contentbg =>
 '#ffffff' &>
-<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj &>
+<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
 <& /Elements/TitleBoxEnd &>
 
 <BR>
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $TicketObj, 
       Collapsed => $ARGS{'Collapsed'}, 
-      ShowHeaders => $ARGS{'ShowHeaders'} &> 
+      ShowHeaders => $ARGS{'ShowHeaders'},
+      Attachments => $attachments 
+      
+      &> 
 
   
 <%ARGS>
@@ -113,6 +116,10 @@ if ($ARGS{'id'} eq 'new') {
 
     push (@Actions, @BasicActions, @results);
 }
+
+my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj);
+
+
 </%INIT>
 
 

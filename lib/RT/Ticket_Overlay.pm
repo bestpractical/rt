@@ -372,13 +372,13 @@ sub Create {
 
     # If there's no queue default initial priority and it's not set, set it to 0
     $args{'InitialPriority'} = ( $QueueObj->InitialPriority || 0 )
-      unless ( defined $args{'InitialPriority'} );
+      unless ( $args{'InitialPriority'} );
 
     #Final priority 
 
     # If there's no queue default final priority and it's not set, set it to 0
     $args{'FinalPriority'} = ( $QueueObj->FinalPriority || 0 )
-      unless ( defined $args{'FinalPriority'} );
+      unless ( $args{'FinalPriority'} );
 
     # Priority may have changed from InitialPriority, for the case
     # where we're importing tickets (eg, from an older RT version.)
@@ -2556,14 +2556,18 @@ ok($id2, "Created dep test 2 - $msg2");
 my $t3 = RT::Ticket->new($RT::SystemUser);
 my ($id3, $trans, $msg3) = $t3->Create(Subject => 'DepTest3', Queue => 'general', Type => 'approval');
 ok($id3, "Created dep test 3 - $msg3");
+my ($addid, $addmsg);
+ok (($addid, $addmsg) =$t1->AddLink( Type => 'DependsOn', Target => $t2->id));
+ok ($addid, $addmsg);
+ok (($addid, $addmsg) =$t1->AddLink( Type => 'DependsOn', Target => $t3->id));
 
-ok ($t1->AddLink( Type => 'DependsOn', Target => $t2->id));
-ok ($t1->AddLink( Type => 'DependsOn', Target => $t3->id));
-
+ok ($addid, $addmsg);
 ok ($t1->HasUnresolvedDependencies, "Ticket ".$t1->Id." has unresolved deps");
 ok (!$t1->HasUnresolvedDependencies( Type => 'blah' ), "Ticket ".$t1->Id." has no unresolved blahs");
 ok ($t1->HasUnresolvedDependencies( Type => 'approval' ), "Ticket ".$t1->Id." has unresolved approvals");
 ok (!$t2->HasUnresolvedDependencies, "Ticket ".$t2->Id." has no unresolved deps");
+;
+
 my ($rid, $rmsg)= $t1->Resolve();
 ok(!$rid, $rmsg);
 ok($t2->Resolve);
@@ -2838,6 +2842,7 @@ sub AddLink {
                  Silent => undef,
                  @_ );
 
+
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
@@ -2853,13 +2858,13 @@ sub AddLink {
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
-	$remote_link = $args{'Base'};
-    	$direction = 'Target';
+        $remote_link    = $args{'Base'};
+        $direction      = 'Target';
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
-	$remote_link = $args{'Target'};
-        $direction='Base';
+        $remote_link  = $args{'Target'};
+        $direction    = 'Base';
     }
     else {
         return ( 0, $self->loc('Either base or target must be specified') );
@@ -2883,11 +2888,12 @@ sub AddLink {
 
     # Storing the link in the DB.
     my $link = RT::Link->new( $self->CurrentUser );
-    my ($linkid) = $link->Create( Target => $args{Target},
+    my ($linkid, $linkmsg) = $link->Create( Target => $args{Target},
                                   Base   => $args{Base},
                                   Type   => $args{Type} );
 
     unless ($linkid) {
+        $RT::Logger->error("Link could not be created: ".$linkmsg);
         return ( 0, $self->loc("Link could not be created") );
     }
 
@@ -2911,22 +2917,6 @@ sub AddLink {
         return ( $Trans, $self->loc( "Link created ([_1])", $TransString ) );
     }
 
-}
-
-# }}}
-
-# {{{ sub URI 
-
-=head2 URI
-
-Returns this ticket's URI
-
-=cut
-
-sub URI {
-    my $self = shift;
-    my $uri = RT::URI::fsck_com_rt->new($self->CurrentUser);
-    return($uri->URIForObject($self));
 }
 
 # }}}

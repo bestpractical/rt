@@ -87,8 +87,6 @@ sub Create {
                               . $base->Scheme
                               . "' into a URI\n" );
 
-        #use Data::Dumper;
-        #$RT::Logger->warning(scalar Dumper $base);
         return (undef);
     }
 
@@ -100,8 +98,6 @@ sub Create {
                               . $args{'Target'} . " - "
                               . "' into a URI\n" );
 
-        #use Data::Dumper;
-        #$RT::Logger->warning(scalar Dumper $target);
         return (undef);
     }
 

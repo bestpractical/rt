@@ -460,6 +460,25 @@ sub LastUpdatedByObj {
 
 # }}}
 
+# {{{ sub URI 
+
+=head2 URI
+
+Returns this record's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+    my $uri = RT::URI::fsck_com_rt->new($self->CurrentUser);
+    return($uri->URIForObject($self));
+}
+
+# }}}
+ 
+
+
+
 
 =head2 SQLType attribute
 

@@ -69,6 +69,8 @@ my $self=shift;
 			 User => $RT::DatabaseUser,
 			 Password => $RT::DatabasePassword,
 			);
+
+    $self->dbh->{LongReadLen} = $RT::MaxAttachmentSize;
    
 }
 

@@ -65,7 +65,7 @@
 	        <& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
 	<& /Elements/TitleBoxEnd &>
         <BR>
-	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
+	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
 
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
@@ -75,6 +75,7 @@
     </TABLE>
 <%ARGS>
 $Ticket => undef
+$Attachments => undef
 </%ARGS>
 
 

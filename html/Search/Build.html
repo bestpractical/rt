@@ -952,7 +952,7 @@ sub debug {
 
 # {{{ Deal with format changes
 my ($AvailableColumns, $CurrentFormat);
-($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', %ARGS);
+($Format, $AvailableColumns, $CurrentFormat) = $m->comp('Elements/BuildFormatString', cfqueues => \%queues, %ARGS);
 
 $ARGS{'Format'} = $Format;
 $ARGS{'Query'}  = $Query;

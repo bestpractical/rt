@@ -25,7 +25,6 @@
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <& .Header, 
     Format => \@Format, 
-    map => $map, 
     AllowSorting => $AllowSorting, 
     Order => $Order, 
     Query => $Query,
@@ -36,11 +35,12 @@
 % my $i;
 % while (my $record = $Collection->Next) {
 % $i++;
-<& .Row, Format => \@Format, i => $i, record => $record, map => $map &>
+<& .Row, Format => \@Format, i => $i, record => $record &>
 % }
 </TABLE>
 % if ($ShowNavigation) {
-<&|/l, $Page, int($TotalFound/$Rows)&>Page [_1] of [_2]</&>
+<hr>
+<&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
 % if ($Page != 1) {
 <A href="<%$BaseURL%>?Page=<%$Page-1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Previous Page</&></a>
 % }
@@ -50,11 +50,65 @@
 % }
 <%INIT>
 
-$Format = $RT::DefaultSearchResultFormat unless $Format;
+use vars qw($COLUMN_MAP $CUSTOM_FIELD_MAP);
 
-$Rows = '25' unless ($Rows); # we need a positive value
+$Format ||= $RT::DefaultSearchResultFormat;
+
+$Rows ||= '25'; # we need a positive value
+
 # {{{ item map
-my $map = {
+
+sub ColumnMap {
+    my $name = shift;
+    my $attr = shift;
+
+    # First deal with the simple things from the map
+    if ( $COLUMN_MAP->{$name} ) {
+        return ( $COLUMN_MAP->{$name}->{$attr} );
+    }
+
+    # now, let's deal with harder things, like Custom Fields
+
+    elsif ( $name =~ /^(?:CF|CustomField).(.*)$/ ) {
+        my $field = $1;
+        my $cf;
+        if ( $CUSTOM_FIELD_MAP->{$field} ) {
+            $cf = $CUSTOM_FIELD_MAP->{$field};
+        }
+        else {
+
+            $cf = RT::CustomField->new( $session{'CurrentUser'} );
+
+            if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+                $cf->LoadByNameAndQueue( Queue => $1, Name => $2 );
+            }
+            else {
+                $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
+                $cf->LoadByNameAndQueue( Queue => "0", Name => $field );
+            }
+            $CUSTOM_FIELD_MAP->{$field} = $cf if ( $cf->id );
+        }
+
+        unless ( $cf->id ) {
+            return undef;
+        }
+
+        if ( $attr eq 'attribute' ) {
+            return (undef);
+        }
+        elsif ( $attr eq 'title' ) {
+            return ( $cf->Name );
+        }
+        elsif ( $attr eq 'value' ) {
+               my $value = eval "sub {
+                    my \$values = \$_[0]->CustomFieldValues('".$cf->id."');
+                    return ( join( ', ', map { \$_->Content } \@{ \$values->ItemsArrayRef } ))
+                  }" || die $@;
+            return($value);
+            }
+        }
+    }
+$COLUMN_MAP = {
     QueueName => {
         attribute => 'Queue',
         title => 'Queue',
@@ -66,13 +120,16 @@ my $map = {
         value => sub { return $_[0]->OwnerObj->Name }
     },
     id => {
+        attribute => 'id',
         align => 'right',
         value => sub { return $_[0]->id }
     },
     Status => {
+        attribute => 'Status',
         value => sub { return $_[0]->Status }
     },
     Subject => {
+        attribute => 'Subject',
         value => sub { return $_[0]->Subject || "(".loc('No subject').")" }
     },
     ExtendedStatus => {
@@ -97,27 +154,35 @@ my $map = {
 
         }
     }, Priority => {
+        attribute => 'Priority',
         value => sub { return $_[0]->Priority }
     },
     InitialPriority => {
+        attribute => 'InitialPriority',
         value => sub { return $_[0]->InitialPriority }
     },
     FinalPriority => {
+        attribute => 'FinalPriority',
         value => sub { return $_[0]->FinalPriority }
     },
     EffectiveId => {
+        attribute => 'EffectiveId',
         value => sub { return $_[0]->EffectiveId }
     },
     Type => {
+        attribute => 'Type',
         value => sub { return $_[0]->Type }
     },
     TimeWorked => {
+        attribute => 'TimeWorked',
         value => sub { return $_[0]->TimeWorked }
     },
     TimeLeft => {
+        attribute => 'TimeLeft',
         value => sub { return $_[0]->TimeLeft }
     },
     TimeEstimated => {
+        attribute => 'TimeEstimated',
         value => sub { return $_[0]->TimeEstimated }
     },
     Requestors => {
@@ -165,26 +230,123 @@ my $map = {
         value => sub { return $_[0]->ResolvedObj->AgeAsString }
     },
     Starts => {
+        attribute => 'Starts',
         value => sub { return $_[0]->StartsObj->AsString }
     },
     Started => {
+        attribute => 'Started',
         value => sub { return $_[0]->StartedObj->AsString }
     },
     Created => {
+        attribute => 'Created',
         value => sub { return $_[0]->CreatedObj->AsString }
     },
     LastUpdated => {
+        attribute => 'LastUpdated',
         value => sub { return $_[0]->LastUpdatedObj->AsString }
     },
     Told => {
+        attribute => 'Told',
         value => sub { return $_[0]->ToldObj->AsString }
     },
     Due => {
+        attribute => 'Due',
         value => sub { return $_[0]->DueObj->AsString }
     },
     Resolved => {
+        attribute => 'Resolved',
         value => sub { return $_[0]->ResolvedObj->AsString }
     },
+
+    DependedOnBy => {
+        value => sub {
+            my $links = $_[0]->DependedOnBy;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->BaseURI->Resolver->HREF . '">'
+                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef } ) );
+          }
+    },
+    Members => {
+        value => sub {
+            my $links = $_[0]->HasMember;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->BaseURI->Resolver->HREF . '">'
+                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef } ) );
+          }
+    },
+    ReferredToBy => {
+        value => sub {
+            my $links = $_[0]->ReferredToBy;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->BaseURI->Resolver->HREF . '">'
+                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef } ) );
+          }
+    },
+
+    DependsOn => {
+        value => sub {
+            my $links = $_[0]->DependsOn;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->TargetURI->Resolver->HREF . '">'
+                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef } ) );
+          }
+    },
+    MemberOf => {
+        value => sub {
+            my $links = $_[0]->MemberOf;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->TargetURI->Resolver->HREF . '">'
+                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef } ) );
+          }
+    },
+    RefersTo => {
+        value => sub {
+            my $links = $_[0]->RefersTo;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->TargetURI->Resolver->HREF . '">'
+                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef } ) );
+          }
+    },
+
+
+
+
     '_CLASS' => {
         value => sub { return  $_[1] %2 ? 'oddline' : 'evenline' } 
         },
@@ -231,7 +393,6 @@ $ShowNavigation => 1
 <%DEF .Header>
 <%ARGS>
 @Format => undef
-$map => undef
 $AllowSorting => undef
 $Order=>undef
 $BaseURL => undef
@@ -251,14 +412,10 @@ foreach my $col (@Format) {
         $m->out('<TH align="center">');
         my $title = $col->{title};
         $title =~ s/^__(.*)__$/$1/o;
-        $title = ( $map->{$title}->{title} || $title );
-        if ( $AllowSorting && $col->{'attribute'} ) {
+        $title = ( ColumnMap($title, 'title')  || $title );
+        if ( $AllowSorting && $col->{'attribute'} && ColumnMap($col->{'attribute'},'attribute')) {
             my @query_args = @generic_query_args;
-            push @query_args,
-              ( "OrderBy="
-              . ( $map->{ $col->{'attribute'} }->{'attribute'}
-              ? $map->{ $col->{'attribute'} }->{'attribute'}
-              : $col->{'attribute'} ) );
+            push @query_args, ( "OrderBy=" . ( ColumnMap($col->{'attribute'}, 'attribute') || $col->{'attribute'} ) );
             push @query_args,
               ( "Order=" . ( $ARGS{'Order'} eq 'ASC'  
               ? 'DESC'
@@ -283,7 +440,6 @@ foreach my $col (@Format) {
 $i => undef
 @Format => undef
 $record => undef
-$map => undef
 </%ARGS>
 <%PERL>
 $m->out( '<TR class="' . ( $i % 2 ? 'oddline' : 'evenline' ) . '" >' );
@@ -297,8 +453,12 @@ foreach my $column (@Format) {
     foreach my $subcol ( @{ $column->{output} } ) {
         if ( $subcol =~ /^__(.*?)__$/o ) {
             my $col = $1;
-            if ( $map->{$col}->{value} && ref( $map->{$col}->{value} ) ) {
-                $m->out( &{ $map->{$col}->{value} } ( $record, $i ) );
+            my $value = ColumnMap($col, 'value');
+
+            if ( $value && ref($value)) {
+                $m->out( &{ $value } ( $record, $i ) );
+            } else {
+                $m->out($value );
             }
         }
         else {

@@ -48,7 +48,7 @@
 					False => loc("isn't"), 
 					TrueVal=> '=', 
 					FalseVal => '!=' &>
-<& /Elements/SelectQueue, Name => "ValueOfQueue" &>
+<& /Elements/SelectQueue, Name => "ValueOfQueue", NamedValues => '1' &>
 
 
 <li><&|/l&>Priority</&> <& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
