@@ -41,13 +41,13 @@
 <TD class=label><&|/l&>Status</&>:
 </TD>
 <TD class=value>
-<& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new' &>
+<& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new', DefaultValue => 0 &>
 </TD>
 <TD class=label>
 <&|/l&>Owner</&>:
 </TD>
 <TD class=value>
-<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||undef &>
+<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->Id, DefaultValue => 0 &>
 </TD>
 </TR>
 <TR>

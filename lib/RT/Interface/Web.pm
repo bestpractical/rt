@@ -1048,6 +1048,8 @@ sub ProcessTicketBasics {
         }
     }
 
+    $ARGSRef->{'Status'} ||= $TicketObj->Status;
+    
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $TicketObj,

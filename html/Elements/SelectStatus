@@ -22,10 +22,12 @@
 %# 
 %# END LICENSE BLOCK
 <SELECT NAME ="<%$Name%>">
-<OPTION VALUE="">-</OPTION>
+%if ($DefaultValue) {
+<OPTION <% !$Default && "SELECTED" %> VALUE=""><%$DefaultLabel%></OPTION>
+%}
 %foreach my $status (@status) {
 %next if ($SkipDeleted && $status eq 'deleted');
-<OPTION VALUE="<%$status%>" <%($Default eq $status) && 'SELECTED'%>><%loc($status)%></OPTION>
+<OPTION <% ($status eq $Default) && "SELECTED" %> VALUE="<%$status%>"><%loc($status)%></OPTION>
 % }
 </SELECT>
 <%ONCE>
@@ -36,4 +38,6 @@ my @status = $queue->StatusArray();
 $Name => undef
 $Default => undef
 $SkipDeleted => 0
+$DefaultValue => 1
+$DefaultLabel => "-"
 </%ARGS>

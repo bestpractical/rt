@@ -129,7 +129,7 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
 my ( $code, $msg );
 
 #Update the status
-if (     ( defined $ARGS{'Status'} )
+if (     ( defined $ARGS{'Status'} ) and $ARGS{'Status'}
      and ( $ARGS{'Status'} ne $Ticket->Status ) ) {
     ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
     push @results, "$msg";

@@ -17,7 +17,7 @@ HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
 cols=60></textarea></TD></TR>
 <TR <%$class|n%>>
 <TD><SPAN CLASS="label">Status:</SPAN> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, 
-				  Default => $Ticket->Status() &></TD>
+				  DefaultLabel => loc("[_1] (Unchanged)",$Ticket->Status()) &></TD>
                   </TR>
 
 % }
