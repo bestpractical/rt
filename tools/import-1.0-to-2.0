@@ -485,7 +485,8 @@ sub MigrateTransactions {
     my $Area = '';
     my $Subject = '';
     my $Owner = $RT::Nobody->Id;
-    
+    my $Priority = $ticket->InitialPriority();
+
     while (my $row = $sth->fetchrow_hashref()) {  
 	my (%trans_args, $MIMEObj, $trans_file);
 	
@@ -573,12 +574,12 @@ sub MigrateTransactions {
 	    $date->Set( Format=>'unix', Value=>$row->{trans_data} );
 	    $trans_args{'NewValue'} = $date->ISO();
 	} 
-	elsif ( $row->{type} eq 'subject' ) {
+	elsif ( $row->{type} eq 'priority' ) {
 	    $trans_args{'Type'} = "Set";
-	    $trans_args{'Field'} ="Subject";
-	    $trans_args{'OldValue'} = $Subject;
-	    $trans_args{'NewValue'} = $row->{trans_data};
-	    $Subject = $row->{trans_data};
+	    $trans_args{'Field'} ="Priority";
+	    $trans_args{'OldValue'} = $Priority;
+	    $trans_args{'NewValue'} = $row->{'trans_data'};
+	    $Priority = $row->{'trans_data'};
 	    
 	} 
 	elsif ( $row->{type} eq 'date_told' ) {
