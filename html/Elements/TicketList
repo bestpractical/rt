@@ -41,6 +41,9 @@
 % if ($ShowNavigation) {
 <hr>
 <&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
+% # The format needs escaping before we pass it out. specifically, we need to escape things tahmason things are kosher in urls
+% $Format =~ s/#/%23/g;
+% $Format =~ s/&/%26/g;
 % if ($Page != 1) {
 <A href="<%$BaseURL%>?Page=<%$Page-1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Previous Page</&></a>
 % }
