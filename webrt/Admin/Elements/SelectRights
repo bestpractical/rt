@@ -15,8 +15,10 @@
 <h3>Current rights</h3>
 <i>(Check box to revoke right)</i> <BR>
 % while (my $right = $ACLObj->Next()) {
+% if ($right->RightName) {
 <input type=checkbox value="<%$right->Id%>" name="RevokeACE"> <%$right->RightName%><br>
-% } 
+% }
+%  }
 </TD>
 </TR>
 </TABLE>
