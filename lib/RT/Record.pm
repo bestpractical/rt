@@ -21,19 +21,6 @@ use RT::Date;
 
 @ISA= qw(DBIx::SearchBuilder::Record);
 
-# {{{ sub new 
-
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->_Init(@_);
-  return $self;
-}
-
-# }}}
-
 # {{{ sub _Init 
 
 sub _Init  {
