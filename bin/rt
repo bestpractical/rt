@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 #
 # $Header$
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
@@ -221,10 +221,15 @@ else {
     # {{{ limit on id
     if (@id) {
 	foreach $value (@id) {
-	    if ($value =~ /^\d+$/) {
+           if ($value =~ /^(\d?)\D?(\d*)$/) {
+                my $start = $1;
+                my $end = $2;
 		$Tickets->LimitId(
-				 VALUE => "$value",
-				 OPERATOR => '=');
+				 VALUE => "$start",
+				 OPERATOR => '>=') if ($start);
+		$Tickets->LimitId(
+				 VALUE => "$end",
+				 OPERATOR => '<=') if ($end);
 	    }	
 	}
     }	
@@ -299,7 +304,6 @@ else {
     #Set up the summary format if we need to
     if (defined $summary) {
 	my $format_string = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "%id4%subject20";
-	debug ("Show ticket summary with format $format");
 
 	($format, $titles, $code) = BuildListingFormat($format_string);
     }	
@@ -414,7 +418,7 @@ else {
 	
 	#set due 
 	if ($due) {
-	    my $iso = ParseDate($due);
+	    my $iso = ParseDateToISO($due);
 	    if ($iso) {
 		debug("Setting due date to $iso ($due)");
 		my ($trans, $msg) = 
@@ -428,7 +432,7 @@ else {
 
 	#set starts
 	if ($starts) {
-	    my $iso = ParseDate($due);
+	    my $iso = ParseDateToISO($due);
 	    if ($iso) {
 		my ($trans, $msg) = 
 		  $Ticket->SetStarts($iso);
@@ -440,7 +444,7 @@ else {
 	}
 	#set started
 		if ($started) {
-	    my $iso = ParseDate($started);
+	    my $iso = ParseDateToISO($started);
 	    if ($iso) {
 		my ($trans, $msg) = 
 		  $Ticket->SetStarted($iso);
@@ -452,7 +456,7 @@ else {
 	}
 	#set contacted
 		if ($contacted) {
-	    my $iso = ParseDate($contacted);
+	    my $iso = ParseDateToISO($contacted);
 	    if ($iso) {
 		my ($trans, $msg) = 
 		  $Ticket->SetContacted($iso);
@@ -669,16 +673,16 @@ sub ParseBooleanOp {
 }
 # }}}
 
-# {{{ sub ParseDate
+# {{{ sub ParseDateToISO
 
-=head2 ParseDate
+=head2 ParseDateToISO
 
 Takes a date in an arbitrary format.
 Returns an ISO date and time in GMT
 
 =cut
 
-sub ParseDate {
+sub ParseDateToISO {
     my $date = shift;
 
     use Date::Manip;
@@ -902,10 +906,9 @@ sub BuildListingFormat {
 	
 	
     }
-    my $code ="";
-    my $code = join (',', @code);
-    my $format = join (" ", @format);
-    my $titles = join (', ', @titles);
+     $code = join (',', @code);
+     $format = join (" ", @format);
+     $titles = join (', ', @titles);
     
   
     return ($format, $titles, $code);

@@ -92,7 +92,7 @@ sub Limit {
 	       );
    $args{'DESCRIPTION'} = "Autodescribed: ".$args{'FIELD'} . $args{'OPERATOR'} . $args{'VALUE'},
     if (!defined $args{'DESCRIPTION'}) ;
-    
+
     my $index = $self->_NextIndex;
     
     #make the TicketRestrictions hash the equivalent of whatever we just passed in;
@@ -787,33 +787,12 @@ sub _ProcessRestrictions {
 	# {{{ if it's an int
 	
 	if ($TYPES{$restriction->{'FIELD'}} eq 'INT' ) {
-	    if ($restriction->{'OPERATOR'} eq '=') {
+	    if ($restriction->{'OPERATOR'} =~ /^(=|!=|>|<|>=|<=)$/) {
 		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
 			      ENTRYAGGREGATOR => 'AND',
-			      OPERATOR => '=',
+			      OPERATOR => $restriction->{'OPERATOR'},
 			      VALUE => $restriction->{'VALUE'},
 			      );
-	    }
-	    elsif ($restriction->{'OPERATOR'} eq '!=') {
-		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
-			      ENTRYAGGREGATOR => 'AND',
-			      OPERATOR => '!=',
-			      VALUE => $restriction->{'VALUE'},
-			    );
-	    }
-	    elsif ($restriction->{'OPERATOR'} eq '>') {
-		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
-			      ENTRYAGGREGATOR => 'AND',
-			      OPERATOR => '>',
-			      VALUE => $restriction->{'VALUE'},
-			    );
-	    }
-	    elsif ($restriction->{'OPERATOR'} eq '<') {
-		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
-			      ENTRYAGGREGATOR => 'AND',
-			      OPERATOR => '<',
-			      VALUE => $restriction->{'VALUE'},
-			    );	
 	    }
 	}
 	# }}}
