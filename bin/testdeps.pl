@@ -51,17 +51,17 @@ Log::Dispatch 1.6
 HTML::Entities 
 Text::Wrapper
 Text::Template
-DBIx::SearchBuilder 0.05
-Apache::Session 1.03
 DBIx::DataSource
 DBIx::DBSchema
+DBIx::SearchBuilder 0.05
+Apache::Session 1.03
 );
 use CPAN;
 
 while ($module= shift @modules) {
 	my $version = "";
 	$version = " ". shift (@modules) . " " if ($modules[0] =~ /^([\d\.]*)$/);
-	print "Checking for $module$version" if ($mode =~ /-w/ );
+	print "Checking for $module$version";
 	eval "use $module$version" ;
 	if ($@) {
 	&resolve_dependency($module, $version) 
@@ -92,8 +92,12 @@ EOF
 sub resolve_dependency {
 	my $module = shift;
 	my $version = shift;
-        print "....$module$version not installed.\n" if ($mode =~ /-w/);
-	CPAN::install($module) if ($mode =~ /-f/);
+        print "....$module$version not installed.";
+    if ($mode =~ /-f/) {
+        print "Installing with CPAN...";
+        CPAN::install($module);
+     }
+     print "\n";
 	exit(1) if ($mode =~ /-q/);
 }	
 	
