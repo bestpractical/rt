@@ -41,9 +41,9 @@
 
    &>
 <div align=right>
-<a href="Bulk.html"><&|/l&>Update all these tickets at once</&></a><br>
-<a href="Results.tsv"><&|/l&>spreadsheet</&></a><br>
-<a href="Results.tsv"><&|/l&>RSS</&></a><br>
+<a href="Bulk.html<%$QueryString%>"><&|/l&>Update all these tickets at once</&></a><br>
+<a href="Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a><br>
+<a href="Results.tsv<%$QueryString%>"><&|/l&>RSS</&></a><br>
 </div>
 <%INIT>
 my ($title, $ticketcount);
@@ -62,7 +62,8 @@ if ( $session{'tickets'}->Query()) {
 my $tabformat = $Format;
 $tabformat =~ s/#/%23/g;
 $tabformat =~ s/&/%26/g;
-my $QueryString = "?Query=$Query&Format=$tabformat&Rows=$ARGS{'Rows'}";
+my $QueryString =
+"?Query=$Query&Format=$tabformat&Rows=$ARGS{'Rows'}&Page=<%$ARGS{'Page'}%>";
 
 </%INIT>
 <%CLEANUP>

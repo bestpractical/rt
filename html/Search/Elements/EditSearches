@@ -7,7 +7,7 @@
 <& SelectSearchObject, Name => 'Owner', Objects => \@Objects &><br>
 % }
 <&|/l&>Description</&>:<br>
-<font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>"></font>
+<font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'}%>" onChange="BuildQuery.Save.click()"></font>
 <br>
 % if ($SearchId ne 'new') {
 <input type="submit" name="Revert" value="<%loc('Revert')%>">

@@ -1,12 +1,8 @@
 <%INIT>
-my $Tickets = $session{'tickets'};
 
+my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+$Tickets->FromSQL($ARGS{'Query'});
 
-my $per_page = $Tickets->RowsPerPage();
-my $first_row = ($Tickets->FirstRow()+1);
-
-$Tickets->RowsPerPage(0);
-$Tickets->FirstRow(1);
 my @rows;
 my %known_cfs;
 
@@ -69,6 +65,4 @@ foreach my $row (@rows) {
 
 
 $m->abort();
-$Tickets->RowsPerPage($per_page);
-$Tickets->FirstRow($first_row);
 </%INIT>

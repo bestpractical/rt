@@ -29,7 +29,7 @@
     Query => $Query,
     Rows => $ARGS{'Rows'} &>
 
-<FORM METHOD="POST" ACTION="Build.html">
+<FORM METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
 <table width=100%>
@@ -1014,6 +1014,10 @@ if ( $ARGS{'Save'} ) {
             push @actions, [loc("Can't find a saved search to work with"), 0];
         }
 
+    $search_hash->{Description} = ( $search->Description() || loc('Untitled search') );
+    $search_hash->{Format}   = $search->SubValue('Format');
+    $search_hash->{Query}    = $search->SubValue('Query');
+    $search_hash->{Object} = $search;
     }
 
     else {
