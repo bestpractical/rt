@@ -58,7 +58,7 @@ my @fields = (
     "id",                  "Status",
     "Subject",             "ExtendedStatus",
     "Priority",            "InitialPriority",
-    "FinalPriority",       "EffectiveId",
+    "FinalPriority",       
     "Type",                "TimeWorked",
     "TimeLeft",            "TimeEstimated",
     "Requestors",          "Cc",
@@ -141,7 +141,7 @@ elsif ( $ARGS{"AddCol"} ) {
 	}
 	foreach my $col (@columns) {
 	    my %column = ();
-	    $column{Column} = $fields[ $col ];
+	    $column{Column} = $col;
 	    
 	    if ( $ARGS{Face} eq "Bold" ) {
 		$column{Prefix} .= "<B>";
