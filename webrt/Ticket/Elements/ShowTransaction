@@ -31,8 +31,9 @@ unless ($Collapsed) {
       $headers .= "\n\n" if ($headers);
   }
      # 13456 is a random # of about the biggest size we want to see inline text
+     my $MAX_INLINE_BODY = 13456;
      if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
-				    length($message->Content)<13456) {
+				    length($message->Content)< $MAX_INLINE_BODY ) {
 
 	 $content = $message->Content;
 
