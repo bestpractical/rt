@@ -1088,6 +1088,11 @@ sub ProcessTicketCustomFieldUpdates {
                   ( ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) 
                   ? @{ $ARGSRef->{$arg} }
                   : split /\n/, $ARGSRef->{$arg} ;
+
+		#for poor windows boxen that pass in "\r\n"
+		local $/ = "\r";
+		chomp @values;
+
                 if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
                     foreach my $value (@values) {
                         next unless length($value);

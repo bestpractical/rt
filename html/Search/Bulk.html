@@ -158,6 +158,37 @@ while (my $Ticket = $Tickets->Next) {
  <& /Elements/MessageBox, Name=>"UpdateContent"&>
  </td></tr>
  </table>
+
+<table>
+% foreach (keys %allcfs) {
+<tr><td class=label>
+%     my $cf = $allcfs{$_};
+%     my $pref;
+%     if ($cf->Queue == 0) {
+%         $pref = "[Global]";
+%     } else {
+%         my $queue = RT::Queue->new($session{'CurrentUser'});
+%         $queue->Load($cf->Queue);
+%         $pref = "[Queue: " . $queue->Name . "]";
+%     }
+<%$pref%> <b><% $cf->Name %></b><br>
+<% $cf->FriendlyType %>
+</td>
+<td>
+% if ($cf->Type ne "FreeformMultiple") {
+<& /Ticket/Elements/EditCustomField, CustomField => $cf &>
+% } else {
+Add Values<br>
+<textarea cols=15 rows=3 name="<%$cf->Id%>-Values"></textarea>
+</td><td>
+Delete Values<br>
+<textarea cols=15 rows=3 name="<%$cf->Id%>-DeleteValues"></textarea>
+% }    
+</td>
+</tr>
+% }
+</table>
+
 <& /Elements/TitleBoxEnd &>
 
 <& /Elements/TitleBoxStart, title => loc('Edit Links'), color => "#336633"&>
@@ -183,6 +214,21 @@ $Tickets->FromSQL($ARGS{'Query'});
 
 Abort(loc("No search to operate on.")) unless ($Tickets);
 
+my %allcfs;
+my %cfqs;
+my $count = 0;
+while (my $Ticket = $Tickets->Next) {
+    my $cfq = $Ticket->QueueObj;
+    my $cfqn = $cfq->Name;
+    if (!$cfqs{$cfqn}) {
+	$cfqs{$cfqn} = 1;
+	$count++;
+	my $cfs = $cfq->CustomFields;
+	while (my $cf = $cfs->Next) {
+	    $allcfs{$cf->Id} = $cf;
+	}
+    }
+}
 
 my $do_comment_reply=0;
 # Prepare for ticket updates
@@ -215,6 +261,17 @@ while (my $Ticket = $Tickets->Next) {
     #Update the watchers
     my @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
 
+    #Update custom fields
+    my $pat = "^(\\d+)-(.*)\$";
+    foreach (keys %ARGS) {
+	$ARGS{"Ticket-" . $Ticket->Id . "-CustomField-" . $1 . "-" . $2} = $ARGS{$_} if (/$pat/o);
+    }
+    my @cfresults = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
+    foreach (keys %ARGS) {
+	delete $ARGS{"Ticket-" . $Ticket->Id . "-CustomField-" . $1 . "-" . $2} if (/$pat/o);
+    }
+
+
     #Update the links
     $ARGS{'id'} = $Ticket;
     $ARGS{$Ticket->Id.'-MergeInto'} = $ARGS{'Ticket-MergeInto'};
@@ -234,7 +291,7 @@ while (my $Ticket = $Tickets->Next) {
     delete $ARGS{$Ticket->Id.'-RefersTo'};
     delete $ARGS{'RefersTo-'.$Ticket->Id};
     
-    my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults, @linkresults);
+    my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults, @linkresults, @cfresults);
     @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
 
     @results = (@results, @tempresults);
