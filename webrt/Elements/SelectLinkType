@@ -1,0 +1,16 @@
+%# $Header$
+
+<SELECT NAME ="<%$Name%>">
+% foreach ('MemberOf', 'DependsOn', 'RefersTo') { # TODO: Merging!
+<OPTION VALUE="<%$_%>"><%$_%></OPTION>
+% }
+</SELECT>
+
+<%ARGS>
+$Name => "LinkType"
+$Default => undef
+</%ARGS>
+
+<%INIT>
+# TODO handle Default
+</%INIT>

@@ -26,7 +26,7 @@
 	  <& /Elements/TitleBoxEnd &>
 	</TD>
 	<TD WIDTH="50%">
-	  <& /Elements/TitleBoxStart, title => 'Other Links', titleright => '<A HREF="">[As search]</a>' &>
+	  <& /Elements/TitleBoxStart, title => 'Other Links', titleright => '<a href="LinkIt.html?id='.$Ticket->Id.'">[Make new links]</a> | <A HREF="">[As search]</a>' &>
 	<& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
 	
 	  <& /Elements/TitleBoxEnd &>	

@@ -45,7 +45,7 @@ use MIME::Entity;
 
 
 my $Ticket = RT::Ticket->new($session{'CurrentUser'});
-$Ticket->Load($ARGS{'id'});
+$Ticket->Load($ARGS{id}) || die "Could not load $ARGS{id}...?!?";
 my @UpdateContent = split(/\r/,$ARGS{'UpdateContent'}."\n");
 
 my $Message = MIME::Entity->build ( Subject => $ARGS{'UpdateSubject'} || "",

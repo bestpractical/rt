@@ -1,0 +1,37 @@
+%# $Header$
+%# Copytight 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
+
+<& /Elements/Header, Title => "Link up request ".$Ticket->Id &>
+
+<& /Ticket/Elements/ToolBar, Ticket => $Ticket &>
+
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Make a link from/to this ticket (#" . $Ticket->Id . ": ". encode_entities($Ticket->Subject,"^A-Za-z0-9") . ")", titleright=> "<a href=\"Modify.html?id=".$Ticket->Id."\">Modify</a> / <a href=\"Update.html?id=".$Ticket->Id."\">Update</a> "&>
+
+<form action="Display.html" method="post">
+<input type=radio name="Link" value="">Nevermind<br>
+<input type=radio name="Link" value="LinkTo">This Ticket <& /Elements/SelectLinkType &> (URI(s) or ticket id(s):) <input name="LinkToURI"><br>
+<input type=radio name="Link" value="LinkFrom"><input name="LinkFromURI"><& /Elements/SelectLinkType &> this ticket.<br>
+</form>
+
+<& /Elements/TitleBoxEnd &>
+
+<%ARGS>
+$id => undef
+</%ARGS>
+
+<%INIT>
+
+  if (!$ARGS{'id'}) {
+    &mc_comp("/Elements/Error" , Why => "No ticket specified");
+    $m->abort;
+  }
+use RT::Ticket;
+use RT::CurrentUser;
+use HTML::Entities;
+my $CurrentUser = RT::CurrentUser->new(2);
+my $Ticket = RT::Ticket->new($CurrentUser);
+unless ($Ticket->Load($id)) {
+    &mc_comp("/Elements/Error" , Why => "Ticket couldn't be loaded");
+    $m->abort;
+}
+</%INIT>
