@@ -50,7 +50,6 @@
         color => "#336699" &>
 
 % foreach my $key (keys %documents) {
-% my $fontsize='size="-2"';
 
 <%$key%><br>
 <ul>
@@ -69,13 +68,12 @@ if ($size) {
 
 </%PERL>
 
-<li><font <%$fontsize | n%>>
+<li><font size="-2">
 <A HREF="<%$RT::WebPath%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | u%>">
 <&|/l, $rev->CreatedAsString, $size, $rev->CreatorObj->Name &>[_1] ([_2]) by [_3]</&>
 </a>
 </font></li>
 % }
-% $fontsize='size="-2"';
 % }
 </ul>
 

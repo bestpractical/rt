@@ -87,7 +87,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <TD class="boxcontainer">
 <& /Elements/Quicksearch &>
 <BR>
-<form method=get action="index.html">
+<form method=get action="<%$RT::WebPath%>/index.html">
 <& /Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
 <div align=right><input type=submit value="<&|/l&>Go!</&>"></div>
 </form>

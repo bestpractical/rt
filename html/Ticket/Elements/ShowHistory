@@ -95,8 +95,6 @@ while ( my $Transaction = $Transactions->Next ) {
     next if $skip;
     $i++;
 
-    $m->out('<a name="lasttrans"></a>') if ( $Transactions->IsLast );
-
     my @trans_attachments = grep { $_->TransactionId == $Transaction->Id } @attachments;
 
     my $trans_content = {};
@@ -116,7 +114,8 @@ while ( my $Transaction = $Transactions->Next ) {
               RowNum               => $i,
               ShowTitleBarCommands => $ShowTitleBarCommands,
               Attachments          => \@trans_attachments,
-              AttachmentContent    => $trans_content
+              AttachmentContent    => $trans_content,
+              LastTransaction      => $Transactions->IsLast
  );
 }
 

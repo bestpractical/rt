@@ -623,10 +623,10 @@ EOT
                 Explanation => "RT thinks this message may be a bounce",
                 MIMEObj     => $Message
             );
-
-            #Do we actually want to store it?
-            return ( 0, "Message Bounced", undef ) unless ($RT::StoreLoops);
         }
+
+        #Do we actually want to store it?
+        return ( 0, "Message Bounced", undef ) unless ($RT::StoreLoops);
     }
 
     # }}}

@@ -1172,6 +1172,7 @@ sub config_from_file {
 sub parse_config_file {
     my %cfg;
     my ($file) = @_;
+    local $_; # $_ may be aliased to a constant, from line 1163
 
     open(CFG, $file) && do {
         while (<CFG>) {

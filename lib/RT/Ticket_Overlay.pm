@@ -306,6 +306,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
+  Priority -- an integer from 0 to 99
   InitialPriority -- an integer from 0 to 99
   FinalPriority -- an integer from 0 to 99
   Status -- any valid status (Defined in RT::Queue)
@@ -2792,6 +2793,10 @@ sub MergeInto {
 
     }
 
+    # Update time fields
+    $NewTicket->SetTimeEstimated(($NewTicket->TimeEstimated || 0) + ($self->TimeEstimated || 0));
+    $NewTicket->SetTimeWorked(   ($NewTicket->TimeWorked || 0)    + ($self->TimeWorked || 0));
+    $NewTicket->SetTimeLeft(     ($NewTicket->TimeLeft || 0)      + ($self->TimeLeft || 0));   
 
     #add all of this ticket's watchers to that ticket.
     my $requestors = $self->Requestors->MembersObj;

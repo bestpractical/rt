@@ -66,6 +66,7 @@ function hideshow(num) {
     }
 }   
 </script>
+<& /Elements/Callback, _CallbackName => 'Head', %ARGS &>
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>"
 % if ($Focus) {

@@ -458,6 +458,10 @@ my %args = (
 # Read the message in from STDIN
 $args{'message'} = <>;
 
+unless ( $args{message} =~ /\S/ ) {
+    print STDERR "$0: no message passed on STDIN!\n";
+    exit 0;
+}
 
 if ($opts{'extension'}) {
         $args{$opts{'extension'}} = $ENV{'EXTENSION'};
