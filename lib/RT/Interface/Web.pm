@@ -1,16 +1,4 @@
-
-# {{{ sub LoadTicket - loads a ticket
-
-sub LoadTicket {
-    my $id=shift;
-    my $CurrentUser = shift;
-    my $Ticket = RT::Ticket->new($CurrentUser);
-    unless ($Ticket->Load($id)) {
-	Abort("Could not load ticket $id");
-    }
-    return $Ticket;
-}
-# }}} ## $Header$
+## $Header$
 ## Copyright 2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
 ## Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 

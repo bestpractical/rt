@@ -2193,7 +2193,7 @@ sub Transactions {
     #If the user has no rights, return an empty object
     if ($self->CurrentUserHasRight('ShowTicket')) {
 	my $tickets = $transactions->NewAlias('Tickets');
-	$transactions->Limit( ALIAS1 => 'main',
+	$transactions->Join( ALIAS1 => 'main',
 			      FIELD1 => 'Ticket',
 			      ALIAS2 => $tickets,
 			      FIELD2 => 'id');
