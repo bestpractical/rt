@@ -8,7 +8,7 @@
 % if ($Code) {
 <META HTTP-EQUIV VALUE="<%$Code%> <%$Why%>">
 % }
-% if ($Refresh) {
+% if ($Refresh > 0) {
 <META HTTP-EQUIV="REFRESH" CONTENT="<%$Refresh%>">
 % }
 

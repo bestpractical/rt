@@ -1,5 +1,5 @@
 <SELECT NAME="<%$Name%>">
-<OPTION VALUE=""
+<OPTION VALUE="-1"
 %unless ($Default) {
  SELECTED
 %}
