@@ -1,6 +1,6 @@
 <& /RTFM/Admin/Elements/Tabs, 
     subtabs => $tabs, 
-    current_tab => 'RTFM/Admin/CustomFields/', 
+    current_tab => 'RTFM/Admin/CustomFields/index.html', 
     current_subtab => 
             "RTFM/Admin/CustomFields/Basics.html?id=" . $id,
     Title => $Title &>
@@ -36,7 +36,7 @@ if ($id) {
 
 if ($session{'CurrentUser'}->HasRight( Object => $RT::FM::System, Right => 'AdminCustomField')) {
   $tabs->{"A"} = { title => loc('Select custom field'),
-                        path => "RTFM/Admin/CustomFields/",
+                        path => "RTFM/Admin/CustomFields/index.html",
                            };
   $tabs->{"B"} = { title => loc('New custom field'),
                         path => "RTFM/Admin/CustomFields/Basics.html?Create=1",

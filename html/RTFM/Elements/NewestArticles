@@ -1,0 +1,75 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/TitleBoxStart, title => loc("[_1] newest articles...", $rows), bodyclass=> '' &>
+<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
+<TR>
+<TH ALIGN=RIGHT><&|/l&>#</&></TH>
+<TH ALIGN=LEFT><&|/l&>Name</&></TH>
+<TH ALIGN=LEFT><&|/l&>Created by</&></TH>
+<TH ALIGN=LEFT>&nbsp;</TH>
+</TR>
+<TR>
+<TH COLSPAN=3><&|/l&>Summary</&>
+</TR>
+
+% while (my $Article = $MyArticles->Next) {
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
+<TD ALIGN=RIGHT>
+<%$Article->Id%>
+</TD>
+<TD>
+<A HREF="<% $RT::WebPath %>/RTFM/Article/Display.html?id=<%$Article->Id%>">
+<%$Article->Name || loc('(no name)')%>
+</A>
+</TD>
+<TD>
+<%$Article->CreatorObj->Name%>
+</TD>
+<TD ALIGN=RIGHT>
+[<A HREF="<% $RT::WebPath %>/RTFM/Article/Update.html?id=<%$Article->Id%>"><&|/l&>Update</&></A>]
+</TD>
+</TR>
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+<TD>&nbsp;</TD>
+<TD COLSPAN=3>
+<SMALL><%$Article->Summary || loc('(no Summary)')%></SMALL>
+</TD>
+</TR>
+% }
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+
+
+<%INIT>
+my $rows = 10;
+my $i;
+my $MyArticles;
+$MyArticles = new RT::FM::ArticleCollection ($session{'CurrentUser'});
+$MyArticles->UnLimit;
+$MyArticles->RowsPerPage($rows);
+$MyArticles->OrderBy(FIELD => 'LastUpdated', ORDER => 'DESC');
+
+</%INIT>

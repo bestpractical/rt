@@ -66,8 +66,8 @@ if ($id eq 'new') {
         }
     }
 
-
-   my ($val, $msg) = $ArticleObj->Create ( Summary => $ARGS{'Summary'},
+  my $msg;
+   ($id, $msg) = $ArticleObj->Create ( Summary => $ARGS{'Summary'},
                          Name => $ARGS{'Name'},
                          Class => $ARGS{'Class'},
                          %create_args);

@@ -1,6 +1,6 @@
 <& /RTFM/Admin/Elements/Tabs, 
     subtabs => $tabs, 
-    current_tab => 'RTFM/Admin/Classes/', 
+    current_tab => 'RTFM/Admin/Classes/index.html', 
     current_subtab => $current_tab, 
     Title => $Title &>
 <%INIT>
@@ -29,7 +29,7 @@ if ($id) {
 }
 if ($session{'CurrentUser'}->HasRight( Object => $RT::FM::System, Right => 'AdminClass')) {
   $tabs->{"A"} = { title => loc('Select class'),
-                        path => "RTFM/Admin/Classes/",
+                        path => "RTFM/Admin/Classes/index.html",
                            };
   $tabs->{"B"} = { title => loc('New class'),
                         path => "RTFM/Admin/Classes/Modify.html?Create=1",
