@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::ACL_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/ACL_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::ACL_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/ACL_Local.pm}) {
             die $@;
         };
 

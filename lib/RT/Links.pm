@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::Links_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Links_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Links_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Links_Local.pm}) {
             die $@;
         };
 

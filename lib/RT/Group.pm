@@ -220,12 +220,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Group_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Group_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Group_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Group_Local.pm}) {
             die $@;
         };
 

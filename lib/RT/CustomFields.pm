@@ -83,12 +83,12 @@ sub NewItem {
 }
 
         eval "require RT::CustomFields_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/CustomFields_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::CustomFields_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/CustomFields_Local.pm}) {
             die $@;
         };
 

@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::GroupMembers_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/GroupMembers_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::GroupMembers_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/GroupMembers_Local.pm}) {
             die $@;
         };
 

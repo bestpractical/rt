@@ -353,14 +353,18 @@ sub MagicImport {
     #if (exists \$warnings::{unimport})  {
     #        no warnings qw(redefine);
 
+    my $path = $class;
+    $path =~ s#::#/#gi;
+
+
     my $content = "
         eval \"require @{[$class]}_Overlay\";
-        if (\$@ && \$@ !~ /^Can't locate/) {
+        if (\$@ && \$@ !~ qr{^Can't locate ".$path."_Overlay.pm}) {
             die \$@;
         };
 
         eval \"require @{[$class]}_Local\";
-        if (\$@ && \$@ !~ /^Can't locate/) {
+        if (\$@ && \$@ !~ qr{^Can't locate ".$path."_Local.pm}) {
             die \$@;
         };
 

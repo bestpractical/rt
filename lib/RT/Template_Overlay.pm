@@ -51,6 +51,8 @@ no warnings qw(redefine);
 use Text::Template;
 use MIME::Entity;
 use MIME::Parser;
+use File::Temp qw /tempdir/;
+
 
 # {{{ sub _Accessible 
 

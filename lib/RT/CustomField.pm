@@ -302,12 +302,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::CustomField_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/CustomField_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::CustomField_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/CustomField_Local.pm}) {
             die $@;
         };
 

@@ -248,12 +248,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::TicketCustomFieldValue_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/TicketCustomFieldValue_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::TicketCustomFieldValue_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/TicketCustomFieldValue_Local.pm}) {
             die $@;
         };
 

@@ -174,12 +174,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Principal_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Principal_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Principal_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Principal_Local.pm}) {
             die $@;
         };
 

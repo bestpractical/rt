@@ -264,12 +264,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Link_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Link_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Link_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Link_Local.pm}) {
             die $@;
         };
 

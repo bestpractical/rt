@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::Templates_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Templates_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Templates_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Templates_Local.pm}) {
             die $@;
         };
 

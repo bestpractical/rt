@@ -225,7 +225,7 @@ my $approvals =
      my $groups = RT::Groups->new($RT::SystemUser);
    $groups->LimitToUserDefinedGroups();
    $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
-   $groups->WithMember($TransactionObj->CreatorObj->Id);
+   $groups->WithMember($Transaction->CreatorObj->Id);
 
    my $groupid = $groups->First->Id;
 

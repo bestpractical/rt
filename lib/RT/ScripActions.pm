@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::ScripActions_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/ScripActions_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::ScripActions_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/ScripActions_Local.pm}) {
             die $@;
         };
 

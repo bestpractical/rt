@@ -312,17 +312,10 @@ sub Apply {
     my %args = ( TicketObj      => undef,
                  TransactionObj => undef,
                  @_ );
+
+    # We want to make sure that if a scrip dies, we don't get
+    # hurt
     eval {
-
-        # We want to make sure that if a scrip dies, we don't get
-        # hurt
-        local $SIG{__DIE__} = sub {
-            $RT::Logger->error( $_[0] );
-            $self->ActionObj->DESTROY();
-            $self->ConditionObj->DESTROY();
-            return (undef);
-
-        };
 
         #Load the scrip's Condition object
         $self->ConditionObj->LoadCondition(
@@ -337,7 +330,7 @@ sub Apply {
         }
 
         #If it's applicable, prepare and commit it
-        $self->ActionObj->LoadAction( ScripObj => $self,
+        $self->ActionObj->LoadAction( ScripObj       => $self,
                                       TicketObj      => $args{'TicketObj'},
                                       TransactionObj => $args{'TransactionObj'},
         );
@@ -363,6 +356,9 @@ sub Apply {
         $self->ConditionObj->DESTROY();
         return (1);
     };
+    if ($@) {
+        $RT::Logger->error( "Scrip " . $self->Id . " died. - " . $@ );
+    }
 
 }
 # }}}

@@ -334,12 +334,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Attachment_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Attachment_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Attachment_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Attachment_Local.pm}) {
             die $@;
         };
 

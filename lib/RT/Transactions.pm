@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::Transactions_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Transactions_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Transactions_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Transactions_Local.pm}) {
             die $@;
         };
 

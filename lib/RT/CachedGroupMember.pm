@@ -220,12 +220,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::CachedGroupMember_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/CachedGroupMember_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::CachedGroupMember_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/CachedGroupMember_Local.pm}) {
             die $@;
         };
 

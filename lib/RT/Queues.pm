@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::Queues_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Queues_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Queues_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Queues_Local.pm}) {
             die $@;
         };
 

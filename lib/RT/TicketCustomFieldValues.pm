@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::TicketCustomFieldValues_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/TicketCustomFieldValues_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::TicketCustomFieldValues_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/TicketCustomFieldValues_Local.pm}) {
             die $@;
         };
 

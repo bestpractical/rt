@@ -462,12 +462,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Scrip_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Scrip_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Scrip_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Scrip_Local.pm}) {
             die $@;
         };
 

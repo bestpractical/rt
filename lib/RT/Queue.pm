@@ -333,12 +333,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Queue_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Queue_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Queue_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Queue_Local.pm}) {
             die $@;
         };
 

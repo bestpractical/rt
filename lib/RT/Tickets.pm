@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::Tickets_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Tickets_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Tickets_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Tickets_Local.pm}) {
             die $@;
         };
 

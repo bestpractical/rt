@@ -624,12 +624,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Ticket_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Ticket_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Ticket_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Ticket_Local.pm}) {
             die $@;
         };
 

@@ -325,12 +325,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Template_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Template_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Template_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Template_Local.pm}) {
             die $@;
         };
 

@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::Users_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Users_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Users_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Users_Local.pm}) {
             die $@;
         };
 

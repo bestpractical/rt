@@ -816,12 +816,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::User_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/User_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::User_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/User_Local.pm}) {
             die $@;
         };
 

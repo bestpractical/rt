@@ -256,12 +256,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::CustomFieldValue_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValue_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::CustomFieldValue_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValue_Local.pm}) {
             die $@;
         };
 

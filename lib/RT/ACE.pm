@@ -266,12 +266,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::ACE_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/ACE_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::ACE_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/ACE_Local.pm}) {
             die $@;
         };
 

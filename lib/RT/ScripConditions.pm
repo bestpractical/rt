@@ -77,12 +77,12 @@ sub NewItem {
 }
 
         eval "require RT::ScripConditions_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/ScripConditions_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::ScripConditions_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/ScripConditions_Local.pm}) {
             die $@;
         };
 

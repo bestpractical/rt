@@ -326,12 +326,12 @@ sub _ClassAccessible {
 
 
         eval "require RT::Transaction_Overlay";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Transaction_Overlay.pm}) {
             die $@;
         };
 
         eval "require RT::Transaction_Local";
-        if ($@ && $@ !~ /^Can't locate/) {
+        if ($@ && $@ !~ qr{^Can't locate RT/Transaction_Local.pm}) {
             die $@;
         };
 
