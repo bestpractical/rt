@@ -53,10 +53,10 @@ my $next =  $m->comp('/Elements/QueryString', Query => $Query,
                                 Page => ($Page+1));
 </%perl>
 % if ($Page > 1) {
-<A href="<%$BaseURL%><%$prev%><&|/l&>Previous Page</&></a>
+<A href="<%$BaseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
 % }
 % if (($Page * $Rows) < $TotalFound) {
-<A href="<%$BaseURL%><%$next%><&|/l&>Next Page</&></a>
+<A href="<%$BaseURL%><%$next%>"><&|/l&>Next Page</&></a>
 % }
 % }
 <%INIT>
