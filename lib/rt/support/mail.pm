@@ -42,9 +42,10 @@ sub template_mail{
     if ($in_recipient eq "") {
 	return("template_mail:No Recipient Specified!");
     }
-    open (MAIL, "|$rt::mailprog -f$rt::mail_alias -oi -t  >/dev/null 2>/dev/null");
-    print MAIL "
-Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject
+
+    open (MAIL, "|$rt::mailprog -f$rt::mail_alias -oi -t -OErrorMode=m ");
+
+    print  MAIL "Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject
 Reply-To: $rt::mail_alias
 To: $in_recipient   
 Cc: $in_cc
@@ -56,7 +57,7 @@ X-Managed-By: Request Tracker ($rt::rtversion)
 $template
 -------------------------------------------- Managed by Request Tracker\n";
     close (MAIL);
-
+    
     return("template_mail:Message Sent");
 }
 

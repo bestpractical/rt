@@ -1,3 +1,4 @@
+# $Header$
 package rt;
 
 require rt::database;
@@ -39,11 +40,11 @@ sub add_new_request {
     $transaction_num=&add_transaction($serial_num, $in_current_user, 'create','',$in_content,$time,1,$in_current_user);
 
     if ($queues{$in_queue_id}{m_members_correspond}) {
-	&rt::template_mail ('correspondence',$in_queue_id,"$queues{$in_queue_id}{dist_list}",,, "$serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
+	&rt::template_mail ('correspondence',$in_queue_id,"$queues{$in_queue_id}{dist_list}","","", "$serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
     }
 
     if ( $queues{$in_queue_id}{m_user_create}) {
-	&rt::template_mail ('autoreply',$in_queue_id,"$in_requestors",,,"$serial_num","$transaction_num","$in_subject","$in_current_user",'');
+	&rt::template_mail ('autoreply',$in_queue_id,"$in_requestors","","","$serial_num","$transaction_num","$in_subject","$in_current_user",'');
     }
     
     return ($serial_num,$transaction_num,"Request #$serial_num created.");
@@ -144,7 +145,7 @@ sub add_correspondence {
 #    }
     
     if ($queues{$queue_id}{m_members_correspond}) {
-	&rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}",,, "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
+	&rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}","","", "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
     }
 
     return ($transaction_num,"This correspondence has been recorded.");

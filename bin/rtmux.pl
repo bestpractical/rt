@@ -59,7 +59,7 @@ elsif ($0 =~ '/rt-mailgate$') {
   require rt::database::manipulate;
   require rt::support::utils;      
   require rt::support::mail;
-  require rt::ui::mail::manipluate;
+  require rt::ui::mail::manipulate;
   &rt::ui::mail::manipulate::activate();
 }
 else {

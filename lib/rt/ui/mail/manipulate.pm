@@ -3,7 +3,7 @@ package rt::ui::mail::manipulate;
 sub activate {
 
 #uncomment for a debugging version
-$debug = "yes";
+$debug = 0;
 
 $area = ""; #TODO: we may wamt to be able to set the area on the command line
 
@@ -50,7 +50,7 @@ elsif ($in_action eq 'correspond') {
 	# if there's been an error, mail the user with the message
 	if ($serial_num == 0) {
 	    if ($debug) {print "Dammit. the new transaction didn't get added\n$edited_content";}
-	    &rt::template_mail ('error','_rt_system',,$current_user,0,0,"RT Error","$in_current_user","$edited_content");
+	    &rt::template_mail ('error','_rt_system',$current_user,"","",0,0,"RT Error","$in_current_user","$edited_content");
 	}
     }   
     else {
@@ -478,8 +478,9 @@ statements in the order you enter them.
     
     if ($debug) {print "$response\n";}
     if ($response) {
-	($message)=&rt::template_mail ('act_response','_rt_system',,,$real_current_user,0,0,"RT Actions Complete","$real_current_user","$response");
+	($message)=&rt::template_mail ('act_response','_rt_system',$real_current_user,"","",0,0,"RT Actions Complete","$real_current_user","$response");
     }
     if ($debug) {print "$message\n";}
     return ($parsed_body);
 }
+1;
