@@ -78,22 +78,6 @@ use Carp;
     package HTML::Mason::Commands;
     use vars qw(%session);
 
-    use RT::Tickets;
-    use RT::Transactions;
-    use RT::Users;
-    use RT::CurrentUser;
-    use RT::Templates;
-    use RT::Queues;
-    use RT::ScripActions;
-    use RT::ScripConditions;
-    use RT::Scrips;
-    use RT::Groups;
-    use RT::GroupMembers;
-    use RT::CustomFields;
-    use RT::CustomFieldValues;
-    use RT::ObjectCustomFields;
-    use RT::ObjectCustomFieldValues;
-
     use RT::Interface::Web;
     use MIME::Entity;
     use Text::Wrapper;

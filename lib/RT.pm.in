@@ -131,7 +131,8 @@ sub Init {
   
     $System = RT::System->new();
 
-   InitLogging(); 
+    InitClasses();
+    InitLogging(); 
 }
 
   
@@ -262,6 +263,29 @@ $SIG{__DIE__}  = sub {
 
 # }}}
 
+}
+
+=head2 InitClasses
+
+Load all modules that define base classes
+
+=cut
+sub InitClasses {
+    require RT::Tickets;
+    require RT::Transactions;
+    require RT::Users;
+    require RT::CurrentUser;
+    require RT::Templates;
+    require RT::Queues;
+    require RT::ScripActions;
+    require RT::ScripConditions;
+    require RT::Scrips;
+    require RT::Groups;
+    require RT::GroupMembers;
+    require RT::CustomFields;
+    require RT::CustomFieldValues;
+    require RT::ObjectCustomFields;
+    require RT::ObjectCustomFieldValues;
 }
 
 # }}}
