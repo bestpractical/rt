@@ -1630,7 +1630,7 @@ sub LimitCustomField {
     }
 
     $self->Limit( VALUE => $args{VALUE},
-		  FIELD => ( $q
+		  FIELD => "CF.".( $q
 			     ? $q . ".{" . $CF->Name . "}"
 			     : $CF->Name
 			   ),

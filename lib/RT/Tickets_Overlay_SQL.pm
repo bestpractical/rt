@@ -211,8 +211,8 @@ sub _parser {
         $key = $stdkey;
       }
    # no longer have a default, since CF's are now a real class, not fallthrough
-    # fixme: "default class" is not Generic.
-   # $class ||= "CUSTOMFIELD";
+   # fixme: "default class" is not Generic.
+
  
    die "Unknown field: $key" unless $class;
 
