@@ -471,7 +471,6 @@ sub Import {
 				  Created => $created->ISO,
 				  Told => $told->ISO,
 				  LastUpdated => $updated->ISO,
-				  
 				  Due => $due->ISO,
 				 );
     #Set the ticket's effective ID now that we've created it.

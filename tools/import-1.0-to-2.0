@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # $Header$
 
@@ -26,6 +26,8 @@ use strict;
 use Carp;
 use Getopt::Long qw(:config pass_through);
 
+#use lib "/opt/rt2/lib";
+#use lib "/opt/rt2/etc";
 use lib "!!RT_LIB_PATH!!";
 use lib "!!RT_ETC_PATH!!";
 
@@ -190,12 +192,12 @@ sub MigrateAreas {
     my $rows = $sth->rows;
 
     #If we have any...
-    if ($rows) {
+
 	#Create /QueueName
 	my $queue_keyword = RT::Keyword->new($RT::SystemUser);
 	my ($val, $msg) = $queue_keyword->Create('Name' => $queue->Name,
 			       'Description' => 'Keywords specific to queue' .$queue->Name,
-			       Parent => 'Queues');
+			       Parent => $queue_keyword->id);
 
 	
 	
@@ -204,6 +206,7 @@ sub MigrateAreas {
 	my ($area, $areamsg) = $area_keyword->Create('Name' => $queue->Name,
 			      Parent => $val);
 	
+    if ($rows) {
 	#Create all the areas underneath /QueueName/Area/
 	while (my @row = $sth->fetchrow()) {
 	    my $this_area = RT::Keyword->new($RT::SystemUser);
@@ -271,7 +274,8 @@ sub MigrateTickets {
     while (my $row = $sth->fetchrow_hashref()) {
 
 	my @requestors = split(',',$row->{'requestors'});
-
+	
+	warn "Ticket ". $row->{'serial_num'}. " has requestors ". join(',',@requestors)."\n";
 	my $owner = new RT::User($RT::SystemUser);
 	$owner->Load($row->{'owner'});
 
@@ -280,7 +284,7 @@ sub MigrateTickets {
 	  $ticket->Import( id => $row->{'serial_num'},
 			   Queue => $row->{'queue_id'},
 			   Status => $row->{'status'},
-			   Requestor => @requestors,
+			   Requestor => \@requestors,
 			   Owner => $owner->id,
 			   Subject => $row->{'subject'},
 			   Priority => $row->{'priority'},
@@ -298,20 +302,24 @@ sub MigrateTickets {
 	#
 
 	my $queue = $ticket->QueueObj();
-	my $area_select = $queue->KeywordSelect('Area');
 
-	my $areaobj = new RT::Keyword($RT::SystemUser);
-	$areaobj->LoadByPath('/Queues/'.$ticket->QueueObj->Name.
-			     '/Area/'.$row->{'area'});
-	
-	# create the new objectkeyword. bypass the Ticketobj so we don't
-	# get a transaction created for us.
-	my $ObjectKeyword = new RT::ObjectKeyword($RT::SystemUser);
-	my $result = $ObjectKeyword->Create( Keyword => $areaobj->id,
-					     ObjectType => 'Ticket',
-					     ObjectId => $ticket->Id,
-					     KeywordSelect => $area_select->Id );
-	
+	#If the ticket has an area, add it.
+	if ($row->{'area'}) {
+	    my $area_sel = $queue->KeywordSelect('Area');
+	    
+	    my $areaobj = new RT::Keyword($RT::SystemUser);
+	    $areaobj->LoadByPath('/Queues/'.$ticket->QueueObj->Name.
+				 '/Area/'.$row->{'area'});
+	    
+	    # create the new objectkeyword. bypass the Ticketobj so we don't
+	    # get a transaction created for us.
+	    my $ObjectKeyword = new RT::ObjectKeyword($RT::SystemUser);
+	    my $result = $ObjectKeyword->Create( Keyword => $areaobj->id,
+						 ObjectType => 'Ticket',
+						 ObjectId => $ticket->Id,
+						 KeywordSelect => $area_sel->Id );
+	}
+
         ImportTransactions($ticket);
     }
     
@@ -319,7 +327,9 @@ sub MigrateTickets {
 
 sub ImportTransactions {
     my $ticket = shift;
-
+    
+    warn "Now getting transactions for ticket ".$ticket->id."\n";
+    
     my $sth = ExecStatement('SELECT * FROM transactions where serial_num = '.
 			    $ticket->id);
     my $Status = "open";
@@ -571,15 +581,18 @@ sub ImportTransactions {
 	    die "We couldn't find or create ".$row->{'actor'}
 	      unless ($User->Id);
 	    
+	    print "Creating a transaction as ".$User->id."\n";
+	    my $created = new RT::Date($RT::SystemUser);
+	    $created->Set( Format=>'unix', Value=>$row->{'trans_date'});
+
+	    
 	    my $trans = new RT::Transaction($User);
 	    
 	    # Allow us to set the 'Created' attribute. 
 	    
 	    $trans->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
-	    
-	    my $created = new RT::Date($RT::SystemUser);
-	    $created->Set( Format=>'unix', Value=>$row->{'trans_date'});
-	    
+	    $trans->{'_AccessibleCache'}{Creator} = { 'read'=>1, 'auto'=>1 };
+	    	    
 	    my ($transaction, $msg) = 
 	      $trans->Create( Ticket => $ticket->Id,
 			      Type => $trans_args{'Type'},
