@@ -790,25 +790,23 @@ sub ResolvedObj {
 }
 # }}}
 
-# {{{ sub Start
-=head2 Start
+# {{{ sub SetStarted
+=head2 SetStarted
 
 Takes a date in ISO format or undef
 Returns a transaction id and a message
-Start is used by PM, RT's Project Managment app.
 The client calls "Start" to note that the project was started on the date in $date.
 A null date means "now"
-
 =cut
 
-sub Start {
+sub SetStarted {
 my $self = shift;
 my $time = shift || 0;
 
 #We create a date object to catch date weirdness
 my $time_obj = new RT::Date($self->CurrentUser());
 if ($time != 0)  {
-$time_obj->Set(Format => 'ISO', Value => $value);
+$time_obj->Set(Format => 'ISO', Value => $time);
 }
 else {
 $time_obj->SetToNow();
@@ -1663,10 +1661,10 @@ sub _Accessible {
 	      TimeLeft => 'read/write',
 	      Created => 'read/auto',
 	      Creator => 'auto',
-	      Told => 'read',
+	      Told => 'read/write',
 	      Resolved => 'read',
-	      Starts => 'read',
-	      Started => 'read',
+	      Starts => 'read,write',
+	      Started => 'read,write',
 	      LastUpdated => 'read/auto',
 	      LastUpdatedBy => 'read/auto',
 	      Due => 'read/write'

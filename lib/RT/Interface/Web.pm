@@ -9,7 +9,7 @@ package HTML::Mason::Commands;
 use strict;
 
 # {{{ sub Error - calls Error and aborts
-sub Error {
+sub Abort {
     &mc_comp("/Elements/Error" , Why => shift);
     $m->abort;
 }
@@ -206,8 +206,6 @@ sub ProcessSearchQuery {
     }
 
     # }}}
-   
-
     # {{{ Limit owner
     if ($args{ARGS}->{'ValueOfOwner'} ne '' ) {
 	$session{'tickets'}->LimitOwner(					
@@ -216,7 +214,6 @@ sub ProcessSearchQuery {
 				       );
     }
     # }}}
-
     # {{{ Limit requestor email
     #TODO this doesn't work
     
@@ -235,9 +232,6 @@ sub ProcessSearchQuery {
 				    OPERATOR => $args{ARGS}->{'QueueOp'});
     }
     # }}}
-        
-
-
     # {{{ Limit Status
     if ($args{ARGS}->{'ValueOfStatus'} ne '') {
 	$session{'tickets'}->LimitStatus (
@@ -247,8 +241,6 @@ sub ProcessSearchQuery {
     }
 
 # }}}
-
-    
     # {{{ Limit Subject
     if ($args{ARGS}->{'ValueOfSubject'} ne '') {
 	$session{'tickets'}->LimitSubject(

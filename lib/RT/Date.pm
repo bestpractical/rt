@@ -35,8 +35,16 @@ sub new  {
 
 =head2 sub Set
 
-Takes the number of seconds since the epoch as Value if Format is 'unix'
+takes a param hash with the fields 'Format' and 'Value'
+
+if $args->{'Format'} is 'unix', takes the number of seconds since the epoch 
+
 If $args->{'Format'} is ISO, tries to parse an ISO date.
+
+If $args->{'Format'} is 'unknown', require Date::Manip and make it figure things
+out. This is a heavyweight operation that should never be called from within 
+RT's core. But it's really useful for something like the textbox date entry
+where we let the user do whatever they want.
 
 If $args->{'Value'}  is 0, assumes you mean never.
 
@@ -72,27 +80,37 @@ sub Set {
 	    
 	    #timegm expects month as 0->11
 	    $mon--;
-	
+	    
 	    #now that we've parsed it, deal with the case where everything
 	    #was 0
             if ($mon == -1) {
 	        $self->{'time'} = 0;
-       		 return($self->Unix());
+		return($self->Unix());
     	    }
-
 	    
- 
+	    
+	    
 	    $self->{'time'} = timegm($sec,$min,$hours,$mday,$mon,$year);
 	}
 	else {
+	    use Carp;
+	    Carp::cluck;
 	    $RT::Logger->debug( "Couldn't parse date $args{'Value'} as a $args{'Format'}");
+	    
 	}
-		
     }
+    elsif ($args{'Format'} =~ /^unknown$/i) {
+        require Date::Manip;
+        #Convert it to an ISO format string 
+        my $date = Date::Manip::ParseDate($args{'Value'});
+        #mmm. recursion.
+	$RT::Logger->debug("RT::Date used date manip to make ".$args{'Value'} . " $date\n");
+        return ($self->Set( Format => 'ISO', Value => "$date"));
+    }                                                    
     else {
 	die "Unknown Date format: ".$args{'Format'}."\n";
     }
-
+    
     return($self->Unix());
 }
 

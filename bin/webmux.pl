@@ -44,6 +44,7 @@ use DBIx::Handle;
     use RT::Queues;
     use MIME::Entity;
     use CGI::Cookie;
+    use Date::Manip;
     use HTML::Entities;
     
     #TODO: make this use DBI
