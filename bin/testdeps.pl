@@ -17,7 +17,7 @@
 #
 #    'PREREQ_PM' => {
 #                     'DBI'                 => 1.13,
-#                     'HTML::Mason'         => 0.87,
+#                     'HTML::Mason'         => 0.89,
 #                     'Date::Manip'         => 0,
 #                     'Date::Format'        => 0,
 #                     'MIME::Entity'        => 5.108,
@@ -52,7 +52,7 @@ HTML::Entities
 Text::Wrapper
 Text::Template
 DBIx::DataSource
-DBIx::DBSchema
+DBIx::DBSchema 0.13
 DBIx::SearchBuilder 0.05
 Apache::Session 1.03
 );

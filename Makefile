@@ -20,7 +20,7 @@ RTGROUP			=	rt
 # RT_PATH is the name of the directory you want make to install RT in
 # RT must be installed in its own directory (don't set this to /usr/local)
 
-RT_PATH			=	/opt/rt-$(RT_VERSION)
+RT_PATH			=	/opt/rt2
 
 # The rest of these paths are all configurable, but you probably don't want to 
 # put them elsewhere
