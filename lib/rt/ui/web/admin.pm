@@ -360,7 +360,7 @@ sub FormModifyQueue{
     
     print "<input type=\"checkbox\" name=\"m_members_correspond\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_members_correspond});
-    print "> Mail correspondence to queue memebers<br>";
+    print "> Mail correspondence to queue members<br>";
     
     print "<input type=\"checkbox\" name=\"m_members_comment\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_members_comment});

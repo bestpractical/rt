@@ -5,20 +5,16 @@
     $ENV{'PATH'} = '/bin:/usr/bin';
 
 
+    #  This is now set in rtmux.pl
+    #	The toplevel that RT is installed in.
+    #	    $rt_dir="/usr/local/rt";
 
-    #The toplevel that RT is installed in.
-    $rt_dir="/usr/local/rt";
-
-
-    #Where you keep the serial numer generators
-    $reqnum_path="$rt_dir/bin/reqnum";
-    $transactnum_path="$rt_dir/bin/transactnum";
 
     #Where you keep you transaction texts
-    $transaction_dir="$rt_dir/transactions";
+    $transaction_dir="!!RT_TRANSACTIONS_PATH!!";
 
     #Where you keep your templates
-    $template_dir="$rt_dir/etc/templates";
+    $template_dir="!!RT_TEMPLATE_PATH!!";
 
 
     # these modes don't do much right now...i had to hard code them in because 
@@ -31,13 +27,13 @@
     # no users should be in the rt group
     # if you change these, make sure to edit the makefile and
     # to chown the rt directory structure
-    $rtuser="rt";
-    $rtgroup="rt";
+    $rtuser="!!RTUSER!!";
+    $rtgroup="!!RTGROUP!!";
 
 
     # before doing a "make install" in /usr/local/rt/src you NEED to change the 
     # password below and change the apropriate line in /usr/local/rt/etc/mysql.acl	
-    $rtpass="My!word#z0t";
+    $rtpass="!!RT_MYSQL_PASS!!";
 
 
     #name of RT installation
@@ -46,16 +42,15 @@
     # (if you do, users will have no end to problems with their old
     #tickets getting new requests opened for them)
 
-    $rtname="fsck";  
+    $rtname="!!RT_MAIL_TAG!!";  
  
 
-    # host is the fqdn of your mSQL server
+    # host is the fqdn of your Mysql server
     # if it's on localhost, leave it blank for enhanced performance
-    $host="";
+    $host="!!RT_MYSQL_HOST!!";
     
-    #$dbname is the name of the database on the mSQL server that contains rt's tables
-    #if you change this be _SURE_ to change the database name in the makefile
-    $dbname="rt";
+    #$dbname is the name of the RT's database on the Mysql server 
+    $dbname="!!RT_MYSQL_DATABASE!!";
 
     #$mail_alias is a generic alias to send mail to for any request
     #already in a queue because of the nature of RT, mail sent to any
@@ -66,7 +61,7 @@
     #This is the address that will be listed in From: and Reply-To:
     #headers of mail tracked by RT
 
-    $mail_alias = "rt\@horked.fsck.com";
+    $mail_alias = "!!RT_MAIL_ALIAS!!";
 
 
     #set this to whatever program you want to send the mail that RT generates
@@ -77,8 +72,7 @@
 
     #glimpse_index is where you keep the glimpseindex binary
     #set it to null if you don't have glimpse
-    $glimpse_index = "/usr/local/bin/glimpseindex";
+    $glimpse_index = "!!GLIMPSE_INDEX!!";
 
 
-	return(1,"Welcome to Request Tracker $rtversion");
-
+1;

@@ -6,4 +6,4 @@ INSERT INTO db VALUES ('%','rt','rt','Y','Y','Y','Y','N','N');
 # CHANGE THE TEXT INSIDE OF "password('') below to something secret.
 # don't forget to change rt/lib/routines/RT.pm accordingly
 #
-INSERT INTO user VALUES ('localhost','rt',password('My!word#z0t'),'N','N','N','N','N','N','N','N','N','N');
+INSERT INTO user VALUES ('localhost','rt',password('!!RT_MYSQL_PASS!!'),'N','N','N','N','N','N','N','N','N','N');
