@@ -8,8 +8,7 @@ msgstr "#"
 #: html/Admin/Queues/Scrip.html:55
 #. ($QueueObj->id)
 msgid "#%1"
-msgstr ""
-
+msgstr "" 
 #: html/Approvals/Elements/ShowDependency:50 html/Ticket/Display.html:26 html/Ticket/Display.html:30
 #. ($Ticket->Id, $Ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
@@ -263,7 +262,7 @@ msgstr ""
 
 #: html/Admin/Elements/EditQueueWatchers:29 html/Admin/Elements/EditScrips:35 html/Admin/Elements/EditTemplates:36 html/Admin/Groups/Members.html:52 html/Ticket/Elements/EditLinks:33 html/Ticket/Elements/EditPeople:46 html/User/Groups/Members.html:55
 msgid "(Check box to delete)"
-msgstr "(Vink hokje aan om te verwijderen)"
+msgstr "(Vink hokje af om te verwijderen)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Check boxes to delete)"
@@ -426,7 +425,7 @@ msgstr ""
 
 #: html/Admin/Users/Modify.html:80
 msgid "Access control"
-msgstr "Toegangs controle"
+msgstr "Toegangscontrole"
 
 #: html/Admin/Elements/EditScrip:57
 msgid "Action"
@@ -753,7 +752,7 @@ msgstr "Ongeldige data in %1"
 #: html/SelfService/Attachment/dhandler:43
 #. ($trans, $AttachmentObj->TransactionId())
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
-msgstr "Ongeldig transactie nummer voor aanhechting. %1 zou %2 moeten zijn\\n"
+msgstr "Ongeldig transactienummer voor aanhechting. %1 zou %2 moeten zijn\\n"
 
 #: html/Admin/Elements/GroupTabs:39 html/Admin/Elements/QueueTabs:39 html/Admin/Elements/UserTabs:38 html/Ticket/Elements/Tabs:90 html/User/Elements/GroupTabs:38
 msgid "Basics"
@@ -789,17 +788,17 @@ msgstr "Korte koppen"
 
 #: html/Search/Bulk.html:25 html/Search/Bulk.html:26
 msgid "Bulk ticket update"
-msgstr "Bulk ticket herziening"
+msgstr "Bulk ticketherziening"
 
 #: lib/RT/User_Overlay.pm:1331
 msgid "Can not modify system users"
-msgstr "Kan systeem gebruikers niet wijzigen"
+msgstr "Kan systeemgebruikers niet wijzigen"
 
 #: lib/RT/Queue_Overlay.pm:67
 msgid "Can this principal see this queue"
 msgstr "Kan dit hoofd deze rij zien"
 
-#: lib/RT/CustomField_Overlay.pm:144
+#: lib/RT/CustomFieLd_Overlay.pm:144
 msgid "Can't add a custom field value without a name"
 msgstr "Kan geen specifiek veld toevoegen zonder een naam"
 
@@ -830,11 +829,11 @@ msgstr "Wijzig wachtwoord"
 
 #: html/Ticket/Create.html:101 html/Ticket/Update.html:92
 msgid "Check box to delete"
-msgstr "Vink hokje aan om te verwijderen"
+msgstr "Vink hokje af om te verwijderen"
 
 #: html/Admin/Elements/SelectRights:31
 msgid "Check box to revoke right"
-msgstr "Vink hokje aan om recht te verwijderen"
+msgstr "Vink hokje af om recht te verwijderen"
 
 #: html/Ticket/Create.html:183 html/Ticket/Elements/EditLinks:131 html/Ticket/Elements/EditLinks:69 html/Ticket/Elements/ShowLinks:51
 msgid "Children"
@@ -955,7 +954,7 @@ msgstr "Correspondentie"
 
 #: html/Admin/Elements/ModifyQueue:39 html/Admin/Queues/Modify.html:51
 msgid "Correspondence Address"
-msgstr "Correspondentie Adres"
+msgstr "Correspondentieadres"
 
 #: lib/RT/Transaction_Overlay.pm:541
 msgid "Correspondence added"
@@ -1087,7 +1086,7 @@ msgstr "Kon gebruiker niet vinden\\n"
 #: lib/RT/CurrentUser.pm:112
 #. ($self->Id)
 msgid "Couldn't load %1 from the users database.\\n"
-msgstr "Kon %1 niet laden uit de gebruikers database.\\n"
+msgstr "Kon %1 niet laden uit de gebruikersdatabase.\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load KeywordSelects."
@@ -1636,19 +1635,19 @@ msgstr "Of basis of doel moeten gespecificeerd zijn"
 
 #: html/Admin/Users/Modify.html:53 html/Admin/Users/Prefs.html:46 html/Elements/SelectUsers:27 html/Ticket/Elements/AddWatchers:56 html/User/Prefs.html:42
 msgid "Email"
-msgstr "Email"
+msgstr "E-mail"
 
 #: lib/RT/User_Overlay.pm:188
 msgid "Email address in use"
-msgstr "Email adres in gebruik"
+msgstr "E-mailadres in gebruik"
 
 #: html/Admin/Elements/ModifyUser:42
 msgid "EmailAddress"
-msgstr "EmailAdres"
+msgstr "E-mailAdres"
 
 #: html/Admin/Elements/ModifyUser:54
 msgid "EmailEncoding"
-msgstr "EmailCodering"
+msgstr "E-mailCodering"
 
 #: html/Admin/Elements/EditCustomField:36
 msgid "Enabled (Unchecking this box disables this custom field)"
@@ -1774,7 +1773,7 @@ msgstr "Zoek nieuwe/open tickets"
 
 #: html/Admin/Queues/People.html:57 html/Admin/Users/index.html:46 html/Ticket/Elements/EditPeople:30
 msgid "Find people whose"
-msgstr "Zoek mensen wiens"
+msgstr "Zoek mensen wier"
 
 #: html/Search/Listing.html:108
 msgid "Find tickets"
@@ -1827,7 +1826,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:392
 msgid "Fri."
-msgstr "Vrij."
+msgstr "Vr."
 
 #: html/Ticket/Elements/ShowHistory:41 html/Ticket/Elements/ShowHistory:51
 msgid "Full headers"
@@ -1976,7 +1975,7 @@ msgstr "Als een goedkeuring afgewezen is, wijs het origineel af en verwijder han
 
 #: bin/rt-crontool:190
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
-msgstr "Als deit gereedschap setgid zou zijn, zou een kwaadwillende locale gebruiker dit gereedschap kunnen gebruiken om administratieve toegang te verkrijgen tot RT"
+msgstr "Als dit gereedschap setgid zou zijn, zou een kwaadwillende lokale gebruiker dit gereedschap kunnen gebruiken om administratieve toegang te verkrijgen tot RT"
 
 #: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyPeople.html:38
 msgid "If you've updated anything above, be sure to"
@@ -1988,7 +1987,7 @@ msgstr "Illegale waarde voor %1"
 
 #: lib/RT/Interface/Web.pm:863
 msgid "Immutable field"
-msgstr "Niet-wijzgbaar veld"
+msgstr "Niet-wijzigbaar veld"
 
 #: html/Admin/Elements/EditCustomFields:74
 msgid "Include disabled custom fields in listing."
@@ -2235,15 +2234,15 @@ msgstr "Maak Status"
 
 #: html/Search/Bulk.html:109
 msgid "Make date Due"
-msgstr "Maak verwachtings datum"
+msgstr "Maak verwachtingsdatum"
 
 #: html/Search/Bulk.html:110
 msgid "Make date Resolved"
-msgstr "Make oplossings datum"
+msgstr "Make oplossingsdatum"
 
 #: html/Search/Bulk.html:107
 msgid "Make date Started"
-msgstr "Maak start datum"
+msgstr "Maak startdatum"
 
 #: html/Search/Bulk.html:106
 msgid "Make date Starts"
@@ -2561,7 +2560,7 @@ msgstr "WijzigTicket"
 
 #: lib/RT/Date.pm:388
 msgid "Mon."
-msgstr "Maa."
+msgstr "Ma."
 
 #: html/Ticket/Elements/ShowRequestor:42
 #. ($name)
@@ -2960,11 +2959,11 @@ msgstr "Bij Creatie"
 
 #: etc/initialdata:169
 msgid "On Owner Change"
-msgstr "Bij Eigenaar Wijziging"
+msgstr "Bij Eigenaarwijziging"
 
 #: etc/initialdata:177
 msgid "On Queue Change"
-msgstr "Bij Rij Wijziging"
+msgstr "Bij Rijwijziging"
 
 #: etc/initialdata:183
 msgid "On Resolve"
@@ -2972,7 +2971,7 @@ msgstr "Bij Oplossing"
 
 #: etc/initialdata:161
 msgid "On Status Change"
-msgstr "Bij Status Wijziging"
+msgstr "Bij Statuswijziging"
 
 #: etc/initialdata:142
 msgid "On Transaction"
@@ -3126,11 +3125,11 @@ msgstr ""
 
 #: html/Elements/Header:52 html/Elements/Tabs:55 html/SelfService/Prefs.html:25 html/User/Prefs.html:25 html/User/Prefs.html:28
 msgid "Preferences"
-msgstr "Voorkeur"
+msgstr "Voorkeuren"
 
 #: NOT FOUND IN SOURCE
 msgid "Prefs"
-msgstr "Voorkeur"
+msgstr "Voorkeuren"
 
 #: lib/RT/Action/Generic.pm:160
 msgid "Prepare Stubbed"
@@ -3281,7 +3280,7 @@ msgstr "RT Fout"
 
 #: NOT FOUND IN SOURCE
 msgid "RT Received mail (%1) from itself."
-msgstr "RT Ontvig mail (%1) van zichzel."
+msgstr "RT Ontving mail (%1) van zichzelf."
 
 #: NOT FOUND IN SOURCE
 msgid "RT Recieved mail (%1) from itself."
@@ -3289,7 +3288,7 @@ msgstr ""
 
 #: html/SelfService/Closed.html:25
 msgid "RT Self Service / Closed Tickets"
-msgstr "RT Zelf Bediening / Afgesloten Tickets"
+msgstr "RT Zelfbediening / Afgesloten Tickets"
 
 #: html/index.html:25 html/index.html:28
 msgid "RT at a glance"
@@ -3335,7 +3334,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
-msgstr "RT denk dat dit bericht onbestelbaar zou kunnen zijn"
+msgstr "RT denkt dat dit bericht onbestelbaar zou kunnen zijn"
 
 #: NOT FOUND IN SOURCE
 msgid "RT will process this message as if it were unsigned.\\n"
@@ -3359,7 +3358,7 @@ msgstr "Naar gerefeerd door"
 
 #: html/Elements/SelectLinkType:28 html/Ticket/Create.html:184 html/Ticket/Elements/EditLinks:135 html/Ticket/Elements/EditLinks:80 html/Ticket/Elements/ShowLinks:55
 msgid "Refers to"
-msgstr "Refereerd aan"
+msgstr "Refereert aan"
 
 #: NOT FOUND IN SOURCE
 msgid "RefersTo"
@@ -3485,7 +3484,7 @@ msgstr "Recht Geladen"
 
 #: lib/RT/ACE_Overlay.pm:678 lib/RT/ACE_Overlay.pm:693
 msgid "Right could not be revoked"
-msgstr "Recht kon niet terug getrokken worden"
+msgstr "Recht kon niet afgenomen worden"
 
 #: html/User/Delegation.html:64
 msgid "Right not found"
@@ -3523,15 +3522,15 @@ msgstr "RootGoedkeuring"
 
 #: lib/RT/Date.pm:393
 msgid "Sat."
-msgstr "Zat."
+msgstr "Za."
 
 #: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyPeople.html:38
 msgid "Save Changes"
-msgstr "Bewaar Wijzigingen"
+msgstr "Bewaarwijzigingen"
 
 #: html/Ticket/ModifyLinks.html:39
 msgid "Save changes"
-msgstr "Bewaar wijzigingen"
+msgstr "Bewaarwijzigingen"
 
 #: html/Admin/Global/Scrip.html:49
 #. ($ARGS{'id'})
@@ -3632,23 +3631,23 @@ msgstr "SelecteerEnkele"
 
 #: html/SelfService/index.html:25
 msgid "Self Service"
-msgstr "Zelf Bediening"
+msgstr "Zelfbediening"
 
 #: etc/initialdata:114
 msgid "Send mail to all watchers"
-msgstr "Stuur mail naar alle toeschouwers"
+msgstr "Stuurt mail naar alle toeschouwers"
 
 #: etc/initialdata:110
 msgid "Send mail to all watchers as a \"comment\""
-msgstr "Stuur mail naar alle toeschouwers als een \"commentaar\""
+msgstr "Stuurt mail naar alle toeschouwers als een \"commentaar\""
 
 #: etc/initialdata:105
 msgid "Send mail to requestors and Ccs"
-msgstr "Stuur mail naar alle verzoekers en Ccs"
+msgstr "Stuurt mail naar alle verzoekers en Ccs"
 
 #: etc/initialdata:100
 msgid "Send mail to requestors and Ccs as a comment"
-msgstr "Stuur mail naar alle verzoekers en Ccs als een \"commentaar\""
+msgstr "Stuurt mail naar alle verzoekers en Ccs als een \"commentaar\""
 
 #: etc/initialdata:79
 msgid "Sends a message to the requestors"
@@ -3660,11 +3659,11 @@ msgstr "Stuurt mail aan expliciet genoemde Ccs en Bccs"
 
 #: etc/initialdata:95
 msgid "Sends mail to the administrative Ccs"
-msgstr "Stuur mail aan de administratieve Ccs"
+msgstr "Stuurt mail aan de administratieve Ccs"
 
 #: etc/initialdata:91
 msgid "Sends mail to the administrative Ccs as a comment"
-msgstr "Stuur mail aan de administratieve Ccs als een \"commentaar\""
+msgstr "Stuurt mail aan de administratieve Ccs als een \"commentaar\""
 
 #: etc/initialdata:83 etc/initialdata:87
 msgid "Sends mail to the owner"
@@ -3785,7 +3784,7 @@ msgstr "Gestart"
 
 #: NOT FOUND IN SOURCE
 msgid "Started date '%1' could not be parsed"
-msgstr "Start datum '%1' kon niet ontleed worden"
+msgstr "Startum '%1' kon niet ontleed worden"
 
 #: html/Elements/SelectDateType:31 html/Ticket/Create.html:166 html/Ticket/Elements/EditDates:27 html/Ticket/Elements/ShowDates:31
 msgid "Starts"
@@ -3797,7 +3796,7 @@ msgstr "Begint op"
 
 #: NOT FOUND IN SOURCE
 msgid "Starts date '%1' could not be parsed"
-msgstr "Begin datum '%1' kon niet ontleed worden"
+msgstr "Begindatum '%1' kon niet ontleed worden"
 
 #: html/Admin/Elements/ModifyUser:82 html/Admin/Users/Modify.html:138 html/User/Prefs.html:94
 msgid "State"
@@ -3852,7 +3851,7 @@ msgstr "Gelukt"
 
 #: lib/RT/Date.pm:394
 msgid "Sun."
-msgstr "Zon."
+msgstr "Zo."
 
 #: lib/RT/System.pm:54
 msgid "SuperUser"
@@ -4082,7 +4081,7 @@ msgstr "De 25 hoogste prioriteit tickets van deze gebruiker"
 
 #: lib/RT/Date.pm:391
 msgid "Thu."
-msgstr "Don."
+msgstr "Do."
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket"
@@ -4272,7 +4271,7 @@ msgstr "Tracht een recht te verwijderen: %1"
 
 #: lib/RT/Date.pm:389
 msgid "Tue."
-msgstr "Din."
+msgstr "Di."
 
 #: html/Admin/Elements/EditCustomField:34 html/Ticket/Elements/AddWatchers:33 html/Ticket/Elements/AddWatchers:44 html/Ticket/Elements/AddWatchers:54 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:959
 msgid "Type"
@@ -4364,7 +4363,7 @@ msgstr "Ververs ticket #%1 (%2)"
 
 #: lib/RT/Interface/Web.pm:373
 msgid "Update type was neither correspondence nor comment."
-msgstr "Verversings type was noch correspondentie, noch commentaar"
+msgstr "Verversingstype was noch correspondentie, noch commentaar"
 
 #: html/Elements/SelectDateType:33 html/Ticket/Elements/ShowDates:51 lib/RT/Ticket_Overlay.pm:1169
 msgid "Updated"
@@ -4392,7 +4391,7 @@ msgstr "Gebruiker Gedifiniëerd"
 
 #: html/Admin/Users/Prefs.html:59
 msgid "User ID"
-msgstr "Gebruiker ID"
+msgstr "GebruikersID"
 
 #: html/Elements/SelectUsers:26
 msgid "User Id"
@@ -4469,7 +4468,7 @@ msgstr "WebCodering"
 
 #: lib/RT/Date.pm:390
 msgid "Wed."
-msgstr "Woe."
+msgstr "Wo."
 
 #: etc/upgrade/2.1.71:161
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
@@ -4489,7 +4488,7 @@ msgstr "Wanneer een goedkeuringsticket is aangemaakts, verwittig de Eigenaar en 
 
 #: etc/initialdata:143
 msgid "When anything happens"
-msgstr "Wanneer iets gebeurd"
+msgstr "Wanneer iets gebeurt"
 
 #: etc/initialdata:184
 msgid "Whenever a ticket is resolved"
@@ -4497,19 +4496,19 @@ msgstr "Wanneer een ticket is opgelost"
 
 #: etc/initialdata:170
 msgid "Whenever a ticket's owner changes"
-msgstr "Wanneer de eigenaar van een ticket veranderd"
+msgstr "Wanneer de eigenaar van een ticket verandert"
 
 #: etc/initialdata:178
 msgid "Whenever a ticket's queue changes"
-msgstr "Wanneer de rij van een ticket veranderd"
+msgstr "Wanneer de rij van een ticket verandert"
 
 #: etc/initialdata:162
 msgid "Whenever a ticket's status changes"
-msgstr "Wanneer de status van een ticket veranderd"
+msgstr "Wanneer de status van een ticket verandert"
 
 #: etc/initialdata:192
 msgid "Whenever a user-defined condition occurs"
-msgstr "Wanneer een door de gebruiker gedifiniëerde voorwaarde gebeurd"
+msgstr "Wanneer een door de gebruiker gedifiniëerde voorwaarde gebeurt"
 
 #: etc/initialdata:156
 msgid "Whenever comments come in"
@@ -4751,7 +4750,7 @@ msgstr "rij %1 %2"
 
 #: lib/RT/Queue_Overlay.pm:62
 msgid "rejected"
-msgstr "gewijgerd"
+msgstr "geweigerd"
 
 #: lib/RT/Queue_Overlay.pm:61
 msgid "resolved"
