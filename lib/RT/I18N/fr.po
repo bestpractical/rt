@@ -705,7 +705,7 @@ msgstr "Attaché"
 
 #: html/SelfService/Create.html:64 html/Ticket/Create.html:109
 msgid "Attach file"
-msgstr "Attacher un ficher"
+msgstr "Attacher un fichier"
 
 #: html/Ticket/Create.html:97 html/Ticket/Update.html:87
 msgid "Attached file"
