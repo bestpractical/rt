@@ -15,7 +15,7 @@ my ($id,$msg) = $q->Create( Name => 'TxnCFTest'.$$);
 ok($id,$msg);
 
 my $cf = RT::CustomField->new($RT::SystemUser);
-($id,$msg) = $cf->Create(Name => 'Txnfreeform-'.$$, Type => 'Freeform', MaxValues => '0', LookupType => RT::Transaction->_LookupTypes );
+($id,$msg) = $cf->Create(Name => 'Txnfreeform-'.$$, Type => 'Freeform', MaxValues => '0', LookupType => RT::Transaction->CustomFieldLookupType );
 
 ok($id,$msg);
 

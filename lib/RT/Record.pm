@@ -1443,13 +1443,13 @@ sub CustomFields {
     $cfs->UnLimit;
 
     # XXX handle multiple types properly
-    foreach my $lookup ($self->_LookupTypes) {
-	$cfs->LimitToLookupType($lookup);
-	$cfs->LimitToGlobalOrObjectId($self->_LookupId($lookup));
-    }
+	$cfs->LimitToLookupType($self->CustomFieldLookupType);
+	$cfs->LimitToGlobalOrObjectId($self->_LookupId($self->CustomFieldLookupType));
 
     return $cfs;
 }
+
+# TODO: This _only_ works for RT::Class classes. it doesn't work, for example, for RT::FM classes. 
 
 sub _LookupId {
     my $self = shift;
@@ -1464,7 +1464,27 @@ sub _LookupId {
     return $self->Id;
 }
 
-sub _LookupTypes { ref($_[0]) }
+
+=head2 CustomFieldLookupType 
+
+Returns the path RT uses to figure out which custom fields apply to this object.
+
+=cut
+
+sub CustomFieldLookupType {
+    my $self = shift;
+    return ref($self);
+}
+
+#TODO Deprecated API. Destroy in 3.6
+sub _LookupTypes { 
+    my  $self = shift;
+    $RT::Logger->warning("_LookupTypes call is deprecated. Replace with CustomFieldLookupType");
+    $RT::Logger->warning("Besides, it was a private API. Were you doing using it?");
+
+    return($self->CustomFieldLookupType);
+
+}
 
 # {{{ AddCustomFieldValue
 
@@ -1754,7 +1774,7 @@ sub CustomFieldValues {
         # Look up the field ID.
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
         $cfs->LimitToGlobalOrObjectId( $self->Id() );
-        $cfs->LimitToLookupType($self->_LookupTypes);
+        $cfs->LimitToLookupType($self->CustomFieldLookupType);
         $cfs->Limit( FIELD => 'Name', OPERATOR => '=', VALUE => $field );
 
         if ( $cfs->First ) {

@@ -989,7 +989,7 @@ sub CustomFieldValues {
         unless ( $field =~ /^\d+$/o ) {
             my $CFs = RT::CustomFields->new( $self->CurrentUser );
              $CFs->Limit( FIELD => 'Name', VALUE => $field);
-            $CFs->LimitToLookupType($self->_LookupTypes);
+            $CFs->LimitToLookupType($self->CustomFieldLookupType);
             $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
             $field = $CFs->First->id if $CFs->First;
         }
@@ -999,7 +999,7 @@ sub CustomFieldValues {
 
 # }}}
 
-sub _LookupTypes {
+sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket-RT::Transaction";
 }
 
