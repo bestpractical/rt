@@ -91,8 +91,10 @@ sub FromObject {
 
 =head2 FromURI <URI>
 
-Returns a local object id for this content.  You are expected to know what sort of object this is the Id 
-of 
+Returns a local object id for this content. You are expected to know
+what sort of object this is the Id of
+
+Returns true if everything is ok, otherwise false
 
 =cut
 
@@ -119,8 +121,11 @@ sub FromURI {
     
     unless ($self->Resolver->ParseURI($uri)) {
         $RT::Logger->warning("Resolver ".ref($self->Resolver)." could not parse $uri");
+        $self->{resolver} = undef; # clear resolver
     	return (undef);
     }
+
+return(1);
 
 }
 
