@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/css" href="<% $RT::WebPath %>/REST/2.0/NoAuth/feed.css"?>
+<?xml-stylesheet type="text/css" href="<% $BaseURL %>/NoAuth/feed.css"?>
 <feed version="0.3" xmlns="http://purl.org/atom/ns#">
   <title>Search result on <% $Type %></title>
   <author>
@@ -7,6 +7,8 @@
     <url><% $RT::WebURL %></url>
   </author>
   <link rel="alternate" type="text/html" href="<% $RT::WebURL %>"/>
+  <link rel="service.post" type="application/x.atom+xml" href="<% $BaseURL %>/<% lc($Type) %>"/>
+  <link rel="service.feed" type="application/x.atom+xml" href="<% $BaseURL %>/<% lc($Type) %>"/>
   <tagline mode="escaped"><% $count %> results found.</tagline>
   <id>rt-fsck.com://<% $RT::rtname %>/<% $Path %></id>
   <modified><% $modified %></modified>
@@ -14,7 +16,8 @@
 % foreach my $entry (@entries) {
   <entry>
     <title mode="escaped"><% $entry->{Name} %></title>
-    <link rel="alternate" type="text/html" href="$RT::WebPath/$Type/Display.html?id=<% $entry->{Id} %>"/>
+    <link rel="alternate" type="text/html" href="<% $RT::WebPath %><% $entry->{URL} %>"/>
+    <link rel="service.edit" type="application/x.atom+xml" href="<% $BaseURL %>/<% lc($Type) %>/<% $entry->{Id} %>"/>
     <modified><% $entry->{LastUpdated} %></modified>
     <issued><% $entry->{Created} %></issued>
     <created><% $entry->{Created} %></created>
@@ -25,6 +28,16 @@
 % }
 </feed>
 <%INIT>
+my %URL = (
+    Tickets	=> '/Ticket/Display.html?id=',
+    Templates	=> '/Admin/Global/Template.html?Template=',
+    Scrips	=> '/Admin/Global/Scrip.html?id=',
+    Queues	=> '/Admin/Queues/Modify.html?id=',
+    Users	=> '/Admin/Users/Modify.html?id=',
+    Groups	=> '/Admin/Groups/Modify.html?id=',
+);
+my $BaseURL = "$RT::WebPath/REST/2.0";
+
 my $Collection = $CollectionClass->new($session{CurrentUser});
 $Collection->UnLimit;
 my $count = $Collection->Count;
@@ -46,6 +59,11 @@ while (my $entry = $Collection->Next) {
     $entry{Created} =~ s/ /T/;
     $entry{LastUpdated} = $entry->LastUpdatedObj->W3CDTF;
     $entry{LastUpdated} =~ s/ /T/;
+    $entry{URL} = $URL{$Type} . $entry{Id};
+    if (my $queue = eval { $entry->Queue } ) {
+	$entry{URL} =~ s/Global/Queue/;
+	$entry{Params} .= "&Queue=$queue";
+    }
     push @entries, \%entry;
 }
 
