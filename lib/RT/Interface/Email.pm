@@ -158,7 +158,7 @@ sub GetCurrentUser  {
   my $From = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
 
   use Mail::Address;
-  my ($FromObj) = Mail::Address->parse($From) || die "Couldn't parse From-address";
+  my ($FromObj) = Mail::Address->parse($From) or die "Couldn't parse From-address";
   my $Name =  ($FromObj->phrase || $FromObj->comment || $FromObj->address);
 
   
