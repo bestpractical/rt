@@ -3,40 +3,40 @@
 <blockquote>
 <ul>
 <li>
-<& /Elements/Checkbox, Name => "CheckOwner" &> 
-	Owner is  <& /Elements/SelectBoolean, Name => "BoolOwner", True => "is", False => "isn't" &>  
+<& /Elements/Checkbox, Name => "LimitOwner" &> 
+	Owner is  <& /Elements/SelectBoolean, Name => "NegateOwner", True => "is", False => "isn't" &>  
 	<& /Elements/SelectOwner, Name => "ValueOfOwner" &>
 
-<li><& /Elements/Checkbox, Name => "CheckRequestor" &> 
-	Requestor email address <& /Elements/SelectBoolean, Name => "BoolRequestor", True => "matches", False => "does not match" &> 
+<li><& /Elements/Checkbox, Name => "LimitRequestor" &> 
+	Requestor email address <& /Elements/SelectBoolean, Name => "NegateRequestor", True => "matches", False => "does not match" &> 
 	<INPUT Name="ValueOfRequestor" SIZE=20>
 
-<li><& /Elements/Checkbox, Name => "CheckSubject" &>
-Subject <& /Elements/SelectBoolean, Name => "BoolSubject", True => "matches", False => "does not match" &> 
+<li><& /Elements/Checkbox, Name => "LimitSubject" &>
+Subject <& /Elements/SelectBoolean, Name => "NegateSubject", True => "matches", False => "does not match" &> 
 	<INPUT Name="ValueOfSubject" SIZE=20>
 
-<li><& /Elements/Checkbox, Name => "CheckQueue" &>
-Queue  <& /Elements/SelectBoolean, Name => "BoolOwner" &>
+<li><& /Elements/Checkbox, Name => "LimitQueue" &>
+Queue  <& /Elements/SelectBoolean, Name => "NegateOwner" , True => "is", False => "isn't" &>
 	<& /Elements/SelectQueue, name => "ValueOfQueue" &>
 
-<li><& /Elements/Checkbox, Name => "CheckCreated" &>
-Created <& /Elements/SelectDateRelation, Name=>"RelationCreated" &>
+<li><& /Elements/Checkbox, Name => "LimitCreated" &>
+Created <& /Elements/SelectDateRelation, Name=>"OpCreated" &>
 	<& /Elements/SelectDate, Name  => "ValueOfCreated" &>
 
-<li><& /Elements/Checkbox, Name => "CheckLastMessage" &>
-	Last correspondence <& /Elements/SelectDateRelation, Name => "RelationLastMessage" &>
+<li><& /Elements/Checkbox, Name => "LimitLastMessage" &>
+	Last correspondence <& /Elements/SelectDateRelation, Name => "OpLastMessage" &>
 	<& /Elements/SelectDate, Name  => "ValueOfLastMessage" &>
 
-<li><& /Elements/Checkbox, Name => "CheckLastUpdate" &>
-	Last update  <& /Elements/SelectDateRelation, Name=>"RelationLastUpdated" &>
+<li><& /Elements/Checkbox, Name => "LimitLastUpdate" &>
+	Last update  <& /Elements/SelectDateRelation, Name=>"OpLastUpdated" &>
 	<& /Elements/SelectDate, Name => "ValueOfLastUpdate" &>
 
-<li><& /Elements/Checkbox, Name => "CheckContent" &>
-	Ticket content  <& /Elements/SelectBoolean, Name => "BoolRequestor", True => "matches", False => "does not match" &> 
+<li><& /Elements/Checkbox, Name => "LimitContent" &>
+	Ticket content  <& /Elements/SelectBoolean, Name => "NegateRequestor", True => "matches", False => "does not match" &> 
 	<Input Name="ValueOfContent" Size=20>
 
-<li><& /Elements/Checkbox, Name => "CheckStatus" &>
-Status <& /Elements/SelectBoolean, Name => "BoolStatus", True => "is", False => "isn't" &>  
+<li><& /Elements/Checkbox, Name => "LimitStatus" &>
+Status <& /Elements/SelectBoolean, Name => "NegateStatus", True => "is", False => "isn't" &>  
 	<& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
 </pre>
