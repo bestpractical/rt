@@ -339,7 +339,6 @@ sub Create {
         Resolved           => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
-
         @_
     );
 
@@ -2716,7 +2715,7 @@ sub MergeInto {
 
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
-    # by trying to do a seperate database query for merge info everytime 
+    # by trying to do a separate database query for merge info everytime 
     # loaded a ticket. 
 
     #update this ticket's effective id to the new ticket's id.

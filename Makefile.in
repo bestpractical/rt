@@ -431,8 +431,8 @@ POD2TEST_EXE = sbin/extract_pod_tests
 
 testify-pods:
 	[ -d lib/t/autogen ] || mkdir lib/t/autogen
-	find lib -name \*pm |grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
-	find bin -type f |grep -v \~ | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find lib -name \*pm |grep -v .svn | grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find bin -type f |grep -v .svn | grep -v \~ | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
 	find lib -name \*pm |grep -v .svn | grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
 	find bin -type f |grep -v .svn | grep -v \~ | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
 

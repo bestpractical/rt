@@ -403,7 +403,7 @@ sub NiceHeaders {
 Returns this object's headers as a string.  This method specifically
 removes the RT-Send-Bcc: header, so as to never reveal to whom RT sent a Bcc.
 We need to record the RT-Send-Cc and RT-Send-Bcc values so that we can actually send
-out mail. (The mailing rules are seperated from the ticket update code by
+out mail. (The mailing rules are separated from the ticket update code by
 an abstraction barrier that makes it impossible to pass this data directly
 
 =cut
@@ -412,7 +412,7 @@ sub Headers {
     my $self = shift;
     my $hdrs="";
     for ($self->_SplitHeaders) {
-	    $hdrs.="$_\n" unless /^(RT-Send-Bcc): /i
+	    $hdrs.="$_\n" unless /^(RT-Send-Bcc):/i
     }
     return $hdrs;
 }
@@ -433,7 +433,7 @@ sub GetHeader {
     my $self = shift;
     my $tag = shift;
     foreach my $line ($self->_SplitHeaders) {
-        if ($line =~ /^\Q$tag\E:\s+(.*)$/i) { #if we find the header, return its value
+        if ($line =~ /^\Q$tag\E:\s+(.*)$/si) { #if we find the header, return its value
             return ($1);
         }
     }
