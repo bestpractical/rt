@@ -96,6 +96,7 @@ if ($session{'tickets'}) {
     }
     if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
 	    $session{'tickets'}->ClearRestrictions;
+	    $session{'tickets'}->CleanSlate;
 	}	
 }
    ProcessSearchQuery(ARGS=>\%ARGS);
