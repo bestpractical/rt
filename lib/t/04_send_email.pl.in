@@ -342,4 +342,6 @@ sub text_plain_russian_redef_sendmessage {
 shift @RT::EmailInputEncodings;
 # }}}
 
+# Don't taint the environment
+$everyone->PrincipalObj->RevokeRight(Right =>'SuperUser');
 1;
