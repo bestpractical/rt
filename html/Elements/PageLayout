@@ -1,0 +1,161 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<table border=0 cellspacing=0 cellpadding=0 width="100%" height=100%>
+<TR><TD colspan=3 valign=top>
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+%# "New ticket in" and "Goto Ticket" fields
+<tr>
+<td valign=top>
+<& BevelBoxRaisedStart &>
+<table class="darkblue" border=0 cellspacing=0 cellpadding=0 width=100%>
+  <td valign=top>
+    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="20" height="20" >
+    <span class="title"><%loc("RT for [_1]", $RT::rtname)%></span>
+  </td>
+  <td colspan=2>
+    <table border=0 cellspacing=0 cellpadding=3 align=right>
+      <span class="topactions">
+% foreach $action (sort keys %{$topactions}) {
+        <td class="darkblueright">
+        <%$topactions->{"$action"}->{'html'} |n %>
+        </td>
+% }
+      </span>
+    </table>
+  </td>
+</table>
+<& BevelBoxRaisedEnd &>
+</td>
+</tr>
+</table>
+</TD></TR>
+
+%# Vertical menu
+<TR height=100%>
+<TD valign="top">
+<& BevelBoxRaisedStart &>
+<table cellspacing=0 cellpadding=0 width=140 height=100%>
+<TR>
+  <TD class="blue">&nbsp;</TD>
+  <TD height=100%>
+    <table class="blue" cellspacing=2 cellpadding=0 width=100% height=100%>
+      <TR>
+        <TD class="blue">
+          <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
+        </TD>
+      </TR>
+    </table>
+  </TD>
+  <TD class="blue">&nbsp;</TD>
+  <TD>
+  </TD>
+<& BevelBoxRaisedEnd &>
+</table>
+</TD>
+%# main panel
+<TD valign="top" width="100%">
+<table border=0 cellspacing=0 cellpadding=0 width="100%" height="100%">
+% if ($Title) {
+<tr><td>
+<& BevelBoxRaisedStart &>
+<table border=0 cellspacing=0 cellpadding=0 width="100%">
+<tr><td class=blue colspan=2></td></tr>
+<tr>
+  <td class=blue>
+    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="10">
+  </td>
+  <td class=blue width="100%">
+    <span class=title><%$Title%></span>
+  </td>
+</tr>
+<tr><td class=blue colspan=2></td></tr>
+</table>
+<& BevelBoxRaisedEnd &>
+</td></tr>
+% }
+
+%# Actions
+% if ($actions) {
+<td class=blueright><table border=0 cellspacing=0 cellpadding=0 align=right>
+<tr>
+  <td class="blue" >
+  </td>
+  <TD class="blue">
+  <table width=100%>
+  <tr>
+% }
+
+% if ($actions) {
+    <TD class="blueright">
+    <span class="nav">| 
+% foreach $action (sort keys %{$actions}) {
+% if ($actions->{"$action"}->{'html'}) {
+    <% $actions->{"$action"}->{'html'} |n%> |
+% } else {
+    <A class="nav" HREF="<%$RT::WebPath."/".$actions->{$action}->{'path'}|n%>"><%$actions->{$action}->{'title'}%></A> |
+% }
+%  }
+    </span>
+% }
+% if ($subactions) {
+    <span class="nav">|
+% foreach $action (sort keys %{$subactions}) {
+    <%$subactions->{"$action"}->{'html'} |n%> |
+%  }
+    </span>
+    </TD>
+% }
+
+% if ( $actions) {
+  </tr>
+  </table>
+  </td>
+</tr>
+</table></td>
+% }
+
+<TR>
+<TD valign="top" width=100% height=100% colspan=2>
+
+<%INIT>
+my $action;
+
+  foreach my $tab (sort keys %{$toptabs}) {
+    if ($toptabs->{$tab}->{'path'} eq $current_toptab) {
+      $toptabs->{$tab}->{"subtabs"} = $tabs;
+      $toptabs->{$tab}->{"current_subtab"} = $current_tab;
+    }
+  }
+</%INIT>
+<%ARGS>
+$current_toptab => undef
+$current_tab => undef
+$toptabs => undef
+$topactions => undef
+$tabs => undef
+$actions => undef
+$subactions => undef
+$Title => undef
+</%ARGS>

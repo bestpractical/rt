@@ -22,129 +22,27 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table border=0 cellspacing=0 cellpadding=0 width="100%" height=100%>
-<TR><TD colspan=3 valign=top>
-<table border=0 cellspacing=0 cellpadding=0 width=100%>
-%# "New ticket in" and "Goto Ticket" fields
-<tr>
-<td valign=top>
-<& BevelBoxRaisedStart &>
-<table class="darkblue" border=0 cellspacing=0 cellpadding=0 width=100%>
-  <td valign=top>
-    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="20" height="20" >
-    <span class="title"><%loc("RT for [_1]", $RT::rtname)%></span>
-  </td>
-  <td colspan=2>
-    <table border=0 cellspacing=0 cellpadding=3 align=right>
-      <span class="topactions">
-% foreach $action (sort keys %{$topactions}) {
-        <td class="darkblueright">
-        <%$topactions->{"$action"}->{'html'} |n %>
-        </td>
-% }
-      </span>
-    </table>
-  </td>
-</table>
-<& BevelBoxRaisedEnd &>
-</td>
-</tr>
-</table>
-</TD></TR>
-% if ($actions) {
-<tr>
-  <td class="blue" >
-  </td>
-  <TD class="blue">
-  <table width=100%>
-  <tr>
-% }
-
-%# Actions
-% if ($actions) {
-    <TD class="blueright">
-    <span class="nav">| 
-% foreach $action (sort keys %{$actions}) {
-% if ($actions->{"$action"}->{'html'}) {
-    <% $actions->{"$action"}->{'html'} |n%> |
-% } else {
-    <A class="nav" HREF="<%$RT::WebPath."/".$actions->{$action}->{'path'}|n%>"><%$actions->{$action}->{'title'}%></A> |
-% }
-%  }
-    </span>
-% }
-% if ($subactions) {
-    <span class="nav">|
-% foreach $action (sort keys %{$subactions}) {
-    <%$subactions->{"$action"}->{'html'} |n%> |
-%  }
-    </span>
-    </TD>
-% }
-
-% if ( $actions) {
-  </tr>
-  </table>
-  </td>
-</tr>
-% }
-
-%# Vertical menu
-<TR height=100%>
-<TD valign="top">
-<& BevelBoxRaisedStart &>
-<table cellspacing=0 cellpadding=0 width=140 height=100%>
-<TR>
-  <TD class="blue">&nbsp;</TD>
-  <TD height=100%>
-    <table class="blue" cellspacing=2 cellpadding=0 width=100% height=100%>
-      <TR>
-        <TD class="blue">
-          <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
-        </TD>
-      </TR>
-    </table>
-  </TD>
-  <TD class="blue">&nbsp;</TD>
-  <TD>
-  </TD>
-<& BevelBoxRaisedEnd &>
-</table>
-</TD>
-%# main panel
-<TD valign="top" width="100%">
-<table border=0 cellspacing=0 cellpadding=0 width="100%" height="100%">
-% if ($Title) {
-<tr><td>
-<& BevelBoxRaisedStart &>
-<table border=0 cellspacing=0 cellpadding=0 width="100%">
-<tr><td class=blue colspan=2></td></tr>
-<tr>
-  <td class=blue>
-    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="10">
-  </td>
-  <td class=blue width="100%">
-    <span class=title><%$Title%></span>
-  </td>
-</tr>
-<tr><td class=blue colspan=2></td></tr>
-</table>
-<& BevelBoxRaisedEnd &>
-</td></tr>
-% }
-<TR>
-<TD valign="top" width=100% height=100% colspan=2>
+<& /Elements/PageLayout,
+    current_toptab => $current_toptab,
+    current_tab => $current_tab,
+    toptabs => $toptabs,
+    topactions => $topactions,
+    tabs => $tabs,
+    actions => $actions,
+    subactions => $subactions
+&>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 
+<a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
 my $action;
-my $topactions = {
+my $basetopactions = {
 	A => { html => $m->scomp('/Elements/CreateTicket')	
 		},
 	B => { html => $m->scomp('/Elements/GotoTicket') 
 		}
 	};
-my $toptabs = {     A => { title => loc('Homepage'),
+my $basetabs = {     A => { title => loc('Homepage'),
                            path => '',
                          },
                     B => { title => loc('Tickets'),
@@ -160,20 +58,25 @@ my $toptabs = {     A => { title => loc('Homepage'),
                         path => 'User/Prefs.html'
                       },
                  };
+
+if (!defined $toptabs) {
+   $toptabs = $basetabs;
+}
+if (!defined $topactions) {
+   $topactions = $basetopactions;
+}
                     
   # Now let callbacks add their extra tabs
-  $m->comp('/Elements/Callback', topactions => $topactions, toptabs => $toptabs, %ARGS);
+  $m->comp('/Elements/Callback', 
+    topactions => $topactions, 
+    toptabs => $toptabs, %ARGS);
 
-  foreach my $tab (sort keys %{$toptabs}) {
-    if ($toptabs->{$tab}->{'path'} eq $current_toptab) {
-      $toptabs->{$tab}->{"subtabs"} = $tabs;
-      $toptabs->{$tab}->{"current_subtab"} = $current_tab;
-    }
-  }
 </%INIT>
 <%ARGS>
 $current_toptab => undef
 $current_tab => undef
+$toptabs => undef
+$topactions => undef
 $tabs => undef
 $actions => undef
 $subactions => undef
