@@ -450,6 +450,8 @@ sub insert_data {
                   $princ->LoadUserDefinedGroup( $item->{'GroupId'} );
 	        } elsif ($item->{'GroupDomain'} eq 'SystemInternal') {
                   $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
+	        } elsif ($item->{'GroupDomain'} eq 'RT::System-Role') {
+                  $princ->LoadSystemRoleGroup( $item->{'GroupType'} );
 	        } elsif ($item->{'GroupDomain'} eq 'RT::Queue-Role' &&
 			 $item->{'Queue'}) {
                   $princ->LoadQueueRoleGroup( Type => $item->{'GroupType'},
