@@ -148,7 +148,7 @@ sub _parser {
 
     unless ($current && $want & $current) {
       # Error
-      die "Error near ->$val<- expecting a ", $tokens[((log $want)/(log 2))], "\n";
+      die "Error near ->$val<- expecting a ", $tokens[((log $want)/(log 2))], " in $string\n";
     }
 
     # State Machine:
@@ -191,7 +191,9 @@ sub _parser {
         substr($val,0,1) = "";
         substr($val,-1,1) = "";
       }
-
+      # Unescape escaped characters                                            
+      $key =~ s!\\(.)!$1!g;                                                    
+      $val =~ s!\\(.)!$1!g;     
       #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
 
       my $class;
@@ -312,7 +314,8 @@ sub FromSQL {
 
   # set SB's dirty flag
   $self->{'must_redo_search'} = 1;
-
+  $self->{'RecalcTicketLimits'} = 0;                                           
+  return($self);  
 }
 
 

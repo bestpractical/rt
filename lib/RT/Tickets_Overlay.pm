@@ -1912,7 +1912,10 @@ sub _ProcessRestrictions {
         $ea = $ea->{$op};
     }
     exists $clause{$field} or $clause{$field} = [];
-
+      # Escape Quotes                                                                                        
+      $field =~ s!(['"])!\\$1!g;                                                                             
+      $value =~ s!(['"])!\\$1!g;                                                                             
+                                   
       my $data = [ $ea, $type, $field, $op, $value ];
 
       # here is where we store extra data, say if it's a keyword or
@@ -1927,7 +1930,6 @@ sub _ProcessRestrictions {
 
     $self->FromSQL($sql);
 
-    $self->{'RecalcTicketLimits'} = 0;
 }
 
 

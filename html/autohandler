@@ -159,7 +159,7 @@ if ( (defined $session{'CurrentUser'}) and
 	$m->abort();
     }
     else {
-	$m->call_next(%ARGS);
+	$m->call_next();
     }
 }
 

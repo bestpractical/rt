@@ -64,6 +64,8 @@
 <tr>
 <td align=left>
 <&|/l, $ticketcount &>[quant,_1,result] found</&>
+<br>
+(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
 </td>
 <td align=right>
 
