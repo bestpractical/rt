@@ -69,9 +69,11 @@ RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
 RT_MODPERL_HANDLER		=	$(RT_BIN_PATH)/webmux.pl
 
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
+# THIS HANDLER IS NOT CURRENTLY SUPPORTED
 RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.fcgi
 
-# RT_SPEEDYCGI_HANDLER is the mason handler scropt for SpeedyCGI
+# RT_SPEEDYCGI_HANDLER is the mason handler script for SpeedyCGI
+# THIS HANDLER IS NOT CURRENTLY SUPPORTED
 RT_SPEEDYCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.scgi
 
 # The following are the names of the various binaries which make up RT 
@@ -174,7 +176,7 @@ instruct:
 insert: insert-install
 	$(PERL) $(RT_ETC_PATH)/insertdata
 
-upgrade: config-replace upgrade-noclobber
+upgrade: dirs config-replace upgrade-noclobber 
 
 upgrade-noclobber: libs-install html-install bin-install nondestruct
 
