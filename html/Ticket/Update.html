@@ -100,6 +100,7 @@ value=<% $ARGS{UpdateCc} %>><BR>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 <& /Elements/Callback, _CallbackName => 'BeforeMessageBox', %ARGS &>
 % if (exists $ARGS{UpdateContent}) {
+% delete $ARGS{'QuoteTransaction'};
 <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, %ARGS&>
 % } else {
 <& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
