@@ -23,7 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc("Delegate rights") &>
-<& /User/Elements/Tabs, current_tab => 'User/Delegation.html' &>
+<& /User/Elements/Tabs, 
+    current_tab => 'User/Delegation.html', 
+    Title => loc("Delegate rights") &>
 
 <& /Elements/ListActions, actions => \@results &>
 

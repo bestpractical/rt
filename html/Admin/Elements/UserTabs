@@ -22,9 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Tabs, subtabs => $tabs,
-			 current_tab => 'Admin/Users/', 
-                         current_subtab => $current_subtab &>
+<& /Admin/Elements/Tabs, 
+    subtabs => $tabs,
+    current_tab => 'Admin/Users/', 
+    current_subtab => $current_subtab, 
+    Title => $Title &>
 <%INIT>
 my $tabs;
 if ($id) {
@@ -55,4 +57,5 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUse
 $id => undef
 $current_tab => undef
 $current_subtab => undef
+$Title => undef
 </%ARGS>

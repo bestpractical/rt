@@ -26,7 +26,8 @@
 <& /Admin/Elements/QueueTabs, id => $QueueObj->Id, 
     current_tab => 'Admin/Queues/Scrips.html?id='.$QueueObj->id, 
     current_subtab => $current_subtab, 
-    subtabs => $subtabs &>
+    subtabs => $subtabs, 
+    Title => $title &>
 
 <& /Admin/Elements/EditScrip, title => $title,  %ARGS &>
 <%init>

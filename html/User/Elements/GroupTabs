@@ -22,9 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /User/Elements/Tabs, subtabs => $subtabs, 
-			current_tab => 'User/Groups/', 
-                        current_subtab => $current_subtab &>
+<& /User/Elements/Tabs, 
+    subtabs => $subtabs, 
+    current_tab => 'User/Groups/', 
+    current_subtab => $current_subtab, 
+    Title => $Title &>
 
 <%INIT>
 my $subtabs;
@@ -47,4 +49,5 @@ $subtabs->{"A"} = { title => loc('New group'),
 <%ARGS>
 $GroupObj => undef
 $current_subtab => undef
+$Title => undef
 </%ARGS>

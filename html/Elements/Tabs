@@ -23,34 +23,38 @@
 %# 
 %# END LICENSE BLOCK
 <table border=0 cellspacing=0 cellpadding=0 width="100%" height=100%>
-<TR><TD bgcolor=red colspan=2>
+<TR><TD colspan=3>
 <table border=0 cellspacing=0 cellpadding=0 width=100%>
-%# bevelled edge
-<TR><TD height=1 bgcolor=333333></TD></TR>
-<TR><TD height=1 bgcolor=999999></TD></TR>
-
 %# "New ticket in" and "Goto Ticket" fields
 <tr>
-  <td class="blueright" colspan=4>
-  <table border=0 cellspacing=0 cellpadding=3 align="right">
-    <span class="topactions">
-% foreach $action (sort keys %{$topactions}) {
-      <td class="blueright">
-      <%$topactions->{"$action"}->{'html'} |n %>
-      </td>
-% }
-    </span>
-  </table>
+<td>
+<& BevelBoxRaisedStart &>
+<table class="darkblue" border=0 cellspacing=0 cellpadding=0 width=100%>
+  <td valign=top>
+    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="20" height="20" >
+    <span class="title"><%loc("RT for [_1]", $RT::rtname)%></span>
   </td>
+  <td colspan=2>
+    <table border=0 cellspacing=0 cellpadding=3 align=right>
+      <span class="topactions">
+% foreach $action (sort keys %{$topactions}) {
+        <td class="darkblueright">
+        <%$topactions->{"$action"}->{'html'} |n %>
+        </td>
+% }
+      </span>
+    </table>
+  </td>
+</table>
+<& BevelBoxRaisedEnd &>
+</td>
 </tr>
-%# bevelled edge
-<TR><TD height=1 bgcolor=999999></TD></TR>
-<TR><TD height=1 bgcolor=333333></TD></TR>
 </table>
 </TD></TR>
 % if ($tabs_scalar or $actions) {
 <tr>
-  <td class="blue" >&nbsp;</td>
+  <td class="blue" >
+  </td>
   <TD class="blue">
   <table width=100%>
   <tr>
@@ -96,10 +100,10 @@
 % }
 
 %# Vertical menu
-<TR height=100%><TD>
-<table cellspacing=0 cellpadding=0 width=100% height=100%>
-<TR><TD colspan=4 height=1 bgcolor=333333></TD></TR>
-<TR><TD colspan=5 height=1 bgcolor=999999></TD></TR>
+<TR height=100%>
+<TD>
+<& BevelBoxRaisedStart &>
+<table cellspacing=0 cellpadding=0 width=140 height=100%>
 <TR>
   <TD class="blue">&nbsp;</TD>
   <TD height=100%>
@@ -113,19 +117,27 @@
   </TD>
   <TD class="blue">&nbsp;</TD>
   <TD>
-    <table cellspacing=0 cellpadding=0 width=2 height=100%>
-      <TR>
-        <TD width="1" bgcolor="#333333"></TD>
-        <TD rowspan=1 width="1" bgcolor="#999999"></TD>
-      </TR>
-    </table>
   </TD>
-<TR><TD colspan=2 height=1 bgcolor=333333></TD></TR>
-<TR><TD colspan=3 height=1 bgcolor=999999></TD></TR>
+<& BevelBoxRaisedEnd &>
 </table>
 </TD>
 %# main panel
-  <TD valign="top" width=100%>
+<TD valign="top" width=100%>
+<table border=0 cellspacing=0 cellpadding=0 width="100%" height=100%>
+% if ($Title) {
+<tr><td class=blue colspan=2></td></tr>
+<tr>
+  <td class=blue>
+    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="10">
+  </td>
+  <td class=blue width=100%>
+    <span class=title><%$Title%></span>
+  </td>
+<tr><td class=blue colspan=2></td></tr>
+</tr>
+% }
+<TR>
+<TD valign="top" width=100% height=100% colspan=2>
 
 <%INIT>
 my $action;
@@ -168,4 +180,5 @@ $actions => undef
 $subactions => undef
 $subtabs_scalar => undef
 $subactions_scalar => undef
+$Title => undef
 </%ARGS>

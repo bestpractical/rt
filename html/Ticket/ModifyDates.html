@@ -23,7 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc('Modify dates for #[_1]', $TicketObj->Id) &>
-<& /Ticket/Elements/Tabs, Ticket => $TicketObj, current_tab => "Ticket/ModifyDates.html?id=".$TicketObj->Id  &> 
+<& /Ticket/Elements/Tabs, 
+    Ticket => $TicketObj, 
+    current_tab => "Ticket/ModifyDates.html?id=".$TicketObj->Id, 
+    Title => loc('Modify dates for #[_1]', $TicketObj->Id) &> 
 
 <& /Elements/ListActions, actions => \@results &>
 

@@ -24,7 +24,8 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
-    current_tab => $current_tab &>
+    current_tab => $current_tab, 
+    Title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="GroupRights.html">

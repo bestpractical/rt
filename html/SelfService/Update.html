@@ -22,8 +22,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /SelfService/Elements/Header, Title => loc('Update ticket # [_1]', $Ticket->id) &>
+<& /SelfService/Elements/Header, loc('Update ticket # [_1]', $Ticket->id) &>
 
+<h2 class="title"><%loc('Update ticket # [_1]', $Ticket->id)%></h2>
 
 <FORM ACTION="Display.html" METHOD=POST ENCTYPE="multipart/form-data">
 

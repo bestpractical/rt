@@ -22,10 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, title => loc("Modify template [_1]", $TemplateObj->id) &>
-<& /Admin/Elements/SystemTabs, current_tab => 'Admin/Global/Templates.html', 
+<& /Admin/Elements/Header, Title => loc("Modify template [_1]", $TemplateObj->id)  &>
+<& /Admin/Elements/SystemTabs, 
+    current_tab => 'Admin/Global/Templates.html', 
     current_subtab => $current_subtab, 
-    subtabs => $subtabs &>
+    subtabs => $subtabs, 
+    Title => loc("Modify template [_1]", $TemplateObj->id) &>
 <& /Elements/ListActions, actions => \@results &>
 
 <& /Elements/TitleBoxStart, title => $title &>

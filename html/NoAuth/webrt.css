@@ -92,7 +92,7 @@ SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 vertical-align: top;
 	 text-align: left;
          }
-.darkblueright {  background-color: #003399;
+.darkblueright {  background-color: #000080;
 	 background-position: left top;
 	 vertical-align: top;
 	 text-align: right;
@@ -104,6 +104,10 @@ td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 .black { background-color: #000000;
 	 background-position: left top;
          }
+.title {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 20px;
+	 font-weight: normal;
+	 color: #000000}
 .header {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 12px;
 	 font-weight: bold;
@@ -207,7 +211,7 @@ a:visited {  text-decoration: none}
 SPAN.date { font-size: 0.8em }
 
 span.title { font-size: 1.6em;
-	 vertical-align: middle;
+	     vertical-align: middle;
              color: #ffffff;}
 span.productname { font-size: 2em;
              color: #0066cc;}

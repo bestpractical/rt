@@ -24,7 +24,8 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => "RT/Admin/Edit the group ". $Group->Name &>
 <& /Admin/Elements/GroupTabs, GroupObj => $Group, 
-    current_tab => 'Admin/Groups/Members.html?id='.$id &>
+    current_tab => 'Admin/Groups/Members.html?id='.$id, 
+    Title => "RT/Admin/Edit the group ". $Group->Name &>
 <& /Elements/ListActions, actions => \@results &>
 
 

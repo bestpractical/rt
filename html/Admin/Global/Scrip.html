@@ -22,11 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, Title => $title  &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/Scrips.html', 
     current_subtab => $current_subtab, 
-    subtabs => $subtabs &>
+    subtabs => $subtabs, 
+    Title => $title &>
 
 <& /Admin/Elements/EditScrip, title => $title,  %ARGS &>
 

@@ -25,7 +25,8 @@
 <& /Admin/Elements/Header, Title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
 <& /Admin/Elements/QueueTabs, id => $Queue->id, 
     current_tab => 'Admin/Queues/CustomFields.html?id='.$id, 
-    subtabs => $subtabs &>
+    subtabs => $subtabs,
+    Title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
 
 <& /Elements/TitleBoxStart, title => loc('Edit Custom Fields for [_1]', $Queue->Name) &>
 <UL>

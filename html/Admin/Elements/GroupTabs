@@ -22,9 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Tabs, subtabs => $tabs, 
-                         current_tab => 'Admin/Groups/', 
-			 current_subtab => $current_tab &>
+<& /Admin/Elements/Tabs, 
+    subtabs => $tabs, 
+    current_tab => 'Admin/Groups/', 
+    current_subtab => $current_tab, 
+    Title => $Title &>
 <%INIT>
 my $tabs;
 if ($GroupObj and $GroupObj->id) {
@@ -63,5 +65,6 @@ $GroupObj => undef
 $subtabs => undef
 $current_subtab => undef
 $current_tab => undef
+$Title => undef
 </%ARGS>
 

@@ -23,7 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
-<& /Ticket/Elements/Tabs, Ticket => $TicketObj, current_tab => "Ticket/Modify.html?id=".$TicketObj->Id  &>
+<& /Ticket/Elements/Tabs, 
+    Ticket => $TicketObj, current_tab => "Ticket/Modify.html?id=".$TicketObj->Id, 
+    Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
 
 <& /Elements/ListActions, actions => \@results &>
 <FORM METHOD=POST ACTION="Modify.html">

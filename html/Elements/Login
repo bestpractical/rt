@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title=>loc("Login") , &>
+<& /Elements/Header, Title => loc('Login') &>
 
 <DIV ALIGN=CENTER>
 % if ($Error) {

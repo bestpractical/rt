@@ -23,8 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Tabs, subtabs => $tabs, 
-	current_tab => 'Admin/Global/', 
-	current_subtab => $current_tab &>
+    current_tab => 'Admin/Global/', 
+    current_subtab => $current_tab, 
+    Title => $Title &>
 
 <%INIT>
   my $tabs = {
@@ -62,4 +63,5 @@ $id => undef
 $current_tab => undef
 $subtabs => undef
 $current_subtab => undef
+$Title => undef
 </%ARGS>

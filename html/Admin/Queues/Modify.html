@@ -24,7 +24,8 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Admin/Queue/Basics') &>
 <& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
-    current_tab => $current_tab &>
+    current_tab => $current_tab, 
+    Title => loc('Admin/Queue/Basics') &>
 <& /Elements/ListActions, actions => \@results &>
 
 <& /Elements/TitleBoxStart, title => $title &>

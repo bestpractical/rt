@@ -24,7 +24,9 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc("My Approvals") &>
 
-<& Elements/Tabs, current_btab => "Approvals/index.html" &>
+<& Elements/Tabs, 
+    current_btab => "Approvals/index.html", 
+    Title => loc("My Approvals") &>
 
 <& /Elements/ListActions, actions => \@actions &>
 <form method="post">

@@ -24,9 +24,12 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
 
-<& /User/Elements/GroupTabs, GroupObj => $Group, current_subtab => $current_tab &>
-<& /Elements/ListActions, actions => \@results &>
+<& /User/Elements/GroupTabs, 
+    GroupObj => $Group, 
+    current_subtab => $current_tab, 
+    Title => $title &>
 
+<& /Elements/ListActions, actions => \@results &>
 
 <& /Elements/TitleBoxStart, title => $title &>
 

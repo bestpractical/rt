@@ -23,8 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>
-<& /Admin/Elements/GroupTabs, GroupObj => $GroupObj, 
-    current_tab => 'Admin/Groups/UserRights.html?id='.$id &>  
+<& /Admin/Elements/GroupTabs, 
+    GroupObj => $GroupObj, 
+    current_tab => 'Admin/Groups/UserRights.html?id='.$id, 
+    Title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>  
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="UserRights.html">

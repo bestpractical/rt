@@ -23,7 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title &>
-<& /User/Elements/GroupTabs, GroupObj => $Group, current_subtab => "User/Groups/Members.html?id=".$Group->id &>
+<& /User/Elements/GroupTabs, 
+    GroupObj => $Group, 
+    current_subtab => "User/Groups/Members.html?id=".$Group->id, 
+    Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 

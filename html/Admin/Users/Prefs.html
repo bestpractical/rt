@@ -22,9 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title=>loc("User view") &>
+<& /Elements/Header, Title => loc("User view") &>
 
 <& /Elements/ViewUser, User=>$u &>
+
+<h2 class="title"><%loc("User view")%></h2>
 
 %if ($session{CurrentUser} && ($session{CurrentUser}->Id == $id)) {
 	<& /Elements/TitleBoxStart, title => loc('Signature')  &>

@@ -22,9 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, title => loc("Modify Template [_1]", $template) &>
-<& /Admin/Elements/SystemTabs &>
-<& /Admin/Elements/ModifyWorkflow, URL => "/Admin/Global/Workflow.html", %ARGS, Queue => $Queue &>
+<& /Admin/Elements/Header, Title => loc("Modify Template [_1]", $template) &>
+<& /Admin/Elements/SystemTabs, 
+    Title => loc("Modify Template [_1]", $template) &>
+<& /Admin/Elements/ModifyWorkflow, 
+    URL => "/Admin/Global/Workflow.html", %ARGS, Queue => $Queue &>
 
 <%ARGS>
 $Queue => 0

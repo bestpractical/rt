@@ -24,7 +24,8 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Modify global group rights') &>
 <& /Admin/Elements/SystemTabs, 
-    current_tab => 'Admin/Global/GroupRights.html' &>  
+    current_tab => 'Admin/Global/GroupRights.html', 
+    Title => loc('Modify global group rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="GroupRights.html">

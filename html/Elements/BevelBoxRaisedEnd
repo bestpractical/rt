@@ -22,6 +22,26 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<FORM METHOD=get ACTION="<% $RT::WebPath %>/Admin/Queues/Create.html">
-<&|/l&>Create a queue called</&> <INPUT NAME="Name" size=10><input type=submit>
-</form>
+        </td>
+        <TD bgcolor=#333333>
+          <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="1">
+        </TD>
+      </TR>
+      <TR>
+        <TD height=1 bgcolor=#999999>
+        </TD>
+        <TD height=1 bgcolor=#333333 colspan=2>
+        </TD>
+      </TR>
+    </table>
+  </td>
+  <TD bgcolor=#999999>
+    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="1">
+  </TD>
+</tr>
+<TR>
+  <TD bgcolor=#999999 colspan=3>
+    <img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="100%" height="1" >
+  </TD>
+</TR>
+</table>

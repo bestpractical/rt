@@ -22,10 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, Title => $title  &>
 
-<& /Admin/Elements/GroupTabs, GroupObj => $Group, 
-    current_tab => $current_tab &>
+<& /Admin/Elements/GroupTabs, 
+    GroupObj => $Group, 
+    current_tab => $current_tab, 
+    Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 

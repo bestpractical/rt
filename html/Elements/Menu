@@ -26,12 +26,13 @@
 %# font size depends on level
 % if ($level gt 0) {
 % if ($level ge 3) {
-%   $size = $basesize-(3);
+%   $size = $basesize-(6);
 % } else {
-%   $size = $basesize-($level);
+%   $size = $basesize-($level * 2);
 % }
 %   $padding = 2;
 % } else {
+%   $size = $basesize;
 %   $padding = 5;
 % }
 <table border=0 cellspacing=0 cellpadding=0 bordercolor=#FFFFFF width=100%>
@@ -85,7 +86,7 @@
 
 <%INIT>
 my ($tab, $subtab, $class, $size, $padding);
-my $basesize=14;
+my $basesize=16;
 </%INIT>
 
 <%ARGS>

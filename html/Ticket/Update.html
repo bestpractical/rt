@@ -22,8 +22,10 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title=> $title  &>
-<& /Ticket/Elements/Tabs, Ticket => $Ticket &>
+<& /Elements/Header, Title=> $title &>
+<& /Ticket/Elements/Tabs, 
+    Ticket => $Ticket &>, 
+    Title=> $title &>
 <& /Elements/TitleBoxStart, title => $title &>
 
 <FORM ACTION="<%$RT::WebPath%>/Ticket/Update.html?<%($ARGS{QuoteTransaction}) && "QuoteTransaction=$ARGS{QuoteTransaction}&"%><%($Action) && "Action=$Action"%>" NAME="TicketUpdate" 

@@ -22,7 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, tabs => $tabs, current_toptab => 'Admin/', current_tab => $current_tab&>
+<& /Elements/Tabs, 
+    tabs => $tabs, 
+    current_toptab => 'Admin/', 
+    current_tab => $current_tab, 
+    Title => $Title &>
 
 <%INIT>
   my $tabs = { A => { title => loc('Users'),
@@ -53,4 +57,5 @@
 $subtabs => undef
 $current_tab => undef
 $current_subtab => undef
+$Title => undef
 </%ARGS>

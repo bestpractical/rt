@@ -53,22 +53,11 @@
 </font>
     </td>
   </tr>
-  <tr><td class="black" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="1"></td></tr>
-<tr valign="middle">
-        <td class="darkblue" align="left" valign="middle" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="60" height="20" ><span class="title"><%$Title%></span></td>
-</tr>
-  <tr><td class="darkblue" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="3"></td></tr>
-  <tr><td class="black" colspan="5"><img src="<%$RT::WebImagesURL%>/space.gif" alt="" width="700" height="1"></td></tr>
 </table>
 <%INIT>
 
 $r->header_out('Pragma' => 'no-cache');
 $r->header_out('Cache-control' => 'no-cache');
-if ($Title) {
-        $Title = loc("RT for [_1]: [_2]", $RT::rtname, $Title);
-} else {
-        $Title = loc("RT for [_1]", $RT::rtname);
-}
 </%INIT>
 
 <%ARGS>

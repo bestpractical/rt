@@ -22,8 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/UserTabs, id => $id, current_subtab => $current_tab &>
+<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/UserTabs, 
+    id => $id, 
+    current_subtab => $current_tab, 
+    Title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
 

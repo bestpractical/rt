@@ -23,9 +23,11 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/SystemTabs, current_tab => 'Admin/Global/CustomFields.html',
+<& /Admin/Elements/SystemTabs, 
+    current_tab => 'Admin/Global/CustomFields.html',
     current_subtab => 'Admin/Global/CustomFields.html', 
-    subtabs => $subtabs &>
+    subtabs => $subtabs, 
+    Title => $title &>
 
 <& /Admin/Elements/EditCustomFields, title => $title, %ARGS &>
 

@@ -24,8 +24,9 @@
 %# END LICENSE BLOCK
 <& /SelfService/Elements/Header, Title => loc('Display ticket #[_1]', $Ticket->id) &>
 
-
 <& /Elements/ListActions, actions => \@results &>
+
+<h2 class="title"><%loc('Display ticket #[_1]', $Ticket->id)%></h2>
 
 <TABLE>
     <TR>

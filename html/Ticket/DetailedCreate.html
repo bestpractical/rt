@@ -23,7 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => loc("Create a new ticket") &>
-<& /Elements/Tabs, current_toptab => "Ticket/Create.html" &>
+<& /Elements/Tabs, 
+    current_toptab => "Ticket/Create.html", 
+    Title => loc("Create a new ticket") &>
 <FORM ACTION="Display.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
