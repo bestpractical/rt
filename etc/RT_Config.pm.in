@@ -42,8 +42,6 @@ Set($Timezone , 'US/Eastern');
 
 # }}}
 
-# }}}
-
 # {{{ Database Configuration
 
 # Database driver beeing used. Case matters
