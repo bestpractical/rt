@@ -755,13 +755,13 @@ sub ProcessTicketBasics {
 
   # {{{ Set basic fields 
   my @attribs = qw(
-		   Queue 
 		   Subject 
 		   FinalPriority 
 		   Priority 
-		   Status 
 		   TimeWorked  
 		   TimeLeft 
+		   Status 
+		   Queue 
         );
  
 
