@@ -248,14 +248,13 @@ sub Children {
 
 # {{{ sub Quote 
 
-# - it might be possible to use the Mail::Internet
-# utility methods ... but I do have a slight feeling that we'd rather
-# want to keep the old stuff I've made for rt1 ... or what? :)
+
 
 sub Quote {
     my $self=shift;
     my %args=(Reply=>undef, # Prefilled reply (i.e. from the KB/FAQ system)
 	      @_);
+
     my ($quoted_content, $body, $headers);
     my $max=0;
 
@@ -304,6 +303,16 @@ sub Quote {
 # }}}
 
 # {{{ sub NiceHeaders - pulls out only the most relevant headers
+
+=head2 NiceHeaders
+
+Returns the To, From, Cc, Date and Subject headers.
+
+It is a known issue that this breaks if any of these headers are not
+properly unfolded.
+
+=cut
+
 sub NiceHeaders {
     my $self=shift;
     my $hdrs="";
