@@ -1141,12 +1141,12 @@ sub _ProcessRestrictions {
 	    my $null_columns_ok;
 
             my $ObjKeywordsAlias = $self->Join(
-			TYPE => 'left',
-			ALIAS1 => 'main',
-			FIELD1 => 'id',
-			TABLE2 => 'ObjectKeywords',
-			FIELD2 => 'ObjectId'
-                       );
+					       TYPE => 'left',
+					       ALIAS1 => 'main',
+					       FIELD1 => 'id',
+					       TABLE2 => 'ObjectKeywords',
+					       FIELD2 => 'ObjectId'
+					      );
             $self->SUPER::Limit(
 				ALIAS => $ObjKeywordsAlias,
 				FIELD => 'Keyword',
@@ -1155,7 +1155,7 @@ sub _ProcessRestrictions {
 				QUOTEVALUE => $restriction->{'QUOTEVALUE'},
 				ENTRYAGGREGATOR => 'AND',
                                );
-
+	    
             if  ( ($restriction->{'OPERATOR'} =~ /^IS$/i) or 
 	          ($restriction->{'OPERATOR'} eq '!=') ) {
 		
@@ -1176,21 +1176,12 @@ sub _ProcessRestrictions {
 	      }
 
 
-            $self->SUPER::Limit(ALIAS => $ObjKeywordsAlias,
+            $self->SUPER::Limit(LEFTJOIN => $ObjKeywordsAlias,
 				FIELD => 'KeywordSelect',
 				VALUE => $restriction->{'KEYWORDSELECT'},
 				ENTRYAGGREGATOR => 'OR');
 
 
-	    if ($null_columns_ok) {
-	         $self->SUPER::Limit(ALIAS => $ObjKeywordsAlias,
-                                    FIELD => 'KeywordSelect',
-	   	  		    OPERATOR => 'IS',
-                                    VALUE => 'NULL',
-				    QUOTEVALUE => 0,
-                                    ENTRYAGGREGATOR => 'OR');
-	    }
-	   
  
             $self->SUPER::Limit( ALIAS => $ObjKeywordsAlias,
                                  FIELD => 'ObjectType',
