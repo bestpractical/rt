@@ -22,7 +22,7 @@
 %# 
 %# END LICENSE BLOCK
 <table class="darkblue" border=0 cellspacing=0 cellpadding=0 width="100%">
-  <th class="titlebox" align="left"><span class="rtname"><%loc("RT for [_1]", $RT::rtname)%></span>
+  <th class="titlebox" align="left"><span class="rtname"><%$AppName%></span>
   </th>
       <span class="topactions">
 % foreach my $action (sort keys %{$topactions}) {
@@ -81,6 +81,9 @@
     }
   }
 
+if (! defined($AppName)) {
+  $AppName = loc("RT for [_1]", $RT::rtname);
+}
 
 </%INIT>
 <%ARGS>
@@ -92,4 +95,5 @@ $tabs => undef
 $actions => undef
 $subactions => undef
 $title => $m->callers(-1)->path
+$AppName => undef
 </%ARGS>
