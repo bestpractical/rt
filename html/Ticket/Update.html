@@ -125,7 +125,7 @@ if ($DefaultStatus eq 'resolved') {
 # for the convenience:
 
 my ($CommentDefault, $ResponseDefault);
-if (($Action eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
+if ($Action ne 'Respond') {
    $CommentDefault = "SELECTED"; 
 } else {
     $ResponseDefault = "SELECTED";
