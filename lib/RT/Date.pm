@@ -333,7 +333,7 @@ Adds 24 hours to the current time
 
 sub AddDay {
     my $self = shift;
-    $self->AddSeconds($day);
+    $self->AddSeconds($DAY);
     
 }
 

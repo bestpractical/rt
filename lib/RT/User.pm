@@ -146,6 +146,7 @@ sub Create  {
 	$TempUser2->LoadByEmail($args{'EmailAddress'});
 	return(0, 'Email in use') 
 	  if ((defined $args{'EmailAddress'}) and 
+	      (defined $TempUser2->EmailAddress) and
 	      ($TempUser2->EmailAddress eq $args{'EmailAddress'}));
 	
     }

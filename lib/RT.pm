@@ -68,7 +68,7 @@ sub InitLogging {
 ## Mason).  It will log all problems through the standard logging
 ## mechanism (see above).
 
-$SIG{__WARN__} = sub {$RT::Logger->log(level=>'warning',message=>$_[0])};
+$SIG{__WARN__} = sub {$RT::Logger->warning($_[0])};
 
 #When we call die, trap it and log->crit with the value of the die.
 

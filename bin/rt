@@ -40,6 +40,8 @@ my ( @id,
      @limit_subject,
      @limit_body,
      @limit_created,
+     @limit_resolved,
+     @limit_lastupdated,
      @limit_due,
      @limit_starts,
      @limit_started,
@@ -161,18 +163,19 @@ a speciifc ticket.
 	  --limit-requestor=[!]<userid>|<email>
 	  --limit-subject=[!]<text>
 	  --limit-body=[!]<text>
+
+       Dates
 	  --limit-created=[starts][-][ends]
-	    starts and ends are dates.  starts can not be less than ends
 	  --limit-due=[starts][-][ends]
-	    starts and ends are dates.  starts can not be less than ends
 	  --limit-starts=[starts][-][ends]
-	    starts and ends are dates.  starts can not be less than ends
 	  --limit-started=[starts][-][ends]
+          --limit-resolved=[starts][-][ends]
+          --limit-last-updated=[starts][-][ends]
 	    starts and ends are dates.  starts can not be less than ends
 
 	  --limit-first=<first row returned>
 	  --limit-rows=<row count>
-"
+
 	  --history | --show
             show a history of the tickets found
  
@@ -455,16 +458,56 @@ else {
     
     
     # Dates
-    if (@limit_created){
-	
-	
+    foreach my $date (@limit_created) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitCreated ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitCreated ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
     }
-    if (@limit_due){
+
+    foreach my $date (@limit_due) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitDue ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitDue ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
     }
-    if (@limit_starts){
+
+    foreach my $date (@limit_starts) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitStarts ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitStarts ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
     }
-    if (@limit_started){
+
+    foreach my $date (@limit_started) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitStarted ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitStarted ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
     }
+
+    foreach my $date (@limit_resolved) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitResolved ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitResolved ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
+    }
+
+    foreach my $date (@limit_lastupdated) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitLastUpdated( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitLastUpdated ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
+    }
+
+
+    
     if ($limit_first){
     }
     if ($limit_rows){
@@ -911,7 +954,6 @@ date, we parse it it as "midnight tonight to midnight tomorrow"
 =cut
 
 sub ParseDateRange {
-    my $self = shift;
     my $in = shift;
     my ($start, $end);
     
@@ -920,32 +962,42 @@ sub ParseDateRange {
     my $start_obj = new RT::Date($CurrentUser);
     my $end_obj = new RT::Date($CurrentUser);
     
-    if ($in =~ /(.*?)-(.*?)/) {
+    if ($in =~ /^(.*?)-(.*?)$/) {
 	$start = $1;
 	$end = $2;
-	
-	
-	
+
+	if ($start) {
+	    $start_obj->Set(Format => 'unknown', 
+			    Value => $start);
+	}
+	if ($end) {
+	    $end_obj->Set(Format => 'unknown', 
+			  Value => $end);
+	}
     }
     else {
 	$start = $in;
 	$end = $in;
-	$start_obj->(Format => 'unknown', 
-		     Value => $start);
+
+	$start_obj->Set(Format => 'unknown', 
+			Value => $start);
 	
-	$end_obj->(Format => 'unknown', 
-		   Value => $end);
+	$end_obj->Set(Format => 'unknown', 
+		      Value => $end);
 	
 	$start_obj->SetToMidnight();
 	$end_obj->SetToMidnight();
 	$end_obj->AddDay();
-
     }	
     
-    return ($start_obj->ISO, $end_obj->ISO);
-    
-    
-    
+    if ($start) {
+	$start = $start_obj->ISO;
+    }
+    if ($end) {
+	$end = $end_obj->ISO;
+    }
+
+    return ($start, $end);
 }
 
 # }}}

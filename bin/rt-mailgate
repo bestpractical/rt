@@ -43,13 +43,12 @@ my ($From, $TicketId, $Subject,$SquelchReplies);
 my ($status, $msg);
 
 # {{{ parse commandline 
+
 while (my $flag = shift @ARGV) {
     if (($flag eq '-v') or ($flag eq '--verbose')) {
-	$RT::Logger->debug('Verbose mode enabled\n');
 	$Verbose = 1;
     }
     if (($flag eq '-t') or ($flag eq '--ticketid')) {
-	$RT::Logger->debug('Return ticket id mode enabled\n');
 	$ReturnTid = 1;
     }
     
@@ -60,16 +59,14 @@ while (my $flag = shift @ARGV) {
     
     if (($flag eq '-q') or ($flag eq '--queue')) {
 	$Queue = shift @ARGV;
-	$RT::Logger->debug("Queue set to $Queue\n");
     } 
       if (($flag eq '-a') or ($flag eq '--action')) {
-	  
 	  $Action = shift @ARGV;
-	  $RT::Logger->debug("Action set to $Action\n");
       } 
     
     
-  }
+}
+
 # }}}
 
 # get the current mime entity from stdin
@@ -350,8 +347,6 @@ sub ParseMIMEEntityFromSTDIN {
 
     ## TODO: Remove the temp dir when we don't need it any more.
 
-    $RT::Logger->debug("Creating attachement temp dir\n");
-
     my $AttachmentDir = File::Temp::tempdir (TMPDIR => 1, CLEANUP => 1);
     
     # Set up output directory for files:
@@ -409,6 +404,7 @@ sub ParseTicketId {
 # {{{ sub MailError 
 sub MailError {
     my %args = (To => $RT::OwnerEmail,
+		Bcc => undef,
 		From => $RT::CorrespondAddress,
 		Subject => 'There has been an error',
 		Explanation => 'Unexplained error',
@@ -418,6 +414,7 @@ sub MailError {
     $RT::Logger->crit($args{'Explanation'});
     my $entity = MIME::Entity->build( Type  =>"multipart/mixed",
 				      From => $args{'From'},
+				      Bcc => $args{'Bcc'},
 				      To => $args{'To'},
 				      Subject => $args{'Subject'},
 				    );
@@ -546,4 +543,26 @@ sub ParseAddressFromHeader{
     return ($Address, $Name);
 }
 # }}}
+
+
+#When we call die, trap it and log->crit with the value of the die.
+$SIG{__DIE__}  = sub {
+    unless ($^S || !defined $^S ) {
+        $RT::Logger->crit("$_[0]");
+	MailError( To => $ErrorsTo,  
+		   Bcc => $RT::OwnerEmail,
+		   Subject => "RT Critical error. Message not recorded!",
+		   Explanation => "$_[0]",
+		   MIMEObj => $entity
+		 );
+	exit(-1);
+    }
+    else {
+        #Get out of here if we're in an eval
+        die $_[0];
+    }
+};
+
+
+
 1;

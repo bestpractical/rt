@@ -13,8 +13,9 @@
 
 =head1 DESCRIPTION
 
-This module should never be called directly by client code. it's an internal module which
-should only be accessed through exported APIs in Ticket, Queue and other similar objects.
+This module should never be instantiated directly by client code. it's an internal 
+module which should only be instantiated through exported APIs in Ticket, Queue and other 
+similar objects.
 
 
 =head1 METHODS
@@ -52,8 +53,6 @@ sub _ClassAccessible {
 }
 # }}}
 
-
-
 # {{{ sub TransactionObj 
 
 =head2 TransactionObj
@@ -73,8 +72,6 @@ sub TransactionObj {
 }
 
 # }}}
-
-#take simple args and call RT::Record to do the real work.
 
 # {{{ sub Create 
 
@@ -175,14 +172,16 @@ sub Create  {
 	    # if we're supposed to truncate large attachments
 	    if ($RT::TruncateLongAttachments) {
 		# truncate the attachment to that length.
+		$Body = substr ($Body, 0, $MaxSize);
+
 	    }
 	    
 	    # elsif we're supposed to drop large attachments on the floor,
 	    elsif ($RT::DropLongAttachments) {
 		# drop the attachment on the floor
+		$RT::Logger->info("$self: Dropped an attachment of size ". length($Body).
+				  "\n". "It started: ". substr($Body, 0, 60) . "\n");
 		return(undef);
-		# TODO percolate an error up	
-		
 	    }
 	}
 	# if we need to mimencode the attachment

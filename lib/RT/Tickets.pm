@@ -643,6 +643,7 @@ sub LimitDate {
 	$args{'DESCRIPTION'} = $args{'FIELD'} . " " .$args{'OPERATOR'}. " ". $args{'VALUE'} . " GMT"
     }
 
+    print "Limiting ". join(';', %args) ."\n";
     $self->Limit (%args);
 
 }
@@ -941,28 +942,11 @@ sub _ProcessRestrictions {
 	# {{{ if it's a date
 
 	elsif ($TYPES{$restriction->{'FIELD'}} eq 'DATE') {
-	    
-	    if ($restriction->{'OPERATOR'} eq '=') {
-		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
-			      ENTRYAGGREGATOR => 'AND',
-			      OPERATOR => '=',
-			      VALUE => $restriction->{'VALUE'},
-			    );
-	    }
-	    elsif ($restriction->{'OPERATOR'} eq '>') {
-		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
-			      ENTRYAGGREGATOR => 'AND',
-			      OPERATOR => '>',
-			      VALUE => $restriction->{'VALUE'},
-			    );
-	    }
-	    elsif ($restriction->{'OPERATOR'} eq '<') {
-		$self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
-			      ENTRYAGGREGATOR => 'AND',
-			      OPERATOR => '<',
-			      VALUE => $restriction->{'VALUE'},
-			    );
-	    }	    
+	    $self->SUPER::Limit( FIELD => $restriction->{'FIELD'},
+				 ENTRYAGGREGATOR => 'AND',
+				 OPERATOR => $restriction->{'OPERATOR'},
+				 VALUE => $restriction->{'VALUE'},
+			       );
 	}
 	# }}}
  	# {{{ if it's a string
