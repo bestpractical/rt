@@ -211,7 +211,6 @@ or as members of groups
 =cut
 
 sub WhoHaveRight {
-
     my $self = shift;
     my %args = ( Right                  => undef,
                  Object =>              => undef,
@@ -224,15 +223,39 @@ sub WhoHaveRight {
         $RT::Logger->crit("$self WhoHaveRight called with the Obsolete ObjectId/ObjectType API");
         return(undef);
     }
+        my @privgroups;
+        my $Groups = RT::Groups->new($RT::SystemUser);
+        $Groups->WithRight(Right=> $args{'Right'},
+                     Object => $args{'Object'},
+                     IncludeSystemRights => $args{'IncludeSystemRights'},
+                     IncludeSuperusers => $args{'IncludeSuperusers'});
+        while (my $Group = $Groups->Next()) {
+                push @privgroups, $Group->Id();
+        }
+
+        $self->WhoBelongToGroups(Groups => \@privgroups,
+                                 IncludeSubgroupMembers => $args{'IncludeSubgroupMembers'});
+}
+
+# }}}
+
+# {{{ WhoBelongToGroups 
+
+=head2 WhoBelongToGroups { Groups => ARRAYREF, IncludeSubgroupMembers => 1 }
+
+=cut
+
+sub WhoBelongToGroups {
+    my $self = shift;
+    my %args = ( Groups                 => undef,
+                 IncludeSubgroupMembers => 1,
+                 @_ );
 
     # Unprivileged users can't be granted real system rights. 
     # is this really the right thing to be saying?
     $self->LimitToPrivileged();
 
-    my $groups     = $self->NewAlias('Groups');
     my $userprinc  = $self->{'princalias'};
-    my $groupprinc = $self->NewAlias('Principals');
-    my $acl        = $self->NewAlias('ACL');
     my $cgm;
 
     # The cachedgroupmembers table is used for unrolling group memberships to allow fast lookups 
@@ -246,76 +269,22 @@ sub WhoHaveRight {
         $cgm = $self->NewAlias('GroupMembers');
     }
 
-
-
-    # Find all users who have this right OR all users who are members of groups 
-    # which have this right for this object
-
-
     # {{{ Tie the users we're returning ($userprinc) to the groups that have rights granted to them ($groupprinc)
     $self->Join( ALIAS1 => $cgm, FIELD1 => 'MemberId',
                  ALIAS2 => $userprinc, FIELD2 => 'id' );
-
-    $self->Join( ALIAS1 => $cgm, FIELD1 => 'GroupId',
-                 ALIAS2 => $groupprinc, FIELD2 => 'id' );
     # }}} 
 
+ #   my $and_check_groups = "($cgm.GroupId = NULL";
+    foreach my $groupid (@{$args{'Groups'}}) {
+        $self->Limit(ALIAS => $cgm, FIELD => 'GroupId', VALUE => $groupid, QUOTEVALUE => 0, ENTRYAGGREGATOR=> 'OR')
 
-    # {{{ Find only rows wehere the right granted is the one we're looking up or _possibly_ superuser 
-    $self->Limit( ALIAS           => $acl,
-                  FIELD           => 'RightName',
-                  OPERATOR        => '=',
-                  VALUE           => $args{Right},
-                  ENTRYAGGREGATOR => 'OR' );
-
-    if ( $args{'IncludeSuperusers'} ) {
-        $self->Limit( ALIAS           => $acl,
-                      FIELD           => 'RightName',
-                      OPERATOR        => '=',
-                      VALUE           => 'SuperUser',
-                      ENTRYAGGREGATOR => 'OR' );
+        #$and_check_groups .= " OR $cgm.GroupId = $groupid";
     }
-    # }}}
+    #$and_check_groups .= ")";
 
-
-    # {{{ Find cases where the right in question is granted on the object in question or RT::System (aka global)
-
-    my ($or_check_ticket_roles, $or_check_roles, $or_look_at_object);
-
-    if ( defined $args{'Object'} ) {
-    if ( ref($args{'Object'}) eq 'RT::Ticket' ) {
-        $or_check_ticket_roles = " OR ( $groups.Domain = 'RT::Ticket-Role' AND $groups.Instance = " . $args{'Object'}->Id . ") ";
-
-        # If we're looking at ticket rights, we also want to look at the associated queue rights.
-        # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
-        # and ask all the rest of our questions about the queue.
-        $args{'Object'}   = $args{'Object'}->QueueObj;
-
-    }
-    # TODO XXX This really wants some refactoring
-    if ( ref($args{'Object'}) eq 'RT::Queue' ) {
-        $or_check_roles =
-          " OR ( ( ($groups.Domain = 'RT::Queue-Role' AND $groups.Instance = " . $args{'Object'}->Id . ") $or_check_ticket_roles ) "
-          . " AND $groups.Type = $acl.PrincipalType AND $groups.id = $groupprinc.id) ";
-    }
-
-        $or_look_at_object = " OR ($acl.ObjectType = '" . ref($args{'Object'}) . "'  AND $acl.ObjectId = " . $args{'Object'}->Id . ") ";
-
-    }
-
-    $self->_AddSubClause( "WhichObject", "($acl.ObjectType = 'RT::System' $or_look_at_object)" );
-
-
-
-
-    $self->_AddSubClause( "WhichGroup",
-"( ($acl.PrincipalId = $groupprinc.id AND $groupprinc.id = $groups.id AND $acl.PrincipalType = 'Group' AND "
-          . "($groups.Domain = 'SystemInternal' OR $groups.Domain = 'UserDefined' OR $groups.Domain = 'ACLEquivalence')) $or_check_roles)"
-    );
-
+    #$self->_AddSubClause("WhichGroup", $and_check_groups);
 }
-
 # }}}
 
-1;
 
+1;

@@ -226,5 +226,73 @@ sub WithMember {
     $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
 }
 
+
+sub WithRight {
+    my $self = shift;
+    my %args = ( Right                  => undef,
+                 Object =>              => undef,
+                 IncludeSystemRights    => undef,
+                 IncludeSuperusers      => undef,
+                 @_ );
+
+    my $groupprinc = $self->NewAlias('Principals');
+    my $acl        = $self->NewAlias('ACL');
+
+    # {{{ Find only rows where the right granted is the one we're looking up or _possibly_ superuser 
+    $self->Limit( ALIAS           => $acl,
+                  FIELD           => 'RightName',
+                  OPERATOR        => '=',
+                  VALUE           => $args{Right},
+                  ENTRYAGGREGATOR => 'OR' );
+
+    if ( $args{'IncludeSuperusers'} ) {
+        $self->Limit( ALIAS           => $acl,
+                      FIELD           => 'RightName',
+                      OPERATOR        => '=',
+                      VALUE           => 'SuperUser',
+                      ENTRYAGGREGATOR => 'OR' );
+    }
+    # }}}
+
+    my ($or_check_ticket_roles, $or_check_roles, $or_look_at_object);
+
+    if ( defined $args{'Object'} ) {
+        if ( ref($args{'Object'}) eq 'RT::Ticket' ) {
+            $or_check_ticket_roles =
+                " OR ( main.Domain = 'RT::Ticket-Role' AND main.Instance = " . $args{'Object'}->Id . ") ";
+
+            # If we're looking at ticket rights, we also want to look at the associated queue rights.
+            # this is a little bit hacky, but basically, now that we've done the ticket roles magic,
+            # we load the queue object and ask all the rest of our questions about the queue.
+            $args{'Object'}   = $args{'Object'}->QueueObj;
+        }
+        # TODO XXX This really wants some refactoring
+        if ( ref($args{'Object'}) eq 'RT::Queue' ) {
+            $or_check_roles =
+                " OR ( ( (main.Domain = 'RT::Queue-Role' AND main.Instance = " .
+                $args{'Object'}->Id . ") $or_check_ticket_roles ) " .
+                " AND main.Type = $acl.PrincipalType AND main.id = $groupprinc.id) ";
+        }
+
+        $or_look_at_object =
+            " OR ($acl.ObjectType = '" . ref($args{'Object'}) . "'" .
+            " AND $acl.ObjectId = " . $args{'Object'}->Id . ") ";
+    }
+
+    $self->_AddSubClause( "WhichObject", "($acl.ObjectType = 'RT::System' $or_look_at_object)" );
+
+    $self->_AddSubClause( "WhichGroup",
+        qq{
+          ( (    $acl.PrincipalId = $groupprinc.id
+             AND $acl.PrincipalType = 'Group'
+             AND (   main.Domain = 'SystemInternal'
+                  OR main.Domain = 'UserDefined'
+                  OR main.Domain = 'ACLEquivalence')
+             AND main.id = $groupprinc.id)
+           $or_check_roles)
+        }
+    );
+}
+
 1;
 
