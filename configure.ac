@@ -230,6 +230,7 @@ AC_CONFIG_FILES([
                  lib/t/04_send_email.pl
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
+ 		 bin/standalone_httpd
  		 bin/mason_handler.svc
  		 bin/rt-commit-handler
  		 bin/rt-crontool

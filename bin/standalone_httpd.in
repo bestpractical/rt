@@ -1,0 +1,137 @@
+#!@PERL@ -w
+
+use strict;
+
+use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+use RT;
+RT::LoadConfig();
+
+use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
+                                   #set private_tempfiles
+use HTML::Mason::CGIHandler;
+use HTML::Mason;                   # brings in subpackages: Parser, Interp, etc.
+
+use RT::Tickets;
+use RT::Transactions;
+use RT::Users;
+use RT::CurrentUser;
+use RT::Templates;
+use RT::Queues;
+use RT::ScripActions;
+use RT::ScripConditions;
+use RT::Scrips;
+use RT::Groups;
+use RT::GroupMembers;
+use RT::CustomFields;
+use RT::CustomFieldValues;
+use RT::TicketCustomFieldValues;
+
+use RT::Interface::Web;
+use MIME::Entity;
+use Text::Wrapper;
+use CGI::Cookie;
+use Time::ParseDate;
+use HTML::Entities;
+
+use Socket;
+
+RT::Init();
+
+my $port = 4711;
+
+main_loop($port);
+
+sub main_loop {
+    my $port = shift;
+    my $tcp  = getprotobyname('tcp');
+    socket( Server, PF_INET, SOCK_STREAM, $tcp ) or die "socket: $!";
+    setsockopt( Server, SOL_SOCKET, SO_REUSEADDR, pack( "l", 1 ) )
+      or warn "setsockopt: $!";
+    bind( Server, sockaddr_in( $port, INADDR_ANY ) ) or die "bind: $!";
+    listen( Server, SOMAXCONN ) or die "listen: $!";
+    $RT::Logger->info("server started on port $port");
+
+    CONNECT:
+
+    RT::Init();
+    my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
+
+    for ( ; accept( Client, Server ) ; close Client ) {
+
+        *STDIN  = *Client;
+        *STDOUT = *Client;
+
+        my $remote_sockaddr = getpeername(STDIN);
+        my ( undef, $iaddr ) = sockaddr_in($remote_sockaddr);
+        my $peername = gethostbyaddr( $iaddr, AF_INET ) || "localhost";
+        my $peeraddr = inet_ntoa($iaddr) || "127.0.0.1";
+
+        my $local_sockaddr = getsockname(STDIN);
+        my ( undef, $localiaddr ) = sockaddr_in($local_sockaddr);
+        my $localname = gethostbyaddr( $localiaddr, AF_INET ) || "localhost";
+        my $localaddr = inet_ntoa($iaddr) || "127.0.0.1";
+
+        chomp( $_ = <STDIN> );
+        my ( $method, $url, $proto, undef ) = split;
+
+        $url =~ s#\\#/#g;
+        $RT::Logger->info("<- $peername: $_");
+        my ( $file, undef, $arglist ) =
+          ( $url =~ /([^?]*)(\?(.*))?/ );    # split at ?
+        my $file_escaped = $file;
+        $file =~ s/%([\dA-Fa-f]{2})/chr(hex($1))/eg;    # %20 -> space
+
+        if ( $method !~ /^(GET|POST|HEAD)$/ ) {
+            next CONNECT;
+        }
+
+        my @env_vars = qw(USER_AGENT CONTENT_LENGTH CONTENT_TYPE);
+        foreach my $var (@env_vars) {
+            delete $ENV{$var};
+        }
+        while (<STDIN>) {
+            s/[\r\l\n\s]+$//;
+            /^User-Agent: (.+)/i      and $ENV{USER_AGENT}     = $1;
+            /^Content-length: (\d+)/i and $ENV{CONTENT_LENGTH} = $1;
+            /^Content-type: (.+)/i    and $ENV{CONTENT_TYPE}   = $1;
+            /^Cookie.?: (.+)/i and $ENV{COOKIE} .= $1 . "; ";
+            last if (/^$/);
+        }
+
+        print "HTTP/1.0 200 OK\n";    # probably OK by now
+
+        $ENV{SERVER_PROTOCOL} = $proto;
+        $ENV{SERVER_PORT}     = $port;
+        $ENV{SERVER_NAME}     = $localname;
+        $ENV{SERVER_URL}      = "http://$localname:$port/";
+        $ENV{PATH_INFO}       = $file;
+        $ENV{SCRIPT_FILENAME} = "file";
+        $ENV{REQUEST_URI}     = $url;
+        $ENV{REQUEST_METHOD}  = $method;
+        $ENV{REMOTE_ADDR}     = $peeraddr;
+        $ENV{REMOTE_HOST}     = $peername;
+        $ENV{QUERY_STRING}    = $arglist ||'';
+        $ENV{SERVER_SOFTWARE} = "rt-standalone/$RT::VERSION";
+
+        RT::ConnectToDatabase();
+
+        CGI::initialize_globals();
+        my $cgi = CGI->new();
+
+        if ( ( !$h->interp->comp_exists( $cgi->path_info ) )
+            && ( $h->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
+            $cgi->path_info( $cgi->path_info . "/index.html" );
+        }
+
+        eval { $h->handle_cgi_object($cgi); };
+            $RT::Logger->crit($@) if ($@);
+
+        if ( $RT::Handle->TransactionDepth ) {
+            $RT::Handle->ForceRollback;
+            $RT::Logger->crit( "Transaction not committed. Usually indicates a software fault. Data loss may have occurred");
+        }
+
+    }
+    next CONNECT;
+
+}

@@ -404,6 +404,7 @@ bin-install:
 		bin/rt-mailgate \
 		bin/mason_handler.fcgi \
 		bin/mason_handler.scgi \
+		bin/standalone_httpd \
 		bin/mason_handler.svc \
 		bin/rt \
 		bin/webmux.pl \
