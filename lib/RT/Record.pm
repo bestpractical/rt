@@ -721,8 +721,8 @@ sub Update {
     my $self = shift;
 
     my %args = (
-        ARGSRef       => undef,
-        AttributesRef => undef,
+        ARGSRef         => undef,
+        AttributesRef   => undef,
         AttributePrefix => undef,
         @_
     );
@@ -737,26 +737,44 @@ sub Update {
             $value = $ARGSRef->{$attribute};
         }
         elsif (
-              defined( $args{'AttributePrefix'} )
-              && defined(
-                  $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute }
-              )
-          ) {
+            defined( $args{'AttributePrefix'} )
+            && defined(
+                $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute }
+            )
+          )
+        {
             $value = $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute };
 
-        } else {
-                next;
+        }
+        else {
+            $RT::Logger->warning(
+                "$self asked to update an unknown attribute: $attribute");
+            next;
         }
 
-            $value =~ s/\r\n/\n/gs;
+        $value =~ s/\r\n/\n/gs;
 
-        if ($value ne $self->$attribute()){
 
-              my $method = "Set$attribute";
-              my ( $code, $msg ) = $self->$method($value);
+        # If Queue is 'General', we want to resolve the queue name for
+        # the object.
 
-	      my($prefix) = ref($self) =~ /RT::(\w+)/;
-	      push @results,  $self->loc("$prefix [_1]", $self->id) . ': ' . $self->loc($attribute) . ': ' . $self->CurrentUser->loc_fuzzy($msg);
+        # This is in an eval block because $object might not exist.
+        # and might not have a Name method. But "can" won't find autoloaded
+        # items. If it fails, we don't care
+        eval {
+            my $object = $attribute . "Obj";
+            next if ($self->$object->Name eq $value);
+        };
+        next if ( $value eq $self->$attribute() );
+        my $method = "Set$attribute";
+        my ( $code, $msg ) = $self->$method($value);
+
+        my ($prefix) = ref($self) =~ /RT::(\w+)/;
+        push @results,
+          $self->loc( "$prefix [_1]", $self->id ) . ': '
+          . $self->loc($attribute) . ': '
+          . $self->CurrentUser->loc_fuzzy($msg);
+
 =for loc
                                    "[_1] could not be set to [_2].",       # loc
                                    "That is already the current value",    # loc
@@ -771,7 +789,6 @@ sub Update {
                                    "Missing a primary key?: [_1]",         # loc
                                    "Found Object",                         # loc
 =cut
-          };
 
     }
 
