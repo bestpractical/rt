@@ -104,19 +104,22 @@ RT_USER_PASSWD_MIN	=	5
 # Note: $DB_HOME/bin is where the database binary tools are installed.
  
 DB_HOME               = /usr/bin
-RT_DB                 = mysql
+
+# Right now, the only acceptable value for DB_TYPE is mysql.
+# Eventually, pgsql, oracle and sybase should be supported
+DB_TYPE                = mysql
 
 # define DBA to the name of a DB user with permission to
 # create new databases 
-DBA                   = root
-DBA_PASSWORD          = yawn
+DB_DBA                   = root
+DB_DBA_PASSWORD          = yawn
  
 #
 # Set this to the domain name of your Mysql server
 # If the database is local, rather than on a remote host, using "localhost" 
 # will greatly enhance performance.
 #
-RT_DB_HOST		=	localhost
+DB_HOST		=	localhost
 
 #
 # Set this to the canonical name of the interface RT will be talking to the mysql database on.
@@ -130,19 +133,26 @@ RT_HOST			=	localhost
 # set this to the name you want to give to the RT database in mysql
 #
 
-RT_DATABASE	=	rt
+DB_DATABASE	=	rt
+
+#
+# Set this to the name of the rt database user
+#
+
+DB_RT_USER	=	rt
 
 #
 # Set this to the password used by the rt database user
 #
 
-RT_DB_PASS	=	password
+DB_RT_PASS      =       password
+
 
 #
 # if you want to give the rt user different default privs, modify this file
 #
 
-RT_DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
+DB_ACL		= 	$(RT_ETC_PATH)/acl.$(RT_DB)
 
 
 #
@@ -173,12 +183,6 @@ WEB_AUTH_COOKIES_ALLOW_NO_PATH	=	yes
 ####################################################################
 # No user servicable parts below this line.  Frob at your own risk #
 ####################################################################
-
-ifdef DBA_PASSWORD
-DBA_PASS_STRING = -p$(DBADMIN_PASS)
-else 
-DBA_PASS_STRING = 
-endif
 
 
 default:
@@ -229,18 +233,18 @@ initialize: database acls
 
 
 database:
-	su -c "bin/initdb.$(RT_DB) '$(DB_HOME)' '$(RT_DB_HOST)' '$(DBA)' '$(DBA_PASSWORD)' '$(RT_DATABASE)'" $(DBA)
+	su -c "bin/initdb.$(RT_DB) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'" $(DBA)
 
 acls:
 	-$(PERL) -p -i.orig -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
 			else { s'!!RT_HOST!!'$(RT_HOST)'g }\
-		s'!!RT_DB_PASS!!'$(RT_DB_PASS)'g;\
-		s'!!RTUSER!!'$(RTUSER)'g;\
-		s'!!RT_DB_HOST!!'$(RT_DB_HOST)'g;\
-		s'!!RT_DATABASE!!'$(RT_DATABASE)'g;\
+		s'!!RT_DB_PASS!!'$(DB_PASS)'g;\
+		s'!!RTUSER!!'$(DB_USER)'g;\
+		s'!!RT_DB_HOST!!'$(DB_HOST)'g;\
+		s'!!RT_DATABASE!!'$(DB_DATABASE)'g;\
 		" $(RT_DB_ACL)
 
-	su -c "bin/initacls.$(RT_DB) '$(DB_HOME)' '$(RT_DB_HOST)' '$(DBA)' '$(DBA_PASSWORD)' '$(RT_DATABASE)' '$(RT_DB_ACL)'" $(DBA)
+	su -c "bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DB_ACL)'" $(DBA)
 
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
@@ -298,7 +302,7 @@ config-replace:
 	s'!!WEB_IMAGE_PATH!!'$(WEB_IMAGE_PATH)'g;\
 	s'!!WEB_AUTH_MECHANISM!!'$(WEB_AUTH_MECHANISM)'g;\
 	s'!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!'$(WEB_AUTH_COOKIES_ALLOW_NO_PATH)'g;\
-	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g; " $(RT_CONFIG)
+	" $(RT_CONFIG)
 
 
 predist:
@@ -318,11 +322,4 @@ dist:
 	rm -rf ./rt.tar.gz
 	ln -s ./rt-$(RT_VERSION).tar.gz ./rt.tar.gz
 	chmod 644 /home/ftp/pub/rt/devel/rt-$(RT_VERSION).tar.gz
-
-
-
-
-
-
-
 
