@@ -124,14 +124,26 @@ delete from ScripScope where id=8;
 
 # {{{ Table Users 
 
+ # Actually I don't think this is a good way to do it; we
+ # need it to be site-configurable what information we want to store
+ # about our users.
+
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   UserId VARCHAR(120) NOT NULL,
+ 
+ # What is `Gecos', anyway?
   Gecos CHAR(16),
   RealName VARCHAR(120),
   Password VARCHAR(40), 			
   ExternalId VARCHAR(100),
+
+ # I'm a bit uncertain if we have this one right.
+ # It's an important demand that it's possible to bind all requests
+ # from one person to the same entry in the Users table, even when a
+ # person is operating from several different email addresses.
   EmailAddress VARCHAR(120),
+
   HomePhone VARCHAR(30),
   WorkPhone VARCHAR(30),
   Address1 VARCHAR(200),
@@ -150,7 +162,6 @@ CREATE TABLE Users (
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP
 )\g
-
 
 # }}}
 
@@ -230,11 +241,11 @@ CREATE TABLE Tickets (
   Told INT, #TODO: Make a date type
   Due INT, #TODO: Make a date type
 
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP
 
   Creator INT(11),
   Created TIMESTAMP,
-  LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
 ) \g
 
 # }}}

@@ -7,30 +7,26 @@ For 2.0, those Linking actions should be supported:
  ...meaning that TARGET has to be resolved before BASE (really) is
  resolved.
  
- According to TobiX, those "weird actions" makes sense:
- ...when the link is set up, BASE will become stalled if it's open.
+ According to TobiX, those "weird action" makes sense:
+ ...when the link and/or TARGET is created, the BASE might be stalled.
+ Alternatively, this should be very trivial to request through the UIs.
  ...when the TARGET is resolved, BASE will be reopened if it's stalled.
- 
- An alternative to this "weird action" is to have some run-time logic that
- takes care of the different 
+
+ An alternative to those "weird actions" is to have some run-time logic that
+ takes care of this; i.e. letting the search interface handle "please hide
+ all requests with unresolved dependencies"
  
  TobiX will need to make dependency links into Bugzilla.
 
- Dependency links should be made when we (think we) can't do more work on
- one ticket before another ticket is resolved.
+ Dependency links should be made when more work to BASE should be done
+ after the TARGET is resolved and/or BASE can't be resolved before TARGET is
+ resolved.
 
-#
-# Where I am, dependencies should get added from the start. It doesn't matter
-# whether there's work we can do now or not. resolution of this ticket has
-# a dependency on that other tickets.   -jv
-#
+ Dependency links are often 1:1, but n:n links makes sense; one ticket can
+ depend on several others, several tickets can depend on one ticket, etc.
 
- Dependency links are usually 1:1, but n:n-links makes sense.  Loops doesn't
- make sense at all, but the system above won't break if it encounter loops.
-
-#
-# Er, one to many, perhaps? One ticket may depend on several others. -JV
-#
+ Loops don't make sense at all, but the system above won't break if it
+ encounter loops.
 
  Dependency links is more for workflow than anything else.  When a new
  TARGET is created, some of the work might be passed over to another
@@ -101,7 +97,7 @@ For 2.0, those Linking actions should be supported:
 
  No special actions will be taken.
  
- Loops might maybe make sense.
+ Loops might maybe make sense
 
 BASE and TARGET are usually Tickets within one RT instance, but it
 might also point to external RT instances, other DB systems, etc.
