@@ -798,8 +798,8 @@ sub GetDeferred {
 		      DependedOnBy => $args->{'dependedonby'},
 		      RefersTo	=> $args->{'refersto'},
 		      ReferredToBy => $args->{'referredtoby'},
-		      Members => $args->{'members'},
-		      MemberOf => $args->{'memberof'},
+		      Children => $args->{'children'},
+		      Parents => $args->{'parents'},
 		  }
 		  );
 
@@ -845,14 +845,15 @@ sub GetUpdateTemplate {
 	$string .= "$type: ";
 
 	my $mode = $LINKTYPEMAP{$type}->{Mode};
+	my $foo = $LINKTYPEMAP{$type}->{Type};
 
 	my $links;
-	while (my $link = $t->$type->Next) {
+	while (my $link = $t->$foo->Next) {
 	    $links .= ", " if $links;
 
 	    my $method = $mode . "Obj";
 	    my $member = $link->$method;
-	    $links .= $member->Id;
+	    $links .= $member->Id if $member;
 	}
 	$string .= $links;
 	$string .= "\n";
