@@ -28,7 +28,9 @@ sub _Init {
   my $self = shift;
   my $UserId = shift;
   $self->_MyHandle;
-  $self->Load($UserId);
+  if (defined($UserId)) {
+    $self->Load($UserId);
+  }
   $self->_MyCurrentUser($self);
   
 }
@@ -41,32 +43,29 @@ sub _Accessible {
 	      RealName => 'read',
 	      Password => 'write',
 	      EmailAddress => 'read',
-	      Phone => 'read',
-	      Office => 'read',
-	      Comments => 'read',
+	      CanManipulate => 'read',
 	      IsAdministrator => 'read'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
 
 
-sub load {
-  my $self = shift;
-  return ($self->Load(@_));
-}
 sub Load {
   my $self = shift;
   my $identifier = shift;
-  print "Identifier is $identifier\n";
+
   #if it's an int, load by id. otherwise, load by name.
   if ($identifier !~ /\D/) {
     $self->SUPER::LoadById($identifier);
   }
+  elsif ($identifier =~ /\@/) {
+    $self->LoadByCol("EmailAddress",$identifier);
+  }
   else {
-
-   $self->LoadByCol("UserId",$identifier);
+    $self->LoadByCol("UserId",$identifier);
   }
 }
+
 
 #used to check if a password is correct
 sub IsPassword { 

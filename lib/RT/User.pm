@@ -26,12 +26,20 @@ sub _Accessible {
   my %Cols = (
 	      UserId => 'read/write',
 	      Gecos => 'read/write',
-	      RealName=> 'read/write',
-	      Password=> 'write',
-	      EmailAddress=> 'read/write',
-	      Phone=> 'read/write',
-	      Office=> 'read/write',
-	      Comments=> 'read/write',
+	      RealName => 'read/write',
+	      Password => 'write',
+	      ExternalId => 'read/write',
+	      EmailAddress => 'read/write',
+	      HomePhone => 'read/write',
+	      WorkPhone => 'read/write',
+	      Address1 => 'read/write',
+	      Address2 => 'read/write',
+	      City => 'read/write',
+	      State => 'read/write',
+	      Zip => 'read/write',
+	      Country => 'read/write',
+	      Comments => 'read/write',
+	      CanManipulate => 'read/write',
 	      IsAdministrator => 'read/write'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
@@ -43,16 +51,24 @@ sub Create {
   my %args = (
 	      UserId => undef,
 	      Password => undef,
+	      Gecos => undef,
+	      RealName => undef,
+	      Password => undef,
+	      ExternalId => undef,
 	      EmailAddress => undef,
-	      Phone => undef,
-	      Office => undef, 
+	      HomePhone => undef,
+	      City => undef,
+	      State => undef,
+	      Zip => undef,
+	      Country => undef,
 	      Comments => undef,
-	      IsAdministrator => '0',
+	      CanManipulate => undef,
+	      IsAdministrator => undef,
 	      @_ # get the real argumentlist
 	     );
   
   
-  
+
   return (0,"That password is too short") if length($args{'Password'}) < $RT::user_passwd_min;
   
   my $id = $self->SUPER::Create(%args);
@@ -60,7 +76,9 @@ sub Create {
   
   #TODO: this is horrificially wasteful. we shouldn't commit 
   # to the db and then instantly turn around and load the same data
-  }
+  
+  return (1,"User created");
+}
  
 sub Delete {
   my $self = shift;

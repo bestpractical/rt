@@ -7,23 +7,8 @@ sub activate {
   
   my ($From, $TicketId, $Subject);
 
-  
-  #BEGIN TEMPORARY CODE FOR CLI USAGE
-  my ($CurrentUid);
-  require RT::CurrentUser;
-  
-  #Instantiate a user object
-  
-  ($CurrentUid,undef)=getpwuid($<);
-  #If the current user is 0, then RT will assume that the User object
-  #is that of the currentuser.
-  $CurrentUser = new RT::CurrentUser($CurrentUid);
-  if (!$CurrentUser) {
-    print "You have no RT access\n";
-    return(0);
-  }  
-#END TEMPORARY CODE
 
+  
   
   if (!defined ($Queue)) { $Queue = "general";}
   if (!defined ($Action)) { $Action = "correspond";}
@@ -62,17 +47,53 @@ sub activate {
   
   #Figure out who's sending this message.
   $From = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
-  chomp $From;
+  use Mail::Address;
+  print "From is : $From\n";
+  my @Address = Mail::Address->parse($From);
+  my $FromObj = shift @Address;
+  my $Address = $FromObj->address;
+  my $Name =  ($FromObj->phrase || $FromObj->comment);
+
+  print "Name: $Name\n";
+  
   
   #Pull apart the subject line
-  $Subject = $head->get('Subject');
+  $Subject = $head->get('Subject') || "";
   chomp $Subject;
-
-  if ($Subject =~ s/\[$rt::rtname \#(\d+)\]//i) {
+  
+  if ($Subject =~ s/\[$RT::rtname \#(\d+)\]//i) {
     $TicketId = $1;
   }
   
   
+  #Now we've got a parsed mime object. 
+  use RT::CurrentUser;
+  my $CurrentUser = new RT::CurrentUser($Address);
+
+  #Lets take the from and load a user object.
+  if ($CurrentUser->Id == 0) {
+    #If it fails, create a user
+    
+    use RT::User;
+    my $SystemUser = new RT::CurrentUser(1);
+    my $NewUser = RT::User->new($SystemUser);#Create a user as root 
+                                   #TODO: Figure out a better way to do this
+    my ($Val, $Message) = $NewUser->Create(UserId => "$Address",
+					   EmailAddress => "$Address",
+					   RealName => "$Name",
+					   Password => "Default", #TODO FIX THIS
+					   CanManipulate => 0,
+					   IsAdministrator => 0,
+					   Comments => "Autocreated by RT::Mailgate on ticket submission"
+					  );
+    
+    if (!$Val) {
+      die $Message;
+    }
+    #TODO: Send the user a "welcome message"
+    #Load the new user object
+    $CurrentUser->Load($Address);
+  }
   
   use RT::Ticket;
   
@@ -95,35 +116,38 @@ sub activate {
 		      );
     
   }
-
-    #If the message applies to an existing ticket
-
+  else { #If we have a ticketid
     #   If the message contains commands, execute them
     
     #   If the mail message is a comment, add a comment.
-
-    
+    if ($Action =~ /comment/i){
+      my $Ticket = new RT::Ticket($CurrentUser);
+      $Ticket->Load($TicketId);
+      #TODO: Check for error conditions.
+      $Ticket->Comment(MIMEObj=>$entity);
+    }
     #   If the message is correspondence, add it to the ticket
-
-
-
-
-
-
-
-}  
+    elsif ($Action =~ /correspond/) {
+      
+      my $Ticket = new RT::Ticket($CurrentUser);
+      $Ticket->Load($TicketId);
+      #TODO: Check for error conditions
+      $Ticket->Comment(MIMEObj => $entity);
+    }
+   }
+}
 
 sub CheckForLoops {
   my $head = shift;
 
   #If this instance of RT sent it our, we don't want to take it in
-  my $RTLoop = $head->get("X-RT-Loop-Prevention");
+  my $RTLoop = $head->get("X-RT-Loop-Prevention") || "";
   if ($RTLoop eq "$RT::rtname") {
     return(1);
   }
  
   #if it's from a postmaster or mailer daemon, it's likely a bounce.
-  my $From = $head->get("From");
+  my $From = $head->get("From") || "";
   
   if (($From =~ /^mailer-daemon/i) or
       ($From =~ /^postmaster/i)){
@@ -131,7 +155,7 @@ sub CheckForLoops {
   }
 
   #If it claims to be bulk mail, discard it
-  my $Precedence = $head->get("Precedence");
+  my $Precedence = $head->get("Precedence") || "" ;
 
   if ($Precedence =~ /^bulk/i) {
     return (1);

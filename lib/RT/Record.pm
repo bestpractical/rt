@@ -24,14 +24,11 @@ sub _MyCurrentUser {
   my $self = shift;
   $self->{'user'} = shift;
   
-  if(!$self->CurrentUser->UserId) {
+  if(!defined($self->CurrentUser)) {
     my ($package, $filename, $line) = caller;
-    print STDERR "RT::Record->_Init: You don't exist. Go Away.\n";
-    die " called from $package, line $line with arguments (",@_,")\n";
     
+    return(0);
   }
-
-
 }
 
 sub _MyHandle {

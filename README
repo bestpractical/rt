@@ -57,12 +57,14 @@ o   Text::Wrapper ( CPAN or http://www.perl.com ) -- free
 
 o   Mail::Internet ( CPAN or http://www.perl.com ) -- free
 
-	Part of the MailTools package. 
-
 	For sending email. Earlier versions used an external mail
 	program (like sendmail). Mail::Internet usually works right
 	out of the box, but if it doesn't, complain to
 	rt-devel@lists.fsck.com.
+
+o MIME::Tools ( CPAN or http://www.perl.com ) -- free
+	
+	For parsing incoming mail messages.
 
 o Libwww-perl / LWP::UserAgent and HTTP::Request 
 	( http://www.perl.com or CPAN ) -- free
@@ -74,7 +76,7 @@ o Libwww-perl / LWP::UserAgent and HTTP::Request
 SOON-TO-BE-REQUIRED PACKAGES
 ----------------------------
 
-o DBIx::RecordObject and DBIx::EasySearch
+o DBIx::Record and DBIx::EasySearch
         ( ftp://ftp.fsck.com/pub/DBIx ) -- free
 
 	These will be used for RT's new Object interface...
@@ -279,7 +281,6 @@ have paid me to update RT and release it to the public.  Without their
 support RT would not exist.  If I've left you out, please drop me a line
 ....it wasn't intentional. 
  
-
 
         Enjoy
 

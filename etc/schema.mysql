@@ -43,24 +43,37 @@ INSERT INTO Scrips VALUES (4,'TellMembersOnMail','Sends mail to requestor when e
 
 
 CREATE TABLE Users (
-
-
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  UserId CHAR(40) NOT NULL,
+  UserId VARCHAR(120) NOT NULL,
   Gecos CHAR(16),
-  RealName CHAR(40),
-  Password CHAR(40), 			
+  RealName VARCHAR(120),
+  Password VARCHAR(40), 			
+  ExternalId VARCHAR(100),
   EmailAddress VARCHAR(120),
-  Phone CHAR(15),
-  Office CHAR(30),
-  Comments CHAR(120),
+  HomePhone VARCHAR(30),
+  WorkPhone VARCHAR(30),
+  Address1 VARCHAR(200),
+  Address2 VARCHAR(200),
+  City VARCHAR(100),
+  State VARCHAR(100),
+  Zip VARCHAR(16),
+  Country VARCHAR(50),
+  Comments BLOB,
+
+
+  CanManipulate INT,  #Whether this user can be granted rights
+		      #If 0, the user can only be a requestor
   IsAdministrator INT,
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP
 )\g
-INSERT into Users (UserId, Gecos, RealName, Password, EmailAddress, Phone, Office, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) VALUES ('root', 'root', "Enoch Root", 'password', 'root@localhost', "000-000-0000", 'At the end of the hall','none', 1, 1, NULL, 1, NULL );			
+
+
+INSERT into Users (UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) VALUES ('root', 'root', "Enoch Root", 'password', 'root@localhost','none', 1, 1, NULL, 1, NULL );			
+
+
 CREATE TABLE Queues (
  id int(11) AUTO_INCREMENT PRIMARY KEY,
  QueueId CHAR(40) NOT NULL,
@@ -83,22 +96,31 @@ CREATE TABLE Queues (
   LastUpdated TIMESTAMP
 )\g
 
-#
-# Table structure for table 'each_req'
-#
+
+
+#We're not using InterestedParties yet.
+CREATE TABLE InterestedParties (
+   id int(11) AUTO_INCREMENT PRIMARY KEY,
+   Ticket int(11),
+   User int(11),
+   Type VARCHAR(16) #Requestor, Cc, Bcc
+   )
 
 CREATE TABLE Tickets (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   EffectiveId INT,
   Queue INT,
-  Alias CHAR(40),
-  Requestors CHAR(200),
+  Alias VARCHAR(40),
+  Type CHAR(16), #Ticket, Task, Bug
+  IssueStatement INT, #Reference to Attachments
+  Resolution INT, #Reference to Attachments
+  Requestors VARCHAR(200),
   Owner INT,
-  Subject CHAR(200),
+  Subject VARCHAR(200),
   InitialPriority INT,
   FinalPriority INT,
   Priority INT,
-  Status CHAR(10),
+  Status VARCHAR(10), #TODO, Make this a reference to a statuses table.
   TimeWorked INT,
   Told INT,
   Due INT,
@@ -108,9 +130,6 @@ CREATE TABLE Tickets (
   LastUpdated TIMESTAMP
 ) \g
 
-#
-# Table structure for table 'transactions'
-#
 
 CREATE TABLE Transactions (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
