@@ -551,11 +551,12 @@ sub MigrateTransactions {
 	    } elsif ( ($Owner == $actor->Id) and 
 		      ($new_user->Id == $RT::Nobody->Id) ) {
 		$trans_args{'Type'} = 'Untake';
-	    } elsif ( $Owner == $actor->Id ) {
-		$trans_args{'Type'} = 'Give';
 	    } elsif ( $Owner != $RT::Nobody->Id) {
 		$trans_args{'Type'} = 'Steal';
-	    } 
+	    } else {
+		$trans_args{'Type'} = 'Give';
+	    }	
+	    
 	    $Owner = $new_user->Id;
 	    
 	} 
@@ -768,14 +769,14 @@ sub MigrateTransactions {
 
 	    my $created = new RT::Date($RT::SystemUser);
 	    $created->Set( Format=>'unix', Value=>$row->{'trans_date'});
-
+	    
 	    my $trans = new RT::Transaction($User);
 	    
 	    # Allow us to set the 'Created' attribute. 
 	    
 	    $trans->{'_AccessibleCache'}{Created} = { 'read'=>1, 'write'=>1 };
 	    $trans->{'_AccessibleCache'}{Creator} = { 'read'=>1, 'auto'=>1 };
-	    	    
+	    
 	    my ($transaction, $msg) = 
 	      $trans->Create( Ticket => $ticket_id,
 			      Type => $trans_args{'Type'},
