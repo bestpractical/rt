@@ -117,7 +117,7 @@ $Description ||= $search_hash->{'Description'};
 $SearchId ||= $search_hash->{'SearchId'} || 'new';
 $Order ||= $search_hash->{'Order'} || 'ASC';
 $OrderBy ||= $search_hash->{'OrderBy'} || 'id';
-$RowsPerPage ||= $search_hash->{'RowsPerPage'} || 50;
+$RowsPerPage = ($search_hash->{'RowsPerPage'} || 50) unless defined ($RowsPerPage);
 $search ||= $search_hash->{'Object'};
 # }}}
 
