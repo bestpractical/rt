@@ -29,6 +29,7 @@ sub RTxInitDB {
         "--datadir"     => "etc",
         "--datafile"    => "etc/initialdata",
         "--dba"         => $RT::DatabaseUser,
+        "--prompt-for-dba-password" => ''
     );
     print "$^X @args\n";
     (system($^X, @args) == 0) or die "...returned with error: $?\n";

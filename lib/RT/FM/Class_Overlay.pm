@@ -191,7 +191,7 @@ sub ArticleCustomFields {
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeClass') ) {
         $cfs->LimitToGlobalOrObjectId( $self->Id );
-        $cfs->LimitToLookupType( RT::FM::Article->_LookupTypes );
+        $cfs->LimitToLookupType( RT::FM::Article->CustomFieldLookupType );
     }
     return ($cfs);
 }

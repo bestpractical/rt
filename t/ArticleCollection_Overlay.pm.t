@@ -20,7 +20,7 @@ is($arts->Count, 0, 'Found no artlcles with summaries matching the word "testing
 
  $arts2 =RT::FM::ArticleCollection->new($RT::SystemUser);
 $arts2->LimitSummary (VALUE => 'test');
-is($arts2->Count, 3, 'Found 3 artlcles with summaries matching the word "test"');
+is($arts2->Count, 3, 'Found 3 artlcles with summaries matching the word "test" (found '.$arts2->Count.')');
 
 
 my $new_art = RT::FM::Article->new($RT::SystemUser);

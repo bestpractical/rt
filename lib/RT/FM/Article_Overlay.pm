@@ -31,7 +31,7 @@ use RT::Transactions;
 
 # This object takes custom fields
 
-RT::CustomField->_ForObjectType( _LookupTypes() => 'RTFM Articles' );    #loc
+RT::CustomField->_ForObjectType( CustomFieldLookupType() => 'RTFM Articles' );    #loc
 
 # {{{ Create
 
@@ -515,7 +515,7 @@ sub _Value {
 
 # }}}
 
-sub _LookupTypes {
+sub CustomFieldLookupType {
     "RT::FM::Class-RT::FM::Article";
 }
 

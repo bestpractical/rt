@@ -40,7 +40,7 @@ isa_ok($cf, 'RT::CustomField');
 
 ($id,$msg) = $cf->Create( Name => 'FM::Sample-'.$$,
              Description => 'Test text cf',
-             LookupType => RT::FM::Article->_LookupTypes,
+             LookupType => RT::FM::Article->CustomFieldLookupType,
              Type => 'Text'
              );
 

@@ -10,12 +10,14 @@ use_ok(RT::FM::Article);
 use_ok(RT::FM::ArticleCollection);
 use_ok(RT::FM::Class);
 
+my $CLASS = 'ArticleTest-'.$$;
+
 my $user = RT::CurrentUser->new('root');
 
 my $class = RT::FM::Class->new($user);
 
 
-my ($id, $msg) = $class->Create(Name =>'ArticleTest');
+my ($id, $msg) = $class->Create(Name =>$CLASS);
 ok ($id, $msg);
 
 
@@ -27,10 +29,10 @@ ok (UNIVERSAL::isa($article, 'RT::Record'));
 ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record') , "It's a searchbuilder record!");
 
 
-($id, $msg) = $article->Create( Class => 'ArticleTest', Summary => "ArticleTest");
+($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS);
 ok ($id, $msg);
 $article->Load($id);
-is ($article->Summary, 'ArticleTest', "The summary is set correct");
+is ($article->Summary, $CLASS, "The summary is set correct");
 my $at = RT::FM::Article->new($RT::SystemUser);
 $at->Load($id);
 is ($at->id , $id);
@@ -40,23 +42,23 @@ is ($at->Summary, $article->Summary);
 
 
 my  $a1 = RT::FM::Article->new($RT::SystemUser);
- ($id, $msg)  = $a1->Create(Class => 1, Name => 'ValidateNameTest');
+ ($id, $msg)  = $a1->Create(Class => $class->id, Name => 'ValidateNameTest'.$$);
 ok ($id, $msg);
 
 
 
 my  $a2 = RT::FM::Article->new($RT::SystemUser);
-($id, $msg)  = $a2->Create(Class => 1, Name => 'ValidateNameTest');
+($id, $msg)  = $a2->Create(Class => $class->id, Name => 'ValidateNameTest'.$$);
 ok (!$id, $msg);
 
 my  $a3 = RT::FM::Article->new($RT::SystemUser);
-($id, $msg)  = $a3->Create(Class => 1, Name => 'ValidateNameTest2');
+($id, $msg)  = $a3->Create(Class => $class->id, Name => 'ValidateNameTest2'.$$);
 ok ($id, $msg);
-($id, $msg) =$a3->SetName('ValidateNameTest');
+($id, $msg) =$a3->SetName('ValidateNameTest'.$$);
 
 ok (!$id, $msg);
 
-($id, $msg) =$a3->SetName('ValidateNametest2');
+($id, $msg) =$a3->SetName('ValidateNametest2'.$$);
 
 ok ($id, $msg);
 
@@ -65,7 +67,7 @@ ok ($id, $msg);
 
 
 my $newart = RT::FM::Article->new($RT::SystemUser);
-$newart->Create(Name => 'DeleteTest', Class => '1');
+$newart->Create(Name => 'DeleteTest'.$$, Class => '1');
 $id = $newart->Id;
 
 ok($id, "New article has an id");
@@ -82,15 +84,15 @@ ok ($val, "Article Deleted: $msg");
 $a2->Load($id);
 ok (!$a2->Id, "Did not find the article");
 
-
-$RT::Handle->SimpleQuery("DELETE FROM Links");
+# NOT OK
+#$RT::Handle->SimpleQuery("DELETE FROM Links");
 
 my $article_a = RT::FM::Article->new($RT::SystemUser);
-($id, $msg) = $article_a->Create( Class => 'ArticleTest', Summary => "ArticleTestlink1");
+($id, $msg) = $article_a->Create( Class => $CLASS, Summary => "ArticleTestlink1".$$);
 ok($id,$msg);
 
 my $article_b = RT::FM::Article->new($RT::SystemUser);
-($id, $msg) = $article_b->Create( Class => 'ArticleTest', Summary => "ArticleTestlink2");
+($id, $msg) = $article_b->Create( Class => $CLASS, Summary => "ArticleTestlink2".$$);
 ok($id,$msg);
 
 # Create a link between two articles
@@ -196,7 +198,7 @@ ok ($id, $msg);
 
 
 my $art = RT::FM::Article->new($RT::SystemUser);
-($id, $msg) = $art->Create (Class => 'ArticleTest');
+($id, $msg) = $art->Create (Class => $CLASS);
 ok ($id,$msg);
 
 ok($art->URI);
@@ -206,7 +208,7 @@ ok($art->__Value('URI') eq $art->URI, "The uri in the db is set correctly");
 
 
  $art = RT::FM::Article->new($RT::SystemUser);
-($id, $msg) = $art->Create (Class => 'ArticleTest');
+($id, $msg) = $art->Create (Class => $CLASS);
 ok ($id,$msg);
 
 ok($art->URIObj);
