@@ -2,8 +2,7 @@ Owner: <& /Elements/SelectOwner, Name => 'Owner', Default => $TicketObj->OwnerOb
 <BR>
 
 <h3>Current watchers</h3>
-<h3 color=red>no backend yet</h3>
-(Check box to delete)<br><br>
+(Check box to delete)<br>
 
 Requestors:
 <& EditWatchers, TicketObj => $TicketObj, Type => 'requestors' &>

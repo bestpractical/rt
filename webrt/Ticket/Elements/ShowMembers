@@ -1,7 +1,7 @@
 <UL>
 % my $members = $Ticket->Members;
 % while (my $member = $members->Next) {
-<LI><a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Subject%> [<%$member->Status%>]<br>
+<LI><a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Subject%> [<%$member->Status%>]<br>
 % if ($depth < 8) {
 <&/Ticket/Elements/ShowMembers, Ticket => $member, depth => ($depth+1) &> 
 % }
