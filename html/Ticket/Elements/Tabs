@@ -45,44 +45,34 @@ if ( $Ticket) {
 my $id   = $Ticket->id();
 
 if ( defined $session{'tickets'} ) {
-    my $items  = $session{'tickets'}->ItemsArrayRef();
-    my @indexs = grep( ( $items->[$_]->id == $Ticket->Id ), 0 .. $#{$items} );
 
-    if ( $items->[0] && @indexs ) {
 
-        if ( $items->[ $indexs[0] ]->id == $Ticket->Id ) {
+my $item_map = $session{'tickets'}->{'item_map'};
 
             # Don't $current_toptab = display prev links if we're on the first ticket
-            if ( $items->[0]->id != $Ticket->id ) {
 
+        if ($item_map->{$Ticket->Id}->{prev}) {
                 $searchtabs->{'_a'} = {
                             class => "nav",
-                            path => "Ticket/Display.html?id=" . $items->[0]->id,
+                            path => "Ticket/Display.html?id=" . $item_map->{first},
                             title => '<< ' . loc('First') };
                 $searchtabs->{"_b"} = { class => "nav",
-                                  path  => "Ticket/Display.html?id="
-                                    . $items->[ $indexs[0] - 1 ]->id,
+                            path => "Ticket/Display.html?id=" . $item_map->{$Ticket->Id}->{prev},
                                   title => '< ' . loc('Prev') };
-            }
-        }
-    }
+       } 
 
-    if ( $items->[0] && @indexs ) {
 
         # Don't display next links if we're on the last ticket
-        if ( $Ticket->id != $items->[-1]->id ) {
+        if ($item_map->{$Ticket->Id}->{next}) {
             $searchtabs->{'d'} = { class => "nav",
-                             path  => "Ticket/Display.html?id="
-                               . $items->[ $indexs[0] + 1 ]->id,
+                            path => "Ticket/Display.html?id=" . $item_map->{$Ticket->Id}->{next},
                              title => loc('Next') . ' >' };
             $searchtabs->{'e'} = {
                            class => "nav",
-                           path => "Ticket/Display.html?id=" . $items->[-1]->id,
+                           path => "Ticket/Display.html?id=" . $item_map->{last},
                            title => loc('Last') . ' >>' };
         }
-    }
 }
-
 
 
 

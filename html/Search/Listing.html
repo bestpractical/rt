@@ -107,6 +107,7 @@ if ($session{'tickets'}) {
     } else {
         $title = loc("Find tickets");
    }
-
-
 </%INIT>
+<%CLEANUP>
+$session{'tickets'}->PrepForSerialization();
+</%CLEANUP>

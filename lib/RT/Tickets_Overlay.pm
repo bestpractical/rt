@@ -1669,6 +1669,8 @@ sub _Init  {
     $self->{'looking_at_effective_id'} = 0;
     $self->{'restriction_index'} =1;
     $self->{'primary_key'} = "id";
+    delete $self->{'items_array'};
+    delete $self->{'item_map'};
     $self->SUPER::_Init(@_);
 
     $self->_InitSQL;
@@ -1696,14 +1698,16 @@ sub ItemsArrayRef {
     my $self = shift;
     my @items;
 
-    my $placeholder = $self->_ItemsCounter;
-    $self->GotoFirstItem();
-    while (my $item = $self->Next) {
-	push (@items, $item);
-    }
+    unless ( $self->{'items_array'} ) {
 
-    $self->GotoItem($placeholder);
-    return(\@items);
+        my $placeholder = $self->_ItemsCounter;
+        $self->GotoFirstItem();
+        while ( my $item = $self->Next ) {
+            push ( @{ $self->{'items_array'} }, $item );
+        }
+        $self->GotoItem($placeholder);
+    }
+    return ( $self->{'items_array'} );
 }
 # }}}
 
@@ -1924,6 +1928,20 @@ sub _ProcessRestrictions {
 
     $self->FromSQL($sql);
 
+    # Build up a map of first/last/next/prev items, so that we can display search nav quickly
+
+    my $items = $self->ItemsArrayRef;
+    my $prev;
+
+    if ($items->[0]) {
+    $self->{'item_map'}->{'first'} = $items->[0]->Id;
+    while (my $item = shift @$items ) {
+        $self->{'item_map'}->{$item->Id}->{prev}  = $prev;
+        $self->{'item_map'}->{$item->Id}->{next}  = $items->[0]->Id if ($items->[0]);
+        $prev = $item->Id;
+    }
+    $self->{'item_map'}->{'last'} = $prev;
+    }
 }
 
 
@@ -1931,6 +1949,19 @@ sub _ProcessRestrictions {
 # }}}
 
 # }}}
+
+=head2 PrepForSerialization
+
+You don't want to serialize a big tickets object, as the {items} hash will be instantly invalid _and_ eat lots of space
+
+=cut
+
+
+sub PrepForSerialization {
+    my $self = shift;
+    delete $self->{'items'};
+	$self->{'RecalcTicketLimits'} = 1;
+}
 
 1;
 

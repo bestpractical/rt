@@ -204,7 +204,9 @@ sub Delete {
 sub Message {
 
     my $self = shift;
-
+    
+    use Carp;
+    Carp::confess;
     if ( !defined( $self->{'message'} ) ) {
 
         $self->{'message'} = new RT::Attachments( $self->CurrentUser );
@@ -244,12 +246,12 @@ sub Content {
     my $content = undef;
 
     # If we don\'t have any content, return undef now.
-    unless ( $self->Message->First ) {
+    unless ( $self->Attachments->First ) {
         return (undef);
     }
 
     # Get the set of toplevel attachments to this transaction.
-    my $MIMEObj = $self->Message->First();
+    my $MIMEObj = $self->Attachments->First();
 
     # If it's a message or a plain part, just return the
     # body. 
@@ -335,8 +337,8 @@ Otherwise, returns null
 
 sub Subject {
     my $self = shift;
-    if ( $self->Message->First ) {
-        return ( $self->Message->First->Subject );
+    if ( $self->Attachments->First ) {
+        return ( $self->Attachments->First->Subject );
     }
     else {
         return (undef);
@@ -356,50 +358,39 @@ a ContentType that Attachments should be restricted to.
 =cut
 
 sub Attachments {
-    my $self  = shift;
-    my $Types = '';
-    $Types = shift if (@_);
+    my $self = shift;
 
-    my $Attachments = RT::Attachments->new( $self->CurrentUser );
+    unless ( $self->{'attachments'} ) {
+        $self->{'attachments'} = RT::Attachments->new( $self->CurrentUser );
 
-    #If it's a comment, return an empty object if they don't have the right to see it
-    if ( $self->Type eq 'Comment' ) {
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return ($Attachments);
+        #If it's a comment, return an empty object if they don't have the right to see it
+        if ( $self->Type eq 'Comment' ) {
+            unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+                return ( $self->{'attachments'} );
+            }
         }
-    }
 
-    #if they ain't got rights to see, return an empty object
-    else {
-        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return ($Attachments);
+        #if they ain't got rights to see, return an empty object
+        else {
+            unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+                return ( $self->{'attachments'} );
+            }
         }
+
+        $self->{'attachments'}->Limit( FIELD => 'TransactionId',
+                                       VALUE => $self->Id );
+
+        # Get the self->{'attachments'} in the order they're put into
+        # the database.  Arguably, we should be returning a tree
+        # of self->{'attachments'}, not a set...but no current app seems to need
+        # it.
+
+        $self->{'attachments'}->OrderBy( ALIAS => 'main',
+                                         FIELD => 'Id',
+                                         ORDER => 'asc' );
+
     }
-
-    $Attachments->Limit(
-        FIELD => 'TransactionId',
-        VALUE => $self->Id
-    );
-
-    # Get the attachments in the order they're put into
-    # the database.  Arguably, we should be returning a tree
-    # of attachments, not a set...but no current app seems to need
-    # it. 
-
-    $Attachments->OrderBy(
-        ALIAS => 'main',
-        FIELD => 'Id',
-        ORDER => 'asc'
-    );
-
-    if ($Types) {
-        $Attachments->ContentType(
-            VALUE    => "$Types",
-            OPERATOR => "LIKE"
-        );
-    }
-
-    return ($Attachments);
+    return ( $self->{'attachments'} );
 
 }
 
@@ -485,6 +476,7 @@ Returns a text string which briefly describes this transaction
 sub BriefDescription {
     my $self = shift;
 
+
     #Check those ACLs
     #If it's a comment, we need to be extra special careful
     if ( $self->__Value('Type') eq 'Comment' ) {
@@ -500,14 +492,16 @@ sub BriefDescription {
         }
     }
 
-    if ( !defined( $self->Type ) ) {
+    my $type = $self->Type; #cache this, rather than calling it 30 times
+
+    if ( !defined( $type ) ) {
         return $self->loc("No transaction type specified");
     }
 
-    if ( $self->Type eq 'Create' ) {
+    if ( $type eq 'Create' ) {
         return ($self->loc("Ticket created"));
     }
-    elsif ( $self->Type =~ /Status/ ) {
+    elsif ( $type =~ /Status/ ) {
         if ( $self->Field eq 'Status' ) {
             if ( $self->NewValue eq 'deleted' ) {
                 return ($self->loc("Ticket deleted"));
@@ -523,15 +517,15 @@ sub BriefDescription {
         return ( $self->loc( "[_1] changed from [_2] to [_3]", $self->Field , ( $self->OldValue || $no_value ) ,  $self->NewValue ));
     }
 
-    if ( $self->Type eq 'Correspond' ) {
+    if ( $type eq 'Correspond' ) {
         return $self->loc("Correspondence added");
     }
 
-    elsif ( $self->Type eq 'Comment' ) {
+    elsif ( $type eq 'Comment' ) {
         return $self->loc("Comments added");
     }
 
-    elsif ( $self->Type eq 'CustomField' ) {
+    elsif ( $type eq 'CustomField' ) {
 
         my $field = $self->loc('CustomField');
 
@@ -553,15 +547,15 @@ sub BriefDescription {
         }
     }
 
-    elsif ( $self->Type eq 'Untake' ) {
+    elsif ( $type eq 'Untake' ) {
         return $self->loc("Untaken");
     }
 
-    elsif ( $self->Type eq "Take" ) {
+    elsif ( $type eq "Take" ) {
         return $self->loc("Taken");
     }
 
-    elsif ( $self->Type eq "Force" ) {
+    elsif ( $type eq "Force" ) {
         my $Old = RT::User->new( $self->CurrentUser );
         $Old->Load( $self->OldValue );
         my $New = RT::User->new( $self->CurrentUser );
@@ -569,44 +563,44 @@ sub BriefDescription {
 
         return $self->loc("Owner forcibly changed from [_1] to [_2]" , $Old->Name , $New->Name);
     }
-    elsif ( $self->Type eq "Steal" ) {
+    elsif ( $type eq "Steal" ) {
         my $Old = RT::User->new( $self->CurrentUser );
         $Old->Load( $self->OldValue );
         return $self->loc("Stolen from [_1] ",  $Old->Name);
     }
 
-    elsif ( $self->Type eq "Give" ) {
+    elsif ( $type eq "Give" ) {
         my $New = RT::User->new( $self->CurrentUser );
         $New->Load( $self->NewValue );
         return $self->loc( "Given to [_1]",  $New->Name );
     }
 
-    elsif ( $self->Type eq 'AddWatcher' ) {
+    elsif ( $type eq 'AddWatcher' ) {
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
         return $self->loc( "[_1] [_2] added", $self->Field, $principal->Object->Name);
     }
 
-    elsif ( $self->Type eq 'DelWatcher' ) {
+    elsif ( $type eq 'DelWatcher' ) {
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->OldValue);
         return $self->loc( "[_1] [_2] deleted", $self->Field, $principal->Object->Name);
     }
 
-    elsif ( $self->Type eq 'Subject' ) {
+    elsif ( $type eq 'Subject' ) {
         return $self->loc( "Subject changed to [_1]", $self->Data );
     }
-    elsif ( $self->Type eq 'Told' ) {
+    elsif ( $type eq 'Told' ) {
         return $self->loc("User notified");
     }
 
-    elsif ( $self->Type eq 'AddLink' ) {
+    elsif ( $type eq 'AddLink' ) {
         return ( $self->Data );
     }
-    elsif ( $self->Type eq 'DeleteLink' ) {
+    elsif ( $type eq 'DeleteLink' ) {
         return ( $self->Data );
     }
-    elsif ( $self->Type eq 'Set' ) {
+    elsif ( $type eq 'Set' ) {
         if ( $self->Field eq 'Queue' ) {
             my $q1 = new RT::Queue( $self->CurrentUser );
             $q1->Load( $self->OldValue );
@@ -627,11 +621,11 @@ sub BriefDescription {
             return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, $self->OldValue, $self->NewValue );
         }
     }
-    elsif ( $self->Type eq 'PurgeTransaction' ) {
+    elsif ( $type eq 'PurgeTransaction' ) {
         return $self->loc("Transaction [_1] purged", $self->Data);
     }
     else {
-        return $self->loc( "Default: [_1]/[_2] changed from [_3] to [_4]", $self->Type, $self->Field, $self->OldValue, $self->NewValue );
+        return $self->loc( "Default: [_1]/[_2] changed from [_3] to [_4]", $type, $self->Field, $self->OldValue, $self->NewValue );
 
     }
 }
