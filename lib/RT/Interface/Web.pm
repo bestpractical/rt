@@ -327,17 +327,17 @@ sub MakeMIMEEntity {
 
         #foreach my $filehandle (@filenames) {
 
-       # my ( $fh, $temp_file ) = tempfile();
+        # my ( $fh, $temp_file ) = tempfile();
 
         #$binmode $fh;    #thank you, windows
 
         # We're having trouble with tempfiles not getting created. Let's try it with 
         # a scalar instead
 
-        my ($buffer,@file);
+        my ( $buffer, @file );
 
         while ( my $bytesread = read( $cgi_filehandle, $buffer, 4096 ) ) {
-            push(@file, $buffer);
+            push ( @file, $buffer );
         }
 
         $RT::Logger->debug($file);
@@ -345,11 +345,13 @@ sub MakeMIMEEntity {
         $filename =~ s#^(.*)/##;
         my $uploadinfo = $cgi_object->uploadInfo($cgi_filehandle);
         $Message->attach(
-            Data    => \@file,
+            Data => \@file,
+
             #Path     => $temp_file,
             Filename => $filename,
             Type     => $uploadinfo->{'Content-Type'}
         );
+
         #close($fh);
         #unlink($temp_file);
 
