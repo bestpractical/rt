@@ -449,7 +449,7 @@ sub DeleteValueForArticle {
                  @_ );
 
     my $oldval = RT::FM::ArticleCFValue->new( $self->CurrentUser );
-    $oldval->LoadByArticleContentAndCustomField( Article      => $args{'Article'},
+    $oldval->LoadByCols( Article      => $args{'Article'},
                                                 Content     => $args{'Content'},
                                                 CustomField => $self->Id );
 

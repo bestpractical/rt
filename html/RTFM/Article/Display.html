@@ -1,6 +1,5 @@
-<& /RTFM/Elements/Header, Title => loc('Article #[_1]',$id) &>
-<& /RTFM/Article/Elements/Tabs, id => $id, 
-    Title => loc( "Article #[_1]: [_2]", $article->Id, $article->Name) &>
+<& /RTFM/Elements/Header, Title => $title &>
+<& /RTFM/Article/Elements/Tabs, id => $id, Title => $title &>
 <table>
 <tr>
 <td>Summary</td>
@@ -66,6 +65,7 @@ unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj,
 my $cfs = $article->ClassObj->CustomFields;
 
 
+   my $title =  loc( "Article #[_1]: [_2]", $article->Id, $article->Name);
 </%init>
 
 <%args>

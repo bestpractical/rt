@@ -24,8 +24,9 @@
 %# END LICENSE BLOCK
 
 
-<& /RTFM/Elements/Header, Title => loc('Modify article #[_1]', $ArticleObj->Id) &>
-<& /RTFM/Article/Elements/Tabs, Article => $ArticleObj, current_tab => "Article/Edit.html?id=".$ArticleObj->Id , id => $id &>
+<& /RTFM/Elements/Header, Title => $title&>
+<& /RTFM/Article/Elements/Tabs, Article => $ArticleObj, current_tab =>
+"Article/Edit.html?id=".$ArticleObj->Id , id => $id, Title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -150,7 +151,7 @@ foreach my $article ( keys %custom_fields_to_mod ) {
                             Field   => $cf,
                             Content => $value
                         );
-                        push ( @results, "finished the add" );
+                        push ( @results, $msg);
                     }
 
                 }
@@ -217,6 +218,8 @@ foreach my $linktype (@linktypes) {
 unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
     Abort("No permission to view Article");
 }
+
+my $title = loc('Modify article #[_1]', $ArticleObj->Id);
 
 </%INIT>
 

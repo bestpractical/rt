@@ -26,6 +26,7 @@ GETPARAM		=       $(PERL) -I/opt/rt3/lib -e'use RT; RT::LoadConfig(); print $${$
 RT_LIB_PATH	     =       /opt/rt3/lib
 MASON_HTML_PATH	 =       /opt/rt3/local/html
 
+DB_DATABASEHOST		=  `${GETPARAM} DatabaseHost`
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
@@ -53,7 +54,8 @@ dropdb: dropdb.$(DBTYPE)
 
 
 initdb.mysql: etc/schema.mysql
-	mysql  $(DB_DATABASE) < etc/schema.mysql
+	#/usr/local/mysql/bin/mysql -h $(DB_DATABASEHOST) -u $(DB_RT_USER) -p $(DB_RT_PASS) $(DB_DATABASENAME) < etc/schema.mysql
+	mysql $(DB_DATABASE) < etc/schema.mysql
 
 initdb.Pg: etc/schema.mysql
 	psql -U pgsql rt3 < etc/schema.Pg

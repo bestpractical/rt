@@ -1,8 +1,7 @@
-<& /RTFM/Elements/Header, Title => loc('Article #[_1]',$id) &>
-<& /RTFM/Article/Elements/Tabs, id => $id  &>
+<& /RTFM/Elements/Header, Title => $title &>
+<& /RTFM/Article/Elements/Tabs, id => $id, Title => $title&>
   
 
-<h1><&|/l,$article->Id, $article->Name &>Article #[_1]: [_2]</&></h1>
 
 % while (my $transaction = $transactions->Next) {
 <%$transaction->CreatedObj->AsString%>: <%$transaction->CreatorObj->Name%>
@@ -26,6 +25,7 @@ unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj,
 
 my $transactions = $article->Transactions();
 
+my $title =loc('History for article #[_1]',$id);
 
 </%init>
 

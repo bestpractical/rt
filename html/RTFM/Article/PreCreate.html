@@ -1,11 +1,11 @@
 <& /RTFM/Elements/Header &>                                                     
-<& /RTFM/Elements/Article/Tabs, current_tab => "RTFM/Article/PreCreate.html",
+<& /RTFM/Article/Elements/Tabs, current_tab => "RTFM/Article/PreCreate.html",
 Title => loc('Create an article in class...') &>
 <ul>                                                                            
 % my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});          
 % $Classes->UnLimit;                                                            
 % while (my $Class = $Classes->Next) {                                          
-<li><a href="Article/Create.html?Class=<%$Class->Id%>">in class <%$Class->Name%>
+<li><a href="Create.html?Class=<%$Class->Id%>">in class <%$Class->Name%>
 </a></li>                                                                       
 % }                                                                             
                                                                                 
