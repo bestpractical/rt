@@ -1,0 +1,296 @@
+#!/usr/bin/perl -w
+#
+# $Header$
+# RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
+
+
+$ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
+$ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
+$ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
+$ENV{'ENV'} = '' if defined $ENV{'ENV'};
+$ENV{'IFS'} = ''		if defined $ENV{'IFS'};
+
+package RT;
+use strict;
+use vars qw($VERSION $Handle $Nobody $SystemUser);
+use Getopt::Long;
+
+$VERSION="!!RT_VERSION!!";
+
+use lib "!!RT_LIB_PATH!!";
+use lib "!!RT_ETC_PATH!!";
+
+#This drags in  RT's config.pm
+use config;
+use Carp;
+
+use RT::Handle;
+$RT::Handle = new RT::Handle($RT::DatabaseType);
+{
+$RT::Handle->Connect();
+}
+
+use RT::CurrentUser;
+#RT's system user is a genuine database user. its id lives here
+
+$RT::SystemUser = new RT::CurrentUser();
+$RT::SystemUser->LoadByUserId('RT_System');
+
+#RT's "nobody user" is a genuine database user. its ID lives here.
+$RT::Nobody = new RT::CurrentUser();
+$RT::Nobody->LoadByUserId('Nobody');
+
+my $CurrentUser = GetCurrentUser();
+
+# {{{ commandline flags 
+my ( @id,
+     @limit_queue,
+     @limit_status,
+     @limit_owner,
+     @limit_priority,
+     @limit_final_priority,
+     @limit_requestor,
+     @limit_subject,
+     @limit_body,
+     @limit_created,
+     @limit_due,
+     @limit_starts,
+     @limit_started,
+     $limit_first,
+     $limit_rows,
+     $history,
+     $summary,
+     $create,
+     $requestors,
+     $cc,
+     $admincc,
+     $status,
+     $subject,
+     $owner,
+     $queue,
+     $time_left,
+     $priority,
+     $final_priority,
+     $due,
+     $starts,
+     $started,
+     $contacted,
+     @add_requestor,
+     @del_requestor,
+     @del_cc,
+     @add_cc,
+     @del_admincc,
+     @add_admincc,
+     $comment,
+     $reply,
+     $source,
+     $edit,
+     @dependson,
+     @memberof, 
+     @relatedto,
+     $time_taken,
+     $verbose,
+     $debug,
+   $help,
+   $version);
+
+# }}}
+# {{{    args
+my @args =("id=s", \@id,
+	   "limit_queue=s", \@limit_queue,
+	   "limit_status=s", \@limit_status,
+	   "limit-owner=s", \@limit_owner,
+	   "limit-priority=s", \@limit_priority,
+	       "limit-final-priority=s", \@limit_final_priority,
+	       "limit-requestor=s", \@limit_requestor,
+	       "limit-subject=s", \@limit_subject,
+	       "limit-body=s",	\@limit_body,
+	       "limit-created=s", \@limit_created,
+	       "limit-due=s",	\@limit_due,
+	       "limit-starts=s", \@limit_starts,
+	       "limit-started=s", \@limit_started,
+	       "limit-first=i", \$limit_first,
+	       "limit-rows=i", \$limit_rows,
+	       "history|show", \$history,
+	       "summary:s", \$summary,
+	   "create", \$create,
+	       "requestors=s", \$requestors,
+	       "cc=s", \$cc,
+	       "admincc=s", \$admincc,
+	       "status=s", \$status,
+	       "subject=s", \$subject,
+	       "owner=s", \$owner,
+	       "queue=s", \$queue,
+	       "time-left=i", \$time_left,
+	       "priority=i", \$priority,
+	       "final-priority=i", \$final_priority,
+	       "due=s", \$due,
+	       "starts=s", \$starts,
+	       "started=s", \$started,
+	       "contacted=s", \$contacted,
+	       "add-requestor=s", \@add_requestor,
+	       "del-requestor=s", \@del_requestor,
+	       "del-cc=s", \@del_cc,
+	       "add-cc=s", \@add_cc,
+	       "del-admincc=s", \@del_admincc,
+	       "add-admincc=s", \@add_admincc,
+	       "comment", \$comment,
+	       "reply|respond", \$reply,
+	       "source=s", \$source,
+	       "edit!", \$edit,
+	       "depends-on=s", \@dependson,
+	       "member-of=s", \@memberof, 
+	       "related-to=s", \@relatedto,
+	       "time-taken=i", \$time_taken,
+	       "verbose+", \$verbose,
+	   "debug", \$debug,
+	   "version", \$version,
+	   "help|h|usage", \$help
+	  );
+  
+# }}}
+
+
+GetOptions(@args);
+
+
+#Validate any options that were passed in. normalize them.
+
+
+#Check if we're creating, if so, create the ticket and be done
+if ($help) {
+    print "This should be a usage message. it will be soon\n";
+}
+
+if ($create) {
+    debug("Creating a new ticket");
+    
+    use RT::Ticket;
+    my $Ticket=new RT::Ticket($CurrentUser);
+    $Ticket->Create(Queue => $queue,
+		    Owner => $owner,
+		    Status => $status,
+		    Subject => $subject,
+		    Requestors => $requestors,
+		    Cc => $cc,
+		    AdminCc => $admincc,
+		    Due => $due,
+		    Starts => $starts,
+		    Started => $started,
+		    TimeLeft => $time_left,
+		    Priority => $priority,
+		    FinalPriority => $final_priority,
+		    Contacted =>,
+		    
+		   );
+}
+
+else {
+    #Apply restrictions
+    use RT::Tickets;
+    my $Tickets = new RT::Tickets($CurrentUser);
+    
+    # {{{ Limit our search
+if (@id) {
+}
+if (@limit_status){
+}
+if (@limit_owner) {
+}
+if (@limit_priority){
+}
+if (@limit_final_priority){
+}
+if (@limit_requestor){
+}
+if (@limit_subject){
+}
+if (@limit_body){
+}
+if (@limit_created){
+}
+if (@limit_due){
+}
+if (@limit_starts){
+}
+if (@limit_started){
+}
+if ($limit_first){
+}
+if ($limit_rows){
+}
+# }}}
+    
+    # {{{ Iterate through all tickets we found
+while (my $Ticket = $Tickets->Next()) {
+    
+    #Run through all the ticket modifications we might want to do
+    
+    #Perform ticket comments/replies
+    if ($reply) {
+	debug("Replying to ticket ".$Ticket->Id);
+    }	
+    
+    if ($comment) {
+	debug("Commenting on ticket ".$Ticket->Id);
+    }
+    
+    #Display whatever we need to display
+    #Display a full ticket listing and history
+    if ($history) {
+	#Display the history
+	debug("Show history for ".$Ticket->id);
+    }	
+    
+    #Display a summary if we need to
+    if (defined $summary) {
+	my $format = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "default_format";
+	debug ("Show ticket summary with format $format")
+    }	
+    
+    
+}
+# }}}
+    
+}
+
+
+$RT::Handle->Disconnect();
+
+
+
+
+# {{{ sub GetCurrentUser 
+sub GetCurrentUser  {
+    if (!$CurrentUser) {
+	my $Gecos;
+	
+	require RT::CurrentUser;
+        
+	#Instantiate a user object
+    	
+	$Gecos=(getpwuid($<))[0];
+	#If the current user is 0, then RT will assume that the User object
+	#is that of the currentuser.
+	$CurrentUser = new RT::CurrentUser();
+	$CurrentUser->LoadByGecos($Gecos);
+    
+	if (!$CurrentUser->Id) {
+	    $CurrentUser = $RT::Nobody;
+	    return(0);
+	}
+    }
+    return($CurrentUser);
+}
+# }}}
+
+sub debug {
+    my $val = shift;
+    $RT::Logger->debug($val."\n");
+    if ($debug) {
+	print STDERR "$val\n";
+    }
+}
+
+1;
+
