@@ -38,14 +38,9 @@
 <input type=hidden name=Format value="<%$Format%>">
 <& Elements/PickCriteria, query => $Query, cfqueues => \%queues, %ARGS &>
 <& /Elements/Submit, Caption => "Add additional criteria", Label => loc('Add'), Name => 'AddClause'&>
-</form>
 
 </td>
 <td valign=top>
-<FORM METHOD="POST" ACTION="Build.html" NAME="NavigateQuery">
-<input type=hidden name=Query value="<%$Query%>">
-<input type=hidden name=Format value="<%$Format%>">
-<input type=hidden name=SearchId value="<%$ARGS{'SearchId'}%>">
 <& /Elements/TitleBoxStart, title => loc("Query") . ": " .$search_hash->{'Description'} &>
 <& Elements/NewListActions, actions => \@actions &>
 <select size=10 name=clauses style="width : 100%">
