@@ -1,0 +1,91 @@
+BODY, TD {font-family: Helvetica, Arial, sans-serif}
+TD {border-color: red }
+
+BLOCKQUOTE.message {
+	font size: -2;
+	font-family: "Helvetica", sans-serif;
+}
+
+
+BODY {
+  color: #000;
+  background: #FBFBFB;
+  font-family: "Helvetica", sans-serif;
+
+
+}
+
+TD, TH { /* ns workaround */
+  font-family: "Helvetica", sans-serif;
+  line-height: 1.35;
+}
+
+H1, H2 { 
+  margin-top: 1.2em;
+  margin-left: -7%;
+  color: #339966;
+  clear: both;
+}
+
+H3 {
+  color: #339966;
+}
+
+DIV.endmatter { margin-left: -7% }
+
+
+
+A { font-weight: bold; 
+      color: #CCCCCC; 
+	    /* border: none -- breaks NS 4.x */ }
+
+A:link IMG, A:visited IMG { border-style: none }
+
+A IMG { color: white } /* The only way to hide the border in NS 4.x */
+
+.hide {
+  display: none;
+  color: white;
+}
+
+SPAN.date { font-size: 0.8em }
+
+SPAN.attribution {
+  font-weight: bold
+}
+
+BLOCKQUOTE {
+  margin-left: 4em; 
+  margin-right: 4em;
+  margin-top: 0.8em; 
+  margin-bottom: 0.8em;
+  font-style: italic;
+  /* color: #990; */
+}
+
+ADDRESS { 
+  text-align: right;
+  font-weight: bold;
+  font-style: italic 
+}
+
+BLOCKQUOTE P {			/* Try to avoid space above the attribution */
+  margin-bottom: 0;
+}
+BLOCKQUOTE ADDRESS {
+  margin: 0;
+}
+
+.motto, .motto A {font: italic 120%/1.3 Georgia, serif; color: #990}
+
+.emphasized {
+  font-weight: bold
+}
+
+/* Why o why does this break Netscape 4.x?
+IMG { 
+  border: none
+}
+*/
+
+P.map-also { font-style: italic; margin-left: 15%; text-align: right }
