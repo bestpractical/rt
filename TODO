@@ -1,3 +1,12 @@
+A rough sketch of what's coming for 2.2. to be fleshed out later.
+
+likely it will be "saveable preferences, saveable searches, 
+          easier upgrades, freeform custom fields, integrated cvs, enhanced 
+                    mailgate, wapRT and templated responses. oh. and some
+                    reporting.
+
+---
+
 Errata for RT 2.x can be found at http://fsck.com/rt2/NoAuth/Errata.html
 
 A list of all open issues, including those which haven't been added
