@@ -14,8 +14,9 @@ if ($QuoteTransaction) {
     my $transaction=RT::Transaction->new($session{'CurrentUser'});
     $transaction->Load($QuoteTransaction);
     my $message=$transaction->Message->First;
-    my $d;
-    ($d, $Width)=$message->Quote;
+    my $d="";
+    ($d, $Width)=$message->Quote
+	if $message;
     $Default=$$d;
 }
 </%INIT>
