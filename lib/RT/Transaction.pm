@@ -407,93 +407,125 @@ sub Description  {
 	return("No transaction type specified");
     }
     
+    return ($self->BriefDescription . " by " . $self->CreatorObj->Name);
+}
+
+# }}}
+
+# {{{ sub BriefDescription 
+
+=head2 BriefDescription
+
+Returns a text string which briefly describes this transaction
+
+=cut
+
+
+sub BriefDescription  {
+    my $self = shift;
+
+    #Check those ACLs
+    #If it's a comment, we need to be extra special careful
+    if ($self->__Value('Type') eq 'Comment') {
+     	unless ($self->CurrentUserHasRight('ShowTicketComments')) {
+	    return (0, "Permission Denied");
+	}
+    }	
+
+    #if they ain't got rights to see, don't let em
+    else {
+	unless ($self->CurrentUserHasRight('ShowTicket')) {
+	    return (0, "Permission Denied");
+	}
+    }
+
+    if (!defined($self->Type)) {
+	return("No transaction type specified");
+    }
+    
     if ($self->Type eq 'Create'){
-	return("Request created by ".$self->CreatorObj->Name);
+	return("Ticket created");
     }
     elsif ($self->Type =~ /Status/) {
 	if ($self->Field eq 'Status') {
 	    if ($self->NewValue eq 'dead') {
-		return ("Request killed by ". $self->CreatorObj->Name);
+		return ("Ticket killed");
       }
 	    else {
 		return( "Status changed from ".  $self->OldValue . 
-			" to ". $self->NewValue.
-			" by ".$self->CreatorObj->Name);
+			" to ". $self->NewValue);
+
 	    }
 	}
 	# Generic:
 	return ($self->Field." changed from ".($self->OldValue||"(empty value)").
-	  " to ".$self->NewValue ." by ". $self->CreatorObj->Name);
+	  " to ".$self->NewValue );
       }
     
     if ($self->Type eq 'Correspond')    {
-	return("Mail sent by ". $self->CreatorObj->Name);
+	return("Correspondence added");
     }
     
     elsif ($self->Type eq 'Comment')  {
-	return( "Comments added by ".$self->CreatorObj->Name);
+	return( "Comments added");
     }
     
     elsif ($self->Type eq 'Keyword') {
+
+	my $field = 'Keyword';
+
+	if ($self->Field) {
+	    my $keywordsel = new RT::KeywordSelect ($self->CurrentUser);
+	    $keywordsel->Load($self->Field);
+	    $field = $keywordsel->Name();
+	}
+
 	if ($self->OldValue eq '') {
-	    return ("Keyword ".$self->NewValue." added by ". 
-		    $self->CreatorObj->Name );
+	    return ($field." ".$self->NewValue." added");
 	}
 	elsif ($self->NewValue eq '') {
-	    return ("Keyword ".$self->OldValue." deleted by ". 
-		    $self->CreatorObj->Name);
+	    return ($field." ".$self->OldValue." deleted"); 
+	    
 	}
 	else {
-	    return  ("Keyword ".$self->OldValue . " changed to ". 
-		     $self->NewValue." by ". $self->CreatorObj->Name );
+	    return ($field." ".$self->OldValue . " changed to ". 
+		     $self->NewValue);
 	}	
     }
     
-    elsif ($self->Type =~ /^(Take|Steal|Untake|Give)$/){
-	if ($self->Type eq 'Untake'){
-	    return( "Untaken by ".$self->CreatorObj->Name);
+    elsif ($self->Type eq 'Untake'){
+	    return( "Untaken");
 	}
-	
-	if ($self->Type eq "Take") {
-	    return( "Taken by ".$self->CreatorObj->Name);
-	}
-	
-	if ($self->Type eq "Steal") {
-	    my $Old = RT::User->new($self->CurrentUser);
-	    $Old->Load($self->OldValue);
-	    return "Request stolen from ".$Old->Name." by ".$self->CreatorObj->Name;
-	}
-	
-	if ($self->Type eq "Give") {
-	    my $New = RT::User->new($self->CurrentUser);
-	    $New->Load($self->NewValue);
-	    
-	    return( "Request given to ".$New->Name." by ". $self->CreatorObj->Name);
-	}
-	
-	my $New = RT::User->new($self->CurrentUser);
-	$New->Load($self->NewValue);
+    
+    elsif ($self->Type eq "Take") {
+	return( "Taken");
+    }
+    
+    elsif ($self->Type eq "Steal") {
 	my $Old = RT::User->new($self->CurrentUser);
 	$Old->Load($self->OldValue);
-	
-	return "Owner changed from ".$New->Name." to ".$Old->Name." by ".
-	  $self->CreatorObj->Name;
-	
+	return "Stolen from ".$Old->Name;
+    }
+    
+    elsif ($self->Type eq "Give") {
+	my $New = RT::User->new($self->CurrentUser);
+	$New->Load($self->NewValue);
+	return( "Given to ".$New->Name);
     }
     
     elsif ($self->Type eq 'AddWatcher'){
-	return( $self->Field." ". $self->NewValue ." added by ".$self->CreatorObj->Name);
+	return( $self->Field." ". $self->NewValue ." added");
     }
     
     elsif ($self->Type eq 'DelWatcher'){
-	return( $self->Field." ".$self->OldValue ." deleted by ".$self->CreatorObj->Name);
+	return( $self->Field." ".$self->OldValue ." deleted");
     }
     
     elsif ($self->Type eq 'Subject') {
-	return( "Subject changed to ".$self->Data." by ".$self->CreatorObj->Name);
+	return( "Subject changed to ".$self->Data);
     }
     elsif ($self->Type eq 'Told') {
-	return( "User notified by ".$self->CreatorObj->Name);
+	return( "User notified");
     }
     
     elsif ($self->Type eq 'AddLink') {
@@ -509,20 +541,20 @@ sub Description  {
 	    my $q2 = new RT::Queue($self->CurrentUser);
 	    $q2->Load($self->NewValue);
 	    return ($self->Field . " changed from " . $q1->Name . " to ".
-		    $q2->Name." by " . $self->CreatorObj->Name);
+		    $q2->Name);
 	}
 	else {
 	    return ($self->Field . " changed from " . $self->OldValue . 
-		    " to ".$self->NewValue." by ". $self->CreatorObj->Name);
+		    " to ".$self->NewValue);
 	}	
     }
     elsif ($self->Type eq 'PurgeTransaction') {
-	return ("Transaction ".$self->Data. " purged by ".  $self->CreatorObj->Name );
+	return ("Transaction ".$self->Data. " purged");
     }
     else {
-	return ("Generic: ". $self->Type ."/". $self->Field . 
+	return ("Default: ". $self->Type ."/". $self->Field . 
 		" changed from " . $self->OldValue . 
-		" to ".$self->NewValue." by " . $self->CreatorObj->Name );
+		" to ".$self->NewValue);
 	
     }
 }
