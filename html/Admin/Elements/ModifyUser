@@ -84,7 +84,7 @@
 <BR>
 <&|/l&>Country</&>: <input name="Country" value="<%$UserObj->Country%>">
 <BR>
-<& /Elements/Submit &>
+<& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
 <& /Elements/TitleBoxEnd &>
 
