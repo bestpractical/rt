@@ -1,0 +1,102 @@
+#!@PERL@ -w
+
+use strict;
+use lib "@RT_LIB_PATH@";
+use RT;
+
+RT::LoadConfig();
+RT::Init();
+
+my $LocalOnly = shift || 1;
+
+my %RV;
+my %Ignore = (
+    All => [qw(
+	id Created Creator LastUpdated LastUpdatedBy
+    )],
+    Templates => [qw(
+	TranslationOf
+    )],
+);
+
+my $SystemUserId = $RT::SystemUser->Id;
+my @classes = qw(
+    Users Groups Queues ScripActions ScripConditions
+    Templates Scrips ACL CustomFields
+);
+foreach my $class (@classes) {
+    require "RT/$class.pm";
+    my $objects = "RT::$class"->new($RT::SystemUser);
+    $objects->{find_disabled_rows} = 1;
+    $objects->UnLimit;
+    $objects->OrderBy( FIELD => 'Id' );
+
+    if ($LocalOnly) {
+	$objects->Limit( FIELD => 'LastUpdatedBy', OPERATOR => '!=', VALUE => $SystemUserId )
+	    unless $class eq 'Groups';
+	$objects->Limit( FIELD => 'Id', OPERATOR => '!=', VALUE => $SystemUserId )
+	    if $class eq 'Users';
+    }
+
+    my %fields;
+    while (my $obj = $objects->Next) {
+	next if $obj->can('LastUpdatedBy') and $obj->LastUpdatedBy == $SystemUserId;
+
+	if (!%fields) {
+	    %fields = map { $_ => 1 } keys %{$obj->_ClassAccessible};
+	    delete @fields{
+		@{$Ignore{$class}||=[]},
+		@{$Ignore{All}||=[]},
+	    };
+	}
+
+	my $rv;
+	# next if $obj-> # skip default names
+	foreach my $field (sort keys %fields) {
+	    my $value = $obj->__Value($field);
+	    $rv->{$field} = $value if length($value);
+	}
+	delete $rv->{Disabled} unless $rv->{Disabled};
+
+	foreach my $record (map { /ACL/ ? 'ACE' : substr($_, 0, -1) } @classes) {
+	    foreach my $key (map "$record$_", ('', 'Id')) {
+		next unless exists $rv->{$key};
+		my $id = $rv->{$key} or next;
+		my $obj = "RT::$record"->new($RT::SystemUser);
+		$obj->LoadByCols( Id => $id ) or next;
+		$rv->{$key} = $obj->__Value('Name') || 0;
+	    }
+	}
+
+	if ($class eq 'Users') {
+	    $rv->{Privileged} = int($obj->Privileged);
+	}
+	elsif ($class eq 'CustomFields') {
+	    my $values = $obj->Values;
+	    while (my $value = $values->Next) {
+		push @{$rv->{Values}}, {
+		    map { ($_ => $value->__Value($_)) } qw(
+			Name Description SortOrder
+		    ),
+		};
+	    }
+	}
+
+	if (eval { require RT::Attributes; 1 }) {
+	    my $attributes = $obj->Attributes;
+	    while (my $attribute = $attributes->Next) {
+		my $content = $attribute->Content;
+		$rv->{Attributes}{$attribute->Name} = $content if length($content);
+	    }
+	}
+
+	push @{$RV{$class}}, $rv;
+    }
+}
+
+use Data::Dumper;
+print Data::Dumper->Dump(
+    [map { $RV{$_} || [] } @classes],
+    [map { "*$_" } @classes],
+);
+

@@ -49,8 +49,12 @@ if ($id) {
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },
 
-                 G => { title => loc('Custom Fields'),
-                        path => 'Admin/Queues/CustomFields.html?id='.$id,
+                 G1 => { title => loc('Ticket Custom Fields'),
+                        path => 'Admin/Queues/CustomFields.html?SubType=RT::Ticket&id='.$id,
+                        },
+
+                 G2 => { title => loc('Transaction Custom Fields'),
+                        path => 'Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction&id='.$id,
                         },
 
 		 H => { title => loc('Group Rights'),
@@ -68,8 +72,13 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQue
 			   };
   $tabs->{"B"} = { title => loc('New queue'),
   		     	path => "Admin/Queues/Modify.html?Create=1",
-			separator => 1,
 			   };
+  $tabs->{"G1"} = { title => loc('Ticket Custom Fields'),
+  		     	path => 'Admin/Queues/CustomFields.html?SubType=RT::Ticket',
+			   };
+  $tabs->{"G2"} = { title => loc('Transaction Custom Fields'),
+  		     	path => 'Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction',
+		 separator => 1, };
 }
 
   # Now let callbacks add their extra tabs

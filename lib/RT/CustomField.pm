@@ -46,7 +46,6 @@ RT::CustomField
 
 package RT::CustomField;
 use RT::Record; 
-use RT::Queue;
 
 
 use vars qw( @ISA );
@@ -69,9 +68,12 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'Name'.
   varchar(200) 'Type'.
-  int(11) 'Queue'.
+  int(11) 'MaxValues'.
+  varchar(255) 'Pattern'.
+  smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
+  varchar(255) 'LookupType'.
   smallint(6) 'Disabled'.
 
 =cut
@@ -84,18 +86,24 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Type => '',
-                Queue => '0',
+                MaxValues => '',
+                Pattern => '',
+                Repeated => '0',
                 Description => '',
                 SortOrder => '0',
+                LookupType => '',
                 Disabled => '0',
 
 		  @_);
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Type => $args{'Type'},
-                         Queue => $args{'Queue'},
+                         MaxValues => $args{'MaxValues'},
+                         Pattern => $args{'Pattern'},
+                         Repeated => $args{'Repeated'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
+                         LookupType => $args{'LookupType'},
                          Disabled => $args{'Disabled'},
 );
 
@@ -148,37 +156,59 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Queue
+=head2 MaxValues
 
-Returns the current value of Queue. 
-(In the database, Queue is stored as int(11).)
-
-
-
-=head2 SetQueue VALUE
+Returns the current value of MaxValues. 
+(In the database, MaxValues is stored as int(11).)
 
 
-Set Queue to VALUE. 
+
+=head2 SetMaxValues VALUE
+
+
+Set MaxValues to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Queue will be stored as a int(11).)
+(In the database, MaxValues will be stored as a int(11).)
 
 
 =cut
 
 
-=head2 QueueObj
+=head2 Pattern
 
-Returns the Queue Object which has the id returned by Queue
+Returns the current value of Pattern. 
+(In the database, Pattern is stored as varchar(255).)
+
+
+
+=head2 SetPattern VALUE
+
+
+Set Pattern to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Pattern will be stored as a varchar(255).)
 
 
 =cut
 
-sub QueueObj {
-	my $self = shift;
-	my $Queue =  RT::Queue->new($self->CurrentUser);
-	$Queue->Load($self->__Value('Queue'));
-	return($Queue);
-}
+
+=head2 Repeated
+
+Returns the current value of Repeated. 
+(In the database, Repeated is stored as smallint(6).)
+
+
+
+=head2 SetRepeated VALUE
+
+
+Set Repeated to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Repeated will be stored as a smallint(6).)
+
+
+=cut
+
 
 =head2 Description
 
@@ -211,6 +241,24 @@ Returns the current value of SortOrder.
 Set SortOrder to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, SortOrder will be stored as a int(11).)
+
+
+=cut
+
+
+=head2 LookupType
+
+Returns the current value of LookupType. 
+(In the database, LookupType is stored as varchar(255).)
+
+
+
+=head2 SetLookupType VALUE
+
+
+Set LookupType to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, LookupType will be stored as a varchar(255).)
 
 
 =cut
@@ -280,12 +328,18 @@ sub _CoreAccessible {
 		{read => 1, write => 1, type => 'varchar(200)', default => ''},
         Type => 
 		{read => 1, write => 1, type => 'varchar(200)', default => ''},
-        Queue => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        MaxValues => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
+        Pattern => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Repeated => 
+		{read => 1, write => 1, type => 'smallint(6)', default => '0'},
         Description => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        LookupType => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},
         Created => 

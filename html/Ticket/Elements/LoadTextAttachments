@@ -13,10 +13,16 @@ if ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
     
     my $tickets = $attachments->NewAlias('Tickets');
 
+
     $attachments->Join( ALIAS1 => $transactions,
-                        FIELD1 => 'Ticket',
+                        FIELD1 => 'ObjectId',
                         ALIAS2 => $tickets,
                         FIELD2 => 'id' );
+
+    $attachments->Limit( ALIAS => $transactions,
+                         FIELD => 'ObjectType',
+                        VALUE => 'RT::Ticket');
+
 
     $attachments->Limit( ALIAS => $tickets,
                          FIELD => 'EffectiveId',

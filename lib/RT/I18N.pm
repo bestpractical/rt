@@ -76,9 +76,11 @@ ok(RT::I18N->Init);
 =cut
 
 sub Init {
+    require File::Glob;
+
     # Load language-specific functions
-    foreach my $language ( glob(substr(__FILE__, 0, -3) . "/*.pm")) {
-        if ($language =~ /^([-\w.\/\\~:]+)$/) {
+    foreach my $language ( File::Glob::bsd_glob(substr(__FILE__, 0, -3) . "/*.pm")) {
+        if ($language =~ /^([-\w\s.\/\\~:]+)$/) {
             require $1;
         }
         else {
@@ -95,6 +97,7 @@ sub Init {
 	    $_	=> [
 		Gettext => (substr(__FILE__, 0, -3) . "/$_.po"),
 		Gettext => "$RT::LocalLexiconPath/*/$_.po",
+		Gettext => "$RT::LocalLexiconPath/$_.po",
 	    ],
 	} @lang
     });

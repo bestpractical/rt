@@ -462,6 +462,7 @@ sub ProcessUpdateMessage {
                 TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
             );
             push ( @{ $args{Actions} }, $Description );
+	    $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
         }
         elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
             my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Correspond(
@@ -471,6 +472,7 @@ sub ProcessUpdateMessage {
                 TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
             );
             push ( @{ $args{Actions} }, $Description );
+	    $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
         }
         else {
             push ( @{ $args{'Actions'} },
@@ -1070,112 +1072,145 @@ sub ProcessTicketBasics {
 
 # }}}
 
-# {{{ Sub ProcessTicketCustomFieldUpdates
-
 sub ProcessTicketCustomFieldUpdates {
-    my %args = (
-        ARGSRef => undef,
-        @_
-    );
+    my %args = @_;
+    $args{'Object'} = delete $args{'TicketObj'};
+    my $ARGSRef = { %{ $args{'ARGSRef'} } };
 
+    # Build up a list of objects that we want to work with
+    my %custom_fields_to_mod;
+    foreach my $arg ( keys %$ARGSRef ) {
+        if ( $arg =~ /^Ticket-(\d+-.*)/) {
+	    $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
+	}
+        elsif ( $arg =~ /^CustomField-(\d+-.*)/) {
+	    $ARGSRef->{"Object-RT::Ticket--$1"} = delete $ARGSRef->{$arg};
+	}
+    }
+
+    return ProcessObjectCustomFieldUpdates(%args, ARGSRef => $ARGSRef);
+}
+
+sub ProcessObjectCustomFieldUpdates {
+    my %args = @_;
+    my $ARGSRef = $args{'ARGSRef'};
     my @results;
 
-    my $ARGSRef = $args{'ARGSRef'};
-
-    # Build up a list of tickets that we want to work with
-    my %tickets_to_mod;
+    # Build up a list of objects that we want to work with
     my %custom_fields_to_mod;
-    foreach my $arg ( keys %{$ARGSRef} ) {
-        if ( $arg =~ /^Ticket-(\d+)-CustomField-(\d+)-/ ) {
-
-            # For each of those tickets, find out what custom fields we want to work with.
-            $custom_fields_to_mod{$1}{$2} = 1;
+    foreach my $arg ( keys %$ARGSRef ) {
+        if ( $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-/ ) {
+            # For each of those objects, find out what custom fields we want to work with.
+            $custom_fields_to_mod{$1}{$2 || $args{'Object'}->Id}{$3} = 1;
         }
     }
 
-    # For each of those tickets
-    foreach my $tick ( keys %custom_fields_to_mod ) {
-        my $Ticket = $args{'TicketObj'};
-	if (!$Ticket or $Ticket->id != $tick) {
-	    $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
-	    $Ticket->Load($tick);
+    # For each of those objects
+    foreach my $class ( keys %custom_fields_to_mod ) {
+	foreach my $id ( keys %{$custom_fields_to_mod{$class}} ) {
+	    my $Object = $args{'Object'};
+	    if (!$Object or ref($Object) ne $class or $Object->id != $id) {
+		$Object = $class->new( $session{'CurrentUser'} );
+		$Object->Load($id);
 	}
 
-        # For each custom field  
-        foreach my $cf ( keys %{ $custom_fields_to_mod{$tick} } ) {
-
+	    # For each custom field  
+	    foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
 	    my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
 	    $CustomFieldObj->LoadById($cf);
 
-            foreach my $arg ( keys %{$ARGSRef} ) {
-                # since http won't pass in a form element with a null value, we need
-                # to fake it
-                if ($arg =~ /^(.*?)-Values-Magic$/ ) {
-                    # We don't care about the magic, if there's really a values element;
-                    next if (exists $ARGSRef->{$1.'-Values'}) ;
+		foreach my $arg ( keys %{$ARGSRef} ) {
+		    # since http won't pass in a form element with a null value, we need
+		    # to fake it
+		    if ($arg =~ /^(.*?)-Values-Magic$/ ) {
+			# We don't care about the magic, if there's really a values element;
+			next if (exists $ARGSRef->{$1.'-Values'}) ;
 
-                    $arg = $1."-Values";
-                    $ARGSRef->{$1."-Values"} = undef;
-                
-                }
-                next unless ( $arg =~ /^Ticket-$tick-CustomField-$cf-/ );
-                my @values =
-                  ( ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) 
-                  ? @{ $ARGSRef->{$arg} }
-                  : split /\n/, $ARGSRef->{$arg} ;
-                if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
-                    foreach my $value (@values) {
-                        next unless length($value);
-                        my ( $val, $msg ) = $Ticket->AddCustomFieldValue(
-                            Field => $cf,
-                            Value => $value
-                        );
-                        push ( @results, $msg );
-                    }
-                }
-                elsif ( $arg =~ /-DeleteValues$/ ) {
-                    foreach my $value (@values) {
-                        next unless length($value);
-                        my ( $val, $msg ) = $Ticket->DeleteCustomFieldValue(
-                            Field => $cf,
-                            Value => $value
-                        );
-                        push ( @results, $msg );
-                    }
-                }
-                elsif ( $arg =~ /-Values$/ and $CustomFieldObj->Type !~ /Entry/) {
-                    my $cf_values = $Ticket->CustomFieldValues($cf);
+			$arg = $1."-Values";
+			$ARGSRef->{$1."-Values"} = undef;
+		    
+		    }
+		    next unless ( $arg =~ /^Object-$class-(?:$id)?-CustomField-$cf-/ );
+		    my @values =
+		    ( ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) 
+		    ? @{ $ARGSRef->{$arg} }
+		    : split /\n/, $ARGSRef->{$arg} ;
+		    if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
+			foreach my $value (@values) {
+			    next unless length($value);
+			    my ( $val, $msg ) = $Object->AddCustomFieldValue(
+				Field => $cf,
+				Value => $value
+			    );
+			    push ( @results, $msg );
+			}
+		    }
+		    elsif ( $arg =~ /-Upload$/ ) {
+			my $cgi_object = $m->cgi_object;
+			my $fh = $cgi_object->upload($arg) or next;
+			my $upload_info = $cgi_object->uploadInfo($fh);
+			my $filename = "$fh";
+			$filename =~ s#^.*[\\/]##;
+			my ( $val, $msg ) = $Object->AddCustomFieldValue(
+			    Field => $cf,
+			    Value => $filename,
+			    LargeContent => do { local $/; scalar <$fh> },
+			    ContentType => $upload_info->{'Content-Type'},
+			);
+			push ( @results, $msg );
+		    }
+		    elsif ( $arg =~ /-DeleteValues$/ ) {
+			foreach my $value (@values) {
+			    next unless length($value);
+			    my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
+				Field => $cf,
+				Value => $value
+			    );
+			    push ( @results, $msg );
+			}
+		    }
+		    elsif ( $arg =~ /-DeleteValueIds$/ ) {
+			foreach my $value (@values) {
+			    next unless length($value);
+			    my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
+				Field => $cf,
+				ValueId => $value,
+			    );
+			    push ( @results, $msg );
+			}
+		    }
+		    elsif ( $arg =~ /-Values$/ and !$CustomFieldObj->Repeated) {
+			my $cf_values = $Object->CustomFieldValues($cf);
 
-                    my %values_hash;
-                    foreach my $value (@values) {
-                        next unless length($value);
+			my %values_hash;
+			foreach my $value (@values) {
+			    next unless length($value);
 
-                        # build up a hash of values that the new set has
-                        $values_hash{$value} = 1;
+			    # build up a hash of values that the new set has
+			    $values_hash{$value} = 1;
 
-                        unless ( $cf_values->HasEntry($value) ) {
-                            my ( $val, $msg ) = $Ticket->AddCustomFieldValue(
-                                Field => $cf,
-                                Value => $value
-                            );
-                            push ( @results, $msg );
-                        }
+			    unless ( $cf_values->HasEntry($value) ) {
+				my ( $val, $msg ) = $Object->AddCustomFieldValue(
+				    Field => $cf,
+				    Value => $value
+				);
+				push ( @results, $msg );
+			    }
 
-                    }
-                    while ( my $cf_value = $cf_values->Next ) {
-                        unless ( $values_hash{ $cf_value->Content } == 1 ) {
-                            my ( $val, $msg ) = $Ticket->DeleteCustomFieldValue(
-                                Field => $cf,
-                                Value => $cf_value->Content
-                            );
-                            push ( @results, $msg);
+			}
+			while ( my $cf_value = $cf_values->Next ) {
+			    unless ( $values_hash{ $cf_value->Content } == 1 ) {
+				my ( $val, $msg ) = $Object->DeleteCustomFieldValue(
+				    Field => $cf,
+				    Value => $cf_value->Content
+				);
+				push ( @results, $msg);
 
-                        }
-
-                    }
-                }
-                elsif ( $arg =~ /-Values$/ ) {
-                    my $cf_values = $Ticket->CustomFieldValues($cf);
+			    }
+			}
+		    }
+		    elsif ( $arg =~ /-Values$/ ) {
+			my $cf_values = $Object->CustomFieldValues($cf);
 
 		    # keep everything up to the point of difference, delete the rest
 		    my $delete_flag;
@@ -1191,23 +1226,22 @@ sub ProcessTicketCustomFieldUpdates {
 
 		    # now add/replace extra things, if any
 		    foreach my $value (@values) {
-			my ( $val, $msg ) = $Ticket->AddCustomFieldValue(
+			    my ( $val, $msg ) = $Object->AddCustomFieldValue(
 			    Field => $cf,
 			    Value => $value
 			);
 			push ( @results, $msg );
 		    }
 		}
-                else {
-                    push ( @results, "User asked for an unknown update type for custom field " . $cf->Name . " for ticket " . $Ticket->id );
-                }
-            }
-        }
-        return (@results);
+		    else {
+			push ( @results, loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]", $cf->Name, $class, $Object->id ) );
+		    }
+		}
+	    }
+	    return (@results);
+	}
     }
 }
-
-# }}}
 
 # {{{ sub ProcessTicketWatchers
 

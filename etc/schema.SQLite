@@ -112,21 +112,23 @@ CREATE TABLE ScripConditions (
 --- {{{ Transactions
 CREATE TABLE Transactions (
   id INTEGER PRIMARY KEY  ,
-  EffectiveTicket integer NULL  ,
-  Ticket integer NULL  ,
+  ObjectType varchar(255) NULL  ,
+  ObjectId integer NULL  ,
   TimeTaken integer NULL  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
+  ReferenceType varchar(255) NULL  ,
+  OldReference integer NULL  ,
+  NewReference integer NULL  ,
   Data varchar(255) NULL  ,
 
   Creator integer NULL  ,
   Created DATETIME NULL  
   
 ) ;
-CREATE INDEX Transactions1 ON Transactions (Ticket);
-CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
 
 --- }}}
 
@@ -355,7 +357,9 @@ CREATE TABLE CustomFields (
   id INTEGER PRIMARY KEY  ,
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
-  Queue int NULL ,
+  MaxValues int NULL ,
+  Pattern varchar(255) NULL  ,
+  LookupType varchar(255) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NULL  ,
 

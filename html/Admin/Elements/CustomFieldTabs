@@ -1,0 +1,69 @@
+<& /Admin/Elements/Tabs, 
+    subtabs => $tabs, 
+    current_tab => 'Admin/CustomFields/', 
+    current_subtab => $current_subtab, 
+    Title => $Title &>
+<%INIT>
+my $tabs;
+
+if ($id) {
+    my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+    $cf->Load($id);
+    $tabs = {
+        C => {
+            title => $cf->Name,
+            path  => "Admin/CustomFields/Modify.html?id=" . $id,
+
+            subtabs => {
+
+                C => { title => loc('Basics'),
+                       path  => "Admin/CustomFields/Modify.html?id=" . $id,
+                },
+                D => { title => loc('Applies to'),
+                       path  => "Admin/CustomFields/Objects.html?id=" . $id,
+                },
+
+                F => { title => loc('Group Rights'),
+                       path  => "Admin/CustomFields/GroupRights.html?id="
+                         . $id, },
+                G => {
+                    title => loc('User Rights'),
+                    path => "Admin/CustomFields/UserRights.html?id=" . $id,
+                },
+
+            } }
+
+    };
+}
+
+if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField')) {
+  $tabs->{"A"} = { title => loc('Select custom field'),
+                        path => "Admin/CustomFields/",
+                           };
+  $tabs->{"B"} = { title => loc('New custom field'),
+                        path => "Admin/CustomFields/Modify.html?Create=1",
+                        separator => 1,
+                           };
+}
+
+  # Now let callbacks add their extra tabs
+  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+
+foreach my $tab ( sort keys %{$tabs} ) {                                        
+    if ( $tabs->{$tab}->{'path'} eq $current_subtab ) {                         
+        $tabs->{$tab}->{"current_subtab"} = $current_subtab;                    
+    }                                                                           
+  foreach my $subtab (sort keys %{$tabs->{'subtabs'}}) {
+    if ($tabs->{$tab}->{subtabs}->{$subtab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{subtabs}->{$subtab}->{"current_subtab"} = $current_subtab;
+    }
+  }
+}                                                                               
+
+</%INIT>
+<%ARGS>
+$id => undef
+$current_subtab => undef
+$current_tab => undef
+$Title => undef
+</%ARGS>

@@ -34,6 +34,9 @@
 <TD ALIGN="RIGHT"><font size=-1><%$titlebar_commands|n%></font></TD>
 </TR>
 <TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>"><TD colspan=5>
+% if ($Transaction->CustomFieldValues->Count) {
+<& /Elements/ShowCustomFields, Object => $Transaction &>
+% }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
 </TD>
 </TR>

@@ -108,6 +108,10 @@ my %FIELDS =
     LinkedTo	    => ['LINKFIELD',],
     CustomFieldValue =>['CUSTOMFIELD',],
     CF              => ['CUSTOMFIELD',],
+    RequestorGroup  => ['MEMBERSHIPFIELD' => 'Requestor',],
+    CCGroup         => ['MEMBERSHIPFIELD' => 'Cc',],
+    AdminCCGroup    => ['MEMBERSHIPFIELD' => 'AdminCc',],
+    WatcherGroup    => ['MEMBERSHIPFIELD',],
   );
 
 # Mapping of Field Type to Function
@@ -120,8 +124,9 @@ my %dispatch =
     TRANSFIELD	    => \&_TransLimit,
     TRANSDATE	    => \&_TransDateLimit,
     WATCHERFIELD    => \&_WatcherLimit,
+    MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     LINKFIELD	    => \&_LinkFieldLimit,
-    CUSTOMFIELD    => \&_CustomFieldLimit,
+    CUSTOMFIELD     => \&_CustomFieldLimit,
   );
 my %can_bundle =
   ( WATCHERFIELD => "yeps",
@@ -242,7 +247,7 @@ sub _EnumLimit {
     $o->Load( $value );
     $value = $o->Id;
   }
-  $sb->_SQLLimit( FIELD => $field,,
+  $sb->_SQLLimit( FIELD => $field,
 	      VALUE => $value,
 	      OPERATOR => $op,
 	      @rest,
@@ -538,6 +543,14 @@ sub _TransLimit {
 
   $sb->_OpenParen;
 
+  # Join Transactions To Attachments
+  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
+
+  # Join Transactions to Tickets
+  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
+	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
+
   #Search for the right field
   $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
 		 FIELD =>    $field,
@@ -546,14 +559,6 @@ sub _TransLimit {
 		 CASESENSITIVE => 0,
 		 @rest
 		);
-
-  # Join Transactions To Attachments
-  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
 
   $sb->_CloseParen;
 
@@ -642,6 +647,112 @@ sub _WatcherLimit {
 
 }
 
+=head2 _WatcherMembershipLimit
+
+Handle watcher membership limits, i.e. whether the watcher belongs to a
+specific group or not.
+
+Meta Data:
+  1: Field to query on
+
+SELECT DISTINCT main.*
+FROM
+    Tickets main,
+    Groups Groups_1,
+    CachedGroupMembers CachedGroupMembers_2,
+    Users Users_3
+WHERE (
+    (main.EffectiveId = main.id)
+) AND (
+    (main.Status != 'deleted')
+) AND (
+    (main.Type = 'ticket')
+) AND (
+    (
+	(Users_3.EmailAddress = '22')
+	    AND
+	(Groups_1.Domain = 'RT::Ticket-Role')
+	    AND
+	(Groups_1.Type = 'RequestorGroup')
+    )
+) AND
+    Groups_1.Instance = main.id
+AND
+    Groups_1.id = CachedGroupMembers_2.GroupId
+AND
+    CachedGroupMembers_2.MemberId = Users_3.id
+ORDER BY main.id ASC
+LIMIT 25
+=cut
+
+sub _WatcherMembershipLimit {
+  my ($self,$field,$op,$value,@rest) = @_;
+  my %rest = @rest;
+
+  $self->_OpenParen;
+
+  my $groups	    = $self->NewAlias('Groups');
+  my $groupmembers  = $self->NewAlias('CachedGroupMembers');
+  my $users	    = $self->NewAlias('Users');
+  my $memberships   = $self->NewAlias('CachedGroupMembers');
+
+  if (ref $field) { # gross hack
+    my @bundle = @$field;
+    $self->_OpenParen;
+    for my $chunk (@bundle) {
+      ($field,$op,$value,@rest) = @$chunk;
+      $self->_SQLLimit(ALIAS => $memberships,
+   		   FIELD => 'GroupId',
+   		   VALUE           => $value,
+   		   OPERATOR        => $op,
+   		   @rest,
+   		  );
+    }
+    $self->_CloseParen;
+  } else {
+     $self->_SQLLimit(ALIAS => $memberships,
+   		   FIELD => 'GroupId',
+   		   VALUE           => $value,
+   		   OPERATOR        => $op,
+   		   @rest,
+   		  );
+  }
+
+  # {{{ Tie to groups for tickets we care about
+  $self->_SQLLimit(ALIAS => $groups,
+		   FIELD => 'Domain',
+		   VALUE => 'RT::Ticket-Role',
+		   ENTRYAGGREGATOR => 'AND');
+
+  $self->Join(ALIAS1 => $groups, FIELD1 => 'Instance',
+	      ALIAS2 => 'main',   FIELD2 => 'id');
+  # }}}
+
+  # If we care about which sort of watcher
+  my $meta = $FIELDS{$field};
+  my $type = ( defined $meta->[1] ? $meta->[1] : undef );
+
+  if ( $type ) {
+    $self->_SQLLimit(ALIAS => $groups,
+		     FIELD => 'Type',
+		     VALUE => $type,
+		     ENTRYAGGREGATOR => 'AND');
+  }
+
+  $self->Join (ALIAS1 => $groups,  FIELD1 => 'id',
+	       ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
+
+  $self->Join( ALIAS1 => $groupmembers, FIELD1 => 'MemberId',
+	       ALIAS2 => $users, FIELD2 => 'id');
+
+  $self->Join( ALIAS1 => $memberships, FIELD1 => 'MemberId',
+	       ALIAS2 => $users, FIELD2 => 'id');
+
+ $self->_CloseParen;
+
+}
+
+
 sub _LinkFieldLimit {
   my $restriction;
   my $self;
@@ -710,93 +821,102 @@ Meta Data:
 =cut
 
 sub _CustomFieldLimit {
-  my ($self,$_field,$op,$value,@rest) = @_;
+    my ( $self, $_field, $op, $value, @rest ) = @_;
 
-  my %rest = @rest;
-  my $field = $rest{SUBKEY} || die "No field specified";
+    my %rest  = @rest;
+    my $field = $rest{SUBKEY} || die "No field specified";
 
-  # For our sanity, we can only limit on one queue at a time
-  my $queue = 0;
+    # For our sanity, we can only limit on one queue at a time
+    my $queue = 0;
+
+    if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
+        $queue = $1;
+        $field = $2;
+    }
+    $field = $1 if $field =~ /^{(.+)}$/;    # trim { }
 
 
-  if ($field =~ /^(.+?)\.{(.+)}$/) {
-    $queue =  $1;
-    $field = $2;
-   }
-    $field = $1 if $field =~ /^{(.+)}$/; # trim { }
 
-    my $q = RT::Queue->new($self->CurrentUser);
+# If we're trying to find custom fields that don't match something, we want tickets
+# where the custom field has no value at all
+
+    my $null_columns_ok;
+    if ( ( $op =~ /^IS$/i ) or ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
+        $null_columns_ok = 1;
+    }
+
+
+
+    my $q = RT::Queue->new( $self->CurrentUser );
     $q->Load($queue) if ($queue);
 
     my $cf;
-    if ($q->id) {
+    if ( $q->id ) {
         $cf = $q->CustomField($field);
     }
-    else { 
-        $cf = RT::CustomField->new($self->CurrentUser);
-        $cf->LoadByNameAndQueue(Queue => '0', Name => $field);
+    else {
+        $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->LoadByNameAndQueue( Queue => '0', Name => $field );
     }
 
+    my $cfid = $cf->id;
+
+    die "No custom field named $field found\n" unless $cfid;
 
 
+    my $TicketCFs;
 
+    # Perform one Join per CustomField
+    if ( $self->{_sql_keywordalias}{$cfid} ) {
+        $TicketCFs = $self->{_sql_keywordalias}{$cfid};
+    }
+    else {
+        $TicketCFs = $self->{_sql_keywordalias}{$cfid} = $self->_SQLJoin(
+            TYPE   => 'left',
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'ObjectCustomFieldValues',
+            FIELD2 => 'ObjectId'
+        );
 
-  my $cfid = $cf->id;
+    $self->_SQLLimit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD => 'ObjectType',
+        VALUE => ref($self->NewItem), # we want a single item, not a collection
+        ENTRYAGGREGATOR => 'AND'
+    );
 
-  die "No custom field named $field found\n" unless $cfid;
+    $self->_SQLLimit(
+        LEFTJOIN        => $TicketCFs,
+        FIELD           => 'CustomField',
+        VALUE           => $cfid,
+        ENTRYAGGREGATOR => 'AND'
+    );
 
+    }
 
+    $self->_OpenParen;
 
-  my $null_columns_ok;
+    $self->_SQLLimit(
+        ALIAS      => $TicketCFs,
+        FIELD      => 'Content',
+        OPERATOR   => $op,
+        VALUE      => $value,
+        QUOTEVALUE => 1,
+        @rest
+    );
+    if ($null_columns_ok) {
+        $self->_SQLLimit(
+            ALIAS           => $TicketCFs,
+            FIELD           => 'Content',
+            OPERATOR        => 'IS',
+            VALUE           => 'NULL',
+            QUOTEVALUE      => 0,
+            ENTRYAGGREGATOR => 'OR',
+        );
+    }
 
-  my $TicketCFs;
-  # Perform one Join per CustomField
-  if ($self->{_sql_keywordalias}{$cfid}) {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid};
-  } else {
-    $TicketCFs = $self->{_sql_keywordalias}{$cfid} =
-      $self->_SQLJoin( TYPE   => 'left',
-		   ALIAS1 => 'main',
-		   FIELD1 => 'id',
-		   TABLE2 => 'TicketCustomFieldValues',
-		   FIELD2 => 'Ticket' );
-  }
-
-  $self->_OpenParen;
-
-  $self->_SQLLimit( ALIAS      => $TicketCFs,
-		    FIELD      => 'Content',
-		    OPERATOR   => $op,
-		    VALUE      => $value,
-		    QUOTEVALUE => 1,
-		    @rest );
-
-
-   # If we're trying to find custom fields that don't match something, we want tickets
-   # where the custom field has no value at all
-
-  if (   ($op =~ /^IS$/i) or ($op =~ /^NOT LIKE$/i) or ( $op eq '!=' ) ) {
-    $null_columns_ok = 1;
-  }
-    
-
-  if ( $null_columns_ok) {
-    $self->_SQLLimit( ALIAS           => $TicketCFs,
-		      FIELD           => 'Content',
-		      OPERATOR        => 'IS',
-		      VALUE           => 'NULL',
-		      QUOTEVALUE      => 0,
-		      ENTRYAGGREGATOR => 'OR', );
-  }
-
-  $self->_SQLLimit( LEFTJOIN => $TicketCFs,
-		    FIELD    => 'CustomField',
-		    VALUE    => $cfid,
-		    ENTRYAGGREGATOR => 'OR' );
-
-
-
-  $self->_CloseParen;
+    $self->_CloseParen;
 
 }
 
@@ -870,8 +990,13 @@ sub _FreezeThawKeys {
 
 sub FreezeLimits {
 	my $self = shift;
-	require FreezeThaw;
-	return (FreezeThaw::freeze(@{$self}{$self->_FreezeThawKeys}));
+	require Storable;
+	require MIME::Base64;
+	MIME::Base64::base64_encode(
+	    Storable::freeze(
+		\@{$self}{$self->_FreezeThawKeys}
+	    )
+	);
 }
 
 # }}}
@@ -893,13 +1018,14 @@ sub ThawLimits {
 
     	$self->{'RecalcTicketLimits'} = 1;
 
-	require FreezeThaw;
-	
+	require Storable;
+	require MIME::Base64;
+
 	#We don't need to die if the thaw fails.
-	
-	eval {
-		@{$self}{$self->_FreezeThawKeys} = FreezeThaw::thaw($in);
+	@{$self}{$self->_FreezeThawKeys} = eval {
+	    @{Storable::thaw( MIME::Base64::base64_decode($in) )};
 	};
+	
 	$RT::Logger->error( $@ ) if $@;
 
 }
@@ -1972,9 +2098,9 @@ sub _RestrictionsToClauses {
     }
 
     # Two special case
-    # CustomFields have a different real field
-    if ($field =~ /^CF\./) {
-      $realfield = "CF"
+    # Handle subkey fields with a different real field
+    if ($field =~ /^(\w+)\./) {
+      $realfield = $1;
     }
 
     die "I don't know about $field yet"

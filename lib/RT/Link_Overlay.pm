@@ -81,23 +81,31 @@ sub Create {
     my $base = RT::URI->new( $self->CurrentUser );
     $base->FromURI( $args{'Base'} );
 
-    unless ( $base->Resolver and $base->Scheme ) {
-        $RT::Logger->warning( "$self couldn't resolve base:'"
-                              . $args{'Base'} . " - "
-                              . "' into a URI\n" );
+    unless ( $base->Resolver && $base->Scheme ) {
+	my $msg = $self->loc("Couldn't resolve base '[_1]' into a URI.", 
+			     $args{'Base'});
+        $RT::Logger->warning( "$self $msg\n" );
 
-        return (undef);
+	if (wantarray) {
+	    return(undef, $msg);
+	} else {
+	    return (undef);
+	}
     }
 
     my $target = RT::URI->new( $self->CurrentUser );
     $target->FromURI( $args{'Target'} );
 
     unless ( $target->Resolver ) {
-        $RT::Logger->warning( "$self couldn't resolve target:'"
-                              . $args{'Target'} . " - "
-                              . "' into a URI\n" );
+	my $msg = $self->loc("Couldn't resolve target '[_1]' into a URI.", 
+			     $args{'Target'});
+        $RT::Logger->warning( "$self $msg\n" );
 
-        return (undef);
+	if (wantarray) {
+	    return(undef, $msg);
+	} else {
+	    return (undef);
+	}
     }
 
     my $base_id   = 0;

@@ -22,8 +22,17 @@
 %# 
 %# END LICENSE BLOCK
 <select name="GroupField">
-<option value="Name"><&|/l&>Name</&>
-<option value="Description"><&|/l&>Description</&>
+% foreach my $col (RT::Group->BasicColumns) {
+<option value="<% $col->[0] %>"><% loc($col->[1]) %>
+% }
+% while (my $CF = $CFs->Next) {
+<option value="CustomField-<% $CF->Id %>"><&|/l&>CustomField</&>: <% $CF->Name %>
+% }
 </select>
 <& /Elements/SelectMatch, Name=> 'GroupOp' &>
 <input size=8 name="GroupString">
+<%INIT>
+my $CFs = RT::CustomFields->new($session{'CurrentUser'});
+$CFs->LimitToChildType('RT::Group');
+$CFs->OrderBy( FIELD => 'Name' );
+</%INIT>

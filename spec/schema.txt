@@ -1,0 +1,51 @@
+CF Schema redesign V5.
+======================
+
+TABLE CustomFields (
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  Name varchar(200) NULL  ,
+  Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
+  MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
+  Pattern varchar(255) NULL  ,	# New -- Must validate against this
+  LookupType varchar(255) NOT NULL,	# Lookup paths like "RT::Queue-RT::Ticket"
+  Description varchar(255) NULL  ,
+  SortOrder integer NOT NULL DEFAULT 0  ,   # not used!
+)
+
+TABLE ObjectCustomFields (
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  CustomField int NOT NULL  ,		    # CustomField ID
+  ObjectId integer NOT NULL,		    # Final id of toplevel parent, or the
+					    # object itself if ParentType is empty;
+					    # 0 means global as usual.
+  SortOrder integer NOT NULL DEFAULT 0  ,
+);
+
+TABLE ObjectCustomFieldValues (	# New -- Replaces TicketCustomFieldValues
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  CustomField int NOT NULL  ,
+  ObjectType varchar(255) NOT NULL,		    # Final target of the Object
+  ObjectId int NOT NULL  ,		    # New -- Replaces Ticket
+  SortOrder integer NOT NULL DEFAULT 0  ,
+
+  Current BOOL DEFAULT '1',		    # New -- whether the value was current
+  Content varchar(255) NULL  ,
+  LargeContent LONGTEXT NULL,		    # New -- to hold 255+ strings
+  ContentType varchar(80) NULL,		    # New -- only text/* gets searched
+  ContentEncoding varchar(80) NULL  ,	    # New -- for binary Content
+)
+
+TABLE Transactions (
+  id INTEGER NOT NULL  AUTO_INCREMENT,
+  ObjectType varchar(255) NULL,		    # Final target of the Object
+  ObjectId integer NOT NULL DEFAULT 0  ,    # Changed -- was Ticket
+  TimeTaken integer NOT NULL DEFAULT 0  ,
+  Type varchar(20) NULL  ,
+  Field varchar(40) NULL  ,
+  OldValue varchar(255) NULL  ,
+  NewValue varchar(255) NULL  ,
+  ReferenceType varchar(255) NULL,	    # Currently "RT::OCFV" only
+  OldReference integer NULL  ,		    # New -- Id of ReferenceType
+  NewReference integer NULL  ,		    # New -- Id of ReferenceType
+  Data varchar(255) NULL  ,
+)

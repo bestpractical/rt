@@ -149,8 +149,12 @@ sub Create {
         Privileged => 0,
         Disabled => 0,
         EmailAddress => '',
+        _RecordTransaction => 1,
         @_    # get the real argumentlist
     );
+
+    # remove the value so it does not cripple SUPER::Create
+    my $record_transaction = delete $args{'_RecordTransaction'};
 
     #Check the ACL
     unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
@@ -292,7 +296,12 @@ sub Create {
     }
 
 
+    if ( $record_transaction ) {
+	$self->_NewTransaction( Type => "Create" );
+    }
+
     $RT::Handle->Commit;
+
     return ( $id, $self->loc('User created') );
 }
 
@@ -1002,11 +1011,28 @@ sub SetPassword {
 
 =head2 _GeneratePassword PASSWORD
 
-returns an MD5 hash of the password passed in, in base64 encoding.
+returns an MD5 hash of the password passed in, in hexadecimal encoding.
 
 =cut
 
 sub _GeneratePassword {
+    my $self = shift;
+    my $password = shift;
+
+    my $md5 = Digest::MD5->new();
+    $md5->add($password);
+    return ($md5->hexdigest);
+
+}
+
+=head2 _GeneratePasswordBase64 PASSWORD
+
+returns an MD5 hash of the password passed in, in base64 encoding
+(obsoleted now).
+
+=cut
+
+sub _GeneratePasswordBase64 {
     my $self = shift;
     my $password = shift;
 
@@ -1055,9 +1081,12 @@ sub IsPassword {
     }
 
     #  if it's a historical password we say ok.
-
-    if ( $self->__Value('Password') eq crypt( $value, $self->__Value('Password') ) ) {
-        return (1);
+    if ($self->__Value('Password') eq crypt($value, $self->__Value('Password'))
+        or $self->_GeneratePasswordBase64($value) eq $self->__Value('Password'))
+    {
+        # ...but upgrade the legacy password inplace.
+        $self->SUPER::SetPassword( $self->_GeneratePassword($value) );
+        return(1);
     }
 
     # no password check has succeeded. get out
@@ -1109,7 +1138,7 @@ The response is cached. PrincipalObj should never ever change.
 ok(my $u = RT::User->new($RT::SystemUser));
 ok($u->Load(1), "Loaded the first user");
 ok($u->PrincipalObj->ObjectId == 1, "user 1 is the first principal");
-ok($u->PrincipalObj->PrincipalType eq 'User' , "Principal 1 is a user, not a group");
+is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group");
 
 =end testing
 
@@ -1273,7 +1302,7 @@ ok($q_as_system->Id, "Loaded the first queue");
 my $new_tick2 = RT::Ticket->new($RT::SystemUser);
 my ($tick2id, $tickmsg) = $new_tick2->Create(Subject=> 'ACL Test 2', Queue =>$q_as_system->Id);
 ok($tick2id, "Created ticket: $tick2id");
-ok($new_tick2->QueueObj->id eq $q_as_system->Id, "Created a new ticket in queue 1");
+is($new_tick2->QueueObj->id, $q_as_system->Id, "Created a new ticket in queue 1");
 
 
 # make sure that the user can't do this without subgroup membership
@@ -1523,6 +1552,8 @@ sub _Set {
     my %args = (
         Field => undef,
         Value => undef,
+	TransactionType   => 'Set',
+	RecordTransaction => 1,
         @_
     );
 
@@ -1536,13 +1567,29 @@ sub _Set {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    #Set the new value
-    my ( $ret, $msg ) = $self->SUPER::_Set(
-        Field => $args{'Field'},
-        Value => $args{'Value'}
-    );
+    my $Old = $self->SUPER::_Value("$args{'Field'}");
+    
+    my ($ret, $msg) = $self->SUPER::_Set( Field => $args{'Field'},
+					  Value => $args{'Value'} );
+    
+    #If we can't actually set the field to the value, don't record
+    # a transaction. instead, get out of here.
+    if ( $ret == 0 ) { return ( 0, $msg ); }
 
-    return ( $ret, $msg );
+    if ( $args{'RecordTransaction'} == 1 ) {
+
+        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+                                               Type => $args{'TransactionType'},
+                                               Field     => $args{'Field'},
+                                               NewValue  => $args{'Value'},
+                                               OldValue  => $Old,
+                                               TimeTaken => $args{'TimeTaken'},
+        );
+        return ( $Trans, scalar $TransObj->Description );
+    }
+    else {
+        return ( $ret, $msg );
+    }
 }
 
 # }}}
@@ -1592,6 +1639,14 @@ sub _Value {
 
 # }}}
 
+sub BasicColumns {
+    (
+	[ Name => 'User Id' ],
+	[ EmailAddress => 'Email' ],
+	[ RealName => 'Name' ],
+	[ Organization => 'Organization' ],
+    );
+}
 
 1;
 

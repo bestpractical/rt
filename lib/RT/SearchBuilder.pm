@@ -109,14 +109,42 @@ sub LimitToDeleted {
 Takes NAME, OPERATOR and VALUE to find records that has the
 matching Attribute.
 
+If EMPTY is set, also select rows with an empty string as
+Attribute's Content.
+
+If NULL is set, also select rows without the named Attribute.
+
 =cut
+
+my %Negate = qw(
+    =		!=
+    !=		=
+    >		<=
+    <		>=
+    >=		<
+    <=		>
+    LIKE	NOT LIKE
+    NOT LIKE	LIKE
+    IS		IS NOT
+    IS NOT	IS
+);
 
 sub LimitAttribute {
     my ($self, %args) = @_;
+    my $clause = 'ALIAS';
+    my $operator = ($args{OPERATOR} || '=');
+    
+    if ($args{NULL} and exists $args{VALUE}) {
+	$clause = 'LEFTJOIN';
+	$operator = $Negate{$operator};
+    }
+    elsif ($args{NEGATE}) {
+	$operator = $Negate{$operator};
+    }
     
     my $alias = $self->Join(
 	TYPE   => 'left',
-	ALIAS1 => 'main',
+	ALIAS1 => $args{ALIAS} || 'main',
 	FIELD1 => 'id',
 	TABLE2 => 'Attributes',
 	FIELD2 => 'ObjectId'
@@ -126,13 +154,13 @@ sub LimitAttribute {
     $type =~ s/(?:s|Collection)$//; # XXX - Hack!
 
     $self->Limit(
-	ALIAS	   => $alias,
+	$clause	   => $alias,
 	FIELD      => 'ObjectType',
 	OPERATOR   => '=',
 	VALUE      => $type,
     );
     $self->Limit(
-	ALIAS	   => $alias,
+	$clause	   => $alias,
 	FIELD      => 'Name',
 	OPERATOR   => '=',
 	VALUE      => $args{NAME},
@@ -141,27 +169,91 @@ sub LimitAttribute {
     return unless exists $args{VALUE};
 
     $self->Limit(
-	ALIAS	   => $alias,
+	$clause	   => $alias,
 	FIELD      => 'Content',
-	OPERATOR   => ($args{OPERATOR} || '='),
+	OPERATOR   => $operator,
 	VALUE      => $args{VALUE},
-	ENTRYAGGREGATOR => 'OR',
     );
 
-    if ($args{EMPTY}) {
-	# Capture rows without the attribute defined by testing IS NULL.
-	$self->Limit(
-	    ALIAS      => $alias,
-	    FIELD      => $_,
-	    OPERATOR   => 'IS',
-	    VALUE      => 'NULL',
-	    ENTRYAGGREGATOR => 'OR',
-	) for qw( ObjectType Name Content );
-    }
+    # Capture rows with the attribute defined as an empty string.
+    $self->Limit(
+	$clause    => $alias,
+	FIELD      => 'Content',
+	OPERATOR   => '=',
+	VALUE      => '',
+	ENTRYAGGREGATOR => $args{NULL} ? 'AND' : 'OR',
+    ) if $args{EMPTY};
+
+    # Capture rows without the attribute defined
+    $self->Limit(
+	%args,
+	ALIAS      => $alias,
+	FIELD	   => 'id',
+	OPERATOR   => ($args{NEGATE} ? 'IS NOT' : 'IS'),
+	VALUE      => 'NULL',
+    ) if $args{NULL};
 }
 # }}}
 
-1;
+# {{{ sub LimitCustomField
+
+=head2 LimitCustomField
+
+Takes a paramhash of key/value pairs with the following keys:
+
+=over 4
+
+=item CUSTOMFIELD - CustomField name or id.  If a name is passed, an additional
+parameter QUEUE may also be passed to distinguish the custom field.
+
+=item OPERATOR - The usual Limit operators
+
+=item VALUE - The value to compare against
+
+=back
+
+=cut
+
+sub _SingularClass {
+    my $self = shift;
+    my $class = ref($self);
+    $class =~ s/s$// or die "Cannot deduce SingularClass for $class";
+    return $class;
+}
+
+sub LimitCustomField {
+    my $self = shift;
+    my %args = ( VALUE        => undef,
+                 CUSTOMFIELD  => undef,
+                 OPERATOR     => '=',
+                 @_ );
+
+    my $alias = $self->Join(
+	TYPE       => 'left',
+	ALIAS1     => 'main',
+	FIELD1     => 'id',
+	TABLE2     => 'ObjectCustomFieldValues',
+	FIELD2     => 'ObjectId'
+    );
+    $self->Limit(
+	ALIAS      => $alias,
+	FIELD      => 'CustomField',
+	OPERATOR   => '=',
+	VALUE      => $args{'CUSTOMFIELD'},
+    );
+    $self->Limit(
+	ALIAS      => $alias,
+	FIELD      => 'ObjectType',
+	OPERATOR   => '=',
+	VALUE      => $self->_SingularClass,
+    );
+    $self->Limit(
+	ALIAS      => $alias,
+	FIELD      => 'Content',
+	OPERATOR   => $args{'OPERATOR'},
+	VALUE      => $args{'VALUE'},
+    );
+}
 
 # {{{ sub FindAllRows
 

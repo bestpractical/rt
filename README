@@ -197,12 +197,8 @@ Apache configuration file telling it about RT:
     DocumentRoot /opt/rt3/share/html
     AddDefaultCharset UTF-8
 
-    # these four lines apply to Apache2+mod_perl2 only: {{{
-    PerlSetVar MasonArgsMethod CGI
-    PerlModule Apache2 Apache::compat
-    RewriteEngine On
-    RewriteRule ^(.*)/$ $1/index.html
-    # }}}
+    # This line applies to Apache2+mod_perl2 only:
+    RedirectMatch permanent (.*)/$ $1/index.html
 
     PerlModule Apache::DBI
     PerlRequire /opt/rt3/bin/webmux.pl

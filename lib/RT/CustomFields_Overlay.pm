@@ -46,6 +46,12 @@ use strict;
 no warnings qw(redefine);
 
 
+sub _OCFAlias {
+    my $self = shift;
+    $self->{_sql_ocfalias} ||= $self->NewAlias('ObjectCustomFields');
+}
+
+
 # {{{ sub LimitToGlobalOrQueue 
 
 =item LimitToGlobalOrQueue QUEUEID
@@ -57,8 +63,8 @@ Limits the set of custom fields found to global custom fields or those tied to t
 sub LimitToGlobalOrQueue {
     my $self = shift;
     my $queue = shift;
-    $self->LimitToQueue($queue);
-    $self->LimitToGlobal();
+    $self->LimitToGlobalOrObjectId( $queue );
+    $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 
 # }}}
@@ -77,11 +83,12 @@ sub LimitToQueue  {
    my $self = shift;
   my $queue = shift;
  
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
+  $self->Limit (ALIAS => $self->_OCFAlias,
+                ENTRYAGGREGATOR => 'OR',
+		FIELD => 'ObjectId',
 		VALUE => "$queue")
       if defined $queue;
-  
+  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 # }}}
 
@@ -99,13 +106,24 @@ another call to this method or LimitToQueue
 sub LimitToGlobal  {
    my $self = shift;
  
-  $self->Limit (ENTRYAGGREGATOR => 'OR',
-		FIELD => 'Queue',
+  $self->Limit (ALIAS => $self->_OCFAlias,
+                ENTRYAGGREGATOR => 'OR',
+		FIELD => 'ObjectId',
 		VALUE => 0);
-  
+  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
 }
 # }}}
 
+sub LimitToObjectType {
+    my $self = shift;
+    my $type = shift;
+
+    return if $self->{_sql_limit_objectype}{$type}++;
+    $self->Limit (ALIAS => $self->_OCFAlias,
+		    ENTRYAGGREGATOR => 'OR',
+		    FIELD => 'ObjectType',
+		    VALUE => $type);
+}
 
 # {{{ sub _DoSearch 
 
@@ -130,6 +148,95 @@ sub _DoSearch {
 }
 
 # }}}
+
+# {{{ sub Next 
+
+=head2 Next
+
+Returns the next custom field that this user can see.
+
+=cut
+  
+sub Next {
+    my $self = shift;
+    
+    
+    my $CF = $self->SUPER::Next();
+    if ((defined($CF)) and (ref($CF))) {
+
+	if ($CF->CurrentUserHasRight('SeeCustomField')) {
+	    return($CF);
+	}
+	
+	#If the user doesn't have the right to show this queue
+	else {	
+	    return($self->Next());
+	}
+    }
+    #if there never was any queue
+    else {
+	return(undef);
+    }	
+    
+}
+# }}}
+
+sub LimitToLookupType  {
+    my $self = shift;
+    my $lookup = shift;
+ 
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+}
+
+sub LimitToChildType  {
+    my $self = shift;
+    my $lookup = shift;
+ 
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+    $self->Limit( FIELD => 'LookupType', ENDSWITH => "$lookup" );
+}
+
+sub LimitToParentType  {
+    my $self = shift;
+    my $lookup = shift;
+ 
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+    $self->Limit( FIELD => 'LookupType', STARTSWITH => "$lookup" );
+}
+
+sub LimitToGlobalOrObjectId {
+    my $self = shift;
+    my $global_only = 1;
+
+    $self->Join( ALIAS1 => 'main',
+                FIELD1 => 'id',
+                ALIAS2 => $self->_OCFAlias,
+                FIELD2 => 'CustomField' );
+
+    foreach my $id (@_) {
+	$self->Limit( ALIAS           => $self->_OCFAlias,
+		    FIELD           => 'ObjectId',
+		    OPERATOR        => '=',
+		    VALUE           => $id || 0,
+		    ENTRYAGGREGATOR => 'OR' );
+	$global_only = 0 if $id;
+    }
+
+    $self->Limit( ALIAS           => $self->_OCFAlias,
+                 FIELD           => 'ObjectId',
+                 OPERATOR        => '=',
+                 VALUE           => 0,
+                 ENTRYAGGREGATOR => 'OR' ) unless $global_only;
+
+    $self->OrderByCols(
+	{ ALIAS => $self->_OCFAlias, FIELD => 'ObjectId' },
+	{ ALIAS => $self->_OCFAlias, FIELD => 'SortOrder' },
+    );
+    
+    # This doesn't work on postgres. 
+    #$self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');
+
+}
   
 1;
 

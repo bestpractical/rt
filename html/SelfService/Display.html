@@ -174,9 +174,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 
 my $Transactions = $Ticket->Transactions;
 
-#!!pape: selfservice_find_attachments.patch {{
 my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
-#!!pape: selfservice_find_attachments.patch }}
 
 </%INIT>
 

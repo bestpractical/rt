@@ -123,8 +123,7 @@ sub LimitToPersonalGroupsFor {
     $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'Personal');
     $self->Limit(   FIELD => 'Instance',   
                     OPERATOR => '=', 
-                    VALUE => $princ,
-                    ENTRY_AGGREGATOR => 'OR');
+                    VALUE => $princ);
 }
 
 

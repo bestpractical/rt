@@ -21,29 +21,4 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $Queue->id, 
-    current_tab => 'Admin/Queues/CustomFields.html?id='.$id, 
-    QueueObj => $Queue,                                                      
-    subtabs => $subtabs,
-    Title => $title
-    &>
-
-<& /Admin/Elements/EditCustomFields, title => $title, %ARGS &>
-<%INIT>
-my $Queue = new RT::Queue($session{'CurrentUser'});
-$Queue->Load($id) || Abort(loc("Couldn't load queue", $id));
-
-my $CustomFields = RT::CustomFields->new($RT::SystemUser);
-$CustomFields->LimitToQueue($Queue->Id);
-my $subtabs = {
-	 A => { title => loc('New custom field'),
-	     	path => "Admin/Queues/CustomField.html?create=1&Queue=".$id,
-			   }
-	      };
-
-my $title=  loc('Edit Custom Fields for [_1]', $Queue->Name);
-</%INIT>
-<%ARGS>
-$id => undef
-</%ARGS>
+<& /Admin/Elements/ObjectCustomFields, %ARGS, ObjectType => 'RT::Queue' &>

@@ -63,6 +63,30 @@ sub _Init   {
 }
 # }}}
 
+=head2 Limit
+
+A wrapper around SUPER::Limit to catch migration issues
+
+=cut
+
+sub Limit {
+	my $self = shift;
+	my %args = (@_);
+
+	if ($args{'FIELD'} eq 'Ticket') {
+		Carp::cluck("Historical code calling RT::Transactions::Limit with a 'Ticket'.  This deprecated API will be deleted in 3.6");
+		$self->SUPER::Limit(FIELD => 'ObjectType', OPERATOR => '=', VALUE =>'RT::Ticket');
+		$args{'FIELD'} = 'ObjectId';
+		$self->SUPER::Limit(%args);
+
+	} else {
+
+		$self->SUPER::Limit(%args);
+	}
+
+
+}
+
 # {{{ sub Next
 sub Next {
     my $self = shift;

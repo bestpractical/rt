@@ -1,0 +1,50 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+      <input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
+      <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
+        size="<%$Rows%>"
+        <% $Multiple && 'MULTIPLE' %>>
+% my $selected;
+% my $CFVs = $CustomField->Values;
+% while ($CFVs and my $value = $CFVs->Next ) {
+        <option value="<%$value->Name%>" 
+% if ($Values) {
+            <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
+% } elsif ($Default) {
+            <% ($Default eq $value->Name) && ($selected = 1) && 'SELECTED' %>
+% }
+            ><% $value->Name%></option>
+% }
+        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
+      </select>
+<%ARGS>
+$Object => undef
+$CustomField => undef
+$NamePrefix => undef
+$Default => undef
+$Values => undef
+$Multiple => 0
+$Cols
+$Rows
+</%ARGS>

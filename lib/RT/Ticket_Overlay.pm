@@ -85,8 +85,8 @@ ok($t->CustomFieldValues($testcf->Id)->Count == 0);
 
 ok(my $t2 = RT::Ticket->new($RT::SystemUser));
 ok($t2->Load($id));
-ok($t2->Subject eq 'Testing');
-ok($t2->QueueObj->Id eq $testqueue->id);
+is($t2->Subject, 'Testing');
+is($t2->QueueObj->Id, $testqueue->id);
 ok($t2->OwnerObj->Id == $u->Id);
 
 my $t3 = RT::Ticket->new($RT::SystemUser);
@@ -120,7 +120,6 @@ use RT::Record;
 use RT::Links;
 use RT::Date;
 use RT::CustomFields;
-use RT::TicketCustomFieldValues;
 use RT::Tickets;
 use RT::URI::fsck_com_rt;
 use RT::URI;
@@ -459,7 +458,7 @@ sub Create {
     }
 
     #If we've been handed something else, try to load the user.
-    elsif ( $args{'Owner'} ) {
+    elsif ( defined $args{'Owner'} ) {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
 
@@ -2679,6 +2678,7 @@ sub AddLink {
 # {{{ sub MergeInto
 
 =head2 MergeInto
+
 MergeInto take the id of the ticket to merge this ticket into.
 
 =cut
@@ -2877,9 +2877,9 @@ ok ($root->Id, "Loaded the root user");
 my $t = RT::Ticket->new($RT::SystemUser);
 $t->Load(1);
 $t->SetOwner('root');
-ok ($t->OwnerObj->Name eq 'root' , "Root owns the ticket");
+is ($t->OwnerObj->Name, 'root' , "Root owns the ticket");
 $t->Steal();
-ok ($t->OwnerObj->id eq $RT::SystemUser->id , "SystemUser owns the ticket");
+is ($t->OwnerObj->id, $RT::SystemUser->id , "SystemUser owns the ticket");
 my $txns = RT::Transactions->new($RT::SystemUser);
 $txns->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $txns->Limit(FIELD => 'Ticket', VALUE => '1');
@@ -3109,14 +3109,14 @@ my $tt = RT::Ticket->new($RT::SystemUser);
 my ($id, $tid, $msg)= $tt->Create(Queue => 'general',
             Subject => 'test');
 ok($id, $msg);
-ok($tt->Status eq 'new', "New ticket is created as new");
+is($tt->Status, 'new', "New ticket is created as new");
 
 ($id, $msg) = $tt->SetStatus('open');
 ok($id, $msg);
-ok ($msg =~ /open/i, "Status message is correct");
+like($msg, qr/open/i, "Status message is correct");
 ($id, $msg) = $tt->SetStatus('resolved');
 ok($id, $msg);
-ok ($msg =~ /resolved/i, "Status message is correct");
+like($msg, qr/resolved/i, "Status message is correct");
 ($id, $msg) = $tt->SetStatus('resolved');
 ok(!$id,$msg);
 
@@ -3268,282 +3268,6 @@ sub Resolve {
 
 # }}}
 
-# {{{ Routines dealing with custom fields
-
-
-# {{{ FirstCustomFieldValue
-
-=item FirstCustomFieldValue FIELD
-
-Return the content of the first value of CustomField FIELD for this ticket
-Takes a field id or name
-
-=cut
-
-sub FirstCustomFieldValue {
-    my $self = shift;
-    my $field = shift;
-    my $values = $self->CustomFieldValues($field);
-    if ($values->First) {
-        return $values->First->Content;
-    } else {
-        return undef;
-    }
-
-}
-
-
-
-# {{{ CustomFieldValues
-
-=item CustomFieldValues FIELD
-
-Return a TicketCustomFieldValues object of all values of CustomField FIELD for this ticket.  
-Takes a field id or name.
-
-
-=cut
-
-sub CustomFieldValues {
-    my $self  = shift;
-    my $field = shift;
-
-    my $cf = RT::CustomField->new($self->CurrentUser);
-
-    if ($field =~ /^\d+$/) {
-        $cf->LoadById($field);
-    } else {
-        $cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
-        unless( $cf->id ) {
-            $cf->LoadByNameAndQueue(Name => $field, Queue => '0');
-        }
-    }
-    my $cf_values = RT::TicketCustomFieldValues->new( $self->CurrentUser );
-    $cf_values->LimitToCustomField($cf->id);
-    $cf_values->LimitToTicket($self->Id());
-    $cf_values->OrderBy( FIELD => 'id' );
-
-    # @values is a CustomFieldValues object;
-    return ($cf_values);
-}
-
-# }}}
-
-# {{{ AddCustomFieldValue
-
-=item AddCustomFieldValue { Field => FIELD, Value => VALUE }
-
-VALUE should be a string.
-FIELD can be a CustomField object OR a CustomField ID.
-
-
-Adds VALUE as a value of CustomField FIELD.  If this is a single-value custom field,
-deletes the old value. 
-If VALUE isn't a valid value for the custom field, returns 
-(0, 'Error message' ) otherwise, returns (1, 'Success Message')
-
-=cut
-
-sub AddCustomFieldValue {
-    my $self = shift;
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-    $self->_AddCustomFieldValue(@_);
-}
-
-sub _AddCustomFieldValue {
-    my $self = shift;
-    my %args = (
-        Field => undef,
-        Value => undef,
-	RecordTransaction => 1,
-        @_
-    );
-
-    my $cf = RT::CustomField->new( $self->CurrentUser );
-    if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
-        $cf->Load( $args{'Field'}->id );
-    }
-    else {
-        $cf->Load( $args{'Field'} );
-    }
-
-    unless ( $cf->Id ) {
-        return ( 0, $self->loc("Custom field [_1] not found", $args{'Field'}) );
-    }
-
-    # Load up a TicketCustomFieldValues object for this custom field and this ticket
-    my $values = $cf->ValuesForTicket( $self->id );
-
-    unless ( $cf->ValidateValue( $args{'Value'} ) ) {
-        return ( 0, $self->loc("Invalid value for custom field") );
-    }
-
-    # If the custom field only accepts a single value, delete the existing
-    # value and record a "changed from foo to bar" transaction
-    if ( $cf->SingleValue ) {
-
-        # We need to whack any old values here.  In most cases, the custom field should
-        # only have one value to delete.  In the pathalogical case, this custom field
-        # used to be a multiple and we have many values to whack....
-        my $cf_values = $values->Count;
-
-        if ( $cf_values > 1 ) {
-            my $i = 0;   #We want to delete all but the last one, so we can then
-                 # execute the same code to "change" the value from old to new
-            while ( my $value = $values->Next ) {
-                $i++;
-                if ( $i < $cf_values ) {
-                    my $old_value = $value->Content;
-                    my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $value->Content);
-                    unless ($val) {
-                        return (0,$msg);
-                    }
-                    my ( $TransactionId, $Msg, $TransactionObj ) =
-                      $self->_NewTransaction(
-                        Type     => 'CustomField',
-                        Field    => $cf->Id,
-                        OldValue => $old_value
-                      );
-                }
-            }
-        }
-
-        my $old_value;
-        if (my $value = $cf->ValuesForTicket( $self->Id )->First) {
-	    $old_value = $value->Content();
-	    return (1) if $old_value eq $args{'Value'};
-	}
-
-        my ( $new_value_id, $value_msg ) = $cf->AddValueForTicket(
-            Ticket  => $self->Id,
-            Content => $args{'Value'}
-        );
-
-        unless ($new_value_id) {
-            return ( 0,
-                $self->loc("Could not add new custom field value for ticket. [_1] ",
-                  ,$value_msg) );
-        }
-
-        my $new_value = RT::TicketCustomFieldValue->new( $self->CurrentUser );
-        $new_value->Load($new_value_id);
-
-        # now that adding the new value was successful, delete the old one
-	if ($old_value) {
-	    my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $old_value);
-	    unless ($val) { 
-	    		return (0,$msg);
-	    }
-	}
-
-	if ($args{'RecordTransaction'}) {
-        my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
-            Type     => 'CustomField',
-            Field    => $cf->Id,
-            OldValue => $old_value,
-            NewValue => $new_value->Content
-        );
-	}
-
-        if ( $old_value eq '' ) {
-            return ( 1, $self->loc("[_1] [_2] added", $cf->Name, $new_value->Content) );
-        }
-        elsif ( $new_value->Content eq '' ) {
-            return ( 1, $self->loc("[_1] [_2] deleted", $cf->Name, $old_value) );
-        }
-        else {
-            return ( 1, $self->loc("[_1] [_2] changed to [_3]", $cf->Name, $old_value, $new_value->Content ) );
-        }
-
-    }
-
-    # otherwise, just add a new value and record "new value added"
-    else {
-        my ( $new_value_id ) = $cf->AddValueForTicket(
-            Ticket  => $self->Id,
-            Content => $args{'Value'}
-        );
-
-        unless ($new_value_id) {
-            return ( 0,
-                $self->loc("Could not add new custom field value for ticket. "));
-        }
-    if ( $args{'RecordTransaction'} ) {
-        my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
-            Type     => 'CustomField',
-            Field    => $cf->Id,
-            NewValue => $args{'Value'}
-        );
-        unless ($TransactionId) {
-            return ( 0,
-                $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
-        }
-    }
-        return ( 1, $self->loc("[_1] added as a value for [_2]",$args{'Value'}, $cf->Name));
-    }
-
-}
-
-# }}}
-
-# {{{ DeleteCustomFieldValue
-
-=item DeleteCustomFieldValue { Field => FIELD, Value => VALUE }
-
-Deletes VALUE as a value of CustomField FIELD. 
-
-VALUE can be a string, a CustomFieldValue or a TicketCustomFieldValue.
-
-If VALUE isn't a valid value for the custom field, returns 
-(0, 'Error message' ) otherwise, returns (1, 'Success Message')
-
-=cut
-
-sub DeleteCustomFieldValue {
-    my $self = shift;
-    my %args = (
-        Field => undef,
-        Value => undef,
-        @_);
-
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-    my $cf = RT::CustomField->new( $self->CurrentUser );
-    if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
-        $cf->LoadById( $args{'Field'}->id );
-    }
-    else {
-        $cf->LoadById( $args{'Field'} );
-    }
-
-    unless ( $cf->Id ) {
-        return ( 0, $self->loc("Custom field not found") );
-    }
-
-
-     my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $args{'Value'});
-     unless ($val) { 
-            return (0,$msg);
-     }
-        my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
-            Type     => 'CustomField',
-            Field    => $cf->Id,
-            OldValue => $args{'Value'}
-        );
-        unless($TransactionId) {
-            return(0, $self->loc("Couldn't create a transaction: [_1]", $Msg));
-        } 
-
-        return($TransactionId, $self->loc("[_1] is no longer a value for custom field [_2]", $args{'Value'}, $cf->Name));
-}
-
-# }}}
-
-# }}}
-
 # {{{ Actions + Routines dealing with transactions
 
 # {{{ sub SetTold and _SetTold
@@ -3594,113 +3318,6 @@ sub _SetTold {
     #use __Set to get no ACLs ;)
     return ( $self->__Set( Field => 'Told',
                            Value => $now->ISO ) );
-}
-
-# }}}
-
-# {{{ sub Transactions 
-
-=head2 Transactions
-
-  Returns an RT::Transactions object of all transactions on this ticket
-
-=cut
-
-sub Transactions {
-    my $self = shift;
-
-    use RT::Transactions;
-    my $transactions = RT::Transactions->new( $self->CurrentUser );
-
-    #If the user has no rights, return an empty object
-    if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        my $tickets = $transactions->NewAlias('Tickets');
-        $transactions->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'Ticket',
-            ALIAS2 => $tickets,
-            FIELD2 => 'id'
-        );
-        $transactions->Limit(
-            ALIAS => $tickets,
-            FIELD => 'EffectiveId',
-            VALUE => $self->id()
-        );
-
-        # if the user may not see comments do not return them
-        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            $transactions->Limit(
-                FIELD    => 'Type',
-                OPERATOR => '!=',
-                VALUE    => "Comment",
-                ENTRYAGGREGATOR => 'AND'
-            );
-            $transactions->Limit(
-                FIELD    => 'Type',
-                OPERATOR => '!=',
-                VALUE    => "CommentEmailRecord",
-                ENTRYAGGREGATOR => 'AND'
-            );
-        }
-    }
-
-    return ($transactions);
-}
-
-# }}}
-
-# {{{ sub _NewTransaction
-
-=head2 _NewTransaction  PARAMHASH
-
-Private function to create a new RT::Transaction object for this ticket update
-
-=cut
-
-sub _NewTransaction {
-    my $self = shift;
-    my %args = (
-        TimeTaken => 0,
-        Type      => undef,
-        OldValue  => undef,
-        NewValue  => undef,
-        Data      => undef,
-        Field     => undef,
-        MIMEObj   => undef,
-        ActivateScrips => 1,
-        CommitScrips => 1,
-        @_
-    );
-
-    require RT::Transaction;
-    my $trans = new RT::Transaction( $self->CurrentUser );
-    my ( $transaction, $msg ) = $trans->Create(
-        Ticket    => $self->Id,
-        TimeTaken => $args{'TimeTaken'},
-        Type      => $args{'Type'},
-        Data      => $args{'Data'},
-        Field     => $args{'Field'},
-        NewValue  => $args{'NewValue'},
-        OldValue  => $args{'OldValue'},
-        MIMEObj   => $args{'MIMEObj'},
-        ActivateScrips => $args{'ActivateScrips'},
-        CommitScrips => $args{'CommitScrips'},
-    );
-
-    # Rationalize the object since we may have done things to it during the caching.
-    $self->Load($self->Id);
-
-    $RT::Logger->warning($msg) unless $transaction;
-
-    $self->_SetLastUpdated;
-
-    if ( defined $args{'TimeTaken'} ) {
-        $self->_UpdateTimeTaken( $args{'TimeTaken'} );
-    }
-    if ( $RT::UseTransactionBatch and $transaction ) {
-	    push @{$self->{_TransactionBatch}}, $trans;
-    }
-    return ( $transaction, $msg, $trans );
 }
 
 # }}}
@@ -3956,6 +3573,86 @@ sub HasRight {
 # }}}
 
 # }}}
+
+# {{{ sub Transactions 
+
+=head2 Transactions
+
+  Returns an RT::Transactions object of all transactions on this ticket
+
+=cut
+
+sub Transactions {
+    my $self = shift;
+
+    use RT::Transactions;
+    my $transactions = RT::Transactions->new( $self->CurrentUser );
+
+    #If the user has no rights, return an empty object
+    if ( $self->CurrentUserHasRight('ShowTicket') ) {
+        my $tickets = $transactions->NewAlias('Tickets');
+        $transactions->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'ObjectId',
+            ALIAS2 => $tickets,
+            FIELD2 => 'id'
+        );
+        $transactions->Limit(
+            ALIAS => $tickets,
+            FIELD => 'EffectiveId',
+            VALUE => $self->id()
+        );
+	$transactions->Limit(
+	    FIELD    => 'ObjectType',
+	    VALUE    => ref($self),
+	);
+
+        # if the user may not see comments do not return them
+        unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
+            $transactions->Limit(
+                FIELD    => 'Type',
+                OPERATOR => '!=',
+                VALUE    => "Comment"
+            );
+            $transactions->Limit(
+                FIELD    => 'Type',
+                OPERATOR => '!=',
+                VALUE    => "CommentEmailRecord",
+                ENTRYAGGREGATOR => 'AND'
+            );
+
+        }
+    }
+
+    return ($transactions);
+}
+
+# }}}
+
+sub TransactionCustomFields {
+    my $self = shift;
+    return $self->QueueObj->TicketTransactionCustomFields;
+}
+
+# Do name => id mapping (if needed) before falling back to
+# RT::Record's CustomFieldValues
+sub CustomFieldValues {
+    my $self = shift;
+    my $field = shift;
+    unless ($field =~ /^\d+$/) {
+	my $cf = RT::CustomField->new($self->CurrentUser);
+	$cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
+	unless( $cf->id ) {
+            $cf->LoadByNameAndQueue(Name => $field, Queue => '0');
+        }
+	$field = $cf->id;
+    }
+    return $self->SUPER::CustomFieldValues($field);
+}
+
+sub _LookupTypes {
+    "RT::Queue-RT::Ticket";
+}
 
 1;
 

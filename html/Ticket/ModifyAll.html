@@ -78,6 +78,14 @@
     <td class="label"><&|/l&>Subject</&>:</td>
     <td class="entry"><input name="UpdateSubject" size=60 value="<%$Ticket->Subject%>"></td>
   </tr>
+% if (my $TxnCFs = $Ticket->TransactionCustomFields) {
+%    while (my $CF = $TxnCFs->Next()) {
+<TR>
+<TD class="label"><% $CF->Name %>:</TD>
+<TD class="entry"><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &><em><% $CF->FriendlyType %></em></TD>
+</TD></TR>
+%    } # end if while
+% } # end of if
   <tr>
     <td class="label"><&|/l&>Attach</&>:</td>
     <td class="entry"><input name="UpdateAttachment" type=file></td>
@@ -115,7 +123,7 @@ my (@wresults, @results,  @dresults, @lresults, @cf_results);
 unless ($OnlySearchForPeople) {
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
- @cf_results = ProcessTicketCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+ @cf_results = ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 

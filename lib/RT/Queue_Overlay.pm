@@ -70,7 +70,7 @@ $RIGHTS = {
     ShowACL             => 'Display Access Control List',             # loc_pair
     ModifyACL           => 'Modify Access Control List',              # loc_pair
     ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
-    AdminCustomFields   => 'Create, delete and modify custom fields', # loc_pair
+    AssignCustomFields  => 'Assign and remove custom fields',         # loc_pair
     ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
     ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
 
@@ -457,12 +457,32 @@ Returns an RT::CustomFields object containing all global custom fields, as well 
 
 =cut
 
+# XXX XXX - this should become TicketCustomFields
+
 sub CustomFields {
+    my $self = shift;
+    warn "Queue->CustomFields is deprecated, use Queue->TicketCustomFields instead";
+    return $self->TicketCustomFields(@_);
+}
+
+sub TicketCustomFields {
     my $self = shift;
 
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
-        $cfs->LimitToGlobalOrQueue( $self->Id );
+	$cfs->LimitToGlobalOrObjectId( $self->Id );
+	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+    }
+    return ($cfs);
+}
+
+sub TicketTransactionCustomFields {
+    my $self = shift;
+
+    my $cfs = RT::CustomFields->new( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('SeeQueue') ) {
+	$cfs->LimitToGlobalOrObjectId( $self->Id );
+	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
     }
     return ($cfs);
 }
@@ -1043,7 +1063,7 @@ sub HasRight {
     }
     return (
         $args{'Principal'}->HasRight(
-            Object => $self,
+            Object => $self->Id ? $self : $RT::System,
             Right    => $args{'Right'}
           )
     );

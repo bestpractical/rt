@@ -328,12 +328,12 @@ specification. but currently doesn't
 =begin testing
 
 ok (my $cu = RT::CurrentUser->new('root'));
-ok (my $lh = $cu->LanguageHandle);
+ok (my $lh = $cu->LanguageHandle('en-us'));
 ok ($lh != undef);
 ok ($lh->isa('Locale::Maketext'));
-ok ($cu->loc('TEST_STRING') eq "Concrete Mixer", "Localized TEST_STRING into English");
+is ($cu->loc('TEST_STRING'), "Concrete Mixer", "Localized TEST_STRING into English");
 ok ($lh = $cu->LanguageHandle('fr'));
-ok ($cu->loc('Before') eq "Avant", "Localized TEST_STRING into Frenc");
+is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into Frenc");
 
 =end testing
 
@@ -400,6 +400,48 @@ sub CurrentUser {
     return($self);
 
 }
+
+=head2 Authenticate
+
+Takes $password, $created and $nonce, and returns a boolean value
+representing whether the authentication succeeded.
+
+If both $nonce and $created are specified, validate $password against:
+
+    encode_base64(sha1(
+	$nonce .
+	$created .
+	sha1_hex( "$username:$realm:$server_pass" )
+    ))
+
+where $server_pass is the md5_hex(password) digest stored in the
+database, $created is in ISO time format, and $nonce is a random
+string no longer than 32 bytes.
+
+=cut
+
+sub Authenticate { 
+    my ($self, $password, $created, $nonce, $realm) = @_;
+
+    require Digest::MD5;
+    require Digest::SHA1;
+    require MIME::Base64;
+
+    my $username = $self->UserObj->Name or return;
+    my $server_pass = $self->UserObj->__Value('Password') or return;
+    my $auth_digest = MIME::Base64::encode_base64(Digest::SHA1::sha1(
+	$nonce .
+	$created .
+	Digest::MD5::md5_hex("$username:$realm:$server_pass")
+    ));
+
+    chomp($password);
+    chomp($auth_digest);
+
+    return ($password eq $auth_digest);
+}
+
+# }}}
 
 
 eval "require RT::CurrentUser_Vendor";

@@ -96,12 +96,14 @@ sub AvailableRights {
 
     my $queue = RT::Queue->new($RT::SystemUser);
     my $group = RT::Group->new($RT::SystemUser);
+    my $cf    = RT::CustomField->new($RT::SystemUser);
 
     my $qr =$queue->AvailableRights();
     my $gr = $group->AvailableRights();
+    my $cr = $cf->AvailableRights();
 
     # Build a merged list of all system wide rights, queue rights and group rights.
-    my %rights = (%{$RIGHTS}, %{$gr}, %{$qr});
+    my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr});
     return(\%rights);
 }
 
