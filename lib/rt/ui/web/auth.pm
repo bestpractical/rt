@@ -52,32 +52,24 @@ if ($rt::program =~ /nph-/) {
 	print STDERR "We've done FORMbased auth. now we're setting cookies\n" if $debug;
 #if we have a $path to play with...
 #not doing this breaks netscape
-    if ($path ne '') { 
-     
-      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
+
+	      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
                                   -value => "$rt::ui::web::FORM{'username'}",
-                                  -expires => '+6M',
-                                  -path => $path);
-      
+                                  -expires => '+6M');
       $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
                                       -value =>$hash,
                                       -path => $path);
-      
- }
-else {
-      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
-                                  -value => "$rt::ui::web::FORM{'username'}",
-                                  -expires => '+6M');
 
-      $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
-                                      -value =>$hash);
+    if ($path ne '') { 
+	$set_user->path($path);
+	$set_password->path($path);
+	}
 
-}
 
       if (($rt::web_auth_cookies_allow_no_path =~ /yes/i) and
 	  ($rt::ui::web::FORM{'insecure_path'})) {
-      	$set_password =~ s/; path=(.*?); /; /;
-      	$set_user =~ s/; path=(.*?); /; /
+      	$set_password->path(undef);
+	$set_user->path(undef);
       } 
        
       print "Set-Cookie: $set_password\n";
