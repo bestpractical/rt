@@ -88,7 +88,7 @@ sub NewApacheHandler {
 
 =cut
 
-sub NewMaosn11ApacheHandler {
+sub NewMason11ApacheHandler {
         my %args = ( default_escape_flags => 'h',
                     allow_globals        => [%session],
         comp_root                    => [
