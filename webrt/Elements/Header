@@ -10,7 +10,7 @@
 You are currently authenticated as <a href="<%$RT::WebURL%>/ViewUser.html?id=<%$session{'CurrentUser'}->Id%>"><%$session{'CurrentUser'}->UserId%></a>.
 %}
 <hr>
-<form method="get" action="Ticket/Display.html">Show Ticket #<input name="id" size=5><input type=submit></form>
+<form method="get" action="Ticket/Display.html"><input type="submit" value="Show Ticket"> #<input name="id" size=5></form>
 <hr>
 
 <%ARGS>
