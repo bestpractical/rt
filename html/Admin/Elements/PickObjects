@@ -43,7 +43,7 @@ value="1"
 % } else {
     <i>(<%loc("no name")%>)</i><br>
 % }
-    <%$Object->Description%>
+    <%$Object->can('Description') && $Object->Description%>
   </TD>
 %#  <TD valign="TOP">
 %#    <i><% $CustomFieldObj->FriendlyTypeComposite %></i>
