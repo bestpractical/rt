@@ -28,7 +28,7 @@ Date::Format
 MIME::Entity 5.108
 Mail::Mailer 1.19
 CGI::Cookie 1.06
-Log::Dispatch 1.2
+Log::Dispatch 1.6
 HTML::Entities 
 Text::Wrapper
 DBIx::Handle
@@ -41,9 +41,14 @@ use CPAN;
 while ($module= shift @modules) {
 	my $version = "";
 	$version = " ". shift (@modules) . " " if ($modules[0] =~ /^([\d\.]*)$/);
-	print "Checking for $module$version\n" if ($mode =~ /-w/ );
+	print "Checking for $module$version" if ($mode =~ /-w/ );
 	eval "use $module$version" ;
-	&resolve_dependency($module, $version) if ($@);
+	if ($@) {
+	&resolve_dependency($module, $version) 
+	}
+	else {
+	print "...found\n";
+	}
 }
 
 sub print_help {
@@ -67,7 +72,7 @@ EOF
 sub resolve_dependency {
 	my $module = shift;
 	my $version = shift;
-        print "$module$version not installed.\n" if ($mode =~ /-w/);
+        print "....$module$version not installed.\n" if ($mode =~ /-w/);
 	CPAN::install($module) if ($mode =~ /-f/);
 	exit(1) if ($mode =~ /-q/);
 }	

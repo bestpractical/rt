@@ -56,12 +56,9 @@ use RT::CurrentUser;
 $SystemUser = RT::CurrentUser->new(1);
 
 
-# I don't think this works --TobiX
 my $program = $0; 
-#my $program=$ARGV[0];
 
 $program =~ s/(.*)\///;
-#shift @ARGV;
 
 
 if ($program eq '!!RT_ACTION_BIN!!') {
@@ -80,7 +77,6 @@ elsif ($program eq '!!RT_QUERY_BIN!!') {
 }
 
 elsif ($program eq '!!RT_ADMIN_BIN!!') {
-  die "Admin tool stubbed";
   #load rt_admin
   require rt::support::utils;     
   require rt::ui::cli::support;
