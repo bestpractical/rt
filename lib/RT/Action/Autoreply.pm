@@ -40,10 +40,12 @@ sub SetReturnAddress {
 	       );
     
     if ($args{'is_comment'}) { 
-	$replyto = $self->TicketObj->QueueObj->CommentAddress;
+	$replyto = $self->TicketObj->QueueObj->CommentAddress || 
+		     $RT::CommentAddress;
     }
     else {
-	$replyto = $self->TicketObj->QueueObj->CorrespondAddress;
+	$replyto = $self->TicketObj->QueueObj->CorrespondAddress ||
+		     $RT::CorrespondAddress;
     }
     
     unless ($self->TemplateObj->MIMEObj->head->get('From')) {
