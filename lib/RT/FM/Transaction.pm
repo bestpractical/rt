@@ -195,6 +195,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item Creator
+
+Returns the current value of Creator. 
+(In the database, Creator is stored as int(11).)
+
+
+=cut
+
+
+=item Created
+
+Returns the current value of Created. 
+(In the database, Created is stored as datetime.)
+
+
+=cut
+
+
 
 sub _ClassAccessible {
     {
@@ -213,6 +231,10 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'text', default => ''},
         NewContent => 
 		{read => 1, write => 1, type => 'text', default => ''},
+        Creator => 
+		{read => 1, auto => 1, type => 'int(11)', default => '0'},
+        Created => 
+		{read => 1, auto => 1, type => 'datetime', default => ''},
 
  }
 };

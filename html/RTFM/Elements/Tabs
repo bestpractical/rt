@@ -139,11 +139,11 @@
 my $action;
 
 
-my $toptabs = { A => { title => loc('RT'),
+my $toptabs = { a => { title => loc('RT'),
                        path  => '', },
-                B => { title => loc('RTFM Home'),
+                aab => { title => loc('RTFM Home'),
                        path  => 'RTFM/' },
-                C => { title => loc('Search'),
+                'articles' => { title => loc('Articles'),
                        path  => 'RTFM/Article/Search.html' },
                 D => { title => loc('Configuration'),
                        path  => 'RTFM/Admin/' }, };

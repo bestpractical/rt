@@ -234,7 +234,9 @@ sub Create {
     # We override the URI lookup. the whole reason
     # we have a URI column is so that joins on the links table
     # aren't expensive and stupid
-    $self->SetURI($self->URI);
+    $self->__Set(Field => 'URI', Value =>$self->URI);
+    
+    $self->_NewTransaction(Type => 'Create');
 
     $RT::Handle->Commit();
 
@@ -1028,7 +1030,7 @@ Data
 sub _NewTransaction {
     my $self = shift;
     my %args = ( Type     => undef,
-                 Field    => undef,
+                 Field    => '',
                  OldContent => '',
                  NewContent => '',
                  ChangeLog     => '',
@@ -1054,6 +1056,29 @@ sub _NewTransaction {
 
 # }}}
 
+=head2 Transactions
+
+Returns an RT::FM::TransactionCollection pre-loaded with all the transactions for tthis Article. If the current user doesn't have the right to 'ShowArticleHistory',
+this object is an _empty_ TransactionCollection
+
+=cut
+
+sub Transactions {
+    my $self = shift;
+    my $transactions = RT::FM::TransactionCollection->new($self->CurrentUser);
+
+    if ( $self->CurrentUserHasRight('ShowArticleHistory') ) {
+        $transactions->Limit(FIELD => 'Article',
+                             OPERATOR => '=',
+                             VALUE => $self->Id);
+    }
+   
+    return ($transactions); 
+
+}
+
+
+# {{{ _Set
 =head2 _Set { Field => undef, Value => undef
 
 Internal helper method to record a transaction as we update some core field of the article
@@ -1068,10 +1093,8 @@ my $s =$art->Summary;
 my ($val, $msg) = $art->SetSummary("testFoo");
 ok ($val, $msg);
 ok ($art->Summary eq 'testFoo', "The Summary was set to foo");
-my $t = RT::FM::TransactionCollection->new($RT::SystemUser);
-$t->Limit(FIELD => 'Article', VALUE => '1');
-$t->OrderBy( FIELD => 'id', ORDER => 'DESC');
-my $trans = $t->First;
+my $t = $art->Transactions();
+my $trans = $t->Last;
 ok ($trans->Type eq 'Core', "It's a core transaction");
 ok ($trans->Field eq 'Summary', "it's about setting the Summary");
 ok ($trans->NewContent eq 'testFoo', "The new content is 'foo'");
@@ -1097,5 +1120,6 @@ sub _Set {
     return ( $self->SUPER::_Set(%args) );
 
 }
+# }}}
 
 1;

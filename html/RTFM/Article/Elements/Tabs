@@ -22,23 +22,44 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTFM/Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'RTFM/Article/', current_tab => $current_tab, current_subtab => $current_subtab&>
+<& /RTFM/Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'RTFM/Article/Search.html', current_tab => $current_tab, current_subtab => $current_subtab, title => $title&>
 
 <hr>
   
 <%INIT>
-  my $tabs = { Classes => { title => loc('Display'),
-			  path => 'RTFM/Article/Display.html?id='.$id,
-			},
-	       CustomFields => { title => loc('Modify'),
-			  path => 'RTFM/Article/Edit.html?id='.$id,
-			 },
-	     };
+
+my $tabs;
+$tabs->{'a_search'} = { class     => "currentnav",
+                        path      => "RTFM/Article/Search.html",
+                        title     => loc("Search"),
+                        separator => 1 };
+if ($id) {
+    $tabs->{"this"} = { class          => "currentnav",
+                        path           => "RTFM/Article/Display.html?id=" . $id,
+                        title          => "#" . $id,
+                        current_subtab => $current_subtab };
+
+    $tabs->{"this"}->{subtabs} = {
+                              Classes => {
+                                  title => loc('Display'),
+                                  path => 'RTFM/Article/Display.html?id=' . $id,
+                              },
+                              History => {
+                                  title => loc('History'),
+                                  path => 'RTFM/Article/History.html?id=' . $id,
+                              },
+
+                              CustomFields => {
+                                     title => loc('Modify'),
+                                     path => 'RTFM/Article/Edit.html?id=' . $id,
+                              }, };
+}
 </%INIT>
 
 
 <%ARGS>
-$id => undef;
+$id => undef
+$title => undef
 $subtabs => undef
 $current_tab => undef
 $current_subtab => undef

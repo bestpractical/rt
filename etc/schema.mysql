@@ -83,5 +83,7 @@ Type varchar(64) NOT NULL DEFAULT '',
 Field varchar(64) NOT NULL DEFAULT '',
 OldContent text NOT NULL DEFAULT '',
 NewContent text NOT NULL DEFAULT '',
+Creator integer NOT NULL DEFAULT 0,
+Created DATETIME NULL,
 PRIMARY KEY (id)
 );

@@ -1,0 +1,34 @@
+<& /RTFM/Elements/Header, Title => loc('Article #[_1]',$id) &>
+<& /RTFM/Article/Elements/Tabs, id => $id  &>
+  
+
+<h1><&|/l,$article->Id, $article->Name &>Article #[_1]: [_2]</&></h1>
+
+% while (my $transaction = $transactions->Next) {
+<%$transaction->CreatedObj->AsString%>: <%$transaction->CreatorObj->Name%>
+<%$transaction->Description%> <BR><BR>
+
+% }
+
+<%init>
+
+my $article = RT::FM::Article->new($session{'CurrentUser'}); 
+
+$article->Load($id);
+unless ($article->Id) {
+    Abort(loc("Article not found"));
+}
+
+unless ($session{'CurrentUser'}->HasRight( Object => $article->ClassObj, 
+                                           Right => 'ShowArticle')) {
+    Abort(loc("Permission Denied"));
+}
+
+my $transactions = $article->Transactions();
+
+
+</%init>
+
+<%args>
+$id => undef
+</%args>
