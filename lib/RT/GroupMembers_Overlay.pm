@@ -65,6 +65,9 @@ ok (require RT::GroupMembers);
 
 =cut
 
+
+package RT::GroupMembers;
+
 use strict;
 no warnings qw(redefine);
 

@@ -66,6 +66,9 @@ ok (require RT::Attachment);
 
 =cut
 
+
+package RT::Attachment;
+
 use strict;
 no warnings qw(redefine);
 

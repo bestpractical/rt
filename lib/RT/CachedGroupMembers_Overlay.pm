@@ -65,6 +65,9 @@ ok (require RT::CachedGroupMembers);
 
 =cut
 
+
+package RT::CachedGroupMembers;
+
 use strict;
 no warnings qw(redefine);
 

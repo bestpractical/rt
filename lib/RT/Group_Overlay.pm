@@ -154,6 +154,9 @@ ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 has member 2 
 
 =cut
 
+
+package RT::Group;
+
 use strict;
 no warnings qw(redefine);
 

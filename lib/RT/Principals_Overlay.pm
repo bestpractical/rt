@@ -65,6 +65,9 @@ ok (require RT::Principals);
 
 =cut
 
+
+package RT::Principals;
+
 use strict;
 no warnings qw(redefine);
 

@@ -63,6 +63,9 @@ ok(require RT::ACE);
 
 =cut
 
+
+package RT::ACE;
+
 use strict;
 no warnings qw(redefine);
 use RT::Principals;

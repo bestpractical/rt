@@ -66,6 +66,9 @@ ok (require RT::Links);
 
 =cut
 
+
+package RT::Links;
+
 use strict;
 no warnings qw(redefine);
 use RT::URI;

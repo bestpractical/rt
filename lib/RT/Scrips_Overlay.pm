@@ -65,6 +65,9 @@ ok (require RT::Scrips);
 
 =cut
 
+
+package RT::Scrips;
+
 use strict;
 no warnings qw(redefine);
 

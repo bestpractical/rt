@@ -68,6 +68,9 @@ ok (require RT::ScripCondition);
 
 =cut
 
+
+package RT::ScripCondition;
+
 use strict;
 no warnings qw(redefine);
 

@@ -65,6 +65,9 @@ ok(require RT::Users);
 
 =cut
 
+
+package RT::Users;
+
 use strict;
 no warnings qw(redefine);
 
