@@ -48,6 +48,7 @@ ok (require RT::ScripAction);
 
 use strict;
 no warnings qw(redefine);
+use RT::Template;
 
 # {{{  sub _Init 
 sub _Init  {
@@ -135,6 +136,8 @@ sub LoadAction  {
     my %args = ( TransactionObj => undef,
 		 TicketObj => undef,
 		 @_ );
+
+    $self->{_TicketObj} = $args{TicketObj};
     
     #TODO: Put this in an eval  
     $self->ExecModule =~ /^(\w+)$/;
@@ -164,14 +167,26 @@ Return this action\'s template object
 sub TemplateObj {
     my $self = shift;
     return undef unless $self->{Template};
-    if (!$self->{'TemplateObj'})  {
-	require RT::Template;
-	$self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
-	$self->{'TemplateObj'}->LoadById($self->{'Template'});
-	
+    if ( !$self->{'TemplateObj'} ) {
+        $self->{'TemplateObj'} = RT::Template->new( $self->CurrentUser );
+        $self->{'TemplateObj'}->LoadById( $self->{'Template'} );
+
+        if ( ( $self->{'TemplateObj'}->__Value('Queue') == 0 )
+            && $self->{'_TicketObj'} ) {
+            my $tmptemplate = RT::Template->new( $self->CurrentUser );
+            my ( $ok, $err ) = $tmptemplate->LoadQueueTemplate(
+                Queue => $self->{'_TicketObj'}->QueueObj->id,
+                Name  => $self->{'TemplateObj'}->Name);
+
+            if ( $tmptemplate->id ) {
+                # found the queue-specific template with the same name
+                $self->{'TemplateObj'} = $tmptemplate;
+            }
+        }
+
     }
-    
-    return ($self->{'TemplateObj'});
+
+    return ( $self->{'TemplateObj'} );
 }
 # }}}
 
@@ -206,6 +221,7 @@ sub Describe  {
 # {{{ sub DESTROY
 sub DESTROY {
     my $self=shift;
+    $self->{'_TicketObj'} = undef;
     $self->{'Action'} = undef;
     $self->{'TemplateObj'} = undef;
 }
