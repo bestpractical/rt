@@ -1,7 +1,12 @@
 % my $l=$Column->{TicketLink}; if ($l) {
-<a href="<% $l!=1 ? $l : "../Ticket/Display.html?" %>id=<%$Ticket->Id%><%$Column->{ExtraLinks}||""%>">
+<a href="<% $l!=1 ? $l : "../Ticket/Display.html?" %>id=<%$Ticket->Id%><%$Column->{ExtraLinks}||""%>"
+%if (exists $session{NewWindowOption}) {
+TARGET="TicketDisplay<% $session{AlwaysNewWindowOption} && (time() . rand(1024)) %>"
+%}
+>
 %}
 <%$Column->{Constant} || eval("\$Ticket->$Column->{TicketAttribute}") || "-" %>
+
 % if ($l) {
 </a>
 % }
