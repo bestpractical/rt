@@ -158,87 +158,60 @@ sub SetMIMEEntityToEncoding {
     my ( $entity, $enc ) = ( shift, shift );
 
     if ( $entity->is_multipart ) {
-        RT::I18N::SetMIMEEntityToEncoding( $_, $enc ) foreach $entity->parts;
+	SetMIMEEntityToEncoding( $_, $enc ) foreach $entity->parts;
     }
-    else {
-        my ( $head, $body ) = ( $entity->head, $entity->bodyhandle );
-        my ( $mime_type, $charset ) =
-          ( $head->mime_type, $head->mime_attr("content-type.charset") || "" );
 
-        # the entity is not text; convert at least MIME word encoded attachment filename
-        # TODO: should we be converting ANY text/ type? autrijus?
-        if ($mime_type !~ /^text\/plain$/) {
-            foreach my $attr (qw(content-type.name content-disposition.filename)) {
-                if (my $name = $head->mime_attr($attr)) {
-                    $head->mime_attr($attr => DecodeMIMEWordsToUTF8($name));
-                }
-            }
-            return;
-        }
+    my $charset = _FindOrGuessCharset($entity) or return;
+    # one and only normalization
+    $charset = 'utf-8' if $charset eq 'utf8';
+    $enc     = 'utf-8' if $enc     eq 'utf8';
 
-        # the entity is text and has charset setting, try convert
-        # message body into $enc
-        my @lines = $body->as_lines or return;
+    SetMIMEHeadToEncoding($entity->head, $charset => $enc);
 
-        if ( !$charset ) {
-            if ( !Encode::is_utf8( $body->as_string )
-		 and @RT::EmailInputEncodings
-                 and eval { require Encode::Guess; 1 } ) {
-                Encode::Guess->set_suspects(@RT::EmailInputEncodings);
-                my $decoder = Encode::Guess->guess( $body->as_string );
+    my ( $head, $body ) = ( $entity->head, $entity->bodyhandle );
 
-                if ( ref $decoder ) {
-                    $charset = $decoder->name;
-                    $RT::Logger->debug("Guessed encoding: $charset");
-                }
-                else {
-                    $charset = 'utf-8';
-                    $RT::Logger->warning( "Cannot Encode::Guess: $decoder; fallback to utf-8");
-                }
-            }
-            else {
-                $charset = 'utf-8';
-            }
-        }
+    if ( $head->mime_type !~ /^text\/plain$/i ) {
+	# the entity is not text; convert at least MIME word encoded attachment filename
+	foreach my $attr (qw(content-type.name content-disposition.filename)) {
+	    if ( my $name = $head->mime_attr($attr) ) {
+		$head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
+	    }
+	}
+	return;
+    }
 
-        # one and only normalization
-        $charset = 'utf-8' if $charset eq 'utf8';
-        $enc     = 'utf-8' if $enc     eq 'utf8';
+    if ( $enc ne $charset ) {
+	my @lines = $body->as_lines or return;
 
-        if ( $enc ne $charset ) {
-            eval {
+	# {{{ Convert the body
+	eval {
+	    $RT::Logger->debug("Converting '$charset' to '$enc'");
 
-                $RT::Logger->debug("Converting '$charset' to '$enc'");
+	    # NOTE:: see the comments at the end of the sub.
+	    Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
+	    Encode::from_to( $lines[$_], $charset => $enc ) for ( 0 .. $#lines );
+	};
 
-                # NOTE:: see the comments at the end of the sub.
-                Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
-
-                if ( $enc eq 'utf-8' ) {
-                    $lines[$_] = Encode::encode_utf8(
-			Encode::decode( $charset, $lines[$_] )
-		    ) foreach ( 0 .. $#lines );
-                }
-                else {
-                    Encode::from_to( $lines[$_], $charset => $enc ) foreach ( 0 .. $#lines );
-                }
-            };
-            if ($@) {
-                $RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8");
-                eval {
-
-                    Encode::from_to( $lines[$_], 'iso-8859-1' => $enc ) foreach ( 0 .. $#lines );
-
-                };
-                if ($@) {
-                    $RT::Logger->crit( "Totally failed to convert to utf-8: ".$@. " I give up");
-                }
-            }
-        }
+	if ($@) {
+	    $RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
+	    eval {
+		Encode::from_to( $lines[$_], 'iso-8859-1' => $enc ) foreach ( 0 .. $#lines );
+	    };
+	    if ($@) {
+		$RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+	    }
+	}
+	# }}}
 
         my $new_body = MIME::Body::InCore->new( \@lines );
 
+	use Data::Dumper;
+	open X, ">/tmp/foo.txt" or die $!;
+	print X Data::Dumper::Dumper(\@lines);
+	close X;
         # set up the new entity
-        $head->mime_attr("content-type" => 'text/plain') unless ($head->mime_attr("content-type"));
+        $head->mime_attr( "content-type" => 'text/plain' )
+          unless ( $head->mime_attr("content-type") );
         $head->mime_attr( "content-type.charset" => $enc );
         $head->add( "X-RT-Original-Encoding" => $charset );
         $entity->bodyhandle($new_body);
@@ -312,6 +285,96 @@ sub DecodeMIMEWordsToUTF8 {
     return ($str)
 }
 
+# }}}
+
+# {{{ _FindOrGuessCharset
+
+=head2 _FindOrGuessCharset MIME::Entity
+
+When handed a MIME::Entity will first attempt to read what charset the message is encoded in. Failing that, 
+will use Encode::Guess to try to figure it out
+
+=cut
+
+sub _FindOrGuessCharset {
+    my $entity = shift;
+    my $head = $entity->head;
+    my $charset;
+    my $fallback = 'iso-8859-1';
+
+    return $charset if ($charset = $head->mime_attr("content-type.charset"));
+
+    my $body = $entity->bodyhandle or return;
+    return 'utf-8' if Encode::is_utf8( $body->as_string );
+
+    if ( @RT::EmailInputEncodings and eval { require Encode::Guess; 1 } ) {
+	Encode::Guess->set_suspects(@RT::EmailInputEncodings);
+	my $decoder = Encode::Guess->guess( $head->as_string . $body->as_string );
+
+	if ( ref $decoder ) {
+	    $charset = $decoder->name;
+	    $RT::Logger->debug("Guessed encoding: $charset");
+	    return $charset;
+	}
+	elsif ($decoder =~ /Encodings too ambiguous: (.+)/) {
+	    my %matched = map { $_ => 1 } split(/ or /, $1);
+	    foreach my $suspect (@RT::EmailInputEncodings) {
+		next unless $matched{$suspect};
+		$RT::Logger->debug("Encode::Guess ambiguous ($decoder); using $suspect");
+		$charset = $suspect;
+		last;
+	    }
+	}
+	else {
+	    $RT::Logger->warning("Encode::Guess failed: $decoder; fallback to $fallback");
+	}
+    }
+    else {
+	$RT::Logger->warning("Cannot Encode::Guess; fallback to $fallback");
+    }
+
+    return($charset || $fallback);
+}
+
+# }}}
+
+# {{{ SetMIMEHeadToEncoding
+
+=head2 SetMIMEHeadToEncoding HEAD OLD_CHARSET NEW_CHARSET
+
+Converts a MIME Head from one encoding to another. This totally violates the RFC.
+We should never need this. But, Surprise!, MUAs are badly broken and do this kind of stuff
+all the time
+
+
+=cut
+
+sub SetMIMEHeadToEncoding {
+    my ($head, $enc, $charset)   = (shift, shift, shift);
+
+    $charset = 'utf-8' if $charset eq 'utf8';
+    $enc     = 'utf-8' if $enc     eq 'utf8';
+    return if $charset eq $enc;
+
+    foreach my $tag ( $head->tags) {
+	my @values = $head->get_all($tag);
+	$head->delete($tag);
+	foreach my $value (@values) {
+	    eval {
+		Encode::_utf8_off($value);
+		Encode::from_to( $value, $charset => $enc );
+	    };
+	    if ($@) {
+		$RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
+		eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
+		if ($@) {
+		    $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+		}
+	    }
+	    $head->add( $tag, $value );
+	}
+    }
+}
 # }}}
 
 eval "require RT::I18N_Vendor";
