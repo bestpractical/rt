@@ -41,7 +41,7 @@ use Carp;
 
 {  
     package HTML::Mason::Commands;
-    use vars qw(%session);
+    use vars qw(%session $ContentType);
     
     use RT; 
     use RT::Ticket;
@@ -87,7 +87,6 @@ use Carp;
 
     # set the page's content type.
     # In this case, just save it to a variable that we can pull later;
-    my $ContentType;
     sub SetContentType {
 	$ContentType = shift;
     }
