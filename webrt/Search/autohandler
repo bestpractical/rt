@@ -1,0 +1,23 @@
+<%PERL>
+if (defined ($user) && defined ($pass)){
+	#TODO if the password is the user's password
+	$session{'CurrentUser'} = new RT::CurrentUser();
+	$session{'CurrentUser'}->Load($user);
+
+        $m->call_next;
+}
+elsif (defined $session{'CurrentUser'}){
+	$m->call_next;
+}
+else {
+$m->comp('/Login.html')
+ }
+</%PERL>
+
+<%INIT>
+my %cookies = fetch CGI::Cookie;
+</%INIT>
+<%ARGS>
+$user => undef
+$pass => undef
+</%ARGS>

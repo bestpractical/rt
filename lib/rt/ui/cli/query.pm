@@ -203,7 +203,11 @@ sub build_query  {
 			OPERATOR => 'LIKE');
     }
     
+    if ($ARGV[$i] eq '-maxitems') {
+      $Tickets->Limit(ROWS => $ARGV[++$i]);
+        }
     
+  
     
     #TODO: DEAL WITH ORDERING & DEFAULT ORDERING
     if ($ARGV[$i] eq '-orderby') {

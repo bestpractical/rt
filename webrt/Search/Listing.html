@@ -27,32 +27,20 @@
 
 <HR>
 
-<& PickRestriction, CurrentUser => $CurrentUser &>
-  
+<& PickRestriction &>
 
 <%INIT>
 
 use RT::Tickets;
-use RT::CurrentUser;
+my $Tickets = RT::Tickets->new($RT::CurrentUser);
+if ($ARGS{'LimitResultsPerPage'} and ($ARGS{'ValueOfResultsPerPage'}>0)) {
 
-my $CurrentUser = RT::CurrentUser->new(2);
-my $Tickets = RT::Tickets->new($CurrentUser);
+  $Tickets->Limit (ROWS => $ARGS{'ValueOfResultsPerPage'}
+		  )
+}
 
-
-if ($ARGS{'LimitOwner'}) {
-  my $oper;
-  if ($ARGS{'NegateOwner'}==1) {
-    $oper = "!=";
-  }
-  else {
-    $oper = "=";
-  }
-  
-  # Better error handling is certainly needed.  I'll just use die as for
-  # now.  If die is a big problem, it's possible to trap it anyway.
-  die "Huh? LimitOwner specified, but not ValueOfOwner."
-      unless $ARGS{'ValueOfOwner'};
-  
+if ($ARGS{'LimitOwner'} and $ARGS{'ValueOfOwner'}) {
+  my $oper = $ARGS{'NegateOwner'} ? "!=" : "=";
   $Tickets->Limit (FIELD => 'Owner',
 		   VALUE => $ARGS{'ValueOfOwner'},
 		   OPERATOR => "$oper"
@@ -64,15 +52,7 @@ if (0) {
 # TODO: this code requires some creative use of EasySearch that I'm not up to 
 # right now
 #if ($ARGS{'LimitRequestor'}) {
-  my $oper;
-  if ($ARGS{'NegateRequestor'}==1) {
-  
-    $oper = "NOT LIKE";
-  }
-  else {
-    $oper = "LIKE";
-  }
-  
+  my $oper = $ARGS{'NegateRequestor'} ? "!=" : "="; 
   $Tickets->Limit (FIELD => 'Requestors',
 		   VALUE => $ARGS{'ValueOfRequestors'},
 		   OPERATOR => "$oper"
@@ -81,14 +61,7 @@ if (0) {
 
 
 if ($ARGS{'LimitSubject'}) {
- my $oper; 
-  if ($ARGS{'NegateSubject'}==1) {
-    $oper = "NOT LIKE";
-  }
-  else {
-    $oper = "LIKE";
-  }
-  
+ my $oper = $ARGS{'NegateSubject'} ? "!=" : "="; 
   $Tickets->Limit (FIELD => 'Subject',
 		   VALUE => $ARGS{'ValueOfSubject'},
 		   OPERATOR => "$oper"
@@ -96,36 +69,25 @@ if ($ARGS{'LimitSubject'}) {
 }
 
 
-
 if ($ARGS{'LimitQueue'}) {
-  my $oper;
-  if ($ARGS{'NegateQueue'}==1) {
-    $oper = "!=";
-  }
-  else {
-    $oper = "=";
-  }
-  
+  my $oper = $ARGS{'NegateQueue'} ? "!=" : "="; 
   $Tickets->Limit (FIELD => 'Queue',
 		   VALUE => $ARGS{'ValueOfQueue'},
 		   OPERATOR => "$oper"
 		  )
 }
 
+
 if ($ARGS{'LimitStatus'}) {
-  my $oper;
-  if ($ARGS{'NegateStatus'}==1) {
-    $oper = "!=";
-  }
-  else {
-    $oper = "=";
-  }
-  
+  my $oper = $ARGS{'NegateStatus'} ? "!=" : "="; 
   $Tickets->Limit (FIELD => 'Status',
 		   VALUE => $ARGS{'ValueOfStatus'},
 		   OPERATOR => "$oper"
 		  )
 }
+
+
+
 
 # TODO: This one should _not_ be here, rather somewhere else
 # (suggestions?).  It might eventually read the cookies, user
@@ -139,6 +101,5 @@ sub _cfg {
   return $args->{$key} || $RT::SitePolicy{$key};
 }
 
-# $Tickets->Limit( FIELD => 'status',
-#			VALUE => "open");
+
 </%INIT>
