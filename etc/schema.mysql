@@ -13,34 +13,6 @@ PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
 
-CREATE TABLE FM_ClassCustomFields (
-id INTEGER NOT NULL AUTO_INCREMENT,
-Class integer not NULL,
-CustomField integer not NULL,
-Creator integer NOT NULL DEFAULT 0,
-Created DATETIME NULL,
-SortOrder int(2) not null default '0',
-Display varchar(255) not null default '',
-LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated DATETIME NULL,
-PRIMARY KEY (id)
-) TYPE=InnoDB;
-
-
-CREATE TABLE FM_CustomFields (
-id INTEGER NOT NULL AUTO_INCREMENT,
-Name varchar(200) NOT NULL DEFAULT '',
-Type varchar(200) NOT NULL DEFAULT '',
-Description varchar(200) NOT NULL DEFAULT '',
-SortOrder integer NOT NULL DEFAULT 0,
-Creator integer NOT NULL DEFAULT 0,
-Created DATETIME NULL,
-LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated DATETIME NULL,
-PRIMARY KEY (id)
-) TYPE=InnoDB;
-
-
 CREATE TABLE FM_Articles (
 id INTEGER NOT NULL AUTO_INCREMENT,
 Name varchar(255) NOT NULL DEFAULT '',
@@ -55,48 +27,6 @@ LastUpdatedBy integer NOT NULL DEFAULT 0,
 LastUpdated DATETIME NULL,
 PRIMARY KEY (id)
 ) TYPE=InnoDB;
-
-
-CREATE TABLE FM_CustomFieldValues (
-id INTEGER NOT NULL AUTO_INCREMENT,
-CustomField int NOT NULL,
-Name varchar(255) NOT NULL DEFAULT '',
-Description varchar(255) NOT NULL DEFAULT '',
-SortOrder integer NOT NULL DEFAULT 0,
-Creator integer NOT NULL DEFAULT 0,
-Created DATETIME NULL,
-LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated DATETIME NULL,
-PRIMARY KEY (id)
-) TYPE=InnoDB;
-
-
-CREATE TABLE FM_ArticleCFValues (
-id INTEGER NOT NULL AUTO_INCREMENT,
-Article int NOT NULL,
-CustomField int NOT NULL,
-Content text,
-Creator integer NOT NULL DEFAULT 0,
-Created DATETIME NULL,
-LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated DATETIME NULL,
-PRIMARY KEY (id)
-) TYPE=InnoDB;
-
-
-CREATE TABLE FM_Transactions (
-id INTEGER NOT NULL AUTO_INCREMENT,
-Article integer NOT NULL DEFAULT 0,
-ChangeLog text NOT NULL DEFAULT '',
-Type varchar(64) NOT NULL DEFAULT '',
-Field varchar(64) NOT NULL DEFAULT '',
-OldContent text NOT NULL DEFAULT '',
-NewContent text NOT NULL DEFAULT '',
-Creator integer NOT NULL DEFAULT 0,
-Created DATETIME NULL,
-PRIMARY KEY (id)
-) TYPE=InnoDB;
-
 
 CREATE TABLE FM_Topics (
 id INTEGER NOT NULL AUTO_INCREMENT,

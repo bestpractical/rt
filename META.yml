@@ -1,0 +1,17 @@
+name: RTx-RTFM
+version: undef
+abstract: RT RTFM Extension
+license: GPL version 2
+distribution_type: module
+requires:
+  perl: 5.8.0
+  RT: 3.4.0
+no_index:
+  directory:
+    - bin
+    - etc
+    - html
+    - po
+    - sbin
+    - inc
+generated_by: Module::Install version 0.36

@@ -1,10 +1,5 @@
 DROP TABLE FM_Classes ;
-DROP TABLE FM_ClassCustomFields ;
-DROP TABLE FM_CustomFields ;
 DROP TABLE FM_Articles ;
-DROP TABLE FM_CustomFieldValues ;
-DROP TABLE FM_ArticleCFValues ;
 DROP TABLE FM_Transactions ;
 DROP TABLE FM_ObjectTopics ;
 DROP TABLE FM_Topics ;
-DELETE FROM Links;
