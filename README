@@ -171,9 +171,10 @@ rt-comment: "|/path/to/rt2/bin/rt-mailgate --queue general --action comment"
 THE WEB UI
 ----------
 
-RT's web ui is based around HTML::Mason, which works best with the mod_perl
-perl interpreter within Apache httpd.  We're working on a FastCGI version as
-well, but for now, apache's your best bet.
+RT's web ui is based around HTML::Mason, which works well with the mod_perl
+perl interpreter within Apache httpd as well as with a webserver which
+supports FastCGI. (Instructions for configuring RT for use with FastCGI
+are available at http://www.fsck.com/rtfm/ )
 
 Apache 
         RT Uses HTML::Mason.  You'll need to add a few lines to your
