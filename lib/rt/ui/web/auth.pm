@@ -12,17 +12,36 @@ use CGI::Cookie;
 
 sub AuthCheck () {
     my ($AuthRealm) = @_;
-    my ($Name, $Pass,$path, $set_user, $set_pass);
+    my ($hash, $Name, $ctx, $Pass,$path, $set_user, $set_pass);
     #lets get the cookies
 
-    print "HTTP/1.0 200 Ok\n";
-  
+    if ($rt::program =~ /nph-/) {
+
+      print "HTTP/1.0 200 Ok\n";
+    }
+
     if ($ENV{'SCRIPT_NAME'} =~ m|^(.*)/[^/]+$|) {
       $path=$1;
     }
 
     # remove trailing slashes
     $path =~ s|/+$||;
+
+    
+
+
+    #lets generate that hash.
+
+  use Digest::MD5;
+  $ctx = Digest::MD5->new;
+  $ctx->add($rt::ui::web::FORM{'username'});
+  $ctx->add($ENV{'REMOTE_ADDR'});
+  $ctx->add($rt::ui::web::FORM{'password'});
+    $hash = $ctx->hexdigest();
+    
+   
+
+
 
     # ingo's patch appended a trailing /
     # this _breaks_ lynx
@@ -32,6 +51,8 @@ sub AuthCheck () {
     #$path .= '/';
    
     # lets set the user/pass cookies
+    
+
     if (length($rt::ui::web::FORM{'username'}) and length($rt::ui::web::FORM{'password'})) {
       
       $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
@@ -40,7 +61,7 @@ sub AuthCheck () {
 				  -path => $path);
       
       $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
-				      -value =>"$rt::ui::web::FORM{'password'}",
+				      -value =>$hash,
 				      -path => $path);
       
  
@@ -54,7 +75,7 @@ sub AuthCheck () {
       print "Set-Cookie: $set_password\n";
       print "Set-Cookie: $set_user\n";   
       
-      return( $rt::ui::web::FORM{'username'}, $rt::ui::web::FORM{'password'});
+      return( $rt::ui::web::FORM{'username'}, $hash);
     }
     
     #otherwise, we've got cookies.

@@ -70,28 +70,63 @@ sub load_user_info {
     
 }
 
+sub is_hash_of_password_and_ip {
+  my $in_user_id = shift;
+  my $in_ip = shift;
+  my $in_hash = shift;
+  my ($password,$hash, $ctx);
+  
+  if (!&is_a_user($in_user_id)) {
+   
+    return(0);
+  }
+  
+  
+  my $user_id=$dbh->quote($in_user_id);
+  $query_string="SELECT password FROM users WHERE user_id = $user_id";
+  $sth = $dbh->Query($query_string) or warn "[is_password] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+  @row=$sth->FetchRow;
+  
+  $password=$row[0];
+  
+  use Digest::MD5;
+    $ctx = Digest::MD5->new;
+  $ctx->add($in_user_id);
+  $ctx->add($in_ip);
+  $ctx->add($password);
+    $hash = $ctx->hexdigest();
+ 
+
+  
+  if ($hash eq $in_hash) {
+    return (1);
+  }
+  else {
+    return(0);
+  }
+    
+}
+
+
+
 sub is_password {
     my ($in_user_id, $in_password) = @_;
     my ($row, $password);
 
    
-    if ($in_user_id eq '')
-    {
+    if (!&is_a_user ($in_user_id)) {
 	return(0);
     }
 
      my $user_id=$dbh->quote($in_user_id);
-    $query_string="SELECT user_id, password FROM users WHERE user_id = $user_id";
+    $query_string="SELECT password FROM users WHERE user_id = $user_id";
        
     $sth = $dbh->Query($query_string) or warn "[is_password] Query had some problem: $Mysql::db_errstr\n$query_string\n";
     @row=$sth->FetchRow;
-    $user_id=$row[0];
-    $password=$row[1];
+
+    $password=$row[0];
    
-    if ($user_id eq '')
-    {
-	return(0);
-    }
+
     
     if ($password eq $in_password) {
 	return (1);
@@ -103,8 +138,8 @@ sub is_password {
 }
 
 sub is_a_user {
-    my ($in_user_id) = @_;
-    if ($users{$in_user_id}{name} eq $in_user_id) {
+    my ($in_user_id) = shift;
+    if ($users{"$in_user_id"}{name} eq $in_user_id) {
 	return (1);
     }
     else {

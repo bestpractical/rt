@@ -19,7 +19,7 @@ push (@INC, "!!RT_LIB_PATH!!");
 
 require "!!RT_ETC_PATH!!/config.pm";          
 
-my ($program) = shift @ARGV;
+$program = shift @ARGV;
 &initialize();
 if ($program eq '!!RT_ACTION_BIN!!') {
   # load rt-cli
@@ -44,7 +44,8 @@ elsif ($program eq '!!RT_ADMIN_BIN!!') {
   &rt::ui::cli::admin::activate();
 }
 elsif ($program eq '!!RT_WEB_QUERY_BIN!!') {
-  #
+  
+    #
   require rt::ui::web::support;
   require rt::ui::web::auth;     
   require rt::ui::web::manipulate;

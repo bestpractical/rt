@@ -1,3 +1,9 @@
+# $Version$
+#
+# RT is (c) Copyright 1996-1999 Jesse Vincent
+# RT is distributed under the terms of the GNU General Public License
+
+
 package rt::ui::web;
 
 sub check_auth() {
@@ -27,7 +33,7 @@ sub check_auth() {
     }
  
     #if the user's password is bad
-    elsif (!(&rt::is_password($name, $pass))) {
+    elsif (!(&rt::is_hash_of_password_and_ip($name,$ENV{'REMOTE_ADDR'}, $pass))) {
       
       &WebAuth::AuthForceLogin($AuthRealm);
       exit(0);
