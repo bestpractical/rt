@@ -193,19 +193,28 @@ sub Create {
 }
 
 
-# {{{ sub LoadByNameAndQueue
+# {{{ sub LoadByName
 
-=head2  LoadByNameAndQueue (Queue => QUEUEID, Name => NAME)
+=head2  LoadByName (Queue => QUEUEID, Name => NAME)
 
-Loads the Custom field named NAME for Queue QUEUE. If QUEUE is 0,
-loads a global custom field
+Loads the Custom field named NAME.
+
+If a Queue parameter is specified, only look for ticket custom fields tied to that Queue.
+
+If the Queue parameter is '0', look for global ticket custom fields.
+
+If no queue parameter is specified, look for any and all custom fields with this name.
+
+BUG/TODO, this won't let you specify that you only want user or group CFs.
 
 =cut
 
 # Compatibility for API change after 3.0 beta 1
-*LoadNameAndQueue = \&LoadByNameAndQueue;
+*LoadNameAndQueue = \&LoadByName;
+# Change after 3.4 beta.
+*LoadByNameAndQueue = \&LoadByName;
 
-sub LoadByNameAndQueue {
+sub LoadByName {
     my $self = shift;
     my %args = (
         Queue => undef,
@@ -213,21 +222,33 @@ sub LoadByNameAndQueue {
         @_,
     );
 
-    if ($args{'Queue'} =~ /\D/) {
+    # if we're looking for a queue by name, make it a number
+    if  (defined $args{'Queue'}  &&  $args{'Queue'} !~ /^\d+$/) {
 	my $QueueObj = RT::Queue->new($self->CurrentUser);
 	$QueueObj->Load($args{'Queue'});
 	$args{'Queue'} = $QueueObj->Id;
     }
 
-    # XXX - really naive implementation.  Slow.
+    # XXX - really naive implementation.  Slow. - not really. still just one query
 
     my $CFs = RT::CustomFields->new($self->CurrentUser);
-    $CFs->Limit( FIELD => 'Name', VALUE => $args{'Name'} );
-    $CFs->LimitToQueue( $args{'Queue'} );
-    $CFs->RowsPerPage(1);
 
-    my $CF = $CFs->First or return;
-    return $self->Load($CF->Id);
+    $CFs->Limit( FIELD => 'Name', VALUE => $args{'Name'} );
+    # Don't limit to queue if queue is 0.  Trying to do so breaks
+    # RT::Group type CFs.
+    if (defined $args{'Queue'}) {
+	$CFs->LimitToQueue( $args{'Queue'} );
+    }
+
+    # When loading by name, it's ok if they're disabled. That's not a big deal.
+    $CFs->{'find_disabled_rows'}=1;
+
+    # We only want one entry.
+    $CFs->RowsPerPage(1);
+    unless ($CFs->First->id) {
+        return(0, $self->loc('Custom field not found'));
+    }
+    return($self->Load($CFs->First->id));
 
 }
 
