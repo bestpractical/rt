@@ -52,8 +52,8 @@ HTML::Entities
 Text::Wrapper
 Text::Template
 DBIx::DataSource
-DBIx::DBSchema 0.13
-DBIx::SearchBuilder 0.05
+DBIx::DBSchema 0.14
+DBIx::SearchBuilder 0.12
 Apache::Session 1.03
 );
 use CPAN;

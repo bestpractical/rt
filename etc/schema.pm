@@ -4,7 +4,7 @@ my $gratuitous = {
 
 'Groups' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'Name', 'varchar', 'NULL', '16', '', '',
     'Description', 'varchar', 'NULL', '64', '', '',
   ],
@@ -15,7 +15,7 @@ my $gratuitous = {
 
 'ACL' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'PrincipalId', 'integer', 'NULL', '', '', '',
     'PrincipalType', 'varchar', 'NULL', '25', '', '',
     'RightName', 'varchar', 'NULL', '25', '', '',
@@ -29,7 +29,7 @@ my $gratuitous = {
 
 'Watchers' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'Type', 'varchar', 'NULL', '16', '', '',
     'Scope', 'varchar', 'NULL', '16', '', '',
     'Value', 'integer', 'NULL', '', '', '',
@@ -48,7 +48,7 @@ my $gratuitous = {
 
 'Links' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'Base', 'varchar', 'NULL', '240', '', '',
     'Target', 'varchar', 'NULL', '240', '', '',
     'Type', 'varchar', '', '20', '', '',
@@ -66,7 +66,7 @@ my $gratuitous = {
 
 'Users' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'UserId', 'varchar', '', '120', '', '',
     'Password', 'varchar', 'NULL', '40', '', '',
     'Comments', 'blob', 'NULL', '', '', '',
@@ -108,7 +108,7 @@ my $gratuitous = {
 
 'Scrips' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'Name', 'varchar', 'NULL', '255', '', '',
     'Description', 'varchar', 'NULL', '255', '', '',
     'Type', 'varchar', 'NULL', '60', '', '',
@@ -127,7 +127,7 @@ my $gratuitous = {
 
 'Tickets' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'EffectiveId', 'integer', 'NULL', '', '', '',
     'Queue', 'integer', 'NULL', '', '', '',
     'Alias', 'varchar', 'NULL', '40', '', '',
@@ -159,7 +159,7 @@ my $gratuitous = {
 
 'GroupMembers' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'GroupId', 'integer', 'NULL', '', '', '',
     'UserId', 'integer', 'NULL', '', '', '',
   ],
@@ -170,7 +170,7 @@ my $gratuitous = {
 
 'Queues' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'QueueId', 'varchar', '', '40', '', '',
     'Description', 'varchar', 'NULL', '120', '', '',
     'CorrespondAddress', 'varchar', 'NULL', '40', '', '',
@@ -190,7 +190,7 @@ my $gratuitous = {
 
 'Transactions' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'EffectiveTicket', 'integer', 'NULL', '', '', '',
     'Ticket', 'integer', 'NULL', '', '', '',
     'TimeTaken', 'integer', 'NULL', '', '', '',
@@ -209,7 +209,7 @@ my $gratuitous = {
 
 'ScripScope' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'Scrip', 'integer', 'NULL', '', '', '',
     'Queue', 'integer', 'NULL', '', '', '',
     'Template', 'integer', 'NULL', '', '', '',
@@ -225,7 +225,7 @@ my $gratuitous = {
 
 'Attachments' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'TransactionId', 'integer', '', '', '', '',
     'Parent', 'integer', 'NULL', '', '', '',
     'MessageId', 'varchar', 'NULL', '160', '', '',
@@ -244,7 +244,7 @@ my $gratuitous = {
 
 'Templates' => {
   'columns' => [
-    'id', 'integer', '', '', '', 'AUTO_INCREMENT',
+    'id', 'serial', '', '', '', '',
     'Title', 'varchar', 'NULL', '120', '', '',
     'Language', 'varchar', 'NULL', '16', '', '',
     'TranslationOf', 'integer', 'NULL', '', '', '',
