@@ -112,8 +112,8 @@ sub Create {
     #For ease of reference
     my $Attachment = $args{'Attachment'};
 
-    #if we didn't specify a ticket, we need to bail
-    if ( $args{'TransactionId'} == 0 ) {
+	    #if we didn't specify a ticket, we need to bail
+	    if ( $args{'TransactionId'} == 0 ) {
         $RT::Logger->crit( "RT::Attachment->Create couldn't, as you didn't specify a transaction\n" );
         return (0);
 
@@ -241,6 +241,9 @@ Create an attachment exactly as specified in the named parameters.
 
 sub Import {
     my $self = shift;
+    my %args = ( ContentEncoding => 'none',
+
+		 @_ );
     return($self->SUPER::Create(@_));
 }
 
@@ -309,11 +312,15 @@ sub OriginalContent {
   }
 
   # Encode::_utf8_on($content);
-  if (!$enc or $enc eq 'utf8' or $enc eq 'utf-8') {
+  if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
     # If we somehow fail to do the decode, at least push out the raw bits
     eval {return( Encode::decode_utf8($content))} || return ($content);
   }
-  Encode::from_to($content, 'utf8' => $enc);
+  
+  eval { Encode::from_to($content, 'utf8' => $enc);};
+  if ($@) {
+	$RT::Logger->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
+  }
   return $content;
 }
 
