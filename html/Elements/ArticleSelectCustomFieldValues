@@ -1,5 +1,6 @@
 % if ($cf->Type =~ /^FreeformSingle$/) {
-% my $value = $ArticleObj->CustomFieldValues($cf)->First
+% my $value = $ArticleObj->CustomFieldValues($cf)->First;
+
 <INPUT NAME="<%$Name%>" VALUE="<%$value && $value->Content%>">
 % } elsif ($cf->Type =~ /^FreeformMultiple$/) {
 
