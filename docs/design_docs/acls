@@ -1,0 +1,51 @@
+$Header$
+
+Here's the rough scheme I was thinking of for RT2 acls. Thoughts? I think
+it's a lot more flexible than RT 1.0, but not so crazily complex that
+it will be impossible to implement.  One of the "interesting" features
+is the ability to grant acls based on watcher status. This now lives
+in design-docs/acls
+
+        jesse
+
+Who can rights be granted to:
+
+	users whose id is <foo>
+	users who are watchers of type <requestor/cc/admincc> for <global/queue/ticket> <id>
+
+
+what scope do these rights apply to
+	queue <id>
+	ticket <id>
+	global
+	
+
+What rights can be granted
+	Display Ticket
+	Manipulate Ticket
+		Only users with manipulate ticket level access will see comments
+
+	Resolve Ticket
+
+	Create Ticket	
+
+	Admin watchers 
+		in the ticket scope, this governs watcher admin for the ticket
+		In the queue scope, this governs watcher admin for the queue or any ticket in the queue
+		In the global scope, this governs watcher admin for any ticket or queue
+
+	Admin user accounts
+		Only effective in the global scope.
+		
+	Admin scrips
+		Only effective in the global scope.
+
+	Admin scripscopes
+		No effect in the ticket scope
+		In the queue scope, this governs scripscope admin for the queue
+		In the global scope, this governs scripscope admin for any queue/ the global context
+
+	Admin ACLS
+		at the ticket level governs acls for a given ticket
+		at the queue level, governs acls for a given queue  or any ticket in that queue
+		at the global level, grants the user supreme power.
