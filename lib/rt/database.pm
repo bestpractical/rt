@@ -69,7 +69,7 @@ sub add_request {
 	}
 	else
 	{
-		$query_string="INSERT INTO each_req (serial__num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
+		$query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $queue_id, $area, $alias, $requestors, $owner, $subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
 	}
 
 	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
@@ -79,10 +79,7 @@ sub add_request {
   # to the same number
   if ($serial_num eq 'NULL') {
 
-	#	This is MySQL specific
-	#      $serial_num = $sth->insert_id;
-
-	$serial_num = &get_last_each_req_serial_num;
+	$serial_num = &get_last_each_req_serial_num($sth);
 
     	$query_string="UPDATE each_req set effective_sn = $serial_num WHERE serial_num = $serial_num";
 	$sth = $dbh->prepare($query_string) or warn "[add_request] prepare had some problem: $DBI::errstr\n$query_string\n";
@@ -93,7 +90,11 @@ sub add_request {
 
 sub get_last_each_req_serial_num
 {
+        my $sth=shift;
 	my($serial_num);
+
+	# I like this one - unfortunately it's MySQL specific:
+	if ($rt::rt_db eq 'mysql') { return $sth->{insertid}; }
 
 	# Pull the last inserted sequence value for the each_req table.
     	$query_string="select last_value from each_req_serial_num_seq";
@@ -108,7 +109,11 @@ sub get_last_each_req_serial_num
 
 sub get_last_transactions_id
 {
+        my ($sth)=shift;
 	my($transaction_num);
+
+	# I like this one - unfortunately it's MySQL specific:
+	if ($rt_db eq 'mysql') { return $sth->{insertid}; }
 
 	# Pull the last inserted sequence value for the transactions table.
     	$query_string="select last_value from transactions_id_seq";
@@ -154,7 +159,7 @@ sub add_transaction {
 	# MySQL specific, need more general way of getting the last sequence value.
 	#    $transaction_num = $sth->insert_id;       
 
-	$transaction_num = &get_last_transactions_id;
+	$transaction_num = &get_last_transactions_id($sth);
 
    
     #if we've got content, mail it away
