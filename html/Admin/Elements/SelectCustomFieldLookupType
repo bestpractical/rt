@@ -21,24 +21,16 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Admin/Elements/Header, Title => $title  &>
-<& /Admin/Elements/UserTabs, 
-    id => $id, 
-    UserObj => $UserObj,
-    current_tab => $current_tab, 
-    Title => $title &>
-
-<& /Ticket/Elements/ShowHistory,
-    Ticket => $UserObj,
-    ShowHeaderModes => 0,
-&>
-
+<SELECT NAME ="<%$Name%>">
+%for my $option ($cf->LookupTypes) {
+<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyLookupType($option) %></OPTION>
+%}
+</SELECT>
 <%INIT>
-my $current_tab = 'Admin/Users/History.html?id='.$id;
-my $UserObj = new RT::User($session{'CurrentUser'});
-$UserObj->Load($id) || Abort("Couldn't load user '$id'");
-my $title = loc("History of the user [_1]", $UserObj->Name);
+my $cf = RT::CustomField->new($session{'CurrentUser'});
+
 </%INIT>
 <%ARGS>
-$id => undef
+$Default=>undef
+$Name => 'LookupType'
 </%ARGS>

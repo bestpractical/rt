@@ -1550,10 +1550,6 @@ sub _Value {
 
 # }}}
 
-sub CustomFieldValues {
-    # XXX
-}
-
 1;
 
 

@@ -25,17 +25,30 @@
 use strict;
 no warnings qw(redefine);
 
-sub LimitToParentAndComposite {
+sub LimitToCustomField {
     my $self = shift;
-    my %args = @_;
-    my $composite = $args{Composite} or die "Must specify Composite";
-    my $ParentObj = $args{Parent};
-    my $ParentType = $args{ParentType} || ref($ParentObj) or die "Must specify ParentType";
-    my $ParentId = $args{ParentId} || ($ParentObj ? $ParentObj->Id || 0 : 0);
-    $self->Limit( FIELD => 'ParentId', VALUE => $ParentId );
+    my $id = shift;
+    $self->Limit( FIELD => 'CustomField', VALUE => $id );
+}
 
-    # $self->Limit( FIELD => 'ParentId', VALUE => '0' ) if $ParentId;
-    # XXX - Join CF here and limit its composites 
+sub LimitToObjectId {
+    my $self = shift;
+    my $id = shift;
+    $self->Limit( FIELD => 'ObjectId', VALUE => $id );
+}
+
+sub LimitToLookupType {
+    my $self = shift;
+    my $lookup = shift;
+    my $cfs = $self->NewAlias('CustomFields');
+    $self->Join( ALIAS1 => 'main',
+                FIELD1 => 'CustomField',
+                ALIAS2 => $cfs,
+                FIELD2 => 'id' );
+    $self->Limit( ALIAS           => $cfs,
+                 FIELD           => 'LookupType',
+                 OPERATOR        => '=',
+                 VALUE           => $lookup );
 }
 
 sub HasEntryForCustomField {

@@ -66,6 +66,18 @@ sub LimitToTicket {
 # }}}
 
 
+sub LimitToObject {
+    my $self = shift;
+    my $object = shift;
+    $self->Limit( FIELD => 'ObjectType',
+		  VALUE => ref($object),
+		  OPERATOR => '=');
+    return ($self->Limit( FIELD => 'ObjectId',
+			  VALUE => $object->Id,
+			  OPERATOR => '='));
+
+}
+
 =sub HasEntry VALUE
 
 Returns true if this CustomFieldValues collection has an entry with content that eq VALUE

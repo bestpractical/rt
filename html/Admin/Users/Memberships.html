@@ -1,0 +1,78 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/UserTabs, 
+    id => $id, 
+    UserObj => $UserObj,
+    current_tab => $current_tab, 
+    Title => $title &>
+
+<h2><&|/l&>Groups</&></h2>
+
+<ul>
+% while ( my $GroupMember = $GroupMembers->Next ) {
+%    my $Group = RT::Group->new($session{'CurrentUser'});
+%    $Group->Load($GroupMember->GroupId) or next;
+%    if ($Group->Domain eq 'UserDefined') {
+<li><a href="/Admin/Groups/Modify.html?id=<% $Group->Id %>"><% $Group->Name %></a></li>
+%    } elsif ($Group->Domain eq 'SystemInternal') {
+<li><em><% loc($Group->Type) %></em></li>
+%    }
+% }
+</ul>
+
+<%INIT>
+my $current_tab = 'Admin/Users/Memberships.html?id='.$id;
+my $UserObj = new RT::User($session{'CurrentUser'});
+$UserObj->Load($id) || Abort("Couldn't load user '$id'");
+my $title = loc("Memberships of the user [_1]", $UserObj->Name);
+my $GroupMembers = RT::GroupMembers->new($session{'CurrentUser'});
+$GroupMembers->Limit( FIELD => 'MemberId', VALUE => $UserObj->Id );
+my $alias = $GroupMembers->Join(
+    TYPE       => 'left',
+    ALIAS1     => 'main',
+    FIELD1     => 'GroupId',
+    TABLE2     => 'Groups',
+    FIELD2     => 'id'
+);
+$GroupMembers->Limit(
+    ALIAS      => $alias,
+    FIELD      => 'Domain',
+    OPERATOR   => '=',
+    VALUE      => 'SystemInternal',
+);
+$GroupMembers->Limit(
+    ALIAS      => $alias,
+    FIELD      => 'Domain',
+    OPERATOR   => '=',
+    VALUE      => 'UserDefined',
+);
+$GroupMembers->OrderByCols(
+    { ALIAS => $alias, FIELD => 'Domain' },
+    { ALIAS => $alias, FIELD => 'Name' },
+);
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

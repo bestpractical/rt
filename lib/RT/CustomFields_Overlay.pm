@@ -181,31 +181,14 @@ sub Next {
 }
 # }}}
 
-sub LimitToParentId  {
+sub LimitToLookupType  {
     my $self = shift;
-    my $id = shift || 0;
+    my $lookup = shift;
  
-    $self->Limit( FIELD => 'ParentId', VALUE => "$id" );
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
 }
 
-sub LimitToObjectType  {
-    my $self = shift;
-    my $o_type = shift;
- 
-    $self->Limit( FIELD => 'ObjectType', VALUE => "$o_type" );
-}
-
-sub LimitToComposite  {
-    my $self = shift;
-    my $composite = shift;
-    my ($o_type, $i_type, $p_type) = split(/-/, $composite, 3);
- 
-    $self->Limit( FIELD => 'ObjectType', VALUE => "$o_type" );
-    $self->Limit( FIELD => 'IntermediateType', VALUE => "$i_type" );
-    $self->Limit( FIELD => 'ParentType', VALUE => "$p_type" );
-}
-
-sub LimitToGlobalOrParentId {
+sub LimitToGlobalOrObjectId {
     my $self = shift;
     my $id = shift || 0;
 
@@ -215,12 +198,12 @@ sub LimitToGlobalOrParentId {
                 ALIAS2 => $object_cfs,
                 FIELD2 => 'CustomField' );
     $self->Limit( ALIAS           => $object_cfs,
-                 FIELD           => 'ParentId',
+                 FIELD           => 'ObjectId',
                  OPERATOR        => '=',
                  VALUE           => $id,
                  ENTRYAGGREGATOR => 'OR' );
     $self->Limit( ALIAS           => $object_cfs,
-                 FIELD           => 'ParentId',
+                 FIELD           => 'ObjectId',
                  OPERATOR        => '=',
                  VALUE           => 0,
                  ENTRYAGGREGATOR => 'OR' ) if $id;

@@ -1,15 +1,15 @@
 User/Group CF and Txn UI first.
 ===============================
-Object<=>CF Edit interface; separate CFs into different kinds:
-    Currently only All-User, All-Group, All-Queue and some-Queue
-    To be created and picked on the "User->CF" and "Group->CF" tabs
-    use code from rtfm's ClassCustomFields as a base of ObjectCustomFields
 CF display for User and Group
-Binary CFs.
+User/Group search in Configuration->User/Group
+Binary/image/textarea CFs.
 Finish Txn display for User and Group
-ACL for per-CF editing
+ACL for per-CF editing (UI done, need verify API)
     AdminThis ACL for CFs controls CF data and metadata, but _not_ where it applies
     AdminCF ACL for Objects controls what CFs applies here, but _not_ CF's contents
+Display Group memberships for Users
+Requestor memberships display for Ticket Requestor
+Requestor-is-of-group ticket search
 
 
 

@@ -68,8 +68,7 @@ sub _Init {
 Create takes a hash of values and creates a row in the database:
 
   int(11) 'CustomField'.
-  int(11) 'ParentId'.
-  int(11) 'SortOrder'.
+  int(11) 'ObjectId'.
   int(11) 'SortOrder'.
 
 =cut
@@ -81,15 +80,13 @@ sub Create {
     my $self = shift;
     my %args = ( 
                 CustomField => '0',
-                ParentId => '0',
-                SortOrder => '0',
+                ObjectId => '0',
                 SortOrder => '0',
 
 		  @_);
     $self->SUPER::Create(
                          CustomField => $args{'CustomField'},
-                         ParentId => $args{'ParentId'},
-                         SortOrder => $args{'SortOrder'},
+                         ObjectId => $args{'ObjectId'},
                          SortOrder => $args{'SortOrder'},
 );
 
@@ -138,19 +135,19 @@ sub CustomFieldObj {
 	return($CustomField);
 }
 
-=head2 ParentId
+=head2 ObjectId
 
-Returns the current value of ParentId. 
-(In the database, ParentId is stored as int(11).)
-
-
-
-=head2 SetParentId VALUE
+Returns the current value of ObjectId. 
+(In the database, ObjectId is stored as int(11).)
 
 
-Set ParentId to VALUE. 
+
+=head2 SetObjectId VALUE
+
+
+Set ObjectId to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ParentId will be stored as a int(11).)
+(In the database, ObjectId will be stored as a int(11).)
 
 
 =cut
@@ -218,7 +215,7 @@ sub _CoreAccessible {
 		{read => 1, type => 'int(11)', default => ''},
         CustomField => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
-        ParentId => 
+        ObjectId => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
         SortOrder => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},

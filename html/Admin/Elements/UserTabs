@@ -24,7 +24,7 @@
 <& /Admin/Elements/Tabs, 
     subtabs => $tabs,
     current_tab => 'Admin/Users/', 
-    current_subtab => $current_subtab, 
+    current_subtab => $current_tab, 
     Title => $Title &>
 <%INIT>
 my $tabs;
@@ -36,6 +36,9 @@ $tabs->{'this'} = { title => eval { $UserObj->Name },
 subtabs => {
 	       Basics => { title => loc('Basics'),
 			   path => "Admin/Users/Modify.html?id=".$id
+			 },
+	       Memberships => { title => loc('Memberships'),
+			   path => "Admin/Users/Memberships.html?id=".$id
 			 },
 	       History => { title => loc('History'),
 			   path => "Admin/Users/History.html?id=".$id
@@ -63,11 +66,19 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUse
   # Now let callbacks add their extra tabs
   $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
                                                                                 
-foreach my $tab ( sort keys %{$tabs} ) {                                        
-    if ( $tabs->{$tab}->{'path'} eq $current_subtab ) {                         
-        $tabs->{$tab}->{"current_subtab"} = $current_subtab;                    
+#foreach my $tab ( sort keys %{$tabs} ) {                                        
+#    if ( $tabs->{$tab}->{'path'} eq $current_subtab ) {                         
+#        $tabs->{$tab}->{"current_subtab"} = $current_subtab;                    
+#    }                                                                           
+#}                                                                               
+foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {  
+    if ( $tabs->{'this'}->{'subtabs'}->{$tab}->{'path'} eq $current_tab ) {
+        $tabs->{'this'}->{'subtabs'}->{$tab}->{"subtabs"}        = $subtabs; 
+        $tabs->{'this'}->{'subtabs'}->{$tab}->{"current_subtab"} = $current_subtab; 
     }                                                                           
-}                                                                               
+}   
+$tabs->{'this'}->{"current_subtab"} = $current_tab; 
+$current_tab = "Admin/Users/Modify.html?id=".$id if $id;
 </%INIT>
   
   

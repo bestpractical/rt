@@ -95,21 +95,14 @@ sub Create {
 		MaxValues => '0',
 		Pattern  => '',
                 Description => '',
-                SortOrder => '0',
                 Disabled => '0',
-		ObjectType  => '',
-		IntermediateType  => '',
-		ParentType  => '',
+		LookupType  => '',
 		Repeated  => '0',
 
 		  @_);
 
     if ($args{TypeComposite}) {
 	@args{'Type', 'MaxValues'} = split(/-/, $args{TypeComposite}, 2);
-    }
-    if ($args{ObjectTypeComposite}) {
-	@args{'ObjectType', 'IntermediateType', 'ParentType'}
-	    = split(/-/, $args{ObjectTypeComposite}, 3);
     }
     
     if ( !exists $args{'Queue'}) {
@@ -119,6 +112,7 @@ sub Create {
         unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AdminCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
+	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
     }
     else {
         my $queue = RT::Queue->new($self->CurrentUser);
@@ -129,6 +123,7 @@ sub Create {
         unless ( $queue->CurrentUserHasRight('AdminCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
+	$args{'LookupType'} = 'RT::Queue-RT::Ticket';
     }
     my $rv = $self->SUPER::Create(
                          Name => $args{'Name'},
@@ -136,11 +131,8 @@ sub Create {
                          MaxValues => $args{'MaxValues'},
                          Pattern  => $args{'Pattern'},
                          Description => $args{'Description'},
-                         SortOrder => $args{'SortOrder'},
                          Disabled => $args{'Disabled'},
-			 ObjectType => $args{'ObjectType'},
-			 IntermediateType => $args{'IntermediateType'},
-			 ParentType => $args{'ParentType'},
+			 LookupType => $args{'LookupType'},
 			 Repeated => $args{'Repeated'},
 );
 
@@ -150,8 +142,7 @@ sub Create {
     my $OCF = RT::ObjectCustomField->new($self->CurrentUser);
     $OCF->Create(
 	CustomField => $self->Id,
-	ObjectType => 'RT::Queue',
-	ParentId => $args{'Queue'},
+	ObjectId => $args{'Queue'},
     );
 
     return $rv;
@@ -563,7 +554,17 @@ Returns false if it accepts multiple values
 
 sub SingleValue {
     my $self = shift;
-    if ($self->Type =~  /Single$/) {
+    if ($self->MaxValues == 1) {
+        return 1;
+    } 
+    else {
+        return undef;
+    }
+}
+
+sub UnlimitedValues {
+    my $self = shift;
+    if ($self->MaxValues == 0) {
         return 1;
     } 
     else {
@@ -665,13 +666,16 @@ sub SetTypeComposite {
     $self->SetMaxValues($max_values);
 }
 
-sub SetObjectTypeComposite {
+sub SetLookupType {
     my $self = shift;
-    my $composite = shift;
-    my ($o_type, $i_type, $p_type) = split(/-/, $composite, 3);
-    $self->SetObjectType("$o_type");
-    $self->SetIntermediateType("$i_type");
-    $self->SetParentType("$p_type");
+    my $lookup = shift;
+    if ($lookup ne $self->LookupType) {
+	# Okay... We need to invalidate our existing relationships
+	my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
+	$ObjectCustomFields->LimitToCustomField($self->Id);
+	$_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
+    }
+    $self->SUPER::SetLookupType($lookup);
 }
 
 sub TypeComposite {
@@ -679,56 +683,42 @@ sub TypeComposite {
     join('-', $self->Type, $self->MaxValues);
 }
 
-sub ObjectTypeComposite {
-    my $self = shift;
-    join('-', $self->ObjectType, $self->IntermediateType, $self->ParentType);
-}
-
 sub TypeComposites {
     my $self = shift;
     return map { ("$_-1", "$_-0") } $self->Types;
 }
 
-sub ObjectTypeComposites {
+sub LookupTypes {
     my $self = shift;
     qw(
-	RT::Ticket--RT::Queue
-	RT::User--
-	RT::Group--
+	RT::Queue-RT::Ticket
+	RT::User
+	RT::Group
     );
 }
 
 my @FriendlyObjectTypes = (
     "[_1] objects",		    # loc
-    "[_2]'s [_1] objects",	    # loc
-    "[_3]'s [_2]'s [_1] objects",   # loc
+    "[_1]'s [_2] objects",	    # loc
+    "[_1]'s [_2]'s [_3] objects",   # loc
 );
 
-sub FriendlyObjectType {
+sub FriendlyLookupType {
     my $self = shift;
-    my $o_type = @_ ? shift : $self->ObjectType;
-    my $i_type = @_ ? shift : $self->IntermediateType;
-    my $p_type = @_ ? shift : $self->ParentType;
+    my $lookup = shift;
     my @types = map { s/^RT::// ? $self->loc($_) : $_ }
 		grep {defined and length}
-		$o_type, $i_type, $p_type or return;
+		split(/-/, $lookup || $self->LookupType) or return;
     return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
 }
 
-sub FriendlyObjectTypeComposite {
-    my $self = shift;
-    my $composite = shift || $self->ObjectTypeComposite;
-    return $self->FriendlyObjectType(split(/-/, $composite, 3));
-}
-
-sub AddToParent {
+sub AddToObject {
     my $self  = shift;
     my $object = shift;
-    my $composite = shift || ref($object)."--";
     my $id = $object->Id || 0;
 
-    unless ($self->ObjectTypeComposite eq $composite) {
-	return ( 0, $self->loc('Object type mismatch') );
+    unless (index($self->LookupType, ref($object)) == 0) {
+	return ( 0, $self->loc('Lookup type mismatch') );
     }
 
     unless ( $object->CurrentUserHasRight('AdminCustomFields') ) {
@@ -737,23 +727,22 @@ sub AddToParent {
 
     my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
 
-    $ObjectCF->LoadByCols( ParentId => $id, CustomField => $self->Id );
+    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
     if ( $ObjectCF->Id ) {
         return ( 0, $self->loc("That is already the current value") );
     }
     my ( $id, $msg ) =
-      $ObjectCF->Create( ParentId => $id, CustomField => $self->Id );
+      $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
 
     return ( $id, $msg );
 }
 
-sub RemoveFromParent {
+sub RemoveFromObject {
     my $self = shift;
     my $object = shift;
-    my $composite = shift || ref($object)."--";
     my $id = $object->Id || 0;
 
-    unless ($self->ObjectTypeComposite eq $composite) {
+    unless (index($self->LookupType, ref($object)) == 0) {
 	return ( 0, $self->loc('Object type mismatch') );
     }
 
@@ -763,7 +752,7 @@ sub RemoveFromParent {
 
     my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
 
-    $ObjectCF->LoadByCols( ParentId => $id, CustomField => $self->Id );
+    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
     unless ( $ObjectCF->Id ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
@@ -771,5 +760,78 @@ sub RemoveFromParent {
 
     return ( $id, $msg );
 }
+
+# {{{ AddValueForObject
+
+=head2 AddValueForObject HASH
+
+Adds a custom field value for a ticket. Takes a param hash of Object and Content
+
+=cut
+
+sub AddValueForObject {
+	my $self = shift;
+	my %args = ( Object => undef,
+                 Content => undef,
+		     @_ );
+	my $obj = $args{'Object'} or return;
+
+	my $newval = RT::ObjectCustomFieldValue->new($self->CurrentUser);
+	my $val = $newval->Create(ObjectType => ref($obj),
+	                    ObjectId => $obj->Id,
+                            Content => $args{'Content'},
+                            CustomField => $self->Id);
+
+    return($val);
+
+}
+
+
+# }}}
+
+# {{{ DeleteValueForObject
+
+=head2 DeleteValueForObject HASH
+
+Adds a custom field value for a ticket. Takes a param hash of Object and Content
+
+=cut
+
+sub DeleteValueForObject {
+	my $self = shift;
+	my %args = ( Object => undef,
+                 Content => undef,
+		     @_ );
+
+	my $oldval = RT::ObjectCustomFieldValue->new($self->CurrentUser);
+    $oldval->LoadByObjectContentAndCustomField (Object => $args{'Object'}, 
+                                                Content =>  $args{'Content'}, 
+                                                CustomField => $self->Id );
+    # check ot make sure we found it
+    unless ($oldval->Id) {
+        return(0, $self->loc("Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->Name));
+    }
+    # delete it
+
+    my $ret = $oldval->Delete();
+    unless ($ret) {
+        return(0, $self->loc("Custom field value could not be found"));
+    }
+    return(1, $self->loc("Custom field value deleted"));
+}
+
+sub ValuesForObject {
+	my $self = shift;
+    my $object = shift;
+
+	my $values = new RT::ObjectCustomFieldValues($self->CurrentUser);
+	$values->LimitToCustomField($self->Id);
+    $values->LimitToObject($object);
+
+	return ($values);
+}
+
+
+# }}}
 
 1;

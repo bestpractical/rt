@@ -73,9 +73,7 @@ Create takes a hash of values and creates a row in the database:
   smallint(6) 'Repeated'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
-  varchar(255) 'ObjectType'.
-  varchar(255) 'IntermediateType'.
-  varchar(255) 'ParentType'.
+  varchar(255) 'LookupType'.
   smallint(6) 'Disabled'.
 
 =cut
@@ -93,9 +91,7 @@ sub Create {
                 Repeated => '0',
                 Description => '',
                 SortOrder => '0',
-                ObjectType => '',
-                IntermediateType => '',
-                ParentType => '',
+                LookupType => '',
                 Disabled => '0',
 
 		  @_);
@@ -107,9 +103,7 @@ sub Create {
                          Repeated => $args{'Repeated'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
-                         ObjectType => $args{'ObjectType'},
-                         IntermediateType => $args{'IntermediateType'},
-                         ParentType => $args{'ParentType'},
+                         LookupType => $args{'LookupType'},
                          Disabled => $args{'Disabled'},
 );
 
@@ -252,55 +246,19 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 ObjectType
+=head2 LookupType
 
-Returns the current value of ObjectType. 
-(In the database, ObjectType is stored as varchar(255).)
-
-
-
-=head2 SetObjectType VALUE
+Returns the current value of LookupType. 
+(In the database, LookupType is stored as varchar(255).)
 
 
-Set ObjectType to VALUE. 
+
+=head2 SetLookupType VALUE
+
+
+Set LookupType to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ObjectType will be stored as a varchar(255).)
-
-
-=cut
-
-
-=head2 IntermediateType
-
-Returns the current value of IntermediateType. 
-(In the database, IntermediateType is stored as varchar(255).)
-
-
-
-=head2 SetIntermediateType VALUE
-
-
-Set IntermediateType to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, IntermediateType will be stored as a varchar(255).)
-
-
-=cut
-
-
-=head2 ParentType
-
-Returns the current value of ParentType. 
-(In the database, ParentType is stored as varchar(255).)
-
-
-
-=head2 SetParentType VALUE
-
-
-Set ParentType to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ParentType will be stored as a varchar(255).)
+(In the database, LookupType will be stored as a varchar(255).)
 
 
 =cut
@@ -380,11 +338,7 @@ sub _CoreAccessible {
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
 		{read => 1, write => 1, type => 'int(11)', default => '0'},
-        ObjectType => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
-        IntermediateType => 
-		{read => 1, write => 1, type => 'varchar(255)', default => ''},
-        ParentType => 
+        LookupType => 
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => '0'},

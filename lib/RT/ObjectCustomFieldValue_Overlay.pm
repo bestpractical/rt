@@ -50,4 +50,22 @@ sub LoadByTicketContentAndCustomField {
     
 }
 
+sub LoadByObjectContentAndCustomField {
+    my $self = shift;
+    my %args = ( Object => undef,
+                CustomField => undef,
+                Content => undef,
+                @_
+                );
+
+    my $obj = $args{'Object'} or return;
+
+    $self->LoadByCols( Content => $args{'Content'},
+                         CustomField => $args{'CustomField'},
+                         ObjectType => ref($obj),
+                         ObjectId => $obj->Id,);
+
+    
+}
+
 1;

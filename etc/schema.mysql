@@ -383,10 +383,7 @@ CREATE TABLE CustomFields (
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
-
-  ObjectType varchar(255) NOT NULL,
-  IntermediateType varchar(255) NOT NULL,
-  ParentType varchar(255) NOT NULL,
+  LookupType varchar(255) NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -403,7 +400,7 @@ CREATE TABLE CustomFields (
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
-  ParentId integer NOT NULL,
+  ObjectId integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,

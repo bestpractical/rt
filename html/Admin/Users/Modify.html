@@ -25,7 +25,7 @@
 <& /Admin/Elements/UserTabs, 
     id => $id, 
     UserObj => $UserObj,
-    current_subtab => $current_tab, 
+    current_tab => $current_tab, 
     Title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -179,14 +179,15 @@
 <TR>
 </TR>
 </TABLE>
+<BR>
 <& /Elements/TitleBoxStart, title => loc('Custom Fields') &>
 <TABLE>
 % my $CFs = $UserObj->CustomFields;
 % while (my $CF = $CFs->Next) {
 <TR><TD ALIGN="RIGHT">
-<% $CF->Name %>
+<% $CF->Name %>:
 </TD><TD>
-<& /Ticket/Elements/EditCustomField, CustomField => $CF &>
+<& /Elements/EditCustomField, %ARGS, Object => $UserObj, CustomField => $CF &>
 </TD></TR>
 % }
 <TR>
@@ -278,6 +279,7 @@ if ($UserObj->Id) {
 					    Object => $UserObj,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS );
 
 
 # {{{ Deal with special fields: Privileged, Enabled and Password

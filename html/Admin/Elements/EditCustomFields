@@ -60,9 +60,9 @@ my @results;
 my (@GlobalCFs, @AssociatedCFs, @UnassociatedCFs);
 
 # XXX - exception: by "RT::Queue" fields on UI we really mean "RT::Ticket" fields.
-my $composite = "$ObjectType--";
-$composite = 'RT::Ticket--RT::Queue' if $composite eq 'RT::Queue--';
-$CustomFields->LimitToComposite($composite);
+my $lookup = $ObjectType;
+$lookup = 'RT::Queue-RT::Ticket' if $lookup eq 'RT::Queue';
+$CustomFields->LimitToLookupType($lookup);
 
 if ($FindDisabledCustomFields) {
     $caption = loc("All Custom Fields");
@@ -115,11 +115,13 @@ if ($CustomField and $Move) {
 my $id = $Object->Id;
 my ($GlobalCFs, $ObjectCFs);
 $ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-$ObjectCFs->LimitToParentAndComposite(Parent => $Object, Composite => $composite);
+$ObjectCFs->LimitToObjectId($Object->Id);
+$ObjectCFs->LimitToLookupType($lookup);
 
 if ($id) {
     $GlobalCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-    $GlobalCFs->LimitToParentAndComposite(ParentType => ref($Object), Composite => $composite);
+    $GlobalCFs->LimitToObjectId(0);
+    $GlobalCFs->LimitToLookupType($lookup);
 }
 
 while (my $cf = $CustomFields->Next) { 
@@ -137,7 +139,7 @@ while (my $cf = $CustomFields->Next) {
 	if ($ARGS{$key}) {
 	    push @AssociatedCFs, $cf;
 	    if (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
-		my ($val, $msg) = $cf->AddToParent($Object, $composite);
+		my ($val, $msg) = $cf->AddToObject($Object);
 		push (@results, $msg);
 	    }
 	    # my ($val, $msg) = $cf->SetSortOrderForObject(Object => $Object, SortOrder => $ARGS{"Object-$id-CF-$cf_id-SortOrder"});
@@ -145,7 +147,7 @@ while (my $cf = $CustomFields->Next) {
 	else {
 	    push @UnassociatedCFs, $cf;
 	    if ($ObjectCFs->HasEntryForCustomField($cf_id)) {
-		my ($val, $msg) = $cf->RemoveFromParent($Object, $composite);
+		my ($val, $msg) = $cf->RemoveFromParent($Object);
 		push (@results, $msg);
 	    }
 	}

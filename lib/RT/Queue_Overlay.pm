@@ -421,7 +421,15 @@ Returns an RT::CustomFields object containing all global custom fields, as well 
 
 =cut
 
+# XXX XXX - this should become TicketCustomFields
+
 sub CustomFields {
+    my $self = shift;
+    warn "Queue->CustomFields is deprecated, use Queue->TicketCustomFields instead";
+    return $self->TicketCustomFields(@_);
+}
+
+sub TicketCustomFields {
     my $self = shift;
 
     my $cfs = RT::CustomFields->new( $self->CurrentUser );

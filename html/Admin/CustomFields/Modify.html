@@ -25,9 +25,9 @@ Title => $title &>
 </tr>
 <tr>
 <td class="label"><&|/l&>Applies to</&></td>
-<td><& /Admin/Elements/SelectCustomFieldObjectType, 
-        Name => "ObjectTypeComposite", 
-        Default => $CustomFieldObj->ObjectTypeComposite, &>
+<td><& /Admin/Elements/SelectCustomFieldLookupType, 
+        Name => "LookupType", 
+        Default => $CustomFieldObj->LookupType, &>
 </td>
 </tr>
 <tr>
@@ -67,7 +67,7 @@ else {
     if ( $id eq 'new' ) {
         my ( $val, $msg ) = $CustomFieldObj->Create(Name        => $Name,
                                                     TypeComposite => $TypeComposite,
-                                                    ObjectTypeComposite => $ObjectTypeComposite,
+                                                    LookupType => $LookupType,
                                                     Description => $Description,);
         $m->comp("/Elements/Error", Why =>  loc( "Could not create CustomField", $msg ) ) unless ($val);
         push @results, $msg;
@@ -77,7 +77,7 @@ else {
         $CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why =>  loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name() );
 
-        my @attribs = qw( Name TypeComposite ObjectTypeComposite Description);
+        my @attribs = qw( Name TypeComposite LookupType Description);
         my @aresults = UpdateRecordObject( AttributesRef => \@attribs,
                                            Object        => $CustomFieldObj,
                                            ARGSRef       => \%ARGS );
@@ -155,7 +155,7 @@ if ($ARGS{'Create'}){
 <%ARGS>
 $id => undef
 $TypeComposite => undef
-$ObjectTypeComposite => undef
+$LookupType => undef
 $MaxValues => undef
 $SortOrder => undef
 $Description => undef
