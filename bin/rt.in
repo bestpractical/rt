@@ -148,17 +148,8 @@ sub help {
             my $title = $item->[2]{Title};
             my @titles = ref $title eq 'ARRAY' ? @$title : $title;
 
-<<<<<<< local
-            foreach $title (@titles) {
-                $help{$title} = $item->[2]{Text};
-            }
-||||||| base
-        foreach $title (@titles) {
-            $help{$title} = $item->[2]{Text};
-=======
         foreach $title (grep $_, @titles) {
             $help{$title} = $item->[2]{Text};
->>>>>>> new
         }
     }
 
