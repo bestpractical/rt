@@ -26,44 +26,43 @@
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
-<%$caption%>:<BR>
+<h2><%$caption%></h2>
 </TD></TR></TABLE>
 % if ($CustomFields->Count == 0 ) {
 <P><i><&|/l&>(No custom fields)</&></i></P>
 % } else {
-<TABLE>
-
-<TR>
-<TD ROWSPAN="<% $CustomFields->Count %>">
-<UL>
-% while (my $CustomFieldObj = $CustomFields->Next) { 
-<LI><A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><b><%$CustomFieldObj->Name%></b></a> (<% $CustomFieldObj->FriendlyType %>)<br>
-<%$CustomFieldObj->Description%>
-</LI>
-% }
-</UL>
-</TD>
+<TABLE cellspacing=0 cellpadding=2>
 
 % my $count;
 % while (my $CustomFieldObj = $CustomFields->Next) { 
+<TR>
+  <TD valign="TOP">
+    <A HREF="CustomField.html?Queue=<%$id%>&CustomField=<%$CustomFieldObj->id()%>"><b><%$CustomFieldObj->Name%></b></a><br>
+    <%$CustomFieldObj->Description%>
+  </TD>
+  <TD valign="TOP">
+    <i><% $CustomFieldObj->FriendlyType %></i>
+  </TD>
 %  # show 'move up' unless it's the first item
 %  if ($count++) {
-<TR><TD>
-<a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>
+  <TD valign="TOP">
+    <a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>
 %  } else {
-<TD ALIGN=RIGHT>
+  <TD valign="TOP" ALIGN=RIGHT>
 %  }
 
 %  # show 'move down' unless it's the last item
 %  if (!$CustomFields->IsLast) {
 %  $m->print(' | ') if $count > 1;
-<a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>
+    <a href="CustomFields.html?id=<%$id%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>
 %  }
-</TD></TR>
-% }
-
 </TD>
 </TR>
+% }
+
+% while (my $CustomFieldObj = $CustomFields->Next) { 
+% }
+
 </TABLE>
 % }
 <FORM METHOD=GET ACTION="CustomFields.html">
