@@ -333,6 +333,9 @@ sub date_parse {
 	$year += 2000;
     }
     
+    #timelocal wants month to start from 0 
+    $month--;
+
     #print "$time: $hours:$sec:$min $month\/$day\/$year\n";
 
     $time = timelocal($sec, $min, $hours, $day, $month, $year);
