@@ -203,7 +203,8 @@ sub LoadQueueTemplate {
     my $self = shift;
     my %args = (
         Queue => undef,
-        Name  => undef
+        Name  => undef,
+        @_
     );
 
     return ( $self->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} ) );

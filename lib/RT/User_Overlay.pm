@@ -933,7 +933,7 @@ sub GenerateRandomPassword {
 
     my $length = $min_length + int( rand( $max_length - $min_length ) );
 
-    my $char = $self->GenerateRandomNextChar( $total_sum, $start_freq );
+    my $char = $self->_GenerateRandomNextChar( $total_sum, $start_freq );
     my @word = ( $char + $a );
     for ( 2 .. $length ) {
         $char =
