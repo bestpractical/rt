@@ -312,7 +312,7 @@ Takes a boolean.
 =head2 Load
 
 Takes either a numerical id or a textual Name and loads the specified queue.
-  
+
 =cut
 
 sub Load {

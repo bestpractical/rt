@@ -160,7 +160,7 @@ foreach my $table (@tables) {
 
         #generate pod for the accessible fields
         $FieldsPod .= "
-=item $field
+=head2 $field
 
 Returns the current value of $field. 
 (In the database, $field is stored as $type.)
@@ -170,7 +170,7 @@ Returns the current value of $field.
         unless ( $typemap{$field} eq 'auto' || $typemap{$field} eq 'ro' ) {
             $FieldsPod .= "
 
-=item Set$field VALUE
+=head2 Set$field VALUE
 
 
 Set $field to VALUE. 
@@ -187,7 +187,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
         if ( $modulemap{$field} ) {
             $FieldsPod .= "
-=item ${field}Obj
+=head2 ${field}Obj
 
 Returns the $modulemap{$field} Object which has the id returned by $field
 
@@ -285,7 +285,7 @@ sub _Init {
 }
 
 
-=item NewItem
+=head2 NewItem
 
 Returns an empty new $RecordClassName item
 
@@ -337,7 +337,7 @@ sub _Init {
 
 $RecordInit
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 

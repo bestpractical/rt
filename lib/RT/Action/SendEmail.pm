@@ -34,10 +34,9 @@ use MIME::Words qw(encode_mimeword);
 
 =head1 NAME
 
-  RT::Action::SendEmail - An Action which users can use to send mail 
-  or can subclassed for more specialized mail sending behavior. 
-  RT::Action::AutoReply is a good example subclass.
-
+RT::Action::SendEmail - An Action which users can use to send mail 
+or can subclassed for more specialized mail sending behavior. 
+RT::Action::AutoReply is a good example subclass.
 
 =head1 SYNOPSIS
 
@@ -165,7 +164,7 @@ sub Commit {
             $MIMEObj->attach( Type => $attach->ContentType,
                               Charset => $attach->OriginalEncoding,
                               Data => $attach->OriginalContent,
-                              Filename => $attach->Filename,
+                              Filename => $self->MIMEEncodeString( $attach->Filename, $RT::EmailOutputEncoding ),
                               Encoding    => '-SUGGEST');
         }
 
@@ -304,8 +303,12 @@ sub SendMessage {
 
 # {{{ sub SetRTSpecialHeaders
 
-# This routine adds all the random headers that RT wants in a mail message
-# that don't matter much to anybody else.
+=head2 SetRTSpecialHeaders 
+
+This routine adds all the random headers that RT wants in a mail message
+that don't matter much to anybody else.
+
+=cut
 
 sub SetRTSpecialHeaders {
     my $self = shift;
@@ -358,9 +361,13 @@ sub SetReferences {
 
 # {{{ sub SetMessageID
 
-# Without this one, threading won't work very nice in email agents.
-# Anyway, I'm not really sure it's that healthy if we need to send
-# several separate/different emails about the same transaction.
+=head2 SetMessageID 
+
+Without this one, threading won't work very nice in email agents.
+Anyway, I'm not really sure it's that healthy if we need to send
+several separate/different emails about the same transaction.
+
+=cut
 
 sub SetMessageID {
     my $self = shift;
@@ -385,6 +392,12 @@ sub SetMessageID {
 # }}}
 
 # {{{ sub SetReturnAddress
+
+=head2 SetReturnAddress is_comment => BOOLEAN
+
+Calculate and set From and Reply-To headers based on the is_comment flag.
+
+=cut
 
 sub SetReturnAddress {
 
@@ -433,6 +446,12 @@ sub SetReturnAddress {
 
 # {{{ sub SetHeader
 
+=head2 SetHeader FIELD, VALUE
+
+Set the FIELD of the current MIME object into VALUE.
+
+=cut
+
 sub SetHeader {
     my $self  = shift;
     my $field = shift;
@@ -463,6 +482,12 @@ sub SetRecipients {
 # }}}
 
 # {{{ sub SetTo
+
+=head2 SetTo
+
+Takes a string that is the addresses you want to send mail to
+
+=cut
 
 sub SetTo {
     my $self      = shift;
@@ -570,7 +595,7 @@ sub SetSubject {
 
 =head2 SetSubjectToken
 
- This routine fixes the RT tag in the subject. It's unlikely that you want to overwrite this.
+This routine fixes the RT tag in the subject. It's unlikely that you want to overwrite this.
 
 =cut
 
@@ -591,9 +616,9 @@ sub SetSubjectToken {
 
 # {{{
 
-=head 2 SetHeaderAsEncoding($field_name, $charset_encoding)
+=head2 SetHeaderAsEncoding($field_name, $charset_encoding)
 
- This routine converts the field into specified charset encoding.
+This routine converts the field into specified charset encoding.
 
 =cut
 

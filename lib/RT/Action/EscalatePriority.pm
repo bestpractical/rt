@@ -25,18 +25,17 @@
 
   RT::Action::EscalatePriority
 
-=description
+=head1 DESCRIPTION
 
 EscalatePriority is a ScripAction which is NOT intended to be called per 
 transaction. It's intended to be called by an RT escalation daemon.
- (The daemon is called escalator).
+(The daemon is called escalator).
 
 EsclatePriority uses the following formula to change a ticket's priority:
 
+    Priority = Priority +  (( FinalPriority - Priority ) / ( DueDate-Today))
 
-Priority = Priority +  (( FinalPriority - Priority ) / ( DueDate-Today))
-
-unless the duedate is past, in which case priority gets bumped straight
+Unless the duedate is past, in which case priority gets bumped straight
 to final priority.
 
 In this way, priority is either increased or decreased toward the final priority

@@ -55,7 +55,7 @@ for (@TYPES) { $TYPES{$_} = 1};
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -172,7 +172,7 @@ ok($bad_id == 0, 'Global custom field correctly decided to not create a cf with 
 
 # {{{ AddValue
 
-=item AddValue HASH
+=head2 AddValue HASH
 
 Create a new value for this CustomField.  Takes a paramhash containing the elements Name, Description and SortOrder
 
@@ -218,7 +218,7 @@ sub AddValue {
 
 # {{{ DeleteValue
 
-=item DeleteValue  ID
+=head2 DeleteValue ID
 
 Deletes a value from this custom field by id. 
 
@@ -254,7 +254,7 @@ sub DeleteValue {
 
 # {{{ Values
 
-=item Values FIELD
+=head2 Values FIELD
 
 Return a CustomFieldeValues object of all acceptable values for this Custom Field.
 
@@ -279,7 +279,7 @@ sub Values {
 
 # {{{ ValuesForTicket
 
-=item ValuesForTicket TICKET
+=head2 ValuesForTicket TICKET
 
 Returns a RT::TicketCustomFieldValues object of this Field's values for TICKET.
 TICKET is a ticket id.
@@ -302,7 +302,7 @@ sub ValuesForTicket {
 
 # {{{ AddValueForTicket
 
-=item AddValueForTicket HASH
+=head2 AddValueForTicket HASH
 
 Adds a custom field value for a ticket. Takes a param hash of Ticket and Content
 
@@ -328,7 +328,7 @@ sub AddValueForTicket {
 
 # {{{ DeleteValueForTicket
 
-=item DeleteValueForTicket HASH
+=head2 DeleteValueForTicket HASH
 
 Adds a custom field value for a ticket. Takes a param hash of Ticket and Content
 
@@ -362,7 +362,7 @@ sub DeleteValueForTicket {
 # }}}
 
 
-=item ValidateQueue Queue
+=head2 ValidateQueue Queue
 
 Make sure that the queue specified is a valid queue name
 
@@ -389,7 +389,7 @@ sub ValidateQueue {
 
 # {{{ Types
 
-=item Types 
+=head2 Types 
 
 Retuns an array of the types of CustomField that are supported
 
@@ -402,7 +402,7 @@ sub Types {
 # }}}
 
 
-=item FriendlyType [TYPE]
+=head2 FriendlyType [TYPE]
 
 Returns a localized human-readable version of the custom field type.
 If a custom field type is specified as the parameter, the friendly type for that type will be returned
@@ -432,12 +432,13 @@ sub FriendlyType {
 }
 
 
-=item ValidateType TYPE
+=head2 ValidateType TYPE
 
 Takes a single string. returns true if that string is a value
 type of custom field
 
-=for testing
+=begin testing
+
 ok(my $cf = RT::CustomField->new($RT::SystemUser));
 ok($cf->ValidateType('SelectSingle'));
 ok($cf->ValidateType('SelectMultiple'));
@@ -461,7 +462,7 @@ sub ValidateType {
 
 # {{{ SingleValue
 
-=item SingleValue
+=head2 SingleValue
 
 Returns true if this CustomField only accepts a single value. 
 Returns false if it accepts multiple values
@@ -482,7 +483,7 @@ sub SingleValue {
 
 # {{{ sub CurrentUserHasRight
 
-=item CurrentUserHasRight
+=head2 CurrentUserHasRight RIGHT
 
 Helper function to call the custom field's queue's CurrentUserHasRight with the passed in args.
 
@@ -517,7 +518,7 @@ sub _Set {
 
 # {{{ sub _Value 
 
-=item _Value
+=head2 _Value
 
 Takes the name of a table column.
 Returns its value as a string, if the user passes an ACL check
