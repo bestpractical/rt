@@ -47,12 +47,10 @@
 %if ($DefaultValue) {
 <OPTION <% !$Default && "SELECTED" %> VALUE=""><%$DefaultLabel%></OPTION>
 %}
-<OPTION <% ($RT::Nobody->Id() == $Default) && "SELECTED" %> VALUE="<%$RT::Nobody->Id%>"><%$RT::Nobody->Name%></OPTION>
 %foreach my $User ( @users)  {
 <OPTION <% ($User->Id == $Default)         && "SELECTED" %> VALUE="<%$User->Id()%>"><%$User->Name()%></OPTION>
 %}
 </SELECT>
-
 <%INIT>
 my @objects;
 my @users;
@@ -73,14 +71,22 @@ else {
 }
 
 my %user_uniq_hash;
+
+
 foreach my $object (@objects) {
 	my $Users = RT::Users->new($session{CurrentUser});
         $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
         while (my $User = $Users->Next()) {
+                next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later
 	      $user_uniq_hash{$User->Id()} = $User;
         }
 }
+
 @users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
+unshift(@users, $RT::Nobody);
+
+
+
 </%INIT>
 
 <%ARGS>
