@@ -190,7 +190,7 @@ instruct:
 
 
 insert: insert-install
-	$(PERL) $(RT_ETC_PATH)/insertdata
+	$(PERL) -I$(DESTDIR)/$(RT_ETC_PATH) -I$(DESTDIR)/$(RT_LIB_PATH) $(DESTDIR)/$(RT_ETC_PATH)/insertdata
 
 upgrade: dirs config-replace upgrade-noclobber  upgrade-instruct
 
