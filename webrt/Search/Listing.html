@@ -39,12 +39,12 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <TR>
 <TD VALIGN="TOP">
 <h1>Search limits</h1>
-<A HREF="/Search/Listing.html?ClearRestrictions=1">Clear all restrictions</a>
+<A HREF="<% $WebPath%>/Search/Listing.html?ClearRestrictions=1">Clear all restrictions</a>
 <BR>
 <BR>
 %my %restrictions=$session{'tickets'}->DescribeRestrictions();
 %foreach $row (keys %restrictions){
-<%$restrictions{"$row"}%> <A HREF="/Search/Listing.html?DeleteRestriction=<%$row%>">[delete]</a><br>
+<%$restrictions{"$row"}%> <A HREF="<% $WebPath %>/Search/Listing.html?DeleteRestriction=<%$row%>">[delete]</a><br>
 %}
 </TD>
 <TD>

@@ -22,7 +22,7 @@
        </TR>
         <TR>
         <TD WIDTH="50%" VALIGN=TOP ROWSPAN=2>
-          <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', titleright => "<A HREF=\"/Ticket/Create_Detail.html?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>" &>
+          <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', titleright => "<A HREF=\"$WebPath/Ticket/Create_Detail.html?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>" &>
 	SuperTickets:<BR>	
 	<& /Ticket/Elements/ShowMemberOf, Ticket => $Ticket &>	<BR>
 	SubTickets:<BR>
