@@ -31,6 +31,18 @@ for ($temp=0;$temp<$count;$temp++)
 		if ($length < 1) {$length=6;}
 	    printf "%-${length}.${length}s ", $rt::req[$temp]{'serial_num'};
 	}
+        elsif ($field =~ /^d(\d*)$/){
+            my $length = $1;
+		if ($rt::req[$temp]{'date_due'} > 0) {
+		my $date = localtime($rt::req[$temp]{'date_due'});
+		$date =~ s/\d*:\d*:\d*//;	
+                if ($length < 1) {$length=5;}
+            printf "%-${length}.${length}s ", $date;
+		}
+	else {
+	printf  "%-${length}.${length}s ", "none";
+	}
+        }
 	elsif ($field =~ /^p(\d*)$/){ 
 	    $length = $1;
 		if ($length < 1) {$length=2;}
@@ -131,6 +143,14 @@ sub build_query {
 	       }
 	       $status_ops .= " status =  \'$ARGV[++$i]\'" ;
 	   }
+
+           if ($ARGV[$i] eq '-area'){
+               if ($area_ops){
+                   $area_ops .= " OR ";
+               }
+               $area_ops .= " area =  \'$ARGV[++$i]\'" ;
+           }
+
 	   if ($ARGV[$i] eq '-open'){
 	       if ($status_ops){
 		   $status_ops .= " OR ";
@@ -186,7 +206,12 @@ sub build_query {
 	if ($query_string) {$query_string .= " AND ";}
 	$query_string .= "$queue_ops";
     }
-    
+   
+    if ($area_ops) {
+	if ($query_string) {$query_string .= " AND ";}
+        $query_string .= "$area_ops";
+    }
+ 
     if ($prio_ops) {
 	if ($query_string) {$query_string .= " AND ";}
 	$query_string .= "$prio_ops";
@@ -250,6 +275,7 @@ print"
                              p[2]      priority
                              r[9]      requestors
                              o[8]      owner
+			     d[10]     due date
                              s[30]     subject
                              t[5]      status
                              a[7]      area
@@ -282,6 +308,12 @@ sub print_header {
 	    $total_length = $total_length + $length;
 	    printf "%-${length}.${length}s ", "Num";
 	}
+        elsif ($field =~ /^d(\d*)$/){
+            $length = $1;
+                if ($length < 1) {$length=5;}
+            $total_length = $total_length + $length;
+            printf "%-${length}.${length}s ", "Due";
+        }
 	elsif ($field =~ /^p(\d*)$/){ 
 	    $length = $1;
 		if ($length < 1) {$length=2;}

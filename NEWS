@@ -1,5 +1,12 @@
-22 jul 99
----------
+25 July 1999
+------------
+	Added the ability to limit to a given area on the cli query engine
+	Added the ability to display the due date in the cli query engine
+
+
+21 July 1999
+------------
+
 Fix for [fsck #113] Display of requests users can't manipulate should now give 
 an error
 
