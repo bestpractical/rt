@@ -22,6 +22,8 @@ contentbg=>"#cccccc" &>
 </TD></TR>
 </TABLE>
 <&/Elements/TitleBoxEnd&>
+% # From mason 1.0.1 forward, this doesn't work. in fact, it breaks things.
+% if (0) {
 % # The code below iterates through everything in the passed in arguments
 % # Preserving all the old parameters
 % # This would be easier, except mason is 'smart' and calls multiple values
@@ -39,7 +41,7 @@ contentbg=>"#cccccc" &>
 % 	}
 % }
 %}
-
+% }
 </FORM>
 % }
 </DIV>
