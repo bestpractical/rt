@@ -53,7 +53,7 @@ sub Create {
                 CustomField => '0',
                 ObjectType => '',
                 ObjectId => '0',
-                Current => '1',
+                Disabled => '0',
                 Content => '',
                 LargeContent => '',
                 ContentType => '',
@@ -65,7 +65,7 @@ sub Create {
                          CustomField => $args{'CustomField'},
                          ObjectType => $args{'ObjectType'},
                          ObjectId => $args{'ObjectId'},
-                         Current => $args{'Current'},
+                         Disabled => $args{'Disabled'},
                          Content => $args{'Content'},
                          LargeContent => $args{'LargeContent'},
                          ContentType => $args{'ContentType'},
@@ -131,7 +131,7 @@ sub LoadByObjectContentAndCustomField {
 
 sub Delete {
     my $self = shift;
-    $self->SetCurrent(0);
+    $self->SetDisabled(1);
 }
 
 1;
