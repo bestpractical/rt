@@ -179,7 +179,7 @@ sub FormShowNum{
     else {
 	print "<input type=\"hidden\" name=\"display\" value=\"History\">";
     }
-    print "<input type=\"submit\" value=\"Display Request #\"><input size=6 name=\"serial_num\">
+    print "<input type=\"submit\" value=\"Display request #\"><input size=6 name=\"serial_num\">
 
 </form>";
 }
@@ -512,7 +512,7 @@ $template
 </TABLE>
 </font>
 <center>
-<input type=\"submit\" value=\"Create Request\">
+<input type=\"submit\" value=\"Create request\">
 </center>
 <input type=\"hidden\" name=\"queue_id\" value=\"$rt::ui::web::FORM{'queue_id'}\">
 <input type=\"hidden\" name=\"alias\" value=\"$rt::ui::web::FORM{'alias'}\">
