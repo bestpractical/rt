@@ -108,7 +108,7 @@ use RT::Action::CreateTickets;
 my $action = RT::Action::CreateTickets->new(CurrentUser => $session{'CurrentUser'});
 ;
 if ($ARGS{'Parse'} && $ARGS{'Template'}) {
-    $ARGS{'string'} = "";
+    $string = "";
     my $cgi_object = $m->cgi_object;
     my $fh = $cgi_object->upload('Template');
     my $filename = "$fh";
