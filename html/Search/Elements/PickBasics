@@ -21,10 +21,10 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc('Ticket Basics')&>
-<table>
+<h3>Basics</h3>
+<table cellpadding=0 cellspacing=0 border=0>
 <tr><td>
-<table>
+<table cellspacing=0 border=0>
 % foreach my $field (@fields1) {
 <tr><td align=right>
 % if ($field eq "Attachment") {
@@ -73,10 +73,6 @@
 
 </td></tr>
 
-</table>
-</td>
-<td>
-<table>
 % foreach my $field (@fields2) {
 <tr><td align=right>
 % if ($field eq "Status") {
@@ -124,8 +120,6 @@
 </table>
 </td></tr>
 </table>
-
-<& /Elements/TitleBoxEnd &>
 
 <%INIT>
 my @fields1 = ('Subject',

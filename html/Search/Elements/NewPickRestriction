@@ -23,7 +23,7 @@
 %# END LICENSE BLOCK
 
 <& /Elements/TitleBoxStart, title => loc('Add Restrictions')&>
-<table bgcolor=white width=100% cellspacing=0 cellpadding=0 border=0>
+<table width=100% cellspacing=0 cellpadding=0 border=0>
 <tr><td width=100%>
 <& SelectAndOr, Name => "AndOr" &>
 </td></tr>
@@ -46,6 +46,8 @@
 <td valign=top>
 <& PickPeople &>
 </td>
+</tr>
+<tr>
 <td valign=top>
 <& PickCFs, cfqueues => \%cfqueues &>
 </td>

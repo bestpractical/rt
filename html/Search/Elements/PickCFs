@@ -21,8 +21,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc('Custom Fields')&>
-<table>
+<h3>Custom Fields</h3>
+<table cellspacing=0 border=0>
 % while ( my $CustomField = $CustomFields->Next ) {
 
 <tr><td>
@@ -39,7 +39,6 @@
 </td></tr>
 % }
 </table>
-<& /Elements/TitleBoxEnd &>
 
 <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});

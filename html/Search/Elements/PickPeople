@@ -21,14 +21,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc('People')&>
-<table>
+<h3>People</h3>
+<table cellspacing=0 border=0>
 % foreach my $field (@fields) {
 <tr><td class="label">
 % if ($field eq "Owner" || 
 %     $field eq "Creator" || 
 %     $field eq "LastUpdatedBy") {
-<&|/l&><%$field%>:</&> 
+<&|/l&><%$field%></&> 
 </td><td>
 <& /Elements/SelectBoolean, Name => $field . "Op", 
 					  TrueVal=> '=', 
@@ -37,7 +37,7 @@
 </td><td>
 <& /Elements/SelectOwner, Name => "ValueOf" . $field &>
 % } elsif ($field eq 'Watcher') {
-<& /Elements/SelectWatcherType, Name => 'WatcherField', Default => 'Requestor' &>:
+<& /Elements/SelectWatcherType, Name => 'WatcherField', Default => 'Requestor' &>
 </td><td>
 <& /Elements/SelectMatch, Name => "WatcherOp" &>
 </td><td>
@@ -54,7 +54,6 @@
 </td></tr>
 
 </table>
-<& /Elements/TitleBoxEnd &>
 
 <%INIT>
 my @fields = ('Owner',

@@ -27,8 +27,10 @@
 <tr>
 <td>
 <&|/l&>Format:</&><br>
-<textarea name="Format" rows=5 cols=60><%$Format%></textarea>
+<textarea name="Format" rows=5 cols=40%><%$Format%></textarea>
 </td>
+</tr>
+<tr>
 <td>
 <table>
 <tr>

@@ -30,8 +30,10 @@
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=items value="<% $items %>">
 <table width=100%>
+<tr>
+<td valign=top>
 <tr><td valign=top>
-<& /Elements/TitleBoxStart, title => $search_hash->{'Description'} &>
+<& /Elements/TitleBoxStart, title => loc("Query") . ": " .$search_hash->{'Description'} &>
 <& Elements/NewListActions, actions => \@actions &>
 <select size=10 name=clauses <select style="width : 100%">
 <%$optionlist|n%>
@@ -46,22 +48,17 @@
 <input type=submit name="EditQuery" value="Edit">
 </center>
 <& /Elements/TitleBoxEnd &>
-
-</td>
-<td valign="top">
+<br>
 <& Elements/EditSearches, CurrentSearch => $search_hash &>
-</td>
-</tr>
-<tr>
-<td colspan=2>
+<br>
 <& Elements/DisplayOptions, Format=> ($Format||$search_hash->{'Format'}), %ARGS &>
-</td>
-<td></td>
-</table>
-
+</td><td valign=top>
 <& Elements/NewPickRestriction, query => $Query, cfqueues => \%queues, %ARGS &>
 
 <& /Elements/Submit, Caption => "Add additional restrictions", Label => loc('Add'), Name => 'AddClause'&>
+</td>
+</tr>
+</table>
 </FORM>
 
 <%INIT>
