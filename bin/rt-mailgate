@@ -75,9 +75,12 @@ while (my $flag = shift @ARGV) {
     if (($flag eq '-q') or ($flag eq '--queue')) {
 	$Queue = shift @ARGV;
     } 
-      if (($flag eq '-a') or ($flag eq '--action')) {
+    if ($flag eq '--queue-from-extension') {
+       $Queue = $ENV{'EXTENSION'};
+    }
+    if (($flag eq '-a') or ($flag eq '--action')) {
 	  $Action = shift @ARGV;
-      } 
+    } 
     
     
 }
@@ -93,6 +96,12 @@ my $ErrorsTo = ParseErrorsToAddressFromHead($head);
 #Get us a current user object.
 my $CurrentUser = GetCurrentUser($head, $entity, $ErrorsTo);
 
+# We've already performed a warning and sent the mail off to somewhere safe ($RTOwner).
+#  this is _exceedingly_ unlikely but we don't want to keep going if we don't have a current user
+
+unless ($CurrentUser->Id) {
+	exit(1);
+}
 
 my $MessageId = $head->get('Message-Id') || 
   "<no-message-id-".time.rand(2000)."\@.$RT::rtname>";
