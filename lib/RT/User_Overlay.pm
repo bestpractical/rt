@@ -1093,7 +1093,7 @@ The response is cached. PrincipalObj should never ever change.
 ok(my $u = RT::User->new($RT::SystemUser));
 ok($u->Load(1), "Loaded the first user");
 ok($u->PrincipalObj->ObjectId == 1, "user 1 is the first principal");
-ok($u->PrincipalObj->PrincipalType eq 'User' , "Principal 1 is a user, not a group");
+is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group");
 
 =end testing
 
@@ -1257,7 +1257,7 @@ ok($q_as_system->Id, "Loaded the first queue");
 my $new_tick2 = RT::Ticket->new($RT::SystemUser);
 my ($tick2id, $tickmsg) = $new_tick2->Create(Subject=> 'ACL Test 2', Queue =>$q_as_system->Id);
 ok($tick2id, "Created ticket: $tick2id");
-ok($new_tick2->QueueObj->id eq $q_as_system->Id, "Created a new ticket in queue 1");
+is($new_tick2->QueueObj->id, $q_as_system->Id, "Created a new ticket in queue 1");
 
 
 # make sure that the user can't do this without subgroup membership

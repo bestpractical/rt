@@ -314,32 +314,39 @@ specification. but currently doesn't
 =begin testing
 
 ok (my $cu = RT::CurrentUser->new('root'));
-ok (my $lh = $cu->LanguageHandle);
+ok (my $lh = $cu->LanguageHandle('en-us'));
 ok ($lh != undef);
 ok ($lh->isa('Locale::Maketext'));
-ok ($cu->loc('TEST_STRING') eq "Concrete Mixer", "Localized TEST_STRING into English");
+is ($cu->loc('TEST_STRING'), "Concrete Mixer", "Localized TEST_STRING into English");
 ok ($lh = $cu->LanguageHandle('fr'));
-ok ($cu->loc('Before') eq "Avant", "Localized TEST_STRING into Frenc");
+is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into Frenc");
 
 =end testing
 
 =cut 
 
 sub LanguageHandle {
-    my $self = shift;
-    if  ((!defined $self->{'LangHandle'}) || 
-         (!UNIVERSAL::can($self->{'LangHandle'}, 'maketext')) || 
-         (@_))  {
-	if ( $self->Lang) {
-	    push @_, $self->Lang;
-	}
-        $self->{'LangHandle'} = RT::I18N->get_handle(@_);
-    }
-    # Fall back to english.
-    unless ($self->{'LangHandle'}) {
-        die "We couldn't get a dictionary. Nye mogu naidti slovar. No puedo encontrar dictionario.";
-    }
-    return ($self->{'LangHandle'});
+     my $self = shift;
+     if (   ( !defined $self->{'LangHandle'} )
+         || ( !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' ) )
+         || (@_) ) {
+
+         if ( $RT::SystemUser and $self->id == $RT::SystemUser->id() ) {
+             @_ = qw(en-US);
+         }
+
+         elsif ( $self->Lang ) {
+             push @_, $self->Lang;
+         }
+         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
+     }
+
+     # Fall back to english.
+     unless ( $self->{'LangHandle'} ) {
+         die "We couldn't get a dictionary. Nye mogu naidti slovar. No 
+puedo encontrar dictionario.";
+     }
+     return ( $self->{'LangHandle'} );
 }
 
 sub loc {

@@ -201,10 +201,12 @@ ok(my ($id, $msg)=  $cf->Create( Name => 'TestingCF',
                                  Type=> 'SelectSingle'), 'Created a global CustomField');
 ok($id != 0, 'Global custom field correctly created');
 ok ($cf->SingleValue);
-ok($cf->Type eq 'SelectSingle');
+is($cf->Type, 'Select');
+is($cf->MaxValues, 1);
 
 ok($cf->SetType('SelectMultiple'));
-ok($cf->Type eq 'SelectMultiple');
+is($cf->Type, 'Select');
+is($cf->MaxValues, 0);
 ok(!$cf->SingleValue );
 ok(my ($bogus_val, $bogus_msg) = $cf->SetType('BogusType') , "Trying to set a custom field's type to a bogus type");
 ok($bogus_val == 0, "Unable to set a custom field's type to a bogus type");
@@ -535,12 +537,27 @@ sub ValidateType {
     my $self = shift;
     my $type = shift;
 
+    if ($type =~ s/(?:Single|Multiple)$//) {
+	warn "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead";
+    }
+
     if( $TYPES{$type}) {
         return(1);
     }
     else {
         return undef;
     }
+}
+
+
+sub SetType {
+    my $self = shift;
+    my $type = shift;
+    if ($type =~ s/(?:(Single)|Multiple)$//) {
+	warn "'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead";
+	$self->SetMaxValues($1 ? 1 : 0);
+    }
+    $self->SUPER::SetType($type);
 }
 
 # {{{ SingleValue

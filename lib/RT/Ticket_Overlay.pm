@@ -85,8 +85,8 @@ ok($t->CustomFieldValues($testcf->Id)->Count == 0);
 
 ok(my $t2 = RT::Ticket->new($RT::SystemUser));
 ok($t2->Load($id));
-ok($t2->Subject eq 'Testing');
-ok($t2->QueueObj->Id eq $testqueue->id);
+is($t2->Subject, 'Testing');
+is($t2->QueueObj->Id, $testqueue->id);
 ok($t2->OwnerObj->Id == $u->Id);
 
 my $t3 = RT::Ticket->new($RT::SystemUser);
@@ -3122,9 +3122,9 @@ ok ($root->Id, "Loaded the root user");
 my $t = RT::Ticket->new($RT::SystemUser);
 $t->Load(1);
 $t->SetOwner('root');
-ok ($t->OwnerObj->Name eq 'root' , "Root owns the ticket");
+is ($t->OwnerObj->Name, 'root' , "Root owns the ticket");
 $t->Steal();
-ok ($t->OwnerObj->id eq $RT::SystemUser->id , "SystemUser owns the ticket");
+is ($t->OwnerObj->id, $RT::SystemUser->id , "SystemUser owns the ticket");
 my $txns = RT::Transactions->new($RT::SystemUser);
 $txns->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $txns->Limit(FIELD => 'Ticket', VALUE => '1');
@@ -3354,14 +3354,14 @@ my $tt = RT::Ticket->new($RT::SystemUser);
 my ($id, $tid, $msg)= $tt->Create(Queue => 'general',
             Subject => 'test');
 ok($id, $msg);
-ok($tt->Status eq 'new', "New ticket is created as new");
+is($tt->Status, 'new', "New ticket is created as new");
 
 ($id, $msg) = $tt->SetStatus('open');
 ok($id, $msg);
-ok ($msg =~ /open/i, "Status message is correct");
+like($msg, qr/open/i, "Status message is correct");
 ($id, $msg) = $tt->SetStatus('resolved');
 ok($id, $msg);
-ok ($msg =~ /resolved/i, "Status message is correct");
+like($msg, qr/resolved/i, "Status message is correct");
 ($id, $msg) = $tt->SetStatus('resolved');
 ok(!$id,$msg);
 
