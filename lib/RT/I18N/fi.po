@@ -1,7 +1,6 @@
 # Finnish localization catalog for Request Tracker (RT)
 # Copyright (c) 2002 Janne Pirkkanen <jp@oppipoika.net>
 # First Author: Janne Pirkkanen <jp@oppipoika.net>, Jul 2002
-
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 2.1.x\n"

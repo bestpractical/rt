@@ -1,6 +1,5 @@
 # Copyright (c) 2002 Jesse Vincent <jesse@bestpractical.com>
 #
-
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 2.1.x\n"
@@ -1525,7 +1524,6 @@ msgid "Modify people related to queue %1"
 msgstr "Úprava uživatelů fronty %1"
 
 #: html/Ticket/ModifyPeople.html:1 html/Ticket/ModifyPeople.html:8
-#. ($Ticket->id)
 #. ($Ticket->Id)
 msgid "Modify people related to ticket #%1"
 msgstr "Úprava uživatelů souvisejících s požadavkem #%1"
@@ -1988,7 +1986,7 @@ msgstr "RT %1 pro %2"
 #: html/Elements/Footer:2
 #. ($RT::VERSION)
 msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
-msgstr "RT %1 od <a href=\http://bestpractical.com\">Best Practival Solutions, LLC</a>."
+msgstr "RT %1 od <a href=\"http://bestpractical.com\">Best Practival Solutions, LLC</a>."
 
 #: bin/rt:307
 #. ($RT::VERSION)
@@ -3036,8 +3034,8 @@ msgstr "požadavek #%1 %2"
 
 #: lib/RT/Group_Overlay.pm:159
 #. ($self->Id)
-msgid "unepopsaná skupina %1escripbed group %1"
-msgstr "ne"
+msgid "undescripbed group %1"
+msgstr "nepopsaná skupina %1"
 
 #: lib/RT/Group_Overlay.pm:134
 #. ($user->Object->Name)

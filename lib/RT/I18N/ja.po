@@ -1,0 +1,3061 @@
+# Copyright (c) 2002 Jesse Vincent <jesse@bestpractical.com>
+# Japanese translation by Interactive Artists LLC 
+# 0.1 2002 08 15
+msgid ""
+msgstr ""
+"Project-Id-Version: RT 2.1.x\n"
+"POT-Creation-Date: 2002-05-02 11:36+0800\n"
+"PO-Revision-Date: 2002-05-13 02:00+0800\n"
+"Last-Translator: Jesse Vincent <jesse@bestpractical.com>\n"
+"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: html/Elements/MyRequests:4 html/Elements/MyTickets:4
+msgid "#"
+msgstr "#"
+
+#: lib/RT/Date.pm:336
+#. ($self->GetWeekday($wday), $self->GetMonth($$mon), $mday, $hour,$min,$sec, ($yday+1900))
+msgid "%1 %2 %3 %4:%5:%6 %7"
+msgstr "%1 %2 %3 %4:%5:%6 %7"
+
+#: lib/RT/Transaction_Overlay.pm:579
+#. ($field, $self->OldValue, $self->NewValue)
+msgid "%1 %2 changed to %3"
+msgstr "%3に変更された%1 %2 "
+
+#: bin/rt:1119
+#. ($l->BaseObj->id, $l->BaseObj->Subject, $l->Type)
+msgid "%1 (%2) %3 this ticket\\n"
+msgstr "%1 (%2) %3 このチケット\\n"
+
+#: lib/RT/ScripAction_Overlay.pm:101
+#. ($self->Id)
+msgid "%1 ScripAction loaded"
+msgstr "%1スクリプトアクションロードしました"
+
+#: lib/RT/Ticket_Overlay.pm:2785
+#. ($args{'Value'}, $cf->Name)
+msgid "%1 added as a value for %2"
+msgstr "%2と同じバリューの%1が追加されました"
+
+#: bin/enhanced-mailgate:294 bin/rt-mailgate:260
+#. ($Action)
+msgid "%1 aliases require a TicketId to work on"
+msgstr "%1aliasesを動かすためにチケットIDが必要です"
+
+#: bin/enhanced-mailgate:298
+#. ($Action, $CurrentUser->UserObj->EmailAddress, $MessageId)
+msgid "%1 aliases require a TicketId to work on (from %2) %3"
+msgstr "%1aliasesを動かすためにチケットIDが必要です(%2から) %3"
+
+#: lib/RT/Transaction_Overlay.pm:499
+#. ($self->BriefDescription , $self->CreatorObj->Name)
+msgid "%1 by %2"
+msgstr "%2による%1"
+
+#: lib/RT/Transaction_Overlay.pm:642
+#. ($self->Field , $q1->Name , $q2->Name)
+msgid "%1 changed from %2 to %3"
+msgstr "%1は%2から%3に変更されました"
+
+#: lib/RT/Ticket_Overlay.pm:1778
+#. ($self, $msg)
+msgid "%1 couldn't init a transaction (%2)\\n"
+msgstr "%1はトランザクションをはじめることができませんでした(%2)\\n"
+
+#: lib/RT/Ticket_Overlay.pm:2240
+#. ($self)
+msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
+msgstr "%1は分解するステータスを設定できませんでした。RTのデータベースに一貫性がない可能性があります。"
+
+#: lib/RT/Queue_Overlay.pm:602
+#. ($principal->Object->Name, $args{'Type'})
+msgid "%1 is no longer a %2 for this queue."
+msgstr "%1はこのキューでは%2ではありません"
+
+#: lib/RT/Ticket_Overlay.pm:1033
+#. ($principal->Object->Name, $args{'Type'})
+msgid "%1 is no longer a %2 for this ticket."
+msgstr "%1はこのチケットでは%2ではありません"
+
+#: lib/RT/Ticket_Overlay.pm:2841
+#. ($args{'Value'}, $cf->Name)
+msgid "%1 is no longer a value for custom field %2"
+msgstr "%1はカスタムフィールド%2のバリューはありません"
+
+#: html/Admin/Queues/Scrips.html:49
+#. ($id)
+msgid "%1 isn't a valid Queue id."
+msgstr "%1は有効なキューIDではありません。"
+
+#: html/Ticket/Elements/ShowBasics:9
+#. ($TimeWorked)
+msgid "%1 min"
+msgstr "%1分"
+
+#: bin/rt:1160
+#. ($message->ContentType)
+msgid "%1 not shown"
+msgstr "%1表示されません"
+
+#: bin/enhanced-mailgate:652
+#. ($msg)
+msgid "%1 succeeded\\n"
+msgstr "%1 成功しました\\n"
+
+#: bin/rt-mailgate:328
+#. ($Action)
+msgid "%1 type unknown for $MessageId"
+msgstr "%1タイプは$MessageIdIDでは不明です"
+
+#: bin/enhanced-mailgate:362
+#. ($Action, $MessageId)
+msgid "%1 type unknown for %2"
+msgstr "%1タイプは%2では不明です"
+
+#: lib/RT/Action/ResolveMembers.pm:15
+#. (ref $self)
+msgid "%1 will resolve all members of a resolved group ticket."
+msgstr "%1は分解されたグループチケットのすべてのメンバーを分解します。"
+
+#: lib/RT/Action/StallDependent.pm:13
+#. (ref $self)
+msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
+msgstr "%1がもしリンクされたリクエストの従属者（もしくはメンバー）であると、[ローカル]ベースを行き詰まらせることになります。"
+
+#: lib/RT/Transaction_Overlay.pm:451
+#. ($self)
+msgid "%1: no attachment specified"
+msgstr "%1:アタッチメントが特定できません"
+
+#: lib/RT/Ticket_Overlay.pm:611
+#. ($args{'Status'})
+msgid "'%1' is an invalid value for status"
+msgstr "%1'はステータスに無効名バリューです"
+
+#: bin/enhanced-mailgate:358 bin/rt-mailgate:323
+#. ($Action)
+msgid "'%1' not a recognized action. "
+msgstr "%1' アクションを認識できませんでした。"
+
+#: html/Admin/Global/Scrips.html:15
+msgid "(Check box to delete scrip)"
+msgstr "（スクリプトを削除するためのチェックボックス）"
+
+#: html/Admin/Groups/Members.html:26 html/Ticket/Elements/EditLinks:22 html/Ticket/Elements/EditPeople:17 html/User/Groups/Members.html:29
+msgid "(Check box to delete)"
+msgstr "（削除のためのチェックボックス）"
+
+#: html/Ticket/Create.html:133 html/Ticket/DetailedCreate.html:60
+msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgstr "（チケットIDまたはURLsを空欄で区切って入力してください）"
+
+#: html/Admin/Groups/Members.html:24 html/User/Groups/Members.html:27
+msgid "(No members)"
+msgstr "（メンバーなし）"
+
+#: html/Admin/Global/Scrips.html:13
+msgid "(No scrips)"
+msgstr "（スクリプトなし）"
+
+#: html/Ticket/Update.html:55
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
+msgstr "（Eメールアドレスにおけるカンマで区切られたリストへの正確なアップデートのブラインドコピーを送る。今後のアップデートを誰が受信するかは<b>変更できません</b>）"
+
+#: html/Ticket/Update.html:51
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
+msgstr "（Eメールアドレスにおけるカンマで区切られたリストへの正確なアップデートのコピーを送る。今後のアップデートを誰が受信するかは<b>変更できません</b>）"
+
+#: html/Admin/Groups/index.html:13 html/User/Groups/index.html:8
+msgid "(empty)"
+msgstr "（空）"
+
+#: html/Elements/MyRequests:18 html/Elements/MyTickets:17
+msgid "(no subject)"
+msgstr "（サブジェクトなし）"
+
+#: html/Admin/Elements/SelectRights:24 html/Elements/SelectCustomFieldValue:5 html/Ticket/Elements/EditCustomFieldValues:26 html/Ticket/Elements/EditCustomFields:25 html/Ticket/Elements/ShowCustomFields:10 lib/RT/Transaction_Overlay.pm:549
+msgid "(no value)"
+msgstr "（バリューなし）"
+
+#: html/Ticket/Elements/EditLinks:11
+msgid "(only one ticket)"
+msgstr "（ひとつのチケットのみ）"
+
+#: html/Admin/Users/Modify.html:19
+msgid "(required)"
+msgstr "（必要です）"
+
+#: html/Elements/MyTickets:1
+msgid "25 highest priority tickets I own..."
+msgstr "私が所有している25の最も重要な優先権"
+
+#: html/Elements/MyRequests:1
+msgid "25 highest priority tickets I requested..."
+msgstr "私がリクエストした25の最も重要な優先権"
+
+#: docs/design_docs/string-extraction-guide.txt:54 html/Elements/CreateTicket:2
+#. ($m->scomp('/Elements/SelectNewTicketQueue'))
+msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"新しいチケット\">&nbsp;%1"
+
+#: lib/RT/ACE_Overlay.pm:159 lib/RT/Principal_Overlay.pm:145
+msgid "ACE not found"
+msgstr "エースはみつかりません"
+
+#: lib/RT/ACE_Overlay.pm:868
+msgid "ACEs can only be created and deleted."
+msgstr "エースは作成、削除のみです。"
+
+#: bin/enhanced-mailgate:599 bin/rt-commit-handler:731
+msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgstr "意図的でないチケットの修正を防ぐために強制終了します。\\n"
+
+#: html/Admin/Users/Modify.html:30
+msgid "Access control"
+msgstr "アクセスコントロール"
+
+#: html/Admin/Global/Scrip.html:28 html/Admin/Queues/Scrips.html:38
+msgid "Action"
+msgstr "アクション"
+
+#: lib/RT/Scrip_Overlay.pm:92
+#. ($args{ScripAction})
+msgid "Action %1 not found"
+msgstr "アクション%1は見つかりません"
+
+#: html/Search/Bulk.html:70
+msgid "Add AdminCc"
+msgstr "管理Ccを追加する"
+
+#: html/Search/Bulk.html:68
+msgid "Add Cc"
+msgstr "Ccを追加する"
+
+#: html/Search/Bulk.html:66
+msgid "Add Requestor"
+msgstr "リクエストする人をを追加する"
+
+#: html/Admin/Global/Scrip.html:6
+msgid "Add a new a global scrip"
+msgstr "新しいグローバルスクリプトを追加する"
+
+#: html/Admin/Queues/Scrips.html:36
+msgid "Add a scrip to this queue"
+msgstr "このキューにスクリプトを追加する"
+
+#: html/Admin/Global/Scrip.html:10
+msgid "Add a scrip which will apply to all queues"
+msgstr "すべてのキューに適応するスクリプトを追加する"
+
+#: html/Search/Bulk.html:96
+msgid "Add comments or replies to selected tickets"
+msgstr "選択されたチケットへのコメントまたは返事を追加する"
+
+#: html/Admin/Groups/Members.html:16 html/User/Groups/Members.html:13
+msgid "Add members"
+msgstr "メンバーを追加する"
+
+#: html/Admin/Queues/People.html:34 html/Ticket/Elements/AddWatchers:4
+msgid "Add new watchers"
+msgstr "新しいウォッチャーを追加する"
+
+#: lib/RT/Queue_Overlay.pm:502
+#. ($args{'Type'})
+msgid "Added principal as a %1 for this queue"
+msgstr "このキューに%1の責任者を追加しました"
+
+#: lib/RT/Ticket_Overlay.pm:924
+#. ($args{'Type'})
+msgid "Added principal as a %1 for this ticket"
+msgstr "このチケットに%1の責任者を追加しました"
+
+#: html/Admin/Elements/ModifyUser:53 html/Admin/Users/Modify.html:66
+msgid "Address1"
+msgstr "住所1"
+
+#: html/Admin/Elements/ModifyUser:55 html/Admin/Users/Modify.html:68
+msgid "Address2"
+msgstr "住所2"
+
+#: html/Ticket/Create.html:50 html/Ticket/DetailedCreate.html:46
+msgid "Admin Cc"
+msgstr "管理Cc"
+
+#: html/Admin/Queues/index.html:1
+msgid "Admin queues"
+msgstr "管理キュー"
+
+#: html/Admin/Users/index.html:1
+msgid "Admin users"
+msgstr "管理ユーザー"
+
+#: html/Admin/Global/index.html:1
+msgid "Admin/Global configuration"
+msgstr "管理/グローバル設定"
+
+#: html/Admin/Groups/index.html:2
+msgid "Admin/Groups"
+msgstr "管理/グループ"
+
+#: html/Admin/Queues/Modify.html:1
+msgid "Admin/Queue/Basics"
+msgstr "管理/キュー/基本"
+
+#: html/Ticket/Elements/ShowPeople:7 html/Ticket/Update.html:22
+msgid "AdminCc"
+msgstr "管理Cc"
+
+#: html/Admin/Queues/People.html:22 html/Ticket/Elements/EditPeople:25
+msgid "Administrative Cc"
+msgstr "管理者Cc"
+
+#: html/Elements/Quicksearch:1
+msgid "Advanced Search"
+msgstr "絞込み検索"
+
+#: html/Elements/SelectDateRelation:13
+msgid "After"
+msgstr "後"
+
+#: html/Admin/Queues/index.html:46
+msgid "All Queues"
+msgstr "すべてのキュー"
+
+#: lib/RT/Date.pm:379
+msgid "Apr."
+msgstr "四月"
+
+#: html/Elements/SelectSortOrder:11
+msgid "Ascending"
+msgstr "昇順"
+
+#: html/Search/Bulk.html:105 html/SelfService/Update.html:11 html/Ticket/ModifyAll.html:48 html/Ticket/Update.html:57
+msgid "Attach"
+msgstr "添付"
+
+#: html/SelfService/Create.html:46 html/Ticket/Create.html:66 html/Ticket/DetailedCreate.html:71
+msgid "Attach file"
+msgstr "添付ファイル"
+
+#: html/SelfService/Attachment/dhandler:12
+msgid "Attachment '%1' could not be loaded"
+msgstr "添付ファイル%1は見つかりません"
+
+#: lib/RT/Transaction_Overlay.pm:459
+msgid "Attachment created"
+msgstr "添付ファイルが作成されました"
+
+#: lib/RT/Tickets_Overlay.pm:494
+msgid "Attachment filename"
+msgstr "添付ファイル名"
+
+#: html/Ticket/Elements/ShowAttachments:2
+msgid "Attachments"
+msgstr "添付ファイル"
+
+#: lib/RT/Date.pm:383
+msgid "Aug."
+msgstr "八月"
+
+#: html/Admin/Elements/ModifyUser:43
+msgid "AuthSystem"
+msgstr "自動システム"
+
+#: bin/enhanced-mailgate:462
+#. ($line)
+msgid "Bad PGP Signature: %1\\n"
+msgstr "悪いPGP署名: %1\\n"
+
+#: html/SelfService/Attachment/dhandler:16
+msgid "Bad attachment id. Couldn't find attachment '%1'\\n"
+msgstr "悪い添付IDです。添付ファイルが見つかりません'%1'\\n"
+
+#: bin/rt-commit-handler:803
+#. ($val)
+msgid "Bad data in %1"
+msgstr "%1の悪いデータです"
+
+#: html/SelfService/Attachment/dhandler:19
+#. ($trans, $AttachmentObj->TransactionId())
+msgid "Bad transaction number for attachment. %1 should be %2\\n"
+msgstr "添付ファイルにとって悪いトランザクションナンバーです。%1は%2\\nのはずです"
+
+#: html/Admin/Elements/GroupTabs:5 html/Admin/Elements/QueueTabs:5 html/Admin/Elements/UserTabs:7 html/Ticket/Elements/Tabs:14 html/User/Elements/GroupTabs:5
+msgid "Basics"
+msgstr "基本"
+
+#: html/Ticket/Update.html:53
+msgid "Bcc"
+msgstr "Bcc"
+
+#: html/Admin/Global/GroupRights.html:59 html/Admin/Global/Scrip.html:44 html/Admin/Global/Template.html:20 html/Admin/Global/UserRights.html:29 html/Admin/Groups/GroupRights.html:48 html/Admin/Groups/Members.html:55 html/Admin/Groups/Modify.html:26 html/Admin/Groups/UserRights.html:29 html/Admin/Queues/GroupRights.html:63 html/Admin/Queues/Template.html:46 html/Admin/Queues/UserRights.html:30
+msgid "Be sure to save your changes"
+msgstr "本当に変更を保存してもよろしいですか"
+
+#: html/Elements/SelectDateRelation:11
+msgid "Before"
+msgstr "前"
+
+#: html/Search/Listing.html:92
+msgid "Bookmarkable URL for this search"
+msgstr "この検索にブックマークのできるURLです"
+
+#: html/Ticket/Elements/ShowHistory:10 html/Ticket/Elements/ShowHistory:13
+msgid "Brief headers"
+msgstr "短いヘッダー"
+
+#: html/Search/Bulk.html:3
+msgid "Bulk ticket update"
+msgstr "チケットの一括アップデート"
+
+#: lib/RT/User_Overlay.pm:1474
+msgid "Can not modify system users"
+msgstr "システムユーザーを修正できません"
+
+#: lib/RT/CustomField_Overlay.pm:119
+msgid "Can't add a custom field value without a name"
+msgstr "氏名なしにカスタムフィールドバリューの追加はできません"
+
+#: lib/RT/Ticket_Overlay.pm:2114
+msgid "Can't link a ticket to itself"
+msgstr "チケット自体にはリンクできません"
+
+#: lib/RT/Ticket_Overlay.pm:2214
+msgid "Can't merge into a merged ticket. You should never get this error"
+msgstr "すでに結合したチケットには結合できません。このエラーは決して出さないでください"
+
+#: lib/RT/Ticket_Overlay.pm:2027 lib/RT/Ticket_Overlay.pm:2100
+msgid "Can't specifiy both base and target"
+msgstr "ベースとターゲットを特定できません"
+
+#: html/autohandler:76
+#. ($msg)
+msgid "Cannot create user: %1"
+msgstr "ユーザー: %1を作成できません"
+
+#: html/Admin/Queues/People.html:18 html/SelfService/Create.html:30 html/SelfService/Display.html:28 html/Ticket/Create.html:42 html/Ticket/DetailedCreate.html:43 html/Ticket/Elements/EditPeople:22 html/Ticket/Elements/ShowPeople:5 html/Ticket/Update.html:17 html/Ticket/Update.html:49
+msgid "Cc"
+msgstr "Cc"
+
+#: html/SelfService/Prefs.html:7 html/User/Prefs.html:8
+msgid "Change password"
+msgstr "パスワードを変更する"
+
+#: html/Admin/Elements/SelectRights:7
+msgid "Check box to revoke right"
+msgstr "権利を無効にするチェックボックス"
+
+#: html/Ticket/Create.html:138 html/Ticket/DetailedCreate.html:65 html/Ticket/Elements/EditLinks:15 html/Ticket/Elements/EditLinks:59 html/Ticket/Elements/ShowLinks:29
+msgid "Children"
+msgstr "子供"
+
+#: html/Admin/Elements/ModifyUser:57 html/Admin/Users/Modify.html:70
+msgid "City"
+msgstr "町"
+
+#: html/SelfService/Elements/Tabs:36
+msgid "Closed requests"
+msgstr "終了したリクエストです"
+
+#: bin/enhanced-mailgate:657
+msgid "Command not understood!\\n"
+msgstr "理解していないコマンド!\\n"
+
+#: html/Ticket/Elements/Tabs:39
+msgid "Comment"
+msgstr "コメント"
+
+#: html/Admin/Elements/ModifyQueue:22 html/Admin/Queues/Modify.html:33
+msgid "Comment Address"
+msgstr "コメントアドレス"
+
+#: bin/enhanced-mailgate:317 bin/enhanced-mailgate:328 bin/rt-mailgate:283 bin/rt-mailgate:294
+msgid "Comment not recorded"
+msgstr "記録されていないコメント"
+
+#: html/Admin/Elements/ModifyUser:12
+msgid "Comments"
+msgstr "コメント"
+
+#: html/Ticket/ModifyAll.html:39 html/Ticket/Update.html:41
+msgid "Comments (Not sent to requestors)"
+msgstr "コメント（リクエスとした人には送信されません）"
+
+#: html/Search/Bulk.html:100
+msgid "Comments (not sent to requestors)"
+msgstr "コメント（リクエスとした人には送信されません）"
+
+#: html/Elements/ViewUser:4
+#. ($name)
+msgid "Comments about %1"
+msgstr "%1についてのコメント"
+
+#: html/Admin/Users/Modify.html:97 html/Ticket/Elements/ShowRequestor:19
+msgid "Comments about this user"
+msgstr "このユーザーについてのコメント"
+
+#: lib/RT/Transaction_Overlay.pm:558
+msgid "Comments added"
+msgstr "コメントが追加されました"
+
+#: lib/RT/Action/Generic.pm:111
+msgid "Commit Stubbed"
+msgstr "コメントが短くされました"
+
+#: html/Search/RestrictSearch.html:1
+msgid "Compile Restrictions"
+msgstr "コンパイル規制"
+
+#: html/Admin/Global/Scrip.html:21 html/Admin/Queues/Scrips.html:37
+msgid "Condition"
+msgstr "コンディション"
+
+#: lib/RT/Scrip_Overlay.pm:104
+msgid "Condition not found"
+msgstr "コンディションが見つかりません"
+
+#: html/Elements/Tabs:99
+msgid "Configuration"
+msgstr "設定"
+
+#: html/SelfService/Prefs.html:9 html/User/Prefs.html:10
+msgid "Confirm"
+msgstr "確認"
+
+#: html/Admin/Elements/ModifyUser:37
+msgid "ContactInfoSystem"
+msgstr "コンタクト情報"
+
+#: bin/rt:792
+#. ($contacted)
+msgid "Contacted date '%1' could not be parsed"
+msgstr "コンタクトされた日にち'%1'を解析できませんでした"
+
+#: html/Admin/Elements/ModifyTemplate:20 html/Admin/Queues/Template.html:36
+msgid "Content"
+msgstr "情報"
+
+#: html/Admin/Elements/ModifyQueue:16 html/Admin/Queues/Modify.html:27
+msgid "Correspondence Address"
+msgstr "メールアドレス"
+
+#: lib/RT/Transaction_Overlay.pm:554
+msgid "Correspondence added"
+msgstr "通信が追加されました"
+
+#: bin/enhanced-mailgate:346 bin/rt-mailgate:312
+msgid "Correspondence not recorded"
+msgstr "記録されていない通信"
+
+#: lib/RT/Ticket_Overlay.pm:2772
+msgid "Could not add new custom field value for ticket. "
+msgstr "チケットの新しいカスタムフィールドバリューを追加できませんでした"
+
+#: lib/RT/Ticket_Overlay.pm:2388 lib/RT/Ticket_Overlay.pm:2394
+msgid "Could not change owner. "
+msgstr "オーナー変更ができませんでした"
+
+#: html/Admin/Queues/CustomField.html:45
+#. ($msg)
+msgid "Could not create CustomField"
+msgstr "カスタムフィールドの作成ができませんでした"
+
+#: html/User/Groups/Modify.html:47 lib/RT/Group_Overlay.pm:393 lib/RT/Group_Overlay.pm:402
+msgid "Could not create group"
+msgstr "グループの作成ができませんでした"
+
+#: html/Admin/Global/Template.html:37 html/Admin/Queues/Template.html:62
+#. ($msg)
+msgid "Could not create template: %1"
+msgstr "テンプレート: %1の作成ができませんでした"
+
+#: lib/RT/Ticket_Overlay.pm:258 lib/RT/Ticket_Overlay.pm:544
+msgid "Could not create ticket. Queue not set"
+msgstr "チケットの作成ができませんでした。キューがセットされていません"
+
+#: lib/RT/User_Overlay.pm:177 lib/RT/User_Overlay.pm:188 lib/RT/User_Overlay.pm:206 lib/RT/User_Overlay.pm:382
+msgid "Could not create user"
+msgstr "ユーザーの作成ができませんでした"
+
+#: bin/enhanced-mailgate:318 bin/rt-mailgate:284
+#. ($TicketId)
+msgid "Could not find a ticket with id %1"
+msgstr "チケットとそのID%1が見つかりませんでした"
+
+#: bin/rtadmin:863
+#. ($group)
+msgid "Could not find group %1."
+msgstr "グループ %1が見つかりませんでした"
+
+#: lib/RT/Queue_Overlay.pm:480 lib/RT/Ticket_Overlay.pm:893
+msgid "Could not find or create that user"
+msgstr "そのユーザーを作成または見つけることができませんでした"
+
+#: lib/RT/Queue_Overlay.pm:541 lib/RT/Ticket_Overlay.pm:964
+msgid "Could not find that principal"
+msgstr "その責任者を見つけることができませんでした"
+
+#: bin/rtadmin:876
+#. ($user)
+msgid "Could not find user %1."
+msgstr "ユーザー%1を見つけることができませんでした"
+
+#: html/Admin/Groups/Members.html:62 html/User/Groups/Members.html:65 html/User/Groups/Modify.html:52
+msgid "Could not load group"
+msgstr "グループをロードできませんでした"
+
+#: lib/RT/Queue_Overlay.pm:500
+#. ($args{'Type'})
+msgid "Could not make that principal a %1 for this queue"
+msgstr "このキューでその責任者を%1にすることができませんでした"
+
+#: lib/RT/Ticket_Overlay.pm:913
+#. ($args{'Type'})
+msgid "Could not make that principal a %1 for this ticket"
+msgstr "このチケットでその責任者を%1にすることができませんでした"
+
+#: lib/RT/Queue_Overlay.pm:599
+#. ($args{'Type'})
+msgid "Could not remove that principal as a %1 for this queue"
+msgstr "このキューでその責任者を%1として削除することができませんでした"
+
+#: lib/RT/Ticket_Overlay.pm:1022
+#. ($args{'Type'})
+msgid "Could not remove that principal as a %1 for this ticket"
+msgstr "このチケットでその責任者を%1として削除することができませんでした"
+
+#: lib/RT/Group_Overlay.pm:805
+msgid "Couldn't add member to group"
+msgstr "グループにメンバーの追加ができませんでした"
+
+#: lib/RT/Ticket_Overlay.pm:2838
+#. ($Msg)
+msgid "Couldn't create a transaction: %1"
+msgstr "トランザクション: %1の作成ができませんでした"
+
+#: bin/enhanced-mailgate:473
+msgid "Couldn't figure out what to do from gpg's reply\\n"
+msgstr "GPGの返事\\nから何を行ったらよいのかわかりませんでした"
+
+#: bin/rtadmin:562 bin/rtadmin:574
+msgid "Couldn't find group\\n"
+msgstr "グループ\\nが見つかりませんでした"
+
+#: lib/RT/Group_Overlay.pm:780
+msgid "Couldn't find that principal"
+msgstr "責任者が見つかりませんでした"
+
+#: lib/RT/CustomField_Overlay.pm:150
+msgid "Couldn't find that value"
+msgstr "そのバリューが見つかりませんでした"
+
+#: bin/rtadmin:537 bin/rtadmin:549
+msgid "Couldn't find user\\n"
+msgstr "ユーザー\\nが見つかりませんでした"
+
+#: lib/RT/CurrentUser.pm:88
+#. ($self->Id)
+msgid "Couldn't load %1 from the users database.\\n"
+msgstr "ユーザーデータベース\\nから%1をロードできませんでした"
+
+#: lib/RT.pm:34
+#. ($config_file, $@)
+msgid "Couldn't load RT config file '%1' %2"
+msgstr "RT設定ファイル'%1' %2をロードできませんでした"
+
+#: html/Admin/Queues/Scrips.html:53
+msgid "Couldn't load Scrips."
+msgstr "スクリプトをロードできませんでした"
+
+#: html/Admin/Groups/GroupRights.html:63 html/Admin/Groups/UserRights.html:49
+#. ($id)
+msgid "Couldn't load group %1"
+msgstr "グループ%1をロードできませんでした"
+
+#: lib/RT/Link_Overlay.pm:107 lib/RT/Link_Overlay.pm:112
+msgid "Couldn't load link"
+msgstr "リンクをロードできませんでした"
+
+#: html/Admin/Queues/People.html:71
+#. ($id)
+msgid "Couldn't load queue"
+msgstr "キューをロードできませんでした"
+
+#: html/Admin/Queues/GroupRights.html:78 html/Admin/Queues/UserRights.html:48
+#. ($id)
+msgid "Couldn't load queue %1"
+msgstr "キュー%1をロードできませんでした"
+
+#: bin/rtadmin:773
+msgid "Couldn't load scrip"
+msgstr "スクリプトをロードできませんでした"
+
+#: bin/rtadmin:660
+msgid "Couldn't load template"
+msgstr "テンプレートをロードできませんでした"
+
+#: html/Admin/Users/Prefs.html:53
+#. ($id)
+msgid "Couldn't load that user (%1)"
+msgstr "そのユーザー（%1）をロードできませんでした"
+
+#: html/SelfService/Display.html:144
+#. ($id)
+msgid "Couldn't load ticket '%1'"
+msgstr "チケット'%1'をロードできませんでした"
+
+#: html/Admin/Elements/ModifyUser:63 html/Admin/Users/Modify.html:76
+msgid "Country"
+msgstr "国"
+
+#: html/Admin/Elements/CreateUserCalled:2 html/Ticket/Create.html:14 html/Ticket/Create.html:150 html/Ticket/Create.html:86 html/Ticket/DetailedCreate.html:86
+msgid "Create"
+msgstr "作成"
+
+#: html/Admin/Queues/CustomField.html:35
+msgid "Create a CustomField"
+msgstr "カスタムフィールドの作成"
+
+#: html/Admin/Queues/CustomFields.html:6
+msgid "Create a new Custom Field"
+msgstr "新しいカスタムフィールドの作成"
+
+#: html/Admin/Global/Scrips.html:9
+msgid "Create a new global scrip"
+msgstr "新しいグローバルスクリプトの作成"
+
+#: html/Admin/Groups/Modify.html:36 html/Admin/Groups/Modify.html:59 html/Admin/Groups/index.html:7
+msgid "Create a new group"
+msgstr "新しいグループの作成"
+
+#: html/User/Groups/Modify.html:37 html/User/Groups/Modify.html:63 html/User/Groups/index.html:6
+msgid "Create a new personal group"
+msgstr "新しい個人グループの作成"
+
+#: html/Admin/Queues/index.html:8
+msgid "Create a new queue"
+msgstr "新しいキューの作成"
+
+#: html/Admin/Global/Templates.html:5 html/Admin/Queues/Templates.html:6
+msgid "Create a new template"
+msgstr "新しいテンプレートの作成"
+
+#: html/SelfService/Create.html:9 html/Ticket/Create.html:13 html/Ticket/Create.html:4 html/Ticket/DetailedCreate.html:1 html/Ticket/DetailedCreate.html:9
+msgid "Create a new ticket"
+msgstr "新しいチケットの作成"
+
+#: html/Admin/Users/Modify.html:128 html/Admin/Users/Modify.html:154 html/Admin/Users/index.html:8
+msgid "Create a new user"
+msgstr "新しいユーザーの作成"
+
+#: html/Admin/Queues/Create.html:1 html/Admin/Queues/Create.html:2 html/Admin/Queues/Modify.html:75
+msgid "Create a queue"
+msgstr "キューの作成"
+
+#: html/Admin/Elements/CreateQueueCalled:2
+msgid "Create a queue called"
+msgstr "呼び出されたキューの作成"
+
+#: html/SelfService/Create.html:4
+msgid "Create a request"
+msgstr "リクエストの作成"
+
+#: html/Admin/Global/Template.html:31 html/Admin/Queues/Template.html:56
+msgid "Create a template"
+msgstr "テンプレートの作成"
+
+#: html/SelfService/Create.html:60
+msgid "Create ticket"
+msgstr "チケットの作成"
+
+#: bin/rt:1235 html/Elements/SelectDateType:2 html/Ticket/Elements/ShowDates:4
+msgid "Created"
+msgstr "作成しました"
+
+#: html/Admin/Queues/CustomField.html:47
+#. ($CustomFieldObj->Name())
+msgid "Created CustomField %1"
+msgstr "カスタムフィールド%1を作成しました"
+
+#: html/Admin/Global/Template.html:39 html/Admin/Queues/Template.html:64
+#. ($TemplateObj->Name())
+msgid "Created template %1"
+msgstr "テンプレート%1を作成しました"
+
+#: html/Ticket/Elements/EditLinks:21
+msgid "Current Relationships"
+msgstr "現在の関係"
+
+#: html/Admin/Groups/Members.html:13 html/User/Groups/Members.html:16
+msgid "Current members"
+msgstr "現在のメンバー"
+
+#: html/Admin/Elements/SelectRights:5
+msgid "Current rights"
+msgstr "現在の権利"
+
+#: html/Admin/Queues/People.html:15 html/Ticket/Elements/EditPeople:16
+msgid "Current watchers"
+msgstr "現在のウォッチャー"
+
+#: html/Admin/Elements/QueueTabs:19 html/Ticket/DetailedCreate.html:28 html/Ticket/Elements/ShowSummary:10
+msgid "Custom Fields"
+msgstr "カスタムフィールド"
+
+#: lib/RT/Tickets_Overlay.pm:918
+#. ($CF->Name , $args{OPERATOR} , $args{VALUE})
+msgid "Custom field %1 %2 %3"
+msgstr "カスタムフィールド%1 %2 %3"
+
+#: lib/RT/Tickets_Overlay.pm:913
+#. ($CF->Name)
+msgid "Custom field %1 has a value."
+msgstr "カスタムフィールド%1はバリューがあります"
+
+#: lib/RT/Tickets_Overlay.pm:910
+#. ($CF->Name)
+msgid "Custom field %1 has no value."
+msgstr "カスタムフィールド%1はバリューがありません"
+
+#: lib/RT/Ticket_Overlay.pm:2687
+#. ($args{'Field'})
+msgid "Custom field %1 not found"
+msgstr "カスタムフィールド%1が見つかりません"
+
+#: lib/RT/Ticket_Overlay.pm:2824
+msgid "Custom field not found"
+msgstr "カスタムフィールドが見つかりません"
+
+#: lib/RT/CustomField_Overlay.pm:260
+#. ($args{'Content'}, $self->Name)
+msgid "Custom field value %1 could not be found for custom field %2"
+msgstr "カスタムフィールド%2のためのカスタムフィールドバリュー%1が見つかりません"
+
+#: lib/RT/Ticket_Overlay.pm:2759
+#. ($old_value, $new_value->Content)
+msgid "Custom field value changed from %1 to %2"
+msgstr "カスタムフィールドが%1から%2に変更されました"
+
+#: lib/RT/CustomField_Overlay.pm:160
+msgid "Custom field value could not be deleted"
+msgstr "カスタムフィールドバリューは削除されません"
+
+#: lib/RT/CustomField_Overlay.pm:266
+msgid "Custom field value could not be found"
+msgstr "カスタムフィールドバリューが見つかりません"
+
+#: lib/RT/CustomField_Overlay.pm:158 lib/RT/CustomField_Overlay.pm:268
+msgid "Custom field value deleted"
+msgstr "カスタムフィールドバリューが削除されました"
+
+#: html/Ticket/Create.html:119 html/Ticket/DetailedCreate.html:54 html/Ticket/Elements/ShowSummary:28 html/Ticket/Elements/Tabs:18 html/Ticket/ModifyAll.html:16
+msgid "Dates"
+msgstr "日付"
+
+#: lib/RT/Date.pm:387
+msgid "Dec."
+msgstr "十二月"
+
+#: html/User/Delegation.html:1
+msgid "Delegate rights"
+msgstr "代表者の権利"
+
+#: html/Admin/Queues/Scrips.html:17
+msgid "Delete"
+msgstr "削除"
+
+#: lib/RT/Transaction_Overlay.pm:216
+msgid "Deleting this object could break referential integrity"
+msgstr "このオブジェクトを削除すると指示の完全性がくずされる可能性があります"
+
+#: lib/RT/Queue_Overlay.pm:168
+msgid "Deleting this object would break referential integrity"
+msgstr "このオブジェクトを削除すると指示の完全性がくずされます"
+
+#: lib/RT/User_Overlay.pm:398
+msgid "Deleting this object would violate referential integrity"
+msgstr "このオブジェクトを削除すると指示の完全性が妨害されます"
+
+#: html/Ticket/Create.html:136 html/Ticket/DetailedCreate.html:63 html/Ticket/Elements/EditLinks:13 html/Ticket/Elements/EditLinks:36 html/Ticket/Elements/ShowDependencies:8 html/Ticket/Elements/ShowLinks:11
+msgid "Depended on by"
+msgstr "次のもの次第である"
+
+#: bin/rt:1117
+msgid "Dependencies: \\n"
+msgstr "従属チケット: \\n"
+
+#: html/Elements/SelectLinkType:5 html/Ticket/Create.html:135 html/Ticket/DetailedCreate.html:62 html/Ticket/Elements/EditLinks:12 html/Ticket/Elements/EditLinks:24 html/Ticket/Elements/ShowDependencies:1 html/Ticket/Elements/ShowLinks:1
+msgid "Depends on"
+msgstr "による"
+
+#: html/Elements/SelectSortOrder:11
+msgid "Descending"
+msgstr "降順する"
+
+#: html/SelfService/Create.html:54 html/Ticket/Create.html:74 html/Ticket/DetailedCreate.html:78
+msgid "Describe the issue below"
+msgstr "下の問題点を表す"
+
+#: html/Admin/Elements/AddCustomFieldValue:3 html/Admin/Elements/ModifyQueue:13 html/Admin/Elements/ModifyTemplate:12 html/Admin/Global/Scrip.html:14 html/Admin/Groups/Modify.html:23 html/Admin/Queues/CustomField.html:12 html/Admin/Queues/Modify.html:24 html/Admin/Queues/Template.html:28 html/User/Groups/Modify.html:23
+msgid "Description"
+msgstr "記述"
+
+#: html/SelfService/Elements/MyRequests:20
+msgid "Details"
+msgstr "詳細"
+
+#: html/Ticket/Elements/Tabs:7
+msgid "Display"
+msgstr "表す"
+
+#: html/Ticket/Elements/ShowHistory:8
+msgid "Display mode"
+msgstr "モードを表す"
+
+#: html/SelfService/Display.html:4
+#. ($Ticket->id)
+msgid "Display ticket #%1"
+msgstr "チケット#%1を表す"
+
+#: html/Elements/Refresh:6
+msgid "Don't refresh this page."
+msgstr "このページを更新しないでください"
+
+#: html/Ticket/Elements/ShowTransaction:78
+msgid "Download"
+msgstr "ダウンロード"
+
+#: bin/rt:1245 html/Elements/SelectDateType:8 html/Ticket/Create.html:125 html/Ticket/DetailedCreate.html:56 html/Ticket/Elements/EditDates:34 html/Ticket/Elements/ShowDates:37
+msgid "Due"
+msgstr "期限切れ"
+
+#: bin/rt:755
+#. ($due)
+msgid "Due date '%1' could not be parsed"
+msgstr "期限が切れる日'%1'は解析されません"
+
+#: bin/enhanced-mailgate:598 bin/rt-commit-handler:730
+#. ($1, $msg)
+msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
+msgstr "ERROR: はチケット '%1': %2.\\nをロードできませんでした"
+
+#: html/Admin/Global/Scrips.html:20
+msgid "Edit"
+msgstr "編集"
+
+#: html/Admin/Queues/CustomFields.html:1 html/Admin/Queues/CustomFields.html:4
+#. ($Queue->Name)
+msgid "Edit Custom Fields for %1"
+msgstr "%1のカスタムフィールドを編集する"
+
+#: html/Ticket/ModifyLinks.html:12
+msgid "Edit Relationships"
+msgstr "関係を編集する"
+
+#: html/Admin/Global/Scrip.html:1 html/Admin/Global/Scrips.html:1 html/Admin/Queues/Scrips.html:1
+msgid "Edit scrips"
+msgstr "スクリプトを編集する"
+
+#: html/Admin/Global/Templates.html:1 html/Admin/Global/Templates.html:4
+msgid "Edit system templates"
+msgstr "システムテンプレートを編集する"
+
+#: html/Admin/Queues/Templates.html:1 html/Admin/Queues/Templates.html:4
+#. ($Queue->Name)
+msgid "Edit templates for %1"
+msgstr "%1のテンプレートを編集する"
+
+#: html/Admin/Elements/ModifyQueue:2 html/Admin/Queues/Modify.html:91
+#. ($QueueObj->Name)
+#. ($QueueObj->Id)
+msgid "Editing Configuration for queue %1"
+msgstr "キュー%1の設定を編集する"
+
+#: html/Admin/Elements/ModifyUser:2
+#. ($UserObj->Name)
+msgid "Editing Configuration for user %1"
+msgstr "ユーザー%1の設定を編集する"
+
+#: html/Admin/Queues/CustomField.html:50
+#. ($CustomFieldObj->Name())
+msgid "Editing CustomField %1"
+msgstr "カスタムフィールド%1を編集する"
+
+#: html/Admin/Groups/Members.html:6
+#. ($Group->Name)
+msgid "Editing membership for group %1"
+msgstr "グループ%1の会員を編集する"
+
+#: html/User/Groups/Members.html:103
+#. ($Group->Name)
+msgid "Editing membership for personal group %1"
+msgstr "個人グループ%1の会員を編集する"
+
+#: html/Admin/Global/Template.html:43 html/Admin/Queues/Template.html:68
+#. ($TemplateObj->Name())
+msgid "Editing template %1"
+msgstr "テンプレート%1を編集する"
+
+#: lib/RT/Ticket_Overlay.pm:2037 lib/RT/Ticket_Overlay.pm:2109
+msgid "Either base or target must be specified"
+msgstr "ベースもしくはターゲットを特定しなければなりません"
+
+#: html/Admin/Users/Modify.html:20 html/Admin/Users/Prefs.html:20 html/Elements/SelectUsers:3 html/Ticket/Elements/AddWatchers:21
+msgid "Email"
+msgstr "Eメール"
+
+#: lib/RT/User_Overlay.pm:158
+msgid "Email address in use"
+msgstr "お使いのEメールアドレス"
+
+#: html/Admin/Elements/ModifyUser:19
+msgid "EmailAddress"
+msgstr "Eメールアドレス"
+
+#: html/Admin/Elements/ModifyUser:31
+msgid "EmailEncoding"
+msgstr "Eメールエンコーディング"
+
+#: html/Admin/Queues/Modify.html:58
+msgid "Enabled (Unchecking this box disables this queue)"
+msgstr "有効になりました（もう一度このボックスをチェックするとこのキューは有効でなくなります）"
+
+#: html/Admin/Queues/index.html:49
+msgid "Enabled Queues"
+msgstr "有効なキュー"
+
+#: html/Admin/Queues/Modify.html:113 html/Admin/Users/Modify.html:196
+#. ($msg)
+msgid "Enabled status %1"
+msgstr "有効なステータス%1"
+
+#: html/Ticket/Elements/EditLinks:9
+msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgstr "チケットをリンクするチケットまたはURLsを入力してください。入力する項目がいくつかある場合にはスペースで区切ってください。"
+
+#: html/Elements/Login:5 html/SelfService/Error.html:1
+msgid "Error"
+msgstr "エラー"
+
+#: lib/RT/Queue_Overlay.pm:414
+msgid "Error in parameters to Queue->AddWatcher"
+msgstr "パラメーターのエラーQueue->AddWatcher"
+
+#: lib/RT/Queue_Overlay.pm:572
+msgid "Error in parameters to Queue->DelWatcher"
+msgstr "パラメーターのエラーQueue->DelWatcher"
+
+#: lib/RT/Ticket_Overlay.pm:827
+msgid "Error in parameters to Ticket->AddWatcher"
+msgstr "パラメーターのエラーTicket->AddWatcher"
+
+#: lib/RT/Ticket_Overlay.pm:995
+msgid "Error in parameters to Ticket->DelWatcher"
+msgstr "パラメーターのエラーTicket->DelWatcher"
+
+#: html/Admin/Elements/ModifyUser:41
+msgid "ExternalAuthId"
+msgstr "外部の認証ID"
+
+#: html/Admin/Elements/ModifyUser:35
+msgid "ExternalContactInfoId"
+msgstr "外部のコンタクト情報ID"
+
+#: html/Admin/Users/Modify.html:26
+msgid "Extra info"
+msgstr "その他の情報"
+
+#: lib/RT/User_Overlay.pm:270
+msgid "Failed to find 'Privileged' users pseudogroup."
+msgstr "'特権のある'ユーザーの擬似グループの検索が失敗しました"
+
+#: lib/RT/User_Overlay.pm:277
+msgid "Failed to find 'Unprivileged' users pseudogroup"
+msgstr "'特権のない'ユーザーの擬似グループの検索が失敗しました"
+
+#: lib/RT/Date.pm:377
+msgid "Feb."
+msgstr "二月"
+
+#: bin/rt:1203
+msgid "Fin"
+msgstr "終了"
+
+#: html/Ticket/Create.html:106 html/Ticket/DetailedCreate.html:23 html/Ticket/Elements/EditBasics:38 lib/RT/Tickets_Overlay.pm:396
+msgid "Final Priority"
+msgstr "最終優先順位"
+
+#: html/Elements/Quicksearch:1
+msgid "Find new/open tickets"
+msgstr "新しい/開くチケットを見つける"
+
+#: html/Admin/Queues/People.html:30 html/Admin/Users/index.html:17 html/Ticket/Elements/EditPeople:7
+msgid "Find people whose"
+msgstr "人々を見つける"
+
+#: html/Ticket/Elements/Tabs:102
+msgid "First"
+msgstr "最初の"
+
+#: html/Search/Listing.html:70
+msgid "First page"
+msgstr "最初のページ"
+
+#: docs/design_docs/string-extraction-guide.txt:33
+msgid "Foo Bar Baz"
+msgstr "Foo Bar Baz"
+
+#: docs/design_docs/string-extraction-guide.txt:24
+msgid "Foo!"
+msgstr "ばか！"
+
+#: html/Search/Bulk.html:65
+msgid "Force change"
+msgstr "変更を強制します"
+
+#: html/Admin/Elements/ModifyUser:21
+msgid "FreeformContactInfo"
+msgstr "フリーフォームコンタクト情報"
+
+#: lib/RT/Date.pm:357
+msgid "Fri."
+msgstr "金曜日"
+
+#: html/Ticket/Elements/ShowHistory:11 html/Ticket/Elements/ShowHistory:14
+msgid "Full headers"
+msgstr "フルヘッダー"
+
+#: bin/enhanced-mailgate:386
+msgid "Getting the current user from a pgp sig\\n"
+msgstr "pgp sig\\nから現在のユーザーを得る"
+
+#: html/Admin/Elements/Tabs:15
+msgid "Global"
+msgstr "グローバル"
+
+#: html/Admin/Global/Scrips.html:11 html/Admin/Queues/Scrips.html:8
+msgid "Global Scrips"
+msgstr "グローバルスクリプト"
+
+#: html/Admin/Queues/People.html:32 html/Admin/Queues/index.html:19 html/Admin/Users/index.html:20 html/Ticket/Elements/EditPeople:9 html/index.html:16
+msgid "Go!"
+msgstr "行く！"
+
+#: bin/enhanced-mailgate:439
+#. ($userid)
+msgid "Good pgp sig from %1\\n"
+msgstr "%1\\nからの良いpgp　sig"
+
+#: html/Search/Listing.html:75
+msgid "Goto page"
+msgstr "ページへ行く"
+
+#: html/Elements/GotoTicket:1 html/SelfService/Elements/GotoTicket:1
+msgid "Goto ticket"
+msgstr "チケットに行く"
+
+#: bin/rtadmin:524
+#. ($group_obj->Name, $attrib, $msg)
+msgid "Group %1 %2: %3"
+msgstr "グループ%1 %2: %3"
+
+#: html/Admin/Elements/GroupTabs:12 html/Admin/Elements/QueueTabs:23 html/Admin/Elements/SystemTabs:12
+msgid "Group Rights"
+msgstr "グループ権利"
+
+#: lib/RT/Group_Overlay.pm:786
+msgid "Group already has member"
+msgstr "グループにはすでにメンバーがいます"
+
+#: lib/RT/Group_Overlay.pm:406
+msgid "Group created"
+msgstr "グループが作成されました"
+
+#: lib/RT/Group_Overlay.pm:766 lib/RT/Queue_Overlay.pm:487 lib/RT/Queue_Overlay.pm:547 lib/RT/Ticket_Overlay.pm:900 lib/RT/Ticket_Overlay.pm:970
+msgid "Group not found"
+msgstr "グループが見つかりません"
+
+#: bin/rtadmin:504
+msgid "Group not found.\\n"
+msgstr "グループが見つかりません。\\n"
+
+#: bin/rtadmin:484
+msgid "Group not specified.\\n"
+msgstr "グループが特定できません。\\n"
+
+#: html/Admin/Elements/SelectNewGroupMembers:6 html/Admin/Elements/Tabs:9 html/Admin/Groups/Members.html:38 html/Admin/Groups/index.html:10 html/User/Elements/Tabs:9 html/User/Groups/Members.html:41
+msgid "Groups"
+msgstr "グループ"
+
+#: lib/RT/Group_Overlay.pm:792
+msgid "Groups can't be members of their members"
+msgstr "グループは彼らのメンバーにはなれません"
+
+#: lib/RT/Interface/CLI.pm:52 lib/RT/Interface/CLI.pm:52
+msgid "Hello!"
+msgstr "こんにちは！"
+
+#: docs/design_docs/string-extraction-guide.txt:40
+#. ($name)
+msgid "Hello, %1"
+msgstr "こんにちは、%1"
+
+#: html/Ticket/Elements/ShowHistory:5 html/Ticket/Elements/Tabs:11
+msgid "History"
+msgstr "ヒストリー"
+
+#: html/Admin/Elements/ModifyUser:45
+msgid "HomePhone"
+msgstr "自宅の電話"
+
+#: html/Elements/Tabs:92
+msgid "Homepage"
+msgstr "ホームページ"
+
+#: lib/RT/Base.pm:43
+#. (6)
+msgid "I have [quant,_1,concrete mixer]."
+msgstr "私は[quant,_1,concrete mixer]があります。"
+
+#: html/Ticket/Elements/ShowBasics:4 lib/RT/Tickets_Overlay.pm:323
+msgid "Id"
+msgstr "ID"
+
+#: html/Admin/Users/Modify.html:17
+msgid "Identity"
+msgstr "身分証明書"
+
+#: html/Admin/Queues/People.html:56 html/Ticket/Modify.html:15 html/Ticket/ModifyAll.html:53 html/Ticket/ModifyPeople.html:11
+msgid "If you've updated anything above, be sure to"
+msgstr "上の何かをアップデートしたなら、次のことを確認してください"
+
+#: html/Admin/Queues/index.html:17
+msgid "Include disabled queues in listing."
+msgstr "リストの無効なキューを含む"
+
+#: html/Admin/Users/index.html:18
+msgid "Include disabled users in search."
+msgstr "検索の無効なユーザーを含む"
+
+#: lib/RT/Tickets_Overlay.pm:372
+msgid "Initial Priority"
+msgstr "最初の優先権"
+
+#: lib/RT/ScripAction_Overlay.pm:84
+msgid "Input error"
+msgstr "入力エラー"
+
+#: lib/RT/Group_Overlay.pm:552
+msgid "Invalid Group Type"
+msgstr "無効なグループタイプです"
+
+#: lib/RT/Ticket_Overlay.pm:324 lib/RT/Ticket_Overlay.pm:349
+msgid "Invalid owner. Defaulting to 'nobody'."
+msgstr "無効なオーナーです。 '誰でもない'に初期設定します."
+
+#: lib/RT/Scrip_Overlay.pm:79 lib/RT/Template_Overlay.pm:213
+msgid "Invalid queue"
+msgstr "無効なキューです"
+
+#: lib/RT/ACE_Overlay.pm:252 lib/RT/ACE_Overlay.pm:260 lib/RT/ACE_Overlay.pm:265 lib/RT/ACE_Overlay.pm:270
+msgid "Invalid right"
+msgstr "無効な権利です"
+
+#: lib/RT/Record.pm:103
+#. ($key)
+msgid "Invalid value for %1"
+msgstr "%1には無効なバリューです"
+
+#: lib/RT/Ticket_Overlay.pm:2694
+msgid "Invalid value for custom field"
+msgstr "カスタムフィールドには無効なバリューです"
+
+#: lib/RT/Ticket_Overlay.pm:363
+msgid "Invalid value for status"
+msgstr "ステータスには無効なバリューです"
+
+#: lib/RT/Date.pm:376
+msgid "Jan."
+msgstr "一月"
+
+#: lib/RT/Date.pm:382
+msgid "Jul."
+msgstr "七月"
+
+#: html/Ticket/Elements/Tabs:28
+msgid "Jumbo"
+msgstr "大きい"
+
+#: lib/RT/Date.pm:381
+msgid "Jun."
+msgstr "六月"
+
+#: lib/RT/Transaction_Overlay.pm:563
+msgid "Keyword"
+msgstr "キーワード"
+
+#: html/Admin/Elements/ModifyUser:29
+msgid "Lang"
+msgstr "長い"
+
+#: html/Ticket/Elements/Tabs:120
+msgid "Last"
+msgstr "最後の"
+
+#: html/Ticket/Elements/EditDates:25 html/Ticket/Elements/ShowDates:29
+msgid "Last Contact"
+msgstr "最後のコンタクト"
+
+#: html/Elements/SelectDateType:5
+msgid "Last Contacted"
+msgstr "最後にコンタクトした"
+
+#: html/Elements/SelectDateType:6
+msgid "Last Updated"
+msgstr "最後にアップデートした"
+
+#: bin/rt:1213
+msgid "Left"
+msgstr "残った"
+
+#: html/Admin/Users/Modify.html:33
+msgid "Let this user access RT"
+msgstr "このユーザーをRTにアクセスします"
+
+#: html/Admin/Users/Modify.html:37
+msgid "Let this user be granted rights"
+msgstr "このユーザーの権利を認めます"
+
+#: bin/rt:458
+#. ($op, $val)
+msgid "Limiting owner to %1 %2"
+msgstr "オーナーを%1 %2に制限します"
+
+#: bin/rt:435
+#. ($ op, $queue_obj->Name)
+msgid "Limiting queue to %1 %2"
+msgstr "キューを%1 %2に制限します"
+
+#: lib/RT/Ticket_Overlay.pm:2127
+msgid "Link already exists"
+msgstr "リンクはすでに存在しています"
+
+#: lib/RT/Ticket_Overlay.pm:2141
+msgid "Link could not be created"
+msgstr "リンクが作成されませんでした"
+
+#: lib/RT/Ticket_Overlay.pm:2156
+#. ($TransString)
+msgid "Link created (%1)"
+msgstr "リンクが作成されました（%1）"
+
+#: lib/RT/Ticket_Overlay.pm:2062
+#. ($TransString)
+msgid "Link deleted (%1)"
+msgstr "リンクが削除されました（%1）"
+
+#: lib/RT/Ticket_Overlay.pm:2068
+msgid "Link not found"
+msgstr "リンクが見つかりません"
+
+#: html/Ticket/ModifyLinks.html:4
+#. ($Ticket->Id)
+msgid "Link ticket #%1"
+msgstr "リンクチケット#%1"
+
+#: html/Ticket/Elements/Tabs:25
+msgid "Links"
+msgstr "リンク"
+
+#: html/Admin/Users/Modify.html:63
+msgid "Location"
+msgstr "場所"
+
+#: lib/RT.pm:84
+#. ($RT::LogDir)
+msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
+msgstr "ログディレクトリー%1が見つからない、または書き出せません。\\n RTが動きません"
+
+#: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:1 html/Elements/Login:10 html/Elements/Login:21
+msgid "Login"
+msgstr "ログイン"
+
+#: html/Elements/Header:36
+msgid "Logout"
+msgstr "ログアウト"
+
+#: html/Search/Bulk.html:64
+msgid "Make Owner"
+msgstr "オーナーを決める"
+
+#: html/Search/Bulk.html:80
+msgid "Make Status"
+msgstr "ステータスを決める"
+
+#: html/Search/Bulk.html:87
+msgid "Make date Due"
+msgstr "期限期日を決める"
+
+#: html/Search/Bulk.html:88
+msgid "Make date Resolved"
+msgstr "解析期日を決める"
+
+#: html/Search/Bulk.html:85
+msgid "Make date Started"
+msgstr "開始した日を決める"
+
+#: html/Search/Bulk.html:84
+msgid "Make date Starts"
+msgstr "開始日を決める"
+
+#: html/Search/Bulk.html:86
+msgid "Make date Told"
+msgstr "いわれた日を決める"
+
+#: html/Search/Bulk.html:77
+msgid "Make priority"
+msgstr "優先順位を決める"
+
+#: html/Search/Bulk.html:78
+msgid "Make queue"
+msgstr "キューを決める"
+
+#: html/Search/Bulk.html:76
+msgid "Make subject"
+msgstr "サブジェクトを決める"
+
+#: lib/RT/Date.pm:378
+msgid "Mar."
+msgstr "三月"
+
+#: lib/RT/Date.pm:380
+msgid "May."
+msgstr "五月"
+
+#: lib/RT/Group_Overlay.pm:802
+msgid "Member added"
+msgstr "メンバーが追加されました"
+
+#: lib/RT/Group_Overlay.pm:960
+msgid "Member deleted"
+msgstr "メンバーが削除されました"
+
+#: lib/RT/Group_Overlay.pm:964
+#. ()
+msgid "Member not deleted"
+msgstr "メンバーが削除されていません"
+
+#: html/Elements/SelectLinkType:4
+msgid "Member of"
+msgstr "のメンバー"
+
+#: html/Admin/Elements/GroupTabs:9 html/User/Elements/GroupTabs:9
+msgid "Members"
+msgstr "メンバー"
+
+#: lib/RT/Ticket_Overlay.pm:2268
+msgid "Merge Successful"
+msgstr "結合が成功しました"
+
+#: lib/RT/Ticket_Overlay.pm:2231
+msgid "Merge failed. Couldn't set EffectiveId"
+msgstr "結合が失敗しました。有効なIDが設定できませんでした"
+
+#: html/Ticket/Elements/EditLinks:11
+msgid "Merge into"
+msgstr "に結合"
+
+#: html/Admin/Users/Modify.html:92
+msgid "Mobile"
+msgstr "携帯"
+
+#: html/Admin/Elements/ModifyUser:49
+msgid "MobilePhone"
+msgstr "携帯電話"
+
+#: html/Admin/Queues/CustomField.html:1
+#. ($CustomFieldObj->id)
+msgid "Modify Custom Field %1"
+msgstr "カスタムフィールド%1を修正する"
+
+#: html/Ticket/ModifyDates.html:1
+#. ($TicketObj->Id)
+msgid "Modify dates for #%1"
+msgstr "#%1の期日を修正する"
+
+#: html/Ticket/ModifyDates.html:8
+#. ($TicketObj->Id)
+msgid "Modify dates for ticket # %1"
+msgstr "チケット#%1の期日を修正する"
+
+#: html/Admin/Global/GroupRights.html:1
+msgid "Modify global group rights"
+msgstr "グローバルグループの権利を修正する"
+
+#: html/Admin/Global/GroupRights.html:7
+msgid "Modify global group rights."
+msgstr "グローバルグループの権利を修正する"
+
+#: html/Admin/Global/Scrips.html:6 html/Admin/Queues/Scrips.html:63
+msgid "Modify global scrips"
+msgstr "グローバルスクリプトを修正する"
+
+#: html/Admin/Global/UserRights.html:1 html/Admin/Global/UserRights.html:7
+msgid "Modify global user rights."
+msgstr "グローバルユーザーの権利を修正する"
+
+#: html/Admin/Groups/GroupRights.html:1 html/Admin/Groups/GroupRights.html:8
+#. ($GroupObj->Name)
+msgid "Modify group rights for group %1"
+msgstr "%1のグループ権利を修正する"
+
+#: html/Admin/Queues/GroupRights.html:1 html/Admin/Queues/GroupRights.html:8
+#. ($QueueObj->Name)
+msgid "Modify group rights for queue %1"
+msgstr "キュー%1のグループ権利を修正する"
+
+#: html/Admin/Queues/People.html:1
+#. ($QueueObj->Name)
+msgid "Modify people related to queue %1"
+msgstr "キュー%1に関係のある人々を修正する"
+
+#: html/Ticket/ModifyPeople.html:1 html/Ticket/ModifyPeople.html:8
+#. ($Ticket->id)
+#. ($Ticket->Id)
+msgid "Modify people related to ticket #%1"
+msgstr "チケット#%1に関係のある人々を修正する"
+
+#: html/Admin/Queues/Scrips.html:60
+#. ($QueueObj->Name)
+msgid "Modify scrips for queue %1"
+msgstr "キュー%1のスクリプトを修正する"
+
+#: html/Admin/Global/Template.html:1 html/Admin/Queues/Template.html:1
+#. ($TemplateObj->id)
+msgid "Modify template %1"
+msgstr "テンプレート%1を修正する"
+
+#: html/Admin/Groups/Modify.html:53 html/User/Groups/Modify.html:57
+#. ($Group->Name)
+msgid "Modify the group %1"
+msgstr "グループ%1を修正する"
+
+#: html/Admin/Users/Modify.html:149
+#. ($UserObj->Name)
+msgid "Modify the user %1"
+msgstr "ユーザー%1を修正する"
+
+#: html/Ticket/ModifyAll.html:10
+#. ($Ticket->Id)
+msgid "Modify ticket # %1"
+msgstr "チケット#　%1を修正する"
+
+#: html/Ticket/Modify.html:1 html/Ticket/Modify.html:9
+#. ($TicketObj->Id)
+msgid "Modify ticket #%1"
+msgstr "チケット#%1を修正する"
+
+#: html/Admin/Groups/UserRights.html:1 html/Admin/Groups/UserRights.html:8
+#. ($GroupObj->Name)
+msgid "Modify user rights for group %1"
+msgstr "グループ%1のユーザー権利を修正する"
+
+#: html/Admin/Queues/UserRights.html:1 html/Admin/Queues/UserRights.html:8
+#. ($QueueObj->Name)
+msgid "Modify user rights for queue %1"
+msgstr "キュー%1のユーザー権利を修正する"
+
+#: html/Admin/Queues/People.html:9
+#. ($QueueObj->Name)
+msgid "Modify watchers for queue '%1'"
+msgstr "キュー'%1'のウォッチャーを修正する"
+
+#: lib/RT/Date.pm:353
+msgid "Mon."
+msgstr "月曜日"
+
+#: html/Ticket/Elements/ShowRequestor:17
+#. ($name)
+msgid "More about %1"
+msgstr "さらに%1について"
+
+#: html/Admin/Elements/SelectSingleOrMultiple:3
+msgid "Multiple"
+msgstr "多くの"
+
+#: lib/RT/User_Overlay.pm:149
+msgid "Must specify 'Name' attribute"
+msgstr "'名前'の属性を特定してください"
+
+#: html/Admin/Elements/AddCustomFieldValue:2 html/Admin/Elements/ModifyTemplate:4 html/Admin/Elements/ModifyUser:7 html/Admin/Groups/Modify.html:18 html/Admin/Queues/CustomField.html:11 html/Admin/Queues/Template.html:20 html/Elements/SelectUsers:4 html/User/Groups/Modify.html:18
+msgid "Name"
+msgstr "名前"
+
+#: lib/RT/User_Overlay.pm:156
+msgid "Name in use"
+msgstr "現在お使いの名前"
+
+#: html/Elements/Quicksearch:6
+msgid "New"
+msgstr "新しい"
+
+#: html/Admin/Elements/ModifyUser:9 html/Admin/Users/Modify.html:43
+msgid "New Password"
+msgstr "新しいパスワード"
+
+#: html/Ticket/Elements/EditLinks:8
+msgid "New Relationships"
+msgstr "新しい関係"
+
+#: html/SelfService/Prefs.html:8 html/User/Prefs.html:9
+msgid "New password"
+msgstr "新しいパスワード"
+
+#: lib/RT/User_Overlay.pm:607
+msgid "New password notification sent"
+msgstr "新しいパスワード情報が送られました"
+
+#: html/SelfService/Elements/Tabs:39
+msgid "New request"
+msgstr "新しいリクエスト"
+
+#: html/Admin/Elements/SelectRights:18
+msgid "New rights"
+msgstr "新しい権利"
+
+#: html/Search/Listing.html:91
+msgid "New search"
+msgstr "新しい検索"
+
+#: lib/RT/Ticket_Overlay.pm:2198
+msgid "New ticket doesn't exist"
+msgstr "新しいチケットはありません"
+
+#: html/Admin/Elements/CreateUserCalled:2
+msgid "New user called"
+msgstr "新しいユーザーが呼ばれました"
+
+#: html/Admin/Queues/People.html:29 html/Ticket/Elements/EditPeople:6
+msgid "New watchers"
+msgstr "新しいウォッチャー"
+
+#: html/Admin/Users/Prefs.html:16
+msgid "New window setting"
+msgstr "新しいウインドウ設定"
+
+#: html/Ticket/Elements/Tabs:116
+msgid "Next"
+msgstr "次へ"
+
+#: html/Search/Listing.html:74
+msgid "Next page"
+msgstr "次のページ"
+
+#: html/Admin/Elements/ModifyUser:27
+msgid "ニックネーム"
+msgstr ""
+
+#: html/Admin/Users/Modify.html:22
+msgid "Nickname"
+msgstr "ニックネーム"
+
+#: html/Admin/Queues/CustomField.html:49
+msgid "No CustomField"
+msgstr "カスタムフィールドがありません"
+
+#: html/Admin/Groups/GroupRights.html:59 html/Admin/Groups/UserRights.html:45
+msgid "No Group defined"
+msgstr "グループが定義されません"
+
+#: html/Admin/Queues/GroupRights.html:74 html/Admin/Queues/UserRights.html:44
+msgid "No Queue defined"
+msgstr "キューが定義されません"
+
+#: bin/rt:33 bin/rtadmin:30
+msgid "No RT user found. Please consult your RT administrator.\\n"
+msgstr "RTユーザーが見つかりません。RT管理者に相談してください。\\n"
+
+#: html/Admin/Global/Template.html:42 html/Admin/Queues/Template.html:67
+msgid "No Template"
+msgstr "テンプレートがありません"
+
+#: bin/rt-commit-handler:740
+msgid "No Ticket specified. Aborting ticket "
+msgstr "チケットが特定できません。チケットを終了します"
+
+#: bin/enhanced-mailgate:609
+msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgstr "チケットが特定できません。チケットの修正を終了します\\n\\n"
+
+#: bin/rtadmin:217
+msgid "No command found\\n"
+msgstr "コマンドが見つかりません\\n"
+
+#: html/Elements/ViewUser:13 html/Ticket/Elements/ShowRequestor:20
+msgid "No comment entered about this user"
+msgstr "このユーザーに関してのコメントは入力されていません"
+
+#: lib/RT/Ticket_Overlay.pm:1686 lib/RT/Ticket_Overlay.pm:1739
+msgid "No correspondence attached"
+msgstr "通信文書の添付はありません"
+
+#: lib/RT/Action/Generic.pm:121 lib/RT/Condition/Generic.pm:155
+#. (ref $self)
+msgid "No description for %1"
+msgstr "%1記述はありません"
+
+#: lib/RT/Users_Overlay.pm:97
+msgid "No group specified"
+msgstr "グループが特定できません"
+
+#: lib/RT/User_Overlay.pm:825
+msgid "No password set"
+msgstr "パスワードが設定されません"
+
+#: lib/RT/Queue_Overlay.pm:135
+msgid "No permission to create queues"
+msgstr "キューを作成する許可がされていません"
+
+#: lib/RT/User_Overlay.pm:126
+msgid "No permission to create users"
+msgstr "ユーザーを作成する許可がされていません"
+
+#: html/SelfService/Display.html:152
+msgid "No permission to display that ticket"
+msgstr "そのチケットを表示する許可がありません"
+
+#: html/SelfService/Update.html:30
+msgid "No permission to view update ticket"
+msgstr "アップデートチケットを見る許可がさありません"
+
+#: lib/RT/Queue_Overlay.pm:534 lib/RT/Ticket_Overlay.pm:957
+msgid "No principal specified"
+msgstr "責任者が特定できません"
+
+#: html/Admin/Queues/People.html:104
+msgid "No principals selected."
+msgstr "責任者が選択されていません"
+
+#: html/Admin/Queues/index.html:28
+msgid "No queues matching search criteria found."
+msgstr "検索基準にあったキューが見つかりません"
+
+#: html/Admin/Elements/SelectRights:9
+msgid "No rights granted."
+msgstr "権利が許可されていません"
+
+#: html/Search/Bulk.html:127
+msgid "No search to operate on."
+msgstr "操作のための検索ができません"
+
+#: bin/enhanced-mailgate:293 bin/rt-mailgate:259
+msgid "No ticket id specified"
+msgstr "チケットIDが特定できません"
+
+#: lib/RT/Transaction_Overlay.pm:496 lib/RT/Transaction_Overlay.pm:531
+msgid "No transaction type specified"
+msgstr "トランザクションタイプが特定できません"
+
+#: html/Admin/Users/index.html:30
+msgid "No users matching search criteria found."
+msgstr "検索基準にあったユーザーが見つかりません"
+
+#: bin/rt-commit-handler:620
+msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
+msgstr "有効なRTユーザーが見つかりません。RT　cvcハンドラが分離しています。RT管理者に相談してください。\\n"
+
+#: html/Elements/Header:39 html/SelfService/Elements/Header:34
+msgid "Not logged in."
+msgstr "ログインできません"
+
+#: lib/RT/Date.pm:332
+msgid "Not set"
+msgstr "セットできません"
+
+#: html/NoAuth/Reminder.html:3
+msgid "Not yet implemented."
+msgstr "まだ実行できません"
+
+#: html/Admin/Groups/Rights.html:1
+msgid "Not yet implemented...."
+msgstr "まだ実行できません。。。"
+
+#: lib/RT/User_Overlay.pm:610
+msgid "Notification could not be sent"
+msgstr "お知らせを送ることができませんでした"
+
+#: lib/RT/Date.pm:386
+msgid "Nov."
+msgstr "十一月"
+
+#: lib/RT/Date.pm:385
+msgid "Oct."
+msgstr "十月"
+
+#: html/Elements/SelectDateRelation:12
+msgid "On"
+msgstr "に"
+
+#: html/Elements/Quicksearch:7
+msgid "Open"
+msgstr "開く"
+
+#: html/Ticket/Elements/Tabs:83
+msgid "Open it"
+msgstr "それを開く"
+
+#: html/SelfService/Elements/Tabs:33
+msgid "Open requests"
+msgstr "リクエストを開く"
+
+#: html/Admin/Users/Prefs.html:15
+msgid "Open tickets (from listing) in a new window"
+msgstr "チケットを（リストから）新しいウインドウから開く"
+
+#: html/Admin/Users/Prefs.html:14
+msgid "Open tickets (from listing) in another window"
+msgstr "チケットを（リストから）ほかのウインドウから開く"
+
+#: html/Search/PickRestriction:78
+msgid "Ordering and sorting"
+msgstr "整列と並び替え"
+
+#: html/Admin/Elements/ModifyUser:23 html/Admin/Users/Modify.html:64 html/Elements/SelectUsers:5
+msgid "Organization"
+msgstr "組織"
+
+#: html/Admin/Elements/ModifyQueue:32 html/Admin/Queues/Modify.html:43
+msgid "Over time, priority moves toward"
+msgstr "時間切れです、優先順位がうつりました"
+
+#: bin/rt:1225 html/Elements/MyRequests:8 html/SelfService/Elements/MyRequests:6 html/Ticket/Create.html:26 html/Ticket/DetailedCreate.html:38 html/Ticket/Elements/EditPeople:14 html/Ticket/Elements/EditPeople:15 html/Ticket/Elements/ShowPeople:1 html/Ticket/Update.html:35 lib/RT/Tickets_Overlay.pm:548
+msgid "Owner"
+msgstr "オーナー"
+
+#: lib/RT/Transaction_Overlay.pm:597
+#. ($Old->Name , $New->Name)
+msgid "Owner forcibly changed from %1 to %2"
+msgstr "オーナーは強制的に%1から%2を変更しました"
+
+#: html/Search/PickRestriction:8
+msgid "Owner is"
+msgstr "オーナーは"
+
+#: html/Admin/Users/Modify.html:94
+msgid "Pager"
+msgstr "ポケットベル"
+
+#: html/Admin/Elements/ModifyUser:51
+msgid "PagerPhone"
+msgstr "ポケットベル電話"
+
+#: html/Ticket/Create.html:137 html/Ticket/DetailedCreate.html:64 html/Ticket/Elements/EditLinks:14 html/Ticket/Elements/EditLinks:47 html/Ticket/Elements/ShowLinks:19
+msgid "Parents"
+msgstr "両親"
+
+#: html/Elements/Login:19
+msgid "Password"
+msgstr "パスワード"
+
+#: html/NoAuth/Reminder.html:1
+msgid "Password Reminder"
+msgstr "パスワードのお知らせ"
+
+#: lib/RT/User_Overlay.pm:138 lib/RT/User_Overlay.pm:828
+msgid "Password too short"
+msgstr "パスワードが短すぎます"
+
+#: html/Admin/Users/Modify.html:204
+#. ($msg)
+msgid "Password: %1"
+msgstr "パスワード: %1"
+
+#: html/Ticket/DetailedCreate.html:37 html/Ticket/Elements/ShowSummary:35 html/Ticket/Elements/Tabs:22 html/Ticket/ModifyAll.html:23
+msgid "People"
+msgstr "人々"
+
+#: lib/RT/ACE_Overlay.pm:220 lib/RT/ACE_Overlay.pm:232 lib/RT/ACE_Overlay.pm:243 lib/RT/ACE_Overlay.pm:565 lib/RT/ACE_Overlay.pm:572 lib/RT/ACE_Overlay.pm:645 lib/RT/CurrentUser.pm:60 lib/RT/CurrentUser.pm:68 lib/RT/CustomField_Overlay.pm:393 lib/RT/CustomField_Overlay.pm:399 lib/RT/Group_Overlay.pm:346 lib/RT/Group_Overlay.pm:427 lib/RT/Group_Overlay.pm:504 lib/RT/Group_Overlay.pm:512 lib/RT/Group_Overlay.pm:730 lib/RT/Group_Overlay.pm:734 lib/RT/Group_Overlay.pm:747 lib/RT/Group_Overlay.pm:914 lib/RT/Group_Overlay.pm:918 lib/RT/Group_Overlay.pm:927 lib/RT/Group_Overlay.pm:979 lib/RT/Group_Overlay.pm:983 lib/RT/Group_Overlay.pm:989 lib/RT/Queue_Overlay.pm:399 lib/RT/Queue_Overlay.pm:409 lib/RT/Queue_Overlay.pm:423 lib/RT/Queue_Overlay.pm:558 lib/RT/Queue_Overlay.pm:567 lib/RT/Queue_Overlay.pm:580 lib/RT/Queue_Overlay.pm:790 lib/RT/Scrip_Overlay.pm:130 lib/RT/Scrip_Overlay.pm:285 lib/RT/Scrip_Overlay.pm:72 lib/RT/Scrip_Overlay.pm:82 lib/RT/Template_Overlay.pm:246 lib/RT/Template_Overlay.pm:65 lib/RT/Template_Overlay.pm:71 lib/RT/Ticket_Overlay.pm:1003 lib/RT/Ticket_Overlay.pm:1341 lib/RT/Ticket_Overlay.pm:1502 lib/RT/Ticket_Overlay.pm:1682 lib/RT/Ticket_Overlay.pm:1735 lib/RT/Ticket_Overlay.pm:2018 lib/RT/Ticket_Overlay.pm:2093 lib/RT/Ticket_Overlay.pm:2189 lib/RT/Ticket_Overlay.pm:2204 lib/RT/Ticket_Overlay.pm:2335 lib/RT/Ticket_Overlay.pm:2511 lib/RT/Ticket_Overlay.pm:2664 lib/RT/Ticket_Overlay.pm:2813 lib/RT/Ticket_Overlay.pm:2865 lib/RT/Ticket_Overlay.pm:3028 lib/RT/Ticket_Overlay.pm:812 lib/RT/Ticket_Overlay.pm:822 lib/RT/Ticket_Overlay.pm:836 lib/RT/Ticket_Overlay.pm:981 lib/RT/Ticket_Overlay.pm:990 lib/RT/Transaction_Overlay.pm:484 lib/RT/Transaction_Overlay.pm:491 lib/RT/Transaction_Overlay.pm:519 lib/RT/Transaction_Overlay.pm:526 lib/RT/User_Overlay.pm:1477 lib/RT/User_Overlay.pm:530 lib/RT/User_Overlay.pm:565 lib/RT/User_Overlay.pm:821
+msgid "Permission Denied"
+msgstr "許可が下りませんでした"
+
+#: html/User/Groups/index.html:16 html/User/Groups/index.html:4
+msgid "Personal groups"
+msgstr "個人グループ"
+
+#: html/User/Elements/DelegateRights:12
+msgid "Personal groups:"
+msgstr "個人グループ："
+
+#: html/Admin/Users/Modify.html:87
+msgid "Phone numbers"
+msgstr "電話番号"
+
+#: html/Admin/Users/Rights.html:1
+msgid "Placeholder"
+msgstr "代替物"
+
+#: html/Elements/Header:34 html/SelfService/Prefs.html:1 html/User/Prefs.html:1
+msgid "Preferences"
+msgstr "お気に入り"
+
+#: html/User/Elements/Tabs:6
+msgid "Pref"
+msgstr "お気に入り"
+
+#: lib/RT/Action/Generic.pm:131
+msgid "Prepare Stubbed"
+msgstr "Prepare Stubbed"
+
+#: html/Ticket/Elements/Tabs:106
+msgid "Prev"
+msgstr "前の"
+
+#: html/Search/Listing.html:72
+msgid "Previous page"
+msgstr "前のページ"
+
+#: bin/rt:1198
+msgid "Pri"
+msgstr "優先権"
+
+#: html/Search/PickRestriction:31 html/SelfService/Display.html:54 html/Ticket/Create.html:105 html/Ticket/DetailedCreate.html:22 html/Ticket/Elements/EditBasics:31 html/Ticket/Elements/ShowBasics:12 lib/RT/Tickets_Overlay.pm:347
+msgid "Priority"
+msgstr "優先権"
+
+#: html/Admin/Elements/ModifyQueue:28 html/Admin/Queues/Modify.html:39
+msgid "Priority starts at"
+msgstr "優先順位は次のように始まります"
+
+#: html/Admin/Users/Modify.html:184
+#. ($msg)
+msgid "Privileged status: %1"
+msgstr "特権ステータス: %1"
+
+#: html/Admin/Users/index.html:52
+msgid "Privileged users"
+msgstr "特権のあるユーザー"
+
+#: bin/rt:1188 html/Elements/MyRequests:6 html/Elements/MyTickets:6 html/Elements/Quicksearch:5 html/Search/PickRestriction:23 html/SelfService/Create.html:14 html/SelfService/Display.html:46 html/Ticket/Create.html:16 html/Ticket/DetailedCreate.html:13 html/Ticket/Elements/EditBasics:46 html/Ticket/Elements/ShowBasics:15 lib/RT/Tickets_Overlay.pm:213
+msgid "Queue"
+msgstr "キュー"
+
+#: bin/rtadmin:390
+#. ($queue)
+msgid "Queue '%1' not found\\n"
+msgstr "キュー'%1'は見つかりませんでした\\n"
+
+#: html/Admin/Elements/ModifyQueue:8 html/Admin/Queues/Modify.html:19
+msgid "Queue Name"
+msgstr "キューの名前"
+
+#: html/Admin/Queues/Scrips.html:13
+msgid "Queue Scrips"
+msgstr "キュースクリプト"
+
+#: lib/RT/Queue_Overlay.pm:139
+msgid "Queue already exists"
+msgstr "キューはすでに存在しています"
+
+#: lib/RT/Queue_Overlay.pm:148 lib/RT/Queue_Overlay.pm:154
+msgid "Queue could not be created"
+msgstr "キューの作成ができませんでした"
+
+#: html/Ticket/Create.html:160 html/Ticket/DetailedCreate.html:91
+msgid "Queue could not be loaded."
+msgstr "キューのロードができませんでした"
+
+#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:158
+msgid "Queue created"
+msgstr "キューが作成されました"
+
+#: html/SelfService/Display.html:107
+msgid "Queue not found"
+msgstr "キューが見つかりません"
+
+#: html/Admin/Elements/Tabs:12
+msgid "Queues"
+msgstr "キュー"
+
+#: docs/design_docs/string-extraction-guide.txt:70 html/Elements/Login:10
+#. ($RT::VERSION, $RT::rtname)
+msgid "RT %1 for %2"
+msgstr "%2のRT %1"
+
+#: html/Elements/Footer:2
+#. ($RT::VERSION)
+msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
+msgstr "<a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>からのRT%1。"
+
+#: bin/rt:307
+#. ($RT::VERSION)
+msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+
+#: html/Admin/index.html:1
+msgid "RT Administration"
+msgstr "RT管理"
+
+#: bin/enhanced-mailgate:465
+msgid "RT Authentication error."
+msgstr "RT認証エラー"
+
+#: bin/enhanced-mailgate:144 bin/enhanced-mailgate:178 bin/rt-mailgate:128 bin/rt-mailgate:168 bin/rt-mailgate:208
+#. ($Subject)
+msgid "RT Bounce: %1"
+msgstr "RTバウンス：%1"
+
+#: bin/enhanced-mailgate:357 bin/rt-mailgate:322
+msgid "RT Configuration error"
+msgstr "RT設定エラー"
+
+#: bin/enhanced-mailgate:497 bin/rt-mailgate:348
+msgid "RT Critical error. Message not recorded!"
+msgstr "RT重大なエラー。メッセージが記録されません"
+
+#: html/Elements/Error:17 html/SelfService/Error.html:16
+msgid "RT Error"
+msgstr "RTエラー"
+
+#: bin/enhanced-mailgate:173
+#. ($MessageId)
+msgid "RT Received mail (%1) from itself."
+msgstr "RT受信メール(%1)自身からのメール "
+
+#: html/SelfService/Closed.html:1
+msgid "RT Self Service / Closed Tickets"
+msgstr "RTセルフサービス/クローズされたチケット"
+
+#: bin/enhanced-mailgate:226
+msgid "RT couldn't authenticate you"
+msgstr "RTでは、ただいまお使いの方の認証ができませんでした"
+
+#: bin/rt-mailgate:209
+msgid "RT couldn't find requestor via its external database lookup"
+msgstr "RTは外部のデータベースルックアップを使ってリクエストする人を見つけることができませんでした"
+
+#: bin/enhanced-mailgate:145 bin/rt-mailgate:129
+#. ($Queue)
+msgid "RT couldn't find the queue: %1"
+msgstr "RTはキュー: %1を見つけることができませんでした"
+
+#: bin/enhanced-mailgate:466
+msgid "RT couldn't validate this PGP signature. \\n"
+msgstr "RTはこのPGPサインを有効にすることができませんでした。\\n"
+
+#: bin/enhanced-mailgate:219
+msgid "RT has proccessed your commands"
+msgstr "RTはあなたののコマンドを処理しました"
+
+#: html/Elements/Login:56
+msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RTは&コピー; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;。これは<a href=\"http://www.gnu.org/copyleft/gpl.html\">GNUジェネラルパブリックライセンスのバージョン2で配信されています。</a>"
+
+#: bin/enhanced-mailgate:179 bin/rt-mailgate:169
+msgid "RT thinks this message may be a bounce"
+msgstr "RTによるとこのメッセージはバウンスする可能性があります"
+
+#: bin/enhanced-mailgate:467
+msgid "RT will process this message as if it were unsigned.\\n"
+msgstr "RTはこのメッセージがまるでサインされていないように処理します。\\n"
+
+#: bin/enhanced-mailgate:229
+msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
+msgstr "RTのEメールコマンドモードではPGP認証が必要になります。貴方のメッセージにサインしなかった、もしくははサインが有効でありません"
+
+#: html/Admin/Users/Modify.html:21 html/Admin/Users/Prefs.html:26
+msgid "Real Name"
+msgstr "本名"
+
+#: html/Admin/Elements/ModifyUser:25
+msgid "RealName"
+msgstr "本名"
+
+#: html/Ticket/Create.html:140 html/Ticket/DetailedCreate.html:67 html/Ticket/Elements/EditLinks:17 html/Ticket/Elements/EditLinks:86 html/Ticket/Elements/ShowLinks:46
+msgid "Referred to by"
+msgstr "次のものによって参照した"
+
+#: html/Elements/SelectLinkType:6 html/Ticket/Create.html:139 html/Ticket/DetailedCreate.html:66 html/Ticket/Elements/EditLinks:16 html/Ticket/Elements/EditLinks:71 html/Ticket/Elements/ShowLinks:32
+msgid "Refers to"
+msgstr "参照する"
+
+#: html/Search/Listing.html:7 html/Search/PickRestriction:103
+msgid "Refine"
+msgstr "絞り込む"
+
+#: html/Search/PickRestriction:4
+msgid "Refine Search"
+msgstr "絞込み検索"
+
+#: html/Elements/Refresh:12
+#. ($value/60)
+msgid "Refresh this page every %1 minutes."
+msgstr "このページを%1分おきに更新してください"
+
+#: html/Ticket/Create.html:129 html/Ticket/DetailedCreate.html:59 html/Ticket/Elements/ShowSummary:18 html/Ticket/ModifyAll.html:29
+msgid "Relationships"
+msgstr "関係"
+
+#: html/Search/Bulk.html:71
+msgid "Remove AdminCc"
+msgstr "管理Ccを削除する"
+
+#: html/Search/Bulk.html:69
+msgid "Remove Cc"
+msgstr "Ccを削除する"
+
+#: html/Search/Bulk.html:67
+msgid "Remove Requestor"
+msgstr "リクエストする人を削除する"
+
+#: html/Ticket/Elements/Tabs:48
+msgid "Reply"
+msgstr "返信"
+
+#: bin/rt:1230 html/Ticket/Update.html:12
+msgid "Requestor"
+msgstr "リクエストする人"
+
+#: html/Search/PickRestriction:15
+msgid "Requestor email address"
+msgstr "リクエストする人のEメールアドレス"
+
+#: html/SelfService/Create.html:22 html/SelfService/Display.html:20 html/Ticket/Create.html:34 html/Ticket/DetailedCreate.html:40 html/Ticket/Elements/EditPeople:19 html/Ticket/Elements/ShowPeople:3
+msgid "Requestors"
+msgstr "リクエストする人"
+
+#: html/Admin/Elements/ModifyQueue:38 html/Admin/Queues/Modify.html:49
+msgid "Requests should be due in"
+msgstr "リクエストは次の日までに行われなければなりません"
+
+#: html/Elements/Submit:43
+msgid "Reset"
+msgstr "リセット"
+
+#: html/Admin/Users/Modify.html:88
+msgid "Residence"
+msgstr "住所"
+
+#: html/Ticket/Elements/Tabs:76 html/Ticket/Update.html:81
+msgid "Resolve"
+msgstr "分解する"
+
+#: html/Elements/SelectDateType:4
+msgid "Resolved"
+msgstr "分解した"
+
+#: html/Search/Bulk.html:101 html/Ticket/ModifyAll.html:42 html/Ticket/Update.html:44
+msgid "Response to requestors"
+msgstr "リクエストする人に返答する"
+
+#: html/Elements/ListActions:2
+msgid "Results"
+msgstr "結果"
+
+#: html/Search/PickRestriction:82
+msgid "Results per page"
+msgstr "ページごとの結果"
+
+#: html/Admin/Elements/ModifyUser:10 html/Admin/Users/Modify.html:50
+msgid "Retype Password"
+msgstr "パスワードの再入力"
+
+#: bin/rtadmin:895
+#. ($right, $principal->{'type'}, $principal->{'id'}, $scope, $appliesto)
+msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
+msgstr "%2　%3の権利%1が領域%4　%5\\nで見つかりませんでした"
+
+#: lib/RT/ACE_Overlay.pm:613
+msgid "Right Delegated"
+msgstr "権利が委託されました"
+
+#: lib/RT/ACE_Overlay.pm:305
+msgid "Right Granted"
+msgstr "権利が許可されました"
+
+#: lib/RT/ACE_Overlay.pm:162
+msgid "Right Loaded"
+msgstr "権利がロードされました"
+
+#: lib/RT/ACE_Overlay.pm:675 lib/RT/ACE_Overlay.pm:690
+msgid "Right could not be revoked"
+msgstr "権利を無効にできませんでした"
+
+#: html/User/Delegation.html:38
+msgid "Right not found"
+msgstr "権利が見つかりませんでした"
+
+#: lib/RT/ACE_Overlay.pm:547 lib/RT/ACE_Overlay.pm:638
+msgid "Right not loaded."
+msgstr "権利がロードできませんでした"
+
+#: lib/RT/ACE_Overlay.pm:686
+msgid "Right revoked"
+msgstr "権利が無効になりました"
+
+#: html/Admin/Elements/UserTabs:10 html/User/Elements/Tabs:12
+msgid "Rights"
+msgstr "権利"
+
+#: html/Admin/Global/GroupRights.html:25 html/Admin/Queues/GroupRights.html:27
+msgid "Roles"
+msgstr "役割"
+
+#: lib/RT/Date.pm:358
+msgid "Sat."
+msgstr "土曜日"
+
+#: html/Admin/Queues/People.html:56 html/Ticket/Modify.html:15 html/Ticket/ModifyAll.html:53 html/Ticket/ModifyPeople.html:11
+msgid "Save Changes"
+msgstr "変更を保存する"
+
+#: html/Ticket/ModifyLinks.html:15
+msgid "Save changes"
+msgstr "変更を保存する"
+
+#: lib/RT/Scrip_Overlay.pm:113
+msgid "Scrip Created"
+msgstr "スクリプトが作成されました"
+
+#: html/Admin/Elements/QueueTabs:12 html/Admin/Elements/SystemTabs:6
+msgid "Scrips"
+msgstr "スクリプト"
+
+#: bin/rtadmin:746
+#. ($queue)
+msgid "Scrips for %1\\n"
+msgstr "%1\\nのスクリプト"
+
+#: html/Elements/Tabs:95 html/Search/Listing.html:3
+msgid "Search"
+msgstr "検索"
+
+#: html/Search/Listing.html:89
+msgid "Search Criteria"
+msgstr "検索基準"
+
+#: html/Admin/Groups/index.html:5
+msgid "Select a group"
+msgstr "グループの選択"
+
+#: html/Admin/Queues/index.html:5
+msgid "Select a queue"
+msgstr "キューの選択"
+
+#: html/Admin/Users/index.html:5
+msgid "Select a user"
+msgstr "ユーザーの選択"
+
+#: html/SelfService/index.html:1
+msgid "Self Service"
+msgstr "セルフサービス"
+
+#: lib/RT/Date.pm:384
+msgid "Sep."
+msgstr "九月"
+
+#: html/Search/PickRestriction:103
+msgid "Show Results"
+msgstr "結果を見る"
+
+#: html/Ticket/Create.html:11 html/Ticket/Create.html:95
+msgid "Show basics"
+msgstr "基本を見る"
+
+#: html/Ticket/Create.html:11 html/Ticket/Create.html:95
+msgid "Show details"
+msgstr "詳細を見る"
+
+#: html/Admin/Elements/ModifyUser:16 html/Admin/Users/Modify.html:104 html/Admin/Users/Prefs.html:6 html/SelfService/Prefs.html:13 html/User/Prefs.html:14
+msgid "Signature"
+msgstr "サイン"
+
+#: html/SelfService/Elements/Header:28
+#. ($session{'CurrentUser'}->Name)
+msgid "Signed in as %1"
+msgstr "%1としてサインする"
+
+#: html/Elements/Header:32
+#. ($session{'CurrentUser'}->Name)
+msgid "Signed in as <b>%1</b>"
+msgstr "<b>%1</b>としてサインする"
+
+#: html/Admin/Elements/SelectSingleOrMultiple:2
+msgid "Single"
+msgstr "ひとつの"
+
+#: html/Admin/Elements/EditCustomFieldValues:7
+msgid "Sort key"
+msgstr "並べ替えのキー"
+
+#: html/Search/PickRestriction:86
+msgid "Sort results by"
+msgstr "次の項目ごとの並び替え"
+
+#: html/Admin/Elements/AddCustomFieldValue:1
+msgid "SortOrder"
+msgstr "並び順"
+
+#: html/Elements/Quicksearch:8
+msgid "Stalled"
+msgstr "停止しています"
+
+#: html/index.html:1
+msgid "Start page"
+msgstr "開始ページ"
+
+#: html/Elements/SelectDateType:3 html/Ticket/Elements/EditDates:13 html/Ticket/Elements/ShowDates:20
+msgid "Started"
+msgstr "開始した"
+
+#: bin/rt:780
+#. ($started)
+msgid "Started date '%1' could not be parsed"
+msgstr "開始日'%1'は見つかりませんでした"
+
+#: html/Ticket/Create.html:124 html/Ticket/DetailedCreate.html:55 html/Ticket/Elements/EditDates:4 html/Ticket/Elements/ShowDates:12
+msgid "Starts"
+msgstr "開始する"
+
+#: html/Elements/SelectDateType:7
+msgid "Starts By"
+msgstr "次の日時までに開始する"
+
+#: bin/rt:768
+#. ($starts)
+msgid "Starts date '%1' could not be parsed"
+msgstr "開始日'%1'を解析できませんでした"
+
+#: html/Admin/Elements/ModifyUser:59 html/Admin/Users/Modify.html:72
+msgid "State"
+msgstr "状態"
+
+#: bin/rt:1220 html/Elements/MyRequests:7 html/Elements/MyTickets:7 html/Search/PickRestriction:51 html/SelfService/Display.html:37 html/SelfService/Elements/MyRequests:5 html/SelfService/Update.html:6 html/Ticket/Create.html:20 html/Ticket/DetailedCreate.html:19 html/Ticket/Elements/EditBasics:11 html/Ticket/Elements/ShowBasics:6 html/Ticket/Update.html:32 lib/RT/Tickets_Overlay.pm:238
+msgid "Status"
+msgstr "ステータス"
+
+#: lib/RT/Transaction_Overlay.pm:543
+#. ($self->OldValue , $self->NewValue)
+msgid "Status changed from %1 to %2"
+msgstr "ステータスが%1から%2に変更されました"
+
+#: html/Ticket/Elements/Tabs:65
+msgid "Steal"
+msgstr "盗用する"
+
+#: lib/RT/Transaction_Overlay.pm:602
+#. ($Old->Name)
+msgid "Stolen from %1 "
+msgstr "%1から盗用した"
+
+#: bin/rt:1193 html/Elements/MyRequests:5 html/Elements/MyTickets:5 html/Search/Bulk.html:104 html/Search/PickRestriction:20 html/SelfService/Create.html:38 html/SelfService/Elements/MyRequests:4 html/SelfService/Update.html:10 html/Ticket/Create.html:58 html/Ticket/DetailedCreate.html:16 html/Ticket/Elements/EditBasics:4 html/Ticket/ModifyAll.html:47 html/Ticket/Update.html:48 lib/RT/Tickets_Overlay.pm:292
+msgid "Subject"
+msgstr "サブジェクト"
+
+#: html/Elements/Submit:40
+msgid "Submit"
+msgstr "提出"
+
+#: lib/RT/Date.pm:359
+msgid "Sun."
+msgstr "日曜日"
+
+#: lib/RT/ACE_Overlay.pm:569
+msgid "System Error"
+msgstr "システムエラー"
+
+#: lib/RT/ACE_Overlay.pm:616
+msgid "System error. Right not delegated."
+msgstr "システムエラー。権利が委任されていません"
+
+#: lib/RT/ACE_Overlay.pm:1070 lib/RT/ACE_Overlay.pm:212 lib/RT/ACE_Overlay.pm:308
+msgid "System error. Right not granted."
+msgstr "システムエラー。権利が認可されていません"
+
+#: html/Admin/Global/GroupRights.html:9 html/Admin/Groups/GroupRights.html:10 html/Admin/Queues/GroupRights.html:10
+msgid "System groups"
+msgstr "システムグループ"
+
+#: lib/RT/CurrentUser.pm:331 lib/RT/CurrentUser.pm:333
+msgid "TEST_STRING"
+msgstr "テスト＿ストリング"
+
+#: html/Ticket/Elements/Tabs:58
+msgid "Take"
+msgstr "とる"
+
+#: lib/RT/Transaction_Overlay.pm:588
+msgid "Taken"
+msgstr "とられた"
+
+#: html/Admin/Global/Scrip.html:36 html/Admin/Queues/Scrips.html:39
+msgid "Template"
+msgstr "テンプレート"
+
+#: lib/RT/Scrip_Overlay.pm:97
+msgid "Template not found"
+msgstr "テンプレートが見つかりません"
+
+#: bin/rtadmin:690
+msgid "Template not found\\n"
+msgstr "テンプレートが見つかりません\\n"
+
+#: lib/RT/Template_Overlay.pm:296
+msgid "Template parsed"
+msgstr "テンプレートが解析されました"
+
+#: html/Admin/Elements/QueueTabs:15 html/Admin/Elements/SystemTabs:9 html/Admin/Global/Templates.html:8
+msgid "Templates"
+msgstr "テンプレート"
+
+#: bin/rtadmin:637
+#. ($queue)
+msgid "Templates for %1\\n"
+msgstr "%1\\nのテンプレート"
+
+#: lib/RT/CustomField_Overlay.pm:153
+msgid "That is not a value for this custom field"
+msgstr "それはこのカスタムフィールドのバリューではありません"
+
+#: lib/RT/Ticket_Overlay.pm:1352
+msgid "That is the same value"
+msgstr "それは同じバリューです"
+
+#: lib/RT/Queue_Overlay.pm:492
+#. ($args{'Type'})
+msgid "That principal is already a %1 for this queue"
+msgstr "その責任者はすでにこのキューの%1です"
+
+#: lib/RT/Ticket_Overlay.pm:905
+#. ($args{'Type'})
+msgid "That principal is already a %1 for this ticket"
+msgstr "その責任者はすでにこのチケットの%1です"
+
+#: lib/RT/Queue_Overlay.pm:591
+#. ($args{'Type'})
+msgid "That principal is not a %1 for this queue"
+msgstr "その責任者はこのキューの%1ではありません"
+
+#: lib/RT/Ticket_Overlay.pm:1014
+#. ($args{'Type'})
+msgid "That principal is not a %1 for this ticket"
+msgstr "その責任者はこのチケットの%1ではありません"
+
+#: lib/RT/Ticket_Overlay.pm:1348
+msgid "That queue does not exist"
+msgstr "そのキューはありません"
+
+#: lib/RT/Ticket_Overlay.pm:2515
+msgid "That ticket has unresolved dependencies"
+msgstr "そのチケットは従属物をすでに分解しました"
+
+#: lib/RT/ACE_Overlay.pm:287 lib/RT/ACE_Overlay.pm:597
+msgid "That user already has that right"
+msgstr "そのユーザーはすでに権利があります"
+
+#: lib/RT/Ticket_Overlay.pm:2377
+msgid "That user already owns that ticket"
+msgstr "そのユーザーはすでにチケットを所有しています"
+
+#: lib/RT/Ticket_Overlay.pm:2342
+msgid "That user does not exist"
+msgstr "そのユーザーは存在しません"
+
+#: lib/RT/User_Overlay.pm:283
+msgid "That user is already privileged"
+msgstr "そのユーザーはすでに特権が与えられています"
+
+#: lib/RT/User_Overlay.pm:300
+msgid "That user is already unprivileged"
+msgstr "そのユーザーにはすでに特権がありません"
+
+#: lib/RT/User_Overlay.pm:295
+msgid "That user is now privileged"
+msgstr "そのユーザーは今特権を与えられました"
+
+#: lib/RT/User_Overlay.pm:312
+msgid "That user is now unprivileged"
+msgstr "そのユーザーは今特権を失いました"
+
+#: lib/RT/Ticket_Overlay.pm:2369
+msgid "That user may not own tickets in that queue"
+msgstr "そのユーザーはこのキューではチケットを所有していない可能性があります"
+
+#: lib/RT/Link_Overlay.pm:115
+msgid "That's not a numerical id"
+msgstr "それは数字のIDではありません"
+
+#: html/Ticket/Create.html:101 html/Ticket/DetailedCreate.html:12 html/Ticket/Elements/ShowSummary:4
+msgid "The Basics"
+msgstr "基本"
+
+#: lib/RT/Ticket_Overlay.pm:1705
+msgid "The comment has been recorded"
+msgstr "コメントは記録されました"
+
+#: bin/enhanced-mailgate:600 bin/enhanced-mailgate:610 bin/rt-commit-handler:732 bin/rt-commit-handler:742
+msgid "The following commands were not proccessed:\\n\\n"
+msgstr "次のコマンドは処理されませんでした:\\n\\n"
+
+#: html/Admin/Elements/EditUserComments:2
+msgid "These comments aren't generally visible to the user"
+msgstr "それらのコメントは実際ユーザーには見ることができません"
+
+#: bin/rt:1122
+#. ($l->Type, $l->TargetObj->Id, $l->TargetObj->Subject)
+msgid "This ticket %1 %2 (%3)\\n"
+msgstr "このチケット%1 %2 (%3)\\n"
+
+#: lib/RT/Transaction_Overlay.pm:319
+msgid "This transaction appears to have no content"
+msgstr "このトランザクションにはコンテンツがありません"
+
+#: html/Ticket/Elements/ShowRequestor:22
+msgid "This user's 25 highest priority tickets"
+msgstr "このユーザーの25のもっとも高い優先チケット"
+
+#: lib/RT/Date.pm:356
+msgid "Thu."
+msgstr "木曜日"
+
+#: html/Ticket/Display.html:4
+#. ($Ticket->Id, $Ticket->Subject)
+msgid "Ticket # %1  %2"
+msgstr "チケット# %1  %2"
+
+#: html/Ticket/ModifyAll.html:1
+#. ($Ticket->Id, $Ticket->Subject)
+msgid "Ticket #%1 Jumbo update: %2"
+msgstr "チケット　#%1　大きいアップデート: %2"
+
+#: lib/RT/Ticket_Overlay.pm:471
+#. ($self->Id, $QueueObj->Name)
+msgid "Ticket %1 created in queue '%2'"
+msgstr "チケット %1がキュー '%2'で作成されました"
+
+#: bin/enhanced-mailgate:604 bin/rt-commit-handler:736
+#. ($Ticket->Id)
+msgid "Ticket %1 loaded\\n"
+msgstr "チケット%1がロードされました\\n"
+
+#: html/Search/Bulk.html:159
+#. ($Ticket->Id,$_)
+msgid "Ticket %1: %2"
+msgstr "チケット　%1: %2"
+
+#: html/Ticket/History.html:4
+#. ($Ticket->Id, $Ticket->Subject)
+msgid "Ticket History # %1 %2"
+msgstr "チケットヒストリー　# %1 %2"
+
+#: html/SelfService/Display.html:12
+msgid "Ticket Id"
+msgstr "チケットID"
+
+#: html/Search/PickRestriction:40
+msgid "Ticket attachment"
+msgstr "チケット添付"
+
+#: html/Ticket/DetailedCreate.html:70 lib/RT/Tickets_Overlay.pm:471
+msgid "Ticket content"
+msgstr "チケットコンテンツ"
+
+#: lib/RT/Tickets_Overlay.pm:517
+msgid "Ticket content type"
+msgstr "チケットコンテンツタイプ"
+
+#: lib/RT/Transaction_Overlay.pm:535
+msgid "Ticket created"
+msgstr "チケットが作成されました"
+
+#: bin/enhanced-mailgate:281 bin/rt-mailgate:246
+msgid "Ticket creation failed"
+msgstr "チケットの作成が失敗しました"
+
+#: lib/RT/Transaction_Overlay.pm:540
+msgid "Ticket deleted"
+msgstr "チケットが削除されました"
+
+#: html/Ticket/Update.html:11
+msgid "Ticket watchers"
+msgstr "チケットウォッチャー"
+
+#: html/Elements/ViewUser:3
+#. ($name)
+msgid "Tickets from %1"
+msgstr "%1からのチケット"
+
+#: html/Ticket/Create.html:108 html/Ticket/DetailedCreate.html:25 html/Ticket/Elements/EditBasics:25
+msgid "Time Left"
+msgstr "時間が残っています"
+
+#: html/Ticket/Create.html:107 html/Ticket/DetailedCreate.html:24 html/Ticket/Elements/EditBasics:18
+msgid "Time Worked"
+msgstr "使った時間"
+
+#: lib/RT/Tickets_Overlay.pm:444
+msgid "Time left"
+msgstr "残っている時間"
+
+#: html/Elements/Footer:6
+msgid "Time to display"
+msgstr "表示する時間"
+
+#: lib/RT/Tickets_Overlay.pm:420
+msgid "Time worked"
+msgstr "使った時間"
+
+#: bin/rt-commit-handler:378
+msgid "To generate a diff of this commit:"
+msgstr "このコミットのディフをつくるために:"
+
+#: bin/rt-commit-handler:367
+msgid "To generate a diff of this commit:\\n"
+msgstr "このコミットのディフをつくるために:\\n"
+
+#: bin/rt:1250
+msgid "Told"
+msgstr "言った"
+
+#: lib/RT/Transaction_Overlay.pm:649
+#. ($self->Data)
+msgid "Transaction %1 purged"
+msgstr "トランザクション%1が消去されました"
+
+#: lib/RT/Transaction_Overlay.pm:206
+msgid "Transaction Created"
+msgstr "トランザクションが作成されました"
+
+#: lib/RT/Transaction_Overlay.pm:708
+msgid "Transactions are immutable"
+msgstr "トランザクションは変更されることはありません"
+
+#: bin/rtadmin:887
+#. ($right \n)
+msgid "Trying to delete a right: %1"
+msgstr "権利: %1を削除しています"
+
+#: lib/RT/Date.pm:354
+msgid "Tue."
+msgstr "火曜日"
+
+#: html/Admin/Queues/CustomField.html:13 html/Ticket/Elements/AddWatchers:19 html/Ticket/Elements/AddWatchers:9 lib/RT/Tickets_Overlay.pm:264
+msgid "Type"
+msgstr "タイプ"
+
+#: lib/RT/ScripCondition_Overlay.pm:83
+msgid "Unimplemented"
+msgstr "導入されていない"
+
+#: html/Admin/Users/Modify.html:24
+msgid "Unix login"
+msgstr "Unixログイン"
+
+#: html/Admin/Elements/ModifyUser:39
+msgid "UnixUsername"
+msgstr "Unixユーザーネーム"
+
+#: lib/RT/Attachment_Overlay.pm:223
+#. ($self->ContentEncoding)
+msgid "Unknown ContentEncoding %1"
+msgstr "不明なコンテンツエンコーディング%1"
+
+#: html/Elements/SelectResultsPerPage:15
+msgid "Unlimited"
+msgstr "制限されていない"
+
+#: lib/RT/Transaction_Overlay.pm:584
+msgid "Untaken"
+msgstr "とられていない"
+
+#: html/Elements/MyTickets:26 html/Search/Bulk.html:11 html/Ticket/Update.html:83
+msgid "Update"
+msgstr "アップデート"
+
+#: html/Admin/Users/Prefs.html:36
+msgid "Update ID"
+msgstr "アップデートID"
+
+#: html/Search/Bulk.html:98 html/Ticket/ModifyAll.html:37 html/Ticket/Update.html:38
+msgid "Update Type"
+msgstr "アップデートタイプ"
+
+#: html/Search/Listing.html:80
+msgid "Update all these tickets at once"
+msgstr "すべてのチケットを一度にアップデートする"
+
+#: html/Admin/Users/Prefs.html:23
+msgid "Update email"
+msgstr "アップデートEメール"
+
+#: html/Admin/Users/Prefs.html:29
+msgid "Update name"
+msgstr "アップデートネーム"
+
+#: lib/RT/Interface/Web.pm:351
+msgid "Update not recorded."
+msgstr "アップデートは記録されませんでした"
+
+#: html/Search/Bulk.html:59
+msgid "Update selected tickets"
+msgstr "選択されたチケットをアップデートする"
+
+#: html/Admin/Users/Prefs.html:10
+msgid "Update signature"
+msgstr "サインをアップデートする"
+
+#: html/Ticket/ModifyAll.html:35
+msgid "Update ticket"
+msgstr "チケットをアップデートする"
+
+#: html/SelfService/Update.html:1
+#. ($Ticket->id)
+msgid "Update ticket # %1"
+msgstr "アップデートチケット # %1"
+
+#: html/SelfService/Update.html:25
+#. ($Ticket->id)
+msgid "Update ticket #%1"
+msgstr "アップデートチケット #%1"
+
+#: lib/RT/Interface/Web.pm:349
+msgid "Update type was neither correspondence nor comment."
+msgstr "アップデートタイプは通知でもコメントでもありません"
+
+#: bin/rt:1240 html/Elements/SelectDateType:9 html/Ticket/Elements/ShowDates:44
+msgid "Updated"
+msgstr "アップデートしました"
+
+#: bin/rtadmin:315
+#. ($user_obj->Name, $attrib, $msg)
+msgid "User %1 %2: %3\\n"
+msgstr "ユーザー%1 %2: %3\\n"
+
+#: bin/rtadmin:323
+#. ($user_obj->Name, $msg)
+msgid "User %1 Password: %2\\n"
+msgstr "ユーザー%1パスワード: %2\\n"
+
+#: bin/rt:452
+#. ($val)
+msgid "User '%1' not found"
+msgstr "ユーザー'%1'が見つかりません"
+
+#: bin/rt:453 bin/rtadmin:289
+#. ($user)
+#. ($val)
+msgid "User '%1' not found\\n"
+msgstr "ユーザー'%1'が見つかりません\\n"
+
+#: html/Admin/Users/Prefs.html:33
+msgid "User ID"
+msgstr "ユーザーID"
+
+#: html/Elements/SelectUsers:2
+msgid "User Id"
+msgstr "ユーザーID"
+
+#: html/Admin/Elements/GroupTabs:15 html/Admin/Elements/QueueTabs:26 html/Admin/Elements/SystemTabs:15
+msgid "User Rights"
+msgstr "ユーザー権利"
+
+#: html/Admin/Users/Modify.html:139
+#. ($msg)
+msgid "User could not be created: %1"
+msgstr "ユーザーを作成することができませんでした: %1"
+
+#: lib/RT/User_Overlay.pm:230
+msgid "User created"
+msgstr "ユーザーが作成されました"
+
+#: html/Admin/Global/GroupRights.html:41 html/Admin/Groups/GroupRights.html:28 html/Admin/Queues/GroupRights.html:44
+msgid "User defined groups"
+msgstr "ユーザーがグループを決定しました"
+
+#: lib/RT/Transaction_Overlay.pm:627
+msgid "User notified"
+msgstr "ユーザーに通告されました"
+
+#: html/Admin/Users/Prefs.html:1
+msgid "User view"
+msgstr "ユーザービュー"
+
+#: html/Admin/Users/Modify.html:19 html/Elements/Login:18 html/Ticket/Elements/AddWatchers:11
+msgid "Username"
+msgstr "ユーザーネーム"
+
+#: html/Admin/Elements/SelectNewGroupMembers:2 html/Admin/Elements/Tabs:6 html/Admin/Groups/Members.html:29 html/User/Groups/Members.html:32
+msgid "Users"
+msgstr "ユーザー"
+
+#: html/Admin/Users/index.html:55
+msgid "Users matching search criteria"
+msgstr "ユーザーが検索基準にあっています"
+
+#: html/Search/PickRestriction:28
+msgid "ValueOfQueue"
+msgstr "キューのバリュー"
+
+#: html/Admin/Queues/CustomField.html:16
+msgid "Values"
+msgstr "バリュー"
+
+#: html/Admin/Elements/QueueTabs:8
+msgid "Watchers"
+msgstr "ウォッチャー"
+
+#: html/Admin/Elements/ModifyUser:33
+msgid "WebEncoding"
+msgstr "ウェブエンコーディング"
+
+#: lib/RT/Date.pm:355
+msgid "Wed."
+msgstr "水曜日"
+
+#: html/Admin/Users/Modify.html:90
+msgid "Work"
+msgstr "仕事"
+
+#: html/Admin/Elements/ModifyUser:47
+msgid "WorkPhone"
+msgstr "仕事先の電話"
+
+#: bin/rt:1208 html/SelfService/Display.html:64 html/Ticket/Elements/ShowBasics:9 html/Ticket/Update.html:37
+msgid "Worked"
+msgstr "Worked"
+
+#: lib/RT/Ticket_Overlay.pm:2458
+msgid "You already own this ticket"
+msgstr "あなたはすでにこのチケットを所有しています"
+
+#: html/autohandler:86
+msgid "You are not an authorized user"
+msgstr "あなたは認証されたユーザーではありません"
+
+#: lib/RT/Ticket_Overlay.pm:2354
+msgid "You can only reassign tickets that you own or that are unowned"
+msgstr "あなたは所有、または所有されていないチケットのみを止めることができます"
+
+#: bin/rt:903
+msgid "You don't have permission to view that ticket.\\n"
+msgstr "あなたはそのチケットを見る許可がありません。\\n"
+
+#: docs/design_docs/string-extraction-guide.txt:47
+#. ($num, $queue)
+msgid "You found %1 tickets in queue %2"
+msgstr "あなたは%2でチケット%1を見つけました"
+
+#: html/NoAuth/Logout.html:7
+msgid "You have been logged out of RT."
+msgstr "あなたはRTからログアウトしたままです"
+
+#: html/SelfService/Display.html:112
+msgid "You have no permission to create tickets in that queue."
+msgstr "あなたはこのキューでチケット作成の許可がありません"
+
+#: lib/RT/Ticket_Overlay.pm:1361
+msgid "You may not create requests in that queue."
+msgstr "あなたはこのキューでリクエストの作成ができるでしょう"
+
+#: html/NoAuth/Logout.html:12
+msgid "You're welcome to login again"
+msgstr "ぜひまたログインしてください"
+
+#: html/SelfService/Elements/MyRequests:1
+#. ($friendly_status)
+msgid "Your %1 requests"
+msgstr "あなたの%1のリクエスト"
+
+#: bin/enhanced-mailgate:359 bin/rt-mailgate:324
+msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
+msgstr "あなたのRT管理者はRTを呼び出すメールaliasesを設定できませんでした"
+
+#: html/autohandler:101 html/autohandler:107
+msgid "Your username or password is incorrect"
+msgstr "あなたののユーザーネームとパスワードが間違っています"
+
+#: html/Admin/Elements/ModifyUser:61 html/Admin/Users/Modify.html:74
+msgid "Zip"
+msgstr "ジップ"
+
+#: html/User/Elements/DelegateRights:32
+#. ($right->PrincipalObj->Object->SelfDescription)
+msgid "as granted to %1"
+msgstr "%1への許可"
+
+#: html/Elements/SelectMatch:11
+msgid "contains"
+msgstr "含む"
+
+#: lib/RT/Ticket_Overlay.pm:1779
+msgid "correspondence (probably) not sent"
+msgstr "通知は（おそらく）送信されていません"
+
+#: lib/RT/Ticket_Overlay.pm:1790
+msgid "correspondence sent"
+msgstr "通知が送信されました"
+
+#: html/Admin/Elements/ModifyQueue:40 html/Admin/Queues/Modify.html:51 lib/RT/Date.pm:282
+msgid "days"
+msgstr "日"
+
+#: html/Search/Listing.html:97
+msgid "delete"
+msgstr "削除"
+
+#: lib/RT/Queue_Overlay.pm:38
+msgid "deleted"
+msgstr "削除された"
+
+#: html/Search/PickRestriction:45
+msgid "does not match"
+msgstr "あいません"
+
+#: html/Elements/SelectMatch:12
+msgid "doesn't contain"
+msgstr "含みません"
+
+#: html/Elements/SelectEqualityOperator:15
+msgid "equal to"
+msgstr "等しい"
+
+#: html/Elements/SelectEqualityOperator:15
+msgid "greater than"
+msgstr "より大きい"
+
+#: lib/RT/Group_Overlay.pm:137
+#. ($self->Name)
+msgid "group '%1'"
+msgstr "グループ'%1'"
+
+#: lib/RT/Date.pm:278
+msgid "hours"
+msgstr "時間"
+
+#: bin/rt:1182
+msgid "id"
+msgstr "ID"
+
+#: html/Elements/SelectBoolean:9 html/Elements/SelectMatch:13 html/Search/PickRestriction:24 html/Search/PickRestriction:53 html/Search/PickRestriction:65
+msgid "is"
+msgstr "です"
+
+#: html/Elements/SelectBoolean:13 html/Elements/SelectMatch:14 html/Search/PickRestriction:25 html/Search/PickRestriction:54 html/Search/PickRestriction:66
+msgid "isn't"
+msgstr "でない"
+
+#: html/Elements/SelectEqualityOperator:15
+msgid "less than"
+msgstr "より少ない"
+
+#: html/Search/PickRestriction:44
+msgid "matches"
+msgstr "合う"
+
+#: lib/RT/Date.pm:274
+msgid "min"
+msgstr "最低"
+
+#: html/Ticket/Update.html:37
+msgid "minutes"
+msgstr "分"
+
+#: bin/rt-commit-handler:741
+msgid "modifications\\n\\n"
+msgstr "修正\\n\\n"
+
+#: lib/RT/Date.pm:290
+msgid "months"
+msgstr "月"
+
+#: lib/RT/Queue_Overlay.pm:33
+msgid "new"
+msgstr "新しい"
+
+#: html/Ticket/Elements/EditWatchers:5
+msgid "none"
+msgstr "なし"
+
+#: html/Elements/SelectEqualityOperator:15
+msgid "not equal to"
+msgstr "等しくない"
+
+#: lib/RT/Queue_Overlay.pm:34
+msgid "open"
+msgstr "開く"
+
+#: lib/RT/Group_Overlay.pm:142
+#. ($self->Name, $user->Name)
+msgid "personal group '%1' for user '%2'"
+msgstr "ユーザー　'%2'　のパーソナルグループ　'%1'　"
+
+#: lib/RT/Group_Overlay.pm:150
+#. ($queue->Name, $self->Type)
+msgid "queue %1 %2"
+msgstr "キュー　%1 %2"
+
+#: lib/RT/Queue_Overlay.pm:37
+msgid "rejected"
+msgstr "拒否されました"
+
+#: lib/RT/Queue_Overlay.pm:36
+msgid "resolved"
+msgstr "分解されました"
+
+#: lib/RT/Date.pm:270
+msgid "sec"
+msgstr "秒"
+
+#: lib/RT/Queue_Overlay.pm:35
+msgid "stalled"
+msgstr "止まりました"
+
+#: lib/RT/Group_Overlay.pm:145
+#. ($self->Type)
+msgid "system %1"
+msgstr "システム　%1"
+
+#: lib/RT/Group_Overlay.pm:156
+#. ($self->Type)
+msgid "system group '%1'"
+msgstr "システムグループ　'%1'"
+
+#: html/Elements/Error:18 html/SelfService/Error.html:17
+msgid "the calling component did not specify why"
+msgstr "呼び出しているコンポーネントがなぜ次のようなことが起こるのか特定できませんでした"
+
+#: lib/RT/Group_Overlay.pm:153
+#. ($self->Instance, $self->Type)
+msgid "ticket #%1 %2"
+msgstr "チケット　#%1 %2"
+
+#: lib/RT/Group_Overlay.pm:159
+#. ($self->Id)
+msgid "undescripbed group %1"
+msgstr "表示されないグループ　%1"
+
+#: lib/RT/Group_Overlay.pm:134
+#. ($user->Object->Name)
+msgid "user %1"
+msgstr "ユーザー　%1"
+
+#: lib/RT/Date.pm:286
+msgid "weeks"
+msgstr "週"
+
+#: html/Admin/Global/Scrips.html:24
+#. ($scrip->TemplateObj->Name)
+msgid "with template %1"
+msgstr "テンプレート　%1と"
+
+#: lib/RT/Date.pm:294
+msgid "years"
+msgstr "年"
+
+
+
+
+

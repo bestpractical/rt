@@ -1,6 +1,5 @@
 # Copyright (c) 2002 Jesse Vincent <jesse@bestpractical.com>
 #
-
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 2.1.x\n"
