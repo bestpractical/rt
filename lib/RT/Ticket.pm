@@ -160,6 +160,8 @@ sub Create {
     my %args = (id => undef,
 		Queue => undef,
 		Requestor => undef,
+		Cc => undef,
+		AdminCc => undef,
 		Type => 'ticket',
 		Owner => $RT::Nobody->UserObj,
 		Subject => '[no subject]',
