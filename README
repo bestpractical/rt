@@ -215,7 +215,7 @@ Apache
 
 
 <VirtualHost your.ip.address>
-DocumentRoot /opt/rt/WebRT
+DocumentRoot /opt/rt/WebRT/html
 ServerName your.rt.server.hostname
 PerlRequire /opt/rt/bin/webmux.pl
 <Location />
