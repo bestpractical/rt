@@ -118,7 +118,7 @@ CREATE TABLE Transactions (
   Field varchar(40) NULL  ,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
-  Data varchar(100) NULL  ,
+  Data varchar(255) NULL  ,
 
   Creator integer NULL  ,
   Created DATETIME NULL  

@@ -105,7 +105,7 @@ CREATE TABLE Transactions (
   	Field 			VARCHAR2(40),
   	OldValue 		VARCHAR2(255),
   	NewValue 		VARCHAR2(255),
-  	Data 			VARCHAR2(100),
+  	Data 			VARCHAR2(255),
   	Creator 		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Created 		DATE
 );
