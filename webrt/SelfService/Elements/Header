@@ -26,7 +26,9 @@
 <font color="#ffffff">
 % if ($session{'CurrentUser'} ) {
 Signed in as <b><%$session{'CurrentUser'}->Name%></b>.<BR>
+% if ($session{'CurrentUser'}->HasSystemRight('ModifySelf')) {
 [<A class='inverse' HREF="<%$RT::WebPath%>/SelfService/Prefs.html" >Preferences</A>]
+% }
 % unless ($RT::WebExternalAuth) { 
  [<A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html">Logout</a>]
 % }
