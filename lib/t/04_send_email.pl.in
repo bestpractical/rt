@@ -200,7 +200,7 @@ sub iso8859_redef_sendmessage {
     }';
 }
 
-
+# {{{ test a multipart alternative containing a text-html part with an umlaut
 
 my $content =  `cat ./lib/t/data/multipart-alternative-with-umlaut` || die "couldn't find new content";
 
@@ -224,4 +224,42 @@ sub umlauts_redef_sendmessage {
     no warnings qw/redefine/;
     eval 'sub RT::Action::SendEmail::SendMessage { }';
 }
+
+# }}}
+
+# {{{ test a text-html message with an umlaut
+
+my $content =  `cat ./lib/t/data/text-html-with-umlaut` || die "couldn't find new content";
+
+$parser->ParseMIMEEntityFromScalar($content);
+
+
+# be as much like the mail gateway as possible.
+&text_html_umlauts_redef_sendmessage;
+
+RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
+$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
+my $tick = $tickets->First();
+ok ($tick->Id, "found ticket ".$tick->Id);
+
+ok ($tick->Transactions->First->Content =~ /causes Error/, "We recorded the content right as text-plain");
+ok ($tick->Transactions->First->Attachments->Count ==1 , "Has one attachment, presumably a text-html and a multipart alternative");
+
+sub text_html_umlauts_redef_sendmessage {
+    no warnings qw/redefine/;
+    eval 'sub RT::Action::SendEmail::SendMessage { 
+                my $self = shift; 
+                my $MIME = shift; 
+                use Data::Dumper;
+                return unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
+                ok (is $MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
+                is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
+                is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
+                is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
+                 }';
+}
+
+# }}}
 1;

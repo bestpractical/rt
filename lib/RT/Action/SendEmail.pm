@@ -126,20 +126,22 @@ sub Commit {
       if ( $self->{'Cc'} && @{ $self->{'Bcc'} } );
 
 
+    $self->SetHeader('MIME-Version', '1.0');
+
     # try to convert message body from utf-8 to $RT::EmailOutputEncoding
     $self->SetHeader( 'Content-Type', 'text/plain; charset="utf-8"' );
-    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $RT::EmailOutputEncoding );
-    $self->SetHeader( 'Content-Type',
-                     'text/plain; charset="' . $RT::EmailOutputEncoding . '"' );
 
-    $MIMEObj->make_multipart('mixed');
-    $self->SetHeader('MIME-Version', '1.0');
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $RT::EmailOutputEncoding );
+    $self->SetHeader( 'Content-Type', 'text/plain; charset="' . $RT::EmailOutputEncoding . '"' );
+
 
     # Build up a MIME::Entity that looks like the original message.
 
     my $do_attach = $self->TemplateObj->MIMEObj->head->get('RT-Attach-Message');
 
     if ($do_attach) {
+        $self->TemplateObj->MIMEObj->head->delete('RT-Attach-Message');
+
         my $attachments = RT::Attachments->new($RT::SystemUser);
         $attachments->Limit( FIELD => 'TransactionId',
                              VALUE => $self->TransactionObj->Id );
@@ -156,7 +158,10 @@ sub Commit {
             # We want to make sure that we don't include the attachment that's being sued as the "Content" of this message"
             next
               if (    $transaction_content_obj
-                   && $transaction_content_obj->Id == $attach->Id );
+                   && $transaction_content_obj->Id == $attach->Id 
+                   && $transaction_content_obj->ContentType =~ qr{text/plain}i
+                );
+            $MIMEObj->make_multipart('mixed');
             $MIMEObj->attach( Type => $attach->ContentType,
                               Charset => $attach->OriginalEncoding,
                               Data => $attach->OriginalContent,
