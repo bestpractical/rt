@@ -71,7 +71,7 @@
 <a href="<%$RT::WebPath%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
 <a href="<%$RT::WebPath%>/Search/Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a> |
 <a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Work offline</&></a><br>
-<& /Elements/Callback, %ARGS, _CallbackName => 'SearchActions', QueryString => $QueryString&>
+<& /Elements/Callback, _CallbackName => 'SearchActions', QueryString => $QueryString&>
 </div>
 <%INIT>
 my ($title, $ticketcount);
