@@ -116,6 +116,49 @@ use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;
 
+
+
+# {{{ sub SelfDescription
+
+=head2 SelfDescription
+
+Returns a user-readable description of what this group is for and what it's named.
+
+=cut
+
+sub SelfDescription {
+	my $self = shift;
+	if ($self->Domain eq 'ACLEquivalence') {
+		my $user = RT::User->new($self->CurrentUser);
+		$user->Load($self->Instance);
+		return $self->loc("user [_1]",$user->Name);
+	}
+	elsif ($self->Domain eq 'UserDefined') {
+		return $self->loc("group [_1]",$self->Name);
+	}
+	elsif ($self->Domain eq 'Personal') {
+		my $user = RT::User->new($self->CurrentUser);
+		$user->Load($self->Instance);
+		return $self->loc("personal group [_1] for user [_2]",$self->Name, $user->Name);
+	}
+	elsif ($self->Domain eq 'SystemRole') {
+		return $self->loc("system [_1]",$self->Type);
+	}
+	elsif ($self->Domain eq 'QueueRole') {
+		my $queue = RT::Queue->new($self->CurrentUser);
+		$queue->Load($self->Instance);
+		return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
+	}
+	elsif ($self->Domain eq 'TicketRole') {
+		return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
+	}
+	else {
+		return $self->loc("Group [_1]",$self->Id);
+	}
+}
+
+# }}}
+
 # {{{ sub Load 
 
 =head2 Load ID
@@ -308,7 +351,7 @@ sub Create {
 
 Takes a paramhash with named arguments: Name, Description.
 
-TODO: fill in for 2.2
+Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
@@ -366,6 +409,8 @@ ngs are afoot at the circle K" );
 
 A helper subroutine which creates a system group 
 
+Returns a tuple of (Id, Message).  If id is 0, the create failed
+
 =cut
 
 sub CreateUserDefinedGroup {
@@ -389,6 +434,8 @@ sub CreateUserDefinedGroup {
 A helper subroutine which creates a group containing only 
 an individual user. This gets used by the ACL system to check rights.
 Yes, it denormalizes the data, but that's ok, as we totally win on performance.
+
+Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
@@ -430,6 +477,8 @@ sub _CreateACLEquivalenceGroup {
 A helper subroutine which creates a personal group. Generally,
 personal groups are used for ACL delegation and adding to ticket roles
 PrincipalId defaults to the current user's principal id.
+
+Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
@@ -484,6 +533,8 @@ Instance is the id of the ticket or queue in question
 
 This routine expects to be called from {Ticket||Queue}->CreateTicketGroups _inside of a transaction_
 
+Returns a tuple of (Id, Message).  If id is 0, the create failed
+
 =cut
 
 sub CreateRoleGroup {
@@ -515,6 +566,15 @@ sub Delete {
     unless ( $self->CurrentUserHasRight('AdminGroup') ) {
         return ( 0, 'Permission Denied' );
     }
+
+    $RT::Logger->crit("Deleting groups violates referential integrity until we go through and fix this");
+    # TODO XXX 
+   
+    # Remove the principal object
+    # Remove this group from anything it's a member of.
+    # Remove all cached members of this group
+    # Remove any rights granted to this group
+    # remove any rights delegated by way of this group
 
     return ( $self->SUPER::Delete(@_) );
 }
@@ -705,7 +765,6 @@ sub _AddMember {
         $RT::Logger->crit("_AddMember called with a parameter that's not an integer.");
     }
 
-    $RT::Logger->debug("About to add ".$new_member." to group".$self->id);
 
     my $new_member_obj = RT::Principal->new( $self->CurrentUser );
     $new_member_obj->Load($new_member);
@@ -893,8 +952,6 @@ sub _DeleteMember {
     my $val = $member_obj->Delete();
 
     if ($val) {
-        $RT::Logger->debug("Deleted group ".$self->Id." member ". $member_id);
-     
         return ( $val, $self->loc("Member deleted") );
     }
     else {

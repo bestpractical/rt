@@ -1,0 +1,32 @@
+<%perl>
+
+my %objects;
+my $acl = RT::ACL->new ($session{'CurrentUser'});
+$acl->ExcludeDelegatedRights();
+$acl->LimitToPrincipal(Id => $session{'CurrentUser'}->Id);
+
+while(my $right = $acl->Next) {
+       push @{$objects{$right->ObjectType}{$right->ObjectId}},$right;
+}
+</%perl>
+<h1> WORK IN PROGRESS</h1>
+<h2>System</h2>
+%foreach my $right (@{$objects{'System'}{0}}) {
+       <% $right->RightName%><font color="#999999"><&|/l, $right->PrincipalObj->Object->SelfDescription &>as granted to [_1]</&></font><br>
+%}
+
+<h2>Queues</h2>
+% foreach my $queue (keys %{$objects{'Queue'}}) {
+% my $queue_obj = @{$objects{'Queue'}{$queue}}[0]->Object;
+<h3><%$queue_obj->Name%><h3>
+%foreach my $right (@{$objects{'Queue'}{$queue}}) {
+       <% $right->RightName%><font color="#999999"><&|/l, $right->PrincipalObj->Object->SelfDescription &>as granted to [_1]</&></font><br>
+%}}
+
+<h2>Groups</h2>
+% foreach my $Group (keys %{$objects{'Group'}}) {
+% my $Group_obj = @{$objects{'Group'}{$Group}}[0]->Object;
+<h3><%$Group_obj->Name%><h3>
+%foreach my $right (@{$objects{'Group'}{$Group}}) {
+       <% $right->RightName%><font color="#999999"><&|/l, $right->PrincipalObj->Object->SelfDescription &>as granted to [_1]</&></font><br>
+%}}

@@ -9,6 +9,9 @@
 	       g => { title => loc('Groups'),
 			   path => 'User/Groups/index.html',
 			 },
+	       h => { title => loc('Rights'),
+			   path => 'User/Delegation.html',
+			 },
 	     };
 </%INIT>
 

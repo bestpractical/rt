@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+open (FH,"make regression|");
+
+my $skip_frontmatter = 1;
+while (<FH>) {
+        next if /^ok/;
+	$skip_frontmatter = 0 if (/autogen/);
+        print $_ unless ($skip_frontmatter);
+}

@@ -261,7 +261,10 @@ test:
 
 regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database
 	(cd ./lib; $(PERL) Makefile.PL && make testifypods && $(PERL) t/02regression.t)
-		
+
+regression-quiet:
+	$(PERL) sbin/regression_harness
+
 regression-instruct:
 	@echo "About to wipe your database for a regression test. ABORT NOW with Control-C"
 
@@ -295,8 +298,8 @@ libs-install:
 	chmod -R $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_LIB_PATH)
 	( cd ./lib; \
 	  $(PERL) Makefile.PL INSTALLSITELIB=$(DESTDIR)/$(RT_LIB_PATH) \
-			      INSTALLMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
-			      INSTALLMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
+			      INSTALLMAN1DIR=none \
+			      INSTALLMAN3DIR=none \
 	    && $(MAKE) \
 	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g; \
 	    			  s'!!RT_CONFIG!!'$(CONFIG_FILE)'g;" \

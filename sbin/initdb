@@ -14,7 +14,7 @@ use DBIx::DataSource qw( create_database drop_database );
 
 $| = 1;    #unbuffer that output.
 
-$DEBUG = 1;
+$DEBUG = 0;
 
 $ACTION = shift @ARGV;
 

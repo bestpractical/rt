@@ -32,9 +32,9 @@
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 <&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b></&>
 <BR>
-[<A class='inverse' HREF="<%$RT::WebPath%>/User/Prefs.html" ><&|/l&>Preferences</&></A>] 
+<A class='inverse' HREF="<%$RT::WebPath%>/User/Prefs.html" ><&|/l&>Preferences</&></A>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-[<A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html"><&|/l&>Logout</&></a>]
+ | <A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html"><&|/l&>Logout</&></a>
 % }
 % } else {
 <&|/l&>Not logged in.</&>

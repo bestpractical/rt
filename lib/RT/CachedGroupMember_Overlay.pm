@@ -101,32 +101,55 @@ mysql supported foreign keys with cascading deletes.
 sub Delete {
     my $self = shift;
 
-    my $member = $self->MemberObj();
-    if ( $member->IsGroup ) {
-        my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
-
-        $deletable->Limit(
-            FIELD    => 'Via',
-            OPERATOR => '=',
-            VALUE    => $self->id
-        );
-
-        while ( my $kid = $deletable->Next ) {
-            my $kid_err = $kid->Delete();
-            unless ($kid_err) {
-                $RT::Logger->error(
-                    "Couldn't delete CachedGroupMember " . $kid->Id );
-                return (undef);
-            }
-        }
-    }
     my $err = $self->SUPER::Delete();
     unless ($err) {
         $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->Id );
         return (undef);
     }
-    return ($err);
+    
+    my $member = $self->MemberObj();
+    if ( $member->IsGroup ) {
+        my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
 
+        $deletable->Limit( FIELD    => 'Via',
+                           OPERATOR => '=',
+                           VALUE    => $self->id );
+
+        while ( my $kid = $deletable->Next ) {
+            my $kid_err = $kid->Delete();
+            unless ($kid_err) {
+                $RT::Logger->error(
+                              "Couldn't delete CachedGroupMember " . $kid->Id );
+                return (undef);
+            }
+        }
+    }
+
+    # Unless $self->GroupObj still has the member recursively $self->MemberObj
+    # (Since we deleted the database row above, $self no longer counts)
+    unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberObj ) ) {
+        #   Find all ACEs granted to $self->GroupId
+        my $acl = RT::ACL->new($RT::SystemUser);
+        $acl->LimitToPrincipal( Id => $self->GroupId );
+
+        while ( my $this_ace = $acl->Next() ) {
+            #       Find all ACEs which $self-MemberObj has delegated from $this_ace
+            my $delegations = RT::ACL->new($RT::SystemUser);
+            $delegations->DelegatedFrom( Id => $this_ace->Id );
+            $delegations->DelegatedBy( Id => $self->MemberId );
+
+            # For each delegation 
+            while ( my $delegation = $delegations->Next ) {
+                # WHACK IT
+                my $del_ret = $delegation->_Delete(InsideTransaction => 1);
+                unless ($del_ret) {
+                    $RT::Logger->crit("Couldn't delete an ACL delegation that we know exists ". $delegation->Id);
+                    return(undef);
+                }
+            }
+        }
+    }
+    return ($err);
 }
 
 # }}}

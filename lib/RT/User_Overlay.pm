@@ -207,25 +207,25 @@ sub Create {
 
     $RT::Handle->Commit;
 
-    $RT::Logger->debug("Adding the user as a member of everyone"); 
+    #$RT::Logger->debug("Adding the user as a member of everyone"); 
     my $everyone = RT::Group->new($self->CurrentUser);
     $everyone->LoadSystemInternalGroup('Everyone');
     $everyone->AddMember($self->PrincipalId);
 
     if ($privileged)  {
         my $priv = RT::Group->new($self->CurrentUser);
-        $RT::Logger->debug("Making ".$self->Id." a privileged user");
+        #$RT::Logger->debug("Making ".$self->Id." a privileged user");
         $priv->LoadSystemInternalGroup('Privileged');
         $priv->AddMember($self->PrincipalId);  
     } else {
         my $unpriv = RT::Group->new($self->CurrentUser);
-        $RT::Logger->debug("Making ".$self->Id." an unprivileged user");
+        #$RT::Logger->debug("Making ".$self->Id." an unprivileged user");
         $unpriv->LoadSystemInternalGroup('Unprivileged');
         $unpriv->AddMember($self->PrincipalId);  
     }
 
 
-    $RT::Logger->debug("Finished creating the user");
+   #  $RT::Logger->debug("Finished creating the user");
     return ( $id, $self->loc('User created') );
 }
 
@@ -277,7 +277,7 @@ sub SetPrivileged {
 
     if ($val) {
         if ($priv->HasMember($self->PrincipalObj)) {
-            $RT::Logger->debug("That user is already privileged");
+            #$RT::Logger->debug("That user is already privileged");
             return (0,$self->loc("That user is already privileged"));
         }
         if ($unpriv->HasMember($self->PrincipalObj)) {
@@ -294,7 +294,7 @@ sub SetPrivileged {
     }
     else {
         if ($unpriv->HasMember($self->PrincipalObj)) {
-            $RT::Logger->debug("That user is already unprivileged");
+            #$RT::Logger->debug("That user is already unprivileged");
             return (0,$self->loc("That user is already unprivileged"));
         }
         if ($priv->HasMember($self->PrincipalObj)) {
@@ -1270,7 +1270,7 @@ sub HasRight {
         return (undef);
     }
 
-    if ( !defined $args{'Right'} ) {
+    if ( !defined $args{'Right'}) {
         require Carp;
         $RT::Logger->debug(Carp::cluck("HasRight called without a right"));
         return (undef);
@@ -1313,9 +1313,7 @@ sub HasRight {
 
     # We want to grant the right if:
 
-    # The user has the right as an individual
-	
-    $RT::Logger->debug("Checking the user right ". $args{'Right'} . "for ". $args{'ObjectType'} . " ".$args{'ObjectId'} );
+    #$RT::Logger->debug("Checking the user right ". $args{'Right'} . "for ". $args{'ObjectType'} . " ".$args{'ObjectId'} );
 
 #    # The user has the right as a member of a system-internal or 
 #    # user-defined group
@@ -1364,7 +1362,7 @@ my $query = "SELECT COUNT(ACL.id) from ACL, Groups, Principals, CachedGroupMembe
    (ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') AND Principals.Id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '".$self->PrincipalId."' AND
     (   ACL.ObjectType = 'System' $or_look_at_object_rights ) AND 
     (
-        (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND (Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence')) 
+        (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND (Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence' OR Groups.Domain = 'Personal')) 
            $or_check_roles ) ";
 
 
@@ -1384,7 +1382,7 @@ my $query = "SELECT COUNT(ACL.id) from ACL, Groups, Principals, CachedGroupMembe
 
     else {    #If the user just doesn't have the right
 
-        	$RT::Logger->debug("No ACL matched query: $query\n");	
+       # 	$RT::Logger->debug("No ACL matched query: $query\n");	
 
         #If nothing matched, return 0.
         $self->_ACLCache->{"$hashkey"}{'set'} = time;

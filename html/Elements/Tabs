@@ -1,49 +1,44 @@
-<TABLE WIDTH=100%>
-    <TR>
-      <TD VALIGN=TOP>
-	<TABLE cellspacing=1>
-	  <TR>
+% my @toptabs;
 % foreach $tab (sort keys %{$toptabs}) {
-	    <TD ALIGN=CENTER>
-	      <font size=+1>
-		[<A 
+% my $class;
 % if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
-class='currenttab'
+% $class="class='currenttab'";
+% } else {
+% $class="class='othertab'";
 % } 
-	HREF="<%$RT::WebPath%>/<% $toptabs->{$tab}->{'path'}%>"><% $toptabs->{$tab}->{'title'}%></A>]
-
-
-	      </font>
-	    </TD>
+% push @toptabs, "<TD ALIGN=CENTER><A HREF=\"$RT::WebPath/". $toptabs->{$tab}->{'path'}."\" $class><font size=\"+1\">". $toptabs->{$tab}->{'title'}."</font></A></TD>";
 % }
-	  </TR>
+<TABLE WIDTH=100% >
+    <TR><TD VALIGN=TOP>
+        <TABLE cellspacing=1>
+        <TR> <% join('<TD><font size=+2>|</font></TD>', @toptabs) |n%>
+        </TR>
 	</TABLE>
 <BR>
 % if ($tabs_scalar) {
 <% $tabs_scalar |n%>
 % }
 % if ($tabs) {
-	
-	<TABLE CELLSPACING=0 CELLPADDING=0 BORDER=0>	
-	  <TR>
+% my @regulartabs;
 % foreach $tab (sort keys %{$tabs}) {
-	    <TD ALIGN=CENTER VALIGN=TOP>
-[<A 
+% my $class;
 % if ($current_tab eq $tabs->{$tab}->{'path'}) {
-class='currenttab' 
+% $class="class='currenttab'";
+% } else {
+% $class="class='othertab'";
 % } 
-HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}%></A>]</TD>
-%}
-	  </TR>
-	</TABLE>
-%}
-
+% push @regulartabs, "<TD ALIGN=CENTER><A HREF=\"$RT::WebPath/". $tabs->{$tab}->{'path'}."\" $class>". $tabs->{$tab}->{'title'}."</A></TD>";
+% }
+        <TABLE cellspacing=1>
+        <TR> <% join('<TD><font size=+1>|</font></TD>', @regulartabs) |n%>
+        </TR>
+        </TABLE>
 <BR>
+%  }
 % if ($subtabs_scalar) {
 <% $subtabs_scalar |n%>
 % }
 % if ($subtabs) {
-	<TABLE>	
 	  <TR>
 % foreach $tab (sort keys %{$subtabs}) {
 	    <TD ALIGN=CENTER>
@@ -51,7 +46,6 @@ HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}
 	    </TD>
 %}
 	  </TR>
-	</TABLE>
 %}
       </TD>
       <TD VALIGN=TOP ALIGN=RIGHT>
@@ -65,23 +59,22 @@ HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}
 </TABLE>
 	
 
-	
-% if ($actions) {
-<TABLE><TR>
-%  foreach $action (sort keys %{$actions}) {
-<TD ALIGN=RIGHT>
-<FONT SIZE=-1>
-% if ($actions->{"$action"}->{'html'}) {
-<%$actions->{"$action"}->{'html'} |n%>
-% } else {
-<A HREF="<%$RT::WebPath%>/<% $actions->{$action}->{'path'}%>"><% $actions->{$action}->{'title'}%></A>
+<%PERL>	
+ if ($actions) {
+ my @action_entries;
+ foreach $action (sort keys %{$actions}) {
+ my $entry = "<TD ALIGN=RIGHT><FONT SIZE=-1>";
+ if ($actions->{"$action"}->{'html'}) {
+$entry .= $actions->{"$action"}->{'html'} ;
+ } else {
+ $entry .= "<A HREF=\"$RT::WebPath/".$actions->{$action}->{'path'}."\">".$actions->{$action}->{'title'}."</A>";
+ }
+$entry .= "</FONT></TD>";
+ push @action_entries, $entry;
+  }
+</%PERL>
+<TABLE><TR><%join ('<TD>|</TD>',@action_entries)|n%></TR></TABLE>
 % }
-</FONT>
-</TD>
-%  }
-</TR></TABLE>
-% }
-	
 % if ($subactions_scalar) {
 <% $subactions_scalar |n%>
 % }

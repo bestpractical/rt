@@ -19,7 +19,7 @@ my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
     if ($@) {
 
         # If the session is invalid, create a new session.
-        if ( $@ =~ m#^Object does not# ) {
+        if ( $@ =~ /Object does not/i ) {
             tie %HTML::Mason::Commands::session, $session_class, undef,
               $IsMySQL ? {
                 Handle     => $RT::Handle->dbh,

@@ -2,6 +2,9 @@
 <& /Elements/Footer, %ARGS &>
 
 <%INIT>
+
+local %session;
+
 if ($ARGS{'Debug'}) {
         require Time::HiRes;
         $m->{'rt_base_time'} = [Time::HiRes::gettimeofday()];

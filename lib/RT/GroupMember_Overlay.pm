@@ -260,6 +260,9 @@ sub Delete {
     # TODO what about the groups key cache?
     RT::User->_InvalidateACLCache();
 
+
+
+
     while ( my $item_to_del = $cached_submembers->Next() ) {
         #$RT::Logger->debug("About to delete a submember ".$item_to_del->MemberId);
         my $del_err = $item_to_del->Delete();

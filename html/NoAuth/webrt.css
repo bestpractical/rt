@@ -44,7 +44,8 @@ A { font-weight: bold;
       		color: #000000;
 	    /* border: none -- breaks NS 4.x */ }
 
-.currenttab { background-color: #cccccc; }
+.currenttab { color: #999999; }
+.othertab { color: #336699; }
 
 .inverse { color: #ffffff; }
 

@@ -81,7 +81,7 @@ sub Object {
 
 # {{{ GrantRight 
 
-=head2 GrantRight 
+=head2 GrantRight  { Right => RIGHTNAME, ObjectType => undef, ObjectId => 0 }
 
 A helper function which calls RT::ACE->Create
 
@@ -97,33 +97,17 @@ sub GrantRight {
     #ACL check handled in ACE.pm
     my $ace = RT::ACE->new( $self->CurrentUser );
 
-    $RT::Logger->debug("About to grant the right ".$args{'Right'}. " to ". $self->PrincipalType ." ". $self->Id ." for ".$args{'ObjectType'} . " ". $args{'ObjectId'});
 
     my $type = $self->_GetPrincipalTypeForACL();
 
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
-    if ($type eq 'Usdasdasdssdasaddassadaser') {
-        my $equiv_group = RT::Group->new($self->CurrentUser);
-        $equiv_group->LoadACLEquivalenceGroup($self);
-        unless ($equiv_group->Id) {
-            $RT::Logger->crit("No ACL equiv group for princ ".$self->ObjectId);
-            return(0,$self->loc('System Error. Right not granted.'));
-        }
-        return ( 
-            $equiv_group->PrincipalObj->GrantRight(Right => $args{'Right'},
-                          ObjectType => $args{'ObjectType'},
-                          ObjectId => $args{'ObjectId'}) );
-
-    }
-    else {
         return ( $ace->Create(RightName => $args{'Right'},
                           ObjectType => $args{'ObjectType'},
                           ObjectId => $args{'ObjectId'},
                           PrincipalType =>  $type,
                           PrincipalId => $self->Id
                           ) );
-    }
 }
 # }}}
 
@@ -139,45 +123,28 @@ sub RevokeRight {
 
     my $self = shift;
     my %args = (
-        Right     => undef,
-        ObjectType     => undef,
-        ObjectId => 0,
+        Right      => undef,
+        ObjectType => undef,
+        ObjectId   => 0,
         @_
     );
 
     #ACL check handled in ACE.pm
     my $type = $self->_GetPrincipalTypeForACL();
 
-    # If it's a user, we really want to grant the right to their 
-    # user equivalence group
-    if ($type eq 'User') {
-        my $equiv_group = RT::Group->new($self->CurrentUser);
-        $equiv_group->LoadACLEquivalenceGroup($self);
-        unless ($equiv_group->Id) {
-            $RT::Logger->crit("No ACL equiv group for princ ".$self->ObjectId);
-            return(0,$self->loc('System Error. Right not granted.'));
-        }
-        return ( 
-            $equiv_group->PrincipalObj->RevokeRight(Right => $args{'Right'},
-                          ObjectType => $args{'ObjectType'},
-                          ObjectId => $args{'ObjectId'}) );
+    my $ace = RT::ACE->new( $self->CurrentUser );
+    $ace->LoadByValues(
+        RightName     => $args{'Right'},
+        ObjectType    => $args{'ObjectType'},
+        ObjectId      => $args{'ObjectId'},
+        PrincipalType => $type,
+        PrincipalId   => $self->Id
+    );
 
+    unless ( $ace->Id ) {
+        return ( 0, $self->loc("ACE not found") );
     }
-    else {
-
-        my $ace = RT::ACE->new( $self->CurrentUser );
-        $ace->LoadByValues( RightName => $args{'Right'},
-                        ObjectType => $args{'ObjectType'},
-                        ObjectId => $args{'ObjectId'},
-                        PrincipalType => $type,
-                        PrincipalId => $self->Id);
-
-
-        unless ($ace->Id) {
-            return(0, $self->loc("ACE not found"));
-        }
-        return($ace->Delete);
-    }
+    return ( $ace->Delete );
 }
 
 # }}}

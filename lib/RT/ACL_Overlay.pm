@@ -80,6 +80,71 @@ sub LimitToPrincipal {
 
 # }}}
 
+# {{{
+=head2 ExcludeDelegatedRights 
+
+Don't list rights which have been delegated.
+
+=cut
+
+sub ExcludeDelegatedRights {
+    my $self = shift;
+    $self->DelegatedBy(Id => 0);
+    $self->DelegatedFrom(Id => 0);
+}
+# }}}
+
+# {{{ DelegatedBy 
+
+=head2 DelegatedBy { Id => undef }
+
+Limit the ACL to rights delegated by the principal whose Principal Id is
+B<Id>
+
+Id is not optional.
+
+=cut
+
+sub DelegatedBy {
+    my $self = shift;
+    my %args = (
+        Id => undef,
+        @_
+    );
+    $self->Limit(
+        FIELD           => 'DelegatedBy',
+        OPERATOR        => '=',
+        VALUE           => $args{'Id'},
+        ENTRYAGGREGATOR => 'OR'
+    );
+
+}
+
+# }}}
+
+# {{{ DelegatedFrom 
+
+=head2 DelegatedFrom { Id => undef }
+
+Limit the ACL to rights delegate from the ACE which has the Id specified 
+by the Id parameter.
+
+Id is not optional.
+
+=cut
+
+sub DelegatedFrom {
+    my $self = shift;
+    my %args = (
+                 Id => undef,
+                 @_);
+    $self->Limit(FIELD => 'DelegatedFrom', OPERATOR=> '=', VALUE => $args{'Id'}, ENTRYAGGREGATOR => 'OR');
+
+}
+
+# }}}
+
+
 # {{{ sub Next 
 sub Next {
     my $self = shift;
