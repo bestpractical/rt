@@ -177,7 +177,6 @@ ok ( my $id = $t->Id, "Got ticket id $id");
 
 sub Create {
     my $self = shift;
-    my ( $ErrStr, $QueueObj, $Owner);
     
     my %args = (id => undef,
 		Queue => undef,
@@ -197,8 +196,12 @@ sub Create {
 		MIMEObj => undef,
 		@_);
 
+    my ($ErrStr, $QueueObj, $Owner, $resolved);
     my (@non_fatal_errors);
     
+    my $now = RT::Date->new($self->CurrentUser);
+    $now->SetToNow();
+
     if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
 	$QueueObj=RT::Queue->new($RT::SystemUser);
 	$QueueObj->Load($args{'Queue'});
@@ -311,6 +314,12 @@ sub Create {
 	return (0,0,'Invalid value for status');
     }
 
+    if ($args{'Status'} eq 'resolved') {
+	$resolved = $now->ISO;
+    } else{
+	$resolved = undef;
+    }
+
     my $id = $self->SUPER::Create(
 				  Queue => $QueueObj->Id,
 				  Owner => $Owner->Id,
@@ -323,6 +332,7 @@ sub Create {
 				  TimeLeft => $args{'TimeLeft'},
 				  Type => $args{'Type'},	
 				  Starts => $starts->ISO,
+				  Resolved => $resolved,
 				  Due => $due->ISO
 				 );
     #Set the ticket's effective ID now that we've created it.
