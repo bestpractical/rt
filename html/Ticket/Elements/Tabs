@@ -51,7 +51,7 @@ if ( defined $session{'tickets'} ) {
 		$session{'tickets'}->PrepForSerialization();
         }
 
-            # Don't $current_toptab = display prev links if we're on the first ticket
+        # Don't $current_toptab = display prev links if we're on the first ticket
         if ($item_map->{$Ticket->Id}->{prev}) {
                 $searchtabs->{'_a'} = {
                             class => "nav",

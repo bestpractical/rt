@@ -104,12 +104,12 @@ sub FromURI {
 
     return undef unless ($uri);
 
-	my $scheme;
-	# Special case: integers passed in as URIs must be ticket ids
-	if ($uri =~ /^(\d+)$/) {
-		$scheme = "fsck.com-rt";
-	} elsif ($uri =~ /^((?:\w|\.|-)+?):/) {
-         $scheme = $1;
+    my $scheme;
+    # Special case: integers passed in as URIs must be ticket ids
+    if ($uri =~ /^(\d+)$/) {
+	$scheme = "fsck.com-rt";
+    } elsif ($uri =~ /^((?:\w|\.|-)+?):/) {
+	$scheme = $1;
     }
     else {
         $RT::Logger->warning("$self Could not determine a URI scheme for $uri");

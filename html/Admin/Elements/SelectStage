@@ -22,7 +22,7 @@
 %# 
 %# END LICENSE BLOCK
 <SELECT NAME=<%$Name%>>
-% foreach my $stage (qw(TransactionCreate TransactionBatch)) {
+% foreach my $stage (qw(TransactionCreate TransactionBatch Disabled)) {
 <OPTION VALUE=<%$stage%>
 <% ($stage eq $Default) && 'SELECTED' %>
 ><% loc($stage) %>

@@ -387,7 +387,25 @@ sub Commit {
 	    } else {
 		$dateobj->Set(Format => 'unknown', Value => $args{$date});
 	    }
-	    $args{$date} = $dateobj->ISO;
+	    elsif (defined ($args{$tag})) { #if we're about to get a second value, make it an array
+		$args{$tag} = [$args{$tag}, $value];
+	    }
+	    else { #if there's nothing there, just set the value
+		$args{ $tag } = $value;
+	    }
+	    
+	    if ( $tag eq 'content' ) { #just build up the content
+		# convert it to an array
+		$args{$tag} = defined($value) ? [ $value."\n" ] : [];
+		while ( defined(my $l = shift @lines) ) {
+		    last if ($l =~  /^ENDOFCONTENT\s*$/) ;
+		    push @{$args{'content'}}, $l."\n";
+		}
+	    } else {
+		# if it's not content, strip leading and trailing spaces
+		$args{ $tag } =~ s/^\s+//g;
+		$args{ $tag } =~ s/\s+$//g;
+	    }
 	}
 	my $mimeobj = MIME::Entity->new();
 	$mimeobj->build(Type => $args{'contenttype'},

@@ -298,12 +298,13 @@ sub _LinkLimit {
   die "Incorrect Meta Data for $field"
     unless (defined $meta->[1] and defined $meta->[2]);
 
-  my $LinkAlias = $sb->NewAlias ('Links');
+  $sb->{_sql_linkalias} = $sb->NewAlias ('Links')
+    unless defined $sb->{_sql_linkalias};
 
   $sb->_OpenParen();
 
   $sb->_SQLLimit(
-	     ALIAS => $LinkAlias,
+	     ALIAS => $sb->{_sql_linkalias},
 	     FIELD =>   'Type',
 	     OPERATOR => '=',
 	     VALUE => $meta->[2],
@@ -314,7 +315,7 @@ sub _LinkLimit {
     my $matchfield = ( $value  =~ /^(\d+)$/ ? "LocalTarget" : "Target" );
 
     $sb->_SQLLimit(
-	       ALIAS => $LinkAlias,
+	       ALIAS => $sb->{_sql_linkalias},
 	       ENTRYAGGREGATOR => 'AND',
 	       FIELD =>   $matchfield,
 	       OPERATOR => '=',
@@ -322,14 +323,14 @@ sub _LinkLimit {
 	      );
 
     #If we're searching on target, join the base to ticket.id
-    $sb->Join( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'},
-	       ALIAS2 => $LinkAlias,	 FIELD2 => 'LocalBase');
+    $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'},
+	       ALIAS2 => $sb->{_sql_linkalias},	 FIELD2 => 'LocalBase');
 
   } elsif ( $meta->[1] eq "From" ) {
     my $matchfield = ( $value  =~ /^(\d+)$/ ? "LocalBase" : "Base" );
 
     $sb->_SQLLimit(
-	       ALIAS => $LinkAlias,
+	       ALIAS => $sb->{_sql_linkalias},
 	       ENTRYAGGREGATOR => 'AND',
 	       FIELD =>   $matchfield,
 	       OPERATOR => '=',
@@ -337,8 +338,8 @@ sub _LinkLimit {
 	      );
 
     #If we're searching on base, join the target to ticket.id
-    $sb->Join( ALIAS1 => 'main',     FIELD1 => $sb->{'primary_key'},
-	       ALIAS2 => $LinkAlias, FIELD2 => 'LocalTarget');
+    $sb->_SQLJoin( ALIAS1 => 'main',     FIELD1 => $sb->{'primary_key'},
+	       ALIAS2 => $sb->{_sql_linkalias}, FIELD2 => 'LocalTarget');
 
   } else {
     die "Invalid link direction '$meta->[1]' for $field\n";
@@ -467,11 +468,11 @@ sub _TransDateLimit {
   $sb->_OpenParen;
 
   # Join Transactions To Attachments
-  $sb->Join( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
 	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
 
   # Join Transactions to Tickets
-  $sb->Join( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
+  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
 	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
 
   my $d = new RT::Date( $sb->CurrentUser );
@@ -542,11 +543,11 @@ sub _TransLimit {
   $sb->_OpenParen;
 
   # Join Transactions To Attachments
-  $sb->Join( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
 	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
 
   # Join Transactions to Tickets
-  $sb->Join( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
+  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
 	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
 
   #Search for the right field
@@ -620,7 +621,7 @@ sub _WatcherLimit {
 		   VALUE => 'RT::Ticket-Role',
 		   ENTRYAGGREGATOR => 'AND');
 
-  $self->Join(ALIAS1 => $groups, FIELD1 => 'Instance',
+  $self->_SQLJoin(ALIAS1 => $groups, FIELD1 => 'Instance',
 	      ALIAS2 => 'main',   FIELD2 => 'id');
   # }}}
 
@@ -635,10 +636,10 @@ sub _WatcherLimit {
 		     ENTRYAGGREGATOR => 'AND');
   }
 
-  $self->Join (ALIAS1 => $groups,  FIELD1 => 'id',
+  $self->_SQLJoin (ALIAS1 => $groups,  FIELD1 => 'id',
 	       ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
 
-  $self->Join( ALIAS1 => $groupmembers, FIELD1 => 'MemberId',
+  $self->_SQLJoin( ALIAS1 => $groupmembers, FIELD1 => 'MemberId',
 	       ALIAS2 => $users, FIELD2 => 'id');
 
  $self->_CloseParen;
@@ -781,7 +782,7 @@ sub _LinkFieldLimit {
 			OPERATOR => '=',
 			VALUE =>    $restriction->{'TARGET'} );
     #If we're searching on target, join the base to ticket.id
-    $self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
+    $self->_SQLJoin( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
 		 ALIAS2 => $LinkAlias,
 		 FIELD2 => 'LocalBase');
   }
@@ -802,7 +803,7 @@ sub _LinkFieldLimit {
 			OPERATOR => '=',
 			VALUE =>    $restriction->{'BASE'} );
     #If we're searching on base, join the target to ticket.id
-    $self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
+    $self->_SQLJoin( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
 		 ALIAS2 => $LinkAlias,
 		 FIELD2 => 'LocalTarget')
   }
@@ -869,7 +870,7 @@ sub _CustomFieldLimit {
     $TicketCFs = $self->{_sql_keywordalias}{$cfid};
   } else {
     $TicketCFs = $self->{_sql_keywordalias}{$cfid} =
-      $self->Join( TYPE   => 'left',
+      $self->_SQLJoin( TYPE   => 'left',
 		   ALIAS1 => 'main',
 		   FIELD1 => 'id',
 		   TABLE2 => 'ObjectCustomFieldValues',

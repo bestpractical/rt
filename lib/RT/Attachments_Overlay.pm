@@ -109,6 +109,34 @@ sub NewItem  {
   return($item);
 }
 # }}}
+
+# {{{ sub Next
+sub Next {
+    my $self = shift;
+ 	
+    my $Attachment = $self->SUPER::Next();
+    if ((defined($Attachment)) and (ref($Attachment))) {
+	if ($Attachment->TransactionObj->__Value('Type') =~ /^Comment/ && 
+	    $Attachment->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
+	    return($Attachment);
+	} elsif ($Attachment->TransactionObj->__Value('Type') !~ /^Comment/ && 
+		 $Attachment->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicket')) {
+	    return($Attachment);
+	}
+
+	#If the user doesn't have the right to show this ticket
+	else {	
+	    return($self->Next());
+	}
+    }
+
+    #if there never was any ticket
+    else {
+	return(undef);
+    }	
+}
+# }}}
+
   1;
 
 

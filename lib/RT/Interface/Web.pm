@@ -1419,48 +1419,8 @@ sub ProcessTicketLinks {
     my $Ticket  = $args{'TicketObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
-    my (@results);
-
-    # Delete links that are gone gone gone.
-    foreach my $arg ( keys %$ARGSRef ) {
-        if ( $arg =~ /DeleteLink-(.*?)-(DependsOn|MemberOf|RefersTo)-(.*)$/ ) {
-            my $base   = $1;
-            my $type   = $2;
-            my $target = $3;
-
-            push @results,
-              "Trying to delete: Base: $base Target: $target  Type $type";
-            my ( $val, $msg ) = $Ticket->DeleteLink( Base   => $base,
-                                                     Type   => $type,
-                                                     Target => $target );
-
-            push @results, $msg;
-
-        }
-
-    }
-
-    my @linktypes = qw( DependsOn MemberOf RefersTo );
-
-    foreach my $linktype (@linktypes) {
-        if ( $ARGSRef->{ $Ticket->Id . "-$linktype" } ) {
-            for my $luri ( split ( / /, $ARGSRef->{ $Ticket->Id . "-$linktype" } ) ) {
-                $luri =~ s/\s*$//;    # Strip trailing whitespace
-                my ( $val, $msg ) = $Ticket->AddLink( Target => $luri,
-                                                      Type   => $linktype );
-                push @results, $msg;
-            }
-        }
-        if ( $ARGSRef->{ "$linktype-" . $Ticket->Id } ) {
-
-            for my $luri ( split ( / /, $ARGSRef->{ "$linktype-" . $Ticket->Id } ) ) {
-                my ( $val, $msg ) = $Ticket->AddLink( Base => $luri,
-                                                      Type => $linktype );
-
-                push @results, $msg;
-            }
-        } 
-    }
+    my (@results) = ProcessRecordLinks(RecordObj => $Ticket,
+				       ARGSRef => $ARGSRef);
 
     #Merge if we need to
     if ( $ARGSRef->{ $Ticket->Id . "-MergeInto" } ) {
@@ -1473,6 +1433,60 @@ sub ProcessTicketLinks {
 }
 
 # }}}
+
+sub ProcessRecordLinks {
+    my %args = ( RecordObj => undef,
+                 ARGSRef   => undef,
+                 @_ );
+
+    my $Record  = $args{'RecordObj'};
+    my $ARGSRef = $args{'ARGSRef'};
+
+    my (@results);
+
+    # Delete links that are gone gone gone.
+    foreach my $arg ( keys %$ARGSRef ) {
+        if ( $arg =~ /DeleteLink-(.*?)-(DependsOn|MemberOf|RefersTo)-(.*)$/ ) {
+            my $base   = $1;
+            my $type   = $2;
+            my $target = $3;
+
+            push @results,
+              "Trying to delete: Base: $base Target: $target  Type $type";
+            my ( $val, $msg ) = $Record->DeleteLink( Base   => $base,
+                                                     Type   => $type,
+                                                     Target => $target );
+
+            push @results, $msg;
+
+        }
+
+    }
+
+    my @linktypes = qw( DependsOn MemberOf RefersTo );
+
+    foreach my $linktype (@linktypes) {
+        if ( $ARGSRef->{ $Record->Id . "-$linktype" } ) {
+            for my $luri ( split ( / /, $ARGSRef->{ $Record->Id . "-$linktype" } ) ) {
+                $luri =~ s/\s*$//;    # Strip trailing whitespace
+                my ( $val, $msg ) = $Record->AddLink( Target => $luri,
+                                                      Type   => $linktype );
+                push @results, $msg;
+            }
+        }
+        if ( $ARGSRef->{ "$linktype-" . $Record->Id } ) {
+
+            for my $luri ( split ( / /, $ARGSRef->{ "$linktype-" . $Record->Id } ) ) {
+                my ( $val, $msg ) = $Record->AddLink( Base => $luri,
+                                                      Type => $linktype );
+
+                push @results, $msg;
+            }
+        } 
+    }
+
+    return (@results);
+}
 
 eval "require RT::Interface::Web_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web_Vendor.pm});

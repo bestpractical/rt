@@ -63,36 +63,40 @@ if ($ARGS{'QuickCreate'} ) {
 if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 
-    if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        $m->redirect("$RT::WebPath/Ticket/Display.html?id=$1");
+   if ( $query =~ m/^\s*(\d+)\s*$/ ) {
+        $m->comp("/Ticket/Display.html", id=> $1);
+        return();
+    }
+
+    if ($m->comp('/Elements/Callback', _CallbackName => 'SearchPreFilter', 
+		 query => $query, %ARGS)) {
+	return();
     }
 
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 
     if ( $query =~ m/\@/ ) {
-        $session{'tickets'}->LimitWatcher( VALUE    => $query,
-                                            TYPE => 'Requestor',
-                                             OPERATOR => '=', );
-        $m->redirect("$RT::WebPath/Search/Listing.html");
+        $m->comp("/Search/Results.html", Query => "Requestor = '$query'");
+
+        return();
     }
 
     #
     # Any search on queue name or subject will be for new/open tickets
     # only.
     #
-    $session{'tickets'}->LimitStatus( VALUE    => $_,
-                                      OPERATOR => '=', ) for qw(open new);
+
+    my $status = "Status = 'new' OR Status = 'open'";
 
     my $queue = RT::Queue->new( $session{'CurrentUser'} );
     if ( $queue->Load($query) && $queue->Id ) {
-        $session{'tickets'}->LimitQueue( VALUE    => $queue->Id,
-                                         OPERATOR => '=', );
-        $m->redirect("$RT::WebPath/Search/Listing.html");
+        $m->comp("/Search/Results.html", Query => "Queue = '" . $queue->Id . "' AND ($status)");
+        return();
     }
-    $session{'tickets'}->LimitSubject( VALUE    =>  $query,
-                                       OPERATOR => 'LIKE' );
 
-    $m->redirect("$RT::WebPath/Search/Listing.html");
+    $m->comp("/Search/Results.html", Query => "Subject LIKE '$query' AND ($status)");
+    return();
+
 }
 
 if ($ARGS{'HomeRefreshInterval'}) {

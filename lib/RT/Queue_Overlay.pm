@@ -102,6 +102,39 @@ foreach my $right ( keys %{$RIGHTS} ) {
 }
     
 
+sub AddLink {
+    my $self = shift;
+    my %args = ( Target => '',
+                 Base   => '',
+                 Type   => '',
+                 Silent => undef,
+                 @_ );
+
+    unless ( $self->CurrentUserHasRight('ModifyQueue') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    return $self->SUPER::_AddLink(%args);
+}
+
+sub DeleteLink {
+    my $self = shift;
+    my %args = (
+        Base   => undef,
+        Target => undef,
+        Type   => undef,
+        @_
+    );
+
+    #check acls
+    unless ( $self->CurrentUserHasRight('ModifyQueue') ) {
+        $RT::Logger->debug("No permission to delete links\n");
+        return ( 0, $self->loc('Permission Denied'))
+    }
+
+    return $self->SUPER::_DeleteLink(%args);
+}
+
 =head2 AvailableRights
 
 Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
