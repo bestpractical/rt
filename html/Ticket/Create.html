@@ -63,7 +63,7 @@
 <&|/l&>Cc</&>:
 </TD>
 <TD class=value COLSPAN=5>
-<INPUT NAME="Cc" SIZE=40<% $ARGS{Cc} && " VALUE=\"$ARGS{Cc}\""%>><BR>
+<INPUT NAME="Cc" SIZE=40 VALUE="<% $ARGS{Cc} %>"><BR>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
 </TD>
@@ -73,7 +73,7 @@
 <&|/l&>Admin Cc</&>:
 </TD>
 <TD class=value COLSPAN=5>
-<INPUT NAME="AdminCc" SIZE=40<% $ARGS{AdminCc} && " VALUE=\"$ARGS{AdminCc}\""%>><BR>
+<INPUT NAME="AdminCc" SIZE=40 VALUE="<% $ARGS{AdminCc} %>"><BR>
 <i><font size=-2>
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
 </TD>
@@ -152,8 +152,8 @@
 <TABLE BORDER=0>
 <TR><TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD><TD><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></TD></TR>
 <TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " VALUE=\"$ARGS{TimeWorked}\""  %>></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " VALUE=\"$ARGS{TimeLeft}\"" %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><input size=3 name="TimeWorked" value="<% $ARGS{TimeWorked} %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><input size=3 name="TimeLeft" value="<% $ARGS{TimeLeft} %>"></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <br>
@@ -177,12 +177,12 @@ $ARGS{Due}%>"></TD></TR>
 
 <i><&|/l&>(Enter ticket ids or URLs, seperated with spaces)</&></i>
 <TABLE BORDER=0>
-<TR><TD ALIGN=RIGHT><&|/l&>Depends on</&></TD><TD><input size=10 name="new-DependsOn"<% $ARGS{'new-DependsOn'} && " VALUE=\"$ARGS{'new-DependsOn'}\""%>></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Depended on by</&></TD><TD><input size=10 name="DependsOn-new"<% $ARGS{'DependsOn-new'} && " VALUE=\"$ARGS{'DependsOn-new'}\"" %>></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Parents</&></TD><TD><input size=10 name="new-MemberOf"<% $ARGS{'new-MemberOf'} && " VALUE=\"$ARGS{'new-MemberOf'}\"" %>></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Children</&></TD><TD><input size=10 name="MemberOf-new" <% $ARGS{'MemberOf-new'} && " VALUE=\"$ARGS{'MemberOf-new'}\"" %>></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Refers to</&></TD><TD><input size=10 name="new-RefersTo"<% $ARGS{'new-RefersTo'} && " VALUE=\"$ARGS{'new-MemberOf'}\"" %>></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Referred to by</&></TD><TD><input size=10 name="RefersTo-new"<% $ARGS{'RefersTo-new'} && " VALUE=\"$ARGS{'RefersTo-new'}\"" %>></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Depends on</&></TD><TD><input size=10 name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Depended on by</&></TD><TD><input size=10 name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Parents</&></TD><TD><input size=10 name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Children</&></TD><TD><input size=10 name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Refers to</&></TD><TD><input size=10 name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Referred to by</&></TD><TD><input size=10 name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} %>"></TD></TR>
 
 
 </TABLE>
