@@ -1,0 +1,50 @@
+<%INIT>
+my %collection_to_obj;
+my %collection_to_class;
+my %record_to_collection;
+foreach my $key (keys %INC) {
+    $key =~ m{^(RTx?(?:/.+)?/([^_/]+)).pm$}i or next;
+    my ($class, $type) = ($1, $2);
+    $class =~ s{/}{::}g;
+    $class->can('NewItem') or next;
+    my $obj = eval {$class->new($session{CurrentUser})->NewItem} or next;
+    $collection_to_obj{$type} = $obj;
+    $collection_to_class{$type} = $class;
+    $record_to_collection{$1} = $type if ref($obj) =~ /(\w+)$/;
+}
+
+my @collection = sort keys %collection_to_obj;
+my @record = (
+    map {($_, $_."Id")} (qw(Member PrincipalType Object),
+    sort keys %record_to_collection)
+);
+
+my %gone;
+foreach my $type (@collection) {
+    my $obj = $collection_to_obj{$type} or next;
+
+    # First, eliminate collections that can be inferred from other objects
+    foreach my $method (@collection) {
+	$gone{$method}++ if $obj->can($method) or $obj->can("_$method");
+    }
+
+    # Next, eliminate normalization records with multiple parent fields 
+    my $score = 0;
+    foreach my $property (@record) {
+	$score++ if $obj->_Accessible($property, 'read');
+    }
+    $gone{$type}++ if $score > 1;
+}
+
+delete @collection_to_class{keys %gone};
+return {map {(lc($_) => $collection_to_class{$_})} keys %collection_to_class}
+    if $Want eq 'CollectionToClass';
+return {map {(lc($_) => $record_to_collection{$_})} keys %record_to_collection}
+    if $Want eq 'RecordToCollection';
+
+delete @collection_to_obj{keys %gone};
+return [sort keys %collection_to_obj];
+</%INIT>
+<%ARGS>
+$Want
+</%ARGS>

@@ -20,12 +20,12 @@
 % foreach my $entry (@entries) {
   <entry>
     <title mode="escaped"><% $entry->{Name} || "#$entry->{Id}" %></title>
+    <& $Link, Relation => "service.edit", URI => "$FeedURI/$entry->{Id}", Title => loc("Edit"). ": $entry->{Name}" &>
     <summary mode="escaped"><% $entry->{Description} %></summary>
     <modified><% $entry->{LastUpdated} %></modified>
     <issued><% $entry->{Created} %></issued>
     <created><% $entry->{Created} %></created>
     <id><% $entry->{URI} %></id>
-    <& $Link, Relation => "service.edit", URI => "$FeedURI/$entry->{Id}", Title => loc("Edit"). ": $entry->{Name}" &>
 % if ($entry->{HTML_URL}) {
     <& $Link, Type => 'text/html', URI => "$RT::WebURL$entry->{HTML_URL}", Title => $entry->{Name} &>
 % }

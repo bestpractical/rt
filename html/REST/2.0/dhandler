@@ -12,7 +12,9 @@ $realm =~ s/[^\w.]//g;
 my $nonce = Digest::MD5::md5_hex($realm . rand());
 my %methods = map {($_ => 1)} @RT::RESTAuthenticationMethods;
 
-my $atom_client = ($r->header_in('User-Agent') =~ /\batom\b/i);
+my %accept = map { $_ => 1 } $r->header_in('Accept') =~ m{([^\s,]+/[^;,]+)}g;
+my $atom_client = $accept{'application/x.atom+xml'};
+
 my $header_out = sub {
     $ENV{FCGI_ROLE} ? $r->header_out(@_) : $r->headers_out->add(@_);
 };
@@ -126,25 +128,33 @@ AUTH_WSSE: {
 }
 
 if (!$CurrentUser or !$CurrentUser->Id) {
-    return $m->comp('Error/index', Status => 401);
+    return $m->comp('Elements/Error', Status => 401);
 }
 
 $session{CurrentUser} = $CurrentUser;
 
-# TODO: Redirect /template to /templates
-
 my $path = $m->dhandler_arg;
-my $type = lc($path);
+my $type = $path;
 $type =~ s{/.*}{};
 $type =~ s{-}{/};
+if ($type ne lc($type)) {
+    $path =~ s{([^/]*)}{\L$type};
+    $r->header_out(Location => $path);
+    return $m->comp('Elements/Error', Status => 301);
+}
 
-my $class;
-foreach my $key (keys %INC) {
-    $key =~ m{^(RTx?(?:/.+)?/($type)).pm$}i or next;
-    ($class, $type) = ($1, $2);
-    $class =~ s{/}{::}g;
-    $class->can('UnLimit') or (undef $class, next);
-    last;
+my $map = $m->comp('Elements/Introspect', Want => 'CollectionToClass');
+my $class = $map->{$type};
+if ($class) {
+    $type = $1 if $class =~ m/([^:]+)$/;
+}
+else {
+    $map = $m->comp('Elements/Introspect', Want => 'RecordToCollection');
+    if (my $new_type = lc($map->{$type})) {
+	$path =~ s{([^/]*)}{$new_type};
+	$r->header_out(Location => $path);
+	return $m->comp('Elements/Error', Status => 301);
+    }
 }
 
 my $BaseURI = "$RT::WebPath/REST/2.0";
@@ -154,11 +164,23 @@ $ARGS{Link} = "$BaseURI/Elements/Link";
 $ARGS{Now} = RT::Date->new($session{CurrentUser});
 $ARGS{Now}->SetToNow;
 
-$r->content_type('text/xml; charset=utf-8');
+my @types = qw(
+    application/x.atom+xml
+    application/xhtml+xml
+    application/xml
+);
+my $content_type = 'text/xml'; # fallback
+foreach my $try_type (@types) {
+    $accept{$try_type} or next;
+    $content_type = $try_type;
+    last;
+}
+
+$r->content_type("$content_type; charset=utf-8");
 
 if (!$class) {
     return $m->comp('index', %ARGS) if $path =~ /index|^\W*$/i;
-    return $m->comp('Error/index', Status => 404);
+    return $m->comp('Elements/Error', Status => 404);
 }
 
 $m->comp(
