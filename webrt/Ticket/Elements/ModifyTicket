@@ -2,7 +2,6 @@
   width => "100%",
   titleright => "<a href=\"Display.html?id=".$TicketObj->Id."\">Abort Modification.</a>" &>
  
-<%$ARGS{'UserString'}%> is the string
 %#ACTION="" means submit to self.
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">

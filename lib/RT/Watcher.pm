@@ -1,5 +1,5 @@
 # $Header$
-# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 #
 
@@ -37,10 +37,14 @@ sub Create  {
 		);
   
     my $User=RT::User->new($self->CurrentUser);
-    if (!$Owner && $User->LoadByEmail($args{Email})) {
+    if (!$args{Owner} && $User->LoadByEmail($args{Email})) {
 	$args{Owner}=$User->id;
 	delete $args{Email};
     }
+
+    #TODO: figure out why this code is here
+    # it appears to nuke unqualfied email addresses if and only
+    # if there is an owner
     if ($args{Email} && $args{Email} !~ /\@/ && $args{Owner}) {
 	delete $args{Email};
     }
@@ -108,21 +112,28 @@ sub Email {
 }
 # }}}
 
-# {{{ sub DisplayPermitted 
-sub DisplayPermitted  {
-  my $self = shift;
-  #TODO: Implement
-  return(1);
-}
-# }}}
+# {{{ sub IsUser
 
-# {{{ sub ModifyPermitted 
-sub ModifyPermitted  {
-  my $self = shift;
-  #TODO: Implement
-  return(1);
+=head2 IsUser
+
+Returns true if this watcher object is tied to a user object. (IE it
+isn't sending to some other email address).
+Otherwise, returns undef
+
+=cut
+
+sub IsUser {
+    my $self = shift;
+    # if this watcher has an email address glued onto it,
+    # return undef
+    if (defined($self->SUPER::Email)) {
+        return undef;
+    }
+    else {
+        return 1;
+    }
 }
-# }}}
+
 
 # {{{ sub _Accessible 
 sub _Accessible  {

@@ -500,6 +500,14 @@ sub _CleanAddressesAsString {
 # {{{ Routines that return RT::Watchers objects of Requestors, Ccs and AdminCcs
 
 # {{{ sub Requestors
+
+=head2 Requestors
+
+Takes nothing.
+Returns this ticket's Requestors as an RT::Watchers object
+
+=cut
+
 sub Requestors {
   my $self = shift;
 
@@ -520,7 +528,14 @@ sub Requestors {
 # }}}
 
 # {{{ sub Cc
-# (see AdminCc comments!)
+
+=head2 Cc
+
+Takes nothing.
+Returns a watchers object which contains this ticket's Cc watchers
+
+=cut
+
 sub Cc {
   my $self = shift;
 
@@ -542,17 +557,20 @@ sub Cc {
 # }}}
 
 # {{{ sub AdminCc
-# TODO: Should this also return queue watchers?
-# ...and are this used anywhere anyway?
-# -- TobiX
+
+=head2 AdminCc
+
+Takes nothing.
+Returns this ticket's administrative Ccs as an RT::Watchers object
+
+=cut
+
 sub AdminCc {
   my $self = shift;
-
   
   unless ($self->CurrentUserHasRight('ShowTicket')) {
     return (0, "Permission Denied");
   }
-
   if (! defined ($self->{'AdminCc'})) {
     require RT::Watchers;
     $self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);

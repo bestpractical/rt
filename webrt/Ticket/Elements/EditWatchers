@@ -1,32 +1,44 @@
 %# $Header$
-%# Copyright 2000 Tobias Brox <tobix@fsck.com>
-%# Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
 <ul>
-%while (my $r=$Watchers->Next) {
-<input type="hidden" name="id" value="<%$id%>">
-<input type="hidden" name="Scope" value="<%$Scope%>">
-<input type="hidden" name="WatcherId" value="<%$r->id%>">
+
+%# Print out a placeholder if there are none.
+%if ($watchers->Count == 0 ) {
+<li><i>none</i>
+% }
+
+
+%while (my $watcher=$watchers->Next) {
 <li>
-<input type="submit" name="action" value="delete">
-%# If this watcher is a real user. TODO THIS LOGIC IS WRONG
-%# all watchers have an owner. it's if this watcher doesn't
-%# have an EmailAddress attributed that we wanna know
-%if ($r->Owner) {
-<a href="<%$RT::WebPath%>/Admin/Users/Display.html?id=<%$r->OwnerObj->id%>">
-        <%$r->OwnerObj->RealName%>
-</a>
+<INPUT TYPE=CHECKBOX NAME="DelWatcher<%$watcher->id%>" UNCHECKED>
+%#If there's a principal backing this user, lets give a link to their
+%# account
+%if ($watcher->IsUser) { 
+<a href="<%$RT::WebPath%>/Admin/Users/Display.html?id=<%$watcher->OwnerObj->id%>">
+<%$watcher->OwnerObj->RealName%></a>:
+%} else {
+Email address:
 %}
-<%$r->Email%>
+<i><%$watcher->Email%></i>
 %}
-</ol>
+</ul>
 <%INIT>
-my $Watchers = $TicketObj->Watchers;
+my ($watchers, $watcher, $set);
+if ($Type  =~ /^request/i) {
+       $watchers = $TicketObj->Requestors;
+       }
+elsif ($Type =~ /^admin/i) {
+        $watchers = $TicketObj->AdminCc;
+        }
+elsif ($Type =~ /^cc/i) {
+        $watchers = $TicketObj->Cc;
+      }
+else { $watchers = $TicketObj->Watchers;
+       }
 </%INIT>
 <%ARGS>
-$id => undef
 $TicketObj => undef
-$Scope => undef
 $Type => undef
 </%ARGS>
 
