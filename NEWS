@@ -1,3 +1,11 @@
+21 jul 99 (Tobix)
+-----------------
+Merged some bugfixes from the 1-0-branch. Migrated to Internet::Mail
+for sending emails (patch by Charlie Brady) - most of the users won't
+notice the difference, but it's A Right Thing (ref. Charlie Brady). As
+a result, mailprog configuration is removed from the
+Makefile. However, Internet::Mail _might_ require some configuration.
+
 17 jul 99 (Tobix)
 -----------------
 I've integrated my RT into the development branch rt 1.1, the version
