@@ -457,8 +457,53 @@ my @cols =  $tix->DisplayColumns;
 ok ($cols[0] == undef, "We haven't explicitly asked to display anything");
 
 
+my (@ids, @expectedids);
 
+my $t = RT::Ticket->new($RT::SystemUser);
 
+my $string = 'subject/content SQL test';
+ok( $t->Create(Queue => 'General', Subject => $string), "Ticket Created");
+
+push @ids, $t->Id;
+
+my $Message = MIME::Entity->build(
+			     Subject     => 'this is my subject',
+			     From        => 'jesse@example.com',
+			     Data        => [ $string ],
+        );
+
+ok( $t->Create(Queue => 'General', Subject => 'another ticket', MIMEObj => $Message, MemberOf => $ids[0]), "Ticket Created");
+
+push @ids, $t->Id;
+
+$query = ("Subject LIKE '$string' OR Content LIKE '$string'");
+
+my ($id, $msg) = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
+
+while (my $tick = $tix->Next) {
+    push @expectedids, $tick->Id;
+}
+
+eq_array(\@ids, \@expectedids);
+
+$query = ("id = $ids[0] OR MemberOf = $ids[0]");
+
+my ($id, $msg) = $tix->FromSQL($query);
+
+ok ($id, $msg);
+
+is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
+
+@expectedids = undef;
+while (my $tick = $tix->Next) {
+    push @expectedids, $tick->Id;
+}
+
+eq_array(\@ids, \@expectedids);
 
 =end testing
 
