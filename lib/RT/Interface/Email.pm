@@ -139,8 +139,8 @@ sub CheckForSuspiciousSender {
 
     my ($From, $junk) = ParseSenderAddressFromHead($head);
     
-    if (($From =~ /^mailer-daemon/i) or
-	($From =~ /^postmaster/i)){
+    if (($From =~ /^mailer-daemon\@/i) or
+	($From =~ /^postmaster\@/i)){
 	return (1);
 	
     }
@@ -296,9 +296,9 @@ sub ParseCcAddressesFromHead {
     foreach my $AddrObj (@ToObjs, @CcObjs) {
 	my $Address = $AddrObj->address;
 	$Address = $args{'CurrentUser'}->UserObj->CanonicalizeEmailAddress($Address);
- 	next if ($args{'CurrentUser'}->EmailAddress =~ /^$Address$/i);
-	next if ($args{'QueueObj'}->CorrespondAddress =~ /^$Address$/i);
-	next if ($args{'QueueObj'}->CommentAddress =~ /^$Address$/i);
+ 	next if ($args{'CurrentUser'}->EmailAddress =~ /^\Q$Address\E$/i);
+	next if ($args{'QueueObj'}->CorrespondAddress =~ /^\Q$Address\E$/i);
+	next if ($args{'QueueObj'}->CommentAddress =~ /^\Q$Address\E$/i);
 	next if (RT::EmailParser::IsRTAddress(undef, $Address));
 	
 	push (@Addresses, $Address);
