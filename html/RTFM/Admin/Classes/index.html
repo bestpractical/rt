@@ -23,27 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTFM/Admin/Elements/Header, Title => loc("Admin Classes") &>
-<& /RTFM/Admin/Elements/Tabs, current_tab => 'RTFM/Admin/Classes/' &>
+<& /RTFM/Admin/Elements/ClassTabs, current_tab => 'RTFM/Admin/Classes/', current_subtab => 'RTFM/Admin/Classes/', Title => loc("Select a Class") &>
 
-
-<& /Elements/TitleBoxStart, title => loc("Select a Class") &>
-
-%# if ($session{'CurrentUser'}->HasRight( Object => $RT::FM::System, Right => 'AdminClass')) {
-<P><A HREF="<%$RT::WebPath%>/RTFM/Admin/Classes/Modify.html?Create=1"><&|/l&>Create a new Class</&></A><BR><BR></P>
-%# }
 
 <TABLE>
-<TR>
-<TD VALIGN=TOP>
-
-<FORM METHOD=POST ACTION="<% $RT::WebPath %>/RTFM/Admin/Classes/">
-
-<input type="checkbox" name="FindDisabledClasses"> <&|/l&>Include disabled classes in listing.</&>
-<BR>
-<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
-</FORM>
-</TD>
-</TR>
 <TR>
 <TD>
 <%$caption%>:<BR>
@@ -58,8 +41,18 @@
 </UL>
 </TD>
 </TR>
+<TR>
+<TD VALIGN=TOP>
+
+<FORM METHOD=POST ACTION="<% $RT::WebPath %>/RTFM/Admin/Classes/">
+
+<input type="checkbox" name="FindDisabledClasses"> <&|/l&>Include disabled classes in listing.</&>
+<BR>
+<div align=right><input type=submit value="<&|/l&>Go!</&>"></div> 
+</FORM>
+</TD>
+</TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
 
 <%INIT>
 my ($Class, $caption);

@@ -23,10 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTFM/Admin/Elements/Header, title => loc("Modify Custom Field [_1]", $CustomFieldObj->id)&>
-<& /RTFM/Admin/Elements/CustomFieldTabs, id => $CustomFieldObj->Id &>
+<& /RTFM/Admin/Elements/CustomFieldTabs, id => $CustomFieldObj->Id ,
+current_tab => $current_subtab, Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/TitleBoxStart, title => $title &>
 
 <FORM METHOD="POST" ACTION="Basics.html">
 <INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
@@ -42,7 +42,6 @@
 <& /RTFM/Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </table>
 % }
-<& /Elements/TitleBoxEnd&>
 <&/Elements/Submit&>
 </FORM>
 
@@ -50,16 +49,18 @@
 
 <%INIT>
 
-my $CustomFieldObj = RT::FM::CustomField->new( $session{'CurrentUser'} );
-my ( $title, @results, $id );
 
-if ( !$CustomField ) {
+
+my $CustomFieldObj = RT::FM::CustomField->new( $session{'CurrentUser'} );
+my ( $title, @results);
+
+if ( !$id ) {
     $title = loc("Create a CustomField");
     $id    = 'new';
 }
 else {
 
-    if ( $CustomField eq 'new' ) {
+    if ( $id eq 'new' ) {
         my ( $val, $msg ) = $CustomFieldObj->Create(Name        => $Name,
                                                     Type        => $Type,
                                                     Description => $Description,
@@ -69,7 +70,7 @@ else {
         $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name() );
     }
     else {
-        $CustomFieldObj->Load($CustomField) || Abort( loc('No CustomField') );
+        $CustomFieldObj->Load($id) || Abort( loc('No CustomField') );
         $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name() );
 
         my @attribs = qw( Name Type Description SortOrder);
@@ -122,12 +123,17 @@ if ($ARGS{$paramtag."new-Name"}) {
 	push (@results, $msg);
 }
 
-
+my $current_subtab;
+if ($ARGS{'Create'}){ 
+    $current_subtab = "RTFM/Admin/CustomFields/Basics.html?Create=1";
+} else {
+    $current_subtab = "RTFM/Admin/CustomFields/Basics.html?id=".$id;
+    }
 
 
 </%INIT>
 <%ARGS>
-$CustomField => undef
+$id => undef
 $Type => undef
 $SortOrder => undef
 $Description => undef

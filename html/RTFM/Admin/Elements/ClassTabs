@@ -1,8 +1,14 @@
-<& /RTFM/Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'RTFM/Admin/Classes/', %ARGS &>
-<hr>
+<& /RTFM/Admin/Elements/Tabs, 
+    subtabs => $tabs, 
+    current_tab => 'RTFM/Admin/Classes/', 
+    current_subtab => $current_tab, 
+    Title => $Title &>
 <%INIT>
-  my $subtabs = {
-                 A => { title => loc('Basics'),
+my $tabs;
+if ($id) {
+
+   $tabs = {
+                 D => { title => loc('Basics'),
                         path => "RTFM/Admin/Classes/Modify.html?id=".$id,
                            },
                  
@@ -20,7 +26,22 @@
 
                  
 };
+}
+if ($session{'CurrentUser'}->HasRight( Object => $RT::FM::System, Right => 'AdminClass')) {
+  $tabs->{"A"} = { title => loc('Select class'),
+                        path => "RTFM/Admin/Classes/",
+                           };
+  $tabs->{"B"} = { title => loc('New class'),
+                        path => "RTFM/Admin/Classes/Modify.html?Create=1",
+                        separator => 1,
+                           };
+}
+
 </%INIT>
 <%ARGS>
 $id => undef
+$current_tab => undef
+$current_subtab => undef
+$subtabs => undef
+$Title => undef
 </%ARGS>

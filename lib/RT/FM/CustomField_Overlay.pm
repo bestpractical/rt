@@ -26,11 +26,11 @@ use RT::ACL;
 
 use vars qw/$RIGHTS/;
 $RIGHTS = {
-
-    AdminValues          => 'Modify values for this custom field', #loc_pair
-    AdminCustomField          => 'Modify metadata for this custom field', #loc_pair
-    ShowACL             => 'Display Access Control List',             # loc_pair
-    ModifyACL           => 'Modify Access Control List',              # loc_pair
+    ShowCustomField  => 'See this custom field\'s name and values',   #loc_pair
+    AdminValues      => 'Modify values for this custom field',        #loc_pair
+    AdminCustomField => 'Modify metadata for this custom field',      #loc_pair
+    ShowACL          => 'Display Access Control List',                # loc_pair
+    ModifyACL        => 'Modify Access Control List',                 # loc_pair
 };
 
 # TODO: This should be refactored out into an RT::ACLedObject or something
@@ -123,6 +123,10 @@ sub Create {
     my %args = (@_);
 
 
+    unless ($self->CurrentUser->HasRight(Right => 'AdminCustomField', Object => $RT::FM::System)){
+        return(0, $self->loc('Permission Denied'));
+    }
+
     # This routine is just here so that SortOrder '' doesn't get passed up the chain
 
     # TODO: generalize this all the way out for any not null field
@@ -134,7 +138,7 @@ sub Create {
 
 
 # }}}
-# {{{ Dealing with "possible" values for selectfoo customfields
+
 
 # {{{ Value
 
@@ -149,10 +153,10 @@ sub Value {
     my $name = shift;
 
     my $values = $self->ValuesObj();
-    $values->Limit(FIELD => 'Name',
-		   OPERATOR => '=',
-		   VALUE => $name);
 
+    if ($self->CurrentUserHasRight('ShowCustomField')) {
+        $values->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $name);
+    }
     return ($values->First);
 
 }
@@ -170,7 +174,9 @@ Returns a RT::FM::CustomFieldValueCollection object of this Field's values.
 sub ValuesObj {
 	my $self = shift;
 	my $values = RT::FM::CustomFieldValueCollection->new($self->CurrentUser);
-	$values->Limit( FIELD => 'CustomField', OPERATOR => '=', VALUE => $self->Id );
+    if ($self->CurrentUserHasRight('ShowCustomField')) {
+	    $values->Limit( FIELD => 'CustomField', OPERATOR => '=', VALUE => $self->Id );
+    }
 	return ($values);
 }
 
@@ -212,6 +218,9 @@ sub AddValue {
 		     SortOrder => '0',
 		     @_ );
              
+    unless ($self->CurrentUserHasRight('AdminCustomFieldValues')) {
+        return(0, $self->loc("Permission Denied"));
+    }
 	my $newval = RT::FM::CustomFieldValue->new($self->CurrentUser);
 	return($newval->Create(  CustomField => $self->Id,
              Name =>$args{'Name'},
@@ -238,6 +247,9 @@ Does not remove this value for any article which has had it selected
 sub DeleteValue {
         my $self = shift;
     my $id = shift;
+    unless ($self->CurrentUserHasRight('AdminCustomFieldValues')) {
+        return(0, $self->loc("Permission Denied"));
+    }
 
         my $val_to_del = RT::FM::CustomFieldValue->new($self->CurrentUser);
         $val_to_del->Load($id);
@@ -259,6 +271,7 @@ sub DeleteValue {
 # }}}
 
 
+# {{{ ValidateValue
 
 =head2 ValidateValue Value
 
@@ -384,7 +397,7 @@ Article is a ticket id.
 
 sub ValuesForArticle {
         my $self = shift;
-    my $article_id = shift;
+        my $article_id = shift; 
 
         my $values = new RT::FM::ArticleCFValueCollection($self->CurrentUser);
         $values->LimitToCustomField($self->Id);
@@ -562,6 +575,8 @@ sub ValidateValueForArticle {
 
 # }}}
 
+# {{{ AddToClass
+
 =head2 AddToClass ID
 
 Adds this custom field to the class specified by ID. 
@@ -580,8 +595,6 @@ my $cf = RT::FM::CustomField->new($RT::SystemUser);
 ok($id,$msg);
 ($id,$msg) = $cf->AddToClass('1');
 ok($id,$msg);
-($id,$msg) = $cf->AddToClass('0');
-ok($id,$msg);
 ($id,$msg) = $cf->AddToClass('99999999990');
 ok(!$id,$msg);
 
@@ -595,14 +608,12 @@ sub AddToClass {
     my $class = shift;
 
     
-    unless ( $class eq '0' ) {
         my $class_obj = RT::FM::Class->new( $self->CurrentUser );
         $class_obj->Load($class);
         unless ( $class_obj->Id ) {
             return ( 0, $self->loc("Invalid value for class") );
         }
         $class = $class_obj->Id;
-    }
     my $ClassCF = RT::FM::ClassCustomField->new( $self->CurrentUser );
     $ClassCF->LoadByCols( Class => $class, CustomField => $self->Id );
     if ( $ClassCF->Id ) {
@@ -613,6 +624,10 @@ sub AddToClass {
 
     return ( $id, $msg );
 }
+
+# }}}
+
+# {{{ RemoveFromClass 
 
 =head2 RemoveFromClass ID
 
@@ -632,8 +647,6 @@ my $cf = RT::FM::CustomField->new($RT::SystemUser);
 ok($id,$msg);
 ($id,$msg) = $cf->RemoveFromClass('1');
 ok($id,$msg);
-($id,$msg) = $cf->RemoveFromClass('0');
-ok($id,$msg);
 ($id,$msg) = $cf->RemoveFromClass('99999999990');
 ok(!$id,$msg);
 ($id,$msg) = $cf->RemoveFromClass('2');
@@ -645,27 +658,37 @@ ok(!$id,$msg);
 =cut
 
 sub RemoveFromClass {
-    my $self = shift;
+    my $self  = shift;
     my $class = shift;
 
-    
-    unless ( $class eq '0' ) {
-        my $class_obj = RT::FM::Class->new( $self->CurrentUser );
-        $class_obj->Load($class);
-        unless ( $class_obj->Id ) {
-            return ( 0, $self->loc("Invalid value for class") );
-        }
-        $class = $class_obj->Id;
+    my $class_obj = RT::FM::Class->new( $self->CurrentUser );
+    $class_obj->Load($class);
+    unless ( $class_obj->Id ) {
+        return ( 0, $self->loc("Invalid value for class") );
     }
+    $class = $class_obj->Id;
     my $ClassCF = RT::FM::ClassCustomField->new( $self->CurrentUser );
     $ClassCF->LoadByCols( Class => $class, CustomField => $self->Id );
     unless ( $ClassCF->Id ) {
-        return ( 0, $self->loc("This custom field does not apply to that class"));
+        return ( 0,
+                 $self->loc("This custom field does not apply to that class") );
     }
     my ( $id, $msg ) = $ClassCF->Delete;
 
     return ( $id, $msg );
 
+}
+
+# }}}
+
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    my $right = shift;
+
+    return ($self->CurrentUser->HasRight( Right => $right,
+                                          Object => $self, 
+                                          EquivObjects => [$RT::FM::System] ));
 
 }
 

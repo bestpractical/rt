@@ -1,13 +1,13 @@
-<& /RTFM/Admin/Elements/Header, Title => loc("Admin Custom Fields") &>
-<& /RTFM/Admin/Elements/Tabs, current_tab => 'RTFM/Admin/CustomFields/' &>
+<& /RTFM/Admin/Elements/Header &>
+
+<& /RTFM/Admin/Elements/CustomFieldTabs, current_tab => 'RTFM/Admin/CustomFields/',
+Title => loc("Select a Custom Fields") &>
 
 <UL>
-<LI><A href="Basics.html?create=1"><&|/l&>Create a new Custom Field</&></A><BR><BR>
-
 %while  (my $CustomFieldObj = $CustomFields->Next) { 
 
 <LI>
-<A HREF="Basics.html?CustomField=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id()%>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a><BR>
+<A HREF="Basics.html?id=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id()%>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a><BR>
 
 %}
 

@@ -22,32 +22,4 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTFM/Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'RTFM/Admin/', 
-    current_tab => $current_tab, 
-    Title => $Title &>
-<%INIT>
-  my $tabs = { Classes => { title => loc('Classes'),
-			  path => 'RTFM/Admin/Classes/',
-			},
-	       CustomFields => { title => loc('Custom Fields'),
-			   path => 'RTFM/Admin/CustomFields/',
-			 },
-	     };
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-  }
-
-</%INIT>
-
-
-<%ARGS>
-$subtabs => undef
-$current_tab => undef
-$current_subtab => undef
-$Title => undef
-</%ARGS>
+<FORM ACTION="<%$RT::WebPath%>/RTFM/Article/Display.html"><input type=submit value="<&|/l&>Goto Article</&>">&nbsp;<input size=15 name=id accesskey="0"></FORM>

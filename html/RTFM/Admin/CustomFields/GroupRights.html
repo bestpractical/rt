@@ -23,13 +23,14 @@
 %# 
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => loc('Modify group rights for custom field [_1]', $CustomFieldObj->Name) &>
-<& /RTFM/Admin/Elements/CustomFieldTabs, id => $id &>  
+<& /RTFM/Admin/Elements/CustomFieldTabs, id => $id, current_tab =>
+"RTFM/Admin/CustomFields/UserRights.html?id=".$id, Title =>
+ loc('Modify group rights for custom field [_1]', $CustomFieldObj->Name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <FORM METHOD=POST ACTION="GroupRights.html">
     <INPUT TYPE=HIDDEN NAME=id VALUE="<% $CustomFieldObj->id %>">
       
-<& /Elements/TitleBoxStart, title => loc('Modify group rights for custom field [_1]', $CustomFieldObj->Name) &>
       
 <h1><&|/l&>System groups</&></h1>
 <TABLE>
@@ -64,7 +65,6 @@
 % }
 </TABLE>
             
-      <& /Elements/TitleBoxEnd &>
       <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
       
   </FORM>

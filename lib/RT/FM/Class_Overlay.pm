@@ -14,6 +14,7 @@ $RIGHTS = {
     SeeClass            => 'See that this class exists', #loc_pair
     CreateArticle       => 'Create articles in this class', #loc_pair
     ShowArticle       => 'See articles in this class', #loc_pair
+    ShowArticleHistory       => 'See articles in this class', #loc_pair
     ModifyArticle       => 'Modify or delete articles in this class', #loc_pair
     AdminClass          => 'Modify metadata and custom fields for this class', #loc_pair
     ShowACL             => 'Display Access Control List',             # loc_pair
@@ -189,11 +190,14 @@ sub CustomFields {
     my $self      = shift;
     
     my $cfs       = RT::FM::CustomFieldCollection->new( $self->CurrentUser );
-    $cfs->LimitToClass($self->Id);
+    if ($self->CurrentUserHasRight('SeeClass')) {
+        $cfs->LimitToClass($self->Id);
+
+    }
+
     return($cfs);                
 }
 # }}}
-
 
 # {{{ ACCESS CONTROL
 
@@ -201,7 +205,7 @@ sub CustomFields {
 sub _Set {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('AdminQueue') ) {
+    unless ( $self->CurrentUserHasRight('AdminClass') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
     return ( $self->SUPER::_Set(@_) );
@@ -214,7 +218,7 @@ sub _Set {
 sub _Value {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('SeeQueue') ) {
+    unless ( $self->CurrentUserHasRight('SeeClass') ) {
         return (undef);
     }
 

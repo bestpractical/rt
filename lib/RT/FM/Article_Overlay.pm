@@ -28,60 +28,6 @@ use RT::Links;
 use RT::URI::fsck_com_rtfm;
 use RT::FM::TransactionCollection;
 
-use vars qw/$RIGHTS/;
-
-# {{{ This object provides ACLs
-
-$RIGHTS = {
-    SeeQueue            => 'Can this principal see this queue',       # loc_pair
-    AdminQueue          => 'Create, delete and modify queues',        # loc_pair
-    ShowACL             => 'Display Access Control List',             # loc_pair
-    ModifyACL           => 'Modify Access Control List',              # loc_pair
-    ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
-    AdminCustomFields   => 'Create, delete and modify custom fields', # loc_pair
-    ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
-    ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
-
-    ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
-    ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
-
-    ShowTicket         => 'Show ticket summaries',                    # loc_pair
-    ShowTicketComments => 'Show ticket private commentary',           # loc_pair
-
-    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
-    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
-    CreateTicket    => 'Create tickets in this queue',                # loc_pair
-    ReplyToTicket   => 'Reply to tickets',                            # loc_pair
-    CommentOnTicket => 'Comment on tickets',                          # loc_pair
-    OwnTicket       => 'Own tickets',                                 # loc_pair
-    ModifyTicket    => 'Modify tickets',                              # loc_pair
-    DeleteTicket    => 'Delete tickets'                               # loc_pair
-
-};
-
-# TODO: This should be refactored out into an RT::ACLedObject or something
-# stuff the rights into a hash of rights that can exist.
-
-foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
-
-
-=head2 AvailableRights
-
-Returns a hash of available rights for this object. The keys are the right names and the values are a description of what t
-he rights do
-
-=cut
-
-sub AvailableRights {
-    my $self = shift;
-    return($RIGHTS);
-}
-
-
-# }}}
-
 
 # {{{ Create
 
@@ -120,13 +66,13 @@ my $article = RT::FM::Article->new($user);
 ok (UNIVERSAL::isa($article, 'RT::FM::Article'));
 ok (UNIVERSAL::isa($article, 'RT::FM::Record'));
 ok (UNIVERSAL::isa($article, 'RT::Record'));
-ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record'));
+ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record') , "It's a searchbuilder record!");
 
 
 ($id, $msg) = $article->Create( Class => 'ArticleTest', Summary => "ArticleTest");
 ok ($id, $msg);
 $article->Load($id);
-is ($article->Summary, 'ArticleTest');
+is ($article->Summary, 'ArticleTest', "The summary is set correct");
 my $at = RT::FM::Article->new($RT::SystemUser);
 $at->Load($id);
 is ($at->id , $id);
@@ -156,6 +102,11 @@ sub Create {
     unless ($class->Id) {
         return(0,$self->loc('Invalid Class'));
     }
+
+    unless ($class->CurrentUserHasRight('CreateArticle')) { 
+        return(0, $self->loc("Permission Denied"));
+    }
+
 
     $RT::Handle->BeginTransaction();
     my ($id, $msg) =  $self->SUPER::Create(
@@ -258,7 +209,10 @@ routine will not recurse and will not find grandchildren, great-grandchildren, u
 sub Children {
     my $self = shift;
     my $kids = new RT::FM::ArticleCollection($self->CurrentUser);
-    $kids->LimitToParent($self->Id);
+
+    unless ($self->CurrentUserHasRight('ShowArticle')){
+        $kids->LimitToParent($self->Id);
+    }
     return($kids);
 }
 
@@ -289,7 +243,7 @@ sub AddLink {
         @_
     );
 
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
@@ -297,9 +251,7 @@ sub AddLink {
     my ($link_type, $link_pointer);
 
     if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug(
-"$self tried to delete a link. both base and target were specified"
-        );
+        $RT::Logger->debug( "$self tried to delete a link. both base and target were specified");
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
@@ -520,7 +472,7 @@ sub DeleteLink {
     );
 
     #check acls
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
         return ( 0, $self->loc('Permission Denied'))
     }
 
@@ -618,7 +570,7 @@ sub _Links {
 
 
         my $search = new RT::Links( $self->CurrentUser );
-        if ( $self->CurrentUserHasRight('ShowTicket') ) {
+        if ( $self->CurrentUserHasRight('ShowArticle') ) {
 
             $search->Limit( FIELD => $args{'Field'}, VALUE => $self->URI );
             $search->Limit( FIELD => 'Type', VALUE => $args{'Type'} ) if ($args{'Type'});
@@ -659,6 +611,11 @@ ok($art->__Value('URI') eq $art->URI, "The uri in the db is set correctly");
 
 sub URI {
     my $self = shift;
+
+    unless ($self->CurrentUserHasRight('ShowArticle')) {
+        return $self->loc("Permission Denied");
+    }
+
     my $uri = RT::URI::fsck_com_rtfm->new($self->CurrentUser);
     return($uri->URIForObject($self));
 }
@@ -692,7 +649,10 @@ ok($art->__Value('URI') eq $art->URIObj->URI, "The uri in the db is set correctl
 sub URIObj {
     my $self = shift;
     my $uri = RT::URI->new($self->CurrentUser);
-    $uri->FromObject($self);
+    if ($self->CurrentUserHasRight('ShowArticle')) {
+        $uri->FromObject($self);
+    }
+
     return($uri);
 }
 
@@ -721,8 +681,10 @@ sub CustomFieldValues {
     my $customfield = shift;
     
     my $cfovc = new RT::FM::ArticleCFValueCollection($self->CurrentUser);
+    if ($self->CurrentUserHasRight('ShowArticle')) {
     $cfovc->LimitToArticle($self->Id);
     $cfovc->LimitToCustomField($customfield);
+    }
     return ($cfovc);
 }
 
@@ -786,9 +748,9 @@ ok (!$id, "Can't add a non-existent value to a custom field that's a 'select mul
 
 sub AddCustomFieldValue {
     my $self = shift;
-  #  unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-  #      return ( 0, $self->loc("Permission Denied") );
-  #  }
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
     $self->_AddCustomFieldValue(@_);
 }
 
@@ -823,7 +785,7 @@ sub _AddCustomFieldValue {
 
 
     # Load up a ArticleCFValueCollection object for this custom field 
-    my $values = $cf->ValuesForArticle( $self->id );
+    my $values = $self->CustomFieldValues($cf->Id);
 
 
     # If the custom field only accepts a single value, delete the existing
@@ -949,6 +911,10 @@ sub DeleteCustomFieldValue {
                  Field   => undef,
                  @_ );
 
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
     #Load up the ObjectKeyword we\'re talking about
     my $CFObjectValue = new RT::FM::ArticleCFValue( $self->CurrentUser );
     $CFObjectValue->LoadByCols( Content     => $args{'Content'},
@@ -998,15 +964,21 @@ sub DeleteCustomFieldValue {
 
 =head2 CurrentUserHasRight
 
-NOT IMPLEMENTED YET
+Returns true if the current user has the right for this article, for the whole system or for this article's class
 
 =cut
 
+
 sub CurrentUserHasRight {
     my $self = shift;
-    $RT::Logger->crit("$self CurrentUserHasRight not implemented");
-    return 1;
+    my $right = shift;
+
+    return ($self->CurrentUser->HasRight( Right => $right,
+                                          Object => $self, 
+                                          EquivObjects => [$RT::FM::System, $self->ClassObj]  ));
+
 }
+
 
 
 # }}}
@@ -1105,12 +1077,15 @@ ok ($trans->OldContent, "There was some old value");
 
 =cut
 
-
 sub _Set {
     my $self = shift;
     my %args = ( Field => undef,
                  Value => undef,
                  @_ );
+
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
 
     $self->_NewTransaction( Type       => 'Core',
                             Field      => $args{'Field'},
@@ -1120,6 +1095,22 @@ sub _Set {
     return ( $self->SUPER::_Set(%args) );
 
 }
+
+=head2 _Value PARAM
+
+Return "PARAM" for this object. if the current user doesn't have rights, returns undef
+
+=cut
+
+sub _Value { 
+    my $self = shift;
+    my $arg = shift;
+    unless (   ($arg eq 'Class') || ( $self->CurrentUserHasRight('ShowArticle') ) ) {
+        return ( undef);
+    }
+    return $self->SUPER::_Value($arg);
+}
+
 # }}}
 
 1;

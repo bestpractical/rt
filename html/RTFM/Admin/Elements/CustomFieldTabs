@@ -1,22 +1,65 @@
-<& /RTFM/Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'RTFM/Admin/CustomFields/', %ARGS &>
-<hr>
+<& /RTFM/Admin/Elements/Tabs, 
+    subtabs => $tabs, 
+    current_tab => 'RTFM/Admin/CustomFields/', 
+    current_subtab => 
+            "RTFM/Admin/CustomFields/Basics.html?id=" . $id,
+    Title => $Title &>
 <%INIT>
-  my $subtabs = {
-                 A => { title => loc('Basics'),
-                        path => "RTFM/Admin/CustomFields/Basics.html?id=".$id,
-                           },
-                 
-                 F => { title => loc('Group Rights'),
-                          path => "RTFM/Admin/CustomFields/GroupRights.html?id=".$id,
-                        },      
-                 G => { title => loc('User Rights'),
-                          path => "RTFM/Admin/CustomFields/UserRights.html?id=".$id,
-                        },
+my $tabs;
+
+if ($id) {
+    my $cf = RT::FM::CustomField->new( $session{'CurrentUser'} );
+    $cf->Load($id);
+    $tabs = {
+        C => {
+            title => $cf->Name,
+            path  => "RTFM/Admin/CustomFields/Basics.html?id=" . $id,
+
+            subtabs => {
+
+                C => { title => loc('Basics'),
+                       path  => "RTFM/Admin/CustomFields/Basics.html?id=" . $id,
+                },
+
+                F => { title => loc('Group Rights'),
+                       path  => "RTFM/Admin/CustomFields/GroupRights.html?id="
+                         . $id, },
+                G => {
+                    title => loc('User Rights'),
+                    path => "RTFM/Admin/CustomFields/UserRights.html?id=" . $id,
+                },
+
+            } }
+
+    };
+}
+
+if ($session{'CurrentUser'}->HasRight( Object => $RT::FM::System, Right => 'AdminCustomField')) {
+  $tabs->{"A"} = { title => loc('Select custom field'),
+                        path => "RTFM/Admin/CustomFields/",
+                           };
+  $tabs->{"B"} = { title => loc('New custom field'),
+                        path => "RTFM/Admin/CustomFields/Basics.html?Create=1",
+                        separator => 1,
+                           };
+}
+  foreach my $tab (sort keys %{$tabs}) {
+    if ($tabs->{$tab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{"current_subtab"} = $current_tab;
+    }
+  foreach my $subtab (sort keys %{$tabs->{'subtabs'}}) {
+    if ($tabs->{$tab}->{subtabs}->{$subtab}->{'path'} eq $current_tab) {
+      $tabs->{$tab}->{subtabs}->{$subtab}->{"current_subtab"} = $current_subtab;
+    }
+  }
+
+  }
 
 
-                 
-};
 </%INIT>
 <%ARGS>
 $id => undef
+$current_subtab => undef
+$current_tab => undef
+$Title => undef
 </%ARGS>

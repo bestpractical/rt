@@ -22,16 +22,17 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTFM/Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'RTFM/Article/Search.html', current_tab => $current_tab, current_subtab => $current_subtab, title => $title&>
-
-<hr>
+<& /RTFM/Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'RTFM/Article/Search.html', current_tab => $current_tab, current_subtab => $current_subtab, Title => $Title&>
   
 <%INIT>
 
 my $tabs;
 $tabs->{'a_search'} = { class     => "currentnav",
                         path      => "RTFM/Article/Search.html",
-                        title     => loc("Search"),
+                        title     => loc("Search"), };
+$tabs->{'aa_new'} = { class     => "currentnav",
+                        path      => "RTFM/Article/PreCreate.html",
+                        title     => loc("New Article"),
                         separator => 1 };
 if ($id) {
     $tabs->{"this"} = { class          => "currentnav",
@@ -59,7 +60,7 @@ if ($id) {
 
 <%ARGS>
 $id => undef
-$title => undef
+$Title => undef
 $subtabs => undef
 $current_tab => undef
 $current_subtab => undef

@@ -145,13 +145,13 @@ my $toptabs = { a => { title => loc('RT'),
                        path  => 'RTFM/' },
                 'articles' => { title => loc('Articles'),
                        path  => 'RTFM/Article/Search.html' },
-                D => { title => loc('Configuration'),
+                'd' => { title => loc('Configuration'),
                        path  => 'RTFM/Admin/' }, };
 
 
 my $topactions = {
         #A => { html => $m->scomp('/Elements/CreateTicket')     },
-        #B => { html => $m->scomp('/Elements/GotoTicket') }
+        B => { html => $m->scomp('/RTFM/Elements/GotoArticle') }
         };
 
                     
