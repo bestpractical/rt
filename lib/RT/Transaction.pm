@@ -376,11 +376,11 @@ sub Description  {
   }
 
   elsif ($self->Type eq 'AddWatcher'){
-      return( $self->Field." ". $self->NewValue ."added by ".$self->Creator->UserId);
+      return( $self->Field." ". $self->NewValue ." added by ".$self->Creator->UserId);
   }
   
   elsif ($self->Type eq 'DelWatcher'){
-      return( $self->Field." ".$self->OldValue ."deleted by ".$self->Creator->UserId);
+      return( $self->Field." ".$self->OldValue ." deleted by ".$self->Creator->UserId);
   }
 
   elsif ($self->Type eq 'Subject') {

@@ -54,7 +54,7 @@
 <TR>
 
 % foreach $action (sort keys %{$topactions}) {
-<TD><%$topactions->{"$action"}->{'html'} |n %></TD>
+<TD><font size=-1><%$topactions->{"$action"}->{'html'} |n %></font></TD>
 % }
 </TR>
 </TABLE>
@@ -65,11 +65,13 @@
 <TABLE><TR>
 %  foreach $action (sort keys %{$actions}) {
 <TD>
+<FONT SIZE=-1>
 % if ($actions->{"$action"}->{'html'}) {
 <%$actions->{"$action"}->{'html'} |n%>
 % } else {
 <A HREF="<%$RT::WebPath%>/<% $actions->{$action}->{'path'}%>"><% $actions->{$action}->{'title'}%></A>
 % }
+</FONT>
 </TD>
 %  }
 </TR></TABLE>

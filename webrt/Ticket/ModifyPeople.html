@@ -7,7 +7,35 @@
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 <& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$TicketObj->Id,   width => "100%" &>
 
-<& Elements/EditPeople, TicketObj => $TicketObj, UserField => $UserField, UserOp => $UserOp, UserString => $UserString &>
+<TABLE>
+<TR>
+<TD VALIGN=TOP>
+
+<h3>Owner</h3>
+Owner: <& /Elements/SelectOwner, Name => 'Owner', Default => $TicketObj->OwnerObj->Id &>
+<h3>New watchers</h3>
+Find people whose<BR>
+<& /Elements/SelectUsers &>
+
+<& Elements/AddWatchers, TicketObj => $TicketObj, UserString => $UserString,
+        UserOp => $UserOp, UserField => $UserField &>
+
+</TD><TD VALIGN=TOP>
+<h3>Current watchers</h3>
+(Check box to delete)<br>
+
+Requestors:
+<& Elements/EditWatchers, TicketObj => $TicketObj, Type => 'requestors' &>
+
+Cc:
+<& Elements/EditWatchers, TicketObj => $TicketObj, Type => 'cc' &>
+
+Administrative Cc:
+<& Elements/EditWatchers, TicketObj => $TicketObj, Type => 'admincc' &>
+
+</TD>
+</TR>
+</TABLE>
 
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>

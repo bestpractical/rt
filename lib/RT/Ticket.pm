@@ -486,6 +486,7 @@ sub DeleteWatcher {
           $self->_NewTransaction ( Type => 'DelWatcher',        
                  OldValue => $Watcher->Email,
                  Field => $Watcher->Type,
+				   
                    );
         $Watcher->Delete();
      }
@@ -498,7 +499,7 @@ sub DeleteWatcher {
       if ($Watcher->Email =~ /^$id$/) {
 	$self->_NewTransaction ( Type => 'DelWatcher',
 				 OldValue => $Watcher->Email,
-				 Data => $Watcher->Type,
+				 Field => $Watcher->Type,
 			       );
 	$Watcher->Delete();
       }
@@ -1236,15 +1237,15 @@ sub TimeWorkedAsString {
 Comment on this ticket.
 Takes a hashref with the follwoing attributes:
 
-    BccMessageTo, CcMesageTo, MimeObj, TimeTaken
+MimeObj, TimeTaken
 
 =cut
 
 sub Comment {
   my $self = shift;
   
-  my %args = (BccMessageTo => undef,
-	      CcMessageTo => undef,
+  my %args = (
+	      
 	      MIMEObj => undef,
 	      TimeTaken => 0,
 	      @_ );
@@ -1262,11 +1263,6 @@ sub Comment {
 				      MIMEObj => $args{'MIMEObj'}
 				    );
   
-  if ($args{'CcMessageTo'} || 
-      $args{'BccMessageTo'} ) {
-      #TODO send a copy of the correspondence to the CC list and BCC list
-    $RT::Logger->warning( "RT::Ticket::Comment needs to send mail to explicit CCs and BCCs");
-  }
   
   return ($Trans, "The comment has been recorded");
 }
@@ -1280,15 +1276,15 @@ sub Comment {
 Correspond on this ticket.
 Takes a hashref with the follwoing attributes:
 
-    BccMessageTo, CcMesageTo, MimeObj, TimeTaken
+
+MimeObj, TimeTaken
 
 =cut
 
 sub Correspond {
   my $self = shift;
-  my %args = ( CcMessageTo => undef,
-	       BccMessageTo => undef,
-	       MIMEObj => undef,
+  my %args = (
+	      MIMEObj => undef,
 	       TimeTaken => 0,
 	       @_ );
 
@@ -1308,12 +1304,6 @@ sub Correspond {
      TimeTaken => $args{'TimeTaken'},
      MIMEObj=> $args{'MIMEObj'}     
     );
-  
-  if ($args{BccMessageTo} || 
-      $args{CcMessageTo}) {
-
-      $RT::Logger->warning("RT::Ticket->Correspond doesn't yet send CCs and Bccs"); 
-  }
   
   unless ($Trans) {
       $RT::Logger->err("$self couldn't init a transaction ($msg)\n");

@@ -153,9 +153,7 @@ sub ProcessUpdateMessage {
 	my @UpdateContent = split(/\r/,$args{ARGS}->{'UpdateContent'}."\n");
 	my $Message = MIME::Entity->build 
 	    ( Subject => $args{ARGS}->{'UpdateSubject'} || "",
-	      Cc => $args{ARGS}->{'UpdateCc'} || "",
-	      Bcc => $args{ARGS}->{'UpdateBcc'} || "",
-	      Data => \@UpdateContent);
+	    	      Data => \@UpdateContent);
 	
 	## TODO: Implement public comments
 	if ($args{ARGS}->{'UpdateType'} =~ /^(private|public)$/) {

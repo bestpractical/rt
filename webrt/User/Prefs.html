@@ -4,6 +4,9 @@
 	<& /Elements/TitleBoxStart, title => 'Signature'  &>
 <form method=post>
 <input type="hidden" name="id" value=<%$id%>>
+
+TODO edit password and email address.
+
 <TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $u->Signature %></TEXTAREA><br><br>
 	  <& /Elements/TitleBoxEnd &>
       <input type="checkbox" name="NewWindowOption" <%exists $session{NewWindowOption} && "CHECKED"%>>

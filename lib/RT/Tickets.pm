@@ -219,6 +219,29 @@ sub LimitType {
 
 # }}}
 
+# {{{ sub LimitId
+
+=head2 LimitId
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, >, < or !=.
+VALUE is a ticket Id to search for
+
+=cut
+
+sub LimitId {
+    my $self = shift;
+    my %args = (OPERATOR => '=',
+                @_);
+    $self->Limit (FIELD => 'id',
+                  VALUE => $args{'VALUE'},
+                  OPERATOR => $args{'OPERATOR'},
+                  DESCRIPTION => 'Id ' .  $args{'OPERATOR'}. " ". $args{'VALUE'},
+                 );
+}
+
+# }}}
+
 # {{{ sub LimitContent
 
 =head2 LimitContent
