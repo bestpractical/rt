@@ -99,14 +99,17 @@ CREATE TABLE Queues (
 
 CREATE TABLE Watchers (
    id int(11) AUTO_INCREMENT PRIMARY KEY,
-   Ticket int(11),
+   Ticket int(11), # 0 for all
+   Queue int(11), # 0 for all
+	# We might consider adding more power here,
+	# i.e. TransactionType, Scrip, etc
    Email VARCHAR(255),
    Type VARCHAR(16), #Requestor, Cc, Bcc
-  Creator INT(11),
-  Created TIMESTAMP,
-  LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
-   )\g
+   Creator INT(11),
+   Created TIMESTAMP,
+   LastUpdatedBy INT(11),
+   LastUpdated TIMESTAMP
+)\g
 
 CREATE TABLE Tickets (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
