@@ -35,7 +35,8 @@ use File::Temp qw/tempdir/;
 
 =head1 NAME
 
-  RT::Interface::CLI - helper functions for creating a commandline RT interface
+  RT::EmailParser - helper functions for parsing parts from incoming
+  email messages
 
 =head1 SYNOPSIS
 
