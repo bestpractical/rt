@@ -160,6 +160,9 @@ my $toptabs = {     A => { title => loc('Homepage'),
                       },
                  };
                     
+  # Now let callbacks add their extra tabs
+  $m->comp('/Elements/Callback', topactions => $topactions, toptabs => $toptabs, %ARGS);
+
   foreach my $tab (sort keys %{$toptabs}) {
     if ($toptabs->{$tab}->{'path'} eq $current_toptab) {
       $toptabs->{$tab}->{"subtabs"} = $tabs;

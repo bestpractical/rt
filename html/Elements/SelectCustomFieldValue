@@ -22,6 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<& /Elements/Callback, %ARGS &>
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
 <select name="<%$Name%>">

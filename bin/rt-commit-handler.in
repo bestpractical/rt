@@ -80,7 +80,7 @@ use Text::Wrap;
 use Digest::MD5;
 use MIME::Entity;
 
-use lib "@RT_LIB_PATH@";
+use lib ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
 

@@ -169,6 +169,7 @@ AC_SUBST([MASON_SESSION_PATH],		${exp_sessionstatedir})
 AC_SUBST([MASON_HTML_PATH],		${exp_htmldir})
 AC_SUBST([MASON_LOCAL_HTML_PATH],	${exp_customhtmldir})
 AC_SUBST([LOCAL_LEXICON_PATH],		${exp_customlexdir})
+AC_SUBST([LOCAL_LIB_PATH],		${exp_customlibdir})
 AC_SUBST([DESTDIR],			${exp_prefix})
 AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 

@@ -22,6 +22,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<& /Elements/Callback, Name => $Name, Values => $Values, %ARGS &>
+
 % if ($CustomField->Type eq 'FreeformSingle') {
 <input name="<%$Name%>"
 % if ($Values)  {
@@ -53,16 +55,14 @@ value="<%$Values->First->Content%>"
 <%INIT>
 my $Values;
 
-my $CustomFieldValues = $CustomField->Values;
-
 if ($TicketObj ){
  $Values = $TicketObj->CustomFieldValues($CustomField->id);
 }
 
-
 unless ($Name) {
      $Name="Ticket-".$TicketObj->Id."-CustomField-".$CustomField->Id."-Values";
 }
+
 </%INIT>
 <%ARGS>
 $Name => undef

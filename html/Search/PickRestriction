@@ -84,7 +84,7 @@
 % while ( my $CustomField = $CustomFields->Next ) {
 
 <li><% $CustomField->Name %> 
-        <& /Elements/SelectBoolean, Name => "CustomFieldOp". $CustomField->id, 
+        <& /Elements/SelectCustomFieldOperator, Name => "CustomFieldOp". $CustomField->id, 
                                     True => loc("is"), 
                                     False => loc("isn't"), 
                                     TrueVal=> '=', FalseVal => '!=' &>

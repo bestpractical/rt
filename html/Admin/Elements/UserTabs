@@ -50,6 +50,9 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUse
 			   };
 }
 
+  # Now let callbacks add their extra tabs
+  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+
 </%INIT>
   
   

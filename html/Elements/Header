@@ -30,6 +30,7 @@
 <META HTTP-EQUIV="REFRESH" CONTENT="<%$Refresh%>">
 % }
 
+<link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">

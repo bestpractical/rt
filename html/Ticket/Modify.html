@@ -43,6 +43,8 @@
 my $TicketObj = LoadTicket($id);
 my $CustomFields = $TicketObj->QueueObj->CustomFields();
 
+# Now let callbacks have a chance at editing %ARGS
+$m->comp('/Elements/Callback', TicketObj => $TicketObj, CustomFields => $CustomFields, %ARGS);
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 my @cf_results = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);

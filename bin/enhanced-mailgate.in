@@ -49,7 +49,7 @@ $KEYDIR = "@RT_ETC_PATH@/gnupg";
 
 $PermitReplayAttacks = 0;
 
-use lib "@RT_LIB_PATH@";
+use lib ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
 
 
 use RT::Interface::Email  qw(CleanEnv 

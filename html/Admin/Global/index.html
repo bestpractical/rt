@@ -22,24 +22,44 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<& /Elements/Callback, tabs => $tabs, %ARGS &>
 <& /Admin/Elements/Header, Title => loc('Admin/Global configuration') &>
 <& /Admin/Elements/SystemTabs, 
     Title => loc('Admin/Global configuration') &>
 
 <ul>
-<li><font size="+2"><a href="Scrips.html"><&|/l&>Scrips</&></a></font><br>
-<&|/l&>Modify scrips which apply to all queues</&>
+% foreach my $key (sort keys %$tabs) {
+<li><font size="+2"><a href="<% $tabs->{$key}{path} %>"><% $tabs->{$key}{title} %></a></font><br>
+<% $tabs->{$key}{text} %>
 </li>
-<li><font size="+2"><a href="Templates.html"><&|/l&>Templates</&></a></font><br>
-<&|/l&>Edit system templates</&>
-</li>
-<li><font size="+2"><a href="CustomFields.html"><&|/l&>Custom Fields</&></a></font><br>
-<&|/l&>Modify Custom Fields which apply to all queues</&>
-</li>
-<li><font size="+2"><a href="GroupRights.html"><&|/l&>Group Rights</&></a></font><br>
-<&|/l&>Modify global group rights</&>
-</li>
-<li><font size="+2"><a href="UserRights.html"><&|/l&>User Rights</&></a></font><br>
-<&|/l&>Modify global user rights</&>
-</li>
+% }
 </ul>
+
+<%INIT>
+  my $tabs = {
+                
+               A => { title => loc('Scrips'),
+                           text => loc('Modify scrips which apply to all queues'),
+                           path => 'Scrips.html',
+                         },
+               B => { title => loc('Templates'),
+                        text => loc('Edit system templates'),
+                        path => 'Templates.html',
+                      },
+              
+                F => { title => loc('Custom Fields'),
+                        text => loc('Modify Custom Fields which apply to all queues'),
+                        path => 'CustomFields.html',
+                        },
+
+                G => { title => loc('Group Rights'),
+                                text => loc('Modify global group rights'),
+                                path => 'GroupRights.html',
+                      },
+                H => { title => loc('User Rights'),
+                                text => loc('Modify global user rights'),
+                                path => 'UserRights.html',
+                      }
+
+};
+</%INIT>

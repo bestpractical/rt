@@ -148,6 +148,9 @@ if (!$session{'CurrentUser'} && defined ($user) && defined ($pass) ){
 if ( (defined $session{'CurrentUser'}) and 
      ( $session{'CurrentUser'}->Id) ) {
     
+    # Process per-page global callbacks
+    $m->comp('/Elements/Callback', %ARGS);
+
     # If the user isn\'t privileged, they can only see SelfService
     if ((! $session{'CurrentUser'}->Privileged) and
 	($m->base_comp->path !~ '^/SelfService/') ) {

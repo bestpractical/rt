@@ -22,6 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+% if ($Show ne 'Groups') {
 <b><&|/l&>Users</&></b>
 <SELECT MULTIPLE NAME="<%$Name%>Users"  SIZE=10>
 %while (my $user = $users->Next) {
@@ -29,12 +30,15 @@
 %}
 </SELECT>
 <br>
+% }
+% if ($Show ne 'Users') {
 <b><&|/l&>Groups</&></b>
 <SELECT MULTIPLE NAME="<%$Name%>Groups"  SIZE=10>
 %while (my $group = $groups->Next) {
 <OPTION VALUE="Group-<%$group->id%>"><%$group->Name%></OPTION>
 %}
 </SELECT>
+% }
 
 <%INIT>
 my $users = new RT::Users($session{'CurrentUser'});
@@ -53,5 +57,6 @@ $groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
 </%INIT>
 <%ARGS>
 $Name => 'Users'
+$Show => 'All'
 $Group
 </%ARGS>

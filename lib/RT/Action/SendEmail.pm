@@ -112,11 +112,11 @@ sub Commit  {
     # make it happy, but only if we actually have values in those arrays.
     
     $self->SetHeader('To', join(',', @{$self->{'To'}})) 
-      if (@{$self->{'To'}});
+      if ($self->{'To'} && @{$self->{'To'}});
     $self->SetHeader('Cc', join(',' , @{$self->{'Cc'}})) 
-      if (@{$self->{'Cc'}});
-	$self->SetHeader('Bcc', join(',', @{$self->{'Bcc'}})) 
-	  if (@{$self->{'Bcc'}});;
+      if ($self->{'Cc'} && @{$self->{'Cc'}});
+    $self->SetHeader('Bcc', join(',', @{$self->{'Bcc'}})) 
+      if ($self->{'Cc'} && @{$self->{'Bcc'}});;
     
     my $MIMEObj = $self->TemplateObj->MIMEObj;
     $MIMEObj->make_singlepart;
@@ -141,7 +141,7 @@ sub Commit  {
     # If we don't have any 'To' header, drop in the pseudo-to header.
 
     $self->SetHeader('To', join(',', @{$self->{'PseudoTo'}}))
-      if ( (@{$self->{'PseudoTo'}}) and (! $MIMEObj->head->get('To')));
+      if ( $self->{'PseudoTo'} && (@{$self->{'PseudoTo'}}) and (! $MIMEObj->head->get('To')));
     
     if ($RT::MailCommand eq 'sendmailpipe') {
 	open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);

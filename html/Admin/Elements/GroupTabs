@@ -53,6 +53,10 @@ $tabs->{"B"} = { title => loc('New group'),
 	     	path => "Admin/Groups/Modify.html?Create=1",
 		separator => 1,
  	  };
+
+  # Now let callbacks add their extra tabs
+  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+
   foreach my $tab (sort keys %{$tabs}) {
     if ($tabs->{$tab}->{'path'} eq $current_subtab) {
       $tabs->{$tab}->{"subtabs"} = $subtabs;

@@ -34,6 +34,7 @@
   customdir:		${prefix}/local
   customhtmldir:	${customdir}/html
   customlexdir:		${customdir}/po
+  customlibdir:		${customdir}/lib
 </Layout>
 
 <Layout FreeBSD>
@@ -54,4 +55,5 @@
   customdir:		${prefix}/share+
   customhtmldir:	${customdir}/local/html
   customlexdir:		${customdir}/local/po
+  customlibdir:		${customdir}/local/lib
 </Layout>

@@ -101,6 +101,8 @@ Date::Parse
 Date::Format 
 File::Temp
 Term::ReadKey
+Text::Autoformat
+Text::Quoted
 .
 
 $deps{'MASON'} = [ _( << '.') ];

@@ -75,6 +75,16 @@
 </ul>
 % }
 
+<p>
+<b><&|/l&>Groups</&></b>
+
+<ul>
+% while (my $g = $Groups->Next ) {
+<li><&/Elements/SelectWatcherType, Scope=>'queue', Name =>
+"Queue-AddWatcher-Principal-".$g->PrincipalId &> <%$g->Name%>
+(<%$g->Description%>)
+% }
+</ul>
 
 </TD>
 </TR>

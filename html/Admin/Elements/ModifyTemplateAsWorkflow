@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("Approval diagram"), color => "#cccc00" &>
+<& /Elements/TitleBoxStart, title => loc("Approval diagram"), color => "#999900" &>
 <TABLE WIDTH=100%>
 <%PERL>
 my $level = 0;
@@ -120,7 +120,7 @@ if (defined $session{WorkFlow}) {
 <TD></TD>
 </TR>
 <& /Elements/TitleBoxEnd &>
-<& /Elements/TitleBoxStart, title => loc("Approval Details") . ($ARGShref->{WFId} && " #$ARGShref->{WFId}"), color => "#cccc00" &>
+<& /Elements/TitleBoxStart, title => loc("Approval Details") . ($ARGShref->{WFId} && " #$ARGShref->{WFId}"), color => "#999900" &>
 
 <TABLE>
 <TR>
@@ -132,14 +132,26 @@ if (defined $session{WorkFlow}) {
 <&|/l&>Edit Conditions</&>
 ]</a></TD></TR>
 <TR>
-<TD ROWSPAN=4 ALIGN=RIGHT><&|/l&>Type</&>:</TD>
+<TD ROWSPAN=<% @{$session{WorkFlow}} ? 4 : 3%> ALIGN=RIGHT><&|/l&>Type</&>:</TD>
 <TD>
 <& .WFType, Default => $ARGShref->{WFType}, Type => (
     'Approval' # loc
 ) &><br>
 </TD>
 <TD ALIGN=LEFT><&|/l&>Owner</&>:
-<& /Elements/SelectOwner, Name => 'WFOwner',Default => $ARGShref->{WFOwner} || undef &></TD>
+<& /Elements/SelectOwner, Name => 'WFOwner', Default => $ARGShref->{WFOwner} || undef &>
+% my $CFs = $QueueObj->CustomFields;
+% if ($CFs->Count) {
+(<&|/l&>CustomField</&>):
+<SELECT>
+<OPTION>-</OPTION>
+% while ( my $cf = $CFs->Next ) {
+%     next unless $cf->Type =~ /User/;
+<OPTION><% $cf->Name %></OPTION>
+% }
+</SELECT>
+% }
+</TD>
 <TD ALIGN=RIGHT><&|/l&>AdminCc</&>:</TD>
 <TD>
 <% loc("[_1] [_2] of group [_3]", $depth_str, $role_str, $group_str) %>
@@ -154,8 +166,8 @@ if (defined $session{WorkFlow}) {
 <TD COLSPAN=3 ALIGN=LEFT><&|/l&>Queue</&>:
 <& /Elements/SelectQueue, Name => 'WFQueue', Default => $ARGShref->{WFQueue} || undef &></TD>
 </TR>
-<TR>
-<TD>
+% if (@{$session{WorkFlow}}) {
+<TR><TD>
 <& .WFType, Default => $ARGShref->{WFType}, Type => (
     'Alias' # loc
 ) &>
@@ -163,13 +175,14 @@ if (defined $session{WorkFlow}) {
 <TD COLSPAN=3 ALIGN=LEFT><&|/l&>Alias for</&>:
 <% $alias_str %>
 </TD></TR>
+% }
 <TR><TD COLSPAN=4>
 <& .WFType, Default => $ARGShref->{WFType}, Type => (
     'Code' # loc
 ) &><br>
 </TD></TR>
 <TR>
-<TD ALIGN=RIGHT><&|/l&>Description</&>:</TD>
+<TD ALIGN=LEFT><&|/l&>Description</&>:</TD>
 <TD COLSPAN=5>
 <input name="WFDescription" VALUE="<% $ARGShref->{WFDescription} || ''%>" SIZE=80><BR>
 </TD></TR>
@@ -238,6 +251,9 @@ foreach my $id (map $_->{Id}, @{$session{WorkFlow}}) {
     $alias_str .= "SELECTED" if $id == $ARGShref->{WFAdminCc};
     $alias_str .= ">$id</OPTION>";
 }
+
+my $QueueObj = RT::Queue->new($session{CurrentUser});
+$QueueObj->Load($Queue);
 </%INIT>
 <%ARGS>
 $URL
