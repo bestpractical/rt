@@ -94,7 +94,8 @@ sub Parse {
 
 sub _ParseContent  {
   my $self=shift;
-  my %args = ( TicketObj => undef,
+  my %args = ( Argument => undef,
+	       TicketObj => undef,
 	       TransactionObj => undef,
 	       @_);
 
@@ -103,7 +104,7 @@ sub _ParseContent  {
   
   $T::Ticket = $args{'TicketObj'};
   $T::Transaction = $args{'TransactionObj'};
-
+  $T::Argument = $args{'Argument'};
   $T::rtname=$RT::rtname;
   
   $template=Text::Template->new(TYPE=>STRING, 

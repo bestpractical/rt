@@ -10,7 +10,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	1
+RT_VERSION_PATCH	=	2
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -227,9 +227,7 @@ database:
 	sh bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'
 
 acls:
-	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
-	$(PERL) -p -i.orig -e "
-				s'!!DB_TYPE!!'$(DB_TYPE)'g;\
+	$(PERL) -p -i.orig -e " s'!!DB_TYPE!!'$(DB_TYPE)'g;\
 				s'!!DB_HOST!!'$(DB_HOST)'g;\
 			        s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
 			        s'!!DB_RT_HOST!!'$(DB_RT_HOST)'g;\

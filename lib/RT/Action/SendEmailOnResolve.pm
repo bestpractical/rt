@@ -2,11 +2,11 @@
 # Copyright 2000 Tobias Brox <tobix@cpan.org> and  Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 
-package RT::Action::NotifyOnResolve;
+package RT::Action::SendEmailOnResolve;
 
-require RT::Action::Notify;
+require RT::Action::SendEmail;
 
-@ISA = qw(RT::Action::Notify);
+@ISA = qw(RT::Action::SendEmail);
 
 
 #

@@ -3,9 +3,7 @@
 # Released under the terms of the GNU Public License
 
 package RT::Action::SendEmail;
-
 require RT::Action;
-
 @ISA = qw(RT::Action);
 
 
@@ -51,6 +49,7 @@ sub Commit  {
 }
 # }}}
 
+
 # {{{ sub Prepare 
 
 sub Prepare  {
@@ -58,7 +57,8 @@ sub Prepare  {
 
   # This actually populates the MIME::Entity fields in the Template Object
 
-  $self->TemplateObj->Parse(TicketObj => $self->TicketObj, 
+  $self->TemplateObj->Parse(Argument => $self->Argument,
+			    TicketObj => $self->TicketObj, 
 			    TransactionObj => $self->TransactionObj);
 
 
@@ -345,7 +345,10 @@ __END__
 
 =head1 NAME
 
-  RT::Action::SendEmail - An abstract base Action which allows RT::Action modules to send email
+  RT::Action::SendEmail - An Action which users can use to send mail 
+  or can subclassed for more specialized mail sending behavior. 
+  RT::Action::AutoReply is a good example subclass.
+
 
 =head1 SYNOPSIS
   require RT::Action::SendEmail;
@@ -356,9 +359,16 @@ __END__
 
   Basically, you create another module RT::Action::YourAction which ISA RT::Action::SendEmail
 
-  You'll want to override the SetTo, SetCc, SetBcc, SetEnvelopeTo headers to send mail messages
-somewhere other than to the ticket's interested parties. RT::Action::NotifyWatchers would be a
-good place to look to see how this works.
+If you want to set the recipients of the mail to something
+other than the addresses mentioned in the To, Cc, Bcc and EnvelopeTo
+headers, you should subclass RT::Action::SendEmail and  override 
+the SetTo, SetCc, SetBcc and SetEnvelopeTo subroutines.
+
+The reason for the EnvelopeTo routine is to allow you to set who
+the mail message is _really_ sent to, as sometimes you may want 
+the to/cc/bcc headers to "massage the truth" and not send mail to all
+listed addresses. For example, you may want to always set the To: and From: lines to RT but don't want to actually _send_ the mail there.
+
 
 
 =head1 AUTHOR

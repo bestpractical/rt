@@ -54,28 +54,32 @@ CREATE TABLE Scrips (
 
 
 # {{{ Values for Scrips
-INSERT INTO Scrips VALUES (1,'Autoreply', 'Sends an automatic response to the requestor when a ticket was created',
+INSERT INTO Scrips VALUES (1,'Autoreply', 
+			  'Sends an automatic response to the requestor when a ticket was created',
 			  'Create','AutoReply',1,'',0,NULL,0,NULL);
 
-INSERT INTO Scrips VALUES (2,'NotifyOwnerOnTransaction','Sends mail to owner when anything happens',
-			  'Any','Notify',2,'Owner',0,NULL,0,NULL);
+INSERT INTO Scrips VALUES (2,'NotifyOwnerOnTransaction',
+			  'Sends mail to owner when anything happens',
+			  'Any','SendEmail',2,'$',0,NULL,0,NULL);
 
-INSERT INTO Scrips VALUES (4,'NotifyAdminWatchersOnCorrespond','Sends mail to administrative watchers when email comes in',
-			  'Correspond','Notify',3,'Admin',0,NULL,0,NULL);
-INSERT INTO Scrips VALUES (6, 'NotifyRegularWatchersOnCorrespond', 'Send mail to non-administrative watchers whenever correspondence comes in',
-			  'Correspond','Notify',5,'Requestors',0,NULL,0,NULL);
+INSERT INTO Scrips VALUES (3, 'NotifyAdminWatchersOnCorrespond',
+			  'Sends mail to administrative watchers when email comes in',
+			  'Correspond','SendEmail',3,'',0,NULL,0,NULL);
+INSERT INTO Scrips VALUES (4, 'NotifyRegularWatchersOnCorrespond', 
+			  'Send mail to non-administrative watchers whenever correspondence comes in',
+			  'Correspond','SendEmail',4,'',0,NULL,0,NULL);
 
-INSERT INTO Scrips VALUES (3, 'NotifyAllWatchersOnCorrespond', 'Send mail to all watchers whenever correspondence comes in',
-			  'Correspond','Notify',5,'All',1,0,1,0);
+INSERT INTO Scrips VALUES (5, 'NotifyAdminWatchersOnComment', 
+			   'Send mail to administrative watchers whenever comments come in',
+			  'Comment','SendEmail',5,'',1,0,1,0);
 
-INSERT INTO Scrips VALUES (7, 'NotifyAdminWatchersOnComment', 'Send mail to administrative watchers whenever comments come in',
-			  'Comment','Notify',5,'Admin',1,0,1,0);
+INSERT INTO Scrips VALUES (6, 'NotifyAllWatchersOnStatus', 
+			  'Send mail to watchers whenever a ticket\'s status changes',
+			  'Status','SendEmail',6,'',1,0,1,0);
 
-INSERT INTO Scrips VALUES (8, 'NotifyAllWatchersOnStatus', 'Send mail to watchers whenever a ticket\'s status changes',
-			  'Status','Notify',5,'All',1,0,1,0);
-
-INSERT INTO Scrips VALUES (9, 'NotifyAllWatchersOnResolve', 'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
-			  'Status','NotifyOnResolve',6,'All',1,0,1,0);
+INSERT INTO Scrips VALUES (7, 'NotifyAllWatchersOnResolve', 
+			  'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
+			  'Status','SendEmailOnResolve',7,'',1,0,1,0);
 
 
 # }}}
@@ -283,6 +287,7 @@ CREATE TABLE Links (
 # }}}
 
 # {{{ TABLE Templates
+
 CREATE TABLE Templates (
 
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -295,6 +300,16 @@ CREATE TABLE Templates (
 		    # of Norwegian + lappish, I'm uncertain a two character code
 		    # will be enough for all languages and sublanguages that might
 		    # be needed..
+	            #
+		    #
+	            # I think we should probably go with the standard language codes, if
+		    # we're going to do this. things like en, en-GB (or is it UK), en-US 
+		    # and fr-FR, fr-CA.
+	            # I'm tempted to leave this as a placeholder for post-2.0. right now,
+		    # i want to make sure the webui and the cli and internals are localizable.
+		    # 
+	            #
+		    #
   Content BLOB,
   Creator INT(11),
   Created TIMESTAMP,
@@ -333,9 +348,9 @@ problem. To do so, you may reply to this message.
 ',
 NULL,20000227191248,NULL,00000000000000);
 
-
-INSERT INTO Templates VALUES (2,'Default Transaction Template',
-'X-Template: foo
+INSERT INTO Templates VALUES (2,'Mail the ticket owner on transaction',
+'Reply-To: {$Ticket->Queue->CommentAddress} (Replies will be entered as comments)
+To: {$Ticket->Owner->Email} 
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
@@ -350,23 +365,70 @@ Transaction: {$Transaction->Description}
 NULL,20000227191543,NULL,00000000000000);
 
 
-INSERT INTO Templates VALUES (3,'Default Correspondance template',
-'Subject: $object->{Subject}
+INSERT INTO Templates VALUES (3,'Send Correspondence to admins',
+'Subject: {$object->{Subject}}
 Content-Type: text/plain; charset=ISO-8859-1
+To: {$Ticket->AdminWatchersAsString}
+X-TODO: (That\'s probably broken. I need sleep)
+
+
+http://{$RT::WebRT}/ticket/display.html?id={$Ticket->id}
 
 {$Transaction->Message()->First()->Content()}',
 NULL,20000227191745,NULL,00000000000000);
 
-INSERT INTO Templates VALUES (4,'Default Comment template',
-'Subject: [Comment] $object->{Subject}
+INSERT INTO Templates VALUES (4,'Default Correspondence template for requestors',
+'Subject: Re: {$Transaction->Subject}
+To: {$Ticket->RequestorsAsString}
+Cc: {$Ticket->CcAsString}
 Content-Type: text/plain; charset=ISO-8859-1
 
+http://{$RT::WebRT}/ticket/display.html?id={$Ticket->id}
+
+{$Transaction->Message()->First()->Content()}',
+NULL,20000227191745,NULL,00000000000000);
+
+
+
+
+
+INSERT INTO Templates VALUES (5,'Default Administrative Comment template',
+'Subject: [Comment] $object->{Subject}
+Reply-To: {$Ticket->Queue->CommentAddress}
+Content-Type: text/plain; charset=ISO-8859-1
+To: {$Ticket->AdminWatchersAsString}
+
+http://{$RT::WebRT}/ticket/display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
 {$Transaction->Message()->First()->Content()}
 ',
 NULL,20000227191745,NULL,00000000000000);
 
+
+INSERT INTO Templates VALUES (6,'Status Change',
+'Subject: Status Changed to: {$Transaction->NewValue}
+Reply-To: {$Ticket->Queue->CorrespondAddress}
+Content-Type: text/plain; charset=ISO-8859-1
+To: {$Ticket->WatchersAsString}
+
+http://{$RT::WebRT}/ticket/display.html?id={$Ticket->id}
+
+{$Transaction->Message()->First()->Content()}
+',
+NULL,20000227191745,NULL,00000000000000);
+
+INSERT INTO Templates VALUES (7,'Ticket Resolved',
+'Subject: Ticket Resolved
+Reply-To: {$Ticket->Queue->CorrespondAddress}
+Content-Type: text/plain; charset=ISO-8859-1
+To: {$Ticket->RequestorsAsString}
+Cc: {$Ticket->CcAsString}
+
+Your request has been resolved. We hope you\'re happy.
+(This template needs customization.
+',
+NULL,20000227191745,NULL,00000000000000);
 
 # }}}
 
