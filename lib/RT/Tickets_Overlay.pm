@@ -58,6 +58,7 @@ ok (require RT::Tickets);
 use strict;
 no warnings qw(redefine);
 use vars qw(@SORTFIELDS);
+use RT::CustomFields;
 
 
 # Configuration Tables:
@@ -715,41 +716,35 @@ sub _CustomFieldLimit {
   my $field = $rest{SUBKEY} || die "No field specified";
 
   # For our sanity, we can only limit on one queue at a time
-  my $queue = undef;
-  # Ugh.    This will not do well for things with underscores in them
+  my $queue = 0;
 
-  use RT::CustomFields;
-  my $CF = RT::CustomFields->new( $self->CurrentUser );
-  #$CF->Load( $cfid} );
 
-  my $q;
   if ($field =~ /^(.+?)\.{(.+)}$/) {
-    my $q = RT::Queue->new($self->CurrentUser);
-    $q->Load($1);
+    $queue =  $1;
     $field = $2;
-    $CF->LimitToQueue( $q->Id );
-    $queue = $q->Id;
-  } else {
+   }
     $field = $1 if $field =~ /^{(.+)}$/; # trim { }
-    $CF->LimitToGlobal;
-  }
-  $CF->FindAllRows;
 
-  my $cfid = 0;
+    my $q = RT::Queue->new($self->CurrentUser);
+    $q->Load($queue) if ($queue);
 
-  # this is pretty inefficient for huge numbers of CFs...
-  while ( my $CustomField = $CF->Next ) {
-    if (lc $CustomField->Name eq lc $field) {
-      $cfid = $CustomField->Id;
-      last;
+    my $cf;
+    if ($q->id) {
+        $cf = $q->CustomField($field);
     }
-  }
-  die "No custom field named $field found\n"
-    unless $cfid;
+    else { 
+        $cf = RT::CustomField->new($self->CurrentUser);
+        $cf->LoadByNameAndQueue(Queue => '0', Name => $field);
+    }
 
-#   use RT::CustomFields;
-#   my $CF = RT::CustomField->new( $self->CurrentUser );
-#   $CF->Load( $cfid );
+
+
+
+
+  my $cfid = $cf->id;
+
+  die "No custom field named $field found\n" unless $cfid;
+
 
 
   my $null_columns_ok;
@@ -776,15 +771,16 @@ sub _CustomFieldLimit {
 		    QUOTEVALUE => 1,
 		    @rest );
 
-  if (   $op =~ /^IS$/i
-	 or ( $op eq '!=' ) ) {
+
+   # If we're trying to find custom fields that don't match something, we want tickets
+   # where the custom field has no value at all
+
+  if (   ($op =~ /^IS$/i) or ($op =~ /^NOT LIKE$/i) or ( $op eq '!=' ) ) {
     $null_columns_ok = 1;
   }
+    
 
-  #If we're trying to find tickets where the keyword isn't somethng,
-  #also check ones where it _IS_ null
-
-  if ( $op eq '!=' ) {
+  if ( $null_columns_ok) {
     $self->_SQLLimit( ALIAS           => $TicketCFs,
 		      FIELD           => 'Content',
 		      OPERATOR        => 'IS',
@@ -1675,7 +1671,6 @@ sub LimitCustomField {
                  QUOTEVALUE    => 1,
                  @_ );
 
-    use RT::CustomFields;
     my $CF = RT::CustomField->new( $self->CurrentUser );
     if ( $args{CUSTOMFIELD} =~ /^\d+$/) {
 	$CF->Load( $args{CUSTOMFIELD} );
