@@ -2,7 +2,7 @@
 
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="">-</OPTION>
-%foreach $status (@status) {
+%foreach my $status (@status) {
 <OPTION VALUE="<%$status%>" <%($Default eq $status) && 'SELECTED'%>><%$status%></OPTION>
 % }
 </SELECT>
@@ -10,7 +10,6 @@
 my @status = qw(new open stalled resolved dead);
 </%ONCE>
 <%ARGS>
-$status => undef
 $Name => undef
 $Default => undef
  

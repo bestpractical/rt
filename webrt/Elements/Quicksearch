@@ -25,7 +25,7 @@ while (my $queue = $Queues->Next) {
      $Tickets->LimitQueue(VALUE => $queue->id, OPERATOR => '=');            
      my $stalled = $Tickets->Count();
 </%PERL>
-<TR><TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&NewSearch=1"><%$queue->Name%></a></TD>
+<TR><TD><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$queue->Name%></a></TD>
 <TD><%$new%></TD>
 <TD><%$open%></TD>
 <TD><%$stalled%></TD>

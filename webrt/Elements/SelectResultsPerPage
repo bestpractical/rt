@@ -17,6 +17,6 @@ my @labels = qw(Unlimited 10 25 50 100);
 <%ARGS>
 
 $Name => undef
-$Default => undef
+$Default => 50
 
 </%ARGS>
