@@ -92,7 +92,8 @@ sub _Accessible  {
 # {{{ sub Create 
 sub Create  {
   my $self = shift;
-  my %args = ( @_ # get the real argumentlist
+  my %args = (#TODO: insert argument list 
+	      @_ # get the real argumentlist
 	     );
   
   
@@ -108,6 +109,11 @@ sub Create  {
   #TODO: this is horrificially wasteful. we shouldn't commit 
   # to the db and then instantly turn around and load the same data
   
+  #TODO: send a welcome message to the user if they should 
+  # get mail and we should send welcome messages at all
+  #TODO: Send the user a "welcome message"  see [fsck.com #290]
+
+
   return (1,"User created");
 }
 # }}}
@@ -264,7 +270,7 @@ sub HasSystemRight {
   return(0);
 }
 
-
+# }}}
 
 1;
  
