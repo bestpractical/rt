@@ -34,7 +34,6 @@ sub _Init {
 
 # }}}
 
-
 # {{{ sub _Accessible 
 
 sub _Accessible  {
@@ -57,9 +56,9 @@ sub _Accessible  {
 sub _Set {
   my $self = shift;
   # use super::value or we get acl blocked
-  if ($self->SUPER::_Value('Queue') == 0 ) {
+  if ((defined $self->SUPER::_Value('Queue')) && ($self->SUPER::_Value('Queue') == 0 )) {
       unless ($self->CurrentUser->HasSystemRight('ModifyTemplate')) {
-	    return (undef);
+	  return (undef);
       }	
   }
   else {
@@ -90,7 +89,7 @@ sub _Value  {
 
   #If the current user doesn't have ACLs, don't let em at it.  
   #use super::value or we get acl blocked
-  if ($self->SUPER::_Value('Queue') == 0 ) {
+  if ((!defined $self->SUPER::_Value('Queue')) || ($self->SUPER::_Value('Queue') == 0 )) {
       unless ($self->CurrentUser->HasSystemRight('ShowTemplates')) {
 	  return (undef);
       }	
@@ -100,13 +99,11 @@ sub _Value  {
 	  return (undef);
       }
   }
-  return($self->SUPER::_Value($field));
+  return($self->__Value($field));
   
 }
 
 # }}}
-
-
 
 # {{{ sub Create
 
@@ -127,18 +124,18 @@ unknown database failure.
 sub Create {
     my $self = shift;
     my %args = ( Content => undef,
-                 Queue => undef,
+                 Queue => 0,
                  Description => '[no description]',
                  Type => 'Action', #By default, template are 'Action' templates
                  Name => undef,
                  @_
                 );
     
-
-    if ($args{'Queue'} == 0 ) {
+    
+    if ($args{'Queue'} == 0 ) { 
 	unless ($self->CurrentUser->HasSystemRight('CreateTemplate')) {
 	    return (undef);
-	}	
+ 	}	
     }
     else {
 	my $QueueObj = new RT::Queue($self->CurrentUser);
@@ -146,21 +143,22 @@ sub Create {
 	
 	unless ($QueueObj->CurrentUserHasRight('CreateTemplate')) {
 	    return (undef);
-	}
-    }	
-    #TODO+++ check the alias for uniqueness
-
-
-    my $result = $self->SUPER::Create( Content => "$args{'Content'}",
-                                       Queue   => "$args{'Queue'}",
-                                       Description   => "$args{'Description'}",
-                                       Name   => "$args{'Name'}"
-                                      );
+	}	
+    }
+    #TODO+++ check the Name for uniqueness
+    
+    
+    $RT::Logger->debug ("Creating a new template: Content is ".$args{'Content'});
+    my $result = $self->SUPER::Create( Content => $args{'Content'},
+                                       Queue   => $args{'Queue'},,
+                                       Description   => $args{'Description'},
+				       Name   => $args{'Name'}
+                                     );
 
     return ($result);
 
 }
-
+# }}}
 
 # {{{ sub MIMEObj
 sub MIMEObj {
@@ -168,7 +166,6 @@ sub MIMEObj {
   return ($self->{'MIMEObj'});
 }
 # }}}
-
 
 # {{{ sub Parse 
 
@@ -236,21 +233,22 @@ Takes nothing. returns this ticket's queue object
 =cut
 
 sub QueueObj {
-    #TODO +++ what uses this?
-  my $self = shift;
-  if (!defined $self->{'queue'})  {
-    require RT::Queue;
-    $self->{'queue'} = RT::Queue->new($self->CurrentUser)
-      or die "RT::Queue->new(". $self->CurrentUser. ") returned false";
-    #We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
-    my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
-
-  }
-  return ($self->{'queue'});
+    my $self = shift;
+    if (!defined $self->{'queue'})  {
+	require RT::Queue;
+	$self->{'queue'} = RT::Queue->new($self->CurrentUser)
+	  or die "RT::Queue->new(". $self->CurrentUser. ") returned false";
+	#We call __Value so that we can avoid the ACL decision and some deep recursion
+	my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
+	
+    }
+    return ($self->{'queue'});
 }
 
 
 # }}}
+
+# {{{ sub CurrentUserHasQueueRight
 
 =head2 CurrentUserHasQueueRight
 
@@ -262,4 +260,5 @@ sub CurrentUserHasQueueRight {
     return($self->QueueObj->CurrentUserHasRight(@_));
 }
 
+# }}}
 1;

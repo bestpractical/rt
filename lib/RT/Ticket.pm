@@ -73,28 +73,12 @@ sub Load {
        return($self->LoadById($id));
    }
    
-   #It's not a URI. It's not a numerical ticket ID. It must be an alias
+   #It's not a URI. It's not a numerical ticket ID. Punt!
    else {
-       return( $self->LoadByName($id));
+       return(undef)
    }
    
    
-}
-
-# }}}
-
-# {{{ sub LoadByName
-
-=head2 LoadByName
-
-Takes a single argument. Loads the ticket whose alias matches what was passed in.
-
-=cut
-
-sub LoadByName {
-    my $self = shift;
-    my $alias = shift;
-   return($self->LoadByCol('Name', $alias));
 }
 
 # }}}
@@ -138,7 +122,6 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Cc  - A list of RT::User objects, email addresses or Names
   AdminCc  - A list of RT::User objects, email addresses or Names
   
-  Name  -- The ticket\'s textual alias
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
@@ -162,7 +145,6 @@ sub Create {
 		Queue => undef,
 		Requestor => undef,
 		RequestorEmail => undef,
-		Name => undef,
 		Type => 'ticket',
 		Owner => $RT::Nobody->UserObj,
 		Subject => '[no subject]',
@@ -253,7 +235,6 @@ sub Create {
     
     my $id = $self->SUPER::Create(
 				  Queue => $Queue->Id,
-				  Name => $args{'Name'},
 				  Owner => $Owner->Id,
 				  Subject => $args{'Subject'},
 				  InitialPriority => $args{'InitialPriority'},
@@ -1163,6 +1144,7 @@ sub LastUpdatedByObj {
   }
   return $self->{LastUpdatedByObj};
 }
+
 # }}}
 
 # {{{ sub TimeWorkedAsString
@@ -2200,7 +2182,6 @@ sub _Accessible {
   my $self = shift;  
   my %Cols = (
 	      Queue => 'read/write',
-	      Name => 'read/write',
 	      Requestors => 'read/write',
 	      Owner => 'read/write',
 	      Subject => 'read/write',

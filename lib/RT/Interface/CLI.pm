@@ -146,6 +146,7 @@ assumes an empty file.  Returns an edited file as an array of lines.
 
 sub GetMessageContent {
     my %args = (  Source => undef,
+		  Content => undef,
 		  Edit => undef,
 		  CurrentUser => undef,
 		 @_);
@@ -164,7 +165,9 @@ sub GetMessageContent {
 	@lines = (<SOURCE>);
 	close (SOURCE);
     }
-
+    elsif ($args{'Content'}) {
+	@lines = split('\n',$args{'Content'});
+    }
     #get us a tempfile.
     my ($fh, $filename) = tempfile("rt-".$currentuser->Name."XXXXXXXX", TMPDIR=>1);
 	
@@ -184,8 +187,6 @@ sub GetMessageContent {
     close (READ);
 
     unlink ($filename) unless (debug());
-
-    print "Newlines is ".join("\n", @newlines);
     return(\@newlines);
     
 }

@@ -458,7 +458,7 @@ sub AdminTemplates {
     GetOptions(\%args, 'list-templates', 'create-template','modify-template=s',
 	       'delete-template=s', 'display-template=s',
 	       'template-Name=s', 'template-Description=s',
-	       'template-edit!');
+	       'template-edit-content!');
     
     # {{{ List templates
     if ($args{'list-templates'}) {
@@ -494,6 +494,13 @@ sub AdminTemplates {
     elsif ($args{'create-template'}) {
 	#TODO edit the template content
 	my $content;
+
+	my $linesref = GetMessageContent(CurrentUser => $CurrentUser,
+				      Edit => 1);
+	
+	$content = join("\n", @{$linesref});
+	
+
 	my ($val, $msg) = $template->Create(Name => $args{'template-Name'},
 					    Description => $args{'template-Description'},
 					    Content => $content,
@@ -514,14 +521,23 @@ sub AdminTemplates {
 		
 		my $method = "Set$attrib";
 		my $val = $template->$method($args{"template-$attrib"});
-		print "Trying to set $attrib to ". $args{"template-$attrib"};
-		print "Template ".$template->Name. " $attrib:  $val\n";
-		
-		
+				
 	    }
 	}
+	if ($args{'template-edit-content'}) {
+	    
+	    my $linesref = GetMessageContent(CurrentUser => $CurrentUser,
+					     Content => $template->Content,
+					     Edit => 1);
+	    
+	    my $content = join("\n", @{$linesref});	    
+	    my ($val) = $template->SetContent($content);
+	    print $val."\n";
+	}	
+
     }	
     if ($args{'display-template'}) {
+	$template->Load($args{'display-template'});
 	print $template->Name . "\n". $template->Description ."\n". $template->Content."\n";
     }	
 }	

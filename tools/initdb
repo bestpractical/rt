@@ -36,6 +36,11 @@ DB_DBA_PASSWORD = <hidden>
 DB_DATABASE     = $DB_DATABASE
 END
 
+
+my $dsn = "dbi:$DB_TYPE:dbname=$DB_DATABASE;host=$DB_HOST";
+
+unless ($DB_TYPE eq 'Oracle') {
+
 if ( $PROMPT ) {
   print <<END;
 
@@ -46,7 +51,6 @@ END
   exit unless _yesno;
 }
 
-my $dsn = "dbi:$DB_TYPE:dbname=$DB_DATABASE;host=$DB_HOST";
 
 print "\nDropping $DB_TYPE database $DB_DATABASE.\n";
 drop_database( $dsn, $DB_DBA, $DB_DBA_PASSWORD )
@@ -56,6 +60,7 @@ print "\nCreating $DB_TYPE database $DB_DATABASE.\n";
 create_database( $dsn, $DB_DBA, $DB_DBA_PASSWORD )
   or die $DBIx::DataSource::errstr;
 
+}
 
 print "\nCreating database schema.\n";
 my $dbh = DBI->connect( $dsn, $DB_DBA, $DB_DBA_PASSWORD ) or die $DBI::errstr;

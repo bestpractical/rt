@@ -122,11 +122,13 @@ sub Load  {
     }	    
     
     if ($identifier !~ /\D/) {
-	return($self->SUPER::LoadById($identifier));
+	$self->SUPER::LoadById($identifier);
     }
     else {
-	return($self->LoadByCol("Name", $identifier));
-  }
+	$self->LoadByCol("Name", $identifier);
+    }
+    return ($self->Id);
+
 
 }
 # }}}

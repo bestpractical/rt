@@ -113,7 +113,6 @@ my $gratuitous = {
     'id', 'serial', '', '', '', '',
     'EffectiveId', 'integer', 'NULL', '', '', '',
     'Queue', 'integer', 'NULL', '', '', '',
-    'Name', 'varchar', 'NULL', '40', '', '',
     'Type', 'varchar', 'NULL', '16', '', '',
     'IssueStatement', 'integer', 'NULL', '', '', '',
     'Resolution', 'integer', 'NULL', '', '', '',
@@ -137,7 +136,7 @@ my $gratuitous = {
     'Deleted', 'bool', 'NULL','','','',
   ],
   'primary_key' => 'id',
-  'unique' => [ [ 'Name']  ],
+  'unique' => [ [] ],
   'index' => [  ],
 },
 

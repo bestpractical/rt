@@ -639,7 +639,9 @@ sub HasQueueRight {
 	}
     }
 
-    else {
+    unless ($QueueId) {
+	use Data::Dumper;
+	$RT::Logger->debug( "\n\n\n".Dumper(%args)."\n");
     	require Carp;
 	$RT::Logger->debug( Carp::cluck() . "$self ->HasQueueRight found no valid queue id.");
     }
@@ -897,8 +899,8 @@ sub _HasRight {
 	    " ($ScopeClause) AND ($RightClause) AND ($MetaPrincipalsClause)";
 	
 	# {{{ deal with checking if the user has a right as a member of a metagroup
-	
-	$RT::Logger->debug("Now Trying $GroupRightsQuery\n");	
+
+	$RT::Logger->debug("Now Trying $MetaGroupRightsQuery\n");	
 	$hitcount = $self->_Handle->FetchResult($MetaGroupRightsQuery);
 	
 	#if there's a match, the right is granted
@@ -909,7 +911,7 @@ sub _HasRight {
 	}
 	
 	$RT::Logger->debug("No ACL matched MetaGroups query: $MetaGroupRightsQuery\n");	
-	
+
 	# }}}    
 	
     }
