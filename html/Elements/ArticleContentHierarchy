@@ -12,7 +12,7 @@ type="i"
 <BR>
 <%$article->ContentObj->Body |n%>
 % if ($Depth < 99) {
-<& ArticleHierarchy, parent => $article->Id , Depth => $Depth &> 
+<& ArticleContentHierarchy, parent => $article->Id , Depth => $Depth &> 
 % }
 </LI>
 % }
