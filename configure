@@ -793,6 +793,7 @@ Optional Packages:
   --with-db-host=HOSTNAME     FQDN of database server (default: localhost)
   --with-db-port=PORT         Port on which the database server on \$DB_HOST listen
   --with-db-rt-host=HOSTNAME  FQDN of database server (default: localhost)
+  --with-db-dba=DBA   name of the local database administrator (default: root)
   --with-db-database=DBNAME   name of the rt database (default: rt3)
   --with-db-rt-user=DBUSER    name of database user (default: rt_user)
   --with-db-rt-pass=PASSWORD  password for \$DBUSER (default: rt_pass)
@@ -1158,7 +1159,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 RT_VERSION_MAJOR=2
 RT_VERSION_MINOR=1
-RT_VERSION_PATCH=46
+RT_VERSION_PATCH=47
 
 
 
@@ -1454,6 +1455,17 @@ if test "${with_db_rt_host+set}" = set; then
   DB_RT_HOST=$withval
 else
   DB_RT_HOST=localhost
+fi;
+
+
+
+
+# Check whether --with-db-dba or --without-db-dba was given.
+if test "${with_db_dba+set}" = set; then
+  withval="$with_db_dba"
+  DB_DBA=$withval
+else
+  DB_DBA=root
 fi;
 
 
@@ -2115,6 +2127,7 @@ s,@DB_TYPE@,$DB_TYPE,;t t
 s,@DB_HOST@,$DB_HOST,;t t
 s,@DB_PORT@,$DB_PORT,;t t
 s,@DB_RT_HOST@,$DB_RT_HOST,;t t
+s,@DB_DBA@,$DB_DBA,;t t
 s,@DB_DATABASE@,$DB_DATABASE,;t t
 s,@DB_RT_USER@,$DB_RT_USER,;t t
 s,@DB_RT_PASS@,$DB_RT_PASS,;t t
@@ -2949,6 +2962,7 @@ s,@DB_TYPE@,$DB_TYPE,;t t
 s,@DB_HOST@,$DB_HOST,;t t
 s,@DB_PORT@,$DB_PORT,;t t
 s,@DB_RT_HOST@,$DB_RT_HOST,;t t
+s,@DB_DBA@,$DB_DBA,;t t
 s,@DB_DATABASE@,$DB_DATABASE,;t t
 s,@DB_RT_USER@,$DB_RT_USER,;t t
 s,@DB_RT_PASS@,$DB_RT_PASS,;t t
@@ -3784,6 +3798,7 @@ s,@DB_TYPE@,$DB_TYPE,;t t
 s,@DB_HOST@,$DB_HOST,;t t
 s,@DB_PORT@,$DB_PORT,;t t
 s,@DB_RT_HOST@,$DB_RT_HOST,;t t
+s,@DB_DBA@,$DB_DBA,;t t
 s,@DB_DATABASE@,$DB_DATABASE,;t t
 s,@DB_RT_USER@,$DB_RT_USER,;t t
 s,@DB_RT_PASS@,$DB_RT_PASS,;t t
@@ -4620,6 +4635,7 @@ s,@DB_TYPE@,$DB_TYPE,;t t
 s,@DB_HOST@,$DB_HOST,;t t
 s,@DB_PORT@,$DB_PORT,;t t
 s,@DB_RT_HOST@,$DB_RT_HOST,;t t
+s,@DB_DBA@,$DB_DBA,;t t
 s,@DB_DATABASE@,$DB_DATABASE,;t t
 s,@DB_RT_USER@,$DB_RT_USER,;t t
 s,@DB_RT_PASS@,$DB_RT_PASS,;t t

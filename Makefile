@@ -35,7 +35,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)";\
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	46
+RT_VERSION_PATCH	=	47
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -78,7 +78,7 @@ MASON_HTML_PATH		=	/opt/rt3/html
 MASON_LOCAL_HTML_PATH	=	/opt/rt3/local/html
 MASON_DATA_PATH		=	/opt/rt3/var/mason_data
 MASON_SESSION_PATH	=	/opt/rt3/var/session_data
-RT_LOG_PATH             =       /opt/rt3/var/log
+RT_LOG_PATH	    =       /opt/rt3/var/log
 
 # RT_READABLE_DIR_MODE is the mode of directories that are generally meant
 # to be accessable
@@ -178,8 +178,13 @@ default:
 	@echo "be dangerous."
 
 
+
 instruct:
 	@echo "Congratulations. RT has been installed. "
+	@echo "Next, you need to initialize RT's database by running" 
+	@echo " 'make initialize-database' or by executing "       
+	@echo " '$(RT_SBIN_PATH)/rt-initialize-database --action init \ "
+	@echo "     --dba $(DB_DBA) --dba-password <your dba password>'"
 	@echo "You must now configure it by editing $(SITE_CONFIG_FILE)."
 	@echo "From here on in, you should refer to the administrator's guide."
 
@@ -188,7 +193,7 @@ upgrade-instruct:
 	@echo "Congratulations. RT has been upgraded. You should now check-over"
 	@echo "$(CONFIG_FILE) for any necessary site customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
-	@echo "	   $(RT_SBIN_PATH)/insertdata <version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-update-database <version>"
 	@echo "where <version> is the version of RT you're upgrading from."
 
 
@@ -269,11 +274,9 @@ dirs:
 	mkdir -p $(DESTDIR)/$(LOCAL_LEXICON_PATH)
 # }}}
 
-install: config-install dirs files-install initialize-database fixperms
+install: config-install dirs files-install fixperms instruct
 
 files-install: libs-install etc-install bin-install sbin-install html-install
-
-initialize-database: createdb insert-schema database-acl insert-baseline-data
 
 config-install:
 	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)	
@@ -301,26 +304,12 @@ regression-instruct:
 
 
 # {{{ database-installation
-genschema:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb generate
+initialize-database: 
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb --action init --dba root
 
 dropdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb drop 
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba root
 
-database-acl:
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/initdb acl
-
-createdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb create 
-
-insert-schema: etc-install
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb insert
-
-insert-baseline-data:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/insertdata
-
-insert-approval-data:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/insert_approval_scrips
 
 # }}}
 
@@ -361,7 +350,6 @@ sbin-install:
 	cp -rp \
 		sbin/initdb \
 		sbin/testdeps \
-		sbin/insertdata \
 		sbin/insert_approval_scrips \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 	$(PERL) -p -i -e " s'!!PERL!!'"$(PERL)"'g;\
@@ -414,7 +402,7 @@ regenerate-catalogs:
 license-tag:
 	$(PERL) sbin/license_tag
 
-factory: createdb insert-schema
+factory: initdb 
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
 
 commit:

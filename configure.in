@@ -5,7 +5,7 @@ AC_INIT(RT, 3.0, rt-3.0-bugs@fsck.com)
 dnl version numbers
 RT_VERSION_MAJOR=2
 RT_VERSION_MINOR=1
-RT_VERSION_PATCH=46
+RT_VERSION_PATCH=47
 
 AC_SUBST(RT_VERSION_MAJOR)
 AC_SUBST(RT_VERSION_MINOR)
@@ -193,6 +193,14 @@ AC_ARG_WITH(db-rt-host,
             DB_RT_HOST=$withval,
             DB_RT_HOST=localhost)
 AC_SUBST(DB_RT_HOST)
+
+
+dnl DB_DATABASE_ADMIN
+AC_ARG_WITH(db-dba,
+            [  --with-db-dba=DBA   name of the local database administrator (default: root)],
+            DB_DBA=$withval,
+            DB_DBA=root)
+AC_SUBST(DB_DBA)
 
 
 dnl DB_DATABASE
