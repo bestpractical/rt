@@ -1569,7 +1569,7 @@ Correspond on this ticket.
 Takes a hashref with the follwoing attributes:
 
 
-MimeObj, TimeTaken
+MIMEObj, TimeTaken
 
 =cut
 
@@ -1596,19 +1596,25 @@ sub Correspond {
        TimeTaken => $args{'TimeTaken'},
        MIMEObj=> $args{'MIMEObj'}     
       );
-
+    
+    # TODO this bit of logic should really become a scrip for 2.2
     if (($TransObj->IsInbound) and 
 	($self->Status ne 'open') and
 	($self->Status ne 'new')
        ) {
-	my $oldstatus = $self->__Value('Status');
-	$self->__Set(Field => 'Status', Value => 'open');
-	$self->_NewTransaction ( Type => 'Set',
-				 Field => 'Status',
-				 OldValue => $oldstatus,
-				 NewValue => 'open',
-				 Data => 'Ticket auto-opened on incoming correspondence'
-			       );
+	
+	my $TicketAsSystem = new RT::Ticket($RT::SystemUser);
+	$TicketAsSystem->Load($self->Id);
+	
+	my $oldstatus = $TicketAsSystem->Status();
+	$TicketAsSystem->__Set(Field => 'Status', Value => 'open');
+	$TicketAsSystem->_NewTransaction 
+	  ( Type => 'Set',
+	    Field => 'Status',
+	    OldValue => $oldstatus,
+	    NewValue => 'open',
+	    Data => 'Ticket auto-opened on incoming correspondence'
+	  );
     }
     
     unless ($Trans) {

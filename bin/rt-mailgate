@@ -236,8 +236,6 @@ else {
 	    #Return an error message saying that Ticket "#foo" wasn't found.
 	}
 	
-	($status, $msg) = $Ticket->Open;	# Reopening it, if necessary 
-	
 	($status, $msg) = $Ticket->Comment(MIMEObj=>$entity);
 	unless ($status) {
 	    #Warn the sender that we couldn't actually submit the comment.
