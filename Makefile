@@ -29,6 +29,12 @@ LIBS_GROUP		=	bin
 
 # {{{ Files and directories 
 
+# DESTDIR allows you to specify that RT be installed somewhere other than
+# where it will eventually reside
+
+DESTDIR			=	
+
+
 # RT_PATH is the name of the directory you want make to install RT in
 # RT must be installed in its own directory (don't set this to /usr/local)
 
@@ -201,75 +207,95 @@ all:
 
 fixperms:
 	# Make the libraries readable
-	chmod -R $(RT_READABLE_DIR_MODE) $(RT_PATH)
-	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
-	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
+	chmod -R $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_PATH)
+	chown -R $(LIBS_OWNER) $(DESTDIR)/$(RT_LIB_PATH)
+	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
 
-	chown -R $(BIN_OWNER) $(RT_BIN_PATH)
-	chgrp -R $(RTGROUP) $(RT_BIN_PATH)
+	chown -R $(BIN_OWNER) $(DESTDIR)/$(RT_BIN_PATH)
+	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_BIN_PATH)
 
 
-	chmod $(RT_READABLE_DIR_MODE) $(RT_BIN_PATH)
-	chmod $(RT_READABLE_DIR_MODE) $(RT_BIN_PATH)	
+	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)
+	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)	
 
-	chmod 0755 $(RT_ETC_PATH)
-	chmod 0500 $(RT_ETC_PATH)/*
+	chmod 0755 $(DESTDIR)/$(RT_ETC_PATH)
+	chmod 0500 $(DESTDIR)/$(RT_ETC_PATH)/*
 
 	#TODO: the config file should probably be able to have its
 	# owner set seperately from the binaries.
-	chown -R $(BIN_OWNER) $(RT_ETC_PATH)
-	chgrp -R $(RTGROUP) $(RT_ETC_PATH)
+	chown -R $(BIN_OWNER) $(DESTDIR)/$(RT_ETC_PATH)
+	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_ETC_PATH)
 
-	chmod 0550 $(RT_CONFIG)
+	chmod 0550 $(DESTDIR)/$(RT_CONFIG)
 
 	# Make the interfaces executable and setgid rt
-	chown $(BIN_OWNER) $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
+	chown $(BIN_OWNER) $(DESTDIR)/$(RT_MAILGATE_BIN) \
+			$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
+			$(DESTDIR)/$(RT_SPEEDYCGI_HANDLER) \
+			$(DESTDIR)/$(RT_CLI_BIN) \
+			$(DESTDIR)/$(RT_CLI_ADMIN_BIN)
 
-	chgrp $(RTGROUP) $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
+	chgrp $(RTGROUP) $(DESTDIR)/$(RT_MAILGATE_BIN) \
+			$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
+			$(DESTDIR)/$(RT_SPEEDYCGI_HANDLER) \
+			$(DESTDIR)/$(RT_CLI_BIN) \
+			$(DESTDIR)/$(RT_CLI_ADMIN_BIN)
 
-	chmod 0755  $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
+	chmod 0755  	$(DESTDIR)/$(RT_MAILGATE_BIN) \
+			$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
+			$(DESTDIR)/$(RT_SPEEDYCGI_HANDLER) \
+			$(DESTDIR)/$(RT_CLI_BIN) \
+			$(DESTDIR)/$(RT_CLI_ADMIN_BIN)
 
-	chmod g+s $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
+	chmod g+s 	$(DESTDIR)/$(RT_MAILGATE_BIN) \
+			$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
+			$(DESTDIR)/$(RT_SPEEDYCGI_HANDLER) \
+			$(DESTDIR)/$(RT_CLI_BIN) \
+			$(DESTDIR)/$(RT_CLI_ADMIN_BIN)
 
 	# Make the web ui readable by all. 
-	chmod -R  u+rwX,go-w,go+rX $(MASON_HTML_PATH) $(MASON_LOCAL_HTML_PATH)
-	chown -R $(LIBS_OWNER) $(MASON_HTML_PATH) $(MASON_LOCAL_HTML_PATH)
-	chgrp -R $(LIBS_GROUP) $(MASON_HTML_PATH) $(MASON_LOCAL_HTML_PATH)
+	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(MASON_HTML_PATH) \
+					$(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+	chown -R $(LIBS_OWNER) 	$(DESTDIR)/$(MASON_HTML_PATH) \
+				$(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+	chgrp -R $(LIBS_GROUP) 	$(DESTDIR)/$(MASON_HTML_PATH) \
+				$(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
 
 	# Make the web ui's data dir writable
-	chmod 0770  $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
-	chown -R $(WEB_USER) $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
-	chgrp -R $(WEB_GROUP) $(MASON_DATA_PATH) $(MASON_SESSION_PATH)
+	chmod 0770  	$(DESTDIR)/$(MASON_DATA_PATH) \
+			$(DESTDIR)/$(MASON_SESSION_PATH)
+	chown -R $(WEB_USER) 	$(DESTDIR)/$(MASON_DATA_PATH) \
+				$(DESTDIR)/$(MASON_SESSION_PATH)
+	chgrp -R $(WEB_GROUP) 	$(DESTDIR)/$(MASON_DATA_PATH) \
+				$(DESTDIR)/$(MASON_SESSION_PATH)
 dirs:
-	mkdir -p $(RT_BIN_PATH)
-	mkdir -p $(MASON_DATA_PATH)
-	mkdir -p $(MASON_SESSION_PATH)
-	mkdir -p $(RT_ETC_PATH)
-	mkdir -p $(RT_LIB_PATH)
-	mkdir -p $(MASON_HTML_PATH)
-	mkdir -p $(MASON_LOCAL_HTML_PATH)
+	mkdir -p $(DESTDIR)/$(RT_BIN_PATH)
+	mkdir -p $(DESTDIR)/$(MASON_DATA_PATH)
+	mkdir -p $(DESTDIR)/$(MASON_SESSION_PATH)
+	mkdir -p $(DESTDIR)/$(RT_ETC_PATH)
+	mkdir -p $(DESTDIR)/$(RT_LIB_PATH)
+	mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
+	mkdir -p $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
 
 libs-install: 
-	[ -d $(RT_LIB_PATH) ] || mkdir $(RT_LIB_PATH)
-	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
-	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
-	chmod -R $(RT_READABLE_DIR_MODE) $(RT_LIB_PATH)
+	[ -d $(DESTDIR)/$(RT_LIB_PATH) ] || mkdir $(DESTDIR)/$(RT_LIB_PATH)
+	chown -R $(LIBS_OWNER) $(DESTDIR)/$(RT_LIB_PATH)
+	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
+	chmod -R $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_LIB_PATH)
 	( cd ./lib; \
-	  $(PERL) Makefile.PL INSTALLSITELIB=$(RT_LIB_PATH) \
-			      INSTALLMAN1DIR=$(RT_MAN_PATH)/man1 \
-			      INSTALLMAN3DIR=$(RT_MAN_PATH)/man3 \
+	  $(PERL) Makefile.PL INSTALLSITELIB=$(DESTDIR)/$(RT_LIB_PATH) \
+			      INSTALLMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
+			      INSTALLMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
 	    && make \
 	    && make test \
 	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g;" blib/lib/RT.pm ;\
 	    make install \
+			   INSTALLSITEMAN1DIR=$(DESTDIR)/$(RT_MAN_PATH)/man1 \
+			   INSTALLSITEMAN3DIR=$(DESTDIR)/$(RT_MAN_PATH)/man3 \
 	)
 
 html-install:
-	cp -rp ./webrt/* $(MASON_HTML_PATH)
+	cp -rp ./webrt/* $(DESTDIR)/$(MASON_HTML_PATH)
 
 
 
@@ -284,14 +310,14 @@ initialize.mysql: createdb acls initdb.rtuser
 initialize.Oracle: acls initdb.rtuser
 
 acls:
-	cp etc/acl.$(DB_TYPE) '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
+	cp etc/acl.$(DB_TYPE) '$(DESTDIR)/$(RT_ETC_PATH)/acl.$(DB_TYPE)'
 	$(PERL) -p -i -e " s'!!DB_TYPE!!'"$(DB_TYPE)"'g;\
 				s'!!DB_HOST!!'"$(DB_HOST)"'g;\
 				s'!!DB_RT_PASS!!'"$(DB_RT_PASS)"'g;\
 				s'!!DB_RT_HOST!!'"$(DB_RT_HOST)"'g;\
 				s'!!DB_RT_USER!!'"$(DB_RT_USER)"'g;\
-				s'!!DB_DATABASE!!'"$(DB_DATABASE)"'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
-	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)' 
+				s'!!DB_DATABASE!!'"$(DB_DATABASE)"'g;" $(DESTDIR)/$(RT_ETC_PATH)/acl.$(DB_TYPE)
+	bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_PORT)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(DESTDIR)/$(RT_ETC_PATH)/acl.$(DB_TYPE)' 
 
 
 
@@ -311,33 +337,37 @@ initdb.rtuser:
 
 insert-install:
 	cp -rp ./tools/insertdata \
-		 $(RT_ETC_PATH)
+		 $(DESTDIR)/$(RT_ETC_PATH)
 	$(PERL) -p -i -e " s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 		           s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;"\
-		$(RT_ETC_PATH)/insertdata
+		$(DESTDIR)/$(RT_ETC_PATH)/insertdata
 
 bin-install:
-	cp -p ./bin/webmux.pl $(RT_MODPERL_HANDLER)
-	cp -p ./bin/rt-mailgate $(RT_MAILGATE_BIN)
-	cp -p ./bin/rtadmin $(RT_CLI_ADMIN_BIN)
-	cp -p ./bin/rt $(RT_CLI_BIN)
-	cp -p ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
-	cp -p ./bin/mason_handler.scgi $(RT_SPEEDYCGI_HANDLER)
+	cp -p ./bin/webmux.pl $(DESTDIR)/$(RT_MODPERL_HANDLER)
+	cp -p ./bin/rt-mailgate $(DESTDIR)/$(RT_MAILGATE_BIN)
+	cp -p ./bin/rtadmin $(DESTDIR)/$(RT_CLI_ADMIN_BIN)
+	cp -p ./bin/rt $(DESTDIR)/$(RT_CLI_BIN)
+	cp -p ./bin/mason_handler.fcgi $(DESTDIR)/$(RT_FASTCGI_HANDLER)
+	cp -p ./bin/mason_handler.scgi $(DESTDIR)/$(RT_SPEEDYCGI_HANDLER)
 
 	$(PERL) -p -i -e "s'!!RT_PATH!!'"$(RT_PATH)"'g;\
 				s'!!PERL!!'"$(PERL)"'g;\
 			      	s'!!RT_VERSION!!'"$(RT_VERSION)"'g;\
 				s'!!RT_ETC_PATH!!'"$(RT_ETC_PATH)"'g;\
 				s'!!RT_LIB_PATH!!'"$(RT_LIB_PATH)"'g;"\
-		$(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN) \
-		$(RT_MAILGATE_BIN)
+		$(DESTDIR)/$(RT_MODPERL_HANDLER) \
+		$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
+		$(DESTDIR)/$(RT_SPEEDYCGI_HANDLER) \
+		$(DESTDIR)/$(RT_CLI_BIN) \
+		$(DESTDIR)/$(RT_CLI_ADMIN_BIN) \
+		$(DESTDIR)/$(RT_MAILGATE_BIN)
 
 
 config-replace:
-	-[ -f $(RT_CONFIG) ] && mv $(RT_CONFIG) $(RT_CONFIG).old && \
-	 chmod 000 $(RT_CONFIG).old
-	cp -rp ./etc/config.pm $(RT_CONFIG)
+	-[ -f $(DESTDIR)/$(RT_CONFIG) ] && \
+		mv $(DESTDIR)/$(RT_CONFIG) $(DESTDIR)/$(RT_CONFIG).old && \
+	 	chmod 000 $(DESTDIR)/$(RT_CONFIG).old
+	cp -rp ./etc/config.pm $(DESTDIR)/$(RT_CONFIG)
 	$(PERL) -p -i -e "\
 	s'!!DB_TYPE!!'"$(DB_TYPE)"'g;\
 	s'!!DB_HOST!!'"$(DB_HOST)"'g;\
@@ -351,7 +381,7 @@ config-replace:
 	s'!!MASON_DATA_PATH!!'"$(MASON_DATA_PATH)"'g;\
 	s'!!RT_LOG_PATH!!'"$(RT_LOG_PATH)"'g;\
 	s'!!RT_VERSION!!'"$(RT_VERSION)"'g;\
-	" $(RT_CONFIG)
+	" $(DESTDIR)/$(RT_CONFIG)
 
 
 commit:
