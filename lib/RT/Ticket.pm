@@ -2558,7 +2558,7 @@ sub Resolve {
 
 # {{{ sub SetTold and _SetTold
 
-=head2 SetTold 
+=head2 SetTold ISO  [TIMETAKEN]
 
 Updates the told and records a transaction
 
@@ -2566,17 +2566,25 @@ Updates the told and records a transaction
 
 sub SetTold {
     my $self=shift;
+    my $told;
+    $told = shift if (@_);
     my $timetaken=shift || 0;
    
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied");
     }
 
-    my $now = new RT::Date($self->CurrentUser);
-    $now->SetToNow(); 
-
+    my $datetold = new RT::Date($self->CurrentUser);
+    if ($told) {
+	$datetold->Set( Format => 'iso',
+			Value => $told);
+    }
+    else {
+	 $datetold->SetToNow(); 
+    }
+    
     return($self->_Set(Field => 'Told', 
-		       Value => $now->ISO,
+		       Value => $datetold->ISO,
 		       TimeTaken => $timetaken,
 		       TransactionType => 'Told'));
 }
