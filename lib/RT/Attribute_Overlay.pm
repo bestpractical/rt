@@ -25,11 +25,64 @@ use strict;
 no warnings qw(redefine);
 use Storable qw/nfreeze thaw/;
 
+
+
 =head1 NAME
 
   RT::Attribute_Overlay 
 
 =head1 Content
+
+=cut
+
+# the acl map is a map of "name of attribute" and "what right the user must have on the associated object to see/edit it
+
+our $ACL_MAP = {
+    SavedSearch => { create => 'EditSavedSearches',
+                     update => 'EditSavedSearches',
+                     delete => 'EditSavedSearches',
+                     display => 'ShowSavedSearches' },
+
+};
+
+# There are a number of attributes that users should be able to modify for themselves, such as saved searches
+#  we could do this with a different set of "modify" rights, but that gets very hacky very fast. this is even faster and even
+# hackier. we're hardcoding that a different set of rights are needed for attributes on oneself
+our $PERSONAL_ACL_MAP = { 
+    SavedSearch => { create => 'ModifySelf',
+                     update => 'ModifySelf',
+                     delete => 'ModifySelf',
+                     display => 'allow' },
+
+};
+
+=head2 LookupObjectRight { create, update, delete, display }
+
+Returns the right that the user needs to have on this attribute's object to perform the related attribute operation. Returns "allow" if the right is otherwise unspecified.
+
+=cut
+
+sub LookupObjectRight { 
+    my $self = shift;
+    my $right = shift;
+
+    # if it's an attribute on oneself, check the personal acl map
+    if (($self->__Value('ObjectType') eq 'RT::User') && ($self->__Value('ObjectId') eq $self->CurrentUser->Id)) {
+    return('allow') unless ($PERSONAL_ACL_MAP->{$self->__Value('Name')});
+    return('allow') unless ($PERSONAL_ACL_MAP->{$self->__Value('Name')}->{$right});
+    return($PERSONAL_ACL_MAP->{$self->__Value('Name')}->{$right}); 
+
+    }
+   # otherwise check the main ACL map
+    else {
+    return('allow') unless ($ACL_MAP->{$self->__Value('Name')});
+    return('allow') unless ($ACL_MAP->{$self->__Value('Name')}->{$right});
+    return($ACL_MAP->{$self->__Value('Name')}->{$right}); 
+    }
+}
+
+
+
 
 =head2 Create PARAMHASH
 
@@ -62,8 +115,15 @@ sub Create {
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
 	    $args{ObjectType} = ref($args{Object});
 	    $args{ObjectId} = $args{Object}->Id;
+    } else {
+        return(0, $self->loc("Required parameter '[_1]' not specified", 'Object'));
+
     }
-    
+   
+
+
+
+   
     if (ref ($args{'Content'}) ) { 
         eval  {$args{'Content'} = $self->_SerializeContent($args{'Content'}); };
         if ($@) {
@@ -272,6 +332,80 @@ sub SetSubValues {
    }
 
    $self->SetContent($values);
+
+}
+
+
+sub Object {
+    my $self = shift;
+    my $object_type = $self->__Value('ObjectType');
+    my $object;
+    eval { $object = $object_type->new($self->CurrentUser) };
+    if ($@) {
+        $RT::Logger->error("Attribute ".$self->Id." has a bogus object type");
+        return(undef);
+     }
+    $object->Load($self->__Value('ObjectId'));
+
+    return($object);
+
+}
+
+
+sub Delete {
+    my $self = shift;
+    unless ($self->CurrentUserHasRight('delete')) {
+        return (0,$self->loc('Permission Denied'));
+    }
+    return($self->SUPER::Delete(@_));
+}
+
+
+sub _Value {
+    my $self = shift;
+    unless ($self->CurrentUserHasRight('display')) {
+        return (0,$self->loc('Permission Denied'));
+    }
+
+    return($self->SUPER::_Value(@_));
+
+
+}
+
+
+sub _Set {
+    my $self = shift;
+    unless ($self->CurrentUserHasRight('modify')) {
+
+        return (0,$self->loc('Permission Denied'));
+    }
+    return($self->SUPER::_Set(@_));
+
+}
+
+
+=head2 CurrentUserHasRight
+
+One of "display" "modify" "delete" or "create" and returns 1 if the user has that right for attributes of this name for this object.Returns undef otherwise.
+
+=cut
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    my $right = shift;
+
+    # object_right is the right that the user has to have on the object for them to have $right on this attribute
+    my $object_right = $self->LookupObjectRight($right);
+   
+    return (1) if ($object_right eq 'allow');
+
+    return (0) if ($object_right eq 'deny');
+
+
+        return(1) if ($self->CurrentUser->HasRight( Object => $self->Object,
+                                    
+                                      Right => $object_right));
+        return(undef);
 
 }
 

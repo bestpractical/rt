@@ -117,8 +117,8 @@ sub AddAttribute {
                  @_ );
 
     my $attr = RT::Attribute->new( $self->CurrentUser );
-    my ( $id, $msg ) = $attr->Create( ObjectType  => ref($self),
-                                      ObjectId    => $self->Id,
+    my ( $id, $msg ) = $attr->Create( 
+                                      Object    => $self,
                                       Name        => $args{'Name'},
                                       Description => $args{'Description'},
                                       Content     => $args{'Content'} );

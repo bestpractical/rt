@@ -145,7 +145,9 @@ $RIGHTS = {
     AdminGroup           => 'Modify group metadata or delete group',  # loc_pair
     AdminGroupMembership =>
       'Modify membership roster for this group',                      # loc_pair
-    ModifyOwnMembership => 'Join or leave this group'                 # loc_pair
+    ModifyOwnMembership => 'Join or leave this group',                 # loc_pair
+    EditSavedSearches => 'Edit saved searches for this group',        # loc_pair
+    ShowSavedSearches => 'Display saved searches for this group',        # loc_pair
 };
 
 # Tell RT::ACE that this sort of object can get acls granted
