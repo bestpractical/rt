@@ -142,7 +142,7 @@ sub insert_schema {
         open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $RT::DatabaseType );
 
         my $statement = "";
-        foreach my $line (<SCHEMA>,  <SCHEMA_LOCAL>) {
+        foreach my $line (<SCHEMA>, ($_ = ';;'), <SCHEMA_LOCAL>) {
             $line =~ s/\#.*//g;
             $line =~ s/--.*//g;
             $statement .= $line;
