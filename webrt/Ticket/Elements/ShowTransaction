@@ -1,5 +1,7 @@
-      <& /Elements/TitleBoxStart, title => $Transaction->Description, titleright=> $RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "<a href=\"Create.html?id=".$Transaction->Ticket."&QuoteTransaction=".$Transaction->id."\">[Spawn]</a> | [<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Respond\">Reply</a> / <a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Comment\">Comment</a>]</a>" &>
+      <& /Elements/TitleBoxStart, title => '#'.$Transaction->id.': '.$Transaction->Description." at ".$Transaction->CreatedAsString, titleright=> $RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "<a href=\"Create.html?id=".$Transaction->Ticket."&QuoteTransaction=".$Transaction->id."\">[Spawn]</a> | [<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Respond\">Reply</a> / <a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."&DefaultAction=Comment\">Comment</a>]</a>" &>
       
+%# This one is not pretty
+%if (0) {
     <TABLE WIDTH="100%">
       <TR>
 	<TD VALIGN=TOP WIDTH="20%">
@@ -18,6 +20,7 @@
 	
       </TR>
     </TABLE>
+%}
 
 %# I had to temporarly move this one because the box grew too wide when a message was too wide.
 <& /Elements/TitleBoxEnd &>
@@ -37,7 +40,9 @@
 <%$message->Content%>
 </pre>
 %    }  
-% else {
+% elsif ($message->ContentType =~ m{^multipart}) {
+This is a multipart message
+% } else {
 	
 Attachment: <A HREF="Display.html?PickUpAttachment=<%$message->Id%>"><% $message->ContentType %></a>
 %    }

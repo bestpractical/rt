@@ -46,9 +46,11 @@ sub activate  {
   # Get the head, a MIME::Head:
   $head = $entity->head;
 
+  # TODO - information about the charset is lost here!
+  $head->decode;
+
   #Pull apart the subject line
-  $Subject = $head->get('Subject') || "";
-  chomp $Subject;
+  my $Subject = $head->get('Subject') || "";
 
   #Lets check for mail loops of various sorts.
   my ($IsALoop, $LoopMsg) = &CheckForLoops($head);

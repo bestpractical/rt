@@ -96,7 +96,13 @@ sub Create  {
       my $SubAttachment = new RT::Attachment($self->CurrentUser);
       $SubAttachment->Create(TransactionId => $args{'TransactionId'},
 			     Parent => "$id",
-			     Attachment => $Attachment->part($Counter),
+
+			     # This was "part", and has always worked
+			     # until I upgraded MIME::Entity.  seems
+			     # like "parts" should work according to
+			     # the doc?
+
+			     Attachment => $Attachment->parts($Counter),
 			     ContentType  => $Attachment->mime_type,
 			     Headers => $Attachment->head->as_string(),
 		
@@ -176,7 +182,7 @@ sub Quote {
 	$body =~ s/^/> /gm;
 
 	$body = '[' . $self->TransactionObj->Creator->UserId . ' - ' . $self->TransactionObj->AgeAsString 
-	            . "]\n\n[REMOVE THIS LINE, AND ANY EXCESSIVE LINES BELOW]\n"
+	            . "]:\n\n[REMOVE THIS LINE, AND ANY EXCESSIVE LINES BELOW]\n"
    	        . $body . "\n\n";
 
     } else {
@@ -190,27 +196,9 @@ sub Quote {
     $max=70 if $max>78;
     $max+=2;
 
-# I'll deal with this tomorrow.
-#    # Let's see if we can figure out the users signature...
-#    if ($Signatures($current_user)) {
-	
-#    }
-#    my @entry=getpwnam($current_user);
-#    my $home=$entry[7];
-#    for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
-#	if (-r $trythis) {
-#	    open(SIGNATURE, "<$trythis"); 
-#	    my $slash=$/;
-#	    undef $/;
-#	    $signature=<SIGNATURE>;
-#	    close(SIGNATURE);
-#	    $/=$slash;
-#	    $body .= "\n\n-- \n$signature";
-#	    last;
-#	}
-#    }
-
-
+    ## Let's see if we can figure out the users signature...
+    $body .= "\n\n-- \n" . $self->{'user'}->Signature
+	if $self->{'user'}->Signature;
     return (\$body, $max);
 }
 # }}}

@@ -1169,8 +1169,7 @@ sub UpdateTold {
 
 sub _UpdateTold {
     my $self=shift;
-    my $timetaken=shift || 0;
-    $self->SUPER::_Set('Told','now()',$timetaken,1);
+    $self->SUPER::_Set('Told','now()',1);
 }
 
 # }}}

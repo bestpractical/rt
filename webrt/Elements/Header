@@ -7,7 +7,7 @@
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
 %if ($session{'CurrentUser'}) {
-You are currently authenticated as <%$session{'CurrentUser'}->UserId%>
+You are currently authenticated as <a href="<%$RT::WebURL%>/ViewUser.html?id=<%$session{'CurrentUser'}->Id%>"><%$session{'CurrentUser'}->UserId%></a>.
 %}
 <hr>
 
@@ -16,5 +16,5 @@ $Title => 'WebRT'
 $BgColor => 'white'
 </%ARGS>
 <%INIT>
-$Title = "WebRT:".$Title;
+$Title = "WebRT: ".$Title;
 </%INIT>

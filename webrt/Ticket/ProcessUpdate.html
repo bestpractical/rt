@@ -42,6 +42,15 @@ my $Ticket = RT::Ticket->new($session{'CurrentUser'});
 $Ticket->Load($ARGS{id}) || die "Could not load $ARGS{id}...?!?";
 my @UpdateContent = split(/\r/,$ARGS{'UpdateContent'}."\n");
 
+
+# This one should be first, so the new owner gets all information
+    if ($ARGS{'SetOwner'}
+        and ($ARGS{'SetOwner'} ne $Ticket->Owner->Id())) {
+    ($Transaction, $Description)=$Ticket->SetOwner($ARGS{'SetOwner'});
+    push(@Actions, $Description);
+}
+   
+
 my $Message = MIME::Entity->build ( Subject => $ARGS{'UpdateSubject'} || "",
 				    Cc => $ARGS{'UpdateCc'} || "",
 				    Bcc => $ARGS{'UpdateBcc'} || "",
@@ -73,12 +82,6 @@ if ($ARGS{'SetStatus'} and ($ARGS{'SetStatus'} ne $Ticket->Status())) {
     push(@Actions, $Description);
 }
 
-    if ($ARGS{'SetOwner'}
-        and ($ARGS{'SetOwner'} ne $Ticket->Owner->Id())) {
-    ($Transaction, $Description)=$Ticket->SetOwner($ARGS{'SetOwner'});
-    push(@Actions, $Description);
-}
-   
 </%init>
 
 

@@ -1,0 +1,38 @@
+%# Header and footer set by autoload
+<& /Elements/ViewUser, User=>$u &>
+%if ($session{CurrentUser}->Id eq $id) {
+	  <& /Elements/TitleBoxStart, title => 'Signature'  &>
+<form method=post>
+<input type="hidden">
+<TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $session{CurrentUser}->Signature %></TEXTAREA><br>
+<input type="submit" value="Update signature">
+</form>
+	  <& /Elements/TitleBoxEnd &>
+%}
+
+<%ARGS>
+$id => $session{CurrentUser}->Id
+$Signature => undef
+</%ARGS>
+
+<%INIT>
+require RT::User;
+my $u=RT::User->new;
+$u->Load($id) || die "Couldn't load that user ($id)";
+if ($Signature) {
+# This blows up here, haven't discovered why ... it works excellent
+# when I'm into the perl debugger using the cli
+#$session{CurrentUser}->SetSignature($Signature);
+my ($val, $msg)=$session{CurrentUser}->_Set('Signature',$Signature);
+$RT::Logger->log(level=>($val ? 'debug' : 'error'), message=>$msg);
+}
+</%INIT>
+
+
+
+
+
+
+
+
+

@@ -7,9 +7,11 @@ package rt::ui::cli::manipulate;
 
 # {{{ sub activate 
 sub activate  {
- &GetCurrentUser;
- &ParseArgs();
- return(0);
+    &GetCurrentUser;
+    $RT::Logger->log(level=>'info', message=>$CurrentUser->UserId.' started up the RT cli');
+    &ParseArgs();
+    $RT::Logger->log(level=>'debug', message=>'RT cli going down');
+    return(0);
 }
 # }}}
 

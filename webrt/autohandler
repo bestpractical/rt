@@ -1,4 +1,5 @@
-%# This one should be in the templates, IMO: <& /Elements/Header &>
+%# This one should be in the templates, IMO: 
+<& /Elements/Header &>
 <% $m->call_next %>
 <& /Elements/Footer &>
 
@@ -10,12 +11,18 @@ warn "WebURL Configuration ($RT::WebURL) does not match incoming URL (".$r->uri.
     if ($r->uri !~ /^\Q$RT::WebURL\E/);
 
 my $a=sub {
+if ($^S) {
+	$RT::Logger->log(message=>$_[0], level=>'warning');
+	die @_;
+}
 &mc_comp("/Elements/Error", 
 		Why=>"Internal Error", 
 		Details=>"You might ask your local RT admin what <pre>$_[0]</pre> means.  If he has configured RT smartly, he will get that error message sent by mail or to his pager or something.  Anyway, you'll probably have to nag about it to get this problem fixed.", 
 		Code=>500);
 	$RT::Logger->log(message=>$_[0], level=>'crit');
+	$RT::Logger->remove('rtmail');
 	$m->abort;
+	die;
 	1;
 };
 $SIG{__DIE__}=$a;

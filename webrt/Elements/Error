@@ -20,5 +20,5 @@ $Title => "Some error"
 $Why => "the calling component did not specify why"
 </%args>
 <%INIT>
-#$RT::Logger->log(message=>"WebRT: $Why", level=>"error");
+$RT::Logger->log(message=>"WebRT: $Why ($Details)", level=>"error");
 </%INIT>

@@ -43,7 +43,11 @@ sub _Accessible  {
 	      Country => 'read/write',
 	      Comments => 'read/write',
 	      CanManipulate => 'read/write',
-	      IsAdministrator => 'read/write'
+	      IsAdministrator => 'read/write',
+	      Creator => 'read/auto',
+	      Created => 'read/auto',
+	      LastUpdatedBy => 'read/auto',
+	      LastUpdated => 'read/auto'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
@@ -89,7 +93,7 @@ sub Create  {
   return (1,"User created");
 }
 # }}}
- 
+
 # {{{ sub Delete 
 sub Delete  {
   my $self = shift;

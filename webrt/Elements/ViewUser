@@ -20,6 +20,7 @@ $User=>undef
 </%ARGS>
 
 <%INIT>
+use RT::Watchers;
 my $as_requestor=RT::Watchers->new;
 $as_requestor->Limit(FIELD=>'Scope', VALUE=>'Ticket');
 $as_requestor->Limit(FIELD=>'Type', VALUE=>'Requestor');
