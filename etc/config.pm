@@ -43,6 +43,11 @@ $DatabaseType="!!DB_TYPE!!";
 # leave it blank for enhanced performance
 $DatabaseHost="!!DB_HOST!!";
 
+# The port that your database server is running on.  Ignored unless it's 
+# a positive integer. It's usually safe to leave this blank
+$DatabasePort="!!DB_PORT!!";
+
+
 #The name of the database user (inside the database) 
 $DatabaseUser="!!DB_RT_USER!!";
 
@@ -149,30 +154,40 @@ $SenderMustExistInExternalDatabase = undef;
 # incoming users with an external data source. 
 #
 # This routine takes a tuple of EmailAddress and FriendlyName
-# EmailAddress is the user's email address, ususally taken from
-#  an email message's From: header.
-# Name is a freeform string, ususally taken from the "comment" portion
-#  of an email message's From: header.
+# 	EmailAddress is the user's email address, ususally taken from
+#  		an email message's From: header.
+# 	FriendlyName is a freeform string, ususally taken from the "comment" 
+#		portion	of an email message's From: header.
 #
-# It returns (EmailAddress, Username, RealName, FoundInExternalDatabase);
-# EmailAddress is the email address that RT should use for this user.  
-# Username is the 'Name' attribute RT should use for this user. 
-#   'Name' is used for things like access control and user lookups.
-# RealName is what RT should display as the user's name when displaying 
-#   'friendly' names
-# FoundInExternalDatabase must  be set to 1 before return if the user was
+# It returns (FoundInExternalDatabase, ParamHash);
+#
+#   FoundInExternalDatabase must  be set to 1 before return if the user was
 #   found in the external database.
+#
+#   ParamHash is a Perl parameter hash which can contain at least the following
+#   fields. These fields are used to populate RT's users database when the user 
+#   is created
+#
+# 	EmailAddress is the email address that RT should use for this user.  
+# 	Name is the 'Name' attribute RT should use for this user. 
+#   	     'Name' is used for things like access control and user lookups.
+# 	RealName is what RT should display as the user's name when displaying 
+#   	     'friendly' names
 
 sub LookupExternalUserInfo {
-  my ($Address, $Name) = @_;
+  my ($EmailAddress, $RealName) = @_;
+
   my $FoundInExternalDatabase = 1;
+  my %params = {};
   
-  #Username is the RT username you want to use for this user.
-  my $Username = $Address;
+  #Name is the RT username you want to use for this user.
+  $params{'Name'} = $EmailAddress;
+  $params{'EmailAddress'} = $EmailAddress;
+  $params{'RealName'} = $RealName;
 
   # See RT's contributed code for examples.
   # http://www.fsck.com/pub/rt/contrib/
-  return ($Address, $Username, $Name, $FoundInExternalDatabase); 
+  return ($FoundInExternalDatabase, %params); 
 }
 
 # }}}
