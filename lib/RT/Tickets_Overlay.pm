@@ -478,22 +478,9 @@ sub _TransDateLimit {
   my ($sb,$field,$op,$value,@rest) = @_;
 
   # See the comments for TransLimit, they apply here too
-
-  $sb->{_sql_transalias} = $sb->NewAlias ('Transactions')
-    unless defined $sb->{_sql_transalias};
-  $sb->{_sql_trattachalias} = $sb->NewAlias ('Attachments')
-    unless defined $sb->{_sql_trattachalias};
+  $sb->_SetupTransactionJoins();
 
   $sb->_OpenParen;
-
-  # Join Transactions To Attachments
-  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
-
   my $d = new RT::Date( $sb->CurrentUser );
   $d->Set( Format => 'ISO', Value => $value);
    $value = $d->ISO;
@@ -554,10 +541,7 @@ sub _TransLimit {
 
   my ($sb,$field,$op,$value,@rest) = @_;
 
-  $sb->{_sql_transalias} = $sb->NewAlias ('Transactions')
-    unless defined $sb->{_sql_transalias};
-  $sb->{_sql_trattachalias} = $sb->NewAlias ('Attachments')
-    unless defined $sb->{_sql_trattachalias};
+    $sb->_SetupTransactionJoins();
 
   $sb->_OpenParen;
 
@@ -570,13 +554,6 @@ sub _TransLimit {
 		 @rest
 		);
 
-  # Join Transactions To Attachments
-  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
 
   $sb->_CloseParen;
 
@@ -879,6 +856,28 @@ sub _CustomFieldLimit {
 
 
   $self->_CloseParen;
+
+}
+
+sub _SetupTransactionJoins {
+    my $self = shift;
+    # Join Transactions to Tickets
+    $self->{_sql_transalias} ||= $self->Join(
+        TYPE => 'LEFT',
+        ALIAS1 => 'main',
+        FIELD1 => $self->{'primary_key'},    # UGH!
+        TABLE2 => 'Transactions',
+        FIELD2 => 'Ticket'
+    );
+
+    # Join Transactions To Attachments
+    $self->{_sql_trattachalias} ||= $self->Join(
+        TYPE => 'LEFT',
+        TABLE2 => 'Attachments',
+        FIELD2 => 'TransactionId',
+        ALIAS1 => $self->{_sql_transalias},
+        FIELD1 => 'id'
+    );
 
 }
 
