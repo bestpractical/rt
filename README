@@ -133,16 +133,21 @@ THE WEB UI
 
 If you don't already have an http daemon set up, you will probably want
 to start one to handle the CGI interface.  For now, I'd recommend the CERN
-httpd.  Apache with www.hughes.com's authentication patches has been
-reported to work, as well.  See the following URL for apache patches:
- 
-	http://www.Hughes.com.au/software/misc/apache_1.2.1_hughes.tar.gz 
+httpd.  Apache with a minor authentication patch works quite well, too.
+
+To get apache to pass authentication headers to cgi scripts, remove the 
+following two lines from util_script.c:
+
+-       else if (!strcasecmp (hdrs[i].key, "Authorization"))
+-           continue;
+
+(These lines can be found at approximately line 180 in apache 1.2.5
 
 NOTE: Netscape's servers don't allow nph-cgi scripts to perform their own 
 authentication so they don't really work with WebRT. Besides, CERN and Apache 
 are free.
 
-The CERN httpd ( http://www.w3.org ) is free.  A sample config file
+A sample config file for CERN httpd ( http://www.w3.org )
 is in rt/etc/httpd/cern.   Invoke it with the following command line:
 
          /path/to/cern/httpd -r /path/to/rt/etc/httpd/cern/httpd.conf
