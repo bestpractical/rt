@@ -187,7 +187,7 @@ sub SetRTSpecialHeaders {
         
     $self->SetHeader('RT-Ticket', $RT::rtname. " #".$self->TicketObj->id());
     $self->SetHeader
-      ('Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
+      ('Managed-by',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt/)");
     
     $self->SetHeader('RT-Originator', $self->TransactionObj->CreatorObj->EmailAddress);
     return();
