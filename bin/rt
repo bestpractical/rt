@@ -22,6 +22,15 @@ use lib "!!RT_ETC_PATH!!";
 
 #This drags in  RT's config.pm
 use config;
+
+# Now that we got the config read in, we have the database 
+# password and don't need to be setgid
+# make the effective group the real group
+
+$) = $(;
+
+
+
 use Carp;
 
 use RT::Handle;
@@ -90,6 +99,10 @@ my ( @id,
    $version);
 
 # }}}
+
+# Set defaults for cli args
+$edit = 1; #Assume the user wants to edit replies and comments unless they specify --noedit
+
 # {{{    args
 my @args =("id=s" => \@id,
 	   "limit-queue=s" => \@limit_queue,
@@ -143,9 +156,10 @@ my @args =("id=s" => \@id,
 # }}}
 
 
+
 GetOptions(@args);
 
-        print join(':',@keywords);
+print join(':',@keywords);
 # {{{ If they want it, print a usage message and get out
 
 if ($help) {
@@ -313,9 +327,12 @@ else {
 	debug ("Now working on ticket ". $Ticket->id);
     
 	#Run through all the ticket modifications we might want to do
-	
+	#TODO: these are all insufficiently lazy and should be replaced with some 
+	# nice foreaches.
+
+
 	# {{{ deal with watchers
-    
+	
 	# add / delete requestors
 	foreach $value (@requestors) {
 	    if ($value =~ /^(\W?)(.*)$/) {
@@ -332,7 +349,6 @@ else {
 	    if ($value =~ /^(\W?)(.*)$/) {
 		my $op = $1;
 		my $addr = $2;
-		
 		$Ticket->AddCc(Email => $addr) if ($op eq '+');
 		$Ticket->DeleteWatcher($addr) if ($op eq '-');
 	    }	
@@ -344,7 +360,6 @@ else {
 	    if ($value =~ /^(\W?)(.*)$/) {
 		my $op = $1;
 		my $addr = $2;
-		
 		$Ticket->AddAdminCc(Email => $addr) if ($op eq '+');
 		$Ticket->DeleteWatcher($addr) if ($op eq '-');
 	    }	
@@ -470,7 +485,13 @@ else {
     # }}}
 	
 	# {{{ set other attributes
-    
+
+	#Set subject
+	if ($subject) {
+	    my ($trans, $msg) = $Ticket->SetSubject($subject);
+	    print $msg;
+	}
+	
 	#Set priority
 	if ($priority) {
 	    my ($trans, $msg) = 
@@ -522,59 +543,65 @@ else {
 
     # }}}
 	
+
+
 	# {{{ Perform ticket comments/replies
-    if ($reply) {
-	debug("Replying to ticket ".$Ticket->Id);
+	if ($reply) {
+	    debug("Replying to ticket ".$Ticket->Id);
+	    
+	    my $linesref =GetMessageContent( Edit => $edit, Source => $source);
+	    
+	    #TODO build this entity
+	    require MIME::Entity;
+	    my $MIMEObj = MIME::Entity->build(Data => $linesref);
+	    
+	    $Ticket->Correspond( MIMEObj => $MIMEObj ,
+				 TimeTaken => $time_taken);
+	}	
 	
-	my @lines =GetMessageContent($edit, $source);
+	elsif ($comment) {
+	    debug("Commenting on ticket ".$Ticket->Id);
 	
-	#TODO build this entity
-	my $MIMEObj = MIME::Entity->build();
-	
-	$Ticket->Correspond( MIMEObj => $MIMEObj,
-			     TimeTaken => $time_taken);
-    }	
-    
-    elsif ($comment) {
-	debug("Commenting on ticket ".$Ticket->Id);
-	my @lines =GetMessageContent($edit, $source);
-	
-	#TODO build this entity
-	my $MIMEObj = MIME::Entity->build();
-	
-	$Ticket->Comment( MIMEObj => $MIMEObj,
-			  TimeTaken => $time_taken);
-    }
-    
+	    my $linesref =GetMessageContent(Edit => $edit, Source => $source);
+	    #TODO build this entity
+	    require MIME::Entity;
+	    my $MIMEObj = MIME::Entity->build(Data => $linesref);
+	    
+	    $Ticket->Comment( MIMEObj => $MIMEObj,
+			      TimeTaken => $time_taken);
+	}
+
     # }}}
+	
 	# {{{ Display whatever we need to display
-    # {{{ Display a full ticket listing and history
-    if ($history) {
-	#Display the history
-	debug("Show history for ".$Ticket->id);
-	
-	if ($Ticket->CurrentUserHasRight("ShowTicket")) {
-	    &ShowSummary($Ticket);
-	    print "\n";
-	    &ShowHistory($Ticket);
-	}
-	else {
-	    print "You don't have permission to view that ticket.\n";
-	}
-    }	
 
-    # }}}
-    
-    # {{{ Display a summary if we need to
-    if (defined $summary) {
-	debug ("Show ticket summary with format $format");
+	# {{{ Display a full ticket listing and history
+	if ($history) {
+	    #Display the history
+	    debug("Show history for ".$Ticket->id);
+	    
+	    if ($Ticket->CurrentUserHasRight("ShowTicket")) {
+		&ShowSummary($Ticket);
+		print "\n";
+		&ShowHistory($Ticket);
+	    }
+	    else {
+		print "You don't have permission to view that ticket.\n";
+	    }
+	}	
 	
-	printf $format."\n", eval $code;
-
-    }	
 	# }}}
-    
-    # }}}
+	
+	# {{{ Display a summary if we need to
+	if (defined $summary) {
+	    debug ("Show ticket summary with format $format");
+	    
+	    printf $format."\n", eval $code;
+	    
+	}	
+	# }}}
+	
+	# }}}
 	
     }
     # }}}
@@ -621,20 +648,46 @@ assumes an empty file.  Returns an edited file as an array of lines.
 =cut
 
 sub GetMessageContent {
-    my $source = shift;
-    my $edit = shift;
+    my %args = (  Source => undef,
+		 @_);
+    my $source = $args{'Source'};
+
+    my $edit = $args{'Edit'};
     
     my @lines;
+
+    use File::Temp qw/ tempfile/;
     
+    #Load the sourcefile, if it's been handed to us
     if ($source) {
-	#Load the sourcefile
+	open (SOURCE, "<$source");
+	@lines = (<SOURCE>);
+	close (SOURCE);
     }
-    if ($edit) {
-	#write to a tmpfile and launch $EDITOR || /bin/vi
+
+    #get us a tempfile.
+    my ($fh, $filename) = tempfile("rt-".$CurrentUser->UserId."XXXXXXXX", TMPDIR=>1);
+	
+    #write to a tmpfile
+    for (@lines) {
+	print $fh $_;
+    }
+    close ($fh);
+    
+    #Edit the file if we need to
+    if ($edit) {	
+	system ($ENV{'EDITOR'}, $filename);
     }	
     
-    return(@lines);
+    open (READ, "<$filename");
+    my @newlines = (<READ>);
+    close (READ);
 
+    unlink ($filename) unless ($debug);
+
+    print "Newlines is ".join("\n", @newlines);
+    return(\@newlines);
+    
 }
 
 # }}}

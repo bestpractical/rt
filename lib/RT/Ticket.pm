@@ -1256,7 +1256,7 @@ sub Comment {
   
   #Record the correspondence (write the transaction)
   my ($Trans, $Msg, $TransObj) = $self->_NewTransaction( Type => 'Comment',
-				      Data => $args{MIMEObj}->head->get('subject'),
+				      Data =>($args{'MIMEObj'}->head->get('subject') || 'No Subject'),
 				      TimeTaken => $args{'TimeTaken'},
 				      MIMEObj => $args{'MIMEObj'}
 				    );
@@ -1298,7 +1298,7 @@ sub Correspond {
     #Record the correspondence (write the transaction)
     my ($Trans,$msg, $TransObj) = $self->_NewTransaction
       (Type => 'Correspond',
-       Data => $args{'MIMEObj'}->head->get('subject'),
+       Data => ($args{'MIMEObj'}->head->get('subject') || 'No Subject'),
        TimeTaken => $args{'TimeTaken'},
        MIMEObj=> $args{'MIMEObj'}     
       );

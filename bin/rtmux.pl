@@ -21,7 +21,14 @@ use lib "!!RT_ETC_PATH!!";
 
 #This drags in  RT's config.pm
 use config;
+# Now that we've got the config loaded, we can drop the setgidness
+$) = $(;
+
+
+
 use Carp;
+
+
 
 use RT::Handle;
 $RT::Handle = new RT::Handle($RT::DatabaseType);
@@ -43,22 +50,6 @@ my $program = $0;
 
 $program =~ s/(.*)\///;
 
-
-if ($program eq '!!RT_ACTION_BIN!!') {
-  # load rt-cli
-  require rt::ui::cli::support;
-  require rt::ui::cli::manipulate;
-  
-  &rt::ui::cli::manipulate::activate();
-}
-elsif ($program eq '!!RT_QUERY_BIN!!') {
-  # load rt-query
-  
-  require rt::ui::cli::query;
-  &rt::ui::cli::query::activate();
-  
-}
-
 elsif ($program eq '!!RT_ADMIN_BIN!!') {
   #load rt_admin
   require rt::support::utils;     
@@ -68,13 +59,14 @@ elsif ($program eq '!!RT_ADMIN_BIN!!') {
 }
 
 elsif ($program eq '!!RT_MAILGATE_BIN!!') {
-  require RT::Interface::Email;
-  &RT::Interface::Email::activate();
+    require RT::Interface::Email;
+    &RT::Interface::Email::activate();
 }
 
 else {
-  $RT::Logger->crit( "RT Has been launched with an illegal launch program ($program)");
-  exit(1);
+    $RT::Logger->crit( "RT Has been launched with an illegal launch program ($program)");
+    $RT::Handle->Disconnect();
+    exit(1);
 }
 
 $RT::Handle->Disconnect();

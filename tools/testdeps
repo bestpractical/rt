@@ -34,6 +34,7 @@ Getopt::Long
 Tie::IxHash 
 Text::Wrapper 
 Text::Template
+File::Temp 
 Log::Dispatch 1.6
 );
 use CPAN;
