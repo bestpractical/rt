@@ -160,39 +160,44 @@ Parse a message stored in a scalar from scalar_ref
 =cut
 
 sub SmartParseMIMEEntityFromScalar {
-    my $self  = shift;
-    my %args = (  Message => undef, Decode => 1, @_ );
-   
+    my $self = shift;
+    my %args = ( Message => undef, Decode => 1, @_ );
 
     my ( $fh, $temp_file );
-    for ( 1 .. 10 ) {
+    eval {
 
-        # on NFS and NTFS, it is possible that tempfile() conflicts
-        # with other processes, causing a race condition. we try to
-        # accommodate this by pausing and retrying.
-        last
-          if ( $fh, $temp_file ) =
-          eval { File::Temp::tempfile( undef, UNLINK => 0 ) };
-        sleep 1;
-    }
-    if ($fh) {
-        binmode $fh;
+        for ( 1 .. 10 ) {
 
-        #thank you, windows                      
-        $fh->autoflush(1);
-        print $fh $args{'Message'};
-        close($fh);
-        if ( -f $temp_file ) {
-            # We have to trust the temp file's name -- untaint it
-            $temp_file =~ /(.*)/;
-            $self->ParseMIMEEntityFromFile($1, $args{'Decode'});
-            unlink($1);
+            # on NFS and NTFS, it is possible that tempfile() conflicts
+            # with other processes, causing a race condition. we try to
+            # accommodate this by pausing and retrying.
+            last
+              if ( $fh, $temp_file ) =
+              eval { File::Temp::tempfile( undef, UNLINK => 0 ) };
+            sleep 1;
         }
-    } #If for some reason we weren't able to parse the message using a temp file      # try it with a scalar
-    if ( !$self->Entity ) {
+        if ($fh) {
+
+            #thank you, windows                      
+            binmode $fh;
+            $fh->autoflush(1);
+            print $fh $args{'Message'};
+            close($fh);
+            if ( -f $temp_file ) {
+
+                # We have to trust the temp file's name -- untaint it
+                $temp_file =~ /(.*)/;
+                $self->ParseMIMEEntityFromFile( $1, $args{'Decode'} );
+                unlink($1);
+            }
+        }
+    };
+
+    #If for some reason we weren't able to parse the message using a temp file
+    # try it with a scalar
+    if ( $@ || !$self->Entity ) {
         $self->ParseMIMEEntityFromScalar( $args{'Message'}, $args{'Decode'} );
     }
-
 
 }
 
