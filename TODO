@@ -1,16 +1,3 @@
-Before we hit 1.0
-  Web
-	UI
-		Add in crosslinks with webadmin
-
-  Install
-	Documentation
-	Make ACLS needs work
-		make it a perl script.
-		
-  General
-
-
 RT Todo List for 1.1
 
 . Reporting Scripts in mainline distribution
@@ -28,5 +15,3 @@ RT Wish List
 . rt daemon. (for running interfaces remotely or not setuid)
 	This is actually not terribly hard. almost all of the code needed
 	can be found in the improved mail gateway.
-
-. Gtk interface
