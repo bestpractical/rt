@@ -321,9 +321,13 @@ sub CreateTicket {
             my $cf = RT::CustomField->new( $session{'CurrentUser'});
             $cf->Load($cfid);
 
-            if ($cf->Type eq 'FreeformMultiple') {
+            if ( $cf->Type eq 'Freeform' && ! $cf->SingleValue) {
                 $ARGS{$arg} =~ s/\r\n/\n/g;
                 $ARGS{$arg} = [split('\n', $ARGS{$arg})];
+            }
+
+            if ( $cf->Type eq 'Text') {
+                $ARGS{$arg} =~ s/\r//g;
             }
 
             if ( $arg =~ /-Upload$/ ) {
@@ -1114,6 +1118,9 @@ sub ProcessObjectCustomFieldUpdates {
 	    $CustomFieldObj->LoadById($cf);
 
 		foreach my $arg ( keys %{$ARGSRef} ) {
+		    # Only interested in args for the current CF:
+		    next unless ( $arg =~ /^Object-$class-(?:$id)?-CustomField-$cf-/ );
+
 		    # since http won't pass in a form element with a null value, we need
 		    # to fake it
 		    if ($arg =~ /^(.*?)-Values-Magic$/ ) {
@@ -1127,11 +1134,23 @@ sub ProcessObjectCustomFieldUpdates {
 			$ARGSRef->{$1."-Values"} = undef;
 		    
 		    }
-		    next unless ( $arg =~ /^Object-$class-(?:$id)?-CustomField-$cf-/ );
-		    my @values =
-		    ( ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) 
-		    ? @{ $ARGSRef->{$arg} }
-		    : split /\n/, $ARGSRef->{$arg} ;
+		    my @values = ();
+		    if (ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) {
+			@values = @{ $ARGSRef->{$arg} };
+		    } elsif ($CustomFieldObj->Type eq 'Text') {
+			@values = ($ARGSRef->{$arg});
+		    } else {
+			@values = split /\n/, $ARGSRef->{$arg};
+		    }
+		    
+		    if ( ($CustomFieldObj->Type eq 'Freeform' 
+			  && ! $CustomFieldObj->SingleValue) ||
+			  $CustomFieldObj->Type eq 'Text') {
+			foreach my $val (@values) {
+			    $val =~ s/\r//g;
+			}
+		    }
+
 		    if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
 			foreach my $value (@values) {
 			    next unless length($value);

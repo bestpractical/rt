@@ -52,7 +52,7 @@
 if ($Multiple and $Values) {
     $Default = '';
     while (my $value = $Values->Next ) {
-	$Default .= $value->Content;
+	$Default .= $value->Content."\n";
     }
 }
 </%INIT>
