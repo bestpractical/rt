@@ -1,4 +1,4 @@
-  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "<font size=+3>#$id: $subj</font>", titleright=> "<a href=\"../Search/Listing.html\">Back to listing</a> | $take $open | <a href=\"Modify.html?id=$id\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=$id\">Update</a> "&>
+  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "<font size=+3>#$id: $subj</font>", titleright=> "<a href=\"../Search/Listing.html\">Back to listing</a> | $take $open | <a href=\"Modify.html?id=$id\">Modify</a> / <a href=\"Update.html?Action=Comment&id=$id\">Update</a> "&>
 
 
 <%ARGS>
@@ -18,6 +18,6 @@ if ($can_take) {
 	$take="<blink><strong><a href=\"Display.html?Action=Steal&id=$id\">Steal</a></strong></blink> /";
 }
 if ($can_open) {
-	$open="<a href=\"ProcessUpdate.html?Action=SetStatus&SetStatus=open&id=$id\">Open</a> /";
+	$open="<a href=\"Display.html?Action=SetStatus&SetStatus=open&id=$id\">Open</a> /";
 }
 </%INIT>

@@ -11,7 +11,8 @@
 	<BR>
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
-  <& /Elements/TitleBoxStart, title => 'References', titleright => '<a href="LinkIt.html?id='.$Ticket->Id.'">[New Link]</a>' &>
+  <& /Elements/TitleBoxStart, title => 'References', titleright => "[<a href=\"$RT::WebPath/Ticket/Link.html?id=".$Ticket->Id."\">New Link</a>]" &>;
+
 	<& /Ticket/Elements/ShowReferences, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>	
 	<BR>
