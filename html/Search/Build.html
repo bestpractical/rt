@@ -361,7 +361,7 @@ while (my $val = shift @options) {
 	}
 	$optionlist .= "<option value=$i $selected>";
 	$optionlist .= "&nbsp;" x (5 * ($depth-1));
-#	$optionlist .= "$i: $key ";
+	$optionlist .= "$i: $key ";
 	if ($num > 0 || $item{Subkey}) {
 	    $optionlist .= $ea . " ";
 	}
@@ -591,8 +591,7 @@ sub ParseQuery {
 	}
 
 	my $keystring = "";
-	$keystring = "{Subkey}{" .
-	    $parentdepth . ".$depths{$parentdepth}}";
+	$keystring = "{Subkey}{" . $parentdepth . ".$num" . "}";
 	$parentdepth--;
 
 	while ($parentdepth > 0) {
