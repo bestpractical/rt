@@ -1,4 +1,4 @@
-<SELECT NAME="<%$Name%>DateType">
+<SELECT NAME="<%$Name%>">
 <OPTION VALUE="Created">Created</OPTION>
 <OPTION VALUE="Started">Started</OPTION>
 <OPTION VALUE="Resolved">Resolved</OPTION>
@@ -8,5 +8,5 @@
 <OPTION VALUE="Due">Due</OPTION>
 </SELECT>
 <%ARGS>
-$Name => undef
+$Name => 'DateType'
 </%ARGS>

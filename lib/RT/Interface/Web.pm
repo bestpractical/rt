@@ -109,12 +109,22 @@ sub LoadTicket {
 
 
 sub ProcessSimpleActions {
-    my %args=@_;
-    # TODO: What if there are more Actions?
-    if (exists $args{ARGS}->{Action}) {
-	my ($action)=$args{ARGS}->{Action} =~ /^(Steal|Kill|Take|SetTold)$/;
-	my ($res, $msg)=$args{Ticket}->$action();
-	push(@{$args{Actions}}, $msg);
+    my %args=( ARGS => undef,
+	       Ticket => undef,
+	       Actions => undef,
+	       @_);
+
+    my ($Action);	
+
+    my $Ticket = $args{'Ticket'};
+    my @Actions = $$args{'Actions'};
+ 
+    if (defined $args{ARGS}->{'Action'}) {
+	if ($args{ARGS}->{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+	  $action = $1;
+	my ($res, $msg)=$Ticket->$action();
+	push(@Actions, $msg);
+        }
     }
 }
 
@@ -237,6 +247,7 @@ sub ProcessSearchQuery {
 					OPERATOR => $args{ARGS}->{'OwnerOp'}
 				       );
     }
+
     # }}}
     # {{{ Limit requestor email
     #TODO this doesn't work
@@ -284,6 +295,20 @@ sub ProcessSearchQuery {
     }
 
     # }}}    
+    # {{{ Limit Dates
+    if ($args{ARGS}->{'ValueOfDate'} ne '') {
+	
+	my $date = ParseDateToISO($args{ARGS}->{'ValueOfDate'});
+	$args{ARGS}->{'DateType'} =~ s/_Date$//;
+
+	$session{'tickets'}->LimitDate(
+				       FIELD => $args{ARGS}->{'DateType'},
+				       VALUE =>  $date,
+				       OPERATOR => $args{ARGS}->{'DateOp'},
+				      );
+    }
+
+    # }}}    
     # {{{ Limit Content
     if ($args{ARGS}->{'ValueOfContent'} ne '') {
 	$session{'tickets'}->Limit(				
@@ -318,6 +343,39 @@ sub ProcessSearchQuery {
 }
 
 # }}}
+
+
+# {{{ sub ParseDateToISO
+
+=head2 ParseDateToISO
+
+Takes a date in an arbitrary format.
+Returns an ISO date and time in GMT
+
+=cut
+
+sub ParseDateToISO {
+    my $date = shift;
+
+    use Date::Manip;
+    my $parsed_date = Date::Manip::ParseDate($date);
+    if ($parsed_date) {
+	my $unixdate = Date::Manip::UnixDate($parsed_date, "%s");
+	$RT::Logger->debug("Parsed date is $parsed_date (localtime)");
+	my $date_obj = new RT::Date($CurrentUser);
+	$date_obj->Set( Format => 'unix',
+			Value => $unixdate
+			      );
+	return ($date_obj->ISO);
+    }
+    #if we couldn't parse the date...
+    else {
+	return(undef);
+    }
+}
+
+# }}}
+
 
 # {{{ sub Config 
 # TODO: This might eventually read the cookies, user configuration

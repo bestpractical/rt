@@ -585,6 +585,7 @@ sub LimitHasMember {
 # }}}
 
 # {{{ LimitDependsOn
+
 sub LimitDependsOn {
     my $self = shift;
     my $ticket_id = shift;
@@ -593,9 +594,11 @@ sub LimitDependsOn {
 			   );
     
 }
+
 # }}}
 
 # {{{ LimitDependedOnBy
+
 sub LimitDependedOnBy {
     my $self = shift;
     my $ticket_id = shift;
@@ -604,27 +607,74 @@ sub LimitDependedOnBy {
 			     );
     
 }
+
 # }}}
 
 # }}}
 
 # {{{ limit based on ticket date attribtes
 
-=head1 TODO
+# {{{ sub LimitDate
 
-# {{{ LimitDate 
-sub LimitDate {
-}
-# }}}
-<OPTION VALUE="Created">Created</OPTION>
-<OPTION VALUE="Started">Started</OPTION>
-<OPTION VALUE="Resolved">Resolved</OPTION>
-<OPTION VALUE="Told">Last Contacted</OPTION>
-<OPTION VALUE="LastUpdated">Last Updated</OPTION>
-<OPTION VALUE="StartsBy">Starts By</OPTION>
-<OPTION VALUE="Due">Due</OPTION>
+=head2 LimitDate (FIELD => 'DateField', OPERATOR => $oper, VALUE => $ISODate)
+
+Takes a paramhash with the fields FIELD OPERATOR and VALUE.
+
+OPERATOR is one of > or < 
+VALUE is a date and time in ISO format in GMT
+FIELD is one of Starts, Started, Told, Created, Resolved, LastUpdated
+
+There are also helper functions of the form LimitFIELD that eliminate
+the need to pass in a FIELD argument.
 
 =cut
+
+sub LimitDate {
+    my $self = shift;
+    my %args = (
+                  FIELD => undef,
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+
+                  @_);
+
+    #Set the description if we didn't get handed it above
+    unless ($args{'DESCRIPTION'} ) {
+	$args{'DESCRIPTION'} = $args{'FIELD'} . " " .$args{'OPERATOR'}. " ". $args{'VALUE'} . " GMT"
+    }
+
+    $self->Limit (%args);
+
+}
+
+# }}}
+
+sub LimitCreated {
+    my $self = shift;
+    $self->LimitDate( FIELD => 'Created', @_);
+
+}
+sub LimitStarts {
+    my $self = shift;
+    $self->LimitDate( FIELD => 'Starts', @_);
+
+}
+sub LimitStarted {
+    my $self = shift;
+    $self->LimitDate( FIELD => 'Started', @_);
+}
+sub LimitResolved { 
+    my $self = shift;
+    $self->LimitDate( FIELD => 'Resolved', @_);
+}
+sub LimitTold {
+    my $self = shift;
+    $self->LimitDate( FIELD => 'Told', @_);
+}
+sub LimitLastUpdated {
+    my $self = shift;
+    $self->LimitDate( FIELD => 'LastUpdated', @_);
+}
 
 # }}}
 
@@ -1106,12 +1156,14 @@ sub _ProcessRestrictions {
 
 # }}}
 
-# {{{ Deal with sorting the set of records found
-
-
-# }}}
-
 # {{{ Deal with displaying rows of the listing 
+
+#
+#  Everything in this section is stub code for 2.2
+# It's not part of the API. It's not for your use
+# It's not for our use.
+#
+
 
 # {{{ sub SetListingFormat
 

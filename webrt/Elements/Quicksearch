@@ -1,4 +1,4 @@
-<& /Elements/TitleBoxStart, title => "Find open tickets...", titleright => "<A CLASS=INVERSE href=\"$RT::WebPath/Search/Listing.html?NewSearch=1\">Advanced Search</A>" &>
+<& /Elements/TitleBoxStart, title => "Find open tickets...", titleright => "<A class='inverse' href=\"$RT::WebPath/Search/Listing.html?NewSearch=1\">Advanced Search</A>" &>
 
 % while (my $queue = $Queues->Next) {
 <A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&NewSearch=1"><%$queue->Name%></a><BR>

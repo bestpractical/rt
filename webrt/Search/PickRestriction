@@ -37,7 +37,7 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp",
 <li>
 <& /Elements/SelectDateType, Name => 'DateType' &>
 <& /Elements/SelectDateRelation, Name=>"DateOp" &>
-<& /Elements/SelectDate, Name  => "ValueOfDate", ShowTime => 0 &>
+<& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
 
 <li>Ticket content 
 <& /Elements/SelectBoolean, Name => "ContentOp", 
