@@ -460,7 +460,7 @@ sub Create {
     }
 
     #If we've been handed something else, try to load the user.
-    elsif ( defined $args{'Owner'} ) {
+    elsif ( $args{'Owner'} ) {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
 
@@ -469,7 +469,6 @@ sub Create {
               . $self->loc( "User '[_1]' could not be found.", $args{'Owner'} )
           )
           unless ( $Owner->Id );
-
     }
 
     #If we have a proposed owner and they don't have the right
