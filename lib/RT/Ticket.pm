@@ -713,7 +713,6 @@ sub LongSinceToldAsString {
     if ($self->Told) {
 	my $now=Date::Kronos->new(cal_type=>'Unix');
 	my $diff=$now - $self->ToldObj;
-	warn $diff->Unix->stringify;
 	return $diff->Unix->stringify;
     } else {
 	return "Never";

@@ -1,13 +1,13 @@
 %# $Header$
 
-# TODO: Better default handling
+%# TODO: Better default handling
 
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="10" >10
 <OPTION VALUE="25" >25
 <OPTION VALUE="50" >50
 <OPTION VALUE="100" SELECTED>100
-<OPTION VALUE="">Unlimited
+<OPTION VALUE="0">Unlimited
 </SELECT>
 
 <%ARGS>

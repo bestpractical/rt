@@ -163,14 +163,18 @@ sub TargetAsHREF {
 
 # {{{ sub AsHREF - Converts Link URIs to HTTP URLs
 sub AsHREF {
-  my $self=shift;
-  my $URI=shift;
-  if ($self->_IsLocal($URI)) {
-    my $url=$RT::WebURL . "Ticket/Display.html?id=$URI";
-    return $url;
-  } else {
-    my ($protocol) = $URI =~ m|(.*?)://|;
-    return $RT::URI2HTTP{$protocol}->($URI);
+    my $self=shift;
+    my $URI=shift;
+    if ($self->_IsLocal($URI)) {
+	my $url=$RT::WebURL . "Ticket/Display.html?id=$URI";
+	return $url;
+    } else {
+	my ($protocol) = $URI =~ m|(.*?)://|;
+	unless (exists $RT::URI2HTTP{$protocol}) {
+	    warn "Linking for protocol $protocol not defined in the config file!";
+	    return "";
+	}
+	return $RT::URI2HTTP{$protocol}->($URI);
     }
 }
 

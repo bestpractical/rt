@@ -32,11 +32,17 @@
 
 <& PickRestriction &>
 
+<%ARGS>
+$ValueOfResultsPerPage=>1
+</%ARGS>
+
 <%INIT>
 
 # temporary disabling features that won't work ... --
-# tobix.. (besides, the "current restrictions" must be listed up, and it
-# must be possible to remove restrictions if this should make any sense)
+
+# tobix about sticky searches: the "current restrictions" must be
+# listed up, and it # must be possible to remove restrictions if this
+# should make any sense.  It would be very cool, indeed.
 
   if (!$ARGS{'keep'} || !defined $session{'tickets'}) {
     use RT::TicketCollection;

@@ -40,7 +40,7 @@ Created <& /Elements/SelectDateRelation, Name=>"OpCreated" &>
 Status <& /Elements/SelectBoolean, Name => "NegateStatus", False => "is", True => "isn't", Default => "False" &>  
 	<& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
-<li><& /Elements/Checkbox, Name => "LimitResultsPerPage" &>
+<li><& /Elements/Checkbox, Name => "LimitResultsPerPage",  Default=>'checked' &>
 	Results per page
 	<& /Elements/SelectResultsPerPage, Name => "ValueOfResultsPerPage" &>
 
