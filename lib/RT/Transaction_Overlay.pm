@@ -433,9 +433,11 @@ sub _Attach {
         return ( 0, $self->loc("[_1]: no attachment specified", $self) );
     }
 
-    if (ref($MIMEObject->{ME_Bodyhandle}) and ref($MIMEObject->{ME_Bodyhandle}{MBC_Data})) {
-	Encode::_utf8_on($_) for @{$MIMEObject->{ME_Bodyhandle}{MBC_Data}};
-    }
+
+# This seems to break the testsuite. autrijus?
+#     if (ref($MIMEObject->{ME_Bodyhandle}) and ref($MIMEObject->{ME_Bodyhandle}{MBC_Data})) {
+# 	Encode::_utf8_on($_) for @{$MIMEObject->{ME_Bodyhandle}{MBC_Data}};
+#     }
 
     my $Attachment = new RT::Attachment( $self->CurrentUser );
     $Attachment->Create(
