@@ -1,7 +1,14 @@
+27 July 1999
+------------
+Added a fix to the mailgate that had problems with repeated headers, as
+	would happen with forwarded mail.
+
+Some cleanup to the cli rtq's online help files
 25 July 1999
 ------------
-	Added the ability to limit to a given area on the cli query engine
-	Added the ability to display the due date in the cli query engine
+Added the ability to limit to a given area on the cli query engine
+
+Added the ability to display the due date in the cli query engine
 
 
 21 July 1999
