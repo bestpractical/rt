@@ -1,0 +1,12 @@
+<SELECT NAME="<%$Name%>DateType">
+<OPTION VALUE="Created">Created</OPTION>
+<OPTION VALUE="Started">Started</OPTION>
+<OPTION VALUE="Resolved">Resolved</OPTION>
+<OPTION VALUE="Told">Last Contacted</OPTION>
+<OPTION VALUE="LastUpdated">Last Updated</OPTION>
+<OPTION VALUE="StartsBy">Starts By</OPTION>
+<OPTION VALUE="Due">Due</OPTION>
+</SELECT>
+<%ARGS>
+$Name => undef
+</%ARGS>
