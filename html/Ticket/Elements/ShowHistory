@@ -107,6 +107,9 @@ my $i;
 
 
 $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
+$AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
+
+
 
 </%INIT>
 <%ARGS>
