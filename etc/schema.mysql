@@ -365,3 +365,9 @@ CREATE TABLE CustomFieldValues (
 ) TYPE=InnoDB;
 
 # }}}
+
+CREATE TABLE sessions (
+    id char(32) NOT NULL,
+    a_session TEXT,
+    PRIMARY KEY (id)
+);

@@ -68,7 +68,7 @@ my ($field, @results, $User, $Users, $watcher, $msg);
 
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($id) || Abort("Couldn't load queue '$id'");
+$QueueObj->Load($id) || Abort(loc("Couldn't load queue", $id));
 # }}}
 
 # {{{ Delete deletable watchers

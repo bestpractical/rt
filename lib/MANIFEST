@@ -52,6 +52,8 @@ RT/I18N/en_us.pm
 RT/I18N/en_us.po
 RT/I18N/fr.pm
 RT/I18N/i_default.pm
+RT/I18N/de.pm
+RT/I18N/de.po
 RT/I18N/zh_tw.pm
 RT/I18N/zh_tw.po
 RT/Interface/CLI.pm

@@ -14,7 +14,7 @@
 
 <%PERL>
 if (defined %session) {
-	%session = undef;
+	tied(%session)->delete;
 }
 $m->abort();
 </%PERL>

@@ -39,12 +39,12 @@ if ($create) {
 else {
   if ($template eq 'new') {
       my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
-      Abort("Could not create template: $msg") unless ($val);
+      Abort(loc("Could not create template: [_1]",$msg)) unless ($val);
      push @results, $msg;
      $title = loc('Created template [_1]', $TemplateObj->Name()); 
     }
     else {
-       $TemplateObj->Load($template) || Abort('No Template');
+       $TemplateObj->Load($template) || Abort(loc('No Template'));
       $title = loc('Editing template [_1]', $TemplateObj->Name()); 
     }
   

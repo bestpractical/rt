@@ -46,21 +46,21 @@ my (@actions, $description);
 
 my $Scrips = new RT::Scrips ($session{'CurrentUser'});
 unless ($id =~ /^\d+$/) {
-    Abort("$id isn't a valid Queue id.");
+    Abort(loc("[_1] isn't a valid Queue id.", $id));
 }
 
 unless ($Scrips->LimitToQueue($id)) {
-    Abort("Couldn't load Scrips.");
+    Abort(loc("Couldn't load Scrips."));
         }
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($id);
 
 if ($QueueObj->id) {
-    $description = "Modify scrips for queue '". $QueueObj->Name ."'";
+    $description = loc("Modify scrips for queue [_1]", $QueueObj->Name);
 }
 else {
-    $description = "Modify global scrips";
+    $description = loc("Modify global scrips");
 }
 
 

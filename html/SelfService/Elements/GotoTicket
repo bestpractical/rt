@@ -1,1 +1,1 @@
-<FORM ACTION="<%$RT::WebPath%>/SelfService/Display.html"><input type=submit value="Goto ticket">&nbsp;<input size=4 name=id></FORM>
+<FORM ACTION="<%$RT::WebPath%>/SelfService/Display.html"><input type=submit value="<&|/l&>Goto ticket</&>">&nbsp;<input size=4 name=id></FORM>

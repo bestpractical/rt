@@ -104,12 +104,12 @@ if ($id[0] eq 'new') {
     
     my $Queue = new RT::Queue($session{'CurrentUser'});	
     unless ($Queue->Load($ARGS{'Queue'})) {
-	$m->comp('Error.html', Why => 'Queue not found');
+	$m->comp('Error.html', Why => loc('Queue not found'));
 	$m->abort;
     }
     
     unless ($Queue->CurrentUserHasRight('CreateTicket')) {
-	$m->comp('Error.html', Why => 'You have no permission to create tickets in that queue.');
+	$m->comp('Error.html', Why => loc('You have no permission to create tickets in that queue.'));
   	$m->abort; 
     }
     
@@ -141,7 +141,7 @@ if ($id[0] eq 'new') {
 }
 else {
     unless ($Ticket->Load($id[0])) {
-	$m->comp('Error.html', Why =>"Couldn't load ticket '$id'");
+	$m->comp('Error.html', Why =>loc("Couldn't load ticket '[_1]'", $id));
 	$m->abort();
     }
 }
@@ -149,7 +149,7 @@ else {
 
 unless ($session{'CurrentUser'}->HasQueueRight ( TicketObj => $Ticket,
 						 Right => 'ShowTicket')) {
-    $m->comp('Error.html', Why => "No permission to display that ticket");
+    $m->comp('Error.html', Why => loc("No permission to display that ticket"));
     $m->abort();
 }
 

@@ -13,91 +13,87 @@ msgstr ""
 "Content-Type: text/plain; charset=big5\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D
+#: html/Elements/MyRequests html/Elements/MyTickets
 msgid "#"
 msgstr "#"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "%1 %2 %3 %4:%5:%6 %7"
-msgstr ""
-
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "%1 %2 changed to %3"
 msgstr "從 %1 %2 改成 %3"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 這份申請單\\n"
 
-#: lib/RT/ScripAction_Overlay.pm lib/RT/ScripAction_Overlay.pm,D lib/blib/lib/RT/ScripAction_Overlay.pm
+#: lib/RT/ScripAction_Overlay.pm
 msgid "%1 ScripAction loaded"
 msgstr "載入手續 %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 added as a value for %2"
 msgstr "新增 %1 作為 %2 的值"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "%1 aliases require a TicketId to work on"
 msgstr "別名 %1 須要可用的申請單編號"
 
-#: bin/rt-mailgate bin/rt-mailgate,D
+#: bin/rt-mailgate
 msgid "%1 aliases require a TicketId to work on "
 msgstr "別名 %1 須要可用的申請單編號 "
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "別名 %1 須要可用的申請單編號以處理（出自 %2 的）%3"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "%1 by %2"
 msgstr "%1 被 %2 更動"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "%1 changed from %2 to %3"
 msgstr "%1 的值從 %2 改成 %3"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 couldn't init a transaction (%2)\\n"
 msgstr "%1 無法初始更新報告 (%2)\\n"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 無法將現況設成已解決。RT 資料庫內容可能不一致。"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 已不再是此佇列的 %2。"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 已不再是此申請單的 %2。"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 已不再是自訂欄位 %2 的值。"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Keywords.html html/Admin/Queues/Scrips.html
 msgid "%1 isn't a valid Queue id."
 msgstr "%1 不是一個合法的佇列編號"
 
-#: html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D
+#: html/Ticket/Elements/ShowBasics
 msgid "%1 min"
 msgstr "%1 分鐘"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "%1 not shown"
 msgstr "沒有顯示 %1"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "%1 succeeded\\n"
 msgstr "%1 完成\\n"
 
-#: bin/rt-mailgate bin/rt-mailgate,D
+#: bin/rt-mailgate
 msgid "%1 type unknown for $MessageId"
 msgstr "不知道 $MessageID 的 %1 類別"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "%1 type unknown for %2"
 msgstr "不知道 %2 的 %1 類別"
 
@@ -105,83 +101,83 @@ msgstr "不知道 %2 的 %1 類別"
 msgid "%1 was created without a CurrentUser\\n"
 msgstr "在沒有 CurrentUser 的情況下建立 %1\\\\n"
 
-#: lib/RT/Action/ResolveMembers.pm lib/RT/Action/ResolveMembers.pm,D lib/blib/lib/RT/Action/ResolveMembers.pm
+#: lib/RT/Action/ResolveMembers.pm
 msgid "%1 will resolve all members of a resolved group ticket."
 msgstr "%1 會解決在已解決群組裡成員的申請單。"
 
-#: lib/RT/Action/StallDependent.pm lib/RT/Action/StallDependent.pm,D lib/blib/lib/RT/Action/StallDependent.pm
+#: lib/RT/Action/StallDependent.pm
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "如果 %1 起始申請單依賴於某個鏈結，或是某個鏈結的成員，它將會被延宕。"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "%1: no attachment specified"
 msgstr "%1：沒有指定附件"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "'%1' is an invalid value for status"
 msgstr "'%1' 不是一個合法的狀態值"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "'%1' not a recognized action. "
 msgstr "'%1'為無法辨識的動作。 "
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Groups/Members.html
 msgid "(Check box to delete group member)"
 msgstr "（選擇欲刪除的群組成員）"
 
-#: html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Ticket/Elements/EditPeople
 msgid "(Check box to delete)"
 msgstr "（選擇欲刪除人員）"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "(Check boxes to delete)"
 msgstr "（選擇欲刪除鏈結）"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D
+#: html/Ticket/Create.html
 msgid "(Enter ticket ids or URLs, seperated with spaces)"
 msgstr "（鍵入申請單編號或網址，以空白分隔）"
 
-#: html/Ticket/Elements/EditCustomFields html/Ticket/Elements/EditCustomFields,D
+#: html/Ticket/Elements/EditCustomFields
 msgid "(No Value)"
 msgstr "（無）"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Groups/Members.html
 msgid "(No members)"
 msgstr "（沒有成員）"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
 msgstr "（送出本份更新的密件副本給名單上以逗號隔開的電子郵件位址。請<b>勿</b>更改接收者名單。）"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
 msgstr "（送出本份更新的副本給名單上以逗號隔開的電子郵件位址。請<b>勿</b>更改接收者名單。）"
 
-#: html/Admin/Groups/index.html html/Admin/Groups/index.html,D html/User/Groups/index.html html/User/Groups/index.html,D
+#: html/Admin/Groups/index.html
 msgid "(empty)"
 msgstr "（空白）"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D html/Admin/Elements/SelectRights html/Admin/Elements/SelectRights,D html/Ticket/Elements/ShowCustomFields html/Ticket/Elements/ShowCustomFields,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm html/Admin/Elements/SelectRights
 msgid "(no value)"
 msgstr "（無）"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "(only one ticket)"
 msgstr "（祇有一份申請單）"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "(required)"
 msgstr "（必填）"
 
-#: html/Elements/MyTickets html/Elements/MyTickets,D
+#: html/Elements/MyTickets
 msgid "25 highest priority tickets I own..."
 msgstr "前 25 份待處理申請單..."
 
-#: html/Elements/MyRequests html/Elements/MyRequests,D
+#: html/Elements/MyRequests
 msgid "25 highest priority tickets I requested..."
 msgstr "前 25 份送出的申請單..."
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D html/Elements/CreateTicket html/Elements/CreateTicket,D
+#: docs/design_docs/string-extraction-guide.txt html/Elements/CreateTicket
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"提出申請單\">&nbsp;%1"
 
@@ -189,7 +185,7 @@ msgstr "<input type=\"submit\" value=\"提出申請單\">&nbsp;%1"
 msgid "ACE Deleted"
 msgstr "刪除 ACE 設定"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "ACE Loaded"
 msgstr "載入 ACE 設定"
 
@@ -197,119 +193,119 @@ msgstr "載入 ACE 設定"
 msgid "ACE could not be deleted"
 msgstr "無法刪除 ACE 設定"
 
-#: lib/RT/Principal_Overlay.pm lib/RT/Principal_Overlay.pm,D lib/blib/lib/RT/Principal_Overlay.pm
+#: lib/RT/Principal_Overlay.pm
 msgid "ACE could not be found"
 msgstr "找不到 ACE 設定"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "ACE not found"
 msgstr "找不到 ACE 設定"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "ACEs can only be created and deleted."
 msgstr "祇能建立或刪除 ACE 設定"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/enhanced-mailgate bin/rt-commit-handler
 msgid "Aborting to avoid unintended ticket modifications.\\n"
 msgstr "離開以免不小心修改到申請單。\\n"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Access control"
 msgstr "存取權限"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Action"
 msgstr "動作"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm
 msgid "Action %1 not found"
 msgstr "動作 %1 找不到"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Add AdminCc"
 msgstr "新增管理員副本收件人"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Add Cc"
 msgstr "新增副本收件人"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Add Requestor"
 msgstr "新增申請人"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Add a keyword selection to this queue"
 msgstr "新增一個關鍵字選項到此佇列"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Add a scrip to this queue"
 msgstr "新增一道手續到此佇列"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D
+#: html/Admin/Global/Scrips.html
 msgid "Add a scrip which will apply to all queues"
 msgstr "新增一道用於所有佇列的手續"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Groups/Members.html
 msgid "Add members"
 msgstr "新增成員"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers,D
+#: html/Admin/Queues/People.html html/Ticket/Elements/AddWatchers
 msgid "Add new watchers"
 msgstr "新增視察員"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Added principal as a %1 for this queue"
 msgstr "新增 %1 為此佇列的單位"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Added principal as a %1 for this ticket"
 msgstr "新增 %1 為此申請單的單位"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Address1"
 msgstr "住址："
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Address2"
 msgstr "住址："
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D
+#: html/Ticket/Create.html
 msgid "Admin Cc"
 msgstr "管理員副本"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "Admin queues"
 msgstr "佇列管理"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Admin users"
 msgstr "使用者管理"
 
-#: html/Admin/Global/index.html html/Admin/Global/index.html,D
+#: html/Admin/Global/index.html
 msgid "Admin/Global configuration"
 msgstr "管理/整體設定"
 
-#: html/Admin/Groups/index.html html/Admin/Groups/index.html,D
+#: html/Admin/Groups/index.html
 msgid "Admin/Groups"
 msgstr "管理/群組"
 
-#: html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Queues/Modify.html
 msgid "Admin/Queue/Basics"
 msgstr "管理/佇列/基本資訊"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D html/Ticket/Elements/ShowPeople html/Ticket/Elements/ShowPeople,D
+#: html/Ticket/Update.html html/Ticket/Elements/ShowPeople
 msgid "AdminCc"
 msgstr "管理員副本"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
 msgid "Administrative Cc"
 msgstr "管理員副本"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D
+#: html/Elements/Quicksearch
 msgid "Advanced Search"
 msgstr "進階搜尋"
 
-#: html/Elements/SelectDateRelation html/Elements/SelectDateRelation,D
+#: html/Elements/SelectDateRelation
 msgid "After"
 msgstr "晚於"
 
@@ -317,259 +313,247 @@ msgstr "晚於"
 msgid "Age"
 msgstr "經歷時間"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Apr"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Apr."
 msgstr "四月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "April"
 msgstr "四月"
 
-#: html/Elements/SelectSortOrder html/Elements/SelectSortOrder,D
+#: html/Elements/SelectSortOrder
 msgid "Ascending"
 msgstr "遞增"
 
-#: html/SelfService/Update.html html/SelfService/Update.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/SelfService/Update.html html/Ticket/ModifyAll.html html/Ticket/Update.html
 msgid "Attach"
 msgstr "附件"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/Ticket/Create.html html/Ticket/Create.html,D
+#: html/SelfService/Create.html html/Ticket/Create.html
 msgid "Attach file"
 msgstr "附加檔案"
 
-#: html/SelfService/Attachment/dhandler html/SelfService/Attachment/dhandler,D
+#: html/SelfService/Attachment/dhandler
 msgid "Attachment '%1' could not be loaded"
 msgstr "無法載入附件 '%1'"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Attachment created"
 msgstr "附件建立完成"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Aug"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Aug."
 msgstr "八月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "August"
 msgstr "八月"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "AuthSystem"
 msgstr "認證方式"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Bad PGP Signature: %1\\n"
 msgstr "錯誤的 PGP 簽章：%1\\n"
 
-#: html/SelfService/Attachment/dhandler html/SelfService/Attachment/dhandler,D
+#: html/SelfService/Attachment/dhandler
 msgid "Bad attachment id. Couldn't find attachment '%1'\\n"
 msgstr "錯誤的附件編號。無法找到附件 '%1'\\n"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "Bad data in %1"
 msgstr "%1 的資料錯誤"
 
-#: html/SelfService/Attachment/dhandler html/SelfService/Attachment/dhandler,D
+#: html/SelfService/Attachment/dhandler
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
 msgstr "附件的處理號碼錯誤。%1 應為 %2\\n"
 
-#: html/Admin/Elements/GroupTabs html/Admin/Elements/GroupTabs,D html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/UserTabs html/Admin/Elements/UserTabs,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D html/User/Elements/GroupTabs html/User/Elements/GroupTabs,D
+#: html/Admin/Elements/GroupTabs html/Admin/Elements/QueueTabs html/Admin/Elements/UserTabs html/Ticket/Elements/Tabs
 msgid "Basics"
 msgstr "基本資訊"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "Bcc"
 msgstr "密件副本"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D html/Admin/Global/UserRights.html html/Admin/Global/UserRights.html,D html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html,D
+#: html/Admin/Global/GroupRights.html html/Admin/Global/UserRights.html html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
 msgid "Be sure to save your changes"
 msgstr "記得儲存修改。"
 
-#: html/Elements/SelectDateRelation html/Elements/SelectDateRelation,D
+#: html/Elements/SelectDateRelation
 msgid "Before"
 msgstr "早於"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Bookmarkable URL for this search"
 msgstr "將搜尋結果轉為可放入書籤的網址"
 
-#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory,D html/Ticket/Elements/ShowHistory,D
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory
 msgid "Brief headers"
 msgstr "精簡標頭檔"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Bulk ticket update"
 msgstr "更新整批申請單"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Can not modify system users"
 msgstr "無法修改系統使用者"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Can't add a custom field value without a name"
 msgstr "不能新增沒有名稱的自訂欄位值"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Can't link a ticket to itself"
 msgstr "申請單不能鏈結自己。"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Can't merge into a merged ticket. You should never get this error"
 msgstr "不能整合進已整合過的申請單。妳不該犯這個錯誤。"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Can't specifiy both base and target"
 msgstr "不能同時指定起始申請單與目的申請單"
 
-#: html/autohandler html/autohandler,D
+#: html/autohandler
 msgid "Cannot create user: %1"
 msgstr "無法建立使用者：%1"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Update.html html/Ticket/Update.html html/Ticket/Update.html,D html/Ticket/Update.html,D html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D html/Ticket/Elements/ShowPeople html/Ticket/Elements/ShowPeople,D
+#: html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html html/Ticket/Update.html html/Ticket/Update.html html/Admin/Queues/People.html html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
 msgid "Cc"
 msgstr "副本"
 
-#: html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D
+#: html/SelfService/Prefs.html html/User/Prefs.html
 msgid "Change password"
 msgstr "修改密碼"
 
-#: html/Admin/Elements/SelectRights html/Admin/Elements/SelectRights,D
+#: html/Admin/Elements/SelectRights
 msgid "Check box to revoke right"
 msgstr "選擇欲撤消的權利"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
 msgid "Children"
 msgstr "子申請單"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "City"
 msgstr "所在城市"
 
-#: html/SelfService/Elements/Tabs html/SelfService/Elements/Tabs,D
+#: html/SelfService/Elements/Tabs
 msgid "Closed requests"
 msgstr "結束的申請"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Command not understood!\\n"
 msgstr "指令無法辨識！\\n"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Comment"
 msgstr "評論"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Comment Address"
 msgstr "評論電子郵件地址"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate bin/enhanced-mailgate,D bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate,D bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-mailgate bin/rt-mailgate
 msgid "Comment not recorded"
 msgstr "評論未被紀錄"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "Comments"
 msgstr "評論"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Comments (Not sent to requestors)"
 msgstr "評論（不送給申請人）"
 
-#: html/Elements/ViewUser html/Elements/ViewUser,D
+#: html/Elements/ViewUser
 msgid "Comments about %1"
 msgstr "對 %1 的評論"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Ticket/Elements/ShowRequestor html/Ticket/Elements/ShowRequestor,D
+#: html/Admin/Users/Modify.html html/Ticket/Elements/ShowRequestor
 msgid "Comments about this user"
 msgstr "使用者描述"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Comments added"
 msgstr "新增評論完成"
 
-#: lib/RT/Action/Generic.pm lib/RT/Action/Generic.pm,D lib/blib/lib/RT/Action/Generic.pm
+#: lib/RT/Action/Generic.pm
 msgid "Commit Stubbed"
 msgstr "消除更動完成"
 
-#: html/Search/RestrictSearch.html html/Search/RestrictSearch.html,D
+#: html/Search/RestrictSearch.html
 msgid "Compile Restrictions"
 msgstr "設定搜尋條件"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Condition"
 msgstr "現況"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm
 msgid "Condition not found"
 msgstr "未找到符合的現況"
 
-#: html/Elements/Tabs html/Elements/Tabs,D
+#: html/Elements/Tabs
 msgid "Configuration"
 msgstr "設定"
 
-#: html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D
+#: html/SelfService/Prefs.html html/User/Prefs.html
 msgid "Confirm"
 msgstr "確認密碼"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "ContactInfoSystem"
 msgstr "連絡資訊系統"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Contacted date '%1' could not be parsed"
 msgstr "無法解讀聯絡日期 '%1'"
 
-#: html/User/Groups/Modify.html html/User/Groups/Modify.html,D
-msgid "Coould not create group"
-msgstr ""
-
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Correspondence Address"
 msgstr "申請單寄送地址"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Correspondence added"
 msgstr "新增申請單寄送地址"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "Correspondence not recorded"
 msgstr "未紀錄申請單寄送地址"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Could not add new custom field value for ticket. "
 msgstr "不能新增自訂欄位的值 "
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Could not add new custom field value for ticket. %1 "
 msgstr "不能新增自訂欄位的值。%1 "
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not change owner. "
 msgstr "不能更改承辦人。 "
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Could not create CustomField"
 msgstr "無法建立自訂欄位"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm
 msgid "Could not create group"
 msgstr "無法建立新群組"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Could not create template: %1"
 msgstr "無法建立範本：%1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not create ticket. Queue not set"
 msgstr "無法建立申請單。尚未指定佇列。"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
 msgid "Could not create user"
 msgstr "無法建立使用者"
 
@@ -577,67 +561,67 @@ msgstr "無法建立使用者"
 msgid "Could not create watcher for requestor"
 msgstr "無法為申請人建立視察員"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "Could not find a ticket with id %1"
 msgstr "找不到編號 %1 的申請單"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Could not find group %1."
 msgstr "找不到群組 %1。"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not find or create that user"
 msgstr "找不到或無法建立該名使用者"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not find that principal"
 msgstr "找不到該單位"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Could not find user %1."
 msgstr "找不到使用者 %1。"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D html/User/Groups/Modify.html html/User/Groups/Modify.html,D
+#: html/Admin/Groups/Members.html
 msgid "Could not load group"
 msgstr "無法載入群組"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Could not make that principal a %1 for this queue"
 msgstr "無法將該單位設為此佇列的 %1。"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "無法將該單位設為此申請單的 %1。"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "無法將單位 %1 從佇列移除。"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Could not remove that principal as a %1 for this ticket"
 msgstr "無法將單位 %1 從申請單移除。"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Couldn't add member to group"
 msgstr "無法新增成員至群組"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Couldn't create a transaction: %1"
 msgstr "無法建立更動報告"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Couldn't figure out what to do from gpg's reply\\n"
 msgstr "無法從 gpg 回函辨識出該採取的行動\\n"
 
-#: bin/rtadmin bin/rtadmin bin/rtadmin,D bin/rtadmin,D
+#: bin/rtadmin bin/rtadmin
 msgid "Couldn't find group\\n"
 msgstr "找不到群組\\n"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Couldn't find that principal"
 msgstr "找不到該單位"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Couldn't find that value"
 msgstr "找不到該值"
 
@@ -645,179 +629,175 @@ msgstr "找不到該值"
 msgid "Couldn't find that watcher"
 msgstr "找不到該名視察員"
 
-#: bin/rtadmin bin/rtadmin bin/rtadmin,D bin/rtadmin,D
+#: bin/rtadmin bin/rtadmin
 msgid "Couldn't find user\\n"
 msgstr "找不到使用者\\n"
 
-#: lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm,D lib/blib/lib/RT/CurrentUser.pm
+#: lib/RT/CurrentUser.pm
 msgid "Couldn't load %1 from the users database.\\n"
 msgstr "無法從使用者資料庫載入 %1。\\n"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Couldn't load KeywordSelects."
 msgstr "無法載入關鍵字選項。"
 
-#: lib/RT.pm lib/RT.pm,D lib/blib/lib/RT.pm
+#: lib/RT.pm
 msgid "Couldn't load RT config file '%1' %2"
 msgstr "無法載入 RT 設定檔 '%1' %2"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Couldn't load Scrips."
 msgstr "無法載入手續。"
 
-#: lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm,D lib/RT/Link_Overlay.pm,D lib/blib/lib/RT/Link_Overlay.pm lib/blib/lib/RT/Link_Overlay.pm
+#: lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm
 msgid "Couldn't load link"
 msgstr "無法載入鏈結。"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Admin/Queues/People.html
 msgid "Couldn't load queue"
 msgstr "無法載入佇列"
 
-#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html,D
+#: html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
 msgid "Couldn't load queue %1"
 msgstr "無法載入佇列 %1"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Couldn't load scrip"
 msgstr "無法載入手續"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Couldn't load template"
 msgstr "無法載入範本"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Couldn't load that user (%1)"
 msgstr "無法載入該名使用者（%1）"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "Couldn't load ticket '%1'"
 msgstr "無法載入申請單 '%1'"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Country"
 msgstr "國家"
 
-#: html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Create.html,D html/Ticket/Create.html,D html/Admin/Elements/CreateUserCalled html/Admin/Elements/CreateUserCalled,D
+#: html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html html/Admin/Elements/CreateUserCalled
 msgid "Create"
 msgstr "建立"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Create a CustomField"
 msgstr "建立新的自訂欄位"
 
-#: html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html,D
+#: html/Admin/Queues/CustomFields.html
 msgid "Create a new Custom Field"
 msgstr "建立新的自訂欄位"
 
-#: html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html,D html/Admin/Groups/Modify.html,D html/Admin/Groups/index.html html/Admin/Groups/index.html,D
+#: html/Admin/Groups/index.html html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html
 msgid "Create a new group"
 msgstr "建立新群組"
 
-#: html/User/Groups/Modify.html html/User/Groups/Modify.html html/User/Groups/Modify.html,D html/User/Groups/Modify.html,D html/User/Groups/index.html html/User/Groups/index.html,D
-msgid "Create a new personal group"
-msgstr ""
-
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "Create a new queue"
 msgstr "建立新佇列"
 
-#: html/Admin/Global/Templates.html html/Admin/Global/Templates.html,D html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html,D
+#: html/Admin/Global/Templates.html html/Admin/Queues/Templates.html
 msgid "Create a new template"
 msgstr "建立新範本"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Create.html,D
+#: html/SelfService/Create.html html/Ticket/Create.html html/Ticket/Create.html
 msgid "Create a new ticket"
 msgstr "建立新的申請單"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Admin/Users/Modify.html,D html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html html/Admin/Users/Modify.html html/Admin/Users/Modify.html
 msgid "Create a new user"
 msgstr "建立新使用者"
 
-#: html/Admin/Queues/Create.html html/Admin/Queues/Create.html html/Admin/Queues/Create.html,D html/Admin/Queues/Create.html,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Queues/Create.html html/Admin/Queues/Create.html html/Admin/Queues/Modify.html
 msgid "Create a queue"
 msgstr "建立佇列"
 
-#: html/Admin/Elements/CreateQueueCalled html/Admin/Elements/CreateQueueCalled,D
+#: html/Admin/Elements/CreateQueueCalled
 msgid "Create a queue called"
 msgstr "建立佇列名稱"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D
+#: html/SelfService/Create.html
 msgid "Create a request"
 msgstr "提出申請"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Create a template"
 msgstr "建立新範本"
 
-#: bin/rt-mailgate bin/rt-mailgate,D
+#: bin/rt-mailgate
 msgid "Create failed: %1 / %2 / %3 "
 msgstr "建立失敗：%1 / %2 / %3 "
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Create failed: %1/%2/%3"
 msgstr "建立失敗：%1/%2/%3"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D
+#: html/SelfService/Create.html
 msgid "Create ticket"
 msgstr "建立申請單"
 
-#: bin/rt bin/rt,D html/Elements/SelectDateType html/Elements/SelectDateType,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: bin/rt html/Elements/SelectDateType html/Ticket/Elements/ShowDates
 msgid "Created"
 msgstr "建立日"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Created CustomField %1"
 msgstr "自訂欄位 %1 成功\建立"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Created template %1"
 msgstr "範本 %1 成功\建立"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "Current Relationships"
 msgstr "目前關係"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Groups/Members.html
 msgid "Current members"
 msgstr "現有成員"
 
-#: html/Admin/Elements/SelectRights html/Admin/Elements/SelectRights,D
+#: html/Admin/Elements/SelectRights
 msgid "Current rights"
 msgstr "現有權限"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
 msgid "Current watchers"
 msgstr "現有視察員"
 
-#: html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D
+#: html/Admin/Elements/QueueTabs html/Ticket/Elements/ShowSummary
 msgid "Custom Fields"
 msgstr "自訂欄位"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Custom field %1 not found"
 msgstr "找不到自訂欄位 %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Custom field not found"
 msgstr "找不到自訂欄位"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "無法從自訂欄位 %2 中找到 %1 這個欄位值"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Custom field value changed from %1 to %2"
 msgstr "自訂欄位值從 %1 改為 %2"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Custom field value could not be deleted"
 msgstr "無法刪除自訂欄位值"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Custom field value could not be found"
 msgstr "找不到自訂欄位值"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm
 msgid "Custom field value deleted"
 msgstr "自訂欄位值刪除成功"
 
@@ -825,187 +805,179 @@ msgstr "自訂欄位值刪除成功"
 msgid "Data error"
 msgstr "資料錯誤"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary html/Ticket/Elements/Tabs
 msgid "Dates"
 msgstr "日期"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Dec"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Dec."
 msgstr "十二月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "December"
 msgstr "十二月"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Keywords.html html/Admin/Queues/Scrips.html
 msgid "Delete"
 msgstr "刪除"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Deleting this object could break referential integrity"
 msgstr "刪除此物件可能破壞參考完整性"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Deleting this object would break referential integrity"
 msgstr "刪除此物件可能破壞參考完整性"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Deleting this object would violate referential integrity"
 msgstr "刪除此物件會違反參考完整性"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Deleting this object would violate referential integrity. That's bad."
 msgstr "刪除此物件會違反參考完整性"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowDependencies,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowLinks
 msgid "Depended on by"
 msgstr "可接續處理的申請單"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Dependencies: \\n"
 msgstr "附屬性：\\n"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowDependencies,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowLinks
 msgid "Depends on"
 msgstr "需先處理的申請單"
 
-#: html/Elements/SelectLinkType html/Elements/SelectLinkType,D
+#: html/Elements/SelectLinkType
 msgid "DependsOn"
 msgstr "需先處理"
 
-#: html/Elements/SelectSortOrder html/Elements/SelectSortOrder,D
+#: html/Elements/SelectSortOrder
 msgid "Descending"
 msgstr "遞減"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/Ticket/Create.html html/Ticket/Create.html,D
+#: html/SelfService/Create.html html/Ticket/Create.html
 msgid "Describe the issue below"
 msgstr "在以下欄位描述主題"
 
-#: html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/AddCustomFieldValue,D html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html,D html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D html/User/Groups/Modify.html html/User/Groups/Modify.html,D
+#: html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/ModifyQueue html/Admin/Global/Template.html html/Admin/Groups/Modify.html html/Admin/Queues/CustomField.html html/Admin/Queues/Modify.html html/Admin/Queues/Template.html
 msgid "Description"
 msgstr "描述"
 
-#: html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D
+#: html/SelfService/Elements/MyRequests
 msgid "Details"
 msgstr "細節"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Display"
 msgstr "顯示內容"
 
-#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory,D
+#: html/Ticket/Elements/ShowHistory
 msgid "Display mode"
 msgstr "顯示模式"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "Display ticket #%1"
 msgstr "顯示第%1號申請單"
 
-#: html/Elements/Refresh html/Elements/Refresh,D
+#: html/Elements/Refresh
 msgid "Don't refresh this page."
 msgstr "不更新此頁面"
 
-#: html/Ticket/Elements/ShowTransaction html/Ticket/Elements/ShowTransaction,D
+#: html/Ticket/Elements/ShowTransaction
 msgid "Download"
 msgstr "下載"
 
-#: bin/rt bin/rt,D html/Elements/SelectDateType html/Elements/SelectDateType,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditDates html/Ticket/Elements/EditDates,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: bin/rt html/Elements/SelectDateType html/Ticket/Create.html html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
 msgid "Due"
 msgstr "到期日"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Due date '%1' could not be parsed"
 msgstr "無法解讀日期 '%1'"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/enhanced-mailgate bin/rt-commit-handler
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
 msgstr "無法載入申請單 '%1'：%2.\\n"
 
-#: html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html,D html/Admin/Queues/CustomFields.html,D
+#: html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html
 msgid "Edit Custom Fields for %1"
 msgstr "編輯 %1 的自訂欄位"
 
-#: html/Ticket/ModifyLinks.html html/Ticket/ModifyLinks.html,D
+#: html/Ticket/ModifyLinks.html
 msgid "Edit Relationships"
 msgstr "編輯申請單關係"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Edit keywords"
 msgstr "編輯關鍵字"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Edit scrips"
 msgstr "編輯手續"
 
-#: html/Admin/Global/Templates.html html/Admin/Global/Templates.html html/Admin/Global/Templates.html,D html/Admin/Global/Templates.html,D
+#: html/Admin/Global/Templates.html html/Admin/Global/Templates.html
 msgid "Edit system templates"
 msgstr "編輯系統範本"
 
-#: html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html,D html/Admin/Queues/Templates.html,D
+#: html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html
 msgid "Edit templates for %1"
 msgstr "編輯 %1 的範本"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Editing Configuration for queue %1"
 msgstr "編輯佇列 %1 的設定"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "Editing Configuration for user %1"
 msgstr "編輯使用者 %1 的設定"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Editing CustomField %1"
 msgstr "編輯自訂欄位 %1"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D
+#: html/Admin/Groups/Members.html
 msgid "Editing membership for group %1"
 msgstr "編輯群組 %1 的成員資訊"
 
-#: html/User/Groups/Members.html html/User/Groups/Members.html,D
-msgid "Editing membership for personal group %1"
-msgstr ""
-
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Editing template %1"
 msgstr "編輯範本 %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Either base or target must be specified"
 msgstr "需要指定起始申請單或目的申請單"
 
-#: html/Elements/SelectUsers html/Elements/SelectUsers,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers,D
+#: html/Elements/SelectUsers html/Admin/Users/Modify.html html/Admin/Users/Prefs.html html/Ticket/Elements/AddWatchers
 msgid "Email"
 msgstr "電子郵件信箱"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Email address in use"
 msgstr "此電子郵件信箱已被使用"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "EmailAddress"
 msgstr "電子郵件信箱位址"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "EmailEncoding"
 msgstr "電子郵件文字編碼方式"
 
-#: html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Queues/Modify.html
 msgid "Enabled (Unchecking this box disables this queue)"
 msgstr "不隱藏（取消打勾隱藏此佇列）"
 
-#: html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Queues/Modify.html html/Admin/Users/Modify.html
 msgid "Enabled status %1"
 msgstr "啟用狀態 %1"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
 msgstr "輸入申請單可鏈結到的申請單編號或網址。以空白隔開。"
 
-#: html/Elements/Login html/Elements/Login,D html/SelfService/Error.html html/SelfService/Error.html,D
+#: html/Elements/Login html/SelfService/Error.html
 msgid "Error"
 msgstr "錯誤"
 
@@ -1013,79 +985,75 @@ msgstr "錯誤"
 msgid "Error adding watcher"
 msgstr "新增視察員有誤"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Error in parameters to Queue->DelWatcher"
 msgstr "佇列->刪除視察員的參數有誤"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "申請單->新增視察員的參數有誤"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Error in parameters to Ticket->DelWatcher"
 msgstr "申請單->刪除視察員的參數有誤"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "ExternalAuthId"
 msgstr "外部認證帳號"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "ExternalContactInfoId"
 msgstr "外部聯絡方式帳號"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Extra info"
 msgstr "備註"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "找不到 '具權限' 使用者的 pseudogroup。"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "找不到 '無權限' 使用者的 pseudogroup。"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Feb"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Feb."
 msgstr "二月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "February"
 msgstr "二月"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Fin"
 msgstr "最終"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: html/Ticket/Create.html lib/RT/Tickets_Overlay.pm html/Ticket/Elements/EditBasics
 msgid "Final Priority"
 msgstr "最低順位"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D
+#: html/Elements/Quicksearch
 msgid "Find new/open tickets"
 msgstr "尋找/開啟申請單"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Admin/Users/index.html html/Admin/Users/index.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Admin/Queues/People.html html/Admin/Users/index.html html/Ticket/Elements/EditPeople
 msgid "Find people whose"
 msgstr "尋找人員的"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "First page"
 msgstr "第一頁"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D
+#: docs/design_docs/string-extraction-guide.txt
 msgid "Foo Bar Baz"
 msgstr "甲 乙 丙"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D
+#: docs/design_docs/string-extraction-guide.txt
 msgid "Foo!"
 msgstr "甲！"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "FreeformContactInfo"
 msgstr "聯絡方式"
 
@@ -1097,59 +1065,51 @@ msgstr "多重填空"
 msgid "FreeformSingle"
 msgstr "單一填空"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Fri"
-msgstr ""
-
-#: lib/RT/Date.pm lib/RT/Date.pm~
-msgid "Fri."
-msgstr ""
-
-#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory,D html/Ticket/Elements/ShowHistory,D
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory
 msgid "Full headers"
 msgstr "完整標頭檔"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "取得目前使用者的 pgp 簽章\\n"
 
-#: html/Admin/Elements/Tabs html/Admin/Elements/Tabs,D
+#: html/Admin/Elements/Tabs
 msgid "Global"
 msgstr "整體設定"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Global Keyword Selections"
 msgstr "全域關鍵字選擇"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Global Scrips"
 msgstr "整體手續"
 
-#: html/index.html html/index.html,D html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Admin/Queues/index.html html/Admin/Queues/index.html,D html/Admin/Users/index.html html/Admin/Users/index.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/index.html html/Admin/Queues/index.html html/Admin/Queues/People.html html/Admin/Users/index.html html/Ticket/Elements/EditPeople
 msgid "Go!"
 msgstr "執行"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Good pgp sig from %1\\n"
 msgstr "%1 的 pgp 簽章是正確的\\n"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Goto page"
 msgstr "到頁面"
 
-#: html/Elements/GotoTicket html/Elements/GotoTicket,D html/SelfService/Elements/GotoTicket html/SelfService/Elements/GotoTicket,D
+#: html/Elements/GotoTicket html/SelfService/Elements/GotoTicket
 msgid "Goto ticket"
 msgstr "連到申請單"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Group %1 %2: %3"
 msgstr "群組 %1 %2：%3"
 
-#: html/Admin/Elements/GroupTabs html/Admin/Elements/GroupTabs,D html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/SystemTabs html/Admin/Elements/SystemTabs,D
+#: html/Admin/Elements/GroupTabs html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs
 msgid "Group Rights"
 msgstr "群組權限"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Group already has member"
 msgstr "群組內已有成員"
 
@@ -1157,79 +1117,79 @@ msgstr "群組內已有成員"
 msgid "Group could not be created."
 msgstr "無法建立群組。"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Group created"
 msgstr "群組建立完成"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Group_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Group not found"
 msgstr "找不到群組"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Group not found.\\n"
 msgstr "找不到群組。\\n"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Group not specified.\\n"
 msgstr "沒有指定群組。\\n"
 
-#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/SelectNewGroupMembers,D html/Admin/Elements/Tabs html/Admin/Elements/Tabs,D html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/Admin/Groups/index.html html/Admin/Groups/index.html,D html/User/Elements/Tabs html/User/Elements/Tabs,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/Tabs html/Admin/Groups/index.html html/Admin/Groups/Members.html
 msgid "Groups"
 msgstr "群組"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Groups can't be members of their members"
 msgstr "不能將群組設為群組內成員"
 
-#: lib/RT/Interface/CLI.pm lib/RT/Interface/CLI.pm lib/RT/Interface/CLI.pm,D lib/RT/Interface/CLI.pm,D lib/blib/man3/RT::Interface::CLI.3 lib/blib/man3/RT::Interface::CLI.3 lib/blib/lib/RT/Interface/CLI.pm lib/blib/lib/RT/Interface/CLI.pm
+#: lib/RT/Interface/CLI.pm lib/RT/Interface/CLI.pm
 msgid "Hello!"
 msgstr "嗨！"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D
+#: docs/design_docs/string-extraction-guide.txt
 msgid "Hello, %1"
 msgstr "嗨，%1"
 
-#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/Tabs
 msgid "History"
 msgstr "紀錄"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "HomePhone"
 msgstr "住處電話"
 
-#: html/Elements/Tabs html/Elements/Tabs,D
+#: html/Elements/Tabs
 msgid "Homepage"
 msgstr "主頁"
 
-#: lib/RT/Base.pm lib/RT/Base.pm,D lib/blib/man3/RT::Base.3 lib/blib/lib/RT/Base.pm
+#: lib/RT/Base.pm
 msgid "I have [quant,_1,concrete mixer]."
 msgstr "我有 [quant,_1,concrete mixer]."
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm html/Ticket/Elements/ShowBasics
 msgid "Id"
 msgstr "編號"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Identity"
 msgstr "身份"
 
-#: html/Ticket/Modify.html html/Ticket/Modify.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html,D html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Ticket/Modify.html html/Ticket/ModifyAll.html html/Ticket/ModifyPeople.html html/Admin/Queues/People.html
 msgid "If you've updated anything above, be sure to"
 msgstr "若您已更新以上資料，請記得儲存"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "Include disabled queues in listing."
 msgstr "列出隱藏佇列"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Include disabled users in search."
 msgstr "搜尋結果列出隱藏使用者"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm
 msgid "Initial Priority"
 msgstr "初始優先權"
 
-#: lib/RT/ScripAction_Overlay.pm lib/RT/ScripAction_Overlay.pm,D lib/blib/lib/RT/ScripAction_Overlay.pm
+#: lib/RT/ScripAction_Overlay.pm
 msgid "Input error"
 msgstr "輸入錯誤"
 
@@ -1237,7 +1197,7 @@ msgstr "輸入錯誤"
 msgid "Interest noted"
 msgstr "新增視察員完成"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Invalid Group Type"
 msgstr "不合法的群組類別"
 
@@ -1245,75 +1205,63 @@ msgstr "不合法的群組類別"
 msgid "Invalid Type"
 msgstr "不合法的類別"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "不合法的承辦人。改成預設承辦人'無'。"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Template_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm lib/RT/Template_Overlay.pm
 msgid "Invalid queue"
 msgstr "不合法的佇列"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm
 msgid "Invalid right"
 msgstr "不合法的權限"
 
-#: lib/RT/Record.pm lib/RT/Record.pm,D lib/blib/lib/RT/Record.pm
+#: lib/RT/Record.pm
 msgid "Invalid value for %1"
 msgstr "%1 的值不合法"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Invalid value for custom field"
 msgstr "不合法的自訂欄位值"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Invalid value for status"
 msgstr "不合法的狀態值"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Jan"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Jan."
 msgstr "一月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "January"
 msgstr "一月"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Jul"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Jul."
 msgstr "七月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "July"
 msgstr "七月"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Jumbo"
 msgstr "全部資訊"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Jun"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Jun."
 msgstr "六月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "June"
 msgstr "六月"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Keyword"
 msgstr "關鍵字"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "Lang"
 msgstr "使用語言"
 
@@ -1321,15 +1269,15 @@ msgstr "使用語言"
 msgid "Last"
 msgstr "上次更新"
 
-#: html/Ticket/Elements/EditDates html/Ticket/Elements/EditDates,D
+#: html/Ticket/Elements/EditDates
 msgid "Last Contact"
 msgstr "上次聯絡"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D
+#: html/Elements/SelectDateType
 msgid "Last Contacted"
 msgstr "上次聯絡日期"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D
+#: html/Elements/SelectDateType
 msgid "Last Updated"
 msgstr "上次更新"
 
@@ -1337,47 +1285,47 @@ msgstr "上次更新"
 msgid "LastUpdated"
 msgstr "上次更新"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Left"
 msgstr "剩餘時間"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Let this user access RT"
 msgstr "允許\這名使用者登入RT"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Let this user be granted rights"
 msgstr "讓這名使用者擁有完整權限"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Limiting owner to %1 %2"
 msgstr "限制承辦人為 %1 到%2"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Limiting queue to %1 %2"
 msgstr "限制佇列為 %1 到 %2"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link already exists"
 msgstr "此鏈結已存在"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link could not be created"
 msgstr "無法建立鏈結"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link created (%1)"
 msgstr "鏈結（%1）建立完成"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link deleted (%1)"
 msgstr "鏈結（%1）刪除完成"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link not found"
 msgstr "找不到鏈結"
 
-#: html/Ticket/ModifyLinks.html html/Ticket/ModifyLinks.html,D
+#: html/Ticket/ModifyLinks.html
 msgid "Link ticket #%1"
 msgstr "鏈結申請單 #%1"
 
@@ -1385,127 +1333,123 @@ msgstr "鏈結申請單 #%1"
 msgid "Link ticket %1"
 msgstr "鏈結到申請單 %1"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Links"
 msgstr "鏈結"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Location"
 msgstr "位置"
 
-#: lib/RT.pm lib/RT.pm,D lib/blib/lib/RT.pm
+#: lib/RT.pm
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "登入目錄 %1 找不到或無法寫入\\n。無法執行 RT。"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D html/Elements/Login html/Elements/Login html/Elements/Login html/Elements/Login,D html/Elements/Login,D html/Elements/Login,D
+#: docs/design_docs/string-extraction-guide.txt html/Elements/Login html/Elements/Login html/Elements/Login
 msgid "Login"
 msgstr "登入"
 
-#: html/Elements/Header html/Elements/Header,D
+#: html/Elements/Header
 msgid "Logout"
 msgstr "登出"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make Owner"
 msgstr "建立承辦人"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make Status"
 msgstr "建立現況"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Due"
 msgstr "建立到期日"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Resolved"
 msgstr "建立解決日期"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Started"
 msgstr "建立實際起始日期"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Starts"
 msgstr "建立應起始日期"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Told"
 msgstr "建立報告日期"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make priority"
 msgstr "建立優先順位"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make queue"
 msgstr "建立佇列"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make subject"
 msgstr "建立主題"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Mar"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Mar."
 msgstr "三月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "March"
 msgstr "三月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "May"
 msgstr "五月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "May."
 msgstr "五月"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Member added"
 msgstr "新增成員完成"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Member deleted"
 msgstr "成員已刪除"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Member not deleted"
 msgstr "成員未被刪除"
 
-#: html/Elements/SelectLinkType html/Elements/SelectLinkType,D
+#: html/Elements/SelectLinkType
 msgid "MemberOf"
 msgstr "附屬於"
 
-#: html/Admin/Elements/GroupTabs html/Admin/Elements/GroupTabs,D html/User/Elements/GroupTabs html/User/Elements/GroupTabs,D
+#: html/Admin/Elements/GroupTabs
 msgid "Members"
 msgstr "成員"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Merge Successful"
 msgstr "整合完成"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "整合失敗。無法設定 EffectiveId"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "Merge into"
 msgstr "整合進"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Mobile"
 msgstr "行動電話"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "MobilePhone"
 msgstr "行動電話"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Modify Custom Field %1"
 msgstr "修改自訂欄位 %1"
 
@@ -1517,19 +1461,19 @@ msgstr "修改系統ACLS"
 msgid "Modify dates for # %1"
 msgstr "修改 # %1 的日期"
 
-#: html/Ticket/ModifyDates.html html/Ticket/ModifyDates.html,D
+#: html/Ticket/ModifyDates.html
 msgid "Modify dates for #%1"
 msgstr "修改 #%1 的日期"
 
-#: html/Ticket/ModifyDates.html html/Ticket/ModifyDates.html,D
+#: html/Ticket/ModifyDates.html
 msgid "Modify dates for ticket # %1"
 msgstr "修改申請單 # %1 的日期"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html
 msgid "Modify global group rights"
 msgstr "修改整體設定的群組權限"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html
 msgid "Modify global group rights."
 msgstr "修改整體設定的群組權限"
 
@@ -1541,231 +1485,223 @@ msgstr "修改群組權限的整體設定"
 msgid "Modify global rights for users"
 msgstr "修改使用者的整體權限"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Modify global scrips"
 msgstr "修改整體手續"
 
-#: html/Admin/Global/UserRights.html html/Admin/Global/UserRights.html html/Admin/Global/UserRights.html,D html/Admin/Global/UserRights.html,D
+#: html/Admin/Global/UserRights.html html/Admin/Global/UserRights.html
 msgid "Modify global user rights."
 msgstr "修改整體設定的使用者權限。"
 
-#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D html/Admin/Queues/GroupRights.html,D
+#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html
 msgid "Modify group rights for queue %1"
 msgstr "修改佇列 %1 的群組權限"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Admin/Queues/People.html
 msgid "Modify people related to queue %1"
 msgstr "修改鏈結到佇列 %1 的人員"
 
-#: html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html,D html/Ticket/ModifyPeople.html,D
+#: html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html
 msgid "Modify people related to ticket #%1"
 msgstr "修改申請單 #%1 鏈結到的人員"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Modify scrips for queue %1"
 msgstr "修改佇列 %1 的手續"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Modify template %1"
 msgstr "修改範本 %1"
 
-#: html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html,D html/User/Groups/Modify.html html/User/Groups/Modify.html,D
+#: html/Admin/Groups/Modify.html
 msgid "Modify the group %1"
 msgstr "修改群組 %1"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Modify the user %1"
 msgstr "修改使用者 %1"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Modify ticket # %1"
 msgstr "修改申請單 # %1"
 
-#: html/Ticket/Modify.html html/Ticket/Modify.html html/Ticket/Modify.html,D html/Ticket/Modify.html,D
+#: html/Ticket/Modify.html html/Ticket/Modify.html
 msgid "Modify ticket #%1"
 msgstr "修改申請單 # %1"
 
-#: html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html,D html/Admin/Queues/UserRights.html,D
+#: html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html
 msgid "Modify user rights for queue %1"
 msgstr "修改佇列 %1 的使用者權限"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Admin/Queues/People.html
 msgid "Modify watchers for queue '%1'"
 msgstr "修改 '%1' 的視察員"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Mon"
-msgstr ""
-
-#: lib/RT/Date.pm lib/RT/Date.pm~
-msgid "Mon."
-msgstr ""
-
-#: html/Ticket/Elements/ShowRequestor html/Ticket/Elements/ShowRequestor,D
+#: html/Ticket/Elements/ShowRequestor
 msgid "More about %1"
 msgstr "關於 %1 的進一步資訊"
 
-#: html/Admin/Elements/SelectSingleOrMultiple html/Admin/Elements/SelectSingleOrMultiple,D
+#: html/Admin/Elements/SelectSingleOrMultiple
 msgid "Multiple"
 msgstr "多重"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Must specify 'Name' attribute"
 msgstr "必須指定 'Name' 的屬性"
 
-#: html/Elements/SelectUsers html/Elements/SelectUsers,D html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/AddCustomFieldValue,D html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html,D html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D html/User/Groups/Modify.html html/User/Groups/Modify.html,D
+#: html/Elements/SelectUsers html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Global/Template.html html/Admin/Groups/Modify.html html/Admin/Queues/CustomField.html html/Admin/Queues/Template.html
 msgid "Name"
 msgstr "名稱"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Name in use"
 msgstr "帳號已有人使用"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D
+#: html/Elements/Quicksearch
 msgid "New"
 msgstr "新建立"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "New Password"
 msgstr "新的密碼"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "New Relationships"
 msgstr "新的關係"
 
-#: html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D
+#: html/SelfService/Prefs.html html/User/Prefs.html
 msgid "New password"
 msgstr "新的密碼"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "New password notification sent"
 msgstr "送出新密碼通知"
 
-#: html/SelfService/Elements/Tabs html/SelfService/Elements/Tabs,D
+#: html/SelfService/Elements/Tabs
 msgid "New request"
 msgstr "提出新申請"
 
-#: html/Admin/Elements/SelectRights html/Admin/Elements/SelectRights,D
+#: html/Admin/Elements/SelectRights
 msgid "New rights"
 msgstr "新增權限"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "New search"
 msgstr "重新搜尋"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "New ticket doesn't exist"
 msgstr "沒有新申請單"
 
-#: html/Admin/Elements/CreateUserCalled html/Admin/Elements/CreateUserCalled,D
+#: html/Admin/Elements/CreateUserCalled
 msgid "New user called"
 msgstr "新使用者名字"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
 msgid "New watchers"
 msgstr "新視察員"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "New window setting"
 msgstr "更新視窗設定"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Next page"
 msgstr "下一頁"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "NickName"
 msgstr "暱稱"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Nickname"
 msgstr "暱稱"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "No CustomField"
 msgstr "無自訂欄位"
 
-#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html,D
+#: html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
 msgid "No Queue defined"
 msgstr "沒有定義好的佇列"
 
-#: bin/rt bin/rt,D bin/rtadmin bin/rtadmin,D
+#: bin/rt bin/rtadmin
 msgid "No RT user found. Please consult your RT administrator.\\n"
 msgstr "找不到 RT 使用者。請向 RT 管理員查詢。\\n"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "No Template"
 msgstr "沒有範本"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "No Ticket specified. Aborting ticket "
 msgstr "沒有指定申請單。退出申請單 "
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
 msgstr "沒有指定申請單。退出申請單修改\\n\\n"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "No command found\\n"
 msgstr "找不到命令"
 
-#: html/Elements/ViewUser html/Elements/ViewUser,D html/Ticket/Elements/ShowRequestor html/Ticket/Elements/ShowRequestor,D
+#: html/Elements/ViewUser html/Ticket/Elements/ShowRequestor
 msgid "No comment entered about this user"
 msgstr "沒有對這名使用者的評論"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "No correspondence attached"
 msgstr "附件沒有來信"
 
-#: lib/RT/Action/Generic.pm lib/RT/Action/Generic.pm,D lib/RT/Condition/Generic.pm lib/RT/Condition/Generic.pm,D lib/blib/lib/RT/Action/Generic.pm lib/blib/lib/RT/Condition/Generic.pm
+#: lib/RT/Action/Generic.pm lib/RT/Condition/Generic.pm
 msgid "No description for %1"
 msgstr "沒有對 %1 的描述"
 
-#: lib/RT/Users_Overlay.pm lib/RT/Users_Overlay.pm,D lib/blib/lib/RT/Users_Overlay.pm
+#: lib/RT/Users_Overlay.pm
 msgid "No group specified"
 msgstr "沒有指定群組"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "No password set"
 msgstr "沒有設定密碼"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "No permission to create queues"
 msgstr "沒有建立佇列的權限"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "沒有在佇列 '%1' 建立申請單的權限"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "No permission to create users"
 msgstr "沒有建立使用者的權限"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "No permission to display that ticket"
 msgstr "沒有顯示該申請單的權限"
 
-#: html/SelfService/Update.html html/SelfService/Update.html,D
+#: html/SelfService/Update.html
 msgid "No permission to view update ticket"
 msgstr "沒有檢視申請單更新的權限"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "No principal specified"
 msgstr "沒有指定單位"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Admin/Queues/People.html
 msgid "No principals selected."
 msgstr "沒有指定單位"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "No queues matching search criteria found."
 msgstr "找不到符合搜尋條件的佇列"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "No ticket id specified"
 msgstr "沒有指定申請單編號"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm
 msgid "No transaction type specified"
 msgstr "沒有指定更動報告類別"
 
@@ -1773,371 +1709,355 @@ msgstr "沒有指定更動報告類別"
 msgid "No user or email address specified"
 msgstr "沒有指定使用者或電子郵件信箱"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "No users matching search criteria found."
 msgstr "找不到符合搜尋條件的使用者"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "找不到合格的 RT 使用者。RT cvs 處理器已停用。請向 RT 管理者詢問。\\n"
 
-#: html/Elements/Header html/Elements/Header,D html/SelfService/Elements/Header html/SelfService/Elements/Header,D
+#: html/Elements/Header html/SelfService/Elements/Header
 msgid "Not logged in."
 msgstr "尚未登入"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Not set"
 msgstr "尚未設定"
 
-#: html/NoAuth/Reminder.html html/NoAuth/Reminder.html,D
+#: html/NoAuth/Reminder.html
 msgid "Not yet implemented."
 msgstr "尚未完工。"
 
-#: html/Admin/Groups/Rights.html html/Admin/Groups/Rights.html,D
+#: html/Admin/Groups/Rights.html
 msgid "Not yet implemented...."
 msgstr "尚未完工..."
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Notification could not be sent"
 msgstr "無法送出通知"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Nov"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Nov."
 msgstr "十一月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "November"
 msgstr "十一月"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Oct"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Oct."
 msgstr "十月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "October"
 msgstr "十月"
 
-#: html/Elements/SelectDateRelation html/Elements/SelectDateRelation,D
+#: html/Elements/SelectDateRelation
 msgid "On"
 msgstr "等於"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Elements/Quicksearch html/Ticket/Elements/Tabs
 msgid "Open"
 msgstr "開啟"
 
-#: html/SelfService/Elements/Tabs html/SelfService/Elements/Tabs,D
+#: html/SelfService/Elements/Tabs
 msgid "Open requests"
 msgstr "開啟的申請單"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Open tickets (from listing) in a new window"
 msgstr "在新視窗開啟（列表的）申請單"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Open tickets (from listing) in another window"
 msgstr "在另一個視窗開啟（列表的）申請單"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Ordering and sorting"
 msgstr "順序與排序方式"
 
-#: html/Elements/SelectUsers html/Elements/SelectUsers,D html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Elements/SelectUsers html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Organization"
 msgstr "所屬組織"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Over time, priority moves toward"
 msgstr "優先順位隨時間增加調為"
 
-#: bin/rt bin/rt,D html/Elements/MyRequests html/Elements/MyRequests,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Update.html html/Ticket/Update.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D html/Ticket/Elements/EditPeople,D html/Ticket/Elements/ShowPeople html/Ticket/Elements/ShowPeople,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: bin/rt html/Elements/MyRequests html/Ticket/Create.html html/Ticket/Update.html lib/RT/Tickets_Overlay.pm html/SelfService/Elements/MyRequests html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
 msgid "Owner"
 msgstr "承辦人"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "強制將承辦人從 %1 改成 %2"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Owner is"
 msgstr "承辦人"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Pager"
 msgstr "呼叫器"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "PagerPhone"
 msgstr "呼叫器號碼"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
 msgid "Parents"
 msgstr "母申請單"
 
-#: html/Elements/Login html/Elements/Login,D
+#: html/Elements/Login
 msgid "Password"
 msgstr "密碼"
 
-#: html/NoAuth/Reminder.html html/NoAuth/Reminder.html,D
+#: html/NoAuth/Reminder.html
 msgid "Password Reminder"
 msgstr "密碼提示"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
 msgid "Password too short"
 msgstr "密碼太短"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Password: %1"
 msgstr "密碼: %1"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary html/Ticket/Elements/Tabs
 msgid "People"
 msgstr "人員"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm,D lib/RT/CurrentUser.pm,D lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/RT/CustomField_Overlay.pm,D lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/RT/Scrip_Overlay.pm,D lib/RT/Scrip_Overlay.pm,D lib/RT/Scrip_Overlay.pm,D lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm,D lib/RT/Template_Overlay.pm,D lib/RT/Template_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/RT/Transaction_Overlay.pm,D lib/RT/Transaction_Overlay.pm,D lib/RT/Transaction_Overlay.pm,D lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/CurrentUser.pm lib/blib/lib/RT/CurrentUser.pm lib/blib/lib/RT/CustomField_Overlay.pm lib/blib/lib/RT/CustomField_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Template_Overlay.pm lib/blib/lib/RT/Template_Overlay.pm lib/blib/lib/RT/Template_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
 msgid "Permission Denied"
 msgstr "權限不足"
 
-#: html/User/Groups/index.html html/User/Groups/index.html html/User/Groups/index.html,D html/User/Groups/index.html,D
-msgid "Personal groups"
-msgstr ""
-
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Phone numbers"
 msgstr "電話號碼"
 
-#: html/Admin/Users/Rights.html html/Admin/Users/Rights.html,D
+#: html/Admin/Users/Rights.html
 msgid "Placeholder"
 msgstr "尚未完工"
 
-#: html/Elements/Header html/Elements/Header,D html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D
+#: html/Elements/Header html/SelfService/Prefs.html html/User/Prefs.html
 msgid "Preferences"
 msgstr "偏好設定"
 
-#: html/User/Elements/Tabs html/User/Elements/Tabs,D
-msgid "Prefs"
-msgstr ""
-
-#: lib/RT/Action/Generic.pm lib/RT/Action/Generic.pm,D lib/blib/lib/RT/Action/Generic.pm
+#: lib/RT/Action/Generic.pm
 msgid "Prepare Stubbed"
 msgstr "預備動作完成"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Previous page"
 msgstr "前一頁"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Pri"
 msgstr "優先順位"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "Principal %1 not found."
 msgstr "找不到單位 %1"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Create.html html/Ticket/Create.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: html/Search/PickRestriction html/SelfService/Display.html html/Ticket/Create.html lib/RT/Tickets_Overlay.pm html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
 msgid "Priority"
 msgstr "優先順位"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Priority starts at"
 msgstr "優先順位起始值"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Privileged status: %1"
 msgstr "具權限狀態: %1"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Privileged users"
 msgstr "具權限的使用者"
 
-#: bin/rt bin/rt,D html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D html/Elements/Quicksearch html/Elements/Quicksearch,D html/Search/PickRestriction html/Search/PickRestriction,D html/SelfService/Create.html html/SelfService/Create.html,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Create.html html/Ticket/Create.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: bin/rt html/Elements/MyRequests html/Elements/MyTickets html/Elements/Quicksearch html/Search/PickRestriction html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html lib/RT/Tickets_Overlay.pm html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
 msgid "Queue"
 msgstr "佇列"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Queue '%1' not found\\n"
 msgstr "找不到佇列 '%1'\\n"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Queue Keyword Selections"
 msgstr "佇列關鍵字選擇"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Queue Name"
 msgstr "佇列名稱"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Queue Scrips"
 msgstr "佇列手續"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Queue already exists"
 msgstr "佇列已存在"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm
 msgid "Queue could not be created"
 msgstr "無法建立佇列"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: docs/design_docs/string-extraction-guide.txt lib/RT/Queue_Overlay.pm
 msgid "Queue created"
 msgstr "佇列建立完成"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "Queue not found"
 msgstr "找不到佇列"
 
-#: html/Admin/Elements/Tabs html/Admin/Elements/Tabs,D
+#: html/Admin/Elements/Tabs
 msgid "Queues"
 msgstr "佇列"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D html/Elements/Login html/Elements/Login,D
+#: docs/design_docs/string-extraction-guide.txt html/Elements/Login
 msgid "RT %1 for %2"
 msgstr "%2：RT %1 版"
 
-#: html/Elements/Footer html/Elements/Footer,D
+#: html/Elements/Footer
 msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
 msgstr "RT %1 版，<a href=\"http://bestpractical.com\">Best Practical Solutions 公司</a>出品。"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
 msgstr "RT %1。版權所有 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
 
-#: html/Admin/index.html html/Admin/index.html,D
+#: html/Admin/index.html
 msgid "RT Administration"
 msgstr "RT 管理頁面"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "RT Authentication error."
 msgstr "RT 認證錯誤"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate bin/enhanced-mailgate,D bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate,D bin/rt-mailgate,D bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate
 msgid "RT Bounce: %1"
 msgstr "RT 退信：%1"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "RT Configuration error"
 msgstr "RT 設定錯誤"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "RT Critical error. Message not recorded!"
 msgstr "RT 致命錯誤。訊息未被紀錄。"
 
-#: html/Elements/Error html/Elements/Error,D html/SelfService/Error.html html/SelfService/Error.html,D
+#: html/Elements/Error html/SelfService/Error.html
 msgid "RT Error"
 msgstr "RT 錯誤"
 
-#: bin/rt-mailgate bin/rt-mailgate,D
+#: bin/rt-mailgate
 msgid "RT Received mail (%1) from itself."
 msgstr "RT 收到從自己寄出的郵件 (%1)"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "RT Recieved mail (%1) from itself."
 msgstr "RT 收到從自己寄出的郵件 (%1)"
 
-#: html/SelfService/Closed.html html/SelfService/Closed.html,D
+#: html/SelfService/Closed.html
 msgid "RT Self Service / Closed Tickets"
 msgstr "RT 自助服務/結束的申請"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "RT couldn't authenticate you"
 msgstr "RT 無法認證你"
 
-#: bin/rt-mailgate bin/rt-mailgate,D
+#: bin/rt-mailgate
 msgid "RT couldn't find requestor via its external database lookup"
 msgstr "RT 無法從外部資料庫查詢找到申請人資訊"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "RT couldn't find the queue: %1"
 msgstr "RT 找不到佇列：%1"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "RT couldn't validate this PGP signature. \\n"
 msgstr "RT 無法確認這個 PGP 簽章。\\n"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "RT has proccessed your commands"
 msgstr "RT 已執行您的命令"
 
-#: html/Elements/Login html/Elements/Login,D
+#: html/Elements/Login
 msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
 msgstr "RT 版權所有 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;。<br>本軟體依 <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU 通用公共授權第二版</a> 散佈。"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "RT thinks this message may be a bounce"
 msgstr "RT 認為這是退信"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "RT will process this message as if it were unsigned.\\n"
 msgstr "RT 以未簽章方式處理這封郵件。\\n"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
 msgstr "RT 的電子郵件命令模式須要 PGP 認證。您可能沒有簽章，或是您的簽章無法辨識。"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Modify.html html/Admin/Users/Prefs.html
 msgid "Real Name"
 msgstr "真實姓名"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "RealName"
 msgstr "真實姓名"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
 msgid "Referred to by"
 msgstr "被參考"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
 msgid "Refers to"
 msgstr "參考"
 
-#: html/Elements/SelectLinkType html/Elements/SelectLinkType,D
+#: html/Elements/SelectLinkType
 msgid "RefersTo"
 msgstr "參考"
 
-#: html/Search/Listing.html html/Search/Listing.html,D html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/Listing.html html/Search/PickRestriction
 msgid "Refine"
 msgstr "調整"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Refine Search"
 msgstr "調整搜尋條件"
 
-#: html/Elements/Refresh html/Elements/Refresh,D
+#: html/Elements/Refresh
 msgid "Refresh this page every %1 minutes."
 msgstr "每 %1 分鐘更新頁面"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D
+#: html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary
 msgid "Relationships"
 msgstr "關係"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Remove AdminCc"
 msgstr "移除管理員副本"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Remove Cc"
 msgstr "移除副本"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Remove Requestor"
 msgstr "移除申請人"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Reply"
 msgstr "回覆"
 
-#: bin/rt bin/rt,D html/Ticket/Update.html html/Ticket/Update.html,D
+#: bin/rt html/Ticket/Update.html
 msgid "Requestor"
 msgstr "申請人"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Requestor email address"
 msgstr "申請人電子郵件信箱位址"
 
@@ -2145,115 +2065,107 @@ msgstr "申請人電子郵件信箱位址"
 msgid "Requestor(s)"
 msgstr "申請人"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D html/Ticket/Elements/ShowPeople html/Ticket/Elements/ShowPeople,D
+#: html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
 msgid "Requestors"
 msgstr "申請人"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Requests should be due in"
 msgstr "申請單處理期限"
 
-#: html/Elements/Submit html/Elements/Submit,D
+#: html/Elements/Submit
 msgid "Reset"
 msgstr "重設"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Residence"
 msgstr "住處"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Update.html html/Ticket/Elements/Tabs
 msgid "Resolve"
 msgstr "解決"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D
+#: html/Elements/SelectDateType
 msgid "Resolved"
 msgstr "已解決"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Response to requestors"
 msgstr "回覆申請人"
 
-#: html/Elements/ListActions html/Elements/ListActions,D
+#: html/Elements/ListActions
 msgid "Results"
 msgstr "結果"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Results per page"
 msgstr "每頁列出幾筆結果"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Retype Password"
 msgstr "再次輸入密碼"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
 msgstr "在 %4 (%5) 的範圍內找不到 %2 %3 的 %1 權限\\n"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "Right Granted"
 msgstr "權限設定完成"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "Right could not be revoked"
 msgstr "無法撤消權限"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "Right revoked"
 msgstr "權限撤消完成"
 
-#: html/Admin/Elements/UserTabs html/Admin/Elements/UserTabs,D
+#: html/Admin/Elements/UserTabs
 msgid "Rights"
 msgstr "權限"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html html/Admin/Queues/GroupRights.html
 msgid "Roles"
 msgstr "角色"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Sat"
-msgstr ""
-
-#: lib/RT/Date.pm lib/RT/Date.pm~
-msgid "Sat."
-msgstr ""
-
-#: html/Ticket/Modify.html html/Ticket/Modify.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html,D html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Ticket/Modify.html html/Ticket/ModifyAll.html html/Ticket/ModifyPeople.html html/Admin/Queues/People.html
 msgid "Save Changes"
 msgstr "儲存修改"
 
-#: html/Ticket/ModifyLinks.html html/Ticket/ModifyLinks.html,D
+#: html/Ticket/ModifyLinks.html
 msgid "Save changes"
 msgstr "儲存修改"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm
 msgid "Scrip Created"
 msgstr "手續建立完成"
 
-#: html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/SystemTabs html/Admin/Elements/SystemTabs,D
+#: html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs
 msgid "Scrips"
 msgstr "手續"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Scrips for %1\\n"
 msgstr "%1 的手續\\n"
 
-#: html/Elements/Tabs html/Elements/Tabs,D html/Search/Listing.html html/Search/Listing.html,D
+#: html/Elements/Tabs html/Search/Listing.html
 msgid "Search"
 msgstr "搜尋"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Search Criteria"
 msgstr "搜尋條件"
 
-#: html/Admin/Groups/index.html html/Admin/Groups/index.html,D
+#: html/Admin/Groups/index.html
 msgid "Select a group"
 msgstr "選擇群組"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "Select a queue"
 msgstr "選擇佇列"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Select a user"
 msgstr "選擇使用者"
 
@@ -2265,279 +2177,255 @@ msgstr "多重選項"
 msgid "SelectSingle"
 msgstr "單一選項"
 
-#: html/SelfService/index.html html/SelfService/index.html,D
+#: html/SelfService/index.html
 msgid "Self Service"
 msgstr "自助服務"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Sep"
-msgstr ""
-
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "Sep."
 msgstr "九月"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "September"
 msgstr "九月"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Show Results"
 msgstr "顯示結果"
 
-#: html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Create.html,D
+#: html/Ticket/Create.html html/Ticket/Create.html
 msgid "Show basics"
 msgstr "顯示基本資訊"
 
-#: html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Create.html,D
+#: html/Ticket/Create.html html/Ticket/Create.html
 msgid "Show details"
 msgstr "顯示細節"
 
-#: html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/SelfService/Prefs.html html/User/Prefs.html html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html html/Admin/Users/Prefs.html
 msgid "Signature"
 msgstr "簽章"
 
-#: html/SelfService/Elements/Header html/SelfService/Elements/Header,D
+#: html/SelfService/Elements/Header
 msgid "Signed in as %1"
 msgstr "以 %1 之名登入"
 
-#: html/Elements/Header html/Elements/Header,D
+#: html/Elements/Header
 msgid "Signed in as <b>%1</b>"
 msgstr "以 <b>%1</b> 之名登入"
 
-#: html/Admin/Elements/SelectSingleOrMultiple html/Admin/Elements/SelectSingleOrMultiple,D
+#: html/Admin/Elements/SelectSingleOrMultiple
 msgid "Single"
 msgstr "單一"
 
-#: html/Admin/Elements/EditCustomFieldValues html/Admin/Elements/EditCustomFieldValues,D
+#: html/Admin/Elements/EditCustomFieldValues
 msgid "Sort key"
 msgstr "排序方式"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Sort results by"
 msgstr "結果排序方式"
 
-#: html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/AddCustomFieldValue,D
+#: html/Admin/Elements/AddCustomFieldValue
 msgid "SortOrder"
 msgstr "排序順序"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D
+#: html/Elements/Quicksearch
 msgid "Stalled"
 msgstr "延宕"
 
-#: html/index.html html/index.html,D
+#: html/index.html
 msgid "Start page"
 msgstr "首頁"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D html/Ticket/Elements/EditDates html/Ticket/Elements/EditDates,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: html/Elements/SelectDateType html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
 msgid "Started"
 msgstr "實際起始日"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Started date '%1' could not be parsed"
 msgstr "無法解讀起始日期 '%1"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditDates html/Ticket/Elements/EditDates,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
 msgid "Starts"
 msgstr "應起始日"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D
+#: html/Elements/SelectDateType
 msgid "Starts By"
 msgstr "應起始日"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Starts date '%1' could not be parsed"
 msgstr "無法解讀起始日期 '%1"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "State"
 msgstr "州"
 
-#: bin/rt bin/rt,D html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D html/Search/PickRestriction html/Search/PickRestriction,D html/SelfService/Display.html html/SelfService/Display.html,D html/SelfService/Update.html html/SelfService/Update.html,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Update.html html/Ticket/Update.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: bin/rt html/Elements/MyRequests html/Elements/MyTickets html/Search/PickRestriction html/SelfService/Display.html html/SelfService/Update.html html/Ticket/Create.html html/Ticket/Update.html lib/RT/Tickets_Overlay.pm html/SelfService/Elements/MyRequests html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
 msgid "Status"
 msgstr "現況"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Status changed from %1 to %2"
 msgstr "現況從 %1 改為 %2"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Steal"
 msgstr "強制更換承辦人"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Stolen from %1 "
 msgstr "被 %1 強制更換 "
 
-#: bin/rt bin/rt,D html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D html/Search/PickRestriction html/Search/PickRestriction,D html/SelfService/Create.html html/SelfService/Create.html,D html/SelfService/Update.html html/SelfService/Update.html,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Update.html html/Ticket/Update.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: bin/rt html/Elements/MyRequests html/Elements/MyTickets html/Search/PickRestriction html/SelfService/Create.html html/SelfService/Update.html html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Update.html lib/RT/Tickets_Overlay.pm html/SelfService/Elements/MyRequests
 msgid "Subject"
 msgstr "主題"
 
-#: html/Elements/Submit html/Elements/Submit,D
+#: html/Elements/Submit
 msgid "Submit"
 msgstr "送出"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Sun"
-msgstr ""
-
-#: lib/RT/Date.pm lib/RT/Date.pm~
-msgid "Sun."
-msgstr ""
-
-#: lib/RT/Principal_Overlay.pm lib/RT/Principal_Overlay.pm lib/RT/Principal_Overlay.pm,D lib/RT/Principal_Overlay.pm,D lib/blib/lib/RT/Principal_Overlay.pm lib/blib/lib/RT/Principal_Overlay.pm
-msgid "System Error. Right not granted."
-msgstr ""
-
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "System Error. right not granted"
 msgstr "系統錯誤。權限不被接受"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "System error. Unable to grant rights."
 msgstr "系統錯誤。無法設定權限。"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html html/Admin/Queues/GroupRights.html
 msgid "System groups"
 msgstr "系統群組"
 
-#: lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm,D lib/RT/CurrentUser.pm,D lib/t/autogen/autogen-RT-CurrentUser.t lib/t/autogen/autogen-RT-CurrentUser.t lib/blib/lib/RT/CurrentUser.pm lib/blib/lib/RT/CurrentUser.pm
+#: lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm
 msgid "TEST_STRING"
 msgstr "TEST_STRING"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Take"
 msgstr "受理"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Taken"
 msgstr "已受理"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Template"
 msgstr "範本"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm
 msgid "Template not found"
 msgstr "找不到範本"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Template not found\\n"
 msgstr "找不到範本\\n"
 
-#: lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm,D lib/blib/lib/RT/Template_Overlay.pm
+#: lib/RT/Template_Overlay.pm
 msgid "Template parsed"
 msgstr "範本剖析完成"
 
-#: html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/SystemTabs html/Admin/Elements/SystemTabs,D
+#: html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs
 msgid "Templates"
 msgstr "範本"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Templates for %1\\n"
 msgstr "找不到 %1 的範本\\n"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "That is not a value for this custom field"
 msgstr "這不是該自訂欄位的值"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That is the same value"
 msgstr "同樣的值"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "That principal is already a %1 for this queue"
 msgstr "這道手續已經是這個佇列的 %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That principal is already a %1 for this ticket"
 msgstr "這道手續已經是這份申請單的 %1"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "That principal is not a %1 for this queue"
 msgstr "這道手續不是這個佇列的 %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That principal is not a %1 for this ticket"
 msgstr "這道手續不是這份申請單的 %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That queue does not exist"
 msgstr "此佇列不存在"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "That user already has that right"
 msgstr "使用者已具有該項權限"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That user already owns that ticket"
 msgstr "該使用者已經承辦這份申請單"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That user does not exist"
 msgstr "使用者不存在"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "That user is already privileged"
 msgstr "這名使用者已經是具權限群組的使用者"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "That user is already unprivileged"
 msgstr "這名使用者是無權限群組的使用者"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "That user is now privileged"
 msgstr "使用者加入具權限群組完成"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "That user is now unprivilegedileged"
 msgstr "使用者加入無權限群組完成"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That user may not own tickets in that queue"
 msgstr "使用者可能沒有承辦佇列裡的申請單"
 
-#: lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm,D lib/blib/lib/RT/Link_Overlay.pm
+#: lib/RT/Link_Overlay.pm
 msgid "That's not a numerical id"
 msgstr "這不是一個數字編號"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D
+#: html/Ticket/Create.html html/Ticket/Elements/ShowSummary
 msgid "The Basics"
 msgstr "基本資訊"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "The comment has been recorded"
 msgstr "評論已被紀錄"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate bin/enhanced-mailgate,D bin/enhanced-mailgate,D bin/rt-commit-handler bin/rt-commit-handler bin/rt-commit-handler,D bin/rt-commit-handler,D
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-commit-handler bin/rt-commit-handler
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "以下命令未被執行：\\n\\n"
 
-#: html/Admin/Elements/EditUserComments html/Admin/Elements/EditUserComments,D
+#: html/Admin/Elements/EditUserComments
 msgid "These comments aren't generally visible to the user"
 msgstr "該使用者不會看見這些評論"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "This ticket %1 %2 (%3)\\n"
 msgstr "申請單 %1 %2 (%3)\\n"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "This transaction appears to have no content"
 msgstr "此項更動報告沒有內容"
 
-#: html/Ticket/Elements/ShowRequestor html/Ticket/Elements/ShowRequestor,D
+#: html/Ticket/Elements/ShowRequestor
 msgid "This user's 25 highest priority tickets"
 msgstr "使用者送出的前 25 份優先處理申請單"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Thu"
-msgstr ""
-
-#: lib/RT/Date.pm lib/RT/Date.pm~
-msgid "Thu."
-msgstr ""
-
-#: html/Ticket/Display.html html/Ticket/Display.html,D
+#: html/Ticket/Display.html
 msgid "Ticket # %1  %2"
 msgstr "申請單 # %1 %2"
 
@@ -2545,71 +2433,71 @@ msgstr "申請單 # %1 %2"
 msgid "Ticket # %1 Jumbo update: %2"
 msgstr "更新申請單 # %1 的全部資訊：%2"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "更新申請單 #%1 的全部資訊：%2"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/enhanced-mailgate bin/rt-commit-handler
 msgid "Ticket %1 loaded\\n"
 msgstr "載入申請單 %1\\n"
 
-#: html/Ticket/History.html html/Ticket/History.html,D
+#: html/Ticket/History.html
 msgid "Ticket History # %1 %2"
 msgstr "申請單處理紀錄 # %1 %2"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "Ticket Id"
 msgstr "申請單編號"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: html/Search/PickRestriction lib/RT/Tickets_Overlay.pm
 msgid "Ticket content"
 msgstr "申請單內容"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm
 msgid "Ticket content type"
 msgstr "申請單內容類別"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Ticket could not be created due to an internal error"
 msgstr "無法建立申請單，內部錯誤。"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Ticket created"
 msgstr "申請單建立完成"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "Ticket creation failed"
 msgstr "申請單建立失敗"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Ticket killed"
 msgstr "申請單刪除完成"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "Ticket watchers"
 msgstr "申請單視察員"
 
-#: html/Elements/ViewUser html/Elements/ViewUser,D
+#: html/Elements/ViewUser
 msgid "Tickets from %1"
 msgstr "%1 的申請單"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditBasics
 msgid "Time Left"
 msgstr "剩餘時間"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditBasics
 msgid "Time Worked"
 msgstr "處理時間"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm
 msgid "Time left"
 msgstr "剩餘時間"
 
-#: html/Elements/Footer html/Elements/Footer,D
+#: html/Elements/Footer
 msgid "Time to display"
 msgstr "顯示時間"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm
 msgid "Time worked"
 msgstr "已處理時間"
 
@@ -2621,183 +2509,175 @@ msgstr "剩餘時間"
 msgid "TimeWorked"
 msgstr "已處理時間"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "To generate a diff of this commit:"
 msgstr "產生這次更動的差異檔："
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "To generate a diff of this commit:\\n"
 msgstr "產生這次更動的差異檔：\\n"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Told"
 msgstr "告知日期"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Transaction %1 purged"
 msgstr "清除更動報告 %1"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Transaction Created"
 msgstr "更動報告已建立"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Transactions are immutable"
 msgstr "不可修改更動報告"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Trying to delete a right: %1"
 msgstr "試圖刪除某項權限：%1"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Tue"
-msgstr ""
-
-#: lib/RT/Date.pm lib/RT/Date.pm~
-msgid "Tue."
-msgstr ""
-
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers,D html/Ticket/Elements/AddWatchers,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm html/Admin/Queues/CustomField.html html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers
 msgid "Type"
 msgstr "類別"
 
-#: lib/RT/ScripCondition_Overlay.pm lib/RT/ScripCondition_Overlay.pm,D lib/blib/lib/RT/ScripCondition_Overlay.pm
+#: lib/RT/ScripCondition_Overlay.pm
 msgid "Unimplemented"
 msgstr "尚無實作"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Unix login"
 msgstr "Unix 登入帳號"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "UnixUsername"
 msgstr "Unix 登入帳號"
 
-#: lib/RT/Attachment_Overlay.pm lib/RT/Attachment_Overlay.pm,D lib/blib/lib/RT/Attachment_Overlay.pm
+#: lib/RT/Attachment_Overlay.pm
 msgid "Unknown ContentEncoding %1"
 msgstr "不可解的內容文字編碼方式 %1"
 
-#: html/Elements/SelectResultsPerPage html/Elements/SelectResultsPerPage,D
+#: html/Elements/SelectResultsPerPage
 msgid "Unlimited"
 msgstr "全數顯示"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Untaken"
 msgstr "未被受理"
 
-#: html/Elements/MyTickets html/Elements/MyTickets,D html/Search/Bulk.html html/Search/Bulk.html,D html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Elements/MyTickets html/Search/Bulk.html html/Ticket/Update.html
 msgid "Update"
 msgstr "更新"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Update ID"
 msgstr "更新編號"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/ModifyAll.html html/Ticket/Update.html
 msgid "Update Type"
 msgstr "更新類別"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Update all these tickets at once"
 msgstr "整批更新申請單"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Update email"
 msgstr "更新電子郵件信箱"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Update name"
 msgstr "更新帳號"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Update selected tickets"
 msgstr "更新選擇的申請單"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Update signature"
 msgstr "更新簽章"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Update ticket"
 msgstr "更新申請單"
 
-#: html/SelfService/Update.html html/SelfService/Update.html,D
+#: html/SelfService/Update.html
 msgid "Update ticket # %1"
 msgstr "更新申請單 # %1"
 
-#: html/SelfService/Update.html html/SelfService/Update.html,D
+#: html/SelfService/Update.html
 msgid "Update ticket #%1"
 msgstr "更新申請單 #%1"
 
-#: bin/rt bin/rt,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: bin/rt html/Ticket/Elements/ShowDates
 msgid "Updated"
 msgstr "更新日期"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "User %1 %2: %3\\n"
 msgstr "使用者 %1 %2：%3\\n"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "User %1 Password: %2\\n"
 msgstr "使用者 %1 密碼：%2\\n"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "User '%1' not found"
 msgstr "找不到使用者 '%1'"
 
-#: bin/rt bin/rt,D bin/rtadmin bin/rtadmin,D
+#: bin/rt bin/rtadmin
 msgid "User '%1' not found\\n"
 msgstr "找不到使用者 '%1'\\n"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "User ID"
 msgstr "使用者帳號"
 
-#: html/Elements/SelectUsers html/Elements/SelectUsers,D
+#: html/Elements/SelectUsers
 msgid "User Id"
 msgstr "使用者帳號"
 
-#: html/Admin/Elements/GroupTabs html/Admin/Elements/GroupTabs,D html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/SystemTabs html/Admin/Elements/SystemTabs,D
+#: html/Admin/Elements/GroupTabs html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs
 msgid "User Rights"
 msgstr "使用者權限"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "User could not be created: %1"
 msgstr "無法建立使用者: %1"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "User created"
 msgstr "使用者建立完成"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html html/Admin/Queues/GroupRights.html
 msgid "User defined groups"
 msgstr "使用者定義的群組"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "User notified"
 msgstr "已通知使用者"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "User view"
 msgstr "使用者私人資料"
 
-#: html/Elements/Login html/Elements/Login,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers,D
+#: html/Elements/Login html/Admin/Users/Modify.html html/Ticket/Elements/AddWatchers
 msgid "Username"
 msgstr "帳號"
 
-#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/SelectNewGroupMembers,D html/Admin/Elements/Tabs html/Admin/Elements/Tabs,D html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/Tabs html/Admin/Groups/Members.html
 msgid "Users"
 msgstr "使用者"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Users matching search criteria"
 msgstr "符合搜尋條件的使用者"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "ValueOfQueue"
 msgstr "選擇佇列"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Values"
 msgstr "值"
 
@@ -2805,127 +2685,111 @@ msgstr "值"
 msgid "Watcher loaded"
 msgstr "載入視察員"
 
-#: html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D
+#: html/Admin/Elements/QueueTabs
 msgid "Watchers"
 msgstr "視察員"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "WebEncoding"
 msgstr "網頁文字編碼方式"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
-msgid "Wed"
-msgstr ""
-
-#: lib/RT/Date.pm lib/RT/Date.pm~
-msgid "Wed."
-msgstr ""
-
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Work"
 msgstr "公司"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "WorkPhone"
 msgstr "公司電話"
 
-#: bin/rt bin/rt,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Update.html html/Ticket/Update.html,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D
+#: bin/rt html/SelfService/Display.html html/Ticket/Update.html html/Ticket/Elements/ShowBasics
 msgid "Worked"
 msgstr "處理時間"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "You already own this ticket"
 msgstr "您已是這份申請單的承辦人"
 
-#: html/autohandler html/autohandler,D
+#: html/autohandler
 msgid "You are not an authorized user"
 msgstr "您不是被授權的使用者"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "祇能重新指派您所承辦或是沒有承辦人的申請單"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "You don't have permission to view that ticket.\\n"
 msgstr "您沒有看那份申請單的權限。\\n"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D
+#: docs/design_docs/string-extraction-guide.txt
 msgid "You found %1 tickets in queue %2"
 msgstr "您會在佇列 %2 找到 %1 的申請單"
 
-#: html/NoAuth/Logout.html html/NoAuth/Logout.html,D
+#: html/NoAuth/Logout.html
 msgid "You have been logged out of RT."
 msgstr "您已登出 RT。"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "You have no permission to create tickets in that queue."
 msgstr "您沒有在該佇列建立申請單的權限"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "You may not create requests in that queue."
 msgstr "您不能在該佇列中提出申請。"
 
-#: html/NoAuth/Logout.html html/NoAuth/Logout.html,D
+#: html/NoAuth/Logout.html
 msgid "You're welcome to login again"
 msgstr "歡迎下次再來"
 
-#: html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D
+#: html/SelfService/Elements/MyRequests
 msgid "Your %1 requests"
 msgstr "您提出的 %1 申請"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
 msgstr "RT 管理員可能設錯了由 RT 寄出的郵件收件人標頭檔"
 
-#: html/autohandler html/autohandler html/autohandler,D html/autohandler,D
+#: html/autohandler html/autohandler
 msgid "Your username or password is incorrect"
 msgstr "您的帳號或密碼有誤"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Zip"
 msgstr "郵遞區號"
 
-#: html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D
+#: html/Elements/MyRequests html/Elements/MyTickets
 msgid "[no subject]"
 msgstr "[沒有主題]"
 
-#: lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "ago"
 msgstr "過期"
 
-#: html/Elements/SelectMatch html/Elements/SelectMatch,D
+#: html/Elements/SelectMatch
 msgid "contains"
 msgstr "包含"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "correspondence (probably) not sent"
 msgstr "申請單（可能）未被送出"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "correspondence sent"
 msgstr "申請單已送出"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "days"
 msgstr "天"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
-msgid "dead"
-msgstr ""
-
-#: html/Search/Listing.html html/Search/Listing.html,D
-msgid "delete"
-msgstr ""
-
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "does not match"
 msgstr "不符合"
 
-#: html/Elements/SelectMatch html/Elements/SelectMatch,D
+#: html/Elements/SelectMatch
 msgid "doesn't contain"
 msgstr "不包含"
 
-#: html/Elements/SelectEqualityOperator html/Elements/SelectEqualityOperator,D
+#: html/Elements/SelectEqualityOperator
 msgid "equal to"
 msgstr "等於"
 
@@ -2933,59 +2797,51 @@ msgstr "等於"
 msgid "false"
 msgstr "假"
 
-#: html/Elements/SelectEqualityOperator html/Elements/SelectEqualityOperator,D
+#: html/Elements/SelectEqualityOperator
 msgid "greater than"
 msgstr "大於"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "hours"
 msgstr "小時"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "id"
 msgstr "編號"
 
-#: html/Elements/SelectBoolean html/Elements/SelectBoolean,D html/Elements/SelectMatch html/Elements/SelectMatch,D html/Search/PickRestriction html/Search/PickRestriction html/Search/PickRestriction,D html/Search/PickRestriction,D
+#: html/Elements/SelectBoolean html/Elements/SelectMatch html/Search/PickRestriction html/Search/PickRestriction
 msgid "is"
 msgstr "是"
 
-#: html/Elements/SelectBoolean html/Elements/SelectBoolean,D html/Elements/SelectMatch html/Elements/SelectMatch,D html/Search/PickRestriction html/Search/PickRestriction html/Search/PickRestriction,D html/Search/PickRestriction,D
+#: html/Elements/SelectBoolean html/Elements/SelectMatch html/Search/PickRestriction html/Search/PickRestriction
 msgid "isn't"
 msgstr "不是"
 
-#: html/Elements/SelectEqualityOperator html/Elements/SelectEqualityOperator,D
+#: html/Elements/SelectEqualityOperator
 msgid "less than"
 msgstr "小於"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "matches"
 msgstr "符合"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "min"
 msgstr "分"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "minutes"
 msgstr "分鐘"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "modifications\\n\\n"
 msgstr "修改\\n\\n"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "months"
 msgstr "月"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
-msgid "new"
-msgstr ""
-
-#: html/Ticket/Elements/EditWatchers html/Ticket/Elements/EditWatchers,D
-msgid "none"
-msgstr ""
-
-#: html/Elements/SelectEqualityOperator html/Elements/SelectEqualityOperator,D
+#: html/Elements/SelectEqualityOperator
 msgid "not equal to"
 msgstr "不等於"
 
@@ -2993,23 +2849,11 @@ msgstr "不等於"
 msgid "notlike"
 msgstr "不符合"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
-msgid "open"
-msgstr ""
-
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
-msgid "resolved"
-msgstr ""
-
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "sec"
 msgstr "秒"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
-msgid "stalled"
-msgstr ""
-
-#: html/Elements/Error html/Elements/Error,D html/SelfService/Error.html html/SelfService/Error.html,D
+#: html/Elements/Error html/SelfService/Error.html
 msgid "the calling component did not specify why"
 msgstr "呼叫元件未指明原因"
 
@@ -3017,15 +2861,15 @@ msgstr "呼叫元件未指明原因"
 msgid "true"
 msgstr "真"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "weeks"
 msgstr "週"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D
+#: html/Admin/Global/Scrips.html
 msgid "with template %1"
 msgstr "使用範本%1"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "years"
 msgstr "年"
 

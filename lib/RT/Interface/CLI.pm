@@ -101,7 +101,7 @@ sub GetCurrentUser  {
     
     #Instantiate a user object
     
-    my $Gecos=(getpwuid($<))[0];
+    my $Gecos= ($^O eq 'MSWin32') ? Win32::LoginName() : (getpwuid($<))[0];
 
     #If the current user is 0, then RT will assume that the User object
     #is that of the currentuser.
@@ -127,7 +127,7 @@ sub GetCurrentUser  {
 =cut
 
 sub loc {
-    die "No current user yet" unless $CurrentUser;
+    die "No current user yet" unless $CurrentUser ||= RT::CurrentUser->new;
     return $CurrentUser->loc(@_);
 }
 # }}}

@@ -50,7 +50,7 @@ $Name => undef
 <%INIT>
 require RT::User;
 my $u=RT::User->new($session{CurrentUser});
-$u->Load($id) || die "Couldn't load that user ($id)";
+$u->Load($id) || die loc("Couldn't load that user ([_1])", $id);
 if ($Signature) {
 my ($val, $msg)=$u->SetSignature($Signature);
 $RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);

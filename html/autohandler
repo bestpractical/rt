@@ -72,7 +72,7 @@ elsif ($RT::WebExternalAuth and length($ENV{'REMOTE_USER'})) {
 	else {
 	    delete $session{'CurrentUser'};
 	    $m->comp('/Elements/Login', %ARGS, Error=> loc('Cannot create user: [_1]', $msg));
-	    $m->abort() if $RT::WebExternalOnly;
+	    $m->abort() unless $RT::WebFallbackToInternalAuth;
 	}
     }
 

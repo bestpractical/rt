@@ -44,11 +44,11 @@ my (@actions);
 
 my $KeywordSelects = new RT::KeywordSelects ($session{'CurrentUser'});
 unless ($id =~ /^\d+$/) {
-    Abort("$id isn't a valid Queue id.");
+    Abort(loc("[_1] isn't a valid Queue id.", $id));
 }
 
 unless ($KeywordSelects->LimitToQueue($id)) {
-    Abort("Couldn't load KeywordSelects.");
+    Abort(loc("Couldn't load KeywordSelects."));
 }
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});

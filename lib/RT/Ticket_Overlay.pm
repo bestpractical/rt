@@ -1980,7 +1980,7 @@ sub DeleteLink {
             TimeTaken => 0
         );
 
-        return ( $linkid, "Link deleted ($TransString)", $transactionid );
+        return ( $linkid, loc("Link deleted ([_1])", $TransString), $transactionid );
     }
 
     #if it's not a link we can find
@@ -2594,14 +2594,14 @@ sub AddCustomFieldValue {
     }
 
     unless ( $cf->Id ) {
-        return ( 0, "Custom field ".$args{'Field'}. " not found" );
+        return ( 0, loc("Custom field [_1] not found", $args{'Field'}) );
     }
 
     # Load up a TicketCustomFieldValues object for this custom field and this ticket
     my $values = $cf->ValuesForTicket( $self->id );
 
     unless ( $cf->ValidateValue( $args{'Value'} ) ) {
-        return ( 0, "Invalid value for custom field" );
+        return ( 0, loc("Invalid value for custom field") );
     }
 
     # If the custom field only accepts a single value, delete the existing

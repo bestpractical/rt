@@ -85,7 +85,7 @@ sub UserObj {
 	use RT::User;
 	$self->{'UserObj'} = RT::User->new($self);
 	unless ($self->{'UserObj'}->Load($self->Id)) {
-	    $RT::Logger->err(loc("Couldn't load [_1] from the users database.\n", $self->Id));
+	    $RT::Logger->err($self->loc("Couldn't load [_1] from the users database.\n", $self->Id));
 	}
 	
     }

@@ -3,7 +3,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form method=post>
 
-% unless ($RT::WebExternalAuth) {
+% unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
 <& /Elements/TitleBoxStart, title => loc('Change password')  &>
 <&|/l&>New password</&>: <input type=password name="NewPass1" size=16>
 <&|/l&>Confirm</&>: <input type=password name="NewPass2" size=16>

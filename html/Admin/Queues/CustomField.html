@@ -42,11 +42,11 @@ if (! $CustomField ) {
                                                  Type => $Type,
                                                  Description => $Description,
                                                  SortOrder => $SortOrder);
-      Abort("Could not create CustomField: $msg") unless ($val);
+      Abort(loc("Could not create CustomField", $msg)) unless ($val);
      push @results, $msg;
      $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
     } else {
-       $CustomFieldObj->Load($CustomField) || Abort('No CustomField');
+       $CustomFieldObj->Load($CustomField) || Abort(loc('No CustomField'));
       $title = loc('Editing CustomField [_1]', $CustomFieldObj->Name()); 
 
       my @aresults = ProcessCustomFieldUpdates ( 

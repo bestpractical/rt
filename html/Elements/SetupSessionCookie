@@ -1,10 +1,16 @@
 <%perl>
 my %cookies = CGI::Cookie->fetch();
+my $IsMySQL = ($RT::DatabaseType eq 'mysql');
+my $session_class = $IsMySQL ? 'Apache::Session::MySQL' : 'Apache::Session::File';
+my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
     eval {
-        tie %HTML::Mason::Commands::session, 'Apache::Session::File',
+        tie %HTML::Mason::Commands::session, $session_class,
           ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
-          {
+          $IsMySQL ? {
+            Handle     => $RT::Handle->dbh,
+            LockHandle => $RT::Handle->dbh,
+          } : {
             Directory     => $RT::MasonSessionDir,
             LockDirectory => $RT::MasonSessionDir,
           };
@@ -13,16 +19,19 @@ my %cookies = CGI::Cookie->fetch();
     if ($@) {
 
         # If the session is invalid, create a new session.
-        if ( $@ =~ m#^Object does not exist in the data store# ) {
-            tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef,
-              {
+        if ( $@ =~ m#^Object does not# ) {
+            tie %HTML::Mason::Commands::session, $session_class, undef,
+              $IsMySQL ? {
+                Handle     => $RT::Handle->dbh,
+                LockHandle => $RT::Handle->dbh,
+              } : {
                 Directory     => $RT::MasonSessionDir,
                 LockDirectory => $RT::MasonSessionDir,
               };
             undef $cookies{'RT_SID'};
         }
         else {
-            die "RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this dir ectory's permissions are correct.";
+            die "RT Couldn't write to session directory '$RT::MasonSessionDir': $@. Check that this dir ectory's permissions are correct.";
         }
     }
 
