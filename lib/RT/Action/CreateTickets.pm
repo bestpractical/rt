@@ -41,7 +41,7 @@ Create one or more tickets according to an externally supplied template.
 
  ===Create-Ticket: codereview
  Subject: Code review for {$Tickets{'TOP'}->Subject}
- Depended-On-By: {$Tickets{'TOP'}->Id}
+ Depended-On-By: TOP
  Content: Someone has created a ticket. you should review and approve it,
  so they can finish their work
  ENDOFCONTENT
@@ -84,13 +84,13 @@ After each ticket is created, it's stuffed into a hash called %Tickets
 so as to be available during the creation of other tickets during the same 
 ScripAction.  The hash is prepopulated with the ticket which triggered the 
 ScripAction as $Tickets{'TOP'}; you can also access that ticket using the
-shorthand $TOP.
+shorthand TOP.
 
 A simple example:
 
  ===Create-Ticket: codereview
  Subject: Code review for {$Tickets{'TOP'}->Subject}
- Depended-On-By: {$Tickets{'TOP'}->Id}
+ Depended-On-By: TOP
  Content: Someone has created a ticket. you should review and approve it,
  so they can finish their work
  ENDOFCONTENT
@@ -128,8 +128,8 @@ A convoluted example
  Queue: Approvals
  Type: Approval
  AdminCc: {join ("\nAdminCc: ",@admins) }
- Depended-On-By: {$Tickets{"TOP"}->Id}
- Refers-To: {$Tickets{"TOP"}->Id}
+ Depended-On-By: TOP
+ Refers-To: TOP
  Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
  Due: {time + 86400}
  Content-Type: text/plain
@@ -139,7 +139,7 @@ A convoluted example
  ENDOFCONTENT
  ===Create-Ticket: two
  Subject: Manager approval
- Depended-On-By: {$Tickets{"TOP"}->Id}
+ Depended-On-By: TOP
  Refers-On: {$Tickets{"approval"}->Id}
  Queue: Approvals
  Content-Type: text/plain
@@ -239,8 +239,8 @@ my $approvals =
 Queue: Approvals
 Type: Approval
 AdminCc: {join ("\nAdminCc: ",@admins) }
-Depended-On-By: {$Tickets{"TOP"}->Id}
-Refers-To: {$Tickets{"TOP"}->Id}
+Depended-On-By: TOP
+Refers-To:  TOP 
 Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
 Content-Type: text/plain
