@@ -1,3 +1,14 @@
+Oct 8 2000
+----------
+
+-fixed displaying of merged tickets in the web ui.                              -fixed displaying of merged tickets in the cli (-publichistory                   and -history|-show)                                                            -fixed function of -publichistory in the cli                                    +added information about function ./rt -publichistory <num> to cli help  
+                -All thanks to Jan Okrouhly <okrouhly@civ.zcu.cz>
+
+setuid wrapper is now responsible about what it clobbers.
+                -Thanks to Jan Kujawa <kujawa@ultranet.com>
+
+
+
 August 31 2000
 --------------
 

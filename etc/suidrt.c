@@ -89,7 +89,8 @@ char** getSafeEnvironment(const char** SafeVars)
   envp = (char **) xmalloc ( (numvars+1)*sizeof(char*));
   
   /* und zen ve copy zem */
-  for(i=0;i<numvars;i++)
+  i=0;
+  while( (candidate=SafeVars[i++])!=NULL)
     if( (candidate=SafeVars[i])!=NULL)
       if( (val=getenv(candidate)) != NULL)
 	{

@@ -276,6 +276,10 @@ n";
 
 sub cli_history_req {
     my ($in_serial_num)=@_;
+
+    $in_serial_num=&rt::normalize_sn($in_serial_num);
+    &rt::req_in($in_serial_num,$current_user);
+
     $total_transactions=&rt::transaction_history_in($in_serial_num,$current_user);
     for ($temp=0; $temp < $total_transactions; $temp++){
 	&print_transaction($temp, $in_serial_num);
@@ -284,6 +288,10 @@ sub cli_history_req {
 
 sub cli_requestor_history_req {
     my ($in_serial_num)=@_;
+
+    $in_serial_num=&rt::normalize_sn($in_serial_num);
+    &rt::req_in($in_serial_num,$current_user);    
+    
     $total_transactions=&rt::transaction_history_in($in_serial_num,$current_user);
     for ($temp=0; $temp < $total_transactions; $temp++){
 	if ($rt::req[$in_serial_num]{'trans'}[$temp]{'type'} ne 'comments') {
@@ -304,6 +312,8 @@ sub cli_help_req {
     -open <num>		  Change <num>'s status to open
     -stall <num>	  Change <num>'s status to stalled
     -show <num>		  Display transaction history current status of <num>
+    -publichistory <num> Display transaction history current status of <num>
+                         (Without any comments)
     -take <num>		  Become owner of <num> (if unowned)
     -steal <num>	  Become owner of <num> (if owned by another)
     -untake <num>	  Make <num> ownerless (if owned by you) 
