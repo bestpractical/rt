@@ -727,7 +727,11 @@ sub SetRandomPassword {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $pass = $self->GenerateRandomPassword( 6, 8 );
+
+    my $min = ( $RT::MinimumPasswordLength > 6 ?  $RT::MinimumPasswordLength : 6);
+    my $max = ( $RT::MinimumPasswordLength > 8 ?  $RT::MinimumPasswordLength : 8);
+
+    my $pass = $self->GenerateRandomPassword( $min, $max) ;
 
     # If we have "notify user on 
 
