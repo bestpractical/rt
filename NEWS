@@ -1,10 +1,8 @@
-17 jul 99
----------
-
+17 jul 99 (Tobix)
+-----------------
 I've integrated my RT into the development branch rt 1.1, the version
-is tagged as 1.1pre.1. I don't have the overview of whom other others
-deserves credits for this - I've picked up quite a few patches from
-the dev-list.
+is tagged as 1.1pre.1. Sorry that I don't remember all the
+contributors, notify me to be included.
 
 Generally:
 ==========
@@ -21,6 +19,10 @@ will be changed to a comment.
 
 Killing requests doesn't kill requests anymore. I intend to move this
 to a "cleanup" procedure instead.
+
+A bug that didn't send mail if the username of an external requestor
+matched the username of the RT user has been fixed, thanks to Aris
+Theocharides.
 
 Mail-gate:
 ==========
@@ -43,9 +45,12 @@ required, e.g. pgp (for mail, and ssl for web).
 
 WebRT:
 ======
-There are more queue filter options, it's possible to sort by area,
-and it's possible to limit the number of output. The requestor-field
-has grown a bit to allow people enter emails there.
+Thanks to Rich West, there are more queue filter options, it's
+possible to sort by area, and it's possible to limit the number of
+output. [fsck #38]
+
+The requestor-field has grown a bit to allow people enter emails
+there.
 
 Now replies and comments with quotes will (hopefully!) be better to
 handle; wide (>76) messages are wrapped before it is quoted, and the
@@ -56,6 +61,15 @@ The history view has been altered a lot. Now it's possible to change
 all the request attributes directly from the history view, witch
 should speed up work with WebRT considerably. The drawback is that the
 interface is uglier.
+
+Link to a queue view of all requests from the same requestor.
+
+Next- and prev-links thanks to allbery@ece.cmu.edu. However, "next"
+and "prev" really means the next and the previous request - regardless
+of queues, areas, access rights, etc.
+
+Thanks to (who came up with this patch?), when logging in with a query
+in the URL, the query is preserved through the login.
 
 7 Jul 99
 --------
