@@ -1,0 +1,10 @@
+This file should contain a list of contributions.
+
+No-ModPerl - things that might be usable for setting up a CGI/FCGI version
+	     of RT.  This directory should eventually die, and all this
+	     stuff should either be available through CPAN or the RT
+	     release.  I just don't have time at the moment.  -- TobiX
+	     
+Bugzilla   - Bugzilla integration.  -- TobiX
+
+KB         - Integration to Jesse's knowledge base.  -- TobiX
