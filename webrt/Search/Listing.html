@@ -3,13 +3,14 @@
 
 <& /Elements/Header, Title => "Ticket Listing / Queue View" &>
 
+%#TODO: What's this? :)
 %#Foo<% $foo %>bar
 
 %#<& QueueInterpretRestrictionCookies &>
 <TABLE WIDTH=100% border>
 %#<& QueueHeader format="$format" &>
 <TR>
-%foreach (@{_cfg(\%ARGS, 'QueueListingCols')}) {
+%foreach (@{Config(\%ARGS, 'QueueListingCols')}) {
    <TH><% $_->{Header} %></TH>
 %}
 </TR>
@@ -22,7 +23,7 @@
 
 %# The ticket view is controlled by config.pm, WebOptions
 
-%foreach (@{_cfg(\%ARGS, 'QueueListingCols')}) {
+%foreach (@{Config(\%ARGS, 'QueueListingCols')}) {
 	<TD>
 	<& TicketCell , Ticket=>$Ticket,  Column=>$_ &>
 	</TD>
@@ -36,115 +37,12 @@
 
 <& PickRestriction &>
 
-<%ARGS>
-$ValueOfResultsPerPage => 1
-</%ARGS>
-
 <%INIT>
 
-# temporary disabling features that won't work ... --
+require RT::Interface::Web;
 
-# tobix about sticky searches: the "current restrictions" must be
-# listed up, and it must be possible to remove restrictions if this
-# should make any sense.  It would be very cool, indeed.
-
-  if (!$ARGS{'keep'} || !defined $session{'tickets'}) {
-    use RT::TicketCollection;
-    $session{'tickets'} = RT::TicketCollection->new($session{'CurrentUser'});
-    
-  }
-  else {
-    $session{'tickets'}->NewTickets;
-  }
-if ($ARGS{'LimitResultsPerPage'} and ($ARGS{'ValueOfResultsPerPage'})) {
-  
-  $session{'tickets'}->Rows($ARGS{'ValueOfResultsPerPage'});
-}
-
-
-if ($ARGS{'LimitOwner'} and $ARGS{'ValueOfOwner'}) {
-  my $oper = $ARGS{'NegateOwner'} ? "!=" : "=";
-  $session{'tickets'}->NewRestriction (FIELD => 'Owner',
-				       VALUE => $ARGS{'ValueOfOwner'},
-				       OPERATOR => "$oper"
-				      );
-}
-
-  if ($ARGS{'LimitRequestorByEmail'}) {
-    my $oper = $ARGS{'NegateRequestor'} ? "!=" : "=";
-    my $alias=$session{'tickets'}->NewRestriction 
-        (FIELD => 'Email',
-         VALUE => $ARGS{'ValueOfRequestors'},
-         TABLE => 'Watchers',
-	 OPERATOR => "$oper",
-	 EXT_LINKFIELD => 'Value');
-    # TODO:
-    # THIS BREAKS.  NewRestriction doesn't return alias.  More work is needed here.. :/
-    # Possible idea; add SET_ALIAS as a method to the Limit, allowing
-    # a join to be performed with a custom-set alias
-    $session{'tickets'}->NewRestriction
-        (FIELD => 'Scope',
-         VALUE => 'Ticket',
-         ALIAS => $alias,
-	 OPERATOR => "=");
-    $session{'tickets'}->NewRestriction
-        (FIELD => 'Type',
-         VALUE => 'Requestor',
-         ALIAS => $alias,
-	 OPERATOR => "=");
-}
-
-
-if ($ARGS{'LimitSubject'}) {
-  my $val=$ARGS{'ValueOfSubject'};
-  my $oper = $ARGS{'NegateSubject'} || "=";
-  $oper="!=" if ($oper eq 1);
-  if ($oper eq 'Like') {
-     $val="%$val%";
-  }
-  $session{'tickets'}->NewRestriction (FIELD => 'Subject',
-				       VALUE => $val,
-				       OPERATOR => $oper
-				      )
-}
-
-
-if ($ARGS{'LimitQueue'}) {
-  my $oper = $ARGS{'NegateQueue'} ? "!=" : "="; 
-  $session{'tickets'}->NewRestriction (FIELD => 'Queue',
-				       VALUE => $ARGS{'ValueOfQueue'},
-				       OPERATOR => "$oper"
-				      )
-}
-
-
-if ($ARGS{'LimitStatus'}) {
-  my $oper = $ARGS{'NegateStatus'} ? "!=" : "="; 
-  $session{'tickets'}->NewRestriction (FIELD => 'Status',
-				       VALUE => $ARGS{'ValueOfStatus'},
-				       OPERATOR => "$oper"
-				      )
-}
-
-$session{'tickets'}->ApplyRestrictions;
+&ProcessSearchQuery(ARGS=>\%ARGS);
 
 #$foo =$session{'tickets'}->Restrictions;
 
-# TODO: This one should _not_ be here, rather somewhere else
-# (suggestions?).  It might eventually read the cookies, user
-# configuration information from the DB, queue configuration information
-# from the DB, etc.  It should be object oriented.  But what object can
-# it belong to, and how should it get access to all this data?
-
-sub _cfg {
-  my $args=shift;
-  my $key=shift;
-  return $args->{$key} || $RT::WebOptions{$key};
-}
-
-
 </%INIT>
-
-<%ARGS>
-$foo => undef
-</%ARGS>
