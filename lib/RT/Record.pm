@@ -427,7 +427,7 @@ sub __Value {
 
     return('') if ( !defined($value) || $value eq '');
 
-    return Encode::decode_utf8($value) if $args{'decode_utf8'};
+    return Encode::decode_utf8($value) || $value if $args{'decode_utf8'};
     return $value;
 }
 

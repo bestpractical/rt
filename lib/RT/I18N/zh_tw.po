@@ -415,12 +415,12 @@ msgid "(untitled)"
 msgstr "(未命名)"
 
 #: NOT FOUND IN SOURCE
-msgid "25 highest priority tickets I own..."
-msgstr "前 25 份待處理申請單..."
+msgid "Tickets I own"
+msgstr "待處理的申請單"
 
 #: NOT FOUND IN SOURCE
-msgid "25 highest priority tickets I requested..."
-msgstr "前 25 份送出的申請單..."
+msgid "Tickets I requested"
+msgstr "送出的申請單"
 
 #: NOT FOUND IN SOURCE
 msgid ":"

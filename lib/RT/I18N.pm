@@ -273,7 +273,11 @@ sub DecodeMIMEWordsToUTF8 {
 	# now we have got a decoded subject, try to convert into
 	# utf-8 encoding
 	unless ($charset =~ m/utf-8/i) {
-	    Encode::from_to($enc_str, $charset, "utf8");
+	    eval { Encode::from_to($enc_str, $charset, "utf8") };
+	    if ($@) {
+		$charset = _GuessCharset( $enc_str );
+		Encode::from_to($enc_str, $charset, "utf8");
+	    }
 	}
 
 	$str .= $prefix . $enc_str . $trailing;
@@ -296,17 +300,33 @@ will use Encode::Guess to try to figure it out
 sub _FindOrGuessCharset {
     my $entity = shift;
     my $head = $entity->head;
-    my $charset;
-    my $fallback = 'iso-8859-1';
 
-    return $charset if ($charset = $head->mime_attr("content-type.charset"));
+    if ($head->mime_attr("content-type.charset")) {
+	return $head->mime_attr("content-type.charset");
+    }
 
     my $body = $entity->bodyhandle or return;
-    return 'utf-8' if Encode::is_utf8( $body->as_string );
+    return _GuessCharset( $head->as_string . $body->as_string );
+}
+
+# }}}
+
+
+# {{{ _GuessCharset
+
+=head2 _GuessCharset STRING
+
+use Encode::Guess to try to figure it out the string's encoding.
+
+=cut
+
+sub _GuessCharset {
+    my $fallback = 'iso-8859-1';
+    my $charset;
 
     if ( @RT::EmailInputEncodings and eval { require Encode::Guess; 1 } ) {
 	Encode::Guess->set_suspects(@RT::EmailInputEncodings);
-	my $decoder = Encode::Guess->guess( $head->as_string . $body->as_string );
+	my $decoder = Encode::Guess->guess( $_[0] );
 
 	if ( ref $decoder ) {
 	    $charset = $decoder->name;
