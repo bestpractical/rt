@@ -189,6 +189,24 @@ sub Create {
     return $rv;
 }
 
+=head2 Load ID/NAME
+
+Load a custom field.  If the value handed in is an integer, load by custom field ID. Otherwise, Load by name.
+
+=cut
+
+
+sub Load {
+    my $self = shift;
+    my $id = shift;
+
+    if ($id =~ /^\d+$/) {
+        return ($self->SUPER::Load($id));
+    } else {
+        return($self->LoadByName(Name => $id));
+    }
+}
+
 
 # {{{ sub LoadByName
 
