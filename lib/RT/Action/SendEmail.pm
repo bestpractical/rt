@@ -386,7 +386,9 @@ sub SetBcc {
 sub SetPrecedence {
   my $self = shift;
 
-  $self->SetHeader('Precedence', "bulk");
+  unless ($self->TemplateObj->MIMEObj->head->get("Precedence")) { 
+    $self->SetHeader('Precedence', "bulk");
+   }
 }
 
 # }}}
