@@ -67,15 +67,11 @@ use vars qw (%SCOPE
 # }}}
 
 
-# {{{ sub new 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
+# {{{ sub _Init
+sub _Init  {
+  my $self = shift;
   $self->{'table'} = "ACL";
-  $self->_Init(@_);
-  return ($self);
+  return($self->SUPER::_Init(@_));
 }
 # }}}
 

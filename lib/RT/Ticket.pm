@@ -36,16 +36,12 @@ This module lets you manipulate RT's most key object. The Ticket.
 
 # }}}
 
-# {{{ sub new
+# {{{ sub _Init
 
-sub new {
-      my $proto = shift;
-      my $class = ref($proto) || $proto;
-      my $self  = {};
-      bless ($self, $class);
-      $self->{'table'} = "Tickets";
-      $self->_Init(@_);
-      return ($self);
+sub _Init {
+    my $self = shift;
+    $self->{'table'} = "Tickets";
+    return ($self->SUPER::_Init(@_));
 }
 
 # }}}
@@ -137,7 +133,6 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
     id 
     Queue  - Either a Queue object or a QueueId
-    QueueTag
     Requestor -- A requestor object, if available.  Eventually taken from the MIME object.
     RequestorEmail -- the requestors email.  Eventually taken from Requestor or the MIME object
     Alias  -- unused
@@ -244,7 +239,7 @@ sub Create {
     }	
 	    
 	    
-    unless ($self->CurrentUser->HasQueuetRight(Right => 'CreateTickets',
+    unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTickets',
 					       QueueObj => $Queue )) {
 	return (0,0,"Permission Denied");
     }
@@ -2162,7 +2157,7 @@ sub HasRight {
 		$RT::Logger->warning("Principal attrib undefined for Ticket::HasRight");
 	}
        
-	return($args{'Principal'}->HasQueueRight(TicketObj => $self, 
+	return($args{'Principal'}->HasQueueRight(QueueObj => $self->QueueObj, 
 						  Right => $args{'Right'}));
 	
 	    

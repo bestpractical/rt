@@ -17,7 +17,7 @@ sub _Init {
     my $self = shift;
     $self->{'table'} = "Templates";
     $self->{'primary_key'} = "id";
-    $self->SUPER::_Init(@_);
+    return ($self->SUPER::_Init(@_));
 }
 # }}}
 

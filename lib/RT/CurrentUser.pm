@@ -10,31 +10,24 @@ use RT::Record;
 
 
 
-# {{{ sub new 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->{'table'} = "Users";
-  $self->_Init(@_);
-
-  return($self);
-}
-# }}}
+# {{{ sub _Init 
 
 #The basic idea here is that $self->CurrentUser is always supposed
 # to be a CurrentUser object. but that's hard to do when we're trying to load
 # the CurrentUser object
-# {{{ sub _Init 
+
 sub _Init  {
   my $self = shift;
   my $UserId = shift;
+
+  $self->{'table'} = "Users";
+
   if (defined($UserId)) {
     $self->Load($UserId);
   }
-  $self->_MyCurrentUser($self);
   
+  $self->_MyCurrentUser($self);
+
 }
 # }}}
 

@@ -8,15 +8,13 @@ require RT::Watcher;
 @ISA= qw(RT::EasySearch);
 
 
-# {{{ sub new 
-sub new  {
-  my $pkg= shift;
-  my $self = SUPER::new $pkg;
+# {{{ sub _Init
+sub _Init  {
+  my $self = shift;
   
   $self->{'table'} = "Watchers";
   $self->{'primary_key'} = "id";
-  $self->_Init(@_);
-  return($self);
+  return($self->SUPER::_Init(@_));
 }
 # }}}
 

@@ -5,25 +5,12 @@ use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
 
 
-#instantiate a new object.
-# {{{ sub new 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->_Init(@_);
-  return ($self)
-}
-# }}}
-
-
 # {{{ sub _Init
 sub _Init { 
   my $self = shift;
   $self->{'table'} = "Queues";
   $self->{'primary_key'} = "id";
-  $self->SUPER::_Init(@_);
+  return ($self->SUPER::_Init(@_));
 }
 # }}}
 

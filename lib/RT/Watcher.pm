@@ -10,16 +10,14 @@ use RT::Record;
 
 
 
-# {{{ sub new 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->{'table'} = "Watchers";
-  $self->_Init(@_);
+# {{{ sub _Init 
 
-  return($self);
+sub _Init {
+  my $self = shift;
+
+  $self->{'table'} = "Watchers";
+  return ($self->SUPER::_Init(@_));
+
 }
 # }}}
 

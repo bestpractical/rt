@@ -12,7 +12,7 @@ sub _Init   {
  
   $self->{'table'} = "Transactions";
   $self->{'primary_key'} = "id";
-  $self->SUPER::_Init(@_);
+  return ( $self->SUPER::_Init(@_));
 }
 # }}}
 

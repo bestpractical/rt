@@ -4,15 +4,11 @@ package RT::ScripScope;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-# {{{ sub new 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
+# {{{ sub _Init
+sub _Init  {
+  my $self = shift;
   $self->{'table'} = "ScripScope";
-  $self->_Init(@_);
-  return ($self);
+  return ($self->SUPER::_Init(@_));
 }
 # }}}
 

@@ -6,18 +6,12 @@ package RT::Transaction;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-# {{{ sub new 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-
+# {{{ sub _Init 
+sub _Init  {
+    my $self = shift;
   $self->{'table'} = "Transactions";
-  $self->_Init(@_);
+  return ($self->SUPER::_Init(@_));
 
-
-  return ($self);
 }
 # }}}
 
@@ -418,16 +412,16 @@ sub IsInbound {
 
 =head2 CurrentUserHasRight
 
-Calls $self->CurrentUser->HasTicketRight with the argument list
+Calls $self->CurrentUser->HasQueueRight with the argument list
 passed in here.
 
 =cut
 
 sub CurrentUserHasRight {
     my $self = shift;
-    my %args = (TicketObj => $self->TicketObj,
+    my %args = (QueueObj => $self->TicketObj->QueueObj,
 		@_);
-    return ($self->CurrentUser->HasTicketRight(%args));
+    return ($self->CurrentUser->HasQueueRight(%args));
 }
 
 1;

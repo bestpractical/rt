@@ -7,16 +7,11 @@ package RT::User;
 use RT::Record;
 @ISA= qw(RT::Record);
 
-# {{{ sub new 
-sub new  {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless ($self, $class);
+# {{{ sub _Init
+sub _Init  {
+    my $self = shift;
     $self->{'table'} = "Users";
-    $self->_Init(@_);
-    
-    return($self);
+    return($self->SUPER::_Init(@_));
 }
 # }}}
 
@@ -410,9 +405,9 @@ sub HasQueueRight {
         $QueueId = $args{'TicketObj'}->QueueObj->Id,
     }
     else {
-	use Carp;
-	Carp::Confess;
-	$RT::Logger->debug("$self ->HasTicketRight didn't find a valid queue id.");
+      use Carp;
+      Carp::Confess();
+	  $RT::Logger->debug("$self ->HasQueueRight found no valid queue id.");
     }
     return ($self->_HasRight(Scope => 'Queue',
 			     AppliesTo => $QueueId,
@@ -464,8 +459,8 @@ several options:
 =item AppliesTo is the numerical Id of the object identified in the scope. For tickets, this is the queue #. for queues, this is the queue #
 
 =item ExtendedPrincipals is an  SQL select clause which assumes that the only
-table in play is ACL.  It's used by HasTicketRight to pass in which 
-metaprincipals apply
+table in play is ACL.  It's used by HasQueueRight to pass in which 
+metaprincipals apply. Actually, it's probably obsolete. TODO: remove it.
 
 Returns 1 if a matching ACE was found.
 

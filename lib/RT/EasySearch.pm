@@ -22,8 +22,9 @@ sub _Init  {
     $self->{'user'} = shift;
     
     if(!defined($self->CurrentUser)) {
+    #TODO should not be in production code:
 	use Carp;
-	Carp::confess();
+	Carp::confess("$self was created without a CurrentUser");
 	$RT::Logger->err("$self was created without a CurrentUser\n"); 
 	return(0);
     }

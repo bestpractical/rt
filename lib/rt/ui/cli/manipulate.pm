@@ -325,7 +325,7 @@ sub cli_create_req  {
 	print "That Queue does not exist\n";
 	$queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     }
-    unless ($CurrentUser->HasTicketRight( Right => 'Create',
+    unless ($CurrentUser->HasQueueRight( Right => 'Create',
                                           QueueObj => $Queue)) {
         print "No permission to create tickets in '".$Queue->QueueId."'\n";
         return();
@@ -334,7 +334,7 @@ sub cli_create_req  {
     
     #TODO this fails. this right does not exist
     warn "Bogus rights check";
-    if ($CurrentUser->HasTicketRight(Right => "Modify",
+    if ($CurrentUser->HasQueueRight(Right => "Modify",
                                      QueueObj => $Queue)) {
 	
 	require RT::User;
@@ -342,7 +342,7 @@ sub cli_create_req  {
       
       $owner=&rt::ui::cli::question_string( "Give request to");
 	
-	while ($owner && (!$Owner->Load($owner) || !$Owner->HasTicketRight(Right => "Modify",
+	while ($owner && (!$Owner->Load($owner) || !$Owner->HasQueueRight(Right => "Modify",
 									   QueueObj => $Queue))) {
 	    
 	    print "That user doesn't exist or can't own tickets in that queue\n";
