@@ -16,7 +16,6 @@ CREATE TABLE Attachments (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX Attachments1 ON Attachments (Parent) ;
 CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 # }}}
@@ -62,7 +61,7 @@ CREATE TABLE Links (
 CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
 CREATE INDEX Links2 ON Links (Base,  Type) ;
 CREATE INDEX Links3 ON Links (Target,  Type) ;
-CREATE INDEX Links4 ON Links(Type,LocalBase);
+CREATE INDEX Links4 ON Links (Type,LocalBase);
 
 # }}}
 
@@ -93,7 +92,7 @@ CREATE TABLE Groups (
 ) TYPE=InnoDB;
 
 CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
-CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);   
+CREATE INDEX Groups2 On Groups (Type, Instance);   
 
 # }}}
 
@@ -213,7 +212,6 @@ create table CachedGroupMembers (
 ) TYPE=InnoDB;
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
-CREATE INDEX GrouMem  on CachedGroupMembers (GroupId,MemberId);
 
 # }}}
 
@@ -260,8 +258,6 @@ CREATE TABLE Users (
 
 
 CREATE UNIQUE INDEX Users1 ON Users (Name) ;
-CREATE INDEX Users2 ON Users (Name);
-CREATE INDEX Users3 ON Users (id, EmailAddress);
 CREATE INDEX Users4 ON Users (EmailAddress);
 
 
@@ -302,9 +298,6 @@ CREATE TABLE Tickets (
 
 CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
 CREATE INDEX Tickets2 ON Tickets (Owner) ;
-CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
-CREATE INDEX Tickets4 ON Tickets (id, Status) ;
-CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
 
 # }}}
