@@ -148,13 +148,16 @@ sub LimitAttribute {
 	ENTRYAGGREGATOR => 'OR',
     );
 
-    $self->Limit(
-	ALIAS	   => $alias,
-	FIELD      => 'Content',
-	OPERATOR   => 'IS',
-	VALUE      => 'NULL',
-	ENTRYAGGREGATOR => 'OR',
-    ) if $args{EMPTY};
+    if ($args{EMPTY}) {
+	# Capture rows without the attribute defined by testing IS NULL.
+	$self->Limit(
+	    ALIAS      => $alias,
+	    FIELD      => $_,
+	    OPERATOR   => 'IS',
+	    VALUE      => 'NULL',
+	    ENTRYAGGREGATOR => 'OR',
+	) for qw( ObjectType Name Content );
+    }
 }
 # }}}
 
