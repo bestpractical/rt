@@ -78,8 +78,8 @@ sub LimitToCc  {
 }
 # }}}
 
-# {{{ sub LimitToAdministrativeCc 
-sub LimitToAdministrativeCc  {
+# {{{ sub LimitToAdminCc 
+sub LimitToAdminCc  {
     my $self = shift;
     $self->LimitToType("AdminCc");
 }
