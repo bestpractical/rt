@@ -433,7 +433,8 @@ sub ProcessUpdateMessage {
     );
 
     #Make the update content have no 'weird' newlines in it
-    if ( $args{ARGSRef}->{'UpdateContent'} ||
+    if ( $args{ARGSRef}->{'UpdateTimeWorked'} ||
+	 $args{ARGSRef}->{'UpdateContent'} ||
 	 $args{ARGSRef}->{'UpdateAttachments'}) {
 
         if (

@@ -54,7 +54,7 @@
 </TABLE>
 % }
 
-<& /Elements/Submit &>
+<& /Elements/Submit, Label => loc('Delete Template') &>
 </FORM>
 
 <%INIT>

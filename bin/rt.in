@@ -777,10 +777,10 @@ sub submit {
 
         my ($head, $text) = split /\n\n/, $res->content, 2;
         my ($status, @headers) = split /\n/, $head;
-        $text =~ s/\n*$/\n/;
+        $text =~ s/\n*$/\n/ if ($text);
 
         # "RT/3.0.1 401 Credentials required"
-        if ($status !~ m#^RT/\d+(?:\.\d+)+(?:-?\w+)? (\d+) ([\w\s]+)$#) {
+	if ($status !~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#) {
             warn "rt: Malformed RT response from $config{server}.\n";
             warn "(Rerun with RTDEBUG=3 for details.)\n" if $config{debug} < 3;
             exit -1;

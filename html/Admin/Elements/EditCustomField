@@ -59,7 +59,7 @@
 <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </font>
 % }
-<&/Elements/Submit&>
+<&/Elements/Submit, Label => loc('Create') &>
 </FORM>
 
 
