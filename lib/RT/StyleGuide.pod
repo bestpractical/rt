@@ -239,7 +239,27 @@ leads to cleaner code.
         my $var1 = shift;                       # right
         my $var2 = shift;                       
 
+=head2 Method parameters
 
+If a method takes exactly one mandatory argument, the argument should be
+passed in a straightforward manner:
+
+        my $self = shift;
+        my $id = shift;
+
+In all other cases, the method needs to take named parameters, usually
+using a C<%args> hash to store them:
+
+        my $self = shift;
+        my %args = ( Name => undef,
+                     Description => undef,
+                     @_ );
+
+You may specify defaults to those named parameters instead of using
+C<undef> above, as long as it is documented as such.
+
+It is worth noting that the existing RT codebase had not followed this
+style perfectly; we are trying to fix it without breaking exsiting APIs.
 
 =head2 Tests
 
