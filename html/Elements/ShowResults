@@ -1,0 +1,12 @@
+% if (@results ) {
+<UL>
+% foreach my $result (@results) {
+% next unless ($result);
+<LI><%$result%></LI>
+% }
+</UL>
+<BR>
+% }
+<%ARGS>
+@results = undef
+</%ARGS>

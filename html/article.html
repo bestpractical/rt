@@ -1,0 +1,44 @@
+<html>
+<head>
+<title><%$article->Summary%>
+</title>
+<body>
+
+
+<h1><%$article->Summary%></h1>
+<A href="article.html?id=<%$article->ParentObj->Id%>">[Up to parent article: <%$article->ParentObj->Summary%>]</a><br>
+
+<& /Elements/ArticleHierarchy, parent => $article->Id , Depth => 1&>
+<HR>
+<& /Elements/ArticleCustomFields, ArticleObj => $article &>
+
+<HR>
+<%$article->ContentObj->Body%>
+
+
+<div align=right><a href="articles.html">Article listing</a>
+<a href="search.html">Search</a>
+<a href="manage/create_article.html?Parent=<%$article->Id%>">New subarticle</a>
+<a href="manage/edit_article.html?id=<%$article->Id%>">Edit me</a></div>
+</body>
+</html>
+
+<%INIT>
+my $article = new RT::FM::Article($session{'CurrentUser'});
+
+if ($id eq 'new') {
+
+	my ($val, $msg) = $article->Create( Parent => $ARGS{'Parent'},
+					    Summary => $ARGS{'Summary'},
+					    Content => $ARGS{'Content'});
+
+	unless ($val) {
+		Abort($msg);
+	}
+	$id = $val;
+}
+$article->Load($id);
+</%INIT>
+<%ARGS>
+$id => 0
+</%ARGS>

@@ -1,0 +1,20 @@
+<html><head><title>Error!</title></head>
+<body>
+<%$Why%>
+<br>
+<font size=-1>
+<%$Details%>
+</font>
+</body>
+</HTML>
+
+
+<%args>
+$Code => undef
+$Details => undef
+$Title => "RT Error"
+$Why => "the calling component did not specify why"
+</%args>
+
+<%INIT>
+</%INIT>

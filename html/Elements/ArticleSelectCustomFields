@@ -1,0 +1,15 @@
+% while (my $cf = $custom_fields->Next) {
+<%$cf->Name%>: 
+% my $values = $ArticleObj->Values($cf->Id);
+% my %selected = map { $_->Content => 1 } @{$values->ItemsArrayRef()};
+<& ArticleSelectCustomFieldValues, cf => $cf, Name => "CustomFieldValues-".$cf->Id."-RT::FM::Article-".$ArticleObj->Id, Selected => \%selected &>
+
+
+% }
+<%INIT>
+my $custom_fields = new RT::FM::CustomFieldCollection($session{'CurrentUser'});
+$custom_fields->UnLimit();
+</%INIT>
+<%ARGS>
+$ArticleObj => undef
+</%ARGS>

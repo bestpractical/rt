@@ -1,0 +1,15 @@
+<SELECT NAME="<%$Name%>">
+% foreach my $item (@{$cf->ValuesObj->ItemsArrayRef}) {
+<OPTION VALUE="<%$item->id%>"
+% 	if ($Selected->{$item->Id}) {
+	    SELECTED
+% 	}
+><%$item->Name%></OPTION>
+% } 
+</SELECT>
+<%ARGS>
+$cf => undef
+$Name => 'Type'
+$Size => undef
+$Selected => undef
+</%ARGS>

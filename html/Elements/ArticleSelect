@@ -1,0 +1,10 @@
+<SELECT NAME="<%$Name%>">
+<OPTION VALUE="0">/</OPTION>
+<& ArticleOptions, parent => $parent, Depth => $Depth, Default => $Default &> 
+</SELECT>
+<%ARGS>
+$parent => 0
+$Name => 'Article'
+$Depth => 0
+$Default => undef
+</%ARGS>

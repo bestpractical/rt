@@ -1,0 +1,14 @@
+<html>
+<head><title>Create custom field</title></head>
+<body>
+<form action=custom_fields.html method=post>
+<input type=hidden name=Create value=1>
+Name <input size=40 maxsize=200 name="Name"><BR>
+Description <input size=80 maxsize=200 name="Description"> <BR>
+Type <& /Elements/CustomFieldTypeSelect, Name=>"Type" &> <BR>
+<input type=submit>
+</body>
+</html>
+<%ARGS>
+$id => undef
+</%ARGS>

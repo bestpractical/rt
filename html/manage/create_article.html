@@ -1,0 +1,31 @@
+<html>
+<head>
+<title>Create a new article
+</title>
+<body>
+<form method="post" action="../article.html" enctype="form/multipart">
+<input type=hidden name="id" value="new">
+<HR>
+<BR>
+Summary: <input size=70 name="Summary"><BR>
+Parent: <& /Elements/ArticleSelect, Name => "Parent", Default => $ParentObj->Id &><BR>
+<textarea cols=70 rows=20 name="Content"></textarea>
+<br>
+<input type=submit>
+</form>
+</body>
+</html>
+
+<%INIT>
+my $ParentObj = new RT::FM::Article ($session{'CurrentUser'});
+$ParentObj->Load($Parent);
+
+unless (($Parent == 0 ) or ($ParentObj->Id)) {
+	Abort ("$Parent isn't a valid article id. can't create an orphan!");
+}
+
+</%INIT>
+<%ARGS>
+$id => 0
+$Parent => undef
+</%ARGS>

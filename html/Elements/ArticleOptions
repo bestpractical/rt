@@ -1,0 +1,23 @@
+% while (my $article = $articles->Next()) {
+<OPTION VALUE="<%$article->Id%>"
+% if ($Default == $article->Id) {
+SELECTED
+% }
+><%"&nbsp;&nbsp;&nbsp;"x$Depth |n%><%$article->Summary%>
+% if ($Depth < $MaxDepth) {
+<& ArticleOptions, parent => $article->Id, Depth => $Depth, Default => $Default, MaxDepth => $MaxDepth &> 
+% }
+% } 
+</UL>
+<%INIT>
+# Subtract 1 from depth. by default, depth 0, means unlimited.
+$Depth++;
+my $articles = new RT::FM::ArticleCollection($session{'CurrentUser'});
+$articles->LimitToParent($parent);
+</%INIT>
+<%ARGS>
+$parent => 0
+$Depth => 0
+$Default => undef
+$MaxDepth => 50
+</%ARGS>

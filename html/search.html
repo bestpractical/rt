@@ -1,0 +1,35 @@
+%if ($articles->Count) {
+% while (my $article = $articles->Next) {
+<A href="article.html?id=<%$article->Id%>">#<%$article->Id%> <%$article->Summary%></a> (Updated <%$article->UpdatedObj->AsString%>)<br>
+
+% }
+
+% } else {
+<i>No articles found</i>
+% }
+
+<BR><BR>
+<form method="post" action="search.html">
+Find articles where<br> 
+the content matches <input name="LimitContent" value="<%$ARGS{'LimitContent'}%>"><br>
+the summary matches <input name="LimitSummary" value="<%$ARGS{'LimitSummary'}%>"><br>
+<div align=right><input type=submit value="Go!"></div>
+</form>
+
+<%INIT>
+my $articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
+if ($ARGS{'LimitContent'}) {
+	$articles->LimitToContent(
+				OPERATOR => 'LIKE' ,
+				VALUE => $ARGS{'LimitContent'}, 
+				);
+}
+
+if ($ARGS{'LimitSummary'}) {
+	$articles->Limit( FIELD => 'Summary',
+			  OPERATOR => 'LIKE',
+			  VALUE => $ARGS{'LimitSummary'}
+			);	
+}
+
+</%INIT>

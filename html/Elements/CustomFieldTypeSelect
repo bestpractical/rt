@@ -1,0 +1,16 @@
+<SELECT NAME="<%$Name%>">
+% foreach my $type (@types) {
+<OPTION VALUE="<%$type%>"
+% 	if ($Default eq $type) {
+	    SELECTED
+% 	}
+><%$type%></OPTION>
+% } 
+</SELECT>
+<%INIT>
+my @types = RT::FM::CustomField->Types();
+</%INIT>
+<%ARGS>
+$Name => 'Type'
+$Default => undef
+</%ARGS>
