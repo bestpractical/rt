@@ -222,7 +222,7 @@ sub _PopulateACLCache {
 
     if (@roles) {
         $or_check_roles = " OR ( (".join (' OR ', @roles)." ) ".  
-        " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.id AND Principals.PrincipalType = 'Group') ";
+        " AND Groups.Type = ACL.PrincipalType AND Groups.id = Principals.id AND Principals.PrincipalType = 'Group') ";
 
    } 
     # {{{ Construct Right Match
@@ -427,7 +427,7 @@ sub _RolesForObject {
     my $self = shift;
     my $type = shift;
     my $id = shift;
-    my $clause = "(Groups.Domain = '".$type."-Role' AND Groups.Instance = '" . $id. "') ";
+    my $clause = "(Groups.Domain = '".$type."-Role' AND Groups.Instance = " . $id. ") ";
 
     return($clause);
 }

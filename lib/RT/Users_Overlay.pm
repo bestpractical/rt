@@ -250,8 +250,8 @@ sub WhoHaveRight {
     if ( defined $args{'Object'} ) {
     if ( ref($args{'Object'}) eq 'RT::Ticket' ) {
         $or_check_ticket_roles =
-          " OR ( $groups.Domain = 'RT::Ticket-Role' AND $groups.Instance = '"
-          . $args{'Object'}->Id . "') ";
+          " OR ( $groups.Domain = 'RT::Ticket-Role' AND $groups.Instance = "
+          . $args{'Object'}->Id . ") ";
 
         # If we're looking at ticket rights, we also want to look at the associated queue rights.
         # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
@@ -262,17 +262,17 @@ sub WhoHaveRight {
     # TODO XXX This really wants some refactoring
     if ( ref($args{'Object'}) eq 'RT::Queue' ) {
         $or_check_roles =
-          " OR ( ( ($groups.Domain = 'RT::Queue-Role' AND $groups.Instance = '"
+          " OR ( ( ($groups.Domain = 'RT::Queue-Role' AND $groups.Instance = "
           . $args{'Object'}->Id
-          . "') $or_check_ticket_roles ) "
-          . " AND $groups.Type = $acl.PrincipalType AND $groups.Id = $groupprinc.id AND $groupprinc.PrincipalType = 'Group') ";
+          . ") $or_check_ticket_roles ) "
+          . " AND $groups.Type = $acl.PrincipalType AND $groups.id = $groupprinc.id AND $groupprinc.PrincipalType = 'Group') ";
     }
 
         $or_look_at_object_rights =
           " OR ($acl.ObjectType = '"
           . ref($args{'Object'})
-          . "'  AND $acl.ObjectId = '"
-          . $args{'Object'}->Id . "') ";
+          . "'  AND $acl.ObjectId = "
+          . $args{'Object'}->Id . ") ";
 
     }
 
@@ -284,12 +284,12 @@ sub WhoHaveRight {
     $self->Join( ALIAS1 => $cgm,
                  FIELD1 => 'MemberId',
                  ALIAS2 => $userprinc,
-                 FIELD2 => 'Id' );
+                 FIELD2 => 'id' );
 
     $self->Join( ALIAS1 => $cgm,
                  FIELD1 => 'GroupId',
                  ALIAS2 => $groupprinc,
-                 FIELD2 => 'Id' );
+                 FIELD2 => 'id' );
 
     # $self->Limit( ALIAS    => $userprinc, FIELD    => 'PrincipalType', OPERATOR => '=', VALUE    => 'User' );
 
@@ -310,7 +310,7 @@ sub WhoHaveRight {
     $self->_AddSubClause( "WhichRight",
                      "($acl.ObjectType = 'RT::System' $or_look_at_object_rights)" );
     $self->_AddSubClause( "WhichGroup",
-"( ($acl.PrincipalId = $groupprinc.Id AND $groupprinc.id = $groups.Id AND $acl.PrincipalType = 'Group' AND "
+"( ($acl.PrincipalId = $groupprinc.id AND $groupprinc.id = $groups.id AND $acl.PrincipalType = 'Group' AND "
           . "($groups.Domain = 'SystemInternal' OR $groups.Domain = 'UserDefined' OR $groups.Domain = 'ACLEquivalence')) $or_check_roles)"
     );
 

@@ -220,7 +220,7 @@ sub WithMember {
     } else {
         $members = $self->NewAlias('GroupMembers');
     }
-    $self->Join(ALIAS1 => 'main', FIELD1 => 'Id',
+    $self->Join(ALIAS1 => 'main', FIELD1 => 'id',
                 ALIAS2 => $members, FIELD2 => 'GroupId');
 
     $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});

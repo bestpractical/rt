@@ -404,7 +404,7 @@ sub Attachments {
         # it.
 
         $self->{'attachments'}->OrderBy( ALIAS => 'main',
-                                         FIELD => 'Id',
+                                         FIELD => 'id',
                                          ORDER => 'asc' );
 
     }

@@ -230,7 +230,7 @@ sub SetDisabled {
         my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
 
         $deletable->Limit( FIELD    => 'Via', OPERATOR => '=', VALUE    => $self->id );
-        $deletable->Limit( FIELD    => 'Id', OPERATOR => '!=', VALUE    => $self->id );
+        $deletable->Limit( FIELD    => 'id', OPERATOR => '!=', VALUE    => $self->id );
 
         while ( my $kid = $deletable->Next ) {
             my $kid_err = $kid->SetDisabled($val );

@@ -61,7 +61,7 @@ sub LimitToUsers {
 
     my $principals = $self->NewAlias('Principals');
     $self->Join( ALIAS1 => 'main', FIELD1 => 'MemberId',
-                 ALIAS2 => $principals, FIELD2 =>'Id');
+                 ALIAS2 => $principals, FIELD2 =>'id');
 
     $self->Limit(       ALIAS => $principals,
                          FIELD => 'PrincipalType',
@@ -88,7 +88,7 @@ sub LimitToGroups {
 
     my $principals = $self->NewAlias('Principals');
     $self->Join( ALIAS1 => 'main', FIELD1 => 'MemberId',
-                 ALIAS2 => $principals, FIELD2 =>'Id');
+                 ALIAS2 => $principals, FIELD2 =>'id');
 
     $self->Limit(       ALIAS => $principals,
                          FIELD => 'PrincipalType',
@@ -117,6 +117,7 @@ sub LimitToMembersOfGroup {
                          VALUE => $group,
                          FIELD => 'GroupId',
                          ENTRYAGGREGATOR => 'OR',
+			 QUOTEVALUE => 0
                          ));
 
 }
