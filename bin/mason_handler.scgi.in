@@ -33,9 +33,11 @@ require CGI;
 RT::Init();
 
 my $cgi = CGI->new;
-unless ($h->interp->comp_exists($cgi->path_info)) {
-    $cgi->path_info($cgi->path_info . "/index.html");
+if ( ( !$h->interp->comp_exists( $cgi->path_info ) )
+    && ( $h->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
+    $cgi->path_info( $cgi->path_info . "/index.html" );
 }
+
 $h->handle_cgi_object($cgi);
 
 1;
