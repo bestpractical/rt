@@ -64,7 +64,7 @@ sub InitLogging {
 			 min_level=> $RT::LogToFile,
 			 filename=> $filename,
 			 mode=>'append',
-            callbacks => sub {my %p=@_; return ."[".gmtime(time)."] [".$p{level}."]: $p{message}\n"}
+            callbacks => sub {my %p=@_; return "[".gmtime(time)."] [".$p{level}."]: $p{message}\n"}
 
 		       ));
     }
