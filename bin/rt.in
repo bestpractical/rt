@@ -37,11 +37,13 @@ use HTTP::Request::Common;
 # Session information is stored in ~/.rt_sessions.
 
 my $VERSION = 0.02;
-my $HOME = (getpwuid($<))[7] || $ENV{HOME} || $ENV{LOGDIR} || ".";
+my $HOME = eval{(getpwuid($<))[7]}
+           || $ENV{HOME} || $ENV{LOGDIR} || $ENV{HOMEPATH}
+           || ".";
 my %config = (
     (
         debug   => 0,
-        user    => (getpwuid($<))[0],
+        user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
         passwd  => undef,
         server  => 'http://localhost/rt/',
     ),
@@ -121,7 +123,7 @@ sub help {
         my $title = $item->[2]{Title};
         my @titles = ref $title eq 'ARRAY' ? @$title : $title;
 
-        foreach $title (@titles) {
+        foreach $title (grep $_, @titles) {
             $help{$title} = $item->[2]{Text};
         }
     }
