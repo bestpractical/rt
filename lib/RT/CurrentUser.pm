@@ -51,8 +51,7 @@ use RT::Record;
 use RT::I18N;
 
 use strict;
-use vars qw/@ISA/;
-@ISA= qw(RT::Record);
+use base qw/RT::Record/;
 
 # {{{ sub _Init 
 
@@ -69,8 +68,7 @@ sub _Init  {
   if (defined($Name)) {
     $self->Load($Name);
   }
-  
- # $self->CurrentUser($self);
+    $self->_BuildTableAttributes();  
 
 }
 # }}}
@@ -151,19 +149,18 @@ sub PrincipalId {
 
 
 # {{{ sub _Accessible 
-sub _Accessible  {
-  my $self = shift;
-  my %Cols = (
-	      Name => 'read',
-	      Gecos => 'read',
-	      RealName => 'read',
-	      Password => 'neither',
-          Lang => 'read',
-	      EmailAddress => 'read',
-	      Privileged => 'read',
-	      IsAdministrator => 'read'
-	     );
-  return($self->SUPER::_Accessible(@_, %Cols));
+
+
+ sub _CoreAccessible  {
+     {
+         Name           => { 'read' => 1 },
+           Gecos        => { 'read' => 1 },
+           RealName     => { 'read' => 1 },
+           Lang     => { 'read' => 1 },
+           Password     => { 'read' => 0, 'write' => 0 },
+          EmailAddress => { 'read' => 1, 'write' => 0 }
+     };
+  
 }
 # }}}
 
@@ -374,11 +371,12 @@ Return  the current currentuser object
 
 =cut
 
-sub CurrentUser  {
+sub CurrentUser {
     my $self = shift;
     return($self);
 
 }
+
 
 eval "require RT::CurrentUser_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Vendor.pm});

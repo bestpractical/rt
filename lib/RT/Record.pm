@@ -49,7 +49,7 @@ use RT::Base;
 use DBIx::SearchBuilder::Record::Cachable;
 
 use strict;
-use vars qw/@ISA/;
+use vars qw/@ISA $_TABLE_ATTR/;
 
 @ISA = qw(RT::Base);
 
@@ -64,8 +64,8 @@ if ($RT::DontCacheSearchBuilderRecords ) {
 
 sub _Init {
     my $self = shift;
+    $self->_BuildTableAttributes unless ($_TABLE_ATTR->{ref($self)});
     $self->CurrentUser(@_);
-
 }
 
 # }}}
@@ -413,8 +413,26 @@ sub LastUpdatedByObj {
 # }}}
 
 
+=head2 SQLType attribute
+
+return the SQL type for the attribute 'attribute' as stored in _ClassAccessible
+
+=cut
+
+sub SQLType {
+    my $self = shift;
+    my $field = shift;
+
+    return ($self->_Accessible($field, 'type'));
+
+
+}
+
 require Encode::compat if $] < 5.007001;
 require Encode;
+
+
+
 
 sub __Value {
     my $self  = shift;
@@ -443,11 +461,77 @@ sub _CacheConfig {
   }
 }
 
-=head2 _DecodeUTF8
 
- When passed a string will "decode" it int a proper UTF-8 string
+
+sub _BuildTableAttributes {
+    my $self = shift;
+
+    my $attributes = $self->_CoreAccessible();
+
+    foreach my $column (%$attributes) {
+        foreach my $attr ( %{ $attributes->{$column} } ) {
+            $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+        }
+    }
+    if ( UNIVERSAL::can( $self, '_OverlayAccessible' ) ) {
+        $attributes = $self->_OverlayAccessible();
+
+        foreach my $column (%$attributes) {
+            foreach my $attr ( %{ $attributes->{$column} } ) {
+                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+            }
+        }
+    }
+    if ( UNIVERSAL::can( $self, '_VendorAccessible' ) ) {
+        $attributes = $self->_VendorAccessible();
+
+        foreach my $column (%$attributes) {
+            foreach my $attr ( %{ $attributes->{$column} } ) {
+                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+            }
+        }
+    }
+    if ( UNIVERSAL::can( $self, '_LocalAccessible' ) ) {
+        $attributes = $self->_LocalAccessible();
+
+        foreach my $column (%$attributes) {
+            foreach my $attr ( %{ $attributes->{$column} } ) {
+                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+            }
+        }
+    }
+
+}
+
+
+=head2 _ClassAccessible 
+
+Overrides the "core" _ClassAccessible using $_TABLE_ATTR. Behaves identical to the version in
+DBIx::SearchBuilder::Record
 
 =cut
+
+sub _ClassAccessible {
+    my $self = shift;
+    return $_TABLE_ATTR->{ref($self)};
+}
+
+=head2 _Accessible COLUMN ATTRIBUTE
+
+returns the value of ATTRIBUTE for COLUMN
+
+
+=cut 
+
+sub _Accessible  {
+  my $self = shift;
+  my $column = shift;
+  my $attribute = lc(shift);
+  return 0 unless defined ($_TABLE_ATTR->{ref($self)}->{$column});
+  return $_TABLE_ATTR->{ref($self)}->{$column}->{$attribute} || 0;
+
+}
+
 
 eval "require RT::Record_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Vendor.pm});

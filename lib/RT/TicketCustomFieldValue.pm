@@ -63,7 +63,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -94,7 +94,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -103,14 +103,14 @@ Returns the current value of id.
 =cut
 
 
-=item Ticket
+=head2 Ticket
 
 Returns the current value of Ticket. 
 (In the database, Ticket is stored as int(11).)
 
 
 
-=item SetTicket VALUE
+=head2 SetTicket VALUE
 
 
 Set Ticket to VALUE. 
@@ -121,7 +121,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item TicketObj
+=head2 TicketObj
 
 Returns the Ticket Object which has the id returned by Ticket
 
@@ -135,14 +135,14 @@ sub TicketObj {
 	return($Ticket);
 }
 
-=item CustomField
+=head2 CustomField
 
 Returns the current value of CustomField. 
 (In the database, CustomField is stored as int(11).)
 
 
 
-=item SetCustomField VALUE
+=head2 SetCustomField VALUE
 
 
 Set CustomField to VALUE. 
@@ -153,7 +153,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item CustomFieldObj
+=head2 CustomFieldObj
 
 Returns the CustomField Object which has the id returned by CustomField
 
@@ -167,14 +167,14 @@ sub CustomFieldObj {
 	return($CustomField);
 }
 
-=item Content
+=head2 Content
 
 Returns the current value of Content. 
 (In the database, Content is stored as varchar(255).)
 
 
 
-=item SetContent VALUE
+=head2 SetContent VALUE
 
 
 Set Content to VALUE. 
@@ -185,7 +185,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Creator
+=head2 Creator
 
 Returns the current value of Creator. 
 (In the database, Creator is stored as int(11).)
@@ -194,7 +194,7 @@ Returns the current value of Creator.
 =cut
 
 
-=item Created
+=head2 Created
 
 Returns the current value of Created. 
 (In the database, Created is stored as datetime.)
@@ -203,7 +203,7 @@ Returns the current value of Created.
 =cut
 
 
-=item LastUpdatedBy
+=head2 LastUpdatedBy
 
 Returns the current value of LastUpdatedBy. 
 (In the database, LastUpdatedBy is stored as int(11).)
@@ -212,7 +212,7 @@ Returns the current value of LastUpdatedBy.
 =cut
 
 
-=item LastUpdated
+=head2 LastUpdated
 
 Returns the current value of LastUpdated. 
 (In the database, LastUpdated is stored as datetime.)
@@ -222,7 +222,7 @@ Returns the current value of LastUpdated.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>

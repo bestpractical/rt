@@ -1,0 +1,137 @@
+%# $Header: /raid/cvsroot/rt-addons/Projects/html/Edit.html,v 1.3 2002/01/25 20:14:55 jesse Exp $
+%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+<& /Elements/Header, Title => "Edit: ". $TicketObj->Subject, ShowBar => 0 &>
+<DIV align="right">
+<font size=-2>
+[ <a href="#close" onClick="window.close();">Close</a> ]
+</font>
+</DIV>
+<BR>
+<& Elements/TicketTabs, current_tab => "Projects/Edit.html", Ticket=> $TicketObj, Project => $Project &>
+
+
+<& /Elements/ListActions, actions => \@results &>
+<FORM enctype="multipart/formdata" method="post" ACTION="Edit.html">
+
+<input type=hidden name="id" value="<%$TicketObj->Id%>">
+<input type=hidden name="Project" value="<%$Project%>">
+<TABLE border=0> 
+<TR>
+<TD colspan=3>
+        <SPAN CLASS="label">Subject</SPAN><BR>
+        <input name=Subject value="<%$TicketObj->Subject|h%>"  SIZE=50>
+</TD>
+</TR>
+<TR>
+<TD colspan=3><SPAN class=label>Parent</SPAN><BR>
+<& Elements/SelectProjectTask, Project => $Project, Default =>  $Parent &>
+</TD>
+</TR>
+<TR>
+<TD><SPAN class=label>Status</SPAN><BR>
+<& /Elements/SelectStatus, Name => 'Status', Default=> $TicketObj->Status &>
+</TD>
+<TD> <SPAN class=label>Owner</SPAN><BR>
+<& /Elements/SelectOwner, Name => 'Owner', Default => $TicketObj->OwnerObj->Id,
+        TicketObj => $TicketObj
+&>
+</TD>
+<TD><SPAN class=label>Queue</SPAN><BR>
+<& /Elements/SelectQueue, Name => 'Queue', Default =>$TicketObj->QueueObj->Id&>
+</TD>
+</TR>
+<TD> <SPAN class=label>Time Worked</SPAN><BR>
+<input name=TimeWorked value="<%$TicketObj->TimeWorked%>" SIZE=5>
+</TD>
+<TD><SPAN class=label>Time Left</SPAN><BR>
+<input name=TimeLeft value="<%$TicketObj->TimeLeft%>" SIZE=5>
+</TD>
+</TR>
+<TR>
+<TD><SPAN  class=label>Priority</SPAN><BR>
+<input name=Priority value="<%$TicketObj->Priority%>" SIZE=2>
+</TD>
+<TD><SPAN class=label>Final Priority</SPAN><BR>
+<input name=FinalPriority value="<%$TicketObj->FinalPriority%>" SIZE=2>
+</TD>
+</TR>
+<TR><TD><SPAN class=label>Starts:</SPAN><BR> 
+<& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
+        (<% $TicketObj->StartsObj->AsString %>)
+</TD>
+<TD><SPAN class=label>Started:</SPAN><BR>
+<& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$TicketObj->StartedObj->AsString %>)
+</TD>
+<TD><SPAN class=label>Due:</SPAN><BR>
+<& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
+</TD>
+</TR>
+
+</TABLE>
+<HR>
+
+<h2>Record notes</h2>
+Visibility: <select name="UpdateType">
+<option value="private">Private</option>
+<option value="response">Public</option>
+</select><BR>
+Attach file: <input type=file name="UpdateAttachment"><BR>
+<textarea name="UpdateContent" rows=8 cols=60></textarea>
+
+<& /Elements/Submit &>
+
+</FORM>
+<%INIT>
+
+my $TicketObj;
+my @results;
+
+# TODO this feels hacky
+if ($id eq 'new') {
+   ($TicketObj, @results) = CreateTicket(%ARGS);  
+}
+
+else {
+$TicketObj = LoadTicket($id);
+
+
+my @wresults = ProcessTicketWatchers( TicketObj => $TicketObj, 
+						ARGSRef => \%ARGS);    
+my @bresults = ProcessTicketBasics( TicketObj => $TicketObj, 
+					ARGSRef => \%ARGS);
+my @okresults = ProcessTicketObjectKeywords(TicketObj => $TicketObj, 
+						ARGSRef => \%ARGS);
+
+my @dresults = ProcessTicketDates( TicketObj => $TicketObj, 
+					ARGSRef => \%ARGS);
+my @lresults = ProcessTicketLinks( TicketObj => $TicketObj, 
+					ARGSRef => \%ARGS);
+ProcessUpdateMessage(TicketObj => $TicketObj, 
+			ARGSRef=>\%ARGS, 
+			Actions=>\@results);
+
+
+
+push @results, @bresults;
+push @results, @wresults;
+push @results, @dresults;
+push @results, @lresults;
+push @results, @okresults;
+}
+
+my $Parent;
+
+if ($TicketObj->MemberOf->First && $TicketObj->MemberOf->First->TargetObj) {
+	$Parent = $TicketObj->MemberOf->First->TargetObj->Id;
+} else {
+	$Parent = undef;
+}
+</%INIT>
+<%ARGS>
+$Project => undef 
+$id => undef
+</%ARGS>
+
+
+
+

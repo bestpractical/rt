@@ -1,0 +1,24 @@
+% if ($Root) {
+<OPTION VALUE="<%$Root->id%>"
+% if ($Root->Id == $Default) {
+SELECTED
+% }
+><%"-"x $Depth|n%><%$Root->Subject%>
+</OPTION>
+%# if ($Depth < $MaxDepth) {
+% while (my $link = $tasks->Next()) {
+<& SelectProjectTaskEntry, Root=> $link->BaseObj, Depth => ($Depth+1), MaxDepth => $MaxDepth, Project => $Project, Default => $Default &>
+% }
+%# }
+% }
+<%ARGS>
+$Depth => 0
+$MaxDepth => 12
+$Root => undef
+$Project => undef
+$Default => undef
+</%ARGS>
+
+<%INIT>
+my $tasks = $Root->Members();
+</%INIT>

@@ -61,7 +61,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -170,7 +170,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -179,14 +179,14 @@ Returns the current value of id.
 =cut
 
 
-=item Name
+=head2 Name
 
 Returns the current value of Name. 
 (In the database, Name is stored as varchar(200).)
 
 
 
-=item SetName VALUE
+=head2 SetName VALUE
 
 
 Set Name to VALUE. 
@@ -197,14 +197,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Password
+=head2 Password
 
 Returns the current value of Password. 
 (In the database, Password is stored as varchar(40).)
 
 
 
-=item SetPassword VALUE
+=head2 SetPassword VALUE
 
 
 Set Password to VALUE. 
@@ -215,14 +215,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Comments
+=head2 Comments
 
 Returns the current value of Comments. 
 (In the database, Comments is stored as blob.)
 
 
 
-=item SetComments VALUE
+=head2 SetComments VALUE
 
 
 Set Comments to VALUE. 
@@ -233,14 +233,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Signature
+=head2 Signature
 
 Returns the current value of Signature. 
 (In the database, Signature is stored as blob.)
 
 
 
-=item SetSignature VALUE
+=head2 SetSignature VALUE
 
 
 Set Signature to VALUE. 
@@ -251,14 +251,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item EmailAddress
+=head2 EmailAddress
 
 Returns the current value of EmailAddress. 
 (In the database, EmailAddress is stored as varchar(120).)
 
 
 
-=item SetEmailAddress VALUE
+=head2 SetEmailAddress VALUE
 
 
 Set EmailAddress to VALUE. 
@@ -269,14 +269,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item FreeformContactInfo
+=head2 FreeformContactInfo
 
 Returns the current value of FreeformContactInfo. 
 (In the database, FreeformContactInfo is stored as blob.)
 
 
 
-=item SetFreeformContactInfo VALUE
+=head2 SetFreeformContactInfo VALUE
 
 
 Set FreeformContactInfo to VALUE. 
@@ -287,14 +287,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Organization
+=head2 Organization
 
 Returns the current value of Organization. 
 (In the database, Organization is stored as varchar(200).)
 
 
 
-=item SetOrganization VALUE
+=head2 SetOrganization VALUE
 
 
 Set Organization to VALUE. 
@@ -305,14 +305,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item RealName
+=head2 RealName
 
 Returns the current value of RealName. 
 (In the database, RealName is stored as varchar(120).)
 
 
 
-=item SetRealName VALUE
+=head2 SetRealName VALUE
 
 
 Set RealName to VALUE. 
@@ -323,14 +323,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item NickName
+=head2 NickName
 
 Returns the current value of NickName. 
 (In the database, NickName is stored as varchar(16).)
 
 
 
-=item SetNickName VALUE
+=head2 SetNickName VALUE
 
 
 Set NickName to VALUE. 
@@ -341,14 +341,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Lang
+=head2 Lang
 
 Returns the current value of Lang. 
 (In the database, Lang is stored as varchar(16).)
 
 
 
-=item SetLang VALUE
+=head2 SetLang VALUE
 
 
 Set Lang to VALUE. 
@@ -359,14 +359,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item EmailEncoding
+=head2 EmailEncoding
 
 Returns the current value of EmailEncoding. 
 (In the database, EmailEncoding is stored as varchar(16).)
 
 
 
-=item SetEmailEncoding VALUE
+=head2 SetEmailEncoding VALUE
 
 
 Set EmailEncoding to VALUE. 
@@ -377,14 +377,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item WebEncoding
+=head2 WebEncoding
 
 Returns the current value of WebEncoding. 
 (In the database, WebEncoding is stored as varchar(16).)
 
 
 
-=item SetWebEncoding VALUE
+=head2 SetWebEncoding VALUE
 
 
 Set WebEncoding to VALUE. 
@@ -395,14 +395,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ExternalContactInfoId
+=head2 ExternalContactInfoId
 
 Returns the current value of ExternalContactInfoId. 
 (In the database, ExternalContactInfoId is stored as varchar(100).)
 
 
 
-=item SetExternalContactInfoId VALUE
+=head2 SetExternalContactInfoId VALUE
 
 
 Set ExternalContactInfoId to VALUE. 
@@ -413,14 +413,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ContactInfoSystem
+=head2 ContactInfoSystem
 
 Returns the current value of ContactInfoSystem. 
 (In the database, ContactInfoSystem is stored as varchar(30).)
 
 
 
-=item SetContactInfoSystem VALUE
+=head2 SetContactInfoSystem VALUE
 
 
 Set ContactInfoSystem to VALUE. 
@@ -431,14 +431,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ExternalAuthId
+=head2 ExternalAuthId
 
 Returns the current value of ExternalAuthId. 
 (In the database, ExternalAuthId is stored as varchar(100).)
 
 
 
-=item SetExternalAuthId VALUE
+=head2 SetExternalAuthId VALUE
 
 
 Set ExternalAuthId to VALUE. 
@@ -449,14 +449,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item AuthSystem
+=head2 AuthSystem
 
 Returns the current value of AuthSystem. 
 (In the database, AuthSystem is stored as varchar(30).)
 
 
 
-=item SetAuthSystem VALUE
+=head2 SetAuthSystem VALUE
 
 
 Set AuthSystem to VALUE. 
@@ -467,14 +467,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Gecos
+=head2 Gecos
 
 Returns the current value of Gecos. 
 (In the database, Gecos is stored as varchar(16).)
 
 
 
-=item SetGecos VALUE
+=head2 SetGecos VALUE
 
 
 Set Gecos to VALUE. 
@@ -485,14 +485,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item HomePhone
+=head2 HomePhone
 
 Returns the current value of HomePhone. 
 (In the database, HomePhone is stored as varchar(30).)
 
 
 
-=item SetHomePhone VALUE
+=head2 SetHomePhone VALUE
 
 
 Set HomePhone to VALUE. 
@@ -503,14 +503,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item WorkPhone
+=head2 WorkPhone
 
 Returns the current value of WorkPhone. 
 (In the database, WorkPhone is stored as varchar(30).)
 
 
 
-=item SetWorkPhone VALUE
+=head2 SetWorkPhone VALUE
 
 
 Set WorkPhone to VALUE. 
@@ -521,14 +521,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item MobilePhone
+=head2 MobilePhone
 
 Returns the current value of MobilePhone. 
 (In the database, MobilePhone is stored as varchar(30).)
 
 
 
-=item SetMobilePhone VALUE
+=head2 SetMobilePhone VALUE
 
 
 Set MobilePhone to VALUE. 
@@ -539,14 +539,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item PagerPhone
+=head2 PagerPhone
 
 Returns the current value of PagerPhone. 
 (In the database, PagerPhone is stored as varchar(30).)
 
 
 
-=item SetPagerPhone VALUE
+=head2 SetPagerPhone VALUE
 
 
 Set PagerPhone to VALUE. 
@@ -557,14 +557,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Address1
+=head2 Address1
 
 Returns the current value of Address1. 
 (In the database, Address1 is stored as varchar(200).)
 
 
 
-=item SetAddress1 VALUE
+=head2 SetAddress1 VALUE
 
 
 Set Address1 to VALUE. 
@@ -575,14 +575,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Address2
+=head2 Address2
 
 Returns the current value of Address2. 
 (In the database, Address2 is stored as varchar(200).)
 
 
 
-=item SetAddress2 VALUE
+=head2 SetAddress2 VALUE
 
 
 Set Address2 to VALUE. 
@@ -593,14 +593,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item City
+=head2 City
 
 Returns the current value of City. 
 (In the database, City is stored as varchar(100).)
 
 
 
-=item SetCity VALUE
+=head2 SetCity VALUE
 
 
 Set City to VALUE. 
@@ -611,14 +611,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item State
+=head2 State
 
 Returns the current value of State. 
 (In the database, State is stored as varchar(100).)
 
 
 
-=item SetState VALUE
+=head2 SetState VALUE
 
 
 Set State to VALUE. 
@@ -629,14 +629,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Zip
+=head2 Zip
 
 Returns the current value of Zip. 
 (In the database, Zip is stored as varchar(16).)
 
 
 
-=item SetZip VALUE
+=head2 SetZip VALUE
 
 
 Set Zip to VALUE. 
@@ -647,14 +647,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Country
+=head2 Country
 
 Returns the current value of Country. 
 (In the database, Country is stored as varchar(50).)
 
 
 
-=item SetCountry VALUE
+=head2 SetCountry VALUE
 
 
 Set Country to VALUE. 
@@ -665,14 +665,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Timezone
+=head2 Timezone
 
 Returns the current value of Timezone. 
 (In the database, Timezone is stored as varchar(50).)
 
 
 
-=item SetTimezone VALUE
+=head2 SetTimezone VALUE
 
 
 Set Timezone to VALUE. 
@@ -683,14 +683,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item PGPKey
+=head2 PGPKey
 
 Returns the current value of PGPKey. 
 (In the database, PGPKey is stored as text.)
 
 
 
-=item SetPGPKey VALUE
+=head2 SetPGPKey VALUE
 
 
 Set PGPKey to VALUE. 
@@ -701,7 +701,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Creator
+=head2 Creator
 
 Returns the current value of Creator. 
 (In the database, Creator is stored as int(11).)
@@ -710,7 +710,7 @@ Returns the current value of Creator.
 =cut
 
 
-=item Created
+=head2 Created
 
 Returns the current value of Created. 
 (In the database, Created is stored as datetime.)
@@ -719,7 +719,7 @@ Returns the current value of Created.
 =cut
 
 
-=item LastUpdatedBy
+=head2 LastUpdatedBy
 
 Returns the current value of LastUpdatedBy. 
 (In the database, LastUpdatedBy is stored as int(11).)
@@ -728,7 +728,7 @@ Returns the current value of LastUpdatedBy.
 =cut
 
 
-=item LastUpdated
+=head2 LastUpdated
 
 Returns the current value of LastUpdated. 
 (In the database, LastUpdated is stored as datetime.)
@@ -738,7 +738,7 @@ Returns the current value of LastUpdated.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>

@@ -61,7 +61,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -110,7 +110,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -119,14 +119,14 @@ Returns the current value of id.
 =cut
 
 
-=item TransactionId
+=head2 TransactionId
 
 Returns the current value of TransactionId. 
 (In the database, TransactionId is stored as int(11).)
 
 
 
-=item SetTransactionId VALUE
+=head2 SetTransactionId VALUE
 
 
 Set TransactionId to VALUE. 
@@ -137,14 +137,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Parent
+=head2 Parent
 
 Returns the current value of Parent. 
 (In the database, Parent is stored as int(11).)
 
 
 
-=item SetParent VALUE
+=head2 SetParent VALUE
 
 
 Set Parent to VALUE. 
@@ -155,14 +155,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item MessageId
+=head2 MessageId
 
 Returns the current value of MessageId. 
 (In the database, MessageId is stored as varchar(160).)
 
 
 
-=item SetMessageId VALUE
+=head2 SetMessageId VALUE
 
 
 Set MessageId to VALUE. 
@@ -173,14 +173,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Subject
+=head2 Subject
 
 Returns the current value of Subject. 
 (In the database, Subject is stored as varchar(255).)
 
 
 
-=item SetSubject VALUE
+=head2 SetSubject VALUE
 
 
 Set Subject to VALUE. 
@@ -191,14 +191,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Filename
+=head2 Filename
 
 Returns the current value of Filename. 
 (In the database, Filename is stored as varchar(255).)
 
 
 
-=item SetFilename VALUE
+=head2 SetFilename VALUE
 
 
 Set Filename to VALUE. 
@@ -209,14 +209,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ContentType
+=head2 ContentType
 
 Returns the current value of ContentType. 
 (In the database, ContentType is stored as varchar(80).)
 
 
 
-=item SetContentType VALUE
+=head2 SetContentType VALUE
 
 
 Set ContentType to VALUE. 
@@ -227,14 +227,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ContentEncoding
+=head2 ContentEncoding
 
 Returns the current value of ContentEncoding. 
 (In the database, ContentEncoding is stored as varchar(80).)
 
 
 
-=item SetContentEncoding VALUE
+=head2 SetContentEncoding VALUE
 
 
 Set ContentEncoding to VALUE. 
@@ -245,14 +245,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Content
+=head2 Content
 
 Returns the current value of Content. 
 (In the database, Content is stored as longtext.)
 
 
 
-=item SetContent VALUE
+=head2 SetContent VALUE
 
 
 Set Content to VALUE. 
@@ -263,14 +263,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Headers
+=head2 Headers
 
 Returns the current value of Headers. 
 (In the database, Headers is stored as longtext.)
 
 
 
-=item SetHeaders VALUE
+=head2 SetHeaders VALUE
 
 
 Set Headers to VALUE. 
@@ -281,7 +281,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Creator
+=head2 Creator
 
 Returns the current value of Creator. 
 (In the database, Creator is stored as int(11).)
@@ -290,7 +290,7 @@ Returns the current value of Creator.
 =cut
 
 
-=item Created
+=head2 Created
 
 Returns the current value of Created. 
 (In the database, Created is stored as datetime.)
@@ -300,7 +300,7 @@ Returns the current value of Created.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>

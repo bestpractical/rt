@@ -1,0 +1,32 @@
+<& /Elements/Tabs, 
+    tabs => $tabs, 
+    actions => $actions, 
+    current_tab => $current_tab, 
+    current_toptab => $current_toptab,
+    Title => $Title &> 
+<%INIT>
+	
+  my $id = $Ticket->id();
+  my $tabs = {
+		 A => { title => 'Overview',
+			path => "Projects/Overview.html?id=".$id,
+		      },
+	      
+	      B => { title => 'Schedule',
+		      path => "Projects/Schedule.html?id=".$id,
+		       },
+	      C => { title => 'Gantt Chart',
+		      path => 'Projects/Gantt.html?id='.$id,
+	     	} 
+	     };
+
+my $actions;
+
+
+</%INIT>
+<%ARGS>
+$Title => loc('Projects')
+$Ticket => undef
+$current_tab => undef
+$current_toptab => 'Projects/index.html'
+</%ARGS>

@@ -27,7 +27,7 @@
 #
 
 
-PERL			= 	/usr/bin/perl
+PERL			= 	/usr/local/bin/perl
 
 CONFIG_FILE_PATH	=	/opt/rt3/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
@@ -35,8 +35,8 @@ SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 
 RT_VERSION_MAJOR	=	3
-RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	8pre1
+RT_VERSION_MINOR	=	1
+RT_VERSION_PATCH	=	1
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -57,6 +57,9 @@ LIBS_GROUP		=	bin
 
 WEB_USER		=	www
 WEB_GROUP		=	www
+
+
+APACHECTL		=	/usr/sbin/apachectl
 
 # {{{ Files and directories 
 
@@ -334,7 +337,7 @@ regression-instruct:
 # {{{ database-installation
 
 regression-reset-db:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password ''
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
 
 initialize-database: 
@@ -422,8 +425,8 @@ POD2TEST_EXE = sbin/extract_pod_tests
 
 testify-pods:
 	[ -d lib/t/autogen ] || mkdir lib/t/autogen
-	find lib -name \*pm |grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
-	find bin -type f |grep -v \~ | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find lib -name \*pm |grep -v .svn |grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find bin -type f |grep -v \~ |grep -v .svn | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
 
 
 
@@ -484,7 +487,7 @@ rpm:
 
 
 apachectl:
-	apachectl stop
+	$(APACHECTL) stop
 	sleep 3
-	apachectl start
+	$(APACHECTL) start
 # }}}

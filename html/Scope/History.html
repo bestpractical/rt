@@ -21,23 +21,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<SELECT NAME=<%$Name%>>
-% foreach my $stage (qw(TransactionCreate TransactionBatch)) {
-<OPTION VALUE=<%$stage%>
-print <%$stage%>
-print <%$Default%>
-<% ($stage eq $Default) && 'SELECTED' %>
-><% loc($stage) %>
-</OPTION>
-% }
-
-<%INIT>
-if ($Default eq '') {
-    $Default = 'TransactionCreate';
-}
-</%INIT>
-
-<%ARGS>
-$Default => 'TransactionCreate'
-$Name => 'Stage'
-</%ARGS>
+% tied(%session)->release_all_locks();
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+<link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png">
+<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
+</HEAD>
+<BODY>
+<& Elements/ShowHistoryView, %ARGS &>;

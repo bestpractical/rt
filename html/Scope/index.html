@@ -1,0 +1,10 @@
+<frameset cols="350,*">
+<frame name="Search"
+src="Search.html?query=<%$query%>&per_page=<%$per_page%>&page=<%$page%>">
+<frame name="View" src="View.html">
+</frameset>
+<%args>
+$per_page => 25
+$page => 1
+$query => ''
+</%args>

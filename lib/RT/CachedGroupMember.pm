@@ -61,7 +61,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -98,7 +98,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -107,14 +107,14 @@ Returns the current value of id.
 =cut
 
 
-=item GroupId
+=head2 GroupId
 
 Returns the current value of GroupId. 
 (In the database, GroupId is stored as int(11).)
 
 
 
-=item SetGroupId VALUE
+=head2 SetGroupId VALUE
 
 
 Set GroupId to VALUE. 
@@ -125,14 +125,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item MemberId
+=head2 MemberId
 
 Returns the current value of MemberId. 
 (In the database, MemberId is stored as int(11).)
 
 
 
-=item SetMemberId VALUE
+=head2 SetMemberId VALUE
 
 
 Set MemberId to VALUE. 
@@ -143,14 +143,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Via
+=head2 Via
 
 Returns the current value of Via. 
 (In the database, Via is stored as int(11).)
 
 
 
-=item SetVia VALUE
+=head2 SetVia VALUE
 
 
 Set Via to VALUE. 
@@ -161,14 +161,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item ImmediateParentId
+=head2 ImmediateParentId
 
 Returns the current value of ImmediateParentId. 
 (In the database, ImmediateParentId is stored as int(11).)
 
 
 
-=item SetImmediateParentId VALUE
+=head2 SetImmediateParentId VALUE
 
 
 Set ImmediateParentId to VALUE. 
@@ -179,14 +179,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Disabled
+=head2 Disabled
 
 Returns the current value of Disabled. 
 (In the database, Disabled is stored as smallint(6).)
 
 
 
-=item SetDisabled VALUE
+=head2 SetDisabled VALUE
 
 
 Set Disabled to VALUE. 
@@ -198,7 +198,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>

@@ -1,0 +1,46 @@
+<& /Elements/Header, title => "What I did today" &>
+(displaying new and open tickets for <%$session{'CurrentUser'}->Name%>)
+<FORM METHOD=POST ACTION="MyDay.html">
+<TABLE width=100% cellpadding=0 cellspacing=0>
+% while ( my $Ticket = $Tickets->Next()) {
+% my $class;
+% $i++;
+% if ($i % 2 ) {
+%  $class = 'class="oddline"';
+% }
+<TR <%$class|n%>><TD COLSPAN=2><h2><A
+HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
+<%$Ticket->Subject%></A></h2></td></tr>
+<TR <%$class|n%>><TD><SPAN CLASS=label>Worked:</SPAN><input size=3 name="UpdateTimeWorked-<%$Ticket->Id%>"> minutes
+</TD>
+<TD ROWSPAN=2><SPAN CLASS=label>Comments:<br></SPAN><textarea name="UpdateContent-<%$Ticket->Id%>" rows=5
+cols=60></textarea></TD></TR>
+<TR <%$class|n%>>
+<TD><SPAN CLASS="label">Status:</SPAN> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, 
+				  Default => $Ticket->Status() &></TD>
+                  </TR>
+
+% }
+</TABLE>
+<& /Elements/Submit, Label => "Record all updates" ,  Reset => 'Clear'&>
+</FORM>
+</HTML>
+
+<%INIT>
+
+my $i = 0;
+
+my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+$Tickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
+$Tickets->LimitStatus( VALUE => 'open' );
+$Tickets->LimitStatus ( VALUE => 'new');
+$Tickets->OrderBy ( FIELD => 'Priority', ORDER => 'DESC');
+
+while (my $Ticket = $Tickets->Next()) {
+	#Process updates	
+	
+
+}
+
+</%INIT>
+

@@ -61,7 +61,7 @@ sub _Init {
 
 
 
-=item Create PARAMHASH
+=head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -98,7 +98,7 @@ sub Create {
 
 
 
-=item id
+=head2 id
 
 Returns the current value of id. 
 (In the database, id is stored as int(11).)
@@ -107,14 +107,14 @@ Returns the current value of id.
 =cut
 
 
-=item Base
+=head2 Base
 
 Returns the current value of Base. 
 (In the database, Base is stored as varchar(240).)
 
 
 
-=item SetBase VALUE
+=head2 SetBase VALUE
 
 
 Set Base to VALUE. 
@@ -125,14 +125,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Target
+=head2 Target
 
 Returns the current value of Target. 
 (In the database, Target is stored as varchar(240).)
 
 
 
-=item SetTarget VALUE
+=head2 SetTarget VALUE
 
 
 Set Target to VALUE. 
@@ -143,14 +143,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Type
+=head2 Type
 
 Returns the current value of Type. 
 (In the database, Type is stored as varchar(20).)
 
 
 
-=item SetType VALUE
+=head2 SetType VALUE
 
 
 Set Type to VALUE. 
@@ -161,14 +161,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item LocalTarget
+=head2 LocalTarget
 
 Returns the current value of LocalTarget. 
 (In the database, LocalTarget is stored as int(11).)
 
 
 
-=item SetLocalTarget VALUE
+=head2 SetLocalTarget VALUE
 
 
 Set LocalTarget to VALUE. 
@@ -179,14 +179,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item LocalBase
+=head2 LocalBase
 
 Returns the current value of LocalBase. 
 (In the database, LocalBase is stored as int(11).)
 
 
 
-=item SetLocalBase VALUE
+=head2 SetLocalBase VALUE
 
 
 Set LocalBase to VALUE. 
@@ -197,7 +197,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item LastUpdatedBy
+=head2 LastUpdatedBy
 
 Returns the current value of LastUpdatedBy. 
 (In the database, LastUpdatedBy is stored as int(11).)
@@ -206,7 +206,7 @@ Returns the current value of LastUpdatedBy.
 =cut
 
 
-=item LastUpdated
+=head2 LastUpdated
 
 Returns the current value of LastUpdated. 
 (In the database, LastUpdated is stored as datetime.)
@@ -215,7 +215,7 @@ Returns the current value of LastUpdated.
 =cut
 
 
-=item Creator
+=head2 Creator
 
 Returns the current value of Creator. 
 (In the database, Creator is stored as int(11).)
@@ -224,7 +224,7 @@ Returns the current value of Creator.
 =cut
 
 
-=item Created
+=head2 Created
 
 Returns the current value of Created. 
 (In the database, Created is stored as datetime.)
@@ -234,7 +234,7 @@ Returns the current value of Created.
 
 
 
-sub _ClassAccessible {
+sub _CoreAccessible {
     {
      
         id =>
