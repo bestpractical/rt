@@ -45,7 +45,7 @@ sub _Accessible  {
 	      
 	      
 	      # {{{ Localization and Internationalization
-	      Lang VARCHAR(16), # Preferred language - to be used by L10N (not there, yet)
+	      Lang => 'read/write',
 	      EmailEncoding => 'read/write',
 	      WebEncoding => 'read/write',
 	      # }}}
@@ -170,6 +170,12 @@ sub LoadByEmail {
     my $self=shift;
     # TODO: check the "AlternateEmails" table if this fails.
     return $self->LoadByCol("EmailAddress", @_);
+}
+
+sub LoadByName {
+    my $self=shift;
+    return $self->LoadByCol("UserId", @_) 
+	|| $self->LoadByCol("RealName",@_);
 }
 
 #used to check if a password is correct
