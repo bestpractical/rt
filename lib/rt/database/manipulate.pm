@@ -285,10 +285,11 @@ sub stall {
     $transaction_num=&update_request($in_serial_num,'status','stalled', $in_current_user);
     return ($transaction_num,"Request #$in_serial_num has been stalled.");
 }
+
 sub kill {
     my  ($in_serial_num, $in_current_user) = @_;
     my ($transaction_count, $transaction_num);
-     if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
+    if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
 	return (0,"You don't have permission to modify request \#$in_serial_num");
     }
  
@@ -299,17 +300,17 @@ sub kill {
     # use 'localtime' than 'parse_time' below? I'm commenting it out
     # even though - I think it's stupid deleting the transactions
     # without deleting from each_req
-
+    
     if (0) { 
-    for ($counter=0;$counter<$transaction_count;$counter++) {
-	($weekday, $month, $monthday, $hour, $min, $sec, $TZ, $year)=&parse_time($rt::req[$in_serial_num]{'trans'}[$counter]{'time'});
-	$filename="$transaction_dir/$year/$month/$monthday/$in_serial_num.$transaction[$counter]{'id'}";
-
-	if (-f $filename) {
-	    unlink($filename);
+	for ($counter=0;$counter<$transaction_count;$counter++) {
+	    ($weekday, $month, $monthday, $hour, $min, $sec, $TZ, $year)=&parse_time($rt::req[$in_serial_num]{'trans'}[$counter]{'time'});
+	    $filename="$transaction_dir/$year/$month/$monthday/$in_serial_num.$transaction[$counter]{'id'}";
+	    
+	    if (-f $filename) {
+		unlink($filename);
+	    }
 	}
-      }
-  }
+    }
 
 # I would consider deleting the DB content without deleting the files
 # as a bug, so I've commented out those. Perhaps some
@@ -321,7 +322,6 @@ sub kill {
 #	$query_string = "DELETE from transactions where effective_sn = $in_serial_num";
 #	$dbh->Query($query_string) or warn "Query had some problem: $Mysql::db_errstr\n";;
 	
-    }
     $transaction_num=&update_request($in_serial_num,'status','dead', $in_current_user);    
     return ($transaction_num,"Request #$in_serial_num has been killed.");
 

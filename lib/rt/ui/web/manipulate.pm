@@ -873,7 +873,7 @@ sub display_summary {
   print "
 <font size=\"-1\">
 <font size=\"+1\">T</font>rack <font size=\"+1\">R</font>equestor\n<br>
- <a href=\"$ScriptURL?display=Queue&amp;q_user=other&amp;q_user_other=$rt::req[$in_serial_num]{requestors}\" $qtarget>List all requests by this requestor</a>
+ <a href=\"$ScriptURL?display=Queue&amp;q_user=other&amp;q_user_other=$rt::req[$in_serial_num]{requestors}\" $qtarget>List all requests by this requestor</a>";
 
   if (&rt::can_manipulate_request ($serial_num, $current_user)) {
 
