@@ -1386,16 +1386,47 @@ sub MemberOf {
 
 # }}}
 
-# {{{ Dependants
+# {{{ AddMember
+=head2 AddMember
 
-=head2 Dependants
+AddLink but set the type to MemberOf
+
+=cut
+
+sub AddMember {
+    my $self = shift;
+    my %args = (@_);
+    return ($self->AddLink(Type => 'MemberOf', @_));
+}
+
+# }}}
+
+# {{{ DeleteMember
+
+=head2 DeleteMember
+
+DeleteLink but set the type to MemberOf
+
+=cut
+
+sub DeleteMember {
+    my $self = shift;
+    my %args = (@_);
+    return ($self->DeleteLink(Type => 'MemberOf', @_));
+}
+
+# }}}
+
+# {{{ DependedOnBy
+
+=head2 DependedOnBy
 
   This returns an RT::Links object which references all the tickets that depend on this one
 
 =cut
-sub Dependants {
+sub DependedOnBy {
     my $self = shift;
-    return $self->_Links('Target','DependsOn');
+    return ($self->_Links('Target','DependsOn'));
 }
 
 # }}}
@@ -1409,7 +1440,39 @@ sub Dependants {
 =cut
 sub DependsOn {
    my $self = shift;
-    return $self->_Links('Base','DependsOn');
+    return ($self->_Links('Base','DependsOn'));
+}
+
+# }}}
+
+# {{{ AddDependency
+
+=head2 AddDependency
+
+AddLink but set the type to DependsOn
+
+=cut
+
+sub AddDependency {
+    my $self = shift;
+    my %args = (@_);
+    return ($self->AddLink(Type => 'DependsOn', @_));
+}
+
+# }}}
+
+# {{{ DeleteDependency
+
+=head2 DeleteDependency
+
+DeleteLink but set the type to DependsOn
+
+=cut
+
+sub DeleteDependency {
+    my $self = shift;
+    my %args = (@_);
+    return ($self->DeleteLink(Type => 'DependsOn', @_));
 }
 
 # }}}
@@ -1424,7 +1487,7 @@ sub DependsOn {
 
 sub RefersTo {
     my $self = shift;
-    return $self->_Links('Base', 'RefersTo');
+    return ($self->_Links('Base', 'RefersTo'));
 }
 
 # }}}
@@ -1439,24 +1502,40 @@ sub RefersTo {
 
 sub ReferedToBy {
     my $self = shift;
-    return $self->_Links('Target', 'RefersTo');
+    return ($self->_Links('Target', 'RefersTo'));
 }
 
 # }}}
 
-# {{{ sub Children
-# Gets all (local) links where we're the TARGET
-sub Children {
+# {{{ AddReference
+
+=head2 AddReference
+
+AddLink but set the type to RefersTo
+
+=cut
+
+sub AddReference {
     my $self = shift;
-    return $self->_Links('Target');
+    my %args = (@_);
+    return ($self->AddLink(Type => 'RefersTo', @_));
 }
+
 # }}}
 
-# {{{ sub Parents
-# Gets all (local) links where we're the BASE
-sub Parents {
+# {{{ DeleteReference
+
+=head2 DeleteReference
+
+DeleteLink but set the type to RefersTo
+
+=cut
+
+sub DeleteReference {
     my $self = shift;
-    return $self->_Links('Base');
+    my %args = (@_);
+    return ($self->DeleteLink(Type => 'RefersTo', @_));
+
 }
 # }}}
 
@@ -1533,60 +1612,92 @@ sub MergeInto {
 
 # }}}
 
-# {{{ sub LinkTo
+# {{{ sub DeleteLink 
 
-=head2 LinkTo
+=head2 DeleteLink
 
-TODO What the hell does this take for args?
+Delete a link. takes a paramhash of Base, Target and Type.
+Either Base or Target must be null. The null value will 
+be replaced with this ticket\'s id
 
-=cut
+=cut 
 
-sub LinkTo {
+sub DeleteLink {
     my $self = shift;
-    my %args = ( dir => 'T',
-		 Base => $self->URI,
-		 Target => '',
-		 Type => '',
+    my %args = ( Base =>  undef,
+		 Target => undef,
+		 Type => undef,
 		 @_ );
-   return( $self->_NewLink(%args));
     
+    #check acls
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+        $RT::Logger->debug("No permission to delete links\n"); 
+        return (0, 'Permission Denied');
+
+    
+    }
+    
+    #we want one of base and target. we don't care which
+    #but we only want _one_
+
+    if ($args{'Base'} and $args{'Target'}) {
+	$RT::Logger->debug("$self ->_DeleteLink. got both Base and Target\n");
+	return (0, 'Can\'t specifiy both base and target');
+    }
+    elsif ($args{'Base'}) {
+	$args{'Target'} = $self->Id();
+    }
+    elsif ($args{'Target'}) {
+	$args{'Base'} = $self->Id();
+    }
+    else {  
+        $RT::Logger->debug("$self: Base or Target must be specified\n");
+	return (0, 'Either base or target must be specified');
+    }
+     
+    my $link = new RT::Link($self->CurrentUser);
+    $RT::Logger->debug("Trying to load link: ". $args{'Base'}." ". $args{'Type'}. " ". $args{'Target'}. "\n");
+    
+    $link->Load($args{'Base'}, $args{'Type'}, $args{'Target'});
+    
+    
+    
+    #it's a real link. 
+    if ($link->id) {
+        $RT::Logger->debug("We're going to delete link ".$link->id."\n");
+	$link->Delete();
+
+	my $TransString=
+	  "Ticket $args{'Base'} no longer $args{Type} ticket $args{'Target'}.";
+	my ($Trans, $Msg, $TransObj) = $self->_NewTransaction
+	  (Type => 'DeleteLink',
+	   Field => $args{'Type'},
+	   Data => $TransString,
+	   TimeTaken => 0
+	  );
+	
+	return ($linkid, "Link deleted ($TransString)", $transactionid);
+    }
+    #if it's not a link we can find
+    else {
+        $RT::Logger->debug("Couldn't find that link\n");
+	return (0, "Link not found");
+    }
 }
 
 # }}}
 
-# {{{ sub LinkFrom
+# {{{ sub AddLink
 
-=head2 LinkFrom
+=head2 AddLink
 
-What the hell does this take for args?
-
-=cut
-
-
-sub LinkFrom {
-    my $self = shift;
-    my %args = ( dir => 'F',
-		 Base => '',
-		 Target => $self->URI,
-		 Type => '',
-		 @_);
-    return($self->_NewLink(%args));
-}
-
-# }}}
-
-# {{{ sub _NewLink
-
-=head2 _NewLink
-
-TODO Rewrite _NewLink so it's easy to understand.
+Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
 
 =cut
 
-sub _NewLink {
+sub AddLink {
     my $self = shift;
-    my %args = ( dir => '',
-		 Target => '',
+    my %args = ( Target => '',
 		 Base => '',
 		 Type => '',
 		 @_ );
@@ -1594,25 +1705,37 @@ sub _NewLink {
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied",0);
     }
+
+    if ($args{'Base'} and $args{'Target'}) {
+	$RT::Logger->debug("$self tried to delete a link. both base and target were specified\n");
+	return (0, 'Can\'t specifiy both base and target');
+    }
+    elsif ($args{'Base'}) {
+        $args{'Target'} = $self->Id();
+    }
+    elsif ($args{'Target'}) {
+	$args{'Base'} = $self->Id();
+    }
+    else {  
+	return (0, 'Either base or target must be specified');
+    }
     
     # {{{ We don't want references to ourself
-  if ($args{Base} eq $args{Target}) {
-      return (0,"You're linking up yourself, that doesn't make sense");
-  }	
-  # }}}
-        
+    if ($args{Base} eq $args{Target}) {
+	return (0, "Can\'t link a ticket to itself");
+    }	
+		
+    # }}}
+    
     # If the base isn't a URI, make it a URI. 
     # If the target isn't a URI, make it a URI. 
         
     # {{{ Check if the link already exists - we don't want duplicates
-    my $Links=RT::Links->new($self->CurrentUser);
-    $Links->Limit(FIELD=>'Type',VALUE => $args{Type});
-    $Links->Limit(FIELD=>'Base',VALUE => $args{Base});
-    $Links->Limit(FIELD=>'Target',VALUE => $args{Target});
-    my $l=$Links->First;
-    if ($l) {
+    my $old_link= new RT::Link ($self->CurrentUser);
+    $old_link->Load($args{'Base'}, $args{'Type'}, $args{'Target'});
+    if ($old_link->Id) {
 	$RT::Logger->debug("$self Somebody tried to duplicate a link");
-	return ($l->id, "Link already exists",0);
+	return ($old_link->id, "Link already exists",0);
     }
     # }}}
     
@@ -1625,21 +1748,14 @@ sub _NewLink {
 				 Type => $args{Type});
     
     #Write the transaction
-    my  ($b, $t);
-    
-    if ($args{dir} eq 'T') {
-	$t=$args{Target};
-	$b=$self->Id;
-    } else {
-	$t=$self->Id;
-	$b=$args{Base};
-    }
-    my $TransString="Ticket $b $args{Type} ticket $t.";
+ 
+    my $TransString="Ticket $args{'Base'} $args{Type} ticket $args{'Target'}.";
     
     my ($Trans, $Msg, $TransObj) = $self->_NewTransaction
-      (Type => 'Link',
+      (Type => 'AddLink',
+       Field => $args{'Type'},
        Data => $TransString,
-       TimeTaken => 0 # Is this always true?
+       TimeTaken => 0
       );
     
     return ($linkid, "Link created ($TransString)", $transactionid);

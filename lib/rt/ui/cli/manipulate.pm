@@ -119,11 +119,11 @@ sub ParseArgs  {
 	my $Ticket;
 	if ($Ticket=&LoadTicket($base)) {
 	  my ($res, $msg, $linkid)=
-	    $Ticket->LinkTo(Target=>$target, Type=>$type);
+	    $Ticket->AddLink(Target=>$target, Type=>$type);
 	  $Message .= $msg;
 	} elsif ($Ticket=&LoadTicket($target)) {
 	  my ($res, $msg, $linkid)=
-	    $Ticket->LinkFrom(Base=>$base, Type=>$type);
+	    $Ticket->AddLink(Base=>$base, Type=>$type);
 	  $Message .= $msg;
 	}
       }

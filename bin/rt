@@ -64,7 +64,7 @@ my ( @id,
      @requestors,
      @cc,
      @admincc,
-     @status,
+     $status,
      $subject,
      $owner,
      $queue,
@@ -113,11 +113,12 @@ my @args =("id=s" => \@id,
 	   "requestors=s" => \@requestors,
 	   "cc=s" => \@cc,
 	   "admincc=s" => \@admincc,
-	   "status=s" => \@status,
+	   "status=s" => \$status,
 	   "subject=s" => \$subject,
 	   "owner=s" => \$owner,
 	   "queue=s" => \$queue,
-	   "time-left=i" => \$time_left,
+
+	   
 	   "priority=i" => \$priority,
 	   "final-priority=i" => \$final_priority,
 	   "due=s" => \$due,
@@ -131,6 +132,7 @@ my @args =("id=s" => \@id,
 	   "depends-on=s" => \@dependson,
 	   "member-of=s" => \@memberof, 
 	   "related-to=s" => \@relatedto,
+	   "time-left=i" => \$time_left,
 	   "time-taken=i" => \$time_taken,
 	   "verbose+" => \$verbose,
 	   "debug" => \$debug,
@@ -380,40 +382,139 @@ else {
 	    }
 	}
 	# }}}
-
+	
 	# {{{ deal with links
+	
+	# add /delete depends-ons
+	my $value;
+	foreach $value (@dependson) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $ticket = $2;
+		if ($op eq '+') {
+		    my ($trans, $msg) =
+		      $Ticket->AddDependency(Target => $ticket);
+		    print $msg;
+		}
+		elsif ($op eq '-') {
+		    my ($trans, $msg) = 
+		      $Ticket->DeleteDependency(Target => $ticket);
+		    print $msg;
+		}
 
-    # add /delete depends-ons
-    
-    # add /delete member-of
-
-    # add / delete related-to
-    
-    # }}}
+	    }
+	}
+	# add /delete member-of
+	
+	# add / delete related-to
+	
+	# }}}
 	
 	# {{{ deal with dates
+	
+	#set due 
+	if ($due) {
+	    my $iso = ParseDate($due);
+	    if ($iso) {
+		debug("Setting due date to $iso ($due)");
+		my ($trans, $msg) = 
+		  $Ticket->SetDue($iso);
+		print $msg;
+	    }
+	    else {
+		print "Due date '$due' could not be parsed";
+	    }
+	}
 
-    #set due 
-    
-    #set starts
+	#set starts
+	if ($starts) {
+	    my $iso = ParseDate($due);
+	    if ($iso) {
+		my ($trans, $msg) = 
+		  $Ticket->SetStarts($iso);
+		print $msg;
+	    }
+	    else {
+		print "Starts date '$starts' could not be parsed";
+	    }
+	}
+	#set started
+		if ($started) {
+	    my $iso = ParseDate($started);
+	    if ($iso) {
+		my ($trans, $msg) = 
+		  $Ticket->SetStarted($iso);
+		print $msg;
+	    }
+	    else {
+		print "Started date '$started' could not be parsed";
+	    }
+	}
+	#set contacted
+		if ($contacted) {
+	    my $iso = ParseDate($contacted);
+	    if ($iso) {
+		my ($trans, $msg) = 
+		  $Ticket->SetContacted($iso);
+		print $msg;
+	    }
+	    else {
+		print "Contacted date '$contacted' could not be parsed";
+	    }
+	}
 
-    #set started
-
-    #set contacted
-    
     # }}}
 	
 	# {{{ set other attributes
     
-    #Set priority
+	#Set priority
+	if ($priority) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetPriority($priority);
+	    print $msg;
+	}
+	
+	#Set final priority
+	if ($final_priority) {
+	    my ($trans, $msg) =
+	      $Ticket->SetFinalPriority($final_priority);
+	    print $msg;
+	}
 
-    #Set final priority
+	#Set status
+	if ($status) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetStatus($status);
+	    print $msg;
+	}
+	
+	#Set time left
+	if ($time_left) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetTimeLeft($time_left);
+	    print $msg;
+	}
 
-    #Set status
-    
-    #Set time left
-    
-    #Set owner
+	#Set time_taken 
+	if ($time_taken) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetTimeTaken($time_taken);
+	    print $msg;
+	}
+	
+	#Set owner
+	if ($owner) {
+	    my ($trans, $msg) =
+	      $Ticket->SetOwner($owner);
+	    print $msg;
+	}
+
+	#Set queue 
+	if ($queue) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetQueue($queue);
+	    print $msg;
+	}
 
     # }}}
 	
@@ -544,7 +645,7 @@ sub debug {
 }
 # }}}
 
-# {{{ ParseBooleanOp
+# {{{ sub ParseBooleanOp
 =head2 ParseBooleanOp
 
   Takes an option modifier. returns the apropriate SQL operator.
@@ -568,6 +669,38 @@ sub ParseBooleanOp {
 }
 # }}}
 
+# {{{ sub ParseDate
+
+=head2 ParseDate
+
+Takes a date in an arbitrary format.
+Returns an ISO date and time in GMT
+
+=cut
+
+sub ParseDate {
+    my $date = shift;
+
+    use Date::Manip;
+    my $parsed_date = Date::Manip::ParseDate($date);
+    if ($parsed_date) {
+	my $unixdate = Date::Manip::UnixDate($parsed_date, "%s");
+	debug("Parsed date is $parsed_date (localtime)");
+	my $date_obj = new RT::Date($CurrentUser);
+	$date_obj->Set( Format => 'unix',
+			Value => $unixdate
+		      );
+	return ($date_obj->ISO);
+    }
+    
+    #if we couldn't parse the date...
+    else {
+	return(undef);
+    }
+}
+
+# }}}
+	  
 # {{{ sub ShowSummary 
 sub ShowSummary  {
     my $Ticket = shift;
@@ -606,13 +739,13 @@ my $selects = $Ticket->QueueObj->KeywordSelects();
 
 
 
-
-#TODO: better link descriptions
-   while (my $l=$Ticket->Children->Next) {
-       print $l->BaseObj->id," (",$l->BaseObj->Subject,") is  ",$l->Type," this ticket\n";
+#TODO: finish link  descriptions
+print "Dependencies: \n";
+   while (my $l=$Ticket->DependedOnBy->Next) {
+       print $l->BaseObj->id," (",$l->BaseObj->Subject,") ",$l->Type," this ticket\n";
    }
-   while (my $l=$Ticket->Parents->Next) {
-       print "This ticket is ",$l->Type," ",$l->TargetObj->Id," (",$l->TargetObj->Subject,")\n";
+   while (my $l=$Ticket->DependsOn->Next) {
+       print "This ticket ",$l->Type," ",$l->TargetObj->Id," (",$l->TargetObj->Subject,")\n";
    }
 }
 # }}}

@@ -6,7 +6,7 @@ Depends on:<BR>
  <br>
 % }
 Depended on by:<BR>
-% while (my $Link = $Ticket->Dependants->Next) {
+% while (my $Link = $Ticket->DependedOnBy->Next) {
 % my $member = $Link->TargetObj;
 <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> 
 [<%$member->Status%>]

@@ -40,9 +40,9 @@ sub Create  {
 	      @_ # get the real argumentlist
 	     );
  
+
   my $BaseURI = $self->CanonicalizeURI($args{'Base'});
   my $TargetURI = $self->CanonicalizeURI($args{'Target'});
-
  
     
   unless (defined $BaseURI) {
@@ -73,12 +73,33 @@ sub Create  {
 # }}}
  
 # {{{ sub Load 
+
+=head2 Load
+
+  Load an RT::Link object from the database.  Takes one parameter or three.
+  One parameter is the id of an entry in the links table.  Three parameters are a tuple of (base, linktype, target);
+
+
+=cut
+
 sub Load  {
   my $self = shift;
   my $identifier = shift;
+  my $linktype = shift if (@_);
+  my $target = shift if (@_);
   
-  if ($identifier =~ /^\d+$/) {
-    $self->LoadById($identifier);
+  if ($target) {
+      my $BaseURI = $self->CanonicalizeURI($identifier);
+      my $TargetURI = $self->CanonicalizeURI($target);
+      $self->LoadByCols( Base => $BaseURI,
+			 Type => $linktype,
+			 Target => $TargetURI
+		       ) || return (0, "Couldn't load link");
+  }
+  
+  elsif ($identifier =~ /^\d+$/) {
+      $self->LoadById($identifier) ||
+	return (0, "Couldn't load link");
   }
   else {
 	return (0, "That's not a numerical id");
@@ -86,8 +107,12 @@ sub Load  {
 }
 # }}}
 
-
 # {{{ sub TargetObj 
+
+=head2 TargetObj
+
+=cut
+
 sub TargetObj {
   my $self = shift;
    return $self->_TicketObj('base',$self->Target);
@@ -95,6 +120,11 @@ sub TargetObj {
 # }}}
 
 # {{{ sub BaseObj
+
+=head2 BaseObj
+
+=cut
+
 sub BaseObj {
   my $self = shift;
   return $self->_TicketObj('target',$self->Base);

@@ -103,18 +103,18 @@ ProcessSimpleActions(ARGS=>\%ARGS, Actions=>\@Actions, Ticket=>$Ticket);
 
 # {{{ process links
 if ($ARGS{'DependsOn'}){
-    ($linkid, $message, $tid) = $Ticket->LinkFrom( Base => $ARGS{'DependsOn'}, Type => 'DependsOn');
+    ($linkid, $message, $tid) = $Ticket->AddLink( Base => $ARGS{'DependsOn'}, Type => 'DependsOn');
     push @Actions, $message;
 }
 
 if ($ARGS{'DependedOnBy'}){
-    ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'DependedOnBy'}, Type => 'DependsOn');
+    ($linkid, $message, $tid) = $Ticket->AddLink( Target => $ARGS{'DependedOnBy'}, Type => 'DependsOn');
     push @Actions, $message;
 }
 
 
 if ($ARGS{'MemberOf'}){
-    ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'MemberOf'}, Type => 'MemberOf');
+    ($linkid, $message, $tid) = $Ticket->AddLink( Target => $ARGS{'MemberOf'}, Type => 'MemberOf');
     push @Actions, $message;
 }
 
@@ -134,13 +134,13 @@ if ($ARGS{'LinkType'}) {
     
     if ($ARGS{'Base'} == $Ticket->Id) {
 	for my $target (split(/ /, $ARGS{'Target'})) {
-	    my ( $linkid, $message) =  $Ticket->LinkTo(Target => $target, Type => $ARGS{'LinkType'});
+	    my ( $linkid, $message) =  $Ticket->AddLink(Target => $target, Type => $ARGS{'LinkType'});
 	    push (@Actions, $message);
        }	
     }	
     elsif ($ARGS{'Target'} == $Ticket->Id) {
 	for my $base (split(/ /, $ARGS{'Base'})) {
-	    my ( $linkid, $message)= $Ticket->LinkFrom(Base => $base, Type => $ARGS{'LinkType'});
+	    my ( $linkid, $message)= $Ticket->AddLink(Base => $base, Type => $ARGS{'LinkType'});
 	    push (@Actions, $message);
 	}
     }

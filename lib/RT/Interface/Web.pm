@@ -103,9 +103,9 @@ sub LinkUpIfRequested {
 	for my $luri (split (/ /,$luris)) {
 	    my ($LinkId, $Message);
 	    if ($l eq 'LinkTo') {
-		($LinkId,$Message)=$args{Ticket}->LinkTo(Target=>$luri, Type=>$ltyp);
+		($LinkId,$Message)=$args{Ticket}->AddLink(Target=>$luri, Type=>$ltyp);
 	    } elsif ($l eq 'LinkFrom') {
-		($LinkId,$Message)=$args{Ticket}->LinkFrom(Base=>$luri, Type=>$ltyp);
+		($LinkId,$Message)=$args{Ticket}->AddLink(Base=>$luri, Type=>$ltyp);
 	    } else {
 		&mc_comp("/Elements/Error" , Why => "Parameter error");
 		$m->abort;
