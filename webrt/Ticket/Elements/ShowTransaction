@@ -17,6 +17,7 @@ unless ($Collapsed) {
  while (my $message=$attachments->Next) {
      #we don't want to show any empty transactions, unless they have kids
      next unless ($message->Content || $message->Children->Count);
+     my ($headers, $content);
      
     </%PERL>
 
@@ -49,9 +50,8 @@ unless ($Collapsed) {
       <TD>&nbsp&nbsp;</TD>
       <TD COLSPAN=3 VALIGN=TOP>
 	<PRE>
-	 <%$headers%>
-	 <%$content|n%>
-	</PRE>
+<%$headers%><%$content|n%>
+</PRE>
       </TD>
       <TD VALIGN=TOP ALIGN=RIGHT>
 	
@@ -90,7 +90,7 @@ $RowNum => 1
 <%INIT>
 
 
-my ($TimeTaken, $TicketString, $bgcolor, $rowbgcolor, $headers, $content);
+my ($TimeTaken, $TicketString, $bgcolor, $rowbgcolor);
 
 my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
