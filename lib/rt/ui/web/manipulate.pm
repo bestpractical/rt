@@ -246,11 +246,11 @@ sub takeaction {
     if ($rt::ui::web::FORM{'do_req_create'}) {
 	
 
-      if ($rt::ui::web::FORM{'due'} and $rt::ui::web::FORM{'due_mday'} and $rt::ui::web::FORM{'due_month'} and $rt::ui::web::FORM{'due_year'}) {
+      if ($rt::ui::web::FORM{'due'}) {
 	$date_due=timelocal(0,0,0,$rt::ui::web::FORM{'due_mday'},$rt::ui::web::FORM{'due_month'},$rt::ui::web::FORM{'due_year'});
       }
       else { 
-	$due_date=0;
+	$date_due=0;
       }
       ($serial_num,$transaction_num,$StatusMsg)=&rt::add_new_request($rt::ui::web::FORM{'queue_id'},$rt::ui::web::FORM{'area'},$rt::ui::web::FORM{'requestors'},$rt::ui::web::FORM{'alias'},$rt::ui::web::FORM{'owner'},$rt::ui::web::FORM{'subject'},"$rt::ui::web::FORM{'final_prio_tens'}$rt::ui::web::FORM{'final_prio_ones'}","$rt::ui::web::FORM{'prio_tens'}$rt::ui::web::FORM{'prio_ones'}",$rt::ui::web::FORM{'status'},$rt::time,0,$date_due, $rt::ui::web::FORM{'content'},$current_user); 
       
