@@ -105,7 +105,8 @@ value="<% $ARGS{UpdateCc} %>"><BR>
 %    while (my $CF = $TxnCFs->Next()) {
 <TR>
 <TD ALIGN=RIGHT><% $CF->Name %>:</TD>
-<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &><em><% $CF->FriendlyType %></em></TD>
+<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
+    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></TD>
 </TD></TR>
 %    } # end if while
 % } # end of if
@@ -132,7 +133,6 @@ value="<% $ARGS{UpdateCc} %>"><BR>
 % }
 </FORM>
 <%INIT>
-
 my $CanRespond = 0;
 my $CanComment = 0;
 my $title;
@@ -178,6 +178,7 @@ foreach my $key (keys %ARGS) {
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
+# }}}
 
 # {{{ store the uploaded attachment in session
 if ($ARGS{'Attach'}) {			# attachment?
@@ -190,7 +191,7 @@ if ($ARGS{'Attach'}) {			# attachment?
     $subject =~ s#^.*[\\/]##;
 
     my $attachment = MakeMIMEEntity(
-        Subject             => $subject,
+        Filename             => $subject,
         Body                => "",
         AttachmentFieldName => 'Attach'
     );

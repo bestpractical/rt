@@ -117,7 +117,8 @@
 % while (my $CF = $TxnCFs->Next()) {
 <TR>
 <TD ALIGN=RIGHT><% $CF->Name %>:</TD>
-<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &><em><% $CF->FriendlyType %></em></TD>
+<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
+    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></TD>
 </TD></TR>
 % }
 % }

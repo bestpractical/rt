@@ -922,21 +922,27 @@ sub FriendlyObjectType {
 }
 
 sub UpdateCustomFields {
-    my ($self, %args) = @_;
+    my $self = shift;
+    my (%args) = @_;
+
     my $args_ref = $args{ARGSRef} or return;
 
     foreach my $arg ( keys %$args_ref ) {
-        $arg =~ /^(?:Transaction)?CustomField-(\d+).*?(?<!-Magic)$/ or next;
-	my $cfid = $1;
-	my $values = $args_ref->{$arg};
-	foreach my $value ( UNIVERSAL::isa($values, 'ARRAY') ? @$values : $values ) {
-	    next unless length($value);
-	    $self->_AddCustomFieldValue(
-		Field => $cfid,
-		Value => $value,
-		RecordTransaction => 0,
-	    );
-	}
+        next
+          unless ( $arg =~
+            /^(?:Object-RT::Transaction--)?CustomField-(\d+).*?(?<!-Magic)$/ );
+        my $cfid   = $1;
+        my $values = $args_ref->{$arg};
+        foreach
+          my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
+        {
+            next unless length($value);
+            $self->_AddCustomFieldValue(
+                Field             => $cfid,
+                Value             => $value,
+                RecordTransaction => 0,
+            );
+        }
     }
 }
 

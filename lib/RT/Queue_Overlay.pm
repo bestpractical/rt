@@ -497,7 +497,7 @@ Returns an RT::CustomFields object containing all global custom fields, as well 
 
 =cut
 
-# XXX XXX - this should become TicketCustomFields
+# XXX TODO - this should become TicketCustomFields
 
 sub CustomFields {
     my $self = shift;

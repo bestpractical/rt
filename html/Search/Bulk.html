@@ -156,7 +156,7 @@ while (my $Ticket = $Tickets->Next) {
 % while (my $CF = $TxnCFs->Next()) {
 <TR>
 <TD ALIGN=RIGHT><% $CF->Name %>:</TD>
-<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "TransactionCustomField-" &><em><% $CF->FriendlyType %></em></TD>
+<TD><& /Elements/EditCustomField, CustomField => $CF, NamePrefix => "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></TD>
 </TD></TR>
 % } # end if while
  <tr><td align=right><&|/l&>Attach</&>:</td><td><input name="UpdateAttachment" type="file"></td></tr>
@@ -229,7 +229,7 @@ while (my $Ticket = $Tickets->Next) {
     unless ( exists $cfqs{$cfqid} ) {
 	$cfqs{$cfqid} = 1;
 	$count++;
-	my $cfs = $cfq->CustomFields;
+	my $cfs = $cfq->TicketCustomFields;
 	while (my $cf = $cfs->Next) {
 	    $allcfs{$cf->Id} = $cf;
 	    $cfqnames{$cf->Id} = $cfqn;
