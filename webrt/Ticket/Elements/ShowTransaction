@@ -46,6 +46,9 @@ This is a multipart message
 % } else {
 	
 Attachment: <A HREF="Display.html?ShowAttachment=<%$message->Id%>"><% $message->ContentType %></a>
+%if ($message->ContentType =~ m{^text/(?!plain)}) {
+	<A HREF="Display.html?ShowAttachment=<%$message->Id%>&plaintext=1">View as plain text</a>
+%}
 %    }
 % }
 
