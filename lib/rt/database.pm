@@ -1,3 +1,9 @@
+# $Header$
+# 
+#
+# Request Tracker is Copyright 1997 Jesse Reed Vincent <jesse@fsck.com>
+# RT is distributed under the terms of the GNU Public License
+
 package rt;
 use Mysql;
 
@@ -5,11 +11,11 @@ use Mysql;
 
 require rt::support::utils;   
 require rt::database::config;
-&rt::read_config;
+&rt::read_config();
 
 sub connectdb {
    if (!($dbh = Mysql->Connect($host, $dbname, $rtpass, $rtuser,))){
-           die "not ok 1: $Mysql::db_errstr\n";
+           die "[connectdb] Database connect failed: $Mysql::db_errstr\n";
          }
   }
 
@@ -38,7 +44,7 @@ sub add_request {
     # if we aren't passed the serial num, get a new one.
     # this is only here for importing
     if (!($serial_num = shift)) {
-        $serial_num=int(&get_req_num());
+        $serial_num="NULL";
     }
 
 
@@ -52,8 +58,11 @@ sub add_request {
     $in_current_user = $rt::dbh->quote($in_current_user);
 
     $query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $in_queue_id, $in_area, $in_alias, $in_requestors, $in_owner, $in_subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $in_status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
-    
-    $dbh->Query($query_string) or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+              $time_id = $sth->insert_id;   
+    $sth = $dbh->Query($query_string) or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
+    if ($serial_num eq 'NULL') {
+      $serial_num = $sth->insert_id;   
+    }
     return ($serial_num);
 }
 
@@ -61,44 +70,43 @@ sub add_request {
 sub add_transaction {
     my ($in_serial_num, $in_actor, $in_type, $in_data,$in_content, $in_time,$in_do_mail,$in_current_user) = @_;
     my ($transaction_num, $query_string, $queue_id, $owner, $requestors);
-    $transaction_num=&get_transaction_num();
+
     
-    
-    $in_actor = $rt::dbh->quote($in_actor);
+        $in_actor = $rt::dbh->quote($in_actor);
     $in_type = $rt::dbh->quote($in_type);
     $in_data = $rt::dbh->quote($in_data);
     
-    if ($in_content) {
-	require rt::database::content;
 
-        $content_file=&write_content($time,$in_serial_num,$transaction_num,$in_content);
-    }
     &req_in($in_serial_num, '_rt_system');
     $queue_id=$rt::req[$in_serial_num]{queue_id};
     $requestors=$rt::req[$in_serial_num]{requestors};
     $owner=$rt::req[$in_serial_num]{owner};
     &req_in($in_serial_num, $in_current_user);
 
-    $query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES ($transaction_num, $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $in_actor, $in_type, $in_data, $in_time)";
-     $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Msql::db_errstr\nQuery: $query_string\n";
+    $query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES (NULL, $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $in_actor, $in_type, $in_data, $in_time)";
+     $sth = $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Msql::db_errstr\nQuery: $query_string\n";
+    $transaction_num = $sth->insert_id;       
+
+    
+    #if we've got content, mail it away
+    if ($in_content) {
+	require rt::database::content;
+        $content_file=&write_content($time,$in_serial_num,$transaction_num,$in_content);
+    }
+
 
     if ($in_do_mail) {
-	
-    
-    if (!&is_owner($in_serial_num,$in_current_user) and ($owner ne "") and ($queues{$queue_id}{m_owner_trans})){
-	    
-      	&rt::template_mail ('transaction',$queue_id,$rt::users{$owner}{email}, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
-    }
-    if ($queues{$queue_id}{m_members_trans}){
-	    
-      	&rt::template_mail ('transaction',$queue_id,$queues{$queue_id}{dist_list}, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
+      if (!&is_owner($in_serial_num,$in_current_user) and ($owner ne "") and ($queues{$queue_id}{m_owner_trans})){
+	&rt::template_mail ('transaction',$queue_id,$rt::users{$owner}{email}, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
+      }
+      if ($queues{$queue_id}{m_members_trans}){
+	&rt::template_mail ('transaction',$queue_id,$queues{$queue_id}{dist_list}, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
     }
 	if ($queues{queue_id}{m_user_trans}){
-	    
-      	&rt::template_mail ('transaction',$queue_id,$requestors, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
+	  &rt::template_mail ('transaction',$queue_id,$requestors, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
     }
-
-	
+      
+      
 }
     return ($transaction_num);
 }
@@ -406,3 +414,5 @@ sub parse_req_row {
 }
 
 1;
+    
+  
