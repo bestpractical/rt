@@ -22,7 +22,9 @@
 %# 
 %# END LICENSE BLOCK
 <SELECT NAME ="<%$Name%>">
+% if ($AllowNull) {
 <OPTION VALUE="">-</OPTION>
+% }
 %for my $option (@types) {
 <OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%loc($option)%></OPTION>
 %}
@@ -38,6 +40,7 @@ else {
 }
 </%INIT>
 <%ARGS>
+$AllowNull => 1
 $Default=>undef
 $Scope => 'ticket'
 $Name => 'WatcherType'

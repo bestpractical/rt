@@ -34,9 +34,10 @@
 <& /Elements/SelectOwner, Name => "ValueOfOwner" &>
 
 <li>
-<&|/l&>Requestor email address</&> 
-<& /Elements/SelectMatch, Name => "RequestorOp" &>
-<INPUT Name="ValueOfRequestor" SIZE=20>
+<& /Elements/SelectWatcherType, Name => "WatcherRole", AllowNull => 0 &>
+<&|/l&> email address</&> 
+<& /Elements/SelectMatch, Name => "WatcherRoleOp" &>
+<INPUT Name="ValueOfWatcherRole" SIZE=20>
 
 <li>
 <&|/l&>Subject</&> <& /Elements/SelectMatch, Name => "SubjectOp" &> 

@@ -661,14 +661,13 @@ sub ProcessSearchQuery {
 
     # }}}
     # {{{ Limit requestor email
+     if ( $args{ARGS}->{'ValueOfWatcherRole'} ne '' ) {
+         $session{'tickets'}->LimitWatcher(
+             TYPE     => $args{ARGS}->{'WatcherRole'},
+             VALUE    => $args{ARGS}->{'ValueOfWatcherRole'},
+             OPERATOR => $args{ARGS}->{'WatcherRoleOp'},
 
-    if ( $args{ARGS}->{'ValueOfRequestor'} ne '' ) {
-        my $alias = $session{'tickets'}->LimitWatcher(
-            TYPE => 'Requestor',
-            VALUE    => $args{ARGS}->{'ValueOfRequestor'},
-            OPERATOR => $args{ARGS}->{'RequestorOp'},
         );
-
     }
 
     # }}}
