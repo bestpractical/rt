@@ -109,7 +109,7 @@ sub Create {
       # Defaulting it to 'general':
       $args{'Queue'}=1;
   }
-  
+
   my $id = $self->SUPER::Create(Id => $args{'id'},
 				EffectiveId => $args{'EffectiveId'},
 				Queue => $args{'Queue'},
@@ -126,7 +126,6 @@ sub Create {
 				Due => $args{'Due'}
 			       );
   
-
   #Load 'er up.
   $self->Load($id);
   #Now that we know the self
@@ -145,7 +144,6 @@ sub Create {
     my @From = Mail::Address->parse($FromLine);
     
     foreach $From (@From) {
-#      print "From is $From\n";
       my $Watcher = RT::Watcher->new($self->CurrentUser);
       
       $self->AddWatcher ( Email => $From->address,
@@ -164,7 +162,22 @@ sub Create {
 				     TimeTaken => 0, 
 				     MIMEEntity=>$args{'MIMEEntity'});
   
-  
+
+  # Logging
+  if ($self->Id && $Trans) {
+      $RT::Logger->log(level=>'info', 
+		       message=>'New request #'
+		               .$self->Id
+		               ." (".$self->Subject
+		               .") created in queue "
+                               .$self->Queue->QueueId);
+  } else {
+      $RT::Logger->log(level=>'warn', 
+		       message=>"New request couldn't be successfully made; $ErrStr");
+  }
+
+  # Hmh ... shouldn't $ErrStr be the second return argument?
+  # Eventually, are all the callers updated?
   return($self->Id, $Trans, $ErrStr);
 }
 
