@@ -358,6 +358,8 @@ html-install:
 
 # {{{ doc-install
 doc-install:
+	# RT 3.0.0 - RT 3.0.2 would accidentally create a file instead of a dir
+	-[ -f $(DESTDIR)/$(RT_DOC_PATH) ] && rm $(DESTDIR)/$(RT_DOC_PATH) 
 	[ -d $(DESTDIR)/$(RT_DOC_PATH) ] || mkdir $(DESTDIR)/$(RT_DOC_PATH)
 	-cp -rp ./README $(DESTDIR)/$(RT_DOC_PATH)
 # }}}
