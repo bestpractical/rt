@@ -24,8 +24,8 @@ CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 # {{{ Queues
 CREATE TABLE Queues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(120) NOT NULL  ,
-  Description varchar(120) NULL  ,
+  Name varchar(200) NOT NULL  ,
+  Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
   CommentAddress varchar(120) NULL  ,
   InitialPriority integer NULL  ,
@@ -76,8 +76,8 @@ CREATE TABLE Principals (
 
 CREATE TABLE Groups (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(16) NULL  ,
-  Description varchar(64) NULL  ,
+  Name varchar(200) NULL  ,
+  Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
   Instance varchar(64),
@@ -92,7 +92,7 @@ CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
 
 CREATE TABLE ScripConditions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(255) NULL  ,
+  Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -199,7 +199,7 @@ create table CachedGroupMembers (
 
 CREATE TABLE Users (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(120) NOT NULL  ,
+  Name varchar(200) NOT NULL  ,
   Password varchar(40) NULL  ,
   Comments blob NULL  ,
   Signature blob NULL  ,
@@ -290,7 +290,7 @@ CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 
 CREATE TABLE ScripActions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(255) NULL  ,
+  Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -308,8 +308,8 @@ CREATE TABLE ScripActions (
 CREATE TABLE Templates (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Queue integer NOT NULL DEFAULT 0 ,
-  Name varchar(40) NOT NULL  ,
-  Description varchar(120) NULL  ,
+  Name varchar(200) NOT NULL  ,
+  Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
   TranslationOf integer NULL  ,
@@ -347,7 +347,7 @@ CREATE TABLE CustomFields (
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
   Queue int NULL ,
-  Description varchar(200) NULL  ,
+  Description varchar(255) NULL  ,
   SortOrder integer NULL  ,
 
   Creator integer NULL  ,
@@ -365,7 +365,7 @@ CREATE TABLE CustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   Name varchar(200) NULL  ,
-  Description varchar(200) NULL  ,
+  Description varchar(255) NULL  ,
   SortOrder integer NULL  ,
 
   Creator integer NULL  ,

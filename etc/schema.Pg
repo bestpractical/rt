@@ -49,8 +49,8 @@ CREATE SEQUENCE queues_id_seq;
 
 CREATE TABLE Queues (
   id INTEGER DEFAULT nextval('queues_id_seq'),
-  Name varchar(120) NOT NULL  ,
-  Description varchar(120) NULL  ,
+  Name varchar(200) NOT NULL  ,
+  Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
   CommentAddress varchar(120) NULL  ,
   InitialPriority integer NULL  ,
@@ -128,8 +128,8 @@ CREATE SEQUENCE groups_id_seq;
 
 CREATE TABLE Groups (
   id INTEGER DEFAULT nextval('groups_id_seq'),
-  Name varchar(16) NULL  ,
-  Description varchar(64) NULL  ,
+  Name varchar(200) NULL  ,
+  Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
   Instance varchar(64),
@@ -153,7 +153,7 @@ CREATE SEQUENCE scripconditions_id_seq;
 
 CREATE TABLE ScripConditions (
   id INTEGER DEFAULT nextval('scripconditions_id_seq'),
-  Name varchar(255) NULL  ,
+  Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -312,7 +312,7 @@ CREATE SEQUENCE users_id_seq;
 
 CREATE TABLE Users (
   id INTEGER DEFAULT nextval('users_id_seq'),
-  Name varchar(120) NOT NULL  ,
+  Name varchar(200) NOT NULL  ,
   Password varchar(40) NULL  ,
   Comments text NULL  ,
   Signature text NULL  ,
@@ -421,7 +421,7 @@ CREATE SEQUENCE scripactions_id_seq;
 
 CREATE TABLE ScripActions (
   id INTEGER DEFAULT nextval('scripactions_id_seq'),
-  Name varchar(255) NULL  ,
+  Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -448,8 +448,8 @@ CREATE SEQUENCE templates_id_seq;
 CREATE TABLE Templates (
   id INTEGER DEFAULT nextval('templates_id_seq'),
   Queue integer NOT NULL DEFAULT 0 ,
-  Name varchar(40) NOT NULL  ,
-  Description varchar(120) NULL  ,
+  Name varchar(200) NOT NULL  ,
+  Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
   TranslationOf integer NULL  ,
@@ -505,7 +505,7 @@ CREATE TABLE CustomFields (
   Name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
   Queue int NULL ,
-  Description varchar(200) NULL  ,
+  Description varchar(255) NULL  ,
   SortOrder integer NULL  ,
 
   Creator integer NULL  ,
@@ -532,7 +532,7 @@ CREATE TABLE CustomFieldValues (
   id INTEGER DEFAULT nextval('customfieldvalues_id_seq'),
   CustomField int NOT NULL  ,
   Name varchar(200) NULL  ,
-  Description varchar(200) NULL  ,
+  Description varchar(255) NULL  ,
   SortOrder integer NULL  ,
 
   Creator integer NULL  ,
