@@ -22,22 +22,22 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'Admin/', current_tab => $current_tab, current_subtab => $current_subtab&>
+<& /RTFM/Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'RTFM/Admin/', current_tab => $current_tab, current_subtab => $current_subtab&>
 
 <hr>
   
 <%INIT>
   my $tabs = { Classes => { title => loc('Classes'),
-			  path => 'Admin/Classes/',
+			  path => 'RTFM/Admin/Classes/',
 			},
-	       CustomFields => { title => loc('CustomFields'),
-			   path => 'Admin/CustomFields/',
+	       CustomFields => { title => loc('Custom Fields'),
+			   path => 'RTFM/Admin/CustomFields/',
 			 },
 	       Access => { title => loc('Access'),
-			   path => 'Admin/Access/',
+			   path => 'RTFM/Admin/Access/',
 			 },
 	       System => { 'title' => loc('Global'),
-			   path => 'Admin/Global/',
+			   path => 'RTFM/Admin/Global/',
 			 },
 	     };
 </%INIT>

@@ -45,6 +45,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'Name'.
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
+  int(2) 'Disabled'.
 
 =cut
 
@@ -57,12 +58,14 @@ sub Create {
                 Name => '',
                 Description => '',
                 SortOrder => '',
+                Disabled => '0',
 
 		  @_);
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
+                         Disabled => $args{'Disabled'},
 );
 
 }
@@ -132,6 +135,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item Disabled
+
+Returns the current value of Disabled. 
+(In the database, Disabled is stored as int(2).)
+
+
+
+=item SetDisabled VALUE
+
+
+Set Disabled to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Disabled will be stored as a int(2).)
+
+
+=cut
+
+
 =item Creator
 
 Returns the current value of Creator. 
@@ -180,6 +201,8 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
+        Disabled => 
+		{read => 1, write => 1, type => 'int(2)', default => '0'},
         Creator => 
 		{read => 1, auto => 1, type => 'int(11)', default => ''},
         Created => 

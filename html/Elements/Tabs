@@ -1,0 +1,142 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<table border=0 cellspacing=0 width="100%">
+<tr> 
+    <td class="darkblue">&nbsp;</td>
+    <td class="darkblue"><span class="topnav">|
+% foreach $tab (sort keys %{$toptabs}) {
+<A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}|n%>"
+% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
+class="currenttopnav"
+% } else {
+class="topnav"
+% } 
+><% $toptabs->{$tab}->{'title'}%></A> |
+% }
+</span><br>
+<br>
+% if ($tabs_scalar) {
+<span class=nav><% $tabs_scalar |n%></span>
+<BR><br>
+% }
+% if ($tabs) {
+<span class="nav">| 
+% foreach $tab (sort keys %{$tabs}) {
+<A HREF="<% $RT::WebPath."/". $tabs->{$tab}->{'path'} |n%>" 
+% if ($current_tab eq $tabs->{$tab}->{'path'}) {
+ class='currentnav'
+% } else {
+ class='nav'
+% } 
+><%$tabs->{$tab}->{'title'}%></a> |
+%  }
+</span><br><br>
+% }
+% if ($subtabs_scalar) {
+<% $subtabs_scalar |n%>
+% }
+% if ($subtabs) {
+<span class="subnav">| 
+% foreach my $subtab (sort keys %{$subtabs}) {
+<A HREF="<% $RT::WebPath ."/". $subtabs->{$subtab}->{'path'}|n%>" 
+% if ($current_subtab eq $subtabs->{$subtab}->{'path'}) {
+class='currentsubnav'
+% } else {
+class='subnav'
+% } 
+><%$subtabs->{$subtab}->{'title'}%></A> |
+% }
+</span>
+% }
+</td>
+<td class="darkblue">&nbsp;</td>
+<TD class="darkblueright">
+
+<span class="topactions">
+% foreach $action (sort keys %{$topactions}) {
+<%$topactions->{"$action"}->{'html'} |n %>
+% }
+</span>
+
+% if ($actions) {
+<span class="nav">| 
+% foreach $action (sort keys %{$actions}) {
+% if ($actions->{"$action"}->{'html'}) {
+<% $actions->{"$action"}->{'html'} |n%> |
+% } else {
+<A class="nav" HREF="<%$RT::WebPath."/".$actions->{$action}->{'path'}|n%>"><%$actions->{$action}->{'title'}%></A> |
+% }
+%  }
+</span>
+% }
+% if ($subactions_scalar) {
+<% $subactions_scalar |n%>
+% }
+% if ($subactions) {
+<span class="nav">|
+%  foreach $action (sort keys %{$subactions}) {
+<%$subactions->{"$action"}->{'html'} |n%> |
+%  }
+</span>
+% }
+      </TD>
+    </TR>
+  </TABLE>
+<BR>
+
+<%INIT>
+my ($tab, $action);
+my $toptabs = {    A => { title => loc('RT'),
+                           path => '',
+                         },
+                    B => { title => loc('Home'),
+                        path => 'RTFM/'
+                      },
+                    C => { title => loc('Search'),
+                           path => 'RTFM/Search/'
+                         },
+                    D => { title => loc('Configuration'),
+                           path => 'RTFM/Admin/'
+                         },
+                 };
+                    
+
+my $topactions = {
+	#A => { html => $m->scomp('/Elements/CreateTicket')	},
+	#B => { html => $m->scomp('/Elements/GotoTicket') }
+	};
+</%INIT>
+<%ARGS>
+$current_toptab =>  "none"
+$current_tab => "none"
+$current_subtab => "none"
+$tabs => undef
+$tabs_scalar => undef
+$subtabs => undef
+$actions => undef
+$subactions => undef
+$subtabs_scalar => undef
+$subactions_scalar => undef
+</%ARGS>

@@ -1,0 +1,26 @@
+<& /RTFM/Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'RTFM/Admin/Classes/', %ARGS &>
+<hr>
+<%INIT>
+  my $subtabs = {
+                 A => { title => loc('Basics'),
+                        path => "RTFM/Admin/Classes/Modify.html?id=".$id,
+                           },
+                 
+                 E => { title => loc('Custom Fields'),
+                        path => 'RTFM/Admin/Classes/CustomFields.html?id='.$id,
+                        },
+
+                 F => { title => loc('Group Rights'),
+                          path => "RTFM/Admin/Classes/GroupRights.html?id=".$id,
+                        },      
+                 G => { title => loc('User Rights'),
+                          path => "RTFM/Admin/Classes/UserRights.html?id=".$id,
+                        },
+
+
+                 
+};
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

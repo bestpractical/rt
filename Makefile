@@ -110,3 +110,8 @@ tag-and-release:
 clean:
 	find .  -type f -name \*~ |xargs rm
 	find lib/t/autogen -type f |xargs rm
+
+
+apachectl:
+	/usr/sbin/apachectl stop
+	/usr/sbin/apachectl start

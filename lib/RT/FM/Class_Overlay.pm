@@ -162,8 +162,15 @@ ok($class->CustomFields->Count == 1, "The class has 1 custom field");
 my $cf2 = RT::FM::CustomField->new($RT::SystemUser);
 ($id, $msg) =$cf2->Create(Name => "ListTest2", Type => "SelectMultiple");
 ok ($id, $msg);
-ok($cf2->AddToClass(0));
-ok($class->CustomFields->Count == 2, "The class has 1 custom field and one global custom field");
+
+# We're not going to do global custom fields
+
+#ok($cf2->AddToClass(0));
+#ok($class->CustomFields->Count == 2, "The class has 1 custom field and one global custom field");
+#ok ($class->CustomFields->HasEntry($cf2->Id), "The class knows that it has the global cf specifically");
+
+ok ($class->CustomFields->HasEntry($cf1->Id), "The class knows that it has the local cf specifically");
+ok (!$class->CustomFields->HasEntry(9899), "The class knows that it doesn't have some random cf");
 
 =end testing
 
@@ -172,6 +179,7 @@ ok($class->CustomFields->Count == 2, "The class has 1 custom field and one globa
 
 sub CustomFields {
     my $self      = shift;
+    
     my $cfs       = RT::FM::CustomFieldCollection->new( $self->CurrentUser );
     my $class_cfs = $cfs->NewAlias('FM_ClassCustomFields');
     $cfs->Join( ALIAS1 => 'main',
@@ -183,11 +191,13 @@ sub CustomFields {
                  OPERATOR        => '=',
                  VALUE           => $self->Id,
                  ENTRYAGGREGATOR => 'OR' );
+    if (0) {
     $cfs->Limit( ALIAS           => $class_cfs,
                  FIELD           => 'Class',
                  OPERATOR        => '=',
                  VALUE           => "0",
                  ENTRYAGGREGATOR => 'OR' );
+    }
     return($cfs);                
 }
 # }}}

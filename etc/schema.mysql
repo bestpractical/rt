@@ -6,6 +6,7 @@ CREATE TABLE FM_Classes (
   Description varchar(255) NULL  ,
 
   SortOrder integer NULL  ,
+  Disabled int(2) not null default '0',
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,

@@ -1,0 +1,125 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /RTFM/Admin/Elements/Header, Title => loc('Admin/Class/Basics') &>
+<& /RTFM/Admin/Elements/ClassTabs, id => $ClassObj->id &>
+<& /Elements/ListActions, actions => \@results &>
+
+
+
+<& /Elements/TitleBoxStart, title => $title &>
+
+
+<FORM ACTION="<%$RT::WebPath%>/RTFM/Admin/Classes/Modify.html" METHOD=POST>
+%if ($Create ) {
+<INPUT TYPE=HIDDEN NAME=id VALUE="new">
+% } else {
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$ClassObj->Id%>">
+% }
+
+<TABLE>
+<TR><TD ALIGN=RIGHT>
+<&|/l&>Class Name</&>: 
+</TD>
+<TD><INPUT name="Name" value="<%$ClassObj->Name%>"></TD>
+</TR><TR>
+<TD ALIGN=RIGHT>
+<&|/l&>Description</&>:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$ClassObj->Description%>" size=60></TD></TR>
+<TR>
+<TR>
+<TD>
+</TD>
+<TD COLSPAN=4><INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
+<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> <&|/l&>Enabled (Unchecking this box disables this Class)</&><BR>
+</TD>
+</TR>
+
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit &>
+</form>
+
+
+
+<%INIT>
+
+my $ClassObj = new RT::FM::Class($session{'CurrentUser'});
+my  ($title, @results, $Disabled, $EnabledChecked);
+
+if ($Create) {
+    $title = loc("Create a Class");
+}
+
+else {
+    if ($id eq 'new') {
+       my ($val, $msg) =  $ClassObj->Create(Name => $Name);
+       if ($val == 0 ) {
+           Abort("$msg");
+	}
+	else {
+		push @results, $msg;
+	}    
+     }
+     else {
+        $ClassObj->Load($id) || $ClassObj->Load($Name) || Abort("Couldn't load class '$Name'");
+    }
+        $title = loc('Editing Configuration for Class [_1]', $ClassObj->Name);
+    
+}
+if ($ClassObj->Id()) {
+my @attribs= qw(Description Name);
+
+  @results = UpdateRecordObject( AttributesRef => \@attribs, 
+				    Object => $ClassObj, 
+				    ARGSRef => \%ARGS);
+
+}
+
+#we're asking about enabled on the web page but really care about disabled.
+if ($Enabled == 1) {
+    $Disabled = 0;
+}	
+else {
+    $Disabled = 1;
+}
+if  ( ($SetEnabled) and ( $Disabled != $ClassObj->Disabled) ) { 
+    my  ($code, $msg) = $ClassObj->SetDisabled($Disabled);
+    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+}
+
+unless ($ClassObj->Disabled()) {
+    $EnabledChecked ="CHECKED";
+}
+</%INIT>
+
+
+<%ARGS>
+$id => undef
+$result => undef
+$Name => undef
+$Create => undef
+$Description => undef
+$SetEnabled => undef
+$Enabled => undef
+</%ARGS>
