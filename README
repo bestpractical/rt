@@ -246,9 +246,11 @@ She forced me to use a database backend.  I've thanked her for it every
 day since.  Rich West rewrote this readme and did some UI hacking.  Adam
 Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
 Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
-Gerald Abshez, Dave Hull, Dave Schenet Dave Walton, Jan Okrouhly and Charlie 
-Brady have all contributed bug reports, code  or ideas that have helped RT 
-along.  Utopia Inc, Wesleyan University and The Leftbank Operation have paid 
+Gerald Abshez, Dave Hull, Dave Schenet Dave Walton, Jan Okrouhly, Tobias Brox
+and Charlie Brady have all contributed bug reports, code  or ideas that have 
+helped RT along.  
+
+Utopia Inc, Wesleyan University and The Leftbank Operation have paid 
 me to update RT and release it to the public.  Without their support RT 
 would not exist.   If I've left you out, please drop me a line....it 
 wasn't intentional. 

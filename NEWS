@@ -1,3 +1,8 @@
+11 May 99
+---------
+Loop prevention has been fixed, thanks to Tobias Brox
+Rolled .99.8pre2
+
 9 May 99
 --------
 Changed cookie-authentication to use a hash of username-password and ip address
