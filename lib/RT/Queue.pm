@@ -581,12 +581,11 @@ sub HasRight {
                      Principal => $self->CurrentUser,
                      @_);
         unless(defined $args{'Principal'}) {
-                $RT::Logger->debug("Principal attrib undefined for Queue::HasRight");
+                $RT::Logger->debug("Principal undefined in Queue::HasRight");
 
         }
         return($args{'Principal'}->HasQueueRight(QueueObj => $self,
           Right => $args{'Right'}));
-
 }
 
 =head2 sub Grant

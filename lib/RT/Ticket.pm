@@ -227,8 +227,8 @@ sub Create {
     $Owner->Load($RT::Nobody->UserObj->Id);
   }
 
-    unless ($Queue->HasRight(Principal => $Owner,
-                             Right     => 'OwnTickets')) {
+    unless ($self->HasRight(Principal => $Owner,
+                             Right     => 'Own')) {
         $RT::Logger->warning("$self user ".$Owner->Id ." was proposed as a ticket owner but has no rights to own tickets in this queue\n");
         $Owner = undef;
         $Owner = new RT::User($self->CurrentUser);
@@ -236,7 +236,8 @@ sub Create {
 
    }
 
-   unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+   unless ($CurrentUser->HasTicketRight(Right => 'Create',
+                                        QueueObj => $Queue )) {
     return (0,0,"Permission Denied");
   }
 
@@ -364,7 +365,7 @@ sub AddWatcher {
 	       Owner => 0,
 	       @_ );
 
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+  unless ($self->CurrentUserHasRight('Modify')) {
     return (0, "Permission Denied");
   }
  
@@ -449,7 +450,7 @@ sub DeleteWatcher {
     my ($Watcher);
    
     #Check ACLs 
-    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+    unless ($self->CurrentUserHasRight('Modify')) {
         return (0, "Permission Denied");
     }
     
@@ -505,7 +506,7 @@ Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 sub Watchers {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
+  unless ($self->CurrentUserHasRight('Show')) {
     return (0, "Permission Denied");
   }
 
@@ -634,7 +635,7 @@ Returns this ticket's Requestors as an RT::Watchers object
 sub Requestors {
   my $self = shift;
 
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
+  unless ($self->CurrentUserHasRight('Show')) {
     return (0, "Permission Denied");
   }
   require RT::Watchers;
@@ -663,7 +664,7 @@ sub Cc {
   my $self = shift;
 
   
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
+  unless ($self->CurrentUserHasRight('Show')) {
     return (0, "Permission Denied");
   }
 
@@ -691,7 +692,7 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 sub AdminCc {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
+  unless ($self->CurrentUserHasRight('Show')) {
     return (0, "Permission Denied");
   }
   if (! defined ($self->{'AdminCc'})) {
@@ -848,7 +849,7 @@ sub SetQueue {
   my $self = shift;
   my ($NewQueue, $NewQueueObj);
 
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+  unless ($self->CurrentUserHasRight('Modify')) {
     return (0, "Permission Denied");
   }
   
@@ -862,10 +863,12 @@ sub SetQueue {
     if (!$NewQueueObj->Load($NewQueue)) {
       return (0, "That queue does not exist");
     }
-    elsif (!$NewQueueObj->CurrentUserHasRight('CreateTickets')) {
+    elsif (!$CurrentUser->HasTicketRight(Right =>'Create',
+                                         QueueObj => $NewQueueObj )) {
       return (0, "You may not create requests in that queue.");
     }
-    elsif (!$NewQueueObj->HasRight('CreateTickets',$self->OwnerObj)) {
+    elsif (!$NewOwnerObj->HasTicketRight(Right=> 'Create',  
+                                         Queue => $NewQueueObj)) {
       $self->Untake();
     }
     
@@ -1164,7 +1167,7 @@ sub Comment {
 	      TimeTaken => 0,
 	      @_ );
 
-  unless ($self->CurrentUserHasRight('CommentOnTicket')) {
+  unless ($self->CurrentUserHasRight('Comment')) {
     return (0, "Permission Denied");
   }
   #Record the correspondence (write the transaction)
@@ -1204,7 +1207,7 @@ sub Correspond {
 	       TimeTaken => 0,
 	       @_ );
 
-  unless ($self->CurrentUserHasRight('CorrespondOnTicket')) {
+  unless ($self->CurrentUserHasRight('Reply')) {
       return (0, "Permission Denied");
   }
   
@@ -1772,7 +1775,7 @@ current user. Even if it's owned by another user.
 sub Steal {
   my $self = shift;
   
-  if (!$self->CurrentUserHasRight('ModifyTicket')){
+  if (!$self->CurrentUserHasRight('Modify')){
       return (0,"Permission Denied");
   }
   elsif ($self->OwnerObj->Id eq $self->CurrentUser->Id ) {
@@ -1917,7 +1920,7 @@ transactions on this ticket
 sub Transactions {
     my $self = shift;
     
-    unless ($self->CurrentUserHasRight('ShowTicketHistory')) {
+    unless ($self->CurrentUserHasRight('ShowHistory')) {
 	return (0, "Permission Denied");
     }
     
@@ -2014,7 +2017,7 @@ sub _Accessible {
 sub _Set {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+  unless ($self->CurrentUserHasRight('Modify')) {
     return (0, "Permission Denied");
   }
 
@@ -2071,7 +2074,7 @@ sub _Value  {
 
  #If the current user doesn't have ACLs, don't let em at it.  
  
- unless ($self->CurrentUserHasRight('ShowTicket')) {
+ unless ($self->CurrentUserHasRight('Show')) {
     return (0, "Permission Denied");
   }
   

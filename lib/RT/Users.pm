@@ -96,12 +96,22 @@ sub Disabled {
 		  VALUE=> '1');
 }
 
+# {{{ LimitToPrivileged
 
-=head2 LimitToCanManipulate
+=head2 LimitToPrivileged
 
 Limits to users who can be made members of ACLs and groups
 
 =cut
+
+sub LimitToPrivileged {
+    my $self = shift;
+    $self->Limit( FIELD => 'Privileged',
+                  Operator => '=',
+                  Value => '1');
+}
+
+# }}}
 
 # {{{ HasQueueRight
 

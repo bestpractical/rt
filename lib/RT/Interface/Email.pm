@@ -426,7 +426,7 @@ sub GetCurrentUser  {
 					   EmailAddress => $Address,
 					   RealName => "$Name",
 					   Password => undef,
-					   CanManipulate => 0,
+					   Privileged => 0,
 					   Comments => undef
 					  );
     

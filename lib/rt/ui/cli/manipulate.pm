@@ -54,7 +54,7 @@ sub ParseArgs  {
       $Ticket=&LoadTicket($id);
       if ($Ticket) {
 	  
-	  if ($Ticket->CurrentUserHasRight("ShowTicket")) {
+	  if ($Ticket->CurrentUserHasRight("Show")) {
 	    &ShowSummary($Ticket);
 	    print "\n";
 	    &ShowHistory($Ticket);
@@ -71,7 +71,7 @@ sub ParseArgs  {
       my $id=int($ARGV[++$i]);
       my $Ticket = &LoadTicket($id);
       
-      if ($Ticket->CurrentUserHasRight("ShowTicket")) {
+      if ($Ticket->CurrentUserHasRight("Show")) {
 	&ShowSummary($id);
 	&ShowRequestorHistory($id);
       }
@@ -325,21 +325,24 @@ sub cli_create_req  {
       print "That Queue does not exist\n";
       $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
     }
-    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+    unless ($CurrentUser->HasTicketRight( Right => 'Create',
+                                          QueueObj => $Queue)) {
         print "No permission to create tickets in '".$Queue->QueueId."'\n";
         return();
     }
 
     
-  
-    if ($Queue->CurrentUserHasRight("ModifyTicket")) {
+    #TODO this fails. this right does not exist
+    warn "Bogus rights check";
+    if ($CurrentUser->HasTicketRight(Right => "Ticket",
+                                     QueueObj => $Queue)) {
       
       require RT::User;
       $Owner = RT::User->new($CurrentUser);
       
       $owner=&rt::ui::cli::question_string( "Give request to");
 	
-      while ($owner && (!$Owner->Load($owner) || !$Queue->HasRight( Right => "ModifyTicket", Principal => $Owner))) {
+      while ($owner && (!$Owner->Load($owner) || !$Owner->HasTicketRight("Modify"))) {
 	
 	print "That user doesn't exist or can't own tickets in that queue\n";
 	$owner=&rt::ui::cli::question_string( "Give request to")

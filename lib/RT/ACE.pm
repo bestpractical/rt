@@ -25,7 +25,6 @@ use vars qw (%SCOPE
 		 ListQueue => 'Display a listing of ticket',
 		 ModifyWatchers => 'Modify the queue watchers',
 		 ModifyACL => 'Modify this queue\'s ACL',
-		 CreateTicket => 'Create a ticket in this queue',
          CreateTemplates => 'Create email templates for this queue',
          ModifyTemplates => 'Modify email templates for this queue',
          ShowTemplates => 'Display email templates for this queue',
@@ -48,14 +47,15 @@ use vars qw (%SCOPE
 #Ticket rights are the sort of queue rights that can be granted to 
 #principals and metaprincipals
 
-%TICKETRIGHTS = ( ShowTicket => 'Show ticket summary',
-		  ShowTicketHistory => 'Show ticket history',
-		  ShowTicketComments => 'Show ticket private commentary',
-		  CorrespondOnTicket => 'Reply to ticket',
-		  CommentOnTicket => 'Comment on ticket',
-		  OwnTicket => 'Own a ticket',
-		  ModifyTicket => 'Modify ticket',
-		  DeleteTicket => 'Delete ticket'
+%TICKETRIGHTS = ( Show => 'Show ticket summary',
+        		  ShowHistory => 'Show ticket history',
+	        	  ShowComments => 'Show ticket private commentary',
+		          Create => 'Create a ticket in this queue',
+        		  Reply => 'Reply to ticket',
+	           	  Comment => 'Comment on ticket',
+        		  Own => 'Own a ticket',
+	        	  Modify => 'Modify ticket',
+        		  Delete => 'Delete ticket'
 		);
 
 # }}}
@@ -63,9 +63,9 @@ use vars qw (%SCOPE
 # {{{ Descriptions of principals
 
 %TICKET_METAPRINCIPALS = ( Owner => 'The owner of a ticket',
-			   Requestor => 'The requestor of a ticket',
-			   Cc => 'The CC of a ticket',
-			   AdminCc => 'The administrative CC of a ticket',
+            			   Requestor => 'The requestor of a ticket',
+		            	   Cc => 'The CC of a ticket',
+			               AdminCc => 'The administrative CC of a ticket',
 			 );
 
 %GLOBAL_METAPRINCIPALS = ( Everyone => 'Any valid RT principal' );
@@ -102,14 +102,14 @@ sub Create {
 
     if ($args{'RightScope'} eq 'System') {
 	return (0, 'No permission to grant rights')
-	  unless ($self->CurrentUser->HasRight('ModifySystemACL'));
+	  unless ($self->CurrentUser->HasSystemRight('ModifySystemACL'));
 
 	#TODO check if it's a valid RightName/Principaltype
     }
     elsif (($args{'RightScope'} eq 'Queue') and
 	   ($args{'RightAppliesTo'} eq '0')) {
 	return (0, 'No permission to grant rights')
-	  unless ($self->CurrentUser->HasRight('ModifySystemACL'));	
+	  unless ($self->CurrentUser->HasSystemRight('ModifySystemACL'));	
 
 	#TODO check if it's a valid RightName/Principaltype
 
@@ -346,39 +346,43 @@ of the system.
 
 =head3 Queue rights that apply to a ticket within a queue
 
+Create Ticket in <queue>
+
+        Name: Create
+	Principals: <user> <group>
 Display Ticket Summary in <queue>
 
-	Name: ShowTicket
+	Name: Show
 	Principals: <user> <group> Owner Requestor Cc AdminCc
 
 Display Ticket History  <queue>
 
-	Name: ShowTicketHistory
+	Name: ShowHistory
 	Principals: <user> <group> Owner Requestor Cc AdminCc
 
 Display Ticket Private Comments  <queue>
 
-	Name: ShowTicketComments
+	Name: ShowComments
 	Principals: <user> <group> Owner Requestor Cc AdminCc
 
 Reply to Ticket in <queue>
 
-	Name: CorrespondOnTicket
+	Name: Reply
 	Principals: <user> <group> Owner Requestor Cc AdminCc
 
 Comment on Ticket in <queue>
 
-	Name: CommentOnTicket
+	Name: Comment
 	Principals: <user> <group> Owner Requestor Cc AdminCc
 
 Modify Ticket in <queue>
 
-	Name: ModifyTicket
+	Name: Modify
 	Principals: <user> <group> Owner Requestor Cc AdminCc
 
 Delete Tickets in <queue>
 
-	Name: DeleteTicket
+	Name: Delete
 	Principals: <user> <group> Owner Requestor Cc AdminCc
 
 
@@ -416,10 +420,6 @@ Modify Queue ACL for queue <queue>
 	Name: ModifyQueueACL
 	Principals: <user> <group>
 
-Create Ticket in <queue>
-
-        Name: CreateTicket
-	Principals: <user> <group>
 
 =head2 Rights that apply to the System scope
 

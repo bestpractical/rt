@@ -143,7 +143,7 @@ Limit the ACL to a just a specific user.
 
 =cut
 
-sub LimitPrincipalsToUser {
+sub LimitPrincipalToUser {
   my $self = shift;
   my $user = shift;
   
@@ -165,7 +165,7 @@ Limit the ACL to just a specific group.
 
 =cut
   
-sub LimitPrincipalsToGroup {
+sub LimitPrincipalToGroup {
   my $self = shift;
   my $group = shift;
   
@@ -194,7 +194,7 @@ $type is one of:
 
 =cut
 
-sub LimitPrincipalsToType {
+sub LimitPrincipalToType {
   my $self=shift;
   my $type=shift;  
   $self->Limit(ENTRYAGGREGATOR => 'OR',
@@ -202,4 +202,77 @@ sub LimitPrincipalsToType {
 		VALUE => $type );
 }
 
+#wrap around _DoSearch  so that we can build the hash of returned
+#values 
+sub _DoSearch {
+    my $self = shift;
+    $RT::Logger->debug("Now in ".$self."->_DoSearch");
+    my $return = $self->SUPER::_DoSearch(@_);
+    $self->_BuildHash();
+    return ($return);
+}
+
+
+#Build a hash of this ACL's entries.
+sub _BuildHash {
+    my $self = shift;
+
+    $RT::Logger->debug("Now in ".$self."->_BuildHash\n");
+    while (my $entry = $self->Next) {
+        $RT::Logger->debug("Now building entry for ".$entry ." in ".
+                            $self."->_BuildHash\n");
+        $self->{'as_hash'}->{$entry->RightScope . "-" .
+                             $entry->RightAppliesTo . "-" . 
+                             $entry->RightName . "-" .
+                             $entry->PrincipalId . "-" .
+                             $entry->PrincipalType
+                            } = 1;
+
+    }
+    $RT::Logger->debug("Done with ".$self."->_BuildHash\n");
+}
+
+
+# {{{ HasEntry
+
+=head2 HasEntry
+
+=cut
+
+sub HasEntry {
+    my $self = shift;
+    my %args = ( RightScope => undef,
+                 RightAppliesTo => undef,
+                 RightName => undef,
+                 PrincipalId => undef,
+                 PrincipalType => undef,
+                 @_ );
+
+    $RT::Logger->debug("Now in ".$self."->HasEntry\n");
+    use Data::Dumper;
+    $RT::Logger->debug(Dumper($self->{'as_hash'}));
+    $RT::Logger->debug("Trying to find as_hash-> ".
+                            $args{'RightScope'} . "-" .
+                             $args{'RightAppliesTo'} . "-" . 
+                             $args{'RightName'} . "-" .
+                             $args{'PrincipalId'} . "-" .
+                             $args{'PrincipalType'}.
+                           " as: '".
+                            $self->{'as_hash'}->{
+                              $args{'RightScope'} . "-" .
+                              $args{'RightAppliesTo'} . "-" . 
+                              $args{'RightName'} . "-" .
+                              $args{'PrincipalId'} . "-" .
+                              $args{'PrincipalType'}}. "'\n"
+                             );
+    return ($self->{'as_hash'}->{$args{'RightScope'} . "-" .
+                             $args{'RightAppliesTo'} . "-" . 
+                             $args{'RightName'} . "-" .
+                             $args{'PrincipalId'} . "-" .
+                             $args{'PrincipalType'}
+                            } );
+
+}
+
+# }}}
 1;

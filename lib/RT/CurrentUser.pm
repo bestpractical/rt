@@ -61,7 +61,7 @@ sub _Accessible  {
 	      RealName => 'read',
 	      Password => 'neither',
 	      EmailAddress => 'read',
-	      CanManipulate => 'read',
+	      Privileged => 'read',
 	      IsAdministrator => 'read'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));

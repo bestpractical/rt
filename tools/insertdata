@@ -31,7 +31,7 @@ $RT_System->Create(
 		     UserId => 'RT_System',
 		     RealName => 'The RT System itself',
 		     Comments =>  'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-		     CanManipulate => '1',
+		     Privileged => '1',
 		     Creator => '1');
 
 
@@ -44,7 +44,7 @@ my @users = (
 	      UserId => 'Nobody',
 	      RealName => 'Nobody in particular',
 	      Comments => 'Do not delete or modify this user. It is integral to RT\'s internal data structures',
-	      CanManipulate => '1',
+	      Privileged => '1',
 	     },
 	     
 	     { 
@@ -54,7 +54,7 @@ my @users = (
               Password => 'password',
 	      EmailAddress => "root\@localhost",
 	      Comments => 'SuperUser',
-	      CanManipulate => '1',
+	      Privileged => '1',
 	     }
 	    );
 

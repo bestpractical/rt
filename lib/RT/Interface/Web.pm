@@ -101,7 +101,8 @@ sub CreateOrLoad {
 		$m->abort;
 	}
 
-	unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+	unless ($CurrentUser->HasTicketRight(Right => 'Create',
+                                         QueueObj => $Queue )) {
 		&mc_comp("/Elements/Error", Why => 'Permission Denied');
 		$m->abort;
 	}

@@ -2,7 +2,7 @@
 
 <%INIT>
 my ($tab);
-my @tabs = qw(Users Groups Queues Scrips Templates);
+my @tabs = qw(Users Groups Queues Scrips Templates ACL);
 </%INIT>
 
 

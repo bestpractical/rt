@@ -75,7 +75,7 @@ my $gratuitous = {
     'FreeformContactInfo', 'blob', 'NULL', '', '', '',
     'Organization', 'varchar', 'NULL', '200', '', '',
     'Disabled', 'integer', 'NULL', '', '', '',
-    'CanManipulate', 'integer', 'NULL', '', '', '',
+    'Privileged', 'integer', 'NULL', '', '', '',
     'RealName', 'varchar', 'NULL', '120', '', '',
     'Nickname', 'varchar', 'NULL', '16', '', '',
     'Lang', 'varchar', 'NULL', '16', '', '',

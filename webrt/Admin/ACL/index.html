@@ -1,4 +1,13 @@
-Find ACL for
+<& /Admin/Elements/Header, Title => 'RT ACL Administration' &>
+
+
+Edit ACL for:
+<ul>
+% while (my $queue = $Queues->Next) {
+<li><A HREF="Queue.html?Queue=<%$queue->id%>"><%$queue->id%>: <%$queue->QueueId%>
+(<%$queue->Description%></a>
+% }
+</ul>
 
         System
 
@@ -8,3 +17,7 @@ Find ACL for
         Users whose <username/email> matches ________
         "Everyone"
         Me
+<%INIT>
+my $Queues = new RT::Queues($session{'CurrentUser'});
+$Queues->UnLimit;
+</%INIT>

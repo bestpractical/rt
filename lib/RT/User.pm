@@ -34,7 +34,7 @@ sub _Accessible  {
 	      Organization => 'read/write',
 	      Disabled => 'read', #To modify this attribute, we have helper
 				  #methods
-	      CanManipulate => 'read/write',
+	      Privileged => 'read/write',
 	      # }}}
 	      
 	      # {{{ Names
@@ -95,7 +95,7 @@ sub _Accessible  {
 sub Create  {
   my $self = shift;
   my %args = (
-	      CanManipulate => 0,
+	      Privileged => 0,
 	      @_ # get the real argumentlist
 	     );
 
@@ -299,7 +299,12 @@ sub HasQueueRight {
 
 # {{{ sub HasTicketRight
 
-=head2 HasTicketRight( TicketObj => RT::Ticket, Right => 'Right' )
+=head2 HasTicketRight
+
+Takes a paramhash which can contain
+three items:
+    TicketObj => RT::Ticket or QueueObj => RT::Queue
+    and Right => 'Right' 
 
 Returns 1 if this user has the ticket right specified for the ticket object
 passed in.
@@ -311,17 +316,20 @@ Returns undef if they don't
 sub HasTicketRight {
 	my $self = shift;
 	my %args = ( TicketObj => undef,
+                 QueueObj => undef,
 		     Right => undef,
 		     @_);
 
-	#Check to make sure that the ticketobj is really a ticketobject	
-	unless (ref ($args{'TicketObj'}) =~ /^RT::Ticket/) {
-		$RT::Logger->debug("RT::User::HasTicketRight was passed $args{'TicketObj'} as a ticket object. It's type is ".ref($args{'TicketObj'})."\n ");
-	}
-	
+    my ($QueueId);
 
+	#Check to make sure that the ticketobj is really a ticketobject	
+    if (defined $args{'QueueObj'}) {
+        $QueueId = $args{'QueueObj'}->Id;
+    } elsif (defined $args{'TicketObj'}) {
+        $QueueId = $args{'TicketObj'}->QueueObj->Id,
+    }        
 	return ($self->_HasRight(Scope => 'Ticket',
-				AppliesTo => $args{'TicketObj'}->QueueObj->Id,
+				AppliesTo => $QueueId,
 				Right => "$args{'Right'}"));
 	
 }

@@ -1,4 +1,3 @@
-<%$ACE->UserObj->UserId%> (<%$ACE->UserObj->RealName%>)
 <UL>
 %while(my $ACE = $ACL->Next) {
 
@@ -9,8 +8,8 @@
 
 <%INIT>
 my $ACL = new RT::ACL($session{'CurrentUser'});
-$ACL->LimitToScopeQueue($QueueObj->id);
-$ACL->LimitToPrincipalToUser($PrincipalId);
+$ACL->LimitScopeToQueue($QueueObj->id);
+$ACL->LimitPrincipalToUser($PrincipalId);
 </%INIT>
 <%ARGS>
 $PrincipalId => undef

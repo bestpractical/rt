@@ -36,7 +36,7 @@ sub _Accessible  {
 # {{{ sub Create
 sub Create {
     my $self = shift;
-    if $self->CurrentUser->HasRight('ModifyGroups') {
+    if $self->CurrentUser->HasSystemRight('ModifyGroups') {
 	die "RT::GroupMember::Create unimplemented";
     }
     else {
@@ -63,7 +63,7 @@ sub Delete {
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
-    if $self->CurrentUser->HasRight('ModifyGroups') {
+    if $self->CurrentUser->HasSystemRight('ModifyGroups') {
 	
 	$self->$SUPER::_Set(@_);
     }

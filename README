@@ -39,6 +39,7 @@ REQUIRED PACKAGES:
 o   Perl5.x ( http://www.perl.com )
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) -- free
+        Currently supported:    Mysql 3.23, Postgres 7.1
 
 o   Apache + mod_perl -- ( http://perl.apache.org) free
 
@@ -260,7 +261,7 @@ Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew,
 Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
 John Lengeling, Elmar Knipp, Gerald Abshez, Dave Hull, Dave Schenet,
 Dave Walton, Jan Okrouhly, Tobias Brox, Lamont Lucas, Charlie Brady,
-Robin Shostack, Eric Mumpower, Jerrod Wiesman, Adam Hammer, Ivan, Alex
+Robin Shostack, Eric Mumpower, Jerrod Wiesman, Adam Hammer, Ivan Kohler, Alex
 Pilosov, Mary Alderdice, Deborah Kaplan, Jens von Bülow and many others
 have all contributed bug reports, code or ideas that have helped RT along.  
 
