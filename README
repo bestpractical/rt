@@ -115,9 +115,8 @@ GENERAL INSTALLATION
 
 	Follow the instructions for installing RT 2.0.
 
-	Once you have installed RT 2.0, cd /path/to/rt/etc
-
-	you will find a script called 'import-1.0-to-2.0'
+	Once you have installed RT 2.0, download import-1.0-to-2.0
+	from ftp://ftp.fsck.com/pub/rt/contrib/2.0/rt-addons
 
 	Edit the configuration defaults in import-1.0-to-2.0
 
@@ -191,6 +190,7 @@ THE WEB UI
 RT's web ui is based around HTML::Mason, which works best with the mod_perl
 perl interpreter within Apache httpd.  We're working on a FastCGI version as
 well, but for now, apache's your best bet.
+
 Apache 
         RT Uses HTML::Mason.  You'll need to add a few lines to your
         httpd.conf telling it to use rt's web ui.  If you have mod-perl

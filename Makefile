@@ -4,9 +4,9 @@
 
 PERL			= 	/usr/bin/perl
 
-RT_VERSION_MAJOR	=	1
-RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	106
+RT_VERSION_MAJOR	=	2
+RT_VERSION_MINOR	=	0
+RT_VERSION_PATCH	=	0-RC1
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -302,11 +302,11 @@ initdb.rtuser:
 
 
 insert-install:
-	cp -rp ./tools/import-1.0-to-2.0 ./tools/insertdata\
+	cp -rp ./tools/insertdata \
 		 $(RT_ETC_PATH)
 	$(PERL) -p -i -e " s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 		           s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;"\
-		$(RT_ETC_PATH)/insertdata $(RT_ETC_PATH)/import-1.0-to-2.0
+		$(RT_ETC_PATH)/insertdata
 
 bin-install:
 	cp -p ./bin/webmux.pl $(RT_MODPERL_HANDLER)
