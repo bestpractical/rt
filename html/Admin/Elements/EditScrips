@@ -40,7 +40,7 @@
 <input type="checkbox" name="DeleteScrip-<%$scrip->Id%>">
 </TD>
 <TD>
-<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" %></a><br>
+<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br>
 <small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
 </TD>
 </TR>

@@ -50,7 +50,7 @@ if ($id) {
                                                                                              
 my $subtabs = {                                                                               
      A => { title => loc('Select scrip'),                                                     
-            path => "Admin/Queues/Scrips.html?id=".$id,                                       
+            path => "Admin/Queues/Scrips.html?id=".$QueueObj->id,
                },                                                                             
      B => { title => loc('New scrip'),                                                        
             path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id,

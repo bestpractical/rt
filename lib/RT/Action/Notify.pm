@@ -107,10 +107,6 @@ sub SetRecipients {
     #Strip the sender out of the To, Cc and AdminCc and set the 
     # recipients fields used to build the message by the superclass.
 
-    $RT::Logger->debug("$self: To is ".join(",",@To));
-    $RT::Logger->debug("$self: Cc is ".join(",",@Cc));
-    $RT::Logger->debug("$self: Bcc is ".join(",",@Bcc));
-
     @{ $self->{'To'} }  = grep ( !/^$creator$/, @To );
     @{ $self->{'Cc'} }  = grep ( !/^$creator$/, @Cc );
     @{ $self->{'Bcc'} } = grep ( !/^$creator$/, @Bcc );
