@@ -1,5 +1,5 @@
 $Header$
-RT is (c) 1996-2000 by Jesse Vincent <jesse@fsck.com>
+RT is (c) 1996-2000 by Jesse Vincent <jesse@bestpractical.com>
 
 RT is licensed to you under the terms of version 2 of the GNU General 
 Public License. 
@@ -167,10 +167,10 @@ machine.
  
 Add the following lines to /etc/aliases (or your local equivalent) :
 
-    rt-comment: "|/path/to/rt2/bin/rt-mailgate --queue general --action comment"
-    rt:         "|/path/to/rt2/bin/rt-mailgate --queue general --action correspond"
-                                                         |          |
-                                         <queue-name>----/          |
+rt:         "|/path/to/rt2/bin/rt-mailgate --queue general --action correspond"
+rt-comment: "|/path/to/rt2/bin/rt-mailgate --queue general --action comment"
+                                                   |                |
+                                   <queue-name>----/                |
                                                                     |
                       <correspond or comment depending on whether   |
                       the mail should be resent to the requestor>---/
@@ -233,18 +233,9 @@ GETTING HELP
 ------------
 
 If you're interested in having RT extended or customized or if you need
-commercial support, please send email to <jesse@fsck.com> to discuss rates
-and availability.
+commercial support, please send email to <jesse@bestpractical.com> to discuss 
+rates and availability.
 
-TROUBLESHOOTING
----------------
-
-All errors will be appended to a logfile, which lives in /tmp/rt.log.* unless 
-you've reconfigured it.  Check etc/config.pm for details.
-
-If the solution to the problem you're running into isn't obvious and you've 
-checked the FAQ, feel free to send mail to rt-users@fsck.com (for release 
-versions of RT) or rt-devel@fsck.com (for development versions).
 
 RT-USERS MAILINGLIST
 --------------------
@@ -265,10 +256,11 @@ those above.
 Address questions about the stable release to the rt-users list, and
 questions about the development version to the rt-devel list.  If you feel
 your questions are best not asked publically, send them personally to
-jesse@fsck.com.
+<jesse@bestpractical.com>.
 
 If you want to be informed of every commit to the CVS repository,
 subscribe to rt-commit@fsck.com using similar instructions to those above.
+
 
 RT WEBSITE
 ----------
@@ -279,13 +271,23 @@ to the current version of rt, contributed patches and lots of other great
 stuff.
 
 
+TROUBLESHOOTING
+---------------
+
+All errors will be appended to a logfile, which lives in /tmp/rt.log.* unless 
+you've reconfigured it.  Check etc/config.pm for details.
+
+If the solution to the problem you're running into isn't obvious and you've 
+checked the FAQ, feel free to send mail to rt-users@fsck.com (for release 
+versions of RT) or rt-devel@fsck.com (for development versions).
+
 GIVING SOMETHING BACK
 ---------------------
 
 RT is free software. You are not obligated to pay for it.  You should be 
 aware, however, that the author develops RT in lieu of a day job. 
 If you able, either a contract to extend RT in some way that would be 
-useful to your organization, a financial contribution or even something
+useful to your organization, a financial contribution, or even something
 off the author's amazon wishlist 
 	( http://www.amazon.com/exec/obidos/wishlist/2GMHUDAFBT2XR/ )
 would be much appreciated. 
@@ -322,4 +324,5 @@ If I've left you out, please drop me a line ....it wasn't intentional.
         Enjoy
 
         Jesse Vincent
-	jesse@fsck.com
+	<jesse@bestpractical.com>
+
