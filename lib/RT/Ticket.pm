@@ -1734,13 +1734,9 @@ sub _Links {
     my $field = shift;
     my $type =shift || "";
 
-    unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return (0, "Permission Denied");
-    }
-    
-    unless (exists $self->{"$field$type"}) {
+    $self->{"$field$type"} = new RT::Links($self->CurrentUser);
+    if ($self->CurrentUserHasRight('ShowTicket')) {
 	
-	$self->{"$field$type"} = new RT::Links($self->CurrentUser);
 	$self->{"$field$type"}->Limit(FIELD=>$field, VALUE=>$self->URI);
 	$self->{"$field$type"}->Limit(FIELD=>'Type', VALUE=>$type) if ($type);
     }
