@@ -18,14 +18,8 @@ sub _Accessible {
   my $self = shift;
   my %Cols = ( QueueId => 'read/write',
 	       CorrespondAddress => 'read/write',
+	       Description => 'read/write',
 	       CommentAddress =>  'read/write',
-	       MailOwnerOnTransaction =>  'read/write',
-	       MailMembersOnTransaction =>  'read/write',
-	       MailRequestorOnTransaction =>  'read/write',
-	       MailRequestorOnCreation =>  'read/write',
-	       MailMembersOnCorrespondence => 'read/write',	
-	       MailMembersOnComment =>  'read/write',
-	       PermitNonmemberCreate =>  'read/write',
 	       InitialPriority =>  'read/write',
 	       FinalPriority =>  'read/write',
 	       DefaultDueIn =>  'read/write'

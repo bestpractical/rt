@@ -28,6 +28,8 @@ sub _Accessible {
 	      Scope => 'read/write',
 	      Value => 'read/write',
 	      Type => 'read/write',
+	      Quiet => 'read/write',
+	      Template => 'read/write'	      
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
 }
@@ -40,6 +42,8 @@ sub Create {
 	      Value => undef,
 	      Scope => undef,
 	      Type => undef,
+	      Template => undef,
+	      Quiet => 0,
 	      @_ # get the real argumentlist
 	     );
   

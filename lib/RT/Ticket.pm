@@ -219,27 +219,27 @@ sub CcAsString {
     
   
 }
-sub Bcc {
+sub AdminCc {
   my $self = shift;
-  if (! defined ($self->{'Bcc'})) {
+  if (! defined ($self->{'AdminCc'})) {
     require RT::Watchers;
-    $self->{'Bcc'} = new RT::Watchers ($self->CurrentUser);
-    $self->{'Bcc'}->LimitToTicket($self->id);
-    $self->{'Bcc'}->LimitToBcc();
+    $self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
+    $self->{'AdminCc'}->LimitToTicket($self->id);
+    $self->{'AdminCc'}->LimitToAdminCc();
   }
-  return($self->{'Bcc'});
+  return($self->{'AdminCc'});
   
 }
-sub BccAsString {
+sub AdminCcAsString {
   my $self = shift;
-  if (!defined $self->{'BccAsString'}) {
-    $self->{'BccAsString'} = "";
+  if (!defined $self->{'AdminCcAsString'}) {
+    $self->{'AdminCcAsString'} = "";
     while (my $requestor = $self->Bcc->Next) {
-      $self->{'BccAsString'} .= $requestor->Email .", ";
+      $self->{'AdminCcAsString'} .= $requestor->Email .", ";
     }
-    $self->{'BccAsString'} =~ s/, $//;
+    $self->{'AdminCcAsString'} =~ s/, $//;
   }
-  return ( $self->{'BccAsString'});
+  return ( $self->{'AdminCcAsString'});
   
     
   

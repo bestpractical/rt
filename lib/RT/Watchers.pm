@@ -60,6 +60,15 @@ sub LimitToRequestors {
   $self->LimitToType("Requestor");
 }
 
+sub LimitToCc {
+    my $self = shift;
+    $self->LimitToType("Cc");
+}
+
+sub LimitToAdministrativeCc {
+    my $self = shift;
+    $self->LimitToType("AdminCc");
+}
 # Return a (reference to a) list of emails
 sub Emails {
     my $self = shift;
