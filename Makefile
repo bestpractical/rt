@@ -11,7 +11,7 @@ GETPARAM		=	$(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	22
+RT_VERSION_PATCH	=	23
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -388,10 +388,10 @@ factory: createdb insert-schema
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
 
 commit:
-	aegis -build ; aegis -diff ; aegis -test; aegis --development_end
+	aegis -build ; aegis -diff ; aegis -test; aegis -develop_end
 
 integrate:
-	aegis -build; aegis -dist; aegis -test ; aegis -integrate_pass
+	aegis -integrate_begin;	aegis -build; aegis -diff; aegis -test ; aegis -integrate_pass
 
 predist: commit tag-and-tar
 
