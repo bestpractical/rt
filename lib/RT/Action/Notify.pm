@@ -22,7 +22,7 @@ sub SetRecipients {
 
     $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
     
-    my (@To, @Cc, @Bcc);
+    my (@To, @PseudoTo, @Cc, @Bcc);
 
     if ($arg =~ /\bRequestor\b/) {
 	push(@To, @{$self->TicketObj->Requestors->Emails});
@@ -59,7 +59,7 @@ sub SetRecipients {
 
     if ($RT::UseFriendlyToLine) {    
     	unless (@To) {
-	    push (@To,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."':;");
+	    push (@PseudoTo,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."':;");
 	}
     } 
     
@@ -70,7 +70,7 @@ sub SetRecipients {
     @{$self->{'To'}} = grep (!/^$creator$/, @To);
     @{$self->{'Cc'}} = grep (!/^$creator$/, @Cc);
     @{$self->{'Bcc'}} = grep (!/^$creator$/, @Bcc);
-        
+    @{$self->{'PseudoTo'}} = @PseudoTo;    
     return(1);
 
 }

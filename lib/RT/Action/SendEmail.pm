@@ -81,7 +81,7 @@ sub Commit  {
     $self->SetHeader('To', join(',', @{$self->{'To'}})) 
       if (@{$self->{'To'}});
     $self->SetHeader('Cc', join(',' , @{$self->{'Cc'}})) 
-      if (@{$self->{'Cc'}});;
+      if (@{$self->{'Cc'}});
 	$self->SetHeader('Bcc', join(',', @{$self->{'Bcc'}})) 
 	  if (@{$self->{'Bcc'}});;
     
@@ -95,9 +95,15 @@ sub Commit  {
     unless ($MIMEObj->head->get('To') ||
 	    $MIMEObj->head->get('Cc') || 
 	    $MIMEObj->head->get('Bcc') ) {
-	$RT::Logger->debug('$self: No recipients found. Not sending.\n');
-	return(0);
+	$RT::Logger->debug("$self: No recipients found. Not sending.\n");
+	return(1);
     }
+
+    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
+    # If we don't have any 'To' header, drop in the pseudo-to header.
+
+    $self->SetHeader('To', join(',', @{$self->{'PseudoTo'}}))
+      if ( (@{$self->{'PseudoTo'}}) and (! $MIMEObj->head->get('To')));
     
     if ($RT::MailCommand eq 'sendmailpipe') {
 	open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments") || return(0);

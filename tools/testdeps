@@ -19,11 +19,13 @@ $mode = shift || print_help();
 $dbd = shift || print_help();
 
 @modules = qw(
-DBI 1.13
+DBI 1.16
 DBIx::DataSource 0.02
-DBIx::SearchBuilder 0.37
+DBIx::SearchBuilder 0.38
 HTML::Entities 
 MLDBM
+Net::Domain
+Net::SMTP
 Params::Validate 0.02
 HTML::Mason 0.896
 CGI::Cookie 1.06
