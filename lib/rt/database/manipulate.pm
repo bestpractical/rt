@@ -198,9 +198,14 @@ sub add_correspondence {
 	&update_each_req($in_serial_num, 'date_told', $rt::time);
 	$tem=&rt::template_mail('correspondence-official', $queue_id, "$requestors", $in_cc, $in_bcc, 
 			 "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
-    } elsif ($in_cc || $in_bcc) {
-	$tem=&rt::template_mail('correspondence-official', $queue_id, "", $in_cc, $in_bcc, 
-			 "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
+    } else {
+	if ($in_cc || $in_bcc) {
+	    $tem=&rt::template_mail('correspondence-official', $queue_id, "", $in_cc, $in_bcc, 
+				    "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
+	}
+	if ($in_notify) {
+	    &update_each_req($in_serial_num, 'date_told', $rt::time);
+	}
     }
 
     my $dist_list=&rt::dist_list('correspond', $queue_id, $in_serial_num);
@@ -619,11 +624,15 @@ sub link {
 
     # ADD TRANSACTION AT THE OTHER REQUEST
     if ($rt::relship{$otherdb}{TYPE} eq 'dependency') {
-	$transaction_num=&add_transaction
-	    ($in_serial_num, $in_current_user, 'link', 
-	     "$otherdb/$foreign_id/$rt::relship{$otherdb}{type}-",
-	     "$content", $time, 1, $in_current_user)
-		or return (0, 'addtrans failed');
+	if (!$rt::relship{$otherdb}{URL}) {
+	    $transaction_num=&add_transaction
+		($in_serial_num, $in_current_user, 'link', 
+		 "$otherdb/$foreign_id/$rt::relship{$otherdb}{TYPE}-",
+		 "$content", $time, 1, $in_current_user)
+		    or return (0, 'addtrans failed');
+	} else {
+	    die "Stub!! :( Link action has to be taken at foreign RT instance";
+	}
     } else {
 	# Maybe we need some kind of PlugIn system here? Hm. What about
 	# loading all available modules in a certain subdirectory. All
@@ -640,12 +649,29 @@ sub link {
     # ADD TRANSACTION:
     $transaction_num=&add_transaction
 	($in_serial_num, $in_current_user, 'link', 
-	 "$otherdb/$foreign_id/$rt::relship{$otherdb}{type}",
+	 "$otherdb/$foreign_id/$rt::relship{$otherdb}{TYPE}". 
+	 (defined $rt::relship{$otherdb}{URL}) ? "/$rt::relship{$otherdb}{URL}" : "",
 	 "$content", $time, 1, $in_current_user)
 	    or return (0, 'addtrans failed');
 
 
+    # DEPENDENCY
+    # One more thing: If we add a dependency, the dependent should be
+    # stalled:
+    if ($rt::relship{$otherdb}{TYPE} eq 'dependency') {
+	req_in($foreign_id);
+	if ($rt::req[$foreign_id]{'status'} ne 'resolved') {
+	    if (!$rt::relship{$otherdb}{URL}) {
+		return stall($foreign_id, $in_current_user);
+	    } else {
+		die "Stub! :( The foreign RT instance has to be informed that the request should be stalled";
+	    }
+	}
+    }
+
+    return ($transaction_num, 'Link added');
+ }
+
 }
 
 1;
-

@@ -94,7 +94,9 @@ sub get_last_each_req_serial_num
 	my($serial_num);
 
 	# I like this one - unfortunately it's MySQL specific:
-	if ($rt::rt_db eq 'mysql') { return $dbh->{'mysql_insertid'}; }
+	if ($rt::rt_db eq 'mysql') { 
+	    return $sth->{insertid} || $dbh->{'mysql_insertid'}; 
+	}
 
 	# Pull the last inserted sequence value for the each_req table.
     	$query_string="select last_value from each_req_serial_num_seq";
@@ -136,7 +138,12 @@ sub add_transaction {
   my $in_time = shift;
   my $in_do_mail = shift;
   my $in_current_user = shift;
-  
+
+  # Observed problem once a month in my version of the script.
+  if (!$in_serial_num) {
+      die "Ups! No serial num! Time to do some debugging.";
+  }
+
   my ($actor, $type, $data, $transaction_num, $query_string, $queue_id, $owner, $requestors);
   
     
@@ -193,6 +200,8 @@ sub update_each_req {
     my ($in_serial_num, $in_field, $in_new_value) = @_;
     my ($query_string, $new_value);
     
+    # This one is required to get the abortion below working OK.
+    req_in($in_serial_num, '_rt_system');
 	
     # if we're not actually changing the field, just abort 
     return 0 if $rt::req[$in_serial_num]{$in_field} eq $in_new_value;
@@ -257,6 +266,11 @@ sub transaction_in {
     my ($trans, $in_current_user) = @_;
     my ($query_string);
 
+    # Another infrequent bug happening here.
+    if (!$trans || !$in_current_user) {
+	warn "huh? Some debugging might be needed";
+    }
+
     $query_string = "SELECT id, actor, type, trans_data, trans_date, serial_num, effective_sn from transactions WHERE id = $trans ORDER BY id";
     $sth = $dbh->prepare($query_string) or return( "prepare had some problem: $DBI::errstr\nThe query was $query_string");
 	$rv = $sth->execute or return( "prepare had some problem: $DBI::errstr\nThe query was $query_string");
@@ -294,7 +308,7 @@ sub parse_transaction_row {
 	if ($success) {
 	    $rt::req[$serial_num]{'trans'}[$in_id]{'content'} = $content;
 	}
-	$rt::req[$serial_num]{'trans'}[$in_id]{'text'}=&transaction_text($serial_num, $in_id);
+	$rt::req[$serial_num]{'trans'}[$in_id]{'text'}=&transaction_text($serial_num, $in_id, $in_current_user);
 
     }
     
@@ -311,7 +325,7 @@ sub parse_transaction_row {
 
 
 sub transaction_text {
-    my ($serial_num,$index) =@_;
+    my ($serial_num,$index,$in_current_user) =@_;
     my ($text_time, $wday, $mon, $mday, $hour, $min, $sec, $TZ, $year);
     if ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'create'){
 	return( "Request created by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
@@ -381,6 +395,28 @@ sub transaction_text {
     {
 	return( "Request $rt::req[$serial_num]{'trans'}[$index]{'serial_num'} merged into $rt::req[$serial_num]{'trans'}[$index]{'data'} by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
     }
+    elsif ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'subreqrsv') {
+	return "Subrequest #$rt::req[$serial_num]{'trans'}[$index]{'data'} resolved by $rt::req[$serial_num]{'trans'}[$index]{'actor'}";
+    }
+    elsif ($rt::req[$serial_num]{'trans'}[$index]{'type'} eq 'link') {
+	my ($db, $fid, $type, $remote)=split(/\/, $rt::req[$serial_num]{'trans'}[$index]{'data'});
+	if ($type =~ /^dependency(-?)$/) {
+	    $remote=(defined $remote) ? " at $remote" : "";
+	    if ($1 eq '-') {
+		return ("Request \#$fid$remote made dependent on\
+this request by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
+	    } else {
+		return ("This request made dependent on request \#$fid$remote\
+by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
+	    }
+	} else {
+
+	    # Some kind of plugin system needed here.
+
+	    return ("$type linked to $fid at $remote\
+by $rt::req[$serial_num]{'trans'}[$index]{'actor'}");
+	}
+    }
     else {
 	return("$rt::req[$serial_num]{'trans'}[$index]{'type'} modified.  RT Should be more explicit about this!");
     }
@@ -404,6 +440,8 @@ sub req_in
 {
     my ($in_serial_num, $in_current_user) = @_;
     my ($effective_sn);
+
+    # Wouldn't it be smarter to first check if we already have it?
 
     $effective_sn = &normalize_sn($in_serial_num);
 
