@@ -763,7 +763,16 @@ sub ProcessTicketBasics {
 		   TimeWorked  
 		   TimeLeft 
         );
-  
+ 
+
+  if ($ARGSRef->{'Queue'} and ($ARGSRef->{'Queue'} !~ /^(\d+)$/)) {
+	my $tempqueue = RT::Queue->new($RT::SystemUser);
+	$tempqueue->Load($ARGSRef->{'Queue'});
+	if ($tempqueue->id) {
+	  $ARGSRef->{'Queue'} =  $tempqueue->Id();
+	}	
+  }
+ 
   my @results = UpdateRecordObject( AttributesRef => \@attribs, 
 				    Object => $TicketObj, 
 				    ARGSRef => $ARGSRef);

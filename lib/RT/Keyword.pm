@@ -222,7 +222,10 @@ Loads KEYWORD, either by id if it's an integer or by Path, otherwise
 sub Load {
     my $self = shift;
     my $id = shift;
-	
+
+    if (!$id) {
+	return (0, 'No keyword defined');
+    }	
     if ($id =~ /^(\d+)$/) {
 	 return ($self->SUPER::Load($id));
     }
