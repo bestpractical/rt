@@ -10,7 +10,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	0
+RT_VERSION_PATCH	=	1
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -44,6 +44,7 @@ RT_ACTION_BIN		=	rt
 RT_QUERY_BIN		=	rtq
 RT_ADMIN_BIN		=	rtadmin
 RT_MAILGATE_BIN		=	rt-mailgate
+RT_CGI_BIN		=	webrt.cgi
 
 #
 # The location of your rt configuration file
@@ -245,6 +246,9 @@ mux-links:
 
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
+
+	rm -f $(RT_CGI_PATH)/$(RT_CGI_BIN)
+	ln -s $(RT_PERL_MUX) $(RT_CGI_PATH)/$(RT_CGI_BIN)
 
 
 

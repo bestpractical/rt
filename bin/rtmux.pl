@@ -73,6 +73,46 @@ elsif ($program eq '!!RT_MAILGATE_BIN!!') {
   require RT::Interface::Email;
   &RT::Interface::Email::activate();
 }
+
+elsif ($program eq 'webrt.cgi') {
+  use HTML::Mason;
+  package HTML::Mason;
+  my $parser = new HTML::Mason::Parser;
+  
+  #TODO: Make this draw from the config file
+  my $interp = new HTML::Mason::Interp (
+					parser=>$parser,
+					comp_root=>'/opt/rt/WebRT/html',
+					data_dir=>'/opt/rt/WebRT/data');
+  chown ( [getpwnam('nobody')]->[2], [getgrnam('nobody')]->[2],
+	  $interp->files_written );   # chown nobody
+  
+  use CGI;
+  my $q = new CGI;
+  
+  # This routine comes from ApacheHandler.pm:
+  my (%args);
+  foreach my $key ( $q->param ) {
+    foreach my $value ( $q->param($key) ) {
+      if (exists($args{$key})) {
+	if (ref($args{$key})) {
+	  $args{$key} = [@{$args{$key}}, $value];
+	} else {
+	  $args{$key} = [$args{$key}, $value];
+          }
+      } else {
+	$args{$key} = $value;
+      }
+    }
+    
+  }
+  my $comp = $ENV{'PATH_TRANSLATED'};
+  my $root = $interp->comp_root;
+  $comp =~ s/^$root//  or die "Component outside comp_root";
+  
+  $interp->exec($comp, %args);
+}
+
 else {
   print STDERR "RT Has been launched with an illegal launch program ($program)\n";
   exit(1);
