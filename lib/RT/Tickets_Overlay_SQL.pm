@@ -115,10 +115,16 @@ use constant AGGREG => 2;
 use constant OP => 4;
 use constant PAREN => 8;
 use constant KEYWORD => 16;
-my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD];
+use constant SELECT => 32;
+use constant WHERE => 64;
+use constant COLUMN => 128;
+my @tokens = qw[VALUE AGGREG OP PAREN KEYWORD SELECT WHERE COLUMN];
 
 my $re_aggreg = qr[(?i:AND|OR)];
+my $re_select = qr[(?i:SELECT)];
+my $re_where = qr[(?i:WHERE)];
 my $re_value  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
+my $re_column  = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
 my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
 my $re_op     = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
 my $re_paren  = qr'\(|\)';
@@ -157,7 +163,7 @@ sub _close_bundle
 
 sub _parser {
   my ($self,$string) = @_;
-  my $want = KEYWORD | PAREN;
+  my $want = SELECT | KEYWORD | PAREN;
   my $last = undef;
 
   my $depth = 0;
@@ -169,8 +175,15 @@ sub _parser {
   # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
   # as a keyword or value.
 
+
+
+
+
   while ($string =~ /(
-                      $re_aggreg
+                      $re_select
+                      |$re_where
+                      |$re_column
+                      |$re_aggreg
                       |$re_op
                       |$re_keyword
                       |$re_value
@@ -185,6 +198,9 @@ sub _parser {
     $current = KEYWORD if _match($re_keyword,$val) && ($want & KEYWORD);
     $current = AGGREG  if _match($re_aggreg,$val);
     $current = PAREN   if _match($re_paren,$val);
+    $current = COLUMN if _match($re_column,$val) && ($want & COLUMN);
+    $current = SELECT if _match($re_select,$val);
+
 
     unless ($current && $want & $current) {
       # Error
@@ -208,6 +224,19 @@ sub _parser {
       }
 
       $want = KEYWORD | PAREN | AGGREG;
+    }
+    elsif ($current & SELECT ) {
+        $want = COLUMN | WHERE;
+    }
+
+    elsif ($current & COLUMN ) {
+        push @{$self->{'columns_to_display'}}, $val;
+        $want = COLUMN | WHERE;
+
+    } 
+    elsif ($current & WHERE ) {
+        $want = KEYWORD | PAREN;
+
     }
     elsif ( $current & AGGREG ) {
       $ea = $val;
@@ -395,7 +424,7 @@ sub FromSQL {
   $self->{'must_redo_search'} = 1;
   $self->{'RecalcTicketLimits'} = 0;                                           
 
-  return (1,"Good Query");
+  return (1,loc("Valid Query"));
 
 }
 
