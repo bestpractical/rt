@@ -1,0 +1,28 @@
+For 2.0, those Linking actions should be supported:
+
+1. Dependency link, TobiX-style.
+
+ BASE is dependent on TARGET.
+
+ ...when the link is set up, BASE will become stalled if it's open.
+ ...when the TARGET is resolved, BASE will be reopened if it's stalled.
+ 
+ The system should allow dependency links to point into Bugzilla.
+ 
+2. MemberOf link (grouping)
+
+ BASE is a member of TARGET.
+
+ ...when TARGET is beeing replied to, all BASE requestors should get the
+ reply.
+ ...when TARGET is resolved, all BASE tickets should be resolved.
+ 
+3. Merge link (connecting)
+
+ BASE is the same as TARGET.
+
+ ...the system should somehow merge together transactions for both tickets.
+ ...BASE should be more or less deleted, only the TARGET should apply.
+ ...actions done toward BASE should be redirected to TARGET.
+
+For 2.1, it should be very easy to set up site-specific link action types.
