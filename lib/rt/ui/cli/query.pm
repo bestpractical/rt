@@ -29,7 +29,8 @@ sub ParseArgs  {
   }
   
   &print_header($format_string);
-  print $Tickets->Restrictions();
+  # debug thingy?
+#  print $Tickets->Restrictions();
   while (my $Ticket = $Tickets->Next) {
     &PrintRow($Ticket, $format_string);
   }
@@ -105,7 +106,7 @@ sub PrintRow {
     elsif ($field =~ /^g(\d*)$/){ 
       $length = $1;
       if (!$length) {$length=6;}
-      printf "%-${length}.${length}s ", $Ticket->Age;
+      printf "%-${length}.${length}s ", $Ticket->AgeAsString;
     }
     elsif ($field =~ /^l(\d*)$/){ 
       $length = $1;
