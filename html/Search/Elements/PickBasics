@@ -42,7 +42,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK
+%# }}} END BPS TAGGED BLOCK
 
 <tr>
 <td class="label">
@@ -77,7 +77,10 @@
 					TrueVal=> '=', 
 					FalseVal => '!=' &>
 </td><td>
-<& /Elements/SelectQueue, Name => "ValueOfQueue", NamedValues => 1 &>
+<& /Elements/SelectQueue, 
+    Name => "ValueOfQueue", 
+    NamedValues => 1, 
+    CheckQueueRight => 'ShowTicket' &>
 </td>
 </tr>
 <tr>

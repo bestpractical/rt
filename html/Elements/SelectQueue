@@ -53,7 +53,7 @@
 <OPTION VALUE="">-</OPTION>
 % }
 % while (my $queue=$q->Next) {
-% if ($ShowAllQueues || $queue->CurrentUserHasRight('CreateTicket')) {
+% if ($ShowAllQueues || $queue->CurrentUserHasRight($CheckQueueRight)) {
 <OPTION VALUE="<%($NamedValues ? $queue->Name : $queue->Id) %>" <%( $queue->Id eq $Default ? 'SELECTED' : '')%>><%$queue->Name%>
 %   if (($Verbose) and ($queue->Description) ){
 (<%$queue->Description%>)
@@ -64,6 +64,7 @@
 </SELECT>
 % }
 <%ARGS>
+$CheckQueueRight => 'CreateTicket'
 $ShowNullOption => 1
 $ShowAllQueues => 1
 $Name => undef
