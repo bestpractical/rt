@@ -15,6 +15,7 @@
 <input type="hidden" name="queue" value="<%$Queue->id%>">
 <input type="hidden" name="id" value="new">
 % if ($Link eq 'DependsOn') {
+<input type="hidden" name="Link" value="LinkFrom">
 <input type="hidden" name="LinkType" value="DependsOn">
 <input type="hidden" name="LinkFrom" value="<%$LinkFromD%>">
 % if ($Ticket) {
@@ -24,6 +25,7 @@ Request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
 %}
 should be dependent on this new request:<br><br>
 %} elsif ($Link eq 'MemberOf') {
+<input type="hidden" name="Link" value="LinkFrom">
 <input type="hidden" name="LinkType" value="MemberOf">
 <input type="hidden" name="LinkFrom" value="<%$LinkFromM%>">
 % if ($Ticket) {
@@ -33,6 +35,7 @@ Request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
 %}
 should become a member of this new request:<br><br>
 %} elsif ($Link eq 'ParentOf') {
+<input type="hidden" name="Link" value="LinkTo">
 <input type="hidden" name="LinkType" value="MemberOf">
 <input type="hidden" name="LinkTo" value="<%$LinkTo%>">
 The new request entered below should be a member of
@@ -80,7 +83,11 @@ my $Ticket=undef;
 
 # Object orientedness isn't always the best thing - I don't see any
 # other ways of doing the thing below - except making a link object -
-# something I don't want to do (yet).
+# something I don't want to do (yet):
+
+# TODO: This is buggy (displays wrong info if the link info is
+# changed, or more links are added):
+
 my $fid=RT::Link::_IsLocal(undef, $LinkFromD || $LinkFromM || $LinkTo || "");
 if ($fid) {
   $Ticket=new RT::Ticket($session{'CurrentUser'});

@@ -11,9 +11,11 @@
 
 <form action="Display.html" method="post">
 <input type="hidden" name="id" value="<%$id%>">
-<input type="radio" name="Link" value="LinkTo">This Ticket <& /Elements/SelectLinkType &> (URI(s) or ticket id(s):) <input name="LinkTo"> <BR><BR>
-<input type="radio" name="Link" value="LinkFrom"><input name="LinkFrom"><& /Elements/SelectLinkType &> this ticket.<BR><BR>
-<input type=submit>
+<input type="hidden" name="Link" value="LinkTo">This Ticket <& /Elements/SelectLinkType &> (URI(s) or ticket id(s):) <input name="LinkTo"><input type=submit value="Create link!">
+</form>
+<form action="Display.html" method="post">
+<input type="hidden" name="id" value="<%$id%>">
+<input type="hidden" name="Link" value="LinkFrom"><input name="LinkFrom"><& /Elements/SelectLinkType &> this ticket.<input type=submit value="Create link!">
 </form>
 
 <& /Elements/TitleBoxEnd &>

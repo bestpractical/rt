@@ -1065,13 +1065,14 @@ sub _NewLink {
       $b='THIS';
       $t=$args{Target};
   }
+  my $TransString="$b $args{Type} $t as of $linkid";
   my $Trans = $self->_NewTransaction
       (Type => 'Link',
-       Data => "$b $args{Type} $t as of $linkid",
+       Data => $TransString,
        TimeTaken => 0 # Is this always true?
        );
   
-  return ($linkid, "Link created", $transactionid);
+  return ($linkid, "Link created ($TransString)", $transactionid);
 }
 
 # }}}
