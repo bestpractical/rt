@@ -40,7 +40,7 @@
 
 
 <%ARGS>
-      $Ticket = undef
+$Ticket => undef
 </%ARGS>
 
 

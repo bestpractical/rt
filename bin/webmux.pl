@@ -53,7 +53,9 @@ use DBIx::Handle;
 #TODO: need to identify the database user here....
 
 
-my $parser = new HTML::Mason::Parser;
+my $parser = new HTML::Mason::Parser(        default_escape_flags=>'h',
+
+					);
 
 
 
@@ -63,6 +65,7 @@ my $parser = new HTML::Mason::Parser;
 #We allow recursive autohandlers to allow for RT auth.
 my $interp = new HTML::Mason::Interp (
             allow_recursive_autohandlers =>1, 
+	
 	    parser=>$parser,
             comp_root=>'!!WEBRT_HTML_PATH!!',
             data_dir=>'!!WEBRT_DATA_PATH!!');

@@ -17,5 +17,5 @@
     </TABLE>
 
 <%ARGS>
-$Ticket = undef
+$Ticket => undef
 </%ARGS>

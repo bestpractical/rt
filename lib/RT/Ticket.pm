@@ -712,12 +712,7 @@ sub Queue {
 
 sub DueAsString {
   my $self = shift;
-#  if ($self->Due) {
-      return $self->DueObj->AsString();
- # }
- # else {
- #     return("Never");
- # }
+  return $self->DueObj->AsString();
 }
 
 # }}}
@@ -745,7 +740,15 @@ sub DueObj {
     my $self = shift;
     
     my $time = RT::Date->new;
-    $time->Set(Format => 'sql', Value => $self->Due);
+
+    # -1 is RT::Date slang for never
+    if ($self->Due) {
+	$time->Set(Format => 'sql', Value => $self->Due );
+    }
+    else {
+	$time->Set(Format => 'unix', Value => -1);
+    }
+    
     return $time;
 }
 # }}}

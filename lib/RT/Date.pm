@@ -197,8 +197,10 @@ Returns the object's time as a string
 *stringify = \&AsString;
 *Stringify = \&AsString;
 
+
 sub AsString {
     my $self = shift;
+    return ("Never") if ($self->Unix == -1);
     return ($self->ISO);
 }
 # }}}
@@ -256,10 +258,15 @@ sub ISO {
     my $self=shift;
     my    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst, $date) ;
     
+    return ('0000-00-00 00:00:00') if ($self->Unix == -1);
+
     #  0    1    2     3     4    5     6     7     8
     ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($self->Unix);
     #make the year YYYY
     $year+=1900;
+
+    #the month needs incrementing, as gmtime returns 0-11
+    $mon++;
         
     $date = sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year,$mon,$mday, $hour,$min,$sec);
     

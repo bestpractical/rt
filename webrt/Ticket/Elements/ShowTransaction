@@ -38,7 +38,7 @@
 <pre>
 %#TODO We're now HTML escaping the message content, but should
 %#TODO probably deal with converting links
-<% $message->Content |h %>
+<% $message->Content %>
 </pre>
 %    }  
 % elsif ($message->ContentType =~ m{^multipart}) {
