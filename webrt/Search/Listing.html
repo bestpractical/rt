@@ -33,7 +33,7 @@
 <& PickRestriction &>
 
 <%ARGS>
-$ValueOfResultsPerPage=>1
+$ValueOfResultsPerPage => 1
 </%ARGS>
 
 <%INIT>
@@ -52,7 +52,7 @@ $ValueOfResultsPerPage=>1
   else {
     $session{'tickets'}->NewTickets;
   }
-if ($ARGS{'LimitResultsPerPage'} and ($ARGS{'ValueOfResultsPerPage'}>0)) {
+if ($ARGS{'LimitResultsPerPage'} and ((0+$ARGS{'ValueOfResultsPerPage'})>0)) {
   
   $session{'tickets'}->Rows($ARGS{'ValueOfResultsPerPage'});
 }
