@@ -24,6 +24,7 @@
 # END LICENSE BLOCK
 # This Action will open the BASE if a dependent is resolved.
 
+package RT::Action::AutoOpen;
 require RT::Action::Generic;
 
 use strict;
