@@ -334,7 +334,7 @@ sub MigrateUsers {
 	print "...added ";
 
 	if ($row[7]) {
-	    $user->GrantSystemRight('SuperUser');
+	    $user->GrantSystemRight(RightName => 'SuperUser');
 	    print " as superuser";
 	}
 	print "\n";
