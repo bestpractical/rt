@@ -150,9 +150,8 @@ sub cgi_vars_in {
 # Get the input
     
     #let's get the cookies
-    use CGI::Cookie;
-    %rt::ui::web::cookies = fetch CGI::Cookie;
-# Split the name-value pairs
+
+    # Split the name-value pairs
     if ($ENV{'CONTENT_LENGTH'}) {
 	read(STDIN, $buffer, $ENV{'CONTENT_LENGTH'});
     }
@@ -190,6 +189,13 @@ sub cgi_vars_in {
 	$FORM{$name} = $value;
 	
     }
+
+    # Pull in the cookies
+    # This had to be moved to the end here because it requires CGI.pm..which
+    # messes up my legacy CGI handling
+    use CGI::Cookie;
+    %rt::ui::web::cookies = fetch CGI::Cookie;
+
 }
 
 

@@ -1,3 +1,9 @@
+16 Jun 99
+---------
+
+Fixed a bug that caused recent versions of CGI::Cookie to break authentication
+
+
 14 Jun 99
 ---------
 
