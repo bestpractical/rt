@@ -35,11 +35,19 @@ sub Create  {
 		Quiet => 0,
 		@_ # get the real argumentlist
 		);
-  
+
+    #Do we have someone this applies to?
+    unless (($args{'Owner'} =~ /^(\d*)$/)|| ($args{'Email'} =~ /\@/)) {
+          return (0, "No user or email addres specified");
+      }
+
+   $RT::Logger->debug("Adding a watcher",$args{Owner}, $args{Email}, $args{Value}, $args{Scope}, $args{Type});
+
+    #If we've got an Email and no owner, try to tie it to the user's account
     my $User=RT::User->new($self->CurrentUser);
     if (!$args{Owner} && $User->LoadByEmail($args{Email})) {
-	$args{Owner}=$User->id;
-	delete $args{Email};
+    	$args{Owner}=$User->id;
+    	delete $args{Email};
     }
 
     #TODO: figure out why this code is here
@@ -48,7 +56,15 @@ sub Create  {
     if ($args{Email} && $args{Email} !~ /\@/ && $args{Owner}) {
 	delete $args{Email};
     }
-  
+
+   #Make sure we've got a valid type
+   #TODO --- move this to ValidateType 
+   unless ($args{'Type'} =~ /^Requestor$/i ||
+          $args{'Type'} =~ /^AdminCc$/i ||
+          $args{'Type'} =~ /^Cc$/i) {
+   	return (0, "Invalid Type");
+    }
+
     my $id = $self->SUPER::Create(%args);
     $self->Load($id);
   
@@ -82,7 +98,7 @@ sub OwnerObj  {
 	if ($self->Owner) {
 	    $self->{'OwnerObj'}->Load($self->Owner);
 	} else {
-	    return undef;
+	    return $RT::Nobody->UserObj;
 	}
     }
     return ($self->{'OwnerObj'});
@@ -90,6 +106,7 @@ sub OwnerObj  {
 # }}}
 
 # {{{ sub Email
+
 =head2 Email
 
 This custom data accessor does the right thing and returns
@@ -106,9 +123,12 @@ sub Email {
   if (defined($self->SUPER::Email)) {
     return ($self->SUPER::Email);
   }
-  else {
+  elsif ($self-Owner) {
     return ($self->OwnerObj->EmailAddress);
   }
+  else {
+    return ("Data error");
+    }
 }
 # }}}
 

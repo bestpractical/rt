@@ -8,6 +8,7 @@ use RT::Record;
 use RT::Link;
 use RT::Links;
 use RT::Date;
+use RT::Watcher;
 
 @ISA= qw(RT::Record);
 
@@ -254,35 +255,32 @@ AddWatcher takes a parameter hash. The keys are as follows:
 
 Email
 Type
-Scope
 Owner
 
 If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
 
 =cut
 
-# TODO: Watchers might want to be notified when they're added or
-# removed (both to tickets and queues) -- Tobix
-
 sub AddWatcher {
   my $self = shift;
-  my %args = ( Value => $self->Id(),
+  my %args = (
 	       Email => undef,
 	       Type => undef,
-	       Scope => 'Ticket',
 	       Owner => 0,
 	       @_ );
 
   unless ($self->CurrentUserHasRight('ModifyTicket')) {
     return (0, "Permission Denied");
   }
-  
-  #TODO: Look up the Email that's been passed in to find the watcher's
-  # user id. Set Owner to that value.
-  
+ 
   require RT::Watcher;
   my $Watcher = new RT::Watcher ($self->CurrentUser);
-  $Watcher->Create(%args);
+  return($Watcher->Create( Value => $self->Id,
+                           Scope => 'Ticket',
+                            Email => $args{'Email'},
+                            Type => $args{'Type'},
+                            Owner => $args{'Owner'},
+                            ));
   
 }
 
@@ -341,27 +339,53 @@ sub AddAdminCc {
 
 =head2 DeleteWatcher
 
-DeleteWatcher takes an email address and removes that watcher
-from this Ticket\'s list of watchers. It\'s currently insufficient, as many watchers will have a null email address and a
-valid owner.
+DeleteWatcher takes a single argument which is either an email address 
+or a watcher id.  It removes that watcher
+from this Ticket\'s list of watchers.
+
 
 =cut
 
 
 sub DeleteWatcher {
     my $self = shift;
-    my $email = shift;
+    my $id = shift;
     
     my ($Watcher);
+   
+    #Check ACLs 
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+        return (0, "Permission Denied");
+    }
     
+    #If it's a numeric watcherid
+   if ($id =~ /^(\d*)$/) { 
+    $Watcher = new RT::Watcher($self->CurrentUser);
+    $Watcher->Load($id);
+    if (($Watcher->Scope  ne 'Ticket') or
+       ($Watcher->Value != $self->id) ) {
+        return (0, "Not a watcher for this ticket");
+       }
+      #If we've validated that it is a watcher for this ticket 
+      else {
+          $self->_NewTransaction ( Type => 'DelWatcher',        
+                 OldValue => $Watcher->Email,
+                 Data => $Watcher->Type,
+                   );
+        $Watcher->Delete();
+     }
+   }
+    #Otherwise, we'll assume it's an email address
+   else {
     while ($Watcher = $self->Watchers->Next) {
-      if ($Watcher->Email =~ /$email/) {
+      if ($Watcher->Email =~ /$id/) {
 	$self->_NewTransaction ( Type => 'DelWatcher',
 				 OldValue => $Watcher->Email,
 				 Data => $Watcher->Type,
 			       );
 	$Watcher->Delete();
       }
+    }
     }
 }
 
@@ -422,6 +446,7 @@ sub RequestorsAsString {
 =head2 WatchersAsString
 
 WatchersAsString ...
+
 =item B<Takes>
 
 =item I<nothing>
@@ -633,6 +658,12 @@ sub IsRequestor {
 # }}}
 
 # {{{ sub IsCc
+
+=head2 IsCc
+
+Takes a string. Returns true if the string is a Cc watcher of the current ticket.
+
+=cut
 
 sub IsCc {
   my $self = shift;
