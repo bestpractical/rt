@@ -430,18 +430,18 @@ sub Kill {
 
 sub Stall {
   my $self = shift;
-  return ($Self->SetStatus('stalled'));
+  return ($self->SetStatus('stalled'));
   
 }
 
 sub Open {
   my $self = shift;
-  return ($Self->SetStatus('open'));
+  return ($self->SetStatus('open'));
 }
 
 sub Resolve {
   my $self = shift;
-  return ($Self->SetStatus('resolved'));
+  return ($self->SetStatus('resolved'));
 }
 
 
