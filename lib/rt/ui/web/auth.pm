@@ -160,6 +160,12 @@ sub AuthForceLogin () {
     $default_user =  $rt::ui::web::cookies{'RT_USERNAME'}->value;
     
   }
+  if ($ENV{'QUERY_STRING'} ne 'display=Logout') {
+	$NewQuery = $ENV{'QUERY_STRING'};
+  }
+  else {
+	$NewQuery= "";
+  }
   print "
 <TABLE cellpadding=10 cellspacing=0 border=0>
 <TR><TD BGCOLOR=\"#cccccc\"><FONT SIZE=\"+2\" COLOR=\"#bb0000\"><b>No valid RT Credentials found</b></FONT></TD></TR>
@@ -168,7 +174,7 @@ sub AuthForceLogin () {
 </TR>
 </TABLE>
     
-    <FORM ACTION=\"$rt::ui::web::ScriptURL\" METHOD=\"POST\">
+    <FORM ACTION=\"$rt::ui::web::ScriptURL?$NewQuery\" METHOD=\"POST\">
 
 
 <CENTER>
