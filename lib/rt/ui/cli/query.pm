@@ -5,14 +5,18 @@
 
  package rt::ui::cli::query;
  
-sub activate {
+# {{{ sub activate 
+sub activate  {
  &GetCurrentUser;
  &ParseArgs();
  return(0);
 }
+# }}}
 
 
-sub ParseArgs {
+
+# {{{ sub ParseArgs 
+sub ParseArgs  {
 
   
   my $Tickets=&build_query();
@@ -112,8 +116,11 @@ sub ParseArgs {
    print "\n";
  }
 }
+# }}}
+
   
-sub build_query {
+# {{{ sub build_query 
+sub build_query  {
   my ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
   use RT::Tickets;
   my $Tickets = RT::Tickets->new($CurrentUser);
@@ -220,7 +227,10 @@ sub build_query {
   
   return ($Tickets);
 }
-  sub usage {
+# }}}
+
+  # {{{ sub usage 
+sub usage  {
     print <<EOFORM;
     
        usage: rtq <queue> <options>
@@ -275,7 +285,8 @@ EOFORM
   }
   
 
-sub print_header {
+# {{{ sub print_header 
+sub print_header  {
     my($format_string) =@_;
     my ($field, $length);
 
@@ -364,7 +375,8 @@ sub print_header {
   }
 
 
-sub GetCurrentUser {
+# {{{ sub GetCurrentUser 
+sub GetCurrentUser  {
   if (!$CurrentUser) {
     my ($CurrentUid);
     require RT::CurrentUser;
@@ -382,5 +394,7 @@ sub GetCurrentUser {
   }
   return($CurrentUser);
 }
+# }}}
+
 
 1;

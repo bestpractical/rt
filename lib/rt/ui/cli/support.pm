@@ -1,6 +1,7 @@
 package rt::ui::cli;
 
-sub question_string {
+# {{{ sub question_string 
+sub question_string  {
     local ($question,$default)=@_;
     local ($response);
     if ($default) {
@@ -12,7 +13,10 @@ sub question_string {
   $response=&input_string($default);
     return($response);
 }
-sub question_yes_no {
+# }}}
+
+# {{{ sub question_yes_no 
+sub question_yes_no  {
     local ($question,$default)=@_;
     local ($response);
     if ($default) {    
@@ -30,7 +34,10 @@ sub question_yes_no {
     }    $response=&input_yes_no($default);
     return($response);
 }
-sub question_int {
+# }}}
+
+# {{{ sub question_int 
+sub question_int  {
     local ($question,$default)=@_;
     local ($response);
     if ($default) {
@@ -41,9 +48,12 @@ sub question_int {
     }    $response=&input_int($default||0);
     return($response);
 }
+# }}}
 
 
-sub input_yes_no {
+
+# {{{ sub input_yes_no 
+sub input_yes_no  {
     local ($default) =@_;
     local ($input);
     chop($input=<STDIN>);
@@ -57,8 +67,11 @@ sub input_yes_no {
 	return(0);
     }
 }
+# }}}
 
-sub input_string {
+
+# {{{ sub input_string 
+sub input_string  {
     local ($default) =@_;
     local ($input);
  
@@ -70,13 +83,18 @@ sub input_string {
     }
     return($input);
 }
+# }}}
 
-sub input_int {
+
+# {{{ sub input_int 
+sub input_int  {
     local ($default) =@_;
     local ($input);
     
     chop($input=<STDIN>||""); 
     return $input eq "" ? ($default||undef) : int($input);
 }
+# }}}
+
 
 1;

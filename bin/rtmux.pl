@@ -3,7 +3,6 @@
 # $Header$
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
 
-use strict;
 
 $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
 $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
@@ -12,6 +11,8 @@ $ENV{'ENV'} = '' if defined $ENV{'ENV'};
 $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 package RT;
+use strict;
+use vars qw($VERSION);
 
 $VERSION="!!RT_VERSION!!";
 
@@ -28,10 +29,10 @@ use DBIx::Handle;
 $RT::Handle = new DBIx::Handle;
 
 $RT::Handle->Connect(Host => $RT::DatabaseHost, 
-		      Database => $RT::DatabaseName, 
-		      User => $RT::DatabaseUser,
-		      Password => $RT::DatabasePassword,
-		      Driver => $RT::DatabaseType);
+		     Database => $RT::DatabaseName, 
+		     User => $RT::DatabaseUser,
+		     Password => $RT::DatabasePassword,
+		     Driver => $RT::DatabaseType);
 
 
 
@@ -43,13 +44,13 @@ $program =~ s/(.*)\///;
 if ($program eq '!!RT_ACTION_BIN!!') {
   # load rt-cli
   require rt::ui::cli::support;
-   require rt::ui::cli::manipulate;
-
+  require rt::ui::cli::manipulate;
+  
   &rt::ui::cli::manipulate::activate();
 }
 elsif ($program eq '!!RT_QUERY_BIN!!') {
   # load rt-query
-
+  
   require rt::ui::cli::query;
   &rt::ui::cli::query::activate();
   
@@ -74,6 +75,6 @@ else {
 
 $RT::Handle->Disconnect();
 
-}
+
 1;
 

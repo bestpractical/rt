@@ -1,0 +1,40 @@
+<%INIT>
+# Load the user in
+my $user = RT::User->new($CurrentUser);
+$user->Load($args{'id'});
+</%INIT>
+<HTML>
+<HEAD>
+<TITLE>Modify the user <%$user->RealName()%></TITLE>
+</HEAD>
+<BODY>
+<FORM METHOD=POST ACTION="CommitModifyUser">
+UserId: <input size=60 name=UserId value="$user->UserId">
+
+Real Name: <input size=60 name=RealName value="<%$user->RealName%>">
+Unix Username:   <input size=12 name=Gecos value="<%$user->Geocs%>">
+External Id:	 <input size=24 name=ExternalId value="<%$user->ExternalId%>">
+Password: <input type=password size=12 name=Password value="<%$user->Password%>">
+EmailAddress <input size=12 name=EmailAddress value="<%$user->EmailAddress()%>">
+HomePhone <input size=12 name=HomePhone value="<%$user->HomePhone()%>">
+  WorkPhone <input size=12 name=Work value="<%$user->WorkPhone()%>">
+  Address1 <input size=12 name=Zip value="<%$user->Address1()%>">
+  Address2 <input size=12 name=Zip value="<%$user->Address2()%>">
+  City <input size=12 name=Zip value="<%$user->City()%>">
+  State <input size=12 name=Zip value="<%$user->State()%>">
+  Zip <input size=12 name=Zip value="<%$user->Zip()%>">
+  Country <input size=12 name="Country" value="<%$user->Country%>">
+  Comments <textarea Name=Comments rows=40 cols=10><%user->Comments%></textarea>
+
+
+<hr>
+%$Manipulate="CHECKED" if ($user->CanManipulate);
+Can be granted ACLs  <checkbox name=CanManipulate <%$Manipulate%>>
+%$Administrator="CHECKED" if ($user->IsAdministrator);
+Superuser <checkbox name=IsAdministrator <%$Superuser%>>
+
+<input type=submit> <input type=reset>
+
+</FORM>
+</BODY>
+</HTML>

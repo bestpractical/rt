@@ -1,0 +1,13 @@
+<%args>
+$Format = "Id:Subject"
+$Ticket = undef
+</%args>
+
+<%Init>
+# parse the  $Format string into something that will print out what we
+# want
+
+
+
+
+</$Init>

@@ -23,22 +23,6 @@ sub new  {
 }
 # }}}
 
-# {{{ sub _Accessible 
-sub _Accessible  {
-  my $self = shift;
-  my %Cols = (
-	      Email => 'read/write',
-	      Scope => 'read/write',
-	      Value => 'read/write',
-	      Type => 'read/write',
-	      Quiet => 'read/write',
-	      Template => 'read/write'	      
-	     );
-  return($self->SUPER::_Accessible(@_, %Cols));
-}
-# }}}
-
-
 # {{{ sub Create 
 sub Create  {
   my $self = shift;
@@ -47,7 +31,7 @@ sub Create  {
 	      Value => undef,
 	      Scope => undef,
 	      Type => undef,
-	      Template => undef,
+	      Owner => 0,
 	      Quiet => 0,
 	      @_ # get the real argumentlist
 	     );
@@ -84,9 +68,38 @@ sub UserObj  {
   if (!defined $self->{'UserObj'}) {
     require RT::User;
     $self->{'UserObj'} = new RT::User($self->CurrentUser);
-    $self->{'UserObj'}->Load($self->Email);
+    #If we don't have an Email attribute, load the Owner Object
+    
+    if (!defined($self->SUPER::Email)) { #the SUPER is so we don't get in a loop
+                                         #with $self->Email
+      $self->{'UserObj'}->Load($self->Owner);
+    }
+    else {
+      $self->{'UserObj'}->Load($self->Email);
+    }
   }
   return ($self->{'UserObj'});
+}
+# }}}
+
+# {{{ sub OwnerObj
+sub OwnerObj {
+  my $self = shift;
+  return ($self->UserObj);
+}
+# }}}
+
+# {{{ sub Email
+sub Email {
+  my $self = shift;
+
+  # IF Email is defined, return that. Otherwise, return the Owner's email address
+  if (defined($self->SUPER::Email)) {
+    return ($self->SUPER::Email);
+  }
+  else {
+    return ($self->{'OwnerObj'}->EmailAddress);
+  }
 }
 # }}}
 
@@ -103,6 +116,21 @@ sub ModifyPermitted  {
   my $self = shift;
   #TODO: Implement
   return(1);
+}
+# }}}
+
+# {{{ sub _Accessible 
+sub _Accessible  {
+  my $self = shift;
+  my %Cols = (
+	      Email => 'read/write',
+	      Scope => 'read/write',
+	      Value => 'read/write',
+	      Type => 'read/write',
+	      Quiet => 'read/write',
+	      Owner => 'read/write'	      
+	     );
+  return($self->SUPER::_Accessible(@_, %Cols));
 }
 # }}}
 

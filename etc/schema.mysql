@@ -1,7 +1,7 @@
 # $Header$
 #
 # Request Tracker is Copyright 1996-1999 Jesse Reed Vincent <jesse@fsck.com>
-# RT is distribute under the terms of the GNU Public License
+# RT is distributed under the terms of the GNU Public License
 
 
 CREATE TABLE QueueACL (
@@ -9,6 +9,7 @@ CREATE TABLE QueueACL (
   Queue INT,
   User INT,
   Right VARCHAR(16), #Read, Write or Admin
+
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
@@ -18,33 +19,63 @@ CREATE TABLE QueueACL (
 
 CREATE TABLE Scrips (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  Name VARCHAR(255), #Textual string
-  Description VARCHAR(255), #another textual string
-  Type VARCHAR(60), #Transaction type or 'any'	
-  Action VARCHAR(60), #Name of a perl module. inside RT::Action
-  Template INT(11), #Link to the templates table of template to pass in.
-  Argument VARCHAR(255), #an argument to pass in.
+  Name VARCHAR(255),	    #Textual string
+  Description VARCHAR(255), #another longer textual string
+  Type VARCHAR(60),	    #Transaction type or 'any'	
+  Action VARCHAR(60),	    #Name of a perl module. inside RT::Action
+  DefaultTemplate INT(11),  #Link to the templates table of template to pass in.
+  Argument VARCHAR(255),    #an argument to pass in.
+
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP  
 )\g
 
-CREATE TABLE QueueScrips (
-  Scrips int(11),
-  Scope INT(11) #Queue Id. 0 for blobal.
-)\g
-
-INSERT INTO Scrips VALUES (1,'Autoreply','Sends an automatic response to the requestor when a ticket was created',,'Create','AutoReply',1,'$Requestor',1,20000129185915,1,20000129185915);
-INSERT INTO Scrips VALUES (2,'TellOwnerOnTransaction','Sends mail to owner when anything happens','Any','SendEmail',2,'$Owner',1,20000223220850,1,20000129190056);
-INSERT INTO Scrips VALUES (3,'MailCorrespondence','Sends mail to requestor','Correspond','MailCorrespondence',3,'$Requestor',1,20000129190151,1,20000129190151);
-INSERT INTO Scrips VALUES (4,'TellMembersOnMail','Sends mail to interessted parties when email comes in','Correspond','SendEmail',3,'',1,20000223220850,1,20000129190151);
-INSERT INTO Scrips VALUES (5,'MailComments','Sends mail to interessted parties upon a comment','Comment','MailComment',4,'',1,20000223220850,1,20000129190151);
-
 # TODO: 
 # -steal & give (should be sent both to old and new)
 # mechanisms to avoid sending more than one mail to a party
 # dealing with CC and BCC.
+
+
+INSERT INTO Scrips VALUES (1,'Autoreply','Sends an automatic response to the requestor when a ticket was created',
+			  'Create','AutoReply',1,'$Requestor',0,NULL,0,NULL);
+
+INSERT INTO Scrips VALUES (2,'NotifyOwnerOnTransaction','Sends mail to owner when anything happens',
+			  'Any','SendEmail',2,'$Owner',0,NULL,0,NULL);
+
+INSERT INTO Scrips VALUES (4,'NotifyAdminWatchersOnCorrespond','Sends mail to administrative watchers when email comes in',
+			  'Correspond','NotifyWatchers',3,'Admin',0,NULL,0,NULL);
+INSERT INTO Scrips VALUES (6, 'NotifyRegularWatchersOnCorrespond', 'Send mail to non-administrative watchers whenever correspondence comes in',
+			  'Correspond','NotifyWatchers',5,'Regular',0,NULL,0,NULL);
+
+INSERT INTO Scrips VALUES (3, 'NotifyAllWatchersOnCorrespond', 'Send mail to all watchers whenever correspondence comes in',
+			  'Correspond','NotifyWatchers',5,'All',1,0,1,0);
+
+INSERT INTO Scrips VALUES (7, 'NotifyAdminWatchersOnComment', 'Send mail to administrative watchers whenever comments come in',
+			  'Comment','NotifyWatchers',5,'Admin',1,0,1,0);
+
+INSERT INTO Scrips VALUES (8, 'NotifyAllWatchersOnStatus', 'Send mail to watchers whenever a ticket\'s status changes',
+			  'Status','NotifyWatchers',5,'All',1,0,1,0);
+
+INSERT INTO Scrips VALUES (9, 'NotifyAllWatchersOnResolve', 'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
+			  'Status','NotifyWatchersOnResolve',6,'All',1,0,1,0);
+
+
+
+
+CREATE TABLE ScripScope (
+  id int(11) AUTO_INCREMENT PRIMARY KEY,
+  Scrip int(11), #Scrip Id
+  Queue INT(11), #Queue Id 0 for global
+  Template INT(11), #Template Id
+
+  Creator INT(11),
+  Created TIMESTAMP,
+  LastUpdatedBy INT(11),
+  LastUpdated TIMESTAMP  
+)\g
+
 
 
 CREATE TABLE Users (
@@ -64,11 +95,10 @@ CREATE TABLE Users (
   Zip VARCHAR(16),
   Country VARCHAR(50),
   Comments BLOB,
-
-
   CanManipulate INT,  #Whether this user can be granted rights
 		      #If 0, the user can only be a requestor
   IsAdministrator INT,
+
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
@@ -76,7 +106,11 @@ CREATE TABLE Users (
 )\g
 
 
-INSERT into Users (UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) VALUES ('root', 'root', "Enoch Root", 'password', 'root@localhost','none', 1, 1, NULL, 1, NULL );			
+INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
+
+INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (2, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
 
 
 CREATE TABLE Queues (
@@ -89,7 +123,6 @@ CREATE TABLE Queues (
  InitialPriority INT,
  FinalPriority INT,
  DefaultDueIn INT,		#reqs in this queue are due in X days by default
-
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
@@ -97,25 +130,20 @@ CREATE TABLE Queues (
 )\g
 
 # Default queue - should eventually be created by the admin-cli through some init script
-insert into Queues values (1, 'general', 'rt@localhost', 'rt-comment@localhost', 1, 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
-# Primarly used by RT::Actions::SendEmail as well as some subclasses
-# to determinate whom to send emails to.  This scheme should work out
-# better than the scheme under RT 1.0, and should suit most users.
-# For more fine grained control, it's possible to create tables as you
-# like and make a new subclass of RT::Actions::SendEmail where the
-# SetRecepients sub is overloaded :)
+INSERT INTO Queues VALUES (1, 'general','A General Catch-all queue' ,'rt@localhost', 'rt-comment@localhost', 1, 0, 0, NULL, NULL, NULL, NULL, NULL);
 
 CREATE TABLE Watchers (
    id int(11) AUTO_INCREMENT PRIMARY KEY,
-   Value int(11),
-   Scope varchar(16), # Might be "Queue" and "Ticket" as for now
-                      # ... might be extended to "Keywords", "Owners", etc.
-   Template int(11),  # Which template to use to send mail to the Email
-
-   Email VARCHAR(255),
+   Type VARCHAR(16), 	# One of: Requestor, Cc, AdminCc
+   Scope varchar(16),	# One of: "Queue", "Ticket" as for now
+			# ... might be extended to "Keywords", "Owners", etc.
+   Value INT(11),	# Which Queue or Ticket this Watcher Watches.
+   Email VARCHAR(255),  # Where this Watch should send mail. If null, use Owner->EmailAddress
    Quiet INT(1),	# Should we send mail to this one at all.
-   Type VARCHAR(16), 	# Requestor, Cc, Bcc, To, ... ++?
+   Owner INT(11),	# TODO: We're not dealing with this yet. For now, it's always 0
+			# A reference to the users table. If it's for a Cc or AdminCc who doesn't
+			# have an RT account, Owner should be 0
+
    Creator INT(11),
    Created TIMESTAMP,
    LastUpdatedBy INT(11),
@@ -130,16 +158,17 @@ CREATE TABLE Tickets (
   Type CHAR(16), #Ticket, Task, Bug
   IssueStatement INT, #Reference to Attachments
   Resolution INT, #Reference to Attachments
- 
-  Owner INT,
-  Subject VARCHAR(200),
+  Owner INT, #Reference to Users
+  Subject VARCHAR(200), 
   InitialPriority INT,
   FinalPriority INT,
   Priority INT,
-  Status VARCHAR(10), #TODO, Make this a reference to a statuses table.
+  Status VARCHAR(10), #For now, One of" Open, Stalled, Resolved, Dead
   TimeWorked INT,
-  Told INT,
-  Due INT,
+  Told INT, #TODO: Make a date type
+  Due INT, #TODO: Make a date type
+
+
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
@@ -153,8 +182,6 @@ CREATE TABLE Transactions (
   Ticket INT,
   TimeTaken INT,
   Type CHAR(20),
-# Alternative suggestion: 
-# Type INT,
   Field CHAR(40),
   OldValue VARCHAR(255),
   NewValue VARCHAR(255),
@@ -164,17 +191,6 @@ CREATE TABLE Transactions (
   
 )\g
 
-# Suggestion:
-
-#CREATE TABLE TransactionTypes (
-#  id int(11) AUTO_INCREMENT PRIMARY KEY,
-#  Name char(20),
-## Will try to use RT::Transaction::TransactionClass - default RT::Transaction:
-#  TransactionClass char(40), 
-#  Description char(100),
-#  ActionTemplate blob,
-#  DescriptionTemplate blob 
-#);
 
 CREATE TABLE Attachments (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -195,7 +211,7 @@ CREATE TABLE Links (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Base int(11),
   Target int(11),
-  Type char(20) NOT NULL,
+  Type char(20) NOT NULL, # "Depends on", "Member of" 
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
@@ -227,18 +243,45 @@ CREATE TABLE Templates (
 # Should eventually be created through some init script calling on the CLI
 INSERT INTO Templates VALUES (1,'Default Autoresponse Template',
 
-'        Greetings,\n        This message has been automatically generated in response to your\nmessage regarding \"{$object->{TicketObject}->Subject()}\", the content of which appears below.  \nThere is no need to reply to it now. The Support group has received\nyour message and it has been assigned a ticket ID of [{$rtname} #{$object->{TicketObject}->id()}]. \nPlease include the string\n\n\n          [{$rtname} #{$object->{TicketObject}->id}]\n\n        in the subject line of all future correspondence about this\nproblem. To do so, you may reply to this message. \n\n\n                        Thank you,\n\n                        The Support Group\n                        {$object->{TicketObject}->Queue()->CorrespondAddress()}\n\n-------------------------------------------------------------------------\n{$object->{TransactionObject}->Message()->First()->Content()}\n',
+'        Greetings,
+        This message has been automatically generated in response to your
+message regarding \"{$object->{TicketObject}->Subject()}\", the content of which appears below.
+There is no need to reply to it now. The Support group has received
+your message and it has been assigned a ticket ID of [{$rtname} #{$object->{TicketObject}->id()}].
+Please include the string
+
+         [{$rtname} #{$object->{TicketObject}->id}]
+in the subject line of all future correspondence about this
+problem. To do so, you may reply to this message.
+                        Thank you,
+                        The Support Group
+                        {$object->{TicketObject}->Queue()->CorrespondAddress()}
+
+-------------------------------------------------------------------------
+{$object->{TransactionObject}->Message()->First()->Content()}\n',
 NULL,20000227191248,NULL,NULL,00000000000000);
 
 
 INSERT INTO Templates VALUES (2,'Default Transaction Template',
-'{$object->{TransactionObject}->CreatedAsString}: Request {$object->{TicketObject}->id} was acted upon.\n\n Transaction: {$object->{TransactionObject}->Description}\n \n       Queue: {$object->{TicketObject}->Queue->QueueId}\n        Area: (stubbed!)               \n     Subject: {$object->{Subject}}\n       Owner: {$object->{TicketObject}->Owner->UserId || "Nobody"}\n  Requestors: {join(",",@{$object->{TicketObject}->Requestors->Emails()})}    \n      Status: {$object->{TicketObject}->Status}\n\n-------------------------------------------------------------------------\n{$object->{TransactionObject}->Message()->First()->Content() if $object->{TransactionObject}->Message()->First()}\n',
+'{$object->{TransactionObject}->CreatedAsString}: Request {$object->{TicketObject}->id} was acted upon.
+Transaction: {$object->{TransactionObject}->Description}
+       Queue: {$object->{TicketObject}->Queue->QueueId}
+        Area: (stubbed!)               
+     Subject: {$object->{Subject}}
+       Owner: {$object->{TicketObject}->Owner->UserId || "Nobody"}
+  Requestors: {join(",",@{$object->{TicketObject}->Requestors->Emails()})}    
+      Status: {$object->{TicketObject}->Status}
+-------------------------------------------------------------------------
+{$object->{TransactionObject}->Message()->First()->Content() if $object->{TransactionObject}->Message()->First()}\n',
 NULL,20000227191543,NULL,NULL,00000000000000);
 
 
 INSERT INTO Templates VALUES (3,'Default Correspondance template','{$object->{TransactionObject}->Message()->First()->Content()}',NULL,20000227191745,NULL,NULL,00000000000000);
 
-INSERT INTO Templates VALUES (4,'Default Comment template','This is a comment.  It is not sent to the Requestor(s):\n\n{$object->{TransactionObject}->Message()->First()->Content()}',NULL,20000227191745,NULL,NULL,00000000000000);
+INSERT INTO Templates VALUES (4,'Default Comment template','This is a comment.  It is not sent to the Requestor(s):
+
+{$object->{TransactionObject}->Message()->First()->Content()}
+',NULL,20000227191745,NULL,NULL,00000000000000);
 
 
 

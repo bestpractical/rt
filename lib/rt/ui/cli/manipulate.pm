@@ -1,4 +1,4 @@
-# Copyright 1999 Jesse Vincent <jesse@fsck.com>
+# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 # $Id$ 
 #
@@ -6,14 +6,16 @@
 package rt::ui::cli::manipulate;
 
 
-sub activate {
+# {{{ sub activate 
+sub activate  {
  &GetCurrentUser;
  &ParseArgs();
  return(0);
 }
+# }}}
 
-
-sub GetCurrentUser {
+# {{{ sub GetCurrentUser 
+sub GetCurrentUser  {
   if (!$CurrentUser) {
     my ($CurrentUid);
     require RT::CurrentUser;
@@ -31,7 +33,10 @@ sub GetCurrentUser {
   }
   return($CurrentUser);
 }
-sub ParseArgs {
+# }}}
+
+# {{{ sub ParseArgs 
+sub ParseArgs  {
 
   for ($i=0;$i<=$#ARGV;$i++) {
     if ($ARGV[$i] eq "-create")   {
@@ -122,18 +127,11 @@ sub ParseArgs {
       }
       
     
-    elsif ($ARGV[$i] eq "-requestor") {
-   	my $id = int($ARGV[++$i]);
-	my $new_user = $ARGV[++$i];
-
-	my $Ticket = &LoadTicket($id);
-	$Message .= $Ticket->AddWatcher(Email => "$new_user",
-			    Type => "Requestor");
-      }
-    
     elsif ( ($ARGV[$i] =~ "-cc") || 
-	    ($ARGV[$i] =~ "-bcc") || 
-	    ($ARGV[$i] =~ "-user") ) {
+	    ($ARGV[$i] =~ "-admincc") || 
+	    ($ARGV[$i] =~ "-user") ||
+	      ($ARGV[$i] =~ "-requestorr") 
+	  ) {
       
       my $type = $ARGV[$i];
       my $id = int($ARGV[++$i]);
@@ -143,10 +141,10 @@ sub ParseArgs {
       if ($type eq '-cc') {
 	$watcher_type = "Cc";
       }
-      elsif ($type eq '-bcc') {
-	$watcher_type = "Bcc";
+      elsif ($type eq '-admincc') {
+	$watcher_type = "AdminCc";
       }
-      elsif ($type eq '-user') {
+      elsif (($type eq '-user') || ($type eq '-requestor')) {
 	$watcher_type = "Requestor";
       }
       else {
@@ -154,8 +152,6 @@ sub ParseArgs {
 	die "This else never reached. Ever. or you broke the cli\n";
       }
      
-
-
       if ($arg =~ /^(.)(.*)/) {
 	$action = $1;
 	$email = $2;
@@ -271,12 +267,10 @@ sub ParseArgs {
 
   print "$Message\n" if defined($Message);
 }
-  
-  
-  
-  
-  
-  sub cli_create_req {	
+# }}}
+
+# {{{ sub cli_create_req 
+sub cli_create_req  {	
     my ($queue_id,$owner,$Requestors,$status,$priority,$Subject,$final_prio,
 	$Cc, $Bcc, $date_due, $due_string, $Owner);
 
@@ -362,8 +356,10 @@ sub ParseArgs {
 
     printf("Request %s created",$id);
   }
+# }}}
   
-  sub cli_comment_req {	
+# {{{ sub cli_comment_req 
+sub cli_comment_req  {	
     my $Ticket = shift ;
     my ($subject,@content,$trans,$cc,$bcc,$Transaction,
 	$Description, $TimeTaken);
@@ -400,8 +396,10 @@ sub ParseArgs {
     
     print $Description;
   }
+# }}}  
   
-  sub cli_respond_req {
+# {{{ sub cli_respond_req 
+sub cli_respond_req  {
     my $Ticket =  shift;
     my ($subject,$content,$trans,$message,$cc,$bcc );
     
@@ -428,15 +426,20 @@ n";
 					From => $CurrentUser->EmailAddress));
     print $Message;
   }                   
+# }}}
   
-  sub ShowHistory {
+# {{{ sub ShowHistory 
+sub ShowHistory  {
     my $Ticket = shift;
     my $Transaction;
     while ($Transaction = $Ticket->Transactions->Next) {
       &ShowTransaction($Transaction);
     }   
   }
-  sub ShowRequestorHistory {
+# }}}
+
+# {{{ sub ShowRequestorHistory 
+sub ShowRequestorHistory  {
     my $Ticket = shift;
     my $Transaction;
     while ($Transaction = $Ticket->Transactions->Next) {
@@ -445,8 +448,10 @@ n";
       }
     }   
   }
+# }}}
   
-  sub ShowHelp {
+# {{{ sub ShowHelp 
+sub ShowHelp  {
     print <<EOFORM
     
     RT CLI Flags and their arguments
@@ -463,7 +468,7 @@ n";
 
     -user <num> (+|-) <email>	  Add or remove <email> as a watcher for <num>
     -cc <num> (+|-) <email>
-    -bcc <num> (+|-) <email>
+    -admincc <num> (+|-) <email>
 
     -due <num< <date>     Change <num>'s due date to <date> (MM/DD/YY)
     -comment <num>	  Add comments about <num> from STDIN
@@ -479,8 +484,10 @@ n";
 EOFORM
     
   }
+# }}}
   
-  sub ShowSummary {
+# {{{ sub ShowSummary 
+sub ShowSummary  {
     my $Ticket = shift;
 
     use Time::Local;
@@ -489,7 +496,7 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
       Subject: @{[$Ticket->Subject]}
    Requestors: @{[$Ticket->RequestorsAsString]}
            Cc: @{[$Ticket->CcAsString]}
-          Bcc: @{[$Ticket->BccAsString]}
+     Admin Cc: @{[$Ticket->AdminCcAsString]}
         Owner: @{[$Ticket->Owner->UserId]}
      Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
           Due: @{[$Ticket->DueAsString]}
@@ -500,7 +507,10 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
 
 EOFORM
 }
-sub ShowTransaction {
+# }}}
+
+# {{{ sub ShowTransaction 
+sub ShowTransaction  {
   my $transaction = shift;
   
 print <<EOFORM;
@@ -523,8 +533,10 @@ EOFORM
   }
   return();
 }
-  
-sub LoadTicket {
+# }}}
+
+# {{{ sub LoadTicket 
+sub LoadTicket  {
   my $id = shift;
   my ($Ticket,$Status,$Message,$CurrentUser);
   $CurrentUser=&GetCurrentUser;
@@ -541,4 +553,6 @@ sub LoadTicket {
   
   }
 }
+# }}}
+
 1;

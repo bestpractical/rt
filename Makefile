@@ -112,7 +112,7 @@ DB_TYPE                =	mysql
 # Set DB_DBA to the name of a DB user with permission to create new databases 
 # Set DB_DBA_PASSWORD to that user's password
 DB_DBA                   =	root
-DB_DBA_PASSWORD          =	""
+DB_DBA_PASSWORD          =	
  
 #
 # Set this to the Fully Qualified Domain Name of your database server.

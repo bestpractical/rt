@@ -119,7 +119,7 @@ sub Create {
 # }}}
 
 #
-# Routines dealing with interested parties.
+# Routines dealing with watchers.
 #
 
 # {{{ sub AddWatcher
@@ -130,8 +130,13 @@ sub AddWatcher {
 	       Email => undef,
 	       Type => undef,
 	       Scope => 'Ticket',
+	       Owner => 0,
 	       @_ );
+
+  #TODO: Look up the Email that's been passed in to find the watcher's
+  # user id. Set Owner to that value.
   
+
   require RT::Watcher;
   my $Watcher = new RT::Watcher ($self->CurrentUser);
   $Watcher->Create(%args);
@@ -139,7 +144,29 @@ sub AddWatcher {
 }
 
 # }}}
+
+# {{{ sub AddRequestor
+sub AddRequestor {
+  my $self = shift;
+  return ($self->AddWatcher ( Type => 'Requestor', @_));
+}
+# }}}
+
+# {{{ sub AddCc
+sub AddCc {
+  my $self = shift;
+  return ($self->AddWatcher ( Type => 'Cc', @_));
+}
+# }}}
 	
+# {{{ sub AddAdminCc
+
+sub AddAdminCc {
+  my $self = shift;
+  return ($self->AddWatcher ( Type => 'AdminCc', @_));
+}
+# }}}
+
 # {{{ sub DeleteWatcher
 
 sub DeleteWatcher {
@@ -228,7 +255,6 @@ sub Cc {
 
 # }}}
 
-
 # {{{ sub CcAsString
 sub CcAsString {
   my $self = shift;
@@ -276,33 +302,27 @@ sub AdminCcAsString {
 # }}}  
 
 
-# {{{ sub _Validate
+# {{{ sub ValidateQueue
 
-sub _Validate {
+sub ValidateQueue {
   my $self = shift;
-  
-  my $Field = shift;
   my $Value = shift;
+  if (!$Value) {
+    return (1);
+  }
   
-  if ($Field eq 'Queue') {
-
-    if (!$Value) {
-      return (1);
-    }
-    
-    require RT::Queue;
-    my $QueueObj = RT::Queue->new($self->CurrentUser);
-    my $id = $QueueObj->Load($Value);
-
-    
-    if ($id) {
-      return (1);
-    }
-    else {
-      return (undef);
-    }
+  require RT::Queue;
+  my $QueueObj = RT::Queue->new($self->CurrentUser);
+  my $id = $QueueObj->Load($Value);
+  
+  if ($id) {
+    return (1);
+  }
+  else {
+    return (undef);
   }
 }
+
 # }}}
 
 # {{{ sub SetQueue  

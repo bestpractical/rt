@@ -3,9 +3,9 @@
 <& QueueInterpretRestrtictionCookies &>
 
 <& QueueHeader format="$format" &>
-foreach entry in $queue {
+%foreach entry in $queue {
 	 <& QueueItem format="$format" Item="$Item" &>
-}
+%}
 
 <& QueueFooter format="$format" &>
 

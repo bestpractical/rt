@@ -1,7 +1,11 @@
-#$Header$
+# $Header$
+# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
+# This software is redistributable under the terms of the GNU GPL
+#
 package rt::ui::cli::admin;
 
-sub activate {
+# {{{ sub activate 
+sub activate  {
   my ($current_user);
   
   require RT::CurrentUser;  
@@ -17,13 +21,15 @@ sub activate {
   
 
 }
+# }}}
 
-sub ParseArgs {
+# {{{ sub ParseArgs 
+
+sub ParseArgs  {
 
   for ($i=0;$i<=$#ARGV;$i++) {
     if ($ARGV[$i] =~ 'q') {
       $action=$ARGV[++$i];
-      
       
       if ($action eq "-list") {
 	&cli_list_queues();
@@ -33,13 +39,12 @@ sub ParseArgs {
 	$queue_id=$ARGV[++$i];
 	if (!$queue_id) {
 	  print "You must specify a queue.\n";
-	  exit(0);
+	  return(0);
 	}
-	
 	&cli_create_queue($queue_id);
       }
       
-      if ($action eq "-modify") {
+      elsif ($action eq "-modify") {
 	$queue_id=$ARGV[++$i];
 	if (!$queue_id) {
 	  print "You must specify a queue.\n";
@@ -48,100 +53,136 @@ sub ParseArgs {
 	&cli_modify_queue($queue_id);
       }
       
-      elsif ($action eq "-delete")	{
-	$queue_id=$ARGV[++$i];
-	if (!$queue_id) {
-	  print "You must specify a queue.\n";
-	  exit(0);
+      elsif ( ($ARGV[$i] =~ "-cc") ||	($ARGV[$i] =~ "-admincc") ) {
+	my $type = $ARGV[$i];
+	my $queue_id = $ARGV[++$i];
+	my $arg = $ARGV[++$i];
+	my $Queue = &LoadQueue($queue_id);
+	
+	if ($type eq '-cc') {
+	  $watcher_type = "Cc";
+	}
+	elsif ($type eq '-admincc') {
+	  $watcher_type = "AdminCc";
 	}
 	
-	&cli_delete_queue($queue_id);
+	else {
+	  #we've just covered all our bases
+	  die "This else never reached. Ever. or you broke the cli\n";
+	}
+	
+	if ($arg =~ /^(.)(.*)/) {
+	  $action = $1;
+	  $email = $2;
+	}
+	if ($action eq "+") {
+	  $Message .= $Queue->AddWatcher(Email => "$email",
+					 Type => "$watcher_type");
+	  
+	}
+	elsif ($action eq "-") {
+	  $Message .= $Queue->DeleteWatcher("$email");
+	}
+	else {
+	  $Message .= "$type expects an argument of the form +<email address> or -<email address>\n";
+	}
       }
       
-      elsif ($action eq "-acl")	{
-	$queue_id=$ARGV[++$i];
-	if (!$queue_id) {
-	  print "You must specify a queue.\n";
-	  return(0);
-	}
-	&cli_acl_queue($queue_id);
-      }	
-      
     }
+    
+    
+    
+    elsif ($action eq "-delete") {
+      $queue_id=$ARGV[++$i];
+      if (!$queue_id) {
+	print "You must specify a queue.\n";
+	  exit(0);
+      }
+      
+      &cli_delete_queue($queue_id);
+    }
+    
+    elsif ($action eq "-acl")	{
+      $queue_id=$ARGV[++$i];
+      if (!$queue_id) {
+	print "You must specify a queue.\n";
+	return(0);
+      }
+      &cli_acl_queue($queue_id);
+    }	
+    
+    
     
     elsif ($ARGV[$i] =~ 'u') {
       require RT::User;
       
       $action=$ARGV[++$i];
       
-      if ($action eq "-modify") {
-	$user_id=$ARGV[++$i];
-	if (!$user_id) {
-	  print "You must specify a user.\n";
-	  return(0);
+    if ($action eq "-modify") {
+      $user_id=$ARGV[++$i];
+      if (!$user_id) {
+	print "You must specify a user.\n";
+	return(0);
 	}
-	&cli_modify_user($user_id);
-      } 
+      &cli_modify_user($user_id);
+    } 
+    
+    elsif  ($action eq "-create") {
+      $user_id=$ARGV[++$i];
+      if (!$user_id) {
+	print "You must specify a user.\n";
+	return(0);
+      }
+      &cli_create_user($user_id);
+    } 
+    
+    elsif ($action eq "-getpwent") {
+      $passwd=$ARGV[++$i];
+      $admin=$ARGV[++$i];
       
-      elsif  ($action eq "-create") {
-	$user_id=$ARGV[++$i];
-	if (!$user_id) {
-	  print "You must specify a user.\n";
-	  return(0);
-	}
-	&cli_create_user($user_id);
-      } 
+      print "Getpwent is not currently supported. A patch would be appreciated\n";
+      exit(0);
       
-      elsif ($action eq "-getpwent") {
-	$passwd=$ARGV[++$i];
-	$admin=$ARGV[++$i];
-	
-	print "Getpwent is not currently supported. A patch would be appreciated\n";
+      if (!defined($admin)) {
+	print "Usage: user -getpwent <password> <administrator> [<users>...]\n";
 	exit(0);
-	
-	if (!defined($admin)) {
-	  print "Usage: user -getpwent <password> <administrator> [<users>...]\n";
-	  exit(0);
+      }
+      if (defined($ARGV[$i++])) {
+	while (my $login=$ARGV[++$i]) {
+	  ($login, $domain) = split('@', $login);
+	  $domain || ($domain = $host);
+	  &add_pwent($domain, getpwnam($login), $CurrentUser);		  
 	}
-	if (defined($ARGV[$i++])) {
-	  while (my $login=$ARGV[++$i]) {
-	    ($login, $domain) = split('@', $login);
-	    $domain || ($domain = $host);
-	    &add_pwent($domain, getpwnam($login), $CurrentUser);		  
-	  }
-	} else { 
-	  #Sometimes it really had been useful beeing able to combine while with
+      } else { 
+	#Sometimes it really had been useful beeing able to combine while with
 	  #else..  
-	  
-	  &setpwent;
-	  while (&add_pwent($host, getpwent, $CurrentUser))
-	    {;}
-	  &endpwent;
-	}
 	
+	&setpwent;
+	while (&add_pwent($host, getpwent, $CurrentUser))
+	  {;}
+	&endpwent;
       }
       
-      
-      
-      elsif ($action eq "-delete")	{
-	$user_id=$ARGV[++$i];
-	
-	if (!$user_id) {
-	  print "You must specify a user.\n";
-	  exit(0);
-	}
-	
-	&cli_delete_user($user_id);
-      }	
-      
     }
-    elsif ($ARGV[$i] =~ 'a')	{
+    
+    elsif ($action eq "-delete")	{
       $user_id=$ARGV[++$i];
-      $queue_id=$ARGV[++$i];
-      $privs=$ARGV[++$i];
-      &cli_user_acl($user_id,$queue_id,$privs);
+      if (!$user_id) {
+	print "You must specify a user.\n";
+	exit(0);
+      }
+      
+      &cli_delete_user($user_id);
     }	
     
+    }
+  elsif ($ARGV[$i] =~ 'a')	{
+    $user_id=$ARGV[++$i];
+    $queue_id=$ARGV[++$i];
+    $privs=$ARGV[++$i];
+    &cli_user_acl($user_id,$queue_id,$privs);
+  }	
+  
     else{
       &cli_help_rt_admin();
       exit(0);
@@ -149,9 +190,12 @@ sub ParseArgs {
   }
 }
 
+# }}}
+
 # Add/Modify users by pwent:
 # This code by tobix...
-sub add_pwent {
+# {{{ sub add_pwent 
+sub add_pwent  {
   if (!@_) {return undef;}
   my ($domain, $name,$pass,$uid,$gid,
       $quota,$comment,$gcos,$dir,$shell,$whoami) = @_;
@@ -166,9 +210,10 @@ sub add_pwent {
   
   return $result;
 }
+# }}}
 
-
-sub cli_acl_queue {
+# {{{ sub cli_acl_queue 
+sub cli_acl_queue  {
     my ($queue_id)=@_;
 
     print "ACLs for queue \"$queue_id\"\n";
@@ -177,22 +222,26 @@ sub cli_acl_queue {
 	&cli_print_acl($user_id,$queue_id);
     }
 }
- sub cli_modify_user{
-   my $user_id = shift;
-   my $User;
+# }}}
 
-   $User = new RT::User($CurrentUser);
+# {{{ sub cli_modify_user
+sub cli_modify_user {
+  my $user_id = shift;
+  my $User;
+  
+  $User = new RT::User($CurrentUser);
    if (!$User->Load($user_id)){
      print "That user does not exist.\n";
      return(0);
    }
+  
+  &cli_modify_user_helper($User);
+}
+# }}} 
 
-   &cli_modify_user_helper($User);
- }
- 
- 
- sub cli_modify_user_helper {
-   my $User = shift;
+# {{{ sub cli_modify_user_helper 
+sub cli_modify_user_helper  {
+  my $User = shift;
 
 
    my ($email, $real_name, $password, $phone, $office, $admin_rt, $comments, $message);
@@ -231,11 +280,7 @@ sub cli_acl_queue {
     $country=&rt::ui::cli::question_string("Country",
 					 $User->Country);
     
-    
- 
- 
-    
-    if ($CurrentUser->IsAdministrator) {
+      if ($CurrentUser->IsAdministrator) {
    
         $gecos=&rt::ui::cli::question_string("UNIX Username",
 					      $User->Gecos);
@@ -277,9 +322,10 @@ sub cli_acl_queue {
     print "You do not have privileges to modify that user's info\n";
   }
 }
+# }}}
  
- 
-sub cli_create_user {
+# {{{ sub cli_create_user 
+sub cli_create_user  {
   my $user_id = shift;
   my $User = RT::User->new($CurrentUser);
   (my $result, $message)= $User->Create(UserId => $user_id);
@@ -291,26 +337,30 @@ sub cli_create_user {
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_user_helper($User);
 }
+# }}}
 
-sub cli_create_queue {
+# {{{ sub cli_create_queue 
+sub cli_create_queue  {
   my $queue_id = shift;
+
   use RT::Queue;
   my $Queue = new RT::Queue($CurrentUser);
   $Queue->Create($queue_id);
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_queue_helper($Queue);
 }
+# }}}
 
-sub cli_modify_queue {
+# {{{ sub cli_modify_queue 
+sub cli_modify_queue  {
   my $queue_id = shift;
-  # get a new queue object and fill it.
-  use RT::Queue;
-  $Queue = new RT::Queue($CurrentUser);
-  $Queue->Load($queue_id);
+  my $Queue = &LoadQueue($queue_id);
   &cli_modify_queue_helper($Queue);
 }
+# }}}
 
-sub cli_modify_queue_helper {
+# {{{ sub cli_modify_queue_helper 
+sub cli_modify_queue_helper  {
   my $Queue = shift;
   my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans, $m_members_correspond, 
       $m_user_create, $m_members_comment, $allow_user_create,$default_prio, 
@@ -362,8 +412,10 @@ sub cli_modify_queue_helper {
     print "Queue modifications aborted.\n";
   }
 }
+# }}}
 
-sub cli_delete_queue {
+# {{{ sub cli_delete_queue 
+sub cli_delete_queue  {
   my  $queue_id = shift;
   # this function needs to ask about moving all requests into some other queue
     if(&rt::ui::cli::question_yes_no("Really DELETE queue $queue_id",0)){
@@ -376,8 +428,10 @@ sub cli_delete_queue {
     print "Queue deletion aborted.\n";
   }
 }
+# }}}
 
-sub cli_delete_user {
+# {{{ sub cli_delete_user 
+sub cli_delete_user  {
   my  $user_id = shift;
   if(&rt::ui::cli::question_yes_no("Really DELETE user $user_id",0)){
     my $User = new RT::User($CurrentUser);
@@ -389,12 +443,10 @@ sub cli_delete_user {
     print "User deletion aborted.\n";
   }
 }
+# }}}
 
-
-
-
-
-sub cli_user_acl {
+# {{{ sub cli_user_acl 
+sub cli_user_acl  {
     my ($user_id,$queue_id,$privs) =@_;
     my ($display, $manipulate, $admin, $message);
     if (!$user_id) {
@@ -450,9 +502,10 @@ sub cli_user_acl {
     }
     return(1);
 }
+# }}}
 
-
-sub cli_list_queues {
+# {{{ sub cli_list_queues 
+sub cli_list_queues  {
   use RT::Queues;
   my ($Queues, $Queue);
   $Queues = new RT::Queues($CurrentUser);
@@ -463,8 +516,10 @@ sub cli_list_queues {
     print $Queue->QueueId,"\t", $Queue->CorrespondAddress, "\t", $Queue->CommentAddress,"\n"; 
   }
 }
+# }}}
 
-sub cli_print_acl {
+# {{{ sub cli_print_acl 
+sub cli_print_acl  {
   my  $user_id =  shift;
   my  $queue_id  = shift;
   
@@ -496,7 +551,10 @@ sub cli_print_acl {
   
     
 }
-sub cli_help_rt_admin{
+# }}}
+
+# {{{ sub cli_help_rt_admin
+sub cli_help_rt_admin {
   print "
 user
       -create <user> create a RT account for <user>
@@ -516,4 +574,18 @@ queue -create <queue>              create a new queue called <queue>
       -area delete <area> <queue>  remove <area> from <queue>
 ";
 }
+# }}}
+
+# {{{ sub LoadQueue 
+sub LoadQueue {
+  my $queue_id = shift;
+
+  my ($Queue);
+  # get a new queue object and fill it.
+  use RT::Queue;
+  $Queue = new RT::Queue($CurrentUser);
+  $Queue->Load($queue_id) || die "Couldn't load the queue called $queue_id";
+  return ($Queue);
+}
+# }}}
 1;

@@ -25,6 +25,7 @@ sub _Accessible  {
 	       CommentAddress =>  'read/write',
 	       InitialPriority =>  'read/write',
 	       FinalPriority =>  'read/write',
+	       PermitNonmemberCreate => 'read/write',
 	       DefaultDueIn =>  'read/write'
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
@@ -102,31 +103,96 @@ sub Load  {
 # }}}
 
 #
-# Distribution lists
+# Dealing with Watchers
 
-# {{{ sub DistributionList 
-sub DistributionList  {
+
+# {{{ sub AddWatcher
+
+sub AddWatcher {
   my $self = shift;
-  #return the list of all queue members.
-  return();
+  my %args = ( Value => $self->Id(),
+	       Email => undef,
+	       Type => undef,
+	       Scope => 'Queue',
+	       Owner => 0,
+	       @_ );
+
+  #TODO: Look up the Email that's been passed in to find the watcher's
+  # user id. Set Owner to that value.
+  
+
+  require RT::Watcher;
+  my $Watcher = new RT::Watcher ($self->CurrentUser);
+  $Watcher->Create(%args);
+  
+}
+
+# }}}
+
+
+# {{{ sub AddCc
+sub AddCc {
+  my $self = shift;
+  return ($self->AddWatcher ( Type => 'Cc', @_));
 }
 # }}}
-#
+	
+# {{{ sub AddAdminCc
 
-
-#
-# Routines related to areas
-# Eventually, this may be replaced with a keyword system
-
-# {{{ sub NewArea 
-sub NewArea  {
+sub AddAdminCc {
+  my $self = shift;
+  return ($self->AddWatcher ( Type => 'AdminCc', @_));
 }
 # }}}
 
-# {{{ sub DeleteArea 
-sub DeleteArea  {
+# {{{ sub DeleteWatcher
+
+sub DeleteWatcher {
+  my $self = shift;
+  my $email = shift;
+  
+  my ($Watcher);
+  
+  while ($Watcher = $self->Watchers->Next) {
+    if ($Watcher->Email =~ /$email/) {
+      $Watcher->Delete();
+    }
+  }
+}
+
+# }}}
+
+# {{{ sub AdminCc
+sub AdminCc {
+  my $self = shift;
+  if (! defined ($self->{'AdminCc'}) 
+      || $self->{'AdminCc'}->{is_modified}) {
+    require RT::Watchers;
+    $self->{'AdminCc'} =RT::Watchers->new($self->CurrentUser);
+    $self->{'AdminCc'}->LimitToQueue($self->id);
+    $self->{'AdminCc'}->LimitToType('AdminCc');
+  }
+  return($self->{'AdminCc'});
+  
 }
 # }}}
+
+
+# {{{ sub Cc
+sub Cc {
+  my $self = shift;
+  if (! defined ($self->{'Cc'}) 
+      || $self->{'Cc'}->{is_modified}) {
+    require RT::Watchers;
+    $self->{'Cc'} =RT::Watchers->new($self->CurrentUser);
+    $self->{'Cc'}->LimitToQueue($self->id);
+    $self->{'Cc'}->LimitToType('Cc');
+  }
+  return($self->{'Cc'});
+  
+}
+# }}}
+
 
 # {{{ sub Watchers 
 sub Watchers  {
@@ -144,21 +210,6 @@ sub Watchers  {
 
 
 
-# {{{ sub Areas 
-sub Areas  {
-  my $self = shift;
-  
-  if (!$self->{'areas'}){
-    require RT::Areas;
-    $self->{'areas'} = RT::Areas->new($self->CurrentUser);
-    $self->{'areas'}->Limit(FIELD => 'queue',
-			    VALUE => $self->QueueId);
-  }  
-  #returns an EasySearch object which enumerates this queue's areas
-}
-# }}}
-
-#
 # 
 # Routines which deal with this queues acls 
 #
