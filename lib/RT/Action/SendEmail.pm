@@ -4,6 +4,9 @@
 
 package RT::Action::SendEmail;
 require RT::Action;
+
+die "You need MailTools 1.14 or newer (check the FAQ)" if ($Mail::Internet::VERSION<1.32);
+
 @ISA = qw(RT::Action);
 
 
@@ -30,21 +33,15 @@ sub Commit  {
 
   my @body = grep($_ .= "\n", split(/\n/,$self->{'Body'}));
 
-  #TODO HACKISH
-  open(SENDMAIL,"|/usr/lib/sendmail -oi -t");
-
   # We should have some kind of site specific configuration here.  I
   # think the default method for sending an email should be
   # send('sendmail'), but some RT installations might want to use the
   # smtpsend method anyway.
-  $self->TemplateObj->MIMEObj->print(\*SENDMAIL);
+
+  $self->{'TemplateObj'}->MIMEObj->send('sendmail') || die "Could not send mail ... check the FAQ";
 #  $self->TemplateObj->MIMEObj->smtpsend(Host => 'localhost') || die "could not send email";
 
-  #TODO: enable this once tobix' new Mail::Internet is out there.
-  #$self->{'TemplateObj'}->send('sendmail'); || die "Could not send mail;
-
   # TODO Tell the administrator that RT couldn't send mail
-  close(SENDMAIL)
 
 }
 # }}}
@@ -61,6 +58,8 @@ sub Prepare  {
 			    TicketObj => $self->TicketObj, 
 			    TransactionObj => $self->TransactionObj);
 
+
+  $self->SetRecipients();
 
   # Header
   
@@ -85,9 +84,6 @@ sub Prepare  {
   $self->SetMessageID();
 
   $self->SetPrecedence();
-
-  # Is it any reason why we need three separate subs for this?  I can
-  # hardly see that they will operate that differently. --TobiX
 
   $self->SetTo();
 
@@ -253,17 +249,21 @@ sub SetReturnAddress {
 
 # {{{ sub SetEnvelopeTo
 
-# Ehrm ... I thought EnvelopeTo was something that was set by some
-# MTAs, not a field that would be respected when calling the MDA /
-# sending through SMTP?
-
 sub SetEnvelopeTo {
   my $self = shift;
-  #TODO Set Envelope to
+  if (exists $self->{'EnvelopeTo'}) {
+      $self->TemplateObj->MIMEObj->head->add('Envelope-To', $self->{'EnvelopeTo'});
+  }
   return($self->{'EnvelopeTo'});
 }
 
 # }}}
+
+# {{{ sub SetRecipientsTo
+sub SetRecipientsTo {
+    # Override this one to set $self->{'To'}, $self->{'Envelope-To'}, etc.
+}
+# }}} sub SetRecipientsTo
 
 # {{{ sub SetTo
 
@@ -357,19 +357,23 @@ __END__
 
 =head1 DESCRIPTION
 
-  Basically, you create another module RT::Action::YourAction which ISA RT::Action::SendEmail
+Basically, you create another module RT::Action::YourAction which ISA
+RT::Action::SendEmail.
 
-If you want to set the recipients of the mail to something
-other than the addresses mentioned in the To, Cc, Bcc and EnvelopeTo
-headers, you should subclass RT::Action::SendEmail and  override 
-the SetTo, SetCc, SetBcc and SetEnvelopeTo subroutines.
+If you want to set the recipients of the mail to something other than
+the addresses mentioned in the To, Cc, Bcc and EnvelopeTo headers in
+the template, you should subclass RT::Action::SendEmail and override
+either the SetRecipients method or the SetTo, SetCc, etc methods.
 
-The reason for the EnvelopeTo routine is to allow you to set who
-the mail message is _really_ sent to, as sometimes you may want 
-the to/cc/bcc headers to "massage the truth" and not send mail to all
-listed addresses. For example, you may want to always set the To: and From: lines to RT but don't want to actually _send_ the mail there.
+The reason for the EnvelopeTo method is to allow you to set who the
+mail message is _really_ sent to, as sometimes you may want the
+to/cc/bcc headers to "massage the truth" and not send mail to all
+listed addresses. For example, you may want to always set the To: and
+From: lines to RT but don't want to actually _send_ the mail there.
 
-
+Envelope-To is not mentionated in RFC822, and might not work with all
+mailers.  Actually TobiX is not sure it will work with any mailer at
+all.
 
 =head1 AUTHOR
 
