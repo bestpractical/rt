@@ -52,6 +52,7 @@ use RT::Ticket;
 	      Type => 'STRING',
               Content => 'TRANSFIELD',
 	      ContentType => 'TRANSFIELD',
+ 	      TransactionDate => 'TRANSDATE',
 	      Watcher => 'WATCHERFIELD',
 	      LinkedTo => 'LINKFIELD',
               Keyword => 'KEYWORDFIELD'
@@ -653,6 +654,8 @@ sub LimitDate {
 
 # }}}
 
+
+
 sub LimitCreated {
     my $self = shift;
     $self->LimitDate( FIELD => 'Created', @_);
@@ -679,6 +682,38 @@ sub LimitLastUpdated {
     my $self = shift;
     $self->LimitDate( FIELD => 'LastUpdated', @_);
 }
+#
+# {{{ sub LimitTransactionDate
+
+=head2 LimitTransactionDate (OPERATOR => $oper, VALUE => $ISODate)
+
+Takes a paramhash with the fields FIELD OPERATOR and VALUE.
+
+OPERATOR is one of > or < 
+VALUE is a date and time in ISO format in GMT
+
+
+=cut
+
+sub LimitTransactionDate {
+    my $self = shift;
+    my %args = (
+                  FIELD => 'TransactionDate',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+
+                  @_);
+
+    #Set the description if we didn't get handed it above
+    unless ($args{'DESCRIPTION'} ) {
+	$args{'DESCRIPTION'} = $args{'FIELD'} . " " .$args{'OPERATOR'}. " ". $args{'VALUE'} . " GMT"
+    }
+
+    $self->Limit (%args);
+
+}
+
+# }}}
 
 # }}}
 
@@ -1036,6 +1071,31 @@ sub _ProcessRestrictions {
 				  VALUE =>    $restriction->{'VALUE'} );
 	    
 
+	}
+
+	# }}}
+	# {{{ if it's a Transaction date that we're hunting for
+	elsif ($TYPES{$restriction->{'FIELD'}} eq 'TRANSDATE') {
+
+	    #Basically, we want to make sure that the limits apply to the same attachment,
+	    #rather than just another attachment for the same ticket, no matter how many 
+	    #clauses we lump on. 
+	    #We put them in TicketAliases so that they get nuked when we redo the join.
+	    
+	    unless (defined $self->{'TicketAliases'}{'TransFieldAlias'}) {
+		$self->{'TicketAliases'}{'TransFieldAlias'} = $self->NewAlias ('Transactions');
+	    }
+
+	    #Join transactions to tickets
+	    $self->Join( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'},
+			 ALIAS2 =>$self->{'TicketAliases'}{'TransFieldAlias'}, FIELD2 => 'Ticket');
+	    
+	    #Search for the right field
+	    $self->SUPER::Limit(ALIAS => $self->{'TicketAliases'}{'TransFieldAlias'},
+				ENTRYAGGREGATOR => 'AND',
+				FIELD =>    'Created',
+				OPERATOR => $restriction->{'OPERATOR'} ,
+				VALUE =>    $restriction->{'VALUE'} );
 	}
 
 	# }}}
