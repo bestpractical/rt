@@ -27,7 +27,6 @@ edge [
 "CachedGroupMemers" -> "Groups" [label="ImmediateParentId -> Groups.id"];
 
 "CustomFields" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"CustomFields" -> "Queues" [label="Queue -> id"];
 
 "CustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "CustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
@@ -45,6 +44,7 @@ edge [
 
 "Principals" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
+"Attributes" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
 "Queues" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
@@ -61,9 +61,11 @@ edge [
 "Templates" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "Templates" -> "Queues" [label ="Queue -> id" ];
 
-"TicketCustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"TicketCustomFieldValues" -> "Tickets" [label="Ticket -> id"];
-"TicketCustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
+"ObjectCustomFields" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"ObjectCustomFields" -> "CustomFields" [label="CustomField -> id"];
+
+"ObjectCustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"ObjectCustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
 
 "Tickets" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "Tickets" -> "Tickets" [label="EffectiveId -> id"];
