@@ -68,12 +68,218 @@ SPAN.nav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 color: #FFFFFF;
 	 text-decoration: none;
 	 white-space: nowrap}
+
+%# .topnav is the original RT class for the sidebar navigation tabs.
+%# Font-sizing by level depth was originally hard-coded into Elements/Menu.
+%# This modification sets a different class name for each level, allowing
+%# style sheet control over the formats.
+
+a.topnav-0 {  font-family: Verdana, sans-serif;
+	 font-size: 16px;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.topnav-1 {  font-family: Verdana, sans-serif;
+	 font-size: 14px;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.topnav-2 {  font-family: Verdana, sans-serif;
+	 font-size: 12px;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.topnav-3 {  font-family: Verdana, sans-serif;
+	 font-size: 11px;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.topnav-4 {  font-family: Verdana, sans-serif;
+	 font-size: 11px;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.topnav-5 {  font-family: Verdana, sans-serif;
+	 font-size: 11px;
+	 font-weight: normal;
+	 color: #FFFFFF;
+	 text-decoration: none;
+	 white-space: nowrap}
+li.topnav-0-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-1-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-2-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-3-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-4-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-5-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.topnav-0-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em
+	 padding-bottom: .5em
+}
+li.topnav-1-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em
+	 padding-bottom: .5em
+}
+li.topnav-2-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em
+	 padding-bottom: .5em
+}
+li.topnav-3-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em
+	 padding-bottom: .5em
+}
+li.topnav-4-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em
+	 padding-bottom: .5em
+}
+li.topnav-5-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em
+	 padding-bottom: .5em
+}
+
 .currenttopnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 16px;
          font-weight: bold;
 	 color: #FFFF66;
 	 text-decoration: none;
 	 white-space: nowrap}
+
+%# .currenttopnav is the original RT class for the sidebar navigation tabs.
+%# Font-sizing by level depth was originally hard-coded into Elements/Menu.
+%# This modification sets a different class name for each level, allowing
+%# style sheet control over the formats
+
+a.currenttopnav-0 {  font-family: Verdana, sans-serif;
+	 font-size: 14px;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.currenttopnav-1 {  font-family: Verdana, sans-serif;
+	 font-size: 12px;
+         font-weight: bold;
+	 color: #FFFF66;
+	 text-decoration: normal;
+	 white-space: nowrap}
+a.currenttopnav-2 {  font-family: Verdana, sans-serif;
+	 font-size: 11px;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.currenttopnav-3 {  font-family: Verdana, sans-serif;
+	 font-size: 11px;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.currenttopnav-4 {  font-family: Verdana, sans-serif;
+	 font-size: 11px;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: nowrap}
+a.currenttopnav-5 {  font-family: Verdana, sans-serif;
+	 font-size: 11px;
+         font-weight: normal;
+	 color: #FFFF66;
+	 text-decoration: none;
+	 white-space: nowrap}
+li.currenttopnav-0-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-1-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-2-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-3-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-4-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-5-minor {
+	 border-top: solid #999999 1px;
+	 padding-top: .1em;
+	 margin-top: .5em;
+}
+li.currenttopnav-0-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-1-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-2-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-3-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-4-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+li.currenttopnav-5-major {
+	 border-bottom: solid white 1px;
+	 padding-top: .25em;
+	 padding-bottom: .5em;
+}
+
 .topactions {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 10px;
 	 color: #FFFFFF;
@@ -379,6 +585,18 @@ ul.topnav {
 	padding-top:0;
 	margin-top: 0;
 	margin-bottom:0;
+}
+
+.menu-major-separator {
+	border-bottom: solid white 1px;
+	padding-top: .25em;
+	padding-bottom: .5em;
+}
+
+.menu-minor-separator {
+        border-top: solid #999999 1px;
+	padding-top: .1em;
+	margin-top: .5em;
 }
 
 %# Provide a callback for adding/modifying the style sheet.

@@ -69,16 +69,16 @@
 % } 
 % my $style="";
 % if ($sep) {
-% $style="border-top: solid #999 1px; padding-top: .1em; margin-top: .5em;";
+% $style="-minor";
 % } elsif ($level == 0 ) {
-% $style="border-bottom: solid white 1px; padding-top: .25em; padding-bottom: .5em;" ;
+% $style="-major";
 % }
 % if ($toptabs->{$tab}->{'separator'}) {
 % $sep=1;
 % } else {
 % $sep=0;
 % }
-<li style="<%$style%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>" style="font-size: <%$size%>;" class="<%$class%>" 
+<li class="<%$class%>-<%$level%>"><A HREF="<%$RT::WebPath%>/<%$toptabs->{$tab}->{'path'}%>" class="<%$class%>-<%$level%>" 
 <%($class eq 'currenttopnav') ? "name='focus'" : ""|n %> 
 <% !$level && "accesskey='".$accesskey++."'" |n%>><% $toptabs->{$tab}->{'title'}%></A>
 %# Second-level items
