@@ -1,3 +1,4 @@
+
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
@@ -796,21 +797,13 @@ sub UserMembersObj {
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
 
-    my $principals = $users->NewAlias('Principals');
-
-    $users->Join(ALIAS1 => 'main', FIELD1 => 'id',
-                 ALIAS2 => $principals, FIELD2 => 'ObjectId');
-    $users->Limit(ALIAS =>$principals,
-                  FIELD => 'PrincipalType', OPERATOR => '=', VALUE => 'User');
-
     my $cached_members = $users->NewAlias('CachedGroupMembers');
     $users->Join(ALIAS1 => $cached_members, FIELD1 => 'MemberId',
-                 ALIAS2 => $principals, FIELD2 => 'id');
+                 ALIAS2 => $users->PrincipalsAlias, FIELD2 => 'id');
     $users->Limit(ALIAS => $cached_members, 
                   FIELD => 'GroupId',
                   OPERATOR => '=',
                   VALUE => $self->PrincipalId);
-
 
     return ( $users);
 
