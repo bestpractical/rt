@@ -14,8 +14,6 @@ BEGIN {
     $VERSION = do { my @r = (q$Revision$ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r }; # must be all one line, for MakeMaker
     
     @ISA         = qw(Exporter);
-    #@EXPORT      = qw(&func1 &func2 &func4);
-    #%EXPORT_TAGS = ( );     # eg: TAG => [ qw!name1 name2! ],
     
     # your exported package globals go here,
     # as well as any optionally exported functions
@@ -122,8 +120,10 @@ sub GetCurrentUser  {
     #Instantiate a user object
     
     $Gecos=(getpwuid($<))[0];
+
     #If the current user is 0, then RT will assume that the User object
     #is that of the currentuser.
+
     $CurrentUser = new RT::CurrentUser();
     $CurrentUser->LoadByGecos($Gecos);
     
@@ -139,8 +139,9 @@ sub GetCurrentUser  {
 
 =head2 GetMessageContent
 
-Takes two arguments a source file and a boolean "edit".  If the source file is undef or "",
-assumes an empty file.  Returns an edited file as an array of lines.
+Takes two arguments a source file and a boolean "edit".  If the source file
+is undef or "", assumes an empty file.  Returns an edited file as an 
+array of lines.
 
 =cut
 
@@ -169,7 +170,8 @@ sub GetMessageContent {
 	@lines = split('\n',$args{'Content'});
     }
     #get us a tempfile.
-    my ($fh, $filename) = tempfile("rt-".$currentuser->Name."XXXXXXXX", TMPDIR=>1);
+    my ($fh, $filename) = tempfile("rt-".$currentuser->Name."XXXXXXXX", 
+				   TMPDIR=>1);
 	
     #write to a tmpfile
     for (@lines) {

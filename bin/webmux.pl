@@ -39,7 +39,8 @@ use Carp;
 {  
     package HTML::Mason::Commands;
     use vars qw(%session);
-   
+  
+    use RT; 
     use RT::Ticket;
     use RT::Tickets;
     use RT::Transaction;
@@ -95,22 +96,7 @@ chown ( [getpwnam('!!WEB_USER!!')]->[2], [getgrnam('!!WEB_GROUP!!')]->[2],
 sub handler {
     my ($r) = @_;
     
-
-    $RT::Handle = new RT::Handle;
-    
-    $RT::Handle->Connect;
-    
-
-    use RT::CurrentUser;
-    
-    #RT's system user is a genuine database user. its id lives here
-    $RT::SystemUser = new RT::CurrentUser();
-    $RT::SystemUser->LoadByName('RT_System');
-
-    #RT's "nobody user" is a genuine database user. its ID lives here.
-    $RT::Nobody = new RT::CurrentUser();
-    $RT::Nobody->LoadByName('Nobody'); 
-    
+    RT::Init();
  
     # We don't need to handle non-text items
     return -1 if defined($r->content_type) && $r->content_type !~ m|^text/|io;

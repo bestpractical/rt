@@ -99,6 +99,11 @@ my @groups = (
 	       Pseudo => '1',
               },
 	      {
+	       Name => 'Owner',
+	       Description => 'Pseudogroup for internal use',
+	       Pseudo => '1',
+	      },
+	      {
 	       Name => 'Requestor',
 	       Description => 'Pseudogroup for internal use',
 	       Pseudo => '1',

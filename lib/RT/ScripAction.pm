@@ -59,7 +59,7 @@ sub _Accessible  {
 sub Create  {
     my $self = shift;
     #TODO check these args and do smart things.
-    my $id = $self->SUPER::Create(@_);
+    return($self->SUPER::Create(@_));
 }
 # }}}
 

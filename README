@@ -66,14 +66,12 @@ GENERAL INSTALLATION
     called testdeps that uses CPAN to automate all of this.
 
 2.1   Check for compliance:
-	perl rt/tools/testdeps -warn <dbtype> 
-	 (replace <dbtype> with mysql, pg or oracle)
+	make testdeps
 
-2.2   If there are unsatisfied dependencies, install them by hand or
-      run rt/tools/testdeps -fix <dbtype>
-	 (replace <dbtype> with mysql, pg or oracle)
+2.2   If there are unsatisfied dependencies, install them by hand or run
+	make fixdeps
 
-3   Create a user rt with primary group rt
+3   Create a group called 'rt'
 
 4   Check over /tmp/rt/Makefile
 

@@ -1,0 +1,483 @@
+spool rt_create.lst
+
+CREATE SEQUENCE GROUPS_NUM;
+CREATE TABLE Groups (
+	id 		NUMBER(11,0) PRIMARY KEY,
+	Name 		VARCHAR2(16) UNIQUE,
+	Description 	VARCHAR(64)
+);
+
+
+CREATE OR REPLACE TRIGGER GROUPS_AUTOINCREMENT
+BEFORE  INSERT ON  GROUPS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT GROUPS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE WATCHERS_NUM;
+CREATE TABLE Watchers (
+   	id 		NUMBER(11,0) PRIMARY KEY,
+   	Type 		VARCHAR2(16), 	/*One of: Requestor, Cc, AdminCc*/
+   	Scope 		VARCHAR2(16),	/*One of: "Queue", "Ticket" as for now*/
+					/*... might be extended to "Keywords", "Owners", etc.*/
+   	Value 		NUMBER(11,0),	/*Which Queue or Ticket this Watcher Watches.*/
+   	Email 		VARCHAR2(255),  /*Where this Watch should send mail. If null, use Owner->EmailAddress*/
+   	Quiet 		NUMBER(11,0),	/*Should we send mail to this one at all.*/
+   	Owner 		NUMBER(11,0),	/*A reference to the users table. If it's for a Cc or AdminCc who doesn't*/
+					/*have an RT account, Owner should be 0.  OwnerObj->EmailAddress is */
+					/*usually equal to Email.  Owner will be automaticly set by Watchers->Create.*/
+   	Creator 	NUMBER(11,0),
+   	Created 	DATE,
+   	LastUpdatedBy 	NUMBER(11,0),
+   	LastUpdated 	DATE
+);
+
+CREATE OR REPLACE TRIGGER WATCHERS_AUTOINCREMENT
+BEFORE  INSERT ON  WATCHERS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT WATCHERS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+CREATE SEQUENCE LINKS_NUM;
+CREATE TABLE Links (
+  	id 		NUMBER(11,0) PRIMARY KEY,
+  	Base 		VARCHAR2(255),
+  	Target 		VARCHAR2(255),
+  	Type 		VARCHAR2(20) NOT NULL,
+  	LastUpdatedBy 	NUMBER(11,0),
+  	LastUpdated 	DATE,
+  	Creator 	NUMBER(11,0),
+  	Created 	DATE
+);
+
+CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
+
+CREATE OR REPLACE TRIGGER LINKS_AUTOINCREMENT
+BEFORE  INSERT ON  LINKS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT LINKS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+CREATE SEQUENCE TEMPLATES_NUM;
+CREATE TABLE Templates (
+  	id 		NUMBER(11,0) PRIMARY KEY,
+	Queue 		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Name		VARCHAR2(40) NOT NULL UNIQUE,
+	Description	VARCHAR2(120),
+	Type		VARCHAR2(16),
+  	Language 	VARCHAR2(16), 
+  	TranslationOf 	NUMBER(11,0),
+  	Content 	CLOB,
+  	LastUpdated 	DATE,
+  	LastUpdatedBy 	NUMBER(11,0),
+  	Creator 	NUMBER(11,0),
+  	Created 	DATE
+);
+
+
+CREATE OR REPLACE TRIGGER TEMPLATES_AUTOINCREMENT
+BEFORE  INSERT ON  TEMPLATES
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT TEMPLATES_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE OBJECTKEYWORDS_NUM;
+CREATE TABLE ObjectKeywords (
+  id 		NUMBER(11,0)  PRIMARY KEY,
+  Keyword	NUMBER(11,0) NOT NULL,
+  KeywordSelect NUMBER(11,0)  NOT NULL,
+  ObjectType	VARCHAR2(32) NOT NULL,
+  ObjectId	NUMBER(11,0) NOT NULL
+);
+
+CREATE UNIQUE INDEX ObjectKeywords1 ON ObjectKeywords
+	(ObjectId, ObjectType, KeywordSelect, Keyword);
+CREATE INDEX ObjectKeywords3 ON ObjectKeywords (Keyword);
+
+CREATE OR REPLACE TRIGGER OBJECTKEYWORDS_AUTOINCREMENT
+BEFORE  INSERT ON  OBJECTKEYWORDS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT OBJECTKEYWORDS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+CREATE SEQUENCE ACL_NUM;
+CREATE TABLE ACL (
+	id 		NUMBER(11,0) PRIMARY KEY,
+	PrincipalId 	NUMBER(11,0),
+	PrincipalType 	VARCHAR2(25),
+	RightName	VARCHAR2(25),
+	RightScope	VARCHAR2(25),
+	RightAppliesTo  NUMBER(11,0)
+);
+
+CREATE OR REPLACE TRIGGER ACL_AUTOINCREMENT
+BEFORE  INSERT ON  ACL
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT ACL_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+CREATE SEQUENCE SCRIPACTIONS_NUM;
+CREATE TABLE ScripActions (
+  id		NUMBER(11,0) PRIMARY KEY,
+  Name		VARCHAR2(255),
+  Description	VARCHAR2(255),
+  ExecModule	VARCHAR2(60),
+  Argument	VARCHAR2(255),
+  Creator	NUMBER(11,0),
+  Created	DATE,
+  LastUpdatedBy	NUMBER(11,0),
+  LastUpdated	DATE
+);
+
+
+CREATE OR REPLACE TRIGGER SCRIPACTIONS_AUTOINCREMENT
+BEFORE  INSERT ON  SCRIPACTIONS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT SCRIPACTIONS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE USERS_NUM;
+CREATE TABLE Users (
+  	id 			NUMBER(11,0) PRIMARY KEY,
+  	Name 			VARCHAR2(120) NOT NULL UNIQUE,
+  	Password 		VARCHAR2(40),
+  	Comments 		CLOB,
+  	Signature 		CLOB,
+  	EmailAddress 		VARCHAR2(120),
+  	FreeFormContactInfo 	CLOB,
+	Organization		VARCHAR2(200),
+	Disabled		NUMBER(11,0),
+	Privileged		NUMBER(11,0),
+  	RealName 		VARCHAR2(120),
+  	NickName 		VARCHAR2(16),
+  	Lang 			VARCHAR2(16),
+	EmailEncoding		VARCHAR2(16),
+	WebEncoding		VARCHAR2(16),
+	ExternalContactInfoId	VARCHAR2(100),
+	ContactInfoSystem	VARCHAR2(30),
+	ExternalAuthId 		VARCHAR2(100),
+	AuthSystem		VARCHAR2(30),
+	Gecos			VARCHAR2(16),
+  	HomePhone 		VARCHAR2(30),
+  	WorkPhone 		VARCHAR2(30),
+  	MobilePhone 		VARCHAR2(30),
+  	PagerPhone 		VARCHAR2(30),
+  	Address1	 	VARCHAR2(200),
+  	Address2 		VARCHAR2(200),
+  	City 			VARCHAR2(100),
+  	State 			VARCHAR2(100),
+  	Zip 			VARCHAR2(16),
+  	Country 		VARCHAR2(50),
+  	Creator 		NUMBER(11,0),
+  	Created 		DATE,
+  	LastUpdatedBy 		NUMBER(11,0),
+  	LastUpdated 		DATE,
+	Deleted			NUMBER(11,0)
+);
+
+
+CREATE OR REPLACE TRIGGER USERS_AUTOINCREMENT
+BEFORE  INSERT ON  USERS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT USERS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE SCRIPS_NUM;
+CREATE TABLE Scrips (
+  	id 		NUMBER(11,0) PRIMARY KEY,	/*The ID.  All IDs lower than 256 is reservated*/
+	ScripCondition 	NUMBER(11,0),
+	ScripAction	NUMBER(11,0),
+	Stage		VARCHAR2(32),
+	Queue		NUMBER(11,0),
+	Template	NUMBER(11,0),
+  	Creator 	NUMBER(11,0),
+  	Created 	DATE,
+  	LastUpdatedBy 	NUMBER(11,0),
+  	LastUpdated 	DATE  
+);
+
+CREATE OR REPLACE TRIGGER SCRIPS_AUTOINCREMENT
+BEFORE  INSERT ON  SCRIPS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT SCRIPS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE TICKETS_NUM;
+CREATE TABLE Tickets (
+  	id			NUMBER(11, 0) PRIMARY KEY,
+  	EffectiveId		NUMBER(11, 0),
+  	Queue 			NUMBER(11,0),
+  	Type 			VARCHAR2(16), 		/*Ticket, Task, Bug*/
+  	IssueStatement 		NUMBER(11,0), 		/*Reference to Attachments*/
+  	Resolution 		NUMBER(11,0),		/*Reference to Attachments*/
+  	Owner 			NUMBER(11,0),		/*Reference to Users*/
+  	Subject			VARCHAR2(200) DEFAULT '', 
+  	InitialPriority 	NUMBER(11,0) DEFAULT 0,
+  	FinalPriority 		NUMBER(11,0) DEFAULT 0,
+  	Priority 		NUMBER(11,0) DEFAULT 0,
+  	Status 			VARCHAR2(10), 		/*For now, One of "Open, Stalled, Resolved, Dead"*/
+  	TimeWorked 		NUMBER(11,0) DEFAULT 0,
+	TimeLeft 		NUMBER(11,0) DEFAULT 0,
+  	Told 			DATE,
+	Starts			DATE,
+	Started			DATE,
+  	Due 			DATE,
+	Resolved		DATE,
+  	LastUpdatedBy 		NUMBER(11,0),
+  	LastUpdated 		DATE,
+	Creator 		NUMBER(11,0),
+  	Created 		DATE,
+  	Deleted 		NUMBER(11,0)
+);
+
+CREATE OR REPLACE TRIGGER TICKETS_AUTOINCREMENT
+BEFORE  INSERT ON  TICKETS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT TICKETS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE KEYWORDSELECTS_NUM;
+CREATE TABLE KeywordSelects (
+	id		NUMBER(11, 0) PRIMARY KEY,
+	Name		VARCHAR2(255),
+	Keyword		NUMBER(11, 0),
+	Single		NUMBER(11, 0),
+	Depth		NUMBER(11, 0) DEFAULT 0,
+	ObjectType	VARCHAR2(32) NOT NULL,
+	ObjectField	VARCHAR2(32),
+	ObjectValue	VARCHAR2(255),
+	Deleted		NUMBER(11, 0)
+);
+
+CREATE INDEX KeywordSelects1 ON KeywordSelects (Keyword);
+CREATE INDEX KeywordSelects2 ON 
+	KeywordSelects(ObjectType, ObjectField, ObjectValue);
+
+CREATE OR REPLACE TRIGGER KEYWORDSELECTS_AUTOINCREMENT
+BEFORE  INSERT ON  KEYWORDSELECTS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT KEYWORDSELECTS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE KEYWORDS_NUM;
+CREATE TABLE Keywords (
+	id		NUMBER(11, 0) PRIMARY KEY,
+	Name		VARCHAR2(255) NOT NULL,
+	Description	VARCHAR2(255),
+	Parent		NUMBER(11, 0),
+	Deleted		NUMBER(11, 0)
+);
+
+CREATE UNIQUE INDEX Keywords1 ON Keywords (Name, Parent);
+CREATE INDEX Keywords3 ON Keywords (Parent);
+
+CREATE OR REPLACE TRIGGER KEYWORDS_AUTOINCREMENT
+BEFORE  INSERT ON  KEYWORDS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT KEYWORDS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE GROUPMEMBERS_NUM;
+CREATE TABLE GroupMembers (
+	id 		NUMBER(11,0) PRIMARY KEY,
+	GroupId 	NUMBER(11,0),
+	UserId 		NUMBER(11,0) 
+);
+
+CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, UserId);
+
+CREATE OR REPLACE TRIGGER GROUPMEMBERS_AUTOINCREMENT
+BEFORE  INSERT ON  GROUPMEMBERS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT GROUPMEMBERS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE QUEUES_NUM;
+CREATE TABLE Queues (
+ 	id 			NUMBER(11, 0) PRIMARY KEY,
+	Name 			VARCHAR2(40) NOT NULL UNIQUE,
+	Description 		VARCHAR2(120),
+ 	CorrespondAddress 	VARCHAR2(40),
+ 	CommentAddress 		VARCHAR2(40),
+ 	InitialPriority 	NUMBER(11, 0),		
+ 	FinalPriority 		NUMBER(11, 0),
+ 	DefaultDueIn 		NUMBER(11, 0),		/*reqs in this queue are due in X days by default*/
+  	Creator 		NUMBER(11, 0),
+  	Created 		DATE,
+  	LastUpdatedBy 		NUMBER(11, 0),
+  	LastUpdated		DATE,
+  	Deleted 		NUMBER(11,0)
+);
+
+
+CREATE OR REPLACE TRIGGER QUEUES_AUTOINCREMENT
+BEFORE  INSERT ON  QUEUES
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT QUEUES_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE TRANSACTIONS_NUM;
+CREATE TABLE Transactions (
+  	id 			NUMBER(11,0) PRIMARY KEY,
+  	EffectiveTicket 	NUMBER(11,0),
+  	Ticket 			NUMBER(11,0),
+  	TimeTaken 		NUMBER(11,0),
+  	Type 			VARCHAR2(20),
+  	Field 			VARCHAR2(40),
+  	OldValue 		VARCHAR2(255),
+  	NewValue 		VARCHAR2(255),
+  	Data 			VARCHAR2(100),
+  	Creator 		NUMBER(11,0),
+  	Created 		DATE,
+  	Deleted 		NUMBER(11,0)
+);
+
+CREATE OR REPLACE TRIGGER TRANSACTIONS_AUTOINCREMENT
+BEFORE  INSERT ON  TRANSACTIONS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT TRANSACTIONS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+CREATE SEQUENCE SCRIPCONDITIONS_NUM;
+CREATE TABLE ScripConditions (
+ 	id 			NUMBER(11, 0) PRIMARY KEY,
+	Name 			VARCHAR2(255),
+	Description 		VARCHAR2(255),
+	ExecModule		VARCHAR2(60),
+	Argument		VARCHAR2(255),
+	ApplicableTransTypes	VARCHAR2(60),
+  	Creator 		NUMBER(11, 0),
+  	Created 		DATE,
+  	LastUpdatedBy 		NUMBER(11, 0),
+  	LastUpdated		DATE
+);
+
+CREATE OR REPLACE TRIGGER SCRIPCONDITIONS_AUTOINCREMENT
+BEFORE  INSERT ON  SCRIPCONDITIONS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT SCRIPCONDITIONS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+
+CREATE SEQUENCE ATTACHMENTS_NUM;
+CREATE TABLE Attachments (
+  	id 		NUMBER(11,0) PRIMARY KEY,
+  	TransactionId	NUMBER(11,0) NOT NULL,
+  	Parent 		NUMBER(11,0), 		/*Another attachment.*/
+  	MessageId 	VARCHAR2(160),
+  	Subject 	VARCHAR2(255),
+  	Filename 	VARCHAR2(255),
+  	ContentType 	VARCHAR2(80),
+  	Content 	CLOB,
+  	Headers 	CLOB,
+  	Creator 	NUMBER(11,0),
+  	Created 	DATE,
+  	Deleted 	NUMBER(11,0)
+);
+
+CREATE OR REPLACE TRIGGER ATTACHMENTS_AUTOINCREMENT
+BEFORE  INSERT ON  ATTACHMENTS
+FOR EACH ROW
+DECLARE
+id_number INTEGER;
+BEGIN
+	SELECT ATTACHMENTS_NUM.nextval INTO ID_NUMBER FROM DUAL;
+	:new.id := ID_NUMBER;
+END;
+/
+
+
+
+spool off

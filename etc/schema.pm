@@ -263,8 +263,8 @@ my $gratuitous = {
     'Filename', 'varchar', 'NULL', '255', '', '',
     'ContentType', 'varchar', 'NULL', '80', '', '',
     'ContentEncoding', 'varchar', 'NULL', '80', '', '',
-    'Content', 'blob', 'NULL', '', '', '',
-    'Headers', 'blob', 'NULL', '', '', '',
+    'Content', 'longblob', 'NULL', '', '', '',
+    'Headers', 'longblob', 'NULL', '', '', '',
 
     'Creator', 'integer', 'NULL', '', '', '',
     'Created', 'timestamp', 'NULL', '', '', '',

@@ -53,9 +53,6 @@ RT_READABLE_DIR_MODE	=	0755
 # The location of your rt configuration file
 RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
 
-# The rtmux is the script which invokes whichever rt program it needs to.
-RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
-
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
 RT_MODPERL_HANDLER		=	$(RT_BIN_PATH)/webmux.pl
 
@@ -69,7 +66,7 @@ RT_SPEEDYCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.scgi
 
 RT_CLI_BIN		=	$(RT_BIN_PATH)/rt
 RT_CLI_ADMIN_BIN	=	$(RT_BIN_PATH)/rtadmin
-RT_MAILGATE_BIN		=	rt-mailgate
+RT_MAILGATE_BIN		=	$(RT_BIN_PATH)/rt-mailgate
 
 # }}}
 
@@ -94,6 +91,7 @@ DB_HOME	      	= /usr
 
 # Set DB_DBA to the name of a DB user with permission to create new databases 
 # Set DB_DBA_PASSWORD to that user's password
+
 DB_DBA	           =	root
 DB_DBA_PASSWORD	  =	
  
@@ -166,15 +164,22 @@ insert: insert-install
 
 upgrade: config-replace upgrade-noclobber
 
-upgrade-noclobber: libs-install html-install mux-install nondestruct
+upgrade-noclobber: libs-install html-install bin-install nondestruct
 
-nondestruct: mux-links fixperms
+nondestruct: fixperms
+
+testdeps:
+	$(PERL) ./tools/testdeps -warn $(DB_TYPE)
+
+fixdeps:
+	$(PERL) ./tools/testdeps -fix $(DB_TYPE)
+
+
 
 all:
 	@echo "Read the readme."
 
 fixperms:
-
 	# Make the libraries readable
 	chmod -R $(RT_READABLE_DIR_MODE) $(RT_PATH)
 	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
@@ -198,16 +203,16 @@ fixperms:
 	chmod 0550 $(RT_CONFIG)
 
 	# Make the interfaces executable and setgid rt
-	chown $(BIN_OWNER) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
+	chown $(BIN_OWNER) $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
-	chgrp $(RTGROUP) $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
+	chgrp $(RTGROUP) $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
-	chmod 0755 $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
+	chmod 0755 $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
-	chmod g+s $(RT_PERL_MUX) $(RT_FASTCGI_HANDLER) \
+	chmod g+s $(RT_MAILGATE_BIN) $(RT_FASTCGI_HANDLER) \
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 	# Make the web ui readable by all. 
@@ -267,9 +272,9 @@ insert-install:
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" \
 				$(RT_ETC_PATH)/insertdata
 
-mux-install:
-	cp -p ./bin/rtmux.pl $(RT_PERL_MUX)
+bin-install:
 	cp -p ./bin/webmux.pl $(RT_MODPERL_HANDLER)
+	cp -p ./bin/rt-mailgate $(RT_MAILGATE_BIN)
 	cp -p ./bin/rtadmin $(RT_CLI_ADMIN_BIN)
 	cp -p ./bin/rt $(RT_CLI_BIN)
 	cp -p ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
@@ -277,18 +282,13 @@ mux-install:
 
 	$(PERL) -p -i -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
-				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;\
 				s'!!WEB_USER!!'$(WEB_USER)'g;\
 				s'!!WEB_GROUP!!'$(WEB_GROUP)'g;" \
-		$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) \
-		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
-
-
-mux-links:
-	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
-	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
+		$(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER) \
+		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN) \
+		$(RT_MAILGATE_BIN)
 
 
 config-replace:

@@ -389,7 +389,6 @@ sub _AddWatcher {
     
     require RT::Watcher;
     my $Watcher = new RT::Watcher ($self->CurrentUser);
-    $RT::Logger->debug("about to hand off to the Watcher object: email: ".$args{'Email'} . " owner: ".$args{'Owner'} ."\n");
     my ($retval, $msg) = ($Watcher->Create( Value => $self->Id,
 					    Scope => 'Ticket',
 					    Email => $args{'Email'},
@@ -1600,25 +1599,21 @@ sub MergeInto {
     my $self = shift;
     my $MergeInto = shift;
     
-    $RT::Logger->debug("$self Merge into checking ACL...");
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied");
     }
     
     # Load up the new ticket.
-    $RT::Logger->debug("loading $MergeInto ...");
     my $NewTicket = RT::Ticket->new($self->CurrentUser);
     $NewTicket->Load($MergeInto);
 
     # make sure it exists.
-    $RT::Logger->debug("checking if $Newticket exists...");
     unless (defined $NewTicket->Id) {
 	return (0, 'New ticket doesn\'t exist');
     }
 
     
     # Make sure the current user can modify the new ticket.
-    $RT::Logger->debug("checking if the current user can modify new ticket..");
     unless ($NewTicket->CurrentUserHasRight('ModifyTicket')) {
 	$RT::Logger->debug("failed...");
 	return (0, "Permission Denied");
@@ -2391,7 +2386,7 @@ sub _Value  {
   #If the current user doesn't have ACLs, don't let em at it.  
   
   unless ($self->CurrentUserHasRight('ShowTicket')) {
-      return (0, "Permission Denied");
+      return (undef);
   }
   return($self->SUPER::_Value($field));
   
