@@ -1,8 +1,14 @@
-# BEGIN LICENSE BLOCK
+# BEGIN BPS TAGGED BLOCK
 # 
-# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -14,13 +20,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 # 
-# Unless otherwise specified, all modifications, corrections or
-# extensions to this work which alter its source code become the
-# property of Best Practical Solutions, LLC when submitted for
-# inclusion in the work.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # 
 # 
-# END LICENSE BLOCK
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK
 =head1 NAME
 
   RT::Record - Base class for RT record objects
@@ -126,6 +148,58 @@ sub AddAttribute {
     $self->Attributes->RedoSearch;
     
     return ($id, $msg);
+}
+
+
+=head2 SetAttribute { Name, Description, Content }
+
+Like AddAttribute, but replaces all existing attributes with the same Name.
+
+=cut
+
+sub SetAttribute {
+    my $self = shift;
+    my %args = ( Name        => undef,
+                 Description => undef,
+                 Content     => undef,
+                 @_ );
+
+    my @AttributeObjs = $self->Attributes->Named( $args{'Name'} )
+        or return $self->AddAttribute( %args );
+
+    my $AttributeObj = pop( @AttributeObjs );
+    $_->Delete foreach @AttributeObjs;
+
+    $AttributeObj->SetDescription( $args{'Description'} );
+    $AttributeObj->SetContent( $args{'Content'} );
+
+    $self->Attributes->RedoSearch;
+    return 1;
+}
+
+=head2 DeleteAttribute NAME
+
+Deletes all attributes with the matching name for this object.
+
+=cut
+
+sub DeleteAttribute {
+    my $self = shift;
+    my $name = shift;
+    return $self->Attributes->DeleteEntry( Name => $name );
+}
+
+=head2 FirstAttribute NAME
+
+Returns the value of the first attribute with the matching name
+for this object, or C<undef> if no such attributes exist.
+
+=cut
+
+sub FirstAttribute {
+    my $self = shift;
+    my $name = shift;
+    return ($self->Attributes->Named( $name ))[0];
 }
 
 
@@ -721,8 +795,8 @@ sub Update {
     my $self = shift;
 
     my %args = (
-        ARGSRef       => undef,
-        AttributesRef => undef,
+        ARGSRef         => undef,
+        AttributesRef   => undef,
         AttributePrefix => undef,
         @_
     );
@@ -737,26 +811,41 @@ sub Update {
             $value = $ARGSRef->{$attribute};
         }
         elsif (
-              defined( $args{'AttributePrefix'} )
-              && defined(
-                  $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute }
-              )
+            defined( $args{'AttributePrefix'} )
+            && defined(
+                $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute }
+            )
           ) {
             $value = $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute };
 
-        } else {
-                next;
+        }
+        else {
+            next;
         }
 
-            $value =~ s/\r\n/\n/gs;
+        $value =~ s/\r\n/\n/gs;
 
-        if ($value ne $self->$attribute()){
 
-              my $method = "Set$attribute";
-              my ( $code, $msg ) = $self->$method($value);
+        # If Queue is 'General', we want to resolve the queue name for
+        # the object.
 
-	      my($prefix) = ref($self) =~ /RT::(\w+)/;
-	      push @results,  $self->loc("$prefix [_1]", $self->id) . ': ' . $self->loc($attribute) . ': ' . $self->CurrentUser->loc_fuzzy($msg);
+        # This is in an eval block because $object might not exist.
+        # and might not have a Name method. But "can" won't find autoloaded
+        # items. If it fails, we don't care
+        eval {
+            my $object = $attribute . "Obj";
+            next if ($self->$object->Name eq $value);
+        };
+        next if ( $value eq $self->$attribute() );
+        my $method = "Set$attribute";
+        my ( $code, $msg ) = $self->$method($value);
+
+        my ($prefix) = ref($self) =~ /RT::(\w+)/;
+        push @results,
+          $self->loc( "$prefix [_1]", $self->id ) . ': '
+          . $self->loc($attribute) . ': '
+          . $self->CurrentUser->loc_fuzzy($msg);
+
 =for loc
                                    "[_1] could not be set to [_2].",       # loc
                                    "That is already the current value",    # loc
@@ -771,7 +860,6 @@ sub Update {
                                    "Missing a primary key?: [_1]",         # loc
                                    "Found Object",                         # loc
 =cut
-          };
 
     }
 

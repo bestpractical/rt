@@ -2403,11 +2403,11 @@ msgstr ""
 
 #: html/Admin/Users/Modify.html:82
 msgid "Let this user access RT"
-msgstr "Diesen Benutzer RT-Zugriff gewähren"
+msgstr "Diesem Benutzer RT-Zugriff gewähren"
 
 #: html/Admin/Users/Modify.html:86
 msgid "Let this user be granted rights"
-msgstr "Diesen Benutzer mehr Rechte gewähren"
+msgstr "Diesem Benutzer mehr Rechte gewähren"
 
 #: NOT FOUND IN SOURCE
 msgid "Limiting owner to %1 %2"
