@@ -533,7 +533,7 @@ sub change_priority {
 	return (0,"You don't have permission to modify request \#$in_serial_num");
     }
     $transaction_num=&update_request($in_serial_num,'priority',$in_priority, $in_current_user);
-    return ($transaction_num);
+    return ($transaction_num, "Request $in_serial_num [$rt::req[$in_serial_num]{subject}] set to priority $in_priority");
 }
 
 
