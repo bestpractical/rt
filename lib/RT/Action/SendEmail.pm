@@ -55,51 +55,66 @@ sub Prepare {
   # Header
   
   # To, bcc and cc
+  my $receipients;
   if (my $a=$self->{Argument}) {
-      my $receipient;
-      if ($a eq '$Requestor') {
-	  # TODO
-	  # I guess this is wrong - I guess we should fetch the
-	  # Requestor(s) from the Watcher table.
-	  $receipient=$self->{TicketObject}->Creator()->EmailAddress();
+
+      # TODO: Do some checks to enforce that one person won't get more
+      # than one email about the same transaction.
+
+      # This is a bit messy, I guess it needs to be cleaned a bit.
+      # Jesse, what are your thoughts about the Argument anyway?
+      if ($a =~ /^\$/) {
+	  $receipients=$self->{TicketObject}->Watchers()->Emails($');
+	  my $r2=$self->{TicketObject}->{values}->{$'};
+	  my $r3=$self->{TransactionObject}->{values}->{$'};
+	  push @$receipients, $r2 if $r2;
+	  push @$receipients, $r3 if $r3;
       } else {
 	  warn "stub - no support for argument/receipient $a yet";
       } 
-      $self->{Header}->add('To', $receipient);
   } else {
+      # Find all queue watchers, and add
       warn "stub";
-      # Find all watchers, and add
+      $receipients=['tobiasb@funcom.com'];
+  }
+  @$receipients || return undef;
+  for my $receipient (@$receipients) { 
+      $self->{Header}->add('To', $receipient); 
   }
 
   # Subject
   unless ($self->{'Header'}->get(Subject)) {
-      my $m=$self->{TransactionObject}->Message;
-      my $subject=$m->head->get('subject')
+      my $m=$self->{TransactionObject}->Message->First;
+      my $ticket=$self->{TicketObject}->Id;
+      ($self->{Subject})=$m->Headers =~ /^Subject: (.*)$/m
 	  if $m;
-      $subject=$self->{TicketObject}->Subject()
-	  unless $subject;
+      $self->{Subject}=$self->{TicketObject}->Subject()
+	  unless $self->{Subject};
 
       $self->{'Header'}->add('subject', 
-			     "[$RT::rtname #$$self{Ticket}] $subject");
+			     "[$RT::rtname #$ticket] $$self{Subject}");
 
   }
 
   # From, RT-Originator (was Sender) and Reply-To
   # $self->{comment} should be set if the comment address is to be used.
+  my $email_address=$self->{comment} ? 
+      $self->{TicketObject}->Queue->CommentAddress :
+      $self->{TicketObject}->Queue->CorrespondAddress
+	  or warn "Can't find email address for queue?";
   unless ($self->{'Header'}->get('From')) {
       my $friendly_name=$self->{TransactionObject}->Creator->RealName;
-      my $email_address=$self->{comment} ? 
-	  $self->{TicketObject}->Queue->CommentAddress :
-          $self->{TicketObject}->Queue->CorrespondAddress
-	      or warn "Can't find email address for queue?";
       $self->{'Header'}->add('From', "$friendly_name <$email_address>");
       $self->{'Header'}->add('Reply-To', "$email_address");
-      # Ref Jesse, <20000228222813.W20787@pallas.eruditorum.org>
-      $self->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
   }
+  
+  # Ref Jesse, <20000228222813.W20787@pallas.eruditorum.org>
+  $self->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
 
   # This should perhaps be in the templates table. ISO-8859-1 just
-  # isn't sufficient.
+  # isn't sufficient for international usage (it's even not enough for
+  # European usage ... there are people using ISO-8859-2 and KOI-8 and
+  # stuff like that).
 
   unless ($self->{'Header'}->get('Content-Type')) {
       $self->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
@@ -122,6 +137,7 @@ sub Prepare {
 
 sub IsApplicable {
   my $self = shift;
+  # More work needs to be done here to avoid duplicates beeing sent.
   return(1);
 }
 

@@ -26,6 +26,7 @@ sub _Accessible {
 	      ContentType => 'read',
 	      Subject => 'read',
 	      Content => 'read',
+	      Headers => 'read',
 	      Filename => 'read',
 	      Creator => 'read',
 	      Created => 'read'

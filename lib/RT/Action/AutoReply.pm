@@ -23,6 +23,10 @@ sub Prepare {
   my $id=$self->{TicketObject}->id || die;
   my $subject=$self->{TicketObject}->Subject || "(no subject)";
 
+  my $email=$self->{TicketObject}->Queue->CorrespondAddress;
+
+  $self->{'Header'}->add('From', "Request Tracker <$email>");
+
   $self->{'Header'}->add('Subject', 
 			 "[$RT::rtname \#$id] Autoreply: $subject");
 
