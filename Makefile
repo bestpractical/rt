@@ -42,6 +42,13 @@ RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
 # RT_WEB_MUX is the mason handler script for apache 
 RT_WEB_MUX		=	$(RT_BIN_PATH)/webmux.pl
 
+#
+# RT_LOGFILE tells where to log stuff.  If you want to use syslog, get
+# problems reported by mail or anything else, check etc/config.pm and
+# the Log::Dispatch POD.
+#
+
+RT_LOGFILE              = ($RT_PATH)/rt.log
 
 #
 # The following are the names of the various binaries which make up RT 
