@@ -1,0 +1,5 @@
+
+DELETE FROM user WHERE user like '!!RTUSER!!';
+DELETE FROM db where db LIKE '!!RT_MYSQL_DATABASE!!';
+INSERT INTO db (Host, Db, User, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv) VALUES ('%','!!RT_MYSQL_DATABASE!!','!!RTUSER!!','Y','Y','Y','Y','N','N');
+INSERT INTO user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv) VALUES ('!!RT_HOST!!','!!RTUSER!!',password('!!RT_MYSQL_PASS!!'),'N','N','N','N','N','N','N','N','N','N');

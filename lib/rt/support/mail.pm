@@ -10,7 +10,8 @@ package rt;
 
 
 sub template_replace_tokens {
-    local ($template,$in_serial_num,$in_id, $in_custom_content, $in_current_user) = @_;
+    local ($template,$in_serial_num,$in_id, 
+	   $in_custom_content, $in_current_user) = @_;
 
 	&rt::req_in($in_serial_num,'_rt_system');
 	&rt::transaction_in($in_id,'_rt_system') if $in_id;
@@ -84,10 +85,20 @@ sub template_mail{
     $head->fold(78);
 
 
+    if (!$rt::users{"$in_current_user"}{'real_name'}) {
+	$friendly_name = "Request Tracker";
+    }
+    else {
+	$friendly_name = $rt::users{"$in_current_user"}{'real_name'}." via RT";
+    }
+
+    # remove leading space
+    $in_subject =~ s/^(\s*)//;
+
     $head->add('Subject',"[$rt::rtname \#" . $in_serial_num .
        "] ($in_queue_id) $in_subject");
     $head->add('Reply-To',$temp_mail_alias);
-    $head->add('From',"$rt::users{$in_current_user}{real_name} via RT" .
+    $head->add('From',"$friendly_name via RT" .
        "<$temp_mail_alias>");
     $head->add('Sender',"$in_current_user");
     $head->add('To',$in_recipient);

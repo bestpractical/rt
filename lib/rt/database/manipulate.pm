@@ -59,7 +59,7 @@ sub add_new_request {
     
     if ( $queues{$in_queue_id}{m_user_create}) {
 	&rt::template_mail ('autoreply',$in_queue_id,"$in_requestors","","","$serial_num",
-			    "$transaction_num","$in_subject","$in_current_user",'');
+			    "$transaction_num","$in_subject","_rt_system",'');
     }
 
     if( $in_owner )

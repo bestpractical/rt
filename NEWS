@@ -1,5 +1,28 @@
+21 Oct 1999
+-----------
+
+* Fixed a typo in date diff, thanks to Paul Evans
+
+* Changed the logic in date_diff to be a bit more explicit about
+  shorter lengths of time
+
+
 20 Oct 1999
 -----------
+* Fixed leading spaces in the subject line when sending mail
+
+* RT now uses "Request Tracker" or "Sender's friendly name via RT" 
+  in its outgoing messages, depending on whether there was a 
+  friendly name in the incoming headers.
+
+* More work on cleaning up the from line
+
+* Fixed the repeated (queue) (queue) in transaction messages
+
+* When a message comes into the mailgate, RT is now more careful about whether 
+  or not to send it to the user. (This fixes a bug introduced in last night's 
+  build)
+
 * RT now uses a queue's mail alias when sending mail.
 
 * Using the web UI to send correspondence should no longer not

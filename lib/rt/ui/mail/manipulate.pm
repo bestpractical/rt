@@ -45,13 +45,18 @@ sub activate {
       ($serial_num,$transaction_num, $message)=&rt::add_new_request
 	  ($in_queue,$area,
 	   $current_user,'','',$subject,
-	   $queues{"$in_queue"}{'default_final_prio'},
-	   $queues{"$in_queue"}{'default_prio'},'open',
-	   $rt::time,0,0,$content,$current_user,$cc,$bcc
+	   $rt::queues{"$in_queue"}{'default_final_prio'},
+	   $rt::queues{"$in_queue"}{'default_prio'},'open',
+	   time,0,0,$content,$current_user,$cc,$bcc
 	   );
     }
     else {
-      ($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",1,$current_user);
+	if (&rt::is_not_a_requestor($current_user, $serial_num)){
+	    $notify_requestor=1;
+	} else {
+	    $notify_requestor=0;
+	}
+	($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject","" ,"" ,"open",$notify_requestor,$current_user);
       
     }
   }
@@ -118,8 +123,9 @@ sub parse_headers {
     
     elsif (($line =~ /^Subject:(.*)\[$rt::rtname\s*\#(\d+)\]\s*(.*)/i) and (!$subject)){
       $serial_num=$2;
+      &rt::req_in($serial_num,$current_user);
       $subject=$3;
-      $subject =~ s/\($in_queue\)//i;
+      $subject =~ s/\($rt::req[$serial_num]{'queue_id'}\)//i;
     }
     
     elsif (($line =~ /^Subject: (.*)/) and (!$subject)){
@@ -144,6 +150,11 @@ sub parse_headers {
   }
   
   $current_user = $replyto || $from || $sender;
+
+  # Get the real name of the current user from the
+  # replyto/from/sender .. etc
+
+  $name_temp = $current_user;
   
   
   if ($current_user =~/<(\S*\@\S*)>/){
@@ -162,9 +173,6 @@ sub parse_headers {
       if (!exists $rt::users{$current_user}{real_name});
   }
   
-  
-  
-    
   if (!$subject) {
     $subject = "[No Subject Given]";
   }
