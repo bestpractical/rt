@@ -905,6 +905,7 @@ sub LimitKeyword {
 	$args{'DESCRIPTION'} ||= "Keyword Selection " . $KeywordSelect->Name.  " $args{OPERATOR} ". $Keyword->Name;
     }
     
+    $args{SingleValued} = $KeywordSelect->Single();
  
     
     my $index = $self->_NextIndex;
@@ -1127,6 +1128,7 @@ sub _ProcessRestrictions {
 
     #Blow away ticket aliases since we'll need to regenerate them for a new search
     delete $self->{'TicketAliases'};
+    delete $self->{KeywordsAliases};
 
     my $row;
     
@@ -1424,20 +1426,31 @@ sub _ProcessRestrictions {
  
 	    my $null_columns_ok;
 
-            my $ObjKeywordsAlias = $self->Join(
+            my $ObjKeywordsAlias;
+	    $ObjKeywordsAlias = $self->{KeywordsAliases}{$restriction->{'KEYWORDSELECT'}}
+	      if $restriction->{SingleValued};
+	    unless (defined $ObjKeywordsAlias) {
+	      $ObjKeywordsAlias = $self->Join(
 					       TYPE => 'left',
 					       ALIAS1 => 'main',
 					       FIELD1 => 'id',
 					       TABLE2 => 'ObjectKeywords',
 					       FIELD2 => 'ObjectId'
 					      );
+	      if ($restriction->{'SingleValued'}) {
+		$self->{KeywordsAliases}{$restriction->{'KEYWORDSELECT'}} 
+		  = $ObjKeywordsAlias;
+	      }
+	    }
+
+	  
             $self->SUPER::Limit(
 				ALIAS => $ObjKeywordsAlias,
 				FIELD => 'Keyword',
 				OPERATOR => $restriction->{'OPERATOR'},
 				VALUE => $restriction->{'KEYWORD'},
 				QUOTEVALUE => $restriction->{'QUOTEVALUE'},
-				ENTRYAGGREGATOR => 'AND',
+				ENTRYAGGREGATOR => 'OR',
                                );
 	    
             if  ( ($restriction->{'OPERATOR'} =~ /^IS$/i) or 
@@ -1771,6 +1784,6 @@ TransactionContent
 
 "Date" OPERATORs Is, Before, After
 
-=cut
+  =cut
 # }}}
 1;
