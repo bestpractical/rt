@@ -7,6 +7,11 @@
 =head1 SYNOPSIS
 
   use RT::Groups;
+  my $groups = $RT::Groups->new($CurrentUser);
+  $groups->LimitToReal();
+  while (my $group = $groups->Next()) {
+     print $group->Id ." is a group id\n";
+  }
 
 =head1 DESCRIPTION
 
@@ -17,6 +22,8 @@
 
 package RT::Groups;
 use RT::EasySearch;
+use RT::Groups;
+
 @ISA= qw(RT::EasySearch);
 
 # {{{ sub _Init
@@ -28,16 +35,6 @@ sub _Init {
   return ( $self->SUPER::_Init(@_));
 }
 # }}}
-
-# {{{ sub Limit 
-sub Limit  {
-  my $self = shift;
-  my %args = ( ENTRYAGGREGATOR => 'AND',
-	       @_);
-  $self->SUPER::Limit(%args);
-}
-# }}}
-
 
 # {{{ LimitToReal
 
@@ -80,11 +77,7 @@ granted rights but whose membership lists are determined dynamically.
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $item;
-
-  use RT::Group;
-  $item = new RT::Group($self->CurrentUser);
-  return($item);
+  return (RT::Group->new($self->CurrentUser));
 }
 # }}}
 

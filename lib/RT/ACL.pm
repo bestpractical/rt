@@ -20,6 +20,7 @@ my $ACL = new RT::ACL($CurrentUser);
 
 package RT::ACL;
 use RT::EasySearch;
+use RT::ACE;
 @ISA= qw(RT::EasySearch);
 
 # {{{ sub _Init 
@@ -32,40 +33,18 @@ sub _Init  {
 }
 # }}}
 
-# {{{ sub Limit 
-sub Limit  {
-  my $self = shift;
-  my %args = ( ENTRYAGGREGATOR => 'AND',
-             @_);
-
-  $self->SUPER::Limit(%args);
-}
-# }}}
-
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $Handle = shift;
-  my $item;
-  use RT::ACE;
-  $item = new RT::ACE($self->CurrentUser);
-  return($item);
+  return(RT::ACE->new($self->CurrentUser));
 }
 # }}}
-
-=head1 RT::ACL
-
-Deals with collections of RT::ACE objects
-
-=head1 Getting records out
-
 
 =head2 Next
 
 Hand out the next ACE that was found
 
 =cut
-
 
 # {{{ sub Next 
 sub Next {

@@ -251,6 +251,7 @@ sub Object {
 	$Queue->Load( $self->ObjectValue );
 	return ($Queue);
     } else {
+	$RT::Logger->error("$self trying to load an object value for a non-queue object");
 	return (undef);
     }
 }
@@ -267,8 +268,8 @@ sub _Set {
         $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
 	return (undef);
     }
-
-    return $self->SUPER::_Set(@_);
+    
+    return ($self->SUPER::_Set(@_));
 
 }
 # }}}

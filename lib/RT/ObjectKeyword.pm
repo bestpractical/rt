@@ -1,4 +1,24 @@
 #$Header$
+# Released under the terms of the GNU Public License
+
+=head1 NAME
+
+  RT::ObjectKeyword -- a keyword tied to an object in the database
+
+=head1 SYNOPSIS
+
+  use RT::ObjectKeyword;
+
+
+=head1 DESCRIPTION
+
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in Ticket, Queue and other similar objects.
+
+
+=head1 METHODS
+
+=cut
 
 package RT::ObjectKeyword;
 
@@ -26,9 +46,9 @@ sub _Accessible {
     return ($self->SUPER::_Accessible( @_, %cols));
 }
 
-# TODO +++ add in a create so we can ACL it and check values
 
-# TODO +++ add in _Set and _Value, so we can ACL them.
+
+# TODO - post 2.0. add in _Set and _Value, so we can ACL them.  protected at another API level
 
 
 =head1 NAME
@@ -45,7 +65,10 @@ sub _Accessible {
 =head1 DESCRIPTION
 
 An B<RT::ObjectKeyword> object associates an B<RT::Keyword> with another
-object (currently only B<RT::Ticket>
+object (currently only B<RT::Ticket>.
+
+This module should B<NEVER> be called directly by client code. its API is entirely through RT ticket or other objects which can have keywords assigned.
+
 
 =head1 METHODS
 
@@ -55,6 +78,10 @@ object (currently only B<RT::Ticket>
 
 Takes a single argument, an RT::CurrentUser object.  Instantiates a new
 (uncreated) RT::ObjectKeyword object.
+
+=cut
+
+# {{{ sub Create
 
 =item Create KEY => VALUE, ...
 
@@ -69,6 +96,7 @@ ObjectId - link to the object specified in I<ObjectType>
 
 =cut
 
+
 sub Create {
     my $self = shift;
     my %args = (Keyword => undef,
@@ -77,12 +105,16 @@ sub Create {
 		ObjectId => undef,
 		@_);
     
+    #TODO post 2.0 ACL check
+    
     return ($self->SUPER::Create( Keyword => $args{'Keyword'}, 
 				  KeywordSelect => $args{'KeywordSelect'},
 				  ObjectType => $args{'ObjectType'}, 
 				  ObjectId => $args{'ObjectId'}))
 }
+# }}}
 
+# {{{ sub KeywordObj
 =item KeywordObj 
 
 Returns an B<RT::Keyword> object of the Keyword associated with this ObjectKeyword.
@@ -95,8 +127,9 @@ sub KeywordObj {
     $keyword->Load($self->Keyword);
     return ($keyword);
 }
+# }}}
 
-
+# {{{ sub KeywordSelectObj
 =item KeywordSelectObj 
 
 Returns an B<RT::KeywordSelect> object of the KeywordSelect associated with this ObjectKeyword.
@@ -109,8 +142,9 @@ sub KeywordSelectObj {
     $keyword_sel->Load($self->KeywordSelect);
     return ($keyword_sel);
 }
+# }}}
 
-
+# {{{ sub KeywordRelativePath
 
 =item KeywordRelativePath
 
@@ -126,6 +160,7 @@ sub KeywordRelativePath {
               $self->KeywordSelectObj->KeywordObj->Path));
     
 }
+# }}}
 
 =back
 

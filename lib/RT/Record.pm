@@ -18,6 +18,7 @@
 package RT::Record;
 use DBIx::SearchBuilder::Record;
 use RT::Date;
+use RT::User;
 
 @ISA= qw(DBIx::SearchBuilder::Record);
 
@@ -208,25 +209,44 @@ sub _SetLastUpdated {
 }
 
 # }}}
-# {{{ sub Creator 
 
-=head2 Creator and CreatorObj
+# {{{ sub CreatorObj 
+
+=head2 CreatorObj
 
 Returns an RT::User object with the RT account of the creator of this row
 
 =cut
 
-*CreatorObj = \&Creator;
-
-sub Creator  {
+sub CreatorObj  {
   my $self = shift;
-  if (!$self->{'creator'}) {
-    use RT::User;
-    $self->{'creator'} = RT::User->new($self->CurrentUser);
-    $self->{'creator'}->Load($self->_Value('Creator'));
+  unless (exists $self->{'creator'}) {
+    
+    $self->{'CreatorObj'} = RT::User->new($self->CurrentUser);
+    $self->{'CreatorObj'}->Load($self->Creator);
   }
-  return($self->{'creator'});
+  return($self->{'CreatorObj'});
 }
+# }}}
+
+# {{{ sub LastUpdatedByObj
+
+=head2 LastUpdatedByObj
+
+  Returns an RT::User object of the last user to touch this object
+  TODO: why isn't this in RT::Record
+
+=cut
+
+sub LastUpdatedByObj {
+    my $self=shift;
+    unless (exists $self->{LastUpdatedByObj}) {
+	$self->{'LastUpdatedByObj'}=RT::User->new($self->CurrentUser);
+	$self->{'LastUpdatedByObj'}->Load($self->LastUpdatedBy);
+    }
+    return $self->{'LastUpdatedByObj'};
+}
+
 # }}}
 
 # {{{ sub CurrentUser 

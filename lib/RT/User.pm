@@ -116,8 +116,6 @@ sub Create  {
 	return (0, 'No permission to create users');
     }
     
-    #TODO check for duplicate email addresses +++
-
     if (! $args{'Password'})  {
 	$args{'Password'} = '*NO-PASSWORD*';
     }
@@ -134,19 +132,25 @@ sub Create  {
 
     #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
     if ($RT::SystemUser) { #This only works if RT::SystemUser has been defined
-	my $TempUser = new RT::User($RT::SystemUser);
+	my $TempUser = RT::User->new($RT::SystemUser);
 	$TempUser->Load($args{'Name'});
 	return (0, 'Name in use') if ($TempUser->Id);
+	
+	my $TempUser2 =RT::User->new($RT::SystemUser);
+	$TempUser2->LoadByEmail($args{'EmailAddress'});
+	return(0, 'Email in use') if ($TempUser2->EmailAddress eq $args{'EmailAddress'});
+
     }
     else {
 	$RT::Logger->warning("$self couldn't check for pre-existing ".
 			     " users on create. This will happen".
-			     " on installation");
+			     " on installation\n");
     }
+    
     my $id = $self->SUPER::Create(%args);
     
     #If the create failed.
-    return (0, 'Could not create user') if ($id == 0);
+    return (0, 'Could not create user') unless ($id);
     
     #TODO post 2.0
     #if ($args{'SendWelcomeMessage'}) {
@@ -166,37 +170,8 @@ sub Create  {
 sub Delete  {
     my $self = shift;
     
-    die "User->Delete not implemented";
+    return(0, "$self: Delete not implemented");
     
-    my $new_owner = shift;
-  
-    #TODO: check ACLS  
-    #TODO: Here, we should take all this admin's tickets that
-    #      are stalled or open and reassign them to $new_owner;
-    #      additionally, we should nuke this user's acls
-    
-    
-    
-    my ($query_string,$update_clause, $user_id);
-    
-    #TODO Handle User->Delete
-    
-    $user_id=$self->_Handle->quote($self->Name);
-    
-    if ($self->CurrentUser->IsAdministrator) {
-	
-	if ($self->Name  ne $self->CurrentUser) {
-	    
-	    return ("User deleted.");
-	    
-	}
-	else {
-	    return("You may not delete yourself. (Do you know why?)");
-	}
-    }
-    else {
-	return("You do not have the privileges to delete that user.");
-    }
     
 }
 
@@ -238,13 +213,13 @@ Tries to load this user object from the database by the user's email address.
 
 sub LoadByEmail {
     my $self=shift;
-    # TODO: check the "AlternateEmails" table if this fails.
-    # TODO +++ canonicalize the email address
+    my $address = shift;
 
-    return $self->LoadByCol("EmailAddress", @_);
+    $address = RT::CanonicalizeAddress($address);
+    $RT::Logger->debug("Trying to load an email address: $address\n");
+    return $self->LoadByCol("EmailAddress", $address);
 }
 # }}}
-
 
 # {{{ sub SetRandomPassword
 
@@ -256,9 +231,14 @@ If the status is anything else, the new value returned is the error code.
 
 =cut
 
-
 sub SetRandomPassword  {
     my $self = shift;
+
+
+    unless ($self->CurrentUserCanModify) {
+	return (0, "Permission Denied");
+    }
+    
     my $pass = $self->GenerateRandomPassword(6,8);
     my ($val, $msg) = $self->SetPassword($pass);
     
@@ -274,8 +254,7 @@ sub SetRandomPassword  {
 
 # }}}
 
-
-# {{{ sub  GenerateRandomPassword
+# {{{ sub GenerateRandomPassword
 
 =head2 GenerateRandomPassword MIN_LEN and MAX_LEN
 
@@ -385,8 +364,6 @@ sub GenerateRandomPassword {
 }
 
 
-
-
 #A private helper function for RandomPassword
 # Takes a row summary and a frequency chart for the next character to be searched
 sub _GenerateRandomNextChar {
@@ -402,9 +379,6 @@ sub _GenerateRandomNextChar {
 }
 
 # }}}
-
-
-
 
 # {{{ sub SetPassword
 
@@ -450,8 +424,8 @@ Returns undef otherwise.
 sub IsPassword { 
     my $self = shift;
     my $value = shift;
-    
-    #TODO +++ ACL this
+
+    #TODO there isn't any apparent way to legitimately ACL this
 
     # RT does not allow null passwords 
     if ((!defined ($value)) or ($value eq '')) {
@@ -494,7 +468,6 @@ sub SetDisabled {
 
 # }}}
 
-
 # {{{ ACL Related routines
 
 # {{{ GrantQueueRight
@@ -516,6 +489,7 @@ sub GrantQueueRight {
 		 PrincipalId => $self->Id,
 		 @_);
    
+    #ACL check handled in ACE.pm
 
     require RT::ACE;
 
@@ -547,10 +521,10 @@ sub GrantSystemRight {
 		 PrincipalId => $self->Id,
 		 @_);
    
-    require RT::ACE;
-    
-#    $RT::Logger->debug("$self ->GrantSystemRight ". join(@_)."\n");
-    
+
+    #ACL check handled in ACE.pm
+
+    require RT::ACE;    
     my $ace = new RT::ACE($self->CurrentUser);
     
     return ($ace->Create(%args));
@@ -1056,7 +1030,7 @@ sub _Value  {
   elsif ($self->CurrentUser->Id == $self->Id) {	
       return($self->SUPER::_Value($field));
   } 
-  #If the user has admin users, return the field
+  #If the user has the admin users right, return the field
   elsif ($self->CurrentUserHasRight('AdminUsers')) {
       return($self->SUPER::_Value($field));
   }

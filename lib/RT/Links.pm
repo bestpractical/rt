@@ -5,8 +5,8 @@
 
 =head1 SYNOPSIS
 
-  use RT::Links
-my $links = new RT::Links($CurrentUser);
+  use RT::Links;
+  my $links = new RT::Links($CurrentUser);
 
 =head1 DESCRIPTION
 
@@ -16,9 +16,9 @@ my $links = new RT::Links($CurrentUser);
 =cut
 package RT::Links;
 use RT::EasySearch;
+use RT::Link;
 
 @ISA= qw(RT::EasySearch);
-
 
 # {{{ sub _Init  
 sub _Init   {
@@ -32,31 +32,27 @@ sub _Init   {
 
 # {{{ sub Limit 
 sub Limit  {
-  my $self = shift;
-my %args = ( ENTRYAGGREGATOR => 'AND',
-             OPERATOR => '=',
-             @_);
-
-  #if someone's trying to search for tickets, try to resolve the uris for searching.
-
-  if (  ( $args{'OPERATOR'} eq '=') and
-        ( $args{'FIELD'}  eq 'Base') or ($args{'FIELD'} eq 'Target')
-     ) {
-        my $dummy = $self->NewItem;
-        $uri = $dummy->CanonicalizeURI($args{'VALUE'});
+    my $self = shift;
+    my %args = ( ENTRYAGGREGATOR => 'AND',
+		 OPERATOR => '=',
+		 @_);
+    
+    #if someone's trying to search for tickets, try to resolve the uris for searching.
+    
+    if (  ( $args{'OPERATOR'} eq '=') and
+	  ( $args{'FIELD'}  eq 'Base') or ($args{'FIELD'} eq 'Target')
+       ) {
+	my $dummy = $self->NewItem();
+	  $uri = $dummy->CanonicalizeURI($args{'VALUE'});
     }
-  $self->SUPER::Limit(%args);
+    $self->SUPER::Limit(%args);
 }
 # }}}
 
 # {{{ sub NewItem 
 sub NewItem  {
-  my $self = shift;
-  my $item;
-
-  use RT::Link;
-  $item = new RT::Link($self->CurrentUser);
-  return($item);
+    my $self = shift;
+    return(RT::Link->new($self->CurrentUser));
 }
 # }}}
   1;

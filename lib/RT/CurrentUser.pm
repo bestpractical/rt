@@ -24,7 +24,6 @@ use RT::Record;
 @ISA= qw(RT::Record);
 
 
-
 # {{{ sub _Init 
 
 #The basic idea here is that $self->CurrentUser is always supposed
@@ -84,10 +83,6 @@ sub _Accessible  {
   return($self->SUPER::_Accessible(@_, %Cols));
 }
 # }}}
-
-
-
-
 
 # {{{ sub LoadByEmail
 

@@ -13,6 +13,9 @@
 
 =head1 DESCRIPTION
 
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in other modules.
+
 
 =head1 METHODS
 
@@ -21,8 +24,6 @@
 package RT::ScripAction;
 use RT::Record;
 @ISA= qw(RT::Record);
-
-
 
 # {{{  sub _Init 
 sub _Init  {
@@ -35,10 +36,10 @@ sub _Init  {
 # {{{ sub _Accessible 
 sub _Accessible  {
     my $self = shift;
-    my %Cols = ( Name  => 'read/write',
-		 Description => 'read/write',
-		 ExecModule  => 'read/write',
-		 Argument  => 'read/write',
+    my %Cols = ( Name  => 'read',
+		 Description => 'read',
+		 ExecModule  => 'read',
+		 Argument  => 'read',
 		 Creator => 'read/auto',
 		 Created => 'read/auto',
 		 LastUpdatedBy => 'read/auto',
@@ -51,40 +52,32 @@ sub _Accessible  {
 # {{{ sub Create 
 =head2 Create
   
-Takes a hash. Creates a new Action entry.
+ Takes a hash. Creates a new Action entry.
  should be better documented.
 =cut
+
 sub Create  {
-  my $self = shift;
-  #TODO check these args and do smart things.
-  my $id = $self->SUPER::Create(@_);
-  $self->LoadById($id);
-  #TODO proper return values 
+    my $self = shift;
+    #TODO check these args and do smart things.
+    my $id = $self->SUPER::Create(@_);
 }
 # }}}
 
-# {{{ sub delete 
+# {{{ sub Delete 
 sub Delete  {
     my $self = shift;
-    # this function needs to move all requests into some other queue!
-    my ($query_string,$update_clause);
     
-    die ("ScripAction->Delete not implemented yet");
+    return (0, "ScripAction->Delete not implemented yet");
 }
 # }}}
-
-
 
 # {{{ sub Load 
 sub Load  {
     my $self = shift;
     my $identifier = shift;
     
-    
-    
-    
     if (!$identifier) {
-	return (undef);
+	return (0, 'Input error');
     }	    
     
     if ($identifier !~ /\D/) {
@@ -101,11 +94,18 @@ sub Load  {
 	
 	$self->{'Template'} = $template;
     }
+    return ($self->Id, 'ScripAction loaded');
 }
 # }}}
 
-
 # {{{ sub LoadAction 
+
+=head2 LoadAction HASH
+
+  Takes a hash consisting of TicketObj and TransactionObj.  Loads an RT::Action:: module.
+
+=cut
+
 sub LoadAction  {
     my $self = shift;
     my %args = ( TransactionObj => undef,
@@ -128,6 +128,13 @@ sub LoadAction  {
 # }}}
 
 # {{{ sub TemplateObj
+
+=head2 TemplateObj
+
+Return this action\'s template object
+
+=cut
+
 sub TemplateObj {
     my $self = shift;
     return undef unless $self->{Template};
@@ -145,6 +152,7 @@ sub TemplateObj {
 # The following methods call the action object
 
 # {{{ sub Prepare 
+
 sub Prepare  {
     my $self = shift;
     return ($self->{'Action'}->Prepare());

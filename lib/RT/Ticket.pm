@@ -15,7 +15,7 @@
 
 =head1 DESCRIPTION
 
-This module lets you manipulate RT's most key object. The Ticket.
+This module lets you manipulate RT\'s ticket object.
 
 
 =head1 METHODS
@@ -24,6 +24,7 @@ This module lets you manipulate RT's most key object. The Ticket.
 
 
 package RT::Ticket;
+use RT::Queue;
 use RT::User;
 use RT::Record;
 use RT::Link;
@@ -161,7 +162,7 @@ sub Create {
     if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
 	$Queue=RT::Queue->new($self->CurrentUser);
 	$Queue->Load($args{'Queue'});
-	#TODO error check this and return 0 if it's not loading properly +++
+	#TODO error check this and return 0 if it\'s not loading properly +++
     }
     elsif (ref($args{'Queue'}) eq 'RT::Queue') {
 	$Queue = $args{'Queue'};
@@ -169,13 +170,14 @@ sub Create {
     else {
 	$RT::Logger->err($args{'Queue'} . " not a recognised queue object.");
     }
+  
     #Can't create a ticket without a queue.
     unless (defined ($Queue)) {
 	$RT::Logger->err( "No queue given for ticket create request '".$args{'Subject'}."'");
 	return (0, 0,'Queue not set');
     }
     
-    #Check the ACLS
+    #Now that we have a queue, Check the ACLS
     unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
 					      QueueObj => $Queue )) {
 	return (0,0,"No permission to create tickets in that queue");
@@ -183,6 +185,7 @@ sub Create {
     
     
     # {{{ Deal with setting the owner
+    
     if (ref($args{'Owner'}) eq 'RT::User') {
 	$Owner = $args{'Owner'};
     }
@@ -306,7 +309,6 @@ sub AddWatcher {
     
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied");
-	
     }
     
     return ($self->_AddWatcher(@_));
@@ -330,7 +332,6 @@ sub _AddWatcher {
     
     #clear the watchers cache
     $self->{'watchers_cache'} = undef;
-    
     
     if (defined $args{'Person'}) {
 	#if it's an RT::User object, pull out the id and shove it in Owner
@@ -445,7 +446,7 @@ sub DeleteWatcher {
     my $id = shift;
     
     my ($Watcher);
-   
+    
     #Check ACLs 
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
         return (0, "Permission Denied");
@@ -453,38 +454,38 @@ sub DeleteWatcher {
     
     #Clear out the watchers hash.
     $self->{'watchers'} = undef;
-
+    
     #If it's a numeric watcherid
-   if ($id =~ /^(\d*)$/) { 
-    $Watcher = new RT::Watcher($self->CurrentUser);
-    $Watcher->Load($id);
-    if (($Watcher->Scope  ne 'Ticket') or
-       ($Watcher->Value != $self->id) ) {
-        return (0, "Not a watcher for this ticket");
-       }
-      #If we've validated that it is a watcher for this ticket 
-      else {
-          $self->_NewTransaction ( Type => 'DelWatcher',        
-                 OldValue => $Watcher->Email,
-                 Field => $Watcher->Type,
-				   
-                   );
-        $Watcher->Delete();
-     }
-   }
-    #Otherwise, we'll assume it's an email address
-   else {
-   #Iterate throug all the watchers looking for this email address
-    #it may be faster to speed this up with a custom query
-    while ($Watcher = $self->Watchers->Next) {
-      if ($Watcher->Email =~ /^$id$/) {
-	$self->_NewTransaction ( Type => 'DelWatcher',
-				 OldValue => $Watcher->Email,
-				 Field => $Watcher->Type,
-			       );
-	$Watcher->Delete();
-      }
+    if ($id =~ /^(\d*)$/) { 
+	$Watcher = new RT::Watcher($self->CurrentUser);
+	$Watcher->Load($id);
+	if (($Watcher->Scope  ne 'Ticket') or
+	    ($Watcher->Value != $self->id) ) {
+	    return (0, "Not a watcher for this ticket");
+	}
+	#If we've validated that it is a watcher for this ticket 
+	else {
+	    $self->_NewTransaction ( Type => 'DelWatcher',        
+				     OldValue => $Watcher->Email,
+				     Field => $Watcher->Type,
+				     
+				   );
+	    $Watcher->Delete();
+	}
     }
+    #Otherwise, we'll assume it's an email address
+    else {
+	#Iterate throug all the watchers looking for this email address
+	#it may be faster to speed this up with a custom query
+	while ($Watcher = $self->Watchers->Next) {
+	    if ($Watcher->Email =~ /^$id$/) {
+		$self->_NewTransaction ( Type => 'DelWatcher',
+					 OldValue => $Watcher->Email,
+					 Field => $Watcher->Type,
+				       );
+		$Watcher->Delete();
+	    }
+	}
     }
 }
 
@@ -523,8 +524,6 @@ sub Watchers {
 
 =head2 RequestorsAsString
 
-
-B<Takes> I<nothing>
  B<Returns> String: All Ticket Requestor email addresses as a string.
 
 =cut
@@ -535,13 +534,12 @@ sub RequestorsAsString {
     unless ($self->CurrentUserHasRight('ShowTicket')) {
         return undef;
     }
-
+    
     return ($self->Requestors->EmailsAsString() );
 }
 
 =head2 WatchersAsString
 
-B<Takes> I<nothing>
 B<Returns> String: All Ticket Watchers email addresses as a string
 
 =cut
@@ -559,13 +557,7 @@ sub WatchersAsString {
 
 =head2 AdminCcAsString
 
-=item B<Takes>
-
-=item I<nothing>
-
-=item B<Returns>
-
-=item String: All Ticket AdminCc email addresses as a string
+returns String: All Ticket AdminCc email addresses as a string
 
 =cut
 
@@ -577,20 +569,13 @@ sub AdminCcAsString {
 	return undef;
     }
     
-    
     return ($self->AdminCc->EmailsAsString());
     
 }
 
 =head2 CcAsString
 
-=item B<Takes>
-
-=item I<nothing>
-
-=item B<Returns>
-
-=item String: All Ticket Ccs as a string of email addresses
+returns String: All Ticket Ccs as a string of email addresses
 
 =cut
 
@@ -661,7 +646,7 @@ sub Cc {
 =head2 AdminCc
 
 Takes nothing.
-Returns this ticket's administrative Ccs as an RT::Watchers object
+Returns this ticket\'s administrative Ccs as an RT::Watchers object
 
 =cut
 
@@ -694,19 +679,23 @@ is a ticket watcher. Returns undef otherwise
 sub IsWatcher {
     my $self = shift;
     
+    #ACL check can't happen since this gets used to check ACLs
+    #    unless ($self->CurrentUserHasRight('ShowTicket')) {
+    #	return(undef);
+    #    }	
+    
     my %args = ( Type => 'Requestor',
 		 User => undef,
 		 @_
 	       );
     
- 
     my %cols = ('Type' => $args{'Type'},
 		'Scope' => 'Ticket',
 		'Value' => $self->Id
 	       );
 
     if (ref($args{'Id'})){ #If it's a ref, assume it's an RT::User object;
-	#Dangerous but ok for now
+	#Dangerous but ok for now TODO
 	$cols{'Owner'} = $args{'Id'}->Id;
     }
     elsif ($args{'Id'} =~ /^\d+$/) { # if it's an integer, it's an RT::User obj
@@ -715,7 +704,7 @@ sub IsWatcher {
     else {
 	$cols{'Email'} = $args{'Id'};
     }	
-
+    
     if ($args{'Email'}) {
 	$cols{'Email'} = $args{'Email'};
     }
@@ -823,12 +812,17 @@ sub IsOwner {
     my $person = shift;
   
 
+    # no ACL check since this is used in acl decisions
+    # unless ($self->CurrentUserHasRight('ShowTicket')) {
+    #	return(undef);
+    #   }	
 
+    
     #Tickets won't yet have owners when they're being created.
     unless ($self->OwnerObj->id) {
         return(undef);
     }
-
+    
     if ($person->id == $self->OwnerObj->id) {
 	return(1);
     }
@@ -876,15 +870,11 @@ sub ValidateQueue {
 
 sub SetQueue {
     my $self = shift;
-    
     my $NewQueue = shift;
+
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied");
     }
-    
-    
-    #TODO Check to make sure this isn't the current queue.
-    #TODO this will clobber the old queue definition. 
     
     use RT::Queue;
     my $NewQueueObj = RT::Queue->new($self->CurrentUser);
@@ -894,6 +884,9 @@ sub SetQueue {
 	return (0, "That queue does not exist");
     }
     
+    if ($NewQueueObj->Id == $self->QueueObj->Id) {
+	return (0, 'That is the same value');
+    }
     unless ($self->CurrentUser->HasQueueRight(Right =>'CreateTicket',
 					      QueueObj => $NewQueueObj )) {
 	return (0, "You may not create requests in that queue.");
@@ -920,12 +913,12 @@ Takes nothing. returns this ticket's queue object
 
 sub QueueObj {
     my $self = shift;
-
-    require RT::Queue;
-    $queue = RT::Queue->new($self->CurrentUser);
-    #We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
-    my ($result) = $queue->Load($self->SUPER::_Value('Queue'));
     
+    my $queue = RT::Queue->new($self->CurrentUser);
+    #We call __Value so that we can avoid the ACL decision and some deep recursion
+    my ($result) = $queue->Load($self->__Value('Queue'));
+    
+    #TODO some error checking here.
     return ($queue);
 }
 
@@ -937,6 +930,12 @@ sub QueueObj {
 # {{{ Date printing routines
 
 # {{{ sub DueObj
+
+=head2 DueObj
+
+  Returns an RT::Date object containing this ticket's due date
+
+=cut
 sub DueObj {
     my $self = shift;
     
@@ -956,6 +955,12 @@ sub DueObj {
 
 # {{{ sub DueAsString 
 
+=head2 DueAsString
+
+Returns this ticket's due date as a human readable string
+
+=cut
+
 sub DueAsString {
   my $self = shift;
   return $self->DueObj->AsString();
@@ -965,7 +970,11 @@ sub DueAsString {
 
 # {{{ sub GraceTimeAsString 
 
-# This really means "time until due"
+=head2 GraceTimeAsString
+
+Return the time until this ticket is due as a string
+=cut
+
 sub GraceTimeAsString {
     my $self=shift;
     
@@ -1026,8 +1035,11 @@ sub SetStarted {
     }
     
     #Now that we're starting, open this ticket
-    $self->Open;
-
+    #TODO do we really want to force this as policy? it should be a scrip
+    if ($self->Status eq 'new') {
+	$self->Open();
+    }	
+    
     return ($self->_Set(Field => 'Started', Value =>$time_obj->ISO));
     
 }
@@ -1127,26 +1139,6 @@ sub ToldAsString {
 }
 # }}}
 
-# {{{ sub LastUpdatedByObj
-
-=head2 LastUpdatedByObj
-
-  Returns an RT::User object of the last user to touch this object
-  TODO: why isn't this in RT::Record
-
-=cut
-
-sub LastUpdatedByObj {
-  my $self=shift;
-  unless (exists $self->{LastUpdatedByObj}) {
-    $self->{LastUpdatedByObj}=RT::User->new($self->CurrentUser);
-    $self->{LastUpdatedByObj}->Load($self->LastUpdatedBy);
-  }
-  return $self->{LastUpdatedByObj};
-}
-
-# }}}
-
 # {{{ sub TimeWorkedAsString
 
 =head2 TimeWorkedAsString
@@ -1183,7 +1175,7 @@ sub TimeWorkedAsString {
 Comment on this ticket.
 Takes a hashref with the follwoing attributes:
 
-MimeObj, TimeTaken
+MIMEObj, TimeTaken
 
 =cut
 
@@ -1253,11 +1245,11 @@ sub Correspond {
     
     unless ($Trans) {
 	$RT::Logger->err("$self couldn't init a transaction ($msg)\n");
-	return ($Trans, "correspondence (probably) NOT sent", $args{'MIMEObj'});
+	return ($Trans, "correspondence (probably) not sent", $args{'MIMEObj'});
     }
     
     #Set the last told date to now if this isn't mail from the requestor.
-    #Note that this will wrongly ack mail from any non-requestor as a "told"
+    #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
     
     unless ($TransObj->IsInbound) {
 	$self->_SetTold;
@@ -1285,9 +1277,7 @@ which are 'MembersOf' this ticket
 
 sub Members {
    my $self = shift;
-
    return ($self->_Links('Target', 'MemberOf'));
-
 }
 
 # }}}
@@ -1303,7 +1293,6 @@ ticket is a 'MemberOf'
 
 sub MemberOf {
    my $self = shift;
-   
    return ($self->_Links('Base', 'MemberOf'));
 }
 
@@ -1482,7 +1471,7 @@ sub AddLink {
     my $self = shift;
     my %args = ( Target => '',
 		 Base => '',
-		 Type => '',
+	 	 Type => '',
 		 @_ );
     
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
@@ -1619,19 +1608,24 @@ sub KeywordsObj {
     my $self = shift;
     my $keyword_select; 
         
-    $keyword_select = shift  if (@_);
+    $keyword_select = shift if (@_);
     
     
+   
     #TODO check acl
     
     use RT::ObjectKeywords;
     my $Keywords = new RT::ObjectKeywords($self->CurrentUser);
-    $Keywords->LimitToTicket($self->id);
+
     
-    if ($keyword_select) {
-	$Keywords->LimitToKeywordSelect($keyword_select);
-    }	
-    
+    #ACL check
+    if ($self->CurrentUserHasRight('ShowTicket')) {
+	$Keywords->LimitToTicket($self->id);
+	if ($keyword_select) {
+	    $Keywords->LimitToKeywordSelect($keyword_select);
+	}	
+	
+    }    
     return ($Keywords);
 }
 
@@ -1658,9 +1652,12 @@ sub AddKeyword {
 	       );
     
     my ($OldValue);
-    
-    #TODO +++ check ACL
-    
+
+
+   #ACL check
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, 'Permission denied');
+    }
 
     #TODO make sure that $args{'Keyword'} is valid for $args{'KeywordSelect'}
 
@@ -1669,20 +1666,20 @@ sub AddKeyword {
     my $Keyword = new RT::Keyword($self->CurrentUser);
     unless ($Keyword->Load($args{'Keyword'}) ) {
 	$RT::Logger->err("$self Couldn't load Keyword ".$args{'Keyword'} ."\n");
-	return(undef);
+	return(0, "Couldn't load keyword");
     }
     
     my $KeywordSelectObj = new RT::KeywordSelect($self->CurrentUser);
     unless ($KeywordSelectObj->Load($args{'KeywordSelect'})) {
 	$RT::Logger->err("$self Couldn't load KeywordSelect ".$args{'KeywordSelect'});
-	return(undef, "Couldn't load keywordselect");
+	return(0, "Couldn't load keywordselect");
     }
     
     my $Keywords = $self->KeywordsObj($KeywordSelectObj->id);
 
     #If the ticket already has this keyword, just get out of here.
     if ($Keywords->HasEntry($Keyword->id)) {
-	return(undef, "That is already the current value");
+	return(0, "That is already the current value");
     }	
 
     #If the keywordselect wants this to be a singleton:
@@ -1693,7 +1690,7 @@ sub AddKeyword {
 	#we shouldn't need a loop ehre, but we do it anyway, to try to 
 	# help keep the database clean.
 	while (my $OldKey = $Keywords->Next) {
-	    my $OldValue = $OldKey->KeywordObj->Name;
+	    $OldValue = $OldKey->KeywordObj->Name;
 	    $OldKey->Delete();
 	}	
 	
@@ -1734,8 +1731,12 @@ sub DeleteKeyword {
     my %args = ( Keyword => undef,
 		 KeywordSelect => undef,
 		 @_ );
-    
-    #TODO check acl
+
+   #ACL check
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {    
+	return (0, 'Permission denied');
+    }
+
     
     #Load up the ObjectKeyword we\'re talking about
     my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
@@ -1772,7 +1773,7 @@ sub DeleteKeyword {
 
 # {{{ Routines dealing with ownership
 
-# {{{ sub Owner
+# {{{ sub OwnerObj
 
 =head2 OwnerObj
 
@@ -1793,7 +1794,7 @@ sub OwnerObj {
     if (! exists $self->{'owner'})  {
 	require RT::User;
 	$self->{'owner'} = new RT::User ($self->CurrentUser);
-	$self->{'owner'}->Load($self->SUPER::_Value('Owner'));
+	$self->{'owner'}->Load($self->__Value('Owner'));
     }
     
     
@@ -1831,61 +1832,58 @@ to 'Give'.  'Steal' is also a valid option.
 =cut
 
 sub SetOwner {
-  my $self = shift;
-  my $NewOwner = shift;
-  my $Type = shift || "Give";
-  my ($NewOwnerObj);
+    my $self = shift;
+    my $NewOwner = shift;
+    my $Type = shift || "Give";
+    
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+    }  
+    
+    
+    my $NewOwnerObj = RT::User->new($self->CurrentUser);
+    my $OldOwnerObj = $self->OwnerObj;
   
-
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
-      return (0, "Permission Denied");
-  }  
-
-  $RT::Logger->debug("in RT::Ticket->SetOwner()");
-  
-  $NewOwnerObj = RT::User->new($self->CurrentUser);
-  my $OldOwnerObj = $self->OwnerObj;
-  
-  if (!$NewOwnerObj->Load($NewOwner)) {
+    if (!$NewOwnerObj->Load($NewOwner)) {
 	return (0, "That user does not exist");
     }
   
-  #If thie ticket has an owner and it's not the current user
+    #If thie ticket has an owner and it's not the current user
   
-  if (($Type ne 'Steal' ) and  #If we're not stealing
-      ($self->OwnerObj->Id != $RT::Nobody->Id ) and  #and the owner is set
-      ($self->CurrentUser->Id ne $self->OwnerObj->Id())) { #and it's not us
-      return(0, "You can only reassign tickets that you own or that are unowned");
-  }
+    if (($Type ne 'Steal' ) and	#If we're not stealing
+	($self->OwnerObj->Id != $RT::Nobody->Id ) and #and the owner is set
+	($self->CurrentUser->Id ne $self->OwnerObj->Id())) { #and it's not us
+	return(0, "You can only reassign tickets that you own or that are unowned");
+    }
   
-  #If we've specified a new owner and that user can't modify the ticket
-  elsif (($NewOwnerObj) and 
-	 (!$NewOwnerObj->HasQueueRight(Right => 'OwnTicket',
-				       QueueObj => $self->QueueObj))
-	) {
-      return (0, "That user may not own requests in that queue");
-  }
-  
-  
-  #If the ticket has an owner and it's the new owner, we don't need
-  #To do anything
-  elsif (($self->OwnerObj) and ($NewOwnerObj->Id eq $self->OwnerObj->Id)) {
-      return(0, "That user already owns that request");
-  }
+    #If we've specified a new owner and that user can't modify the ticket
+    elsif (($NewOwnerObj) and 
+	   (!$NewOwnerObj->HasQueueRight(Right => 'OwnTicket',
+					 QueueObj => $self->QueueObj))
+	  ) {
+	return (0, "That user may not own requests in that queue");
+    }
   
   
-  my ($trans,$msg)=$self->_Set(Field => 'Owner',
-			       Value => $NewOwnerObj->Id, 
-			       TimeTaken => 0,
-			       TransactionType => $Type);
+    #If the ticket has an owner and it's the new owner, we don't need
+    #To do anything
+    elsif (($self->OwnerObj) and ($NewOwnerObj->Id eq $self->OwnerObj->Id)) {
+	return(0, "That user already owns that request");
+    }
   
-  #Clean out the owner object
-  delete $self->{'owner'};
+  
+    my ($trans,$msg)=$self->_Set(Field => 'Owner',
+				 Value => $NewOwnerObj->Id, 
+				 TimeTaken => 0,
+				 TransactionType => $Type);
+  
+    #Clean out the owner object
+    delete $self->{'owner'};
 
-  if ($trans) {
-      $msg = "Owner changed from ".$OldOwnerObj->Name." to ".$NewOwnerObj->Name;
-  }
-  return ($trans, $msg);
+    if ($trans) {
+	$msg = "Owner changed from ".$OldOwnerObj->Name." to ".$NewOwnerObj->Name;
+    }
+    return ($trans, $msg);
 	  
 }
 
@@ -1900,9 +1898,8 @@ A convenince method to set the ticket's owner to the current user
 =cut
 
 sub Take {
-  my $self = shift;
-  
-  return ($self->SetOwner($self->CurrentUser->Id, 'Take'));
+    my $self = shift;
+    return ($self->SetOwner($self->CurrentUser->Id, 'Take'));
 }
 # }}}
 
@@ -1915,9 +1912,8 @@ Convenience method to set the owner to 'nobody' if the current user is the owner
 =cut
 
 sub Untake {
-  my $self = shift;
-  
-  return($self->SetOwner($RT::Nobody->UserObj, 'Untake'));
+    my $self = shift;
+    return($self->SetOwner($RT::Nobody->UserObj, 'Untake'));
 }
 # }}}
 
@@ -1931,15 +1927,14 @@ current user. Even if it's owned by another user.
 =cut
 
 sub Steal {
-  my $self = shift;
+    my $self = shift;
   
-   if ($self->OwnerObj->Id eq $self->CurrentUser->Id ) {
-      return (0,"You already own this ticket"); 
-  }
-  else {
-      return($self->SetOwner($self->CurrentUser->Id, 'Steal'));
+    if ($self->IsOwner($self->CurrentUser)) {
+	return (0,"You already own this ticket"); 
+    } else {
+	return($self->SetOwner($self->CurrentUser->Id, 'Steal'));
       
-  }
+    }
   
 }
 
@@ -1951,9 +1946,9 @@ sub Steal {
 
 # {{{ sub SetStatus
 
-=head2 SetStatus [STATUS]
+=head2 SetStatus STATUS
 
-Set this ticket's status. STATUS can be one of: new, open, stalled, resolved or dead.
+Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved or dead.
 
 =cut
 
@@ -1971,8 +1966,8 @@ sub SetStatus {
 	return (0,"The status '$status' is not valid.");
     }
     
-
-     
+    
+    
     my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow();
     
@@ -2036,13 +2031,13 @@ sub Stall {
 
 =head2 Open
 
-Sets this ticket's status to Open
+Sets this ticket\'s status to Open
 
 =cut
 
 sub Open {
-  my $self = shift;
-  return ($self->SetStatus('open'));
+    my $self = shift;
+    return ($self->SetStatus('open'));
 }
 
 # }}}
@@ -2051,13 +2046,13 @@ sub Open {
 
 =head2
 
-Sets this ticket's status to Resolved
+Sets this ticket\'s status to Resolved
 
 =cut
 
 sub Resolve {
-  my $self = shift;
-  return ($self->SetStatus('resolved'));
+    my $self = shift;
+    return ($self->SetStatus('resolved'));
 }
 
 # }}}
@@ -2075,6 +2070,11 @@ Updates the told and records a transaction
 sub SetTold {
     my $self=shift;
     my $timetaken=shift || 0;
+   
+    unless ($self->CurrentUserHasRight('ModifyTicket')) {
+	return (0, "Permission Denied");
+    }
+
     my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow(); 
 
@@ -2106,8 +2106,7 @@ sub _SetTold {
 
 =head2 Transactions
 
-  Returns an RT::Transactions object of all
-transactions on this ticket
+  Returns an RT::Transactions object of all transactions on this ticket
 
 =cut
   
@@ -2118,15 +2117,10 @@ sub Transactions {
     my $transactions = RT::Transactions->new($self->CurrentUser);
 
     #If the user has no rights, return an empty object
-    unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return ($transactions);
-    }
-    
-    
- 
-    $transactions->Limit( FIELD => 'Ticket',
-			  VALUE => $self->id() );
-    
+    if ($self->CurrentUserHasRight('ShowTicket')) {
+	$transactions->Limit( FIELD => 'Ticket',
+			      VALUE => $self->id() );
+    }	
     return($transactions);
 }
 
@@ -2354,9 +2348,9 @@ sub CurrentUserHasRight {
 
 sub HasRight {
     my $self = shift;
-	my %args = ( Right => undef,
-		     Principal => undef,
-	 	     @_);
+    my %args = ( Right => undef,
+		 Principal => undef,
+		 @_);
     
     unless ((defined $args{'Principal'}) and (ref($args{'Principal'}))) {
 	$RT::Logger->warning("Principal attrib undefined for Ticket::HasRight");
@@ -2364,8 +2358,6 @@ sub HasRight {
     
     return($args{'Principal'}->HasQueueRight(TicketObj => $self,
 					     Right => $args{'Right'}));
-    
-    
 }
 
 # }}}

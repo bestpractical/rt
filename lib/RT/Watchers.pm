@@ -9,9 +9,15 @@
 =head1 SYNOPSIS
 
   use RT::Watchers;
-my $watchers = new RT::Watchers($CurrentUser)
+  my $watchers = new RT::Watchers($CurrentUser);
+  while (my $watcher = $watchers->Next()) {
+    print $watcher->Id . "is a watcher";
+  }  
 
 =head1 DESCRIPTION
+
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in Ticket, Queue and other similar objects.
 
 
 =head1 METHODS
@@ -159,7 +165,6 @@ sub LimitToAdminCc  {
     $self->LimitToType("AdminCc");
 }
 # }}}
-
 
 # {{{ sub Emails 
 

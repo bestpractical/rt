@@ -6,16 +6,19 @@
 =head1 SYNOPSIS
 
   use RT::Tickets;
-my $tickets = new RT::Tickets($CurrentUser);
+  my $tickets = new RT::Tickets($CurrentUser);
 
 =head1 DESCRIPTION
 
+   A collection of RT::Tickets.
 
 =head1 METHODS
 
 =cut
+
 package RT::Tickets;
 use RT::EasySearch;
+use RT::Ticket;
 @ISA= qw(RT::EasySearch);
 
 # {{{ TYPES
@@ -67,7 +70,7 @@ sub _Init  {
 }
 # }}}
 
-# {{{ sub _NextItem
+# {{{ sub _NextIndex
 sub _NextIndex {
     my $self = shift;
     return ($self->{'restriction_index'}++);
@@ -644,11 +647,8 @@ sub LimitKeyword {
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $Handle = shift;
-  my $item;
-  use RT::Ticket;
-  $item = new RT::Ticket($self->CurrentUser);
-  return($item);
+  return(RT::Ticket->new($self->CurrentUser));
+
 }
 # }}}
 
@@ -657,7 +657,6 @@ sub Next {
 	my $self = shift;
 	
 	$self->_ProcessRestrictions if ($self->{'RecalcTicketLimits'} == 1 );
-
 
 	my $Ticket = $self->SUPER::Next();
 	if ((defined($Ticket)) and (ref($Ticket))) {
@@ -963,7 +962,6 @@ sub _ProcessRestrictions {
 	elsif ($TYPES{$restriction->{'FIELD'}} eq 'WATCHERFIELD') {
 	    my $Watch = $self->NewAlias('Watchers');
 
-	    #TODO use this to allow searching on things like email addresses.
 	    my $User = $self->NewAlias('Users');
 
 	    #Join watchers to users

@@ -17,6 +17,7 @@
 
 package RT::GroupMembers;
 use RT::EasySearch;
+use RT::GroupMember;
 
 @ISA= qw(RT::EasySearch);
 
@@ -28,16 +29,6 @@ sub _Init   {
   $self->{'table'} = "GroupMembers";
   $self->{'primary_key'} = "id";
   return ( $self->SUPER::_Init(@_) );
-}
-# }}}
-
-# {{{ sub Limit 
-sub Limit  {
-  my $self = shift;
-my %args = ( ENTRYAGGREGATOR => 'AND',
-             @_);
-
-  $self->SUPER::Limit(%args);
 }
 # }}}
 
@@ -64,14 +55,11 @@ sub LimitToGroup {
 # }}}
 
 # {{{ sub NewItem 
-sub NewItem  {
-  my $self = shift;
-  my $Handle = shift;
-  my $item;
 
-  use RT::GroupMember;
-  $item = new RT::GroupMember($self->CurrentUser);
-  return($item);
+sub NewItem  {
+    my $self = shift;
+    return(RT::GroupMember->new($self->CurrentUser))
 }
+
 # }}}
 1;

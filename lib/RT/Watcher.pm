@@ -13,16 +13,16 @@
 
 =head1 DESCRIPTION
 
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in Ticket, Queue and other similar objects.
 
 =head1 METHODS
 
 =cut
 
-
 package RT::Watcher;
 use RT::Record;
 @ISA= qw(RT::Record);
-
 
 
 # {{{ sub _Init 
@@ -54,15 +54,13 @@ sub Create  {
           return (0, "No user or email addres specified");
       }
 
-   $RT::Logger->debug("Adding a watcher",$args{Owner}, $args{Email}, $args{Value}, $args{Scope}, $args{Type});
-
     #If we've got an Email and no owner, try to tie it to the user's account
     my $User=RT::User->new($self->CurrentUser);
     if (!$args{Owner} && $User->LoadByEmail($args{Email})) {
     	$args{Owner}=$User->id;
     	delete $args{Email};
     }
-
+    
     #TODO: figure out why this code is here
     # it appears to nuke unqualfied email addresses if and only
     # if there is an owner
@@ -87,7 +85,7 @@ sub Create  {
     return (1,"Interest noted");
 }
 # }}}
- 
+
 # {{{ sub Load 
 sub Load  {
   my $self = shift;
@@ -130,21 +128,21 @@ an RT::User object.
 =cut
 
 sub Email {
-  my $self = shift;
-
-  # IF Email is defined, return that. Otherwise, return the Owner's email address
-  if (defined($self->SUPER::Email)) {
-    return ($self->SUPER::Email);
-  }
-  elsif ($self->Owner) {
-    return ($self->OwnerObj->EmailAddress);
-  }
-  else {
-    return ("Data error");
+    my $self = shift;
+    
+    # IF Email is defined, return that. Otherwise, return the Owner's email address
+    if (defined($self->SUPER::Email)) {
+	return ($self->SUPER::Email);
+    }
+    elsif ($self->Owner) {
+	return ($self->OwnerObj->EmailAddress);
+    }
+    else {
+	return ("Data error");
     }
 }
 # }}}
-
+  
 # {{{ sub IsUser
 
 =head2 IsUser
@@ -159,7 +157,8 @@ sub IsUser {
     my $self = shift;
     # if this watcher has an email address glued onto it,
     # return undef
-    if (defined($self->SUPER::Email)) {
+
+    if (defined($self->__Value('Email'))) {
         return undef;
     }
     else {

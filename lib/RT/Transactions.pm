@@ -32,24 +32,12 @@ sub _Init   {
 }
 # }}}
 
-# {{{ sub Limit 
-sub Limit  {
-  my $self = shift;
-my %args = ( ENTRYAGGREGATOR => 'AND',
-             @_);
-
-  $self->SUPER::Limit(%args);
-}
-# }}}
-
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $Handle = shift;
-  my $item;
 
   use RT::Transaction;
-  $item = new RT::Transaction($self->CurrentUser);
+  my $item = RT::Transaction->new($self->CurrentUser);
   return($item);
 }
 # }}}

@@ -59,6 +59,10 @@ sub Create  {
 	       );
     
     
+
+    unless ($self->CurrentUserHasRight('ModifyScrips')) {
+	return (0, 'Permission Denied');
+    }
     
     #TODO +++ validate input 
     #TODO: Allow loading Template, ScripAction and ScripCondition by name
@@ -76,12 +80,10 @@ sub Create  {
     require RT::ScripCondition;
     my $condition = new RT::ScripCondition($self->CurrentUser);
     $condition->Load($args{'ScripCondition'});
-    return (0, 'Condition not found') unless $condition->Id;
 
-
-    unless ($self->CurrentUserHasRight('ModifyScrips')) {
-	return (0, 'Permission Denied');
-    }
+    unless ($condition->Id) {
+	return (0, 'Condition not found');
+    }	
     
     my $id = $self->SUPER::Create(Queue => $args{'Queue'},
 				  Template => $template->Id,
@@ -108,8 +110,6 @@ sub QueueObj {
     if (!$self->{'QueueObj'})  {
 	require RT::Queue;
 	$self->{'QueueObj'} = RT::Queue->new($self->CurrentUser);
-	#TODO: why are we loading Actions with templates like this. 
-	# two seperate methods might make more sense
 	$self->{'QueueObj'}->Load($self->Queue);
     }
     return ($self->{'QueueObj'});
@@ -132,7 +132,6 @@ sub ActionObj {
     unless (defined $self->{'ScripActionObj'})  {
 	require RT::ScripAction;
 	
-	$RT::Logger->debug("Now loading the ScripAction ". $self->ScripAction."\n");
 	$self->{'ScripActionObj'} = RT::ScripAction->new($self->CurrentUser);
 	#TODO: why are we loading Actions with templates like this. 
 	# two seperate methods might make more sense
@@ -156,7 +155,6 @@ sub TemplateObj {
     
     unless (defined $self->{'TemplateObj'})  {
 	require RT::Template;
-	
 	$self->{'TemplateObj'} = RT::Template->new($self->CurrentUser);
 	$self->{'TemplateObj'}->Load($self->Template);
     }
@@ -206,11 +204,7 @@ sub ConditionObj {
     
     unless (defined $self->{'ScripConditionObj'})  {
 	require RT::ScripCondition;
-	
-	$RT::Logger->debug("Now loading the ScripCondition ". $self->ScripCondition."\n");
 	$self->{'ScripConditionObj'} = RT::ScripCondition->new($self->CurrentUser);
-
-
 	$self->{'ScripConditionObj'}->Load($self->ScripCondition);
     }
     return ($self->{'ScripConditionObj'});
@@ -222,13 +216,13 @@ sub ConditionObj {
 
 =head2 IsApplicable
 
-Calls the  Condition object's IsApplicable method
+Calls the  Condition object\'s IsApplicable method
 
 =cut
 
 sub IsApplicable {
     my $self = shift;
-    $self->ConditionObj->IsApplicable(@_);
+    return ($self->ConditionObj->IsApplicable(@_));
 }
 
 # }}}
@@ -250,9 +244,9 @@ sub _Set {
     
     unless ($self->CurrentUserHasRight('ModifyScrips')) {
         $RT::Logger->debug("CurrentUser can't modify Scrips for ".$self->Queue."\n");
-	return (undef);
+	return (0, 'Permission denied');
     }
-    return $self->SUPER::_Set(@_);
+    return $self->__Set(@_);
 }
 
 # }}}
@@ -267,7 +261,7 @@ sub _Value {
 	return (undef);
     }
     
-    return $self->SUPER::_Value(@_);
+    return $self->__Value(@_);
 }
 # }}}
 
@@ -308,12 +302,12 @@ sub HasRight {
     
     if ((defined $self->SUPER::_Value('Queue')) and ($self->SUPER::_Value('Queue') != 0)) {
         return ( $args{'Principal'}->HasQueueRight(
-		      Right => $args{'Right'},
-                      Queue => $self->SUPER::_Value('Queue'),
-                      Principal => $args{'Principal'}
-                      ) 
-                );
-
+						   Right => $args{'Right'},
+						   Queue => $self->SUPER::_Value('Queue'),
+						   Principal => $args{'Principal'}
+						  ) 
+	       );
+	
     }
     else {
         return( $args{'Principal'}->HasSystemRight( $args{'Right'}) );

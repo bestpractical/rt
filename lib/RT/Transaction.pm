@@ -13,6 +13,10 @@
 
 =head1 DESCRIPTION
 
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in Ticket, Queue and other similar objects.
+
+
 
 =head1 METHODS
 
@@ -72,8 +76,8 @@ sub Create  {
     $self->_Attach($args{'MIMEObj'})
       if defined $args{'MIMEObj'};
     
+    
     #We're really going to need a non-acled ticket for the scrips to work
-    #TODO this MUST be as the "System" principal or it all breaks
     my $TicketAsSystem = RT::Ticket->new($RT::SystemUser);
     $TicketAsSystem->Load($args{'Ticket'}) || 
       $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
@@ -149,15 +153,14 @@ sub Create  {
 		  $RT::Logger->info("$self: Committed $Scrip\n");
 	      
 	      #We're done with it. lets clean up.
-	      #TODO: why the fuck do we need to do this? 
+	      #TODO: something else isn't letting these get garbage collected. check em out.
 	      $Scrip->ActionObj->DESTROY();
 	      $Scrip->ConditionObj->DESTROY;
 	  }
 	  
 	  
 	else {
-	    #TODO: why the fuck does this not catch all
-	    # ScripObjs we create. and why do we explictly need to destroy them?
+	    #TODO: why doesn't this catch all the ScripObjs we create. and why do we explictly need to destroy them?
 	    $Scrip->ConditionObj->DESTROY;
 	}
       }	
@@ -214,7 +217,6 @@ sub Attachments  {
 	my $Types = shift;
     }
     
-    #TODO cache this
     use RT::Attachments;
     
     #If it's a comment, return an empty object if they don't have the right to see it
@@ -258,20 +260,21 @@ A private method used to attach a mime object to this transaction.
 =cut
 
 sub _Attach  {
-  my $self = shift;
-  my $MIMEObject = shift;
-
-  if (!defined($MIMEObject)) {
-    die "RT::Transaction::_Attach: We can't attach a mime object if you don't give us one.\n";
-  }
+    my $self = shift;
+    my $MIMEObject = shift;
+    
+    if (!defined($MIMEObject)) {
+	$RT::Logger->error("$self _Attach: We can't attach a mime object if you don't give us one.\n");
+	return(0, "$self: no attachment specified");
+    }
+    
   
-
-  use RT::Attachment;
-  my $Attachment = new RT::Attachment ($self->CurrentUser);
-  $Attachment->Create(TransactionId => $self->Id,
-		      Attachment => $MIMEObject);
-  return ($Attachment, "Attachment created");
-  
+    use RT::Attachment;
+    my $Attachment = new RT::Attachment ($self->CurrentUser);
+    $Attachment->Create(TransactionId => $self->Id,
+			Attachment => $MIMEObject);
+    return ($Attachment, "Attachment created");
+    
 }
 
 # }}}
@@ -309,112 +312,152 @@ Returns a text string which describes this transaction
 
 
 sub Description  {
-  my $self = shift;
-  if (!defined($self->Type)) {
-    return("No transaction type specified");
-  }
+    my $self = shift;
 
-  if ($self->Type eq 'Create'){
-    return("Request created by ".$self->Creator->Name);
-  }
-  elsif ($self->Type =~ /Status/) {
-    if ($self->Field eq 'Status') {
-      if ($self->NewValue eq 'dead') {
-	  return ("Request killed by ". $self->Creator->Name);
-      }
-      else {
-	  return( "Status changed from ".  $self->OldValue . 
-		  " to ". $self->NewValue.
-		  " by ".$self->Creator->Name);
-      }
-  }
-    # Generic:
-    return $self->Field." changed from ".($self->OldValue||"(empty value)")." to ".$self->NewValue 
-}
-  
-  if ($self->Type eq 'Correspond')    {
-    return("Mail sent by ". $self->Creator->Name);
-  }
-  
-  elsif ($self->Type eq 'Comment')  {
-    return( "Comments added by ".$self->Creator->Name);
-}
-  
-  elsif ($self->Type eq 'Keyword') {
-      if ($self->OldValue eq '') {
-	  return ("Keyword ".$self->NewValue." added.");
-      }
-      elsif ($self->NewValue eq '') {
-	  return ("Keyword ".$self->OldValue." deleted.");
-      }
-      else {
-	return  ("Keyword ".$self->OldValue . " changed to ". $self->NewValue.".");
+    #Check those ACLs
+    #If it's a comment, we need to be extra special careful
+    if ($self->__Value('Type') eq 'Comment') {
+     	unless ($self->CurrentUserHasRight('ShowTicketComments')) {
+	    return (0, "Permission Denied");
+	}
     }	
-  }
-  
-  elsif ($self->Type =~ /^(Take|Steal|Untake|Give)$/){
-      if ($self->Type eq 'Untake'){
-	  return( "Untaken by ".$self->Creator->Name);
+
+    #if they ain't got rights to see, don't let em
+    else {
+	unless ($self->CurrentUserHasRight('ShowTicket')) {
+	    return (0, "Permission Denied");
+	}
+    }
+
+    if (!defined($self->Type)) {
+	return("No transaction type specified");
+    }
+    
+    if ($self->Type eq 'Create'){
+	return("Request created by ".$self->CreatorObj->Name);
+    }
+    elsif ($self->Type =~ /Status/) {
+	if ($self->Field eq 'Status') {
+	    if ($self->NewValue eq 'dead') {
+		return ("Request killed by ". $self->CreatorObj->Name);
+      }
+	    else {
+		return( "Status changed from ".  $self->OldValue . 
+			" to ". $self->NewValue.
+			" by ".$self->CreatorObj->Name);
+	    }
+	}
+	# Generic:
+	return $self->Field." changed from ".($self->OldValue||"(empty value)").
+	  " to ".$self->NewValue 
       }
     
-      if ($self->Type eq "Take") {
-	  return( "Taken by ".$self->Creator->Name);
+    if ($self->Type eq 'Correspond')    {
+	return("Mail sent by ". $self->CreatorObj->Name);
+    }
+    
+    elsif ($self->Type eq 'Comment')  {
+	return( "Comments added by ".$self->CreatorObj->Name);
+    }
+    
+    elsif ($self->Type eq 'Keyword') {
+	if ($self->OldValue eq '') {
+	    return ("Keyword ".$self->NewValue." added.");
+	}
+	elsif ($self->NewValue eq '') {
+	    return ("Keyword ".$self->OldValue." deleted.");
       }
-
-      if ($self->Type eq "Steal") {
-	  my $Old = RT::User->new($self->CurrentUser);
-	  $Old->Load($self->OldValue);
-	  return "Request stolen from ".$Old->Name." by ".$self->Creator->Name;
+	else {
+	    return  ("Keyword ".$self->OldValue . " changed to ". $self->NewValue.".");
+	}	
+    }
+    
+    elsif ($self->Type =~ /^(Take|Steal|Untake|Give)$/){
+	if ($self->Type eq 'Untake'){
+	    return( "Untaken by ".$self->CreatorObj->Name);
+	}
+	
+	if ($self->Type eq "Take") {
+	    return( "Taken by ".$self->CreatorObj->Name);
+	}
+	
+	if ($self->Type eq "Steal") {
+	    my $Old = RT::User->new($self->CurrentUser);
+	    $Old->Load($self->OldValue);
+	    return "Request stolen from ".$Old->Name." by ".$self->CreatorObj->Name;
+	}
+	
+	if ($self->Type eq "Give") {
+	    
+	    my $New = RT::User->new($self->CurrentUser);
+	    $New->Load($self->NewValue);
+	    
+	    return( "Request given to ".$New->Name." by ". $self->CreatorObj->Name);
       }
-
-      if ($self->Type eq "Give") {
-	  
-	  my $New = RT::User->new($self->CurrentUser);
-	  $New->Load($self->NewValue);
-
-	  return( "Request given to ".$New->Name." by ". $self->Creator->Name);
-      }
-      
-      my $New = RT::User->new($self->CurrentUser);
-      $New->Load($self->NewValue);
-      my $Old = RT::User->new($self->CurrentUser);
-      $Old->Load($self->OldValue);
-      
-      return "Owner changed from ".$New->Name." to ".$Old->Name." by ".$self->Creator->Name;
-
-  }
-
-  elsif ($self->Type eq 'AddWatcher'){
-      return( $self->Field." ". $self->NewValue ." added by ".$self->Creator->Name);
-  }
-  
-  elsif ($self->Type eq 'DelWatcher'){
-      return( $self->Field." ".$self->OldValue ." deleted by ".$self->Creator->Name);
-  }
-  
-  elsif ($self->Type eq 'Subject') {
-      return( "Subject changed to ".$self->Data." by ".$self->Creator->Name);
-  }
-  elsif ($self->Type eq 'Told') {
-      return( "User notified by ".$self->Creator->Name);
-  }
-  
-  elsif ($self->Type eq 'AddLink') {
-      return ($self->Data);
-  }
-  elsif ($self->Type eq 'DeleteLink') {
-      return ($self->Data);
-  }
-  elsif ($self->Type eq 'Set') {
-      return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
-  }	
-  else {
-      return ("Generic: ". $self->Type ."/". $self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
-      
-  }
-  
-  
+	
+	my $New = RT::User->new($self->CurrentUser);
+	$New->Load($self->NewValue);
+	my $Old = RT::User->new($self->CurrentUser);
+	$Old->Load($self->OldValue);
+	
+	return "Owner changed from ".$New->Name." to ".$Old->Name." by ".
+	  $self->CreatorObj->Name;
+	
+    }
+    
+    elsif ($self->Type eq 'AddWatcher'){
+	return( $self->Field." ". $self->NewValue ." added by ".$self->CreatorObj->Name);
+    }
+    
+    elsif ($self->Type eq 'DelWatcher'){
+	return( $self->Field." ".$self->OldValue ." deleted by ".$self->CreatorObj->Name);
+    }
+    
+    elsif ($self->Type eq 'Subject') {
+	return( "Subject changed to ".$self->Data." by ".$self->CreatorObj->Name);
+    }
+    elsif ($self->Type eq 'Told') {
+	return( "User notified by ".$self->CreatorObj->Name);
+    }
+    
+    elsif ($self->Type eq 'AddLink') {
+	return ($self->Data);
+    }
+    elsif ($self->Type eq 'DeleteLink') {
+	return ($self->Data);
+    }
+    elsif ($self->Type eq 'Set') {
+	return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
+    }	
+    else {
+	return ("Generic: ". $self->Type ."/". $self->Field . " changed from " . $self->OldValue . 
+		" to ".$self->NewValue."\n");
+	
+    }
+    
+    
 }
+
+# }}}
+
+# {{{ Utility methods
+
+# {{{ sub IsInbound
+
+=head2 IsInbound
+
+Returns true if the creator of the transaction is a requestor of the ticket.
+Returns false otherwise
+
+=cut
+
+sub IsInbound {
+    my $self=shift;
+    return ($self->TicketObj->IsRequestor($self->CreatorObj));
+}
+
+# }}}
+
 # }}}
 
 # {{{ sub _Accessible 
@@ -439,35 +482,20 @@ sub _Accessible  {
 
 # }}}
 
-# {{{ Utility methods
-
-# {{{ sub IsInbound
-
-=head2 IsInbound
-
-Returns true if the creator of the transaction is a requestor of the ticket.
-Returns false otherwise
-
-=cut
-
-sub IsInbound {
-  my $self=shift;
-  return ($self->TicketObj->IsRequestor($self->Creator));
-}
-
-# }}}
-
-# }}}
-
 # {{{ sub _Set
 
 sub _Set {
     my $self = shift;
     
+    
+
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied");
     }
     
+    return(0, 'Transactions are immutable');
+
+    #TODO, yank this code once we're confident we really don't need it.
     my %args = (Field => undef,
 		Value => undef,
 		@_
@@ -479,8 +507,6 @@ sub _Set {
     if ($ret==0) {
 	return (0,$msg);
     }
-    
-
     else {
 	return ($ret, $msg);
     }
@@ -506,11 +532,11 @@ sub _Value  {
     #if the field is public, return it.
     if ($self->_Accessible($field, 'public')) {
 	$RT::Logger->debug("Skipping ACL check for $field\n");
-	return($self->SUPER::_Value($field));
+	return($self->__Value($field));
 	
     }
     #If it's a comment, we need to be extra special careful
-    if ($self->SUPER::_Value('Type') eq 'Comment') {
+    if ($self->__Value('Type') eq 'Comment') {
         
         
 	unless ($self->CurrentUserHasRight('ShowTicketComments')) {
@@ -524,7 +550,7 @@ sub _Value  {
 	}
     }	
     
-    return($self->SUPER::_Value($field));
+    return($self->__Value($field));
     
 }
 

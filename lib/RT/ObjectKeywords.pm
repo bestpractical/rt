@@ -5,23 +5,34 @@ package RT::ObjectKeywords;
 use strict;
 use vars qw( @ISA );
 
+
+
+=head1 WARNING
+
+This module should B<NEVER> be called directly by client code. its API is entirely through RT ticket or other objects which can have keywords assigned.
+
+
+=cut
 use RT::EasySearch;
 use RT::ObjectKeyword;
 
 @ISA = qw( RT::EasySearch );
 
+# {{{ sub _Init
 sub _Init {
     my $self = shift;
     $self->{'table'} = 'ObjectKeywords';
     $self->{'primary_key'} = 'id';
     return ($self->SUPER::_Init(@_));
 }
+# }}}
 
+# {{{ sub NewItem
 sub NewItem {
     my $self = shift;
     return (new RT::ObjectKeyword($self->CurrentUser));
 }
-
+# }}}
 
 # {{{ sub LimitToKeywordSelect
 
@@ -131,7 +142,6 @@ sub _DoSearch {
 sub _BuildHash {
     my $self = shift;
 
-    #   $RT::Logger->debug("Now in ".$self."->_BuildHash\n");
     while (my $entry = $self->Next) {
 
 	my $hashkey = $entry->Keyword;
@@ -177,7 +187,6 @@ sub HasEntry {
 
 # }}}
 
-
 # {{{ sub RelativePaths
 
 =head2 RelativePaths
@@ -212,8 +221,6 @@ sub RelativePathsAsString {
     return(join(", ",@{$self->KeywordRelativePaths}));
 }
 # }}}
-
-
 
 1;
 

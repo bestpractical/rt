@@ -10,6 +10,9 @@
 
 =head1 DESCRIPTION
 
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in Ticket, Queue and other similar objects.
+
 
 =head1 METHODS
 
@@ -21,8 +24,6 @@ use RT::EasySearch;
 
 @ISA= qw(RT::EasySearch);
 
-
-
 # {{{ sub _Init  
 sub _Init   {
   my $self = shift;
@@ -30,17 +31,6 @@ sub _Init   {
   $self->{'table'} = "Attachments";
   $self->{'primary_key'} = "id";
   return ( $self->SUPER::_Init(@_));
-}
-# }}}
-
-
-# {{{ sub Limit 
-sub Limit  {
-  my $self = shift;
-my %args = ( ENTRYAGGREGATOR => 'AND',
-             @_);
-
-  $self->SUPER::Limit(%args);
 }
 # }}}
 
@@ -56,10 +46,9 @@ sub ChildrenOf  {
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $Handle = shift;
-  my $item;
+
   use RT::Attachment;
-  $item = new RT::Attachment($self->CurrentUser);
+  my $item = new RT::Attachment($self->CurrentUser);
   return($item);
 }
 # }}}

@@ -17,6 +17,7 @@
 
 package RT::ScripConditions;
 use RT::EasySearch;
+use RT::ScripCondition;
 @ISA= qw(RT::EasySearch);
 
 # {{{ sub _Init
@@ -25,15 +26,6 @@ sub _Init {
   $self->{'table'} = "ScripConditions";
   $self->{'primary_key'} = "id";
   return ( $self->SUPER::_Init(@_));
-}
-# }}}
-
-# {{{ sub Limit 
-sub Limit  {
-  my $self = shift;
-  my %args = ( ENTRYAGGREGATOR => 'AND',
-	       @_);
-  $self->SUPER::Limit(%args);
 }
 # }}}
 
@@ -59,11 +51,7 @@ sub LimitToType  {
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $item;
-
-  require RT::ScripCondition;
-  $item = new RT::ScripCondition($self->CurrentUser);
-  return($item);
+  return(RT::ScripCondition->new($self->CurrentUser));
 }
 # }}}
 

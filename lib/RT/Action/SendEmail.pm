@@ -153,7 +153,7 @@ sub SetRTSpecialHeaders {
     $self->TemplateObj->MIMEObj->head->add
       ('Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
     
-    $self->TemplateObj->MIMEObj->head->add('RT-Originator', $self->TransactionObj->Creator->EmailAddress);
+    $self->TemplateObj->MIMEObj->head->add('RT-Originator', $self->TransactionObj->CreatorObj->EmailAddress);
     return();
     
 }
@@ -220,10 +220,10 @@ sub SetMessageID {
 
 # }}}
 
-
 # }}}
 
 # {{{ sub SetReturnAddress 
+
 sub SetReturnAddress {
 
   my $self = shift;
@@ -237,7 +237,7 @@ sub SetReturnAddress {
   
   
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
-      my $friendly_name=$self->TransactionObj->Creator->RealName;
+      my $friendly_name=$self->TransactionObj->CreatorObj->RealName;
       # TODO: this "via RT" should really be site-configurable.
       $self->TemplateObj->MIMEObj->head->add('From', "$friendly_name via RT <$email_address>");
   }
@@ -362,7 +362,6 @@ sub SetSubjectToken {
 }
 
 # }}}
-
 
 # }}}
 

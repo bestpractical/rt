@@ -13,6 +13,9 @@
 
 =head1 DESCRIPTION
 
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in other modules.
+
 
 =head1 METHODS
 
@@ -21,8 +24,6 @@
 package RT::ScripCondition;
 use RT::Record;
 @ISA= qw(RT::Record);
-
-
 
 # {{{  sub _Init 
 sub _Init  {
@@ -35,11 +36,11 @@ sub _Init  {
 # {{{ sub _Accessible 
 sub _Accessible  {
     my $self = shift;
-    my %Cols = ( Name  => 'read/write',
-		 Description => 'read/write',
-		 ApplicableTransTypes	 => 'read/write',
-		 ExecModule  => 'read/write',
-		 Argument  => 'read/write',
+    my %Cols = ( Name  => 'read',
+		 Description => 'read',
+		 ApplicableTransTypes	 => 'read',
+		 ExecModule  => 'read',
+		 Argument  => 'read',
 		 Creator => 'read/auto',
 		 Created => 'read/auto',
 		 LastUpdatedBy => 'read/auto',
@@ -50,33 +51,41 @@ sub _Accessible  {
 # }}}
 
 # {{{ sub Create 
+
 =head2 Create
   
-Takes a hash. Creates a new Condition entry.
- should be better documented.
+  Takes a hash. Creates a new Condition entry.
+  should be better documented.
 =cut
+
 sub Create  {
-  my $self = shift;
-  #TODO check these args and do smart things.
-  my $id = $self->SUPER::Create(@_);
-  $self->LoadById($id);
-  #TODO proper return values 
+    my $self = shift;
+    return($self->SUPER::Create(@_));
 }
 # }}}
 
-# {{{ sub delete 
+# {{{ sub Delete 
+
+=head2 Delete
+
+No API available for deleting things just yet.
+
+=cut
+
 sub Delete  {
     my $self = shift;
-    # this function needs to move all requests into some other queue!
-    my ($query_string,$update_clause);
-    
-    die ("Condition->Delete not implemented yet");
+    return(0,'Unimplemented');
 }
 # }}}
 
-
-
 # {{{ sub Load 
+
+=head2 Load IDENTIFIER
+
+Loads a condition takes a name or ScripCondition id.
+
+=cut
+
 sub Load  {
     my $self = shift;
     my $identifier = shift;
@@ -94,8 +103,16 @@ sub Load  {
 }
 # }}}
 
-
 # {{{ sub LoadCondition 
+
+=head2 LoadCondition  HASH
+
+takes a hash which has the following elements:  TransactionObj and TicketObj.
+Loads the Condition module in question.
+
+=cut
+
+
 sub LoadCondition  {
     my $self = shift;
     my %args = ( TransactionObj => undef,
@@ -109,19 +126,25 @@ sub LoadCondition  {
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
     $self->{'Condition'}  = $type->new ( 'ScripConditionObj' => $self, 
-				      'TicketObj' => $args{'TicketObj'},
-				      'TransactionObj' => $args{'TransactionObj'},
-				      'Argument' => $self->Argument,
-				      'ApplicableTransTypes' => $self->ApplicableTransTypes,
-				    );
+					 'TicketObj' => $args{'TicketObj'},
+					 'TransactionObj' => $args{'TransactionObj'},
+					 'Argument' => $self->Argument,
+					 'ApplicableTransTypes' => $self->ApplicableTransTypes,
+				       );
 }
 # }}}
 
-
-# The following methods call the Condition object
+# {{{ The following methods call the Condition object
 
 
 # {{{ sub Describe 
+
+=head2 Describe 
+
+Helper method to call the condition module\'s Describe method.
+
+=cut
+
 sub Describe  {
     my $self = shift;
     return ($self->{'Condition'}->Describe());
@@ -130,11 +153,20 @@ sub Describe  {
 # }}}
 
 # {{{ sub IsApplicable 
+
+=head2 IsApplicable
+
+Helper method to call the condition module\'s IsApplicable method.
+
+=cut
+
 sub IsApplicable  {
     my $self = shift;
     return ($self->{'Condition'}->IsApplicable());
     
 }
+# }}}
+
 # }}}
 
 # {{{ sub DESTROY

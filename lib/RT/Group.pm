@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-  RT::Group - RT's group object
+  RT::Group - RT\'s group object
 
 =head1 SYNOPSIS
 
@@ -33,6 +33,8 @@ RT
 package RT::Group;
 use RT::Record;
 use RT::GroupMember;
+use RT::ACE;
+
 use vars qw|@ISA|;
 @ISA= qw(RT::Record);
 
@@ -100,14 +102,13 @@ sub Create {
     
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
 	$RT::Logger->warning($self->CurrentUser->Name ." Tried to create a group without permission.");
-	return(undef);
+	return(0, 'Permission denied');
     }
     
     my $retval = $self->SUPER::Create(Name => $args{'Name'},
 				      Description => $args{'Description'},
 				      Pseudo => $args{'Pseudo'});
-
-
+    
     return ($retval);
 }
 
@@ -126,10 +127,13 @@ sub MembersObj {
     unless (defined $self->{'members_obj'}) {
 	use RT::GroupMembers;
         $self->{'members_obj'} = new RT::GroupMembers($self->CurrentUser);
-        $self->{'members_obj'}->LimitToGroup($self->id);
+	
+	#If we don't have rights, don't include any results
+	$self->{'members_obj'}->LimitToGroup($self->id);
+	
     }
     return ($self->{'members_obj'});
-
+    
 }
 
 # }}}
@@ -151,16 +155,16 @@ sub AddMember {
     my $new_member_obj = new RT::User($self->CurrentUser);
     $new_member_obj->Load($new_member);
     
+    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
+        #User has no permission to be doing this
+        return(0, "Permission Denied");
+    }
+
     unless ($new_member_obj->Id) {
 	$RT::Logger->debug("Couldn't find user $new_member");
 	return(0, "Couldn't find user");
     }	
 
-
-    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-        #User has no permission to be doing this
-        return(0, "Permission Denied");
-    }
     if ($self->HasMember($new_member_obj->Id)) {
         #User is already a member of this group. no need to add it
         return(0, "Group already has member");
@@ -195,13 +199,13 @@ sub HasMember {
     my $member_obj = new RT::GroupMember($self->CurrentUser);
     $member_obj->LoadByCols( UserId => $user_id, GroupId => $self->id);
 
-    #TODO: +++ if Load returns no objects, do we actually have an undef id or 
-    # something worse
-
     #If we have a member object
-    if ($member_obj->id) {
+    if (defined $member_obj->id) {
         return ($member_obj->id);
-    } else {
+    }
+
+    #If Load returns no objects, we have an undef id. 
+    else {
         return(undef);
     } 
 }
@@ -224,6 +228,11 @@ sub DeleteMember {
     my $self = shift;
     my $member = shift;
 
+    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
+        #User has no permission to be doing this
+        return(0,"Permission denied");
+    }
+
     my $member_user_obj = new RT::User($self->CurrentUser);
     $member_user_obj->Load($member);
     
@@ -232,15 +241,11 @@ sub DeleteMember {
 	return(0, "User not found");
     }	
 
-
-    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-        #User has no permission to be doing this
-        return(0,"Permission denied");
-    }
     my $member_obj = new RT::GroupMember($self->CurrentUser);
-    $member_obj->LoadByCols ( UserId => $member_user_obj->Id,
-			      GroupId => $self->Id ) ||
-				return(0, "Couldn't load member");  #couldn't load member object
+    unless ($member_obj->LoadByCols ( UserId => $member_user_obj->Id,
+				      GroupId => $self->Id )) {
+	return(0, "Couldn\'t load member");  #couldn\'t load member object
+    }
     
     #If we couldn't load it, return undef.
     unless ($member_obj->Id()) {
@@ -280,10 +285,8 @@ sub GrantQueueRight {
 		 PrincipalId => $self->Id,
 		 @_);
    
-    require RT::ACE;
-
-
-    #TODO +++ ACL this
+    #ACLs get checked in ACE.pm
+    
     my $ace = new RT::ACE($self->CurrentUser);
     
     return ($ace->Create(%args));
@@ -308,11 +311,10 @@ sub GrantSystemRight {
 		 PrincipalType => 'Group',
 		 PrincipalId => $self->Id,
 		 @_);
-   
-    require RT::ACE;
-
-    my $ace = new RT::ACE($self->CurrentUser);
     
+    # ACLS get checked in ACE.pm
+    
+    my $ace = new RT::ACE($self->CurrentUser);
     return ($ace->Create(%args));
 }
 
@@ -323,13 +325,12 @@ sub GrantSystemRight {
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
-    if ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	
-	$self->SUPER::_Set(@_);
-    }
-    else {
-	return (undef);
-    }
+
+    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
+	return (0, 'Permission denied');
+    }	
+
+    return ($self->SUPER::_Set(@_));
 
 }
 # }}}

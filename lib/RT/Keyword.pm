@@ -7,7 +7,6 @@ use vars qw(@ISA);
 use Tie::IxHash;
 use RT::Record;
 use RT::Keywords;
-use RT::ObjectKeywords;
 
 @ISA = qw(RT::Record);
 
@@ -230,14 +229,9 @@ sub RelativePath {
     my $OtherKey = shift;
     
     my $OtherPath = $OtherKey->Path();
-    
     my $MyPath = $self->Path;
-
     $MyPath =~ s/^$OtherPath\///g;
-
     return ($MyPath);
-    
-    
 }
 
 

@@ -45,7 +45,6 @@ use vars qw (%SCOPES
                 AdminKeywordSelects => 'Create, delete and modify keyword selections',
 
 		
-		CreateTemplate => 'Create email templates for this queue',
 		ModifyTemplate => 'Modify email templates for this queue',
 		ShowTemplate => 'Display email templates for this queue',
 		
@@ -430,13 +429,18 @@ sub PrincipalObj {
 			     $self->PrincipalType ."\n");
 	return(undef);
     }
-#    $RT::Logger->debug("Loading Principal ".$self->PrincipalId ."\n");
+    
     $princ_obj->Load($self->PrincipalId);
     return($princ_obj);
 
 }	
 
 # }}}
+
+
+
+
+# {{{ ACL related methods
 
 # {{{ sub _Set
 
@@ -447,7 +451,20 @@ sub _Set {
 
 # }}}
 
-# {{{ ACL related methods
+# {{{ sub _Value
+
+sub _Value {
+    my $self = shift;
+
+    unless ($self->CurrentUserHasRight('ShowACL')) {
+	return (undef);
+    }
+
+    return ($self->__Value(@_));
+}
+
+# }}}
+
 
 # {{{ sub CurrentUserHasQueueRight 
 
@@ -536,16 +553,16 @@ sub HasRight {
         return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
     }	
     
-    elsif ($self->RightScope eq 'System') {
+    elsif ($self->__Value('RightScope') eq 'System') {
 	return $args{'Principal'}->HasSystemRight($right);
     }
-    elsif ($self->RightScope eq 'Queue') {
-	return $args{'Principal'}->HasQueueRight( Queue => $self->RightAppliesTo,
+    elsif ($self->__Value('RightScope') eq 'Queue') {
+	return $args{'Principal'}->HasQueueRight( Queue => $self->__Value('RightAppliesTo'),
 						  Right => $right );
     }	
     else {
 	$RT::Logger->warning("$self: Trying to check an acl for a scope we ".
-			     "don't understand:" . $self->RightScope ."\n");
+			     "don't understand:" . $self->__Value('RightScope') ."\n");
 	return undef;
     }
 

@@ -11,6 +11,8 @@
 
 =head1 DESCRIPTION
 
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in Ticket other similar objects.
 
 =head1 METHODS
 
@@ -62,12 +64,8 @@ sub Create  {
                                LocalTarget => $LocalTarget,
                                Type => $args{'Type'});
   
-  #TODO +++ deal with a failed create 
-  $self->Load($id);
   
-  #TODO: this is horrificially wasteful. we shouldn't commit 
-  # to the db and then instantly turn around and load the same data
-  
+    
   return ($id);
 }
 # }}}
@@ -175,6 +173,13 @@ sub _Accessible  {
 # Static methods:
 
 # {{{ sub BaseIsLocal
+
+=head2 BaseIsLocal
+
+Returns true if the base of this link is a local ticket
+
+=cut
+
 sub BaseIsLocal {
   my $self = shift;
   return $self->_IsLocal($self->Base);
@@ -183,6 +188,13 @@ sub BaseIsLocal {
 # }}}
 
 # {{{ sub TargetIsLocal
+
+=head2 TargetIsLocal
+
+Returns true if the target of this link is a local ticket
+
+=cut
+
 sub TargetIsLocal {
   my $self = shift;
   return $self->_IsLocal($self->Target);
@@ -193,30 +205,37 @@ sub TargetIsLocal {
 # {{{ sub _IsLocal
 =head2 _IsLocal 
 
-when handed a URI returns the local ticket id if it's local. otherwise returns undef.
+when handed a URI returns the local ticket id if it\'s local. otherwise returns undef.
 
 =cut
 
 # checks whether an URI is local or not
 sub _IsLocal {
-  my $self = shift;
-  my $URI=shift;
-  unless ($URI) {
-      $RT::Logger->warning ("$self _IsLocal called without a URI\n");
-      return (undef);
-  }
-  # TODO: More thorough check
-  if ($URI =~ /^$RT::TicketBaseURI(\d+)$/) {
-    return($1);
-   }
-   else {
-    return (undef);
-   }
+    my $self = shift;
+    my $URI=shift;
+    unless ($URI) {
+	$RT::Logger->warning ("$self _IsLocal called without a URI\n");
+	return (undef);
+    }
+    # TODO: More thorough check
+    if ($URI =~ /^$RT::TicketBaseURI(\d+)$/) {
+	return($1);
+    }
+    else {
+	return (undef);
+    }
 }
 # }}}
 
 
 # {{{ sub BaseAsHREF 
+
+=head2 BaseAsHREF
+
+Returns an HTTP url to access the base of this link
+
+=cut
+
 sub BaseAsHREF {
   my $self = shift;
   return $self->AsHREF($self->Base);
@@ -224,6 +243,13 @@ sub BaseAsHREF {
 # }}}
 
 # {{{ sub TargetAsHREF 
+
+=head2 TargetAsHREF
+
+return an HTTP url to access the target of this link
+
+=cut
+
 sub TargetAsHREF {
   my $self = shift;
   return $self->AsHREF($self->Target);
@@ -231,17 +257,23 @@ sub TargetAsHREF {
 # }}}
 
 # {{{ sub AsHREF - Converts Link URIs to HTTP URLs
+=head2 URI
+
+Takes a URI and returns an http: url to access that object.
+
+=cut
 sub AsHREF {
     my $self=shift;
     my $URI=shift;
     if ($self->_IsLocal($URI)) {
 	my $url=$RT::WebURL . "Ticket/Display.html?id=$URI";
-	return $url;
-    } else {
+	return($url);
+    } 
+    else {
 	my ($protocol) = $URI =~ m|(.*?)://|;
 	unless (exists $RT::URI2HTTP{$protocol}) {
-	    warn "Linking for protocol $protocol not defined in the config file!";
-	    return "";
+	    $RT::Logger->warning("Linking for protocol $protocol not defined in the config file!");
+	    return("");
 	}
 	return $RT::URI2HTTP{$protocol}->($URI);
     }
@@ -251,7 +283,7 @@ sub AsHREF {
 
 # {{{ sub GetContent - gets the content from a link
 sub GetContent {
-    my ($self, $URI)=@_;
+    my ($self, $URI)= @_;
     if ($self->_IsLocal($URI)) {
 	die "stub";
     } else {
@@ -281,46 +313,43 @@ Bug: ticket aliases can't have :// in them. URIs must have :// in them.
 =cut
 
 sub CanonicalizeURI {
- my $self = shift;
- my $id = shift;
-
-
-  #If it's a local URI, load the ticket object and return its URI
-  if ($id =~ /^$RT::TicketBaseURI/)  {
-    my $ticket = new RT::Ticket($self->CurrentUser);
-    $ticket->LoadByURI($id);
-    #If we couldn't find a ticket, return undef.
-    return undef unless (defined $ticket->Id);
-    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");
-    return ($ticket->URI);
-  }
-  #If it's a remote URI, we're going to punt for now
-  elsif ($id =~ '://' ) {
-    return ($id);
-   }
+    my $self = shift;
+    my $id = shift;
+    
+    
+    #If it's a local URI, load the ticket object and return its URI
+    if ($id =~ /^$RT::TicketBaseURI/) {
+	my $ticket = new RT::Ticket($self->CurrentUser);
+	$ticket->LoadByURI($id);
+	#If we couldn't find a ticket, return undef.
+	return undef unless (defined $ticket->Id);
+	$RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");
+	return ($ticket->URI);
+    }
+    #If it's a remote URI, we're going to punt for now
+    elsif ($id =~ '://' ) {
+	return ($id);
+    }
   
-  #If the base is an integer, load it as a ticket 
- elsif ( $id =~ /^\d+$/ ) {
+    #If the base is an integer, load it as a ticket 
+    elsif ( $id =~ /^\d+$/ ) {
    
-    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id. It's a ticket id.\n");
-    my $ticket = new RT::Ticket($self->CurrentUser);
-    $ticket->Load($id);
-    #If we couldn't find a ticket, return undef.
-    return undef unless (defined $ticket->Id);
-    $RT::Logger->debug("$self returned ".$ticket->URI ." (id #)\n");
-    return ($ticket->URI);
-  }
+	$RT::Logger->debug("$self -> CanonicalizeURI was passed $id. It's a ticket id.\n");
+	my $ticket = new RT::Ticket($self->CurrentUser);
+	$ticket->Load($id);
+	#If we couldn't find a ticket, return undef.
+	return undef unless (defined $ticket->Id);
+	$RT::Logger->debug("$self returned ".$ticket->URI ." (id #)\n");
+	return ($ticket->URI);
+    }
 
-  #It's not a URI. It's not a numerical ticket ID. It must be an alias
-  else { 
-    my $ticket = new RT::Ticket($self->CurrentUser);
-    $ticket->LoadByName($id);
-    #If we couldn't find a ticket, return undef.
-    return undef unless (defined $ticket->Id);
-    $RT::Logger->debug("$self -> CanonicalizeURI was passed $id and returned ".$ticket->URI ." (uri)\n");
-    return ($ticket->URI);
-    return($ticket->URI);
-  }
+    #It's not a URI. It's not a numerical ticket ID
+    else { 
+     
+	#If we couldn't find a ticket, return undef.
+	return( undef);
+    
+    }
 
  
 }

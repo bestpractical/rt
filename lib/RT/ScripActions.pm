@@ -17,6 +17,8 @@
 
 package RT::ScripActions;
 use RT::EasySearch;
+use RT::ScripAction;
+
 @ISA= qw(RT::EasySearch);
 
 # {{{ sub _Init
@@ -25,15 +27,6 @@ sub _Init {
   $self->{'table'} = "ScripActions";
   $self->{'primary_key'} = "id";
   return ( $self->SUPER::_Init(@_));
-}
-# }}}
-
-# {{{ sub Limit 
-sub Limit  {
-  my $self = shift;
-  my %args = ( ENTRYAGGREGATOR => 'AND',
-	       @_);
-  $self->SUPER::Limit(%args);
 }
 # }}}
 
@@ -59,11 +52,8 @@ sub LimitToType  {
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $item;
+  return(RT::ScripAction->new($self->CurrentUser));
 
-  use RT::ScripAction;
-  $item = new RT::ScripAction($self->CurrentUser);
-  return($item);
 }
 # }}}
 

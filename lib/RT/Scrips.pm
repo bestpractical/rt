@@ -1,4 +1,4 @@
-# Copyright 1999-2000 Jesse Vincent <jesse@fsck.com>
+# Copyright 1999-2001 Jesse Vincent <jesse@fsck.com>
 # Released under the terms of the GNU Public License
 # $Header$
 
@@ -19,10 +19,9 @@
 
 package RT::Scrips;
 use RT::EasySearch;
+use RT::Scrip
 @ISA= qw(RT::EasySearch);
 
-# Removed the new() method.  It's redundant, we'll use
-# RT::EasySearch::new instead.
 
 # {{{ sub _Init
 sub _Init { 
@@ -30,19 +29,6 @@ sub _Init {
   $self->{'table'} = "Scrips";
   $self->{'primary_key'} = "id";
   return ( $self->SUPER::_Init(@_));
-}
-# }}}
-
-# {{{ sub Limit 
-
-# In this case, we want the default aggregator to be AND rather than OR
-
-sub Limit  {
-  my $self = shift;
-  my %args = ( ENTRYAGGREGATOR => 'AND',
-	       @_);
- 
-  $self->SUPER::Limit(%args);
 }
 # }}}
 
@@ -92,11 +78,8 @@ sub LimitToGlobal  {
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;
-  my $item;
-
-  use RT::Scrip;
-  $item = new RT::Scrip($self->CurrentUser);
-  return($item);
+  
+  return(new RT::Scrip($self->CurrentUser));
 }
 # }}}
 

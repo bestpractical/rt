@@ -65,8 +65,7 @@ sub _DoSearch {
 # {{{ sub NewItem 
 sub NewItem {
     my $self = shift;
-    #my $Handle = shift;
-    return (new RT::Keyword ($self->CurrentUser));
+    return (RT::Keyword->new($self->CurrentUser));
 }
 # }}}
 
@@ -87,8 +86,6 @@ sub LimitToParent {
 		  ENTRYAGGREGATOR => 'OR' );
 }	
 # }}}
-
-#sub DEBUG { 1; }
 
 1;
 

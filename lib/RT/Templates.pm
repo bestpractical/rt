@@ -55,6 +55,7 @@ sub LimitToNotInQueue {
                 );
 }
 # }}}
+
 # {{{ LimitToGlobal
 
 =head2 LimitToGlobal
@@ -103,10 +104,9 @@ Returns a new empty Template object
 
 sub NewItem  {
   my $self = shift;
-  my $Handle = shift;
-  my $item;
+
   use RT::Template;
-  $item = new RT::Template($self->CurrentUser);
+  my $item = new RT::Template($self->CurrentUser);
   return($item);
 }
 # }}}

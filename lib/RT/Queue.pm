@@ -84,7 +84,7 @@ sub Create  {
     unless ($id) {
 	return (0, 'Queue could not be created');
     }
-    $self->LoadById($id);
+
     return ($id, "Queue $id created");
 }
 
@@ -181,6 +181,7 @@ sub Templates {
     
 
     my $templates = RT::Templates->new($self->CurrentUser);
+
     if ($self->CurrentUserHasRight('ShowTemplate')) {
 	$templates->LimitToQueue($self->id);
     }
@@ -205,40 +206,29 @@ sub Watchers {
     
     require RT::Watchers;
     my $watchers =RT::Watchers->new($self->CurrentUser);
-    if ($self->CurrentUserHasRight('ExploreQueue')) {
+    
+    if ($self->CurrentUserHasRight('SeeQueue')) {
 	$watchers->LimitToQueue($self->id);	
     }	
+    
     return($watchers);
 }
 
 # }}}
 
-# {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
-
+# {{{ sub WatchersAsString
 =head2 WatchersAsString
 
-WatchersAsString ...
-
-=item B<Takes>
-
-=item I<nothing>
-
-=item B<Returns>
-
-=item String: All Ticket/Queue Watchers.
+Returns a string of all queue watchers email addresses concatenated with ','s.
 
 =cut
 
 sub WatchersAsString {
     my $self=shift;
-
-    unless ($self->CurrentUserHasRight('ExploreQueue')) {
-	return (undef);
-    }
-    
     return($self->Watchers->EmailsAsString());
 }
 
+# }}}
 
 # {{{ sub AdminCcAsString 
 
@@ -252,9 +242,6 @@ Takes nothing. returns a string: All Ticket/Queue AdminCcs.
 sub AdminCcAsString {
     my $self=shift;
     
-    return (undef)
-      unless ($self->CurrentUserHasRight('ExploreQueue'));
-    
     return($self->AdminCc->EmailsAsString());
   }
 
@@ -264,22 +251,15 @@ sub AdminCcAsString {
 
 =head2 CcAsString
 
-=item B<Takes>  I<nothing>
-
-=item B<Returns> String: All Queue Ccs as a comma delimited set of email addresses.
+B<Returns> String: All Queue Ccs as a comma delimited set of email addresses.
 
 =cut
 
 sub CcAsString {
     my $self=shift;
     
-    return (undef)
-      unless ($self->CurrentUserHasRight('ExploreQueue'));
-    
     return ($self->Cc->EmailsAsString());
 }
-
-# }}}
 
 # }}}
 
@@ -288,26 +268,26 @@ sub CcAsString {
 =head2 Cc
 
 Takes nothing.
-Returns a watchers object which contains this ticket's Cc watchers
+Returns a watchers object which contains this ticket\'s Cc watchers
 
 =cut
 
 sub Cc {
     my $self = shift;
     my $cc = $self->Watchers();
-    if ($self->CurrentUserHasRight('ExploreQueue')) {
+    if ($self->CurrentUserHasRight('SeeQueue')) {
 	$cc->LimitToCc();
     }
-
     return ($cc);
 }
 
 # A helper function for Cc, so that we can call it from the ACL checks 
 # without going through acl checks.
+
 sub _Cc {
     my $self = shift;
     my $cc = $self->Watchers();
-    $cc->LimitToAdminCc();
+    $cc->LimitToCc();
     return($cc);
     
 }
@@ -326,7 +306,7 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 sub AdminCc {
     my $self = shift;
     my $admin_cc = $self->Watchers();
-    if ($self->CurrentUserHasRight('ExploreQueue')) {
+    if ($self->CurrentUserHasRight('SeeQueue')) {
  	$admin_cc->LimitToAdminCc();
     }
     
@@ -352,8 +332,7 @@ sub _AdminCc {
 =head2 IsWatcher
 
 Takes a param hash with the attributes Type and User. User is either a user object or string containing an email address. Returns true if that user or string
-is a ticket watcher. Returns undef otherwise
-
+is a queue watcher. Returns undef otherwise
 =cut
 
 sub IsWatcher {
@@ -363,7 +342,12 @@ sub IsWatcher {
 		 Id => undef,
 		 @_
 	       );
-    
+    #ACL check - can't do it. we need this method for ACL checks
+    #    unless ($self->CurrentUserHasRight('SeeQueue')) {
+    #	return(undef);
+    #    }
+
+
     my %cols = ('Type' => $args{'Type'},
 		'Scope' => 'Queue',
 		'Value' => $self->Id
@@ -384,8 +368,6 @@ sub IsWatcher {
     if (defined $args{'Email'}) {
 	$cols{'Email'} = $args{'Email'};
     }
-    
-
 
     my ($description);
     $description = join(":",%cols);
@@ -423,7 +405,7 @@ sub IsWatcher {
 
 =head2 IsCc
 
-Takes a string. Returns true if the string is a Cc watcher of the current ticket.
+Takes a string. Returns true if the string is a Cc watcher of the current queue
 
 =item Bugs
 
@@ -446,7 +428,7 @@ sub IsCc {
 
 =head2 IsAdminCc
 
-Takes a string. Returns true if the string is an AdminCc watcher of the current ticket.
+Takes a string. Returns true if the string is an AdminCc watcher of the current queue
 
 =item Bugs
 
@@ -480,12 +462,12 @@ sub AddWatcher {
     my %args = ( Email => undef,
 		 Type => undef,
 		 Owner => 0,
-		 @_ 
+		 @_
 	       );
     
     unless ($self->CurrentUserHasRight('ModifyQueueWatchers')) {
 	return (0, "Permission Denied");
-    } 
+    }
     
     #TODO: Look up the Email that's been passed in to find the watcher's +++ before 2.0
     # user id. Set Owner to that value.
@@ -506,7 +488,7 @@ sub AddWatcher {
 
 =head2 AddCc
 
-Add a Cc to this queue
+Add a Cc to this queue.
 Takes a paramhash of Email and Owner. 
 We need either an Email Address in Email or a userid in Owner
 
@@ -515,15 +497,15 @@ We need either an Email Address in Email or a userid in Owner
 
 sub AddCc {
     my $self = shift;
-    return ($self->AddWatcher ( Type => 'Cc', @_));
+    return ($self->AddWatcher( Type => 'Cc', @_));
 }
 # }}}
-	
+
 # {{{ sub AddAdminCc
 
 =head2 AddAdminCc
 
-Add an Administrative Cc to this queue
+Add an Administrative Cc to this queue.
 Takes a paramhash of Email and Owner. 
 We need either an Email Address in Email or a userid in Owner
 
@@ -531,7 +513,7 @@ We need either an Email Address in Email or a userid in Owner
 
 sub AddAdminCc {
     my $self = shift;
-    return ($self->AddWatcher ( Type => 'AdminCc', @_));
+    return ($self->AddWatcher( Type => 'AdminCc', @_));
 }
 # }}}
 
@@ -552,13 +534,11 @@ sub DeleteWatcher {
     my $id = shift;
     
     my ($Watcher);
-   
-   
+
     unless ($self->CurrentUserHasRight('ModifyQueueWatchers')) {
-	return (undef);
+	return (0, 'Permission denied');
     }
-    
-    
+
     #If it's a numeric watcherid
     if ($id =~ /^(\d*)$/) { 
 	$Watcher = new RT::Watcher($self->CurrentUser);
@@ -569,7 +549,7 @@ sub DeleteWatcher {
        }
        #If we've validated that it is a watcher for this ticket 
        else {
-	   $Watcher->Delete();
+	   return($Watcher->Delete());
        }
    }
     #Otherwise, we'll assume it's an email address
@@ -578,7 +558,7 @@ sub DeleteWatcher {
 	#TODO we could speed this up
 	while ($Watcher = $self->Watchers->Next) {
 	    if ($Watcher->Email =~ /^$id$/) {
-		$Watcher->Delete();
+		return($Watcher->Delete());
 	    }
 	}
     }
@@ -638,9 +618,11 @@ sub KeywordSelect {
     my $name = shift;
     
     require RT::KeywordSelect;
+
     my $select = RT::KeywordSelect->new($self->CurrentUser);
-    $select->LoadByName( Name => $name, Queue => $self->Id);
-    
+    if ($self->CurrentUserHasRight('SeeQueue')) {
+	$select->LoadByName( Name => $name, Queue => $self->Id);
+    }
     return ($select);
 }
 
@@ -664,9 +646,10 @@ sub KeywordSelects {
   use RT::KeywordSelects;
   my $KeywordSelects = new RT::KeywordSelects($self->CurrentUser);
 
-  $KeywordSelects->LimitToQueue($self->id);
-  $KeywordSelects->IncludeGlobals();
-
+  if ($self->CurrentUserHasRight('SeeQueue')) {
+      $KeywordSelects->LimitToQueue($self->id);
+      $KeywordSelects->IncludeGlobals();
+  }
   return ($KeywordSelects);
 }
 # }}}
@@ -684,19 +667,18 @@ sub KeywordSelects {
 =cut
 
 sub ACL  {
-  my $self = shift;
-  
-  
-  use RT::ACL;
-  my $acl = new RT::ACL($self->CurrentUser);
-  
-  if ($self->CurrentUserHasRight('ShowACL')) {
-      $acl->LimitToQueue($self->Id);
-  }
-  
- return ($acl);
-  
+    my $self = shift;
+    
+    use RT::ACL;
+    my $acl = new RT::ACL($self->CurrentUser);
+    
+    if ($self->CurrentUserHasRight('ShowACL')) {
+	$acl->LimitToQueue($self->Id);
+    }
+    
+    return ($acl);
 }
+
 # }}}
 
 # {{{ sub _Set
@@ -711,15 +693,17 @@ sub _Set {
 # }}}
 
 # {{{ sub _Value
+
 sub _Value {
     my $self = shift;
 
-    unless ($self->CurrentUserHasRight('ExploreQueue')) {
+    unless ($self->CurrentUserHasRight('SeeQueue')) {
 	return (undef);
     }
 
-    return ($self->SUPER::_Value(@_));
+    return ($self->__Value(@_));
 }
+
 # }}}
 
 # {{{ sub CurrentUserHasRight
@@ -767,33 +751,6 @@ sub HasRight {
         return($args{'Principal'}->HasQueueRight(QueueObj => $self,
           Right => $args{'Right'}));
 }
-
-=head2 sub Grant
-
-Grant is a convenience method for creating a new ACE  in the ACL.
-It passes off its values along with a scope and applies to of 
-the current object.
-Grant takes a param hash of the following fields PrincipalType, PrincipalId and Right. 
-
-=cut 
-
-sub Grant {
-	my $self = shift;
-	my %args = ( PrincipalType => 'User',
-		     PrincipalId => undef,
-		     Right => undef,
-		     @_
-		    );
-	use RT::ACE;
-	my $ACE = new RT::ACE($self->CurrentUser);
-	return($ACE->Create(PrincipalType => $args{'PrinicpalType'},
-			    PrincipalId =>   $args{'PrincipalId'},
-			    Right => $args{'Right'},
-			    Scope => 'Queue',
-			    AppliesTo => $self->Id ));
-}
-# 
-
 # }}}
 
 # }}}

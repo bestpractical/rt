@@ -62,13 +62,13 @@ sub _Set {
   # use super::value or we get acl blocked
   if ((defined $self->SUPER::_Value('Queue')) && ($self->SUPER::_Value('Queue') == 0 )) {
       unless ($self->CurrentUser->HasSystemRight('ModifyTemplate')) {
-	  return (undef);
+	  return (0, 'Permission denied');
       }	
   }
   else {
       
       unless ($self->CurrentUserHasQueueRight('ModifyTemplate')) {
-	  return (undef);
+	  return (0, 'Permission denied');
       }
   }
   return($self->SUPER::_Set(@_));
@@ -93,8 +93,8 @@ sub _Value  {
 
   #If the current user doesn't have ACLs, don't let em at it.  
   #use super::value or we get acl blocked
-  if ((!defined $self->SUPER::_Value('Queue')) || ($self->SUPER::_Value('Queue') == 0 )) {
-      unless ($self->CurrentUser->HasSystemRight('ShowTemplates')) {
+  if ((!defined $self->__Value('Queue')) || ($self->__Value('Queue') == 0 )) {
+      unless ($self->CurrentUser->HasSystemRight('ShowTemplate')) {
 	  return (undef);
       }	
   }
@@ -120,9 +120,6 @@ Load a template, either by number or by name
 sub Load  {
     my $self = shift;
     my $identifier = shift;
-    
-    
-    
     
     if (!$identifier) {
 	return (undef);
@@ -166,7 +163,7 @@ sub Create {
     
     
     if ($args{'Queue'} == 0 ) { 
-	unless ($self->CurrentUser->HasSystemRight('CreateTemplate')) {
+	unless ($self->CurrentUser->HasSystemRight('ModifyTemplate')) {
 	    return (undef);
  	}	
     }
@@ -174,14 +171,11 @@ sub Create {
 	my $QueueObj = new RT::Queue($self->CurrentUser);
 	$QueueObj->Load($args{'Queue'}) || return (0,'Invalid queue');
 	
-	unless ($QueueObj->CurrentUserHasRight('CreateTemplate')) {
+	unless ($QueueObj->CurrentUserHasRight('ModifyTemplate')) {
 	    return (undef);
 	}	
     }
-    #TODO+++ check the Name for uniqueness
-    
-    
-    #$RT::Logger->debug ("Creating a new template: Content is ".$args{'Content'});
+
     my $result = $self->SUPER::Create( Content => $args{'Content'},
                                        Queue   => $args{'Queue'},,
                                        Description   => $args{'Description'},
@@ -270,10 +264,13 @@ sub QueueObj {
     my $self = shift;
     if (!defined $self->{'queue'})  {
 	require RT::Queue;
-	$self->{'queue'} = RT::Queue->new($self->CurrentUser)
-	  or die "RT::Queue->new(". $self->CurrentUser. ") returned false";
-	#We call __Value so that we can avoid the ACL decision and some deep recursion
-	my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
+	$self->{'queue'} = RT::Queue->new($self->CurrentUser);
+	
+	unless ($self->{'queue'}) {
+	    $RT::Logger->crit("RT::Queue->new(". $self->CurrentUser. ") returned false");
+	    return(undef);
+	}
+	my ($result) = $self->{'queue'}->Load($self->__Value('Queue'));
 	
     }
     return ($self->{'queue'});

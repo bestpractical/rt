@@ -13,12 +13,13 @@
 
 =head1 DESCRIPTION
 
+This module should never be called directly by client code. it's an internal module which
+should only be accessed through exported APIs in Ticket, Queue and other similar objects.
+
 
 =head1 METHODS
 
 =cut
-
-
 
 package RT::Attachment;
 use RT::Record;
@@ -74,6 +75,7 @@ sub TransactionObj {
 # }}}
 
 #take simple args and call RT::Record to do the real work.
+
 # {{{ sub Create 
 
 =head2 Create
@@ -191,15 +193,11 @@ sub Quote {
 	# Do we need any preformatting (wrapping, that is) of the message?
 
 	# Remove quoted signature.
-	$body =~ s/\n-- (.*)$//s;
-
-	# Local noise.  THIS LINE SHOULD NOT BE HERE.  Just haven't
-	# found the right place yet.
-	$body =~ s/\n-- param start(.*)$//s;
+	$body =~ s/\n-- \n(.*)$//s;
 
 	# What's the longest line like?
 	foreach (split (/\n/,$body)) {
-	    $max=length if length>$max;
+	    $max=length if ( length > $max);
 	}
 
 	if ($max>76) {
@@ -215,24 +213,21 @@ sub Quote {
 
 	$body =~ s/^/> /gm;
 
-	$body = '[' . $self->TransactionObj->Creator->Name . ' - ' . $self->TransactionObj->AgeAsString 
+	$body = '[' . $self->TransactionObj->CreatorObj->Name() . ' - ' . $self->TransactionObj->CreatedAsString()
 	            . "]:\n\n"
    	        . $body . "\n\n";
 
     } else {
-	$body = "[non-text message gutted]\n\n";
+	$body = "[Non-text message not quoted]\n\n";
     }
-    
-    $body .= "[REMOVE THIS LINE. DOES THE REPLY MATCH THE QUESTION?]\n$args{Reply}"
-	if ($args{Reply});
     
     $max=60 if $max<60;
     $max=70 if $max>78;
     $max+=2;
 
-    ## Let's see if we can figure out the users signature...
-    $body .= "\n\n-- \n" . $self->{'user'}->UserObj->Signature
-	if $self->{'user'}->UserObj->Signature;
+    #Attache the user's signature if we have it. 
+    $body .= "\n\n-- \n" . $self->CurrentUser->UserObj->Signature
+	if ($self->CurrentUser->UserObj->Signature);
     return (\$body, $max);
 }
 # }}}
@@ -248,7 +243,6 @@ sub NiceHeaders {
     return $hdrs;
 }
 # }}}
-
 
 # {{{ sub _Value 
 
@@ -268,7 +262,7 @@ sub _Value  {
     #if the field is public, return it.
     if ($self->_Accessible($field, 'public')) {
 	$RT::Logger->debug("Skipping ACL check for $field\n");
-	return($self->SUPER::_Value($field));
+	return($self->__Value($field));
 	
     }
     
@@ -277,14 +271,13 @@ sub _Value  {
 	     ($self->TransactionObj->Type eq 'Comment') )  or
 	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
 	
-	return($self->SUPER::_Value($field));
+	return($self->__Value($field));
     }
     #if they ain't got rights to see, don't let em
     else {
 	    return(undef);
 	}
     	
-    
     
 }
 
