@@ -5,7 +5,7 @@
 <H1>WebRT Queue</H1>
 
 
-%#<& QueueInterpretRestrtictionCookies &>
+%#<& QueueInterpretRestrictionCookies &>
 <TABLE WIDTH=100%>
 %#<& QueueHeader format="$format" &>
 %while (my $Ticket = $Tickets->Next) {
@@ -24,6 +24,11 @@
   
 
 <%INIT>
+
+use RT::Tickets;
+use RT::CurrentUser;
+
+print STDERR "Kilroy was here\n";
 
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Tickets = RT::Tickets->new($CurrentUser);

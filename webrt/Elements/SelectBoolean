@@ -15,7 +15,7 @@ $FalseDefault => undef
 </%ARGS>
 
 <%INIT>
-if ($Default !~ /true/i) {
+if ($Default && $Default !~ /true/i) {
 	$FalseDefault = "SELECTED";
 }
 else {
