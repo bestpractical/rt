@@ -1,7 +1,13 @@
 
 30 Sep 1999
 -----------
-*   [fsck #140] In late august, tobias caused request creation via the 
+*  Edited the README to include some new contributers and remove outdated info
+    (and add the website)
+
+*  Removed the upgrade instructions for versions older than .9.4.  If you want
+    them, download .99.9
+
+*  [fsck #140] In late august, tobias caused request creation via the 
     web ui to drop you into the "ticket display" after you create a ticket.
 
 *  Fixed [fsck.com #86]. The "comment" and "reply" links at the top
