@@ -376,14 +376,8 @@ sub parse_actions {
 	#		($trans,  $message)=&rt::resolve($serial_num, $current_user);
 	# batch them up and do them at the very end.
 	if (!$arg[1]) { $arg[1] = $real_serial_num; }
-	if ($arg[1]) {
-	  if (!@resolve_nums) {
-	    $resolve_nums[$#resolve_nums++]=$arg[1];
-	  }
-	  else {
-              $resolve_nums[$#resolve_nums]=$arg[1];
-            }
-	  #                   $message = "Batching resolve of $resolve_nums[$#resolve_nums].";
+		@resolve_nums = (@resolve_nums,$arg[1]);
+         	$message = "Batching resolve of $resolve_nums[$#resolve_nums].";
 	}
 	else {
 	  $message = "No ticket number found.";
@@ -565,8 +559,9 @@ sub send_rt_response {
     my($real_current_user) = shift;
     
     if ($#resolve_nums > -1) {
-      foreach $count (0..$#resolve_nums) {
-        print "Resolving $resolve_nums[$count]\n" if ($debug);
+      print "RT: Resolving $#resolve_nums tickets\n" if ($debug);
+     foreach $ticket (@resolve_nums) {     
+        print "Resolving $ticket\n" if ($debug);
         ($trans,  $message)=&rt::resolve($resolve_nums[$count], (split(/\@/, $current_user))[0]);
         $response .= "RT: $message ($trans)\n";
       }

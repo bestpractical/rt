@@ -1,3 +1,7 @@
+23 Feb 2000
+-----------
+
+* Fixes to the mail gateway's actions system from "Heather L. Sherman" <heather@idealab.com> 
 14 Jan 2000
 -----------
 * Changed the max queue member email address length to 120 characters to deal
