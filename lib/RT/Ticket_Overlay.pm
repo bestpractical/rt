@@ -305,6 +305,7 @@ sub Create {
     my $self = shift;
 
     my %args = ( id              => undef,
+                 EffectiveId     => undef,
                  Queue           => undef,
                  Requestor       => undef,
                  Cc              => undef,
@@ -521,7 +522,7 @@ sub Create {
     }
 
     #Set the ticket's effective ID now that we've created it.
-    my ( $val, $msg ) = $self->__Set( Field => 'EffectiveId', Value => $id );
+    my ( $val, $msg ) = $self->__Set( Field => 'EffectiveId', Value => ($args{'EffectiveId'} || $id ) );
 
     unless ($val) {
         $RT::Logger->crit("$self ->Create couldn't set EffectiveId: $msg\n");
