@@ -16,16 +16,16 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Article/Elements/Tabs, Article => $ArticleObj, current_subtab =>
-"RTFM/Article/Delete.html?id=".$ArticleObj->Id , id => $id, Title => $title &>
-
-
 % if ($ARGS{'Delete'}) {
+<& /RTFM/Article/Elements/Tabs, Title => $title &>
 
 <%$title%>
 <& /Elements/ListActions, actions => \@results &>
 
 % } else { 
+<& /RTFM/Article/Elements/Tabs, Article => $ArticleObj, current_subtab =>
+"RTFM/Article/Delete.html?id=".$ArticleObj->Id , id => $id, Title => $title &>
+
 <b><&|/l&>Are you sure you want to delete this article?</&></b>
 <table>
 <tr>
