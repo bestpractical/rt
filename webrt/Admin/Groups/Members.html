@@ -43,10 +43,11 @@ Current members
 
 
 <%INIT>
-my $Group = new RT::Group($session{'CurrentUser'});
 
+my $Group = new RT::Group($session{'CurrentUser'});
 $Group->Load($id) || Abort('Could not load group');
 
+my (@results);
 
 my $key;
 foreach $key (keys %ARGS) {
@@ -56,17 +57,20 @@ if ($key =~ /^DeleteMember-(\d+)$/) {
     my ($val,$msg) = $Group->DeleteMember($id);
     push (@results, $msg);
 }
-if ($key =~ /^AddMembers$/) {
-    my ($val, $msg) = $Group->AddMember($ARGS{"$key"});
+}
+
+# Make sure AddMembers is always an array
+my @AddMembers = (ref $AddMembers eq 'ARRAY') ? @{$AddMembers} : ($AddMembers);
+
+foreach my $member (@AddMembers) {
+    my ($val, $msg) = $Group->AddMember($member);
     push (@results, $msg);
 }
-}
+
 
 </%INIT>
 
 <%ARGS>
-@results => undef
-$CreateGroup => undef
-$Name => undef
+$AddMembers => undef
 $id => undef
 </%ARGS>

@@ -13,7 +13,10 @@
 <ul>
 <li>	Requestor: <% $Ticket->RequestorsAsString %> 
 <li>	Cc: <% $Ticket->CcAsString %>
+<li>    QueueCc: <% $Ticket->QueueObj->CcAsString %>
+<br>
 <li>	AdminCc: <% $Ticket->AdminCcAsString %> 
+<li>    QueueAdminCc: <% $Ticket->QueueObj->AdminCcAsString %>
 </ul>
 </TD>
 </TR>
