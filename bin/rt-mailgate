@@ -508,7 +508,7 @@ sub GetCurrentUser  {
 	$CurrentUser->LoadByEmail($Address);
 	
 	unless ($CurrentUser->id) {
-	    $RT::Logger->warn("Couldn't load user '$Address'.".
+	    $RT::Logger->warning("Couldn't load user '$Address'.".
 			      " Defaulting to nobody");
 	    
 	    $CurrentUser->Load($RT::Nobody->Id);
