@@ -272,21 +272,18 @@ sub _Value  {
     }
     
     #If it's a comment, we need to be extra special careful
-    if ($self->TransactionObj->Type eq 'Comment') {
-	unless 
-	  ($self->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicketComments')) {
-	      return (0, "Permission Denied");
-	  }
-    }	
+    elsif ( (($self->TransactionObj->CurrentUserHasRight('ShowTicketComments')) and
+	     ($self->TransactionObj->Type eq 'Comment') )  or
+	    ($self->TransactionObj->CurrentUserHasRight('ShowTicket'))) {
+	
+	return($self->SUPER::_Value($field));
+    }
     #if they ain't got rights to see, don't let em
     else {
-	unless ($self->TransactionObj->TicketObj->CurrentUserHasRight('ShowTicket')) {
-	    return (0, "Permission Denied");
+	    return(undef);
 	}
-    }	
+    	
     
-    
-    return($self->SUPER::_Value($field));
     
 }
 
