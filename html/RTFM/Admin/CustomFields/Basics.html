@@ -42,6 +42,9 @@ current_tab => $current_subtab, Title => $title &>
 <tr>
 <td clas="label"><&|/l&>Sort Order</&></td>
 <td><input name="SortOrder" VALUE="<%$CustomFieldObj->SortOrder%>" SIZE=6></td>
+</tr>
+</table>
+
 <BR>
 % if ($CustomFieldObj->Id && $CustomFieldObj->Type =~ /^Select/i) {
 <H2><&|/l&>Values</&></H2>
