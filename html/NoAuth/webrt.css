@@ -157,7 +157,7 @@ UL.topnav LI :focus { font-weight: bold; color: #FF9900; text-color: #FF9900; }
 TD.mainbody {
         padding-top: 0.5em;
         padding-left: 0.5em;
-        padding-right: 0.5em;
+        padding-right: 1em;
         margin-left: 1em;
         margin-right: 1em;
 }
@@ -202,11 +202,16 @@ BLOCKQUOTE.message {
 
 BODY {
   color: #000;
-  margin: 0;
   background: #FFFFFF;
   font-family: "Helvetica", sans-serif;
-
-
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-left: 0px;
+  border-right: 0px;
 }
 
 
