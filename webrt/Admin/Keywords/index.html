@@ -40,7 +40,9 @@ foreach $arg (keys %ARGS) {
     if ($arg =~ /^Delete-(\d*)$/) {
 	my $id = $1;
 	my $keyword = new RT::Keyword($session{'CurrentUser'});
-	$keyword->Delete();
+	$keyword->Load($id);
+	$keyword->SetDisabled(1);
+
     }	
     elsif ($arg =~ /^KeyName-(\d*)$/) {
 	my $id = $1;

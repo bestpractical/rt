@@ -9,13 +9,39 @@ use RT::KeywordSelect;
 
 @ISA = qw( RT::EasySearch );
 
+# {{{ _Init
 sub _Init {
   my $self = shift;
   $self->{'table'} = 'KeywordSelects';
   $self->{'primary_key'} = 'id';
   return ($self->SUPER::_Init(@_));
 }
+# }}}
 
+# {{{ sub _DoSearch 
+
+=head2 _DoSearch
+
+  A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that _Disabled rows never get seen unless
+we're explicitly trying to see them.
+
+=cut
+
+sub _DoSearch {
+    my $self = shift;
+    
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    unless($self->{'find_disabled_rows'}) {
+	$self->LimitToEnabled();
+    }
+    
+    return($self->SUPER::_DoSearch(@_));
+    
+}
+
+# }}}
+
+# {{{ sub LimitToQueue
 =head2 LimitToQueue 
 
 Takes a queue id. Limits the returned set to KeywordSelects for that queue.
@@ -43,6 +69,9 @@ sub LimitToQueue {
 
     
 }
+# }}}
+
+# {{{ sub LimitToGlobals
 
 =head2 LimitToGlobals
 
@@ -69,7 +98,7 @@ sub LimitToGlobals {
 		);
     
 }
-
+# }}}
 
 # {{{ sub IncludeGlobals
 =head2 IncludeGlobals

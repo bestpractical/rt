@@ -16,9 +16,9 @@
 <TD VALIGN=TOP ROWSPAN=2>
 <& /Elements/TitleBoxStart, title => 'Identity' &>
 
-RT Name: <input name="Name" value="<%$UserObj->Name%>"> <b>(required)</b>
+Username: <input name="Name" value="<%$UserObj->Name%>"> <b>(required)</b>
 <BR>
-Name: <input name="RealName" value="<%$UserObj->RealName%>">
+Real Name: <input name="RealName" value="<%$UserObj->RealName%>">
 <BR>
 Nickname: <input name="NickName" value="<%$UserObj->NickName%>">
 <BR>
@@ -30,9 +30,16 @@ Extra info: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->Free
 </TD>
 <TD VALIGN=TOP>
 <& /Elements/TitleBoxStart, title => 'Access control' &>
+<INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
+<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> Enabled user. (
+Can access system)<BR>
+
+
 <INPUT TYPE=HIDDEN NAME="SetPrivileged" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Privileged" VALUE="1" <%$PrivilegedChecked%>> Privileged user. (Can
 be granted rights.)<BR>
+		    
+
 <TABLE>
 <TR>
 <TD ALIGN=RIGHT>
@@ -116,7 +123,7 @@ Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 <%INIT>
 
 my $UserObj = new RT::User($session{'CurrentUser'});
-my ($title, $PrivilegedChecked);
+my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled);
 
 if ($Create) {
     $title = "Create a new user";
@@ -163,6 +170,17 @@ my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
      push @results, 'Privileged status: '. $msg;
 }
 
+#we're asking about enabled on the web page but really care about disabled.
+if ($Enabled == 1) {
+    $Disabled = 0;
+}	
+else {
+    $Disabled = 1;
+}
+if  ( ($SetEnabled) and ( $Disabled != $UserObj->Disabled) ) { 
+    my  ($code, $msg) = $UserObj->SetDisabled($Disabled);
+    push @results, 'Enabled status '. $msg;
+}
 
 
 #TODO: make this report errors properly
@@ -172,6 +190,9 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->I
     push @results, 'Password: '. $msg;
 }
 
+unless ($UserObj->Disabled()) {
+    $EnabledChecked ="CHECKED";
+}
 
 if ($UserObj->Privileged()) {  
     $PrivilegedChecked = "CHECKED";
@@ -194,6 +215,8 @@ $RealName  => undef
 $NickName  => undef
 $Privileged => undef
 $SetPrivileged => undef
+$Enabled => undef
+$SetEnabled => undef
 $Lang  => undef
 $EmailEncoding  => undef
 $WebEncoding => undef

@@ -93,7 +93,7 @@ foreach $key (keys %ARGS) {
 	my $id = $1;
 	my $keywordselect = new RT::KeywordSelect($session{'CurrentUser'});
 	$keywordselect->Load($id);
-	$keywordselect->Delete();
+	$keywordselect->SetDisabled(1) || Abort("Couldn't delete keyword select");
     }
 
   # }}}

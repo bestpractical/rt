@@ -90,24 +90,15 @@ sub Create  {
 
 # }}}
 
-# {{{ sub Disable
+# {{{ sub SetDisabled
 
-=head2 Disable
+=head2 SetDisabled
 
-Disable this queue. Takes no arguments.  After this is called, this queue will
-no longer show up in lists of Queues to search for.
-
+Takes a boolean.
+1 will cause this queue to no longer be avaialble for tickets.
+0 will re-enable this queue
 
 =cut
-
-sub Disable {
-    my $self = shift;
-    my $newqueue = shift;
-    # this function needs to move all requests into some other queue!
-
-    return($self->SetDisabled(1));
-    
-}
 
 # }}}
 

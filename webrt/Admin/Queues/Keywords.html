@@ -102,7 +102,7 @@ foreach $key (keys %ARGS) {
 	$RT::Logger->debug("Now trying to delete keyword select $id\n");
 	my $keywordselect = new RT::KeywordSelect($session{'CurrentUser'});
 	$keywordselect->Load($id) || Abort("Couldn't load KeywordSelect $id for deletion");
-	$keywordselect->Delete || Abort("Couldn't delete KeywordSelect $id");
+	$keywordselect->SetDisabled(1) || Abort("Couldn't delete KeywordSelect $id");
     }
 	# }}}
 

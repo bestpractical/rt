@@ -44,7 +44,7 @@ sub _Accessible  {
 	      PagerEmailAddress => 'read/write',
 	      FreeformContactInfo => 'read/write',
 	      Organization => 'public/read/write',
-	      Disabled => 'public/read', #To modify this attribute, we have helper
+	      Disabled => 'public/read/write', #To modify this attribute, we have helper
 	      #methods
 	      Privileged => 'read/write', # 0=no 1=user 2=system
 
@@ -79,6 +79,7 @@ sub _Accessible  {
 	      WorkPhone => 'read/write',
 	      MobilePhone => 'read/write',
 	      PagerPhone => 'read/write',
+
 	      # }}}
 	      
 	      # {{{ Paper Address
@@ -470,45 +471,29 @@ sub IsPassword {
 
 # }}}
 
-# {{{ sub Disable
+# {{{ sub SetDisabled
 
-=head2 Sub Disable
+=head2 Sub SetDisabled
 
-Disable takes no arguments and returns 1 on success and undef on failure.
-It causes this user to have his/her disable flag set.  If this flag is
+Toggles the user's disabled flag.
+If this flag is
 set, all password checks for this user will fail. All ACL checks for this
-user will fail.
+user will fail. The user will appear in no user listings.
 
 =cut 
 
-sub Disable {
+sub SetDisabled {
     my $self = shift;
-    if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
-	return($self->_Set(Field => 'Disabled', Value => 1));
+    my $value = shift;
+
+    unless($self->CurrentUser->HasSystemRight('AdminUsers')) {
+	return (0, 'Permission denied');
     }
+    return($self->_Set('Disabled', $value));
 }
 
 # }}}
 
-# {{{ sub Enable
-
-=head2 Sub Enable
-
-Disable takes no arguments and returns 1 on success and undef on failure.
-It causes this user to have his/her disable flag unset.  see sub Disable
-for a fuller treatment of this
-
-=cut 
-
-sub Enable {
-    my $self = shift;
-    
-    if ($self->CurrentUser->HasSystemRight('AdminUsers')) {
-	return($self->_Set(Field => 'Disabled', Value => 0));
-    }
-}
-
-# }}}
 
 # {{{ ACL Related routines
 
@@ -531,6 +516,7 @@ sub GrantQueueRight {
 		 PrincipalId => $self->Id,
 		 @_);
    
+
     require RT::ACE;
 
 #    $RT::Logger->debug("$self ->GrantQueueRight right:". $args{'RightName'} .

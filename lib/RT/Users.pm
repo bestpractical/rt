@@ -1,3 +1,4 @@
+
 # $Header$
 # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
@@ -32,6 +33,30 @@ sub _Init  {
   
 }
 # }}}
+
+# {{{ sub _DoSearch 
+
+=head2 _DoSearch
+
+  A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that _Disabled rows never get seen unless
+we're explicitly trying to see them.
+
+=cut
+
+sub _DoSearch {
+    my $self = shift;
+    
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    unless($self->{'find_disabled_rows'}) {
+	$self->LimitToEnabled();
+    }
+    
+    return($self->SUPER::_DoSearch(@_));
+    
+}
+
+# }}}
+
 # {{{ sub Limit 
 # Why do we need this?  I thought "AND" was default, anyway?
 sub Limit  {
@@ -100,26 +125,6 @@ sub MemberOfGroup {
 
 # }}}
 
-
-# {{{ Disabled
-=head2 Disabled
-
-Limits the returned set to users who have been disabled
-
-=cut
-
-sub Disabled {
-    my $self = shift;
-    $self->Limit( FIELD => 'Disabled',
-		  OPERATOR => '=',
-		  VALUE => '1');
-}
-
-# }}}
-
-# TODO: wrapper around _DoSearch which explicitly sets !Disabled unless Disabled has been called.
-# by default, Disabled users should be neither seen nor heard.
-
 # {{{ LimitToPrivileged
 
 =head2 LimitToPrivileged
@@ -154,6 +159,7 @@ sub LimitToSystem {
 }
 
 # }}}
+
 # {{{ HasQueueRight
 
 =head2 HasQueueRight

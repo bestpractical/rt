@@ -189,7 +189,7 @@ my $gratuitous = {
 
     'Creator', 'integer', 'NULL', '', '', '',
     'Created', 'timestamp', 'NULL', '', '', '',
-    'Disabled', 'bool', '','','0','',
+
   ],
   'primary_key' => 'id',
   'unique' => [  ],
@@ -267,7 +267,7 @@ my $gratuitous = {
 
     'Creator', 'integer', 'NULL', '', '', '',
     'Created', 'timestamp', 'NULL', '', '', '',
-    'Disabled', 'bool', '','','0','',
+
   ],
   'primary_key' => 'id',
   'unique' => [  ],

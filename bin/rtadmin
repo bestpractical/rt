@@ -55,7 +55,7 @@ my $help_keyword_sel = "
           --multiple
           --depth  <int>
 
-        --delete-keyword-select <name>";
+        --disable-keyword-select <name>";
 # }}}
     
     # {{{ help_scrip
@@ -68,6 +68,7 @@ my $help_scrip = "
 
         --delete-scrip <id>
 	--list-scrips";
+
 # }}}
     
     # {{{ help_template  
@@ -101,7 +102,7 @@ USAGE:  rtadmin --user <userid> [Userflags]
 
 User configuration for --user <userid>
    
-  	--delete
+  	--disable
   	--create
 	--display
 
@@ -157,7 +158,7 @@ Group Configuration for --group <groupid>
 
 Queue Configuration for --queue <queueid>
 	--create
-	--delete
+	--disable
 	--display
 
 	--name <name>
@@ -196,7 +197,7 @@ $help_scrip
 Keyword configuration for --keyword  <fully qualified name>
 	--list-children
   	--create-child <name>
-	--delete 
+	--disable
 	--name <new name>
 	--description <new description>
 
@@ -251,7 +252,7 @@ sub AdminUser {
     my %args;
 
     GetOptions(\%args,
-	   'create', 'delete', 'display',
+	   'create', 'disable|delete', 'display',
 	   'Name=s', 'Gecos=s', 'Password=s',
 	   'EmailAddress=s', 'Privileged=s', 'Comments=s', 'Signature=s',
 	   'Organization=s', 'RealName=s', 'NickName=s',  
@@ -341,8 +342,8 @@ sub AdminUser {
 	}	
 	
 	#Check if we need to delete the user
-	if ($args{'delete'}) {
-	    my ($val, $msg) = $user_obj->Delete();
+	if ($args{'disable'}) {
+	    my ($val, $msg) = $user_obj->SetDisabled(1);
 	    print "$msg\n";
 	}	
 	
@@ -358,7 +359,7 @@ sub AdminQueue {
     my %args;
 
     GetOptions(\%args,
-	       'create', 'disable', 'display',
+	       'create', 'disable|delete', 'display',
 	       'Name=s', 'CorrespondAddress=s', 'Description=s',
 	       'CommentAddress=s', 'InitialPriority=n', 'FinalPriority=n',
 	       'DefaultDueIn=n',
@@ -427,7 +428,7 @@ sub AdminQueue {
 
 	#Check if we need to delete the queue
 	if ($args{'disable'}) {
-	    my ($val, $msg) = $queue_obj->Disable();
+	    my ($val, $msg) = $queue_obj->SetDisabled(1);
 	    print "$msg\n";
 	}	
 	
@@ -436,13 +437,13 @@ sub AdminQueue {
 
 # }}}
 
-
 # {{{ AdminKeywords
+
 sub AdminKeywords {
     my $keyword = shift;
     
     my %args;
-    GetOptions(\%args, 'list-children', 'create-child=s', 'delete', 'Name=s', 'Description=s');
+    GetOptions(\%args, 'list-children', 'create-child=s', 'disable|delete', 'Name=s', 'Description=s');
     
     use RT::Keyword;
     
@@ -510,22 +511,24 @@ sub AdminKeywords {
 		print "Keyword ".$key_obj->Name. " $attrib:  $msg\n";	    }
 	}
 	
-	if ($args{'delete'}) {
-	    $key_obj->Delete();
+	if ($args{'disable'}) {
+	    $key_obj->SetDisabled(1);
 	    
 	}
 	
     }
 }
+
 # }}}
 
 # {{{ AdminKeywordSelects
+
 sub AdminKeywordSelects {
     my $queue = shift;
     # O for queue means global
 
     my %args;
-    GetOptions(\%args, 'add-keyword-select','delete-keyword-select=s',
+    GetOptions(\%args, 'add-keyword-select','disable-keyword-select|delete-keyword-select=s',
 	       'modify-keyword-select=s', 
 	       'keyword-select-Keyword|ks-keyword=s', 
 	       'keyword-select-Single|ks-single', 
@@ -576,14 +579,15 @@ sub AdminKeywordSelects {
     }	
 
     
-    elsif ($args{'delete-keyword-select'}) {
-	$keysel_obj->LoadByName(Name => $args{'delete-keyword-select'},
+    elsif ($args{'disable-keyword-select'}) {
+	$keysel_obj->LoadByName(Name => $args{'disable-keyword-select'},
 				Queue => $queue);
 	
-	$keysel_obj->Delete();
+	$keysel_obj->SetDisabled(1);
 	
     }
 }
+
 # }}}
 
 # {{{ AdminGroup

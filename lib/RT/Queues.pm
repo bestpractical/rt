@@ -30,6 +30,7 @@ sub _Init {
 # }}}
 
 # {{{ sub _DoSearch 
+
 =head2 _DoSearch
 
   A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that _Disabled rows never get seen unless
@@ -48,7 +49,8 @@ sub _DoSearch {
     return($self->SUPER::_DoSearch(@_));
     
 }
-# }))
+
+# }}}
   
 
 # {{{ sub Limit 

@@ -97,7 +97,7 @@ sub _Accessible {
 		ObjectType  => 'read/write', # currently only C<Ticket>
 		ObjectField => 'read/write', #optional, currently only C<Queue>
 		ObjectValue => 'read/write', #constrains KeywordSelect function to when B<ObjectType>.I<ObjectField> equals I<ObjectValue>
-		Deleted => 'read/write'
+		Disabled => 'read/write'
 	       );
     return($self->SUPER::_Accessible(@_, %Cols));  
 }
@@ -200,28 +200,6 @@ sub Create {
 				 ObjectValue => $args{'ObjectValue'}));
     
     
-}
-# }}}
-
-# {{{ sub Delete
-
-=item Delete
-
-Delete this keyword select object. Does not remove keywords from tickets
-
-=cut
-
-sub Delete {
-    my $self = shift;
-    unless ($self->CurrentUserHasRight('ModifyKeywordSelects')) {
-        $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
-	return (undef);
-    }
-    
-    
-    
-    return($self->SetDeleted(1));
-
 }
 # }}}
 

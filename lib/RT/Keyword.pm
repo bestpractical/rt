@@ -12,6 +12,7 @@ use RT::ObjectKeywords;
 @ISA = qw(RT::Record);
 
 # {{{ Core methods
+
 sub _Init {
     my $self = shift;
     $self->{'table'} = "Keywords";
@@ -24,10 +25,12 @@ sub _Accessible {
 		Name        => 'read/write', #the keyword itself
 		Description => 'read/write', #(not yet used)
 		Parent      => 'read/write', #optional id of another B<RT::Keyword>, allowing keyword to be arranged hierarchically
+		Disabled    => 'read/write'
 	       );
     return ($self->SUPER::_Accessible( @_, %cols));
     
 }
+
 # }}}
 
 =head1 NAME
@@ -159,7 +162,7 @@ sub LoadByPath {
 
 # }}}
 
-# {{{ LoadByNameAndParentId
+# {{{ sub LoadByNameAndParentId
 =head2 LoadByNameAndParentId NAME PARENT_ID
   
 Takes two arguments, a keyword name and a parent id. Loads a keyword into 
@@ -180,43 +183,6 @@ sub LoadByNameAndParentId {
 	return (0, 'Keyword could not be found');
     }
   }
-
-# }}}
-
-# {{{ sub Set
-
-=item Set KEY => VALUE
-
-=cut
-
-#TODO +++ why would we ever use this when we have the _Accessible generated SetFoo methods?
-sub Set {
-    my $self = shift;
-    my $field = shift;
-    my $value = shift;
-    
-    die "RT::Keyword::Set should be removed";
-
-    $self->_Set( Field=>$field, Value=>$value );
-}
-# }}}
-
-# {{{ sub Delete
-
-=item Delete
-
-=cut
-
-sub Delete {
-    my $self = shift;
-    #TODO: check referential integrety - Keywords, ObjectKeywords, KeywordSelects
-    
-    #TODO: ACL check
-    
-    #TODO find all children of this keyword and make them children of my parent.
-
-    $self->SUPER::Delete(@_);
-}
 
 # }}}
 

@@ -51,6 +51,14 @@ Requests should be due in:
 <INPUT NAME="DefaultDueIn" VALUE="<%$QueueObj->DefaultDueIn%>"> days.
 </TD>
 </TR>
+<TR>
+<TD>
+</TD>
+<TD COLSPAN=4><INPUT TYPE=HIDDEN NAME="SetEnabled" VALUE="1">
+<INPUT TYPE=CHECKBOX NAME="Enabled" VALUE="1" <%$EnabledChecked%>> Enabled (Unchecking this box disables this queue)<BR>
+</TD>
+</TR>
+
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
@@ -61,7 +69,7 @@ Requests should be due in:
 <%INIT>
 use RT::Interface::Web;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-my  ($title, @results);
+my  ($title, @results, $Disabled, $EnabledChecked);
 
 if ($Create) {
     $title = "Create a queue";
@@ -101,6 +109,22 @@ eval $check;
 
 }
 }
+
+#we're asking about enabled on the web page but really care about disabled.
+if ($Enabled == 1) {
+    $Disabled = 0;
+}	
+else {
+    $Disabled = 1;
+}
+if  ( ($SetEnabled) and ( $Disabled != $QueueObj->Disabled) ) { 
+    my  ($code, $msg) = $QueueObj->SetDisabled($Disabled);
+    push @results, 'Enabled status '. $msg;
+}
+
+unless ($QueueObj->Disabled()) {
+    $EnabledChecked ="CHECKED";
+}
 </%INIT>
 
 
@@ -115,4 +139,6 @@ $CommentAddress => undef
 $InitialPriority => undef
 $FinalPriority => undef
 $DefaultDueIn => undef
+$SetEnabled => undef
+$Enabled => undef
 </%ARGS>
