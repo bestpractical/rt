@@ -4,7 +4,11 @@
 
 <ol>
 %while (my $r=$Watchers->Next) {
-<form method="post"><input type="hidden" name="id" value="<%$id%>"><input type="hidden" name="Domain" value="<%$Domain%>"><input type="hidden" name="WatcherId" value="<%$r->id%>"><li><input type="submit" name="action" value="delete"><%$r->Owner && $r->OwnerObj->RealName%><input name="Address" value="<%$r->Email%>"><input type="submit" name=action value="update"></form>
+<form method="post"><input type="hidden" name="id" value="<%$id%>"><input type="hidden" name="Domain" value="<%$Domain%>"><input type="hidden" name="WatcherId" value="<%$r->id%>"><li><input type="submit" name="action" value="delete">
+%if ($r->Owner) {
+<a href="<%$RT::WebURL%>/ViewUser.html?id=<%$r->OwnerObj->id%>"><%$r->OwnerObj->RealName%></a>
+%}
+<input name="Address" value="<%$r->Email%>"><input type="submit" name=action value="update"></form>
 %}
 </ol>
 <form method="post"><input type="hidden" name="id" value="<%$id%>"><input type="hidden" name="Domain" value="<%$Domain%>">

@@ -812,7 +812,7 @@ sub Comment {
   }
   #Record the correspondence (write the transaction)
   my $Trans = $self->_NewTransaction( Type => 'Comment',
-				      Data => $MIMEObj->head->get('subject'),
+				      Data => $args{MIMEObj}->head->get('subject'),
 				      TimeTaken => $args{'TimeTaken'},
 				      MIMEObj => $args{'MIMEObj'}
 				    );

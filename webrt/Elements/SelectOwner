@@ -18,13 +18,20 @@ $Default => 2
 use RT::CurrentUser;
 use RT::Users;
 
-# TODO: respect the ACLs!!
-# This will be a list of some thousands requestors with the current scheme.
+# TODO: respect the ACLs
 
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Users = RT::Users->new($CurrentUser);
 $Users->Limit( FIELD => 'id',
 		OPERATOR => "!=",
+	        VALUE => 1
+		);
+
+# TODO: Does this one makes sense?  I'd daresay that, but anyway it
+# should be obsoleted by proper access control. -- TobiX
+
+$Users->Limit( FIELD => 'CanManipulate',
+		OPERATOR => "=",
 	        VALUE => 1
 		);
 </%INIT>

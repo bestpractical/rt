@@ -5,6 +5,7 @@
 #
 package RT::Attachment;
 use RT::Record;
+use vars qw|@ISA|;
 @ISA= qw(RT::Record);
 
 # {{{ sub new 
@@ -149,6 +150,9 @@ sub Quote {
 	      @_);
     my ($quoted_content, $body, $headers);
     my $max=0;
+
+    # TODO: Handle Multipart/Mixed (eventually fix the link in the
+    # ShowHistory web template?)
     if ($self->ContentType =~ m{^(text/plain|message)}) {
 	$body=$self->Content;
 
