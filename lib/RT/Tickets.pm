@@ -532,7 +532,10 @@ sub LimitDependedOnBy {
     
 }
 # }}}
+
+
 =head1 TODO
+# {{{ LimitDate 
 sub LimitDate
 <OPTION VALUE="Created">Created</OPTION>
 <OPTION VALUE="Started">Started</OPTION>
@@ -541,7 +544,7 @@ sub LimitDate
 <OPTION VALUE="LastUpdated">Last Updated</OPTION>
 <OPTION VALUE="StartsBy">Starts By</OPTION>
 <OPTION VALUE="Due">Due</OPTION>
-
+# }}}
 
 sub LimitDependsOn
 sub LimitDependedOnBy
@@ -979,6 +982,7 @@ sub PrevPage {
 }
 # }}}
 
+# {{{ POD
 =head2 notes
 "Enum" Things that get Is, IsNot
 
@@ -1002,6 +1006,238 @@ TransactionContent
 "Date" OPERATORs Is, Before, After
 
 =cut
-  1;
+# }}}
 
 
+
+
+
+=head2 SetListingFormat
+
+Takes a single Format string as specified below. parses that format string and makes the various listing output
+things DTRT.
+
+=item Format strings
+
+Format strings are made up of a chain of Elements delimited with vertical pipes (|).
+Elements of a Format string 
+
+
+FormatString:    Element[::FormatString]
+
+Element:         AttributeName[;HREF=<URL>][;TITLE=<TITLE>]
+
+AttributeName    Id | Subject | Status | Owner | Priority | InitialPriority | TimeWorked | TimeLeft |
+  
+                 Keywords[;SELECT=<KeywordSelect>] | 
+	
+                <Created|Starts|Started|Contacted|Due|Resolved>Date<AsString|AsISO|AsAge>
+
+
+=cut
+
+
+
+
+#accept a format string
+
+
+sub SetListingFormat {
+    my $self = shift;
+    my $listing_format = shift;
+    
+    my ($element, $attribs);
+    my $i = 0;
+    foreach $element (split (/::/,$listing_format)) {
+	if ($element =~ /^(.*?);(.*)$/) {
+	    $element = $1;
+	    $attribs = $2;
+	}	
+	$self->{'format_string'}->[$i]->{'Element'} = $element;
+	foreach $attrib (split (/;/, $attribs)) {
+	    my $value = "";
+	    if ($attrib =~ /^(.*?)=(.*)$/) {
+		$attrib = $1;
+		$value = $2;
+	    }	
+	    $self->{'format_string'}->[$i]->{"$attrib"} = $val;
+	    
+	}
+    
+    }
+    return(1);
+}
+
+
+
+
+
+#Seperate methods for
+
+#Print HTML Header
+sub HTMLHeader {
+    my $self = shift;
+    my $header = "";
+    my $col;
+    foreach $col ( @{[ $self->{'format_string'} ]}) {
+	$header .= "<TH>" . $self->_ColumnTitle($self->{'format_string'}->[$col]) . "</TH>";
+	
+    }
+    return ($header);
+}
+
+
+#Print text header
+sub TextHeader {
+    my $self = shift;
+    my ($header);
+    
+    return ($header);
+}
+
+
+#Print HTML row
+sub TicketAsHTMLRow {
+    my $self = shift;
+    my $Ticket = shift;
+    my ($row, $col);
+    foreach $col (@{[$self->{'format_string'}]}) {
+	$row .= "<TD>" . $self->_TicketColumnValue($ticket,$self->{'format_string'}->[$col]) . "</TD>";
+	
+    }
+    return ($row);
+}
+
+
+#Print text row
+sub TicketAsTextRow {
+    my $self = shift;
+    my ($row);
+    
+    return ($row);
+}
+
+
+# {{{ _ColumnTitle {
+
+sub _ColumnTitle {
+    my $self = shift;
+    
+    # Attrib is a hash 
+    my $attrib = shift;
+    
+    # return either attrib->{'TITLE'} or..
+    if ($attrib->{'TITLE'}) {
+	return($attrib->{'TITLE'});
+    }	
+    # failing that, Look up the title in a hash
+    else {
+	#TODO create $self->{'ColumnTitles'};
+	return ($self->{'ColumnTitles'}->{$attrib->{'Element'}});
+    }	
+    
+}
+
+# }}}
+
+# {{{ _TicketColumnValue
+sub _TicketColumnValue {
+    my $self = shift;
+    my $Ticket = shift;
+    my $attrib = shift;
+
+    
+    my $out;
+
+  SWITCH: {
+	/^id/i && do {
+	    $out = $Ticket->id;
+	    last SWITCH; 
+	};
+	/^subj/i && do {
+	    last SWITCH; 
+	    $Ticket->Subject;
+		   };	
+	/^status/i && do {
+	    last SWITCH; 
+	    $Ticket->Status;
+	};
+	/^prio/i && do {
+	    last SWITCH; 
+	    $Ticket->Priority;
+	};
+	/^finalprio/i && do {
+	    
+	    last SWITCH; 
+	    $Ticket->FinalPriority
+	};
+	/^initialprio/i && do {
+	    
+	    last SWITCH; 
+	    $Ticket->InitialPriority;
+	};	
+	/^timel/i && do {
+	    
+	    last SWITCH; 
+	    $Ticket->TimeWorked;
+	};
+	/^timew/i && do {
+	    
+	    last SWITCH; 
+	    $Ticket->TimeLeft;
+	};
+	
+	/^(.*?)date(.*)$/i && do {
+	    my $o = $1;
+	    my $m = $2;
+	    my ($obj);
+	    #TODO: optimize
+	    $obj = $Ticket->DueObj         if $o =~ /due/i;
+	    $obj = $Ticket->CreatedObj     if $o =~ /created/i;
+	    $obj = $Ticket->StartsObj      if $o =~ /starts/i;
+	    $obj = $Ticket->StartedObj     if $o =~ /started/i;
+	    $obj = $Ticket->ToldObj        if $o =~ /told/i;
+	    $obj = $Ticket->LastUpdatedObj if $o =~ /lastu/i;
+	    
+	    $method = 'ISO' if $m =~ /iso/i;
+	    
+	    $method = 'AsString' if $m =~ /asstring/i;
+	    $method = 'AgeAsString' if $m =~ /age/i;
+	    last SWITCH;
+	    $obj->$method
+	      
+	};
+	  
+	  /^watcher/i && do {
+	      last SWITCH; 
+	      $Ticket->WatchersAsString();
+	  };	
+	
+	/^requestor/i && do {
+	    last SWITCH; 
+	    $Ticket->RequestorsAsString();
+	};	
+	/^cc/i && do {
+	    last SWITCH; 
+	    $Ticket->CCAsString();
+	};	
+	
+	
+	/^admincc/i && do {
+	    last SWITCH; 
+	    $Ticket->AdminCcAsString();
+	};
+	
+	/^keywords/i && do {
+	    last SWITCH; 
+	    #Limit it to the keyword select we're talking about, if we've got one.
+	    my $objkeys =$Ticket->KeywordsObj($attrib->{'SELECT'});
+	    $objkeys->KeywordRelativePathsAsString();
+	};
+	
+    }
+      
+}
+
+# }}}
+1;

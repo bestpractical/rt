@@ -1,4 +1,6 @@
-<FORM ACTION="Listing.html?CompileRestriction=1" METHOD="GET">
+<& /Elements/TitleBoxStart, title => 'Restrict Search'&>
+<FORM ACTION="Listing.html" METHOD="POST">
+<INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
 <ul>
 <li>Owner is  <& /Elements/SelectBoolean, Name => "OwnerOp", TrueVal=> '=', FalseVal => '!=' &> 
@@ -35,8 +37,13 @@ Results per page
 <& /Elements/SelectResultsPerPage, Name => "ValueOfResultsPerPage" &>
 
 </UL>
-<DIV ALIGN=RIGHT>
-<input type=submit name="Search">
-</DIV>
-</FORM>
 
+
+</DIV>
+
+
+<& /Elements/TitleBoxEnd &>
+
+<& /Elements/Submit &>
+
+</FORM>

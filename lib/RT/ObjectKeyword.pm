@@ -99,6 +99,36 @@ sub KeywordObj {
 
 =back
 
+=item KeywordSelectObj 
+
+Returns an B<RT::KeywordSelect> object of the KeywordSelect associated with this ObjectKeyword.
+
+=cut
+
+sub KeywordSelectObj {
+    my $self = shift;
+    my $keyword_sel = new RT::KeywordSelect($self->CurrentUser);
+    $keyword_sel->Load($self->KeywordSelect);
+    return ($keyword_sel);
+}
+
+
+=back
+
+
+=item KeywordRelativePath
+
+Returns a string of the Keyword's path relative to this ObjectKeyword's KeywordSelect
+
+=cut
+
+sub KeywordRelativePath {
+    my $self = shift;
+    return($self->KeywordObj->RelativePath(
+              $self->KeywordSelectObj->KeywordObj->Path));
+    
+}
+
 =head1 AUTHOR
 
 Ivan Kohler <ivan-rt@420.am>

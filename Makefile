@@ -272,7 +272,7 @@ mux-links:
 
 
 config-replace:
-	[ -f $(RT_CONFIG) ] && mv $(RT_CONFIG) $(RT_CONFIG).old
+	-[ -f $(RT_CONFIG) ] && mv $(RT_CONFIG) $(RT_CONFIG).old
 	cp -rp ./etc/config.pm $(RT_CONFIG)
 	$(PERL) -p -i -e "\
 	s'!!DB_TYPE!!'$(DB_TYPE)'g;\

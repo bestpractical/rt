@@ -49,7 +49,8 @@ Subject:
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
 </TD>
 </TR>
-
+%# I'm diking these out until we get things a bit more settled. (post 2.0)
+%  if (0) {
 <TR>
 <TD>
 Relationships
@@ -70,8 +71,12 @@ Depends on:
 </TD>
 </TR>
 </TABLE>
+
 </TD>
 </TR>
+% }
+%#TODO: support for uploading attachments
+% if (0){ 
 <TR>
 <TD>
 Attach file:
@@ -81,6 +86,7 @@ Attach file:
 </TD>
 </TR>
 <TR>
+% }
 <TD COLSPAN=6>
 Describe the issue below:<br>
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>

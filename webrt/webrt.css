@@ -9,7 +9,7 @@ BLOCKQUOTE.message {
 
 BODY {
   color: #000;
-  background: #FBFBFB;
+  background: #FFFFFF;
   font-family: "Helvetica", sans-serif;
 
 
@@ -33,9 +33,13 @@ DIV.endmatter { margin-left: -7% }
 
 
 A { font-weight: bold; 
-      color: #333333;
-	background-color: #ffffff;
+      		color: #000000;
 	    /* border: none -- breaks NS 4.x */ }
+
+
+A.inverse {
+	    color: #ffffff; };	
+
 
 A:link IMG, A:visited IMG { border-style: none }
 

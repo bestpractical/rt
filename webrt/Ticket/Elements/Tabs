@@ -8,6 +8,10 @@
 		 A => { title => 'Display',
 			     path => "Ticket/Display.html?id=".$id,
 			   },
+
+		 Ab => { title => 'History',
+			     path => "Ticket/History.html?id=".$id,
+			   },
 		 B => { title => 'Edit Basics',
 			  path => "Ticket/Modify.html?id=".$id,
 			},

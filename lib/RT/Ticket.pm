@@ -1772,7 +1772,7 @@ sub AddLink {
 =head2 KeywordsObj [KEYWORD_SELECT_ID]
 
   Returns an B<RT::ObjectKeywords> object preloaded with this ticket's ObjectKeywords.
-If the optional KEYWORD_SELECT parameter is set, limit the keywords object to that keyword
+If the optional KEYWORD_SELECT_ID parameter is set, limit the keywords object to that keyword
 select.
 
 =cut

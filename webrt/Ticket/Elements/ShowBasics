@@ -6,7 +6,7 @@
 	<TD VALIGN=TOP WIDTH="20%"> <& /Elements/ShadedBox, title => 'Status' , content => $Ticket->Status &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
-        <& /Elements/ShadedBox, title => 'Time Worked' , content => $TimeWorked ." min" &>
+        <& /Elements/ShadedBox, title => 'Worked' , content => $TimeWorked ." min" &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
 	  <& /Elements/ShadedBox, title => 'Priority', content=> $Ticket->Priority."/".$Ticket->FinalPriority &>

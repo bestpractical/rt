@@ -27,7 +27,7 @@ sub NewItem {
 
 =head2 LimitToKeywordSelect
 
-  Takes a B<RT::KeywordSelect> id as its single argument. limits the returned set of ObjectKeywords
+  Takes a B<RT::KeywordSelect> id or Nameas its single argument. limits the returned set of ObjectKeywords
 to ObjectKeywords which apply to that ticket
 
 =cut
@@ -37,10 +37,50 @@ sub LimitToKeywordSelect {
     my $self = shift;
     my $keywordselect = shift;
     
-    $self->Limit(FIELD => 'KeywordSelect',
-		 OPERATOR => '=',
-		 ENTRYAGGREGATOR => 'OR',
-		 VALUE => "$keywordselect");
+    if ($keywordselect =~ /^\d+$/) {
+
+	$self->Limit(FIELD => 'KeywordSelect',
+		     OPERATOR => '=',
+		     ENTRYAGGREGATOR => 'OR',
+		     VALUE => "$keywordselect");
+    }
+
+    #We're limiting by name. time to be klever
+    else {
+	my $ks = $self->Alias('KeywordSelects');
+	$self->Join(ALIAS1 => $ks, FIELD1 => 'id',
+		    ALIAS2 => 'main', FIELD2 => 'KeywordSelect');
+	
+	$self->Limit( ALIAS => "$ks",
+		       FIELD => 'Name',
+		       VALUE => "$keywordselect",
+		       OPERATOR => "=",
+		       ENTRYAGGREGATOR => "OR");
+
+	$self->Limit ( ALIAS => "$ks",
+		       FIELD => 'ObjectType',
+		       VALUE => 'Ticket',
+		       OPERATOR => '=',
+		     );
+
+	$self->Limit ( ALIAS => "$ks",
+		       FIELD => 'ObjectField',
+		       VALUE => 'Queue',
+		       OPERATOR => '=',
+		     );
+
+
+	# TODO +++ we need to be able to limit the returned
+	# keywordselects to ones that apply only to this queue
+	#	$self->Limit( ALIAS => "$ks",
+	#		       FIELD => 'ObjectValue',
+	#		       VALUE => $self->QueueObj->Id,
+	#		       OPERATOR => "=",
+	#		       ENTRYAGGREGATOR => "OR");	
+
+    }
+
+
 
 }
 
@@ -136,6 +176,45 @@ sub HasEntry {
 }
 
 # }}}
+
+
+# {{{ sub RelativePaths
+
+=head2 RelativePaths
+
+# Return a (reference to a) list of KeywordRelativePaths
+
+=cut
+
+sub RelativePaths  {
+    my $self = shift;
+
+    $self->{is_modified}++;
+
+    my @list;
+
+    # Here $w is a RT::ObjectKeyword
+    while (my $w=$self->Next()) {
+	push(@list, $w->KeywordRelativePath);
+    }
+    return(\@list);
+}
+# }}}
+
+# {{{ sub RelativePathsAsString
+
+=head2 RelativePathsAsString
+
+# Returns the RT::ObjectKeywords->RelativePaths as a comma seperated string
+
+=cut
+
+sub RelativePathsAsString {
+    my $self = shift;
+    return(join(", ",@{$self->KeywordRelativePaths}));
+}
+# }}}
+
 
 
 1;

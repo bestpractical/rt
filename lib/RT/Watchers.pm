@@ -163,7 +163,12 @@ sub LimitToAdminCc  {
 
 # {{{ sub Emails 
 
+=head2 Emails
+
 # Return a (reference to a) list of emails
+
+=cut
+
 sub Emails  {
     my $self = shift;
 
@@ -181,7 +186,12 @@ sub Emails  {
 
 # {{{ sub EmailsAsString
 
+=head2 EmailsAsString
+
 # Returns the RT::Watchers->Emails as a comma seperated string
+
+=cut
+
 sub EmailsAsString {
     my $self = shift;
     return(join(", ",@{$self->Emails}));

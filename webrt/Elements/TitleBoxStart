@@ -19,6 +19,6 @@
 $width => "100%"
 $title => undef
 $titleright => undef
-$contentbg => "#cccccc"
+$contentbg => "#dddddd"
 $color => "#336699"
 </%ARGS>

@@ -176,6 +176,7 @@ sub Delete {
 
 
 # {{{ sub KeywordObj
+
 =item KeywordObj
 
 Returns the B<RT::Keyword> referenced by the I<Keyword> field.
@@ -192,6 +193,7 @@ sub KeywordObj {
 # }}}
 
 # {{{ sub Object
+
 =item Object
 
 Returns the object (currently only RT::Queue) specified by ObjectField and ObjectValue.

@@ -1,7 +1,7 @@
 % my $name=$User->RealName || $User->EmailAddress;
 <& /Elements/TitleBoxStart, 
-	title => "<a href=\"$RT::WebPath/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">Tickets from $name</a>",
-	titleright=> "<a href=\"$RT::WebPath/EditUserComments.html?id=".$User->id."\">Comments about $name</a>" &>
+	title => "<a class='inverse' href=\"$RT::WebPath/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">Tickets from $name</a>",
+	titleright=> "<a class='inverse' href=\"$RT::WebPath/EditUserComments.html?id=".$User->id."\">Comments about $name</a>" &>
 <TABLE WIDTH="100%">
 <tr>
 <td halign=left valign=top>
