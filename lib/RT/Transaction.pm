@@ -81,7 +81,9 @@ sub Create {
   #Load a scrips object
   #Iterate through each script and check it's applicability.
 
+  #Tobias: Why is this needed?  -- jesse
   $args{'TicketObject'}=$TicketAsSystem;
+
   
   while (my $Scrip = $Scrips->Next()) {
     
