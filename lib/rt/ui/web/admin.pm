@@ -441,7 +441,7 @@ Queue Configuration
     print "</td></tr>
 <tr><td>Final priority:</td><td>";
     &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
-    print "</td></tr></table>\n";
+    print "</td></tr></table>\n<BR>\n";
 
     print "<input type=\"checkbox\" name=\"m_owner_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_owner_trans});
