@@ -13,7 +13,7 @@
     sub load_queue_acls {
 	
 	my ($user_id, $queue_id);
-	$sth = $dbh->Query("SELECT queue_acl.queue_id, users.user_id, queue_acl.display, queue_acl.manipulate, queue_acl.admin, users.email FROM queue_acl, users WHERE users.user_id = queue_acl.user_id") or warn "Query had some problem: $Mysql::db_errstr\n";
+	$sth = $dbh->Query("SELECT queue_acl.queue_id, users.user_id, queue_acl.display, queue_acl.manipulate, queue_acl.admin, users.email, queue_acl.mail FROM queue_acl, users WHERE users.user_id = queue_acl.user_id") or warn "Query had some problem: $Mysql::db_errstr\n";
 	while (@row=$sth->FetchRow) {
 	    $queue_id=$row[0];
 	    $user_id=$row[1];
@@ -23,8 +23,13 @@
 	    $rt::queues{$queue_id}{acls}{$user_id}{'manipulate'}=$row[3];
 	    $rt::queues{$queue_id}{acls}{$user_id}{'admin'}=$row[4];
 
+# TODO: The email-field (#6) should be used. What is most easy is to
+# let it be binary "user should get mail" or not. In that case, just
+# add $row[6] in the if-statement below (and update ui/*/admin.pm). A
+# more featuristic schema is to let it be a bitmap of what emails he
+# should get. In that case dist_list must be made into a hash ... that
+# seems like WORK to me, so I've postponed it for now.
 	    if ($row[5] and $row[3]) {
-
 		if ($queues{$queue_id}{'dist_list'}) {
 		    $queues{$queue_id}{'dist_list'} .= ", " . $row[5];
 		}
@@ -58,6 +63,7 @@ sub load_user_info {
     $sth = $dbh->Query($query_string) or warn "[load_user_info] Query had some problem: $Mysql::db_errstr\n$query_string\n";
     while (@row=$sth->FetchRow) { 
 	$user_id=$row[0];
+	$emails{$row[2]}=$user_id;
 	$users{$user_id}{name}=$user_id;
 	$users{$user_id}{password}="";
 	$users{$user_id}{email}=$row[2];
