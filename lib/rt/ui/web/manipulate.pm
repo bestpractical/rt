@@ -521,6 +521,12 @@ sub display_queue {
     }
     $order_ops .= "date_created"; 
   } 
+  if ($rt::ui::web::FORM{'q_sort'} eq "last") {
+    if ($order_ops){
+      $order_ops .= ", ";
+    }
+    $order_ops .= "date_acted";
+  }
 
   if ($rt::ui::web::FORM{'q_sort'} eq "subject") {       
     if ($order_ops){
@@ -620,6 +626,7 @@ $query_string
   print &queue_header('timestamp',"Told");
   print &queue_header('area',"Area");
   print &queue_header('age',"Age");
+  print &queue_header('last',"Last");
   print &queue_header('date_due',"Due");
   print &queue_header('user',"Requestor");
   print &queue_header('subject',"Subject");
@@ -680,6 +687,9 @@ print "</TR>";
 <font size=-1>$rt::req[$temp]{'age'}</font>
 </TD>
 
+<TD NOWRAP>
+<font size=-1>$rt::req[$temp]{'since_acted'}</font>
+</TD>
               
 <TD NOWRAP>";
     

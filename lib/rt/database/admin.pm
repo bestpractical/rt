@@ -205,8 +205,7 @@ sub add_modify_queue_acl {
            $dbh->Query($query_string) or return (0,"[add_modify_queue] Query had some problem: $Mysql::db_errstr\n$query_string\n");
            if( ! (($in_admin == 0) and ($in_display == 0) and ($in_manipulate == 0)) )
 	     {
-	       $query_string="INSERT INTO queue_acl (queue_id, user_id, display, manipulate, admin) VALUES ($queue_id, $user_id, $in_display, $in_manipulat
-e, $in_admin)";
+	       $query_string="INSERT INTO queue_acl (queue_id, user_id, display, manipulate, admin) VALUES ($queue_id, $user_id, $in_display, $in_manipulate, $in_admin)";
 	       $dbh->Query($query_string) or return (0, "[add_modify_queue_acl] Query had some problem: $Mysql::db_errstr\n");
 	       
 	       

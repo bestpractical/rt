@@ -1,3 +1,11 @@
+19 Nov 98
+---------
+
+Incorportated patches from Dave Walton to fix a typo, replace an accidentally 
+blown away library and add a "last acted" column to the web ui.
+incremented version to .9.20
+
+
 2 Aug 98
 --------
 
