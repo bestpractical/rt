@@ -238,21 +238,21 @@ sub date_diff {
     $day    = 24 * $hour;
     $week   = 7 * $day;
     $month  = 4 * $week;
-    $year   = 356 * $day;
+    $year   = 365 * $day;
     
     if($diff < $minute) {
 	$s=$diff;
 	$string="sec";
-    } elsif($diff < $hour) {
+    } elsif($diff < (2 * $hour)) {
 	$s = int($diff/$minute);
 	$string="min";
-    } elsif($diff < $day) {
+    } elsif($diff < (2 * $day)) {
 	$s = int($diff/$hour);
 	$string="hr";
-    } elsif($diff < $week) {
+    } elsif($diff < (2 * $week)) {
 	$s = int($diff/$day);
 	$string="day";
-    } elsif($diff < $month) {
+    } elsif($diff < (2 * $month)) {
 	$s = int($diff/$week);
 	$string="wk";
     } elsif($diff < $year) {

@@ -1,3 +1,12 @@
+21 Oct 1999
+-----------
+
+* Fixed a typo in date diff, thanks to Paul Evans
+
+* Changed the logic in date_diff to be a bit more explicit about
+  shorter lengths of time
+
+
 20 Oct 1999
 -----------
 * Fixed leading spaces in the subject line when sending mail
