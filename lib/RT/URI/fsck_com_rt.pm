@@ -75,7 +75,7 @@ sub LocalURIPrefix {
 
 sub ObjectType {
     my $self = shift;
-    my $object = shift;
+    my $object = shift || $self->Object;
 
     my $type = 'ticket';
     if (ref($object) && (ref($object) ne 'RT::Ticket')) {
