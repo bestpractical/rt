@@ -1,0 +1,31 @@
+(todo ... basically, those are untouched from 1.0)
+Ticket
+Queue
+Requestor
+(...)
+
+
+External Requestor
+
+  Might be a customer or a potential customer.  We want to treat him as nice
+  as possible.  (S)he shouldn't need to see too much of RT, the requestor
+  should more feel like getting personal handling from a 1st line support
+  department.  The external requestor might get access to the Web UI, but
+  only to track his own requests.
+
+
+Internal Requestor / regular Watcher
+
+  An Internal Requestor might be 1st line support sending matters to tech
+  support or similar. Might be an internal employee sending matters to tech
+  support (or even 1st line support if he's not sure where to send matters).
+  Might be just any user of an open source project sending in reports and
+  support requests.  We consider Internal Requestors and Regular Watchers as
+  more robust and capable human beeings than the fragile customers.  We
+  don't mind letting them get entagled with RT, and we let them access the
+  Web UI.  We don't mind letting them be Cc or Bcc instead of the To
+  addressee at an email.  
+
+  The system doesn't make any difference between requestors, but the RT
+  users might pay some attention ... and the administrator should pay
+  attention when setting up the templates.
