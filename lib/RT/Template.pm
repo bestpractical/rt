@@ -237,7 +237,7 @@ sub Parse {
 
   my ($body, $headers);
   
-  if ($content =~ /^(\S*):(.*?)\n/s) {
+  if ($content =~ /^(\S*?):(.*?)\n/s) {
      ($headers, $body) = split(/\n\n/,$content,2);
   }
   else {
@@ -245,12 +245,13 @@ sub Parse {
   }
 
   $self->{'MIMEObj'}->attach(Data => $body);
-
-  foreach $header (split(/\n/,$headers)) {
-    (my $key, my $value) = (split(/: /,$header,2));
-    $self->{'MIMEObj'}->head->add($key, $value);
-  }
   
+  if ($headers) {
+    foreach $header (split(/\n/,$headers)) {
+      (my $key, my $value) = (split(/: /,$header,2));
+      $self->{'MIMEObj'}->head->add($key, $value);
+    }
+  }
 }
 
 # }}}
