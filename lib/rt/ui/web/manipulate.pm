@@ -915,6 +915,12 @@ $rt::req[$in_serial_num]{'requestors'}
 $rt::req[$in_serial_num]{'owner'} 
 </TD>
 </TR> 
+</TABLE>
+</TD></TR>
+<TR>
+<TD>
+<TABLE cellspacing=0 cellpadding=0 border=0 width=\"100%\">
+
 <TR VALIGN=\"TOP\">
 <TD ALIGN=\"RIGHT\">
 <b><a href=\"$ScriptURL?display=SetStatus&amp;serial_num=$in_serial_num\" $target>Status</a></b>
@@ -923,10 +929,7 @@ $rt::req[$in_serial_num]{'owner'}
 <TD BGCOLOR=\"$bg_color\">
 $rt::req[$in_serial_num]{'status'}
 </TD>
-</TR> 
-</TD>
-<TR>
-<TD>
+</TR>
 <TR VALIGN=\"TOP\">
 <TD ALIGN=\"RIGHT\">
 <b><a href=\"$ScriptURL?display=SetNotify&amp;do_req_notify=1&amp;serial_num=$in_serial_num\" $target>Last User Contact</a></b>
