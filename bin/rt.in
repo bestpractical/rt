@@ -739,7 +739,8 @@ sub submit {
             # We can deal with authentication failures ourselves. Either
             # we sent invalid credentials, or our session has expired.
             if ($res->code == 401) {
-                if ($data->{user}) {
+                my %d = @$data;
+                if (exists $d{user}) {
                     warn "rt: Incorrect username or password.\n";
                     exit -1;
                 }
