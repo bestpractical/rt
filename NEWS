@@ -1,3 +1,11 @@
+2 Aug 1999
+----------
+
+Minor mailui change to hopefully better strip subjecgt lines
+
+Added still-broken -trans option to bin/rt for steve rader's xrts
+Full support will probably appear in 1.1 soon
+
 27 July 1999
 ------------
 Added a fix to the mailgate that had problems with repeated headers, as
