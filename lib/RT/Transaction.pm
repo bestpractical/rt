@@ -55,7 +55,7 @@ sub Create  {
 	       @_
 	     );
   #if we didn't specify a ticket, we need to bail
-  if ( $args{'Ticket'} == 0) {
+  unless ( $args{'Ticket'} ) {
     return(0, "RT::Transaction->Create couldn't, as you didn't specify a ticket id");
   }
 

@@ -266,7 +266,11 @@ sub ParseArgs  {
     next;
   }
 
-  $Message->print if defined($Message);
+  if (defined($Message)) {
+      print "======================================\n";
+      $Message->print ;
+      print "======================================\n";
+  }
 }
 # }}}
 
