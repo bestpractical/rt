@@ -1483,21 +1483,19 @@ If VALUE isn't a valid value for the custom field, returns
 
 sub AddCustomFieldValue {
     my $self = shift;
-#    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-#        return ( 0, $self->loc("Permission Denied") );
-#    }
     $self->_AddCustomFieldValue(@_);
 }
 
 sub _AddCustomFieldValue {
     my $self = shift;
     my %args = (
-        Field => undef,
-        Value => undef,
-	RecordTransaction => 1,
+        Field             => undef,
+        Value             => undef,
+        RecordTransaction => 1,
         @_
     );
 
+   # {{{ Get a custom field object from the 'Field' parameter.
     my $cf = RT::CustomField->new( $self->CurrentUser );
     if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
         $cf->Load( $args{'Field'}->id );
@@ -1507,17 +1505,24 @@ sub _AddCustomFieldValue {
     }
 
     unless ( $cf->Id ) {
-        return ( 0, $self->loc("Custom field [_1] not found", $args{'Field'}) );
+        return ( 0,
+            $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
 
     my $OCFs = $self->CustomFields;
     $OCFs->Limit( FIELD => 'id', VALUE => $cf->Id );
-    unless ($OCFs->Count) {
-        return ( 0, $self->loc("Custom field [_1] does not apply to this object", $args{'Field'}) );
+    unless ( $OCFs->Count ) {
+        return (
+            0,
+            $self->loc(
+                "Custom field [_1] does not apply to this object",
+                $args{'Field'}
+            )
+        );
     }
-
-    # Load up a ObjectCustomFieldValues object for this custom field and this ticket
-    my $values = $cf->ValuesForObject( $self );
+    # }}}
+# Load up a ObjectCustomFieldValues object for this custom field and this ticket
+    my $values = $cf->ValuesForObject($self);
 
     unless ( $cf->ValidateValue( $args{'Value'} ) ) {
         return ( 0, $self->loc("Invalid value for custom field") );
@@ -1527,9 +1532,9 @@ sub _AddCustomFieldValue {
     # value and record a "changed from foo to bar" transaction
     if ( $cf->SingleValue ) {
 
-        # We need to whack any old values here.  In most cases, the custom field should
-        # only have one value to delete.  In the pathalogical case, this custom field
-        # used to be a multiple and we have many values to whack....
+ # We need to whack any old values here.  In most cases, the custom field should
+ # only have one value to delete.  In the pathalogical case, this custom field
+ # used to be a multiple and we have many values to whack....
         my $cf_values = $values->Count;
 
         if ( $cf_values > 1 ) {
@@ -1538,97 +1543,120 @@ sub _AddCustomFieldValue {
             while ( my $value = $values->Next ) {
                 $i++;
                 if ( $i < $cf_values ) {
-                    my ($val, $msg) = $cf->DeleteValueForObject(Object => $self, Content => $value->Content);
+                    my ( $val, $msg ) = $cf->DeleteValueForObject(
+                        Object  => $self,
+                        Content => $value->Content
+                    );
                     unless ($val) {
-                        return (0,$msg);
+                        return ( 0, $msg );
                     }
                     my ( $TransactionId, $Msg, $TransactionObj ) =
                       $self->_NewTransaction(
-                        Type     => 'CustomField',
-                        Field    => $cf->Id,
+                        Type         => 'CustomField',
+                        Field        => $cf->Id,
                         OldReference => $value,
                       );
                 }
             }
         }
 
-        my ($old_value, $old_content);
-        if ($old_value = $cf->ValuesForObject( $self )->First) {
-	    $old_content = $old_value->Content();
-	    return (1) if $old_content eq $args{'Value'};
-	}
+        my ( $old_value, $old_content );
+        if ( $old_value = $cf->ValuesForObject($self)->First ) {
+            $old_content = $old_value->Content();
+            return (1) if( $old_content eq $args{'Value'} && $old_value->LargeContent eq $args{'LargeContent'});;
+        }
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
-            Object  => $self,
-            Content => $args{'Value'},
+            Object       => $self,
+            Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
-            ContentType => $args{'ContentType'},
+            ContentType  => $args{'ContentType'},
         );
 
         unless ($new_value_id) {
-            return ( 0,
-                $self->loc("Could not add new custom field value. [_1] ",
-                  ,$value_msg) );
+            return (
+                0,
+                $self->loc(
+                    "Could not add new custom field value. [_1] ",,
+                    $value_msg
+                )
+            );
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
         $new_value->Load($new_value_id);
 
         # now that adding the new value was successful, delete the old one
-	if ($old_value) {
-	    my ($val, $msg) = $cf->DeleteValueForObject(Object => $self, Content => $old_content);
-	    unless ($val) { 
-	    		return (0,$msg);
-	    }
-	}
+        if ($old_value) {
+            my ( $val, $msg ) = $old_value->Delete();
+            unless ($val) {
+                return ( 0, $msg );
+            }
+        }
 
-	if ($args{'RecordTransaction'}) {
-        my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
-            Type     => 'CustomField',
-            Field    => $cf->Id,
-            OldReference => $old_value,
-            NewReference => $new_value,
-        );
-	}
+        if ( $args{'RecordTransaction'} ) {
+            my ( $TransactionId, $Msg, $TransactionObj ) =
+              $self->_NewTransaction(
+                Type         => 'CustomField',
+                Field        => $cf->Id,
+                OldReference => $old_value,
+                NewReference => $new_value,
+              );
+        }
 
         if ( $old_value eq '' ) {
-            return ( 1, $self->loc("[_1] [_2] added", $cf->Name, $new_value->Content) );
+            return ( 1,
+                $self->loc( "[_1] [_2] added", $cf->Name, $new_value->Content )
+            );
         }
         elsif ( $new_value->Content eq '' ) {
-            return ( 1, $self->loc("[_1] [_2] deleted", $cf->Name, $old_content) );
+            return ( 1,
+                $self->loc( "[_1] [_2] deleted", $cf->Name, $old_value->Content ) );
         }
         else {
-            return ( 1, $self->loc("[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_value->Content ) );
+            return (
+                1,
+                $self->loc(
+                    "[_1] [_2] changed to [_3]", $cf->Name,
+                    $old_content,                $new_value->Content
+                )
+            );
         }
 
     }
 
     # otherwise, just add a new value and record "new value added"
     else {
-        my ( $new_value_id ) = $cf->AddValueForObject(
-            Object  => $self,
-            Content => $args{'Value'},
+        my ($new_value_id) = $cf->AddValueForObject(
+            Object       => $self,
+            Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
-            ContentType => $args{'ContentType'},
+            ContentType  => $args{'ContentType'},
         );
 
         unless ($new_value_id) {
-            return ( 0,
-                $self->loc("Could not add new custom field value. "));
+            return ( 0, $self->loc("Could not add new custom field value. ") );
         }
-    if ( $args{'RecordTransaction'} ) {
-        my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
-            Type     => 'CustomField',
-            Field    => $cf->Id,
-            NewReference => $new_value_id,
-	    ReferenceType => 'RT::ObjectCustomFieldValue',
+        if ( $args{'RecordTransaction'} ) {
+            my ( $TransactionId, $Msg, $TransactionObj ) =
+              $self->_NewTransaction(
+                Type          => 'CustomField',
+                Field         => $cf->Id,
+                NewReference  => $new_value_id,
+                ReferenceType => 'RT::ObjectCustomFieldValue',
+              );
+            unless ($TransactionId) {
+                return ( 0,
+                    $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
+            }
+        }
+        return (
+            1,
+            $self->loc(
+                "[_1] added as a value for [_2]",
+                $args{'Value'}, $cf->Name
+            )
         );
-        unless ($TransactionId) {
-            return ( 0,
-                $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
-        }
-    }
-        return ( 1, $self->loc("[_1] added as a value for [_2]",$args{'Value'}, $cf->Name));
     }
 
 }
@@ -1651,15 +1679,12 @@ If VALUE isn't a valid value for the custom field, returns
 sub DeleteCustomFieldValue {
     my $self = shift;
     my %args = (
-        Field => undef,
-        Value => undef,
-	ValueId => undef,
-        @_);
+        Field   => undef,
+        Value   => undef,
+        ValueId => undef,
+        @_
+    );
 
-#    XXX - normalise CF related ACLs... ask obra!
-#    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-#        return ( 0, $self->loc("Permission Denied") );
-#    }
     my $cf = RT::CustomField->new( $self->CurrentUser );
     if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
         $cf->LoadById( $args{'Field'}->id );
@@ -1672,26 +1697,31 @@ sub DeleteCustomFieldValue {
         return ( 0, $self->loc("Custom field not found") );
     }
 
+    my ( $val, $msg ) = $cf->DeleteValueForObject(
+        Object  => $self,
+        Id      => $args{'ValueId'},
+        Content => $args{'Value'},
+    );
+    unless ($val) {
+        return ( 0, $msg );
+    }
+    my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
+        Type          => 'CustomField',
+        Field         => $cf->Id,
+        OldReference  => $val,
+        ReferenceType => 'RT::ObjectCustomFieldValue',
+    );
+    unless ($TransactionId) {
+        return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
+    }
 
-     my ($val, $msg) = $cf->DeleteValueForObject(
-	 Object => $self,
-	 Id => $args{'ValueId'},
-	 Content => $args{'Value'},
-     );
-     unless ($val) { 
-            return (0,$msg);
-     }
-        my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
-            Type     => 'CustomField',
-            Field    => $cf->Id,
-            OldReference => $val,
-	    ReferenceType => 'RT::ObjectCustomFieldValue',
-        );
-        unless($TransactionId) {
-            return(0, $self->loc("Couldn't create a transaction: [_1]", $Msg));
-        } 
-
-        return($TransactionId, $self->loc("[_1] is no longer a value for custom field [_2]", $TransactionObj->OldValue, $cf->Name));
+    return (
+        $TransactionId,
+        $self->loc(
+            "[_1] is no longer a value for custom field [_2]",
+            $TransactionObj->OldValue, $cf->Name
+        )
+    );
 }
 
 # }}}
@@ -1763,7 +1793,6 @@ sub CustomFieldValues {
     $cf_values->LimitToCustomField($field) if ($field);
     $cf_values->LimitToObject($self);
     $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-
 
     return ($cf_values);
 }

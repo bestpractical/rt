@@ -439,7 +439,7 @@ sub AddValueForTicket {
 
     my $ticket = RT::Ticket->new($self->CurrentUser);
     $ticket->Load($args{'Ticket'});
-    return($self->AddValueForObjecT(Content => $args{'Content'}, Object => $ticket));
+    return($self->AddValueForObject(Content => $args{'Content'}, Object => $ticket,@_));
 
 }
 
@@ -465,7 +465,7 @@ sub DeleteValueForTicket {
 
     my $ticket = RT::Ticket->new($self->CurrentUser);
     $ticket->load($args{'Ticket'});
-    return ($self->DeleteValueForObject(Object => $ticket, Content => $args{'Content'}));
+    return ($self->DeleteValueForObject(Object => $ticket, Content => $args{'Content'}, @_));
 
 }
 
@@ -946,6 +946,7 @@ sub DeleteValueForObject {
                  Id => undef,
 		     @_ );
 
+
     unless ($self->CurrentUserHasRight('ModifyObjectCustomFieldValues')) {
         return (0, $self->loc('Permission Denied'));
     }
@@ -955,13 +956,14 @@ sub DeleteValueForObject {
     if (my $id = $args{'Id'}) {
 	$oldval->Load($id);
     }
-    else {
+    unless ($oldval->id) { 
 	$oldval->LoadByObjectContentAndCustomField(
 	    Object => $args{'Object'}, 
 	    Content =>  $args{'Content'}, 
-	    CustomField => $self->Id
+	    CustomField => $self->Id,
 	);
     }
+
 
     # check ot make sure we found it
     unless ($oldval->Id) {
@@ -995,6 +997,7 @@ sub ValuesForObject {
 	
 	
 	$values->LimitToCustomField($self->Id);
+	$values->LimitToEnabled();
     $values->LimitToObject($object);
 
 	return ($values);

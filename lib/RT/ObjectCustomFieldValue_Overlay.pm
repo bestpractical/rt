@@ -109,7 +109,9 @@ sub LoadByTicketContentAndCustomField {
     $self->LoadByCols( Content => $args{'Content'},
                          CustomField => $args{'CustomField'},
                          ObjectType => 'RT::Ticket',
-                         ObjectId => $args{'Ticket'},);
+                         ObjectId => $args{'Ticket'},
+			 Disabled => 0
+			 );
 
     
 }
@@ -127,9 +129,10 @@ sub LoadByObjectContentAndCustomField {
     $self->LoadByCols( Content => $args{'Content'},
                          CustomField => $args{'CustomField'},
                          ObjectType => ref($obj),
-                         ObjectId => $obj->Id,);
+                         ObjectId => $obj->Id,
+			 Disabled => 0
+			 );
 
-    
 }
 
 sub Delete {
