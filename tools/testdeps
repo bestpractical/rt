@@ -11,28 +11,6 @@
 # the modules needed by RT before you can install it.
 #
 
-# TODO Polish this a whole lot
-#
-# in a MakeMaker-based install, you can do:
-#
-#    'PREREQ_PM' => {
-#                     'DBI'                 => 1.13,
-#                     'HTML::Mason'         => 0.895,
-#                     'Date::Manip'         => 0,
-#                     'Date::Format'        => 0,
-#                     'MIME::Entity'        => 5.108,
-#                     'Mail::Mailer'        => 1.20,
-#                     'CGI::Cookie'         => 1.06,
-#                     'Log::Dispatch'       => 1.6,
-#                     'HTML::Entities'      => 0,
-#                     'Text::Wrapper'       => 0,
-#                     'Text::Template'      => 0,
-#                     'DBIx::SearchBuilder' => 0,
-#                     'Apache::Session'     => 1.03,
-#                     'DBIx::DataSource'    => 0.03,
-#                     'DBIx::DBSchema'      => 0.13,
-#                   },
-
 use strict;
 
 use vars qw($mode $module @modules);
@@ -41,9 +19,9 @@ $mode = shift || &print_help;
 
 @modules = qw(
 DBI 1.13
-DBIx::DataSource 
+DBIx::DataSource 0.02
 DBIx::DBSchema 0.14
-DBIx::SearchBuilder 0.13
+DBIx::SearchBuilder 0.15
 HTML::Entities 
 HTML::Mason 0.895
 CGI::Cookie 1.06

@@ -23,9 +23,8 @@ to just work out of the box.
 BUGS
 ----
 
-Have a look at <URL:
-http://www.fsck.com/rt/webrt.cgi?username=rt2guest&password=rt2guest&q_status=open&q_queue=RT+2.0+Bugs&display=Queue
-> for known bugs.
+Have a look at <URL:http://fsck.com/rt2/> for known bugs. (login as
+guest/guest)
 
 To submit a bug, send an email to rt-2.0-bugs@fsck.com.
 
@@ -67,10 +66,10 @@ GENERAL INSTALLATION
     called testdeps.pl that uses CPAN to automate all of this.
 
 2.1   Check for compliance:
-	perl rt/bin/testdeps.pl -warn
+	perl rt/tools/testdeps -warn
 
 2.2   If there are unsatisfied dependencies, install them by hand or
-      run rt/bin/testdeps.pl -fix
+      run rt/tools/testdeps -fix
 
 3   Create a user rt with primary group rt
 

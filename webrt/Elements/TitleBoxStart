@@ -1,6 +1,6 @@
 <TABLE BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=3 WIDTH="<%$width%>">
 <TR> 
-<TD><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=5 ALT="&nbsp;"></TD>
+<TD><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 ALT="&nbsp;"></TD>
 <TD valign=middle align=left bgcolor="<%$color%>"> 	
 <font size=-1 color="#ffffff"><b><%$title |n %></b></font>
 </TD>
@@ -11,7 +11,7 @@
 </TD>
 </TR>	
 <TR> 
-<TD><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=5 ALT="&nbsp;"></TD>
+<TD><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=1 ALT="&nbsp;"></TD>
 <TD COLSPAN=2 bgcolor="<%$contentbg%>" valign=top WIDTH=100%>
 
 	
