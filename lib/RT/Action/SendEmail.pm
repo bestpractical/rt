@@ -73,8 +73,10 @@ sub Prepare  {
 
   $self->SetSubject();
 
+  my $tag = "[$RT::rtname #".$self->TicketObj->id."]";
   my $sub = $self->TemplateObj->MIMEObj->head->get('subject');
-  $self->TemplateObj->MIMEObj->head->replace('subject', "[$RT::rtname #".$self->TicketObj->id."] $sub");  
+  $self->TemplateObj->MIMEObj->head->replace('subject', "$tag $sub")
+      unless $sub =~ /\Q$tag\E/;
 
   $self->SetReturnAddress();
 
@@ -351,7 +353,6 @@ sub SetSubject {
 
   }
 
-  #TODO Set the subject
   return($self->{'Subject'});
 }
 # }}}
