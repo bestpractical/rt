@@ -205,7 +205,7 @@ endif
 
 
 default:
-	@echo "Read the readme"
+	@echo "Read the README"
 
 install: dirs mux-install libs-install initialize config-replace  nondestruct instruct
 
