@@ -330,7 +330,7 @@ sub Values {
     my $self = shift;
 
     my $cf_values = RT::CustomFieldValues->new($self->CurrentUser);
-    if ( $self->__Value('Queue') == 0 || $self->CurrentUserHasRight( 'SeeQueue') ) {
+    if ( $self->CurrentUserHasRight( 'SeeCustomField') ) {
         $cf_values->LimitToCustomField($self->Id);
     }
     return ($cf_values);
@@ -651,16 +651,10 @@ sub _Value {
     my $self  = shift;
     my $field = shift;
 
-    # We need to expose the queue so that we can do things like ACL checks
-    if ( $field eq 'Queue') {
-          return ( $self->SUPER::_Value($field) );
-     }
-
-
-    #Anybody can see global custom fields, otherwise we need to do the rights check
-        unless ( $self->__Value('Queue') == 0 || $self->CurrentUserHasRight( 'SeeQueue') ) {
-            return (undef);
-        }
+    # we need to do the rights check
+    unless ( $self->CurrentUserHasRight( 'SeeCustomField') ) {
+	return (undef);
+    }
     return ( $self->__Value($field) );
 
 }
