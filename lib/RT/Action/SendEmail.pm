@@ -119,16 +119,28 @@ sub Commit  {
       if ($self->{'Cc'} && @{$self->{'Bcc'}});;
     
     my $MIMEObj = $self->TemplateObj->MIMEObj;
-    $MIMEObj->make_singlepart;
 
     # try to convert message body from utf-8 to $RT::EmailOutputEncoding
-    $self->SetHeader('Content-Type',
-		     'text/plain;charset="utf-8"');
-    RT::I18N::SetMIMEEntityToEncoding($MIMEObj,
-				      $RT::EmailOutputEncoding);
-    $self->SetHeader('Content-Type',
-		     'text/plain;charset="'. $RT::EmailOutputEncoding .'"');
+    $self->SetHeader('Content-Type', 'text/plain;charset="utf-8"');
+    RT::I18N::SetMIMEEntityToEncoding($MIMEObj, $RT::EmailOutputEncoding);
+    $self->SetHeader('Content-Type', 'text/plain;charset="'. $RT::EmailOutputEncoding .'"');
+
+    $MIMEObj->make_multipart('mixed');
+    # Build up a MIME::Entity that looks like the original message.
+
+    my $do_attach = $self->TemplateObj->MIMEObj->head->get('RT-Attach-Message');
     
+    if ($do_attach) {
+    my $attachments      = RT::Attachments->new($RT::SystemUser);
+    $attachments->Limit( FIELD => 'TransactionId',
+                         VALUE => $self->TransactionObj->Id );
+    $attachments->OrderBy('id');
+    while ( my $attach = $attachments->Next ) {
+        next unless ($attach->Content);
+        $MIMEObj->attach(Type => $attach->ContentType, Data=> $attach->Content) ;
+    }
+
+    }
     #If we don't have any recipients to send to, don't send a message;
     unless ($MIMEObj->head->get('To') ||
 	    $MIMEObj->head->get('Cc') || 

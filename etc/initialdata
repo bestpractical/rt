@@ -236,7 +236,7 @@ you may reply to this message.
     {  Queue       => '0',
        Name        => 'Transaction',                     # loc
        Description => 'Default transaction template',    # loc
-       Content     => '
+       Content     => 'RT-Attach-Message: yes
 
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
@@ -247,8 +247,7 @@ Transaction: {$Transaction->Description}
   Requestors: {$Ticket->RequestorAddresses}
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
--------------------------------------------------------------------------
-{$Transaction->Content()}'
+'
     },
 
     {
@@ -256,20 +255,19 @@ Transaction: {$Transaction->Description}
       Queue       => '0',
       Name        => 'Admin Correspondence',                     # loc
       Description => 'Default admin correspondence template',    # loc
-      Content     => '
+      Content     => 'RT-Attach-Message: yes
 
 
 <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
-
-{$Transaction->Content()}'
+'
     },
 
     {  Queue       => '0',
        Name        => 'Correspondence',                          # loc
        Description => 'Default correspondence template',         # loc
-       Content     => '
+       Content     => 'RT-Attach-Message: yes
 
-{$Transaction->Content()}'
+'
     },
 
     {  Queue       => '0',
