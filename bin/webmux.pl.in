@@ -98,6 +98,14 @@ use Carp;
 use RT::Interface::Web::Handler;
 $Handler = RT::Interface::Web::Handler->new(@RT::MasonParameters);
 
+if (!$RT::DevelMode) {
+    # Under static_source, we need to purge the component cache
+    # each time we restart, so newer components may be reloaded.
+    use File::Path qw( rmtree );
+    use File::Glob qw( bsd_glob );
+    rmtree([ bsd_glob("$RT::MasonDataDir/obj/*") ], 0, 1);
+}
+
 sub handler {
     ($r) = @_;
 
