@@ -75,7 +75,7 @@ value="1"
 %  # show 'move up' unless it's the first item
 %  if ($count++ and $Checked) {
   <TD valign="TOP">
-    [<a href="CustomFields.html?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
+    [<a href="<%$RT::WebPath%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
 %  } else {
   <TD valign="TOP" ALIGN=RIGHT>
 %  }
@@ -83,7 +83,7 @@ value="1"
 %  # show 'move down' unless it's the last item
 %  if ($count != @CustomFields and $Checked) {
 %  $m->print(' | ') if $count > 1;
-    [<a href="CustomFields.html?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>]
+    [<a href="<%$RT::WebPath%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>]
 %  }
   </TD>
 </TR>
