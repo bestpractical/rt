@@ -323,7 +323,7 @@ sub Comment {
 	       @_ );
   
   if ($args{'subject'} !~ /\[(\s*)comment(\s*)\]/i) {
-    $args{'subject]} .= ' [comment]';
+    $args{'subject'} .= ' [comment]';
   }
   #Record the correspondence (write the transaction)
   $self->_NewTransaction('comment',$args{'subject'},$args{'time_taken'},
@@ -484,14 +484,15 @@ sub IsRequestor {
   my $self = shift;
   my $username = shift;
   
-  #
-  # TODO: we need to actually do a compoarieson here. 
-  #
-  # if the user is a requestor:
-  return(1);
-  #else
-  return(undef);
-  #
+  #if the requestors string contains the username
+
+  if ($self->Requestor() =~ /\$username/) {
+
+    return(1);
+  }
+  else {
+    return(undef);
+  }
 };
 
 
@@ -513,7 +514,7 @@ sub _UpdateDateActed {
 sub _set_and_return {
   my $self = shift;
   my (@args);
-  #if the user is trying to display only {
+  #if the user is trying to display only 
   if (@_ == undef) {
     
     if ($self->Display_Permitted) {
@@ -569,23 +570,25 @@ sub _set_and_return {
 
 sub Merge {
   my $self = shift;
+  my $MergeInto = shift;
+  
+  #Make sure this user can modify this ticket
 
-# TODO: IMPLEMENT
-
-#  my  ($in_serial_num, $in_merge_into, $in_current_user) = @_;
-#  my ($new_requestors, $old_requestors, @requestors_list, $user); 
-#  my ($transaction_num);
-#    my %requestors;
-#    if (!(&can_manipulate_request($in_serial_num,$in_current_user)) or (!(&can_manipulate_request($in_merge_into,$in_current_user)))) {
-#      return (0,"You don't have permission to modify both requests you wish to merge");
-#    }
-#    #&req_in($in_serial_num,$in_current_user);
-#    #&req_in($in_merge_into,$in_current_user);
-#    if ( $req[$in_merge_into]{'date_created'} == 0) {
-#	return (0,"That request doesn't exist\n");
-#      }
-    
-#    $old_requestors=$req[$in_serial_num]{'requestors'};
+  #Load $MergeInto as Ticket $Target
+  
+  #If the $Target doesn't exist, return an area
+  
+  
+  #Make sure this user can modify $Target
+  
+  #If I have an owner and the $Target doesn't, set them on the target
+  
+  #If this ticket has an area and the $Target doesn't, set them on the target
+  
+  #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
+  
+  #Give the $Target my requestors
+  #    $old_requestors=$req[$in_serial_num]{'requestors'};
 #    $new_requestors=$req[$in_merge_into]{'requestors'};
 #    @requestors_list=split(/,/ , $old_requestors . ", $new_requestors");
 #    foreach $user (@requestors_list) {
@@ -595,28 +598,11 @@ sub Merge {
 #    }
 #    $new_requestors = join(",",sort keys %requestors);
     
-#    &update_each_req($in_merge_into,'requestors',$new_requestors);
+  #Set my effective_sn to the $Target's Effective SN.
 
-#  if ($req[$in_merge_into]{'date_created'} > $req[$in_serial_num]{'date_created'}) {
-#	&update_each_req($in_merge_into,'date_created',$req[$in_serial_num]{'date_created'});
-#    }
-#    if (($req[$in_merge_into]{'date_told'} < $req[$in_serial_num]{'date_told'}) && ($req[$in_serial_num]{'date_told'} > 0)) {
-#	&update_each_req($in_merge_into,'date_told',$req[$in_serial_num]{'date_told'});
-#    }
-
-#    if (($req[$in_merge_into]{'date_due'} < $req[$in_serial_num]{'date_due'}) && ($req[$in_serial_num]{'date_due'} > 0)) {
-#	&update_each_req($in_merge_into,'date_due',$req[$in_serial_num]{'date_due'});
-#    }    
-    
-
-#    $transaction_num=&update_request($in_serial_num,'effective_ticket',$in_merge_into, $in_current_user);    
-
-#	$query_string = "UPDATE transactions SET effective_sn = $in_merge_into WHERE effective_sn = $in_serial_num";
-#	$sth = $dbh->prepare($query_string) or warn "prepare had some problem: $DBI::errstr\n";
-#	$rv = $sth->execute  or warn "execute had some problem: $DBI::errstr\n";
-
-#    &req_in($in_merge_into,$in_current_user);
-#    return ($transaction_num,"Request #$in_serial_num has been merged into request #$in_merge_into.");
+  #Set all my transactions Effective_SN to the $Target's Effective_Sn
+  
+  
 
 }  
 
