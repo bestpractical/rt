@@ -297,6 +297,7 @@ Queue: General
 Subject: foo, bar
 Owner: root
 Content: blah
+ENDOFCONTENT
 EOF
 
 $expected{ticket2} = <<EOF;
@@ -304,6 +305,7 @@ Queue: General
 Subject: foo bar
 Owner: root
 Content: blah
+ENDOFCONTENT
 EOF
 
 $expected{ticket3} = <<EOF;
@@ -311,6 +313,7 @@ Queue: General
 Subject: foo' bar
 Owner: root
 Content: blah'boo
+ENDOFCONTENT
 EOF
 
 $expected{ticket10} = <<EOF;
@@ -318,6 +321,7 @@ Queue: General
 Subject: foo' bar
 Owner: root
 Content: blah'
+ENDOFCONTENT
 EOF
 
 $expected{ticket11} = <<EOF;
@@ -325,6 +329,7 @@ Queue: General
 Subject: foo, bar
 Owner: root
 Content: blah
+ENDOFCONTENT
 EOF
 
 $expected{ticket12} = <<EOF;
@@ -332,6 +337,7 @@ Queue: General
 Subject: foo' bar
 Owner: root
 Content: blah'boo
+ENDOFCONTENT
 EOF
 
 $action->Parse($commas);
