@@ -3,19 +3,19 @@
 ## Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
 ## This is a library of static subs to be used by the Mason web
-## interface to RT, and maybe also for usage by webrt.cgi / webmux.pl.
+## interface to RT
 
 package HTML::Mason::Commands;
 use strict;
 
-#{{{ sub Error - calls Error and aborts
+# {{{ sub Error - calls Error and aborts
 sub Error {
     &mc_comp("/Elements/Error" , Why => shift);
     $m->abort;
 }
-#}}}
+# }}}
 
-#{{{ sub LoadTicket - loads a ticket
+# {{{ sub LoadTicket - loads a ticket
 sub LoadTicket {
     my $id=shift;
     my $CurrentUser = shift;
@@ -25,9 +25,9 @@ sub LoadTicket {
     }
     return $Ticket;
 }
-#}}}
+# }}}
 
-#{{{ sub CreateOrLoad - will create or load a ticket
+# {{{ sub CreateOrLoad - will create or load a ticket
 sub CreateOrLoad {
     my %args=(@_);
     my $CurrentUser = $args{'CurrentUser'};
@@ -79,7 +79,9 @@ sub CreateOrLoad {
     }
     return $Ticket;
 }
-#}}}
+# }}}
+
+# {{{ sub LinkUpIfRequested
 
 sub LinkUpIfRequested {
     my %args=@_;
@@ -109,6 +111,9 @@ sub LinkUpIfRequested {
     }
 }
 
+# }}}
+
+# {{{ sub ProcessSimpleActions
 ## TODO: This is a bit hacky, that eval should go away.  Eventually,
 ## the eval is not needed in perl 5.6.0.  Eventually the sub should
 ## accept more than one Action, and it should handle Actions with
@@ -122,6 +127,7 @@ sub ProcessSimpleActions {
 	push(@{$args{Actions}}, $msg);
     }
 }
+# }}}
 
 sub ProcessOwnerChangeRequest {
     my %args=@_;
@@ -132,6 +138,7 @@ sub ProcessOwnerChangeRequest {
     }
 }
 
+# {{{ sub ProcessUpdateMessage
 sub ProcessUpdateMessage {
     my %args=@_;
     if ($args{ARGS}->{'UpdateContent'}) {
@@ -161,6 +168,7 @@ sub ProcessUpdateMessage {
 	}
     }
 }
+# }}}
 
 sub ProcessStatusChangeQuery {
     my %args=@_;
@@ -170,122 +178,118 @@ sub ProcessStatusChangeQuery {
     }
 }
 
+# {{{ sub ProcessSearchQuery
 sub ProcessSearchQuery {
     my %args=@_;
-
+    
     ## TODO: The only parameter here is %ARGS.  Maybe it would be
     ## cleaner to load this parameter as $ARGS, and use $ARGS->{...}
     ## instead of $args{ARGS}->{...} ? :)
 
-    require RT::TicketCollection;
+    require RT::Tickets;
 
-    ## Tobix: Sticky searches is a very cool feature indeed.  It
-    ## should be handled in the same way as in KB, the search
-    ## criterias should be listed up, and it should be possible (from
-    ## the webui) to delete criterias, add criterias and delete all
-    ## criterias.
-
-    # Currently we'll only have "sticky searches" if explicitly asked
-    # for it (parameter keep). TODO: it should be opposit, the current
-    # search should be destroyed only when explicitly asked for it.
  
-    if ($args{ARGS}->{'keep'} && defined $session{'tickets'}) {
+#TODO We'll do sticky searches later
+    if (defined $session{'tickets'}) {
 	# Reset the old search
-	$session{'tickets'}->NewTickets;
+
+	$session{'tickets'}->GotoFirstItem;
     } else {
 	# Init a new search
-	$session{'tickets'} = RT::TicketCollection->new($session{'CurrentUser'});
+	$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'});
     }
-
-    # Set the query limit
+    
+    # {{{ Set the query limit
+    #TODO this doesn't work
     if ($args{ARGS}->{'LimitResultsPerPage'} and ($args{ARGS}->{'ValueOfResultsPerPage'})) {
 	$session{'tickets'}->Rows($args{ARGS}->{'ValueOfResultsPerPage'});
     }
+    # }}}
+   
 
-    # Limit owner
-    if ($args{ARGS}->{'LimitOwner'} and $args{ARGS}->{'ValueOfOwner'}) {
-	my $oper = $args{ARGS}->{'NegateOwner'} ? "!=" : "=";
-	$session{'tickets'}->NewRestriction (FIELD => 'Owner',
-					     VALUE => $args{ARGS}->{'ValueOfOwner'},
-					     OPERATOR => "$oper"
-					     );
+    # {{{ Limit owner
+    if ($args{ARGS}->{'ValueOfOwner'} ne '' ) {
+	my $owner = new RT::User($session{'CurrentUser'});
+
+	$owner->Load($args{ARGS}->{'ValueOfOwner'});
+	
+	$session{'tickets'}->Limit (FIELD => 'Owner',
+				    VALUE => $args{ARGS}->{'ValueOfOwner'},
+ 				    OPERATOR => $args{ARGS}->{'OwnerOp'},
+				    DESCRIPTION => "Owner " .
+				    $args{ARGS}->{'OwnerOp'} . " ".
+				    $owner->UserId
+				   );
+    }
+    # }}}
+
+    # {{{ Limit requestor email
+    #TODO this doesn't work
+    
+    if ($args{ARGS}->{'ValueOfRequestor'} ne '') {
+	my $alias=$session{'tickets'}->Limit  (FIELD => 'WatcherEmail',
+					       VALUE => $args{ARGS}->{'ValueOfRequestor'},
+					       OPERATOR =>  $args{ARGS}->{'RequestorOp'},
+					       DESCRIPTION => "Watcher's email address ".
+					       $args{ARGS}->{'RequestorOp'} . " ".
+					       $args{ARGS}->{'ValueOfRequestor'} );
+	
+    }
+    # }}}
+    # {{{ Limit Queue
+    if ($args{ARGS}->{'ValueOfQueue'} ne '') {
+	my $queue = new RT::Queue($session{'CurrentUser'});
+	$queue->Load($args{ARGS}->{'ValueOfQueue'});
+	$session{'tickets'}->Limit (FIELD => 'Queue',
+				    VALUE => $args{ARGS}->{'ValueOfQueue'},
+				    OPERATOR => $args{ARGS}->{'QueueOp'},
+				    DESCRIPTION => 'Queue ' .  $args{ARGS}->{'QueueOp'}. " ".
+				    $queue->QueueId
+				   );
+    }
+    # }}}
+        
+
+
+    # {{{ Limit Status
+    if ($args{ARGS}->{'ValueOfStatus'} ne '') {
+	$session{'tickets'}->Limit (FIELD => 'Status',
+				    VALUE => $args{ARGS}->{'ValueOfStatus'},
+				    OPERATOR =>  $args{ARGS}->{'StatusOp'},
+				    DESCRIPTION => "Status ".  $args{ARGS}->{'StatusOp'} .
+				    " ".$args{ARGS}->{'ValueOfStatus'}
+				   );
     }
 
-    ## Limit requestor email
+# }}}
 
-    ## TODO: This don't work - and it's a hard nut to crack.
-    ## Sometimes we also need to check the User table!  I'd suggest
-    ## doing this as a three-step operation - first fetching records
-    ## from the User table, then from the Watcher table, and finally
-    ## from the Ticket table, using sth like "SELECT * FROM
-    ## Tickets,Watchers WHERE Watchers.id IN (53,67,...) and
-    ## Watchers.Scope='Ticket' and Tickets.id=Watchers.value".
-
-    ## That solution might break a bit, since a saved query can't
-    ## catch new Tickets with the same Requestor.  Anyway, if properly
-    ## documented, I think we can live with that.  Eventually, we'll
-    ## need to improve the TicketCollection system.
-
-    ## TobiX
-
-    if ($args{ARGS}->{'LimitRequestorByEmail'}) {
-	my $oper = $args{ARGS}->{'NegateRequestor'} ? "!=" : "=";
-	my $alias=$session{'tickets'}->NewRestriction 
-	    (FIELD => 'Email',
-	     VALUE => $args{ARGS}->{'ValueOfRequestors'},
-	     TABLE => 'Watchers',
-	     OPERATOR => "$oper",
-	     EXT_LINKFIELD => 'Value');
-	# TODO:
-	# THIS BREAKS.  NewRestriction doesn't return alias.  More work is needed here.. :/
-	# Possible idea; add SET_ALIAS as a method to the Limit, allowing
-	# a join to be performed with a custom-set alias
-	$session{'tickets'}->NewRestriction
-	    (FIELD => 'Scope',
-	     VALUE => 'Ticket',
-	     ALIAS => $alias,
-	     OPERATOR => "=");
-	$session{'tickets'}->NewRestriction
-	    (FIELD => 'Type',
-	     VALUE => 'Requestor',
-	     ALIAS => $alias,
-	     OPERATOR => "=");
+    
+    # {{{ Limit Subject
+    if ($args{ARGS}->{'ValueOfSubject'} ne '') {
+	$session{'tickets'}->Limit(FIELD => 'Subject',
+				   VALUE =>  $args{ARGS}->{'ValueOfSubject'},
+				   OPERATOR => $args{ARGS}->{'SubjectOp'},
+				   DESCRIPTION => "Subject ". 
+				   $args{ARGS}->{'SubjectOp'}." ".
+				   $args{ARGS}->{'ValueOfSubject'}
+				  );
     }
 
-    ## Limit Subject
-    if ($args{ARGS}->{'LimitSubject'}) {
-	my $val=$args{ARGS}->{'ValueOfSubject'};
-	my $oper = $args{ARGS}->{'NegateSubject'} || "=";
-	$oper="!=" if ($oper eq 1);
-	if ($oper eq 'Like') {
-	    $val="%$val%";
-	}
-	$session{'tickets'}->NewRestriction (FIELD => 'Subject',
-					     VALUE => $val,
-					     OPERATOR => $oper
-					     );
+    # }}}    
+     # {{{ Limit Subject
+    if ($args{ARGS}->{'ValueOfContent'} ne '') {
+	$session{'tickets'}->Limit(FIELD => 'Content',
+				   VALUE =>  $args{ARGS}->{'ValueOfContent'},
+				   OPERATOR => $args{ARGS}->{'ContentOp'},
+				   DESCRIPTION => "Transaction content". 
+				   $args{ARGS}->{'ContentOp'}." ".
+				   $args{ARGS}->{'ValueOfContent'}
+				  );
     }
 
-    ## Limit Queue
-    if ($args{ARGS}->{'LimitQueue'}) {
-	my $oper = $args{ARGS}->{'NegateQueue'} ? "!=" : "="; 
-	$session{'tickets'}->NewRestriction (FIELD => 'Queue',
-					     VALUE => $args{ARGS}->{'ValueOfQueue'},
-					     OPERATOR => "$oper"
-					     );
-    }
-
-    ## Limit Status
-    if ($args{ARGS}->{'LimitStatus'}) {
-	my $oper = $args{ARGS}->{'NegateStatus'} ? "!=" : "="; 
-	$session{'tickets'}->NewRestriction (FIELD => 'Status',
-					     VALUE => $args{ARGS}->{'ValueOfStatus'},
-					     OPERATOR => "$oper"
-					     );
-    }
-
-    $session{'tickets'}->ApplyRestrictions;
+    # }}}   
 }
+# }}}
 
 # TODO: This might eventually read the cookies, user configuration
 # information from the DB, queue configuration information from the

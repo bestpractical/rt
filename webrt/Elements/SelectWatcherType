@@ -4,11 +4,14 @@
 
 <SELECT NAME ="WatcherType">
 %# Make nice options:
-%for my $option ('Requestor', 'Cc', 'AdminCc') {
+%for my $option (@types) {
 <OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%$option%></OPTION>
 %}
 </SELECT>
 
+<%ONCE>
+my @types = qw  ('Requestor', 'Cc', 'AdminCc');
+</%ONCE>
 <%ARGS>
 $Default=>undef
 </%ARGS>

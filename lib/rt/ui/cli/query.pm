@@ -124,14 +124,15 @@ sub PrintRow {
   }
   print "\n";
 }
+
 # }}}
 
 # {{{ sub build_query 
 
 sub build_query  {
   my ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
-  require RT::TicketCollection;
-  my $Tickets = RT::TicketCollection->new($CurrentUser);
+  require RT::Tickets;
+  my $Tickets = RT::Tickets->new($CurrentUser);
 
   # A hack to deal with the default..
   if ($#ARGV==-1) {
@@ -153,26 +154,26 @@ sub build_query  {
     
     if ($ARGV[$i] eq '-queue') {
       my $queue_id = $ARGV[++$i];
-      $Tickets->NewRestriction( FIELD => 'Queue',
+      $Tickets->Limit( FIELD => 'Queue',
 			VALUE => "$queue_id");
     }
     
     if ($ARGV[$i] eq '-owner') {
       my $owner = $ARGV[++$i];
-      $Tickets->NewRestriction( FIELD => 'Owner',
+      $Tickets->Limit( FIELD => 'Owner',
 			VALUE => "$owner");
       
     }
     
     if ($ARGV[$i] eq '-unowned'){
-      $Tickets->NewRestriction( FIELD => 'Owner',
+      $Tickets->Limit( FIELD => 'Owner',
 			VALUE => $RT::Nobody->Id);
       
     }
     if ($ARGV[$i] =~ '-prio'){
       my $operator = $ARGV[++$i];
       my $priority = $ARGV[++$i];
-      $Tickets->NewRestriction( FIELD => 'Priority',
+      $Tickets->Limit( FIELD => 'Priority',
 			OPERATOR => "$operator",
 			VALUE => "$priority");
     }
@@ -180,35 +181,50 @@ sub build_query  {
     if ($ARGV[$i] =~ '-stat'){
       my $status = $ARGV[++$i];
       print "Got some status\n";
-      $Tickets->NewRestriction( FIELD => 'Status',
+      $Tickets->Limit( FIELD => 'Status',
 			VALUE => "$status");
     }
     
     if ($ARGV[$i] eq '-open'){
-      $Tickets->NewRestriction(FIELD => 'Status', VALUE => 'open');
+      $Tickets->Limit(FIELD => 'Status', VALUE => 'open');
     }
+    
+
     if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
-      $Tickets->NewRestriction( FIELD => 'Status',
+      $Tickets->Limit( FIELD => 'Status',
 			VALUE => "resolved");
       
       
     }
     if ($ARGV[$i] eq '-dead'){
-      $Tickets->NewRestriction( FIELD => 'Status',
+      $Tickets->Limit( FIELD => 'Status',
 			VALUE => "dead");
     }    
     
     if ($ARGV[$i] eq '-stalled'){
-      $Tickets->NewRestriction (FIELD => 'Status', VALUE => 'stalled');
+      $Tickets->Limit (FIELD => 'Status', VALUE => 'stalled');
     }
     
     if ($ARGV[$i] eq '-user') {
       my $requestors = $ARGV[++$i];
-      $Tickets->NewRestriction( FIELD => 'Requestors',
+      $Tickets->Limit( FIELD => 'Requestors',
 			VALUE => "%$requestors%",
 			OPERATOR => 'LIKE');
     }
+    if ($ARGV[$i] eq '-subject') {
+	my $subject = $ARGV[++$i];
+	$Tickets->Limit(FIELD => 'Subject',
+			VALUE => $subject,
+			OPERATOR => 'LIKE');
+    }
     
+    if ($ARGV[$i] eq '-content') {
+	my $content = $ARGV[++$i];
+	$Tickets->Limit (FIELD => 'Content',
+			 VALUE => $content,
+			 OPERATOR => 'LIKE'
+			 );
+    }
     if ($ARGV[$i] eq '-maxitems') {
       $Tickets->Rows($ARGV[++$i]);
     }
@@ -236,7 +252,7 @@ sub build_query  {
     }
   }    
   
-  $Tickets->ApplyRestrictions();
+
   return ($Tickets);
 }
 
@@ -293,9 +309,11 @@ EOFORM
 
 
   }
+
 # }}}
 
 # {{{ sub print_header 
+
 sub print_header  {
     my($format_string) =@_;
     my ($field, $length);
@@ -383,6 +401,7 @@ sub print_header  {
     }
     print "\n";
   }
+
 # }}}
 
 # {{{ sub GetCurrentUser 

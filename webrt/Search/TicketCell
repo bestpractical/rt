@@ -1,20 +1,27 @@
-% my $l=$Column->{TicketLink}; if ($l) {
-<a href="<% $l!=1 ? $l : "../Ticket/Display.html?" %>id=<%$Ticket->Id%><%$Column->{ExtraLinks}||""%>"
+%#$Header$
+<% $link |n%><%$Column->{Constant} || eval("\$Ticket->$Column->{TicketAttribute}") || "-" %><% $endlink|n %>
+<%INIT>
 
-%# TODO: Is it right to store this in the %session?  Maybe it would be
-%# better to store misc. user preferences in the DB?
+my $link = "";
+my $endlink = "";
+if ($Column->{TicketLink}) {
+	$link = "<A HREF=\"";
+	if ($Column->{TicketLink} == 1 ) {
+		$link .= "../Ticket/Display.html?";
+	}
+	else {
+		$link .= $Column->{TicketLink};
+	}
 
-%if ($session{NewWindowOption}) {
-TARGET="TicketDisplay<% $session{AlwaysNewWindowOption} && (time() . rand(1024)) %>"
-%}
->
-%}
-<%$Column->{Constant} || eval("\$Ticket->$Column->{TicketAttribute}") || "-" %>
+	$link .= "id=".$Ticket->Id . $Column->{ExtraLinks};
 
-% if ($l) {
-</a>
-% }
-
+	if ($session{NewWindowOption}) {
+		$link .= "TARGET=\"TicketDisplay".$session{AlwaysNewWindowOption} && (time() . rand(1024))."\" ";
+	}
+	$link .= "\">";
+	$endlink = "</a>";
+}
+</%INIT>
 <%ARGS>
 $Ticket => undef
 $Column => undef

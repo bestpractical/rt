@@ -1,15 +1,17 @@
 %# $Header$
-<SELECT NAME ="<%$Name%>">
-<OPTION VALUE="<%$Default%>" SELECTED><%$Default%>
-<OPTION VALUE="new">new
-<OPTION VALUE="open" >open
-<OPTION VALUE="stalled" >stalled
-<OPTION VALUE="resolved" >resolved
-<OPTION VALUE="dead" >dead
-</SELECT>
 
+<SELECT NAME ="<%$Name%>">
+<OPTION VALUE="">-</OPTION>
+%foreach $status (@status) {
+<OPTION VALUE="<%$status%>" <%($Default eq $status) && 'SELECTED'%>><%$status%></OPTION>
+% }
+</SELECT>
+<%ONCE>
+my @status = qw(new open stalled resolved dead);
+</%ONCE>
 <%ARGS>
+$status => undef
 $Name => undef
 $Default => undef
-
+ 
 </%ARGS>

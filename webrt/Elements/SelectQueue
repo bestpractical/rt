@@ -1,20 +1,18 @@
 %# $Header$
 
 <SELECT NAME ="<%$Name%>">
+<OPTION VALUE="">-</OPTION>
 % while (my $queue=$q->Next) {
-<OPTION VALUE="<%$queue->Id%>"><%$queue->Description%></OPTION>
+<OPTION VALUE="<%$queue->Id%>" <%($queue->Id eq $Default) && 'DEFAULT'%>><%$queue->QueueId%> (<%$queue->Description%>)</OPTION>
 % }
 </SELECT>
 
 <%ARGS>
 $Name => undef
-$True => undef
-$False => undef
 $Default => undef
 </%ARGS>
 
 <%INIT>
-# TODO handle Default
 use RT::Queues;
 my $q=new RT::Queues($session{'CurrentUser'});
 $q->UnLimit;

@@ -1,9 +1,9 @@
 <SELECT NAME="<%$Name%>">
-
-%while ( my $User = $Users->Next()) {
-
+<OPTION VALUE="">-</OPTION>
+%while ( my $User = $Users->Next())  {
+% if ($User->CanManipulate) {
 <OPTION VALUE="<%$User->Id()%>" <% ($User->Id() == $Default) && "SELECTED" %>><%$User->UserId()%></OPTION>
-
+% }
 %}
 
 </SELECT>
@@ -11,11 +11,12 @@
 <%ARGS>
 $Queue => undef
 $Name => undef
-$Default => 2
+$Default => undef
+$User => undef
 </%ARGS>
 
 <%INIT>
-use RT::CurrentUser;
+
 use RT::Users;
 
 # TODO: respect the ACLs

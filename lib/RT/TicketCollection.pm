@@ -120,32 +120,7 @@ sub FirstRow {
   return ($self->Tickets->FirstRow(@_));
 }
 # }}}
-  
-# {{{ sub NextPage
-sub NextPage {
-  my $self = shift;
-  $self->FirstRow( $self->FirstRow + $self->Rows );
-}
-# }}}
 
-# {{{ sub FirstPage
-sub FirstPage {
-  my $self = shift;
-  $self->FirstRow(1);
-}
-# }}}
-
-# {{{ sub PrevPage
-sub PrevPage {
-  my $self = shift;
-  if ($self->FirstRow > 1) {
-    $self->FirstRow( $self->FirstRow - $self->Rows );
-  }
-  else {
-    $self->FirstRow(1);
-  }
-}
-# }}}
 
 # {{{ sub _Init 
 sub _Init  {
