@@ -33,9 +33,10 @@
 
 <form method="post" action="Build.html">
 <input type="hidden" name="SearchId" value="<%$SearchId%>">
-<& /Elements/MessageBox, Name => "Query", Default => $Query, Width => '100%' &>
-
-<& /Elements/MessageBox, Name => "Format", Default => $Format, Width => '100%' &>
+<textarea name="Query" rows="8" cols="72"><%$Query%></textarea>
+<br>
+<textarea name="Format" rows="8" cols="72"><%$Format%></textarea>
+<br>
 <& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => "Apply your changes"&>
 </form>
 

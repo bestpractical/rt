@@ -173,10 +173,14 @@ $tabs->{"g"} = { path      => "Search/Build.html$args",
 $tabs->{"h"} = { path      => "Search/Edit.html$args",
                  title     => loc('Advanced'),
                  separator => 1 };
+if ($current_tab =~  "Search/Results.html") {
 $tabs->{"i"} = { path      => "Search/Results.html$args",
                  title     => loc('Show Results'),
                  separator => 1 };
 
+$current_tab = "Search/Results.html$args";
+
+}
 </%INIT>
 
   

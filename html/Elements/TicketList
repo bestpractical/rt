@@ -38,8 +38,9 @@
 <& .Row, Format => \@Format, i => $i, record => $record &>
 % }
 </TABLE>
+<hr>
 % if ($ShowNavigation) {
-<&|/l, $Page, int($TotalFound/$Rows)&>Page [_1] of [_2]</&>
+<&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
 % if ($Page != 1) {
 <A href="<%$BaseURL%>?Page=<%$Page-1%>&Rows=<%$Rows%>&Format=<%$Format%>&Query=<%$Query%>"><&|/l&>Previous Page</&></a>
 % }
@@ -457,7 +458,7 @@ foreach my $column (@Format) {
             if ( $value && ref($value)) {
                 $m->out( &{ $value } ( $record, $i ) );
             } else {
-                $m->out($value . " HI ");
+                $m->out($value );
             }
         }
         else {
