@@ -158,6 +158,7 @@ sub _Accessible  {
 	      Gecos => 'read',
 	      RealName => 'read',
 	      Password => 'neither',
+          Lang => 'read',
 	      EmailAddress => 'read',
 	      Privileged => 'read',
 	      IsAdministrator => 'read'
@@ -327,8 +328,8 @@ sub LanguageHandle {
     if  ((!defined $self->{'LangHandle'}) || 
          (!UNIVERSAL::can($self->{'LangHandle'}, 'maketext')) || 
          (@_))  {
-	if ($self->UserObj and my $lang = $self->UserObj->Lang) {
-	    push @_, $lang;
+	if ( $self->Lang) {
+	    push @_, $self->Lang;
 	}
         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
     }
