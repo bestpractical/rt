@@ -97,7 +97,7 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
 # "Pg" is known to work
 # "Oracle" is in the early stages of working.
 
-DB_TYPE			=	`${GETPARAM} DatabaseName`
+DB_TYPE			=	`${GETPARAM} DatabaseType`
 
 # Set DBA to the name of a unix account with the proper permissions and 
 # environment to run your commandline SQL sbin
@@ -247,6 +247,15 @@ config-install:
 	install -b -D -g $(RTGROUP) -o $(BIN_OWNER) etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE_PATH)
 	@echo "Installed configuration. about to install rt in  $(RT_PATH)"
 
+test: 
+	$(PERL) -Ilib lib/t/smoke.t
+
+regression: regression-instruct dropdb initialize-database
+	(cd ./lib; $(PERL) Makefile.PL && make testifypods && $(PERL) t/regression.t)
+		
+regression-instruct:
+	@echo "About to wipe your database for a regression test. ABORT NOW with Control-C"
+
 
 # {{{ database-installation
 genschema:
@@ -265,7 +274,7 @@ insert-schema:
 	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb insert
 
 insert-baseline-data:
-		$(DESTDIR)/$(RT_SBIN_PATH)/insertdata
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/insertdata
 
 # }}}
 
@@ -338,6 +347,10 @@ bin-install:
 				s'!!RT_LIB_PATH!!'"$(RT_LIB_PATH)"'g;"\
 		$(BINARIES)
 # }}}
+
+
+factory: createdb insert-schema
+	cd lib; $(PERL) sbin/factory  $(DB_DATABASE) RT
 
 commit:
 	aegis -build ; aegis -diff ; aegis -test; aegis --development_end

@@ -85,7 +85,6 @@ my ( @id,
      @memberof, 
      @refersto,
      $mergeinto,
-     @keywords,
      $time_taken,
      $verbose,
      $debug,
@@ -128,7 +127,6 @@ my @args =("id=s" => \@id,
 	   "history|show" => \$history,
 	   "summary:s" => \$summary,
 	   "create" => \$create,
-	   "keywords=s" => \@keywords,
 	   "requestor|requestors=s" => \@requestors,
 	   "cc=s" => \@cc,
 	   "admincc=s" => \@admincc,
@@ -166,7 +164,6 @@ my @args =("id=s" => \@id,
 
 GetOptions(@args);
 
-print join(':',@keywords);
 # {{{ If they want it, print a usage message and get out
 
 if ($help) {
@@ -258,11 +255,6 @@ Attributes
           add or remove this user as a ticket admincc
 
 	(When creating tickets, just leave off the + or - )
-
-  Keywords
-	  --keywords[+|-]<keyword_select>/<keyword>
-          Add or remove a keyword.
-
 
 
   Dates
@@ -675,41 +667,6 @@ else {
 	    }	
 	}	
 
-	# }}}
-	
-	# {{{ Deal with ticket keywords
-
-	my $KeywordSelects = $Ticket->QueueObj->KeywordSelects();
-        $RT::Logger->debug ("Looking at keywords");
-	foreach $value (@keywords) {
-           $RT::Logger->debug("Looking at --keyword=$value");
-	    if ($value =~ /^(\W?)(.*?)\/(.*)$/) {
-		my $op = $1;
-		my $select = $2;
-		my $keyword = $3;
-		
-		$RT::Logger->debug("Going to $op Keyword $select / $keyword");	
-		while (my $ks = $KeywordSelects->Next) {
-                    $RT::Logger->debug("$select is select ".$ks->Name." is found");
-		    next unless ($ks->Name =~ /$select/i);
-		    $RT::Logger->debug ("Found a match for $select\n"); 
-		    my $kids = $ks->KeywordObj->Descendents;
-    
-                    my ($kid);
-		    foreach $kid (keys %{$kids}) {
-                        $RT::Logger->debug("Now comparing $keyword with ".$kids->{$kid}. "\n");
-			next unless ($kids->{$kid} =~ /^$keyword$/i);
-		        $RT::Logger->debug("Going to $op $select / $keyword (".$kids->{$kid} .")");	
-			$Ticket->DeleteKeyword(KeywordSelect => $ks->id,
-					    Keyword => $kid) if ($op eq '-');
-			
-			$Ticket->AddKeyword(KeywordSelect => $ks->id,
-					    Keyword => $kid) if ($op eq '+');
-		    }
-		    
-		}
-	    }
-	}
 	# }}}
 	
 	# {{{ deal with links
@@ -1148,23 +1105,6 @@ Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket
   Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedByObj->Name]}
 	         
 EOFORM
-
-my $selects = $Ticket->QueueObj->KeywordSelects();
-    #get the keyword selects
-    print "Keywords:\n";
-    while (my $select = $selects->Next) {
-	print "\t" .$select->Name .": ";
-	my $keys = $Ticket->KeywordsObj($select->id);	
-	while (my $key = $keys->Next) {
-	    print $key->KeywordObj->RelativePath($select->KeywordObj) . "  ";
-	    
-	}	
-	print "\n";
-    }
-    
-#iterate through the keyword selects.
-#print the keyword select and all the related keywords
-
 
 
 #TODO: finish link  descriptions

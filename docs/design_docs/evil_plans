@@ -67,7 +67,6 @@ nice	Scrips could apply to a list of queues, rather than just one queue or
 
 Custom fields
 
-Must	"KeywordSelects" become "Custom Fields"
 Should	String and multi-string custom fields.
 Nice	Date custom fields
 Nice	Some way to order and group custom fields.

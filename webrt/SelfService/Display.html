@@ -68,22 +68,6 @@
       </TD>
     </TR>
 % }
-    
-% my $selects = $Ticket->QueueObj->KeywordSelects;
-% while (my $select = $selects->Next) {
-    <TR>
-      <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	<%$select->Name%>
-      </TD>
-      <TD>
-% my $object_keywords = $Ticket->KeywordsObj($select->id);	
-% while (my $keyword = $object_keywords->Next) {
-	<%$keyword->KeywordObj->RelativePath($select->KeywordObj)%>
-% }
-%}
-	</TD>
-      </TR>
-
 
 
 

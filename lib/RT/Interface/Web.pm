@@ -143,9 +143,6 @@ sub CreateTicket {
 		      );         
 
     
-    # we need to get any KeywordSelect-<integer> fields into %create_args..
-    grep { $_ =~ /^KeywordSelect-/ && {$create_args{$_} = $ARGS{$_}}} %ARGS;
-
     my ($id, $Trans, $ErrMsg)= $Ticket->Create(%create_args);
     unless ($id && $Trans) {
 	Abort($ErrMsg);
@@ -473,32 +470,6 @@ sub ProcessSearchQuery {
     }
 
     # }}}   
-    # {{{ Limit KeywordSelects
-
-    foreach my $KeywordSelectId (
-				 map { /^KeywordSelect(\d+)$/; $1 }
-				 grep { /^KeywordSelect(\d+)$/; }
-				 keys %{$args{ARGS}} ) {
-	my $form = $args{ARGS}->{"KeywordSelect$KeywordSelectId"};
-	my $oper = $args{ARGS}->{"KeywordSelectOp$KeywordSelectId"};
-	foreach my $KeywordId ( ref($form) ? @{ $form } : ( $form ) ) {
-	    next unless ($KeywordId); 
-	    my $quote = 1;
-	    if ( $KeywordId =~ /^null$/i ) {
-		#Don't quote the string 'null'
-		$quote = 0;
-		# Convert the operator to something apropriate for nulls
-		$oper = 'IS' if ( $oper eq '=' );
-		$oper = 'IS NOT' if ( $oper eq '!=' ) ;
-	    }
-	    $session{'tickets'}->LimitKeyword(KEYWORDSELECT => $KeywordSelectId,
-					      OPERATOR => $oper,
-					      QUOTEVALUE => $quote,
-					      KEYWORD => $KeywordId);
-	}
-    }
-    # }}}
-    
 }
 
 # }}}
@@ -982,111 +953,6 @@ sub ProcessTicketLinks {
       my ($val, $msg) = $Ticket->MergeInto($ARGSRef->{$Ticket->Id."-MergeInto"});
       push @results, $msg;
     }
-    
-    return (@results);
-}
-
-# }}}
-
-# {{{ sub ProcessTicketObjectKeywords
-
-=head2 ProcessTicketObjectKeywords ( TicketObj => $Ticket, ARGSRef => \%ARGS );
-
-Returns an array of results messages.
-
-=cut
-
-sub ProcessTicketObjectKeywords {
-    my %args = ( TicketObj => undef,
-	       ARGSRef => undef,
-		 @_
-	       );
-    
-    my $TicketObj = $args{'TicketObj'};
-    my $ARGSRef = $args{'ARGSRef'};
-    
-    my (@results);
-    
-    # {{{ set ObjectKeywords.
-  
-    my $KeywordSelects = $TicketObj->QueueObj->KeywordSelects;
-    
-    # iterate through all the keyword selects for this queue
-    while ( my $KeywordSelect = $KeywordSelects->Next ) {
-	# {{{ do some setup
-	
-	# if we have KeywordSelectMagic for this keywordselect:
-	next unless defined $ARGSRef->{'KeywordSelectMagic'. $KeywordSelect->id};
-	
-	
-	# Lets get a hash of the possible values to work with
-	my $value = $ARGSRef->{'KeywordSelect'. $KeywordSelect->id} || [];
-	
-	#lets get all those values in a hash. regardless of # of entries
-	#we'll use this for adding and deleting keywords from this object.
-	my %values = map { $_=>1 } ref($value) ? @{$value} : ( $value );
-	
-	# Load up the ObjectKeywords for this KeywordSelect for this ticket
-	my $ObjectKeys = $TicketObj->KeywordsObj($KeywordSelect->id);
-	
-	# }}}
-	# {{{ add new keywords
-
-	foreach my $key (keys %values) {
-
-	    #unless the ticket has that keyword for that keyword select,
-	    unless ($ObjectKeys->HasEntry($key)) {
-		#Add the keyword
-		my ($result, $msg) = 
-		  $TicketObj->AddKeyword( Keyword => $key,
-					  KeywordSelect => $KeywordSelect->id);
-		push(@results, $msg);
-	    }
-	}
-	
-	# }}}
-	# {{{ Delete unused keywords
-	
-	#redo this search, so we don't ask it to delete things that are already gone
-	# such as when a single keyword select gets its value changed.
-	$ObjectKeys = $TicketObj->KeywordsObj($KeywordSelect->id);
-
-	while (my $TicketKey = $ObjectKeys->Next) {
-	    
-	    # if the hash defined above doesn\'t contain the keyword mentioned,
-	    unless ($values{$TicketKey->Keyword}) {
-		#I'd really love to just call $keyword->Delete, but then 
-		# we wouldn't get a transaction recorded
-		my ($result, $msg) = 
-		  $TicketObj->DeleteKeyword(Keyword => $TicketKey->Keyword,
-					    KeywordSelect => $KeywordSelect->id);
-		push(@results, $msg);
-	    }
-	}
-	
-	# }}}
-    }
-    
-    #Iterate through the keyword selects for BulkManipulator style access
-    while ( my $KeywordSelect = $KeywordSelects->Next ) {
-	if ($ARGSRef->{"AddToKeywordSelect".$KeywordSelect->Id}) {
-	    #Add the keyword
-	    my ($result, $msg) = 
-		  $TicketObj->AddKeyword( Keyword => $ARGSRef->{"AddToKeywordSelect".
-								$KeywordSelect->Id },
-					  KeywordSelect => $KeywordSelect->id);
-		push(@results, $msg);
-	    }	
-	if ($ARGSRef->{"DeleteFromKeywordSelect".$KeywordSelect->Id}) {
-	    #Delete the keyword
-	    my ($result, $msg) = 
-	      $TicketObj->DeleteKeyword(Keyword =>$ARGSRef->{"DeleteFromKeywordSelect".
-							     $KeywordSelect->Id },
-					KeywordSelect => $KeywordSelect->id);
-	    push(@results, $msg);
-	}	
-    }	
-    # }}}
     
     return (@results);
 }

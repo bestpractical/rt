@@ -1,17 +1,3 @@
-CREATE TABLE KeywordSelects (
-  id serial NOT NULL  ,
-  Name varchar(255)   ,
-  Keyword integer   ,
-  Single integer   ,
-  Depth integer NOT NULL DEFAULT 0 ,
-  ObjectType varchar(32) NOT NULL  ,
-  ObjectField varchar(32)   ,
-  ObjectValue varchar(255)   ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id)
-);
-CREATE INDEX KeywordSelects1 ON KeywordSelects (Keyword);
-CREATE INDEX KeywordSelects2 ON KeywordSelects (ObjectType, ObjectField, ObjectValue);
 CREATE TABLE Attachments (
   id serial NOT NULL  ,
   TransactionId integer NOT NULL  ,
@@ -144,28 +130,6 @@ CREATE TABLE GroupMembers (
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, UserId);
-CREATE TABLE ObjectKeywords (
-  id serial NOT NULL  ,
-  Keyword integer NOT NULL  ,
-  KeywordSelect integer NOT NULL  ,
-  ObjectType varchar(32) NOT NULL  ,
-  ObjectId integer NOT NULL  ,
-  PRIMARY KEY (id)
-);
-CREATE UNIQUE INDEX ObjectKeywords1 ON ObjectKeywords (ObjectId, ObjectType, KeywordSelect, Keyword);
-CREATE INDEX ObjectKeywords2 ON ObjectKeywords (ObjectId, ObjectType);
-CREATE INDEX ObjectKeywords3 ON ObjectKeywords (Keyword);
-CREATE TABLE Keywords (
-  id serial NOT NULL  ,
-  Name varchar(255) NOT NULL  ,
-  Description varchar(255)   ,
-  Parent integer   ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (id)
-);
-CREATE UNIQUE INDEX Keywords1 ON Keywords (Name, Parent);
-CREATE INDEX Keywords2 ON Keywords (Name);
-CREATE INDEX Keywords3 ON Keywords (Parent);
 CREATE TABLE Users (
   id serial NOT NULL  ,
   Name varchar(120) NOT NULL  ,

@@ -578,8 +578,8 @@ sub IsRTAddress {
 }
 
 =for testing
-is(IsRTAddress("rt\@example.com"),1, "Regexp matched rt address" );
-is(IsRTAddress("frt\@example.com"),undef, "Regexp didn't match non-rt address" );
+is(RT::Interface::Email::IsRTAddress("rt\@example.com"),1, "Regexp matched rt address" );
+is(RT::Interface::Email::IsRTAddress("frt\@example.com"),undef, "Regexp didn't match non-rt address" );
 
 =cut
 
@@ -598,7 +598,7 @@ is(IsRTAddress("frt\@example.com"),undef, "Regexp didn't match non-rt address" )
 # If you define an AutoRejectRequest template, RT will use this   
 # template for the rejection message.
 
-$SenderMustExistInExternalDatabase = undef;
+$SenderMustExistInExternalDatabase = undef;;
 
 # {{{ LookupExternalUserInfo
 =item LookupExternalUserInfo

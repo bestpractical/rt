@@ -56,18 +56,6 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 &>  
 <& /Elements/SelectStatus, Name => "ValueOfStatus" &>
 
-% while ( my $KeywordSelect = $KeywordSelects->Next ) {
-
-<li><% $KeywordSelect->Name %> 
-	<& /Elements/SelectBoolean, Name => "KeywordSelectOp". $KeywordSelect->id, 
-				    True => "is", False => "isn't", 
-  				    TrueVal=> '=', FalseVal => '!=' &>
-
-<& /Elements/SelectKeyword, Name => "KeywordSelect".$KeywordSelect->id,
-			    KeywordObj => $KeywordSelect->KeywordObj
-			    &>
-% }
-
 </UL>
 
 <& /Elements/TitleBoxEnd &>
@@ -103,10 +91,4 @@ Subject <& /Elements/SelectMatch, Name => "SubjectOp" &>
 
 
  <%INIT>
- my $KeywordSelects = new RT::KeywordSelects $session{'CurrentUser'};
- foreach ( $session{'tickets'}->RestrictionValues('Queue') ) {
-        $KeywordSelects->LimitToQueue($_);
- }
-
- $KeywordSelects->IncludeGlobals;
 </%INIT>

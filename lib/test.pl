@@ -19,7 +19,7 @@ print "ok 1\n";
 # of the test code):
 
 use RT::Record;
-use RT::EasySearch;
+use RT::SearchBuilder;
 use RT::Handle;
 use RT::Ticket;
 use RT::Tickets;
@@ -42,11 +42,5 @@ use RT::Users;
 use RT::CurrentUser;
 use RT::Attachment;
 use RT::Attachments;
-use RT::Keyword;
-use RT::Keywords;
-use RT::KeywordSelect;
-use RT::KeywordSelects;
-use RT::ObjectKeyword;
-use RT::ObjectKeywords;
 use RT::Date;
 

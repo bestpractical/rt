@@ -111,34 +111,6 @@ Describe the issue below:<br>
 <BR>
 <BR>
 
-
- <& /Elements/TitleBoxStart, 
-		title_class=> 'inverse',  
-		title => "Keyword Selections", color => "#993300"
-  &>
-<TABLE BORDER=0>
-% while ( my $KeywordSelect = $KeywordSelects->Next ) {
-%   my $Descendents = $KeywordSelect->KeywordObj->Descendents;
-     <TR><TD ALIGN=RIGHT>
-	<% $KeywordSelect->Name %></TD><TD>
-	  <INPUT TYPE="hidden" NAME="KeywordSelectMagic<% $KeywordSelect->id %>" VALUE="1">
-	    <SELECT NAME="KeywordSelect-<% $KeywordSelect->id %>"
-	      <% $KeywordSelect->Single ? "" : " MULTIPLE " %> SIZE=5>
-%#
-%#  All of this cruft is so we have a 'no keyword' selector for single
-%#  keywords that's only selected when there's no value.
-%
-% foreach my $kid ( keys %{$Descendents} ) {
-	      <OPTION VALUE="<% $kid %>"><% $Descendents->{$kid} %></OPTION>
-%   }
-%   if ( $KeywordSelect->Single) {
-<OPTION VALUE="" SELECTED>(empty)</OPTION>
-% }
-	    </SELECT>
-      </TD></TR>
-% }
-  
-</TABLE>
 <& /Elements/TitleBoxEnd &>
 
 </TD>
@@ -186,7 +158,6 @@ Describe the issue below:<br>
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort("Queue could not be loaded.");
-my $KeywordSelects = $QueueObj->KeywordSelects;
 
 </%INIT>
 

@@ -19,11 +19,6 @@
 
 <BR>
 
-<& /Elements/TitleBoxStart, title => 'Keywords', color =>"#993333"&>
-<& Elements/EditKeywordSelects, TicketObj=>$Ticket &>
-<& /Elements/TitleBoxEnd &>
-
-<BR>
 
 <& /Elements/TitleBoxStart, title => 'People',width => "100%", color=> "#333399" &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
@@ -80,7 +75,6 @@ my (@wresults, @results, @okresults, @dresults, @lresults);
 unless ($OnlySearchForPeople) {
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @okresults = ProcessTicketObjectKeywords(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);

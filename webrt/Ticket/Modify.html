@@ -10,10 +10,6 @@
 <& Elements/EditBasics, TicketObj => $TicketObj &>
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/TitleBoxStart, title => 'Keywords', color =>"#993333"&>
-<& Elements/EditKeywordSelects, TicketObj=>$TicketObj &>
-<& /Elements/TitleBoxEnd &>
-
 <& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#993333" &>
 </form>
 <%INIT>
@@ -21,7 +17,6 @@
 my $TicketObj = LoadTicket($id);
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-my @okresults = ProcessTicketObjectKeywords(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 
 push (@results, @okresults);
 

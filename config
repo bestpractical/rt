@@ -257,9 +257,10 @@ file_template =
  * is done to ensure the version stmp is updated appropriately.
  */
 
-integrate_begin_exceptions =
-[
-];
+integrate_begin_exceptions = [ ];
+
+
+
 
 /* -------------------------------------------------------------------------
  *
@@ -271,7 +272,7 @@ integrate_begin_exceptions =
 
 trojan_horse_suspect = [ ];
 
-
-
-
 build_covers_all_architectures = true;
+
+test_command = "make test";
+

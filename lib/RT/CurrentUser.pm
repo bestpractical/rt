@@ -19,7 +19,6 @@
 
 =begin testing
 
-ok (require RT::TestHarness);
 ok (require RT::CurrentUser);
 
 =end testing

@@ -9,18 +9,6 @@
 	  <& /Elements/TitleBoxEnd &>
 
 	<BR>
-
-	  <& /Elements/TitleBoxStart, 
-		title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
-		title_class=> 'inverse',  
-		title => "Keyword Selections", color => "#993300"
-	  &>
-	  <& /Ticket/Elements/ShowKeywordSelects, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
-
-	
-
-	<BR>
 	  <& /Elements/TitleBoxStart, title => 'Relationships', 
 		title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  

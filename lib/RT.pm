@@ -72,7 +72,7 @@ sub InitLogging {
     use Log::Dispatch::File;
     use Log::Dispatch::Screen;
 
-    $Logger=Log::Dispatch->new();
+    $RT::Logger=Log::Dispatch->new();
     
     if ($RT::LogToFile) {
 
@@ -83,7 +83,7 @@ sub InitLogging {
 
 	my $filename = $RT::LogToFileNamed || "$RT::LogDir/rt.log";
 
-	  $Logger->add(Log::Dispatch::File->new
+	  $RT::Logger->add(Log::Dispatch::File->new
 		       ( name=>'rtlog',
 			 min_level=> $RT::LogToFile,
 			 filename=> $filename,
@@ -92,7 +92,7 @@ sub InitLogging {
 		       ));
     }
     if ($RT::LogToScreen) {
-	$Logger->add(Log::Dispatch::Screen->new
+	$RT::Logger->add(Log::Dispatch::Screen->new
 		     ( name => 'screen',
 		       min_level => $RT::LogToScreen,
 		       stderr => 1

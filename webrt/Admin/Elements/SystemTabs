@@ -6,10 +6,6 @@
 	       A => { title => 'Scrips',
 			   path => 'Admin/Global/Scrips.html',
 			 },
-	       Ba => { title => 'Keyword Selections',		
-			        path => 'Admin/Global/Keywords.html',
-		      },
-
 	       B => { title => 'Templates',
 			path => 'Admin/Global/Templates.html',
 		      },

@@ -31,11 +31,5 @@ return (
 "grant select, insert, update, delete on Attachments_id_seq to ${RT::DatabaseUser};",
 "grant select, insert, update, delete on Templates to ${RT::DatabaseUser};",
 "grant select, insert, update, delete on Templates_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Keywords to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on Keywords_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on ObjectKeywords to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on ObjectKeywords_id_seq to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on KeywordSelects to ${RT::DatabaseUser};",
-"grant select, insert, update, delete on KeywordSelects_id_seq to ${RT::DatabaseUser};");
 }
 1;

@@ -53,19 +53,6 @@ my $help_acl ="
 
 # }}}
     
-    # {{{ help_keyword_sel
-my $help_keyword_sel = "
-       Keyword Selections
-       --add-keyword-select
-       --modify-keyword-select <name>
-          --ks-name <name>
-          --ks-keyword <keyword>
-          --ks-single 
-          --ks-multiple
-          --ks-depth  <int>
-
-        --disable-keyword-select <name>";
-# }}}
     
     # {{{ help_scrip
 my $help_scrip = "
@@ -107,7 +94,6 @@ USAGE:  rtadmin --user <userid> [Userflags]
 	rtadmin --group [groupflags]
 	rtadmin --list-groups
 	rtadmin --system  [SystemFlags]
-	rtadmin --keyword [keywordflags]
 
 User configuration for --user <userid>
    
@@ -187,8 +173,6 @@ Queue Configuration for --queue <queueid>
 
 $help_acl
 
-$help_keyword_sel
-
 $help_template
 
 $help_scrip
@@ -198,19 +182,10 @@ System configuration for --system
 
 $help_acl
 
-$help_keyword_sel
-
 $help_template
 
 $help_scrip
 
-
-Keyword configuration for --keyword  <fully qualified name>
-	--list-children
-  	--create-child <name>
-	--disable
-	--name <new name>
-	--description <new description>
 
 EOF
 
@@ -223,7 +198,7 @@ EOF
 # {{{ PickMode
 
 sub PickMode {
-    my ($user,$group, $queue, $system, $keyword, $listusers, 
+    my ($user,$group, $queue, $system, $listusers, 
 	$listgroups, $listqueues, $help);
 
 
@@ -232,7 +207,6 @@ sub PickMode {
 		'queue=s' => \$queue,
 		'group=s' => \$group,
 		'system' => \$system,
-		'keyword=s', => \$keyword,
 		'list-users' => \$listusers,
 		'list-queues' => \$listqueues,
 		'list-groups' => \$listgroups,
@@ -244,7 +218,6 @@ sub PickMode {
     elsif ($group)      { AdminGroup($group) }
     elsif ($queue)      { AdminQueue($queue) }
     elsif ($system)     { AdminSystem($system) }
-    elsif ($keyword)    { AdminKeywords($keyword) }
     elsif ($listusers)  { ListUsers() }
     elsif ($listgroups) { ListGroups()  }
     elsif ($listqueues) { ListQueues() }
@@ -469,166 +442,12 @@ sub AdminQueue {
         AdminTemplates($queue_obj->Id());
         AdminScrips($queue_obj->Id());
 	AdminRights($queue_obj->Id());
-	AdminKeywordSelects($queue_obj->Id());
 
 	#Check if we need to delete the queue
 	if ($args{'disable'}) {
 	    my ($val, $msg) = $queue_obj->SetDisabled(1);
 	    print "$msg\n";
 	}	
-	
-    }
-}
-
-# }}}
-
-# {{{ AdminKeywords
-
-sub AdminKeywords {
-    my $keyword = shift;
-    
-    my %args;
-    GetOptions(\%args, 'list-children', 'create-child=s', 'disable|delete', 'Name=s', 'Description=s');
-    
-    use RT::Keyword;
-    
-    my $key_obj = new RT::Keyword($CurrentUser);
-    my $key_id;
-    
-    #If we're dealing with the root of the keyword list
-    if ($keyword eq '/') {
-	$key_id=0;
-    }	
-    else {
-	my ($val, $msg) = $key_obj->LoadByPath( $keyword );
-	unless ($val) {
-	    print $msg ."\n";
-	}
-	$key_id = $key_obj->Id();
-    }	
-    
-    if ($args{'create-child'}) {
-	my $child = new RT::Keyword($CurrentUser);
-	
-	my ($val, $msg) = $child->Create( Parent => $key_id,
-					  Name => $args{'create-child'},
-					);
-	print $msg ."\n";
-    }	
-    
-    elsif ($args{'list-children'}) {
-	my $keywords;
-	if ($key_obj->id) {
-	    $keywords = $key_obj->Children();
-	}	
-	#If we didn't actually have a keyword object, we need to create our own Keywords object.
-	else {
-	    $keywords = new RT::Keywords($CurrentUser);
-	    $keywords->LimitToParent(0); 
-	}
-	
-	while (my $key=$keywords->Next) {
-	    print $key->Name;
-	    if ($key->Description) {
-		print " (" . $key->Description .")";
-	    }	
-	    print "\n";
-	}	
-	      
-
-    }	
-    
-    #Else we wanna do some modification.
-    else {
-	
-	#If we didn't load a keyword, get out
-	return(undef) unless ($key_obj->Id);
-	
-	
-	my @attributes = qw( Name Description );
-	foreach my $attrib (@attributes) {
-	    if ( (exists ($args{"$attrib"})) and
-		 ($key_obj->$attrib() ne $args{"$attrib"})) {
-		
-		my $method = "Set$attrib";
-		my ($val, $msg) = $key_obj->$method($args{"$attrib"});
-		
-		print "Keyword ".$key_obj->Name. " $attrib:  $msg\n";	    }
-	}
-	
-	if ($args{'disable'}) {
-	    $key_obj->SetDisabled(1);
-	    
-	}
-	
-    }
-}
-
-# }}}
-
-# {{{ AdminKeywordSelects
-
-sub AdminKeywordSelects {
-    my $queue = shift;
-    # O for queue means global
-
-    my %args;
-    GetOptions(\%args, 'add-keyword-select','disable-keyword-select|delete-keyword-select=s',
-	       'modify-keyword-select=s', 
-	       'keyword-select-Keyword|ks-keyword=s', 
-	       'keyword-select-Single|ks-single', 
-	       'keyword-select-Multiple|ks-multiple', 
-	       'keyword-select-Depth|ks-depth=i', 
-	       'keyword-select-Name|ks-name=s'
-	      );
-
-    # sanitize single vs multiple.
-    if ($args{'keyword-select-Multiple'}) {
-	$args{'keyword-select-Single'} = 0;
-    }
-    
-    use RT::KeywordSelect;
-    my $keysel_obj = new RT::KeywordSelect($CurrentUser);
-    if ($args{'add-keyword-select'}) {
-	
-	my ($val, $msg) = $keysel_obj->Create( Keyword => $args{'keyword-select-Keyword'},
-					       Depth => $args{'keyword-select-Depth'},
-					       Single => $args{'keyword-select-Single'},
-					       Name => $args{'keyword-select-Name'},
-					       ObjectType => 'Ticket',
-					       ObjectField => 'Queue',
-					       ObjectValue => $queue);
-	print $msg ."\n";
-    }	
-    elsif ($args{'modify-keyword-select'}) {
-	$keysel_obj->LoadByName(Name => $args{'modify-keyword-select'},
-				Queue => $queue
-			       );
-	
-	unless ($keysel_obj->Id()) {
-	    print "Keyword select not found\n";
-	    return();
-	}	
-	my @attributes = qw( Name Keyword Single Depth );
-	foreach my $attrib (@attributes) {
-	    if ( (exists ($args{"keyword-select-$attrib"})) and
-		 ($keysel_obj->$attrib() ne $args{"keyword-select-$attrib"})) {
-		
-		my $method = "Set$attrib";
-		my ($val, $msg) = $keysel_obj->$method($args{"keyword-select-$attrib"});
-				
-		print "Keyword select ".$keysel_obj->Name. " $attrib:  $msg\n";	    }
-	}
-
-
-    }	
-
-    
-    elsif ($args{'disable-keyword-select'}) {
-	$keysel_obj->LoadByName(Name => $args{'disable-keyword-select'},
-				Queue => $queue);
-	
-	$keysel_obj->SetDisabled(1);
 	
     }
 }
@@ -720,12 +539,9 @@ sub AdminGroup {
 
 # {{{ AdminSystem
 sub AdminSystem {
-    print "In AdminSystem\n";
-
     AdminTemplates(0);
     AdminScrips(0);
     AdminRights(0);
-    AdminKeywordSelects(0);
 }
 # }}}
 

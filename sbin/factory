@@ -1,12 +1,12 @@
 #!/usr/bin/perl
-#$Header: /raid/cvsroot/rt/sbin/Attic/factory,v 1.1.2.1 2002/01/28 05:27:15 jesse Exp $
+#$Header: /raid/RT/polysched/sbin/factory,v 1.2 2001/12/07 03:51:09 jesse Exp $
 use DBI;
 
 my $database = shift;
 my $namespace = shift;
 
-my $CollectionBaseclass = 'RT::FM::SearchBuilder';
-my $RecordBaseclass = 'RT::FM::Record';
+my $CollectionBaseclass = 'RT::SearchBuilder';
+my $RecordBaseclass = 'RT::Record';
 
 my $driver = 'mysql';
 my $hostname = 'localhost';
@@ -20,31 +20,45 @@ my $dbh = DBI->connect($dsn, $user, $password);
 #get all tables out of database
 my @tables = $dbh->tables();
 
-my %tablemap;
+my (%tablemap, $typemap);
 
 foreach my $table (@tables) {
 	$tablemap{$table} = $table;
+        if ($table =~ /^(.*)s$/) {
+	        $tablemap{$1} = $table;
+        }
 }
 $tablemap{'CreatedBy'} = 'User';
 $tablemap{'UpdatedBy'} = 'User';
 
+$typemap{'id'} = 'ro';
+$typemap{'Creator'} = 'auto';
+$typemap{'Created'} = 'auto';
+$typemap{'Updated'} = 'auto';
+$typemap{'UpdatedBy'} = 'auto';
 
 
 foreach my $table (@tables) {
 
     my $tablesingle = $table;
     $tablesingle =~ s/s$//;
+    my $tableplural = $tablesingle."s";
+
+    if ($tablesingle eq 'ACL') {
+        $tablesingle = "ACE";
+        $tableplural = "ACL";
+    }
 
     my %requirements;
 
-    my $CollectionClassName = $namespace."::".$tablesingle."Collection";
+    my $CollectionClassName = $namespace."::".$tableplural;
     my $RecordClassName = $namespace."::".$tablesingle;
     
     my $path = $namespace;
     $path =~ s/::/\//g;
     
     my $RecordClassPath = $path."/".$tablesingle.".pm";
-    my $CollectionClassPath = $path."/".$tablesingle."Collection.pm";
+    my $CollectionClassPath = $path."/".$tableplural.".pm";
 
 
     
@@ -62,9 +76,22 @@ foreach my $table (@tables) {
 		my $default = $row->{'Default'};
 		
 		#generate the 'accessible' datastructure
-		$ClassAccessible .= "        $field => {'read' => 1, 'write' => 1},\n";
+	
+		if ($typemap{$field} eq 'auto' ) {
+			$ClassAccessible .= "        $field => 
+		{read => 1, auto => 1,";
+		}
+		elsif ($typemap{$field} eq 'ro' ) {	
+			$ClassAccessible .= "        $field =>
+		{read => 1,";
+		} else {
+			$ClassAccessible .= "        $field => 
+		{read => 1, write => 1,";
+
+		}
 		
-		
+		$ClassAccessible .= " type => '$type', default => '$default'},\n";
+
 		#generate pod for the accessible fields
 		$FieldsPod .= "
 =item $field
@@ -72,13 +99,22 @@ foreach my $table (@tables) {
 Returns the current value of $field. 
 (In the database, $field is stored as $type.)
 
+";
+
+unless ($typemap{$field} eq 'auto' || $typemap{$field} eq 'ro') {
+$FieldsPod .= "
 
 =item Set$field VALUE
+
 
 Set $field to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, $field will be stored as a $type.)
 
+";
+}
+
+$FieldsPod .= "
 =cut
 
 ";
@@ -102,8 +138,10 @@ sub ${field}Obj {
 $requirements{$tablemap{$field}} = "use ${namespace}::$tablemap{$field};";
 
 }
+
+		unless ($typemap{$field} eq 'auto' || $field eq 'id') {
 		#generate create statement
-		$CreateInParams .= "                $field => undef,\n";
+		$CreateInParams .= "                $field => '$default',\n";
                 $CreateOutParams .= "                         $field => \$args{'$field'},\n";
 
 
@@ -112,13 +150,15 @@ $requirements{$tablemap{$field}} = "use ${namespace}::$tablemap{$field};";
 		$CreatePod .= " defaults to '$default'" if ($default);
 		$CreatePod .= ".\n";
 
+		}
+
 	}
 
         $Create = "
 sub Create {
     my \$self = shift;
     my \%args = ( 
-$CreateInParams,
+$CreateInParams
 		  \@_);
     \$self->SUPER::Create(
 $CreateOutParams);
@@ -174,9 +214,9 @@ sub NewItem {
     my \$self = shift;
     return(new $RecordClassName(\@_));
 }
+" . MagicImport($CollectionClassName);
 
-1;
-";
+
 
 my $RecordClassHeader = "
 # \$Header\$
@@ -220,9 +260,6 @@ sub _Init {
 
 
 
-
-
-
 my $RecordClass = "
 
 $RecordClassHeader
@@ -245,10 +282,11 @@ sub _ClassAccessible {
 $ClassAccessible
  }
 };
-1;
-";
+
+" . MagicImport($RecordClassName);
 
 
+print "About to make $RecordClassPath, $CollectionClassPath\n";
 `mkdir -p $path`;
 
 open (RECORD, ">$RecordClassPath");
@@ -263,4 +301,51 @@ close($COL);
 
 
 
+
+sub MagicImport {
+    my $class = shift;
+
+#if (exists \$warnings::{unimport})  {
+#        no warnings qw(redefine);
+
+    my $content =  "
+        eval \"require @{[$class]}_Overlay\";
+        if (\$@ && \$@ !~ /^Can't locate/) {
+            die \$@;
+        };
+
+        eval \"require @{[$class]}_Local\";
+        if (\$@ && \$@ !~ /^Can't locate/) {
+            die \$@;
+        };
+
+
+
+
+=head1 SEE ALSO
+
+This class allows \"overlay\" methods to be placed
+into the following files _Overlay is for a System overlay by the original author,
+while _Local is for site-local customizations.  
+
+These overlay files can contain new subs or subs to replace existing subs in this module.
+
+If you'll be working with perl 5.6.0 or greater, each of these files should begin with the line 
+
+   no warnings qw(redefine);
+
+so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
+
+@{[$class]}_Overlay, @{[$class]}_Local
+
+=cut
+
+
+1;
+";
+
+return $content;
+}
+
+# }}}
 	

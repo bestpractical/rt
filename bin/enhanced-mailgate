@@ -284,24 +284,6 @@ elsif (!defined($TicketId)) {
 		     );
 	    $RT::Logger->error("Create failed: $id / $Transaction / $ErrStr ");
 	}	
-	else {
-	    
-	    if ($values->{'keywords'}) {
-		foreach my $keywordsel (keys %{$values->{'keywords'}}) {
-		    my $ks_obj = $Ticket->QueueObj->KeywordSelect($keywordsel);
-		    next unless ($ks_obj->id);
-		    foreach my $key (keys %{$values->{'keywords'}{$keywordsel}}) {
-			my $kids = $ks_obj->KeywordObj->Descendents;
-			foreach my $kid (keys %{$kids}) {
-			    next unless ($kids->{$kid} =~ /^$key$/i);
-			    my ($val, $msg) = 
-			      $Ticket->AddKeyword(KeywordSelect => $ks_obj->id,
-						  Keyword => $kid);
-			}
-		    }
-		}
-	    }
-	}
     }
     # }}}
     
@@ -668,50 +650,6 @@ sub ActOnPseudoHeaders {
 		    }
 		}
 		
-		
-		# {{{ Deal with ticket keywords
-		else {
-		    #Default is to add keywords
-		    my $op = '+';
-		    my $ks = $Ticket->QueueObj->KeywordSelect($command);
-		    
-		    unless ($ks->Id) {
-			$ResultsMessage .= "ERROR: couldn't find a keyword ".
-			  "selection matching '$command'\n";
-			next;
-		    }
-		    
-		    if ($args =~ /^(\-|\+)(.*)$/) {
-			$op = $1;
-			$args = $2;
-		    }
-		    my $kids = $ks->KeywordObj->Descendents;
-		    
-		    #TODO: looping is lossy.
-		    foreach my $kid (keys %{$kids}) {
-			next unless ($kids->{$kid} =~ /^$args$/i);
-			if ($op eq '-') {
-			    ($val, $msg) = 
-			      $Ticket->DeleteKeyword(KeywordSelect => $ks->id,
-						     Keyword => $kid);
-			}
-			elsif ($op eq '+') {
-			    ($val, $msg) =
-			      $Ticket->AddKeyword(KeywordSelect => $ks->id,
-						  Keyword => $kid);
-			}
-			else {
-			    $msg = "'$op' is not a valid operator.\n";
-			}
-			
-		    }
-		}
-	    }
-	    
-	    # }}}
-	    
-	    
-	    
 	    $ResultsMessage .= $msg." succeeded\n";
 	    
 	}
@@ -761,10 +699,6 @@ sub ParsePseudoHeadersForNewTicket {
 		                  # in this context
 		push @{$commandvalues{lc($command)}}, $args;
 	    }
-	    #Deal with keywords
-	    else {
-		$commandvalues{'keywords'}{$command}{$args} = 1;
-	    }	
 	    
 	}
     }	

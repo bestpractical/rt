@@ -33,14 +33,13 @@ $RT::Handle->Connect();
 my $CurrentUser = new RT::CurrentUser();
 
 if ($LastVersion) {
-    if ( $LastVersion =~ /^2.0.(\d+)$/ ) {
+    if ( $LastVersion =~ /^2.1.(\d+)$/ ) {
         $LastMinorVersion = $1;
         print "Looking for new objects to add to the database"
           . " since $LastVersion\n\n";
     }
     else {
-        print "This tool does not support upgrades from development releases "
-          . "or non 2.0.x versions";
+        print "This tool does not support upgrades from non 2.1.x versions";
     }
 }
 else {    # this is a virgin install
@@ -61,7 +60,7 @@ else {    # this is a virgin install
 
     }
     else {
-        print "not found.  This appears to be a new installation";
+        print "not found.  This appears to be a new installation.\n";
     }
 
     print "Creating system user...";
