@@ -97,6 +97,7 @@ sub Init {
 	    $_	=> [
 		Gettext => (substr(__FILE__, 0, -3) . "/$_.po"),
 		Gettext => "$RT::LocalLexiconPath/*/$_.po",
+		Gettext => "$RT::LocalLexiconPath/$_.po",
 	    ],
 	} @lang
     });
