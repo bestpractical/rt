@@ -56,8 +56,8 @@ my %args;
 GetOptions(
     \%args,
     'prompt-for-dba-password', 'force', 'debug',
-    'action=s',                'dba=s', 'dba-password=s', 'datafile=s'
-
+    'action=s',                'dba=s', 'dba-password=s', 'datafile=s',
+    'datadir=s'
 );
 
 $| = 1;    #unbuffer that output.
@@ -78,9 +78,7 @@ unless ( $args{'action'} ) {
 }
 if ( $args{'action'} eq 'init' ) {
     $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} )
-      || die "Failed to connect to "
-      . get_system_dsn()
-      . " as $args{'dba'}: $DBI::errstr";
+      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
     print "Now creating a database for RT.\n";
     create_db();
 
@@ -110,6 +108,17 @@ elsif ( $args{'action'} eq 'drop' ) {
 elsif ( $args{'action'} eq 'insert' ) {
     insert_data( $args{'datafile'} );
 }
+elsif ($args{'action'} eq 'acl') {
+    $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
+      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+     insert_acl($args{'datadir'});
+}
+elsif ($args{'action'} eq 'schema') {
+    $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
+      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+        insert_schema($args{'datadir'});
+}
+
 else {
     print STDERR '$0 called with an invalid --action parameter';
     exit(-1);
@@ -117,13 +126,14 @@ else {
 
 # {{{ sub insert_schema
 sub insert_schema {
+        my $base_path = (shift || $RT::EtcPath);
     my (@schema);
     print "Creating database schema.\n";
 
-    if ( -f $RT::EtcPath . "/schema." . $RT::DatabaseType ) {
+    if ( -f $base_path . "/schema." . $RT::DatabaseType ) {
 	no warnings 'unopened';
 
-        open( SCHEMA, "<" . $RT::EtcPath . "/schema." . $RT::DatabaseType );
+        open( SCHEMA, "<" . $base_path . "/schema." . $RT::DatabaseType );
         open( SCHEMA_LOCAL, "<" . $RT::LocalEtcPath . "/schema." . $RT::DatabaseType );
 
         my $statement = "";
@@ -225,15 +235,17 @@ sub _yesno {
 # {{{ insert_acls
 sub insert_acl {
 
+        my $base_path = (shift || $RT::EtcPath);
+
     if ( $RT::DatabaseType =~ /^oracle$/i ) {
-        do $RT::EtcPath . "/acl.Oracle"
+        do $base_path . "/acl.Oracle"
           || die "Couldn't find ACLS for Oracle\n" . $@;
     }
     elsif ( $RT::DatabaseType =~ /^pg$/i ) {
-        do $RT::EtcPath . "/acl.Pg" || die "Couldn't find ACLS for Pg\n" . $@;
+        do $base_path . "/acl.Pg" || die "Couldn't find ACLS for Pg\n" . $@;
     }
     elsif ( $RT::DatabaseType =~ /^mysql$/i ) {
-        do $RT::EtcPath . "/acl.mysql"
+        do $base_path . "/acl.mysql"
           || die "Couldn't find ACLS for mysql in " . $RT::EtcPath . "\n" . $@;
     }
     elsif ( $RT::DatabaseType =~ /^SQLite$/i ) {
@@ -548,9 +560,18 @@ $0: Set up RT's database
                         To use a local or supplementary datafile, specify it
                         using the '--datafile' option below.
                         
-
+                acl     Initialize only the database ACLs
+                        To use a local or supplementary datafile, specify it
+                        using the '--datadir' option below.
+                        
+                schema  Initialize only the database schema
+                        To use a local or supplementary datafile, specify it
+                        using the '--datadir' option below.
 
 --datafile /path/to/datafile
+--datadir /path/to/              Used to specify a path to find the local
+                                database schema and acls to be installed.
+
 
 --dba                           dba's username
 --dba-password                  dba's password
