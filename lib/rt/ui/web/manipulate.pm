@@ -598,8 +598,8 @@ print "</TR>";
   
   for ($temp=0;$temp<$count;$temp++){
     
-    
-    
+   my $wrapped_requestors = $rt::req[$temp]{'requestors'};
+   $wrapped_requestors =~ s/,/, /g; 
     if ($temp % 2) {
       &rt::ui::web::new_row("bgcolor=\"ffffff\"");
     } else {
@@ -668,11 +668,11 @@ print "</TR>";
 </TD>
 
                
-<TD NOWRAP>
-<font size=-1>$rt::req[$temp]{'requestors'}&nbsp;</font>
+<TD>
+<font size=-1>$wrapped_requestors&nbsp;</font>
 </TD>
 
-<TD NOWRAP>
+<TD>
 <font size=-1>$rt::req[$temp]{'subject'}&nbsp;</font>
 </TD>";
   }

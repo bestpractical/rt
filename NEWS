@@ -1,3 +1,13 @@
+19 July 1999
+------------
+Fix for [fsck #104]  We no longer try to reset the user's uid after writing
+	transaction content to the filesystem. This should help out Net/OpenBSD
+	compatibility
+
+Removed some legacy support for glimpse searching
+
+Fix for [fsck #115] The web ticket list should now wrap reasonably, so it's 
+	printable.
 7 Jul 99
 --------
 
