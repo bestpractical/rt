@@ -27,7 +27,7 @@
     current_tab => 'Search/Listing.html', 
     Title => $title &>
 
-%if ($ticketcount > $session{'tickets_rows_per_page'} && !  $ARGS{'HideResults'}) {
+%if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
 <& Elements/TicketHeader, %ARGS &>
 % my $i;
@@ -97,14 +97,16 @@ if ($session{'tickets'}) {
     }
     if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
 	    $session{'tickets'}->ClearRestrictions;
-        $title = loc("Find tickets");
-    } else {
-        $session{'tickets'}->RedoSearch();
+	}	
+}
+   ProcessSearchQuery(ARGS=>\%ARGS);
+   $session{'tickets'}->RedoSearch();
+   if ( $session{'tickets'}->DescribeRestrictions()) {
        $ticketcount = $session{tickets}->Count();
         $title = loc('Found [quant,_1,ticket]', $ticketcount);
-    }
-}
-&ProcessSearchQuery(ARGS=>\%ARGS);
+    } else {
+        $title = loc("Find tickets");
+   }
 
 
 </%INIT>
