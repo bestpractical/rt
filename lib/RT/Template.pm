@@ -82,7 +82,7 @@ sub Parse {
     $self->{'MIMEObj'}->head->add($key, $value);
   }
   
-  $self->{'MIMEObj'}->print;
+#  $self->{'MIMEObj'}->print;
   print STDERR "Leaving RT::Template::Parse\n"
 }
 

@@ -33,7 +33,7 @@ sub Create {
 	      Requestor => undef,
 	      Alias => undef,
 	      Type => undef,
-	      Owner => undef,
+	      Owner => $RT::Nobody,
 	      Subject => undef,
 	      InitialPriority => undef,
 	      FinalPriority => undef,

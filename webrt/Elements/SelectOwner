@@ -1,5 +1,4 @@
 <SELECT NAME="<%$Name%>">
-<OPTION VALUE="1">None</OPTION>
 
 %while ( my $User = $Users->Next()) {
 
