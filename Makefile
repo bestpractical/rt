@@ -19,7 +19,7 @@ RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 # RT_PATH is the name of the directory you want make to install RT in
 #
 
-RT_PATH			=	/opt/rt-openculture
+RT_PATH			=	/opt/rt
 
 #
 # The rest of these paths are all configurable, but you probably don't want to 
