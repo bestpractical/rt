@@ -360,7 +360,7 @@ Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'sub
 </pre>
 <input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
 <font size=\"-1\">
-<br><textarea rows=15 cols=70 name=\"content\" WARP=HARD>
+<br><textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
 </font>
@@ -393,13 +393,26 @@ sub FormCreate_Step2 {
     if ($frames) { print "target=\"summary\" ";
 	       }
     print ">";
-      print "<pre>
-Queue: $rt::ui::web::FORM{'queue_id'} * Created by: $current_user\n";
+      print "<table>
+<TR>
+<TD align=\"right\">
+Queue:
+</TD>
+<TD> $rt::ui::web::FORM{'queue_id'} *</TR>
+<TR><TD align=\"right\"> Created by:
+</TD> 
+<TD>
+ $current_user
+</TD>
+</TR>\n";
     $template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
     $template=&rt::template_replace_tokens($template,0,0,"", $current_user);
     if ($current_user){
 
-    print "Area:<select name=\"area\">
+    print "<TR>
+<TD align=\"right\">Area:
+</TD>
+<TD><select name=\"area\">
 <option value=\"\">None ";	
     if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $current_user)) {
 	foreach $area ( keys % {$rt::queues{$rt::ui::web::FORM{queue_id}}{areas}} ) {
@@ -407,45 +420,59 @@ Queue: $rt::ui::web::FORM{'queue_id'} * Created by: $current_user\n";
 	    print "<option>$area\n";
 	}
     }
-    print "</select>\n";
+    print "</select>
+</TD>
+</TR>\n";
 
-print "Status:<select name=\"status\">
+print "
+<TR>
+<TD align=\"right\">Status:</TD>
+<TD><select name=\"status\">
 <option value=\"open\">open
 <option value=\"stalled\">stalled
 <option value=\"resolved\">resolved
-</select>";
+</select></TD></TR>";
     
-print " * Owner:<select name=\"owner\">
+print "<TR><TD align=\"right\">Owner:</TD><TD><select name=\"owner\">
 <option value=\"\">Nobody ";	
 	foreach $user_id ( keys % {$rt::queues{$rt::ui::web::FORM{'queue_id'}}{acls}} ) {
 	    if (&rt::can_manipulate_queue ($rt::ui::web::FORM{'queue_id'}, $user_id)) {
 		print "<option>$user_id\n";
 	    }
 	}
-	print "</select>\n";
+	print "</select></TD></TR>\n";
     }	
 
 
 
-    print"Priority:";
+    print"<TR><TD align=\"right\">Priority:</TD><TD>";
     
     &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
-    print "Final priority:";
+    print "</TR>
+<TR>
+<TD align=\"right\">
+Final priority:
+</TD>
+<TD>";
     &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
-    print "\n<input type=\"checkbox\" name=\"due\"> Set Date Due:";
+    print "</TD></TR>
+<TR><TD align=\"right\">Date Due:</TD><TD><input type=\"checkbox\" name=\"due\">";
     &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
-    print "
-Requestor:<input name=\"requestors\" size=\"30\"";
+    print "</TD></TR>
+<TR><TD align=\"right\">Requestor:</TD><TD><input name=\"requestors\" size=\"30\"";
     if ($current_user ne 'anonymous') {
 	print "value=\"$rt::users{$current_user}{email}\"";
     }
-    print ">
-Summary:  <input name=\"subject\" size=\"50\">
-</pre>
+    print "></TD></TR>
+<TR><TD align=\"right\">Summary:</TD><TD>  <input name=\"subject\" size=\"50\">
+</TD></TR>
+<TR><TD valign=\"top\" align=\"right\">Content:</TD><TD>
 <font size=\"-1\">
-<br><textarea rows=15 cols=70 name=\"content\" WARP=HARD>
+<textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
 $template
 </textarea>
+</TD></TR>
+</TABLE>
 </font>
 <center>
 <input type=\"submit\" value=\"Create Request\">
@@ -479,7 +506,7 @@ Bcc:	 <input name=\"bcc\">
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
 <input type=\"hidden\" name=\"do_req_comment\" value=\"true\">
 <br><font size=\"-1\">
-<textarea rows=15 cols=70 name=\"content\" WARP=HARD>
+<textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
 </font>
