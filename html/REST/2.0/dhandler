@@ -136,11 +136,14 @@ $session{CurrentUser} = $CurrentUser;
 my $verb = {
     GET	    => 'Get',
     HEAD    => 'Get',
-    POST    => 'Create',
+    POST    => 'Add',
     PUT	    => 'Put',
-    DELETE  => 'Delete',
+    DELETE  => 'Remove',
     OPTIONS => 'Describe',
 }->{$r->method} or return $m->comp('Elements/Error', Status => 405);
+
+require YAML;
+die YAML::Dump(\%ENV);
 
 my $path = $m->dhandler_arg;
 my ($type, @parts) = grep length, split('/', $path);
@@ -156,7 +159,7 @@ if ($type =~ s/-(\w+)$//) {
     $adverb = $1;
     $verb = 'Describe' if $verb eq 'Get';
     $m->comp('Elements/Error', Status => 405)
-        unless $verb =~ /Create|Describe/;
+        unless $verb =~ /Add|Describe/;
 }
 
 if ((@parts % 2) == 0) {
@@ -165,7 +168,7 @@ if ((@parts % 2) == 0) {
 }
 elsif ($adverb) {
     # PostURI on object
-    $verb = 'Update' if $verb eq 'Create';
+    $verb = 'Update' if $verb eq 'Add';
 }
 
 my $map = $m->comp('Elements/Introspect', Want => 'CollectionToClass');

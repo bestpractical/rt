@@ -425,6 +425,7 @@ string no longer than 32 bytes.
 sub Authenticate { 
     my ($self, $password, $created, $nonce, $realm) = @_;
 
+    require Digest::MD5;
     require Digest::SHA1;
     require MIME::Base64;
 
@@ -433,7 +434,7 @@ sub Authenticate {
     my $auth_digest = MIME::Base64::encode_base64(Digest::SHA1::sha1(
 	$nonce .
 	$created .
-	Digest::SHA1::sha1_hex("$username:$realm:$server_pass")
+	Digest::MD5::md5_hex("$username:$realm:$server_pass")
     ));
 
     chomp($password);

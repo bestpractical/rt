@@ -1,4 +1,4 @@
-RT/REST API 2.0
+RT/Atom 0.3 API
 ===============
 This implementation is based on Atom 0.3.
 
@@ -11,57 +11,121 @@ This implementation is based on Atom 0.3.
 Request methods and response status codes are specified here:
     http://www.w3.org/Protocols/rfc2616/rfc2616.html
 
-Some example URIs are:
+Some example canonical URIs are:
 
-    /REST/2.0/				# FeedURI
-    /REST/2.0/tickets			# FeedURI
-    /REST/2.0/tickets-new		# PostURI (Container)
-    /REST/2.0/tickets/15		# EditURI
-    /REST/2.0/tickets/15-comment	# PostURI (Object)
-    /REST/2.0/tickets/15-correspond	# PostURI (Object)
-    /REST/2.0/tickets/15/transactions	# FeedURI
+    /Atom/0.3					# FeedURI
+    /Atom/0.3/RT-Tickets			# FeedURI
+    /Atom/0.3/RT-Tickets!add			# PostURI (Container)
+    /Atom/0.3/RT-Tickets/15			# EditURI (Object)
+    /Atom/0.3/RT-Tickets/15.Subject		# EditURI (Property)
+    /Atom/0.3/RT-Tickets/15!update		# PostURI (Object)
+    /Atom/0.3/RT-Tickets/15!comment		# PostURI (Object)
+    /Atom/0.3/RT-Tickets/15!correspond		# PostURI (Object)
+    /Atom/0.3/RT-Tickets/15,16,17!update	# PostURI (ResultSet)
+    /Atom/0.3/RT-Tickets/15/Transactions	# FeedURI
 
-[GET FeedURI]
-Search for objects within an container.
-Possible query parameters: rows, page, query.
-200: Success.  Body is the result, serialized as an AtomFeed.
-400: Request failed.  Body is error message in text/plain.
-404: There is no container matching the specified URI.
+An example exchange: Create an 'autrijus' user, then add it to all groups
+that has 'root' as member.
 
-[GET EditURI]
-Get a representation of an object.
-200: Success.  Body is the object, serialized as an AtomEntry.
-400: Request failed.  Body is error message in text/plain.
-404: There is no object matching the specified URI.
+First, the RT::Client code:
 
-[PUT EditURI]
-Modifies an object with the AtomEntry in the request body.
-200: Success.  Body is the object, serialized as an AtomEntry.
-400: Request failed.  Body is error message in text/plain.
-404: There is no object matching the specified URI.
+    my $user = $rt->Users->add(
+	Name => 'autrijus',
+	EmailAddress => 'autrijus@example.com',
+    );
 
-[DELETE EditURI]
-Delete an object.
-200: Successfully deleted.  Body is success message in text/plain.
-400: Request failed.  Body is error message in text/plain.
-404: There is no object matching the specified URI.
+    $rt->Groups->search("HasMember='root'")->update(
+	Members => { add => $user },
+    );
 
-[OPTIONS PostURI], [GET PostURI]
-On a container, returns the schema of objects acceptable by this container.
-On an object, returns the schema acceptable by the specified 'adverb'.
-200: Success.  Body is schema in a format determined by content negotiation.
-400: Request failed.  Body is error message in text/plain.
-404: There is no container matching the specified URI.
+And now the actual interactions (OPTIONS can also be replaced by GET):
 
-[POST PostURI] (Container)
-Create a new object from the AtomEntry in the request's body.
-303: Created.  The 'Location:' header is set to the new object's EditURI
-     (for subsequent Get/Update).  Body is success message in text/plain.
-400: Request failed.  Body is error message in text/plain.
-404: There is no container matching the specified URI.
+    OPTIONS /Atom/0.3/Users!add
 
-[POST PostURI] (Object)
-Updates an object, using an 'adverb' acceptable to that object's class.
-200: Success.  Body is the object, serialized as an AtomEntry.
-400: Request failed.  Body is error message in text/plain.
-404: The specific object does not exist, or does not support this adverb.
+	200 OK
+	...schema data...
+
+    POST /Atom/0.3/Users!add
+    ...<Name>autrijus</Name>...
+    ...<EmailAddress>autrijus@example.com</EmailAddress>...
+
+	303 See Other
+	Location: /Atom/0.3/RT-Users/20
+
+    GET /Atom/0.3/RT-Users/20
+
+	200 OK
+	...<atom:id>rt-fsck.com://some-id</atom:id>...
+
+    HEAD /Atom/0.3/Groups?query=HasMember%3D'root'&rows=all
+
+	200 OK
+	Location: /Atom/0.3/RT-Groups/(1,2,3,5,8,13)
+
+    OPTIONS /Atom/0.3/RT-Groups/(1,2,3,5,8,13)!update
+
+	200 OK
+	...schema data...
+
+    POST /Atom/0.3/RT-Groups/(1,2,3,5,8,13)!update
+    ...<Members><add href="rt-fsck.com://some-id"/></Members>...
+	
+	207 Multiple Status
+	...<status><code>200</code><description>Member Added</description>...
+
+Here is a list of all verbs supported by this API:
+
+    [Search] - GET FeedURI
+
+    Search for objects within an container.
+    Possible query parameters: rows, page, query.
+    200: Success.  Body is the result serialized as an AtomFeed.
+	It entries are found, the 'Location:' header is set to a ResultSet.
+    400: Request failed.  Body is error message in text/plain.
+    404: There is no container matching the specified URI.
+
+    [Get] - GET EditURI
+
+    Retrieve a representation of an object or property.
+    Possible query parameters: expand
+    200: Success.  Body is the serialized item.
+    400: Request failed.  Body is error message in text/plain.
+    404: There is no object matching the specified URI.
+
+    [Put] - PUT EditURI
+
+    Modifies an object or property with the serialization in the request body.
+    200: Success.  Body is the serialized item again.
+    400: Request failed.  Body is error message in text/plain.
+    404: There is no object matching the specified URI.
+
+    [Remove] - DELETE EditURI
+
+    Remove the specified object.
+    200: Successfully deleted.  Body is success message in text/plain.
+    400: Request failed.  Body is error message in text/plain.
+    404: There is no object matching the specified URI.
+
+    [Describe] - OPTIONS PostURI | GET PostURI
+
+    On a container, returns the schema of objects acceptable by this container.
+    On an object, returns the schema acceptable by the specified 'adverb'.
+    200: Success.  Body is schema in a format determined by content negotiation.
+    400: Request failed.  Body is error message in text/plain.
+    404: There is no container matching the specified URI.
+
+    [Add] - POST PostURI (Container)
+
+    Create a new object from the AtomEntry in the request's body.
+    303: Created.  The 'Location:' header is set to the new object's EditURI
+	(for subsequent Get/Update).  Body is success message in text/plain.
+    400: Request failed.  Body is error message in text/plain.
+    404: There is no container matching the specified URI.
+
+    [Update] - POST PostURI (Object)
+
+    Updates an object, using an 'adverb' acceptable to that object's class.
+    207: Updated.  Body is the status code and messages for each updated item.
+    400: Request failed.  Body is error message in text/plain.
+    404: The specific object does not exist, or does not support this adverb.
+

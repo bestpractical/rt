@@ -529,9 +529,9 @@ sub ISO {
 
 # }}}
 
-# {{{ sub ISO
+# {{{ sub W3CDTF
 
-=head2 ISO
+=head2 W3CDTF
 
 Takes nothing
 
