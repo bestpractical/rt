@@ -30,16 +30,17 @@
 <table>
 <tr>
 <td align="left">
-<form action="Display.html?id=<%$ArticleObj->Id%>" method="get" >
-<input type=submit value="<&|/l&>No</&>">
+<form action="Display.html" method="GET">
+<input type="hidden" name="id"     value="<%$ArticleObj->Id%>" />
+<input type="submit" value="<&|/l&>No</&>" />
 </form>
 
 </td>
 <td align="right">
-<form action="Delete.html" method="POST" >
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$ArticleObj->Id%>">
-<INPUT TYPE="HIDDEN" NAME="Delete" VALUE="yes">
-<input type=submit value="<&|/l&>Yes</&>">
+<form action="Delete.html" method="POST">
+<input type="hidden" name="id" value="<%$ArticleObj->Id%>" />
+<input type="hidden" name="Delete" value="yes" />
+<input type="submit" value="<&|/l&>Yes</&>" />
 </form>
 </td>
 
