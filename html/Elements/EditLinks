@@ -102,39 +102,46 @@
 % if ($Merge) {
   <TR>
     <TD class="label"><&|/l&>Merge into</&>:</TD>
-    <TD class="entry"><input name="<%$Object->Id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD>
+    <TD class="entry"><input name="<%$id%>-MergeInto"> <i><&|/l&>(only one ticket)</&></i></TD>
   </TR>
 % }
   <TR>
     <TD class="label"><&|/l&>Depends on</&>:</TD>
-    <TD class="entry"><input name="<%$Object->Id%>-DependsOn"></TD>
+    <TD class="entry"><input name="<%$id%>-DependsOn"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Depended on by</&>:</TD>
-    <TD class="entry"><input name="DependsOn-<%$Object->Id%>"></TD>
+    <TD class="entry"><input name="DependsOn-<%$id%>"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Parents</&>:</TD>
-    <TD class="entry"><input name="<%$Object->Id%>-MemberOf"></TD>
+    <TD class="entry"><input name="<%$id%>-MemberOf"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Children</&>:</TD>
-    <TD class="entry"> <input name="MemberOf-<%$Object->Id%>"></TD>
+    <TD class="entry"> <input name="MemberOf-<%$id%>"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Refers to</&>:</TD>
-    <TD class="entry"><input name="<%$Object->Id%>-RefersTo"></TD>
+    <TD class="entry"><input name="<%$id%>-RefersTo"></TD>
   </TR>
   <TR>
     <TD class="label"><&|/l&>Referred to by</&>:</TD>
-    <TD class="entry"> <input name="RefersTo-<%$Object->Id%>"></TD>
+    <TD class="entry"> <input name="RefersTo-<%$id%>"></TD>
   </TR>
 </TABLE>
 </TD>
 </TR>
 </TABLE>
 
-
+<%INIT>
+my $id;
+if ($Object && $Object->Id) {
+    $id = $Object->Id;
+} else {
+    $id = 'new';
+}
+</%INIT>
       
 <%ARGS>
 $Object => undef
