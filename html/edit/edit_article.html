@@ -15,7 +15,7 @@ Children:
 <ul>
 % while (my $child = $children->Next) {
 <li><input type=hidden name="EditArticle" value="<%$child->Id%>">
-SortOrder: <input size=2 name="RT::FM::Article-<%$child->Id%>-SortOrder" value="<%$article->SortOrder%>">
+SortOrder: <input size=2 name="RT::FM::Article-<%$child->Id%>-SortOrder" value="<%$child->SortOrder%>">
 <%$child->Summary%>
 </li>
 % }

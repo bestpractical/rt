@@ -219,12 +219,13 @@ sub UpdateArticles {
       keys %{$template_article->{'_AccessibleCache'}};
     
     
-    foreach my $art_id ( ref($$args{'ARGSRef'}->{'EditArticle'}) ? 
+    foreach my $art_id ( ref($args{'ARGSRef'}->{'EditArticle'}) ? 
 			 @{ $args{'ARGSRef'}->{'EditArticle'} } : 
 			 ( $args{'ARGSRef'}->{'EditArticle'} ) ) {
 
 	# update all the basic fields
 	my $article = RT::FM::Article->new($session{'CurrentUser'});
+	$RT::FM::Logger->crit("Loading $art_id\n");
 	$article->Load($art_id);
 	my @results = UpdateRecordObject ( AttributesRef => \@attributes, 
 					   Object => $article, 
@@ -260,7 +261,7 @@ sub UpdateUsers {
       keys %{$template->{'_AccessibleCache'}};
 
 
-    foreach my $id ( ref($$args{'ARGSRef'}->{'EditUser'}) ?
+    foreach my $id ( ref($args{'ARGSRef'}->{'EditUser'}) ?
                          @{ $args{'ARGSRef'}->{'EditUser'} } :
                          ( $args{'ARGSRef'}->{'EditUser'} ) ) {
 
@@ -435,7 +436,7 @@ sub UpdateCustomFields {
     my @attributes = grep { $template->{'_AccessibleCache'}->{$_}->{'read'} } 
       keys %{$template->{'_AccessibleCache'}};
     
-    foreach my $id ( ref($$args{'ARGSRef'}->{'EditCustomField'}) ? 
+    foreach my $id ( ref($args{'ARGSRef'}->{'EditCustomField'}) ? 
 		     @{ $args{'ARGSRef'}->{'EditCustomField'} } : 
 		     ( $args{'ARGSRef'}->{'EditCustomField'} ) ) {
 	
