@@ -10,3026 +10,3046 @@ msgstr ""
 "Last-Translator: Whiteg Weng <whiteg@elixus.org>\n"
 "Language-Team: Chinese <contact@ourinet.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=big5\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D
+#: html/Elements/MyRequests html/Elements/MyTickets
 msgid "#"
 msgstr "#"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "%1 %2 %3 %4:%5:%6 %7"
-msgstr ""
+msgstr "%1 %2 %3 %4:%5:%6 %7"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "%1 %2 changed to %3"
-msgstr "±q %1 %2 §ï¦¨ %3"
+msgstr "å¾ %1 %2 æ”¹æˆ %3"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "%1 (%2) %3 this ticket\\n"
-msgstr "%1 (%2) %3 ³o¥÷¥Ó½Ğ³æ\\n"
+msgstr "%1 (%2) %3 é€™ä»½ç”³è«‹å–®\\n"
 
-#: lib/RT/ScripAction_Overlay.pm lib/RT/ScripAction_Overlay.pm,D lib/blib/lib/RT/ScripAction_Overlay.pm
+#: lib/RT/ScripAction_Overlay.pm
 msgid "%1 ScripAction loaded"
-msgstr "¸ü¤J¤âÄò %1"
+msgstr "è¼‰å…¥æ‰‹çºŒ %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 added as a value for %2"
-msgstr "·s¼W %1 §@¬° %2 ªº­È"
+msgstr "æ–°å¢ %1 ä½œç‚º %2 çš„å€¼"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "%1 aliases require a TicketId to work on"
-msgstr "§O¦W %1 ¶·­n¥i¥Îªº¥Ó½Ğ³æ½s¸¹"
+msgstr "åˆ¥å %1 é ˆè¦å¯ç”¨çš„ç”³è«‹å–®ç·¨è™Ÿ"
 
-#: bin/rt-mailgate bin/rt-mailgate,D
+#: bin/rt-mailgate
 msgid "%1 aliases require a TicketId to work on "
-msgstr "§O¦W %1 ¶·­n¥i¥Îªº¥Ó½Ğ³æ½s¸¹ "
+msgstr "åˆ¥å %1 é ˆè¦å¯ç”¨çš„ç”³è«‹å–®ç·¨è™Ÿ "
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
-msgstr "§O¦W %1 ¶·­n¥i¥Îªº¥Ó½Ğ³æ½s¸¹¥H³B²z¡]¥X¦Û %2 ªº¡^%3"
+msgstr "åˆ¥å %1 é ˆè¦å¯ç”¨çš„ç”³è«‹å–®ç·¨è™Ÿä»¥è™•ç†ï¼ˆå‡ºè‡ª %2 çš„ï¼‰%3"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "%1 by %2"
-msgstr "%1 ³Q %2 §ó°Ê"
+msgstr "%1 è¢« %2 æ›´å‹•"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "%1 changed from %2 to %3"
-msgstr "%1 ªº­È±q %2 §ï¦¨ %3"
+msgstr "%1 çš„å€¼å¾ %2 æ”¹æˆ %3"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#:
+msgid "%1 could not be set to %2."
+msgstr "ç„¡æ³•å°‡ %1 è¨­å®šç‚º %2ã€‚"
+
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 couldn't init a transaction (%2)\\n"
-msgstr "%1 µLªkªì©l§ó·s³ø§i (%2)\\n"
+msgstr "%1 ç„¡æ³•åˆå§‹æ›´æ–°å ±å‘Š (%2)\\n"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1 µLªk±N²{ªp³]¦¨¤w¸Ñ¨M¡CRT ¸ê®Æ®w¤º®e¥i¯à¤£¤@­P¡C"
+msgstr "%1 ç„¡æ³•å°‡ç¾æ³è¨­æˆå·²è§£æ±ºã€‚RT è³‡æ–™åº«å…§å®¹å¯èƒ½ä¸ä¸€è‡´ã€‚"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 ¤w¤£¦A¬O¦¹¦î¦Cªº %2¡C"
+msgstr "%1 å·²ä¸å†æ˜¯æ­¤ä½‡åˆ—çš„ %2ã€‚"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 is no longer a %2 for this ticket."
-msgstr "%1 ¤w¤£¦A¬O¦¹¥Ó½Ğ³æªº %2¡C"
+msgstr "%1 å·²ä¸å†æ˜¯æ­¤ç”³è«‹å–®çš„ %2ã€‚"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "%1 is no longer a value for custom field %2"
-msgstr "%1 ¤w¤£¦A¬O¦Û­qÄæ¦ì %2 ªº­È¡C"
+msgstr "%1 å·²ä¸å†æ˜¯è‡ªè¨‚æ¬„ä½ %2 çš„å€¼ã€‚"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Keywords.html html/Admin/Queues/Scrips.html
 msgid "%1 isn't a valid Queue id."
-msgstr "%1 ¤£¬O¤@­Ó¦Xªkªº¦î¦C½s¸¹"
+msgstr "%1 ä¸æ˜¯ä¸€å€‹åˆæ³•çš„ä½‡åˆ—ç·¨è™Ÿã€‚"
 
-#: html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D
+#: html/Ticket/Elements/ShowBasics
 msgid "%1 min"
-msgstr "%1 ¤ÀÄÁ"
+msgstr "%1 åˆ†é˜"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "%1 not shown"
-msgstr "¨S¦³Åã¥Ü %1"
+msgstr "æ²’æœ‰é¡¯ç¤º %1"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "%1 succeeded\\n"
-msgstr "%1 §¹¦¨\\n"
+msgstr "%1 å®Œæˆ\\n"
 
-#: bin/rt-mailgate bin/rt-mailgate,D
+#: bin/rt-mailgate
 msgid "%1 type unknown for $MessageId"
-msgstr "¤£ª¾¹D $MessageID ªº %1 Ãş§O"
+msgstr "ä¸çŸ¥é“ $MessageID çš„ %1 é¡åˆ¥"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "%1 type unknown for %2"
-msgstr "¤£ª¾¹D %2 ªº %1 Ãş§O"
+msgstr "ä¸çŸ¥é“ %2 çš„ %1 é¡åˆ¥"
 
 #:
 msgid "%1 was created without a CurrentUser\\n"
-msgstr "¦b¨S¦³ CurrentUser ªº±¡ªp¤U«Ø¥ß %1\\\\n"
+msgstr "åœ¨æ²’æœ‰ CurrentUser çš„æƒ…æ³ä¸‹å»ºç«‹ %1\\\\n"
 
-#: lib/RT/Action/ResolveMembers.pm lib/RT/Action/ResolveMembers.pm,D lib/blib/lib/RT/Action/ResolveMembers.pm
+#: lib/RT/Action/ResolveMembers.pm
 msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 ·|¸Ñ¨M¦b¤w¸Ñ¨M¸s²Õ¸Ì¦¨­ûªº¥Ó½Ğ³æ¡C"
+msgstr "%1 æœƒè§£æ±ºåœ¨å·²è§£æ±ºç¾¤çµ„è£¡æˆå“¡çš„ç”³è«‹å–®ã€‚"
 
-#: lib/RT/Action/StallDependent.pm lib/RT/Action/StallDependent.pm,D lib/blib/lib/RT/Action/StallDependent.pm
+#: lib/RT/Action/StallDependent.pm
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
-msgstr "¦pªG %1 °_©l¥Ó½Ğ³æ¨Ì¿à©ó¬Y­ÓÃìµ²¡A©Î¬O¬Y­ÓÃìµ²ªº¦¨­û¡A¥¦±N·|³Q©µÌX¡C"
+msgstr "å¦‚æœ %1 èµ·å§‹ç”³è«‹å–®ä¾è³´æ–¼æŸå€‹éˆçµï¼Œæˆ–æ˜¯æŸå€‹éˆçµçš„æˆå“¡ï¼Œå®ƒå°‡æœƒè¢«å»¶å®•ã€‚"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "%1: no attachment specified"
-msgstr "%1¡G¨S¦³«ü©wªş¥ó"
+msgstr "%1ï¼šæ²’æœ‰æŒ‡å®šé™„ä»¶"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "'%1' is an invalid value for status"
-msgstr "'%1' ¤£¬O¤@­Ó¦Xªkªºª¬ºA­È"
+msgstr "'%1' ä¸æ˜¯ä¸€å€‹åˆæ³•çš„ç‹€æ…‹å€¼"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "'%1' not a recognized action. "
-msgstr "'%1'¬°µLªk¿ëÃÑªº°Ê§@¡C "
+msgstr "'%1'ç‚ºç„¡æ³•è¾¨è­˜çš„å‹•ä½œã€‚ "
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Groups/Members.html html/User/Groups/Members.html
 msgid "(Check box to delete group member)"
-msgstr "¡]¿ï¾Ü±ı§R°£ªº¸s²Õ¦¨­û¡^"
+msgstr "ï¼ˆé¸æ“‡æ¬²åˆªé™¤çš„ç¾¤çµ„æˆå“¡ï¼‰"
 
-#: html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Ticket/Elements/EditPeople
 msgid "(Check box to delete)"
-msgstr "¡]¿ï¾Ü±ı§R°£¤H­û¡^"
+msgstr "ï¼ˆé¸æ“‡æ¬²åˆªé™¤äººå“¡ï¼‰"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "(Check boxes to delete)"
-msgstr "¡]¿ï¾Ü±ı§R°£Ãìµ²¡^"
+msgstr "ï¼ˆé¸æ“‡æ¬²åˆªé™¤éˆçµï¼‰"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D
+#: html/Ticket/Create.html
 msgid "(Enter ticket ids or URLs, seperated with spaces)"
-msgstr "¡]Áä¤J¥Ó½Ğ³æ½s¸¹©Îºô§}¡A¥HªÅ¥Õ¤À¹j¡^"
+msgstr "ï¼ˆéµå…¥ç”³è«‹å–®ç·¨è™Ÿæˆ–ç¶²å€ï¼Œä»¥ç©ºç™½åˆ†éš”ï¼‰"
 
-#: html/Ticket/Elements/EditCustomFields html/Ticket/Elements/EditCustomFields,D
+#: html/Ticket/Elements/EditCustomFields
 msgid "(No Value)"
-msgstr "¡]µL¡^"
+msgstr "ï¼ˆç„¡ï¼‰"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Groups/Members.html html/User/Groups/Members.html
 msgid "(No members)"
-msgstr "¡]¨S¦³¦¨­û¡^"
+msgstr "ï¼ˆæ²’æœ‰æˆå“¡ï¼‰"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "¡]°e¥X¥»¥÷§ó·sªº±K¥ó°Æ¥»µ¹¦W³æ¤W¥H³r¸¹¹j¶}ªº¹q¤l¶l¥ó¦ì§}¡C½Ğ<b>¤Å</b>§ó§ï±µ¦¬ªÌ¦W³æ¡C¡^"
+msgstr "ï¼ˆé€å‡ºæœ¬ä»½æ›´æ–°çš„å¯†ä»¶å‰¯æœ¬çµ¦åå–®ä¸Šä»¥é€—è™Ÿéš”é–‹çš„é›»å­éƒµä»¶ä½å€ã€‚è«‹<b>å‹¿</b>æ›´æ”¹æ¥æ”¶è€…åå–®ã€‚ï¼‰"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
-msgstr "¡]°e¥X¥»¥÷§ó·sªº°Æ¥»µ¹¦W³æ¤W¥H³r¸¹¹j¶}ªº¹q¤l¶l¥ó¦ì§}¡C½Ğ<b>¤Å</b>§ó§ï±µ¦¬ªÌ¦W³æ¡C¡^"
+msgstr "ï¼ˆé€å‡ºæœ¬ä»½æ›´æ–°çš„å‰¯æœ¬çµ¦åå–®ä¸Šä»¥é€—è™Ÿéš”é–‹çš„é›»å­éƒµä»¶ä½å€ã€‚è«‹<b>å‹¿</b>æ›´æ”¹æ¥æ”¶è€…åå–®ã€‚ï¼‰"
 
-#: html/Admin/Groups/index.html html/Admin/Groups/index.html,D html/User/Groups/index.html html/User/Groups/index.html,D
+#: html/Admin/Groups/index.html html/User/Groups/index.html
 msgid "(empty)"
-msgstr "¡]ªÅ¥Õ¡^"
+msgstr "ï¼ˆç©ºç™½ï¼‰"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D html/Admin/Elements/SelectRights html/Admin/Elements/SelectRights,D html/Ticket/Elements/ShowCustomFields html/Ticket/Elements/ShowCustomFields,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: html/Elements/MyRequests html/Elements/MyTickets
+msgid "(no subject)"
+msgstr "(æ²’æœ‰ä¸»é¡Œ)"
+
+#: lib/RT/Transaction_Overlay.pm html/Admin/Elements/SelectRights html/Ticket/Elements/ShowCustomFields
 msgid "(no value)"
-msgstr "¡]µL¡^"
+msgstr "ï¼ˆç„¡ï¼‰"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "(only one ticket)"
-msgstr "¡]¬é¦³¤@¥÷¥Ó½Ğ³æ¡^"
+msgstr "ï¼ˆç¥‡æœ‰ä¸€ä»½ç”³è«‹å–®ï¼‰"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "(required)"
-msgstr "¡]¥²¶ñ¡^"
+msgstr "ï¼ˆå¿…å¡«ï¼‰"
 
-#: html/Elements/MyTickets html/Elements/MyTickets,D
+#: html/Elements/MyTickets
 msgid "25 highest priority tickets I own..."
-msgstr "«e 25 ¥÷«İ³B²z¥Ó½Ğ³æ..."
+msgstr "å‰ 25 ä»½å¾…è™•ç†ç”³è«‹å–®..."
 
-#: html/Elements/MyRequests html/Elements/MyRequests,D
+#: html/Elements/MyRequests
 msgid "25 highest priority tickets I requested..."
-msgstr "«e 25 ¥÷°e¥Xªº¥Ó½Ğ³æ..."
+msgstr "å‰ 25 ä»½é€å‡ºçš„ç”³è«‹å–®..."
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D html/Elements/CreateTicket html/Elements/CreateTicket,D
+#: docs/design_docs/string-extraction-guide.txt html/Elements/CreateTicket
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"´£¥X¥Ó½Ğ³æ\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"æå‡ºç”³è«‹å–®\">&nbsp;%1"
 
 #:
 msgid "ACE Deleted"
-msgstr "§R°£ ACE ³]©w"
+msgstr "åˆªé™¤ ACE è¨­å®š"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "ACE Loaded"
-msgstr "¸ü¤J ACE ³]©w"
+msgstr "è¼‰å…¥ ACE è¨­å®š"
 
 #:
 msgid "ACE could not be deleted"
-msgstr "µLªk§R°£ ACE ³]©w"
+msgstr "ç„¡æ³•åˆªé™¤ ACE è¨­å®š"
 
-#: lib/RT/Principal_Overlay.pm lib/RT/Principal_Overlay.pm,D lib/blib/lib/RT/Principal_Overlay.pm
+#: lib/RT/Principal_Overlay.pm
 msgid "ACE could not be found"
-msgstr "§ä¤£¨ì ACE ³]©w"
+msgstr "æ‰¾ä¸åˆ° ACE è¨­å®š"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "ACE not found"
-msgstr "§ä¤£¨ì ACE ³]©w"
+msgstr "æ‰¾ä¸åˆ° ACE è¨­å®š"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "ACEs can only be created and deleted."
-msgstr "¬é¯à«Ø¥ß©Î§R°£ ACE ³]©w"
+msgstr "ç¥‡èƒ½å»ºç«‹æˆ–åˆªé™¤ ACE è¨­å®šã€‚"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/enhanced-mailgate bin/rt-commit-handler
 msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Â÷¶}¥H§K¤£¤p¤ß­×§ï¨ì¥Ó½Ğ³æ¡C\\n"
+msgstr "é›¢é–‹ä»¥å…ä¸å°å¿ƒä¿®æ”¹åˆ°ç”³è«‹å–®ã€‚\\n"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Access control"
-msgstr "¦s¨úÅv­­"
+msgstr "å­˜å–æ¬Šé™"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Action"
-msgstr "°Ê§@"
+msgstr "å‹•ä½œ"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm
 msgid "Action %1 not found"
-msgstr "°Ê§@ %1 §ä¤£¨ì"
+msgstr "å‹•ä½œ %1 æ‰¾ä¸åˆ°"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Add AdminCc"
-msgstr "·s¼WºŞ²z­û°Æ¥»¦¬¥ó¤H"
+msgstr "æ–°å¢ç®¡ç†å“¡å‰¯æœ¬æ”¶ä»¶äºº"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Add Cc"
-msgstr "·s¼W°Æ¥»¦¬¥ó¤H"
+msgstr "æ–°å¢å‰¯æœ¬æ”¶ä»¶äºº"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Add Requestor"
-msgstr "·s¼W¥Ó½Ğ¤H"
+msgstr "æ–°å¢ç”³è«‹äºº"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Add a keyword selection to this queue"
-msgstr "·s¼W¤@­ÓÃöÁä¦r¿ï¶µ¨ì¦¹¦î¦C"
+msgstr "æ–°å¢ä¸€å€‹é—œéµå­—é¸é …åˆ°æ­¤ä½‡åˆ—"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Add a scrip to this queue"
-msgstr "·s¼W¤@¹D¤âÄò¨ì¦¹¦î¦C"
+msgstr "æ–°å¢ä¸€é“æ‰‹çºŒåˆ°æ­¤ä½‡åˆ—"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D
+#: html/Admin/Global/Scrips.html
 msgid "Add a scrip which will apply to all queues"
-msgstr "·s¼W¤@¹D¥Î©ó©Ò¦³¦î¦Cªº¤âÄò"
+msgstr "æ–°å¢ä¸€é“ç”¨æ–¼æ‰€æœ‰ä½‡åˆ—çš„æ‰‹çºŒ"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Groups/Members.html html/User/Groups/Members.html
 msgid "Add members"
-msgstr "·s¼W¦¨­û"
+msgstr "æ–°å¢æˆå“¡"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers,D
+#: html/Admin/Queues/People.html html/Ticket/Elements/AddWatchers
 msgid "Add new watchers"
-msgstr "·s¼Wµø¹î­û"
+msgstr "æ–°å¢è¦–å¯Ÿå“¡"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Added principal as a %1 for this queue"
-msgstr "·s¼W %1 ¬°¦¹¦î¦Cªº³æ¦ì"
+msgstr "æ–°å¢ %1 ç‚ºæ­¤ä½‡åˆ—çš„å–®ä½"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Added principal as a %1 for this ticket"
-msgstr "·s¼W %1 ¬°¦¹¥Ó½Ğ³æªº³æ¦ì"
+msgstr "æ–°å¢ %1 ç‚ºæ­¤ç”³è«‹å–®çš„å–®ä½"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Address1"
-msgstr "¦í§}¡G"
+msgstr "ä½å€ï¼š"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Address2"
-msgstr "¦í§}¡G"
+msgstr "ä½å€ï¼š"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D
+#: html/Ticket/Create.html
 msgid "Admin Cc"
-msgstr "ºŞ²z­û°Æ¥»"
+msgstr "ç®¡ç†å“¡å‰¯æœ¬"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "Admin queues"
-msgstr "¦î¦CºŞ²z"
+msgstr "ä½‡åˆ—ç®¡ç†"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Admin users"
-msgstr "¨Ï¥ÎªÌºŞ²z"
+msgstr "ä½¿ç”¨è€…ç®¡ç†"
 
-#: html/Admin/Global/index.html html/Admin/Global/index.html,D
+#: html/Admin/Global/index.html
 msgid "Admin/Global configuration"
-msgstr "ºŞ²z/¾ãÅé³]©w"
+msgstr "ç®¡ç†/æ•´é«”è¨­å®š"
 
-#: html/Admin/Groups/index.html html/Admin/Groups/index.html,D
+#: html/Admin/Groups/index.html
 msgid "Admin/Groups"
-msgstr "ºŞ²z/¸s²Õ"
+msgstr "ç®¡ç†/ç¾¤çµ„"
 
-#: html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Queues/Modify.html
 msgid "Admin/Queue/Basics"
-msgstr "ºŞ²z/¦î¦C/°ò¥»¸ê°T"
+msgstr "ç®¡ç†/ä½‡åˆ—/åŸºæœ¬è³‡è¨Š"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D html/Ticket/Elements/ShowPeople html/Ticket/Elements/ShowPeople,D
+#: html/Ticket/Update.html html/Ticket/Elements/ShowPeople
 msgid "AdminCc"
-msgstr "ºŞ²z­û°Æ¥»"
+msgstr "ç®¡ç†å“¡å‰¯æœ¬"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
 msgid "Administrative Cc"
-msgstr "ºŞ²z­û°Æ¥»"
+msgstr "ç®¡ç†å“¡å‰¯æœ¬"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D
+#: html/Elements/Quicksearch
 msgid "Advanced Search"
-msgstr "¶i¶¥·j´M"
+msgstr "é€²éšæœå°‹"
 
-#: html/Elements/SelectDateRelation html/Elements/SelectDateRelation,D
+#: html/Elements/SelectDateRelation
 msgid "After"
-msgstr "±ß©ó"
+msgstr "æ™šæ–¼"
 
 #:
 msgid "Age"
-msgstr "¸g¾ú®É¶¡"
+msgstr "ç¶“æ­·æ™‚é–“"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Apr"
-msgstr ""
+msgstr "å››æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Apr."
-msgstr "¥|¤ë"
+msgstr "å››æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "April"
-msgstr "¥|¤ë"
+msgstr "å››æœˆ"
 
-#: html/Elements/SelectSortOrder html/Elements/SelectSortOrder,D
+#: html/Elements/SelectSortOrder
 msgid "Ascending"
-msgstr "»¼¼W"
+msgstr "éå¢"
 
-#: html/SelfService/Update.html html/SelfService/Update.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/SelfService/Update.html html/Ticket/ModifyAll.html html/Ticket/Update.html
 msgid "Attach"
-msgstr "ªş¥ó"
+msgstr "é™„ä»¶"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/Ticket/Create.html html/Ticket/Create.html,D
+#: html/SelfService/Create.html html/Ticket/Create.html
 msgid "Attach file"
-msgstr "ªş¥[ÀÉ®×"
+msgstr "é™„åŠ æª”æ¡ˆ"
 
-#: html/SelfService/Attachment/dhandler html/SelfService/Attachment/dhandler,D
+#: html/SelfService/Attachment/dhandler
 msgid "Attachment '%1' could not be loaded"
-msgstr "µLªk¸ü¤Jªş¥ó '%1'"
+msgstr "ç„¡æ³•è¼‰å…¥é™„ä»¶ '%1'"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Attachment created"
-msgstr "ªş¥ó«Ø¥ß§¹¦¨"
+msgstr "é™„ä»¶å»ºç«‹å®Œæˆ"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Aug"
-msgstr ""
+msgstr "å…«æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Aug."
-msgstr "¤K¤ë"
+msgstr "å…«æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "August"
-msgstr "¤K¤ë"
+msgstr "å…«æœˆ"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "AuthSystem"
-msgstr "»{ÃÒ¤è¦¡"
+msgstr "èªè­‰æ–¹å¼"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Bad PGP Signature: %1\\n"
-msgstr "¿ù»~ªº PGP Ã±³¹¡G%1\\n"
+msgstr "éŒ¯èª¤çš„ PGP ç°½ç« ï¼š%1\\n"
 
-#: html/SelfService/Attachment/dhandler html/SelfService/Attachment/dhandler,D
+#: html/SelfService/Attachment/dhandler
 msgid "Bad attachment id. Couldn't find attachment '%1'\\n"
-msgstr "¿ù»~ªºªş¥ó½s¸¹¡CµLªk§ä¨ìªş¥ó '%1'\\n"
+msgstr "éŒ¯èª¤çš„é™„ä»¶ç·¨è™Ÿã€‚ç„¡æ³•æ‰¾åˆ°é™„ä»¶ '%1'\\n"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "Bad data in %1"
-msgstr "%1 ªº¸ê®Æ¿ù»~"
+msgstr "%1 çš„è³‡æ–™éŒ¯èª¤"
 
-#: html/SelfService/Attachment/dhandler html/SelfService/Attachment/dhandler,D
+#: html/SelfService/Attachment/dhandler
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
-msgstr "ªş¥óªº³B²z¸¹½X¿ù»~¡C%1 À³¬° %2\\n"
+msgstr "é™„ä»¶çš„è™•ç†è™Ÿç¢¼éŒ¯èª¤ã€‚%1 æ‡‰ç‚º %2\\n"
 
-#: html/Admin/Elements/GroupTabs html/Admin/Elements/GroupTabs,D html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/UserTabs html/Admin/Elements/UserTabs,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D html/User/Elements/GroupTabs html/User/Elements/GroupTabs,D
+#: html/Admin/Elements/GroupTabs html/Admin/Elements/QueueTabs html/Admin/Elements/UserTabs html/Ticket/Elements/Tabs html/User/Elements/GroupTabs
 msgid "Basics"
-msgstr "°ò¥»¸ê°T"
+msgstr "åŸºæœ¬è³‡è¨Š"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "Bcc"
-msgstr "±K¥ó°Æ¥»"
+msgstr "å¯†ä»¶å‰¯æœ¬"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D html/Admin/Global/UserRights.html html/Admin/Global/UserRights.html,D html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html,D
+#: html/Admin/Global/GroupRights.html html/Admin/Global/UserRights.html html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
 msgid "Be sure to save your changes"
-msgstr "°O±oÀx¦s­×§ï¡C"
+msgstr "è¨˜å¾—å„²å­˜ä¿®æ”¹ã€‚"
 
-#: html/Elements/SelectDateRelation html/Elements/SelectDateRelation,D
+#: html/Elements/SelectDateRelation
 msgid "Before"
-msgstr "¦­©ó"
+msgstr "æ—©æ–¼"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Bookmarkable URL for this search"
-msgstr "±N·j´Mµ²ªGÂà¬°¥i©ñ¤J®ÑÅÒªººô§}"
+msgstr "å°‡æœå°‹çµæœè½‰ç‚ºå¯æ”¾å…¥æ›¸ç±¤çš„ç¶²å€"
 
-#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory,D html/Ticket/Elements/ShowHistory,D
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory
 msgid "Brief headers"
-msgstr "ºëÂ²¼ĞÀYÀÉ"
+msgstr "ç²¾ç°¡æ¨™é ­æª”"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Bulk ticket update"
-msgstr "§ó·s¾ã§å¥Ó½Ğ³æ"
+msgstr "æ›´æ–°æ•´æ‰¹ç”³è«‹å–®"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Can not modify system users"
-msgstr "µLªk­×§ï¨t²Î¨Ï¥ÎªÌ"
+msgstr "ç„¡æ³•ä¿®æ”¹ç³»çµ±ä½¿ç”¨è€…"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Can't add a custom field value without a name"
-msgstr "¤£¯à·s¼W¨S¦³¦WºÙªº¦Û­qÄæ¦ì­È"
+msgstr "ä¸èƒ½æ–°å¢æ²’æœ‰åç¨±çš„è‡ªè¨‚æ¬„ä½å€¼"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Can't link a ticket to itself"
-msgstr "¥Ó½Ğ³æ¤£¯àÃìµ²¦Û¤v¡C"
+msgstr "ç”³è«‹å–®ä¸èƒ½éˆçµè‡ªå·±ã€‚"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Can't merge into a merged ticket. You should never get this error"
-msgstr "¤£¯à¾ã¦X¶i¤w¾ã¦X¹Lªº¥Ó½Ğ³æ¡C©p¤£¸Ó¥Ç³o­Ó¿ù»~¡C"
+msgstr "ä¸èƒ½æ•´åˆé€²å·²æ•´åˆéçš„ç”³è«‹å–®ã€‚å¦³ä¸è©²çŠ¯é€™å€‹éŒ¯èª¤ã€‚"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Can't specifiy both base and target"
-msgstr "¤£¯à¦P®É«ü©w°_©l¥Ó½Ğ³æ»P¥Øªº¥Ó½Ğ³æ"
+msgstr "ä¸èƒ½åŒæ™‚æŒ‡å®šèµ·å§‹ç”³è«‹å–®èˆ‡ç›®çš„ç”³è«‹å–®"
 
-#: html/autohandler html/autohandler,D
+#: html/autohandler
 msgid "Cannot create user: %1"
-msgstr "µLªk«Ø¥ß¨Ï¥ÎªÌ¡G%1"
+msgstr "ç„¡æ³•å»ºç«‹ä½¿ç”¨è€…ï¼š%1"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Update.html html/Ticket/Update.html html/Ticket/Update.html,D html/Ticket/Update.html,D html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D html/Ticket/Elements/ShowPeople html/Ticket/Elements/ShowPeople,D
+#: html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html html/Ticket/Update.html html/Ticket/Update.html html/Admin/Queues/People.html html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
 msgid "Cc"
-msgstr "°Æ¥»"
+msgstr "å‰¯æœ¬"
 
-#: html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D
+#: html/SelfService/Prefs.html html/User/Prefs.html
 msgid "Change password"
-msgstr "­×§ï±K½X"
+msgstr "ä¿®æ”¹å¯†ç¢¼"
 
-#: html/Admin/Elements/SelectRights html/Admin/Elements/SelectRights,D
+#: html/Admin/Elements/SelectRights
 msgid "Check box to revoke right"
-msgstr "¿ï¾Ü±ıºM®øªºÅv§Q"
+msgstr "é¸æ“‡æ¬²æ’¤æ¶ˆçš„æ¬Šåˆ©"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
 msgid "Children"
-msgstr "¤l¥Ó½Ğ³æ"
+msgstr "å­ç”³è«‹å–®"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "City"
-msgstr "©Ò¦b«°¥«"
+msgstr "æ‰€åœ¨åŸå¸‚"
 
-#: html/SelfService/Elements/Tabs html/SelfService/Elements/Tabs,D
+#: html/SelfService/Elements/Tabs
 msgid "Closed requests"
-msgstr "µ²§ôªº¥Ó½Ğ"
+msgstr "çµæŸçš„ç”³è«‹"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Command not understood!\\n"
-msgstr "«ü¥OµLªk¿ëÃÑ¡I\\n"
+msgstr "æŒ‡ä»¤ç„¡æ³•è¾¨è­˜ï¼\\n"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Comment"
-msgstr "µû½×"
+msgstr "è©•è«–"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Comment Address"
-msgstr "µû½×¹q¤l¶l¥ó¦a§}"
+msgstr "è©•è«–é›»å­éƒµä»¶åœ°å€"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate bin/enhanced-mailgate,D bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate,D bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-mailgate bin/rt-mailgate
 msgid "Comment not recorded"
-msgstr "µû½×¥¼³Q¬ö¿ı"
+msgstr "è©•è«–æœªè¢«ç´€éŒ„"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "Comments"
-msgstr "µû½×"
+msgstr "è©•è«–"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Comments (Not sent to requestors)"
-msgstr "µû½×¡]¤£°eµ¹¥Ó½Ğ¤H¡^"
+msgstr "è©•è«–ï¼ˆä¸é€çµ¦ç”³è«‹äººï¼‰"
 
-#: html/Elements/ViewUser html/Elements/ViewUser,D
+#: html/Elements/ViewUser
 msgid "Comments about %1"
-msgstr "¹ï %1 ªºµû½×"
+msgstr "å° %1 çš„è©•è«–"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Ticket/Elements/ShowRequestor html/Ticket/Elements/ShowRequestor,D
+#: html/Admin/Users/Modify.html html/Ticket/Elements/ShowRequestor
 msgid "Comments about this user"
-msgstr "¨Ï¥ÎªÌ´y­z"
+msgstr "ä½¿ç”¨è€…æè¿°"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Comments added"
-msgstr "·s¼Wµû½×§¹¦¨"
+msgstr "æ–°å¢è©•è«–å®Œæˆ"
 
-#: lib/RT/Action/Generic.pm lib/RT/Action/Generic.pm,D lib/blib/lib/RT/Action/Generic.pm
+#: lib/RT/Action/Generic.pm
 msgid "Commit Stubbed"
-msgstr "®ø°£§ó°Ê§¹¦¨"
+msgstr "æ¶ˆé™¤æ›´å‹•å®Œæˆ"
 
-#: html/Search/RestrictSearch.html html/Search/RestrictSearch.html,D
+#: html/Search/RestrictSearch.html
 msgid "Compile Restrictions"
-msgstr "³]©w·j´M±ø¥ó"
+msgstr "è¨­å®šæœå°‹æ¢ä»¶"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Condition"
-msgstr "²{ªp"
+msgstr "ç¾æ³"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm
 msgid "Condition not found"
-msgstr "¥¼§ä¨ì²Å¦Xªº²{ªp"
+msgstr "æœªæ‰¾åˆ°ç¬¦åˆçš„ç¾æ³"
 
-#: html/Elements/Tabs html/Elements/Tabs,D
+#: html/Elements/Tabs
 msgid "Configuration"
-msgstr "³]©w"
+msgstr "è¨­å®š"
 
-#: html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D
+#: html/SelfService/Prefs.html html/User/Prefs.html
 msgid "Confirm"
-msgstr "½T»{±K½X"
+msgstr "ç¢ºèªå¯†ç¢¼"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "ContactInfoSystem"
-msgstr "³sµ¸¸ê°T¨t²Î"
+msgstr "é€£çµ¡è³‡è¨Šç³»çµ±"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Contacted date '%1' could not be parsed"
-msgstr "µLªk¸ÑÅªÁpµ¸¤é´Á '%1'"
+msgstr "ç„¡æ³•è§£è®€è¯çµ¡æ—¥æœŸ '%1'"
 
-#: html/User/Groups/Modify.html html/User/Groups/Modify.html,D
-msgid "Coould not create group"
-msgstr ""
-
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Correspondence Address"
-msgstr "¥Ó½Ğ³æ±H°e¦a§}"
+msgstr "ç”³è«‹å–®å¯„é€åœ°å€"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Correspondence added"
-msgstr "·s¼W¥Ó½Ğ³æ±H°e¦a§}"
+msgstr "æ–°å¢ç”³è«‹å–®å¯„é€åœ°å€"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "Correspondence not recorded"
-msgstr "¥¼¬ö¿ı¥Ó½Ğ³æ±H°e¦a§}"
+msgstr "æœªç´€éŒ„ç”³è«‹å–®å¯„é€åœ°å€"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Could not add new custom field value for ticket. "
-msgstr "¤£¯à·s¼W¦Û­qÄæ¦ìªº­È "
+msgstr "ä¸èƒ½æ–°å¢è‡ªè¨‚æ¬„ä½çš„å€¼ "
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Could not add new custom field value for ticket. %1 "
-msgstr "¤£¯à·s¼W¦Û­qÄæ¦ìªº­È¡C%1 "
+msgstr "ä¸èƒ½æ–°å¢è‡ªè¨‚æ¬„ä½çš„å€¼ã€‚%1 "
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not change owner. "
-msgstr "¤£¯à§ó§ï©Ó¿ì¤H¡C "
+msgstr "ä¸èƒ½æ›´æ”¹æ‰¿è¾¦äººã€‚ "
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Could not create CustomField"
-msgstr "µLªk«Ø¥ß¦Û­qÄæ¦ì"
+msgstr "ç„¡æ³•å»ºç«‹è‡ªè¨‚æ¬„ä½"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm html/User/Groups/Modify.html
 msgid "Could not create group"
-msgstr "µLªk«Ø¥ß·s¸s²Õ"
+msgstr "ç„¡æ³•å»ºç«‹æ–°ç¾¤çµ„"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Could not create template: %1"
-msgstr "µLªk«Ø¥ß½d¥»¡G%1"
+msgstr "ç„¡æ³•å»ºç«‹ç¯„æœ¬ï¼š%1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not create ticket. Queue not set"
-msgstr "µLªk«Ø¥ß¥Ó½Ğ³æ¡C©|¥¼«ü©w¦î¦C¡C"
+msgstr "ç„¡æ³•å»ºç«‹ç”³è«‹å–®ã€‚å°šæœªæŒ‡å®šä½‡åˆ—ã€‚"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
 msgid "Could not create user"
-msgstr "µLªk«Ø¥ß¨Ï¥ÎªÌ"
+msgstr "ç„¡æ³•å»ºç«‹ä½¿ç”¨è€…"
 
 #:
 msgid "Could not create watcher for requestor"
-msgstr "µLªk¬°¥Ó½Ğ¤H«Ø¥ßµø¹î­û"
+msgstr "ç„¡æ³•ç‚ºç”³è«‹äººå»ºç«‹è¦–å¯Ÿå“¡"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "Could not find a ticket with id %1"
-msgstr "§ä¤£¨ì½s¸¹ %1 ªº¥Ó½Ğ³æ"
+msgstr "æ‰¾ä¸åˆ°ç·¨è™Ÿ %1 çš„ç”³è«‹å–®"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Could not find group %1."
-msgstr "§ä¤£¨ì¸s²Õ %1¡C"
+msgstr "æ‰¾ä¸åˆ°ç¾¤çµ„ %1ã€‚"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not find or create that user"
-msgstr "§ä¤£¨ì©ÎµLªk«Ø¥ß¸Ó¦W¨Ï¥ÎªÌ"
+msgstr "æ‰¾ä¸åˆ°æˆ–ç„¡æ³•å»ºç«‹è©²åä½¿ç”¨è€…"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Could not find that principal"
-msgstr "§ä¤£¨ì¸Ó³æ¦ì"
+msgstr "æ‰¾ä¸åˆ°è©²å–®ä½"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Could not find user %1."
-msgstr "§ä¤£¨ì¨Ï¥ÎªÌ %1¡C"
+msgstr "æ‰¾ä¸åˆ°ä½¿ç”¨è€… %1ã€‚"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D html/User/Groups/Modify.html html/User/Groups/Modify.html,D
+#: html/Admin/Groups/Members.html html/User/Groups/Members.html html/User/Groups/Modify.html
 msgid "Could not load group"
-msgstr "µLªk¸ü¤J¸s²Õ"
+msgstr "ç„¡æ³•è¼‰å…¥ç¾¤çµ„"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Could not make that principal a %1 for this queue"
-msgstr "µLªk±N¸Ó³æ¦ì³]¬°¦¹¦î¦Cªº %1¡C"
+msgstr "ç„¡æ³•å°‡è©²å–®ä½è¨­ç‚ºæ­¤ä½‡åˆ—çš„ %1ã€‚"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Could not make that principal a %1 for this ticket"
-msgstr "µLªk±N¸Ó³æ¦ì³]¬°¦¹¥Ó½Ğ³æªº %1¡C"
+msgstr "ç„¡æ³•å°‡è©²å–®ä½è¨­ç‚ºæ­¤ç”³è«‹å–®çš„ %1ã€‚"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Could not remove that principal as a %1 for this queue"
-msgstr "µLªk±N³æ¦ì %1 ±q¦î¦C²¾°£¡C"
+msgstr "ç„¡æ³•å°‡å–®ä½ %1 å¾ä½‡åˆ—ç§»é™¤ã€‚"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Could not remove that principal as a %1 for this ticket"
-msgstr "µLªk±N³æ¦ì %1 ±q¥Ó½Ğ³æ²¾°£¡C"
+msgstr "ç„¡æ³•å°‡å–®ä½ %1 å¾ç”³è«‹å–®ç§»é™¤ã€‚"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Couldn't add member to group"
-msgstr "µLªk·s¼W¦¨­û¦Ü¸s²Õ"
+msgstr "ç„¡æ³•æ–°å¢æˆå“¡è‡³ç¾¤çµ„"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Couldn't create a transaction: %1"
-msgstr "µLªk«Ø¥ß§ó°Ê³ø§i"
+msgstr "ç„¡æ³•å»ºç«‹æ›´å‹•å ±å‘Š"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Couldn't figure out what to do from gpg's reply\\n"
-msgstr "µLªk±q gpg ¦^¨ç¿ëÃÑ¥X¸Ó±Ä¨úªº¦æ°Ê\\n"
+msgstr "ç„¡æ³•å¾ gpg å›å‡½è¾¨è­˜å‡ºè©²æ¡å–çš„è¡Œå‹•\\n"
 
-#: bin/rtadmin bin/rtadmin bin/rtadmin,D bin/rtadmin,D
+#: bin/rtadmin bin/rtadmin
 msgid "Couldn't find group\\n"
-msgstr "§ä¤£¨ì¸s²Õ\\n"
+msgstr "æ‰¾ä¸åˆ°ç¾¤çµ„\\n"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Couldn't find that principal"
-msgstr "§ä¤£¨ì¸Ó³æ¦ì"
+msgstr "æ‰¾ä¸åˆ°è©²å–®ä½"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Couldn't find that value"
-msgstr "§ä¤£¨ì¸Ó­È"
+msgstr "æ‰¾ä¸åˆ°è©²å€¼"
 
 #:
 msgid "Couldn't find that watcher"
-msgstr "§ä¤£¨ì¸Ó¦Wµø¹î­û"
+msgstr "æ‰¾ä¸åˆ°è©²åè¦–å¯Ÿå“¡"
 
-#: bin/rtadmin bin/rtadmin bin/rtadmin,D bin/rtadmin,D
+#: bin/rtadmin bin/rtadmin
 msgid "Couldn't find user\\n"
-msgstr "§ä¤£¨ì¨Ï¥ÎªÌ\\n"
+msgstr "æ‰¾ä¸åˆ°ä½¿ç”¨è€…\\n"
 
-#: lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm,D lib/blib/lib/RT/CurrentUser.pm
+#: lib/RT/CurrentUser.pm
 msgid "Couldn't load %1 from the users database.\\n"
-msgstr "µLªk±q¨Ï¥ÎªÌ¸ê®Æ®w¸ü¤J %1¡C\\n"
+msgstr "ç„¡æ³•å¾ä½¿ç”¨è€…è³‡æ–™åº«è¼‰å…¥ %1ã€‚\\n"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Couldn't load KeywordSelects."
-msgstr "µLªk¸ü¤JÃöÁä¦r¿ï¶µ¡C"
+msgstr "ç„¡æ³•è¼‰å…¥é—œéµå­—é¸é …ã€‚"
 
-#: lib/RT.pm lib/RT.pm,D lib/blib/lib/RT.pm
+#: lib/RT.pm
 msgid "Couldn't load RT config file '%1' %2"
-msgstr "µLªk¸ü¤J RT ³]©wÀÉ '%1' %2"
+msgstr "ç„¡æ³•è¼‰å…¥ RT è¨­å®šæª” '%1' %2"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Couldn't load Scrips."
-msgstr "µLªk¸ü¤J¤âÄò¡C"
+msgstr "ç„¡æ³•è¼‰å…¥æ‰‹çºŒã€‚"
 
-#: lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm,D lib/RT/Link_Overlay.pm,D lib/blib/lib/RT/Link_Overlay.pm lib/blib/lib/RT/Link_Overlay.pm
+#: lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm
 msgid "Couldn't load link"
-msgstr "µLªk¸ü¤JÃìµ²¡C"
+msgstr "ç„¡æ³•è¼‰å…¥éˆçµã€‚"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Admin/Queues/People.html
 msgid "Couldn't load queue"
-msgstr "µLªk¸ü¤J¦î¦C"
+msgstr "ç„¡æ³•è¼‰å…¥ä½‡åˆ—"
 
-#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html,D
+#: html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
 msgid "Couldn't load queue %1"
-msgstr "µLªk¸ü¤J¦î¦C %1"
+msgstr "ç„¡æ³•è¼‰å…¥ä½‡åˆ— %1"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Couldn't load scrip"
-msgstr "µLªk¸ü¤J¤âÄò"
+msgstr "ç„¡æ³•è¼‰å…¥æ‰‹çºŒ"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Couldn't load template"
-msgstr "µLªk¸ü¤J½d¥»"
+msgstr "ç„¡æ³•è¼‰å…¥ç¯„æœ¬"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Couldn't load that user (%1)"
-msgstr "µLªk¸ü¤J¸Ó¦W¨Ï¥ÎªÌ¡]%1¡^"
+msgstr "ç„¡æ³•è¼‰å…¥è©²åä½¿ç”¨è€…ï¼ˆ%1ï¼‰"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "Couldn't load ticket '%1'"
-msgstr "µLªk¸ü¤J¥Ó½Ğ³æ '%1'"
+msgstr "ç„¡æ³•è¼‰å…¥ç”³è«‹å–® '%1'"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Country"
-msgstr "°ê®a"
+msgstr "åœ‹å®¶"
 
-#: html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Create.html,D html/Ticket/Create.html,D html/Admin/Elements/CreateUserCalled html/Admin/Elements/CreateUserCalled,D
+#: html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html html/Admin/Elements/CreateUserCalled
 msgid "Create"
-msgstr "«Ø¥ß"
+msgstr "å»ºç«‹"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Create a CustomField"
-msgstr "«Ø¥ß·sªº¦Û­qÄæ¦ì"
+msgstr "å»ºç«‹æ–°çš„è‡ªè¨‚æ¬„ä½"
 
-#: html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html,D
+#: html/Admin/Queues/CustomFields.html
 msgid "Create a new Custom Field"
-msgstr "«Ø¥ß·sªº¦Û­qÄæ¦ì"
+msgstr "å»ºç«‹æ–°çš„è‡ªè¨‚æ¬„ä½"
 
-#: html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html,D html/Admin/Groups/Modify.html,D html/Admin/Groups/index.html html/Admin/Groups/index.html,D
+#: html/Admin/Groups/index.html html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html
 msgid "Create a new group"
-msgstr "«Ø¥ß·s¸s²Õ"
+msgstr "å»ºç«‹æ–°ç¾¤çµ„"
 
-#: html/User/Groups/Modify.html html/User/Groups/Modify.html html/User/Groups/Modify.html,D html/User/Groups/Modify.html,D html/User/Groups/index.html html/User/Groups/index.html,D
+#: html/User/Groups/index.html html/User/Groups/Modify.html html/User/Groups/Modify.html
 msgid "Create a new personal group"
-msgstr ""
+msgstr "å»ºç«‹æ–°çš„å€‹äººç¾¤çµ„"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "Create a new queue"
-msgstr "«Ø¥ß·s¦î¦C"
+msgstr "å»ºç«‹æ–°ä½‡åˆ—"
 
-#: html/Admin/Global/Templates.html html/Admin/Global/Templates.html,D html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html,D
+#: html/Admin/Global/Templates.html html/Admin/Queues/Templates.html
 msgid "Create a new template"
-msgstr "«Ø¥ß·s½d¥»"
+msgstr "å»ºç«‹æ–°ç¯„æœ¬"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Create.html,D
+#: html/SelfService/Create.html html/Ticket/Create.html html/Ticket/Create.html
 msgid "Create a new ticket"
-msgstr "«Ø¥ß·sªº¥Ó½Ğ³æ"
+msgstr "å»ºç«‹æ–°çš„ç”³è«‹å–®"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Admin/Users/Modify.html,D html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html html/Admin/Users/Modify.html html/Admin/Users/Modify.html
 msgid "Create a new user"
-msgstr "«Ø¥ß·s¨Ï¥ÎªÌ"
+msgstr "å»ºç«‹æ–°ä½¿ç”¨è€…"
 
-#: html/Admin/Queues/Create.html html/Admin/Queues/Create.html html/Admin/Queues/Create.html,D html/Admin/Queues/Create.html,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Queues/Create.html html/Admin/Queues/Create.html html/Admin/Queues/Modify.html
 msgid "Create a queue"
-msgstr "«Ø¥ß¦î¦C"
+msgstr "å»ºç«‹ä½‡åˆ—"
 
-#: html/Admin/Elements/CreateQueueCalled html/Admin/Elements/CreateQueueCalled,D
+#: html/Admin/Elements/CreateQueueCalled
 msgid "Create a queue called"
-msgstr "«Ø¥ß¦î¦C¦WºÙ"
+msgstr "å»ºç«‹ä½‡åˆ—åç¨±"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D
+#: html/SelfService/Create.html
 msgid "Create a request"
-msgstr "´£¥X¥Ó½Ğ"
+msgstr "æå‡ºç”³è«‹"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Create a template"
-msgstr "«Ø¥ß·s½d¥»"
+msgstr "å»ºç«‹æ–°ç¯„æœ¬"
 
-#: bin/rt-mailgate bin/rt-mailgate,D
+#: bin/rt-mailgate
 msgid "Create failed: %1 / %2 / %3 "
-msgstr "«Ø¥ß¥¢±Ñ¡G%1 / %2 / %3 "
+msgstr "å»ºç«‹å¤±æ•—ï¼š%1 / %2 / %3 "
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Create failed: %1/%2/%3"
-msgstr "«Ø¥ß¥¢±Ñ¡G%1/%2/%3"
+msgstr "å»ºç«‹å¤±æ•—ï¼š%1/%2/%3"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D
+#: html/SelfService/Create.html
 msgid "Create ticket"
-msgstr "«Ø¥ß¥Ó½Ğ³æ"
+msgstr "å»ºç«‹ç”³è«‹å–®"
 
-#: bin/rt bin/rt,D html/Elements/SelectDateType html/Elements/SelectDateType,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: bin/rt html/Elements/SelectDateType html/Ticket/Elements/ShowDates
 msgid "Created"
-msgstr "«Ø¥ß¤é"
+msgstr "å»ºç«‹æ—¥"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Created CustomField %1"
-msgstr "¦Û­qÄæ¦ì %1 ¦¨¥\\«Ø¥ß"
+msgstr "è‡ªè¨‚æ¬„ä½ %1 æˆåŠŸ\å»ºç«‹"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Created template %1"
-msgstr "½d¥» %1 ¦¨¥\\«Ø¥ß"
+msgstr "ç¯„æœ¬ %1 æˆåŠŸ\å»ºç«‹"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "Current Relationships"
-msgstr "¥Ø«eÃö«Y"
+msgstr "ç›®å‰é—œä¿‚"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Groups/Members.html html/User/Groups/Members.html
 msgid "Current members"
-msgstr "²{¦³¦¨­û"
+msgstr "ç¾æœ‰æˆå“¡"
 
-#: html/Admin/Elements/SelectRights html/Admin/Elements/SelectRights,D
+#: html/Admin/Elements/SelectRights
 msgid "Current rights"
-msgstr "²{¦³Åv­­"
+msgstr "ç¾æœ‰æ¬Šé™"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
 msgid "Current watchers"
-msgstr "²{¦³µø¹î­û"
+msgstr "ç¾æœ‰è¦–å¯Ÿå“¡"
 
-#: html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D
+#: html/Admin/Elements/QueueTabs html/Ticket/Elements/ShowSummary
 msgid "Custom Fields"
-msgstr "¦Û­qÄæ¦ì"
+msgstr "è‡ªè¨‚æ¬„ä½"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Custom field %1 not found"
-msgstr "§ä¤£¨ì¦Û­qÄæ¦ì %1"
+msgstr "æ‰¾ä¸åˆ°è‡ªè¨‚æ¬„ä½ %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Custom field not found"
-msgstr "§ä¤£¨ì¦Û­qÄæ¦ì"
+msgstr "æ‰¾ä¸åˆ°è‡ªè¨‚æ¬„ä½"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Custom field value %1 could not be found for custom field %2"
-msgstr "µLªk±q¦Û­qÄæ¦ì %2 ¤¤§ä¨ì %1 ³o­ÓÄæ¦ì­È"
+msgstr "ç„¡æ³•å¾è‡ªè¨‚æ¬„ä½ %2 ä¸­æ‰¾åˆ° %1 é€™å€‹æ¬„ä½å€¼"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Custom field value changed from %1 to %2"
-msgstr "¦Û­qÄæ¦ì­È±q %1 §ï¬° %2"
+msgstr "è‡ªè¨‚æ¬„ä½å€¼å¾ %1 æ”¹ç‚º %2"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Custom field value could not be deleted"
-msgstr "µLªk§R°£¦Û­qÄæ¦ì­È"
+msgstr "ç„¡æ³•åˆªé™¤è‡ªè¨‚æ¬„ä½å€¼"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm
 msgid "Custom field value could not be found"
-msgstr "§ä¤£¨ì¦Û­qÄæ¦ì­È"
+msgstr "æ‰¾ä¸åˆ°è‡ªè¨‚æ¬„ä½å€¼"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm lib/blib/lib/RT/CustomField_Overlay.pm
+#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm
 msgid "Custom field value deleted"
-msgstr "¦Û­qÄæ¦ì­È§R°£¦¨¥\"
+msgstr "è‡ªè¨‚æ¬„ä½å€¼åˆªé™¤æˆåŠŸ"
 
 #:
 msgid "Data error"
-msgstr "¸ê®Æ¿ù»~"
+msgstr "è³‡æ–™éŒ¯èª¤"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary html/Ticket/Elements/Tabs
 msgid "Dates"
-msgstr "¤é´Á"
+msgstr "æ—¥æœŸ"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Dec"
-msgstr ""
+msgstr "åäºŒæœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Dec."
-msgstr "¤Q¤G¤ë"
+msgstr "åäºŒæœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "December"
-msgstr "¤Q¤G¤ë"
+msgstr "åäºŒæœˆ"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Keywords.html html/Admin/Queues/Scrips.html
 msgid "Delete"
-msgstr "§R°£"
+msgstr "åˆªé™¤"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Deleting this object could break referential integrity"
-msgstr "§R°£¦¹ª«¥ó¥i¯à¯}Ãa°Ñ¦Ò§¹¾ã©Ê"
+msgstr "åˆªé™¤æ­¤ç‰©ä»¶å¯èƒ½ç ´å£åƒè€ƒå®Œæ•´æ€§"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Deleting this object would break referential integrity"
-msgstr "§R°£¦¹ª«¥ó¥i¯à¯}Ãa°Ñ¦Ò§¹¾ã©Ê"
+msgstr "åˆªé™¤æ­¤ç‰©ä»¶å¯èƒ½ç ´å£åƒè€ƒå®Œæ•´æ€§"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Deleting this object would violate referential integrity"
-msgstr "§R°£¦¹ª«¥ó·|¹H¤Ï°Ñ¦Ò§¹¾ã©Ê"
+msgstr "åˆªé™¤æ­¤ç‰©ä»¶æœƒé•ååƒè€ƒå®Œæ•´æ€§"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Deleting this object would violate referential integrity. That's bad."
-msgstr "§R°£¦¹ª«¥ó·|¹H¤Ï°Ñ¦Ò§¹¾ã©Ê"
+msgstr "åˆªé™¤æ­¤ç‰©ä»¶æœƒé•ååƒè€ƒå®Œæ•´æ€§ã€‚"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowDependencies,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowLinks
 msgid "Depended on by"
-msgstr "¥i±µÄò³B²zªº¥Ó½Ğ³æ"
+msgstr "å¯æ¥çºŒè™•ç†çš„ç”³è«‹å–®"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Dependencies: \\n"
-msgstr "ªşÄİ©Ê¡G\\n"
+msgstr "é™„å±¬æ€§ï¼š\\n"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowDependencies,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowDependencies html/Ticket/Elements/ShowLinks
 msgid "Depends on"
-msgstr "»İ¥ı³B²zªº¥Ó½Ğ³æ"
+msgstr "éœ€å…ˆè™•ç†çš„ç”³è«‹å–®"
 
-#: html/Elements/SelectLinkType html/Elements/SelectLinkType,D
+#: html/Elements/SelectLinkType
 msgid "DependsOn"
-msgstr "»İ¥ı³B²z"
+msgstr "éœ€å…ˆè™•ç†"
 
-#: html/Elements/SelectSortOrder html/Elements/SelectSortOrder,D
+#: html/Elements/SelectSortOrder
 msgid "Descending"
-msgstr "»¼´î"
+msgstr "éæ¸›"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/Ticket/Create.html html/Ticket/Create.html,D
+#: html/SelfService/Create.html html/Ticket/Create.html
 msgid "Describe the issue below"
-msgstr "¦b¥H¤UÄæ¦ì´y­z¥DÃD"
+msgstr "åœ¨ä»¥ä¸‹æ¬„ä½æè¿°ä¸»é¡Œ"
 
-#: html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/AddCustomFieldValue,D html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html,D html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D html/User/Groups/Modify.html html/User/Groups/Modify.html,D
+#: html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/ModifyQueue html/Admin/Global/Template.html html/Admin/Groups/Modify.html html/Admin/Queues/CustomField.html html/Admin/Queues/Modify.html html/Admin/Queues/Template.html html/User/Groups/Modify.html
 msgid "Description"
-msgstr "´y­z"
+msgstr "æè¿°"
 
-#: html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D
+#: html/SelfService/Elements/MyRequests
 msgid "Details"
-msgstr "²Ó¸`"
+msgstr "ç´°ç¯€"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Display"
-msgstr "Åã¥Ü¤º®e"
+msgstr "é¡¯ç¤ºå…§å®¹"
 
-#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory,D
+#: html/Ticket/Elements/ShowHistory
 msgid "Display mode"
-msgstr "Åã¥Ü¼Ò¦¡"
+msgstr "é¡¯ç¤ºæ¨¡å¼"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "Display ticket #%1"
-msgstr "Åã¥Ü²Ä%1¸¹¥Ó½Ğ³æ"
+msgstr "é¡¯ç¤ºç¬¬%1è™Ÿç”³è«‹å–®"
 
-#: html/Elements/Refresh html/Elements/Refresh,D
+#: html/Elements/Refresh
 msgid "Don't refresh this page."
-msgstr "¤£§ó·s¦¹­¶­±"
+msgstr "ä¸æ›´æ–°æ­¤é é¢ã€‚"
 
-#: html/Ticket/Elements/ShowTransaction html/Ticket/Elements/ShowTransaction,D
+#: html/Ticket/Elements/ShowTransaction
 msgid "Download"
-msgstr "¤U¸ü"
+msgstr "ä¸‹è¼‰"
 
-#: bin/rt bin/rt,D html/Elements/SelectDateType html/Elements/SelectDateType,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditDates html/Ticket/Elements/EditDates,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: bin/rt html/Elements/SelectDateType html/Ticket/Create.html html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
 msgid "Due"
-msgstr "¨ì´Á¤é"
+msgstr "åˆ°æœŸæ—¥"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Due date '%1' could not be parsed"
-msgstr "µLªk¸ÑÅª¤é´Á '%1'"
+msgstr "ç„¡æ³•è§£è®€æ—¥æœŸ '%1'"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/enhanced-mailgate bin/rt-commit-handler
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
-msgstr "µLªk¸ü¤J¥Ó½Ğ³æ '%1'¡G%2.\\n"
+msgstr "ç„¡æ³•è¼‰å…¥ç”³è«‹å–® '%1'ï¼š%2.\\n"
 
-#: html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html,D html/Admin/Queues/CustomFields.html,D
+#: html/Admin/Queues/CustomFields.html html/Admin/Queues/CustomFields.html
 msgid "Edit Custom Fields for %1"
-msgstr "½s¿è %1 ªº¦Û­qÄæ¦ì"
+msgstr "ç·¨è¼¯ %1 çš„è‡ªè¨‚æ¬„ä½"
 
-#: html/Ticket/ModifyLinks.html html/Ticket/ModifyLinks.html,D
+#: html/Ticket/ModifyLinks.html
 msgid "Edit Relationships"
-msgstr "½s¿è¥Ó½Ğ³æÃö«Y"
+msgstr "ç·¨è¼¯ç”³è«‹å–®é—œä¿‚"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Edit keywords"
-msgstr "½s¿èÃöÁä¦r"
+msgstr "ç·¨è¼¯é—œéµå­—"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Edit scrips"
-msgstr "½s¿è¤âÄò"
+msgstr "ç·¨è¼¯æ‰‹çºŒ"
 
-#: html/Admin/Global/Templates.html html/Admin/Global/Templates.html html/Admin/Global/Templates.html,D html/Admin/Global/Templates.html,D
+#: html/Admin/Global/Templates.html html/Admin/Global/Templates.html
 msgid "Edit system templates"
-msgstr "½s¿è¨t²Î½d¥»"
+msgstr "ç·¨è¼¯ç³»çµ±ç¯„æœ¬"
 
-#: html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html,D html/Admin/Queues/Templates.html,D
+#: html/Admin/Queues/Templates.html html/Admin/Queues/Templates.html
 msgid "Edit templates for %1"
-msgstr "½s¿è %1 ªº½d¥»"
+msgstr "ç·¨è¼¯ %1 çš„ç¯„æœ¬"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Editing Configuration for queue %1"
-msgstr "½s¿è¦î¦C %1 ªº³]©w"
+msgstr "ç·¨è¼¯ä½‡åˆ— %1 çš„è¨­å®š"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "Editing Configuration for user %1"
-msgstr "½s¿è¨Ï¥ÎªÌ %1 ªº³]©w"
+msgstr "ç·¨è¼¯ä½¿ç”¨è€… %1 çš„è¨­å®š"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Editing CustomField %1"
-msgstr "½s¿è¦Û­qÄæ¦ì %1"
+msgstr "ç·¨è¼¯è‡ªè¨‚æ¬„ä½ %1"
 
-#: html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D
+#: html/Admin/Groups/Members.html
 msgid "Editing membership for group %1"
-msgstr "½s¿è¸s²Õ %1 ªº¦¨­û¸ê°T"
+msgstr "ç·¨è¼¯ç¾¤çµ„ %1 çš„æˆå“¡è³‡è¨Š"
 
-#: html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/User/Groups/Members.html
 msgid "Editing membership for personal group %1"
-msgstr ""
+msgstr "ç·¨è¼¯å€‹äººç¾¤çµ„ %1 çš„æˆå“¡è³‡è¨Š"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Editing template %1"
-msgstr "½s¿è½d¥» %1"
+msgstr "ç·¨è¼¯ç¯„æœ¬ %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Either base or target must be specified"
-msgstr "»İ­n«ü©w°_©l¥Ó½Ğ³æ©Î¥Øªº¥Ó½Ğ³æ"
+msgstr "éœ€è¦æŒ‡å®šèµ·å§‹ç”³è«‹å–®æˆ–ç›®çš„ç”³è«‹å–®"
 
-#: html/Elements/SelectUsers html/Elements/SelectUsers,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers,D
+#: html/Elements/SelectUsers html/Admin/Users/Modify.html html/Admin/Users/Prefs.html html/Ticket/Elements/AddWatchers
 msgid "Email"
-msgstr "¹q¤l¶l¥ó«H½c"
+msgstr "é›»å­éƒµä»¶ä¿¡ç®±"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Email address in use"
-msgstr "¦¹¹q¤l¶l¥ó«H½c¤w³Q¨Ï¥Î"
+msgstr "æ­¤é›»å­éƒµä»¶ä¿¡ç®±å·²è¢«ä½¿ç”¨"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "EmailAddress"
-msgstr "¹q¤l¶l¥ó«H½c¦ì§}"
+msgstr "é›»å­éƒµä»¶ä¿¡ç®±ä½å€"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "EmailEncoding"
-msgstr "¹q¤l¶l¥ó¤å¦r½s½X¤è¦¡"
+msgstr "é›»å­éƒµä»¶æ–‡å­—ç·¨ç¢¼æ–¹å¼"
 
-#: html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Queues/Modify.html
 msgid "Enabled (Unchecking this box disables this queue)"
-msgstr "¤£ÁôÂÃ¡]¨ú®ø¥´¤ÄÁôÂÃ¦¹¦î¦C¡^"
+msgstr "ä¸éš±è—ï¼ˆå–æ¶ˆæ‰“å‹¾éš±è—æ­¤ä½‡åˆ—ï¼‰"
 
-#: html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Queues/Modify.html html/Admin/Users/Modify.html
 msgid "Enabled status %1"
-msgstr "±Ò¥Îª¬ºA %1"
+msgstr "å•Ÿç”¨ç‹€æ…‹ %1"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
-msgstr "¿é¤J¥Ó½Ğ³æ¥iÃìµ²¨ìªº¥Ó½Ğ³æ½s¸¹©Îºô§}¡C¥HªÅ¥Õ¹j¶}¡C"
+msgstr "è¼¸å…¥ç”³è«‹å–®å¯éˆçµåˆ°çš„ç”³è«‹å–®ç·¨è™Ÿæˆ–ç¶²å€ã€‚ä»¥ç©ºç™½éš”é–‹ã€‚"
 
-#: html/Elements/Login html/Elements/Login,D html/SelfService/Error.html html/SelfService/Error.html,D
+#: html/Elements/Login html/SelfService/Error.html
 msgid "Error"
-msgstr "¿ù»~"
+msgstr "éŒ¯èª¤"
 
 #:
 msgid "Error adding watcher"
-msgstr "·s¼Wµø¹î­û¦³»~"
+msgstr "æ–°å¢è¦–å¯Ÿå“¡æœ‰èª¤"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "Error in parameters to Queue->DelWatcher"
-msgstr "¦î¦C->§R°£µø¹î­ûªº°Ñ¼Æ¦³»~"
+msgstr "ä½‡åˆ—->åˆªé™¤è¦–å¯Ÿå“¡çš„åƒæ•¸æœ‰èª¤"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Error in parameters to Ticket->AddWatcher"
-msgstr "¥Ó½Ğ³æ->·s¼Wµø¹î­ûªº°Ñ¼Æ¦³»~"
+msgstr "ç”³è«‹å–®->æ–°å¢è¦–å¯Ÿå“¡çš„åƒæ•¸æœ‰èª¤"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Error in parameters to Ticket->DelWatcher"
-msgstr "¥Ó½Ğ³æ->§R°£µø¹î­ûªº°Ñ¼Æ¦³»~"
+msgstr "ç”³è«‹å–®->åˆªé™¤è¦–å¯Ÿå“¡çš„åƒæ•¸æœ‰èª¤"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "ExternalAuthId"
-msgstr "¥~³¡»{ÃÒ±b¸¹"
+msgstr "å¤–éƒ¨èªè­‰å¸³è™Ÿ"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "ExternalContactInfoId"
-msgstr "¥~³¡Ápµ¸¤è¦¡±b¸¹"
+msgstr "å¤–éƒ¨è¯çµ¡æ–¹å¼å¸³è™Ÿ"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Extra info"
-msgstr "³Æµù"
+msgstr "å‚™è¨»"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Failed to find 'Privileged' users pseudogroup."
-msgstr "§ä¤£¨ì '¨ãÅv­­' ¨Ï¥ÎªÌªº pseudogroup¡C"
+msgstr "æ‰¾ä¸åˆ° 'å…·æ¬Šé™' ä½¿ç”¨è€…çš„ pseudogroupã€‚"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Failed to find 'Unprivileged' users pseudogroup"
-msgstr "§ä¤£¨ì 'µLÅv­­' ¨Ï¥ÎªÌªº pseudogroup¡C"
+msgstr "æ‰¾ä¸åˆ° 'ç„¡æ¬Šé™' ä½¿ç”¨è€…çš„ pseudogroupã€‚"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Feb"
-msgstr ""
+msgstr "äºŒæœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Feb."
-msgstr "¤G¤ë"
+msgstr "äºŒæœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "February"
-msgstr "¤G¤ë"
+msgstr "äºŒæœˆ"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Fin"
-msgstr "³Ì²×"
+msgstr "æœ€çµ‚"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: html/Ticket/Create.html lib/RT/Tickets_Overlay.pm html/Ticket/Elements/EditBasics
 msgid "Final Priority"
-msgstr "³Ì§C¶¶¦ì"
+msgstr "æœ€ä½é †ä½"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D
+#: html/Elements/Quicksearch
 msgid "Find new/open tickets"
-msgstr "´M§ä/¶}±Ò¥Ó½Ğ³æ"
+msgstr "å°‹æ‰¾/é–‹å•Ÿç”³è«‹å–®"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Admin/Users/index.html html/Admin/Users/index.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Admin/Queues/People.html html/Admin/Users/index.html html/Ticket/Elements/EditPeople
 msgid "Find people whose"
-msgstr "´M§ä¤H­ûªº"
+msgstr "å°‹æ‰¾äººå“¡çš„"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "First page"
-msgstr "²Ä¤@­¶"
+msgstr "ç¬¬ä¸€é "
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D
+#: docs/design_docs/string-extraction-guide.txt
 msgid "Foo Bar Baz"
-msgstr "¥Ò ¤A ¤ş"
+msgstr "ç”² ä¹™ ä¸™"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D
+#: docs/design_docs/string-extraction-guide.txt
 msgid "Foo!"
-msgstr "¥Ò¡I"
+msgstr "ç”²ï¼"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "FreeformContactInfo"
-msgstr "Ápµ¸¤è¦¡"
+msgstr "è¯çµ¡æ–¹å¼"
 
 #:
 msgid "FreeformMultiple"
-msgstr "¦h­«¶ñªÅ"
+msgstr "å¤šé‡å¡«ç©º"
 
 #:
 msgid "FreeformSingle"
-msgstr "³æ¤@¶ñªÅ"
+msgstr "å–®ä¸€å¡«ç©º"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Fri"
-msgstr ""
+msgstr "æ˜ŸæœŸäº”"
 
-#: lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Fri."
-msgstr ""
+msgstr "æ˜ŸæœŸäº”"
 
-#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory,D html/Ticket/Elements/ShowHistory,D
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory
 msgid "Full headers"
-msgstr "§¹¾ã¼ĞÀYÀÉ"
+msgstr "å®Œæ•´æ¨™é ­æª”"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#:
+msgid "Gecos"
+msgstr "Unix ç™»å…¥å¸³è™Ÿ"
+
+#: bin/enhanced-mailgate
 msgid "Getting the current user from a pgp sig\\n"
-msgstr "¨ú±o¥Ø«e¨Ï¥ÎªÌªº pgp Ã±³¹\\n"
+msgstr "å–å¾—ç›®å‰ä½¿ç”¨è€…çš„ pgp ç°½ç« \\n"
 
-#: html/Admin/Elements/Tabs html/Admin/Elements/Tabs,D
+#: html/Admin/Elements/Tabs
 msgid "Global"
-msgstr "¾ãÅé³]©w"
+msgstr "æ•´é«”è¨­å®š"
 
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
+#: html/Admin/Queues/Keywords.html
 msgid "Global Keyword Selections"
-msgstr "¥ş°ìÃöÁä¦r¿ï¾Ü"
+msgstr "å…¨åŸŸé—œéµå­—é¸æ“‡"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Global Scrips"
-msgstr "¾ãÅé¤âÄò"
+msgstr "æ•´é«”æ‰‹çºŒ"
 
-#: html/index.html html/index.html,D html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Admin/Queues/index.html html/Admin/Queues/index.html,D html/Admin/Users/index.html html/Admin/Users/index.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/index.html html/Admin/Queues/index.html html/Admin/Queues/People.html html/Admin/Users/index.html html/Ticket/Elements/EditPeople
 msgid "Go!"
-msgstr "°õ¦æ"
+msgstr "åŸ·è¡Œ"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "Good pgp sig from %1\\n"
-msgstr "%1 ªº pgp Ã±³¹¬O¥¿½Tªº\\n"
+msgstr "%1 çš„ pgp ç°½ç« æ˜¯æ­£ç¢ºçš„\\n"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Goto page"
-msgstr "¨ì­¶­±"
+msgstr "åˆ°é é¢"
 
-#: html/Elements/GotoTicket html/Elements/GotoTicket,D html/SelfService/Elements/GotoTicket html/SelfService/Elements/GotoTicket,D
+#: html/Elements/GotoTicket html/SelfService/Elements/GotoTicket
 msgid "Goto ticket"
-msgstr "³s¨ì¥Ó½Ğ³æ"
+msgstr "é€£åˆ°ç”³è«‹å–®"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Group %1 %2: %3"
-msgstr "¸s²Õ %1 %2¡G%3"
+msgstr "ç¾¤çµ„ %1 %2ï¼š%3"
 
-#: html/Admin/Elements/GroupTabs html/Admin/Elements/GroupTabs,D html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/SystemTabs html/Admin/Elements/SystemTabs,D
+#: html/Admin/Elements/GroupTabs html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs
 msgid "Group Rights"
-msgstr "¸s²ÕÅv­­"
+msgstr "ç¾¤çµ„æ¬Šé™"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Group already has member"
-msgstr "¸s²Õ¤º¤w¦³¦¨­û"
+msgstr "ç¾¤çµ„å…§å·²æœ‰æˆå“¡"
 
 #:
 msgid "Group could not be created."
-msgstr "µLªk«Ø¥ß¸s²Õ¡C"
+msgstr "ç„¡æ³•å»ºç«‹ç¾¤çµ„ã€‚"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Group created"
-msgstr "¸s²Õ«Ø¥ß§¹¦¨"
+msgstr "ç¾¤çµ„å»ºç«‹å®Œæˆ"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Group_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Group not found"
-msgstr "§ä¤£¨ì¸s²Õ"
+msgstr "æ‰¾ä¸åˆ°ç¾¤çµ„"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Group not found.\\n"
-msgstr "§ä¤£¨ì¸s²Õ¡C\\n"
+msgstr "æ‰¾ä¸åˆ°ç¾¤çµ„ã€‚\\n"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Group not specified.\\n"
-msgstr "¨S¦³«ü©w¸s²Õ¡C\\n"
+msgstr "æ²’æœ‰æŒ‡å®šç¾¤çµ„ã€‚\\n"
 
-#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/SelectNewGroupMembers,D html/Admin/Elements/Tabs html/Admin/Elements/Tabs,D html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/Admin/Groups/index.html html/Admin/Groups/index.html,D html/User/Elements/Tabs html/User/Elements/Tabs,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/Tabs html/Admin/Groups/index.html html/Admin/Groups/Members.html html/User/Elements/Tabs html/User/Groups/Members.html
 msgid "Groups"
-msgstr "¸s²Õ"
+msgstr "ç¾¤çµ„"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Groups can't be members of their members"
-msgstr "¤£¯à±N¸s²Õ³]¬°¸s²Õ¤º¦¨­û"
+msgstr "ä¸èƒ½å°‡ç¾¤çµ„è¨­ç‚ºç¾¤çµ„å…§æˆå“¡"
 
-#: lib/RT/Interface/CLI.pm lib/RT/Interface/CLI.pm lib/RT/Interface/CLI.pm,D lib/RT/Interface/CLI.pm,D lib/blib/man3/RT::Interface::CLI.3 lib/blib/man3/RT::Interface::CLI.3 lib/blib/lib/RT/Interface/CLI.pm lib/blib/lib/RT/Interface/CLI.pm
+#: lib/RT/Interface/CLI.pm lib/RT/Interface/CLI.pm
 msgid "Hello!"
-msgstr "¶Ù¡I"
+msgstr "å—¨ï¼"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D
+#: docs/design_docs/string-extraction-guide.txt
 msgid "Hello, %1"
-msgstr "¶Ù¡A%1"
+msgstr "å—¨ï¼Œ%1"
 
-#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/ShowHistory,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/ShowHistory html/Ticket/Elements/Tabs
 msgid "History"
-msgstr "¬ö¿ı"
+msgstr "ç´€éŒ„"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "HomePhone"
-msgstr "¦í³B¹q¸Ü"
+msgstr "ä½è™•é›»è©±"
 
-#: html/Elements/Tabs html/Elements/Tabs,D
+#: html/Elements/Tabs
 msgid "Homepage"
-msgstr "¥D­¶"
+msgstr "ä¸»é "
 
-#: lib/RT/Base.pm lib/RT/Base.pm,D lib/blib/man3/RT::Base.3 lib/blib/lib/RT/Base.pm
+#: lib/RT/Base.pm
 msgid "I have [quant,_1,concrete mixer]."
-msgstr "§Ú¦³ [quant,_1,concrete mixer]."
+msgstr "æˆ‘æœ‰ [quant,_1,ä»½å›ºé«”æ”ªæ‹Œå™¨]ã€‚"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm html/Ticket/Elements/ShowBasics
 msgid "Id"
-msgstr "½s¸¹"
+msgstr "ç·¨è™Ÿ"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Identity"
-msgstr "¨­¥÷"
+msgstr "èº«ä»½"
 
-#: html/Ticket/Modify.html html/Ticket/Modify.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html,D html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Ticket/Modify.html html/Ticket/ModifyAll.html html/Ticket/ModifyPeople.html html/Admin/Queues/People.html
 msgid "If you've updated anything above, be sure to"
-msgstr "­Y±z¤w§ó·s¥H¤W¸ê®Æ¡A½Ğ°O±oÀx¦s"
+msgstr "è‹¥æ‚¨å·²æ›´æ–°ä»¥ä¸Šè³‡æ–™ï¼Œè«‹è¨˜å¾—å„²å­˜"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "Include disabled queues in listing."
-msgstr "¦C¥XÁôÂÃ¦î¦C"
+msgstr "åˆ—å‡ºéš±è—ä½‡åˆ—"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Include disabled users in search."
-msgstr "·j´Mµ²ªG¦C¥XÁôÂÃ¨Ï¥ÎªÌ"
+msgstr "æœå°‹çµæœåˆ—å‡ºéš±è—ä½¿ç”¨è€…"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm
 msgid "Initial Priority"
-msgstr "ªì©lÀu¥ıÅv"
+msgstr "åˆå§‹å„ªå…ˆæ¬Š"
 
-#: lib/RT/ScripAction_Overlay.pm lib/RT/ScripAction_Overlay.pm,D lib/blib/lib/RT/ScripAction_Overlay.pm
+#: lib/RT/ScripAction_Overlay.pm
 msgid "Input error"
-msgstr "¿é¤J¿ù»~"
+msgstr "è¼¸å…¥éŒ¯èª¤"
 
 #:
 msgid "Interest noted"
-msgstr "·s¼Wµø¹î­û§¹¦¨"
+msgstr "æ–°å¢è¦–å¯Ÿå“¡å®Œæˆ"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Invalid Group Type"
-msgstr "¤£¦Xªkªº¸s²ÕÃş§O"
+msgstr "ä¸åˆæ³•çš„ç¾¤çµ„é¡åˆ¥"
 
 #:
 msgid "Invalid Type"
-msgstr "¤£¦XªkªºÃş§O"
+msgstr "ä¸åˆæ³•çš„é¡åˆ¥"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Invalid owner. Defaulting to 'nobody'."
-msgstr "¤£¦Xªkªº©Ó¿ì¤H¡C§ï¦¨¹w³]©Ó¿ì¤H'µL'¡C"
+msgstr "ä¸åˆæ³•çš„æ‰¿è¾¦äººã€‚æ”¹æˆé è¨­æ‰¿è¾¦äººã€Œnobodyã€ã€‚"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Template_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm lib/RT/Template_Overlay.pm
 msgid "Invalid queue"
-msgstr "¤£¦Xªkªº¦î¦C"
+msgstr "ä¸åˆæ³•çš„ä½‡åˆ—"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm
 msgid "Invalid right"
-msgstr "¤£¦XªkªºÅv­­"
+msgstr "ä¸åˆæ³•çš„æ¬Šé™"
 
-#: lib/RT/Record.pm lib/RT/Record.pm,D lib/blib/lib/RT/Record.pm
+#: lib/RT/Record.pm
 msgid "Invalid value for %1"
-msgstr "%1 ªº­È¤£¦Xªk"
+msgstr "%1 çš„å€¼ä¸åˆæ³•"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Invalid value for custom field"
-msgstr "¤£¦Xªkªº¦Û­qÄæ¦ì­È"
+msgstr "ä¸åˆæ³•çš„è‡ªè¨‚æ¬„ä½å€¼"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Invalid value for status"
-msgstr "¤£¦Xªkªºª¬ºA­È"
+msgstr "ä¸åˆæ³•çš„ç‹€æ…‹å€¼"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Jan"
-msgstr ""
+msgstr "ä¸€æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Jan."
-msgstr "¤@¤ë"
+msgstr "ä¸€æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "January"
-msgstr "¤@¤ë"
+msgstr "ä¸€æœˆ"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Jul"
-msgstr ""
+msgstr "ä¸ƒæœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Jul."
-msgstr "¤C¤ë"
+msgstr "ä¸ƒæœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "July"
-msgstr "¤C¤ë"
+msgstr "ä¸ƒæœˆ"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Jumbo"
-msgstr "¥ş³¡¸ê°T"
+msgstr "å…¨éƒ¨è³‡è¨Š"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Jun"
-msgstr ""
+msgstr "å…­æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Jun."
-msgstr "¤»¤ë"
+msgstr "å…­æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "June"
-msgstr "¤»¤ë"
+msgstr "å…­æœˆ"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Keyword"
-msgstr "ÃöÁä¦r"
+msgstr "é—œéµå­—"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "Lang"
-msgstr "¨Ï¥Î»y¨¥"
+msgstr "ä½¿ç”¨èªè¨€"
 
 #:
 msgid "Last"
-msgstr "¤W¦¸§ó·s"
+msgstr "ä¸Šæ¬¡æ›´æ–°"
 
-#: html/Ticket/Elements/EditDates html/Ticket/Elements/EditDates,D
+#: html/Ticket/Elements/EditDates
 msgid "Last Contact"
-msgstr "¤W¦¸Ápµ¸"
+msgstr "ä¸Šæ¬¡è¯çµ¡"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D
+#: html/Elements/SelectDateType
 msgid "Last Contacted"
-msgstr "¤W¦¸Ápµ¸¤é´Á"
+msgstr "ä¸Šæ¬¡è¯çµ¡æ—¥æœŸ"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D
+#: html/Elements/SelectDateType
 msgid "Last Updated"
-msgstr "¤W¦¸§ó·s"
+msgstr "ä¸Šæ¬¡æ›´æ–°"
 
 #:
 msgid "LastUpdated"
-msgstr "¤W¦¸§ó·s"
+msgstr "ä¸Šæ¬¡æ›´æ–°"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Left"
-msgstr "³Ñ¾l®É¶¡"
+msgstr "å‰©é¤˜æ™‚é–“"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Let this user access RT"
-msgstr "¤¹³\\³o¦W¨Ï¥ÎªÌµn¤JRT"
+msgstr "å…è¨±\é€™åä½¿ç”¨è€…ç™»å…¥RT"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Let this user be granted rights"
-msgstr "Åı³o¦W¨Ï¥ÎªÌ¾Ö¦³§¹¾ãÅv­­"
+msgstr "è®“é€™åä½¿ç”¨è€…æ“æœ‰å®Œæ•´æ¬Šé™"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Limiting owner to %1 %2"
-msgstr "­­¨î©Ó¿ì¤H¬° %1 ¨ì%2"
+msgstr "é™åˆ¶æ‰¿è¾¦äººç‚º %1 åˆ°%2"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Limiting queue to %1 %2"
-msgstr "­­¨î¦î¦C¬° %1 ¨ì %2"
+msgstr "é™åˆ¶ä½‡åˆ—ç‚º %1 åˆ° %2"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link already exists"
-msgstr "¦¹Ãìµ²¤w¦s¦b"
+msgstr "æ­¤éˆçµå·²å­˜åœ¨"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link could not be created"
-msgstr "µLªk«Ø¥ßÃìµ²"
+msgstr "ç„¡æ³•å»ºç«‹éˆçµ"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link created (%1)"
-msgstr "Ãìµ²¡]%1¡^«Ø¥ß§¹¦¨"
+msgstr "éˆçµï¼ˆ%1ï¼‰å»ºç«‹å®Œæˆ"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link deleted (%1)"
-msgstr "Ãìµ²¡]%1¡^§R°£§¹¦¨"
+msgstr "éˆçµï¼ˆ%1ï¼‰åˆªé™¤å®Œæˆ"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Link not found"
-msgstr "§ä¤£¨ìÃìµ²"
+msgstr "æ‰¾ä¸åˆ°éˆçµ"
 
-#: html/Ticket/ModifyLinks.html html/Ticket/ModifyLinks.html,D
+#: html/Ticket/ModifyLinks.html
 msgid "Link ticket #%1"
-msgstr "Ãìµ²¥Ó½Ğ³æ #%1"
+msgstr "éˆçµç”³è«‹å–® #%1"
 
 #:
 msgid "Link ticket %1"
-msgstr "Ãìµ²¨ì¥Ó½Ğ³æ %1"
+msgstr "éˆçµåˆ°ç”³è«‹å–® %1"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Links"
-msgstr "Ãìµ²"
+msgstr "éˆçµ"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Location"
-msgstr "¦ì¸m"
+msgstr "ä½ç½®"
 
-#: lib/RT.pm lib/RT.pm,D lib/blib/lib/RT.pm
+#: lib/RT.pm
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
-msgstr "µn¤J¥Ø¿ı %1 §ä¤£¨ì©ÎµLªk¼g¤J\\n¡CµLªk°õ¦æ RT¡C"
+msgstr "ç™»å…¥ç›®éŒ„ %1 æ‰¾ä¸åˆ°æˆ–ç„¡æ³•å¯«å…¥\\nã€‚ç„¡æ³•åŸ·è¡Œ RTã€‚"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D html/Elements/Login html/Elements/Login html/Elements/Login html/Elements/Login,D html/Elements/Login,D html/Elements/Login,D
+#: docs/design_docs/string-extraction-guide.txt html/Elements/Login html/Elements/Login html/Elements/Login
 msgid "Login"
-msgstr "µn¤J"
+msgstr "ç™»å…¥"
 
-#: html/Elements/Header html/Elements/Header,D
+#: html/Elements/Header
 msgid "Logout"
-msgstr "µn¥X"
+msgstr "ç™»å‡º"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make Owner"
-msgstr "«Ø¥ß©Ó¿ì¤H"
+msgstr "å»ºç«‹æ‰¿è¾¦äºº"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make Status"
-msgstr "«Ø¥ß²{ªp"
+msgstr "å»ºç«‹ç¾æ³"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Due"
-msgstr "«Ø¥ß¨ì´Á¤é"
+msgstr "å»ºç«‹åˆ°æœŸæ—¥"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Resolved"
-msgstr "«Ø¥ß¸Ñ¨M¤é´Á"
+msgstr "å»ºç«‹è§£æ±ºæ—¥æœŸ"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Started"
-msgstr "«Ø¥ß¹ê»Ú°_©l¤é´Á"
+msgstr "å»ºç«‹å¯¦éš›èµ·å§‹æ—¥æœŸ"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Starts"
-msgstr "«Ø¥ßÀ³°_©l¤é´Á"
+msgstr "å»ºç«‹æ‡‰èµ·å§‹æ—¥æœŸ"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make date Told"
-msgstr "«Ø¥ß³ø§i¤é´Á"
+msgstr "å»ºç«‹å ±å‘Šæ—¥æœŸ"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make priority"
-msgstr "«Ø¥ßÀu¥ı¶¶¦ì"
+msgstr "å»ºç«‹å„ªå…ˆé †ä½"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make queue"
-msgstr "«Ø¥ß¦î¦C"
+msgstr "å»ºç«‹ä½‡åˆ—"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Make subject"
-msgstr "«Ø¥ß¥DÃD"
+msgstr "å»ºç«‹ä¸»é¡Œ"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Mar"
-msgstr ""
+msgstr "ä¸‰æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Mar."
-msgstr "¤T¤ë"
+msgstr "ä¸‰æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "March"
-msgstr "¤T¤ë"
+msgstr "ä¸‰æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: html/Elements/monthMenu
 msgid "May"
-msgstr "¤­¤ë"
+msgstr "äº”æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "May."
-msgstr "¤­¤ë"
+msgstr "äº”æœˆ"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Member added"
-msgstr "·s¼W¦¨­û§¹¦¨"
+msgstr "æ–°å¢æˆå“¡å®Œæˆ"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Member deleted"
-msgstr "¦¨­û¤w§R°£"
+msgstr "æˆå“¡å·²åˆªé™¤"
 
-#: lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/blib/lib/RT/Group_Overlay.pm
+#: lib/RT/Group_Overlay.pm
 msgid "Member not deleted"
-msgstr "¦¨­û¥¼³Q§R°£"
+msgstr "æˆå“¡æœªè¢«åˆªé™¤"
 
-#: html/Elements/SelectLinkType html/Elements/SelectLinkType,D
+#: html/Elements/SelectLinkType
 msgid "MemberOf"
-msgstr "ªşÄİ©ó"
+msgstr "é™„å±¬æ–¼"
 
-#: html/Admin/Elements/GroupTabs html/Admin/Elements/GroupTabs,D html/User/Elements/GroupTabs html/User/Elements/GroupTabs,D
+#: html/Admin/Elements/GroupTabs html/User/Elements/GroupTabs
 msgid "Members"
-msgstr "¦¨­û"
+msgstr "æˆå“¡"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Merge Successful"
-msgstr "¾ã¦X§¹¦¨"
+msgstr "æ•´åˆå®Œæˆ"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "Merge failed. Couldn't set EffectiveId"
-msgstr "¾ã¦X¥¢±Ñ¡CµLªk³]©w EffectiveId"
+msgstr "æ•´åˆå¤±æ•—ã€‚ç„¡æ³•è¨­å®š EffectiveId"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "Merge into"
-msgstr "¾ã¦X¶i"
+msgstr "æ•´åˆé€²"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Mobile"
-msgstr "¦æ°Ê¹q¸Ü"
+msgstr "è¡Œå‹•é›»è©±"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "MobilePhone"
-msgstr "¦æ°Ê¹q¸Ü"
+msgstr "è¡Œå‹•é›»è©±"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Modify Custom Field %1"
-msgstr "­×§ï¦Û­qÄæ¦ì %1"
+msgstr "ä¿®æ”¹è‡ªè¨‚æ¬„ä½ %1"
 
 #:
 msgid "Modify System ACLS"
-msgstr "­×§ï¨t²ÎACLS"
+msgstr "ä¿®æ”¹ç³»çµ±ACLS"
 
 #:
 msgid "Modify dates for # %1"
-msgstr "­×§ï # %1 ªº¤é´Á"
+msgstr "ä¿®æ”¹ # %1 çš„æ—¥æœŸ"
 
-#: html/Ticket/ModifyDates.html html/Ticket/ModifyDates.html,D
+#: html/Ticket/ModifyDates.html
 msgid "Modify dates for #%1"
-msgstr "­×§ï #%1 ªº¤é´Á"
+msgstr "ä¿®æ”¹ #%1 çš„æ—¥æœŸ"
 
-#: html/Ticket/ModifyDates.html html/Ticket/ModifyDates.html,D
+#: html/Ticket/ModifyDates.html
 msgid "Modify dates for ticket # %1"
-msgstr "­×§ï¥Ó½Ğ³æ # %1 ªº¤é´Á"
+msgstr "ä¿®æ”¹ç”³è«‹å–® # %1 çš„æ—¥æœŸ"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html
 msgid "Modify global group rights"
-msgstr "­×§ï¾ãÅé³]©wªº¸s²ÕÅv­­"
+msgstr "ä¿®æ”¹æ•´é«”è¨­å®šçš„ç¾¤çµ„æ¬Šé™"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html
 msgid "Modify global group rights."
-msgstr "­×§ï¾ãÅé³]©wªº¸s²ÕÅv­­"
+msgstr "ä¿®æ”¹æ•´é«”è¨­å®šçš„ç¾¤çµ„æ¬Šé™"
 
 #:
 msgid "Modify global rights for groups"
-msgstr "­×§ï¸s²ÕÅv­­ªº¾ãÅé³]©w"
+msgstr "ä¿®æ”¹ç¾¤çµ„æ¬Šé™çš„æ•´é«”è¨­å®š"
 
 #:
 msgid "Modify global rights for users"
-msgstr "­×§ï¨Ï¥ÎªÌªº¾ãÅéÅv­­"
+msgstr "ä¿®æ”¹ä½¿ç”¨è€…çš„æ•´é«”æ¬Šé™"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Modify global scrips"
-msgstr "­×§ï¾ãÅé¤âÄò"
+msgstr "ä¿®æ”¹æ•´é«”æ‰‹çºŒ"
 
-#: html/Admin/Global/UserRights.html html/Admin/Global/UserRights.html html/Admin/Global/UserRights.html,D html/Admin/Global/UserRights.html,D
+#: html/Admin/Global/UserRights.html html/Admin/Global/UserRights.html
 msgid "Modify global user rights."
-msgstr "­×§ï¾ãÅé³]©wªº¨Ï¥ÎªÌÅv­­¡C"
+msgstr "ä¿®æ”¹æ•´é«”è¨­å®šçš„ä½¿ç”¨è€…æ¬Šé™ã€‚"
 
-#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D html/Admin/Queues/GroupRights.html,D
+#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html
 msgid "Modify group rights for queue %1"
-msgstr "­×§ï¦î¦C %1 ªº¸s²ÕÅv­­"
+msgstr "ä¿®æ”¹ä½‡åˆ— %1 çš„ç¾¤çµ„æ¬Šé™"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Admin/Queues/People.html
 msgid "Modify people related to queue %1"
-msgstr "­×§ïÃìµ²¨ì¦î¦C %1 ªº¤H­û"
+msgstr "ä¿®æ”¹éˆçµåˆ°ä½‡åˆ— %1 çš„äººå“¡"
 
-#: html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html,D html/Ticket/ModifyPeople.html,D
+#: html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html
 msgid "Modify people related to ticket #%1"
-msgstr "­×§ï¥Ó½Ğ³æ #%1 Ãìµ²¨ìªº¤H­û"
+msgstr "ä¿®æ”¹ç”³è«‹å–® #%1 éˆçµåˆ°çš„äººå“¡"
 
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Queues/Scrips.html
 msgid "Modify scrips for queue %1"
-msgstr "­×§ï¦î¦C %1 ªº¤âÄò"
+msgstr "ä¿®æ”¹ä½‡åˆ— %1 çš„æ‰‹çºŒ"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "Modify template %1"
-msgstr "­×§ï½d¥» %1"
+msgstr "ä¿®æ”¹ç¯„æœ¬ %1"
 
-#: html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html,D html/User/Groups/Modify.html html/User/Groups/Modify.html,D
+#: html/Admin/Groups/Modify.html html/User/Groups/Modify.html
 msgid "Modify the group %1"
-msgstr "­×§ï¸s²Õ %1"
+msgstr "ä¿®æ”¹ç¾¤çµ„ %1"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Modify the user %1"
-msgstr "­×§ï¨Ï¥ÎªÌ %1"
+msgstr "ä¿®æ”¹ä½¿ç”¨è€… %1"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Modify ticket # %1"
-msgstr "­×§ï¥Ó½Ğ³æ # %1"
+msgstr "ä¿®æ”¹ç”³è«‹å–® # %1"
 
-#: html/Ticket/Modify.html html/Ticket/Modify.html html/Ticket/Modify.html,D html/Ticket/Modify.html,D
+#: html/Ticket/Modify.html html/Ticket/Modify.html
 msgid "Modify ticket #%1"
-msgstr "­×§ï¥Ó½Ğ³æ # %1"
+msgstr "ä¿®æ”¹ç”³è«‹å–® # %1"
 
-#: html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html,D html/Admin/Queues/UserRights.html,D
+#: html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html
 msgid "Modify user rights for queue %1"
-msgstr "­×§ï¦î¦C %1 ªº¨Ï¥ÎªÌÅv­­"
+msgstr "ä¿®æ”¹ä½‡åˆ— %1 çš„ä½¿ç”¨è€…æ¬Šé™"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Admin/Queues/People.html
 msgid "Modify watchers for queue '%1'"
-msgstr "­×§ï '%1' ªºµø¹î­û"
+msgstr "ä¿®æ”¹ '%1' çš„è¦–å¯Ÿå“¡"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Mon"
-msgstr ""
+msgstr "æ˜ŸæœŸä¸€"
 
-#: lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Mon."
-msgstr ""
+msgstr "æ˜ŸæœŸä¸€"
 
-#: html/Ticket/Elements/ShowRequestor html/Ticket/Elements/ShowRequestor,D
+#: html/Ticket/Elements/ShowRequestor
 msgid "More about %1"
-msgstr "Ãö©ó %1 ªº¶i¤@¨B¸ê°T"
+msgstr "é—œæ–¼ %1 çš„é€²ä¸€æ­¥è³‡è¨Š"
 
-#: html/Admin/Elements/SelectSingleOrMultiple html/Admin/Elements/SelectSingleOrMultiple,D
+#: html/Admin/Elements/SelectSingleOrMultiple
 msgid "Multiple"
-msgstr "¦h­«"
+msgstr "å¤šé‡"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Must specify 'Name' attribute"
-msgstr "¥²¶·«ü©w 'Name' ªºÄİ©Ê"
+msgstr "å¿…é ˆæŒ‡å®š 'Name' çš„å±¬æ€§"
 
-#: html/Elements/SelectUsers html/Elements/SelectUsers,D html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/AddCustomFieldValue,D html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Groups/Modify.html html/Admin/Groups/Modify.html,D html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D html/User/Groups/Modify.html html/User/Groups/Modify.html,D
+#: html/Elements/SelectUsers html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Global/Template.html html/Admin/Groups/Modify.html html/Admin/Queues/CustomField.html html/Admin/Queues/Template.html html/User/Groups/Modify.html
 msgid "Name"
-msgstr "¦WºÙ"
+msgstr "åç¨±"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Name in use"
-msgstr "±b¸¹¤w¦³¤H¨Ï¥Î"
+msgstr "å¸³è™Ÿå·²æœ‰äººä½¿ç”¨"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D
+#: html/Elements/Quicksearch
 msgid "New"
-msgstr "·s«Ø¥ß"
+msgstr "æ–°å»ºç«‹"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "New Password"
-msgstr "·sªº±K½X"
+msgstr "æ–°çš„å¯†ç¢¼"
 
-#: html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D
+#: html/Ticket/Elements/EditLinks
 msgid "New Relationships"
-msgstr "·sªºÃö«Y"
+msgstr "æ–°çš„é—œä¿‚"
 
-#: html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D
+#: html/SelfService/Prefs.html html/User/Prefs.html
 msgid "New password"
-msgstr "·sªº±K½X"
+msgstr "æ–°çš„å¯†ç¢¼"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "New password notification sent"
-msgstr "°e¥X·s±K½X³qª¾"
+msgstr "é€å‡ºæ–°å¯†ç¢¼é€šçŸ¥"
 
-#: html/SelfService/Elements/Tabs html/SelfService/Elements/Tabs,D
+#: html/SelfService/Elements/Tabs
 msgid "New request"
-msgstr "´£¥X·s¥Ó½Ğ"
+msgstr "æå‡ºæ–°ç”³è«‹"
 
-#: html/Admin/Elements/SelectRights html/Admin/Elements/SelectRights,D
+#: html/Admin/Elements/SelectRights
 msgid "New rights"
-msgstr "·s¼WÅv­­"
+msgstr "æ–°å¢æ¬Šé™"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "New search"
-msgstr "­«·s·j´M"
+msgstr "é‡æ–°æœå°‹"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "New ticket doesn't exist"
-msgstr "¨S¦³·s¥Ó½Ğ³æ"
+msgstr "æ²’æœ‰æ–°ç”³è«‹å–®"
 
-#: html/Admin/Elements/CreateUserCalled html/Admin/Elements/CreateUserCalled,D
+#: html/Admin/Elements/CreateUserCalled
 msgid "New user called"
-msgstr "·s¨Ï¥ÎªÌ¦W¦r"
+msgstr "æ–°ä½¿ç”¨è€…åå­—"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D
+#: html/Admin/Queues/People.html html/Ticket/Elements/EditPeople
 msgid "New watchers"
-msgstr "·sµø¹î­û"
+msgstr "æ–°è¦–å¯Ÿå“¡"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "New window setting"
-msgstr "§ó·sµøµ¡³]©w"
+msgstr "æ›´æ–°è¦–çª—è¨­å®š"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Next page"
-msgstr "¤U¤@­¶"
+msgstr "ä¸‹ä¸€é "
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "NickName"
-msgstr "¼ÊºÙ"
+msgstr "æš±ç¨±"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Nickname"
-msgstr "¼ÊºÙ"
+msgstr "æš±ç¨±"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "No CustomField"
-msgstr "µL¦Û­qÄæ¦ì"
+msgstr "ç„¡è‡ªè¨‚æ¬„ä½"
 
-#: html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D html/Admin/Queues/UserRights.html html/Admin/Queues/UserRights.html,D
+#: html/Admin/Queues/GroupRights.html html/Admin/Queues/UserRights.html
 msgid "No Queue defined"
-msgstr "¨S¦³©w¸q¦nªº¦î¦C"
+msgstr "æ²’æœ‰å®šç¾©å¥½çš„ä½‡åˆ—"
 
-#: bin/rt bin/rt,D bin/rtadmin bin/rtadmin,D
+#: bin/rt bin/rtadmin
 msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "§ä¤£¨ì RT ¨Ï¥ÎªÌ¡C½Ğ¦V RT ºŞ²z­û¬d¸ß¡C\\n"
+msgstr "æ‰¾ä¸åˆ° RT ä½¿ç”¨è€…ã€‚è«‹å‘ RT ç®¡ç†å“¡æŸ¥è©¢ã€‚\\n"
 
-#: html/Admin/Global/Template.html html/Admin/Global/Template.html,D html/Admin/Queues/Template.html html/Admin/Queues/Template.html,D
+#: html/Admin/Global/Template.html html/Admin/Queues/Template.html
 msgid "No Template"
-msgstr "¨S¦³½d¥»"
+msgstr "æ²’æœ‰ç¯„æœ¬"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "No Ticket specified. Aborting ticket "
-msgstr "¨S¦³«ü©w¥Ó½Ğ³æ¡C°h¥X¥Ó½Ğ³æ "
+msgstr "æ²’æœ‰æŒ‡å®šç”³è«‹å–®ã€‚é€€å‡ºç”³è«‹å–® "
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
+#: bin/enhanced-mailgate
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
-msgstr "¨S¦³«ü©w¥Ó½Ğ³æ¡C°h¥X¥Ó½Ğ³æ­×§ï\\n\\n"
+msgstr "æ²’æœ‰æŒ‡å®šç”³è«‹å–®ã€‚é€€å‡ºç”³è«‹å–®ä¿®æ”¹\\n\\n"
 
-#: bin/rtadmin bin/rtadmin,D
+#:
+msgid "No column specified"
+msgstr "æ²’æœ‰æŒ‡å®šæ¬„ä½"
+
+#: bin/rtadmin
 msgid "No command found\\n"
-msgstr "§ä¤£¨ì©R¥O"
+msgstr "æ‰¾ä¸åˆ°å‘½ä»¤"
 
-#: html/Elements/ViewUser html/Elements/ViewUser,D html/Ticket/Elements/ShowRequestor html/Ticket/Elements/ShowRequestor,D
+#: html/Elements/ViewUser html/Ticket/Elements/ShowRequestor
 msgid "No comment entered about this user"
-msgstr "¨S¦³¹ï³o¦W¨Ï¥ÎªÌªºµû½×"
+msgstr "æ²’æœ‰å°é€™åä½¿ç”¨è€…çš„è©•è«–"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "No correspondence attached"
-msgstr "ªş¥ó¨S¦³¨Ó«H"
+msgstr "é™„ä»¶æ²’æœ‰ä¾†ä¿¡"
 
-#: lib/RT/Action/Generic.pm lib/RT/Action/Generic.pm,D lib/RT/Condition/Generic.pm lib/RT/Condition/Generic.pm,D lib/blib/lib/RT/Action/Generic.pm lib/blib/lib/RT/Condition/Generic.pm
+#: lib/RT/Action/Generic.pm lib/RT/Condition/Generic.pm
 msgid "No description for %1"
-msgstr "¨S¦³¹ï %1 ªº´y­z"
+msgstr "æ²’æœ‰å° %1 çš„æè¿°"
 
-#: lib/RT/Users_Overlay.pm lib/RT/Users_Overlay.pm,D lib/blib/lib/RT/Users_Overlay.pm
+#: lib/RT/Users_Overlay.pm
 msgid "No group specified"
-msgstr "¨S¦³«ü©w¸s²Õ"
+msgstr "æ²’æœ‰æŒ‡å®šç¾¤çµ„"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "No password set"
-msgstr "¨S¦³³]©w±K½X"
+msgstr "æ²’æœ‰è¨­å®šå¯†ç¢¼"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "No permission to create queues"
-msgstr "¨S¦³«Ø¥ß¦î¦CªºÅv­­"
+msgstr "æ²’æœ‰å»ºç«‹ä½‡åˆ—çš„æ¬Šé™"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "No permission to create tickets in the queue '%1'"
-msgstr "¨S¦³¦b¦î¦C '%1' «Ø¥ß¥Ó½Ğ³æªºÅv­­"
+msgstr "æ²’æœ‰åœ¨ä½‡åˆ— '%1' å»ºç«‹ç”³è«‹å–®çš„æ¬Šé™"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "No permission to create users"
-msgstr "¨S¦³«Ø¥ß¨Ï¥ÎªÌªºÅv­­"
+msgstr "æ²’æœ‰å»ºç«‹ä½¿ç”¨è€…çš„æ¬Šé™"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "No permission to display that ticket"
-msgstr "¨S¦³Åã¥Ü¸Ó¥Ó½Ğ³æªºÅv­­"
+msgstr "æ²’æœ‰é¡¯ç¤ºè©²ç”³è«‹å–®çš„æ¬Šé™"
 
-#: html/SelfService/Update.html html/SelfService/Update.html,D
+#: html/SelfService/Update.html
 msgid "No permission to view update ticket"
-msgstr "¨S¦³ÀËµø¥Ó½Ğ³æ§ó·sªºÅv­­"
+msgstr "æ²’æœ‰æª¢è¦–ç”³è«‹å–®æ›´æ–°çš„æ¬Šé™"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Queue_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "No principal specified"
-msgstr "¨S¦³«ü©w³æ¦ì"
+msgstr "æ²’æœ‰æŒ‡å®šå–®ä½"
 
-#: html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Admin/Queues/People.html
 msgid "No principals selected."
-msgstr "¨S¦³«ü©w³æ¦ì"
+msgstr "æ²’æœ‰æŒ‡å®šå–®ä½ã€‚"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "No queues matching search criteria found."
-msgstr "§ä¤£¨ì²Å¦X·j´M±ø¥óªº¦î¦C"
+msgstr "æ‰¾ä¸åˆ°ç¬¦åˆæœå°‹æ¢ä»¶çš„ä½‡åˆ—ã€‚"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "No ticket id specified"
-msgstr "¨S¦³«ü©w¥Ó½Ğ³æ½s¸¹"
+msgstr "æ²’æœ‰æŒ‡å®šç”³è«‹å–®ç·¨è™Ÿ"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm
 msgid "No transaction type specified"
-msgstr "¨S¦³«ü©w§ó°Ê³ø§iÃş§O"
+msgstr "æ²’æœ‰æŒ‡å®šæ›´å‹•å ±å‘Šé¡åˆ¥"
 
 #:
 msgid "No user or email address specified"
-msgstr "¨S¦³«ü©w¨Ï¥ÎªÌ©Î¹q¤l¶l¥ó«H½c"
+msgstr "æ²’æœ‰æŒ‡å®šä½¿ç”¨è€…æˆ–é›»å­éƒµä»¶ä¿¡ç®±"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "No users matching search criteria found."
-msgstr "§ä¤£¨ì²Å¦X·j´M±ø¥óªº¨Ï¥ÎªÌ"
+msgstr "æ‰¾ä¸åˆ°ç¬¦åˆæœå°‹æ¢ä»¶çš„ä½¿ç”¨è€…ã€‚"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
-msgstr "§ä¤£¨ì¦X®æªº RT ¨Ï¥ÎªÌ¡CRT cvs ³B²z¾¹¤w°±¥Î¡C½Ğ¦V RT ºŞ²zªÌ¸ß°İ¡C\\n"
+msgstr "æ‰¾ä¸åˆ°åˆæ ¼çš„ RT ä½¿ç”¨è€…ã€‚RT cvs è™•ç†å™¨å·²åœç”¨ã€‚è«‹å‘ RT ç®¡ç†è€…è©¢å•ã€‚\\n"
 
-#: html/Elements/Header html/Elements/Header,D html/SelfService/Elements/Header html/SelfService/Elements/Header,D
+#:
+msgid "No value sent to _Set"
+msgstr "_Set æ²’æœ‰æ”¶åˆ°ä»»ä½•å€¼"
+
+#: html/Elements/Header html/SelfService/Elements/Header
 msgid "Not logged in."
-msgstr "©|¥¼µn¤J"
+msgstr "å°šæœªç™»å…¥"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Not set"
-msgstr "©|¥¼³]©w"
+msgstr "å°šæœªè¨­å®š"
 
-#: html/NoAuth/Reminder.html html/NoAuth/Reminder.html,D
+#: html/NoAuth/Reminder.html
 msgid "Not yet implemented."
-msgstr "©|¥¼§¹¤u¡C"
+msgstr "å°šæœªå®Œå·¥ã€‚"
 
-#: html/Admin/Groups/Rights.html html/Admin/Groups/Rights.html,D
+#: html/Admin/Groups/Rights.html
 msgid "Not yet implemented...."
-msgstr "©|¥¼§¹¤u..."
+msgstr "å°šæœªå®Œå·¥..."
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "Notification could not be sent"
-msgstr "µLªk°e¥X³qª¾"
+msgstr "ç„¡æ³•é€å‡ºé€šçŸ¥"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Nov"
-msgstr ""
+msgstr "åä¸€æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Nov."
-msgstr "¤Q¤@¤ë"
+msgstr "åä¸€æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "November"
-msgstr "¤Q¤@¤ë"
+msgstr "åä¸€æœˆ"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Oct"
-msgstr ""
+msgstr "åæœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Oct."
-msgstr "¤Q¤ë"
+msgstr "åæœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "October"
-msgstr "¤Q¤ë"
+msgstr "åæœˆ"
 
-#: html/Elements/SelectDateRelation html/Elements/SelectDateRelation,D
+#: html/Elements/SelectDateRelation
 msgid "On"
-msgstr "µ¥©ó"
+msgstr "ç­‰æ–¼"
 
-#: html/Elements/Quicksearch
+#: html/Elements/Quicksearch html/Ticket/Elements/Tabs
 msgid "Open"
-msgstr "¶}±Ò"
+msgstr "é–‹å•Ÿ"
+
+#: html/SelfService/Elements/Tabs
+msgid "Open requests"
+msgstr "é–‹å•Ÿçš„ç”³è«‹å–®"
+
+#: html/Admin/Users/Prefs.html
+msgid "Open tickets (from listing) in a new window"
+msgstr "åœ¨æ–°è¦–çª—é–‹å•Ÿï¼ˆåˆ—è¡¨çš„ï¼‰ç”³è«‹å–®"
+
+#: html/Admin/Users/Prefs.html
+msgid "Open tickets (from listing) in another window"
+msgstr "åœ¨å¦ä¸€å€‹è¦–çª—é–‹å•Ÿï¼ˆåˆ—è¡¨çš„ï¼‰ç”³è«‹å–®"
+
+#: html/Search/PickRestriction
+msgid "Ordering and sorting"
+msgstr "é †åºèˆ‡æ’åºæ–¹å¼"
+
+#: html/Elements/SelectUsers html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
+msgid "Organization"
+msgstr "æ‰€å±¬çµ„ç¹”"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Over time, priority moves toward"
+msgstr "å„ªå…ˆé †ä½éš¨æ™‚é–“å¢åŠ èª¿ç‚º"
+
+#: bin/rt html/Elements/MyRequests html/Ticket/Create.html html/Ticket/Update.html lib/RT/Tickets_Overlay.pm html/SelfService/Elements/MyRequests html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
+msgid "Owner"
+msgstr "æ‰¿è¾¦äºº"
+
+#: lib/RT/Transaction_Overlay.pm
+msgid "Owner forcibly changed from %1 to %2"
+msgstr "å¼·åˆ¶å°‡æ‰¿è¾¦äººå¾ %1 æ”¹æˆ %2"
+
+#: html/Search/PickRestriction
+msgid "Owner is"
+msgstr "æ‰¿è¾¦äºº"
+
+#: html/Admin/Users/Modify.html
+msgid "Pager"
+msgstr "å‘¼å«å™¨"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "PagerPhone"
+msgstr "å‘¼å«å™¨è™Ÿç¢¼"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
+msgid "Parents"
+msgstr "æ¯ç”³è«‹å–®"
+
+#: html/Elements/Login
+msgid "Password"
+msgstr "å¯†ç¢¼"
+
+#: html/NoAuth/Reminder.html
+msgid "Password Reminder"
+msgstr "å¯†ç¢¼æç¤º"
+
+#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
+msgid "Password too short"
+msgstr "å¯†ç¢¼å¤ªçŸ­"
+
+#: html/Admin/Users/Modify.html
+msgid "Password: %1"
+msgstr "å¯†ç¢¼: %1"
+
+#: html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary html/Ticket/Elements/Tabs
+msgid "People"
+msgstr "äººå“¡"
+
+#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm
+msgid "Permission Denied"
+msgstr "æ¬Šé™ä¸è¶³"
+
+#: html/User/Groups/index.html html/User/Groups/index.html
+msgid "Personal groups"
+msgstr "å€‹äººç¾¤çµ„"
+
+#: html/Admin/Users/Modify.html
+msgid "Phone numbers"
+msgstr "é›»è©±è™Ÿç¢¼"
+
+#: html/Admin/Users/Rights.html
+msgid "Placeholder"
+msgstr "å°šæœªå®Œå·¥"
+
+#: html/Elements/Header html/SelfService/Prefs.html html/User/Prefs.html
+msgid "Preferences"
+msgstr "åå¥½è¨­å®š"
+
+#: html/User/Elements/Tabs
+msgid "Prefs"
+msgstr "åå¥½è¨­å®š"
+
+#: lib/RT/Action/Generic.pm
+msgid "Prepare Stubbed"
+msgstr "é å‚™å‹•ä½œå®Œæˆ"
+
+#: html/Search/Listing.html
+msgid "Previous page"
+msgstr "å‰ä¸€é "
+
+#: bin/rt
+msgid "Pri"
+msgstr "å„ªå…ˆé †ä½"
+
+#: lib/RT/ACE_Overlay.pm
+msgid "Principal %1 not found."
+msgstr "æ‰¾ä¸åˆ°å–®ä½ %1ã€‚"
+
+#: html/Search/PickRestriction html/SelfService/Display.html html/Ticket/Create.html lib/RT/Tickets_Overlay.pm html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
+msgid "Priority"
+msgstr "å„ªå…ˆé †ä½"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Priority starts at"
+msgstr "å„ªå…ˆé †ä½èµ·å§‹å€¼"
+
+#: html/Admin/Users/Modify.html
+msgid "Privileged status: %1"
+msgstr "å…·æ¬Šé™ç‹€æ…‹: %1"
+
+#: html/Admin/Users/index.html
+msgid "Privileged users"
+msgstr "å…·æ¬Šé™çš„ä½¿ç”¨è€…"
+
+#: bin/rt html/Elements/MyRequests html/Elements/MyTickets html/Elements/Quicksearch html/Search/PickRestriction html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html lib/RT/Tickets_Overlay.pm html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
+msgid "Queue"
+msgstr "ä½‡åˆ—"
+
+#: bin/rtadmin
+msgid "Queue '%1' not found\\n"
+msgstr "æ‰¾ä¸åˆ°ä½‡åˆ— '%1'\\n"
+
+#: html/Admin/Queues/Keywords.html
+msgid "Queue Keyword Selections"
+msgstr "ä½‡åˆ—é—œéµå­—é¸æ“‡"
+
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
+msgid "Queue Name"
+msgstr "ä½‡åˆ—åç¨±"
+
+#: html/Admin/Queues/Scrips.html
+msgid "Queue Scrips"
+msgstr "ä½‡åˆ—æ‰‹çºŒ"
+
+#: lib/RT/Queue_Overlay.pm
+msgid "Queue already exists"
+msgstr "ä½‡åˆ—å·²å­˜åœ¨"
+
+#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm
+msgid "Queue could not be created"
+msgstr "ç„¡æ³•å»ºç«‹ä½‡åˆ—"
+
+#: docs/design_docs/string-extraction-guide.txt lib/RT/Queue_Overlay.pm
+msgid "Queue created"
+msgstr "ä½‡åˆ—å»ºç«‹å®Œæˆ"
+
+#: html/SelfService/Display.html
+msgid "Queue not found"
+msgstr "æ‰¾ä¸åˆ°ä½‡åˆ—"
+
+#: html/Admin/Elements/Tabs
+msgid "Queues"
+msgstr "ä½‡åˆ—"
+
+#: docs/design_docs/string-extraction-guide.txt html/Elements/Login
+msgid "RT %1 for %2"
+msgstr "%2ï¼šRT %1 ç‰ˆ"
+
+#: html/Elements/Footer
+msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
+msgstr "RT %1 ç‰ˆï¼Œ<a href=\"http://bestpractical.com\">Best Practical Solutions å…¬å¸</a>å‡ºå“ã€‚"
+
+#: bin/rt
+msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr "RT %1ã€‚ç‰ˆæ¬Šæ‰€æœ‰ 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+
+#: html/Admin/index.html
+msgid "RT Administration"
+msgstr "RT ç®¡ç†é é¢"
+
+#: bin/enhanced-mailgate
+msgid "RT Authentication error."
+msgstr "RT èªè­‰éŒ¯èª¤ã€‚"
+
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate
+msgid "RT Bounce: %1"
+msgstr "RT é€€ä¿¡ï¼š%1"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "RT Configuration error"
+msgstr "RT è¨­å®šéŒ¯èª¤"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "RT Critical error. Message not recorded!"
+msgstr "RT è‡´å‘½éŒ¯èª¤ã€‚è¨Šæ¯æœªè¢«ç´€éŒ„ã€‚"
+
+#: html/Elements/Error html/SelfService/Error.html
+msgid "RT Error"
+msgstr "RT éŒ¯èª¤"
+
+#: bin/rt-mailgate
+msgid "RT Received mail (%1) from itself."
+msgstr "RT æ”¶åˆ°å¾è‡ªå·±å¯„å‡ºçš„éƒµä»¶ (%1)ã€‚"
+
+#: bin/enhanced-mailgate
+msgid "RT Recieved mail (%1) from itself."
+msgstr "RT æ”¶åˆ°å¾è‡ªå·±å¯„å‡ºçš„éƒµä»¶ (%1)ã€‚"
+
+#: html/SelfService/Closed.html
+msgid "RT Self Service / Closed Tickets"
+msgstr "RT è‡ªåŠ©æœå‹™/çµæŸçš„ç”³è«‹"
+
+#: bin/enhanced-mailgate
+msgid "RT couldn't authenticate you"
+msgstr "RT ç„¡æ³•èªè­‰ä½ "
+
+#: bin/rt-mailgate
+msgid "RT couldn't find requestor via its external database lookup"
+msgstr "RT ç„¡æ³•å¾å¤–éƒ¨è³‡æ–™åº«æŸ¥è©¢æ‰¾åˆ°ç”³è«‹äººè³‡è¨Š"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "RT couldn't find the queue: %1"
+msgstr "RT æ‰¾ä¸åˆ°ä½‡åˆ—ï¼š%1"
+
+#: bin/enhanced-mailgate
+msgid "RT couldn't validate this PGP signature. \\n"
+msgstr "RT ç„¡æ³•ç¢ºèªé€™å€‹ PGP ç°½ç« ã€‚\\n"
+
+#: bin/enhanced-mailgate
+msgid "RT has proccessed your commands"
+msgstr "RT å·²åŸ·è¡Œæ‚¨çš„å‘½ä»¤"
+
+#: html/Elements/Login
+msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RT ç‰ˆæ¬Šæ‰€æœ‰ 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;ã€‚<br>æœ¬è»Ÿé«”ä¾ <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU é€šç”¨å…¬å…±æˆæ¬Šç¬¬äºŒç‰ˆ</a> æ•£ä½ˆã€‚"
+
+#: bin/enhanced-mailgate bin/rt-mailgate
+msgid "RT thinks this message may be a bounce"
+msgstr "RT èªç‚ºé€™æ˜¯é€€ä¿¡"
+
+#: bin/enhanced-mailgate
+msgid "RT will process this message as if it were unsigned.\\n"
+msgstr "RT ä»¥æœªç°½ç« æ–¹å¼è™•ç†é€™å°éƒµä»¶ã€‚\\n"
+
+#: bin/enhanced-mailgate
+msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
+msgstr "RT çš„é›»å­éƒµä»¶å‘½ä»¤æ¨¡å¼é ˆè¦ PGP èªè­‰ã€‚æ‚¨å¯èƒ½æ²’æœ‰ç°½ç« ï¼Œæˆ–æ˜¯æ‚¨çš„ç°½ç« ç„¡æ³•è¾¨è­˜ã€‚"
+
+#: html/Admin/Users/Modify.html html/Admin/Users/Prefs.html
+msgid "Real Name"
+msgstr "çœŸå¯¦å§“å"
+
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
+msgid "RealName"
+msgstr "çœŸå¯¦å§“å"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
+msgid "Referred to by"
+msgstr "è¢«åƒè€ƒ"
+
+#: html/Ticket/Create.html html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/ShowLinks
+msgid "Refers to"
+msgstr "åƒè€ƒ"
+
+#: html/Elements/SelectLinkType
+msgid "RefersTo"
+msgstr "åƒè€ƒ"
+
+#: html/Search/Listing.html html/Search/PickRestriction
+msgid "Refine"
+msgstr "èª¿æ•´"
+
+#: html/Search/PickRestriction
+msgid "Refine Search"
+msgstr "èª¿æ•´æœå°‹æ¢ä»¶"
+
+#: html/Elements/Refresh
+msgid "Refresh this page every %1 minutes."
+msgstr "æ¯ %1 åˆ†é˜æ›´æ–°é é¢"
+
+#: html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Elements/ShowSummary
+msgid "Relationships"
+msgstr "é—œä¿‚"
+
+#: html/Search/Bulk.html
+msgid "Remove AdminCc"
+msgstr "ç§»é™¤ç®¡ç†å“¡å‰¯æœ¬"
+
+#: html/Search/Bulk.html
+msgid "Remove Cc"
+msgstr "ç§»é™¤å‰¯æœ¬"
+
+#: html/Search/Bulk.html
+msgid "Remove Requestor"
+msgstr "ç§»é™¤ç”³è«‹äºº"
 
 #: html/Ticket/Elements/Tabs
-msgid "Open it"
-msgstr "¶}±Ò"
-
-#: html/SelfService/Elements/Tabs html/SelfService/Elements/Tabs,D
-msgid "Open requests"
-msgstr "¶}±Òªº¥Ó½Ğ³æ"
-
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
-msgid "Open tickets (from listing) in a new window"
-msgstr "¦b·sµøµ¡¶}±Ò¡]¦Cªíªº¡^¥Ó½Ğ³æ"
-
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
-msgid "Open tickets (from listing) in another window"
-msgstr "¦b¥t¤@­Óµøµ¡¶}±Ò¡]¦Cªíªº¡^¥Ó½Ğ³æ"
-
-#: html/Search/PickRestriction html/Search/PickRestriction,D
-msgid "Ordering and sorting"
-msgstr "¶¶§Ç»P±Æ§Ç¤è¦¡"
-
-#: html/Elements/SelectUsers html/Elements/SelectUsers,D html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
-msgid "Organization"
-msgstr "©ÒÄİ²ÕÂ´"
-
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
-msgid "Over time, priority moves toward"
-msgstr "Àu¥ı¶¶¦ìÀH®É¶¡¼W¥[½Õ¬°"
-
-#: bin/rt bin/rt,D html/Elements/MyRequests html/Elements/MyRequests,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Update.html html/Ticket/Update.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D html/Ticket/Elements/EditPeople,D html/Ticket/Elements/ShowPeople html/Ticket/Elements/ShowPeople,D lib/blib/lib/RT/Tickets_Overlay.pm
-msgid "Owner"
-msgstr "©Ó¿ì¤H"
-
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
-msgid "Owner forcibly changed from %1 to %2"
-msgstr "±j¨î±N©Ó¿ì¤H±q %1 §ï¦¨ %2"
-
-#: html/Search/PickRestriction html/Search/PickRestriction,D
-msgid "Owner is"
-msgstr "©Ó¿ì¤H"
-
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
-msgid "Pager"
-msgstr "©I¥s¾¹"
-
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
-msgid "PagerPhone"
-msgstr "©I¥s¾¹¸¹½X"
-
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
-msgid "Parents"
-msgstr "¥À¥Ó½Ğ³æ"
-
-#: html/Elements/Login html/Elements/Login,D
-msgid "Password"
-msgstr "±K½X"
-
-#: html/NoAuth/Reminder.html html/NoAuth/Reminder.html,D
-msgid "Password Reminder"
-msgstr "±K½X´£¥Ü"
-
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm
-msgid "Password too short"
-msgstr "±K½X¤Óµu"
-
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
-msgid "Password: %1"
-msgstr "±K½X: %1"
-
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
-msgid "People"
-msgstr "¤H­û"
-
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/RT/ACE_Overlay.pm,D lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm,D lib/RT/CurrentUser.pm,D lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/RT/CustomField_Overlay.pm,D lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Group_Overlay.pm,D lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/RT/Scrip_Overlay.pm,D lib/RT/Scrip_Overlay.pm,D lib/RT/Scrip_Overlay.pm,D lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm,D lib/RT/Template_Overlay.pm,D lib/RT/Template_Overlay.pm,D lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/RT/Transaction_Overlay.pm,D lib/RT/Transaction_Overlay.pm,D lib/RT/Transaction_Overlay.pm,D lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/RT/User_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/ACE_Overlay.pm lib/blib/lib/RT/CurrentUser.pm lib/blib/lib/RT/CurrentUser.pm lib/blib/lib/RT/CustomField_Overlay.pm lib/blib/lib/RT/CustomField_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Group_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Scrip_Overlay.pm lib/blib/lib/RT/Template_Overlay.pm lib/blib/lib/RT/Template_Overlay.pm lib/blib/lib/RT/Template_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/Transaction_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm lib/blib/lib/RT/User_Overlay.pm
-msgid "Permission Denied"
-msgstr "Åv­­¤£¨¬"
-
-#: html/User/Groups/index.html html/User/Groups/index.html html/User/Groups/index.html,D html/User/Groups/index.html,D
-msgid "Personal groups"
-msgstr ""
-
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
-msgid "Phone numbers"
-msgstr "¹q¸Ü¸¹½X"
-
-#: html/Admin/Users/Rights.html html/Admin/Users/Rights.html,D
-msgid "Placeholder"
-msgstr "©|¥¼§¹¤u"
-
-#: html/Elements/Header html/Elements/Header,D html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D
-msgid "Preferences"
-msgstr "°¾¦n³]©w"
-
-#: html/User/Elements/Tabs html/User/Elements/Tabs,D
-msgid "Prefs"
-msgstr ""
-
-#: lib/RT/Action/Generic.pm lib/RT/Action/Generic.pm,D lib/blib/lib/RT/Action/Generic.pm
-msgid "Prepare Stubbed"
-msgstr "¹w³Æ°Ê§@§¹¦¨"
-
-#: html/Search/Listing.html html/Search/Listing.html,D
-msgid "Previous page"
-msgstr "«e¤@­¶"
-
-#: bin/rt bin/rt,D
-msgid "Pri"
-msgstr "Àu¥ı¶¶¦ì"
-
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
-msgid "Principal %1 not found."
-msgstr "§ä¤£¨ì³æ¦ì %1"
-
-#: html/Search/PickRestriction html/Search/PickRestriction,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Create.html html/Ticket/Create.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
-msgid "Priority"
-msgstr "Àu¥ı¶¶¦ì"
-
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
-msgid "Priority starts at"
-msgstr "Àu¥ı¶¶¦ì°_©l­È"
-
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
-msgid "Privileged status: %1"
-msgstr "¨ãÅv­­ª¬ºA: %1"
-
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
-msgid "Privileged users"
-msgstr "¨ãÅv­­ªº¨Ï¥ÎªÌ"
-
-#: bin/rt bin/rt,D html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D html/Elements/Quicksearch html/Elements/Quicksearch,D html/Search/PickRestriction html/Search/PickRestriction,D html/SelfService/Create.html html/SelfService/Create.html,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Create.html html/Ticket/Create.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
-msgid "Queue"
-msgstr "¦î¦C"
-
-#: bin/rtadmin bin/rtadmin,D
-msgid "Queue '%1' not found\\n"
-msgstr "§ä¤£¨ì¦î¦C '%1'\\n"
-
-#: html/Admin/Queues/Keywords.html html/Admin/Queues/Keywords.html,D
-msgid "Queue Keyword Selections"
-msgstr "¦î¦CÃöÁä¦r¿ï¾Ü"
-
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
-msgid "Queue Name"
-msgstr "¦î¦C¦WºÙ"
-
-#: html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
-msgid "Queue Scrips"
-msgstr "¦î¦C¤âÄò"
-
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
-msgid "Queue already exists"
-msgstr "¦î¦C¤w¦s¦b"
-
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm lib/blib/lib/RT/Queue_Overlay.pm
-msgid "Queue could not be created"
-msgstr "µLªk«Ø¥ß¦î¦C"
-
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
-msgid "Queue created"
-msgstr "¦î¦C«Ø¥ß§¹¦¨"
-
-#: html/SelfService/Display.html html/SelfService/Display.html,D
-msgid "Queue not found"
-msgstr "§ä¤£¨ì¦î¦C"
-
-#: html/Admin/Elements/Tabs html/Admin/Elements/Tabs,D
-msgid "Queues"
-msgstr "¦î¦C"
-
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D html/Elements/Login html/Elements/Login,D
-msgid "RT %1 for %2"
-msgstr "%2¡GRT %1 ª©"
-
-#: html/Elements/Footer html/Elements/Footer,D
-msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
-msgstr "RT %1 ª©¡A<a href=\"http://bestpractical.com\">Best Practical Solutions ¤½¥q</a>¥X«~¡C"
-
-#: bin/rt bin/rt,D
-msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
-msgstr "RT %1¡Cª©Åv©Ò¦³ 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
-
-#: html/Admin/index.html html/Admin/index.html,D
-msgid "RT Administration"
-msgstr "RT ºŞ²z­¶­±"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
-msgid "RT Authentication error."
-msgstr "RT »{ÃÒ¿ù»~"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate bin/enhanced-mailgate,D bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate bin/rt-mailgate,D bin/rt-mailgate,D bin/rt-mailgate,D
-msgid "RT Bounce: %1"
-msgstr "RT °h«H¡G%1"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
-msgid "RT Configuration error"
-msgstr "RT ³]©w¿ù»~"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
-msgid "RT Critical error. Message not recorded!"
-msgstr "RT ­P©R¿ù»~¡C°T®§¥¼³Q¬ö¿ı¡C"
-
-#: html/Elements/Error html/Elements/Error,D html/SelfService/Error.html html/SelfService/Error.html,D
-msgid "RT Error"
-msgstr "RT ¿ù»~"
-
-#: bin/rt-mailgate bin/rt-mailgate,D
-msgid "RT Received mail (%1) from itself."
-msgstr "RT ¦¬¨ì±q¦Û¤v±H¥Xªº¶l¥ó (%1)"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
-msgid "RT Recieved mail (%1) from itself."
-msgstr "RT ¦¬¨ì±q¦Û¤v±H¥Xªº¶l¥ó (%1)"
-
-#: html/SelfService/Closed.html html/SelfService/Closed.html,D
-msgid "RT Self Service / Closed Tickets"
-msgstr "RT ¦Û§UªA°È/µ²§ôªº¥Ó½Ğ"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
-msgid "RT couldn't authenticate you"
-msgstr "RT µLªk»{ÃÒ§A"
-
-#: bin/rt-mailgate bin/rt-mailgate,D
-msgid "RT couldn't find requestor via its external database lookup"
-msgstr "RT µLªk±q¥~³¡¸ê®Æ®w¬d¸ß§ä¨ì¥Ó½Ğ¤H¸ê°T"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
-msgid "RT couldn't find the queue: %1"
-msgstr "RT §ä¤£¨ì¦î¦C¡G%1"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
-msgid "RT couldn't validate this PGP signature. \\n"
-msgstr "RT µLªk½T»{³o­Ó PGP Ã±³¹¡C\\n"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
-msgid "RT has proccessed your commands"
-msgstr "RT ¤w°õ¦æ±zªº©R¥O"
-
-#: html/Elements/Login html/Elements/Login,D
-msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT ª©Åv©Ò¦³ 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;¡C<br>¥»³nÅé¨Ì <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU ³q¥Î¤½¦@±ÂÅv²Ä¤Gª©</a> ´²§G¡C"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
-msgid "RT thinks this message may be a bounce"
-msgstr "RT »{¬°³o¬O°h«H"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
-msgid "RT will process this message as if it were unsigned.\\n"
-msgstr "RT ¥H¥¼Ã±³¹¤è¦¡³B²z³o«Ê¶l¥ó¡C\\n"
-
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D
-msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
-msgstr "RT ªº¹q¤l¶l¥ó©R¥O¼Ò¦¡¶·­n PGP »{ÃÒ¡C±z¥i¯à¨S¦³Ã±³¹¡A©Î¬O±zªºÃ±³¹µLªk¿ëÃÑ¡C"
-
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
-msgid "Real Name"
-msgstr "¯u¹ê©m¦W"
-
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
-msgid "RealName"
-msgstr "¯u¹ê©m¦W"
-
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
-msgid "Referred to by"
-msgstr "³Q°Ñ¦Ò"
-
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks html/Ticket/Elements/EditLinks,D html/Ticket/Elements/EditLinks,D html/Ticket/Elements/ShowLinks html/Ticket/Elements/ShowLinks,D
-msgid "Refers to"
-msgstr "°Ñ¦Ò"
-
-#: html/Elements/SelectLinkType html/Elements/SelectLinkType,D
-msgid "RefersTo"
-msgstr "°Ñ¦Ò"
-
-#: html/Search/Listing.html html/Search/Listing.html,D html/Search/PickRestriction html/Search/PickRestriction,D
-msgid "Refine"
-msgstr "½Õ¾ã"
-
-#: html/Search/PickRestriction html/Search/PickRestriction,D
-msgid "Refine Search"
-msgstr "½Õ¾ã·j´M±ø¥ó"
-
-#: html/Elements/Refresh html/Elements/Refresh,D
-msgid "Refresh this page every %1 minutes."
-msgstr "¨C %1 ¤ÀÄÁ§ó·s­¶­±"
-
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D
-msgid "Relationships"
-msgstr "Ãö«Y"
-
-#: html/Search/Bulk.html html/Search/Bulk.html,D
-msgid "Remove AdminCc"
-msgstr "²¾°£ºŞ²z­û°Æ¥»"
-
-#: html/Search/Bulk.html html/Search/Bulk.html,D
-msgid "Remove Cc"
-msgstr "²¾°£°Æ¥»"
-
-#: html/Search/Bulk.html html/Search/Bulk.html,D
-msgid "Remove Requestor"
-msgstr "²¾°£¥Ó½Ğ¤H"
-
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
 msgid "Reply"
-msgstr "¦^ÂĞ"
+msgstr "å›è¦†"
 
-#: bin/rt bin/rt,D html/Ticket/Update.html html/Ticket/Update.html,D
+#: bin/rt html/Ticket/Update.html
 msgid "Requestor"
-msgstr "¥Ó½Ğ¤H"
+msgstr "ç”³è«‹äºº"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Requestor email address"
-msgstr "¥Ó½Ğ¤H¹q¤l¶l¥ó«H½c¦ì§}"
+msgstr "ç”³è«‹äººé›»å­éƒµä»¶ä¿¡ç®±ä½å€"
 
 #:
 msgid "Requestor(s)"
-msgstr "¥Ó½Ğ¤H"
+msgstr "ç”³è«‹äºº"
 
-#: html/SelfService/Create.html html/SelfService/Create.html,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditPeople html/Ticket/Elements/EditPeople,D html/Ticket/Elements/ShowPeople html/Ticket/Elements/ShowPeople,D
+#: html/SelfService/Create.html html/SelfService/Display.html html/Ticket/Create.html html/Ticket/Elements/EditPeople html/Ticket/Elements/ShowPeople
 msgid "Requestors"
-msgstr "¥Ó½Ğ¤H"
+msgstr "ç”³è«‹äºº"
 
-#: html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D
+#: html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "Requests should be due in"
-msgstr "¥Ó½Ğ³æ³B²z´Á­­"
+msgstr "ç”³è«‹å–®è™•ç†æœŸé™"
 
-#: html/Elements/Submit html/Elements/Submit,D
+#: html/Elements/Submit
 msgid "Reset"
-msgstr "­«³]"
+msgstr "é‡è¨­"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Residence"
-msgstr "¦í³B"
+msgstr "ä½è™•"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Update.html html/Ticket/Elements/Tabs
 msgid "Resolve"
-msgstr "¸Ñ¨M"
+msgstr "è§£æ±º"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D
+#: html/Elements/SelectDateType
 msgid "Resolved"
-msgstr "¤w¸Ñ¨M"
+msgstr "å·²è§£æ±º"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Response to requestors"
-msgstr "¦^ÂĞ¥Ó½Ğ¤H"
+msgstr "å›è¦†ç”³è«‹äºº"
 
-#: html/Elements/ListActions html/Elements/ListActions,D
+#: html/Elements/ListActions
 msgid "Results"
-msgstr "µ²ªG"
+msgstr "çµæœ"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Results per page"
-msgstr "¨C­¶¦C¥X´Xµ§µ²ªG"
+msgstr "æ¯é åˆ—å‡ºå¹¾ç­†çµæœ"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Retype Password"
-msgstr "¦A¦¸¿é¤J±K½X"
+msgstr "å†æ¬¡è¼¸å…¥å¯†ç¢¼"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
-msgstr "¦b %4 (%5) ªº½d³ò¤º§ä¤£¨ì %2 %3 ªº %1 Åv­­\\n"
+msgstr "åœ¨ %4 (%5) çš„ç¯„åœå…§æ‰¾ä¸åˆ° %2 %3 çš„ %1 æ¬Šé™\\n"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "Right Granted"
-msgstr "Åv­­³]©w§¹¦¨"
+msgstr "æ¬Šé™è¨­å®šå®Œæˆ"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "Right could not be revoked"
-msgstr "µLªkºM®øÅv­­"
+msgstr "ç„¡æ³•æ’¤æ¶ˆæ¬Šé™"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "Right revoked"
-msgstr "Åv­­ºM®ø§¹¦¨"
+msgstr "æ¬Šé™æ’¤æ¶ˆå®Œæˆ"
 
-#: html/Admin/Elements/UserTabs html/Admin/Elements/UserTabs,D
+#: html/Admin/Elements/UserTabs
 msgid "Rights"
-msgstr "Åv­­"
+msgstr "æ¬Šé™"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html html/Admin/Queues/GroupRights.html
 msgid "Roles"
-msgstr "¨¤¦â"
+msgstr "è§’è‰²"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Sat"
-msgstr ""
+msgstr "æ˜ŸæœŸå…­"
 
-#: lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Sat."
-msgstr ""
+msgstr "æ˜ŸæœŸå…­"
 
-#: html/Ticket/Modify.html html/Ticket/Modify.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/ModifyPeople.html html/Ticket/ModifyPeople.html,D html/Admin/Queues/People.html html/Admin/Queues/People.html,D
+#: html/Ticket/Modify.html html/Ticket/ModifyAll.html html/Ticket/ModifyPeople.html html/Admin/Queues/People.html
 msgid "Save Changes"
-msgstr "Àx¦s­×§ï"
+msgstr "å„²å­˜ä¿®æ”¹"
 
-#: html/Ticket/ModifyLinks.html html/Ticket/ModifyLinks.html,D
+#: html/Ticket/ModifyLinks.html
 msgid "Save changes"
-msgstr "Àx¦s­×§ï"
+msgstr "å„²å­˜ä¿®æ”¹"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm
 msgid "Scrip Created"
-msgstr "¤âÄò«Ø¥ß§¹¦¨"
+msgstr "æ‰‹çºŒå»ºç«‹å®Œæˆ"
 
-#: html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/SystemTabs html/Admin/Elements/SystemTabs,D
+#: html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs
 msgid "Scrips"
-msgstr "¤âÄò"
+msgstr "æ‰‹çºŒ"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Scrips for %1\\n"
-msgstr "%1 ªº¤âÄò\\n"
+msgstr "%1 çš„æ‰‹çºŒ\\n"
 
-#: html/Elements/Tabs html/Elements/Tabs,D html/Search/Listing.html html/Search/Listing.html,D
+#: html/Elements/Tabs html/Search/Listing.html
 msgid "Search"
-msgstr "·j´M"
+msgstr "æœå°‹"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Search Criteria"
-msgstr "·j´M±ø¥ó"
+msgstr "æœå°‹æ¢ä»¶"
 
-#: html/Admin/Groups/index.html html/Admin/Groups/index.html,D
+#: html/Admin/Groups/index.html
 msgid "Select a group"
-msgstr "¿ï¾Ü¸s²Õ"
+msgstr "é¸æ“‡ç¾¤çµ„"
 
-#: html/Admin/Queues/index.html html/Admin/Queues/index.html,D
+#: html/Admin/Queues/index.html
 msgid "Select a queue"
-msgstr "¿ï¾Ü¦î¦C"
+msgstr "é¸æ“‡ä½‡åˆ—"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Select a user"
-msgstr "¿ï¾Ü¨Ï¥ÎªÌ"
+msgstr "é¸æ“‡ä½¿ç”¨è€…"
 
 #:
 msgid "SelectMultiple"
-msgstr "¦h­«¿ï¶µ"
+msgstr "å¤šé‡é¸é …"
 
 #:
 msgid "SelectSingle"
-msgstr "³æ¤@¿ï¶µ"
+msgstr "å–®ä¸€é¸é …"
 
-#: html/SelfService/index.html html/SelfService/index.html,D
+#: html/SelfService/index.html
 msgid "Self Service"
-msgstr "¦Û§UªA°È"
+msgstr "è‡ªåŠ©æœå‹™"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Sep"
-msgstr ""
+msgstr "ä¹æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D lib/RT/Date.pm lib/RT/Date.pm~
+#: html/Elements/monthMenu lib/RT/Date.pm
 msgid "Sep."
-msgstr "¤E¤ë"
+msgstr "ä¹æœˆ"
 
-#: html/Elements/monthMenu html/Elements/monthMenu,D
+#: html/Elements/monthMenu
 msgid "September"
-msgstr "¤E¤ë"
+msgstr "ä¹æœˆ"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Show Results"
-msgstr "Åã¥Üµ²ªG"
+msgstr "é¡¯ç¤ºçµæœ"
 
-#: html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Create.html,D
+#: html/Ticket/Create.html html/Ticket/Create.html
 msgid "Show basics"
-msgstr "Åã¥Ü°ò¥»¸ê°T"
+msgstr "é¡¯ç¤ºåŸºæœ¬è³‡è¨Š"
 
-#: html/Ticket/Create.html html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Create.html,D
+#: html/Ticket/Create.html html/Ticket/Create.html
 msgid "Show details"
-msgstr "Åã¥Ü²Ó¸`"
+msgstr "é¡¯ç¤ºç´°ç¯€"
 
-#: html/SelfService/Prefs.html html/SelfService/Prefs.html,D html/User/Prefs.html html/User/Prefs.html,D html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/SelfService/Prefs.html html/User/Prefs.html html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html html/Admin/Users/Prefs.html
 msgid "Signature"
-msgstr "Ã±³¹"
+msgstr "ç°½ç« "
 
-#: html/SelfService/Elements/Header html/SelfService/Elements/Header,D
+#: html/SelfService/Elements/Header
 msgid "Signed in as %1"
-msgstr "¥H %1 ¤§¦Wµn¤J"
+msgstr "ä½¿ç”¨è€…ï¼š%1"
 
-#: html/Elements/Header html/Elements/Header,D
+#: html/Elements/Header
 msgid "Signed in as <b>%1</b>"
-msgstr "¥H <b>%1</b> ¤§¦Wµn¤J"
+msgstr "ä½¿ç”¨è€…ï¼š<b>%1</b>"
 
-#: html/Admin/Elements/SelectSingleOrMultiple html/Admin/Elements/SelectSingleOrMultiple,D
+#: html/Admin/Elements/SelectSingleOrMultiple
 msgid "Single"
-msgstr "³æ¤@"
+msgstr "å–®ä¸€"
 
-#: html/Admin/Elements/EditCustomFieldValues html/Admin/Elements/EditCustomFieldValues,D
+#: html/Admin/Elements/EditCustomFieldValues
 msgid "Sort key"
-msgstr "±Æ§Ç¤è¦¡"
+msgstr "æ’åºæ–¹å¼"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "Sort results by"
-msgstr "µ²ªG±Æ§Ç¤è¦¡"
+msgstr "çµæœæ’åºæ–¹å¼"
 
-#: html/Admin/Elements/AddCustomFieldValue html/Admin/Elements/AddCustomFieldValue,D
+#: html/Admin/Elements/AddCustomFieldValue
 msgid "SortOrder"
-msgstr "±Æ§Ç¶¶§Ç"
+msgstr "æ’åºé †åº"
 
-#: html/Elements/Quicksearch html/Elements/Quicksearch,D
+#: html/Elements/Quicksearch
 msgid "Stalled"
-msgstr "©µÌX"
+msgstr "å»¶å®•"
 
-#: html/index.html html/index.html,D
+#: html/index.html
 msgid "Start page"
-msgstr "­º­¶"
+msgstr "é¦–é "
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D html/Ticket/Elements/EditDates html/Ticket/Elements/EditDates,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: html/Elements/SelectDateType html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
 msgid "Started"
-msgstr "¹ê»Ú°_©l¤é"
+msgstr "å¯¦éš›èµ·å§‹æ—¥"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Started date '%1' could not be parsed"
-msgstr "µLªk¸ÑÅª°_©l¤é´Á '%1"
+msgstr "ç„¡æ³•è§£è®€èµ·å§‹æ—¥æœŸ '%1"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditDates html/Ticket/Elements/EditDates,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditDates html/Ticket/Elements/ShowDates
 msgid "Starts"
-msgstr "À³°_©l¤é"
+msgstr "æ‡‰èµ·å§‹æ—¥"
 
-#: html/Elements/SelectDateType html/Elements/SelectDateType,D
+#: html/Elements/SelectDateType
 msgid "Starts By"
-msgstr "À³°_©l¤é"
+msgstr "æ‡‰èµ·å§‹æ—¥"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Starts date '%1' could not be parsed"
-msgstr "µLªk¸ÑÅª°_©l¤é´Á '%1"
+msgstr "ç„¡æ³•è§£è®€èµ·å§‹æ—¥æœŸ '%1"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "State"
-msgstr "¦{"
+msgstr "å·"
 
-#: bin/rt bin/rt,D html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D html/Search/PickRestriction html/Search/PickRestriction,D html/SelfService/Display.html html/SelfService/Display.html,D html/SelfService/Update.html html/SelfService/Update.html,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Update.html html/Ticket/Update.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: bin/rt html/Elements/MyRequests html/Elements/MyTickets html/Search/PickRestriction html/SelfService/Display.html html/SelfService/Update.html html/Ticket/Create.html html/Ticket/Update.html lib/RT/Tickets_Overlay.pm html/SelfService/Elements/MyRequests html/Ticket/Elements/EditBasics html/Ticket/Elements/ShowBasics
 msgid "Status"
-msgstr "²{ªp"
+msgstr "ç¾æ³"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Status changed from %1 to %2"
-msgstr "²{ªp±q %1 §ï¬° %2"
+msgstr "ç¾æ³å¾ %1 æ”¹ç‚º %2"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Steal"
-msgstr "±j¨î§ó´«©Ó¿ì¤H"
+msgstr "å¼·åˆ¶æ›´æ›æ‰¿è¾¦äºº"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Stolen from %1 "
-msgstr "³Q %1 ±j¨î§ó´« "
+msgstr "è¢« %1 å¼·åˆ¶æ›´æ› "
 
-#: bin/rt bin/rt,D html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D html/Search/PickRestriction html/Search/PickRestriction,D html/SelfService/Create.html html/SelfService/Create.html,D html/SelfService/Update.html html/SelfService/Update.html,D html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Update.html html/Ticket/Update.html,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: bin/rt html/Elements/MyRequests html/Elements/MyTickets html/Search/PickRestriction html/SelfService/Create.html html/SelfService/Update.html html/Ticket/Create.html html/Ticket/ModifyAll.html html/Ticket/Update.html lib/RT/Tickets_Overlay.pm html/SelfService/Elements/MyRequests html/Ticket/Elements/EditBasics
 msgid "Subject"
-msgstr "¥DÃD"
+msgstr "ä¸»é¡Œ"
 
-#: html/Elements/Submit html/Elements/Submit,D
+#: html/Elements/Submit
 msgid "Submit"
-msgstr "°e¥X"
+msgstr "é€å‡º"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Sun"
-msgstr ""
+msgstr "æ˜ŸæœŸæ—¥"
 
-#: lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Sun."
-msgstr ""
+msgstr "æ˜ŸæœŸæ—¥"
 
-#: lib/RT/Principal_Overlay.pm lib/RT/Principal_Overlay.pm lib/RT/Principal_Overlay.pm,D lib/RT/Principal_Overlay.pm,D lib/blib/lib/RT/Principal_Overlay.pm lib/blib/lib/RT/Principal_Overlay.pm
+#: lib/RT/Principal_Overlay.pm lib/RT/Principal_Overlay.pm
 msgid "System Error. Right not granted."
-msgstr ""
+msgstr "ç³»çµ±éŒ¯èª¤ã€‚è¨­å®šæ¬Šé™å¤±æ•—ã€‚"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "System Error. right not granted"
-msgstr "¨t²Î¿ù»~¡CÅv­­¤£³Q±µ¨ü"
+msgstr "ç³»çµ±éŒ¯èª¤ã€‚æ¬Šé™ä¸è¢«æ¥å—"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "System error. Unable to grant rights."
-msgstr "¨t²Î¿ù»~¡CµLªk³]©wÅv­­¡C"
+msgstr "ç³»çµ±éŒ¯èª¤ã€‚ç„¡æ³•è¨­å®šæ¬Šé™ã€‚"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html html/Admin/Queues/GroupRights.html
 msgid "System groups"
-msgstr "¨t²Î¸s²Õ"
+msgstr "ç³»çµ±ç¾¤çµ„"
 
-#: lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm,D lib/RT/CurrentUser.pm,D lib/t/autogen/autogen-RT-CurrentUser.t lib/t/autogen/autogen-RT-CurrentUser.t lib/blib/lib/RT/CurrentUser.pm lib/blib/lib/RT/CurrentUser.pm
+#: lib/RT/CurrentUser.pm lib/RT/CurrentUser.pm
 msgid "TEST_STRING"
 msgstr "TEST_STRING"
 
-#: html/Ticket/Elements/Tabs html/Ticket/Elements/Tabs,D
+#: html/Ticket/Elements/Tabs
 msgid "Take"
-msgstr "¨ü²z"
+msgstr "å—ç†"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Taken"
-msgstr "¤w¨ü²z"
+msgstr "å·²å—ç†"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D html/Admin/Queues/Scrips.html html/Admin/Queues/Scrips.html,D
+#: html/Admin/Global/Scrips.html html/Admin/Queues/Scrips.html
 msgid "Template"
-msgstr "½d¥»"
+msgstr "ç¯„æœ¬"
 
-#: lib/RT/Scrip_Overlay.pm lib/RT/Scrip_Overlay.pm,D lib/blib/lib/RT/Scrip_Overlay.pm
+#: lib/RT/Scrip_Overlay.pm
 msgid "Template not found"
-msgstr "§ä¤£¨ì½d¥»"
+msgstr "æ‰¾ä¸åˆ°ç¯„æœ¬"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Template not found\\n"
-msgstr "§ä¤£¨ì½d¥»\\n"
+msgstr "æ‰¾ä¸åˆ°ç¯„æœ¬\\n"
 
-#: lib/RT/Template_Overlay.pm lib/RT/Template_Overlay.pm,D lib/blib/lib/RT/Template_Overlay.pm
+#: lib/RT/Template_Overlay.pm
 msgid "Template parsed"
-msgstr "½d¥»­åªR§¹¦¨"
+msgstr "ç¯„æœ¬å‰–æå®Œæˆ"
 
-#: html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/SystemTabs html/Admin/Elements/SystemTabs,D
+#: html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs
 msgid "Templates"
-msgstr "½d¥»"
+msgstr "ç¯„æœ¬"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Templates for %1\\n"
-msgstr "§ä¤£¨ì %1 ªº½d¥»\\n"
+msgstr "æ‰¾ä¸åˆ° %1 çš„ç¯„æœ¬\\n"
 
-#: lib/RT/CustomField_Overlay.pm lib/RT/CustomField_Overlay.pm,D lib/blib/lib/RT/CustomField_Overlay.pm
+#:
+msgid "That is already the current value"
+msgstr "å·²ç¶“æ˜¯ç›®å‰æ¬„ä½çš„å€¼"
+
+#: lib/RT/CustomField_Overlay.pm
 msgid "That is not a value for this custom field"
-msgstr "³o¤£¬O¸Ó¦Û­qÄæ¦ìªº­È"
+msgstr "é€™ä¸æ˜¯è©²è‡ªè¨‚æ¬„ä½çš„å€¼"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That is the same value"
-msgstr "¦P¼Ëªº­È"
+msgstr "åŒæ¨£çš„å€¼"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "That principal is already a %1 for this queue"
-msgstr "³o¹D¤âÄò¤w¸g¬O³o­Ó¦î¦Cªº %1"
+msgstr "é€™é“æ‰‹çºŒå·²ç¶“æ˜¯é€™å€‹ä½‡åˆ—çš„ %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That principal is already a %1 for this ticket"
-msgstr "³o¹D¤âÄò¤w¸g¬O³o¥÷¥Ó½Ğ³æªº %1"
+msgstr "é€™é“æ‰‹çºŒå·²ç¶“æ˜¯é€™ä»½ç”³è«‹å–®çš„ %1"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "That principal is not a %1 for this queue"
-msgstr "³o¹D¤âÄò¤£¬O³o­Ó¦î¦Cªº %1"
+msgstr "é€™é“æ‰‹çºŒä¸æ˜¯é€™å€‹ä½‡åˆ—çš„ %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That principal is not a %1 for this ticket"
-msgstr "³o¹D¤âÄò¤£¬O³o¥÷¥Ó½Ğ³æªº %1"
+msgstr "é€™é“æ‰‹çºŒä¸æ˜¯é€™ä»½ç”³è«‹å–®çš„ %1"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That queue does not exist"
-msgstr "¦¹¦î¦C¤£¦s¦b"
+msgstr "æ­¤ä½‡åˆ—ä¸å­˜åœ¨"
 
-#: lib/RT/ACE_Overlay.pm lib/RT/ACE_Overlay.pm,D lib/blib/lib/RT/ACE_Overlay.pm
+#: lib/RT/ACE_Overlay.pm
 msgid "That user already has that right"
-msgstr "¨Ï¥ÎªÌ¤w¨ã¦³¸Ó¶µÅv­­"
+msgstr "ä½¿ç”¨è€…å·²å…·æœ‰è©²é …æ¬Šé™"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That user already owns that ticket"
-msgstr "¸Ó¨Ï¥ÎªÌ¤w¸g©Ó¿ì³o¥÷¥Ó½Ğ³æ"
+msgstr "è©²ä½¿ç”¨è€…å·²ç¶“æ‰¿è¾¦é€™ä»½ç”³è«‹å–®"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That user does not exist"
-msgstr "¨Ï¥ÎªÌ¤£¦s¦b"
+msgstr "ä½¿ç”¨è€…ä¸å­˜åœ¨"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "That user is already privileged"
-msgstr "³o¦W¨Ï¥ÎªÌ¤w¸g¬O¨ãÅv­­¸s²Õªº¨Ï¥ÎªÌ"
+msgstr "é€™åä½¿ç”¨è€…å·²ç¶“æ˜¯å…·æ¬Šé™ç¾¤çµ„çš„ä½¿ç”¨è€…"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "That user is already unprivileged"
-msgstr "³o¦W¨Ï¥ÎªÌ¬OµLÅv­­¸s²Õªº¨Ï¥ÎªÌ"
+msgstr "é€™åä½¿ç”¨è€…æ˜¯ç„¡æ¬Šé™ç¾¤çµ„çš„ä½¿ç”¨è€…"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "That user is now privileged"
-msgstr "¨Ï¥ÎªÌ¥[¤J¨ãÅv­­¸s²Õ§¹¦¨"
+msgstr "ä½¿ç”¨è€…åŠ å…¥å…·æ¬Šé™ç¾¤çµ„å®Œæˆ"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "That user is now unprivilegedileged"
-msgstr "¨Ï¥ÎªÌ¥[¤JµLÅv­­¸s²Õ§¹¦¨"
+msgstr "ä½¿ç”¨è€…åŠ å…¥ç„¡æ¬Šé™ç¾¤çµ„å®Œæˆ"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "That user may not own tickets in that queue"
-msgstr "¨Ï¥ÎªÌ¥i¯à¨S¦³©Ó¿ì¦î¦C¸Ìªº¥Ó½Ğ³æ"
+msgstr "ä½¿ç”¨è€…å¯èƒ½æ²’æœ‰æ‰¿è¾¦ä½‡åˆ—è£¡çš„ç”³è«‹å–®"
 
-#: lib/RT/Link_Overlay.pm lib/RT/Link_Overlay.pm,D lib/blib/lib/RT/Link_Overlay.pm
+#: lib/RT/Link_Overlay.pm
 msgid "That's not a numerical id"
-msgstr "³o¤£¬O¤@­Ó¼Æ¦r½s¸¹"
+msgstr "é€™ä¸æ˜¯ä¸€å€‹æ•¸å­—ç·¨è™Ÿ"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/ShowSummary html/Ticket/Elements/ShowSummary,D
+#: html/Ticket/Create.html html/Ticket/Elements/ShowSummary
 msgid "The Basics"
-msgstr "°ò¥»¸ê°T"
+msgstr "åŸºæœ¬è³‡è¨Š"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "The comment has been recorded"
-msgstr "µû½×¤w³Q¬ö¿ı"
+msgstr "è©•è«–å·²è¢«ç´€éŒ„"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate bin/enhanced-mailgate,D bin/enhanced-mailgate,D bin/rt-commit-handler bin/rt-commit-handler bin/rt-commit-handler,D bin/rt-commit-handler,D
+#: bin/enhanced-mailgate bin/enhanced-mailgate bin/rt-commit-handler bin/rt-commit-handler
 msgid "The following commands were not proccessed:\\n\\n"
-msgstr "¥H¤U©R¥O¥¼³Q°õ¦æ¡G\\n\\n"
+msgstr "ä»¥ä¸‹å‘½ä»¤æœªè¢«åŸ·è¡Œï¼š\\n\\n"
 
-#: html/Admin/Elements/EditUserComments html/Admin/Elements/EditUserComments,D
+#:
+msgid "The new value has been set."
+msgstr "æ–°çš„æ¬„ä½å€¼è¨­å®šå®Œæˆã€‚"
+
+#: html/Admin/Elements/EditUserComments
 msgid "These comments aren't generally visible to the user"
-msgstr "¸Ó¨Ï¥ÎªÌ¤£·|¬İ¨£³o¨Çµû½×"
+msgstr "è©²ä½¿ç”¨è€…ä¸æœƒçœ‹è¦‹é€™äº›è©•è«–"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "This ticket %1 %2 (%3)\\n"
-msgstr "¥Ó½Ğ³æ %1 %2 (%3)\\n"
+msgstr "ç”³è«‹å–® %1 %2 (%3)\\n"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "This transaction appears to have no content"
-msgstr "¦¹¶µ§ó°Ê³ø§i¨S¦³¤º®e"
+msgstr "æ­¤é …æ›´å‹•å ±å‘Šæ²’æœ‰å…§å®¹"
 
-#: html/Ticket/Elements/ShowRequestor html/Ticket/Elements/ShowRequestor,D
+#: html/Ticket/Elements/ShowRequestor
 msgid "This user's 25 highest priority tickets"
-msgstr "¨Ï¥ÎªÌ°e¥Xªº«e 25 ¥÷Àu¥ı³B²z¥Ó½Ğ³æ"
+msgstr "ä½¿ç”¨è€…é€å‡ºçš„å‰ 25 ä»½å„ªå…ˆè™•ç†ç”³è«‹å–®"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Thu"
-msgstr ""
+msgstr "æ˜ŸæœŸå››"
 
-#: lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Thu."
-msgstr ""
+msgstr "æ˜ŸæœŸå››"
 
-#: html/Ticket/Display.html html/Ticket/Display.html,D
+#: html/Ticket/Display.html
 msgid "Ticket # %1  %2"
-msgstr "¥Ó½Ğ³æ # %1 %2"
+msgstr "ç”³è«‹å–® # %1 %2"
 
 #:
 msgid "Ticket # %1 Jumbo update: %2"
-msgstr "§ó·s¥Ó½Ğ³æ # %1 ªº¥ş³¡¸ê°T¡G%2"
+msgstr "æ›´æ–°ç”³è«‹å–® # %1 çš„å…¨éƒ¨è³‡è¨Šï¼š%2"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "§ó·s¥Ó½Ğ³æ #%1 ªº¥ş³¡¸ê°T¡G%2"
+msgstr "æ›´æ–°ç”³è«‹å–® #%1 çš„å…¨éƒ¨è³‡è¨Šï¼š%2"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/enhanced-mailgate bin/rt-commit-handler
 msgid "Ticket %1 loaded\\n"
-msgstr "¸ü¤J¥Ó½Ğ³æ %1\\n"
+msgstr "è¼‰å…¥ç”³è«‹å–® %1\\n"
 
-#: html/Ticket/History.html html/Ticket/History.html,D
+#: html/Ticket/History.html
 msgid "Ticket History # %1 %2"
-msgstr "¥Ó½Ğ³æ³B²z¬ö¿ı # %1 %2"
+msgstr "ç”³è«‹å–®è™•ç†ç´€éŒ„ # %1 %2"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "Ticket Id"
-msgstr "¥Ó½Ğ³æ½s¸¹"
+msgstr "ç”³è«‹å–®ç·¨è™Ÿ"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: html/Search/PickRestriction lib/RT/Tickets_Overlay.pm
 msgid "Ticket content"
-msgstr "¥Ó½Ğ³æ¤º®e"
+msgstr "ç”³è«‹å–®å…§å®¹"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm
 msgid "Ticket content type"
-msgstr "¥Ó½Ğ³æ¤º®eÃş§O"
+msgstr "ç”³è«‹å–®å…§å®¹é¡åˆ¥"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm
 msgid "Ticket could not be created due to an internal error"
-msgstr "µLªk«Ø¥ß¥Ó½Ğ³æ¡A¤º³¡¿ù»~¡C"
+msgstr "ç„¡æ³•å»ºç«‹ç”³è«‹å–®ï¼Œå…§éƒ¨éŒ¯èª¤ã€‚"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Ticket created"
-msgstr "¥Ó½Ğ³æ«Ø¥ß§¹¦¨"
+msgstr "ç”³è«‹å–®å»ºç«‹å®Œæˆ"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "Ticket creation failed"
-msgstr "¥Ó½Ğ³æ«Ø¥ß¥¢±Ñ"
+msgstr "ç”³è«‹å–®å»ºç«‹å¤±æ•—"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Ticket killed"
-msgstr "¥Ó½Ğ³æ§R°£§¹¦¨"
+msgstr "ç”³è«‹å–®åˆªé™¤å®Œæˆ"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "Ticket watchers"
-msgstr "¥Ó½Ğ³æµø¹î­û"
+msgstr "ç”³è«‹å–®è¦–å¯Ÿå“¡"
 
-#: html/Elements/ViewUser html/Elements/ViewUser,D
+#: html/Elements/ViewUser
 msgid "Tickets from %1"
-msgstr "%1 ªº¥Ó½Ğ³æ"
+msgstr "%1 çš„ç”³è«‹å–®"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditBasics
 msgid "Time Left"
-msgstr "³Ñ¾l®É¶¡"
+msgstr "å‰©é¤˜æ™‚é–“"
 
-#: html/Ticket/Create.html html/Ticket/Create.html,D html/Ticket/Elements/EditBasics html/Ticket/Elements/EditBasics,D
+#: html/Ticket/Create.html html/Ticket/Elements/EditBasics
 msgid "Time Worked"
-msgstr "³B²z®É¶¡"
+msgstr "è™•ç†æ™‚é–“"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm
 msgid "Time left"
-msgstr "³Ñ¾l®É¶¡"
+msgstr "å‰©é¤˜æ™‚é–“"
 
-#: html/Elements/Footer html/Elements/Footer,D
+#: html/Elements/Footer
 msgid "Time to display"
-msgstr "Åã¥Ü®É¶¡"
+msgstr "é¡¯ç¤ºæ™‚é–“"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm
 msgid "Time worked"
-msgstr "¤w³B²z®É¶¡"
+msgstr "å·²è™•ç†æ™‚é–“"
 
 #:
 msgid "TimeLeft"
-msgstr "³Ñ¾l®É¶¡"
+msgstr "å‰©é¤˜æ™‚é–“"
 
 #:
 msgid "TimeWorked"
-msgstr "¤w³B²z®É¶¡"
+msgstr "å·²è™•ç†æ™‚é–“"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "To generate a diff of this commit:"
-msgstr "²£¥Í³o¦¸§ó°Êªº®t²§ÀÉ¡G"
+msgstr "ç”¢ç”Ÿé€™æ¬¡æ›´å‹•çš„å·®ç•°æª”ï¼š"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "To generate a diff of this commit:\\n"
-msgstr "²£¥Í³o¦¸§ó°Êªº®t²§ÀÉ¡G\\n"
+msgstr "ç”¢ç”Ÿé€™æ¬¡æ›´å‹•çš„å·®ç•°æª”ï¼š\\n"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "Told"
-msgstr "§iª¾¤é´Á"
+msgstr "å‘ŠçŸ¥æ—¥æœŸ"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Transaction %1 purged"
-msgstr "²M°£§ó°Ê³ø§i %1"
+msgstr "æ¸…é™¤æ›´å‹•å ±å‘Š %1"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Transaction Created"
-msgstr "§ó°Ê³ø§i¤w«Ø¥ß"
+msgstr "æ›´å‹•å ±å‘Šå·²å»ºç«‹"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Transactions are immutable"
-msgstr "¤£¥i­×§ï§ó°Ê³ø§i"
+msgstr "ä¸å¯ä¿®æ”¹æ›´å‹•å ±å‘Š"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "Trying to delete a right: %1"
-msgstr "¸Õ¹Ï§R°£¬Y¶µÅv­­¡G%1"
+msgstr "è©¦åœ–åˆªé™¤æŸé …æ¬Šé™ï¼š%1"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Tue"
-msgstr ""
+msgstr "æ˜ŸæœŸäºŒ"
 
-#: lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Tue."
-msgstr ""
+msgstr "æ˜ŸæœŸäºŒ"
 
-#: lib/RT/Tickets_Overlay.pm lib/RT/Tickets_Overlay.pm,D html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers,D html/Ticket/Elements/AddWatchers,D lib/blib/lib/RT/Tickets_Overlay.pm
+#: lib/RT/Tickets_Overlay.pm html/Admin/Queues/CustomField.html html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers
 msgid "Type"
-msgstr "Ãş§O"
+msgstr "é¡åˆ¥"
 
-#: lib/RT/ScripCondition_Overlay.pm lib/RT/ScripCondition_Overlay.pm,D lib/blib/lib/RT/ScripCondition_Overlay.pm
+#: lib/RT/ScripCondition_Overlay.pm
 msgid "Unimplemented"
-msgstr "©|µL¹ê§@"
+msgstr "å°šç„¡å¯¦ä½œ"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Unix login"
-msgstr "Unix µn¤J±b¸¹"
+msgstr "Unix ç™»å…¥å¸³è™Ÿ"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "UnixUsername"
-msgstr "Unix µn¤J±b¸¹"
+msgstr "Unix ç™»å…¥å¸³è™Ÿ"
 
-#: lib/RT/Attachment_Overlay.pm lib/RT/Attachment_Overlay.pm,D lib/blib/lib/RT/Attachment_Overlay.pm
+#: lib/RT/Attachment_Overlay.pm
 msgid "Unknown ContentEncoding %1"
-msgstr "¤£¥i¸Ñªº¤º®e¤å¦r½s½X¤è¦¡ %1"
+msgstr "ä¸å¯è§£çš„å…§å®¹æ–‡å­—ç·¨ç¢¼æ–¹å¼ %1"
 
-#: html/Elements/SelectResultsPerPage html/Elements/SelectResultsPerPage,D
+#: html/Elements/SelectResultsPerPage
 msgid "Unlimited"
-msgstr "¥ş¼ÆÅã¥Ü"
+msgstr "å…¨æ•¸é¡¯ç¤º"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "Untaken"
-msgstr "¥¼³Q¨ü²z"
+msgstr "æœªè¢«å—ç†"
 
-#: html/Elements/MyTickets html/Elements/MyTickets,D html/Search/Bulk.html html/Search/Bulk.html,D html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Elements/MyTickets html/Search/Bulk.html html/Ticket/Update.html
 msgid "Update"
-msgstr "§ó·s"
+msgstr "æ›´æ–°"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Update ID"
-msgstr "§ó·s½s¸¹"
+msgstr "æ›´æ–°ç·¨è™Ÿ"
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/ModifyAll.html html/Ticket/Update.html
 msgid "Update Type"
-msgstr "§ó·sÃş§O"
+msgstr "æ›´æ–°é¡åˆ¥"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "Update all these tickets at once"
-msgstr "¾ã§å§ó·s¥Ó½Ğ³æ"
+msgstr "æ•´æ‰¹æ›´æ–°ç”³è«‹å–®"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Update email"
-msgstr "§ó·s¹q¤l¶l¥ó«H½c"
+msgstr "æ›´æ–°é›»å­éƒµä»¶ä¿¡ç®±"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Update name"
-msgstr "§ó·s±b¸¹"
+msgstr "æ›´æ–°å¸³è™Ÿ"
 
-#: html/Search/Bulk.html html/Search/Bulk.html,D
+#: html/Search/Bulk.html
 msgid "Update selected tickets"
-msgstr "§ó·s¿ï¾Üªº¥Ó½Ğ³æ"
+msgstr "æ›´æ–°é¸æ“‡çš„ç”³è«‹å–®"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "Update signature"
-msgstr "§ó·sÃ±³¹"
+msgstr "æ›´æ–°ç°½ç« "
 
-#: html/Ticket/ModifyAll.html html/Ticket/ModifyAll.html,D
+#: html/Ticket/ModifyAll.html
 msgid "Update ticket"
-msgstr "§ó·s¥Ó½Ğ³æ"
+msgstr "æ›´æ–°ç”³è«‹å–®"
 
-#: html/SelfService/Update.html html/SelfService/Update.html,D
+#: html/SelfService/Update.html
 msgid "Update ticket # %1"
-msgstr "§ó·s¥Ó½Ğ³æ # %1"
+msgstr "æ›´æ–°ç”³è«‹å–® # %1"
 
-#: html/SelfService/Update.html html/SelfService/Update.html,D
+#: html/SelfService/Update.html
 msgid "Update ticket #%1"
-msgstr "§ó·s¥Ó½Ğ³æ #%1"
+msgstr "æ›´æ–°ç”³è«‹å–® #%1"
 
-#: bin/rt bin/rt,D html/Ticket/Elements/ShowDates html/Ticket/Elements/ShowDates,D
+#: bin/rt html/Ticket/Elements/ShowDates
 msgid "Updated"
-msgstr "§ó·s¤é´Á"
+msgstr "æ›´æ–°æ—¥æœŸ"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "User %1 %2: %3\\n"
-msgstr "¨Ï¥ÎªÌ %1 %2¡G%3\\n"
+msgstr "ä½¿ç”¨è€… %1 %2ï¼š%3\\n"
 
-#: bin/rtadmin bin/rtadmin,D
+#: bin/rtadmin
 msgid "User %1 Password: %2\\n"
-msgstr "¨Ï¥ÎªÌ %1 ±K½X¡G%2\\n"
+msgstr "ä½¿ç”¨è€… %1 å¯†ç¢¼ï¼š%2\\n"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "User '%1' not found"
-msgstr "§ä¤£¨ì¨Ï¥ÎªÌ '%1'"
+msgstr "æ‰¾ä¸åˆ°ä½¿ç”¨è€… '%1'"
 
-#: bin/rt bin/rt,D bin/rtadmin bin/rtadmin,D
+#: bin/rt bin/rtadmin
 msgid "User '%1' not found\\n"
-msgstr "§ä¤£¨ì¨Ï¥ÎªÌ '%1'\\n"
+msgstr "æ‰¾ä¸åˆ°ä½¿ç”¨è€… '%1'\\n"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "User ID"
-msgstr "¨Ï¥ÎªÌ±b¸¹"
+msgstr "ä½¿ç”¨è€…å¸³è™Ÿ"
 
-#: html/Elements/SelectUsers html/Elements/SelectUsers,D
+#: html/Elements/SelectUsers
 msgid "User Id"
-msgstr "¨Ï¥ÎªÌ±b¸¹"
+msgstr "ä½¿ç”¨è€…å¸³è™Ÿ"
 
-#: html/Admin/Elements/GroupTabs html/Admin/Elements/GroupTabs,D html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D html/Admin/Elements/SystemTabs html/Admin/Elements/SystemTabs,D
+#: html/Admin/Elements/GroupTabs html/Admin/Elements/QueueTabs html/Admin/Elements/SystemTabs
 msgid "User Rights"
-msgstr "¨Ï¥ÎªÌÅv­­"
+msgstr "ä½¿ç”¨è€…æ¬Šé™"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "User could not be created: %1"
-msgstr "µLªk«Ø¥ß¨Ï¥ÎªÌ: %1"
+msgstr "ç„¡æ³•å»ºç«‹ä½¿ç”¨è€…: %1"
 
-#: lib/RT/User_Overlay.pm lib/RT/User_Overlay.pm,D lib/blib/lib/RT/User_Overlay.pm
+#: lib/RT/User_Overlay.pm
 msgid "User created"
-msgstr "¨Ï¥ÎªÌ«Ø¥ß§¹¦¨"
+msgstr "ä½¿ç”¨è€…å»ºç«‹å®Œæˆ"
 
-#: html/Admin/Global/GroupRights.html html/Admin/Global/GroupRights.html,D html/Admin/Queues/GroupRights.html html/Admin/Queues/GroupRights.html,D
+#: html/Admin/Global/GroupRights.html html/Admin/Queues/GroupRights.html
 msgid "User defined groups"
-msgstr "¨Ï¥ÎªÌ©w¸qªº¸s²Õ"
+msgstr "ä½¿ç”¨è€…å®šç¾©çš„ç¾¤çµ„"
 
-#: lib/RT/Transaction_Overlay.pm lib/RT/Transaction_Overlay.pm,D lib/blib/lib/RT/Transaction_Overlay.pm
+#: lib/RT/Transaction_Overlay.pm
 msgid "User notified"
-msgstr "¤w³qª¾¨Ï¥ÎªÌ"
+msgstr "å·²é€šçŸ¥ä½¿ç”¨è€…"
 
-#: html/Admin/Users/Prefs.html html/Admin/Users/Prefs.html,D
+#: html/Admin/Users/Prefs.html
 msgid "User view"
-msgstr "¨Ï¥ÎªÌ¨p¤H¸ê®Æ"
+msgstr "ä½¿ç”¨è€…ç§äººè³‡æ–™"
 
-#: html/Elements/Login html/Elements/Login,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D html/Ticket/Elements/AddWatchers html/Ticket/Elements/AddWatchers,D
+#: html/Elements/Login html/Admin/Users/Modify.html html/Ticket/Elements/AddWatchers
 msgid "Username"
-msgstr "±b¸¹"
+msgstr "å¸³è™Ÿ"
 
-#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/SelectNewGroupMembers,D html/Admin/Elements/Tabs html/Admin/Elements/Tabs,D html/Admin/Groups/Members.html html/Admin/Groups/Members.html,D html/User/Groups/Members.html html/User/Groups/Members.html,D
+#: html/Admin/Elements/SelectNewGroupMembers html/Admin/Elements/Tabs html/Admin/Groups/Members.html html/User/Groups/Members.html
 msgid "Users"
-msgstr "¨Ï¥ÎªÌ"
+msgstr "ä½¿ç”¨è€…"
 
-#: html/Admin/Users/index.html html/Admin/Users/index.html,D
+#: html/Admin/Users/index.html
 msgid "Users matching search criteria"
-msgstr "²Å¦X·j´M±ø¥óªº¨Ï¥ÎªÌ"
+msgstr "ç¬¦åˆæœå°‹æ¢ä»¶çš„ä½¿ç”¨è€…"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "ValueOfQueue"
-msgstr "¿ï¾Ü¦î¦C"
+msgstr "é¸æ“‡ä½‡åˆ—"
 
-#: html/Admin/Queues/CustomField.html html/Admin/Queues/CustomField.html,D
+#: html/Admin/Queues/CustomField.html
 msgid "Values"
-msgstr "­È"
+msgstr "å€¼"
 
 #:
 msgid "Watcher loaded"
-msgstr "¸ü¤Jµø¹î­û"
+msgstr "è¼‰å…¥è¦–å¯Ÿå“¡"
 
-#: html/Admin/Elements/QueueTabs html/Admin/Elements/QueueTabs,D
+#: html/Admin/Elements/QueueTabs
 msgid "Watchers"
-msgstr "µø¹î­û"
+msgstr "è¦–å¯Ÿå“¡"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "WebEncoding"
-msgstr "ºô­¶¤å¦r½s½X¤è¦¡"
+msgstr "ç¶²é æ–‡å­—ç·¨ç¢¼æ–¹å¼"
 
-#: lib/RT/Date.pm,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "Wed"
-msgstr ""
+msgstr "æ˜ŸæœŸä¸‰"
 
-#: lib/RT/Date.pm lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "Wed."
-msgstr ""
+msgstr "æ˜ŸæœŸä¸‰"
 
-#: html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Users/Modify.html
 msgid "Work"
-msgstr "¤½¥q"
+msgstr "å…¬å¸"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser
 msgid "WorkPhone"
-msgstr "¤½¥q¹q¸Ü"
+msgstr "å…¬å¸é›»è©±"
 
-#: bin/rt bin/rt,D html/SelfService/Display.html html/SelfService/Display.html,D html/Ticket/Update.html html/Ticket/Update.html,D html/Ticket/Elements/ShowBasics html/Ticket/Elements/ShowBasics,D
+#: bin/rt html/SelfService/Display.html html/Ticket/Update.html html/Ticket/Elements/ShowBasics
 msgid "Worked"
-msgstr "³B²z®É¶¡"
+msgstr "è™•ç†æ™‚é–“"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "You already own this ticket"
-msgstr "±z¤w¬O³o¥÷¥Ó½Ğ³æªº©Ó¿ì¤H"
+msgstr "æ‚¨å·²æ˜¯é€™ä»½ç”³è«‹å–®çš„æ‰¿è¾¦äºº"
 
-#: html/autohandler html/autohandler,D
+#: html/autohandler
 msgid "You are not an authorized user"
-msgstr "±z¤£¬O³Q±ÂÅvªº¨Ï¥ÎªÌ"
+msgstr "æ‚¨ä¸æ˜¯è¢«æˆæ¬Šçš„ä½¿ç”¨è€…"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr "¬é¯à­«·s«ü¬£±z©Ò©Ó¿ì©Î¬O¨S¦³©Ó¿ì¤Hªº¥Ó½Ğ³æ"
+msgstr "ç¥‡èƒ½é‡æ–°æŒ‡æ´¾æ‚¨æ‰€æ‰¿è¾¦æˆ–æ˜¯æ²’æœ‰æ‰¿è¾¦äººçš„ç”³è«‹å–®"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "You don't have permission to view that ticket.\\n"
-msgstr "±z¨S¦³¬İ¨º¥÷¥Ó½Ğ³æªºÅv­­¡C\\n"
+msgstr "æ‚¨æ²’æœ‰çœ‹é‚£ä»½ç”³è«‹å–®çš„æ¬Šé™ã€‚\\n"
 
-#: docs/design_docs/string-extraction-guide.txt docs/design_docs/string-extraction-guide.txt,D
+#: docs/design_docs/string-extraction-guide.txt
 msgid "You found %1 tickets in queue %2"
-msgstr "±z·|¦b¦î¦C %2 §ä¨ì %1 ªº¥Ó½Ğ³æ"
+msgstr "æ‚¨æœƒåœ¨ä½‡åˆ— %2 æ‰¾åˆ° %1 çš„ç”³è«‹å–®"
 
-#: html/NoAuth/Logout.html html/NoAuth/Logout.html,D
+#: html/NoAuth/Logout.html
 msgid "You have been logged out of RT."
-msgstr "±z¤wµn¥X RT¡C"
+msgstr "æ‚¨å·²ç™»å‡º RTã€‚"
 
-#: html/SelfService/Display.html html/SelfService/Display.html,D
+#: html/SelfService/Display.html
 msgid "You have no permission to create tickets in that queue."
-msgstr "±z¨S¦³¦b¸Ó¦î¦C«Ø¥ß¥Ó½Ğ³æªºÅv­­"
+msgstr "æ‚¨æ²’æœ‰åœ¨è©²ä½‡åˆ—å»ºç«‹ç”³è«‹å–®çš„æ¬Šé™ã€‚"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "You may not create requests in that queue."
-msgstr "±z¤£¯à¦b¸Ó¦î¦C¤¤´£¥X¥Ó½Ğ¡C"
+msgstr "æ‚¨ä¸èƒ½åœ¨è©²ä½‡åˆ—ä¸­æå‡ºç”³è«‹ã€‚"
 
-#: html/NoAuth/Logout.html html/NoAuth/Logout.html,D
+#: html/NoAuth/Logout.html
 msgid "You're welcome to login again"
-msgstr "Åwªï¤U¦¸¦A¨Ó"
+msgstr "æ­¡è¿ä¸‹æ¬¡å†ä¾†"
 
-#: html/SelfService/Elements/MyRequests html/SelfService/Elements/MyRequests,D
+#: html/SelfService/Elements/MyRequests
 msgid "Your %1 requests"
-msgstr "±z´£¥Xªº %1 ¥Ó½Ğ"
+msgstr "æ‚¨æå‡ºçš„ %1 ç”³è«‹"
 
-#: bin/enhanced-mailgate bin/enhanced-mailgate,D bin/rt-mailgate bin/rt-mailgate,D
+#: bin/enhanced-mailgate bin/rt-mailgate
 msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
-msgstr "RT ºŞ²z­û¥i¯à³]¿ù¤F¥Ñ RT ±H¥Xªº¶l¥ó¦¬¥ó¤H¼ĞÀYÀÉ"
+msgstr "RT ç®¡ç†å“¡å¯èƒ½è¨­éŒ¯äº†ç”± RT å¯„å‡ºçš„éƒµä»¶æ”¶ä»¶äººæ¨™é ­æª”"
 
-#: html/autohandler html/autohandler html/autohandler,D html/autohandler,D
+#: html/autohandler html/autohandler
 msgid "Your username or password is incorrect"
-msgstr "±zªº±b¸¹©Î±K½X¦³»~"
+msgstr "æ‚¨çš„å¸³è™Ÿæˆ–å¯†ç¢¼æœ‰èª¤"
 
-#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyTemplate,D html/Admin/Elements/ModifyUser html/Admin/Elements/ModifyUser,D html/Admin/Users/Modify.html html/Admin/Users/Modify.html,D
+#: html/Admin/Elements/ModifyTemplate html/Admin/Elements/ModifyUser html/Admin/Users/Modify.html
 msgid "Zip"
-msgstr "¶l»¼°Ï¸¹"
+msgstr "éƒµéå€è™Ÿ"
 
-#: html/Elements/MyRequests html/Elements/MyRequests,D html/Elements/MyTickets html/Elements/MyTickets,D
+#:
 msgid "[no subject]"
-msgstr "[¨S¦³¥DÃD]"
+msgstr "[æ²’æœ‰ä¸»é¡Œ]"
 
-#: lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#:
 msgid "ago"
-msgstr "¹L´Á"
+msgstr "éæœŸ"
 
-#: html/Elements/SelectMatch html/Elements/SelectMatch,D
+#: html/Elements/SelectMatch
 msgid "contains"
-msgstr "¥]§t"
+msgstr "åŒ…å«"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "correspondence (probably) not sent"
-msgstr "¥Ó½Ğ³æ¡]¥i¯à¡^¥¼³Q°e¥X"
+msgstr "ç”³è«‹å–®ï¼ˆå¯èƒ½ï¼‰æœªè¢«é€å‡º"
 
-#: lib/RT/Ticket_Overlay.pm lib/RT/Ticket_Overlay.pm,D lib/blib/lib/RT/Ticket_Overlay.pm
+#: lib/RT/Ticket_Overlay.pm
 msgid "correspondence sent"
-msgstr "¥Ó½Ğ³æ¤w°e¥X"
+msgstr "ç”³è«‹å–®å·²é€å‡º"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ html/Admin/Elements/ModifyQueue html/Admin/Elements/ModifyQueue,D html/Admin/Queues/Modify.html html/Admin/Queues/Modify.html,D lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm html/Admin/Elements/ModifyQueue html/Admin/Queues/Modify.html
 msgid "days"
-msgstr "¤Ñ"
+msgstr "å¤©"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "dead"
-msgstr ""
+msgstr "æ‹’çµ•è™•ç†"
 
-#: html/Search/Listing.html html/Search/Listing.html,D
+#: html/Search/Listing.html
 msgid "delete"
-msgstr ""
+msgstr "åˆªé™¤"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "does not match"
-msgstr "¤£²Å¦X"
+msgstr "ä¸ç¬¦åˆ"
 
-#: html/Elements/SelectMatch html/Elements/SelectMatch,D
+#: html/Elements/SelectMatch
 msgid "doesn't contain"
-msgstr "¤£¥]§t"
+msgstr "ä¸åŒ…å«"
 
-#: html/Elements/SelectEqualityOperator html/Elements/SelectEqualityOperator,D
+#: html/Elements/SelectEqualityOperator
 msgid "equal to"
-msgstr "µ¥©ó"
+msgstr "ç­‰æ–¼"
 
 #:
 msgid "false"
-msgstr "°²"
+msgstr "å‡"
 
-#: html/Elements/SelectEqualityOperator html/Elements/SelectEqualityOperator,D
+#: html/Elements/SelectEqualityOperator
 msgid "greater than"
-msgstr "¤j©ó"
+msgstr "å¤§æ–¼"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "hours"
-msgstr "¤p®É"
+msgstr "å°æ™‚"
 
-#: bin/rt bin/rt,D
+#: bin/rt
 msgid "id"
-msgstr "½s¸¹"
+msgstr "ç·¨è™Ÿ"
 
-#: html/Elements/SelectBoolean html/Elements/SelectBoolean,D html/Elements/SelectMatch html/Elements/SelectMatch,D html/Search/PickRestriction html/Search/PickRestriction html/Search/PickRestriction,D html/Search/PickRestriction,D
+#: html/Elements/SelectBoolean html/Elements/SelectMatch html/Search/PickRestriction html/Search/PickRestriction
 msgid "is"
-msgstr "¬O"
+msgstr "æ˜¯"
 
-#: html/Elements/SelectBoolean html/Elements/SelectBoolean,D html/Elements/SelectMatch html/Elements/SelectMatch,D html/Search/PickRestriction html/Search/PickRestriction html/Search/PickRestriction,D html/Search/PickRestriction,D
+#: html/Elements/SelectBoolean html/Elements/SelectMatch html/Search/PickRestriction html/Search/PickRestriction
 msgid "isn't"
-msgstr "¤£¬O"
+msgstr "ä¸æ˜¯"
 
-#: html/Elements/SelectEqualityOperator html/Elements/SelectEqualityOperator,D
+#: html/Elements/SelectEqualityOperator
 msgid "less than"
-msgstr "¤p©ó"
+msgstr "å°æ–¼"
 
-#: html/Search/PickRestriction html/Search/PickRestriction,D
+#: html/Search/PickRestriction
 msgid "matches"
-msgstr "²Å¦X"
+msgstr "ç¬¦åˆ"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "min"
-msgstr "¤À"
+msgstr "åˆ†"
 
-#: html/Ticket/Update.html html/Ticket/Update.html,D
+#: html/Ticket/Update.html
 msgid "minutes"
-msgstr "¤ÀÄÁ"
+msgstr "åˆ†é˜"
 
-#: bin/rt-commit-handler bin/rt-commit-handler,D
+#: bin/rt-commit-handler
 msgid "modifications\\n\\n"
-msgstr "­×§ï\\n\\n"
+msgstr "ä¿®æ”¹\\n\\n"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "months"
-msgstr "¤ë"
+msgstr "æœˆ"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "new"
-msgstr ""
+msgstr "æ–°å»ºç«‹"
 
-#: html/Ticket/Elements/EditWatchers html/Ticket/Elements/EditWatchers,D
+#: html/Ticket/Elements/EditWatchers
 msgid "none"
-msgstr ""
+msgstr "ç„¡"
 
-#: html/Elements/SelectEqualityOperator html/Elements/SelectEqualityOperator,D
+#: html/Elements/SelectEqualityOperator
 msgid "not equal to"
-msgstr "¤£µ¥©ó"
+msgstr "ä¸ç­‰æ–¼"
 
 #:
 msgid "notlike"
-msgstr "¤£²Å¦X"
+msgstr "ä¸ç¬¦åˆ"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "open"
-msgstr ""
+msgstr "é–‹å•Ÿ"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "resolved"
-msgstr ""
+msgstr "å·²è§£æ±º"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "sec"
-msgstr "¬í"
+msgstr "ç§’"
 
-#: lib/RT/Queue_Overlay.pm lib/RT/Queue_Overlay.pm,D lib/blib/lib/RT/Queue_Overlay.pm
+#: lib/RT/Queue_Overlay.pm
 msgid "stalled"
-msgstr ""
+msgstr "å»¶å®•"
 
-#: html/Elements/Error html/Elements/Error,D html/SelfService/Error.html html/SelfService/Error.html,D
+#: html/Elements/Error html/SelfService/Error.html
 msgid "the calling component did not specify why"
-msgstr "©I¥s¤¸¥ó¥¼«ü©ú­ì¦]"
+msgstr "å‘¼å«å…ƒä»¶æœªæŒ‡æ˜åŸå› "
 
 #:
 msgid "true"
-msgstr "¯u"
+msgstr "çœŸ"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "weeks"
-msgstr "¶g"
+msgstr "é€±"
 
-#: html/Admin/Global/Scrips.html html/Admin/Global/Scrips.html,D
+#: html/Admin/Global/Scrips.html
 msgid "with template %1"
-msgstr "¨Ï¥Î½d¥»%1"
+msgstr "ä½¿ç”¨ç¯„æœ¬%1"
 
-#: lib/RT/Date.pm lib/RT/Date.pm,D lib/RT/Date.pm,D lib/RT/Date.pm~ lib/blib/lib/RT/Date.pm lib/blib/lib/RT/Date.pm~
+#: lib/RT/Date.pm
 msgid "years"
-msgstr "¦~"
+msgstr "å¹´"
 

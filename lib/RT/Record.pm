@@ -389,4 +389,26 @@ sub CurrentUser {
 
 # }}}
 
+
+sub __Value {
+    my $self = shift;
+    my $field = shift;
+
+    my $value = $self->SUPER::__Value($field);
+
+    if ($] >= 5.007003 and eval { require Encode; 1 }) {
+	return Encode::decode_utf8($value);
+    }
+    elsif ($] >= 5.006001) {
+	return pack('U0A*', $value);
+    }
+    elsif ($] >= 5.006) {
+	return $value;
+    }
+    else {
+	return $value;
+    }
+}
+
+
 1;
