@@ -47,7 +47,7 @@ unless ($KeywordSelects->LimitToGlobals()) {
 if ($ARGS{'KeywordSelect-new-Name'}) {
     my $NewKeywordSelect = new RT::KeywordSelect($session{'CurrentUser'});
     
-    my $retval = $NewKeywordSelect->Create ( Keyword => $ARGS{'KeywordSelect-new-Keyword'},
+    my ($retval, $msg) = $NewKeywordSelect->Create ( Keyword => $ARGS{'KeywordSelect-new-Keyword'},
 					     ObjectField => 'Queue',
 					     ObjectType => 'Ticket',
 					     ObjectValue => 0,
@@ -55,14 +55,10 @@ if ($ARGS{'KeywordSelect-new-Name'}) {
 					     Single => $ARGS{'KeywordSelect-new-Single'},
 					     Depth => $ARGS{'KeywordSelect-new-Depth'}
 					   );
-    if (defined $retval) {
-	push @actions, "KeywordSelect added.";
-	}
-    else {
-	push @actions, "KeywordSelect could not be added.";
-    }
+	push (@actions, $msg);
 }
 # }}}
+
 # {{{ if we're trying to delete the keywordselect
 foreach my $key (keys %ARGS) {
     if ($key =~ /^KeywordSelect-(\d+)-Delete$/) {

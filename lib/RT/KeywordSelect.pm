@@ -202,20 +202,25 @@ sub Create {
 
     unless ($Keyword->Id) {
 	$RT::Logger->debug("Keyword ".$args{'Keyword'} ." not found\n");
-	return(undef, 'Keyword not found');
+	return(0, 'Keyword not found');
     }
     
     $args{'Name'} = $Keyword->Name if  (!$args{'Name'});
     
-    return($self->SUPER::Create( Name => $args{'Name'},
-				 Keyword => $Keyword->Id,
-				 Single => $args{'Single'},
-				 Depth => $args{'Depth'},
-				 ObjectType => $args{'ObjectType'},
-				 ObjectField => $args{'ObjectField'},
-				 ObjectValue => $args{'ObjectValue'}));
-    
-    
+    my $val = $self->SUPER::Create( Name => $args{'Name'},
+				    Keyword => $Keyword->Id,
+				    Single => $args{'Single'},
+				    Depth => $args{'Depth'},
+				    ObjectType => $args{'ObjectType'},
+				    ObjectField => $args{'ObjectField'},
+				    ObjectValue => $args{'ObjectValue'});
+    if ($val) {
+	return ($val, 'KeywordSelect Created');
+    }
+    else {
+	return (0, 'System error. KeywordSelect not created');
+	
+    }
 }
 # }}}
 
@@ -225,6 +230,28 @@ sub Delete {
     my $self = shift;
     
     return (0, 'Deleting this object would break referential integrity.');
+}
+
+# }}}
+
+
+# {{{ sub SetDisabled
+
+=head2 Sub SetDisabled
+
+Toggles the KeywordSelect's disabled flag.
+
+
+=cut 
+
+sub SetDisabled {
+    my $self = shift;
+    my $value = shift;
+
+    unless ($self->CurrentUserHasRight('AdminKeywordSelects')) {
+	return (0, "Permission denied");
+    }
+    return($self->_Set(Field => 'Disabled', Value => $value));
 }
 
 # }}}
@@ -275,13 +302,13 @@ sub _Set {
     my $self = shift;
 
     unless ($self->CurrentUserHasRight('AdminKeywordSelects')) {
-        $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
-	return (undef);
+	return (0, "Permission denied");
     }
     
     return ($self->SUPER::_Set(@_));
 
 }
+
 # }}}
 
 
