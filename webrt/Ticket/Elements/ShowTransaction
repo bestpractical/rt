@@ -46,7 +46,7 @@ $TimeTaken,
 This is a multipart message
 % } else {
 	
-Attachment: <A HREF="Attachment/<%$Transaction->TicketObj->id%>/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>"><%$message->Filename%></a>
+Attachment: <A HREF="Attachment/<%$Transaction->TicketObj->id%>/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>">Download <%$message->Filename%></a> <% int(length($message->Content())/1024)%>k<br>
 
 %  }
 % }
