@@ -67,6 +67,7 @@ CREATE TABLE Principals (
         id INTEGER  AUTO_INCREMENT not null,
         PrincipalType VARCHAR(16) not null,
         ObjectId integer, # foreign key to Users or Groups, depending
+        Disabled int2 NOT NULL DEFAULT 0 ,
         PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
@@ -186,10 +187,15 @@ create table CachedGroupMembers (
         id int auto_increment,
         GroupId int, # foreign key to Principals
         MemberId int, # foreign key to Principals
-        Via int, #foreign key to g_m_u
+        Via int, #foreign key to CachedGroupMembers. (may point to $self->id)
         ImmediateParentId int, #foreign key to prinicpals.         
                                # this points to the group that the member is
                                # a member of, for ease of deletes.
+        Disabled int2 NOT NULL DEFAULT 0 , # if this cached group member is a member of this group by way of a disabled
+                                           # group or this group is disabled, this will be set to 1
+                                           # this allows us to not find members of disabled subgroups when listing off
+                                           # group members recursively.
+                                           # Also, this allows us to have the ACL system elide members of disabled groups
         PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
@@ -232,7 +238,6 @@ CREATE TABLE Users (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 

@@ -66,7 +66,8 @@ CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
 CREATE TABLE Principals (
         id INTEGER   not null,
         PrincipalType VARCHAR(16) not null,
-        ObjectId integer 
+        ObjectId integer,
+        Disabled int2 NOT NULL DEFAULT 0 
         
 ) ;
 
@@ -180,14 +181,20 @@ CREATE TABLE GroupMembers (
 
 --- }}}
 
---- {{{ GroupMembersCache
+--- {{{ CachedGroupMembers
 
 create table CachedGroupMembers (
         id int ,
         GroupId int, 
         MemberId int, 
         Via int, 
-        ImmediateParentId int
+        ImmediateParentId int,
+        Disabled int2 NOT NULL DEFAULT 0  # if this cached group member is a member of this group by way of a disabled
+                                           # group or this group is disabled, this will be set to 1
+                                           # this allows us to not find members of disabled subgroups when listing off
+                                           # group members recursively.
+                                           # Also, this allows us to have the ACL system elide members of disabled groups
+
         
 ) ;
 
@@ -229,8 +236,7 @@ CREATE TABLE Users (
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
-  LastUpdated DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 
+  LastUpdated DATETIME NULL  
   
 ) ;
 

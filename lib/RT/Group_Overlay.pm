@@ -614,6 +614,84 @@ sub Delete {
 
 # }}}
 
+=head2 SetDisabled BOOL
+
+If passed a positive value, this group will be disabled. No rights it commutes or grants will be honored.
+It will not appear in most group listings.
+
+This routine finds all the cached group members that are members of this group  (recursively) and disables them.
+=cut 
+
+ # }}}
+
+ sub SetDisabled {
+     my $self = shift;
+     my $val = shift;
+    if ($self->Domain eq 'Personal') {
+   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
+    		unless ( $self->CurrentUserHasRight('AdminOwnPersonalGroups')) {
+        		return ( 0, $self->loc('Permission Denied') );
+    		}
+    	} else {
+        	unless ( $self->CurrentUserHasRight('AdminAllPersonalGroups') ) {
+   	    		 return ( 0, $self->loc('Permission Denied') );
+    		}
+    	}
+	}
+	else {
+        unless ( $self->CurrentUserHasRight('AdminGroup') ) {
+                 return (0, $self->loc('Permission Denied'));
+    }
+    }
+    $RT::Handle->BeginTransaction();
+    $self->PrincipalObj->SetDisabled($val);
+
+
+
+
+    # Find all occurrences of this member as a member of this group
+    # in the cache and nuke them, recursively.
+
+    # The following code will delete all Cached Group members
+    # where this member's group is _not_ the primary group 
+    # (Ie if we're deleting C as a member of B, and B happens to be 
+    # a member of A, will delete C as a member of A without touching
+    # C as a member of B
+
+    my $cached_submembers = RT::CachedGroupMembers->new( $self->CurrentUser );
+
+    $cached_submembers->Limit( FIELD    => 'ImmediateParentId', OPERATOR => '=', VALUE    => $self->Id);
+
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
+    # TODO what about the groups key cache?
+    RT::User->_InvalidateACLCache();
+
+
+
+    while ( my $item = $cached_submembers->Next() ) {
+        my $del_err = $item->SetDisabled($val);
+        unless ($del_err) {
+            $RT::Handle->Rollback();
+            $RT::Logger->warning("Couldn't disable cached group submember ".$item->Id);
+            return (undef);
+        }
+    }
+
+    $RT::Handle->Commit();
+    return (1, $self->loc("Succeeded"));
+
+}
+
+# }}}
+
+
+
+sub Disabled {
+    my $self = shift;
+    $self->PrincipalObj->Disabled(@_);
+}
+
+
 # {{{ DeepMembersObj
 
 =head2 DeepMembersObj
@@ -906,7 +984,9 @@ sub HasMemberRecursively {
 
     my $member_obj = RT::CachedGroupMember->new( $self->CurrentUser );
     $member_obj->LoadByCols( MemberId => $principal->Id,
-                             GroupId => $self->PrincipalId );
+                             GroupId => $self->PrincipalId ,
+                             Disabled => 0
+                             );
 
     #If we have a member object
     if ( defined $member_obj->id ) {

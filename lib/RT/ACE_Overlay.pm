@@ -22,6 +22,7 @@
 # 
 # 
 # END LICENSE BLOCK
+
 =head1 SYNOPSIS
 
   use RT::ACE;
@@ -54,10 +55,8 @@ use vars qw (%SCOPES
   %LOWERCASERIGHTNAMES
 );
 
-%SCOPES = (
-	   System => 'System-level right',
-	   Queue => 'Queue-level right'
-	  );
+%SCOPES = ( System => 'System-level right',
+            Queue  => 'Queue-level right' );
 
 # {{{ Descriptions of rights
 
@@ -65,60 +64,65 @@ use vars qw (%SCOPES
 # to real people or groups
 
 # XXX TODO Can't localize these outside of having an object around.
-%QUEUERIGHTS = ( 
-		SeeQueue => 'Can this principal see this queue',					# loc_pair
-		AdminQueue => 'Create, delete and modify queues', 					# loc_pair
-		ShowACL => 'Display Access Control List',							# loc_pair
-		ModifyACL => 'Modify Access Control List',							# loc_pair
-		ModifyQueueWatchers => 'Modify the queue watchers',					# loc_pair
-        AdminCustomFields => 'Create, delete and modify custom fields',		# loc_pair
-        ModifyTemplate => 'Modify Scrip templates for this queue',			# loc_pair
-		ShowTemplate => 'Display Scrip templates for this queue',			# loc_pair
+%QUEUERIGHTS = (
+    SeeQueue            => 'Can this principal see this queue',       # loc_pair
+    AdminQueue          => 'Create, delete and modify queues',        # loc_pair
+    ShowACL             => 'Display Access Control List',             # loc_pair
+    ModifyACL           => 'Modify Access Control List',              # loc_pair
+    ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
+    AdminCustomFields   => 'Create, delete and modify custom fields', # loc_pair
+    ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
+    ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
 
-		ModifyScrips => 'Modify Scrips for this queue',						# loc_pair
-		ShowScrips => 'Display Scrips for this queue',						# loc_pair
+    ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
+    ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
 
-		ShowTicket => 'Show ticket summaries',								# loc_pair
-		ShowTicketComments => 'Show ticket private commentary',				# loc_pair
+    ShowTicket         => 'Show ticket summaries',                    # loc_pair
+    ShowTicketComments => 'Show ticket private commentary',           # loc_pair
 
-		Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',		# loc_pair
-		WatchAsAdminCc => 'Sign up as a ticket or queue AdminCc', 			# loc_pair
-		CreateTicket => 'Create tickets in this queue',						# loc_pair
-		ReplyToTicket => 'Reply to tickets',								# loc_pair
-		CommentOnTicket => 'Comment on tickets',							# loc_pair
-		OwnTicket => 'Own tickets',											# loc_pair
-		ModifyTicket => 'Modify tickets',									# loc_pair
-		DeleteTicket => 'Delete tickets'									# loc_pair
+    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
+    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
+    CreateTicket    => 'Create tickets in this queue',                # loc_pair
+    ReplyToTicket   => 'Reply to tickets',                            # loc_pair
+    CommentOnTicket => 'Comment on tickets',                          # loc_pair
+    OwnTicket       => 'Own tickets',                                 # loc_pair
+    ModifyTicket    => 'Modify tickets',                              # loc_pair
+    DeleteTicket    => 'Delete tickets'                               # loc_pair
 
-	       );	
-
+);
 
 # System rights are rights granted to the whole system
 # XXX TODO Can't localize these outside of having an object around.
 %SYSTEMRIGHTS = (
-        SuperUser => 'Do anything and everything',							# loc_pair
-		AdminAllPersonalGroups => "Create, delete and modify the members of any user's personal groups", # loc_pair
-		AdminOwnPersonalGroups => 'Create, delete and modify the members of personal groups', # loc_pair
-	    AdminUsers => 'Create, delete and modify users',					# loc_pair
-		ModifySelf => "Modify one's own RT account",						# loc_pair
-        DelegateRights => "Delegate specific rights which have been granted to you." # loc_pair
-		);
+    SuperUser              => 'Do anything and everything',           # loc_pair
+    AdminAllPersonalGroups =>
+      "Create, delete and modify the members of any user's personal groups"
+    ,                                                                 # loc_pair
+    AdminOwnPersonalGroups =>
+      'Create, delete and modify the members of personal groups',     # loc_pair
+    AdminUsers     => 'Create, delete and modify users',              # loc_pair
+    ModifySelf     => "Modify one's own RT account",                  # loc_pair
+    DelegateRights =>
+      "Delegate specific rights which have been granted to you."      # loc_pair
+);
 
 %GROUPRIGHTS = (
-       AdminGroup 	=> 'Modify group metadata or delete group',				# loc_pair
-       AdminGroupMembership => 'Modify membership roster for this group',	# loc_pair
-       ModifyOwnMembership => 'Join or leave this group'					# loc_pair
+    AdminGroup           => 'Modify group metadata or delete group',  # loc_pair
+    AdminGroupMembership =>
+      'Modify membership roster for this group',                      # loc_pair
+    ModifyOwnMembership => 'Join or leave this group'                 # loc_pair
 );
 
 # }}}
 
 # {{{ Descriptions of principals
 
-%TICKET_METAPRINCIPALS = ( Owner => 'The owner of a ticket',				# loc_pair
-            			   Requestor => 'The requestor of a ticket',		# loc_pair
-		            	   Cc => 'The CC of a ticket',						# loc_pair
-			               AdminCc => 'The administrative CC of a ticket',	# loc_pair
-			 );
+%TICKET_METAPRINCIPALS = (
+    Owner     => 'The owner of a ticket',                             # loc_pair
+    Requestor => 'The requestor of a ticket',                         # loc_pair
+    Cc        => 'The CC of a ticket',                                # loc_pair
+    AdminCc   => 'The administrative CC of a ticket',                 # loc_pair
+);
 
 # }}}
 
@@ -126,16 +130,17 @@ use vars qw (%SCOPES
 
 #since you can't do case insensitive hash lookups
 
-foreach $right (keys %QUEUERIGHTS) {
-    $LOWERCASERIGHTNAMES{lc $right}=$right;
+foreach $right ( keys %QUEUERIGHTS ) {
+    $LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
-foreach $right (keys %SYSTEMRIGHTS) {
-    $LOWERCASERIGHTNAMES{lc $right}=$right;
+foreach $right ( keys %SYSTEMRIGHTS ) {
+    $LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
 
-foreach $right (keys %GROUPRIGHTS) {
-    $LOWERCASERIGHTNAMES{lc $right}=$right;
+foreach $right ( keys %GROUPRIGHTS ) {
+    $LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
+
 # }}}
 
 # {{{ sub LoadByValues
@@ -153,36 +158,39 @@ Load an ACE by specifying a paramhash with the following fields:
 =cut
 
 sub LoadByValues {
-  my $self = shift;
-  my %args = (PrincipalId => undef,
-              PrincipalType => undef,
-	      RightName => undef,
-	      ObjectType => undef,
-	      ObjectId => undef,
-	      @_);
+    my $self = shift;
+    my %args = ( PrincipalId   => undef,
+                 PrincipalType => undef,
+                 RightName     => undef,
+                 ObjectType    => undef,
+                 ObjectId      => undef,
+                 @_ );
 
     my $princ_obj;
-    ($princ_obj, $args{'PrincipalType'}) = $self->_CanonicalizePrincipal($args{'PrincipalId'}, $args{'PrincipalType'});
+    ( $princ_obj, $args{'PrincipalType'} ) =
+      $self->_CanonicalizePrincipal( $args{'PrincipalId'},
+                                     $args{'PrincipalType'} );
 
-    unless ($princ_obj->id) {
+    unless ( $princ_obj->id ) {
         return ( 0,
-            $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} ) );
+                 $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
+        );
     }
-  
-  $self->LoadByCols (PrincipalId => $princ_obj->Id,
-              PrincipalType => $args{'PrincipalType'},
-		     RightName => $args{'RightName'},
-		     ObjectType => $args{'ObjectType'},
-		     ObjectId => $args{'ObjectId'}
-		    );
-  
-  #If we couldn't load it.
-  unless ($self->Id) {
-      return (0, $self->loc("ACE not found"));
-  }
-  # if we could
-  return ($self->Id, $self->loc("Right Loaded"));
-  
+
+    $self->LoadByCols( PrincipalId   => $princ_obj->Id,
+                       PrincipalType => $args{'PrincipalType'},
+                       RightName     => $args{'RightName'},
+                       ObjectType    => $args{'ObjectType'},
+                       ObjectId      => $args{'ObjectId'} );
+
+    #If we couldn't load it.
+    unless ( $self->Id ) {
+        return ( 0, $self->loc("ACE not found") );
+    }
+
+    # if we could
+    return ( $self->Id, $self->loc("Right Loaded") );
+
 }
 
 # }}}
@@ -205,37 +213,37 @@ PARAMS is a parameter hash with the following elements:
 
 sub Create {
     my $self = shift;
-    my %args = (
-        PrincipalId   => undef,
-        PrincipalType => undef,
-        RightName     => undef,
-        ObjectType    => undef,
-        ObjectId      => undef,
-        @_
-    );
+    my %args = ( PrincipalId   => undef,
+                 PrincipalType => undef,
+                 RightName     => undef,
+                 ObjectType    => undef,
+                 ObjectId      => undef,
+                 @_ );
 
     # {{{ Validate the principal
     my $princ_obj;
-    ($princ_obj, $args{'PrincipalType'}) = $self->_CanonicalizePrincipal($args{'PrincipalId'}, $args{'PrincipalType'});
+    ( $princ_obj, $args{'PrincipalType'} ) =
+      $self->_CanonicalizePrincipal( $args{'PrincipalId'},
+                                     $args{'PrincipalType'} );
 
-    unless ($princ_obj->id) {
+    unless ( $princ_obj->id ) {
         return ( 0,
-            $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} ) );
+                 $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
+        );
     }
 
     # }}}
 
     #If it's not a scope we recognise, something scary is happening.
-    unless ($args{'ObjectType'} =~ /^(?:Group|Queue|System)$/) {
+    unless ( $args{'ObjectType'} =~ /^(?:Group|Queue|System)$/ ) {
         $RT::Logger->err(
-            "RT::ACE->Create got an object type it didn't recognize: "
-              . $args{'ObjectType'}
-              . " Bailing. \n" );
+                      "RT::ACE->Create got an object type it didn't recognize: "
+                        . $args{'ObjectType'}
+                        . " Bailing. \n" );
         return ( 0, $self->loc("System error. Right not granted.") );
     }
 
     # {{{ Check the ACL
-
 
     if ( $args{'ObjectType'} eq 'System' ) {
         unless ( $self->CurrentUserHasSystemRight('ModifyACL') ) {
@@ -244,28 +252,19 @@ sub Create {
     }
 
     elsif ( $args{'ObjectType'} eq 'Queue' ) {
-        unless (
-            $self->CurrentUserHasQueueRight(
-                Queue => $args{'ObjectId'},
-                Right => 'ModifyACL'
-            )
-          )
-        {
+        unless ( $self->CurrentUserHasQueueRight( Queue => $args{'ObjectId'},
+                                                  Right => 'ModifyACL' )
+          ) {
             return ( 0, $self->loc('Permission Denied') );
         }
     }
     elsif ( $args{'ObjectType'} eq 'Group' ) {
-        unless (
-            $self->CurrentUserHasGroupRight(
-                Group => $args{'ObjectId'},
-                Right => 'AdminGroup'
-            )
-          )
-        {
+        unless ( $self->CurrentUserHasGroupRight( Group => $args{'ObjectId'},
+                                                  Right => 'AdminGroup' )
+          ) {
             return ( 0, $self->loc('Permission Denied') );
         }
     }
-
 
     # }}}
 
@@ -296,28 +295,24 @@ sub Create {
     # }}}
 
     # Make sure the right doesn't already exist.
-    $self->LoadByCols(
-        PrincipalId   => $princ_obj->id,
-        PrincipalType => $args{'PrincipalType'},
-        RightName     => $args{'RightName'},
-        ObjectType    => $args{'ObjectType'},
-        ObjectId      => $args{'ObjectId'},
-        DelegatedBy   => 0,
-        DelegatedFrom   => 0
-    );
+    $self->LoadByCols( PrincipalId   => $princ_obj->id,
+                       PrincipalType => $args{'PrincipalType'},
+                       RightName     => $args{'RightName'},
+                       ObjectType    => $args{'ObjectType'},
+                       ObjectId      => $args{'ObjectId'},
+                       DelegatedBy   => 0,
+                       DelegatedFrom => 0 );
     if ( $self->Id ) {
         return ( 0, $self->loc('That user already has that right') );
     }
 
-    my $id = $self->SUPER::Create(
-        PrincipalId   => $princ_obj->id,
-        PrincipalType => $args{'PrincipalType'},
-        RightName     => $args{'RightName'},
-        ObjectType    => $args{'ObjectType'},
-        ObjectId      => $args{'ObjectId'},
-        DelegatedBy   => 0,
-        DelegatedFrom   => 0
-    );
+    my $id = $self->SUPER::Create( PrincipalId   => $princ_obj->id,
+                                   PrincipalType => $args{'PrincipalType'},
+                                   RightName     => $args{'RightName'},
+                                   ObjectType    => $args{'ObjectType'},
+                                   ObjectId      => $args{'ObjectId'},
+                                   DelegatedBy   => 0,
+                                   DelegatedFrom => 0 );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
@@ -560,67 +555,69 @@ ok(  !$user_b->HasRight(Right => 'OwnTicket', ObjectType => 'Queue', ObjectId =>
 
 sub Delegate {
     my $self = shift;
-    my %args = (
-        PrincipalId   => undef,
-        @_
-    );
+    my %args = ( PrincipalId => undef,
+                 @_ );
 
-    unless ($self->Id) {
-        return(0, $self->loc("Right not loaded."));
+    unless ( $self->Id ) {
+        return ( 0, $self->loc("Right not loaded.") );
     }
     my $princ_obj;
-    ($princ_obj, $args{'PrincipalType'}) = $self->_CanonicalizePrincipal($args{'PrincipalId'}, $args{'PrincipalType'});
-    
-    unless ($princ_obj->id) {
+    ( $princ_obj, $args{'PrincipalType'} ) =
+      $self->_CanonicalizePrincipal( $args{'PrincipalId'},
+                                     $args{'PrincipalType'} );
+
+    unless ( $princ_obj->id ) {
         return ( 0,
-            $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} ) );
+                 $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
+        );
     }
 
     # }}}
 
     # {{{ Check the ACL
 
-
     # First, we check to se if the user is delegating rights and
     # they have the permission to
-    unless($self->CurrentUserHasSystemRight('DelegateRights')) { 
-            return ( 0, $self->loc("Permission Denied") );
+    unless ( $self->CurrentUserHasSystemRight('DelegateRights') ) {
+        return ( 0, $self->loc("Permission Denied") );
     }
 
-    unless ($self->PrincipalObj->IsGroup) {
-            return ( 0, $self->loc("System Error") );
+    unless ( $self->PrincipalObj->IsGroup ) {
+        return ( 0, $self->loc("System Error") );
     }
-    unless ( $self->PrincipalObj->Object->HasMemberRecursively($self->CurrentUser->PrincipalObj)) {
-            return ( 0, $self->loc("Permission Denied") );
+    unless ( $self->PrincipalObj->Object->HasMemberRecursively(
+                                                $self->CurrentUser->PrincipalObj
+             )
+      ) {
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     # }}}
 
     my $concurrency_check = RT::ACE->new($RT::SystemUser);
-    $concurrency_check->Load($self->Id);
-    unless ($concurrency_check->Id) {
-        $RT::Logger->crit("Trying to delegate a right which had already been deleted");
-        return (0, $self->Loc('Permission Denied'));
+    $concurrency_check->Load( $self->Id );
+    unless ( $concurrency_check->Id ) {
+        $RT::Logger->crit(
+                   "Trying to delegate a right which had already been deleted");
+        return ( 0, $self->Loc('Permission Denied') );
     }
 
-    my $delegated_ace = RT::ACE->new($self->CurrentUser);
+    my $delegated_ace = RT::ACE->new( $self->CurrentUser );
 
     # Make sure the right doesn't already exist.
-    $delegated_ace->LoadByCols(
-        PrincipalId   => $princ_obj->Id,
-        PrincipalType => 'Group', 
-        RightName     => $self->__Value('RightName'),
-        ObjectType    => $self->__Value('ObjectType'),
-        ObjectId      => $self->__Value('ObjectId'),
-        DelegatedBy   => $self->CurrentUser->PrincipalId,
-        DelegatedFrom   => $self->id
-    );
+    $delegated_ace->LoadByCols( PrincipalId   => $princ_obj->Id,
+                                PrincipalType => 'Group',
+                                RightName     => $self->__Value('RightName'),
+                                ObjectType    => $self->__Value('ObjectType'),
+                                ObjectId      => $self->__Value('ObjectId'),
+                                DelegatedBy => $self->CurrentUser->PrincipalId,
+                                DelegatedFrom => $self->id );
     if ( $delegated_ace->Id ) {
         return ( 0, $self->loc('That user already has that right') );
     }
     my $id = $delegated_ace->SUPER::Create(
         PrincipalId   => $princ_obj->Id,
-        PrincipalType => 'Group',             # do we want to hardcode this?
+        PrincipalType => 'Group',          # do we want to hardcode this?
         RightName     => $self->__Value('RightName'),
         ObjectType    => $self->__Value('ObjectType'),
         ObjectId      => $self->__Value('ObjectId'),
@@ -656,16 +653,19 @@ This routine will also recurse and delete any delegations of this right
 sub Delete {
     my $self = shift;
 
-    unless ($self->Id) {
-        return (0, $self->loc('Right not loaded.'));
+    unless ( $self->Id ) {
+        return ( 0, $self->loc('Right not loaded.') );
     }
 
     # A user can delete an ACE if the current user has the right to modify it and it's not a delegated ACE
     # or if it's a delegated ACE and it was delegated by the current user
-    unless ( ($self->CurrentUserHasRight('ModifyACL') && $self->__Value('DelegatedBy') == 0) ||
-           ($self->__Value('DelegatedBy') == $self->CurrentUser->PrincipalId ) ) {
-	    return (0, $self->loc('Permission Denied'));
-    }	
+    unless (
+         (    $self->CurrentUserHasRight('ModifyACL')
+           && $self->__Value('DelegatedBy') == 0 )
+         || ( $self->__Value('DelegatedBy') == $self->CurrentUser->PrincipalId )
+      ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
     $self->_Delete(@_);
 }
 
@@ -673,23 +673,23 @@ sub Delete {
 sub _Delete {
     my $self = shift;
     my %args = ( InsideTransaction => undef,
-                 @_ 
-                 );
+                 @_ );
 
     my $InsideTransaction = $args{'InsideTransaction'};
-    
+
     $RT::Handle->BeginTransaction() unless $InsideTransaction;
 
     my $delegated_from_this = RT::ACL->new($RT::SystemUser);
-    $delegated_from_this->Limit(FIELD => 'DelegatedFrom',
-                                OPERATOR => '=',
-                                VALUE => $self->Id);
+    $delegated_from_this->Limit( FIELD    => 'DelegatedFrom',
+                                 OPERATOR => '=',
+                                 VALUE    => $self->Id );
 
     my $delete_succeeded = 1;
     my $submsg;
-    while (my $delegated_ace = $delegated_from_this->Next)  {
-         ($delete_succeeded, $submsg) =  $delegated_ace->_Delete(InsideTransaction => 1);
-         last if ($delete_succeeded);
+    while ( my $delegated_ace = $delegated_from_this->Next ) {
+        ( $delete_succeeded, $submsg ) =
+          $delegated_ace->_Delete( InsideTransaction => 1 );
+        last if ($delete_succeeded);
     }
 
     unless ($delete_succeeded) {
@@ -697,7 +697,7 @@ sub _Delete {
         return ( 0, $self->loc('Right could not be revoked') );
     }
 
-    my ($val,$msg) = $self->SUPER::Delete(@_);
+    my ( $val, $msg ) = $self->SUPER::Delete(@_);
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
@@ -733,24 +733,24 @@ sub _BootstrapCreate {
     my %args = (@_);
 
     # When bootstrapping, make sure we get the _right_ users
-    if ($args{'UserId'} ) {
-    my $user = RT::User->new($self->CurrentUser);
-    $user->Load($args{'UserId'});
+    if ( $args{'UserId'} ) {
+        my $user = RT::User->new( $self->CurrentUser );
+        $user->Load( $args{'UserId'} );
         delete $args{'UserId'};
-        $args{'PrincipalId'} = $user->PrincipalId;
+        $args{'PrincipalId'}   = $user->PrincipalId;
         $args{'PrincipalType'} = 'User';
     }
 
-    my $id = $self->SUPER::Create( %args);
-    
-    if ($id > 0 ) {
-	return ($id);
+    my $id = $self->SUPER::Create(%args);
+
+    if ( $id > 0 ) {
+        return ($id);
     }
     else {
-	    $RT::Logger->err('System error. right not granted.');
-	    return(undef);
+        $RT::Logger->err('System error. right not granted.');
+        return (undef);
     }
-    
+
 }
 
 # }}}
@@ -765,14 +765,14 @@ the correct case. If it's not found, will return undef.
 =cut
 
 sub CanonicalizeRightName {
-    my $self = shift;
+    my $self  = shift;
     my $right = shift;
     $right = lc $right;
-    if (exists $LOWERCASERIGHTNAMES{"$right"}) {
-	return ($LOWERCASERIGHTNAMES{"$right"});
+    if ( exists $LOWERCASERIGHTNAMES{"$right"} ) {
+        return ( $LOWERCASERIGHTNAMES{"$right"} );
     }
     else {
-	return (undef);
+        return (undef);
     }
 }
 
@@ -787,7 +787,7 @@ Returns a hash of all the possible rights at the queue scope
 =cut
 
 sub QueueRights {
-        return (%QUEUERIGHTS);
+    return (%QUEUERIGHTS);
 }
 
 # }}}
@@ -801,9 +801,8 @@ Returns a hash of all the possible rights at the system scope
 =cut
 
 sub SystemRights {
-	return (%SYSTEMRIGHTS);
+    return (%SYSTEMRIGHTS);
 }
-
 
 # }}}
 
@@ -816,9 +815,8 @@ Returns a hash of all the possible rights at the system scope
 =cut
 
 sub GroupRights {
-	return (%GROUPRIGHTS);
+    return (%GROUPRIGHTS);
 }
-
 
 # }}}
 
@@ -836,25 +834,26 @@ If the user has no rights, returns undef.
 
 sub Object {
     my $self = shift;
-    if ($self->ObjectType eq 'Queue') {
-	my $appliesto_obj = RT::Queue->new($self->CurrentUser);
-	$appliesto_obj->Load($self->ObjectId);
-	return($appliesto_obj);
+    if ( $self->ObjectType eq 'Queue' ) {
+        my $appliesto_obj = RT::Queue->new( $self->CurrentUser );
+        $appliesto_obj->Load( $self->ObjectId );
+        return ($appliesto_obj);
     }
-    elsif ($self->ObjectType eq 'Group') {
-	my $appliesto_obj = RT::Group->new($self->CurrentUser);
-	$appliesto_obj->Load($self->ObjectId);
-	return($appliesto_obj);
+    elsif ( $self->ObjectType eq 'Group' ) {
+        my $appliesto_obj = RT::Group->new( $self->CurrentUser );
+        $appliesto_obj->Load( $self->ObjectId );
+        return ($appliesto_obj);
     }
-    elsif ($self->ObjectType eq 'System') {
-	return (undef);
-    }	
+    elsif ( $self->ObjectType eq 'System' ) {
+        return (undef);
+    }
     else {
-	$RT::Logger->warning("$self -> Object called for an object ".
-			     "of an unknown type:" . $self->ObjectType);
-	return(undef);
+        $RT::Logger->warning( "$self -> Object called for an object "
+                              . "of an unknown type:"
+                              . $self->ObjectType );
+        return (undef);
     }
-}	
+}
 
 # }}}
 
@@ -869,15 +868,16 @@ Returns the RT::Principal object for this ACE.
 sub PrincipalObj {
     my $self = shift;
 
-   	my $princ_obj = RT::Principal->new($self->CurrentUser);
-    $princ_obj->Load($self->__Value('PrincipalId'));
+    my $princ_obj = RT::Principal->new( $self->CurrentUser );
+    $princ_obj->Load( $self->__Value('PrincipalId') );
 
-    unless ($princ_obj->Id) {
-        $RT::Logger->err("ACE ".$self->Id." couldn't load its principal object");
+    unless ( $princ_obj->Id ) {
+        $RT::Logger->err(
+                   "ACE " . $self->Id . " couldn't load its principal object" );
     }
-    return($princ_obj);
+    return ($princ_obj);
 
-}	
+}
 
 # }}}
 
@@ -886,8 +886,8 @@ sub PrincipalObj {
 # {{{ sub _Set
 
 sub _Set {
-  my $self = shift;
-  return (0, $self->loc("ACEs can only be created and deleted."));
+    my $self = shift;
+    return ( 0, $self->loc("ACEs can only be created and deleted.") );
 }
 
 # }}}
@@ -900,8 +900,11 @@ sub _Value {
     if ( $self->__Value('DelegatedBy') eq $self->CurrentUser->PrincipalId ) {
         return ( $self->__Value(@_) );
     }
-    elsif ($self->PrincipalObj->IsGroup &&
-           $self->PrincipalObj->Object->HasMemberRecursively( $self->CurrentUser->PrincipalObj)) {
+    elsif ( $self->PrincipalObj->IsGroup
+            && $self->PrincipalObj->Object->HasMemberRecursively(
+                                                $self->CurrentUser->PrincipalObj
+            )
+      ) {
         return ( $self->__Value(@_) );
     }
     elsif ( $self->CurrentUserHasRight('ShowACL') ) {
@@ -914,7 +917,6 @@ sub _Value {
 
 # }}}
 
-
 # {{{ sub CurrentUserHasGroupRight 
 
 =head2 CurrentUserHasGroupRight ( Group => GROUPID, Right => RIGHTNANAME )
@@ -925,13 +927,12 @@ Check to see whether the current user has the specified right for the specified 
 
 sub CurrentUserHasGroupRight {
     my $self = shift;
-    my %args = (Group => undef,
-		Right => undef,
-		@_
-		);
-    return ($self->HasRight( Right => $args{'Right'},
-			     Principal => $self->CurrentUser,
-			     Group => $args{'Group'}));
+    my %args = ( Group => undef,
+                 Right => undef,
+                 @_ );
+    return ( $self->HasRight( Right     => $args{'Right'},
+                              Principal => $self->CurrentUser,
+                              Group     => $args{'Group'} ) );
 }
 
 # }}}
@@ -946,18 +947,18 @@ Check to see whether the current user has the specified right for the specified 
 
 sub CurrentUserHasQueueRight {
     my $self = shift;
-    my %args = (Queue => undef,
-		Right => undef,
-		@_
-		);
-    return ($self->HasRight( Right => $args{'Right'},
-			     Principal => $self->CurrentUser,
-			     Queue => $args{'Queue'}));
+    my %args = ( Queue => undef,
+                 Right => undef,
+                 @_ );
+    return ( $self->HasRight( Right     => $args{'Right'},
+                              Principal => $self->CurrentUser,
+                              Queue     => $args{'Queue'} ) );
 }
 
 # }}}
 
 # {{{ sub CurrentUserHasSystemRight 
+
 =head2 CurrentUserHasSystemRight RIGHTNAME
 
 Check to see whether the current user has the specified right for the 'system' scope.
@@ -965,14 +966,12 @@ Check to see whether the current user has the specified right for the 'system' s
 =cut
 
 sub CurrentUserHasSystemRight {
-    my $self = shift;
+    my $self  = shift;
     my $right = shift;
-    return ($self->HasRight( Right => $right,
-			     Principal => $self->CurrentUser,
-			     System => 1
-			   ));
+    return ( $self->HasRight( Right     => $right,
+                              Principal => $self->CurrentUser,
+                              System    => 1 ) );
 }
-
 
 # }}}
 
@@ -987,11 +986,10 @@ calls HasRight.
 =cut
 
 sub CurrentUserHasRight {
-    my $self = shift;
+    my $self  = shift;
     my $right = shift;
-    return ($self->HasRight( Principal => $self->CurrentUser,
-                             Right => $right,
-			   ));
+    return ( $self->HasRight( Principal => $self->CurrentUser,
+                              Right     => $right, ) );
 }
 
 # }}}
@@ -1008,51 +1006,55 @@ Right string that applies to the given queue or systemwide,
 
 sub HasRight {
     my $self = shift;
-    my %args = ( Right => undef,
+    my %args = ( Right     => undef,
                  Principal => undef,
-                 Group => undef,
-		 Queue => undef,
-		 System => undef,
-                 @_ ); 
+                 Group     => undef,
+                 Queue     => undef,
+                 System    => undef,
+                 @_ );
 
-	# TODO XXXX This code could be refactored to just use ->HasRight
-	# and be MUCH cleaner.
+    # TODO XXXX This code could be refactored to just use ->HasRight
+    # and be MUCH cleaner.
 
     #If we're explicitly specifying a queue, as we need to do on create
-    if (defined $args{'Queue'}) {
-	return ($args{'Principal'}->HasQueueRight(Right => $args{'Right'},
-						  Queue => $args{'Queue'}));
+    if ( defined $args{'Queue'} ) {
+        return ( $args{'Principal'}->HasQueueRight( Right => $args{'Right'},
+                                                    Queue => $args{'Queue'} ) );
     }
-    elsif (defined $args{'Group'}) {
-	return ($args{'Principal'}->HasGroupRight(Right => $args{'Right'},
-						  Group => $args{'Group'}));
-   }	
+    elsif ( defined $args{'Group'} ) {
+        return ( $args{'Principal'}->HasGroupRight( Right => $args{'Right'},
+                                                    Group => $args{'Group'} ) );
+    }
+
     #else if we're specifying to check a system right
-    elsif ((defined $args{'System'}) and (defined $args{'Right'})) {
-        return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
-    }	
-    
-    elsif ($self->__Value('ObjectType') eq 'System') {
-	return $args{'Principal'}->HasSystemRight($args{'Right'});
+    elsif ( ( defined $args{'System'} ) and ( defined $args{'Right'} ) ) {
+        return ( $args{'Principal'}->HasSystemRight( $args{'Right'} ) );
     }
-    elsif ($self->__Value('ObjectType') eq 'Group') {
-	return $args{'Principal'}->HasGroupRight( Group => $self->__Value('ObjectId'),
-						  Right => $args{'Right'} );
-    }	
-    elsif ($self->__Value('ObjectType') eq 'Queue') {
-	return $args{'Principal'}->HasQueueRight( Queue => $self->__Value('ObjectId'),
-						  Right => $args{'Right'} );
-    }	
+
+    elsif ( $self->__Value('ObjectType') eq 'System' ) {
+        return $args{'Principal'}->HasSystemRight( $args{'Right'} );
+    }
+    elsif ( $self->__Value('ObjectType') eq 'Group' ) {
+        return $args{'Principal'}->HasGroupRight(
+                                            Group => $self->__Value('ObjectId'),
+                                            Right => $args{'Right'} );
+    }
+    elsif ( $self->__Value('ObjectType') eq 'Queue' ) {
+        return $args{'Principal'}->HasQueueRight(
+                                            Queue => $self->__Value('ObjectId'),
+                                            Right => $args{'Right'} );
+    }
     else {
-	Carp;
-	$RT::Logger->warning(Carp::cluck("$self: Trying to check an acl for a scope we ".
-			     "don't understand:" . $self->__Value('ObjectType') ."\n"));
-	return undef;
+        Carp;
+        $RT::Logger->warning(Carp::cluck(
+                                 "$self: Trying to check an acl for a scope we "
+                                   . "don't understand:"
+                                   . $self->__Value('ObjectType') . "\n" ) );
+        return undef;
     }
-
-
 
 }
+
 # }}}
 
 # }}}
@@ -1069,33 +1071,36 @@ Returns a tuple of  (RT::Principal, PrincipalType)  for the principal we really 
 =cut
 
 sub _CanonicalizePrincipal {
-    my $self = shift;
-    my $princ_id = shift;
+    my $self       = shift;
+    my $princ_id   = shift;
     my $princ_type = shift;
 
     my $princ_obj = RT::Principal->new($RT::SystemUser);
-    $princ_obj->Load( $princ_id );
+    $princ_obj->Load($princ_id);
 
-    unless ($princ_obj->Id) {
+    unless ( $princ_obj->Id ) {
         use Carp;
         $RT::Logger->crit(Carp::cluck);
         $RT::Logger->crit("Can't load a principal for id $princ_id");
-        return($princ_obj, undef);
+        return ( $princ_obj, undef );
     }
+
     # Rights never get granted to users. they get granted to their 
     # ACL equivalence groups
-   if ($princ_type eq 'User') {
-        my $equiv_group = RT::Group->new($self->CurrentUser);
+    if ( $princ_type eq 'User' ) {
+        my $equiv_group = RT::Group->new( $self->CurrentUser );
         $equiv_group->LoadACLEquivalenceGroup($princ_obj);
-        unless ($equiv_group->Id) {
-            $RT::Logger->crit("No ACL equiv group for princ ".$self->__Value('ObjectId'));
-            return(0,$self->loc('System error. Right not granted.'));
+        unless ( $equiv_group->Id ) {
+            $RT::Logger->crit(
+                 "No ACL equiv group for princ " . $self->__Value('ObjectId') );
+            return ( 0, $self->loc('System error. Right not granted.') );
         }
-        $princ_obj = $equiv_group->PrincipalObj();
+        $princ_obj  = $equiv_group->PrincipalObj();
         $princ_type = 'Group';
 
     }
-    return($princ_obj, $princ_type);
+    return ( $princ_obj, $princ_type );
 }
+
 # }}}
 1;

@@ -42,8 +42,9 @@ Create takes a hash of values and creates a row in the database:
   belongs to to get here
 
   int(11) 'Via' is an internal reference to CachedGroupMembers->Id of
-  the "parent" record of this cached group member. It should be "0" if this
-  member is a "direct" member of this group
+  the "parent" record of this cached group member. It should be empty if this
+  member is a "direct" member of this group. (In that case, it will be set to this 
+  cached group member's id after creation)
 
   This routine should _only_ be called by GroupMember->Create
 
@@ -56,6 +57,7 @@ sub Create {
         Member          => '',
         ImmediateParent => '',
         Via             => '0',
+        Disabled        => '0',
         @_
     );
 
@@ -70,12 +72,23 @@ sub Create {
     unless ( $args{'ImmediateParent'} && UNIVERSAL::isa($args{'ImmediateParent'}, 'RT::Principal') && $args{'ImmediateParent'}->Id ) {
         $RT::Logger->debug("$self->Create: bogus ImmediateParent argument");
     }
+
+    # If the parent group for this group member is disabled, it's disabled too, along with all its children
+    if ( $args{'ImmediateParent'}->Disabled ) {
+        $args{'Disabled'} =  $args{'ImmediateParent'}->Disabled;
+    }
+
     my $id = $self->SUPER::Create(
         GroupId           => $args{'Group'}->Id,
         MemberId          => $args{'Member'}->Id,
         ImmediateParentId => $args{'ImmediateParent'}->Id,
+        Disabled          => $args{'Disabled'}, 
         Via               => $args{'Via'},
     );
+
+
+
+
 
     unless ($id) {
         $RT::Logger->warn( "Couldn't create "
@@ -84,6 +97,17 @@ sub Create {
               . $args{'Group'}->Id . " via "
               . $args{'Via'} );
         return (undef);  #this will percolate up and bail out of the transaction
+    }
+    if ($self->__Value('Via') == 0 ) {
+       my ($vid, $vmsg)=  $self->__Set(Field => 'Via', Value => $id);
+        unless ($vid) {
+        $RT::Logger->warn( "Due to a via error, couldn't create "
+              . $args{'Member'}
+              . " as a cached member of "
+              . $args{'Group'}->Id . " via "
+              . $args{'Via'} );
+            return (undef);  #this will percolate up and bail out of the transaction
+    }
     }
 
     if ( $args{'Member'}->IsGroup() ) {
@@ -95,6 +119,7 @@ sub Create {
                 Group           => $args{'Group'},
                 Member          => $member->MemberObj,
                 ImmediateParent => $args{'Member'},
+                Disabled        => $args{'Disabled'},
                 Via             => $id
             );
             unless ($c_id) {
@@ -162,6 +187,71 @@ sub Delete {
             $delegations->DelegatedBy( Id => $self->MemberId );
 
             # For each delegation 
+            while ( my $delegation = $delegations->Next ) {
+                # WHACK IT
+                my $del_ret = $delegation->_Delete(InsideTransaction => 1);
+                unless ($del_ret) {
+                    $RT::Logger->crit("Couldn't delete an ACL delegation that we know exists ". $delegation->Id);
+                    return(undef);
+                }
+            }
+        }
+    }
+    return ($err);
+}
+
+# }}}
+
+# {{{ SetDisabled
+
+=head2 SetDisabled
+
+SetDisableds the current CachedGroupMember from the group it's in and cascades 
+the SetDisabled to all submembers. This routine could be completely excised if
+mysql supported foreign keys with cascading SetDisableds.
+
+=cut 
+
+sub SetDisabled {
+    my $self = shift;
+    my $val = shift;
+    
+    my $err = $self->SUPER::SetDisabled($val);
+    unless ($err) {
+        $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $self->Id );
+        return (undef);
+    }
+    
+    my $member = $self->MemberObj();
+    if ( $member->IsGroup ) {
+        my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
+
+        $deletable->Limit( FIELD    => 'Via', OPERATOR => '=', VALUE    => $self->id );
+        $deletable->Limit( FIELD    => 'Id', OPERATOR => '!=', VALUE    => $self->id );
+
+        while ( my $kid = $deletable->Next ) {
+            my $kid_err = $kid->SetDisabled($val );
+            unless ($kid_err) {
+                $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $kid->Id );
+                return (undef);
+            }
+        }
+    }
+
+    # Unless $self->GroupObj still has the member recursively $self->MemberObj
+    # (Since we SetDisabledd the database row above, $self no longer counts)
+    unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberObj ) ) {
+        #   Find all ACEs granted to $self->GroupId
+        my $acl = RT::ACL->new($RT::SystemUser);
+        $acl->LimitToPrincipal( Id => $self->GroupId );
+
+        while ( my $this_ace = $acl->Next() ) {
+            #       Find all ACEs which $self-MemberObj has delegated from $this_ace
+            my $delegations = RT::ACL->new($RT::SystemUser);
+            $delegations->DelegatedFrom( Id => $this_ace->Id );
+            $delegations->DelegatedBy( Id => $self->MemberId );
+
+            # For each delegation,  blow away the delegation
             while ( my $delegation = $delegations->Next ) {
                 # WHACK IT
                 my $del_ret = $delegation->_Delete(InsideTransaction => 1);

@@ -117,7 +117,7 @@ elsif ($dbd =~ /pg/i) {
 }
 
 
-@modules =  (@core_modules, @mason_modules, @cli_modules, @dev_modules, @db_modules, @fcgi_modules, @modperl_modules);
+@modules =  (@core_modules, @mason_modules, @cli_modules, @dev_modules, @db_modules, @fcgi_modules, @modperl_modules, @i18n_modules);
 
 use CPAN;
 
