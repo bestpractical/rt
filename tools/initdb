@@ -7,7 +7,7 @@ use DBI;
 use DBIx::DataSource qw( create_database drop_database );
 use DBIx::DBSchema;
 
-$DEBUG=0;
+$DEBUG=1;
 $PROMPT = 1; #by default, should at least *ask* before nuking databases
 $SCHEMA_FILE = "etc/schema.pm"; #hmm
 

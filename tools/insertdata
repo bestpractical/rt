@@ -25,9 +25,9 @@ $RT::Handle = new RT::Handle($RT::DatabaseType);
 $RT::Handle->Connect();
 
 
-my $RT_System = new RT::CurrentUser(0); #TODO how do we bootstrap?
+my $RT_System = new RT::CurrentUser(); #TODO how do we bootstrap?
 
-$RT_System->Create( id => '1',
+$RT_System->Create(
 		     UserId => 'RT_System',
 		     RealName => 'The RT System itself',
 		     Comments =>  'Do not delete or modify this user. It is integral to RT\'s internal database structures',
@@ -35,13 +35,12 @@ $RT_System->Create( id => '1',
 		     Creator => '1');
 
 
-my $CurrentUser = new RT::CurrentUser(1);
-
+my $CurrentUser = new RT::CurrentUser();
+$CurrentUser->LoadByUserId('RT_System');
 # {{{ Users
 
 my @users = ( 
 	     { 
-	      id => '2',
 	      UserId => 'Nobody',
 	      RealName => 'Nobody in particular',
 	      Comments => 'Do not delete or modify this user. It is integral to RT\'s internal data structures',

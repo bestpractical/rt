@@ -7,7 +7,7 @@ my $gratuitous = {
     'Description', 'varchar', 'NULL', '64', '','',
   ],
   'primary_key' => 'id',
-  'unique' => [  ],
+  'unique' => [ ['Name'] ],
   'index' => [  ],
 },
 
@@ -47,8 +47,8 @@ my $gratuitous = {
 'Links' => {
   'columns' => [
     'id', 'integer', '', '', '','AUTO_INCREMENT',
-    'Base', 'varchar', 'NULL', '255', '','',
-    'Target', 'varchar', 'NULL', '255', '','',
+    'Base', 'varchar', 'NULL', '240', '','',
+    'Target', 'varchar', 'NULL', '240', '','',
     'Type', 'varchar', '', '20', '','',
     'LastUpdatedBy', 'integer', 'NULL', '', '','',
     'LastUpdated', 'timestamp', 'NULL', '', '','',
@@ -56,7 +56,7 @@ my $gratuitous = {
     'Created', 'timestamp', 'NULL', '', '','',
   ],
   'primary_key' => 'id',
-  'unique' => [  ],
+  'unique' => [ ['Base', 'Target', 'Type'] ],
   'index' => [  ],
 },
 
@@ -98,7 +98,7 @@ my $gratuitous = {
     'LastUpdated', 'timestamp', 'NULL', '', '','',
   ],
   'primary_key' => 'id',
-  'unique' => [  ],
+  'unique' => [ ['UserId'] ],
   'index' => [  ],
 },
 
@@ -108,7 +108,7 @@ my $gratuitous = {
     'Name', 'varchar', 'NULL', '255', '','',
     'Description', 'varchar', 'NULL', '255', '','',
     'Type', 'varchar', 'NULL', '60', '','',
-    'ExecModulE', 'varchar', 'NULL', '60', '','',
+    'ExecModule', 'varchar', 'NULL', '60', '','',
     'DefaultTemplate', 'integer', 'NULL', '', '','',
     'Argument', 'varchar', 'NULL', '255', '','',
     'Creator', 'integer', 'NULL', '', '','',
@@ -149,7 +149,7 @@ my $gratuitous = {
     'Created', 'timestamp', 'NULL', '', '','',
   ],
   'primary_key' => 'id',
-  'unique' => [  ],
+  'unique' => [ [ 'Alias']  ],
   'index' => [  ],
 },
 
@@ -160,7 +160,7 @@ my $gratuitous = {
     'UserId', 'integer', 'NULL', '', '','',
   ],
   'primary_key' => 'id',
-  'unique' => [  ],
+  'unique' => [ ['GroupId', 'UserId']  ],
   'index' => [  ],
 },
 
@@ -180,7 +180,7 @@ my $gratuitous = {
     'LastUpdated', 'timestamp', 'NULL', '', '','',
   ],
   'primary_key' => 'id',
-  'unique' => [  ],
+  'unique' => [ ['QueueId'] ],
   'index' => [  ],
 },
 

@@ -353,7 +353,7 @@ sub ParseCommands {
 	  if (!$TicketId) {
 	      die "Links require a base and a target ticket";
 	  }
-	  my $Ticket = new RT::Ticket($CurrentUser);
+	  my $Ticket = new RT::Ticket($urrentUser);
 	  $Ticket->Load($TicketId) || die "Could not load ticket";
 
 	  #TODO: use a published interface.  +++
@@ -409,22 +409,21 @@ sub GetCurrentUser  {
   #This will apply local address canonicalization rules
   $Address = &RT::CanonicalizeAddress($Address);
 
-  my $CurrentUser = RT::CurrentUser->new($FromObj->address);
-  
-  # One more try if we couldn't find that user
-  # TODO: we should never be calling _routines from external code.
-  # what the hell are we doing here ++++
-  $CurrentUser->Id || $CurrentUser->_Init($Name);
+  my $CurrentUser = RT::CurrentUser->new();
+
+  $CurrentUser->LoadByEmail($Address);
   
   unless ($CurrentUser->Id) {
     #If it fails, create a user
     
-    my $SystemUser = new RT::CurrentUser(1);
+    my $SystemUser = new RT::CurrentUser();
+    $SystemUser->LoadByUserId('RT_System');
+
     my $NewUser = RT::User->new($SystemUser);#Create a user as root 
     #TODO: Figure out a better way to do this
     ## Tobix: What's wrong with this way?
     my ($Val, $Message) = $NewUser->Create(UserId => $FromObj->address,
-					   EmailAddress => $FromObj->address,
+					   EmailAddress => $Address,
 					   RealName => "$Name",
 					   Password => undef,
 					   CanManipulate => 0,
@@ -439,7 +438,7 @@ sub GetCurrentUser  {
     
 
     #Load the new user object
-    $CurrentUser->Load($FromObj->address);
+    $CurrentUser->LoadByEmail($Address);
   }
   return ($CurrentUser);
 }

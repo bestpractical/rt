@@ -68,7 +68,55 @@ sub _Accessible  {
 }
 # }}}
 
+
+
+
+
+# {{{ sub LoadByEmail
+
+=head2 LoadByEmail
+
+Loads a User into this CurrentUser object.
+Takes the email address of the user to load.
+
+=cut
+
+sub LoadByEmail  {
+    my $self = shift;
+    my $identifier = shift;
+        
+    $self->LoadByCol("EmailAddress",$identifier);
+    
+}
+# }}}
+
+# {{{ sub LoadByUserId
+
+=head2 LoadByUserId
+
+Loads a User into this CurrentUser object.
+Takes a UserId.
+=cut
+
+sub LoadByUserId {
+    my $self = shift;
+    my $identifier = shift;
+    $self->LoadByCol("UserId",$identifier);
+    
+}
+# }}}
+
 # {{{ sub Load 
+
+=head2 Load
+
+Loads a User into this CurrentUser object.
+Takes either an integer (users id column reference) or a UserId
+The latter is deprecated. Instead, you should use LoadByUserId.
+Formerly, this routine also took email addresses. 
+
+=cut
+
 sub Load  {
   my $self = shift;
   my $identifier = shift;
@@ -77,16 +125,14 @@ sub Load  {
   if ($identifier !~ /\D/) {
     $self->SUPER::LoadById($identifier);
   }
-  elsif ($identifier =~ /\@/) {
-    $self->LoadByCol("EmailAddress",$identifier);
-  }
   else {
-    # This is a bit dangerous, we might get false authen if somebody
-    # uses ambigous userids or real names:
-    $self->LoadByCol("UserId",$identifier);
+      # This is a bit dangerous, we might get false authen if somebody
+      # uses ambigous userids or real names:
+      $self->LoadByCol("UserId",$identifier);
   }
 }
 # }}}
+
 
 
 # {{{ sub IsPassword

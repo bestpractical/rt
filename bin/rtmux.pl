@@ -32,11 +32,12 @@ $RT::Handle->Connect();
 use RT::CurrentUser;
 #RT's system user is a genuine database user. its id lives here
 
-$RT::SystemUser = new RT::CurrentUser(1);
+$RT::SystemUser = new RT::CurrentUser();
+$RT::SystemUser->LoadByUserId('RT_System');
 
 #RT's "nobody user" is a genuine database user. its ID lives here.
-$RT::Nobody = new RT::CurrentUser(2);
-
+$RT::Nobody = new RT::CurrentUser();
+$RT::Nobody->LoadByUserId('Nobody');
 
 my $program = $0; 
 
