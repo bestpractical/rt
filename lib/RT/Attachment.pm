@@ -102,7 +102,7 @@ sub Create  {
     
     #if we didn't specify a ticket, we need to bail
     if ( $args{'TransactionId'} == 0) {
-	$RT::Logger->Crit("RT::Attachment->Create couldn't, as you didn't specify a transaction\n");
+	$RT::Logger->crit("RT::Attachment->Create couldn't, as you didn't specify a transaction\n");
 	return (0);
 	
     }
