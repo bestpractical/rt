@@ -405,7 +405,7 @@ sub GetCurrentUser  {
 	
 	else {
 	    my $NewUser = RT::User->new($RT::SystemUser);
-	
+	    
 	    my ($Val, $Message) = 
 	      $NewUser->Create(Name => ($Username || $Address),
 			       EmailAddress => $Address,
@@ -416,15 +416,28 @@ sub GetCurrentUser  {
 			      );
 	    
 	    unless ($Val) {
-		MailError( To => $ErrorsTo,
-			   Subject => "User could not be created",
-			   Explanation => "User creation failed in mailgateway: $Message",
-			   MIMEObj => $entity,
-			   LogLevel => 'crit'
-			 );
+		
+		# Deal with the race condition of two account creations at once
+		#
+           	if ($Username) {
+		    $NewUser->LoadByName($Username);
+		}
+		
+		unless ($NewUser->Id) {
+	            $NewUser->LoadByEmail($Address);
+		}
+		
+		unless ($NewUser->Id) {  
+		    MailError( To => $ErrorsTo,
+			       Subject => "User could not be created",
+			       Explanation => "User creation failed in mailgateway: $Message",
+			       MIMEObj => $entity,
+			       LogLevel => 'crit'
+			     );
+		}
 	    }
 	}
-
+	
 	#Load the new user object
 	$CurrentUser->LoadByEmail($Address);
 	
@@ -435,7 +448,7 @@ sub GetCurrentUser  {
 	    $CurrentUser->Load($RT::Nobody->Id);
 	}
     }
- 
+    
     return ($CurrentUser);
     
 }
