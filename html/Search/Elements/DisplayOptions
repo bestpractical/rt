@@ -59,7 +59,7 @@
 % foreach my $field (keys %fields) {
 %    next unless $field;
 <option value=<%$field%>
-% if ($field =~ /$OrderBy/i) {
+% if ($field =~ /^$OrderBy$/i) {
 SELECTED
 % }
 ><%$field%></option>
