@@ -1,7 +1,21 @@
-<TEXTAREA COLS=75 ROWS=15 WRAP=SOFT NAME="<%$Name%>"><% $Default %></TEXTAREA>
+<TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %></TEXTAREA>
 
 <%ARGS>
 $QuoteTransaction => undef
 $Name=>'Content'
 $Default=>''
+$Width=>72
 </%ARGS>
+
+<%INIT>
+if ($QuoteTransaction) {
+    require RT::Ticket;
+    require RT::Transaction;
+    my $transaction=RT::Transaction->new($session{'CurrentUser'});
+    $transaction->Load($QuoteTransaction);
+    my $message=$transaction->Message->First;
+    my $d;
+    ($d, $Width)=$message->Quote;
+    $Default=$$d;
+}
+</%INIT>

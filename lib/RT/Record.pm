@@ -111,8 +111,36 @@ sub CurrentUser  {
   return ($self->{'user'});
 }
 # }}}
-    
+
+# {{{ AgeAsString
+sub AgeAsString {
+    # TODO: I'll deal with this one tomorrow, I hope :)
+    return "Stub";
+}
+# }}}
+
+# {{{ AgeAsString
+sub LastUpdatedAsString {
+    # TODO: I'll deal with this one tomorrow, I hope :)
+    return "Stub";
+}
+# }}}
+
+# {{{ AgeAsString
+sub CreatedAsString {
+    # TODO: I'll deal with this one tomorrow, I hope :)
+    return "Stub";
+}
+# }}}
+
+# {{{ LongSinceUpdateAsString
+sub LongSinceUpdateAsString {
+    # TODO: I'll deal with this one tomorrow, I hope :)
+    return "Stub";
+}
+# }}}
 
 1;
+
 
 

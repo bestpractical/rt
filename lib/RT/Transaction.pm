@@ -305,13 +305,6 @@ sub Description  {
 }
 # }}}
 
-# {{{ sub CreatedAsString 
-sub CreatedAsString  {
-  my $self = shift;
-  return($self->_Value('Created'));
-}
-# }}}
-
 # {{{ sub _Accessible 
 sub _Accessible  {
   my $self = shift;

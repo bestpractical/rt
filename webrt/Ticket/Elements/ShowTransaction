@@ -9,7 +9,7 @@
 	  <& /Elements/ShadedBox, title => 'Id' , content => $Transaction->Id &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%"> 
-	  <& /Elements/ShadedBox, title => 'Actor' , content => $Transaction->Actor &>
+	  <& /Elements/ShadedBox, title => 'Actor' , content => $Transaction->Creator->UserId &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
 	  <& /Elements/ShadedBox, title => 'Time Worked' , content => $TimeTaken &>
@@ -19,6 +19,8 @@
       </TR>
     </TABLE>
 
+%# I had to temporarly move this one because the box grew too wide when a message was too wide.
+<& /Elements/TitleBoxEnd &>
 
 % $attachments->GotoFirstItem();
 %  while (my $message=$attachments->Next) {
@@ -40,7 +42,6 @@ Attachment: <A HREF=""><% $message->ContentType %></a>
 %    }
 % }
 
-    <& /Elements/TitleBoxEnd &>
 
 
 <%ARGS>

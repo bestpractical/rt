@@ -37,7 +37,6 @@ sub ChildrenOf  {
 }
 # }}}
 
-
 # {{{ sub NewItem 
 sub NewItem  {
   my $self = shift;

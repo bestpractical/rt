@@ -31,8 +31,11 @@
 
 <%INIT>
 
+# temporary disabling features that won't work ... --
+# tobix.. (besides, the "current restrictions" must be listed up, and it
+# must be possible to remove restrictions if this should make any sense)
 
-  if (!defined $session{'tickets'}) {
+  if (1 || !defined $session{'tickets'}) {
     use RT::TicketCollection;
     $session{'tickets'} = RT::TicketCollection->new($session{'CurrentUser'});
     
@@ -91,8 +94,6 @@ if ($ARGS{'LimitStatus'}) {
 				       OPERATOR => "$oper"
 				      )
 }
-
-
 
 $session{'tickets'}->ApplyRestrictions;
 

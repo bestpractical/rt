@@ -132,7 +132,7 @@ sub ParseArgs  {
 	  $Message .= $msg;
 	}
       }
-      
+
       elsif ($ARGV[$i] eq "-steal")	{
 	$id=int($ARGV[++$i]);
 	
@@ -554,6 +554,8 @@ EOFORM
 --------------------------------------------------------------------------
 @{[$message->Headers]}
 EOFORM
+    my ($test1, $test2)=$message->Quote;
+    print "TEST: ", $$test1, $test2,"\n\n\n\n";
     if ($message->ContentType =~ m{^(text/plain|message)}) {
 	print $message->Content;
     } else {

@@ -2,7 +2,10 @@
 if (defined ($user) && defined ($pass)){
 	#TODO if the password is the user's password
 	$session{'CurrentUser'} = new RT::CurrentUser();
-	$session{'CurrentUser'}->Load($user);
+	unless ($session{'CurrentUser'}->Load($user)) {
+		&mc_comp("/Elements/Error", Why => "User Unknown");
+		$m->abort;
+	}
 
         $m->call_next;
 }

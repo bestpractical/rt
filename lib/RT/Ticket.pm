@@ -734,6 +734,7 @@ sub Resolve {
 
 # {{{ Date printing routines
 
+# Created and LastUpdated belongs to the RT::Record layer (and maybe even deeper)
 
 # {{{ sub DueAsString 
 sub DueAsString {
@@ -747,30 +748,11 @@ sub DueAsString {
 }
 # }}}
 
-# {{{ sub CreatedAsString
-sub CreatedAsString {
-  my $self = shift;
-  return (scalar(localtime($self->Created)));
-}
-# }}}
-
 # {{{ sub ToldAsString
 sub ToldAsString {
   my $self = shift;
   if ($self->Due) {
     return (scalar(localtime($self->Told)));
-  }
-  else {
-    return("Never");
-  }
-}
-# }}}
-
-# {{{ #sub LastUpdatedAsString
-sub LastUpdatedAsString {
-  my $self = shift;
-  if ($self->Due) {
-    return (scalar(localtime($self->LastUpdated)));
   }
   else {
     return("Never");

@@ -26,7 +26,7 @@ sub new  {
 sub _Accessible  {
   my $self = shift;
   my %Cols = (
-	      Transaction => 'read',
+	      TransactionId => 'read',
 	      MessageId => 'read',
 	      ContentType => 'read',
 	      Subject => 'read',
@@ -39,6 +39,16 @@ sub _Accessible  {
   return $self->SUPER::_Accessible(@_, %Cols);
 }
 # }}}
+
+sub TransactionObj {
+    require RT::Transaction;
+    my $self=shift;
+    unless (exists $self->{_TransactionObj}) {
+	$self->{_TransactionObj}=RT::Transaction->new($self->Creator);
+	$self->{_TransactionObj}->Load($self->TransactionId);
+    }
+    return $self->{_TransactionObj};
+}
 
 #take simple args and call RT::Record to do the real work.
 # {{{ sub Create 
@@ -120,6 +130,66 @@ sub Create  {
 }
 
 # }}}
+
+
+# {{{ sub Quote - it might be possible to use the Mail::Internet
+# utility methods ... but I do have a slight feeling that we'd rather
+# want to keep the old stuff I've made for rt1 ... or what? :)
+
+sub Quote {
+    my $self=shift;
+    my %args=(Reply=>undef, # Prefilled reply (i.e. from the KB/FAQ system)
+	      @_);
+    my ($quoted_content, $body, $headers);
+    my $max=0;
+    if ($self->ContentType =~ m{^(text/plain|message)}) {
+	$body=$self->Content;
+
+	# Do we need any preformatting (wrapping, that is) of the message?
+
+	# Remove trailing headers (from 1.0, this one might probably
+	# be gutted)
+	$body =~ s/--- Headers Follow ---\n\n(.*)$//s;
+
+	# Remove quoted signature.
+	$body =~ s/\n-- (.*)$//s;
+
+	# What's the longest line like?
+	foreach (split (/\n/,$body)) {
+	    $max=length if length>$max;
+	}
+
+	if ($max>76) {
+	    require Text::Wrapper;
+	    my $wrapper=new Text::Wrapper
+		(
+		 columns => 70, 
+		 body_start => ($max > 70*3 ? '   ' : ''),
+		 par_start => ''
+		 );
+	    $body=$wrapper->wrap($body);
+	}
+
+	$body =~ s/^/> /gm;
+
+	$body = '[' . $self->TransactionObj->Creator->UserId . ' - ' . $self->TransactionObj->AgeAsString 
+	            . "]\n\n[REMOVE THIS LINE, AND ANY EXCESSIVE LINES BELOW]\n"
+   	        . $body . "\n\n";
+
+    } else {
+	$body = "[non-text message gutted]\n\n";
+    }
+    
+    $body .= "[REMOVE THIS LINE. DOES THE REPLY MATCH THE QUESTION?]\n$args{Reply}"
+	if (defined($args{Reply}));
+    
+    $max=60 if $max<60;
+    $max=70 if $max>78;
+    $max+=2;
+    return (\$body, $max);
+}
+# }}}
+
 
 
 #ACCESS CONTROL
