@@ -123,6 +123,7 @@ my %FIELDS =
     ContentType	    => ['TRANSFIELD',],
     Filename        => ['TRANSFIELD',],
     TransactionDate => ['TRANSDATE',],
+    Updated => ['TRANSDATE',],
     Requestor       => ['WATCHERFIELD' => 'Requestor',],
     Requestors       => ['WATCHERFIELD' => 'Requestor',],
     Cc              => ['WATCHERFIELD' => 'Cc',],
@@ -479,6 +480,7 @@ Meta Data:
 
 =cut
 
+# This routine should really be factored into translimit.
 sub _TransDateLimit {
   my ($sb,$field,$op,$value,@rest) = @_;
 
@@ -489,19 +491,9 @@ sub _TransDateLimit {
   $sb->{_sql_trattachalias} = $sb->NewAlias ('Attachments')
     unless defined $sb->{_sql_trattachalias};
 
-  $sb->_OpenParen;
 
   # Join Transactions To Attachments
-  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
-
-  my $d = new RT::Date( $sb->CurrentUser );
-  $d->Set( Format => 'ISO', Value => $value);
-   $value = $d->ISO;
+  $sb->_OpenParen;
 
   #Search for the right field
   $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
@@ -511,6 +503,20 @@ sub _TransDateLimit {
 		 CASESENSITIVE => 0,
 		 @rest
 		);
+
+  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+	     ALIAS2 => $sb->{_transalias}, FIELD2 => 'id');
+
+  # Join Transactions to Tickets
+  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
+	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'ObjectId');
+
+  $sb->Limit( ALIAS => $sb->{_sql_transalias}, FIELD => 'ObjectType', VALUE => 'RT::Ticket');
+
+
+  my $d = new RT::Date( $sb->CurrentUser );
+  $d->Set( Format => 'ISO', Value => $value);
+   $value = $d->ISO;
 
   $sb->_CloseParen;
 }
@@ -557,25 +563,18 @@ sub _TransLimit {
   # them all into the same subclause when you have (A op B op C) - the
   # way they get parsed in the tree they're in different subclauses.
 
-  my ($sb,$field,$op,$value,@rest) = @_;
+  my ($self,$field,$op,$value,@rest) = @_;
 
-  $sb->{_sql_transalias} = $sb->NewAlias ('Transactions')
-    unless defined $sb->{_sql_transalias};
-  $sb->{_sql_trattachalias} = $sb->NewAlias ('Attachments')
-    unless defined $sb->{_sql_trattachalias};
+  $self->{_sql_transalias} = $self->NewAlias ('Transactions')
+    unless defined $self->{_sql_transalias};
+  $self->{_sql_trattachalias} = $self->NewAlias ('Attachments')
+    unless defined $self->{_sql_trattachalias};
 
-  $sb->_OpenParen;
 
-  # Join Transactions To Attachments
-  $sb->_SQLJoin( ALIAS1 => $sb->{_sql_trattachalias}, FIELD1 => 'TransactionId',
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'id');
-
-  # Join Transactions to Tickets
-  $sb->_SQLJoin( ALIAS1 => 'main', FIELD1 => $sb->{'primary_key'}, # UGH!
-	     ALIAS2 => $sb->{_sql_transalias}, FIELD2 => 'Ticket');
+    $self->_OpenParen;
 
   #Search for the right field
-  $sb->_SQLLimit(ALIAS => $sb->{_sql_trattachalias},
+  $self->_SQLLimit(ALIAS => $self->{_sql_trattachalias},
 		 FIELD =>    $field,
 		 OPERATOR => $op,
 		 VALUE =>    $value,
@@ -583,7 +582,18 @@ sub _TransLimit {
 		 @rest
 		);
 
-  $sb->_CloseParen;
+
+  $self->_SQLJoin( ALIAS1 => $self->{_sql_trattachalias}, FIELD1 => 'TransactionId',
+	     ALIAS2 => $self->{_sql_transalias}, FIELD2 => 'id');
+
+  # Join Transactions to Tickets
+  $self->_SQLJoin( ALIAS1 => 'main', FIELD1 => $self->{'primary_key'}, # Why not use "id" here?
+	     ALIAS2 => $self->{_sql_transalias}, FIELD2 => 'ObjectId');
+
+    $self->Limit( ALIAS => $self->{_sql_transalias}, FIELD => 'ObjectType', VALUE => 'RT::Ticket', ENTRYAGGREGATOR => 'AND');
+
+
+    $self->_CloseParen;
 
 }
 

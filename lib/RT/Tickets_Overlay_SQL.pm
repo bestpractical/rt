@@ -435,14 +435,13 @@ $query = ("Subject LIKE '$string' OR Content LIKE '$string'");
 
 my ($id, $msg) = $tix->FromSQL($query);
 
+
 ok ($id, $msg);
 
 is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
-
 while (my $tick = $tix->Next) {
     push @expectedids, $tick->Id;
 }
-
 ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
 
 $query = ("id = $ids[0] OR MemberOf = $ids[0]");
