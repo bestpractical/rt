@@ -291,6 +291,19 @@ ticket3,General,foo' bar,root,blah'boo
 ticket4,General,foo' bar,,blah'boo
 EOF
 
+
+# Comma delimited templates with missing data
+my $sparse_commas = <<"EOF";
+id,Queue,Subject,Owner,Requestor
+ticket14,General,,,bobby
+ticket15,General,,,tommy
+ticket16,General,,suzie,tommy
+ticket17,General,Foo "bar" baz,suzie,tommy
+ticket18,General,'Foo "bar" baz',suzie,tommy
+ticket19,General,'Foo bar' baz,suzie,tommy
+EOF
+
+
 # tab-delimited templates
 my $tabs = <<"EOF";
 id\tQueue\tSubject\tOwner\tContent
@@ -366,7 +379,49 @@ Content: blah'boo
 ENDOFCONTENT
 EOF
 
+
+$expected{'ticket14'} = <<EOF;
+Queue: General
+Subject: 
+Owner: 
+Requestor: bobby
+EOF
+$expected{'ticket15'} = <<EOF;
+Queue: General
+Subject: 
+Owner: 
+Requestor: tommy
+EOF
+$expected{'ticket16'} = <<EOF;
+Queue: General
+Subject: 
+Owner: suzie
+Requestor: tommy
+EOF
+$expected{'ticket17'} = <<EOF;
+Queue: General
+Subject: Foo "bar" baz
+Owner: suzie
+Requestor: tommy
+EOF
+$expected{'ticket18'} = <<EOF;
+Queue: General
+Subject: Foo "bar" baz
+Owner: suzie
+Requestor: tommy
+EOF
+$expected{'ticket19'} = <<EOF;
+Queue: General
+Subject: 'Foo bar' baz
+Owner: suzie
+Requestor: tommy
+EOF
+
+
+
+
 $action->Parse(Content =>$commas);
+$action->Parse(Content =>$sparse_commas);
 $action->Parse(Content => $tabs);
 
 my %got;
@@ -374,7 +429,7 @@ foreach (@{ $action->{'create_tickets'} }) {
   $got{$_} = $action->{'templates'}->{$_};
 }
 
-foreach my $id ( keys %expected ) {
+foreach my $id ( sort keys %expected ) {
     ok(exists($got{"create-$id"}), "template exists for $id");
     is($got{"create-$id"}, $expected{$id}, "template is correct for $id");
 }
@@ -760,10 +815,13 @@ sub Parse {
         else {
             $delimiter = ',';
         }
-        my $delimited = qr[[^$delimiter]+];
         my @fields    = split( /$delimiter/, $first );
-        my $empty     = qr[[$delimiter][$delimiter]];
+        
 
+        my $delimiter_re = qr[$delimiter];
+
+        my $delimited = qr[[^$delimiter]+];
+        my $empty     = qr[^[$delimiter](?=[$delimiter])];
         my $justquoted = qr[$RE{quoted}];
 
         $args{'Content'} = substr( $args{'Content'}, index( $args{'Content'}, "\n" ) + 1 );
@@ -777,7 +835,7 @@ sub Parse {
             # first item is $template_id
             my $i = 0;
             my $template_id;
-            while ( $line =~ /($justquoted|$delimited|$empty)/igx ) {
+            while ($line && $line =~ s/^($justquoted|.*?)(?:$delimiter_re|$)//ix) {
                 if ( $i == 0 ) {
                     $queue     = 0;
                     $requestor = 0;
@@ -791,10 +849,10 @@ sub Parse {
                 }
                 else {
                     my $value = $1;
-                    $value = '' if ( $value =~ /^$empty$/ );
-                    if ( $value =~ /$justquoted/ ) {
-                        $value =~ s/^\"|\'//;
-                        $value =~ s/\"|\'$//;
+                    $value = '' if ( $value =~ /^$delimiter$/ );
+                    if ($value =~ /^$RE{delimited}{-delim=>qq{\'\"}}$/) {
+                        substr($value,0,1) = "";
+                    substr($value,-1,1) = "";
                     }
                     my $field = $fields[$i];
                     next unless $field;
@@ -826,7 +884,6 @@ sub Parse {
                     $self->{'templates'}->{$template_id} .= "\n";
                     $self->{'templates'}->{$template_id} .= "ENDOFCONTENT\n"
                       if $field =~ /content/i;
-                    $RT::Logger->debug( $field . ": $1" );
                 }
                 $i++;
             }

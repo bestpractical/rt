@@ -94,6 +94,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
 	$template .= $buffer;
     }
+    $template =~ s/\r\n/\n/gs;
     $action->Parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);
     foreach (@{ $action->{'create_tickets'} }) {
 	my $id = $_;
