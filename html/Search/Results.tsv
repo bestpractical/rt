@@ -52,7 +52,6 @@ $m->out("\n");
 foreach my $row (@rows) {
         my @row;
         foreach my $attr(@attrs) {
-                $RT::Logger->crit("Looking at $attr");
                 push @row, $row->{"$attr"};
         }
     foreach my $id (sort keys %known_cfs) {
