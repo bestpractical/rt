@@ -303,9 +303,22 @@ Set($WebExternalGecos , undef);
 
 Set($WebExternalAuto , undef);
 
+# $WebSessionClass is the class you wish to use for managing Sessions.
+# It defaults to use your SQL database, but if you are using MySQL 3.x and
+# plans to use non-ascii Queue names, uncomment and add this line to
+# RT_SiteConfig.pm will prevent session corruption.
+
+# Set($WebSessionClass , 'Apache::Session::File');
+
 # }}}
 
 # {{{ RT UTF-8 Settings
+
+# An array that contains languages supported by RT's internationalization
+# interface.  Defaults to all *.po lexicons; set it to qw(en ja) will make
+# RT bilingual instead of multilingual, but will save same memory.
+
+@LexiconLanguages = qw(*) unless (@LexiconLanguages);
 
 # An array that contains default encodings used to guess which charset
 # an attachment uses if not specified.  Must be recognized by

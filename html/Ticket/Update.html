@@ -168,14 +168,18 @@ foreach my $key (keys %ARGS) {
 if ($ARGS{'Attach'}) {			# attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
+    my $subject = "$ARGS{'Attach'}";
+    # since CGI.pm deutf8izes the magic field, we need to add it back.
+    Encode::_utf8_on($subject);
     # strip leading directories
-    $ARGS{'Attach'} =~ s#^.*[\\/]##;
+    $subject =~ s#^.*[\\/]##;
 
     my $attachment = MakeMIMEEntity(
-        Subject             => "$ARGS{'Attach'}",
+        Subject             => $subject,
         Body                => "",
         AttachmentFieldName => 'Attach'
     );
+
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
 				$ARGS{'Attach'} => $attachment };
 }

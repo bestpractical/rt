@@ -4869,6 +4869,3 @@ msgstr ""
 #: lib/RT/Date.pm:331
 msgid "years"
 msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "דƒ‹דƒƒד‚¯דƒ

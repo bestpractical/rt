@@ -43,35 +43,26 @@
 
      }
 
-     my $content_type =  $AttachmentObj->ContentType || 'text/plain';
+     my $content_type = $AttachmentObj->ContentType || 'text/plain';
         
      unless ($RT::TrustHTMLAttachments) {
          $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
      }
 
-     unless ($RT::TrustMIMEAttachments) {
-         $content_type = 'application/octet-stream' unless ($content_type eq 'text/plain');
+     if (my $enc = $AttachmentObj->OriginalEncoding) {
+	# normalize Encode.pm convention with IANA ones
+        $enc = 'big5'  if $enc eq 'big5-eten';
+        $enc = 'utf-8' if $enc eq 'utf8';
+	$content_type .= ";charset=$enc";
      }
 
-     $r->content_type( $content_type);
+     # unless ($RT::TrustMIMEAttachments) {
+     #     $content_type = 'application/octet-stream';
+     # }
+
+     $r->content_type( $content_type );
      $m->clear_buffer();
-         # sometimes binary attachments is converted to utf-8.  this
-         # seems to fix the problem.
-         #
-         # This bug is VERY DIFFICULT to reproduce.  You have to
-         # reload many many times to get a chance to see it.  That's
-         # why I'm not sure if this will fix it for good.
-
-     if ($RT::TextAttachmentsAsUTF8) {
-         my $Content = $AttachmentObj->Content;
-         if ($AttachmentObj->ContentType =~ /^text\//i) {
-                 Encode::_utf8_on($Content);
-         }
-         $m->out($Content);
-     }
-     else {
-         $m->out($AttachmentObj->Content);
-     }
+     $m->out($AttachmentObj->OriginalContent);
      $m->abort; 
 </%perl>
 

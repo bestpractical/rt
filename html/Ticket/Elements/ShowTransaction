@@ -38,13 +38,8 @@ unless ($Collapsed) {
  while (my $message=$attachments->Next) {
      #we don't want to show any empty transactions, unless they have kids
      next unless ($message->ContentLength || $message->Children->Count);
-     my ($headers, $content);
-     
-    </%PERL>
 
-
-<%PERL>
-  my $quoted;
+  my ($headers, $quoted);
   if ($message->Parent == 0) {
       if ($ShowHeaders && ($ShowHeaders == $Ticket->Id)) {
 	  $headers = $message->Headers;
@@ -63,17 +58,13 @@ unless ($Collapsed) {
      if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
 				    $message->ContentLength < $MAX_INLINE_BODY ) {
          require Text::Quoted;
-         $quoted = Text::Quoted::extract($message->Content); 
-
-     }
-     else {
-	 $content = "&nbsp;";
+	 $quoted = Text::Quoted::extract($message->Content); 
      }
         
 </%PERL>
 <TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >                                
       <TD BGCOLOR="<%$bgcolor%>">&nbsp;&nbsp;</TD>
-      <TD>&nbsp&nbsp;</TD>
+      <TD>&nbsp;&nbsp;</TD>
       <TD COLSPAN=3 VALIGN=TOP>
 <span class="message">
 	<PRE>

@@ -27,8 +27,8 @@ my %backends = (
     mysql	=> 'Apache::Session::MySQL',
     Pg		=> 'Apache::Session::Postgres',
     Oracle	=> 'Apache::Session::Oracle',
-);
-my $session_class = $backends{$RT::DatabaseType} || 'Apache::Session::File';
+) unless $RT::WebSessionClass;
+my $session_class = $RT::WebSessionClass || $backends{$RT::DatabaseType} || 'Apache::Session::File';
 my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
     eval {

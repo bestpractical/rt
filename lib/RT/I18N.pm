@@ -234,14 +234,12 @@ sub SetMIMEEntityToEncoding {
                 }
             }
         }
-#       elsif ( $enc eq 'utf-8' ) {
-#           Encode::_utf8_on( $lines[$_] ) foreach ( 0 .. $#lines );
-#       }
 
         my $new_body = MIME::Body::InCore->new( \@lines );
 
         # set up the new entity
         $head->mime_attr( "content-type.charset" => $enc );
+        $head->add( "X-RT-Original-Encoding" => $charset );
         $entity->bodyhandle($new_body);
     }
 }

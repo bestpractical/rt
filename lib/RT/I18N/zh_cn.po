@@ -1075,7 +1075,7 @@ msgstr "修改申请单"
 
 #: html/SelfService/Prefs.html:30
 msgid "Change password"
-msgstr "更改密码"
+msgstr "更改口令"
 
 #: html/Edit/Global/Basic/Top:70
 msgid "ChangeOwnerUI"
@@ -1204,11 +1204,11 @@ msgstr "设定"
 
 #: html/SelfService/Prefs.html:32
 msgid "Confirm"
-msgstr "确认密码"
+msgstr "确认口令"
 
 #: NOT FOUND IN SOURCE
 msgid "Confirm Password"
-msgstr "密码确认"
+msgstr "口令确认"
 
 #: html/Work/Approvals/Display.html:25 html/Work/Tickets/Create.html:163 html/Work/Tickets/Create.html:175 html/Work/Tickets/Update.html:106
 msgid "Confirm Submit"
@@ -2293,6 +2293,10 @@ msgstr "单选填表"
 msgid "EntryTime"
 msgstr "时间填表"
 
+#: lib/RT/CustomField_Vendor.pm:17
+msgid "EntryNumber"
+msgstr "数值填表"
+
 #: html/Elements/Login:38 html/SelfService/Error.html:24 html/SelfService/Error.html:25
 msgid "Error"
 msgstr "错误"
@@ -2343,7 +2347,7 @@ msgstr "外部数据库连结字符串"
 
 #: html/Edit/Global/Basic/Top:68
 msgid "ExternalDatabasePass"
-msgstr "外部数据库密码"
+msgstr "外部数据库口令"
 
 #: html/Edit/Global/Basic/Top:66
 msgid "ExternalDatabaseUser"
@@ -2521,7 +2525,7 @@ msgstr "多重输入"
 
 #: lib/RT/CustomField_Vendor.pm:13
 msgid "FreeformPassword"
-msgstr "密码输入"
+msgstr "口令输入"
 
 #: lib/RT/CustomField_Overlay.pm:36
 msgid "FreeformSingle"
@@ -2530,6 +2534,10 @@ msgstr "单一输入"
 #: lib/RT/CustomField_Vendor.pm:12
 msgid "FreeformTime"
 msgstr "时间输入"
+
+#: lib/RT/CustomField_Vendor.pm:17
+msgid "FreeformNumber"
+msgstr "数值输入"
 
 #: NOT FOUND IN SOURCE
 msgid "Fri"
@@ -3141,7 +3149,7 @@ msgstr "管理各表单及相关属性"
 
 #: html/Admin/index.html:29
 msgid "Manage users and passwords"
-msgstr "管理使用者与密码"
+msgstr "管理使用者与口令"
 
 #: NOT FOUND IN SOURCE
 msgid "Manager"
@@ -3531,7 +3539,7 @@ msgstr "新建立"
 
 #: html/Admin/Elements/ModifyUser:31 html/Admin/Users/Modify.html:92 html/Edit/Elements/ModifyUser:32 html/User/Prefs.html:64 html/Work/Preferences/Info:34
 msgid "New Password"
-msgstr "新的密码"
+msgstr "新的口令"
 
 #: etc/initialdata:317 etc/upgrade/2.1.71:16 html/Edit/Elements/CreateApprovalsQueue:21
 msgid "New Pending Approval"
@@ -3559,11 +3567,11 @@ msgstr "新增群组"
 
 #: html/SelfService/Prefs.html:31
 msgid "New password"
-msgstr "新的密码"
+msgstr "新的口令"
 
 #: lib/RT/User_Overlay.pm:706
 msgid "New password notification sent"
-msgstr "送出新密码通知"
+msgstr "送出新口令通知"
 
 #: html/Admin/Elements/QueueTabs:69
 msgid "New queue"
@@ -3704,7 +3712,7 @@ msgstr "未指定群组"
 
 #: lib/RT/User_Overlay.pm:924
 msgid "No password set"
-msgstr "没有设定密码"
+msgstr "没有设定口令"
 
 #: lib/RT/Queue_Overlay.pm:258
 msgid "No permission to create queues"
@@ -4127,28 +4135,28 @@ msgstr "停车位申请"
 
 #: html/Elements/Login:51 html/User/Prefs.html:60 html/Work/Preferences/Info:31
 msgid "Password"
-msgstr "密码"
+msgstr "口令"
 
 #: html/NoAuth/Reminder.html:24
 msgid "Password Reminder"
-msgstr "密码提示"
+msgstr "口令提示"
 
 #: lib/RT/User_Overlay.pm:228 lib/RT/User_Overlay.pm:927
 msgid "Password too short"
-msgstr "密码太短"
+msgstr "口令太短"
 
 #: html/Admin/Users/Modify.html:290 html/User/Prefs.html:171 html/Work/Preferences/Info:134
 #. (loc_fuzzy($msg))
 msgid "Password: %1"
-msgstr "密码：%1"
+msgstr "口令：%1"
 
 #: html/Admin/Users/Modify.html:292
 msgid "Passwords do not match."
-msgstr "密码确认失败。"
+msgstr "口令确认失败。"
 
 #: html/User/Prefs.html:173 html/Work/Preferences/Info:136
 msgid "Passwords do not match. Your password has not been changed"
-msgstr "密码确认失败。您的密码并未改变。"
+msgstr "口令确认失败。您的口令并未改变。"
 
 #: NOT FOUND IN SOURCE
 msgid "Pelase select a queue"
@@ -4703,7 +4711,7 @@ msgstr "每页列出几笔结果"
 
 #: html/Admin/Elements/ModifyUser:32 html/Admin/Users/Modify.html:99 html/Edit/Elements/ModifyUser:33 html/User/Prefs.html:71 html/Work/Preferences/Info:41
 msgid "Retype Password"
-msgstr "再次输入密码"
+msgstr "再次输入口令"
 
 #: NOT FOUND IN SOURCE
 msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
@@ -5792,7 +5800,7 @@ msgstr "使用者 %1 %2：%3\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "User %1 Password: %2\\n"
-msgstr "使用者 %1 密码：%2\\n"
+msgstr "使用者 %1 口令：%2\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "User '%1' not found"
@@ -6055,7 +6063,7 @@ msgstr "您的申请单已被驳回。"
 
 #: html/autohandler:139
 msgid "Your username or password is incorrect"
-msgstr "您的帐号或密码有误"
+msgstr "您的帐号或口令有误"
 
 #: html/Admin/Elements/ModifyUser:83 html/Admin/Users/Modify.html:143 html/Edit/Elements/ModifyUser:84 html/User/Prefs.html:95 html/Work/Preferences/Info:65
 msgid "Zip"

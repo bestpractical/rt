@@ -259,8 +259,12 @@ before returning it.
 sub Content {
   my $self = shift;
   if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
-      return $self->_Value('Content',
-                           decode_utf8 => ($self->ContentType =~ m/^text/i || 0 ) );
+      if ($self->ContentType eq 'text/plain') {
+	  my $content = $self->_Value( 'Content', decode_utf8 => 0);
+#	  Encode::_utf8_on($content); # XXX - this line is needed, but we don't know why.
+	  return Encode::decode_utf8($content);
+      }
+      return $self->_Value( 'Content', decode_utf8 => 0);
   } elsif ( $self->ContentEncoding eq 'base64' ) {
       return MIME::Base64::decode_base64($self->_Value('Content'));
   } else {
@@ -268,6 +272,58 @@ sub Content {
   }
 }
 
+
+# }}}
+
+
+# {{{ sub OriginalContent
+
+=head2 OriginalContent
+
+Returns the attachment's content as octets before RT's mangling.
+Currently, this just means restoring text/plain content back to its
+original encoding.
+
+=cut
+
+sub OriginalContent {
+  my $self = shift;
+
+  return $self->Content unless $self->ContentType eq 'text/plain';
+  my $enc = $self->OriginalEncoding;
+
+  my $content;
+  if ( $self->ContentEncoding eq 'none' || ! $self->ContentEncoding ) {
+      $content = $self->_Value('Content', decode_utf8 => 0);
+  } elsif ( $self->ContentEncoding eq 'base64' ) {
+      $content = MIME::Base64::decode_base64($self->_Value('Content', decode_utf8 => 0));
+  } else {
+      return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
+  }
+
+  # Encode::_utf8_on($content);
+  if (!$enc or $enc eq 'utf8' or $enc eq 'utf-8') {
+    return Encode::decode_utf8($content);
+  }
+  Encode::from_to($content, 'utf8' => $enc);
+  return $content;
+}
+
+# }}}
+
+
+# {{{ sub OriginalEncoding
+
+=head2 OriginalEncoding
+
+Returns the attachment's original encoding.
+
+=cut
+
+sub OriginalEncoding {
+  my $self = shift;
+  return $self->GetHeader('X-RT-Original-Encoding');
+}
 
 # }}}
 
@@ -405,7 +461,7 @@ sub GetHeader {
     my $self = shift;
     my $tag = shift;
     foreach my $line (split(/\n/,$self->SUPER::Headers)) {
-        if ($line =~ /^$tag:\s+(.*)$/i) { #if we find the header, return its value
+        if ($line =~ /^\Q$tag\E:\s+(.*)$/i) { #if we find the header, return its value
             return ($1);
         }
     }

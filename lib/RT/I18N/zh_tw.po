@@ -2293,6 +2293,10 @@ msgstr "單選填表"
 msgid "EntryTime"
 msgstr "時間填表"
 
+#: lib/RT/CustomField_Vendor.pm:17
+msgid "EntryNumber"
+msgstr "數值填表"
+
 #: html/Elements/Login:38 html/SelfService/Error.html:24 html/SelfService/Error.html:25
 msgid "Error"
 msgstr "錯誤"
@@ -2530,6 +2534,10 @@ msgstr "單一輸入"
 #: lib/RT/CustomField_Vendor.pm:12
 msgid "FreeformTime"
 msgstr "時間輸入"
+
+#: lib/RT/CustomField_Vendor.pm:17
+msgid "FreeformNumber"
+msgstr "數值輸入"
 
 #: NOT FOUND IN SOURCE
 msgid "Fri"

@@ -433,7 +433,7 @@ sub MakeMIMEEntity {
         Cc                  => undef,
         Body                => undef,
         AttachmentFieldName => undef,
-        @_
+        map Encode::encode_utf8($_), @_,
     );
 
     #Make the update content have no 'weird' newlines in it
@@ -452,8 +452,6 @@ sub MakeMIMEEntity {
             Data    => [ $args{'Body'} ]
         );
     }
-
-    RT::I18N::SetMIMEEntityToUTF8($Message); # convert text parts into utf-8
 
     my $cgi_object = $m->cgi_object;
 
@@ -483,7 +481,7 @@ sub MakeMIMEEntity {
 
     $Message->attach(
         Path     => $temp_file,
-        Filename => Encode::decode_utf8($filename),
+        Filename => $filename,
         Type     => $uploadinfo->{'Content-Type'},
     );
     close($fh);
@@ -493,6 +491,8 @@ sub MakeMIMEEntity {
     }
 
     $Message->make_singlepart();
+    RT::I18N::SetMIMEEntityToUTF8($Message); # convert text parts into utf-8
+
     return ($Message);
 
 }
