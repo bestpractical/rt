@@ -239,16 +239,24 @@ sub Message  {
 
 # {{{ sub Content
 
-=head2 Content
+=head2 Content PARAMHASH
 
 If this transaction has attached mime objects, returns the first text/ part.
 Otherwise, returns undef.
+
+Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
+at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
+
 
 =cut
 
 sub Content {
     my $self = shift;
+    my %args = ( Quote => 0,
+		 Wrap => 70,
+		 @_ );
 
+    my $content = undef;
 
     # If we don\'t have any content, return undef now.
     unless ($self->Message->First) {
@@ -261,19 +269,19 @@ sub Content {
     # If it's a message or a plain part, just return the
     # body. 
     if ($MIMEObj->ContentType() =~ '^(text|message)/') {
-	return ($MIMEObj->Content());
+	$content = $MIMEObj->Content();
     }
     
     # If it's a multipart object, first try returning the first 
     # text/plain part. 
     
-    if ($MIMEObj->ContentType() =~ '^multipart/') {
+    elsif ($MIMEObj->ContentType() =~ '^multipart/') {
 	my $plain_parts = $MIMEObj->Children();
 	$plain_parts->ContentType(VALUE => 'text/plain');
 	
 	# If we actully found a part, return its content
 	if ($plain_parts->First) {
-	    return ($plain_parts->First->Content);		
+	    $content = $plain_parts->First->Content;		
 	}	
 	
 	# If that fails, return the  first text/ or message/ part 
@@ -281,10 +289,11 @@ sub Content {
     
 	else {
 	    my $all_parts = $MIMEObj->Children();
-	    while (my $part = $all_parts->Next) {
+	    while (($content == undef) && 
+		   (my $part = $all_parts->Next)) {
 		if (($part->ContentType() =~ '^(text|message)/') and
 		    ($part->Content())) {
-		    return ($part->Content);
+		    $content = $part->Content;
 		}	
 	    }
 	}	
@@ -292,10 +301,39 @@ sub Content {
     }
     # If all else fails, return a message that we couldn't find
     # any content
-    
-    return ('This transaction appears to have no content');
-}	
+    else { 
+        $content = 'This transaction appears to have no content';
+    }	
 
+    if ($args{'Quote'}) {
+	# Remove quoted signature.
+	$content =~ s/\n-- \n(.*)$//s;
+
+	# What's the longest line like?
+	foreach (split (/\n/,$content)) {
+	    $max=length if ( length > $max);
+	}
+
+	if ($max>76) {
+	    require Text::Wrapper;
+	    my $wrapper=new Text::Wrapper
+		(
+		 columns => $args{'Wrap'}, 
+		 body_start => ($max > 70*3 ? '   ' : ''),
+		 par_start => ''
+		 );
+	    $content=$wrapper->wrap($content);
+	}
+
+	$content =~ s/^/> /gm;
+	$content = '[' . $self->CreatorObj->Name() . ' - ' . $self->CreatedAsString()
+	            . "]:\n\n"
+   	        . $content . "\n\n";
+
+    }
+
+    return ($content); 
+}
 # }}}
 
 # {{{ sub Subject
