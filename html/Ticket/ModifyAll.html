@@ -119,13 +119,29 @@ unless ($OnlySearchForPeople) {
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+    if ($ARGS{'UpdateAttachment'}) {
+        my $subject = "$ARGS{'UpdateAttachment'}";
+        # since CGI.pm deutf8izes the magic field, we need to add it back.
+        Encode::_utf8_on($subject);
+        # strip leading directories
+        $subject =~ s#^.*[\\/]##;
 
-    if ($ARGS{'UpdateContent'} && 
-	$ARGS{'UpdateContent'} ne '' && 
+        my $attachment = MakeMIMEEntity(
+           Subject             => $subject,
+           Body                => "",
+           AttachmentFieldName => 'UpdateAttachment'
+        );
+	delete $ARGS{'UpdateAttachment'};
+	$ARGS{'UpdateAttachments'}->{ $subject } = $attachment;
+    }
+
+    $ARGS{'UpdateContent'} =~ s/\r+\n/\n/g;
+
+    if ($ARGS{'UpdateAttachments'} || (
+        $ARGS{'UpdateContent'} &&
 	$ARGS{'UpdateContent'} ne  "-- \n" . 
 				$session{'CurrentUser'}->UserObj->Signature
-       ) {
+       )) {
    	 ProcessUpdateMessage(TicketObj => $Ticket, 
 			      ARGSRef=>\%ARGS, 
                               Actions=>\@results);
