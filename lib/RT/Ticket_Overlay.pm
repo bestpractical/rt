@@ -455,6 +455,8 @@ sub Create {
         $Owner = RT::User->new( $self->CurrentUser );
         $Owner->Load( $args{'Owner'} );
 
+	push @non_fatal_errors, $self->loc("Owner could not be set.  User '[_1]' could not be loaded", $args{'Owner'}) unless ($Owner->Id);
+
     }
 
     #If we have a proposed owner and they don't have the right 
@@ -473,7 +475,7 @@ sub Create {
                               . "as a ticket owner but has no rights to own "
                               . "tickets in ".$QueueObj->Name );
 
-        push @non_fatal_errors, $self->loc("Invalid owner. Defaulting to 'nobody'.");
+        push @non_fatal_errors, $self->loc("Owner '[_1]' does not have rights to own this ticket.  Defaulting to 'Nobody'.", $Owner->Name);
 
         $Owner = undef;
     }
@@ -646,6 +648,9 @@ sub Create {
             $ErrStr = join ( "\n", $ErrStr, @non_fatal_errors );
 
             $RT::Logger->info("Ticket ".$self->Id. " created in queue '".$QueueObj->Name."' by ".$self->CurrentUser->Name);
+	    $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
+	    $ErrStr = join ( "\n", $ErrStr, @non_fatal_errors );
+	    return ( $self->Id, $0, $ErrStr );
         }
         else {
             $RT::Handle->Rollback();

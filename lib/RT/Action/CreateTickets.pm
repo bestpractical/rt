@@ -379,8 +379,9 @@ sub CreateByTemplate {
 
 	my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%$ticketargs);
 
-	push @results, $T::Tickets{$template_id}->loc("Ticket [_1]", $T::Tickets{$template_id}->Id) . ': ' .$msg;
-
+	foreach my $res (split('\n', $msg)) {
+	    push @results, $T::Tickets{$template_id}->loc("Ticket [_1]", $T::Tickets{$template_id}->Id) . ': ' .$res;
+	}
 	if (!$id) {
 	    if ($self->TicketObj) {
 		$msg = "Couldn't create related ticket $template_id for ".
