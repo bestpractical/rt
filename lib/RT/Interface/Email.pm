@@ -23,26 +23,45 @@ sub activate  {
     
     # {{{ Parse the MIME entity
 
-    #TODO: This should be pid + time + a random # for safety.
-    my $AttachmentDir = "/tmp/rt-tmp-$time";
-    mkdir "$AttachmentDir", 0700;
-    
     # Create a new parser object:
     use MIME::Parser;
     use Mail::Address;
     
     my $parser = new MIME::Parser;
     
+    # {{{ Config $parser to store large attacments in temp dir
+
+    ## TODO: Does it make sense storing to disk at all?  After all, we
+    ## need to put each msg as an in-core scalar before saving it to
+    ## the database, don't we?
+
+    ## TODO: Remove the temp dir when we don't need it any more.
+
+    my $AttachmentDir = "/tmp/rt-tmp-$time-$$-".int(rand(100));
+    
+    ## TODO: Will die and bounce if the disk goes full or if there are
+    ## other reasons why we couldn't create this dir.  Is that right?
+    ## Can we do it better?  Tobix thinks that any caring RT
+    ## administrator should set up config.pm to send an email or maybe
+    ## even a mail to a pager whenever RT dies, is this a good enough
+    ## assumption, or should we also log it as an emergency?  Or even
+    ## explicitly send a mail to RT-Owner?  It's also a bit flawed to
+    ## die here, as the temp directory is only needed for the biggest
+    ## attachments.
+    mkdir("$AttachmentDir", 0700) || die "Couldn't create temp dir!";
+    
     # Set up output directory for files:
     $parser->output_dir("$AttachmentDir");
     
     # Set up the prefix for files with auto-generated names:
     $parser->output_prefix("part");
-    
+
     # If content length is <= 20000 bytes, store each msg as in-core scalar;
     # Else, write to a disk file (the default action):
     $parser->output_to_core(20000);
-    
+
+    # }}} (temporary directory)
+
     #Ok. now that we're set up, let's get the stdin.
     #TODO: Deal with this error better
     my $entity = $parser->read(\*STDIN) or die "couldn't parse MIME stream";
@@ -78,6 +97,14 @@ sub activate  {
 	# This might wreak havoc with vacation-mailing users.
 	# Maybe have a "disabled for bouncing" state that gets
 	# turned off when we get a legit incoming message
+
+	# Tobix: I don't think we should turn off watchers, I think we
+	# should only stop _this_ transaction from generating emails.
+	# A "silent transaction" mode - yeah, that was also a
+	# suggested feature at RTCon.  That will be enough from
+	# stopping loops.  TODO: I also think it's important that it's
+	# clearly written in the ticket history that this is a "silent
+	# transaction"
     }
 
     #If it's actually a _local loop_ we want to warn someone
@@ -85,13 +112,21 @@ sub activate  {
 	$RT::Logger->crit("RT Recieved mail from itself");
         
 	#Should we mail it to RTOwner?
+	## TODO: This should be documented in config.pm
 	if ($RT::LoopsToRTOwner) {
 	    &MailError(To => $RT::OwnerEmail,
 		       Subject => "RT Bounce: $subject",
 		       Explanation => "RT thinks this message may be a bounce",
 		       MIMEObj => $entity);
-	      #Do we actually want to store it?
-	      return unless ($RT::StoreLoops);
+
+
+	    ## TODO: This return belongs to the outside of this
+	    ## if-scope, and it has to be documented it in config.pm.
+	    ## I think it makes sense to have it on as default, ref
+	    ## [fsck #291]
+
+	    #Do we actually want to store it?
+	    return unless ($RT::StoreLoops);
 	}
     }
     
@@ -104,6 +139,9 @@ sub activate  {
 
 
     if ($SquelchReplies) {
+	## TODO: This is a hack.  It should be some other way to
+	## indicate that the transaction should be "silent".
+
 	$head->add('RT-Mailing-Loop-Alarm', 'True');
     }
  
@@ -354,10 +392,11 @@ sub GetCurrentUser  {
     my $SystemUser = new RT::CurrentUser(1);
     my $NewUser = RT::User->new($SystemUser);#Create a user as root 
     #TODO: Figure out a better way to do this
+    ## Tobix: What's wrong with this way?
     my ($Val, $Message) = $NewUser->Create(UserId => $FromObj->address,
 					   EmailAddress => $FromObj->address,
 					   RealName => "$Name",
-					   Password => "Default", #TODO FIX THIS
+					   Password => undef,
 					   CanManipulate => 0,
 					   Comments => undef
 					  );
