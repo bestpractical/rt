@@ -49,7 +49,7 @@ o   Perl 5.8.3 or later (http://www.perl.com).
 	    is unsupported in that configuration.
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:  Mysql 4.0.13 or later. 
+        Currently supported:  Mysql 4.0.13 or later with InnoDB support.
                               Postgres 7.2 or later.
                               Oracle 9iR2.
         Beta-quality support for Informix and SQLite is also available.
