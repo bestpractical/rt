@@ -14,7 +14,7 @@ BINDIR=${DATABASEHOME}/bin
 PATH=$PATH:$BINDIR
 export PATH
 
-#echo "Enter the postgres administrator's database password to create a new user for rt"
+echo "Enter the postgres administrator's database password to create a new user for rt"
 
 if [ "fnord$PORT" != "fnord" ]; then
 	$PORT = "-p $PORT"
@@ -24,5 +24,5 @@ if [ "fnord$HOSTNAME" != "fnord" ]; then
 	$HOSTNAME = "-h $HOSTNAME"
 fi;
 
-echo $DBAPASSWD | psql $HOSTNAME $PORT -d $DATABASENAME -f $DATABASEACLS -U $DATABASEADMIN -W
+psql $HOSTNAME $PORT -d $DATABASENAME -f $DATABASEACLS -U $DATABASEADMIN
 

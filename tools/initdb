@@ -20,12 +20,6 @@ $SCHEMA_FILE = "$SCHEMA_DIR/schema.pm"; #hmm
 ($DB_TYPE, $DB_HOME, $DB_HOST, $DB_PORT, $DB_DBA, $DB_DATABASE, $ACTION) = @ARGV;
 
 
-if ($ACTION =~ /unattended/) {
-	my $line = <STDIN>;
-	chomp($line);
-	$DB_DBA_PASSWORD = $line;
-}
-
 if ($DEBUG) {
   print_config_params();
 }
@@ -45,26 +39,26 @@ elsif ($DB_TYPE eq 'Oracle') {
 }
 
 
-if ($ACTION =~ 'create') {
+if ($ACTION eq 'create') {
     unless ($DB_TYPE eq 'Oracle') {
         print "Now creating a database for RT.\n";
 	prompt_for_dba_password();
 	create_db();
     }
 }
-elsif ($ACTION =~ 'drop' ) {
+elsif ($ACTION eq 'drop' ) {
     unless ($DB_TYPE eq 'Oracle') {
 	print "Now dropping the RT2 database.\n";
         prompt_for_dba_password();
         drop_db();
     }
 }
-elsif ($ACTION =~ 'insert' ) {
+elsif ($ACTION eq 'insert' ) {
     print "Now populating database schema.\n";
     prompt_for_dba_password();
     insert_schema();
 }
-elsif ($ACTION =~ 'generate') {
+elsif ($ACTION eq 'generate') {
     prompt_for_dba_password();
     generate_schema();
 }
@@ -77,16 +71,13 @@ else {
 # {{{ sub prompt_for_dba_password
 
 sub prompt_for_dba_password {
+    print "Enter the $DB_TYPE password for $DB_DBA: ";
 
-    unless (defined $DB_DBA_PASSWORD) {
+    system "stty -echo";
+    $DB_DBA_PASSWORD = scalar(<STDIN>); #keep off commandline
+    system "stty echo";
+    chomp $DB_DBA_PASSWORD;
 
-    	print "Enter the $DB_TYPE password for $DB_DBA: ";
-
-   	 system "stty -echo";
-    	$DB_DBA_PASSWORD = <STDIN>; #keep off commandline
-    	system "stty echo";
-    	chomp $DB_DBA_PASSWORD;
-    }
 }
 # }}}
 
@@ -218,7 +209,7 @@ sub create_db {
 # {{{ sub _yesno
 sub _yesno {
     print "Proceed [y/N]:";
-    my $x = <STDIN>;
+    my $x = scalar(<STDIN>);
     $x =~ /^y/i;
 }
 
