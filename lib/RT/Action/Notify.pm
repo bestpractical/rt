@@ -5,6 +5,16 @@ require RT::Action::SendEmail;
 @ISA = qw(RT::Action::SendEmail);
 
 
+# {{{ sub SetRecipients
+
+=head2 SetRecipients
+
+Sets the recipients of this meesage to Owner, Requestor, AdminCc, Cc or All. 
+Explicitly B<does not> notify the creator of the transaction.
+
+=cut
+
+
 sub SetRecipients {
     my $self=shift;
 
@@ -13,10 +23,10 @@ sub SetRecipients {
     $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
     
 
-    my (@To, @Cc, @Bcc, $To, $Cc, $Bcc);
+    my (@To, @Cc, @Bcc);
 
     if ($arg =~ /\bRequestor\b/) {
-	push(@To, $self->TicketObj->RequestorsAsString);
+	push(@To, @{$self->TicketObj->Requestors->Emails});
     }
     
     
@@ -24,11 +34,11 @@ sub SetRecipients {
     if ($arg =~ /\bCc\b/) {
 	#If we have a To, make the Ccs, Ccs, otherwise, promote them to To
 	if (@To) {
-	    push(@Cc, $self->TicketObj->CcAsString);
-	    push(@Cc, $self->TicketObj->QueueObj->CcAsString);
+	    push(@Cc, @{$self->TicketObj->Cc->Emails});
+	    push(@Cc, @{$self->TicketObj->QueueObj->Cc->Emails});
 	} else {
-	    push(@Cc, $self->TicketObj->CcAsString);
-	    push(@To, $self->TicketObj->QueueObj->CcAsString);
+	    push(@Cc, @{$self->TicketObj->CcAsString});
+	    push(@To, @{$self->TicketObj->QueueObj->Cc->Emails});
 	}
     }
     
@@ -46,20 +56,26 @@ sub SetRecipients {
     
     
     if ($arg =~ /\bAdminCc\b/) {
-        push(@Bcc, $self->TicketObj->AdminCcAsString);
-	    push(@Bcc, $self->TicketObj->QueueObj->AdminCcAsString);
+        push(@Bcc, @{$self->TicketObj->AdminCc->Emails});
+	push(@Bcc, @{$self->TicketObj->QueueObj->AdminCc->Emails});
     }
     
-
-    if (@To) {
-	$To = join(',',@To);
-    }
-    else {
-	$To = "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."': ;";
+    unless (@To) {
+	push (@To,  "'$arg of $RT::rtname Ticket #".$self->TicketObj->id."': ;");
     }
     
-    $Cc = join(',',@Cc);
-    $Bcc = join(',',@Bcc);
+    
+    my $creator = $self->TransactionObj->CreatorObj->EmailAddress();
+      
+    #Strip the sender out of the To, Cc and AdminCc;
+    @To = grep (!/^$creator$/, @To);
+    @Cc = grep (!/^$creator$/, @Cc);
+    @AdminCc = grep (!/^$creator$/, @AdminCc);
+    
+    my $To = join(',',@To);
+    my $Cc = join(',',@Cc);
+    my $Bcc = join(',',@Bcc);
+    
     
     $self->SetTo($To);
     $self->SetCc($Cc);
@@ -69,5 +85,6 @@ sub SetRecipients {
 
 }
 
+# }}}
 
 1;

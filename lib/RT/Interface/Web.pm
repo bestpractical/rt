@@ -177,7 +177,11 @@ sub ProcessUpdateMessage {
 # {{{ sub ProcessStatusChanges 
 
 sub ProcessStatusChanges {
-    my %args=@_;
+    my %args=( Ticket => undef,
+	       ARGS => undef,
+               Actions => undef,
+               @_
+	      );
     if ($args{ARGS}->{'SetStatus'} and ($args{ARGS}->{'SetStatus'} ne $args{Ticket}->Status())) {
 	my ($Transaction, $Description)=$args{Ticket}->SetStatus($args{ARGS}->{'SetStatus'});
 	push(@{$args{Actions}}, $Description);
