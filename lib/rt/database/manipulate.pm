@@ -158,14 +158,22 @@ sub add_correspondence {
     }
     
     #if it's coming from somebody other than the user, send them a copy
-    if ( (&is_not_a_requestor($in_current_user,$in_serial_num)) or
-	 ($in_cc) or 
-	 ($in_bcc) or
-	 ($in_notify) ) {
+    if ( (&is_not_a_requestor($in_current_user,$in_serial_num)) {
       &update_each_req($in_serial_num, 'date_told', $rt::time);
       $tem=&rt::template_mail('correspondence', $queue_id, "$requestors", $in_cc, $in_bcc, 
 			      "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
+    } else {
+	if (
+	    ($in_cc) or 
+	    ($in_bcc)) {
+	    $tem=&rt::template_mail('correspondence', $queue_id, "", $in_cc, $in_bcc, 
+			      "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
+	}
+	if ($in_notify) {
+	    &update_each_req($in_serial_num, 'date_told', $rt::time);
+	}
     }
+
     
     if ($queues{$queue_id}{'m_members_correspond'}) {
       &rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}","","", 
