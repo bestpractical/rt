@@ -1,0 +1,343 @@
+$Header: /raid/cvsroot/rt/README,v 1.39.2.1 2002/01/25 22:37:49 jesse Exp $
+RT is (c) 1996-2002 by Jesse Vincent <jesse@bestpractical.com>
+
+RT is licensed to you under the terms of version 2 of the GNU General 
+Public License. 
+
+If you don't have a copy of the GPL, you've been living in a cave,
+but one should be included in this distribution.
+
+
+WARNING
+-------
+
+
+        This is a DEVELOPMENT RELEASE OF RT. PROCEED AT YOUR OWN RISK.
+
+
+
+INSTALLATION INSTRUCTIONS
+-------------------------
+
+These instructions are a summary of those at http://www.helgrim.com/rtdocs.
+The docs on the web at www.helgrim.com/rtdocs are likely to be more up to
+date and complete than this readme.  You should consult them before proceeding
+
+REQUIRED PACKAGES:
+------------------
+
+o   Perl5.005_03 or later with support for setgid perl scripts
+        RT's command line and mail gateway tools run setgid to the 'rt' group
+	to protect RT's database password.  You may need to install a special 
+	"suidperl" package or reconfigure your perl setup to support
+	 "setuid scripts".
+
+o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
+        Currently supported:    Mysql 3.23.38 or newer. 
+				 (Some older releases had crippling SQL bugs)
+				Postgres 7.1
+	Partially supported:    Oracle 8i
+	(Mysql and Postgres are known to be a more solid base for RT than 
+	Oracle at this time)
+
+o   Apache + mod_perl -- ( http://perl.apache.org) 
+    or A webserver with FastCGI support (www.fastcgi.com)
+
+	If you compile mod_perl as a DSO, you're on your own. It's known
+	to have massive stability problems. 
+        mod_perl must be build with EVERYTHING=1
+
+o    Various and sundry perl modules
+        RT takes care of the installation of most of these automatically
+        during the "make testdeps" and "make fixdeps" stages below
+
+
+GENERAL INSTALLATION
+--------------------
+
+1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
+
+        Granted, you've already got it open. To do this cleanly:
+
+        	tar xzvf rt.tar.gz -C /tmp
+
+2   Check over /tmp/rt/Makefile
+
+	There are many variables you NEED to customize for your site.
+	Even if you are just upgrading, you must set ALL variables.
+
+3   Satisfy RT's myriad dependencies.  There's a perl script in rt/tools
+    called testdeps that uses CPAN to automate all of this.
+
+3.1   Check for compliance:
+	make testdeps
+
+3.2   If there are unsatisfied dependencies, install them by hand or run
+	make fixdeps
+	
+       (You may need to install Apache::Session and Apache::DBI by hand.
+
+	You might need to install Msql-Mysql-Modules by hand.
+	perl -MCPAN -e'install DBD::mysql::Install' should do it for you.
+       )
+
+3.3   Check to make sure everything was installed properly:
+	make testdeps
+
+4   Create a group called 'rt'
+
+5a  FOR A NEW INSTALLATION: 
+        
+        As root, type:
+		 make install	(replace "make" with the local name for 
+				 Make, if you need to)
+
+	If the make fails, type:
+		make dropdb 
+	and start over from step 5a
+
+5b  FOR UPGRADING: (Within the RT 2.0.x series)
+
+	Make a backup of /path/to/rt/etc/config.pm
+ 
+        As root, type: 
+		make upgrade     (replace "make" with the local name for 
+				  Make, if you need to)
+
+	This will build new binaries, config files and libraries without
+	overwriting your RT database. 
+        
+        It will then instruct you to update your RT system database objects 
+        by running rt/etc/insertdata <version> where <version> is the version 
+        of RT you're upgrading from.
+
+	WARNING: This WILL clobber your existing configuration file!
+	
+5c  FOR UPGRADING (From 1.0.x):
+
+	Follow the instructions for installing RT 2.0.
+
+	Once you have installed RT 2.0, download import-1.0-to-2.0
+	from http://www.fsck.com/pub/rt/contrib/2.0/rt-addons
+
+	Edit the configuration defaults in import-1.0-to-2.0
+
+	If you don't set $DEFAULTQUEUE to the name of one of your
+	RT 1.0 queues, THE IMPORT WILL FAIL.
+
+	perl ./import-1.0-to-2.0
+
+	The import tool will do its thing. If you're using postgres, you'll
+	need to execute the following SQL statement within your RT2 database:
+
+	select setval('tickets_id_seq', (select max(id) from tickets));
+	
+	It imports:
+		Queues, Areas, Users, Acls, Mailing Rules, Queue Members,
+		Tickets and Transactions.
+
+	It DOES NOT IMPORT:
+		Attachments removed by stripmime or Templates.
+	
+6   Edit etc/config.pm in your RT installation directory.  In many
+    cases sensible defaults have been included. In others, you MUST
+    supply a value.
+
+7   Configure the email and web gateways, as described below. 
+
+8   Stop and start your webserver, so it picks up your configuration changes.
+
+    NOTE: root's password for the web interface is "password" 
+    (without the quotes.)  Not changing this is a SECURITY risk
+    
+9   Configure RT per the instructions at http://www.fsck.com/rtfm/
+
+    Until you do this, RT will not be able to send or recieve email,
+    nor will it be more than marginally functional.  This is not an
+    optional step.
+
+
+SETTING UP THE MAIL GATEWAY 
+---------------------------
+
+An alias for the initial queue will need to be made in either your
+global mail aliases file (if you are using NIS) or locally on your
+machine.
+ 
+Add the following lines to /etc/aliases (or your local equivalent) :
+
+rt:         "|/path/to/rt2/bin/rt-mailgate --queue general --action correspond"
+rt-comment: "|/path/to/rt2/bin/rt-mailgate --queue general --action comment"
+                                                   |                |
+                                   <queue-name>----/                |
+                                                                    |
+                      <correspond or comment depending on whether   |
+                      the mail should be resent to the requestor>---/
+
+
+
+THE WEB UI
+----------
+
+RT's web ui is based around HTML::Mason, which works best with the mod_perl
+perl interpreter within Apache httpd.  We're working on a FastCGI version as
+well, but for now, apache's your best bet.
+
+Apache 
+        RT Uses HTML::Mason.  You'll need to add a few lines to your
+        httpd.conf telling it to use rt's web ui.  If you have mod-perl
+	(you should, the perl scripts will go quite a bit faster around with
+	it), you can do something like this:
+
+
+<VirtualHost your.ip.address>
+DocumentRoot /path/to/rt2/WebRT/html
+ServerName your.rt.server.hostname
+PerlModule Apache::DBI
+PerlFreshRestart On
+PerlRequire /path/to/rt2/bin/webmux.pl
+<Location />
+ SetHandler perl-script
+ PerlHandler RT::Mason
+</Location>
+</VirtualHost>
+
+Additionally, you should set up a cron job to remove stale session data.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ WARNING: Don't install this cron job or run this find command if your
+ MASON_SESSION_PATH (known in config.pm as $MasonSessionDir) 
+ points to a directory that could  EVER contain any file that's not 
+ a Apache::Session datafile.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Every hour, nuke session files and lockfiles that haven't been 
+# touched in 10 hours
+
+0 * * * * find /path/to/rt2/WebRT/sessiondata -type f -amin +600 -exec rm {} \;
+
+
+THE CLI
+-------
+        Binaries for the CLI are located in rt/bin
+        You've got:
+
+                "rt" (manipulate or display requests) 
+                "rtadmin" (modify queues, users and acls)
+
+        Both of these programs take --help as an option.
+
+
+BUGS
+----
+
+Known issues with releases of RT2 are listed at 
+<URL:http://fsck.com/rt2/NoAuth/Errata.html>.  This includes every bug known
+to exist in each release of RT.  (When prompted, login as guest/guest)
+
+To find out more about currently open bugs, check out the live 
+Buglist at  <URL:http://fsck.com/rt2/NoAuth/Buglist.html>.
+(When prompted, login as guest/guest)
+
+To report a bug, send an email to rt-2.0-bugs@fsck.com.
+
+GETTING HELP
+------------
+
+If RT is mission-critical for you or if you use it heavily, we recommend that
+you purchase a commercial support contract.  Details on support contracts
+are available at http://www.bestpractical.com.
+
+If you're interested in having RT extended or customized or would like more
+information about commercial support options, please send email to 
+<sales@bestpractical.com> to discuss rates and availability.
+
+
+RT-USERS MAILINGLIST
+--------------------
+
+To keep up to date on the latest RT tips, techniques and extections,
+you probably want to join the rt-users mailinglist.  Send a message to:
+
+         rt-users-request@lists.fsck.com 
+
+With the body of the message consisting of only the word:
+
+        subscribe
+
+If you're interested in hacking on rt, you'll want to subscribe to
+rt-devel@lists.fsck.com.  Subscribe to it with instructions similar to
+those above.
+
+Address questions about the stable release to the rt-users list, and
+questions about the development version to the rt-devel list.  If you feel
+your questions are best not asked publically, send them personally to
+<jesse@bestpractical.com>.
+
+If you want to be informed of every commit to the CVS repository,
+subscribe to rt-commit@fsck.com using similar instructions to those above.
+
+
+RT WEBSITE
+----------
+
+For current information about RT, check out the RT website at 
+http://www.bestpractical.com/rt  You'll find screenshots, a pointer
+to the current version of rt, contributed patches and lots of other great
+stuff.
+
+
+TROUBLESHOOTING
+---------------
+
+All errors will be appended to a logfile, which lives in /tmp/rt.log.* unless 
+you've reconfigured it.  Check etc/config.pm for details.
+
+If the solution to the problem you're running into isn't obvious and you've 
+checked the FAQ, feel free to send mail to rt-users@fsck.com (for release 
+versions of RT) or rt-devel@fsck.com (for development versions).
+
+GIVING SOMETHING BACK
+---------------------
+
+RT is free software. You are not obligated to pay for it.  You should be 
+aware, however, that bestpractical.com's sole source of revenue is commercial
+work related to RT. If you are able, either a contract to extend RT in some 
+way that would be useful to your organization, a financial contribution, or 
+even something off the author's amazon wishlist 
+	( http://www.amazon.com/exec/obidos/wishlist/2GMHUDAFBT2XR/ )
+would be much appreciated. 
+
+Thanks!
+
+
+CREDITS
+-------
+
+A lot of people are responsible for making RT a better program.  Many
+thanks to Lauren Burka, who originally tasked me with writing this beast.
+She forced me to use a database backend.  I've thanked her for it every
+day since.  Rich West rewrote this readme and did some UI hacking.  Adam
+Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
+Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley, Serge Zhuk,
+John Lengeling, Elmar Knipp, Gerald Abshez, Dave Hull, Dave Schenet,
+Dave Walton, Jan Okrouhly, Tobias Brox, Lamont Lucas, Charlie Brady,
+Robin Shostack, Eric Mumpower, Jerrod Wiesman, Adam Hammer, Ivan Kohler, Alex
+Pilosov, Mary Alderdice, Deborah Kaplan, Jens von Bülow, Tristan Horn,
+Lee Ann Goldstein, Karel P Kerezman, Feargal Reilly, Christian Steger,
+Christian Kurz, JD Falk, Arthur de Jong, Ben Carter, Mark Vevers
+and many others
+have all contributed bug reports, code or ideas that have helped RT along.  
+
+Arepa, Inc, Utopia Inc, Wesleyan University and The Leftbank Operation 
+have paid me to maintain RT and release it to the public.  Without their 
+support RT would not exist.  
+
+If I've left you out, please drop me a line ....it wasn't intentional. 
+ 
+
+        Enjoy
+
+        Jesse Vincent
+	<jesse@bestpractical.com>
+        Best Practical Solutions, LLC
