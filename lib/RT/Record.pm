@@ -1516,6 +1516,10 @@ sub _AddCustomFieldValue {
     );
 
    # {{{ Get a custom field object from the 'Field' parameter.
+   #
+   # XXX TODO: RT should be looking for a custom field for this object 
+   # with this name, if it's a name, rather than just "Load"
+   #
     my $cf = RT::CustomField->new( $self->CurrentUser );
     if ( UNIVERSAL::isa( $args{'Field'}, "RT::CustomField" ) ) {
         $cf->Load( $args{'Field'}->id );
