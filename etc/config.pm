@@ -17,7 +17,10 @@ use Log::Dispatch::File;
 # Logging.  The default is to log anything except debugging
 # information to a logfile.  Check the Log::Dispatch POD for
 # information about how to get things by syslog, mail or anything
-# else, get debugging info in the log, etc.
+# else, get debugging info in the log, etc.  It might generally make
+# sense to send error and higher by email to some administrator.  For
+# heavens sake; be sure that the email goes directly to a mailbox, and
+# not via RT :)  Mail loops will generate a critical log message.
 
 # I'm running this stuff to SysLog myself, but that's a bit more
 # complex - actually I had to fight a bit with Sys::Syslog and h2ph to
