@@ -1,0 +1,81 @@
+<table>
+<tr>
+<td>
+Available Columns:
+</td>
+<td>
+Format:
+</td>
+<td></td>
+<td>
+Show Columns:
+</td>
+<tr>
+<td valign=top>
+<select size=6 name="UnseenCols">
+% my $i = 0;
+% while ($i < scalar @unseen) {
+% my $field = $unseen[$i];
+% if ($field) {
+<option value=<%$i%>
+><%$field%></option>
+% }
+% $i++;
+% }
+</select>
+</td>
+<td>
+Link:
+<select name=Link>
+<option value="None">-</option>
+<option value="Display">Display</option>
+<option value="Take">Take</option>
+</select>
+<br>Title: <input name="Title" size=10>
+<br>Size:
+<select name=Size>
+<option value="">-</option>
+<option value="Small">Small</option>
+<option value="Large">Large</option>
+</select>
+<br>Face:
+<select name=Face>
+<option value="">-</option>
+<option value="Bold">Bold</option>
+<option value="Italic">Italic</option>
+</select>
+</td>
+<td>
+<input type=submit name="AddCol" value="-->">
+</td>
+<td valign=top>
+<select size=4 name="SeenCols" style="width : 100%">
+% $i = 0;
+% while ($i < scalar @seen) {
+% my $field = $seen[$i];
+% if ($field) {
+<option value=<%$i%>
+% if ($i eq $ARGS{SeenCols}) {
+SELECTED
+% }
+><%$field->{Column}%></option>
+% }
+% $i++;
+% }
+</select>
+<br>
+<center>
+<input type=submit name="ColUp" value="^">
+<input type=submit name="ColDown" value="v">
+<input type=submit name="RemoveCol" value="Delete">
+</center>
+</td>
+<td colspan=3 align=center>
+</td>
+</tr>
+</table>
+
+<%ARGS>
+@seen => undef
+@unseen => undef
+</%ARGS>

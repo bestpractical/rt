@@ -21,39 +21,34 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
 <& /Elements/TitleBoxStart, title => loc('Add Criteria')&>
 <table width=100% cellspacing=0 cellpadding=0 border=0>
-<tr><td width=100%>
-<& SelectAndOr, Name => "AndOr" &>
-</td></tr>
-<tr>
-<td valign=top>
-  <table width=100%>
-    <tr>
-      <td valign=top>
-        <& PickBasics &>
-      </td>
-    </tr>
-  </table>
-</td>
-</tr>
-
-<tr>
-<td valign=top>
-<table width=100%>
-<tr>
-<td valign=top>
-<& PickPeople &>
-</td>
-</tr>
-<tr>
-<td valign=top>
-<& PickCFs, cfqueues => \%cfqueues &>
-</td>
-</tr>
-</table>
-</td></tr>
+  <tr>
+    <td>
+      <table cellspacing=0 border=0>
+        <tr><td class=label>
+        Aggregator:
+        </td>
+        <td><& SelectAndOr, Name => "AndOr" &>
+        </td></tr>
+      </table>
+    </td></tr>
+  <tr>
+    <td>
+      <hr>
+    </td>
+  </tr>
+  <tr>
+    <td valign=top>
+      <& PickBasics &>
+    </td>
+  </tr>
+  <tr>
+    <td valign=top>
+    <& PickCFs, cfqueues => \%cfqueues &>
+    </td>
+  </tr>
+  <tr><td>&nbsp;</td></tr>
 </table>
 
 <& /Elements/TitleBoxEnd &>

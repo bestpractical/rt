@@ -28,6 +28,7 @@
 
 <FORM METHOD="GET">
 <input type=hidden name=Query value="<%$Query%>">
+<input type=hidden name=Format value="<%$Format%>">
 <table width=100%>
 <tr>
 <td valign=top>
@@ -37,7 +38,7 @@
 <td valign=top>
 <& /Elements/TitleBoxStart, title => loc("Query") . ": " .$search_hash->{'Description'} &>
 <& Elements/NewListActions, actions => \@actions &>
-<select size=10 name=clauses <select style="width : 100%">
+<select size=10 name=clauses style="width : 100%">
 <%$optionlist|n%>
 </select>
 <center>
@@ -45,17 +46,20 @@
 <input type=submit name="Down" value="v">
 <input type=submit name="Left" value="<">
 <input type=submit name="Right" value=">">
-<br>
-<input type=submit name="Clear" value="Clear">
-<input type=submit name="Toggle" DISABLED value="And/Or">
 <input type=submit name="DeleteClause" value="Delete">
-<input type=submit name="EditQuery" value="Advanced">
+<input type=submit name="Clear" value="Clear">
+<br>
+%#<input type=submit name="Toggle" DISABLED value="And/Or">
+%#<input type=submit name="EditQuery" value="Advanced">
 </center>
 <& /Elements/TitleBoxEnd &>
 <br>
-<& Elements/DisplayOptions, Format=> ($Format||$search_hash->{'Format'}), %ARGS &>
-<br>
 <& Elements/EditSearches, CurrentSearch => $search_hash &>
+</td>
+</tr>
+<tr>
+<td colspan=2>
+<& Elements/DisplayOptions, Format=> ($Format||$search_hash->{'Format'}), seen => \@seen, unseen => \@unseen, %ARGS &>
 </td>
 </tr>
 </table>
@@ -223,7 +227,7 @@ our $selectedclause = $ARGS{clauses};
 our %queues;
 
 if ($ARGS{"DoSearch"}) {
-    $m->comp("Results.html", Query => $Query, Format => $ARGS{Format}, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
+    $m->comp("Results.html", Query => $Query, Format => $Format, OrderBy => $ARGS{OrderBy}, Rows => $ARGS{RowsPerPage});
     $m->abort();
 } elsif ($ARGS{"EditQuery"}) {
     $m->comp("Edit.html", Query => $Query, Format => $Format, SearchId =>
@@ -930,7 +934,7 @@ sub debug {
 
 unless ($Format) {
 $Format = qq{
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#'
+'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
 '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 Status, 
 QueueName, 
@@ -945,17 +949,168 @@ Priority,
 '<small>__TimeLeft__</small>'};
 }
 
-$ARGS{'Query'} = $Query;
-
 # escape the '#' symbols so they won't be parsed as part of a URL
 my $format = $ARGS{'Format'};
 $format =~ s/#/%23/g;
+$format =~ s/&/%26/g;
 my $args;
 
 if ($ARGS{'Query'}) {
     $args = "?Query=$ARGS{'Query'}&Format=$format&Rows=$ARGS{'Rows'}";
 }
 
+my @fields = ( "QueueName", 
+	       "OwnerName", 
+	       "id", 
+	       "Status", 
+	       "Subject", 
+	       "ExtendedStatus", 
+	       "Priority", 
+	       "InitialPriority", 
+	       "FinalPriority", 
+	       "EffectiveId", 
+	       "Type", 
+	       "TimeWorked", 
+	       "TimeLeft", 
+	       "TimeEstimated", 
+	       "Requestors", 
+	       "Cc", 
+	       "AdminCc", 
+	       "StartsRelative", 
+	       "StartedRelative", 
+	       "CreatedRelative", 
+	       "LastUpdatedRelative", 
+	       "ToldRelative", 
+	       "DueRelative", 
+	       "ResolvedRelative", 
+	       "Starts", 
+	       "Started", 
+	       "Created", 
+	       "LastUpdated", 
+	       "Told", 
+	       "Due", 
+	       "Resolved",
+	       "NEWLINE",
+	       "-",
+	       );
+
+my (@seen, @unseen);
+foreach my $field (@fields) {
+    push @unseen, $field;
+}
+
+my @format = split(/,\s*/, $Format);
+foreach my $field (@format) {
+    my %column = ();
+    $field =~ s/'(.*)'/$1/;
+    $field =~ s/(.*)__(.*)__(.*)/$2/;
+    $field = "<blank>" if !$field;
+    my $prefix = $1;
+    my $suffix = $3;
+    $column{Prefix} = $prefix;
+    $column{Suffix} = $suffix;
+    $field =~ s/\s*(.*)\s*/$1/;
+    $column{Column} = $field;
+    push @seen, \%column;
+}
+
+if ($ARGS{"RemoveCol"}) {
+    my $index = $ARGS{'SeenCols'};
+    my $column = $seen[$index];
+    if ($index) {
+	delete $seen[$index];
+	my @temp = @seen;
+	@seen = ();
+	foreach my $element (@temp) {
+	    next unless $element;
+	    push @seen, $element;
+	}
+    } else {
+	$m->print("no columns selected");
+    }
+} elsif ($ARGS{"AddCol"}) {
+    if (defined $ARGS{'UnseenCols'}) {
+	my %column = ();
+	$column{Column} = $unseen[$ARGS{'UnseenCols'}];
+
+	my $prefix;
+	if ($ARGS{Face} eq "Bold") {
+	    $prefix .= "<B>";
+	}
+	if ($ARGS{Face} eq "Italic") {
+	    $prefix .= "<I>";
+	}
+	if ($ARGS{Size}) {
+	    $prefix .= "<" . $ARGS{Size} . ">";
+	}
+	if ($ARGS{Link} eq "Display") {
+	    $prefix .= "<A HREF=\"/rt3/Ticket/Display.html?id=__id__\">";
+	} elsif ($ARGS{Link} eq "Take") {
+	    $prefix .= "<A HREF=\"/rt3/Ticket/Display.html?Action=Take&id=__id__\">";
+	}
+
+	my $suffix;
+	if ($ARGS{'Link'} eq "Display" || $ARGS{'Link'} eq "Take") {
+	    $suffix .= "</a>";
+	}
+	if ($ARGS{Size}) {
+	    $suffix .= "</" . $ARGS{Size} . ">";
+	}
+	if ($ARGS{Face} eq "Italic") {
+	    $suffix .= "</I>";
+	}
+	if ($ARGS{Face} eq "Bold") {
+	    $suffix .= "</B>";
+	}
+	if ($ARGS{Title}) {
+	    $suffix .= "/TITLE:" . $ARGS{Title};
+	}
+
+	$column{Prefix} = $prefix;
+	$column{Suffix} = $suffix;
+	push @seen, \%column;
+    } else {
+	$m->print("no columns selected");
+    }
+} elsif ($ARGS{"ColUp"}) {
+    my $index = $ARGS{'SeenCols'};
+    if (defined $index && ($index-1) >= 0) {
+	my $column = $seen[$index];
+	$seen[$index] = $seen[$index-1];
+	$seen[$index-1] = $column;
+	$ARGS{SeenCols} = $index-1;
+    } else {
+	$m->print("no columns selected");
+    }
+} elsif ($ARGS{"ColDown"}) {
+    my $index = $ARGS{'SeenCols'};
+    if (defined $index && ($index+1) < scalar @seen) {
+	my $column = $seen[$index];
+	$seen[$index] = $seen[$index+1];
+	$seen[$index+1] = $column;
+	$ARGS{SeenCols} = $index+1;
+    } else {
+	$m->print("no columns selected");
+    }
+}
+
+$Format = "";
+foreach my $field (@seen) {
+    next unless $field;
+    $Format .= ", \n" if $Format;
+    $Format .= "'";
+    $Format .= $field->{Prefix};
+    if ($field->{Column} ne "<blank>") {
+	$Format .= "__" . $field->{Column} . "__";
+    }
+    $Format .= $field->{Suffix};
+    $Format .= "'";
+}
+
+#$m->print("format: <pre>$Format</pre>");
+
+$ARGS{'Format'} = $Format;
+$ARGS{'Query'} = $Query;
 </%INIT>
 
 <%ARGS>

@@ -160,7 +160,9 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 # escape the '#' symbols so they won't be parsed as part of a URL
 my $format = $ARGS{'Format'};
 $format =~ s/#/%23/g;
-my $args = "?Query=$ARGS{'Query'}&Format=$format&Rows=$ARGS{'Rows'}";
+$format =~ s/&/%26/g;
+
+my $args = "?Query=$ARGS{'Query'}&Format=\"$format\"&Rows=$ARGS{'Rows'}";
 
 $tabs->{"f"} = { path      => "Search/Build.html",
                  title     => loc('New Query'),

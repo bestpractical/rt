@@ -21,10 +21,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<h3>Basics</h3>
-<table cellpadding=0 cellspacing=0 border=0>
-<tr><td>
 <table cellspacing=0 border=0>
+<tr><td>
 % foreach my $field (@fields) {
 <tr><td align=right>
 % if ($field eq "Attachment") {
@@ -108,6 +106,35 @@
 <& /Elements/SelectEqualityOperator, Name => "idOp" &>
 </td><td>
 <INPUT Name="ValueOfid" SIZE=5>
+% } elsif ($field eq "People") {
+% foreach my $field (@people) {
+<tr><td class="label">
+% if ($field eq "Actor") {
+<SELECT NAME="ActorField">
+<OPTION VALUE="Owner"><&|/l&>Owner</&></OPTION>
+<OPTION VALUE="Creator"><&|/l&>Creator</&></OPTION>
+<OPTION VALUE="LastUpdatedBy"><&|/l&>LastUpdatedBy</&></OPTION>
+</SELECT>
+</td><td>
+<& /Elements/SelectBoolean, Name => "ActorOp", 
+					  TrueVal=> '=', 
+					  FalseVal => '!=' 
+&> 
+</td><td>
+<& /Elements/SelectOwner, Name => "ValueOfActor" &>
+% } elsif ($field eq 'Watcher') {
+<& SelectPersonType, Name => 'WatcherField', Default => 'Requestor' &>
+</td><td>
+<& /Elements/SelectMatch, Name => "WatcherOp" &>
+</td><td>
+<Input Name="ValueOfWatcher" Size=20>
+% } else {
+<&|/l&><%$field%></&>
+<& /Elements/SelectMatch, Name => "$field" . "Op" &>
+<INPUT Name="<%"ValueOf" . $field%>" value=""SIZE=20>
+% }
+</td></tr>
+% }
 % } else {
 <&|/l&><%$field%></&>
 </td><td>
@@ -118,17 +145,20 @@
 </td></tr>
 % }
 </table>
-</td></tr>
-</table>
 
 <%INIT>
 my @fields = ('Attachment',
-	      'Queue',
-	      'Status',
-	      'Dates',
-	      'Time',
-	      'Priority',
-	      'Links',
-	      'id',
+    'Queue',
+    'Status',
+    'People',
+    'Dates',
+    'Time',
+    'Priority',
+    'Links',
+    'id',
+    );
+
+my @people = ('Actor',
+	      'Watcher',
 	      );
 </%INIT>

@@ -1,6 +1,6 @@
 <& /Elements/TitleBoxStart, title => loc('Saved searches') &>
 <input type="hidden" name="SearchId" value="<%$SearchId%>">
-<&|/l&>Privacy:</&><br>
+<&|/l&>Privacy:</&>
 % if ($CurrentSearch->{'Object'}) {
 <& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
 % } else {

@@ -22,19 +22,16 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /Elements/TitleBoxStart, title => loc("Show Results") &>
+<& /Elements/TitleBoxStart, title => loc("Display Columns") &>
 <table>
 <tr>
 <td>
-<&|/l&>Format:</&><br>
-<textarea name="Format" rows=5 cols=40%><%$Format%></textarea>
+<& EditFormat, %ARGS &>
 </td>
-</tr>
+<td valign=top>
+<table valign=top>
 <tr>
-<td>
-<table>
-<tr>
-<td>
+<td class=label>
 <&|/l&>Order by</&>:
 </td><td class=label>
 <select name="OrderBy">

@@ -21,7 +21,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<h3>Custom Fields</h3>
 <table cellspacing=0 border=0>
 % while ( my $CustomField = $CustomFields->Next ) {
 
