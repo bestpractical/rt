@@ -60,7 +60,7 @@
 % my $content;
 % if ($TicketObj) {
 %          while (my $value = $Values->Next ) {
-%                 $content .= $value->Content;
+%                 $content .= "\n" . $value->Content;
 %           }
 % } elsif ($Default) {
           value="<%$Default ? $Default : ''%>"

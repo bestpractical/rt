@@ -124,6 +124,7 @@ my %FIELDS =
     Filename        => ['TRANSFIELD',],
     TransactionDate => ['TRANSDATE',],
     Requestor       => ['WATCHERFIELD' => 'Requestor',],
+    Requestors       => ['WATCHERFIELD' => 'Requestor',],
     Cc              => ['WATCHERFIELD' => 'Cc',],
     AdminCc         => ['WATCHERFIELD' => 'AdminCC',],
     Watcher	    => ['WATCHERFIELD'],
@@ -593,79 +594,162 @@ Handle watcher limits.  (Requestor, CC, etc..)
 Meta Data:
   1: Field to query on
 
+
+=begin testing
+
+# Test to make sure that you can search for tickets by requestor address and
+# by requestor name.
+
+my ($id,$msg);
+my $u1 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u1->Create( Name => 'RequestorTestOne', EmailAddress => 'rqtest1@example.com');
+ok ($id,$msg);
+my $u2 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u2->Create( Name => 'RequestorTestTwo', EmailAddress => 'rqtest2@example.com');
+ok ($id,$msg);
+
+my $t1 = RT::Ticket->new($RT::SystemUser);
+my ($trans);
+($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', Requestor => [$u1->EmailAddress]);
+ok ($id, $msg);
+
+my $t2 = RT::Ticket->new($RT::SystemUser);
+($id,$trans,$msg) =$t2->Create (Queue => 'general', Subject => 'Requestor test one', Requestor => [$u2->EmailAddress]);
+ok ($id, $msg);
+
+
+my $t3 = RT::Ticket->new($RT::SystemUser);
+($id,$trans,$msg) =$t3->Create (Queue => 'general', Subject => 'Requestor test one', Requestor => [$u2->EmailAddress, $u1->EmailAddress]);
+ok ($id, $msg);
+
+
+my $tix1 = RT::Tickets->new($RT::SystemUser);
+$tix1->FromSQL('Requestor.EmailAddress LIKE "rqtest1" OR Requestor.EmailAddress LIKE "rqtest2"');
+
+is ($tix1->Count, 3);
+
+my $tix2 = RT::Tickets->new($RT::SystemUser);
+$tix2->FromSQL('Requestor.Name LIKE "TestOne" OR Requestor.Name LIKE "TestTwo"');
+
+is ($tix2->Count, 3);
+
+
+my $tix3 = RT::Tickets->new($RT::SystemUser);
+$tix3->FromSQL('Requestor.EmailAddress LIKE "rqtest1"');
+
+is ($tix3->Count, 2);
+
+my $tix4 = RT::Tickets->new($RT::SystemUser);
+$tix4->FromSQL('Requestor.Name LIKE "TestOne" ');
+
+is ($tix4->Count, 2);
+
+# Searching for tickets that have two requestors isn't supported
+# There's no way to differentiate "one requestor name that matches foo and bar"
+# and "two requestors, one matching foo and one matching bar"
+
+# my $tix5 = RT::Tickets->new($RT::SystemUser);
+# $tix5->FromSQL('Requestor.Name LIKE "TestOne" AND Requestor.Name LIKE "TestTwo"');
+# 
+# is ($tix5->Count, 1);
+# 
+# my $tix6 = RT::Tickets->new($RT::SystemUser);
+# $tix6->FromSQL('Requestor.EmailAddress LIKE "rqtest1" AND Requestor.EmailAddress LIKE "rqtest2"');
+# 
+# is ($tix6->Count, 1);
+
+
+=end testing
+
 =cut
 
 sub _WatcherLimit {
-  my ($self,$field,$op,$value,@rest) = @_;
-  my %rest = @rest;
+    my $self  = shift;
+    my $field = shift;
+    my $op    = shift;
+    my $value = shift;
+    my %rest  = (@_);
 
-  $self->_OpenParen;
-
-  my $groups	    = $self->NewAlias('Groups');
-  my $groupmembers  = $self->NewAlias('CachedGroupMembers');
-  my $users	    = $self->NewAlias('Users');
-
-
-  #Find user watchers
-#  my $subclause = undef;
-#  my $aggregator = 'OR';
-#  if ($restriction->{'OPERATOR'} =~ /!|NOT/i ){
-#    $subclause = 'AndEmailIsNot';
-#    $aggregator = 'AND';
-#  }
-
-  if (ref $field) { # gross hack
-    my @bundle = @$field;
     $self->_OpenParen;
-    for my $chunk (@bundle) {
-      ($field,$op,$value,@rest) = @$chunk;
-      $self->_SQLLimit(ALIAS => $users,
-   		   FIELD => $rest{SUBKEY} || 'EmailAddress',
-   		   VALUE           => $value,
-   		   OPERATOR        => $op,
-   		   CASESENSITIVE   => 0,
-   		   @rest,
-   		  );
+
+    my $groups       = $self->NewAlias('Groups');
+    my $groupmembers = $self->NewAlias('CachedGroupMembers');
+    my $users        = $self->NewAlias('Users');
+
+    # If we're looking for multiple watchers of a given type,
+    # TicketSQL will be handing it to us as an array of cluases in
+    # $field
+    if ( ref $field ) {    # gross hack
+        $self->_OpenParen;
+        for my $chunk (@$field) {
+            ( $field, $op, $value, %rest ) = @$chunk;
+            $self->_SQLLimit(
+                ALIAS         => $users,
+                FIELD         => $rest{SUBKEY} || 'EmailAddress',
+                VALUE         => $value,
+                OPERATOR      => $op,
+                CASESENSITIVE => 0,
+                %rest
+            );
+        }
+        $self->_CloseParen;
     }
+    else {
+        $self->_SQLLimit(
+            ALIAS         => $users,
+            FIELD         => $rest{SUBKEY} || 'EmailAddress',
+            VALUE         => $value,
+            OPERATOR      => $op,
+            CASESENSITIVE => 0,
+            %rest,
+        );
+    }
+
+    # {{{ Tie to groups for tickets we care about
+    $self->_SQLLimit(
+        ALIAS           => $groups,
+        FIELD           => 'Domain',
+        VALUE           => 'RT::Ticket-Role',
+        ENTRYAGGREGATOR => 'AND'
+    );
+
+    $self->_SQLJoin(
+        ALIAS1 => $groups,
+        FIELD1 => 'Instance',
+        ALIAS2 => 'main',
+        FIELD2 => 'id'
+    );
+
+    # }}}
+
+    # If we care about which sort of watcher
+    my $meta = $FIELDS{$field};
+    my $type = ( defined $meta->[1] ? $meta->[1] : undef );
+
+    if ($type) {
+        $self->_SQLLimit(
+            ALIAS           => $groups,
+            FIELD           => 'Type',
+            VALUE           => $type,
+            ENTRYAGGREGATOR => 'AND'
+        );
+    }
+
+    $self->_SQLJoin(
+        ALIAS1 => $groups,
+        FIELD1 => 'id',
+        ALIAS2 => $groupmembers,
+        FIELD2 => 'GroupId'
+    );
+
+    $self->_SQLJoin(
+        ALIAS1 => $groupmembers,
+        FIELD1 => 'MemberId',
+        ALIAS2 => $users,
+        FIELD2 => 'id'
+    );
+
     $self->_CloseParen;
-  } else {
-     $self->_SQLLimit(ALIAS => $users,
-   		   FIELD => $rest{SUBKEY} || 'EmailAddress',
-   		   VALUE           => $value,
-   		   OPERATOR        => $op,
-   		   CASESENSITIVE   => 0,
-   		   @rest,
-   		  );
-  }
-
-  # {{{ Tie to groups for tickets we care about
-  $self->_SQLLimit(ALIAS => $groups,
-		   FIELD => 'Domain',
-		   VALUE => 'RT::Ticket-Role',
-		   ENTRYAGGREGATOR => 'AND');
-
-  $self->_SQLJoin(ALIAS1 => $groups, FIELD1 => 'Instance',
-	      ALIAS2 => 'main',   FIELD2 => 'id');
-  # }}}
-
-  # If we care about which sort of watcher
-  my $meta = $FIELDS{$field};
-  my $type = ( defined $meta->[1] ? $meta->[1] : undef );
-
-  if ( $type ) {
-    $self->_SQLLimit(ALIAS => $groups,
-		     FIELD => 'Type',
-		     VALUE => $type,
-		     ENTRYAGGREGATOR => 'AND');
-  }
-
-  $self->_SQLJoin (ALIAS1 => $groups,  FIELD1 => 'id',
-	       ALIAS2 => $groupmembers, FIELD2 => 'GroupId');
-
-  $self->_SQLJoin( ALIAS1 => $groupmembers, FIELD1 => 'MemberId',
-	       ALIAS2 => $users, FIELD2 => 'id');
-
- $self->_CloseParen;
 
 }
 

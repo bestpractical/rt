@@ -133,8 +133,8 @@ Set($RTAddressRegexp , '^rt\@example.com$');
 # (These values are passed to the CanonicalizeEmailAddress subroutine in RT/User.pm)
 # By default, that routine performs a s/$Match/$Replace/gi on any address passed to it
 
-Set($CanonicalizeEmailAddressMatch   , 'subdomain.example.com$');
-Set($CanonicalizeEmailAddressReplace , 'example.com');
+#Set($CanonicalizeEmailAddressMatch , '@subdomain\.example\.com$');
+#Set($CanonicalizeEmailAddressReplace , '@example.com');
 
 # set this to true and the create new user page will use the values that you
 # enter in the form but use the function CanonicalizeUserInfo in User_Local.pm
