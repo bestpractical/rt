@@ -33,7 +33,7 @@ sub LimitToCustomField {
 
 sub LimitToObjectId {
     my $self = shift;
-    my $id = shift;
+    my $id = shift || 0;
     $self->Limit( FIELD => 'ObjectId', VALUE => $id );
 }
 
@@ -66,6 +66,12 @@ sub HasEntryForCustomField {
     else {
 	return ($items[0]);
     }  
+}
+
+sub CustomFields {
+    my $self = shift;
+    my %seen;
+    map { $_->CustomFieldObj } grep { !$seen{$_->CustomField}++ } @{$self->ItemsArrayRef};
 }
 
 1;

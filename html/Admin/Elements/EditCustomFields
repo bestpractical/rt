@@ -45,7 +45,7 @@
 <& PickCustomFields, CustomFields => \@GlobalCFs, ReadOnly => 1 &>
 % }
 <h3>Associated Custom Fields (uncheck to unassociate)</h3>
-<& PickCustomFields, CustomFields => \@AssociatedCFs, id => $Object->Id, Checked => 1 &>
+<& PickCustomFields, CustomFields => [$ObjectCFs->CustomFields], id => $Object->Id, Checked => 1 &>
 <h3>Unassociated Custom Fields (check to associate)</h3>
 <& PickCustomFields, CustomFields => \@UnassociatedCFs, id => $Object->Id &>
 
@@ -57,12 +57,13 @@
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 my $caption;
 my @results;
-my (@GlobalCFs, @AssociatedCFs, @UnassociatedCFs);
+my (@GlobalCFs, @UnassociatedCFs);
 
 # XXX - exception: by "RT::Queue" fields on UI we really mean "RT::Ticket" fields.
 my $lookup = $ObjectType;
 $lookup = 'RT::Queue-RT::Ticket' if $lookup eq 'RT::Queue';
 $CustomFields->LimitToLookupType($lookup);
+$CustomFields->OrderBy( FIELD => 'Name' );
 
 if ($FindDisabledCustomFields) {
     $caption = loc("All Custom Fields");
@@ -71,18 +72,25 @@ if ($FindDisabledCustomFields) {
     $caption = loc("Enabled Custom Fields");
 }
 
+my $id = $Object->Id;
+my ($GlobalCFs, $ObjectCFs);
+$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs->UnLimit;
+$ObjectCFs->LimitToObjectId($id);
+$ObjectCFs->LimitToLookupType($lookup);
+
 # {{{ deal with moving sortorder of custom fields
 if ($CustomField and $Move) {
-    my $SourceObj = RT::CustomField->new($session{'CurrentUser'});
-    $SourceObj->Load($CustomField) || Abort(loc('No CustomField'));
+    my $SourceObj = RT::ObjectCustomField->new($session{'CurrentUser'});
+    $SourceObj->LoadByCols( ObjectId => $id, CustomField => $CustomField );
 
     my $TargetObj;
     my $target_order = $SourceObj->SortOrder + $Move;
-    while (my $CustomFieldObj = $CustomFields->Next) { 
-	my $this_order = $CustomFieldObj->SortOrder;
+    while (my $ObjectCF = $ObjectCFs->Next) { 
+	my $this_order = $ObjectCF->SortOrder;
 
 	# if we have an exact match, finish the loop now
-	($TargetObj = $CustomFieldObj, last) if $this_order == $target_order;
+	($TargetObj = $ObjectCF, last) if $this_order == $target_order;
 
 	# otherwise, we need to apropos toward the general direction
 	# ... first, check the sign is correct
@@ -96,7 +104,7 @@ if ($CustomField and $Move) {
 	    next if $orig_delta < $this_delta;
 	}
 
-	$TargetObj = $CustomFieldObj;
+	$TargetObj = $ObjectCF;
     }
 
     if ($TargetObj) {
@@ -105,18 +113,11 @@ if ($CustomField and $Move) {
 	$TargetObj->SetSortOrder($s);
 	$SourceObj->SetSortOrder($t);
 	# because order changed, we must redo search for subsequent uses
-	$CustomFields->RedoSearch;
     }
 
-    $CustomFields->GotoFirstItem;
+    $ObjectCFs->GotoFirstItem;
 }
 # }}}
-
-my $id = $Object->Id;
-my ($GlobalCFs, $ObjectCFs);
-$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-$ObjectCFs->LimitToObjectId($Object->Id);
-$ObjectCFs->LimitToLookupType($lookup);
 
 if ($id) {
     $GlobalCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
@@ -137,7 +138,6 @@ while (my $cf = $CustomFields->Next) {
 	# no longer has
 	my $key = "Object-$id-CF-$cf_id";
 	if ($ARGS{$key}) {
-	    push @AssociatedCFs, $cf;
 	    if (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
 		my ($val, $msg) = $cf->AddToObject($Object);
 		push (@results, $msg);
@@ -147,18 +147,17 @@ while (my $cf = $CustomFields->Next) {
 	else {
 	    push @UnassociatedCFs, $cf;
 	    if ($ObjectCFs->HasEntryForCustomField($cf_id)) {
-		my ($val, $msg) = $cf->RemoveFromParent($Object);
+		my ($val, $msg) = $cf->RemoveFromObject($Object);
 		push (@results, $msg);
 	    }
 	}
     }
-    elsif ($ObjectCFs->HasEntryForCustomField($cf_id)) {
-	push @AssociatedCFs, $cf;
-    }
-    else {
+    elsif (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
 	push @UnassociatedCFs, $cf;
     }
 }
+
+$ObjectCFs->RedoSearch;
 
 </%INIT>
 <%ARGS>

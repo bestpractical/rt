@@ -53,7 +53,7 @@
 <TR><TD ALIGN="RIGHT">
 <% $CF->Name %>
 </TD><TD>
-<& /Ticket/Elements/EditCustomField, CustomField => $CF &>
+<& /Elements/EditCustomField, CustomField => $CF, Object => $Group &>
 </TD></TR>
 % }
 <TR>
@@ -112,6 +112,7 @@ if ($id) {
 					    Object => $Group,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS );
 }
 
 #we're asking about enabled on the web page but really care about disabled.

@@ -25,4 +25,54 @@
 use strict;
 no warnings qw(redefine);
 
+sub Create {
+    my $self = shift;
+    my %args = ( 
+                CustomField => '0',
+                ObjectId => '0',
+		SortOrder => undef,
+		  @_);
+
+    if (!defined $args{SortOrder}) {
+	my $CF = $self->CustomFieldObj($args{'CustomField'});
+	my $ObjectCFs = RT::ObjectCustomFields->new($self->CurrentUser);
+	$ObjectCFs->LimitToObjectId($args{'ObjectId'});
+	$ObjectCFs->LimitToLookupType($CF->LookupType);
+
+	$args{SortOrder} = $ObjectCFs->Count + 1;
+    }
+
+    $self->SUPER::Create(
+                         CustomField => $args{'CustomField'},
+                         ObjectId => $args{'ObjectId'},
+                         SortOrder => $args{'SortOrder'},
+		     );
+}
+
+sub Delete {
+    my $self = shift;
+
+    my $ObjectCFs = RT::ObjectCustomFields->new($self->CurrentUser);
+    $ObjectCFs->LimitToObjectId($self->ObjectId);
+    $ObjectCFs->LimitToLookupType($self->CustomFieldObj->LookupType);
+
+    # Move everything below us up
+    my $sort_order = $self->SortOrder;
+    while (my $OCF = $ObjectCFs->Next) {
+	my $this_order = $OCF->SortOrder;
+	next if $this_order <= $sort_order; 
+	$OCF->SetSortOrder($this_order - 1);
+    }
+
+    $self->SUPER::Delete;
+}
+
+sub CustomFieldObj {
+    my $self = shift;
+    my $id = shift || $self->CustomField;
+    my $CF = RT::CustomField->new($self->CurrentUser);
+    $CF->Load($id) or die "Cannot load CustomField $id";
+    return $CF;
+}
+
 1;
