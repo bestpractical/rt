@@ -37,7 +37,17 @@ DB_DATABASE	     =	     `${GETPARAM} DatabaseName`
 DB_RT_USER	      =	      `${GETPARAM} DatabaseUser`
 DB_RT_PASS	      =	      `${GETPARAM} DatabasePass`
 DB_DBA			= root
-TAG			= rtfm-2-0-1
+
+
+
+PRODUCT			= RTFM
+TAG			= 2-0-2rc1
+CANONICAL_REPO		= svn+ssh://svn.bestpractical.com/svn/bps-public/rtfm/
+CANONICAL_REPO_TAGS		= $(CANONICAL_REPO)/tags/
+CANONICAL_REPO_TRUNK		= $(CANONICAL_REPO)/trunk/
+TMP_DIR			= /tmp
+RELEASE_DIR		= /home/ftp/pub/rt/release
+
 
 
 upgrade: install-lib install-html install-lexicon
@@ -106,32 +116,15 @@ regression: dropdb testify-pods install
 	$(PERL) lib/t/02regression.t
 
 
-tag-and-release-baseline:
-	aegis -cp -ind Makefile -output /tmp/Makefile.tagandrelease; \
-	$(MAKE) -f /tmp/Makefile.tagandrelease tag-and-release-never-by-hand
+tag-and-release:
+	svn cp $(CANONICAL_REPO_TRUNK) $(CANONICAL_REPO_TAGS)/$(TAG) 
+	svn export $(CANONICAL_REPO_TAGS)/$(TAG) $(TMP_DIR)/$(PRODUCT)-$(TAG)
+	svn log -v $(CANONICAL_REPO_TAGS)/$(TAG) > $(TMP_DIR)/$(PRODUCT)-$(TAG)/Changelog		
+	(cd $(TMP_DIR); tar czf $(PRODUCT)-$(TAG).tar.gz $(PRODUCT)-$(TAG))
+	 gpg --detach-sign $(TMP_DIR)/$(PRODUCT)-$(TAG).tar.gz
+	 gpg --verify $(TMP_DIR)/$(PRODUCT)-$(TAG).tar.gz.sig
+	 cp $(TMP_DIR)/$(PRODUCT)-$(TAG).tar.gz* $(RELEASE_DIR) 
 
-
-# Running this target in a working directory is
-# WRONG WRONG WRONG.
-# it will tag the current baseline with the version of RT defined
-# in the currently-being-worked-on makefile. which is wrong.
-#you want tag-and-release-baseline
-
-tag-and-release-never-by-hand:
-	aegis --delta-name $(TAG)
-	rm -rf /tmp/$(TAG)
-	mkdir /tmp/$(TAG)
-	cd /tmp/$(TAG); \
-			 aegis -cp -ind -delta $(TAG) . ;\
-			 chmod 600 Makefile;\
-			 aegis --report --project rtfm.2 \
-				--change 0 \
-				--page_width 80 \
-				--page_length 9999 \
-				--output Changelog Change_Log;
-
-	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
-	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
 clean:
 	find .	-type f -name \*~ |xargs rm
