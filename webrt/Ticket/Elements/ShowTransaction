@@ -29,6 +29,7 @@ unless ($Collapsed) {
       } else {
 	  $headers = $message->NiceHeaders;
       }
+      chomp $headers;
   }
      # 13456 is a random # of about the biggest size we want to see inline text
      if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
@@ -50,7 +51,7 @@ unless ($Collapsed) {
       <TD>&nbsp&nbsp;</TD>
       <TD COLSPAN=3 VALIGN=TOP>
 	<PRE>
-<%$headers%><%$content|n%>
+<%$headers%><BR><%$content|n%>
 </PRE>
       </TD>
       <TD VALIGN=TOP ALIGN=RIGHT>

@@ -173,7 +173,7 @@ if ($UserObj->Id) {
 					    Object => $UserObj,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
-}
+
 
 # {{{ Deal with special fields: Privileged, Enabled and Password
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
@@ -202,6 +202,8 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->I
 }
 
 # }}}
+}
+
 
 # {{{ Do some setup for the ui
 unless ($UserObj->Disabled()) {
