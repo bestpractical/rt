@@ -99,10 +99,10 @@ my $ah = &RT::Interface::Web::NewApacheHandler($interp);
 # Resets ownership of all files created by Mason at startup.
 #
 chown (Apache->server->uid, Apache->server->gid, 
-		$RT::MasonSessionDir);
+		[$RT::MasonSessionDir]);
 
 chown (Apache->server->uid, Apache->server->gid, 
-		[$interp->files_written]);
+		$interp->files_written);
 
 # Die if WebSessionDir doesn't exist or we can't write to it
 
