@@ -23,7 +23,7 @@
 %# END LICENSE BLOCK
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/QueueTabs, id => $Queue, 
-    QueueObj => $TemplateObj->QueueObj,
+     QueueObj => $QueueObj,
      current_tab => 'Admin/Queues/Templates.html?id='.$Queue,
      current_subtab => $current_subtab, 
      subtabs => $subtabs, 
@@ -46,6 +46,9 @@ $TemplateObj->Description, Content => $TemplateObj->Content &>
 
 
 <%INIT>
+
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue);
 
 my $TemplateObj = new RT::Template($session{'CurrentUser'});
 my  ($title, @results, $current_subtab);
