@@ -311,6 +311,8 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj
     );
     foreach my $arg (keys %ARGS) {
+            my $cfid = $1;
+
             next if ($arg =~ /-Magic$/);
        #Object-RT::Ticket--CustomField-3-Values
         if ($arg =~ /^Object-RT::Transaction--CustomField-/) {
@@ -1251,7 +1253,6 @@ sub ProcessObjectCustomFieldUpdates {
 	    }
 	    return (@results);
 	}
-    }
 }
 
 # {{{ sub ProcessTicketWatchers
@@ -1406,6 +1407,7 @@ sub ProcessTicketLinks {
 
     my $Ticket  = $args{'TicketObj'};
     my $ARGSRef = $args{'ARGSRef'};
+
 
     my (@results) = ProcessRecordLinks(RecordObj => $Ticket,
 				       ARGSRef => $ARGSRef);

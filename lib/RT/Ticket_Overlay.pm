@@ -3242,6 +3242,7 @@ sub Resolve {
 
 # }}}
 
+	
 # {{{ Actions + Routines dealing with transactions
 
 # {{{ sub SetTold and _SetTold
