@@ -39,7 +39,7 @@ SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	1
-RT_VERSION_PATCH	=	79
+RT_VERSION_PATCH	=	80
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -109,9 +109,11 @@ RT_CRON_BIN		=	$(RT_BIN_PATH)/rt-crontool
 
 # }}}
 
-SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_FASTCGI_HANDLER)
+SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
+				$(DESTDIR)/$(RT_WIN32_FASTCGI_HANDLER)
 
 BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
+				$(DESTDIR)/$(RT_MAILGATE_BIN) \
 				$(DESTDIR)/$(RT_CRON_BIN) \
 				$(SETGID_BINARIES)
 SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
@@ -208,9 +210,9 @@ upgrade-instruct:
 	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action insert --datafile etc/upgrade/<version>"
 
 
-upgrade: dirs upgrade-noclobber  upgrade-instruct
+upgrade: dirs upgrade-noclobber upgrade-instruct
 
-upgrade-noclobber: libs-install html-install bin-install local-install doc-install fixperms
+upgrade-noclobber: config-install libs-install html-install bin-install local-install doc-install fixperms
 
 
 # {{{ dependencies
@@ -246,9 +248,9 @@ fixperms:
 	chmod 0550 $(DESTDIR)/$(SITE_CONFIG_FILE)
 
 	# Make the interfaces executable and setgid rt
-	chown $(BIN_OWNER) $(SETGID_BINARIES)
-	chgrp $(RTGROUP) $(SETGID_BINARIES)
-	chmod 0755  $(SETGID_BINARIES)
+	chown $(BIN_OWNER) $(BINARIES)
+	chgrp $(RTGROUP) $(BINARIES)
+	chmod 0755  $(BINARIES)
 	chmod g+s $(SETGID_BINARIES)
 
 	# Make the web ui readable by all. 

@@ -33,6 +33,8 @@ foreach my $stanza (@$Message) {
         my $content = $stanza->{raw};
         RT::Interface::Web::EscapeUTF8(\$content);
          $m->comp('/Elements/Callback', content_ref  => \$content, %ARGS);
+                $content =~ s/\n/<br>/gi;
+
 </%perl>
 <font color="<%$colors[$Depth]%>"><%$content |n%><br></font>
 %       }

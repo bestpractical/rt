@@ -6,7 +6,7 @@ AC_REVISION($Revision: 1.1 $)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [2.1.79], [rt-3.0-bugs@fsck.com])
+AC_INIT(RT, [2.1.80], [rt-3.0-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -91,7 +91,7 @@ AC_SUBST(DB_PORT)
 dnl DB_RT_HOST
 AC_ARG_WITH(db-rt-host,
 	    AC_HELP_STRING([--with-db-rt-host=HOSTNAME],
-	    		   [FQDN of database server (default: localhost)]),
+	    		   [FQDN of RT server which talks to the database server (default: localhost)]),
             DB_RT_HOST=$withval,
             DB_RT_HOST=localhost)
 AC_SUBST(DB_RT_HOST)
