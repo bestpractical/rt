@@ -77,7 +77,7 @@ sub ScripObj {
   my $self = shift;
   if (!$self->{'ScripObj'})  {
     require RT::Scrip;
-    $self->{'ScripObj'} = RT::ScripObj->new($self->CurrentUser);
+    $self->{'ScripObj'} = RT::Scrip->new($self->CurrentUser);
     $self->{'ScripObj'}->load($self->_Value('Scrip'), $self->_Value('Template'));
   }
   return ($self->{'ScripObj'});
