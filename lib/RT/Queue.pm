@@ -252,7 +252,7 @@ sub Templates {
 
 # {{{ sub Watchers
 
-=head2
+=head2 Watchers
 
 Watchers returns a Watchers object preloaded with this queue\'s watchers.
 

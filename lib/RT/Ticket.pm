@@ -968,7 +968,7 @@ sub DeleteAdminCc {
 
 # {{{ sub Watchers
 
-=head2
+=head2 Watchers
 
 Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 
@@ -2649,7 +2649,7 @@ sub Open {
 
 # {{{ sub Resolve
 
-=head2
+=head2 Resolve
 
 Sets this ticket\'s status to Resolved
 
