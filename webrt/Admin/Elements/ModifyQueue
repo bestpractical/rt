@@ -1,7 +1,7 @@
 
 <& /Elements/TitleBoxStart, title => 'Editing Configuration for queue '.$QueueObj->Id &>
 
-<FORM ACTION="/Admin/ModifyQueue.html" METHOD=POST>
+<FORM ACTION="/Admin/Queues/Modify.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
 Queue Name: <INPUT name="QueueId" value="<%$QueueObj->QueueId%>"><BR>
 

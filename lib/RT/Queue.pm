@@ -41,9 +41,9 @@ If you pass the ACL check, it creates the queue and returns its queue id.
 
 sub Create  {
   my $self = shift;
-  my $queue_id = shift;
+  my %args = (@_); 
   #TODO +++ check acls
-  my $id = $self->SUPER::Create(QueueId => $queue_id);
+  my $id = $self->SUPER::Create(QueueId => $args{'QueueId'});
   $self->LoadById($id);
   
 }

@@ -1,0 +1,30 @@
+<& /Admin/Elements/Header, Title => 'Admin users' &>
+
+<TABLE WIDTH=100%>
+<TR>
+<TD VALIGN=TOP>
+<h2>Create</h2>
+<& /Admin/Elements/CreateUserCalled &>
+</TD>
+
+<TD VALIGN=TOP>
+<H2>Modify</H2>
+<& /Admin/Elements/SelectModifyUser, IdLike => $IdLike, EmailLike =>
+$EmailLike &>
+<BR>
+<BR>
+<FORM METHOD=GET ACTION="/Admin/Users/">
+<BR>
+Email like: <INPUT SIZE=8 NAME="EmailLike VALUE="<%$EmailLike%>"> (and)<BR>
+UserId like: <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"><BR>
+<BR>
+<INPUT TYPE=SUBMIT>
+</FRONT>
+</TD>
+</TR>
+</TABLE>
+
+<%ARGS>
+$EmailLike => undef
+$IdLike => undef
+</%ARGS>

@@ -1,27 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html>
-  <head>
-    <title>Modify a queue</title>
-  </head>
-
-  <body>
+<& /Admin/Elements/Header, Title => 'Modify a queue' &>
     <h1>Modify a queue</h1>
 
+<& /Elements/ListActions, actions => \@results &>
 
-%foreach $result (@results) {
-<b><%$result%></b><br>
-%}
 
 <& /Admin/Elements/ModifyQueue, QueueObj => $QueueObj &>
 
-    <hr>
-    <address><a href="mailto:jesse@localhost.localdomain">Jesse</a></address>
-<!-- Modifyd: Mon Aug  7 22:47:53 EDT 2000 -->
-<!-- hhmts start -->
-Last modified: Tue Aug  8 00:49:17 EDT 2000
-<!-- hhmts end -->
-  </body>
-</html>
 <%INIT>
 use RT::Interface::Web;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});

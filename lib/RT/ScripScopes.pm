@@ -32,6 +32,15 @@ sub Limit  {
 # }}}
 
 # {{{ sub LimitToQueue 
+
+=head2 LimitToQueue
+
+Takes a queue id (numerical) as its only argument. Makes sure that 
+Scopes it pulls out apply to this queue (or another that you've selected with
+another call to this method
+
+=cut
+
 sub LimitToQueue  {
    my $self = shift;
   my $queue = shift;

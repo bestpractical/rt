@@ -1,0 +1,47 @@
+<& /Admin/Elements/Header, title => "Modify template ".$TemplateObj->id&>
+
+<& /Elements/ListActions, actions => @results &>
+
+Modify Template <%$TemplateObj->id%>:
+
+<FORM METHOD=POST ACTION="ModifyTemplate.html">
+<INPUT TYPE=HIDDEN name="id" value="<%$TemplateObj->id%>">
+Title: <input name="Title" VALUE="<%$TemplateObj->Title%>" SIZE=80>
+<PRE>
+<TEXTAREA NAME=Content ROWS=25 COLS=80 WRAP=SOFT>
+<%$TemplateObj->Content%>
+</TEXTAREA>
+</PRE>
+<&/Elements/Submit&>
+</FORM>
+
+
+
+<%INIT>
+
+my $TemplateObj = new RT::Template($session{'CurrentUser'});
+$TemplateObj->Load($id) || &Abort('No Template');
+
+# Deal with updating individual fields where we're doing something to watch
+# what goes in and out
+    
+my @fields = qw( Title Content );
+
+#Run through each field in this list. update the value if apropriate
+my ($field);
+my @results = ('');
+foreach $field (@fields) {
+    my ($code, $msg);
+    my $check = "if ((defined \$ARGS{'$field'}) and (\$ARGS{'$field'} ne \$TemplateObj->$field))
+    {        (\$code, \$msg) = \$TemplateObj->Set$field(\$ARGS{'$field'});
+
+    push \@results, \$msg;  }";
+    $RT::Logger->debug("$check");
+    eval $check || push @results, $@;
+    
+}
+
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

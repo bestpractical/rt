@@ -1,3 +1,3 @@
-<FORM METHOD=get ACTION="/Admin/CreateQueue.html">
+<FORM METHOD=get ACTION="/Admin/Queues/Create.html">
 Create a queue called <INPUT NAME="QueueId" size=10><input type=submit>
 </form>

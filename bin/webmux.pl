@@ -42,11 +42,11 @@ use DBIx::Handle;
     use RT::Templates;
     use RT::Queue;
     use RT::Queues;
+    use RT::Interface::Web;    
     use MIME::Entity;
     use CGI::Cookie;
     use Date::Manip;
     use HTML::Entities;
-    
     #TODO: make this use DBI
     use Apache::Session::File;
 }

@@ -1,0 +1,13 @@
+<& /Admin/Elements/Header, Title => 'Create a queue' &>
+    <h1>Create a queue</h1>
+
+<& /Admin/Elements/ModifyQueue, QueueObj => $QueueObj &>
+
+<%INIT>
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Create(QueueId => "$QueueId");
+</%INIT>
+
+<%ARGS>
+$QueueId => undef
+</%ARGS>

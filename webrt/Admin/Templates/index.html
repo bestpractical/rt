@@ -1,0 +1,17 @@
+<& /Admin/Elements/Header, Title => 'Templates '&>
+
+<H1>Create a template</H1>
+<FORM METHOD=POST ACTION="Create.html">
+<INPUT TYPE=SUBMIT VALUE="Create"> <B>TODO</B>
+</FORM>
+<H1>Select a template to modify</H1>
+%while  (my $TemplateObj = $Templates->Next) {
+
+<A HREF="Modify.html?id=<%$TemplateObj->id()%>"><%$TemplateObj->id()%>:
+<%$TemplateObj->Title%></a><BR>
+
+%}
+<%INIT>
+my $Templates = new RT::Templates($session{'CurrentUser'});
+$Templates->UnLimit;
+</%INIT>

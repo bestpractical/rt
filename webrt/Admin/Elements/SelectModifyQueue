@@ -1,0 +1,10 @@
+%while ( $queue = $queues->Next) {
+<A HREF="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->QueueId%></a><BR>
+%}
+<%INIT>
+my ($queue);
+my $queues = new RT::Queues($session{'CurrentUser'});
+$queues->UnLimit;
+</%INIT>
+<%ARGS>
+</%ARGS>

@@ -28,8 +28,8 @@ sub _Accessible  {
   my $self = shift;
   my %Cols = (
 	      id => 'read',
-	      Title => 'read',
-	      Content => 'read',
+	      Title => 'read/write',
+	      Content => 'read/write',
 	      Creator => 'read',
 	      Created => 'read',
 	      LastUpdatedBy => 'read',

@@ -374,7 +374,7 @@ sub cli_create_queue  {
 
   use RT::Queue;
   my $Queue = new RT::Queue($CurrentUser);
-  $Queue->Create($queue_id);
+  $Queue->Create(QueueId => "$queue_id");
   #TODO. this is wasteful. we should just be passing around a queue object
   &cli_modify_queue_helper($Queue);
 }

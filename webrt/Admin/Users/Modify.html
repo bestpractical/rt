@@ -1,10 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html>
-  <head>
-    <title>Modify a user</title>
-  </head>
-
-  <body>
+<& /Admin/Elements/Header, Title => 'Modify user' &>
     <h1>Modify a user</h1>
 
 
@@ -14,14 +8,6 @@
 
 <& /Admin/Elements/ModifyUser, UserObj => $UserObj &>
 
-    <hr>
-    <address><a href="mailto:jesse@localhost.localdomain">Jesse</a></address>
-<!-- Modifyd: Mon Aug  7 22:47:53 EDT 2000 -->
-<!-- hhmts start -->
-Last modified: Tue Aug  8 01:38:30 EDT 2000
-<!-- hhmts end -->
-  </body>
-</html>
 <%INIT>
 use RT::Interface::Web;
 my $UserObj = new RT::User($session{'CurrentUser'});

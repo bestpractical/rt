@@ -1,7 +1,7 @@
 
 <& /Elements/TitleBoxStart, title => 'Editing Configuration for user '.$UserObj->UserId &>
 
-<FORM ACTION="/Admin/ModifyUser.html" METHOD=POST>
+<FORM ACTION="/Admin/Users/Modify.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$UserObj->Id%>">
 
 UserId: <input name="UserId" value="<%$UserObj->UserId%>">
