@@ -25,17 +25,24 @@
 % if ($AllowNull) {
 <OPTION VALUE="">-</OPTION>
 % }
-%for my $option (@types) {
-%foreach my $subtype (@subtypes) {
+% for my $option (@types) {
+%  if ($Suffix) {
+<OPTION VALUE="<% $option %><% $Suffix %>" <%$option eq $Default && "SELECTED"%> ><%loc($option)%></OPTION>
+%   next;
+%  }
+%  foreach my $subtype (@subtypes) {
 <OPTION VALUE="<%"$option.$subtype"%>" <%$option eq $Default && $subtype eq 'EmailAddress' && "SELECTED"%> ><%loc("[_1] [_2]",$option, $subtype)%></OPTION>
+%  }
 % }
-%}
 </SELECT>
 
 <%INIT>
 my @types;
 if ($Scope =~ 'queue') {
    @types = qw(Cc AdminCc);
+}
+elsif ($Suffix eq 'Group') {
+   @types = qw(Requestor Cc AdminCc Watcher);
 }
 else { 
    @types = qw(Requestor Cc AdminCc Watcher Owner);
@@ -46,6 +53,7 @@ my @subtypes = qw(EmailAddress Name RealName Nickname Organization Address1 Addr
 </%INIT>
 <%ARGS>
 $AllowNull => 1
+$Suffix => ''
 $Default=>undef
 $Scope => 'ticket'
 $Name => 'WatcherType'

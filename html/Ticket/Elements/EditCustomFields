@@ -58,11 +58,11 @@ my $NamePrefix;
 
 if ($TicketObj) {
  $CustomFields = $TicketObj->CustomFields();
-  $NamePrefix = "Ticket-".$TicketObj->Id."-CustomField-";
+  $NamePrefix = "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
 
 } else {
  $CustomFields = $QueueObj->TicketCustomFields();
-  $NamePrefix = "CustomField-";
+  $NamePrefix = "Object-RT::Ticket--CustomField-";
 }
 
 

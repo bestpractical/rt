@@ -226,7 +226,7 @@ sub LimitToGlobalOrObjectId {
                  FIELD           => 'ObjectId',
                  OPERATOR        => '=',
                  VALUE           => 0,
-                 ENTRYAGGREGATOR => 'OR' ) if $global_only;
+                 ENTRYAGGREGATOR => 'OR' ) unless $global_only;
 
     $self->OrderByCols(
 	{ ALIAS => $self->_OCFAlias, FIELD => 'ObjectId' },

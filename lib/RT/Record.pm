@@ -1355,10 +1355,8 @@ sub _AddCustomFieldValue {
         return ( 0, $self->loc("Custom field [_1] not found", $args{'Field'}) );
     }
 
-    my $OCFs = RT::ObjectCustomFields->new( $self->CurrentUser );
-    $OCFs->LimitToCustomField( $cf->Id );
-    $OCFs->LimitToObjectId( $self->Id );
-    $OCFs->LimitToObjectId( 0 );
+    my $OCFs = $self->CustomFields;
+    $OCFs->Limit( FIELD => 'id', VALUE => $cf->Id );
     unless ($OCFs->Count) {
         return ( 0, $self->loc("Custom field [_1] does not apply to this object", $args{'Field'}) );
     }
@@ -1442,10 +1440,10 @@ sub _AddCustomFieldValue {
             return ( 1, $self->loc("[_1] [_2] added", $cf->Name, $new_value->Content) );
         }
         elsif ( $new_value->Content eq '' ) {
-            return ( 1, $self->loc("[_1] [_2] deleted", $cf->Name, $old_value) );
+            return ( 1, $self->loc("[_1] [_2] deleted", $cf->Name, $old_content) );
         }
         else {
-            return ( 1, $self->loc("[_1] [_2] changed to [_3]", $cf->Name, $old_value, $new_value->Content ) );
+            return ( 1, $self->loc("[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_value->Content ) );
         }
 
     }

@@ -891,7 +891,7 @@ sub UpdateCustomFields {
         $arg =~ /^(?:Transaction)?CustomField-(\d+).*?(?<!-Magic)$/ or next;
 	my $cfid = $1;
 	my $values = $args_ref->{$arg};
-	foreach my $value ( ref($values) ? @$values : $values ) {
+	foreach my $value ( UNIVERSAL::isa($values, 'ARRAY') ? @$values : $values ) {
 	    next unless length($value);
 	    $self->_AddCustomFieldValue(
 		Field => $cfid,

@@ -617,7 +617,7 @@ sub Create {
     next unless ( $arg =~ /^CustomField-(\d+)$/i );
     my $cfid = $1;
     foreach
-      my $value ( ref( $args{$arg} ) ? @{ $args{$arg} } : ( $args{$arg} ) ) {
+      my $value ( UNIVERSAL::isa($args{$arg}, 'ARRAY') ? @{ $args{$arg} } : ( $args{$arg} ) ) {
         next unless (length($value));
         $self->_AddCustomFieldValue( Field => $cfid,
                                      Value => $value,

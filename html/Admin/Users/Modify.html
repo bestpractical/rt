@@ -312,7 +312,7 @@ if ($UserObj->Id && $id ne 'new') {
 					    Object => $UserObj,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS );
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 
 
 # {{{ Deal with special fields: Privileged, Enabled and Password

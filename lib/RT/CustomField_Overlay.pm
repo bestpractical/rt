@@ -43,10 +43,10 @@ for (@TYPES) { $TYPES{$_} = 1};
 
 
 %FRIENDLY_OBJECT_TYPES =  (
-    'RT::Queue-RT::Ticket'                 => "Tickets",
-    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",
-    'RT::User'                             => "Users",
-    'RT::Group'                            => "Groups",
+    'RT::Queue-RT::Ticket'                 => "Tickets",		# loc
+    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",	# loc
+    'RT::User'                             => "Users",			# loc
+    'RT::Group'                            => "Groups",			# loc
 );
 
 $RIGHTS = {
@@ -503,7 +503,7 @@ my %FriendlyTypes = (
     ],
     Binary => [
         'Upload multiple files',	# loc
-        'Upload one files',		# loc
+        'Upload one file',		# loc
         'Upload up to [_1] files',	# loc
     ],
 );

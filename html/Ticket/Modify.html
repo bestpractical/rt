@@ -27,7 +27,7 @@
     Title => loc('Modify ticket #[_1]', $TicketObj->Id) &>
 
 <& /Elements/ListActions, actions => \@results &>
-<FORM METHOD=POST ACTION="Modify.html">
+<FORM METHOD=POST ACTION="Modify.html" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 
 <& /Elements/TitleBoxStart, title => loc('Modify ticket #[_1]',$TicketObj->Id),   color=> "#993333", width => "100%" &>
@@ -46,7 +46,7 @@ my $CustomFields = $TicketObj->QueueObj->CustomFields();
 $m->comp('/Elements/Callback', TicketObj => $TicketObj, CustomFields => $CustomFields, %ARGS);
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-my @cf_results = ProcessTicketCustomFieldUpdates(TicketObj => $TicketObj, ARGSRef => \%ARGS);
+my @cf_results = ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
 push (@results, @cf_results);
 
 # TODO: display the results, even if we can't display the ticket

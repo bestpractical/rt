@@ -334,11 +334,6 @@ sub CreateTicket {
         Starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
-  foreach my $arg (%ARGS) {
-        if ($arg =~ /^((?:Transaction)?CustomField-\d+).*?(?<!-Magic)$/) {
-            $create_args{$1} = $ARGS{$arg};
-        }
-    }
     my ( $id, $Trans, $ErrMsg ) = $Ticket->Create(%create_args);
     unless ( $id && $Trans ) {
         Abort($ErrMsg);
@@ -364,6 +359,8 @@ sub CreateTicket {
             push ( @Actions, $msg ) unless ($val);
         }
     }
+
+    ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
 
     push ( @Actions, split("\n", $ErrMsg) );
     unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
@@ -459,7 +456,6 @@ sub ProcessUpdateMessage {
                 TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
             );
             push ( @{ $args{Actions} }, $Description );
-	    print "I see $Object coming down\n";
 	    $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
         }
         else {
@@ -1109,6 +1105,9 @@ sub ProcessTicketCustomFieldUpdates {
         if ( $arg =~ /^Ticket-(\d+-.*)/) {
 	    $ARGSRef->{"Object-RT::Ticket-$1"} = delete $ARGSRef->{$arg};
 	}
+        elsif ( $arg =~ /^CustomField-(\d+-.*)/) {
+	    $ARGSRef->{"Object-RT::Ticket--$1"} = delete $ARGSRef->{$arg};
+	}
     }
 
     return ProcessObjectCustomFieldUpdates(%args, ARGSRef => $ARGSRef);
@@ -1122,9 +1121,9 @@ sub ProcessObjectCustomFieldUpdates {
     # Build up a list of objects that we want to work with
     my %custom_fields_to_mod;
     foreach my $arg ( keys %$ARGSRef ) {
-        if ( $arg =~ /^Object-([\w:]+)-(\d+)-CustomField-(\d+)-/ ) {
+        if ( $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-/ ) {
             # For each of those objects, find out what custom fields we want to work with.
-            $custom_fields_to_mod{$1}{$2}{$3} = 1;
+            $custom_fields_to_mod{$1}{$2 || $args{'Object'}->Id}{$3} = 1;
         }
     }
 
@@ -1153,7 +1152,7 @@ sub ProcessObjectCustomFieldUpdates {
 			$ARGSRef->{$1."-Values"} = undef;
 		    
 		    }
-		    next unless ( $arg =~ /^Object-$class-$id-CustomField-$cf-/ );
+		    next unless ( $arg =~ /^Object-$class-(?:$id)?-CustomField-$cf-/ );
 		    my @values =
 		    ( ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) 
 		    ? @{ $ARGSRef->{$arg} }
