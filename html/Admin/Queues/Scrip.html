@@ -40,7 +40,11 @@ my $subtabs = {
             path => "Admin/Queues/Scrips.html?id=".$QueueObj->id,
                },                                                                             
      B => { title => loc('New scrip'),                                                        
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O43 A43 B43] /-/-/-/-/-/-/-/-/-/-/
             path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id,
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+            path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id,
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
             separator => 1,                                                                   
                }, 
           };   
@@ -51,10 +55,14 @@ unless($QueueObj->id) {
 if ($id) {
     $current_subtab = "Admin/Queues/Scrip.html?id=".$id."&Queue=".$QueueObj->id;
     $title = loc("Modify a scrip for queue [_1]", $QueueObj->Name);
-    $subtabs->{"C"} = { title => loc("#[_1]",$QueueObj->id),
+    $subtabs->{"C"} = { title => loc("Scrip #[_1]",$QueueObj->id),
 			path => "Admin/Queues/Scrip.html?id=$id&Queue=".$QueueObj->id };
 } else {
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O57 A57 B57] /-/-/-/-/-/-/-/-/-/-/
     $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id;
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+    $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id;
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
     $title = loc("Create a scrip for queue [_1]", $QueueObj->Name);
 }
                                                                                              
