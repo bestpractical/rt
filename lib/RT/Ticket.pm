@@ -2063,6 +2063,8 @@ be a single KeywordObject, automatically removes the old value.
  Issues: probably doesn't enforce the depth restrictions or make sure that keywords
 are coming from the right part of the tree. really should.
 
+=cut
+
 sub AddKeyword {
     my $self = shift;
     my %args = ( KeywordSelect => undef,  # id of a keyword select record
