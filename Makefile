@@ -4,7 +4,7 @@
 
 RTFM_VERSION_MAJOR	=	0
 RTFM_VERSION_MINOR	=	9
-RTFM_VERSION_PATCH	=	2
+RTFM_VERSION_PATCH	=	3
 
 
 RTFM_VERSION =	$(RTFM_VERSION_MAJOR).$(RTFM_VERSION_MINOR).$(RTFM_VERSION_PATCH)
@@ -62,17 +62,17 @@ MODPERL_HANDLER		=	$(BIN_PATH)/webmux.pl
 
 			
 createdb:
-	mysqladmin create $(DBNAME) -u $(DBA)
+	mysqladmin create $(DBNAME) -u $(DBA) -p
 
 dropdb:
 
-	mysqladmin drop $(DBNAME) -u $(DBA)
+	mysqladmin drop $(DBNAME) -u $(DBA) -p
 
 genschema: dropdb createdb
 	$(PERL) $(SBIN_PATH)/initdb mysql /usr/bin localhost '' $(DBA) $(DBNAME) generate
 
 initdb: createdb
-	mysql -u $(DBA) $(DBNAME) < etc/schema.mysql
+	mysql -u $(DBA) -p $(DBNAME) < etc/schema.mysql
 	$(PERL) $(SBIN_PATH)/insertdata
 
 
