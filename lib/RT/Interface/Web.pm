@@ -121,13 +121,17 @@ does a css-busting but minimalist escaping of whatever html you're passing in.
 
 sub EscapeUTF8  {
         my  $ref = shift;
-        $$ref =~ s/&/&#38;/g;
-        $$ref =~ s/</&lt;/g; 
-        $$ref =~ s/>/&gt;/g;
-        $$ref =~ s/\(/&#40;/g;
-        $$ref =~ s/\)/&#41;/g;
-        $$ref =~ s/"/&#34;/g;
-        $$ref =~ s/'/&#39;/g;
+        my $val = $$ref;
+        use bytes;
+        $val =~ s/&/&#38;/g;
+        $val =~ s/</&lt;/g; 
+        $val =~ s/>/&gt;/g;
+        $val =~ s/\(/&#40;/g;
+        $val =~ s/\)/&#41;/g;
+        $val =~ s/"/&#34;/g;
+        $val =~ s/'/&#39;/g;
+        $$ref = $val;
+        Encode::_utf8_on($$ref);
 
 }
 

@@ -55,7 +55,7 @@ unless ($Collapsed) {
       chomp $headers;
       if ($headers) {
 	   # localize the common headers (like 'Subject:'), too.
-	   $headers =~ s/^([^:]+)(?=:)/loc($1)/em;
+	   eval {$headers =~ s/^([^:]+)(?=:)/loc($1)/em; } # we eval here to catch errors when 5.6 panics
            
       }
   }
