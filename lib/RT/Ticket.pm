@@ -571,9 +571,11 @@ sub Comment {
   # MIMEObj here ... and MIMEEntity somewhere else ... it would have been better
   # to be consistant.  But hey - it works!  We'll just leave it here as for now.
   # -- TobiX
-  my %args = ( MIMEObj => undef,
-	       TimeTaken => 0,
-	       @_ );
+  my %args = (BccMessageTo => undef,
+	      CcMessageTo => undef,
+	      MIMEObj => undef,
+	      TimeTaken => 0,
+	      @_ );
     
 
   #For ease of processing
@@ -588,7 +590,8 @@ sub Comment {
 				      MIMEEntity => $MIME
 				    );
 
-  if ($args{'cc'} || $args{'bcc'} ) {
+  if ($args{'CcMessageTo'} || 
+      $args{'BccMessageTo'} ) {
       #send a copy of the correspondence to the CC list and BCC list
       warn "Stub!";
   }
@@ -598,9 +601,11 @@ sub Comment {
 
 sub Correspond {
   my $self = shift;
-    my %args = ( MIMEObj => undef,
-		 TimeTaken => 0,
-		 @_ );
+  my %args = ( CcMessageTo => undef,
+	       BccMessageTo => undef,
+	       MIMEObj => undef,
+	       TimeTaken => 0,
+	       @_ );
   
   #For ease of processing
   my $MIME = $args{'MIMEObj'};
@@ -623,8 +628,12 @@ sub Correspond {
   # mail we can assume that Bccs and Ccs from the header is already
   # sent, so it's rather a bug in the cli that the ccs and bccs are in
   # the MIMEEntity instead of %args..
+  
+  # This is no longer true. -- jv
 
-  if ($args{Bcc} || $args{Cc}) {
+
+  if ($args{BccMessageTo} || 
+      $args{CcMessageTo}) {
       warn "stub"
   }
   

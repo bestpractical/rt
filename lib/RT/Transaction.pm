@@ -77,6 +77,15 @@ sub Create {
   my $TicketAsSystem = RT::Ticket->new($self->CurrentUser);
   $TicketAsSystem->Load($self->Ticket);
 
+ 
+  # Here, we send a copy of the transaction to all Interested Parties.
+  
+  
+
+
+
+  # Deal with Scrips
+
   #Load a scrips object
   use RT::Scrips;
   my $Scrips = RT::Scrips->new($self->CurrentUser);
@@ -86,15 +95,17 @@ sub Create {
   #Iterate through each script and check it's applicability.
 
   while (my $Scrip = $Scrips->Next()) {
-    
-    #Load the scrip's action;
-    $Scrip->LoadAction(TicketObject=>$TicketAsSystem, TransactionObject=>$self);
-
-    #If it's applicable, prepare and commit it
-    if ( $Scrip->IsApplicable() ) {
-      $Scrip->Prepare() and $Scrip->Commit();
+    #TODO: Raise errors here.
+    eval {
+      #Load the scrip's action;
+      $Scrip->LoadAction(TicketObject=>$TicketAsSystem, TransactionObject=>$self);
+      
+      #If it's applicable, prepare and commit it
+      if ( $Scrip->IsApplicable() ) {
+	$Scrip->Prepare() and $Scrip->Commit();
+      }
     }
-    
+
   } 
   
   return ($id, "Transaction Created");

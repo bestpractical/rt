@@ -368,11 +368,11 @@ sub ParseArgs {
     my ($subject,@content,$trans,$cc,$bcc,$Transaction,
 	$Description, $TimeTaken);
     
-    $TimeTaken = &rt::ui::cli::question_int("How long did you spend on this transaction?");
+   
     $subject=&rt::ui::cli::question_string("Subject",);
     
-    $cc=&rt::ui::cli::question_string("Cc",);
-    $bcc=&rt::ui::cli::question_string("Bcc",);   
+    $cc=&rt::ui::cli::question_string("Cc this comment to:",);
+    $bcc=&rt::ui::cli::question_string("Bcc this comment to:",);   
     print "Please enter your comments this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
       if(/^\.\n/) {
@@ -383,18 +383,21 @@ sub ParseArgs {
 	
       }
     }
-    
+   
+    $TimeTaken = &rt::ui::cli::question_int("How long did you spend on this transaction?");
+ 
     use MIME::Entity;
-
     $Message = MIME::Entity->build ( Subject => $subject || "",
 				     Cc => $cc || "",
 				     Bcc => $Bcc || "",
 				     Data => \@content);
-
-    ($Transaction, $Description) = $Ticket->Comment( MIMEObj => $Message,
+    
+    ($Transaction, $Description) = $Ticket->Comment( CcMessageTo => $cc,
+						     BccMessageTo => $bcc,
+						     MIMEObj => $Message,
 						     TimeTaken => $TimeTaken
 						   );
-			       
+    
     print $Description;
   }
   
@@ -403,8 +406,8 @@ sub ParseArgs {
     my ($subject,$content,$trans,$message,$cc,$bcc );
     
     $subject=&rt::ui::cli::question_string("Subject",);
-    $cc=&rt::ui::cli::question_string("Cc",);
-    $bcc=&rt::ui::cli::question_string("Bcc",);      
+    $cc=&rt::ui::cli::question_string("Cc this response to:",);
+    $bcc=&rt::ui::cli::question_string("Bcc this response to:",);      
     print "Please enter your response to this request, terminated\nby a line containing only a period:\
 n";
     while (<STDIN>) {
@@ -416,11 +419,13 @@ n";
       }
     }
     my ($Trans, $Message) = $Ticket->Correspond
-	(MIMEObj=>MIME::Entity->build( Subject => $subject || "",
-				       Cc => $cc || "",
-				       Bcc => $Bcc || "",
-				       Data => $content,
-				       From => $CurrentUser->EmailAddress));
+      ( CcMessageTo => $cc,
+	BccMessageTo => $bcc,
+	MIMEObj => MIME::Entity->build( Subject => $subject || "",
+					Cc => $cc || "",
+					Bcc => $Bcc || "",
+					Data => $content,
+					From => $CurrentUser->EmailAddress));
     print $Message;
   }                   
   
