@@ -44,6 +44,9 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/TitleBoxStart, title => loc('Saved searches') &>
+%# Hide all the save functionality if the user shouldn't see it.
+% if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
+%                                       Object=> $RT::System )) {
 <&|/l&>Privacy:</&>
 % if ($CurrentSearch->{'Object'} && $CurrentSearch->{'Object'}->id) {
 <& SearchPrivacy, Object => $CurrentSearch->{'Object'}->Object &><br>
@@ -66,12 +69,18 @@
 <input type="submit" name="Save" value="<%loc('Save')%>">
 % }
 <hr>
+% }
 <&|/l&>Load saved search:</&><br>
 <& SelectSearchesForObjects, Name => 'LoadSavedSearch', Objects => \@Objects&>
 <input value="<%loc('Load')%>" type="submit">
 <& /Elements/TitleBoxEnd &>
 
 <%init>
+
+unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
+                                          Object=> $RT::System )) {
+    return;
+}
 my @Objects;
 
 push @Objects,  $session{CurrentUser}->UserObj;
