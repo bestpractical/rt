@@ -1366,7 +1366,7 @@ sub _NewTransaction {
 
 =head2 Transactions
 
-  Returns an RT::Transactions object of all transactions on this ticket
+  Returns an RT::Transactions object of all transactions on this record object
 
 =cut
 
@@ -1378,12 +1378,12 @@ sub Transactions {
 
     #If the user has no rights, return an empty object
     $transactions->Limit(
-	FIELD => 'ObjectId',
-	VALUE => $self->id,
+        FIELD => 'ObjectId',
+        VALUE => $self->id,
     );
     $transactions->Limit(
-	FIELD    => 'ObjectType',
-	VALUE    => ref($self),
+        FIELD => 'ObjectType',
+        VALUE => ref($self),
     );
 
     return ($transactions);
@@ -1679,9 +1679,9 @@ sub FirstCustomFieldValue {
 
 =item CustomFieldValues FIELD
 
-Return a ObjectCustomFieldValues object of all values of CustomField FIELD for this ticket.  
-Takes a field id.
+Return a ObjectCustomFieldValues object of all values of the CustomField whose id is FIELD for this ticket.  
 
+Returns an RT::ObjectCustomFieldValues object
 
 =cut
 
@@ -1691,16 +1691,13 @@ sub CustomFieldValues {
 
     my $cf_values = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
     $cf_values->LimitToObject($self);
-    $cf_values->OrderBy( FIELD => 'id' );
+    $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
 
-    if (length $field) {
-	$field =~ /^\d+$/ or die "LoadByNameAndQueue impossible for Record.pm";
-	my $cf = RT::CustomField->new($self->CurrentUser);
-        $cf->LoadById($field);
-	$cf_values->LimitToCustomField($cf->id);
+    if ( length $field ) {
+        $field =~ /^\d+$/ or die "LoadByNameAndQueue impossible for Record.pm";
+        my $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf_values->LimitToCustomField( $field);
     }
-
-    # @values is a CustomFieldValues object;
     return ($cf_values);
 }
 

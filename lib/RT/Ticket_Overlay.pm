@@ -749,170 +749,6 @@ sub Create {
 
 # }}}
 
-# {{{ sub CreateFromEmailMessage
-
-
-=head2 CreateFromEmailMessage { Message, Queue, ExtractActorFromHeaders } 
-
-This code replaces what was once a large part of the email gateway.
-It takes an email message as a parameter, parses out the sender, subject
-and a MIME object. It then creates a ticket based on those attributes
-
-=cut
-
-sub CreateFromEmailMessage {
-    my $self = shift;
-    my %args = ( Message => undef,
-                 Queue => undef,
-                 ExtractActorFromSender => undef,
-                 @_ );
-
-    
-    # Pull out requestor
-
-    # Pull out Cc?
-
-    # 
-
-
-}
-
-# }}}
-
-
-# {{{ CreateFrom822
-
-=head2 FORMAT
-
-CreateTickets uses the template as a template for an ordered set of tickets 
-to create. The basic format is as follows:
-
-
- ===Create-Ticket: identifier
- Param: Value
- Param2: Value
- Param3: Value
- Content: Blah
- blah
- blah
- ENDOFCONTENT
-=head2 Acceptable fields
-
-A complete list of acceptable fields for this beastie:
-
-
-    *  Queue           => Name or id# of a queue
-       Subject         => A text string
-       Status          => A valid status. defaults to 'new'
-
-       Due             => Dates can be specified in seconds since the epoch
-                          to be handled literally or in a semi-free textual
-                          format which RT will attempt to parse.
-       Starts          => 
-       Started         => 
-       Resolved        => 
-       Owner           => Username or id of an RT user who can and should own 
-                          this ticket
-   +   Requestor       => Email address
-   +   Cc              => Email address 
-   +   AdminCc         => Email address 
-       TimeWorked      => 
-       TimeEstimated   => 
-       TimeLeft        => 
-       InitialPriority => 
-       FinalPriority   => 
-       Type            => 
-    +  DependsOn       => 
-    +  DependedOnBy    =>
-    +  RefersTo        =>
-    +  ReferredToBy    => 
-    +  Members         =>
-    +  MemberOf        => 
-       Content         => content. Can extend to multiple lines. Everything
-                          within a template after a Content: header is treated
-                          as content until we hit a line containing only 
-                          ENDOFCONTENT
-       ContentType     => the content-type of the Content field
-       CustomField-<id#> => custom field value
-
-Fields marked with an * are required.
-
-Fields marked with a + man have multiple values, simply
-by repeating the fieldname on a new line with an additional value.
-
-
-When parsed, field names are converted to lowercase and have -s stripped.
-Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all 
-be treated as the same thing.
-
-
-=begin testing
-
-use_ok(RT::Ticket);
-
-=end testing
-
-
-=cut
-
-sub CreateFrom822 {
-    my $self    = shift;
-    my $content = shift;
-
-
-
-    my %args = $self->_Parse822HeadersForAttributes($content);
-
-    # Now we have a %args to work with.
-    # Make sure we have at least the minimum set of
-    # reasonable data and do our thang
-    my $ticket = RT::Ticket->new($RT::SystemUser);
-
-    my %ticketargs = (
-        Queue           => $args{'queue'},
-        Subject         => $args{'subject'},
-        Status          => $args{'status'},
-        Due             => $args{'due'},
-        Starts          => $args{'starts'},
-        Started         => $args{'started'},
-        Resolved        => $args{'resolved'},
-        Owner           => $args{'owner'},
-        Requestor       => $args{'requestor'},
-        Cc              => $args{'cc'},
-        AdminCc         => $args{'admincc'},
-        TimeWorked      => $args{'timeworked'},
-        TimeEstimated   => $args{'timeestimated'},
-        TimeLeft        => $args{'timeleft'},
-        InitialPriority => $args{'initialpriority'},
-        FinalPriority   => $args{'finalpriority'},
-        Type            => $args{'type'},
-        DependsOn       => $args{'dependson'},
-        DependedOnBy    => $args{'dependedonby'},
-        RefersTo        => $args{'refersto'},
-        ReferredToBy    => $args{'referredtoby'},
-        Members         => $args{'members'},
-        MemberOf        => $args{'memberof'},
-        MIMEObj         => $args{'mimeobj'}
-    );
-
-    # Add custom field entries to %ticketargs.
-    # TODO: allow named custom fields
-    map {
-        /^customfield-(\d+)$/
-          && ( $ticketargs{ "CustomField-" . $1 } = $args{$_} );
-    } keys(%args);
-
-    my ( $id, $transid, $msg ) = $ticket->Create(%ticketargs);
-    unless ($id) {
-        $RT::Logger->error( "Couldn't create a related ticket for "
-              . $self->TicketObj->Id . " "
-              . $msg );
-    }
-
-    return (1);
-}
-
-# }}}
 
 # {{{ UpdateFrom822 
 
@@ -1337,7 +1173,6 @@ sub Import {
 }
 
 # }}}
-
 
 # {{{ Routines dealing with watchers.
 
@@ -3656,26 +3491,48 @@ sub Transactions {
 
 # }}}
 
+
+# {{{ TransactionCustomFields
+
+=head2 TransactionCustomFields
+
+    Returns the custom fields that transactions on tickets will ahve.
+
+=cut
+
 sub TransactionCustomFields {
     my $self = shift;
     return $self->QueueObj->TicketTransactionCustomFields;
 }
 
+# }}}
+
+# {{{ sub CustomFieldValues
+
+=head2 CustomFieldValues
+
 # Do name => id mapping (if needed) before falling back to
 # RT::Record's CustomFieldValues
+
+See L<RT::Record>
+
+=cut
+
 sub CustomFieldValues {
-    my $self = shift;
+    my $self  = shift;
     my $field = shift;
-    unless ($field =~ /^\d+$/) {
-	my $cf = RT::CustomField->new($self->CurrentUser);
-	$cf->LoadByNameAndQueue(Name => $field, Queue => $self->QueueObj->Id);
-	unless( $cf->id ) {
-            $cf->LoadByNameAndQueue(Name => $field, Queue => '0');
+    unless ( $field =~ /^\d+$/ ) {
+        my $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->LoadByNameAndQueue( Name => $field, Queue => $self->QueueObj->Id );
+        unless ( $cf->id ) {
+            $cf->LoadByNameAndQueue( Name => $field, Queue => '0' );
         }
-	$field = $cf->id;
+        $field = $cf->id;
     }
     return $self->SUPER::CustomFieldValues($field);
 }
+
+# }}}
 
 sub _LookupTypes {
     "RT::Queue-RT::Ticket";
