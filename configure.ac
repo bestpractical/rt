@@ -6,7 +6,7 @@ AC_REVISION($Revision: 1.1 $)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [2.1.87], [rt-3.0-bugs@fsck.com])
+AC_INIT(RT, [2.1.88], [rt-3.0-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -70,6 +70,9 @@ AC_ARG_WITH(db-type,
 	    		   [sort of database RT will use (default: mysql)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
+if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg'; then
+	AC_MSG_ERROR([Only Pg and mysql are valid db types])
+fi
 AC_SUBST(DB_TYPE)
 
 dnl DB_HOST

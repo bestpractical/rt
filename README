@@ -1,8 +1,8 @@
 # BEGIN LICENSE BLOCK
 # 
-# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 # 
-# (Except where explictly superceded by other copyright notices)
+# (Except where explicitly superceded by other copyright notices)
 # 
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
@@ -22,62 +22,89 @@
 # 
 # 
 # END LICENSE BLOCK
-RT is an enterprise-grade issue tracking system. [it needs more description
-here before 3.0.0]
 
-This is a BETA release. It's not been field-tested enough to be recommended 
-for production deployment, but it's proven itself stable in internal testing 
-and is largely feature complete.
+
+RT is an enterprise-grade issue tracking system. It allows
+organizations to keep track of their to-do lists, who is working
+on which tasks, what's already been done, and when tasks were
+completed. It is available under the terms of version 2 of the GNU
+General Public License (GPL), so it doesn't cost anything to set
+up and use.
+
 
         Jesse Vincent
         Best Practical Solutions, LLC
-        5 Feb 2003
+        March 2003
 
 REQUIRED PACKAGES:
 ------------------
 
-o   Perl5.6.1 or later.
+o   Perl 5.6.1 or later with support for setgid perl scripts (http://www.perl.com).
 
-
-        RT's FastCGI handler runs setgid to the 'RT' group
-	to protect RT's database password.  You may need to install a special 
-	"suidperl" package or reconfigure your perl setup to support
-	 "setuid scripts" if you intend to use RT with FastCGI.
-
-
-        If you intend to use RT's support for non-english languages, it is 
-        STRONGLY recommended that you use perl 5.8.0 or newer, as it contains 
-        significantly enhanced support for Unicode and non-english languages.
-         (Put another way, trying to use RT with Perl 5.6.1 in a
-          non-English-speaking environment will hurt a lot.)
+        Note: If you intend to use RT's support for non-English languages, we         
+        strongly recommend you use Perl 5.8.0 or newer, as it contains
+        significantly enhanced support for Unicode and non-English languages. 
+        (In other words, trying to use RT with Perl 5.6.1 in a non-English-speaking 
+        environment will hurt a lot.)
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
-        Currently supported:  Mysql 4.0.6 or newer. 
+        Currently supported:  Mysql 4.0.9 or newer. 
                               Mysql 3.23.46 or newer with support for InnoDB 
-				 (Some older releases had crippling SQL bugs)
-				Postgres 7.2 or later
+                                 (Some older releases had crippling SQL bugs)
+                              Postgres 7.2 or later
 
-o   Apache (1.3.x or 2.x) with mod_perl -- ( http://perl.apache.org ) 
-    or A webserver with FastCGI support (www.fastcgi.com)
+o   Apache version 1.3.x or 2.x (http://httpd.apache.org) with mod_perl -- (http://perl.apache.org ) 
+    or a webserver with FastCGI support (www.fastcgi.com)
 
-	If you compile mod_perl on Apache 1.3.x as a DSO, you're on your own;
-	It's known to have massive stability problems. 
+        mod_perl 2.0 isn't quite ready for prime_time just yet;
+        Best Practical Solutions strongly recommends that sites use 
+        Apache 1.3 or FastCGI.
+
+        Compiling mod_perl on Apache 1.3.x as a DSO has been known 
+         to have massive stability problems and is not recommended.
 
         mod_perl 1.x must be build with EVERYTHING=1
 
+        RT's FastCGI handler runs setgid to the 'rt' group to
+        protect RT's database password.  You may need to install
+        a special  "suidperl" package or reconfigure your perl
+        setup to support "setuid scripts" if you intend to use RT
+        with FastCGI.
+
+        Debian GNU/* 3.0+: the package which installs suidperl is
+         called perl-suid, and should work without any tweaking.
+
+        FreeBSD 4.2+: the package is called sperl, and should
+         install a suidperl that just works 
+
+        Conectiva Linux 6.0+: suidperl is installed by default when 
+         perl is installed, but the program /bin/suidperl is not setuid. 
+         You must use chmod to make it setuid.
+
+
+
 o    Various and sundry perl modules
-        RT takes care of the installation of most of these automatically
-        during the "make testdeps" and "make fixdeps" stages below
+	A tool included with RT takes care of the installation of
+	most of these automatically during the install process.
+
+	The tool supplied with RT uses Perl's CPAN system
+	(http://www.cpan.org) to install modules. Some operating
+	systems package all or some of the modules required and
+	you may be better off installing the modules that way.
 
 
 GENERAL INSTALLATION
 --------------------
 
+This is a rough guide to installing RT. For more detail, you'll want 
+to read 'Chapter 2: Installing' in RT's manual, available at
+http://www.bestpractical.com/rt 
+
 1   Unpack this distribution SOMWHERE OTHER THAN where you want to install RT
 
         Granted, you've already got it open. To do this cleanly:
 
-        	tar xzvf rt-2-1-xx.tar.gz -C /tmp
+                tar xzvf rt.tar.gz -C /tmp
 
 2   Run the "configure" script. 
 
@@ -88,7 +115,7 @@ GENERAL INSTALLATION
 
 3.1   Check for compliance:
         
-        perl sbin/rt-test-dependencies \
+   perl sbin/rt-test-dependencies \ 
                 --with-<databasename> --with-<web-environment>
 
         databasename is one of: mysql, postgres
@@ -98,7 +125,7 @@ GENERAL INSTALLATION
 
         perl sbin/rt-test-dependencies \
                 --with-<databasename> --with-<web-environment> --install
-	
+        
 
 3.3   Check to make sure everything was installed properly:
 
@@ -110,25 +137,25 @@ GENERAL INSTALLATION
 5a  FOR A NEW INSTALLATION: 
         
         As root, type:
-		 make install	(replace "make" with the local name for 
-				 Make, if you need to)
+                 make install        (replace "make" with the local name for 
+                                 Make, if you need to)
 
                        
                  make initialize-database 
 
 
-	If the make fails, type:
-		make dropdb 
-	and start over from step 5a
+        If the make fails, type:
+                make dropdb 
+        and start over from step 5a
 
 5b  FOR UPGRADING: (Within the RT 3.0.x series)
 
         As root, type: 
-		make upgrade     (replace "make" with the local name for 
-				  Make, if you need to)
+                make upgrade     (replace "make" with the local name for 
+                                  Make, if you need to)
 
-	This will build new binaries, config files and libraries without
-	overwriting your RT database. 
+        This will build new binaries, config files and libraries without
+        overwriting your RT database. 
         
         It may then instruct you to update your RT system database objects 
 
@@ -142,26 +169,22 @@ GENERAL INSTALLATION
     NOTE: root's password for the web interface is "password" 
     (without the quotes.)  Not changing this is a SECURITY risk
     
-9   Configure RT per the instructions at http://www.fsck.com/rtfm/
+9   Configure RT per the instructions in RT's manual.
 
-    Until you do this, RT will not be able to send or recieve email,
+    Until you do this, RT will not be able to send or receive email,
     nor will it be more than marginally functional.  This is not an
     optional step.
 
 
+THE WEB INTERFACE
+-----------------
 
-THE WEB UI
-----------
-
-RT's web ui is based around HTML::Mason, which works best with the mod_perl
+RT's web interface is based around HTML::Mason, which works best with the mod_perl
 perl interpreter within Apache httpd.  Alternatively, support for the FastCGI
 (and plain CGI) interface is also provided as 'bin/mason_handler.fcgi'.
 
 Apache 
-        RT Uses HTML::Mason.  You'll need to add a few lines to your
-        httpd.conf telling it to use rt's web ui.  If you have mod-perl
-	(you should, the perl scripts will go quite a bit faster around with
-	it), you can do something like this:
+        You'll need to add a few lines to your httpd.conf telling it about RT:
 
 <VirtualHost your.ip.address>
     ServerName your.rt.server.hostname
@@ -222,8 +245,8 @@ information about commercial support options, please send email to
 RT-USERS MAILINGLIST
 --------------------
 
-To keep up to date on the latest RT tips, techniques and extections,
-you probably want to join the rt-users mailinglist.  Send a message to:
+To keep up to date on the latest RT tips, techniques and extensions,
+you probably want to join the rt-users mailing list.  Send a message to:
 
          rt-users-request@lists.fsck.com 
 
@@ -231,13 +254,13 @@ With the body of the message consisting of only the word:
 
         subscribe
 
-If you're interested in hacking on rt, you'll want to subscribe to
+If you're interested in hacking on RT, you'll want to subscribe to
 rt-devel@lists.fsck.com.  Subscribe to it with instructions similar to
 those above.
 
 Address questions about the stable release to the rt-users list, and
 questions about the development version to the rt-devel list.  If you feel
-your questions are best not asked publically, send them personally to
+your questions are best not asked publicly, send them personally to
 <jesse@bestpractical.com>.
 
 
@@ -245,9 +268,10 @@ RT WEBSITE
 ----------
 
 For current information about RT, check out the RT website at 
-http://www.bestpractical.com/  You'll find screenshots, a pointer
-to the current version of rt, contributed patches and lots of other great
-stuff.
+        http://www.bestpractical.com/  
+
+You'll find screenshots, a pointer to the current version of RT, contributed 
+patches, and lots of other great stuff.
 
 
 TROUBLESHOOTING
@@ -258,9 +282,3 @@ checked the FAQ, feel free to send mail to rt-users@fsck.com (for released
 versions of RT) or rt-devel@fsck.com (for development versions).
 
 Thanks!
-
-        Enjoy
-
-        Jesse Vincent
-	<jesse@bestpractical.com>
-        Best Practical Solutions, LLC
