@@ -1,0 +1,53 @@
+% if (keys %documents) {
+<& /Elements/TitleBoxStart, title => loc('Attachments'), 
+        title_class=> 'inverse',  
+        color => "#336699" &>
+
+% foreach my $key (keys %documents) {
+% my $fontsize='size="-1"';
+
+<%$key%><br>
+<ul>
+% foreach my $rev (@{$documents{$key}}) {
+
+<%PERL>
+my $size = length($rev->Content());
+
+if ($size) {
+    if ($size > 1024) {
+        $size = int($size/102.4)/10 . "k";
+    }
+    else {
+        $size = $size ."b";
+    }
+
+</%PERL>
+
+<li><font <%$fontsize%>>
+        <A HREF="Attachment/<%$rev->TransactionObj->Id%>/<%$rev->Id%>/<%$rev->Filename%>"><%$rev->CreatedAsString%> (<% $size %>)</a></font></li>
+% }
+% $fontsize='size="-2"';
+% }
+</ul>
+
+% }
+<& /Elements/TitleBoxEnd &>
+<BR>
+% }
+
+<%INIT>
+my %documents;
+my $transactions = $Ticket->Transactions();
+while (my $trans = $transactions->Next()) {
+        my $attachments = $trans->Attachments();
+        while (my $attach = $attachments->Next()) {
+              next unless ($attach->Filename());
+              # most recent at the top
+              unshift (@{$documents{$attach->Filename}}, $attach);
+        }
+}
+</%INIT>
+<%ARGS>
+$Ticket => undef
+</%ARGS>
+

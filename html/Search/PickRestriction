@@ -28,24 +28,25 @@
 <& /Elements/SelectQueue, Name => loc("ValueOfQueue") &>
 
 
-<li><&|/l&>Priority</&>  <& /Elements/SelectEqualityOperator,  Name => "PriorityOp" &>
+<li><&|/l&>Priority</&> <& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
 
 <INPUT Name="ValueOfPriority" SIZE=5>
-
 
 <li>
 <& /Elements/SelectDateType, Name => 'DateType' &>
 <& /Elements/SelectDateRelation, Name=>"DateOp" &>
 <& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
 
-<li><&|/l&>Ticket content</&> 
-<& /Elements/SelectBoolean, Name => "ContentOp", 
+<li><&|/l&>Ticket attachment</&> 
+
+<& /Elements/SelectAttachmentField, Name => 'AttachmentField' &>
+<& /Elements/SelectBoolean, Name => "AttachmentFieldOp", 
 			    True => loc("matches"), 
 			    False => loc("does not match"), 
 			    TrueVal => 'LIKE', 
 			    FalseVal => 'NOT LIKE' 
 &> 
-<Input Name="ValueOfContent" Size=20>
+<Input Name="ValueOfAttachmentField" Size=20>
 
 <li><&|/l&>Status</&> 
 <& /Elements/SelectBoolean, Name => "StatusOp", 

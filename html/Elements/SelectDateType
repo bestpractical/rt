@@ -6,6 +6,7 @@
 <OPTION VALUE="LastUpdated"><&|/l&>Last Updated</&></OPTION>
 <OPTION VALUE="StartsBy"><&|/l&>Starts By</&></OPTION>
 <OPTION VALUE="Due"><&|/l&>Due</&></OPTION>
+<OPTION VALUE="Updated"><&|/l&>Updated</&></OPTION>
 </SELECT>
 <%ARGS>
 $Name => 'DateType'

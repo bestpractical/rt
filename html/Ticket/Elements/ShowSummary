@@ -39,6 +39,7 @@
 	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
+	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
 
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 

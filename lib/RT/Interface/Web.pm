@@ -573,23 +573,30 @@ sub ProcessSearchQuery {
     # }}}    
     # {{{ Limit Dates
     if ( $args{ARGS}->{'ValueOfDate'} ne '' ) {
-
         my $date = ParseDateToISO( $args{ARGS}->{'ValueOfDate'} );
         $args{ARGS}->{'DateType'} =~ s/_Date$//;
 
-        $session{'tickets'}->LimitDate(
-            FIELD    => $args{ARGS}->{'DateType'},
-            VALUE    => $date,
-            OPERATOR => $args{ARGS}->{'DateOp'},
-        );
+        if ( $args{ARGS}->{'DateType'} eq 'Updated' ) {
+            $session{'tickets'}->LimitTransactionDate(
+                                            VALUE    => $date,
+                                            OPERATOR => $args{ARGS}->{'DateOp'},
+            );
+        }
+        else {
+            $session{'tickets'}->LimitDate( FIELD => $args{ARGS}->{'DateType'},
+                                            VALUE => $date,
+                                            OPERATOR => $args{ARGS}->{'DateOp'},
+            );
+        }
     }
 
     # }}}    
     # {{{ Limit Content
-    if ( $args{ARGS}->{'ValueOfContent'} ne '' ) {
-        $session{'tickets'}->LimitContent(
-            VALUE    => $args{ARGS}->{'ValueOfContent'},
-            OPERATOR => $args{ARGS}->{'ContentOp'},
+    if ( $args{ARGS}->{'ValueOfAttachmentField'} ne '' ) {
+        $session{'tickets'}->Limit(
+            FIELD   => $args{ARGS}->{'AttachmentField'},
+            VALUE    => $args{ARGS}->{'ValueOfAttachmentField'},
+            OPERATOR => $args{ARGS}->{'AttachmentFieldOp'},
         );
     }
 

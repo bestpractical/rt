@@ -59,6 +59,7 @@ use vars qw(%TYPES @SORTFIELDS);
 	      Type => 'STRING',
               Content => 'TRANSFIELD',
 	      ContentType => 'TRANSFIELD',
+          Filename => 'TRANSFIELD',
  	      TransactionDate => 'TRANSDATE',
 	      LinkedTo => 'LINKFIELD',
           Watcher => 'WATCHERFIELD',
@@ -108,7 +109,7 @@ sub Limit {
 		 @_
 	       );
     $args{'DESCRIPTION'} = $self->loc(
-	"Autodescribed: [_1][_2][_3]", $args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'}
+	"[_1] [_2] [_3]", $args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'}
     ) if (!defined $args{'DESCRIPTION'}) ;
 
     my $index = $self->_NextIndex;
@@ -468,6 +469,29 @@ sub LimitContent {
 		  OPERATOR => $args{'OPERATOR'},
 		  DESCRIPTION => join(
 		   ' ', $self->loc('Ticket content'), $args{'OPERATOR'}, $args{'VALUE'},
+		  ),
+		 );
+}
+
+# }}}
+
+# {{{ sub LimitFilename
+
+=head2 LimitFilename
+
+Takes a paramhash with the fields OPERATOR and VALUE.
+OPERATOR is one of =, LIKE, NOT LIKE or !=.
+VALUE is a string to search for in the body of the ticket
+
+=cut
+sub LimitFilename {
+    my $self = shift;
+    my %args = (@_);
+    $self->Limit (FIELD => 'Filename',
+		  VALUE => $args{'VALUE'},
+		  OPERATOR => $args{'OPERATOR'},
+		  DESCRIPTION => join(
+		   ' ', $self->loc('Attachment filename'), $args{'OPERATOR'}, $args{'VALUE'},
 		  ),
 		 );
 }
