@@ -1,7 +1,9 @@
 #!/usr/bin/perl -w
 #
 # $Header$
-# RT is (c) 1997 Jesse Vincent (jesse@fsck.com)
+# RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
+
+use strict;
 
 $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
 $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
@@ -13,15 +15,14 @@ package RT;
 
 $VERSION="!!RT_VERSION!!";
 
-use strict;
-#this is the RT path
-
 use lib "!!RT_LIB_PATH!!";
 use lib "!!RT_ETC_PATH!!";
-use config;
 
+#This drags in  RT's config.pm
+use config;
 use Carp;
 use DBIx::Handle;
+
 
 #TODO: need to identify the database user here....
 $RT::Handle = new DBIx::Handle;
@@ -33,8 +34,6 @@ $RT::Handle->Connect(Host => $RT::DatabaseHost,
 		      Driver => $RT::DatabaseType);
 
 
-
-require "!!RT_ETC_PATH!!/config.pm";          
 
 my $program = $0; 
 $program =~ s/(.*)\///;
@@ -73,5 +72,8 @@ else {
   exit(1);
 }
 
-
 $RT::Handle->Disconnect();
+
+}
+1;
+
