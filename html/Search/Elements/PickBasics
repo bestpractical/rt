@@ -165,7 +165,7 @@
 % }
 </td></tr>
 % }
-
+<& '/Elements/Callback', _CallbackName => 'EndOfList' &>
 <%INIT>
 my @fields = ('Attachment',
     'Queue',

@@ -107,6 +107,7 @@ my %FIELDS =
     RefersTo        => ['LINK' => To => 'RefersTo',],
     HasMember	    => ['LINK' => From => 'MemberOf',],
     DependentOn     => ['LINK' => From => 'DependsOn',],
+    DependedOnBy     => ['LINK' => From => 'DependsOn',],
     ReferredToBy    => ['LINK' => From => 'RefersTo',],
 #   HasDepender	    => ['LINK',],
 #   RelatedTo	    => ['LINK',],
@@ -118,7 +119,6 @@ my %FIELDS =
     LastUpdated	    => ['DATE' => 'LastUpdated',],
     Created	    => ['DATE' => 'Created',],
     Subject	    => ['STRING',],
-    Type	    => ['STRING',],
     Content	    => ['TRANSFIELD',],
     ContentType	    => ['TRANSFIELD',],
     Filename        => ['TRANSFIELD',],
@@ -864,6 +864,7 @@ sub Limit {
     }
 
     if ($args{'FIELD'} eq 'Type') {
+    warn "We're loooking at the type";
         $self->{'looking_at_type'} = 1;
     }
 
