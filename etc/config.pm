@@ -186,7 +186,7 @@ $MasonDataDir = "!!MASON_DATA_PATH!!";
 
       { Header     => 'Subject',
 	 TicketAttribute => 'Subject'
-	 }
+	 },
        { Header => 'Requestor(s)',
 	 TicketAttribute => 'RequestorsAsString'
 	 },
