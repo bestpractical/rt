@@ -1,12 +1,13 @@
 #!/usr/bin/perl -w
 
 use strict;
-use vars qw($PROMPT $SCHEMA_FILE);
+use vars qw($PROMPT $SCHEMA_FILE $DEBUG);
 use subs qw(_yesno);
 use DBI;
 use DBIx::DataSource qw( create_database drop_database );
 use DBIx::DBSchema;
 
+$DEBUG=1;
 $PROMPT = 1; #by default, should at least *ask* before nuking databases
 $SCHEMA_FILE = "etc/schema.pm"; #hmm
 
@@ -57,6 +58,7 @@ create_database( $dsn, $DB_DBA, $DB_DBA_PASSWORD )
 
 my $dbh = DBI->connect( $dsn, $DB_DBA, $DB_DBA_PASSWORD ) or die $DBI::errstr;
 foreach my $statement ( $schema->sql($dsn) ) {
+  print STDERR $statement if $DEBUG;
   my $sth = $dbh->prepare($statement) or die $dbh->errstr;
   $sth->execute or die $sth->errstr;
 }
