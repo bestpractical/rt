@@ -269,6 +269,9 @@ integrate_begin_exceptions =
  * about ANY file can host a Trojan, one way or the other.
  */
 
-trojan_horse_suspect =
-[
-];
+trojan_horse_suspect = [ ];
+
+
+
+
+build_covers_all_architectures = true;

@@ -340,7 +340,10 @@ bin-install:
 # }}}
 
 commit:
-	cvs commit
+	aegis -build ; aegis -diff ; aegis -test; aegis --development_end
+
+integrate:
+	aegis -build; aegis -dist; aegis -test ; aegis -integrate_pass
 
 predist: commit
 	cvs tag -r $(BRANCH) -F $(TAG)
