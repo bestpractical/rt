@@ -30,7 +30,7 @@ RT_SBIN_PATH	=	$(RT_PREFIX)/sbin/
 GETPARAM		=       $(PERL) -I$(RT_LIB_PATH) -e'use RT; RT::LoadConfig(); print $${$$RT::{$$ARGV[0]}};'
 
 
-DBTYPE		=		`${GETPARAM} DatabaseType`
+DB_TYPE		=		`${GETPARAM} DatabaseType`
 DB_DATABASEHOST		=  `${GETPARAM} DatabaseHost`
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
@@ -71,7 +71,7 @@ initdb:
 dropdb: 
 
 dropdb.Pg: etc/drop_schema.mysql
-	psql -U ${DB_DBA} $(DB_DATABASE) < etc/drop_schema.Pg
+	psql -U $(DB_DBA) $(DB_DATABASE) < etc/drop_schema.Pg
 
 dropdb.mysql: etc/drop_schema.mysql
 	-mysql  $(DB_DATABASE) < etc/drop_schema.mysql

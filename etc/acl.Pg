@@ -22,7 +22,6 @@ FM_Transactions
 
     );
 
-    # if there's already an rt_user, drop it.
     foreach my $table (@tables) {
         push @acls,
           "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to "

@@ -1,0 +1,7 @@
+# mysql doesn't need new acls
+sub acl {
+	return ('select 1;');
+}
+1;
+
+
