@@ -20,7 +20,7 @@ use CGI qw(-private_tempfiles); #bring this in before mason, to make sure we
 use HTML::Mason::ApacheHandler (args_method => 'CGI');
 use HTML::Mason;  # brings in subpackages: Parser, Interp, etc.
 
-use vars qw($VERSION %session $Nobody $SystemUser $r);
+use vars qw($VERSION %session $Nobody $SystemUser $r $m);
 
 # List of modules that you want to use from components (see Admin
 # manual for details)
@@ -41,7 +41,7 @@ use Carp;
 
 {  
 	    package HTML::Mason::Commands;
-	    use vars qw(%session);
+	    use vars qw(%session $m);
 	  
 	    use RT; 
 	    use RT::Ticket;
@@ -113,8 +113,9 @@ if ($HTML::Mason::VERSION < 1.0902) {
 chown (Apache->server->uid, Apache->server->gid, 
 		[$RT::MasonSessionDir]);
 
+
 chown (Apache->server->uid, Apache->server->gid, 
-		$interp->files_written);
+		$ah->interp->files_written);
 
 # Die if WebSessionDir doesn't exist or we can't write to it
 
