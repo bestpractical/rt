@@ -1,7 +1,42 @@
 no warnings qw/redefine/;
 
+use RT::FM::System;
 use RT::FM::CustomFieldCollection;
 
+# {{{ This object provides ACLs
+
+use vars qw/$RIGHTS/;
+my $RIGHTS = {
+
+    SeeClass            => 'See that this class exists', #loc_pair
+    CreateArticle       => 'Create articles in this class', #loc_pair
+    ModifyArticle       => 'Modify or delete articles in this class', #loc_pair
+    AdminClass          => 'Modify metadata and custom fields for this class', #loc_pair
+    ShowACL             => 'Display Access Control List',             # loc_pair
+    ModifyACL           => 'Modify Access Control List',              # loc_pair
+};
+
+# TODO: This should be refactored out into an RT::ACLedObject or something
+# stuff the rights into a hash of rights that can exist.
+
+foreach my $right ( keys %{$RIGHTS} ) {
+    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+}
+
+
+=head2 AvailableRights
+
+Returns a hash of available rights for this object. The keys are the right names and the values are a description of what t
+he rights do
+
+=cut
+
+sub AvailableRights {
+    my $self = shift;
+    return($RIGHTS);
+}
+
+# }}}
 
 # {{{ Create
 
@@ -44,6 +79,25 @@ ok($cl->id, "Loaded the class we want");
 
 
 
+# Create a new user. make sure they can't create a class
+
+my $u= RT::User->new($RT::SystemUser);
+$u->Create(Name => "RTFMTest".time, Privileged => 1);
+ok ($u->Id, "Created a new user");
+
+# Make sure you can't create a group with no acls
+my $cl = RT::FM::Class->new($u);
+ok (UNIVERSAL::isa($cl, 'RT::FM::Class'), "the new class is a class");
+
+my ($id, $msg) = $cl->Create(Name => 'Test-nobody', Description => 'A test class');
+
+ok (!$id, $msg. "- Can not create classes as a random new user");
+
+$u->PrincipalObj->GrantRight(Right =>'AdminClass', Object => $RT::FM::System);
+my ($id, $msg) = $cl->Create(Name => 'Test-nobody', Description => 'A test class');
+
+ok ($id, $msg. "- Can create classes as a random new user after ACL grant");
+
 
 =end testing
 
@@ -57,13 +111,17 @@ sub Create {
                 Name => '',
                 Description => '',
                 SortOrder => '',
+    @_);
 
-		  @_);
+    unless ($self->CurrentUser->HasRight(Right => 'AdminClass', Object => $RT::FM::System) ) {
+        return(0, $self->loc('Permission Denied'));
+    }
+
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Description => $args{'Description'},
                          SortOrder => $args{'SortOrder'},
-);
+    );
 
 }
 
@@ -133,6 +191,45 @@ sub CustomFields {
     return($cfs);                
 }
 # }}}
+
+
+# {{{ ACCESS CONTROL
+
+# {{{ sub _Set
+sub _Set {
+    my $self = shift;
+
+    unless ( $self->CurrentUserHasRight('AdminQueue') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+    return ( $self->SUPER::_Set(@_) );
+}
+
+# }}}
+
+# {{{ sub _Value
+
+sub _Value {
+    my $self = shift;
+
+    unless ( $self->CurrentUserHasRight('SeeQueue') ) {
+        return (undef);
+    }
+
+    return ( $self->__Value(@_) );
+}
+
+# }}}
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    my $right = shift;
+
+    return ($self->CurrentUser->HasRight( Right => $right,
+                                          Object => $self, 
+                                          EquivObjects => [$RT::FM::System] ));
+
+}
 
 1;
 

@@ -16,13 +16,71 @@
 # 
 # END LICENSE BLOCK
 
+use strict;
+
 no warnings qw/redefine/;
 
+use RT::FM;
 use RT::FM::ArticleCollection;
 use RT::FM::CustomField;
 use RT::FM::Class;
 use RT::Links;
 use RT::URI::fsck_com_rtfm;
+
+
+use vars qw/$RIGHTS/;
+
+# {{{ This object provides ACLs
+
+$RIGHTS = {
+    SeeQueue            => 'Can this principal see this queue',       # loc_pair
+    AdminQueue          => 'Create, delete and modify queues',        # loc_pair
+    ShowACL             => 'Display Access Control List',             # loc_pair
+    ModifyACL           => 'Modify Access Control List',              # loc_pair
+    ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
+    AdminCustomFields   => 'Create, delete and modify custom fields', # loc_pair
+    ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
+    ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
+
+    ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
+    ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
+
+    ShowTicket         => 'Show ticket summaries',                    # loc_pair
+    ShowTicketComments => 'Show ticket private commentary',           # loc_pair
+
+    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
+    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
+    CreateTicket    => 'Create tickets in this queue',                # loc_pair
+    ReplyToTicket   => 'Reply to tickets',                            # loc_pair
+    CommentOnTicket => 'Comment on tickets',                          # loc_pair
+    OwnTicket       => 'Own tickets',                                 # loc_pair
+    ModifyTicket    => 'Modify tickets',                              # loc_pair
+    DeleteTicket    => 'Delete tickets'                               # loc_pair
+
+};
+
+# TODO: This should be refactored out into an RT::ACLedObject or something
+# stuff the rights into a hash of rights that can exist.
+
+foreach my $right ( keys %{$RIGHTS} ) {
+    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+}
+
+
+=head2 AvailableRights
+
+Returns a hash of available rights for this object. The keys are the right names and the values are a description of what t
+he rights do
+
+=cut
+
+sub AvailableRights {
+    my $self = shift;
+    return($RIGHTS);
+}
+
+
+# }}}
 
 
 # {{{ Create
@@ -432,7 +490,7 @@ sub DeleteLink {
         my $TransString = "Ticket $args{'Base'} no longer $args{Type} ticket $args{'Target'}.";
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction( Type      => 'DeleteLink', Field     => $args{'Type'}, Data      => $TransString, );
 
-        return ( $linkid, $self->loc("Link deleted ([_1])", $TransString), $transactionid );
+        return ( $linkid, $self->loc("Link deleted ([_1])", $TransString));
     }
 
 
@@ -716,7 +774,7 @@ sub _AddCustomFieldValue {
 
         # {{{ Kill the old value
         my $new_value = RT::ArticleCustomFieldValue->new( $self->CurrentUser );
-        $new_value->Load($value_id);
+        $new_value->Load($new_value_id);
 
         # now that adding the new value was successful, delete the old one
         my ( $val, $msg ) = $cf->DeleteValueForArticle(Article  => $self->Id,
@@ -795,14 +853,15 @@ sub DeleteCustomFieldValue {
     
     #if we can\'t find it, bail
     unless ($CFObjectValue->id) {
-	return (undef, "Couldn't load custom field valuewhile trying to delete it.");
+	return (undef, $self->loc("Couldn't load custom field valuewhile trying to delete it."));
     };
     
     #record transaction here.
    
     $CFObjectValue->Delete();
-    
-    return (1, "Value ".$CFObjectValue-Name ." deleted from custom field ".$CustomField.".");
+   
+    # TODO XXX error check
+    return (1, $self->loc("Value [_1] deleted from custom field [_2].",$CFObjectValue->Name, $args{'CustomField'}));
     
 }
 
