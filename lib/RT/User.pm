@@ -94,7 +94,8 @@ sub _Accessible  {
 
 sub Create  {
   my $self = shift;
-  my %args = (#TODO: insert argument list 
+  my %args = (#TODO: insert argument list +++
+	      CanManipulate => 0,
 	      @_ # get the real argumentlist
 	     );
 
