@@ -52,6 +52,7 @@ $RT::Nobody->LoadByUserId('Nobody');
 my $CurrentUser = GetCurrentUser();
 
 # {{{ commandline flags 
+
 my ( @id,
      @limit_queue,
      @limit_status,
@@ -104,6 +105,7 @@ my ( @id,
 $edit = 1; #Assume the user wants to edit replies and comments unless they specify --noedit
 
 # {{{    args
+
 my @args =("id=s" => \@id,
 	   "limit-queue=s" => \@limit_queue,
 	   "limit-status=s" => \@limit_status,
@@ -152,7 +154,7 @@ my @args =("id=s" => \@id,
 	   "version" => \$version,
 	   "help|h|usage" => \$help
 	  );
-  
+
 # }}}
 
 
@@ -351,74 +353,134 @@ else {
     my $Tickets = new RT::Tickets($CurrentUser);
     
     # {{{ Limit our search
-    my $value; #to use when iterating through restrictions
+    my $value;			#to use when iterating through restrictions
     
     # {{{ limit on id
-    if (@id) {
-	foreach $value (@id) {
-           if ($value =~ /^(\d?)\D?(\d*)$/) {
-                my $start = $1;
-                my $end = $2;
-		$Tickets->LimitId(
-				 VALUE => "$start",
-				 OPERATOR => '>=') if ($start);
-		$Tickets->LimitId(
-				 VALUE => "$end",
-				 OPERATOR => '<=') if ($end);
-	    }	
-	}
-    }	
+
+    foreach $value (@id) {
+	if ($value =~ /^(\d?)\D?(\d*)$/) {
+	    my $start = $1;
+	    my $end = $2;
+	    $Tickets->LimitId(
+			      VALUE => "$start",
+			      OPERATOR => '>=') if ($start);
+	    $Tickets->LimitId(
+			      VALUE => "$end",
+			      OPERATOR => '<=') if ($end);
+	}	
+    }
+
 
     # }}}
     
     # {{{ limit on status
-    if (@limit_status){
-	foreach $value (@limit_status) {
-	    if ($value =~ /^(.?)(new|open|stalled|resolved|dead)$/) {
-		my $op = $1;
-		my $val = $2;
-		
-		$op = ParseBooleanOp($op);
-		$Tickets->LimitStatus(VALUE => "$val",
-				      OPERATOR => "$op");
-	    }	
-	}
-    }
-    # }}}
 
-    if (@limit_owner) {
-	foreach $value (@limit_owner) {
-	    if ($value =~ /^(\W?)(.*?)$/i) {
-		my $op = $1;
-		my $val = $2;
+    foreach $value (@limit_status) {
+	if ($value =~ /^(.?)(new|open|stalled|resolved|dead)$/) {
+	    my $op = $1;
+	    my $val = $2;
 		
-		$op = ParseBooleanOp($op);
-
-		my $user_obj = new RT::User($RT::SystemUser);
-		
-		unless ($user_obj->Load($val)) {
-		    debug("User '$val' not found");
-		    return(-1);
-		}
-		$val = $user_obj->id();
-		
-		debug ("Limiting owner to $op $val");
-		$Tickets->LimitOwner(VALUE => "$val",
-				      OPERATOR => "$op");
-	    }	
+	    $op = ParseBooleanOp($op);
+	    $Tickets->LimitStatus(VALUE => "$val",
+				  OPERATOR => "$op");
 	}	
     }
-    if (@limit_priority){
+
+    # }}}
+
+    foreach $value (@limit_owner) {
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+		
+	    $op = ParseBooleanOp($op);
+
+	    my $user_obj = new RT::User($RT::SystemUser);
+		
+	    unless ($user_obj->Load($val)) {
+		debug("User '$val' not found");
+		return(-1);
+	    }
+	    $val = $user_obj->id();
+		
+	    debug ("Limiting owner to $op $val");
+	    $Tickets->LimitOwner(VALUE => "$val",
+				 OPERATOR => "$op");
+	}	
+    }	
+
+    foreach $value (@limit_priority) {
+	my ($start, $end) = ParseRange($value);
+	if ($start == $end) {
+	    $Tickets->LimitPriority( VALUE => $start,
+				     OPERATOR => '=');
+	} elsif ($start) {
+	    $Tickets->LimitPriority( VALUE => $start,
+				     OPERATOR => '>=');
+	} elsif ($end) {
+	    $Tickets->LimitPriority( VALUE => $end,
+				     OPERATOR => '<=');
+	}	
+	    
     }
-    if (@limit_final_priority){
+    foreach $value (@limit_final_priority) {
+	my ($start, $end) = ParseRange($value);
+	if ($start == $end) {
+	    $Tickets->LimitFinalPriority( VALUE => $start,
+					  OPERATOR => '=');
+	} elsif ($start) {
+	    $Tickets->LimitFinalPriority( VALUE => $start,
+					  OPERATOR => '>=');
+	} elsif ($end) {
+	    $Tickets->LimitFinalPriority( VALUE => $end,
+					  OPERATOR => '<=');
+	}	
+	    
     }
-    if (@limit_requestor){
+
+    foreach $value (@limit_requestor) {
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+		
+	    $op = ParseBooleanOp($op);
+	    $Tickets->LimitRequestor(VALUE => $val,
+				     OEPRATOR => $op );
+	}
+	    
     }
-    if (@limit_subject){
+    foreach $value (@limit_subject) {
+	
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+	    
+	    $op = ParseLikeOp($op);
+	    
+	    $Tickets->LimitSubject(VALUE => $val,
+				   OEPRATOR => $op );
+	    }
     }
-    if (@limit_body){
+    
+    foreach $value (@limit_body) {
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+	    
+	    $op = ParseLikeOp($op);
+	    
+		$Tickets->LimitBody(VALUE => $val,
+				    OEPRATOR => $op );
+	}	
+	
     }
+    
+    
+    
+    # Dates
     if (@limit_created){
+	
+	
     }
     if (@limit_due){
     }
@@ -430,9 +492,11 @@ else {
     }
     if ($limit_rows){
     }
+
 # }}}
     
     # {{{ Iterate through all tickets we found
+
 
     my ($format, $titles, $code);
     
@@ -737,7 +801,7 @@ $RT::Handle->Disconnect();
 
 # {{{ sub GetCurrentUser 
 sub GetCurrentUser  {
-    if (!$CurrentUser) {
+    unless ($CurrentUser) {
 	my $Gecos;
 	
 	require RT::CurrentUser;
@@ -749,10 +813,10 @@ sub GetCurrentUser  {
 	#is that of the currentuser.
 	$CurrentUser = new RT::CurrentUser();
 	$CurrentUser->LoadByGecos($Gecos);
-    
-	if (!$CurrentUser->Id) {
+	
+	unless ($CurrentUser->Id) {
 	    $CurrentUser = $RT::Nobody;
-	    return(0);
+	    debug ("No user with a unix login of '$Gecos' was found. Continuing in unprivileged mode.\n");
 	}
     }
     return($CurrentUser);
@@ -814,6 +878,7 @@ sub GetMessageContent {
 # }}}
 
 # {{{ sub debug
+
 sub debug {
     my $val = shift;
     $RT::Logger->debug($val."\n");
@@ -821,6 +886,7 @@ sub debug {
 	print STDERR "$val\n";
     }
 }
+
 # }}}
 
 # {{{ sub ParseBooleanOp
@@ -841,6 +907,30 @@ sub ParseBooleanOp {
     }
     else {
 	$op = "=";
+    }
+    
+    return($op);
+}
+# }}}
+
+# {{{ sub ParseLikeOp
+=head2 ParseLikeOp
+
+  Takes an option modifier. returns the apropriate SQL operator.
+  If it's handed ! or -, returns NOT  LIKE.  Otherwise returns LIKE
+
+=cut
+
+sub ParseLikeOp {
+    
+    my $op = shift;
+    
+    #so that !new limits to not new, etc
+    if ($op =~ /^(\!|-)/) {
+	$op = "NOT LIKE";
+    }
+    else {
+	$op = "LIKE";
     }
     
     return($op);
@@ -875,6 +965,88 @@ sub ParseDateToISO {
     else {
 	return(undef);
     }
+}
+
+# }}}
+
+# {{{ sub ParseDateRange
+
+
+=head2 ParseDateRange [RANGE]
+
+Takes a range of dates of the form [<date>][-][<date>] and returns 
+starting and ending dates (as ISOs) If a date is specified as neither a starting nor ending 
+date, we parse it it as "midnight tonight to midnight tomorrow"
+
+=cut
+
+sub ParseDateRange {
+    my $self = shift;
+    my $in = shift;
+    my ($start, $end);
+    
+    
+    use RT::Date;
+    my $start_obj = new RT::Date($CurrentUser);
+    my $end_obj = new RT::Date($CurrentUser);
+    
+    if ($in =~ /(.*?)-(.*?)/) {
+	$start = $1;
+	$end = $2;
+	
+	
+	
+    }
+    else {
+	$start = $in;
+	$end = $in;
+	$start_obj->(Format => 'unknown', 
+		     Value => $start);
+	
+	$end_obj->(Format => 'unknown', 
+		   Value => $end);
+	
+	$start_obj->SetToMidnight();
+	$end_obj->SetToMidnight();
+	$end_obj->AddDay();
+
+    }	
+    
+    return ($startobj->ISO, $endobj->ISO);
+    
+    
+    
+}
+
+
+
+# }}}
+
+# {{{ ParseRange
+=head2 ParseRange [RANGE]
+
+Takes a range of the form [<int>][-][<int>] and returns 
+a first and a last value. If the - is omitted, both $start and $end are the same.
+=cut
+
+sub ParseRange {
+    my $self = shift;
+    my $in = shift;
+    my ($start, $end);
+    
+    if ($in =~ /(.*?)-(.*?)/) {
+	$start = $1;
+	$end = $2;
+    }
+    else {
+	$start = $in;
+	$end = $in;
+    }	
+    
+    return ($start, $end);
+    
+
+    
 }
 
 # }}}
@@ -970,6 +1142,7 @@ EOFORM
 
 
 # {{{ sub BuildListingFormat
+
 sub BuildListingFormat {
     my $format_string = shift;
 
@@ -1087,6 +1260,7 @@ sub BuildListingFormat {
   
     return ($format, $titles, $code);
 }
+
 # }}}
 
 

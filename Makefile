@@ -44,6 +44,12 @@ MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
 MASON_DATA_PATH		=       $(RT_PATH)/WebRT/data
 RT_LOG_PATH             =       /tmp
 
+# RT_READABLE_DIR_MODE is the mode of directories that are generally meant to be
+# accessable
+RT_READABLE_DIR_MODE	=	0755
+
+
+
 # The location of your rt configuration file
 RT_CONFIG		=	$(RT_ETC_PATH)/config.pm
 
@@ -169,16 +175,24 @@ all:
 fixperms:
 
 	# Make the libraries readable
+	chmod -R $(RT_READABLE_DIR_MODE) $(RT_PATH)
 	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
 	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
-	chmod -R 0755 $(RT_LIB_PATH)
+
+	chown -R $(BIN_OWNER) $(RT_BIN_PATH)
+	chgrp -R $(RTGROUP) $(RT_BIN_PATH)
+
+
+	chmod $(RT_READABLE_DIR_MODE) $(RT_BIN_PATH)
+	chmod $(RT_READABLE_DIR_MODE) $(RT_BIN_PATH)	
 
 	chmod 0555 $(RT_ETC_PATH)
+	chmod 0500 $(RT_ETC_PATH)/*
 
 	#TODO: the config file should probably be able to have its
 	# owner set seperately from the binaries.
-	chown $(BIN_OWNER) $(RT_CONFIG)
-	chgrp $(RTGROUP) $(RT_CONFIG)
+	chown -R $(BIN_OWNER) $(RT_ETC_PATH)
+	chgrp -R $(RTGROUP) $(RT_ETC_PATH)
 
 	chmod 0550 $(RT_CONFIG)
 
@@ -282,7 +296,8 @@ mux-links:
 
 
 config-replace:
-	-[ -f $(RT_CONFIG) ] && mv $(RT_CONFIG) $(RT_CONFIG).old
+	-[ -f $(RT_CONFIG) ] && mv $(RT_CONFIG) $(RT_CONFIG).old && \
+	 chmod 000 $(RT_CONFIG).old
 	cp -rp ./etc/config.pm $(RT_CONFIG)
 	$(PERL) -p -i -e "\
 	s'!!DB_TYPE!!'$(DB_TYPE)'g;\

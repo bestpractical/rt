@@ -23,12 +23,12 @@ The fact that it assumes that a time of 0 means "never" is probably a bug.
 package RT::Date;
 use Time::Local;
 
-my $minute = 60;
-my $hour   = 60 * $minute;
-my $day    = 24 * $hour;
-my $week   = 7 * $day;
-my $month  = 4 * $week;
-my $year   = 365 * $day;
+my $MINUTE = 60;
+my $HOUR   = 60 * $MINUTE;
+my $DAY    = 24 * $HOUR;
+my $WEEK   = 7 * $DAY;
+my $MONTH  = 4 * $WEEK;
+my $YEAR   = 365 * $DAY;
 
 # {{{ sub new 
 
@@ -68,12 +68,12 @@ sub Set {
 		 Value => time,
 		 @_);
     if (($args{'Value'} =~ /^\d*$/) and ($args{'Value'} == 0)) {
-	$self->{'time'} = -1;
+	$self->Unix(-1);
 	return($self->Unix());
     }
 
     if ($args{'Format'} =~ /^unix$/i) {
-	$self->{'time'} = $args{'Value'};
+	$self->Unix($args{'Value'});
     }
     
     elsif ($args{'Format'} =~ /^(sql|datemanip|iso)$/i) {
@@ -96,11 +96,11 @@ sub Set {
 	    #now that we've parsed it, deal with the case where everything
 	    #was 0
             if ($mon == -1) {
-	            $self->{'time'} = -1;
+	            $self->Unix(-1);
 	        } else {
-                $self->{'time'} = timegm($sec,$min,$hours,$mday,$mon,$year);
-                $self->{'time'} = -1 unless $self->{'time'};
-             }
+		    $self->Unix(timegm($sec,$min,$hours,$mday,$mon,$year));
+		    $self->Unix(-1) unless $self->Unix;
+		}
    }  
 	else {
 	    use Carp;
@@ -126,6 +126,29 @@ sub Set {
 
 # }}}
 
+# {{{ sub SetToMidnight 
+
+=head2 SetToMidnight
+
+Sets the date to midnight (at the beginning of the day)
+Returns the unixtime at midnight.
+
+=cut
+
+sub SetToMidnight {
+    my $self = shift;
+    
+    use Time::Local;
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday) = gmtime($self->Unix);
+    $self->Unix(timegm (0,0,0,$mday,$mon,$year,$wday,$yday));
+    
+    return ($self->Unix);
+    
+    
+}
+
+
+# }}}
 
 # {{{ sub SetToNow
 sub SetToNow {
@@ -133,6 +156,7 @@ sub SetToNow {
 	return($self->Set(Format => 'unix', Value => time))
 }
 # }}}
+
 # {{{ sub Diff
 
 =head2 Diff
@@ -201,26 +225,26 @@ sub DurationAsString{
 
     $duration = abs($duration);
 
-    if($duration < $minute) {
+    if($duration < $MINUTE) {
 	$s=$duration;
 	$string="sec";
-    } elsif($duration < (2 * $hour)) {
-	$s = int($duration/$minute);
+    } elsif($duration < (2 * $HOUR)) {
+	$s = int($duration/$MINUTE);
 	$string="min";
-    } elsif($duration < (2 * $day)) {
-	$s = int($duration/$hour);
+    } elsif($duration < (2 * $DAY)) {
+	$s = int($duration/$HOUR);
 	$string="hours";
-    } elsif($duration < (2 * $week)) {
-	$s = int($duration/$day);
+    } elsif($duration < (2 * $WEEK)) {
+	$s = int($duration/$DAY);
 	$string="days";
-    } elsif($duration < (2 * $month)) {
-	$s = int($duration/$week);
+    } elsif($duration < (2 * $MONTH)) {
+	$s = int($duration/$WEEK);
 	$string="weeks";
-    } elsif($duration < $year) {
-	$s = int($duration/$month);
+    } elsif($duration < $YEAR) {
+	$s = int($duration/$MONTH);
 	$string="months";
     } else {
-	$s = int($duration/$year);
+	$s = int($duration/$YEAR);
 	$string="years";
     }
     
@@ -289,18 +313,36 @@ sub AddSeconds {
 
 # }}}
 
+# {{{ sub AddDay
+
+=head2 AddDay
+
+Adds 24 hours to the current time
+
+=cut
+
+sub AddDay {
+    my $self = shift;
+    $self->AddSeconds($day);
+    
+}
+
+# }}}
+
 # {{{ sub Unix
 
-=head2 sub Unix
+=head2 sub Unix [unixtime]
 
-Takes nothing
-
+Optionally takes a date in unix seconds since the epoch format.
 Returns the number of seconds since the epoch
 
 =cut
 
 sub Unix {
     my $self = shift;
+    
+    $self->{'time'} = shift if (@_);
+    
     return ($self->{'time'});
 }
 # }}}
@@ -335,5 +377,8 @@ sub ISO {
 }
 
 # }}}
+
+
+
 
 1;
