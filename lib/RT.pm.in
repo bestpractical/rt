@@ -100,6 +100,7 @@ After that, go after the site config.
 =cut
 
 sub LoadConfig {
+     local *Set = sub { $_[0] = $_[1] unless defined $_[0] }; 
     if ( -f "$SITE_CONFIG_FILE" ) {
         require $SITE_CONFIG_FILE
           || die ("Couldn't load RT config file  '$SITE_CONFIG_FILE'\n$@");
