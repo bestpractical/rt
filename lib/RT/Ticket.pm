@@ -169,12 +169,13 @@ sub Create {
 		@_);
     
     if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
-	$QueueObj=RT::Queue->new($self->CurrentUser);
+	$QueueObj=RT::Queue->new($RT::SystemUser);
 	$QueueObj->Load($args{'Queue'});
 	#TODO error check this and return 0 if it\'s not loading properly +++
     }
     elsif (ref($args{'Queue'}) eq 'RT::Queue') {
-	$QueueObj = $args{'Queue'};
+	$QueueObj=RT::Queue->new($RT::SystemUser);
+	$QueueObj->Load($args{'Queue'}->Id);
     }
     else {
 	$RT::Logger->err("$self ". $args{'Queue'} . 
@@ -2428,8 +2429,10 @@ sub _NewTransaction {
 
   #if the ticket's status is 'new' and we've done something to it
   # (other than creating it) let's open it up 
-  if (($self->Status eq 'new') and ($args{'Type'} ne 'Create')) {
-  	$self->SetStatus('open'); 
+  if ( ($self->Status) &&
+       ($self->Status eq 'new') &&
+       ($args{'Type'} ne 'Create') ) {
+      $self->SetStatus('open'); 
   }
 
  
