@@ -723,9 +723,10 @@ sub ProcessTicketDates {
 	}
       }
     }
-
+    # }}}
     return (@results);
 }
+
 # }}}
 
 # {{{ sub ProcessTicketLinks
