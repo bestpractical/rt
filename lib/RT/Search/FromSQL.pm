@@ -1,0 +1,86 @@
+# BEGIN LICENSE BLOCK
+# 
+# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+# 
+# (Except where explictly superceded by other copyright notices)
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# Unless otherwise specified, all modifications, corrections or
+# extensions to this work which alter its source code become the
+# property of Best Practical Solutions, LLC when submitted for
+# inclusion in the work.
+# 
+# 
+# END LICENSE BLOCK
+=head1 NAME
+
+  RT::Search::FromSQL
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+Find all tickets described by the SQL statement passed as an argument
+
+=head1 METHODS
+
+
+=begin testing
+
+ok (require RT::Search::Generic);
+
+=end testing
+
+
+=cut
+
+package RT::Search::FromSQL;
+
+use strict;
+use base qw(RT::Search::Generic);
+
+=head2 Describe
+
+Returns a localized string describing the module's function.
+
+=cut
+
+# {{{ sub Describe 
+sub Describe  {
+    my $self = shift;
+    return ($self->loc("TicketSQL search module", ref $self));
+}
+# }}}
+
+=head2 Prepare
+
+The meat of the module.  Runs a search on its Tickets object, using
+the SQL string described in its Argument object.  The Tickets object
+is reduced to those tickets matching the SQL query.
+
+=cut
+
+# {{{ sub Prepare
+sub Prepare  {
+    my $self = shift;
+
+    $self->TicketsObj->FromSQL($self->Argument);
+    return(1);
+}
+# }}}
+
+eval "require RT::Search::FromSQL_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/FromSQL_Vendor.pm});
+eval "require RT::Search::FromSQL_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/FromSQL_Local.pm});
+
+1;

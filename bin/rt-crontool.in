@@ -97,8 +97,8 @@ load_module($condition) if ($condition);
 # load template if specified
 my $template_obj;
 if ($template_id) {
-    $template_obj = RT::Template->new($RT::Nobody);
-    $template_obj->LoadById($template_id);
+    $template_obj = RT::Template->new($CurrentUser);
+    $template_obj->Load($template_id);
 }
 
 #At the appointed time:
@@ -118,7 +118,7 @@ my $tickets = $search->TicketsObj;
 
 #for each ticket we've found
 while ( my $ticket = $tickets->Next() ) {
-    print "\n" . $ticket->Id() . ": " if ($verbose);
+    print $ticket->Id() . ": " if ($verbose);
 
     # perform some more advanced check
     if ($condition) {
@@ -146,7 +146,7 @@ while ( my $ticket = $tickets->Next() ) {
 
     #commit our action.
     next unless ( $action_obj->Commit );
-    print loc("Action committed.") if ($verbose);
+    print loc("Action committed.\n") if ($verbose);
 }
 
 # {{{ load_module 
