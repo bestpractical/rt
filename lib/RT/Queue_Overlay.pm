@@ -70,7 +70,7 @@ no warnings qw(redefine);
 use vars qw(@STATUS @ACTIVE_STATUS @INACTIVE_STATUS $RIGHTS);
 use RT::Groups;
 use RT::ACL;
-use RT::Interface::Email;
+use RT::EmailParser;
 
 
 @ACTIVE_STATUS = qw(new open stalled);
@@ -662,7 +662,7 @@ sub _AddWatcher {
              my $new_user = RT::User->new($RT::SystemUser);
 
             my ( $Address, $Name ) =  
-               RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
+               RT::EmailParser::ParseAddressFromHeader('', $args{'Email'});
 
             my ( $Val, $Message ) = $new_user->Create(
                 Name => $Address,

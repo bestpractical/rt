@@ -54,7 +54,7 @@ use vars qw/@ISA/;
 
 use MIME::Words qw(encode_mimeword);
 
-use RT::Interface::Email;
+use RT::EmailParser;
 use Mail::Address;
 
 =head1 NAME
@@ -484,11 +484,11 @@ sub RemoveInappropriateRecipients {
 
     # Weed out any RT addresses. We really don't want to talk to ourselves!
     @{ $self->{'To'} } =
-      RT::Interface::Email::CullRTAddresses( @{ $self->{'To'} } );
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'To'} } );
     @{ $self->{'Cc'} } =
-      RT::Interface::Email::CullRTAddresses( @{ $self->{'Cc'} } );
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Cc'} } );
     @{ $self->{'Bcc'} } =
-      RT::Interface::Email::CullRTAddresses( @{ $self->{'Bcc'} } );
+      RT::EmailParser::CullRTAddresses( "", @{ $self->{'Bcc'} } );
 
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To

@@ -75,7 +75,7 @@ use vars qw(%_USERS_KEY_CACHE);
 use Digest::MD5;
 use RT::Principals;
 use RT::ACE;
-use RT::Interface::Email;
+use RT::EmailParser;
 
 
 # {{{ sub _Accessible 
@@ -573,7 +573,7 @@ sub LoadOrCreateByEmail {
         my ($val, $message);
 
 	my ( $Address, $Name ) =
-		RT::Interface::Email::ParseAddressFromHeader($email);
+		RT::EmailParser::ParseAddressFromHeader('', $email);
 	$email = $Address;
 
         $self->LoadByEmail($email);
