@@ -11,6 +11,10 @@ Serial Number: <%$Ticket->Id%>   Status:<%$Ticket->Status%> Worked: <%$Ticket->T
      Priority: <%$Ticket->Priority%> / <%$Ticket->FinalPriority%>
           Due: <%$Ticket->DueAsString%>
       Created: <%$Ticket->CreatedAsString%> (<%$Ticket->Age%>) ago)
+% if ($Ticket->Told+0) {
  Last Contact: <%$Ticket->ToldAsString%> (<%$Ticket->SinceTold%> ago)
+% }
+% if ($Ticket->LastUpdated+0) {
   Last Update: <%$Ticket->LastUpdatedAsString%> by <%$Ticket->LastUpdatedBy%>
+% }
 </pre>

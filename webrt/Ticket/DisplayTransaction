@@ -13,7 +13,15 @@ Date: <%$Transaction->CreatedAsString%>
 
 
 %  while (my $message=$attachments->Next) {
-<%$message%>
+
+%# TODO: This is _not_ the right way to do it.  
+%# We have to handle the message as a MIME Entity and view it 
+%# accordingly.
+
+<h3><%$message->Subject%></h3>
+<hr>
+<pre>
+<%$message->Content%>
 
 % if (0) {
 <hr width=60%>
