@@ -35,7 +35,7 @@ use Getopt::Long;
 use CPAN;
 my %args;
 my %deps;
-GetOptions(\%args,'install', 'with-MYSQL', 'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE', 'with-FASTCGI', 'with-MODPERL1', 'with-MODPERL2' ,'with-DEV');
+GetOptions(\%args,'install', 'with-MYSQL', 'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE', 'with-ORACLE', 'with-FASTCGI', 'with-MODPERL1', 'with-MODPERL2' ,'with-DEV');
 
 if  (!keys %args) {
 help();
@@ -144,7 +144,7 @@ CGI 2.89
 Apache::DBI
 .
 
-$deps{'I18N_COMPAT'} = [ _( << '.') ];
+$deps{'I18N-COMPAT'} = [ _( << '.') ];
 Text::Iconv
 Encode::compat 0.04
 .
@@ -155,7 +155,7 @@ DBD::mysql 2.0416
 $deps{'ORACLE'} = [ _( << '.') ];
 DBD::Oracle
 .
-$deps{'POSTGRES'} => [ _( << '.') ];
+$deps{'POSTGRESQL'} => [ _( << '.') ];
 DBD::Pg
 .
 
