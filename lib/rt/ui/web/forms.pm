@@ -4,7 +4,6 @@
 
 package rt::ui::web;
 
-
 sub FormQueueOptions{
     local($^W) = 0; # Lots of form fields that may or may not exist give bogus errors
     my @qs;
@@ -487,9 +486,9 @@ sub FormCreate{
 	if (&rt::can_create_request($queue, $current_user)) {
 	    print "<option>$queue\n";
 	}
-	else {
-	print "<!-- $current_user can't make a req in $queue\n\n-->";    
-	}
+#	else {
+#	print "<!-- $current_user can't make a req in $queue\n\n-->";    
+#	}
 }
     print"</select>
 <input type=\"hidden\" name=\"display\" value=\"Create_Step2\">

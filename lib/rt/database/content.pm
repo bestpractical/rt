@@ -54,15 +54,7 @@ sub write_content {
     print CONTENT "$content" or die "Error writing to $file: $!\n";
     close (CONTENT);
 
-    $< = $temp;    
     
-    #add this note to the glimpse database
-    if ($glimpse_index) {
-	
-	open (GLIMPSE ,"$rt::glimpse_index -H $rt::glimpse_dir -a $file");
-	while (<GLIMPSE>) {}
-	close (GLIMPSE);
-    }
 }
 
 
