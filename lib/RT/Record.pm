@@ -238,7 +238,7 @@ Returns an RT::User object with the RT account of the creator of this row
 
 sub CreatorObj  {
   my $self = shift;
-  unless (exists $self->{'creator'}) {
+  unless (exists $self->{'CreatorObj'}) {
     
     $self->{'CreatorObj'} = RT::User->new($self->CurrentUser);
     $self->{'CreatorObj'}->Load($self->Creator);
@@ -252,7 +252,6 @@ sub CreatorObj  {
 =head2 LastUpdatedByObj
 
   Returns an RT::User object of the last user to touch this object
-  TODO: why isn't this in RT::Record
 
 =cut
 
