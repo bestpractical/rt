@@ -108,10 +108,12 @@ sub main_loop {
 
             last if ( $method !~ /^(GET|POST|HEAD)$/ );
 
+            $query_string = '' if !defined $query_string;
+
             build_cgi_env( method       => $method,
                            query_string => $query_string,
                            path         => $file,
-                           method       => $method,
+                           protocol     => $proto,
                            port         => $port,
                            peername     => $peername,
                            peeraddr     => $peeraddr,

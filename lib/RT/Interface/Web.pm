@@ -326,7 +326,12 @@ sub CreateTicket {
                 $ARGS{$arg} = [split('\n', $ARGS{$arg})];
             }
 
-            $create_args{"CustomField-".$cfid} = $ARGS{"$arg"};
+            if ( $arg =~ /-Upload$/ ) {
+                $create_args{"CustomField-".$cfid} = _UploadedFile($arg);
+            }
+            else {
+                $create_args{"CustomField-".$cfid} = $ARGS{"$arg"};
+            }
         }
     }
 
@@ -825,19 +830,6 @@ sub ParseDateToISO {
 
 # }}}
 
-# {{{ sub Config 
-# TODO: This might eventually read the cookies, user configuration
-# information from the DB, queue configuration information from the
-# DB, etc.
-
-sub Config {
-    my $args = shift;
-    my $key  = shift;
-    return $args->{$key} || $RT::WebOptions{$key};
-}
-
-# }}}
-
 # {{{ sub ProcessACLChanges
 
 sub ProcessACLChanges {
@@ -1149,16 +1141,11 @@ sub ProcessObjectCustomFieldUpdates {
 			}
 		    }
 		    elsif ( $arg =~ /-Upload$/ ) {
-			my $cgi_object = $m->cgi_object;
-			my $fh = $cgi_object->upload($arg) or next;
-			my $upload_info = $cgi_object->uploadInfo($fh);
-			my $filename = "$fh";
-			$filename =~ s#^.*[\\/]##;
+                        my $value_hash = _UploadedFile($arg) or next;
+
 			my ( $val, $msg ) = $Object->AddCustomFieldValue(
-			    Field => $cf,
-			    Value => $filename,
-			    LargeContent => do { local $/; scalar <$fh> },
-			    ContentType => $upload_info->{'Content-Type'},
+                            %$value_hash,
+                            Field => $cf,
 			);
 			push ( @results, $msg );
 		    }
@@ -1466,6 +1453,35 @@ sub ProcessRecordLinks {
     }
 
     return (@results);
+}
+
+# {{{ sub _UploadedFile
+
+=head2 _UploadedFile ( $arg );
+
+Takes a CGI parameter name; if a file is uploaded under that name,
+return a hash reference suitable for AddCustomFieldValue's use:
+C<( Value => $filename, LargeContent => $content, ContentType => $type )>.
+
+Returns C<undef> if no files were uploaded in the C<$arg> field.
+
+=cut
+
+sub _UploadedFile {
+    my $arg = shift;
+    my $cgi_object = $m->cgi_object;
+    my $fh = $cgi_object->upload($arg) or return undef;
+    my $upload_info = $cgi_object->uploadInfo($fh);
+
+    my $filename = "$fh";
+    $filename =~ s#^.*[\\/]##;
+    binmode($fh);
+
+    return {
+        Value => $filename,
+        LargeContent => do { local $/; scalar <$fh> },
+        ContentType => $upload_info->{'Content-Type'},
+    };
 }
 
 eval "require RT::Interface::Web_Vendor";

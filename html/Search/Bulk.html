@@ -76,7 +76,6 @@ while (my $Ticket = $Tickets->Next) {
       </%PERL>
 <TR bgcolor="<%$bgcolor%>">
 <TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
-%# The ticket view is controlled by config.pm, WebOptions
 %foreach my $col (@cols) {
 <TD>
 % if ($col eq 'id') {

@@ -692,10 +692,15 @@ sub Create {
           my $value ( UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
         {
             next unless ( length($value) );
+
+            # Allow passing in uploaded LargeContent etc by hash reference
             $self->_AddCustomFieldValue(
+                (UNIVERSAL::isa( $value => 'HASH' )
+                    ? %$value
+                    : (Value => $value)
+                ),
                 Field             => $cfid,
-                Value             => $value,
-                RecordTransaction => 0
+                RecordTransaction => 0,
             );
         }
     }
