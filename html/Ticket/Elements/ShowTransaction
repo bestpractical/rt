@@ -21,8 +21,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >                                
-<TD bgcolor="<%$bgcolor%>"><A NAME="#<%$Transaction->Id%>"></A>&nbsp&nbsp;</TD>
+<TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >
+<TD bgcolor="<%$bgcolor%>"><A NAME="txn-<%$Transaction->Id%>" href="#txn-<%$Transaction->Id%>">#</A>&nbsp;</TD>
 <TD>&nbsp&nbsp;</TD>
 <TD><font size=-2><% $transdate|n %></font>&nbsp;</TD>
 <TD ALIGN="LEFT"><b><%$Transaction->CreatorObj->Name%> - <%$TicketString%> <%$Transaction->BriefDescription%>

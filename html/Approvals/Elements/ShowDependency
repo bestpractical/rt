@@ -65,7 +65,7 @@ while (my $link = $approving->Next()) {
 my $refer;
 foreach my $id (sort keys %show) {
     if ($_seen->{$id}++) {
-	$refer .= "<a href='#$id'>" . $show{$id}{head} . "</a>";
+	$refer .= "<a href='#txn-$id'>" . $show{$id}{head} . "</a>";
 	next;
     }
 
