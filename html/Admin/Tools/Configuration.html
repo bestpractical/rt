@@ -80,7 +80,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 % next if (ref ${'RT::'.$key} );
 <tr><td>RT::<%$key%></td>
 <td>
-% if ($key =~ /Password(?|Length)/i) { 
+% if ($key =~ /Password(?!Length)/i) { 
 <i>Password not printed</i>
 % } else {
 <%${'RT::'.$key} %>
