@@ -604,11 +604,18 @@ sub Parse {
 
     my @template_order;
     my $template_id;
+    my $queue;
     if (substr($content, 0, 3) eq '===') {
 	$RT::Logger->debug("Line: ===");
 	foreach my $line (split(/\n/, $content)) {
 	    $line =~ s/\r$//;
 	    $RT::Logger->debug("Line: $line");
+	    if ($line =~ /^===$/) {
+		if ($template_id && !$queue) {
+		    $self->{'templates'}->{$template_id} .= "Queue: $qname\n";
+		}
+		$queue = 0;
+	    }
 	    if ($line =~ /^===Create-Ticket: (.*)$/) {
 		$template_id = "create-$1";
 		$RT::Logger->debug("****  Create ticket: $template_id");
@@ -623,9 +630,19 @@ sub Parse {
 		push @{$self->{'base_tickets'}},$template_id;
 	    } elsif ($line =~ /^===#.*$/) { # a comment
 		     next;
-		 } else {
-		     $self->{'templates'}->{$template_id} .= $line."\n";
-		 }
+	    } else {
+		if ( $line =~ /^Queue:(.*)/i) {
+		    $queue = 1;
+		    my $value = $1;
+		    $value =~ s/^\s//;
+		    $value =~ s/\s$//;
+		    if (!$value) {
+			$value = $qname;
+			$line = "Queue: $value";
+		    }
+		}
+		$self->{'templates'}->{$template_id} .= $line."\n";
+	    }
 	}
     } elsif (substr($content, 0, 2) =~ /^id$/i) {
 	$RT::Logger->debug("Line: id");
@@ -647,7 +664,6 @@ sub Parse {
 	$content = substr($content, index($content, "\n") + 1);
 	$RT::Logger->debug("First: $first");
 	
-	my $queue;
 	foreach my $line (split(/\n/, $content)) {
 	    next unless $line;
 	    $RT::Logger->debug("Line: $line");

@@ -32,7 +32,7 @@
 	METHOD=POST enctype="multipart/form-data">
 <table>
 <tr>
-<td>
+<td class=label>
 <&|/l&>Default Queue</&>:
 </td>
 <td>
@@ -89,7 +89,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 
     $ARGS{'string'} = $string;
 } elsif ($ARGS{'UpdateTickets'}) {
-    $action->Parse($ARGS{string});
+    $action->Parse($ARGS{string}, $ARGS{'qname'});
     push @results, $action->CreateByTemplate();
     push @results, $action->UpdateByTemplate();
     $string = $ARGS{string};
