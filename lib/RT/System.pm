@@ -63,7 +63,7 @@ In the future, there will probably be other API goodness encapsulated here.
 
 
 package RT::System;
-use base qw /RT::Base/;
+use base qw /RT::Record/;
 use strict;
 
 use RT::ACL;
@@ -132,22 +132,9 @@ sub AvailableRights {
     return(\%rights);
 }
 
-
-=head2 new
-
-Create a new RT::System object. Really, you should be using $RT::System
-
-=cut
-
-                         
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless( $self, $class );
-
-
-    return ($self);
+sub _Init {
+    my $self = shift;
+    $self->SUPER::_Init (@_) if @_ && $_[0];
 }
 
 =head2 id
@@ -183,6 +170,15 @@ It does nothing
 sub Load {
 	return (1);
 }
+
+sub Name {
+    return 'RT System';
+}
+
+sub __Set { 0 }
+sub __Value { 0 }
+sub Create { 0 }
+sub Delete { 0 }
 
 eval "require RT::System_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Vendor.pm});

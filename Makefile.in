@@ -480,7 +480,7 @@ reconfigure:
 	./configure
 
 start-httpd:
-	$(PERL) bin/standalone_httpd 80 &
+	$(PERL) bin/standalone_httpd &
 
 apachectl:
 	$(APACHECTL) stop

@@ -43,21 +43,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<%args>
-@Objects => undef
-$Name => undef
-</%args>
-<select name="<%$Name%>">
-% foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value=""><&|/l&>My saved searches</&></option>
-% } else {
-<option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
-% }
-% foreach ($m->comp("SearchesForObject", Object => $object)) { 
-% my ($desc, $search) = @$_;
-<option value="<%ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id%>"> -<%$desc||loc('Unnamed search')%></option>
-% }
-% }
-</select>
+<&|/Elements/TitleBox, title => loc("My support queues"), bodyclass => "" &>
+<& /Elements/QueueSummary,
+   cache => 'my_support_queues',
+   queue_filter => sub { $_->IsAdminCc($session{'CurrentUser'}->Id) },
+   conditions => [ {cond => "Status = 'new'",  name => loc ('new')  },
+		   {cond => "Status = 'open'", name => loc ('open') }] &>
+</&>

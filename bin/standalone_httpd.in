@@ -78,7 +78,7 @@ $SIG{HUP} = sub {
 
 RT::Init();
 
-my $port = shift || '8080';
+my $port = $RT::WebPort || '8080';
 
 main_loop($port);
 

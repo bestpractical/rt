@@ -1,0 +1,161 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2005 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs, 
+    current_toptab => '',
+    Title => $title
+&>
+
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/class.js"></script>
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/list.js"></script>
+
+<& /Elements/ListActions, actions => \@actions &>
+<a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
+
+% for my $pane (@panes) {
+<h2><% $pane %></h2>
+<FORM METHOD="POST" ACTION="MyRT.html" name="MyRT-<% $pane %>" id="MyRT-<% $pane %>">
+<input type="hidden" name="referer" value="<%$ARGS{'referer'}%>">
+List of available items:<br>
+<select name="PortletList" multiple >
+% for (@items) {
+<option value="<% $_->[0] %>"><% $_->[1] %></option>
+% }
+</select>
+<input name="add" type="button" value="->"/>
+<select name="PortletList-<%$pane%>" multiple>
+% for (@{$current_portlets->{$pane}}) {
+<option value="<% $_ %>"><% $item_map{$_} %></option>
+% }
+</select>
+ <input name="moveup" type="button" value="^"/>
+ <input name="movedown" type="button" value="v"/>
+ <input name="remove" type="button" value="X"/>
+ <input name="submit" type="submit" value="submit"/>
+%#<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save' &>
+
+</form>
+% }
+<script type="text/javascript">
+% my $i = 1;
+% for my $pane (@panes) {
+var list<%$i%>	= new list(document.getElementById("MyRT-<% $pane %>"), 0, "list<%$i%>");
+% ++$i;
+% }
+</script>
+<%INIT>
+my @actions;
+$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
+my $title = loc("Customize").' '.loc("My RT");
+my $user = $session{'CurrentUser'}->UserObj;
+
+unless (exists $session{'my_rt_portlets'}) {
+    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('My RT');
+    $session{'my_rt_portlets'} = $user->Preferences('My RT', $d_portlets->Content);
+}
+
+my $portlets = $session{'my_rt_portlets'};
+
+my %allowed_components = map {$_ => 1}
+    qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues RefreshHomepage);
+my @items;
+
+push @items, map {["component-$_", $_]} sort keys %allowed_components;
+
+my $sys = RT::System->new($session{'CurrentUser'});
+
+unless ($session{'CurrentUser'}->HasRight( Right => 'LoadSavedSearch',
+					   Object=> $RT::System )) {
+    return;
+}
+
+my $groups = RT::Groups->new($session{'CurrentUser'});
+$groups->LimitToUserDefinedGroups;
+$groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
+                    Recursively => 1);
+for my $object ($sys, $user, @{$groups->ItemsArrayRef()}) {
+    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
+	my ($desc, $search) = @$_;
+	if ($object eq $sys) {
+	    push @items, ["system-$desc", $desc],
+	}
+	else {
+	    my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
+	    push @items, ["saved-$oid", "Saved Search: $desc"];
+	}
+    }
+}
+
+my %item_map = map {$_->[0] => $_->[1]} @items;
+
+my @panes = ('main', 'right');
+
+# build
+#if ($ARGS{'Save'}) {
+if ($ARGS{'submit'}) {
+    for my $pane (@panes) {
+	next unless $ARGS{'PortletList-'.$pane};
+	$portlets->{$pane} =
+	    [map { m/(\w+)-(.*)$}/;
+		   # XXX: CHECK!
+		   { type => $1,
+		     name => $2,
+		   }}
+	     @{$ARGS{'PortletList-'.$pane}}];
+    }
+
+    $user->SetPreferences('My RT', $portlets);
+    push @actions, loc ('Preferences saved.');
+    delete $session{'my_rt_portlets'};
+}
+
+my $current_portlets;
+for my $pane (@panes) {
+    $current_portlets->{$pane}
+	= [map {join('-',@{$_}{qw/type name/})} @{$portlets->{$pane}}];
+}
+
+</%INIT>

@@ -3,7 +3,7 @@
 use WWW::Mechanize;
 use HTTP::Cookies;
 
-use Test::More qw/no_plan/;
+use Test::More tests => 26;
 use RT;
 RT::LoadConfig();
 RT::Init();
@@ -27,9 +27,9 @@ my $agent = WWW::Mechanize->new();
 
 $agent->cookie_jar($cookie_jar);
 
-
+no warnings 'once';
 # get the top page
-my $url = "http://localhost".$RT::WebPath."/";
+my $url = "http://localhost:".$RT::WebPort.$RT::WebPath."/";
 $agent->get($url);
 
 is ($agent->{'status'}, 200, "Loaded a page - http://localhost".$RT::WebPath);

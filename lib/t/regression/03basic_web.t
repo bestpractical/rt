@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More qw/no_plan/;
+use Test::More 'no_plan';
 use WWW::Mechanize;
 use HTTP::Request::Common;
 use HTTP::Cookies;
@@ -15,9 +15,11 @@ my $agent = WWW::Mechanize->new();
 
 $agent->cookie_jar($cookie_jar);
 
-
+use RT;
+RT::LoadConfig();
 # get the top page
-my $url = "http://localhost".$RT::WebPath."/";
+my $url = "http://localhost:".$RT::WebPort.$RT::WebPath."/";
+diag $url;
 $agent->get($url);
 
 is ($agent->{'status'}, 200, "Loaded a page");
@@ -49,7 +51,7 @@ Encode::from_to($string, 'iso-8859-1', 'utf8');
 $agent->field('Subject' => "Ticket with utf8 body");
 $agent->field('Content' => $string);
 ok($agent->submit(), "Created new ticket with $string as Content");
-ok( $agent->{'content'} =~ qr{$string} , "Found the content");
+like( $agent->{'content'}, qr{$string} , "Found the content");
 $agent->get($url."Ticket/Create.html?Queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form(3);
@@ -60,7 +62,7 @@ $agent->field('Subject' => $string);
 $agent->field('Content' => "Ticket with utf8 subject");
 ok($agent->submit(), "Created new ticket with $string as Subject");
 
-ok( $agent->{'content'} =~ qr{$string} , "Found the content");
+like( $agent->{'content'}, qr{$string} , "Found the content");
 
 
 
