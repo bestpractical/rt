@@ -698,11 +698,19 @@ sub _CustomFieldLimit {
 
 
   my $null_columns_ok;
-  my $TicketCFs = $self->Join( TYPE   => 'left',
-			       ALIAS1 => 'main',
-			       FIELD1 => 'id',
-			       TABLE2 => 'TicketCustomFieldValues',
-			       FIELD2 => 'Ticket' );
+
+  my $TicketCFs;
+  # Perform one Join per CustomField
+  if ($self->{_sql_keywordalias}{$cfid}) {
+    $TicketCFs = $self->{_sql_keywordalias}{$cfid};
+  } else {
+    $TicketCFs = $self->{_sql_keywordalias}{$cfid} =
+      $self->Join( TYPE   => 'left',
+		   ALIAS1 => 'main',
+		   FIELD1 => 'id',
+		   TABLE2 => 'TicketCustomFieldValues',
+		   FIELD2 => 'Ticket' );
+  }
 
   $self->_OpenParen;
 
