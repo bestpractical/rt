@@ -1294,10 +1294,14 @@ sub _Set {
 	$MoreOptions={ActionType=>$MoreOptions};
     }
     
-    #record what's being done in the transaction
-    my ($ret, $msg)=$self->SUPER::_Set($Field, $Value, $MoreOptions->{IsSQL}||undef);
-    $ret or return (0,$msg);
+    #Take care of the old value
     my $Old=$self->_Value("$Field") || undef;
+
+    #Set the new value
+    my ($ret, $msg)=$self->SUPER::_Set($Field, $Value, $MoreOptions->{IsSQL}||undef);
+
+    #record the transaction
+    $ret or return (0,$msg);
     my $Trans=	$self->_NewTransaction 
 	(Type => $MoreOptions->{'TransactionType'}||"Set",
 	 Field => $Field,
