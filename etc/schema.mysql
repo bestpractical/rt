@@ -22,26 +22,6 @@ CREATE TABLE ACL (
 
 # }}}
 
-# {{{ OBSOLETE Table QueueACL
-CREATE TABLE QueueACL (
-  id int(11) AUTO_INCREMENT PRIMARY KEY,
-  Queue INT,
-  User INT,
-  Right VARCHAR(16), #Read, Write or Admin
-
-  Creator INT(11),
-  Created TIMESTAMP,
-  LastUpdatedBy INT(11),
-  LastUpdated TIMESTAMP
-)\g
-
-# Grant all rights to the default root user (see below)
-insert into QueueACL values (1, 1, 2, "Write", NULL, NULL, NULL, NULL);
-insert into QueueACL values (2, 1, 2, "Read", NULL, NULL, NULL, NULL);
-insert into QueueACL values (3, 1, 2, "Admin", NULL, NULL, NULL, NULL);
-
-# }}}
-
 
 # {{{ TABLE Scrips
 CREATE TABLE Scrips (
