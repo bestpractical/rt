@@ -1290,32 +1290,22 @@ sub Correspond {
 
 # {{{ Routines dealing with Links and Relations between tickets
 
+# {{{ Link Collections
+
 # {{{ sub Members
 
 =head2 Members
 
-  This returns an RT::Tickets object which references all the tickets 
-that have  this ticket as their target AND are of type 'MemberOf'
+  This returns an RT::Links object which references all the tickets 
+which are 'MembersOf' this ticket
 
 =cut
 
 sub Members {
    my $self = shift;
 
-   unless ($self->CurrentUserHasRight('ShowTicket')) {
-       return (0, "Permission Denied");
-   }
-   
-   if (!defined ($self->{'members'})){
-       use RT::Tickets;
-       $self->{'members'} = new RT::Tickets($self->CurrentUser);
-       #Tickets that are Members of this ticket
-       $self->{'members'}->LimitMemberOf($self->id);
-       #Don't show dead tickets
-       $self->{'members'}->LimitStatus( OPERATOR => '!=',
-					VALUE => 'dead');
-   }
-   return ($self->{'members'});
+   return ($self->_Links('Target', 'MemberOf'));
+
 }
 
 # }}}
@@ -1324,61 +1314,45 @@ sub Members {
 
 =head2 MemberOf
 
-  This returns an RT::Tickets object which references all the tickets that have 
-this ticket as their base AND are of type 'MemberOf' AND are not marked 
-'dead'
+  This returns an RT::Links object which references all the tickets that this
+ticket is a 'MemberOf'
 
 =cut
 
 sub MemberOf {
    my $self = shift;
    
-   unless ($self->CurrentUserHasRight('ShowTicket')) {
-      return (0, "Permission Denied");
-  }
-   
-   if (!defined ($self->{'memberof'})){
-       use RT::Tickets;
-       $self->{'memberof'} = new RT::Tickets($self->CurrentUser);
-       #Tickets that  this ticket is a member of
-       $self->{'memberof'}->LimitHasMember($self->id);
-       #Don't show dead tickets
-       $self->{'memberof'}->LimitStatus( OPERATOR => '!=',
-					 VALUE => 'dead');
-   }
-   return ($self->{'memberof'});
-   
+   return ($self->_Links('Base', 'MemberOf'));
 }
 
 # }}}
 
-# {{{ AddMember
-=head2 AddMember
+# {{{ RefersTo
 
-AddLink but set the type to MemberOf
+=head2 RefersTo
+
+  This returns an RT::Links object which shows all references for which this ticket is a base
 
 =cut
 
-sub AddMember {
+sub RefersTo {
     my $self = shift;
-    my %args = (@_);
-    return ($self->AddLink(Type => 'MemberOf', @_));
+    return ($self->_Links('Base', 'RefersTo'));
 }
 
 # }}}
 
-# {{{ DeleteMember
+# {{{ ReferredToBy
 
-=head2 DeleteMember
+=head2 ReferredToBy
 
-DeleteLink but set the type to MemberOf
+  This returns an RT::Links object which shows all references for which this ticket is a target
 
 =cut
 
-sub DeleteMember {
+sub ReferredToBy {
     my $self = shift;
-    my %args = (@_);
-    return ($self->DeleteLink(Type => 'MemberOf', @_));
+    return ($self->_Links('Target', 'RefersTo'));
 }
 
 # }}}
@@ -1411,112 +1385,20 @@ sub DependsOn {
 
 # }}}
 
-# {{{ AddDependency
-
-=head2 AddDependency
-
-AddLink but set the type to DependsOn
-
-=cut
-
-sub AddDependency {
-    my $self = shift;
-    my %args = (@_);
-    return ($self->AddLink(Type => 'DependsOn', @_));
-}
-
-# }}}
-
-# {{{ DeleteDependency
-
-=head2 DeleteDependency
-
-DeleteLink but set the type to DependsOn
-
-=cut
-
-sub DeleteDependency {
-    my $self = shift;
-    my %args = (@_);
-    return ($self->DeleteLink(Type => 'DependsOn', @_));
-}
-
-# }}}
-
-# {{{ RefersTo
-
-=head2 RefersTo
-
-  This returns an RT::Links object which shows all references for which this ticket is a base
-
-=cut
-
-sub RefersTo {
-    my $self = shift;
-    return ($self->_Links('Base', 'RefersTo'));
-}
-
-# }}}
-
-# {{{ ReferedToBy
-
-=head2 ReferedToBy
-
-  This returns an RT::Links object which shows all references for which this ticket is a target
-
-=cut
-
-sub ReferedToBy {
-    my $self = shift;
-    return ($self->_Links('Target', 'RefersTo'));
-}
-
-# }}}
-
-# {{{ AddReference
-
-=head2 AddReference
-
-AddLink but set the type to RefersTo
-
-=cut
-
-sub AddReference {
-    my $self = shift;
-    my %args = (@_);
-    return ($self->AddLink(Type => 'RefersTo', @_));
-}
-
-# }}}
-
-# {{{ DeleteReference
-
-=head2 DeleteReference
-
-DeleteLink but set the type to RefersTo
-
-=cut
-
-sub DeleteReference {
-    my $self = shift;
-    my %args = (@_);
-    return ($self->DeleteLink(Type => 'RefersTo', @_));
-
-}
-# }}}
-
 # {{{ sub _Links 
 
 sub _Links {
     my $self = shift;
     
-    unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return (0, "Permission Denied");
-    }
     #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic ---
     #tobias meant by $f
     my $field = shift;
     my $type =shift || "";
+
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
+	return (0, "Permission Denied");
+    }
+    
     unless (exists $self->{"$field$type"}) {
 	
 	$self->{"$field$type"} = new RT::Links($self->CurrentUser);
@@ -1528,55 +1410,8 @@ sub _Links {
 
 # }}}
 
-# {{{ sub URI 
-
-=head2 URI
-
-Returns this ticket's URI
-
-=cut
-
-sub URI {
-    my $self = shift;
-    return $RT::TicketBaseURI.$self->id;
-}
-
 # }}}
 
-# {{{ sub MergeInto
-
-=head2 MergeInto
-MergeInto take the id of the ticket to merge this ticket into.
-
-=cut
-
-sub MergeInto {
-  my $self = shift;
-  my $MergeInto = shift;
-
-  unless ($self->CurrentUserHasRight('ModifyTicket')) {
-    return (0, "Permission Denied");
-  }
-  
-  #TODO: Merge must be implemented +++
-  die "Ticket::Merge stubbed";
-  #Make sure this user can modify this ticket
-  #Load $MergeInto as Ticket $Target
-
-  #Make sure this user can modify $Target
-  #If I have an owner and the $Target doesn't, set them on the target
-  
-  #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
-  #Merge the requestor lists
-  #Set my effective_sn to the $Target's Effective SN.
-  #Set all my transactions Effective_SN to the $Target's Effective_Sn
-  
-  #Make sure this ticket object thinks its merged
-
-  return ($TransactionObj, "Merge Successful");
-}  
-
-# }}}
 
 # {{{ sub DeleteLink 
 
@@ -1671,7 +1506,7 @@ sub AddLink {
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied",0);
     }
-
+    
     if ($args{'Base'} and $args{'Target'}) {
 	$RT::Logger->debug("$self tried to delete a link. both base and target were specified\n");
 	return (0, 'Can\'t specifiy both base and target');
@@ -1713,8 +1548,11 @@ sub AddLink {
 				 Base => $args{Base}, 
 				 Type => $args{Type});
     
-    #Write the transaction
- 
+    unless ($linkid) {
+	return (0,"Link could not be created");
+    }
+	#Write the transaction
+    
     my $TransString="Ticket $args{'Base'} $args{Type} ticket $args{'Target'}.";
     
     my ($Trans, $Msg, $TransObj) = $self->_NewTransaction
@@ -1725,9 +1563,61 @@ sub AddLink {
       );
     
     return ($linkid, "Link created ($TransString)", $transactionid);
-    
+	
+	
 }
 # }}}
+
+# {{{ sub URI 
+
+=head2 URI
+
+Returns this ticket's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+    return $RT::TicketBaseURI.$self->id;
+}
+
+# }}}
+
+# {{{ sub MergeInto
+
+=head2 MergeInto
+MergeInto take the id of the ticket to merge this ticket into.
+
+=cut
+
+sub MergeInto {
+  my $self = shift;
+  my $MergeInto = shift;
+
+  unless ($self->CurrentUserHasRight('ModifyTicket')) {
+    return (0, "Permission Denied");
+  }
+  
+  #TODO: Merge must be implemented +++
+  die "Ticket::Merge stubbed";
+  #Make sure this user can modify this ticket
+  #Load $MergeInto as Ticket $Target
+
+  #Make sure this user can modify $Target
+  #If I have an owner and the $Target doesn't, set them on the target
+  
+  #If I have a Due Date and it's before the $Target's due date, set the $Target's due date
+  #Merge the requestor lists
+  #Set my effective_sn to the $Target's Effective SN.
+  #Set all my transactions Effective_SN to the $Target's Effective_Sn
+  
+  #Make sure this ticket object thinks its merged
+
+  return ($TransactionObj, "Merge Successful");
+}  
+
+# }}}
+
 
 # }}}
 

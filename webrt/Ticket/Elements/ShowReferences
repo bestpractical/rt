@@ -12,7 +12,7 @@
 
 
 
-% while (my $Link = $Ticket->ReferedToBy->Next) {
+% while (my $Link = $Ticket->ReferredToBy->Next) {
 <LI>
 % if ($Link->BaseIsLocal) {
 % my $member = $Link->BaseObj;

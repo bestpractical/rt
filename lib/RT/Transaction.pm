@@ -313,6 +313,7 @@ sub Description  {
   if (!defined($self->Type)) {
     return("No transaction type specified");
   }
+
   if ($self->Type eq 'Create'){
     return("Request created by ".$self->Creator->UserId);
   }
@@ -390,18 +391,19 @@ sub Description  {
   elsif ($self->Type eq 'DelWatcher'){
       return( $self->Field." ".$self->OldValue ." deleted by ".$self->Creator->UserId);
   }
-
+  
   elsif ($self->Type eq 'Subject') {
       return( "Subject changed to ".$self->Data." by ".$self->Creator->UserId);
-      }
+  }
   elsif ($self->Type eq 'Told') {
-    return( "User notified by ".$self->Creator->UserId);
-      }
+      return( "User notified by ".$self->Creator->UserId);
+  }
   
-  elsif ($self->Type eq 'Link') {
-    #TODO: make pretty output.
-      
-      return "Linked by ".$self->Creator->UserId."  (  ". $self->Data. "  )";
+  elsif ($self->Type eq 'AddLink') {
+      return ($self->Data);
+  }
+  elsif ($self->Type eq 'DeleteLink') {
+      return ($self->Data);
   }
   elsif ($self->Type eq 'Set') {
       return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");

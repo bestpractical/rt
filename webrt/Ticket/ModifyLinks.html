@@ -1,45 +1,133 @@
 %# $Header$
-%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
+%# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
 
 <& /Elements/Header, Title => "Link ticket ".$Ticket->Id &>
 <& /Ticket/Elements/Tabs, Ticket => $Ticket &>
 
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Link tickets" &>
+<& /Elements/ListActions, actions => \@result &>
 
-<form action="Display.html" method="post">
-<input type="hidden" name="id" value="<%$id%>">
-<input type="hidden" name="Target" value="<%$id%>">
+<form action="ModifyLinks.html" method="post">
+<input type="hidden" name="id" value="<%$Ticket->id%>">
+<& /Elements/TitleBoxStart, title => 'Edit Relationships', color => "#336633"&>
+<TABLE>
+<TR>
+<TD VALIGN=TOP WIDTH=50%>
+<h3>Current Relationships</h3>
+<i>(Check boxes to delete)</i><br>
+
+Depends on:<BR>
+<UL>
+% while (my $link = $Ticket->DependsOn->Next) {
+% my $member = $link->TargetObj;
+<LI>
+<INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%>
+[<%$member->Status%>]
+
+% }
+</UL>
+
+Depended on by:<BR>
+<UL>
+% while (my $link = $Ticket->DependedOnBy->Next) {
+% my $member = $link->BaseObj;
+<LI>
+<INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> 
+[<%$member->Status%>]
+% }
+</UL>
+
+SuperTickets:<BR>
+<UL>
+% while (my $link = $Ticket->MemberOf->Next) {
+% my $member = $link->TargetObj;
+<LI>
+<INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%>
+[<%$member->Status%>]
+
+% }
+</UL>
+
+SubTickets:<BR>
+<UL>
+% while (my $link = $Ticket->Members->Next) {
+<LI>
+<INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+% my $member = $link->BaseObj;
+<a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> 
+[<%$member->Status%>]
+% }
+</UL>
 
 
-<input name="Base"> (URI(s) or ticket id(s):) 
-<& /Elements/SelectLinkType &> 
-this Ticket .
+References:<BR>
+<UL>
+% while (my $link = $Ticket->RefersTo->Next) {
+<LI>
+<INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+% if ($link->TargetIsLocal) {
+% my $member = $link->TargetObj;
 
-<input type=submit value="Create link!">
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+% } else {
+<A HREF="<%$link->TargetAsHREF%>"><%$link->Target%></A>
+% }
+%}
+</UL>
 
-</form>
+Referred to by:<BR>
+<UL>
+% while (my $link = $Ticket->ReferredToBy->Next) {
+<LI>
+<INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+% if ($link->BaseIsLocal) {
+% my $member = $link->BaseObj;
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+% } else {
+<A HREF="<%$link->BaseAsHREF%>"><%$link->Base%></A>
+%}
+% }
+</UL>
 
-<form action="" method="post">
-<input type="hidden" name="id" value="<%$id%>">
-<input type="hidden" name="Base" value="<%$id%>">
+			    
+</TD>
+<TD VALIGN=TOP>
+<h3>New Relationships</h3>
+<i>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</i><br>
+Depends on:<input name="<%$Ticket->Id%>-DependsOn"><BR>
+Depended on by:<input name="DependsOn-<%$Ticket->Id%>"><BR>
+
+		
+Parents:<input name="<%$Ticket->Id%>-MemberOf"><BR>
+Children: <input name="MemberOf-<%$Ticket->Id%>"><BR>
+
+RefersTo:<input name="<%$Ticket->Id%>-RefersTo"><BR>
+Referred to by: <input name="RefersTo-<%$Ticket->Id%>"><BR>
 
 
-This ticket
-<& /Elements/SelectLinkType &> 
-<input name="Target">.
+</TD>
+</TR>
+</TABLE>
 
-<input type=submit value="Create link!">
-</form>
+
+
+
+
 
 <& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, color => "#336633", Caption=> 'Save changes' &>
+</form>
 
-<%ARGS>
-$id => undef
-</%ARGS>
+
+
 
 <%INIT>
+  
+  my @result;
 
-  if (!$ARGS{'id'}) {
+unless ($id) {
     Abort("No ticket specified");
   }
 
@@ -47,4 +135,56 @@ my $Ticket = RT::Ticket->new($session{CurrentUser});
 unless ($Ticket->Load($id)) {
     Abort("/Elements/Error");
 }
+
+
+# Delete links that are gone gone gone.
+foreach my $arg (keys %ARGS) {
+    if ($arg =~ /DeleteLink-(.*?)-(DependsOn|MemberOf|RefersTo)-(.*)$/) {
+	my $base = $1;
+	my $type = $2;
+	my $target = $3;
+	
+	push @result, "Trying to delete: Base: $base Target: $target  Type $type";
+	my ($val, $msg) = $Ticket->DeleteLink(Base => $base,
+					      Type => $type,
+					      Target => $target);
+	
+	push @result, $msg;
+	
+	
+    }	
+    
+}
+
+
+my @linktypes = qw( DependsOn MemberOf RefersTo );
+
+foreach my $linktype (@linktypes) {
+    
+    for my $luri (split (/ /,$ARGS{$Ticket->Id."-$linktype"})) {
+	my ($val, $msg) = $Ticket->AddLink( Target => $luri,
+					    Type => $linktype);
+	push @result, $msg;
+    }
+    
+    for my $luri (split (/ /,$ARGS{"$linktype-".$Ticket->Id})) {
+	my ($val, $msg) = $Ticket->AddLink( Base => $luri,
+					    Type => $linktype);
+	
+	push @result, $msg;
+    }
+}
+
+my $DependsOn = $Ticket->DependsOn();
+my $DependedOnBy = $Ticket->DependedOnBy();
+my $MemberOf = $Ticket->MemberOf();
+my $Members = $Ticket->Members();
+my $RefersTo = $Ticket->RefersTo();
+my $ReferredToBy = $Ticket->ReferredToBy();
+
 </%INIT>
+      
+      
+<%ARGS>
+$id => undef
+</%ARGS>
