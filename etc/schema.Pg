@@ -603,7 +603,7 @@ CREATE TABLE Attributes (
   Content text,
   ContentType varchar(16),
   ObjectType varchar(64),
-  ObjectId integer, # foreign key to anything
+  ObjectId integer, 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
