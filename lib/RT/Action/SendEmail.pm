@@ -280,10 +280,12 @@ sub SetEnvelopeTo {
 sub SetRecipients {
   my $self=shift;
   my $r;
+  print STDERR "Setting up receipient header fields";
   $self->SetTo() && $r++;
   $self->SetCc() && $r++;
   $self->SetBcc() && $r++;
   $self->SetEnvelopeTo() && $r++;
+  print STDERR "Done setting up receipient header fields, $r";
   $r;
 }
 # }}} sub SetRecipients

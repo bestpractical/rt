@@ -116,7 +116,7 @@ sub Create  {
 	print STDERR $Scope->ScripObj->Describe();
 
 	print STDERR "About to prepare\n";
-	$Scope->ScripObj->Prepare();   
+	$Scope->ScripObj->Prepare() || next;   
 	print STDERR "About to Commit\n";
 	$Scope->ScripObj->Commit();
       }

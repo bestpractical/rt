@@ -198,25 +198,45 @@ sub Watchers {
 }
 # }}}
 
-# {{{ sub WatchersAsString
+# {{{ sub ...AsString
 
-#TODO genericise this routine and use it for CcAsString, AdminCcAsString,
-# Requestors as string
-
-sub WatchersAsString {
-  my $self = shift;
-  if (!defined $self->{'WatchersAsString'}) {
-    $self->{'WatchersAsString'} = "";
+sub WatcherClassAsString {
+  my $self  = shift;
+  my $class = shift || "";
+  my $o = ($class||"Watchers").'AsString';
+  if (!defined $self->{$o}) {
+    $self->{$o} = "";
+    my @w=();
     while (my $watcher = $self->Watchers->Next) {
-      $self->{'WatchersAsString'} .= $watcher->Email.", ";    
-     }
-    $self->{'WatchersAsString'} =~ s/, $//;
+      push(@w, $watcher->Email)
+	  if ($watcher->Type =~ /\b$class\b/)
+    }
   }
   return ( $self->{'WatchersAsString'});
   
 }
 
 # }}}
+
+sub RequestorsAsString {
+    my $self=shift;
+    return $self->WatcherClassAsString('Requestor');
+}
+
+sub WatchersAsString {
+    my $self=shift;
+    return $self->WatcherClassAsString();
+}
+
+sub AdminCcAsString {
+    my $self=shift;
+    return $self->WatcherClassAsString('AdminCc');
+}
+
+sub CcAsString {
+    my $self=shift;
+    return $self->WatcherClassAsString('Cc');
+}
 
 # {{{ sub Requestors
 sub Requestors {
@@ -230,21 +250,6 @@ sub Requestors {
   return($self->{'Requestors'});
   
 }
-# }}}
-
-# {{{ sub RequestorsAsString
-sub RequestorsAsString {
-  my $self = shift;
-  if (!defined $self->{'RequestorsAsString'}) {
-    $self->{'RequestorsAsString'} = "";
-    while (my $requestor = $self->Requestors->Next) {
-      $self->{'RequestorsAsString'} .= $requestor->Email.", ";    
-     }
-    $self->{'RequestorsAsString'} =~ s/, $//;
-  }
-  return ( $self->{'RequestorsAsString'});
-}
-
 # }}}
 
 # {{{ sub Cc

@@ -32,20 +32,22 @@ sub SetRecipients {
 	if ($` || $') {
 	    push(@{$self->{Bcc}}, $self->TicketObj->AdminCcAsString);
 	} else {
-	    push(@{$self->{To}}), $self->TicketObj->AdminCcAsString);
+	    push(@{$self->{To}}, $self->TicketObj->AdminCcAsString);
 	}
     }
 
     # Will use Cc as To if there aren't any To.
     if ($arg =~ /\bCc\b/) {
 	if (@{$self->{To}}) {
-	    push(@{$self->{Cc}}, join(",", $self->TicketObj->CcAsString, $self->{Cc}||undef);
+	    push(@{$self->{Cc}}, $self->TicketObj->CcAsString);
 	} else {
 	    push(@{$self->{To}}, $self->TicketObj->CcAsString);
 	}
     }
 
-    return @{$self->{To}};
+    return 0 unless (exists $self->{To} && defined $self->{To} && @{$self->{To}});
+
+    return $self->SUPER::SetRecipients;
 }
 
 
