@@ -34,18 +34,6 @@ BEGIN {
     @ORACLE_ENV_PREF@
 }
 
-if ($mod_perl::VERSION >= 1.9908) {
-    require Apache::RequestUtil;
-    no warnings 'redefine';
-    my $sub = *Apache::request{CODE};
-    *Apache::request = sub {
-        my $r;
-        eval { $r = $sub->('Apache'); };
-        # warn $@ if $@;
-        return $r;
-    };
-}
-
 use lib ("@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 use RT;
 
@@ -55,6 +43,17 @@ use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
                                    #set private_tempfiles
 
 BEGIN {
+    if ($mod_perl::VERSION >= 1.9908) {
+	require Apache::RequestUtil;
+	no warnings 'redefine';
+	my $sub = *Apache::request{CODE};
+	*Apache::request = sub {
+	    my $r;
+	    eval { $r = $sub->('Apache'); };
+	    # warn $@ if $@;
+	    return $r;
+	};
+    }
     if ($CGI::MOD_PERL) {
 	require HTML::Mason::ApacheHandler;
     }

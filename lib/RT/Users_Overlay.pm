@@ -232,8 +232,15 @@ sub WhoHaveRight {
                 push @privgroups, $Group->Id();
         }
 
+
+    if (@privgroups) {
         $self->WhoBelongToGroups(Groups => \@privgroups,
                                  IncludeSubgroupMembers => $args{'IncludeSubgroupMembers'});
+    }
+    else {
+	# We don't have any group that matches -- make it impossible.
+	$self->Limit( FIELD => 'Id', VALUE => 'IS', OPERATOR => 'NULL' );
+    }
 }
 
 # }}}

@@ -50,6 +50,10 @@
     <td class=label><&|/l&>Nickname</&>:</td>
     <td class=value><input name="NickName" value="<%$UserObj->NickName%>"></td>
   </tr>
+  <tr>
+    <td class=label><&|/l&>Language</&>:</td>
+    <td class=value><& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &></td>
+  </tr>
 </table>
 <& /Elements/TitleBoxEnd &>
 <br>
@@ -180,12 +184,13 @@ if ($UserObj->Id) {
 		    Organization RealName NickName Lang EmailEncoding WebEncoding 
 		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
 		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
-		Address2 City State Zip Country 
+		Address2 City State Zip Country Lang
 		   );
     
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $UserObj,
 					    ARGSRef => \%ARGS );
+    $session{'CurrentUser'}->LanguageHandle($Lang) if $Lang;
     push (@results,@fieldresults);
 
 

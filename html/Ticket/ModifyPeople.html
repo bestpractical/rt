@@ -44,7 +44,7 @@ my (@results, @wresults);
 my $Ticket = LoadTicket($id);
 
 # if we're trying to search for watchers and nothing else
-unless ($OnlySearchForPeople) {
+unless ($OnlySearchForPeople or $OnlySearchForGroup) {
     @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
 }
@@ -56,6 +56,7 @@ push @results, @wresults;
 
 <%ARGS>
 $OnlySearchForPeople => undef
+$OnlySearchForGroup => undef
 $UserField => undef
 $UserOp => undef
 $UserString => undef

@@ -22,6 +22,8 @@
 %# 
 %# END LICENSE BLOCK
 <%init>
+return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
+
 my %cookies = CGI::Cookie->fetch();
 my %backends = (
     mysql	=> 'Apache::Session::MySQL',

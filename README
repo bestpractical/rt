@@ -197,7 +197,7 @@ Apache
     DocumentRoot /opt/rt3/share/html
     AddDefaultCharset UTF-8
 
-    # these four lines applies to Apache2+mod_perl2 only: {{{
+    # these four lines apply to Apache2+mod_perl2 only: {{{
     PerlSetVar MasonArgsMethod CGI
     PerlModule Apache2 Apache::compat
     RewriteEngine On

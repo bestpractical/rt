@@ -77,6 +77,7 @@ my ($msg, $Users, $Groups);
 if ($UserString) {
     $Users = RT::Users->new($session{'CurrentUser'});
     $Users->Limit(FIELD => $UserField, VALUE => $UserString, OPERATOR => $UserOp);
+    $Users->LimitToPrivileged if $PrivilegedOnly;
      }
 
 if ($GroupString) {
@@ -94,4 +95,5 @@ $UserString => undef
 $GroupField => 'Name'
 $GroupOp => '='
 $GroupString => undef
+$PrivilegedOnly => undef
 </%ARGS>

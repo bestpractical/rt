@@ -488,7 +488,8 @@ sub MakeMIMEEntity {
         Cc                  => undef,
         Body                => undef,
         AttachmentFieldName => undef,
-        map Encode::encode_utf8($_), @_,
+#        map Encode::encode_utf8($_), @_,
+        @_,
     );
 
     #Make the update content have no 'weird' newlines in it
@@ -543,7 +544,7 @@ sub MakeMIMEEntity {
 
     $Message->attach(
         Path     => $temp_file,
-        Filename => $filename,
+        Filename => Encode::decode_utf8($filename),
         Type     => $uploadinfo->{'Content-Type'},
     );
     close($fh);
@@ -1143,7 +1144,7 @@ sub ProcessTicketCustomFieldUpdates {
                   : ( $ARGSRef->{$arg} );
                 if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
                     foreach my $value (@values) {
-                        next unless ($value);
+                        next unless length($value);
                         my ( $val, $msg ) = $Ticket->AddCustomFieldValue(
                             Field => $cf,
                             Value => $value
@@ -1153,7 +1154,7 @@ sub ProcessTicketCustomFieldUpdates {
                 }
                 elsif ( $arg =~ /-DeleteValues$/ ) {
                     foreach my $value (@values) {
-                        next unless ($value);
+                        next unless length($value);
                         my ( $val, $msg ) = $Ticket->DeleteCustomFieldValue(
                             Field => $cf,
                             Value => $value
@@ -1166,7 +1167,7 @@ sub ProcessTicketCustomFieldUpdates {
 
                     my %values_hash;
                     foreach my $value (@values) {
-                        next unless ($value);
+                        next unless length($value);
 
                         # build up a hash of values that the new set has
                         $values_hash{$value} = 1;

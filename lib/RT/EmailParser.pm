@@ -159,7 +159,7 @@ sub ParseMIMEEntityFromSTDIN {
 
 # }}}
 
-=head2 ParseMIMEEntityFRomScalar  $message
+=head2 ParseMIMEEntityFromScalar  $message
 
 Takes either a scalar or a reference to a scalr which contains a stringified MIME message.
 Parses it.

@@ -37,7 +37,7 @@
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField,
 	GroupString => $GroupString, GroupOp => $GroupOp,
-	GroupField => $GroupField &> 
+	GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
 </TD><TD VALIGN=TOP>
 <h3><&|/l&>Owner</&></h3>
 <&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
@@ -64,5 +64,6 @@ $UserString => undef
 $GroupField => undef
 $GroupOp => undef
 $GroupString => undef
+$PrivilegedOnly => undef
 $Ticket => undef
 </%ARGS>

@@ -329,6 +329,9 @@ sub LanguageHandle {
     if  ((!defined $self->{'LangHandle'}) || 
          (!UNIVERSAL::can($self->{'LangHandle'}, 'maketext')) || 
          (@_))  {
+	if ($self->UserObj and my $lang = $self->UserObj->Lang) {
+	    push @_, $lang;
+	}
         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
     }
     # Fall back to english.
