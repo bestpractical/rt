@@ -29,7 +29,7 @@ $ticket => undef
 </%ARGS>
 <%init>
 use RT::Interface::Email; 
-my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( %ARGS);
+my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway(\%ARGS);
 </%init>
 <%flags>
 inherit => undef # inhibit UTF8 conversion done in /autohandler

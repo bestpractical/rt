@@ -74,8 +74,9 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
-                                  
- RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+                           
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
@@ -113,7 +114,8 @@ my $content =  `cat @RT_LIB_PATH@/t/data/new-ticket-from-iso-8859-1` || die "cou
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
                                   
- RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
@@ -210,7 +212,8 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &umlauts_redef_sendmessage;
 
-RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
@@ -237,7 +240,8 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &text_html_umlauts_redef_sendmessage;
 
-RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
@@ -274,7 +278,8 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &text_html_russian_redef_sendmessage;
 
-RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
@@ -315,7 +320,8 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 # be as much like the mail gateway as possible.
 &text_plain_russian_redef_sendmessage;
-RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
@@ -354,7 +360,8 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 # be as much like the mail gateway as possible.
 &text_plain_nested_redef_sendmessage;
-RT::Interface::Email::Gateway(message => $content, queue => 1, action => 'correspond');
+my %args =        (message => $content, queue => 1, action => 'correspond');
+ RT::Interface::Email::Gateway(\%args);
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');

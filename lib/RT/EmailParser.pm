@@ -159,6 +159,16 @@ sub ParseMIMEEntityFromSTDIN {
 
 # }}}
 
+=head2 ParseMIMEEntityFRomScalar  $message
+
+Takes either a scalar or a reference to a scalr which contains a stringified MIME message.
+Parses it.
+
+Returns true if it wins.
+Returns false if it loses.
+
+
+=cut
 
 sub ParseMIMEEntityFromScalar {
     my $self = shift;
@@ -208,6 +218,41 @@ sub ParseMIMEEntityFromFileHandle {
         # Try again, this time without extracting nested messages
         $parser->extract_nested_messages(0);
         unless ( $self->{'entity'} = $parser->parse($filehandle) ) {
+            $RT::Logger->crit("couldn't parse MIME stream");
+            return ( undef);
+        }
+    }
+    $self->_PostProcessNewEntity();
+    return (1);
+}
+
+# }}}
+
+# {{{ ParseMIMEEntityFromFile
+
+=head2 ParseMIMEEntityFromFile 
+
+Parses a mime entity from a filename passed in as an argument
+
+=cut
+
+sub ParseMIMEEntityFromFile {
+    my $self = shift;
+    my $file = shift;
+
+    # Create a new parser object:
+
+    my $parser = MIME::Parser->new();
+    $self->_SetupMIMEParser($parser);
+
+
+    # TODO: XXX 3.0 we really need to wrap this in an eval { }
+
+    unless ( $self->{'entity'} = $parser->parse_open($file) ) {
+
+        # Try again, this time without extracting nested messages
+        $parser->extract_nested_messages(0);
+        unless ( $self->{'entity'} = $parser->parse_open($file) ) {
             $RT::Logger->crit("couldn't parse MIME stream");
             return ( undef);
         }
@@ -769,10 +814,9 @@ sub _SetupMIMEParser {
     # Set up the prefix for files with auto-generated names:
     $parser->output_prefix("part");
 
-    # If content length is <= 50000 bytes, store each msg as in-core scalar;
-    # Else, write to a disk file (the default action):
+    # do _not_ store each msg as in-core scalar;
 
-    $parser->output_to_core(50000);
+    $parser->output_to_core(0);
 }
 # }}}
 

@@ -27,7 +27,7 @@ use strict;
 use Mail::Address;
 use MIME::Entity;
 use RT::EmailParser;
-
+use File::Temp;
 
 BEGIN {
     use Exporter ();
@@ -361,7 +361,7 @@ sub ParseAddressFromHeader{
 
 
 
-=head2 Gateway
+=head2 Gateway ARGSREF
 
 This performs all the "guts" of the mail rt-mailgate program, and is
 designed to be called from the web interface with a message, user
@@ -370,11 +370,12 @@ object, and so on.
 =cut
 
 sub Gateway {
-    my %args = ( message => undef,
-                 queue   => 1,
-                 action  => 'correspond',
-                 ticket  => undef,
-                 @_ );
+    my $argsref = shift;
+
+    my %args = %$argsref;
+    # Set some reasonable defaults
+    $args{'action'} = 'correspond' unless ($args{'action'});
+    $args{'queue'} = '1' unless ($args{'queue'});
 
     # Validate the action
     unless ( $args{'action'} =~ /^(comment|correspond|action)$/ ) {
@@ -384,7 +385,24 @@ sub Gateway {
     }
 
     my $parser = RT::EmailParser->new();
-    $parser->ParseMIMEEntityFromScalar( $args{'message'} );
+    my ( $fh, $temp_file );
+    for ( 1 .. 10 ) {
+        # on NFS and NTFS, it is possible that tempfile() conflicts
+        # with other processes, causing a race condition. we try to
+        # accommodate this by pausing and retrying.
+        last if ($fh, $temp_file) = eval { File::Temp::tempfile() };
+        sleep 1;
+    }
+
+    binmode $fh;    #thank you, windows
+    print $fh $args{'message'};
+    close($fh);
+
+    delete $args{'message'};
+    $parser->ParseMIMEEntityFromFile( $temp_file);
+    File::Temp::unlink0($fh, $temp_file) || return(0, "Failed to unlink a temporary file for the message");
+
+
 
     my $Message = $parser->Entity();
     my $head = $Message->head;
@@ -480,7 +498,7 @@ RT could not load a valid user, and RT's configuration does not allow
 for the creation of a new user for this email ($ErrorsTo).
 
 You might need to grant 'Everyone' the right 'CreateTicket' for the
-queue $args{'queue'}.
+queue @{[$args{'queue'}]}.
 
 EOT
                 MIMEObj  => $Message,

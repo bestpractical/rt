@@ -381,16 +381,17 @@ for (qw(url)) {
 }
 
 undef $/;
-my $message = <>;
 my $ua      = LWP::UserAgent->new();
 $ua->cookie_jar( { file => $opts{jar} } );
 
 my %args = (
     queue   => $opts{queue},
     action  => $opts{action},
-    message => $message,
     SessionType => 'REST',    # Surpress login box
 );
+
+# Read the message in from STDIN
+$args{'message'} = <>;
 
 
 if ($opts{'extension'}) {
