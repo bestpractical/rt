@@ -1,0 +1,354 @@
+
+Find tickets to operate on:
+        --id=<tickets>          Find only tickets in the range <tickets>
+                synonyms:
+                --limit-id, --tickets, --limit-tickets
+        --limit-queue=<queue>
+        --limit-status=<status>
+        --limit-owner=<owner>
+        --limit-priority=<priority>
+        --limit-requestor=<email>
+        --limit-subject=<string>      (Subject contains)
+        --limit-body=<string>         (body contains)
+        --limit-created=(before/after) <date>
+        --limit-due=(before/after) <date>
+        --limit-starts=(before/after) <date>
+        --limit-started=(before/after) <date>
+
+        --limit-first=<int>           Start on the <int>th row returned by the
+                                database  
+        --limit-rows=<int>      Find only <int> rows
+
+Display:
+        --show                  shows a ticket history
+        --history               ditto
+
+        --summary               default option. shows a ticket summary
+                --format        Optional format string. If not specified,
+                                uses the value of ENV{'RT_LISTING_FORMAT'}
+                                or an internal default
+        
+
+Basic ticket editing:
+
+	--status=(open|stall|resolve|kill)
+	--subject=<string>
+        --owner=<owner>
+	--queue=<queue>
+	--time-left=<minutes>
+
+Watcher-related editing:
+
+	--add-requestor=<email>
+	--del-requestor=<email>
+	--add-cc=<email>
+	--del-cc=<email>
+	--add-admincc=<email>
+	--del-admincc=<email>
+
+Priority related editing:
+
+	--priority=<int>
+	--final-priority=<int>
+
+Date related editing:
+
+	--due=date
+	--starts=date
+	--started=date
+	--contacted=date
+
+
+
+Ticket updates:
+
+	--comment 
+	--reply | --respond 
+
+
+Links
+
+	--add-link 
+		--type=<DependsOn|MemberOf|RelatedTo>
+		needs one of:
+		   --target=<ticketid> 
+		   --base=<ticketid>
+
+	--del-link <link-id>
+
+
+
+Condiments:
+	any update can take:
+
+		--time-taken <minutes>
+
+	Ticket updates can take:
+
+		--source 	-- specify a source file to read the content from
+		--edit		= give me an editor to edit the message
+		--no-edit	= don't give me an editor to edit the message.
+
+
+
+
+----- Forwarded message from deborah kaplan <deborah@curl.com> -----
+
+Date: Fri, 14 Apr 2000 11:43:18 -0400 (EDT)
+From: deborah kaplan <deborah@curl.com>
+To: Jesse <jesse@fsck.com>
+Subject: Re: [rt-devel] RT Projects list
+
+Finally, here is the functional spec for the command line
+interface.  This is for the user interface only; if you think
+this is right, I will add the administrative interface as well.
+Should I post to rt-devel, add to the ticket, or just modify
+based on your kibbitzing?  When you are happy with it I'll start
+the code.
+
+-deborah
+
+
+RT command line interface functional specification
+Author: Deborah Kaplan (Deborah@suberic.net)
+Version:0.1
+
+Requirements: 
+
+RT needs a CLI for various reasons.  If a user is restricted to a
+dumb terminal, she needs to be able to access the RT database and
+manipulate it fully.  The full functionality of both the RT
+database and the RT administrative interface should be available
+from this CLI.
+
+There are two possible types of CLI which I will discuss here.
+The first is a curses-style interface, which allows the user to
+move about a series of menus and choices, usually using arrow
+keys.  As RT supplies a Web interface, there is no need for this
+curses-style interface to be written as part of RT.  Instead, the
+RT developers should pick one tty-based Web browser (e.g. lynx,
+w3m) and make sure that all of the RT pages are easily readable
+with that tty based browser.  Installation of that browser should
+be recommended in the RT installation documentation as a
+supported method of accessing RT from a tty.
+
+The second possible type of CLI is more minimal: a series of
+commands which can be run at a UNIX command prompt which provide
+full functionality to the RT database and administrative
+interface.  There are two major benefits to this second type of
+CLI.  First of all, in order to use this CLI, you need no extra
+tools (Web browsers, etc.).  All that is required is a UNIX
+command line prompt and an installation of RT.  Secondly, a user
+of RT who has a very specific command to run and who knows the
+appropriate CLI commands can accomplish her task much more
+quickly with a single command then she could navigating through a
+menu based interface.
+
+In the specification, I will describe the second type of CLI.
+
+Caveats:
+
+This specification draws heavily on the structure of formatting
+command line options for cvs.  RT faces a smaller version of the
+same kinds of problems cvs faces: we want to create a very rich
+command set without sacrificing ease-of-use. 
+
+I am not wedded to any specific command names if they seem
+impractical; I merely am proposing the command names that seem
+reasonable to me at this moment.
+
+Finally, I am finding the functioning of the web UI from RT 1.
+If the functionality differs greatly in RT 2, I will need to
+modify this specification.
+
+Specification:
+
+There are two commands: "rt", which is the primary interface to
+the database, and "rtadmin", which is the administrative
+interface to the database.
+
+The format of an rt command is as follows:
+
+ rt <command> 
+    <command> is one of:
+
+    - help
+      print an overview of the commands which can be run
+
+    - print <queue> <options> 
+      with no options, dump to the screen a list of all open
+      requests in <queue> -- the equivalent of "Display Queue" in
+      the existing Web interface.
+
+      <queue> is the name of an RT queue
+      <option> is either:
+
+        -f <filename> |  --filename <filename>
+	   where <filename> is the name of a file (defaulting to
+	   ~/.rtrc) in which the options described below can be
+	   placed in the format "^ <long option name> <option value>
+	   $".
+
+        Or a series of the following options:
+
+        -o <owner name> |  --owner <owner name>: restrict tickets
+	viewed to those owned by <owner name>.
+	   This option can be used multiple times in one call of
+	   the rt command in order to produce a list which
+	   contains tickets owned by multiple owners.  Giving the
+	   empty string ("") as an option to this switch will
+	   restrict tickets viewed to those which have no owner.
+	   If this switch is given with no argument, the option
+	   defaults to the user name of the currently running
+	   process.
+
+        -r <requestor name> | --requestor <requestor name>:
+	restrict tickets viewed to those requested by <requestor
+	name>.
+	   This option can be used multiple times in one call of
+	   the rt command in order to produce a list which
+	   contains tickets requested by multiple requesters.  If
+	   this switch is given with no arguments, it produces an
+	   error.
+
+        -s <status> | --status <status>: restrict tickets viewed
+	to those with the status named in <status>.
+	   This option can be used multiple times in one call of
+	   the rt command in order to produce a list which
+	   contains tickets with multiple statuses (statii?
+	   Dragon NaturallySpeaking recognizes "statuses" as a
+	   word).  This option defaults to status "open".
+
+        -j <subject> | --subject <subject>: restrict tickets
+	viewed to those which contain <subject> as a substring in
+	the subject field of the ticket.
+	   This command can be used multiple times in one call of
+	   the rt command in order to produce a list which
+	   contains tickets with various subject substrings.  If
+	   the option is called with no argument, the result is
+	   an error.
+
+        -h | --help: print a usage message.
+
+        -n | --number: print out a specific ticket.
+	   This command can be used multiple times to produce a
+	   list which contains multiple tickets.  If the option
+	   is called with no argument, the result is an error.
+
+    This completes all of the print options which are available
+    in the Web interface, except the sort options.  I maintain
+    that this command is already excessively complex, and that
+    adding functionality which can be replicated easily by
+    standard UNIX tools is unnecessary added complexity.  I
+    recommend that the man pages and documentation for this
+    option contain an example of a command line run (e.g. of rt |
+    awk) which replicates the sorting functionality provided by
+    the Web interface.
+
+    - edit <ticket> <options>
+      with no options, or with no <ticket>, produces the same
+      output as the --help option.
+      Otherwise, edits the ticket with number <ticket> as
+      indicated in the options given.  All options listed below
+      except for --help and --number can be used in conjunction
+      with one another to change many features of the same ticket
+      all at once.
+
+        -h | --help: print usage message
+
+        -s <status> | --status <status>: change the status to the
+	status listed in <status>.
+	   No <status> listed, or 1 listed it does not come from
+	   a list of approve statuses, produces an error.
+
+        -o <owner name> |  --owner <owner name>: set to the owner
+	of the ticket the owner named.
+	   Follows whatever convention is finally decided on for
+	   the requirement to steal a ticket that is owned by
+	   somebody else.  No <owner named> listed has the user
+	   who is running the rt program take the ticket.  If
+	   that user is not a valid owner, or the 1 listed does
+	   not come from a list of approve names, produces an
+	   error.
+
+        -r <requestor name> | --requestor <requestor name>: sets
+	the requestor to <requestor name>.
+	   Follows any conventions that the Web UI follows to
+	   make sure that this is a legal name.  If not legal, or
+	   left blank, produces an error.
+
+        -j <subject> | --subject <subject>:  sets the subject of
+	the ticket to <subject>.
+	   If the option is called with no argument, the result
+	   is an error.
+
+        -n <number one> <number 2> | --number <number one>
+	<number 2>: merges ticket number <number one> into ticket
+	<number 2>.
+	   If both arguments are not provided, the result is an
+	   error.
+
+        -q <queue> | --queue <queue>: set the queue to that
+	named.
+	   If <queue> is not listed, or the 1 listed does not
+	   come from a list of approve queues, produces an
+	   error.
+
+        -a <area> | --area <area>: set the area of the ticket to
+	that named.
+	   If <area> is not listed, or the 1 listed does not come
+	   from a list of approve areas, produces an error.
+
+        -c <time stamp> | --contact <time stamp>: sets the last
+	user contact field, and produces an error if the format
+	is invalid.
+	   If the argument is left blank, sets the last user
+	   contact field to now.
+
+        -p <priority> | --priority <priority>: sets the current
+	priority to the 1 listed.
+	   Produces an error if the argument is left blank.
+
+        -f <priority> | --final <priority>: sets the final
+	priority to the 1 listed.
+	   Produces an error if the arguments left blank.
+
+        -d <date due> | --datedue <date due>: sets the due date
+	to the 1 listed.
+	   Produces an error if the argument is left blank, or if
+	   the format is invalid.
+
+    - comment <options>
+      with no options, this command reads from standard input
+      until it sees EOF and appends that to the ticket as a
+      comment.
+
+        -h | --help: print usage message
+
+        -c | --comment: append as a comment.  This is the default behavior.
+
+        -r | --reply: append as a reply.
+
+        -f <filename> | --file <filename>: can be used with
+	either the comment or reply options.  Instead of reading
+	from standard input, read the text of the comment or
+	reply from the file <filename>.
+
+    - report <options>
+      this command is a place holder for reporting functionality
+      which does not yet exist.  It will probably have the
+      default behavior to select reports at the command line or
+      choose default reports from a .rtrc file.  In a future
+      version, it can output graphs in some graphical format.
+
+
+
+----- End forwarded message -----
+
+-- 
+jesse reed vincent -- root@eruditorum.org -- jesse@fsck.com 
+70EBAC90: 2A07 FC22 7DB4 42C1 9D71 0108 41A3 3FB3 70EB AC90
+
+"If IBM _wanted_ to make clones, we could make them cheaper and faster than
+anyone else!"  - An IBM Rep. visiting Vassar College's Comp Sci Department.
+
