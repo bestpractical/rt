@@ -216,23 +216,22 @@ sub Signature {
     ## at the moment, it's left out.
 
     if (0) {
-      my @entry=getpwnam($self->Gecos || $self->UserId);
-      my $home=$entry[7];
+	my @entry=getpwnam($self->Gecos || $self->UserId);
+	my $home=$entry[7];
 ## TODO: Check if the commented out line might work better
-#     for my $trythis (@RT::signature) {
-      for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
-	if (-r $trythis) {
-	  local($/);
-	    undef $/;
-	  open(SIGNATURE, "<$trythis"); 
-	  $signature=<SIGNATURE>;
-	  close(SIGNATURE);
-	  return $signature;
+#       for my $trythis (@RT::signature) {
+	for my $trythis ("$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
+	    if (-r $trythis) {
+		local($/);
+		undef $/;
+		open(SIGNATURE, "<$trythis"); 
+		$signature=<SIGNATURE>;
+		close(SIGNATURE);
+		return $signature;
+	    }
 	}
-      }
-      return undef;
+	return undef;
     }
-  }
 }
 # }}}
 
