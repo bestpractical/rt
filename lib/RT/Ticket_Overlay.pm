@@ -1693,32 +1693,40 @@ sub TimeWorkedAsString {
 
 Comment on this ticket.
 Takes a hashref with the follwoing attributes:
+If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
+commentl
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content.
 
 =cut
 
+## Please see file perltidy.ERR
 sub Comment {
     my $self = shift;
 
-    my %args = (
-        CcMessageTo  => undef,
-        BccMessageTo => undef,
-        MIMEObj      => undef,
-        TimeTaken    => 0,
-        @_
-    );
+    my %args = ( CcMessageTo  => undef,
+                 BccMessageTo => undef,
+                 MIMEObj      => undef,
+                 Content      => undef,
+                 TimeTaken => 0,
+                 @_ );
 
-    unless ( ( $self->CurrentUserHasRight('CommentOnTicket') )
-        or ( $self->CurrentUserHasRight('ModifyTicket') ) )
-    {
+    unless (    ( $self->CurrentUserHasRight('CommentOnTicket') )
+             or ( $self->CurrentUserHasRight('ModifyTicket') ) ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
     unless ( $args{'MIMEObj'} ) {
-        return ( 0, $self->loc("No correspondence attached") );
-    }
+        if ( $args{'Content'} ) {
+            use MIME::Entity;
+            $args{'MIMEObj'} = MIME::Entity->build( Data => $args{'Content'} );
 
+        }
+        else {
+
+            return ( 0, $self->loc("No correspondence attached") );
+        }
+    }
     # If we've been passed in CcMessageTo and BccMessageTo fields,
     # add them to the mime object for passing on to the transaction handler
     # The "NotifyOtherRecipients" scripAction will look for RT--Send-Cc: and
@@ -1748,28 +1756,37 @@ Correspond on this ticket.
 Takes a hashref with the following attributes:
 
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content
+
+if there's no MIMEObj, Content is used to build a MIME::Entity object
+
 
 =cut
 
 sub Correspond {
     my $self = shift;
-    my %args = (
-        CcMessageTo  => undef,
-        BccMessageTo => undef,
-        MIMEObj      => undef,
-        TimeTaken    => 0,
-        @_
-    );
+    my %args = ( CcMessageTo  => undef,
+                 BccMessageTo => undef,
+                 MIMEObj      => undef,
+                 Content      => undef,
+                 TimeTaken    => 0,
+                 @_ );
 
-    unless ( ( $self->CurrentUserHasRight('ReplyToTicket') )
-        or ( $self->CurrentUserHasRight('ModifyTicket') ) )
-    {
+    unless (    ( $self->CurrentUserHasRight('ReplyToTicket') )
+             or ( $self->CurrentUserHasRight('ModifyTicket') ) ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
     unless ( $args{'MIMEObj'} ) {
-        return ( 0, $self->loc("No correspondence attached") );
+        if ( $args{'Content'} ) {
+            use MIME::Entity;
+            $args{'MIMEObj'} = MIME::Entity->build( Data => $args{'Content'} );
+
+        }
+        else {
+
+            return ( 0, $self->loc("No correspondence attached") );
+        }
     }
 
     # If we've been passed in CcMessageTo and BccMessageTo fields,
@@ -1782,35 +1799,33 @@ sub Correspond {
 
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
-        Type      => 'Correspond',
-        Data      => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
-        TimeTaken => $args{'TimeTaken'},
-        MIMEObj   => $args{'MIMEObj'}
-    );
+             Type => 'Correspond',
+             Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
+             TimeTaken => $args{'TimeTaken'},
+             MIMEObj   => $args{'MIMEObj'} );
 
-    # TODO this bit of logic should really become a scrip for 2.2
+    # TODO this bit of logic should really become a scrip for 3.0
     my $TicketAsSystem = new RT::Ticket($RT::SystemUser);
     $TicketAsSystem->Load( $self->Id );
 
-    if ( ( $TicketAsSystem->Status ne 'open' )
-        and ( $TicketAsSystem->Status ne 'new' ) )
-    {
+    if (     ( $TicketAsSystem->Status ne 'open' )
+         and ( $TicketAsSystem->Status ne 'new' ) ) {
 
         my $oldstatus = $TicketAsSystem->Status();
         $TicketAsSystem->__Set( Field => 'Status', Value => 'open' );
         $TicketAsSystem->_NewTransaction(
-            Type     => 'Set',
-            Field    => 'Status',
-            OldValue => $oldstatus,
-            NewValue => 'open',
-            Data     => 'Ticket auto-opened on incoming correspondence'
+                         Type     => 'Set',
+                         Field    => 'Status',
+                         OldValue => $oldstatus,
+                         NewValue => 'open',
+                         Data => 'Ticket auto-opened on incoming correspondence'
         );
     }
 
     unless ($Trans) {
-        $RT::Logger->err($self->loc("[_1] couldn't init a transaction ([_2])\n", $self, $msg) );
+        $RT::Logger->err( "$self couldn't init a transaction $msg");
         return ( $Trans, $self->loc("correspondence (probably) not sent"),
-            $args{'MIMEObj'} );
+                 $args{'MIMEObj'} );
     }
 
     #Set the last told date to now if this isn't mail from the requestor.

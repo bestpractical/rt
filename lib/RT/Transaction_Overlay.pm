@@ -103,6 +103,11 @@ sub Create {
         $PossibleScrips->LimitToQueue( $TicketAsSystem->QueueObj->Id )
           ;                                  #Limit it to  $Ticket->QueueObj->Id
         $PossibleScrips->LimitToGlobal();    # or to "global"
+
+
+        $PossibleScrips->Limit(FIELD => "Stage", VALUE => "TransactionCreate");
+
+
         my $ConditionsAlias = $PossibleScrips->NewAlias('ScripConditions');
 
         $PossibleScrips->Join(

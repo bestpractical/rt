@@ -1,0 +1,102 @@
+# (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# This software is redistributable under the terms of the GNU GPL
+
+=head1 NAME
+
+  RT::Search::Generic - ;
+
+=head1 SYNOPSIS
+
+    use RT::Search::Generic;
+    my $tickets = RT::Tickets->new($CurrentUser);
+    my $foo = RT::Search::Generic->new(Argument => $arg,
+                                       TicketsObj => $tickets);
+    $foo->Prepare();
+    while ( my $ticket = $foo->Next ) {
+        # Do something with each ticket we've found
+    }
+
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+
+=begin testing
+
+ok (require RT::Search::Generic);
+
+=end testing
+
+
+=cut
+
+package RT::Search::Generic;
+
+
+# {{{ sub new 
+sub new  {
+  my $proto = shift;
+  my $class = ref($proto) || $proto;
+  my $self  = {};
+  bless ($self, $class);
+  $self->_Init(@_);
+  return $self;
+}
+# }}}
+
+# {{{ sub _Init 
+sub _Init  {
+  my $self = shift;
+  my %args = ( 
+           TicketsObj => undef,
+	       Argument => undef,
+	       @_ );
+  
+  $self->{'TicketsObj'} = $args{'TicketsObj'}; 
+  $self->{'Argument'} = $args{'Argument'};
+}
+# }}}
+
+# {{{ sub Argument 
+
+=head2 Argument
+
+Return the optional argument associated with this Search
+
+=cut
+
+sub Argument  {
+  my $self = shift;
+  return($self->{'Argument'});
+}
+# }}}
+
+
+=head2 TicketsObj 
+
+Return the Tickets object passed into this search
+
+=cut
+
+sub TicketsObj {
+    my $self = shift;
+    return($self->{'TicketsObj'});
+}
+
+# {{{ sub Describe 
+sub Describe  {
+  my $self = shift;
+  return ($self->loc("No description for [_1]", ref $self));
+}
+# }}}
+
+# {{{ sub Prepare
+sub Prepare  {
+  my $self = shift;
+  return(1);
+}
+# }}}
+
+1;
