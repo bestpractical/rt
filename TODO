@@ -1,7 +1,6 @@
-RT Todo List
+RT Todo List for 1.1
 
-. Reporting Scripts
-
+. Reporting Scripts in mainline distribution
 . Move request display into rtq
 . Allow sub-requests.
 . Web interface for requestors.
