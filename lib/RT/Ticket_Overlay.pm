@@ -2788,6 +2788,10 @@ sub MergeInto {
 
     }
 
+    # Update time fields
+    $NewTicket->SetTimeEstimated(($NewTicket->TimeEstimated || 0) + ($self->TimeEstimated || 0));
+    $NewTicket->SetTimeWorked(   ($NewTicket->TimeWorked || 0)    + ($self->TimeWorked || 0));
+    $NewTicket->SetTimeLeft(     ($NewTicket->TimeLeft || 0)      + ($self->TimeLeft || 0));   
 
     #add all of this ticket's watchers to that ticket.
     my $requestors = $self->Requestors->MembersObj;
