@@ -32,6 +32,21 @@ sub _Init  {
 
 # }}}
 
+# {{{ _PrimaryKeys
+
+=head2 _PrimaryKeys
+
+The primary keys for RT classes is 'id'
+
+=cut
+
+sub _PrimaryKeys {
+    my $self = shift;
+    return(['id']);
+}
+
+# }}}
+
 # {{{ sub _MyCurrentUser 
 
 sub _MyCurrentUser  {
