@@ -75,12 +75,12 @@ foreach $key (keys %ARGS) {
     my $id = $1;
     my $scrip = new RT::Scrip($session{'CurrentUser'});
     $scrip->Load($id);
-    my $retval = $scrip->Delete;
+    my ($retval, $msg) = $scrip->Delete;
     if ($retval) {
       push @actions, "Scrip deleted";
     }
     else {
-      push @actions, "Scrip could not be deleted";
+      push @actions, $msg;
     }
   }
   # }}}
