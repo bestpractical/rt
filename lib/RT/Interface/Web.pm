@@ -508,6 +508,7 @@ sub MakeMIMEEntity {
             Subject => $args{'Subject'} || "",
             From    => $args{'From'},
             Cc      => $args{'Cc'},
+            Charset => 'utf8',
             Data    => [ $args{'Body'} ]
         );
     }
