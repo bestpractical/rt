@@ -46,7 +46,7 @@ $r->content_type('text/xml');
 
 my $entries = '';
 
-my $now = RT::Date->new;
+my $now = RT::Date->new($session{CurrentUser});
 $now->SetToNow;
 my $modified = $now->W3CDTF;
 

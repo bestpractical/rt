@@ -40,7 +40,6 @@ my $headerParts = sub {
 	$v =~ s/"$//;
 	$parts{lc($k)} = $v;
     }
-    $RT::Logger->error(join(',', %parts));
     $parts{lc($_)} = delete $parts{$_} for map "$_", keys %parts;
     return \%parts;
 };
@@ -101,24 +100,22 @@ AUTH_WSSE: {
     $CurrentUser->Load($username) or last;
 
     # check against reused nonces
+    require MIME::Base64;
+    $auth_nonce = MIME::Base64::decode_base64($auth_nonce);
+
     my $nonce_cache;
-    if ($auth_nonce) {
-	require Cache::FileCache;
-	$nonce_cache = Cache::FileCache->new({
-	    namespace => 'RT-Nonces',
-	    default_expires_in => 1728000,
-	    auto_purge_interval => 3600,
-	});
-        $auth_nonce = substr($auth_nonce, 0, 32);
-        last if $nonce_cache->get( $auth_nonce );
-    }
+    require Cache::FileCache;
+    $nonce_cache = Cache::FileCache->new({
+	namespace => 'RT-Nonces',
+	default_expires_in => 1728000,
+	auto_purge_interval => 3600,
+    });
+    $auth_nonce = substr($auth_nonce, 0, 32);
+    (undef($CurrentUser), last) if $nonce_cache->get( $auth_nonce );
 
     # if ($auth_created and abs($auth_created - time) >= 864000) {
     #	last; # system clock differ by more than one day, oops!
     # }
-
-    require MIME::Base64;
-    $auth_nonce = MIME::Base64::decode_base64($auth_nonce);
 
     $CurrentUser->Authenticate(
 	$auth_digest, $auth_created, $auth_nonce, $realm
@@ -129,7 +126,7 @@ AUTH_WSSE: {
 }
 
 if (!$CurrentUser or !$CurrentUser->Id) {
-    $m->comp('Error/index', Status => 401);
+    return $m->comp('Error/index', Status => 401);
 }
 
 $session{CurrentUser} = $CurrentUser;
