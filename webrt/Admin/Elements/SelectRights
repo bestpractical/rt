@@ -3,13 +3,13 @@
 <TR>
 <TD valign=top>
 <h3>New rights</h3> 
-    <SELECT SIZE=5  MULTIPLE  NAME="GrantACE-<%$ACLDesc%>">
-            
+<SELECT SIZE=5  MULTIPLE  NAME="GrantACE-<%$ACLDesc%>">
 % foreach $right (sort keys %Rights) {
       <OPTION VALUE="<%$right%>"  
 	><%$right%></OPTION>
 % }
-    </SELECT>
+<OPTION VALUE="" SELECTED>(no value)</OPTION>
+</SELECT>
 </TD>
 <TD valign=top> 
 <h3>Current rights</h3>
