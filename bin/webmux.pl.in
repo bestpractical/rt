@@ -122,6 +122,9 @@ my $ah = &RT::Interface::Web::NewApacheHandler() if $CGI::MOD_PERL;
 sub handler {
     ($r) = @_;
 
+    local $SIG{__WARN__};
+    local $SIG{__DIE__};
+
     RT::Init();
 
     # We don't need to handle non-text items
