@@ -28,9 +28,23 @@ my %args = ( ENTRYAGGREGATOR => 'AND',
 sub LimitToTicket { 
   my $self = shift;
   my $ticket = shift;
-  $self->Limit( FIELD => 'Ticket',
-		VALUE => "$ticket");
-  
+  $self->Limit( ENTRYAGGREAGTOR => 'AND',
+		FIELD => 'Value',
+		VALUE => $ticket);
+  $self->Limit (ENTRYAGGREGATOR => 'AND',
+		FIELD => 'Scope',
+		VALUE => 'Ticket');
+}
+
+sub LimitToQueue {
+  my $self = shift;
+  my $queue = shift;
+  $self->Limit (ENTRYAGGREGATOR => 'AND',
+		FIELD => 'Value',
+		VALUE => "$queue")
+  $self->Limit (ENTRYAGGREGATOR => 'AND',
+		FIELD => 'Scope',
+		VALUE => 'Queue');
 }
 
 sub LimitToType {
