@@ -4,12 +4,49 @@
 
 %# This template is for deleting and adding watchers to a ticket.
 
-<& /Elements/Header, Title => "Edit Ticket Watchers (#".$Ticket->Id.")" &>
+<& /Elements/Header, Title => "Edit Watchers for Ticket #".$Ticket->Id &>
+
+<a href="Display.html?id=<%$id%>">Back to ticket display (#<%$Ticket->id%>, <%$Ticket->Subject || "[no subject]"%>)</a>
+
+<h1>Requestor(s)</h1> The Requestor is usually only the one person
+that initiated the Ticket, but more requestors can be added.  The
+Requestor(s) will (dependent on the RT configuration) get
+correspondance sent <i>to</i> them.  With the default RT
+configuration, RT should be transparent to the requestor(s).  Be aware
+that things might go a bit wrong when multiple requestors and/or Ccs
+are used; persons replying to mail might typically send reply to all
+receipients - which is bad because RT might duplicate the reply to
+those persons.
+<& /Ticket/Elements/EditWatcherList, Ws=>$Requestors, Type=>'Requestor', Domain=>'Ticket', id=>$id &>
+
+<h1>Carbon/Courtesy Copies</h1> 
+In RT2, a Cc watcher is principially the same as a requestor, only that they will be listed on the Cc line in the emails sent.  
+<& /Ticket/Elements/EditWatcherList, Ws=>$Ccs, Type=>'Cc', Domain=>'Ticket', id=>$id &>
+
+<h1>Admin Ccs</h1> 
+The Admin Cc is typically some person witch is familiar with RT.  He
+will either be a bcc receipient on mail sent by RT, or he will get
+private copies, often with extended information from RT.
+<& /Ticket/Elements/EditWatcherList, Ws=>$AdminCcs, Type=>'AdminCc', Domain=>'Ticket', id=>$id &>
+
+<h1>Queue Watchers for <%$Queue->QueueId%></h1>
+<table><th>Ccs<th>AdminCcs<tr>
+<td><& /Ticket/Elements/EditWatcherList, Ws=>$QCc, Type=>'Cc', Domain=>'Queue', id=>$id &></td>
+<td><& /Ticket/Elements/EditWatcherList, Ws=>$QBcc, Type=>'AdminCc', Domain=>'Queue', id=>$id &></td>
+</table>
 
 <%ARGS>
 $id => undef
+$action => undef
+$watcher => undef
+$RealName => undef
+$Address => undef
+$WType => undef
+$Domain => 'Ticket'
 </%ARGS>
+
 <%INIT>
+require RT::Ticket;
 
 my $Ticket = RT::Ticket->new($session{'CurrentUser'});
 # Can we load it?
@@ -19,4 +56,38 @@ unless ($Ticket->Load($id)) {
     $m->abort;
 }
 
+my $Queue=$Ticket->QueueObj;
+
+my $Requestors=$Ticket->Requestors;
+my $Ccs=$Ticket->Cc;
+my $AdminCcs=$Ticket->AdminCc;
+
+my $QCc=$Queue->Cc;
+my $QBcc=$Queue->AdminCc;
+
+if ($action) {
+   my $Watcher;
+   if ($watcher) {
+     $Watcher=RT::Watcher->new($session{CurrentUser});
+     $Watcher->Load($watcher) or die "Can't load watcher item";
+   }
+   if ($action eq "update") {
+     die "No watcher to modify" unless $Watcher;
+     $Watcher->SetEmail($Address);
+   } elsif ($action eq "delete") {
+     die "No watcher to delete" unless $Watcher;
+     $Watcher->Delete;
+   } elsif ($action eq "add") {
+     my $d=eval "\$$Domain";
+     die "Domain $Domain didn't eval" unless $d;
+     $d->AddWatcher(Type => $WType, Email => $Address, Name => $Address);
+   }
+}
+
 </%INIT>
+
+
+
+
+
+

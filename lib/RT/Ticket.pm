@@ -228,6 +228,8 @@ If the watcher you\'re trying to set has an RT account, set the Owner paremeter 
 
 =cut
 
+# TODO: Watchers might want to be notified when they're added or
+# removed (both to tickets and queues) -- Tobix
 
 sub AddWatcher {
   my $self = shift;
@@ -483,7 +485,7 @@ sub Requestors {
 # }}}
 
 # {{{ sub Cc
-# (see also AdminCc comments)
+# (see AdminCc comments!)
 sub Cc {
   my $self = shift;
 
@@ -668,6 +670,8 @@ sub Queue {
   }
   return ($self->{'queue'});
 }
+
+*QueueObj=\&Queue;
 
 # }}}
 

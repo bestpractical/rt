@@ -43,8 +43,12 @@ sub Create  {
     if (!$Owner && $User->LoadByEmail($args{Email})) {
 	$args{Owner}=$User->id;
 	delete $args{Email};
-    } elsif (!$Owner && $args{Name} && $User->LoadByName($args{Name})) {
+    } elsif (!$Owner && exists $args{Name} && $User->LoadByName($args{Name})) {
 	$args{Owner}=$User->id;
+    }
+    delete $args{Name} if exists $args{Name};
+    if ($args{Email} !~ /\@/ && $args{Email} && $args{Owner}) {
+	delete $args{Email};
     }
     # }}}
   
