@@ -516,6 +516,9 @@ sub Description  {
 		    " to ".$self->NewValue." by ". $self->CreatorObj->Name);
 	}	
     }
+    elsif ($self->Type eq 'PurgeTransaction') {
+	return ("Transaction ".$self->Data. " purged by ".  $self->CreatorObj->Name );
+    }
     else {
 	return ("Generic: ". $self->Type ."/". $self->Field . 
 		" changed from " . $self->OldValue . 
