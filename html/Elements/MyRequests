@@ -23,9 +23,13 @@
 %# END LICENSE BLOCK
 <&|/Elements/TitleBox, title => loc('[_1] highest priority tickets I requested', $rows) &>
 <& /Elements/TicketList, 
-        Title => loc("[_1] highest priority tickets I requested...", $rows),
-        Format => "'<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, OwnerName",
-        Query => "Requestor = '".$session{'CurrentUser'}->EmailAddress."' AND ( Status = 'new' OR Status = 'open')",
+        Title => loc("[_1] newest unowned tickets...", $rows),
+        Format => "'<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"$RT::WebPath/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus",
+        Query => "Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
+        OrderBy => 'Created',
+        Order => 'DESC',
+        ShowNavigation => 0,
+        Rows => $rows
 
         &>
 </&>
