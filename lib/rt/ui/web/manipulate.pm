@@ -241,7 +241,7 @@ sub frame_display_request {
   
     &rt::ui::web::content_header();
     print "
-<frameset rows=\"20,80\" name=\"body\" border=\"0\">
+<frameset rows=\"35,65\" name=\"body\" border=\"0\">
 <frameset cols=\"45,55\" name=\"reqtop\" border\"0\">
 <frame src=\"$ScriptURL?display=ReqOptions&amp;serial_num=$serial_num\" name=\"req_buttons\" scrolling=\"no\">
 <frame src=\"$ScriptURL?serial_num=$serial_num\" name=\"summary\">
@@ -536,11 +536,17 @@ sub display_queue {
   
   
   $count=&rt::get_queue($query_string,$current_user);
+
+  #we subtract 1 from the refresh rate so that the default value is -1..which 
+  #means never refresh...as 0 should...but 0 means refresh now.
+  $rt::ui::web::FORM{'refresh'} =   $rt::ui::web::FORM{'refresh'}-1;
   print "<!-- Query String 
 $query_string
 -->
 <font size=$QUEUE_FONT>
 <TABLE cellpadding=4 border=1 width=100% bgcolor=\"\#bbbbbb\">
+<META HTTP-EQUIV=\"REFRESH\" CONTENT=\"". $rt::ui::web::FORM{'refresh'}."\">
+
 <TR>
        <TH><FONT SIZE=-1>Ser</FONT></TH>
        <TH><FONT SIZE=-1>Queue</FONT></TH>
@@ -674,8 +680,8 @@ sub display_history_tables {
     $bgcolor="\#AA0000" if ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'date_due');	
     
     print "	 
-<TR bgcolor=\"$bgcolor\" height=40>
-<td><img src=\"/webrt/endcap.gif\" alt='(' ></td>
+<TR bgcolor=\"$bgcolor\" height=25>
+<td><img src=\"/webrt/endcap.gif\" height=30 alt='(' ></td>
 <TD align=\"left\" valign=\"center\"  width=\"15%\">
 <font color=\"\#ffffff\" size=\"-1\">
 $date

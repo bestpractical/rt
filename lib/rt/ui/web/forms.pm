@@ -7,7 +7,7 @@ package rt::ui::web;
 
 sub FormQueueOptions{
     local($^W) = 0; # Lots of form fields that may or may not exist give bogus errors
-    print "<form action=\"$ScriptURL\" method=\"post\"";
+    print "<form action=\"$ScriptURL\" method=\"get\"";
     if ($frames){
         print "target=\"queue\"";
     }
@@ -123,7 +123,33 @@ sub FormQueueOptions{
 <br>
 </font>
 </td><td valign=\"top\">
+Refresh <SELECT name=\"refresh\">
+<OPTION VALUE=0 ";
+	if ($rt::ui::web::FORM{'refresh'} == -1 ) { print "SELECTED ";}
+        print "> Never";
+
+	print "<OPTION VALUE=60 ";
+        if ($rt::ui::web::FORM{'refresh'} == 59 ) { print "SELECTED " ;}
+        print "> every 1 minute";
+
+	print "<OPTION VALUE=600 ";
+        if ($rt::ui::web::FORM{'refresh'} == 599 ) { print "SELECTED " ;}
+        print "> every 10 minutes";
+
+	print "<OPTION VALUE=1800 ";
+        if ($rt::ui::web::FORM{'refresh'} == 1799 ) { print "SELECTED "; }
+        print "> every 30 minutes";
+
+	print "<OPTION VALUE=3600 ";
+        if ($rt::ui::web::FORM{'refresh'} == 3599 ) { print "SELECTED "; }
+        print "> every hour";
+
+		
+
+print"
+</select>
 </td></tr></table>
+
 </td><td><B>
 <center><input type=\"submit\" value =\"Refresh Queue\"></center>
 </B></td></tr>
@@ -206,7 +232,7 @@ sub FormSetSubject{
 <form action=\"$ScriptURL\" method=\"post\">
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
 <input type=\"submit\" value =\"Set \#$serial_num\'s subject to\">
-<font size=\"-1\">
+<font size=\"$MESSAGE_FONT\">
 <input type=\"hidden\" name=\"do_req_subject\" value=\"true\">
 <input size=25 name=\"subject\" VALUE=\"$rt::req[$serial_num]{'subject'}\">
 </font>
@@ -359,7 +385,7 @@ From:     $rt::users{$current_user}{email}
 Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
 </pre>
 <input type=\"hidden\" name=\"do_req_respond\" value=\"true\">
-<font size=\"-1\">
+<font size=\"$MESSAGE_FONT\">
 <br><textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
@@ -505,7 +531,7 @@ Bcc:	 <input name=\"bcc\">
 </pre>
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
 <input type=\"hidden\" name=\"do_req_comment\" value=\"true\">
-<br><font size=\"-1\">
+<br><font size=\"$MESSAGE_FONT\">
 <textarea rows=15 cols=70 name=\"content\" WRAP=HARD>
 $reply_content
 </textarea>
