@@ -25,7 +25,7 @@
 <ul>
 % while (my $v = $values->Next) {
 <li>
-<font size=-1 color="#336699"><%$v->SortOrder%>:</font>
+<INPUT TYPE="text" SIZE="2" NAME="CustomField-<%$CustomField->Id%>-SortOrder<%$v->Id()%>" VALUE="<%$v->SortOrder()%>">
 <input type="checkbox" name="CustomField-<%$CustomField->Id%>-DeleteValue" value="<%$v->id%>">
 <%$v->Name%>
 % if ($v->Description) {

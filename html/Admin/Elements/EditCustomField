@@ -24,7 +24,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<FORM METHOD=GET ACTION="CustomField.html">
+<FORM METHOD=POST ACTION="CustomField.html">
 <INPUT TYPE=HIDDEN NAME="CustomField" VALUE="<%$id %>">
 <INPUT TYPE=HIDDEN name="Queue" value="<%$Queue%>">
 

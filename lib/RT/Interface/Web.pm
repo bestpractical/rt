@@ -1007,6 +1007,17 @@ sub ProcessCustomFieldUpdates {
         my ( $err, $msg ) = $Object->DeleteValue($id);
         push ( @results, $msg );
     }
+
+    my $vals = $Object->Values();
+    while (my $cfv = $vals->Next()) {
+        if (my $so = $ARGSRef->{ 'CustomField-' . $Object->Id . '-SortOrder' . $cfv->Id }) {
+            if ($cfv->SortOrder != $so) {
+                my ( $err, $msg ) = $cfv->SetSortOrder($so);
+                push ( @results, $msg );
+            }
+        }
+    }
+
     return (@results);
 }
 
