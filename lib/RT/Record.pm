@@ -163,6 +163,13 @@ sub _Set  {
 # }}}
 
 # {{{ sub Creator 
+
+=head2 Creator and CreatorObj
+
+Returns an RT::User object with the RT account of the creator of this row
+=cut
+*CreatorObj = \&Creator;
+
 sub Creator  {
   my $self = shift;
   if (!$self->{'creator'}) {

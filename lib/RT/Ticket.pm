@@ -92,7 +92,7 @@ sub Create {
 	      RequestorEmail => undef,
 	      Alias => undef,
 	      Type => undef,
-	      Owner => $RT::Nobody->UserObj,
+	      Owner => undef,
 	      Subject => undef,
 	      InitialPriority => 0,
 	      FinalPriority => 0,
@@ -804,6 +804,8 @@ $time_obj->Set(Format => 'ISO', Value => $value);
 else {
 $time_obj->SetToNow();
 }
+#Now that we're starting, open this ticket
+$self->Open;
 return ($self->_Set('Started', $time_obj->ISO));
 
 }
@@ -1367,7 +1369,7 @@ sub SetOwner {
   #If thie ticket has an owner and it's not the current user
 
   if (($Type ne 'Steal' ) and  #If we're not stealing
-      ($self->Owner->Id != $RT::Nobody-UserObj->Id ) and  #and the owner is set
+      ($self->Owner->Id != $RT::Nobody->Id ) and  #and the owner is set
       ($self->CurrentUser->Id ne $self->Owner->Id())) { #and it's not us
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
@@ -1452,10 +1454,11 @@ sub SetStatus {
   my $self = shift;
   my $status = shift;
   my $action = 
-      $status eq 'open' ? 'Open' :
-      $status eq 'stalled' ? 'Stall' :
-      $status eq 'resolved' ? 'Resolve' :
-	$status eq 'dead' ? 'Kill' : 'huh?';
+      $status =~ 'new' ? 'New' :
+      $status =~ 'open' ? 'Open' :
+      $status =~ 'stalled' ? 'Stall' :
+      $status =~ 'resolved' ? 'Resolve' :
+	$status =~ 'dead' ? 'Kill' : 'huh?';
   
   if ($action eq 'huh?') {
     return (0,"That status is not valid.");

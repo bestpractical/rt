@@ -1,6 +1,7 @@
 %# $Header$
 <SELECT NAME ="<%$Name%>">
 <OPTION VALUE="" SELECTED><%$Default%>
+<OPTION VALUE="new">new
 <OPTION VALUE="open" >open
 <OPTION VALUE="stalled" >stalled
 <OPTION VALUE="resolved" >resolved

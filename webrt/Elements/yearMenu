@@ -9,6 +9,7 @@ $max - Maximum year appearing in menus; defaults to $min plus 10.
 -------------------------------------------------------------------</%doc>
 
 <select name="<% $menu_name %>">
+<option value="-1">-
 % foreach my $year ($min..$max) {
 <option value="<% $year %>" <% $year==$current ? "selected" : "" %>>
 <% $year %>

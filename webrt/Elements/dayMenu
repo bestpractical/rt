@@ -7,6 +7,7 @@ $current - Selected day value (1 to 31)
 -------------------------------------------------------------------</%doc>
 
 <select name="<% $menu_name %>">
+<option value="-1">-
 % foreach my $day (1..31) {
 <option value="<% $day %>" <% $day==$current ? "selected" : "" %>><% sprintf("%02d",$day) %>
 % }

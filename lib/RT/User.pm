@@ -405,6 +405,14 @@ sub _HasRight {
 		$RT::Logger->debug ("Disabled User:  ".$self->UserId." failed access check for ".$args{'Right'}." to object ".$args{'Scope'}."/".$args{'AppliesTo'}."\n");
 		return (undef);
 	}
+
+	#If we've cached a win or loss for this lookup say so
+	#TODO Security +++ check to make sure this is complete and right
+	if (defined ($self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"})) {
+	    
+	    return  ($self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"});
+	}
+
 	my $RightClause = "(Right = '$args{'Right'}')";
 	
 	my $ScopeClause = "(Scope = '$args{'Scope'}')";
@@ -444,16 +452,22 @@ sub _HasRight {
 	$hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_1);
   
 	#if there's a match, the right is granted
-	return (1) if ($hitcount);
+	if ($hitcount) {
+	    $self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"}=1;
+	    return (1);
+	}
 #	$RT::Logger->debug("No ACL matched $query_string_1\n");	
 	
 
 	
 	$hitcount = $self->{'DBIxHandle'}->FetchResult($query_string_2);
-	return (1) if ($hitcount);
-
+	if ($hitcount) {
+	    $self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"}=1;
+	    return (1);
+	}
+		
 	$RT::Logger->debug("No ACL matched $query_string_2\n")	;
-	
+	$self->{'rights'}->{"$args->{'Right'}"}->{"$args->{'Scope'}"}->{"$args{'AppliesTo'}"}=0;
 	return(0);
 }
 

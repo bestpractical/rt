@@ -13,6 +13,7 @@ $format - Choice of month labels:
 -------------------------------------------------------------------</%doc>
 
 <select name="<% $menu_name %>">
+<option value="-1">-
 % foreach my $month (1..12) {
 <option value="<% $month %>" <% $month==$current ? "selected" : "" %>>
 %   if ($format eq 'full') {
