@@ -1,0 +1,217 @@
+<html>
+ <head>
+<title>RTFM 2.0 Schema</title>
+</head>
+<body>
+
+<h1>FM_Articles</h1>
+ <h2>Fields:</h2>
+ <dl><dt>
+  id INTEGER NOT NULL  AUTO_INCREMENT
+  </dt>
+<dd></dd>
+<dt>
+  Name varchar(255) NULL  
+  </dt>
+<dd></dd>
+<dt>
+  Summary varchar(255) NULL  
+  </dt>
+<dd>A brief summary of this article</dd>
+<dt>
+  SortOrder integer NULL  
+  </dt>
+<dd></dd>
+<dt>
+  Class integer NULL
+  </dt>
+<dd>Foreign key to <b>FM_Classes</b></dd>
+<dt>
+  URI varchar(255)
+  </dt>
+<dd>A cached copy of this article's URI. Used to speed article relationship searches.</dd>
+
+</dl>
+
+  An "Article" is RTFM's central element. Each article belongs to
+  one and only one "Class".
+
+  Adtitionally, articles can have a number of "ArticleCFValues" which
+  correspond to the "CustomFields" for the Article's class.
+
+<h1>FM_Classes</h1>
+ <h2>Fields:</h2>
+ <dl><dt>
+  id INTEGER NOT NULL  AUTO_INCREMENT
+  </dt>
+<dd></dd>
+<dt>
+  Name varchar(255) NULL  
+  </dt>
+<dd></dd>
+<dt>
+  Description varchar(255) NULL  
+
+  </dt>
+<dd></dd>
+<dt>
+  SortOrder integer NULL  
+  </dt>
+<dd>Used to automatically order classes in listings</dd>
+<dt>
+  Disabled int(2) not null default '0'
+  </dt>
+<dd>Boolean used to determine whether this class is currently active</dd>
+
+</dl>
+
+       <p> Classes are an analog to RT's "Queue."  
+        
+
+       <p> Within RTFM, rights to a class and all articles within that class can be granted to an RT user or group, using RT's ACL system.  Class objects contain the necessary metadata to be ACLed within RT.
+
+FM_CustomFields
+ <h2>Fields:</h2>
+ <dl><dt>
+  id INTEGER NOT NULL  AUTO_INCREMENT
+  </dt>
+<dd></dd>
+<dt>
+  Name varchar(200) NULL  
+  </dt>
+<dd></dd>
+<dt>
+  Type varchar(200) NULL  
+  </dt>
+<dd>A custom field's type determines its behaviour. Available types are: 
+SelectSingle SelectMultiple FreeformSingle FreeformMultiple TextSingle
+</dd>
+<dt>
+  Description varchar(200) NULL  
+  </dt>
+<dd>A freeform description for this custom field</dd>
+<dt>
+  SortOrder integer NULL  
+  </dt>
+<dd></dd></dl>
+
+<p>Almost all data and metadata related to an "Article" is attached to it in the form of CustomFields. 
+
+
+
+<p>Within RTFM, rights to a CustomField can be granted to an RT user or group, using RT's ACL system.  Class objects contain the necessary metadata to be ACLed within RT.
+
+
+<h1>FM_ClassCustomFields</h1>
+ <h2>Fields:</h2>
+ <dl><dt>
+  id INTEGER NOT NULL  AUTO_INCREMENT
+ </dt>
+<dd></dd>
+<dt>
+  Class integer not NULL  
+ </dt>
+<dd>Foreign key to FM_Class.id</dd>
+<dt>
+  CustomField integer not NULL  
+</dt>
+<dd>Foreign key to FM_CustomFields.id </dd>
+</dl>
+
+<p>ClassCustomFields is a simple mapping table that allows a single CustomField to apply to more than one Class.
+
+<h1>FM_CustomFieldValues</h1>
+ <h2>Fields:</h2>
+ <dl><dt>
+  id INTEGER NOT NULL  AUTO_INCREMENT
+ </dt>
+<dd></dd>
+<dt>
+  CustomField int NOT NULL  
+ </dt>
+<dd>Foreign key to FM_CustomFields.id </dd>
+<dt>
+  Name varchar(255) NULL  
+ </dt>
+<dd></dd>
+<dt>
+  Description varchar(255) NULL  
+ </dt>
+<dd></dd>
+<dt>
+  SortOrder integer NULL  
+  </dt>
+<dd></dd>
+</dl>
+
+
+
+        <p>CustomFieldValues contains a list of acceptable values for each SelectSingle or SelectMultiple CustomField.
+
+<h1>ArticleCFValues</h1>
+ <h2>Fields:</h2>
+ <dl><dt>
+  id INTEGER NOT NULL  AUTO_INCREMENT
+ </dt>
+<dd></dd>
+<dt>
+  Article int NOT NULL  
+ </dt>
+<dd>Foreign key to FM_Articles.id</dd>
+<dt>
+  CustomField int NOT NULL  
+ </dt>
+<dd>Foreign key to FM_CustomFields.id</dd>
+<dt>
+  Content text
+  </dt>
+<dd></dd></dl>
+	
+	<p>ArticleCFValues contains a list of current values for each applicable CustomField for each article.
+	To ensure data integrity, even as the "current" acceptable values for a Custom Field change, Article Custom Field Values
+	are stored by value, rather than by reference in the ArticleCFValues table. This has the adted benefit of allowing "Select" custom fields
+	to be converted to "Freeform" custom fields without losing data.
+
+        
+
+<h1>FM_Transactions</h1>
+ <h2>Fields:</h2>
+ <dl><dt>
+  id INTEGER NOT NULL  AUTO_INCREMENT
+ </dt>
+<dd></dd>
+<dt>
+  Article integer NULL  
+ </dt>
+<dd>Foreign key to FM_Articles.id</dd>
+<dt>
+  ChangeLog text NULL  
+ </dt>
+<dd>A textual description of the content of this change</dd>
+<dt>
+  Type varchar(64) NULL  
+ </dt>
+<dd>What sort of field is being changed. One of Link, Core, Custom</dd>
+<dt>
+  CustomField int NULL  
+ </dt>
+<dd>Weak foreign key to FM_CustomFields.id. Only valid if Type is "Custom"</dd>
+<dt>
+  OldContent text NULL  
+ </dt>
+<dd>The old value of the field in question</dd>
+<dt>
+  NewContent text NULL  
+  </dt>
+<dd>The new value of the field in question</dd></dl>
+        
+
+
+
+       <p>Each transaction describes a single update to an "Article".
+
+
+
+
+</body>
+</html>	

@@ -1,0 +1,6 @@
+<%init>
+use RT::FM::ArticleCollection;
+use RT::FM::ClassCollection;
+use RT::FM::CustomFieldCollection;
+$m->call_next();
+</%init>

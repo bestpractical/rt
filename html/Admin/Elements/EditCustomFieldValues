@@ -1,0 +1,41 @@
+<tr>
+<td><&|/l&>(Delete)</&></td>
+<td><&|/l&>Sort Order</&></td>
+<td><&|/l&>Name</&> / <&|/l&>Description</&></td>
+</tr>
+% if ($values->Count) {
+<tr colspan=3>
+<td>
+<&|/l&>(no values</&>
+</td>
+</tr>
+% }
+% while (my $value = $values->Next) {
+<tr>
+<td rowspan=2 valign="middle">
+<input type="checkbox" name="Delete-CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>">
+</td>
+<td rowspan=2 valign="middle">
+<input size=3 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-SortOrder" value="<%$value->SortOrder%>">
+</td>
+<td>
+<input type="text" size=30 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Name" value="<%$value->Name%>">
+</td>
+</tr>
+<tr>
+
+<td>
+<font size="-1">
+<input type="text" size=50 name="CustomField-<%$CustomField->Id%>-Value-<%$value->Id%>-Description" value="<%$value->Description%>">
+</font>
+</td>
+</tr>
+% }
+<%init>
+
+my $values = $CustomField->ValuesObj();
+
+</%init>
+<%args>
+$CustomField => undef
+</%args>

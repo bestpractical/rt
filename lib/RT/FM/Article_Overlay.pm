@@ -365,9 +365,10 @@ use RT::Ticket;
 
 my $tick = RT::Ticket->new($RT::SystemUser);
 $tick->Load('1');
+ok ($tick->Id, "Found ticket 1");
+ok ($tick->URI =~ /\/1$/, "The ticket uri ends in /1");
 ($id, $msg) = $article_a->AddLink(Type => 'RefersTo', Target => $tick->URI);
 ok($id,$msg);
-
 
 # Find all tickets whhich refer to Article A
 
