@@ -104,13 +104,13 @@ sub add_transaction {
 
     if ($in_do_mail) {
       if (!&is_owner($in_serial_num,$in_current_user) and ($owner ne "") and ($queues{$queue_id}{m_owner_trans})){
-	&rt::template_mail ('transaction',$queue_id,$rt::users{$owner}{email}, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
+	&rt::template_mail ('transaction',$queue_id,$rt::users{$owner}{email},,, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
       }
       if ($queues{$queue_id}{m_members_trans}){
-	&rt::template_mail ('transaction',$queue_id,$queues{$queue_id}{dist_list}, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
+	&rt::template_mail ('transaction',$queue_id,$queues{$queue_id}{dist_list},,, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
     }
 	if ($queues{queue_id}{m_user_trans}){
-	  &rt::template_mail ('transaction',$queue_id,$requestors, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
+	  &rt::template_mail ('transaction',$queue_id,$requestors,,, "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
     }
       
       

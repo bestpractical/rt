@@ -1,4 +1,4 @@
-package RT_UI_Cli;
+package rt::ui::cli;
 
 sub question_string{
     local ($question,$default)=@_;

@@ -1,4 +1,4 @@
-package rt::ui::cli::admin;
+package rt::ui::cli::admin
 
 
 sub activate {
@@ -83,18 +83,18 @@ sub cli_acl_queue {
  sub cli_create_modify_user{
     my ($user_id)=@_;
     if (($current_user eq $user_id) or ($rt::users{$current_user}{admin_rt})) {
-	$email=&RT_UI_Cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,$rt::users{$user_id}{email});
-	$password=&RT_UI_Cli::question_string("RT Password (will echo)",$rt::users{$user_id}{password});
-	$phone=&RT_UI_Cli::question_string("Phone Number",$rt::users{$user_id}{phone});
-	$office=&RT_UI_Cli::question_string("Office Location",$rt::users{$user_id}{office});
-	$comments=&RT_UI_Cli::question_string("Misc info about this user",$rt::users{$user_id}{comments});
+	$email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,$rt::users{$user_id}{email});
+	$password=&rt::ui::cli::question_string("RT Password (will echo)",$rt::users{$user_id}{password});
+	$phone=&rt::ui::cli::question_string("Phone Number",$rt::users{$user_id}{phone});
+	$office=&rt::ui::cli::question_string("Office Location",$rt::users{$user_id}{office});
+	$comments=&rt::ui::cli::question_string("Misc info about this user",$rt::users{$user_id}{comments});
 	if ($rt::users{$current_user}{admin_rt}) {
-	    $admin_rt=&RT_UI_Cli::question_yes_no("Is this user the RT administrator",$rt::users{$user_id}{admin_rt});
+	    $admin_rt=&rt::ui::cli::question_yes_no("Is this user the RT administrator",$rt::users{$user_id}{admin_rt});
 	}
 	else {
 	    $admin_rt=0;
 	}
-	if(&RT_UI_Cli::question_yes_no("Are you satisfied with your answers",0)){
+	if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
 	    ($flag, $message)=&rt::add_modify_user_info($user_id, $password, $email, $phone, $office,$comments, $admin_rt, $current_user);
 	    print "$message\n";
 	}
@@ -112,20 +112,20 @@ sub cli_acl_queue {
 sub cli_create_modify_queue {
     my ($queue_id)=@_;
     my ($mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans,$m_members_correspond, $m_user_create, $m_members_comment, $allow_user_create,$default_prio, $default_final_prio);
-    $mail_alias=&RT_UI_Cli::question_string("Queue email alias (ex: support\@somewhere.com)" ,$rt::queues{$queue_id}{mail_alias});
-    $m_owner_trans=&RT_UI_Cli::question_yes_no("Mail request owner on transaction",$rt::queues{$queue_id}{m_owner_trans});
+    $mail_alias=&rt::ui::cli::question_string("Queue email alias (ex: support\@somewhere.com)" ,$rt::queues{$queue_id}{mail_alias});
+    $m_owner_trans=&rt::ui::cli::question_yes_no("Mail request owner on transaction",$rt::queues{$queue_id}{m_owner_trans});
     
-    $m_members_trans=&RT_UI_Cli::question_yes_no("Mail queue members on transaction",$rt::queues{$queue_id}{m_members_trans});
-    $m_user_trans=&RT_UI_Cli::question_yes_no("Mail requestors on transaction",$rt::queues{$queue_id}{m_user_trans});
+    $m_members_trans=&rt::ui::cli::question_yes_no("Mail queue members on transaction",$rt::queues{$queue_id}{m_members_trans});
+    $m_user_trans=&rt::ui::cli::question_yes_no("Mail requestors on transaction",$rt::queues{$queue_id}{m_user_trans});
 
-    $m_user_create=&RT_UI_Cli::question_yes_no("Autoreply to requestor on creation",$rt::queues{$queue_id}{m_user_create});
-    $m_members_correspond=&RT_UI_Cli::question_yes_no("Mail correspondence to queue members",$rt::queues{$queue_id}{m_members_correspond});
-    $m_members_comment=&RT_UI_Cli::question_yes_no("Mail queue members on comment",$rt::queues{$queue_id}{m_members_comment});
-    $allow_user_create=&RT_UI_Cli::question_yes_no("Allow non-queue members to create requests",$rt::queues{$queue_id}{allow_user_create});
-    $default_prio=&RT_UI_Cli::question_int("Default request priority (1-100)",$rt::queues{$queue_id}{default_prio});
-    $default_final_prio=&RT_UI_Cli::question_int("Default final request priority (1-100)",$rt::queues{$queue_id}{default_final_prio});
+    $m_user_create=&rt::ui::cli::question_yes_no("Autoreply to requestor on creation",$rt::queues{$queue_id}{m_user_create});
+    $m_members_correspond=&rt::ui::cli::question_yes_no("Mail correspondence to queue members",$rt::queues{$queue_id}{m_members_correspond});
+    $m_members_comment=&rt::ui::cli::question_yes_no("Mail queue members on comment",$rt::queues{$queue_id}{m_members_comment});
+    $allow_user_create=&rt::ui::cli::question_yes_no("Allow non-queue members to create requests",$rt::queues{$queue_id}{allow_user_create});
+    $default_prio=&rt::ui::cli::question_int("Default request priority (1-100)",$rt::queues{$queue_id}{default_prio});
+    $default_final_prio=&rt::ui::cli::question_int("Default final request priority (1-100)",$rt::queues{$queue_id}{default_final_prio});
     
-    if(&RT_UI_Cli::question_yes_no("Are you satisfied with your answers",0)){
+    if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
 	($flag, $message)=&rt::add_modify_queue_conf($queue_id, $mail_alias, $m_owner_trans, $m_members_trans, $m_user_trans, $m_user_create, $m_members_correspond, $m_members_comment, $allow_user_create, $default_prio, $default_final_prio, $current_user);
 	print "$message\n";
   }
@@ -137,7 +137,7 @@ sub cli_create_modify_queue {
 sub cli_delete_queue {
     my ($queue_id)=@_;
     # this function needs to ask about moving all requests into some other queue
-    if(&RT_UI_Cli::question_yes_no("Really DELETE queue $queue_id",0)){
+    if(&rt::ui::cli::question_yes_no("Really DELETE queue $queue_id",0)){
 	($flag, $message)=&rt::delete_queue($queue_id, $current_user);
 	print "$message\n";
     }
@@ -148,7 +148,7 @@ sub cli_delete_queue {
 
 sub cli_delete_user {
     my ($user_id)=@_;
-    if(&RT_UI_Cli::question_yes_no("Really DELETE user $user_id",0)){
+    if(&rt::ui::cli::question_yes_no("Really DELETE user $user_id",0)){
 	($flag, $message)=&rt::delete_user($user_id, $current_user);
 	print "$message\n";
     }
@@ -188,11 +188,11 @@ sub cli_user_acl {
     }
     
     elsif (!$in_privs) {
-	$display=&RT_UI_Cli::question_yes_no("Can this user access this queue",$rt::queues{$queue_id}{acls}{$user_id}{display});
+	$display=&rt::ui::cli::question_yes_no("Can this user access this queue",$rt::queues{$queue_id}{acls}{$user_id}{display});
 	if ($display) {
-	    $manipulate=&RT_UI_Cli::question_yes_no("Can this user manipulate requests in this queue",$rt::queues{$queue_id}{acls}{$user_id}{manipulate});
+	    $manipulate=&rt::ui::cli::question_yes_no("Can this user manipulate requests in this queue",$rt::queues{$queue_id}{acls}{$user_id}{manipulate});
 	    if ($manipulate) {
-		$admin=&RT_UI_Cli::question_yes_no("Is this user the administrator for this queue",$rt::queues{$queue_id}{acls}{$user_id}{admin});
+		$admin=&rt::ui::cli::question_yes_no("Is this user the administrator for this queue",$rt::queues{$queue_id}{acls}{$user_id}{admin});
 	    }
 	    else {
 		$admin=0;
@@ -203,7 +203,7 @@ sub cli_user_acl {
 	    $admin=0;
 	}
 
-	if (&RT_UI_Cli::question_yes_no("Are you satisfied with your answers",0)) {
+	if (&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)) {
 	    ($result,$message)=&rt::add_modify_queue_acl($queue_id, $user_id, $display, $manipulate, $admin, $current_user);
 	    print "$message\n";
 	}

@@ -39,11 +39,11 @@ sub add_new_request {
     $transaction_num=&add_transaction($serial_num, $in_current_user, 'create','',$in_content,$time,1,$in_current_user);
 
     if ($queues{$in_queue_id}{m_members_correspond}) {
-	&rt::template_mail ('correspondence',$in_queue_id,"$queues{$in_queue_id}{dist_list}", "$serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
+	&rt::template_mail ('correspondence',$in_queue_id,"$queues{$in_queue_id}{dist_list}",,, "$serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
     }
 
     if ( $queues{$in_queue_id}{m_user_create}) {
-	&rt::template_mail ('autoreply',$in_queue_id,"$in_requestors","$serial_num","$transaction_num","$in_subject","$in_current_user",'');
+	&rt::template_mail ('autoreply',$in_queue_id,"$in_requestors",,,"$serial_num","$transaction_num","$in_subject","$in_current_user",'');
     }
     
     return ($serial_num,$transaction_num,"Request #$serial_num created.");
@@ -110,16 +110,12 @@ sub import_request {
     # note the creation in the transaction log
     $transaction_num=&add_transaction($serial_num, $in_current_user, 'import','',$in_content,$time,1,$in_current_user);
 
-    if ($queues{$in_queue_id}{m_members_correspond}) {
-	&rt::template_mail ('correspondence',$in_queue_id,"$queues{$in_queue_id}{dist_list}", "$serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
-    }
-
     
     return ($serial_num,$transaction_num,"Request #$serial_num created.");
     }
 
 sub add_correspondence {
-    my  ($in_serial_num, $in_content, $in_subject, $in_current_user) = @_;
+    my  ($in_serial_num, $in_content, $in_subject, $in_cc, $in_bcc, $in_current_user) = @_;
     my ($transaction_num,$requestors);
     
     # is there a reason we might want to restrict comment access? I'd just as soon let
@@ -144,11 +140,11 @@ sub add_correspondence {
  #   if ( (&is_not_a_requestor($in_current_user,$in_serial_num))) {
     # for now, always send a copy to the user.
     ($notifytrans,$notifymsg)=&rt::update_request($in_serial_num,'date_told', $rt::time, $in_current_user);
-    $tem=&rt::template_mail('correspondence',$queue_id,"$requestors","$in_serial_num","$transaction_num","$in_subject","$in_current_user",'');
+    $tem=&rt::template_mail('correspondence', $queue_id, "$requestors", $in_cc, $in_bcc, "$in_serial_num", "$transaction_num", "$in_subject", "$in_current_user",'');
 #    }
     
     if ($queues{$queue_id}{m_members_correspond}) {
-	&rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}", "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
+	&rt::template_mail ('correspondence',$queue_id,"$queues{$queue_id}{dist_list}",,, "$in_serial_num" ,"$transaction_num","$in_subject", "$in_current_user",'');
     }
 
     return ($transaction_num,"This correspondence has been recorded.");
@@ -166,7 +162,7 @@ sub import_correspondence {
 }
 
 sub comment {
-    my  ( $in_serial_num, $in_content, $in_subject,$in_current_user) = @_;
+    my  ( $in_serial_num, $in_content, $in_subject, $in_cc, $in_bcc, $in_current_user) = @_;
     my ($transaction_num,$queue_id);
  
     if (!(&can_manipulate_request($in_serial_num,$in_current_user))) {
@@ -179,11 +175,11 @@ sub comment {
   
 
     if ($queues{$queue_id}{m_members_comment}) {
-	&template_mail('comment',$queue_id,"$queues{$queue_id}{dist_list}",$in_serial_num,$transaction_num,"$in_subject",$in_current_user,$in_content);
+	&template_mail('comment',$queue_id,"$queues{$queue_id}{dist_list}",$in_cc,$in_bcc,$in_serial_num,$transaction_num,"$in_subject",$in_current_user,$in_content);
 
     }
-    if (($queues{$queue_id}{m_owner_comment}) && ($req[$in_serial_num]{owner} ne '')) {
-	&template_mail('comment',$queue_id,"$req[$in_serial_num]{'owner'}",$in_serial_num,$transaction_num,"$in_subject",$in_current_user,$in_content);
+    elsif (($queues{$queue_id}{m_owner_comment}) && ($req[$in_serial_num]{owner} ne '')) {
+	&template_mail('comment', $queue_id, "$req[$in_serial_num]{'owner'}", $in_cc, $in_bcc, $in_serial_num, $transaction_num, "$in_subject", $in_current_user, $in_content);
 	
     }
     

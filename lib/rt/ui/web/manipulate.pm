@@ -361,10 +361,10 @@ sub takeaction {
 	}
 	
 	if ($rt::ui::web::FORM{'do_req_comment'}){
-	    ($trans, $StatusMsg)=&rt::comment($serial_num, $rt::ui::web::FORM{'content'},$rt::ui::web::FORM{'subject'}, $current_user);
+	    ($trans, $StatusMsg)=&rt::comment($serial_num, $rt::ui::web::FORM{'content'},$rt::ui::web::FORM{'subject'}, $rt::ui::web::FORM{'cc'} , $rt::ui::web::FORM{'bcc'}, $current_user);
 	}
 	if ($rt::ui::web::FORM{'do_req_respond'}){
-	    ($trans,$StatusMsg)=&rt::add_correspondence($serial_num,$rt::ui::web::FORM{'content'},$rt::ui::web::FORM{'subject'},$current_user);
+	    ($trans,$StatusMsg)=&rt::add_correspondence($serial_num,$rt::ui::web::FORM{'content'},$rt::ui::web::FORM{'subject'}, $rt::ui::web::FORM{'cc'}, $rt::ui::web::FORM{'bcc'}, $current_user);
 	}
 	if ($rt::ui::web::FORM{'do_req_date_due'}){
 	    $date_due=timelocal(0,0,0,$rt::ui::web::FORM{'due_mday'},$rt::ui::web::FORM{'due_month'},$rt::ui::web::FORM{'due_year'});
@@ -549,107 +549,106 @@ $query_string
 #    print "Num   !  Owner   Age     Told    Due     Status   User    Subject\n";
 #    print "<HR SIZE=1>";
 	&rt::ui::web::new_table("cellpadding=4 border=1 width=100% bgcolor=\"\#bbbbbb\""); {
+   print " 
+<TR>
+       <TH><FONT SIZE=-1>Ser</FONT></TH>
+       <TH><FONT SIZE=-1>Queue</FONT></TH>
+       <TH><FONT SIZE=-1>Owner</FONT></TH>
+       <TH><FONT SIZE=-1>Pri</FONT></TH>
+       <TH><FONT SIZE=-1>Status</FONT></TH>
+       <TH><FONT SIZE=-1>Told</FONT></TH>
+       <TH><FONT SIZE=-1>Area</FONT></TH>
+       <TH><FONT SIZE=-1>Age</FONT></TH>
+       <TH><FONT SIZE=-1>Due</FONT></TH>
+       <TH><FONT SIZE=-1>Requestor</FONT></TH>
+       <TH><FONT SIZE=-1>Subject</FONT></TH>
+ </TR>
+";
+
     for ($temp=0;$temp<$count;$temp++){
 
 
 
-	    &rt::ui::web::new_row; {
-		&rt::ui::web::new_col("rowspan=2 valign=center bgcolor=\"#bbbbbb\" align=center"); {
-		    
-		    print "
-<A href=\"$ScriptURL?serial_num=$rt::req[$temp]{'effective_sn'}";
-		    if($frames) {
-			print "&display=Request\" target=\"workspace\"";
-		    }
-		    else {
-			print "&display=History\"";
-		    }
-		    print "><font size=+3>$rt::req[$temp]{'serial_num'}</font></a>";
-		} &rt::ui::web::end_col;
+       if ($temp % 2) {
+               &rt::ui::web::new_row("bgcolor=\"ffffff\"");
+       } else {
+               &rt::ui::web::new_row("bgcolor=\"dddddd\"");
+       }
+       {
+               &rt::ui::web::new_col("nowrap"); {
 
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Queue");
-		    print "$rt::req[$temp]{'queue_id'}";
-		} &rt::ui::web::end_col;
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Area");
-		    print "$rt::req[$temp]{'area'}";
-		} &rt::ui::web::end_col;
-		
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Owner");
-		    print "$rt::req[$temp]{'owner'}";
-		} &rt::ui::web::end_col;
+                   print "<font size=-1>
+ <A href=\"$ScriptURL?serial_num=$rt::req[$temp]{'effective_sn'}</font>";     
+	
 
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Age");
-		    print "$rt::req[$temp]{'age'}";
-		} &rt::ui::web::end_col;
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Sub");
-		    print "$rt::req[$temp]{'subject'}";
-		} &rt::ui::web::end_col;
-	    } &rt::ui::web::end_row;
-	    &rt::ui::web::new_row("bgcolor=\"#ffffff\""); {
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Status");
-		    print "$rt::req[$temp]{'status'}";
-		} &rt::ui::web::end_col;
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Told");
-		    print "$rt::req[$temp]{'since_told'}";
-		} &rt::ui::web::end_col;
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Priority");
-		    print "$rt::req[$temp]{'priority'}";
-		} &rt::ui::web::end_col;
-		&rt::ui::web::new_col;{
-		    &rt::ui::web::table_label("Due");
-		    print "$rt::req[$temp]{'till_due'}";
-		} &rt::ui::web::end_col;
-		&rt::ui::web::new_col; {
-		    &rt::ui::web::table_label("Requestor");
-		    print "$rt::req[$temp]{'requestors'}";
-		} &rt::ui::web::end_col;
-	    } &rt::ui::web::end_row;
-	    
+                    if($frames) {
+                        print "&display=Request\" target=\"workspace\"";
+                    }
+                    else {
+                        print "&display=History\"";
+                    }
+                    print ">$rt::req[$temp]{'serial_num'}</a>";
+                } &rt::ui::web::end_col;
+
+                &rt::ui::web::new_col("nowrap"); {
+                    #&rt::ui::web::table_label("Queue");
+                    print "<font size=-1>$rt::req[$temp]{'queue_id'}</font>";
+                } &rt::ui::web::end_col;
+
+                &rt::ui::web::new_col("nowrap"); {
+#                   &rt::ui::web::table_label("Owner");
+                    print "<font size=-1><b>$rt::req[$temp]{'owner'}</b></font>";
+                } &rt::ui::web::end_col;
+
+                &rt::ui::web::new_col("nowrap"); {
+#                   &rt::ui::web::table_label("Priority");
+                    print "<font size=-1>$rt::req[$temp]{'priority'}</font>";
+                } &rt::ui::web::end_col;   
 
 
-	    if ($false) {
-	    $foo=pack("A6",$rt::req[$temp]{'serial_num'});
-	    chop($foo);
-	    &rt::ui::web::print_html ("$foo");
-	    $foo=pack("A3",$rt::req[$temp]{'priority'});
-	    chop($foo);
-	    &rt::ui::web::print_html (" $foo");
-	    $foo=pack("A8",$rt::req[$temp]{'owner'});
-	    chop($foo);
-	    &rt::ui::web::print_html (" $foo");
+                &rt::ui::web::new_col("nowrap"); {
+                        print "<font size=-1>$rt::req[$temp]{'status'}</font>";
+                } &rt::ui::web::end_col;
 
-	    $foo=pack("A8",$rt::req[$temp]{'age'});
-	    chop($foo);
-	    &rt::ui::web::print_html (" $foo");
+                &rt::ui::web::new_col("nowrap"); {
+#                   &rt::ui::web::table_label("Told");
+                    print "<font size=-1>$rt::req[$temp]{'since_told'}</font>";
+                } &rt::ui::web::end_col;
 
-	    $foo=pack("A8",$rt::req[$temp]{'since_told'});
-	    chop($foo);
-	    &rt::ui::web::print_html (" $foo");
+                &rt::ui::web::new_col("nowrap"); {
+#                   &rt::ui::web::table_label("Area");
+                    print "<font size=-1>$rt::req[$temp]{'area'}</font>";
+                } &rt::ui::web::end_col;
 
-	    $foo=pack("A8",$rt::req[$temp]{'till_due'});
-	    chop($foo);
-	    &rt::ui::web::print_html (" $foo");
+                &rt::ui::web::new_col("nowrap"); {
+#                   &rt::ui::web::table_label("Age");
+                    print "<font size=-1>$rt::req[$temp]{'age'}</font>";
+                } &rt::ui::web::end_col;
 
-	    $foo=pack("A9",$rt::req[$temp]{'status'});
-	    chop($foo);
-	    &rt::ui::web::print_html (" $foo");
-	    $foo=pack("A8",$rt::req[$temp]{'requestors'});
-	    chop($foo);
-	    &rt::ui::web::print_html (" $foo");
-	    $foo=pack("A30",$rt::req[$temp]{'subject'});
-	    chop($foo);
-	    &rt::ui::web::print_html (" $foo");
-}	    print "</a>\n";
-#	    print "</tr>\n";
-	    
+                &rt::ui::web::new_col("nowrap");{
+#                   &rt::ui::web::table_label("Due");        
+
+
+ $due = $rt::req[$temp]{'till_due'};
+
+                        if (substr($due,0,1) eq '-') {
+                                $attr = "color=#ff0000";
+                        } else { $attr = ""; }
+
+                    print "<font size=-1 $attr>$due</font>";
+                } &rt::ui::web::end_col;
+
+                &rt::ui::web::new_col("nowrap"); {
+#                   &rt::ui::web::table_label("Requestor");
+                    print "<font size=-1>$rt::req[$temp]{'requestors'}</font>";
+                } &rt::ui::web::end_col;
+
+                &rt::ui::web::new_col("nowrap"); {
+#                   &rt::ui::web::table_label("Sub");
+                    printf "<font size=-1>%s</font>",$rt::req[$temp]{'subject'};
+                } &rt::ui::web::end_col;
+            } &rt::ui::web::end_row;
+
 	}
     } &rt::ui::web::end_table;
     print "</font><HR>";

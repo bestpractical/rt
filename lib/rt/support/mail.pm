@@ -31,7 +31,7 @@ sub template_replace_tokens {
 }
 
 sub template_mail{
-    local ($in_template,$in_queue_id, $in_recipient, $in_serial_num, $in_transaction, $in_subject, $in_current_user, $in_custom_content) = @_;
+    local ($in_template,$in_queue_id, $in_recipient, $in_cc, $in_bcc, $in_serial_num, $in_transaction, $in_subject, $in_current_user, $in_custom_content) = @_;
     my ($mailto, $template);
 
     $template=&template_read($in_template, $in_queue_id);
@@ -42,20 +42,19 @@ sub template_mail{
     if ($in_recipient eq "") {
 	return("template_mail:No Recipient Specified!");
     }
-    $ENV{'CDPATH'}="";
-    open (MAIL2, "|$rt::mailprog -f$rt::mail_alias -oi -t  >/dev/null 2>/dev/null");
-    print MAIL2"Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject\n";
-
-
-    print MAIL2 "Reply-To: $rt::mail_alias\n";
-    print MAIL2 "X-Request-ID: $in_serial_num\n";
-    print MAIL2 "X-Sender: $in_current_user\n";
-    print MAIL2 "X-Managed-By: Request Tracker ($rt::version)\n";
-    print MAIL2 "To: $in_recipient\n";          
-
-    print MAIL2 "\n\n";
-    print MAIL2 "$template";
-    print MAIL2 "\n-------------------------------------------- Managed by Request Tracker\n";
+    open (MAIL, "|$rt::mailprog -f$rt::mail_alias -oi -t  >/dev/null 2>/dev/null");
+    print MAIL "
+Subject: [$rt::rtname \#". $in_serial_num . "] ($in_queue_id) $in_subject
+Reply-To: $rt::mail_alias
+To: $in_recipient   
+Cc: $in_cc
+Bcc: $in_bcc
+X-Request-ID: $in_serial_num
+X-Sender: $in_current_user
+X-Managed-By: Request Tracker ($rt::version)
+	 
+$template
+-------------------------------------------- Managed by Request Tracker\n";
     close (MAIL2);
 
     return("template_mail:Message Sent");

@@ -365,6 +365,8 @@ Status:<select name=\"do_req_status\">\n";
     print "
 </select>
 To:       $rt::req[$serial_num]{requestors}
+Cc:	  <input name=\"cc\">
+Bcc:      <input name=\"bcc\">
 From:     $rt::users{$current_user}{email}
 Subject:  <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
 </pre>
@@ -471,7 +473,7 @@ sub FormComment{
     print "
 <form action=\"$ScriptURL\" method=\"post\" ";
 
-if ($rt::ui::web::frames) { print " target=\"summary\"";
+if ($rt::ui::web::frames) { print " target=\"summary\"";}
 
 print " >
 <H1>
@@ -479,6 +481,8 @@ Enter your comments below:
 </H1>
 <pre>
 Summary: <input name=\"subject\" size=\"50\" value=\"$rt::req[$serial_num]{'subject'}\">
+Cc:	 <input name=\"cc\">
+Bcc:	 <input name=\"bcc\"> 
 </pre>
 <input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\">
 <input type=\"hidden\" name=\"do_req_comment\" value=\"true\">

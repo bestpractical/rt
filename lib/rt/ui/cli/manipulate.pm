@@ -66,7 +66,7 @@ sub parse_args {
 
 	elsif ($ARGV[$i] eq "-kill")	{
 	    $serial_num=int($ARGV[++$i]);
-	    $response=&RT_UI_Cli::question_string("Type 'yes' if you REALLY want to KILL request \#$serial_num",);
+	    $response=&rt::ui::cli::question_string("Type 'yes' if you REALLY want to KILL request \#$serial_num",);
 	    if ($response eq 'yes') { 
 		($trans,$message)=&rt::kill ($serial_num, $current_user);
 		print "$message\n";
@@ -179,14 +179,14 @@ sub parse_args {
 
 sub cli_create_req {	
     my ($queue_id,$owner,$requestors,$status,$priority,$subject,$final_prio,$date_due);
-    $queue_id=&RT_UI_Cli::question_string("Place Request in queue",);
-    $area=&RT_UI_Cli::question_string("Place Request in area",);
-    $owner=&RT_UI_Cli::question_string( "Give request to");
-    $requestors=&RT_UI_Cli::question_string("Requestor(s)",);
-    $subject=&RT_UI_Cli::question_string("Subject",);
-    $priority=&RT_UI_Cli::question_int("Starting Priority",$queues{$queue_id}{default_prio});
-    $final_priority=&RT_UI_Cli::question_int("Final Priority",$queues{$queue_id}{default_final_prio});
-    $due_string=&RT_UI_Cli::question_string("Date due (MM/DD/YY)",);
+    $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
+    $area=&rt::ui::cli::question_string("Place Request in area",);
+    $owner=&rt::ui::cli::question_string( "Give request to");
+    $requestors=&rt::ui::cli::question_string("Requestor(s)",);
+    $subject=&rt::ui::cli::question_string("Subject",);
+    $priority=&rt::ui::cli::question_int("Starting Priority",$queues{$queue_id}{default_prio});
+    $final_priority=&rt::ui::cli::question_int("Final Priority",$queues{$queue_id}{default_final_prio});
+    $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YY)",);
     $due_date = &rt::date_parse($due_string);
     print "Please enter a detailed description of this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
@@ -203,10 +203,12 @@ sub cli_create_req {
 
 sub cli_comment_req {	
     my ($serial_num)=@_;
-    my ($subject,$content,$trans,$message );
+    my ($subject,$content,$trans,$message,$cc,$bcc );
    
     if (&rt::can_manipulate_request($serial_num, $current_user)) {
-    $subject=&RT_UI_Cli::question_string("Subject",);
+    $subject=&rt::ui::cli::question_string("Subject",);
+    $cc=&rt::ui::cli::question_string("Cc",);
+    $bcc=&rt::ui::cli::question_string("Bcc",);   
     print "Please enter your comments this request, terminated\nby a line containing only a period:\n";
     while (<STDIN>) {
 	if(/^\.\n/) {
@@ -217,7 +219,7 @@ sub cli_comment_req {
 		}
   	}
     
-    ($trans,  $message)=&rt::comment($serial_num,$content,$subject,$current_user);
+    ($trans,  $message)=&rt::comment($serial_num,$content,$subject,$cc,$bcc,$current_user);
     print $message;
 	}
 	else {
@@ -226,9 +228,11 @@ sub cli_comment_req {
 }
 sub cli_respond_req {
     my ($serial_num)=@_;
-    my ($subject,$content,$trans,$message );
+    my ($subject,$content,$trans,$message,$cc,$bcc );
 
-    $subject=&RT_UI_Cli::question_string("Subject",);
+    $subject=&rt::ui::cli::question_string("Subject",);
+    $cc=&rt::ui::cli::question_string("Cc",);
+    $bcc=&rt::ui::cli::question_string("Bcc",);      
     print "Please enter your response to this request, terminated\nby a line containing only a period:\
 n";
     while (<STDIN>) {
@@ -240,7 +244,7 @@ n";
                 }
         }
 
-    ($trans,  $message)=&rt::add_correspondence($serial_num,$content,$subject,$current_user);
+    ($trans,  $message)=&rt::add_correspondence($serial_num,$content,$subject,$cc,$bcc,$current_user);
     print $message;
 }                   
 

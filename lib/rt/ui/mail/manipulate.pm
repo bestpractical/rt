@@ -55,13 +55,13 @@ elsif ($in_action eq 'correspond') {
     }   
     else {
 	
-	($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject",$current_user);
+	($transaction_num,$message)=&rt::add_correspondence($serial_num,$content,"$subject", , ,$current_user);
 	
     }
 }
 elsif ($in_action eq 'comment') {
     if ($debug) {print "Now commenting on request \# $serial_num\n";}
-    ($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject",$current_user);
+    ($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject", , ,$current_user);
 }
 
 
@@ -478,7 +478,7 @@ statements in the order you enter them.
     
     if ($debug) {print "$response\n";}
     if ($response) {
-	($message)=&rt::template_mail ('act_response','_rt_system',$real_current_user,0,0,"RT Actions Complete","$real_current_user","$response");
+	($message)=&rt::template_mail ('act_response','_rt_system',,,$real_current_user,0,0,"RT Actions Complete","$real_current_user","$response");
     }
     if ($debug) {print "$message\n";}
     return ($parsed_body);
