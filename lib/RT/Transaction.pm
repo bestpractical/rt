@@ -422,8 +422,8 @@ sub Description  {
 	    }
 	}
 	# Generic:
-	return $self->Field." changed from ".($self->OldValue||"(empty value)").
-	  " to ".$self->NewValue 
+	return ($self->Field." changed from ".($self->OldValue||"(empty value)").
+	  " to ".$self->NewValue ." by ". $self->CreatorObj->Name);
       }
     
     if ($self->Type eq 'Correspond')    {
@@ -436,13 +436,16 @@ sub Description  {
     
     elsif ($self->Type eq 'Keyword') {
 	if ($self->OldValue eq '') {
-	    return ("Keyword ".$self->NewValue." added.");
+	    return ("Keyword ".$self->NewValue." added by ". 
+		    $self->CreatorObj->Name );
 	}
 	elsif ($self->NewValue eq '') {
-	    return ("Keyword ".$self->OldValue." deleted.");
-      }
+	    return ("Keyword ".$self->OldValue." deleted by ". 
+		    $self->CreatorObj->Name);
+	}
 	else {
-	    return  ("Keyword ".$self->OldValue . " changed to ". $self->NewValue.".");
+	    return  ("Keyword ".$self->OldValue . " changed to ". 
+		     $self->NewValue." by ". $self->CreatorObj->Name );
 	}	
     }
     
@@ -462,12 +465,11 @@ sub Description  {
 	}
 	
 	if ($self->Type eq "Give") {
-	    
 	    my $New = RT::User->new($self->CurrentUser);
 	    $New->Load($self->NewValue);
 	    
 	    return( "Request given to ".$New->Name." by ". $self->CreatorObj->Name);
-      }
+	}
 	
 	my $New = RT::User->new($self->CurrentUser);
 	$New->Load($self->NewValue);
@@ -506,19 +508,20 @@ sub Description  {
 	    $q1->Load($self->OldValue);
 	    my $q2 = new RT::Queue($self->CurrentUser);
 	    $q2->Load($self->NewValue);
-	    return ($self->Field . " changed from " . $q1->Name . " to ".$q2->Name."\n");
+	    return ($self->Field . " changed from " . $q1->Name . " to ".
+		    $q2->Name." by " . $self->CreatorObj->Name);
 	}
 	else {
-	    return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
+	    return ($self->Field . " changed from " . $self->OldValue . 
+		    " to ".$self->NewValue." by ". $self->CreatorObj->Name);
 	}	
     }
     else {
-	return ("Generic: ". $self->Type ."/". $self->Field . " changed from " . $self->OldValue . 
-		" to ".$self->NewValue."\n");
+	return ("Generic: ". $self->Type ."/". $self->Field . 
+		" changed from " . $self->OldValue . 
+		" to ".$self->NewValue." by " . $self->CreatorObj->Name );
 	
     }
-    
-    
 }
 
 # }}}

@@ -744,7 +744,9 @@ sub AddKeywordSelect {
 
 Takes the name of a keyword select for this queue or that's global.
 Returns the relevant KeywordSelect object.  Prefers a keywordselect that's 
-specific to this queue over a global one
+specific to this queue over a global one.  If it can't find the proper
+Keword select or the user doesn't have permission, returns an empty 
+KeywordSelect object
 
 =cut
 

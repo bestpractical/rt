@@ -27,7 +27,7 @@ $MinimumPasswordLength = "5";
 # It should be set to a timezone recognized by your local unix box.
 $Timezone =  'US/Eastern'; 
 
-# RootDir is the root of the RT installation
+# LogDir is the root of the RT installation
 $LogDir = "!!RT_LOG_PATH!!";
 
 # }}}
