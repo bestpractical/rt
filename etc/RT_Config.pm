@@ -36,10 +36,6 @@ $MinimumPasswordLength = "5";
 # It should be set to a timezone recognized by your local unix box.
 $Timezone =  'US/Eastern'; 
 
-# LogDir is where RT writes its logfiles.
-$LogDir = $VarPath."log";
-# This directory should be writable by your rt group
-
 $BasePath = "/opt/rt3/";
 
 $BinPath = $BasePath . "bin/";
@@ -52,6 +48,10 @@ $VarPath = $BasePath . "var/";
 
 $WebUser = 'www';
 $WebGroup = 'www';
+
+# LogDir is where RT writes its logfiles.
+$LogDir = $VarPath."log";
+# This directory should be writable by your rt group
 
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
@@ -84,8 +84,8 @@ $MasonSessionDir = $VarPath ."session_data";
 # Database driver beeing used. Case matters
 # Valid types are "mysql" and "Pg" 
 
-#$DatabaseType="mysql";
-$DatabaseType="Pg";
+$DatabaseType="mysql";
+#$DatabaseType="Pg";
 
 # The domain name of your database server
 # If you're running mysql and it's on localhost,
@@ -105,8 +105,8 @@ $DatabaseUser='rt_user';
 $DatabasePassword='rt_pass';
 
 
-#$DatabaseDBA="root";
-$DatabaseDBA="pgsql";
+$DatabaseDBA="root";
+#$DatabaseDBA="pgsql";
 $DatabaseDBAPassword="";
 
 # The name of the RT's database on your database server
@@ -355,7 +355,7 @@ $WebExternalAuto = undef;
 	 TicketAttribute => 'RequestorAddresses'
 	 },
        { Header => 'Status',				# loc
-	 TicketAttribute => 'Status'
+	 TicketAttribute => 'CurrentUser->loc($Ticket->Status)'
 	 },
 
 

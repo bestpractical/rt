@@ -28,7 +28,6 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <FORM METHOD=POST ACTION="Modify.html">
-<INPUT TYPE=hidden name="Debug" value="2">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 
 <& /Elements/TitleBoxStart, title => loc('Modify ticket #[_1]',$TicketObj->Id), 

@@ -164,7 +164,6 @@ passed as rest of @_.
 =cut
 
 sub loc_match {
-    my $self = shift;
     my $msg  = shift;
     
     foreach my $entry (@_) {
@@ -175,7 +174,7 @@ sub loc_match {
 	}
     }
 
-    return loc($msg);
+    return $msg;
 }
 
 # }}}
@@ -196,6 +195,7 @@ sub Abort {
 =head2 CreateTicket ARGS
 
 Create a new ticket, using Mason's %ARGS.  returns @results.
+
 =cut
 
 sub CreateTicket {
@@ -219,9 +219,9 @@ sub CreateTicket {
     my $starts = new RT::Date( $session{'CurrentUser'} );
     $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
 
-    my @Requestors = split ( /,/, $ARGS{'Requestors'} );
-    my @Cc         = split ( /,/, $ARGS{'Cc'} );
-    my @AdminCc    = split ( /,/, $ARGS{'AdminCc'} );
+    my @Requestors = split ( /\s*,\s*/, $ARGS{'Requestors'} );
+    my @Cc         = split ( /\s*,\s*/, $ARGS{'Cc'} );
+    my @AdminCc    = split ( /\s*,\s*/, $ARGS{'AdminCc'} );
 
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
@@ -677,7 +677,7 @@ Returns an ISO date and time in GMT
 sub ParseDateToISO {
     my $date = shift;
 
-    my $date_obj = new RT::Date($CurrentUser);
+    my $date_obj = new RT::Date($session{'CurrentUser'});
     $date_obj->Set(
         Format => 'unknown',
         Value  => $date

@@ -35,6 +35,7 @@ use Getopt::Long;
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
 use RT::Tickets;
+use RT::Template;
 
 #Clean out all the nasties from the environment
 CleanEnv();
@@ -57,13 +58,14 @@ unless ( $CurrentUser->Id ) {
 }
 
 my ( $search, $condition, $action, $search_arg, $condition_arg, $action_arg,
-     $help, $verbose );
+     $template_id, $help, $verbose );
 GetOptions( "search=s"        => \$search,
             "search-arg=s"    => \$search_arg,
             "condition=s"     => \$condition,
             "condition-arg=s" => \$condition_arg,
             "action-arg=s"    => \$action_arg,
             "action=s"        => \$action,
+	    "template-id=s"   => \$template_id,
             "help"            => \$help,
             "verbose|v"       => \$verbose );
 
@@ -73,6 +75,13 @@ help() if $help;
 load_module($search);
 load_module($action)    if ($action);
 load_module($condition) if ($condition);
+
+# load template if specified
+my $template_obj;
+if ($template_id) {
+    $template_obj = RT::Template->new($RT::Nobody);
+    $template_obj->LoadById($template_id);
+}
 
 #At the appointed time:
 
@@ -102,6 +111,7 @@ while ( my $ticket = $tickets->Next() ) {
 
     #prepare our action
     my $action_obj = $action->new( TicketObj => $ticket,
+				   TemplateObj => $template_obj,
                                    Argument  => $action_arg );
 
     #if our preparation, move onto the next ticket

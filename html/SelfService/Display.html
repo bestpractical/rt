@@ -135,8 +135,8 @@ if ($id[0] eq 'new') {
   	$m->abort; 
     }
     
-    my @Requestors = split(/,/,$ARGS{'Requestors'});
-    my @Cc = split(/,/,$ARGS{'Cc'});
+    my @Requestors = split(/\s*,\s*/,$ARGS{'Requestors'});
+    my @Cc = split(/\s*,\s*/,$ARGS{'Cc'});
     
 
     my $MIMEObj = MakeMIMEEntity ( Subject => $ARGS{'Subject'},

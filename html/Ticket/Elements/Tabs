@@ -110,7 +110,7 @@ if (defined $session{'tickets'}) {
     my $items = $session{'tickets'}->ItemsArrayRef();
     my @indexs = grep(($items->[$_]->id == $Ticket->Id), 0 .. $#{$items});
 
-    if ($items->[0]) {
+    if ($items->[0] && @indexs) {
 
     if ($items->[$indexs[0]]->id == $Ticket->Id) {
 	# Don't display prev links if we're on the first ticket
@@ -129,7 +129,7 @@ if (defined $session{'tickets'}) {
 
         $tabs_scalar .= " | <span class=\"currentnav\">#".$Ticket->Id."</span> | ";
 
-    if ($items->[0]) {
+    if ($items->[0] && @indexs) {
 	# Don't display next links if we're on the last ticket
 	if ( $Ticket->id != $items->[-1]->id ) {
 	    $tabs_scalar .= '<A class="nav" HREF="Display.html?id='.

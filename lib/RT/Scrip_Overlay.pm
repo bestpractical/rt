@@ -120,6 +120,8 @@ sub Create {
         @_
     );
 
+    $args{'Queue'} ||= 0;		# avoid undef sneaking in
+
     if ( $args{'Queue'} == 0 ) {
         unless ( $self->CurrentUser->HasSystemRight('ModifyScrips') ) {
             return ( 0, $self->loc('Permission Denied') );
@@ -380,6 +382,7 @@ sub IsApplicable {
 # }}}
 
 # {{{ sub Prepare
+
 =head2 Prepare
 
 Calls the action object's prepare method
@@ -394,6 +397,7 @@ sub Prepare {
 # }}}
 
 # {{{ sub Commit
+
 =head2 Commit
 
 Calls the action object's commit method

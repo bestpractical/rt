@@ -302,6 +302,19 @@ sub Parse {
 
     my $parser = MIME::Parser->new();
 
+    # Setup output directory for files. from RT::EmailParser::_SetupMIMEParser
+    my $AttachmentDir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    # Set up output directory for files:
+    $parser->output_dir("$AttachmentDir");
+    #If someone includes a message, don't extract it
+    $parser->extract_nested_messages(1);
+    # Set up the prefix for files with auto-generated names:
+    $parser->output_prefix("part");
+    # If content length is <= 50000 bytes, store each msg as in-core scalar;
+    # Else, write to a disk file (the default action):
+    $parser->output_to_core(50000);
+
+
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
     $self->{'MIMEObj'} = eval { $parser->parse_data($content) };

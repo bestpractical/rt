@@ -26,6 +26,7 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <form action="Scrips.html" method="post">
+<input type="hidden" name="id" value="<%$id%>">
 <& /Elements/TitleBoxStart, title => $title &>
 
 <P><A href="Scrip.html?create=1&Queue=<%$id%>"><&|/l&>Create a new scrip</&></A></P>
