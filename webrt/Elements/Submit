@@ -1,0 +1,16 @@
+<TABLE WIDTH=100% BGCOLOR="#336699" CELLSPACING=0 BORDER=0>
+<TR>
+<TD>
+&nbsp;
+</TD>
+<TD ALIGN=RIGHT>
+<FONT COLOR=#FFFFFF>
+<%$Caption%> <INPUT TYPE=SUBMIT VALUE='<%$Label%>'>
+</FONT>
+</TD>
+</TR>
+</TABLE>
+<%ARGS>
+$Caption => undef
+$Label => 'Submit'
+</%ARGS>

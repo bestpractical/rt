@@ -1,4 +1,4 @@
-<& /Elements/Header, Title=>"Login" , SuppressAuthString=>1 &>
+<& /Elements/Header, Title=>"Login" , &>
 <DIV ALIGN=CENTER>
 <& /Elements/TitleBoxStart, width=> "40%", titleright => "RT for $RT::rtname", title => 'Login' ,
 contentbg=>"#cccccc" &>
@@ -19,7 +19,8 @@ contentbg=>"#cccccc" &>
 </FORM>
 </DIV>
 <&/Elements/TitleBoxEnd&>
-
+<& /Elements/Footer, SuppressAuthString => 1 &>
+<% $m->abort() %>
 <%ARGS>
 $user => ""
 $pass => undef

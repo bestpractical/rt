@@ -6,7 +6,7 @@
 	<TD VALIGN=TOP WIDTH="20%"> <& /Elements/ShadedBox, title => 'Status' , content => $Ticket->Status &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
-	  <& /Elements/ShadedBox, title => 'Time Worked' , content => $Ticket->TimeWorked ." minutes" &>
+        <& /Elements/ShadedBox, title => 'Time Worked' , content => $TimeWorked ." minutes" &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="20%">
 	  <& /Elements/ShadedBox, title => 'Queue', content=> $Ticket->QueueObj->QueueId &>
@@ -18,7 +18,12 @@
 
       </TR>
     </TABLE>
-
+<%INIT>
+my $TimeWorked = $Ticket->TimeWorked;
+if ($Ticket->TimeLeft > 0 ) {
+        $TimeWorked = $Ticket->TimeWorked."/".($Ticket->TimeLeft+$Ticket->TimeWorked);
+}
+</%INIT>
 <%ARGS>
 $Ticket = undef
 </%ARGS>
