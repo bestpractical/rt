@@ -541,6 +541,9 @@ sub Merge {
 sub Comment {
   my $self = shift;
   
+  # MIMEObj here ... and MIMEEntity somewhere else ... it would have been better
+  # to be consistant.  But hey - it works!  We'll just leave it here as for now.
+  # -- TobiX
   my %args = ( MIMEObj => undef,
 	       TimeTaken => 0,
 	       @_ );
@@ -552,22 +555,18 @@ sub Comment {
   #Record the correspondence (write the transaction)
   my $Trans = $self->_NewTransaction( Type => 'Comment',
 				      Data => $MIME->head->get('subject'),
-				      TimeTaken => $args{'TimeTaken'}
+				      # Wouldn't it be better to just add %args here?
+				      # -- TobiX
+				      TimeTaken => $args{'TimeTaken'},
+				      MIMEEntity => $MIME
 				    );
 
-  $Trans->Attach($MIME);
-
-  #Set the from address to be the queue's comment address
-    
-  #Send a copy to the queue members, if necessary
-  
-  #Send a copy to the ticket owner if necesary
-  
   if ($args{'cc'} || $args{'bcc'} ) {
-    #send a copy of the correspondence to the CC list and BCC list
+      #send a copy of the correspondence to the CC list and BCC list
+      warn "Stub!";
   }
   
-  return ($Trans, "The comment has been recorded (but code is stubbed)");
+  return ($Trans, "The comment has been recorded");
 }
 
 sub Correspond {
