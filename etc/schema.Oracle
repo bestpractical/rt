@@ -327,6 +327,21 @@ CREATE TABLE CustomFieldValues (
 
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
+CREATE SEQUENCE ATTRIBUTES_seq;
+CREATE TABLE Attributes (
+	id 			NUMBER(11,0) PRIMARY KEY,
+	Name 			VARCHAR2(255) UNIQUE NOT NULL,
+	Description 		VARCHAR2(255),
+  	Content 	CLOB,
+	ObjectType	VARCHAR2(25) NOT NULL,
+	ObjectId	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Creator 		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Created 		DATE,
+	LastUpdatedBy 		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LastUpdated		DATE,
+);
+
+
 CREATE TABLE sessions (
 	id		VARCHAR2(32) PRIMARY KEY,
 	a_session	CLOB,

@@ -332,6 +332,19 @@ CREATE TABLE CustomFieldValues (
 
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
+CREATE TABLE Attributes (
+  	id 		SERIAL,
+	Name 			VARCHAR(255) DEFAULT '' NOT NULL,
+	Description 		VARCHAR(255) DEFAULT NULL,
+  	Content 	BYTE,
+	ObjectType	VARCHAR(25) NOT NULL,
+	ObjectId	INTEGER DEFAULT 0 NOT NULL,
+	Creator 	INTEGER DEFAULT 0 NOT NULL,
+  	Created 	DATETIME YEAR TO SECOND,
+	LastUpdatedBy	INTEGER DEFAULT 0 NOT NULL,
+	LastUpdated	DATETIME YEAR TO SECOND,
+        PRIMARY KEY (id)
+); 
 CREATE TABLE sessions (
 	id		VARCHAR(32) NOT NULL,
 	a_session	BYTE,

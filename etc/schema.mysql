@@ -411,7 +411,8 @@ CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(255) NULL  ,
-  Content varchar(255) NULL  ,
+  Description varchar(255) NULL  ,
+  Content text,
   ObjectType varchar(64),
   ObjectId integer, # foreign key to anything
   Creator integer NOT NULL DEFAULT 0  ,

@@ -387,3 +387,22 @@ CREATE TABLE CustomFieldValues (
 CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
 --- }}}
+
+--- {{{ Attributes
+CREATE TABLE Attributes (
+  id INTEGER PRIMARY KEY  ,
+  Name varchar(255) NOT NULL  ,
+  Description varchar(255) NULL  ,
+  Content LONGTEXT NULL  ,
+  ObjectType varchar(25) NOT NULL  ,
+  ObjectId INTEGER default 0,
+  Creator integer NULL  ,
+  Created DATETIME NULL  ,
+  LastUpdatedBy integer NULL  ,
+  LastUpdated DATETIME NULL  
+ 
+) ;
+CREATE UNIQUE INDEX Attributes1 ON Attributes (Name) ;
+
+--- }}}
+
