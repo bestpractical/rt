@@ -306,7 +306,7 @@ sub _CreateQueueGroups {
 
     foreach my $type (@types) {
         my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateWatcherGroup(Instance => $self->Id, 
+        my ($id, $msg) = $type_obj->CreateRoleGroup(Instance => $self->Id, 
                                                      Type => $type,
                                                      Domain => 'QueueRole');
         unless ($id) {

@@ -82,6 +82,29 @@ sub LimitToUserDefinedGroups {
 
 # }}}
 
+# {{{ LimiToPersonalGroups
+
+=head2 LimitToPersonalGroupsForUser USER_ID
+
+Return only Personal Groups for the user whose id is USER_ID
+
+=cut
+
+
+sub LimitToPersonalGroupsForUser {
+    my $self = shift;
+    my $user = shift;
+
+    $self->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'Personal');
+    $self->Limit(   FIELD => 'Instance',   
+                    OPERATOR => '=', 
+                    VALUE => $user,
+                    ENTRY_AGGREGATOR => 'OR');
+}
+
+
+# }}}
+
 # {{{ LimitToRolesForQueue
 
 =item LimitToRolesForQueue QUEUE_ID

@@ -507,7 +507,7 @@ print "Creating groups...";
 use RT::Group;
 foreach $item (@groups) {
     my $new_entry = RT::Group->new($CurrentUser);
-    my ($return, $msg)   = $new_entry->CreateSystemGroup(%$item);
+    my ($return, $msg)   = $new_entry->_Create(%$item);
     print "(Error: $msg)" unless ($return);
     print $return. ".";
 }

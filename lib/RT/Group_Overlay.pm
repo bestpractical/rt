@@ -28,16 +28,17 @@ RT
 
 =begin testing
 
+# {{{ Tests
 ok (require RT::Group);
 
 ok (my $group = RT::Group->new($RT::SystemUser), "instantiated a group object");
-ok (my ($id, $msg) = $group->CreateSystemGroup( Name => 'TestGroup', Description => 'A test group',
+ok (my ($id, $msg) = $group->CreateUserDefinedGroup( Name => 'TestGroup', Description => 'A test group',
                     ), 'Created a new group');
 ok ($id != 0, "Group id is $id");
 ok ($group->Name eq 'TestGroup', "The group's name is 'TestGroup'");
 my $ng = RT::Group->new($RT::SystemUser);
 
-ok($ng->LoadSystemGroup('TestGroup'), "Loaded testgroup");
+ok($ng->LoadUserDefinedGroup('TestGroup'), "Loaded testgroup");
 ok(($ng->id == $group->id), "Loaded the right group");
 ok ($ng->AddMember('1'), "Added a member to the group");
 ok ($ng->AddMember('2' ), "Added a member to the group");
@@ -46,7 +47,7 @@ ok ($ng->AddMember('3' ), "Added a member to the group");
 # Group 1 now has members 1, 2 ,3
 
 my $group_2 = RT::Group->new($RT::SystemUser);
-ok (my ($id_2, $msg_2) = $group_2->CreateSystemGroup( Name => 'TestGroup2', Description => 'A second test group'), , 'Created a new group');
+ok (my ($id_2, $msg_2) = $group_2->CreateUserDefinedGroup( Name => 'TestGroup2', Description => 'A second test group'), , 'Created a new group');
 ok ($id_2 != 0, "Created group 2 ok");
 ok ($group_2->AddMember($ng->PrincipalId), "Made TestGroup a member of testgroup2");
 ok ($group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2");
@@ -54,8 +55,8 @@ ok ($group_2->AddMember('1' ), "Added  member RT_System to the group TestGroup2"
 # Group 2 how has 1, g1->{1, 2,3}
 
 my $group_3 = RT::Group->new($RT::SystemUser);
-ok (($id_3, $msg) = $group_3->CreateSystemGroup( Name => 'TestGroup3', Description => 'A second test group'), 'Created a new group');
-ok ($id_3 != 0, "Created group 3 ok");
+ok (($id_3, $msg) = $group_3->CreateUserDefinedGroup( Name => 'TestGroup3', Description => 'A second test group'), 'Created a new group');
+ok ($id_3 != 0, "Created group 3 ok - $msg");
 ok ($group_3->AddMember($group_2->PrincipalId), "Made TestGroup a member of testgroup2");
 
 # g3 now has g2->{1, g1->{1,2,3}}
@@ -79,21 +80,21 @@ ok ($delid !=0, "Sucessfully deleted it-".$delid."-".$delmsg);
 
 #Gotta reload the group objects, since we've been messing with various internals.
 # we shouldn't need to do this.
-#$ng->LoadSystemGroup('TestGroup');
-#$group_2->LoadSystemGroup('TestGroup2');
-#$group_3->LoadSystemGroup('TestGroup');
+#$ng->LoadUserDefinedGroup('TestGroup');
+#$group_2->LoadUserDefinedGroup('TestGroup2');
+#$group_3->LoadUserDefinedGroup('TestGroup');
 
 # G1 now has 1, 3
 # Group 2 how has 1, g1->{1, 3}
 # g3 now has  1, g2->{1, g1->{1, 3}}
 
 ok(!$ng->HasMember($principal_2)  , "group ".$ng->Id." no longer has member 2");
-
 ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 doesn't have member 2");
 ok($group_2->HasMemberRecursively($principal_2) == undef, "group 2 doesn't have member 2");
 ok($ng->HasMember($principal_2) == undef, "group 1 doesn't have member 2");;
 ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 has member 2 recursively");
 
+# }}}
 
 =end testing
 
@@ -109,11 +110,11 @@ use RT::ACL;
 
 # {{{ sub Load 
 
-=head2 Load
+=head2 Load ID
 
 Load a group object from the database. Takes a single argument.
-If the argument is numerical, load by the column 'id'. Otherwise, load by
-the "Name" column which is the group's textual name
+If the argument is numerical, load by the column 'id'. Otherwise, 
+complain and return.
 
 =cut
 
@@ -126,15 +127,16 @@ sub Load {
         $self->SUPER::LoadById($identifier);
     }
     else {
-        $self->LoadByCol( "Name", $identifier );
+        $RT::Logger->crit("Group -> Load called with a bogus argument");
+        return undef;
     }
 }
 
 # }}}
 
-# {{{ sub LoadSystemGroup 
+# {{{ sub LoadUserDefinedGroup 
 
-=head2 LoadSystemGroup NAME
+=head2 LoadUserDefinedGroup NAME
 
 Loads a system group from the database. The only argument is
 the group's name.
@@ -142,14 +144,36 @@ the group's name.
 
 =cut
 
-sub LoadSystemGroup {
+sub LoadUserDefinedGroup {
     my $self       = shift;
     my $identifier = shift;
 
         $self->LoadByCols( "Domain" => 'UserDefined',
-                           "Instance" => '',
-                           "Type" => '',
                            "Name" => $identifier );
+}
+
+# }}}
+
+# {{{ sub LoadPersonalGroup 
+
+=head2 LoadPersonalGroup {Name => NAME, User => USERID}
+
+Loads a system group from the database. The only argument is
+the group's name.
+
+
+=cut
+
+sub LoadPersonalGroup {
+    my $self       = shift;
+    my %args =  (   Name => undef,
+                    User => undef,
+                    @_);
+
+        $self->LoadByCols( "Domain" => 'Personal',
+                           "Instance" => $args{'User'},
+                           "Type" => '',
+                           "Name" => $args{'Name'} );
 }
 
 # }}}
@@ -304,15 +328,15 @@ ngs are afoot at the circle K" );
 
 # }}}
 
-# {{{ CreateSystemGroup
+# {{{ CreateUserDefinedGroup
 
-=head2 CreateSystemGroup { Name => "name", Description => "Description"}
+=head2 CreateUserDefinedGroup { Name => "name", Description => "Description"}
 
 A helper subroutine which creates a system group 
 
 =cut
 
-sub CreateSystemGroup {
+sub CreateUserDefinedGroup {
     my $self = shift;
 
     unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
@@ -326,15 +350,17 @@ sub CreateSystemGroup {
 
 # }}}
 
-# {{{ CreateSystemInternalGroup
+# {{{ CreatePersonalGroup
 
-=head2 CreateSystemInternalGroup { Name => "name", Description => "Description"}
+=head2 CreatePersonalGroup { Name => "name", Description => "Description"}
 
-A helper subroutine which creates a Pseudo group 
+A helper subroutine which creates a personal group. Generally,
+personal groups are used for ACL delegation and adding to ticket roles
+
 
 =cut
 
-sub CreateSystemInternalGroup {
+sub CreatePersonalGroup {
     my $self = shift;
 
     unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
@@ -342,14 +368,14 @@ sub CreateSystemInternalGroup {
               . " Tried to create a group without permission." );
         return ( 0, $self->loc('Permission Denied') );
     }
-
-    return($self->_Create( Domain => 'SystemInternal', Type => '', Instance => '', @_));
+    return($self->_Create( Domain => 'Personal', Type => '', Instance => '', @_));
 }
 
 # }}}
 
-# {{{ CreateWatcherGroup 
-=head2 CreateWatchertGroup { Domain= > DOMAIN, Type =>  TYPE, Instance => ID }
+# {{{ CreateRoleGroup 
+
+=head2 CreateRoleGroup { Domain => DOMAIN, Type =>  TYPE, Instance => ID }
 
 A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
 Type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
@@ -360,7 +386,7 @@ This routine expects to be called from {Ticket||Queue}->CreateTicketGroups _insi
 
 =cut
 
-sub CreateWatcherGroup {
+sub CreateRoleGroup {
     my $self = shift;
     my %args = ( Instance => undef,
                  Type => undef,
@@ -416,7 +442,6 @@ sub DeepMembersObj {
 }
 
 # }}}
-
 
 # {{{ UserMembersObj
 
@@ -534,7 +559,7 @@ sub AddMember {
 
 
     unless ($self->Id) {
-        $RT::Logger->debug("Attempting to add a member to a group which wasn't loaded. 'oops'");
+        $RT::Logger->err("Attempting to add a member to a group which wasn't loaded. 'oops'");
         return(0, $self->loc("Group not found"));
     }
 
@@ -544,7 +569,6 @@ sub AddMember {
     $new_member_obj->Load($new_member);
 
     unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
-
         #User has no permission to be doing this
         return ( 0, $self->loc("Permission Denied") );
     }
@@ -728,7 +752,44 @@ sub _Set {
 
 # }}}
 
+
+=item CurrentUserHasRight RIGHTNAME
+
+Returns true if the current user has the specified right for this group
+
+Per-Group rights are:
+    AdminGroup
+    AdminGroupMembership
+    ModifyOwnMembership 
+   
+System rights is all per-group rights and:
+    CreatePersonalGroup
+    CreateUserDefinedGroup
+
+    TODO: we don't deal with membership visibility yet
+
+=cut
+
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    my $right = shift;
+
+    if ($self->CurrentUser->HasGroupRight( Group => $self->Id,
+                                           Right => $right )) {
+
+        return(1);
+   }
+    else {
+        return(undef);
+    }
+
+}
+
 # }}}
+
+
+
 
 # {{{ Principal related routines
 

@@ -235,6 +235,7 @@ fixperms-nosetgid: fixperms
 
 # {{{ dirs
 dirs:
+	mkdir -p $(DESTDIR)/$(RT_LOG_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_DATA_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_SESSION_PATH)
 	mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
@@ -249,7 +250,10 @@ initialize-database: createdb insert-schema database-acl insert-baseline-data
 
 config-install:
 	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)	
-	install -b -g $(RTGROUP) -o $(BIN_OWNER) etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
+	cp etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
+	chgrp $(RTGROUP) $(DESTDIR)/$(CONFIG_FILE)
+	chown $(BIN_OWNER) $(DESTDIR)/$(CONFIG_FILE)
+
 	@echo "Installed configuration. about to install rt in  $(RT_PATH)"
 
 test: 

@@ -41,7 +41,7 @@ else {
     
     if ($id eq 'new' ) {
 	
-	$Group->CreateSystemGroup(Name => "$Name") ||
+	$Group->CreateUserDefinedGroup(Name => "$Name") ||
         Abort ("Group could not be created.");
 	$id = $Group->Id;
     }

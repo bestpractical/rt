@@ -34,6 +34,9 @@ Handling a change set:
                 cd ~ # Get out of the current working directory
 		aeipass
 
+
+
+
     --	Update the aedist baseline on the web site:
 
 		aedist -s -bl -p rt.2.1 > rt.2.1.ae
@@ -54,3 +57,11 @@ Handling a change set:
         checked in to the bin/subdirectory.
 
 	[This may eventually be automated.]
+
+
+
+	-- Grabbing the latest dev sources over ssh 
+
+	ssh fsck.com "aedist -s -p rt.2.1 -naa -bl -entire-source" | aedist -r
+
+

@@ -13,56 +13,85 @@
 
 use strict;
 
-use vars qw($mode $dbd $module @modules);
+use vars qw($mode $dbd @modules);
 
 $mode = shift || print_help();
 $dbd = shift || print_help();
 
-@modules = qw(
+my @core_modules = qw(
+CPAN 1.60
 DBI 1.18
-DBIx::DataSource 0.02
+Test::Inline
 DBIx::SearchBuilder 0.60
-HTML::Entities 
-MLDBM
-Net::Domain
-Net::SMTP
-Params::Validate 0.02
-HTML::Mason 1.09
-CGI::Cookie 1.20
-Apache::Session 1.53
-Date::Parse
-Date::Format 
-MIME::Entity 5.108
-Mail::Mailer 1.20
-Getopt::Long 2.24
-Tie::IxHash 
-Text::Wrapper 
+DBIx::DataSource 0.02
 Text::Template
 File::Spec 0.8
-Errno
-FreezeThaw
-File::Temp 
+HTML::Entities 
+Net::Domain
 Log::Dispatch 1.6
 Locale::Maketext
 Locale::Maketext::Lexicon
-Time::HiRes
+MIME::Entity 5.108
+Mail::Mailer 1.20
+Net::SMTP
+Text::Wrapper 
+Date::Parse
+Date::Format 
+File::Temp 
+);
+my @mason_modules = qw(
+Params::Validate 0.02
+Cache::Cache
+Exception::Class
+HTML::Mason 1.09
+MLDBM
+Errno
+FreezeThaw
+Digest::MD5
+CGI::Cookie 1.20
+Apache::Session 1.53);
+
+my @cli_modules = qw(
+Getopt::Long 2.24
 );
 
+my @dev_modules = qw(
+Time::HiRes 
+Test::Inline 
+);
+
+my @fcgi_modules = qw(
+CGI::Fast 
+);
+
+my @modperl_modules = qw( 
+Apache::Request 
+);
+
+my @db_modules;
 
 if ($dbd =~ /mysql/i) {
-	push @modules, ('DBD::mysql','2.0416'); 
+        @db_modules = qw(DBD::mysql 2.0416
+        );
 }
 elsif ($dbd =~ /oracle/i) {
-	push @modules, ('DBD::Oracle','');
+        @db_modules = qw(DBD::Oracle
+        );
 }
 elsif ($dbd =~ /pg/i) {
-	push @modules, ('DBD::Pg','');
+        @db_modules = qw(DBD::Pg
+        );
 }
+
+
+@modules =  (@core_modules, @mason_modules, @cli_modules, @dev_modules, @db_modules, @fcgi_modules, @modperl_modules);
+
 use CPAN;
 
-while ($module= shift @modules) {
+while (my $module= shift @modules) {
 	my $version = "";
-	$version = " ". shift (@modules) . " " if ($modules[0] =~ /^([\d\.]*)$/);
+        next unless ($module);
+	$version = " ". shift (@modules) . " " if (@modules && $modules[0] =~ /^([\d\.]*)$/);
 	print "Checking for $module$version";
 	eval "use $module$version" ;
 	if ($@) {

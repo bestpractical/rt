@@ -8,9 +8,11 @@
 
 =head1 SYNOPSIS
 
-RT::GroupMember should never be called directly. It should generally
+RT::GroupMember should never be called directly. It should ONLY
 only be accessed through the helper functions in RT::Group;
-This class does no authentication itself
+
+If you're operating on an RT::GroupMember object yourself, you B<ARE>
+doing something wrong.
 
 =head1 DESCRIPTION
 

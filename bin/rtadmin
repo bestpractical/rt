@@ -487,7 +487,7 @@ sub AdminGroup {
 
     #Create the group if we need to
     if ( $args{'create'} ) {
-        my ( $val, $msg ) = $group_obj->CreateSystemGroup(
+        my ( $val, $msg ) = $group_obj->CreateUserDefinedGroup(
             Name => ( $args{'Name'} || $group ),
             Description => $args{'Description'}
         );
@@ -496,7 +496,7 @@ sub AdminGroup {
 
     #otherwise we load it
     else {
-        $group_obj->LoadSystemGroup($group);
+        $group_obj->LoadUserDefinedGroup($group);
     }
 
     #If we have no group object, get the hell out
@@ -552,7 +552,7 @@ sub AdminGroup {
 
     foreach my $group ( @{ $args{'add-group'} } ) {
         my $member_obj = RT::Group->new($CurrentUser);
-        $member_obj->LoadSystemGroup($group);
+        $member_obj->LoadUserDefinedGroup($group);
         if ( $group_obj->Id ) {
             my ( $val, $msg ) =
               $group_obj->AddMember( $member_obj->PrincipalId );
@@ -564,7 +564,7 @@ sub AdminGroup {
     }
     foreach my $group ( @{ $args{'delete-group'} } ) {
         my $member_obj = RT::Group->new($CurrentUser);
-        $member_obj->LoadSystemGroup($group);
+        $member_obj->LoadUserDefinedGroup($group);
         if ( $group_obj->Id ) {
             my ( $val, $msg ) =
               $group_obj->DeleteMember( $member_obj->PrincipalId );

@@ -27,6 +27,7 @@ use RT::Principal;
 use vars qw (%SCOPES
    	     %QUEUERIGHTS
 	     %SYSTEMRIGHTS
+         %GROUPRIGHTS
 	     %LOWERCASERIGHTNAMES
 	    ); 
 
@@ -48,9 +49,9 @@ use vars qw (%SCOPES
 		ModifyACL => 'Modify Access Control List',
 		ModifyQueueWatchers => 'Modify the queue watchers',
         AdminCustomFields => 'Create, delete and modify custom fields',
-
         ModifyTemplate => 'Modify email templates for this queue',
 		ShowTemplate => 'Display email templates for this queue',
+
 		ModifyScrips => 'Modify Scrips for this queue',
 		ShowScrips => 'Display Scrips for this queue',
 
@@ -74,10 +75,16 @@ use vars qw (%SCOPES
 %SYSTEMRIGHTS = (
         SuperUser => 'Do anything and everything',
 		AdminGroups => 'Create, delete and modify groups',
-	    AdminUsers => 'Create, Delete and Modify users',
+	    AdminUsers => 'Create, delete and modify users',
 		ModifySelf => "Modify one's own RT account",
 
 		);
+
+%GROUPRIGHTS = qw(
+       AdminGroup
+       AdminGroupMembership
+       ModifyOwnMembership
+);
 
 # }}}
 

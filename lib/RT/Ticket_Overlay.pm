@@ -736,7 +736,7 @@ sub _CreateTicketGroups {
 
     foreach my $type (@types) {
         my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateWatcherGroup(Domain => 'TicketRole',
+        my ($id, $msg) = $type_obj->CreateRoleGroup(Domain => 'TicketRole',
                                                        Instance => $self->Id, 
                                                        Type => $type);
         unless ($id) {

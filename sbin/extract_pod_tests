@@ -71,6 +71,7 @@ foreach my $test (@tests, @examples) {
     print $outfh "$test\n";
 }
 
+print $outfh "1;\n";
 
 =pod
 

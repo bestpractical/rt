@@ -1,0 +1,65 @@
+Group ACLs
+        
+        the rights:
+
+
+        CreatePersonalGroup
+        CreateGroup
+
+        AdminGroup
+                * Update group metadata and access control list
+        AdminGroupMembers
+                * Add ad delete members of this group
+        ModifyOwnMembership
+                * Join and quit this group
+
+
+        the primitives:
+       
+In user.pm
+
+=item HasRight  { Right => 'somerightname', ObjectType => 'Group', ObjectId => 'GroupId'
+
+        Returns true if this user has the right 'somerightname' for
+the group with id 'Id'
+
+=cut
+
+
+=item RightsForObject { ObjectType => 'Group', ObjectId =>'GroupId' }
+
+in users.pm
+
+=item WhoHaveRight { Right =>'somerightname', ObjectType => 'Group', ObjectId => 'GroupId' }
+
+
+        Finds all users who have the right 'somerightname' for the group
+in question.
+
+        If a user has "AdminGroupMembers" globally and we ask about 
+        group 23, that user should be found.
+
+=cut
+
+Users must be able to delegate individual rights 
+
+        * Is it that users can delegate any and all rights but it's
+        only rights they _have_ which actually grant rights.
+
+rights must not be redelegated
+
+users must be able to create groups to which rights can be delegated.
+
+Only users who have the "delegate rights" right can delegate rights.
+
+
+When a user's right to do something is revoked, the delegation must 
+be revoked
+
+        * For any delegated ACL check, the delegator's right must be 
+          checked immediately after the delegatee's right.
+          If a user has had a right delegated by multiple parties, 
+          this may mean that we need to actually loop through and check
+          a bunch of possible delegations. Or can we craft a "has delegated 
+          right" ACL check.
+             
