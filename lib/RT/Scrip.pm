@@ -98,7 +98,7 @@ sub LoadAction  {
   #TODO: Put this in an eval  
   my $type = "RT::Action::". $self->Action;
  
-  $RT::Logger->debug("now requiring $type"); 
+  $RT::Logger->debug("now requiring $type\n"); 
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
   $self->{'Action'}  = $type->new ( 'ScripObj' => $self, 
 				    'TicketObj' => $args{'TicketObj'},

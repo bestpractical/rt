@@ -38,6 +38,7 @@ sub Prepare  {
   # $self->{'Header'}->add('RT-Action-Type', "Autoreply");
 
   #You _always_ need to run SUPER::Prepare();
+
   return $self->SUPER::Prepare();
 }
 # }}}
@@ -75,10 +76,10 @@ sub SetReturnAddress {
   my $email_address = $self->TicketObj->QueueObj->CorrespondAddress ? 
     $self->TicketObj->QueueObj->CorrespondAddress :
       $RT::CorrespondAddress
-	or warn "Can't find email address for queue?";
+	or $RT::Logger->err( "Can't find email address for queue?");
   
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
-    my $friendly_name=$self->{TransactionObj}->Creator->RealName;
+      my $friendly_name=$self->{TransactionObj}->Creator->RealName;
     $self->TemplateObj->MIMEObj->head->add('From', "Request Tracker <$email_address>");
     $self->TemplateObj->MIMEObj->head->add('Reply-To', "$email_address");
   }

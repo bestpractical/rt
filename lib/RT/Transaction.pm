@@ -78,20 +78,16 @@ sub Create  {
 	
 	# TODO: we're really doing a lot of unneccessary
 	# TODO: loading here. I think we really should do a search on two
-	# TODO: tables.  --TobiX
-	# TODO: Agreed - jesse. It'll probably wait until after the 2.0 
-	# TODO  release unless it appears to be a serious perf bottleneck.
+	# TODO: tables. 
 	
-	$RT::Logger->debug("Trying out ".$Scope->ScripObj->Name." (".$Scope->ScripObj->Type.")");
+	$RT::Logger->debug("Checking Scrip: ".$Scope->ScripObj->Name." (".$Scope->ScripObj->Type.")\n");
 	if ($Scope->ScripObj->Type && 
 	    $Scope->ScripObj->Type =~ /(Any)|(\b$args{'Type'}\b)/) {
 
 	    #TODO: properly deal with errors raised in this scrip loop
 
-	    # Why do we need an eval here anyway?  What errors can be
-	    # raised here?
-
 	    eval {
+		local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
 		#Load the scrip's action;
 		$Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
 					     TemplateObj => $Scope->ScripObj->TemplateObj,
@@ -359,6 +355,5 @@ sub IsInbound {
 
 # }}}
 
-# }}}
 
 1;

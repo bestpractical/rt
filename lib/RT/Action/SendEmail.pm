@@ -1,14 +1,9 @@
 # $Header$
-# Copyright 2000 Tobias Brox <tobix@cpan.org> and  Jesse Vincent <jesse@fsck.com>
+# Copyright 2000  Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>
 # Released under the terms of the GNU Public License
 
 package RT::Action::SendEmail;
 require RT::Action;
-require Mail::Internet;
-require Mail::Mailer;
-
-die "You need MailTools 1.14 or newer (check the FAQ)" if ($Mail::Internet::VERSION<1.32);
-warn "Your Mail::Mailer might need patching" if ($Mail::Mailer::VERSION eq 1.19);
 
 @ISA = qw(RT::Action);
 
@@ -32,10 +27,23 @@ sub Commit  {
   # it's very easy to subclass Mail::Mailer::mail - but you should
   # probably talk with Graham Barr first.
 
-  $self->TemplateObj->MIMEObj->send('sendmail') || die "Could not send mail (check the FAQ)";
-#  $self->TemplateObj->MIMEObj->smtpsend(Host => 'localhost') || die "could not send email";
 
-  $RT::Logger->log(message=>"Mail sent", level=>'debug')
+  
+  $self->TemplateObj->MIMEObj->make_singlepart;
+
+  #TODO: make this work with Mail::Mailer. I saw weird shit that broke
+  # all mailing (doubled newlines in headers)
+
+  $RT::Logger->debug("$self: RT::Action::SendEmail is calling a hardcoded sendmail 8 commandline\n");
+  open (MAIL, "|/usr/lib/sendmail -oi -t -ODeliveryMode=b -OErrorMode=m ");
+  print MAIL $self->TemplateObj->MIMEObj->as_string;
+  close(MAIL);
+  
+
+#  $self->TemplateObj->MIMEObj->send('sendmail', $self->{'EnvelopeTo'}) || die "Could not send mail (check the FAQ)";
+  #  $self->TemplateObj->MIMEObj->smtpsend(Host => 'localhost') || die "could not send email";
+  
+  $RT::Logger->debug("$self: Message sent\n");
 
   # TODO Better error handling?
 
@@ -49,19 +57,19 @@ sub Prepare  {
 
   # This actually populates the MIME::Entity fields in the Template Object
 
-
+  $RT::Logger->debug("Now entering $self -> Prepare\n");
   unless ($self->TemplateObj) {
-      warn "oh! No template given! :(";
+      $RT::Logger->debug("No template object handed to $self\n");
       return 0;
   }
 
   unless ($self->TransactionObj) {
-      warn "oh! No transaction given! :(";
+      $RT::Logger->debug("No transaction object handed to $self\n");
       return 0;
   }
 
-  unless ($self->TransactionObj->Message->First) {
-      warn "oh! No message given! :(";
+    unless ($self->TicketObj) {
+      $RT::Logger->debug("No ticket object handed to $self\n");
       return 0;
   }
 
@@ -89,7 +97,7 @@ sub Prepare  {
 
   $self->SetPrecedence();
 
-  $self->SetRecipients() || return 0;
+  $self->SetRecipients();
 
 # Todo: add "\n-------------------------------------------- Managed by Request Tracker\n\n" to the message body
 
@@ -107,16 +115,16 @@ sub IsApplicable  {
   # Loop check.  This header field might be added to the incoming mail
   # by RT::Interfaces::Email.pm if it might be a loop or result in
   # looping (typically a bounce) 
-  my $m=$self->TransactionObj->Message->First ;
-  if ( $m && ($m->Headers =~ /^RT-Mailing-Loop-Alarm/m)) {
-      warn "Aborting mailsending Scrip because of possible or potential mail loop";
-      return 0;
-  }
 
-  $RT::Logger->log(message=>"No transaction attachment; ".$self->TransactionObj->Description,
-		   level=>'debug')
-      unless $m;
-
+  #TODO: This code violates RT's abstraction six ways to sunday
+  # and needs to move into a subclass
+  if (0) {
+      my $m=$self->TransactionObj->Message->First ;
+      if ( $m && ($m->Headers =~ /^RT-Mailing-Loop-Alarm/m)) {
+	  warn "Aborting mailsending Scrip because of possible or potential mail loop";
+	  return 0;
+      }
+}
   # More work needs to be done here to avoid duplicates beeing sent,
   # and to ensure that there actually are any receipients.
 
@@ -126,7 +134,7 @@ sub IsApplicable  {
 
 # }}}
 
-# {{{ Deal with message headers (Set* subs, many of them suited for overriding)
+# {{{ Deal with message headers (Set* subs, designed for  easy overriding)
 
 # {{{ sub SetRTSpecialHeaders
 
@@ -221,6 +229,7 @@ sub SetMessageID {
 # }}}
 
 # {{{ sub SetContentType
+
 sub SetContentType {
   my $self = shift;
   
@@ -246,7 +255,6 @@ sub SetContentType {
   }
 return();
 }
-
 
 # }}}
 
@@ -281,10 +289,7 @@ sub SetReturnAddress {
 
 sub SetEnvelopeTo {
   my $self = shift;
-  if (exists $self->{'EnvelopeTo'}) {
-      # STUB!  Has to be done differently.
-      $self->TemplateObj->MIMEObj->head->add('Envelope-To', $self->{'EnvelopeTo'});
-  }
+  $self->{'EnvelopeTo'} = "root";
   return($self->{'EnvelopeTo'});
 }
 
@@ -338,7 +343,7 @@ sub SetHeader {
 
 sub SetTo {
     my $self=shift;
-    return $self->SetHeader('To', @_);
+    return $self->SetHeader('To', 'jesse',@_);
 }
 # }}}
 

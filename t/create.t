@@ -4,7 +4,7 @@
 # $Header$
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
 
-=head1 Stress Test for RT2
+=head1 Ticket Create Test for RT2
 
 This test stresses the rt core with 1000 ticket creates,
 1000 ticket takes, 1000 responses and 1000 resolves
@@ -15,7 +15,7 @@ so far, the first thing is all it does.
 
 package RT;
 use strict;
-use vars qw($VERSION $Handle $SystemUser);
+use vars qw($VERSION $Handle $SystemUser $Root);
 
 $VERSION="1.3.3";
 
@@ -41,7 +41,8 @@ $Handle->Connect(Host => $RT::DatabaseHost,
 use RT::CurrentUser;
 #TODO abstract out the ID of the RT SystemUser
 $SystemUser = RT::CurrentUser->new(1);
-
+$RT::Nobody = RT::CurrentUser->new(2);
+$Root = RT::CurrentUser->new(3);
 use MIME::Entity;
 my  $Message = MIME::Entity->build ( Subject => "This is a subject",
 				     From => "jesse\@fsck.com",
@@ -49,15 +50,14 @@ my  $Message = MIME::Entity->build ( Subject => "This is a subject",
 
 print STDERR time."\n";
 use RT::Ticket;
-for (my $i = 0; $i < 1000; $i++) {
 	my $ticket = RT::Ticket->new($SystemUser);
 	$ticket->Create(Queue => 'general',
 		Subject => "This is a subject",
 		Status => "Open",
+		Owner => $Root->UserObj,
 		Requestor => $SystemUser->UserObj,
 		MIMEObj => $Message);
 
-}
 $RT::Handle->Disconnect();
 
 print STDERR "Ok. all done".time." \n\n";
