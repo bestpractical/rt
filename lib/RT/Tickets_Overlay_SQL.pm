@@ -263,7 +263,7 @@ sub _parser {
         substr($val,0,1) = "";
         substr($val,-1,1) = "";
       }
-      # Unescape escaped characters                                            
+      # Unescape escaped characters
       $key =~ s!\\(.)!$1!g;                                                    
       $val =~ s!\\(.)!$1!g;     
       #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
@@ -378,6 +378,21 @@ Convert a RT-SQL string into a set of SearchBuilder restrictions.
 Returns (1, 'Status message') on success and (0, 'Error Message') on
 failure.
 
+
+=begin testing
+
+
+my $query = "SELECT id WHERE Status = 'open'";
+
+my $tix = RT::Tickets->new($RT::SystemUser);
+
+my ($id, $msg)  
+
+
+
+=end testing
+
+
 =cut
 
 sub FromSQL {
@@ -424,7 +439,7 @@ sub FromSQL {
   $self->{'must_redo_search'} = 1;
   $self->{'RecalcTicketLimits'} = 0;                                           
 
-  return (1,loc("Valid Query"));
+  return (1,$self->loc("Valid Query"));
 
 }
 
