@@ -316,8 +316,8 @@ sub _FindScrips {
 
     $self->LimitToQueue( $self->{'TicketObj'}->QueueObj->Id )
       ;    #Limit it to  $Ticket->QueueObj->Id
-    $self->LimitToGlobal()
-      unless $self->{'TicketObj'}->QueueObj->Disabled;    # or to "global"
+    $self->LimitToGlobal();
+      # or to "global"
 
     $self->Limit( FIELD => "Stage", VALUE => $args{'Stage'} );
 
