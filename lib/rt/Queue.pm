@@ -31,42 +31,30 @@ sub create {
   # TODO: created is not autoset
 }
 
-#TODO: this is OLD CODE. IT IS BROKEN
 sub delete {
   my $self = shift;
  # this function needs to move all requests into some other queue!
   my ($query_string,$update_clause);
   
-  
+  die ("Queue->Delete not implemented yet";)
     
-    $queue_id=$rt::dbh->quote($in_queue_id);
+    
     if (($users{$in_current_user}{'admin_rt'}) or ($queues{"$in_queue_id"}{'acls'}{"$in_current_user"}{'admin'})) {
-	$query_string = "DELETE FROM queues WHERE id = $in_queue_id";
-	$sth = $dbh->prepare($query_string) 
-	    or return (0, 
-		       "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");
- 	$rv = $sth->execute 
-	    or return (0, 
-		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
-	$query_string = "DELETE FROM queue_acl WHERE queue_id = $in_queue_id";
-        $sth=$dbh->prepare($query_string) 
-	    or return (0, 
-		       "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");
- 	$rv = $sth->execute 
-	    or return (0, 
-		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
-	$query_string = "DELETE FROM queue_areas WHERE queue_id = $in_queue_id";
-        $sth=$dbh->prepare($query_string) 
-	    or return (0, "[delete_queue] Query had some problem: $DBI::errstr\n$query_string\n");  
- 	$rv = $sth->execute 
-	    or return (0, 
-		       "[delete_area] Query had some problem: $DBI::errstr\n$query_string\n");
-	delete $rt::queues{"$in_queue_id"};
-	return (1, "Queue $in_queue_id deleted.");
-    }
-    else {
-	return(0, "You do not have the privileges to delete queue $in_queue_id.");
-    }
+      
+
+      #TODO:  DO ALL THESE
+      $query_string = "DELETE FROM queues WHERE id = $in_queue_id";
+      $query_string = "DELETE FROM queue_acl WHERE queue_id = $in_queue_id";
+      $query_string = "DELETE FROM queue_areas WHERE queue_id = $in_queue_id";
+      
+
+      return (1, "Queue $in_queue_id deleted.");
+ 
+
+   }
+  else {
+    return(0, "You do not have the privileges to delete queue $in_queue_id.");
+  }
 }
 
 sub Create {
@@ -176,6 +164,8 @@ sub DeleteArea {
 }
 
 sub Areas {
+
+  
 #returns an EasySearch object which enumerates this queue's areas
 }
 
@@ -188,12 +178,12 @@ sub Areas {
 sub ACL {
  my $self = shift;
  if (!$self->{'acl'}) {
-	 my $self->{'acl'} = new RT::ACL($self->{'user'});
-	 $self->{'acl'}->Limit(FIELD => 'queue', 
-			       VALUE => "$self->id");
-	}
-
-  return ($self->{'acl'});
+   my $self->{'acl'} = new RT::ACL($self->{'user'});
+   $self->{'acl'}->Limit(FIELD => 'queue', 
+			 VALUE => "$self->id");
+ }
+ 
+ return ($self->{'acl'});
 
 }
 
@@ -207,6 +197,17 @@ sub ACL {
 
 #
 #
+ 
+sub Admin_Permitted {
+  my $self = shift;
+  my $actor = shift || my $actor = $self->{'user'};
+  return(1);
+  #if it's not permitted,
+  return(0);
+
+}
+
+
 sub Display_Permitted {
   my $self = shift;
   my $actor = shift || my $actor = $self->{'user'};

@@ -14,10 +14,9 @@ sub new {
 
 sub create {
   my $self = shift;
-#  print STDERR "RT::Article::create::",join(", ",@_),"\n";
   my $id = $self->SUPER::create(@_);
   $self->load_by_reference($id);
-
+  
   #TODO: this is horrificially wasteful. we shouldn't commit 
   # to the db and then instantly turn around and load the same data
 
@@ -32,7 +31,7 @@ sub create {
 }
 sub created {
   my $self = shift;
-  $self->_set_and_return('created',@_);
+  $self->_set_and_return('created');
 }
 
 
@@ -42,25 +41,22 @@ sub SerialNum {
 }
 sub EffectiveSm {
   my $self = shift;
+
   $self->_set_and_return('effective_sn',@_);
 }
-sub Queue {
-  my $self = shift;
-  return ($self->queue_id);
-}
+
 sub QueueId {
   my $self = shift;
   my ($new_queue, $queue_obj);
   
   #TODO: does this work?
   if ($new_queue = shift) {
-    $queue_obj = RT::Queue->new($self->CurrentUser);
-    if (!$queue_obj->load($new_queue);) {
+    if (!$self->Queue->load($new_queue);) {
       return (0, "That queue does not exist");
-   }
-    if (!$queue_obj->Create_Permitted) {
-      return (0, "You may not create requests in that queue");
-      }
+    }
+    if (!$self->Queue->Create_Permitted) {
+      return (0, "You may not create requests in that queue.");
+    }
   }
   $self->_set_and_return('queue_id',@_);
 }
@@ -69,9 +65,9 @@ sub QueueId {
 sub Area {
   my $self = shift;
   
-
+  
   #TODO: if we get an area check to see if it's a valid area in this queue
-
+  
   $self->_set_and_return('area',@_);
 }
 sub Alias {
@@ -89,6 +85,7 @@ sub Take {
   my $self=shift;
   $self->Owner($self->CurrentUser);
 }
+
 sub Unake {
   my $self=shift;
   $self->Owner("");
@@ -218,51 +215,67 @@ sub DateDue {
 
 sub NewComment {
   my $self = shift;
-  #TODO implement
-}
 
-sub NewCorrespondence {
-  my $self;
   my $content = shift;
   my $subject = shift;
   my $sender = shift;
   my $cc = shift;
   my $bcc = shift;
+  my $time_taken = shift;
 
-  my $status = shift;
   
-
   #Record the correspondence (write the transaction)
+  $self->_NewTransaction('comment',$subject,$time_taken,$content);
   
   #Send a copy to the queue members, if necessary
   
   #Send a copy to the owner if necesary
+  
+  if ($cc || $bcc ) {
+    #send a copy of the correspondence to the CC list and BCC list
+  }
+  
+  return ("This correspondence has been recorded");
+}
 
+sub NewCorrespondence {
+  my $self = shift;
+  my $content = shift;
+  my $subject = shift;
+  my $sender = shift;
+  my $cc = shift;
+  my $bcc = shift;
+  my $time_taken = shift;
+
+  
+  #Record the correspondence (write the transaction)
+  $self->_NewTransaction('correspondence',$subject,$time_taken,$content);
+  
+  #Send a copy to the queue members, if necessary
+  
+  #Send a copy to the owner if necesary
+  
   if (!$self->IsRequestor($sender)) {
     #Send a copy of the correspondence to the user
     #Flip the date_told to now
-
+    #If we've sent the correspondence to the user, flip the note the date_told
   }
+  
   elsif ($cc || $bcc ) {
     #send a copy of the correspondence to the CC list and BCC list
   }
   
-
-  #If there's a status change, call $self->Status($status);
-  
-  #If we've sent the correspondence to the user, flip the note the date_told
-  
-
-  return ("This correspondence has been recorded");
+  return ("This correspondence has been sent");
 }
 
 
 
 sub _NewTransaction {
   my $self = shift;
-  my $time_taken = shift;
+
   my $type = shift;
   my $data = shift;
+  my $time_taken = shift;
   my $content = shift;
   my $trans = new RT::Transaction($self->CurrentUser);
   $trans->Create( effective_sn => $self->EffectiveSN,
@@ -275,7 +288,7 @@ sub _NewTransaction {
 		  content => "$content"
 		);
   
-  
+  $self->_update_time_taken($time_taken); 
 }
 
 sub Transactions {
@@ -387,6 +400,11 @@ sub IsRequestor {
 #
 
 
+sub _update_time_taken {
+  my $self = shift;
+  warn("_update_time_taken not implemented yet.");
+  
+}
 
 sub _update_date_acted {
   my $self = shift;
@@ -394,7 +412,7 @@ sub _update_date_acted {
 }
 sub _set_and_return {
   my $self = shift;
-  my $field = shift;
+  my (@args);
   #if the user is trying to display only {
   if (@_ == undef) {
     
@@ -407,24 +425,53 @@ sub _set_and_return {
     }
   }
   #if the user is trying to modify the record
-  else {
-    if ($self->Modify_Permitted) {
-      #instantiate a transaction 
- 
-     #record what's being done in the transaction
- 
-      #Figure out where to send mail
-      
-      $self->_update_date_acted;
+  
 
-      $self->SUPER::_set_and_return($field, @_);
-    }
-    else {
-      return (0, "Permission Denied");
-    }
+
+  if ($self->Modify_Permitted) {
+ 
+    my $field = shift;
+    my $value = shift;
+    my $time_taken = shift if @_;
+    
+    #TODO: this doesn't work, iirc.
+    
+    my $content = @_;
+    
+    
+  #record what's being done in the transaction
+    
+    $self->_NewTransaction ($field, $value, $time_taken, $content);
+    
+  
+    
+    $self->_update_date_acted;
+  
+    $self->SUPER::_set_and_return($field, @_);
+    
+    #Figure out where to send mail
+    
+    
+    
   }
   
+  else {
+    return (0, "Permission Denied");
+  }
 }
+
+
+
+sub Queue {
+  my $self = shift;
+  if (!$self->{'queue'}) {
+    my $self->{'queue'} = new RT::Queue($self->CurrentUser);
+    $self->{'queue'}->load($self->QueueId);
+  }
+  return ($self->{'queue'});
+  
+}
+
 
 #
 #ACCESS CONTROL
@@ -432,18 +479,42 @@ sub _set_and_return {
 sub Display_Permitted {
   my $self = shift;
   my $actor = shift || my $actor = $self->CurrentUser;
-  return(1);
-  #if it's not permitted,
-  return(0);
 
+  if (($self->Queue->DisplayPermitted($actor))) {
+    
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
 }
 sub Modify_Permitted {
   my $self = shift;
- my $actor = shift || my $actor = $self->CurrentUser;
-  return(1);
-  #if it's not permitted,
-  return(0);
+  my $actor = shift || my $actor = $self->CurrentUser;
 
+  if (($self->Queue->ModifyPermitted($actor))) {
+    
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
+}
+
+sub Admin_Permitted {
+  my $self = shift;
+  my $actor = shift || my $actor = $self->CurrentUser;
+
+  if (($self->Queue->AdminPermitted($actor))) {
+    
+    return(1);
+  }
+  else {
+    #if it's not permitted,
+    return(0);
+  }
 }
 
 1;

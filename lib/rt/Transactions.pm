@@ -1,4 +1,4 @@
-package RT::Articles;
+package RT::Transactions;
 @ISA= qw(DBIx::EasySearch);
 
 
@@ -6,7 +6,7 @@ sub new {
   my $pkg= shift;
   my $self = SUPER::new $pkg;
   
-  $self->{'table'} = "transaction";
+  $self->{'table'} = "transactions";
   $self->{'primary_key'} = "id";
   return($self);
 }
