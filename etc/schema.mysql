@@ -308,6 +308,11 @@ INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
 			  'Sends mail to owner when anything happens',
 			  'Any','Notify',2,'AdminCc',1,NULL,1,NULL);
 
+##TODO: Get Notify.pm to support OldOwner + fix a template
+#INSERT INTO Scrips VALUES (20, 'NotifyOldOwnerOnSteal',
+#			  'Sends mail to the old owner when the ticket is stolen',
+#			  'Steal','Notify',10,'OldOwner',1,NULL,1,NULL);
+
 # Short about the default available link actions available;
 
 # Action
