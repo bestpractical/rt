@@ -48,10 +48,17 @@ use strict;
 use warnings;
 
 no warnings qw(redefine);
-use vars qw(%_ACL_KEY_CACHE);
+
+use Cache::Simple::TimedExpiry;
+
+
 
 use RT::Group;
 use RT::User;
+
+# Set up the ACL cache on startup
+our $_ACL_CACHE;
+_InvalidateACLCache();
 
 # {{{ IsGroup
 
@@ -298,60 +305,20 @@ sub HasRight {
     };
     # }}}
 
-    #Anything older than 60 seconds needs to be rechecked
-    my $cache_timeout = ( time - 60 );
 
     # {{{ if we've cached a positive result for this query, return 1
-    if (    ( defined $self->_ACLCache->{"$hashkey"} )
-         && ( $self->_ACLCache->{"$hashkey"}{'val'} == 1 )
-         && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
-         && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
 
-        #$RT::Logger->debug("Cached ACL win for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
-        return ( 1);
-    }
-    # }}}
+        my $cached_answer = $_ACL_CACHE->fetch($hashkey);
+        # Returns undef on cache miss
+        if (defined $cached_answer) {
+            if ($cached_answer == 1) {
+                   return(1);
+                }
+            elsif ($cached_answer == -1) {
+                return(0); 
+             }
+        }
 
-    #  {{{ if we've cached a negative result for this query return undef
-    elsif (    ( defined $self->_ACLCache->{"$hashkey"} )
-            && ( $self->_ACLCache->{"$hashkey"}{'val'} == -1 )
-            && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
-            && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
-
-        #$RT::Logger->debug("Cached ACL loss decision for ".  $args{'Right'}.$args{'Scope'}.  $args{'AppliesTo'}."\n");	    
-
-        return (undef);
-    }
-    # }}}
-
-    # }}}
-
-
-
-    #  {{{ Out of date docs
-    
-    #   We want to grant the right if:
-
-
-    #    # The user has the right as a member of a system-internal or 
-    #    # user-defined group
-    #
-    #    Find all records from the ACL where they're granted to a group 
-    #    of type "UserDefined" or "System"
-    #    for the object "System or the object "Queue N" and the group we're looking
-    #    at has the recursive member $self->Id
-    #
-    #    # The user has the right based on a role
-    #
-    #    Find all the records from ACL where they're granted to the role "foo"
-    #    for the object "System" or the object "Queue N" and the group we're looking
-    #   at is of domain  ("RT::Queue-Role" and applies to the right queue)
-    #                             or ("RT::Ticket-Role" and applies to the right ticket)
-    #    and the type is the same as the type of the ACL and the group has
-    #    the recursive member $self->Id
-    #
-
-    # }}}
 
     my ( $or_look_at_object_rights, $or_check_roles );
     my $right = $args{'Right'};
@@ -443,35 +410,19 @@ sub HasRight {
     
     # {{{ if there's a match, the right is granted 
     if ($hitcount) {
-
-        # Cache a positive hit.
-        $self->_ACLCache->{"$hashkey"}{'set'} = time;
-        $self->_ACLCache->{"$hashkey"}{'val'} = 1;
+        $_ACL_CACHE->set($hashkey => 1);
         return (1);
     }
-    # }}}
-    # {{{ If there's no match on groups, try it on roles
-    else {   
-
+    # Now check the roles query
     	$hitcount = $self->_Handle->FetchResult($roles_query);
 
-        if ($hitcount) {
-
-            # Cache a positive hit.
-            $self->_ACLCache->{"$hashkey"}{'set'} = time;
-            $self->_ACLCache->{"$hashkey"}{'val'} = 1;
-            return (1);
-	    }
-
-        else {
-            # cache a negative hit
-            $self->_ACLCache->{"$hashkey"}{'set'} = time;
-            $self->_ACLCache->{"$hashkey"}{'val'} = -1;
-
-            return (undef);
-	    }
+    if ($hitcount) {
+        $_ACL_CACHE->set($hashkey => 1);
+        return (1);
     }
-    # }}}
+    # We failed to find an acl hit
+     $_ACL_CACHE->set($hashkey => -1);
+     return (undef);
 }
 
 # }}}
@@ -513,23 +464,6 @@ sub _RolesForObject {
 
 # {{{ ACL caching
 
-# {{{ _ACLCache
-
-=head2 _ACLCache
-
-# Function: _ACLCache
-# Type    : private instance
-# Args    : none
-# Lvalue  : hash: ACLCache
-# Desc    : Returns a reference to the Key cache hash
-
-=cut
-
-sub _ACLCache {
-    return(\%_ACL_KEY_CACHE);
-}
-
-# }}}
 
 # {{{ _InvalidateACLCache
 
@@ -540,7 +474,9 @@ Cleans out and reinitializes the user rights key cache
 =cut
 
 sub _InvalidateACLCache {
-    %_ACL_KEY_CACHE = ();
+    $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
+    $_ACL_CACHE->expire_after($RT::ACLCacheLifetime||60);
+
 }
 
 # }}}
