@@ -867,7 +867,28 @@ is a good chance it will not be dealt with.
 Send patches to rt-<major-version>-bugs@fsck.com, too.  Use C<diff
 -u> for patches.
 
+=head1 SCHEMA DESIGN
 
+RT uses a convention to denote the foreign key status in its tables.
+The rule of thumb is:
+
+=over 4
+
+=item When it references to another table, always use the table name
+
+For example, the C<Template> field in the C<Scrips> table refers to
+the C<Id> of the same-named C<Template> table.
+
+=item Otherwise, always use the C<Id> suffix
+
+For example, the C<ObjectId> field in the C<ACL> table can refer
+to any object, so it has the C<Id> suffix.
+
+=back
+
+There are some legacy fields that did not follow this rule, namely
+C<ACL.PrincipalId>, C<GroupMembers.GroupId> and C<Attachments.TransactionId>,
+but new tables are expected to be consistent.
 
 =head1 TO DO
 
