@@ -201,9 +201,10 @@ An alias for the initial queue will need to be made in either your
 global mail aliases file (if you are using NIS) or locally on your
 machine.
  
-Add the following line to /etc/aliases (or your local equivalent) :
+Add the following lines to /etc/aliases (or your local equivalent) :
 
-        rt:     |"/path/to/rt/bin/rt-mailgate general correspond"
+    rt-comment: |"/path/to/rt/bin/rt-mailgate general comment"
+    rt:         |"/path/to/rt/bin/rt-mailgate general correspond"
                                                     |          |
                                    <<queue-name>----/          |
                                                                |
