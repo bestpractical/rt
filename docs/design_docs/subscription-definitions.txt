@@ -1,8 +1,9 @@
 What is an Action?
 
-...some piece of code that can do something whenever a transaction is
-done.  The actions shipped with RT sends email.  Eventually site-specific
-modules can be dropped in to perform special actions.
+...some piece of code that can do something whenever a transaction is done.
+The actions shipped with RT sends email and can handle some logic that makes
+sense for some instances.  site-specific modules can be dropped in to
+perform special actions.
 
 
 What can an Action do?
@@ -21,8 +22,11 @@ actions that will be bundled with RT.
 What is a Scrip?
 
 ...it's an entry in the database that tells that an action is to be
-performed with a certain template and argument.  It can be limited by
-transaction type.  It has a name and a description.
+performed with a certain template and argument.  Template and argument
+doesn't make sense in all contexts.  A scrip can be limited to transaction
+types; the current implementation allows a comma-separated list (though for
+a "cleaner" schema design, it should be a separate table for this?).  It has
+a name and a description.
 
 
 What is a ScripScope?
