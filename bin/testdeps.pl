@@ -53,7 +53,7 @@ Text::Wrapper
 Text::Template
 DBIx::DataSource
 DBIx::DBSchema 0.14
-DBIx::SearchBuilder 0.12
+DBIx::SearchBuilder 0.13
 Apache::Session 1.03
 );
 use CPAN;
