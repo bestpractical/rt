@@ -294,59 +294,6 @@ $WebExternalGecos = undef;
 $WebExternalAuto = undef;
 
 
-
-#This is from tobias' prototype web search UI. it may stay and it may go.
-%WebOptions=
-    (
-     # Here you can modify the list view.  Be aware that the web
-     # interface might crash if TicketAttribute is wrongly set.
-     
-     QueueListingCols => 
-      [
-       { Header     => 'Id',				# loc
-	 TicketLink => 1,
-	 TicketAttribute => 'Id'
-	 },
-
-      { Header     => 'Subject',			# loc
-	 TicketAttribute => 'Subject'
-	 },
-       { Header => 'Requestor(s)',			# loc
-	 TicketAttribute => 'RequestorAddresses'
-	 },
-       { Header => 'Status',				# loc
-	 TicketAttribute => 'CurrentUser->loc($Ticket->Status)'
-	 },
-
-
-       { Header => 'Queue',				# loc
-	 TicketAttribute => 'QueueObj->Name'
-	 },
-
-
-
-       { Header => 'Told',				# loc
-	 TicketAttribute => 'ToldObj->AgeAsString'
-	 },  
-
-       { Header => 'Age',				# loc
-	 TicketAttribute => 'CreatedObj->AgeAsString'
-	 },
-
-       { Header => 'Last',				# loc
-	 TicketAttribute => 'LastUpdatedObj->AgeAsString'
-	 },
-
-       # TODO: It would be nice with a link here to the Owner and all
-       # other request owned by this Owner.
-       { Header => 'Owner',				# loc
-	 TicketAttribute => 'OwnerObj->Name'
-       },
-   
- 
-      ]
-     );
-
 # }}}
 
 # {{{ RT UTF-8 Settings
@@ -360,6 +307,20 @@ $WebExternalAuto = undef;
 # The charset for localized email.  Must be recognized by Encode.
 
 $EmailOutputEncoding = 'utf-8';
+
+# }}}
+
+# {{{ RT Date Handling Options (for Time::ParseDate)
+
+# Set this to 1 if your local date convention looks like "dd/mm/yy"
+# instead of "mm/dd/yy".
+
+$DateDayBeforeMonth = 1;
+
+# Should "Tuesday" default to meaning "Next Tuesday" or "Last Tuesday"?
+# Set to 0 for "Next" or 1 for "Last".
+
+$AmbiguousDayInPast = 1;
 
 # }}}
 

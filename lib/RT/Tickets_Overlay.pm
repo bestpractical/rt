@@ -351,10 +351,13 @@ sub _DateLimit {
   die "Incorrect Meta Data for $field"
     unless (defined $meta->[1]);
 
-  use Date::Parse;
+  require Time::ParseDate;
   use POSIX 'strftime';
 
-  my $time = str2time($value);
+  my $time = Time::ParseDate::parsedate( $value,
+			UK => $RT::DateDayBeforeMonth,
+			PREFER_PAST => $RT::AmbiguousDayInPast,
+			PREFER_FUTURE => !($RT::AmbiguousDayInPast));
   $value = strftime("%Y-%m-%d %H:%M",localtime($time));
 
   $sb->_SQLLimit(
@@ -394,7 +397,7 @@ sub _StringLimit {
 
 Handle fields limiting based on Transaction Date.
 
-The inpupt value must be in a format parseable by Date::Parse
+The inpupt value must be in a format parseable by Time::ParseDate
 
 Meta Data:
   None

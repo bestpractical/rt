@@ -90,10 +90,10 @@ if $args->{'Format'} is 'unix', takes the number of seconds since the epoch
 
 If $args->{'Format'} is ISO, tries to parse an ISO date.
 
-If $args->{'Format'} is 'unknown', require Date::Parse and make it figure things
-out. This is a heavyweight operation that should never be called from within 
-RT's core. But it's really useful for something like the textbox date entry
-where we let the user do whatever they want.
+If $args->{'Format'} is 'unknown', require Time::ParseDate and make it figure
+things out. This is a heavyweight operation that should never be called from
+within RT's core. But it's really useful for something like the textbox date
+entry where we let the user do whatever they want.
 
 If $args->{'Value'}  is 0, assumes you mean never.
 
@@ -174,11 +174,14 @@ sub Set {
         }
     }
     elsif ( $args{'Format'} =~ /^unknown$/i ) {
-        require Date::Parse;
+        require Time::ParseDate;
 
         #Convert it to an ISO format string
 
-        my $date = Date::Parse::str2time( $args{'Value'} );
+	my $date = Time::ParseDate::parsedate($args{'Value'},
+			UK => $RT::DateDayBeforeMonth,
+			PREFER_PAST => $RT::AmbiguousDayInPast,
+			PREFER_FUTURE => !($RT::AmbiguousDayInPast));
 
         #This date has now been set to a date in the _local_ timezone.
         #since ISO dates are known to be in GMT (for RT's purposes);

@@ -1,32 +1,33 @@
 #!@PERL@ -w
 # BEGIN LICENSE BLOCK
-# 
+#
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
-# 
+#
 # (Except where explictly superceded by other copyright notices)
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
-# 
+#
+#
 # Unless otherwise specified, all modifications, corrections or
 # extensions to this work which alter its source code become the
 # property of Best Practical Solutions, LLC when submitted for
 # inclusion in the work.
-# 
-# 
+#
+#
 # END LICENSE BLOCK
 
 use strict;
 use vars qw($PROMPT $VERSION $Handle $Nobody $SystemUser $item);
-use vars qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips);
+use vars
+  qw(@Groups @Users @ACL @Queues @ScripActions @ScripConditions @Templates @CustomFields @Scrips);
 
 use lib "@RT_LIB_PATH@";
 
@@ -44,41 +45,43 @@ use RT::Group;
 use RT::User;
 use RT::Queue;
 use RT::ScripCondition;
+use RT::CustomField;
 
 
-    RT::LoadConfig();
+RT::LoadConfig();
 use Term::ReadKey;
 use Getopt::Long;
 
 my %args;
 
-GetOptions (\%args, 
-		 'prompt-for-dba-password','force', 'debug',
-		'action=s', 'dba=s', 'dba-password=s', 'datafile=s'
+GetOptions(
+    \%args,
+    'prompt-for-dba-password', 'force', 'debug',
+    'action=s',                'dba=s', 'dba-password=s', 'datafile=s'
 
 );
 
 $| = 1;    #unbuffer that output.
-
-
 
 require RT::Handle;
 my $Handle = RT::Handle->new($RT::DatabaseType);
 $Handle->BuildDSN;
 my $dbh;
 
-if ($args{'prompt-for-dba-password'}) {
-	$args{'dba-password'} = get_dba_password();
-	chomp($args{'dba-password'});
+if ( $args{'prompt-for-dba-password'} ) {
+    $args{'dba-password'} = get_dba_password();
+    chomp( $args{'dba-password'} );
 }
 
-unless ($args{'action'} ) {
-	help();
-	die;
+unless ( $args{'action'} ) {
+    help();
+    die;
 }
-if ($args{'action'} eq 'init') {
+if ( $args{'action'} eq 'init' ) {
     $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} )
-      || die "Failed to connect to " . get_system_dsn() . " as $args{'dba'}: $DBI::errstr";
+      || die "Failed to connect to "
+      . get_system_dsn()
+      . " as $args{'dba'}: $DBI::errstr";
     print "Now creating a database for RT.\n";
     create_db();
 
@@ -86,25 +89,30 @@ if ($args{'action'} eq 'init') {
     $dbh = DBI->connect( $Handle->DSN, $args{'dba'}, $args{'dba-password'} )
       || die $DBI::errstr;
 
-
     print "Now populating database schema.\n";
     insert_schema();
     print "Now inserting database ACLs\n";
     insert_acl();
+    print "Now inserting RT core system objects\n";
+    insert_initial_data();
     print "Now inserting RT data\n";
-    insert_data();
-
+    insert_data($RT::EtcPath . "/initialdata");
 }
 elsif ( $args{'action'} eq 'drop' ) {
-    unless ( $dbh = DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} ) ) {
+    unless ( $dbh =
+         DBI->connect( get_system_dsn(), $args{'dba'}, $args{'dba-password'} ) )
+    {
         warn $DBI::errstr;
         warn "Database doesn't appear to exist. Aborting database drop.";
         exit(0);
     }
     drop_db();
 }
+elsif ($args{'action'} eq 'insert') {
+        insert_data($args{'datafile'});
+}
 else {
-    print STDERR 'Action unspecified. Makefile error. It was ' . $args{'action'};
+    print STDERR '$0 called with an invalid --action parameter';
     exit(-1);
 }
 
@@ -117,7 +125,7 @@ sub insert_schema {
         open( SCHEMA, "<" . $RT::EtcPath . "/schema." . $RT::DatabaseType );
         my $statement = "";
         foreach my $line (<SCHEMA>) {
-		$line =~ s/\#.*//g;
+            $line =~ s/\#.*//g;
             $statement .= $line;
             if ( $line =~ /;(\s*)$/ ) {
                 $statement =~ s/;(\s*)$//g;
@@ -147,7 +155,7 @@ sub insert_schema {
 # {{{ sub drop_db
 sub drop_db {
     return if ( $RT::DatabaseType eq 'SQLite' );
-    unless ($args{'force'}) {
+    unless ( $args{'force'} ) {
         print <<END;
 
 About to drop $RT::DatabaseType database $RT::DatabaseName on $RT::DatabaseHost.
@@ -176,15 +184,21 @@ sub create_db {
 # }}}
 
 sub get_dba_password {
-	print "In order to create a new database and grant RT access to that database,\n";
-print "this script needs to connect to your ".$RT::DatabaseType." instance on ".$RT::DatabaseHost." as ".$args{'dba'}.".\n";
-print "Please specify that user's database password below. If the user has no database\n";
-print "password, just press return.\n\n";
-print "Password: ";
-ReadMode('noecho');
-my $password = ReadLine(0);
-ReadMode('normal');
-return ($password);
+    print
+"In order to create a new database and grant RT access to that database,\n";
+    print "this script needs to connect to your "
+      . $RT::DatabaseType
+      . " instance on "
+      . $RT::DatabaseHost . " as "
+      . $args{'dba'} . ".\n";
+    print
+"Please specify that user's database password below. If the user has no database\n";
+    print "password, just press return.\n\n";
+    print "Password: ";
+    ReadMode('noecho');
+    my $password = ReadLine(0);
+    ReadMode('normal');
+    return ($password);
 }
 
 # {{{ sub _yesno
@@ -252,187 +266,190 @@ sub get_system_dsn {
     return $dsn;
 }
 
+sub insert_initial_data {
 
+    RT::InitLogging();
+
+    #connect to the db, for actual RT work
+    require RT::Handle;
+    $RT::Handle = RT::Handle->new();
+    $RT::Handle->Connect();
+
+    #Put together a current user object so we can create a User object
+    my $CurrentUser = new RT::CurrentUser();
+
+    print "Checking for existing system user...";
+    my $test_user = RT::User->new($CurrentUser);
+    $test_user->Load('RT_System');
+    if ( $test_user->id ) {
+        print "found!\n\nYou appear to have a functional RT database.\n"
+          . "Exiting, so as not to clobber your existing data.\n";
+        exit(-1);
+
+    }
+    else {
+        print "not found.  This appears to be a new installation.\n";
+    }
+
+    print "Creating system user...";
+    my $RT_System = new RT::User($CurrentUser);
+
+    my ( $val, $msg ) = $RT_System->_BootstrapCreate(
+        Name     => 'RT_System',
+        RealName => 'The RT System itself',
+        Comments =>
+'Do not delete or modify this user. It is integral to RT\'s internal database structures',
+        Creator => '1' );
+
+    unless ($val) {
+        print "$msg\n";
+        exit(1);
+    }
+    print "done.\n";
+    $RT::Handle->dbh->disconnect();
+
+
+}
+
+
+# load some sort of data into the database
 
 sub insert_data {
+        my $datafile = shift;
+    #Connect to the database and get RT::SystemUser and RT::Nobody loaded
+    RT::Init;
 
-RT::InitLogging();
+    my $CurrentUser = RT::CurrentUser->new();
+    $CurrentUser->LoadByName('RT_System');
 
-#connect to the db, for actual RT work
-require RT::Handle;
-$RT::Handle = RT::Handle->new();
-$RT::Handle->Connect();
+    print "Creating Superuser  ACL...";
 
-#Put together a current user object so we can create a User object
-my $CurrentUser = new RT::CurrentUser();
-
-print "Checking for existing system user...";
-my $test_user = RT::User->new($CurrentUser);
-$test_user->Load('RT_System');
-if ( $test_user->id ) {
-    print "found!\n\nYou appear to have a functional RT database.\n"
-      . "Exiting, so as not to clobber your existing data.\n";
-    exit(-1);
-
-}
-else {
-    print "not found.  This appears to be a new installation.\n";
-}
-
-print "Creating system user...";
-my $RT_System = new RT::User($CurrentUser);
-
-my ( $val, $msg ) = $RT_System->_BootstrapCreate(
-    Name     => 'RT_System',
-    RealName => 'The RT System itself',
-    Comments =>
-'Do not delete or modify this user. It is integral to RT\'s internal database structures',
-    Creator => '1' );
-
-unless ($val) {
-    print "$msg\n";
-    exit(1);
-}
-print "done.\n";
-$RT::Handle->dbh->disconnect();
-
-#now that we bootstrapped that little bit, we can use the standard RT cli
-# helpers  to do what we need
-
-use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent);
-
-#Clean out all the nasties from the environment
-CleanEnv();
-
-#Connect to the database and get RT::SystemUser and RT::Nobody loaded
-RT::Init;
-
-$CurrentUser->LoadByName('RT_System');
-
-print "Creating Superuser  ACL...";
-
-my $superuser_ace = RT::ACE->new($CurrentUser);
-$superuser_ace->_BootstrapCreate(
+    my $superuser_ace = RT::ACE->new($CurrentUser);
+    $superuser_ace->_BootstrapCreate(
                              PrincipalId => ACLEquivGroupId( $CurrentUser->Id ),
                              PrincipalType => 'Group',
                              RightName     => 'SuperUser',
                              ObjectType    => 'RT::System',
                              ObjectId      => '1' );
 
-# Slurp in stuff to insert from the datafile. Possible things to go in here:-
-# @groups, @users, @acl, @queues, @ScripActions, @ScripConditions, @templates
+    # Slurp in stuff to insert from the datafile. Possible things to go in here:-
+    # @groups, @users, @acl, @queues, @ScripActions, @ScripConditions, @templates
 
-if (!$args{'datafile'}) {
-	$args{'datafile'} = $RT::EtcPath . "/initialdata";
-}
 
-require $args{'datafile'}
-          || die "Couldn't find initial data for import\n" . $@;
+    require $datafile
+      || die "Couldn't find initial data for import\n" . $@;
 
-print "Creating groups...";
-foreach $item (@Groups) {
-    my $new_entry = RT::Group->new($CurrentUser);
-    my ( $return, $msg ) = $new_entry->_Create(%$item);
-    print "(Error: $msg)" unless ($return);
-    print $return. ".";
-}
-print "done.\n";
-
-print "Creating users...";
-foreach $item (@Users) {
-    my $new_entry = new RT::User($CurrentUser);
-    my ( $return, $msg ) = $new_entry->Create(%$item);
-    print "(Error: $msg)" unless ($return);
-    print $return. ".";
-}
-print "done.\n";
-
-print "Creating ACL...";
-for my $item (@ACL) {
-
-    my $princ = RT::User->new($CurrentUser);
-    $princ->Load( $item->{'UserId'} );
-    my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
-                                                      Right => $item->{'Right'},
-                                                      Object => $RT::System );
-    if ($return) {
+    print "Creating groups...";
+    foreach $item (@Groups) {
+        my $new_entry = RT::Group->new($CurrentUser);
+        my ( $return, $msg ) = $new_entry->_Create(%$item);
+        print "(Error: $msg)" unless ($return);
         print $return. ".";
     }
-    else {
-        print $msg . ".";
+    print "done.\n";
+
+    print "Creating users...";
+    foreach $item (@Users) {
+        my $new_entry = new RT::User($CurrentUser);
+        my ( $return, $msg ) = $new_entry->Create(%$item);
+        print "(Error: $msg)" unless ($return);
+        print $return. ".";
+    }
+    print "done.\n";
+
+    print "Creating ACL...";
+    for my $item (@ACL) {
+
+        my $princ = RT::User->new($CurrentUser);
+        $princ->Load( $item->{'UserId'} );
+        my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
+                                                      Right => $item->{'Right'},
+                                                      Object => $RT::System );
+        if ($return) {
+            print $return. ".";
+        }
+        else {
+            print $msg . ".";
+
+        }
 
     }
+    print "done.\n";
 
-}
-print "done.\n";
+    print "Creating queues...";
+    for $item (@Queues) {
+        my $new_entry = new RT::Queue($CurrentUser);
+        my ( $return, $msg ) = $new_entry->Create(%$item);
+        print "(Error: $msg)" unless ($return);
+        print $return. ".";
+    }
+    print "done.\n";
+    print "Creating custom fields...";
+    for $item (@CustomFields) {
+        my $new_entry = new RT::CustomField($CurrentUser);
+        my $values    = $item->{'Values'};
+        delete $item->{'Values'};
+        my $q     = $item->{'Queue'};
+        my $q_obj = RT::Queue->new($CurrentUser);
+        $q_obj->Load($q);
+        if ($q_obj->Id) {
+                $item->{'Queue'} = $q_obj->Id;
+        }
+        elsif ($q == 0)  {
+                $item->{'Queue'} = 0;
+        } else {
+                print "(Error: Could not find queue " . $q . ")\n" unless ($q_obj->Id );
+                next;
+        }
+        my ( $return, $msg ) = $new_entry->Create(%$item);
 
-print "Creating queues...";
-for $item (@Queues) {
-    my $new_entry = new RT::Queue($CurrentUser);
-    my ( $return, $msg ) = $new_entry->Create(%$item);
-    print "(Error: $msg)" unless ($return);
-    print $return. ".";
-}
-print "Creating custom fields...";
-for $item (@CustomFields) {
-    my $new_entry = new RT::CustomField($CurrentUser);
-    my $values    = $item->{'Values'};
-    delete $item->{'Values'};
-    my $q     = $item->{'Queue'};
-    my $q_obj = RT::Queue->new($CurrentUser);
-    $q_obj->Load($q);
-    print "(Error: Could not find queue " . $q . ")";
-    $item->{'Queue'} = $q_obj->Id;
-    my ( $return, $msg ) = $new_entry->Create(%$item);
+        foreach my $value ( @{$values} ) {
+            $new_entry->AddValue($value);
+        }
 
-    foreach my $value ( @{$values} ) {
-        $new_entry->AddValue($value);
+        print "(Error: $msg)\n" unless ($return);
+        print $return. ".";
     }
 
-    print "(Error: $msg)" unless ($return);
-    print $return. ".";
-}
+    print "done.\n";
+    print "Creating ScripActions...";
 
-print "done.\n";
-print "Creating ScripActions...";
+    for $item (@ScripActions) {
+        my $new_entry = RT::ScripAction->new($CurrentUser);
+        my $return    = $new_entry->Create(%$item);
+        print $return. ".";
+    }
 
-for $item (@ScripActions) {
-    my $new_entry = RT::ScripAction->new($CurrentUser);
-    my $return    = $new_entry->Create(%$item);
-    print $return. ".";
-}
+    print "done.\n";
+    print "Creating ScripConditions...";
 
-print "done.\n";
-print "Creating ScripConditions...";
+    for $item (@ScripConditions) {
+        my $new_entry = RT::ScripCondition->new($CurrentUser);
+        my $return    = $new_entry->Create(%$item);
+        print $return. ".";
+    }
 
-for $item (@ScripConditions) {
-    my $new_entry = RT::ScripCondition->new($CurrentUser);
-    my $return    = $new_entry->Create(%$item);
-    print $return. ".";
-}
+    print "done.\n";
 
-print "done.\n";
+    print "Creating templates...";
 
-print "Creating templates...";
+    for $item (@Templates) {
+        my $new_entry = new RT::Template($CurrentUser);
+        my $return    = $new_entry->Create(%$item);
+        print $return. ".";
+    }
+    print "done.\n";
 
-for $item (@Templates) {
-    my $new_entry = new RT::Template($CurrentUser);
-    my $return    = $new_entry->Create(%$item);
-    print $return. ".";
-}
-print "done.\n";
+    print "Creating scrips...";
 
-print "Creating scrips...";
+    for $item (@Scrips) {
+        my $new_entry = new RT::Scrip($CurrentUser);
+        my $return    = $new_entry->Create(%$item);
+        print $return. ".";
+    }
+    print "done.\n";
 
-for $item (@Scrips) {
-    my $new_entry = new RT::Scrip($CurrentUser);
-    my $return    = $new_entry->Create(%$item);
-    print $return. ".";
-}
-print "done.\n";
-
-$RT::Handle->Disconnect();
-
+    $RT::Handle->Disconnect();
 
 }
 
@@ -450,4 +467,28 @@ sub ACLEquivGroupId {
     $equiv_group->LoadACLEquivalenceGroup($user);
     return ( $equiv_group->Id );
 }
+
+
+sub help {
+
+print <<EOF;
+
+$0: Set up RT's database
+
+--action        init
+                drop
+                insert
+                        --datafile /path/to/datafile
+
+
+--dba                           dba_username
+--dba-password                  dba's_password
+--prompt-for-dba-password       Ask for the database administrator's password interactively
+
+
+EOF
+
+}
+ 
+
 1;
