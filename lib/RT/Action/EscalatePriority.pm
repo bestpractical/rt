@@ -27,9 +27,10 @@
 
 =head1 DESCRIPTION
 
-EscalatePriority is a ScripAction which is NOT intended to be called per 
-transaction. It's intended to be called by an RT escalation daemon.
-(The daemon is called escalator).
+EscalatePriority is a ScripAction which is NOT intended to be called
+per transaction. It's intended to be called by an RT escalation tool.
+One such tool is called rt-crontool and is located in $RTHOME/bin (see
+C<rt-crontool -h> for more details)
 
 EsclatePriority uses the following formula to change a ticket's priority:
 

@@ -152,8 +152,8 @@
 <TABLE BORDER=0>
 <TR><TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD><TD><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></TD></TR>
 <TR><TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD><TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><input size=3 name="TimeWorked" value="<% $ARGS{TimeWorked} %>"></TD></TR>
-<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><input size=3 name="TimeLeft" value="<% $ARGS{TimeLeft} %>"></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD><TD><&|/l,'<input size=3 name="TimeWorked" value="'.$ARGS{TimeWorked}.'">'&>[_1] min</&></TD></TR>
+<TR><TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD><TD><&|/l,'<input size=3 name="TimeLeft" value="'.$ARGS{TimeLeft}.'">'&>[_1] min</&></TD></TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <br>
@@ -208,7 +208,9 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 my $CFs = $QueueObj->CustomFields();
 
-if ($QueueObj->DefaultDueIn) {
+# if no due date has been set explicitly, then use the
+# queue's default if it exists
+if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
     my $default_due = RT::Date->new($session{'CurrentUser'});
     $default_due->SetToNow();
     $default_due->AddDays($QueueObj->DefaultDueIn);

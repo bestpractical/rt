@@ -25,7 +25,7 @@
 <& /Admin/Elements/UserTabs, 
     id => $id, 
     UserObj => $UserObj,
-    current_subtab => $current_tab, 
+    current_tab => $current_tab, 
     Title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -268,8 +268,6 @@ else {
 	$title = loc("Create a new user");
 	$Create = 1;
     }    
-
-    
 
 }
 
