@@ -400,7 +400,6 @@ sub _GenerateRandomNextChar {
 
 
 
-# }}}
 
 # {{{ sub SetPassword
 

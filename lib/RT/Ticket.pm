@@ -2132,13 +2132,16 @@ transactions on this ticket
 sub Transactions {
     my $self = shift;
     
+    use RT::Transactions;
+    my $transactions = RT::Transactions->new($self->CurrentUser);
+
+    #If the user has no rights, return an empty object
     unless ($self->CurrentUserHasRight('ShowTicket')) {
-	return (0, "Permission Denied");
+	return ($transactions);
     }
     
     
-    use RT::Transactions;
-    my $transactions = RT::Transactions->new($self->CurrentUser);
+ 
     $transactions->Limit( FIELD => 'Ticket',
 			  VALUE => $self->id() );
     
