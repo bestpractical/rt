@@ -100,7 +100,7 @@ sub Create  {
 		   
 		    #We're done with it. lets clean up.
 		    #TODO: why the fuck do we need to do this? 
-		    $Scope->ScropObj->DESTROY();
+		    $Scope->ScripObj->DESTROY();
 		}
 	    }
 	}
