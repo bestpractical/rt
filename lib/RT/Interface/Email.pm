@@ -139,7 +139,11 @@ sub activate  {
       $RT::Logger->log(message=>"Action requested through email: $_", level=>'info');
       my ($command, $arguments)=/^(?:\s*)(\w+)(?: (.*))?$/
 	  or die "syntax error";
-      if ($command eq 'Link') {
+      if ($command =~ /^(Un)?[Ll]ink$/) {
+	  if ($1) {
+	      warn "Unlink not implemented yet: $_";
+	      next;
+	  }
 	  my ($from, $typ, $to)=$arguments =~ m|^(.+?) (\w+) (.+?)$|
 	      or die "syntax error in link command";
 	  my $dir='F';
