@@ -293,6 +293,8 @@ config-replace:
 	s'!!DB_HOST!!'$(DB_HOST)'g;\
         s'!!DB_RT_PASS!!'$(DB_RT_PASS)'g;\
         s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
+        s'!!RT_USER!!'$(RT_USER)'g;\
+        s'!!RT_GROUP!!'$(RT_GROUP)'g;\
 	s'!!DB_DATABASE!!'$(DB_DATABASE)'g;\
 	s'!!RT_PATH!!'$(RT_PATH)'g;\
         s'!!RT_TEMPLATE_PATH!!'$(RT_TEMPLATE_PATH)'g;\
