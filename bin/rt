@@ -1107,7 +1107,6 @@ a first and a last value. If the - is omitted, both $start and $end are the same
 =cut
 
 sub ParseRange {
-    my $self = shift;
     my $in = shift;
     my ($start, $end);
     
