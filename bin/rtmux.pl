@@ -87,7 +87,7 @@ elsif ($program eq '!!RT_MAILGATE_BIN!!') {
 }
 
 elsif ($program eq '!!WEBRT_CGI_BIN!!') {
-  use HTML::Mason;
+  require HTML::Mason;
   package HTML::Mason;
   my $parser = new HTML::Mason::Parser;
   
@@ -99,7 +99,7 @@ elsif ($program eq '!!WEBRT_CGI_BIN!!') {
   chown ( [getpwnam('nobody')]->[2], [getgrnam('nobody')]->[2],
 	  $interp->files_written );   # chown nobody
   
-  use CGI;
+  require CGI;
   my $q = new CGI;
   
   # This routine comes from ApacheHandler.pm:
