@@ -67,24 +67,28 @@ An B<RT::KeywordSelect> object is a link between a Keyword and a object
 type (one of: Ticket), titled by the I<Name> field of the B<RT::Keyword> such
 that:
 
-- Object display will contain a field, titled with the I<Name> field of the
-B<RT::Keyword> and showing any descendent keywords which are related to this
-object via the B<RT::ObjectKeywords> table.
+=over 4
 
-- Object creation for this object will contain a field titled with the
-I<Name> field of the B<RT::Keyword> and containing the descendents of the
-B<RT::Keyword> as choices.  If the I<Single> field of this
-B<RT::KeywordSelect> is true, each object must be associated (via an
-B<RT::ObjectKeywords> record) to a single descendent.  If the I<Single>
-field is false, each object may be connect to zero, one, or many descendents.
+=item Object display will contain a field, titled with the I<Name> field and
+  showing any descendent keywords which are related to this object via the
+  B<RT::ObjectKeywords> table.
 
-- Searches for this object type will contain a selection field titled with
-the I<Name> field of the B<RT::Keyword> and containing the descendents of the
-B<RT::Keyword> as choices.
+=item Object creation for this object will contain a field titled with the
+  I<Name> field and containing the descendents of the B<RT::Keyword> as
+  choices.  If the I<Single> field of this B<RT::KeywordSelect> is true, each
+  object must be associated (via an B<RT::ObjectKeywords> record) to a single
+  descendent.  If the I<Single> field is false, each object may be connect to
+  zero, one, or many descendents.
 
--If I<ObjectField> is defined (one of: Queue), all of the above apply only when
- the value of I<ObjectField> (Queue) in B<ObjectType> (Ticket) matches
- I<ObjectValue>.
+=item Searches for this object type will contain a selection field titled with
+  the I<Name> field and containing the descendents of the B<RT::Keyword> as
+  choices.
+
+=item If I<ObjectField> is defined (one of: Queue), all of the above apply only
+  when the value of I<ObjectField> (Queue) in B<ObjectType> (Ticket) matches
+  I<ObjectValue>.
+
+=back
 
 =head1 METHODS
 
@@ -153,7 +157,7 @@ sub Create {
 
 # {{{ sub Delete
 
-=head2 Delete
+=item Delete
 
 Delete this keyword select object. Does not currently remove keywords from tickets
 
@@ -225,7 +229,7 @@ sub _Set {
 
 # {{{ sub CurrentUserHasRight
 
-=head2 CurrentUserHasRight
+=item CurrentUserHasRight
 
 Helper menthod for HasRight. Presets Principal to CurrentUser then 
 calls HasRight.
@@ -244,7 +248,7 @@ sub CurrentUserHasRight {
 
 # {{{ sub HasRight
 
-=head2 HasRight
+=item HasRight
 
 Takes a param-hash consisting of "Right" and "Principal"  Principal is 
 an RT::User object or an RT::CurrentUser object. "Right" is a textual

@@ -1,8 +1,8 @@
+&nbsp;</TD>
+</TR>
 
-	      </TD>
-	    </TR>
-	  </TABLE>
-</TD></TR></TABLE>
+
+</TABLE>
 <%ARGS>
 $title => undef
 $content => undef

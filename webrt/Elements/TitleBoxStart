@@ -1,28 +1,24 @@
-	<TABLE BGCOLOR="#000000" CELLSPACING=0 BORDER=0 CELLPADDING=1 WIDTH="<%$width%>">
-	<TR VALIGN="MIDDLE">
-	<TD ALIGN="CENTER">
-	  <TABLE width="100%" border=0 cellpadding=4 cellspacing=0>
-	    <TR> 
-	      <TH valign=middle align=left bgcolor="#336699"> 	
-		<font size=-1 color="#ffffff">
-		  <b>
-		    <%$title |n %>
-		  </b>
-		</font>
-	      </TH>
-	      <TH ALIGN="right" valign=middle bgcolor="#336699">
-		<FONT color="#ffffff" SIZE=-1>
-		&nbsp;<%$titleright |n %>
-		</FONT>
-	      </TH>
-	    </TR>	
-	    <TR> 
-	      <TD COLSPAN=2 bgcolor="<%$contentbg%>" valign=top width="100%">
+<TABLE BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=3 WIDTH="<%$width%>">
+<TR> 
+<TD><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=5 ALT="&nbsp;"></TD>
+<TD valign=middle align=left bgcolor="<%$color%>"> 	
+<font size=-1 color="#ffffff"><b><%$title |n %></b></font>
+</TD>
+<TD ALIGN="right" valign=middle bgcolor="<%$color%>">
+<FONT color="#ffffff" SIZE=-1>
+&nbsp;<%$titleright |n %>
+</FONT>
+</TD>
+</TR>	
+<TR> 
+<TD><IMG SRC="<%$RT::WebPath%>/NoAuth/images/spacer.gif" width=5 ALT="&nbsp;"></TD>
+<TD COLSPAN=2 bgcolor="<%$contentbg%>" valign=top WIDTH=100%>
 
 	
 <%ARGS>
 $width => "100%"
 $title => undef
 $titleright => undef
-$contentbg => "#ffffff"
+$contentbg => "#cccccc"
+$color => "#336699"
 </%ARGS>

@@ -1,5 +1,12 @@
+% if (@actions ) {
+<& /Elements/TitleBoxStart, title => 'Results' &>
+<UL>
 % foreach $action (@actions) {
-   <%$action%><br>
+<LI><%$action%></LI>
+% }
+</UL>
+<& /Elements/TitleBoxEnd &>
+<BR>
 % }
 <%INIT>
 my $action;

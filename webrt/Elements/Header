@@ -10,17 +10,19 @@
 <link rel="stylesheet" href="<%$RT::WebPath%>/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
-<TABLE BORDER=0 WIDTH=100%>
+<TABLE BORDER=0 WIDTH=100% CELLSPACING=0 BGCOLOR="#993333">
 <TR VALIGN=TOP>
-<TD WIDTH=32><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"></TD><TD VALIGN=CENTER ALIGN=LEFT><font size=+2>Request Tracker <%$RT::VERSION%></font>
+<TD WIDTH=32><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"></TD><TD VALIGN=CENTER ALIGN=LEFT><font size=+2 color=#ffffff><B><%$Title%></B></font>
 </TD>
 <TD ALIGN=RIGHT>
+<font color="#ffffff">
 % if ($session{'CurrentUser'} ) {
 Signed in as <b><%$session{'CurrentUser'}->UserId%></b>.<BR>
 [<A HREF="<%$RT::WebPath%>/User/Prefs.html" >Preferences</A>] [<A HREF="<%$RT::WebPath%>/NoAuth/Logout.html">Logout</a>]
 % } else {
 Not logged in.
 % }
+</font>
 </TD>
 </TR>
 </TABLE>
@@ -33,6 +35,6 @@ $Why => undef
 $BgColor => '#ffffff'
 </%ARGS>
 <%INIT>
-$Title = "WebRT/$RT::rtname: ".$Title;
+$Title = "RT/$RT::rtname: ".$Title;
 </%INIT>
 

@@ -5,7 +5,7 @@
 
 <FORM METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
-<& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$Ticket->Id,   width => "100%" &>
+<& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$Ticket->Id,   width => "100%", color=> "#36633" &>
 
 <TABLE>
 <TR>
@@ -38,7 +38,7 @@ Administrative Cc:
 </TABLE>
 
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to", color => "#36633" &>
 </form>
 
 <%INIT>

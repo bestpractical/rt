@@ -1,5 +1,5 @@
 <& /Elements/TitleBoxStart, title => "Tickets I own..." &>
-<TABLE BORDER=0 cellspacing=1 cellpadding=1 BGCOLOR="#eeeeee" WIDTH=100%>
+<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH>Subject</TH>
 <TH>Queue</TH>

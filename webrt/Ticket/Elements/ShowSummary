@@ -1,48 +1,49 @@
       <TABLE WIDTH="100%" >
       <TR>
 	<TD VALIGN=TOP >
-	  <& /Elements/TitleBoxStart, title => 'The Basics'  &>
+	  <& /Elements/TitleBoxStart, title => 'The Basics', color => "#993333" &>
 	  <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
+
 	<BR>
-	  <& /Elements/TitleBoxStart, title => 'People' &>
-	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
+
+	  <& /Elements/TitleBoxStart, title => "Keyword Selections", color => "#993300"&>
+	  <& /Ticket/Elements/ShowKeywordSelects, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
-	<BR>
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
-  <& /Elements/TitleBoxStart, title => 'References', titleright => "[<a href=\"$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id."\">New Link</a>]" &>;
+	
 
-	<& /Ticket/Elements/ShowReferences, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>	
 	<BR>
-	  <& /Elements/TitleBoxStart, title => 'Dependencies', titleright => '' &>
+	  <& /Elements/TitleBoxStart, title => 'Dependencies', titleright => '', color=> "#339933" &>
 	  <& /Ticket/Elements/ShowDependencies, Ticket => $Ticket &>
 	<& /Elements/TitleBoxEnd &>
-
-	</TD>
 	<BR>
-	<TD VALIGN=TOP >
-	  
-	  <& /Elements/TitleBoxStart, title => "Dates" &>
-	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
-	<BR>
-
-          <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', titleright => "<A HREF=\"$RT::WebPath/Ticket/Create.html?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>" &>
+          <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', titleright => "<A HREF=\"$RT::WebPath/Ticket/Create.html?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>", color => "#339966" &>
 	SuperTickets:<BR>	
 	<& /Ticket/Elements/ShowMemberOf, Ticket => $Ticket &>	<BR>
 	SubTickets:<BR>
 	<& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
-	  <& /Elements/TitleBoxStart, title => "Keyword Selections" &>
-	  <& /Ticket/Elements/ShowKeywordSelects, Ticket => $Ticket &>
+	<& /Elements/TitleBoxStart, title => 'References', titleright => "[<a href=\"$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id."\">New Link</a>]", color => "#339999" &>
+	<& /Ticket/Elements/ShowReferences, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxEnd &>	
+
+	</TD>
+	<BR>
+	<TD VALIGN=TOP >
+
+	  <& /Elements/TitleBoxStart, title => "Dates", color => "#663366" &>
+	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
+	<BR>  
+	  <& /Elements/TitleBoxStart, title => 'People', color => "#3663399" &>
+	  <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxEnd &>
+	<BR>
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
 
-	
-	
 	</TD>
       </TR>
     </TABLE>

@@ -1,4 +1,4 @@
-<TABLE WIDTH=100% BGCOLOR="#336699" CELLSPACING=0 BORDER=0 CELLPADDING=0 >
+<TABLE WIDTH=100% BGCOLOR="<%$color%>" CELLSPACING=0 BORDER=0 CELLPADDING=0 >
 <TR>
 % if ($Reset) {
 <TD>
@@ -12,13 +12,14 @@
 </TD>
 <TD ALIGN=RIGHT VALIGN=CENTER>
 
-<FONT COLOR=#ffd800 >
+<FONT COLOR=#ffd800>
 <B><%$Caption%>
 <INPUT TYPE=SUBMIT VALUE='<%$Label%>'></B></FONT>
 </TD>
 </TR>
 </TABLE>
 <%ARGS>
+$color => "#336699"
 $Caption => undef
 $Label => 'Submit'
 $Reset => undef

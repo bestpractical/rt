@@ -1,0 +1,11 @@
+<TABLE WIDTH=100%>
+<TR>
+<TD>
+<font size=+4><%$title%></font>
+</TD>
+</TR>
+</TABLE>
+
+<%ARGS>
+$title => undef
+</%ARGS>

@@ -47,16 +47,25 @@ sub _Init  {
 # }}}
 
 # {{{ sub UserObj
+
+=head2 UserObj
+
+  Returns the RT::User object associated with this CurrentUser object.
+
+=cut
+
 sub UserObj {
-  my $self = shift;
-  
-  unless ($self->{'UserObj'}) {
-    use RT::User;
-    $self->{'UserObj'} = RT::User->new($self);
-    $self->{'UserObj'}->Load($self->Id)
-      || die "Couldn't find myself in the user db?";
-  }
-  return ($self->{'UserObj'});
+    my $self = shift;
+    
+    unless ($self->{'UserObj'}) {
+	use RT::User;
+	$self->{'UserObj'} = RT::User->new($self);
+	unless ($self->{'UserObj'}->Load($self->Id)) {
+	    $RT::Logger->err("Couldn't load ".$self->Id. "from the users database.\n");
+	}
+	
+    }
+    return ($self->{'UserObj'});
 }
 # }}}
 
