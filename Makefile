@@ -4,7 +4,6 @@
 # Request Tracker is Copyright 1997-9 Jesse Vincent <jesse@fsck.com>
 # RT is distributed under the terms of the GNU Public License
 
-CC			=	gcc
 PERL			= 	/usr/bin/perl
 RTUSER			=	rt
 RTGROUP			=	rt
