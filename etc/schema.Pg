@@ -25,6 +25,7 @@ CREATE TABLE Attachments (
   Creator integer   ,
   Created timestamp   
 );
+CREATE INDEX Attachments1 ON Attachments (TransactionId);
 CREATE TABLE Queues (
   id serial NOT NULL  ,
   Name varchar(40) NOT NULL  ,
