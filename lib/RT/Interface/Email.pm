@@ -2,7 +2,7 @@
 # This software is redistributable under the terms of the GNU GPL
 
 package RT::Interface::Email;
-
+use RT::Ticket;
 sub activate {
   my $Action=$ARGV[0];
   my $Queue=$ARGV[1];
@@ -56,12 +56,13 @@ sub activate {
   
   if ($Subject =~ s/\[$RT::rtname \#(\d+)\]//i) {
     $TicketId = $1;
+    #print STDERR "Got a ticket id: $TicketId\n";
   }
+
   
   my $CurrentUser = &GetCurrentUser($head);
 
-  require RT::Ticket;
-  
+  #print STDERR "User is $CurrentUser\n"; 
   #If the message doesn't reference a ticket #, create a new ticket
   if (!defined($TicketId)) {
     #    If the message is meant to be a comment, return an error.
@@ -78,13 +79,15 @@ sub activate {
 			Subject => $Subject,
 			MIMEEntity => $entity
 		      );
-   print "id/trans/err:  $id $Transaction $ErrStr\n"; 
+   #print "id/trans/err:  $id $Transaction $ErrStr\n"; 
   }
   else { #If we have a ticketid
+    #print STDERR "We know we've got a ticketId\n";
     #   If the message contains commands, execute them
     
     #   If the mail message is a comment, add a comment.
     if ($Action =~ /comment/i){
+       #print "Action is $Action\n";
       my $Ticket = new RT::Ticket($CurrentUser);
       $Ticket->Load($TicketId);
       #TODO: Check for error conditions.
@@ -94,12 +97,17 @@ sub activate {
     
     #   If the message is correspondence, add it to the ticket
     elsif ($Action =~ /correspond/) {
-      
-      my $Ticket = new RT::Ticket($CurrentUser);
+      #print STDERR "Action is correspond\n"; 
+      my $Ticket = RT::Ticket->new($CurrentUser);
       $Ticket->Load($TicketId);
+	#	print STDERR "Ticket loaded\n";
       #TODO: Check for error conditions
       $Ticket->Correspond(MIMEObj => $entity);
-    }
+   	#print STDERR "ticket correspond done\n"; 
+	}
+     else { 
+	die "Unknown action type: $Action\n";
+     }
   }
   
   return(0);
