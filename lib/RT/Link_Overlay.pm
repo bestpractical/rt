@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-# This software is redistributable under the terms of the GNU GPL
 
 =head1 NAME
 
@@ -111,10 +110,21 @@ sub Create {
     my $base_id   = 0;
     my $target_id = 0;
 
+
+
+
     if ( $base->IsLocal ) {
+        unless (UNIVERSAL::can($base->Object, 'Id')) {
+            return (undef, $self->Loc("[_1] appears to be a local object, but can't be found in the database", $args{'Base'}));
+        
+        }
         $base_id = $base->Object->Id;
     }
     if ( $target->IsLocal ) {
+        unless (UNIVERSAL::can($target->Object, 'Id')) {
+            return (undef, $self->Loc("[_1] appears to be a local object, but can't be found in the database", $args{'Target'}));
+        
+        }
         $target_id = $target->Object->Id;
     }
 

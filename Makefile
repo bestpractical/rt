@@ -109,9 +109,7 @@ RT_CRON_BIN		=	$(RT_BIN_PATH)/rt-crontool
 
 # }}}
 
-SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_MAILGATE_BIN) \
-				$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
-				$(DESTDIR)/$(RT_CLI_ADMIN_BIN)
+SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_FASTCGI_HANDLER)
 
 BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
 				$(DESTDIR)/$(RT_CRON_BIN) \
@@ -134,12 +132,12 @@ DB_TYPE			=	mysql
 # environment to run your commandline SQL sbin
 
 # Set DB_DBA to the name of a DB user with permission to create new databases 
-# Set DB_DBA_PASSWORD to that user's password (if you don't, you'll be prompted
-# later)
 
 # For mysql, you probably want 'root'
 # For Pg, you probably want 'postgres' 
 # For oracle, you want 'system'
+
+DB_DBA			=	root
 
 DB_HOST			=	localhost
 
@@ -148,6 +146,9 @@ DB_HOST			=	localhost
 # It's generally safe to leave this blank 
 
 DB_PORT			=	
+
+
+
 
 #
 # Set this to the canonical name of the interface RT will be talking to the 
@@ -181,12 +182,20 @@ default:
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
-	@echo "Next, you need to initialize RT's database by running" 
-	@echo " 'make initialize-database' or by executing "       
-	@echo " '$(RT_SBIN_PATH)/rt-setup-database --action init \ "
-	@echo "     --dba root --prompt-for-dba-password'"
+	@echo ""
+	@echo ""
 	@echo "You must now configure RT by editing $(SITE_CONFIG_FILE)."
-	@echo "From here on in, you should refer to the administrator's guide."
+	@echo ""
+	@echo "(You will definitely need to set RT's database password before continuing."
+	@echo " Not doing so could be very dangerous)"
+	@echo ""
+	@echo "After that, you need to initialize RT's database by running" 
+	@echo " 'make initialize-database'"
+
+#	@echo " or by executing "       
+#	@echo " '$(RT_SBIN_PATH)/rt-setup-database --action init \ "
+#	@echo "     --dba $(DB_DBA) --prompt-for-dba-password'"
+
 
 
 upgrade-instruct: 
@@ -217,6 +226,7 @@ fixperms:
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_PATH)
 	chown -R $(LIBS_OWNER) $(DESTDIR)/$(RT_LIB_PATH)
 	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
+	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(RT_LIB_PATH)
 
 
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)
@@ -312,14 +322,14 @@ regression-instruct:
 # {{{ database-installation
 
 regression-reset-db:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba root --dba-password ''
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba root --dba-password ''
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password ''
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
 
 initialize-database: 
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba root --prompt-for-dba-password
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --prompt-for-dba-password
 
 dropdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba root --prompt-for-dba-password
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --prompt-for-dba-password
 
 insert-approval-data: 
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/insert_approval_scrips
@@ -328,14 +338,12 @@ insert-approval-data:
 # {{{ libs-install
 libs-install: 
 	[ -d $(DESTDIR)/$(RT_LIB_PATH) ] || mkdir $(DESTDIR)/$(RT_LIB_PATH)
-	chown -R $(LIBS_OWNER) $(DESTDIR)/$(RT_LIB_PATH)
-	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
-	chmod -R $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_LIB_PATH)
 	cp -rp lib/* $(DESTDIR)/$(RT_LIB_PATH)
 # }}}
 
 # {{{ html-install
 html-install:
+	[ -d $(DESTDIR)/$(MASON_HTML_PATH) ] || mkdir $(DESTDIR)/$(MASON_HTML_PATH)
 	cp -rp ./html/* $(DESTDIR)/$(MASON_HTML_PATH)
 # }}}
 
@@ -362,7 +370,6 @@ sbin-install:
 	cp -rp \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
-		sbin/insert_approval_scrips \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 # }}}
 
@@ -371,14 +378,11 @@ sbin-install:
 bin-install:
 	mkdir -p $(DESTDIR)/$(RT_BIN_PATH)
 	cp -rp \
-		bin/rtadmin \
 		bin/rt-mailgate \
-		bin/enhanced-mailgate \
 		bin/mason_handler.fcgi \
 		bin/mason_handler.svc \
 		bin/webmux.pl \
 		bin/rt-crontool \
-		bin/rt-commit-handler \
 		$(DESTDIR)/$(RT_BIN_PATH)
 # }}}
 

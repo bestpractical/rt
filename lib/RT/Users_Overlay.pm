@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-# This software is redistributable under the terms of the GNU GPL
 
 =head1 NAME
 

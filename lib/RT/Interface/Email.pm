@@ -22,8 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
-
 package RT::Interface::Email;
 
 use strict;

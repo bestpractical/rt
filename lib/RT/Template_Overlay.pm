@@ -22,8 +22,8 @@
 # 
 # 
 # END LICENSE BLOCK
+
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
-# Released under the terms of the GNU General Public License
 
 =head1 NAME
 

@@ -22,7 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-
 =head1 NAME
 
   RT::GroupMember - a member of an RT Group

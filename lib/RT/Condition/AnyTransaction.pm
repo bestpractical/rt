@@ -23,7 +23,6 @@
 # 
 # END LICENSE BLOCK
  
-# Released under the terms of the GNU General Public License
 
 package RT::Condition::AnyTransaction;
 require RT::Condition::Generic;

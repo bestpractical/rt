@@ -22,8 +22,6 @@
 # 
 # 
 # END LICENSE BLOCK
-# Released under the terms of the GNU Public License
-
 
 =head1 NAME
 

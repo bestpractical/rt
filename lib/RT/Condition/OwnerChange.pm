@@ -23,7 +23,7 @@
 # 
 # END LICENSE BLOCK
  
-# Released under the terms of the GNU General Public License
+
 
 package RT::Condition::OwnerChange;
 require RT::Condition::Generic;

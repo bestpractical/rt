@@ -1,4 +1,9 @@
 
+#
+# WARNING: NEVER EDIT RT_Config.pm. Instead, copy any sections you want to change to RT_SiteConfig.pm 
+# and edit them there.
+#
+
 package RT;
 
 =head1 NAME

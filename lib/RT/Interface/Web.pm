@@ -190,12 +190,11 @@ sub Abort {
 
     if ($session{'ErrorDocument'} && 
         $session{'ErrorDocumentType'}) {
-        SetContentType($session{'ErrorDocumentType'});
+        $r->content_type($session{'ErrorDocumentType'});
         $m->comp($session{'ErrorDocument'} , Why => shift);
         $m->abort;
     } 
     else  {
-        SetContentType('text/html');
         $m->comp("/Elements/Error" , Why => shift);
         $m->abort;
     }
