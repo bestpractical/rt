@@ -610,7 +610,7 @@ sub Create {
     my $cfid = $1;
     foreach
       my $value ( ref( $args{$arg} ) ? @{ $args{$arg} } : ( $args{$arg} ) ) {
-        next unless ($value);
+        next unless (length($value));
         $self->_AddCustomFieldValue( Field => $cfid,
                                      Value => $value,
                                      RecordTransaction => 0
