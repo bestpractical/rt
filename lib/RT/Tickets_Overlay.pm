@@ -133,7 +133,7 @@ my %FIELDS = (
     Requestor        => [ 'WATCHERFIELD'    => 'Requestor', ],
     Requestors       => [ 'WATCHERFIELD'    => 'Requestor', ],
     Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
-    AdminCc          => [ 'WATCHERFIELD'    => 'AdminCC', ],
+    AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ],
     Watcher          => ['WATCHERFIELD'],
     LinkedTo         => [ 'LINKFIELD', ],
     CustomFieldValue => [ 'CUSTOMFIELD', ],
