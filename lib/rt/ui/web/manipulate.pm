@@ -748,29 +748,18 @@ print "
     if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'comments') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-      print &fdro_murl("display=SetComment","history","<img border=0 src=\"/webrt/comment.gif\" alt=\"[Comment]\">");
+      print &fdro_murl("display=SetComment","history","<img border=0 src=\"/webrt/comment.gif\" alt=\"[Comment]\">",
+		       $rt::req[$serial_num]{'trans'}[$temp]{'id'} );
       
-      }
+    }
     if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
 	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-      print &fdro_murl("display=SetReply","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Reply]\">");
+      print &fdro_murl("display=SetReply","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Reply]\">",
+		       $rt::req[$serial_num]{'trans'}[$temp]{'id'});
     }
   }
     
-    #all of these things can be done from the top/bottom menus. we don't 
-    # need em here
-    if (0) {
 
-    if ($rt::req[$serial_num]{'owner'} eq '') {
-      print &fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take");
-    }
-    if ($rt::req[$serial_num]{'status'} ne 'resolved') {
-      print &fdro_murl("do_req_resolve=true","summary","Resolve");
-    }
-    if ($rt::req[$serial_num]{'status'} ne 'open') {  
-      print &fdro_murl("do_req_open=true","summary","Open");
-    }
-  }
 print "</FONT></TD>
 <TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=\"28\" alt=\"\"></TD>
 </TR>
@@ -806,23 +795,23 @@ sub do_bar {
   
       print "
      <DIV ALIGN=\"CENTER\"> ".
-&fdro_murl("display=SetComment","history","Comment"). " | " .
-&fdro_murl("display=SetReply","history","Reply");
+&fdro_murl("display=SetComment","history","Comment",0). " | " .
+&fdro_murl("display=SetReply","history","Reply",0);
       
       
       if ($rt::req[$serial_num]{'owner'} eq '') {
 	print " | ". 
-&fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take") ;
+&fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take",0) ;
       }
       if ($rt::req[$serial_num]{'status'} ne 'resolved') {
 	
 	print " | ". 
-&fdro_murl("do_req_resolve=true","summary","Resolve");
+&fdro_murl("do_req_resolve=true","summary","Resolve",0);
       }
       if ($rt::req[$serial_num]{'status'} ne 'open') {
 	
 	print " | " . 
-&fdro_murl("do_req_open=true","summary","Open");
+&fdro_murl("do_req_open=true","summary","Open",0);
       }
       
       print "</DIV>";
@@ -1033,8 +1022,9 @@ sub fdro_murl {
   my $custom_content = shift;
   my $target = shift;
   my $description = shift;
+  my $trans = shift;
   
-    $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$rt::req[$serial_num]{'trans'}[$temp]{'id'}&";
+    $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$trans&";
     $url .= $custom_content;
     $url .= "\"";
     $url .= " target=\"$target\"" if ($frames);

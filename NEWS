@@ -1,5 +1,12 @@
+
 30 Sep 1999
 -----------
+*   [fsck #140] In late august, tobias caused request creation via the 
+    web ui to drop you into the "ticket display" after you create a ticket.
+
+*  Fixed [fsck.com #86]. The "comment" and "reply" links at the top
+    and bottom of the ticket page should no longer quote the most recent
+    transaction
 
 *  Fixed a bug which caused RT to go crazy when comments were submitted
    by may without a ticket #.
