@@ -104,7 +104,7 @@ $ParseNewMessageForTicketCcs = undef;
 
 
 
-# IsRTAddress is used to make sure RT doesn't add itself as a tickeet CC if
+# IsRTAddress is used to make sure RT doesn't add itself as a ticket CC if
 # the setting above is enabled.
 
 sub IsRTAddress {
