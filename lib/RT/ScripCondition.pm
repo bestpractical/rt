@@ -91,15 +91,15 @@ sub Load  {
     my $self = shift;
     my $identifier = shift;
     
-    if (!$identifier) {
+    unless (defined $identifier) {
 	return (undef);
     }	    
     
-  if ($identifier !~ /\D/) {
-      $self->SUPER::LoadById($identifier);
-  }
+    if ($identifier !~ /\D/) {
+	return ($self->SUPER::LoadById($identifier));
+    }
     else {
-	$self->LoadByCol('Name', $identifier);
+	return ($self->LoadByCol('Name', $identifier));
     }
 }
 # }}}

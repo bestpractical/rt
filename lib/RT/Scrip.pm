@@ -257,7 +257,7 @@ sub _Value {
     my $self = shift;
     
     unless ($self->CurrentUserHasRight('ShowScrips')) {
-        $RT::Logger->debug("CurrentUser can't modify Scrips for ".$self->Queue."\n");
+        $RT::Logger->debug("CurrentUser can't modify Scrips for ".$self->__Value('Queue')."\n");
 	return (undef);
     }
     

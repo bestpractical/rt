@@ -264,7 +264,12 @@ sub Create {
 				  Type => $args{'Type'},	
 				  Due => $due->ISO
 				 );
+    #Set the ticket's effective ID now that we've created it.
+    my ($val, $msg) = $self->__Set(Field => 'EffectiveId', Value => $id);
     
+    unless ($val) {
+	$RT::Logger->err("$self -> Create couldn't set EffectiveId: $msg\n");
+    }	
      
     $RT::Logger->debug("Now adding watchers. ");
 
@@ -295,12 +300,8 @@ sub Create {
 	$RT::Logger->warning("Ticket couldn't be created: $ErrStr");
     }
     
-    #Set the ticket's effective ID now that we've created it.
-    my ($val, $msg) = $self->__Set('EffectiveId', $self->Id());
 
-    unless ($val) {
-	$RT::Logger->err("$self -> Create couldn't set EffectiveId: $msg\n");
-    }	
+
     
     # Hmh ... shouldn't $ErrStr be the second return argument?
     # Eventually, are all the callers updated?
@@ -1596,27 +1597,39 @@ sub MergeInto {
     my $self = shift;
     my $MergeInto = shift;
     
+    $RT::Logger->debug("$self Merge into checking ACL...");
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
 	return (0, "Permission Denied");
     }
     
     # Load up the new ticket.
+    $RT::Logger->debug("loading $MergeInto ...");
     my $NewTicket = RT::Ticket->new($self->CurrentUser);
-    
+    $NewTicket->Load($MergeInto);
+
     # make sure it exists.
+    $RT::Logger->debug("checking if $Newticket exists...");
     unless (defined $NewTicket->Id) {
 	return (0, 'New ticket doesn\'t exist');
     }
-    
-    unless ($NewTicket->id == $NewTicket->EffectiveId) {
-	$RT::Logger->err('$self trying to merge into '.$NewTicket->Id.' which is itself merged.\n');
-	return (0, "Can't merge into a merged ticket. You should never get this error");
-    }
+
     
     # Make sure the current user can modify the new ticket.
+    $RT::Logger->debug("checking if the current user can modify new ticket..");
     unless ($NewTicket->CurrentUserHasRight('ModifyTicket')) {
+	$RT::Logger->debug("failed...");
 	return (0, "Permission Denied");
     }
+    $RT::Logger->debug("succeeded...");
+
+    $RT::Logger->debug("checking if the new ticket has the same id and effective id...");
+    unless ($NewTicket->id == $NewTicket->EffectiveId) {
+	$RT::Logger->err('$self trying to merge into '.$NewTicket->Id .
+			 ' which is itself merged.\n');
+	return (0, "Can't merge into a merged ticket. ".
+		"You should never get this error");
+    }
+
     
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
@@ -1625,46 +1638,61 @@ sub MergeInto {
     
     
     
-    unless ($val) {
-	$RT::Logger->Error("$self couldn't set effective id. ticket not merged");
-	return (0, $msg);
-    }	
+
     
     #update this ticket's effective id to the new ticket's id.
-    my ($val, $msg) = $self->__Set('EffectiveId', $NewTicket->Id());
+    $RT::Logger->debug("setting $self effective id to ".
+		       $NewTicket->Id()."...");
+    my ($val, $msg) = $self->__Set(Field => 'EffectiveId', 
+				   Value => $NewTicket->Id());
+
     
+    my ($val, $msg) = $self->__Set(Field => 'Status',
+				   Value => 'resolved');
+
+    unless ($val) {
+	$RT::Logger->error("$self couldn't set status to resolved. db may be inconsistent.");
+    }	    
+
+    $RT::Logger->debug("adding a merged into link");
     #make a new link: this ticket is merged into that other ticket.
     $self->AddLink( Type =>'MergedInto',
 		    Target => $NewTicket->Id() );
     
     #add all of this ticket's watchers to that ticket.
+    $RT::Logger->debug("transferring the watchers to the new ticket");
     my $watchers = $self->Watchers();
     while (my $watcher = $watchers->Next()) {
-	unless ($NewTicket->HasWatcher ( Type => $watcher->Type(),
-					 Email => $watcher->Email(),
-					 Id => $watcher->Owner())) {
+	$RT::Logger->debug("checking to see if new ticket has watcher email" .$watcher->Email() . " and owner ". $watcher->Owner() ."...");
+
+	unless ($NewTicket->IsWatcher ( Type => $watcher->Type(),
+					Email => $watcher->Email(),
+					Id => $watcher->Owner())) {
+	    $RT::Logger->debug("adding watcher to new ticket: email" .$watcher->Email() . " and owner ". $watcher->Owner() ."...");
 	    $NewTicket->AddWatcher( Type => $watcher->Type, 
 				    Email => $watcher->Email(),
 				    Owner => $watcher->Owner());
-	    
 	}
     }
 
+
+    $RT::Logger->debug("updating old merges...");
     #find all of the tickets that were merged into this ticket. 
     my $old_mergees = new RT::Tickets($self->CurrentUser);
     $old_mergees->Limit( FIELD => 'EffectiveId',
 			 OPERATOR => '=',
 			 VALUE => $self->Id );
     while (my $ticket = $old_mergees->Next()) {
+	$RT::Logger->debug("updating ticket ".$ticket->Id );
 	#   update their EffectiveId fields to the new ticket's id
-	my ($val, $msg) = $ticket->__Set('EffectiveId', $NewTicket->Id());
+	my ($val, $msg) = $ticket->__Set(Field => 'EffectiveId', 
+					 Value => $NewTicket->Id());
     }	
     
     return ($TransactionObj, "Merge Successful");
 }  
 
 # }}}
-
 
 # }}}
 
@@ -1683,28 +1711,21 @@ select.
 sub KeywordsObj {
     my $self = shift;
     my $keyword_select; 
-        
+    
     $keyword_select = shift if (@_);
-    
-    
-   
-    #TODO check acl
     
     use RT::ObjectKeywords;
     my $Keywords = new RT::ObjectKeywords($self->CurrentUser);
 
-    
     #ACL check
     if ($self->CurrentUserHasRight('ShowTicket')) {
 	$Keywords->LimitToTicket($self->id);
 	if ($keyword_select) {
 	    $Keywords->LimitToKeywordSelect($keyword_select);
 	}	
-	
-    }    
+    }
     return ($Keywords);
 }
-
 # }}}
 
 # {{{ sub AddKeyword
@@ -2258,7 +2279,7 @@ sub _Accessible {
 
   my $self = shift;  
   my %Cols = (
-	      EffectiveId => 'read',
+	      EffectiveId => 'read/write',
 	      Queue => 'read/write',
 	      Requestors => 'read/write',
 	      Owner => 'read/write',
