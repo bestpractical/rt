@@ -30,10 +30,11 @@ To report a bug, send an email to rt-2.0-bugs@fsck.com.
 REQUIRED PACKAGES:
 ------------------
 
-o   Perl5.005_03 or later with support for setgid perl scripts ( http://www.perl.com )
+o   Perl5.005_03 or later with support for setgid perl scripts
         RT's command line and mail gateway tools run setgid to the 'rt' group
-	to protect RT's database password.  You may need to install a special "suidperl"
-	package or reconfigure your perl setup to support "setuid scripts".
+	to protect RT's database password.  You may need to install a special 
+	"suidperl" package or reconfigure your perl setup to support
+	 "setuid scripts".
 
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
         Currently supported:    Mysql 3.23.38 or newer. 
@@ -43,10 +44,12 @@ o   A DB backend; MySQL is recommended ( http://www.mysql.com )
 	(Mysql and Postgres are known to be a more solid base for RT than 
 	Oracle at this time)
 
-o   Apache + mod_perl -- ( http://perl.apache.org) 
+o   Apache + mod_perl -- ( http://perl.apache.org)
+	If you compile mod_perl as a DSO, you're on your own. It's known
+	to have massive stability problems
 
 o    Various and sundry perl modules
-	
+		
 
 INSTALLATION INSTRUCTIONS
 -------------------------
@@ -235,6 +238,14 @@ THE CLI
         Both of these programs take --help as an option.
 	
 
+
+GETTING HELP
+------------
+
+If you're interested in having RT extended or customized or if you need
+commercial support, please send email to <jesse@fsck.com> to discuss rates
+and availability.
+
 TROUBLESHOOTING
 ---------------
 
@@ -276,6 +287,21 @@ For current information about RT, check out the RT website at
 http://www.fsck.com/projects/rt  You'll find screenshots, a pointer
 to the current version of rt, contributed patches and lots of other great
 stuff.
+
+
+GIVING SOMETHING BACK
+---------------------
+
+RT is free software. You are not obligated to pay for it.  You should be 
+aware, however, that the author develops RT in lieu of a day job. 
+If you able, either a contract to extend RT in some way that would be 
+useful to your organization, a financial contribution or even something
+off the author's amazon wishlist 
+	( http://www.amazon.com/exec/obidos/wishlist/2GMHUDAFBT2XR/ )
+would be much appreciated. 
+
+Thanks!
+
 
 
 CREDITS
