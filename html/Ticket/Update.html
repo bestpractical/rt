@@ -95,6 +95,7 @@
 <tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
+<& /Elements/Callback, Name => 'BeforeTextarea', %ARGS &>
 % if (exists $ARGS{UpdateContent}) {
 <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent} &>
 % } else {
