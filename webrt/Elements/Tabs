@@ -3,7 +3,12 @@
 % foreach $tab (sort keys %{$toptabs}) {
 <TD ALIGN=CENTER>
 <font size=+1>
+% if ($current_toptab eq $toptabs->{$tab}->{'path'}) {
+[<% $toptabs->{$tab}->{'title'}%>]
+% } else {
 [<A HREF="<%$RT::WebPath%>/<% $toptabs->{$tab}->{'path'}%>"><% $toptabs->{$tab}->{'title'}%></A>]
+
+% }
 </font>
 </TD>
 % }
@@ -17,8 +22,12 @@
 <TR>
 % foreach $tab (sort keys %{$tabs}) {
 <TD ALIGN=CENTER>
+% if ($current_tab eq $tabs->{$tab}->{'path'}) {
+[<% $tabs->{$tab}->{'title'}%>]
+% } else {
 [<A HREF="<%$RT::WebPath%>/<% $tabs->{$tab}->{'path'}%>"><% $tabs->{$tab}->{'title'}%></A>]
 </TD>
+%}
 %}
 </TR>
 </TABLE>
@@ -55,6 +64,9 @@ my $toptabs = {    A => { title => 'Home',
                     
 </%INIT>
 <%ARGS>
+$current_toptab =>  "none"
+$current_tab => "none"
+$current_subtab => "none"
 $tabs => undef
 $subtabs => undef
 </%ARGS>

@@ -1,0 +1,161 @@
+<& /Elements/Header, title => 'Modify people related to queue ' . $QueueObj->id &>
+<& /Admin/Elements/QueueTabs, id => $id  &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+ 
+<FORM METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$QueueObj->Id%>">
+<& /Elements/TitleBoxStart, title => 'Modify people related to queue'.$QueueObj->Id,   width => "100%" &>
+
+<TABLE WIDTH=100%>
+<TR>
+<TD VALIGN=TOP >
+
+<h3>Current watchers</h3>
+(Check box to delete)<br>
+
+
+Cc:
+
+<ul>
+
+%# Print out a placeholder if there are none.
+%if ($cc->Count == 0 ) {
+<li><i>none</i>
+% }
+
+%while (my $watcher=$cc->Next) {
+<li>
+<INPUT TYPE=CHECKBOX NAME="DelWatcher<%$watcher->id%>" UNCHECKED>
+%# account
+%if ($watcher->IsUser) { 
+<a href="<%$RT::WebPath%>/Admin/Users/Display.html?id=<%$watcher->OwnerObj->id%>">
+<%$watcher->OwnerObj->RealName%></a>:
+%} else {
+Email address:
+%}
+<i><%$watcher->Email%></i>
+%}
+</ul>
+
+
+Administrative Cc:
+<UL>
+%# Print out a placeholder if there are none.
+%if ($admincc->Count == 0 ) {
+<li><i>none</i>
+% }
+
+%while (my $watcher=$admincc->Next) {
+<li><INPUT TYPE=CHECKBOX NAME="DelWatcher<%$watcher->id%>" UNCHECKED>
+%# account
+%if ($watcher->IsUser) { 
+<a href="<%$RT::WebPath%>/Admin/Users/Display.html?id=<%$watcher->OwnerObj->id%>">
+<%$watcher->OwnerObj->RealName%></a>:
+%} else {
+Email address:
+%}
+<i><%$watcher->Email%></i>
+%}
+</UL>
+</TD>
+
+<TD VALIGN=TOP>
+<h3>New watchers</h3>
+Find people whose<BR>
+<& /Elements/SelectUsers &>
+
+<BR>
+Add new watchers:<br>
+
+% if ($msg) {
+<%$msg%>
+% } elsif ($Users) {
+<ul>
+% while (my $u = $Users->Next ) {
+<li><&/Elements/SelectWatcherType, Scope=>'queue', Name => "WatcherTypeUser".$u->Id &> <%$u->UserId%>
+(<%$u->RealName%>)
+% }
+</ul>
+% }
+
+</TD>
+</TR>
+</TABLE>
+
+
+
+
+<& /Elements/Submit, Label => 'Save Changes', Caption => "If you've updated anything above, be sure to" &>
+<& /Elements/TitleBoxEnd &>
+
+</form>
+
+<%INIT>
+
+my ($field, @results, $User, $Users, $watcher, $key, $msg);
+# {{{ Load the queue
+#If we get handed two ids, mason will make them an array. bleck.
+# We want teh first one. Just because there's no other sensible way
+# to deal
+
+
+
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($id) || Abort("Couldn't load queue '$id'");
+# }}}
+
+# {{{ Delete deletable watchers
+
+foreach $key (keys %ARGS) {
+    if (($key =~ /^DelWatcher(\d*)$/) and
+	($ARGS{$key})) {
+	$RT::Logger->debug("Deleting watcher $1\n");
+	my ($code, $msg) = $QueueObj->DeleteWatcher($1);
+	
+	push @results, $msg;
+    }
+}
+# }}}
+
+# {{{ Add new watchers
+foreach $key (keys %ARGS) {
+    #They're in this order because otherwise $1 gets clobbered :/
+    if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
+	 ($key =~ /^WatcherTypeUser(\d*)$/) ) {
+	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
+	my ($code, $msg) = 
+	  $QueueObj->AddWatcher(Type => $ARGS{$key},
+				 Owner => $1);
+	push @results, $msg;
+    }
+}
+
+# }}}
+
+
+
+my $admincc = $QueueObj->AdminCc;
+my $cc = $QueueObj->Cc;
+ 
+
+if (!$ARGS{'UserString'}) {
+$msg = "No users selected.";
+ }
+else {
+    $Users = new RT::Users($session{'CurrentUser'});
+    $Users->Limit(FIELD => $ARGS{'UserField'},
+                 VALUE => $ARGS{'UserString'},
+                 OPERATOR => $ARGS{'UserOp'});
+     }
+</%INIT>
+
+<%ARGS>
+$UserField => 'UserId'
+$UserOp => '='
+$UserString => undef
+$Type => undef
+$id => undef
+</%ARGS>
+

@@ -1,4 +1,4 @@
-<& /Admin/Elements/Tabs, subtabs => $subtabs &>
+<& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Global/', current_subtab => $current_subtab &>
 <hr>
 <%INIT>
   my $subtabs = {
@@ -23,4 +23,5 @@
   
 <%ARGS>
 $id => undef
+$current_subtab => undef
 </%ARGS>

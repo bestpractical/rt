@@ -1,4 +1,5 @@
-<& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs &>
+<& /Elements/Tabs, tabs => $tabs, subtabs => $subtabs, current_toptab => 'Admin/', current_tab => $current_tab, current_subtab => $current_subtab&>
+
 <hr>
   
 <%INIT>
@@ -21,4 +22,6 @@
 
 <%ARGS>
 $subtabs => undef
+$current_tab => undef
+$current_subtab => undef
 </%ARGS>

@@ -8,7 +8,7 @@
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Groups/Modify.html" METHOD=POST>
 
-%if ($Create) {
+%unless ($Group->Id) {
 <INPUT TYPE=HIDDEN NAME=id VALUE="new">
 % } else {
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">
@@ -40,12 +40,12 @@ else {
     if ($id eq 'new' ) {
 	
 	$Group->Create(Name => "$Name") || Abort ("Group could not be created.");
-
+	$id = $Group->Id;
     }
     else {
 	$Group->Load($id) || Abort('Could not load group');
     }
-    $title = "Modify the group ". $Group ->Name;
+    $title = "Modify the group ". $Group->Name;
 
   
 }
@@ -56,9 +56,8 @@ my @fields = qw(Description Name );
 #Run through each field in this list. update the value if apropriate
 my $field;
 foreach $field (@fields) {
-my ($code, $msg);
 my $check = "if ((defined \$$field) and (\$Group->$field ne \$$field)) {
-  (\$code, \$msg) = \$Group->Set$field(\$$field);
+  my (\$code, \$msg) = \$Group->Set$field(\$$field);
 
      push \@results, \$msg;
    }";
@@ -73,5 +72,6 @@ eval $check;
 $Create => undef
 @results => undef
 $Name => undef
+$Description => undef
 $id => undef
 </%ARGS>

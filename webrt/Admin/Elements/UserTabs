@@ -1,26 +1,21 @@
-<& /Admin/Elements/Tabs, subtabs => $subtabs &>
+<& /Admin/Elements/Tabs, subtabs => $subtabs,
+			 current_tab => 'Admin/Users/', 
+                         current_subtab => $current_subtab &>
 <hr>
 <%INIT>
-my $subtabs = { A => { title => 'Create',
-                        path => 'Admin/Users/Create.html',
-                      },
-             Groups => { title => 'Search',
-                         path => 'Admin/Users/Search.html',
-                       },
-             Queues => { title => 'Queues',
-                         path => 'Admin/Queues/',
-                       },
-             Scrips => { title => 'Scrips',
-                         path => 'Admin/Scrips/',
-                       },
-             Templates => { title => 'Templates',
-                         path => 'Admin/Templates/',
-                       },
-             ACL => { title => 'ACL',
-                         path => 'Admin/ACL/',
-                       }
-
-           };
+my $subtabs = {
+	       Queues => { title => 'Basics',
+			   path => "Admin/Users/Modify.html?id=".$id
+			 },
+	       Scrips => { title => 'Queue Rights',
+			   path => 'Admin/Scrips/'
+			 }
+	       
+	      };
 </%INIT>
-
-
+  
+  
+<%ARGS>
+$id => undef
+$current_subtab => undef
+</%ARGS>

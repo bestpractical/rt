@@ -10,10 +10,17 @@
 %}
 </SELECT>
 
-<%ONCE>
-my @types = qw(Requestor Cc AdminCc);
-</%ONCE>
+<%INIT>
+my @types;
+if ($Scope =~ 'queue') {
+   @types = qw(Cc AdminCc);
+}
+else { 
+   @types = qw(Requestor Cc AdminCc);
+}
+</%INIT>
 <%ARGS>
 $Default=>undef
+$Scope => 'ticket'
 $Name => 'WatcherType'
 </%ARGS>

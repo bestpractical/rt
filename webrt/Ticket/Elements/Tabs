@@ -1,4 +1,4 @@
-<& /Elements/Tabs, tabs => $tabs &>
+<& /Elements/Tabs, tabs => $tabs, current_tab => $current_tab &>
 <hr>
 <%INIT>
   my $tabs = {
@@ -32,4 +32,5 @@
   
 <%ARGS>
 $id => undef
+$current_tab => undef
 </%ARGS>

@@ -1,4 +1,4 @@
-<& /Admin/Elements/Tabs, subtabs => $subtabs &>
+<& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Groups/' &>
 <hr>
 <%INIT>
 my $subtabs = { 

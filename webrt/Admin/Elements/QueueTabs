@@ -1,4 +1,4 @@
-<& /Admin/Elements/Tabs, subtabs => $subtabs &>
+<& /Admin/Elements/Tabs, subtabs => $subtabs, current_tab => 'Admin/Queues/' &>
 <hr>
 <%INIT>
   my $subtabs = {
@@ -13,7 +13,10 @@
 			   },
 		 D => { title => 'Templates',
 				path => "Admin/Queues/Templates.html?id=".$id,
-			      }
+			      },
+		 E => { title => 'People',
+		 	path => "Admin/Queues/People.html?id=".$id,
+		      }
 };
 </%INIT>
 
