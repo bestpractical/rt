@@ -80,10 +80,10 @@ sub DisplayForm {
   elsif (($rt::ui::web::FORM{action} eq "Update Queue") or ($rt::ui::web::FORM{'display'} =~ /(View|Modify) the Queue called/)){
     &FormModifyQueue($rt::ui::web::FORM{'queue_id'});
   }
-  elsif ($rt::ui::web::FORM{'display'} eq 'Delete this Queue'){
+  elsif ($rt::ui::web::FORM{'display'} eq 'Delete Queue'){
     &FormDeleteQueue($rt::ui::web::FORM{'queue_id'});
   }
-  elsif ($rt::ui::web::FORM{'display'} eq 'Delete this User'){
+  elsif ($rt::ui::web::FORM{'display'} eq 'Delete User'){
     &FormDeleteUser($rt::ui::web::FORM{'user_id'});
   }    
   else {
@@ -395,12 +395,12 @@ misc:
 </TD>\n";
     if ($rt::users{$current_user}{admin_rt}) {
 	print "<TD ALIGN=CENTER WIDTH=33%>
-	<input type=\"submit\" name=\"display\" value=\"Delete this User\">\n
+	<input type=\"submit\" name=\"display\" value=\"Delete User\">\n
 </TD>";
     }
 
     print "<TD ALIGN=RIGHT>
-<input type=\"submit\" name=\"display\" value=\"Return to Main Menu\">
+<input type=\"submit\" name=\"display\" value=\"Main Menu\">
 </TD></TR></TABLE>
 ";
 
@@ -507,13 +507,13 @@ Access Control
 <input type=\"submit\" name=\"action\" value=\"Update Queue\">
 </TD>
 <TD ALIGN=CENTER>
-<input type=\"submit\" name=\"display\" value=\"Delete this Queue\">
+<input type=\"submit\" name=\"display\" value=\"Delete Queue\">
 </TD>";
     }
     
     
     print "<TD ALIGN=RIGHT WIDTH=33%>
-<input type=\"submit\" name=\"display\" value=\"Return to Main Menu\">
+<input type=\"submit\" name=\"display\" value=\"Main Menu\">
 </TD>
 </TR>
 </TABLE>
@@ -532,7 +532,7 @@ sub FormDeleteUser {
 <input type=\"hidden\" name=\"user_id\" value=\"$user_id\" >
 <input type=\"hidden\" name=\"action\" value=\"delete_user\">
 <center>
-<input type=\"submit\" value=\"Delete this user\">
+<input type=\"submit\" value=\"Delete User\">
 <br><center></form>
 <form action=\"$ScriptURL\" method=\"post\">
 <center>
@@ -552,7 +552,7 @@ sub FormDeleteQueue{
 <input type=\"hidden\" name=\"queue_id\" value=\"$queue_id\" >
 <input type=\"hidden\" name=\"action\" value=\"delete_queue\">
 <center>
-<input type=\"submit\" value=\"Delete this queue\">
+<input type=\"submit\" value=\"Delete Queue\">
 <br><center></form>
 <form action=\"$ScriptURL\" method=\"post\">
 <center>
