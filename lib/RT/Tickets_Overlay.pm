@@ -1989,6 +1989,8 @@ sub _ProcessRestrictions {
     #a new search
     delete $self->{'TicketAliases'};
     delete $self->{'items_array'};                                                                                                                   
+    delete $self->{'item_map'};
+
     my $sql = $self->{_sql_query}; # Violating the _SQL namespace
     if (!$sql||$self->{'RecalcTicketLimits'}) {
       #  "Restrictions to Clauses Branch\n";

@@ -45,11 +45,17 @@ my $id   = $Ticket->id();
 
 if ( defined $session{'tickets'} ) {
 
+        # we have to update session data if we get new ItemMap
+        my $updatesession = 1 unless($session{'tickets'}->{'item_map'});
 
-my $item_map = $session{'tickets'}->ItemMap;
+        my $item_map = $session{'tickets'}->ItemMap;
 
-            # Don't $current_toptab = display prev links if we're on the first ticket
+        if ($updatesession) {
+                $session{'i'}++;
+		$session{'tickets'}->PrepForSerialization();
+        }
 
+        # Don't $current_toptab = display prev links if we're on the first ticket
         if ($item_map->{$Ticket->Id}->{prev}) {
                 $searchtabs->{'_a'} = {
                             class => "nav",
