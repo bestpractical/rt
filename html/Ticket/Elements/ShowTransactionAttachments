@@ -79,21 +79,24 @@ foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
      }
         
 </%PERL> 
-<A HREF="<%$AttachPath%>/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename | u%>"><&|/l&>Download</&><%$message->Filename || loc('(untitled)') %></a> 
+<A HREF="<%$AttachPath%>/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename | u%>"><&|/l&>Download</&> <%$message->Filename || loc('(untitled)') %></a> 
 <div class="downloadcontenttype">
 <%$message->ContentType%> <% $size %> 
 </div> 
 </div>
-%}
-
+% }
 % # }}}
 <div class="messagebody">
 <%perl>
-# {{{   if it's got content-disposition inline, show it inline
+# {{{   if it has a content-disposition: attachment, don't show inline
+unless ( $message->GetHeader('Content-Disposition') =~ /attachment/i ) {
+
     my $content;
 
     # If it's text
-    if ( $message->ContentType =~ m{^(text|message)}i ) {
+    if (   $message->ContentType =~ m{^(text|message)}i
+        && $size <= $RT::MaxInlineBody )
+    {
 
         if (
 
@@ -127,7 +130,7 @@ foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
             if ( $message->ContentType =~ m{^text/(?:html|enriched)$}i ) {
                 $content =
                   $m->comp( '/Elements/ScrubHTML', Content => $content );
-                $m->out( $content );
+                $m->out($content);
             }
 
             # if it's a text/plain show the body
@@ -146,23 +149,26 @@ foreach my $message ( grep { $_->Parent == $Parent } @$Attachments ) {
         }
 
     }
-        # if it's an image, show it as an image
-        elsif ( $message->ContentType =~ /^image\//i ) {
-            $m->out('<img src="'
-                  . $AttachPath . '/'
-                  . $Transaction->Id . '/'
-                  . $message->Id
-                  . '/">' );
-        }
 
+    # if it's an image, show it as an image
+    elsif ( $message->ContentType =~ /^image\//i ) {
+        $m->out('<img src="'
+              . $AttachPath . '/'
+              . $Transaction->Id . '/'
+              . $message->Id
+              . '/">' );
+    }
+}
 
-    # }}}
+# }}}
 
-    $m->comp( 'ShowTransactionAttachments', %ARGS,
-          Parent    => $message->id,
-          ParentObj => $message );
+$m->comp(
+    'ShowTransactionAttachments', %ARGS,
+    Parent    => $message->id,
+    ParentObj => $message
+);
 
-
+## Please see file perltidy.ERR
 }
 </%PERL>
 </div>
