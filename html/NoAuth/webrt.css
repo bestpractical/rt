@@ -36,6 +36,10 @@
 	 font-size: 13px;
 	 color: #FFFFFF;
 	 text-decoration: none}
+.topactions {  font-family: Verdana, Arial, Helvetica, sans-serif;
+	 font-size: 10px;
+	 color: #FFFFFF;
+	 text-decoration: none}
 .currenttopnav {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 font-size: 13px;
          font-weight: bold;
@@ -97,7 +101,6 @@ td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	 background-position: left top;
 	 vertical-align: top }
 
-BODY, TD {font-family: Helvetica, Arial, sans-serif}
 TD {border-color: #cccccc }
 
 .currenttab { margin: 0.2em; background: #336699; }
@@ -117,6 +120,7 @@ BLOCKQUOTE.message {
 
 BODY {
   color: #000;
+  margin: 0;
   background: #FFFFFF;
   font-family: "Helvetica", sans-serif;
 

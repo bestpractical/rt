@@ -75,9 +75,11 @@ class='subnav'
 <td class="darkblue">&nbsp;</td>
 <TD class="darkblueright">
 
+<span class="topactions">
 % foreach $action (sort keys %{$topactions}) {
 <%$topactions->{"$action"}->{'html'} |n %>
 % }
+</span>
 
 % if ($actions) {
 <span class="nav">| 
