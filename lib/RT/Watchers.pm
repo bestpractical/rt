@@ -111,7 +111,7 @@ sub Emails  {
 # Returns the RT::Watchers->Emails as a comma seperated string
 sub EmailsAsString {
   my $self = shift;
-  return(join(", ",$self->Emails));
+  return(join(", ",@{$self->Emails}));
 }
 # }}}
 
