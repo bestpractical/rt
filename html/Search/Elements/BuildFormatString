@@ -99,7 +99,6 @@ elsif ( $ARGS{"AddCol"} ) {
 	    push @columns, $selected;
 	}
 	foreach my $col (@columns) {
-	    $m->print("col: $fields[$col] <br>");
 	    my %column = ();
 	    $column{Column} = $fields[ $col ];
 	    
