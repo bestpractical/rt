@@ -146,6 +146,13 @@ sub _Set  {
   my $field = shift;
   #if the user is trying to modify the record
   $RT::Logger->debug("in RT::Record::Set for $self ".$self->Id ."\n"); 
+
+  my $now = new RT::Date;
+  $now->SetToNow();
+
+  $error_condition = $self->_Handle->UpdateTableValue($self->{'table'}, 'LastUpdated',$now->ISO,$self->id)
+    if ($self->_Accessible('LastUpdated','auto'));
+
   $self->SUPER::_Set('LastUpdatedBy', $self->CurrentUser->id)
     if ($self->_Accessible('LastUpdatedBy','auto'));
   $self->SUPER::_Set($field, @_);

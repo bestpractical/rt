@@ -73,7 +73,7 @@ sub Create  {
     
     #Load a ScripsScopes object
     #Iterate through each script and check it's applicability.
-    $RT::Logger->log(level=>'debug', message=>("Searching for scrips for transaction #".$self->Id." (".$self->Type()."), ticket #".$TicketAsSystem->Id));
+    $RT::Logger->debug("Searching for scrips for transaction #".$self->Id." (".$self->Type()."), ticket #".$TicketAsSystem->Id);
    
     while (my $Scope = $ScripScopes->Next()) {
 	
@@ -83,7 +83,7 @@ sub Create  {
 	# TODO: Agreed - jesse. It'll probably wait until after the 2.0 
 	# TODO  release unless it appears to be a serious perf bottleneck.
 	
-	$RT::Logger->log(level=>'debug', message=>("Trying out ".$Scope->ScripObj->Name." (".$Scope->ScripObj->Type.")"));
+	$RT::Logger->debug("Trying out ".$Scope->ScripObj->Name." (".$Scope->ScripObj->Type.")");
 	if ($Scope->ScripObj->Type && 
 	    $Scope->ScripObj->Type =~ /(Any)|(\b$args{'Type'}\b)/) {
 
@@ -97,17 +97,20 @@ sub Create  {
 		$Scope->ScripObj->LoadAction(TicketObj => $TicketAsSystem, 
 					     TemplateObj => $Scope->ScripObj->TemplateObj,
 					     TransactionObj => $self);
-		
+	
 		#If it's applicable, prepare and commit it
-		$RT::Logger->log(level=>'debug', message=>("Found a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id));
+		$RT::Logger->debug("Found a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id);
+
 		if ( $Scope->ScripObj->IsApplicable() ) {
 
-		    $RT::Logger->log(level=>'debug', message=>("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe,($Scope->ScripObj->TemplateObj ? $Scope->ScripObj->TemplateObj->id : "")).") at ticket #".$TicketAsSystem->Id));
+		    $RT::Logger->debug("Running a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe,($Scope->ScripObj->TemplateObj ? $Scope->ScripObj->TemplateObj->id : "")).") at ticket #".$TicketAsSystem->Id);
 
+
+		    #TODO: handle some errors here
 
 		    $Scope->ScripObj->Prepare() &&   
 		    $Scope->ScripObj->Commit() &&
-		    $RT::Logger->log(level=>'info', message=>("Sucsessfully executed a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id));
+		    $RT::Logger->info("Successfully executed a Scrip (".join("/",$Scope->ScripObj->Name,$Scope->ScripObj->Description,$Scope->ScripObj->Describe).") at ticket #".$TicketAsSystem->Id);
 		   
 		    #We're done with it. lets clean up.
 		    #TODO: why the fuck do we need to do this? 

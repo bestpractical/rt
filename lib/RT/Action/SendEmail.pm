@@ -49,6 +49,23 @@ sub Prepare  {
 
   # This actually populates the MIME::Entity fields in the Template Object
 
+
+  unless ($self->TemplateObj) {
+      warn "oh! No template given! :(";
+      return 0;
+  }
+
+  unless ($self->TransactionObj) {
+      warn "oh! No transaction given! :(";
+      return 0;
+  }
+
+  unless ($self->TransactionObj->Message->First) {
+      warn "oh! No message given! :(";
+      return 0;
+  }
+
+
   $self->TemplateObj->Parse(Argument => $self->Argument,
 			    TicketObj => $self->TicketObj, 
 			    TransactionObj => $self->TransactionObj);
@@ -76,20 +93,6 @@ sub Prepare  {
 
 # Todo: add "\n-------------------------------------------- Managed by Request Tracker\n\n" to the message body
 
-  unless ($self->TemplateObj) {
-      warn "oh! No template given! :(";
-      return 0;
-  }
-
-  unless ($self->TransactionObj) {
-      warn "oh! No transaction given! :(";
-      return 0;
-  }
-
-  unless ($self->TransactionObj->Message->First) {
-      warn "oh! No message given! :(";
-      return 0;
-  }
 
   return 1;
   

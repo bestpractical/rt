@@ -41,13 +41,16 @@ sub NewItem  {
 sub Next {
 	my $self = shift;
 	my $Ticket = $self->SUPER::Next();
-	if ((defined($Ticket)) && 
-  	    ($Ticket->CurrentUserHasRight('ShowTicket'))) {
+	if ((defined($Ticket)) and (ref($Ticket))) {
+
+  	    if ($Ticket->CurrentUserHasRight('ShowTicket')) {
 		return($Ticket);
-	}
-	#If the user doesn't have the right to show this ticket
-	elsif (defined($Ticket)) {
+	    }
+
+	    #If the user doesn't have the right to show this ticket
+	    else {	
 		return($self->Next());
+	    }
 	}
 	#if there never was any ticket
 	else {

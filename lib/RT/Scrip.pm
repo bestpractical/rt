@@ -56,13 +56,6 @@ sub Delete  {
 # }}}
 
 
-# {{{ sub create 
-# Todo: yank this before release
-sub create  {
-  my $self = shift;
-  die "RT::Scrip::create should be RT::Scrip::Create";
-}
-# }}}
 
 # {{{ sub Load 
 sub Load  {
@@ -104,7 +97,8 @@ sub LoadAction  {
 
   #TODO: Put this in an eval  
   my $type = "RT::Action::". $self->Action;
-  
+ 
+  $RT::Logger->debug("now requiring $type"); 
   eval "require $type" || die "Require of $type failed.\nThis most likely means that a custom Action installed by your RT administrator broke. $@\n";
   $self->{'Action'}  = $type->new ( 'ScripObj' => $self, 
 				    'TicketObj' => $args{'TicketObj'},
@@ -144,7 +138,7 @@ sub Prepare  {
 # {{{ sub Commit 
 sub Commit  {
   my $self = shift;
-  return($self->{'Action'}->Commit());
+   return($self->{'Action'}->Commit());
 
   
 }

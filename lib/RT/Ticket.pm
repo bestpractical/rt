@@ -1487,7 +1487,7 @@ sub _Set {
   my $Old=$self->_Value("$Field") || undef;
   
   #Set the new value
-  my ($ret, $msg)=$self->SUPER::_Set($Field, $Value, $MoreOptions->{IsSQL}||undef);
+  my ($ret, $msg)=$self->SUPER::_Set($Field, $Value);
   
   #record the transaction
   $ret or return (0,$msg);
