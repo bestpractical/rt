@@ -38,47 +38,57 @@ $maxitems => undef
 my %generic_query_args = ( Query => $Query, Rows => $Rows, Page => $Page );
 
 my $item = 0;
-$$maxitems = 0;
 foreach my $col (@Format) {
     $item++;
-    $$maxitems = $item if $item > $$maxitems;
     if ( $col->{title} eq 'NEWLINE' ) {
+        while ( $item < $maxitems ) {
+            $m->out(qq{<th class="collection-as-table">&nbsp;</th>\n});
+            $item++;
+        }
+
+        $item = 0;
         $m->out(qq{</TR>\n<TR class="collection-as-table">});
-	$item = 0;
     }
     else {
         $m->out('<TH class="collection-as-table">');
         my $title = $col->{title};
         $title =~ s/^__(.*)__$/$1/o;
-        $title = ( $m->comp('/Elements/RT__Ticket/ColumnMap', 
-                     Name => $title, 
-                     Attr => 'title' 
-                 )  
-                     || $title
-                 );
-        if (   $AllowSorting
+        $title = (
+            $m->comp(
+                '/Elements/RT__Ticket/ColumnMap',
+                Name => $title,
+                Attr => 'title'
+              )
+              || $title
+        );
+        if (
+               $AllowSorting
             && $col->{'attribute'}
-            && $m->comp('/Elements/RT__Ticket/ColumnMap',
-                          Name => $col->{'attribute'},
-                          Attr => 'attribute' ) 
-           )
+            && $m->comp(
+                '/Elements/RT__Ticket/ColumnMap',
+                Name => $col->{'attribute'},
+                Attr => 'attribute'
+            )
+          )
         {
 
             $m->out(
-                '<a href="' . $BaseURL 
+                '<a href="' . $BaseURL
                   . $m->comp(
                     '/Elements/QueryString',
                     %generic_query_args,
                     OrderBy => (
-                        $m->comp('/Elements/RT__Ticket/ColumnMap',
-                          Name => $col->{'attribute'},
-                          Attr => 'attribute' 
-                    )
+                        $m->comp(
+                            '/Elements/RT__Ticket/ColumnMap',
+                            Name => $col->{'attribute'},
+                            Attr => 'attribute'
+                          )
                           || $col->{'attribute'}
                     ),
                     Order => ( $ARGS{'Order'} eq 'ASC' ? 'DESC' : 'ASC' )
-                  ).
-                  '">' . loc($title) . '</a>'
+                  )
+                  . '">'
+                  . loc($title) . '</a>'
             );
         }
         else {

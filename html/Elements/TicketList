@@ -34,7 +34,7 @@
     Page => $Page,
     OrderBy => $OrderBy , 
     BaseURL => $BaseURL,
-    maxitems => \$maxitems &> 
+    maxitems => $maxitems &> 
 % }
 
 %   my $i;
@@ -90,6 +90,19 @@ unless ($Collection) {
 }
 
 my (@Format) = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $Format);
+
+# Find the maximum number of items in any row, so we can pad the table.
+my $item = 0;
+foreach my $col (@Format) {
+    $item++;
+    if ( $col->{title} eq 'NEWLINE' ) {
+        $item = 0;
+    }
+    else {
+        $maxitems = $item if $item > $maxitems;
+    }
+}
+
 
 $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 $Collection->RowsPerPage($Rows) if ($Rows);
