@@ -1,6 +1,12 @@
 <& /Elements/Header, Title=>"Start page" &>
-<a href="Search/RestrictSearch.html">Search/make a query</a><br>
-<a href="Search/Listing.html?LimitOwner=on&NegateOwner=0&ValueOfOwner=2&LimitStatus=on&NegateStatus=0&ValueOfStatus=open&LimitResultsPerPage=1">All unowned open requests</a><br>
-<a href="Search/Listing.html?LimitStatus=on&NegateStatus=0&ValueOfStatus=open&LimitResultsPerPage=1">All open requests</a><br>
+<a href="Search/RestrictSearch.html">Advanced query</a><br>
+<hr>
+<h1>Queue View</h1>
+<form method="get" action="Search/Listing.html">
+<input type="hidden" name="LimitQueue" value="Yes, baby!">
+<& /Elements/SelectQueue, Name => "ValueOfQueue" &>
+<input type="hidden" name="ValueOfStatus" value="open">
+<input type="submit" name="LimitStatus" value="Give me all open requests in this queue!">
+</form>
 
 
