@@ -1,9 +1,11 @@
+%if ($#{$rss->{'items'}} > -1 ) {
+<h2>Related tasks</h2>
 <UL>
 % foreach my $item (@{$rss->{'items'}}) {
-<LI><A HREF="<%$item->{'url'}"><%$item->{'link'}%></a>
+<LI><A HREF="<%$item->{'link'}%>"><%$item->{'title'}%></a>
 % }   
 </UL>
-
+% }
 <%INIT>
 # Create a user agent object
 use LWP::UserAgent;
@@ -16,7 +18,7 @@ $ua->agent("RT/FM " . $ua->agent);
 
 # Create a request
 my $req = new HTTP::Request GET => $BaseRSSURL."RefersTo=".
-				$ArticleBaseURL.$article->Id;
+				$RT::FM::ArticleBaseURL.$article->Id;
 
 # Pass request to the user agent and get a response back
 my $res = $ua->request($req);
@@ -28,6 +30,7 @@ if ($res->is_success) {
 </%INIT>
 
 <%ARGS>
-$BaseRSSURL => "http://fsck.com/rt2/TicketTalk/tickets.rss?user=guest&pass=guest&"
+$BaseRSSURL => 'http://fsck.com/rt2/TicketTalk/tickets.rss?user=guest&pass=guest&'
+#$BaseRSSURL => 'http://fsck.com/rt2/NoAuth/tickets.rss?user=guest&pass=guest&'
 $article => undef
-</%$ARGS>
+</%ARGS>
