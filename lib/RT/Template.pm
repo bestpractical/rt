@@ -58,7 +58,7 @@ sub _Set {
   my $self = shift;
   # use super::value or we get acl blocked
   if ($self->SUPER::_Value('Queue') == 0 ) {
-      unless ($self->CurrentUser->HasSystemRight('ModifyTemplates')) {
+      unless ($self->CurrentUser->HasSystemRight('ModifyTemplate')) {
 	    return (undef);
       }	
   }
@@ -67,9 +67,9 @@ sub _Set {
       unless ($self->CurrentUserHasQueueRight('ModifyTemplate')) {
 	  return (undef);
       }
-      
-      return($self->SUPER::_Set(@_));
-  }   
+  }
+  return($self->SUPER::_Set(@_));
+     
 }
 
 # }}}
