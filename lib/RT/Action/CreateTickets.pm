@@ -271,6 +271,82 @@ $t->Create(Subject => "Sample workflow test",
            Queue => $q->Id);
 
 
+use RT::Action::CreateTickets;
+my $action = new RT::Action::CreateTickets;
+
+# comma-delimited templates
+my $commas = <<"EOF";
+id,Queue,Subject,Owner,Content
+ticket1,General,"foo, bar",root,blah
+ticket2,General,foo bar,root,blah
+ticket3,General,foo' bar,root,blah'boo
+EOF
+
+# tab-delimited templates
+my $tabs = <<"EOF";
+id\tQueue\tSubject\tOwner\tContent
+ticket10\tGeneral\t"foo' bar"\troot\tblah'
+ticket11\tGeneral\tfoo, bar\troot\tblah
+ticket12\tGeneral\tfoo' bar\troot\tblah'boo
+EOF
+
+my %expected;
+
+$expected{ticket1} = <<EOF;
+Queue: General
+Subject: foo, bar
+Owner: root
+Content: blah
+EOF
+
+$expected{ticket2} = <<EOF;
+Queue: General
+Subject: foo bar
+Owner: root
+Content: blah
+EOF
+
+$expected{ticket3} = <<EOF;
+Queue: General
+Subject: foo' bar
+Owner: root
+Content: blah'boo
+EOF
+
+$expected{ticket10} = <<EOF;
+Queue: General
+Subject: foo' bar
+Owner: root
+Content: blah'
+EOF
+
+$expected{ticket11} = <<EOF;
+Queue: General
+Subject: foo, bar
+Owner: root
+Content: blah
+EOF
+
+$expected{ticket12} = <<EOF;
+Queue: General
+Subject: foo' bar
+Owner: root
+Content: blah'boo
+EOF
+
+$action->Parse($commas);
+$action->Parse($tabs);
+
+my %got;
+foreach (@{ $action->{'create_tickets'} }) {
+  $got{$_} = $action->{'templates'}->{$_};
+}
+
+foreach my $id ( keys %expected ) {
+    ok(exists($got{"create-$id"}), "template exists for $id");
+    is($got{"create-$id"}, $expected{$id}, "template is correct for $id");
+}
+
 =end testing
 
 
@@ -353,6 +429,8 @@ sub Prepare  {
 sub CreateByTemplate {
     my $self = shift;
     my $top = shift;
+
+    $RT::Logger->debug("In CreateByTemplate");
 
     my @results;
 
@@ -519,26 +597,72 @@ sub Parse {
 
     my @template_order;
     my $template_id;
-    foreach my $line (split(/\n/, $content)) {
-	$line =~ s/\r$//;
-	$RT::Logger->debug("Line: $line");
-	if ($line =~ /^===Create-Ticket: (.*)$/) {
-	    $template_id = "create-$1";
-	    $RT::Logger->debug("****  Create ticket: $template_id");
-	    push @{$self->{'create_tickets'}},$template_id;
-        } elsif ($line =~ /^===Update-Ticket: (.*)$/) {
-	    $template_id = "update-$1";
-	    $RT::Logger->debug("****  Update ticket: $template_id");
-	    push @{$self->{'update_tickets'}},$template_id;
-        } elsif ($line =~ /^===Base-Ticket: (.*)$/) {
-	    $template_id = "base-$1";
-	    $RT::Logger->debug("****  Base ticket: $template_id");
-	    push @{$self->{'base_tickets'}},$template_id;
-	} elsif ($line =~ /^===#.*$/) { # a comment
-	    next;
-        } else {
-	    $self->{'templates'}->{$template_id} .= $line."\n";
-        }
+    if (substr($content, 0, 3) eq '===') {
+	$RT::Logger->debug("Line: ===");
+	foreach my $line (split(/\n/, $content)) {
+	    $line =~ s/\r$//;
+	    $RT::Logger->debug("Line: $line");
+	    if ($line =~ /^===Create-Ticket: (.*)$/) {
+		$template_id = "create-$1";
+		$RT::Logger->debug("****  Create ticket: $template_id");
+		push @{$self->{'create_tickets'}},$template_id;
+	    } elsif ($line =~ /^===Update-Ticket: (.*)$/) {
+		$template_id = "update-$1";
+		$RT::Logger->debug("****  Update ticket: $template_id");
+		push @{$self->{'update_tickets'}},$template_id;
+	    } elsif ($line =~ /^===Base-Ticket: (.*)$/) {
+		$template_id = "base-$1";
+		$RT::Logger->debug("****  Base ticket: $template_id");
+		push @{$self->{'base_tickets'}},$template_id;
+	    } elsif ($line =~ /^===#.*$/) { # a comment
+		     next;
+		 } else {
+		     $self->{'templates'}->{$template_id} .= $line."\n";
+		 }
+	}
+    } elsif (substr($content, 0, 2) =~ /^id$/i) {
+	$RT::Logger->debug("Line: id");
+	use Regexp::Common qw(delimited);
+	my $first = substr($content, 0, index($content, "\n"));
+	$first =~ s/\r$//;
+
+	my $delimiter;
+	if ($first =~ /\t/)  {
+	    $delimiter = "\t";
+	} else {
+	    $delimiter = ',';
+	}
+	my $delimited = qr[[^$delimiter]+];
+	my @fields = split(/$delimiter/, $first);
+
+	my $justquoted = qr[$RE{quoted}];
+
+	$content = substr($content, index($content, "\n") + 1);
+	$RT::Logger->debug("First: $first");
+	
+	foreach my $line (split(/\n/, $content)) {
+	    next unless $line;
+	    $RT::Logger->debug("Line: $line");
+	    # first item is $template_id
+	    my $i = 0;
+	    my $template_id;
+	    while ($line =~ /($justquoted|$delimited)/igx) {
+		if ($i == 0) {
+		    $template_id = 'create-' . $1;
+		    $RT::Logger->debug("template_id: $1");
+		    push @{$self->{'create_tickets'}},$template_id;
+		} else {
+		    my $field = $1;
+		    if ($field =~ /$justquoted/) {
+			$field =~ s/^\"|\'//;
+			$field =~ s/\"|\'$//;
+		    }
+		    $self->{'templates'}->{$template_id} .= $fields[$i] . ": $field\n";
+		    $RT::Logger->debug($fields[$i] . ": $1");
+		}
+		$i++;
+	    }
+	}
     }
 }
 
