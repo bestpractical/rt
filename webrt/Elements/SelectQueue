@@ -1,24 +1,38 @@
 %# $Header$
 
+% if ($Lite) {
+<INPUT NAME="<%$Name%>" size=25 DEFAULT="<%$d->Name%>">
+% } else {
 <SELECT NAME ="<%$Name%>">
+% if ($ShowNullOption) {
 <OPTION VALUE="">-</OPTION>
+% }
 % while (my $queue=$q->Next) {
+% if ($ShowAllQueues || $queue->CurrentUserHasRight('CreateTicket')) {
 <OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->Name%>
 %   if (($Verbose) and ($queue->Description) ){
 (<%$queue->Description%>)
 %  }
 </OPTION>
 % }
+% }
 </SELECT>
-
+% }
 <%ARGS>
+$ShowNullOption => 1
+$ShowAllQueues => 1
 $Name => undef
 $Verbose => undef
 $Default => undef
+$Lite => 0
 </%ARGS>
 
 <%INIT>
-use RT::Queues;
+
 my $q=new RT::Queues($session{'CurrentUser'});
 $q->UnLimit;
+
+my $d = new RT::Queue($session{'CurrentUser'});
+$d->Load($Default);
+
 </%INIT>

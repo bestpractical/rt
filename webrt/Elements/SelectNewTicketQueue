@@ -1,23 +1,9 @@
 %# $Header$
-<SELECT NAME ="<%$Name%>">
-% while (my $queue=$q->Next) {
-% if ($queue->CurrentUserHasRight('CreateTicket')) {
-<OPTION VALUE="<%$queue->Id%>" <%($queue->Id == $Default) && 'SELECTED'%>><%$queue->Name%>
-%   if (($Verbose) and ($queue->Description) ){
-(<%$queue->Description%>)
-%  }
-</OPTION>
-%  }
-% }
-</SELECT>
+<& SelectQueue, Name => $Name, Verbose => $Verbose, Default => $Default,
+	ShowAllQueues => 0, ShowNullOption => 0 &>
+
 <%ARGS>
 $Name => 'Queue'
 $Verbose => undef
 $Default => undef
 </%ARGS>
-
-<%INIT>
-use RT::Queues;
-my $q=new RT::Queues($session{'CurrentUser'});
-$q->UnLimit;
-</%INIT>
