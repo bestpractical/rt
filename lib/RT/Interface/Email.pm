@@ -166,6 +166,7 @@ sub MailError {
 				      Bcc => $args{'Bcc'},
 				      To => $args{'To'},
 				      Subject => $args{'Subject'},
+				      Precedence => 'bulk',
 				      'X-RT-Loop-Prevention' => $RT::rtname,
 				    );
 
