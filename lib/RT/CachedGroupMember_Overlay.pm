@@ -97,7 +97,7 @@ sub Delete {
 
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
-        my $deletable = RT::CachedGroupMembers->new( $session->CurrentUser );
+        my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
 
         $deletable->Limit(
             FIELD    => 'Via',

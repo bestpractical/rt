@@ -199,6 +199,21 @@ ngs are afoot at the circle K" );
 
 # }}}
 
+# {{{ CreateSystemGroups
+
+=head2 CreateSystemGroup { Name => "name", Description => "Description"}
+
+A helper subroutine which creates a system group 
+
+=cut
+
+sub CreateSystemGroup {
+    my $self = shift;
+    return($self->Create( Domain => 'System', Instance => '', @_));
+}
+
+# }}}
+
 # {{{ sub Delete
 
 =head2 Delete
@@ -229,14 +244,13 @@ Returns an RT::Principals object of this group's members.
 
 sub MembersObj {
     my $self = shift;
-    unless ( defined $self->{'members_obj'} ) {
-        $self->{'members_obj'} = RT::GroupMembers->new( $self->CurrentUser );
+    my $members_obj = RT::GroupMembers->new( $self->CurrentUser );
 
-        #If we don't have rights, don't include any results
-        $self->{'members_obj'}->LimitToMembersOfGroup( $self->PrincipalId );
+    #If we don't have rights, don't include any results
+    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
+    $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
 
-    }
-    return ( $self->{'members_obj'} );
+    return ( $members_obj );
 
 }
 
@@ -259,6 +273,8 @@ sub AddMember {
     my $self       = shift;
     my $new_member = shift;
 
+    $RT::Logger->debug("About to add $new_member to group".$self->id);
+
     my $new_member_obj = RT::Principal->new( $self->CurrentUser );
     $new_member_obj->Load($new_member);
 
@@ -278,15 +294,26 @@ sub AddMember {
         #User is already a member of this group. no need to add it
         return ( 0, $self->loc("Group already has member") );
     }
+    if ( $new_member_obj->IsGroup &&
+         $new_member_obj->Object->HasMemberRecursively($self->PrincipalObj) ) {
+
+        #User is already a member of this group. no need to add it
+        return ( 0, $self->loc("Groups can't be members of their members"));
+    }
+
 
     my $member_object = RT::GroupMember->new( $self->CurrentUser );
-    $member_object->Create(
+    my $id = $member_object->Create(
         Member => $new_member_obj,
         Group => $self->PrincipalObj
     );
-    return ( 1, "Member added" );
+    if ($id) {
+        return ( 1, $self->loc("Member added") );
+    }
+    else {
+        return(0, $self->loc("Couldn't add member to group"));
+    }
 }
-
 # }}}
 
 # {{{ HasMember
@@ -347,7 +374,7 @@ sub HasMemberRecursively {
     my $principal = shift;
 
     unless (UNIVERSAL::isa($principal,'RT::Principal')) {
-        $RT::Logger->crit("Group::HasMember was called with an argument that".
+        $RT::Logger->crit("Group::HasMemberRecursively was called with an argument that".
                           "isn't an RT::Principal. It's $principal");
         return(undef);
     }

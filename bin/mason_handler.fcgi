@@ -23,7 +23,7 @@ package RT::Mason;
 use HTML::Mason;    # brings in subpackages: Parser, Interp, etc.
 use HTML::Mason::CGIHandler;
 
-use vars qw( %session $cgi);
+use vars qw( $CGI);
 
 # List of modules that you want to use from components (see Admin
 # manual for details)
@@ -78,11 +78,11 @@ die "Can't read and write $RT::MasonSessionDir"
 
 RT::Init();
 
-my $h = RT::Interface::Web::NewCGIHandler();
 
 # Response loop
-while ( $RT::Mason::cgi = new CGI::Fast ) {
+while ( $RT::Mason::CGI = new CGI::Fast ) {
 
+    my $h = RT::Interface::Web::NewCGIHandler();
     my $comp = $ENV{'PATH_INFO'};
     
     if ($comp =~ /^(.*)$/) {  # untaint the path info. apache should

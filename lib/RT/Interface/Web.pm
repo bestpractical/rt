@@ -115,7 +115,7 @@ through
 sub loc {
 
     if ($session{'CurrentUser'} && 
-        UNIVERSAL::can($session{'CurrentUser'}, loc)){
+        UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
         return($session{'CurrentUser'}->loc(@_));
     }
     else  {

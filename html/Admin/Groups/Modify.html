@@ -31,7 +31,7 @@ Description:</TD><TD COLSPAN=3><INPUT name="Description" value="<%$Group->Descri
 my ($title);
 my (@results);
 
-my $Group = new RT::Group($session{'CurrentUser'});
+my $Group = RT::Group->new($session{'CurrentUser'});
 
 if ($Create) {
     $title = "Create a new group";
@@ -41,7 +41,8 @@ else {
     
     if ($id eq 'new' ) {
 	
-	$Group->Create(Name => "$Name") || Abort ("Group could not be created.");
+	$Group->CreateSystemGroup(Name => "$Name") ||
+        Abort ("Group could not be created.");
 	$id = $Group->Id;
     }
     else {

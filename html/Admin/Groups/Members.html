@@ -10,27 +10,41 @@
 <TABLE WIDTH="100%">
 <TR>
 <TD>
-Add members
+<&|/l&>Add members</&>
 </TD>
 <TD>
-Current members
+<&|/l&>Current members</&>
 </TD>
 </TR>
 
 <TR>
 <TD VALIGN=TOP>
-<& /Admin/Elements/SelectUsers, Name => "AddMembers" &>
+<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers" &>
 </TD>
 <TD VALIGN=TOP>
 
-(Check box to delete group member)
-<UL>
 % if ($Group->MembersObj->Count == 0 ) {
-<LI><i>(No members)</i>
+<i><&|/l&>(No members)</&></i>
 % } else {
-% while (my $member = $Group->MembersObj->Next()) {
-<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->UserObj->id%>">
-<%$member->UserObj->Name%> (<%$member->UserObj->RealName%>)
+<i><&|/l&>(Check box to delete group member)</&></i>
+<br>
+<br>
+<&|/l&>Users</&>
+% my $UserMembers = $Group->MembersObj;
+% $UserMembers->LimitToUsers();
+<UL>
+% while (my $member = $UserMembers->Next()) {
+<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
+<%$member->MemberObj->Object->Name%> (<%$member->MemberObj->Object->RealName%>)
+% }
+</ul>
+<&|/l&>Groups</&>
+<ul>
+% my $GroupMembers = $Group->MembersObj;
+% $GroupMembers->LimitToSystemGroups();
+% while (my $member = $GroupMembers->Next()) {
+<LI><INPUT TYPE=CHECKBOX Name="DeleteMember-<%$member->MemberId%>">
+<%$member->MemberObj->Object->Name%>
 % }
 % }
 </UL>
@@ -64,7 +78,21 @@ my @AddMembers = (ref $AddMembers eq 'ARRAY') ? @{$AddMembers} : ($AddMembers);
 
 foreach my $member (@AddMembers) {
     next unless ($member);
-    my ($val, $msg) = $Group->AddMember($member);
+
+    my $principal;
+
+    if ($member =~ /^Group-(\d+)$/) {
+        $principal = RT::Group->new($session{'CurrentUser'});
+        $principal->Load($1);
+    } elsif ($member =~ /^User-(\d+)$/) {
+        $principal = RT::User->new($session{'CurrentUser'});
+        $principal->Load($1);
+    } else {
+        next;
+    }
+
+
+    my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
     push (@results, $msg);
 }
 

@@ -80,7 +80,6 @@ sub Create {
 
     unless($args{'Group'}->IsGroup) {
         $RT::Logger->warning("Someone tried to add a member to a user instead of a group");
-        $RT::Logger->debug("The principal id is ". $args{'Group'}->Id);
         return (undef);
     }
 
@@ -92,6 +91,24 @@ sub Create {
         return (undef);
     }
     $RT::Handle->BeginTransaction();
+
+    # We really need to make sure we don't add any members to this group
+    # that contain the group itself. that would, um, suck. 
+    # (and recurse infinitely)  Later, we can add code to check this in the 
+    # cache and bail so we can support cycling directed graphs
+
+    if ($args{'Member'}->IsGroup) {
+        my $member_object = $args{'Member'}->Object;
+        if ($member_object->HasMemberRecursively($args{'Group'})) {
+            $RT::Logger->debug("Adding that group would create a loop");
+            return(undef);
+        }
+        elsif ( $args{'Member'}->Id == $args{'Group'}->Id) {
+            $RT::Logger->debug("Can't add a group to itself");
+            return(undef);
+        }
+    }
+
 
     my $id = $self->SUPER::Create(
         GroupId  => $args{'Group'}->Id,

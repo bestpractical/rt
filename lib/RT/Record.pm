@@ -64,7 +64,7 @@ sub _MyCurrentUser {
     if ( !defined( $self->CurrentUser ) ) {
         use Carp;
         Carp::cluck();
-        $RT::Logger->err("$self was created without a CurrentUser\n");
+        $RT::Logger->err("$self was created without a CurrentUser");
         return (0);
     }
 }

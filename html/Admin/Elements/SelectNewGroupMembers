@@ -1,0 +1,26 @@
+<SELECT MULTIPLE NAME="<%$Name%>"  SIZE=10>
+<OPTION VALUE=""><b><&|/l&>Users</&></b></OPTION>
+%while (my $user = $users->Next) {
+<OPTION VALUE="User-<%$user->id%>">- <%$user->Name%></OPTION>
+%}
+<OPTION VALUE=""><b><&|/l&>Groups</&></b></OPTION>
+%while (my $group = $groups->Next) {
+<OPTION VALUE="Group-<%$group->id%>">- <%$group->Name%></OPTION>
+%}
+</SELECT>
+
+<%INIT>
+my $users = new RT::Users($session{'CurrentUser'});
+
+$users->Limit(FIELD => 'id', VALUE => $RT::SystemUser->id, OPERATOR => '!=' );
+$users->Limit(FIELD => 'id', VALUE => $RT::Nobody->id, OPERATOR => '!=' );
+$users->LimitToPrivileged();
+
+my $groups = new RT::Groups($session{'CurrentUser'});
+$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'System');
+
+
+</%INIT>
+<%ARGS>
+$Name => 'Users'
+</%ARGS>

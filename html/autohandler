@@ -2,12 +2,14 @@
 <& /Elements/Footer, %ARGS &>
 
 <%INIT>
+$m->{'rt_base_time'} = time;
+
 $m->comp('/Elements/SetupSessionCookie');
-unless ($session{'CurrentUser'}) {
+
+unless ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
     $session{'CurrentUser'} = RT::CurrentUser->new();
 }
 
-$m->{'rt_base_time'} = time;
 
 #if it's a noauth file, don't ask for auth.
 if ($m->base_comp->path =~ '^/NoAuth/') {

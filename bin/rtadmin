@@ -9,8 +9,7 @@ use Getopt::Long qw(:config pass_through);
 
 use lib "!!RT_LIB_PATH!!";
 
-use RT::Interface::CLI  qw(CleanEnv 
-			   GetCurrentUser GetMessageContent);
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent);
 
 #Clean out all the nasties from the environment
 CleanEnv();
@@ -27,23 +26,19 @@ RT::DropSetGIDPermissions();
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 
-unless ($CurrentUser->Id) {
-        print "No RT user found. Please consult your RT administrator.\n";   
-        exit(1);
+unless ( $CurrentUser->Id ) {
+    print "No RT user found. Please consult your RT administrator.\n";
+    exit(1);
 }
 
-
-
-
 PickMode();
-
 
 # {{{ Help
 
 sub Help {
 
     # {{{ help_acl
-my $help_acl ="
+    my $help_acl = "
         Access control
 	--grant-right <right> 
 	--revoke-right <right>
@@ -51,11 +46,10 @@ my $help_acl ="
           --groupid <group>
 	--list-rights";
 
-# }}}
-    
-    
+    # }}}
+
     # {{{ help_scrip
-my $help_scrip = "
+    my $help_scrip = "
         Scrips
         --create-scrip
            --scrip-condition <condition name or id>
@@ -65,10 +59,10 @@ my $help_scrip = "
         --delete-scrip <id>
 	--list-scrips";
 
-# }}}
-    
+    # }}}
+
     # {{{ help_template  
-my $help_template = "      
+    my $help_template = "      
         Templates
         --delete-template [<id>|<name>]
         --display-template [<id>|<name>]
@@ -82,10 +76,9 @@ my $help_template = "
          
          --list-templates";
 
-# }}}
-    
-    
-print <<EOF;
+    # }}}
+
+    print <<EOF;
 
 USAGE:  rtadmin --user <userid> [Userflags]
 	rtadmin --list-users
@@ -146,10 +139,12 @@ Group Configuration for --group <groupid>
 	--description <new description>
 
 
-
-	--add-member <userid>
-	--delete-member <userid>
+	--add-group <groupid>
+	--delete-group <groupid>
+	--add-user <userid>
+	--delete-user <userid>
 	--list-members	
+	--list-members-recursively	
 
 Queue Configuration for --queue <queueid>
 	--create
@@ -189,8 +184,6 @@ $help_scrip
 
 EOF
 
-
-
 }
 
 # }}}
@@ -198,145 +191,156 @@ EOF
 # {{{ PickMode
 
 sub PickMode {
-    my ($user,$group, $queue, $system, $listusers, 
-	$listgroups, $listqueues, $help);
+    my ( $user, $group, $queue, $system, $listusers, $listgroups, $listqueues,
+        $help );
 
+    GetOptions(
+        'help|h|usage' => \$help,
+        'user=s'       => \$user,
+        'queue=s'      => \$queue,
+        'group=s'      => \$group,
+        'system'       => \$system,
+        'list-users'   => \$listusers,
+        'list-queues'  => \$listqueues,
+        'list-groups'  => \$listgroups,
+    );
 
-    GetOptions ('help|h|usage' => \$help,
-		'user=s' => \$user,
-		'queue=s' => \$queue,
-		'group=s' => \$group,
-		'system' => \$system,
-		'list-users' => \$listusers,
-		'list-queues' => \$listqueues,
-		'list-groups' => \$listgroups,
-	       );
-    
-
-    
-    if ($user)          { AdminUser($user) }  
+    if    ($user)       { AdminUser($user) }
     elsif ($group)      { AdminGroup($group) }
     elsif ($queue)      { AdminQueue($queue) }
     elsif ($system)     { AdminSystem($system) }
     elsif ($listusers)  { ListUsers() }
-    elsif ($listgroups) { ListGroups()  }
+    elsif ($listgroups) { ListGroups() }
     elsif ($listqueues) { ListQueues() }
-    elsif ($help)       { Help()}
+    elsif ($help)       { Help() }
     else {
-	print "No command found\n";
+        print "No command found\n";
     }
     exit(0);
-}	
+}
 
 # }}}
 
 # {{{ AdminUser
 
 sub AdminUser {
-    my $user=shift;
+    my $user = shift;
     my %args;
 
-    GetOptions(\%args,
-	   'create', 'disable|delete', 'display',
-	   'Name=s', 'Gecos=s', 'Password=s',
-	   'EmailAddress=s', 'Privileged=s', 'Comments=s', 'Signature=s',
-	   'Organization=s', 'RealName=s', 'NickName=s',  
-	   'ExternalContactInfoId=s', 'ContactInfoSystem=s', 
-           'ExternalAuthId=s', 'AuthSystem=s',
-	   'HomePhone=s', 'WorkPhone=s', 'MobilePhone=s', 'PagerPhone=s',
-           'Address1=s', 'Address2=s', 'City=s', 'State=s', 'Zip=s', 
-           'Country=s', 'FreeformContactInfo=s');
+    GetOptions(
+        \%args,                    'create',
+        'disable|delete',          'display',
+        'Name=s',                  'Gecos=s',
+        'Password=s',              'EmailAddress=s',
+        'Privileged=s',            'Comments=s',
+        'Signature=s',             'Organization=s',
+        'RealName=s',              'NickName=s',
+        'ExternalContactInfoId=s', 'ContactInfoSystem=s',
+        'ExternalAuthId=s',        'AuthSystem=s',
+        'HomePhone=s',             'WorkPhone=s',
+        'MobilePhone=s',           'PagerPhone=s',
+        'Address1=s',              'Address2=s',
+        'City=s',                  'State=s',
+        'Zip=s',                   'Country=s',
+        'FreeformContactInfo=s'
+    );
 
     my $user_obj = new RT::User($CurrentUser);
-    
- 
+
     #Create the user if we need to 
-    if ($args{'create'}) {
-	my ($status, $msg) = 
-	  $user_obj->Create( Name => ($args{'Name'} || $user),
-			     Gecos => $args{'Gecos'},
-			     Password => $args{'Password'},
-			     EmailAddress => $args{'EmailAddress'},
-			     Privileged => $args{'Privileged'},
-			     Comments => $args{'Comments'},
-			     Signature => $args{'Signature'},
-			     Organization => $args{'Organization'},
-			     RealName => $args{'RealName'},
-			     NickName => $args{'NickName'},
-			     ExternalContactInfoId => $args{'ExternalContactInfoId'},
-			     ContactInfoSystem => $args{'ContactInfoSystem'},
-			     ExternalAuthId => $args{'ExternalAuthId'},
-			     AuthSystem => $args{'AuthSystem'},
-			     HomePhone => $args{'HomePhone'},
-			     WorkPhone => $args{'WorkPhone'},
-			     MobilePhone => $args{'MobilePhone'},
-			     PagerPhone => $args{'PagerPhone'},
-			     Address1 => $args{'Address1'},
-			     Address2 => $args{'Address2'},
-			     City  => $args{'City'},
-			     State => $args{'State'},
-			     Zip => $args{'Zip'},
-			     FreeformContactInfo => $args{'FreeformContactInfo'}
-			   );
-	
-	print "$msg\n";
-	return();
-	
+    if ( $args{'create'} ) {
+        my ( $status, $msg ) = $user_obj->Create(
+            Name => ( $args{'Name'} || $user ),
+            Gecos                 => $args{'Gecos'},
+            Password              => $args{'Password'},
+            EmailAddress          => $args{'EmailAddress'},
+            Privileged            => $args{'Privileged'},
+            Comments              => $args{'Comments'},
+            Signature             => $args{'Signature'},
+            Organization          => $args{'Organization'},
+            RealName              => $args{'RealName'},
+            NickName              => $args{'NickName'},
+            ExternalContactInfoId => $args{'ExternalContactInfoId'},
+            ContactInfoSystem     => $args{'ContactInfoSystem'},
+            ExternalAuthId        => $args{'ExternalAuthId'},
+            AuthSystem            => $args{'AuthSystem'},
+            HomePhone             => $args{'HomePhone'},
+            WorkPhone             => $args{'WorkPhone'},
+            MobilePhone           => $args{'MobilePhone'},
+            PagerPhone            => $args{'PagerPhone'},
+            Address1              => $args{'Address1'},
+            Address2              => $args{'Address2'},
+            City                  => $args{'City'},
+            State                 => $args{'State'},
+            Zip                   => $args{'Zip'},
+            FreeformContactInfo   => $args{'FreeformContactInfo'}
+        );
+
+        print "$msg\n";
+        return ();
+
     }
     else {
-	
-	
-	#Load the user
-	$user_obj->Load($user);
-	
-	unless ($user_obj->id) {
-	    print "User '$user' not found\n";
-	    return();
-	}	
-	
-	
-	
-	#modify the user if we need to
-	my @attributes = ('Name', 'Gecos',
-			  'EmailAddress', 'Privileged', 'Comments', 'Signature',
-			  'Organization', 'RealName', 'NickName',  
-			  'ExternalContactInfoId', 'ContactInfoSystem', 
-			  'ExternalAuthId', 'AuthSystem',
-			  'HomePhone', 'WorkPhone', 'MobilePhone', 'PagerPhone',
-			  'Address1', 'Address2', 'City', 'State', 'Zip', 
-			  'Country', 'FreeformContactInfo');
-	foreach my $attrib (@attributes) {
-	    if ( (exists ($args{"$attrib"})) and
-		 ($user_obj->$attrib() ne $args{"$attrib"})) {
-		
-		my $method = "Set$attrib";
-		my ($val, $msg) = $user_obj->$method($args{"$attrib"});
-		print "User ".$user_obj->Name. " $attrib:  $msg\n";
-		
-	    }
-	}		
-	
-	if (exists ($args{'Password'})) {
-	    my ($code, $msg);
-	    ($code, $msg) = $user_obj->SetPassword($args{'Password'});
-	    print "User ". $user_obj->Name. ' Password: '. $msg . "\n";
-	}
-	
-	#Check if we need to display the user
-	if ($args{'display'}) {
-	    foreach my $attrib (@attributes) {
-		next if ($attrib eq 'Password'); #Can't see the password
-		printf("%22.22s %-64s\n",$attrib, ($user_obj->$attrib()||'(undefined)'));
-		
-	    }	
-	}	
-	
-	#Check if we need to delete the user
-	if ($args{'disable'}) {
-	    my ($val, $msg) = $user_obj->SetDisabled(1);
-	    print "$msg\n";
-	}	
-	
+
+        #Load the user
+        $user_obj->Load($user);
+
+        unless ( $user_obj->id ) {
+            print "User '$user' not found\n";
+            return ();
+        }
+
+        #modify the user if we need to
+        my @attributes = (
+            'Name',              'Gecos',
+            'EmailAddress',      'Privileged',
+            'Comments',          'Signature',
+            'Organization',      'RealName',
+            'NickName',          'ExternalContactInfoId',
+            'ContactInfoSystem', 'ExternalAuthId',
+            'AuthSystem',        'HomePhone',
+            'WorkPhone',         'MobilePhone',
+            'PagerPhone',        'Address1',
+            'Address2',          'City',
+            'State',             'Zip',
+            'Country',           'FreeformContactInfo'
+        );
+        foreach my $attrib (@attributes) {
+            if ( ( exists( $args{"$attrib"} ) )
+                and ( $user_obj->$attrib() ne $args{"$attrib"} ) )
+            {
+
+                my $method = "Set$attrib";
+                my ( $val, $msg ) = $user_obj->$method( $args{"$attrib"} );
+                print "User " . $user_obj->Name . " $attrib:  $msg\n";
+
+            }
+        }
+
+        if ( exists( $args{'Password'} ) ) {
+            my ( $code, $msg );
+            ( $code, $msg ) = $user_obj->SetPassword( $args{'Password'} );
+            print "User " . $user_obj->Name . ' Password: ' . $msg . "\n";
+        }
+
+        #Check if we need to display the user
+        if ( $args{'display'} ) {
+            foreach my $attrib (@attributes) {
+                next if ( $attrib eq 'Password' );    #Can't see the password
+                printf(
+                    "%22.22s %-64s\n", $attrib,
+                    ( $user_obj->$attrib() || '(undefined)' )
+                );
+
+            }
+        }
+
+        #Check if we need to delete the user
+        if ( $args{'disable'} ) {
+            my ( $val, $msg ) = $user_obj->SetDisabled(1);
+            print "$msg\n";
+        }
+
     }
 }
 
@@ -345,110 +349,113 @@ sub AdminUser {
 # {{{ AdminQueue
 
 sub AdminQueue {
-    my $queue=shift;
+    my $queue = shift;
     my %args;
 
-    GetOptions(\%args,
-	       'create', 'disable|delete', 'display',
-	       'Name=s', 'CorrespondAddress=s', 'Description=s',
-	       'CommentAddress=s', 'InitialPriority=n', 'FinalPriority=n',
-	       'DefaultDueIn=n',
-	       
-	       'add-cc=s@', 'add-admincc=s@', 
-	       'delete-cc=s@', 'delete-admincc=s@',
-	       'list-watchers', 'create-template'
-	       );
+    GetOptions(
+        \%args,
+        'create',           'disable|delete',      'display',
+        'Name=s',           'CorrespondAddress=s', 'Description=s',
+        'CommentAddress=s', 'InitialPriority=n',   'FinalPriority=n',
+        'DefaultDueIn=n',
+
+        'add-cc=s@',     'add-admincc=s@',
+        'delete-cc=s@',  'delete-admincc=s@',
+        'list-watchers', 'create-template'
+    );
 
     use RT::Queue;
     my $queue_obj = new RT::Queue($CurrentUser);
-    
+
     #Create the queue if we need to 
-    if ($args{'create'}) {
-	my ($status, $msg) = 
-	  $queue_obj->Create(
-			     Name => ($args{'Name'} || $queue) ,
-			     CorrespondAddress => $args{'CorrespondAddress'},
-			     Description => $args{'Description'},
-			     CommentAddress  => $args{'CommentAddress'},
-			     InitialPriority => $args{'InitialPriority'},
-			     FinalPriority => $args{'FinalPriority'},
-			     DefaultDueIn => $args{'DefaultDueIn'}
-			    );
-	
-	print "$msg\n";
+    if ( $args{'create'} ) {
+        my ( $status, $msg ) = $queue_obj->Create(
+            Name => ( $args{'Name'} || $queue ),
+            CorrespondAddress => $args{'CorrespondAddress'},
+            Description       => $args{'Description'},
+            CommentAddress    => $args{'CommentAddress'},
+            InitialPriority   => $args{'InitialPriority'},
+            FinalPriority     => $args{'FinalPriority'},
+            DefaultDueIn      => $args{'DefaultDueIn'}
+        );
+
+        print "$msg\n";
     }
     else {
-	#Load the queue
-	$queue_obj->Load($queue);
-	
-	unless ($queue_obj->id) {
-	    print "Queue '$queue' not found\n";
-	    return();
-	}	
-		
+
+        #Load the queue
+        $queue_obj->Load($queue);
+
+        unless ( $queue_obj->id ) {
+            print "Queue '$queue' not found\n";
+            return ();
+        }
+
         #modify if we need to
-	my @attributes = qw(Name CorrespondAddress Description
-			    CommentAddress InitialPriority FinalPriority
-			    DefaultDueIn
-			 );
-	foreach my $attrib (@attributes) {
-	    if ( (exists ($args{"$attrib"})) and
-		 ($queue_obj->$attrib() ne $args{"$attrib"})) {
-		
-		my $method = "Set$attrib";
-		my ($val, $msg) = $queue_obj->$method($args{"$attrib"});
-		print "Queue ".$queue_obj->Name. " $attrib:  $msg\n";
-		
-	    }
-	}		
-	    
-	
-	#Check if we need to display the queue
-	if ($args{'display'}) {
-	    foreach my $attrib (@attributes) {
-		printf("%22.22s %-64s\n",$attrib, ($queue_obj->$attrib()||'(undefined)'));
-		
-	    }	
-	}	
-       	
-	foreach my $person (@{$args{'add-cc'}}) {
-	    my ($val, $msg) = $queue_obj->AddCc(Email => $person);
-	    print "$msg\n";
-	}
-	foreach my $person (@{$args{'add-admincc'}}) {
-	    my ($val, $msg) = $queue_obj->AddAdminCc(Email => $person);
-	    print "$msg\n";
-	}
+        my @attributes = qw(Name CorrespondAddress Description
+          CommentAddress InitialPriority FinalPriority
+          DefaultDueIn
+        );
+        foreach my $attrib (@attributes) {
+            if ( ( exists( $args{"$attrib"} ) )
+                and ( $queue_obj->$attrib() ne $args{"$attrib"} ) )
+            {
 
-	foreach my $person (@{$args{'delete-cc'}}) {
-	    my ($val, $msg) = $queue_obj->DeleteCc($person);
-	    print "$msg\n";
-	}
-	foreach my $person (@{$args{'delete-admincc'}}) {
-	    my ($val, $msg) = $queue_obj->DeleteAdminCc($person);
-	    print "$msg\n";
-	}
+                my $method = "Set$attrib";
+                my ( $val, $msg ) = $queue_obj->$method( $args{"$attrib"} );
+                print "Queue " . $queue_obj->Name . " $attrib:  $msg\n";
 
-	if ($args{'list-watchers'}) {
-	    require RT::Watchers;
-	    my $watchers = new RT::Watchers($CurrentUser);
-	    $watchers->LimitToQueue($queue_obj->id);
-	    while (my $watcher = $watchers->Next()) {
-		printf("%10s %-60s\n",
-		       $watcher->Type, $watcher->Email );
-	    }	
-	}	
+            }
+        }
 
-        AdminTemplates($queue_obj->Id());
-        AdminScrips($queue_obj->Id());
-	AdminRights($queue_obj->Id());
+        #Check if we need to display the queue
+        if ( $args{'display'} ) {
+            foreach my $attrib (@attributes) {
+                printf(
+                    "%22.22s %-64s\n", $attrib,
+                    ( $queue_obj->$attrib() || '(undefined)' )
+                );
 
-	#Check if we need to delete the queue
-	if ($args{'disable'}) {
-	    my ($val, $msg) = $queue_obj->SetDisabled(1);
-	    print "$msg\n";
-	}	
-	
+            }
+        }
+
+        foreach my $person ( @{ $args{'add-cc'} } ) {
+            my ( $val, $msg ) = $queue_obj->AddCc( Email => $person );
+            print "$msg\n";
+        }
+        foreach my $person ( @{ $args{'add-admincc'} } ) {
+            my ( $val, $msg ) = $queue_obj->AddAdminCc( Email => $person );
+            print "$msg\n";
+        }
+
+        foreach my $person ( @{ $args{'delete-cc'} } ) {
+            my ( $val, $msg ) = $queue_obj->DeleteCc($person);
+            print "$msg\n";
+        }
+        foreach my $person ( @{ $args{'delete-admincc'} } ) {
+            my ( $val, $msg ) = $queue_obj->DeleteAdminCc($person);
+            print "$msg\n";
+        }
+
+        if ( $args{'list-watchers'} ) {
+            require RT::Watchers;
+            my $watchers = new RT::Watchers($CurrentUser);
+            $watchers->LimitToQueue( $queue_obj->id );
+            while ( my $watcher = $watchers->Next() ) {
+                printf( "%10s %-60s\n", $watcher->Type, $watcher->Email );
+            }
+        }
+
+        AdminTemplates( $queue_obj->Id() );
+        AdminScrips( $queue_obj->Id() );
+        AdminRights( $queue_obj->Id() );
+
+        #Check if we need to delete the queue
+        if ( $args{'disable'} ) {
+            my ( $val, $msg ) = $queue_obj->SetDisabled(1);
+            print "$msg\n";
+        }
+
     }
 }
 
@@ -461,183 +468,259 @@ sub AdminGroup {
 
     my (%args);
 
-    GetOptions(\%args,
-	       'create', 'delete', 'display',
-	       'Name=s', 'Description=s',
-	       	       
-	       'add-member=s@', 'delete-member=s@',
-	       'list-members'
-	       );
-
+    GetOptions(
+        \%args,         'create',
+        'delete',       'display',
+        'Name=s',       'Description=s',
+        'add-group=s@', 'delete-group=s@',
+        'add-user=s@',  'delete-user=s@',
+        'list-members', 'list-members-recursively'
+    );
 
     use RT::Group;
     my $group_obj = new RT::Group($CurrentUser);
     unless ($group) {
-	print "Group not specified.\n";
-	return();
-    }	
-    
+        print "Group not specified.\n";
+        return ();
+    }
 
     #Create the group if we need to
-    if ($args{'create'}) {
-	my ($val, $msg) = $group_obj->Create( Name => ($args{'Name'} || $group),
-					      Description => $args{'Description'} );
-	print $msg ."\n";
-    }	
+    if ( $args{'create'} ) {
+        my ( $val, $msg ) = $group_obj->CreateSystemGroup(
+            Name => ( $args{'Name'} || $group ),
+            Description => $args{'Description'}
+        );
+        print $msg . "\n";
+    }
+
     #otherwise we load it
     else {
-	$group_obj->Load($group);
-    }	
-    
-    #If we have no group object, get the hell out
-    unless ($group_obj->Id) {
-	print "Group not found.\n";
+        $group_obj->LoadSystemGroup($group);
     }
 
-    if ($args{'delete'}) {
-	my ($val, $msg) = $group_obj->Delete();
-	print $msg ."\n";
-	return();
-    }	
+    #If we have no group object, get the hell out
+    unless ( $group_obj->Id ) {
+        print "Group not found.\n";
+    }
 
+    if ( $args{'delete'} ) {
+        my ( $val, $msg ) = $group_obj->Delete();
+        print $msg . "\n";
+        return ();
+    }
 
-    
     #modify if we need to
     my @attributes = qw(Name Description
-			
-		       );
+
+    );
     foreach my $attrib (@attributes) {
-	if ( (exists ($args{"$attrib"})) and
-	     ($group_obj->$attrib() ne $args{"$attrib"})) {
-		
-	    my $method = "Set$attrib";
-	    my ($val, $msg) = $group_obj->$method($args{"$attrib"});
-	    print "Group ".$group_obj->Name. " $attrib:  $msg\n";
-	    
-	    }
-    }		
-    
-    foreach my $user (@{$args{'add-member'}}) {
-	my ($val, $msg) = $group_obj->AddMember($user);
-	print $msg. "\n";
+        if ( ( exists( $args{"$attrib"} ) )
+            and ( $group_obj->$attrib() ne $args{"$attrib"} ) )
+        {
+
+            my $method = "Set$attrib";
+            my ( $val, $msg ) = $group_obj->$method( $args{"$attrib"} );
+            print "Group " . $group_obj->Name . " $attrib:  $msg\n";
+
+        }
     }
-    foreach my $user (@{$args{'delete-member'}}) {
-	my ($val, $msg) = $group_obj->DeleteMember($user);
-	print $msg ."\n";
+
+    foreach my $user ( @{ $args{'add-user'} } ) {
+        my $member_obj = RT::User->new($CurrentUser);
+        $member_obj->Load($user);
+        if ( $member_obj->Id ) {
+            my ( $val, $msg ) = $group_obj->AddMember( $member_obj->PrincipalId );
+            print $msg. "\n";
+        }
+        else {
+            print "Couldn't find user\n";
+        }
     }
-    
-    if ($args{'list-members'}) {
-	my $members = $group_obj->MembersObj();
-	while (my $member = $members->Next()) {
-	    print $member->UserObj->Name() ."\n";
-	}
-    }	
-    
+    foreach my $user ( @{ $args{'delete-user'} } ) {
+        my $member_obj = RT::User->new($CurrentUser);
+        $member_obj->Load($user);
+        if ( $member_obj->Id ) {
+            my ( $val, $msg ) =
+              $group_obj->DeleteMember( $member_obj->PrincipalId );
+            print $msg . "\n";
+        }
+        else {
+            print "Couldn't find user\n";
+        }
+    }
+
+    foreach my $group ( @{ $args{'add-group'} } ) {
+        my $member_obj = RT::Group->new($CurrentUser);
+        $member_obj->LoadSystemGroup($group);
+        if ( $group_obj->Id ) {
+            my ( $val, $msg ) =
+              $group_obj->AddMember( $member_obj->PrincipalId );
+            print $msg. "\n";
+        }
+        else {
+            print "Couldn't find group\n";
+        }
+    }
+    foreach my $group ( @{ $args{'delete-group'} } ) {
+        my $member_obj = RT::Group->new($CurrentUser);
+        $member_obj->LoadSystemGroup($group);
+        if ( $group_obj->Id ) {
+            my ( $val, $msg ) =
+              $group_obj->DeleteMember( $member_obj->PrincipalId );
+            print $msg . "\n";
+        }
+        else {
+            print "Couldn't find group\n";
+        }
+    }
+
+    if ( $args{'list-members'} ) {
+        ListGroupMembers( 1, $group_obj->MembersObj(), 0 );
+    }
+    if ( $args{'list-members-recursively'} ) {
+        ListGroupMembers( 1, $group_obj->MembersObj(), 1 );
+    }
+
+}
+
+sub ListGroupMembers {
+    my $indent  = shift;
+    my $members = shift;
+    my $recurse = shift;
+    while ( my $member = $members->Next() ) {
+        if ( $member->MemberObj->IsGroup ) {
+            print " " x $indent;
+            print "* " . $member->MemberObj->Object->Name() . "\n";
+            if ($recurse) {
+                ListGroupMembers( ( $indent + 3 ),
+                    $member->MemberObj->Object->MembersObj, $recurse );
+            }
+        }
+        elsif ( $member->MemberObj->IsUser ) {
+            print " " x $indent;
+            print "- " . $member->MemberObj->Object->Name() . "\n";
+        }
+    }
+
 }
 
 # }}}
-
 # {{{ AdminSystem
 sub AdminSystem {
     AdminTemplates(0);
     AdminScrips(0);
     AdminRights(0);
 }
+
 # }}}
 
 # {{{ sub AdminTemplates
 
 sub AdminTemplates {
     my $queue = shift;
+
     #Queue = 0 means 'global';
 
     my %args;
 
-    
-    GetOptions(\%args, 'list-templates', 'create-template','modify-template=s',
-	       'delete-template=s', 'display-template=s',
-	       'template-Name=s', 'template-Description=s',
-	       'template-edit-content!');
-    
+    GetOptions(
+        \%args,              'list-templates',
+        'create-template',   'modify-template=s',
+        'delete-template=s', 'display-template=s',
+        'template-Name=s',   'template-Description=s',
+        'template-edit-content!'
+    );
+
     # {{{ List templates
-    if ($args{'list-templates'}) {
-	print "Templates for $queue\n";
-	require RT::Templates;
-	my $templates = new RT::Templates($CurrentUser);
-	if ($queue != 0) {
-	    $templates->LimitToQueue($queue);
-	}	
-	else {
-	    $templates->LimitToGlobal();
-	}	
-	while (my $template = $templates->Next) {
-	    print $template->Id.": ".$template->Name." - " . $template->Description ."\n";
-	}	
+    if ( $args{'list-templates'} ) {
+        print "Templates for $queue\n";
+        require RT::Templates;
+        my $templates = new RT::Templates($CurrentUser);
+        if ( $queue != 0 ) {
+            $templates->LimitToQueue($queue);
+        }
+        else {
+            $templates->LimitToGlobal();
+        }
+        while ( my $template = $templates->Next ) {
+            print $template->Id . ": "
+              . $template->Name . " - "
+              . $template->Description . "\n";
+        }
     }
 
     # }}}
 
-    require RT::Template;	
+    require RT::Template;
     my $template = new RT::Template($CurrentUser);
-    if ($args{'delete-template'}) {
-	$template->Load($args{'delete-template'});
-	unless ($template->id) {
-	    print "Couldn't load template";
-	    return(undef);
-	}
-	my ($val, $msg) = $template->Delete();
-	print "$msg\n";
+    if ( $args{'delete-template'} ) {
+        $template->Load( $args{'delete-template'} );
+        unless ( $template->id ) {
+            print "Couldn't load template";
+            return (undef);
+        }
+        my ( $val, $msg ) = $template->Delete();
+        print "$msg\n";
     }
-    elsif ($args{'create-template'}) {
-	#TODO edit the template content
-	my $content;
+    elsif ( $args{'create-template'} ) {
 
-	my $linesref = GetMessageContent(CurrentUser => $CurrentUser,
-				      Edit => 1);
-	
-	$content = join("\n", @{$linesref});
-	
+        #TODO edit the template content
+        my $content;
 
-	my ($val, $msg) = $template->Create(Name => $args{'template-Name'},
-					    Description => $args{'template-Description'},
-					    Content => $content,
-					    Queue => $queue);
-	print "$msg\n";
-    }	
-    elsif ($args{'modify-template'}) {
-	
-	$template->Load($args{'modify-template'});
-	unless ($template->Id()) {
-	    print "Template not found\n";
-	    return();
-	}	
-	my @attributes = qw( Name Description );
-	foreach my $attrib (@attributes) {
-	    if ( (exists ($args{"template-$attrib"})) and
-		 ($template->$attrib() ne $args{"template-$attrib"})) {
-		
-		my $method = "Set$attrib";
-		my $val = $template->$method($args{"template-$attrib"});
-				
-	    }
-	}
-	if ($args{'template-edit-content'}) {
-	    
-	    my $linesref = GetMessageContent(CurrentUser => $CurrentUser,
-					     Content => $template->Content,
-					     Edit => 1);
-	    
-	    my $content = join("\n", @{$linesref});	    
-	    my ($val) = $template->SetContent($content);
-	    print $val."\n";
-	}	
+        my $linesref = GetMessageContent(
+            CurrentUser => $CurrentUser,
+            Edit        => 1
+        );
 
-    }	
-    if ($args{'display-template'}) {
-	$template->Load($args{'display-template'});
-	print $template->Name . "\n". $template->Description ."\n". $template->Content."\n";
-    }	
-}	
+        $content = join ( "\n", @{$linesref} );
+
+        my ( $val, $msg ) = $template->Create(
+            Name        => $args{'template-Name'},
+            Description => $args{'template-Description'},
+            Content     => $content,
+            Queue       => $queue
+        );
+        print "$msg\n";
+    }
+    elsif ( $args{'modify-template'} ) {
+
+        $template->Load( $args{'modify-template'} );
+        unless ( $template->Id() ) {
+            print "Template not found\n";
+            return ();
+        }
+        my @attributes = qw( Name Description );
+        foreach my $attrib (@attributes) {
+            if ( ( exists( $args{"template-$attrib"} ) )
+                and ( $template->$attrib() ne $args{"template-$attrib"} ) )
+            {
+
+                my $method = "Set$attrib";
+                my $val    = $template->$method( $args{"template-$attrib"} );
+
+            }
+        }
+        if ( $args{'template-edit-content'} ) {
+
+            my $linesref = GetMessageContent(
+                CurrentUser => $CurrentUser,
+                Content     => $template->Content,
+                Edit        => 1
+            );
+
+            my $content = join ( "\n", @{$linesref} );
+            my ($val) = $template->SetContent($content);
+            print $val. "\n";
+        }
+
+    }
+    if ( $args{'display-template'} ) {
+        $template->Load( $args{'display-template'} );
+        print $template->Name . "\n"
+          . $template->Description . "\n"
+          . $template->Content . "\n";
+    }
+}
 
 # }}}
 
@@ -645,57 +728,62 @@ sub AdminTemplates {
 
 sub AdminScrips {
     my $queue = shift;
+
     #Queue = 0 means 'global';
 
     my %args;
 
-    
-    GetOptions(\%args, 'list-scrips', 'create-scrip','modify-scrip=s',
-	       'scrip-action=s', 'scrip-template=s', 'scrip-condition=s',
-	       'delete-scrip=s');
+    GetOptions(
+        \%args,              'list-scrips',
+        'create-scrip',      'modify-scrip=s',
+        'scrip-action=s',    'scrip-template=s',
+        'scrip-condition=s', 'delete-scrip=s'
+    );
 
-    
     # {{{ List entries
-    if ($args{'list-scrips'}) {
-	print "Scrips for $queue\n";
-	require RT::Scrips;
-	my $scrips = new RT::Scrips($CurrentUser);
-	if ($queue != 0) {
-	    $scrips->LimitToQueue($queue);
-	}	
-	else {
-	    $scrips->LimitToGlobal();
-	}	
-	while (my $scrip = $scrips->Next) {
-	    print $scrip->Id.": If ".
-	      $scrip->ConditionObj->Name." then " .
-		$scrip->ActionObj->Name." with template " .
-		  $scrip->TemplateObj->Name."\n";
-	}	
+    if ( $args{'list-scrips'} ) {
+        print "Scrips for $queue\n";
+        require RT::Scrips;
+        my $scrips = new RT::Scrips($CurrentUser);
+        if ( $queue != 0 ) {
+            $scrips->LimitToQueue($queue);
+        }
+        else {
+            $scrips->LimitToGlobal();
+        }
+        while ( my $scrip = $scrips->Next ) {
+            print $scrip->Id . ": If "
+              . $scrip->ConditionObj->Name . " then "
+              . $scrip->ActionObj->Name
+              . " with template "
+              . $scrip->TemplateObj->Name . "\n";
+        }
     }
 
     # }}}
 
     require RT::Scrip;
     my $scrip = new RT::Scrip($CurrentUser);
-    if ($args{'delete-scrip'}) {
-	$scrip->Load($args{'delete-scrip'});
-	unless ($scrip->id) {
-	    print "Couldn't load scrip";
-	      return(undef);
-	}
-	my ($val, $msg) = $scrip->Delete();
-	print "$msg\n";
+    if ( $args{'delete-scrip'} ) {
+        $scrip->Load( $args{'delete-scrip'} );
+        unless ( $scrip->id ) {
+            print "Couldn't load scrip";
+            return (undef);
+        }
+        my ( $val, $msg ) = $scrip->Delete();
+        print "$msg\n";
     }
-    elsif ($args{'create-scrip'}) {
-	my ($val, $msg) = $scrip->Create( ScripAction => $args{'scrip-action'},
-					  ScripCondition => $args{'scrip-condition'},
-					  Template => $args{'scrip-template'},
-					  Queue => $queue);
+    elsif ( $args{'create-scrip'} ) {
+        my ( $val, $msg ) = $scrip->Create(
+            ScripAction    => $args{'scrip-action'},
+            ScripCondition => $args{'scrip-condition'},
+            Template       => $args{'scrip-template'},
+            Queue          => $queue
+        );
 
-	print "$msg\n";
-    }	
-}	
+        print "$msg\n";
+    }
+}
 
 # }}}
 
@@ -703,153 +791,173 @@ sub AdminScrips {
 
 sub AdminRights {
     my $queue = shift;
+
     #Queue = 0 means 'global';
 
-    my ($scope, $appliesto);
-    if ($queue == 0) {
-	$scope = 'System';
-	$appliesto = 0;
-    }	
+    my ( $scope, $appliesto );
+    if ( $queue == 0 ) {
+        $scope     = 'System';
+        $appliesto = 0;
+    }
     else {
-	$scope =  'Queue';
-	$appliesto = $queue;
-    }	
+        $scope     = 'Queue';
+        $appliesto = $queue;
+    }
 
-    my %args;    
-    GetOptions(\%args, 
-	       'grant-right|add-right|new-right|create-right=s@',
-	       'revoke-right|del-right|delete-right=s@',
-	       'list-rights', 'userid=s@', 'groupid=s@',
-	      );
-    
-    
+    my %args;
+    GetOptions(
+        \%args,
+        'grant-right|add-right|new-right|create-right=s@',
+        'revoke-right|del-right|delete-right=s@',
+        'list-rights',
+        'userid=s@',
+        'groupid=s@',
+    );
+
     # {{{ List entries
-    if ($args{'list-rights'}) {
-	require RT::ACL;
-	my $acl = new RT::ACL($CurrentUser);
-	if ($queue != 0) {
-	    $acl->LimitToQueue($queue);
-	}	
-	else {
-	    $acl->LimitToSystem();
-	}	
-	while (my $ace = $acl->Next) {
-	    print $ace->RightScope;
-	    
-	    #Print the queue name if we have it.
-	    print " " . $ace->AppliesToObj->Name if (defined $ace->AppliesToObj);
-	    
-	    print ": ". $ace->PrincipalType . " " .$ace->PrincipalObj->Name .
-	      " has right " . $ace->RightName ."\n";
-	      
-	}	
+    if ( $args{'list-rights'} ) {
+        require RT::ACL;
+        my $acl = new RT::ACL($CurrentUser);
+        if ( $queue != 0 ) {
+            $acl->LimitToQueue($queue);
+        }
+        else {
+            $acl->LimitToSystem();
+        }
+        while ( my $ace = $acl->Next ) {
+            print $ace->RightScope;
+
+            #Print the queue name if we have it.
+            print " " . $ace->AppliesToObj->Name
+              if ( defined $ace->AppliesToObj );
+
+            print ": "
+              . $ace->PrincipalType . " "
+              . $ace->PrincipalObj->Name
+              . " has right "
+              . $ace->RightName . "\n";
+
+        }
     }
 
     # }}}
 
-    require RT::ACE;    
+    require RT::ACE;
 
     # {{{ Build up an array of principals
     my (@principals);
     my $i = 0;
-    foreach my $group (@{$args{'groupid'}}) { 
+    foreach my $group ( @{ $args{'groupid'} } ) {
 
-
-	my $princ = new RT::Group($CurrentUser);
-	$princ->Load("$group");
-	if ($princ->id) {
-	    $principals[$i]->{'type'} = 'Group';
-	    $principals[$i]->{'id'} = $princ->id();
-	    $i++;
-	}	
-	else {
-	    print "Could not find group $group\n";
-	}	
-    }	
-
-
-    foreach my $user (@{$args{'userid'}}) { 
-	my $princ = new RT::User($CurrentUser);
-	$princ->Load("$user");
-	if ($princ->id) {
-	    $principals[$i]->{'type'} = 'User';
-	    $principals[$i]->{'id'} = $princ->id();
-	    $i++;
-	}	
-	else {
-	    print "Could not find user $user.\n";
-	    }
+        my $princ = new RT::Group($CurrentUser);
+        $princ->Load("$group");
+        if ( $princ->id ) {
+            $principals[$i]->{'type'} = 'Group';
+            $principals[$i]->{'id'}   = $princ->id();
+            $i++;
+        }
+        else {
+            print "Could not find group $group\n";
+        }
     }
-    # }}}
 
+    foreach my $user ( @{ $args{'userid'} } ) {
+        my $princ = new RT::User($CurrentUser);
+        $princ->Load("$user");
+        if ( $princ->id ) {
+            $principals[$i]->{'type'} = 'User';
+            $principals[$i]->{'id'}   = $princ->id();
+            $i++;
+        }
+        else {
+            print "Could not find user $user.\n";
+        }
+    }
+
+    # }}}
 
     foreach my $principal (@principals) {
 
-	# {{{ Delete rights that need deleting
-	foreach my $right (@{$args{'revoke-right'}}) {
-	    my $ace = new RT::ACE($CurrentUser);
-	    $RT::Logger->debug("Trying to delete a right: $right \n");
-	    my ($val, $msg) = $ace->LoadByValues( RightName => $right,
-						  RightScope => $scope,
-						  PrincipalType => $principal->{'type'},
-						  PrincipalId => $principal->{'id'},
-						  RightAppliesTo => $appliesto);
-	    
-	    unless ($val) {
-		print "Right $right not found for" . $principal->{'type'} . " " .
-		  $principal->{'id'} . " in scope $scope ($appliesto)\n";
-		next;
-	    }	
-	    my ($delval, $delmsg) =$ace->Delete;
-	    print "$delmsg\n";
-	    
-	    
-	}
+        # {{{ Delete rights that need deleting
+        foreach my $right ( @{ $args{'revoke-right'} } ) {
+            my $ace = new RT::ACE($CurrentUser);
+            $RT::Logger->debug("Trying to delete a right: $right \n");
+            my ( $val, $msg ) = $ace->LoadByValues(
+                RightName      => $right,
+                RightScope     => $scope,
+                PrincipalType  => $principal->{'type'},
+                PrincipalId    => $principal->{'id'},
+                RightAppliesTo => $appliesto
+            );
 
-	# }}}
-	
-	# {{{ grant rights that need granting
-	foreach my $right (@{$args{'grant-right'}}) {
-	    my $ace = new RT::ACE($CurrentUser);
-	    my ($val, $msg) = $ace->Create(RightName => $right,
-					   PrincipalType => $principal->{'type'},
-					   PrincipalId => $principal->{'id'},
-					   RightScope => $scope,
-					   RightAppliesTo => $appliesto);
-	    
-	    print $msg . "\n";
-	}
+            unless ($val) {
+                print "Right $right not found for"
+                  . $principal->{'type'} . " "
+                  . $principal->{'id'}
+                  . " in scope $scope ($appliesto)\n";
+                next;
+            }
+            my ( $delval, $delmsg ) = $ace->Delete;
+            print "$delmsg\n";
 
-	# }}}
-    }	
+        }
+
+        # }}}
+
+        # {{{ grant rights that need granting
+        foreach my $right ( @{ $args{'grant-right'} } ) {
+            my $ace = new RT::ACE($CurrentUser);
+            my ( $val, $msg ) = $ace->Create(
+                RightName      => $right,
+                PrincipalType  => $principal->{'type'},
+                PrincipalId    => $principal->{'id'},
+                RightScope     => $scope,
+                RightAppliesTo => $appliesto
+            );
+
+            print $msg . "\n";
+        }
+
+        # }}}
+    }
 
 }
 
 # }}}
 
+# {{{ ListUsers
 
 sub ListUsers {
     require RT::Users;
     my $users = new RT::Users($CurrentUser);
     $users->UnLimit();
-    while (my $user = $users->Next()) {
-	printf ("%16s %-16s\n",$user->Name(), $user->EmailAddress());
+    while ( my $user = $users->Next() ) {
+        printf( "%16s %-16s\n", $user->Name(), $user->EmailAddress() );
     }
 }
+
+# }}}
+
+# {{{ ListQueues
 sub ListQueues {
     require RT::Queues;
     my $queues = new RT::Queues($CurrentUser);
     $queues->UnLimit();
-    while (my $queue = $queues->Next()) {
-	printf ("%16s %-16s\n",$queue->Name(), $queue->Description());
+    while ( my $queue = $queues->Next() ) {
+        printf( "%16s %-16s\n", $queue->Name(), $queue->Description() );
     }
 }
 
+# }}}
+
+# {{{ ListGroups
 sub ListGroups {
     require RT::Groups;
     my $groups = new RT::Groups($CurrentUser);
     $groups->UnLimit();
-    while (my $group = $groups->Next()) {
-	printf ("%16s %-16s\n",$group->Name(), $group->Description());
-    }	
+    while ( my $group = $groups->Next() ) {
+        printf( "%16s %-16s\n", $group->Name(), $group->Description() );
+    }
 }
+
+# }}}

@@ -1,0 +1,14 @@
+<SELECT MULTIPLE NAME="<%$Name%>"  SIZE=10>
+%while (my $group = $groups->Next) {
+<OPTION VALUE="<%$group->id%>"><%$group->Name%>
+%}
+</SELECT>
+
+<%INIT>
+my $groups = new RT::Groups($session{'CurrentUser'});
+$groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'System');
+
+</%INIT>
+<%ARGS>
+$Name => 'groups'
+</%ARGS>

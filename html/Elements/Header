@@ -28,8 +28,8 @@
 </font>
 </TD>
 <TD ALIGN=RIGHT>
-<font color="#ffffff">
-% if ($session{'CurrentUser'}->Id) {
+<font color="#ffffff" size=-1>
+% if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
 <&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b>
 </&>
 <BR>

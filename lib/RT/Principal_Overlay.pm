@@ -55,7 +55,7 @@ sub Object {
         $self->{'object'}  = RT::Group->new($self->CurrentUser);
     }
     else { 
-        $RT::Logger->Crit("Found a principal (".$self->Id.") that was neither a user nor a group");
+        $RT::Logger->crit("Found a principal (".$self->Id.") that was neither a user nor a group");
         return(undef);
     }
     $self->{'object'}->Load($self->ObjectId());

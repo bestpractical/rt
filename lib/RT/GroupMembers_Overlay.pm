@@ -24,6 +24,54 @@ ok (require RT::GroupMembers);
 
 no warnings qw(redefine);
 
+# {{{ LimitToUsers
+
+=head2 LimitToUsers
+
+Limits this search object to users who are members of this group
+
+=cut
+
+sub LimitToUsers {
+    my $self = shift;
+
+    my $principals = $self->NewAlias('Principals');
+    $self->Join( ALIAS1 => 'main', FIELD1 => 'MemberId',
+                 ALIAS2 => $principals, FIELD2 =>'Id');
+
+    $self->Limit(       ALIAS => $principals,
+                         FIELD => 'PrincipalType',
+                         VALUE => 'User',
+                         ENTRYAGGREGATOR => 'OR',
+                         );
+}
+
+# }}}
+
+
+# {{{ LimitToSystemGroups
+
+=head2 LimitToSystemGroups
+
+Limits this search object to Groups who are members of this group
+
+=cut
+
+sub LimitToSystemGroups {
+    my $self = shift;
+
+    my $principals = $self->NewAlias('Principals');
+    $self->Join( ALIAS1 => 'main', FIELD1 => 'MemberId',
+                 ALIAS2 => $principals, FIELD2 =>'Id');
+
+    $self->Limit(       ALIAS => $principals,
+                         FIELD => 'PrincipalType',
+                         VALUE => 'Group',
+                         ENTRYAGGREGATOR => 'OR',
+                         );
+}
+
+# }}}
 
 # {{{ sub LimitToMembersOfGroup
 
