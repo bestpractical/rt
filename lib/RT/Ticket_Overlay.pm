@@ -1523,6 +1523,10 @@ sub _AddWatcher {
     if ($args{'Email'}) {
         my $user = RT::User->new($RT::SystemUser);
         my ($pid, $msg) = $user->LoadOrCreateByEmail($args{'Email'});
+	# If we can't load the user by email address, let's try to load by username	
+	unless ($pid) { 
+		($pid,$msg) = $user->Load($args{'Email'})
+	}
         if ($pid) {
             $args{'PrincipalId'} = $pid; 
         }

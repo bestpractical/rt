@@ -168,7 +168,6 @@ $m->comp(
     ParentObj => $message
 );
 
-## Please see file perltidy.ERR
 }
 </%PERL>
 </div>
