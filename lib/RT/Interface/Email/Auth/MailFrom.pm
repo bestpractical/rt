@@ -118,7 +118,7 @@ sub GetCurrentUser {
 
     }
 
-    $CurrentUser = CreateUser( undef, $Address, $Name, $args{'Message'} );
+    $CurrentUser = CreateUser( undef, $Address, $Name, $Address, $args{'Message'} );
 
     return ( $CurrentUser, 1 );
 }
