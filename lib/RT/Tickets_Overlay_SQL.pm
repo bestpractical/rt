@@ -447,6 +447,11 @@ sub FromSQL {
     local($self->{'first_row'}, $self->{'show_rows'});
     $self->CleanSlate;
   }
+  {
+    # preserve first_row and show_rows across the CleanSlate
+    local($self->{'first_row'}, $self->{'show_rows'});
+    $self->CleanSlate;
+  }
   $self->_InitSQL();
 
   return (1,$self->loc("No Query")) unless $query;

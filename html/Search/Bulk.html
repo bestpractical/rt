@@ -182,6 +182,11 @@ while (my $Ticket = $Tickets->Next) {
     $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
     next unless ($ARGS{"UpdateTicket".$Ticket->Id});
     $RT::Logger->debug ("Matched\n");
+    my @updateresults; 
+    if ($do_comment_reply) {
+       ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
+    }
+
     #Update the basics.
     my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
     my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
@@ -207,11 +212,7 @@ while (my $Ticket = $Tickets->Next) {
     delete $ARGS{$Ticket->Id.'-RefersTo'};
     delete $ARGS{'RefersTo-'.$Ticket->Id};
     
-    my @updateresults; 
-    if ($do_comment_reply) {
-    ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
-   } 
-   my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults, @linkresults);
+    my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults, @linkresults);
     @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
 
     @results = (@results, @tempresults);
