@@ -1528,17 +1528,17 @@ sub _AddCustomFieldValue {
         return ( 0, $self->loc("Invalid value for custom field") );
     }
 
-    # If the custom field only accepts a single value, delete the existing
+    # If the custom field only accepts a certain # of values, delete the existing
     # value and record a "changed from foo to bar" transaction
-    if ( $cf->SingleValue ) {
+    unless ( $cf->UnlimitedValues) {
 
  # We need to whack any old values here.  In most cases, the custom field should
  # only have one value to delete.  In the pathalogical case, this custom field
  # used to be a multiple and we have many values to whack....
         my $cf_values = $values->Count;
 
-        if ( $cf_values > 1 ) {
-            my $i = 0;   #We want to delete all but the last one, so we can then
+        if ( $cf_values > $cf->MaxValues ) {
+            my $i = 0;   #We want to delete all but the max we can currently have , so we can then
                  # execute the same code to "change" the value from old to new
             while ( my $value = $values->Next ) {
                 $i++;
@@ -1574,13 +1574,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ($new_value_id) {
-            return (
-                0,
-                $self->loc(
-                    "Could not add new custom field value. [_1] ",,
-                    $value_msg
-                )
-            );
+            return ( 0, $self->loc( "Could not add new custom field value. [_1] ",, $value_msg));
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
@@ -1605,22 +1599,14 @@ sub _AddCustomFieldValue {
         }
 
         if ( $old_value eq '' ) {
-            return ( 1,
-                $self->loc( "[_1] [_2] added", $cf->Name, $new_value->Content )
-            );
+            return ( 1, $self->loc( "[_1] [_2] added", $cf->Name, $new_value->Content ));
         }
         elsif ( $new_value->Content eq '' ) {
             return ( 1,
                 $self->loc( "[_1] [_2] deleted", $cf->Name, $old_value->Content ) );
         }
         else {
-            return (
-                1,
-                $self->loc(
-                    "[_1] [_2] changed to [_3]", $cf->Name,
-                    $old_content,                $new_value->Content
-                )
-            );
+            return ( 1, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content,                $new_value->Content));
         }
 
     }
@@ -1650,13 +1636,7 @@ sub _AddCustomFieldValue {
                     $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
             }
         }
-        return (
-            1,
-            $self->loc(
-                "[_1] added as a value for [_2]",
-                $args{'Value'}, $cf->Name
-            )
-        );
+        return ( 1, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name));
     }
 
 }

@@ -894,38 +894,83 @@ sub RemoveFromObject {
 
 =head2 AddValueForObject HASH
 
-Adds a custom field value for a ticket. Takes a param hash of Object and Content
+Adds a custom field value for a record object of some kind. 
+Takes a param hash of 
+
+Required:
+
+    Object
+    Content
+
+Optional:
+
+    LargeContent
+    ContentType
 
 =cut
 
 sub AddValueForObject {
-	my $self = shift;
-	my %args = ( Object => undef,
-                 Content => undef,
-		 LargeContent => undef,
-		 ContentType => undef,
-		     @_ );
-	my $obj = $args{'Object'} or return;
+    my $self = shift;
+    my %args = (
+        Object       => undef,
+        Content      => undef,
+        LargeContent => undef,
+        ContentType  => undef,
+        @_
+    );
+    my $obj = $args{'Object'} or return;
 
-
-    unless ($self->CurrentUserHasRight('ModifyCustomField')) {
-        return (0, $self->loc('Permission Denied'));
+    unless ( $self->CurrentUserHasRight('ModifyCustomField') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
 
+    $RT::Handle->BeginTransaction;
 
+    my $current_values = $self->ValuesForObject($obj);
 
-	my $newval = RT::ObjectCustomFieldValue->new($self->CurrentUser);
-	my $val = $newval->Create(ObjectType => ref($obj),
-	                    ObjectId => $obj->Id,
-                            Content => $args{'Content'},
-                            LargeContent => $args{'LargeContent'},
-                            ContentType => $args{'ContentType'},
-                            CustomField => $self->Id);
+    if ( $self->MaxValues ) {
+        my $extra_values = ( $current_values->Count + 1 ) - $self->MaxValues;
 
-    return($val);
+        # (The +1 is for the new value we're adding)
+
+        # If we have a set of current values and we've gone over the maximum
+        # allowed number of values, we'll need to delete some to make room.
+        # which former values are blown away is not guaranteed
+
+        while ($extra_values) {
+            my $extra_item = $current_values->Next;
+
+            unless ( $extra_item->id ) {
+                $RT::Logger->crit(
+"We were just asked to delete a custom fieldvalue that doesn't exist!"
+                );
+                $RT::Handle->Rollback();
+                return (undef);
+            }
+            $extra_item->Delete;
+            $extra_values--;
+
+        }
+    }
+    my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
+    my $val    = $newval->Create(
+        ObjectType   => ref($obj),
+        ObjectId     => $obj->Id,
+        Content      => $args{'Content'},
+        LargeContent => $args{'LargeContent'},
+        ContentType  => $args{'ContentType'},
+        CustomField  => $self->Id
+    );
+
+    unless ($val) {
+        $RT::Handle->Rollback();
+        return ($val);
+    }
+
+    $RT::Handle->Commit();
+    return ($val);
 
 }
-
 
 # }}}
 
