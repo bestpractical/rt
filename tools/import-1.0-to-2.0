@@ -485,7 +485,7 @@ sub MigrateTransactions {
     print "..transactions: ";
     
     my $sth = ExecStatement('SELECT * FROM transactions where serial_num = '.
-			    $ticket_id);
+			    $ticket_id .' ORDER BY trans_date ASC');
     my $Status = "open";
     my $Queue = "(unknown)";
     my $Area = '';
@@ -808,7 +808,7 @@ sub MigrateTransactions {
 # {{{ sub MigrateMerges 
 
 sub MigrateMerges {
-    my @merges = shift;
+    my @merges = @_;
     
     foreach my $row (@merges) {
 	print "Merging ".$row->{'ticket'} ." into ". $row->{'mergeinto'} ."\n";
