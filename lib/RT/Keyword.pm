@@ -338,7 +338,7 @@ sub _Set {
     my $self = shift;
     
     unless ($self->CurrentUserHasRight('AdminKeywords')) {
-	return (undef);
+	return (0,'Permission denied');
     }
     return $self->SUPER::_Set(@_);
 }

@@ -1,6 +1,8 @@
 <& /Elements/Header, Title => 'Admin/Keywords' &>
 <& /Admin/Elements/Tabs, current_tab => 'Admin/Keywords/' &>
 
+<& /Elements/ListActions, actions => \@Actions &>
+
 <& /Elements/TitleBoxStart, title => 'Keywords' &>
 <a href="<%$RT::WebPath%>/Admin/Keywords/?RootId=<%$Root->Parent%>"><%$Root->Path%></a>
 <UL>
@@ -29,10 +31,12 @@
 
 <& /Elements/TitleBoxEnd &>
 <%INIT>
+my (@Actions);
   
 if ($ARGS{'KeyName-New'}) {
     my $NewKey = new RT::Keyword($session{'CurrentUser'});
-    $NewKey->Create( Parent => $RootId, Name => $ARGS{'KeyName-New'});
+    my ($val, $msg) = $NewKey->Create( Parent => $RootId, Name => $ARGS{'KeyName-New'});
+    push (@Actions, $msg);
 }
 
 my $arg;
@@ -41,7 +45,9 @@ foreach $arg (keys %ARGS) {
 	my $id = $1;
 	my $keyword = new RT::Keyword($session{'CurrentUser'});
 	$keyword->Load($id);
-	$keyword->SetDisabled(1);
+	my ($val, $msg) = $keyword->SetDisabled(1);
+	push (@Actions, $msg);
+
 
     }	
     elsif ($arg =~ /^KeyName-(\d*)$/) {
@@ -49,13 +55,15 @@ foreach $arg (keys %ARGS) {
 	my $keyword = new RT::Keyword ($session{'CurrentUser'});
 	$keyword->Load($id);
 	if ($keyword->Name() ne $ARGS{"$arg"}) {
-	    $keyword->SetName($ARGS{"$arg"});
+	    my ($val, $msg) = $keyword->SetName($ARGS{"$arg"});
+	    push (@Actions, $msg);
 	}	
 	if (($ARGS{"KeyParent-$id"}) && 
 	    ($keyword->Parent ne $ARGS{"KeyParent-$id"})) {
-	    $keyword->SetParent($ARGS{"KeyParent-$id"});
+	    my ($val, $msg) = $keyword->SetParent($ARGS{"KeyParent-$id"});
+	    push (@Actions, $msg);
 	}	
-      }	
+    }	
 }
 
 
