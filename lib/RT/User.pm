@@ -1126,7 +1126,7 @@ sub CurrentUserCanModify {
 
 # {{{ sub CurrentUserHasRight
 
-=head2
+=head2 CurrentUserHasRight
   
   Takes a single argument. returns 1 if $Self->CurrentUser
   has the requested right. returns undef otherwise
