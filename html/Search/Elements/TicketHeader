@@ -7,7 +7,7 @@
 <& TicketHeaderCell , Attribute => 'Priority'&>
 </TR>
 <TR>
-<TH>&nbsp;</TH>
+<TH class="ticketheader">&nbsp;</TH>
 <& TicketHeaderCell , Attribute => 'Requestor(s)'&>
 <& TicketHeaderCell , Attribute => 'Created'&>
 <& TicketHeaderCell , Attribute => 'Told', Header => 'Last Contact'&>

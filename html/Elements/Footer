@@ -41,6 +41,10 @@
 <pre>
 <%$d->Dump() %>
 </pre>
+% my $s = Data::Dumper->new([\%session], [qw(%session)]);
+<pre>
+<%$s->Dump() %>
+</pre>
 % }
 % if ($Menu) {
 </TD>

@@ -48,7 +48,7 @@
 </TD>
 <TD>
 % if ($Ticket->HasUnresolvedDependencies ) {
-%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval' ) ) { or
+%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval'  )) { 
 <em><&|/l&>(pending approval)</&></em>
 %     } else {
 <em><&|/l&>(pending other tickets)</&></em>

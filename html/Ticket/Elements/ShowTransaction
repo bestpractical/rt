@@ -56,7 +56,7 @@ unless ($Collapsed) {
       if ($headers) {
 	   # localize the common headers (like 'Subject:'), too.
 	   $headers =~ s/^([^:]+)(?=:)/loc($1)/em;
-	   $headers .= "\n\n";
+           
       }
   }
      # 13456 is a random # of about the biggest size we want to see inline text

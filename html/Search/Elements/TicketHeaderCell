@@ -9,7 +9,7 @@ my ($order);
 $Header = $Attribute unless ($Header);
 
 </%INIT>
-<TH>
+<th class="ticketheader">
 % if (grep (/^$Attribute$/i, $session{'tickets'}->SortFields)) {
 <A 
 % if ($Attribute eq $session{'tickets_sort_by'}) {
@@ -21,7 +21,7 @@ HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->Free
 % } else {
 <% loc($Header) %>
 % }
-</TH>
+</th>
 <%ARGS>
 $Header => undef
 $Attribute => undef 

@@ -89,7 +89,6 @@ my %FIELDS =
 #   HasDepender	    => ['LINK',],
 #   RelatedTo	    => ['LINK',],
     Told	    => ['DATE' => 'Told',],
-#    StartsBy	    => ['DATE',],
     Starts	    => ['DATE' => 'Starts',],
     Started	    => ['DATE' => 'Started',],
     Due		    => ['DATE' => 'Due',],
@@ -161,8 +160,10 @@ require RT::Tickets_Overlay_SQL;
 
 # {{{ sub SortFields
 
-@SORTFIELDS = qw(id Status Owner Created Due Starts Started
-		 Queue Subject Told Started
+@SORTFIELDS = qw(id Status 
+		 Queue Subject
+         Owner Created Due Starts Started
+         Told 
 		 Resolved LastUpdated Priority TimeWorked TimeLeft);
 
 =head2 SortFields
@@ -1727,7 +1728,8 @@ sub Next {
 	    if ($Ticket->__Value('Status') eq 'deleted') {
 		return($self->Next());
 	    }
-  	    elsif ($Ticket->CurrentUserHasRight('ShowTicket')) {
+  	    elsif ($Ticket->CurrentUserHasRight('ShowTicket')  ||
+  	     $Ticket->QueueObj->CurrentUserHasRight('ShowTicket')) {
 		return($Ticket);
 	    }
 
@@ -1931,11 +1933,13 @@ sub _ProcessRestrictions {
     # Build up a map of first/last/next/prev items, so that we can display search nav quickly
 
     my $items = $self->ItemsArrayRef;
-    my $prev;
+    my $prev = 0 ;
 
+    delete $self->{'item_map'};
     if ($items->[0]) {
     $self->{'item_map'}->{'first'} = $items->[0]->Id;
     while (my $item = shift @$items ) {
+        $self->{'item_map'}->{$item->Id}->{'defined'} = 1;
         $self->{'item_map'}->{$item->Id}->{prev}  = $prev;
         $self->{'item_map'}->{$item->Id}->{next}  = $items->[0]->Id if ($items->[0]);
         $prev = $item->Id;

@@ -160,9 +160,10 @@ TD.mainbody {
         margin-right: 1em;
 }
 
-th { font-size: 80%;
+th.ticketheader { font-size: 80%;
      font-weight: bold;
      color: #336699;
+     background: #cccccc; 
 }
 
 th.titlebox {
@@ -228,7 +229,6 @@ DIV.endmatter { margin-left: -7% }
 .bpscredits {margin-top: 1em;
              text-align: right; 
              color: #666666;
-	     font-size: 60%;
              }
 
 

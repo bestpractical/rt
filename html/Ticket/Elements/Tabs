@@ -128,9 +128,7 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
     if ( $Ticket->Status ne 'resolved' ) {
         $actions->{'B'} = {
 
-            path =>
-              "Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id="
-              . $id,
+            path => "Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
             title => loc('Resolve') };
     }
     if ( $Ticket->Status ne 'open' ) {

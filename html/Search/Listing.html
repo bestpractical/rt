@@ -28,7 +28,7 @@
     Title => $title &>
 
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
-<TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
+<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& Elements/TicketHeader, %ARGS &>
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {

@@ -6,7 +6,7 @@ AC_REVISION($Revision: 1.1 $)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [2.1.66], [rt-3.0-bugs@fsck.com])
+AC_INIT(RT, [2.1.67], [rt-3.0-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -195,7 +195,8 @@ AC_CONFIG_FILES([
  		 bin/rt-mailgate
  		 bin/rtadmin
  		 bin/webmux.pl],
-		[chmod +x sbin/rt-setup-database
+		[chmod +x configure
+                chmod +x sbin/rt-setup-database
 		chmod +x sbin/rt-test-dependencies
 		chmod +x bin/rt-mailgate]
                 )

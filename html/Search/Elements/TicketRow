@@ -8,9 +8,9 @@ CLASS="evenline"
 >
 <TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->id%></a></B></TD>
 <TD><B><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></B></TD>
-<TD><%$Ticket->Status%></TD>
+<TD><%loc($Ticket->Status)%></TD>
 <TD><%$Ticket->QueueObj->Name%></TD>
-<TD><%$Ticket->OwnerObj->Name%></TD>
+<TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
 <TD><%$Ticket->Priority%></TD>
 </TR>
 <TR
@@ -23,7 +23,7 @@ CLASS="evenline"
 <TD><SMALL><%$Ticket->CreatedObj->AgeAsString || '-'%></SMALL></TD>
 <TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
 <TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
-<TD><SMALL><%$Ticket->TimeWorked%></SMALL></TD>
+<TD><SMALL><%$Ticket->TimeLeft%></SMALL></TD>
 </TR>
 </SPAN>
 <%ARGS>
