@@ -11,7 +11,7 @@ RTGROUP			=	rt
 
 RT_VERSION_MAJOR	=	0
 RT_VERSION_MINOR	=	99
-RT_VERSION_PATCH	=	6pre5
+RT_VERSION_PATCH	=	6pre6
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -171,8 +171,6 @@ RT_MYSQL_ACL		= 	$(RT_ETC_PATH)/mysql.acl
 # Web UI Configuration
 #
 
-#TODO: NONE OF THIS IS LIVE YET.
-
 # WEB_AUTH_MECHANISM defines what sort of authentication you'd like to use 
 # for the web ui.  Valid choices are: "cookies" and "external".  Cookies 
 # uses http cookies to keep track of authentication. External means that 
@@ -205,7 +203,7 @@ endif
 default:
 	@echo "Read the readme"
 
-install: dirs mux-install libs-install initialize config-replace httpd.conf-replace nondestruct instruct
+install: dirs mux-install libs-install initialize config-replace  nondestruct instruct
 
 suid-wrapper:
 	$(CC) etc/suidrt.c -DPERL=\"$(PERL)\" -DRT_PERL_MUX=\"$(RT_PERL_MUX)\" -o $(RT_WRAPPER)
