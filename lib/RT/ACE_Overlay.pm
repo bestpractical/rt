@@ -48,70 +48,32 @@ use RT::Principals;
 use RT::Queues;
 use RT::Groups;
 
-use vars qw (%SCOPES
-  %QUEUERIGHTS
-  %SYSTEMRIGHTS
-  %GROUPRIGHTS
+use vars qw (
   %LOWERCASERIGHTNAMES
 );
 
-%SCOPES = ( System => 'System-level right',
-            Queue  => 'Queue-level right' );
-
 # {{{ Descriptions of rights
+
+=head1 Rights
 
 # Queue rights are the sort of queue rights that can only be granted
 # to real people or groups
 
-# XXX TODO Can't localize these outside of having an object around.
-%QUEUERIGHTS = (
-    SeeQueue            => 'Can this principal see this queue',       # loc_pair
-    AdminQueue          => 'Create, delete and modify queues',        # loc_pair
-    ShowACL             => 'Display Access Control List',             # loc_pair
-    ModifyACL           => 'Modify Access Control List',              # loc_pair
-    ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
-    AdminCustomFields   => 'Create, delete and modify custom fields', # loc_pair
-    ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
-    ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
 
-    ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
-    ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
+=begin testing
 
-    ShowTicket         => 'Show ticket summaries',                    # loc_pair
-    ShowTicketComments => 'Show ticket private commentary',           # loc_pair
+my $Queue = RT::Queue->new($RT::SystemUser);
 
-    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
-    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
-    CreateTicket    => 'Create tickets in this queue',                # loc_pair
-    ReplyToTicket   => 'Reply to tickets',                            # loc_pair
-    CommentOnTicket => 'Comment on tickets',                          # loc_pair
-    OwnTicket       => 'Own tickets',                                 # loc_pair
-    ModifyTicket    => 'Modify tickets',                              # loc_pair
-    DeleteTicket    => 'Delete tickets'                               # loc_pair
+is ($Queue->AvailableRights->{'DeleteTicket'} , 'Delete tickets', "Found the delete ticket right");
+is ($RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', "Found the superuser right");
 
-);
 
-# System rights are rights granted to the whole system
-# XXX TODO Can't localize these outside of having an object around.
-%SYSTEMRIGHTS = (
-    SuperUser              => 'Do anything and everything',           # loc_pair
-    AdminAllPersonalGroups =>
-      "Create, delete and modify the members of any user's personal groups"
-    ,                                                                 # loc_pair
-    AdminOwnPersonalGroups =>
-      'Create, delete and modify the members of personal groups',     # loc_pair
-    AdminUsers     => 'Create, delete and modify users',              # loc_pair
-    ModifySelf     => "Modify one's own RT account",                  # loc_pair
-    DelegateRights =>
-      "Delegate specific rights which have been granted to you."      # loc_pair
-);
+=end testing
 
-%GROUPRIGHTS = (
-    AdminGroup           => 'Modify group metadata or delete group',  # loc_pair
-    AdminGroupMembership =>
-      'Modify membership roster for this group',                      # loc_pair
-    ModifyOwnMembership => 'Join or leave this group'                 # loc_pair
-);
+=cut
+
+
+
 
 # }}}
 
@@ -126,22 +88,6 @@ use vars qw (%SCOPES
 
 # }}}
 
-# {{{ We need to build a hash of all rights, keyed by lower case names
-
-#since you can't do case insensitive hash lookups
-
-foreach $right ( keys %QUEUERIGHTS ) {
-    $LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
-foreach $right ( keys %SYSTEMRIGHTS ) {
-    $LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
-
-foreach $right ( keys %GROUPRIGHTS ) {
-    $LOWERCASERIGHTNAMES{ lc $right } = $right;
-}
-
-# }}}
 
 # {{{ sub LoadByValues
 
@@ -311,25 +257,27 @@ sub Create {
 
     #check if it's a valid RightName
     if ( $object_type eq 'RT::Queue' ) {
-        unless ( exists $QUEUERIGHTS{ $args{'RightName'} } ) {
-            $RT::Logger->warning("Couldn't validate queue right name". $args{'RightName'});
+        my $obj = RT::Queue->new($self->CurrentUser);
+        unless ( exists $obj->AvailableRights->{ $args{'RightName'} } ) {
+            $RT::Logger->warning("Couldn't validate right name". $args{'RightName'});
             return ( 0, $self->loc('Invalid right') );
         }
     }
     elsif ( $object_type eq 'RT::Group'  ) {
-        unless ( exists $GROUPRIGHTS{ $args{'RightName'} } ) {
+        my $obj = RT::Group->new($self->CurrentUser);
+        unless ( exists $obj->AvailableRights->{ $args{'RightName'} } ) {
             $RT::Logger->warning("Couldn't validate group right name". $args{'RightName'});
             return ( 0, $self->loc('Invalid right') );
         }
     }
     elsif ( $object_type eq 'RT::System'  ) {
-        unless ( ( exists $SYSTEMRIGHTS{ $args{'RightName'} } ) ||
-         ( exists $QUEUERIGHTS{ $args{'RightName'} } )  ||
-         ( exists $GROUPRIGHTS{ $args{'RightName'} } )) {
+        my $q = RT::Queue->new($self->CurrentUser);
+        my $g = RT::Group->new($self->CurrentUser);
+
+        unless (( exists $g->AvailableRights->{ $args{'RightName'} } )
+        || ( exists $g->AvailableRights->{ $args{'RightName'} } )
+        || ( exists $RT::System->AvailableRights->{ $args{'RightName'} } ) ) {
             $RT::Logger->warning("Couldn't validate system right name - ". $args{'RightName'});
-            use Data::Dumper;
-            $RT::Logger->warning(scalar Dumper(\%args));
-            $RT::Logger->warning(scalar Dumper(\%SYSTEMRIGHTS));
             return ( 0, $self->loc('Invalid right') );
         }
     }
@@ -820,47 +768,6 @@ sub CanonicalizeRightName {
 
 # }}}
 
-# {{{ sub QueueRights
-
-=head2 QueueRights
-
-Returns a hash of all the possible rights at the queue scope
-
-=cut
-
-sub QueueRights {
-    return (%QUEUERIGHTS);
-}
-
-# }}}
-
-# {{{ sub SystemRights
-
-=head2 SystemRights
-
-Returns a hash of all the possible rights at the system scope
-
-=cut
-
-sub SystemRights {
-    return (%SYSTEMRIGHTS);
-}
-
-# }}}
-
-# {{{ sub GroupRights
-
-=head2 GroupRights
-
-Returns a hash of all the possible rights at the system scope
-
-=cut
-
-sub GroupRights {
-    return (%GROUPRIGHTS);
-}
-
-# }}}
 
 # {{{ sub Object
 

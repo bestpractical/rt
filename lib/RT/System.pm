@@ -21,8 +21,39 @@ In the future, there will probably be other API goodness encapsulated here.
 package RT::System;
 use base qw /RT::Base/;
 use strict;
+use vars qw/ $RIGHTS/;
+
+# System rights are rights granted to the whole system
+# XXX TODO Can't localize these outside of having an object around.
+$RIGHTS = {
+    SuperUser              => 'Do anything and everything',           # loc_pair
+    AdminAllPersonalGroups =>
+      "Create, delete and modify the members of any user's personal groups"
+    ,                                                                 # loc_pair
+    AdminOwnPersonalGroups =>
+      'Create, delete and modify the members of personal groups',     # loc_pair
+    AdminUsers     => 'Create, delete and modify users',              # loc_pair
+    ModifySelf     => "Modify one's own RT account",                  # loc_pair
+    DelegateRights =>
+      "Delegate specific rights which have been granted to you."      # loc_pair
+};
 
 
+foreach my $right ( keys %{$RIGHTS} ) {
+    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+}
+
+
+=head2 AvailableRights
+
+Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
+
+=cut
+
+sub AvailableRights {
+    my $self = shift;
+    return($RIGHTS);
+}
 
 
 =head2 new

@@ -22,6 +22,7 @@
 # 
 # 
 # END LICENSE BLOCK
+
 =head1 NAME
 
   RT::Queue - an RT Queue object
@@ -45,7 +46,7 @@ use RT::Queue;
 
 no warnings qw(redefine);
 
-use vars qw(@STATUS @ACTIVE_STATUS @INACTIVE_STATUS);
+use vars qw(@STATUS @ACTIVE_STATUS @INACTIVE_STATUS $RIGHTS);
 use RT::Groups;
 
 @ACTIVE_STATUS = qw(new open stalled);
@@ -60,6 +61,51 @@ use RT::Groups;
 # $self->loc('deleted'); # For the string extractor to get a string to localize
 
 
+$RIGHTS = {
+    SeeQueue            => 'Can this principal see this queue',       # loc_pair
+    AdminQueue          => 'Create, delete and modify queues',        # loc_pair
+    ShowACL             => 'Display Access Control List',             # loc_pair
+    ModifyACL           => 'Modify Access Control List',              # loc_pair
+    ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
+    AdminCustomFields   => 'Create, delete and modify custom fields', # loc_pair
+    ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
+    ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
+
+    ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
+    ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
+
+    ShowTicket         => 'Show ticket summaries',                    # loc_pair
+    ShowTicketComments => 'Show ticket private commentary',           # loc_pair
+
+    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
+    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
+    CreateTicket    => 'Create tickets in this queue',                # loc_pair
+    ReplyToTicket   => 'Reply to tickets',                            # loc_pair
+    CommentOnTicket => 'Comment on tickets',                          # loc_pair
+    OwnTicket       => 'Own tickets',                                 # loc_pair
+    ModifyTicket    => 'Modify tickets',                              # loc_pair
+    DeleteTicket    => 'Delete tickets'                               # loc_pair
+
+};
+
+# TODO: This should be refactored out into an RT::ACLedObject or something
+# stuff the rights into a hash of rights that can exist.
+
+foreach my $right ( keys %{$RIGHTS} ) {
+    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+}
+    
+
+=head2 AvailableRights
+
+Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
+
+=cut
+
+sub AvailableRights {
+    my $self = shift;
+    return($RIGHTS);
+}
 
 # {{{ ActiveStatusArray
 

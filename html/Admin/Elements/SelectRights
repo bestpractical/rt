@@ -74,14 +74,16 @@
     $ACLObj->LimitToPrincipal( Id => $PrincipalId);
 
     if (ref($Object) eq 'RT::Group') { 
-        %Rights = $ACE->GroupRights();
+        %Rights = %{$Object->AvailableRights};
     } 
 
     elsif (ref($Object) eq 'RT::Queue') { 
-        %Rights = $ACE->QueueRights();
+        %Rights = %{$Object->AvailableRights};
     } 
     elsif (ref($Object) eq 'RT::System') {
-        %Rights =  ( $ACE->SystemRights , $ACE->QueueRights(),$ACE->GroupRights());
+        my $q = RT::Queue->new($session{'CurrentUser'});
+        my $g = RT::Group->new($session{'CurrentUser'});
+        %Rights = (%{$Object->AvailableRights}, %{$q->AvailableRights}, %{$g->AvailableRights});
     }
 
     

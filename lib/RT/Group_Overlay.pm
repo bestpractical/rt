@@ -139,6 +139,35 @@ use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;
 
+use vars qw/$RIGHTS/;
+
+$RIGHTS = {
+    AdminGroup           => 'Modify group metadata or delete group',  # loc_pair
+    AdminGroupMembership =>
+      'Modify membership roster for this group',                      # loc_pair
+    ModifyOwnMembership => 'Join or leave this group'                 # loc_pair
+};
+
+#
+
+# TODO: This should be refactored out into an RT::ACLedObject or something
+# stuff the rights into a hash of rights that can exist.
+
+foreach my $right ( keys %{$RIGHTS} ) {
+    $RT::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+}
+
+
+=head2 AvailableRights
+
+Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
+
+=cut
+
+sub AvailableRights {
+    my $self = shift;
+    return($RIGHTS);
+}
 
 
 # {{{ sub SelfDescription
