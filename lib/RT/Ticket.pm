@@ -816,7 +816,7 @@ sub _NewLink {
  
   # TODO: fix Link.pm
   my $link = new RT::Link;
-  my $linkid = $link->create(%args);
+  my $linkid = $link->Create(%args);
 
   #Write the transaction
   my $Trans = $self->_NewTransaction
@@ -825,7 +825,7 @@ sub _NewLink {
        TimeTaken => 0 # Is this always true?
        );
   
-  return (0, "work stubbed");
+  return (0, "work stubbed"); # Needs to be tested a bit
   return ($linkid, "Link created", $transactionid);
 }
 
