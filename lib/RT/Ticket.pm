@@ -8,6 +8,25 @@ use RT::Record;
 use RT::Link;
 @ISA= qw(RT::Record);
 
+=head1 NAME
+
+ Ticket - Manipulate an RT Ticket Object
+
+=head1 SYNOPSIS
+
+  use RT::Ticket;
+    ...
+  my $ticket = RT::Ticket->new($self->CurrentUser);
+  $ticket->Load($ticket_id);
+
+  ....
+
+=head1 DESCRIPTION
+ 
+This module lets you manipulate RT's most key object. The Ticket.
+
+
+=cut
 
 # {{{ sub new
 
@@ -120,6 +139,20 @@ sub Create {
 
 # {{{ sub AddWatcher
 
+=head2 AddWatcher
+
+AddWatcher takes a parameter hash. The keys are as follows:
+
+Email
+Type
+Scope
+Owner
+
+If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
+
+=cut
+
+
 sub AddWatcher {
   my $self = shift;
   my %args = ( Value => $self->Id(),
@@ -142,6 +175,14 @@ sub AddWatcher {
 # }}}
 
 # {{{ sub AddRequestor
+
+=head2 AddRequestor
+
+AddRequestor takes what AddWatcher does, except it presets
+the "Type" parameter to \'Requestor\'
+
+=cut
+
 sub AddRequestor {
   my $self = shift;
   return ($self->AddWatcher ( Type => 'Requestor', @_));
@@ -149,6 +190,14 @@ sub AddRequestor {
 # }}}
 
 # {{{ sub AddCc
+
+=head2 AddCc
+
+AddCc takes what AddWatcher does, except it presets
+the "Type" parameter to \'Cc\'
+
+=cut
+
 sub AddCc {
   my $self = shift;
   return ($self->AddWatcher ( Type => 'Cc', @_));
@@ -156,6 +205,13 @@ sub AddCc {
 # }}}
 	
 # {{{ sub AddAdminCc
+
+=head2 AddAdminCc
+
+AddAdminCc takes what AddWatcher does, except it presets
+the "Type" parameter to \'AdminCc\'
+
+=cut
 
 sub AddAdminCc {
   my $self = shift;
@@ -165,26 +221,39 @@ sub AddAdminCc {
 
 # {{{ sub DeleteWatcher
 
+=head2 DeleteWatcher
+
+DeleteWatcher takes an email address and removes that watcher
+from this Ticket\'s list of watchers. It\'s currently insufficient, as many watchers will have a null email address and a
+valid owner.
+
+=cut
+
+
 sub DeleteWatcher {
-  my $self = shift;
-  my $email = shift;
-  
-  my ($Watcher);
-  
-  while ($Watcher = $self->Watchers->Next) {
-    if ($Watcher->Email =~ /$email/) {
-      $self->_NewTransaction ( Type => 'DelWatcher',
-			       OldValue => $Watcher->Email,
-			       Data => $Watcher->Type,
-			     );
-      $Watcher->Delete();
+    my $self = shift;
+    my $email = shift;
+    
+    my ($Watcher);
+    
+    while ($Watcher = $self->Watchers->Next) {
+	if ($Watcher->Email =~ /$email/) {
+	    $self->_NewTransaction ( Type => 'DelWatcher',
+				     OldValue => $Watcher->Email,
+				     Data => $Watcher->Type,
+				   );
+	    $Watcher->Delete();
+	}
     }
-  }
 }
 
 # }}}
 
 # {{{ sub Watchers
+
+=head2
+
+Watchers returns a Watchers object preloaded with this ticket\'s watchers.
 
 # TODO: Should this one only return the _ticket_ watchers or the queue
 # + ticket watchers?  I think the latter would make most sense, and
@@ -195,7 +264,9 @@ sub DeleteWatcher {
 # methods capture the queue watchers too. I don't feel thrilled about this,
 # but we don't want the Cc Requestors and AdminCc objects to get filled up
 # with all the queue watchers too. we've got seperate objects for that.
-# should we rename these as s/(.*)AsString/$1Addresses/ or somesuch?
+  # should we rename these as s/(.*)AsString/$1Addresses/ or somesuch?
+
+=cut
 
 sub Watchers {
   my $self = shift;
@@ -213,10 +284,35 @@ sub Watchers {
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
+=head2 RequestorsAsString
+
+=item B<Takes>
+
+=item I<nothing>
+
+=item B<Returns>
+
+=item String: All Ticket/Queue Requestors.
+
+=cut
+
 sub RequestorsAsString {
     my $self=shift;
     return _CleanAddressesAsString ($self->Requestors->EmailsAsString() );
 }
+
+=head2 WatchersAsString
+
+WatchersAsString ...
+=item B<Takes>
+
+=item I<nothing>
+
+=item B<Returns>
+
+=item String: All Ticket/Queue Watchers.
+
+=cut
 
 sub WatchersAsString {
     my $self=shift;
@@ -224,17 +320,54 @@ sub WatchersAsString {
 		  $self->Queue->Watchers->EmailsAsString());
 }
 
+=head2 AdminCcAsString
+
+=item B<Takes>
+
+=item I<nothing>
+
+=item B<Returns>
+
+=item String: All Ticket/Queue AdminCcs.
+
+=cut
+
+
 sub AdminCcAsString {
     my $self=shift;
     return _CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
 		  $self->Queue->AdminCc->EmailsAsString());
   }
 
+=head2 CcAsString
+
+=item B<Takes>
+
+=item I<nothing>
+
+=item B<Returns>
+
+=item String: All Ticket/Queue Ccs.
+
+=cut
+
 sub CcAsString {
     my $self=shift;
     return _CleanAddressesAsString ($self->Cc->EmailsAsString() . ", ".
 		  $self->Queue->Cc->EmailsAsString());
 }
+
+=head2 _CleanAddressesAsString
+
+=item B<Takes>
+
+=item String: A comma delineated address list
+
+=item B<Returns>
+
+=item String: A comma delineated address list
+
+=cut
 
 sub _CleanAddressesAsString {
     my $i=shift;
