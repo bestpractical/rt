@@ -1,4 +1,7 @@
-# This Action will stall the BASE if a dependency link is created and if BASE is open.
+# This Action will stall the BASE if a dependency or membership link
+# (according to argument) is created and if BASE is open.
+
+# TODO: Rename this .pm
 
 package RT::Action::StallDependent;
 require RT::Action;
@@ -7,7 +10,7 @@ require RT::Action;
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return (ref $self . " will open a [local] BASE if it's stalled and dependent on a resolved request.");
+  return (ref $self . " will stall a [local] BASE if it's dependent [or member] of a linked up request.");
 }
 # }}}
 
@@ -22,14 +25,16 @@ sub Prepare  {
 sub Commit {
     my $self = shift;
     # Find all Dependent
-    unless ($self->TransactionObj->Data =~ /^([^ ]*) DependsOn /) {
+    my $arg=$self->Argument || "DependsOn";
+    unless ($self->TransactionObj->Data =~ /^([^ ]+) $arg /) {
 	warn; return 0;
     }
+    my $base_id=$1;
     my $base;
     if ($1 eq "THIS") {
 	$base=$self->TicketObj;
     } else {
-	my $base_id=&RT::Link::_IsLocal($1) || return 0;
+	$base_id=&RT::Link::_IsLocal(undef, $base_id) || return 0;
 	$base=RT::Ticket->new($self->TicketObj->CurrentUser);
 	$base->Load($base_id);
     }
@@ -38,20 +43,24 @@ sub Commit {
 }
 
 
+# {{{ sub IsApplicable 
+
 # Only applicable if:
 # 1. the link action is a dependency
 # 2. BASE is a local ticket
 
-# {{{ sub IsApplicable 
 sub IsApplicable  {
   my $self = shift;
+
+  my $arg=$self->Argument || "DependsOn";
+
   # 1:
-  $self->TransactionObj->Data =~ /^([^ ]*) DependsOn / || return 0;
+  $self->TransactionObj->Data =~ /^([^ ]*) $arg / || return 0;
 
   # 2:
   # (dirty!)
   &RT::Link::_IsLocal(undef,$1) || return 0;
-  
+
   return 1;
 }
 # }}}

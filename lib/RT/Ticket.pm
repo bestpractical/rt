@@ -1032,6 +1032,11 @@ sub _NewLink {
 	       Type => '',
 	       @_ );
 
+  # {{{ We don't want references to ourself
+  return (0,"You're linking up yourself, that doesn't make sense",0) 
+      if ($args{Base} eq $args{Target});
+  # }}}
+
   # {{{ Check if the link already exists - we don't want duplicates
   my $Links=RT::Links->new($self->CurrentUser);
   $Links->Limit(FIELD=>'Type',VALUE => $args{Type});

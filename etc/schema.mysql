@@ -357,7 +357,9 @@ INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
 # Short about the default available link actions available;
 
 # Action
+
 #   StallDependent - stalls the dependent upon a DependsOn linking action.
+#   StallMember - stalls a member upon a MemberOf linking action.
 #   OpenDependent - when a DependsOn is resolved, the dependent should be opened.
 #   Spam - upon correspondance to a group ticket, sends to all member requestors.
 #   ResolveMembers - when a Group Ticket is resolved, all Members should be resolved.
@@ -367,11 +369,15 @@ INSERT INTO Scrips VALUES (9, 'StallDependentOnLink',
 		           'Stalls the dependent when a DependsOn link is made',
 			   'Link', 'StallDependent',NULL,NULL,1,NULL,1,NULL);
 
-INSERT INTO Scrips VALUES (10, 'OpenDependentOnResolve', 
+INSERT INTO Scrips VALUES (9, 'StallMemberOnLink', 
+		           'Stalls the member when a MemberOf link is made',
+			   'Link', 'StallDependent',NULL,'MemberOf',1,NULL,1,NULL);
+
+INSERT INTO Scrips VALUES (10, 'OpenDependentOnResolve',
 		           'Opens the dependent when the DependsOn is resolved',
 			   'Resolve', 'OpenDependent',NULL,NULL,1,NULL,1,NULL);
 
-INSERT INTO Scrips VALUES (11, 'ResolveMembers', 
+INSERT INTO Scrips VALUES (11, 'ResolveMembers',
 		           'Resolves all members when MemberOf is resolved',
 			   'Resolve', 'ResolveMembers',NULL,NULL,1,NULL,1,NULL);
 

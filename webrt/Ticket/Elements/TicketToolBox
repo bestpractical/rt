@@ -1,4 +1,4 @@
-  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $subj, titleright=> "<a href=\"../Search/Listing.html?keep=1\">Back to listing</a> / <a href=\"#last\">Last transaction</a> | $take <a href=\"Display.html?Action=Kill&id=$id\">Kill</a> | <a href=\"Modify.html?id=$id\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=$id\">Update</a> "&>
+  <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $subj, titleright=> "<a href=\"../Search/Listing.html?keep=1\">Back to listing</a> / <a href=\"#last\">Last transaction</a> | $take $open <a href=\"Display.html?Action=Kill&id=$id\">Kill</a> | <a href=\"Modify.html?id=$id\">Modify</a> / <a href=\"Update.html?DefaultAction=PublicComment&id=$id\">Update</a> "&>
 
 
 <%ARGS>
@@ -7,12 +7,17 @@ $Ticket = undef
 <%INIT>
 my $subj=$Ticket->Subject||"(No subject given)";
 my $id=$Ticket->Id;
+my $can_open=($Ticket->Status ne 'open');
 my $can_take=($Ticket->Owner->id == $RT::Nobody);
 my $can_steal=!$can_take && $Ticket->Owner->id!=$session{CurrentUser}->id;
 my $take="";
+my $open="";
 if ($can_take) {
 	$take="<a href=\"Display.html?Action=Take&id=$id\">Take</a> /";
 } elsif ($can_steal) {
 	$take="<blink><strong><a href=\"Display.html?Action=Steal&id=$id\">Steal</a></strong></blink> /";
+}
+if ($can_open) {
+	$open="<a href=\"ProcessUpdate.html?Action=SetStatus&SetStatus=open&id=$id\">Open</a> /";
 }
 </%INIT>
