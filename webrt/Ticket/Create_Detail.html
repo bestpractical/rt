@@ -1,0 +1,27 @@
+<FORM ACTION="ProcessCreate.html" METHOD="POST">
+
+Create a new ticket in <%$Queue->QueueId%>:
+
+<& /Elements/Error, Why => 'Nothing on this page works yet' &>
+
+Owner: <& /Elements/SelectOwner, Name => "ValueOfOwner" &><br>
+
+
+Requestors: <INPUT Name="Requestors" SIZE=20>
+Cc: <INPUT NAME="Cc" SIZE=20>
+
+Subject: <INPUT Name="ubject" SIZE=20>
+Status:	<& /Elements/SelectStatus, Name => "Status" &>
+
+
+Upload an attachment: <INPUT TYPE=FILE><br>
+Describe the issue below:<br>
+<TEXTAREA NAME="Content" ROWS=10 COLS=70 WRAP=SOFT>
+</TEXTAREA>
+
+
+<INPUT TYPE=SUBMIT VALUE="Submit">
+<%INIT>
+my $Queue = RT::Queue->new($session{'CurrentUser'});
+$Queue->Load($ARGS{'Queue'});
+</%INIT>
