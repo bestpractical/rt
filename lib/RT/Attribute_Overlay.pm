@@ -21,10 +21,11 @@
 # 
 # 
 # END LICENSE BLOCK
+
 use strict;
 no warnings qw(redefine);
 use Storable qw/nfreeze thaw/;
-
+use MIME::Base64;
 
 
 =head1 NAME
@@ -203,7 +204,7 @@ sub _DeserializeContent {
     my $content = shift;
 
     my $hashref;
-    eval {$hashref  = thaw($content)} ; 
+    eval {$hashref  = thaw(decode_base64($content))} ; 
     if ($@) {
         $RT::Logger->error("Deserialization of attribute ".$self->Id. " failed");
     }
@@ -237,7 +238,7 @@ sub Content {
 sub _SerializeContent {
     my $self = shift;
     my $content = shift;
-        return( nfreeze($content)); 
+        return( encode_base64(nfreeze($content))); 
 }
 
 
@@ -359,8 +360,8 @@ sub Object {
     my $object_type = $self->__Value('ObjectType');
     my $object;
     eval { $object = $object_type->new($self->CurrentUser) };
-    if ($@) {
-        $RT::Logger->error("Attribute ".$self->Id." has a bogus object type");
+    unless(UNIVERSAL::isa($object, $object_type)) {
+        $RT::Logger->error("Attribute ".$self->Id." has a bogus object type - $object_type (".$@.")");
         return(undef);
      }
     $object->Load($self->__Value('ObjectId'));

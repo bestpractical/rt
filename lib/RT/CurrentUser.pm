@@ -59,16 +59,30 @@ use base qw/RT::Record/;
 # to be a CurrentUser object. but that's hard to do when we're trying to load
 # the CurrentUser object
 
-sub _Init  {
-  my $self = shift;
-  my $Name = shift;
+sub _Init {
+    my $self = shift;
+    my $User = shift;
 
-  $self->{'table'} = "Users";
+    $self->{'table'} = "Users";
 
-  if (defined($Name)) {
-    $self->Load($Name);
-  }
-    $self->_BuildTableAttributes();  
+    if ( defined($User) ) {
+
+        if (   UNIVERSAL::isa( $User, 'RT::User' )
+            || UNIVERSAL::isa( $User, 'RT::CurrentUser' ) )
+        {
+            $self->Load( $User->id );
+
+        }
+        elsif ( ref($User) ) {
+            $RT::Logger->crit(
+                "RT::CurrentUser->new() called with a bogus argument: $User");
+        }
+        else {
+            $self->Load($User);
+        }
+    }
+
+    $self->_BuildTableAttributes();
 
 }
 # }}}
