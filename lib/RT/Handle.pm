@@ -60,9 +60,12 @@ Takes nothing. Calls SUPER::Connect with the needed args
 sub Connect {
 my $self=shift;
 
-# Unless the database port is a positive integer, we really don't want to pass it.
 
-$self->SUPER::Connect(
+    if ($RT::DatabaseType eq 'Oracle') {
+        $ENV{'NLS_LANG'} = ".UTF8";
+    }
+
+    $self->SUPER::Connect(
 			 User => $RT::DatabaseUser,
 			 Password => $RT::DatabasePassword,
 			);
@@ -79,8 +82,10 @@ from the config file.
 
 sub BuildDSN {
     my $self = shift;
+# Unless the database port is a positive integer, we really don't want to pass it.
 $RT::DatabasePort = undef unless (defined $RT::DatabasePort && $RT::DatabasePort =~ /^(\d+)$/);
 $RT::DatabaseHost = undef unless (defined $RT::DatabaseHost && $RT::DatabaseHost ne '');
+
 
     $self->SUPER::BuildDSN(Host => $RT::DatabaseHost, 
 			 Database => $RT::DatabaseName, 
