@@ -461,7 +461,7 @@ sub edit {
 
     if ($output) {
         print $text;
-        exit;
+        return;
     }
 
     my $synerr = 0;
@@ -487,7 +487,7 @@ EDIT:
             }
             else {
                 print $r->content;
-                exit -1;
+                return;
             }
         }
         print $r->content;
@@ -516,7 +516,7 @@ sub comment {
             if (/-a/) {
                 unless (-f $ARGV[0] && -r $ARGV[0]) {
                     whine "Cannot read attachment: '$ARGV[0]'.";
-                    exit -1;
+                    return;
                 }
                 push @files, shift @ARGV;
             }
@@ -566,7 +566,7 @@ sub comment {
 
         do {
             my $ntext = vi($text);
-            exit if ($error && $ntext eq $text);
+            return if ($error && $ntext eq $text);
             $text = $ntext;
             $form = Form::parse($text);
             $error = 0;
@@ -578,7 +578,7 @@ sub comment {
                 goto NEXT;
             }
             elsif (!@$o) {
-                exit;
+                return;
             }
             @files = @{ vsplit($k->{Attachment}) };
 
