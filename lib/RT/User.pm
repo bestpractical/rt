@@ -166,17 +166,13 @@ sub Load  {
 }
 # }}}
 
+# {{{ sub LoadByEmail
 sub LoadByEmail {
     my $self=shift;
     # TODO: check the "AlternateEmails" table if this fails.
     return $self->LoadByCol("EmailAddress", @_);
 }
-
-sub LoadByName {
-    my $self=shift;
-    return $self->LoadByCol("UserId", @_) 
-	|| $self->LoadByCol("RealName",@_);
-}
+# }}}
 
 #used to check if a password is correct
 # {{{ sub IsPassword
