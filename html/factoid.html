@@ -1,0 +1,33 @@
+<& /Elements/Header, Title => $article->Summary &>
+<& /Elements/NavBar, article => $article &>
+
+<h1><%$article->Summary%></h1>
+<BR>
+<i><A HREF="<%$RT::FM::WebRoot%>/article.html?id=<%$article->ParentObj->Id%>">See this article in context.</A></i>
+<BR>
+<& /Elements/ArticleCustomFields, ArticleObj => $article &>
+
+<HR>
+<%$article->ContentObj->Body|n%>
+</body>
+</html>
+
+<%INIT>
+my $article = new RT::FM::Article($session{'CurrentUser'});
+
+if ($id eq 'new') {
+
+	my ($val, $msg) = $article->Create( Parent => $ARGS{'Parent'},
+					    Summary => $ARGS{'Summary'},
+					    Content => $ARGS{'Content'});
+
+	unless ($val) {
+		Abort($msg);
+	}
+	$id = $val;
+}
+$article->Load($id);
+</%INIT>
+<%ARGS>
+$id => 0
+</%ARGS>
