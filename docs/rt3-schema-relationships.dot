@@ -11,71 +11,71 @@ shape = record, fontsize = 18
 edge [
 ];
 
-"acl" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"acl" -> "principals" [label="ACL.PrincipalId -> Principals.Id"];
-"acl" -> "principals" [label="ACL.DelegatedBy -> Principals.Id"];
-"acl" -> "acl" [label="ACL.DelegatedFrom -> ACL.Id"];
+"ACL" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"ACL" -> "Principals" [label="PrincipalId -> Id"];
+"ACL" -> "Principals" [label="DelegatedBy -> Id"];
+"ACL" -> "ACL" [label="DelegatedFrom -> Id"];
 
-"attachments" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"attachments" -> "transactions" [label="Attachments.TransactionId -> Transactions.Id"];
-"attachments" -> "attachments" [label="Attachments.Parent -> Attachments.id"];
+"Attachments" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"Attachments" -> "Transactions" [label="TransactionId -> id"];
+"Attachments" -> "Attachments" [label="Parent -> id"];
 
-"cachedgroupmembers" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"cachedgroupmembers" -> "groups" [label="CachedGroupMembers.GroupId -> Groups.id"];
-"cachedgroupmembers" -> "principals" [label="CachedGroupMembers.MemberId -> Principals.Id"];
-"cachedgroupmembers" -> "cachedgroupmembers" [label="CachedGroupMembers.Via -> CachedGroupMembers.id"];
-"cachedgroupmembers" -> "groups" [label="CachedGroupMembers.ImmediateParentId -> Groups.id"];
+"CachedGroupMemers" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"CachedGroupMemers" -> "Groups" [label="GroupId -> Groups.id"];
+"CachedGroupMemers" -> "Principals" [label="MemberId -> Id"];
+"CachedGroupMemers" -> "CachedGroupMemers" [label="Via -> id"];
+"CachedGroupMemers" -> "Groups" [label="ImmediateParentId -> Groups.id"];
 
-"customfields" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"customfields" -> "queues" [label="CustomFields.Queue -> Queues.id"];
+"CustomFields" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"CustomFields" -> "Queues" [label="Queue -> id"];
 
-"customfieldvalues" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"customfieldvalues" -> "customfields" [label="CustomFieldValues.CustomField -> CustomFields.id"];
+"CustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"CustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
 
-"groupmembers" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"groupmembers" -> "groups" [label="GroupMembers.GroupId => Groups.Id"];
-"groupmembers" -> "principals" [label="GroupMembers.MemberId => Principals.Id"];
+"GroupMembers" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"GroupMembers" -> "Groups" [label="GroupId => Groups.Id"];
+"GroupMembers" -> "Principals" [label="MemberId => Id"];
 
-"groups" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"groups" -> "principals" [label="Groups.id -> Principals.id"];
+"Groups" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"Groups" -> "Principals" [label="Groups.id -> id"];
 
-"links" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"links" -> "tickets" [label="Links.LocalBase => Tickets.id (usually)"];
-"links" -> "tickets" [label="Links.LocalTarget => Tickets.id (usually)"];
+"Links" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"Links" -> "Tickets" [label="LocalBase => id (usually)"];
+"Links" -> "Tickets" [label="LocalTarget => id (usually)"];
 
-"principals" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"Principals" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
 
-"queues" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"Queues" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
-"scripactions" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"ScripActions" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
-"scripconditions" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"ScripConditions" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
-"scrips" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"scrips" -> "scripconditions" [label="Scrips.ScripCondition -> ScripConditions.id"];
-"scrips" -> "scripactions" [label="Scrips.ScripAction -> ScripActions.id"];
-"scrips" -> "templates" [label="Scrips.Template -> Templates.id"];
-"scrips" -> "queues" [label="Scrips.Queue -> Queues.id"];
+"Scrips" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"Scrips" -> "ScripConditions" [label="ScripCondition -> id"];
+"Scrips" -> "ScripActions" [label="ScripAction -> id"];
+"Scrips" -> "Templates" [label="Template -> id"];
+"Scrips" -> "Queues" [label="Queue -> id"];
 
-"templates" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"templates" -> "queues" [label ="Templates.Queue -> Queues.id" ];
+"Templates" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"Templates" -> "Queues" [label ="Queue -> id" ];
 
-"ticketcustomfieldvalues" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"ticketcustomfieldvalues" -> "tickets" [label="TicketCustomFieldValues.Ticket -> Tickets.id"];
-"ticketcustomfieldvalues" -> "customfields" [label="TicketCustomFieldValues.CustomField -> CustomFields.id"];
+"TicketCustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"TicketCustomFieldValues" -> "Tickets" [label="Ticket -> id"];
+"TicketCustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
 
-"tickets" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"tickets" -> "tickets" [label="Tickets.EffectiveId -> Tickets.id"];
-"tickets" -> "queues" [label="Tickets.Queue -> Queues.id"];
-"tickets" -> "principals" [label="Tickets.Owner -> Principals.id"];
+"Tickets" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"Tickets" -> "Tickets" [label="EffectiveId -> id"];
+"Tickets" -> "Queues" [label="Queue -> id"];
+"Tickets" -> "Principals" [label="Owner -> id"];
 
-"transactions" [shape = record, fontsize = 18, label = "<col0> \N |" ];
-"transactions" -> "tickets" [label="Transactions.Ticket -> Tickets.Id"];
+"Transactions" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"Transactions" -> "Tickets" [label="Ticket -> Id"];
 
-"users" [shape = record, fontsize = 18, label = "<col0> \N |" ];
+"Users" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
-"users" -> "principals" [label="Users.id -> Principals.id"];
+"Users" -> "Principals" [label="id -> id"];
 
 
 }
