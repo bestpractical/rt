@@ -1,11 +1,11 @@
 % if ($cf->Type =~ /^FreeformSingle$/) {
-<INPUT NAME="<%$Name%>" VALUE="<%$ArticleObj->CustomFieldValues($cf)->First->Content%>">
-
+% my $value = $ArticleObj->CustomFieldValues($cf)->First
+<INPUT NAME="<%$Name%>" VALUE="<%$value && $value->Content%>">
 % } elsif ($cf->Type =~ /^FreeformMultiple$/) {
 
 <TEXTAREA NAME="<%$Name%>"  ROWS=5 COLS=20>
 % foreach my $item (@{$ArticleObj->CustomFieldValues($cf)->ItemsArrayRef}) {
-<% $item && $item->Content%>
+<% $item->Content%>
 % }
 </TEXTAREA>
 % } else { 
