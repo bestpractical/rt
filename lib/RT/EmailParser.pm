@@ -62,7 +62,6 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
-  $self->{'AttachmentDir'} = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
   return $self;
 }
 
@@ -591,21 +590,20 @@ A private instance method which sets up a mime parser to do its job
     ## Over max size and return them
 
 sub _SetupMIMEParser {
-    my $self = shift;
+    my $self   = shift;
     my $parser = shift;
 
     # Set up output directory for files:
-    # Untaint the attachment dir, because MIME::Tools will choke otherwise
-    if ($self->{'AttachmentDir'} =~ /^(.*)$/) {
-        $parser->output_dir($1);
-    } 
-    $parser->filer->ignore_filename(1);
 
+    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    push ( @{ $self->{'AttachmentDirs'} }, $tmpdir );
+    $parser->output_dir($tmpdir);
+    $parser->filer->ignore_filename(1);
 
     #If someone includes a message, extract it
     $parser->extract_nested_messages(1);
 
-    $parser->extract_uuencode(1);           ### default is false
+    $parser->extract_uuencode(1);    ### default is false
 
     # Set up the prefix for files with auto-generated names:
     $parser->output_prefix("part");
@@ -619,7 +617,7 @@ sub _SetupMIMEParser {
 
 sub DESTROY {
     my $self = shift;
-    File::Path::rmtree([$self->{'AttachmentDir'}],0,1);
+    File::Path::rmtree([@{$self->{'AttachmentDirs'}}],0,1);
 }
 
 
