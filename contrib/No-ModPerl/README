@@ -2,3 +2,6 @@ The release should eventually work OK without Apache/Modperl (i.e. in a CGI
 or FCGI environment).  Anyway, it seems like I don't have the time fixing
 and testing a general solution right away, so I'll put some of the things
 I've done to get it working locally in this directory.
+
+
+Tobias Brox <tobix@fsck.com>

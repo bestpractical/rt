@@ -1,4 +1,7 @@
-       use UpgradeRT;
+
+use UpgradeRT;
+
+die "this is hopelessly outdated.  Nag tobix@fsck.com about it";
 
        my $rt10 = DBI->connect
            ('dbi:mysql:database=rt;host=localhost',

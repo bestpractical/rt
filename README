@@ -117,8 +117,18 @@ o   DBIx::Record and DBIx::EasySearch
 o   HTML::Mason (CPAN) 
 	For the web ui
 
-o   Locale::Maketext
-	Will probably be used by RT for localization.
+o   Log::Dispatch (CPAN)
+
+        Check the config.pm and the POD about how to configure the logging.
+	Unfortunately, a really weird bug has appeared after we introduced
+	Log::Dispatch.  The program suddently dies because it can't find the
+	Mail::Field::addrlist and Mail::Field::date.
+	Mail::Field::AddrList and Mail::Field::Date works.  You can get
+	around this by making a symlink.  Anyway, if you can track down the
+	real reason why those are called, I'd be very happy.
+
+o   Locale::Maketext (CPAN)
+	Will probably be used by RT for localization in the future.
 
 o   Apache + mod_perl -- free, optional 
 	You might choose to run without a Web UI, and you can choose
