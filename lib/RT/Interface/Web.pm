@@ -1090,7 +1090,8 @@ sub ProcessTicketCustomFieldUpdates {
                 # to fake it
                 if ($arg =~ /^(.*?)-Values-Magic$/ ) {
                     # We don't care about the magic, if there's really a values element;
-                    next if (exists $ARGSRef->{$1.'-Values'}) ;
+                    next if ( $ARGSRef->{$1.'-Values'} ||
+                              $ARGSRef->{$1.'-Value'}) ;
 
                     $arg = $1."-Values";
                     $ARGSRef->{$1."-Values"} = undef;
