@@ -76,7 +76,7 @@ foreach my $object (@objects) {
         $Users->WhoHaveRight(Right => 'OwnTicket',
                      Object => $object,
                      IncludeSystemRights => 1,
-                     IncludeSuperusers => 1);
+                     IncludeSuperusers => 0);
         while (my $User = $Users->Next()) {
 	      $user_uniq_hash{$User->Id()} = $User;
         }
