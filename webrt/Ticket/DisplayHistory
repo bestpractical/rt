@@ -1,0 +1,13 @@
+<%ARGS>
+$Ticket => undef
+
+</%ARGS>
+<TABLE width=100% BORDER=1>
+%while (my $Transaction = $Ticket->Transactions->Next) {
+
+<TR><TD>
+<& DisplayTransaction, Transaction => $Transaction &>
+</TD></TR>
+%}
+
+</TABLE>

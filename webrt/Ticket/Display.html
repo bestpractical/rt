@@ -1,12 +1,26 @@
 %# $Header$
 %# Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+<%ARGS>
+$id => undef
+</%ARGS>
 <%INIT>
 use RT::Ticket;
-my $Ticket = RT::Ticket->new(0);
-$Ticket->Load(1);
+use RT::CurrentUser;
+my $CurrentUser = RT::CurrentUser->new(2);
+my $Ticket = RT::Ticket->new($CurrentUser);
+$Ticket->Load($id);
 </%INIT>
+<HTML>
+<HEAD>
+<TITLE>
+WebRT Ticket View
+</TITLE>
+</HEAD>
+<BODY BGCOLOR=WHITE>
 <& ToolBar &>
 
 <& DisplaySummary ,  Ticket => $Ticket &>
 
 <& DisplayHistory , Ticket => $Ticket &> 
+</BODY>
+</HTML>
