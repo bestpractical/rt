@@ -1,0 +1,4879 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: RT 3.0.1\n"
+"POT-Creation-Date: 2003-04-01 06:06+0200\n"
+"PO-Revision-Date: 2003-05-01 04:47+0200\n"
+"Last-Translator: Marcus Ramberg <marcus@thefeed.no>\n"
+"Language-Team: RT Norwegian <rt@thefeed.no>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+
+#: html/Elements/MyRequests:28 html/Elements/MyTickets:28
+msgid "#"
+msgstr "#"
+
+#: html/Admin/Queues/Scrip.html:55
+#. ($QueueObj->id)
+msgid "#%1"
+msgstr "#%1"
+
+#: html/Approvals/Elements/Approve:27 html/Approvals/Elements/ShowDependency:50 html/SelfService/Display.html:25 html/Ticket/Display.html:26 html/Ticket/Display.html:30
+#. ($Ticket->Id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->Subject)
+#. ($ticket->Id, $ticket->Subject)
+#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+msgid "#%1: %2"
+msgstr "#%1: %2"
+
+#: lib/RT/Date.pm:337
+#. ($s, $time_unit)
+msgid "%1 %2"
+msgstr "%1 %2"
+
+#: lib/RT/Tickets_Overlay.pm:771
+#. ($args{'FIELD'}, $args{'OPERATOR'}, $args{'VALUE'})
+msgid "%1 %2 %3"
+msgstr "%1 %2 %3"
+
+#: lib/RT/Date.pm:373
+#. ($self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
+msgid "%1 %2 %3 %4:%5:%6 %7"
+msgstr "%1 %3. %2 %7 %4:%5:%6"
+
+#: lib/RT/Ticket_Overlay.pm:3505 lib/RT/Transaction_Overlay.pm:557 lib/RT/Transaction_Overlay.pm:599
+#. ($cf->Name, $new_value->Content)
+#. ($field, $self->NewValue)
+#. ($self->Field, $principal->Object->Name)
+msgid "%1 %2 added"
+msgstr "%1 %2 lagt til"
+
+#: lib/RT/Date.pm:334
+#. ($s, $time_unit)
+msgid "%1 %2 ago"
+msgstr "%1 %2 siden"
+
+#: lib/RT/Ticket_Overlay.pm:3511 lib/RT/Transaction_Overlay.pm:564
+#. ($cf->Name, $old_value, $new_value->Content)
+#. ($field, $self->OldValue, $self->NewValue)
+msgid "%1 %2 changed to %3"
+msgstr "%1 %2 ble endret til %3"
+
+#: lib/RT/Ticket_Overlay.pm:3508 lib/RT/Transaction_Overlay.pm:560 lib/RT/Transaction_Overlay.pm:605
+#. ($cf->Name, $old_value)
+#. ($field, $self->OldValue)
+#. ($self->Field, $principal->Object->Name)
+msgid "%1 %2 deleted"
+msgstr "%1 %2 slettet"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 %2 of group %3"
+msgstr "%1 %2 av gruppen %3"
+
+#: html/Admin/Elements/EditScrips:44 html/Admin/Elements/ListGlobalScrips:28
+#. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
+msgid "%1 %2 with template %3"
+msgstr "%1 %2 med mal %3"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 (%2) %3 this ticket\\n"
+msgstr "%1 (%2) %3 denne biletten\\n""
+
+#: html/Search/Listing.html:57
+#. (($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ))
+msgid "%1 - %2 shown"
+msgstr "%1 - %2 vist"
+
+#: bin/rt-crontool:169 bin/rt-crontool:176 bin/rt-crontool:182
+#. ("--search-argument", "--search")
+#. ("--condition-argument", "--condition")
+#. ("--action-argument", "--action")
+msgid "%1 - An argument to pass to %2"
+msgstr "%1 - Et parameter til %2"
+
+#: bin/rt-crontool:185
+#. ("--verbose")
+msgid "%1 - Output status updates to STDOUT"
+msgstr "%1 - Viser statusoppdateringer til STDOUT"
+
+#: bin/rt-crontool:179
+#. ("--action")
+msgid "%1 - Specify the action module you want to use"
+msgstr "%1 - Oppgi kommandomodulen du ønsker Â bruke"
+
+#: bin/rt-crontool:173
+#. ("--condition")
+msgid "%1 - Specify the condition module you want to use"
+msgstr "%1 - Oppgiv betingelsesmodulen du ønsker Â bruke"
+
+#: bin/rt-crontool:166
+#. ("--search")
+msgid "%1 - Specify the search module you want to use"
+msgstr "%1 - Oppgi søkemodulen du ønsker Â bruke"
+
+#: lib/RT/ScripAction_Overlay.pm:122
+#. ($self->Id)
+msgid "%1 ScripAction loaded"
+msgstr "%1 KommandoScript lastet"
+
+#: lib/RT/Ticket_Overlay.pm:3538
+#. ($args{'Value'}, $cf->Name)
+msgid "%1 added as a value for %2"
+msgstr "%1 ble lagt til som verdi for %2"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 aliases require a TicketId to work on"
+msgstr "%1 alias trenger en ReferanseId å jobbe mot"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 aliases require a TicketId to work on "
+msgstr "%1 alias trenger en saksnummer å jobbe mot "
+
+#: NOT FOUND IN SOURCE
+msgid "%1 aliases require a TicketId to work on (from %2) %3"
+msgstr "%1 alias trenger et saksnummer å jobbe mot (fra %2) %3"
+
+#: lib/RT/Link_Overlay.pm:117 lib/RT/Link_Overlay.pm:124
+#. ($args{'Base'})
+#. ($args{'Target'})
+msgid "%1 appears to be a local object, but can't be found in the database"
+msgstr "%1 ser ut til å være et lokalt objekt, men kan ikke finnes i databasen"
+
+#: html/Ticket/Elements/ShowDates:52 lib/RT/Transaction_Overlay.pm:481
+#. ($self->BriefDescription , $self->CreatorObj->Name)
+#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
+msgid "%1 by %2"
+msgstr "%1 av %2"
+
+#: lib/RT/Transaction_Overlay.pm:535 lib/RT/Transaction_Overlay.pm:624 lib/RT/Transaction_Overlay.pm:633 lib/RT/Transaction_Overlay.pm:636
+#. ($self->Field , ( $self->OldValue || $no_value ) ,  $self->NewValue)
+#. ($self->Field , $q1->Name , $q2->Name)
+#. ($self->Field, $t2->AsString, $t1->AsString)
+#. ($self->Field, $self->OldValue, $self->NewValue)
+msgid "%1 changed from %2 to %3"
+msgstr "%1 ble endret fra %2 til %3"
+
+#: lib/RT/Interface/Web.pm:891
+msgid "%1 could not be set to %2."
+msgstr "%1 kunne ikke settes til %2."
+
+#: NOT FOUND IN SOURCE
+msgid "%1 couldn't init a transaction (%2)\\n"
+msgstr "%1 kunne ikke starte en transaksjon (%2)\\n"
+
+#: lib/RT/Ticket_Overlay.pm:2817
+#. ($self)
+msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
+msgstr "%1 kunne ikke sette status til løst. RT-basen kan være inkonsistent."
+
+#: html/Elements/MyTickets:25
+#. ($rows)
+msgid "%1 highest priority tickets I own..."
+msgstr "Mine %1 høyst prioriterte saker..."
+
+#: html/Elements/MyRequests:25
+#. ($rows)
+msgid "%1 highest priority tickets I requested..."
+msgstr "Mine %1 høyst prioriterte forespørsler..."
+
+#: bin/rt-crontool:161
+#. ($0)
+msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
+msgstr "%1 er et verktøy for å behandle saker fra eksterne verktøy, slik som cron."
+
+#: lib/RT/Queue_Overlay.pm:743
+#. ($principal->Object->Name, $args{'Type'})
+msgid "%1 is no longer a %2 for this queue."
+msgstr "%1 er ikke lenger en %2 for denne køen."
+
+#: lib/RT/Ticket_Overlay.pm:1570
+#. ($principal->Object->Name, $args{'Type'})
+msgid "%1 is no longer a %2 for this ticket."
+msgstr "%1 er ikke lenger en %2 for denne saken."
+
+#: lib/RT/Ticket_Overlay.pm:3594
+#. ($args{'Value'}, $cf->Name)
+msgid "%1 is no longer a value for custom field %2"
+msgstr "%1 er ikke lenger en verdi for fleksifeltet %2"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 isn't a valid Queue id."
+msgstr "%1 er ikke et gyldig saksnummer."
+
+#: html/Ticket/Elements/ShowBasics:36
+#. ($TimeWorked)
+msgid "%1 min"
+msgstr "%1 min"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 not shown"
+msgstr "%1 vises ikke"
+
+#: html/User/Elements/DelegateRights:76
+#. (loc($ObjectType =~ /^RT::(.*)$/))
+msgid "%1 rights"
+msgstr "%1 rettigheter"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 succeeded\\n"
+msgstr "%1 var velykket\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 type unknown for $MessageId"
+msgstr "%1 er ukjent type for $saksnummer"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 type unknown for %2"
+msgstr "%1 er ukjent type for %2"
+
+#: NOT FOUND IN SOURCE
+msgid "%1 was created without a CurrentUser\\n"
+msgstr "%1 ble opprettet uten en aktiv bruker\\n"
+
+#: lib/RT/Action/ResolveMembers.pm:42
+#. (ref $self)
+msgid "%1 will resolve all members of a resolved group ticket."
+msgstr "%1 vil løse alle medlemmer av en løst gruppesak."
+
+#: NOT FOUND IN SOURCE
+msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
+msgstr "%1 vil stoppe en [lokal] BASE hvis den er avhengig av/medlem av en tilkoblet sak."
+
+#: lib/RT/Transaction_Overlay.pm:433
+#. ($self)
+msgid "%1: no attachment specified"
+msgstr "%1: ingen vedlegg oppgitt"
+
+#: html/Ticket/Elements/ShowTransaction:102
+#. ($size)
+msgid "%1b"
+msgstr "%1b"
+
+#: html/Ticket/Elements/ShowTransaction:99
+#. (int($size/102.4)/10)
+msgid "%1k"
+msgstr "%1k"
+
+#: lib/RT/Ticket_Overlay.pm:1140
+#. ($args{'Status'})
+msgid "'%1' is an invalid value for status"
+msgstr "'%1' er en ugyldig statusverdi"
+
+#: NOT FOUND IN SOURCE
+msgid "'%1' not a recognized action. "
+msgstr "'%1' er ikke en kjent handling"
+
+#: NOT FOUND IN SOURCE
+msgid "(Check box to delete group member)"
+msgstr "(Merk for å slette gruppemedlem)"
+
+#: NOT FOUND IN SOURCE
+msgid "(Check box to delete scrip)"
+msgstr "(Merk for å slette Scrip)"
+
+#: html/Admin/Elements/EditCustomFieldValues:25 html/Admin/Elements/EditQueueWatchers:29 html/Admin/Elements/EditScrips:35 html/Admin/Elements/EditTemplates:36 html/Admin/Groups/Members.html:52 html/Ticket/Elements/EditLinks:33 html/Ticket/Elements/EditPeople:46 html/User/Groups/Members.html:55
+msgid "(Check box to delete)"
+msgstr "(Merk for å slette)"
+
+#: NOT FOUND IN SOURCE
+msgid "(Check boxes to delete)"
+msgstr "(Merk boksene for å slette)"
+
+#: html/Ticket/Create.html:178
+msgid "(Enter ticket ids or URLs, seperated with spaces)"
+msgstr "(Skriv inn referansenummer eller URler, separert med mellomrom)"
+
+#: html/Admin/Queues/Modify.html:54 html/Admin/Queues/Modify.html:60
+#. ($RT::CorrespondAddress)
+#. ($RT::CommentAddress)
+msgid "(If left blank, will default to %1"
+msgstr "(Standard er %1);H
+
+#: NOT FOUND IN SOURCE
+msgid "(No Value)"
+msgstr "(Ingen Verdi)"
+
+#: html/Admin/Elements/EditCustomFields:33 html/Admin/Elements/ListGlobalCustomFields:32
+msgid "(No custom fields)"
+msgstr "(Ingen fleksifelt)"
+
+#: html/Admin/Groups/Members.html:50 html/User/Groups/Members.html:53
+msgid "(No members)"
+msgstr "(Ingen medlemmer)"
+
+#: html/Admin/Elements/EditScrips:32 html/Admin/Elements/ListGlobalScrips:32
+msgid "(No scrips)"
+msgstr "(Ingen scrips)"
+
+#: html/Admin/Elements/EditTemplates:31
+msgid "(No templates)"
+msgstr "(Ingen maler)"
+
+#: html/Ticket/Update.html:85
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
+msgstr "(Sender en kopi av denne oppdateringen til en kommaseparert liste med epostaddresser. Endrer <b>ikke</b> hvem som vil motta fremtidige oppdatreinger.)"
+
+#: NOT FOUND IN SOURCE
+msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
+msgstr "(Sender en kopi av denne oppdateringen til en kommaseparert liste med epostaddresser. Endrer <b>ikke</b> hvem som vil motta fremtidige oppdateringer.)"
+
+#: html/Ticket/Create.html:79
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
+msgstr "(Sender en kopi av denne oppdateringen til en kommaseparert liste av administrative epostaddresser. Disse vil <b>vil</b> motta fremtidige oppdateringer.)"
+
+#: html/Ticket/Update.html:81
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
+msgstr "(Sender en kopi av denne oppdateringen til en komma-separert liste av epostaddresser. Endrer <b>ikke</b> hvem som vil motta fremtidige oppdateringer.)"
+
+#: NOT FOUND IN SOURCE
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
+msgstr "(Sender en kopi av denne oppdateringen til en kommaseparert liste med epost-addresser. Endrer <b->ikke</b> hvem som vi motta fremtige utfordrer dere nå."
+
+#: html/Ticket/Create.html:69
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
+msgstr "(Sender en kopi av dette oppdateringen til en kommaseparert liste med epostaddresser. Disse <b>vill</b> motta fremtidige oppdateringer.)"
+
+#: html/Admin/Groups/index.html:33 html/User/Groups/index.html:33
+msgid "(empty)"
+msgstr "(tom)"
+
+#: html/Admin/Users/index.html:39
+msgid "(no name listed)"
+msgstr "(navn ikke oppgitt)"
+
+#: html/Elements/MyRequests:43 html/Elements/MyTickets:45
+msgid "(no subject)"
+msgstr "(ingen overskrift)"
+
+#: html/Admin/Elements/SelectRights:48 html/Elements/SelectCustomFieldValue:30 html/Ticket/Elements/EditCustomField:59 html/Ticket/Elements/ShowCustomFields:36 lib/RT/Transaction_Overlay.pm:534
+msgid "(no value)"
+msgstr "(ingen verdi)"
+
+#: html/Ticket/Elements/EditLinks:116
+msgid "(only one ticket)"
+msgstr "(bare en sak)"
+
+#: html/Elements/MyRequests:52 html/Elements/MyTickets:55
+msgid "(pending approval)"
+msgstr "(Venter på godkjenning)"
+
+#: html/Elements/MyRequests:54 html/Elements/MyTickets:57
+msgid "(pending other tickets)"
+msgstr "(venter på andre saker)"
+
+#: NOT FOUND IN SOURCE
+msgid "(requestor's group)"
+msgstr "(kundens gruppe)"
+
+#: html/Admin/Users/Modify.html:50
+msgid "(required)"
+msgstr "(nødvendig)"
+
+#: html/Ticket/Elements/ShowTransaction:105
+msgid "(untitled)"
+msgstr "(ingen tittel)"
+
+#: NOT FOUND IN SOURCE
+msgid "25 highest priority tickets I own..."
+msgstr "Mine 25 høyst prioriterte saker..."
+
+#: NOT FOUND IN SOURCE
+msgid "25 highest priority tickets I requested..."
+msgstr "Mine 25 høyst priorterte forespørsler..."
+
+#: html/Ticket/Elements/ShowBasics:32
+msgid "<% $Ticket->Status%>"
+msgstr "<% $Ticket-:Status%>"
+
+#: html/Elements/SelectTicketTypes:27
+msgid "<% $_ %>"
+msgstr "<% $_ %>"
+
+#: docs/design_docs/string-extraction-guide.txt:54 html/Elements/CreateTicket:26
+#. ($m->scomp('/Elements/SelectNewTicketQueue'))
+msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"Ny sak i\">&nbsp;%1"
+
+#: NOT FOUND IN SOURCE
+msgid "??????"
+msgstr "??????"
+
+#: etc/initialdata:203
+msgid "A blank template"
+msgstr "En tom mal"
+
+#: NOT FOUND IN SOURCE
+msgid "ACE Deleted"
+msgstr "ACE slettet"
+
+#: NOT FOUND IN SOURCE
+msgid "ACE Loaded"
+msgstr "ACE lastet"
+
+#: NOT FOUND IN SOURCE
+msgid "ACE could not be deleted"
+msgstr "ACE kunne ikke slettes"
+
+#: NOT FOUND IN SOURCE
+msgid "ACE could not be found"
+msgstr "fant ikke ACE"
+
+#: lib/RT/ACE_Overlay.pm:157 lib/RT/Principal_Overlay.pm:181
+msgid "ACE not found"
+msgstr "ACE ikke funnet"
+
+#: lib/RT/ACE_Overlay.pm:831
+msgid "ACEs can only be created and deleted."
+msgstr "ACEr kan bare opprettes og slettes."
+
+#: bin/rt-commit-handler:755
+msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgstr "Avbryter for Â ungÂ uønsket saksendring"
+
+#: html/User/Elements/Tabs:32
+msgid "About me"
+msgstr "Om meg"
+
+#: html/Admin/Users/Modify.html:80
+msgid "Access control"
+msgstr "Aksesskontroll"
+
+#: html/Admin/Elements/EditScrip:57
+msgid "Action"
+msgstr "Handling"
+
+#: lib/RT/Scrip_Overlay.pm:147
+#. ($args{'ScripAction'})
+msgid "Action %1 not found"
+msgstr "Handling %1 finnes ikke"
+
+#: bin/rt-crontool:123
+msgid "Action committed."
+msgstr "Handling skrevet."
+
+#: bin/rt-crontool:119
+msgid "Action prepared..."
+msgstr "Handling forberedt"
+
+#: html/Search/Bulk.html:92
+msgid "Add AdminCc"
+msgstr "Legg til AdminCc"
+
+#: html/Search/Bulk.html:90
+msgid "Add Cc"
+msgstr "Legg til Cc"
+
+#: html/Ticket/Create.html:114 html/Ticket/Update.html:100
+msgid "Add More Files"
+msgstr "Legg til flere filer"
+
+#: NOT FOUND IN SOURCE
+msgid "Add Next State"
+msgstr "Legg til neste status"
+
+#: html/Search/Bulk.html:88
+msgid "Add Requestor"
+msgstr "Legg til kunde"
+
+#: html/Admin/Elements/AddCustomFieldValue:26
+msgid "Add Value"
+msgstr "Legg til verdi"
+
+#: NOT FOUND IN SOURCE
+msgid "Add a Scrip to this queue"
+msgstr "Legg til Scrip i denne køen"
+
+#: NOT FOUND IN SOURCE
+msgid "Add a Scrip which will apply to all queues"
+msgstr "Legg til et Scrip som gjelder for alle køer"
+
+#: NOT FOUND IN SOURCE
+msgid "Add a keyword selection to this queue"
+msgstr "Legg til et nøkkelordvalg pÂ denne køen"
+
+#: NOT FOUND IN SOURCE
+msgid "Add a new a global scrip"
+msgstr "Legg til et globalt Scrip"
+
+#: NOT FOUND IN SOURCE
+msgid "Add a scrip to this queue"
+msgstr "Legg til et Scrip til denne køen"
+
+#: html/Admin/Global/Scrip.html:55
+msgid "Add a scrip which will apply to all queues"
+msgstr "Legg til et Scrip som vil gjelde for alle køer"
+
+#: html/Search/Bulk.html:118
+msgid "Add comments or replies to selected tickets"
+msgstr "Legg til kommentarer eller svar til denne saken"
+
+#: html/Admin/Groups/Members.html:42 html/User/Groups/Members.html:39
+msgid "Add members"
+msgstr "Legg til medlemmer"
+
+#: html/Admin/Queues/People.html:66 html/Ticket/Elements/AddWatchers:28
+msgid "Add new watchers"
+msgstr "Legg til overvåkere"
+
+#: NOT FOUND IN SOURCE
+msgid "AddNextState"
+msgstr "AddNextState"
+
+#: lib/RT/Queue_Overlay.pm:643
+#. ($args{'Type'})
+msgid "Added principal as a %1 for this queue"
+msgstr "La til primær som en %1 for denne køen"
+
+#: lib/RT/Ticket_Overlay.pm:1454
+#. ($self->loc($args{'Type'}))
+msgid "Added principal as a %1 for this ticket"
+msgstr "La til primær som en %1 for denne saken"
+
+#: html/Admin/Elements/ModifyUser:76 html/Admin/Users/Modify.html:122 html/User/Prefs.html:88
+msgid "Address1"
+msgstr "Adresse1"
+
+#: html/Admin/Elements/ModifyUser:78 html/Admin/Users/Modify.html:127 html/User/Prefs.html:90
+msgid "Address2"
+msgstr "Adresse2"
+
+#: html/Ticket/Create.html:74
+msgid "Admin Cc"
+msgstr "Admin Cc"
+
+#: etc/initialdata:280
+msgid "Admin Comment"
+msgstr "Admin Kommentar"
+
+#: etc/initialdata:259
+msgid "Admin Correspondence"
+msgstr "Admin-korrespondanse"
+
+#: html/Admin/Queues/index.html:25 html/Admin/Queues/index.html:28
+msgid "Admin queues"
+msgstr "Adminkøer"
+
+#: NOT FOUND IN SOURCE
+msgid "Admin users"
+msgstr "Adminbrukere"
+
+#: html/Admin/Global/index.html:26 html/Admin/Global/index.html:28
+msgid "Admin/Global configuration"
+msgstr "Admin/Global konfigurasjon"
+
+#: NOT FOUND IN SOURCE
+msgid "Admin/Groups"
+msgstr "Admin/Grupper"
+
+#: html/Admin/Queues/Modify.html:25 html/Admin/Queues/Modify.html:29
+msgid "Admin/Queue/Basics"
+msgstr "Admin/Køer/Grunnleggende"
+
+#: NOT FOUND IN SOURCE
+msgid "AdminAllPersonalGroups"
+msgstr "AdminAllePersonalGrupper"
+
+#: etc/initialdata:56 html/Ticket/Elements/ShowPeople:39 html/Ticket/Update.html:50 lib/RT/ACE_Overlay.pm:89
+msgid "AdminCc"
+msgstr "AdminCc"
+
+#: NOT FOUND IN SOURCE
+msgid "AdminComment"
+msgstr "AdminKommentar"
+
+#: NOT FOUND IN SOURCE
+msgid "AdminCorrespondence"
+msgstr "AdminKorrespondanse"
+
+#: lib/RT/Queue_Overlay.pm:72
+msgid "AdminCustomFields"
+msgstr "AdminFleksifelt"
+
+#: lib/RT/Group_Overlay.pm:146
+msgid "AdminGroup"
+msgstr "AdminGruppe"
+
+#: lib/RT/Group_Overlay.pm:148
+msgid "AdminGroupMembership"
+msgstr "AdminGruppeMedlemskap"
+
+#: lib/RT/System.pm:59
+msgid "AdminOwnPersonalGroups"
+msgstr "AdminEgnePersonligeGrupper"
+
+#: lib/RT/Queue_Overlay.pm:68
+msgid "AdminQueue"
+msgstr "AdminKø"
+
+#: lib/RT/System.pm:60
+msgid "AdminUsers"
+msgstr "AdminBrukere"
+
+#: html/Admin/Queues/People.html:48 html/Ticket/Elements/EditPeople:54
+msgid "Administrative Cc"
+msgstr "Administrativ Cc"
+
+#: NOT FOUND IN SOURCE
+msgid "Admins"
+msgstr "Admin"
+
+#: NOT FOUND IN SOURCE
+msgid "Advanced Search"
+msgstr "Avansert Søk"
+
+#: html/Elements/SelectDateRelation:36
+msgid "After"
+msgstr "Etter"
+
+#: NOT FOUND IN SOURCE
+msgid "Age"
+msgstr "Alder"
+
+#: NOT FOUND IN SOURCE
+msgid "Alias"
+msgstr "Alias"
+
+#: NOT FOUND IN SOURCE
+msgid "Alias for"
+msgstr "Alias for"
+
+#: html/Admin/Elements/EditCustomFields:96
+msgid "All Custom Fields"
+msgstr "Alle Fleksifelt"
+
+#: html/Admin/Queues/index.html:53
+msgid "All Queues"
+msgstr "Alle køer"
+
+#: NOT FOUND IN SOURCE
+msgid "Always sends a message to the requestors independent of message sender"
+msgstr "Send alltid en melding til kunden uavhengig av meldingssender"
+
+#: html/Elements/Tabs:56
+msgid "Approval"
+msgstr "Godkjennelse"
+
+#: html/Approvals/Display.html:46 html/Approvals/Elements/ShowDependency:42 html/Approvals/index.html:65
+#. ($Ticket->Id, $Ticket->Subject)
+#. ($ticket->id, $msg)
+#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+msgid "Approval #%1: %2"
+msgstr "Godkjennelse #%1: %2"
+
+#: html/Approvals/index.html:54
+#. ($ticket->Id)
+msgid "Approval #%1: Notes not recorded due to a system error"
+msgstr "Godkjenning # %1: Notater kunne ikke lagres pga. systemfeil"
+
+#: html/Approvals/index.html:52
+#. ($ticket->Id)
+msgid "Approval #%1: Notes recorded"
+msgstr "Godkjenning #%1: Notater lagret"
+
+#: NOT FOUND IN SOURCE
+msgid "Approval Details"
+msgstr "Godkjenning - Detaljer"
+
+#: NOT FOUND IN SOURCE
+msgid "Approval diagram"
+msgstr "Godkjenningsdiagram"
+
+#: html/Approvals/Elements/Approve:44
+msgid "Approve"
+msgstr "Godkjenn"
+
+#: etc/initialdata:437 etc/upgrade/2.1.71:148
+msgid "Approver's notes: %1"
+msgstr "Godkjenners notater: %1"
+
+#: lib/RT/Date.pm:414
+msgid "Apr."
+msgstr "Apr."
+
+#: NOT FOUND IN SOURCE
+msgid "April"
+msgstr "April"
+
+#: html/Elements/SelectSortOrder:35
+msgid "Ascending"
+msgstr "Stigende"
+
+#: html/Search/Bulk.html:127 html/SelfService/Update.html:33 html/Ticket/ModifyAll.html:83 html/Ticket/Update.html:100
+msgid "Attach"
+msgstr "Legg Ved"
+
+#: html/SelfService/Create.html:65 html/Ticket/Create.html:110
+msgid "Attach file"
+msgstr "Legg ved fil"
+
+#: html/Ticket/Create.html:98 html/Ticket/Update.html:89
+msgid "Attached file"
+msgstr "Vedlagt fil"
+
+#: NOT FOUND IN SOURCE
+msgid "Attachment '%1' could not be loaded"
+msgstr "Vedlegg '%1' kunne ikke lastes"
+
+#: lib/RT/Transaction_Overlay.pm:441
+msgid "Attachment created"
+msgstr "Vedlegg opprettet"
+
+#: lib/RT/Tickets_Overlay.pm:1189
+msgid "Attachment filename"
+msgstr "Vedleggsnavn"
+
+#: html/Ticket/Elements/ShowAttachments:26
+msgid "Attachments"
+msgstr "Vedlegg"
+
+#: lib/RT/Date.pm:418
+msgid "Aug."
+msgstr "Aug."
+
+#: NOT FOUND IN SOURCE
+msgid "August"
+msgstr "August"
+
+#: html/Admin/Elements/ModifyUser:66
+msgid "AuthSystem"
+msgstr "AutSystem"
+
+#: etc/initialdata:206
+msgid "Autoreply"
+msgstr "Autosvar"
+
+#: etc/initialdata:72
+msgid "Autoreply To Requestors"
+msgstr "Autosvar Til Kunde"
+
+#: NOT FOUND IN SOURCE
+msgid "AutoreplyToRequestors"
+msgstr "AutosvarTilKunde"
+
+#: NOT FOUND IN SOURCE
+msgid "Bad PGP Signature: %1\\n"
+msgstr "Ugyldig PGP-signatur: %1\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Bad attachment id. Couldn't find attachment '%1'\\n"
+msgstr "Ugyldig vedleggsid. Kunne ikke finne vedlegg '%1'\\n"
+
+#: bin/rt-commit-handler:827
+#. ($val)
+msgid "Bad data in %1"
+msgstr "Ugyldig data i %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Bad transaction number for attachment. %1 should be %2\\n"
+msgstr "Ugyldig transaksjonsnummer for vedlegg. %1 skulle vært %2\\n"
+
+#: html/Admin/Elements/GroupTabs:39 html/Admin/Elements/QueueTabs:39 html/Admin/Elements/UserTabs:38 html/Ticket/Elements/Tabs:90 html/User/Elements/GroupTabs:38
+msgid "Basics"
+msgstr "Detaljer"
+
+#: html/Ticket/Update.html:83
+msgid "Bcc"
+msgstr "Bcc"
+
+#: html/Admin/Elements/EditScrip:88 html/Admin/Global/GroupRights.html:85 html/Admin/Global/Template.html:46 html/Admin/Global/UserRights.html:54 html/Admin/Groups/GroupRights.html:73 html/Admin/Groups/Members.html:81 html/Admin/Groups/Modify.html:56 html/Admin/Groups/UserRights.html:55 html/Admin/Queues/GroupRights.html:85 html/Admin/Queues/Template.html:45 html/Admin/Queues/UserRights.html:54 html/User/Groups/Modify.html:56
+msgid "Be sure to save your changes"
+msgstr "Sørg for Â lagre endringene dine"
+
+#: html/Elements/SelectDateRelation:34 lib/RT/CurrentUser.pm:320
+msgid "Before"
+msgstr "Før"
+
+#: NOT FOUND IN SOURCE
+msgid "Begin Approval"
+msgstr "Begynn Godkjenning"
+
+#: etc/initialdata:202
+msgid "Blank"
+msgstr "Blank"
+
+#: html/Search/Listing.html:79
+msgid "Bookmarkable URL for this search"
+msgstr "URL som kan brukes som bokmerke for dette søket"
+
+#: html/Ticket/Elements/ShowHistory:39 html/Ticket/Elements/ShowHistory:45
+msgid "Brief headers"
+msgstr "Begrens headere"
+
+#: html/Search/Bulk.html:25 html/Search/Bulk.html:26
+msgid "Bulk ticket update"
+msgstr "Masseoppdatering av saker"
+
+#: lib/RT/User_Overlay.pm:1352
+msgid "Can not modify system users"
+msgstr "Kan ikke endre systembrukere"
+
+#: lib/RT/Queue_Overlay.pm:67
+msgid "Can this principal see this queue"
+msgstr "Kan denne primæren se denne køen"
+
+#: lib/RT/CustomField_Overlay.pm:206
+msgid "Can't add a custom field value without a name"
+msgstr "Kan ikke legge til en verdi for et fleksifelt uten navn"
+
+#: lib/RT/Link_Overlay.pm:132
+msgid "Can't link a ticket to itself"
+msgstr "Kan ikke koble en sak til seg selv"
+
+#: lib/RT/Ticket_Overlay.pm:2794
+msgid "Can't merge into a merged ticket. You should never get this error"
+msgstr "Kan ikke flette inn i en flettet sak. Denne meldingen bør ikke forekomme"
+
+#: lib/RT/Ticket_Overlay.pm:2612 lib/RT/Ticket_Overlay.pm:2681
+msgid "Can't specifiy both base and target"
+msgstr "Kan ikke spesifisere både base og mål."
+
+#: html/autohandler:99
+#. ($msg)
+msgid "Cannot create user: %1"
+msgstr "Kunne ikke oprette bruker: %1"
+
+#: etc/initialdata:50 html/Admin/Queues/People.html:44 html/SelfService/Create.html:49 html/Ticket/Create.html:64 html/Ticket/Elements/EditPeople:51 html/Ticket/Elements/ShowPeople:35 html/Ticket/Update.html:45 html/Ticket/Update.html:78 lib/RT/ACE_Overlay.pm:88
+msgid "Cc"
+msgstr "Cc"
+
+#: html/SelfService/Prefs.html:31
+msgid "Change password"
+msgstr "Endre passord"
+
+#: html/Ticket/Create.html:101 html/Ticket/Update.html:92
+msgid "Check box to delete"
+msgstr "Merk for å slette"
+
+#: html/Admin/Elements/SelectRights:31
+msgid "Check box to revoke right"
+msgstr "Merk for å trekke tilbake rettighet"
+
+#: html/Ticket/Create.html:183 html/Ticket/Elements/EditLinks:131 html/Ticket/Elements/EditLinks:69 html/Ticket/Elements/ShowLinks:57
+msgid "Children"
+msgstr "Barn"
+
+#: html/Admin/Elements/ModifyUser:80 html/Admin/Users/Modify.html:132 html/User/Prefs.html:92
+msgid "City"
+msgstr "By"
+
+#: html/Ticket/Elements/ShowDates:47
+msgid "Closed"
+msgstr "Lukket"
+
+#: html/SelfService/Closed.html:25
+msgid "Closed Tickets"
+msgstr "Lukkede Saker"
+
+#: NOT FOUND IN SOURCE
+msgid "Closed requests"
+msgstr "Lukkede forespørsler"
+
+#: html/SelfService/Elements/Tabs:45
+msgid "Closed tickets"
+msgstr "Lukkede saker"
+
+#: NOT FOUND IN SOURCE
+msgid "Code"
+msgstr "Kode"
+
+#: NOT FOUND IN SOURCE
+msgid "Command not understood!\\n"
+msgstr "Kunne ikke tolke kommando!\\n"
+
+#: html/Ticket/Elements/ShowTransaction:179 html/Ticket/Elements/Tabs:153
+msgid "Comment"
+msgstr "Kommenter"
+
+#: html/Admin/Elements/ModifyQueue:45 html/Admin/Queues/Modify.html:58
+msgid "Comment Address"
+msgstr "Kommentaraddresse"
+
+#: NOT FOUND IN SOURCE
+msgid "Comment not recorded"
+msgstr "Kommentaren ble ikke lagret"
+
+#: lib/RT/Queue_Overlay.pm:86
+msgid "Comment on tickets"
+msgstr "Kommenter saker"
+
+#: lib/RT/Queue_Overlay.pm:86
+msgid "CommentOnTicket"
+msgstr "KommenterSak"
+
+#: html/Admin/Elements/ModifyUser:35
+msgid "Comments"
+msgstr "Kommentarer"
+
+#: html/Ticket/ModifyAll.html:70 html/Ticket/Update.html:70
+msgid "Comments (Not sent to requestors)"
+msgstr "Kommentarer (Ikke send til kunder)"
+
+#: html/Search/Bulk.html:122
+msgid "Comments (not sent to requestors)"
+msgstr "Kommentarer (ikke sendt til kunder)"
+
+#: html/Elements/ViewUser:27
+#. ($name)
+msgid "Comments about %1"
+msgstr "Kommentarer til %1"
+
+#: html/Admin/Users/Modify.html:185 html/Ticket/Elements/ShowRequestor:44
+msgid "Comments about this user"
+msgstr "Kommentarer om denne brukeren"
+
+#: lib/RT/Transaction_Overlay.pm:543
+msgid "Comments added"
+msgstr "La til kommentarer "
+
+#: lib/RT/Action/Generic.pm:140
+msgid "Commit Stubbed"
+msgstr "Lagring forkortet"
+
+#: NOT FOUND IN SOURCE
+msgid "Compile Restrictions"
+msgstr "Kompilatorrestriksjoner"
+
+#: html/Admin/Elements/EditScrip:41
+msgid "Condition"
+msgstr "Forutsetning"
+
+#: bin/rt-crontool:109
+msgid "Condition matches..."
+msgstr "Forutsetning gjelder..."
+
+#: lib/RT/Scrip_Overlay.pm:160
+msgid "Condition not found"
+msgstr "Forutsetning ikke funnet"
+
+#: html/Elements/Tabs:50
+msgid "Configuration"
+msgstr "Konfigurasjon"
+
+#: html/SelfService/Prefs.html:33
+msgid "Confirm"
+msgstr "Bekreft"
+
+#: html/Admin/Elements/ModifyUser:60
+msgid "ContactInfoSystem"
+msgstr "KontaktInfoSystem"
+
+#: NOT FOUND IN SOURCE
+msgid "Contacted date '%1' could not be parsed"
+msgstr "Kontatdato '%1' kunne ikke tolkes"
+
+#: html/Admin/Elements/ModifyTemplate:44 html/Ticket/ModifyAll.html:87
+msgid "Content"
+msgstr "Innhold"
+
+#: NOT FOUND IN SOURCE
+msgid "Coould not create group"
+msgstr "Kunne ikke opprette gruppen"
+
+#: etc/initialdata:271
+msgid "Correspondence"
+msgstr "Korrespondanse"
+
+#: html/Admin/Elements/ModifyQueue:39 html/Admin/Queues/Modify.html:51
+msgid "Correspondence Address"
+msgstr "Korrespondanseaddresse"
+
+#: lib/RT/Transaction_Overlay.pm:539
+msgid "Correspondence added"
+msgstr "Korrespondanse lagt til"
+
+#: NOT FOUND IN SOURCE
+msgid "Correspondence not recorded"
+msgstr "Korrespondansen ble ikke lagret"
+
+#: lib/RT/Ticket_Overlay.pm:3525
+msgid "Could not add new custom field value for ticket. "
+msgstr "Kunne ikke legge til nye fleksifeltverdier for saken. "
+
+#: NOT FOUND IN SOURCE
+msgid "Could not add new custom field value for ticket. %1 "
+msgstr "Kunne ikke legge til nye fleksifeltverdier for saken. %1 "
+
+#: lib/RT/Ticket_Overlay.pm:3031 lib/RT/Ticket_Overlay.pm:3039 lib/RT/Ticket_Overlay.pm:3055
+msgid "Could not change owner. "
+msgstr "Kunne ikke endre eier. "
+
+#: html/Admin/Elements/EditCustomField:85 html/Admin/Elements/EditCustomFields:166
+#. ($msg)
+msgid "Could not create CustomField"
+msgstr "Kunne ikke opprette fleksifelt"
+
+#: html/User/Groups/Modify.html:77 lib/RT/Group_Overlay.pm:474 lib/RT/Group_Overlay.pm:481
+msgid "Could not create group"
+msgstr "Kunne ikke opprette gruppe"
+
+#: html/Admin/Global/Template.html:75 html/Admin/Queues/Template.html:72
+#. ($msg)
+msgid "Could not create template: %1"
+msgstr "Kunne ikke opprette mal: %1"
+
+#: lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:334
+msgid "Could not create ticket. Queue not set"
+msgstr "Kunne ikke opprette sak. Kø ikke satt"
+
+#: lib/RT/User_Overlay.pm:208 lib/RT/User_Overlay.pm:220 lib/RT/User_Overlay.pm:238 lib/RT/User_Overlay.pm:422
+msgid "Could not create user"
+msgstr "Kunne ikke opprette bruker"
+
+#: NOT FOUND IN SOURCE
+msgid "Could not create watcher for requestor"
+msgstr "Kunne ikke opprette overvåker for kunde"
+
+#: NOT FOUND IN SOURCE
+msgid "Could not find a ticket with id %1"
+msgstr "Kunne ikke finne en sak med id %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Could not find group %1."
+msgstr "Kunne ikke finne gruppen %1."
+
+#: lib/RT/Queue_Overlay.pm:621 lib/RT/Ticket_Overlay.pm:1422
+msgid "Could not find or create that user"
+msgstr "Kunne ikke finne eller lage den brukeren"
+
+#: lib/RT/Queue_Overlay.pm:682 lib/RT/Ticket_Overlay.pm:1501
+msgid "Could not find that principal"
+msgstr "Kunne ikke finne den primæren"
+
+#: NOT FOUND IN SOURCE
+msgid "Could not find user %1."
+msgstr "Kunne ikke finne brukeren %1."
+
+#: html/Admin/Groups/Members.html:88 html/User/Groups/Members.html:90 html/User/Groups/Modify.html:82
+msgid "Could not load group"
+msgstr "Kunne ikke hente gruppen"
+
+#: lib/RT/Queue_Overlay.pm:641
+#. ($args{'Type'})
+msgid "Could not make that principal a %1 for this queue"
+msgstr "Kunne ikke sette den primæren som %1 for denne køen"
+
+#: lib/RT/Ticket_Overlay.pm:1443
+#. ($self->loc($args{'Type'}))
+msgid "Could not make that principal a %1 for this ticket"
+msgstr "Kunne ikke sette den primæren som %1 for denne saken"
+
+#: lib/RT/Queue_Overlay.pm:740
+#. ($args{'Type'})
+msgid "Could not remove that principal as a %1 for this queue"
+msgstr "Kunne ikke fjerne den primæren som %1 for denne køen"
+
+#: lib/RT/Ticket_Overlay.pm:1559
+#. ($args{'Type'})
+msgid "Could not remove that principal as a %1 for this ticket"
+msgstr "Knne ikke fjære den primæren som %1 for denne saken"
+
+#: lib/RT/Group_Overlay.pm:985
+msgid "Couldn't add member to group"
+msgstr "Kunne ikke legge til medlemmmer i gruppen"
+
+#: lib/RT/Ticket_Overlay.pm:3535 lib/RT/Ticket_Overlay.pm:3591
+#. ($Msg)
+msgid "Couldn't create a transaction: %1"
+msgstr "Kunne ikke opprette en transaksjon: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't figure out what to do from gpg's reply\\n"
+msgstr "Kunne ikke tolke gpgs svar\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't find group\\n"
+msgstr "Kunne ikke finne gruppen\\n"
+
+#: lib/RT/Interface/Web.pm:900
+msgid "Couldn't find row"
+msgstr "Kunne ikke finne raden"
+
+#: lib/RT/Group_Overlay.pm:959
+msgid "Couldn't find that principal"
+msgstr "Kunne ikke finne primæren"
+
+#: lib/RT/CustomField_Overlay.pm:240
+msgid "Couldn't find that value"
+msgstr "Kunne ikke finne verdien"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't find that watcher"
+msgstr "Kunne ikke finne den overvåkern"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't find user\\n"
+msgstr "Kunne ikke finne bruker\\n"
+
+#: lib/RT/CurrentUser.pm:112
+#. ($self->Id)
+msgid "Couldn't load %1 from the users database.\\n"
+msgstr "Kunne ikke laste %1 fra brukerdatabasen.\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't load KeywordSelects."
+msgstr "Kunne ikke laste NøkkelordValg."
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't load RT config file '%1' %2"
+msgstr "Kunne ikke laste RTs konfigurasjonsfil '%1' %2"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't load Scrips."
+msgstr "Kunne ikke laste Scripsene."
+
+#: html/Admin/Groups/GroupRights.html:88 html/Admin/Groups/UserRights.html:75
+#. ($id)
+msgid "Couldn't load group %1"
+msgstr "Kunne ikke laste gruppen %1"
+
+#: lib/RT/Link_Overlay.pm:175 lib/RT/Link_Overlay.pm:184 lib/RT/Link_Overlay.pm:211
+msgid "Couldn't load link"
+msgstr "Kunne ikke laste linken"
+
+#: html/Admin/Elements/EditCustomFields:147 html/Admin/Queues/People.html:121
+#. ($id)
+msgid "Couldn't load queue"
+msgstr "Kunne ikke laste køen"
+
+#: html/Admin/Queues/GroupRights.html:100 html/Admin/Queues/UserRights.html:72
+#. ($id)
+msgid "Couldn't load queue %1"
+msgstr "Kunne ikke laste køen %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't load scrip"
+msgstr "Kunne ikke laste scripet"
+
+#: NOT FOUND IN SOURCE
+msgid "Couldn't load template"
+msgstr "Kunne ikke finne mal"
+
+#: html/Admin/Users/Prefs.html:79
+#. ($id)
+msgid "Couldn't load that user (%1)"
+msgstr "Kunne ikke laste den brukeren (%1)"
+
+#: html/SelfService/Display.html:109
+#. ($id)
+msgid "Couldn't load ticket '%1'"
+msgstr "Kunne ikke laste saken '%1'"
+
+#: html/Admin/Elements/ModifyUser:86 html/Admin/Users/Modify.html:149 html/User/Prefs.html:98
+msgid "Country"
+msgstr "Land"
+
+#: html/Admin/Elements/CreateUserCalled:26 html/Ticket/Create.html:135 html/Ticket/Create.html:195
+msgid "Create"
+msgstr "Opprett"
+
+#: etc/initialdata:128
+msgid "Create Tickets"
+msgstr "Opprett Saker"
+
+#: html/Admin/Elements/EditCustomField:75
+msgid "Create a CustomField"
+msgstr "Oprett et fleksifelt"
+
+#: html/Admin/Queues/CustomField.html:48
+#. ($QueueObj->Name())
+msgid "Create a CustomField for queue %1"
+msgstr "Opprett et fleksifelt for køen %1"
+
+#: html/Admin/Global/CustomField.html:48
+msgid "Create a CustomField which applies to all queues"
+msgstr "Opprett et fleksifelt for alle køer"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new Custom Field"
+msgstr "Opprett et nytt fleksifelt"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new global Scrip"
+msgstr "Opprett et globalt Scrip"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new global scrip"
+msgstr "Opprett et nytt globalt scrip"
+
+#: html/Admin/Groups/Modify.html:67 html/Admin/Groups/Modify.html:93
+msgid "Create a new group"
+msgstr "Opprett en ny gruppe"
+
+#: html/User/Groups/Modify.html:67 html/User/Groups/Modify.html:92
+msgid "Create a new personal group"
+msgstr "Opprett en ny personlig gruppe"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new queue"
+msgstr "Opprett en ny kø"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new scrip"
+msgstr "Opprett et nytt scrip"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a new template"
+msgstr "Opprett en ny mal"
+
+#: html/Ticket/Create.html:25 html/Ticket/Create.html:28 html/Ticket/Create.html:36
+msgid "Create a new ticket"
+msgstr "Opprett en ny sak"
+
+#: html/Admin/Users/Modify.html:214 html/Admin/Users/Modify.html:241
+msgid "Create a new user"
+msgstr "Opprett en ny bruker"
+
+#: html/Admin/Queues/Modify.html:103
+msgid "Create a queue"
+msgstr "Opprett en ny kø"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a queue called"
+msgstr "Opprett en kø kalt"
+
+#: NOT FOUND IN SOURCE
+msgid "Create a request"
+msgstr "Opprett en forespørsel"
+
+#: html/Admin/Queues/Scrip.html:59
+#. ($QueueObj->Name)
+msgid "Create a scrip for queue %1"
+msgstr "Opprett et scrip for køen %1"
+
+#: html/Admin/Global/Template.html:69 html/Admin/Queues/Template.html:65
+msgid "Create a template"
+msgstr "Opprett en mal"
+
+#: html/SelfService/Create.html:25
+msgid "Create a ticket"
+msgstr "Opprett en sak"
+
+#: NOT FOUND IN SOURCE
+msgid "Create failed: %1 / %2 / %3 "
+msgstr "Opprettelse feilet: %1 / %2 / %3"
+
+#: NOT FOUND IN SOURCE
+msgid "Create failed: %1/%2/%3"
+msgstr "Opprettelse feilet: %1/%2/%3"
+
+#: etc/initialdata:130
+msgid "Create new tickets based on this scrip's template"
+msgstr "Opprett nye saker basert på dette scripets mal"
+
+#: html/SelfService/Create.html:78
+msgid "Create ticket"
+msgstr "Opprett sak"
+
+#: lib/RT/Queue_Overlay.pm:84
+msgid "Create tickets in this queue"
+msgstr "Opprett saker i denne køen"
+
+#: lib/RT/Queue_Overlay.pm:72
+msgid "Create, delete and modify custom fields"
+msgstr "Opprett, slett og modifiser fleksifelt"
+
+#: lib/RT/Queue_Overlay.pm:68
+msgid "Create, delete and modify queues"
+msgstr "Opprett, slett og endre køer"
+
+#: NOT FOUND IN SOURCE
+msgid "Create, delete and modify the members of any user's personal groups"
+msgstr "Opprett, slett og modifiser medlemmene av en brukers personlige grupper"
+
+#: lib/RT/System.pm:59
+msgid "Create, delete and modify the members of personal groups"
+msgstr "Opprett, slett og modifiser medlemmene av personlige grupper"
+
+#: lib/RT/System.pm:60
+msgid "Create, delete and modify users"
+msgstr "Opprett, slett og modifiser brukere"
+
+#: lib/RT/Queue_Overlay.pm:84
+msgid "CreateTicket"
+msgstr "OpprettSak"
+
+#: html/Elements/SelectDateType:26 html/Ticket/Elements/ShowDates:27 lib/RT/Ticket_Overlay.pm:1167
+msgid "Created"
+msgstr "Opprettet"
+
+#: html/Admin/Elements/EditCustomField:88
+#. ($CustomFieldObj->Name())
+msgid "Created CustomField %1"
+msgstr "Opprettet Fleksifelt %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Created template %1"
+msgstr "Opprettet malen %1"
+
+#: html/Ticket/Elements/EditLinks:28
+msgid "Current Relationships"
+msgstr "Eksisterende Forhold"
+
+#: html/Admin/Elements/EditScrips:30
+msgid "Current Scrips"
+msgstr "Eksisterende Scrips"
+
+#: html/Admin/Groups/Members.html:39 html/User/Groups/Members.html:42
+msgid "Current members"
+msgstr "Eksisterende medlemmer"
+
+#: html/Admin/Elements/SelectRights:29
+msgid "Current rights"
+msgstr "Eksisterende rettigheter"
+
+#: html/Search/Listing.html:71
+msgid "Current search criteria"
+msgstr "Eksisterende søkekriterier"
+
+#: html/Admin/Queues/People.html:41 html/Ticket/Elements/EditPeople:45
+msgid "Current watchers"
+msgstr "Eksisterende overvåkere"
+
+#: html/Admin/Global/CustomField.html:55
+#. ($CustomField)
+msgid "Custom Field #%1"
+msgstr "Fleksifeltet #%1"
+
+#: html/Admin/Elements/QueueTabs:53 html/Admin/Elements/SystemTabs:40 html/Admin/Global/index.html:50 html/Ticket/Elements/ShowSummary:36
+msgid "Custom Fields"
+msgstr "Fleksifelt"
+
+#: html/Admin/Elements/EditScrip:73
+msgid "Custom action cleanup code"
+msgstr "Avsluttningskode"
+
+#: html/Admin/Elements/EditScrip:65
+msgid "Custom action preparation code"
+msgstr "Forberedelseskode"
+
+#: html/Admin/Elements/EditScrip:49
+msgid "Custom condition"
+msgstr "Forutsetning"
+
+#: lib/RT/Tickets_Overlay.pm:1618
+#. ($CF->Name , $args{OPERATOR} , $args{VALUE})
+msgid "Custom field %1 %2 %3"
+msgstr "Fleksifeltet %1 %2 %3"
+
+#: lib/RT/Tickets_Overlay.pm:1613
+#. ($CF->Name)
+msgid "Custom field %1 has a value."
+msgstr "Fleksifeltet %1 har en verdi."
+
+#: lib/RT/Tickets_Overlay.pm:1610
+#. ($CF->Name)
+msgid "Custom field %1 has no value."
+msgstr "Fleksifeltet %1 har ingen verdi."
+
+#: lib/RT/Ticket_Overlay.pm:3427
+#. ($args{'Field'})
+msgid "Custom field %1 not found"
+msgstr "Fleksifeltet %1 kunne ikke finnes"
+
+#: html/Admin/Elements/EditCustomFields:197
+msgid "Custom field deleted"
+msgstr "Fleksifeltet slettet"
+
+#: lib/RT/Ticket_Overlay.pm:3577
+msgid "Custom field not found"
+msgstr "Fleksifeltet kunne ikke finnes"
+
+#: lib/RT/CustomField_Overlay.pm:350
+#. ($args{'Content'}, $self->Name)
+msgid "Custom field value %1 could not be found for custom field %2"
+msgstr "Verdien %1 for fleksifeltet %2 kunne ikke finnes"
+
+#: NOT FOUND IN SOURCE
+msgid "Custom field value changed from %1 to %2"
+msgstr "Fleksifeltets verdi endret fra %1 til %2"
+
+#: lib/RT/CustomField_Overlay.pm:250
+msgid "Custom field value could not be deleted"
+msgstr "Fleksifeltets verdi kunne ikke slettes"
+
+#: lib/RT/CustomField_Overlay.pm:356
+msgid "Custom field value could not be found"
+msgstr "Fleksifeltets verdi kunne ikke finnes"
+
+#: lib/RT/CustomField_Overlay.pm:248 lib/RT/CustomField_Overlay.pm:358
+msgid "Custom field value deleted"
+msgstr "Fleksifeltverdi slettet"
+
+#: lib/RT/Transaction_Overlay.pm:548
+msgid "CustomField"
+msgstr "FleksiFelt"
+
+#: NOT FOUND IN SOURCE
+msgid "Data error"
+msgstr "Datafeil"
+
+#: html/SelfService/Display.html:39 html/Ticket/Create.html:161 html/Ticket/Elements/ShowSummary:55 html/Ticket/Elements/Tabs:93 html/Ticket/ModifyAll.html:44
+msgid "Dates"
+msgstr "Datoer"
+
+#: lib/RT/Date.pm:422
+msgid "Dec."
+msgstr "Des."
+
+#: NOT FOUND IN SOURCE
+msgid "December"
+msgstr "Desember"
+
+#: NOT FOUND IN SOURCE
+msgid "Default Autoresponse Template"
+msgstr "Standard Autosvarmal"
+
+#: etc/initialdata:207
+msgid "Default Autoresponse template"
+msgstr "Standard Autosvarmal"
+
+#: etc/initialdata:281
+msgid "Default admin comment template"
+msgstr "Standard Adminkommentarmal"
+
+#: etc/initialdata:260
+msgid "Default admin correspondence template"
+msgstr "Standard Adminkorrespondensemal"
+
+#: etc/initialdata:272
+msgid "Default correspondence template"
+msgstr "Standard korrespondensemal"
+
+#: etc/initialdata:238
+msgid "Default transaction template"
+msgstr "Standard transaksjonsmal"
+
+#: lib/RT/Transaction_Overlay.pm:643
+#. ($type, $self->Field, $self->OldValue, $self->NewValue)
+msgid "Default: %1/%2 changed from %3 to %4"
+msgstr "Standard: %1/%2 endret seg fra %3 til %4"
+
+#: html/User/Delegation.html:25 html/User/Delegation.html:28
+msgid "Delegate rights"
+msgstr "Deleger rettigheter"
+
+#: lib/RT/System.pm:63
+msgid "Delegate specific rights which have been granted to you."
+msgstr "Deleger spesifikke rettigheter som har blitt gitt til deg."
+
+#: lib/RT/System.pm:63
+msgid "DelegateRights"
+msgstr "DelegerRettigheter"
+
+#: html/User/Elements/Tabs:38
+msgid "Delegation"
+msgstr "Delegering"
+
+#: NOT FOUND IN SOURCE
+msgid "Delete"
+msgstr "Slett"
+
+#: lib/RT/Queue_Overlay.pm:90
+msgid "Delete tickets"
+msgstr "Slett saker"
+
+#: lib/RT/Queue_Overlay.pm:90
+msgid "DeleteTicket"
+msgstr "SlettSak"
+
+#: lib/RT/Transaction_Overlay.pm:187
+msgid "Deleting this object could break referential integrity"
+msgstr "Sletting av dette objektet kan føre til inkonsistens"
+
+#: lib/RT/Queue_Overlay.pm:292
+msgid "Deleting this object would break referential integrity"
+msgstr "Sletting av dette objektet vil føre til inkonsistens"
+
+#: lib/RT/User_Overlay.pm:438
+msgid "Deleting this object would violate referential integrity"
+msgstr "Sletting av dette objektet ville føre til inkonsistens"
+
+#: NOT FOUND IN SOURCE
+msgid "Deleting this object would violate referential integrity."
+msgstr "Sletting av dette objektet ville føre til inkonsisistens."
+
+#: NOT FOUND IN SOURCE
+msgid "Deleting this object would violate referential integrity. That's bad."
+msgstr "Sletting av dette objektet ville føre til inkonsistens. Det er uheldig."
+
+#: html/Approvals/Elements/Approve:45
+msgid "Deny"
+msgstr "Nekt"
+
+#: html/Ticket/Create.html:181 html/Ticket/Elements/EditLinks:123 html/Ticket/Elements/EditLinks:47 html/Ticket/Elements/ShowDependencies:32 html/Ticket/Elements/ShowLinks:37
+msgid "Depended on by"
+msgstr "Avhengighet fra"
+
+#: NOT FOUND IN SOURCE
+msgid "Dependencies: \\n"
+msgstr "Avhengigheter: \\n"
+
+#: html/Elements/SelectLinkType:27 html/Ticket/Create.html:180 html/Ticket/Elements/EditLinks:119 html/Ticket/Elements/EditLinks:36 html/Ticket/Elements/ShowDependencies:25 html/Ticket/Elements/ShowLinks:27
+msgid "Depends on"
+msgstr "Avhengig av"
+
+#: NOT FOUND IN SOURCE
+msgid "DependsOn"
+msgstr "AvhengigAv"
+
+#: html/Elements/SelectSortOrder:35
+msgid "Descending"
+msgstr "Synkende"
+
+#: html/SelfService/Create.html:73 html/Ticket/Create.html:119
+msgid "Describe the issue below"
+msgstr "Beskriv problemet under"
+
+#: html/Admin/Elements/AddCustomFieldValue:37 html/Admin/Elements/EditCustomField:39 html/Admin/Elements/EditScrip:34 html/Admin/Elements/ModifyQueue:36 html/Admin/Elements/ModifyTemplate:36 html/Admin/Groups/Modify.html:49 html/Admin/Queues/Modify.html:48 html/Elements/SelectGroups:27 html/User/Groups/Modify.html:49
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: NOT FOUND IN SOURCE
+msgid "Details"
+msgstr "Detaljer"
+
+#: html/Ticket/Elements/Tabs:85
+msgid "Display"
+msgstr "Vis"
+
+#: lib/RT/Queue_Overlay.pm:69
+msgid "Display Access Control List"
+msgstr "Vis Rettigheter"
+
+#: lib/RT/Queue_Overlay.pm:75
+msgid "Display Scrip templates for this queue"
+msgstr "Vis Scrip-maler for denne køen"
+
+#: lib/RT/Queue_Overlay.pm:78
+msgid "Display Scrips for this queue"
+msgstr "Vis Scrip-maler for denne køen"
+
+#: html/Ticket/Elements/ShowHistory:35
+msgid "Display mode"
+msgstr "Visningsmodus"
+
+#: NOT FOUND IN SOURCE
+msgid "Display ticket #%1"
+msgstr "Vis saken #%1"
+
+#: lib/RT/System.pm:54
+msgid "Do anything and everything"
+msgstr "Gjør hva som helst"
+
+#: html/Elements/Refresh:30
+msgid "Don't refresh this page."
+msgstr "Ikke last denne siden pÂ nytt"
+
+#: html/Search/Elements/PickRestriction:114
+msgid "Don't show search results"
+msgstr "Ikke vis søkeresultat"
+
+#: html/Ticket/Elements/ShowTransaction:105
+msgid "Download"
+msgstr "Last ned"
+
+#: html/Elements/SelectDateType:32 html/Ticket/Create.html:167 html/Ticket/Elements/EditDates:45 html/Ticket/Elements/ShowDates:43 lib/RT/Ticket_Overlay.pm:1171
+msgid "Due"
+msgstr "Innen"
+
+#: NOT FOUND IN SOURCE
+msgid "Due date '%1' could not be parsed"
+msgstr "Innendato '%1' kunne ikke tolkes""
+
+#: bin/rt-commit-handler:754
+#. ($1, $msg)
+msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
+msgstr "FEIL: Kunne ikke laste sak '%1': %2.\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Edit"
+msgstr "Rediger"
+
+#: NOT FOUND IN SOURCE
+msgid "Edit Conditions"
+msgstr "Rediger Forhold"
+
+#: html/Admin/Queues/CustomFields.html:45
+#. ($Queue->Name)
+msgid "Edit Custom Fields for %1"
+msgstr "Rediger fleksifelt for %1"
+
+#: html/Ticket/ModifyLinks.html:36
+msgid "Edit Relationships"
+msgstr "Rediger Forhold"
+
+#: html/Admin/Queues/Templates.html:42
+#. ($QueueObj->Name)
+msgid "Edit Templates for queue %1"
+msgstr "Rediger Maler for køen %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Edit keywords"
+msgstr "Rediger nøkkelord"
+
+#: NOT FOUND IN SOURCE
+msgid "Edit scrips"
+msgstr "Rediger scrips"
+
+#: html/Admin/Global/index.html:46
+msgid "Edit system templates"
+msgstr "Rediger systemmal"
+
+#: NOT FOUND IN SOURCE
+msgid "Edit templates for %1"
+msgstr "Rediger maler for %1"
+
+#: html/Admin/Elements/ModifyQueue:25 html/Admin/Queues/Modify.html:118
+#. ($QueueObj->Name)
+#. ($QueueObj->Id)
+msgid "Editing Configuration for queue %1"
+msgstr "Rediger Konfigurasjon for køen %1"
+
+#: html/Admin/Elements/ModifyUser:25
+#. ($UserObj->Name)
+msgid "Editing Configuration for user %1"
+msgstr "Redigerer Konfigurasjonen av brukern %1"
+
+#: html/Admin/Elements/EditCustomField:91
+#. ($CustomFieldObj->Name())
+msgid "Editing CustomField %1"
+msgstr "Redigerer Fleksifeltet %1"
+
+#: html/Admin/Groups/Members.html:32
+#. ($Group->Name)
+msgid "Editing membership for group %1"
+msgstr "Redigerer medlemsskap for gruppen %1""
+
+#: html/User/Groups/Members.html:129
+#. ($Group->Name)
+msgid "Editing membership for personal group %1"
+msgstr "Redigerer medlemsskap for den personlige gruppen %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Editing template %1"
+msgstr "Redigerer malen %1"
+
+#: lib/RT/Ticket_Overlay.pm:2622 lib/RT/Ticket_Overlay.pm:2690
+msgid "Either base or target must be specified"
+msgstr "Enten base eller mål må oppgis"
+
+#: html/Admin/Users/Modify.html:53 html/Admin/Users/Prefs.html:46 html/Elements/SelectUsers:27 html/Ticket/Elements/AddWatchers:56 html/User/Prefs.html:42
+msgid "Email"
+msgstr "Epost"
+
+#: lib/RT/User_Overlay.pm:188
+msgid "Email address in use"
+msgstr "Epostaddresse i bruk"
+
+#: html/Admin/Elements/ModifyUser:42
+msgid "EmailAddress"
+msgstr "EpostAddresse"
+
+#: html/Admin/Elements/ModifyUser:54
+msgid "EmailEncoding"
+msgstr "EpostFormat"
+
+#: html/Admin/Elements/EditCustomField:51
+msgid "Enabled (Unchecking this box disables this custom field)"
+msgstr "Aktivt (Fjern merkingen for Â deaktivere dette fleksifeltet)"
+
+#: html/Admin/Groups/Modify.html:53 html/User/Groups/Modify.html:53
+msgid "Enabled (Unchecking this box disables this group)"
+msgstr "Aktiv (Fjern merkingen for Â deaktivere denne gruppen)"
+
+#: html/Admin/Queues/Modify.html:84
+msgid "Enabled (Unchecking this box disables this queue)"
+msgstr "Aktiv (Fjern merkingen for Â deaktivere denne køen)"
+
+#: html/Admin/Elements/EditCustomFields:99
+msgid "Enabled Custom Fields"
+msgstr "Aktive Fleksifelt"
+
+#: html/Admin/Queues/index.html:56
+msgid "Enabled Queues"
+msgstr "Aktive Køer"
+
+#: html/Admin/Elements/EditCustomField:107 html/Admin/Groups/Modify.html:117 html/Admin/Queues/Modify.html:140 html/Admin/Users/Modify.html:283 html/User/Groups/Modify.html:117
+#. (loc_fuzzy($msg))
+msgid "Enabled status %1"
+msgstr "Aktiv status %1"
+
+#: lib/RT/CustomField_Overlay.pm:428
+msgid "Enter multiple values"
+msgstr "Skriv multiple verdier"
+
+#: lib/RT/CustomField_Overlay.pm:425
+msgid "Enter one value"
+msgstr "Skriv en verdi"
+
+#: html/Ticket/Elements/EditLinks:112
+msgid "Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces."
+msgstr "Skriv saker og/eller URIer som det skal linkes til. Separer dem med mellomrom"
+
+#: html/Elements/Login:39 html/SelfService/Error.html:25 html/SelfService/Error.html:26
+msgid "Error"
+msgstr "Feil"
+
+#: NOT FOUND IN SOURCE
+msgid "Error adding watcher"
+msgstr "Feilet ved opprettelse av Overvåker"
+
+#: lib/RT/Queue_Overlay.pm:555
+msgid "Error in parameters to Queue->AddWatcher"
+msgstr "Feil i parameterne til Queue->AddWatcher"
+
+#: lib/RT/Queue_Overlay.pm:713
+msgid "Error in parameters to Queue->DelWatcher"
+msgstr "Feil i parameterne til Queue->DelWatcher"
+
+#: lib/RT/Ticket_Overlay.pm:1356
+msgid "Error in parameters to Ticket->AddWatcher"
+msgstr "Feil i parameterne til Ticket->AddWatcher"
+
+#: lib/RT/Ticket_Overlay.pm:1532
+msgid "Error in parameters to Ticket->DelWatcher"
+msgstr "Feil i parameterne til Ticket->DelWatcher"
+
+#: etc/initialdata:20
+msgid "Everyone"
+msgstr "Alle"
+
+#: bin/rt-crontool:194
+msgid "Example:"
+msgstr "Eksempel:"
+
+#: html/Admin/Elements/ModifyUser:64
+msgid "ExternalAuthId"
+msgstr "EksternAutId"
+
+#: html/Admin/Elements/ModifyUser:58
+msgid "ExternalContactInfoId"
+msgstr "EksternKontaktInfoId"
+
+#: html/Admin/Users/Modify.html:73
+msgid "Extra info"
+msgstr "Ekstra info"
+
+#: lib/RT/User_Overlay.pm:302
+msgid "Failed to find 'Privileged' users pseudogroup."
+msgstr "Kunne ikke finne pseudogruppen 'Privilgerte' brukere."
+
+#: lib/RT/User_Overlay.pm:309
+msgid "Failed to find 'Unprivileged' users pseudogroup"
+msgstr "Kunne ikke finne 'pseudogruppen 'Upriviligerte' brukere"
+
+#: bin/rt-crontool:138
+#. ($modname, $@)
+msgid "Failed to load module %1. (%2)"
+msgstr "Kunne ikke laste modulen %1. (%2)"
+
+#: lib/RT/Date.pm:412
+msgid "Feb."
+msgstr "Feb."
+
+#: NOT FOUND IN SOURCE
+msgid "February"
+msgstr "Februar"
+
+#: NOT FOUND IN SOURCE
+msgid "Fin"
+msgstr "End"
+
+#: html/Ticket/Create.html:155 html/Ticket/Elements/EditBasics:59 lib/RT/Tickets_Overlay.pm:1091
+msgid "Final Priority"
+msgstr "Endelig Prioritet"
+
+#: lib/RT/Ticket_Overlay.pm:1162
+msgid "FinalPriority"
+msgstr "EndeligPrioritet"
+
+#: html/Admin/Queues/People.html:61 html/Ticket/Elements/EditPeople:34
+msgid "Find group whose"
+msgstr "Finn grupper hvor"
+
+#: NOT FOUND IN SOURCE
+msgid "Find new/open tickets"
+msgstr "Finn nye/Âpne saker"
+
+#: html/Admin/Queues/People.html:57 html/Admin/Users/index.html:46 html/Ticket/Elements/EditPeople:30
+msgid "Find people whose"
+msgstr "Finn folk hvor"
+
+#: html/Search/Listing.html:108
+msgid "Find tickets"
+msgstr "Finn saker"
+
+#: NOT FOUND IN SOURCE
+msgid "Finish Approval"
+msgstr "Fullfør godkjennelse"
+
+#: html/Ticket/Elements/Tabs:58
+msgid "First"
+msgstr "Først"
+
+#: html/Search/Listing.html:41
+msgid "First page"
+msgstr "Første side"
+
+#: docs/design_docs/string-extraction-guide.txt:33
+msgid "Foo Bar Baz"
+msgstr "Foo Bar Baz"
+
+#: docs/design_docs/string-extraction-guide.txt:24
+msgid "Foo!"
+msgstr "Foo!"
+
+#: html/Search/Bulk.html:87
+msgid "Force change"
+msgstr "Tving gjennom endring"
+
+#: html/Search/Listing.html:106
+#. ($ticketcount)
+msgid "Found %quant(%1,ticket)"
+msgstr "Fant %quant(%1,sak)"
+
+#: lib/RT/Interface/Web.pm:902
+msgid "Found Object"
+msgstr "Fant Objektet"
+
+#: html/Admin/Elements/ModifyUser:44
+msgid "FreeformContactInfo"
+msgstr "FriforkKontaktInfo"
+
+#: lib/RT/CustomField_Overlay.pm:38
+msgid "FreeformMultiple"
+msgstr "FriformMultipel"
+
+#: lib/RT/CustomField_Overlay.pm:37
+msgid "FreeformSingle"
+msgstr "FriformSingel"
+
+#: lib/RT/Date.pm:392
+msgid "Fri."
+msgstr "Fre."
+
+#: html/Ticket/Elements/ShowHistory:41 html/Ticket/Elements/ShowHistory:51
+msgid "Full headers"
+msgstr "Fulle headere"
+
+#: NOT FOUND IN SOURCE
+msgid "Getting the current user from a pgp sig\\n"
+msgstr "Henter brukerinfo fra pgp signatur\\n"
+
+#: lib/RT/Transaction_Overlay.pm:593
+#. ($New->Name)
+msgid "Given to %1"
+msgstr "Gitt til %1"
+
+#: html/Admin/Elements/Tabs:41 html/Admin/index.html:38
+msgid "Global"
+msgstr "Global"
+
+#: NOT FOUND IN SOURCE
+msgid "Global Keyword Selections"
+msgstr "Globale Nøkkelordvalg"
+
+#: NOT FOUND IN SOURCE
+msgid "Global Scrips"
+msgstr "Globale Scrip"
+
+#: html/Admin/Elements/SelectTemplate:38
+#. (loc($Template->Name))
+msgid "Global template: %1"
+msgstr "Globale maler: %1"
+
+#: html/Admin/Elements/EditCustomFields:75 html/Admin/Queues/People.html:59 html/Admin/Queues/People.html:63 html/Admin/Queues/index.html:44 html/Admin/Users/index.html:49 html/Ticket/Elements/EditPeople:32 html/Ticket/Elements/EditPeople:36 html/index.html:41
+msgid "Go!"
+msgstr "Start!"
+
+#: NOT FOUND IN SOURCE
+msgid "Good pgp sig from %1\\n"
+msgstr "Gyldig pgp sig fra %1\\n"
+
+#: html/Search/Listing.html:50
+msgid "Goto page"
+msgstr "Gå til siden"
+
+#: html/Elements/GotoTicket:25 html/SelfService/Elements/GotoTicket:25
+msgid "Goto ticket"
+msgstr "Gå til saken"
+
+#: NOT FOUND IN SOURCE
+msgid "Grand"
+msgstr "Stor"
+
+#: html/Ticket/Elements/AddWatchers:46 html/User/Elements/DelegateRights:78
+msgid "Group"
+msgstr "Gruppe"
+
+#: NOT FOUND IN SOURCE
+msgid "Group %1 %2: %3"
+msgstr "Gruppen %1 %2: %3"
+
+#: html/Admin/Elements/GroupTabs:45 html/Admin/Elements/QueueTabs:57 html/Admin/Elements/SystemTabs:44 html/Admin/Global/index.html:55
+msgid "Group Rights"
+msgstr "Grupperettigheter"
+
+#: lib/RT/Group_Overlay.pm:965
+msgid "Group already has member"
+msgstr "Alt medlem av gruppen"
+
+#: NOT FOUND IN SOURCE
+msgid "Group could not be created."
+msgstr "Gruppen kunne ikke lastes."
+
+#: html/Admin/Groups/Modify.html:77
+#. ($create_msg)
+msgid "Group could not be created: %1"
+msgstr "Gruppen kunne ikke opprettes: %1"
+
+#: lib/RT/Group_Overlay.pm:497
+msgid "Group created"
+msgstr "Gruppen opprettet"
+
+#: lib/RT/Group_Overlay.pm:1133
+msgid "Group has no such member"
+msgstr "Gruppen har ikke det medlemmet"
+
+#: lib/RT/Group_Overlay.pm:945 lib/RT/Queue_Overlay.pm:628 lib/RT/Queue_Overlay.pm:688 lib/RT/Ticket_Overlay.pm:1429 lib/RT/Ticket_Overlay.pm:1507
+msgid "Group not found"
+msgstr "Fant ikke gruppen"
+
+#: NOT FOUND IN SOURCE
+msgid "Group not found.\\n"
+msgstr "Fant ikke gruppen.\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Group not specified.\\n"
+msgstr "Ikke spesifisert gruppe.\\n"
+
+#: html/Admin/Elements/SelectNewGroupMembers:35 html/Admin/Elements/Tabs:35 html/Admin/Groups/Members.html:64 html/Admin/Queues/People.html:83 html/Admin/index.html:32 html/User/Groups/Members.html:67
+msgid "Groups"
+msgstr "Grupper"
+
+#: lib/RT/Group_Overlay.pm:971
+msgid "Groups can't be members of their members"
+msgstr "Grupper kan ikke være medlemmer av sine medlemmer"
+
+#: lib/RT/Interface/CLI.pm:73 lib/RT/Interface/CLI.pm:73
+msgid "Hello!"
+msgstr "Hallo!"
+
+#: docs/design_docs/string-extraction-guide.txt:40
+#. ($name)
+msgid "Hello, %1"
+msgstr "Hallo, %1"
+
+#: html/Ticket/Elements/ShowHistory:30 html/Ticket/Elements/Tabs:88
+msgid "History"
+msgstr "Historikk"
+
+#: html/Admin/Elements/ModifyUser:68
+msgid "HomePhone"
+msgstr "HjemmeTelefon"
+
+#: html/Elements/Tabs:44
+msgid "Homepage"
+msgstr "Hjemmeside"
+
+#: lib/RT/Base.pm:74
+#. (6)
+msgid "I have %quant(%1,concrete mixer)."
+msgstr "Jeg har %quant(%1, sementblandere)."
+
+#: NOT FOUND IN SOURCE
+msgid "I have [quant,_1,concrete mixer]."
+msgstr "Jeg har [quant,_1,sementblandere]."
+
+#: html/Ticket/Elements/ShowBasics:27 lib/RT/Tickets_Overlay.pm:1018
+msgid "Id"
+msgstr "Id"
+
+#: html/Admin/Users/Modify.html:44 html/User/Prefs.html:39
+msgid "Identity"
+msgstr "Identitet"
+
+#: etc/upgrade/2.1.71:86
+msgid "If an approval is rejected, reject the original and delete pending approvals"
+msgstr "Hvis en godkjenner blir avvist, avvis orginalen, og slett ventende godkjenninger"
+
+#: bin/rt-crontool:190
+msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
+msgstr "Hvis dette verktøyet var setgid kunne en fiendtlig lokal bruker bruke dette verktøyet for å oppnå administrativ tilgang til RT."
+
+#: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyPeople.html:38
+msgid "If you've updated anything above, be sure to"
+msgstr "Hvis du har oppdatert noe over, sørg for at"
+
+#: lib/RT/Interface/Web.pm:894
+msgid "Illegal value for %1"
+msgstr "Ugyldig verdig for %1"
+
+#: lib/RT/Interface/Web.pm:897
+msgid "Immutable field"
+msgstr "Låst felt"
+
+#: html/Admin/Elements/EditCustomFields:74
+msgid "Include disabled custom fields in listing."
+msgstr "Inkluder deaktiverte fleksifelt i listen."
+
+#: html/Admin/Queues/index.html:43
+msgid "Include disabled queues in listing."
+msgstr "Inkluder deaktiverte køer i listen."
+
+#: html/Admin/Users/index.html:47
+msgid "Include disabled users in search."
+msgstr "Inkluder deaktiverte brukere i søket."
+
+#: lib/RT/Tickets_Overlay.pm:1067
+msgid "Initial Priority"
+msgstr "Startprioritet"
+
+#: lib/RT/Ticket_Overlay.pm:1161 lib/RT/Ticket_Overlay.pm:1163
+msgid "InitialPriority"
+msgstr "StartPrioritet"
+
+#: lib/RT/ScripAction_Overlay.pm:105
+msgid "Input error"
+msgstr "Feil i inntasting"
+
+#: NOT FOUND IN SOURCE
+msgid "Interest noted"
+msgstr "Interesse registrert"
+
+#: lib/RT/Ticket_Overlay.pm:3796
+msgid "Internal Error"
+msgstr "Intern Feil"
+
+#: lib/RT/Record.pm:143
+#. ($id->{error_message})
+msgid "Internal Error: %1"
+msgstr "Intern Feil: %1"
+
+#: lib/RT/Group_Overlay.pm:644
+msgid "Invalid Group Type"
+msgstr "Ugyldig gruppetype"
+
+#: lib/RT/Principal_Overlay.pm:128
+msgid "Invalid Right"
+msgstr "Ugyldige rettigheter"
+
+#: NOT FOUND IN SOURCE
+msgid "Invalid Type"
+msgstr "Ugyldig Type"
+
+#: lib/RT/Interface/Web.pm:899
+msgid "Invalid data"
+msgstr "Ugyldig data"
+
+#: lib/RT/Ticket_Overlay.pm:439
+msgid "Invalid owner. Defaulting to 'nobody'."
+msgstr "Ugydlig eier. Setter til 'nobody'."
+
+#: lib/RT/Scrip_Overlay.pm:134 lib/RT/Template_Overlay.pm:251
+msgid "Invalid queue"
+msgstr "Ugyldig kø"
+
+#: lib/RT/ACE_Overlay.pm:244 lib/RT/ACE_Overlay.pm:253 lib/RT/ACE_Overlay.pm:259 lib/RT/ACE_Overlay.pm:270 lib/RT/ACE_Overlay.pm:275
+msgid "Invalid right"
+msgstr "Ugyldige rettigheter"
+
+#: lib/RT/Record.pm:118
+#. ($key)
+msgid "Invalid value for %1"
+msgstr "Ugyldig verdi for %1"
+
+#: lib/RT/Ticket_Overlay.pm:3434
+msgid "Invalid value for custom field"
+msgstr "Ugyldig verdi for fleksifeltet."
+
+#: lib/RT/Ticket_Overlay.pm:346
+msgid "Invalid value for status"
+msgstr "Ugyldig verdi for status"
+
+#: bin/rt-crontool:191
+msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
+msgstr "Det er ekstremt viktig at ikkepriviligerte brukere ikke har tilgang til dette verktøyet."
+
+#: bin/rt-crontool:192
+msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
+msgstr "Det er anbefalt at du oppretter en upriviligert unixbruker med korrekt gruppemedlemsskap og tilgang til RT for Â kjøre dette verktøyet."
+
+#: bin/rt-crontool:163
+msgid "It takes several arguments:"
+msgstr "Det tar flere parametere:"
+
+#: NOT FOUND IN SOURCE
+msgid "Items pending my approval"
+msgstr "Ting som venter pÂ min godkjenning"
+
+#: lib/RT/Date.pm:411
+msgid "Jan."
+msgstr "Jan."
+
+#: NOT FOUND IN SOURCE
+msgid "January"
+msgstr "Januar"
+
+#: lib/RT/Group_Overlay.pm:149
+msgid "Join or leave this group"
+msgstr "Bli med i eller forlat denne gruppen"
+
+#: lib/RT/Date.pm:417
+msgid "Jul."
+msgstr "Jul."
+
+#: NOT FOUND IN SOURCE
+msgid "July"
+msgstr "Juli"
+
+#: html/Ticket/Elements/Tabs:99
+msgid "Jumbo"
+msgstr "Total"
+
+#: lib/RT/Date.pm:416
+msgid "Jun."
+msgstr "Jun."
+
+#: NOT FOUND IN SOURCE
+msgid "June"
+msgstr "Juni"
+
+#: NOT FOUND IN SOURCE
+msgid "Keyword"
+msgstr "Nøkkelord"
+
+#: html/Admin/Elements/ModifyUser:52
+msgid "Lang"
+msgstr "Språk"
+
+#: html/Ticket/Elements/Tabs:73
+msgid "Last"
+msgstr "Siste"
+
+#: html/Ticket/Elements/EditDates:38 html/Ticket/Elements/ShowDates:39
+msgid "Last Contact"
+msgstr "Siste Kontakt"
+
+#: html/Elements/SelectDateType:29
+msgid "Last Contacted"
+msgstr "Sist kontaktet"
+
+#: html/Search/Elements/TicketHeader:41
+msgid "Last Notified"
+msgstr "Sist Informert"
+
+#: html/Elements/SelectDateType:30
+msgid "Last Updated"
+msgstr "Sist Oppdatert"
+
+#: NOT FOUND IN SOURCE
+msgid "LastUpdated"
+msgstr "SistOppdatert"
+
+#: NOT FOUND IN SOURCE
+msgid "Left"
+msgstr "Igjen"
+
+#: html/Admin/Users/Modify.html:83
+msgid "Let this user access RT"
+msgstr "La denne brukeren få tilgang til RT"
+
+#: html/Admin/Users/Modify.html:87
+msgid "Let this user be granted rights"
+msgstr "La denne brukeren få rettigheter"
+
+#: NOT FOUND IN SOURCE
+msgid "Limiting owner to %1 %2"
+msgstr "Begrenser eier til %1 %2"
+
+#: NOT FOUND IN SOURCE
+msgid "Limiting queue to %1 %2"
+msgstr "Begrenser køen til %1 %2"
+
+#: lib/RT/Ticket_Overlay.pm:2704
+msgid "Link already exists"
+msgstr "Lenke finnes alt"
+
+#: lib/RT/Ticket_Overlay.pm:2716
+msgid "Link could not be created"
+msgstr "Lenke kunne ikke opprettes"
+
+#: lib/RT/Ticket_Overlay.pm:2724 lib/RT/Ticket_Overlay.pm:2734
+#. ($TransString)
+msgid "Link created (%1)"
+msgstr "Lenke opprettet (%1)"
+
+#: lib/RT/Ticket_Overlay.pm:2645
+#. ($TransString)
+msgid "Link deleted (%1)"
+msgstr "Lenke slettet (%1)"
+
+#: lib/RT/Ticket_Overlay.pm:2651
+msgid "Link not found"
+msgstr "Lenke ble ikke funnet"
+
+#: html/Ticket/ModifyLinks.html:25 html/Ticket/ModifyLinks.html:29
+#. ($Ticket->Id)
+msgid "Link ticket #%1"
+msgstr "Knytt sak #%1"
+
+#: NOT FOUND IN SOURCE
+msgid "Link ticket %1"
+msgstr "Knytt sak %1"
+
+#: html/Ticket/Elements/Tabs:97
+msgid "Links"
+msgstr "Lenker"
+
+#: html/Admin/Users/Modify.html:114 html/User/Prefs.html:85
+msgid "Location"
+msgstr "Lokasjon"
+
+#: lib/RT.pm:159
+#. ($RT::LogDir)
+msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
+msgstr "Logkatalogen %1 ble ikke funnet eller kunne ikke skrives til.\\nRT kan ikke kjøre."
+
+#: html/Elements/Header:57
+#. ("<b>".$session{'CurrentUser'}->Name."</b>")
+msgid "Logged in as %1"
+msgstr "Logget inn som %1"
+
+#: docs/design_docs/string-extraction-guide.txt:71 html/Elements/Login:35 html/Elements/Login:44 html/Elements/Login:54
+msgid "Login"
+msgstr "Innlogging"
+
+#: html/Elements/Header:54
+msgid "Logout"
+msgstr "Logg av"
+
+#: html/Search/Bulk.html:86
+msgid "Make Owner"
+msgstr "Sett Eier"
+
+#: html/Search/Bulk.html:102
+msgid "Make Status"
+msgstr "Sett Status"
+
+#: html/Search/Bulk.html:109
+msgid "Make date Due"
+msgstr "Sett tidsfrist" 
+
+#: html/Search/Bulk.html:110
+msgid "Make date Resolved"
+msgstr "Sett løsningsdato"
+
+#: html/Search/Bulk.html:107
+msgid "Make date Started"
+msgstr "Sett startdato"
+
+#: html/Search/Bulk.html:106
+msgid "Make date Starts"
+msgstr "Sett startdato"
+
+#: html/Search/Bulk.html:108
+msgid "Make date Told"
+msgstr "Sett informert dato"
+
+#: html/Search/Bulk.html:99
+msgid "Make priority"
+msgstr "Sett prioritet"
+
+#: html/Search/Bulk.html:100
+msgid "Make queue"
+msgstr "Sett Kø"
+
+#: html/Search/Bulk.html:98
+msgid "Make subject"
+msgstr "Sett Emne"
+
+#: html/Admin/index.html:33
+msgid "Manage groups and group membership"
+msgstr "Sett grupper og gruppemedlemsskap"
+
+#: html/Admin/index.html:39
+msgid "Manage properties and configuration which apply to all queues"
+msgstr "Rediger egenskaper og konfigurasjon som gjelder for alle køer"
+
+#: html/Admin/index.html:36
+msgid "Manage queues and queue-specific properties"
+msgstr "Rediger køer og kø-spesifike egenskaper"
+
+#: html/Admin/index.html:30
+msgid "Manage users and passwords"
+msgstr "Rediger brukere og passord"
+
+#: lib/RT/Date.pm:413
+msgid "Mar."
+msgstr "Mar."
+
+#: NOT FOUND IN SOURCE
+msgid "March"
+msgstr "Mars"
+
+#: NOT FOUND IN SOURCE
+msgid "May"
+msgstr "Mai"
+
+#: lib/RT/Date.pm:415
+msgid "May."
+msgstr "Mai."
+
+#: lib/RT/Group_Overlay.pm:982
+msgid "Member added"
+msgstr "Medlem lagt til"
+
+#: lib/RT/Group_Overlay.pm:1140
+msgid "Member deleted"
+msgstr "Medlem slettet"
+
+#: lib/RT/Group_Overlay.pm:1144
+msgid "Member not deleted"
+msgstr "Medlem ikke slettet"
+
+#: html/Elements/SelectLinkType:26
+msgid "Member of"
+msgstr "Medlem av"
+
+#: NOT FOUND IN SOURCE
+msgid "MemberOf"
+msgstr "MedlemAv"
+
+#: html/Admin/Elements/GroupTabs:42 html/User/Elements/GroupTabs:42
+msgid "Members"
+msgstr "Medlemmer"
+
+#: lib/RT/Ticket_Overlay.pm:2891
+msgid "Merge Successful"
+msgstr "Fletting vellykket"
+
+#: lib/RT/Ticket_Overlay.pm:2811
+msgid "Merge failed. Couldn't set EffectiveId"
+msgstr "Fletting feilet. Kunne ikke sette EffektivId"
+
+#: html/Ticket/Elements/EditLinks:115
+msgid "Merge into"
+msgstr "Flett inn i"
+
+#: html/Ticket/Update.html:102
+msgid "Message"
+msgstr "Melding"
+
+#: lib/RT/Interface/Web.pm:901
+msgid "Missing a primary key?: %1"
+msgstr "Mangler en primærnøkkel?: %1"
+
+#: html/Admin/Users/Modify.html:169 html/User/Prefs.html:54
+msgid "Mobile"
+msgstr "Mobil"
+
+#: html/Admin/Elements/ModifyUser:72
+msgid "MobilePhone"
+msgstr "MobilTelefon"
+
+#: lib/RT/Queue_Overlay.pm:70
+msgid "Modify Access Control List"
+msgstr "Endre Tilgangslister"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify Custom Field %1"
+msgstr "Endre Fleksifeltet %1"
+
+#: html/Admin/Global/CustomFields.html:44 html/Admin/Global/index.html:51
+msgid "Modify Custom Fields which apply to all queues"
+msgstr "Endre Fleksifelt som gjelder for alle køer"
+
+#: lib/RT/Queue_Overlay.pm:73
+msgid "Modify Scrip templates for this queue"
+msgstr "Endre Scripmaler for denne køen"
+
+#: lib/RT/Queue_Overlay.pm:76
+msgid "Modify Scrips for this queue"
+msgstr "Endre Scrips for denne køen"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify System ACLS"
+msgstr "Endre SystemACLer"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify Template %1"
+msgstr "Endre Malen %1"
+
+#: html/Admin/Queues/CustomField.html:45
+#. ($QueueObj->Name())
+msgid "Modify a CustomField for queue %1"
+msgstr "Endre et fleksifelt for køen %1"
+
+#: html/Admin/Global/CustomField.html:53
+msgid "Modify a CustomField which applies to all queues"
+msgstr "Endre et fleksifelt som gjelder for alle køer"
+
+#: html/Admin/Queues/Scrip.html:54
+#. ($QueueObj->Name)
+msgid "Modify a scrip for queue %1"
+msgstr "Endre et scrip for køen %1"
+
+#: html/Admin/Global/Scrip.html:48
+msgid "Modify a scrip which applies to all queues"
+msgstr "Endre et scrip som gjelder for alle køer"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify dates for # %1"
+msgstr "Endre datoer for # %1"
+
+#: html/Ticket/ModifyDates.html:25 html/Ticket/ModifyDates.html:29
+#. ($TicketObj->Id)
+msgid "Modify dates for #%1"
+msgstr "Endre datoer for #%1"
+
+#: html/Ticket/ModifyDates.html:35
+#. ($TicketObj->Id)
+msgid "Modify dates for ticket # %1"
+msgstr "Endre datoer for sak # %1"
+
+#: html/Admin/Global/GroupRights.html:25 html/Admin/Global/GroupRights.html:28 html/Admin/Global/index.html:56
+msgid "Modify global group rights"
+msgstr "Endre globale grupperettigheter"
+
+#: html/Admin/Global/GroupRights.html:33
+msgid "Modify global group rights."
+msgstr "Endre globale grupperettigheter"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify global rights for groups"
+msgstr "Endre globale rettigheter for grupper"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify global rights for users"
+msgstr "Endre globale rettigheter for brukere"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify global scrips"
+msgstr "Endre globale scrips"
+
+#: html/Admin/Global/UserRights.html:25 html/Admin/Global/UserRights.html:28 html/Admin/Global/index.html:60
+msgid "Modify global user rights"
+msgstr "Endre globale brukerrettigheter"
+
+#: html/Admin/Global/UserRights.html:33
+msgid "Modify global user rights."
+msgstr "Endre globale brukerrettigheter"
+
+#: lib/RT/Group_Overlay.pm:146
+msgid "Modify group metadata or delete group"
+msgstr "Endre gruppens metadata eller slette gruppen"
+
+#: html/Admin/Groups/GroupRights.html:25 html/Admin/Groups/GroupRights.html:29 html/Admin/Groups/GroupRights.html:35
+#. ($GroupObj->Name)
+msgid "Modify group rights for group %1"
+msgstr "Endre grupperettigheter for %1 gruppen"
+
+#: html/Admin/Queues/GroupRights.html:25 html/Admin/Queues/GroupRights.html:29
+#. ($QueueObj->Name)
+msgid "Modify group rights for queue %1"
+msgstr "Endre grupperettigheter %1 køen"
+
+#: lib/RT/Group_Overlay.pm:148
+msgid "Modify membership roster for this group"
+msgstr "Endre medlemsliste for denne gruppen"
+
+#: lib/RT/System.pm:61
+msgid "Modify one's own RT account"
+msgstr "Endre sin egen RT konto"
+
+#: html/Admin/Queues/People.html:25 html/Admin/Queues/People.html:29
+#. ($QueueObj->Name)
+msgid "Modify people related to queue %1"
+msgstr "Endre hvem som er relatert til %1 køen"
+
+#: html/Ticket/ModifyPeople.html:25 html/Ticket/ModifyPeople.html:29 html/Ticket/ModifyPeople.html:35
+#. ($Ticket->id)
+#. ($Ticket->Id)
+msgid "Modify people related to ticket #%1"
+msgstr "Endre hvem som er relater til sak #%1"
+
+#: html/Admin/Queues/Scrips.html:44
+#. ($QueueObj->Name)
+msgid "Modify scrips for queue %1"
+msgstr "Endre scrips for %1 køen"
+
+#: html/Admin/Global/Scrips.html:44 html/Admin/Global/index.html:42
+msgid "Modify scrips which apply to all queues"
+msgstr "Endre scrips som gjelder alle køer"
+
+#: html/Admin/Global/Template.html:25 html/Admin/Global/Template.html:30 html/Admin/Global/Template.html:81 html/Admin/Queues/Template.html:78
+#. (loc($TemplateObj->Name()))
+#. ($TemplateObj->id)
+msgid "Modify template %1"
+msgstr "Endre mal %1"
+
+#: html/Admin/Global/Templates.html:44
+msgid "Modify templates which apply to all queues"
+msgstr "Endre maler som gjelder for alle køer"
+
+#: html/Admin/Groups/Modify.html:87 html/User/Groups/Modify.html:86
+#. ($Group->Name)
+msgid "Modify the group %1"
+msgstr "Endre gruppen %1"
+
+#: lib/RT/Queue_Overlay.pm:71
+msgid "Modify the queue watchers"
+msgstr "Endre overvåkere for køen"
+
+#: html/Admin/Users/Modify.html:236
+#. ($UserObj->Name)
+msgid "Modify the user %1"
+msgstr "Endre brukeren %1"
+
+#: html/Ticket/ModifyAll.html:37
+#. ($Ticket->Id)
+msgid "Modify ticket # %1"
+msgstr "Endre sak # %1"
+
+#: html/Ticket/Modify.html:25 html/Ticket/Modify.html:28 html/Ticket/Modify.html:34
+#. ($TicketObj->Id)
+msgid "Modify ticket #%1"
+msgstr "Endre sak #%1"
+
+#: lib/RT/Queue_Overlay.pm:88
+msgid "Modify tickets"
+msgstr "Endre saker"
+
+#: html/Admin/Groups/UserRights.html:25 html/Admin/Groups/UserRights.html:29 html/Admin/Groups/UserRights.html:35
+#. ($GroupObj->Name)
+msgid "Modify user rights for group %1"
+msgstr "Endre brukerrettigheter for %1 gruppen"
+
+#: html/Admin/Queues/UserRights.html:25 html/Admin/Queues/UserRights.html:29
+#. ($QueueObj->Name)
+msgid "Modify user rights for queue %1"
+msgstr "Endre brukerrettigheter for %1 køen"
+
+#: NOT FOUND IN SOURCE
+msgid "Modify watchers for queue '%1'"
+msgstr "Endre overvåkere for '%1' køen"
+
+#: lib/RT/Queue_Overlay.pm:70
+msgid "ModifyACL"
+msgstr "EndreACL"
+
+#: lib/RT/Group_Overlay.pm:149
+msgid "ModifyOwnMembership"
+msgstr "EndreEgetMedlemskap"
+
+#: lib/RT/Queue_Overlay.pm:71
+msgid "ModifyQueueWatchers"
+msgstr "EndreKøOvervåkere"
+
+#: lib/RT/Queue_Overlay.pm:76
+msgid "ModifyScrips"
+msgstr "EndreScrips"
+
+#: lib/RT/System.pm:61
+msgid "ModifySelf"
+msgstr "EndreSegSelv"
+
+#: lib/RT/Queue_Overlay.pm:73
+msgid "ModifyTemplate"
+msgstr "EndreMal"
+
+#: lib/RT/Queue_Overlay.pm:88
+msgid "ModifyTicket"
+msgstr "EndreSak"
+
+#: lib/RT/Date.pm:388
+msgid "Mon."
+msgstr "Man."
+
+#: html/Ticket/Elements/ShowRequestor:42
+#. ($name)
+msgid "More about %1"
+msgstr "Mer om %1"
+
+#: html/Admin/Elements/EditCustomFields:61
+msgid "Move down"
+msgstr "Flytt ned"
+
+#: html/Admin/Elements/EditCustomFields:53
+msgid "Move up"
+msgstr "Flytt opp"
+
+#: html/Admin/Elements/SelectSingleOrMultiple:27
+msgid "Multiple"
+msgstr "Flere"
+
+#: lib/RT/User_Overlay.pm:179
+msgid "Must specify 'Name' attribute"
+msgstr "Må spesifisere attributten 'Navn'"
+
+#: html/SelfService/Elements/MyRequests:49
+#. ($friendly_status)
+msgid "My %1 tickets"
+msgstr "Mine %1 saker"
+
+#: NOT FOUND IN SOURCE
+msgid "My Approvals"
+msgstr "Mine saker til godkjenning"
+
+#: html/Approvals/index.html:25 html/Approvals/index.html:26
+msgid "My approvals"
+msgstr "Mine saker til godkjenning"
+
+#: html/Admin/Elements/AddCustomFieldValue:33 html/Admin/Elements/EditCustomField:34 html/Admin/Elements/ModifyTemplate:28 html/Admin/Elements/ModifyUser:30 html/Admin/Groups/Modify.html:44 html/Elements/SelectGroups:26 html/Elements/SelectUsers:28 html/User/Groups/Modify.html:44
+msgid "Name"
+msgstr "Navn"
+
+#: lib/RT/User_Overlay.pm:186
+msgid "Name in use"
+msgstr "Navnet er i bruk"
+
+#: NOT FOUND IN SOURCE
+msgid "Need approval from system administrator"
+msgstr "Trenger godkjennelse fra systemadministrator"
+
+#: html/Ticket/Elements/ShowDates:52
+msgid "Never"
+msgstr "Aldri"
+
+#: html/Elements/Quicksearch:30
+msgid "New"
+msgstr "Ny"
+
+#: html/Admin/Elements/ModifyUser:32 html/Admin/Users/Modify.html:93 html/User/Prefs.html:65
+msgid "New Password"
+msgstr "Nytt Passord"
+
+#: etc/initialdata:317 etc/upgrade/2.1.71:16
+msgid "New Pending Approval"
+msgstr "Ny, Venter på Godkjennelse"
+
+#: html/Ticket/Elements/EditLinks:111
+msgid "New Relationships"
+msgstr "Nye forhold"
+
+#: html/Ticket/Elements/Tabs:36
+msgid "New Search"
+msgstr "Nytt Søk"
+
+#: html/Admin/Global/CustomField.html:41 html/Admin/Global/CustomFields.html:39 html/Admin/Queues/CustomField.html:52 html/Admin/Queues/CustomFields.html:40
+msgid "New custom field"
+msgstr "Nytt fleksifelt"
+
+#: html/Admin/Elements/GroupTabs:54 html/User/Elements/GroupTabs:52
+msgid "New group"
+msgstr "Ny gruppe"
+
+#: html/SelfService/Prefs.html:32
+msgid "New password"
+msgstr "Nytt passord"
+
+#: lib/RT/User_Overlay.pm:647
+msgid "New password notification sent"
+msgstr "Melding om nytt passord sendt"
+
+#: html/Admin/Elements/QueueTabs:70
+msgid "New queue"
+msgstr "Ny kø"
+
+#: NOT FOUND IN SOURCE
+msgid "New request"
+msgstr "Ny forespørsel"
+
+#: html/Admin/Elements/SelectRights:42
+msgid "New rights"
+msgstr "Nye rettigheter"
+
+#: html/Admin/Global/Scrip.html:40 html/Admin/Global/Scrips.html:39 html/Admin/Queues/Scrip.html:43 html/Admin/Queues/Scrips.html:53
+msgid "New scrip"
+msgstr "Nytt scrip"
+
+#: NOT FOUND IN SOURCE
+msgid "New search"
+msgstr "Nytt søk"
+
+#: html/Admin/Global/Template.html:60 html/Admin/Global/Templates.html:39 html/Admin/Queues/Template.html:58 html/Admin/Queues/Templates.html:50
+msgid "New template"
+msgstr "Ny mal"
+
+#: html/SelfService/Elements/Tabs:48
+msgid "New ticket"
+msgstr "Ny sak"
+
+#: lib/RT/Ticket_Overlay.pm:2778
+msgid "New ticket doesn't exist"
+msgstr "Ny sak eksistere ikke"
+
+#: html/Admin/Elements/UserTabs:52
+msgid "New user"
+msgstr "Ny bruker"
+
+#: html/Admin/Elements/CreateUserCalled:26
+msgid "New user called"
+msgstr "Ny bruker kalt"
+
+#: html/Admin/Queues/People.html:55 html/Ticket/Elements/EditPeople:29
+msgid "New watchers"
+msgstr "Ny overvåker"
+
+#: html/Admin/Users/Prefs.html:42
+msgid "New window setting"
+msgstr "Instillinger for nytt vindu"
+
+#: html/Ticket/Elements/Tabs:69
+msgid "Next"
+msgstr "Neste"
+
+#: html/Search/Listing.html:48
+msgid "Next page"
+msgstr "Neste side"
+
+#: html/Admin/Elements/ModifyUser:50
+msgid "NickName"
+msgstr "KalleNavn"
+
+#: html/Admin/Users/Modify.html:63 html/User/Prefs.html:46
+msgid "Nickname"
+msgstr "Kallenavn"
+
+#: html/Admin/Elements/EditCustomField:90 html/Admin/Elements/EditCustomFields:105
+msgid "No CustomField"
+msgstr "Ingen FleksiFelt"
+
+#: html/Admin/Groups/GroupRights.html:84 html/Admin/Groups/UserRights.html:71
+msgid "No Group defined"
+msgstr "Ingen grupper definert"
+
+#: html/Admin/Queues/GroupRights.html:96 html/Admin/Queues/UserRights.html:68
+msgid "No Queue defined"
+msgstr "Ingen kø definert"
+
+#: bin/rt-crontool:56
+msgid "No RT user found. Please consult your RT administrator.\\n"
+msgstr "Ingen RT bruker funnet. Vennligst referer til manualen.\\n"
+
+#: html/Admin/Global/Template.html:79 html/Admin/Queues/Template.html:76
+msgid "No Template"
+msgstr "Ingen Mal"
+
+#: bin/rt-commit-handler:764
+msgid "No Ticket specified. Aborting ticket "
+msgstr "Ingen sak oppgitt. Avbryter sak "
+
+#: NOT FOUND IN SOURCE
+msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgstr "Ingen Sak oppgitt. Avbryter saksendring\\n\\n"
+
+#: html/Approvals/Elements/Approve:46
+msgid "No action"
+msgstr "Ingen handling"
+
+#: lib/RT/Interface/Web.pm:896
+msgid "No column specified"
+msgstr "Ingen kolonne spesifisert"
+
+#: NOT FOUND IN SOURCE
+msgid "No command found\\n"
+msgstr "Ingen kommando funnet\\n"
+
+#: html/Elements/ViewUser:36 html/Ticket/Elements/ShowRequestor:45
+msgid "No comment entered about this user"
+msgstr "Ingen kommentar skrevet om denne brukeren"
+
+#: lib/RT/Ticket_Overlay.pm:2189 lib/RT/Ticket_Overlay.pm:2257
+msgid "No correspondence attached"
+msgstr "Ingen korrespondanse vedlagt"
+
+#: lib/RT/Action/Generic.pm:150 lib/RT/Condition/Generic.pm:176 lib/RT/Search/ActiveTicketsInQueue.pm:56 lib/RT/Search/Generic.pm:113
+#. (ref $self)
+msgid "No description for %1"
+msgstr "Ingen beskrivelse for %1"
+
+#: lib/RT/Users_Overlay.pm:145
+msgid "No group specified"
+msgstr "Ingen gruppe spesifisert"
+
+#: lib/RT/User_Overlay.pm:865
+msgid "No password set"
+msgstr "Passordet er ikke satt"
+
+#: lib/RT/Queue_Overlay.pm:259
+msgid "No permission to create queues"
+msgstr "Ingen tilgang til å opprette køer"
+
+#: lib/RT/Ticket_Overlay.pm:342
+#. ($QueueObj->Name)
+msgid "No permission to create tickets in the queue '%1'"
+msgstr "Ikke tilgang til å opprette saker for køen '%1'"
+
+#: lib/RT/User_Overlay.pm:152
+msgid "No permission to create users"
+msgstr "Ikke tilgang til å opprette brukere"
+
+#: html/SelfService/Display.html:118
+msgid "No permission to display that ticket"
+msgstr "Ikke tilgang til å vise den saken"
+
+#: html/SelfService/Update.html:52
+msgid "No permission to view update ticket"
+msgstr "Ingen tilgang til å se oppdatering av saken"
+
+#: lib/RT/Queue_Overlay.pm:675 lib/RT/Ticket_Overlay.pm:1488
+msgid "No principal specified"
+msgstr "Ingen primær spesifisert"
+
+#: html/Admin/Queues/People.html:154 html/Admin/Queues/People.html:164
+msgid "No principals selected."
+msgstr "Ingen primære spesifisert"
+
+#: html/Admin/Queues/index.html:35
+msgid "No queues matching search criteria found."
+msgstr "Det er ingen køer som matcher søkekriteriet"
+
+#: html/Admin/Elements/SelectRights:81
+msgid "No rights found"
+msgstr "Ingen rettigheter funnet"
+
+#: html/Admin/Elements/SelectRights:33
+msgid "No rights granted."
+msgstr "Ingen rettigheter tildelt"
+
+#: html/Search/Bulk.html:149
+msgid "No search to operate on."
+msgstr "Ingen søk Â behandle"
+
+#: NOT FOUND IN SOURCE
+msgid "No ticket id specified"
+msgstr "Ingen saksid oppgitt"
+
+#: lib/RT/Transaction_Overlay.pm:478 lib/RT/Transaction_Overlay.pm:516
+msgid "No transaction type specified"
+msgstr "Transaksjonstype ikke spesifisert"
+
+#: NOT FOUND IN SOURCE
+msgid "No user or email address specified"
+msgstr "Ingen bruker eller epostaddresse oppgitt"
+
+#: html/Admin/Users/index.html:36
+msgid "No users matching search criteria found."
+msgstr "Fant ingen brukere som treffer søkekriteriene."
+
+#: bin/rt-commit-handler:644
+msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
+msgstr "Fant ingen gyldig RT bruker. RT cvs handler avstengt. Kontakt din RT administrator.\\n"
+
+#: lib/RT/Interface/Web.pm:893
+msgid "No value sent to _Set!\\n"
+msgstr "Ingen verdi sendt til _Set!\\n"
+
+#: html/Search/Elements/TicketRow:37
+msgid "Nobody"
+msgstr "Ingen"
+
+#: lib/RT/Interface/Web.pm:898
+msgid "Nonexistant field?"
+msgstr "Ukjent felt?"
+
+#: NOT FOUND IN SOURCE
+msgid "Not logged in"
+msgstr "Ikke logget inn"
+
+#: html/Elements/Header:59
+msgid "Not logged in."
+msgstr "Ikke logget inn."
+
+#: lib/RT/Date.pm:369
+msgid "Not set"
+msgstr "Ikke satt"
+
+#: html/NoAuth/Reminder.html:27
+msgid "Not yet implemented."
+msgstr "Ikke implementert enda."
+
+#: NOT FOUND IN SOURCE
+msgid "Not yet implemented...."
+msgstr "Ikke implementert enda...."
+
+#: html/Approvals/Elements/Approve:49
+msgid "Notes"
+msgstr "Notater"
+
+#: lib/RT/User_Overlay.pm:650
+msgid "Notification could not be sent"
+msgstr "Melding kunne ikke sendes"
+
+#: etc/initialdata:94
+msgid "Notify AdminCcs"
+msgstr "Raporter til AdminCc"
+
+#: etc/initialdata:90
+msgid "Notify AdminCcs as Comment"
+msgstr "Rapporter til AdminCc som kommentar"
+
+#: etc/initialdata:121
+msgid "Notify Other Recipients"
+msgstr "Rapporter til andre mottakere"
+
+#: etc/initialdata:117
+msgid "Notify Other Recipients as Comment"
+msgstr "Rapporter til andre mottakere som kommentar"
+
+#: etc/initialdata:86
+msgid "Notify Owner"
+msgstr "Rapporter til eier"
+
+#: etc/initialdata:82
+msgid "Notify Owner as Comment"
+msgstr "Rapportert til eier som kommentar"
+
+#: etc/initialdata:319 etc/upgrade/2.1.71:17
+msgid "Notify Owners and AdminCcs of new items pending their approval"
+msgstr "Rapporter til Eiere og AdminCc om nye ting som venter på godkjenning"
+
+#: etc/initialdata:78
+msgid "Notify Requestors"
+msgstr "Rapporter til kunde"
+
+#: etc/initialdata:104
+msgid "Notify Requestors and Ccs"
+msgstr "Rapporter til Kunder og Cc"
+
+#: etc/initialdata:99
+msgid "Notify Requestors and Ccs as Comment"
+msgstr "Rapporter til Kunder og Cc som kommentar"
+
+#: etc/initialdata:113
+msgid "Notify Requestors, Ccs and AdminCcs"
+msgstr "Rapporter til Kunder Cc og AdminCc"
+
+#: etc/initialdata:109
+msgid "Notify Requestors, Ccs and AdminCcs as Comment"
+msgstr "Rapporter til Kunder Cc og AdminCc som Kommentar"
+
+#: lib/RT/Date.pm:421
+msgid "Nov."
+msgstr "Nov."
+
+#: NOT FOUND IN SOURCE
+msgid "November"
+msgstr "November"
+
+#: lib/RT/Record.pm:157
+msgid "Object could not be created"
+msgstr "Objekter kunne ikke opprettes"
+
+#: lib/RT/Record.pm:176
+msgid "Object created"
+msgstr "Objektet ble opprettet"
+
+#: lib/RT/Date.pm:420
+msgid "Oct."
+msgstr "Okt."
+
+#: NOT FOUND IN SOURCE
+msgid "October"
+msgstr "Oktober"
+
+#: html/Elements/SelectDateRelation:35
+msgid "On"
+msgstr "Ved"
+
+#: etc/initialdata:155
+msgid "On Comment"
+msgstr "Ved Kommentar"
+
+#: etc/initialdata:148
+msgid "On Correspond"
+msgstr "Ved Korrespondanse"
+
+#: etc/initialdata:137
+msgid "On Create"
+msgstr "Ved Opprettelse"
+
+#: etc/initialdata:169
+msgid "On Owner Change"
+msgstr "Ved Eierskifte"
+
+#: etc/initialdata:177
+msgid "On Queue Change"
+msgstr "Ved Køendring"
+
+#: etc/initialdata:183
+msgid "On Resolve"
+msgstr "Ved Løsning"
+
+#: etc/initialdata:161
+msgid "On Status Change"
+msgstr "Ved statusendring"
+
+#: etc/initialdata:142
+msgid "On Transaction"
+msgstr "Ved Transaksjon"
+
+#: html/Approvals/Elements/PendingMyApproval:50
+#. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter'>")
+msgid "Only show approvals for requests created after %1"
+msgstr "Vis kun godkjennelse for saker opprettet etter %1"
+
+#: html/Approvals/Elements/PendingMyApproval:48
+#. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore'>")
+msgid "Only show approvals for requests created before %1"
+msgstr "Bare vis godkjennelse for saker opprettet før %1"
+
+#: html/Elements/Quicksearch:31
+msgid "Open"
+msgstr "Åpne"
+
+#: html/Ticket/Elements/Tabs:136
+msgid "Open it"
+msgstr "Åpne den"
+
+#: NOT FOUND IN SOURCE
+msgid "Open requests"
+msgstr "Åpne forespørsler"
+
+#: html/SelfService/Elements/Tabs:42
+msgid "Open tickets"
+msgstr "Åpne saker"
+
+#: html/Admin/Users/Prefs.html:41
+msgid "Open tickets (from listing) in a new window"
+msgstr "Åpne saker (fra utlisting) i et nytt vindu"
+
+#: html/Admin/Users/Prefs.html:40
+msgid "Open tickets (from listing) in another window"
+msgstr "Åpne saker (fra utlisting) it et annet vinud"
+
+#: etc/initialdata:133
+msgid "Open tickets on correspondence"
+msgstr "Åpne saker ved korrespondanse"
+
+#: html/Search/Elements/PickRestriction:101
+msgid "Ordering and sorting"
+msgstr "Rekkefølge og sortering"
+
+#: html/Admin/Elements/ModifyUser:46 html/Admin/Users/Modify.html:117 html/Elements/SelectUsers:29 html/User/Prefs.html:86
+msgid "Organization"
+msgstr "Organisasjon"
+
+#: html/Approvals/Elements/Approve:33
+#. ($approving->Id, $approving->Subject)
+msgid "Originating ticket: #%1"
+msgstr "Opprinnelig sak: #%1"
+
+#: html/Admin/Elements/ModifyQueue:55 html/Admin/Queues/Modify.html:69
+msgid "Over time, priority moves toward"
+msgstr "Over tid beveger prioriteten seg mot"
+
+#: lib/RT/Queue_Overlay.pm:87
+msgid "Own tickets"
+msgstr "Eie saker"
+
+#: lib/RT/Queue_Overlay.pm:87
+msgid "OwnTicket"
+msgstr "EieSak"
+
+#: etc/initialdata:38 html/Elements/MyRequests:32 html/SelfService/Elements/MyRequests:30 html/Ticket/Create.html:48 html/Ticket/Elements/EditPeople:43 html/Ticket/Elements/EditPeople:44 html/Ticket/Elements/ShowPeople:27 html/Ticket/Update.html:63 lib/RT/ACE_Overlay.pm:86 lib/RT/Tickets_Overlay.pm:1244
+msgid "Owner"
+msgstr "Eier"
+
+#: lib/RT/Ticket_Overlay.pm:3071
+#. ($OldOwnerObj->Name,  $NewOwnerObj->Name)
+msgid "Owner changed from %1 to %2"
+msgstr "Eier endret fra %1 til %2"
+
+#: lib/RT/Transaction_Overlay.pm:582
+#. ($Old->Name , $New->Name)
+msgid "Owner forcibly changed from %1 to %2"
+msgstr "Eier ble tvunget til å endres fra %1 til %2"
+
+#: html/Search/Elements/PickRestriction:31
+msgid "Owner is"
+msgstr "Eier er"
+
+#: html/Admin/Users/Modify.html:174 html/User/Prefs.html:56
+msgid "Pager"
+msgstr "Personsøker"
+
+#: html/Admin/Elements/ModifyUser:74
+msgid "PagerPhone"
+msgstr "PersonSøker"
+
+#: NOT FOUND IN SOURCE
+msgid "Parent"
+msgstr "Forelder"
+
+#: html/Ticket/Create.html:182 html/Ticket/Elements/EditLinks:127 html/Ticket/Elements/EditLinks:58 html/Ticket/Elements/ShowLinks:47
+msgid "Parents"
+msgstr "Foreldre"
+
+#: html/Elements/Login:52 html/User/Prefs.html:61
+msgid "Password"
+msgstr "Passord"
+
+#: html/NoAuth/Reminder.html:25
+msgid "Password Reminder"
+msgstr "Passordhint"
+
+#: lib/RT/User_Overlay.pm:169 lib/RT/User_Overlay.pm:868
+msgid "Password too short"
+msgstr "For kort passord"
+
+#: html/Admin/Users/Modify.html:291 html/User/Prefs.html:172
+#. (loc_fuzzy($msg))
+msgid "Password: %1"
+msgstr "Passord: %1"
+
+#: html/Admin/Users/Modify.html:293
+msgid "Passwords do not match."
+msgstr "Passordene stemmer ikke overens."
+
+#: html/User/Prefs.html:174
+msgid "Passwords do not match. Your password has not been changed"
+msgstr "Passordene stemmer ikke overrens. Passordet ble ikke endret"
+
+#: html/Ticket/Elements/ShowSummary:45 html/Ticket/Elements/Tabs:96 html/Ticket/ModifyAll.html:51
+msgid "People"
+msgstr "Folk"
+
+#: etc/initialdata:126
+msgid "Perform a user-defined action"
+msgstr "Kjør en brukerdefinert handling"
+
+#: lib/RT/ACE_Overlay.pm:231 lib/RT/ACE_Overlay.pm:237 lib/RT/ACE_Overlay.pm:563 lib/RT/ACE_Overlay.pm:573 lib/RT/ACE_Overlay.pm:583 lib/RT/ACE_Overlay.pm:648 lib/RT/CurrentUser.pm:83 lib/RT/CurrentUser.pm:92 lib/RT/CustomField_Overlay.pm:101 lib/RT/CustomField_Overlay.pm:202 lib/RT/CustomField_Overlay.pm:234 lib/RT/CustomField_Overlay.pm:511 lib/RT/CustomField_Overlay.pm:91 lib/RT/Group_Overlay.pm:1095 lib/RT/Group_Overlay.pm:1099 lib/RT/Group_Overlay.pm:1108 lib/RT/Group_Overlay.pm:1159 lib/RT/Group_Overlay.pm:1163 lib/RT/Group_Overlay.pm:1169 lib/RT/Group_Overlay.pm:426 lib/RT/Group_Overlay.pm:518 lib/RT/Group_Overlay.pm:596 lib/RT/Group_Overlay.pm:604 lib/RT/Group_Overlay.pm:701 lib/RT/Group_Overlay.pm:705 lib/RT/Group_Overlay.pm:711 lib/RT/Group_Overlay.pm:904 lib/RT/Group_Overlay.pm:908 lib/RT/Group_Overlay.pm:921 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:550 lib/RT/Queue_Overlay.pm:564 lib/RT/Queue_Overlay.pm:699 lib/RT/Queue_Overlay.pm:708 lib/RT/Queue_Overlay.pm:721 lib/RT/Queue_Overlay.pm:931 lib/RT/Scrip_Overlay.pm:126 lib/RT/Scrip_Overlay.pm:137 lib/RT/Scrip_Overlay.pm:197 lib/RT/Scrip_Overlay.pm:430 lib/RT/Template_Overlay.pm:284 lib/RT/Template_Overlay.pm:88 lib/RT/Template_Overlay.pm:94 lib/RT/Ticket_Overlay.pm:1341 lib/RT/Ticket_Overlay.pm:1351 lib/RT/Ticket_Overlay.pm:1365 lib/RT/Ticket_Overlay.pm:1518 lib/RT/Ticket_Overlay.pm:1527 lib/RT/Ticket_Overlay.pm:1540 lib/RT/Ticket_Overlay.pm:1875 lib/RT/Ticket_Overlay.pm:2013 lib/RT/Ticket_Overlay.pm:2177 lib/RT/Ticket_Overlay.pm:2244 lib/RT/Ticket_Overlay.pm:2603 lib/RT/Ticket_Overlay.pm:2675 lib/RT/Ticket_Overlay.pm:2769 lib/RT/Ticket_Overlay.pm:2784 lib/RT/Ticket_Overlay.pm:2978 lib/RT/Ticket_Overlay.pm:3206 lib/RT/Ticket_Overlay.pm:3404 lib/RT/Ticket_Overlay.pm:3566 lib/RT/Ticket_Overlay.pm:3618 lib/RT/Ticket_Overlay.pm:3783 lib/RT/Transaction_Overlay.pm:466 lib/RT/Transaction_Overlay.pm:473 lib/RT/Transaction_Overlay.pm:502 lib/RT/Transaction_Overlay.pm:509 lib/RT/User_Overlay.pm:1355 lib/RT/User_Overlay.pm:570 lib/RT/User_Overlay.pm:605 lib/RT/User_Overlay.pm:861 lib/RT/User_Overlay.pm:962
+msgid "Permission Denied"
+msgstr "Ingen Tilgang"
+
+#: html/User/Elements/Tabs:35
+msgid "Personal Groups"
+msgstr "Personlige Grupper"
+
+#: html/User/Groups/index.html:30 html/User/Groups/index.html:40
+msgid "Personal groups"
+msgstr "Personlige grupper"
+
+#: html/User/Elements/DelegateRights:37
+msgid "Personal groups:"
+msgstr "Personlige grupper:"
+
+#: html/Admin/Users/Modify.html:156 html/User/Prefs.html:49
+msgid "Phone numbers"
+msgstr "Telefonnummer"
+
+#: NOT FOUND IN SOURCE
+msgid "Placeholder"
+msgstr "Stedholder"
+
+#: NOT FOUND IN SOURCE
+msgid "Pref"
+msgstr "Pref"
+
+#: html/Elements/Header:52 html/Elements/Tabs:53 html/SelfService/Elements/Tabs:51 html/SelfService/Prefs.html:25 html/User/Prefs.html:25 html/User/Prefs.html:28
+msgid "Preferences"
+msgstr "Instillinger"
+
+#: NOT FOUND IN SOURCE
+msgid "Prefs"
+msgstr "Pref"
+
+#: lib/RT/Action/Generic.pm:160
+msgid "Prepare Stubbed"
+msgstr "Klargjør Forkortet"
+
+#: html/Ticket/Elements/Tabs:61
+msgid "Prev"
+msgstr "Forrige"
+
+#: html/Search/Listing.html:44
+msgid "Previous page"
+msgstr "Forrige side"
+
+#: NOT FOUND IN SOURCE
+msgid "Pri"
+msgstr "Pri"
+
+#: lib/RT/ACE_Overlay.pm:133 lib/RT/ACE_Overlay.pm:208 lib/RT/ACE_Overlay.pm:552
+#. ($args{'PrincipalId'})
+msgid "Principal %1 not found."
+msgstr "Primær %1 ikke funnet."
+
+#: html/Search/Elements/PickRestriction:54 html/Ticket/Create.html:154 html/Ticket/Elements/EditBasics:54 html/Ticket/Elements/ShowBasics:39 lib/RT/Tickets_Overlay.pm:1042
+msgid "Priority"
+msgstr "Prioritet"
+
+#: html/Admin/Elements/ModifyQueue:51 html/Admin/Queues/Modify.html:65
+msgid "Priority starts at"
+msgstr "Prioritet starter på"
+
+#: etc/initialdata:25
+msgid "Privileged"
+msgstr "Priviligert"
+
+#: html/Admin/Users/Modify.html:271 html/User/Prefs.html:163
+#. (loc_fuzzy($msg))
+msgid "Privileged status: %1"
+msgstr "Priviligert status: %1"
+
+#: html/Admin/Users/index.html:62
+msgid "Privileged users"
+msgstr "Priviligerte brukere"
+
+#: etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
+msgid "Pseudogroup for internal use"
+msgstr "Pseduogruppe for intern bruk"
+
+#: html/Elements/MyRequests:30 html/Elements/MyTickets:30 html/Elements/Quicksearch:29 html/Search/Elements/PickRestriction:46 html/SelfService/Create.html:33 html/Ticket/Create.html:38 html/Ticket/Elements/EditBasics:64 html/Ticket/Elements/ShowBasics:43 html/User/Elements/DelegateRights:80 lib/RT/Tickets_Overlay.pm:883
+msgid "Queue"
+msgstr "Kø"
+
+#: html/Admin/Queues/CustomField.html:42 html/Admin/Queues/Scrip.html:50 html/Admin/Queues/Scrips.html:46 html/Admin/Queues/Templates.html:44
+#. ($Queue)
+#. ($id)
+msgid "Queue %1 not found"
+msgstr "Køen %1 kunne ikke finnes"
+
+#: NOT FOUND IN SOURCE
+msgid "Queue '%1' not found\\n"
+msgstr "Køen '%1' ikke funnet\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Queue Keyword Selections"
+msgstr "Nøkkelordvalg for kø"
+
+#: html/Admin/Elements/ModifyQueue:31 html/Admin/Queues/Modify.html:43
+msgid "Queue Name"
+msgstr "Kønavn"
+
+#: NOT FOUND IN SOURCE
+msgid "Queue Scrips"
+msgstr "Køscrip"
+
+#: lib/RT/Queue_Overlay.pm:263
+msgid "Queue already exists"
+msgstr "Køen eksisterer allerede"
+
+#: lib/RT/Queue_Overlay.pm:272 lib/RT/Queue_Overlay.pm:278
+msgid "Queue could not be created"
+msgstr "Køen kunne ikke opprettes"
+
+#: html/Ticket/Create.html:205
+msgid "Queue could not be loaded."
+msgstr "Køen kunne ikke lastes."
+
+#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:282
+msgid "Queue created"
+msgstr "Køen opprettet"
+
+#: NOT FOUND IN SOURCE
+msgid "Queue is not specified."
+msgstr "Køen er ikke oppgitt."
+
+#: html/SelfService/Display.html:71 lib/RT/CustomField_Overlay.pm:98
+msgid "Queue not found"
+msgstr "Køen ikke funnet"
+
+#: html/Admin/Elements/Tabs:38 html/Admin/index.html:35
+msgid "Queues"
+msgstr "Køer"
+
+#: html/Elements/Quicksearch:25
+msgid "Quick search"
+msgstr "Raskt søk"
+
+#: html/Elements/Login:44
+#. ($RT::VERSION)
+msgid "RT %1"
+msgstr "RT %1"
+
+#: docs/design_docs/string-extraction-guide.txt:70
+#. ($RT::VERSION, $RT::rtname)
+msgid "RT %1 for %2"
+msgstr "RT %1 for %2"
+
+#: html/Elements/Footer:32
+#. ($RT::VERSION)
+msgid "RT %1 from <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
+msgstr "RT %1 fra <a href=\"http://bestpractical.com\">Best Practical Solutions, LLC</a>."
+
+#: NOT FOUND IN SOURCE
+msgid "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+msgstr "RT %1. Copyright 1996-2002 Jesse Vincent <jesse\\@bestpractical.com>\\n"
+
+#: html/Admin/index.html:25 html/Admin/index.html:26
+msgid "RT Administration"
+msgstr "RT-administrasjon"
+
+#: NOT FOUND IN SOURCE
+msgid "RT Authentication error."
+msgstr "RT Autentiseringsfeil."
+
+#: NOT FOUND IN SOURCE
+msgid "RT Bounce: %1"
+msgstr "RT Avvisning: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "RT Configuration error"
+msgstr "RT Konfigurasjonsfeil"
+
+#: NOT FOUND IN SOURCE
+msgid "RT Critical error. Message not recorded!"
+msgstr "Kritisk RT feil. Meldingen ble ikke lagret!"
+
+#: html/Elements/Error:41 html/SelfService/Error.html:41
+msgid "RT Error"
+msgstr "RT Feil"
+
+#: NOT FOUND IN SOURCE
+msgid "RT Received mail (%1) from itself."
+msgstr "RT Mottok mail (%1) fra seg selv."
+
+#: NOT FOUND IN SOURCE
+msgid "RT Recieved mail (%1) from itself."
+msgstr "RT Mottok mail (%1) fra seg selv."
+
+#: NOT FOUND IN SOURCE
+msgid "RT Self Service / Closed Tickets"
+msgstr "RT Selvbetjening / Lukkede Saker"
+
+#: html/index.html:25 html/index.html:28
+msgid "RT at a glance"
+msgstr "RT oversikt"
+
+#: NOT FOUND IN SOURCE
+msgid "RT couldn't authenticate you"
+msgstr "RT kunne ikke autentisere deg"
+
+#: NOT FOUND IN SOURCE
+msgid "RT couldn't find requestor via its external database lookup"
+msgstr "RT kunne ikke finne kunde via sitt eksterne databaseoppslag"
+
+#: NOT FOUND IN SOURCE
+msgid "RT couldn't find the queue: %1"
+msgstr "RT kunne ikke finne køen: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "RT couldn't validate this PGP signature. \\n"
+msgstr "RT kunne ikke validere denne PGP signaturen. \\n" 
+
+#: html/Elements/PageLayout:26
+#. ($RT::rtname)
+msgid "RT for %1"
+msgstr "RT for %1"
+
+#: NOT FOUND IN SOURCE
+msgid "RT for %1: %2"
+msgstr "RT for %1: %2"
+
+#: NOT FOUND IN SOURCE
+msgid "RT has proccessed your commands"
+msgstr "RT har behandlet dine kommandoer"
+
+#: html/Elements/Login:92
+#. ('2003')
+msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RT er &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Den er distribuert under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>""
+
+#: NOT FOUND IN SOURCE
+msgid "RT is &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
+msgstr "RT er &copy; Copyright 1996-2002 Jesse Vincent &lt;jesse@bestpractical.com&gt;. Den er distribuert under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>""
+
+#: NOT FOUND IN SOURCE
+msgid "RT thinks this message may be a bounce"
+msgstr "RT tror denne meldingen kan være en returmail"
+
+#: NOT FOUND IN SOURCE
+msgid "RT will process this message as if it were unsigned.\\n"
+msgstr "RT vil behandle denne meldingen som om den var usignert"
+
+#: NOT FOUND IN SOURCE
+msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
+msgstr "RT's epost kommandomodus krever PGP autentisering. Meldingen din var enten ikke signert, eller signaturen din kunne ikke bekreftes."
+
+#: html/Admin/Users/Modify.html:58 html/Admin/Users/Prefs.html:52 html/User/Prefs.html:44
+msgid "Real Name"
+msgstr "Ekte Navn"
+
+#: html/Admin/Elements/ModifyUser:48
+msgid "RealName"
+msgstr "EkteNavn"
+
+#: html/Ticket/Create.html:185 html/Ticket/Elements/EditLinks:139 html/Ticket/Elements/EditLinks:94 html/Ticket/Elements/ShowLinks:71
+msgid "Referred to by"
+msgstr "Referert til av"
+
+#: html/Elements/SelectLinkType:28 html/Ticket/Create.html:184 html/Ticket/Elements/EditLinks:135 html/Ticket/Elements/EditLinks:80 html/Ticket/Elements/ShowLinks:61
+msgid "Refers to"
+msgstr "Refererer til"
+
+#: NOT FOUND IN SOURCE
+msgid "RefersTo"
+msgstr "RefererTil"
+
+#: NOT FOUND IN SOURCE
+msgid "Refine"
+msgstr "Redefiner"
+
+#: html/Search/Elements/PickRestriction:27
+msgid "Refine search"
+msgstr "Redefiner søket"
+
+#: html/Elements/Refresh:36
+#. ($value/60)
+msgid "Refresh this page every %1 minutes."
+msgstr "Last siden pÂ nytt hvert %1 minutt."
+
+#: html/Ticket/Create.html:174 html/Ticket/Elements/ShowSummary:62 html/Ticket/ModifyAll.html:57
+msgid "Relationships"
+msgstr "Forhold"
+
+#: html/Search/Bulk.html:93
+msgid "Remove AdminCc"
+msgstr "Fjern AdminCc"
+
+#: html/Search/Bulk.html:91
+msgid "Remove Cc"
+msgstr "Fjern Cc"
+
+#: html/Search/Bulk.html:89
+msgid "Remove Requestor"
+msgstr "Fjern Kunde"
+
+#: html/Ticket/Elements/ShowTransaction:173 html/Ticket/Elements/Tabs:122
+msgid "Reply"
+msgstr "Svar"
+
+#: lib/RT/Queue_Overlay.pm:85
+msgid "Reply to tickets"
+msgstr "Svar pÂ sak"
+
+#: lib/RT/Queue_Overlay.pm:85
+msgid "ReplyToTicket"
+msgstr "SvarPÂSak"
+
+#: etc/initialdata:44 html/Ticket/Update.html:40 lib/RT/ACE_Overlay.pm:87
+msgid "Requestor"
+msgstr "Kunde"
+
+#: html/Search/Elements/PickRestriction:38
+msgid "Requestor email address"
+msgstr "Kundens epostaddresse"
+
+#: NOT FOUND IN SOURCE
+msgid "Requestor(s)"
+msgstr "Kunde(r)"
+
+#: NOT FOUND IN SOURCE
+msgid "RequestorAddresses"
+msgstr "KundeAddresser"
+
+#: html/SelfService/Create.html:41 html/Ticket/Create.html:56 html/Ticket/Elements/EditPeople:48 html/Ticket/Elements/ShowPeople:31
+msgid "Requestors"
+msgstr "Kunder"
+
+#: html/Admin/Elements/ModifyQueue:61 html/Admin/Queues/Modify.html:75
+msgid "Requests should be due in"
+msgstr "Forespørsler skal være behandlet innen"
+
+#: html/Elements/Submit:62
+msgid "Reset"
+msgstr "Reset"
+
+#: html/Admin/Users/Modify.html:159 html/User/Prefs.html:50
+msgid "Residence"
+msgstr "Hjemme"
+
+#: html/Ticket/Elements/Tabs:132
+msgid "Resolve"
+msgstr "Løs"
+
+#: html/Ticket/Update.html:133
+#. ($Ticket->id, $Ticket->Subject)
+msgid "Resolve ticket #%1 (%2)"
+msgstr "Løs saknr #%1 (%2)"
+
+#: etc/initialdata:308 html/Elements/SelectDateType:28 lib/RT/Ticket_Overlay.pm:1170
+msgid "Resolved"
+msgstr "Løst"
+
+#: html/Search/Bulk.html:123 html/Ticket/ModifyAll.html:73 html/Ticket/Update.html:73
+msgid "Response to requestors"
+msgstr "Svar til kunder"
+
+#: html/Elements/ListActions:26
+msgid "Results"
+msgstr "Resultater"
+
+#: html/Search/Elements/PickRestriction:105
+msgid "Results per page"
+msgstr "Resultater per side"
+
+#: html/Admin/Elements/ModifyUser:33 html/Admin/Users/Modify.html:100 html/User/Prefs.html:72
+msgid "Retype Password"
+msgstr "Skriv Passord igjen"
+
+#: NOT FOUND IN SOURCE
+msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
+msgstr "Rettighet %1 kunne ikke finnes for %2  %3 in scope %4 (%5)\\n"
+
+#: lib/RT/ACE_Overlay.pm:613
+msgid "Right Delegated"
+msgstr "Rettighet Deligert"
+
+#: lib/RT/ACE_Overlay.pm:303
+msgid "Right Granted"
+msgstr "Rettighet Tildelt"
+
+#: lib/RT/ACE_Overlay.pm:161
+msgid "Right Loaded"
+msgstr "Rettighet lastet"
+
+#: lib/RT/ACE_Overlay.pm:678 lib/RT/ACE_Overlay.pm:693
+msgid "Right could not be revoked"
+msgstr "Rettigheten kunne ikke trekkes tilbake"
+
+#: html/User/Delegation.html:64
+msgid "Right not found"
+msgstr "Rettighet ikke funnet"
+
+#: lib/RT/ACE_Overlay.pm:543 lib/RT/ACE_Overlay.pm:638
+msgid "Right not loaded."
+msgstr "Rettighet ikke lastet."
+
+#: lib/RT/ACE_Overlay.pm:689
+msgid "Right revoked"
+msgstr "Rettighet fjernet"
+
+#: html/Admin/Elements/UserTabs:41
+msgid "Rights"
+msgstr "Rettigheter"
+
+#: lib/RT/Interface/Web.pm:792
+#. ($object_type)
+msgid "Rights could not be granted for %1"
+msgstr "Rettigheter kunne ikke tildeles for %1"
+
+#: lib/RT/Interface/Web.pm:825
+#. ($object_type)
+msgid "Rights could not be revoked for %1"
+msgstr "Rettigheter kunne ikke trekkes tilbake for %1"
+
+#: html/Admin/Global/GroupRights.html:51 html/Admin/Queues/GroupRights.html:52
+msgid "Roles"
+msgstr "Roller"
+
+#: NOT FOUND IN SOURCE
+msgid "RootApproval"
+msgstr "RootGodkjenning"
+
+#: lib/RT/Date.pm:393
+msgid "Sat."
+msgstr "Lør."
+
+#: html/Admin/Queues/People.html:105 html/Ticket/Modify.html:39 html/Ticket/ModifyAll.html:94 html/Ticket/ModifyLinks.html:39 html/Ticket/ModifyPeople.html:38
+msgid "Save Changes"
+msgstr "Lagre Endringer"
+
+#: NOT FOUND IN SOURCE
+msgid "Save changes"
+msgstr "Lage endringer"
+
+#: html/Admin/Global/Scrip.html:49
+#. ($ARGS{'id'})
+msgid "Scrip #%1"
+msgstr "Scrip #%1"
+
+#: lib/RT/Scrip_Overlay.pm:176
+msgid "Scrip Created"
+msgstr "Scrip Opprettet"
+
+#: html/Admin/Elements/EditScrips:84
+msgid "Scrip deleted"
+msgstr "Scrip slettet"
+
+#: html/Admin/Elements/QueueTabs:46 html/Admin/Elements/SystemTabs:33 html/Admin/Global/index.html:41
+msgid "Scrips"
+msgstr "Scrip"
+
+#: NOT FOUND IN SOURCE
+msgid "Scrips for %1\\n"
+msgstr "Scrip for %1\\n"
+
+#: html/Admin/Queues/Scrips.html:33
+msgid "Scrips which apply to all queues"
+msgstr "Scrip som gjelder for alle køer"
+
+#: html/Elements/SimpleSearch:27 html/Search/Elements/PickRestriction:126 html/Ticket/Elements/Tabs:159
+msgid "Search"
+msgstr "Søk"
+
+#: NOT FOUND IN SOURCE
+msgid "Search Criteria"
+msgstr "Søkekriteria"
+
+#: html/Approvals/Elements/PendingMyApproval:39
+msgid "Search for approvals"
+msgstr "Søk etter godkjenninger"
+
+#: bin/rt-crontool:188
+msgid "Security:"
+msgstr "Sikkerhet:"
+
+#: lib/RT/Queue_Overlay.pm:67
+msgid "SeeQueue"
+msgstr "SeKø"
+
+#: html/Admin/Groups/index.html:40
+msgid "Select a group"
+msgstr "Velg en gruppe"
+
+#: NOT FOUND IN SOURCE
+msgid "Select a queue"
+msgstr "Velg en kø"
+
+#: html/Admin/Users/index.html:25 html/Admin/Users/index.html:28
+msgid "Select a user"
+msgstr "Velg en bruker"
+
+#: html/Admin/Global/CustomField.html:38 html/Admin/Global/CustomFields.html:36
+msgid "Select custom field"
+msgstr "Velg fleksifelt"
+
+#: html/Admin/Elements/GroupTabs:52 html/User/Elements/GroupTabs:50
+msgid "Select group"
+msgstr "Velg gruppe"
+
+#: lib/RT/CustomField_Overlay.pm:422
+msgid "Select multiple values"
+msgstr "Velg flere verdier"
+
+#: lib/RT/CustomField_Overlay.pm:419
+msgid "Select one value"
+msgstr "Velg en verdi"
+
+#: html/Admin/Elements/QueueTabs:67
+msgid "Select queue"
+msgstr "Velg kø"
+
+#: html/Admin/Global/Scrip.html:37 html/Admin/Global/Scrips.html:36 html/Admin/Queues/Scrip.html:40 html/Admin/Queues/Scrips.html:50
+msgid "Select scrip"
+msgstr "Velg scrip"
+
+#: html/Admin/Global/Template.html:57 html/Admin/Global/Templates.html:36 html/Admin/Queues/Template.html:55 html/Admin/Queues/Templates.html:47
+msgid "Select template"
+msgstr "Velg mal"
+
+#: html/Admin/Elements/UserTabs:49
+msgid "Select user"
+msgstr "Velg bruker"
+
+#: lib/RT/CustomField_Overlay.pm:36
+msgid "SelectMultiple"
+msgstr "VelgFlere"
+
+#: lib/RT/CustomField_Overlay.pm:35
+msgid "SelectSingle"
+msgstr "VelgEnkelt"
+
+#: NOT FOUND IN SOURCE
+msgid "Self Service"
+msgstr "Selvbetjening"
+
+#: etc/initialdata:114
+msgid "Send mail to all watchers"
+msgstr "Send epost til alle overvåkere"
+
+#: etc/initialdata:110
+msgid "Send mail to all watchers as a \"comment\""
+msgstr "Send epost til alle overvåkere som \"kommentar\""
+
+#: etc/initialdata:105
+msgid "Send mail to requestors and Ccs"
+msgstr "Send epost til kunder og Cc"
+
+#: etc/initialdata:100
+msgid "Send mail to requestors and Ccs as a comment"
+msgstr "Send epost til kunder og Cc som kommentar"
+
+#: etc/initialdata:79
+msgid "Sends a message to the requestors"
+msgstr "Sender en melding til kundene"
+
+#: etc/initialdata:118 etc/initialdata:122
+msgid "Sends mail to explicitly listed Ccs and Bccs"
+msgstr "Send epost til eksplisit oppgitte Ccer og Bccer"
+
+#: etc/initialdata:95
+msgid "Sends mail to the administrative Ccs"
+msgstr "Send epost til Administrative Ccer"
+
+#: etc/initialdata:91
+msgid "Sends mail to the administrative Ccs as a comment"
+msgstr "Sender epost til de administrative Ccene som kommentar"
+
+#: etc/initialdata:83 etc/initialdata:87
+msgid "Sends mail to the owner"
+msgstr "Sender epost til eieren"
+
+#: lib/RT/Date.pm:419
+msgid "Sep."
+msgstr "Sep."
+
+#: NOT FOUND IN SOURCE
+msgid "September"
+msgstr "September"
+
+#: NOT FOUND IN SOURCE
+msgid "Show Results"
+msgstr "Vis Resultater"
+
+#: html/Approvals/Elements/PendingMyApproval:44
+msgid "Show approved requests"
+msgstr "Vis godkjente forespørsler"
+
+#: html/Ticket/Create.html:144 html/Ticket/Create.html:34
+msgid "Show basics"
+msgstr "Vis basisinfo"
+
+#: html/Approvals/Elements/PendingMyApproval:45
+msgid "Show denied requests"
+msgstr "Vis avviste forespørsler"
+
+#: html/Ticket/Create.html:144 html/Ticket/Create.html:34
+msgid "Show details"
+msgstr "Vis detaljer"
+
+#: html/Approvals/Elements/PendingMyApproval:43
+msgid "Show pending requests"
+msgstr "Vis ventende forespørsler"
+
+#: html/Approvals/Elements/PendingMyApproval:46
+msgid "Show requests awaiting other approvals"
+msgstr "Vis forespørsler som venter på andre godkjenninger"
+
+#: lib/RT/Queue_Overlay.pm:81
+msgid "Show ticket private commentary"
+msgstr "Vis sakens private kommentarer"
+
+#: lib/RT/Queue_Overlay.pm:79
+msgid "Show ticket summaries"
+msgstr "Vis sakssammendrag"
+
+#: lib/RT/Queue_Overlay.pm:69
+msgid "ShowACL"
+msgstr "VisACL"
+
+#: lib/RT/Queue_Overlay.pm:78
+msgid "ShowScrips"
+msgstr "VisScrip"
+
+#: lib/RT/Queue_Overlay.pm:75
+msgid "ShowTemplate"
+msgstr "VisMal"
+
+#: lib/RT/Queue_Overlay.pm:79
+msgid "ShowTicket"
+msgstr "VisSak"
+
+#: lib/RT/Queue_Overlay.pm:81
+msgid "ShowTicketComments"
+msgstr "VisSaksKommentarer"
+
+#: lib/RT/Queue_Overlay.pm:82
+msgid "Sign up as a ticket Requestor or ticket or queue Cc"
+msgstr "Meld deg på som saksforespørrer eller sak/kø Cc"
+
+#: lib/RT/Queue_Overlay.pm:83
+msgid "Sign up as a ticket or queue AdminCc"
+msgstr "Meld deg på som sak/kø AdminCc"
+
+#: html/Admin/Elements/ModifyUser:39 html/Admin/Users/Modify.html:191 html/Admin/Users/Prefs.html:32 html/User/Prefs.html:112
+msgid "Signature"
+msgstr "Signatur"
+
+#: NOT FOUND IN SOURCE
+msgid "Signed in as %1"
+msgstr "Logget inn som %1"
+
+#: html/Admin/Elements/SelectSingleOrMultiple:26
+msgid "Single"
+msgstr "Enkel"
+
+#: html/Elements/Header:51
+msgid "Skip Menu"
+msgstr "Dropp Meny"
+
+#: html/Admin/Elements/AddCustomFieldValue:29
+msgid "Sort"
+msgstr "Sorter"
+
+#: NOT FOUND IN SOURCE
+msgid "Sort key"
+msgstr "Sorter nøkkel"
+
+#: html/Search/Elements/PickRestriction:109
+msgid "Sort results by"
+msgstr "Sorter resultater etter"
+
+#: NOT FOUND IN SOURCE
+msgid "SortOrder"
+msgstr "SorteringsRekkefølge"
+
+#: NOT FOUND IN SOURCE
+msgid "Stalled"
+msgstr "Pauset"
+
+#: NOT FOUND IN SOURCE
+msgid "Start page"
+msgstr "Startside"
+
+#: html/Elements/SelectDateType:27 html/Ticket/Elements/EditDates:32 html/Ticket/Elements/ShowDates:35
+msgid "Started"
+msgstr "Startet"
+
+#: NOT FOUND IN SOURCE
+msgid "Started date '%1' could not be parsed"
+msgstr "Startdato '%1' kunne ikke tolkes"
+
+#: html/Elements/SelectDateType:31 html/Ticket/Create.html:166 html/Ticket/Elements/EditDates:27 html/Ticket/Elements/ShowDates:31
+msgid "Starts"
+msgstr "Starter"
+
+#: NOT FOUND IN SOURCE
+msgid "Starts By"
+msgstr "Starter Etter"
+
+#: NOT FOUND IN SOURCE
+msgid "Starts date '%1' could not be parsed"
+msgstr "Startdato '%1' kunne ikke tolkes"
+
+#: html/Admin/Elements/ModifyUser:82 html/Admin/Users/Modify.html:138 html/User/Prefs.html:94
+msgid "State"
+msgstr "Stat"
+
+#: html/Elements/MyRequests:31 html/Elements/MyTickets:31 html/Search/Elements/PickRestriction:74 html/SelfService/Elements/MyRequests:29 html/SelfService/Update.html:31 html/Ticket/Create.html:42 html/Ticket/Elements/EditBasics:38 html/Ticket/Elements/ShowBasics:31 html/Ticket/Update.html:60 lib/RT/Ticket_Overlay.pm:1164 lib/RT/Tickets_Overlay.pm:908
+msgid "Status"
+msgstr "Status"
+
+#: etc/initialdata:294
+msgid "Status Change"
+msgstr "Statusendring"
+
+#: lib/RT/Transaction_Overlay.pm:528
+#. ($self->loc($self->OldValue), $self->loc($self->NewValue))
+msgid "Status changed from %1 to %2"
+msgstr "Status endret fra %1 til %2"
+
+#: NOT FOUND IN SOURCE
+msgid "StatusChange"
+msgstr "EndreStatus"
+
+#: html/Ticket/Elements/Tabs:147
+msgid "Steal"
+msgstr "Stjel"
+
+#: lib/RT/Transaction_Overlay.pm:587
+#. ($Old->Name)
+msgid "Stolen from %1 "
+msgstr "Stjålet fra %1 "
+
+#: html/Elements/MyRequests:29 html/Elements/MyTickets:29 html/Search/Bulk.html:126 html/Search/Elements/PickRestriction:43 html/SelfService/Create.html:57 html/SelfService/Elements/MyRequests:28 html/SelfService/Update.html:32 html/Ticket/Create.html:84 html/Ticket/Elements/EditBasics:28 html/Ticket/ModifyAll.html:79 html/Ticket/Update.html:77 lib/RT/Ticket_Overlay.pm:1160 lib/RT/Tickets_Overlay.pm:987
+msgid "Subject"
+msgstr "Emne"
+
+#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/Transaction_Overlay.pm:609
+#. ($self->Data)
+msgid "Subject changed to %1"
+msgstr "Endre emne til %1"
+
+#: html/Elements/Submit:59
+msgid "Submit"
+msgstr "Oppdater"
+
+#: NOT FOUND IN SOURCE
+msgid "Submit Workflow"
+msgstr "Send Arbeidsflyt"
+
+#: lib/RT/Group_Overlay.pm:749
+msgid "Succeeded"
+msgstr "Lykkes"
+
+#: lib/RT/Date.pm:394
+msgid "Sun."
+msgstr "Søn."
+
+#: lib/RT/System.pm:54
+msgid "SuperUser"
+msgstr "SuperBruker"
+
+#: html/User/Elements/DelegateRights:77
+msgid "System"
+msgstr "System"
+
+#: html/Admin/Elements/SelectRights:81 lib/RT/ACE_Overlay.pm:567 lib/RT/Interface/Web.pm:791 lib/RT/Interface/Web.pm:824
+msgid "System Error"
+msgstr "Systemfeil"
+
+#: NOT FOUND IN SOURCE
+msgid "System Error. Right not granted."
+msgstr "Systemfeil. Rettighet ikke tildelt."
+
+#: NOT FOUND IN SOURCE
+msgid "System Error. right not granted"
+msgstr "Systemfeil. rettigheter ikke tildelt"
+
+#: lib/RT/ACE_Overlay.pm:616
+msgid "System error. Right not delegated."
+msgstr "Systemfeil. Rettighet ikke tildelt."
+
+#: lib/RT/ACE_Overlay.pm:146 lib/RT/ACE_Overlay.pm:223 lib/RT/ACE_Overlay.pm:306 lib/RT/ACE_Overlay.pm:898
+msgid "System error. Right not granted."
+msgstr "Systemfeil. Rettighet ikke tildelt."
+
+#: NOT FOUND IN SOURCE
+msgid "System error. Unable to grant rights."
+msgstr "Systemfeil. Kunne ikke tildele rettigheter."
+
+#: html/Admin/Global/GroupRights.html:35 html/Admin/Groups/GroupRights.html:37 html/Admin/Queues/GroupRights.html:36
+msgid "System groups"
+msgstr "Systemgrupper"
+
+#: etc/initialdata:41 etc/initialdata:47 etc/initialdata:53
+msgid "SystemRolegroup for internal use"
+msgstr "SystemRollegruppe for intern bruk"
+
+#: lib/RT/CurrentUser.pm:318
+msgid "TEST_STRING"
+msgstr "TEST_STRENG"
+
+#: html/Ticket/Elements/Tabs:143
+msgid "Take"
+msgstr "Ta"
+
+#: lib/RT/Transaction_Overlay.pm:573
+msgid "Taken"
+msgstr "Tatt"
+
+#: html/Admin/Elements/EditScrip:81
+msgid "Template"
+msgstr "Mal"
+
+#: html/Admin/Global/Template.html:91 html/Admin/Queues/Template.html:90
+#. ($TemplateObj->Id())
+msgid "Template #%1"
+msgstr "Mal #%1"
+
+#: html/Admin/Elements/EditTemplates:89
+msgid "Template deleted"
+msgstr "Mal slettet"
+
+#: lib/RT/Scrip_Overlay.pm:153
+msgid "Template not found"
+msgstr "Kunne ikke finne mal"
+
+#: NOT FOUND IN SOURCE
+msgid "Template not found\\n"
+msgstr "Kunne ikke finne mal\\n"
+
+#: lib/RT/Template_Overlay.pm:347
+msgid "Template parsed"
+msgstr "Mal tolket"
+
+#: html/Admin/Elements/QueueTabs:49 html/Admin/Elements/SystemTabs:36 html/Admin/Global/index.html:45
+msgid "Templates"
+msgstr "Maler"
+
+#: NOT FOUND IN SOURCE
+msgid "Templates for %1\\n"
+msgstr "Maler for %1\\n"
+
+#: lib/RT/Interface/Web.pm:892
+msgid "That is already the current value"
+msgstr "Verdien er allerede satt"
+
+#: lib/RT/CustomField_Overlay.pm:243
+msgid "That is not a value for this custom field"
+msgstr "Det er ikke en verdi for dette fleksifeltet"
+
+#: lib/RT/Ticket_Overlay.pm:1886
+msgid "That is the same value"
+msgstr "Det er den samme verdien"
+
+#: lib/RT/ACE_Overlay.pm:288 lib/RT/ACE_Overlay.pm:597
+msgid "That principal already has that right"
+msgstr "Den primæren har allerede den rettigheten"
+
+#: lib/RT/Queue_Overlay.pm:633
+#. ($args{'Type'})
+msgid "That principal is already a %1 for this queue"
+msgstr "Den primæren er allerede en %1 for denne køen"
+
+#: lib/RT/Ticket_Overlay.pm:1434
+#. ($self->loc($args{'Type'}))
+msgid "That principal is already a %1 for this ticket"
+msgstr "Den primæren er allerede en %1 for denne køen"
+
+#: lib/RT/Queue_Overlay.pm:732
+#. ($args{'Type'})
+msgid "That principal is not a %1 for this queue"
+msgstr "Den primæren er ikke en %1 for denne køen"
+
+#: lib/RT/Ticket_Overlay.pm:1551
+#. ($args{'Type'})
+msgid "That principal is not a %1 for this ticket"
+msgstr "Den primæren er ikke en %1 for denne saken"
+
+#: lib/RT/Ticket_Overlay.pm:1882
+msgid "That queue does not exist"
+msgstr "Den køen eksisterer ikke"
+
+#: lib/RT/Ticket_Overlay.pm:3210
+msgid "That ticket has unresolved dependencies"
+msgstr "Denne saken har uløste avhengigheter"
+
+#: NOT FOUND IN SOURCE
+msgid "That user already has that right"
+msgstr "Den brukeren har allerede den rettigheten"
+
+#: lib/RT/Ticket_Overlay.pm:3020
+msgid "That user already owns that ticket"
+msgstr "Den brukeren eier allerede den saken"
+
+#: lib/RT/Ticket_Overlay.pm:2986
+msgid "That user does not exist"
+msgstr "Den brukeren finnes ikke"
+
+#: lib/RT/User_Overlay.pm:315
+msgid "That user is already privileged"
+msgstr "Den brukeren er allerede priviligert"
+
+#: lib/RT/User_Overlay.pm:336
+msgid "That user is already unprivileged"
+msgstr "Den brukeren er allerede upriviligert"
+
+#: lib/RT/User_Overlay.pm:328
+msgid "That user is now privileged"
+msgstr "Denne brukeren er nå priviligert"
+
+#: lib/RT/User_Overlay.pm:349
+msgid "That user is now unprivileged"
+msgstr "Dette brukeren er nå upriviligert"
+
+#: NOT FOUND IN SOURCE
+msgid "That user is now unprivilegedileged"
+msgstr "Den brukeren er allerede upriviligert"
+
+#: lib/RT/Ticket_Overlay.pm:3012
+msgid "That user may not own tickets in that queue"
+msgstr "Den brukeren kan ikke eie saker i den køen"
+
+#: lib/RT/Link_Overlay.pm:206
+msgid "That's not a numerical id"
+msgstr "Dette er ikke en numerisk id"
+
+#: html/SelfService/Display.html:32 html/Ticket/Create.html:150 html/Ticket/Elements/ShowSummary:28
+msgid "The Basics"
+msgstr "Detaljer"
+
+#: lib/RT/ACE_Overlay.pm:88
+msgid "The CC of a ticket"
+msgstr "CCen til en sak"
+
+#: lib/RT/ACE_Overlay.pm:89
+msgid "The administrative CC of a ticket"
+msgstr "Administrative CCer for en sak"
+
+#: lib/RT/Ticket_Overlay.pm:2213
+msgid "The comment has been recorded"
+msgstr "Kommentarer er lagret"
+
+#: bin/rt-crontool:198
+msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
+msgstr "De følgende kommandoene vil finne alle aktive saker i køen 'general' og sette deres prioritet til 99 hvis de ikke har blitt rørt de siste 4 timene:"
+
+#: bin/rt-commit-handler:756 bin/rt-commit-handler:766
+msgid "The following commands were not proccessed:\\n\\n"
+msgstr "De følgende kommandoene ble ikke behandlet:\\n\\n"
+
+#: lib/RT/Interface/Web.pm:895
+msgid "The new value has been set."
+msgstr "Den nye verdien har blitt satt."
+
+#: lib/RT/ACE_Overlay.pm:86
+msgid "The owner of a ticket"
+msgstr "Eieren av en sak"
+
+#: lib/RT/ACE_Overlay.pm:87
+msgid "The requestor of a ticket"
+msgstr "Forespørren av en sak"
+
+#: html/Admin/Elements/EditUserComments:26
+msgid "These comments aren't generally visible to the user"
+msgstr "Disse kommentarene er generelt ikke synlig for brukeren"
+
+#: NOT FOUND IN SOURCE
+msgid "This ticket %1 %2 (%3)\\n"
+msgstr "Denne saken %1 %2 (%3)\\n"
+
+#: bin/rt-crontool:189
+msgid "This tool allows the user to run arbitrary perl modules from within RT."
+msgstr "Dette verktøyet tillater brukeren  å kjøre perlmoduler fra inni RT."
+
+#: lib/RT/Transaction_Overlay.pm:251
+msgid "This transaction appears to have no content"
+msgstr "Denne transaksjonen ser ikke ut til å ha noe innhold"
+
+#: html/Ticket/Elements/ShowRequestor:47
+#. ($rows)
+msgid "This user's %1 highest priority tickets"
+msgstr "Denne brukerens %1 høyst prioriterte saker"
+
+#: NOT FOUND IN SOURCE
+msgid "This user's 25 highest priority tickets"
+msgstr "Denne brukerens 23 høys prioriterte saker"
+
+#: lib/RT/Date.pm:391
+msgid "Thu."
+msgstr "Tor."
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket"
+msgstr "Sak"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket # %1  %2"
+msgstr "Sak # %1 %2"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket # %1 Jumbo update: %2"
+msgstr "Sak $ %1 Jumbo oppdater: %2"
+
+#: html/Ticket/ModifyAll.html:25 html/Ticket/ModifyAll.html:29
+#. ($Ticket->Id, $Ticket->Subject)
+msgid "Ticket #%1 Jumbo update: %2"
+msgstr "Sak #%1 Jumbo oppdatering: %2"
+
+#: html/Approvals/Elements/ShowDependency:46
+#. ($link->BaseObj->Id, $link->BaseObj->Subject)
+msgid "Ticket #%1: %2"
+msgstr "Sak #%1: %2"
+
+#: lib/RT/Ticket_Overlay.pm:587 lib/RT/Ticket_Overlay.pm:608
+#. ($self->Id, $QueueObj->Name)
+msgid "Ticket %1 created in queue '%2'"
+msgstr "Sak %1 opprettet i '%2' køen"
+
+#: bin/rt-commit-handler:760
+#. ($Ticket->Id)
+msgid "Ticket %1 loaded\\n"
+msgstr "Sak %1 lastet\\n"
+
+#: html/Search/Bulk.html:181
+#. ($Ticket->Id,$_)
+msgid "Ticket %1: %2"
+msgstr "Sak %1: %2"
+
+#: html/Ticket/History.html:25 html/Ticket/History.html:28
+#. ($Ticket->Id, $Ticket->Subject)
+msgid "Ticket History # %1 %2"
+msgstr "Sakshistorikk # %1 %2"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket Id"
+msgstr "SaksId"
+
+#: etc/initialdata:309
+msgid "Ticket Resolved"
+msgstr "Løst Sak"
+
+#: html/Search/Elements/PickRestriction:63
+msgid "Ticket attachment"
+msgstr "Saks-vedlegg"
+
+#: lib/RT/Tickets_Overlay.pm:1166
+msgid "Ticket content"
+msgstr "Saks-innhold"
+
+#: lib/RT/Tickets_Overlay.pm:1212
+msgid "Ticket content type"
+msgstr "Sakens innholdstype"
+
+#: lib/RT/Ticket_Overlay.pm:496 lib/RT/Ticket_Overlay.pm:597
+msgid "Ticket could not be created due to an internal error"
+msgstr "Saken kunne ikke opprettes på grunn av en intern feil"
+
+#: lib/RT/Transaction_Overlay.pm:520
+msgid "Ticket created"
+msgstr "Sak opprettet"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket creation failed"
+msgstr "Saksopprettelse feilet"
+
+#: lib/RT/Transaction_Overlay.pm:525
+msgid "Ticket deleted"
+msgstr "Sak slettet"
+
+#: html/REST/1.0/modify:29 html/REST/1.0/update:34
+msgid "Ticket id not found"
+msgstr "Saksid ikke funnet"
+
+#: NOT FOUND IN SOURCE
+msgid "Ticket killed"
+msgstr "Sak drept"
+
+#: html/REST/1.0/modify:36 html/REST/1.0/update:41
+msgid "Ticket not found"
+msgstr "Sak ikke funnet"
+
+#: etc/initialdata:295
+msgid "Ticket status changed"
+msgstr "Saksstatus endret"
+
+#: html/Ticket/Update.html:39
+msgid "Ticket watchers"
+msgstr "Saksovervåkere"
+
+#: html/Elements/Tabs:47
+msgid "Tickets"
+msgstr "Saker"
+
+#: lib/RT/Tickets_Overlay.pm:1383
+#. ($self->loc($args{'TYPE'}), ($args{'BASE'} || $args{'TICKET'}))
+msgid "Tickets %1 %2"
+msgstr "Saker %1 %2"
+
+#: lib/RT/Tickets_Overlay.pm:1348
+#. ($self->loc($args{'TYPE'}), ($args{'TARGET'} || $args{'TICKET'}))
+msgid "Tickets %1 by %2"
+msgstr "Saker %1 av %2"
+
+#: html/Elements/ViewUser:26
+#. ($name)
+msgid "Tickets from %1"
+msgstr "Saker fra %1"
+
+#: html/Approvals/Elements/ShowDependency:27
+msgid "Tickets which depend on this approval:"
+msgstr "Saker som er avhengige av denne godkjennelsen:"
+
+#: html/Ticket/Create.html:157 html/Ticket/Elements/EditBasics:48
+msgid "Time Left"
+msgstr "Tid Igjen"
+
+#: html/Ticket/Create.html:156 html/Ticket/Elements/EditBasics:43
+msgid "Time Worked"
+msgstr "Arbeidstid"
+
+#: lib/RT/Tickets_Overlay.pm:1139
+msgid "Time left"
+msgstr "Tid igjen"
+
+#: html/Elements/Footer:36
+msgid "Time to display"
+msgstr "Tid å vise"
+
+#: lib/RT/Tickets_Overlay.pm:1115
+msgid "Time worked"
+msgstr "Arbeidstid"
+
+#: NOT FOUND IN SOURCE
+msgid "TimeLeft"
+msgstr "TidIgjen"
+
+#: lib/RT/Ticket_Overlay.pm:1165
+msgid "TimeWorked"
+msgstr "ArbeidsTid"
+
+#: bin/rt-commit-handler:402
+msgid "To generate a diff of this commit:"
+msgstr "For å generere en diff av denne bekreftelsen:"
+
+#: bin/rt-commit-handler:391
+msgid "To generate a diff of this commit:\\n"
+msgstr "For å genere en diff av denne bekreftelsen"
+
+#: lib/RT/Ticket_Overlay.pm:1168
+msgid "Told"
+msgstr "Fortalt"
+
+#: etc/initialdata:237
+msgid "Transaction"
+msgstr "Transaksjon"
+
+#: lib/RT/Transaction_Overlay.pm:640
+#. ($self->Data)
+msgid "Transaction %1 purged"
+msgstr "Transaksjon %1 slettet"
+
+#: lib/RT/Transaction_Overlay.pm:177
+msgid "Transaction Created"
+msgstr "Transaksjon Opprettet"
+
+#: lib/RT/Transaction_Overlay.pm:89
+msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
+msgstr "Transaction->Create kunne ikke, siden du ikke spesifiserte en saksid"
+
+#: lib/RT/Transaction_Overlay.pm:699
+msgid "Transactions are immutable"
+msgstr "Transaksjoner er låst"
+
+#: NOT FOUND IN SOURCE
+msgid "Trying to delete a right: %1"
+msgstr "Prøver å slette en rettighet: %1"
+
+#: lib/RT/Date.pm:389
+msgid "Tue."
+msgstr "Tir."
+
+#: html/Admin/Elements/EditCustomField:44 html/Ticket/Elements/AddWatchers:33 html/Ticket/Elements/AddWatchers:44 html/Ticket/Elements/AddWatchers:54 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:959
+msgid "Type"
+msgstr "Type"
+
+#: lib/RT/ScripCondition_Overlay.pm:104
+msgid "Unimplemented"
+msgstr "Uimplementert"
+
+#: html/Admin/Users/Modify.html:68
+msgid "Unix login"
+msgstr "Unix login"
+
+#: html/Admin/Elements/ModifyUser:62
+msgid "UnixUsername"
+msgstr "UnixBrukerNavn"
+
+#: lib/RT/Attachment_Overlay.pm:265
+#. ($self->ContentEncoding)
+msgid "Unknown ContentEncoding %1"
+msgstr "Ukjent InnholdsFormatering %1"
+
+#: html/Elements/SelectResultsPerPage:37
+msgid "Unlimited"
+msgstr "Ubegrenset"
+
+#: etc/initialdata:32
+msgid "Unprivileged"
+msgstr "Upriviligert"
+
+#: lib/RT/Transaction_Overlay.pm:569
+msgid "Untaken"
+msgstr "Ikke tatt"
+
+#: html/Elements/MyTickets:64 html/Search/Bulk.html:33
+msgid "Update"
+msgstr "Oppdater"
+
+#: html/Admin/Users/Prefs.html:62
+msgid "Update ID"
+msgstr "Oppdater ID"
+
+#: html/Search/Bulk.html:120 html/Ticket/ModifyAll.html:66 html/Ticket/Update.html:67
+msgid "Update Type"
+msgstr "Oppdater Type"
+
+#: html/Search/Listing.html:61
+msgid "Update all these tickets at once"
+msgstr "Oppdater alle disse sakene samtidig"
+
+#: html/Admin/Users/Prefs.html:49
+msgid "Update email"
+msgstr "Oppdater epost"
+
+#: html/Admin/Users/Prefs.html:55
+msgid "Update name"
+msgstr "Oppdater navn"
+
+#: lib/RT/Interface/Web.pm:409
+msgid "Update not recorded."
+msgstr "Oppdatering ikke lagret."
+
+#: html/Search/Bulk.html:81
+msgid "Update selected tickets"
+msgstr "Oppdater valgte saker"
+
+#: html/Admin/Users/Prefs.html:36
+msgid "Update signature"
+msgstr "Oppdater signatur"
+
+#: html/Ticket/ModifyAll.html:63
+msgid "Update ticket"
+msgstr "Oppdater sak"
+
+#: NOT FOUND IN SOURCE
+msgid "Update ticket # %1"
+msgstr "Ooppdater sak # %1"
+
+#: html/SelfService/Update.html:25 html/SelfService/Update.html:47
+#. ($Ticket->id)
+msgid "Update ticket #%1"
+msgstr "Oppdater sak #%1"
+
+#: html/Ticket/Update.html:135
+#. ($Ticket->id, $Ticket->Subject)
+msgid "Update ticket #%1 (%2)"
+msgstr "Oppdater sak #%1 (%2)"
+
+#: lib/RT/Interface/Web.pm:407
+msgid "Update type was neither correspondence nor comment."
+msgstr "Oppdateringstype var verken korrespondanse eller kommentar."
+
+#: html/Elements/SelectDateType:33 html/Ticket/Elements/ShowDates:51 lib/RT/Ticket_Overlay.pm:1169
+msgid "Updated"
+msgstr "Oppdatert"
+
+#: NOT FOUND IN SOURCE
+msgid "User %1 %2: %3\\n"
+msgstr "Bruker %1 %2: %3\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "User %1 Password: %2\\n"
+msgstr "Bruker %1 Passord: %2\\n"
+
+#: NOT FOUND IN SOURCE
+msgid "User '%1' not found"
+msgstr "Brukeren '%1' ble ikke funnet"
+
+#: NOT FOUND IN SOURCE
+msgid "User '%1' not found\\n"
+msgstr "Brukeren '%1' ble ikke funnet"
+
+#: etc/initialdata:125 etc/initialdata:191
+msgid "User Defined"
+msgstr "Bruker Definert"
+
+#: html/Admin/Users/Prefs.html:59
+msgid "User ID"
+msgstr "BrukerID"
+
+#: html/Elements/SelectUsers:26
+msgid "User Id"
+msgstr "BrukerId"
+
+#: html/Admin/Elements/GroupTabs:47 html/Admin/Elements/QueueTabs:60 html/Admin/Elements/SystemTabs:47 html/Admin/Global/index.html:59
+msgid "User Rights"
+msgstr "Brukerrettigheter"
+
+#: html/Admin/Users/Modify.html:226
+#. ($msg)
+msgid "User could not be created: %1"
+msgstr "Bruker kunne ikke opprettes: %1"
+
+#: lib/RT/User_Overlay.pm:262
+msgid "User created"
+msgstr "Bruker opprettet"
+
+#: html/Admin/Global/GroupRights.html:67 html/Admin/Groups/GroupRights.html:54 html/Admin/Queues/GroupRights.html:68
+msgid "User defined groups"
+msgstr "Brukerdefinerte grupper"
+
+#: NOT FOUND IN SOURCE
+msgid "User notified"
+msgstr "Bruker informert"
+
+#: html/Admin/Users/Prefs.html:25 html/Admin/Users/Prefs.html:29
+msgid "User view"
+msgstr "Brukervisning"
+
+#: html/Admin/Users/Modify.html:48 html/Elements/Login:51 html/Ticket/Elements/AddWatchers:35
+msgid "Username"
+msgstr "Brukernavn"
+
+#: html/Admin/Elements/SelectNewGroupMembers:26 html/Admin/Elements/Tabs:32 html/Admin/Groups/Members.html:55 html/Admin/Queues/People.html:68 html/Admin/index.html:29 html/User/Groups/Members.html:58
+msgid "Users"
+msgstr "Brukere"
+
+#: html/Admin/Users/index.html:65
+msgid "Users matching search criteria"
+msgstr "Brukere som treffer søkekriteria"
+
+#: html/Search/Elements/PickRestriction:51
+msgid "ValueOfQueue"
+msgstr "KøVerdi"
+
+#: html/Admin/Elements/EditCustomField:57
+msgid "Values"
+msgstr "Verdier"
+
+#: NOT FOUND IN SOURCE
+msgid "VrijevormEnkele"
+msgstr "VrijevormEnkele"
+
+#: lib/RT/Queue_Overlay.pm:82
+msgid "Watch"
+msgstr "Overvåk"
+
+#: lib/RT/Queue_Overlay.pm:83
+msgid "WatchAsAdminCc"
+msgstr "OvervåkSomAdminCc"
+
+#: NOT FOUND IN SOURCE
+msgid "Watcher loaded"
+msgstr "Overvåker lastet"
+
+#: html/Admin/Elements/QueueTabs:42
+msgid "Watchers"
+msgstr "Overvåkere"
+
+#: html/Admin/Elements/ModifyUser:56
+msgid "WebEncoding"
+msgstr "WebFormatering"
+
+#: lib/RT/Date.pm:390
+msgid "Wed."
+msgstr "Ons."
+
+#: etc/upgrade/2.1.71:161
+msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
+msgstr "Når en sak har blitt godkjent av alle godkjennere, legg til korrespondanse for den opprinnelige saken"
+
+#: etc/upgrade/2.1.71:135
+msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
+msgstr "Når en sak har blitt godkjent av en godkjenner, legg til korrespondanse til den orginale saken"
+
+#: etc/initialdata:138
+msgid "When a ticket is created"
+msgstr "Når er sak er opprettet"
+
+#: etc/upgrade/2.1.71:79
+msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
+msgstr "Når er godkjennelsessak blir opprettet, gi melding til Eier og AdminCc om saken som venter på deres godkjenning"
+
+#: etc/initialdata:143
+msgid "When anything happens"
+msgstr "Når noe skjer"
+
+#: etc/initialdata:184
+msgid "Whenever a ticket is resolved"
+msgstr "Når en sak er løst"
+
+#: etc/initialdata:170
+msgid "Whenever a ticket's owner changes"
+msgstr "Når en sak får ny eier"
+
+#: etc/initialdata:178
+msgid "Whenever a ticket's queue changes"
+msgstr "Når en sak flyttes til en ny kø"
+
+#: etc/initialdata:162
+msgid "Whenever a ticket's status changes"
+msgstr "Når en saks status endres"
+
+#: etc/initialdata:192
+msgid "Whenever a user-defined condition occurs"
+msgstr "Når brukerdefinerte forhold intreffer"
+
+#: etc/initialdata:156
+msgid "Whenever comments come in"
+msgstr "Når kommentarer kommer inn"
+
+#: etc/initialdata:149
+msgid "Whenever correspondence comes in"
+msgstr "Når korrespondanse kommer inn"
+
+#: html/Admin/Users/Modify.html:164 html/User/Prefs.html:52
+msgid "Work"
+msgstr "Arbeid"
+
+#: html/Admin/Elements/ModifyUser:70
+msgid "WorkPhone"
+msgstr "ArbeidsTelefon"
+
+#: html/Ticket/Elements/ShowBasics:35 html/Ticket/Update.html:65
+msgid "Worked"
+msgstr "Arbeidet"
+
+#: lib/RT/Ticket_Overlay.pm:3123
+msgid "You already own this ticket"
+msgstr "Du eier allerede denne saken"
+
+#: html/autohandler:108
+msgid "You are not an authorized user"
+msgstr "Du er ikke en autorisert bruker"
+
+#: lib/RT/Ticket_Overlay.pm:2998
+msgid "You can only reassign tickets that you own or that are unowned"
+msgstr "Du kan bare omfordele saker som du eier eller som ikke har en eier"
+
+#: NOT FOUND IN SOURCE
+msgid "You don't have permission to view that ticket.\\n"
+msgstr "Du har ikke tilgang til å se den saken.\\n"
+
+#: docs/design_docs/string-extraction-guide.txt:47
+#. ($num, $queue)
+msgid "You found %1 tickets in queue %2"
+msgstr "Du fant %1 saker i %2 køen"
+
+#: html/NoAuth/Logout.html:31
+msgid "You have been logged out of RT."
+msgstr ""
+
+#: html/SelfService/Display.html:78
+msgid "You have no permission to create tickets in that queue."
+msgstr "Du har ikke tilgang til å opprette saker i den køen."
+
+#: lib/RT/Ticket_Overlay.pm:1895
+msgid "You may not create requests in that queue."
+msgstr "Du kan ikke opprette forespørsler i den køen."
+
+#: html/NoAuth/Logout.html:36
+msgid "You're welcome to login again"
+msgstr "Velkommen tilbake"
+
+#: NOT FOUND IN SOURCE
+msgid "Your %1 requests"
+msgstr "Dine %1 forespørsler"
+
+#: NOT FOUND IN SOURCE
+msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
+msgstr "Din RT administrastor har feilkonfigurert mail aliasene som kaller RT"
+
+#: etc/initialdata:435 etc/upgrade/2.1.71:146
+msgid "Your request has been approved by %1. Other approvals may still be pending."
+msgstr "Din forespørsel har blitt godkjent av %1. Andre godkjennelser avventer kanskje fortsatt"
+
+#: etc/initialdata:469 etc/upgrade/2.1.71:180
+msgid "Your request has been approved."
+msgstr "Din forespørsel ble godkjent."
+
+#: NOT FOUND IN SOURCE
+msgid "Your request was rejected"
+msgstr "Din forespørsel ble avvist"
+
+#: etc/initialdata:390 etc/upgrade/2.1.71:101
+msgid "Your request was rejected."
+msgstr "Din forespørsel ble avvist"
+
+#: html/autohandler:127
+msgid "Your username or password is incorrect"
+msgstr "Ditt brukernavn/passord er ugyldig"
+
+#: html/Admin/Elements/ModifyUser:84 html/Admin/Users/Modify.html:144 html/User/Prefs.html:96
+msgid "Zip"
+msgstr "Zip"
+
+#: NOT FOUND IN SOURCE
+msgid "[no subject]"
+msgstr "[ikke noe emne]"
+
+#: html/User/Elements/DelegateRights:59
+#. ($right->PrincipalObj->Object->SelfDescription)
+msgid "as granted to %1"
+msgstr "som tildelt til %1"
+
+#: html/SelfService/Closed.html:28
+msgid "closed"
+msgstr "lukket"
+
+#: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:34
+msgid "contains"
+msgstr "inneholder"
+
+#: html/Elements/SelectAttachmentField:26
+msgid "content"
+msgstr "innhold"
+
+#: html/Elements/SelectAttachmentField:27
+msgid "content-type"
+msgstr "innholdstype"
+
+#: lib/RT/Ticket_Overlay.pm:2282
+msgid "correspondence (probably) not sent"
+msgstr "korrespondanse (sansynligvis) ikke sendt"
+
+#: lib/RT/Ticket_Overlay.pm:2292
+msgid "correspondence sent"
+msgstr "korrespondanse sendt"
+
+#: html/Admin/Elements/ModifyQueue:63 html/Admin/Queues/Modify.html:77 lib/RT/Date.pm:319
+msgid "days"
+msgstr "dager"
+
+#: NOT FOUND IN SOURCE
+msgid "dead"
+msgstr "død"
+
+#: html/Search/Listing.html:75
+msgid "delete"
+msgstr "slett"
+
+#: lib/RT/Queue_Overlay.pm:63
+msgid "deleted"
+msgstr "slettet"
+
+#: html/Search/Elements/PickRestriction:68
+msgid "does not match"
+msgstr "treffer ikke"
+
+#: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:35
+msgid "doesn't contain"
+msgstr "inneholder ikke"
+
+#: html/Elements/SelectEqualityOperator:38
+msgid "equal to"
+msgstr "lik som"
+
+#: NOT FOUND IN SOURCE
+msgid "false"
+msgstr "usant"
+
+#: html/Elements/SelectAttachmentField:28
+msgid "filename"
+msgstr "filnavn"
+
+#: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectEqualityOperator:38
+msgid "greater than"
+msgstr "større enn"
+
+#: lib/RT/Group_Overlay.pm:194
+#. ($self->Name)
+msgid "group '%1'"
+msgstr "gruppe '%1'"
+
+#: lib/RT/Date.pm:315
+msgid "hours"
+msgstr "timer"
+
+#: NOT FOUND IN SOURCE
+msgid "id"
+msgstr "id"
+
+#: html/Elements/SelectBoolean:32 html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:36 html/Search/Elements/PickRestriction:47 html/Search/Elements/PickRestriction:76 html/Search/Elements/PickRestriction:88
+msgid "is"
+msgstr "er"
+
+#: html/Elements/SelectBoolean:36 html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectMatch:37 html/Search/Elements/PickRestriction:48 html/Search/Elements/PickRestriction:77 html/Search/Elements/PickRestriction:89
+msgid "isn't"
+msgstr "er ikke"
+
+#: html/Elements/SelectCustomFieldOperator:38 html/Elements/SelectEqualityOperator:38
+msgid "less than"
+msgstr "mindre enn"
+
+#: html/Search/Elements/PickRestriction:67
+msgid "matches"
+msgstr "treffer"
+
+#: lib/RT/Date.pm:311
+msgid "min"
+msgstr "min"
+
+#: html/Ticket/Update.html:66
+msgid "minutes"
+msgstr "minutter"
+
+#: bin/rt-commit-handler:765
+msgid "modifications\\n\\n"
+msgstr "endringer\\n\\n"
+
+#: lib/RT/Date.pm:327
+msgid "months"
+msgstr "måneder"
+
+#: lib/RT/Queue_Overlay.pm:58
+msgid "new"
+msgstr "ny"
+
+#: html/Admin/Elements/EditScrips:43
+msgid "no value"
+msgstr "ingen verdi"
+
+#: html/Ticket/Elements/EditWatchers:28
+msgid "none"
+msgstr "ingen"
+
+#: html/Elements/SelectEqualityOperator:38
+msgid "not equal to"
+msgstr "ikke lik som"
+
+#: NOT FOUND IN SOURCE
+msgid "notlike"
+msgstr "ikkelik"
+
+#: html/SelfService/Elements/MyRequests:61 lib/RT/Queue_Overlay.pm:59
+msgid "open"
+msgstr "åpen"
+
+#: lib/RT/Group_Overlay.pm:199
+#. ($self->Name, $user->Name)
+msgid "personal group '%1' for user '%2'"
+msgstr "personlig gruppe '%1' for bruker '%2'"
+
+#: lib/RT/Group_Overlay.pm:207
+#. ($queue->Name, $self->Type)
+msgid "queue %1 %2"
+msgstr "kø %1 %2"
+
+#: lib/RT/Queue_Overlay.pm:62
+msgid "rejected"
+msgstr "avvist"
+
+#: lib/RT/Queue_Overlay.pm:61
+msgid "resolved"
+msgstr "løst"
+
+#: lib/RT/Date.pm:307
+msgid "sec"
+msgstr "sek"
+
+#: lib/RT/Queue_Overlay.pm:60
+msgid "stalled"
+msgstr "pauset"
+
+#: lib/RT/Group_Overlay.pm:202
+#. ($self->Type)
+msgid "system %1"
+msgstr "system %1"
+
+#: lib/RT/Group_Overlay.pm:213
+#. ($self->Type)
+msgid "system group '%1'"
+msgstr "systemgruppe '%1'"
+
+#: html/Elements/Error:42 html/SelfService/Error.html:42
+msgid "the calling component did not specify why"
+msgstr "den kallende komponenten oppga ikke hvorfor"
+
+#: lib/RT/Group_Overlay.pm:210
+#. ($self->Instance, $self->Type)
+msgid "ticket #%1 %2"
+msgstr "sak #%1 %2"
+
+#: NOT FOUND IN SOURCE
+msgid "true"
+msgstr "sant"
+
+#: lib/RT/Group_Overlay.pm:216
+#. ($self->Id)
+msgid "undescribed group %1"
+msgstr "ubeskrevet gruppe %1"
+
+#: NOT FOUND IN SOURCE
+msgid "undescripbed group %1"
+msgstr "ubeskrevet gruppe %1"
+
+#: lib/RT/Group_Overlay.pm:191
+#. ($user->Object->Name)
+msgid "user %1"
+msgstr "bruker %1"
+
+#: lib/RT/Date.pm:323
+msgid "weeks"
+msgstr "uker"
+
+#: NOT FOUND IN SOURCE
+msgid "with template %1"
+msgstr "med malen %1"
+
+#: lib/RT/Date.pm:331
+msgid "years"
+msgstr "år"
+
+#: NOT FOUND IN SOURCE
+msgid "„Éã„ÉÉ„ÇØ„Éç„Éº„É†"
+msgstr "????"
+
