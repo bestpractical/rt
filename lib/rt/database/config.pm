@@ -4,11 +4,35 @@
     package rt;
 
 	sub read_config {
+	        &prepare_sql();
 		&load_user_info();
 		&load_queue_conf();
 		&load_queue_acls();
 		&load_queue_areas();      
 	}	
+
+    # I feel preparing frequently used statements is more correct once
+    # and only than each time the statement is used. When we move to
+    # FastCGI, this will probably speed up the execution.
+    sub prepare_sql {
+	$rt::AddLink=$dbh->prepare
+	    ('INSERT into links 
+                     (serial_num, foreign_db, foreign_id) 
+                     values (?, ?, ?, ?)');
+
+	$rt::GetStalledParents=$dbh->prepare
+	    ("SELECT foreign_id from links,relship,each_req 
+              WHERE relship.type='dependency' 
+                and links.foreign_db=relship.id 
+                and links.serial_num=?
+                and each_req.serial_num=links.foreign_id
+                and each_req.status='stalled'");
+
+	unless ($rt::AddLink && $rt::GetStalledParents) {
+	    warn "SQL statement failed ($DBI::errstr)";
+	}
+     }
+
     
     sub load_queue_acls {
 	
