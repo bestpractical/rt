@@ -44,6 +44,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % my $Values;
+<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
 % if ($TicketObj) {
 %          $Values  = $TicketObj->CustomFieldValues($CustomField->id);
 % }
@@ -65,10 +66,8 @@
 % } elsif ($Default) {
           value="<%$Default ? $Default : ''%>"
 %  }
-<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
 <textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$content%></textarea>
 % } elsif ($CustomField->Type =~ /^Select/) {
-      <input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
       <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
         size="<%$Rows%>"
         <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>>
