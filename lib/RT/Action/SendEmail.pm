@@ -325,9 +325,9 @@ sub SetBcc {
 
 # {{{ sub SetPrecedence 
 sub SetPrecedence {
-  
   my $self = shift;
-  $self->TemplateObj->MIMEObj->head->add('Precedence', "Bulk");
+  # No - this should only be set for the AutoReply!
+#  $self->TemplateObj->MIMEObj->head->add('Precedence', "Bulk");
 }
 
 

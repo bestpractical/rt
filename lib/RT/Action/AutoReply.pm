@@ -91,6 +91,13 @@ sub SetReturnAddress {
 
 # }}}
 
+# {{{ sub SetPrecedence 
+sub SetPrecedence {
+  my $self = shift;
+  $self->TemplateObj->MIMEObj->head->add('Precedence', "Bulk");
+}
+
+
 # {{{ sub IsApplicable 
 sub IsApplicable  {
     return 1
