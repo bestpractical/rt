@@ -299,9 +299,9 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   id 
   Queue  - Either a Queue object or a Queue Name
-  Requestor -  A reference to a list of RT::User objects, email addresses or RT user Names
-  Cc  - A reference to a list of RT::User objects, email addresses or Names
-  AdminCc  - A reference to a  list of RT::User objects, email addresses or Names
+  Requestor -  A reference to a list of  email addresses or RT user Names
+  Cc  - A reference to a list of  email addresses or Names
+  AdminCc  - A reference to a  list of  email addresses or Names
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
