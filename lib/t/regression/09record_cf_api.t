@@ -8,7 +8,7 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
-# Before we get going, let's ditch all object_cfs; this will remove 
+# Before we get going, ditch all object_cfs; this will remove 
 # all custom fields systemwide;
 my $object_cfs = RT::ObjectCustomFields->new($RT::SystemUser);
 $object_cfs->UnLimit();
@@ -83,7 +83,7 @@ for (@custom_fields) {
 }
 # }}}
 
-# try to add field value with fields that doesn't exist {{{
+# try to add field value with fields that do not exist {{{
 my ($status, $msg) = $ticket->AddCustomFieldValue( Field => -1 , Value => 'foo' );
 ok(!$status, "shouldn't add value" );
 ($status, $msg) = $ticket->AddCustomFieldValue( Field => 'SomeUnexpedCustomFieldName' , Value => 'foo' );
@@ -93,7 +93,7 @@ ok(!$status, "shouldn't add value" );
 # {{{
 SKIP: {
 
-	skip "TODO: We want fields that doesn't allow to set unexpected values", 10;
+	skip "TODO: We want fields that are not allowed to set unexpected values", 10;
 	for (@custom_fields) {
 		($status, $msg) = $ticket->AddCustomFieldValue( Field => $_ , Value => 'SomeUnexpectedCFValue' );
 		ok( !$status, 'value doesn\'t exist');
@@ -105,7 +105,7 @@ SKIP: {
 		ok( !$status, 'value doesn\'t exist');
 	}
 	
-	# Let check that we didn't add value to be shure
+	# Let check that we did not add value to be sure
 	# using only FirstCustomFieldValue sub because
 	# we checked other variants allready
 	for (@custom_fields) {
