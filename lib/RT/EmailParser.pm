@@ -95,7 +95,7 @@ sub CheckForLoops {
     #If this instance of RT sent it our, we don't want to take it in
     my $RTLoop = $head->get("X-RT-Loop-Prevention") || "";
     chomp($RTLoop);    #remove that newline
-    if ( $RTLoop =~ /^$RT::rtname/ ) {
+    if ( $RTLoop =~ /^\Q$RT::rtname\E/o ) {
         return (1);
     }
 
@@ -250,7 +250,7 @@ sub ParseTicketId {
 
     my $Subject = shift;
 
-    if ( $Subject =~ s/\[$RT::rtname \#(\d+)\s*\]//i ) {
+    if ( $Subject =~ s/\[\Q$RT::rtname\E\s+\#(\d+)\s*\]//i ) {
         my $id = $1;
         $RT::Logger->debug("Found a ticket ID. It's $id");
         return ($id);
