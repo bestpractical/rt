@@ -125,7 +125,7 @@ $Logger=Log::Dispatch->new();
 $Logger->add(Log::Dispatch::File->new
 	     ( name=>'rtlog',
 	       min_level=>'debug',
-	       filename=>'/tmp/rt.log', #Change to log elsewhere
+	       filename=>"/tmp/rt.log.".$$.".".$<, #log to /tmp/rt.log.<pid>.<user>
 	       mode=>'append',
 	       callback => sub {my %p=@_; return "$p{message}\n"}
 	     ));
