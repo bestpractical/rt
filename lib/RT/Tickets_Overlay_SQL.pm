@@ -488,8 +488,7 @@ while (my $tick = $tix->Next) {
     push @expectedids, $tick->Id;
 }
 
-# this doesn't work as expected
-# eq_array(\@ids, \@expectedids);
+ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
 
 $query = ("id = $ids[0] OR MemberOf = $ids[0]");
 
@@ -499,13 +498,12 @@ ok ($id, $msg);
 
 is ($tix->Count, scalar @ids, "number of returned tickets same as entered");
 
-@expectedids = undef;
+@expectedids = ();
 while (my $tick = $tix->Next) {
     push @expectedids, $tick->Id;
 }
 
-# this doesn't work as expected
-# eq_array(\@ids, \@expectedids);
+ok (eq_array(\@ids, \@expectedids), "returned expected tickets");
 
 =end testing
 
