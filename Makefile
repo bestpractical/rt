@@ -6,11 +6,14 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	2
 RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	9pre5
+RT_VERSION_PATCH	=	9pre6
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
+
+BRANCH			=	HEAD
+
 
 RTGROUP			=	rt
 
@@ -388,11 +391,11 @@ commit:
 	cvs commit
 
 predist: commit
-	cvs tag -r rt-1-1 -F $(TAG)
+	cvs tag -r $(BRANCH) -F $(TAG)
 	rm -rf /tmp/$(TAG)
-	cvs co -D now -d /tmp/$(TAG) -r rt-1-1 rt
+	cvs co -D now -d /tmp/$(TAG) -r $(BRANCH) rt
 	cd /tmp/$(TAG); chmod 600 Makefile; /usr/local/bin/cvs2cl.pl \
-		--no-wrap --follow rt-1-1 --separate-header \
+		--no-wrap --follow $(BRANCH) --separate-header \
 		--window 120
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz

@@ -40,7 +40,10 @@ unless ($Collapsed) {
 
 	 my $wrapper = new Text::Wrapper (columns=>85);
 	 $content = $wrapper->wrap($content);
-	 $content =~ s!(?:^|\b)((?:http|https|ftp|mailto)://[^\s\"\'/]+/[^\s():\"\']+)!<A HREF=\"$1\">$1</A>!g;
+	 $content =~ s/</&lt;/g;
+	 $content =~ s/>/&gt;/g;
+	 $content =~ s!((?:http|https|ftp|mailto)://[^\s\"\'/]+[^\s():\"\'/]+)(&lt;??)!<A HREF=\"$1\">$1</A>$2!g;
+
      }
      else {
 	 $content = "&nbsp;";

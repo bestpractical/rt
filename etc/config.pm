@@ -270,6 +270,11 @@ $UseFriendlyToLine = 1;
 # If you do this, be careful that this email isn't sent to this RT instance.
 
 
+# the minimum level error that will be logged to the specific device.
+# levels from lowest to highest:  
+#  debug info notice warning error critical alert emergency 
+
+
 #  Mail loops will generate a critical log message.
 
 $LogToScreen = 'error';

@@ -72,9 +72,9 @@ my $help_keyword_sel = "
 my $help_scrip = "
         Scrips
         --create-scrip
-           --condition <condition name or id>
-           --action <action name or id>
-           --template <template name or id>
+           --scrip-condition <condition name or id>
+           --scrip-action <action name or id>
+           --scrip-template <template name or id>
 
         --delete-scrip <id>
 	--list-scrips";
