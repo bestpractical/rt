@@ -1,6 +1,16 @@
+4 Aug 2000
+----------
+
+A bunch of hacking on ACL related stuff. we were a bit sloppy with object
+instantiation before.
+
+Password checking now works for the web ui
+
+Bits of cruft are slowly getting removed from the webui
+
 Weekend of 1 Aug 2000
 ---------------------
-I'm in DC this weekend hacking. Sadly, I have no access to the CVS server,
+I'm in DC this weekend hacking. Sadly, I have no access to the CVS server
 so I'll be batching a bunch of commits.
 
 1. Enabled CLI admin tool

@@ -21,12 +21,15 @@ TD, TH { /* ns workaround */
 
 H1, H2 { 
   margin-top: 1.2em;
-  color: #339966;
+  color: #336699;
+  font-family: "Helvetica", sans-serif;
+
   clear: both;
 }
 
 H3 {
-  color: #339966;
+  font-family: "Helvetica", sans-serif;
+  color: #336699;
 }
 
 DIV.endmatter { margin-left: -7% }
