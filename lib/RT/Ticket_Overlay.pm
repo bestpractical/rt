@@ -2635,10 +2635,10 @@ MergeInto take the id of the ticket to merge this ticket into.
 =begin testing
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
-$t1->Create ( Subject => 'Merge test 1', Queue => 'general');
+$t1->Create ( Subject => 'Merge test 1', Queue => 'general', Requestor => 'merge1@example.com');
 my $t1id = $t1->id;
 my $t2 = RT::Ticket->new($RT::SystemUser);
-$t2->Create ( Subject => 'Merge test 2', Queue => 'general');
+$t2->Create ( Subject => 'Merge test 2', Queue => 'general', Requestor => 'merge2@example.com');
 my $t2id = $t2->id;
 my ($msg, $val) = $t1->MergeInto($t2->id);
 ok ($msg,$val);
@@ -2647,6 +2647,9 @@ is ($t1->id, undef, "ok. we've got a blank ticket1");
 $t1->Load($t1id);
 
 is ($t1->id, $t2->id);
+
+is ($t1->Requestors->MembersObj->Count, 2);
+
 
 =end testing
 
@@ -2742,11 +2745,15 @@ sub MergeInto {
         $addwatcher_type  =~ s/s$//;
 
         while ( my $watcher = $people->Next ) {
-            $MergeInto->_AddWatcher(
-                Type        => $watcher_type,
-                                  Silent => 1,
+            
+           my ($val, $msg) =  $MergeInto->_AddWatcher(
+                Type        => $addwatcher_type,
+                Silent => 1,
                 PrincipalId => $watcher->MemberId
             );
+            unless ($val) {
+                $RT::Logger->warning($msg);
+            }
     }
 
     }
