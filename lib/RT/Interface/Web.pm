@@ -582,7 +582,7 @@ sub UpdateRecordObject {
       
       my $method = "Set$attribute";
       my ($code, $msg) = $object->$method($ARGSRef->{"$attribute"});
-      push @results, "$msg";
+      push @results, "$attribute: $msg";
     }
     
   }

@@ -147,16 +147,27 @@ $CommentAddress="RT::CommentAddress.not.set";
 #Sendmail Configuration
 
 # $MailCommand defines which method RT will use to try to send mail
-$MailCommand = 'sendmail', 
+# We know that 'sendmail' works fairly well.
+# If 'sendmail' doesn't work well for you, try 'sendmailpipe' 
+# But note that you have to configure $SendmailPath and add a -t 
+# to $SendmailArguments
 
-#$SendmailArguments defines what flags to pass to $Sendmail
-# (assuming you picked 'sendmail' as the $MailCommand above)
+$MailCommand = 'sendmail';
 
-#These options are good for most sendmail wrappers and workalikes
+# $SendmailArguments defines what flags to pass to $Sendmail
+# assuming you picked 'sendmail' or 'sendmailpipe' as the $MailCommand above.
+# If you picked 'sendmailpipe', you MUST add a -t flag to $SendmailArguments
+
+# These options are good for most sendmail wrappers and workalikes
 $SendmailArguments="-oi";
 
-#These arguments are good for sendmail brand sendmail 8 and newer
+# These arguments are good for sendmail brand sendmail 8 and newer
 #$SendmailArguments="-oi -ODeliveryMode=b -OErrorMode=m";
+
+# If you selected 'sendmailpipe' above, you MUST specify the path
+# to your sendmail binary in $SendmailPath.  
+# !! If you did not # select 'sendmailpipe' above, this has no effect!!
+$SendmailPath = "/usr/sbin/sendmail";
 
 # }}}
 

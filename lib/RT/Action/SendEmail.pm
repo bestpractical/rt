@@ -68,16 +68,23 @@ sub Commit  {
 	# if a to address contains anyone in the squelch replies to, yank it out.
 	while ( my $line =  $self->TemplateObj->MIMEObj->head->get($header)) {
 	    if ($line =~ s/ $blacklist,//)  {
-		$ $self->TemplateObj->MIMEObj->head->replace($header, $line);
+		$self->TemplateObj->MIMEObj->head->replace($header, $line);
 	    }
 	}
     }
   }
     $self->TemplateObj->MIMEObj->make_singlepart;
-    $self->TemplateObj->MIMEObj->send($RT::MailCommand, $RT::MailParams) || 
-      $RT::Logger->crit("$self: Could not send mail for ".$self->TransactionObj . "\n");
-  }
 
+  if ($RT::MailCommand eq 'sendmailpipe') {
+    open (MAIL, "|$RT::SendmailPath $RT::SendmailArguments");
+    print MAIL $self->TemplateObj->MIMEObj->as_string;
+    close(MAIL);
+  }
+  else {
+    $self->TemplateObj->MIMEObj->send($RT::MailCommand, $RT::MailParams) || 
+    $RT::Logger->crit("$self: Could not send mail for ".$self->TransactionObj . "\n");
+   }
+}
 
 # }}}
 
@@ -143,11 +150,11 @@ sub SetRTSpecialHeaders {
     
     $self->SetPrecedence();
         
-    $self->TemplateObj->MIMEObj->head->add('RT-Ticket', $RT::rtname. " #".$self->TicketObj->id());
-    $self->TemplateObj->MIMEObj->head->add
+    $self->SetHeader('RT-Ticket', $RT::rtname. " #".$self->TicketObj->id());
+    $self->SetHeader
       ('Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
     
-    $self->TemplateObj->MIMEObj->head->add('RT-Originator', $self->TransactionObj->CreatorObj->EmailAddress);
+    $self->SetHeader('RT-Originator', $self->TransactionObj->CreatorObj->EmailAddress);
     return();
     
 }
@@ -173,7 +180,7 @@ sub SetReferences {
   # incoming mails, we would like to preserve the In-Reply-To and/or
   # References.
 
-  $self->TemplateObj->MIMEObj->head->add
+  $self->SetHeader
     ('In-Reply-To', "<rt-".$self->TicketObj->id().
      "\@".$RT::rtname.">");
 
@@ -204,7 +211,7 @@ sub SetMessageID {
   # TODO $RT::rtname should be replaced by $RT::hostname to form valid
   # message-ids (ref rfc822)
   
-  $self->TemplateObj->MIMEObj->head->add
+  $self->TemplateObj->MIMEObj->SetHeader
     ('Message-ID', "<rt-".$self->TicketObj->id().
      "-".
      $self->TransactionObj->id()."." .rand(20) . "\@".$RT::rtname.">")
@@ -233,11 +240,11 @@ sub SetReturnAddress {
   unless ($self->TemplateObj->MIMEObj->head->get('From')) {
       my $friendly_name=$self->TransactionObj->CreatorObj->RealName;
       # TODO: this "via RT" should really be site-configurable.
-      $self->TemplateObj->MIMEObj->head->add('From', "$friendly_name via RT <$email_address>");
+      $self->TemplateObj->MIMEObj->SetHeader('From', "$friendly_name via RT <$email_address>");
   }
   
   unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
-      $self->TemplateObj->MIMEObj->head->add('Reply-To', "$email_address");
+      $self->TemplateObj->MIMEObj->SetHeader('Reply-To', "$email_address");
   }
   
 }
@@ -254,6 +261,9 @@ sub SetHeader {
   my $field = shift;
   my $val = shift;
 
+  chomp $val;                                                                  
+  chomp $field;                                                                
+  $self->TemplateObj->MIMEObj->head->fold_length($field,10000);     
   $self->TemplateObj->MIMEObj->head->add($field, $val);
   return $self->TemplateObj->MIMEObj->head->get($field);
 }
@@ -305,7 +315,7 @@ sub SetBcc {
 sub SetPrecedence {
   my $self = shift;
 
-  $self->TemplateObj->MIMEObj->head->add('Precedence', "bulk");
+  $self->SetHeader('Precedence', "bulk");
 }
 
 # }}}

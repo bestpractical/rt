@@ -10,7 +10,7 @@ $tickets->LimitStatus( VALUE => 'new');
 </%PERL>
 
 <& /Elements/TitleBoxStart, 
-	title => "<a class='inverse' href=\"$RT::WebPath/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$user->id."\">More about $name</a>" &>
+	title => "<a class='inverse' href=\"$RT::WebPath/Admin/Users/Modify.html?id=".$user->id."\">More about $name</a>" &>
 
 Comments about this user:<BR>
 <B><% ($user->Comments || "No comment entered about this user") %></B><BR>
