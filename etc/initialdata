@@ -247,6 +247,9 @@ Transaction: {$Transaction->Description}
   Requestors: {$Ticket->RequestorAddresses}
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
+
+
+{$Transaction->Content()}
 '
     },
 
@@ -259,6 +262,8 @@ Transaction: {$Transaction->Description}
 
 
 <URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
+
+{$Transaction->Content()}
 '
     },
 
@@ -267,6 +272,7 @@ Transaction: {$Transaction->Description}
        Description => 'Default correspondence template',         # loc
        Content     => 'RT-Attach-Message: yes
 
+{$Transaction->Content()}
 '
     },
 
