@@ -1,3 +1,5 @@
+<A NAME="#<%$article->Id%>">
+
 <OL
 % if ($Depth == 1 ) {
 type="1"
