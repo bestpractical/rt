@@ -98,7 +98,8 @@ o DBIx::Record and DBIx::EasySearch
 
 	These will be used for RT's new Object interface...
 
-
+o HTML::Mason -- free
+	For the web ui
 
 INSTALL INSTRUCTIONS
 --------------------
