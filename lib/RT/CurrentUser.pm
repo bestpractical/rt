@@ -44,7 +44,7 @@ sub UserObj {
   
   unless ($self->{'UserObj'}) {
     $self->{'UserObj'} = RT::User->new($self);
-    $self->{'UserObj'}->Load($id) 
+    $self->{'UserObj'}->Load($self->Id)
       || die "Couldn't find myself in the user db?";
   }
   return ($self->{'UserObj'});
