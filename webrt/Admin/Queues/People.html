@@ -30,7 +30,7 @@ Cc:
 <INPUT TYPE=CHECKBOX NAME="DelWatcher<%$watcher->id%>" UNCHECKED>
 %# account
 %if ($watcher->IsUser) { 
-<a href="<%$RT::WebPath%>/Admin/Users/Display.html?id=<%$watcher->OwnerObj->id%>">
+<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$watcher->OwnerObj->id%>">
 <%$watcher->OwnerObj->RealName%></a>:
 %} else {
 Email address:
