@@ -224,8 +224,8 @@ my $approvals =
 Queue: Approvals
 Type: Approval
 AdminCc: {join ("\nAdminCc: ",@admins) }
-Depended-On-By: TOP
-Refers-To:  TOP 
+Depended-On-By: {$Tickets{"TOP"}->Id}
+Refers-To: TOP 
 Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
 Content-Type: text/plain
@@ -235,11 +235,11 @@ Blah
 ENDOFCONTENT
 ===Create-Ticket: two
 Subject: Manager approval.
-Depends-On: {$Tickets{"approval"}->Id}
+Depended-On-By: approval
 Queue: Approvals
 Content-Type: text/plain
 Content: 
-Your minion approved this ticket. you ok with that?
+Your minion approved ticket {$Tickets{"TOP"}->Id}. you ok with that?
 ENDOFCONTENT
 ';
 
@@ -266,11 +266,19 @@ ok ($scrip->ConditionObj->Id, "Created the scrip condition");
 ok ($scrip->ActionObj->Id, "Created the scrip action");
 
 my $t = RT::Ticket->new($RT::SystemUser);
-$t->Create(Subject => "Sample workflow test",
+my($tid, $ttrans, $tmsg) = $t->Create(Subject => "Sample workflow test",
            Owner => "root",
            Queue => $q->Id);
 
+ok ($tid,$tmsg);
 
+my $deps = $t->DependsOn;
+is ($deps->Count, 1, "The ticket we created depends on one other ticket");
+my $dependson= $deps->First->TargetObj;
+ok ($dependson->Id, "It depends on a real ticket");
+unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
+is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
+is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
 use RT::Action::CreateTickets;
 my $action = new RT::Action::CreateTickets;
 
@@ -670,7 +678,7 @@ sub Parse {
                  _ActiveContent => undef,
                 @_);
 
-    if ($args{'ActiveContent'}) {
+    if ($args{'_ActiveContent'}) {
         $self->{'UsePerlTextTemplate'} =1;
     } else {
 
@@ -1176,15 +1184,19 @@ sub PostProcess {
                 ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
             {
                 next unless $link;
-                if ( $link !~ m/^\d+$/ ) {
+
+                if ($link =~ /^TOP$/i) {
+                    $RT::Logger->debug( "Building $type link for $link: " . $T::Tickets{TOP}->Id );
+                    $link = $T::Tickets{TOP}->Id;
+
+                } 
+                elsif ( $link !~ m/^\d+$/ ) {
                     my $key = "create-$link";
                     if ( !exists $T::Tickets{$key} ) {
-                        $RT::Logger->debug(
-                            "Skipping $type link for $key (non-existent)");
+                        $RT::Logger->debug( "Skipping $type link for $key (non-existent)");
                         next;
                     }
-                    $RT::Logger->debug( "Building $type link for $link: "
-                          . $T::Tickets{$key}->Id );
+                    $RT::Logger->debug( "Building $type link for $link: " . $T::Tickets{$key}->Id );
                     $link = $T::Tickets{$key}->Id;
                 }
                 else {
@@ -1209,7 +1221,7 @@ sub PostProcess {
     # postponed actions -- Status only, currently
     while ( my $template_id = shift(@$postponed) ) {
         my $ticket = $T::Tickets{$template_id};
-        $RT::Logger->debug("Handling postponed actions for $ticket");
+        $RT::Logger->debug("Handling postponed actions for ".$ticket->id);
         my %args = %{ shift(@$postponed) };
         $ticket->SetStatus( $args{Status} ) if defined $args{Status};
     }
