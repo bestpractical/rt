@@ -28,6 +28,9 @@
     map => $map, 
     AllowSorting => $AllowSorting, 
     Order => $Order, 
+    Query => $Query,
+    Rows => $Rows,
+    Page => $Page,
     OrderBy => $OrderBy , 
     BaseURL => $BaseURL  &> 
 % my $i;
@@ -232,9 +235,14 @@ $map => undef
 $AllowSorting => undef
 $Order=>undef
 $BaseURL => undef
+$Query => undef
+$Rows => undef
+$Page => undef
 </%ARGS>
 <TR>
 <%perl>
+my @generic_query_args = ( 'Query=' . $Query, 'Rows=' . $Rows, 'Page=' . $Page );
+
 foreach my $col (@Format) {
     if ( $col->{title} eq 'NEWLINE' ) {
         $m->out('</TR>       <TR>');
@@ -245,7 +253,7 @@ foreach my $col (@Format) {
         $title =~ s/^__(.*)__$/$1/o;
         $title = ( $map->{$title}->{title} || $title );
         if ( $AllowSorting && $col->{'attribute'} ) {
-            my @query_args;
+            my @query_args = @generic_query_args;
             push @query_args,
               ( "OrderBy="
               . ( $map->{ $col->{'attribute'} }->{'attribute'}
