@@ -26,7 +26,9 @@
 <OPTION VALUE="">-</OPTION>
 % }
 %for my $option (@types) {
-<OPTION VALUE="<%$option%>" <%$option eq $Default && "SELECTED"%>><%loc($option)%></OPTION>
+%foreach my $subtype (@subtypes) {
+<OPTION VALUE="<%"$option.$subtype"%>" <%$option eq $Default && $subtype eq 'EmailAddress' && "SELECTED"%> ><%loc("[_1] [_2]",$option, $subtype)%></OPTION>
+% }
 %}
 </SELECT>
 
@@ -36,8 +38,11 @@ if ($Scope =~ 'queue') {
    @types = qw(Cc AdminCc);
 }
 else { 
-   @types = qw(Requestor Cc AdminCc Watcher Owner Creator LastUpdatedBy);
+   @types = qw(Requestor Cc AdminCc Watcher Owner);
 }
+
+my @subtypes = qw(EmailAddress Name RealName Nickname Organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone);
+
 </%INIT>
 <%ARGS>
 $AllowNull => 1
