@@ -53,7 +53,7 @@ BEGIN {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-    eval { require Apache2; require APR::Table; require Apache::Log; require MasonX::Apache2Handler; 1 } or
+    eval { require Apache2; require Apache::Request; 1 } or
     eval { require Apache2; require Apache::compat; 1 } or die $@
       if $ENV{'MOD_PERL'}
       and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:2|1\.9)};
