@@ -1,6 +1,6 @@
 
 <& /Elements/Header, Title=>"Update Ticket ".$Ticket->Id.": ".$Ticket->Subject  &>
-<& /Ticket/Elements/Tabs, id => $id &>
+<& /Ticket/Elements/Tabs, Ticket => $Ticket &>
 <& /Elements/TitleBoxStart, title => 'Update ticket '.$Ticket->Id &>
 
 <FORM ACTION="Display.html" METHOD=POST>

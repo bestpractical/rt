@@ -1020,11 +1020,9 @@ sub DueAsString {
 # This really means "time until due"
 sub GraceTimeAsString {
     my $self=shift;
-
+    
     if ($self->Due) {
-	my $now=new RT::Date($self->CurrentUser);
-	$now->SetToNow();	
-	return($now->DiffAsString($self->DueObj));
+	return ($self->DueObj->AgeAsString());
     } else {
 	return "";
     }
@@ -1153,9 +1151,7 @@ sub LongSinceToldAsString {
   my $self = shift;
 
   if ($self->Told) {
-      my $now = new RT::Date($self->CurrentUser);
-      $now->SetToNow();
-      return $now->DiffAsString($self->ToldObj);
+      return $self->ToldObj->AgeAsString();
   } else {
       return "Never";
   }

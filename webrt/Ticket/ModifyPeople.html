@@ -1,5 +1,5 @@
 <& /Elements/Header, title => 'Modify people related to ticket # ' . $TicketObj->id &>
-<& /Ticket/Elements/Tabs, id => $id  &>
+<& /Ticket/Elements/Tabs, $TicketObj => $TicketObj  &>
 
 <& /Elements/ListActions, actions => \@results &>
 

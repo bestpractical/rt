@@ -1,6 +1,9 @@
 <& /Elements/Tabs, tabs => $tabs, actions => $actions, current_tab => $current_tab &>
 <hr>
 <%INIT>
+	
+  my $id = $Ticket->id();
+
   my $tabs = {
 		 A => { title => 'Display',
 			     path => "Ticket/Display.html?id=".$id,
@@ -22,6 +25,7 @@
 			},
 
 	};
+
     my $actions = {
 		 F => { title => 'Comment',
 	 	        path => "Ticket/Update.html?Action=Comment&id=".$id,
@@ -31,10 +35,33 @@
 		      }
 	};
 
+if ($Ticket->OwnerObj->id == $RT::Nobody->id) {
+	$actions->{'Take'} = 	{ path => "Display.html?Action=Take&id=".$id,
+				  title => 'Take'
+				};
+}
+elsif ( $Ticket->OwnerObj->id!=$session{CurrentUser}->id) {
+	$actions->{'Steal'} = 	{ path => "Display.html?Action=Steal&id=".$id,
+				  title => 'Steal' 
+				};
+}
+
+
+if ($Ticket->Status ne 'resolved') {
+	$actions->{'Resolve'} = { path => "Display.html?Action=SetStatus&SetStatus=resolved&id=". $id,
+			  title => 'Resolve'
+			};
+	}	
+if ($Ticket->Status ne 'open') {	
+	$actions->{'Open'} = { path => "Display.html?Action=SetStatus&SetStatus=open&id=". $id,
+				  title => 'Open'
+			};
+}	
+
 </%INIT>
 
   
 <%ARGS>
-$id => undef
+$Ticket => undef
 $current_tab => undef
 </%ARGS>
