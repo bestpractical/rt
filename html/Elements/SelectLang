@@ -1,0 +1,55 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<SELECT NAME ="<%$Name%>">
+% if ($ShowNullOption) {
+<OPTION VALUE="">-</OPTION>
+% }
+% foreach my $lang (@lang) {
+<OPTION VALUE="<%$lang%>" <%($Default && ($lang eq $Default)) && 'SELECTED'%>><% $lang_to_desc{$lang} %>
+%   if (($Verbose) and (my $description = I18N::LangTags::List::native_name($lang)) ){
+(<%$description%>)
+%  }
+</OPTION>
+% }
+</SELECT>
+<%ARGS>
+$ShowNullOption => 1
+$ShowAllQueues => 1
+$Name => undef
+$Verbose => undef
+$Default => 0
+$Lite => 0
+</%ARGS>
+
+<%ONCE>
+use I18N::LangTags::List;
+my (@lang, %lang_to_desc);
+foreach my $lang (map { s/:://; s/_/-/g; $_ } grep { /^\w+::$/ } keys %RT::I18N::) {
+    next if $lang =~ /i-default|en-us/;
+    my $desc = I18N::LangTags::List::name($lang);
+    $desc =~ s/(.*) (.*)/$2 ($1)/;
+    $lang_to_desc{$lang} = $desc;
+}
+@lang = sort { $lang_to_desc{$a} cmp $lang_to_desc{$b} } keys %lang_to_desc;
+</%ONCE>
