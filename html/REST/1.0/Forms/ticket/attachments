@@ -86,11 +86,10 @@ else {
     while (my $t = $transactions->Next) {
         my $attachments = $t->Attachments;
         while (my $a = $attachments->Next) {
-            next unless $a->Filename;
             my $size = length($a->Content);
             if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
             else              { $size .= "b" }
-            push @attachments, $a->Id.": ".$a->Filename." (".$size.")";
+            push @attachments, $a->Id.": ".$a->Filename." (".$a->ContentType . " / ".$size.")";
         }
     }
 
