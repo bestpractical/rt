@@ -197,6 +197,9 @@ create table CachedGroupMembers (
         GroupId int, # foreign key to Principals
         MemberId int, # foreign key to Principals
         Via int, #foreign key to g_m_u
+        ImmediateParentId int, #foreign key to prinicpals.         
+                               # this points to the group that the member is
+                               # a member of, for ease of deletes.
         PRIMARY KEY (id)
 ) TYPE=InnoDB;
 

@@ -32,7 +32,22 @@ RT
 
 ok (require RT::Group);
 
+ok (my $group = RT::Group->new($RT::SystemUser), "instantiated a group object");
+ok (my ($id, $msg) = $group->Create( Name => 'TestGroup', Description => 'A test group',
+                    Domain => 'System', Instance => ''), 'Created a new group');
+ok ($id != 0, "Group id is $id");
+ok ($group->Name eq 'TestGroup', "The group's name is 'TestGroup'");
+my $ng = RT::Group->new($RT::SystemUser);
+
+ok($ng->LoadSystemGroup('TestGroup'), "Loaded testgroup");
+ok(($ng->id == $group->id), "Loaded the right group");
+ok ($ng->AddMember('1' ), "Added a member to the group");
+ok ($ng->AddMember('2' ), "Added a member to the group");
+ok ($ng->AddMember('3' ), "Added a member to the group");
+
 =end testing
+
+
 
 =cut
 
@@ -41,15 +56,6 @@ no warnings qw(redefine);
 use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;
-
-# {{{ sub _Init
-sub _Init {
-    my $self = shift;
-    $self->{'table'} = "Groups";
-    return ( $self->SUPER::_Init(@_) );
-}
-
-# }}}
 
 # {{{ sub Load 
 
@@ -72,6 +78,27 @@ sub Load {
     else {
         $self->LoadByCol( "Name", $identifier );
     }
+}
+
+# }}}
+
+# {{{ sub LoadSystemGroup 
+
+=head2 LoadSystemGroup NAME
+
+Loads a system group from the database. The only argument is
+the group's name.
+
+
+=cut
+
+sub LoadSystemGroup {
+    my $self       = shift;
+    my $identifier = shift;
+
+        $self->LoadByCols( "Domain" => 'System',
+                           "Instance" => '',
+                           "Name" => $identifier );
 }
 
 # }}}
@@ -103,6 +130,8 @@ sub Create {
         return ( 0, 'Permission Denied' );
     }
 
+    $RT::Handle->BeginTransaction();
+
     my $id = $self->SUPER::Create(
         Name        => $args{'Name'},
         Description => $args{'Description'},
@@ -124,13 +153,14 @@ sub Create {
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
-        $self->SUPER::Delete();    # We really want to delete this object
+        $RT::Handle->Rollback();
         $self->crit(
             "Couldn't create a Principal on new user create. Strange thi
 ngs are afoot at the circle K" );
         return ( 0, $self->loc('Could not create group') );
     }
 
+    $RT::Handle->Commit();
     return ( $id, $self->loc("Group created") );
 }
 
@@ -218,8 +248,8 @@ sub AddMember {
 
     my $member_object = RT::GroupMember->new( $self->CurrentUser );
     $member_object->Create(
-        UserId  => $new_member_obj->Id,
-        GroupId => $self->id
+        Member => $new_member_obj,
+        Group => $self->PrincipalObj
     );
     return ( 1, "Member added" );
 }
@@ -243,9 +273,15 @@ sub HasMember {
     my $user_id = shift;
 
     #Try to cons up a member object using "LoadByCols"
+    #TODO: port this to use a principal object directly. requires
+    # tracking down uses.
 
-    my $member_obj = new RT::GroupMember( $self->CurrentUser );
-    $member_obj->LoadByCols( UserId => $user_id, GroupId => $self->id );
+    my $user = RT::User->new($RT::SystemUser);
+    $user->Load($user_id);
+    my $princ_id = $user->PrincipalId;
+
+    my $member_obj = RT::GroupMember->new( $self->CurrentUser );
+    $member_obj->LoadByCols( MemberId => $princ_id, GroupId => $self->id );
 
     #If we have a member object
     if ( defined $member_obj->id ) {
@@ -282,7 +318,7 @@ sub DeleteMember {
         return ( 0, "Permission Denied" );
     }
 
-    my $member_user_obj = new RT::User( $self->CurrentUser );
+    my $member_user_obj = RT::User->new( $self->CurrentUser );
     $member_user_obj->Load($member);
 
     unless ( $member_user_obj->Id ) {
@@ -293,7 +329,7 @@ sub DeleteMember {
     my $member_obj = new RT::GroupMember( $self->CurrentUser );
     unless (
         $member_obj->LoadByCols(
-            UserId  => $member_user_obj->Id,
+            MemberId  => $member_user_obj->PrincipalId,
             GroupId => $self->Id
         )
       )
@@ -395,5 +431,51 @@ sub _Set {
 
 # }}}
 
+# {{{ Principal related routines
+
+=head2 PrincipalObj 
+
+Returns the principal object for this user. returns an empty RT::Principal
+if there's no principal object matching this user. 
+The response is cached. PrincipalObj should never ever change.
+
+=begin testing
+
+ok(my $u = RT::Group->new($RT::SystemUser));
+ok($u->Load(4), "Loaded the first user");
+ok($u->PrincipalObj->ObjectId == 4, "user 4 is the fourth principal");
+ok($u->PrincipalObj->PrincipalType eq 'Group' , "Principal 4 is a group");
+
+=end testing
+
+=cut
+
+
+sub PrincipalObj {
+    my $self = shift;
+    unless ($self->{'PrincipalObj'} &&
+            ($self->{'PrincipalObj'}->ObjectId == $self->Id) &&
+            ($self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
+
+            $self->{'PrincipalObj'} = RT::Principal->new($self->CurrentUser);
+            $self->{'PrincipalObj'}->LoadByCols('ObjectId' => $self->Id,
+                                                'PrincipalType' => 'Group') ;
+            }
+    return($self->{'PrincipalObj'});
+}
+
+
+=head2 PrincipalId  
+
+Returns this user's PrincipalId
+
+=cut
+
+sub PrincipalId {
+    my $self = shift;
+    return $self->PrincipalObj->Id;
+}
+
+# }}}
 1;
 

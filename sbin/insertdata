@@ -136,22 +136,32 @@ unless ($LastVersion) {
     @groups = (
         {
             Name        => 'Everyone',
+            Domain      => 'Pseudo',
+            Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
         {
             Name        => 'Owner',
+            Domain      => 'Pseudo',
+            Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
         {
             Name        => 'Requestor',
+            Domain      => 'Pseudo',
+            Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
         {
             Name        => 'Cc',
+            Domain      => 'Pseudo',
+            Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
         {
             Name        => 'AdminCc',
+            Domain      => 'Pseudo',
+            Instance    => '',
             Description => 'Pseudogroup for internal use',
         },
     );

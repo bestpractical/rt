@@ -20,6 +20,8 @@ ok(require RT::ACE);
 =cut
 
 no warnings qw(redefine);
+use RT::Principal;
+
 
 use vars qw (%SCOPES
    	     %QUEUERIGHTS
@@ -98,14 +100,6 @@ foreach $right (keys %SYSTEMRIGHTS) {
 
 # }}}
 
-# {{{ sub _Init
-sub _Init  {
-  my $self = shift;
-  $self->{'table'} = "ACL";
-  return($self->SUPER::_Init(@_));
-}
-# }}}
-
 # {{{ sub LoadByValues
 
 =head2 LoadByValues PARAMHASH
@@ -113,27 +107,24 @@ sub _Init  {
 Load an ACE by specifying a paramhash with the following fields:
 
               PrincipalId => undef,
-	      PrincipalType => undef,
 	      RightName => undef,
-	      RightScope => undef,
-	      RightAppliesTo => undef,
+	      RightDomain => undef,
+	      RightInstance => undef,
 
 =cut
 
 sub LoadByValues {
   my $self = shift;
   my %args = (PrincipalId => undef,
-	      PrincipalType => undef,
 	      RightName => undef,
-	      RightScope => undef,
-	      RightAppliesTo => undef,
+	      RightDomain => undef,
+	      RightInstance => undef,
 	      @_);
   
   $self->LoadByCols (PrincipalId => $args{'PrincipalId'},
-		     PrincipalType => $args{'PrincipalType'},
 		     RightName => $args{'RightName'},
-		     RightScope => $args{'RightScope'},
-		     RightAppliesTo => $args{'RightAppliesTo'}
+		     RightDomain => $args{'RightDomain'},
+		     RightInstance => $args{'RightInstance'}
 		    );
   
   #If we couldn't load it.
@@ -153,38 +144,24 @@ sub LoadByValues {
 
 PARAMS is a parameter hash with the following elements:
 
-   PrincipalType => "Queue"|"User"
-   PrincipalId => an intentifier you can use to ->Load a user or group
+   PrincipalId => An if of an RT::Principal object
    RightName => the name of a right. in any case
-   RightScope => "System" | "Queue"
-   RightAppliesTo => a queue id or undef
+   RightDomain => "System" | "Queue"
+   RightInstance => a queue id or undef
 
 =cut
 
 sub Create {
     my $self = shift;
     my %args = ( PrincipalId => undef,
-		 PrincipalType => undef,
 		 RightName => undef,
-		 RightScope => undef,
-		 RightAppliesTo => undef,
+		 RightDomain => undef,
+		 RightInstance => undef,
 		 @_
 	       );
     
     # {{{ Validate the principal
-    my ($princ_obj);
-    if ($args{'PrincipalType'} eq 'User') {
-	$princ_obj = new RT::User($RT::SystemUser);
-	
-    }	
-    elsif ($args{'PrincipalType'} eq 'Group') {
-	require RT::Group;
-	$princ_obj = new RT::Group($RT::SystemUser);
-    }
-    else {
-	return (0, 'Principal type '.$args{'PrincipalType'} . ' is invalid.');
-    }	
-    
+    my $princ_obj = RT::Principal->new($RT::SystemUser);
     $princ_obj->Load($args{'PrincipalId'});
     my $princ_id = $princ_obj->Id();
     
@@ -197,7 +174,7 @@ sub Create {
     #TODO allow loading of queues by name.    
     
     # {{{ Check the ACL
-    if ($args{'RightScope'} eq 'System') {
+    if ($args{'RightDomain'} eq 'System') {
 	
 	unless ($self->CurrentUserHasSystemRight('ModifyACL')) {
 	    $RT::Logger->error("Permission Denied.");
@@ -205,8 +182,8 @@ sub Create {
 	}
     }
     
-    elsif ($args{'RightScope'} eq 'Queue') {
-	unless ($self->CurrentUserHasQueueRight( Queue => $args{'RightAppliesTo'},
+    elsif ($args{'RightDomain'} eq 'Queue') {
+	unless ($self->CurrentUserHasQueueRight( Queue => $args{'RightInstance'},
 						 Right => 'ModifyACL')) {
 	    return (0, 'Permission Denied.');
 	}
@@ -218,7 +195,7 @@ sub Create {
     #If it's not a scope we recognise, something scary is happening.
     else {
 	$RT::Logger->err("RT::ACE->Create got a scope it didn't recognize: ".
-			 $args{'RightScope'}." Bailing. \n");
+			 $args{'RightDomain'}." Bailing. \n");
 	return(0,"System error. Unable to grant rights.");
     }
 
@@ -228,12 +205,12 @@ sub Create {
     $args{'RightName'} = $self->CanonicalizeRightName($args{'RightName'});
     
     #check if it's a valid RightName
-    if ($args{'RightScope'} eq 'Queue') {
+    if ($args{'RightDomain'} eq 'Queue') {
 	unless (exists $QUEUERIGHTS{$args{'RightName'}}) {
 	    return(0, 'Invalid right');
 	}	
 	}	
-    elsif ($args{'RightScope' eq 'System'}) {
+    elsif ($args{'RightDomain' eq 'System'}) {
 	unless (exists $SYSTEMRIGHTS{$args{'RightName'}}) {
 	    return(0, 'Invalid right');
 	}		    
@@ -242,20 +219,18 @@ sub Create {
     
     # Make sure the right doesn't already exist.
     $self->LoadByCols (PrincipalId => $princ_id,
-		       PrincipalType => $args{'PrincipalType'},
 		       RightName => $args{'RightName'},
-		       RightScope => $args {'RightScope'},
-		       RightAppliesTo => $args{'RightAppliesTo'}
+		       RightDomain => $args {'RightDomain'},
+		       RightInstance => $args{'RightInstance'}
 		      );
     if ($self->Id) {
 	return (0, 'That user already has that right');
     }	
 
     my $id = $self->SUPER::Create( PrincipalId => $princ_id,
-				   PrincipalType => $args{'PrincipalType'},
 				   RightName => $args{'RightName'},
-				   RightScope => $args {'RightScope'},
-				   RightAppliesTo => $args{'RightAppliesTo'}
+				   RightDomain => $args {'RightDomain'},
+				   RightInstance => $args{'RightInstance'}
 				 );
     
     
@@ -314,10 +289,9 @@ sub _BootstrapRight {
     my %args = @_;
 
     my $id = $self->SUPER::Create( PrincipalId => $args{'PrincipalId'},
-				   PrincipalType => $args{'PrincipalType'},
 				   RightName => $args{'RightName'},
-				   RightScope => $args {'RightScope'},
-				   RightAppliesTo => $args{'RightAppliesTo'}
+				   RightDomain => $args {'RightDomain'},
+				   RightInstance => $args{'RightInstance'}
 				 );
     
     if ($id > 0 ) {
@@ -384,21 +358,6 @@ sub SystemRights {
 
 # }}}
 
-# {{{ sub _Accessible 
-
-sub _Accessible  {
-  my $self = shift;  
-  my %Cols = (
-	      PrincipalId => 'read/write',
-	      PrincipalType => 'read/write',
-	      RightName => 'read/write', 
-	      RightScope => 'read/write',
-	      RightAppliesTo => 'read/write'
-	    );
-  return($self->SUPER::_Accessible(@_, %Cols));
-}
-# }}}
-
 # {{{ sub AppliesToObj
 
 =head2 AppliesToObj
@@ -410,17 +369,17 @@ the system object, returns undef. If the user has no rights, returns undef.
 
 sub AppliesToObj {
     my $self = shift;
-    if ($self->RightScope eq 'Queue') {
+    if ($self->RightDomain eq 'Queue') {
 	my $appliesto_obj = new RT::Queue($self->CurrentUser);
-	$appliesto_obj->Load($self->RightAppliesTo);
+	$appliesto_obj->Load($self->RightInstance);
 	return($appliesto_obj);
     }
-    elsif ($self->RightScope eq 'System') {
+    elsif ($self->RightDomain eq 'System') {
 	return (undef);
     }	
     else {
 	$RT::Logger->warning("$self -> AppliesToObj called for an object ".
-			     "of an unknown scope:" . $self->RightScope);
+			     "of an unknown scope:" . $self->RightDomain);
 	return(undef);
     }
 }	
@@ -431,30 +390,14 @@ sub AppliesToObj {
 
 =head2 PrincipalObj
 
-If the AppliesTo is a group, returns the group object.
-If the AppliesTo is a user, returns the user object.
-Otherwise, it logs a warning and returns undef.
+Returns the RT::Principal object for this ACE. 
 
 =cut
 
 sub PrincipalObj {
     my $self = shift;
-    my ($princ_obj);
 
-    if ($self->PrincipalType eq 'Group') {
-	use RT::Group;
-	$princ_obj = new RT::Group($self->CurrentUser);
-    }
-    elsif ($self->PrincipalType eq 'User') {
-	$princ_obj = new RT::User($self->CurrentUser);
-    }
-    else {
-	$RT::Logger->warning("$self -> PrincipalObj called for an object ".
-			     "of an unknown principal type:" . 
-			     $self->PrincipalType ."\n");
-	return(undef);
-    }
-    
+   	my $princ_obj = RT::Principal->new($self->CurrentUser);
     $princ_obj->Load($self->PrincipalId);
     return($princ_obj);
 
@@ -576,16 +519,16 @@ sub HasRight {
         return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
     }	
     
-    elsif ($self->__Value('RightScope') eq 'System') {
+    elsif ($self->__Value('RightDomain') eq 'System') {
 	return $args{'Principal'}->HasSystemRight($args{'Right'});
     }
-    elsif ($self->__Value('RightScope') eq 'Queue') {
-	return $args{'Principal'}->HasQueueRight( Queue => $self->__Value('RightAppliesTo'),
+    elsif ($self->__Value('RightDomain') eq 'Queue') {
+	return $args{'Principal'}->HasQueueRight( Queue => $self->__Value('RightInstance'),
 						  Right => $args{'Right'} );
     }	
     else {
 	$RT::Logger->warning("$self: Trying to check an acl for a scope we ".
-			     "don't understand:" . $self->__Value('RightScope') ."\n");
+			     "don't understand:" . $self->__Value('RightDomain') ."\n");
 	return undef;
     }
 

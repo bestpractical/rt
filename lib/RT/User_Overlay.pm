@@ -157,6 +157,9 @@ sub Create {
         $RT::Logger->warning( "$self couldn't check for pre-existing users");
     }
 
+
+    $RT::Handle->BeginTransaction();
+
     my $id = $self->SUPER::Create(%args);
 
     #If the create failed.
@@ -179,11 +182,12 @@ sub Create {
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
-        $self->SUPER::Delete(); # We really want to delete this object 
+        $RT::Handle->Rollback();
         $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
         return ( 0, $self->loc('Could not create user') );
     }
                                     
+    $RT::Handle->Commit;
 
     return ( $id, $self->loc('User created') );
 }
@@ -202,6 +206,9 @@ sub _BootstrapCreate {
 
     $args{'Password'} = '*NO-PASSWORD*';
 
+
+    $RT::Handle->BeginTransaction(); 
+
     my $id = $self->SUPER::Create(%args);
 
     #If the create failed.
@@ -216,11 +223,12 @@ sub _BootstrapCreate {
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
-        $self->SUPER::Delete(); # We really want to delete this object 
+        $RT::Handle->Rollback();
         $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
         return ( 0, $self->loc('Could not create user') );
     }
                                     
+    $RT::Handle->Commit();
 
     return ( $id, $self->loc('User created') );
 }

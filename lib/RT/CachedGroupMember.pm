@@ -47,6 +47,7 @@ Create takes a hash of values and creates a row in the database:
   int(11) 'GroupId'.
   int(11) 'MemberId'.
   int(11) 'Via'.
+  int(11) 'ImmediateParentId'.
 
 =cut
 
@@ -59,12 +60,14 @@ sub Create {
                 GroupId => '',
                 MemberId => '',
                 Via => '',
+                ImmediateParentId => '',
 
 		  @_);
     $self->SUPER::Create(
                          GroupId => $args{'GroupId'},
                          MemberId => $args{'MemberId'},
                          Via => $args{'Via'},
+                         ImmediateParentId => $args{'ImmediateParentId'},
 );
 
 }
@@ -134,6 +137,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=item ImmediateParentId
+
+Returns the current value of ImmediateParentId. 
+(In the database, ImmediateParentId is stored as int(11).)
+
+
+
+=item SetImmediateParentId VALUE
+
+
+Set ImmediateParentId to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ImmediateParentId will be stored as a int(11).)
+
+
+=cut
+
+
 
 sub _ClassAccessible {
     {
@@ -145,6 +166,8 @@ sub _ClassAccessible {
         MemberId => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         Via => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
+        ImmediateParentId => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
 
  }
