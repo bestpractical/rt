@@ -64,7 +64,7 @@ CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
 --- {{{ Principals
 
 CREATE TABLE Principals (
-        id INTEGER   not null,
+        id INTEGER PRIMARY KEY,
         PrincipalType VARCHAR(16) not null,
         ObjectId integer,
         Disabled int2 NOT NULL DEFAULT 0 
@@ -76,7 +76,7 @@ CREATE TABLE Principals (
 --- {{{ Groups
 
 CREATE TABLE Groups (
-  id INTEGER PRIMARY KEY  ,
+  id INTEGER ,
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   Domain varchar(64),
@@ -184,7 +184,7 @@ CREATE TABLE GroupMembers (
 --- {{{ CachedGroupMembers
 
 create table CachedGroupMembers (
-        id int ,
+        id integer primary key ,
         GroupId int, 
         MemberId int, 
         Via int, 
@@ -203,7 +203,7 @@ create table CachedGroupMembers (
 --- {{{ Users
 
 CREATE TABLE Users (
-  id INTEGER PRIMARY KEY  ,
+  id INTEGER ,
   Name varchar(200) NOT NULL  ,
   Password varchar(40) NULL  ,
   Comments blob NULL  ,

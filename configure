@@ -1745,7 +1745,7 @@ if test "${with_db_type+set}" = set; then
 else
   DB_TYPE=mysql
 fi;
-if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg'; then
+if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite'; then
 	{ { echo "$as_me:$LINENO: error: Only Pg and mysql are valid db types" >&5
 echo "$as_me: error: Only Pg and mysql are valid db types" >&2;}
    { (exit 1); exit 1; }; }

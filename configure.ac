@@ -78,7 +78,7 @@ AC_ARG_WITH(db-type,
 	    		   [sort of database RT will use (default: mysql) (mysql and Pg are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
-if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg'; then
+if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite'; then
 	AC_MSG_ERROR([Only Pg and mysql are valid db types])
 fi
 AC_SUBST(DB_TYPE)
