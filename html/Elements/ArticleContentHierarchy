@@ -8,7 +8,7 @@
 % }
 </LI>
 % }
-</UL>
+</OL>
 <%INIT>
 # Subtract 1 from depth. by default, depth 0, means unlimited.
 $Depth--;

@@ -7,12 +7,12 @@
 	 <a href="edit/edit_article.html?id=<%$article->Id%>">[edit]</a>
 	 <a href="edit/create_article.html?Parent=<%$article->Id%>">[new child]</a>
 % }
-</LI>
 % if ($Depth > 0) {
 <& ArticleHierarchy, parent => $article->Id , Depth => $Depth &> 
 % }
+</LI>
 % }
-</UL>
+</OL>
 <%INIT>
 # Subtract 1 from depth. by default, depth 0, means unlimited.
 $Depth--;
