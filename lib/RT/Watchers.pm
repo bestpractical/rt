@@ -18,8 +18,8 @@ sub new {
 
 sub Limit {
   my $self = shift;
-my %args = ( ENTRYAGGREGATOR => 'AND',
-             @_);
+  my %args = ( ENTRYAGGREGATOR => 'AND',
+	       @_);
 
   $self->SUPER::Limit(%args);
 }
@@ -41,7 +41,7 @@ sub LimitToQueue {
   my $queue = shift;
   $self->Limit (ENTRYAGGREGATOR => 'AND',
 		FIELD => 'Value',
-		VALUE => "$queue")
+		VALUE => "$queue");
   $self->Limit (ENTRYAGGREGATOR => 'AND',
 		FIELD => 'Scope',
 		VALUE => 'Queue');

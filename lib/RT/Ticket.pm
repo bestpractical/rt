@@ -120,9 +120,10 @@ sub Create {
 
 sub AddWatcher {
   my $self = shift;
-  my %args = ( Ticket => $self->Id(),
+  my %args = ( Value => $self->Id(),
 	       Email => undef,
 	       Type => undef,
+	       Scope => 'Ticket',
 	       @_ );
   
   require RT::Watcher;
@@ -153,9 +154,8 @@ sub Watchers {
   my $self = shift;
   if (! defined ($self->{'Watchers'})) {
     require RT::Watchers;
-    $self->{'Watchers'} = new RT::Watchers ($self->CurrentUser);
+    $self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
     $self->{'Watchers'}->LimitToTicket($self->id);
-    
   }
   return($self->{'Watchers'});
   
@@ -165,7 +165,7 @@ sub Requestors {
   my $self = shift;
   if (! defined ($self->{'Requestors'})) {
     require RT::Watchers;
-    $self->{'Requestors'} = new RT::Watchers ($self->CurrentUser);
+    $self->{'Requestors'} = RT::Watchers->new($self->CurrentUser);
     $self->{'Requestors'}->LimitToTicket($self->id);
     $self->{'Requestors'}->LimitToRequestors();
   }

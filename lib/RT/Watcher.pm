@@ -25,7 +25,8 @@ sub _Accessible {
   my $self = shift;
   my %Cols = (
 	      Email => 'read/write',
-	      Ticket => 'read/write',
+	      Scope => 'read/write',
+	      Value => 'read/write',
 	      Type => 'read/write',
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
@@ -36,7 +37,8 @@ sub Create {
   my $self = shift;
   my %args = (
 	      Email => undef,
-	      Ticket => undef,
+	      Value => undef,
+	      Scope => undef,
 	      Type => undef,
 	      @_ # get the real argumentlist
 	     );

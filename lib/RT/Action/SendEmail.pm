@@ -52,35 +52,23 @@ sub Commit {
 sub Prepare {
   my $self = shift;
 
+  # Perform variable substitution on the template headers
+  my $headers=$self->{TemplateObject}->ParseHeaders($self);
+
+  for (split /\n/, $headers) {
+      /: /;
+      $self->{Header}->add($`, $');
+  }
+
   # Header
   
   # To, bcc and cc
-  my $receipients;
-  if (my $a=$self->{Argument}) {
+  $self->SetReceipients() || return undef;
 
-      # TODO: Do some checks to enforce that one person won't get more
-      # than one email about the same transaction.
+  # Maybe it's better to separate out _all_ headers/group of headers
+  # to make it easier to customize subclasses?
 
-      # This is a bit messy, I guess it needs to be cleaned a bit.
-      # Jesse, what are your thoughts about the Argument anyway?
-      if ($a =~ /^\$/) {
-	  $receipients=$self->{TicketObject}->Watchers()->Emails($');
-	  my $r2=$self->{TicketObject}->{values}->{$'};
-	  my $r3=$self->{TransactionObject}->{values}->{$'};
-	  push @$receipients, $r2 if $r2;
-	  push @$receipients, $r3 if $r3;
-      } else {
-	  warn "stub - no support for argument/receipient $a yet";
-      } 
-  } else {
-      # Find all queue watchers, and add
-      warn "stub";
-      $receipients=['tobiasb@funcom.com'];
-  }
-  @$receipients || return undef;
-  for my $receipient (@$receipients) { 
-      $self->{Header}->add('To', $receipient); 
-  }
+  # nah ... 
 
   # Subject
   unless ($self->{'Header'}->get(Subject)) {
@@ -123,7 +111,7 @@ sub Prepare {
   $self->{'Header'}->add('X-Request-ID', $self->{'TicketObject'}->id());
   $self->{'Header'}->add('X-RT-Loop-Prevention', $RT::rtname);
 
-  # Perform variable substitution on the template
+  # Perform variable substitution on the template body
   $self->{'Body'}=$self->{TemplateObject}->Parse($self);
   $self->{'Body'} .= 
       "\n-------------------------------------------- Managed by Request Tracker\n\n";
@@ -133,6 +121,39 @@ sub Prepare {
   $self->{'Header'}->add
       ('X-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
 
+}
+
+# Override this sub for more fine grained control of receipients.
+sub SetReceipients {
+  my $self=shift;
+
+  my $receipients;
+  if (my $a=$self->{Argument}) {
+
+      # TODO: Do some checks to enforce that one person won't get more
+      # than one email about the same transaction.  -- TobiX
+
+      # This is a bit messy, I guess it needs to be cleaned a bit.
+      if ($a =~ /^\$/) {
+	  $receipients=$self->{TicketObject}->Watchers()->Emails($');
+	  my $r2=$self->{TicketObject}->{values}->{$'};
+	  my $r3=$self->{TransactionObject}->{values}->{$'};
+	  push @$receipients, $r2 if $r2;
+	  push @$receipients, $r3 if $r3;
+      } else {
+	  warn "stub - no support for argument/receipient $a yet";
+      } 
+  } else {
+      # Find ALL interessting parties.
+      # TODO: Need to separate BCC, CC and other  -- TobiX
+      $receipients=$self->{TicketObject}->Queue->Watchers()->Emails();
+      push (@$receipients, @{$self->{TicketObject}->Watchers()->Emails()});
+  }
+  @$receipients || return undef;
+  for my $receipient (@$receipients) { 
+      $self->{Header}->add('To', $receipient); 
+  }
+  return 1;
 }
 
 sub IsApplicable {

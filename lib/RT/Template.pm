@@ -19,10 +19,11 @@ sub _Accessible {
   my $self = shift;
   my %Cols = (
 	      id => 'read',
-	      title => 'read',
-	      content => 'read',
+	      Title => 'read',
+	      Content => 'read',
 	      Creator => 'read',
 	      Created => 'read',
+	      Headers => 'read',
 	      LastUpdatedBy => 'read',
 	      LastUpdated => 'read'
 	     );
@@ -33,9 +34,14 @@ sub DisplayPermitted {
     return 1;
 }
 
+sub ParseHeaders {
+    Parse(@_, 'Headers');
+}
+
 sub Parse {
     my $self=shift;
     my $object=shift;
+    my $what=shift;
 
     # Might be subject to change
     require Text::Template;
@@ -48,7 +54,10 @@ sub Parse {
     $T::object=$object;
     $T::rtname=$RT::rtname;
     
-    $template=Text::Template->new(TYPE=>STRING, SOURCE=>$self->content);
+    $template=Text::Template->new(TYPE=>STRING, 
+				  SOURCE=>($what&&($what eq 'Headers')
+				      ? $self->Headers 
+                                      : $self->Content));
     return $template->fill_in(PACKAGE=>T);
 }
 

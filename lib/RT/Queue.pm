@@ -117,6 +117,19 @@ sub NewArea {
 sub DeleteArea {
 }
 
+sub Watchers {
+  my $self = shift;
+  if (! defined ($self->{'Watchers'})) {
+    require RT::Watchers;
+    $self->{'Watchers'} =RT::Watchers->new($self->CurrentUser);
+    $self->{'Watchers'}->LimitToQueue($self->id);
+  }
+  return($self->{'Watchers'});
+  
+}
+
+
+
 sub Areas {
   my $self = shift;
   
