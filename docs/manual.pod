@@ -1,0 +1,234 @@
+=head1 Introduction	
+
+=head1	Requirements
+
+=head2 Perl
+
+=head2 Required Modules
+
+=head2 A database backend
+
+=head3 Mysql
+
+=head3 PostgreSQL
+
+=head3 Oracle
+
+=head1	Installation
+
+=head1	Configuration
+
+=head2	Sitewide configuration
+
+=head2	Apache configuration
+
+=head2	Mail gateway configuration
+
+=head1	Concepts
+
+=head2	Tickets
+
+=head2	Queues
+
+=head2	Users
+
+=head3	Attributes
+
+=head3	Roles
+
+=head2	Groups
+
+=head3	Pseudogroups
+
+=head3	Regular groups
+
+=head2	Watchers
+
+=head3	Watcher Types
+
+=head4	Requestors
+
+=head4	Cc
+
+=head4	Administrative Cc
+
+=head3	Watcher Scopes
+
+=head4	Queue 
+
+=head4	Ticket
+
+=head2  Keywords
+
+=head3  The Keywords tree
+
+=head3 Keyword Selections
+
+=head4 Name
+
+=head4 Description
+
+=head4 Multiplicty
+
+=head4 Depth
+
+=head4 Which Keyword
+
+=head2	Scrips
+
+RT 2.0 includes a powerful system for implementing local business logic, called 'Scrips'.  (The 'Scrips' system is a combination of a 'script' system and a 'subscription' system).
+
+With RT 1.0, the requestors of a ticket were automatically emailed
+on any correspondence that RT couldn't determine came from them.
+RT 2.0 allows each site to control this and many other behaviors at the queue
+level.  Through the scrips mechanism, RT 2.0 allows local administrators to define what actions should be taken on each transaction.  
+
+Scrips can be defined per-queue and system-wide. 
+Each scrip is composed of a Condition, an Action and a Template.
+
+For 2,0 there isn't an exposed user interface for defining new actions and
+conditions, though the programming API is simple and well defined.
+
+=head3	Conditions
+
+
+Conditions are things like:
+	OnCorrespond
+	OnComment
+	OnCreate
+	OnStall
+	OnResolve
+	OnTransaction
+
+=head3	Actions
+
+Actions include things like:
+
+	NotifyRequestorsAsCorrespondence
+	NotifyCcsAsCorrespondence
+	NotifyAdminCcsAsCorrespondence
+	NotifyAllWatchersAsCorrespondence
+	NotifyRequestorsAsComment
+	NotifyCcsAsComment
+	NotifyAdminCcsAsComment
+	NotifyAllWatchersAsComment
+
+=head3	Templates
+
+There are a bunch of predefined system-wide templates like:
+	Autoreply
+	Transaction
+	Correspondence
+	Comment
+
+	Additionally, RT allows local RT administrators to define new
+	system-wide tempaltes and allows queue administrators
+	to define per-queue templates.  
+
+
+
+=head2	ACL
+
+rt2 includes a rich acl scheme which supports granting rights to users and groups for a given queue or for the entire RT instance.
+
+
+rights can be granted to:
+	a specific user who has the privileged flag set and doesn't have the disabled flag set
+	a specific locally defined group
+	one of several 'pseudogroups': 
+		everyone, requestor, cc, admincc, owner
+
+
+
+Rights granted to an individual user are granted to that user and only that user
+
+Rights granted to a locally defined group will be made available to all members
+of that group, so long as they remain members of the group.
+
+rights granted to the pseudo-group 'everyone' will be granted to all users.
+
+Rights granted to any of the following pseudo-groups will be dynamically 
+granted to users based on the current ticket being dealt with:
+	requestor, cc, admincc, owner.
+	
+
+
+
+=head1	Tasks
+
+=head2	Creating a user	
+
+=head3 Using the CLI
+
+=head3 Using the Web interface
+
+=head2	Creating a queue
+
+=head2	Granting users rights to access a queue
+
+	To allow any user to create a ticket in any queue, grant the right
+'CreateTicket' to the Pseudogroup 'Everyone' globally.
+
+	To allow any user to create a ticket in the queue 'general', grant
+the right 'CreateTicket' to the pseudogroup 'Everyone' for the queue 'general'
+
+	To allow anyone to send in an email update to a ticket in the queue 'general',
+grant the rights 'ReplyToTicket' and 'CommentOnTicket' to the pseudogroup 'Everyone for the queue
+'general'
+
+
+
+
+=head2	Using scrips to notify users of changes to tickets in a queue
+
+=head1 Extending RT
+
+=head2 Scrips
+
+=head3  Scrip Actions
+
+=head3  Scrip Conditions
+
+=head2 Plugging in your own user authorization
+
+=head2 Plugging in your own user metadata
+
+=head1	Reference
+
+=head2	Mail Gateway
+
+=head3	Introduction
+
+=head3	Syntax
+
+=head3	Examples
+
+=head2	User Commandline
+
+=head3	Introduction
+
+=head3	Syntax
+
+=head3	Examples
+
+=head2	Administrative Commandline
+
+=head3	Introduction
+
+=head3	Syntax
+
+=head3	Examples
+
+=head2	Web UI
+
+=head3	Introduction
+
+=head3	mod_perl Configuration
+
+=head3	speedycgi Configuration
+
+=head3	fastcgi Configuration
+
+=head1	Questions
+
+=cut
