@@ -34,12 +34,44 @@ sub _Init   {
 }
 # }}}
 
+
+# {{{ sub ContentType
+
+=head2 ContentType (VALUE => 'text/plain', ENTRYAGGREGATOR => 'OR', OPERATOR => '=' ) 
+
+Limit result set to attachments of ContentType 'TYPE'...
+
+=cut
+
+
+sub ContentType  {
+  my $self = shift;
+  my %args = ( VALUE => 'text/plain',
+	       OPERATOR => '=',
+	       ENTRYAGGREGATOR => 'OR',
+	       @_);
+
+  $self->Limit ( FIELD => 'ContentType',
+		 VALUE => $args{'VALUE'},
+		 OPERATOR => $args{'OPERATOR'},
+		 ENTRYAGGREGATOR => $args{'ENTRYAGGREGATOR'});
+}
+# }}}
+
 # {{{ sub ChildrenOf 
+
+=head2 ChildrenOf ID
+
+Limit result set to children of Attachment ID
+
+=cut
+
+
 sub ChildrenOf  {
   my $self = shift;
   my $attachment = shift;
   $self->Limit ( FIELD => 'Parent',
-		 VALUE => "$attachment");
+		 VALUE => $attachment);
 }
 # }}}
 
