@@ -57,7 +57,11 @@ sub print_transaction {
     } &end_table;
 	
     }
-    print "<hr><pre>";
+
+
+    $body =~ s/(.{76})/$1\\\n /g;
+    
+    print "<pre>";
     &print_html($body);
     print "<pre>";
 }
@@ -197,7 +201,7 @@ sub header {
     print "Content-type: text/html\n\n";
     print "<HTML>\n";
     print "<head><title>WebRT</title></head>\n";
-    print "<BODY bgcolor=\"#ffffff\">\n";
+    print "<BODY  bgcolor=\"#ffffff\">\n";
     #   if (!&frames()) {
     #	#&head_foot_options;
     #	print "<hr>";

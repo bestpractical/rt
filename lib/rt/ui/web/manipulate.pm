@@ -589,26 +589,29 @@ sub display_queue {
   }
   $query = $ENV{'QUERY_STRING'};
   $query =~ s/q_sort=(.*?)\&//;
+  $query =~ s/q_reverse=(.*?)\&//;
+  $query =~ s/&&//g;
   print "<!-- Query String 
 $query_string
 -->
 <font size=\"$QUEUE_FONT\">
 <TABLE cellpadding=4 border=1 width=100% bgcolor=\"\#bbbbbb\">
 
-<TR>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=number\&$query\">Ser</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=queue\&$query\">Queue</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=owner\&$query\">Owner</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=priority\&$query\">Pri</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=status\&$query\">Status</FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=timestamp\&$query\">Told</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=area\&$query\">Area</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=age\&$query\">Age</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=date_due\&$query\">Due</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=user\&$query\">Requestor</a></FONT></TH>
-       <TH><FONT SIZE=-1><a href=\"$ScriptURL?q_sort=subject\&$query\">Subject</a></FONT></TH>
- </TR>
-";
+<TR>";
+
+  print &queue_header('number',"Ser");
+  print &queue_header('queue',"Queue");
+  print &queue_header('owner',"Owner");
+  print &queue_header('priority',"Pri");
+  print &queue_header('status',"Status");
+  print &queue_header('timestamp',"Told");
+  print &queue_header('area',"Area");
+  print &queue_header('age',"Age");
+  print &queue_header('date_due',"Due");
+  print &queue_header('user',"Requestor");
+  print &queue_header('subject',"Subject");
+
+print "</TR>";
   
   for ($temp=0;$temp<$count;$temp++){
     
@@ -689,20 +692,6 @@ $query_string
   }
   print "
 </TR>
-<TR>
-<TD COLSPAN=11>";
-  $query = $ENV{'QUERY_STRING'};
-  if ($query =~ s/q_reverse=true//) {
-    #our conditional affected variables. bad coding style. but speedy
-  }
-  else {
-    $query .=  "\&q_reverse=true";
-  }
-print"
-<center><A HREF=\"$ScriptURL?$query\">Reverse sort the queue</a>
-</center>
-</TD>
-</TR>
 </TABLE>
 </font>
 <HR>
@@ -750,75 +739,64 @@ $date
 $time
 </font>
 </TD>
-
+<TD>
+&nbsp;&nbsp;
+</TD>
 <TD align=\"left\">
 <font color=\"\#ffffff\">
 <b>$rt::req[$serial_num]{'trans'}[$temp]{text}</b>
 </font>
 </TD>
-<TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=28 alt=')'></TD>
+<TD ALIGN=\"RIGHT\" VALIGN=\"CENTER\"><FONT color=\"\#ffffff\">&nbsp;";
+
+
+
+    if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
+	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'comments') or
+	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
+      print &fdro_murl("display=SetComment","history","<img border=0 src=\"/webrt/comment.gif\" alt=\"[Comment]\">");
+      
+      }
+    if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
+	($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
+      print &fdro_murl("display=SetReply","history","<img border=0 src=\"/webrt/respond.gif\" alt=\"[Reply]\">");
+    }
+
+    #all of these things can be done from the top/bottom menus. we don't 
+    # need em here
+    if (0) {
+
+    if ($rt::req[$serial_num]{'owner'} eq '') {
+      print &fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take");
+    }
+    if ($rt::req[$serial_num]{'status'} ne 'resolved') {
+      print &fdro_murl("do_req_resolve=true","summary","Resolve");
+    }
+    if ($rt::req[$serial_num]{'status'} ne 'open') {  
+      print &fdro_murl("do_req_open=true","summary","Open");
+    }
+  }
+print "</FONT></TD>
+<TD width=4 bgcolor=\"#ffffff\"><IMG SRC=\"/webrt/srs.gif\" width=4 height=\"28\" alt=')'></TD>
 </TR>
 <TR>
-<TD COLSPAN=3><img src=\"/webrt/sbs.gif\" width=100% height=4 alt=''></TD> 
-<TD><img src=\"/webrt/sbc.gif\"  width=4 alt='' height=4></TD>
-</TR>
-
-
-";
+<TD COLSPAN=5><img src=\"/webrt/sbs.gif\" width=100% height=4 alt=''></TD>
+<TD><img src=\"/webrt/sbc.gif\"  width=4 alt='' height=4></TD></TR>";
     
-    if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
-      print "
-<TR>
+   if ($rt::req[$serial_num]{'trans'}[$temp]{'content'}) {
+     print "
 
-<TD VALIGN=\"TOP\">
-<TABLE>";
-
-      if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
-	  ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'comments') or
-	  ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-	print "<TR><TD>";
-	print &fdro_murl("display=SetComment","history","Comment");
-	print "</TD></TR>";
-      }
-      if (($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'correspond') or
-	  ($rt::req[$serial_num]{'trans'}[$temp]{'type'} eq 'create')) {
-	print "<TR><TD>";
-	print &fdro_murl("display=SetReply","history","Reply");
-	print "</TD></TR>";
-	
-      }
-      
-      
-      if ($rt::req[$serial_num]{'owner'} eq '') {
-	print "<TR><TD>";
-	
-	print &fdro_murl("do_req_give=true&do_req_give_to=$current_user","summary","Take");
-	print "</TD></TR>";
-      }
-      if ($rt::req[$serial_num]{'status'} ne 'resolved') {
-	
-	print "<TR><TD>";
-	print &fdro_murl("do_req_resolve=true","summary","Resolve");
-	print "</TD></TR>";
-      }
-      if ($rt::req[$serial_num]{'status'} ne 'open') {  
-	print "<TR><TD>";
-	print &fdro_murl("do_req_open=true","summary","Open");
-	print "</TD></TR>";
-      }
-      print "</TABLE>
-    
-</TD>
-<TD BGCOLOR=\"#EEEEEE\" colspan=2>
+<TR><TD BGCOLOR=\"#FFFFFF\" colspan=5>
+<TABLE CELLPADDING=20 width=\"100%\"><TR><TD BGCOLOR=\"\#EEEEEE\">
 <font size=\"$MESSAGE_FONT\">";
       
       &rt::ui::web::print_transaction('all','received',$rt::req[$serial_num]{'trans'}[$temp]{'content'});
       
-      print "</font><hr>";
+      print "</font></TD></TR></TABLE></TD></TR>";
     }
     
     
-    print "</TD></TR>";
+
     
   }
   
@@ -1036,17 +1014,41 @@ localtime($rt::req[$in_serial_num]{'date_created'}) . "
 }
   
 
+#display a column header for the queue
+
+sub queue_header {
+  my $col = shift;
+  my $name = shift;
+  my ($header);
+  $header = "<TH>
+<CENTER><FONT SIZE=\"-1\">
+$name
+<br>
+<a href=\"$ScriptURL?q_sort=$col\&$query\">
+<img src=\"/webrt/up.gif\" alt=\"Ascending\" border=0>
+</a> 
+&nbsp;<a href=\"$ScriptURL?q_sort=$col\&q_reverse=1&$query\">
+<img src=\"/webrt/down.gif\" alt=\"Descending\" border=0>
+</a>
+</FONT>
+</CENTER>
+</TH>";
+  return ($header);
+}
 
 #display req options munge url
 #makes it easier to print out a url for fdro
 sub fdro_murl {
-    local ($custom_content, $target,$description) = @_;
+  my $custom_content = shift;
+  my $target = shift;
+  my $description = shift;
+  
     $url="<a href=\"$ScriptURL?serial_num=$serial_num&refresh_req=true&transaction=$rt::req[$serial_num]{'trans'}[$temp]{'id'}&";
     $url .= $custom_content;
     $url .= "\"";
-    $url .= "target=\"$target\"" if ($frames);
+    $url .= " target=\"$target\"" if ($frames);
 
-    $url .= ">";
+    $url .= " >";
     $url .= "$description</a>";
     return($url);
 }
