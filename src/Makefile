@@ -9,7 +9,7 @@ RT_BIN_PATH		=	$(RT_PATH)/bin
 RT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
 RT_TRANSACTIONS_PATH	= 	$(RT_PATH)/transactions
 GLIMPSE_PATH		=       $(RT_TRANSACTIONS_PATH)/glimpse
-RTMUX			=	$(RT_LIB_PATH)/rtmux.pl
+RTMUX			=	$(RT_BIN_PATH)/rtmux.pl
 TRANSACT_NUMFILE 	=	$(RT_ETC_PATH)/transact-num
 REQUEST_NUMFILE 	=	$(RT_ETC_PATH)/request-num
 
