@@ -2239,7 +2239,7 @@ sub SetStatus {
 
     #Check ACL
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
-	return (undef);
+	return (0, 'Permission denied');
     }
 
     my $now = new RT::Date($self->CurrentUser);
