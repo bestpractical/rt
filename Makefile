@@ -101,6 +101,9 @@ dropdb.Pg: etc/drop_schema.mysql
 dropdb.mysql: etc/drop_schema.mysql
 	-mysql	$(DB_DATABASE) < etc/drop_schema.mysql
 
+dropdb.Oracle: etc/drop_schema.Oracle
+	sqlplus	$(DB_DBA)@$(DB_DATABASE) \@etc/drop_schema.mysql
+
 POD2TEST_EXE = tools/extract_pod_tests
 
 testify-pods:
