@@ -16,26 +16,20 @@
 <tr>
 <td valign=top><b><%$cf->Name%></b></td>
 <td>
-% if ($cf->Type eq 'TextSingle') { 
-% my $value = $values->First;
-% my $content;
-% if ( $value) {$content = $value->Content};
-% $content = "<pre>".$content."</pre>" unless ($content =~ /<(.{1,5})>/);
+<% ($cf->Type !~ /Single$/) && '<ul>' |n%>
+%   while (my $value = $values->Next) {
+%       my $content;
+%       if ( $value) {$content = $value->Content};
+%       if ($cf->Type =~ /^(FreeForm|Text)/) {
+%           $content = "<pre>".$content."</pre>" unless ($content =~ /<(.{1,5})>/);
+%       }
+<%($cf->Type !~ /Single$/) && '<li>'|n%>
 <%$content|n%>
-% } else {
-<ul>
-% while (my $value = $values->Next) {
-% my $content = $value->Content;
-% $content =~ s/\n/<br>/gi;
-<li><%$content%></li>
 % }
-</ul>
+<%($cf->Type !~ /Single$/ )&& '</ul>'|n%>
 % }
-
 </td>
 </tr>
-%} 
-
 </table>
 <& /Elements/TitleBoxEnd &> 
 <br>

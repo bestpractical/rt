@@ -27,13 +27,9 @@
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
 <TH ALIGN=LEFT><&|/l&>Name</&></TH>
-<TH ALIGN=LEFT><&|/l&>Created by</&></TH>
+<TH ALIGN=LEFT width="20%"><&|/l&>Created by</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
-<TR>
-<TH COLSPAN=3><&|/l&>Summary</&>
-</TR>
-
 % while (my $Article = $MyArticles->Next) {
 % $i++;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
@@ -49,7 +45,7 @@
 <%$Article->CreatorObj->Name%>
 </TD>
 <TD ALIGN=RIGHT>
-[<A HREF="<% $RT::WebPath %>/RTFM/Article/Update.html?id=<%$Article->Id%>"><&|/l&>Update</&></A>]
+[<A HREF="<% $RT::WebPath %>/RTFM/Article/Modify.html?id=<%$Article->Id%>"><&|/l&>Update</&></A>]
 </TD>
 </TR>
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >

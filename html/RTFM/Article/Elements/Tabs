@@ -62,6 +62,13 @@ if ($id) {
                                      path => 'RTFM/Article/Edit.html?id=' . $id,
             };
         }
+        if ( $art->CurrentUserHasRight('DeleteArticle') ) {
+
+            $tabs->{"this"}->{subtabs}->{'ZDelete'} = {
+                                     title => loc('Delete'),
+                                     path => 'RTFM/Article/Delete.html?id=' . $id,
+            };
+        }
 }
 </%INIT>
 

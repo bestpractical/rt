@@ -33,7 +33,10 @@ current_tab => $current_subtab, Title => $title &>
 
 <&|/l&>Name</&>: <input name="Name" VALUE="<%$CustomFieldObj->Name%>" SIZE=20><BR>
 <&|/l&>Description</&>: <input name="Description" VALUE="<%$CustomFieldObj->Description%>" SIZE=80><BR>
-<&|/l&>Type</&>: <& /RTFM/Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
+<&|/l&>Type</&>: <& /RTFM/Admin/Elements/SelectCustomFieldType, Name => "Type",
+Default => $CustomFieldObj->Type &><br>
+<&|/l&>Sort Order</&>: <input name="SortOrder"
+VALUE="<%$CustomFieldObj->SortOrder%>" SIZE=6><BR>
 <BR>
 % if ($CustomFieldObj->Id && $CustomFieldObj->Type =~ /^Select/i) {
 <H2><&|/l&>Values</&></H2>

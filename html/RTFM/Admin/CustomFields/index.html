@@ -7,7 +7,7 @@ Title => loc("Select a Custom Fields") &>
 %while  (my $CustomFieldObj = $CustomFields->Next) { 
 
 <LI>
-<A HREF="Basics.html?id=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->id()%>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a><BR>
+<A HREF="Basics.html?id=<%$CustomFieldObj->id()%>"><%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></a> (<%$CustomFieldObj->SortOrder%>)<BR>
 
 %}
 
