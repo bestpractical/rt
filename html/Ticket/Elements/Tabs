@@ -187,6 +187,7 @@ my $args = "?" . $m->comp(
     Order   => $ARGS{'Order'}   || $session{'CurrentSearchHash'}->{'Order'},
     Rows    => $ARGS{'Rows'},
   ) if ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'});
+$args ||= '';
 
 $tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",
                  title     => loc('New Query')};

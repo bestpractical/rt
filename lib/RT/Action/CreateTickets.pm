@@ -213,7 +213,7 @@ A complete list of acceptable fields for this beastie:
 
 Fields marked with an * are required.
 
-Fields marked with a + man have multiple values, simply
+Fields marked with a + may have multiple values, simply
 by repeating the fieldname on a new line with an additional value.
 
 Fields marked with a ! are postponed to be processed after all
