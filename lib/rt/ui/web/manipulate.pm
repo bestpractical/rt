@@ -178,12 +178,12 @@ sub DisplayForm {
   }
   if ($rt::ui::web::FORM{'display'} eq 'History') {
     	  if (!$frames) {
-	      &display_commands();
+	      #&display_commands();
 	        }
     &FormHeader("Details");
     print "<BR><BR>";
   &do_bar($serial_num);
-    
+   print "<BR><BR>"; 
     &display_summary($serial_num);
     print "<hr>";
     &display_history_tables($serial_num);
