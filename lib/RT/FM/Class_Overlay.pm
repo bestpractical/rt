@@ -16,12 +16,14 @@
 # 
 # END LICENSE BLOCK
 
+package RT::FM::Class;
+
 no warnings qw/redefine/;
 use strict;
 
 
 use RT::FM::System;
-use RT::FM::CustomFieldCollection;
+use RT::CustomFields;
 use RT::ACL;
 
 
@@ -87,6 +89,12 @@ sub AvailableRights {
 }
 
 # }}}
+
+# This object takes custom fields
+
+RT::CustomField->_ForObjectType(_LookupTypes() => 'RTFM Articles'); #loc
+
+
 
 # {{{ Create
 
@@ -187,51 +195,7 @@ sub ValidateName {
 }
 # }}}
 
-# {{{ CustomFields
 
-=head2 CustomFields
-
-Returns a CustomFieldCollection of all custom fields related to this article
-
-=begin testing
-
-my ($id,$msg);
-
-my $class = RT::FM::Class->new($RT::SystemUser);
-($id,$msg) = $class->Create(Name => 'CFTests');
-ok($id, $msg);
-
-ok($class->CustomFields->Count == 0, "The class has no custom fields");
-my $cf1 = RT::FM::CustomField->new($RT::SystemUser);
-($id, $msg) =$cf1->Create(Name => "ListTest1", Type => "SelectMultiple");
-ok ($id, $msg);
-ok($cf1->AddToClass($class->Id));
-ok($class->CustomFields->Count == 1, "The class has 1 custom field - ");
-my $cf2 = RT::FM::CustomField->new($RT::SystemUser);
-($id, $msg) =$cf2->Create(Name => "ListTest2", Type => "SelectMultiple");
-ok ($id, $msg);
-
-# We're not going to do global custom fields
-
-ok ($class->CustomFields->HasEntry($cf1->Id), "The class knows that it has the local cf specifically");
-ok (!$class->CustomFields->HasEntry(9899), "The class knows that it doesn't have some random cf");
-
-=end testing
-
-=cut
-
-
-sub CustomFields {
-    my $self      = shift;
-    
-    my $cfs       = RT::FM::CustomFieldCollection->new( $self->CurrentUser );
-    if ($self->CurrentUserHasRight('SeeClass')) {
-        $cfs->LimitToClass($self->Id);
-
-    }
-
-    return($cfs);                
-}
 # }}}
 
 # {{{ ACCESS CONTROL
@@ -268,9 +232,14 @@ sub CurrentUserHasRight {
 
     return ($self->CurrentUser->HasRight( Right => $right,
                                           Object => $self, 
-                                          EquivObjects => [$RT::FM::System] ));
+                                          EquivObjects => [$RT::System, $RT::FM::System] ));
 
 }
+
+sub _LookupTypes {
+    "RT::FM::Class-RT::FM::Article";
+}
+
 
 1;
 

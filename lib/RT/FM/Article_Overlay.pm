@@ -22,7 +22,6 @@ no warnings qw/redefine/;
 
 use RT::FM;
 use RT::FM::ArticleCollection;
-use RT::FM::CustomFieldCollection;
 use RT::FM::ObjectTopicCollection;
 use RT::FM::ClassCollection;
 use RT::Links;
@@ -1238,7 +1237,7 @@ sub CurrentUserHasRight {
     return ( $self->CurrentUser->HasRight(
                             Right        => $right,
                             Object       => $self,
-                            EquivObjects => [ $RT::FM::System, $self->ClassObj ]
+                            EquivObjects => [ $RT::FM::System, $RT::System, $self->ClassObj ]
              ) );
 
 }

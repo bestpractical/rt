@@ -20,7 +20,6 @@
 use RT::FM;
 use RT::FM::ArticleCollection;
 use RT::FM::ClassCollection;
-use RT::FM::CustomFieldCollection;
 use RT::FM::TopicCollection;
 use RT::FM::ObjectTopicCollection;
 use Time::ParseDate;

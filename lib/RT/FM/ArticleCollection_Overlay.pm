@@ -18,10 +18,6 @@
 
 use strict;
 package RT::FM::ArticleCollection;
-
-
-
-
 no warnings qw/redefine/;
 
 =head2 Next
