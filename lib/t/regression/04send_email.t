@@ -1,6 +1,10 @@
-#!@PERL@ -w
+#!/usr/bin/perl -w
 
 use strict;
+use Test::More qw/no_plan/;
+use RT;
+RT::LoadConfig();
+RT::Init;
 use RT::EmailParser;
 use RT::Tickets;
 use RT::Action::SendEmail;
@@ -36,7 +40,7 @@ my $parser = RT::EmailParser->new();
 
 
 # Let's test to make sure a multipart/report is processed correctly
-my $content =  `cat @RT_LIB_PATH@/t/data/multipart-report` || die "couldn't find new content";
+my $content =  `cat /opt/rt3/lib/t/data/multipart-report` || die "couldn't find new content";
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
                                   
@@ -45,7 +49,7 @@ my %args =        (message => $content, queue => 1, action => 'correspond');
 my $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+my $tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Content =~ /The original message was received/, "It's the bounce");
@@ -70,12 +74,12 @@ Foob!');
 use Data::Dumper;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
-my ($id,  $tid, $msg ) = $ticket->Create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
+my  ($id,  undef, $msg ) = $ticket->Create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
 ok ($id,$msg);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+ $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'I18NTest', "failed to create the new ticket from an unprivileged account");
 
@@ -91,7 +95,7 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
-my $content =  `cat @RT_LIB_PATH@/t/data/new-ticket-from-iso-8859-1` || die "couldn't find new content";
+$content =  `cat /opt/rt3/lib/t/data/new-ticket-from-iso-8859-1` || die "couldn't find new content";
 
 
 
@@ -101,12 +105,12 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
                            
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+ $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
@@ -122,7 +126,7 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # If we correspond, does it do the right thing to the outbound messages?
 
 $parser->ParseMIMEEntityFromScalar($content);
-my ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
+  ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
 $parser->ParseMIMEEntityFromScalar($content);
@@ -139,16 +143,16 @@ $RT::EmailOutputEncoding = 'iso-8859-1';
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
-my $content =  `cat @RT_LIB_PATH@/t/data/new-ticket-from-iso-8859-1` || die "couldn't find new content";
+ $content =  `cat /opt/rt3/lib/t/data/new-ticket-from-iso-8859-1` || die "couldn't find new content";
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
                                   
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+ $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Content =~ /H\x{e5}vard/, "It's signed by havard. yay");
@@ -165,7 +169,7 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # If we correspond, does it do the right thing to the outbound messages?
 
 $parser->ParseMIMEEntityFromScalar($content);
-my ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
+ ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
 $parser->ParseMIMEEntityFromScalar($content);
@@ -233,7 +237,7 @@ sub iso8859_redef_sendmessage {
 
 # {{{ test a multipart alternative containing a text-html part with an umlaut
 
-my $content =  `cat @RT_LIB_PATH@/t/data/multipart-alternative-with-umlaut` || die "couldn't find new content";
+ $content =  `cat /opt/rt3/lib/t/data/multipart-alternative-with-umlaut` || die "couldn't find new content";
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -241,12 +245,12 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &umlauts_redef_sendmessage;
 
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+ $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Content =~ /causes Error/, "We recorded the content right as text-plain");
@@ -261,7 +265,7 @@ sub umlauts_redef_sendmessage {
 
 # {{{ test a text-html message with an umlaut
 
-my $content =  `cat @RT_LIB_PATH@/t/data/text-html-with-umlaut` || die "couldn't find new content";
+ $content =  `cat /opt/rt3/lib/t/data/text-html-with-umlaut` || die "couldn't find new content";
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -269,12 +273,12 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &text_html_umlauts_redef_sendmessage;
 
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+ $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Attachments->First->Content =~ /causes Error/, "We recorded the content as containing 'causes error'");
@@ -299,7 +303,7 @@ sub text_html_umlauts_redef_sendmessage {
 
 # {{{ test a text-html message with russian characters
 
-my $content =  `cat @RT_LIB_PATH@/t/data/text-html-in-russian` || die "couldn't find new content";
+ $content =  `cat /opt/rt3/lib/t/data/text-html-in-russian` || die "couldn't find new content";
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -307,12 +311,12 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &text_html_russian_redef_sendmessage;
 
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+ $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Attachments->First->ContentType =~ /text\/html/, "We recorded the content right as text-html");
@@ -342,19 +346,19 @@ sub text_html_russian_redef_sendmessage {
 
 unshift (@RT::EmailInputEncodings, 'koi8-r');
 $RT::EmailOutputEncoding = 'koi8-r';
-my $content =  `cat @RT_LIB_PATH@/t/data/russian-subject-no-content-type` || die "couldn't find new content";
+$content =  `cat /opt/rt3/lib/t/data/russian-subject-no-content-type` || die "couldn't find new content";
 
 $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
 &text_plain_russian_redef_sendmessage;
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+$tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Attachments->First->ContentType =~ /text\/plain/, "We recorded the content type right");
@@ -381,7 +385,7 @@ $RT::EmailOutputEncoding = 'utf-8';
 
 # {{{ test a message containing a nested RFC 822 message
 
-my $content =  `cat @RT_LIB_PATH@/t/data/nested-rfc-822` || die "couldn't find new content";
+ $content =  `cat /opt/rt3/lib/t/data/nested-rfc-822` || die "couldn't find new content";
 ok ($content, "Loaded nested-rfc-822 to test");
 
 $parser->ParseMIMEEntityFromScalar($content);
@@ -389,12 +393,12 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 # be as much like the mail gateway as possible.
 &text_plain_nested_redef_sendmessage;
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+$tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 is ($tick->Subject, "[Jonas Liljegren] Re: [Para] Niv\x{e5}er?");
 ok ($tick->Transactions->First->Attachments->First->ContentType =~ /multipart\/mixed/, "We recorded the content type right");
@@ -420,7 +424,7 @@ sub text_plain_nested_redef_sendmessage {
 
 # {{{ test a multipart alternative containing a uuencoded mesage generated by lotus notes
 
-my $content =  `cat @RT_LIB_PATH@/t/data/notes-uuencoded` || die "couldn't find new content";
+ $content =  `cat /opt/rt3/lib/t/data/notes-uuencoded` || die "couldn't find new content";
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -428,12 +432,12 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &notes_redef_sendmessage;
 
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+$tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Content =~ /from Lotus Notes/, "We recorded the content right");
@@ -448,7 +452,7 @@ sub notes_redef_sendmessage {
 
 # {{{ test a multipart that crashes the file-based mime-parser works
 
-my $content =  `cat @RT_LIB_PATH@/t/data/crashes-file-based-parser` || die "couldn't find new content";
+ $content =  `cat /opt/rt3/lib/t/data/crashes-file-based-parser` || die "couldn't find new content";
 
 $parser->ParseMIMEEntityFromScalar($content);
 
@@ -456,12 +460,12 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 &crashes_redef_sendmessage;
 
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+$tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 ok ($tick->Transactions->First->Content =~ /FYI/, "We recorded the content right");
@@ -478,18 +482,18 @@ sub crashes_redef_sendmessage {
 
 # {{{ test a multi-line RT-Send-CC header
 
-my $content =  `cat @RT_LIB_PATH@/t/data/rt-send-cc` || die "couldn't find new content";
+ $content =  `cat /opt/rt3/lib/t/data/rt-send-cc` || die "couldn't find new content";
 
 $parser->ParseMIMEEntityFromScalar($content);
 
 
 
-my %args =        (message => $content, queue => 1, action => 'correspond');
+ %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-my $tickets = RT::Tickets->new($RT::SystemUser);
+ $tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
+$tick= $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 my $cc = $tick->Transactions->First->Attachments->First->GetHeader('RT-Send-Cc');

@@ -1,6 +1,7 @@
-#!@PERL@
+#!/usr/bin/perl
 
 use strict;
+use Test::More qw/no_plan/;
 use WWW::Mechanize;
 use HTTP::Request::Common;
 use HTTP::Cookies;

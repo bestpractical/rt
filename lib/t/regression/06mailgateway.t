@@ -1,4 +1,4 @@
-#!@PERL@ -w
+#!/usr/bin/perl -w
 # BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
@@ -51,11 +51,14 @@ rt-mailgate - Mail interface to RT3.
 
 =cut
 
+use Test::More qw/no_plan/;
+use RT;
+RT::LoadConfig();
+RT::Init();
 use RT::I18N;
-
 # Make sure that when we call the mailgate wrong, it tempfails
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://bad.address"), "Opened the mailgate - The error below is expected - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://bad.address"), "Opened the mailgate - The error below is expected - $@");
 print MAIL <<EOF;
 From: root\@localhost
 To: rt\@example.com
@@ -71,7 +74,7 @@ is ( $? >> 8, 75, "The error message above is expected The mail gateway exited w
 
 # {{{ Test new ticket creation by root who is privileged and superuser
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate  --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate  --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 To: rt\@example.com
@@ -99,7 +102,7 @@ ok ($tick->Subject eq 'This is a test of new ticket creation', "Created the tick
 
 # {{{This is a test of new ticket creation as an unknown user
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist\@example.com
 To: rt\@example.com
@@ -135,7 +138,7 @@ my ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 ok ($val, "Granted everybody the right to create tickets - $msg");
 
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist\@example.com
 To: rt\@example.com
@@ -155,7 +158,7 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 $tick = $tickets->First();
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
-my $u = RT::User->new($RT::SystemUser);
+ $u = RT::User->new($RT::SystemUser);
 $u->Load('doesnotexist@example.com');
 ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 
@@ -168,7 +171,7 @@ ok( $u->Id != 0, " user does not exist and was created by ticket submission");
 #($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-2\@example.com
 To: rt\@example.com
@@ -193,7 +196,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket corresponde
 ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'ReplyToTicket');
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-2\@example.com
 To: rt\@example.com
@@ -219,7 +222,7 @@ ok( $u->Id != 0, " user exists and was created by ticket correspondence submissi
 #($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CreateTicket');
 #ok ($val, "Granted everybody the right to create tickets - $msg");
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-3\@example.com
 To: rt\@example.com
@@ -244,7 +247,7 @@ ok( $u->Id == 0, " user does not exist and was not created by ticket comment sub
 ($val,$msg) = $g->PrincipalObj->GrantRight(Right => 'CommentOnTicket');
 ok ($val, "Granted everybody the right to reply to  tickets - $msg");
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action comment"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: doesnotexist-3\@example.com
 To: rt\@example.com
@@ -277,12 +280,12 @@ my $entity = MIME::Entity->build( From => 'root@localhost',
                                 Data => ['This is a test of a binary attachment']);
 
 # currently in lib/t/autogen
-$entity->attach(Path => '@MASON_HTML_PATH@/NoAuth/images/bplogo.gif', 
+$entity->attach(Path => '/opt/rt3/share/html/NoAuth/images/bplogo.gif', 
                 Type => 'image/gif',
                 Encoding => 'base64');
 
 # Create a ticket with a binary attachment
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 
 $entity->print(\*MAIL);
 
@@ -291,7 +294,7 @@ close (MAIL);
 #Check the return value
 is ($? >> 8, 0, "The mail gateway exited normally. yay");
 
-my $tickets = RT::Tickets->new($RT::SystemUser);
+$tickets = RT::Tickets->new($RT::SystemUser);
 $tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
 $tickets->Limit(FIELD => 'id', OPERATOR => '>', VALUE => '0');
  $tick = $tickets->First();
@@ -299,7 +302,7 @@ ok (UNIVERSAL::isa($tick,'RT::Ticket'));
 ok ($tick->Id, "found ticket ".$tick->Id);
 ok ($tick->Subject eq 'binary attachment test', "Created the ticket - ".$tick->Id);
 
-my $file = `cat '@MASON_HTML_PATH@/NoAuth/images/bplogo.gif'`;
+my $file = `cat '/opt/rt3/share/html/NoAuth/images/bplogo.gif'`;
 ok ($file, "Read in the logo image");
 
 
@@ -340,7 +343,7 @@ is($file, $r->content, 'The attachment isn\'t screwed up in download');
 
 # {{{ Simple I18N testing
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
@@ -374,7 +377,7 @@ is ($unitick->Transactions->First->Content, $unitick->Transactions->First->Attac
 ok($unitick->Transactions->First->Attachments->First->Content =~ /$unistring/i, $unitick->Id." appears to be unicode ". $unitick->Transactions->First->Attachments->First->Id);
 # supposedly I18N fails on the second message sent in.
 
-ok(open(MAIL, "|@RT_BIN_PATH@/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
                                                                          
 print MAIL <<EOF;
 From: root\@localhost
@@ -402,7 +405,7 @@ ok ($tick2->Subject eq 'This is a test of I18N ticket creation', "Created the ti
 
 
 
-my $unistring = "\303\241\303\251\303\255\303\263\303\272";
+$unistring = "\303\241\303\251\303\255\303\263\303\272";
 Encode::_utf8_on($unistring);
 
 ok ($tick2->Transactions->First->Content =~ $unistring, "It appears to be unicode - ".$tick2->Transactions->First->Content);

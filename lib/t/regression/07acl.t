@@ -1,7 +1,12 @@
-#!@PERL@ -w
+#!/usr/bin/perl -w
 
 use WWW::Mechanize;
 use HTTP::Cookies;
+
+use Test::More qw/no_plan/;
+use RT;
+RT::LoadConfig();
+RT::Init();
 
 # Create a user with basically no rights, to start.
 my $user_obj = RT::User->new($RT::SystemUser);
@@ -27,7 +32,7 @@ $agent->cookie_jar($cookie_jar);
 my $url = "http://localhost".$RT::WebPath."/";
 $agent->get($url);
 
-is ($agent->{'status'}, 200, "Loaded a page");
+is ($agent->{'status'}, 200, "Loaded a page - http://localhost".$RT::WebPath);
 # {{{ test a login
 
 # follow the link marked "Login"

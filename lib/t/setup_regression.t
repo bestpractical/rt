@@ -1,8 +1,7 @@
-#!@PERL@
+#!/usr/bin/perl
 
 use Test::More qw(no_plan);
 
-use lib "@RT_LIB_PATH@";
 use RT;
 ok(RT::LoadConfig);
 ok(RT::Init, "Basic initialization and DB connectivity");
@@ -33,19 +32,3 @@ is($q2->CorrespondAddress, 'correspond@a');
 is($q2->CommentAddress, 'comment@a');
 
 
-use File::Find;
-File::Find::find({wanted => \&wanted_autogen,	
-	preprocess => sub {return sort @_}}, 'lib/t/autogen');
-sub wanted_autogen { /^autogen.*\.t\z/s && require $_; }
-
-File::Find::find({wanted => \&wanted_regression,
-	preprocess => sub {return sort @_}}, 'lib/t/regression');
-sub wanted_regression { /^*\.t\z/s && require $_; }
-
-require "@RT_LIB_PATH@/t/03web.pl";
-require "@RT_LIB_PATH@/t/04_send_email.pl";
-require "@RT_LIB_PATH@/t/05cronsupport.pl";
-require "@RT_LIB_PATH@/t/06mailgateway.pl";
-require "@RT_LIB_PATH@/t/07acl.pl";
-require "@RT_LIB_PATH@/t/08web_cf.pl";
-require "@RT_LIB_PATH@/t/09record_customfields.t";
