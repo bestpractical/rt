@@ -49,7 +49,7 @@ is ( $? >> 8, 75, "The error message above is expected The mail gateway exited w
 
 # {{{ Test new ticket creation by root who is privileged and superuser
 
-ok(open(MAIL, "|/opt/rt3/bin/rt-mailgate --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
+ok(open(MAIL, "|/opt/rt3/bin/rt-mailgate  --debug --url http://localhost".$RT::WebPath."/ --queue general --action correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
 To: rt\@example.com
@@ -294,6 +294,7 @@ my $attachments = RT::Attachments->new($RT::SystemUser);
 $attachments->Limit(FIELD => 'ContentType', VALUE => 'image/gif');
 ok ($attachments->Count == 1, 'Found only one gif in the database');
 my $attachment = $attachments->First;
+ok($attachment->Id);
 my $acontent = $attachment->Content;
 
         warn "coming from the  database, the content is ".Digest::MD5::md5_base64($acontent);

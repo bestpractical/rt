@@ -1,6 +1,7 @@
+m4trace:configure.ac:9: -1- AC_INIT([RT], [3.1.1], [rt-3.1-bugs@fsck.com])
 m4trace:configure.ac:9: -1- m4_pattern_forbid([^_?A[CHUM]_])
 m4trace:configure.ac:9: -1- m4_pattern_forbid([_AC_])
-m4trace:configure.ac:9: -1- m4_pattern_forbid([^LIBOBJS$], [do not use LIBOBJS directly, use AC_LIBOBJ (see section `AC_LIBOBJ vs. LIBOBJS'])
+m4trace:configure.ac:9: -1- m4_pattern_forbid([^LIBOBJS$], [do not use LIBOBJS directly, use AC_LIBOBJ (see section `AC_LIBOBJ vs LIBOBJS'])
 m4trace:configure.ac:9: -1- m4_pattern_allow([^AS_FLAGS$])
 m4trace:configure.ac:9: -1- m4_pattern_forbid([^_?m4_])
 m4trace:configure.ac:9: -1- m4_pattern_forbid([^dnl$])
@@ -51,15 +52,22 @@ m4trace:configure.ac:9: -1- AC_SUBST([ECHO_N])
 m4trace:configure.ac:9: -1- AC_SUBST([ECHO_T])
 m4trace:configure.ac:9: -1- AC_SUBST([LIBS])
 m4trace:configure.ac:14: -1- AC_SUBST([rt_version_major], [3])
-m4trace:configure.ac:16: -1- AC_SUBST([rt_version_minor], [0])
-m4trace:configure.ac:18: -1- AC_SUBST([rt_version_patch], [7_01])
+m4trace:configure.ac:16: -1- AC_SUBST([rt_version_minor], [1])
+m4trace:configure.ac:18: -1- AC_SUBST([rt_version_patch], [1])
 m4trace:configure.ac:24: -1- AC_PROG_INSTALL
 m4trace:configure.ac:24: -1- AC_SUBST([INSTALL_PROGRAM])
 m4trace:configure.ac:24: -1- AC_SUBST([INSTALL_SCRIPT])
 m4trace:configure.ac:24: -1- AC_SUBST([INSTALL_DATA])
 m4trace:configure.ac:25: -1- AC_SUBST([PERL])
 m4trace:configure.ac:26: -1- AC_SUBST([PERL], [$ac_cv_path_PERL])
+m4trace:configure.ac:33: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:33: the top level])
 m4trace:configure.ac:36: -1- AC_SUBST([SPEEDY_BIN])
+m4trace:configure.ac:41: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+aclocal.m4:867: RT_ENABLE_LAYOUT is expanded from...
+configure.ac:41: the top level])
 m4trace:configure.ac:41: -1- AC_SUBST([prefix])
 m4trace:configure.ac:41: -1- AC_SUBST([exp_prefix])
 m4trace:configure.ac:41: -1- AC_SUBST([exec_prefix])
@@ -99,44 +107,93 @@ m4trace:configure.ac:41: -1- AC_SUBST([exp_customlexdir])
 m4trace:configure.ac:41: -1- AC_SUBST([customlibdir])
 m4trace:configure.ac:41: -1- AC_SUBST([exp_customlibdir])
 m4trace:configure.ac:41: -1- AC_SUBST([rt_layout_name])
+m4trace:configure.ac:46: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:46: the top level])
 m4trace:configure.ac:49: -1- AC_SUBST([RTGROUP])
+m4trace:configure.ac:54: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:54: the top level])
 m4trace:configure.ac:57: -1- AC_SUBST([BIN_OWNER])
+m4trace:configure.ac:62: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:62: the top level])
 m4trace:configure.ac:65: -1- AC_SUBST([LIBS_OWNER])
+m4trace:configure.ac:70: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:70: the top level])
 m4trace:configure.ac:73: -1- AC_SUBST([LIBS_GROUP])
+m4trace:configure.ac:78: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:78: the top level])
 m4trace:configure.ac:84: -1- AC_SUBST([DB_TYPE])
 m4trace:configure.ac:91: -1- AC_SUBST([ORACLE_ENV_PREF])
+m4trace:configure.ac:96: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:96: the top level])
 m4trace:configure.ac:99: -1- AC_SUBST([DB_HOST])
+m4trace:configure.ac:104: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:104: the top level])
 m4trace:configure.ac:107: -1- AC_SUBST([DB_PORT])
+m4trace:configure.ac:112: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:112: the top level])
 m4trace:configure.ac:115: -1- AC_SUBST([DB_RT_HOST])
+m4trace:configure.ac:120: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:120: the top level])
 m4trace:configure.ac:123: -1- AC_SUBST([DB_DBA])
+m4trace:configure.ac:128: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:128: the top level])
 m4trace:configure.ac:131: -1- AC_SUBST([DB_DATABASE])
+m4trace:configure.ac:136: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:136: the top level])
 m4trace:configure.ac:139: -1- AC_SUBST([DB_RT_USER])
+m4trace:configure.ac:144: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:144: the top level])
 m4trace:configure.ac:147: -1- AC_SUBST([DB_RT_PASS])
+m4trace:configure.ac:152: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:152: the top level])
 m4trace:configure.ac:155: -1- AC_SUBST([WEB_USER])
+m4trace:configure.ac:160: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:160: the top level])
 m4trace:configure.ac:163: -1- AC_SUBST([WEB_GROUP])
-m4trace:configure.ac:182: -1- AC_SUBST([RT_VERSION_MAJOR], [${rt_version_major}])
-m4trace:configure.ac:183: -1- AC_SUBST([RT_VERSION_MINOR], [${rt_version_minor}])
-m4trace:configure.ac:184: -1- AC_SUBST([RT_VERSION_PATCH], [${rt_version_patch}])
-m4trace:configure.ac:187: -1- AC_SUBST([RT_PATH], [${exp_prefix}])
-m4trace:configure.ac:188: -1- AC_SUBST([RT_DOC_PATH], [${exp_manualdir}])
-m4trace:configure.ac:189: -1- AC_SUBST([RT_LOCAL_PATH], [${exp_customdir}])
-m4trace:configure.ac:190: -1- AC_SUBST([RT_LIB_PATH], [${exp_libdir}])
-m4trace:configure.ac:191: -1- AC_SUBST([RT_ETC_PATH], [${exp_sysconfdir}])
-m4trace:configure.ac:192: -1- AC_SUBST([CONFIG_FILE_PATH], [${exp_sysconfdir}])
-m4trace:configure.ac:193: -1- AC_SUBST([RT_BIN_PATH], [${exp_bindir}])
-m4trace:configure.ac:194: -1- AC_SUBST([RT_SBIN_PATH], [${exp_sbindir}])
-m4trace:configure.ac:195: -1- AC_SUBST([RT_VAR_PATH], [${exp_localstatedir}])
-m4trace:configure.ac:196: -1- AC_SUBST([RT_MAN_PATH], [${exp_mandir}])
-m4trace:configure.ac:197: -1- AC_SUBST([MASON_DATA_PATH], [${exp_masonstatedir}])
-m4trace:configure.ac:198: -1- AC_SUBST([MASON_SESSION_PATH], [${exp_sessionstatedir}])
-m4trace:configure.ac:199: -1- AC_SUBST([MASON_HTML_PATH], [${exp_htmldir}])
-m4trace:configure.ac:200: -1- AC_SUBST([LOCAL_ETC_PATH], [${exp_custometcdir}])
-m4trace:configure.ac:201: -1- AC_SUBST([MASON_LOCAL_HTML_PATH], [${exp_customhtmldir}])
-m4trace:configure.ac:202: -1- AC_SUBST([LOCAL_LEXICON_PATH], [${exp_customlexdir}])
-m4trace:configure.ac:203: -1- AC_SUBST([LOCAL_LIB_PATH], [${exp_customlibdir}])
-m4trace:configure.ac:204: -1- AC_SUBST([DESTDIR], [${exp_prefix}])
-m4trace:configure.ac:205: -1- AC_SUBST([RT_LOG_PATH], [${exp_logfiledir}])
-m4trace:configure.ac:228: -1- AC_CONFIG_FILES([
+m4trace:configure.ac:169: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:169: the top level])
+m4trace:configure.ac:182: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:182: the top level])
+m4trace:configure.ac:186: -1- AC_SUBST([APACHECTL])
+m4trace:configure.ac:193: -1- AC_SUBST([RT_VERSION_MAJOR], [${rt_version_major}])
+m4trace:configure.ac:194: -1- AC_SUBST([RT_VERSION_MINOR], [${rt_version_minor}])
+m4trace:configure.ac:195: -1- AC_SUBST([RT_VERSION_PATCH], [${rt_version_patch}])
+m4trace:configure.ac:198: -1- AC_SUBST([RT_PATH], [${exp_prefix}])
+m4trace:configure.ac:199: -1- AC_SUBST([RT_DOC_PATH], [${exp_manualdir}])
+m4trace:configure.ac:200: -1- AC_SUBST([RT_LOCAL_PATH], [${exp_customdir}])
+m4trace:configure.ac:201: -1- AC_SUBST([RT_LIB_PATH], [${exp_libdir}])
+m4trace:configure.ac:202: -1- AC_SUBST([RT_ETC_PATH], [${exp_sysconfdir}])
+m4trace:configure.ac:203: -1- AC_SUBST([CONFIG_FILE_PATH], [${exp_sysconfdir}])
+m4trace:configure.ac:204: -1- AC_SUBST([RT_BIN_PATH], [${exp_bindir}])
+m4trace:configure.ac:205: -1- AC_SUBST([RT_SBIN_PATH], [${exp_sbindir}])
+m4trace:configure.ac:206: -1- AC_SUBST([RT_VAR_PATH], [${exp_localstatedir}])
+m4trace:configure.ac:207: -1- AC_SUBST([RT_MAN_PATH], [${exp_mandir}])
+m4trace:configure.ac:208: -1- AC_SUBST([MASON_DATA_PATH], [${exp_masonstatedir}])
+m4trace:configure.ac:209: -1- AC_SUBST([MASON_SESSION_PATH], [${exp_sessionstatedir}])
+m4trace:configure.ac:210: -1- AC_SUBST([MASON_HTML_PATH], [${exp_htmldir}])
+m4trace:configure.ac:211: -1- AC_SUBST([LOCAL_ETC_PATH], [${exp_custometcdir}])
+m4trace:configure.ac:212: -1- AC_SUBST([MASON_LOCAL_HTML_PATH], [${exp_customhtmldir}])
+m4trace:configure.ac:213: -1- AC_SUBST([LOCAL_LEXICON_PATH], [${exp_customlexdir}])
+m4trace:configure.ac:214: -1- AC_SUBST([LOCAL_LIB_PATH], [${exp_customlibdir}])
+m4trace:configure.ac:215: -1- AC_SUBST([DESTDIR], [${exp_prefix}])
+m4trace:configure.ac:216: -1- AC_SUBST([RT_LOG_PATH], [${exp_logfiledir}])
+m4trace:configure.ac:239: -1- AC_CONFIG_FILES([
 		 sbin/rt-setup-database
                  sbin/rt-test-dependencies
                  Makefile
@@ -156,3 +213,5 @@ m4trace:configure.ac:228: -1- AC_CONFIG_FILES([
 		 bin/rt
  		 bin/webmux.pl
                 ])
+m4trace:configure.ac:240: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:240: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])

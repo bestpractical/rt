@@ -35,8 +35,8 @@ SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
 
 RT_VERSION_MAJOR	=	3
-RT_VERSION_MINOR	=	0
-RT_VERSION_PATCH	=	7_01
+RT_VERSION_MINOR	=	1
+RT_VERSION_PATCH	=	1
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 TAG 	   =	rt-$(RT_VERSION_MAJOR)-$(RT_VERSION_MINOR)-$(RT_VERSION_PATCH)
@@ -55,8 +55,11 @@ LIBS_OWNER 		=	root
 # Group that should own all of RT's libraries, generally root.
 LIBS_GROUP		=	bin
 
-WEB_USER		=	www
-WEB_GROUP		=	www
+WEB_USER		=	www-data
+WEB_GROUP		=	www-data
+
+
+APACHECTL		=	/usr/sbin/apachectl
 
 # {{{ Files and directories 
 
@@ -321,7 +324,7 @@ regression-nosetgid-quiet: regression-install dirs files-install libs-install sb
 regression-nosetgid: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
 	$(PERL) lib/t/02regression.t
 
-regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods apachectl
+regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms apachectl
 	$(PERL) lib/t/02regression.t
 
 regression-quiet:
@@ -334,7 +337,7 @@ regression-instruct:
 # {{{ database-installation
 
 regression-reset-db:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password ''
+	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
 
 initialize-database: 
@@ -422,8 +425,8 @@ POD2TEST_EXE = sbin/extract_pod_tests
 
 testify-pods:
 	[ -d lib/t/autogen ] || mkdir lib/t/autogen
-	find lib -name \*pm |grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
-	find bin -type f |grep -v \~ | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find lib -name \*pm |grep -v .svn |grep -v \*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find bin -type f |grep -v \~ |grep -v .svn | grep -v "\.in" | xargs -n 1 $(PERL) $(POD2TEST_EXE)
 
 
 
@@ -484,7 +487,7 @@ rpm:
 
 
 apachectl:
-	apachectl stop
+	$(APACHECTL) stop
 	sleep 3
-	apachectl start
+	$(APACHECTL) start
 # }}}

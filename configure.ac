@@ -175,15 +175,6 @@ AC_ARG_WITH(my-user-group,
             WEB_GROUP=$my_group)
 
 
-dnl Set the value of apachectl
-AC_ARG_WITH(apachectl,
-            AC_HELP_STRING([--with-apachectl],
-                           [instruct RT where to find your apachectl]),
-
-            APACHECTL=$withval, 
-            APACHECTL=`which apachectl`)
-AC_SUBST(APACHECTL)
-
 
 dnl Set the value of apachectl
 AC_ARG_WITH(apachectl,
