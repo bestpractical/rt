@@ -3,7 +3,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM METHOD=POST>
+<FORM METHOD=POST ACTION="ModifyAll.html">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
 <& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$Ticket->Id,   width => "100%", color=> "#333399" &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>

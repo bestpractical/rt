@@ -28,6 +28,7 @@ DBConnect();
 
 
 use RT::Ticket;
+use RT::Queue;
 use MIME::Parser;
 use File::Temp;
 use Mail::Address;
@@ -79,7 +80,6 @@ my $CurrentUser = GetCurrentUser($head);
 my $ErrorsTo = ParseErrorsToAddressFromHead($head);
 
 
-
 my $MessageId = $head->get('Message-Id') || 
   "<no-message-id-".time.rand(2000)."\@.$RT::rtname>";
 
@@ -89,6 +89,18 @@ chomp $Subject;
 
 # Get the ticket ID
 $TicketId = ParseTicketId($Subject);
+
+#Set up a queue object
+my $QueueObj = RT::Queue->new($CurrentUser);
+$QueueObj->Load($Queue);
+unless ($QueueObj->id ) {
+
+  MailError(To => $RT::OwnerEmail,
+                  Subject => "RT Bounce: $Subject",
+                  Explanation => "RT couldn't find the queue: $Queue",
+                  MIMEObj => $entity);
+
+}
 
 # {{{ Lets check for mail loops of various sorts.
 
@@ -141,6 +153,7 @@ if ($SquelchReplies) {
     my $Sender = ParseSenderAddressFromHead($head);
     $head->add('RT-Squelch-Replies-To', $Sender);
 }
+# }}}
 
 # {{{ If we don't have a ticket Id, we're creating a new ticket
 
@@ -154,16 +167,22 @@ if (!defined($TicketId)) {
 	#    open a new ticket 
 	my @Requestors = ($CurrentUser->id);
 	
+	my @Cc;
+	if ($RT::ParseNewMessageForTicketCcs) {
+		@Cc = ParseCcAddressesFromHead(Head => $head, QueueObj => $QueueObj );
+	}
+
 	my $Ticket = new RT::Ticket($CurrentUser);
 	my ($id, $Transaction, $ErrStr) = 
 	  $Ticket->Create ( Queue => $Queue,
 			    Subject => $Subject,
 			    Requestor => \@Requestors,
+			    Cc => \@Cc,
 			    MIMEObj => $entity
 			  );
 	if ($id == 0 ) {
 	    MailError( To => $ErrorsTo,
-		       Subject => "Ticket creation failed",
+ 		       Subject => "Ticket creation failed",
 		       Explanation => $ErrStr,
 		       MIMEObj => $entity
 		     );
@@ -479,6 +498,42 @@ sub GetCurrentUser  {
 
 # }}}
 
+# {{{ ParseCcAddressesFromHead 
+
+=head2 ParseCcAddressesFromHead HEAD
+
+Takes a head object. Returns a list of all email addresses in the To and Cc headers
+b<except> the current Queue\'s email addresses, the CurrentUser\'s email address 
+and anything that the configuration sub RT::IsRTAddress matches.
+
+=cut
+  
+sub ParseCcAddressesFromHead {
+    my %args = ( Head => undef,
+		 QueueObj => undef,
+		 @_ );
+    
+    my (@Addresses);
+        
+    my @ToObjs = Mail::Address->parse($args{'Head'}->get('To'));
+    my @CcObjs = Mail::Address->parse($args{'Head'}->get('Cc'));
+    
+    foreach my $AddrObj (@ToObjs, @CcObjs) {
+	my $Address = $AddrObj->address;
+	$Address = RT::CanonicalizeAddress($Address);
+ 	next if ($CurrentUser->EmailAddress =~ /^$Address$/i);
+	next if ($args{'QueueObj'}->CorrespondAddress =~ /^$Address$/i);
+	next if ($args{'QueueObj'}->CommentAddress =~ /^$Address$/i);
+	next if (RT::IsRTAddress($Address));
+	
+	push (@Addresses, $Address);
+    }
+    return (@Addresses);
+}
+
+
+# }}}
+
 # {{{ ParseSenderAdddressFromHead
 
 =head2 ParseSenderAddressFromHead
@@ -518,6 +573,7 @@ sub ParseErrorsToAddressFromHead {
 # }}}
 
 # {{{ ParseAddressFromHeader
+
 =head2 ParseAddressFromHeader ADDRESS
 
 Takes an address from $head->get('Line') and returns a tuple: user@host, friendly name

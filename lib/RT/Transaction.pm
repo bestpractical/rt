@@ -123,9 +123,6 @@ sub Create  {
 			   ENTRYAGGREGATOR => 'OR',
 			  );			    
     
-    $RT::Logger->debug("$self: Searching for scrips for transaction #".$self->Id.
-		       " (".$self->Type()."), ticket #".$TicketAsSystem->Id."\n");
-    
     #Iterate through each script and check it's applicability.
     
     while (my $Scrip = $PossibleScrips->Next()) {
@@ -134,7 +131,7 @@ sub Create  {
 	
       #$RT::Logger->debug("$self now dealing with ".$Scrip->Id. "\n");      
 	eval {
-	  local $SIG{__DIE__} = sub { $RT::Logger->debug($_[0])};
+	  local $SIG{__DIE__} = sub { $RT::Logger->error($_[0])};
 	  
 	  
 	  #Load the scrip's Condition object
@@ -147,7 +144,6 @@ sub Create  {
 	  
 	  if ( $Scrip->IsApplicable() ) {
 	      
-	      $RT::Logger->debug ("$self: Preparing $Scrip\n");
 	      
 	      #TODO: handle some errors here
 	      

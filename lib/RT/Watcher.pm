@@ -72,7 +72,7 @@ sub Create  {
     if ($args{'Owner'} == 0) {
         my $User = new RT::User($RT::SystemUser);
         $User->LoadByEmail($args{'Email'});
-        if ($User->id > 0) {
+        if ($User->id) {
             $args{'Owner'} = $User->id;
    	    delete $args{'Email'};
 	}

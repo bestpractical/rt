@@ -519,7 +519,8 @@ sub ProcessACLChanges {
 		next unless ($aceid);
 		my $right = new RT::ACE($session{'CurrentUser'});
 		$right->Load($aceid);
-		
+	 	next unless ($right->id);
+	
 		my $phrase = "Revoked ".$right->PrincipalType." ".
 		  $right->PrincipalObj->Name . "'s right to ". $right->RightName;
 		

@@ -89,6 +89,29 @@ $TruncateLongAttachments = undef;
 
 $DropLongAttachments = undef;
 
+# If $ParseNewMessageForTicketCcs is true, RT will attempt to divine
+# Ticket 'Cc' watchers from the To and Cc lines of incoming messages
+# Be forewarned that if you have _any_ addresses which forward mail to
+# RT automatically and you enable this option without modifying 
+# "IsRTAddress" below, you will get yourself into a heap of trouble.
+# And well, this is free software, so there isn't a warrantee, but
+# I disclaim all ability to help you if you do enable this without
+# modifying IsRTAddress below.
+
+$ParseNewMessageForTicketCcs = undef;
+
+# IsRTAddress
+sub IsRTAddress {
+    my $address = shift;
+
+    # Example: the following rule would tell RT not to Cc "tickets@noc.example.com"
+    # return(1) if ($address =~ /^tickets\@noc.example.com$/i);
+    
+    return(undef)
+}
+
+
+
 # CanonicalizeAddress converts email addresses into canonical form.
 # it takes one email address in and returns the proper canonical
 # form. You can dump whatever your proper local config is in here

@@ -22,13 +22,14 @@ The fact that it assumes that a time of 0 means "never" is probably a bug.
 
 package RT::Date;
 use Time::Local;
+use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 
-my $MINUTE = 60;
-my $HOUR   = 60 * $MINUTE;
-my $DAY    = 24 * $HOUR;
-my $WEEK   = 7 * $DAY;
-my $MONTH  = 4 * $WEEK;
-my $YEAR   = 365 * $DAY;
+$MINUTE = 60;
+$HOUR   = 60 * $MINUTE;
+$DAY    = 24 * $HOUR;
+$WEEK   = 7 * $DAY;
+$MONTH  = 4 * $WEEK;
+$YEAR   = 365 * $DAY;
 
 # {{{ sub new 
 
@@ -37,6 +38,7 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
+  $self->Unix(0);
   return $self;
 }
 

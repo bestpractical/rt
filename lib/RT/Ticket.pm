@@ -168,8 +168,6 @@ sub Create {
 		MIMEObj => undef,
 		@_);
     
-    #TODO Load queue defaults +++ v2.0
-    
     if ( (defined($args{'Queue'})) && (!ref($args{'Queue'})) ) {
 	$QueueObj=RT::Queue->new($self->CurrentUser);
 	$QueueObj->Load($args{'Queue'});
@@ -192,7 +190,8 @@ sub Create {
     #Now that we have a queue, Check the ACLS
     unless ($self->CurrentUser->HasQueueRight(Right => 'CreateTicket',
 					      QueueObj => $QueueObj )) {
-	return (0,0,"No permission to create tickets in that queue");
+	return (0,0,"No permission to create tickets in the queue '". 
+		$QueueObj->Name."'.");
     }
     
     #Since we have a queue, we can set queue defaults
@@ -213,13 +212,13 @@ sub Create {
     
     #Set the due date. if we didn't get fed one, use the queue default due in
     my $due = new RT::Date($self->CurrentUser);
-    unless (defined $args{'Due'}) {
-	  $due->SetToNow;
-	  $due->AddDays($QueueObj->DefaultDueIn);
-      }	
-    else {
+    if (defined $args{'Due'}) {
 	$due->Set (Format => 'ISO',
 		   Value => $args{'Due'});
+      }	
+    elsif (defined ($QueueObj->DefaultDueIn)) {
+	  $due->SetToNow;
+	  $due->AddDays($QueueObj->DefaultDueIn);
     }	
 
     # {{{ Deal with setting the owner

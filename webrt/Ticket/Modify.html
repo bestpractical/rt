@@ -2,7 +2,7 @@
 <& /Ticket/Elements/Tabs, Ticket => $TicketObj  &>
 
 <& /Elements/ListActions, actions => \@results &>
-<FORM METHOD=POST>
+<FORM METHOD=POST ACTION="Modify.html">
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
 
 <& /Elements/TitleBoxStart, title => 'Modify ticket #'.$TicketObj->Id, 
