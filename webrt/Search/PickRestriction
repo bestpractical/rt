@@ -17,7 +17,7 @@ Subject <& /Elements/SelectBoolean, Name => "NegateSubject", False => "matches",
 
 <li><& /Elements/Checkbox, Name => "LimitQueue" &>
 Queue  <& /Elements/SelectBoolean, Name => "NegateQueue" , False => "is", True => "isn't" &>
-	<& /Elements/SelectQueue, name => "ValueOfQueue" &>
+	<& /Elements/SelectQueue, Name => "ValueOfQueue" &>
 
 <li><& /Elements/Checkbox, Name => "LimitCreated" &>
 Created <& /Elements/SelectDateRelation, Name=>"OpCreated" &>
