@@ -25,7 +25,7 @@
 	      </OPTION>
 %   }
 %   if ( $KeywordSelect->Single) {
-<OPTION VALUE="" <% ($selected_keywords == 0) && 'SELECTED' %> >-</OPTION>
+<OPTION VALUE="" <% ($selected_keywords == 0) && 'SELECTED' %> >(empty)</OPTION>
 % }
 	    </SELECT>
       </TD>
