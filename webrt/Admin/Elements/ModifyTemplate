@@ -10,13 +10,11 @@ New Password: <input type=password name="Pass1"><BR>
 Retype Password: <input type=password name="Pass2"><BR>
 
 Comments: <TEXTAREA name="Comments" COLS=20 ROWS=5>
-<%$UserObj->Comments%>
-</TEXTAREA>
+<%$UserObj->Comments%></TEXTAREA>
 
 <BR>
 Signature: <TEXTAREA COLS=80 ROWS=5 name="Signature">
-<%$UserObj->Signature%>">
-</TEXTAREA>
+<%$UserObj->Signature%>"></TEXTAREA>
 <BR>
 EmailAddress: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>">
 <BR>

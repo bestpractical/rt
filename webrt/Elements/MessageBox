@@ -1,7 +1,6 @@
 <TEXTAREA COLS=<%$Width%> ROWS=15 WRAP=HARD NAME="<%$Name%>"><% $Default %>
 -- 
-<%$session{'CurrentUser'}->UserObj->Signature%>
-</TEXTAREA>
+<%$session{'CurrentUser'}->UserObj->Signature%></TEXTAREA>
 
 <%ARGS>
 $QuoteTransaction => undef

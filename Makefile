@@ -301,6 +301,7 @@ bin-install:
 	cp -p ./bin/mason_handler.scgi $(RT_SPEEDYCGI_HANDLER)
 
 	$(PERL) -p -i -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
+				s'!!PERL!!'$(PERL)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;\

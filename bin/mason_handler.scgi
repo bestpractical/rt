@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!!!PERL!! -w
 
 #!/usr/bin/speedy -- -t600 -M8
 # $Header$

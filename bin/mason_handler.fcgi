@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!!!PERL!! -w
 # $Header$
 # RT is (c) 1996-2000 Jesse Vincent (jesse@fsck.com);
 
