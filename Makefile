@@ -111,13 +111,17 @@ MYSQLDIR		=	/usr/bin
 MYSQL_VERSION		= 	3.22
 
 #
-# You can insert your "root" password for mysql to allow
+# You must insert your "root" password for mysql to allow
 # RT to create its databases.  Remove this password from this Makefile 
 # AS SOON AS MAKE INSTALL FINISHES
 #
-# Alternatively, leave it commented and be prompted
 #
 #ROOT_MYSQL_PASS		=	My!word%z0t	
+ifdef ROOT_MYSQL_PASS
+ROOT_MYSQL_PASS_STRING = -p$(ROOT_MYSQL_PASS)
+else 
+ROOT_MYSQL_PASS_STRING = 
+endif
 
 #
 # this password is what RT will use to authenticate itself to mysql
@@ -251,17 +255,17 @@ initialize: database acls
 
 database:
 #	$(MYSQLDIR)/mysqladmin drop $(RT_MYSQL_DATABASE)
-	-$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root -p$(ROOT_MYSQL_PASS) create $(RT_MYSQL_DATABASE)
-	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u root -p$(ROOT_MYSQL_PASS) $(RT_MYSQL_DATABASE) < etc/schema      
+	-$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) create $(RT_MYSQL_DATABASE)
+	$(MYSQLDIR)/mysql -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) $(RT_MYSQL_DATABASE) < etc/schema      
 
 acls:
-	-$(PERL) -p$(ROOT_MYSQL_PASS) -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
+	-$(PERL) $(ROOT_MYSQL_PASS_STRING) -e "if ('$(RT_HOST)' eq '') { s'!!RT_HOST!!'localhost'g}\
 			else { s'!!RT_HOST!!'$(RT_HOST)'g }\
 		s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
 		s'!!RTUSER!!'$(RTUSER)'g;\
 		s'!!RT_MYSQL_DATABASE!!'$(RT_MYSQL_DATABASE)'g;\
 		" $(RT_MYSQL_ACL) | $(MYSQLDIR)/mysql mysql
-	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root -p$(ROOT_MYSQL_PASS) reload
+	$(MYSQLDIR)/mysqladmin -h $(RT_MYSQL_HOST) -u root $(ROOT_MYSQL_PASS_STRING) reload
 
 
 mux-install:
