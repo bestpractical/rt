@@ -316,11 +316,11 @@ sub edit {
             my $vars = 0;
             my $hash = ($_ eq "add") ? \%add : \%del;
 
-            while (@ARGV && $ARGV[0] =~ /^$field$/ && $ARGV[1]) {
-                my $key = shift @ARGV;
-                my $val = shift @ARGV;
+            while (@ARGV && $ARGV[0] =~ /^($field)=(.*)$/) {
+                my ($key, $val) = ($1, $2);
 
                 vpush($hash, lc $key, $val);
+                shift @ARGV;
                 $vars++;
             }
             unless ($vars) {
