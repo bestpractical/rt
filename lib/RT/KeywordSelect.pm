@@ -190,14 +190,14 @@ sub Create {
 	#If we're talking about a keywordselect for all queues
 	if ($args{'ObjectValue'} == 0) {
 	    unless( $self->CurrentUserHasSystemRight('AdminKeywordSelects')) {
-		return (0, 'Permission denied');
+		return (0, 'Permission Denied');
 	    }
 	}  
 	#otherwise, we're talking about a keywordselect for a specific queue
 	else {
 	    unless ($self->CurrentUserHasQueueRight( Right => 'AdminKeywordSelects',
 						     Queue => $args{'ObjectValue'})) {
-		return (0, 'Permission denied');
+		return (0, 'Permission Denied');
 	    }
 	}
     }
@@ -263,7 +263,7 @@ sub SetDisabled {
     my $value = shift;
 
     unless ($self->CurrentUserHasRight('AdminKeywordSelects')) {
-	return (0, "Permission denied");
+	return (0, "Permission Denied");
     }
     return($self->_Set(Field => 'Disabled', Value => $value));
 }
@@ -316,7 +316,7 @@ sub _Set {
     my $self = shift;
 
     unless ($self->CurrentUserHasRight('AdminKeywordSelects')) {
-	return (0, "Permission denied");
+	return (0, "Permission Denied");
     }
     
     return ($self->SUPER::_Set(@_));

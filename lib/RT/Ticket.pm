@@ -637,7 +637,7 @@ sub AddWatcher {
 	if ($args{'Type'} eq 'AdminCc') {
 	    unless ($self->CurrentUserHasRight('ModifyTicket') or 
 		    $self->CurrentUserHasRight('WatchAsAdminCc')) {
-		return(0, 'Permission denied');
+		return(0, 'Permission Denied');
 	    }
 	}
 
@@ -648,7 +648,7 @@ sub AddWatcher {
 		   
 	    unless ($self->CurrentUserHasRight('ModifyTicket') or 
 		    $self->CurrentUserHasRight('Watch')) {
-		return(0, 'Permission denied');
+		return(0, 'Permission Denied');
 	    }
 	}
 	else {
@@ -829,7 +829,7 @@ sub DeleteWatcher {
 	if ($Watcher->Type eq 'AdminCc') {
 	    unless ($self->CurrentUserHasRight('ModifyTicket') or 
 		    $self->CurrentUserHasRight('WatchAsAdminCc')) {
-		return(0, 'Permission denied');
+		return(0, 'Permission Denied');
 	    }
 	}
 
@@ -840,7 +840,7 @@ sub DeleteWatcher {
 		   
 	    unless ($self->CurrentUserHasRight('ModifyTicket') or 
 		    $self->CurrentUserHasRight('Watch')) {
-		return(0, 'Permission denied');
+		return(0, 'Permission Denied');
 	    }
 	}
 	else {
@@ -2191,7 +2191,7 @@ sub AddKeyword {
     my $self = shift;
    #ACL check
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }
     
     return($self->_AddKeyword(@_));
@@ -2287,7 +2287,7 @@ sub DeleteKeyword {
 
    #ACL check
     unless ($self->CurrentUserHasRight('ModifyTicket')) {    
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }
 
     
@@ -2526,7 +2526,7 @@ sub SetStatus {
 
     #Check ACL
     unless ($self->CurrentUserHasRight('ModifyTicket')) {
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }
 
     my $now = new RT::Date($self->CurrentUser);

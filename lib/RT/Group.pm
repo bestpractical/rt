@@ -110,7 +110,7 @@ sub Create {
     
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
 	$RT::Logger->warning($self->CurrentUser->Name ." Tried to create a group without permission.");
-	return(0, 'Permission denied');
+	return(0, 'Permission Denied');
     }
     
     my $retval = $self->SUPER::Create(Name => $args{'Name'},
@@ -258,7 +258,7 @@ sub DeleteMember {
 
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
         #User has no permission to be doing this
-        return(0,"Permission denied");
+        return(0,"Permission Denied");
     }
 
     my $member_user_obj = new RT::User($self->CurrentUser);
@@ -355,7 +355,7 @@ sub _Set {
     my $self = shift;
 
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }	
 
     return ($self->SUPER::_Set(@_));

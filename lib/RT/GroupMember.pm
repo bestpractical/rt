@@ -66,7 +66,7 @@ sub Create {
 	       );
     
     unless( $self->CurrentUser->HasSystemRight('ModifyGroups')) {
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }
 
     return ($self->SUPER::Create(GroupId => $args{'GroupId'},
@@ -101,7 +101,7 @@ group in question.
 sub Delete {
     my $self = shift;
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }
     return($self->SUPER::Delete(@_));
 }
@@ -129,7 +129,7 @@ sub UserObj {
 sub _Set {
     my $self = shift;
     unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }
     return($self->SUPER::_Set(@_));
 }

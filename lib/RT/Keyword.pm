@@ -100,7 +100,7 @@ sub Create {
 		@_);
     
     unless ($self->CurrentUserHasRight('AdminKeywords')) {
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }    
   
     if ( $args{'Parent'} && $args{'Parent'} !~ /^\d+$/ ) {
@@ -376,7 +376,7 @@ sub _Set {
     my $self = shift;
     
     unless ($self->CurrentUserHasRight('AdminKeywords')) {
-	return (0,'Permission denied');
+	return (0,'Permission Denied');
     }
     return $self->SUPER::_Set(@_);
 }

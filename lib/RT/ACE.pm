@@ -209,7 +209,7 @@ sub Create {
     if ($args{'RightScope'} eq 'System') {
 	
 	unless ($self->CurrentUserHasSystemRight('ModifyACL')) {
-	    $RT::Logger->error("Permission denied.");
+	    $RT::Logger->error("Permission Denied.");
 	    return(undef);
 	}
     }
@@ -217,7 +217,7 @@ sub Create {
     elsif ($args{'RightScope'} eq 'Queue') {
 	unless ($self->CurrentUserHasQueueRight( Queue => $args{'RightAppliesTo'},
 						 Right => 'ModifyACL')) {
-	    return (0, 'Permission denied.');
+	    return (0, 'Permission Denied.');
 	}
 	
 	
@@ -292,7 +292,7 @@ sub Delete {
     my $self = shift;
     
     unless ($self->CurrentUserHasRight('ModifyACL')) {
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }	
     
     

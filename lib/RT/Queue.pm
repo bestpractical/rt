@@ -534,7 +534,7 @@ sub AddWatcher {
 	if ($args{'Type'} eq 'AdminCc') {
 	    unless ($self->CurrentUserHasRight('ModifyQueueWatchers') or 
 		    $self->CurrentUserHasRight('WatchAsAdminCc')) {
-		return(0, 'Permission denied');
+		return(0, 'Permission Denied');
 	    }
 	}
 
@@ -543,7 +543,7 @@ sub AddWatcher {
 	elsif ($args{'Type'} eq 'Cc') {
 	    unless ($self->CurrentUserHasRight('ModifyQueueWatchers') or 
 		    $self->CurrentUserHasRight('Watch')) {
-		return(0, 'Permission denied');
+		return(0, 'Permission Denied');
 	    }
 	}
 	else {
@@ -663,7 +663,7 @@ sub DeleteWatcher {
 	if ($Watcher->Type eq 'AdminCc') {
 	    unless ($self->CurrentUserHasRight('ModifyQueueWatchers') or 
 		    $self->CurrentUserHasRight('WatchAsAdminCc')) {
-		return(0, 'Permission denied');
+		return(0, 'Permission Denied');
 	    }
 	}
 
@@ -672,7 +672,7 @@ sub DeleteWatcher {
 	elsif ($Watcher->Type eq 'Cc') {
 	    unless ($self->CurrentUserHasRight('ModifyQueueWatchers') or 
 		    $self->CurrentUserHasRight('Watch')) {
-		return(0, 'Permission denied');
+		return(0, 'Permission Denied');
 	    }
 	}
 	else {
@@ -872,7 +872,7 @@ sub _Set {
     my $self = shift;
 
     unless ($self->CurrentUserHasRight('AdminQueue')) {
-	return(0, 'Permission denied');
+	return(0, 'Permission Denied');
     }	
     return ($self->SUPER::_Set(@_));
 }

@@ -72,7 +72,7 @@ sub Create  {
       
     if ($args{'Queue'} == 0 ) { 
 	unless ($self->CurrentUser->HasSystemRight('ModifyScrips')) {
-	    return (0, 'Permission denied');
+	    return (0, 'Permission Denied');
  	}	
     }
     else {
@@ -82,7 +82,7 @@ sub Create  {
 	    return (0,'Invalid queue');
 	}
 	unless ($QueueObj->CurrentUserHasRight('ModifyScrips')) {
-	    return (0, 'Permssion denied');
+	    return (0, 'Permssion Denied');
 	}	
     }
 
@@ -285,7 +285,7 @@ sub _Set {
     
     unless ($self->CurrentUserHasRight('ModifyScrips')) {
         $RT::Logger->debug("CurrentUser can't modify Scrips for ".$self->Queue."\n");
-	return (0, 'Permission denied');
+	return (0, 'Permission Denied');
     }
     return $self->__Set(@_);
 }
