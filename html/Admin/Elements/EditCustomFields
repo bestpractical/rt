@@ -45,7 +45,7 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM ACTION="<%$RT::WebPath%><%$m->request_comp->path|n%>" METHOD=POST>
+<FORM ACTION="<%$RT::WebPath%><% $m->request_comp->path |n %>" METHOD="POST" NAME="EditCustomFields">
 <INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>">
 <INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>">
 <INPUT TYPE=HIDDEN NAME="SubType" VALUE="<% $SubType %>">
@@ -165,6 +165,8 @@ while (my $cf = $CustomFields->Next) {
     elsif (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
 	push @UnassignedCFs, $cf;
     }
+        else {
+        }
 }
 
 # redo search...
