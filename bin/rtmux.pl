@@ -54,11 +54,8 @@ elsif ($program eq '!!RT_QUERY_BIN!!') {
   
 }
 elsif ($program eq '!!RT_MAILGATE_BIN!!') {
-
-  require rt::support::utils;      
-  require rt::support::mail;
-  require rt::ui::mail::manipulate;
-  &rt::ui::mail::manipulate::activate();
+  require RT::Interface::Email;
+  &RT::Interface::Email::activate();
 }
 else {
   print STDERR "RT Has been launched with an illegal launch program ($program)\n";

@@ -1,4 +1,7 @@
-package rt::ui::mail::manipulate;
+# (c) 1996-2000 Jesse Vincent <jesse@fsck.com>
+# This software is redistributable under the terms of the GNU GPL
+
+package RT::Interface::Email;
 
 sub activate {
   my $Action=$ARGV[0];
