@@ -54,7 +54,8 @@ alter table CustomFields add column LookupType varchar(255) NOT NULL;
 alter table CustomFields add column Repeated int2 NOT NULL DEFAULT 0 ;
 alter table CustomFields add column Pattern varchar(255) NULL;
 alter table CustomFields add column MaxValues integer;
-alter table CustomFields drop index CustomFields1;
+# See above
+# alter table CustomFields drop index CustomFields1;
 
 UPDATE CustomFields SET MaxValues = 0 WHERE Type LIKE '%Multiple';
 UPDATE CustomFields SET MaxValues = 1 WHERE Type LIKE '%Single';
