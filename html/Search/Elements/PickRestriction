@@ -131,7 +131,10 @@
  <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
  foreach ( $session{'tickets'}->RestrictionValues('Queue') ) {
-        $CustomFields->LimitToQueue($_);
+        # Gotta load up the $queue object, since queues get stored by name now.
+        my $queue = RT::Queue->new($session{'CurrentUser'});
+        $queue->Load($_);
+        $CustomFields->LimitToQueue($queue->Id);
  }
 
  $CustomFields->LimitToGlobal();

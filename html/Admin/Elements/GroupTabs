@@ -57,13 +57,15 @@ $tabs->{"B"} = { title     => loc('New group'),
 
 # Now let callbacks add their extra tabs
 $m->comp( '/Elements/Callback', tabs => $tabs, %ARGS );
+foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {  
+    if ( $tabs->{'this'}->{'subtabs'}->{$tab}->{'path'} eq $current_tab ) {
+        $tabs->{'this'}->{'subtabs'}->{$tab}->{"subtabs"}        = $subtabs; 
+        $tabs->{'this'}->{'subtabs'}->{$tab}->{"current_subtab"} = $current_subtab; 
+    }                                                                           
+}   
+        $tabs->{'this'}->{"current_subtab"} = $current_tab; 
+        $current_tab = "Admin/Groups/Modify.html?id=".$GroupObj->id if $GroupObj;
 
-foreach my $tab ( sort keys %{$tabs} ) {
-    if ( $tabs->{$tab}->{'path'} eq $current_subtab ) {
-        $tabs->{$tab}->{"subtabs"}        = $subtabs;
-        $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-}
 </%INIT>
 <%ARGS>
 $GroupObj => undef

@@ -284,6 +284,11 @@ sub ClausesToSQL {
 
 =head2 FromSQL
 
+Convert a RT-SQL string into a set of SearchBuilder restrictions.
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on
+failure.
+
 =cut
 
 sub FromSQL {
@@ -291,10 +296,12 @@ sub FromSQL {
 
   $self->CleanSlate;
   $self->_InitSQL();
-   return unless $query;
+  return (1,"No Query") unless $query;
 
   $self->{_sql_query} = $query;
-  $self->_parser( $query );
+  eval { $self->_parser( $query ); };
+  $RT::Logger->error( $@ ) if $@;
+  return(0,$@) if $@;
 
   # We only want to look at EffectiveId's (mostly) for these searches.
   $self->SUPER::Limit( FIELD           => 'EffectiveId',
@@ -327,8 +334,28 @@ sub FromSQL {
   # set SB's dirty flag
   $self->{'must_redo_search'} = 1;
   $self->{'RecalcTicketLimits'} = 0;                                           
-  return($self);  
+
+  return (1,"Good Query");
+
 }
 
 
 1;
+
+=pod
+
+=head2 Exceptions
+
+Most of the RT code does not use Exceptions (die/eval) but it is used
+in the TicketSQL code for simplicity and historical reasons.  Lest you
+be worried that the dies will trigger user visible errors, all are
+trapped via evals.
+
+99% of the dies fall in subroutines called via FromSQL and then parse.
+(This includes all of the _FooLimit routines in Tickets_Overlay.pm.)
+The other 1% or so are via _ProcessRestrictions.
+
+All dies are trapped by eval {}s, and will be logged at the 'error'
+log level.  The general failure mode is to not display any tickets.
+
+=cut

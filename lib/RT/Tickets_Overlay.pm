@@ -1951,9 +1951,14 @@ sub _ProcessRestrictions {
     my $sql = $self->{_sql_query}; # Violating the _SQL namespace
     if (!$sql||$self->{'RecalcTicketLimits'}) {
       #  "Restrictions to Clauses Branch\n";
-      my $clauseRef = $self->_RestrictionsToClauses;
-      $sql = $self->ClausesToSQL($clauseRef);
-      $self->FromSQL($sql);
+      my $clauseRef = eval { $self->_RestrictionsToClauses; };
+      if ($@) {
+	$RT::Logger->error( "RestrictionsToClauses: " . $@ );
+	$self->FromSQL("");
+      } else {
+	$sql = $self->ClausesToSQL($clauseRef);
+	$self->FromSQL($sql);
+      }
     }
 
     #    print "SQL is $sql\n";

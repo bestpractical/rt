@@ -106,7 +106,7 @@ sub Load  {
     }	    
     
     if ($identifier !~ /\D/) {
-	$self->SUPER::LoadById($identifier);
+	$self->SUPER::Load($identifier);
     }
     else {
 	$self->LoadByCol('Name', $identifier);

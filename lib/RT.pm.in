@@ -193,6 +193,7 @@ sub InitLogging {
 	require Log::Dispatch::Syslog;
 	$RT::Logger->add(Log::Dispatch::Syslog->new
 		     ( name => 'syslog',
+                       ident => 'RT',
 		       min_level => $RT::LogToSyslog,
 			 callbacks => sub { my %p = @_;
                                 my ($package, $filename, $line) = caller(5);

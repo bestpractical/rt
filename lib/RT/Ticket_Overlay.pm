@@ -583,11 +583,10 @@ sub Create {
 
 
         if ( $self->Id && $Trans ) {
-            $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'",
-                                  $self->Id, $QueueObj->Name );
+            $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->Id, $QueueObj->Name );
             $ErrStr = join ( "\n", $ErrStr, @non_fatal_errors );
 
-            $RT::Logger->info($ErrStr);
+            $RT::Logger->info("Ticket ".$self->Id. " created in queue '".$QueueObj->Name."' by ".$self->CurrentUser->Name);
         }
         else {
             $RT::Handle->Rollback();
