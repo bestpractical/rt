@@ -43,12 +43,40 @@ dnl Defaults paths for installation
 AC_PREFIX_DEFAULT([/opt/rt3])
 RT_ENABLE_LAYOUT
 
+
+# ACRT_USER_EXISTS( users, variable, default )
+# - users is a list of users [www apache www-docs]
+#    from highest to lowest priority to high priority (i.e. first match)
+# - variable is what you set with the result
+#
+
+AC_DEFUN([ACRT_USER_GUESS],
+ [ 
+   $2=$3
+   for x in $1; do
+    AC_MSG_CHECKING([if user $x exists]) 
+     AS_IF([ $PERL -e"exit( defined getpwnam('$x') ? 0 : 1)" ],
+           [ AC_MSG_RESULT([found]); $2=$x ; break],
+           [ AC_MSG_RESULT([not found]) ])
+   done
+  ])
+AC_DEFUN([ACRT_GROUP_GUESS],
+ [ 
+   $2=$3
+   for x in $1; do
+    AC_MSG_CHECKING([if group $x exists]) 
+     AS_IF([ $PERL -e"exit( defined getgrnam('$x') ? 0 : 1)" ],
+           [ AC_MSG_RESULT([found]); $2=$x ; break],
+           [ AC_MSG_RESULT([not found]) ])
+   done
+  ])
+
 dnl RTGROUP
 AC_ARG_WITH(rt-group,
 	    AC_HELP_STRING([--with-rt-group=GROUP],
 	    		   [group to own all files (default: rt)]),
             RTGROUP=$withval,
-            RTGROUP=rt)
+            ACRT_GROUP_GUESS([rt3 rt],[RTGROUP], [rt]))
 AC_SUBST(RTGROUP)
 
 dnl BIN_OWNER
@@ -160,15 +188,16 @@ AC_ARG_WITH(web-user,
 	    AC_HELP_STRING([--with-web-user=USER],
 	    		   [user the web server runs as (default: www)]),
             WEB_USER=$withval,
-            WEB_USER=www)
+            ACRT_USER_GUESS([www www-data apache httpd nobody],[WEB_USER],[www])
+)
 AC_SUBST(WEB_USER)
 
 dnl WEB_GROUP
 AC_ARG_WITH(web-group,
-            AC_HELP_STRING([--with-web-group=GROUP],
+	    AC_HELP_STRING([--with-web-group=GROUP],
 		           [group the web server runs as (default: www)]),
             WEB_GROUP=$withval,
-            WEB_GROUP=www)
+            ACRT_GROUP_GUESS([www www-data apache httpd nogroup nobody],[WEB_GROUP], [www]))
 AC_SUBST(WEB_GROUP)
 
 dnl INSTALL AS ME
