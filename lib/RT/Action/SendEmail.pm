@@ -160,7 +160,8 @@ sub Commit {
             $MIMEObj->attach( Type => $attach->ContentType,
                               Charset => $attach->OriginalEncoding,
                               Data => $attach->OriginalContent,
-                              Filename => $attach->Filename );
+                              Filename => $attach->Filename,
+                              Encoding    => '-SUGGEST');
         }
 
     }
