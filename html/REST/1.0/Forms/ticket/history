@@ -97,8 +97,6 @@ if ($tid) {
     $t->Load($tid);
 
     push @data, [ id    => $t->Id   ];
-    push @data, [ EffectiveTicket    => $t->EffectiveTicket   ]
-	if (!%$fields || exists $fields->{lc 'EffectiveTicket'});
     push @data, [ Ticket    => $t->Ticket   ]
 	if (!%$fields || exists $fields->{lc 'Ticket'});
     push @data, [ TimeTaken    => $t->TimeTaken   ]
