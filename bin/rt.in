@@ -1210,6 +1210,8 @@ sub get_type_argument {
         @_ = ("No type argument specified with -t.");
         goto &whine;
     }
+
+    $type =~ s/s$//; # "Plural". Ugh.
     return $type;
 }
 
@@ -1259,12 +1261,12 @@ Text:
     to perform on one or more objects, and any other arguments required
     to complete the desired action.
 
-    See "rt help actions" for a list of actions, and "rt help types" for
-    the types of objects that can be operated upon.
+    For more information:
 
-    For more information, see:
-
+        - rt help actions       (a list of possible actions)
+        - rt help objects       (how to specify objects)
         - rt help usage         (syntax information)
+
         - rt help config        (configuration details)
         - rt help examples      (a few useful examples)
         - rt help topics        (a list of help topics)
@@ -1277,68 +1279,31 @@ Text:
 
     Syntax:
 
-        rt <action> <type> [options] [args]
+        rt <action> [options] [arguments]
 
-    This is the general form of an RT command. It specifies an action, a
-    type of object to operate upon, options to modify behaviour, and any
-    other arguments that are required. (For example, most actions accept
-    as arguments the numeric IDs of one or more objects of the specified
-    type.)
+    Each invocation of this program must specify an action (e.g. "edit",
+    "create"), options to modify behaviour, and other arguments required
+    by the specified action. (For example, most actions expect a list of
+    numeric object IDs to act upon.)
 
     The details of the syntax and arguments for each action are given by
     "rt help <action>". Some actions may be referred to by more than one
     name ("create" is the same as "new", for example).  
 
-    You don't need to specify a type if the action implies it ("comment"
-    makes sense only for tickets, for example). Both singular and plural
-    forms of every type are accepted (i.e., "rt list ticket" is the same
-    as "rt list tickets").
+    Objects are identified by a type and an ID (which can be a name or a
+    number, depending on the type). For some actions, the object type is
+    implied (you can only comment on tickets); for others, the user must
+    specify it explicitly. See "rt help objects" for details.
 
     In syntax descriptions, mandatory arguments that must be replaced by
     appropriate value are enclosed in <>, and optional arguments are
     indicated by [] (for example, <action> and [options] above).
 
---
-
-Title: types
-Title: objects
-Text:
-
-    You can currently operate on the following types of objects:
-
-        - tickets
-        - users
-        - groups
-        - queues
-
-    Every command accepts both singular and plural forms of each type.
-    (That is, "rt list ticket" is the same as "rt list tickets".)
-
     For more information:
 
-        - rt help <type>        (for type-specific details)
-        - rt help actions       (a list of possible actions)
-
---
-
-Title: actions
-Title: commands
-Text:
-
-    You can currently perform the following actions on all objects:
-
-        - list          (list objects matching some condition)
-        - show          (display object details)
-        - edit          (edit object details)
-        - create        (create a new object)
-
-    Each type may define actions specific to itself; these are listed in
-    the help item about that type.
-
-    For more information:
-
-        - rt help <action>      (for action-specific details)
-        - rt help types         (a list of possible types)
+        - rt help objects       (how to specify objects)
+        - rt help actions       (a list of actions)
+        - rt help types         (a list of object types)
 
 --
 
@@ -1379,6 +1344,86 @@ Text:
 
 --
 
+Title: objects
+Text:
+
+    Syntax:
+
+        <type>/<id>[/<attributes>]
+
+    Every object in RT has a type (e.g. "ticket", "queue") and a numeric
+    ID. Some types of objects can also be identified by name (like users
+    and queues). Furthermore, objects may have named attributes (such as
+    "ticket/1/history").
+
+    An object specification is like a path in a virtual filesystem, with
+    object types as top-level directories, object IDs as subdirectories,
+    and named attributes as further subdirectories.
+
+    A comma-separated list of names, numeric IDs, or numeric ranges can
+    be used to specify more than one object of the same type. Note that
+    the list must be a single argument (i.e., no spaces). For example,
+    "user/root,1-3,5,7-10,ams" is a list of ten users; the same list
+    can also be written as "user/ams,root,1,2,3,5,7,8-20".
+    
+    Examples:
+
+        ticket/1
+        ticket/1/attachments
+        ticket/1/attachments/3
+        ticket/1-3/links
+        ticket/1-3,5-7/history
+
+        user/ams
+        user/ams/rights
+        user/ams,rai,1/rights
+
+    For more information:
+
+        - rt help <action>      (action-specific details)
+        - rt help <type>        (type-specific details)
+
+--
+
+Title: actions
+Title: commands
+Text:
+
+    You can currently perform the following actions on all objects:
+
+        - list          (list objects matching some condition)
+        - show          (display object details)
+        - edit          (edit object details)
+        - create        (create a new object)
+
+    Each type may define actions specific to itself; these are listed in
+    the help item about that type.
+
+    For more information:
+
+        - rt help <action>      (action-specific details)
+        - rt help types         (a list of possible types)
+
+--
+
+Title: types
+Text:
+
+    You can currently operate on the following types of objects:
+
+        - tickets
+        - users
+        - groups
+        - queues
+
+    For more information:
+
+        - rt help <type>        (type-specific details)
+        - rt help objects       (how to specify objects)
+        - rt help actions       (a list of possible actions)
+
+--
+
 Title: ticket
 Text:
 
@@ -1400,24 +1445,50 @@ Text:
 
     Attributes:
 
-        The following attributes can be used with "rt show ticket id" or
-        "rt edit ..." to retrieve or edit other information associated
-        with tickets:
+        The following attributes can be used with "rt show" or "rt edit"
+        to retrieve or edit other information associated with tickets:
 
         links                   A ticket's relationships with others.
         history                 All of a ticket's transactions.
-        history/type            Only a particular type of transaction.
+        history/<type>          Only a particular type of transaction.
         attachments             A list of attachments.
-        attachments/$id         An individual attachment.
+        attachments/<id>        An individual attachment.
 
 --
 
 Title: user
 Title: group
+Text:
+
+    Users and groups are identified by name or numeric ID.
+
+    The following generic operations may be performed upon them:
+
+        - list
+        - show
+        - edit
+        - create
+
+    In addition, the following type-specific actions exist:
+
+        - grant
+        - revoke
+
+    Attributes:
+
+        The following attributes can be used with "rt show" or "rt edit"
+        to retrieve or edit other information associated with users and
+        groups:
+
+        rights                  Global rights granted to this user.
+        rights/<queue>          Queue rights for this user.
+
+--
+
 Title: queue
 Text:
 
-    Users, groups, and queues are identified by name or numeric ID.
+    Queues are identified by name or numeric ID.
 
     Currently, they can be subjected to the following actions:
 
@@ -1447,7 +1518,7 @@ Text:
 
     Syntax:
 
-        rt <ls|list|search> <type> [options] "query string"
+        rt <ls|list|search> [options] "query string"
 
     Displays a list of objects matching the specified conditions.
     ("ls", "list", and "search" are synonyms.)
@@ -1472,12 +1543,14 @@ Text:
         In addition,
         
         -S var=val      Submits the specified variable with the request.
+        -t type         Specifies the type of object to look for. (The
+                        default is "ticket".)
 
     Examples:
 
-        rt ls tickets "Priority > 5 and Status='new'"
-        rt ls tickets -i "Priority > 5"|rt edit - set status=resolved
-        rt ls tickets "Subject like '[PATCH]%'"
+        rt ls "Priority > 5 and Status='new'"
+        rt ls -i "Priority > 5"|rt edit - set status=resolved
+        rt ls -t ticket "Subject like '[PATCH]%'"
 
 --
 
@@ -1486,19 +1559,14 @@ Text:
 
     Syntax:
 
-        rt show <type> [options] <object-ids>
+        rt show [options] <object-ids>
 
     Displays details of the specified objects.
-
-    More than one object of the given type may be specified by using a
-    comma-separated list of numeric IDs or ranges (e.g., "1-3,5,7-100"
-    is the same as "1,2,3,5,7,8-100"). Note that the entire list must
-    be specified as a single argument (i.e., no spaces).
 
     For some types, object information is further classified into named
     attributes (for example, "1-3/links" is a valid ticket specification
     that refers to the links for tickets 1-3). Consult "rt help <type>"
-    for further details.
+    and "rt help objects" for further details.
 
     This command writes a set of forms representing the requested object
     data to STDOUT.
@@ -1506,15 +1574,16 @@ Text:
     Options:
 
         -               Read IDs from STDIN instead of the command-line.
+        -t type         Specifies object type.
         -f a,b,c        Restrict the display to the specified fields.
         -S var=val      Submits the specified variable with the request.
 
     Examples:
 
-        rt show tickets -f id,subject,status 1-3
-        rt show ticket 3/attachments/29
-        rt show ticket 1-3/links
-        rt show user 2
+        rt show -t ticket -f id,subject,status 1-3
+        rt show ticket/3/attachments/29
+        rt show ticket/1-3/links
+        rt show -t user 2
 
 --
 
@@ -1525,9 +1594,9 @@ Text:
 
     Syntax:
 
-        rt edit <type> [options] <object-ids> set field=value [field=value] ...
-                                              add field=value [field=value] ...
-                                              del field=value [field=value] ...
+        rt edit [options] <object-ids> set field=value [field=value] ...
+                                       add field=value [field=value] ...
+                                       del field=value [field=value] ...
 
     Edits information corresponding to the specified objects.
 
@@ -1548,7 +1617,8 @@ Text:
     For some types, object information is further classified into named
     attributes (for example, "1-3/links" is a valid ticket specification
     that refers to the links for tickets 1-3). These attributes may also
-    be edited. Consult "rt help <type>" for further details.
+    be edited. Consult "rt help <type>" and "rt help object" for further
+    details.
 
     Options:
 
@@ -1560,12 +1630,13 @@ Text:
                 enough information to make a submission directly.
         -S var=val
                 Submits the specified variable with the request.
+        -t type Specifies object type.
 
     Examples:
 
-        rt edit tickets 1-3 add cc=foo@example.com set priority=3
-        rt ls tickets -i 'Priority > 5' | rt edit - set status=resolved
-        rt edit ticket 4 set priority=3 owner=bar@example.com
+        rt edit ticket/1-3 add cc=foo@example.com set priority=3
+        rt ls -t tickets -i 'Priority > 5' | rt edit - set status=resolved
+        rt edit ticket/4 set priority=3 owner=bar@example.com \
                          add cc=foo@example.com bcc=quux@example.net
 
 --
@@ -1629,7 +1700,7 @@ Text:
         RefersTo/ReferredToBy:      A refers to B (or vice versa).
         MemberOf/HasMember:         A is a member of B (or vice versa).
 
-    To view a ticket's relationships, use "rt show ticket 3/links". (See
+    To view a ticket's relationships, use "rt show ticket/3/links". (See
     "rt help ticket" and "rt help show".)
 
     Options:
@@ -1694,7 +1765,8 @@ Text:
         - query                                 (search query syntax)
         - forms                                 (form specification)
 
-        - types/objects                         (a list of object types)
+        - objects                               (how to specify objects)
+        - types                                 (a list of object types)
         - actions/commands                      (a list of actions)
         - usage/syntax                          (syntax details)
         - conf/config/configuration             (configuration details)
