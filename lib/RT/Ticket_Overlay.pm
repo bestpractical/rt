@@ -93,7 +93,9 @@ ok(require RT::Ticket, "Loading the RT::Ticket library");
 
 # }}}
 
-# Relationships table
+# {{{ LINKTYPEMAP
+# A helper table for relationships mapping to make it easier
+# to build and parse links between tickets
 
 use vars (%LINKTYPEMAP);
 
@@ -101,7 +103,7 @@ use vars (%LINKTYPEMAP);
     MemberOf => { Type => 'MemberOf',
                   Mode => 'Target', },
     Members => { Type => 'MemberOf',
-                   Mode => 'Base', },
+                 Mode => 'Base', },
     HasMember => { Type => 'MemberOf',
                    Mode => 'Base', },
     RefersTo => { Type => 'RefersTo',
@@ -114,6 +116,7 @@ use vars (%LINKTYPEMAP);
                       Mode => 'Base', },
 
 );
+# }}}
 
 # {{{ sub Load
 
@@ -521,6 +524,30 @@ sub Create {
 
 # }}}
 
+# }}}
+
+# {{{ sub CreateFromEmailMessage
+
+
+=head2 CreateFromEmailMessage { Message, Queue, ExtractActorFromHeaders } 
+
+This code replaces what was once a large part of the email gateway.
+It takes an email message as a parameter, parses out the sender, subject
+and a MIME object. It then creates a ticket based on those attributes
+
+=cut
+
+sub CreateFromEmailMessage {
+    my $self = shift;
+    my %args = ( Message => undef,
+                 Queue => undef,
+                 ExtractActorFromSender => undef,
+                 @_ );
+}
+
+# }}}
+
+
 # {{{ sub Import
 
 =head2 Import PARAMHASH
@@ -707,7 +734,6 @@ sub Import {
 
 # }}}
 
-# }}}
 
 # {{{ Routines dealing with watchers.
 
@@ -996,7 +1022,7 @@ sub DeleteWatcher {
 
         $principal->Load($args{'PrincipalId'});
     } else {
-        my $user = RT::Useer->new($self->CurrentUser);
+        my $user = RT::User->new($self->CurrentUser);
         $user->LoadByEmail($args{'Email'});
         $principal->Load($user->Id);
     }

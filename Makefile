@@ -369,6 +369,7 @@ POD2TEST_EXE = sbin/extract_pod_tests
 testify-pods:
 	[ -d lib/t/autogen ] || mkdir lib/t/autogen
 	find lib -name \*pm |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find bin -type f |grep -v \~| xargs -n 1 $(PERL) $(POD2TEST_EXE)
 
 
 
