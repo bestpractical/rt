@@ -3,7 +3,7 @@ CREATE TABLE FM_Classes (
 id NUMBER(11,0)
   CONSTRAINT FM_Classes_key PRIMARY KEY,
 Name varchar2(255) DEFAULT '' NOT NULL,
-Description varchar2(255) DEFAULT '' NOT NULL,
+Description varchar2(255) DEFAULT '',
 SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
 Disabled NUMBER(11,0) DEFAULT 0 NOT NULL,
 Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -61,7 +61,7 @@ id NUMBER(11,0)
   CONSTRAINT FM_CustomFieldValues_key PRIMARY KEY,
 CustomField NUMBER(11,0) NOT NULL,
 Name varchar2(255) DEFAULT '' NOT NULL,
-Description varchar2(255) DEFAULT '' NOT NULL,
+Description varchar2(255) DEFAULT '',
 SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL,
 Creator NUMBER(11,0) DEFAULT 0 NOT NULL,
 Created DATE,
@@ -87,7 +87,7 @@ CREATE TABLE FM_Transactions (
 id NUMBER(11,0)
   CONSTRAINT FM_Transactions_key PRIMARY KEY,
 Article NUMBER(11,0) DEFAULT 0 NOT NULL,
-ChangeLog CLOB DEFAULT EMPTY_CLOB() NOT NULL,
+ChangeLog CLOB DEFAULT EMPTY_CLOB(),
 Type varchar2(64) DEFAULT '' NOT NULL,
 Field varchar2(64) DEFAULT '' NOT NULL,
 OldContent CLOB DEFAULT EMPTY_CLOB() NOT NULL,

@@ -157,8 +157,7 @@ foreach my $field qw(Name Summary Class) {
         }
 
         # preprocess Classes, so we can search on class
-        if ( $field eq 'Class' ) {
-            $RT::Logger->crit("Checking for a class of $value");
+        if ( $field eq 'Class' && $value ) {
             my $class = RT::FM::Class->new($RT::SystemUser);
             $class->Load($value);
             $value = $class->Id;
@@ -175,8 +174,6 @@ foreach my $field qw(Name Summary Class) {
 
     }
     foreach my $value (@NoMatch) {
-        $RT::Logger->debug( "noMatch value is '$value' for $field");
-        
 
         # preprocess Classes, so we can search on class
         if ( $value =~ /^~(.*)/ ) {
