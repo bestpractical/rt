@@ -704,7 +704,27 @@ sub _AddWatcher {
        }	
     }	
 
- 
+    # Turn an email address int a watcher if we possibly can.
+    if ($args{'Email'}) {
+	my $watcher = new RT::User($self->CurrentUser);
+	$watcher->LoadByEmail($args{'Email'});
+	if ($watcher->Id) {
+		$args{'Owner'} = $watcher->Id;
+		delete $args{'Email'};
+	}
+    }
+
+
+    # see if this user is already a watcher. if we have an owner, check it
+    # otherwise, we've got an email-address watcher. use that.
+
+    if ($self->IsWatcher(Type => $args{'Type'},
+                         Id => ($args{'Owner'} || $args{'Email'}) ) ) {
+
+
+        return(0, 'That user is already that sort of watcher for this ticket');
+    }
+
     
     require RT::Watcher;
     my $Watcher = new RT::Watcher ($self->CurrentUser);
@@ -1131,7 +1151,6 @@ sub IsWatcher {
     my $self = shift;
 
     my %args = ( Type => 'Requestor',
-		 User => undef,
 		 Email => undef,
 		 Id => undef,
 		 @_
@@ -1201,10 +1220,9 @@ sub IsWatcher {
 
 sub IsRequestor {
     my $self = shift;
-    my $whom = shift;
-    
+    my $person = shift;
 
-    return ($self->IsWatcher(Type => 'Requestor', Id => $whom));
+    return ($self->IsWatcher(Type => 'Requestor', Id => $person));
 	    
 };
 
@@ -1238,9 +1256,9 @@ Takes a string. Returns true if the string is an AdminCc watcher of the current 
 
 sub IsAdminCc {
   my $self = shift;
-  my $bcc = shift;
+  my $person = shift;
   
-  return ($self->IsWatcher( Type => 'AdminCc', Id => $bcc ));
+  return ($self->IsWatcher( Type => 'AdminCc', Id => $person ));
   
 }
 
