@@ -2,16 +2,16 @@
 # (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
 # This software is redistributable under the terms of the GNU GPL
 
-package RT::InterestedParties;
-use DBIx::EasySearch;
-@ISA= qw(DBIx::EasySearch);
+package RT::Watchers;
+require RT::EasySearch;
+@ISA= qw(RT::EasySearch);
 
 
 sub new {
   my $pkg= shift;
   my $self = SUPER::new $pkg;
   
-  $self->{'table'} = "Interested Parties";
+  $self->{'table'} = "Watchers";
   $self->{'primary_key'} = "id";
   return($self);
 }
@@ -59,7 +59,7 @@ sub NewItem {
   my $self = shift;
   my $Handle = shift;
   my $item;
-  $item = new RT::InterestedParty($self->{'user'}, $Handle);
+  $item = new RT::Watcher($self->{'user'}, $Handle);
   return($item);
 }
 1;

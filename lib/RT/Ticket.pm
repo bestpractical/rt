@@ -24,7 +24,7 @@ sub Create {
   my %args = (id => undef,
 	      EffectiveId => undef,
 	      Queue => undef,
-	   
+	      Requestor => undef,
 	      Alias => undef,
 	      Type => undef,
 	      Owner => undef,
@@ -60,22 +60,23 @@ sub Create {
   $self->Load($id);
   #Now that we know the Id
   $self->SUPER::_Set("EffectiveId",$id);
-  
+
+
+  #Add the requestor to the list of watchers
+  $self->NewWatcher ( Type => 'Requestor',
+		      Email => $arg{'requestor'} );
 
   #Add a transaction for the create
   my $Trans = $self->_NewTransaction(Type => "Create",
 				     TimeTaken => 0);
   
   
-
   #Attach the content to the transaction, if we were passed in an attachment
   if ($args{'Attachment'}){
     $Trans->Attach($args{'Attachment'});
   }
 
-
-
-  #TODO If the requestor is supposed to get an autoreply on creation, do that now.
+    
   return($self->Id, $Trans, $ErrStr);
   
 }
@@ -86,53 +87,111 @@ sub Create {
 #
 
 
-sub InterestedParties {
+sub NewWatcher {
+  my $self = shift;
+  my %args = ( Ticket => $self->Id(),
+	       Email => undef,
+	       Type => undef,
+	       @_ );
+  
+  require RT::Watcher;
+  my $Watcher = new RT::Watcher ($self->CurrentUser);
+  $Watcher->Create(%args);
+  
+}
+	
+sub DeleteWatcher {
+  my $self = shift;
+  my $self = shift;
+  my %args = ( Ticket => $self->Id(),
+	       Email => undef,
+	       Type => undef,
+	       @_ );
+  
+  require RT::Watcher;
+  my $Watcher = new RT::Watcher ($self->CurrentUser);
+  $Watcher->Load(%args);
+}
+
+
+sub Watchers {
+  my $self = shift;
+  if (! defined ($self->{'Watchers'})) {
+    require RT::Watchers;
+    $self->{'Watchers'} = new RT::Watchers->($self->CurrentUser);
+
+  }
+  return($self->{'Watcherss'});
+
 }
 
 sub Requestors {
   my $self = shift;
   if (! defined ($self->{'Requestors'})) {
-    require RT::InterestedParties;
-    $self->{'Requestors'} = new RT::InterestedParties->($self->CurrentUser);
+    require RT::Watchers;
+    $self->{'Requestors'} = new RT::Watchers->($self->CurrentUser);
     $self->{'Requestors'}->LimitToRequestors();
   }
   return($self->{'Requestors'});
   
 }
 sub RequestorsAsString {
-my $self = shift;
-if (!defined $self->{'RequestorsAsString'}) {
-  $self->{'RequestorsAsString'} = "";
-  foreach $requestor ($self->Requestors) {
-    $self->{'RequestorsAsString'} . = 
-
+  my $self = shift;
+  if (!defined $self->{'RequestorsAsString'}) {
+    $self->{'RequestorsAsString'} = "";
+    foreach $requestor ($self->Requestors) {
+      $self->{'RequestorsAsString'} . = $requestor->Email.", ";    
+    }
+    return ( $self->{'RequestorsAsString'});
+  }
 }
 
 sub Cc {
-my $self = shift;
+  my $self = shift;
   if (! defined ($self->{'Cc'})) {
-    require RT::InterestedParties;
-    $self->{'Cc'} = new RT::InterestedParties->($self->CurrentUser);
+    require RT::Watchers;
+    $self->{'Cc'} = new RT::Watchers->($self->CurrentUser);
     $self->{'Cc'}->LimitToCc();
   }
   return($self->{'Cc'});
-
+  
 }
 
 sub CcAsString {
   my $self = shift;
+  if (!defined $self->{'CcAsString'}) {
+    $self->{'CcAsString'} = "";
+    foreach $requestor ($self->Cc) {
+      $self->{'CcAsString'} . = $requestor->Email .", ";
+      
+    }
+    return ( $self->{'CcAsString'});
+
+
 }
 sub Bcc {
   if (! defined ($self->{'Bcc'})) {
-    require RT::InterestedParties;
-    $self->{'Bcc'} = new RT::InterestedParties->($self->CurrentUser);
+    require RT::Watchers;
+    $self->{'Bcc'} = new RT::Watchers->($self->CurrentUser);
     $self->{'Bcc'}->LimitToBcc();
   }
   return($self->{'Bcc'});
 
 }
 sub BccAsString {
+  my $self = shift;
+  if (!defined $self->{'BccAsString'}) {
+    $self->{'BccAsString'} = "";
+    foreach $requestor ($self->Bcc) {
+      $self->{'BccAsString'} . = $requestor->Email .", ";
+      
+    }
+    return ( $self->{'BccAsString'});
+
+    
+  }
 }
+  
 
 #
 #
