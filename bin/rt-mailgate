@@ -55,6 +55,9 @@ my $Action = "correspond";
 
 my ($Verbose, $ReturnTid, $Debug);
 my ($From, $TicketId, $Subject,$SquelchReplies);
+
+# using --owner-from-extension, this will let you set ticket owner on create
+my $AssignTicketTo = undef;
 my ($status, $msg);
 
 # {{{ parse commandline 
@@ -81,6 +84,10 @@ while (my $flag = shift @ARGV) {
     if ($flag eq '--queue-from-extension') {
        $Queue = $ENV{'EXTENSION'};
     }
+    if ($flag eq '--owner-from-extension') {
+        $AssignTicketTo = $ENV{'EXTENSION'};
+    }
+
     if (($flag eq '-a') or ($flag eq '--action')) {
 	  $Action = shift @ARGV;
     } 
@@ -210,7 +217,6 @@ if ($RT::LookupSenderInExternalDatabase &&
 
 # }}}
 
-
 # {{{ elsif we don't have a ticket Id, we're creating a new ticket
 
 
@@ -234,6 +240,7 @@ elsif (!defined($TicketId)) {
 	my ($id, $Transaction, $ErrStr) = 
 	  $Ticket->Create ( Queue => $Queue,
 			    Subject => $Subject,
+                            Owner => $AssignTicketTo,
 			    Requestor => \@Requestors,
 			    Cc => \@Cc,
 			    MIMEObj => $entity
