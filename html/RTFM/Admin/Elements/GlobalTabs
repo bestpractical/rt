@@ -16,35 +16,30 @@
 %# 
 %# END LICENSE BLOCK
 
-<& /RTFM/Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'RTFM/Admin/index.html', 
-    current_tab => $current_tab, 
+<& /RTFM/Admin/Elements/Tabs, 
+    subtabs => $tabs, 
+    current_tab => 'RTFM/Admin/Global/index.html', 
+    current_subtab => $current_tab, 
     Title => $Title &>
 <%INIT>
-  my $tabs = { Classes => { title => loc('Classes'),
-			  path => 'RTFM/Admin/Classes/index.html',
-			},
-	       CustomFields => { title => loc('Custom Fields'),
-			   path => 'RTFM/Admin/CustomFields/index.html',
-			 },
-	       Global => { title => loc('Global'),
-			   path => 'RTFM/Admin/Global/index.html',
-			 },
-	     };
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-  }
+my $tabs;
 
+   $tabs = {
+
+                 F => { title => loc('Group Rights'),
+                          path => "RTFM/Admin/Global/GroupRights.html",
+                        },      
+                 G => { title => loc('User Rights'),
+                          path => "RTFM/Admin/Global/UserRights.html",
+                        },
+
+
+                 
+};
 </%INIT>
-
-
 <%ARGS>
-$subtabs => undef
 $current_tab => undef
 $current_subtab => undef
+$subtabs => undef
 $Title => undef
 </%ARGS>

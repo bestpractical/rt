@@ -1,0 +1,76 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /RTFM/Admin/Elements/GlobalTabs, 
+    current_tab => 'Admin/Global/UserRights.html',
+    Title => loc('Modify global user rights') &>  
+<& /Elements/ListActions, actions => \@results &>
+
+  <FORM METHOD=POST ACTION="UserRights.html">
+      
+<& /Elements/TitleBoxStart, title => loc('Modify global user rights.') &>
+      
+<TABLE>
+        
+%	while (my $Member = $Users->Next()) {
+% my $UserObj = $Member->MemberObj->Object();
+% my $group = RT::Group->new($session{'CurrentUser'});
+% $group->LoadACLEquivalenceGroup($Member->MemberObj);
+  <TR ALIGN=RIGHT> 
+	<TD VALIGN=TOP>
+	    <% $UserObj->Name %>
+		  </TD>
+	  <TD>
+	    <& /Admin/Elements/SelectRights, PrincipalId => $group->PrincipalId,
+        Object => $RT::FM::System  &>
+	  </TD>
+	</TR>
+% }
+</TABLE>
+            
+      <& /Elements/TitleBoxEnd &>
+      <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+      
+  </FORM>
+  
+<%INIT>
+ 
+  #Update the acls.
+  my @results =  ProcessACLChanges(\%ARGS);
+
+# {{{ Deal with setting up the display of current rights.
+
+
+# Find out which users we want to display ACL selects for
+my $Privileged = RT::Group->new($session{'CurrentUser'});
+$Privileged->LoadSystemInternalGroup('Privileged');
+my $Users = $Privileged->MembersObj();
+
+    
+  
+# }}}
+    
+</%INIT>
+
+<%ARGS>
+</%ARGS>

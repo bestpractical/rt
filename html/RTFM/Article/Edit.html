@@ -268,12 +268,12 @@ elsif ( $id eq 'new' ) {
     $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
   }
 
-  # TODO: display the results, even if we can't display the Article
-
+  # if they're working on an existing article
+  if ($ArticleObj->id) {
   unless ( $ArticleObj->CurrentUserHasRight('ShowArticle') ) {
     $m->comp( "/RTFM/Elements/Error", Why => "No permission to view Article" );
-}
-
+    }
+  }
 
 </%INIT>
 

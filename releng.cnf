@@ -1,7 +1,7 @@
 PRODUCT			        = RTFM
-TAG			            = 2.0.3rc4
+TAG			            = 2.0.3rc5
 CANONICAL_REPO		    = svn+ssh://svn.bestpractical.com/svn/bps-public/rtfm/
 TAGS		            = tags/
 TRUNK	                = trunk/
 TMP_DIR			        = /tmp
-RELEASE_DIR		        = /home/ftp/pub/rt/release
+RELEASE_DIR		        = /home/ftp/pub/rt/devel

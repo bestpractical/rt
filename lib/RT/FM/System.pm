@@ -43,7 +43,7 @@ use vars qw/ $RIGHTS/;
 
 
 # Tell RT::ACE that this sort of object can get acls granted
-$RT::ACE::OBJECT_TYPES{'RT::FM::Class'} = 1;
+$RT::ACE::OBJECT_TYPES{'RT::FM::System'} = 1;
 
 
 # System rights are rights granted to the whole system
@@ -66,8 +66,12 @@ Returns a hash of available rights for this object. The keys are the right names
 sub AvailableRights {
     my $self = shift;
     my $class = RT::FM::Class->new($RT::SystemUser);
-    my $rights = class->AvailableRights();
-    return($rights);
+    my $classrights = $class->AvailableRights();
+    my $CustomField = RT::FM::CustomField->new($RT::SystemUser);
+    my $cfrights = $CustomField->AvailableRights();
+    my %rights = (%{$cfrights}, %{$classrights});
+    
+    return(\%rights);
 }
 
 
@@ -111,4 +115,13 @@ sub id {
     return (1);
 }
 
+=head2 Load
+
+for compatibility. dummy method
+
+=cut
+
+sub Load {
+    return(1);
+}
 1;
