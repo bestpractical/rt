@@ -586,6 +586,8 @@ sub _Accessible  {
 }
 
 
+eval "require RT::Record_Overlay";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Overlay.pm});
 eval "require RT::Record_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Record_Vendor.pm});
 eval "require RT::Record_Local";

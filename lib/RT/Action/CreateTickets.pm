@@ -25,6 +25,7 @@ package RT::Action::CreateTickets;
 require RT::Action::Generic;
 
 use strict;
+use warnings;
 use vars qw/@ISA/;
 @ISA = qw(RT::Action::Generic);
 
@@ -39,7 +40,7 @@ Create one or more tickets according to an externally supplied template.
 
 =head1 SYNOPSIS
 
- ===Create-Ticket: codereview
+ ===Create-Ticket codereview
  Subject: Code review for {$Tickets{'TOP'}->Subject}
  Depended-On-By: TOP
  Content: Someone has created a ticket. you should review and approve it,
@@ -307,194 +308,12 @@ my %LINKTYPEMAP = (
 #Do what we need to do and send it out.
 sub Commit {
     my $self = shift;
-    my (@links, @postponed);
-
-    # XXX: cargo cult programming that works. i'll be back.
-    use bytes;
 
     # Create all the tickets we care about
     return(1) unless $self->TicketObj->Type eq 'ticket';
 
-    %T::Tickets = ();
-
-    foreach my $template_id ( @{ $self->{'template_order'} } ) {
-	$T::Tickets{'TOP'} = $T::TOP = $self->TicketObj;
-	$RT::Logger->debug("Workflow: processing $template_id of $T::TOP");
-
-	$T::ID = $template_id;
-	@T::AllID = @{ $self->{'template_order'} };
-
-        my $template = Text::Template->new(
-	      TYPE   => 'STRING',
-	      SOURCE => $self->{'templates'}->{$template_id}
-        );
-
-	$RT::Logger->debug("Workflow: evaluating\n$self->{templates}{$template_id}");
-
-	my $err;
-        my $filled_in = $template->fill_in( PACKAGE => 'T', BROKEN => sub {
-	    $err = { @_ }->{error};
-	} );
-
-	$RT::Logger->debug("Workflow: yielding\n$filled_in");
-
-	if ($err) {
-	    $RT::Logger->error("Ticket creation failed for ".$self->TicketObj->Id." ".$err);
-	    while (my ($k, $v) = each %T::X) {
-		$RT::Logger->debug("Eliminating $template_id from ${k}'s parents.");
-		delete $v->{$template_id};
-	    }
-	    next;
-	}
-
-        my %args;
-        my @lines = ( split ( /\n/, $filled_in ) );
-        while ( defined(my $line = shift @lines) ) {
-            if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
-                my $value = $2;
-                my $tag = lc ($1);
-                $tag =~ s/-//g;
-
-		if (ref($args{$tag})) { #If it's an array, we want to push the value
-		    push @{$args{$tag}}, $value;
-		}
-		elsif (defined ($args{$tag})) { #if we're about to get a second value, make it an array
-		    $args{$tag} = [$args{$tag}, $value];
-		}
-		else { #if there's nothing there, just set the value
-		    $args{ $tag } = $value;
-		}
-
-                if ( $tag eq 'content' ) { #just build up the content
-                        # convert it to an array
-                        $args{$tag} = defined($value) ? [ $value."\n" ] : [];
-                      while ( defined(my $l = shift @lines) ) {
-                        last if ($l =~  /^ENDOFCONTENT\s*$/) ;
-                        push @{$args{'content'}}, $l."\n";
-                        }
-                }
-            }
-	}
-
-	foreach my $date qw(due starts started resolved) {
-	    my $dateobj = RT::Date->new($RT::SystemUser);
-	    next unless $args{$date};
-	    if ($args{$date} =~ /^\d+$/) {
-		$dateobj->Set(Format => 'unix', Value => $args{$date});
-	    } else {
-		$dateobj->Set(Format => 'unknown', Value => $args{$date});
-	    }
-	    $args{$date} = $dateobj->ISO;
-	}
-	my $mimeobj = MIME::Entity->new();
-	$mimeobj->build(Type => $args{'contenttype'},
-			Data => $args{'content'});
-	# Now we have a %args to work with. 
-	# Make sure we have at least the minimum set of 
-	# reasonable data and do our thang
-	$T::Tickets{$template_id} ||= RT::Ticket->new($RT::SystemUser);
-
-	# Deferred processing	
-	push @links, (
-	    $T::Tickets{$template_id}, {
-		DependsOn		=> $args{'dependson'},
-		DependedOnBy	=> $args{'dependedonby'},
-		RefersTo		=> $args{'refersto'},
-		ReferredToBy	=> $args{'referredtoby'},
-		Members		=> $args{'members'},
-		MemberOf		=> $args{'memberof'},
-	    }
-	);
-
-	push @postponed, (
-	    # Status is postponed so we don't violate dependencies
-	    $T::Tickets{$template_id}, {
-		Status		=> $args{'status'},
-	    }
-	);
-
-	$args{'requestor'} ||= $self->TicketObj->Requestors->MemberEmailAddresses;
-
-	$args{'type'} ||= 'ticket';
-
-	my %ticketargs = ( Queue => $args{'queue'},
-		      Subject=> $args{'subject'},
-		    Status => 'new',
-		    Due => $args{'due'},
-		    Starts => $args{'starts'},
-		    Started => $args{'started'},
-		    Resolved => $args{'resolved'},
-		    Owner => $args{'owner'},
-		    Requestor => $args{'requestor'},
-		    Cc => $args{'cc'},
-		    AdminCc=> $args{'admincc'},
-		    TimeWorked =>$args{'timeworked'},
-		    TimeEstimated =>$args{'timeestimated'},
-		    TimeLeft =>$args{'timeleft'},
-		    InitialPriority => $args{'initialpriority'},
-		    FinalPriority => $args{'finalpriority'},
-		    Type => $args{'type'}, 
-		    MIMEObj => $mimeobj);
-
-
-	foreach my $key (keys(%args)) {
-	    $key =~ /^customfield(\d+)$/ or next;
-	    $ticketargs{ "CustomField-" . $1 } = $args{$key};
-	}
-
-	my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%ticketargs);
-	if (!$id) {
-	    $RT::Logger->error(
-		"Couldn't create related ticket $template_id for ".
-		$self->TicketObj->Id." ".$msg
-	    );
-	    next;
-	}
-
-	$RT::Logger->debug("Assigned $template_id with $id");
-	$T::Tickets{$template_id}->SetOriginObj($self->TicketObj)
-	    if $T::Tickets{$template_id}->can('SetOriginObj');
-    }
-
-    # postprocessing: add links
-
-    while (my $ticket = shift(@links)) {
-	$RT::Logger->debug("Handling links for " . $ticket->Id);
-	my %args = %{shift(@links)};
-
-	foreach my $type ( keys %LINKTYPEMAP ) {
-	    next unless (defined $args{$type});
-	    foreach my $link (
-		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
-	    {
-		if (!exists $T::Tickets{$link}) {
-		    $RT::Logger->debug("Skipping $type link for $link (non-existent)");
-		    next;
-		}
-		$RT::Logger->debug("Building $type link for $link: " . $T::Tickets{$link}->Id);
-		$link = $T::Tickets{$link}->Id;
-
-		my ( $wval, $wmsg ) = $ticket->AddLink(
-		    Type                          => $LINKTYPEMAP{$type}->{'Type'},
-		    $LINKTYPEMAP{$type}->{'Mode'} => $link,
-		    Silent                        => 1
-		);
-
-		$RT::Logger->warning("AddLink thru $link failed: $wmsg") unless $wval;
-		# push @non_fatal_errors, $wmsg unless ($wval);
-	    }
-
-	}
-    }
-
-    # postponed actions -- Status only, currently
-    while (my $ticket = shift(@postponed)) {
-	$RT::Logger->debug("Handling postponed actions for $ticket");
-	my %args = %{shift(@postponed)};
-
-	$ticket->SetStatus($args{Status}) if defined $args{Status};
-    }
-
+    $self->CreateByTemplate($self->TicketObj);
+    $self->UpdateByTemplate($self->TicketObj);
     return(1);
 }
 # }}}
@@ -518,21 +337,7 @@ sub Prepare  {
       
   }
  
-
-    
-
-my $template_id;
-foreach my $line (split(/\n/,$self->TemplateObj->Content)) {
-        if ($line =~ /^===Create-Ticket: (.*)$/) {
-                $template_id = $1;
-                push @{$self->{'template_order'}},$template_id;
-        } else {
-                $self->{'templates'}->{$template_id} .= $line."\n";
-        }       
-        
-        
-}
-  
+  $self->Parse($self->TemplateObj->Content);
   return 1;
   
 }
@@ -540,6 +345,380 @@ foreach my $line (split(/\n/,$self->TemplateObj->Content)) {
 # }}}
 
 # }}}
+
+sub CreateByTemplate {
+    my $self = shift;
+    my $top = shift;
+
+    # XXX: cargo cult programming that works. i'll be back.
+    use bytes;
+
+    %T::Tickets = ();
+
+    my $ticketargs;
+    my (@links, @postponed);
+    foreach my $template_id ( @{ $self->{'create_tickets'} } ) {
+	$T::Tickets{'TOP'} = $T::TOP = $top if $top;
+	$RT::Logger->debug("Workflow: processing $template_id of $T::TOP");
+
+	$T::ID = $template_id;
+	@T::AllID = @{ $self->{'create_tickets'} };
+
+	($T::Tickets{$template_id}, $ticketargs) = $self->ParseLines($template_id, 
+								     \@links, \@postponed);
+
+	# Now we have a %args to work with. 
+	# Make sure we have at least the minimum set of 
+	# reasonable data and do our thang
+
+	my ($id, $transid, $msg) = $T::Tickets{$template_id}->Create(%$ticketargs);
+	if (!$id) {
+	    if ($self->TicketObj) {
+		$msg = "Couldn't create related ticket $template_id for ".
+		    $self->TicketObj->Id ." ".$msg;
+	    } else {
+		$msg = "Couldn't create ticket $template_id " . $msg;
+	    }
+
+	    $RT::Logger->error($msg);
+	    next;
+	}
+
+	$RT::Logger->debug("Assigned $template_id with $id");
+	$T::Tickets{$template_id}->SetOriginObj($self->TicketObj)
+	    if $self->TicketObj && 
+		$T::Tickets{$template_id}->can('SetOriginObj');
+    }
+
+    # postprocessing: add links
+
+    while (my $ticket = shift(@links)) {
+	$RT::Logger->debug("Handling links for " . $ticket->Id);
+	my %args = %{shift(@links)};
+
+	foreach my $type ( keys %LINKTYPEMAP ) {
+	    next unless (defined $args{$type});
+	    foreach my $link (
+		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
+	    {
+		if ($link !~ m/\d+/) {
+		    if (!exists $T::Tickets{$link}) {
+			$RT::Logger->debug("Skipping $type link for $link (non-existent)");
+			next;
+		    }
+		    $link = $T::Tickets{$link}->Id;
+		    $RT::Logger->debug("Building $type link for $link: " . $T::Tickets{$link}->Id);
+		} else {
+		    $RT::Logger->debug("Building $type link for $link")
+		}
+		
+		my ( $wval, $wmsg ) = $ticket->AddLink(
+		    Type                          => $LINKTYPEMAP{$type}->{'Type'},
+		    $LINKTYPEMAP{$type}->{'Mode'} => $link,
+		    Silent                        => 1
+		);
+
+		$RT::Logger->warning("AddLink thru $link failed: $wmsg") unless $wval;
+		# push @non_fatal_errors, $wmsg unless ($wval);
+	    }
+
+	}
+    }
+
+    # postponed actions -- Status only, currently
+    while (my $ticket = shift(@postponed)) {
+	$RT::Logger->debug("Handling postponed actions for $ticket");
+	my %args = %{shift(@postponed)};
+
+	$ticket->SetStatus($args{Status}) if defined $args{Status};
+    }
+}
+
+sub UpdateByTemplate {
+    my $self = shift;
+    my $top = shift;
+
+    # XXX: cargo cult programming that works. i'll be back.
+    use bytes;
+
+    %T::Tickets = ();
+
+    my $ticketargs;
+    my (@links, @postponed);
+    foreach my $template_id ( @{ $self->{'update_tickets'} } ) {
+	$RT::Logger->debug("Update Workflow: processing $template_id");
+
+	$T::ID = $template_id;
+	@T::AllID = @{ $self->{'update_tickets'} };
+
+	($T::Tickets{$template_id}, $ticketargs) = $self->ParseLines($template_id, 
+								     \@links, \@postponed);
+
+	# Now we have a %args to work with. 
+	# Make sure we have at least the minimum set of 
+	# reasonable data and do our thang
+
+	my @attribs = qw(
+			 Subject
+			 FinalPriority
+			 Priority
+			 TimeEstimated
+			 TimeWorked
+			 TimeLeft
+			 Status
+			 Queue
+			 );
+
+	my $id = $template_id;
+	$id =~ s/update-(\d+).*/$1/;
+	$T::Tickets{$template_id}->Load($id);
+
+	my $msg;
+	if (!$T::Tickets{$template_id}->Id) {
+	    if ($self->TicketObj) {
+		$msg = "Couldn't create related ticket $template_id for ".
+		    $self->TicketObj->Id ." ".$msg;
+	    } else {
+		$msg = "Couldn't create ticket $template_id " . $msg;
+	    }
+
+	    $RT::Logger->error($msg);
+	    next;
+	}
+
+	my (@results) =
+	    $T::Tickets{$template_id}->Update(AttributesRef => \@attribs,
+					      ARGSRef => $ticketargs);
+
+	next unless $ticketargs->{'UpdateType'};
+        if ( $ticketargs->{'UpdateType'} =~ /^(private|public)$/ ) {
+            my ( $Transaction, $Description, $Object ) = $T::Tickets{$template_id}->Comment(
+                CcMessageTo  => $ticketargs->{'Cc'},
+                BccMessageTo => $ticketargs->{'Bcc'},
+                MIMEObj      => $ticketargs->{'MIMEObj'},
+                TimeTaken    => $ticketargs->{'TimeWorked'}
+            );
+            push ( @results, $Description );
+        }
+        elsif ( $ticketargs->{'UpdateType'} eq 'response' ) {
+            my ( $Transaction, $Description, $Object ) = $T::Tickets{$template_id}->Correspond(
+                CcMessageTo  => $ticketargs->{'Cc'},
+                BccMessageTo => $ticketargs->{'Bcc'},
+                MIMEObj      => $ticketargs->{'MIMEObj'},
+                TimeTaken    => $ticketargs->{'TimeWorked'}
+            );
+            push ( @results, $Description );
+        }
+        else {
+            push ( @results,
+                $T::Tickets{$template_id}->loc("Update type was neither correspondence nor comment.").
+                " ".
+                $T::Tickets{$template_id}->loc("Update not recorded.")
+            );
+        }
+    }
+
+    # postprocessing: add links
+
+    while (my $ticket = shift(@links)) {
+	$RT::Logger->debug("Handling links for " . $ticket->Id);
+	my %args = %{shift(@links)};
+
+	foreach my $type ( keys %LINKTYPEMAP ) {
+	    next unless (defined $args{$type});
+	    foreach my $link (
+		ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
+	    {
+		if ($link !~ m/\d+/) {
+		    if (!exists $T::Tickets{$link}) {
+			$RT::Logger->debug("Skipping $type link for $link (non-existent)");
+			next;
+		    }
+		    $link = $T::Tickets{$link}->Id;
+		    $RT::Logger->debug("Building $type link for $link: " . $T::Tickets{$link}->Id);
+		} else {
+		    $RT::Logger->debug("Building $type link for $link")
+		}
+		
+		my ( $wval, $wmsg ) = $ticket->AddLink(
+		    Type                          => $LINKTYPEMAP{$type}->{'Type'},
+		    $LINKTYPEMAP{$type}->{'Mode'} => $link,
+		    Silent                        => 1
+		);
+
+		$RT::Logger->warning("AddLink thru $link failed: $wmsg") unless $wval;
+		# push @non_fatal_errors, $wmsg unless ($wval);
+	    }
+
+	}
+    }
+
+    # postponed actions -- Status only, currently
+    while (my $ticket = shift(@postponed)) {
+	$RT::Logger->debug("Handling postponed actions for $ticket");
+	my %args = %{shift(@postponed)};
+
+	$ticket->SetStatus($args{Status}) if defined $args{Status};
+    }
+}
+
+sub Parse {
+    my $self = shift;
+    my $content = shift;
+
+    my @template_order;
+    my $template_id;
+    foreach my $line (split(/\n/, $content)) {
+        if ($line =~ /^===Create-Ticket: (.*)$/) {
+	    $template_id = "create-$1";
+	    push @{$self->{'create_tickets'}},$template_id;
+        } elsif ($line =~ /^===Update-Ticket: (.*)$/) {
+	    $template_id = "update-$1";
+	    push @{$self->{'update_tickets'}},$template_id;
+        } else {
+	    $self->{'templates'}->{$template_id} .= $line."\n";
+        }
+    }
+}
+
+sub ParseLines {
+    my $self = shift;
+    my $template_id = shift;
+    my $links = shift;
+    my $postponed = shift;
+
+    $RT::Logger->debug("Workflow: evaluating\n$self->{templates}{$template_id}");
+
+    my $template = Text::Template->new(
+				       TYPE   => 'STRING',
+				       SOURCE => $self->{'templates'}->{$template_id}
+				       );
+
+    my $err;
+    my $filled_in = $template->fill_in( PACKAGE => 'T', BROKEN => sub {
+	$err = { @_ }->{error};
+    } );
+    
+    $RT::Logger->debug("Workflow: yielding\n$filled_in");
+    
+    if ($err) {
+	$RT::Logger->error("Ticket creation failed: ".$err);
+	while (my ($k, $v) = each %T::X) {
+	    $RT::Logger->debug("Eliminating $template_id from ${k}'s parents.");
+	    delete $v->{$template_id};
+	}
+	next;
+    }
+    
+    my $TicketObj ||= RT::Ticket->new($RT::SystemUser);
+
+    my %args;
+    my @lines = ( split ( /\n/, $filled_in ) );
+    while ( defined(my $line = shift @lines) ) {
+	if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
+	    my $value = $2;
+	    my $tag = lc ($1);
+	    $tag =~ s/-//g;
+	    
+	    $value =~ s/\r$//;
+	    
+	    if (ref($args{$tag})) { #If it's an array, we want to push the value
+		push @{$args{$tag}}, $value;
+	    }
+	    elsif (defined ($args{$tag})) { #if we're about to get a second value, make it an array
+		$args{$tag} = [$args{$tag}, $value];
+	    }
+	    else { #if there's nothing there, just set the value
+		$args{ $tag } = $value;
+	    }
+	    
+	    if ( $tag eq 'content' ) { #just build up the content
+		# convert it to an array
+		$args{$tag} = defined($value) ? [ $value."\n" ] : [];
+		while ( defined(my $l = shift @lines) ) {
+		    last if ($l =~  /^ENDOFCONTENT\s*$/) ;
+		    push @{$args{'content'}}, $l."\n";
+		}
+	    }
+	}
+    }
+
+    foreach my $date qw(due starts started resolved) {
+	my $dateobj = RT::Date->new($RT::SystemUser);
+	next unless $args{$date};
+	if ($args{$date} =~ /^\d+$/) {
+	    $dateobj->Set(Format => 'unix', Value => $args{$date});
+	} else {
+	    $dateobj->Set(Format => 'unknown', Value => $args{$date});
+	}
+	$args{$date} = $dateobj->ISO;
+    }
+
+    $args{'requestor'} ||= $self->TicketObj->Requestors->MemberEmailAddresses 
+	if $self->TicketObj;
+
+    $args{'type'} ||= 'ticket';
+	
+    my $mimeobj = MIME::Entity->new();
+    $mimeobj->build(Type => $args{'contenttype'},
+		    Data => $args{'content'});
+    
+    my %ticketargs = ( Queue => $args{'queue'},
+		       Subject=> $args{'subject'},
+		       Status => 'new',
+		       Due => $args{'due'},
+		       Starts => $args{'starts'},
+		       Started => $args{'started'},
+		       Resolved => $args{'resolved'},
+		       Owner => $args{'owner'},
+		       Requestor => $args{'requestor'},
+		       Cc => $args{'cc'},
+		       AdminCc=> $args{'admincc'},
+		       TimeWorked =>$args{'timeworked'},
+		       TimeEstimated =>$args{'timeestimated'},
+		       TimeLeft =>$args{'timeleft'},
+		       InitialPriority => $args{'initialpriority'},
+		       FinalPriority => $args{'finalpriority'},
+		       Type => $args{'type'}, 
+		       UpdateType => $args{'updatetype'}, 
+		       MIMEObj => $mimeobj);
+
+    foreach my $key (keys(%args)) {
+	$key =~ /^customfield(\d+)$/ or next;
+	$ticketargs{ "CustomField-" . $1 } = $args{$key};
+    }
+
+    $self->GetDeferred(\%args, $TicketObj->Id, $links, $postponed);
+
+    return $TicketObj, \%ticketargs;
+}
+
+sub GetDeferred {
+    my $self = shift;
+    my $args = shift;
+    my $id = shift;
+    my $links = shift;
+    my $postponed = shift;
+
+    # Deferred processing	
+    push @$links, (
+		  $id, {
+		      DependsOn => $args->{'dependson'},
+		      DependedOnBy => $args->{'dependedonby'},
+		      RefersTo	=> $args->{'refersto'},
+		      ReferredToBy => $args->{'referredtoby'},
+		      Members => $args->{'members'},
+		      MemberOf => $args->{'memberof'},
+		  }
+		  );
+
+    push @$postponed, (
+		      # Status is postponed so we don't violate dependencies
+		      $id, {
+			  Status => $args->{'status'},
+		      }
+		      );
+}
 
 eval "require RT::Action::CreateTickets_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Vendor.pm});
