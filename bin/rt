@@ -175,7 +175,7 @@ Limt the set of records returned:
 a speciifc ticket.
   
   --limit-queue=<queue>
-	  --limit-status=[!](open|stalled|resolved|dead)
+	  --limit-status=[!](new|open|stalled|resolved|dead)
 
 	  --limit-owner=[!]<userid>
 	  --limit-priority=[starts][-][ends]
@@ -230,7 +230,7 @@ a speciifc ticket.
 
 Attributes
   Basics
-	  --status=<open|stalled|resolved|dead>
+	  --status=<new|open|stalled|resolved|dead>
            sets status
 	   --subject=<subject>
            sets subject
