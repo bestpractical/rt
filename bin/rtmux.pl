@@ -11,6 +11,8 @@ $ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 package RT;
 
+$VERSION="!!RT_VERSION!!";
+
 use strict;
 #this is the RT path
 
