@@ -116,7 +116,7 @@ CREATE TABLE Watchers (
    Scope varchar(16), # Might be "Queue" and "Ticket" as for now
                       # ... might be extended to "Keywords", "Owners", etc.
    Email VARCHAR(255),
-   Type VARCHAR(16), #Requestor, Cc, Bcc
+   Type VARCHAR(16), #Requestor, Cc, Bcc ... ++?
    Creator INT(11),
    Created TIMESTAMP,
    LastUpdatedBy INT(11),

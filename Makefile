@@ -108,6 +108,7 @@ DB_TYPE                =	mysql
 # Set DBA to the name of a unix account with the proper permissions and 
 # environment to run your commandline SQL tools
 
+# I don't think this should be needed.  At least not with mysql!
 # Set DB_DBA to the name of a DB user with permission to create new databases 
 # Set DB_DBA_PASSWORD to that user's password
 DB_DBA                   =	root
@@ -212,7 +213,7 @@ initialize: database acls
 
 
 database:
-	su -c "sh bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'" $(DBA)
+	sh bin/initdb.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)'
 
 acls:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
@@ -223,7 +224,7 @@ acls:
 			        s'!!DB_RT_USER!!'$(DB_RT_USER)'g;\
 				s'!!DB_DATABASE!!'$(DB_DATABASE)'g;" $(RT_ETC_PATH)/acl.$(DB_TYPE)
 
-	su -c "sh bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'" $(DBA)
+	sh bin/initacls.$(DB_TYPE) '$(DB_HOME)' '$(DB_HOST)' '$(DB_DBA)' '$(DB_DBA_PASSWORD)' '$(DB_DATABASE)' '$(RT_ETC_PATH)/acl.$(DB_TYPE)'
 
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  

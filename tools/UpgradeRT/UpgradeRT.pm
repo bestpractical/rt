@@ -5,7 +5,7 @@ use vars qw($VERSION @ISA);
 use DBIx::Copy 0.03;
 
 @ISA = qw(DBIx::Copy);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 sub new {
     my $object_or_class = shift; my $class = ref($object_or_class) || $object_or_class;
