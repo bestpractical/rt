@@ -110,16 +110,17 @@ sub add_transaction {
     &req_in($in_serial_num, $in_current_user);
 
     $query_string = "INSERT INTO transactions (id, effective_sn, serial_num, actor, type, trans_data, trans_date)  VALUES (NULL, $req[$in_serial_num]{'effective_sn'}, $in_serial_num, $actor, $type, $data, $in_time)";
-    $sth = $dbh->Query($query_string) or warn "[add transaction] Query had some problem: $Mysql::db_errstr\nQuery: $query_string\n";
+    $sth = $dbh->Query($query_string) or warn "[add_transaction] Query had some problem: $Mysql::db_errstr\nQuery: $query_string\n";
     $transaction_num = $sth->insert_id;       
 
     
-    #if we've got content, mail it away
+    #if we've got content, write to transaction file
     if ($in_content) {
 	require rt::database::content;
-        $content_file=&write_content($time,$in_serial_num,$transaction_num,$in_content);
+        $content_file=&write_content($in_time,$in_serial_num,$transaction_num,$in_content);
     }
 
+    #if we've got content, mail it away
     if ($in_do_mail) {
       if (!&is_owner($in_serial_num,$in_current_user) and ($owner ne "") and ($queues{$queue_id}{m_owner_trans})){
 	&rt::template_mail ('transaction',$queue_id,$rt::users{$owner}{email},"","", "$in_serial_num" ,"$transaction_num","Transaction ($in_current_user)", "$in_current_user",'');
@@ -171,14 +172,14 @@ sub update_request
     if (($in_current_user eq '_rt_system') or (&can_manipulate_queue($req[$effective_sn]{queue_id},$in_current_user))) {
 	if( $in_variable eq 'effective_sn' )
 	{
-		&update_each_req($effective_sn, 'date_acted', $time);        #make now the last acted time
-		$transaction_num=&add_transaction($effective_sn, $in_current_user, $in_variable,$in_new_value,'',$time,1,$in_current_user);
+		&update_each_req($effective_sn, 'date_acted', time);        #make now the last acted time
+		$transaction_num=&add_transaction($effective_sn, $in_current_user, $in_variable,$in_new_value,'',time,1,$in_current_user);
 		return 0 if ! &update_each_req($effective_sn, $in_variable, $in_new_value);
 		return ($transaction_num);
 	}
 	return 0 if ! &update_each_req($effective_sn, $in_variable, $in_new_value);
-	&update_each_req($effective_sn, 'date_acted', $time);        #make now the last acted time
-	$transaction_num=&add_transaction($effective_sn, $in_current_user, $in_variable,$in_new_value,'',$time,1,$in_current_user);
+	&update_each_req($effective_sn, 'date_acted', time);        #make now the last acted time
+	$transaction_num=&add_transaction($effective_sn, $in_current_user, $in_variable,$in_new_value,'',time,1,$in_current_user);
 	return ($transaction_num);
       }
     else {
@@ -411,18 +412,18 @@ sub parse_req_row {
 	$req[$in_serial_num]{'date_told'}      	=	$row[13];
 	$req[$in_serial_num]{'date_acted'}	        =	$row[14];
 	$req[$in_serial_num]{'date_due'}	       	=	$row[15];
-	$req[$in_serial_num]{'age'}=date_diff($req[$in_serial_num]{'date_created'}, $time);
+	$req[$in_serial_num]{'age'}=date_diff($req[$in_serial_num]{'date_created'}, time);
 	if ($req[$in_serial_num]{'date_told'} > 0) {
-	    $req[$in_serial_num]{'since_told'}=date_diff($req[$in_serial_num]{'date_told'}, $time);	
+	    $req[$in_serial_num]{'since_told'}=date_diff($req[$in_serial_num]{'date_told'}, time);	
 	}
 	else {
 	    $req[$in_serial_num]{'since_told'}="never";
 	}
 	if ($req[$in_serial_num]{'date_acted'} > 0) {
-	    $req[$in_serial_num]{'since_acted'}=date_diff($req[$in_serial_num]{'date_acted'}, $time);	
+	    $req[$in_serial_num]{'since_acted'}=date_diff($req[$in_serial_num]{'date_acted'}, time);	
 	}
 	if ($req[$in_serial_num]{'date_due'} > 0) {
-	    $req[$in_serial_num]{'till_due'}=date_diff($time, $req[$in_serial_num]{'date_due'});
+	    $req[$in_serial_num]{'till_due'}=date_diff(time, $req[$in_serial_num]{'date_due'});
 	}
 	else {
 	    $req[$in_serial_num]{'till_due'}="";

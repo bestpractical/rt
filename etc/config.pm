@@ -13,10 +13,10 @@
 
     # these modes don't do much right now...i had to hard code them in because 
     # perl ws being nasty about the leading 0  check RT_Content.pl for hacking
-    $dirmode="0700";
-    $transactionmode="0700";
-    umask(0700);
-	
+    $dirmode=0750;
+    $transactionmode=0640;
+    umask(0027);	
+
     # rt runs setuid to this user and group to keep its datafile private
     # no users should be in the rt group
     # if you change these, make sure to edit the makefile and

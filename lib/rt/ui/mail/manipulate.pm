@@ -38,11 +38,12 @@ sub activate {
       #WE REALLY SHOULD PARSE THE TIME OUT OF THE DATE HEADER...BUT FOR NOW
       # THE CURRENT TIME IS GOOD ENOUGH
       
-      ($serial_num,$transaction_num, $message)=&rt::add_new_request($in_queue,$area,
-								    $current_user,'','',$subject,
-								    $queues{"$in_queue"}{'default_final_prio'},
-								    $queues{"$in_queue"}{'default_prio'},'open',
-								    $rt::time,0,0,$content,$current_user);
+      ($serial_num,$transaction_num, $message)=&rt::add_new_request(
+		$in_queue,$area,
+		$current_user,'','',$subject,
+		$queues{"$in_queue"}{'default_final_prio'},
+		$queues{"$in_queue"}{'default_prio'},'open',
+		$rt::time,0,0,$content,$current_user);
       
     }
     else {
@@ -51,6 +52,20 @@ sub activate {
     }
   }
   elsif ($in_action eq 'comment') {
+	if (!$serial_num) {
+		$edited_content = "
+You did not specify a ticket number for these comments. Please resubmit them
+with a ticket number.  Your comments appear below.
+
+$content.
+";
+    &rt::template_mail('error', '_rt_system', "$current_user", '', '', "", 
+			"$transaction_num", "RT Error: $subject", 
+			"$current_user", "$edited_content");
+  	exit(0);
+	}
+
+
     if ($debug) {print "Now commenting on request \# $serial_num\n";}
     ($transaction_num,$message)=&rt::comment($serial_num,$content,"$subject","" ,"" ,$current_user);
   }
@@ -58,7 +73,8 @@ sub activate {
   # if there's been an error, mail the user with the message
   if ($transaction_num == 0) {
     $edited_content = "There has been an error with your request:\n$message\n\nYour message is reproduced below:\n\n$content\n";
-    &rt::template_mail('error', '_rt_system', "$current_user", '', '', "$serial_num", "$transaction_num", 
+    &rt::template_mail('error', '_rt_system', "$current_user", '', '', 
+			"$serial_num", "$transaction_num", 
 		       "RT Error: $subject", "$current_user", "$edited_content");
   }
   
