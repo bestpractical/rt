@@ -103,7 +103,23 @@ sub HREF {
 sub IsLocal {
     my $self = shift;
     return undef;
-};
+}
+
+=head2 AsString
+
+Return a "pretty" string representing the URI object.
+
+This is meant to be used like this:
+
+ % $re = $uri->Resolver;
+ <A HREF="<% $re->HREF %>"><% $re->AsString %></A>
+
+=cut
+
+sub AsString {
+    my $self = shift;
+    return $self->URI;
+}
 
 eval "require RT::URI::base_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/base_Vendor.pm});

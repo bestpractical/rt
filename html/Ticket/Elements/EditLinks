@@ -84,7 +84,7 @@
 % my $member = $link->TargetObj;
       <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
-      <A HREF="<%$link->TargetURI->Resolver->HREF%>"><%$link->Target%></A><br>
+      <A HREF="<%$link->TargetURI->Resolver->HREF%>"><%$link->TargetURI->Resolver->AsString%></A><br>
 % }
 %}
     </td>
@@ -98,7 +98,7 @@
 % my $member = $link->BaseObj;
       <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
 % } else {
-      <A HREF="<%$link->BaseURI->Resolver->HREF%>"><%$link->Base%></A><br>
+      <A HREF="<%$link->BaseURI->Resolver->HREF%>"><%$link->BaseURI->Resolver->AsString%></A><br>
 %}
 % }
     </td>
