@@ -1,16 +1,16 @@
 Summary: rt Request Tracker
 
 Name: rt
-Version: 2.0.8
+Version: 2.0.9pre5
 Release: 1
 Group: Applications/Web
-Packager: Cris Bailiff <c.bailiff@devsecure.com>
+Packager: Jesse Vincent <jesse@bestpractical.com>
 Vendor: http://www.fsck.com/projects/rt
 Requires: perl
 Requires: mod_perl > 1.22
 Requires: perl-DBI >= 1.18
 Requires: perl-DBIx-DataSource >= 0.02
-Requires: perl-DBIx-SearchBuilder >= 0.43
+Requires: perl-DBIx-SearchBuilder >= 0.47
 Requires: perl-HTML-Parser
 Requires: perl-MLDBM
 Requires: perl-libnet
