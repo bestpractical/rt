@@ -39,7 +39,8 @@ $LogDir = "!!RT_LOG_PATH!!";
 $DatabaseType="!!DB_TYPE!!";
 
 # The domain name of your database server
-# If it's on localhost, leave it blank for enhanced performance
+# If you're running mysql and it's on localhost,
+# leave it blank for enhanced performance
 $DatabaseHost="!!DB_HOST!!";
 
 #The name of the database user (inside the database) 
@@ -144,9 +145,9 @@ sub CanonicalizeAddress {
 #From: and Reply-To: headers of mail tracked by RT unless overridden
 #by a queue specific address
 
-$CorrespondAddress="RT::CorrespondAddress.not.set";
+$CorrespondAddress='RT::CorrespondAddress.not.set';
 
-$CommentAddress="RT::CommentAddress.not.set";
+$CommentAddress='RT::CommentAddress.not.set';
 
 
 #Sendmail Configuration
