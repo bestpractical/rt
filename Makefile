@@ -107,9 +107,10 @@ RT_USER_PASSWD_MIN	=	5
 
 
 # Database options
-h
+#
 # DB_TYPE defines what sort of database RT trys to talk to
 # "mysql" is known to work.
+# "Pg" gets you the preliminary postgres support. which needs a miracle
 # "Oracle" is in the early stages of working.
 #	 Dave Morgan <dmorgan@bartertrust.com> owns the oracle port
 
