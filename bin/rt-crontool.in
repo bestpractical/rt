@@ -197,13 +197,23 @@ sub help {
       )
       . "\n\n";
 
-    print " sbin/cron_shim \\\n";
+    print " bin/rt-cron-tool \\\n";
     print
       "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
     print
       "  --condition RT::Condition::UntouchedInHours --condition-arg 4 \\\n";
     print "  --action RT::Action::SetPriority --action-arg 99 \\\n";
     print "  --verbose\n";
+
+    print "\n";
+    print loc("Escalate tickets");
+    print "rt-crontool \\\n";
+    print " --search RT::Search::ActiveTicketsInQueue  --search-arg thequeuename \\\n";
+    print " --action RT::Action::EscalatePriority \\\n";
+ 
+ 
+ 
+
 
 
     exit(0);
