@@ -1472,8 +1472,14 @@ sub SetStarted {
     
     #Now that we're starting, open this ticket
     #TODO do we really want to force this as policy? it should be a scrip
-    if ($self->Status eq 'new') {
-	$self->Open();
+    
+    #We need $TicketAsSystem, in case the current user doesn't have
+    #ShowTicket
+    #
+    my $TicketAsSystem = new RT::Ticket($RT::SystemUser);
+    $TicketAsSystem->Load($self->Id);	
+    if ($TicketAsSystem->Status eq 'new') {
+	$TicketAsSystem->Open();
     }	
     
     return ($self->_Set(Field => 'Started', Value =>$time_obj->ISO));
@@ -1682,13 +1688,13 @@ sub Correspond {
       );
     
     # TODO this bit of logic should really become a scrip for 2.2
-    if (
-	($self->Status ne 'open') and
-	($self->Status ne 'new')
-       ) {
+    my $TicketAsSystem = new RT::Ticket($RT::SystemUser);
+    $TicketAsSystem->Load($self->Id);
 	
-	my $TicketAsSystem = new RT::Ticket($RT::SystemUser);
-	$TicketAsSystem->Load($self->Id);
+    if (
+	($TicketAsSystem->Status ne 'open') and
+	($TicketAsSystem->Status ne 'new')
+       ) {
 	
 	my $oldstatus = $TicketAsSystem->Status();
 	$TicketAsSystem->__Set(Field => 'Status', Value => 'open');
