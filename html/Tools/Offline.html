@@ -73,42 +73,46 @@
 <& /Elements/Submit, Name => 'UpdateTickets', Label => loc('Upload'), Caption => loc("Upload your changes"), color => "#993333" &>
 
 </FORM>
-
+<%args>
+$requestoraddress => undef
+$qname => undef
+$string => undef
+</%args>
 <%INIT>
 
 my @results;
 use RT::Action::CreateTickets;
-my $action = new RT::Action::CreateTickets;
-my $string;
-
-my $requestoraddress = $ARGS{'requestoraddress'};
-my $qname = $ARGS{'qname'};
-
+my $action = RT::Action::CreateTickets->new(CurrentUser => $session{'CurrentUser'});
+;
 if ($ARGS{'Parse'} && $ARGS{'Template'}) {
-    $ARGS{'string'} = "";
     my $cgi_object = $m->cgi_object;
     my $fh = $cgi_object->upload('Template');
     my $filename = "$fh";
 
     my ($buffer, $template);
     while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
-	$template .= $buffer;
+	    $template .= $buffer;
     }
     $template =~ s/\r\n/\n/gs;
     $action->Parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);
-    foreach (@{ $action->{'create_tickets'} }) {
-	my $id = $_;
-	$id =~ s/^create\-//;
-	$string .= "===Create-Ticket: $id\n";
-	$string .= $action->{'templates'}->{$_} . "\n";
+    foreach ( @{ $action->{'create_tickets'} } ) {
+        my $id = $_;
+        $id =~ s/^create\-//;
+        $string .= "===Create-Ticket: $id\n";
+        $string .= $action->{'templates'}->{$_} . "\n";
+    }
+    foreach ( @{ $action->{'update_tickets'} } ) {
+        my $id = $_;
+        $id =~ s/^update\-//;
+        $string .= "===Update-Ticket: $id\n";
+        $string .= $action->{'templates'}->{$_} . "\n";
     }
 
-    $ARGS{'string'} = $string;
+
 } elsif ($ARGS{'UpdateTickets'}) {
     $action->Parse(Content => $ARGS{string}, Queue => $qname, Requestor=> $requestoraddress);
     push @results, $action->CreateByTemplate();
     push @results, $action->UpdateByTemplate();
-    $string = $ARGS{string};
 } else {
     if ($ARGS{'Query'}) {
 	my $Tickets = RT::Tickets->new($session{'CurrentUser'});

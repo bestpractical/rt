@@ -2128,6 +2128,18 @@ sub QueueObj {
     return ($queue_obj);
 }
 
+=head2 Queue
+
+Returns the name of this ticket's queue, rather than its id.
+
+=cut
+
+sub Queue { 
+    my $self = shift;
+    return $self->QueueObj->Name;
+}
+
+
 # }}}
 
 # }}}

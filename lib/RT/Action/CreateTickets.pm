@@ -280,7 +280,7 @@ unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that
 is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
 use RT::Action::CreateTickets;
-my $action = new RT::Action::CreateTickets;
+my $action =  RT::Action::CreateTickets->new( CurrentUser => $RT::SystemUser);;
 
 # comma-delimited templates
 my $commas = <<"EOF";
@@ -655,18 +655,20 @@ sub UpdateByTemplate {
         $template_id =~ m/^update-(.*)/;
         my $base_id = "base-$1";
         my $base    = $self->{'templates'}->{$base_id};
+        if ($base) {
         $base    =~ s/\r//g;
         $base    =~ s/\n+$//;
         $current =~ s/\n+$//;
 
-        if ( $base ne $current ) {
+        # If we have no base template, set what we can.
+        if ($base ne $current)  {
             push @results,
               "Could not update ticket "
               . $T::Tickets{$template_id}->Id
               . ": Ticket has changed";
             next;
         }
-
+        }
         push @results, $T::Tickets{$template_id}->Update(
             AttributesRef => \@attribs,
             ARGSRef       => $ticketargs
@@ -783,7 +785,7 @@ sub Parse {
                     my $value = $1;
                     $value =~ s/^\s//;
                     $value =~ s/\s$//;
-                    if ( !$value ) {
+                    if ( !$value && $args{'Queue'}) {
                         $value = $args{'Queue'};
                         $line  = "Queue: $value";
                     }
@@ -793,7 +795,7 @@ sub Parse {
                     my $value = $1;
                     $value =~ s/^\s//;
                     $value =~ s/\s$//;
-                    if ( !$value ) {
+                    if ( !$value && $args{'Requestor'}) {
                         $value = $args{'Requestor'};
                         $line  = "Requestor: $value";
                     }
@@ -843,9 +845,22 @@ sub Parse {
                     $tid =~ s/^\s//;
                     $tid =~ s/\s$//;
                     next unless $tid;
-                    $template_id = 'create-' . $tid;
+                   
+                     
+                    if ($tid =~ /^\d+$/) {
+                        $template_id = 'update-' . $tid;
+                        push @{ $self->{'update_tickets'} }, $template_id;
+
+                    } elsif ($tid =~ /^#base-(\d+)$/) {
+
+                        $template_id = 'base-' . $1;
+                        push @{ $self->{'base_tickets'} }, $template_id;
+
+                    } else {
+                        $template_id = 'create-' . $tid;
+                        push @{ $self->{'create_tickets'} }, $template_id;
+                    }
                     $RT::Logger->debug("template_id: $tid");
-                    push @{ $self->{'create_tickets'} }, $template_id;
                 }
                 else {
                     my $value = $1;
@@ -869,13 +884,13 @@ sub Parse {
                     }
                     if ( $field =~ /Queue/i ) {
                         $queue = 1;
-                        if ( !$value ) {
+                        if ( !$value && $args{'Queue'} ) {
                             $value = $args{'Queue'};
                         }
                     }
                     if ( $field =~ /Requestor/i ) {
                         $requestor = 1;
-                        if ( !$value ) {
+                        if ( !$value && $args{'Requestor'} ) {
                             $value = $args{'Requestor'};
                         }
                     }
@@ -938,12 +953,12 @@ sub ParseLines {
         }
     }
     
-    my $TicketObj ||= RT::Ticket->new($RT::SystemUser);
+    my $TicketObj ||= RT::Ticket->new($self->CurrentUser);
 
     my %args;
     my @lines = ( split( /\n/, $content ) );
     while ( defined( my $line = shift @lines ) ) {
-        if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
+        if ( $line =~ /^(.*?):(?:\s+)(.*?)(?:\s*)$/ ) {
             my $value = $2;
             my $tag   = lc($1);
             $tag =~ s/-//g;
@@ -980,7 +995,7 @@ sub ParseLines {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new($RT::SystemUser);
+        my $dateobj = RT::Date->new($self->CurrentUser);
         next unless $args{$date};
         if ( $args{$date} =~ /^\d+$/ ) {
             $dateobj->Set( Format => 'unix', Value => $args{$date} );
@@ -1191,6 +1206,10 @@ sub UpdateWatchers {
     foreach my $type qw(Requestor Cc AdminCc) {
         my $method  = $type . 'Addresses';
         my $oldaddr = $ticket->$method;
+    
+    
+        # Skip unless we have a defined field
+        next unless defined $args->{$type};
         my $newaddr = $args->{$type};
 
         my @old = split( ', ', $oldaddr );
