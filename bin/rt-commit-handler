@@ -523,9 +523,9 @@ sub order_and_summarize_diffs {
     foreach my $file (@files) {
         if ( $#items == -1    #if it's empty
             || ( !defined $items[-1]->{'old'}
-                || $items[-1]->{'old'} != $file->{'old'} )
+                || $items[-1]->{'old'} ne $file->{'old'} )
             || ( !defined $items[-1]->{'new'}
-                || $items[-1]->{'new'} != $file->{'new'} )
+                || $items[-1]->{'new'} ne $file->{'new'} )
             || ( !defined $items[-1]->{'tag'}
                 || $items[-1]->{'tag'} ne $file->{'tag'} ) )
         {
