@@ -1,0 +1,18 @@
+This ticket depends on:<BR>
+% while (my $Link = $Ticket->DependsOn->Next) {
+% my $member = $Link->TargetObj;
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->Owner->UserId%>) <%$member->Subject%>
+[<%$member->Status%>]
+ <br>
+% }
+These tickets depend on this one:<BR>
+% while (my $Link = $Ticket->Dependants->Next) {
+% my $member = $Link->TargetObj;
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->Owner->UserId%>) <%$member->Subject%> 
+[<%$member->Status%>]
+ <br>
+% }
+
+<%ARGS>
+$Ticket => undef
+</%ARGS>

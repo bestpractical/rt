@@ -1,0 +1,14 @@
+% while (my $Link = $Ticket->RefersTo->Next) {
+% my $member = $Link->TargetObj;
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->Owner->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+% }
+
+% while (my $Link = $Ticket->ReferedToBy->Next) {
+% my $member = $Link->BaseObj;
+<a href="/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->Owner->UserId%>) <%$member->Subject%> [<%$member->Status%>]<br>
+% }
+
+
+<%ARGS>
+$Ticket => undef
+</%ARGS>

@@ -1,7 +1,7 @@
  <TABLE WIDTH="100%">
       <TR>
 	<TD VALIGN=TOP WIDTH="25%">
-	  <& /Elements/ShadedBox, title => 'Owner' , content => "<a href=\"$RT::WebURL/ViewUser.html?id=".$Ticket->Owner->id."\">".$Ticket->Owner->UserId."</a>" &>
+	  <& /Elements/ShadedBox, title => 'Owner' , content => $Ticket->Owner->UserId &>
 	</TD>
 	<TD VALIGN=TOP WIDTH="25%">
 	  <& /Elements/ShadedBox, title => 'Requestors' , content => $Ticket->RequestorsAsString &>

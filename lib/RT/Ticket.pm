@@ -987,6 +987,95 @@ sub HasKeyword {
 
 # - (all) parent(s)/group ticket ...
 
+
+# {{{ sub Members
+
+=head2 Members
+
+  This returns an RT::Links object which references all the tickets that have 
+this ticket as their target AND are of type 'MemberOf'
+
+=cut
+
+sub Members {
+    my $self = shift;
+    return $self->_Links('Target','MemberOf');
+}
+
+
+# }}}
+
+# {{{ sub MemberOf
+
+=head2 MemberOf
+
+  This returns an RT::Links object which references all the tickets that have 
+this ticket as their base AND are of type 'MemberOf'
+
+=cut
+
+sub MemberOf {
+    my $self = shift;
+    return $self->_Links('Base','MemberOf');
+}
+
+
+# }}}
+
+# {{{ Dependants
+=head2 Dependants
+
+  This returns an RT::Links object which references all the tickets that depend on this one
+
+=cut
+sub Dependants {
+    my $self = shift;
+    return $self->_Links('Target','DependsOn');
+}
+
+# }}}
+
+# {{{ DependsOn
+=head2 DependsOn
+
+  This returns an RT::Links object which references all the tickets that this ticket depends on
+
+=cut
+sub DependsOn {
+   my $self = shift;
+    return $self->_Links('Base','DependsOn');
+}
+
+# }}}
+
+# {{{ RefersTo
+=head2 RefersTo
+
+  This returns an RT::Links object which shows all references for which this ticket is a base
+
+=cut
+
+sub RefersTo {
+    my $self = shift;
+    return $self->_Links('Base', 'RefersTo');
+}
+
+# }}}
+
+# {{{ ReferedToBy
+=head2 ReferedToBy
+
+  This returns an RT::Links object which shows all references for which this ticket is a target
+
+=cut
+
+sub ReferedToBy {
+    my $self = shift;
+    return $self->_Links('Target', 'RefersTo');
+}
+
+# }}}
+
 # {{{ sub Children
 # Gets all (local) links where we're the TARGET
 sub Children {
@@ -1004,12 +1093,14 @@ sub Parents {
 # {{{ sub _Links 
 sub _Links {
   my $self = shift;
-  
+
+
   #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic
   #tobias meant by $f
   my $field = shift;
   my $type =shift || "";
     unless (exists $self->{"$field$type"}) {
+	
 	$self->{"$field$type"} = new RT::Links($self->CurrentUser);
 	$self->{"$field$type"}->Limit(FIELD=>$field, VALUE=>$self->id);
 	$self->{"$field$type"}->Limit(FIELD=>'Type', VALUE=>$type) if ($type);
@@ -1349,6 +1440,7 @@ sub Resolve {
 # }}}
 
 # }}}
+
 # {{{ sub UpdateTold and _UpdateTold
 
 # UpdateTold - updates the told and makes a transaction

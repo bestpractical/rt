@@ -4,66 +4,99 @@
 <& /Elements/Header, Title => "Create a request" &>
 
 <FORM ACTION="Display.html" METHOD="POST">
-
+<INPUT TYPE=HIDDEN Name="id" VALUE="new">
+<INPUT TYPE=HIDDEN Name="queue" VALUE="<%$Queue->Id%>">
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Create a new ticket in queue \"".$Queue->QueueId.'"' &>
 
-%# TODO: Totally ugly&untested code:
-%# TODO: Get a nice display also when more than one request is linked up
+<TABLE>
+<TR>
+<TD>
+Owner: 
+</TD>
+<TD>
+<& /Elements/SelectOwner, Name => "ValueOfOwner", Queue=>$Queue->Id &>
+</TD>
+</TR>
+<TR>
+<TD>
+Relationships
+</TD>
+<TD>
+<TABLE>
+<TR>
+<TD>
+Depended on by:<BR><input size=5 name="DependsOn" value="<% $DependsOn %>">
+</TD>
+<TD>
+Depends on:
+<BR>
+<input size=5 name="DependedOnBy" value="<% $DependedOnBy %>">
+</TD>
+<TD>Subticket of:<BR>
+<input size=5 name="MemberOf" value="<% $MemberOf %>">
+</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+<TR>
+<TD>
+Requestors: 
+</TD>
+<TD>
+<INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=20>
+</TD>
+</TR>
+<TR>
+<TD>
+Cc:
+</TD>
+<TD>
+ <INPUT NAME="Cc" SIZE=20>
+</TD>
+</TR>
+<TR>
+<TD>Status:
+</TD>
+<TD>
+<& /Elements/SelectStatus, Name => "Status", Default=> 'Open' &>
+</TD>
+</TR>
+<TR>
+<TD>
+Subject:
+</TD>
+<TD COLSPAN=3>
+<INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
+</TD>
+</TR>
 
-<input type="hidden" name="queue" value="<%$Queue->id%>">
-<input type="hidden" name="id" value="new">
-% if ($Link eq 'DependsOn') {
-<input type="hidden" name="Link" value="LinkFrom">
-<input type="hidden" name="LinkType" value="DependsOn">
-<input type="hidden" name="LinkFrom" value="<%$LinkFromD%>">
-% if ($Ticket) {
-Request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
-% } else {
-<%$LinkFromD%>
-%}
-should be dependent on this new request:<br><br>
-%} elsif ($Link eq 'MemberOf') {
-<input type="hidden" name="Link" value="LinkFrom">
-<input type="hidden" name="LinkType" value="MemberOf">
-<input type="hidden" name="LinkFrom" value="<%$LinkFromM%>">
-% if ($Ticket) {
-Request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
-% } else {
-<%$LinkFromD%>
-%}
-should become a member of this new request:<br><br>
-%} elsif ($Link eq 'ParentOf') {
-<input type="hidden" name="Link" value="LinkTo">
-<input type="hidden" name="LinkType" value="MemberOf">
-<input type="hidden" name="LinkTo" value="<%$LinkTo%>">
-The new request entered below should be a member of
-% if ($Ticket) {
-request #<%$Ticket->Id%> (<%$Ticket->Subject%>)
-% } else {
-<%$LinkTo%>
-%}
-<br><br>
-%}
-
-
-
-Owner: <& /Elements/SelectOwner, Name => "ValueOfOwner", Queue=>$Queue->Id &><br><br>
-
-Requestors: <INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=20><br>
-Cc: <INPUT NAME="Cc" SIZE=20><br>
-
-Subject: <INPUT Name="Subject" value="<% $Ticket ? $Ticket->Subject : "REMEMBER TO FILL IN SOMETHING HERE!" %>" SIZE=20><br><br>
-Status:	<& /Elements/SelectStatus, Name => "Status", Default=> 'Open' &>
-
-%# TODO in Display.html or a more proper place:
-Upload an attachment (not implemented yet): <INPUT TYPE=FILE><br>
+<TR>
+<TD>
+Attach file:
+</TD>
+<TD>
+<INPUT TYPE=FILE NAME="Attachment">
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=2>
 Describe the issue below:<br>
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 
-
-<INPUT TYPE=SUBMIT VALUE="Submit"><br>
-
+<BR>
+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT COLSPAN=2>
+<INPUT TYPE=SUBMIT VALUE="Create">
+</TD>
+</TR>
+</TABLE>
 <& /Elements/TitleBoxEnd &>
+
+
+</FORM>
 
 
 
@@ -73,30 +106,22 @@ require RT::Ticket;
 require RT::Link;
 
 my $Queue = RT::Queue->new($session{'CurrentUser'});
-$Queue->Load($ARGS{'Queue'});
+my $result = $Queue->Load($ARGS{'Queue'}) ;
+if (!$result) {
+ &mc_comp("/Elements/Error", Why=> "Queue '$ARGS{'Queue'}' unknown"); 
+$m->abort;}
 
-my $Ticket=undef;
 
-# Object orientedness isn't always the best thing - I don't see any
-# other ways of doing the thing below - except making a link object -
-# something I don't want to do (yet):
 
-# TODO: This is buggy (displays wrong info if the link info is
-# changed, or more links are added):
 
-my $fid=RT::Link::_IsLocal(undef, $LinkFromD || $LinkFromM || $LinkTo || "");
-if ($fid) {
-  $Ticket=new RT::Ticket($session{'CurrentUser'});
-  $Ticket->Load($fid) || undef $Ticket;
-  &mc_comp("/Elements/Error" , Why => "The specified linking ticket doesn't exist or cannot be loaded") 
-      unless $Ticket;
-}
+
 
 </%INIT>
 <%ARGS>
-$Link => undef
-$LinkFromM => undef
-$LinkFromD => undef
-$LinkTo => undef
+
+$DependsOn => undef
+$DependedOnBy => undef
+$MemberOf => undef
 $QuoteTransaction => undef
+$id => undef
 </%ARGS>

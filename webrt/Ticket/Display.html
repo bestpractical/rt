@@ -12,7 +12,6 @@
 
 <& /Ticket/Elements/ShowSummary,  Ticket => $Ticket &>
 <& /Elements/TitleBoxEnd &>
-
 <h1>Ticket History</h1>
 
 <& /Ticket/Elements/ShowHistory , Ticket => $Ticket &> 
@@ -20,26 +19,10 @@
 <& /Elements/TitleBoxEnd &>
 
 
-%# TODO: Evaluate if this should be in RT 2.0 or not, eventually move
-%# it to a separate module.
-%if ($ARGS{'ShowMembers'}) {
-
-%# Popular demand; to save time, it should be possible to request
-%# the history of _all_ the submembers through one mouse click
-
-%while (my $l=$Ticket->Children->Next) {
-%if ($l->BaseIsLocal) {
-%# TODO: Make a concentrated "ShowShortSummary"
-<h1>Ticket History for <%$l->BaseObj->Subject%></h1>
-<& /Ticket/Elements/ShowHistory, Ticket => $l->BaseObj &>
-%}
-%}
-
-%}
-
 
 <%ARGS>
 $id => undef
+$Create => undef
 </%ARGS>
 
 <%INIT>
@@ -52,10 +35,30 @@ use RT::Interface::Web;
 
 my @Actions;
 
+#Here, tobias passes in an empty array so we can get the returns out.
 my $Ticket = &CreateOrLoad(CurrentUser => $session{'CurrentUser'},
 			   id=>$id, 
 			   ARGS=>\%ARGS, 
 			   Actions=>\@Actions);
+
+my ($linkid, $message, $tid);
+if ($ARGS{'DependsOn'}){
+  ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'DependsOn'}, Type => 'DependsOn');
+  push @Actions, $message;
+}
+
+if ($ARGS{'DependedOnBy'}){
+  ($linkid, $message, $tid) = $Ticket->LinkFrom( Base => $ARGS{'DependedOnBy'}, Type => 'DependsOn');
+  push @Actions, $message;
+}
+
+
+if ($ARGS{'MemberOf'}){
+  ($linkid, $message, $tid) = $Ticket->LinkTo( Target => $ARGS{'MemberOf'}, Type => 'MemberOf');
+  push @Actions, $message;
+}
+
+
 $id=$Ticket->Id;
 
 # Eventually, link up the ticket:

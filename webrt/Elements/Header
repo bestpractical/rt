@@ -7,7 +7,7 @@
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
 %if ($session{'CurrentUser'}) {
-You are currently authenticated as <a href="<%$RT::WebURL%>/ViewUser.html?id=<%$session{'CurrentUser'}->Id%>"><%$session{'CurrentUser'}->UserId%></a>.
+You are currently authenticated as <a href="<%$RT::WebURL%>/User/Prefs.html?id=<%$session{'CurrentUser'}->Id%>"><%$session{'CurrentUser'}->UserId%></a>.
 %}
 <hr>
 

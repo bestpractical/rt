@@ -23,6 +23,6 @@ use RT::Users;
 my $Users = RT::Users->new($session{CurrentUser});
 $Users->Limit( FIELD => 'id',
 		OPERATOR => "!=",
-	        VALUE => 1
+	        VALUE => $RT::SystemUser->Id()
 		);
 </%INIT>

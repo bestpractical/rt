@@ -6,17 +6,22 @@
 <TITLE>
 <% $Title %>
 </TITLE>
-<BODY BGCOLOR=RED>
-This is an unfriendly error message.
-<hr>
-<h1><%$Why%></h1>
+<BODY BGCOLOR=WHITE>
+<& /Elements/TitleBoxStart, title => $Title &>
+
+RT ran into an error:
+<br><%$Why%>
+<br>
+<font size=-1>
 <%$Details%>
+</font>
+<& /Elements/TitleBoxEnd &>
 </body>
 </HTML>
 <%args>
 $Code => undef
 $Details => "(No details given)"
-$Title => "Some error"
+$Title => "RT Error"
 $Why => "the calling component did not specify why"
 </%args>
 <%INIT>

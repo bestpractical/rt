@@ -243,6 +243,30 @@ $CommentAddress="!!RT_COMMENT_MAIL_ALIAS!!";
 
 # }}}
 
+# {{{ MIME Object storage configuration
+# 
+# So far, this is all placeholders
+#
+#
+# Maximum MIME Object Size
+
+# Drop on the ground if it's over x kb
+# Return to sender if it's over x kb
+
+# MIME Object types to drop on the floor
+# MIME Object types to return to sender
+# MIME Object types to forward to RT Owner
+# MIME Object types to store on disk
+# MIME Object types to store in the database
+
+# If an object doesn't meet any of the above criteria:
+
+# Store on disk if it's over x kb
+
+# Otherwise store it in the DB
+
+# }}}
+
 # {{{ WebRT Configuration
 # Define the directory name to be used for images in rt web
 # documents.

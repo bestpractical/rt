@@ -21,14 +21,27 @@
       </TD>
        </TR>
         <TR>
-	<TD WIDTH="50%" VALIGN=TOP>
-	  <& /Elements/TitleBoxStart, title => 'Unresolved Dependencies', titleright => '<A HREF="">[As search]</a>' &>
-	  Nothing's here yet
+        <TD WIDTH="50%" VALIGN=TOP ROWSPAN=2>
+          <& /Elements/TitleBoxStart, title => 'Ticket Hierarchy', titleright => "<A HREF=\"/Ticket/Create_Detail.html?MemberOf=".$Ticket->Id."&Queue=".$Ticket->QueueObj->Id."\">[New SubTicket]</a>" &>
+	SuperTickets:<BR>	
+	<& /Ticket/Elements/ShowMemberOf, Ticket => $Ticket &>	<BR>
+	SubTickets:<BR>
+	<& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	</TD>
+
 	<TD WIDTH="50%" VALIGN=TOP>
-	  <& /Elements/TitleBoxStart, title => 'Other Links', titleright => '<a href="LinkIt.html?id='.$Ticket->Id.'">[Make new links]</a> | <A HREF="">[As search]</a>' &>
-	<& /Ticket/Elements/ShowLinks, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxStart, title => 'Dependencies', titleright => '' &>
+	  <& /Ticket/Elements/ShowDependencies, Ticket => $Ticket &>
+	<& /Elements/TitleBoxEnd &>
+	</TD>
+
+	</TR>
+	<TR>
+
+	<TD WIDTH="50%" VALIGN=TOP>
+	  <& /Elements/TitleBoxStart, title => 'Other Links', titleright => '<a href="LinkIt.html?id='.$Ticket->Id.'">[Make new links]</a>' &>
+	<& /Ticket/Elements/ShowReferences, Ticket => $Ticket &>
 	
 	  <& /Elements/TitleBoxEnd &>	
 	</TD>

@@ -13,15 +13,7 @@
 %# I'd like to have it here, rather than at the next page, because it
 %# might be that we'd like to draw the subject and message into the
 %# create dialogue.  I'll explain better later.
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => "Should the new request be linked up somehow?" &>
-%if ($QuoteTransaction) {
-<input type="hidden" name="QuoteTransaction" value=<%$QuoteTransaction%>>
-% }
-<input type="radio" name="Link" value="" CHECKED>The new ticket should be independent.<BR><BR>
-<input type="radio" name="Link" value="DependsOn">Ticket(s) <input name="LinkFromD" value="<% $id %>"> should depend on the new ticket<BR><BR>
-<input type="radio" name="Link" value="MemberOf">Ticket(s) <input name="LinkFromM" value="<% $id %>"> should be a member of the new ticket<BR><BR>
-<input type="radio" name="Link" value="ParentOf">The new ticket is a member of ticket <input name="LinkTo" value="<% $id %>"><BR><BR>
-<& /Elements/TitleBoxEnd &>
+
 
 <INPUT TYPE=SUBMIT VALUE="Next">
 </FORM>

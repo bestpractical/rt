@@ -28,6 +28,7 @@ HomePhone <input size=12 name=HomePhone value="<%$user->HomePhone()%>">
 
 
 <hr>
+<& /Admin/Elements/EditUserComments , UserObj => $user &>
 %$Manipulate="CHECKED" if ($user->CanManipulate);
 Can be granted ACLs  <checkbox name=CanManipulate <%$Manipulate%>>
 %$Administrator="CHECKED" if ($user->IsAdministrator);
@@ -38,3 +39,4 @@ Superuser <checkbox name=IsAdministrator <%$Superuser%>>
 </FORM>
 </BODY>
 </HTML>
+

@@ -37,7 +37,7 @@ DIV.endmatter { margin-left: -7% }
 
 
 A { font-weight: bold; 
-      color: #333333; 
+      color: #999999; 
 	    /* border: none -- breaks NS 4.x */ }
 
 A:link IMG, A:visited IMG { border-style: none }
