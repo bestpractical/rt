@@ -21,7 +21,7 @@ use RT::CurrentUser;
 use MIME::Entity;
 use RT::Interface::Web;
 
-my $Ticket = LoadTicket($ARGS{id});
+my $Ticket = LoadTicket($ARGS{id}, $session{'CurrentUser'});
 
 # This should be done first, so the new owner gets all information
 ProcessOwnerChangeRequest(ARGS=>\%ARGS, Ticket=>$Ticket, Actions=>\@Actions);
