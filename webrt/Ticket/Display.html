@@ -33,5 +33,8 @@ use RT::Ticket;
 use RT::CurrentUser;
 my $CurrentUser = RT::CurrentUser->new(2);
 my $Ticket = RT::Ticket->new($CurrentUser);
-$Ticket->Load($id);
+unless ($Ticket->Load($id)) {
+    &mc_comp("/Elements/Error" , Why => "No ticket specified";
+    $m->abort;
+}
 </%INIT>
