@@ -12,19 +12,20 @@ $realm =~ s/[^\w.]//g;
 my $nonce = Digest::MD5::md5_hex($realm . rand());
 my %methods = map {($_ => 1)} @RT::RESTAuthenticationMethods;
 
+my $atom_client = ($r->header_in('User-Agent') =~ /\batom\b/i);
 my $header_out = sub {
     $ENV{FCGI_ROLE} ? $r->header_out(@_) : $r->headers_out->add(@_);
 };
 
 $header_out->(
     'WWW-Authenticate' => qq(WSSE realm="$realm", profile="UsernameToken")
-) if $methods{WSSE};
+) if $methods{WSSE} and $atom_client;
 $header_out->(
     'WWW-Authenticate' => qq(Digest realm="$realm", stale=false, nonce="", qop="auth", algorithm="MD5")
-) if $methods{Digest};
+) if $methods{Digest} and !$atom_client;
 $header_out->(
     'WWW-Authenticate' => qq(Basic realm="$realm")
-) if $methods{Basic};
+) if $methods{Basic} and !$atom_client;
 
 my $CurrentUser;
 my $headerParts = sub {
