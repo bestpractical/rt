@@ -200,7 +200,16 @@ $COLUMN_MAP = {
     DueRelative => {
         title     => 'Due',
         attribute => 'Due',
-        value     => sub { return $_[0]->DueObj->AgeAsString }
+        value     => sub { 
+	    my $date = $_[0]->DueObj;
+	    my $now = new RT::Date($RT::SystemUser);
+	    $now->SetToNow();
+	    my $class;
+	    if ($date && $date->Unix > 0 && $date->Unix < $now->Unix) {
+		$class = 'overdue';
+	    }
+	    return '<span class="' . $class . '">' . $date->AgeAsString . '</span>';
+	}
     },
     ResolvedRelative => {
         title     => 'Resolved',
