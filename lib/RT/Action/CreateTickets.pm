@@ -287,8 +287,12 @@ perl(1).
 my %LINKTYPEMAP = (
     MemberOf => { Type => 'MemberOf',
                   Mode => 'Target', },
+    Parents => { Type => 'MemberOf',
+		 Mode => 'Target', },
     Members => { Type => 'MemberOf',
                  Mode => 'Base', },
+    Children => { Type => 'MemberOf',
+		  Mode => 'Base', },
     HasMember => { Type => 'MemberOf',
                    Mode => 'Base', },
     RefersTo => { Type => 'RefersTo',
@@ -708,7 +712,9 @@ sub GetUpdateTemplate {
     $string .= "FinalPriority: " . $t->FinalPriority . "\n";
 
     foreach my $type (sort keys %LINKTYPEMAP) {
-	if ($type eq "HasMember") {
+	# don't display duplicates
+	if ($type eq "HasMember" || $type eq "Members"
+	    || $type eq "MemberOf") {
 	    next;
 	}
 	$string .= "$type: ";
@@ -779,8 +785,13 @@ sub GetCreateTemplate {
     $string .= "InitialPriority: \n";
     $string .= "FinalPriority: \n";
 
-    foreach (keys %LINKTYPEMAP) {
-	$string .= "$_: \n";
+    foreach my $type (keys %LINKTYPEMAP) {
+	# don't display duplicates
+	if ($type eq "HasMember" || $type eq 'Members' 
+	    || $type eq 'MemberOf') {
+	    next;
+	}
+	$string .= "$type: \n";
     }
     return $string;
 }

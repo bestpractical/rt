@@ -146,8 +146,12 @@ use vars '%LINKTYPEMAP';
 %LINKTYPEMAP = (
     MemberOf => { Type => 'MemberOf',
                   Mode => 'Target', },
+    Parents => { Type => 'MemberOf',
+		 Mode => 'Target', },
     Members => { Type => 'MemberOf',
                  Mode => 'Base', },
+    Children => { Type => 'MemberOf',
+		  Mode => 'Base', },
     HasMember => { Type => 'MemberOf',
                    Mode => 'Base', },
     RefersTo => { Type => 'RefersTo',

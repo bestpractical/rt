@@ -33,7 +33,8 @@ my @fields = (
     "Resolved",            "NEWLINE",
     "RefersTo",	           "ReferredToBy",
     "DependsOn",           "DependedOnBy",
-    "MemberOf",            "HasMember",
+    "MemberOf",            "Members",
+    "Parents",             "Children",
     "-",
 );
 

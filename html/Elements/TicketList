@@ -287,7 +287,21 @@ $COLUMN_MAP = {
     },
     Members => {
         value => sub {
-            my $links = $_[0]->HasMember;
+            my $links = $_[0]->Members;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->BaseURI->Resolver->HREF . '">'
+                          . ( $_->BaseIsLocal ? $_->LocalBase : $_->Base )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef } ) );
+          }
+    },
+    Children => {
+        value => sub {
+            my $links = $_[0]->Members;
             return (
                 join(
                     "<br>",
@@ -329,6 +343,20 @@ $COLUMN_MAP = {
           }
     },
     MemberOf => {
+        value => sub {
+            my $links = $_[0]->MemberOf;
+            return (
+                join(
+                    "<br>",
+                    map {
+                            '<A HREF="'
+                          . $_->TargetURI->Resolver->HREF . '">'
+                          . ( $_->TargetIsLocal ? $_->LocalTarget : $_->Target )
+                          . '</A>'
+                      } @{ $links->ItemsArrayRef } ) );
+          }
+    },
+    Parents => {
         value => sub {
             my $links = $_[0]->MemberOf;
             return (
