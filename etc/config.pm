@@ -9,10 +9,6 @@
 
 package RT;
 
-#Where you keep templates for each of your queues
-$template_dir="!!RT_TEMPLATE_PATH!!";
-
-
 # these modes don't do much right now...i had to hard code them in because 
 # perl ws being nasty about the leading 0  check RT_Content.pl for hacking
 $dirmode=0750;
@@ -23,8 +19,9 @@ umask(0027);
 # no users should be in the rt group
 # if you change these, make sure to edit the makefile and
 # to chown the rt directory structure
-$rtuser="!!RTUSER!!";
-$rtgroup="!!RTGROUP!!";
+# (are those needed any more?)
+#$rtuser="!!RTUSER!!";
+#$rtgroup="!!RTGROUP!!";
 
 
 # before doing a "make install" in /usr/local/rt/src you NEED to change the 
@@ -109,5 +106,15 @@ $DefaultLocale = "!!DEFAULT_LOCALE!!";
 # This is the directory that .po files live in.
 
 $LocalePath = "!!LOCALE_PATH!!";
-# 
+
+# Hackers only:
+
+$Nobody=2;
+
 1;
+
+
+
+
+
+

@@ -158,8 +158,11 @@ CREATE TABLE Users (
 INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
 	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
 
+INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (2, 'Nobody', "Noone in particular", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
+
 INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (2, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
+	   VALUES (3, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
 # }}}
 
 # {{{ TABLE Queues 

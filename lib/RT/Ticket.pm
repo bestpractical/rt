@@ -58,7 +58,7 @@ sub Create {
 				EffectiveId => $args{'EffectiveId'},
 				Queue => $args{'Queue'},
 				Alias => $args{'Alias'},
-				Owner => $args{'Owner'},
+				Owner => $args{'Owner'} || $RT::Nobody,
 				Subject => $args{'Subject'},
 				InitialPriority => $args{'InitialPriority'},
 				FinalPriority => $args{'FinalPriority'},
@@ -400,7 +400,7 @@ sub Take {
 # {{{ sub Untake
 sub Untake {
   my $self = shift;
-  return($self->SetOwner("", 'Untake'));
+  return($self->SetOwner($RT::Nobody, 'Untake'));
 }
 # }}}
 
@@ -448,7 +448,7 @@ sub SetOwner {
   #TODO:this breaks stealing.
   
 
-  if (($self->Owner->Id) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
+  if ($self->Owner && ($self->Owner->Id) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
     print STDERR  "You can only reassign tickets that you own or that are unowned\n";
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
