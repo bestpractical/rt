@@ -408,7 +408,7 @@ INSERT INTO Templates VALUES (2,'Default transaction template',NULL, NULL,
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->Queue->QueueId}
         Area: (stubbed!)               
-     Subject: {$Transaction->Subject}
+     Subject: {$Transaction->Message()->First()->Subject}
        Owner: {$Ticket->Owner ? $Ticket->Owner->UserId : "Nobody"}
   Requestors: {join(",",@{$Ticket->Requestors->Emails()})}    
       Status: {$Ticket->Status}
