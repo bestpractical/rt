@@ -1,0 +1,44 @@
+What is an Action?
+
+...some piece of code that can do something whenever a transaction is
+done.  The actions shipped with RT sends email.  Eventually site-specific
+modules can be dropped in to perform special actions.
+
+
+What can an Action do?
+
+- decide whether it's applicable or not
+- prepare
+- commit
+- describe itself
+
+...and if it's a subclass of SendEmail, you can also override:
+
+- SetReceipients
+
+
+What is a Scrip?
+
+...it's an entry in the database that tells that an action is to be
+performed with a certain template and argument.  It can be limited by
+queue and transaction type.  It has a name and a description.
+
+/* I want to move the queue to a new table, for easier queue admin. */
+
+
+What is a Watcher?
+
+...it's a request for beeing kept updated on a ticket and/or a queue
+and/or whatever.  It is to be used by the Actions.  Watcher items can
+easily be enabled/disabled through the `Quiet' attribute.  `Type' might
+indicate what emails the watcher wants to get and how to get them.
+
+The Bcc/Cc watchers should be handled by the NotifyWatchers action which is
+run regardless of the Scrips.
+
+
+What is a Template?
+
+...A template is a text template that is to be used for outgoing email -
+or for different use for different actions.  One template can be used by
+several Scrips.
