@@ -259,7 +259,7 @@ print "\tbin owner (@BIN_OWNER@)...",   (defined getpwnam("@BIN_OWNER@")  ? "fou
 print "\tlibs owner (@LIBS_OWNER@)...", (defined getpwnam("@LIBS_OWNER@") ? "found" : "MISSING"), "\n";
 print "\tlibs group (@LIBS_GROUP@)...", (defined getgrnam("@LIBS_GROUP@") ? "found" : "MISSING"), "\n";
 print "\tweb owner (@WEB_USER@)...",    (defined getpwnam("@WEB_USER@")   ? "found" : "MISSING"), "\n";
-print "\tweb group (@WEB_GROUP@)...",   (defined getpwnam("@WEB_GROUP@")  ? "found" : "MISSING"), "\n";
+print "\tweb group (@WEB_GROUP@)...",   (defined getgrnam("@WEB_GROUP@")  ? "found" : "MISSING"), "\n";
 
 foreach my $type (keys %args) {
     next unless ($type =~ /^with-(.*?)$/);
