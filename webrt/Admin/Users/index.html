@@ -4,7 +4,19 @@
 
 <& /Elements/TitleBoxStart, title => 'Select a user' &>
 
+<TABLE>
+<TR>
+<TD VALIGN=TOP>
 
+<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Users/">
+
+Find people whose <& /Elements/SelectUsers &><BR>
+<input type="checkbox" name="FindDisabledUsers"> Include disabled users in search.
+<BR>
+<div align=right><input type=submit value="Go!"></div> 
+</FORM>
+</TD>
+<TD VALIGN=TOP>
 <UL>
 % if ($session{'CurrentUser'}->HasSystemRight('AdminUsers')) {
 <LI><A HREF="<%$RT::WebPath%>/Admin/Users/Modify.html?Create=1">Create a new user</A><BR><BR></LI>
@@ -13,45 +25,47 @@
 
 <%$caption%><BR>
 <UL>
+%if ($users->Count == 0) {
+<LI> <i>No users matching search criteria found.</i>
+% }
 %while ( $user = $users->Next) {
-<LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->id%>: <%$user->Name%></a></LI>
+<LI><A HREF="Modify.html?id=<%$user->id%>"><%$user->Name%></a></LI>
 %}
 
 </UL>
-
-<FORM METHOD=POST ACTION="<% $RT::WebPath %>/Admin/Users/">
-% if ((!defined $IdLike) and (!defined $EmailLike) ) {
-To find users not listed above, search by email address or username below.<br>
-% }
-Find users with email addresses like: <INPUT SIZE=8 NAME="EmailLike" VALUE="<%$EmailLike%>"> and RT usernames like <INPUT SIZE=8 NAME="IdLike" VALUE="<%$IdLike%>"> <INPUT TYPE="submit" Value="Go">
-
+</TD>
+</TR>
+</TABLE>
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
 my ($user, $caption);
 my $users = new RT::Users($session{'CurrentUser'});
 
-if ((!defined $IdLike) and (!defined $EmailLike) ) {
+if ($FindDisabledUsers) {
+	$users->{'find_disabled_rows'} = 1;
+}
+
+unless (defined $UserString) {
     $users->LimitToPrivileged();
     $caption = "Privileged users";
 }
 else {
     $caption = "Users matching search criteria";
 
-    if (defined $IdLike) {
-$users->Limit(FIELD => 'Name',
-              VALUE => $IdLike,
-              OPERATOR => 'LIKE' );
-}
-if (defined $EmailLike) {
-$users->Limit(FIELD => 'EmailAddress',
-              VALUE => $EmailLike,
-              OPERATOR => 'LIKE');
+  if ($UserString) {
+	$users->Limit( FIELD => $UserField,
+		        OPERATOR => $UserOp,
+		       VALUE => $UserString); 
 
 }
 }
 </%INIT>
 <%ARGS>
+$UserString => undef
+$UserOp => '='
+$UserField => 'Name'
 $IdLike => undef
 $EmailLike => undef
+$FindDisabledUsers => 0
 </%ARGS>
