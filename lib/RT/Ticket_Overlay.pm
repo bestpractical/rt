@@ -3313,8 +3313,7 @@ sub SetStatus {
                      Value             => $now->ISO,
                      RecordTransaction => 0 );
     }
-
-    if ( $args{Status} =~ /^(resolved|rejected|dead)$/ ) {
+    if ( $self->QueueObj->IsInactiveStatus($args{Status}) ) {
 
         #When we resolve a ticket, set the 'Resolved' attribute to now.
         $self->_Set( Field             => 'Resolved',
