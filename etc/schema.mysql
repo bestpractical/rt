@@ -8,10 +8,7 @@
 # the makefile should call up some init scrips that uses an RT api or the (admin)
 # cli to add the data.
 
-# I think it might make sense replacing "TIMESTAMP" with "DATETIME"
-# for mysql.  Yes, indeed, I'll do that right away.
-
-# {{{ Core entities (Queues, Tickets, Transactions, Attachments, Links)
+# {{{ Queues, Tickets, Transactions, Attachments, Links
 
 # {{{ TABLE Queues 
 CREATE TABLE Queues (
@@ -139,74 +136,64 @@ CREATE TABLE Links (
 
 # {{{ Table Users 
 
- # Jesse thinks that contact information is needed here because RT
- # should be able to stand on its own.  Tobix don't think that it's
- # needed...
-
- # Tobix: I can't see any need for RT to know anything about
- # which phone number, home address, etc a user has.  I think it might
- # make sense to let the system be able to store an URL to some page
- # showing information like this, but since RT is not going to phone the
- # user or send him a paper letter, there is no need for RT to know this
- # extra contact information.  
-
- # Tobix: Also, contact information doesn't always fit a strict schema.  
- # It's becoming more common today to have a cellphone than to have work
- # phone and home phone.  Somebody want to have a fax number, an ICQ
- # number, a beeper and all that kind of weird contact information.
- # All together, I actually think it makes more sense to
- # have a freetext field for contact information in a system like RT!
- # Though it makes more sense to point the user over to an external
- # system containing such information.  Most organizations have an
- # external system keeping track of their employees and contacts.
-
- # Tobix: A plugin authentication (and address book) system is clearly
- # be the best and only right thing.  We have to fix that for RT 2.1.
- # It must be possible to mix different authentication systems - both
- # in such a way that one user might be in one system and another user
- # in another system, and such that some information about a user might
- # be in one system, and other in another system. 
-
- # Tobix: This table should always be one of the configurable (and
- # default) authentication modules.  The main authentication system
- # must also be capable to store new users.
+#  In future versions of RT, there will be plugin systems for Authentication
+# and user data. but there will always be an internal system as well.
 
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  UserId VARCHAR(120) NOT NULL,
 
-  Gecos CHAR(16), #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
-  RealName VARCHAR(120),
-  Lang VARCHAR(16), # Preffered language - to be used by L10N (not there, yet)
+  # {{{ Core RT Info
+  UserId VARCHAR(120) NOT NULL,
   Password VARCHAR(40),
   Comments BLOB,
   Signature BLOB,
   EmailAddress VARCHAR(120),
+  FreeformContactInfo BLOB,
+  Organization VARCHAR(200),
+
   CanManipulate INT,  #Whether this user can be granted rights
 		      #If 0, the user can only be a requestor
-  IsAdministrator INT,
+  # }}}
 
- # We should rather have a "plug'n'play" authentication system where
- # this table can be exchanged for some external system.
-  ExternalId VARCHAR(100),
+  # {{{ Names
+  RealName VARCHAR(120),
+  Nickname VARCHAR(16),
+  # }}}
+  
+  # {{{ Localization and Internationalization
+  Lang VARCHAR(16), # Preferred language - to be used by L10N (not there, yet)
+  EmailEncoding VARCHAR(16),
+  WebEncoding VARCHAR(16),
+  # }}}
 
- # I'd daresay that those fields really shouldn't be in RT:
- # -- TobiX
- 
- # I disagree. They're needed. -jrv
+  # {{{ External ContactInfo Linkage
+  ExternalContactInfoId VARCHAR(100),
+  ContactInfoSystem VARCHAR(30),
+  # }}}
 
- # For what?  Will you let RT dial up the requestors? :) -- TobiX
+  # {{{ User Authentication identifier
+  ExternalAuthId VARCHAR(100),
+  #Authentication system used for user 
+  AuthSystem VARCHAR(30),  
+  Gecos CHAR(16), #Gecos is the name of the fields in a unix passwd file. In this case, it refers to "Unix Username"
+  # }}}
 
+  # {{{ Telephone numbers
   HomePhone VARCHAR(30),
   WorkPhone VARCHAR(30),
+  MobilePhone  VARCHAR(30),
+  PagerPhone VARCHAR(30),
+  # }}}
+
+  # {{{ Paper Address
   Address1 VARCHAR(200),
   Address2 VARCHAR(200),
   City VARCHAR(100),
   State VARCHAR(100),
   Zip VARCHAR(16),
   Country VARCHAR(50),
-
-
+  # }}}
+  
   Creator INT(11),
   Created DATETIME,
   LastUpdatedBy INT(11),
@@ -214,11 +201,23 @@ CREATE TABLE Users (
 )\g
 
 # }}}
-	
+
+# {{{ Values for Users
+INSERT into Users (id, UserId, RealName, Comments, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1, NULL, 1, NULL );
+
+INSERT into Users (id, UserId, RealName, Comments, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (2, 'Nobody', "Noone in particular", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1, NULL, 1, NULL );
+
+INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, Creator, Created, LastUpdatedBy, LastUpdated) 
+	   VALUES (3, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 1, NULL, 1, NULL );			
+# }}}
+
 # {{{ AlternateEmails (stubbed!)
 # Create Table AlternateEmails (
-#    id int,
-#    Email VARCHAR(120) PRIMARY KEY
+#  id int(11) AUTO_INCREMENT PRIMARY KEY,
+#    UserId INT,
+#    Email VARCHAR(120) DISTINCT
 # );
 # }}}
 
@@ -239,18 +238,6 @@ CREATE TABLE GroupMembers (
 	UserId INT
 );
 
-# }}}
-
-
-# {{{ Values for Users
-INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (1, 'RT_System', "The RT System itself", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
-
-INSERT into Users (id, UserId, RealName, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (2, 'Nobody', "Noone in particular", 'Do not delete or modify this user. It is integral to RT\'s internal database structures',1,1, NULL, 1, NULL );
-
-INSERT into Users (id, UserId, Gecos, RealName, Password, EmailAddress, Comments, IsAdministrator, Creator, Created, LastUpdatedBy, LastUpdated) 
-	   VALUES (3, 'root', 'root', "Enoch Root", 'password', 'root@localhost','', 0,1, NULL, 1, NULL );			
 # }}}
 
 # {{{ Table ACL {
