@@ -51,7 +51,7 @@
     subtabs => $subtabs, 
     Title => $title &>
 
-<& "/Admin/Elements/EditCustomField", title => $title, %ARGS &>
+<& /Admin/Elements/EditCustomField, title => $title, %ARGS &>
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
