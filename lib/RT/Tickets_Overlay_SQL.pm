@@ -232,9 +232,9 @@ sub _parser {
     $current = KEYWORD if $val =~ /^$re_keyword$/io && ($want & KEYWORD);
     $current = AGGREG  if $val =~ /^$re_aggreg$/io;
     $current = PAREN   if $val =~ /^$re_paren$/io;
-    $current = COLUMN if _match($re_keyword,$val) && ($want & COLUMN);
-    $current = WHERE if _match($re_where,$val) && ($want & WHERE);
-    $current = SELECT if _match($re_select,$val);
+    $current = COLUMN if  $val =~ /^$re_keyword$/io && ($want & COLUMN);
+    $current = WHERE if  $val =~ /^$re_where$/io && ($want & WHERE);
+    $current = SELECT if  $val =~ /^$re_select$/io;
 
 
     unless ($current && $want & $current) {
@@ -502,7 +502,7 @@ sub FromSQL {
   $self->{_sql_query} = $query;
   eval { $self->_parser( $query ); };
     if ($@) {
-        $RT::Logger->error( $@ );
+        $RT::Logger->error( "Query error in <<$query>>:\n$@" );
         return(0,$@);
     }
   # We only want to look at EffectiveId's (mostly) for these searches.
