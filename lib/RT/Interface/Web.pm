@@ -922,7 +922,7 @@ sub UpdateRecordObject {
     my $Object = $args{'Object'};
     my @results = $Object->Update(AttributesRef => $args{'AttributesRef'},
 				  ARGSRef       => $args{'ARGSRef'},
-				  AttributePrefix => undef,
+                  AttributePrefix => $args{'AttributePrefix'}
 				  );
 
     return (@results);
