@@ -50,6 +50,8 @@ Create takes a hash of values and creates a row in the database:
 
   int(11) 'ScripCondition'.
   int(11) 'ScripAction'.
+  text 'ScripConditionRules'.
+  text 'ScripActionRules'.
   varchar(32) 'Stage'.
   int(11) 'Queue'.
   int(11) 'Template'.
@@ -64,6 +66,8 @@ sub Create {
     my %args = ( 
                 ScripCondition => '',
                 ScripAction => '',
+                ScripConditionRules => '',
+                ScripActionRules => '',
                 Stage => '',
                 Queue => '',
                 Template => '',
@@ -72,6 +76,8 @@ sub Create {
     $self->SUPER::Create(
                          ScripCondition => $args{'ScripCondition'},
                          ScripAction => $args{'ScripAction'},
+                         ScripConditionRules => $args{'ScripConditionRules'},
+                         ScripActionRules => $args{'ScripActionRules'},
                          Stage => $args{'Stage'},
                          Queue => $args{'Queue'},
                          Template => $args{'Template'},
@@ -153,6 +159,42 @@ sub ScripActionObj {
 	$ScripAction->Load($self->ScripAction());
 	return($ScripAction);
 }
+
+=item ScripConditionRules
+
+Returns the current value of ScripConditionRules. 
+(In the database, ScripConditionRules is stored as text.)
+
+
+
+=item SetScripConditionRules VALUE
+
+
+Set ScripConditionRules to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ScripConditionRules will be stored as a text.)
+
+
+=cut
+
+
+=item ScripActionRules
+
+Returns the current value of ScripActionRules. 
+(In the database, ScripActionRules is stored as text.)
+
+
+
+=item SetScripActionRules VALUE
+
+
+Set ScripActionRules to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ScripActionRules will be stored as a text.)
+
+
+=cut
+
 
 =item Stage
 
@@ -282,6 +324,10 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'int(11)', default => ''},
         ScripAction => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
+        ScripConditionRules => 
+		{read => 1, write => 1, type => 'text', default => ''},
+        ScripActionRules => 
+		{read => 1, write => 1, type => 'text', default => ''},
         Stage => 
 		{read => 1, write => 1, type => 'varchar(32)', default => ''},
         Queue => 

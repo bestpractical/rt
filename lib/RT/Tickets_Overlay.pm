@@ -1000,11 +1000,11 @@ sub Next {
 	my $Ticket = $self->SUPER::Next();
 	if ((defined($Ticket)) and (ref($Ticket))) {
 
-    	    #Make sure we _never_ show dead tickets
+    	    #Make sure we _never_ show deleted tickets
 	    #TODO we should be doing this in the where clause.
 	    #but you can't do multiple clauses on the same field just yet :/
 
-	    if ($Ticket->Status eq 'dead') {
+	    if ($Ticket->Status eq 'deleted') {
 		return($self->Next());
 	    }
   	    elsif ($Ticket->CurrentUserHasRight('ShowTicket')) {

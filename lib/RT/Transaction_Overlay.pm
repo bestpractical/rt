@@ -536,8 +536,8 @@ sub BriefDescription {
     }
     elsif ( $self->Type =~ /Status/ ) {
         if ( $self->Field eq 'Status' ) {
-            if ( $self->NewValue eq 'dead' ) {
-                return ($self->loc("Ticket killed"));
+            if ( $self->NewValue eq 'deleted' ) {
+                return ($self->loc("Ticket deleted"));
             }
             else {
                 return ( $self->loc("Status changed from [_1] to [_2]", $self->OldValue , $self->NewValue ));

@@ -64,7 +64,7 @@ ok(my $t2 = RT::Ticket->new($RT::SystemUser));
 ok($t2->Load($id));
 ok($t2->Subject eq 'Testing');
 ok($t2->QueueObj->Id eq $testqueue->id);
-ok($t2->OwnerObj->Id == $u->Id;
+ok($t2->OwnerObj->Id == $u->Id);
 
 
 =end testing
@@ -76,11 +76,11 @@ no warnings qw(redefine);
 use RT::Queue;
 use RT::User;
 use RT::Record;
-use RT::Link;
 use RT::Links;
 use RT::Date;
 use RT::CustomFields;
 use RT::TicketCustomFieldValues;
+use RT::Tickets;
 
 =begin testing
 
@@ -670,16 +670,6 @@ sub Import {
     }
 
     return ( $self->Id, $ErrStr );
-}
-
-# }}}
-
-# {{{ sub Delete
-
-sub Delete {
-    my $self = shift;
-    return ( 0,
-        $self->loc("Deleting this object would violate referential integrity") );
 }
 
 # }}}
@@ -1885,6 +1875,78 @@ sub DependedOnBy {
 
 # }}}
 
+
+
+=head2 HasUnresolvedDependencies
+
+Returns true if $self->UnresolvedDependencies returns an object with one
+or more members. Returns false otherwise
+
+
+=begin testing
+
+my $t1 = RT::Ticket->new($RT::SystemUser);
+my ($id, $trans, $msg) = $t1->Create(Subject => 'DepTest1', Queue => 'general');
+ok($id, "Created dep test 1 - $msg");
+
+my $t2 = RT::Ticket->new($RT::SystemUser);
+my ($id2, $trans, $msg2) = $t2->Create(Subject => 'DepTest2', Queue => 'general');
+ok($id2, "Created dep test 2 - $msg2");
+
+my ($lid, $lmsg) = 
+# returns $lid, $lmsg 
+ok ($t1->AddLink( Type => 'DependsOn', Target => $t2->id));
+
+ok ($t1->HasUnresolvedDependencies, "Ticket ".$t1->Id." has unresolved deps");
+ok (!$t2->HasUnresolvedDependencies, "Ticket ".$t2->Id." has no unresolved deps");
+my ($rid, $rmsg)= $t1->Resolve();
+ok(!$rid, $rmsg);
+ok($t2->Resolve);
+ok($t1->Resolve());
+
+
+=end testing
+
+=cut
+
+sub HasUnresolvedDependencies {
+    my $self = shift;
+    my $deps = $self->UnresolvedDependencies;
+    if ($deps->Count > 0) {
+        return 1;
+    }
+    else {
+        return (undef);
+    }
+}
+
+
+# {{{ UnresolvedDependencies 
+
+=head2 UnresolvedDependencies
+
+Returns an RT::Tickets object of tickets which this ticket depends on
+and which have a status of new, open or stalled. (That list comes from
+RT::Queue->ActiveStatusArray
+
+=cut
+
+
+sub UnresolvedDependencies {
+    my $self = shift;
+    my $deps = RT::Tickets->new($self->CurrentUser);
+    my @live_statuses = RT::Queue->ActiveStatusArray();
+    foreach my $status (@live_statuses) {
+        $deps->LimitStatus(VALUE => $status);
+    }
+    $deps->LimitDependedOnBy($self->Id);
+
+    return($deps);
+
+}
+
+# }}}
+
 # {{{ DependsOn
 
 =head2 DependsOn
@@ -1899,6 +1961,9 @@ sub DependsOn {
 }
 
 # }}}
+
+
+
 
 # {{{ sub _Links 
 
@@ -1915,11 +1980,9 @@ sub _Links {
         if ( $self->CurrentUserHasRight('ShowTicket') ) {
 
             $self->{"$field$type"}->Limit( FIELD => $field,
-                VALUE => $self->URI );
-            $self->{"$field$type"}->Limit(
-                FIELD => 'Type',
-                VALUE => $type
-              )
+                                           VALUE => $self->URI );
+            $self->{"$field$type"}->Limit( FIELD => 'Type',
+                                           VALUE => $type )
               if ($type);
         }
     }
@@ -2435,7 +2498,7 @@ sub ValidateStatus {
 
 =head2 SetStatus STATUS
 
-Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved or dead.
+Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
 
 =cut
 
@@ -2448,39 +2511,35 @@ sub SetStatus {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $now = new RT::Date( $self->CurrentUser );
+    if ($self->HasUnresolvedDependencies) {
+        return (0, $self->loc('That ticket has unresolved dependencies'));
+    }
+
+    my $now = RT::Date->new( $self->CurrentUser );
     $now->SetToNow();
 
     #If we're changing the status from new, record that we've started
     if ( ( $self->Status =~ /new/ ) && ( $status ne 'new' ) ) {
 
         #Set the Started time to "now"
-        $self->_Set(
-            Field             => 'Started',
-            Value             => $now->ISO,
-            RecordTransaction => 0
-        );
+        $self->_Set( Field             => 'Started',
+                     Value             => $now->ISO,
+                     RecordTransaction => 0 );
     }
 
     if ( $status eq 'resolved' ) {
 
         #When we resolve a ticket, set the 'Resolved' attribute to now.
-        $self->_Set(
-            Field             => 'Resolved',
-            Value             => $now->ISO,
-            RecordTransaction => 0
-        );
+        $self->_Set( Field             => 'Resolved',
+                     Value             => $now->ISO,
+                     RecordTransaction => 0 );
     }
 
     #Actually update the status
-    return (
-        $self->_Set(
-            Field           => 'Status',
-            Value           => $status,
-            TimeTaken       => 0,
-            TransactionType => 'Status'
-          )
-    );
+    return ( $self->_Set( Field           => 'Status',
+                          Value           => $status,
+                          TimeTaken       => 0,
+                          TransactionType => 'Status' ) );
 }
 
 # }}}
@@ -2495,7 +2554,13 @@ Takes no arguments. Marks this ticket for garbage collection
 
 sub Kill {
     my $self = shift;
-    return ( $self->SetStatus('dead') );
+    $RT::Logger->crit("'Kill' is deprecated. use 'Delete' instead.");
+    return $self->Delete;
+}
+
+sub Delete {
+    my $self = shift;
+    return ( $self->SetStatus('deleted') );
 
     # TODO: garbage collection
 }

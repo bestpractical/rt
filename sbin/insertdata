@@ -356,6 +356,22 @@ unless ($LastVersion) {
 
         },
         {
+
+            Name                 => 'OnOwnerChange',
+            Description          => 'Whenever a ticket\'s owner changes',
+            ApplicableTransTypes => 'Set',
+            ExecModule           => 'OwnerChange',
+
+        },
+        {
+
+            Name                 => 'OnQueueChange',
+            Description          => 'Whenever a ticket\'s queue changes',
+            ApplicableTransTypes => 'Set',
+            ExecModule           => 'QueueChange',
+
+        },
+        {
             Name                 => 'OnResolve',
             Description          => 'Whenever a ticket is resolved.',
             ApplicableTransTypes => 'Status',

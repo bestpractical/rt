@@ -23,20 +23,51 @@ use RT::Queue;
 
 no warnings qw(redefine);
 
-use vars(@STATUS);
+use vars qw(@STATUS @ACTIVE_STATUS @INACTIVE_STATUS);
 use RT::Groups;
 
-@STATUS = qw(new open stalled resolved dead);
-
+@ACTIVE_STATUS = qw(new open stalled);
+@INACTIVE_STATUS = qw(resolved rejected deleted);
+@STATUS = (@ACTIVE_STATUS, @INACTIVE_STATUS);
 
 # $self->loc('new'); # For the string extractor to get a string to localize
 # $self->loc('open'); # For the string extractor to get a string to localize
 # $self->loc('stalled'); # For the string extractor to get a string to localize
 # $self->loc('resolved'); # For the string extractor to get a string to localize
-# $self->loc('dead''); # For the string extractor to get a string to localize
+# $self->loc('rejected'); # For the string extractor to get a string to localize
+# $self->loc('deleted'); # For the string extractor to get a string to localize
 
 
 
+# {{{ ActiveStatusArray
+
+=head2 ActiveStatusArray
+
+Returns an array of all ActiveStatuses for this queue
+
+=cut
+
+sub ActiveStatusArray {
+    my $self = shift;
+    return (@ACTIVE_STATUS);
+}
+
+# }}}
+
+# {{{ InactiveStatusArray
+
+=head2 InactiveStatusArray
+
+Returns an array of all InactiveStatuses for this queue
+
+=cut
+
+sub InactiveStatusArray {
+    my $self = shift;
+    return (@INACTIVE_STATUS);
+}
+
+# }}}
 
 # {{{ StatusArray
 

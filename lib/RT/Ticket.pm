@@ -95,25 +95,25 @@ sub Create {
 
 		  @_);
     $self->SUPER::Create(
-                         EffectiveId => $args{'EffectiveId'},		# loc
-                         Queue => $args{'Queue'},			# loc
-                         Type => $args{'Type'},				# loc
-                         IssueStatement => $args{'IssueStatement'},	# loc
-                         Resolution => $args{'Resolution'},		# loc
-                         Owner => $args{'Owner'},			# loc
-                         Subject => $args{'Subject'},			# loc
-                         InitialPriority => $args{'InitialPriority'},	# loc
-                         FinalPriority => $args{'FinalPriority'},	# loc
-                         Priority => $args{'Priority'},			# loc
-                         Status => $args{'Status'},			# loc
-                         TimeWorked => $args{'TimeWorked'},		# loc
-                         TimeLeft => $args{'TimeLeft'},			# loc
-                         Told => $args{'Told'},				# loc
-                         Starts => $args{'Starts'},			# loc
-                         Started => $args{'Started'},			# loc
-                         Due => $args{'Due'},				# loc
-                         Resolved => $args{'Resolved'},			# loc
-                         Disabled => $args{'Disabled'},			# loc
+                         EffectiveId => $args{'EffectiveId'},
+                         Queue => $args{'Queue'},
+                         Type => $args{'Type'},
+                         IssueStatement => $args{'IssueStatement'},
+                         Resolution => $args{'Resolution'},
+                         Owner => $args{'Owner'},
+                         Subject => $args{'Subject'},
+                         InitialPriority => $args{'InitialPriority'},
+                         FinalPriority => $args{'FinalPriority'},
+                         Priority => $args{'Priority'},
+                         Status => $args{'Status'},
+                         TimeWorked => $args{'TimeWorked'},
+                         TimeLeft => $args{'TimeLeft'},
+                         Told => $args{'Told'},
+                         Starts => $args{'Starts'},
+                         Started => $args{'Started'},
+                         Due => $args{'Due'},
+                         Resolved => $args{'Resolved'},
+                         Disabled => $args{'Disabled'},
 );
 
 }

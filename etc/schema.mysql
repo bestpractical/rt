@@ -134,6 +134,8 @@ CREATE TABLE Scrips (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   ScripCondition integer NULL  ,
   ScripAction integer NULL  ,
+  ScripConditionRules text NULL  ,
+  ScripActionRules text NULL  ,
   Stage varchar(32) NULL  ,
   Queue integer NULL  ,
   Template integer NULL  ,
