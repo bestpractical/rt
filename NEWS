@@ -1,7 +1,27 @@
 11 May 99
 ---------
 Loop prevention has been fixed, thanks to Tobias Brox
+
 Rolled .99.8pre2
+
+Made error messages on the web admin interface more prominent.
+
+All the following changes are from tobix:
+
+	Correspondence from RT now properly reflect the name of the sender 
+	in the "from" header.
+
+	Automated messages now properly have a "Precedence: bulk" header
+
+	A stupid error with rt::mail_alias has been fixed
+
+	Tobix' patch removes headers from all correspondence.  I'm relatively
+	afraid of this change, so I'm going to comment it out for now.
+
+	rtadmin (the commandline has a new tool) :
+	     -update <passwd> <admin> [<users>]  updates user(s) from the
+                   /etc/passwd file. If no users are specified, ALL
+                   of /etc/passwd will be processed.	
 
 9 May 99
 --------

@@ -1,3 +1,8 @@
+# $Header$
+# (c) 1996-1999 Jesse Vincent <jesse@fsck.com>
+# This software is redistributable under the terms of the GNU GPL
+#
+
 package rt::ui::web;
 
 sub activate { 
@@ -25,7 +30,7 @@ sub DisplayForm {
   #    print "<h1>WebRT Administrator</h1>";
   
   if ($result ne '') {
-    print "$result<hr>";
+    print "<b><font size=\"+1\">$result</font></b><hr>";
   }
   
   

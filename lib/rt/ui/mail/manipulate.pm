@@ -5,7 +5,7 @@ sub activate {
   #uncomment for a debugging version
   $debug = 0;
   
-  $area = ""; #TODO: we may wamt to be able to set the area on the command line
+  $area = ""; #TODO: we may want to be able to set the area on the command line
   
   $content=&read_mail_from_stdin();
   $in_queue=$ARGV[0];

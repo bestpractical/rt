@@ -72,6 +72,23 @@ sub parse_args {
 
 
 		&cli_create_modify_user($user_id);
+	    } elsif ($action eq "-getpwent") {
+		$passwd=$ARGV[++$i];
+		$admin=$ARGV[++$i];
+		if (!defined($admin)) {
+		    print "Usage: user -update <password> <administrator> [<users>...]\n";
+		    exit(0);
+		}
+		if (defined($ARGV[i+1])) {
+		   while (my $login=$ARGV[++$i]) {
+		       &add_pwent(getpwnam($login), $current_user);
+		   }
+	       } else { 
+		   #Sometimes it really had been useful beeing able to combine while with
+		   #else..  
+		   while (&add_pwent(getpwent, $current_user)) {;}
+	       }
+   
 	    }
 	    elsif ($action eq "-delete")	{
 		$user_id=$ARGV[++$i];
@@ -99,6 +116,25 @@ sub parse_args {
     }
 }
    
+
+# Add/Modify users by pwent:
+# This code by tobix...
+sub add_pwent {
+  if (!@_) {return undef;}
+  my ($name,$pass,$uid,$gid,
+      $quota,$comment,$gcos,$dir,$shell,$whoami) = @_;
+  my ($realname,$office,$phone)=split(/,/,$gcos);
+
+  my ($result, $msg)=&rt::add_modify_user_info
+      ($name,$realname,$passwd,"$name\@$host",$phone,$office,$comment,
+       ($name eq $whoami ? 1 : $admin),$whoami);
+
+  # Report to STDOUT:
+  print "$msg\n" if ($msg);
+
+  return $result;
+}
+
 
 sub cli_acl_queue {
     my ($queue_id)=@_;
@@ -284,6 +320,10 @@ user
       -create <user> create a RT account for <user>
       -modify <user> modify user info for <user>
       -delete <user> delete <user>'s RT account
+      -getpwent <password> <admin> [<users>]  Creates user(s) from the
+                    data in the /etc/passwd file. If no users are 
+		    specified, ALL of /etc/passwd will be processed.
+
 acl <user> <queue> set user <user>'s privileges for queue <queue>
                    if <queue> is ommitted, list user <user>'s ACLs
 
