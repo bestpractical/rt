@@ -165,7 +165,7 @@ RT-USERS MAILINGLIST
 By now, you've probably hit at least one sticking point. you probably
 want to join the RT-users mailinglist.  Send a message to:
 
-         rt-users-request@auk.con.wesleyan.edu
+         rt-users-request@lists.fsck.com 
 
 With the body of the message consisting of only the word:
 
@@ -175,6 +175,7 @@ Address questions to the mailinglist.  If you feel your questions are
 best not asked publically, send them to me personally at:
 jrvincent@wesleyan.edu.
 
+NOTE THAT THE LIST HAS MOVED
 
 
 
@@ -186,9 +187,8 @@ thanks to Lauren Burka, who originally tasked me with writing this beast.
 She forced me to use a database backend.  I've thanked her for it every
 day since.  Rich West rewrote this readme and did some UI hacking.  Adam
 Hirsch, Kit Kraysha, Robin Garner, Jens Glaser, John Adams, Trey Belew, 
-Sean Dague, Nathan Mehl, Kee Hinckley, Rich West and Dale Bewley have all
-contributed bug reports or ideas that have helped RT along.  If I've left 
-you out, please drop me a line....it wasn't intentional. 
+Sean Dague, Nathan Mehl, Kee Hinckley, Rich West, Dale Bewley and Serge Zhuk 
+have all contributed bug reports, code  or ideas that have helped RT along.  If I've left you out, please drop me a line....it wasn't intentional. 
  
         Enjoy
 

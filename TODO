@@ -1,8 +1,6 @@
 RT Todo List
 
-. Glimpse Searching
 . Reporting Scripts
-. Allow user to rename RT commands in the makefile
 
 . Move request display into rtq
 . Allow sub-requests.
@@ -14,13 +12,9 @@ RT Todo List
 . Searching on text of requests.
 
 
-
-
-
 RT Wish List
 . rt daemon. (for running interfaces remotely or not setuid)
 	This is actually not terribly hard. almost all of the code needed
 	can be found in the improved mail gateway.
 
-. TK interface
-
+. Gtk interface

@@ -286,7 +286,9 @@ sub date_parse {
     elsif ($date_string =~ /^(.?)\/(.?)$/) {
 	$month = $1;
 	$day = $2;
-	$year = -1;
+	#FIXME THIS IS NOT THE RIGHT WAY TO DO THIS. IT ONLY WORKS FOR DATES IN
+	# THE CURRENT YEAR
+	$year = $now_year;
     }
     
     elsif ($date_string =~ /^(...), (\d?) (...) (\d?) (\d?):(\d?):(\d?) (\W*)/) {

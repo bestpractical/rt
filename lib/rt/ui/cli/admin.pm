@@ -85,6 +85,7 @@ sub cli_acl_queue {
     my ($user_id)=@_;
     if (($current_user eq $user_id) or ($rt::users{$current_user}{admin_rt})) {
 	$email=&rt::ui::cli::question_string("User's email alias (ex: somebody\@somewhere.com)" ,$rt::users{$user_id}{email});
+	$real_name=&rt::ui::cli::question_string("Real Name",$rt::users{$user_id}{'real_name'});
 	$password=&rt::ui::cli::question_string("RT Password (will echo)",$rt::users{$user_id}{password});
 	$phone=&rt::ui::cli::question_string("Phone Number",$rt::users{$user_id}{phone});
 	$office=&rt::ui::cli::question_string("Office Location",$rt::users{$user_id}{office});
@@ -96,7 +97,7 @@ sub cli_acl_queue {
 	    $admin_rt=0;
 	}
 	if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
-	    ($flag, $message)=&rt::add_modify_user_info($user_id, $password, $email, $phone, $office,$comments, $admin_rt, $current_user);
+	    ($flag, $message)=&rt::add_modify_user_info($user_id, $real_name, $password, $email, $phone, $office,$comments, $admin_rt, $current_user);
 	    print "$message\n";
 	}
 	else {

@@ -1,0 +1,3 @@
+Cookie-prefs is a patch from serge zhuk (serge@yahoo-inc) which keeps track of your queue preferences with cookies. Be careful, as it also contains some other fixes which have already been integrated into rt.  This functionality will eventually make it into rt 1.1
+
+	jesse

@@ -1,8 +1,7 @@
 2 Aug 98
 --------
 
-	Incorporated a LOT of changes from Serge Zhuk (CHECK SPELLING AND EMAIL)
-
+Incorporated a LOT of changes from Serge Zhuk <serge@yahoo-inc.com>
 
 Bug fixes:
 
@@ -91,15 +90,15 @@ New features:
 
 Additionally, serge added some functionality to mail to the user on "take, give, steal, etc." which I didn't patch into the main codebase, as it goes against my philosophy of how RT should work in this incarnation.  He also added functionality to make webrt work as a non-ssl-based script.  I removed this, as I'll be adding cookie-auth soon.  
 
-ISSUES:
-	cookie-auth
-	cli updates
+
+I've added some new/updated patches to rt/contrib. check them out. We've got some new reporter code and a new version of req2rt from rich west as well as some code from serge to keep track of queue preferences with cookies.
+
+
+ISSUES REMAINING IN .9.18:
 	with view only, the user should NOT be able to have options to change 
 	things in webrt.
 
 	optionally, don't show/send headers.
-
-
 
 
 
