@@ -7,7 +7,7 @@
 <& /Elements/TitleBoxEnd &>
 % }
 <BR>
-<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT for $RT::rtname", title => 'Login' ,
+<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for $RT::rtname", title => 'Login' ,
 contentbg=>"#cccccc" &>
 
 
