@@ -45,7 +45,7 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM ACTION="CustomFields.html" METHOD=POST>
+<FORM ACTION="<%$RT::WebPath%><%$m->request_comp->path|n%>" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME="id" VALUE="<% $Object->Id %>">
 <INPUT TYPE=HIDDEN NAME="ObjectType" VALUE="<% $ObjectType %>">
 <INPUT TYPE=HIDDEN NAME="SubType" VALUE="<% $SubType %>">
