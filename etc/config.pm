@@ -2,15 +2,15 @@
 
 
 # This is where RT's preferences are kept track of
-# Since RT runs with taint checks in place, we need to specify
-# a path explicitly.  Unless sendmail is installed elsewhere,
-# there should be no need to change it
-
 
 package RT;
 
+# Different "tunable" configuration options should be in this hash:
+%SitePolicy=();
+
 # these modes don't do much right now...i had to hard code them in because 
 # perl ws being nasty about the leading 0  check RT_Content.pl for hacking
+# (Those shouldn't be needed in 2.0?)
 $dirmode=0750;
 $transactionmode=0640;
 umask(0027);	
