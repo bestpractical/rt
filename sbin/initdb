@@ -45,14 +45,14 @@ my $Handle = RT::Handle->new($RT::DatabaseType);
 $Handle->BuildDSN;
 my $dbh ;
 if ( $ACTION eq 'create' ) {
-        my $dsn = $Handle->DSN;
-        $dsn =~ s/dbname=$RT::DatabaseName//;
-     $dbh = DBI->connect( $dsn, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) || die $DBI::errstr;
+     $dbh = DBI->connect( get_system_dsn(), $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) || die "Failed to connect to ".get_system_dsn()." as $RT::DatabaseDBA: $DBI::errstr";
     print "Now creating a database for RT.\n";
     create_db();
 }
 elsif ( $ACTION eq 'drop' ) {
-     unless (  $dbh = DBI->connect( $Handle->DSN, $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) )
+
+
+     unless (  $dbh = DBI->connect( get_system_dsn(), $RT::DatabaseDBA, $RT::DatabaseDBAPassword ) )
      
         {  warn $DBI::errstr;
            warn "Database doesn't appear to exist. Aborting database drop.";
@@ -184,3 +184,23 @@ sub insert_acl {
 
 # }}}
 
+=head2 get_system_dsn
+
+Returns a dsn suitable for database creates and drops
+and user creates and drops
+
+=cut
+
+
+sub get_system_dsn {
+
+        my $dsn =        $Handle->DSN;
+      #with mysql, you want to connect sans database to funge things
+     if ($RT::DatabaseType eq 'mysql') {
+        $dsn =~ s/dbname=$RT::DatabaseName//;
+        # with postgres, you want to connect to database1
+      } elsif ($RT::DatabaseType eq 'Pg') {
+        $dsn =~ s/dbname=$RT::DatabaseName/dbname=template1/;
+      }
+      return $dsn;
+}

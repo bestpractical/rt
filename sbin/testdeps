@@ -37,6 +37,8 @@ $mode = shift || print_help();
 $dbd = shift || print_help();
 
 my @core_modules = qw(
+Digest::MD5
+Bundle::CPAN
 CPAN 1.60
 DBI 1.18
 Test::Inline

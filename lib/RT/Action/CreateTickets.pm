@@ -102,7 +102,7 @@ A convoluted example
  { # Find out who the administrators of the group called "HR" 
    # of which the creator of this ticket is a member
     my $name = "HR";
-    q
+   
     my $groups = RT::Groups->new($RT::SystemUser);
     $groups->LimitToUserDefinedGroups();
     $groups->Limit(FIELD => "Name", OPERATOR => "=", VALUE => "$name");
