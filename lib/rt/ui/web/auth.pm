@@ -52,8 +52,19 @@ Content Type: text/plain
 
 This RT Server requires you to log in with your RT username and password.  If you are unsure of your RT username or password, please seek out your local RT administrator.
 ";
-    
+
 }
+
+# return a username if the HTTPd has authenticated for us
+# undefined otherwise
+sub HTTP_AuthAvailable() {
+    # make sure that we are called by the httpd or by the rt-user
+    if(($EUID == $UID) || ($UID == $http_user)) {
+       return $ENV{'REMOTE_USER'};
+       }
+    return undef;
+   }    
+
 sub Headers_Authenticated(){
     local ($Name, $Pass)= @_;
     print "HTTP/1.0 200 Ok

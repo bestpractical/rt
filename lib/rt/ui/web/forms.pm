@@ -101,6 +101,16 @@ sub FormQueueOptions{
         if ($rt::ui::web::FORM{'refresh'} == 59 ) { print "SELECTED " ;}
         print "> every 1 minute";
 
+
+        print "<OPTION VALUE=180 ";
+        if ($rt::ui::web::FORM{'refresh'} == 179 ) { print "SELECTED " ;}
+        print "> every 3 minutes";
+
+
+        print "<OPTION VALUE=300 ";
+        if ($rt::ui::web::FORM{'refresh'} == 299 ) { print "SELECTED " ;}
+        print "> every 5 minutes";
+	
 	print "<OPTION VALUE=600 ";
         if ($rt::ui::web::FORM{'refresh'} == 599 ) { print "SELECTED " ;}
         print "> every 10 minutes";

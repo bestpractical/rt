@@ -942,7 +942,7 @@ $rt::req[$in_serial_num]{'status'}
 <TD BGCOLOR=\"$bg_color\">";
 			
   if ($rt::req[$in_serial_num]{'date_told'}) {
-			    print localtime($rt::req[$in_serial_num]{'date_told'});
+			    print scalar localtime($rt::req[$in_serial_num]{'date_told'});
 			    print " ($rt::req[$in_serial_num]{'since_told'} ago)";
 			}
 			else {
@@ -978,7 +978,7 @@ $rt::req[$in_serial_num]{'final_priority'}
 <TD BGCOLOR=\"$bg_color\">";		
   
   if ($rt::req[$in_serial_num]{'date_due'}) {
-    print localtime($rt::req[$in_serial_num]{'date_due'});
+    print scalar localtime($rt::req[$in_serial_num]{'date_due'});
     print " (in $rt::req[$in_serial_num]{'till_due'})";
   }
   else {
@@ -993,7 +993,7 @@ $rt::req[$in_serial_num]{'final_priority'}
 		    
 </TD>
 <TD BGCOLOR=\"$bg_color\"> " .
-localtime($rt::req[$in_serial_num]{'date_acted'}) . "
+scalar localtime($rt::req[$in_serial_num]{'date_acted'}) . "
 ($rt::req[$in_serial_num]{'since_acted'} ago)
 </TD>
 </TR> 
@@ -1003,7 +1003,7 @@ localtime($rt::req[$in_serial_num]{'date_acted'}) . "
 <b>Created</b>
 </TD>
 <TD BGCOLOR=\"$bg_color\"> " .
-localtime($rt::req[$in_serial_num]{'date_created'}) . "
+scalar localtime($rt::req[$in_serial_num]{'date_created'}) . "
 ($rt::req[$in_serial_num]{'age'} ago)
 </TD>
 </TR>
