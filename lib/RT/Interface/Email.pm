@@ -469,19 +469,34 @@ sub Gateway {
     if ( !$CurrentUser or !$CurrentUser->Id or $AuthStat == -1 ) {
 
         # If the plugins refused to create one, they lose.
-        MailError(
-            Subject     => "Could not load a valid user",
-            Explanation => <<EOT,
+        unless ($AuthStat == -1) {
+            # Notify the RT Admin of the failure.
+            # XXX Should this be configurable?
+            MailError(
+                To          => $RT::OwnerEmail,
+                Subject     => "Could not load a valid user",
+                Explanation => <<EOT,
+RT could not load a valid user, and RT's configuration does not allow
+for the creation of a new user for this email ($ErrorsTo).
+
+You might need to grant 'Everyone' the right 'CreateTicket' for the
+queue $args{'queue'}.
+
+EOT
+                MIMEObj  => $Message,
+                LogLevel => 'error' );
+            # Also notify the requestor that his request has been dropped.
+            MailError(
+                To          => $ErrorsTo,
+                Subject     => "Could not load a valid user",
+                Explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow
 for the creation of a new user for your email.
 
-Your RT administrator needs to grant 'Everyone' the right 'CreateTicket'
-for this queue.
-
 EOT
-            MIMEObj  => $Message,
-            LogLevel => 'error' )
-          unless $AuthStat == -1;
+                MIMEObj  => $Message,
+                LogLevel => 'error' );
+        }
         return ( 0, "Could not load a valid user", undef );
     }
 
