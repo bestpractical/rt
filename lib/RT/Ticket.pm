@@ -2427,15 +2427,6 @@ sub _NewTransaction {
   
   $self->_SetLastUpdated;
 
-  #if the ticket's status is 'new' and we've done something to it
-  # (other than creating it) let's open it up 
-  if ( ($self->Status) &&
-       ($self->Status eq 'new') &&
-       ($args{'Type'} ne 'Create') ) {
-      $self->SetStatus('open'); 
-  }
-
- 
   if (defined $args{'TimeTaken'} ) {
     $self->_UpdateTimeTaken($args{'TimeTaken'}); 
   }
