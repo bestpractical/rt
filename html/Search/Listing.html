@@ -37,16 +37,16 @@
 </TABLE>
 <div align=center>
 <font size=2>
-<a href="Listing.html?GotoPage=1"><&|/l&>First page</&></a>
+<a href="<%$RT::WebPath%>/Search/Listing.html?GotoPage=1"><&|/l&>First page</&></a>
 &nbsp;&nbsp;
 %  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="Listing.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+<a href="<%$RT::WebPath%>/Search/Listing.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
 &nbsp;&nbsp;
 %  }                                                                           
 %  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="Listing.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+<a href="<%$RT::WebPath%>/Search/Listing.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
 %  }
-%#&nbsp;&nbsp;<form method=get action="Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
+%#&nbsp;&nbsp;<form method=get action="<%$RT::WebPath%>/Search/Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
 </font>
 </div>
 <!--<div align=right>-->
