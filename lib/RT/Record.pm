@@ -21,11 +21,14 @@ ok (require RT::Record);
 =cut
 
 package RT::Record;
-use DBIx::SearchBuilder::Record::Cachable;
 use RT::Date;
 use RT::User;
 
-@ISA = qw(DBIx::SearchBuilder::Record::Cachable);
+use RT::Base;
+use DBIx::SearchBuilder::Record::Cachable;
+
+@ISA = qw(DBIx::SearchBuilder::Record RT::Base);
+
 
 # {{{ sub _Init 
 

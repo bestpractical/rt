@@ -1,1 +1,3 @@
-<FORM ACTION="<% $RT::WebPath%>/Ticket/Create.html"><input type=submit value="New ticket in">&nbsp;<& /Elements/SelectNewTicketQueue &></FORM>
+<FORM ACTION="<% $RT::WebPath%>/Ticket/Create.html">
+<&|/l, $m->scomp('/Elements/SelectNewTicketQueue')&><input type="submit" value="New ticket in">&nbsp;[_1]</&>
+</FORM>

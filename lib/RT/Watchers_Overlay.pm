@@ -32,16 +32,6 @@ ok(require RT::Watchers);
 
 no warnings qw(redefine);
 
-# {{{ sub _Init
-sub _Init  {
-  my $self = shift;
-  
-  $self->{'table'} = "Watchers";
-  $self->{'primary_key'} = "id";
-  return($self->SUPER::_Init(@_));
-}
-# }}}
-
 # {{{ sub Limit 
 
 =head2 Limit

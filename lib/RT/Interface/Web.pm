@@ -32,37 +32,6 @@ sub NewParser {
 
 # }}}
 
-# {{{ sub NewInterp
-
-=head2 NewInterp 
-
-  Takes a paremeter hash. Needs a param called 'parser' which is a reference
-  to an HTML::Mason::Parser.
-  returns a new Mason::Interp object
-
-=cut
-
-sub NewInterp {
-    my %params = (
-        allow_recursive_autohandlers => 1,
-        comp_root                    => [
-            [ local    => $RT::MasonLocalComponentRoot ],
-            [ standard => $RT::MasonComponentRoot ]
-        ],
-        data_dir => "$RT::MasonDataDir",
-        parser   => undef,
-        @_
-    );
-
-    #We allow recursive autohandlers to allow for RT auth.
-
-    use HTML::Mason::Interp;
-    my $interp = new HTML::Mason::Interp(%params);
-
-}
-
-# }}}
-
 # {{{ sub NewApacheHandler 
 
 =head2 NewApacheHandler
@@ -74,20 +43,112 @@ sub NewInterp {
 
 sub NewApacheHandler {
     my $interp = shift;
-    my $ah = new HTML::Mason::ApacheHandler( interp => $interp );
+    my $ah = new HTML::Mason::ApacheHandler( 
+    
+        comp_root                    => [
+            [ local    => $RT::MasonLocalComponentRoot ],
+            [ standard => $RT::MasonComponentRoot ]
+        ],
+        data_dir => "$RT::MasonDataDir");
+    
     return ($ah);
 }
 
 # }}}
 
+# {{{ sub NewCGIHandler 
+
+=head2 NewCGIHandler
+
+  Returns a new Mason::CGIHandler object
+
+=cut
+
+sub NewCGIHandler {
+    my %args = (
+        allow_globals => qw//,
+        @_
+    );
+
+    my $handler = HTML::Mason::CGIHandler->new(
+        comp_root                    => [
+            [ local    => $RT::MasonLocalComponentRoot ],
+            [ standard => $RT::MasonComponentRoot ]
+        ],
+        data_dir => "$RT::MasonDataDir",
+        allow_globals        => [qw(%session)]
+    );
+    return ($handler);
+}
+
+# }}}
+
+
+=head2 SetSessionCookie $r
+
+=cut
+
+
+sub SetSessionCookie {
+    my $r = shift;
+    my %cookies = CGI::Cookie->fetch();
+
+    eval {
+        tie %HTML::Mason::Commands::session, 'Apache::Session::File',
+          ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
+          {
+            Directory     => $RT::MasonSessionDir,
+            LockDirectory => $RT::MasonSessionDir,
+          };
+    };
+
+    if ($@) {
+
+        # If the session is invalid, create a new session.
+        if ( $@ =~ m#^Object does not exist in the data store# ) {
+            tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef,
+              {
+                Directory     => $RT::MasonSessionDir,
+                LockDirectory => $RT::MasonSessionDir,
+              };
+            undef $cookies{'RT_SID'};
+        }
+        else {
+            die "RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this dir ectory's permissions are correct.";
+        }
+    }
+
+    if ( !$cookies{'RT_SID'} ) {
+        my $cookie = new CGI::Cookie(
+            $r,
+            -name  => 'RT_SID',
+            -value => $HTML::Mason::Commands::session{_session_id},
+            -path  => '/',
+        );
+        $r->header_out('Set-Cookie:', $cookie);
+
+    } 
+}
+
 package HTML::Mason::Commands;
+
+=head2 SetContentType TYPE
+
+Set this response's output to content type TYPE
+
+=cut
+
+sub SetContentType {
+    my $type = shift;
+    $r->content_type($type);
+}
 
 # {{{ sub Abort
 # Error - calls Error and aborts
 sub Abort {
 
-    SetContentType('text/html');
-    $m->comp( "/Elements/Error", Why => shift );
+    $r->content_type('text/html');
+    $m->comp( "/Elements/Error", Why => shift );;
     $m->abort;
 }
 

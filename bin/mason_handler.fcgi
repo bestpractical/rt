@@ -21,7 +21,7 @@ RT::LoadConfig();
 
 package RT::Mason;
 use HTML::Mason;    # brings in subpackages: Parser, Interp, etc.
-use HTML::Mason::ApacheHandler;
+use HTML::Mason::CGIHandler;
 
 use vars qw( %session $cgi);
 
@@ -36,7 +36,7 @@ use Carp;
 {
 
     package HTML::Mason::Commands;
-    use vars qw(%session $ContentType);
+    use vars qw(%session);
 
     use RT::Tickets;
     use RT::Transactions;
@@ -68,22 +68,7 @@ use Carp;
     # set the page's content type.
     # In this case, just save it to a variable that we can pull later;
 
-    sub SetContentType {
-        $ContentType = shift;
-    }
-
-    sub CGIObject {
-        return $RT::Mason::cgi;
-    }
 }
-
-my ($output);
-my $parser = &RT::Interface::Web::NewParser( allow_globals => [%session] );
-
-my $interp = &RT::Interface::Web::NewInterp(
-    parser     => $parser,
-    out_method => \$output
-);
 
 # Die if WebSessionDir doesn't exist or we can't write to it
 
@@ -93,106 +78,32 @@ die "Can't read and write $RT::MasonSessionDir"
 
 RT::Init();
 
+my $h = RT::Interface::Web::NewCGIHandler();
+
 # Response loop
 while ( $RT::Mason::cgi = new CGI::Fast ) {
 
-    $HTML::Mason::Commands::ContentType = 'text/html';
-
-    # This routine comes from ApacheHandler.pm:
-    my ( %args, $cookie );
-    foreach my $key ( $cgi->param ) {
-        foreach my $value ( $cgi->param($key) ) {
-            if ( exists( $args{$key} ) ) {
-                if ( ref( $args{$key} ) ) {
-                    $args{$key} = [ @{ $args{$key} }, $value ];
-                }
-                else {
-                    $args{$key} = [ $args{$key}, $value ];
-                }
-            }
-            else {
-                $args{$key} = $value;
-            }
-
-        }
-
-    }
-
     my $comp = $ENV{'PATH_INFO'};
-
-    if ( $comp =~ /^(.*)$/ ) {    # untaint the path info. apache should
-                                  # never hand us a bogus path.
-                                  # We should be more careful here.
+    
+    if ($comp =~ /^(.*)$/) {  # untaint the path info. apache should
+                              # never hand us a bogus path. 
+                              # We should be more careful here.
         $comp = $1;
-    }
-
-    if ( $comp =~ /\/$/ ) {
+    }    
+    
+    if ($comp =~ /\/$/) {
         $comp .= "index.html";
     }
+    
+
+        $h->handle_cgi($comp);
+        untie %HTML::Mason::Commands::session;
+
+
 
     #This is all largely cut and pasted from mason's session_handler.pl
 
-    # {{{ Cookies
-    my %cookies = fetch CGI::Cookie();
 
-    eval {
-        my $session_id = undef;
 
-        #Get the session id and untaint it
-        if ( $cookies{'AF_SID'} && $cookies{'AF_SID'}->value() =~ /^(.*)$/ ) {
-            $session_id = $1;
-        }
-
-        tie %HTML::Mason::Commands::session, 'Apache::Session::File',
-          $session_id,
-          {
-            Directory     => $RT::MasonSessionDir,
-            LockDirectory => $RT::MasonSessionDir,
-          };
-    };
-
-    if ($@) {
-
-        # If the session is invalid, create a new session.
-        if ( $@ =~ m#^Object does not exist in the data store# ) {
-            tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef,
-              {
-                Directory     => $RT::MasonSessionDir,
-                LockDirectory => $RT::MasonSessionDir,
-              };
-            undef $cookies{'AF_SID'};
-        }
-        else {
-            die
-"$@ \nProbably means that RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this directory's permissions are correct.";
-        }
-    }
-
-    if ( !$cookies{'AF_SID'} ) {
-        $cookie = new CGI::Cookie(
-            -name  => 'AF_SID',
-            -value => $HTML::Mason::Commands::session{_session_id},
-            -path  => '/',
-        );
-
-    }
-    else {
-        $cookie = undef;
-    }
-
-    # }}}
-
-    $output = '';
-    eval { my $status = $interp->exec( $comp, %args ); };
-
-    if ($@) {
-        $output = "<PRE>$@</PRE>";
-    }
-
-    print "Content-Type: $HTML::Mason::Commands::ContentType\r\n";
-    print "Set-Cookie: $cookie\r\n" if ($cookie);
-    print "\r\n";
-    print $output;
-    untie %HTML::Mason::Commands::session;
 
 }

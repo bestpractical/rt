@@ -28,6 +28,8 @@ ok (require RT::CurrentUser);
 
 package RT::CurrentUser;
 use RT::Record;
+use RT::I18N;
+
 @ISA= qw(RT::Record);
 
 
@@ -264,6 +266,43 @@ sub HasRight {
 }
 
 # }}}
+
+# {{{ Localization
+
+=head2 LanguageHandle
+
+Returns this current user's langauge handle. Should take a language
+specification. but currently doesn't
+
+=begin testing
+
+ok (my $cu = RT::CurrentUser->new('root'));
+ok (my $lh = $cu->LanguageHandle);
+ok ($lh != undef);
+ok ($lh->isa('Locale::Maketext'));
+ok ($cu->loc('TEST_STRING') eq "Concrete Mixer", "Localized TEST_STRING into English");
+ok ($lh = $cu->LanguageHandle('fr'));
+ok ($cu->loc('TEST_STRING') eq "Feche la vache", "Localized TEST_STRING into Frenc");
+
+=end testing
+
+=cut 
+
+sub LanguageHandle {
+    my $self = shift;
+    if  ((!defined $self->{'LangHandle'}) || (@_))  {
+        $self->{'LangHandle'} = RT::I18N->get_handle(@_);
+    }
+    return ($self->{'LangHandle'});
+}
+
+sub loc {
+    my $self = shift;
+    $RT::Logger->debug("Language handle:".$self->LanguageHandle());
+    return($self->LanguageHandle->maketext(@_));
+}
+# }}}
+
 
 1;
  

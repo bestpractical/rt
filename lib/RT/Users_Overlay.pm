@@ -66,17 +66,6 @@ sub _DoSearch {
 
 # }}}
 
-# {{{ sub NewItem 
-
-sub NewItem  {
-  my $self = shift;
-
-  use RT::User;
-  my $item = new RT::User($self->CurrentUser);
-  return($item);
-}
-# }}}
-
 # {{{ LimitToEmail
 =head2 LimitToEmail
 
@@ -106,7 +95,7 @@ sub MemberOfGroup {
     my $self = shift;
     my $group = shift;
     
-    return ("No group specified") if (!defined $group);
+    return $self->loc("No group specified") if (!defined $group);
 
     my $groupalias = $self->NewAlias('GroupMembers');
 

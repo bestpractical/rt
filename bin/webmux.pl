@@ -54,7 +54,7 @@ use Carp;
     use RT::Interface::Web;
     use MIME::Entity;
     use Text::Wrapper;
-    use Apache::Cookie;
+    use CGI::Cookie;
     use Date::Parse;
     use HTML::Entities;
 
@@ -62,29 +62,21 @@ use Carp;
     use Apache::Session::File;
 
     # Set this page's content type to whatever we are called with
-    sub SetContentType {
-        my $type = shift;
-        $RT::Mason::r->content_type($type);
-    }
-
     sub CGIObject {
-        $m->cgi_object();
+        #$m->cgi_object();
     }
 
 }
 
-my $parser = &RT::Interface::Web::NewParser( allow_globals => [%session] );
 
-my $interp = &RT::Interface::Web::NewInterp( parser => $parser );
-
-my $ah = &RT::Interface::Web::NewApacheHandler($interp);
+my $ah = &RT::Interface::Web::NewApacheHandler();
 
 # Activate the following if running httpd as root (the normal case).
 # Resets ownership of all files created by Mason at startup.
 #
 chown( Apache->server->uid, Apache->server->gid, [$RT::MasonSessionDir] );
 
-chown( Apache->server->uid, Apache->server->gid, $interp->files_written );
+#chown( Apache->server->uid, Apache->server->gid, $interp->files_written );
 
 # Die if WebSessionDir doesn't exist or we can't write to it
 

@@ -2,6 +2,10 @@
 <& /Elements/Footer, %ARGS &>
 
 <%INIT>
+$m->comp('/Elements/SetupSessionCookie');
+unless ($session{'CurrentUser'}) {
+    $session{'CurrentUser'} = RT::CurrentUser->new();
+}
 
 $m->{'rt_base_time'} = time;
 

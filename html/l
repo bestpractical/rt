@@ -1,0 +1,2 @@
+% my $hand = $session{'CurrentUser'}->LanguageHandle;
+<%$hand->maketext($m->content, @_)%>

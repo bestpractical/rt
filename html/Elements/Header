@@ -29,8 +29,10 @@
 </TD>
 <TD ALIGN=RIGHT>
 <font color="#ffffff">
-% if ($session{'CurrentUser'}) {
-Signed in as <b><%$session{'CurrentUser'}->Name%></b>.<BR>
+% if ($session{'CurrentUser'}->Id) {
+<&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b>
+</&>
+<BR>
 [<A class='inverse' HREF="<%$RT::WebPath%>/User/Prefs.html" >Preferences</A>] 
 % unless ($RT::WebExternalAuth) { 
 [<A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html">Logout</a>]

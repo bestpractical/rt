@@ -26,15 +26,6 @@ ok(require RT::User);
 
 no warnings qw(redefine);
 
-# {{{ sub _Init
-sub _Init {
-    my $self = shift;
-    $self->{'table'} = "Users";
-    return ( $self->SUPER::_Init(@_) );
-}
-
-# }}}
-
 # {{{ sub _Accessible 
 
 sub _Accessible {
@@ -129,14 +120,14 @@ sub Create {
 
     #Check the ACL
     unless ( $self->CurrentUserHasRight('AdminUsers') ) {
-        return ( 0, 'No permission to create users' );
+        return ( 0, $self->loc('No permission to create users') );
     }
 
     if ( !$args{'Password'} ) {
         $args{'Password'} = '*NO-PASSWORD*';
     }
     elsif ( length( $args{'Password'} ) < $RT::MinimumPasswordLength ) {
-        return ( 0, "Password too short" );
+        return ( 0, $self->loc("Password too short") );
     }
     else {
         my $salt = join '',
@@ -147,29 +138,27 @@ sub Create {
     #TODO Specify some sensible defaults.
 
     unless ( defined( $args{'Name'} ) ) {
-        return ( 0, "Must specify 'Name' attribute" );
+        return ( 0, $self->loc("Must specify 'Name' attribute") );
     }
 
     #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
     if ($RT::SystemUser) {   #This only works if RT::SystemUser has been defined
         my $TempUser = RT::User->new($RT::SystemUser);
         $TempUser->Load( $args{'Name'} );
-        return ( 0, 'Name in use' ) if ( $TempUser->Id );
+        return ( 0, $self->loc('Name in use') ) if ( $TempUser->Id );
 
-        return ( 0, 'Email address in use' )
+        return ( 0, $self->loc('Email address in use') )
           unless ( $self->ValidateEmailAddress( $args{'EmailAddress'} ) );
     }
     else {
-        $RT::Logger->warning( "$self couldn't check for pre-existing "
-              . " users on create. This will happen"
-              . " on installation\n" );
+        $RT::Logger->warning( "$self couldn't check for pre-existing users");
     }
 
     my $id = $self->SUPER::Create(%args);
 
     #If the create failed.
     unless ($id) {
-        return ( 0, 'Could not create user' );
+        return ( 0, $self->loc('Could not create user') );
     }
 
     #TODO post 2.0
@@ -178,7 +167,7 @@ sub Create {
     #	#TODO: Send the user a "welcome message" 
     #}
 
-    return ( $id, 'User created' );
+    return ( $id, $self->loc('User created') );
 }
 
 # }}}
@@ -198,10 +187,10 @@ sub _BootstrapCreate {
     my $id = $self->SUPER::Create(%args);
 
     #If the create failed.
-    return ( 0, 'Could not create user' )
+    return ( 0, $self->loc('Could not create user') )
       unless ($id);
 
-    return ( $id, 'User created' );
+    return ( $id, $self->loc('User created') );
 }
 
 # }}}
@@ -211,7 +200,7 @@ sub _BootstrapCreate {
 sub Delete {
     my $self = shift;
 
-    return ( 0, 'Deleting this object would violate referential integrity' );
+    return ( 0, $self->loc('Deleting this object would violate referential integrity') );
 
 }
 
@@ -342,7 +331,7 @@ sub SetRandomPassword {
     my $self = shift;
 
     unless ( $self->CurrentUserCanModify('Password') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     my $pass = $self->GenerateRandomPassword( 6, 8 );
@@ -377,7 +366,7 @@ sub ResetPassword {
     my $self = shift;
 
     unless ( $self->CurrentUserCanModify('Password') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
     my ( $status, $pass ) = $self->SetRandomPassword();
 
@@ -419,10 +408,10 @@ sub ResetPassword {
     }
 
     if ($ret) {
-        return ( 1, 'New password notification sent' );
+        return ( 1, $self->loc('New password notification sent') );
     }
     else {
-        return ( 0, 'Notification could not be sent' );
+        return ( 0, $self->loc('Notification could not be sent') );
     }
 
 }
@@ -633,14 +622,14 @@ sub SetPassword {
     my $password = shift;
 
     unless ( $self->CurrentUserCanModify('Password') ) {
-        return ( 0, 'Permission Denied' );
+        return ( 0, $self->loc('Permission Denied') );
     }
 
     if ( !$password ) {
-        return ( 0, "No password set" );
+        return ( 0, $self->loc("No password set") );
     }
     elsif ( length($password) < $RT::MinimumPasswordLength ) {
-        return ( 0, "Password too short" );
+        return ( 0, $self->loc("Password too short") );
     }
     else {
         my $salt = join '',
@@ -1297,10 +1286,10 @@ sub _Set {
     # want to change an email address. For 2.2, neither should have an email address
 
     if ( $self->Privileged == 2 ) {
-        return ( 0, "Can not modify system users" );
+        return ( 0, $self->loc("Can not modify system users") );
     }
     unless ( $self->CurrentUserCanModify( $args{'Field'} ) ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     #Set the new value

@@ -28,18 +28,6 @@ ok(require RT::Watcher);
 
 no warnings qw(redefine);
 
-# {{{ sub _Init 
-
-sub _Init {
-    my $self = shift;
-
-    $self->{'table'} = "Watchers";
-    return ( $self->SUPER::_Init(@_) );
-
-}
-
-# }}}
-
 # {{{ sub Create 
 
 =head2 Create PARAMHASH
@@ -69,12 +57,12 @@ sub Create {
 
     #Do we have someone this applies to?
     unless ( ( $args{'Owner'} =~ /^(\d+)$/ ) || ( $args{'Email'} =~ /\@/ ) ) {
-        return ( 0, "No user or email address specified" );
+        return ( 0, $self->loc("No user or email address specified") );
     }
 
     #if we only have an email address, try to resolve it to an owner
     if ( $args{'Owner'} == 0 ) {
-        my $User = new RT::User($RT::SystemUser);
+        my $User = RT::User->new($RT::SystemUser);
         $User->LoadByEmail( $args{'Email'} );
         if ( $User->id ) {
             $args{'Owner'} = $User->id;
@@ -97,7 +85,7 @@ sub Create {
             Privileged   => 0,
             Comments     => 'Autocreated on ticket submission'
         );
-        return ( 0, "Could not create watcher for requestor" )
+        return ( 0, $self->loc("Could not create watcher for requestor") )
           unless $Val;
         if ( $NewUser->id ) {
             $args{'Owner'} = $NewUser->id;
@@ -112,10 +100,10 @@ sub Create {
 
     my $id = $self->SUPER::Create(%args);
     if ($id) {
-        return ( 1, "Interest noted" );
+        return ( 1, $self->loc("Interest noted") );
     }
     else {
-        return ( 0, "Error adding watcher" );
+        return ( 0, $self->loc("Error adding watcher") );
     }
 }
 
@@ -137,7 +125,7 @@ sub Load {
         $self->SUPER::LoadById($identifier);
     }
     else {
-        return ( 0, "That's not a numerical id" );
+        return ( 0, $self->loc("That's not a numerical id") );
     }
 }
 
@@ -173,7 +161,7 @@ sub LoadByValue {
 
     #Do we have someone this applies to?
     unless ( ( $args{'Owner'} =~ /^(\d*)$/ ) || ( $args{'Email'} =~ /\@/ ) ) {
-        return ( 0, "No user or email address specified" );
+        return ( 0, $self->loc("No user or email address specified") );
     }
 
     #if we only have an email address, try to resolve it to an owner
@@ -189,7 +177,7 @@ sub LoadByValue {
     if ( ( defined( $args{'Type'} ) )
         and ( $args{'Type'} !~ /^(Requestor|Cc|AdminCc)$/i ) )
     {
-        return ( 0, "Invalid Type" );
+        return ( 0, $self->loc("Invalid Type") );
     }
     if ( $args{'Owner'} ) {
         $self->LoadByCols(
@@ -208,9 +196,9 @@ sub LoadByValue {
         );
     }
     unless ( $self->Id ) {
-        return ( 0, "Couldn\'t find that watcher" );
+        return ( 0, $self->loc("Couldn't find that watcher") );
     }
-    return ( 1, "Watcher loaded" );
+    return ( 1, $self->loc("Watcher loaded") );
 }
 
 # }}}
@@ -262,7 +250,7 @@ sub Email {
         return ( $self->OwnerObj->EmailAddress );
     }
     else {
-        return ("Data error");
+        return ($self->loc("Data error"));
     }
 }
 

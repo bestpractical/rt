@@ -22,8 +22,12 @@ ok (require RT::SearchBuilder);
 =cut
 
 package RT::SearchBuilder;
+
+use RT::Base;
 use DBIx::SearchBuilder;
-@ISA= qw(DBIx::SearchBuilder);
+
+use vars qw(@ISA);
+@ISA = qw(DBIx::SearchBuilder RT::Base);
 
 # {{{ sub _Init 
 sub _Init  {

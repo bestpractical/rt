@@ -15,7 +15,7 @@ contentbg=>"#cccccc" &>
 <FORM METHOD=POST >
 <TABLE BORDER=0 WIDTH=100%>
 <TR ALIGN=RIGHT>
-<TD ALIGN=RIGHT>Username:</TD><TD ALIGN=LEFT><input name=user value="<%$user%>"></TD></TR>
+<TD ALIGN=RIGHT><&|/l&>Username</&>:</TD><TD ALIGN=LEFT><input name=user value="<%$user%>"></TD></TR>
 <TR><TD ALIGN=RIGHT>Password:</TD><TD ALIGN=LEFT><input type=password name=pass></TD></TR>
 <TR><TD colspan=2 align=right>
 <input type=submit Value="Login">

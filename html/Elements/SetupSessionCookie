@@ -1,0 +1,39 @@
+<%perl>
+my %cookies = CGI::Cookie->fetch();
+
+    eval {
+        tie %HTML::Mason::Commands::session, 'Apache::Session::File',
+          ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
+          {
+            Directory     => $RT::MasonSessionDir,
+            LockDirectory => $RT::MasonSessionDir,
+          };
+    };
+
+    if ($@) {
+
+        # If the session is invalid, create a new session.
+        if ( $@ =~ m#^Object does not exist in the data store# ) {
+            tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef,
+              {
+                Directory     => $RT::MasonSessionDir,
+                LockDirectory => $RT::MasonSessionDir,
+              };
+            undef $cookies{'RT_SID'};
+        }
+        else {
+            die "RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this dir ectory's permissions are correct.";
+        }
+    }
+
+    if ( !$cookies{'RT_SID'} ) {
+        my $cookie = new CGI::Cookie(
+            -name  => 'RT_SID',
+            -value => $HTML::Mason::Commands::session{_session_id},
+            -path  => '/',
+        );
+        $r->header_out('Set-Cookie', $cookie->as_string);
+
+    } 
+</%perl>
+
