@@ -159,27 +159,30 @@ sub cgi_vars_in {
 
 sub select_an_int{
     my ($default, $name) = @_;
-    my ($ones, $tens, $counter);
+    my ($Form, $ones, $tens, $counter);
     $tens = int($default / 10);
     $ones = int($default % 10);
-    print "<select name=\"".$name."_tens\">\n";
+    $Form = "<select name=\"".$name."_tens\">\n";
     for ($counter=0;$counter<=9;$counter++) {
-	print "<option";
-	if ($tens==$counter) {print " SELECTED";}
-	print ">$counter\n";
+	$Form .= "<option";
+	if ($tens==$counter) {$Form .= " SELECTED";}
+	$Form .= ">$counter\n";
     }
-    print "</select><select name=\"".$name."_ones\">\n";
+    $Form .= "</select><select name=\"".$name."_ones\">\n";
     for ($counter=0;$counter<=9;$counter++) {
-	print "<option";
-	if ($ones==$counter) {print " SELECTED";}
-	print ">$counter\n";
-    }
-    print "</select>\n"; 
+	$Form .= "<option";
+	if ($ones==$counter) {$Form .= " SELECTED";}
+	$Form .=  ">$counter\n";
+      }
+    $Form .=  "</select>\n"; 
     
+    return ($Form);
 }
 sub select_a_date{
-    my ($default, $name) = @_;
-    my ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year, $temp, $counter, $now_year);
+    my $default = shift;
+    my $name = shift;
+    
+    my ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $year, $temp, $counter, $now_year, $Form);
     local (@MoY = ('Jan','Feb','Mar','Apr','May','Jun',
 	       	   'Jul','Aug','Sep','Oct','Nov','Dec'));
 
@@ -188,34 +191,34 @@ sub select_a_date{
     }
     
  ($wday, $mon, $mday, $hour, $min, $sec, $TZ, $now_year)=&rt::parse_time($default);
-  print "<select name=\"".$name."_mday\">\n";
-  print "<option>No\n"; 
+  $Form = "<select name=\"".$name."_mday\">\n";
+  $Form .= "<option>No\n"; 
    for ($counter=1;$counter<=31;$counter++) {
-	print "<option";
-	if (($default > 0) and ($mday==$counter)) {print " SELECTED";}
-	print ">$counter\n";
+	$Form .= "<option";
+	if (($default > 0) and ($mday==$counter)) {$Form .= " SELECTED";}
+	$Form .= ">$counter\n";
     }
   
-  print "</select><select name=\"".$name."_month\">\n";
-  print "<option>Date\n";
+  $Form .= "</select><select name=\"".$name."_month\">\n";
+  $Form .= "<option>Date\n";
     for ($counter=0;$counter<=11;$counter++) {
-	print "<option value=\"$counter\" ";
-	if (($default > 0) and ($mon eq $MoY[$counter])) {print " SELECTED";}
-	print ">$MoY[$counter]\n";
+	$Form .= "<option value=\"$counter\" ";
+	if (($default > 0) and ($mon eq $MoY[$counter])) {$Form .= " SELECTED";}
+	$Form .= ">$MoY[$counter]\n";
     }
-    print "</select><select name=\"".$name."_year\">\n";
-	  print "<option>Set\n";
+    $Form .= "</select><select name=\"".$name."_year\">\n";
+	  $Form .= "<option>Set\n";
     for ($counter=$now_year;$counter<=($now_year+5);$counter++) {
-	print "<option value=\"".($counter-1900)."\" "; #apparently, timelocal
+	$Form .= "<option value=\"".($counter-1900)."\" "; #apparently, timelocal
 	                                            #likes dates to be 2 digits
 	                                            #that sucks
-	if (($default > 0)  and ($now_year==$counter)) {print " SELECTED";}
-	print ">$counter\n";
+	if (($default > 0)  and ($now_year==$counter)) {$Form .= " SELECTED";}
+	$Form .= ">$counter\n";
     }
 
-    print "</select>\n"; 
-
-}
+    $Form .= "</select>\n"; 
+    return ($Form);
+  }
 
 
 sub header {

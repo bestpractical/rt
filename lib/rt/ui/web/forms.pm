@@ -246,66 +246,7 @@ sub FormShowNum{
 }
 
 
-sub FormSetUser{
-    print "
-<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"submit\" value =\"Set requestor to\">
-<input type=\"hidden\" name=\"do_req_user\" value=\"true\">
-<input size=20 name=\"recipient\" VALUE=\"$rt::req[$serial_num]{'requestors'}\">
-</FORM>
-";
-}
 
-
-sub FormSetGive{
-    print "
-<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"submit\" value =\"Give to\"><select name=\"do_req_give_to\">
-<option value=\"\">Nobody ";	
-    foreach $user_id ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{acls}} ) {
-	if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $user_id)) {
-	    print "<option ";
-		print "SELECTED" if ($user_id eq $rt::req[$serial_num]{owner});
-		print ">$user_id\n";
-	    }
-	}
-    print "</select>
-<input type=\"hidden\" name=\"do_req_give\" value=\"true\"></FORM>
-";
-}
-sub FormSetArea{
-    print "
-<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"submit\" value =\"Set area to\"><select name=\"area\">
-<option value=\"\">None ";	
-    if (&rt::can_manipulate_queue ($rt::req[$serial_num]{queue_id}, $current_user)) {
-       foreach $area ( sort keys % {$rt::queues{$rt::req[$serial_num]{queue_id}}{areas}} ) {
-	    print "<option ";
-		print "SELECTED" if ($area eq $rt::req[$serial_num]{area});
-		print ">$area\n";
-	    }
-    }
-    print "</select>
-<input type=\"hidden\" name=\"do_req_area\" value=\"true\">
-</FORM>
-";
-}
-
-sub FormSetSubject{
-    print "
-<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"submit\" value =\"Set \#$serial_num\'s subject to\">
-<font size=\"$MESSAGE_FONT\">
-<input type=\"hidden\" name=\"do_req_subject\" value=\"true\">
-<input size=25 name=\"subject\" VALUE=\"$rt::req[$serial_num]{'subject'}\">
-</font>
-</FORM>
-";
-}
 sub FormSetKill{
     print "
 <form action=\"$ScriptURL\" method=\"post\">
@@ -322,69 +263,6 @@ sub FormSetSteal{
 <input type=\"submit\" name=\"dummy\" value=\"Abort\"></FORM>
 ";
 }
-
-sub FormSetMerge{
-    print "
-<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"hidden\" name=\"do_req_merge\" value=\"true\">
-<input type=\"submit\" value =\"Merge into #\"> <input size=5 name=\"req_merge_into\" ></FORM>
-";
-}
-sub FormSetQueue{
-    my ($queue, $value);
-    print "
-<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"submit\" value =\"Set queue to\"> <select name=\"queue\">";
-    foreach $queue (sort keys %rt::queues) {
-	if (&rt::can_create_request($queue, $current_user)) {
-	    print "<option";
-	    if ($rt::req[$serial_num]{queue_id} eq $queue) {
-		print " SELECTED";
-	    }
-	    print ">$queue\n";
-	}
-	}
-    print "
-</select>
-<input type=\"hidden\" name=\"do_req_queue\" value=\"true\"> 
-</FORM>
-";
-}
-  
-
-
-
-sub  FormSetDateDue{
-    print "<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"do_req_date_due\" value=\"true\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"submit\" value =\"Set Date Due to\"> ";
-    &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
-    print "</FORM>";
-}  
-
-sub  FormSetPrio{
-    print "
-<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"do_req_prio\" value=\"true\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"submit\" value =\"Set \#$serial_num\'s priority to\">";
-    &rt::ui::web::select_an_int($rt::req[$serial_num]{priority}, "prio");
- 
-    print "</FORM>\n";
-}  
-sub  FormSetFinalPrio{
-    print "
-<form action=\"$ScriptURL\" method=\"post\">
-<input type=\"hidden\" name=\"do_req_final_prio\" value=\"true\">
-<input type=\"hidden\" name=\"serial_num\" value=\"$serial_num\" >
-<input type=\"submit\" value =\"Set \#$serial_num\'s final priority to\">";
-    &rt::ui::web::select_an_int($rt::req[$serial_num]{final_priority}, "final_prio");
-    print "</FORM>\n";
-}  
-
 
 sub  FormSetStatus{
     if ($rt::req[$serial_num]{status} eq 'dead') { 
@@ -508,14 +386,15 @@ sub FormCreate_Step2 {
     my ($template,$actions,$user_id, $value);
     my $queue_id;
     require rt::support::mail;
-
+    $template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
+    $template=&rt::template_replace_tokens($template,0,0,"", $current_user);
     $queue_id = $rt::ui::web::FORM{'queue_id'};
     
     print "<CENTER> <form action=\"$ScriptURL\" method=\"post\"";
     if ($frames) { print "target=\"summary\" ";
 	       }
-    print ">";
-      print "<table>
+    print ">
+<table>
 <TR>
 <TD COLSPAN=3 BGCOLOR=\"#CCCCCC\" WIDTH=100%>
 <FONT SIZE=+2>
@@ -530,12 +409,6 @@ Create a new request in <b>$queue_id</b>.
 Queue:
 </font><BR>
 $queue_id </TD>
-
-\n";
-  
-   
-
-    print "
 <TD><FONT size=-2>Area:</FONT><BR>
 <select name=\"area\">
 <option value=\"\">None ";	
@@ -547,12 +420,9 @@ $queue_id </TD>
 	}
       }
     }
-    print "</select></TD>";
-    
-print "</TR>";
-
-
-print "<TR>
+    print "</select></TD>
+</TR>
+<TR>
 <TD><FONT SIZE=-2>Status:</FONT><BR>
 <select name=\"status\">
 <option value=\"open\">open
@@ -579,31 +449,25 @@ print "<TR>
     if ($current_user ne 'anonymous') {
 	print "value=\"$rt::users{$current_user}{email}\"";
     }
-    print "></TD></TR>";
-
-
-    print"<TR><TD><FONT SIZE=-2>Priority:</FONT><BR>";
-    
-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio}, "prio");
-    print "
+    print ">
+</TD></TR>
+<TR><TD><FONT SIZE=-2>Priority:</FONT><BR>
+ ".  &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio}, "prio") ."
 </TD><TD>
-<FONT SIZE=-2>Final Priority:</FONT><BR>";
-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio}, "final_prio");
-    print "</TD>";
+<FONT SIZE=-2>Final Priority:</FONT><BR>
+" . &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio}, "final_prio") ."
+</TD>
+<TD><FONT SIZE=-2>Due Date:</FONT><BR><input type=\"checkbox\" name=\"due\">
+" .  &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due") . "</TD>
+</TR>
 
-    print "<TD><FONT SIZE=-2>Due Date:</FONT><BR><input type=\"checkbox\" name=\"due\">";
-    &rt::ui::web::select_a_date($rt::req[$serial_num]{date_due}, "due");
-    print "</TD></TR>";
-
-
-print "<TR><TD COLSPAN=4><FONT SIZE=-2>Subject:</FONT><BR><input name=\"subject\" size=\"50\">
+<TR><TD COLSPAN=4><FONT SIZE=-2>Subject:</FONT><BR><input name=\"subject\" size=\"50\">
 
 </TD></TR>
 <TR><TD valign=\"top\" colspan=3><FONT SIZE=-1>Content:</FONT><BR>
 <font size=\"-1\">";
     
-    $template=&rt::template_read("web_create",$rt::ui::web::FORM{'queue_id'});
-    $template=&rt::template_replace_tokens($template,0,0,"", $current_user);
+
     
 print "<textarea rows=15 cols=78 name=\"content\" WRAP=HARD>$template</textarea>
 </TD></TR>

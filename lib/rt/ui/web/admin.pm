@@ -412,10 +412,10 @@ Queue Configuration
 <tr><td>Queue name:</td><td>$queue_id</td></tr>
 <tr><td>mail alias:</td><td><input name=\"email\" size=30 value=\"$rt::queues{$queue_id}{mail_alias}\"></td></tr>
 <tr><td>Initial priority:</td><td> ";
-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio},"initial_prio");
+    print &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_prio},"initial_prio");
     print "</td></tr>
 <tr><td>Final priority:</td><td>";
-    &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
+   print  &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
     print "</td></tr></table>\n<BR>\n";
 
     print "<hr><h2>Notification</h2>";
