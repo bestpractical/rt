@@ -34,7 +34,7 @@ use Getopt::Long;
 use CPAN;
 my %args;
 my %deps;
-GetOptions(\%args,'install', 'with-MYSQL', 'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE', 'with-ORACLE', 'with-FASTCGI', 'with-SPEEDYCGI', 'with-MODPERL1', 'with-MODPERL2' ,'with-DEV', 'download=s');
+GetOptions(\%args, 'v|verbose', 'install', 'with-MYSQL', 'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE', 'with-ORACLE', 'with-FASTCGI', 'with-SPEEDYCGI', 'with-MODPERL1', 'with-MODPERL2' ,'with-DEV', 'download=s');
 
 if (!keys %args) {
     help();
@@ -83,6 +83,9 @@ The following switches will tell the tool to check for specific dependencies
 	--with-modperl2		Libraries needed to support the modperl 2 handler
 
 	--with-dev		Tools needed for RT development
+
+You can also specify -v or --verbose to list the status of all dependencies,
+rather than just the missing ones.
 .
 }
 
@@ -249,8 +252,7 @@ if ($@) {
         print "\nRT is known to be non-functional on versions of perl older than 5.8.3.\nPlease upgrade to 5.8.3 or newer\n\n";
     }
 } else {
-    print "...found\n";
-
+    print "...found\n" if $args{'v'};
 }
 
 print "users:\n";
@@ -269,8 +271,7 @@ foreach my $type (keys %args) {
     while (@deps) {
         my $module = shift @deps;
         my $version = shift @deps;
-        my $ret;
-        $ret =test_dep($module, $version);	
+        my $ret = test_dep($module, $version);	
 
         if ($args{'install'} && !$ret) {
             resolve_dep($module);		
@@ -282,17 +283,17 @@ sub test_dep {
     my $module = shift;
     my $version = shift;
 
-    print "\t$module $version";
     eval "use $module $version ()";
     if ($@) {
         my $error = $@;
         $error =~ s/\n(.*)$//s;
+        print "\t$module $version";
         print "...MISSING\n";
         print "\t\t$error\n" if $error =~ /this is only/;
 
         return undef;
     } else {
-        print "...found\n";
+        print "\t$module $version...found\n" if $args{'v'};
         return 1;
     }
 }
