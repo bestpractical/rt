@@ -439,10 +439,6 @@ sub SetOwner {
   $more_params->{TransactionType}=$Type if $Type;
   my ($NewOwnerObj);
 
-  #TODO this routine dies when: we're trying to give something away
-  #TODO this routine dies when: we're trying to steal something
-
-
   require RT::User;
   $NewOwnerObj = RT::User->new($self->CurrentUser);
   
@@ -453,10 +449,12 @@ sub SetOwner {
   
   
   #If thie ticket has an owner and it's not the current user
-  #TODO:this breaks stealing.
-  
 
-  if ($self->Owner && ($self->Owner->Id) and ($self->CurrentUser->Id ne $self->Owner->Id())) {
+  # TODO: check this
+  
+  if ($Type ne 'Steal' and 
+      $self->Owner->Id!=$RT::Nobody and 
+      $self->CurrentUser->Id ne $self->Owner->Id())) {
     print STDERR  "You can only reassign tickets that you own or that are unowned\n";
     return(0, "You can only reassign tickets that you own or that are unowned");
   }
