@@ -1,7 +1,7 @@
 <%perl>
      my ($ticket, $trans,$attach, $filename);
      my $arg = $m->dhandler_arg;                # get rest of path
-     if ($arg =~ '^(\d+)/(\d+)') {
+     if ($arg =~ '^(\d+)/(\d+)/') {
         $trans = $2;
         $attach = $3;
      }
@@ -12,7 +12,7 @@
      $AttachmentObj->Load($attach) || Abort('Attachment could not be loaded');
 
      unless ($AttachmentObj->TransactionId() == $trans ) {
-        Abort("Bad transaction number for attachment.");
+        Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
      }
      my $content_type = $AttachmentObj->ContentType || 'text/html';
      $r->content_type($content_type);

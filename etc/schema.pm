@@ -272,7 +272,7 @@ my $gratuitous = {
   ],
   'primary_key' => 'id',
   'unique' => [  ],
-  'index' => [  ],
+  'index' => [ ['TransactionId'] ],
 },
 
 'Templates' => {

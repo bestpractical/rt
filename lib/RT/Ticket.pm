@@ -178,14 +178,14 @@ sub Create {
 	$QueueObj->Load($args{'Queue'}->Id);
     }
     else {
-	$RT::Logger->err("$self ". $args{'Queue'} . 
+	$RT::Logger->debug("$self ". $args{'Queue'} . 
 			 " not a recognised queue object.");
     }
   
     #Can't create a ticket without a queue.
     unless (defined ($QueueObj)) {
-	$RT::Logger->err( "$self No queue given for ticket creation.");
-	return (0, 0,'Queue not set');
+	$RT::Logger->debug( "$self No queue given for ticket creation.");
+	return (0, 0,'Could not create ticket. Queue not set');
     }
     
     #Now that we have a queue, Check the ACLS
@@ -205,9 +205,6 @@ sub Create {
       unless (defined $args{'FinalPriority'});
     
     
-    
-
-
     #TODO we should see what sort of due date we're getting, rather +
     # than assuming it's in ISO format.
     
@@ -268,6 +265,10 @@ sub Create {
     }	
 
     # }}}
+
+    unless ($self->ValidateStatus($args{'Status'})) {
+	return (0,0,'Invalid value for status');
+    }
 
     my $id = $self->SUPER::Create(
 				  Queue => $QueueObj->Id,
@@ -2035,8 +2036,6 @@ sub DeleteKeyword {
 
 # }}}
 
-# {{{ Actions + Routines dealing with transactions
-
 # {{{ Routines dealing with ownership
 
 # {{{ sub OwnerObj
@@ -2201,6 +2200,31 @@ sub Steal {
 
 # {{{ Routines dealing with status
 
+# {{{ sub ValidateStatus 
+
+=head2 ValidateStatus STATUS
+
+Takes a string. Returns true if that status is a valid status for this ticket.
+Returns false otherwise.
+
+=cut
+
+sub ValidateStatus {
+    my $self = shift;
+    my $status = shift;
+
+    #Make sure the status passed in is valid
+    unless ($status =~ /^(new|open|stalled|resolved|dead)$/) {
+	return (undef);
+    }
+    
+    return (1);
+
+}
+
+
+# }}}
+
 # {{{ sub SetStatus
 
 =head2 SetStatus STATUS
@@ -2218,13 +2242,6 @@ sub SetStatus {
 	return (undef);
     }
 
-    #Make sure the status passed in is valid
-    unless ($status =~ /^(new|open|stalled|resolved|dead)$/) {
-	return (0,"The status '$status' is not valid.");
-    }
-    
-    
-    
     my $now = new RT::Date($self->CurrentUser);
     $now->SetToNow();
     
@@ -2315,6 +2332,8 @@ sub Resolve {
 # }}}
 
 # }}}
+
+# {{{ Actions + Routines dealing with transactions
 
 # {{{ sub SetTold and _SetTold
 

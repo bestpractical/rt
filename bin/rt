@@ -88,7 +88,9 @@ my ( @id,
 # }}}
 
 # Set defaults for cli args
-$edit = 1; #Assume the user wants to edit replies and comments unless they specify --noedit
+
+$edit = 1; # Assume the user wants to edit replies and comments 
+           # unless they specify --noedit
 
 # {{{    args
 
@@ -319,29 +321,37 @@ if ($create) {
     
     #Make sure that the owner specified can own tickets in this queue
 
-    #see if we've specified an input file. if so, load it up
 
-    #If we haven't specified no-edit, get up an editor session,
-    #either with a temp file or the input file, if it exists.
+	    
+    my $linesref = GetMessageContent( Edit => $edit, Source => $source,
+				      CurrentUser => $CurrentUser
+				    );
+    
+    require MIME::Entity;
+    my $MIMEObj;
+    
+    if ($linesref) {
+	$MIMEObj = MIME::Entity->build(Data => $linesref);
+    }	
     
     use RT::Ticket;
     my $Ticket=new RT::Ticket($CurrentUser);
     my ($ticket, $trans, $msg) =
       $Ticket->Create(Queue => $queue,
-		    Owner => $owner,
-		    Status => $status,
-		    Subject => $subject,
-		    Requestors => undef,
-		    Cc => undef,
-		    AdminCc => undef,
-		    Due => $due,
-		    Starts => $starts,
-		    Started => $started,
-		    TimeLeft => $time_left,
-		    Priority => $priority,
-		    FinalPriority => $final_priority,
-		      
-		   );
+		      Owner => $owner,
+		      Status => $status || 'new' ,
+		      Subject => $subject,
+		      Requestors => undef,
+		      Cc => undef,
+		      AdminCc => undef,
+		      Due => $due,
+		      Starts => $starts,
+		      Started => $started,
+		      TimeLeft => $time_left,
+		      Priority => $priority,
+		      FinalPriority => $final_priority,
+		      MIMEObj => $MIMEObj
+		     );
     print $msg . "\n";
 }
 

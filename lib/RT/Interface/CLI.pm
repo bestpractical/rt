@@ -181,6 +181,11 @@ sub GetMessageContent {
     
     #Edit the file if we need to
     if ($edit) {	
+
+	unless ($ENV{'EDITOR'}) {
+	    $RT::Logger->crit('No $EDITOR variable defined'. "\n");
+	    return undef;
+	}
 	system ($ENV{'EDITOR'}, $filename);
     }	
     

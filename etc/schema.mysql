@@ -27,8 +27,10 @@ CREATE TABLE Attachments (
   Headers LONGBLOB NULL  ,
   Creator integer NULL  ,
   Created DATETIME NULL  ,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX (TransactionId)
 );
+CREATE INDEX Attachments1 ON Attachments (TransactionId);
 CREATE TABLE Queues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(40) NOT NULL  ,
