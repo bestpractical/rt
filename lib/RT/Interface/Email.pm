@@ -201,12 +201,6 @@ sub CreateUser {
     my ($Username, $Address, $Name, $ErrorsTo, $entity) = @_;
     my $NewUser = RT::User->new($RT::SystemUser);
 
-    # This data is tainted by some Very Broken mailers.
-    # (Sometimes they send raw ISO 8859-1 data here. fear that.
-    require Encode;
-    $Username = Encode::encode(utf8 => $Username, Encode::FB_PERLQQ()) if defined $Username;
-    $Name = Encode::encode(utf8 => $Name, Encode::FB_PERLQQ()) if defined $Name;
-    
     my ($Val, $Message) = 
       $NewUser->Create(Name => ($Username || $Address),
                        EmailAddress => $Address,
