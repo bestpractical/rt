@@ -1,0 +1,13 @@
+<%args>
+@Objects => undef
+$Name => undef
+</%args>
+<select name="<%$Name%>">
+% foreach my $object (@Objects) {
+% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
+<option value="<%ref($object)%>-<%$object->id%>"><&|/l&>My saved searches</&></option>
+% } else {
+<option value="<%ref($object)%>-<%$object->id%>"><&|/l, $object->Name&>[_1]'s saved searches</&></option>
+% }
+% }
+</select>

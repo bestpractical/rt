@@ -1,0 +1,175 @@
+%# BEGIN LICENSE BLOCK;
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+
+<& /Elements/Header, Title => $search_hash->{'Description'} &>
+<& /Ticket/Elements/Tabs, 
+    current_tab => 'Search/Edit.html', 
+    Title => $search_hash->{'Description'} &>
+<hr>
+<form method="POST" action="Edit.html">
+<table>
+<tr valign="top">
+<td>
+<& /Elements/TitleBoxStart, title => $search_hash->{'Description'} &>
+
+<&|/l&>Format:</&><br>
+<textarea name="Format" rows=5 cols=80><%($Format||$search_hash->{'Format'})%></textarea>
+<hr>
+<&|/l&>Query:</&><br>
+<textarea name="Query" rows=5 cols=80><%($Query||$search_hash->{'Query'})%></textarea>
+
+
+<&/Elements/TitleBoxEnd &>
+</td>
+<td valign="top">
+<& Elements/EditSearches, CurrentSearch => $search_hash &>
+</td>
+</tr>
+</table>
+
+</form>
+<%INIT>
+my $search_hash = {};
+my $search;
+my $title;
+
+
+# if we're asked to revert the current search, we just want to load it
+if ( $ARGS{'Revert'} ) {
+    $ARGS{'LoadSavedSearch'} = $ARGS{'SearchId'};
+    $Format                  = undef;
+    $Query                   = undef;
+}
+
+# if we're asked to load a search, load it.
+if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    # XXX TODO This will only let users save personal searches
+    # We explicitly list out the available types and
+    # don't trust user input here
+    if (    ( $obj_type eq 'RT::User' )
+         && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+        $search = $session{'CurrentUser'}->Attributes->WithId($search_id);
+
+    }
+
+    $search_hash->{'SearchId'} = $ARGS{'LoadSavedSearch'};
+}
+
+# if we're asked to save the current search, save it
+if ( $ARGS{'Save'} ) {
+    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+        my $obj_type  = $1;
+        my $obj_id    = $2;
+        my $search_id = $3;
+
+        # XXX TODO This will only let users save personal searches
+        # We explicitly list out the available types and
+        # don't trust user input here
+        if (    ( $obj_type eq 'RT::User' )
+             && ( $obj_id == $session{'CurrentUser'}->id ) ) {
+            $search =
+              $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+
+        }
+        else {
+
+            die "unsupported search type"
+
+        }
+
+        # if the search data or metadata has changed, change it
+        $search->SetSubValues( Format => $ARGS{'Format'},
+                               Query  => $ARGS{'Query'} );
+        $search->SetDescription( $ARGS{'Description'} );
+
+        # if the associated object has changed, change which object this search
+        # applies to
+
+
+         $search_hash->{'SearchId'}  = $ARGS{'SearchId'};
+
+    }
+    elsif ( $ARGS{'SearchId'} eq 'new' ) {
+        my ( $search_id, $search_msg ) =
+          $session{'CurrentUser'}->UserObj->AddAttribute(
+                                            Name        => 'SavedSearch',
+                                            Description => $ARGS{'Description'},
+                                            Content     => {
+                                                      Format => $ARGS{'Format'},
+                                                      Query  => $ARGS{'Query'} }
+          );
+        $search =
+          $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
+        $search_hash->{'SearchId'} =
+            ref( $session{'CurrentUser'}->UserObj )
+          . '-'. $session{'CurrentUser'}->UserObj->Id
+          . '-SavedSearch-'
+          . $search->Id;
+
+    }
+}
+
+# If we're asked to delete the current search, make it go away and reset
+# the search parameters
+if ( $ARGS{'Delete'} ) {
+    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+        my $obj_type  = $1;
+        my $obj_id    = $2;
+        my $search_id = $3;
+        $session{'CurrentUser'}->UserObj->Attributes->DeleteEntry(
+                                                          Name => 'SavedSearch',
+                                                          id   => $search_id );
+   
+    $Format = '';
+    $Query = '';
+
+}
+
+}
+
+if ($search) {
+    $search_hash->{Description} = ($search->Description()|| loc('Untitled search'));
+    $search_hash->{Format} = $search->SubValue('Format');
+    $search_hash->{Query} = $search->SubValue('Query');
+} else {
+    $search_hash->{Description} = loc('Untitled search');
+    $search_hash->{Format} = '';
+    $search_hash->{Query} = '';
+}
+
+
+
+</%INIT>
+
+<%ARGS>
+$SearchId => 'new'
+$Query => undef
+$Format => undef 
+$Description => undef
+$HideResults => 0
+</%ARGS>

@@ -52,6 +52,7 @@ sub Create {
     my $self = shift;
     my %args = ( 
                 Name => '',
+                Description => '',
                 Content => '',
                 ContentType => '',
                 ObjectType => '',
@@ -76,6 +77,7 @@ sub Create {
                          Name => $args{'Name'},
                          Content => $args{'Content'},
                          ContentType => $args{'ContentType'},
+                         Description => $args{'Description'},
                          ObjectType => $args{'ObjectType'},
                          ObjectId => $args{'ObjectId'},
 );

@@ -1,0 +1,18 @@
+<%args>
+@Objects => undef
+$Name => undef
+</%args>
+<select name="<%$Name%>">
+% foreach my $object (@Objects) {
+% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
+<option value=""><&|/l&>My saved searches</&></option>
+% } else {
+<option value=""></option>
+<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
+% }
+% my @searches = $object->Attributes->Named('SavedSearch');
+% foreach my $search (@searches) { 
+<option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->Id%>"> -<%$search->Description||loc('Unnamed search')%></option>
+% }
+% }
+</select>
