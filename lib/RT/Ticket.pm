@@ -75,6 +75,7 @@ Returns: TICKETID, Transaction Object, Error Message
 
 sub Create {
   my $self = shift;
+  my $ErrStr;
   
   my %args = (id => undef,
 	      EffectiveId => undef,
@@ -132,6 +133,7 @@ sub Create {
   (my $code, my $message) = $self->SUPER::_Set("EffectiveId",$id);
   if ($code == 0) {
     warn $message;
+    return (0, 0, $message);
   }
   if (defined $args{'MIMEEntity'}) {
     my $head = $args{'MIMEEntity'}->head;
@@ -158,19 +160,18 @@ sub Create {
 
   }
   #Add a transaction for the create
-  my $Trans = $self->_NewTransaction(Type => "Create",
+  my ($Trans,$ErrStr) = $self->_NewTransaction(Type => "Create",
 				     TimeTaken => 0, 
 				     MIMEEntity=>$args{'MIMEEntity'});
   
 
   # Logging
   if ($self->Id && $Trans) {
+      $ErrStr='New request #'.$self->Id." (".$self->Subject.") created in queue ".
+	  $self->Queue->QueueId;
+
       $RT::Logger->log(level=>'info', 
-		       message=>'New request #'
-		               .$self->Id
-		               ." (".$self->Subject
-		               .") created in queue "
-                               .$self->Queue->QueueId);
+		       message=>$ErrStr);
   } else {
       $RT::Logger->log(level=>'warn', 
 		       message=>"New request couldn't be successfully made; $ErrStr");
@@ -1126,7 +1127,7 @@ sub _NewTransaction {
   if (defined $args{'TimeTaken'} ) {
     $self->_UpdateTimeTaken($args{'TimeTaken'}); 
   }
-  return($trans);
+  return($transaction,$msg);
 }
 # }}}
 
