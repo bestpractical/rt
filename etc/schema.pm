@@ -107,7 +107,6 @@ my $gratuitous = {
   'index' => [  ],
 },
 
-
 'Tickets' => {
   'columns' => [
     'id', 'serial', '', '', '', '',
@@ -289,6 +288,46 @@ my $gratuitous = {
   'primary_key' => 'id',
   'unique' => [ ['Alias'] ],
   'index' => [  ],
-}
+},
+
+'Keywords' => {
+  'columns' => [
+    'id', 'serial', '', '', '', '',
+    'Name', 'varchar', 'NOT NULL', '255', '', '',
+    'Description', 'varchar', 'NULL', '255', '', '',
+    'Parent', 'integer', 'NULL', '', '', '',
+  ],
+  'primary_key' => 'id',
+  'unique' => [ [ 'Name', 'Parent' ] ],
+  'index' => [ [ 'Name', ], [ 'Parent' ] ],
+},
+
+'ObjectKeywords' => {
+  'columns' =>  [
+    'id', 'serial', '', '', '', '',
+    'Keyword', 'integer', 'NOT NULL', '', '', '',
+    'ObjectType', 'varchar', 'NOT NULL', '32', '', '',
+    'ObjectId', 'integer', 'NOT NULL', '', '', '',
+  ],
+  'primary_key' => 'id',
+  'unique' => [ [  'ObjectId', 'ObjectType', 'Keyword' ] ],
+  'index' => [ [ 'ObjectId', 'ObjectType'  ] , ['Keyword'] ],
+
+},
+
+'KeywordSelects' => {
+  'columns' =>  [
+    'id', 'serial', '', '', '', '',
+    'Parent', 'integer', 'NULL', '', '', '',
+    'Single', 'integer', 'NULL', '', '', '',
+    'Generations', 'integer', 'NOT NULL', '', 0, '',
+    'ObjectType', 'varchar', 'NOT NULL',  '32', '', '',
+    'ObjectField', 'varchar', 'NULL', '32', '', '',
+    'ObjectValue', 'varchar', 'NULL', '255', '', '',
+  ],
+  'primary_key' => 'id',
+  'unique' => [ [ ] ],
+  'index' => [ [ 'Parent' ] ],
+},
 
 };

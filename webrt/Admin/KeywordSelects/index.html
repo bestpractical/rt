@@ -1,0 +1,41 @@
+<& /Admin/Elements/Header, Title => 'Admin KeywordSelects' &>
+<& /Admin/Elements/Tabs, current_tab => 'Admin/KeywordSelects/' &>
+
+A <B>KeywordSelect</B> is a link between a <B>Keyword</B> and a object
+(currently just <B>Tickets</B>), titled by the <I>Name</I> field of the Keyword such that:
+<ul>
+<li>Object display will contain a field, titled with the <I>Name</I> field of
+the <B>Keyword</B> and showing any descendent keywords.
+<li>Object creation for this field will contain a field, titled with the
+<I>Name</I> field of the <B>Keyword</B> and containing the descendents of
+the <B>Keyword</B> as choices.
+<li>Searches for this object type will contain a selection field titled with
+the <I>Name</I> field of the <B>Keyword</B> and containing the descendents
+of the <B>Keyword</B> as choices.
+<TABLE WIDTH=100%>
+
+<TR>
+  <TD VALIGN=TOP>
+    <h2>Create Keyword</h2>
+    <& /Admin/Elements/ModifyKeyword, 'Create'=>'1' &>
+  </TD>
+
+  <TD VALIGN=TOP>
+    <H2>Modify Keyword</H2>
+    <& /Admin/Elements/SelectModifyKeyword &>
+  </TD>
+</TR>
+
+<TR>
+  <TD VALIGN=TOP>
+    <h2>Create KeywordSelect</h2>
+    <& /Admin/Elements/ModifyKeywordSelect, 'Create'=>'1' &>
+  </TD>
+
+  <TD VALIGN=TOP>
+    <H2>Modify KeywordSelect</H2>
+    <& /Admin/Elements/SelectModifyKeywordSelect &>
+  </TD>
+</TR>
+
+</TABLE>

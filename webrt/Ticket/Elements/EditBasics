@@ -50,6 +50,7 @@
  &>
 </TD>
 </TR>
+<TR><TD><& EditKeywordSelects, TicketObj=>$TicketObj &></TD></TR>
 </TABLE>
 
 <%INIT>

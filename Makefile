@@ -209,11 +209,13 @@ libs-install:
 	chown -R $(LIBS_OWNER) $(RT_LIB_PATH)
 	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
 	chmod -R 0755 $(RT_LIB_PATH)
-	cp -rp ./lib/generic_templates ./lib/images ./lib/rt $(RT_LIB_PATH)    
+	cp -rp ./lib/rt $(RT_LIB_PATH)    
 	( cd ./lib; \
-	  $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g;" RT.pm; \
 	  $(PERL) Makefile.PL LIB=$(RT_LIB_PATH) \
-	    && make && make test && make install; \
+	    && make \
+	    && make test \
+	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g;" blib/lib/RT.pm ;\
+	    make install \
 	)
 
 html-install:

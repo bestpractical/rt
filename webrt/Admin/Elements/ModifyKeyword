@@ -1,0 +1,90 @@
+<FORM METHOD="get" ACTION="<%$RT::WebPath%>/Admin/Keywords/Modify.html">
+[<%$title |n %>]<BR>
+<INPUT TYPE="hidden" NAME="id" VALUE="<% $id %>">
+Keyword <INPUT NAME="Name" VALUE="<% $Keyword->Name %>"><BR>
+Parent <SELECT NAME="Parent"><OPTION VALUE=""<% defined($Keyword->Parent) ? '' : ' SELECTED' %>><I>(none)</I>
+%while ( $parent = $parents->Next ) {
+<OPTION VALUE="<% $parent->id %>"<% defined($Keyword->Parent) && $parent->id == $Keyword->Parent ? ' SELECTED' : '' %>><% $parent->Name %>
+%}
+</SELECT></BR>
+Kids <FONT SIZE="-2">(separate by
+<INPUT TYPE="radio" NAME="delim" VALUE="n"<% $delim eq 'n' ? ' CHECKED' : '' %>>
+line or
+<INPUT TYPE="radio" NAME="delim" VALUE="s"<% $delim eq 's' ? ' CHECKED' : '' %>>
+whitespace)</FONT><BR>
+<TEXTAREA NAME="Kids" ROWS=4><% $kidstring %></TEXTAREA><BR>
+<INPUT TYPE="SUBMIT" VALUE="<% $submit %>">
+</FORM>
+
+<%INIT>
+
+use RT::Keyword;
+use RT::Keywords;
+
+my $Keyword = new RT::Keyword $session{CurrentUser};
+my $title;
+my $submit;
+my (%kids, $kid);
+
+if ( $Create ) {
+  $title = "Create a new Keyword";
+  $submit = "Create";
+  $id = "new";
+  %kids = ();
+  $Parent = ''; #silence 
+} else {
+  if ( $id eq 'new' ) {
+    $id = $Keyword->Create( Name => $Name, Parent => $Parent )
+      or Abort "can't create keyword Name=>$Name, Parent=>$Parent";
+  } else {
+    $Keyword->Load($id) || Abort("Can't load keyword id $id");
+    #foreach my $field ( grep eval "defined(\$$_)", qw( Name Parent )) {
+    #  eval "\$Keyword->Set(\$field=>\$$field); #sigh
+    #}
+    $Keyword->SetName($Name) if defined($Name);
+    $Keyword->SetParent($Parent) if defined($Parent);
+  }
+  $title = "Modify the Keyword <B>". $Keyword->Name. "</B>";
+  $submit = "Modify";
+  my $kids = new RT::Keywords $session{CurrentUser};
+  $kids->Limit( FIELD => 'Parent', VALUE => $id, OPERATOR => '=' );
+  $kids{$kid->Name} = $kid while $kid = $kids->Next;
+  if ( defined($Kids) ) {
+    my %newkids;
+    if ( $delim eq 'n' ) {
+      %newkids = map { $_=>1 } split(/\n/, $Kids);
+    } elsif ( $delim eq 's' ) {
+      %newkids = map { $_=>1 } split(' ', $Kids);
+    } else {
+      die "illegal delim";
+    }
+    foreach ( grep { ! defined($newkids{$_}) } keys %kids ) {
+      $kids{$_}->Delete;
+      delete $kids{$_};
+    }
+    foreach ( grep { ! defined($kids{$_}) } keys %newkids ) {
+      $kids{$_} = new RT::Keyword $session{CurrentUser};
+      $kids{$_}->Create( Name => $_, Parent => $id )
+        or Abort "can't create keyword Name=>$_, Parent=>$id";
+    }
+
+  }
+}
+
+my $parent;
+my $parents = new RT::Keywords $session{CurrentUser};
+$parents->UnLimit;
+
+$delim = ( grep /\s/, keys %kids ) ? 'n' : 's';
+my $kidstring = join("\n", keys %kids);
+
+</%INIT>
+
+<%ARGS>
+$id => undef
+$Create => undef
+$Name => undef
+$Parent => undef
+$Kids => undef
+$delim => undef
+</%ARGS>

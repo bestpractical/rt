@@ -35,6 +35,11 @@
 	SubTickets:<BR>
 	<& /Ticket/Elements/ShowMembers, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
+	<BR>
+	  <& /Elements/TitleBoxStart, title => "Keyword Selections" &>
+	  <& /Ticket/Elements/ShowKeywordSelects, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxEnd &>
+
 
 	
 	

@@ -3,6 +3,8 @@
 # This software is redistributable under the terms of the GNU GPL
 #
 package rt::ui::cli::admin;
+use strict;
+use vars qw($CurrentUser);
 use RT::User;
 use RT::Queue;
 
@@ -30,29 +32,30 @@ sub activate  {
 # {{{ sub ParseArgs 
 
 sub ParseArgs  {
-
+  my $i;
   for ($i=0;$i<=$#ARGV;$i++) {
-	if ($ARGV[$i] =~ /listacl/i) {
-		my $type = $ARGV[++$i];
-		if ($type =~ /us/i) {
-			my $user = $ARGV[++$i];
-			&UserACLList($user);
-		}
-		elsif ($type =~ /q/i) {
-			my $queue = $ARGV[++$i];
-			&QueueACLList($queue);
-		}
-	}
+
+    if ($ARGV[$i] =~ /listacl/i) {
+    	my $type = $ARGV[++$i];
+    	if ($type =~ /us/i) {
+    		my $user = $ARGV[++$i];
+    		&UserACLList($user);
+    	}
+    	elsif ($type =~ /q/i) {
+    		my $queue = $ARGV[++$i];
+    		&QueueACLList($queue);
+    	}
+    }
 	
     elsif ($ARGV[$i] =~ 'q') {
-      $action=$ARGV[++$i];
+      my $action=$ARGV[++$i];
       
       if ($action eq "-list") {
 	&cli_list_queues();
       }
       
       if ($action eq "-create") {
-	$queue_id=$ARGV[++$i];
+	my $queue_id=$ARGV[++$i];
 	if (!$queue_id) {
 	  print "You must specify a queue.\n";
 	  return(0);
@@ -61,7 +64,7 @@ sub ParseArgs  {
       }
       
       elsif ($action eq "-modify") {
-	$queue_id=$ARGV[++$i];
+	my $queue_id=$ARGV[++$i];
 	if (!$queue_id) {
 	  print "You must specify a queue.\n";
 	  return(0);
@@ -69,16 +72,16 @@ sub ParseArgs  {
 	&cli_modify_queue($queue_id);
       }
       
-      elsif ( ($ARGV[$i] =~ "-cc") ||	($ARGV[$i] =~ "-admincc") ) {
-	my $type = $ARGV[$i];
+      elsif ( $action eq  "-cc" || $action eq "-admincc") {
 	my $queue_id = $ARGV[++$i];
 	my $arg = $ARGV[++$i];
 	my $Queue = &LoadQueue($queue_id);
-	
-	if ($type eq '-cc') {
+
+        my $watcher_type;
+	if ($action eq '-cc') {
 	  $watcher_type = "Cc";
 	}
-	elsif ($type eq '-admincc') {
+	elsif ($action eq '-admincc') {
 	  $watcher_type = "AdminCc";
 	}
 	
@@ -87,98 +90,158 @@ sub ParseArgs  {
 	  die "This else never reached. Ever. or you broke the cli\n";
 	}
 	
+	my $w_action;
+	my $email;
 	if ($arg =~ /^(.)(.*)/) {
-	  $action = $1;
+	  $w_action = $1;
 	  $email = $2;
 	}
-	if ($action eq "+") {
+	my $Message;
+	if ($w_action eq "+") {
 	  $Message .= $Queue->AddWatcher(Email => "$email",
 					 Type => "$watcher_type");
 	  
 	}
-	elsif ($action eq "-") {
+	elsif ($w_action eq "-") {
 	  $Message .= $Queue->DeleteWatcher("$email");
 	}
 	else {
-	  $Message .= "$type expects an argument of the form +<email address> or -<email address>\n";
+	  $Message .= "$watcher_type expects an argument of the form +<email address> or -<email address>\n";
 	}
       }
       
-    }
-    
-    
-    
-    elsif ($action eq "-delete") {
-      $queue_id=$ARGV[++$i];
-      if (!$queue_id) {
-	print "You must specify a queue.\n";
-	  exit(0);
+      elsif ($action eq "-delete") {
+        my $queue_id=$ARGV[++$i];
+        if (!$queue_id) {
+	  print "You must specify a queue.\n";
+	    exit(0);
+        }
+        &cli_delete_queue($queue_id);
       }
-      
-      &cli_delete_queue($queue_id);
-    }
     
-    elsif ($action eq "-acl")	{
-      $queue_id=$ARGV[++$i];
-      if (!$queue_id) {
-	print "You must specify a queue.\n";
-	return(0);
-      }
-      &cli_acl_queue($queue_id);
-    }	
-    
-    
+      elsif ($action eq "-acl")	{
+        my $queue_id=$ARGV[++$i];
+        if (!$queue_id) {
+	  print "You must specify a queue.\n";
+	  return(0);
+        }
+        &cli_acl_queue($queue_id);
+      }	
+
+    } # end of queue actions
     
     elsif ($ARGV[$i] =~ 'u') {
       require RT::User;
       
-      $action=$ARGV[++$i];
+      my $action=$ARGV[++$i];
      
       if ($action =~ /-disable/) {
 	my $userid = $ARGV[++$i];
 	&DisableUser($userid);
       }
-      if ($action =~ /-enable/) {
+      elsif ($action =~ /-enable/) {
 	my $userid = $ARGV[++$i];
 	&EnableUser($userid);
-	}
-  	
- 
-    if ($action eq "-modify") {
-      $user_id=$ARGV[++$i];
-      if (!$user_id) {
-	print "You must specify a user.\n";
-	return(0);
-	}
-      &cli_modify_user($user_id);
-    } 
-    
-    elsif  ($action eq "-create") {
-      $user_id=$ARGV[++$i];
-      if (!$user_id) {
-	print "You must specify a user.\n";
-	return(0);
       }
-      &cli_create_user($user_id);
-    } 
+      elsif ($action eq "-modify") {
+        my $user_id=$ARGV[++$i];
+        if (!$user_id) {
+	  print "You must specify a user.\n";
+          return(0);
+	}
+        &cli_modify_user($user_id);
+      } 
+      elsif  ($action eq "-create") {
+        my $user_id=$ARGV[++$i];
+        if (!$user_id) {
+          print "You must specify a user.\n";
+          return(0);
+        }
+        &cli_create_user($user_id);
+      } 
+      elsif ($action eq "-delete")	{
+        my $user_id=$ARGV[++$i];
+        if (!$user_id) {
+          print "You must specify a user.\n";
+          exit(0);
+        }
+        &cli_delete_user($user_id);
+      }	
     
-    elsif ($action eq "-delete")	{
-      $user_id=$ARGV[++$i];
-      if (!$user_id) {
-	print "You must specify a user.\n";
-	exit(0);
+    } #end of user actions
+
+    elsif ( $ARGV[$i] =~ /^keyword$/i ) {
+      my $action = $ARGV[++$i]
+        or do { &cli_help_rt_admin(); exit; };
+      if ( $action =~ /^\-create$/i ) {
+        my $name = $ARGV[++$i]
+          or do { &cli_help_rt_admin(); exit; };
+        if ( defined($ARGV[$i+1]) && $ARGV[$i+1] =~ /^\-parent$/i ) {
+          $i++;
+          my $parent = $ARGV[++$i]
+            or do { &cli_help_rt_admin(); exit; };
+          &cli_create_keyword( Name => $name, Parent => $parent );
+        } else {
+          &cli_create_keyword( Name => $name );
+        }
+      } else {
+        die "keyword $action unimplemented";
       }
-      
-      &cli_delete_user($user_id);
-    }	
-    
-    }
+    } #end of keyword actions
+
+    elsif ( $ARGV[$i] =~ /^keywordselect$/i ) {
+      my $action=$ARGV[++$i]
+        or do { &cli_help_rt_admin(); exit; };
+      if ( $action =~ /^\-create$/i ) {
+        my %keywordselect;
+        $keywordselect{objecttype} = $ARGV[++$i]
+          or do { &cli_help_rt_admin(); exit; };
+        $keywordselect{parent} = $ARGV[++$i]
+          or do { &cli_help_rt_admin(); exit; };
+        while ( defined($ARGV[$i+1])
+                && $ARGV[$i+1] =~ /^\-(single|generations|objectfield|objectvalue)$/i
+              ) {
+          $i++;
+          my $param = $1;
+          if ( lc($param) eq 'generations' ) {
+            $keywordselect{generations} = $ARGV[++$i]
+              or do { &cli_help_rt_admin(); exit; };
+          } elsif ( lc($param) eq 'objectfield' ) {
+            $keywordselect{objectfield} = $ARGV[++$i]
+              or do { &cli_help_rt_admin(); exit; };
+          } elsif ( lc($param) eq 'objectvalue' ) {
+            $keywordselect{objectvalue} = $ARGV[++$i]
+              or do { &cli_help_rt_admin(); exit; };
+          } elsif ( lc($param) eq 'single' ) {
+            $keywordselect{single}++;
+          }
+        }
+        &cli_create_keywordselect( %keywordselect );
+      } else {
+        die "keyword $action unimplemented";
+      }
+    } #end of keywordselect actions
+
   
     else{
       &cli_help_rt_admin();
       exit(0);
     }
   }
+}
+
+
+
+sub cli_create_keyword {
+  use RT::Keyword;
+  my $keyword = new RT::Keyword $CurrentUser;
+  $keyword->Create(@_);
+}
+
+sub cli_create_keywordselect {
+  use RT::KeywordSelect;
+  my $keywordselect = new RT::KeywordSelect $CurrentUser;
+  $keywordselect->Create(@_);
 }
 
 # }}}
@@ -274,7 +337,10 @@ sub cli_modify_user_helper  {
   my $User = shift;
 
 
-   my ($email, $real_name, $password, $phone, $office, $admin_rt, $comments, $message);
+   my( $email, $real_name, $password, $homephone, $workphone, $address1,
+       $address2, $city, $state, $zip, $country, $gecos, $externalid,
+       $admin_rt, $comments, $message
+     );
    
    if (($CurrentUser->Id eq $User->Id) or 
        ($CurrentUser->IsAdministrator)) {
@@ -358,7 +424,7 @@ sub cli_modify_user_helper  {
 sub cli_create_user  {
   my $user_id = shift;
   my $User = RT::User->new($CurrentUser);
-  (my $result, $message)= $User->Create(UserId => $user_id);
+  my($result, $message) = $User->Create(UserId => $user_id);
   if (!$result) {
     print $message;
     return()
@@ -425,7 +491,7 @@ sub cli_modify_queue_helper  {
 						 $Queue->FinalPriority);
   
   if(&rt::ui::cli::question_yes_no("Are you satisfied with your answers",0)){
-    $message = $Queue->SetCorrespondAddress($mail_alias);
+    my $message = $Queue->SetCorrespondAddress($mail_alias);
     $message .= $Queue->SetCommentAddress($comment_alias);
     $message .= $Queue->SetMailOwnerOnTransaction($m_owner_trans);
     $message .= $Queue->SetMailMembersOnTransaction($m_members_trans);
@@ -451,7 +517,7 @@ sub cli_delete_queue  {
     if(&rt::ui::cli::question_yes_no("Really DELETE queue $queue_id",0)){
       my $Queue = new RT::Queue($CurrentUser);
       $Queue->Load($queue_id);
-      $message = $Queue->Delete();
+      my $message = $Queue->Delete();
       print "$message\n";
     }
   else {
@@ -466,7 +532,7 @@ sub cli_delete_user  {
   if(&rt::ui::cli::question_yes_no("Really DELETE user $user_id",0)){
     my $User = new RT::User($CurrentUser);
     $User->Load($user_id);
-    $message = $User->Delete();
+    my $message = $User->Delete();
     print "$message\n";
   }
   else {
@@ -580,10 +646,31 @@ listacl
 
 
 
-queue  to implement:
+queue
       -create <queue>              create a new queue called <queue>
       -modify <queue>              modify <queue>'s settings
       -delete <queue>              completely wipe out <queue>
+      -cc <queue> +email
+      -cc <queue> -email
+      -admincc <queue> +email
+      -admincc <queue> -email
+
+keyword
+      -create <name>
+        -parent <Keywords.id or Keywords.Name> (optional)
+      -modify (to be implemented)
+      -delete (to be implemented)
+
+keywordselect
+      -create <objecttype> <parent> 
+          <objecttype> is one of: Ticket  
+          <parent> is a Keywords.id or Keywords.Name 
+        -single
+        -generations <generations>
+        -objectfield queue
+        -objectvalue <queueid>
+      -modify (to be implemented)
+      -delete (to be implemented)
 ";
 }
 # }}}
@@ -596,7 +683,7 @@ sub LoadQueue {
   # get a new queue object and fill it.
   use RT::Queue;
   $Queue = new RT::Queue($CurrentUser);
-  my $Status = $Queue->Load($queue_id);
+  my $status = $Queue->Load($queue_id);
   if (!$status) {
 	$RT::Logger->debug( "Couldn\'t load the queue called $queue_id");
 	exit (-1);

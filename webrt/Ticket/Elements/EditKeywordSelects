@@ -1,0 +1,27 @@
+<TABLE>
+<TR>
+% while ( $KeywordSelect = $KeywordSelects->Next ) {
+<TD>
+<% $KeywordSelect->KeywordObj->Name %><BR>
+<INPUT TYPE="hidden" NAME="KeywordSelectMagic<% $KeywordSelect->id %>" VALUE="1">
+<SELECT NAME="KeywordSelect<% $KeywordSelect->id %>"<% $KeywordSelect->Single ? "" : " MULTIPLE" %>>
+%   my $Descendents = $KeywordSelect->KeywordObj->Descendents;
+%   foreach my $kid ( keys %{$Descendents} ) {
+<OPTION VALUE="<% $kid %>"<%  $KeywordSelect->KeywordObj->TicketObjectKeyword($kid, $TicketObj->id) ? ' SELECTED' : '' %>><% $Descendents->{$kid} %>
+%   }
+</SELECT>
+</TD>
+% }
+</TR>
+</TABLE>
+
+<%INIT>
+my $KeywordSelects = $TicketObj->KeywordSelects;
+my $KeywordSelect;
+
+</%INIT>
+
+<%ARGS>
+$TicketObj => undef
+</%ARGS>
+

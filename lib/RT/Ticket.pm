@@ -30,6 +30,7 @@ use RT::Link;
 use RT::Links;
 use RT::Date;
 use RT::Watcher;
+use RT::KeywordSelects;
 
 @ISA= qw(RT::Record);
 
@@ -2245,6 +2246,42 @@ sub HasRight {
 
 # }}}
 
+=head2 KeywordSelects
+
+Returns an B<RT::KeywordSelects> object containing the collection of
+B<RT::KeywordSelect> objects which apply to this ticket.
+
+=cut
+
+sub KeywordSelects {
+  my $self = shift;
+  $self->id;
+  $self->Queue;
+  my $KeywordSelects = new RT::KeywordSelects $self->CurrentUser;
+  # ok, this isn't quite right.  it assumes ObjectField is "Queue" if 
+  # ObjectValue is the current Queue.id, which is currently true, but the
+  # idea is to support additional QueueFields...
+  # SELECT * FROM KeywordSelects WHERE
+  # ObjectType = "Ticket" AND
+  # ( ObjectField = "" OR
+  #   ( ObjectField = "Queue" AND ObjectValue = $self->Queue )
+  # ) 
+  $KeywordSelects->Limit(
+    FIELD => 'ObjectType',
+    VALUE => 'Ticket',
+  );
+#  $KeywordSelects->Limit(
+#    FIELD => 'ObjectField',
+#    VALUE => '',
+#    ENTRYAGGREGATOR => 'OR',
+#  );
+#  $KeywordSelects->Limit(
+#    FIELD => 'ObjectValue',
+#    VALUE => $self->Queue, 
+#    ENTRYAGGREGATOR => 'OR',
+#  );
+  $KeywordSelects;
+}
 
 1;
 

@@ -1,0 +1,25 @@
+<TABLE>
+% while ( $KeywordSelect = $KeywordSelects->Next ) {
+<TR>
+<TD>
+<% $KeywordSelect->KeywordObj->Name %><BR>
+</TD>
+<TD>
+%   my $TicketDescendents = $KeywordSelect->KeywordObj->TicketDescendents($Ticket->id);
+%   foreach my $kid ( keys %{$TicketDescendents} ) {
+<% '<B>'. $TicketDescendents->{$kid}. '</B>' |n %><BR>
+%   }
+</TD>
+</TR>
+% }
+</TABLE>
+
+<%INIT>
+use RT::ObjectKeywords;
+my $KeywordSelects = $Ticket->KeywordSelects;
+my $KeywordSelect;
+</%INIT>
+
+<%ARGS>
+$Ticket => undef
+</%ARGS>

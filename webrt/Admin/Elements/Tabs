@@ -14,7 +14,11 @@
 			 },
 	       System => { 'title' => 'Global',
 			   path => 'Admin/Global/',
-			 }
+			 },
+               KeywordSelects => { title => 'Keywords',
+                                   path => 'Admin/KeywordSelects/',
+                                 },
+
 	       
 	     };
 </%INIT>
