@@ -625,7 +625,7 @@ sub parse_actions {
 	  
 	  $due_date = &rt::date_parse($due_string);
 	  
-	  ($trans,$message)=&rt::change_date_due($serial_num, $date_due, $authenticated_user);
+	  ($trans,$message)=&rt::change_date_due($serial_num, $due_date, $authenticated_user);
 	}
 	
 	#deal with SET STATUS commands
