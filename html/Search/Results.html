@@ -88,17 +88,19 @@
 <%INIT>
 my ($title, $ticketcount);
 $session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'}) ;
 $session{'tickets'}->FromSQL($Query) if ($Query);
 $session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 
-if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
-    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
-    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
-    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
-    # Invalidate the ordering cache
-    undef $session{'tickets'}->{'items_array'};
-}
+
+$session{'CurrentSearchHash'} = {
+    Format      => $Format,
+    Query       => $Query,
+    Order       => $Order,
+    OrderBy     => $OrderBy,
+    RowsPerPage => $Rows
+    } unless ($session{'CurrentSearchHash'} && $session{'CurrentSearchHash'}->{Query} eq $Query);
+
 
 
 if ( $session{'tickets'}->Query()) {
