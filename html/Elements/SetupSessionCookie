@@ -31,6 +31,10 @@ my %backends = (
 my $session_class = $RT::WebSessionClass || $backends{$RT::DatabaseType} || 'Apache::Session::File';
 my $pm = "$session_class.pm"; $pm =~ s|::|/|g; require $pm;
 
+    # morning bug avoidance attempt -- pdh 20030815
+    unless ($RT::Handle->dbh && $RT::Handle->dbh->ping) {
+        $RT::Handle->Connect();
+    }
     eval {
         tie %session, $session_class,
           $SessionCookie || ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
