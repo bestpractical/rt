@@ -116,8 +116,6 @@ sub IsRTAddress {
     return(undef)
 }
 
-
-
 # CanonicalizeAddress converts email addresses into canonical form.
 # it takes one email address in and returns the proper canonical
 # form. You can dump whatever your proper local config is in here
@@ -129,6 +127,52 @@ sub CanonicalizeAddress {
     # foo.com
     #$email =~ s/\@(.*).foo.com/\@foo.com/;
     return ($email)
+}
+
+# If $IncomingUserMatch is defined, RT will require that the incoming
+# message be from a known source.
+
+$LookupSenderInExternalDatabase = undef;
+
+# If $SenderMustExistInExternalDatabase is true, RT will
+# automatically create non-privileged accounts for unknown users
+# if you are using "LookupSenderInExternalDatabase.
+# Instead, an error message will be mailed and RT will proceed
+# as $RT::Nobody.
+
+# If you are not using $LookupSenderInExternalDatabase, this option
+# has no effect.
+
+$SenderMustExistInExternalDatabase = undef;
+
+# LookupExternalUserInfo is a site-definable method for synchronizing
+# incoming users with an external data source. 
+#
+# This routine takes a tuple of EmailAddress and FriendlyName
+# EmailAddress is the user's email address, ususally taken from
+#  an email message's From: header.
+# Name is a freeform string, ususally taken from the "comment" portion
+#  of an email message's From: header.
+#
+# It returns (EmailAddress, Username, RealName, FoundInExternalDatabase);
+# EmailAddress is the email address that RT should use for this user.  
+# Username is the 'Name' attribute RT should use for this user. 
+#   'Name' is used for things like access control and user lookups.
+# RealName is what RT should display as the user's name when displaying 
+#   'friendly' names
+# FoundInExternalDatabase must  be set to 1 before return if the user was
+#   found in the external database.
+
+sub LookupExternalUserInfo {
+  my ($Address, $Name) = @_;
+  my $FoundInExternalDatabase = 1;
+  
+  #Username is the RT username you want to use for this user.
+  my $Username = $Address;
+
+  # See RT's contributed code for examples.
+  # http://www.fsck.com/pub/rt/contrib/
+  return ($Address, $Username, $Name, $FoundInExternalDatabase); 
 }
 
 # }}}
@@ -226,7 +270,10 @@ $WebBaseURL = "http://RT::WebBaseURL.not.configured:80";
 
 $WebURL = $WebBaseURL . $WebPath . "/";
 
+# If $WebExternalAuth is defined, RT will defer to the environment's
+# REMOTE_USER variable.
 
+$WebExternalAuth = undef;
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 # (this should be autoconfigured during 'make install' or 'make upgrade')
@@ -350,7 +397,7 @@ $TicketBaseURI = "fsck.com-rt://$Organization/$rtname/ticket/";
 
 # }}}
 
-# {{{  No User servicable parts inside 
+# {{{ No User servicable parts inside 
 
 ############################################
 ############################################
