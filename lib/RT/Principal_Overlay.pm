@@ -257,12 +257,11 @@ sub HasRight {
         return (undef);
     }
 
-    if ( defined( $args{'Object'} )) {
-        return (undef) unless (UNIVERSAL::can( $args{'Object'}, 'id' ) );
-        push(@{$args{'EquivObjects'}}, $args{Object});
-    }
-    elsif ( $args{'ObjectId'} && $args{'ObjectType'} ) {
-        $RT::Logger->crit(Carp::cluck("API not supprted"));
+    if (   defined( $args{'Object'} )
+        && UNIVERSAL::can( $args{'Object'}, 'id' )
+        && $args{'Object'}->id )
+    {
+        push( @{ $args{'EquivObjects'} }, $args{Object} );
     }
     else {
         $RT::Logger->crit("$self HasRight called with no valid object");
