@@ -1,19 +1,16 @@
 # $Header$	
 
-
-# This is where RT's preferences are kept track of
-
-# Most (if not all?) $RT:: global variables should be here.  I'd
-# suggest putting session information in another Namespace (main:: or
-# RT::main or maybe something like that).
+# This is where RT's base configuration is stored.
 
 package RT;
-use Log::Dispatch;
-use Log::Dispatch::File;
-#use strict;
 
-#use vars qw/%SitePolicy $dirmode $transactionmode $DatabasePassword $rtname $domain $host $DatabaseHost $DatabaseUser $RT::DatabaseName $DatabaseType $user_passwd_min $MailAlias $WebrtImagePath $web_auth_mechanism $web_auth_cookies_allow_no_path $DefaultLocale $LocalePath $Nobody $Logger/;
+#use vars qw/%SitePolicy $dirmode $transactionmode $DatabasePassword 
+# $rtname $domain $host $DatabaseHost $DatabaseUser $RT::DatabaseName 
+# $DatabaseType $user_passwd_min $MailAlias $WebrtImagePath 
+# $web_auth_mechanism $web_auth_cookies_allow_no_path $DefaultLocale 
+# $LocalePath $Nobody $Logger/;
 
+# {{{ Logging
 # Logging.  The default is to log anything except debugging
 # information to a logfile.  Check the Log::Dispatch POD for
 # information about how to get things by syslog, mail or anything
@@ -32,6 +29,9 @@ use Log::Dispatch::File;
 # callback should be used.  I will eventually look more into this
 # later.
 
+use Log::Dispatch;
+use Log::Dispatch::File;
+
 $Logger=Log::Dispatch->new;
 $Logger->add(Log::Dispatch::File->new
 	     ( name=>'rtlog',
@@ -40,8 +40,15 @@ $Logger->add(Log::Dispatch::File->new
 	       mode=>'append'
 	      ));
 
+# }}}
+
+# {{{ Some weird stuff of tobias I don't get
 # Different "tunable" configuration options should be in those hashes:
 %SitePolicy=();
+
+# }}}
+
+# {{{ Options for the webui
 %WebOptions=
     (
      # This is for putting in more user-actions at the Transaction
@@ -99,6 +106,9 @@ $Logger->add(Log::Dispatch::File->new
       ]
      );
 
+# }}}
+
+# {{{ RT Linking Interface
 # A hash table of convertion subs to be used for transforming RT Link
 # URIs to URLs in the web interface.  If you want to use RT towards
 # locally installed databases, this is the right place to configure it.
@@ -111,10 +121,9 @@ my %URI2HTTP=
      );
     
 
-# before doing a "make install" in /usr/local/rt/src you NEED to change the 
-# password below and change the apropriate line in /usr/local/rt/etc/mysql.acl	
-$DatabasePassword="!!DB_RT_PASS!!";
+# }}}
 
+# {{{ Base Configuration
 
 # name of RT installation
 # Use a smart name, it's not smart changing this, unless you know
@@ -125,6 +134,16 @@ $rtname="!!RT_MAIL_TAG!!";
 $domain="!!RT_DOMAIN!!";
 $host="!!RT_HOST!!";
  
+# $passwd_min defines the minimum length for user passwords.
+$user_passwd_min = "!!RT_USER_PASSWD_MIN!!";
+
+# }}}
+
+# {{{ Database Configuration
+
+# before doing a "make install" in /usr/local/rt/src you NEED to change the 
+# password below and change the apropriate line in /usr/local/rt/etc/mysql.acl	
+$DatabasePassword="!!DB_RT_PASS!!";
 
 # host is the fqdn of your Mysql server
 # if it's on localhost, leave it blank for enhanced performance
@@ -134,17 +153,15 @@ $DatabaseHost="!!DB_HOST!!";
 $DatabaseUser="!!DB_RT_USER!!";
     
 
-
-
 #$dbname is the name of the RT's database on the Mysql server 
 $RT::DatabaseName="!!DB_DATABASE!!";
 
 # $rt_db is the database driver beeing used - i.e. MySQL.
 $DatabaseType="!!DB_TYPE!!";
 
+# }}}
 
-# $passwd_min defines the minimum length for user passwords.
-$user_passwd_min = "!!RT_USER_PASSWD_MIN!!";
+# {{{ Mail configuration
 
 #$MailAlias is a generic alias to send mail to for any request
 #already in a queue because of the nature of RT, mail sent to any
@@ -161,7 +178,9 @@ $MailAlias = "!!RT_MAIL_ALIAS!!";
 
 #TODO: Mail::Internet might need some configuration.
 
+# }}}
 
+# {{{ WebRT Configuration
 # Define the directory name to be used for images in rt web
 # documents.
 
@@ -178,16 +197,9 @@ $WebURL = "http://$host\.$domain/$WebPath/";
 
 $web_auth_mechanism = "!!WEB_AUTH_MECHANISM!!";
 
+# }}}
 
-
-
-# WEB_AUTH_COOKIES_ALLOW_NO_PATH allows RT users to check a box which sends
-# their authentication cookies to any CGI on the server.  This could be a
-# security hole. You'll _never_ want to enable it, unless you have clients
-# with IE4.01sp1..which chokes unless this is enabled.
-
-$web_auth_cookies_allow_no_path = "!!WEB_AUTH_COOKIES_ALLOW_NO_PATH!!";
-
+# {{{ Localization configuration
 
 #  This is the default locale used by RT when deciding what version of the strings
 # to show you
@@ -197,7 +209,10 @@ $DefaultLocale = "!!DEFAULT_LOCALE!!";
 
 $LocalePath = "!!LOCALE_PATH!!";
 
-##### THINGS BELOW SHOULD ONLY BE MODIFIED BY REAL HACKERS! :)
+# }}}
+
+# {{{  No User servicable parts inside 
+#
 
 $Nobody=2;
 $SIG{__WARN__} = sub {$RT::Logger->log(level=>'warning',message=>$_[0])};
@@ -207,6 +222,7 @@ $SIG{__DIE__}  = sub {
     exit(-1);
 };
 
+# }}}
 
 1;
 
