@@ -409,6 +409,9 @@ sub Gateway {
 
     my ( $CurrentUser, $AuthStat, $status, $error );
 
+ # Initalize AuthStat so comparisons work correctly
+ $AuthStat=-9999999;
+
     my $ErrorsTo = ParseErrorsToAddressFromHead($head);
 
     my $MessageId = $head->get('Message-Id')
@@ -480,8 +483,8 @@ sub Gateway {
 	# If a module returns a "-1" then we discard the ticket, so.
         $AuthStat = -1 if $NewAuthStat == -1;
         # You get the highest level of authentication you were assigned.
-        last if $AuthStat == -1;
         $AuthStat = $NewAuthStat if $NewAuthStat > $AuthStat;
+        last if $AuthStat == -1;
     }
 
     # {{{ If authentication fails and no new user was created, get out.
