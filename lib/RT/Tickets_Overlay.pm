@@ -862,14 +862,20 @@ sub Limit {
 Returns a frozen string suitable for handing back to ThawLimits.
 
 =cut
+
+sub _FreezeThawKeys {
+    'TicketRestrictions',
+    'restriction_index',
+    'looking_at_effective_id',
+    'looking_at_type'
+}
+
 # {{{ sub FreezeLimits
 
 sub FreezeLimits {
 	my $self = shift;
 	require FreezeThaw;
-	return (FreezeThaw::freeze($self->{'TicketRestrictions'},
-				   $self->{'restriction_index'}
-				  ));
+	return (FreezeThaw::freeze(@{$self}{$self->_FreezeThawKeys}));
 }
 
 # }}}
@@ -896,9 +902,7 @@ sub ThawLimits {
 	#We don't need to die if the thaw fails.
 	
 	eval {
-		($self->{'TicketRestrictions'},
-		$self->{'restriction_index'}
-		) = FreezeThaw::thaw($in);
+		@{$self}{$self->_FreezeThawKeys} = FreezeThaw::thaw($in);
 	};
 	$RT::Logger->error( $@ ) if $@;
 
