@@ -23,8 +23,8 @@ sub _Accessible {
     my $self = shift;
     my %cols = (
 		Name        => 'read/write', #the keyword itself
-		Description => 'read/write', #(not yet used)
-		Parent      => 'read/write', #optional id of another B<RT::Keyword>, allowing keyword to be arranged hierarchically
+		Description => 'read/write', #a description of the keyword
+		Parent      => 'read/write', #optional id of another B<RT::Keyword>, allowing keywords to be arranged hierarchically
 		Disabled    => 'read/write'
 	       );
     return ($self->SUPER::_Accessible( @_, %cols));
@@ -44,11 +44,12 @@ sub _Accessible {
   $keyword->Create( Name => 'tofu',
 		    Description => 'fermented soy beans',
 		  );
+  
 
-  my $keyword = RT::Keyword->new($CurrentUser);
-  $keyword->Create( Name   => 'beast',
+  my $keyword2 = RT::Keyword->new($CurrentUser);
+  $keyword2->Create( Name   => 'beast',
 		    Description => 'a wild animal',
-		    Parent => 2,
+		    Parent => $keyword->id(),
 		  );
 
 =head1 DESCRIPTION
@@ -88,8 +89,10 @@ sub Create {
 		Parent => 0,
 		@_);
     
-    
-    #TODO check for ACLs+++
+    unless ($self->CurrentUserHasRight('AdminKeywords')) {
+	return (0, 'Permission denied');
+    }    
+  
     if ( $args{'Parent'} && $args{'Parent'} !~ /^\d+$/ ) {
 	$RT::Logger->err( "can't yet specify parents by name, sorry: ". $args{'Parent'});
 	return(0,'Parent must be specified by id');
@@ -314,6 +317,63 @@ sub Descendents {
 
 # }}}
 
+# {{{ ACL related methods
+
+# {{{ sub _Set
+
+# does an acl check and then passes off the call
+sub _Set {
+    my $self = shift;
+    
+    unless ($self->CurrentUserHasRight('AdminKeywords')) {
+	return (undef);
+    }
+    return $self->SUPER::_Set(@_);
+}
+
+# }}}
+
+# {{{ sub CurrentUserHasRight
+
+=head2 CurrentUserHasRight
+
+Helper menthod for HasRight. Presets Principal to CurrentUser then 
+calls HasRight.
+
+=cut
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    my $right = shift;
+    return ($self->HasRight( Principal => $self->CurrentUser->UserObj,
+                             Right => $right ));
+    
+}
+
+# }}}
+
+# {{{ sub HasRight
+
+=head2 HasRight
+
+Takes a param-hash consisting of "Right" and "Principal"  Principal is 
+an RT::User object or an RT::CurrentUser object. "Right" is a textual
+Right string that applies to Keywords.
+
+=cut
+
+sub HasRight {
+    my $self = shift;
+    my %args = ( Right => undef,
+                 Principal => undef,
+                 @_ );
+
+    return( $args{'Principal'}->HasSystemRight( $args{'Right'}) );
+
+}
+# }}}
+
+# }}}
 
 =back
 
@@ -330,7 +390,7 @@ Yes.
 L<RT::Keywords>, L<RT::ObjectKeyword>, L<RT::ObjectKeywords>, L<RT::Ticket>,
 L<RT::Record>
 
-=cut
+[A=cut
 
 1;
 

@@ -103,7 +103,6 @@ sub _Accessible {
 }
 # }}}
 
-
 # {{{ sub LoadByName
 
 =head2 LoadByName( Name => [NAME], Queue => [QUEUE_ID])
@@ -169,14 +168,31 @@ sub Create {
 		 ObjectField => undef,
 		 ObjectValue => undef,
 		 @_);
-# TODO +++ ACL
-#    unless ($self->CurrentUserHasRight('ModifyKeywordSelects')) {
-#        $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
-#	return (undef, 'Permission denied');
-#    }
+
+    #If we're talking about a keyword select based on a ticket's 'Queue' field
+    if  ( ($args{'ObjectField'} eq 'Queue') and
+	  ($args{'ObjectType'} eq 'Ticket')) {
+	
+	#If we're talking about a keywordselect for all queues
+	if ($args{'ObjectValue'} == 0) {
+	    unless( $self->CurrentUserHasSystemRight('AdminKeywordSelects')) {
+		return (0, 'Permission denied');
+	    }
+	}  
+	#otherwise, we're talking about a keywordselect for a specific queue
+	else {
+	    unless ($self->CurrentUserHasQueueRight( Right => 'AdminKeywordSelects',
+						     Queue => $args{'ObjectValue'})) {
+		return (0, 'Permission denied');
+	    }
+	}
+    }
+    else {
+	return (0, "Can't create a KeywordSelect for that object/field combo");
+    }
 
     my $Keyword = new RT::Keyword($self->CurrentUser);
-    
+
     if ( $args{'Keyword'} && $args{'Keyword'} !~ /^\d+$/ ) {
 	$Keyword->LoadByPath($args{'Keyword'});
     }	
@@ -247,7 +263,7 @@ sub Object {
 sub _Set {
     my $self = shift;
 
-    unless ($self->CurrentUserHasRight('ModifyKeywordSelects')) {
+    unless ($self->CurrentUserHasRight('AdminKeywordSelects')) {
         $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
 	return (undef);
     }
@@ -257,10 +273,51 @@ sub _Set {
 }
 # }}}
 
+
+# {{{ sub CurrentUserHasQueueRight 
+
+=head2 CurrentUserHasQueueRight ( Queue => QUEUEID, Right => RIGHTNANAME )
+
+Check to see whether the current user has the specified right for the specified queue.
+
+=cut
+
+sub CurrentUserHasQueueRight {
+    my $self = shift;
+    my %args = (Queue => undef,
+		Right => undef,
+		@_
+		);
+    return ($self->HasRight( Right => $args{'Right'},
+			     Principal => $self->CurrentUser->UserObj,
+			     Queue => $args{'Queue'}));
+}
+
+# }}}
+
+# {{{ sub CurrentUserHasSystemRight 
+=head2 CurrentUserHasSystemRight RIGHTNAME
+
+Check to see whether the current user has the specified right for the 'system' scope.
+
+=cut
+
+sub CurrentUserHasSystemRight {
+    my $self = shift;
+    my $right = shift;
+    return ($self->HasRight( Right => $right,
+			     Principal => $self->CurrentUser->UserObj));
+}
+
+
+# }}}
+
 # {{{ sub CurrentUserHasRight
 
-=item CurrentUserHasRight
+=item CurrentUserHasRight RIGHT  [QUEUEID]
 
+Takes a rightname as a string. Can take a queue id as a second
+optional parameter, which can be useful to a routine like create.
 Helper menthod for HasRight. Presets Principal to CurrentUser then 
 calls HasRight.
 
@@ -270,8 +327,8 @@ sub CurrentUserHasRight {
     my $self = shift;
     my $right = shift;
     return ($self->HasRight( Principal => $self->CurrentUser->UserObj,
-                             Right => $right ));
-    
+                             Right => $right,
+			   ));
 }
 
 # }}}
@@ -290,14 +347,28 @@ sub HasRight {
     my $self = shift;
     my %args = ( Right => undef,
                  Principal => undef,
+		 Queue => undef,
+		 System => undef
                  @_ );
 
-    if (($self->__Value('ObjectField') eq 'Queue') and
-	($self->__Value('ObjectValue') >0 )) {
-        return ( $args{'Principal'}->HasQueueRight( 
-						   Right => $args{'Right'},
-						   Queue => $self->SUPER::_Value('Queue') )); 
+    #If we're explicitly specifying a queue, as we need to do on create
+    if ($args{'Queue'}) {
+	return ($args{'Principal'}->HasQueueRight(Right => $args{'Right'},
+						  Queue => $args{'Queue'}));
     }
+    #else if we're specifying to check a system right
+    elsif ($args{'System'}) {
+        return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
+    }	
+
+    #else if we 're using the object's queue
+    elsif (($self->__Value('ObjectField') eq 'Queue') and
+	   ($self->__Value('ObjectValue') > 0 )) {
+        return ($args{'Principal'}->HasQueueRight(Right => $args{'Right'},
+						  Queue => $self->__Value('Queue') )); 
+    }
+    
+    #If the object is system scoped.
     else {
         return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
     }
@@ -312,7 +383,8 @@ Ivan Kohler <ivan-rt@420.am>, Jesse Vincent <jesse@fsck.com>
 
 =head1 BUGS
 
-Yes.
+The ACL system for this object is more byzantine than it should be.  reworking it eventually
+would be a good thing.
 
 =head1 SEE ALSO
 

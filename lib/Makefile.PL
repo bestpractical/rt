@@ -8,8 +8,8 @@ WriteMakefile(
                      'DBI'                 => 1.13,
                      'DBIx::DataSource'    => 0.02,
                      'DBIx::DBSchema'      => 0.14,
-                     'DBIx::SearchBuilder' => 0.15,
-                     'HTML::Mason'         => 0.89,
+                     'DBIx::SearchBuilder' => 0.21,
+                     'HTML::Mason'         => 0.896,
                      'Date::Manip'         => 0,
                      'Date::Format'        => 0,
                      'MIME::Entity'        => 5.108,
@@ -19,6 +19,7 @@ WriteMakefile(
                      'HTML::Entities'      => 0,
                      'Text::Wrapper'       => 0,
                      'Text::Template'      => 0,
+		     'Getopt::Long'        => 2.24,
                      'Apache::Session'     => 1.53,
                    },
 );

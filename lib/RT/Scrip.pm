@@ -233,6 +233,15 @@ sub IsApplicable {
 
 # }}}
 
+# {{{ sub DESTROY
+sub DESTROY {
+    my $self = shift;
+    $self->{'ActionObj'} = undef;
+}
+# }}}
+
+# {{{ ACL related methods
+
 # {{{ sub _Set
 
 # does an acl check and then passes off the call
@@ -261,14 +270,6 @@ sub _Value {
     return $self->SUPER::_Value(@_);
 }
 # }}}
-
-# {{{ sub DESTROY
-sub DESTROY {
-    my $self = shift;
-    $self->{'ActionObj'} = undef;
-}
-#}}}
-
 
 # {{{ sub CurrentUserHasRight
 
@@ -319,6 +320,9 @@ sub HasRight {
     }
 }
 # }}}
+
+# }}}
+
 1;
 
 

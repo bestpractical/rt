@@ -7,7 +7,8 @@
 =head1 SYNOPSIS
 
   use RT::ACE;
-my $ace = new RT::ACE($CurrentUser);
+  my $ace = new RT::ACE($CurrentUser);
+
 
 =head1 DESCRIPTION
 
@@ -24,7 +25,6 @@ use vars qw (%SCOPES
    	     %QUEUERIGHTS
 	     %SYSTEMRIGHTS
 	     %LOWERCASERIGHTNAMES
-
 	    ); 
 
 %SCOPES = (
@@ -42,15 +42,15 @@ use vars qw (%SCOPES
 		ShowACL => 'Display Access Control List',
 		ModifyACL => 'Modify Access Control List',
 		ModifyQueueWatchers => 'Modify the queue watchers',
-                ModifyKeywordSelects => 'Modify keyword selections for this queue',
+                AdminKeywordSelects => 'Create, delete and modify keyword selections',
 
 		
 		CreateTemplate => 'Create email templates for this queue',
 		ModifyTemplate => 'Modify email templates for this queue',
 		ShowTemplate => 'Display email templates for this queue',
 		
-		ModifyScrips => 'Modify ScripScopes for this queue',
-		ShowScrips => 'Display ScripScopes for this queue',
+		ModifyScrips => 'Modify Scrips for this queue',
+		ShowScrips => 'Display Scrips for this queue',
 
 		ShowTicket => 'Show ticket summaries',
 		ShowTicketComments => 'Show ticket private commentary',
@@ -67,10 +67,11 @@ use vars qw (%SCOPES
 
 # System rights are rights granted to the whole system
 %SYSTEMRIGHTS = (
-         SuperUser => 'Do anything and everything',
-		 AdminGroups => 'Create, delete and modify groups',
-		 AdminUsers => 'Create, Delete and Modify users',
-		 ModifySelf => 'Modify one\'s own RT account',
+                SuperUser => 'Do anything and everything',
+		AdminKeywords => 'Creatte, delete and modify keywords',	 
+		AdminGroups => 'Create, delete and modify groups',
+	        AdminUsers => 'Create, Delete and Modify users',
+		ModifySelf => 'Modify one\'s own RT account',
 
 		);
 
@@ -195,21 +196,21 @@ sub Create {
     }
 
     # }}}
-
-    # {{{ Check the scope
+    
+    # {{{ Check the ACL
     if ($args{'RightScope'} eq 'System') {
 	
-	unless ($self->CurrentUser->HasSystemRight('ModifyACL')) {
+	unless ($self->CurrentUserHasSystemRight('ModifyACL')) {
 	    $RT::Logger->error("No permission to grant rights");
 	    return(undef);
 	}
 	
-
+	
     }
     elsif ($args{'RightScope'} eq 'Queue') {
    	
-	unless ($self->CurrentUser->HasQueueRight( Queue => $args{'RightAppliesTo'},
-						   Right => 'ModifyACL')) {
+	unless ($self->CurrentUserHasQueueRight( Queue => $args{'RightAppliesTo'},
+						 Right => 'ModifyACL')) {
 	    return (0, 'No permission to grant rights');
 	}
 	#TODO allow loading of queues by name.
@@ -446,15 +447,100 @@ sub _Set {
 
 # }}}
 
+# {{{ ACL related methods
+
+# {{{ sub CurrentUserHasQueueRight 
+
+=head2 CurrentUserHasQueueRight ( Queue => QUEUEID, Right => RIGHTNANAME )
+
+Check to see whether the current user has the specified right for the specified queue.
+
+=cut
+
+sub CurrentUserHasQueueRight {
+    my $self = shift;
+    my %args = (Queue => undef,
+		Right => undef,
+		@_
+		);
+    return ($self->HasRight( Right => $args{'Right'},
+			     Principal => $self->CurrentUser->UserObj,
+			     Queue => $args{'Queue'}));
+}
+
+# }}}
+
+# {{{ sub CurrentUserHasSystemRight 
+=head2 CurrentUserHasSystemRight RIGHTNAME
+
+Check to see whether the current user has the specified right for the 'system' scope.
+
+=cut
+
+sub CurrentUserHasSystemRight {
+    my $self = shift;
+    my $right = shift;
+    return ($self->HasRight( Right => $right,
+			     Principal => $self->CurrentUser->UserObj));
+}
+
+
+# }}}
+
 # {{{ sub CurrentUserHasRight
+
+=item CurrentUserHasRight RIGHT  [QUEUEID]
+
+Takes a rightname as a string. Can take a queue id as a second
+optional parameter, which can be useful to a routine like create.
+Helper menthod for HasRight. Presets Principal to CurrentUser then 
+calls HasRight.
+
+=cut
+
 sub CurrentUserHasRight {
     my $self = shift;
     my $right = shift;
-    if ($self->RightScope eq 'System') {
-	return $self->CurrentUser->HasSystemRight($right);
+    return ($self->HasRight( Principal => $self->CurrentUser->UserObj,
+                             Right => $right,
+			   ));
+}
+
+# }}}
+
+# {{{ sub HasRight
+
+=item HasRight
+
+Takes a param-hash consisting of "Right" and "Principal"  Principal is 
+an RT::User object or an RT::CurrentUser object. "Right" is a textual
+Right string that applies to KeywordSelects
+
+=cut
+
+sub HasRight {
+    my $self = shift;
+    my %args = ( Right => undef,
+                 Principal => undef,
+		 Queue => undef,
+		 System => undef
+                 @_ );
+
+    #If we're explicitly specifying a queue, as we need to do on create
+    if ($args{'Queue'}) {
+	return ($args{'Principal'}->HasQueueRight(Right => $args{'Right'},
+						  Queue => $args{'Queue'}));
+    }
+    #else if we're specifying to check a system right
+    elsif ($args{'System'}) {
+        return( $args{'Principal'}->HasSystemRight( $args{'Right'} ));
+    }	
+    
+    elsif ($self->RightScope eq 'System') {
+	return $args{'Principal'}->HasSystemRight($right);
     }
     elsif ($self->RightScope eq 'Queue') {
-	return $self->CurrentUser->HasQueueRight( Queue => $self->RightAppliesTo,
+	return $args{'Principal'}->HasQueueRight( Queue => $self->RightAppliesTo,
 						  Right => $right );
     }	
     else {
@@ -462,8 +548,14 @@ sub CurrentUserHasRight {
 			     "don't understand:" . $self->RightScope ."\n");
 	return undef;
     }
-}	
+
+
+
+}
 # }}}
+
+# }}}
+
 
 
 1;
