@@ -62,7 +62,7 @@ sub _OverlayAccessible {
     {
 
         Name                    => { public => 1,  admin => 1 },
-          Password              => { read   => 0,  admin => 1 },
+          Password              => { read   => 0 },
           EmailAddress          => { public => 1 },
           Organization          => { public => 1,  admin => 1 },
           RealName              => { public => 1 },
