@@ -13,9 +13,7 @@ package RT;
        { Header     => 'Ticket Id',
 	 TicketLink => 1,
 	 TicketAttribute => 'Id'
-       }
-      ],
-      [
+	 },
        { Header     => 'Subject',
 	 TicketAttribute => 'Subject'
        }
