@@ -16,7 +16,7 @@
 % foreach my $entry (@entries) {
   <entry>
     <title mode="escaped"><% $entry->{Name} %></title>
-    <link rel="alternate" type="text/html" href="<% $RT::WebPath %><% $entry->{URL} %>"/>
+    <link rel="alternate" type="text/html" href="<% $RT::WebURL %><% $entry->{URL} %>"/>
     <link rel="service.edit" type="application/x.atom+xml" href="<% $BaseURL %>/<% lc($Type) %>/<% $entry->{Id} %>"/>
     <modified><% $entry->{LastUpdated} %></modified>
     <issued><% $entry->{Created} %></issued>
@@ -29,12 +29,12 @@
 </feed>
 <%INIT>
 my %URL = (
-    Tickets	=> '/Ticket/Display.html?id=',
-    Templates	=> '/Admin/Global/Template.html?Template=',
-    Scrips	=> '/Admin/Global/Scrip.html?id=',
-    Queues	=> '/Admin/Queues/Modify.html?id=',
-    Users	=> '/Admin/Users/Modify.html?id=',
-    Groups	=> '/Admin/Groups/Modify.html?id=',
+    Tickets	=> 'Ticket/Display.html?id=',
+    Templates	=> 'Admin/Global/Template.html?Template=',
+    Scrips	=> 'Admin/Global/Scrip.html?id=',
+    Queues	=> 'Admin/Queues/Modify.html?id=',
+    Users	=> 'Admin/Users/Modify.html?id=',
+    Groups	=> 'Admin/Groups/Modify.html?id=',
 );
 my $BaseURL = "$RT::WebPath/REST/2.0";
 
