@@ -117,13 +117,10 @@ sub LoadConfig {
 =cut
 
 sub Init {
-    require RT::Handle;
+
     #Get a database connection
-         unless ($Handle && $Handle->dbh && $Handle->dbh->ping) {
-    $Handle = RT::Handle->new();
-        } 
-    $Handle->Connect();
-    
+    ConnectToDatabase();
+
     #RT's system user is a genuine database user. its id lives here
     $SystemUser = new RT::CurrentUser();
     $SystemUser->LoadByName('RT_System');
@@ -137,6 +134,21 @@ sub Init {
    InitLogging(); 
 }
 
+  
+=head2 ConnectToDatabase
+
+Get a database connection
+
+=cut
+ 
+sub ConnectToDatabase {
+    require RT::Handle;
+    unless ($Handle && $Handle->dbh && $Handle->dbh->ping) {
+        $Handle = RT::Handle->new();
+    } 
+    $Handle->Connect();
+}
+    
 =head2 InitLogging
 
 Create the RT::Logger object. 

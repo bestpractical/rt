@@ -44,6 +44,8 @@ while ( my $cgi = CGI::Fast->new ) {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
+    RT::ConnectToDatabase();
+
     unless ($h->interp->comp_exists($cgi->path_info)) {
 	$cgi->path_info($cgi->path_info . "/index.html");
     }
