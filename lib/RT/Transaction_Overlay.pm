@@ -610,10 +610,61 @@ sub BriefDescription {
     }
 
     elsif ( $type eq 'AddLink' ) {
+        my $value;
+	if ($self->NewValue) {
+		my $URI = RT::URI->new($self->CurrentUser);
+		$URI->FromURI($self->NewValue);
+		if ($URI->Resolver) {
+			$value = $URI->Resolver->AsString;
+		} else {
+			$value = $self->NewValue;
+		}
+	}
+	if ($self->Field eq 'DependsOn') {
+		return $self->loc("Dependency on [_1] added",$value);
+	} elsif ($self->Field eq 'DependedOnBy') {
+		return $self->loc("Dependency by [_1] added",$value);
+		
+	} elsif ($self->Field eq 'RefersTo') {
+		return $self->loc("Reference to [_1] added",$value);
+	} elsif ($self->Field eq 'ReferredToBy') {
+		return $self->loc("Reference by [_1] added",$value);
+	} elsif ($self->Field eq 'MemberOf') {
+		return $self->loc("Membership in [_1] added",$value);
+	} elsif ($self->Field eq 'HasMember') {
+		return $self->loc("Member [_1] added",$value);
+	} else {
         return ( $self->Data );
+	}
     }
     elsif ( $type eq 'DeleteLink' ) {
+    my $value;
+	if ($self->OldValue) {
+		my $URI = RT::URI->new($self->CurrentUser);
+		$URI->FromURI($self->OldValue);
+		if ($URI->Resolver) {
+			$value = $URI->Resolver->AsString;
+		} else {
+			$value = $self->OldValue;
+		}
+	}
+
+	if ($self->Field eq 'DependsOn') {
+		return $self->loc("Dependency on [_1] deleted",$value);
+	} elsif ($self->Field eq 'DependedOnBy') {
+		return $self->loc("Dependency by [_1] deleted",$value);
+		
+	} elsif ($self->Field eq 'RefersTo') {
+		return $self->loc("Reference to [_1] deleted",$value);
+	} elsif ($self->Field eq 'ReferredToBy') {
+		return $self->loc("Reference by [_1] deleted",$value);
+	} elsif ($self->Field eq 'MemberOf') {
+		return $self->loc("Membership in [_1] deleted",$value);
+	} elsif ($self->Field eq 'HasMember') {
+		return $self->loc("Member [_1] deleted",$value);
+	} else {
         return ( $self->Data );
+	}
     }
     elsif ( $type eq 'Set' ) {
         if ( $self->Field eq 'Queue' ) {

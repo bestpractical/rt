@@ -162,6 +162,24 @@ use vars '%LINKTYPEMAP';
 
 # }}}
 
+# {{{ LINKDIRMAP
+# A helper table for relationships mapping to make it easier
+# to build and parse links between tickets
+
+use vars '%LINKDIRMAP';
+
+%LINKDIRMAP = (
+    MemberOf => { Base => 'MemberOf',
+                  Target => 'HasMember', },
+    RefersTo => { Base => 'RefersTo',
+                Target => 'ReferredToBy', },
+    DependsOn => { Base => 'DependsOn',
+                   Target => 'DependedOnBy', },
+
+);
+
+# }}}
+
 # {{{ sub Load
 
 =head2 Load
@@ -2620,15 +2638,22 @@ sub DeleteLink {
     #we want one of base and target. we don't care which
     #but we only want _one_
 
+    my $direction;
+    my $remote_link;
+
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target\n");
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
+	$remote_link = $args{'Base'};
+    	$direction = 'Target';
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
+	$remote_link = $args{'Target'};
+        $direction='Base';
     }
     else {
         $RT::Logger->debug("$self: Base or Target must be specified\n");
@@ -2646,12 +2671,14 @@ sub DeleteLink {
         my $linkid = $link->id;
         $link->Delete();
 
-        my $TransString =
-          "Ticket $args{'Base'} no longer $args{Type} ticket $args{'Target'}.";
+        my $TransString = "Ticket $args{'Base'} no longer $args{Type} ticket $args{'Target'}.";
+	my $remote_uri = RT::URI->new( $RT::SystemUser );
+    	$remote_uri->FromURI( $remote_link );
+
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type      => 'DeleteLink',
-            Field     => $args{'Type'},
-            Data      => $TransString,
+            Field => $LINKDIRMAP{$args{'Type'}}->{$direction},
+	    OldValue =>  $remote_uri->URI || $remote_link,
             TimeTaken => 0
         );
 
@@ -2688,6 +2715,10 @@ sub AddLink {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    # Remote_link is the URI of the object that is not this ticket
+    my $remote_link;
+    my $direction;
+
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug(
 "$self tried to delete a link. both base and target were specified\n" );
@@ -2695,9 +2726,13 @@ sub AddLink {
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
+	$remote_link = $args{'Base'};
+    	$direction = 'Target';
     }
     elsif ( $args{'Target'} ) {
         $args{'Base'} = $self->URI();
+	$remote_link = $args{'Target'};
+        $direction='Base';
     }
     else {
         return ( 0, $self->loc('Either base or target must be specified') );
@@ -2737,12 +2772,14 @@ sub AddLink {
         return ( 1, $self->loc( "Link created ([_1])", $TransString ) );
     }
     else {
+	my $remote_uri = RT::URI->new( $RT::SystemUser );
+    	$remote_uri->FromURI( $remote_link );
 
         #Write the transaction
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
                                                          Type  => 'AddLink',
-                                                         Field => $args{'Type'},
-                                                         Data  => $TransString,
+                                                         Field => $LINKDIRMAP{$args{'Type'}}->{$direction},
+							                             NewValue =>  $remote_uri->URI || $remote_link,
                                                          TimeTaken => 0 );
         return ( $Trans, $self->loc( "Link created ([_1])", $TransString ) );
     }

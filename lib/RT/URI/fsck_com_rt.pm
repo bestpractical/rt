@@ -222,6 +222,23 @@ sub HREF {
     }
 }
 
+=head2 AsString
+
+Returns either a localized string 'ticket #23' or the full URI if the object is not local
+
+=cut
+
+sub AsString {
+    my $self = shift;
+    if ($self->IsLocal) {
+	return $self->loc("ticket #[_1]", $self->Object->Id);
+
+    }
+    else {
+	return $self->Object->URI;
+    }
+}
+
 eval "require RT::URI::fsck_com_rt_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI/fsck_com_rt_Vendor.pm});
 eval "require RT::URI::fsck_com_rt_Local";
