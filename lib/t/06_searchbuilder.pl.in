@@ -1,0 +1,56 @@
+use Test::More qw/no_plan/;
+
+use lib qw(/opt/rt3/lib);
+use RT;
+RT::LoadConfig;
+RT::Init;
+
+my $users = RT::Users->new($RT::SystemUser);
+$users->UnLimit();
+
+# Test to make sure we've got enough results to test paging
+ok ($users->Count > 10, "We have more than 10 users");
+is ($users->Count, $users->CountAll, "Before we start paging the search, Count and CountAll agree");
+
+
+# Test to see if we can limit the number of rows returned
+
+
+$users->RowsPerPage(5);
+my $i;
+while  ($users->Next) {
+    $i++;
+}
+
+is ($i, 5, "We got only 5 rows on this page");
+ok ($users->CountAll > 10, "We have more than 10 users total (".$users->CountAll.")");
+
+# Test to see if we can go to the second page
+$users->FirstRow(6);
+
+$i = 0;
+while  ($users->Next) {
+    $i++;
+}
+
+is ($i, 5, "We got only 5 rows on this page");
+is ($users->Count, $i, "We found the same number of results 'Count' did");
+ok ($users->CountAll > 10, "We have more than 10 users total (".$users->CountAll.")");
+
+
+# Go to the next to last row. so now we'll have two rows on the page
+$users->RowsPerPage(5);
+$users->FirstRow($users->CountAll - 1);
+$i = 0;
+while  ($users->Next) {
+    $i++;
+}
+
+is ($i, 2, "We got only 2 rows on this page");
+is ($users->Count, $i, "We found the same number of results 'Count' did");
+
+
+ok ($users->CountAll > 10, "We have more than 10 users total (".$users->CountAll.")");
+
+
+
