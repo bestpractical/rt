@@ -214,7 +214,7 @@ Otherwise, return its URI
 
 sub HREF {
     my $self = shift;
-    if ($self->IsLocal) {
+    if ($self->IsLocal && $self->Object) {
         return ( $RT::WebURL . "Ticket/Display.html?id=".$self->Object->Id);
     }   
     else {
@@ -230,12 +230,11 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 
 sub AsString {
     my $self = shift;
-    if ($self->IsLocal) {
-	return $self->loc("ticket #[_1]", $self->Object->Id);
-
+    if ($self->IsLocal && $self->Object) {
+	    return $self->loc("ticket #[_1]", $self->Object->Id);
     }
     else {
-	return $self->Object->URI;
+	    return $self->URI;
     }
 }
 

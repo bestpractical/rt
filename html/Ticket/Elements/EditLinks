@@ -35,10 +35,8 @@
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
 % while (my $link = $Ticket->DependsOn->Next) {
-% my $member = $link->TargetObj;
       <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
-      [<%$member->Status%>]<br>
+        <& ShowLink, URI => $link->TargetURI &><br>
 % }
     </td>
   </tr>
@@ -48,8 +46,7 @@
 % while (my $link = $Ticket->DependedOnBy->Next) {
 % my $member = $link->BaseObj;
       <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
-      [<%$member->Status%>]<br>
+        <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
   </tr>
@@ -57,10 +54,8 @@
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
 % while (my $link = $Ticket->MemberOf->Next) {
-% my $member = $link->TargetObj;
       <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%>
-      [<%$member->Status%>]<br>
+        <& ShowLink, URI => $link->TargetURI &><br>
 % }
     </td>
   </tr>
@@ -69,9 +64,7 @@
     <td class="value">
 % while (my $link = $Ticket->Members->Next) {
       <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
-% my $member = $link->BaseObj;
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> 
-      [<%$member->Status%>]<br>
+        <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
   </tr>
@@ -80,12 +73,7 @@
     <td class="value">
 % while (my $link = $Ticket->RefersTo->Next) {
       <INPUT TYPE=CHECKBOX NAME="DeleteLink--<%$link->Type%>-<%$link->Target%>">
-% if ($link->TargetURI->IsLocal) {
-% my $member = $link->TargetObj;
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
-% } else {
-      <A HREF="<%$link->TargetURI->Resolver->HREF%>"><%$link->TargetURI->Resolver->AsString%></A><br>
-% }
+        <& ShowLink, URI => $link->TargetURI &><br>
 %}
     </td>
   </tr>
@@ -94,12 +82,7 @@
     <td class="value">
 % while (my $link = $Ticket->ReferredToBy->Next) {
       <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
-% if ($link->BaseURI->IsLocal) {
-% my $member = $link->BaseObj;
-      <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$member->Id%>"><%$member->Id%></a>: (<%$member->OwnerObj->Name%>) <%$member->Subject%> [<%$member->Status%>]<br>
-% } else {
-      <A HREF="<%$link->BaseURI->Resolver->HREF%>"><%$link->BaseURI->Resolver->AsString%></A><br>
-%}
+        <& ShowLink, URI => $link->BaseURI &><br>
 % }
     </td>
   </tr>
