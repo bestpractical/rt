@@ -123,7 +123,7 @@ sub Email {
   if (defined($self->SUPER::Email)) {
     return ($self->SUPER::Email);
   }
-  elsif ($self-Owner) {
+  elsif ($self->Owner) {
     return ($self->OwnerObj->EmailAddress);
   }
   else {
