@@ -65,6 +65,7 @@ while ( my $cgi = CGI::Fast->new ) {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
+    Module::Refresh->refresh if $RT::DevelMode;
     RT::ConnectToDatabase();
 
     if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
@@ -76,13 +77,7 @@ while ( my $cgi = CGI::Fast->new ) {
     if ($@) {
         $RT::Logger->crit($@);
     }
-
-
-    if ($RT::Handle->TransactionDepth) {
-        $RT::Handle->ForceRollback;
-        $RT::Logger->crit("Transaction not committed. Usually indicates a software fault. Data loss may have occurred") ;
-    }
-
+    RT::Interface::Web::Handler->CleanupRequest(); 
 
 }
 

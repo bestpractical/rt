@@ -16,6 +16,21 @@ accidentally damage your database and lose data or worse.
 
 *******
 
+UPGRADING FROM 3.3.14 and earlier - Changes:
+
+The "ModifyObjectCustomFieldValues" right name was too long. It's been changed to
+"ModifyCustomField"
+
+
+UPGRADING FROM 3.3.11 and earlier - Changes:
+
+= Rights Changes =
+
+Custom Fields now have an additional right "ModifyCustomField". 
+This right governs whether a user can modify an object's custom field values
+for a particular custom field. This includes adding, deleting and changing values.
+
+
 UPGRADING FROM 3.2 and earlier - Changes:
 
 = Rights changes =
@@ -23,6 +38,9 @@ UPGRADING FROM 3.2 and earlier - Changes:
 Now, if you want any user to be able to access the Admin tools (a.k.a. 
 the Configuration tab), you must grant that user the "ShowConfigTab" 
 right.  Making the user a privileged user is no longer sufficient.
+
+"SuperUser" users are no longer automatically added to the list of users who can own tickets in a queue. You now need to explicitly give them the "own tickets" right.
+
 
 
 UPGRADING FROM 3.0.x - Changes:

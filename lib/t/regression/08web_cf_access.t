@@ -1,10 +1,15 @@
-#!@PERL@ -w
+#!/usr/bin/perl -w
 use strict;
+
+use Test::More qw/no_plan/;
+use RT;
+RT::LoadConfig;
+RT::Init;
 use Test::WWW::Mechanize;
 
-
+$RT::WebPath ||= ''; # Shut up a warning
 use constant BaseURL => "http://localhost".$RT::WebPath."/";
-use constant ImageFile => '@MASON_HTML_PATH@/NoAuth/images/bplogo.gif';
+use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant ImageFileContent => do {
     local $/;
     open my $fh, '<', ImageFile or die $!;

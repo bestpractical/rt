@@ -621,6 +621,12 @@ SPAN.attribution {
 SPAN.label { font-size: 0.8em; 
 }
 
+DIV.page-stats { font-size: 0.8em;
+                  color: #cccccc;
+                  text-align: right;
+              }
+
+
 BLOCKQUOTE {
   font-style: italic;
 }

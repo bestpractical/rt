@@ -44,9 +44,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/CustomFieldTabs, id => $CustomFieldObj->Id ,
-current_subtab => $current_subtab,
-Title => $title &>
+<& /Admin/Elements/CustomFieldTabs,
+    id => $CustomFieldObj->Id ,
+    current_tab => $current_tab,
+    Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -189,11 +190,11 @@ if ($ARGS{$paramtag."new-Name"}) {
 	push (@results, $msg);
 }
 
-my $current_subtab;
+my $current_tab;
 if ($ARGS{'Create'}){ 
-    $current_subtab = "Admin/CustomFields/Modify.html?Create=1";
+    $current_tab = "Admin/CustomFields/Modify.html?Create=1";
 } else {
-    $current_subtab = "Admin/CustomFields/Modify.html?id=".$id;
+    $current_tab = "Admin/CustomFields/Modify.html?id=".$id;
     }
 
 

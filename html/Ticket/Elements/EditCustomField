@@ -43,54 +43,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% my $Values;
-% if ($TicketObj) {
-%          $Values  = $TicketObj->CustomFieldValues($CustomField->id);
-% }
-% if ($CustomField->Type eq 'FreeformSingle') {
-      <input name="<%$NamePrefix%><%$CustomField->Id%>-Value"
-        size="<%$Cols%>"
-% if ($TicketObj) {
-          value="<%$Values->Count ? $Values->First->Content : ''%>"
-% } elsif ($Default) {
-          value="<%$Default ? $Default : ''%>"
-% }
->
-% } elsif ($CustomField->Type eq 'FreeformMultiple') {
-% my $content;
-% if ($TicketObj) {
-%          while (my $value = $Values->Next ) {
-%                 $content .= "\n" . $value->Content;
-%           }
-% } elsif ($Default) {
-          value="<%$Default ? $Default : ''%>"
-%  }
-<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
-<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$content%></textarea>
-% } elsif ($CustomField->Type =~ /^Select/) {
-      <input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
-      <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
-        size="<%$Rows%>"
-        <%$CustomField->Type eq 'SelectMultiple' && 'MULTIPLE'%>>
-% my $CustomFieldValues = $CustomField->Values();
-% my $selected;
-% while (my $value = $CustomFieldValues->Next) {
-        <option value="<%$value->Name%>" 
-% if ($TicketObj) {
-            <% $Values->HasEntry($value->Name) && ($selected = 1) && 'SELECTED' %>
-% } elsif ($Default) {
-            <% ($Default eq $value->Name) && ($selected = 1) && 'SELECTED' %>
-% }
-            ><% $value->Name%></option>
-% }
-        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
-      </select>
-% }
-<%ARGS>
-$TicketObj => undef
-$CustomField => undef
-$NamePrefix => undef
-$Rows => 5
-$Cols=> 15
-$Default => undef
-</%ARGS>
+<%init>
+
+# RT 3.2 API compatibility glue
+
+$RT::Logger->debug("Ticket/Elements/EditCustomField is deprecated in RT 3.4 and will be removed in 3.6.");
+
+$ARGS{'NamePrefix'} =~ s/^Ticket-/Object-RT::Ticket-/;
+$ARGS{'NamePrefix'} =~ s/^CustomField-/Object-RT::Ticket--CustomField-/;
+$m->comp('/Elements/EditCustomField', %ARGS, Object=> $ARGS{'TicketObj'});
+</%init>

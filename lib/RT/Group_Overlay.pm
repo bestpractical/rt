@@ -763,7 +763,7 @@ This routine finds all the cached group members that are members of this group  
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    RT::Principal->_InvalidateACLCache();
+    RT::Principal->InvalidateACLCache();
 
 
 

@@ -339,6 +339,9 @@ should be loaded by the SuperUser role
 =cut
 
 
+# XXX TODO : This code appears to be obsoleted in favor of similar code in Scrips->Apply.
+# Why is this here? Is it still called?
+
 sub Apply {
     my $self = shift;
     my %args = ( TicketObj      => undef,

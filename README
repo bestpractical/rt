@@ -1,48 +1,4 @@
-# BEGIN BPS TAGGED BLOCK {{{
-# 
-# COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
-#                                          <jesse@bestpractical.com>
-# 
-# (Except where explicitly superseded by other copyright notices)
-# 
-# 
-# LICENSE:
-# 
-# This work is made available to you under the terms of Version 2 of
-# the GNU General Public License. A copy of that license should have
-# been provided with this software, but in any event can be snarfed
-# from www.gnu.org.
-# 
-# This work is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-# 
-# 
-# CONTRIBUTION SUBMISSION POLICY:
-# 
-# (The following paragraph is not intended to limit the rights granted
-# to you to modify and distribute this software under the terms of
-# the GNU General Public License and is only of importance to you if
-# you choose to contribute your changes and enhancements to the
-# community by submitting them to Best Practical Solutions, LLC.)
-# 
-# By intentionally submitting any modifications, corrections or
-# derivatives to this work, or any other work intended for use with
-# Request Tracker, to Best Practical Solutions, LLC, you confirm that
-# you are the copyright holder for those contributions and you grant
-# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
-# royalty-free, perpetual, license to use, copy, create derivative
-# works based on those contributions, and sublicense and distribute
-# those contributions and any derivatives thereof.
-# 
-# END BPS TAGGED BLOCK }}}
+
 RT is an enterprise-grade issue tracking system. It allows
 organizations to keep track of their to-do lists, who is working
 on which tasks, what's already been done, and when tasks were
@@ -56,7 +12,7 @@ sales@bestpractical.com.
 
         Jesse Vincent
         Best Practical Solutions, LLC
-        June 2004
+        January, 2005
 
 
 REQUIRED PACKAGES:
@@ -176,6 +132,9 @@ want to read a more comprehensive installation guide at:
             /opt/rt3/sbin/rt-setup-database --action insert \
                  --datadir etc/upgrade/<version>
 
+        Some of these commands will generate errors related to missing files.
+        That just means that no action was needed.
+
 
 5c  FOR UPGRADING: (From RT 2.0.x)
 
@@ -211,7 +170,8 @@ the mod_perl perl interpreter within Apache httpd and FastCGI
 mod_perl
 --------
 
-To install RT with mod_perl, you'll need to add a few lines to your 
+To install RT with mod_perl, you'll need to install the
+apache database connection cache and add a few lines to your 
 Apache configuration file telling it about RT:
 
 <VirtualHost your.ip.address>
@@ -227,6 +187,12 @@ Apache configuration file telling it about RT:
         PerlHandler RT::Mason
     </Location>
 </VirtualHost>
+
+To make sure that the Apache database connection cache is installed, run
+the following command:
+
+    perl -MCPAN -e'install Apache::DBI'
+
 
 FastCGI
 -------
@@ -266,10 +232,6 @@ SETTING UP THE MAIL GATEWAY
 RT can accept incoming email using a simple program run as a "pipe" 
 by your mail server.
 
-An alias for the initial queue will need to be made in either your
-global mail aliases file (if you are using NIS) or locally on your
-machine.
- 
 Add the following lines to /etc/aliases (or your local equivalent) :
 
 rt:         "|/opt/rt3/bin/rt-mailgate --queue general --action correspond --url http://localhost/"
@@ -294,7 +256,7 @@ GETTING HELP
 If RT is mission-critical for you or if you use it heavily, we recommend that
 you purchase a commercial support contract.  Details on support contracts
 are available at http://www.bestpractical.com or by writing to
-sales@bestpractical.com.
+<sales@bestpractical.com>. 
 
 If you're interested in having RT extended or customized or would like more
 information about commercial support options, please send email to 
@@ -319,7 +281,7 @@ similar to those above.
 
 Address questions about the stable release to the rt-users list, and
 questions about the development version to the rt-devel list.  If you feel
-your questions are best not asked publicly, send them personally to
+your questions are best not asked publicly for, send them personally to
 <jesse@bestpractical.com>.
 
 
@@ -332,3 +294,50 @@ For current information about RT, check out the RT website at
 
 You'll find screenshots, a pointer to the current version of RT, contributed 
 patches, and lots of other great stuff.
+
+
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}

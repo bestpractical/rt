@@ -123,7 +123,7 @@ sub Create {
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    RT::Principal->_InvalidateACLCache();
+    RT::Principal->InvalidateACLCache();
 
     $RT::Handle->BeginTransaction() unless ($args{'InsideTransaction'});
 
@@ -232,7 +232,7 @@ sub _StashUser {
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    RT::Principal->_InvalidateACLCache();
+    RT::Principal->InvalidateACLCache();
 
 
     # We really need to make sure we don't add any members to this group
@@ -308,7 +308,7 @@ sub Delete {
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    RT::Principal->_InvalidateACLCache();
+    RT::Principal->InvalidateACLCache();
 
 
 

@@ -211,7 +211,7 @@ if (defined $session{'tickets'} and $session{'tickets'}->Count) {
 <%ARGS>
 $Ticket => undef
 $subtabs => undef
-$current_tab => undef
-$current_subtab => undef
+$current_tab => ''
+$current_subtab => ''
 $Title => undef
 </%ARGS>

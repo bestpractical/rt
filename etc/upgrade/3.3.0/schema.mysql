@@ -25,9 +25,9 @@ alter table ObjectCustomFieldValues add column ContentType varchar(80) NULL;
 
 alter table ObjectCustomFieldValues add column ContentEncoding varchar(80) NULL;
 
-alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues1;
-
-alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues2;
+# These could fail if there's no such index and there's no "drop index if exists" syntax
+#alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues1;
+#alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues2;
 
 alter table ObjectCustomFieldValues add index ObjectCustomFieldValues1 (Content); 
 
@@ -54,7 +54,8 @@ alter table CustomFields add column LookupType varchar(255) NOT NULL;
 alter table CustomFields add column Repeated int2 NOT NULL DEFAULT 0 ;
 alter table CustomFields add column Pattern varchar(255) NULL;
 alter table CustomFields add column MaxValues integer;
-alter table CustomFields drop index CustomFields1;
+# See above
+# alter table CustomFields drop index CustomFields1;
 
 UPDATE CustomFields SET MaxValues = 0 WHERE Type LIKE '%Multiple';
 UPDATE CustomFields SET MaxValues = 1 WHERE Type LIKE '%Single';

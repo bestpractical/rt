@@ -311,6 +311,8 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj
     );
     foreach my $arg (keys %ARGS) {
+            my $cfid = $1;
+
             next if ($arg =~ /-Magic$/);
        #Object-RT::Ticket--CustomField-3-Values
         if ($arg =~ /^Object-RT::Transaction--CustomField-/) {
@@ -321,9 +323,13 @@ sub CreateTicket {
             my $cf = RT::CustomField->new( $session{'CurrentUser'});
             $cf->Load($cfid);
 
-            if ($cf->Type eq 'FreeformMultiple') {
+            if ( $cf->Type eq 'Freeform' && ! $cf->SingleValue) {
                 $ARGS{$arg} =~ s/\r\n/\n/g;
                 $ARGS{$arg} = [split('\n', $ARGS{$arg})];
+            }
+
+            if ( $cf->Type eq 'Text') {
+                $ARGS{$arg} =~ s/\r//g;
             }
 
             if ( $arg =~ /-Upload$/ ) {
@@ -887,7 +893,6 @@ sub ProcessACLChanges {
                 $obj = $object_type->new($session{'CurrentUser'});
                 $obj->Load($object_id);      
             } else {
-		die;
                 push (@results, loc("System Error"). ': '.
                                 loc("Rights could not be revoked for [_1]", $object_type));
                 next;
@@ -1115,21 +1120,39 @@ sub ProcessObjectCustomFieldUpdates {
 	    $CustomFieldObj->LoadById($cf);
 
 		foreach my $arg ( keys %{$ARGSRef} ) {
+		    # Only interested in args for the current CF:
+		    next unless ( $arg =~ /^Object-$class-(?:$id)?-CustomField-$cf-/ );
+
 		    # since http won't pass in a form element with a null value, we need
 		    # to fake it
 		    if ($arg =~ /^(.*?)-Values-Magic$/ ) {
 			# We don't care about the magic, if there's really a values element;
-			next if (exists $ARGSRef->{$1.'-Values'}) ;
+			next if ($ARGSRef->{$1.'-Value'} || $ARGSRef->{$1.'-Values'}) ;
+
+                        # "Empty" values does not mean anything for Image and Binary fields
+                        next if $CustomFieldObj->Type =~ /^(?:Image|Binary)$/;
 
 			$arg = $1."-Values";
 			$ARGSRef->{$1."-Values"} = undef;
 		    
 		    }
-		    next unless ( $arg =~ /^Object-$class-(?:$id)?-CustomField-$cf-/ );
-		    my @values =
-		    ( ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) 
-		    ? @{ $ARGSRef->{$arg} }
-		    : split /\n/, $ARGSRef->{$arg} ;
+		    my @values = ();
+		    if (ref( $ARGSRef->{$arg} ) eq 'ARRAY' ) {
+			@values = @{ $ARGSRef->{$arg} };
+		    } elsif ($CustomFieldObj->Type eq 'Text') {
+			@values = ($ARGSRef->{$arg});
+		    } else {
+			@values = split /\n/, $ARGSRef->{$arg};
+		    }
+		    
+		    if ( ($CustomFieldObj->Type eq 'Freeform' 
+			  && ! $CustomFieldObj->SingleValue) ||
+			  $CustomFieldObj->Type eq 'Text') {
+			foreach my $val (@values) {
+			    $val =~ s/\r//g;
+			}
+		    }
+
 		    if ( ( $arg =~ /-AddValue$/ ) || ( $arg =~ /-Value$/ ) ) {
 			foreach my $value (@values) {
 			    next unless length($value);
@@ -1386,6 +1409,7 @@ sub ProcessTicketLinks {
     my $Ticket  = $args{'TicketObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
+
     my (@results) = ProcessRecordLinks(RecordObj => $Ticket,
 				       ARGSRef => $ARGSRef);
 
@@ -1455,7 +1479,6 @@ sub ProcessRecordLinks {
     return (@results);
 }
 
-# {{{ sub _UploadedFile
 
 =head2 _UploadedFile ( $arg );
 

@@ -100,14 +100,14 @@ sub InitSessionDir {
     # Activate the following if running httpd as root (the normal case).
     # Resets ownership of all files created by Mason at startup.
     # Note that mysql uses DB for sessions, so there's no need to do this.
-    unless ( $RT::DatabaseType =~ /(mysql|Pg)/ ) {
+    unless ( $RT::DatabaseType =~ /(?:mysql|Pg)/ ) {
 
         # Clean up our umask to protect session files
         umask(0077);
 
         if ($CGI::MOD_PERL) {
             chown( Apache->server->uid, Apache->server->gid,
-                [$RT::MasonSessionDir] )
+                $RT::MasonSessionDir )
             if Apache->server->can('uid');
         }
 
@@ -178,6 +178,32 @@ sub NewHandler {
     return($handler);
 }
 
+=head2 CleanupRequest
+
+Rollback any uncommitted transaction.
+Flush the ACL cache
+Flush the searchbuilder query cache
+
+=cut
+
+sub CleanupRequest {
+
+    if ( $RT::Handle->TransactionDepth ) {
+        $RT::Handle->ForceRollback;
+        $RT::Logger->crit(
+            "Transaction not committed. Usually indicates a software fault."
+            . "Data loss may have occurred" );
+    }
+
+    # Clean out the ACL cache. the performance impact should be marginal.
+    # Consistency is imprived, too.
+    RT::Principal->InvalidateACLCache();
+    DBIx::SearchBuilder::Record::Cachable->FlushCache
+      if ( $RT::WebFlushDbCacheEveryRequest
+        and UNIVERSAL::can(
+            'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache' ) );
+
+}
 # }}}
 
 1;

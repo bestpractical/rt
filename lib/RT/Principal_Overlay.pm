@@ -61,7 +61,7 @@ use RT::User;
 
 # Set up the ACL cache on startup
 our $_ACL_CACHE;
-_InvalidateACLCache();
+InvalidateACLCache();
 
 # {{{ IsGroup
 
@@ -143,6 +143,11 @@ sub Object {
 
 A helper function which calls RT::ACE->Create
 
+
+
+   Returns a tuple of (STATUS, MESSAGE);  If the call succeeded, STATUS is true. Otherwise it's 
+   false.
+
 =cut
 
 sub GrantRight {
@@ -183,6 +188,11 @@ sub GrantRight {
 =head2 RevokeRight { Right => "RightName", Object => "object" }
 
 Delete a right that a user has 
+
+
+   Returns a tuple of (STATUS, MESSAGE);  If the call succeeded, STATUS is true. Otherwise it's 
+      false.
+
 
 =cut
 
@@ -480,15 +490,15 @@ sub _RolesForObject {
 # {{{ ACL caching
 
 
-# {{{ _InvalidateACLCache
+# {{{ InvalidateACLCache
 
-=head2 _InvalidateACLCache
+=head2 InvalidateACLCache
 
-Cleans out and reinitializes the user rights key cache
+Cleans out and reinitializes the user rights cache
 
 =cut
 
-sub _InvalidateACLCache {
+sub InvalidateACLCache {
     $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
     $_ACL_CACHE->expire_after($RT::ACLCacheLifetime||60);
 

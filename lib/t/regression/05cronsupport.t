@@ -1,6 +1,11 @@
-#!@PERL@ -w
+#!/usr/bin/perl -w
 
 use strict;
+use Test::More qw/no_plan/;
+
+use RT;
+RT::LoadConfig();
+RT::Init();
 
 ### Set up some testing data.  Test the testing data because why not?
 

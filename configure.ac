@@ -7,7 +7,7 @@ AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [3.3.HEAD], [rt-3.1-bugs@fsck.com])
+AC_INIT(RT, [3.3.HEAD], [rt-bugs@fsck.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -234,31 +234,26 @@ AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 
 dnl Configure the output files, and generate them.
 
+dnl Binaries that should be +x
 AC_CONFIG_FILES([
 		 sbin/rt-dump-database
 		 sbin/rt-setup-database
-                 sbin/rt-test-dependencies
-                 Makefile
-		 etc/RT_Config.pm
-		 lib/RT.pm
-                 lib/t/00smoke.t
-                 lib/t/01harness.t
-                 lib/t/02regression.t
-                 lib/t/03web.pl
-                 lib/t/04_send_email.pl
-		 lib/t/05cronsupport.pl
-		 lib/t/06mailgateway.pl
-		 lib/t/07acl.pl
-		 lib/t/08web_cf.pl
+		 sbin/rt-test-dependencies
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd
- 		 bin/mason_handler.svc
  		 bin/rt-crontool
  		 bin/rt-mailgate
-		 bin/rt
- 		 bin/webmux.pl],
-		[chmod ug+x sbin/rt-test-dependencies
-		 chmod ug+x sbin/rt-setup-database]
+		 bin/rt],
+		[chmod ug+x $ac_file]
+               )
+
+dnl All other generated files
+AC_CONFIG_FILES([
+		 Makefile
+		 etc/RT_Config.pm
+		 lib/RT.pm
+ 		 bin/mason_handler.svc
+		 bin/webmux.pl],
                )
 AC_OUTPUT

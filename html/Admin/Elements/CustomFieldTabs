@@ -44,9 +44,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Tabs, 
+    current_tab => 'Admin/CustomFields/',
     subtabs => $tabs, 
-    current_tab => 'Admin/CustomFields/', 
-    current_subtab => $current_subtab, 
+    current_subtab => $current_tab, 
     Title => $Title &>
 <%INIT>
 my $tabs;
@@ -55,19 +55,16 @@ if ($id) {
     my $cf = RT::CustomField->new( $session{'CurrentUser'} );
     $cf->Load($id);
     $tabs = {
-        C => {
+        this => {
             title => $cf->Name,
             path  => "Admin/CustomFields/Modify.html?id=" . $id,
+            current_subtab => $current_tab,
 
             subtabs => {
 
                 C => { title => loc('Basics'),
                        path  => "Admin/CustomFields/Modify.html?id=" . $id,
                 },
-                D => { title => loc('Applies to'),
-                       path  => "Admin/CustomFields/Objects.html?id=" . $id,
-                },
-
                 F => { title => loc('Group Rights'),
                        path  => "Admin/CustomFields/GroupRights.html?id="
                          . $id, },
@@ -79,6 +76,14 @@ if ($id) {
             } }
 
     };
+
+
+    if ($cf->LookupType =~ /^RT::Queue/io) {
+	$tabs->{'this'}->{subtabs}->{D} = {
+	title => loc('Applies to'),
+	    path  => "Admin/CustomFields/Objects.html?id=" . $id,
+	};
+    }
 }
 
 if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCustomField')) {
@@ -94,21 +99,18 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminCus
   # Now let callbacks add their extra tabs
   $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
 
-foreach my $tab ( sort keys %{$tabs} ) {                                        
-    if ( $tabs->{$tab}->{'path'} eq $current_subtab ) {                         
-        $tabs->{$tab}->{"current_subtab"} = $current_subtab;                    
-    }                                                                           
-  foreach my $subtab (sort keys %{$tabs->{'subtabs'}}) {
-    if ($tabs->{$tab}->{subtabs}->{$subtab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{subtabs}->{$subtab}->{"current_subtab"} = $current_subtab;
+foreach my $tab (sort keys %{$tabs->{'this'}->{'subtabs'}}) {
+    if ($tabs->{'this'}->{'subtabs'}->{$tab}->{'path'} eq $current_tab) {
+	$tabs->{'this'}->{'subtabs'}->{$tab}->{'subtabs'} = $subtabs;
+	$tabs->{'this'}->{'subtabs'}->{$tab}->{'current_subtab'} = $current_subtab;
     }
-  }
-}                                                                               
-
+}
+if( $id ) { $current_tab = "Admin/CustomFields/Modify.html?id=" . $id }
 </%INIT>
 <%ARGS>
-$id => undef
-$current_subtab => undef
-$current_tab => undef
 $Title => undef
+$id => undef
+$current_tab => undef
+$subtabs => undef
+$current_subtab => undef
 </%ARGS>

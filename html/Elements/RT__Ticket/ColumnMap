@@ -49,7 +49,7 @@ $Attr => undef
 </%ARGS>
 
 
-<%INIT>
+<%ONCE>
 our ( $COLUMN_MAP );
 
 sub ColumnMap {
@@ -94,8 +94,8 @@ sub LinkCallback {
     my $method = shift;
 
     my $mode            = $RT::Ticket::LINKTYPEMAP{$method}{Mode};
+    my $type            = $RT::Ticket::LINKTYPEMAP{$method}{Type};
     my $mode_uri        = $mode.'URI';
-    my $mode_is_local   = $mode.'IsLocal';
     my $local_type      = 'Local'.$mode;
 
     return sub {
@@ -103,9 +103,9 @@ sub LinkCallback {
             \'<A HREF="',
             $_->$mode_uri->Resolver->HREF,
             \'">',
-            ( $_->$mode_is_local ? $_->$local_type : $_->$mode ),
+            ( $_->$mode_uri->IsLocal ? $_->$local_type : $_->$mode ),
             \'</A><BR>',
-        } @{ $_[0]->$method->ItemsArrayRef }
+        } @{ $_[0]->Links($mode,$type)->ItemsArrayRef }
     }
 }
 
@@ -232,7 +232,7 @@ $COLUMN_MAP = {
         value     => sub { 
 	    my $date = $_[0]->DueObj;
 	    if ($date && $date->Unix > 0 && $date->Unix < time()) {
-		return \'<span class="overdue">' . $date->AgeAsString . \'</span>';
+		return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
 	    } else {
 		return $date->AgeAsString;
 	    }
@@ -298,5 +298,7 @@ $COLUMN_MAP = {
 
 # }}}
 $m->comp( '/Elements/Callback', COLUMN_MAP    => $COLUMN_MAP, _CallbackName => 'ColumnMap');
+</%ONCE>
+<%init>
 return ColumnMap($Name, $Attr);
-</%INIT>
+</%init>

@@ -1,8 +1,7 @@
-#!@PERL@
+#!/usr/bin/perl
 
 use Test::More qw(no_plan);
 
-use lib "@RT_LIB_PATH@";
 use RT;
 ok(RT::LoadConfig);
 ok(RT::Init, "Basic initialization and DB connectivity");

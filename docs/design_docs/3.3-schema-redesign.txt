@@ -14,7 +14,7 @@ TABLE CustomFields (
   SortOrder integer NOT NULL DEFAULT 0  ,   -- only used on "pick CF" screen
 )
 
--- This table replaces TicketCustomFields
+-- This table replaces the "Queue" field in CustomFields
 TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,               -- CustomField ID
