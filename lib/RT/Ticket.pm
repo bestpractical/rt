@@ -98,14 +98,6 @@ sub Create {
 			  Type => "Cc");
     }
 
-    # Should we store this at all?  There might be a point keeping
-    # blind cc's secret.
-    my @Bcc = Mail::Address->parse($head->get('Bcc'));
-    foreach $Bcc (@Bcc) {
-      $self->AddWatcher ( Email => $Bcc->address,
-			  Type => "Bcc");
-    }
-    
   }
   #Add a transaction for the create
   my $Trans = $self->_NewTransaction(Type => "Create",
@@ -291,7 +283,7 @@ sub AdminCcAsString {
   my $self = shift;
   if (!defined $self->{'AdminCcAsString'}) {
     $self->{'AdminCcAsString'} = "";
-    while (my $requestor = $self->Bcc->Next) {
+    while (my $requestor = $self->AdminCc->Next) {
       $self->{'AdminCcAsString'} .= $requestor->Email .", ";
     }
     $self->{'AdminCcAsString'} =~ s/, $//;

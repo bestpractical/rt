@@ -1,12 +1,13 @@
 # $Header$
+# Copyright 2000 Tobias Brox <tobix@cpan.org> and  Jesse Vincent <jesse@fsck.com>
+# Released under the terms of the GNU Public License
 
 package RT::Action::SendEmail;
 
 require RT::Action;
-require Mail::Internet;
-require RT::Template;
 
 @ISA = qw(RT::Action);
+
 
 # {{{ sub new 
 sub new  {
@@ -22,10 +23,22 @@ sub new  {
 # {{{ sub _Init 
 sub _Init  {
   my $self = shift;
-  $self->{'TemplateObject'}=RT::Template->new;
-  $self->{'TemplateObject'}->Load($self->{Template});
-  $self->{'Header'} = Mail::Header->new;
-  $self->{'Header'}->fold(78);
+  my $template = shift;
+  
+  # Load in whatever tempalte we've been called with.
+  # RT Templates are subclasses of MIME::Entity, which are subclasses of
+  # Mail::Internet.
+  require RT::Template;
+  $self->{'TemplateObj'}=RT::Template->new;
+  $self->{'TemplateObj'}->Load($template);
+  # This actually populates the MIME::Entity fields in the Template Object
+  $self->{'TemplateObj'}->Parse;
+
+
+  #TODO: Tobix: what does this do? -jesse
+  $self->{'TemplateObj'}->{'Header'}->fold(78);
+
+  return();
 }
 # }}}
 
@@ -34,12 +47,8 @@ sub Commit  {
   my $self = shift;
   #send the email
 
-  # This is way stupid.  The more I fiddle around with Mail::Internet,
-  # the more I'm just wanting to throw it out the window. -- TobiX
   my @body = grep($_ .= "\n", split(/\n/,$self->{'Body'}));
 
-  $self->{'Message'}=Mail::Internet->new(Header=>$self->{'Header'}, 
-					 Body=>\@body);
 
   # This one is stupid.  There are really stability concerns with
   # smtpsend.  We really should call $self->{'Message'}->send instead
@@ -47,50 +56,117 @@ sub Commit  {
   # will be.  I will probably mash it together myself some day.
   # -- TobiX
 
-  $self->{'Message'}->smtpsend || die "could not send email";
+  $self->{'TemplateObj'}->smtpsend || die "could not send email";
 
-  # I would at least expect it to sort the headers in an appropriate
-  # order.  It doesn't.
+  #TODO: enable this once tobix' new Mail::Internet is out there.
+  #$self->{'TemplateObj'}->send('sendmail'); || die "Could not send mail;
+
+  # TODO Tell the administrator that RT couldn't send mail
+
 }
 # }}}
 
 # {{{ sub Prepare 
+
 sub Prepare  {
   my $self = shift;
 
-  # Perform variable substitution on the template headers
-  my $headers=$self->{TemplateObject}->ParseHeaders($self);
-
-  for (split /\n/, $headers) {
-      /: /;
-      $self->{Header}->add($`, $');
-  }
-
   # Header
   
-  # To, bcc and cc
-  $self->SetReceipients() || return undef;
-
   # Maybe it's better to separate out _all_ headers/group of headers
-  # to make it easier to customize subclasses?
+  # to make it easier to customize subclasses?  nah ... 
 
-  # nah ... 
+  # Yes, actually --jesse ;)
 
-  # Subject
-  unless ($self->{'Header'}->get(Subject)) {
-      my $m=$self->{TransactionObject}->Message->First;
-      my $ticket=$self->{TicketObject}->Id;
-      ($self->{Subject})=$m->Headers =~ /^Subject: (.*)$/m
-	  if $m;
-      $self->{Subject}=$self->{TicketObject}->Subject()
-	  unless $self->{Subject};
-
-      $self->{'Header'}->add('Subject', 
-			     "[$RT::rtname #$ticket] $$self{Subject}");
-
-  }
+  $self->SetSubject();
 
   #TODO We should _Always_ insert the [RT::rtname #$ticket] tag here.
+
+  $self->SetReturnAddress();
+
+  $self->SetContentType();
+
+  $self->SetRTSpecialHeaders();
+
+  $self->SetReferences();
+  #TODO Set up an In-Reply-To maybe.
+
+ $self->{'Body'} .= 
+    "\n-------------------------------------------- Managed by Request Tracker\n\n";
+  
+
+
+}
+
+# }}}
+
+# {{{ sub SetRTSpecialHeaders
+
+# This routine adds all the random headers that RT wants in a mail message
+# that don't matter much to anybody else.
+
+sub SetRTSpecialHeaders {
+  my $self = shift;
+    
+  unless ($self->{'Header'}->get('RT-Action')) {
+    $self->{'Header'}->add('RT-Action', $self->Describe);
+  }
+  
+  unless ($self->{'Header'}->get('RT-Scrip')) {
+    $self->{'Header'}->add('RT-Scrip', $self->{'ScripObject'}->Description);
+  }
+  
+  $self->{'Header'}->add('RT-Ticket-ID', $self->{'TicketObject'}->id());
+  $self->{'Header'}->add('RT-Loop-Prevention', $RT::rtname);
+
+  $self->{'Header'}->add
+    ('RT-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
+
+  return();
+
+}
+# }}}
+
+# {{{ sub SetReferences
+
+# This routine will set the References: header, autopopulating it with all the correspondence on this
+# ticket so far. This should make RT responses threadable. Yay!
+
+sub SetReferences {
+  my $self = shift;
+  
+  $self->{'Header'}->add
+    ('References', "<rt-ticket-".$self->{'TicketObject'}->id()."\@".$RT::rtname.">");
+    #TODO We should always add References headers for previous messages
+  # related to this ticket.
+}
+# }}}
+
+# {{{ sub SetContentType
+sub SetContentType {
+  my $self = shift;
+  
+  
+  # TODO do we really need this with MIME::Entity? I think it autosets it -- jesse
+  #. ISO-8859-1 just
+  # isn't sufficient for international usage (it's even not enough for
+  # European usage ... there are people using ISO-8859-2 and KOI-8 and
+  # stuff like that).
+  # By default, the Template's Content-Type is used. 
+
+  unless ($self->{'Header'}->get('Content-Type')) {
+      $self->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
+  }
+return();
+}
+
+
+# }}}
+
+# {{{ sub SetReturnAddress 
+sub SetReturnAddress {
+
+my $self = shift;
 
   # From, RT-Originator (was Sender) and Reply-To
   # $self->{comment} should be set if the comment address is to be used.
@@ -109,55 +185,71 @@ sub Prepare  {
 
   $self->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
 
-  #. ISO-8859-1 just
-  # isn't sufficient for international usage (it's even not enough for
-  # European usage ... there are people using ISO-8859-2 and KOI-8 and
-  # stuff like that).
-  # By default, the Template's Content-Type is used. 
+}
 
-  unless ($self->{'Header'}->get('Content-Type')) {
-      $self->{'Header'}->add('Content-Type', 'text/plain; charset=ISO-8859-1');
-  }
+# }}}
 
-  unless ($self->{'Header'}->get('RT-Action')) {
-      $self->{'Header'}->add('RT-Action', $self->Describe);
-  }
+# {{{ sub SetEnvelopeTo
 
-  unless ($self->{'Header'}->get('RT-Scrip')) {
-      $self->{'Header'}->add('RT-Scrip', $self->{'ScripObject'}->Description);
-  }
+sub SetEnvelopeTo {
+  my $self = shift;
+  #TODO Set Envelope to
+  return($self->{'EnvelopeTo'});
+}
 
-  $self->{'Header'}->add('RT-Ticket-ID', $self->{'TicketObject'}->id());
-  $self->{'Header'}->add('RT-Loop-Prevention', $RT::rtname);
+# }}}
 
-  # Perform variable substitution on the template body
-  $self->{'Body'}=$self->{TemplateObject}->Parse($self);
-  $self->{'Body'} .= 
-      "\n-------------------------------------------- Managed by Request Tracker\n\n";
- 
+# {{{ sub SetTo
 
-  
-  $self->{'Header'}->add
-    ('X-Managed-By',"Request Tracker $RT::VERSION (http://www.fsck.com/projects/rt)");
+sub SetTo {
+  my $self = shift;
+  #TODO Set To
+  return($self->{'To'});
+}
 
+# }}}
 
-  $self->{'Header'}->add
-    ('References', "<rt-ticket-".$self->{'TicketObject'}->id()."\@".$RT::rtname.">");
+# {{{ sub SetCc
 
-  #TODO We should always add In-Reply-To and References headers for previous messages
-  # related to this ticket.
-  
+sub SetCc {
+  my $self = shift;
+  #TODO Set Cc
+  return($self->{'Cc'});
+}
 
+# }}}
 
+# {{{ sub SetBcc
+
+sub SetBcc {
+  my $self = shift;
+  #TODO Set Bcc
+  return($self->{'Bcc'});
 }
 # }}}
 
+# {{{ sub SetSubject
 
-# {{{ sub SetReceipients 
-sub SetRecipients {
+# This routine sets the subject. it does not add the rt tag. that gets done elsewhere
+
+sub SetSubject {
+  my $self = shift;
+  unless ($self->{'TemplateObj'}->{'Header'}->get(Subject)) {
+      my $m=$self->{TransactionObject}->Message->First;
+      my $ticket=$self->{TicketObject}->Id;
+      ($self->{Subject})=$m->Headers =~ /^Subject: (.*)$/m
+	  if $m;
+      $self->{Subject}=$self->{TicketObject}->Subject()
+	  unless $self->{Subject};
+      
+      $self->{'Header'}->add('Subject',"$$self{Subject}");
+
+  }
+
+  #TODO Set the subject
+  return($self->{'Subject'});
 }
 # }}}
-
 
 # {{{ sub IsApplicable 
 sub IsApplicable  {
@@ -166,6 +258,37 @@ sub IsApplicable  {
   return(1);
 }
 # }}}
+
+__END__
+
+=head1 NAME
+
+  RT::Action::SendEmail - An abstract base Action which allows RT::Action modules to send email
+
+=head1 SYNOPSIS
+  require RT::Action::SendEmail;
+  @ISA qw(RT::Action::SendEmail);
+
+
+=head1 DESCRIPTION
+
+  Basically, you create another module RT::Action::YourAction which ISA RT::Action::SendEmail
+
+  You'll want to override the SetTo, SetCc, SetBcc, SetEnvelopeTo headers to send mail messages
+somewhere other than to the ticket's interested parties. RT::Action::NotifyWatchers would be a
+good place to look to see how this works.
+
+
+=head1 AUTHOR
+
+Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>
+
+=head1 SEE ALSO
+
+perl(1).
+
+=cut
+
 
 1;
 
