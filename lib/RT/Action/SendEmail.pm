@@ -10,9 +10,9 @@ require Mail::Internet;
 sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
-  my $self  = {};
+  my $self  = { @_ };
   bless ($self, $class);
-  $self->_Init(@_);
+  $self->_Init();
   return $self;
 }
 
@@ -24,6 +24,11 @@ sub _Init {
 sub Commit {
   my $self = shift;
   #send the email
+
+  # This one is stupid.  There are really stability concerns with
+  # smtpsend.  We really should call $self->{'Message'}->send instead
+  # - unfortunately that sub is not implemented, and probably never
+  # will be.  I will probably mash it together myself some day.
 
   $self->{'Message'}->smtpsend || die "could not send email";
 
