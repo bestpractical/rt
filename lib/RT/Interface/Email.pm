@@ -381,12 +381,10 @@ sub GetCurrentUser  {
 	    
 	    my $Message = "Sender's email address was not found in the user database.";
 
-	    $CurrentUser->Load($RT::Nobody->Id);
-
 	    # {{{  This code useful only if you've defined an AutoRejectRequest template
 	    
 	    require RT::Template;
-	    my $template = new RT::Template($CurrentUser);
+	    my $template = new RT::Template($RT::Nobody);
 	    $template->Load('AutoRejectRequest');
 	    $Message = $template->Content || $Message;
 	    
@@ -443,10 +441,14 @@ sub GetCurrentUser  {
 	$CurrentUser->LoadByEmail($Address);
 	
 	unless ($CurrentUser->id) {
-	    $RT::Logger->warning("Couldn't load user '$Address'.".
-				 " Defaulting to nobody\n");
+	    $RT::Logger->warning("Couldn't load user '$Address'.".  "giving up");
+		MailError( To => $ErrorsTo,
+			   Subject => "User could not be loaded",
+			   Explanation => "User  '$Address' could not be loaded in the mail gateway",
+			   MIMEObj => $entity,
+			   LogLevel => 'crit'
+			 );
 	    
-	    $CurrentUser->Load($RT::Nobody->Id);
 	}
     }
     

@@ -132,8 +132,7 @@ sub GetCurrentUser  {
     $CurrentUser->LoadByGecos($Gecos);
     
     unless ($CurrentUser->Id) {
-	$CurrentUser = $RT::Nobody;
-	$RT::Logger->debug("No user with a unix login of '$Gecos' was found. Continuing in unprivileged mode.\n");
+	$RT::Logger->debug("No user with a unix login of '$Gecos' was found. ");
     }
     return($CurrentUser);
 }

@@ -28,6 +28,13 @@ RT::DropSetGIDPermissions();
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 
+unless ($CurrentUser->Id) {
+        print "No RT user found. Please consult your RT administrator.\n";   
+        exit(1);
+}
+
+
+
 
 PickMode();
 
@@ -52,11 +59,11 @@ my $help_keyword_sel = "
        Keyword Selections
        --add-keyword-select
        --modify-keyword-select <name>
-          --name <name>
-          --root <keyword>
-          --single 
-          --multiple
-          --depth  <int>
+          --ks-name <name>
+          --ks-keyword <keyword>
+          --ks-single 
+          --ks-multiple
+          --ks-depth  <int>
 
         --disable-keyword-select <name>";
 # }}}
@@ -312,7 +319,7 @@ sub AdminUser {
 	$user_obj->Load($user);
 	
 	unless ($user_obj->id) {
-	    print "User '$user' not found";
+	    print "User '$user' not found\n";
 	    return();
 	}	
 	
@@ -341,7 +348,7 @@ sub AdminUser {
 	if (exists ($args{'Password'})) {
 	    my ($code, $msg);
 	    ($code, $msg) = $user_obj->SetPassword($args{'Password'});
-	    print "User ". $user_obj->Name. ' Password: '. $msg;
+	    print "User ". $user_obj->Name. ' Password: '. $msg . "\n";
 	}
 	
 	#Check if we need to display the user

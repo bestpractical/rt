@@ -28,6 +28,10 @@ RT::DropSetGIDPermissions();
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 
+unless ($CurrentUser->Id) {
+	print "No RT user found. Please consult your RT administrator.\n";
+	exit(1);
+}
 
 
 # {{{ commandline flags 
