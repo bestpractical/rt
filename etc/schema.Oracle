@@ -1,3 +1,4 @@
+
 CREATE SEQUENCE ATTACHMENTS_seq;
 CREATE TABLE Attachments (
   	id 		NUMBER(11,0) 
@@ -343,9 +344,10 @@ CREATE TABLE CustomFields (
 	Type		VARCHAR2(200),
 	MaxValues	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Pattern		VARCHAR2(255),
-	LookupType	VARCHAR2(255),
+        Repeated        NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Description	VARCHAR2(255),
 	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LookupType	VARCHAR2(255),
 	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Created		DATE,
 	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
