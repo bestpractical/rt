@@ -252,23 +252,16 @@ sub _DoSearch {
 sub _BuildHash {
     my $self = shift;
 
- #   $RT::Logger->debug("Now in ".$self."->_BuildHash\n");
     while (my $entry = $self->Next) {
-
-
-
        my $hashkey = $entry->RightScope . "-" .
                              $entry->RightAppliesTo . "-" . 
                              $entry->RightName . "-" .
                              $entry->PrincipalId . "-" .
                              $entry->PrincipalType;
 
-
-#       $RT::Logger->debug("Now building entry for ".$hashkey." in ". $self."->_BuildHash\n");
         $self->{'as_hash'}->{"$hashkey"} =1;
 
     }
-#    $RT::Logger->debug("Done with ".$self."->_BuildHash\n");
 }
 
 
@@ -291,28 +284,15 @@ sub HasEntry {
     #if we haven't done the search yet, do it now.
     $self->_DoSearch();
 
-#    $RT::Logger->debug("Now in ".$self."->HasEntry\n");
-if (0) {
-    $RT::Logger->debug("Trying to find as_hash-> ".
-		       $args{'RightScope'} . "-" .
-		       $args{'RightAppliesTo'} . "-" . 
-		       $args{'RightName'} . "-" .
-		       $args{'PrincipalId'} . "-" .
-		       $args{'PrincipalType'}.
-		       "..."
-		      );
-}
     if ($self->{'as_hash'}->{ $args{'RightScope'} . "-" .
 			      $args{'RightAppliesTo'} . "-" . 
 			      $args{'RightName'} . "-" .
 			      $args{'PrincipalId'} . "-" .
 			      $args{'PrincipalType'}
                             } == 1) {
-#	$RT::Logger->debug("found.\n");
 	return(1);
     }
     else {
-#	$RT::Logger->debug("not found.\n");
 	return(undef);
     }
 }

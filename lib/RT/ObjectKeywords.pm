@@ -171,16 +171,11 @@ sub HasEntry {
     
     #    $RT::Logger->debug("Now in ".$self."->HasEntry\n");
     
-    $RT::Logger->debug("Trying to find as_hash-> ".
-		       $keyword ."..."
-		      );
     
     if ($self->{'as_hash'}->{ $keyword } == 1) {
-	$RT::Logger->debug("found.\n");
 	return(1);
     }
     else {
-	$RT::Logger->debug("not found.\n");
 	return(undef);
     }
 }
