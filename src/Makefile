@@ -1,21 +1,15 @@
 PERL			= 	/usr/bin/perl
-MYSQLDIR		=	/usr/bin
+MYSQLDIR		=	/opt/mysql/bin
 RTUSER			=	rt
 RTGROUP			=	rt
-RT_PATH			=	/usr/local/rt
+RT_PATH			=	/projects/rt
 RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 RT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
-RT_INTERFACES_PATH	=	$(RT_LIB_PATH)/interfaces
 RT_TRANSACTIONS_PATH	= 	$(RT_PATH)/transactions
 GLIMPSE_PATH		=       $(RT_TRANSACTIONS_PATH)/glimpse
-RTQ			=	$(RT_INTERFACES_PATH)/cli_queue.pl
-RT			=	$(RT_INTERFACES_PATH)/cli_manipulate.pl
-RTADMIN			=	$(RT_INTERFACES_PATH)/cli_admin.pl
-WEBRT			=	$(RT_INTERFACES_PATH)/web_manipulate.pl
-ADMINWEBRT		=	$(RT_INTERFACES_PATH)/web_admin.pl
-RTMAILGATE		=	$(RT_INTERFACES_PATH)/mail_gateway.pl
+RTMUX			=	$(RT_LIB_PATH)/rtmux.pl
 TRANSACT_NUMFILE 	=	$(RT_ETC_PATH)/transact-num
 REQUEST_NUMFILE 	=	$(RT_ETC_PATH)/request-num
 
@@ -56,9 +50,7 @@ dirs:
 	mkdir -p $(GLIMPSE_PATH)
 
 suidrt: 
-	$(CC) suidrt.c -DRTQ=\"$(RTQ)\" -DRT=\"$(RT)\" \
-	-DRTADMIN=\"$(RTADMIN)\" -DWEBRT=\"$(WEBRT)\" -DADMINWEBRT=\"$(ADMINWEBRT)\" \
-	-DRTMAILGATE=\"$(RTMAILGATE)\" -DPERL=\"$(PERL)\" -o $(RT_BIN_PATH)/suidrt
+	$(CC) suidrt.c -DRTMUX=\"$(RTMUX)\" -DPERL=\"$(PERL)\" -o $(RT_BIN_PATH)/suidrt
 	rm -f $(RT_BIN_PATH)/rt
 	ln -s $(RT_BIN_PATH)/suidrt $(RT_BIN_PATH)/rt
 	rm -f $(RT_BIN_PATH)/rtadmin

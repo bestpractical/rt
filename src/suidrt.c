@@ -30,30 +30,39 @@ char *argv[],*envp[];
     }
   eargv[0]= PERL;
   eargv[1] = "-U";
-/*  eargv[2] = "-m/usr/local/rt/lib/routines/RT.pm";
-	doesn't work setuid
-*/
+  eargv[2] = RTMUX;
 
-  if (!strcmp (program_name, "rt"))
-    eargv[2] = RT;
-  else if (!strcmp (program_name, "rtq"))
-    eargv[2] = RTQ;
-   else if (!strcmp (program_name, "nph-webrt.cgi"))
-    eargv[2] = WEBRT;
-   else if (!strcmp (program_name, "nph-admin-webrt.cgi"))
-    eargv[2] = ADMINWEBRT;
-  else if (!strcmp (program_name, "rtadmin"))
-    eargv[2] = RTADMIN;
-  else if (!strcmp (program_name, "rt-mailgate"))
-    eargv[2] = RTMAILGATE;
-  else
+  if (!strcmp (program_name, "rt")) {
+    eargv[3] = "rt";	 
+  }
+  else if (!strcmp (program_name, "rtq")) {
+
+    eargv[3]= "rtq";
+  }
+  else if (!strcmp (program_name, "nph-webrt.cgi")) {
+
+    eargv[3] = "webrt";
+  }
+   else if (!strcmp (program_name, "nph-admin-webrt.cgi")) {
+
+    eargv[3] = "adminwebrt"; 
+   }
+    else if (!strcmp (program_name, "rtadmin")) {
+
+    eargv[3] = "rtadmin";
+    }
+  else if (!strcmp (program_name, "rt-mailgate")) {
+
+    eargv[3] = "rtmailgate";
+  }
+    else
     {
       fprintf (stderr, "%s: Illegal launch program.\n", program_name);
       exit(1);
     }
 
   for (i = 1; i < argc; i++)
-    eargv[i+2] = argv[i];
+    eargv[i+3] = argv[i];
   execve(PERL, eargv, envp);
   fprintf (stderr, "%s: Failed to launch RT program.\n", program_name);
   perror (program_name);
