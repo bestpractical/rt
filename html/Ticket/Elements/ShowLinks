@@ -26,25 +26,31 @@
   <tr>
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
+<ul>
 % while (my $Link = $Ticket->DependsOn->Next) {
-<& ShowLink, URI => $Link->TargetURI &>
+<li><& ShowLink, URI => $Link->TargetURI &>
 % }
+</ul>
     </td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Depended on by</&>:</td>
     <td class="value">
+<ul>
 % while (my $Link = $Ticket->DependedOnBy->Next) {
-<& ShowLink, URI => $Link->BaseURI &>
+<li><& ShowLink, URI => $Link->BaseURI &>
 % }
+</ul>
     </td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
+<ul>
 % while (my $Link = $Ticket->MemberOf->Next) {
-<& ShowLink, URI => $Link->TargetURI &>
+<li><& ShowLink, URI => $Link->TargetURI &>
 % }
+</ul>
     </td>
   </tr>
   <tr>
@@ -54,17 +60,21 @@
   <tr>
     <td class="labeltop"><&|/l&>Refers to</&>:</td>
     <td class="value">
+<ul>
 % while (my $Link = $Ticket->RefersTo->Next) {
-<& ShowLink, URI => $Link->TargetURI &>
+<li><& ShowLink, URI => $Link->TargetURI &>
 % }
+</ul>
     </td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Referred to by</&>:</td>
     <td class="value">
+    <ul>
 % while (my $Link = $Ticket->ReferredToBy->Next) {
-<& ShowLink, URI => $Link->BaseURI &>
+<li><& ShowLink, URI => $Link->BaseURI &>
 % }
+</ul>
     </td>
   </tr>
 </table>
