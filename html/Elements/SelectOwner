@@ -67,25 +67,20 @@ elsif ($cfqueues) {
 	@objects = keys %{$cfqueues};
 }
 else {
-        my $Queues = RT::Queues->new($session{CurrentUser});
-	$Queues->UnLimit();
-	while (my $Queue = $Queues->Next()) {
-	      push( @objects, $Queue );
-        }
+    # Let's check rights on an empty queue object. that will do a search for any queue.
+    my $queue = RT::Queue->new($session{'CurrentUser'});
+	      push( @objects, $queue );
 }
 
 my %user_uniq_hash;
 foreach my $object (@objects) {
 	my $Users = RT::Users->new($session{CurrentUser});
-        $Users->WhoHaveRight(Right => 'OwnTicket',
-                     Object => $object,
-                     IncludeSystemRights => 1,
-                     IncludeSuperusers => 0);
+        $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
         while (my $User = $Users->Next()) {
 	      $user_uniq_hash{$User->Id()} = $User;
         }
 }
-@users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash;
+@users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
 </%INIT>
 
 <%ARGS>
