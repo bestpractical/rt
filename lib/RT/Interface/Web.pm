@@ -419,7 +419,8 @@ sub ProcessUpdateMessage {
     );
 
     #Make the update content have no 'weird' newlines in it
-    if ( $args{ARGSRef}->{'UpdateContent'} ) {
+    if ( $args{ARGSRef}->{'UpdateContent'} ||
+	 $args{ARGSRef}->{'UpdateAttachments'}) {
 
         if (
             $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject() )

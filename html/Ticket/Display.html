@@ -91,11 +91,12 @@ if (defined $ARGS{'Action'}) {
   }
 }
 
-    if ( $ARGS{'UpdateContent'} ) {
+    if ( $ARGS{'UpdateContent'} || $session{'Attachments'}) {
         $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-        if (    $ARGS{'UpdateContent'} ne ''
-             && $ARGS{'UpdateContent'} ne "-- \n"
-             . $session{'CurrentUser'}->UserObj->Signature ) {
+        if ( $session{'Attachments'} || 
+	     (   $ARGS{'UpdateContent'} ne ''
+		 && $ARGS{'UpdateContent'} ne "-- \n"
+		 . $session{'CurrentUser'}->UserObj->Signature )) {
             $ARGS{UpdateAttachments} = $session{'Attachments'};
             ProcessUpdateMessage( ARGSRef   => \%ARGS,
                                   Actions   => \@Actions,
