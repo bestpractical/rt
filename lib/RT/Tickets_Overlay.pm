@@ -1851,28 +1851,19 @@ sub DeleteRestriction {
 
 # }}}
 
-# {{{ sub _ProcessRestrictions
+# {{{ sub _RestrictionsToClauses
 
-# The new _ProcessRestrictions is somewhat dependent on the SQL stuff,
-# but isn't quite generic enough to move into Tickets_Overlay_SQL.
+# Convert a set of oldstyle SB Restrictions to Clauses for RQL
 
-sub _ProcessRestrictions {
-    my $self = shift;
+sub _RestrictionsToClauses {
+  my $self = shift;
 
-    #Need to clean the SearchBuilder slate because it makes things too sticky
-    $self->CleanSlate();
-
-    #Blow away ticket aliases since we'll need to regenerate them for
-    #a new search
-    delete $self->{'TicketAliases'};
-
-    my $row;
-    my %clause;
-    foreach $row (keys %{$self->{'TicketRestrictions'}}) {
-      my $restriction = $self->{'TicketRestrictions'}{$row};
-
-      #use Data::Dumper;
-      #print Dumper($restriction),"\n";
+  my $row;
+  my %clause;
+  foreach $row (keys %{$self->{'TicketRestrictions'}}) {
+    my $restriction = $self->{'TicketRestrictions'}{$row};
+    #use Data::Dumper;
+    #print Dumper($restriction),"\n";
 
       # We need to reimplement the subclause aggregation that SearchBuilder does.
       # Default Subclause is ALIAS.FIELD, and default ALIAS is 'main', 
@@ -1882,20 +1873,20 @@ sub _ProcessRestrictions {
       # SQL, and then join them with the appropriate DefaultEA.
       # Then join each subclause group with AND.
 
-      my $field = $restriction->{'FIELD'};
+    my $field = $restriction->{'FIELD'};
 
-      # One special case
-      if ($field =~ /LinkedTo/) {
-	$field = $restriction->{'TYPE'};
-      }
+    # One special case
+    if ($field =~ /LinkedTo/) {
+      $field = $restriction->{'TYPE'};
+    }
 
-      die "I don't know about $field yet" unless (exists $FIELDS{$field} or $restriction->{CUSTOMFIELD});
+    die "I don't know about $field yet" unless (exists $FIELDS{$field} or $restriction->{CUSTOMFIELD});
 
     my $type = $FIELDS{$field}->[0];
     my $op   = $restriction->{'OPERATOR'};
 
     my $value = ( grep { defined }
-                    map { $restriction->{$_} } qw(VALUE TICKET BASE TARGET))[0];
+		  map { $restriction->{$_} } qw(VALUE TICKET BASE TARGET))[0];
 
     # this performs the moral equivalent of defined or/dor/C<//>,
     # without the short circuiting.You need to use a 'defined or'
@@ -1914,28 +1905,50 @@ sub _ProcessRestrictions {
 
     my $ea = $DefaultEA{$type};
     if ( ref $ea ) {
-        die "Invalid operator $op for $field ($type)"
-          unless exists $ea->{$op};
-        $ea = $ea->{$op};
+      die "Invalid operator $op for $field ($type)"
+	unless exists $ea->{$op};
+      $ea = $ea->{$op};
     }
     exists $clause{$field} or $clause{$field} = [];
-      # Escape Quotes                                                                                        
-      $field =~ s!(['"])!\\$1!g;                                                                             
-      $value =~ s!(['"])!\\$1!g;                                                                             
-                                   
-      my $data = [ $ea, $type, $field, $op, $value ];
+    # Escape Quotes
+    $field =~ s!(['"])!\\$1!g;
+    $value =~ s!(['"])!\\$1!g;
+    my $data = [ $ea, $type, $field, $op, $value ];
 
-      # here is where we store extra data, say if it's a keyword or
-      # something.  (I.e. "TYPE SPECIFIC STUFF")
+    # here is where we store extra data, say if it's a keyword or
+    # something.  (I.e. "TYPE SPECIFIC STUFF")
 
-      #print Dumper($data);
-      push @{$clause{$field}}, $data;
+    #print Dumper($data);
+    push @{$clause{$field}}, $data;
+  }
+  return \%clause;
+}
+
+# }}}
+
+# {{{ sub _ProcessRestrictions
+
+# The new _ProcessRestrictions is somewhat dependent on the SQL stuff,
+# but isn't quite generic enough to move into Tickets_Overlay_SQL.
+
+sub _ProcessRestrictions {
+    my $self = shift;
+
+    #Blow away ticket aliases since we'll need to regenerate them for
+    #a new search
+    delete $self->{'TicketAliases'};
+
+    my $sql = $self->{_sql_query}; # Violating the _SQL namespace
+    if (!$sql||$self->{'RecalcTicketLimits'}) {
+      #  "Restrictions to Clauses Branch\n";
+      my $clauseRef = $self->_RestrictionsToClauses;
+      $sql = $self->ClausesToSQL($clauseRef);
+      $self->FromSQL($sql);
     }
 
-    my $sql =$self->ClausesToSQL(\%clause);
     #    print "SQL is $sql\n";
 
-    $self->FromSQL($sql);
+    $self->{'RecalcTicketLimits'} = 0;
 
     # Build up a map of first/last/next/prev items, so that we can display search nav quickly
 
@@ -1971,7 +1984,7 @@ You don't want to serialize a big tickets object, as the {items} hash will be in
 sub PrepForSerialization {
     my $self = shift;
     delete $self->{'items'};
-	$self->{'RecalcTicketLimits'} = 1;
+    $self->RedoSearch();
 }
 
 1;
