@@ -2907,9 +2907,6 @@ sub MergeInto {
     }
 
 
-    #make a new link: this ticket is merged into that other ticket.
-    $self->AddLink( Type   => 'MergedInto', Target => $NewTicket->Id());
-
     #add all of this ticket's watchers to that ticket.
     my $requestors = $self->Requestors->MembersObj;
     while (my $watcher = $requestors->Next) { 
@@ -2948,6 +2945,9 @@ sub MergeInto {
             Value => $NewTicket->Id()
         );
     }
+
+    #make a new link: this ticket is merged into that other ticket.
+    $self->AddLink( Type   => 'MergedInto', Target => $NewTicket->Id());
 
     $NewTicket->_SetLastUpdated;
 
