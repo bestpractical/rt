@@ -68,13 +68,25 @@
 my $CF = RT::CustomField->new($session{'CurrentUser'});
 $CF->Load($id) or Abort(loc("Could not load CustomField [_1]"), $id);
 my $LookupType = $CF->LookupType;
-$LookupType =~ /^(RT::(\w+))/
-    or Abort(loc("Object of type [_1] cannot take custom fields", $LookupType));
+$LookupType =~ /^(.*?)-/ ||
+     Abort(loc("Object of type [_1] cannot take custom fields", $LookupType));
 
-my $Type = $2;
 my $Class = $1;
-my $CollectionType = $2.'s';
-my $CollectionClass = $Class.'s';
+my $CollectionClass;
+if (UNIVERSAL::can($Class.'Collection', 'new') ) {
+$CollectionClass = $Class.'Collection';
+
+} elsif (UNIVERSAL::can($Class.'es', 'new') ) {
+    $CollectionClass = $Class.'es';
+
+} elsif (UNIVERSAL::can($Class.'s', 'new') ) {
+    $CollectionClass = $Class.'s';
+
+} else {
+    Abort(loc("Can't find a collection class for '[_1]'", $Class));
+}
+
+
 my $title = loc('Modify associated objects for [_1]', $CF->Name);
 
 my $Objects = $CollectionClass->new($session{'CurrentUser'});
