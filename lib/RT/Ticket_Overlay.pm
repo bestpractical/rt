@@ -66,12 +66,16 @@ ok($testqueue->Create( Name => 'ticket tests'));
 ok($testqueue->Id != 0);
 use_ok(RT::CustomField);
 ok(my $testcf = RT::CustomField->new($RT::SystemUser));
-ok($testcf->Create( Name => 'selectmulti',
+my ($ret, $cmsg) = $testcf->Create( Name => 'selectmulti',
                     Queue => $testqueue->id,
-                               Type => 'SelectMultiple'));
-ok($testcf->AddValue ( Name => 'Value1',
+                               Type => 'SelectMultiple');
+ok($ret,"Created the custom field - ".$cmsg);
+($ret,$cmsg) = $testcf->AddValue ( Name => 'Value1',
                         SortOrder => '1',
-                        Description => 'A testing value'));
+                        Description => 'A testing value');
+
+ok($ret, "Added a value - ".$cmsg);
+
 ok($testcf->AddValue ( Name => 'Value2',
                         SortOrder => '2',
                         Description => 'Another testing value'));
@@ -146,6 +150,7 @@ use RT::Links;
 use RT::Date;
 use RT::CustomFields;
 use RT::Tickets;
+use RT::Transactions;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
@@ -2523,7 +2528,6 @@ ok(!$id,$msg);
 ok ($id,$msg);
 ($id,$msg) = $u1->PrincipalObj->GrantRight ( Object => $q2, Right => 'ModifyTicket');
 ok ($id,$msg);
-sleep(15);
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 
@@ -2708,11 +2712,24 @@ sub MergeInto {
     my $old_links_to = RT::Links->new($self->CurrentUser);
     $old_links_to->Limit(FIELD => 'Target', VALUE => $self->URI);
 
+    my %old_seen;
     while (my $link = $old_links_to->Next) {
-        if ($link->Base eq $MergeInto->URI) {
+        if (exists $old_seen{$link->Base."-".$link->Type}) {
+            $link->Delete;
+        }   
+        elsif ($link->Base eq $MergeInto->URI) {
             $link->Delete;
         } else {
-            $link->SetTarget($MergeInto->URI);
+            # First, make sure the link doesn't already exist. then move it over.
+            my $tmp = RT::Link->new($RT::SystemUser);
+            $tmp->LoadByCols(Base => $link->Base, Type => $link->Type, LocalTarget => $MergeInto->id);
+            if ($tmp->id)   {
+                    $link->Delete;
+            } else { 
+                $link->SetTarget($MergeInto->URI);
+                $link->SetLocalTarget($MergeInto->id);
+            }
+            $old_seen{$link->Base."-".$link->Type} =1;
         }
 
     }
@@ -2721,10 +2738,22 @@ sub MergeInto {
     $old_links_from->Limit(FIELD => 'Base', VALUE => $self->URI);
 
     while (my $link = $old_links_from->Next) {
+        if (exists $old_seen{$link->Type."-".$link->Target}) {
+            $link->Delete;
+        }   
         if ($link->Target eq $MergeInto->URI) {
             $link->Delete;
         } else {
-            $link->SetBase($MergeInto->URI);
+            # First, make sure the link doesn't already exist. then move it over.
+            my $tmp = RT::Link->new($RT::SystemUser);
+            $tmp->LoadByCols(Target => $link->Target, Type => $link->Type, LocalBase => $MergeInto->id);
+            if ($tmp->id)   {
+                    $link->Delete;
+            } else { 
+                $link->SetBase($MergeInto->URI);
+                $link->SetLocalBase($MergeInto->id);
+                $old_seen{$link->Type."-".$link->Target} =1;
+            }
         }
 
     }
@@ -3135,9 +3164,9 @@ sub SetStatus {
                      RecordTransaction => 0 );
     }
 
-    if ( $args{Status} =~ /^(resolved|rejected|dead)$/ ) {
-
-        #When we resolve a ticket, set the 'Resolved' attribute to now.
+    #When we close a ticket, set the 'Resolved' attribute to now.
+    # It's misnamed, but that's just historical.
+    if ( $self->QueueObj->IsInactiveStatus($args{Status}) ) {
         $self->_Set( Field             => 'Resolved',
                      Value             => $now->ISO,
                      RecordTransaction => 0 );
@@ -3239,6 +3268,7 @@ sub Resolve {
 
 # }}}
 
+	
 # {{{ Actions + Routines dealing with transactions
 
 # {{{ sub SetTold and _SetTold
@@ -3559,27 +3589,11 @@ sub HasRight {
 sub Transactions {
     my $self = shift;
 
-    use RT::Transactions;
     my $transactions = RT::Transactions->new( $self->CurrentUser );
 
     #If the user has no rights, return an empty object
     if ( $self->CurrentUserHasRight('ShowTicket') ) {
-        my $tickets = $transactions->NewAlias('Tickets');
-        $transactions->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'ObjectId',
-            ALIAS2 => $tickets,
-            FIELD2 => 'id'
-        );
-        $transactions->Limit(
-            ALIAS => $tickets,
-            FIELD => 'EffectiveId',
-            VALUE => $self->id()
-        );
-	$transactions->Limit(
-	    FIELD    => 'ObjectType',
-	    VALUE    => ref($self),
-	);
+        $transactions->LimitToTicket($self->id);
 
         # if the user may not see comments do not return them
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {

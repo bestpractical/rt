@@ -150,14 +150,7 @@ sub main_loop {
             eval { $Handler->handle_cgi_object($cgi); };
             $RT::Logger->crit($@) if ($@);
 
-            if ( $RT::Handle->TransactionDepth ) {
-                $RT::Handle->ForceRollback;
-                $RT::Logger->crit( "Transaction not committed. Usually indicates a software fault. Data loss may have occurred");
-            }
-
-            DBIx::SearchBuilder::Record::Cachable->FlushCache if UNIVERSAL::can(
-                'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache'
-            );
+	    RT::Interface::Web::Handler->CleanupRequest();
         }
 
     }

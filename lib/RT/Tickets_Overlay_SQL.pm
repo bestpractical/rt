@@ -157,7 +157,7 @@ my @tokens = qw[VALUE AGGREG OP OPEN_PAREN CLOSE_PAREN KEYWORD];
 
 my $re_aggreg = qr[(?i:AND|OR)];
 my $re_delim  = qr[$RE{delimited}{-delim=>qq{\'\"}}];
-my $re_value  = qr[$re_delim|\d+];
+my $re_value  = qr[$re_delim|\d+|NULL];
 my $re_keyword = qr[$re_delim|(?:\{|\}|\w|\.)+];
 my $re_op     = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]; # long to short
 my $re_open_paren  = qr'\(';

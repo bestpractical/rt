@@ -236,6 +236,7 @@ while( my $cgi = CGI::Fast->new ) {
     warn "Serving $comp\n";
 
     $Handler->handle_cgi($comp);
+    RT::Interface::Web::Handler->CleanupRequest();
     # _should_ always be tied
 }
 

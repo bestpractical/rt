@@ -59,6 +59,7 @@ use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
         $LocalEtcPath
         $LocalLexiconPath
         $LogDir
+        $BinPath
         $MasonComponentRoot
         $MasonLocalComponentRoot
         $MasonDataDir
@@ -74,6 +75,7 @@ $SITE_CONFIG_FILE = "@CONFIG_FILE_PATH@/RT_SiteConfig.pm";
 $BasePath = '@RT_PATH@';
 
 $EtcPath = '@RT_ETC_PATH@';
+$BinPath = '@RT_BIN_PATH@';
 $VarPath = '@RT_VAR_PATH@';
 $LocalPath = '@RT_LOCAL_PATH@';
 $LocalEtcPath = '@LOCAL_ETC_PATH@';

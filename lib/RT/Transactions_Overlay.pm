@@ -112,6 +112,48 @@ sub Limit {
 
 }
 
+
+
+=head2 LimitToTicket TICKETID 
+
+Find only transactions for the ticket whose id is TICKETID.
+
+This includes tickets merged into TICKETID.
+
+Repeated calls to this method will intelligently limit down to that set of tickets, joined with an OR
+
+
+=cut
+
+
+sub LimitToTicket {
+    my $self = shift;
+    my $tid  = shift;
+
+    unless ( $self->{'tickets_table'} ) {
+        $self->{'tickets_table'} ||= $self->NewAlias('Tickets');
+        $self->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'ObjectId',
+            ALIAS2 => $self->{'tickets_table'},
+            FIELD2 => 'id'
+        );
+        $self->Limit(
+            FIELD => 'ObjectType',
+            VALUE => 'RT::Ticket',
+        );
+    }
+    $self->Limit(
+        ALIAS           => $self->{tickets_table},
+        FIELD           => 'EffectiveId',
+        OPERATOR        => '=',
+        ENTRYAGGREGATOR => 'OR',
+        VALUE           => $tid,
+    );
+
+}
+
+
 # {{{ sub Next
 sub Next {
     my $self = shift;

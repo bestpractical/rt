@@ -53,7 +53,7 @@ BEGIN {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-    eval { require Apache2; require APR::Table; require MasonX::Apache2Handler; 1 } or
+    eval { require Apache2; require Apache::Request; 1 } or
     eval { require Apache2; require Apache::compat; 1 } or die $@
       if $ENV{'MOD_PERL'}
       and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:2|1\.9)};
@@ -90,6 +90,7 @@ use Carp;
     use Text::Wrapper;
     use CGI::Cookie;
     use Time::ParseDate;
+    use Time::HiRes;
     use HTML::Entities;
     use HTML::Scrubber;
     use Text::Quoted;
@@ -97,6 +98,14 @@ use Carp;
 
 use RT::Interface::Web::Handler;
 $Handler = RT::Interface::Web::Handler->new(@RT::MasonParameters);
+
+if (!$RT::DevelMode) {
+    # Under static_source, we need to purge the component cache
+    # each time we restart, so newer components may be reloaded.
+    use File::Path qw( rmtree );
+    use File::Glob qw( bsd_glob );
+    rmtree([ bsd_glob("$RT::MasonDataDir/obj/*") ], 0, 1);
+}
 
 sub handler {
     ($r) = @_;
@@ -127,16 +136,7 @@ sub handler {
 
     undef(%session);
 
-    if ( $RT::Handle->TransactionDepth ) {
-        $RT::Handle->ForceRollback;
-        $RT::Logger->crit(
-"Transaction not committed. Usually indicates a software fault. Data loss may have occurred"
-        );
-    }
-
-    DBIx::SearchBuilder::Record::Cachable->FlushCache if UNIVERSAL::can(
-        'DBIx::SearchBuilder::Record::Cachable' => 'FlushCache'
-    );
+    RT::Interface::Web::Handler->CleanupRequest();
 
     return $status;
 }

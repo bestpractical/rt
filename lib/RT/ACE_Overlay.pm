@@ -211,6 +211,12 @@ PARAMS is a parameter hash with the following elements:
    ObjectType => the type of the object in question (ref ($object))
    ObjectId => the id of the object in question $object->Id
 
+
+
+   Returns a tuple of (STATUS, MESSAGE);  If the call succeeded, STATUS is true. Otherwise it's false.
+
+
+
 =cut
 
 sub Create {
@@ -321,7 +327,7 @@ sub Create {
                                    DelegatedFrom => 0 );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    RT::Principal->_InvalidateACLCache();
+    RT::Principal->InvalidateACLCache();
 
     if ( $id > 0 ) {
         return ( $id, $self->loc('Right Granted') );
@@ -631,7 +637,7 @@ sub Delegate {
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    RT::Principal->_InvalidateACLCache();
+    RT::Principal->InvalidateACLCache();
 
     if ( $id > 0 ) {
         return ( $id, $self->loc('Right Delegated') );
@@ -706,7 +712,7 @@ sub _Delete {
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
     # TODO what about the groups key cache?
-    RT::Principal->_InvalidateACLCache();
+    RT::Principal->InvalidateACLCache();
 
     if ($val) {
         $RT::Handle->Commit() unless $InsideTransaction;

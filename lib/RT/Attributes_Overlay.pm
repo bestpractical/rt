@@ -56,29 +56,6 @@ my $Attributes = new RT::Attributes($CurrentUser);
 
 
 =head1 METHODS
-
-=begin testing
-
-ok(require RT::Attributes);
-
-my $root = RT::User->new($RT::SystemUser);
-ok (UNIVERSAL::isa($root, 'RT::User'));
-$root->Load('root');
-ok($root->id, "Found a user for root");
-
-my $attr = $root->Attributes;
-
-ok (UNIVERSAL::isa($attr,'RT::Attributes'), 'got the attributes object');
-
-my ($id, $msg) =  $root->AddAttribute(Name => 'TestAttr', Content => 'The attribute has content'); 
-ok ($id, $msg);
-my @names = $attr->Names;
-
-is ($names[0] , 'TestAttr');
-
-
-=end testing
-
 =cut
 
 
@@ -178,13 +155,17 @@ sub DeleteEntry {
                  Content => undef,
                  id => undef,
                  @_);
-
+    my $found = 0;
     foreach my $attr ($self->Named($args{'Name'})){ 
-        $attr->Delete
-            if (!defined $args{'id'} and !defined $args{'Content'})
-            or (defined $args{'id'} and $attr->id eq $args{'id'})
-            or (defined $args{'Content'} and $attr->Content eq $args{'Content'});
+      if ((!defined $args{'id'} and !defined $args{'Content'})
+          or (defined $args{'id'} and $attr->id eq $args{'id'})
+          or (defined $args{'Content'} and $attr->Content eq $args{'Content'})) {
+        my ($id, $msg) = $attr->Delete;
+        return ($id, $msg) unless $id;
+        $found = 1;
+      }
     }
+    return (0, "No entry found") unless $found;
     $self->_DoSearch();
     return (1, $self->loc('Attribute Deleted'));
 }

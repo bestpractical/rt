@@ -50,43 +50,49 @@
 
 <TABLE>
 <TR>
-<TD>
+<TD class="label">
 <&|/l&>Queue</&>:
-</TD>
-<TD>
-<& /Elements/SelectNewTicketQueue, Verbose => 'True' &>
+</td>
+<td class="value">
+    <input type="hidden" name="Queue" value="<%$queue_obj->id%>">
+    <b><%$queue_obj->Name%></b> (<%$queue_obj->Description%>)
 </TD>
 </TR>
 <TR>
-<TD>
+<TD class="label">
 <&|/l&>Requestors</&>:
 </TD>
-<TD>
+<TD class="value">
 <INPUT Name="Requestors" Value="<%$session{CurrentUser}->EmailAddress%>" SIZE=20>
 </TD>
 </TR>
 <TR>
-<TD>
+<TD class="label">
 <&|/l&>Cc</&>:
 </TD>
-<TD>
+<TD class="value">
  <INPUT NAME="Cc" SIZE=20>
 </TD>
 </TR>
 <TR>
-<TD>
+<TD class="label">
 <&|/l&>Subject</&>:
 </TD>
-<TD>
+<TD class="value">
 <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="">
 </TD>
 </TR>
-<TR>
-<TD>
+<tr>
+    <td colspan="2">
+        <& /Ticket/Elements/EditCustomFields, QueueObj => $queue_obj &>
+    </td>
+</tr>
+<tr>
+<TD class="label">
 <&|/l&>Attach file</&>:
 </TD>
-<TD>
-<INPUT Name="Attach" type=file>
+<TD class="value">
+<INPUT Name="Attach" type="file">
 </TD>
 </TR>
 <TR>
@@ -100,3 +106,10 @@
 
 
 </FORM>
+<%args>
+$Queue => undef
+</%args>
+<%init>
+my $queue_obj = RT::Queue->new($session{'CurrentUser'});
+$queue_obj->Load($Queue);
+</%init>

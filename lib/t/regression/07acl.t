@@ -1,7 +1,12 @@
-#!@PERL@ -w
+#!/usr/bin/perl -w
 
 use WWW::Mechanize;
 use HTTP::Cookies;
+
+use Test::More qw/no_plan/;
+use RT;
+RT::LoadConfig();
+RT::Init();
 
 # Create a user with basically no rights, to start.
 my $user_obj = RT::User->new($RT::SystemUser);
@@ -27,7 +32,7 @@ $agent->cookie_jar($cookie_jar);
 my $url = "http://localhost".$RT::WebPath."/";
 $agent->get($url);
 
-is ($agent->{'status'}, 200, "Loaded a page");
+is ($agent->{'status'}, 200, "Loaded a page - http://localhost".$RT::WebPath);
 # {{{ test a login
 
 # follow the link marked "Login"
@@ -52,20 +57,17 @@ ok(!$agent->find_link( url => '/User/Prefs.html',
 # Now test for their presence, one at a time.  Sleep for a bit after
 # ACL changes, thanks to the 10s ACL cache.
 $user_obj->PrincipalObj->GrantRight(Right => 'ShowConfigTab');
-sleep(10);
 $agent->reload();
 ok($agent->{'content'} =~ /Logout/i, "Reloaded page successfully");
 ok($agent->find_link( url => '/Admin/',
 		       text => 'Configuration'), "Found config tab" );
 $user_obj->PrincipalObj->RevokeRight(Right => 'ShowConfigTab');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
-sleep(10);
 $agent->reload();
 ok($agent->{'content'} =~ /Logout/i, "Reloaded page successfully");
 ok($agent->find_link( url => '/User/Prefs.html',
 		       text => 'Preferences'), "Found prefs pane" );
 $user_obj->PrincipalObj->RevokeRight(Right => 'ModifySelf');
-sleep(10);
 
 # Good.  Now load the search page and test Load/Save Search.
 $agent->follow_link( url => '/Search/Build.html',
@@ -75,14 +77,12 @@ ok($agent->{'content'} !~ /Load saved search/i, "No search loading box");
 ok($agent->{'content'} !~ /Saved searches/i, "No saved searches box");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
-sleep(10);
 $agent->reload();
 ok($agent->{'content'} =~ /Load saved search/i, "Search loading box exists");
 ok($agent->{'content'} !~ /input\s+type=.submit.\s+name=.Save./i, 
    "Still no saved searches box");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
-sleep(10);
 $agent->reload();
 ok($agent->{'content'} =~ /Load saved search/i, 
    "Search loading box still exists");
@@ -108,7 +108,6 @@ $group_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',
 				     Object => $queue_obj);
 $group_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',
 				     Object => $queue_obj);
-sleep(10);
 
 # Now.  When we look at the search page we should be able to see
 # ourself in the list of possible owners.

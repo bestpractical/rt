@@ -1,3 +1,4 @@
+
 CREATE SEQUENCE ATTACHMENTS_seq;
 CREATE TABLE Attachments (
   	id 		NUMBER(11,0) 
@@ -297,6 +298,20 @@ CREATE TABLE Templates (
 );
 
 
+CREATE SEQUENCE OBJECTCUSTOMFIELDS_seq;
+CREATE TABLE ObjectCustomFields (
+	id		NUMBER(11,0)
+                 CONSTRAINT ObjectCustomFields_Key PRIMARY KEY,
+        CustomField       NUMBER(11,0)  NOT NULL,
+        ObjectId              NUMBER(11,0)  NOT NULL,
+	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
+	Created		DATE,
+	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LastUpdated	DATE
+);
+
+
 CREATE SEQUENCE OBJECTCUSTOMFIELDVALUES_seq;
 CREATE TABLE ObjectCustomFieldValues (
 	id		NUMBER(11,0) 
@@ -329,9 +344,10 @@ CREATE TABLE CustomFields (
 	Type		VARCHAR2(200),
 	MaxValues	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Pattern		VARCHAR2(255),
-	LookupType	VARCHAR2(255),
+        Repeated        NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Description	VARCHAR2(255),
 	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
+	LookupType	VARCHAR2(255),
 	Creator		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Created		DATE,
 	LastUpdatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,

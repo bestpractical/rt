@@ -392,11 +392,9 @@ elsif ( $ARGS{"Toggle"} ) {
     my $ea;
     if (@current_values) {
         foreach my $value (@current_values) {
-            my $value = $value->getNodeValue();
             my $parent = $value->getParent();
-            my $parentvalue = $parent->getNodeValue();
 
-            if ( $parentvalue eq 'AND') {
+            if ( $parent->getNodeValue eq 'AND') {
                 $parent->setNodeValue('OR');
             }
             else {

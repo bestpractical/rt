@@ -66,7 +66,11 @@
       <b><%$CustomField->Name%></b><br>
       <i><%$CustomField->FriendlyType%></i>
     </td>
-    <td class="entry"><& /Elements/EditCustomField, Object => $TicketObj, CustomField => $CustomField, NamePrefix => $NamePrefix &></td>
+    <td class="entry"><& /Elements/EditCustomField, 
+        Object => $TicketObj, 
+        CustomField => $CustomField, 
+        NamePrefix => $NamePrefix 
+        &></td>
   </tr>
 % }
 </table>

@@ -17,7 +17,7 @@ use RT::Config;
 
 # {{{ Base Configuration
 
-# $rtname the string that RT will look for in mail messages to
+# $rtname is the string that RT will look for in mail messages to
 # figure out what ticket a new piece of mail belongs to
 
 # Your domain name is recommended, so as not to pollute the namespace.
@@ -87,7 +87,7 @@ Set($OwnerEmail , 'root');
 
 Set($LoopsToRTOwner , 1);
 
-# If $StoreLoopss is defined, RT will record messages that it believes
+# If $StoreLoops is defined, RT will record messages that it believes
 # to be part of mail loops.
 # As it does this, it will try to be careful not to send mail to the
 # sender of these messages
@@ -177,7 +177,7 @@ Set($CommentAddress , 'RT_CommentAddressNotSet');
 # If 'sendmailpipe' doesn't work well for you, try 'sendmail'
 #
 # Note that you should remove the '-t' from $SendmailArguments
-# if you use 'sendmail rather than 'sendmailpipe'
+# if you use 'sendmail' rather than 'sendmailpipe'
 
 Set($MailCommand , 'sendmailpipe');
 
@@ -286,7 +286,7 @@ Set($WebImagesURL , $WebPath . "/NoAuth/images/");
 
 # $RTLogoURL points to the URL of the RT logo displayed in the web UI
 
-Set($LogoURL , $WebImagesURL . "rt.jpg");
+Set($LogoURL , $WebImagesURL . "bplogo.gif");
 
 # WebNoAuthRegex - What portion of RT's URLspace should not require
 # authentication.
@@ -348,6 +348,16 @@ Set($WebExternalAuto , undef);
 
 # Set($WebSessionClass , 'Apache::Session::File');
 
+# By default, RT clears its database cache after every page view.
+# This ensures that you've always got the most current information 
+# when working in a multi-process (mod_perl or FastCGI) Environment
+# Setting $WebFlushDbCacheEveryRequest to '0' will turn this off,
+# which will speed RT up a bit, at the expense of a tiny bit of data 
+# accuracy
+
+Set($WebFlushDbCacheEveryRequest, '1');
+
+
 # $MaxInlineBody is the maximum attachment size that we want to see
 # inline when viewing a transaction. 13456 is a random sane-sounding
 # default.
@@ -396,8 +406,8 @@ Set ($DefaultSearchResultFormat, qq{
 # {{{ RT UTF-8 Settings
 
 # An array that contains languages supported by RT's internationalization
-# interface.  Defaults to all *.po lexicons; set it to qw(en ja) will make
-# RT bilingual instead of multilingual, but will save same memory.
+# interface.  Defaults to all *.po lexicons; setting it to qw(en ja) will make
+# RT bilingual instead of multilingual, but will save some memory.
 
 @LexiconLanguages = qw(*) unless (@LexiconLanguages);
 

@@ -43,7 +43,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-      <input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
       <select name="<%$NamePrefix%><%$CustomField->Id%>-Values"
         size="<%$Rows%>"
         <% $Multiple && 'MULTIPLE' %>>

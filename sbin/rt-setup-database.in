@@ -196,6 +196,7 @@ sub insert_schema {
 
 	local $SIG{__WARN__} = sub {};
 	my $is_local = 0; # local/etc/schema needs to be nonfatal. 
+        $dbh->begin_work or die $dbh->errstr;
         foreach my $statement (@schema) {
 	    if ($statement =~ /^\s*;$/) { $is_local = 1; next; }
             print STDERR "SQL: $statement\n" if defined $args{'debug'};
@@ -204,6 +205,7 @@ sub insert_schema {
                 die "Problem with statement:\n $statement\n" . $sth->errstr;
             }
         }
+        $dbh->commit or die $dbh->errstr;
 
     }
     else {
