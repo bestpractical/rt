@@ -4,7 +4,7 @@
 
 =head1 NAME
 
-  RT::Transaction - RT's transaction object
+  RT::Transaction - RT\'s transaction object
 
 =head1 SYNOPSIS
 
@@ -13,9 +13,9 @@
 
 =head1 DESCRIPTION
 
-This module should never be called directly by client code. it's an internal module which
-should only be accessed through exported APIs in Ticket, Queue and other similar objects.
 
+Each RT::Transaction describes an atomic change to a ticket object or an update to an RT::Ticket object.
+It can have arbitrary MIME attachments.
 
 
 =head1 METHODS
@@ -25,6 +25,8 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 package RT::Transaction;
 use RT::Record;
 @ISA= qw(RT::Record);
+    
+use RT::Attachments;
 
 # {{{ sub _Init 
 sub _Init  {
@@ -39,7 +41,12 @@ sub _Init  {
 
 =head2 Create
 
-Create a new transaction
+Create a new transaction.
+
+This routine should _never_ be called anything other Than RT::Ticket. It should not be called 
+from client code. Ever. Not ever.  If you do this, we will hunt you down. and break your kneecaps.
+Then the unpleasant stuff will start.
+
 TODO: Document what gets passed to this
 
 =cut
@@ -226,13 +233,14 @@ sub Attachments  {
 	my $Types = shift;
     }
     
-    use RT::Attachments;
+
+    
+    my $Attachments = new RT::Attachments($self->CurrentUser);
     
     #If it's a comment, return an empty object if they don't have the right to see it
     if ($self->Type eq 'Comment') {
 	unless ($self->CurrentUserHasRight('ShowTicketComments')) {
 	    return ($Attachments);
-	    
 	}
     }	
     #if they ain't got rights to see, return an empty object
@@ -241,21 +249,19 @@ sub Attachments  {
 	    return ($Attachments);
 	}
     }
-
-
-  my $Attachments = new RT::Attachments($self->CurrentUser);
-  $Attachments->Limit(FIELD => 'TransactionId',
-		      VALUE => $self->Id);
-
-  if ($Types) {
-    $Attachments->Limit(FIELD => 'ContentType',
-			VALUE => "$Types",
-			OPERATOR => "LIKE");
-  }
-  
-  
-  return($Attachments);
-
+    
+    $Attachments->Limit(FIELD => 'TransactionId',
+			VALUE => $self->Id);
+    
+    if ($Types) {
+	$Attachments->Limit(FIELD => 'ContentType',
+			    VALUE => "$Types",
+			    OPERATOR => "LIKE");
+    }
+    
+    
+    return($Attachments);
+    
 }
 
 # }}}
@@ -504,30 +510,7 @@ sub _Accessible  {
 
 sub _Set {
     my $self = shift;
-    
-    
-
-    unless ($self->CurrentUserHasRight('ModifyTicket')) {
-	return (0, "Permission Denied");
-    }
-    
     return(0, 'Transactions are immutable');
-
-    #TODO, yank this code once we're confident we really don't need it.
-    my %args = (Field => undef,
-		Value => undef,
-		@_
-	       );
-    my ($ret, $msg)=$self->SUPER::_Set(Field => $args{'Field'}, 
-				       Value=> $args{'Value'});
-    
-    
-    if ($ret==0) {
-	return (0,$msg);
-    }
-    else {
-	return ($ret, $msg);
-    }
 }
 
 # }}}
@@ -549,22 +532,19 @@ sub _Value  {
     
     #if the field is public, return it.
     if ($self->_Accessible($field, 'public')) {
-	#$RT::Logger->debug("Skipping ACL check for $field\n");
 	return($self->__Value($field));
 	
     }
     #If it's a comment, we need to be extra special careful
     if ($self->__Value('Type') eq 'Comment') {
-        
-        
 	unless ($self->CurrentUserHasRight('ShowTicketComments')) {
-	    return (0, "Permission Denied");
+	    return (undef);
 	}
     }	
     #if they ain't got rights to see, don't let em
     else {
 	unless ($self->CurrentUserHasRight('ShowTicket')) {
-	    return (0, "Permission Denied");
+	    return (undef);
 	}
     }	
     
@@ -576,9 +556,9 @@ sub _Value  {
 
 # {{{ sub CurrentUserHasRight
 
-=head2 CurrentUserHasRight
+=head2 CurrentUserHasRight RIGHT
 
-Calls $self->CurrentUser->HasQueueRight with the argument list
+Calls $self->CurrentUser->HasQueueRight for the right passed in here.
 passed in here.
 
 =cut
@@ -586,8 +566,6 @@ passed in here.
 sub CurrentUserHasRight {
     my $self = shift;
     my $right = shift;
-    my %args = (TicketObj => $self->TicketObj,
-		@_);
     return ($self->CurrentUser->HasQueueRight(Right => "$right", 
                                               TicketObj => $self->TicketObj));            
 }
