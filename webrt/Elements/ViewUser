@@ -1,6 +1,6 @@
 % my $name=$User->RealName || $User->EmailAddress;
 <& /Elements/TitleBoxStart, 
-	title => "<a href=\"$RT::WebURL/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">Earlier requests from $name</a>",
+	title => "<a href=\"$RT::WebURL/Search/Listing.html?LimitRequestorById=1&IdOfRequestor=".$User->id."\">Tickets from $name</a>",
 	titleright=> "<a href=\"$RT::WebURL/EditUserComments.html?id=".$User->id."\">Comments about $name</a>" &>
 <TABLE WIDTH="100%">
 <tr>
@@ -10,7 +10,7 @@
 %}
 </td>
 <td align=right valign=top>
-	<% $User->Comments || "No comment entered about this user" %>
+	<% $User->Comments || "No comment entered about this user" |h %>
 </tr>
 </table>
 <& /Elements/TitleBoxEnd &>

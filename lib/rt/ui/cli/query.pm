@@ -130,7 +130,7 @@ sub PrintRow {
 
 sub build_query  {
   my ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
-  use RT::TicketCollection;
+  require RT::TicketCollection;
   my $Tickets = RT::TicketCollection->new($CurrentUser);
 
   # A hack to deal with the default..

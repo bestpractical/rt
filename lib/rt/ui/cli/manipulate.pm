@@ -4,7 +4,6 @@
 #
 #
 package rt::ui::cli::manipulate;
-
 # {{{ sub activate 
 sub activate  {
     &GetCurrentUser;
@@ -336,8 +335,8 @@ sub cli_create_req  {
       $final_priority=&rt::ui::cli::question_int("Final Priority",$rt::queues{$queue_id}{'default_final_prio'});
       $due_string=&rt::ui::cli::question_string("Date due (MM/DD/YYYY)",);
       if ($due_string ne '') {
-	use Date::Manip;
-	$date_due = &ParseDate($due_string);
+	require Date::Manip;
+	$date_due = &Date::Manip::ParseDate($due_string);
       }  
       
     }
@@ -357,7 +356,7 @@ sub cli_create_req  {
 	$content .= $_;
       }
     }	 
-    use MIME::Entity;
+    require MIME::Entity;
     $Message = MIME::Entity->build ( Subject => $Subject||"",
 				     From => $Requestor||"",
 				     Cc => $Cc||"",
@@ -406,7 +405,7 @@ sub cli_comment_req  {
    
     $TimeTaken = &rt::ui::cli::question_int("How long did you spend on this transaction?");
  
-    use MIME::Entity;
+    require MIME::Entity;
     $Message = MIME::Entity->build ( Subject => $subject || "",
 				     Cc => $cc || "",
 				     Bcc => $Bcc || "",
@@ -515,7 +514,7 @@ EOFORM
 sub ShowSummary  {
     my $Ticket = shift;
 
-    use Time::Local;
+    require Time::Local;
     print <<EOFORM;
 Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->Queue->QueueId]}
       Subject: @{[$Ticket->Subject]}
@@ -574,7 +573,7 @@ sub LoadTicket  {
   my ($Ticket,$Status,$Message,$CurrentUser);
   $CurrentUser=&GetCurrentUser;
   #print "Current User is ".$CurrentUser->Id."\n";;
-  use RT::Ticket;
+  require RT::Ticket;
   $Ticket = RT::Ticket->new($CurrentUser);
   ($Status, $Message) = $Ticket->Load($id);
   if (!$Status) {
@@ -587,5 +586,4 @@ sub LoadTicket  {
   }
 }
 # }}}
-
 1;

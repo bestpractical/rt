@@ -30,21 +30,22 @@
 
 
 <pre>
-<A HREF="Display.html?PickUpHeaders=<%$message->Id%>">Full headers</a>
+<A HREF="Display.html?ShowHeaders=<%$message->Id%>">Full headers</a>
 <%$message->NiceHeaders %>
 </pre>
 
 %   if ($message->ContentType =~ m{^(text/plain|message)} && length($message->Content)<13456) {
 <pre>
-%# TODO: We really should HTML'ify and/or HTML-escape the Content.
-<%$message->Content%>
+%#TODO We're now HTML escaping the message content, but should
+%#TODO probably deal with converting links
+<%$message->Content% |h>
 </pre>
 %    }  
 % elsif ($message->ContentType =~ m{^multipart}) {
 This is a multipart message
 % } else {
 	
-Attachment: <A HREF="Display.html?PickUpAttachment=<%$message->Id%>"><% $message->ContentType %></a>
+Attachment: <A HREF="Display.html?ShowAttachment=<%$message->Id%>"><% $message->ContentType %></a>
 %    }
 % }
 

@@ -20,14 +20,28 @@ use vars qw($mode $module @modules);
 
 $mode = shift || &print_help;
 
-@modules = qw(DBI HTML::Mason MIME::Entity Mail::Mailer CGI::Cookie 
-		Log::Dispatch HTML::Entities Text::Wrapper
-	        DBIx::Record DBIx::EasySearch Apache::Session DBIx::Handle);
+@modules = qw(
+DBI 1.13
+HTML::Mason 0.81
+MIME::Entity 5.108
+Mail::Mailer 1.19
+CGI::Cookie 1.06
+Log::Dispatch 1.2
+HTML::Entities 
+Text::Wrapper
+DBIx::Record
+DBIx::EasySearch
+Apache::Session 1.03
+DBIx::Handle
+);
 use CPAN;
 
-
-foreach $module (@modules) {
-	eval "require $module" || &resolve_dependency($module);
+while ($module= shift @modules) {
+	my $version = "";
+	$version = " ". shift (@modules) . " " if ($modules[0] =~ /^([\d\.]*)$/);
+	print "Checking for $module$version\n" if ($mode =~ /-w/ );
+	eval "use $module$version" ;
+	&resolve_dependency($module, $version) if ($@);
 }
 
 sub print_help {
@@ -50,8 +64,9 @@ EOF
 
 sub resolve_dependency {
 	my $module = shift;
-	CPAN::install($module) if ($mode eq '-fix');
-	print "$module not installed.\n" if ($mode eq '-warn');
-	exit(1) if ($mode eq '-quiet');
+	my $version = shift;
+        print "$module$version not installed.\n" if ($mode =~ /-w/);
+	CPAN::install($module) if ($mode =~ /-f/);
+	exit(1) if ($mode =~ /-q/);
 }	
 	
