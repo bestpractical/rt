@@ -1735,7 +1735,8 @@ sub CustomFieldValues {
     my $field = shift;
 
     my $cf_values = RT::ObjectCustomFieldValues->new( $self->CurrentUser );
-    # If we've been handed a value that contains at least one non-digit, 
+
+    # If we've been handed a value that contains at least one non-digit,
     # it's a name.  Resolve it into an id.
     #
     if ( $field =~ /\D+/ ) {
@@ -1749,20 +1750,24 @@ sub CustomFieldValues {
             $field = $cfs->First->id;
         }
         else {
-            $field = undef;
+
+            #We didn't find a custom field, but they wanted one. let's
+            # return an empty
+            return ($cf_values);
         }
     }
 
     # If we now have a custom field id, let's limit things down
-    # If we don't have a custom field ID, the $cf_values object will be empty
-    if ( $field =~ /^\d+$/o) {
-        $cf_values->LimitToCustomField($field) ;
-        $cf_values->LimitToObject($self);
-        $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+    # If we don't have a custom field ID, the $cf_values object will return
+    #  all values
+    $cf_values->LimitToCustomField($field) if ($field);
+    $cf_values->LimitToObject($self);
+    $cf_values->OrderBy( FIELD => 'id', ORDER => 'ASC' );
 
-    } 
+}
 
-    return ($cf_values);
+return ($cf_values);
+## Please see file perltidy.ERR
 }
 
 # }}}
