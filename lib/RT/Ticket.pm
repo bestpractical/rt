@@ -1647,8 +1647,8 @@ sub MergeInto {
 				   Value => $NewTicket->Id());
 
     unless ($id_val) {
-	$RT::Logger->error('Couldn't set effective ID for ".$self->Id.": $id_msg");
-	return(0,'Merge failed. Couldn\'t set EffectiveId');
+	$RT::Logger->error("Couldn't set effective ID for ".$self->Id.": $id_msg");
+	return(0,"Merge failed. Couldn't set EffectiveId");
     }
  
     my ($status_val, $status_msg) = $self->__Set(Field => 'Status',
