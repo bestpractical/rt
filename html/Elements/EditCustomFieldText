@@ -21,27 +21,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($Multiple) {
-<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
-<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$Default%></textarea>
-% } else {
-<input name="<%$NamePrefix%><%$CustomField->Id%>-Value" size="<%$Cols%>" value="<%$Default ? $Default : ''%>">
+% while (my $value = $Values->Next ) {
+<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><% $value->Content %></textarea><br>
 % }
-<%INIT>
-if ($Multiple and $Values) {
-    $Default = '';
-    while (my $value = $Values->Next ) {
-	$Default .= $value->Content;
-    }
-}
-</%INIT>
+% if (!$MaxValues or $Values->Count < $MaxValues) {
+<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
+<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"></textarea>
+% }
 <%ARGS>
 $Object => undef
 $CustomField => undef
 $NamePrefix => undef
 $Default => undef
 $Values => undef
-$Multiple => undef
+$MaxValues => undef
 $Cols
 $Rows
 </%ARGS>

@@ -21,27 +21,18 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($Multiple) {
-<input type="hidden" name="<%$NamePrefix%><%$CustomField->Id%>-Values-Magic" value="1">
-<textarea cols=<%$Cols%> rows=<%$Rows%> name="<%$NamePrefix%><%$CustomField->Id%>-Values"><%$Default%></textarea>
-% } else {
-<input name="<%$NamePrefix%><%$CustomField->Id%>-Value" size="<%$Cols%>" value="<%$Default ? $Default : ''%>">
+% while (my $value = $Values->Next ) {
+%# XXX - display thumbnails or full images?
+<input type="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValues" value="<% $value->Id %>"><% $value->Content %><br>
 % }
-<%INIT>
-if ($Multiple and $Values) {
-    $Default = '';
-    while (my $value = $Values->Next ) {
-	$Default .= $value->Content;
-    }
-}
-</%INIT>
+% if (!$MaxValues or $Values->Count < $MaxValues) {
+<input type="file" name="<%$NamePrefix%><%$CustomField->Id%>-Value">
+% }
 <%ARGS>
 $Object => undef
 $CustomField => undef
 $NamePrefix => undef
 $Default => undef
 $Values => undef
-$Multiple => undef
-$Cols
-$Rows
+$MaxValues => undef
 </%ARGS>
