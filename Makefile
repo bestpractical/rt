@@ -32,7 +32,8 @@ RT_GLIMPSE_PATH		=       $(RT_TRANSACTIONS_PATH)/glimpse
 # The rtmux is the setuid script which invokes whichever rt program it needs to.
 #
 
-RTMUX			=	$(RT_BIN_PATH)/rtmux.pl
+RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
+RT_WRAPPER		=	$(RT_BIN_PATH)/suid_wrapper
 
 #
 # The location of your rt configuration file
@@ -120,6 +121,9 @@ default:
 
 install: dirs mux-install libs-install initialize config-replace nondestruct instruct
 
+suidrt:
+	$(CC) etc/suidrt.c -DPERL=\"$(PERL)\" -D RT_PERL_MUX=\"$(RT_PERL_MUX)\" $(RT_BIN_PATH)/suidrt
+
 instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "(Now, create a queue, add some users and start resolving requests)"
@@ -136,7 +140,8 @@ fixperms:
 	chmod 0755 $(RT_PATH)
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(RT_CGI_PATH)
-	chmod 4755 $(RTMUX)
+	chmod 0755 $(RT_PERL_MUX)
+	chmod 4111 $(RT_WRAPPER)
 
 dirs:
 	mkdir -p $(RT_BIN_PATH)
@@ -154,17 +159,17 @@ libs-install:
 
 mux-links: 
 	rm -f $(RT_BIN_PATH)/rt
-	ln -s $(RTMUX) $(RT_BIN_PATH)/rt
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt
 	rm -f $(RT_BIN_PATH)/rtadmin
-	ln -s $(RTMUX) $(RT_BIN_PATH)/rtadmin
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rtadmin
 	rm -f $(RT_BIN_PATH)/rtq
-	ln -s  $(RTMUX) $(RT_BIN_PATH)/rtq
+	ln -s  $(RT_WRAPPER) $(RT_BIN_PATH)/rtq
 	rm -f $(RT_BIN_PATH)/rt-mailgate
-	ln -s $(RTMUX) $(RT_BIN_PATH)/rt-mailgate   
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt-mailgate   
 	rm -f $(RT_CGI_PATH)/nph-webrt.cgi
-	ln  $(RTMUX) $(RT_CGI_PATH)/nph-webrt.cgi
+	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/nph-webrt.cgi
 	rm -f $(RT_CGI_PATH)/nph-admin-webrt.cgi
-	ln  $(RTMUX) $(RT_CGI_PATH)/nph-admin-webrt.cgi
+	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/nph-admin-webrt.cgi
 	chmod 4755 $(RT_CGI_PATH)/nph-webrt.cgi
 	chmod 4755 $(RT_CGI_PATH)/nph-admin-webrt.cgi
 
@@ -182,31 +187,31 @@ database:
 	$(MYSQLDIR)/mysql $(RT_MYSQL_DATABASE) < etc/schema      
 
 acls:
-	-$(PERL) -p -e"s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;" $(RT_MYSQL_ACL) | $(MYSQLDIR)/mysql mysql
+	-$(PERL) -p -e "s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;" $(RT_MYSQL_ACL) | $(MYSQLDIR)/mysql mysql
 	$(MYSQLDIR)/mysqladmin reload
 
 
 mux-install:
-	cp -rp ./bin/rtmux.pl $(RTMUX)  
-	$(PERL) -p -i.orig -e"s'!!RT_PATH!!'$(RT_PATH)'g;\
-			      s'!!RT_VERSION!!'$(RT_VERSION)'g;"  $(RTMUX)
+	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)  
+	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
+			      s'!!RT_VERSION!!'$(RT_VERSION)'g;"  $(RT_WRAPPER)
 	rm -f $(RT_BIN_PATH)/rt
-	ln -s $(RTMUX) $(RT_BIN_PATH)/rt
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt
 	rm -f $(RT_BIN_PATH)/rtadmin
-	ln -s $(RTMUX) $(RT_BIN_PATH)/rtadmin
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rtadmin
 	rm -f $(RT_BIN_PATH)/rtq
-	ln -s  $(RTMUX) $(RT_BIN_PATH)/rtq
+	ln -s  $(RT_WRAPPER) $(RT_BIN_PATH)/rtq
 	rm -f $(RT_BIN_PATH)/rt-mailgate
-	ln -s $(RTMUX) $(RT_BIN_PATH)/rt-mailgate
+	ln -s $(RT_WRAPPER) $(RT_BIN_PATH)/rt-mailgate
 	rm -f $(RT_CGI_PATH)/nph-webrt.cgi
-	ln  $(RTMUX) $(RT_CGI_PATH)/nph-webrt.cgi
+	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/nph-webrt.cgi
 	rm -f $(RT_CGI_PATH)/nph-admin-webrt.cgi
-	ln  $(RTMUX) $(RT_CGI_PATH)/nph-admin-webrt.cgi
+	ln  $(RT_WRAPPER) $(RT_CGI_PATH)/nph-admin-webrt.cgi
 	chmod 4755 $(RT_CGI_PATH)/nph-webrt.cgi
 	chmod 4755 $(RT_CGI_PATH)/nph-admin-webrt.cgi
 
 config-replace:
-	 $(PERL) -p -i.bak  -e"\
+	 $(PERL) -p -i.bak  -e "\
 	s'!!RT_PATH!!'$(RT_PATH)'g;\
         s'!!RT_TRANSACTIONS_PATH!!'$(RT_TRANSACTIONS_PATH)'g;\
         s'!!RT_TEMPLATE_PATH!!'$(RT_TEMPLATE_PATH)'g;\

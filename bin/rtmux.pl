@@ -4,7 +4,10 @@
 # RT is (c) 1997 Jesse Vincent (jesse@fsck.com)
 
 require "ctime.pl";
-delete @ENV{'IFS', 'CDPATH', 'PATH', 'ENV', 'BASH_ENV'};     
+$ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
+$ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
+$ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
+$ENV{'IFS'} = ''          if defined $ENV{'IFS'};
 
 package rt;
 
