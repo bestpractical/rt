@@ -48,7 +48,7 @@ while (my $queue = $Queues->Next) {
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
 <td><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1" TITLE="<% $queue->Description %>"><%$queue->Name%></a></TD>
 <td align="right"><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=new&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$new%></a></TD>
-<td align="right"><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&openSearch=1"><%$open%></a></TD>
+<td align="right"><A HREF="<% $RT::WebPath%>/Search/Listing.html?ValueOfStatus=open&StatusOp=%3D&QueueOp=%3D&ValueOfQueue=<%$queue->Id%>&RowsPerPage=50&NewSearch=1"><%$open%></a></TD>
 </TR>
 % }
 </TABLE>
