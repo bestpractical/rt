@@ -353,17 +353,14 @@ sub Config {
 # {{{ sub ProcessACLChanges
 
 sub ProcessACLChanges {
- #   my $self = shift;
-
-    my (@CheckACL, %ARGS);
     
     my $ACLref= shift;
     my $ARGSref = shift;
 
-    @CheckACL = @$ACLref;
-    %ARGS = %$ARGSref;
+    my @CheckACL = @$ACLref;
+    my %ARGS = %$ARGSref;
     
-    my $ACL;
+    my ($ACL, @results);
     foreach $ACL (@CheckACL) {
 	
 	my ($Principal);
@@ -439,20 +436,18 @@ sub ProcessACLChanges {
 		    #TODO Deal with system rights
 		    #Add new entry to list of rights.
 		    $RT::Logger->debug("Granting queue $AppliesTo right $right to ".
-				       $Principal->id.	 
-				       " for queue $AppliesTo\n"); 
+				       $Principal->id.	 " for queue $AppliesTo\n"); 
 		    if ($Scope eq 'Queue') {
 			$Principal->GrantQueueRight( RightAppliesTo => $AppliesTo,
 						     RightName => "$right" );
-			push (@results, "Granted queue $AppliesTo right $right to ".
-			      $Principal->id.	 
-			      " for queue $AppliesTo\n");
+			push (@results, "Granted right $right to ".
+			      $Principal->id." for queue $AppliesTo.\n");
 		    }
 		    elsif ($Scope eq 'System') {
 			$Principal->GrantSystemRight( RightAppliesTo => $AppliesTo,
 						      RightName => "$right" );
-			push (@results, "Granted system right $right to ".
-			      $Principal->id. "\n");	 
+			push (@results, "Granted system right '$right' to ".
+			      $Principal->id. ".\n");	 
 	
 		    }
 		}
@@ -472,7 +467,10 @@ sub ProcessACLChanges {
 		unless ($rights{$right->RightName}) {
 		    #yank the entry out of  the ACL
 		    $right->Delete();
-		    push (@results, "Revoked ".$right->RightName. "\n");
+		    push (@results, "Revoked ".$right->PrincipalType." ".
+                    $right->PrincipalId . "'s right to ". $right->RightName. 
+                    "  for " . $right->RightScope. " ". 
+                    $right->RightAppliesTo.".\n");
 		}
 		
 		

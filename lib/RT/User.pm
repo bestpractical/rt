@@ -302,8 +302,9 @@ sub GrantQueueRight {
    
     require RT::ACE;
 
-    $RT::Logger->debug("$self ->GrantQueueRight right:". $args{'RightName'} ." applies to queue ".$args{'RightAppliesTo'}."\n");
-
+    $RT::Logger->debug("$self ->GrantQueueRight right:". $args{'RightName'} .
+		       " applies to queue ".$args{'RightAppliesTo'}."\n");
+    
     my $ace = new RT::ACE($self->CurrentUser);
     
     return ($ace->Create(%args));
@@ -330,9 +331,9 @@ sub GrantSystemRight {
 		 @_);
    
     require RT::ACE;
-
+    
     $RT::Logger->debug("$self ->GrantSystemRight ". join(@_)."\n");
-
+    
     my $ace = new RT::ACE($self->CurrentUser);
     
     return ($ace->Create(%args));
@@ -375,14 +376,22 @@ sub HasQueueRight {
         $QueueId = $args{'TicketObj'}->QueueObj->Id,
     }
     else {
-      use Carp;
-      Carp::Confess();
-	  $RT::Logger->debug("$self ->HasQueueRight found no valid queue id.");
+	use Carp;
+	Carp::Confess();
+	$RT::Logger->debug("$self ->HasQueueRight found no valid queue id.");
     }
-    return ($self->_HasRight(Scope => 'Queue',
-			     AppliesTo => $QueueId,
-			     Right => "$args{'Right'}"));
     
+    my $retval = $self->_HasRight(Scope => 'Queue',
+				  AppliesTo => $QueueId,
+				  Right => "$args{'Right'}");
+    if (defined $retval) {
+	return ($retval);
+    }
+    #if they don't have the queue right, see if they have the system right.
+    else {
+        $retval = $self->HasSystemRight( Right => "$args{'Right'}");
+        return ($retval);
+    }
     
 }
 
@@ -448,7 +457,6 @@ sub _HasRight {
 		 ExtendedPrincipals => undef,
 		 @_);
     
-    
     if ($self->Disabled) {
 	$RT::Logger->debug ("Disabled User:  ".$self->UserId.
 			    " failed access check for ".$args{'Right'}.
@@ -458,16 +466,16 @@ sub _HasRight {
     }
     
     if (!defined $args{'Right'}) {
-	$RT::Logger->debug("_HasRight called without a right\n");
-	return(0);
+    	$RT::Logger->debug("_HasRight called without a right\n");
+    	return(0);
     }
     elsif (!defined $args{'Scope'}) {
-	$RT::Logger->debug("_HasRight called without a scope\n");
-	return(0)
+    	$RT::Logger->debug("_HasRight called without a scope\n");
+    	return(0)
     }
     elsif (!defined $args{'AppliesTo'}) {
-	$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
-	return(0)
+    	$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
+    	return(0)
     }
     
     #If we've cached a win or loss for this lookup say so
@@ -477,7 +485,7 @@ sub _HasRight {
 	$RT::Logger->debug("Got a cached ACL decision for ". 
 			   $args{'Right'}.$args{'Scope'}.
 			   $args{'AppliesTo'}."\n");	    
-	return  ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
+	return ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"});
     }
     
     my $RightClause = "(RightName = '$args{'Right'}')";
@@ -486,20 +494,21 @@ sub _HasRight {
     #If an AppliesTo was passed in, we should pay attention to it.
     #otherwise, none is needed
     
-    $ScopeClause = "($ScopeClause AND ((RightAppliesTo = 0) OR ".
-      " (RightAppliesTo = $args{'AppliesTo'})))"
-	if ($args{'AppliesTo'});
+    $ScopeClause = "($ScopeClause AND (RightAppliesTo = $args{'AppliesTo'}))"
+      if ($args{'AppliesTo'});
     
     
     # The generic principals clause looks for users with my id
     # and Rights that apply to _everyone_
-    my $PrincipalsClause =  "(((PrincipalType = 'User') AND ".
-      "	(PrincipalId = ".$self->Id.")) OR ".
-	"(PrincipalType = 'Everyone'))";
+    my $PrincipalsClause =  "( (PrincipalType = 'Everyone') OR ".
+      "((PrincipalType = 'User') AND (PrincipalId = ".$self->Id.")))";
+    
     
     # If the user is the superuser, grant them the damn right ;)
-    my $SuperUserClause = "(RightName = 'SuperUser') AND ".
-      "(RightScope = 'System') AND (RightAppliesTo = 0)";
+    my $SuperUserClause = 
+      "(RightName = 'SuperUser') AND ".
+	" (RightScope = 'System') AND ".
+	  " (RightAppliesTo = 0)";
     
     # If we've been passed in an extended principals clause, we should lump it
     # on to the existing principals clause. it'll make life easier
@@ -523,7 +532,7 @@ sub _HasRight {
     
     my ($hitcount);
     
-    # {{{ deal with checking to see whether the user has a right as a member of a group
+    # {{{ deal with checking if the user has a right as a member of a group
 
     $RT::Logger->debug("Now Trying $query_string_1\n");	
     $hitcount = $self->_Handle->FetchResult($query_string_1);
