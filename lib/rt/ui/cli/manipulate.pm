@@ -308,7 +308,7 @@ sub cli_create_req  {
     
     while (!$Queue->Load($queue_id)) {
       print "That Queue does not exist\n";
-      $queue_id=&rt::ui::cli::question_string("Place Request in queue",);
+      $queue_id=&rt::ui::cli::question_string("Place Request in queue",) || "general";
     }
     
     if (!$Queue->CreatePermitted) {
