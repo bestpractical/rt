@@ -256,6 +256,8 @@ upgrade-noclobber: config-install libs-install html-install bin-install local-in
 testdeps:
 	$(PERL) ./sbin/rt-test-dependencies --verbose --with-$(DB_TYPE)
 
+depends: fixdeps
+
 fixdeps:
 	$(PERL) ./sbin/rt-test-dependencies --verbose --install --with-$(DB_TYPE)
 
