@@ -82,7 +82,6 @@ sub ScripObj {
   }
   return ($self->{'ScripObj'});
 }
-}
 
 # }}}
 #
