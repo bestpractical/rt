@@ -28,6 +28,8 @@
 package RT::Condition::PriorityExceeds;
 require RT::Condition::Generic;
 
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Condition::Generic);
 
 

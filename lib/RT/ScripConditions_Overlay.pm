@@ -45,6 +45,7 @@ ok (require RT::ScripConditions);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ sub _Init

@@ -89,8 +89,6 @@ RT_READABLE_DIR_MODE	=	0755
 
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
 RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
-# RT_MODPERL2_HANDLER is the mason handler script for mod_perl2
-RT_MODPERL2_HANDLER	=	$(RT_BIN_PATH)/modperl2.pl
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
 RT_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.fcgi
 # RT_WIN32_FASTCGI_HANDLER is the mason handler script for FastCGI
@@ -109,7 +107,6 @@ SETGID_BINARIES	 	= 	$(DESTDIR)/$(RT_MAILGATE_BIN) \
 				$(DESTDIR)/$(RT_CLI_ADMIN_BIN)
 
 BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
-				$(DESTDIR)/$(RT_MODPERL2_HANDLER) \
 				$(DESTDIR)/$(RT_CRON_BIN) \
 				$(SETGID_BINARIES)
 SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
@@ -304,7 +301,8 @@ initialize-database:
 dropdb: 
 	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/initdb --action drop --dba @DB_DBA@ --prompt-for-dba-password
 
-
+insert-approval-data: 
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/insert_approval_scrips
 # }}}
 
 # {{{ libs-install
@@ -314,12 +312,6 @@ libs-install:
 	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
 	chmod -R $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_LIB_PATH)
 	cp -rp lib/* $(DESTDIR)/$(RT_LIB_PATH)
-	$(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g;\
-	    			  s'!!RT_CONFIG!!'$(CONFIG_FILE)'g; \
-	    			  s'!!RT_SITE_CONFIG!!'$(SITE_CONFIG_FILE)'g; \
-	    			  s'!!RT_VENDOR_CONFIG!!'$(VENDOR_CONFIG_FILE)'g;" \
-		$(DESTDIR)/$(RT_LIB_PATH)/RT.pm ; \
-
 # }}}
 
 # {{{ html-install
@@ -346,10 +338,6 @@ sbin-install:
 		sbin/testdeps \
 		sbin/insert_approval_scrips \
 		$(DESTDIR)/$(RT_SBIN_PATH)
-	$(PERL) -p -i -e " s'!!PERL!!'"$(PERL)"'g;\
-				s'!!RT_LIB_PATH!!'"$(RT_LIB_PATH)"'g;"\
-		$(DESTDIR)/$(RT_SBIN_PATH)/*
-
 # }}}
 
 # {{{ bin-install
@@ -362,20 +350,10 @@ bin-install:
 		bin/enhanced-mailgate \
 		bin/mason_handler.fcgi \
 		bin/mason_handler.svc \
-		bin/modperl2.pl \
 		bin/webmux.pl \
 		bin/rt-crontool \
 		bin/rt-commit-handler \
 		$(DESTDIR)/$(RT_BIN_PATH)
-
-
-	$(PERL) -p -i -e " s'!!PERL!!'"$(PERL)"'g;\
-				s'!!RT_LIB_PATH!!'"$(RT_LIB_PATH)"'g;"\
-		$(BINARIES)
-
-
-
-
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside
@@ -385,8 +363,8 @@ POD2TEST_EXE = sbin/extract_pod_tests
 
 testify-pods:
 	[ -d lib/t/autogen ] || mkdir lib/t/autogen
-	find lib -name \*pm |xargs -n 1 $(PERL) $(POD2TEST_EXE)
-	find bin -type f |grep -v \~| xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find lib -name \*pm |grep -v\*.in |xargs -n 1 $(PERL) $(POD2TEST_EXE)
+	find bin -type f |grep -v \~| grep -v \*.in | xargs -n 1 $(PERL) $(POD2TEST_EXE)
 
 
 

@@ -36,7 +36,7 @@ contentbg=>"#cccccc" &>
 
 
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-<FORM METHOD=POST >
+<FORM METHOD=POST ACTION="<% ($r->uri) =~ m!.*/(.*)! %>" >
 <TABLE BORDER=0 WIDTH=100%>
 <TR ALIGN=RIGHT>
 <TD ALIGN=RIGHT><&|/l&>Username</&>:</TD><TD ALIGN=LEFT><input name=user value="<%$user%>"></TD></TR>
@@ -47,9 +47,7 @@ contentbg=>"#cccccc" &>
 </TABLE>
 <&/Elements/TitleBoxEnd&>
 % # From mason 1.0.1 forward, this doesn't work. in fact, it breaks things.
-% # But on Mason 1.15 it's fixed again, so we still use it.  Remember to
-% # search for 'have your cake and eat it too' in CGI.pm and uncomment it!
-% if (1) {
+% # But on Mason 1.15 it's fixed again, so we still use it.
 % # The code below iterates through everything in the passed in arguments
 % # Preserving all the old parameters
 % # This would be easier, except mason is 'smart' and calls multiple values
@@ -65,8 +63,7 @@ contentbg=>"#cccccc" &>
 %	else {
 <input type="hidden" name="<% $key %>" value="<% $ARGS{$key} %>">
 % 	}
-% }
-%}
+%  }
 % }
 </FORM>
 % }

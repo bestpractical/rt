@@ -46,6 +46,7 @@ ok(require RT::Template);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 use Text::Template;
@@ -331,7 +332,7 @@ sub Parse {
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
     $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
-    $error = ( $@ || $parser->last_error );
+    my $error = ( $@ || $parser->last_error );
 
     if ($error) {
         $RT::Logger->error("$error");
@@ -371,12 +372,12 @@ sub _ParseContent {
     # with it
     my $content = $self->Content();
     $content =~ s/^(.*)$/$1/;
-    $template = Text::Template->new(
-        TYPE   => STRING,
+    my $template = Text::Template->new(
+        TYPE   => 'STRING',
         SOURCE => $content
     );
 
-    my $retval = $template->fill_in( PACKAGE => T );
+    my $retval = $template->fill_in( PACKAGE => 'T' );
     return ($retval);
 }
 

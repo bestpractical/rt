@@ -25,6 +25,8 @@
 package RT::Action::CreateTickets;
 require RT::Action::Generic;
 
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Action::Generic);
 
 use MIME::Entity;
@@ -335,12 +337,12 @@ sub Commit {
 
 	$T::ID = $template_id;
         my $template = Text::Template->new(
-                                  TYPE   => STRING,
+                                  TYPE   => 'STRING',
                                   SOURCE => $self->{'templates'}->{$template_id}
         );
 
 	my $err;
-        my $filled_in = $template->fill_in( PACKAGE => T, BROKEN => sub {
+        my $filled_in = $template->fill_in( PACKAGE => 'T', BROKEN => sub {
 	    $err = { @_ }->{error};
 	} );
 
@@ -413,7 +415,7 @@ sub Commit {
 		}
 	    );
 
-            %ticketargs = ( Queue => $args{'queue'},
+            my %ticketargs = ( Queue => $args{'queue'},
                           Subject=> $args{'subject'},
                         Status => 'new',
                         Due => $args{'due'},
@@ -465,7 +467,7 @@ sub Commit {
 		    Silent                        => 1
 		);
 
-		push @non_fatal_errors, $wmsg unless ($wval);
+		# push @non_fatal_errors, $wmsg unless ($wval);
 	    }
 
 	}

@@ -22,6 +22,8 @@
 # 
 # 
 # END LICENSE BLOCK
+
+use strict;
 no warnings qw(redefine);
 
 

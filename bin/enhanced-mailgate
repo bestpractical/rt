@@ -39,7 +39,7 @@ $VERSION='0.3';
 # KEYIDIR should point to the directory containing a pubring.gpg
 # for gpg to use as its authentication database
 
-$KEYDIR = "/opt/rt2/etc/gnupg";
+$KEYDIR = "/opt/rt3/etc/gnupg";
 
 # If you turn on the $PermitReplayAttacks flag in enhanced-mailgate, RT will
 #  treat
@@ -49,7 +49,7 @@ $KEYDIR = "/opt/rt2/etc/gnupg";
 
 $PermitReplayAttacks = 0;
 
-use lib "!!RT_LIB_PATH!!";
+use lib "/opt/rt3/lib";
 
 
 use RT::Interface::Email  qw(CleanEnv 

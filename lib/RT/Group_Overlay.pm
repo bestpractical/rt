@@ -132,6 +132,7 @@ ok($group_3->HasMemberRecursively($principal_2) == undef, "group 3 has member 2 
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 use RT::Users;
@@ -519,7 +520,7 @@ sub _CreateACLEquivalenceGroup {
        # We use stashuser so we don't get transactions inside transactions
        # and so we bypass all sorts of cruft we don't need
        my $aclstash = RT::GroupMember->new($self->CurrentUser);
-       my $stash_id =  $aclstash->_StashUser(Group => $self->PrincipalObj,
+       my ($stash_id, $add_msg) = $aclstash->_StashUser(Group => $self->PrincipalObj,
                                              Member => $princ);
 
       unless ($stash_id) {
@@ -1066,7 +1067,7 @@ sub DeleteMember {
     	}
 	}
 	else {
-    unless ( ($new_member == $self->CurrentUser->PrincipalId &&
+    unless ( (($member_id == $self->CurrentUser->PrincipalId) &&
 	      $self->CurrentUserHasRight('ModifyOwnMembership') ) ||
 	      $self->CurrentUserHasRight('AdminGroupMembership') ) {
         #User has no permission to be doing this

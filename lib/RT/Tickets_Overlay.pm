@@ -46,6 +46,7 @@ ok (require RT::Tickets);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 use vars qw(%TYPES @SORTFIELDS);
@@ -832,8 +833,8 @@ sub LimitDate {
     my $self = shift;
     my %args = (
                   FIELD => undef,
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
+		  VALUE => undef,
+		  OPERATOR => undef,
 
                   @_);
 
@@ -898,8 +899,8 @@ sub LimitTransactionDate {
     my $self = shift;
     my %args = (
                   FIELD => 'TransactionDate',
-		  VALUE => $args{'VALUE'},
-		  OPERATOR => $args{'OPERATOR'},
+		  VALUE => undef,
+		  OPERATOR => undef,
 
                   @_);
 
@@ -1425,7 +1426,7 @@ sub _ProcessRestrictions {
         # {{{ Tie to groups for tickets we care about
         $self->SUPER::Limit(ALIAS => $groups, 
                             FIELD => 'Domain',
-                            VALUE => 'TicketRole');
+                            VALUE => 'RT::Ticket-Role');
 
         $self->Join(ALIAS1 => $groups, FIELD1 => 'Instance',
                     ALIAS2 => 'main',   FIELD2 => 'id');
@@ -1592,13 +1593,13 @@ sub SetListingFormat {
 	    $attribs = $2;
 	}	
 	$self->{'format_string'}->[$i]->{'Element'} = $element;
-	foreach $attrib (split (/;/, $attribs)) {
+	foreach my $attrib (split (/;/, $attribs)) {
 	    my $value = "";
 	    if ($attrib =~ /^(.*?)=(.*)$/) {
 		$attrib = $1;
 		$value = $2;
 	    }	
-	    $self->{'format_string'}->[$i]->{"$attrib"} = $val;
+	    $self->{'format_string'}->[$i]->{"$attrib"} = $value;
 	    
 	}
     
@@ -1638,7 +1639,7 @@ sub TicketAsHTMLRow {
     my $Ticket = shift;
     my ($row, $col);
     foreach $col (@{[$self->{'format_string'}]}) {
-	$row .= "<TD>" . $self->_TicketColumnValue($ticket,$self->{'format_string'}->[$col]) . "</TD>";
+	$row .= "<TD>" . $self->_TicketColumnValue($Ticket,$self->{'format_string'}->[$col]) . "</TD>";
 	
     }
     return ($row);
@@ -1738,8 +1739,9 @@ sub _TicketColumnValue {
 	    $obj = $Ticket->ToldObj        if $o =~ /told/i;
 	    $obj = $Ticket->LastUpdatedObj if $o =~ /lastu/i;
 	    
-	    $method = 'ISO' if $m =~ /iso/i;
+	    my $method;
 	    
+	    $method = 'ISO' if $m =~ /iso/i;
 	    $method = 'AsString' if $m =~ /asstring/i;
 	    $method = 'AgeAsString' if $m =~ /age/i;
 	    last SWITCH;

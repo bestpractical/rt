@@ -57,6 +57,7 @@ ok (UNIVERSAL::isa($link, 'DBIx::SearchBuilder::Record'));
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 
@@ -338,7 +339,7 @@ Takes a URI and returns an http: url to access that object.
 sub AsHREF {
     my $self=shift;
    
-    $RT::Logger->crit("AsHREF is gone. look at URI::HREF to figure out what to do with $URI");
+    $RT::Logger->crit("AsHREF is gone. look at URI::HREF to figure out what to do with \$URI");
 }
 
 # }}}

@@ -27,6 +27,9 @@
 package RT::Action::OpenDependent;
 require RT::Action::Generic;
 require RT::Links;
+
+use strict;
+use vars qw/@ISA/;
 @ISA=qw(RT::Action::Generic);
 
 #Do what we need to do and send it out.

@@ -44,6 +44,7 @@ ok (require RT::ScripActions);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ sub _Init

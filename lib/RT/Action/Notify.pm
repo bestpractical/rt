@@ -24,6 +24,9 @@
 # END LICENSE BLOCK
 package RT::Action::Notify;
 require RT::Action::SendEmail;
+
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Action::SendEmail);
 
 # {{{ sub SetRecipients
@@ -38,7 +41,7 @@ Explicitly B<does not> notify the creator of the transaction.
 sub SetRecipients {
     my $self = shift;
 
-    $arg = $self->Argument;
+    my $arg = $self->Argument;
 
     $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
 

@@ -43,6 +43,7 @@ ok (require RT::Templates);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 

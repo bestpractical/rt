@@ -44,6 +44,7 @@ ok (require RT::Principals);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 

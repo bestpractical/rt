@@ -42,26 +42,32 @@ $DEBUG = 1;
 $FILECAT = {};
 
 # extract all strings and stuff them into $FILECAT
-File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, '.' );
+File::Find::find( { wanted => \&extract_strings_from_code, follow => 0 }, '.' );
 
 # ensure proper escaping and [_1] => %1 transformation
 foreach my $str ( sort keys %{$FILECAT} ) {
     my $entry = $FILECAT->{$str};
     my $oldstr = $str;
+
     $str =~ s/\\/\\\\/g;
     $str =~ s/\"/\\"/g;
-    $str =~ s/\[_(\d+)\]/%$1/g;
+    $str =~ s/((?<!~)(?:~~)*)\[_(\d+)\]/$1%$2/g;
+    $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".escape($3).")"/eg;
     $str =~ s/~([\[\]])/$1/g;
+
     delete $FILECAT->{$oldstr};
     $FILECAT->{$str} = $entry;
 }
 
 # update all language dictionaries
-foreach my $lang (@ARGV) {
+foreach my $dict (@ARGV) {
+    $dict = "lib/RT/I18N/$dict.po" unless -f $dict;
+
+    my $lang = $dict;
     $lang =~ s|.*/||;
     $lang =~ s|\.po$||;
 
-    update($lang);
+    update($lang, $dict);
 }
 
 
@@ -72,13 +78,15 @@ sub extract_strings_from_code {
 
     local $/;
     return if ( -d $_ );
-    return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen' );
+    return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen|var|m4' );
     return if ( /\.po$|\.bak$|~|,D|,B$|extract-message-catalog$/ );
     return if ( /^[\.#]/ );
+    return if ( -f "$_.in" );
 
     print "Looking at $File::Find::name\n";
     my $filename = $File::Find::name;
     $filename =~ s'^\./'';
+    $filename =~ s'\.in$'';
 
     unless (open _, $file) {
         print "Cannot open $file for reading ($!), skipping.\n";
@@ -150,13 +158,13 @@ sub extract_strings_from_code {
 
 sub update {
     my $lang = shift;
-    my $file = "lib/RT/I18N/$lang.po";
+    my $file = shift;
     my ( %Lexicon, %Header);
     my $out = '';
 
     unless (-w $file) {
 	warn "Can't write to $lang, skipping...\n";
-	next;
+	return;
     }
 
     print "Updating $lang...\n";
@@ -170,7 +178,7 @@ sub update {
         $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
         my $msgid  = shift @lines;
         my $msgstr = "";
-        $msgstr .= shift @lines while ( $lines[0] =~ /^(msgstr|")/ );
+        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgstr|")/ );
 
         last unless $msgid;
 
@@ -206,9 +214,8 @@ sub update {
 
             $out .= "#: $f\n";
         }
-        else {
+        elsif ($_) {
             $out .= "#: NOT FOUND IN SOURCE\n";
-
         }
         foreach my $entry ( grep { $_->[2] } @{ $FILECAT->{$_} } ) {
             my ( $file, $line, $var ) = @{$entry};
@@ -224,6 +231,12 @@ sub update {
     close PO;
 
     return 1;
+}
+
+sub escape {
+    my $text = shift;
+    $text =~ s/\b_(\d+)/%$1/;
+    return $text;
 }
 
 __END__

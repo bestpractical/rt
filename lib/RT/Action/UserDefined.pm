@@ -27,6 +27,9 @@
 
 package RT::Action::UserDefined;
 use RT::Action::Generic;
+
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Action::Generic);
 
 =head2 Prepare

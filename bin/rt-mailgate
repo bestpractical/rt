@@ -1,4 +1,4 @@
-#!!!PERL!! -w
+#@!PERL@ -w
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
@@ -51,7 +51,7 @@ ok(close(GATE), "Closed the pipe");
 
 use strict;
 
-use lib "!!RT_LIB_PATH!!";
+use lib "/opt/rt3/lib";
 
 use RT;
 use RT::Interface::Email  qw(CleanEnv  MailError);

@@ -24,6 +24,9 @@
 # END LICENSE BLOCK
 package RT::Action::NotifyAsComment;
 require RT::Action::Notify;
+
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Action::Notify);
 
 

@@ -54,8 +54,10 @@ package RT::Date;
 use Time::Local;
 
 use RT::Base;
-@ISA = qw/RT::Base/;
 
+use strict;
+use vars qw/@ISA/;
+@ISA = qw/RT::Base/;
 
 use vars qw($MINUTE $HOUR $DAY $WEEK $MONTH $YEAR);
 
@@ -287,6 +289,7 @@ sub DurationAsString {
 
     $duration = abs($duration);
 
+    my $time_unit;
     if ( $duration < $MINUTE ) {
         $s         = $duration;
         $time_unit = $self->loc("sec");
@@ -525,7 +528,10 @@ pull from a 'Timezone' attribute of the CurrentUser
 
 sub LocalTimezone {
     my $self = shift;
-    
+
+    return $self->CurrentUser->Timezone
+	if $self->CurrentUser and $self->CurrentUser->can('Timezone');
+
     return ($RT::Timezone);
 }
 

@@ -57,6 +57,7 @@ ok (require RT::Search::Generic);
 
 package RT::Search::Generic;
 
+use strict;
 
 # {{{ sub new 
 sub new  {

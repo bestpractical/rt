@@ -47,6 +47,7 @@ ok (require RT::Attachments);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ sub _Init  

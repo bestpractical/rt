@@ -45,12 +45,13 @@ o   A DB backend; MySQL is recommended ( http://www.mysql.com )
 				 (Some older releases had crippling SQL bugs)
 				Postgres 7.2 or later
 
-o   Apache + mod_perl -- ( http://perl.apache.org) 
+o   Apache (1.3.x or 2.x) with mod_perl -- ( http://perl.apache.org ) 
     or A webserver with FastCGI support (www.fastcgi.com)
 
-	If you compile mod_perl as a DSO, you're on your own. It's known
-	to have massive stability problems. 
-        mod_perl must be build with EVERYTHING=1
+	If you compile mod_perl on Apache 1.3.x as a DSO, you're on your own;
+	It's known to have massive stability problems. 
+
+        mod_perl 1.x must be build with EVERYTHING=1
 
 o    Various and sundry perl modules
         RT takes care of the installation of most of these automatically
@@ -153,8 +154,8 @@ THE WEB UI
 ----------
 
 RT's web ui is based around HTML::Mason, which works best with the mod_perl
-perl interpreter within Apache httpd.  We're working on a FastCGI version as
-well, but for now, apache's your best bet.
+perl interpreter within Apache httpd.  Alternatively, support for the FastCGI
+(and plain CGI) interface is also provided as 'bin/mason_handler.fcgi'.
 
 Apache 
         RT Uses HTML::Mason.  You'll need to add a few lines to your
@@ -162,20 +163,30 @@ Apache
 	(you should, the perl scripts will go quite a bit faster around with
 	it), you can do something like this:
 
-
 <VirtualHost your.ip.address>
-DocumentRoot /path/to/rt3/html
-ServerName your.rt.server.hostname
-PerlModule Apache::DBI
-PerlFreshRestart On
-PerlRequire /path/to/rt3/bin/webmux.pl
-<Location />
- SetHandler perl-script
- PerlHandler RT::Mason
-</Location>
+    ServerName your.rt.server.hostname
+    DocumentRoot /path/to/rt3/share/html
+    AddDefaultCharset UTF-8
+
+    PerlFreshRestart On			# only for Apache/mod_perl 1.x
+    PerlModule Apache2 Apache::compat	# only for Apache/mod_perl 2.x
+
+    PerlModule Apache::DBI
+    PerlRequire /path/to/rt3/bin/webmux.pl
+
+    <FilesMatch "\.html$">
+        SetHandler perl-script
+        PerlHandler RT::Mason
+    </FilesMatch>
+    <LocationMatch "/Attachment/">
+        SetHandler perl-script
+        PerlHandler RT::Mason
+    </LocationMatch>
 </VirtualHost>
 
-Additionally, you should set up a cron job to remove stale session data.
+Additionally, if you are using a database engine other than MySQL, you should
+set up a cron job to remove stale session locks.  (MySQL uses the database
+itself for that.)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  WARNING: Don't install this cron job or run this find command if your

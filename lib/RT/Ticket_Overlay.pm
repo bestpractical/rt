@@ -114,6 +114,7 @@ ok($t3->CustomFieldValues($testcf->Id)->Count == 1,
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 use RT::Queue;
@@ -142,7 +143,7 @@ ok(require RT::Ticket, "Loading the RT::Ticket library");
 # A helper table for relationships mapping to make it easier
 # to build and parse links between tickets
 
-use vars (%LINKTYPEMAP);
+use vars '%LINKTYPEMAP';
 
 %LINKTYPEMAP = (
     MemberOf => { Type => 'MemberOf',
@@ -161,6 +162,7 @@ use vars (%LINKTYPEMAP);
                       Mode => 'Base', },
 
 );
+
 # }}}
 
 # {{{ sub Load
@@ -387,7 +389,7 @@ sub Create {
 
 
     #If the status is an inactive status, set the resolved date
-    if (( grep $args{'Status'}, @{$QueueObj->InactiveStatusArray} ) &&
+    if (( grep $args{'Status'}, $QueueObj->InactiveStatusArray ) &&
         (!defined($args{'Resolved'}))) {
         $Resolved->SetToNow;
     }
@@ -491,18 +493,20 @@ sub Create {
 	    $field = 'PrincipalId' if $watcher =~ /^\d+$/;
 	    $RT::Logger->info("Putting principal $watcher as $field");
 
+	    my ( $wval, $wmsg );
+
             if ( $type eq 'AdminCc' ) {
 
                 # Note that we're using AddWatcher, rather than _AddWatcher, as we 
                 # actually _want_ that ACL check. Otherwise, random ticket creators
                 # could make themselves adminccs and maybe get ticket rights. that would
                 # be poor
-                my ( $wval, $wmsg ) = $self->AddWatcher( Type   => $type,
+                ( $wval, $wmsg ) = $self->AddWatcher( Type   => $type,
                                                          $field => $watcher,
                                                          Silent => 1 );
             }
             else {
-                my ( $wval, $wmsg ) = $self->_AddWatcher( Type   => $type,
+                ( $wval, $wmsg ) = $self->_AddWatcher( Type   => $type,
                                                           $field => $watcher,
                                                           Silent => 1 );
             }
@@ -536,7 +540,7 @@ sub Create {
 
     foreach my $arg ( keys %args ) {
     next unless ( $arg =~ /^CustomField-(\d+)$/i );
-    $cfid = $1;
+    my $cfid = $1;
     foreach
       my $value ( ref( $args{$arg} ) ? @{ $args{$arg} } : ( $args{$arg} ) ) {
         next unless ($value);
@@ -2494,7 +2498,7 @@ sub MergeInto {
         );
     }
 
-    return ( $TransactionObj, $self->loc("Merge Successful") );
+    return ( 1, $self->loc("Merge Successful") );
 }
 
 # }}}
@@ -2519,7 +2523,7 @@ sub OwnerObj {
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
 
-    $owner = new RT::User( $self->CurrentUser );
+    my $owner = new RT::User( $self->CurrentUser );
     $owner->Load( $self->__Value('Owner') );
 
     #Return the owner object
@@ -2800,7 +2804,7 @@ sub SetStatus {
     $now->SetToNow();
 
     #If we're changing the status from new, record that we've started
-    if ( ( $self->Status =~ /new/ ) && ( $status ne 'new' ) ) {
+    if ( ( $self->Status =~ /new/ ) && ( $args{Status} ne 'new' ) ) {
 
         #Set the Started time to "now"
         $self->_Set( Field             => 'Started',
@@ -2808,7 +2812,7 @@ sub SetStatus {
                      RecordTransaction => 0 );
     }
 
-    if ( $status eq 'resolved' ) {
+    if ( $args{status} eq 'resolved' ) {
 
         #When we resolve a ticket, set the 'Resolved' attribute to now.
         $self->_Set( Field             => 'Resolved',
@@ -3026,6 +3030,7 @@ sub _AddCustomFieldValue {
         my $old_value;
         if (my $value = $cf->ValuesForTicket( $self->Id )->First) {
 	    $old_value = $value->Content();
+	    return (1) if $old_value eq $args{'Value'};
 	}
 
         my ( $new_value_id, $value_msg ) = $cf->AddValueForTicket(
@@ -3041,13 +3046,13 @@ sub _AddCustomFieldValue {
         }
 
         my $new_value = RT::TicketCustomFieldValue->new( $self->CurrentUser );
-        $new_value->Load($value_id);
+        $new_value->Load($new_value_id);
 
         # now that adding the new value was successful, delete the old one
-	if ($oldvalue) {
-	    my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $oldvalue);
+	if ($old_value) {
+	    my ($val, $msg) = $cf->DeleteValueForTicket(Ticket => $self->Id, Content => $old_value);
 	    unless ($val) { 
-			return (0,$msg);
+	    		return (0,$msg);
 	    }
 	}
 
@@ -3059,7 +3064,16 @@ sub _AddCustomFieldValue {
             NewValue => $new_value->Content
         );
 	}
-        return ( 1, $self->loc("Custom field value changed from [_1] to [_2]" , $old_value, $new_value->Content ));
+
+        if ( $old_value eq '' ) {
+            return ( 1, $self->loc("[_1] [_2] added", $cf->Name, $new_value->Content) );
+        }
+        elsif ( $new_value->Content eq '' ) {
+            return ( 1, $self->loc("[_1] [_2] deleted", $cf->Name, $old_value) );
+        }
+        else {
+            return ( 1, $self->loc("[_1] [_2] changed to [_3]", $cf->Name, $old_value, $new_value->Content ) );
+        }
 
     }
 

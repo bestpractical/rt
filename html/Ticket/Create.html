@@ -231,6 +231,11 @@ foreach my $key (keys %ARGS) {
 # {{{ store the uploaded attachment in session
 if ($ARGS{'Attach'}) {			# attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
+
+     # strip leading directories
+     $ARGS{'Attach'} =~ s#^.*[\\/]##;
+
+
     my $attachment = MakeMIMEEntity(
         Subject             => "$ARGS{'Attach'}",
         Body                => "",

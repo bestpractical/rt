@@ -61,6 +61,8 @@ ok (require RT::Condition::Generic);
 package RT::Condition::Generic;
 
 use RT::Base;
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Base);
 
 # {{{ sub new 

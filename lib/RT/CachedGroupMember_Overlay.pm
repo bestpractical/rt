@@ -24,6 +24,7 @@
 # END LICENSE BLOCK
 # Released under the terms of the GNU Public License
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ Create

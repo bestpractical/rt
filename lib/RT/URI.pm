@@ -24,6 +24,7 @@
 # END LICENSE BLOCK
 package RT::URI;;
 
+use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::Base);
 

@@ -45,6 +45,7 @@ ok (require RT::Attachment);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 use MIME::Base64;

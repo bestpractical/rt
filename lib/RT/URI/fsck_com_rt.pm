@@ -28,7 +28,8 @@ use RT::Ticket;
 
 use RT::URI::base;
 
-use vars qw (@ISA);
+use strict;
+use vars qw(@ISA);
 @ISA = qw/RT::URI::base/;
 
 

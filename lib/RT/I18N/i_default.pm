@@ -23,7 +23,11 @@
 # 
 # END LICENSE BLOCK
 package RT::I18N::i_default;
-use base qw(RT::I18N);
+
+use strict;
+use vars qw/@ISA/;
+@ISA = qw(RT::I18N);
+
 1;
 
 __END__

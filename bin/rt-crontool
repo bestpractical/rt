@@ -27,7 +27,7 @@
 use strict;
 use Carp;
 
-use lib "!!RT_LIB_PATH!!";
+use lib "/opt/rt3/lib";
 
 package RT;
 

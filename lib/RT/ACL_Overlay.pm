@@ -47,6 +47,7 @@ ok(require RT::ACL);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 

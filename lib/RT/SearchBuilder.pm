@@ -48,6 +48,7 @@ package RT::SearchBuilder;
 use RT::Base;
 use DBIx::SearchBuilder;
 
+use strict;
 use vars qw(@ISA);
 @ISA = qw(DBIx::SearchBuilder RT::Base);
 

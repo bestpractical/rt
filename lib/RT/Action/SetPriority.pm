@@ -24,6 +24,9 @@
 # END LICENSE BLOCK
 package RT::Action::SetPriority;
 require RT::Action::Generic;
+
+use strict;
+use vars qw/@ISA/;
 @ISA=qw(RT::Action::Generic);
 
 #Do what we need to do and send it out.

@@ -50,6 +50,7 @@ ok (require RT::ScripAction);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{  sub _Init 

@@ -48,6 +48,7 @@ ok (require RT::Search::Generic);
 
 package RT::Search::ActiveTicketsInQueue;
 
+use strict;
 use base qw(RT::Search::Generic);
 
 

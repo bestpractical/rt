@@ -43,6 +43,7 @@ use RT::Queue;
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 use vars qw(@STATUS @ACTIVE_STATUS @INACTIVE_STATUS $RIGHTS);

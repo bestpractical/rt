@@ -77,6 +77,7 @@ ok ($ticket2->Priority != '87', "Ticket priority is set right");
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 

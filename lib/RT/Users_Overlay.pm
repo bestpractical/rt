@@ -46,6 +46,7 @@ ok(require RT::Users);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ sub _Init 
@@ -155,7 +156,7 @@ sub MemberOfGroup {
 
     # Join the principal to the groups table
     $self->Join( ALIAS1 => $self->{'princalias'},
-                 FIELD1 => id,
+                 FIELD1 => 'id',
                  ALIAS2 => $groupalias,
                  FIELD2 => 'MemberId' );
 
@@ -243,6 +244,8 @@ sub WhoHaveRight {
 
     # Find all users who have this right OR all users who are members of groups 
     # which have this right for this object
+
+    my ($or_check_ticket_roles, $or_check_roles, $or_look_at_object_rights);
 
     if ( defined $args{'Object'} ) {
     if ( ref($args{'Object'}) eq 'RT::Ticket' ) {

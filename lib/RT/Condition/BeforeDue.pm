@@ -27,6 +27,8 @@ require RT::Condition::Generic;
 
 use RT::Date;
 
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Condition::Generic);
 
 
@@ -48,7 +50,7 @@ sub IsApplicable {
     return (undef) if $due->Unix <= 0;
 
     my $diff = $due->Diff($cur);
-    if ( $diff > = 0 and $diff <= $elapse ) {
+    if ( $diff >= 0 and $diff <= $elapse ) {
         return(1);
     } else {
         return(undef);

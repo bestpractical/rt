@@ -44,6 +44,7 @@ ok (require RT::GroupMembers);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ LimitToUsers

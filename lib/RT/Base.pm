@@ -25,6 +25,7 @@
 package RT::Base;
 use Carp;
 
+use strict;
 use vars qw(@EXPORT);
 
 @EXPORT=qw(loc CurrentUser);

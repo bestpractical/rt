@@ -1844,7 +1844,7 @@ RT_LOG_PATH=${exp_logfiledir}
 
 
 
-                                        ac_config_files="$ac_config_files Makefile etc/RT_Config.pm lib/RT.pm sbin/initdb"
+                                                                                                                                                                          ac_config_files="$ac_config_files Makefile etc/RT_Config.pm lib/RT.pm lib/t/00smoke.t lib/t/02regression.t sbin/initdb sbin/testdeps sbin/insert_approval_scrips bin/enhanced-mailgate bin/mason_handler.fcgi bin/mason_handler.svc bin/rt bin/rt-commit-handler bin/rt-crontool bin/rt-mailgate bin/rtadmin bin/webmux.pl"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -2379,7 +2379,20 @@ do
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "etc/RT_Config.pm" ) CONFIG_FILES="$CONFIG_FILES etc/RT_Config.pm" ;;
   "lib/RT.pm" ) CONFIG_FILES="$CONFIG_FILES lib/RT.pm" ;;
+  "lib/t/00smoke.t" ) CONFIG_FILES="$CONFIG_FILES lib/t/00smoke.t" ;;
+  "lib/t/02regression.t" ) CONFIG_FILES="$CONFIG_FILES lib/t/02regression.t" ;;
   "sbin/initdb" ) CONFIG_FILES="$CONFIG_FILES sbin/initdb" ;;
+  "sbin/testdeps" ) CONFIG_FILES="$CONFIG_FILES sbin/testdeps" ;;
+  "sbin/insert_approval_scrips" ) CONFIG_FILES="$CONFIG_FILES sbin/insert_approval_scrips" ;;
+  "bin/enhanced-mailgate" ) CONFIG_FILES="$CONFIG_FILES bin/enhanced-mailgate" ;;
+  "bin/mason_handler.fcgi" ) CONFIG_FILES="$CONFIG_FILES bin/mason_handler.fcgi" ;;
+  "bin/mason_handler.svc" ) CONFIG_FILES="$CONFIG_FILES bin/mason_handler.svc" ;;
+  "bin/rt" ) CONFIG_FILES="$CONFIG_FILES bin/rt" ;;
+  "bin/rt-commit-handler" ) CONFIG_FILES="$CONFIG_FILES bin/rt-commit-handler" ;;
+  "bin/rt-crontool" ) CONFIG_FILES="$CONFIG_FILES bin/rt-crontool" ;;
+  "bin/rt-mailgate" ) CONFIG_FILES="$CONFIG_FILES bin/rt-mailgate" ;;
+  "bin/rtadmin" ) CONFIG_FILES="$CONFIG_FILES bin/rtadmin" ;;
+  "bin/webmux.pl" ) CONFIG_FILES="$CONFIG_FILES bin/webmux.pl" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -2731,10 +2744,57 @@ s,@INSTALL@,$ac_INSTALL,;t t
 
   # Run the commands associated with the file.
   case $ac_file in
-    Makefile ) chmod +x sbin/initdb ;;
-    etc/RT_Config.pm ) chmod +x sbin/initdb ;;
-    lib/RT.pm ) chmod +x sbin/initdb ;;
-    sbin/initdb ) chmod +x sbin/initdb ;;
+    Makefile ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    etc/RT_Config.pm ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    lib/RT.pm ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    lib/t/00smoke.t ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    lib/t/02regression.t ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    sbin/initdb ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    sbin/testdeps ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    sbin/insert_approval_scrips ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/enhanced-mailgate ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/mason_handler.fcgi ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/mason_handler.svc ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/rt ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/rt-commit-handler ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/rt-crontool ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/rt-mailgate ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/rtadmin ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
+    bin/webmux.pl ) chmod +x sbin/initdb
+		chmod +x sbin/testdeps
+                 ;;
   esac
 done
 _ACEOF

@@ -44,6 +44,9 @@ ok(require RT::Handle);
 
 package RT::Handle;
 
+use strict;
+use vars qw/@ISA/;
+
 eval "use DBIx::SearchBuilder::Handle::$RT::DatabaseType;
 \@ISA= qw(DBIx::SearchBuilder::Handle::$RT::DatabaseType);";
 #TODO check for errors here.

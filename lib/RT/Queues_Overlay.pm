@@ -44,6 +44,7 @@ ok (require RT::Queues);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ sub _Init

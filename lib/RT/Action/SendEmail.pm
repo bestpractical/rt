@@ -27,6 +27,8 @@
 package RT::Action::SendEmail;
 require RT::Action::Generic;
 
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Action::Generic);
 
 use MIME::Words qw(encode_mimeword);
@@ -430,18 +432,18 @@ the transaction's subject.
 
 sub SetSubject {
   my $self = shift;
+  my $subject;
+    
   unless ($self->TemplateObj->MIMEObj->head->get('Subject')) {
     my $message=$self->TransactionObj->Message;
     my $ticket=$self->TicketObj->Id;
-    
-    my $subject;
     
     if ($self->{'Subject'}) {
       $subject = $self->{'Subject'};
     }
     elsif (($message->First()) &&
 	   ($message->First->Headers)) {
-      $header = $message->First->Headers();
+      my $header = $message->First->Headers();
       $header =~ s/\n\s+/ /g; 
       if ( $header =~ /^Subject: (.*?)$/m ) {
 	$subject = $1;

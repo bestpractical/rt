@@ -469,7 +469,7 @@ sub MakeMIMEEntity {
     my $filename = $RT::Mason::CGI::Filename;
     $filename = "$filehandle" unless defined($filename);
                    
-    $filename =~ s#^.*/##;
+    $filename =~ s#^.*[\\/]##;
     $Message->attach(
         Path     => $temp_file,
         Filename => $filename,

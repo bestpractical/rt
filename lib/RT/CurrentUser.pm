@@ -49,11 +49,13 @@ ok (require RT::CurrentUser);
 
 
 package RT::CurrentUser;
+
 use RT::Record;
 use RT::I18N;
 
+use strict;
+use vars qw/@ISA/;
 @ISA= qw(RT::Record);
-
 
 # {{{ sub _Init 
 
@@ -79,6 +81,7 @@ sub _Init  {
 # {{{ sub Create
 
 sub Create {
+    my $self = shift;
     return (0, $self->loc('Permission Denied'));
 }
 
@@ -87,6 +90,7 @@ sub Create {
 # {{{ sub Delete
 
 sub Delete {
+    my $self = shift;
     return (0, $self->loc('Permission Denied'));
 }
 

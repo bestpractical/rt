@@ -46,6 +46,7 @@ ok (require RT::CustomFields);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 

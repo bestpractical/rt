@@ -24,6 +24,9 @@
 # END LICENSE BLOCK
 package RT::Action::Autoreply;
 require RT::Action::SendEmail;
+
+use strict;
+use vars qw/@ISA/;
 @ISA = qw(RT::Action::SendEmail);
 
 
@@ -61,6 +64,7 @@ sub SetReturnAddress {
 		 @_
 	       );
     
+    my $replyto;
     if ($args{'is_comment'}) { 
 	$replyto = $self->TicketObj->QueueObj->CommentAddress || 
 		     $RT::CommentAddress;

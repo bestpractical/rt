@@ -1,0 +1,1317 @@
+#@!PERL@ -w
+# BEGIN LICENSE BLOCK
+# 
+# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# 
+# (Except where explictly superceded by other copyright notices)
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# 
+# Unless otherwise specified, all modifications, corrections or
+# extensions to this work which alter its source code become the
+# property of Best Practical Solutions, LLC when submitted for
+# inclusion in the work.
+# 
+# 
+# END LICENSE BLOCK
+
+#
+
+
+
+use strict;
+use Carp;
+
+use lib "@RT_LIB_PATH@";
+
+package RT;
+
+use Getopt::Long;
+
+use RT::Interface::CLI  qw(CleanEnv GetCurrentUser GetMessageContent loc);
+
+#Clean out all the nasties from the environment
+CleanEnv();
+
+# Load the config file
+RT::LoadConfig();
+
+#Connect to the database and get RT::SystemUser and RT::Nobody loaded
+RT::Init();
+
+#Drop setgid permissions
+RT::DropSetGIDPermissions();
+
+#Get the current user all loaded
+my $CurrentUser = GetCurrentUser();
+
+unless ($CurrentUser->Id) {
+	print loc("No RT user found. Please consult your RT administrator.\n");
+	exit(1);
+}
+
+
+# {{{ commandline flags 
+
+my ( @id,
+     @limit_queue,
+     @limit_status,
+     @limit_owner,
+     @limit_priority,
+     @limit_final_priority,
+     @limit_requestor,
+     @limit_subject,
+     @limit_body,
+     @limit_created,
+     @limit_resolved,
+     @limit_lastupdated,
+     @limit_dependson,
+     @limit_dependedonby,
+     @limit_memberof,
+     @limit_hasmember,
+     @limit_refersto,
+     @limit_referredtoby,
+     
+     @limit_due,
+     @limit_starts,
+     @limit_started,
+     $limit_first,
+     $limit_rows,
+     $history,
+     $summary,
+     $create,
+     @requestors,
+     @cc,
+     @admincc,
+     $status,
+     $subject,
+     $owner,
+     $queue,
+     $time_left,
+     $priority,
+     $final_priority,
+     $due,
+     $starts,
+     $started,
+     $contacted,
+     $comment,
+     $reply,
+     $source,
+     $edit,
+     @dependson,
+     @memberof, 
+     @refersto,
+     $mergeinto,
+     $time_taken,
+     $verbose,
+     $debug,
+   $help,
+   $version);
+
+# }}}
+
+# Set defaults for cli args
+
+$edit = 1; # Assume the user wants to edit replies and comments 
+           # unless they specify --noedit
+
+# {{{    args
+
+my @args =("id=s" => \@id,
+	   "limit-queue=s" => \@limit_queue,
+	   "limit-status=s" => \@limit_status,
+	   "limit-owner=s" => \@limit_owner,
+	   "limit-priority=s" => \@limit_priority,
+	   "limit-final-priority=s" => \@limit_final_priority,
+	   "limit-requestor=s" => \@limit_requestor,
+	   "limit-subject=s" => \@limit_subject,
+	   "limit-body=s",	\@limit_body,
+	   "limit-created=s" => \@limit_created,
+	   "limit-due=s" =>	\@limit_due,
+ 	   "limit-last-updated=s" => \@limit_lastupdated,
+
+	   "limit-member-of=s" => \@limit_memberof,
+	   "limit-has-member=s" => \@limit_hasmember,
+	   "limit-depended-on-by=s" => \@limit_dependedonby,
+	   "limit-depends-on=s" => \@limit_dependson,
+	   "limit-referred-to-by=s" => \@limit_referredtoby,
+	   "limit-refers-to=s" => \@limit_refersto,
+
+	   "limit-starts=s" => \@limit_starts,
+	   "limit-started=s" => \@limit_started,
+	   "limit-first=i" => \$limit_first,
+	   "limit-rows=i" => \$limit_rows,
+	   "history|show" => \$history,
+	   "summary:s" => \$summary,
+	   "create" => \$create,
+	   "requestor|requestors=s" => \@requestors,
+	   "cc=s" => \@cc,
+	   "admincc=s" => \@admincc,
+	   "status=s" => \$status,
+	   "subject=s" => \$subject,
+	   "owner=s" => \$owner,
+	   "queue=s" => \$queue,
+
+	   
+	   "priority=i" => \$priority,
+	   "final-priority=i" => \$final_priority,
+	   "due=s" => \$due,
+	   "starts=s" => \$starts,
+	   "started=s" => \$started,
+	   "contacted=s" => \$contacted,
+	   "comment", \$comment,
+	   "reply|respond", \$reply,
+	   "source=s" => \$source,
+	   "edit!" => \$edit,
+	   "depends-on=s" => \@dependson,
+	   "member-of=s" => \@memberof, 
+	   "merge-into=s" => \$mergeinto, 
+	   "refers-to=s" => \@refersto,
+	   "time-left=i" => \$time_left,
+	   "time-taken=i" => \$time_taken,
+	   "verbose+" => \$verbose,
+	   "debug" => \$debug,
+	   "version" => \$version,
+	   "help|h|usage" => \$help
+	  );
+
+# }}}
+
+
+
+GetOptions(@args);
+
+# {{{ If they want it, print a usage message and get out
+
+if ($help) {
+
+
+print <<EOUSAGE;
+
+Limit the set of records returned:
+
+--id=[first][-][last]
+  Specify a single ticket, a range, or to start with (n-) or end with (-n)
+a speciifc ticket.
+  
+  --limit-queue=<queue>
+	  --limit-status=[!](new|open|stalled|resolved|rejected|deleted)
+
+	  --limit-owner=[!]<userid>
+	  --limit-priority=[starts][-][ends]
+	  --limit-final-priority=[starts][-][ends]
+	    starts is less than ends
+	  --limit-requestor=[!]<userid>|<email>
+	  --limit-subject=[!]<text>
+	  --limit-body=[!]<text>
+        
+       Links
+          --limit-member-of=<ticketid>
+          --limit-has-member=<ticketid>
+          --limit-refers-to=<ticketid>
+          --limit-referred-to-by=<ticketid>
+          --limit-depends-on=<ticketid>
+          --limit-depended-on-by=<ticketid>
+
+
+       Dates
+	  --limit-created=[starts][-][ends]
+	  --limit-due=[starts][-][ends]
+	  --limit-starts=[starts][-][ends]
+	  --limit-started=[starts][-][ends]
+          --limit-resolved=[starts][-][ends]
+          --limit-last-updated=[starts][-][ends]
+	    starts and ends are dates.  starts can not be less than ends
+
+	  --limit-first=<first row returned>
+	  --limit-rows=<row count>
+
+	  --history | --show
+            show a history of the tickets found
+ 
+
+	  --summary [format-string]
+             show a listing-style summary of the tickets found. If format string
+             is ommitted, uses \$RT_SUMMARY_FORMAT or an internal default
+            
+
+             #TODO: doc summary 
+             format: <atom>%<format>
+             atom:   <name><size>
+             size: <integer>
+             name:  (grep for # {{{ attribs for the array of ok values)
+
+
+	  --create
+            create a new ticket. Any attributes that you can modify on an existing ticket
+            can also be used for ticket creation.
+
+
+
+Attributes
+  Basics
+	  --status=<new|open|stalled|resolved|rejected|deleted>
+           sets status
+	   --subject=<subject>
+           sets subject
+	   --owner=<userid>
+           set owner to 
+	   --queue=<queueid>
+           set queue to
+	   
+	   --priority=<int>
+	  
+           --final-priority=<int>
+
+  Watchers
+	  --requestors=[+|-]<userid|email address>
+          add or remove this user as a ticket requestor 
+	  --cc=[+|-]<userid|email address>
+          add or remove this user as a ticket cc
+	  --admincc=[+|-]<userid|email address>
+          add or remove this user as a ticket admincc
+
+	(When creating tickets, just leave off the + or - )
+
+
+  Dates
+	   --due=<date>
+	   --starts=<date>
+	   --started=<date>
+	   --contacted=<date>
+
+	   --time-left=<int>
+	     
+	   --time-taken=<int>
+
+
+   Link related manipulation:
+
+	   --depends-on=[+|-]<ticketid>
+	   --member-of=[+|-]<ticketid>
+	   --refers-to=[+|-]<ticketid>
+           --merge-into=<ticketid>
+
+Comments and replies
+
+	   --comment
+	   --reply|respond
+	     --source <path>
+                Specify the path to the source file for this ticket update
+
+	      --noedit
+                Don't invoke \$EDITOR to edit the content of this update
+
+
+
+
+   Condiments
+
+	   --verbose
+	   --debug
+	   --version
+	   --help|h|usage
+             You're reading it.
+
+EOUSAGE
+
+    exit(0);
+}
+
+# Print version, and leave
+if ($version) {
+	print loc("RT [_1]. Copyright 1996-2002 Jesse Vincent <jesse\@bestpractical.com>\n", $RT::VERSION);
+	exit(0);
+}
+
+# }}}
+
+# {{{ Validate any options that were passed in. normalize them.
+
+#if a queue was specified
+if ($queue) {
+    # make sure that $queue is a valid queue and load it into $queue_obj
+}
+
+#For each date in: $due, $starts, $started
+
+# load up an RT::Date object and parse it into a normalized form
+# if it can't parse it, log an error and null out the variable
+
+# }}}
+
+# {{{ Check if we're creating, if so, create the ticket and be done
+
+if ($create) {
+    $RT::Logger->debug("Creating a new ticket");
+
+    #Make sure the current user can create tickets in this queue
+    
+    #Make sure that the owner specified can own tickets in this queue
+
+
+	    
+    my $linesref = GetMessageContent( Edit => $edit, Source => $source,
+				      CurrentUser => $CurrentUser
+				    );
+    
+    require MIME::Entity;
+    my $MIMEObj;
+    
+    if ($linesref) {
+	$MIMEObj = MIME::Entity->build(Data => $linesref);
+    }	
+    
+    use RT::Ticket;
+    my $Ticket=new RT::Ticket($CurrentUser);
+    my ($ticket, $trans, $msg) =
+      $Ticket->Create(Queue => $queue,
+		      Owner => $owner,
+		      Status => $status || 'new' ,
+		      Subject => $subject,
+		      Requestor => \@requestors,
+		      Cc => \@cc,
+		      AdminCc => \@admincc,
+		      Due => $due,
+		      Starts => $starts,
+		      Started => $started,
+		      TimeLeft => $time_left,
+		      InitialPriority => $priority,
+		      FinalPriority => $final_priority,
+		      MIMEObj => $MIMEObj
+		     );
+    print $msg . "\n";
+}
+
+# }}}
+
+else {
+    #Apply restrictions
+    use RT::Tickets;
+    my $Tickets = new RT::Tickets($CurrentUser);
+    
+    # {{{ Limit our search
+    my $value;			#to use when iterating through restrictions
+    
+    # {{{ limit on id
+
+    foreach $value (@id) {
+	if ($value =~ /^(\d+)$/) {
+	    $Tickets->LimitId ( VALUE => $1,
+				OPERATOR => '=');
+	}	
+	elsif ($value =~ /^(\d*)\D?(\d*)$/) {
+	    my $start = $1;
+	    my $end = $2;
+	    $Tickets->LimitId(
+			      VALUE => "$start",
+			      OPERATOR => '>=') if ($start);
+	    $Tickets->LimitId(
+			      VALUE => "$end",
+			      OPERATOR => '<=') if ($end);
+	}	
+    }
+
+
+    # }}}
+    
+    # {{{ limit on status
+
+    foreach $value (@limit_status) {
+	if ($value =~ /^(=|!=|!|)(.*)$/) {
+	    my $op = $1;
+	    my $val = $2;
+	         
+
+	    $op = ParseBooleanOp($op);
+	    $Tickets->LimitStatus(VALUE => "$val",
+				  OPERATOR => "$op");
+	}	
+    }
+
+    # }}}
+
+
+
+    # {{{ limit on queue
+    foreach $value (@limit_queue) {
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+		
+	    $op = ParseBooleanOp($op);
+
+	    my $queue_obj = new RT::Queue($RT::SystemUser);
+		
+	    unless ($queue_obj->Load($val)) {
+		$RT::Logger->debug("Queue '$val' not found");
+		print STDERR "Queue '$val' not found\n";	
+		exit(-1);
+	    }
+	    $RT::Logger->debug (loc("Limiting queue to [_1] [_2]",$ op, $queue_obj->Name));
+	    $Tickets->LimitQueue(VALUE => $queue_obj->Name,
+				 OPERATOR => $op);
+	}	
+    }	
+    # }}}
+    # {{{ limit on owner
+    foreach $value (@limit_owner) {
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+		
+	    $op = ParseBooleanOp($op);
+
+	    my $user_obj = new RT::User($RT::SystemUser);
+		
+	    unless ($user_obj->Load($val)) {
+		$RT::Logger->debug(loc("User '[_1]' not found", $val));
+		print STDERR loc("User '[_1]' not found\n", $val);	
+		exit(-1);
+	    }
+	    $val = $user_obj->id();
+		
+	    $RT::Logger->debug (loc("Limiting owner to [_1] [_2]", $op, $val));
+	    $Tickets->LimitOwner(VALUE => "$val",
+				 OPERATOR => "$op");
+	}	
+    }	
+    # }}}
+    # {{{ limt on priority
+
+    foreach $value (@limit_priority) {
+	my ($start, $end) = ParseRange($value);
+	if ($start == $end) {
+	    $Tickets->LimitPriority( VALUE => $start,
+				     OPERATOR => '=');
+	} elsif ($start) {
+	    $Tickets->LimitPriority( VALUE => $start,
+				     OPERATOR => '>=');
+	} elsif ($end) {
+	    $Tickets->LimitPriority( VALUE => $end,
+				     OPERATOR => '<=');
+	}	
+	    
+    }
+    foreach $value (@limit_final_priority) {
+	my ($start, $end) = ParseRange($value);
+	if ($start == $end) {
+	    $Tickets->LimitFinalPriority( VALUE => $start,
+					  OPERATOR => '=');
+	} elsif ($start) {
+	    $Tickets->LimitFinalPriority( VALUE => $start,
+					  OPERATOR => '>=');
+	} elsif ($end) {
+	    $Tickets->LimitFinalPriority( VALUE => $end,
+					  OPERATOR => '<=');
+	}	
+    }
+    # }}}
+
+    foreach $value (@limit_requestor) {
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+		
+	    $op = ParseBooleanOp($op);
+	    $Tickets->LimitRequestor(VALUE => $val,
+				     OPERATOR => $op );
+	}
+	    
+    }
+    foreach $value (@limit_subject) {
+	
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+	    
+	    $op = ParseLikeOp($op);
+	    
+	    $Tickets->LimitSubject(VALUE => $val,
+				   OPERATOR => $op );
+	    }
+    }
+    
+    foreach $value (@limit_body) {
+	if ($value =~ /^(\W?)(.*?)$/i) {
+	    my $op = $1;
+	    my $val = $2;
+	    
+	    $op = ParseLikeOp($op);
+	    
+		$Tickets->LimitBody(VALUE => $val,
+				    OPERATOR => $op );
+	}	
+	
+    }
+    
+    
+    
+    # Dates
+    foreach my $date (@limit_created) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitCreated ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitCreated ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
+    }
+
+    foreach my $date (@limit_due) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitDue ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitDue ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
+    }
+
+    foreach my $date (@limit_starts) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitStarts ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitStarts ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
+    }
+
+    foreach my $date (@limit_started) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitStarted ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitStarted ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
+    }
+
+    foreach my $date (@limit_resolved) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitResolved ( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitResolved ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
+    }
+
+    foreach my $date (@limit_lastupdated) {
+	my ($start, $end) = ParseDateRange($date);
+	$Tickets->LimitLastUpdated( VALUE => $start,
+				 OPERATOR => '>=' ) if ($start);
+	$Tickets->LimitLastUpdated ( VALUE => $end,
+				 OPERATOR => '<=' ) if ($end);
+    }
+
+    foreach my $link (@limit_memberof) {
+	$Tickets->LimitMemberOf($link);
+    }	
+
+    foreach my $link (@limit_hasmember) {
+	$Tickets->LimitHasMember($link);
+    }	
+
+    foreach my $link (@limit_dependson) {
+	$Tickets->LimitDependsOn($link);
+    }	
+
+    foreach my $link (@limit_dependedonby) {
+	$Tickets->LimitDependedOnBy($link);
+    }
+    foreach my $link (@limit_refersto) {
+	$Tickets->LimitRefersTo($link);
+    }	
+    
+    foreach my $link (@limit_referredtoby) {
+	$Tickets->LimitReferredToBy($link);
+    }	
+
+    
+    if ($limit_first){
+    }
+    if ($limit_rows){
+    }
+
+# }}}
+    
+    # {{{ Iterate through all tickets we found
+
+
+    my ($format, $titles, $code);
+    
+    #Set up the summary format if we need to
+    if (defined $summary) {
+	my $format_string = $summary || $ENV{'RT_SUMMARY_FORMAT'} || "%id4%status4%queue7%subject40%requestor16";
+
+	($format, $titles, $code) = BuildListingFormat($format_string);
+        printf "$format\n", eval "$titles";
+   }	
+
+ 
+
+    while (my $Ticket = $Tickets->Next()) {
+	$RT::Logger->debug ("Now working on ticket ". $Ticket->id);
+    
+	#Run through all the ticket modifications we might want to do
+	#TODO: these are all insufficiently lazy and should be replaced with some 
+	# nice foreaches.
+
+
+	# {{{ deal with watchers
+	
+	# add / delete requestors
+	foreach $value (@requestors) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $addr = $2;
+		
+		$Ticket->AddWatcher(Type => 'Requestor',
+                                    Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher( Type => 'Requestor',
+                                        Email => $addr) if ($op eq '-');
+	    }	
+	}
+	
+	# add / delete ccs
+	foreach $value (@cc) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $addr = $2;
+		$Ticket->AddWatcher( Type=> 'Cc',
+                                     Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher(Type => 'Cc',
+                                       Email => $addr) if ($op eq '-');
+	    }	
+	}	
+	
+	# add / delete adminccs
+	foreach $value (@admincc) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $addr = $2;
+		$Ticket->AddWatcher( Type => 'AdminCc',
+                                     Email => $addr) if ($op eq '+');
+		$Ticket->DeleteWatcher( Type=> 'AdminCc',
+                                        Email => $addr) if ($op eq '-');
+	    }	
+	}	
+
+	# }}}
+	
+	# {{{ deal with links
+
+	# Deal with merging {
+	if ($mergeinto) {
+		my ($trans, $msg) =$Ticket->MergeInto($mergeinto);
+		print $msg."\n";
+	}	
+	# add /delete depends-ons
+
+	foreach my $value (@dependson) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $ticket = $2;
+		if (!$op or ($op eq '+')) {
+		    my ($trans, $msg) =
+		      $Ticket->AddLink(Type => 'DependsOn', Target => $ticket);
+		    print $msg."\n";
+		}
+		elsif ($op eq '-') {
+		    my ($trans, $msg) = 
+		      $Ticket->DeleteLink(Type => 'DependsOn', Target => $ticket);
+		    print $msg."\n";
+		}
+
+	    }
+	}
+	# add /delete member-of
+	foreach my $value (@memberof) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $ticket = $2;
+		if ($op eq '+') {
+		    my ($trans, $msg) =
+		      $Ticket->AddLink(Type => 'MemberOf', Target => $ticket);
+		    print $msg;
+		}
+		elsif ($op eq '-') {
+		    my ($trans, $msg) = 
+		      $Ticket->DeleteLink(Type => 'MemberOf', Target => $ticket);
+		    print $msg;
+		}
+
+	    }
+	}	
+	# add / delete refers-to
+		foreach my $value (@refersto) {
+	    if ($value =~ /^(\W?)(.*)$/) {
+		my $op = $1;
+		my $ticket = $2;
+		if ($op eq '+') {
+		    my ($trans, $msg) =
+		      $Ticket->AddLink(Type => 'RefersTo', Target => $ticket);
+		    print $msg;
+		}
+		elsif ($op eq '-') {
+		    my ($trans, $msg) = 
+		      $Ticket->DeleteLink(Type => 'RefersTo', Target => $ticket);
+		    print $msg;
+		}
+
+	    }
+	}
+
+	# }}}
+	
+	# {{{ deal with dates
+	
+	#set due 
+	if ($due) {
+	    my $iso = ParseDateToISO($due);
+	    if ($iso) {
+		$RT::Logger->debug("Setting due date to $iso ($due)");
+		my ($trans, $msg) = 
+		  $Ticket->SetDue($iso);
+		print $msg;
+	    }
+	    else {
+		print loc("Due date '[_1]' could not be parsed", $due);
+	    }
+	}
+
+	#set starts
+	if ($starts) {
+	    my $iso = ParseDateToISO($due);
+	    if ($iso) {
+		my ($trans, $msg) = 
+		  $Ticket->SetStarts($iso);
+		print $msg."\n";
+	    }
+	    else {
+		print loc("Starts date '[_1]' could not be parsed", $starts);
+	    }
+	}
+	#set started
+		if ($started) {
+	    my $iso = ParseDateToISO($started);
+	    if ($iso) {
+		my ($trans, $msg) = 
+		  $Ticket->SetStarted($iso);
+		print $msg."\n";
+	    }
+	    else {
+		print loc("Started date '[_1]' could not be parsed", $started);
+	    }
+	}
+	#set contacted
+		if ($contacted) {
+	    my $iso = ParseDateToISO($contacted);
+	    if ($iso) {
+		my ($trans, $msg) = 
+		  $Ticket->SetContacted($iso);
+		print $msg."\n";
+	    }
+	    else {
+		print loc("Contacted date '[_1]' could not be parsed", $contacted);
+	    }
+	}
+
+    # }}}
+	
+	# {{{ set other attributes
+
+	#Set subject
+	if ($subject) {
+	    my ($trans, $msg) = $Ticket->SetSubject($subject);
+	    print $msg."\n";
+	}
+	
+	#Set priority
+	if ($priority) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetPriority($priority);
+	    print $msg."\n";
+	}
+	
+	#Set final priority
+	if ($final_priority) {
+	    my ($trans, $msg) =
+	      $Ticket->SetFinalPriority($final_priority);
+	    print $msg."\n";
+	}
+
+	#Set status
+	if ($status) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetStatus($status);
+	    print $msg."\n";
+	}
+	
+	#Set time left
+	if ($time_left) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetTimeLeft($time_left);
+	    print $msg."\n";
+	}
+
+	#Set time_taken 
+	if ($time_taken) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetTimeTaken($time_taken);
+	    print $msg."\n";
+	}
+	
+	#Set owner
+	if ($owner) {
+	    my ($trans, $msg) =
+	      $Ticket->SetOwner($owner);
+	    print $msg."\n";
+	}
+
+	#Set queue 
+	if ($queue) {
+	    my ($trans, $msg) = 
+	      $Ticket->SetQueue($queue);
+	    print $msg."\n";
+	}
+
+    # }}}
+	
+
+
+	# {{{ Perform ticket comments/replies
+	if ($reply) {
+	    $RT::Logger->debug("Replying to ticket ".$Ticket->Id);
+	    
+	    my $linesref = GetMessageContent( Edit => $edit, Source => $source,
+					     CurrentUser => $CurrentUser
+					   );
+	    
+	    #TODO build this entity
+	    require MIME::Entity;
+	    my $MIMEObj = MIME::Entity->build(Data => $linesref);
+	    
+	    $Ticket->Correspond( MIMEObj => $MIMEObj ,
+				 TimeTaken => $time_taken);
+	}	
+	
+	elsif ($comment) {
+	    $RT::Logger->debug("Commenting on ticket ".$Ticket->Id);
+	
+	    my $linesref =GetMessageContent(Edit => $edit, Source => $source,
+					    CurrentUser => $CurrentUser);
+	    #TODO build this entity
+	    require MIME::Entity;
+	    my $MIMEObj = MIME::Entity->build(Data => $linesref);
+	    
+	    $Ticket->Comment( MIMEObj => $MIMEObj,
+			      TimeTaken => $time_taken);
+	}
+
+    # }}}
+	
+	# {{{ Display whatever we need to display
+
+	# {{{ Display a full ticket listing and history
+	if ($history) {
+	    #Display the history
+	    $RT::Logger->debug("Show history for ".$Ticket->id);
+	    
+	    if ($Ticket->CurrentUserHasRight("ShowTicket")) {
+		&ShowSummary($Ticket);
+		print "\n";
+		&ShowHistory($Ticket);
+	    }
+	    else {
+		print loc("You don't have permission to view that ticket.\n");
+	    }
+	}	
+
+	# }}}
+	
+	# {{{ Display a summary if we need to
+	if (defined $summary) {
+	    $RT::Logger->debug ("Show ticket summary with format $format");
+	    
+	    printf $format."\n", eval $code;
+	    
+	}	
+	# }}}
+
+	# }}}
+	
+    }
+
+    # }}}
+    
+}
+
+
+$RT::Handle->Disconnect();
+
+
+
+
+
+
+
+# {{{ sub ParseBooleanOp
+
+=head2 ParseBooleanOp
+
+  Takes an option modifier. returns the apropriate SQL operator.
+  If it's handed ! or -, returns !=.  Otherwise returns =.
+
+=cut
+
+sub ParseBooleanOp {
+    
+    my $op = shift;
+    
+    #so that !new limits to not new, etc
+    if ($op =~ /^(\!|-)/) {
+	$op = "!=";
+    }
+    else {
+	$op = "=";
+    }
+    
+    return($op);
+}
+
+# }}}
+
+# {{{ sub ParseLikeOp
+=head2 ParseLikeOp
+
+  Takes an option modifier. returns the apropriate SQL operator.
+  If it's handed ! or -, returns NOT  LIKE.  Otherwise returns LIKE
+
+=cut
+
+sub ParseLikeOp {
+    
+    my $op = shift;
+    
+    #so that !new limits to not new, etc
+    if ($op =~ /^(\!|-)/) {
+	$op = "NOT LIKE";
+    }
+    else {
+	$op = "LIKE";
+    }
+    
+    return($op);
+}
+# }}}
+
+# {{{ sub ParseDateToISO
+
+=head2 ParseDateToISO
+
+Takes a date in an arbitrary format.
+Returns an ISO date and time in GMT
+
+=cut
+
+sub ParseDateToISO {
+    my $date = shift;
+
+	my $date_obj = new RT::Date($CurrentUser);
+	$date_obj->Set( Format => 'unknown',
+			Value => $date
+		      );
+	return ($date_obj->ISO);
+}
+
+# }}}
+
+# {{{ sub ParseDateRange
+
+=head2 ParseDateRange [RANGE]
+
+Takes a range of dates of the form [<date>][-][<date>] and returns 
+starting and ending dates (as ISOs) If a date is specified as neither a starting nor ending 
+date, we parse it it as "midnight tonight to midnight tomorrow"
+
+=cut
+
+sub ParseDateRange {
+    my $in = shift;
+    my ($start, $end);
+    
+    
+    use RT::Date;
+    my $start_obj = new RT::Date($CurrentUser);
+    my $end_obj = new RT::Date($CurrentUser);
+    
+    if ($in =~ /^(.*?)-(.*?)$/) {
+	$start = $1;
+	$end = $2;
+
+	if ($start) {
+	    $start_obj->Set(Format => 'unknown', 
+			    Value => $start);
+	}
+	if ($end) {
+	    $end_obj->Set(Format => 'unknown', 
+			  Value => $end);
+	}
+    }
+    else {
+	$start = $in;
+	$end = $in;
+
+	$start_obj->Set(Format => 'unknown', 
+			Value => $start);
+	
+	$end_obj->Set(Format => 'unknown', 
+		      Value => $end);
+	
+	$start_obj->SetToMidnight();
+	$end_obj->SetToMidnight();
+	$end_obj->AddDay();
+    }	
+    
+    if ($start) {
+	$start = $start_obj->ISO;
+    }
+    if ($end) {
+	$end = $end_obj->ISO;
+    }
+
+    return ($start, $end);
+}
+
+# }}}
+
+# {{{ ParseRange
+=head2 ParseRange [RANGE]
+
+Takes a range of the form [<int>][-][<int>] and returns 
+a first and a last value. If the - is omitted, both $start and $end are the same.
+=cut
+
+sub ParseRange {
+    my $self = shift;
+    my $in = shift;
+    my ($start, $end);
+    
+    if ($in =~ /(.*?)-(.*?)/) {
+	$start = $1;
+	$end = $2;
+    }
+    else {
+	$start = $in;
+	$end = $in;
+    }	
+    
+    return ($start, $end);
+    
+
+    
+}
+
+# }}}
+	  
+# {{{ sub ShowSummary 
+
+sub ShowSummary  {
+    my $Ticket = shift;
+
+
+    print <<EOFORM;
+Serial Number: @{[$Ticket->Id]}   Status:@{[$Ticket->Status]} Worked: @{[$Ticket->TimeWorked]} minutes  Queue:@{[$Ticket->QueueObj->Name]}
+      Subject: @{[$Ticket->Subject]}
+   Requestors: @{[$Ticket->RequestorAddresses]}
+           Cc: @{[$Ticket->CcAddresses]}
+     Admin Cc: @{[$Ticket->AdminCcAddresses]}
+        Owner: @{[$Ticket->OwnerObj->Name]}
+     Priority: @{[$Ticket->Priority]} / @{[$Ticket->FinalPriority]}
+          Due: @{[$Ticket->DueAsString]}
+      Created: @{[$Ticket->CreatedAsString]} (@{[$Ticket->AgeAsString]})
+ Last Contact: @{[$Ticket->ToldAsString]} (@{[$Ticket->LongSinceToldAsString]})
+  Last Update: @{[$Ticket->LastUpdatedAsString]} by @{[$Ticket->LastUpdatedByObj->Name]}
+	         
+EOFORM
+
+
+#TODO: finish link  descriptions
+print loc("Dependencies: \n");
+   while (my $l=$Ticket->DependedOnBy->Next) {
+       print loc("[_1] ([_2]) [_3] this ticket\n", $l->BaseObj->id, $l->BaseObj->Subject, $l->Type);
+   }
+   while (my $l=$Ticket->DependsOn->Next) {
+       print loc("This ticket [_1] [_2] ([_3])\n", $l->Type, $l->TargetObj->Id, $l->TargetObj->Subject);
+   }
+}
+
+# }}}
+
+# {{{ sub ShowHistory 
+sub ShowHistory  {
+    my $Ticket = shift;
+    my $Transaction;    
+    my $Transactions = $Ticket->Transactions;
+
+    while ($Transaction = $Transactions->Next) {
+      &ShowTransaction($Transaction);
+    }   
+  }
+# }}}
+
+# {{{ sub ShowTransaction 
+sub ShowTransaction  {
+  my $transaction = shift;
+  
+print <<EOFORM;
+==========================================================================
+Date: @{[$transaction->CreatedAsString]} (@{[$transaction->TimeTaken]} minutes)
+@{[$transaction->Description]}
+EOFORM
+    ;
+  my $attachments=$transaction->Attachments();
+  while (my $message=$attachments->Next) {
+    print <<EOFORM;
+--------------------------------------------------------------------------
+@{[$message->Headers]}
+EOFORM
+
+    if ($message->ContentType =~ m{^(text/plain|message|text$)}) {
+	print $message->Content;
+    } else {
+	print loc("[_1] not shown", $message->ContentType);
+    }
+  }
+  print "\n";
+  return();
+}
+# }}}
+
+
+# {{{ sub BuildListingFormat
+
+sub BuildListingFormat {
+    my $format_string = shift;
+
+    my ($id, @format, @code, @titles);
+    my ($field,$titles,$length, $format);
+
+    my $code = "";
+
+    # {{{ attribs
+    my $attribs = { id => { chars => '4',
+			    justify => 'r',
+			    title => loc('id'),
+			    value => '$Ticket->id',
+			  },
+		    
+		    queue => { chars => '8',
+			       justify => 'l',
+			       title => loc('Queue'),
+			       value => '$Ticket->QueueObj->Name' 
+			     },
+		    subject => { chars => '30',
+				 justify => 'l',
+				 title => loc('Subject'),
+				 value => '$Ticket->Subject',
+			       },
+		    priority => { chars => '2',
+				  justify => 'r',
+				  title => loc('Pri'),
+				  value => '$Ticket->Priority',
+				},
+		    final_priority => {  chars => '2',
+					 justify => 'r',
+					 title => loc('Fin'),
+					 value => '$Ticket->FinalPriority',
+				      },
+		    time_worked => { chars => '6',
+				     justify => 'r',
+				     title => loc('Worked'),
+				     value => '$Ticket->TimeWorked',
+				   },
+		    time_left => { chars => '5',
+				   justify => 'r',
+				   title => loc('Left'),
+				   value => '$Ticket->TimeLeft',
+			       
+				 },
+		
+		    status => {  chars => '6',
+				 justify => 'r',
+				 title => loc('Status'),
+				 value => '$Ticket->Status',
+			      },
+		    owner => {  chars => '10',
+				justify => 'r',
+				title => loc('Owner'),
+				value => '$Ticket->OwnerObj->Name'
+			     },
+		    requestor => {  chars => '10',
+				    justify => 'r',
+				    title => loc('Requestor'),
+				    value => '$Ticket->RequestorAddresses'
+				 },
+		    created => {  chars => '12',
+				  justify => 'r',
+				  title => loc('Created'),
+				  value => '$Ticket->CreatedAsString'
+			       },
+		    updated => {  chars => '12',
+				  justify => 'r',
+				  title => loc('Updated'),
+				  value => '$Ticket->LastUpdatedAsString'
+			       },
+		    due => {  chars => '12',
+			      justify => 'r',
+			      title => loc('Due'),
+			      value => '$Ticket->DueAsString'
+			   },
+		    told => {  chars => '12',
+			       justify => 'r',
+			       title => loc('Told'),
+			       value => '$Ticket->ToldAsString'
+			    },
+		
+		
+		
+		  };
+
+    # }}}
+    
+
+    foreach $field (split ('%',$format_string)) {
+	
+	if ($field =~ /^(\D*?)(\d*?)$/) {
+	    $id = $1;
+	    $length = $2;
+	}
+	else {	
+	    $RT::Logger->debug ("Error parsing $field\n");
+	}
+	if ($length) {
+	    push (@format, "%".$length.".".$length."s ");
+	    
+	    push (@code,  $attribs->{"$id"}->{'value'});
+		  
+	    push (@titles, "'". $attribs->{"$id"}->{title}. "'");
+	}
+	
+	
+    }
+     $code = join (',', @code);
+     $format = join (" ", @format);
+     $titles = join (', ', @titles);
+    
+  
+    return ($format, $titles, $code);
+}
+
+# }}}
+
+
+
+1;

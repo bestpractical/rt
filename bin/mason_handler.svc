@@ -1,4 +1,4 @@
-#!perl
+#!/usr/bin/perl
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
@@ -57,14 +57,11 @@ registry setting will also be automatically populated.
 =cut
 
 use strict;
-use lib "!!RT_LIB_PATH!!";
-
-use RT;
-RT::LoadConfig();	# This drags in RT_Config.pm
+use File::Basename;
+require (dirname(__FILE__) . '/webmux.pl');
 
 use Cwd;
 use File::Spec;
-use File::Basename;
 
 use Win32;
 use Win32::Process;
@@ -74,12 +71,6 @@ use Win32::TieRegistry;
 my $ProcessObj;
 
 BEGIN {
-    $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
-    $ENV{'SHELL'}  = $ENV{'COMSPEC'} if defined $ENV{'SHELL'};
-    $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
-    $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
-    $ENV{'FCGI_SOCKET_PATH'} ||= ":8284"; # ord('R').ord('T')
-
     my $runsvc = sub {
 	Win32::Process::Create(
 	    $ProcessObj, $^X, "$^X $0 --run", 0, NORMAL_PRIORITY_CLASS, "."
@@ -90,7 +81,7 @@ BEGIN {
 	chdir File::Basename::dirname($0);
 	my $path = Cwd::cwd();
 	$path =~ s|/|\\|g;
-	$path =~ s|bin$|WebRT\\html|;
+	$path =~ s|bin$|share\\html|;
 
 	$Win32::TieRegistry::Registry->{
 	    'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\\'.
@@ -204,59 +195,15 @@ BEGIN {
 
 ###############################################################################
 
-package RT::Mason;
+warn "Begin listening on $ENV{'FCGI_SOCKET_PATH'}\n";
 
-use HTML::Mason;	# brings in subpackages: Parser, Interp, etc.
-use RT::MasonCGIHandler;
-
-use vars qw($CGI);
-use Carp;
-
-{
-
-    package HTML::Mason::Commands;
-    use vars qw(%session);
-
-    use RT::Tickets;
-    use RT::Transactions;
-    use RT::Users;
-    use RT::CurrentUser;
-    use RT::Templates;
-    use RT::Queues;
-    use RT::ScripActions;
-    use RT::ScripConditions;
-    use RT::Scrips;
-    use RT::Groups;
-    use RT::GroupMembers;
-    use RT::Watchers;
-    use RT::CustomFields;
-    use RT::CustomFieldValues;
-    use RT::TicketCustomFieldValues;
-
-    use RT::Interface::Web;
-    use MIME::Entity;
-    use CGI::Cookie;
-    use Date::Parse;
-    use HTML::Entities;
-    use Text::Wrapper;
-
-    use Apache::Session::File;
-    use CGI::Fast;	
-}
-
-# Die if WebSessionDir doesn't exist or we can't write to it
-
-stat($RT::MasonSessionDir);
-die "Can't read and write $RT::MasonSessionDir"
-  unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
+require CGI::Fast;
+my $h = &RT::Interface::Web::NewCGIHandler();
 
 RT::Init();
 
-warn "Begin listening on $ENV{'FCGI_SOCKET_PATH'}\n";
-
 # Response loop
-while( $RT::Mason::CGI = CGI::Fast->new ) {
-    my $h = RT::Interface::Web::NewCGIHandler();
+while( my $cgi = CGI::Fast->new ) {
     my $comp = $ENV{'PATH_INFO'};
 
     $comp = $1 if ($comp =~ /^(.*)$/);
@@ -267,7 +214,7 @@ while( $RT::Mason::CGI = CGI::Fast->new ) {
     warn "Serving $comp\n";
 
     $h->handle_cgi($comp);
-    untie %HTML::Mason::Commands::session;
+    # _should_ always be tied
 }
 
 1;

@@ -51,6 +51,7 @@ ok(require RT::Transaction);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 use RT::Attachments;
@@ -290,6 +291,7 @@ sub Content {
         $content =~ s/\n-- \n(.*)$//s;
 
         # What's the longest line like?
+        my $max = 0;
         foreach ( split ( /\n/, $content ) ) {
             $max = length if ( length > $max );
         }
@@ -523,21 +525,21 @@ sub BriefDescription {
         return $self->loc("Comments added");
     }
 
-    elsif ( $self->Type eq 'Keyword' ) {
+    elsif ( $self->Type eq 'CustomField' ) {
 
-        my $field = $self->loc('Keyword');
+        my $field = $self->loc('CustomField');
 
         if ( $self->Field ) {
-            my $keywordsel = new RT::KeywordSelect( $self->CurrentUser );
-            $keywordsel->Load( $self->Field );
-            $field = $keywordsel->Name();
+            my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->Load( $self->Field );
+            $field = $cf->Name();
         }
 
         if ( $self->OldValue eq '' ) {
             return ( $self->loc("[_1] [_2] added", $field, $self->NewValue) );
         }
         elsif ( $self->NewValue eq '' ) {
-            return ( $self->loc("[_1] [_2] deleted", $field, $self->NewValue) );
+            return ( $self->loc("[_1] [_2] deleted", $field, $self->OldValue) );
 
         }
         else {

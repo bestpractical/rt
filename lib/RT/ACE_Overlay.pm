@@ -42,6 +42,7 @@ ok(require RT::ACE);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 use RT::Principals;
 use RT::Queues;
@@ -50,6 +51,7 @@ use RT::Groups;
 use vars qw (
   %LOWERCASERIGHTNAMES
   %OBJECT_TYPES
+  %TICKET_METAPRINCIPALS
 );
 
 

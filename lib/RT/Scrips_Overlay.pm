@@ -47,6 +47,7 @@ ok (require RT::Scrips);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ sub LimitToQueue 

@@ -49,6 +49,9 @@ as the ticket heads toward its due date.
 
 package RT::Action::EscalatePriority;
 require RT::Action::Generic;
+
+use strict;
+use vars qw/@ISA/;
 @ISA=qw(RT::Action::Generic);
 
 #Do what we need to do and send it out.

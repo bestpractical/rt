@@ -49,6 +49,7 @@ ok (require RT::Groups);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 

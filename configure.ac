@@ -176,6 +176,21 @@ dnl Configure the output files, and generate them.
 AC_CONFIG_FILES([Makefile
 		 etc/RT_Config.pm
 		 lib/RT.pm
-		 sbin/initdb],
-		[chmod +x sbin/initdb])
+                 lib/t/00smoke.t
+                 lib/t/02regression.t
+		 sbin/initdb
+                 sbin/testdeps
+ 		 sbin/insert_approval_scrips
+ 		 bin/enhanced-mailgate
+ 		 bin/mason_handler.fcgi
+ 		 bin/mason_handler.svc
+ 		 bin/rt
+ 		 bin/rt-commit-handler
+ 		 bin/rt-crontool
+ 		 bin/rt-mailgate
+ 		 bin/rtadmin
+ 		 bin/webmux.pl],
+		[chmod +x sbin/initdb
+		chmod +x sbin/testdeps]
+                )
 AC_OUTPUT

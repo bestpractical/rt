@@ -24,7 +24,7 @@
 # END LICENSE BLOCK
 # Released under the terms of the GNU Public License
 
-
+use strict;
 no warnings qw(redefine);
 
 use vars qw(@TYPES %TYPES);
@@ -228,9 +228,7 @@ sub ValuesForTicket {
 	my $values = new RT::TicketCustomFieldValues($self->CurrentUser);
 	$values->LimitToCustomField($self->Id);
     $values->LimitToTicket($ticket_id);
-    ( FIELD => 'CustomField',
-			OPERATOR => '=',
-			VALUE => $self->Id );
+
 	return ($values);
 }
 

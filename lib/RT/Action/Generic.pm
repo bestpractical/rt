@@ -46,6 +46,8 @@ ok (require RT::Action::Generic);
 
 package RT::Action::Generic;
 
+use strict;
+
 # {{{ sub new 
 sub new  {
   my $proto = shift;

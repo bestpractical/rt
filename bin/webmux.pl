@@ -1,37 +1,67 @@
-
-
+#!/usr/bin/perl
+# BEGIN LICENSE BLOCK
+# 
+# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+# 
+# (Except where explictly superceded by other copyright notices)
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# 
+# Unless otherwise specified, all modifications, corrections or
+# extensions to this work which alter its source code become the
+# property of Best Practical Solutions, LLC when submitted for
+# inclusion in the work.
+# 
+# 
+# END LICENSE BLOCK
 
 use strict;
-$ENV{'PATH'}   = '/bin:/usr/bin';                      # or whatever you need
-$ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
-$ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};
-$ENV{'ENV'}    = '' if defined $ENV{'ENV'};
-$ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-# We really don't want apache to try to eat all vm
-# see http://perl.apache.org/guide/control.html#Preventing_mod_perl_Processes_Fr
+BEGIN {
+    $ENV{'PATH'}   = '/bin:/usr/bin';                      # or whatever you need
+    $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
+    $ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};
+    $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
+    $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
+}
 
-use lib "!!RT_LIB_PATH!!";
+use lib "/opt/rt3/lib";
 use RT;
 
 package RT::Mason;
+
 use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
                                    #set private_tempfiles
-use HTML::Mason::ApacheHandler( args_method => 'CGI' );
+
+BEGIN {
+    if ($CGI::MOD_PERL) {
+	require HTML::Mason::ApacheHandler;
+	HTML::Mason::ApacheHandler->import( args_method => 'CGI' );
+    }
+    else {
+	require HTML::Mason::CGIHandler;
+    }
+}
+
 use HTML::Mason;                   # brings in subpackages: Parser, Interp, etc.
 
 use vars qw($Nobody $SystemUser $r);
 
-#Clean up our umask...so that the session files aren't world readable, writable or executable
-umask(0077);
-
-#This drags in  RT's config.pm
+#This drags in RT's config.pm
 RT::LoadConfig();
 
 use Carp;
 
 {
-
     package HTML::Mason::Commands;
     use vars qw(%session);
 
@@ -56,26 +86,26 @@ use Carp;
     use CGI::Cookie;
     use Date::Parse;
     use HTML::Entities;
-
-    #TODO: make this use DBI
-    use Apache::Session::File;
-
-
 }
 
 
-my $ah = &RT::Interface::Web::NewApacheHandler();
-
 # Activate the following if running httpd as root (the normal case).
 # Resets ownership of all files created by Mason at startup.
-#
-chown( Apache->server->uid, Apache->server->gid, [$RT::MasonSessionDir] );
+# Note that mysql uses DB for sessions, so there's no need to do this.
+unless ($RT::DatabaseType eq 'mysql') {
+    # Clean up our umask to protect session files
+    umask(0077);
 
-# Die if WebSessionDir doesn't exist or we can't write to it
+    chown( Apache->server->uid, Apache->server->gid, [$RT::MasonSessionDir] )
+	if Apache->server->can('uid');
 
-stat($RT::MasonSessionDir);
-die "Can't read and write $RT::MasonSessionDir"
-  unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
+    # Die if WebSessionDir doesn't exist or we can't write to it
+    stat($RT::MasonSessionDir);
+    die "Can't read and write $RT::MasonSessionDir"
+	unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
+}
+
+my $ah = &RT::Interface::Web::NewApacheHandler() if $CGI::MOD_PERL;
 
 sub handler {
     ($r) = @_;
@@ -84,11 +114,12 @@ sub handler {
 
     # We don't need to handle non-text items
     return -1 if defined( $r->content_type ) && $r->content_type !~ m|^text/|io;
+
     my %session;
     my $status = $ah->handle_request($r);
     undef (%session);
+
     return $status;
-
 }
-1;
 
+1;

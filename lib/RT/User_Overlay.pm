@@ -44,6 +44,7 @@ ok(require RT::User);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 use vars qw(%_USERS_KEY_CACHE);
@@ -1305,7 +1306,7 @@ sub HasRight {
 
     # {{{ if we've cached a positive result for this query, return 1
     if (    ( defined $self->_ACLCache->{"$hashkey"} )
-         && ( $self->_ACLCache->{"$hashkey"} == 1 )
+         && ( $self->_ACLCache->{"$hashkey"}{'val'} == 1 )
          && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
          && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
 
@@ -1316,7 +1317,7 @@ sub HasRight {
 
     #  {{{ if we've cached a negative result for this query return undef
     elsif (    ( defined $self->_ACLCache->{"$hashkey"} )
-            && ( $self->_ACLCache->{"$hashkey"} == -1 )
+            && ( $self->_ACLCache->{"$hashkey"}{'val'} == -1 )
             && ( defined $self->_ACLCache->{"$hashkey"}{'set'} )
             && ( $self->_ACLCache->{"$hashkey"}{'set'} > $cache_timeout ) ) {
 
@@ -1417,7 +1418,7 @@ sub HasRight {
 
     # {{{ Actually check the ACL by performing an SQL query
     #   $RT::Logger->debug("Now Trying $query");	
-    $hitcount = $self->_Handle->FetchResult($query);
+    my $hitcount = $self->_Handle->FetchResult($query);
     # }}}
     
     # {{{ if there's a match, the right is granted 
@@ -1425,7 +1426,7 @@ sub HasRight {
 
         # Cache a positive hit.
         $self->_ACLCache->{"$hashkey"}{'set'} = time;
-        $self->_ACLCache->{"$hashkey"} = 1;
+        $self->_ACLCache->{"$hashkey"}{'val'} = 1;
         return (1);
     }
     # }}}
@@ -1435,7 +1436,7 @@ sub HasRight {
         # 	$RT::Logger->debug("No ACL matched query: $query\n");	
         # cache a negative hit
         $self->_ACLCache->{"$hashkey"}{'set'} = time;
-        $self->_ACLCache->{"$hashkey"} = -1;
+        $self->_ACLCache->{"$hashkey"}{'val'} = -1;
 
         return (undef);
     }

@@ -1,4 +1,4 @@
-#! /usr/bin/perl -w
+#!/usr/bin/perl -w
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
@@ -44,11 +44,11 @@
 
 Stick the following in in CVSROOT/commitinfo
 
- ALL     /opt/rt2/bin/rt-commit-handler --record-last-dir
+ ALL     /opt/rt3/bin/rt-commit-handler --record-last-dir
 
 Stick the following  in CVSROOT/loginfo
 
- ALL     /opt/rt2/bin/rt-commit-handler --cvs-root /pathtocvs/root --rt %{Vvts}
+ ALL     /opt/rt3/bin/rt-commit-handler --cvs-root /pathtocvs/root --rt %{Vvts}
 
 =head2 Invocation (advanced use)
 
@@ -80,7 +80,7 @@ use Text::Wrap;
 use Digest::MD5;
 use MIME::Entity;
 
-use lib "!!RT_LIB_PATH!!";
+use lib "/opt/rt3/lib";
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
 

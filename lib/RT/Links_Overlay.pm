@@ -45,6 +45,7 @@ ok (require RT::Links);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 use RT::URI;
 
@@ -62,7 +63,7 @@ sub Limit  {
        ) {
 	  my $dummy = RT::URI->new($self->CurrentUser);
 	   $dummy->FromURI($args{'VALUE'});
-       $uri = $dummy->URI;
+	   # $uri = $dummy->URI;
     }
 
 

@@ -44,6 +44,7 @@ ok (require RT::CachedGroupMembers);
 
 =cut
 
+use strict;
 no warnings qw(redefine);
 
 # {{{ LimitToUsers
