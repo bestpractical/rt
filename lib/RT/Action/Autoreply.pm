@@ -74,10 +74,18 @@ sub SetReturnAddress {
     }
     
     unless ($self->TemplateObj->MIMEObj->head->get('From')) {
-	my $friendly_name = $self->TicketObj->QueueObj->Description ||
-		$self->TicketObj->QueueObj->Name;
-	$friendly_name =~ s/"/\\"/g;
-	$self->SetHeader('From', "\"$friendly_name\" <$replyto>");
+	if ($RT::UseFriendlyFromLine) {
+	    my $friendly_name = $self->TicketObj->QueueObj->Description ||
+		    $self->TicketObj->QueueObj->Name;
+	    $friendly_name =~ s/"/\\"/g;
+	    $self->SetHeader( 'From',
+		        sprintf($RT::FriendlyFromLineFormat, 
+                $self->MIMEEncodeString( $friendly_name, $RT::EmailOutputEncoding ), $replyto),
+	    );
+	}
+	else {
+	    $self->SetHeader( 'From', $replyto );
+	}
     }
     
     unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {

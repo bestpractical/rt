@@ -463,7 +463,14 @@ sub MakeMIMEEntity {
 
     #foreach my $filehandle (@filenames) {
 
-    my ( $fh, $temp_file ) = tempfile();
+    my ( $fh, $temp_file );
+    for ( 1 .. 10 ) {
+        # on NFS and NTFS, it is possible that tempfile() conflicts
+        # with other processes, causing a race condition. we try to
+        # accommodate this by pausing and retrying.
+        last if ($fh, $temp_file) = eval { tempfile() };
+        sleep 1;
+    }
 
     binmode $fh;    #thank you, windows
     my ($buffer);

@@ -551,7 +551,7 @@ while (my $link = $links->Next) {
 require RT::Action::Notify; bless($self, 'RT::Action::Notify');
 $self->{Argument} = 'Requestor'; $self->Prepare;
 
-return $passed;
+return 0; # ignore $passed;
 # ------------------------------------------------------------------- #
 	],
        CustomCommitCode => '"never needed"',

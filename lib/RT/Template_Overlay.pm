@@ -206,7 +206,7 @@ sub LoadQueueTemplate {
         Name  => undef
     );
 
-    return ( $self->LoadByCols( Name => $args{'Name'}, Queue => {'Queue'} ) );
+    return ( $self->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} ) );
 
 }
 

@@ -2936,7 +2936,7 @@ msgstr "七月"
 
 #: lib/RT/Date.pm:417
 msgid "Jul."
-msgstr "01"
+msgstr "07"
 
 #: NOT FOUND IN SOURCE
 msgid "July"
@@ -2952,7 +2952,7 @@ msgstr "六月"
 
 #: lib/RT/Date.pm:416
 msgid "Jun."
-msgstr "06."
+msgstr "06"
 
 #: NOT FOUND IN SOURCE
 msgid "June"
@@ -6413,4 +6413,8 @@ msgstr "年"
 #: lib/RT/Date.pm:331
 msgid "approving"
 msgstr "待簽核"
+
+#: lib/RT/Date.pm:331
+msgid "CompanySpecific"
+msgstr "各公司獨立顯示"
 

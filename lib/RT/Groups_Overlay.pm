@@ -294,5 +294,58 @@ sub WithRight {
     );
 }
 
+# {{{ sub LimitToEnabled
+
+=head2 LimitToEnabled
+
+Only find items that haven\'t been disabled
+
+=cut
+
+sub LimitToEnabled {
+    my $self = shift;
+    
+    my $alias = $self->Join(
+	TYPE   => 'left',
+	ALIAS1 => 'main',
+	FIELD1 => 'id',
+	TABLE2 => 'Principals',
+	FIELD2 => 'ObjectId'
+    );
+
+    $self->Limit( ALIAS => $alias,
+		  FIELD => 'Disabled',
+		  VALUE => '0',
+		  OPERATOR => '=' );
+}
+# }}}
+
+# {{{ sub LimitToDisabled
+
+=head2 LimitToDeleted
+
+Only find items that have been deleted.
+
+=cut
+
+sub LimitToDeleted {
+    my $self = shift;
+    
+    my $alias = $self->Join(
+	TYPE   => 'left',
+	ALIAS1 => 'main',
+	FIELD1 => 'id',
+	TABLE2 => 'Principals',
+	FIELD2 => 'ObjectId'
+    );
+
+    $self->{'find_disabled_rows'} = 1;
+    $self->Limit( ALIAS => $alias,
+		  FIELD => 'Disabled',
+		  OPERATOR => '=',
+		  VALUE => '1'
+		);
+}
+# }}}
 1;
 
