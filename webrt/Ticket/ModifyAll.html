@@ -61,7 +61,7 @@ my $Ticket = LoadTicket($id);
 
 my @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
 my @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-my @okresults = ProcessTicketObjectKeywords(TicketObj => $TicketObj, ARGSRef => \%ARGS);
+my @okresults = ProcessTicketObjectKeywords(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
 my @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
 my @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
