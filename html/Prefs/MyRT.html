@@ -52,7 +52,6 @@
 <& /Widgets/SelectionBox:header &>
 
 <& /Elements/ListActions, actions => \@actions &>
-<a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
 <p>
 <&|/Elements/TitleBox, title => loc('Predefined searches'), bodyclass => "" &>
 <ul>
@@ -73,7 +72,6 @@ my @actions;
 
 my $title = loc("Customize").' '.loc("RT at a glance");
 my $user = $session{'CurrentUser'}->UserObj;
-$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
 
 unless (exists $session{'my_rt_portlets'}) {
     my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');

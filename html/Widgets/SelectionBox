@@ -169,7 +169,6 @@ $self => undef
 <FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>">
 <input type="hidden" name="<% $self->{Name} %>-Submit" value="1">
 <& SelectionBox:current, self => $self &>
-<input type="hidden" name="referer" value="<%$ARGS{'referer'}%>">
 <input type="hidden" name="fromjs" value="0">
 <&|/l&>Available</&>:
 % if ($self->{Modified}) {
@@ -211,7 +210,6 @@ $self => undef
 my $name = $self->{Name};
 my %selected = map {$_ => 1} @{$self->{Selected}};
 my %item_map = map {$_->[0] => $_->[1]} @{$self->{Available}};
-$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
 </%INIT>
 
 </%method>

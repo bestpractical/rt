@@ -49,7 +49,6 @@
     Title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
-<a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
 % if ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
 <&|/l&>You can also edit the predefined search itself</&>:
 <a href="<% $RT::WebPath.'/Search/Build.html?'.
@@ -59,7 +58,6 @@
 <br>
 <FORM METHOD="POST" ACTION="Search.html" NAME="BuildQuery">
 <input type=hidden name=name value="<%$ARGS{name}%>">
-<input type=hidden name=referer value="<%$ARGS{referer}%>">
 <input type=hidden name=Format value="<%$ARGS{Format}%>">
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
@@ -70,7 +68,6 @@
 
 <%INIT>
 my @actions;
-$ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
 my $title = loc("Customize").' ';
 
 my @fields = qw(Format Order OrderBy RowsPerPage);
