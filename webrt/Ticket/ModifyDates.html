@@ -53,7 +53,7 @@ foreach $field (@date_fields) {
 		      Value => $ARGS{$field. '_Date'});
 	my $obj = $field."Obj";
 	if ( (defined $DateObj->Unix) and 
-	     ($DateObj->Unix ne $TicketObj->$obj->Unix()) ) {
+	     ($DateObj->Unix ne $TicketObj->$obj()->Unix()) ) {
 	    my $method = "Set$field";
 	    my ($code, $msg) = $TicketObj->$method($DateObj->ISO);
 	    push @results, "$msg";
