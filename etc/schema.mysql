@@ -78,15 +78,6 @@ CREATE TABLE Scrips (
 #     Notify  - sends away a template to the recipient in the Scrips Argument 
 #     AutoReply - sends an autoreply 
 
-# Short about the default available link actions available;
-
-# Action
-#   StallDependent - stalls the dependent upon a DependsOn linking action.
-#   OpenDependent - when a DependsOn is resolved, the dependent should be opened.
-#   Spam - upon correspondance to a group ticket, sends to all member requestors.
-#   ResolveMembers - when a Group Ticket is resolved, all Members should be resolved.
-#   ResolveGroupTicket - resolve the Group Ticket when all Members are resolved.
-
 INSERT INTO Scrips VALUES (1,'Autoreply', 
 			  'Sends an automatic response to the requestor when a ticket was created',
 			  'Create','AutoReply',1,'',0,NULL,0,NULL);
@@ -109,15 +100,24 @@ INSERT INTO Scrips VALUES (5, 'NotifyAdminWatchersOnComment',
 
 INSERT INTO Scrips VALUES (6, 'NotifyAllWatchersOnStatus', 
 			  'Send mail to watchers whenever a ticket\'s status changes',
-			  'Status','SendEmail',6,'',1,0,1,0);
+			  'Resolve/Stall/Open/Kill','SendEmail',6,'',1,0,1,0);
 
 INSERT INTO Scrips VALUES (7, 'NotifyAllWatchersOnResolve', 
 			  'Send mail to watchers whenever a ticket\'s status changes to resolved.', 
-			  'Status','SendEmailOnResolve',7,'',1,0,1,0);
+			  'Resolve','SendEmailOnResolve',7,'',1,0,1,0);
 
 INSERT INTO Scrips VALUES (8, 'NotifyAdminWatchersOnTransaction',
 			  'Sends mail to owner when anything happens',
 			  'Any','Notify',2,'AdminCc',1,NULL,1,NULL);
+
+# Short about the default available link actions available;
+
+# Action
+#   StallDependent - stalls the dependent upon a DependsOn linking action.
+#   OpenDependent - when a DependsOn is resolved, the dependent should be opened.
+#   Spam - upon correspondance to a group ticket, sends to all member requestors.
+#   ResolveMembers - when a Group Ticket is resolved, all Members should be resolved.
+#   ResolveGroupTicket - resolve the Group Ticket when all Members are resolved.
 
 INSERT INTO Scrips VALUES (9, 'StallDependentOnLink', 
 		           'Stalls the dependent when a DependsOn link is made',

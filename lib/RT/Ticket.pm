@@ -497,7 +497,8 @@ sub SetOwner {
 # {{{ sub SetStatus
 sub SetStatus { 
   my $self = shift;
-   my $status = shift;
+  my $status = shift;
+  my $action = shift;
   
   if (($status ne 'open') and ($status ne 'stalled') and 
       ($status ne 'resolved') and ($status ne 'dead') ) {
@@ -510,14 +511,14 @@ sub SetStatus {
     #TODO: we need to check for open parents.
   }
   
-  return($self->_Set('Status',$status));
+  return($self->_Set('Status',$status, 0,{TransactionType=>$action}));
 }
 # }}}
 
 # {{{ sub Kill
 sub Kill {
   my $self = shift;
-  return ($self->SetStatus('dead'));
+  return ($self->SetStatus('dead', 'Kill'));
   # TODO: garbage collection
 }
 # }}}
@@ -525,21 +526,21 @@ sub Kill {
 # {{{ sub Stall
 sub Stall {
   my $self = shift;
-  return ($self->SetStatus('stalled'));
+  return ($self->SetStatus('stalled', 'Stall'));
 }
 # }}}
 
 # {{{ sub Owner
 sub Open {
   my $self = shift;
-  return ($self->SetStatus('open'));
+  return ($self->SetStatus('open', 'Open'));
 }
 # }}}
 
 # {{{ sub Resolve
 sub Resolve {
   my $self = shift;
-  return ($self->SetStatus('resolved'));
+  return ($self->SetStatus('resolved', 'Resolve'));
 }
 # }}}
 
@@ -790,7 +791,8 @@ sub URI {
 sub URIIsLocal {
     my $URI=shift;
     # TODO: More thorough check
-    return $URI =~ /^\d+$/;
+    $URI =~ /^(\d+)$/;
+    return $1;
 }
 # }}}
 

@@ -71,5 +71,10 @@ sub _Accessible  {
 }
 # }}}
 
+sub DisplayPermitted {
+    # TODO: stub!
+    return 1;
+}
+
 1;
  

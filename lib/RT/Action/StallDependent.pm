@@ -27,6 +27,7 @@ sub Commit {
 	$base=$self->TicketObj;
     } else {
 	$base=RT::Ticket->new($self->TicketObj->CurrentUser);
+	# TODO: only works if id is a plain ticket num:
 	$base->Load($base_id);
     }
     $base->Stall if $base->Status eq 'open';
@@ -42,7 +43,10 @@ sub Commit {
 sub IsApplicable  {
   my $self = shift;
   # 1:
-  $self->TransactionObj->Data =~ /^[^ ]* DependsOn / || return 0;
+  $self->TransactionObj->Data =~ /^([^ ]*) DependsOn / || return 0;
+
+  # 2:
+  &RT::Ticket::URIIsLocal($1) || return 0;
   
   return 1;
 }
