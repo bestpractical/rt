@@ -59,8 +59,8 @@ urgency.  Higher numbers indicate higher Priority.  A Request may have no
 set priority, may simply have its Priority set to a static number, or it may
 have its Final Priority set.  Final Priority requires a Due Date to operate
 -- as the Request gets closer to its Due Date, its current priority gets
-higher. On (##JRV## day before?  day of?) the final day, its priority
-becomes the preset Final Priority.
+higher. On (##JRV## day before?  day of? AH: NO. final priority isn't for real,
+yet. ) the final day, its priority becomes the preset Final Priority.
 
   EX: James Earl Jones creates a Request in July which will come due on
   December 20th, to remind himself to get Solstice presents for his friends.
@@ -93,8 +93,9 @@ with the Requestor *through*&RT&* was.
 
 		- What is the "Last Contact"?
 
-The last logged update to the Request.  (##JRV## this isn't quite correct, I know.  Clarification?)
+The last logged update to the Request.  (##JRV## this isn't quite correct, I know.  Clarification? AH: you're thinking of "Last modification" it's the last time the req was touched)
 
 		- What is the "Age" of a Request?
 
-The amount of time elapsed since the first Transaction for this Request.
+The amount of time elapsed since the first Transaction for this Request. (AH:
+since the request was created..)

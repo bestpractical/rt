@@ -51,7 +51,7 @@ field.
 Tells &RT& that somehow, the person who made the original Request has been
 contacted.  Automatically tagged when someone uses the Reply function,
 rather than simply Commenting.  Useful when trying to measure the
-reponse-time back to users. (##JRV## accurate?)
+reponse-time back to users. (##JRV## accurate? AH: yep)
 
   EX:  While standing at the buffet, Charlie notices he's standing elbow to
   elbow with Biff, who sent in a Request that morning.  Charlie tells Biff
@@ -68,10 +68,13 @@ You may edit the Subject line of a Request.
 		- Change Queue
 
 Move a Request from one Queue to another.  (##JRV##  Exact privileges
-required in each Queue to do this?  Manipulate?  or do you have to be an RT
+required in each Queue to do this?  Manipulate?  AH: You can move a request
+from any queue you can manipulate to any queue you can create requests in.
+
+or do you have to be an RT
 admin...?  Will it ever be possible to have Requests belong to multiple
 Queues, such that something could sit in a public queue and someone's
-private queue at the same time?)
+private queue at the same time? AH: no it won't be)
 
 		- Change Area
 
@@ -95,7 +98,8 @@ changes.
 		- Change Due Date
 
 You may change the Due Date, which may or may not be set automatically,
-depending on Queue settings.  (##JRV## correct?)
+depending on Queue settings.  (##JRV## correct? Due date is NOT SET
+automatically.)
 
 		- Change Priority
 
@@ -109,4 +113,5 @@ information more appropriate to continue an already open Request than to
 start one anew, you may merge all the entirety of one Request into another.
 (##JRV## --> )"Merge" may be something of a misnomer here, as the actual
 action being performed is appending -- the Request being merged becomes the
-newest transactions in the Request being merged into.
+newest transactions in the Request being merged into. AH: no, the transactions
+are interleaved)

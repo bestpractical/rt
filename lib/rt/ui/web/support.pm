@@ -58,8 +58,8 @@ sub print_transaction {
 	
     }
 
-
-    $body =~ s/(.{76}).{3}/$1\n $2/g;
+     $body =~ s/(.{76})\s+/$1\n/g;                                             
+     $body =~ s/(.{100})/$1\n/g;   
     
     print "<pre>";
     &print_html($body);
