@@ -70,8 +70,19 @@ sub _Init  {
 
 =head2 Create
 
-Creates a new entry in the Scrips table. Takes a paramhash with three
-fields, Queue, Template and Action.
+Creates a new entry in the Scrips table. Takes a paramhash with:
+
+        Queue                  => 0,
+        Description            => undef,
+        Template               => undef,
+        ScripAction            => undef,
+        ScripCondition         => undef,
+        CustomPrepareCode      => undef,
+        CustomCommitCode       => undef,
+        CustomIsApplicableCode => undef,
+
+
+
 
 Returns (retval, msg);
 retval is 0 for failure or scrip id.  msg is a textual description of what happened.
@@ -82,9 +93,9 @@ sub Create {
     my $self = shift;
     my %args = (
         Queue                  => 0,
-        Template               => undef,
-        ScripAction            => undef,
-        ScripCondition         => undef,
+        Template               => undef, # name or id
+        ScripAction            => undef, # name or id
+        ScripCondition         => undef, # name or id
         Stage                  => 'TransactionCreate',
         Description            => undef,
         CustomPrepareCode      => undef,
@@ -111,7 +122,6 @@ sub Create {
     }
 
     #TODO +++ validate input 
-    #TODO: Allow loading Template, ScripAction and ScripCondition by name
 
     require RT::ScripAction;
     my $action = new RT::ScripAction( $self->CurrentUser );

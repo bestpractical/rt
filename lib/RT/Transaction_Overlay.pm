@@ -151,13 +151,11 @@ sub Create {
 
                 #If it's applicable, prepare and commit it
 
-                $RT::Logger->debug( "$self: Checking condition "
-                      . $Scrip->ConditionObj->Name . "...\n" );
+                #$RT::Logger->debug( "$self: Checking condition " . $Scrip->ConditionObj->Name . "...\n" );
 
                 if ( $Scrip->IsApplicable() ) {
 
-                    $RT::Logger->debug( "$self: Matches condition "
-                          . $Scrip->ConditionObj->Name . "...\n" );
+                    #$RT::Logger->debug( "$self: Matches condition " . $Scrip->ConditionObj->Name . "...\n" );
 
                     #TODO: handle some errors here
 
@@ -168,11 +166,7 @@ sub Create {
                     );
 
                     if ( $Scrip->Prepare() ) {
-                        $RT::Logger->debug( "$self: Prepared "
-                              . $Scrip->ActionObj->Name . "\n" );
                         if ( $Scrip->Commit() ) {
-                            $RT::Logger->debug( "$self: Committed "
-                                  . $Scrip->ActionObj->Name . "\n" );
                         }
                         else {
                             $RT::Logger->info( "$self: Failed to commit "
@@ -187,13 +181,10 @@ sub Create {
                     #We're done with it. lets clean up.
                     #TODO: something else isn't letting these get garbage collected. check em out.
                     $Scrip->ActionObj->DESTROY();
-                    $Scrip->ConditionObj->DESTROY;
+                    $Scrip->ConditionObj->DESTROY();
                 }
 
                 else {
-                    $RT::Logger->debug( "$self: Doesn't match condition "
-                          . $Scrip->ConditionObj->Name . "...\n" );
-
                     # TODO: why doesn't this catch all the ScripObjs we create. 
                     # and why do we explictly need to destroy them?
                     $Scrip->ConditionObj->DESTROY;

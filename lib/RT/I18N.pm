@@ -16,7 +16,7 @@ use base ('Locale::Maketext');
 %Lexicon = (
    'TEST_STRING' => 'Concrete Mixer',
 
-    '__Content-Type' => 'text/plain; charset=ISO-8859-1',
+    '__Content-Type' => 'text/plain; charset=utf-8',
 
   '_AUTO' => 1,
   # That means that lookup failures can't happen -- if we get as far
@@ -44,7 +44,7 @@ ok($chinese->encoding eq 'utf-8', "The encoding is 'utf-8' -".$chinese->encoding
 
 ok(my $en = RT::I18N->get_handle('en'));
 ok(UNIVERSAL::can($en, 'maketext'));
-ok($en->encoding eq 'ISO-8859-1', "The encoding ".$en->encoding." is 'ISO-8859-1'");
+ok($en->encoding eq 'utf-8', "The encoding ".$en->encoding." is 'utf-8'");
 
 =end testing
 
@@ -58,53 +58,47 @@ my %decoder; # shared cache of Text::Iconv decoder
 sub encoding { 
     my $self = shift;
 
-    if ($self->maketext('__Content-Type') =~ /charset=\s*([-\w]+)/i) {
-	my $encoding = $1;
-	
-	if ($] >= 5.007003 and eval { require Encode; 1 }) {
-	    # perl 5.7.3 or above with Encode module - normalize to utf8
-	    no strict 'refs';
-	    *{ref($self) . '::maketext'} = sub {
-		my $self  = shift;
-		return Encode::decode($encoding, $self->SUPER::maketext(@_));
-	    };
+    if ( $self->maketext('__Content-Type') =~ /charset=\s*([-\w]+)/i ) {
+        my $encoding = $1;
 
-	    return ('utf-8');
-	}
-	elsif ($] >= 5.006 and eval { require Encode; 1 }) {
-	    $decoder{$encoding} ||= Text::Iconv->new($encoding, 'utf-8');
+        if ( $] >= 5.007003 and eval { require Encode; 1 } ) {
 
-	    # different quite broken ways to force utf8ness.
-	    my $force_utf8 = ($] == 5.006) ? sub {
-		local $^W; # 'malformed utf8...'
-		my $text = $_[0];
-		eval '$text =~ tr/\0-\xFF//CU'; # avoid syntax error
-		return $text;
-	    } : sub {
-		return pack('U0A*', $_[0]);
-	    };
+            # perl 5.7.3 or above with Encode module - normalize to utf8
+            no strict 'refs';
+            *{ ref($self) . '::maketext' } = sub {
+                my $self = shift;
+                return Encode::decode( $encoding, $self->SUPER::maketext(@_) );
+            };
 
-	    *{ref($self) . '::maketext'} = sub {
-		my $self  = shift;
+            return ('utf-8');
+        }
+        elsif ( $] >= 5.006 and eval { require Text::Iconv; 1 } ) {
+            $decoder{$encoding} ||= Text::Iconv->new( $encoding, 'utf-8' );
 
-		return $force_utf8->(
-		    $decoder{$encoding}->convert($self->SUPER::maketext(@_))
-		);
-	    };
+            # different quite broken ways to force utf8ness.
+            my $force_utf8 = sub {
+                return pack( 'U0A*', $_[0] );
+              };
 
-	    return ('utf-8');
-	}
-	else {
-	    # assume byte semantic
-	    return ($encoding);
-	}
-    }
-    else {
-        return ('ISO-8859-1');
-    } 
-}
+            *{ ref($self) . '::maketext' } = sub {
+                my $self = shift;
+
+                return $force_utf8->(
+                      $decoder{$encoding}->convert( $self->SUPER::maketext(@_) )
+                );
+            };
+
+            return ('utf-8');
+        }
+        else {
+
+            # assume byte semantic
+            return ($encoding);
+        }
+
 
 }
-
+}
+}
 1;  # End of module.
 

@@ -314,6 +314,11 @@ unless ($LastVersion) {
             Description => 'Perform a user-defined action',
             ExecModule  => 'UserDefined',
         },
+        {
+            Name        => 'CreateTickets',
+            Description => 'Create new tickets based on this scrip\'s template',
+            ExecModule  => 'CreateTickets',
+        },
     );
 }
 
