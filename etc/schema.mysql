@@ -16,22 +16,35 @@ CREATE TABLE QueueACL (
 )\g
 
 
-CREATE TABLE Subscriptions (
+CREATE TABLE Scrips (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
-  Scope VarCHAR(16), #Ticket, Queue or Global
-  Value INT(11), #Ticket Id or Queue Id -- 0 for global
-  Condition VARCHAR(60), 
-  Action VARCHAR(60),
-  Template INT(11), #Link to the templates table
-  Target VARCHAR(255),
+  Name VARCHAR(255), #Textual string
+  Description VARCHAR(255), #another textual string
+  Scope INT(11), #Queue Id. O for global
+  Type VARCHAR(60), #Transaction type or 'any'	
+  Action VARCHAR(60), #Name of a perl module. inside RT::Scrips
+  Template INT(11), #Link to the templates table of template to pass in.
+  Argument VARCHAR(255), #an argument to pass in.
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP  
 )\g
 
+#
+# These are examples. We should redo them. it's not like they're used yet :)
+#
+
+INSERT INTO Scrips VALUES (1,'Autoreply','Sends an automatic response to the requestor when a ticket was created',0,'Create','Autoreply',1,'$Requestor',1,20000129185915,1,20000129185915);
+INSERT INTO Scrips VALUES (2,'TellOwnerOnTransaction','Sends mail to owner when anything happens',0,'Any','SendMail',2,'$Owner',1,20000129190056,1,20000129190056);
+INSERT INTO Scrips VALUES (3,'MailCorrespondence','Sends mail to interested parties when email comes in',0,'Correspond','MailCorrespondence',3,'',1,20000129190151,1,20000129190151);
+INSERT INTO Scrips VALUES (4,'TellMembersOnMail','Sends mail to requestor when email comes in',0,'Correspond','SendMail',3,'$Requestor',1,20000129190151,1,20000129190151);
+
+
 
 CREATE TABLE Users (
+
+
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   UserId CHAR(40) NOT NULL,
   Gecos CHAR(16),
@@ -170,7 +183,7 @@ CREATE TABLE Actors (
 		       #will be covered with a meta-acl
   Gecos VARCHAR(64),
   Password VARCHAR(255),
-  Name VARCHAR(64)
+  Name VARCHAR(64),
   Creator INT(11),
   Created TIMESTAMP,
   LastUpdatedBy INT(11),
