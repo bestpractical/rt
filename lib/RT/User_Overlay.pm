@@ -986,11 +986,28 @@ sub SetPassword {
 
 =head2 _GeneratePassword PASSWORD
 
-returns an MD5 hash of the password passed in, in base64 encoding.
+returns an MD5 hash of the password passed in, in hexadecimal encoding.
 
 =cut
 
 sub _GeneratePassword {
+    my $self = shift;
+    my $password = shift;
+
+    my $md5 = Digest::MD5->new();
+    $md5->add($password);
+    return ($md5->hexdigest);
+
+}
+
+=head2 _GeneratePasswordBase64 PASSWORD
+
+returns an MD5 hash of the password passed in, in base64 encoding
+(obsoleted now).
+
+=cut
+
+sub _GeneratePasswordBase64 {
     my $self = shift;
     my $password = shift;
 
@@ -1039,9 +1056,12 @@ sub IsPassword {
     }
 
     #  if it's a historical password we say ok.
-
-    if ( $self->__Value('Password') eq crypt( $value, $self->__Value('Password') ) ) {
-        return (1);
+    if ($self->__Value('Password') eq crypt($value, $self->__Value('Password'))
+        or $self->_GeneratePasswordBase64($value) eq $self->__Value('Password'))
+    {
+        # ...but upgrade the legacy password inplace.
+        $self->SUPER::SetPassword( $self->_GeneratePassword($value) );
+        return(1);
     }
 
     # no password check has succeeded. get out
