@@ -621,10 +621,11 @@ sub select_queue_acls {
 	print "<option value=\"disp\"";
 	if (! $flag && (&rt::can_display_queue($queue_id,$user_id))==1){
 	    print "SELECTED";
+	    $flag = 1;
 	}
 	print">Display\n";	
 	print "<option value=\"none\"";
-	if (! $flag && !&rt::can_display_queue($queue_id,$user_id)){
+	if (! $flag) {
 	    print "SELECTED";
 	}
 	print ">No Access\n";

@@ -167,6 +167,9 @@ You'll need an alias like the following for action requests:
 
         rt-action:      |"/path/to/rt/bin/rt-mailgate general action"
 	
+If you want to handle MIME Attachments, you should _really_ take a look
+at stripmime in ftp://ftp.fsck.com/pub/rt/contrib
+
 
 THE WEB UI
 ----------

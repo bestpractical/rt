@@ -1,6 +1,7 @@
 # $Header$
 
 package rt::ui::cli::query;
+require "ctime.pl";
 
 
 sub activate {
@@ -14,6 +15,13 @@ else {
     print "$message\n";
 }
 $criteria=&build_query();
+if ( $export && $format_string ) {
+    die "-export and -format may not both be specified";
+}
+if ( $export ) {
+    &export();
+    return 0;
+}
 $count=&rt::get_queue($criteria,$current_user);
 if (!$format_string) {
     $format_string = "%n%p%o%g%l%t%r%s";
@@ -115,8 +123,10 @@ sub build_query {
     for ($i=0;$i<=$#ARGV;$i++) {
 	if ($ARGV[$i] eq '-format') {
 	    $format_string = $ARGV[++$i];
-	
 	}
+        if ($ARGV[$i] eq '-export') {
+            $export = 1;
+        }
 
 	if ($ARGV[$i] eq '-owner') {
 	    if ($owner_ops){
@@ -130,6 +140,9 @@ sub build_query {
 		   $owner_ops .= " OR ";
 	       }
 	       $owner_ops .= " owner =  \'\'" ;
+	   }
+	   if ($ARGV[$i] eq '-all'){
+	       $all_ops = 1;
 	   }
 	   if ($ARGV[$i] =~ '-prio'){
 	       if ($prio_ops){
@@ -231,8 +244,11 @@ sub build_query {
 	if ($query_string) {$query_string .= " AND ";}
 	$query_string .= "$owner_ops";
     }
+    if ($all_ops) {
+        $query_string = "1 = 1 ";
+    }
     if (!$query_string) {
-	$query_string = "status = \'open\'";
+	$query_string = "status = \'open\' ";
     }
     if ($order_ops) {
 	$query_string .= "ORDER BY $order_ops";
@@ -265,6 +281,11 @@ print"
 	   -area <area>	     lists requests in the area <area>
            -orderby <crit>   Sorts requests by <crit>  (one of serial_num, 
                              queue_id, requestors, owner, subject, priority, 
+           -export           Outputs selected requests in tab-delimited format,
+                             including all fields.  Embedded tabs and newlines
+                             are translated to \\t and \\n.  A header record is
+                             written.
+           -all              Export all requests
                              status, date_created, date_due, area)
            -format <format> allows you to specify the output of rtq.
                              <format> is a string of the form %xn%xn%xn.  
@@ -387,6 +408,71 @@ sub print_header {
 	print "-";
     }
     print "\n";
+}
+sub export
+{
+    my( $i, $k, $val, @values );
+
+    my @fields = qw(
+                        serial_num
+                        queue_id
+                        area
+                        status
+                        alias
+                        owner
+                        initial_priority
+                        final_priority
+                        priority
+                        date_created
+                        date_told
+                        date_acted
+                        date_due
+                        date_status_changed
+                        current_user
+                        requestors
+                        subject
+                   );
+
+    print join("\t", @fields), "\n";
+
+    for ($i = 0 ; $i < $count; $i++) {
+
+        $rt::req[$i]{'date_status_changed'} =
+                &last_status($rt::req[$i]{'serial_num'});
+
+        my @values = ();
+
+        foreach $k (@fields) {
+          
+            $val = $rt::req[$i]{$k};
+            $val =~ s/\t/\\t/g;
+            $val =~ s/\n/\\n/g;
+
+            push(@values, $val);
+        }
+
+        print join("\t", @values), "\n";
+
+    }
+    
+}
+
+
+sub last_status
+{
+    my ( $in_serial_num ) = @_;
+
+    my $i = &rt::transaction_history_in($in_serial_num,$current_user);
+
+    while ( $i-- > 0 ) {
+
+        next unless $rt::req[$in_serial_num]{'trans'}[$i]{'type'} eq 'status';
+
+        return $rt::req[$in_serial_num]{'trans'}[$i]{'time'};
+    
+    }
+
+    return 0;
 }
 
 

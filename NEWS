@@ -1,3 +1,19 @@
+28 Feb 2000
+-----------
+
+* Fixed a longstanding bug in the Web Admin tool that granted people with 
+RT Admin access exlicit queue access as well.
+
+* Added functionality for exporting tickets to rtq. Useful for curl.com's 
+reporting scrips
+
+       -export           Outputs selected requests in tab-delimited format,
+                         including all fields.  Embedded tabs and newlines
+                         are translated to \\t and \\n.  A header record is
+                         written.
+        -all              Export all requests
+
+
 23 Feb 2000
 -----------
 
