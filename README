@@ -138,11 +138,8 @@ want to read a more comprehensive installation guide at:
 
 5c  FOR UPGRADING: (From RT 2.0.x)
 
-    Download the RT2 to RT3 migration tools from:
-
-    http://bestpractical.com/pub/rt/devel/rt2-to-rt3.tar.gz
-
-    Follow the included instructions.
+    Please upgrade from RT 2.0 to RT 3.2 and then follow the instructions
+    for section 5b above.
 
 6   Edit etc/RT_SiteConfig.pm in your RT installation directory, by specifying
     any values you need to change from the defaults in etc/RT_Config.pm
