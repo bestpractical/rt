@@ -96,6 +96,7 @@ sub _Accessible  {
 	      Created => 'read/auto',
 	      LastUpdatedBy => 'read/auto',
 	      LastUpdated => 'read/auto'
+
 	      # }}}
 	     );
   return($self->SUPER::_Accessible(@_, %Cols));
@@ -127,9 +128,14 @@ sub Create  {
         $args{'Password'} = crypt($args{'Password'}, $salt);     
     }   
         
+    
     #TODO Specify some sensible defaults.
-
-
+    
+    unless (defined ($args{'Name'})) {
+	return(0, "Must specify 'Name' attribute");
+    }	
+    
+    
     #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
     if ($RT::SystemUser) { #This only works if RT::SystemUser has been defined
 	my $TempUser = RT::User->new($RT::SystemUser);
@@ -138,8 +144,10 @@ sub Create  {
 	
 	my $TempUser2 =RT::User->new($RT::SystemUser);
 	$TempUser2->LoadByEmail($args{'EmailAddress'});
-	return(0, 'Email in use') if ((defined $args{'EmailAddress'}) and ($TempUser2->EmailAddress eq $args{'EmailAddress'}));
-
+	return(0, 'Email in use') 
+	  if ((defined $args{'EmailAddress'}) and 
+	      ($TempUser2->EmailAddress eq $args{'EmailAddress'}));
+	
     }
     else {
 	$RT::Logger->warning("$self couldn't check for pre-existing ".
@@ -150,12 +158,13 @@ sub Create  {
     my $id = $self->SUPER::Create(%args);
     
     #If the create failed.
-    return (0, 'Could not create user') unless ($id);
+    return (0, 'Could not create user') 
+      unless ($id);
     
     #TODO post 2.0
     #if ($args{'SendWelcomeMessage'}) {
     #	#TODO: Check if the email exists and looks valid
-    #	#TODO: Send the user a "welcome message"  see [fsck.com #290]
+    #	#TODO: Send the user a "welcome message" 
     #}
     
     return ($id, 'User created');
