@@ -13,9 +13,8 @@ sub activate  {
 }
 # }}}
 
-
-
 # {{{ sub ParseArgs 
+
 sub ParseArgs  {
 
   
@@ -30,100 +29,108 @@ sub ParseArgs  {
   }
   
   &print_header($format_string);
-  
+  print $Tickets->Restrictions();
   while (my $Ticket = $Tickets->Next) {
-    #do this because we're redefining the format string internally each run.
-    my ($format_string) = $format_string;
-    
-    while ($format_string) {
-      ($field, $format_string) = split (/\%/, $format_string,2);  
-      
-      if  ($field =~ /^n(\d*)$/){ 
-	$length = $1;
-	if (!$length) {$length=6;}
-	printf "%-${length}.${length}s ", $Ticket->Id;
-      }
-      elsif ($field =~ /^d(\d*)$/){
-       my $length = $1;
-       if ($Ticket->DateDue > 0) {
-	 my $date = localtime($Ticket->DateDue);
-	 $date =~ s/\d*:\d*:\d*//;	
-	 if (!$length) {$length=5;}
-	 printf "%-${length}.${length}s ", $date;
-       }
-       else {
-	 printf  "%-${length}.${length}s ", "none";
-       }
-     }
-     elsif ($field =~ /^p(\d*)$/){ 
-       $length = $1; 
-       if (!$length) {$length=2;}
-  
-       printf "%-${length}.${length}d ", $Ticket->Priority;
-     }
-     elsif ($field =~ /^r(\d*)$/){ 
-       $length = $1;
-       if (!$length) {$length=9;}
-       printf "%-${length}.${length}s ", $Ticket->RequestorsAsString;}
-     elsif ($field =~ /^o(\d*)$/){ 
-       $length = $1;
-       my $Owner;
-       if (!$length) {$length=8;}
-       if ($Ticket->Owner) {
-	 $Owner = $Ticket->Owner->UserId;
-       }
-       else {
-	 $Owner = "";
-       }
-       printf "%-${length}.${length}s ", $Owner;
-     }
-      
-     elsif ($field =~ /^s(\d*)$/){ 
-       $length = $1;
-       if (!$length) {$length=30;}
-       printf "%-${length}.${length}s ", $Ticket->Subject;
-     }
-     elsif ($field =~ /^t(\d*)$/){ 
-       $length = $1;
-       if (!$length) {$length=5;}
-       printf "%-${length}.${length}s ", $Ticket->Status;
-     }
-     elsif ($field =~ /^q(\d*)$/){ 
-       $length = $1;
-       if (!$length) {$length=8;}
-       printf "%-${length}.${length}s ", $Ticket->Queue->Id;
-     }
+    &PrintRow($Ticket, $format_string);
+  }
+}
 
-     elsif ($field =~ /^g(\d*)$/){ 
-       $length = $1;
-       if (!$length) {$length=6;}
-       printf "%-${length}.${length}s ", $Ticket->Age;
-     }
-     elsif ($field =~ /^l(\d*)$/){ 
-       $length = $1;
-       if (!$length) {$length=6;}
-       printf "%-${length}.${length}s ", $Ticket->SinceTold;
-     }
-     elsif ($field =~ /^w(.)$/) {
-       if ($1 eq 't') { print "\t";}
-       if ($1 eq 's') { print " ";}
-       if ($1 eq 'n') {print "\n";}
-     }
-     else {
-       print $field;
-     }
-   }
-   print "\n";
- }
+# }}}
+
+
+# {{{ sub PrintRow
+
+sub PrintRow {
+  my $Ticket = shift;
+  my $format_string = shift;
+  while ($format_string) {
+    ($field, $format_string) = split (/\%/, $format_string,2);  
+    
+    if  ($field =~ /^n(\d*)$/){ 
+      $length = $1;
+      if (!$length) {$length=6;}
+      printf "%-${length}.${length}s ", $Ticket->Id;
+    }
+    elsif ($field =~ /^d(\d*)$/){
+      my $length = $1;
+      if ($Ticket->DateDue > 0) {
+	my $date = localtime($Ticket->DateDue);
+	$date =~ s/\d*:\d*:\d*//;	
+	if (!$length) {$length=5;}
+	printf "%-${length}.${length}s ", $date;
+      }
+      else {
+	printf  "%-${length}.${length}s ", "none";
+      }
+    }
+    elsif ($field =~ /^p(\d*)$/){ 
+      $length = $1; 
+      if (!$length) {$length=2;}
+      
+      printf "%-${length}.${length}d ", $Ticket->Priority;
+    }
+    elsif ($field =~ /^r(\d*)$/){ 
+      $length = $1;
+      if (!$length) {$length=9;}
+      printf "%-${length}.${length}s ", $Ticket->RequestorsAsString;}
+    elsif ($field =~ /^o(\d*)$/){ 
+      $length = $1;
+      my $Owner;
+      if (!$length) {$length=8;}
+      if ($Ticket->Owner) {
+	$Owner = $Ticket->Owner->UserId;
+      }
+      else {
+	$Owner = "";
+      }
+      printf "%-${length}.${length}s ", $Owner;
+    }
+    
+    elsif ($field =~ /^s(\d*)$/){ 
+      $length = $1;
+      if (!$length) {$length=30;}
+      printf "%-${length}.${length}s ", $Ticket->Subject;
+    }
+    elsif ($field =~ /^t(\d*)$/){ 
+      $length = $1;
+      if (!$length) {$length=5;}
+      printf "%-${length}.${length}s ", $Ticket->Status;
+    }
+    elsif ($field =~ /^q(\d*)$/){ 
+      $length = $1;
+      if (!$length) {$length=8;}
+      printf "%-${length}.${length}s ", $Ticket->Queue->Id;
+    }
+    
+    elsif ($field =~ /^g(\d*)$/){ 
+      $length = $1;
+      if (!$length) {$length=6;}
+      printf "%-${length}.${length}s ", $Ticket->Age;
+    }
+    elsif ($field =~ /^l(\d*)$/){ 
+      $length = $1;
+      if (!$length) {$length=6;}
+      printf "%-${length}.${length}s ", $Ticket->SinceTold;
+    }
+    elsif ($field =~ /^w(.)$/) {
+      if ($1 eq 't') { print "\t";}
+      if ($1 eq 's') { print " ";}
+      if ($1 eq 'n') {print "\n";}
+    }
+    else {
+      print $field;
+    }
+  }
+  print "\n";
 }
 # }}}
 
-  
 # {{{ sub build_query 
+
 sub build_query  {
   my ($owner_ops, $user_ops, $status_ops, $prio_ops, $order_ops, $reverse);
-  use RT::Tickets;
-  my $Tickets = RT::Tickets->new($CurrentUser);
+  use RT::TicketCollection;
+  my $Tickets = RT::TicketCollection->new($CurrentUser);
 
   # A hack to deal with the default..
   if ($#ARGV==-1) {
@@ -145,26 +152,26 @@ sub build_query  {
     
     if ($ARGV[$i] eq '-queue') {
       my $queue_id = $ARGV[++$i];
-      $Tickets->Limit( FIELD => 'queue',
+      $Tickets->NewRestriction( FIELD => 'queue',
 			VALUE => "$queue_id");
     }
     
     if ($ARGV[$i] eq '-owner') {
       my $owner = $ARGV[++$i];
-      $Tickets->Limit( FIELD => 'owner',
+      $Tickets->NewRestriction( FIELD => 'owner',
 			VALUE => "$owner");
       
     }
     
     if ($ARGV[$i] eq '-unowned'){
-      $Tickets->Limit( FIELD => 'owner',
+      $Tickets->NewRestriction( FIELD => 'owner',
 			VALUE => "");
       
     }
     if ($ARGV[$i] =~ '-prio'){
       my $operator = $ARGV[++$i];
       my $priority = $ARGV[++$i];
-      $Tickets->Limit( FIELD => 'priority',
+      $Tickets->NewRestriction( FIELD => 'priority',
 			OPERATOR => "$operator",
 			VALUE => "$priority");
     }
@@ -172,42 +179,44 @@ sub build_query  {
     if ($ARGV[$i] =~ '-stat'){
       my $status = $ARGV[++$i];
       print "Got some status\n";
-      $Tickets->Limit( FIELD => 'status',
+      $Tickets->NewRestriction( FIELD => 'status',
 			VALUE => "$status");
     }
     
     if ($ARGV[$i] eq '-open'){
-      $Tickets->Limit( FIELD => 'status',
+      $Tickets->NewRestriction( FIELD => 'status',
 			VALUE => "open");
     }
     if (($ARGV[$i] eq '-resolved') or ($ARGV[$i] eq '-closed')){
-      $Tickets->Limit( FIELD => 'status',
+      $Tickets->NewRestriction( FIELD => 'status',
 			VALUE => "resolved");
       
       
     }
     if ($ARGV[$i] eq '-dead'){
-      $Tickets->Limit( FIELD => 'status',
+      $Tickets->NewRestriction( FIELD => 'status',
 			VALUE => "dead");
     }    
     
     if ($ARGV[$i] eq '-stalled'){
-      $Tickets->Limit( FIELD => 'status',
+      $Tickets->NewRestriction( FIELD => 'status',
 			VALUE => "stalled");
     }
     
     if ($ARGV[$i] eq '-user') {
       my $requestors = $ARGV[++$i];
-      $Tickets->Limit( FIELD => 'requestors',
+      $Tickets->NewRestriction( FIELD => 'requestors',
 			VALUE => "%$requestors%",
 			OPERATOR => 'LIKE');
     }
     
     if ($ARGV[$i] eq '-maxitems') {
-      $Tickets->Limit(ROWS => $ARGV[++$i]);
-        }
+      $Tickets->Rows($ARGV[++$i]);
+    }
     
-  
+     if ($ARGV[$i] eq '-firstitem') {
+      $Tickets->FirstRow($ARGV[++$i]);
+    }
     
     #TODO: DEAL WITH ORDERING & DEFAULT ORDERING
     if ($ARGV[$i] eq '-orderby') {
@@ -228,12 +237,14 @@ sub build_query  {
     }
   }    
   
-  
+  $Tickets->ApplyRestrictions();
   return ($Tickets);
 }
+
 # }}}
 
-  # {{{ sub usage 
+# {{{ sub usage 
+
 sub usage  {
     print <<EOFORM;
     
@@ -277,17 +288,13 @@ sub usage  {
                              wn        newline
 
 
-    #          <num>-<num>      print only requests in the number range\n
-    #          <num>            print only request <num>\n";
-    #          :<num>           print a total of <num> requests\n";
-    
                      Without options, rtq lists all open requests.
 EOFORM
 
 
 
   }
-  
+# }}}
 
 # {{{ sub print_header 
 sub print_header  {
@@ -377,7 +384,7 @@ sub print_header  {
     }
     print "\n";
   }
-
+# }}}
 
 # {{{ sub GetCurrentUser 
 sub GetCurrentUser  {

@@ -38,8 +38,9 @@
 use RT::Ticket;
 use RT::CurrentUser;
 # Huh? Shouldn't this be $session{CurrentUser}? -- TobiX
-my $CurrentUser = RT::CurrentUser->new(2);
-my $Ticket = RT::Ticket->new($CurrentUser);
+
+
+my $Ticket = RT::Ticket->new($session{'CurrentUser'});
 my $id=$ARGS{'id'};
 my @Actions=();
 

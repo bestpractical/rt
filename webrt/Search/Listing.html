@@ -4,6 +4,7 @@
 <BODY BGCOLOR="#FFFFFF">
 <H1>WebRT Queue</H1>
 
+Foo<% $foo %>bar
 
 %#<& QueueInterpretRestrictionCookies &>
 <TABLE WIDTH=100%>
@@ -13,7 +14,7 @@
    <TH><% $_->{Header} %>
 %}
 
-%while (my $Ticket = $Tickets->Next) {
+%while (my $Ticket = $session{'tickets'}->Next) {
 <TR>
 %foreach (@{_cfg(\%ARGS, 'QueueListingCols')}) {
 	<TD>
@@ -31,62 +32,72 @@
 
 <%INIT>
 
-use RT::Tickets;
-my $Tickets = RT::Tickets->new($RT::CurrentUser);
-if ($ARGS{'LimitResultsPerPage'} and ($ARGS{'ValueOfResultsPerPage'}>0)) {
 
-  $Tickets->Limit (ROWS => $ARGS{'ValueOfResultsPerPage'}
-		  )
+  if (!defined $session{'tickets'}) {
+    use RT::TicketCollection;
+    $session{'tickets'} = RT::TicketCollection->new($session{'CurrentUser'});
+    
+  }
+  else {
+    $session{'tickets'}->NewTickets;
+  }
+if ($ARGS{'LimitResultsPerPage'} and ($ARGS{'ValueOfResultsPerPage'}>0)) {
+  
+  $session{'tickets'}->Rows ($ARGS{'ValueOfResultsPerPage'});
 }
+
 
 if ($ARGS{'LimitOwner'} and $ARGS{'ValueOfOwner'}) {
   my $oper = $ARGS{'NegateOwner'} ? "!=" : "=";
-  $Tickets->Limit (FIELD => 'Owner',
-		   VALUE => $ARGS{'ValueOfOwner'},
-		   OPERATOR => "$oper"
-		  )
+  $session{'tickets'}->NewRestriction (FIELD => 'Owner',
+				       VALUE => $ARGS{'ValueOfOwner'},
+				       OPERATOR => "$oper"
+				      );
 }
 
 if (0) {
-# TODO: this code requires some creative use of EasySearch that I'm not up to 
-# right now
-#if ($ARGS{'LimitRequestor'}) {
+  # TODO: this code requires some creative use of EasySearch that I'm not up to 
+  # right now
+  #if ($ARGS{'LimitRequestor'}) {
   my $oper = $ARGS{'NegateRequestor'} ? "!=" : "="; 
-  $Tickets->Limit (FIELD => 'Requestors',
-		   VALUE => $ARGS{'ValueOfRequestors'},
-		   OPERATOR => "$oper"
-		  )
+  $session{'tickets'}->NewRestriction (FIELD => 'Requestors',
+				       VALUE => $ARGS{'ValueOfRequestors'},
+				       OPERATOR => "$oper"
+				      )
 }
 
 
 if ($ARGS{'LimitSubject'}) {
- my $oper = $ARGS{'NegateSubject'} ? "!=" : "="; 
-  $Tickets->Limit (FIELD => 'Subject',
-		   VALUE => $ARGS{'ValueOfSubject'},
-		   OPERATOR => "$oper"
-		  )
+  my $oper = $ARGS{'NegateSubject'} ? "!=" : "="; 
+  $session{'tickets'}->NewRestriction (FIELD => 'Subject',
+				       VALUE => $ARGS{'ValueOfSubject'},
+				       OPERATOR => "$oper"
+				      )
 }
 
 
 if ($ARGS{'LimitQueue'}) {
   my $oper = $ARGS{'NegateQueue'} ? "!=" : "="; 
-  $Tickets->Limit (FIELD => 'Queue',
-		   VALUE => $ARGS{'ValueOfQueue'},
-		   OPERATOR => "$oper"
-		  )
+  $session{'tickets'}->NewRestriction (FIELD => 'Queue',
+				       VALUE => $ARGS{'ValueOfQueue'},
+				       OPERATOR => "$oper"
+				      )
 }
 
 
 if ($ARGS{'LimitStatus'}) {
   my $oper = $ARGS{'NegateStatus'} ? "!=" : "="; 
-  $Tickets->Limit (FIELD => 'Status',
-		   VALUE => $ARGS{'ValueOfStatus'},
-		   OPERATOR => "$oper"
-		  )
+  $session{'tickets'}->NewRestriction (FIELD => 'Status',
+				       VALUE => $ARGS{'ValueOfStatus'},
+				       OPERATOR => "$oper"
+				      )
 }
 
 
 
+$session{'tickets'}->ApplyRestrictions;
+
+#$foo =$session{'tickets'}->Restrictions;
 
 # TODO: This one should _not_ be here, rather somewhere else
 # (suggestions?).  It might eventually read the cookies, user
@@ -102,3 +113,7 @@ sub _cfg {
 
 
 </%INIT>
+
+<%ARGS>
+$foo => undef
+</%ARGS>

@@ -1,3 +1,5 @@
+#$Header$
+
 package RT::Tickets;
 use RT::EasySearch;
 @ISA= qw(RT::EasySearch);
@@ -6,7 +8,6 @@ use RT::EasySearch;
 # {{{ sub _Init 
 sub _Init  {
   my $self = shift;
-
   $self->{'table'} = "Tickets";
   $self->{'primary_key'} = "id";
   $self->SUPER::_Init(@_);
@@ -17,9 +18,10 @@ sub _Init  {
 # {{{ sub Limit 
 sub Limit  {
   my $self = shift;
-  my %args = ( ENTRYAGGREGATOR => 'AND',
+ 
+   my %args = (ENTRYAGGREGATOR => 'AND',
 	       @_);
-  
+
   $self->SUPER::Limit(%args);
 }
 # }}}
@@ -102,16 +104,19 @@ sub Queue  {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub Subject 
 sub Subject  {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub Content 
 sub Content  {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub Creator 
 sub Creator  {
   my $self = shift;
@@ -119,31 +124,35 @@ sub Creator  {
 # }}}
 
 #Restrict by date
+
 # {{{ sub Created 
 sub Created  {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub Modified 
 sub Modified  {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub Contacted 
 sub Contacted  {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub Due 
 sub Due  {
   my $self = shift;
 }
 # }}}
 
+# {{{ sub Link 
 
 #Restrict by links.
 
-# {{{ sub Link 
 sub Link  {
   my $self = shift;
   my %args = (
@@ -155,22 +164,24 @@ sub Link  {
 }
 # }}}
 
-
 # {{{ sub ParentOf  
 sub ParentOf   {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub ChildOf 
 sub ChildOf  {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub DependsOn 
 sub DependsOn  {
   my $self = shift;
 }
 # }}}
+
 # {{{ sub DependedOnBy 
 sub DependedOnBy  {
   my $self = shift;

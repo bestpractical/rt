@@ -1096,9 +1096,11 @@ sub Transactions {
   }
   return($self->{'transactions'});
 }
+
 # }}}
 
 # {{{ sub NewTransaction
+
 sub _NewTransaction {
   my $self = shift;
   my %args = (TimeTaken => 0,
@@ -1133,6 +1135,7 @@ sub _NewTransaction {
   }
   return($transaction,$msg);
 }
+
 # }}}
 
 # }}}
@@ -1292,6 +1295,7 @@ sub _HasRight {
 # }}}
 
 # {{{ sub DisplayPermitted
+
 sub DisplayPermitted {
   my $self = shift;
   my $actor = shift;
@@ -1308,6 +1312,7 @@ sub DisplayPermitted {
     return(0);
   }
 }
+
 # }}}
 
 # {{{ sub ModifyPermitted
