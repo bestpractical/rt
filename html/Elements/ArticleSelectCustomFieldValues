@@ -1,3 +1,15 @@
+% if ($cf->Type =~ /^FreeformSingle$/) {
+<INPUT NAME="<%$Name%>" VALUE="<%$ArticleObj->CustomFieldValues($cf)->First->Content%>">
+
+% } elsif ($cf->Type =~ /^FreeformMultiple$/) {
+
+<TEXTAREA NAME="<%$Name%>"  ROWS=5 COLS=20>
+% foreach my $item (@{$ArticleObj->CustomFieldValues($cf)->ItemsArrayRef}) {
+<%$item->Content%>
+% }
+</TEXTAREA>
+% } else { 
+
 <SELECT NAME="<%$Name%>"
 
 %if ($cf->Type =~ /Multiple$/) {
@@ -11,10 +23,12 @@ MULTIPLE SIZE="<%$Size%>"
 % 	}
 ><%$item->Name%></OPTION>
 % } 
+% }
 </SELECT>
 <%ARGS>
 $cf => undef
 $Name => 'Type'
 $Size => 5
 $Selected => undef
+$ArticleObj => undef
 </%ARGS>
