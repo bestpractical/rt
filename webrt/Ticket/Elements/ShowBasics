@@ -21,7 +21,7 @@
 <%INIT>
 my $TimeWorked = $Ticket->TimeWorked;
 if ($Ticket->TimeLeft > 0 ) {
-        $TimeWorked = $Ticket->TimeWorked."/".($Ticket->TimeLeft+$Ticket->TimeWorked);
+        $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeWorked;
 }
 </%INIT>
 <%ARGS>
