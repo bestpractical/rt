@@ -90,6 +90,7 @@ unless ($Ticket->Load($id)) {
         $m->abort;
     }
     for my $luri (split (/ /,$luris)) {
+      warn $luri;
       my ($LinkId, $Message);
       if ($l eq 'LinkTo') {
         ($LinkId,$Message)=$Ticket->LinkTo(Target=>$luri, Type=>$ltyp);
@@ -99,6 +100,8 @@ unless ($Ticket->Load($id)) {
         &mc_comp("/Elements/Error" , Why => "Parameter error");
         $m->abort;
       }
+      warn $Message;
+      
       push(@Actions, $Message);
     }
   }

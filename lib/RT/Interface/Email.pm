@@ -14,6 +14,8 @@ sub activate  {
   if (!defined ($Queue)) { $Queue = "general";}
   if (!defined ($Action)) { $Action = "correspond";}
   
+  $RT::Logger->log(message=>"RT Mailgate started up ($Queue/$Action)", level=>'info');
+
   my $time = time;
 
   my $AttachmentDir = "/tmp/rt-tmp-$time";
@@ -67,7 +69,7 @@ sub activate  {
 
   #print STDERR "User is $CurrentUser\n"; 
   #If the message doesn't reference a ticket #, create a new ticket
-  if (!defined($TicketId)) {
+  if (!defined($TicketId) && $Action ne 'action') {
     #    If the message is meant to be a comment, return an error.
     if ($Action =~ /comment/i) {
       #TODO Send a warning message
@@ -84,21 +86,14 @@ sub activate  {
 		      );
    #print "id/trans/err:  $id $Transaction $ErrStr\n"; 
   }
-  else { #If we have a ticketid
-    #print STDERR "We know we've got a ticketId\n";
-    #   If the message contains commands, execute them
-    # TODO / Stub!
+  else {
+    # If we have a ticketid
 
-    # It might be worth considerating to allow both the old style (%RT
-    # command parameter(s)) and an alternative style where the
-    # commands are injected into the header.
-
-    #   If the mail message is a comment, add a comment.
     if ($Action =~ /comment/i){
        #print "Action is $Action\n";
       my $Ticket = new RT::Ticket($CurrentUser);
-      $Ticket->Load($TicketId);
-      #TODO: Check for error conditions.
+      $Ticket->Load($TicketId) || die "Could not load ticket";
+      # TODO: better error handling
       $Ticket->Comment(MIMEObj=>$entity);
     }
     
@@ -115,10 +110,60 @@ sub activate  {
 	}
      else { 
 	#TODO: Send a warning
-	die "Unknown action type: $Action\n";
+	die "Unknown action type: $Action\n"
+	    unless $Action eq "action";
      }
   }
   
+  # If the message contains commands, execute them
+  
+  # I'm allowing people to put in stuff in the mail headers here,
+  # with the header key "RT-Command":
+  
+  my $commands=$entity->head->get('RT-Command');
+  my @commands=(ref $commands ? @$commands : $commands);
+  
+  # TODO: pull out "%RT " commands from the message body and put
+  # them in commands
+  
+  # TODO: Handle all commands
+  
+  # TODO: The sender of the mail must be notificated about all %RT
+  # commands that has been executed, as well as all %RT commands
+  # that couldn't be processed.  I'll just use "die" for errors as
+  # for now.
+  
+  for (@commands) {
+      next if /^$/;
+      chomp;
+      $RT::Logger->log(message=>"Action requested through email: $_", level=>'info');
+      my ($command, $arguments)=/^(?:\s*)(\w+)(?: (.*))?$/
+	  or die "syntax error";
+      if ($command eq 'Link') {
+	  my ($from, $typ, $to)=$arguments =~ m|^(.+?) (\w+) (.+?)$|
+	      or die "syntax error in link command";
+	  my $dir='F';
+	  # dirty? yes. how to fix?
+	  $TicketId=RT::Link::_IsLocal(undef, $from);
+	  if (!$TicketId) {
+	      $dir='T';
+	      $TicketId=RT::Link::_IsLocal(undef, $to);
+	      warn $TicketId;
+	  }
+	  if (!$TicketId) {
+	      die "Links can only be done at tickets";
+	  }
+	  my $Ticket = new RT::Ticket($CurrentUser);
+	  $Ticket->Load($TicketId) || die "Could not load ticket";
+	  # dirty? yes. how to fix?
+	  $Ticket->_NewLink(dir=>$dir,Target=>$to,Base=>$from,Type=>$typ);
+      } else {
+	  die "unknown command $command";
+      }
+  }
+  
+  #   If the mail message is a comment, add a comment.
+
   return(0);
 }
 # }}}

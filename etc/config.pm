@@ -107,10 +107,10 @@ $Logger->add(Log::Dispatch::File->new
 # URIs to URLs in the web interface.  If you want to use RT towards
 # locally installed databases, this is the right place to configure it.
 # (TODO!)
-my %URI2HTTP=
+%URI2HTTP=
     (
      'fsck.com-rt' => sub {warn "stub!";},
-     'mozilla.org-bugzilla' => sub {warn "stub!";},
+     'mozilla.org-bugzilla' => sub {warn "stub!"},
      'fsck.com-kb' => sub {warn "stub!"}
      );
     

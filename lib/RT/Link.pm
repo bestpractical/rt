@@ -38,7 +38,7 @@ sub Create  {
   #TODO: this is horrificially wasteful. we shouldn't commit 
   # to the db and then instantly turn around and load the same data
   
-  return (1,"Link created");
+  return ($id,"Link created");
 }
 # }}}
  

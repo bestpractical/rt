@@ -1049,7 +1049,9 @@ sub _NewLink {
 	       Type => '',
 	       @_ );
 
-  # TODO: Check if the link exists or not
+  # TODO: Check if the link already exists - we don't want duplicates
+
+  # TODO: URIfy local tickets
  
   # Storing the link in the DB.
   my $link = RT::Link->new($self->CurrentUser);
