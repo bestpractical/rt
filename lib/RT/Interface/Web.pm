@@ -178,13 +178,13 @@ sub MakeMIMEEntity {
 	      @_);
 
   #Make the update content have no 'weird' newlines in it
-  my @UpdateContent = split(/(\r\n|\n|\r)/,
-			    $args{Body});
+
+  $args{'Body'} =~ s/\r\n/\n/gs;
   my $Message = MIME::Entity->build 
     ( Subject => $args{'Subject'} || "",
       From => $args{'From'},
       Cc => $args{'Cc'},
-      Data => \@UpdateContent);
+      Data => [ $args{'Body'} ] );
 
   my $cgi_object = CGIObject();
 
@@ -199,9 +199,7 @@ sub MakeMIMEEntity {
   
   binmode $fh; #thank you, windows
   my ($buffer);
-  #while ($buffer = <$filehandle>) {
   while (my $bytesread=read($filehandle,$buffer,4096)) {
-      $RT::Logger->crit("got $buffer");
       print $fh $buffer;
   }
   
@@ -263,6 +261,13 @@ sub ProcessSearchQuery {
     # }}}
 
     # {{{ Deal with limiting the search
+
+
+    if ($args{ARGS}->{'RefreshSearchInterval'}) {
+	$session{'tickets_refresh_interval'} = 
+		$args{ARGS}->{'RefreshSearchInterval'};
+    }
+
     if ($args{ARGS}->{'TicketsSortBy'}) {
 	$session{'tickets_sort_by'} = $args{ARGS}->{'TicketsSortBy'};
 	$session{'tickets_sort_order'} = $args{ARGS}->{'TicketsSortOrder'};
@@ -618,7 +623,6 @@ sub UpdateRecordObject {
     foreach $attribute (@$attributes) {
 	if ((defined $ARGSRef->{"$attribute"}) and 
 	    ($ARGSRef->{"$attribute"} ne $object->$attribute())) {
-	    
 	    $ARGSRef->{"$attribute"} =~ s/\r\n/\n/gs;
 	    
 	    my $method = "Set$attribute";
