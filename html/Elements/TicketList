@@ -61,7 +61,7 @@
 </TABLE>
 % }
 
-% if ($ShowNavigation) {
+% if ($Rows && $ShowNavigation) {
 <hr>
 <&|/l, $Page, int($TotalFound/$Rows)+1&>Page [_1] of [_2]</&>
 
@@ -95,7 +95,6 @@ $Format ||= $RT::DefaultSearchResultFormat;
 # Scrub the html of the format string to remove any potential nasties.
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
 
-$Rows ||= '25'; # we need a positive value
 
 unless ($Collection) {
         $Collection = RT::Tickets->new($session{'CurrentUser'});
@@ -105,14 +104,14 @@ unless ($Collection) {
 my (@Format) = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $Format);
 
 $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
-$Collection->RowsPerPage($Rows);
+$Collection->RowsPerPage($Rows) if ($Rows);
 $Collection->GotoPage($Page-1); # SB uses page 0 as the first page
 my $TotalFound =  $Collection->CountAll();
 
 </%INIT>
 <%ARGS>
 $Query => undef
-$Rows => 10
+$Rows => 50
 $Page => 1
 $Title => 'Ticket Search'
 $Collection => undef
