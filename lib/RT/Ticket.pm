@@ -76,7 +76,7 @@ sub Create {
   #Now that we know the self
   (my $code, my $message) = $self->SUPER::_Set("EffectiveId",$id);
   if ($code == 0) {
-    print STDERR "$message\n";
+    warn $message;
   }
   if (defined $args{'MIMEEntity'}) {
     my $head = $args{'MIMEEntity'}->head;
@@ -863,15 +863,18 @@ sub _NewTransaction {
   
   require RT::Transaction;
   my $trans = new RT::Transaction($self->CurrentUser);
-  $trans->Create( Ticket => $self->EffectiveId,
-		  TimeTaken => $args{'TimeTaken'},
-		  Type => $args{'Type'},
-		  Data => $args{'Data'},
-		  Field => $args{'Field'},
-		  NewValue => $args{'NewValue'},
-		  OldValue => $args{'OldValue'},
-		  MIMEEntity => $args{'MIMEEntity'}
-		);
+  my ($transaction, $msg) = 
+      $trans->Create( Ticket => $self->EffectiveId,
+		      TimeTaken => $args{'TimeTaken'},
+		      Type => $args{'Type'},
+		      Data => $args{'Data'},
+		      Field => $args{'Field'},
+		      NewValue => $args{'NewValue'},
+		      OldValue => $args{'OldValue'},
+		      MIMEEntity => $args{'MIMEEntity'}
+		      );
+
+  warn $msg unless $transaction;
   
   $self->_UpdateDateActed;
   
