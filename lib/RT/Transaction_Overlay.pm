@@ -137,11 +137,11 @@ sub Create {
 
 
     #Provide a way to turn off scrips if we need to
-        $RT::Logger->debug('About to think about scrips for transaction' .$self->Id);            
+        $RT::Logger->debug('About to think about scrips for transaction #' .$self->Id);
     if ( $args{'ActivateScrips'} ) {
        $self->{'scrips'} = RT::Scrips->new($RT::SystemUser);
 
-        $RT::Logger->debug('About to prepare scrips for transaction' .$self->Id);            
+        $RT::Logger->debug('About to prepare scrips for transaction #' .$self->Id); 
 
         $self->{'scrips'}->Prepare(
             Stage       => 'TransactionCreate',
@@ -150,7 +150,7 @@ sub Create {
             Transaction => $self->id,
         );
         if ($args{'CommitScrips'} ) {
-            $RT::Logger->debug('About to commit scrips for transaction' .$self->Id);
+            $RT::Logger->debug('About to commit scrips for transaction #' .$self->Id);
             $self->{'scrips'}->Commit();
         }
     }

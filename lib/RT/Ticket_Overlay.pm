@@ -3782,6 +3782,7 @@ sub DESTROY {
 	Stage		=> 'TransactionBatch',
 	TicketObj	=> $self,
 	TransactionObj	=> $batch->[0],
+	Type		=> join(',', (map { $_->Type } @{$batch}) )
     );
 }
 
