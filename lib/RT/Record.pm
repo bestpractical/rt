@@ -10,6 +10,12 @@
 =head1 DESCRIPTION
 
 
+=begin testing
+
+ok (require RT::Record);
+
+=end testing
+
 =head1 METHODS
 
 =cut

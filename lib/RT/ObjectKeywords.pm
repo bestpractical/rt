@@ -12,7 +12,15 @@ use vars qw( @ISA );
 This module should B<NEVER> be called directly by client code. its API is entirely through RT ticket or other objects which can have keywords assigned.
 
 
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::ObjectKeywords);
+
+=end testing
+
 =cut
+
 use RT::EasySearch;
 use RT::ObjectKeyword;
 

@@ -32,6 +32,14 @@ either the SetRecipients method or the SetTo, SetCc, etc methods (see
 the comments for the SetRecipients sub).
 
 
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Action::SendEmail);
+
+=end testing
+
+
 =head1 AUTHOR
 
 Jesse Vincent <jesse@fsck.com> and Tobias Brox <tobix@cpan.org>

@@ -21,6 +21,13 @@ It can have arbitrary MIME attachments.
 
 =head1 METHODS
 
+=begin testing
+
+ok(require RT::TestHarness);
+ok(require RT::Transaction);
+
+=end testing
+
 =cut
 
 package RT::Transaction;

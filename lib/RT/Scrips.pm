@@ -15,6 +15,14 @@
 
 =head1 METHODS
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Scrips);
+
+=end testing
+
 =cut
 
 package RT::Scrips;

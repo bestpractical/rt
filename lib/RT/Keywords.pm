@@ -18,7 +18,15 @@
 
 =head1 METHODS
 
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Keywords);
+
+=end testing
+
 =cut
+
 package RT::Keywords;
 
 use strict;

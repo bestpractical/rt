@@ -20,6 +20,14 @@ similar objects.
 
 =head1 METHODS
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Attachment);
+
+=end testing
+
 =cut
 
 package RT::Attachment;

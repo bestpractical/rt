@@ -1,5 +1,39 @@
 #$Header$
 
+=head1 NAME
+
+ RT::Keyword - Manipulate an RT::Keyword record
+
+=head1 SYNOPSIS
+  use RT::Keyword;
+
+  my $keyword = RT::Keyword->new($CurrentUser);
+  $keyword->Create( Name => 'tofu',
+		    Description => 'fermented soy beans',
+		  );
+  
+
+  my $keyword2 = RT::Keyword->new($CurrentUser);
+  $keyword2->Create( Name   => 'beast',
+		    Description => 'a wild animal',
+		    Parent => $keyword->id(),
+		  );
+
+=head1 DESCRIPTION
+
+An B<RT::Keyword> object is an arbitrary string. 
+
+=head1 METHODS
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Scrip);
+
+=end testing
+
+
+=cut 
 package RT::Keyword;
 
 use strict;
@@ -32,30 +66,6 @@ sub _Accessible {
 
 # }}}
 
-=head1 NAME
-
- RT::Keyword - Manipulate an RT::Keyword record
-
-=head1 SYNOPSIS
-  use RT::Keyword;
-
-  my $keyword = RT::Keyword->new($CurrentUser);
-  $keyword->Create( Name => 'tofu',
-		    Description => 'fermented soy beans',
-		  );
-  
-
-  my $keyword2 = RT::Keyword->new($CurrentUser);
-  $keyword2->Create( Name   => 'beast',
-		    Description => 'a wild animal',
-		    Parent => $keyword->id(),
-		  );
-
-=head1 DESCRIPTION
-
-An B<RT::Keyword> object is an arbitrary string. 
-
-=head1 METHODS
 
 =over 4
 

@@ -10,6 +10,11 @@
 
 =head1 DESCRIPTION
 
+=begin testing
+
+ok(require RT::Handle);
+
+=end testing
 
 =head1 METHODS
 
@@ -33,7 +38,7 @@ sub Connect {
 my $self=shift;
 
 # Unless the database port is a positive integer, we really don't want to pass it.
-$RT::DatabasePort = undef unless ($RT::DatabasePort =~ /^(\d+)$/);
+$RT::DatabasePort = undef unless (defined $RT::DatabasePort && $RT::DatabasePort =~ /^(\d+)$/);
 
 $self->SUPER::Connect(Host => $RT::DatabaseHost, 
 			 Database => $RT::DatabaseName, 

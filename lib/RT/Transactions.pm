@@ -14,6 +14,13 @@
 
 =head1 METHODS
 
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Transactions);
+
+=end testing
+
 =cut
 
 package RT::Transactions;

@@ -13,7 +13,16 @@
 
 =head1 METHODS
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Links);
+
+=end testing
+
 =cut
+
 package RT::Links;
 use RT::EasySearch;
 use RT::Link;

@@ -11,6 +11,14 @@
 
 =head1 METHODS
 
+
+=begin testing
+
+ok (require RT::EasySearch);
+
+=end testing
+
+
 =cut
 
 package RT::EasySearch;

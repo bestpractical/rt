@@ -16,6 +16,13 @@
 
 =head1 METHODS
 
+=begin testing
+
+ok(require RT::TestHarness);
+ok(require RT::Template);
+
+=end testing
+
 =cut
 
 package RT::Template;

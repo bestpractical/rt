@@ -15,6 +15,13 @@
 
 =head1 METHODS
 
+=begin testing
+
+ok(require RT::TestHarness);
+ok(require RT::ACE);
+
+=end testing
+
 =cut
 
 package RT::ACE;

@@ -50,6 +50,13 @@ BEGIN {
 
 =head1 METHODS
 
+=begin testing
+
+ok(require RT::TestHarness);
+ok(require RT::Interface::CLI);
+
+=end testing
+
 =cut
 
 
@@ -166,8 +173,7 @@ sub GetMessageContent {
 	@lines = split('\n',$args{'Content'});
     }
     #get us a tempfile.
-    my ($fh, $filename) = tempfile("rt-".$currentuser->Name."XXXXXXXX", 
-				   TMPDIR=>1);
+    my ($fh, $filename) = tempfile();
 	
     #write to a tmpfile
     for (@lines) {

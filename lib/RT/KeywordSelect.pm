@@ -65,7 +65,20 @@ that:
 
 =back
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::KeywordSelects);
+
+=end testing
+
+
 =head1 METHODS
+
+
+=cut
+
 
 =over 4
 

@@ -27,6 +27,14 @@ RT
 
 =head1 METHODS
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Group);
+
+=end testing
+
 =cut
 
 

@@ -16,6 +16,13 @@ This module should never be called directly by client code. it's an internal mod
 should only be accessed through exported APIs in Ticket, Queue and other similar objects.
 
 
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::ObjectKeyword);
+
+=end testing
+
 =head1 METHODS
 
 =cut

@@ -18,6 +18,13 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 
 =head1 METHODS
 
+=begin testing
+
+ok(require RT::TestHarness);
+ok(require RT::Watcher);
+
+=end testing
+
 =cut
 
 package RT::Watcher;

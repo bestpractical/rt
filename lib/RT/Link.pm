@@ -16,6 +16,14 @@ should only be accessed through exported APIs in Ticket other similar objects.
 
 =head1 METHODS
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::Link);
+
+=end testing
+
 =cut
 
 package RT::Link;

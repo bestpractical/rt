@@ -11,6 +11,14 @@
 =head1 DESCRIPTION
 
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::ScripConditions);
+
+=end testing
+
 =head1 METHODS
 
 =cut

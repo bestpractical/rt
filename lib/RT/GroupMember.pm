@@ -18,6 +18,15 @@ only be accessed through the helper functions in RT::Group;
 
 =head1 METHODS
 
+
+=begin testing
+
+ok (require RT::TestHarness);
+ok (require RT::GroupMember);
+
+=end testing
+
+
 =cut
 
 package RT::GroupMember;
