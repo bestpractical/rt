@@ -61,14 +61,18 @@ sub Create {
   #Now that we know the self
   $self->SUPER::_Set("EffectiveId",$id);
   
-  if (defined $args{'MIMEntity'}) {
+  if (defined $args{'MIMEEntity'}) {
     my $head = $args{'MIMEEntity'}->head;
     
+    require Mail::Address;
+    require RT::Watcher;
+
     #Add the requestor to the list of watchers
     my $FromLine = $head->get('Reply-To') || $head->get('From') || $head->get('Sender');
     my @From = Mail::Address->parse($FromLine);
     
     foreach $From (@From) {
+#      print "From is $From\n";
       my $Watcher = RT::Watcher->new($self->CurrentUser);
       
       $self->AddWatcher ( Email => $From->address,
@@ -168,7 +172,7 @@ sub RequestorsAsString {
     while (my $requestor = $self->Requestors->Next) {
       $self->{'RequestorsAsString'} .= $requestor->Email.", ";    
     }
-    $self->{'RequestorsAsString'} =~ s/,$//;
+    $self->{'RequestorsAsString'} =~ s/, $//;
   }
   
 
@@ -196,7 +200,7 @@ sub CcAsString {
       
     }
   }
-  $self->{'CcAsString'} =~ s/,$//;
+  $self->{'CcAsString'} =~ s/, $//;
   return ( $self->{'CcAsString'});
     
     
@@ -219,7 +223,7 @@ sub BccAsString {
     while (my $requestor = $self->Bcc->Next) {
       $self->{'BccAsString'} .= $requestor->Email .", ";
     }
-    $self->{'BccAsString'} =~ s/,$//;
+    $self->{'BccAsString'} =~ s/, $//;
   }
   return ( $self->{'BccAsString'});
   

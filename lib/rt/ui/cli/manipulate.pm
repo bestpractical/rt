@@ -309,7 +309,9 @@ sub ParseArgs {
 				     Bcc => $Bcc||"",
 				     Data => $content||"");
 
-    use RT::Ticket;
+
+   # print "Message CC is ". $message->head->get('From');
+    require RT::Ticket;
     my $Ticket = RT::Ticket->new($CurrentUser);
     my ($id, $Transaction, $ErrStr) = $Ticket->Create ( Queue => $queue,
 			       Area => $area,
