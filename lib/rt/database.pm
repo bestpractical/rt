@@ -58,7 +58,7 @@ sub add_request {
     $in_current_user = $rt::dbh->quote($in_current_user);
 
     $query_string="INSERT INTO each_req (serial_num, effective_sn, queue_id, area, alias,requestors, owner, subject, initial_priority, final_priority, priority, status, date_created, date_told, date_acted, date_due)  VALUES ($serial_num, $serial_num, $in_queue_id, $in_area, $in_alias, $in_requestors, $in_owner, $in_subject," . int($in_priority) .", ". int($in_final_priority).", ".int($in_priority) . ", $in_status, " . int($in_date_created).", ".int($in_date_told) .", ". int($in_date_created).", ". int($in_date_due).")";
-              $time_id = $sth->insert_id;   
+    
     $sth = $dbh->Query($query_string) 
 	or warn "[add_request] Query had some problem: $Mysql::db_errstr\n$query_string\n";
    
