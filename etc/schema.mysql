@@ -3,6 +3,11 @@
 # Request Tracker is Copyright 1996-1999 Jesse Reed Vincent <jesse@fsck.com>
 # RT is distributed under the terms of the GNU Public License
 
+# This contains both table definitions and some default data.  The
+# data shouldn't be here, it's mostly for test purposes.  Eventually,
+# the makefile should call up some init scrips that uses the (admin)
+# cli to add the data.
+
 # {{{ Table QueueACL
 CREATE TABLE QueueACL (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -15,6 +20,12 @@ CREATE TABLE QueueACL (
   LastUpdatedBy INT(11),
   LastUpdated TIMESTAMP
 )\g
+
+# Grant all rights to the default root user (see below)
+insert into QueueACL values (1, 1, 2, "Write", NULL, NULL, NULL, NULL);
+insert into QueueACL values (2, 1, 2, "Read", NULL, NULL, NULL, NULL);
+insert into QueueACL values (3, 1, 2, "Admin", NULL, NULL, NULL, NULL);
+
 # }}}
 
 
@@ -74,7 +85,7 @@ CREATE TABLE ScripScope (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   Scrip int(11), #Scrip Id
   Queue INT(11), #Queue Id 0 for global
-  Template INT(11), #Template Id
+  Template INT(11), #Template Id or NULL for default template
 
   Creator INT(11),
   Created TIMESTAMP,
@@ -82,10 +93,12 @@ CREATE TABLE ScripScope (
   LastUpdated TIMESTAMP  
 )\g
 
+# Put all scrips at all queues:
+insert into ScripScope select NULL, id, 0, NULL, NULL, NULL, NULL, NULL from Scrips;
 
 # }}}
 
-# {{{ Table USers 
+# {{{ Table Users 
 
 CREATE TABLE Users (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
@@ -250,9 +263,16 @@ CREATE TABLE Links (
   # <BASE> DependsOn <TARGET>
   # <BASE> MemberOf <TARGET>
   # <BASE> MergedInto <TARGET>
+
   # One possible Idea: Turn base into URIs
   # fsck.com-rt://instancename/ticket/<id>
 
+  # We need possibilities for letting links point to/from remote
+  # instances of RT as well as to other remote and internal web-based
+  # databases.  I suggest another table for URL information about
+  # foreign installations and different databases (URLs, description,
+  # ++) ... and using the
+  # mail gateway for communication between different RT instances.
 
 )\g
 
