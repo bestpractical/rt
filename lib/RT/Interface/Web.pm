@@ -5,4 +5,5 @@
 # This is a library of static subs to be used by the Mason web
 # interface to RT, and to be used by webrt.cgi / webmux.pl.
 
+package HTML::Mason::Commands;
 

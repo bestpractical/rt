@@ -47,14 +47,7 @@ require RT::User;
 my $u=RT::User->new($session{CurrentUser});
 $u->Load($id) || die "Couldn't load that user ($id)";
 if ($Signature) {
-
-# TODO: I think those comments are from before we found out that we
-# were trying to use "persistant" DBI handles:
-
-# This blows up here, haven't discovered why ... it works excellent
-# when I'm into the perl debugger using the cli
-#$session{CurrentUser}->SetSignature($Signature);
-my ($val, $msg)=$session{CurrentUser}->_Set('Signature',$Signature);
+$u->SetSignature($Signature);
 $RT::Logger->log(level=>($val ? 'info' : 'error'), message=>$msg);
 }
 
