@@ -3,12 +3,11 @@
 % if ($Default == $article->Id) {
 SELECTED
 % }
-><%"&nbsp;&nbsp;&nbsp;"x$Depth |n%><%$article->Summary%>
+><%"&nbsp;&nbsp;&nbsp;"x$Depth |n%><%$article->Summary%></OPTION>
 % if ($Depth < $MaxDepth) {
 <& ArticleOptions, parent => $article->Id, Depth => $Depth, Default => $Default, MaxDepth => $MaxDepth &> 
 % }
 % } 
-</UL>
 <%INIT>
 # Subtract 1 from depth. by default, depth 0, means unlimited.
 $Depth++;

@@ -144,6 +144,24 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
+=item Value NAME
+
+Returns a RT::FM::CustomFieldValue object of this Field\'s value with the name NAME
+
+=cut
+
+sub Value {
+    my $self = shift;
+    my $name = shift;
+
+    my $values = $self->ValuesObj();
+    $values->Limit(FIELD => 'Name',
+		   OPERATOR => '=',
+		   VALUE => $name);
+
+    return ($values->First);
+
+}
 
 =item ValuesObj
 
@@ -214,95 +232,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, SortOrder will be stored as a int(11).)
 
 =cut
-
-
-=item CreatedBy
-
-Returns the current value of CreatedBy. 
-(In the database, CreatedBy is stored as int(11).)
-
-
-=item SetCreatedBy VALUE
-
-Set CreatedBy to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, CreatedBy will be stored as a int(11).)
-
-=cut
-
-
-=item CreatedByObj
-
-Returns the User Object which has the id returned by CreatedBy
-
-
-=cut
-
-sub CreatedByObj {
-	my $self = shift;
-	my $CreatedBy = new RT::FM::User($self->CurrentUser);
-	$CreatedBy->Load($self->CreatedBy());
-	return($CreatedBy);
-}
-
-=item Created
-
-Returns the current value of Created. 
-(In the database, Created is stored as datetime.)
-
-
-=item SetCreated VALUE
-
-Set Created to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Created will be stored as a datetime.)
-
-=cut
-
-
-=item UpdatedBy
-
-Returns the current value of UpdatedBy. 
-(In the database, UpdatedBy is stored as int(11).)
-
-
-=item SetUpdatedBy VALUE
-
-Set UpdatedBy to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, UpdatedBy will be stored as a int(11).)
-
-=cut
-
-
-=item UpdatedByObj
-
-Returns the User Object which has the id returned by UpdatedBy
-
-
-=cut
-
-sub UpdatedByObj {
-	my $self = shift;
-	my $UpdatedBy = new RT::FM::User($self->CurrentUser);
-	$UpdatedBy->Load($self->UpdatedBy());
-	return($UpdatedBy);
-}
-
-=item Updated
-
-Returns the current value of Updated. 
-(In the database, Updated is stored as datetime.)
-
-
-=item SetUpdated VALUE
-
-Set Updated to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Updated will be stored as a datetime.)
-
-=cut
-
 
 
 =item Types 

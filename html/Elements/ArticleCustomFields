@@ -1,7 +1,7 @@
 % while (my $cf = $custom_fields->Next) {
 <%$cf->Name%>: 
 
-% my $values_obj = $ArticleObj->Values($cf->Id);
+% my $values_obj = $ArticleObj->CustomFieldValues($cf->Id);
 % while (my $value = $values_obj->Next) {
 
 <%$ value->FriendlyContent %>

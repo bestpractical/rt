@@ -254,23 +254,132 @@ sub Children {
 
 # }}}
 
+# {{{ sub CustomFieldValues
 
-=item Values CUSTOMFIELDID
+=item CustomFieldValues CUSTOMFIELDID
 
 Returns an RT::FM::CustomFieldObjectValueCollection object containing
 the values of CustomField CUSTOMFIELDID for this Article
 
 
 =cut
-sub Values {
-	my $self = shift;
-	my $customfield = shift;
 
-	my $cfovc = new RT::FM::CustomFieldObjectValueCollection($self->CurrentUser);
-	$cfovc->LimitToArticle($self->Id);
-	$cfovc->LimitToCustomField($customfield);
-	return ($cfovc);
+sub CustomFieldValues {
+    my $self = shift;
+    my $customfield = shift;
+    
+    my $cfovc = new RT::FM::CustomFieldObjectValueCollection($self->CurrentUser);
+    $cfovc->LimitToArticle($self->Id);
+    $cfovc->LimitToCustomField($customfield);
+    return ($cfovc);
 }
+
+# }}}
+
+sub AddCustomFieldValue {
+    my $self = shift;
+    my %args = ( CustomField => undef,  # id of a customfield record
+		 Value => undef, #id of the keyword to add
+		 @_
+	       );
+    
+    my ($OldValue, $Value, $PrintableValue);
+
+    my $CustomFieldObj = new RT::FM::CustomField($self->CurrentUser);
+    $CustomFieldObj->Load($args{'CustomField'});
+   
+    my $CurrentValuesObj = $self->CustomFieldValues($CustomFieldObj->id);
+    
+    unless ($CustomFieldObj->Id()) {
+	return(0, "Couldn't load custom field ". $args{'CustomField'});
+    }
+    
+    if ($CustomFieldObj->Type =~ /^Select/) {
+	my $ValueObj =  $CustomFieldObj->ValuesObj->HasEntry($args{'Value'}); 
+	unless ($ValueObj) {
+	    return(0, "Couldn't find value ". $args{'Value'} ." for the field ".
+		   $CustomFieldObj->Name );
+	}
+   
+
+	$Value = $ValueObj->id;
+	$PrintableValue = $ValueObj->Name;
+ 
+
+    }
+    # if we're not restricting possible values to a set
+    else {
+	$Value = $args{'Value'};
+	$PrintableValue = $Value;
+    }	
+    
+
+    #If the ticket already has this custom field value, just get out of here.
+    if (grep {$_->Content eq $Value }  	@{$CurrentValuesObj->ItemsArrayRef} ) {
+		return(0, "That is already the current value");
+    }	
+    
+
+
+    #If the keywordselect wants this to be a singleton:
+
+    if ($CustomFieldObj->Type =~ /Single$/) {
+
+	#Whack any old values...keep track of the last value that we get.
+	#we shouldn't need a loop ehre, but we do it anyway, to try to 
+	# help keep the database clean.
+	while (my $OldKey = $CurrentValuesObj->Next) {
+	    $OldValue = $OldKey->CustomFieldValueObj->Name;
+	    $OldKey->Delete();
+	}	
+	
+	
+    }
+
+    # create the new objectkeyword 
+    my $ObjectValue = new RT::FM::CustomFieldObjectValue($self->CurrentUser);
+    my $result = $ObjectValue->Create( Content => $Value,
+				       Article => $self->Id,
+				       CustomField => $CustomFieldObj->Id );
+    
+    
+    return (1, "Custom value $PrintableValue added to ". $CustomFieldObj->Name . " for article ".$self->Id);
+
+}	
+
+=head2 DeleteCustomFieldValue
+  
+  Takes a paramhash. Deletes the Keyword denoted by the I<Keyword> parameter from this
+  ticket's object keywords.
+
+=cut
+
+sub DeleteCustomFieldValue {
+    my $self = shift;
+    my %args = ( Value => undef,
+		 CustomField => undef,
+		 @_ );
+
+    #Load up the ObjectKeyword we\'re talking about
+    my $CFObjectValue = new RT::FM::CustomFieldObjectValue($self->CurrentUser);
+    $CFObjectValue->LoadByCols( Content  => $args{'Value'},
+			        CustomField => $args{'CustomField'},
+			        Article => $self->id()
+			      );
+    
+    #if we can\'t find it, bail
+    unless ($CFObjectValue->id) {
+	return (undef, "Couldn't load custom field valuewhile trying to delete it.");
+    };
+    
+    #record transaction here.
+   
+    $CFObjectValue->Delete();
+    
+    return (1, "Value ".$CFObjectValue-Name ." deleted from custom field ".$CustomField.".");
+    
+}
+
 
 # {{{ SortOrder
 =item SortOrder

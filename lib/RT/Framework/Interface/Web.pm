@@ -1,9 +1,6 @@
 ## $Header$
-## Copyright 2000 Jesse Vincent <jesse@fsck.com> & Tobias Brox <tobix@fsck.com>
-## Request Tracker is Copyright 1996-2000 Jesse Vincent <jesse@fsck.com>
+## Copyright 2001 Jesse Vincent <jesse@fsck.com> 
 
-## This is a library of static subs to be used by the Mason web
-## interface to RT
 
 package RT::Interface::Web;
 
@@ -212,33 +209,159 @@ sub UpdateArticles {
     my %args = (
 		ARGSRef => undef,
 		@_
-		
 	       );
 
     my @total_results;
     my $template_article = RT::FM::Article->new($session{'CurrentUser'}) ;
+ 
     # TODO  There needs to be a DBIx::SB::Record API to get this cleanly
     my @attributes = grep { $template_article->{'_AccessibleCache'}->{$_}->{'read'} } 
       keys %{$template_article->{'_AccessibleCache'}};
-    warn "Attributes of articles are ". join(',',@attributes);
     
     
     foreach my $art_id ( ref($$args{'ARGSRef'}->{'EditArticle'}) ? 
-			   @{ $args{'ARGSRef'}->{'EditArticle'} } : 
-			   ( $args{'ARGSRef'}->{'EditArticle'} ) ) {
-			 
+			 @{ $args{'ARGSRef'}->{'EditArticle'} } : 
+			 ( $args{'ARGSRef'}->{'EditArticle'} ) ) {
+
+	# update all the basic fields
 	my $article = RT::FM::Article->new($session{'CurrentUser'});
 	$article->Load($art_id);
 	my @results = UpdateRecordObject ( AttributesRef => \@attributes, 
 					   Object => $article, 
 					   ARGSRef => $args{'ARGSRef'});
-	@total_results = (@total_results, @results);
+	my @cf_results = UpdateArticleCustomFieldValues (
+					   Object => $article, 
+					   ARGSRef => $args{'ARGSRef'});
+	@total_results = (@total_results, @results, @cf_results);
+	
     }	
     return (@total_results);
     
 	
 }
 
+
+# }}}
+
+
+
+# {{{ sub UpdateArticleCustomFieldValues
+
+=head2 UpdateArticleCustomFieldValues ( Object => $Article, ARGSRef => \%ARGS );
+
+Returns an array of results messages.
+
+=cut
+
+sub UpdateArticleCustomFieldValues {
+    my %args = ( Object => undef,
+		 ARGSRef => undef,
+		 @_
+	       );
+    
+    my $Article = $args{'Object'};
+    my $ARGSRef = $args{'ARGSRef'};
+    
+    my (@results);
+    
+    # {{{ set ObjectKeywords.
+
+    my $CustomFields = new RT::FM::CustomFieldCollection($session{'CurrentUser'});
+    $CustomFields->UnLimit();
+
+  
+        # iterate through all the custom fields
+    while ( my $CustomField = $CustomFields->Next ) {
+	# {{{ do some setup
+
+	# Thanks to the miracle of http and html, if the form is empty (if all values are deleted, this just loses.	
+	next unless defined 
+	    $ARGSRef->{'RT::FM::Article-'.$Article->Id.'-CustomField-'.$CustomField->Id.'-AllValues-Magic'}; 
+	
+	# Lets get a hash of the possible values to work with
+	my $allvalues = $ARGSRef->{'RT::FM::Article-'.$Article->Id.'-CustomField-'.$CustomField->Id.'-AllValues'} || [];
+	
+	#lets get all those values in a hash. regardless of # of entries
+	#we'll use this for adding and deleting keywords from this object.
+	my %values = map { $_=>1 } ref($allvalues) ? @{$allvalues} : ( $allvalues );
+	
+	# Load up the ObjectKeywords for this CustomField for this ticket
+	my $CurrentValuesObj = $Article->CustomFieldValues($CustomField->id);
+	
+	# }}}
+	# {{{ add new keywords
+
+	foreach my $key (keys %values) {
+
+	    #unless the ticket has that value for that field
+            unless (grep {$_->Content eq $key }   @{$CurrentValuesObj->ItemsArrayRef} ) {
+		#Add the keyword
+		my ($result, $msg) = 
+		  $Article->AddCustomFieldValue( Value => $key,
+						 CustomField => $CustomField->id);
+		push(@results, $msg);
+	    }
+	}
+	
+	# }}}
+	# {{{ Delete unused keywords
+	
+	#redo this search, so we don't ask it to delete things that are already gone
+	# such as when a single keyword select gets its value changed.
+	$cfvalues = $Article->CustomFieldValues($CustomField->id);
+
+	while (my $CFValue = $cfvalues->Next) {
+	    
+	    # if the hash defined above doesn\'t contain the keyword mentioned,
+	    unless ($values{$CFValue->Content}) {
+		my ($result, $msg) = 
+		  $Article->DeleteCustomFieldValue(Value => $CFValue->Content,
+					          CustomField => $CustomField->id);
+		push(@results, $msg);
+	    }
+	}
+	
+	# }}}
+    }
+    
+    #Iterate through the keyword selects for BulkManipulator style access
+    while ( my $CustomField = $CustomFields->Next ) {
+
+	# Lets get a hash of the possible values to work with
+	my $add_value = $ARGSRef->{'RT::FM::Article-'.$Article->Id.'-CustomField-'.$CustomField->Id.'-AddValues'} || [];
+	
+	#lets get all those values in a hash. regardless of # of entries
+	#we'll use this for adding and deleting keywords from this object.
+	my @add_values =  ref($add_value) ? @{$add_value} : ( $add_value );
+
+        foreach my $value (@add_values) {
+
+	    #Add the keyword
+	    my ($result, $msg) = 
+		  $Article->AddCustomFieldValue( Value => $value ,
+					  CustomField => $CustomField->id);
+		push(@results, $msg);
+	}
+	
+	# Lets get a hash of the possible values to work with
+	my $del_value = $ARGSRef->{'RT::FM::Article-'.$Article->Id.'-CustomField-'.$CustomField->Id.'-DeleteValues'} || [];
+	
+	#lets get all those values in a hash. regardless of # of entries
+	#we'll use this for adding and deleting keywords from this object.
+	my @del_values =  ref($del_value) ? @{$del_value} : ( $del_value );
+	
+        foreach my $value (@del_values) {
+	    #Delete the keyword
+	    my ($result, $msg) = 
+	      $Article->DeleteCustomFieldValue(	Value => $value,
+						CustomField => $CustomField->id);
+	    push(@results, $msg);
+	}	
+    }	
+    # }}}
+    
+    return (@results);
+}
 
 # }}}
 

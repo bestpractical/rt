@@ -11,10 +11,10 @@
 <HR>
 Summary: <input size=70 name="RT::FM::Article-<%$article->Id%>-Summary" value="<%$article->Summary%>"><BR>
 
-Parent <& /Elements/ArticleSelect, Name => "RT::FM::Article-".$article->Id . "-Parent", Default => $article->ParentObj->Id &><BR>
+Parent: <& /Elements/ArticleSelect, Name => "RT::FM::Article-".$article->Id . "-Parent", Default => $article->ParentObj->Id &><BR>
 
 <& /Elements/ArticleSelectCustomFields, ArticleObj => $article &>
-
+<BR>
 <textarea cols=70 rows=20 name="RT::FM::Article-<%$article->Id%>-Content"><%$article->ContentObj->Body%></textarea>
 <br>
 <input type=submit>

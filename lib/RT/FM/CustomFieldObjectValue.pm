@@ -197,7 +197,7 @@ If this is a Select custom field, returns the CustomFieldValue this object is as
 
 sub CustomFieldValueObj {
 	my $self = shift;
-	my $cfv_obj = new RT::CustomFieldValue($self->CurrentUser);
+	my $cfv_obj = new RT::FM::CustomFieldValue($self->CurrentUser);
 	unless ($self->CustomFieldObj->Type =~ /^Select/) {
 		return ($cfv_obj);
 	}

@@ -53,7 +53,7 @@ sub _MyCurrentUser  {
     my $self = shift;
   
     $self->CurrentUser(@_);
-    warn "$self -> _MyCurrentUser isn't returning the right thing\n";
+    #warn "$self -> _MyCurrentUser isn't returning the right thing\n";
     return;
     if(!defined($self->CurrentUser)) {
 	use Carp;

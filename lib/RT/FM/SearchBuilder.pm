@@ -22,7 +22,7 @@ sub _Init  {
     my $self = shift;
     
     $self->{'user'} = shift;
-    warn "$self -> _Init  -- currentuser stubbed";
+    #warn "$self -> _Init  -- currentuser stubbed";
     unless (1) { # unless(defined($self->CurrentUser)) {
 	use Carp;
 	Carp::confess("$self was created without a CurrentUser");
@@ -68,6 +68,35 @@ sub LimitToDeleted {
 		);
 }
 # }}}
+
+# {{{ sub HasEntry
+
+=item HasEntry ID
+
+If this Collection has an entry with the ID $id, returns that entry. Otherwise returns
+undef
+
+=cut
+
+sub HasEntry {
+    my $self = shift;
+    my $id = shift;
+   
+    my @items = grep {$_->Id == $id } @{$self->ItemsArrayRef};
+   
+    if ($#items > 1) {
+	die "$self HasEntry had a list with more than one of $item in it. this can never happen";
+    }
+    
+    if ($#items == -1 ) {
+	return undef;
+    }
+    else {
+	return ($items[0]);
+    }	
+
+}
+
 
 # {{{ sub CurrentUser 
 

@@ -1,8 +1,12 @@
 % while (my $cf = $custom_fields->Next) {
 <%$cf->Name%>: 
-% my $values = $ArticleObj->Values($cf->Id);
+% my $values = $ArticleObj->CustomFieldValues($cf->Id);
 % my %selected = map { $_->Content => 1 } @{$values->ItemsArrayRef()};
-<& ArticleSelectCustomFieldValues, cf => $cf, Name => "CustomFieldValues-".$cf->Id."-RT::FM::Article-".$ArticleObj->Id, Selected => \%selected &>
+<INPUT TYPE="hidden" NAME="RT::FM::Article-<%$ArticleObj->Id%>-CustomField-<%$cf->Id%>-AllValues-Magic" VALUE=1">
+<& ArticleSelectCustomFieldValues,
+	cf => $cf, 
+	Name => "RT::FM::Article-".$ArticleObj->Id. "-CustomField-".$cf->Id.'-AllValues', 
+	Selected => \%selected &>
 
 
 % }
