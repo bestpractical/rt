@@ -42,7 +42,6 @@ $CurrentUser->LoadByUserId('RT_System');
 my @users = ( 
 	     { 
 	      UserId => 'Nobody',
-              Password => 'password', # TODO ++ shouldn't need password here
 	      RealName => 'Nobody in particular',
 	      Comments => 'Do not delete or modify this user. It is integral ' .
 	      'to RT\'s internal data structures',

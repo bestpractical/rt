@@ -3,8 +3,6 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/TitleBoxStart, title => $title &>
-
 <FORM ACTION="<%$RT::WebPath%>/Admin/Users/Modify.html" METHOD=POST>
 %if ($Create) {
 <INPUT TYPE=HIDDEN NAME=id VALUE="new">
@@ -35,8 +33,23 @@ Extra info: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->Free
 <INPUT TYPE=HIDDEN NAME="SetPrivileged" VALUE="1">
 <INPUT TYPE=CHECKBOX NAME="Privileged" VALUE="1" <%$PrivilegedChecked%>> Privileged user. (Can
 be granted rights.)<BR>
-	    New Password: <input type=password name="Pass1">
-<BR>Retype Password: <input type=password name="Pass2"><BR>
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT>
+New Password:
+</TD>
+<TD ALIGN=LEFT>
+<input type=password name="Pass1">
+</TD>
+</TR>
+<TR><TD ALIGN=RIGHT>
+Retype Password:
+</TD>
+<TD>
+<input type=password name="Pass2">
+</TD>
+</TR>
+</TABLE>
 <& /Elements/TitleBoxEnd &>
 </TD>
 <TR>
@@ -97,7 +110,7 @@ Pager: <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size=13>
 </TR>
 </TABLE>
 
-<& /Elements/TitleBoxEnd &>
+
 <& /Elements/Submit &>
 </form>
 
@@ -148,16 +161,16 @@ eval $check;
 
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
 my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
-     push @results, $msg;;
+     push @results, $msg;
 }
 
 
 
 #TODO: make this report errors properly
 if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
-my ($code, $msg);
-($code, $msg) = $UserObj->SetPassword($Pass1);
-push @results, $msg;
+    my ($code, $msg);
+    ($code, $msg) = $UserObj->SetPassword($Pass1);
+    push @results, $msg;
 }
 
 

@@ -109,7 +109,7 @@ sub Create  {
     #TODO check for duplicate emails and userid +++
 
     if (! $args{'Password'})  {
-        return(0, "No password set");
+	$args{'Password'} = '*NO-PASSWORD*';
     }
     elsif (length($args{'Password'}) < $RT::MinimumPasswordLength) {
         return(0,"Password too short");
@@ -121,6 +121,8 @@ sub Create  {
         
     #TODO Specify some sensible defaults.
     #TODO check ACLs
+
+    #TODO +++ SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
     
     my $id = $self->SUPER::Create(%args);
     
@@ -272,7 +274,6 @@ sub IsPassword {
     
     #TODO +++ ACL this
 
-    $RT::Logger->debug($self->UserId." attempting to authenticate with password '$value'\n");
     # RT does not allow null passwords 
     if ((!defined ($value)) or ($value eq '')) {
 	return(undef);
