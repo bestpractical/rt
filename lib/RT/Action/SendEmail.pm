@@ -51,25 +51,33 @@ perl(1).
 # {{{ sub Commit 
 #Do what we need to do and send it out.
 sub Commit  {
-  my $self = shift;
-  #send the email
+    my $self = shift;
+    #send the email
+    
+    # If there are no recipients, don't try to send the message.
+    # If the transaction has content and has the header RT-Squelch-Replies-To
+    
+    my $headers = $self->TransactionObj->Message->First->Headers();
+    if ($headers =~ /^RT-Squelch-Replies-To: (.*?)$/si) {
+  	my $blacklist = $1;
+	
+	# Cycle through the people we're sending to
+	my @headers = qw (To Cc Bcc);
+	
+	# if a to address contains anyone in the squelch replies to, yank it out.
+	while ( my $line =  $self->TemplateObj->MIMEObj->head->get($header)) {
+	    if ($line =~ / $blacklist,//)  {
+		$ $self->TemplateObj->MIMEObj->head->replace($header, $line);
+	    }
+	}
+    }
 
-  # We should have some kind of site specific configuration here.  I
-  # think the default method for sending an email should be
-  # send('sendmail'), but some RT installations might want to use the
-  # smtpsend method anyway. 
-
-  # If there are no recipients, don't try to send the message.
-
-  $RT::Logger->debug("Sending message \n");
-  
-  $self->TemplateObj->MIMEObj->make_singlepart;
-
-  $self->TemplateObj->MIMEObj->send($RT::MailCommand, $RT::MailParams) || 
-    die "Could not send mail (check the FAQ)";
-  
-  $RT::Logger->debug("$self: Message sent\n");
+    $self->TemplateObj->MIMEObj->make_singlepart;
+    
+    $self->TemplateObj->MIMEObj->send($RT::MailCommand, $RT::MailParams) || 
+      $RT::Logger->crit("$self: Could not send mail for ".$self->TransactionObj . "\n");
 }
+    
 
 # }}}
 

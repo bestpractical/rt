@@ -323,7 +323,7 @@ Transaction: {$Transaction->Description}
        Queue: {$Ticket->QueueObj->Name}
      Subject: {my $z=$Transaction->Message()->First(); $z ? $z->Subject : "(No subject given)"}
        Owner: {$Ticket->OwnerObj->Name}
-  Requestors: {join(",",\@{$Ticket->Requestors->Emails()})}    
+  Requestors: {$Ticket->Requestors->EmailsAsString()}
       Status: {$Ticket->Status}
  Ticket <URL: {$RT::WebURL}/Ticket/Display.html?id={$Ticket->id} >
 -------------------------------------------------------------------------

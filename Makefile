@@ -217,7 +217,7 @@ fixperms:
 		$(RT_SPEEDYCGI_HANDLER) $(RT_CLI_BIN) $(RT_CLI_ADMIN_BIN)
 
 	# Make the web ui readable by all. 
-	chmod -R 0755 $(MASON_HTML_PATH)
+	chmod -R  u+rwX,go-w,go+rX $(MASON_HTML_PATH)
 	chown -R $(LIBS_OWNER) $(MASON_HTML_PATH)
 	chgrp -R $(LIBS_GROUP) $(MASON_HTML_PATH)
 
