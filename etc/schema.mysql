@@ -149,6 +149,8 @@ CREATE TABLE Transactions (
   Ticket INT,
   TimeTaken INT,
   Type CHAR(20),
+# Alternative suggestion: 
+# Type INT,
   Field CHAR(40),
   OldValue VARCHAR(255),
   NewValue VARCHAR(255),
@@ -157,6 +159,18 @@ CREATE TABLE Transactions (
   Created TIMESTAMP
   
 )\g
+
+# Suggestion:
+
+#CREATE TABLE TransactionTypes (
+#  id int(11) AUTO_INCREMENT PRIMARY KEY,
+#  Name char(20),
+## Will try to use RT::Transaction::TransactionClass - default RT::Transaction:
+#  TransactionClass char(40), 
+#  Description char(100),
+#  ActionTemplate blob,
+#  DescriptionTemplate blob 
+#);
 
 CREATE TABLE Attachments (
   id int(11) AUTO_INCREMENT PRIMARY KEY,
