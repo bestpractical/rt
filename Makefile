@@ -44,10 +44,12 @@ html-install: install-html
 install-html:
 	-mkdir $(MASON_HTML_PATH)/RTFM
 	cp -rp html/* $(MASON_HTML_PATH)/
+	chmod -R 755  $(MASON_HTML_PATH)
+
 
 install-lib:
 	cp -rp lib/* $(RT_LIB_PATH)
-
+	chmod -R 755 $(RT_LIB_PATH)
 factory:
 	cd lib; $(PERL) ../tools/factory.mysql $(DB_DATABASE) RT::FM
 
