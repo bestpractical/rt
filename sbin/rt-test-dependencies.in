@@ -182,7 +182,7 @@ Apache::Test
 HTML::Form
 HTML::TokeParser
 WWW::Mechanize
-Test::WWW::Mechanize
+Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
 .
 
