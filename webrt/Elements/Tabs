@@ -7,7 +7,7 @@ Takes $basepath which is the base path to reference.
 <TR>
 % foreach $tab (@tabs) {
 <TD ALIGN=CENTER>
-<A HREF="<%$RT::WebPath%>/<%$basepath%>/<%$tab%>"><%$tab%></A>
+<A HREF="<%$RT::WebPath%>/<%$basepath%>/<%$tab%>/"><%$tab%></A>
 </TD>
 %}
 </TR>
