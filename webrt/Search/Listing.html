@@ -1,16 +1,33 @@
+<HTML>
+<HEAD>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
 <H1>WebRT Queue</H1>
 
-<& QueueInterpretRestrtictionCookies &>
 
-<& QueueHeader format="$format" &>
-%foreach entry in $queue {
-	 <& QueueItem format="$format" Item="$Item" &>
+%#<& QueueInterpretRestrtictionCookies &>
+<TABLE WIDTH=100%>
+%#<& QueueHeader format="$format" &>
+%while (my $Ticket = $Tickets->Next) {
+<TR>
+	<TD>
+	<& QueueItem , Ticket=>$Ticket &>
+	</TD>
+</TR>
 %}
-
-<& QueueFooter format="$format" &>
+</TABLE>
+%#<& QueueFooter format="$format" &>
 
 <HR>
 
-< QueueAddRestriction >
+%#<& QueueAddRestriction &>
 
 
+<%INIT>
+use RT::CurrentUser;
+my $CurrentUser = RT::CurrentUser->new(2);
+my $Tickets = RT::Tickets->new($CurrentUser);
+use RT::Tickets;
+ $Tickets->Limit( FIELD => 'status',
+			VALUE => "open");
+</%INIT>

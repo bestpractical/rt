@@ -30,7 +30,7 @@ RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
 RT_CGI_PATH		=	$(RT_BIN_PATH)/cgi
-
+RT_HTML_PATH		=	$(RT_PATH)/WebRT/html
 #
 # The rtmux is the setuid script which invokes whichever rt program it needs to.
 #
@@ -174,7 +174,7 @@ WEB_IMAGE_PATH			=	/webrt
 default:
 	@echo "Read the README"
 
-install: dirs initialize libs-install config-replace mux-install mux-links fixperms instruct
+install: dirs initialize libs-install html-install config-replace mux-install mux-links fixperms instruct
 
 instruct:
 	@echo "Congratulations. RT has been installed. "
@@ -182,7 +182,7 @@ instruct:
 
 upgrade: libs-install config-replace mux-install nondestruct
 
-upgrade-noclobber: libs-install mux-install nondestruct
+upgrade-noclobber: libs-install html-install mux-install nondestruct
 
 nondestruct: mux-links fixperms
 
@@ -197,6 +197,7 @@ fixperms:
 	chmod 0755 $(RT_BIN_PATH)
 	chmod 0755 $(RT_CGI_PATH)
 	chmod 4755 $(RT_PERL_MUX)
+	chmod 777  /opt/rt/WebRT/data
 dirs:
 	mkdir -p $(RT_BIN_PATH)
 	mkdir -p $(RT_CGI_PATH)
@@ -208,6 +209,10 @@ libs-install:
 	cp -rp ./lib/* $(RT_LIB_PATH)    
 	chmod -R 0755 $(RT_LIB_PATH)
 
+html-install:
+	mkdir -p $(RT_HTML_PATH)
+	cp -rp ./webrt/* $(RT_HTML_PATH)
+	chmod -R 0755 $(RT_HTML_PATH)
 
 initialize: database acls
 

@@ -324,7 +324,7 @@ sub DisplayPermitted  {
 
   my $actor = shift;
   if (!$actor) {
-    my $actor = $self->CurrentUser->Id();
+ #   my $actor = $self->CurrentUser->Id();
   }
   if (1) {
 #  if ($self->Queue->DisplayPermitted($actor)) {

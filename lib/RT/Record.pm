@@ -27,11 +27,11 @@ sub _Init  {
 # {{{ sub _MyCurrentUser 
 sub _MyCurrentUser  {
   my $self = shift;
+  
   $self->{'user'} = shift;
   
   if(!defined($self->CurrentUser)) {
     my ($package, $filename, $line) = caller;
-    
     return(0);
   }
 }
