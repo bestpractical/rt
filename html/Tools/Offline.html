@@ -95,7 +95,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
 	$template .= $buffer;
     }
-    $action->Parse($template, $qname, $requestoraddress);
+    $action->Parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);
     foreach (@{ $action->{'create_tickets'} }) {
 	my $id = $_;
 	$id =~ s/^create\-//;
@@ -105,7 +105,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 
     $ARGS{'string'} = $string;
 } elsif ($ARGS{'UpdateTickets'}) {
-    $action->Parse($ARGS{string}, $qname, $requestoraddress);
+    $action->Parse(Content => $ARGS{string}, Queue => $qname, Requestor=> $requestoraddress);
     push @results, $action->CreateByTemplate();
     push @results, $action->UpdateByTemplate();
     $string = $ARGS{string};
