@@ -28,6 +28,12 @@ sub _Init   {
   
   $self->{'table'} = "Transactions";
   $self->{'primary_key'} = "id";
+  
+  # By default, order by the date of the transaction, rather than ID.
+  $self->OrderBy( ALIAS => 'main',
+		  FIELD => 'Created',
+		  ORDER => 'ASC');
+
   return ( $self->SUPER::_Init(@_));
 }
 # }}}

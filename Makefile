@@ -6,7 +6,7 @@ PERL			= 	/usr/bin/perl
 
 RT_VERSION_MAJOR	=	1
 RT_VERSION_MINOR	=	3
-RT_VERSION_PATCH	=	101
+RT_VERSION_PATCH	=	102
 
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
@@ -40,6 +40,7 @@ RT_PATH			=	/opt/rt2
 RT_LIB_PATH		=	$(RT_PATH)/lib
 RT_ETC_PATH		=	$(RT_PATH)/etc
 RT_BIN_PATH		=	$(RT_PATH)/bin
+RT_MAN_PATH		=	$(RT_PATH)/man
 MASON_HTML_PATH		=	$(RT_PATH)/WebRT/html
 
 
@@ -250,7 +251,9 @@ libs-install:
 	chgrp -R $(LIBS_GROUP) $(RT_LIB_PATH)
 	chmod -R $(RT_READABLE_DIR_MODE) $(RT_LIB_PATH)
 	( cd ./lib; \
-	  $(PERL) Makefile.PL LIB=$(RT_LIB_PATH) \
+	  $(PERL) Makefile.PL INSTALLSITELIB=$(RT_LIB_PATH) \
+			      INSTALLSITEMAN1DIR=$(RT_MAN_PATH)/man1 \
+			      INSTALLSITEMAN3DIR=$(RT_MAN_PATH)/man3 \
 	    && make \
 	    && make test \
 	    && $(PERL) -p -i -e " s'!!RT_VERSION!!'$(RT_VERSION)'g;" blib/lib/RT.pm ;\
