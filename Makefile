@@ -289,6 +289,10 @@ test:
 regression: config-install dirs files-install libs-install sbin-install bin-install regression-instruct dropdb initialize-database testify-pods
 	$(PERL) lib/t/02regression.t
 
+web-test: 
+	$(PERL) lib/t/03web.t
+
+
 regression-quiet:
 	$(PERL) sbin/regression_harness
 
