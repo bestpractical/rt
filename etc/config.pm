@@ -7,9 +7,6 @@
     #Where you keep you transaction texts
     $transaction_dir="!!RT_TRANSACTIONS_PATH!!";
 
-    #Where you're sticking the glimpse index files;
-    $glimpse_dir= "!!RT_GLIMPSE_PATH!!|";
-
     #Where you keep templates for each of your queues
     $template_dir="!!RT_TEMPLATE_PATH!!";
 
@@ -71,11 +68,6 @@
     #with sendmail's command line syntax
     $mailprog = "!!MAIL_PROGRAM!!";
     $mail_options = "!!MAIL_OPTIONS!!";
-
-
-    #glimpse_index is where you keep the glimpseindex binary
-    #set it to null if you don't have glimpse
-    $glimpse_index = "!!GLIMPSE_INDEX!!";
 
 
 1;

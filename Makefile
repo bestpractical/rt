@@ -34,7 +34,6 @@ RT_TRANSACTIONS_PATH	= 	$(RT_PATH)/transactions
 
 # Where you keep the templates for your various queues
 RT_TEMPLATE_PATH	=	$(RT_ETC_PATH)/templates
-RT_GLIMPSE_PATH		=       $(RT_TRANSACTIONS_PATH)/glimpse
 
 
 #
@@ -78,20 +77,12 @@ RT_MAIL_TAG		=	change-this-string-or-perish
 
 RT_MAIL_ALIAS		=	rt\@your.domain.is.not.yet.set
 
-#
-# glimpse_index is where you keep the glimpseindex binary
-# set it to null if you don't have glimpse
-# (glimpse functionality isn't yet used)
-#
-
-GLIMPSE_INDEX		=       /usr/local/bin/glimpseindex
-
 # 
 # set this to whatever program you want to send the mail that RT generates
 # be aware, however, that RT expects to be able to set the From: line
-# with sendmail's command line syntax. For versions of sendmail < 8.8 you may need
-# to remove some or all of the flags we're passing here.  However, nobody should be 
-# running a version of sendmail < 8.8
+# with sendmail's command line syntax. For versions of sendmail < 8.8 you may 
+# need to remove some or all of the flags we're passing here.  However, nobody
+# should be running a version of sendmail < 8.8
 #
 
 MAIL_PROGRAM		= 	/usr/lib/sendmail
@@ -201,7 +192,7 @@ instruct:
 
 upgrade: libs-install config-replace mux-install nondestruct
 
-nondestruct: mux-links glimpse fixperms
+nondestruct: mux-links fixperms
 
 all:
 	@echo "Read the readme."
@@ -222,15 +213,11 @@ dirs:
 	mkdir -p $(RT_ETC_PATH)
 	cp -rp ./etc/* $(RT_ETC_PATH)
 	mkdir -p $(RT_TRANSACTIONS_PATH)
-	mkdir -p $(RT_GLIMPSE_PATH)
 
 libs-install: 
 	mkdir -p $(RT_LIB_PATH)
 	cp -rp ./lib/* $(RT_LIB_PATH)    
 	chmod -R 0755 $(RT_LIB_PATH)
-
-glimpse:
-	-$(GLIMPSE_INDEX) -H $(RT_GLIMPSE_PATH) $(RT_TRANSACTIONS_PATH)
 
 
 initialize: database acls
@@ -295,7 +282,6 @@ config-replace:
 	s'!!RT_PATH!!'$(RT_PATH)'g;\
         s'!!RT_TRANSACTIONS_PATH!!'$(RT_TRANSACTIONS_PATH)'g;\
         s'!!RT_TEMPLATE_PATH!!'$(RT_TEMPLATE_PATH)'g;\
-	s'!!RT_GLIMPSE_PATH!!'$(RT_GLIMPSE_PATH)'g;\
         s'!!RTUSER!!'$(RTUSER)'g;\
         s'!!RTGROUP!!'$(RTGROUP)'g;\
         s'!!RT_MYSQL_PASS!!'$(RT_MYSQL_PASS)'g;\
@@ -305,8 +291,7 @@ config-replace:
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
         s'!!MAIL_PROGRAM!!'$(MAIL_PROGRAM)'g;\
 	s'!!MAIL_OPTIONS!!'$(MAIL_OPTIONS)'g;\
-	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g;\
-	s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
+	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g; " $(RT_CONFIG)
 
 httpd.conf-replace:
 	mv $(RT_ETC_PATH)/httpd/cern/httpd.conf $(RT_ETC_PATH)/httpd/cern/httpd.conf.old

@@ -34,19 +34,6 @@ o   MysqlPerl ( http://www.tcx.se ) -- free
 	Mysqlperl is included in the MySQL distribution
 
 
-SUGGESTED PACKAGES:
--------------------
-
-o   Glimpse 4.0 (http://glimpse.cs.arizona.edu) -- free (detect a trend?)
-
-        FTP glimpse from ftp.cs.arizona.edu and follow the install
-	instructions containted therein.
-
-        At this stage of the game, glimpse won't buy you any
-	functionality.  However, in the future, it will make your life
-	much easier by allowing you to search the full text of requests easily.
-
-
 INSTALL INSTRUCTIONS
 --------------------
 
