@@ -101,6 +101,8 @@ my $Transactions = $Ticket->Transactions;
 my $i;
 
 
+$Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
+
 </%INIT>
 <%ARGS>
 $URIFile => 'Display.html'
