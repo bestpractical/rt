@@ -58,7 +58,7 @@ Takes nothing. Calls SUPER::Connect with the needed args
 =cut
 
 sub Connect {
-my $self=shift;
+    my $self = shift;
 
 
     if ($RT::DatabaseType eq 'Oracle') {

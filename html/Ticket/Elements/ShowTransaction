@@ -50,14 +50,25 @@ unless ($Collapsed) {
           my $MAX_INLINE_BODY = $RT::MaxInlineBody || 13456;
         if (    $message->ContentType =~ m{^(text/plain|message|text$)}i
              && $message->ContentLength < $MAX_INLINE_BODY ) {
-            eval {
-                require Text::Quoted;
-                $quoted = Text::Quoted::extract( $message->Content );
-            };
-            if ($@) {
-                $quoted = $message->Content;
-            }
+  		my $content;
+        	# If we've preloaded all the content, let's pull from there
+        	# if we haven't, load it now
+        	if ($AttachmentContent->{$message->id}) {
+            $content = $AttachmentContent->{$message->id}->Content;
+        	} else {
+            $content = $message->Content;
+        	} 
+
+
+
+        eval {
+            require Text::Quoted;
+            $quoted = Text::Quoted::extract( $content );
+        };
+        if ($@) {
+            $quoted = $content;
         }
+    }
 
 </%PERL>
 <TR class="<% $RowNum%2 ? 'oddline' : 'evenline'%>" >                                
