@@ -24,7 +24,7 @@ CONFIG_FILE	     =       $(CONFIG_FILE_PATH)/RT_Config.pm
 GETPARAM		=       $(PERL) -e'require "$(CONFIG_FILE)"; print $${$$RT::{$$ARGV[0]}};'
 
 RT_LIB_PATH	     =       `$(GETPARAM) "LibPath"`
-MASON_HTML_PATH	 =       `$(GETPARAM) "MasonComponentRoot"`
+MASON_HTML_PATH	 =       `$(GETPARAM) "MasonLocalComponentRoot"`
 
 DB_DATABASE	     =       `${GETPARAM} DatabaseName`
 DB_RT_USER	      =       `${GETPARAM} DatabaseUser`
@@ -32,7 +32,11 @@ DB_RT_PASS	      =       `${GETPARAM} DatabasePass`
 DBTYPE		=mysql
 TAG			= rtfm-2-snap
 
-install: install-lib initdb
+install: install-lib install-html initdb
+
+install-html:
+	-mkdir $(MASON_HTML_PATH)/RTFM
+	cp -rvp html/* $(MASON_HTML_PATH)/RTFM/
 
 install-lib:
 	cp -rvp lib/* $(RT_LIB_PATH)

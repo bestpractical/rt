@@ -35,20 +35,6 @@ package RT::FM::SearchBuilder;
 use RT::SearchBuilder;
 @ISA= qw(RT::SearchBuilder);
 
-# {{{ sub _Init 
-sub _Init  {
-    my $self = shift;
-    
-    $self->{'user'} = shift;
-    unless(defined($self->CurrentUser)) {
-	use Carp;
-	Carp::confess("$self was created without a CurrentUser");
-	return(0);
-    }
-    $self->SUPER::_Init( 'Handle' => $RT::Handle);
-}
-# }}}
-
 # {{{ sub LimitToEnabled
 
 =head2 LimitToEnabled

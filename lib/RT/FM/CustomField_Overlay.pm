@@ -559,10 +559,57 @@ sub AddToClass {
     return ( $id, $msg );
 }
 
+=head2 RemoveFromClass ID
+
+Removes this custom field from the class specified by ID. 
+
+Id can be a name or Id.
+
+"0" is treated as "all classes"
+
+
+=begin testing
+
+my ($id, $msg);
+my $cf = RT::FM::CustomField->new($RT::SystemUser);
+($id, $msg) =$cf->Load('ClassTest');
+
+ok($id,$msg);
+($id,$msg) = $cf->RemoveFromClass('1');
+ok($id,$msg);
+($id,$msg) = $cf->RemoveFromClass('0');
+ok($id,$msg);
+($id,$msg) = $cf->RemoveFromClass('99999999990');
+ok(!$id,$msg);
+($id,$msg) = $cf->RemoveFromClass('2');
+ok(!$id,$msg);
+
+
+=end testing
+
+=cut
+
 sub RemoveFromClass {
     my $self = shift;
     my $class = shift;
 
+    
+    unless ( $class eq '0' ) {
+        my $class_obj = RT::FM::Class->new( $self->CurrentUser );
+        $class_obj->Load($class);
+        unless ( $class_obj->Id ) {
+            return ( 0, $self->loc("Invalid value for class") );
+        }
+        $class = $class_obj->Id;
+    }
+    my $ClassCF = RT::FM::ClassCustomField->new( $self->CurrentUser );
+    $ClassCF->LoadByCols( Class => $class, CustomField => $self->Id );
+    unless ( $ClassCF->Id ) {
+        return ( 0, $self->loc("This custom field does not apply to that class"));
+    }
+    my ( $id, $msg ) = $ClassCF->Delete;
+
+    return ( $id, $msg );
 
 
 }
