@@ -163,7 +163,128 @@ print join(':',@keywords);
 # {{{ If they want it, print a usage message and get out
 
 if ($help) {
-    print "This should be a usage message. it will be soon\n";
+
+print <<EOUSAGE;
+
+Limt the set of records returned:
+
+--id=[first][-][last]
+  Specify a single ticket, a range, or to start with (n-) or end with (-n)
+a speciifc ticket.
+  
+  --limit-queue=<queue>
+	  --limit-status=[!](open|stalled|resolved|dead)
+
+	  --limit-owner=[!]<userid>
+	  --limit-priority=[starts][-][ends]
+	  --limit-final-priority=[starts][-][ends]
+	    starts is less than ends
+	  --limit-requestor=[!]<userid>|<email>
+	  --limit-subject=[!]<text>
+	  --limit-body=[!]<text>
+	  --limit-created=[starts][-][ends]
+	    starts and ends are dates.  starts can not be less than ends
+	  --limit-due=[starts][-][ends]
+	    starts and ends are dates.  starts can not be less than ends
+	  --limit-starts=[starts][-][ends]
+	    starts and ends are dates.  starts can not be less than ends
+	  --limit-started=[starts][-][ends]
+	    starts and ends are dates.  starts can not be less than ends
+
+	  --limit-first=<first row returned>
+	  --limit-rows=<row count>
+"
+	  --history | --show
+            show a history of the tickets found
+ 
+
+	  --summary [format-string]
+             show a listing-style summary of the tickets found. If format string
+             is ommitted, uses $RT_SUMMARY_FORMAT or an internal default
+            
+
+             #TODO: doc summary 
+             format: <atom>%<format>
+             atom:   <name><size>
+             size: <integer>
+             name:  (grep for # {{{ attribs for the array of ok values)
+
+
+	  --create
+            create a new ticket. Any attributes that you can modify on an existing ticket
+            can also be used for ticket creation.
+
+
+
+Attributes
+  Basics
+	  --status=<open|stalled|resolved|dead>
+           sets status
+	   --subject=<subject>
+           sets subject
+	   --owner=<userid>
+           set owner to 
+	   --queue=<queueid>
+           set queue to
+	   
+	   --priority=<int>
+	  
+           --final-priority=<int>
+
+  Watchers
+	  --requestors=[+|-]<userid|email address>
+          add or remove this user as a ticket requestor
+	  --cc=[+|-]<userid|email address>
+          add or remove this user as a ticket cc
+	  --admincc=[+|-]<userid|email address>
+          add or remove this user as a ticket admincc
+
+  Keywords
+	  --keywords[+|-]<keyword_select>/<keyword>
+          Add or remove a keyword.
+
+
+
+  Dates
+	   --due=<date>
+	   --starts=<date>
+	   --started=<date>
+	   --contacted=<date>
+
+	   --time-left=<int>
+	     
+	   --time-taken=<int>
+
+
+   Link related manipulation:
+
+	   --depends-on=[+|-]<ticketid>
+	   --member-of=[+|-]<ticketid>
+	   --related-to=[+|-]<ticketid>
+
+Comments and replies
+
+	   --comment
+	   --reply|respond
+	     --source <path>
+                Specify the path to the source file for this ticket update
+
+	      --no-edit
+                Don't invoke $EDITOR to edit the content of this update
+
+
+
+
+   Condiments
+
+	   --verbose
+	   --debug
+	   --version
+	   --help|h|usage
+             You're reading it.
+
+EOUSAGE
+
     exit(0);
 }
 
