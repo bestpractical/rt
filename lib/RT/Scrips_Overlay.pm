@@ -130,18 +130,75 @@ sub Next {
 # }}}
 
 sub Apply {
-    my  $self = shift;
+    my $self = shift;
 
-    my  %args  = (
+    my %args = ( TicketObj      => undef,
+                 Ticket         => undef,
+                 Transaction    => undef,
+                 TransactionObj => undef,
+                 Stage          => undef,
+                 Type           => undef,
+                 @_ );
+
+    #We're really going to need a non-acled ticket for the scrips to work
+    $self->_SetupSourceObjects( TicketObj      => $args{'TicketObj'},
+                                Ticket         => $args{'Ticket'},
+                                TransactionObj => $args{'TransactionObj'},
+                                Transaction    => $args{'Transaction'} );
+
+    # {{{ Deal with Scrips
+
+    $self->_FindScrips( Stage => $args{'Stage'}, Type => $args{'Type'} );
+
+    my @scrips_to_commit;
+
+    #Iterate through each script and check it's applicability.
+    while ( my $scrip = $self->Next() ) {
+
+        next
+          unless ( $scrip->IsApplicable(
+                                     TicketObj      => $self->{'TicketObj'},
+                                     TransactionObj => $self->{'TransactionObj'}
+                   ) );
+
+        #If it's applicable, prepare and commit it
+        next
+          unless ( $scrip->Prepare( TicketObj      => $self->{'TicketObj'},
+                                    TransactionObj => $self->{'TransactionObj'}
+                   ) );
+        push @scrips_to_commit, $scrip;
+
+    }
+    foreach my $scrip (@scrips_to_commit) {
+
+        $scrip->Commit( TicketObj      => $self->{'TicketObj'},
+                        TransactionObj => $self->{'TransactionObj'} );
+    }
+
+
+    # }}}
+}
+
+# {{{ sup _SetupSourceObjects
+=head2  _SetupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }
+
+Setup a ticket and transaction for this Scrip collection to work with as it runs through the 
+relevant scrips.  (Also to figure out which scrips apply)
+
+Returns: nothing
+
+=cut
+
+
+sub _SetupSourceObjects {
+
+    my $self = shift;
+    my %args = ( 
             TicketObj => undef,
             Ticket => undef,
             Transaction => undef,
             TransactionObj => undef,
-            Stage => undef,
-            Type => undef,
-                @_);
-
-    #We're really going to need a non-acled ticket for the scrips to work
+            @_ );
 
     if ( ( $self->{'TicketObj'} = $args{'TicketObj'} ) ) {
         $self->{'TicketObj'}->CurrentUser( $self->CurrentUser );
@@ -158,25 +215,13 @@ sub Apply {
     else {
         $self->{'TransactionObj'} = RT::Transaction->new( $self->CurrentUser );
         $self->{'TransactionObj'}->Load( $args{'Transaction'} )
-          || $RT::Logger->err(
-            "$self couldn't load transaction $args{'Transaction'}\n");
+          || $RT::Logger->err( "$self couldn't load transaction $args{'Transaction'}\n");
     }
+} 
 
-    # {{{ Deal with Scrips
+# }}}
 
-    $self->_FindScrips(Stage => $args{'Stage'}, Type => $args{'Type'});
-
-    #Iterate through each script and check it's applicability.
-    while ( my $Scrip = $self->Next() ) {
-        $RT::Logger->debug("About to apply scrip ".$Scrip->Id. " for transaction ".$self->{'TransactionObj'}->id);
-        $Scrip->Apply(
-            TicketObj      => $self->{'TicketObj'},
-            TransactionObj => $self->{'TransactionObj'}
-        );
-    }
-
-    # }}}
-}
+# {{{ sub _FindScrips;
 
 =head2 _FindScrips
 
@@ -230,6 +275,7 @@ sub _FindScrips {
     $RT::Logger->debug("Found ".$self->Count. " scrips");
 }
 
+# }}}
 
 1;
 
