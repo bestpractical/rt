@@ -151,14 +151,15 @@ sub Commit {
         while ( my $attach = $attachments->Next ) {
 
             # Don't attach anything blank
-            next unless ( $attach->Content );
+            next unless ( $attach->ContentLength );
 
             # We want to make sure that we don't include the attachment that's being sued as the "Content" of this message"
             next
               if (    $transaction_content_obj
                    && $transaction_content_obj->Id == $attach->Id );
             $MIMEObj->attach( Type => $attach->ContentType,
-                              Data => $attach->Content,
+                              Charset => $attach->OriginalEncoding,
+                              Data => $attach->OriginalContent,
                               Filename => $attach->Filename );
         }
 

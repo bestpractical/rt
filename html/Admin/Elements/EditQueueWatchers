@@ -23,7 +23,7 @@
 %# END LICENSE BLOCK
 %if ($Members->Count == 0 ) {
 <ul>
-<li><i>none</i>
+<li><i><&|/l&>none</&></i>
 % } else {
 <i><&|/l&>(Check box to delete)</&></i><br><BR>
 <ul>

@@ -338,6 +338,7 @@ sub Commit {
 	$RT::Logger->debug("Workflow: processing $template_id of $T::TOP");
 
 	$T::ID = $template_id;
+	@T::AllID = @{ $self->{'template_order'} };
 
         my $template = Text::Template->new(
 	      TYPE   => 'STRING',

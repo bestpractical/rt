@@ -31,6 +31,7 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
 }
 </%INIT>
 
+<& /Elements/Callback, %ARGS, _CallbackName => 'Header' &>
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
 <DIV ALIGN=CENTER>
