@@ -130,10 +130,10 @@ $MailCommand = 'sendmail',
 # (assuming you picked 'sendmail' as the $MailCommand above)
 
 #These options are good for most sendmail wrappers and workalikes
-$SendmailArguments="-oi -t";
+$SendmailArguments="-oi";
 
 #These arguments are good for sendmail brand sendmail 8 and newer
-#$SendmailArguments="-oi -t -ODeliveryMode=b -OErrorMode=m";
+#$SendmailArguments="-oi -ODeliveryMode=b -OErrorMode=m";
 
 # }}}
 

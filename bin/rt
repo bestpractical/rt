@@ -649,7 +649,7 @@ else {
 	    if ($iso) {
 		my ($trans, $msg) = 
 		  $Ticket->SetStarts($iso);
-		print $msg;
+		print $msg."\n";
 	    }
 	    else {
 		print "Starts date '$starts' could not be parsed";
@@ -661,7 +661,7 @@ else {
 	    if ($iso) {
 		my ($trans, $msg) = 
 		  $Ticket->SetStarted($iso);
-		print $msg;
+		print $msg."\n";
 	    }
 	    else {
 		print "Started date '$started' could not be parsed";
@@ -673,7 +673,7 @@ else {
 	    if ($iso) {
 		my ($trans, $msg) = 
 		  $Ticket->SetContacted($iso);
-		print $msg;
+		print $msg."\n";
 	    }
 	    else {
 		print "Contacted date '$contacted' could not be parsed";
@@ -687,56 +687,56 @@ else {
 	#Set subject
 	if ($subject) {
 	    my ($trans, $msg) = $Ticket->SetSubject($subject);
-	    print $msg;
+	    print $msg."\n";
 	}
 	
 	#Set priority
 	if ($priority) {
 	    my ($trans, $msg) = 
 	      $Ticket->SetPriority($priority);
-	    print $msg;
+	    print $msg."\n";
 	}
 	
 	#Set final priority
 	if ($final_priority) {
 	    my ($trans, $msg) =
 	      $Ticket->SetFinalPriority($final_priority);
-	    print $msg;
+	    print $msg."\n";
 	}
 
 	#Set status
 	if ($status) {
 	    my ($trans, $msg) = 
 	      $Ticket->SetStatus($status);
-	    print $msg;
+	    print $msg."\n";
 	}
 	
 	#Set time left
 	if ($time_left) {
 	    my ($trans, $msg) = 
 	      $Ticket->SetTimeLeft($time_left);
-	    print $msg;
+	    print $msg."\n";
 	}
 
 	#Set time_taken 
 	if ($time_taken) {
 	    my ($trans, $msg) = 
 	      $Ticket->SetTimeTaken($time_taken);
-	    print $msg;
+	    print $msg."\n";
 	}
 	
 	#Set owner
 	if ($owner) {
 	    my ($trans, $msg) =
 	      $Ticket->SetOwner($owner);
-	    print $msg;
+	    print $msg."\n";
 	}
 
 	#Set queue 
 	if ($queue) {
 	    my ($trans, $msg) = 
 	      $Ticket->SetQueue($queue);
-	    print $msg;
+	    print $msg."\n";
 	}
 
     # }}}
