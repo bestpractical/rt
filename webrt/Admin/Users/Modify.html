@@ -16,13 +16,11 @@
 <TD VALIGN=TOP ROWSPAN=2>
 <& /Elements/TitleBoxStart, title => 'Identity' &>
 
-Username: <input name="Name" value="<%$UserObj->Name%>"> <b>(required)</b>
-<BR>
-Real Name: <input name="RealName" value="<%$UserObj->RealName%>">
-<BR>
+Username: <input name="Name" value="<%$UserObj->Name%>"> <b>(required)</b> <BR>
+Email: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"><BR>
+Real Name: <input name="RealName" value="<%$UserObj->RealName%>"> <BR>
 Nickname: <input name="NickName" value="<%$UserObj->NickName%>">
 <BR>
-Email: <input name="EmailAddress" value="<%$UserObj->EmailAddress%>"> <BR>
 Unix login: <input name="Gecos" value="<%$UserObj->Gecos%>">
 <BR>
 Extra info: <textarea name="FreeformContactInfo" cols=20 rows=5><%$UserObj->FreeformContactInfo%></TEXTAREA>
@@ -162,7 +160,7 @@ else {
 
 
 # If we have a user to modify, lets try. 
-if ($val) {
+if ($UserObj->Id) {
     
     my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
 		    Organization RealName NickName Lang EmailEncoding WebEncoding 
