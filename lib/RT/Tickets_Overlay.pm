@@ -2080,12 +2080,12 @@ sub _BuildItemMap {
 
     delete $self->{'item_map'};
     if ($items->[0]) {
-    $self->{'item_map'}->{'first'} = $items->[0]->Id;
+    $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
     while (my $item = shift @$items ) {
-        my $id = $item->Id;
+        my $id = $item->EffectiveId;
         $self->{'item_map'}->{$id}->{'defined'} = 1;
         $self->{'item_map'}->{$id}->{prev}  = $prev;
-        $self->{'item_map'}->{$id}->{next}  = $items->[0]->Id if ($items->[0]);
+        $self->{'item_map'}->{$id}->{next}  = $items->[0]->EffectiveId if ($items->[0]);
         $prev = $id;
     }
     $self->{'item_map'}->{'last'} = $prev;
