@@ -1,0 +1,31 @@
+<SPAN class="search">
+<TR
+% if ($i%2) {
+CLASS="oddline"
+% } else {
+CLASS="evenline"
+% }
+>
+<TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->id%></a></B></TD>
+<TD><B><A HREF="<%$RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></B></TD>
+<TD><%$Ticket->Status%></TD>
+<TD><%$Ticket->QueueObj->Name%></TD>
+<TD><%$Ticket->OwnerObj->Name%></TD>
+
+</TR>
+<TR
+% if ($i%2) {
+CLASS="oddline"
+% } else {
+CLASS="evenline"
+% }
+><TD><small><%$Ticket->Requestors->MemberEmailAddressesAsString%></small></TD>
+<TD><SMALL><%$Ticket->CreatedObj->AgeAsString || '-'%></SMALL></TD>
+<TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
+<TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
+</TR>
+</SPAN>
+<%ARGS>
+$Ticket => undef
+$i => undef
+</%ARGS>

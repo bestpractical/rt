@@ -91,19 +91,19 @@ if (defined $ARGS{'Action'}) {
     push(@Actions, $msg);
   }
 }
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
 
-    if ($ARGS{'UpdateContent'} &&
-        $ARGS{'UpdateContent'} ne '' &&
-        $ARGS{'UpdateContent'} ne  "-- \n" .
-                                $session{'CurrentUser'}->UserObj->Signature
-       ) {
+    if ( $ARGS{'UpdateContent'} ) {
+        $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+        if (    $ARGS{'UpdateContent'} ne ''
+             && $ARGS{'UpdateContent'} ne "-- \n"
+             . $session{'CurrentUser'}->UserObj->Signature ) {
             $ARGS{UpdateAttachments} = $session{'Attachments'};
-	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
-				 Actions=>\@Actions, 
-				 TicketObj=>$Ticket);
+            ProcessUpdateMessage( ARGSRef   => \%ARGS,
+                                  Actions   => \@Actions,
+                                  TicketObj => $Ticket );
             delete $session{'Attachments'};
-	}
+        }
+    }
 #Process status updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 my @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);                            

@@ -29,55 +29,13 @@
 
 % unless ($ARGS{'Action'} eq loc('Refine')) {
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
-<TR>
-%foreach my $col (@{Config(\%ARGS, 'QueueListingCols')}) {
-<TH>
-
-<%PERL>	
-my ($order);
- my $attr = $col->{'TicketAttribute'};
- $attr =~ s/Obj->(Name|AsString|AgeAsString)//g;
-  if ($session{'tickets_sort_order'} =~ /^asc$/i) {
-   $order = 'DESC';
- } else {
-   $order = 'ASC';
- }
-</%PERL>
-
-% if (grep (/^$attr$/i, $session{'tickets'}->SortFields)) {
-<A 
-% if ($attr eq $session{'tickets_sort_by'}) {
-class="currenttab"
-% }
-HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$attr%>&TicketsSortOrder=<%$order%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>">
-<% loc($col->{Header}) %>
-</A>
-% } else {
-<% loc($col->{Header}) %>
-% }
-</TH>
-%}
-</TR>
-
-<%PERL>
-
-my $i;
-my $ticketcount;
-      
-$session{'tickets'}->RedoSearch();
-$ticketcount = $session{tickets}->Count();
-while (my $Ticket = $session{'tickets'}->Next) {
- $i++;
-      </%PERL>
-      <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" 
-    ONMOUSEOVER="this.Class = 'oddline'"
-      ONMOUSEOUT="this.Class = 'evenline'"
-      ONCLICK="parent.location= '../Ticket/Display.html?id=<%$Ticket->Id%>'" >
-%# The ticket view is controlled by config.pm, WebOptions
-%foreach my $col (@{Config(\%ARGS,'QueueListingCols')}) {
-<TD><& TicketCell , Ticket=>$Ticket,  Column=>$col &></TD>
-%}
-</TR>
+<& Elements/TicketHeader, %ARGS &>
+% $session{'tickets'}->RedoSearch();
+% my $ticketcount = $session{tickets}->Count();
+% my $i;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% $i++;
+<& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
 %}
 
 
@@ -134,7 +92,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 </TD>
 <TD>
 
-<& PickRestriction &>
+<& Elements/PickRestriction &>
 
 </TD>
 </TR>

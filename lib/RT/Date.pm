@@ -111,78 +111,89 @@ ok ($date->ISO eq '1970-01-01 00:00:00', "Set a date to midnight 1/1/1970 GMT");
 sub Set {
     my $self = shift;
     my %args = ( Format => 'unix',
-		 Value => time,
-		 @_);
-    if (($args{'Value'} =~ /^\d*$/) and ($args{'Value'} == 0)) {
-	$self->Unix(-1);
-	return($self->Unix());
+                 Value  => time,
+                 @_ );
+    if ( !$args{'Value'}
+         || ( ( $args{'Value'} =~ /^\d*$/ ) and ( $args{'Value'} == 0 ) ) ) {
+        $self->Unix(-1);
+        return ( $self->Unix() );
     }
 
-    if ($args{'Format'} =~ /^unix$/i) {
-	$self->Unix($args{'Value'});
+    if ( $args{'Format'} =~ /^unix$/i ) {
+        $self->Unix( $args{'Value'} );
     }
-    
-    elsif ($args{'Format'} =~ /^(sql|datemanip|iso)$/i) {
-	
-	if (($args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/) ||
-	    ($args{'Value'} =~ /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) ||
-	    ($args{'Value'} =~ /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/) ||
-	    ($args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/)) {
-	    
-        my $year = $1;
-	    my $mon = $2;
-	    my $mday = $3;
-	    my $hours = $4;
-	    my $min = $5;
-	    my $sec = $6;
-	    
-	    #timegm expects month as 0->11
-	    $mon--;
-	    
-	    #now that we've parsed it, deal with the case where everything
-	    #was 0
-            if ($mon == -1) {
-	            $self->Unix(-1);
-	        } else {
 
-		    #Dateamnip strings aren't in GMT.
-		    if ($args{'Format'} =~ /^datemanip$/i) {
-			$self->Unix(timelocal($sec,$min,$hours,$mday,$mon,$year));
-		    }
-		    #ISO and SQL dates are in GMT
-		    else {
-			$self->Unix(timegm($sec,$min,$hours,$mday,$mon,$year));
-		    }
-		    
-		    $self->Unix(-1) unless $self->Unix;
-		}
-   }  
-	else {
-	    use Carp;
-	    Carp::cluck;
-	    $RT::Logger->debug( "Couldn't parse date $args{'Value'} as a $args{'Format'}");
-	    
-	}
+    elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
+
+        if (( $args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
+            || ( $args{'Value'} =~
+                 /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ )
+            || ( $args{'Value'} =~
+                 /^(\d{4}?)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/ )
+            || ($args{'Value'} =~ /^(\d{4}?)(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/ )
+          ) {
+
+            my $year  = $1;
+            my $mon   = $2;
+            my $mday  = $3;
+            my $hours = $4;
+            my $min   = $5;
+            my $sec   = $6;
+
+            #timegm expects month as 0->11
+            $mon--;
+
+            #now that we've parsed it, deal with the case where everything
+            #was 0
+            if ( $mon == -1 ) {
+                $self->Unix(-1);
+            }
+            else {
+
+                #Dateamnip strings aren't in GMT.
+                if ( $args{'Format'} =~ /^datemanip$/i ) {
+                    $self->Unix(
+                          timelocal( $sec, $min, $hours, $mday, $mon, $year ) );
+                }
+
+                #ISO and SQL dates are in GMT
+                else {
+                    $self->Unix(
+                             timegm( $sec, $min, $hours, $mday, $mon, $year ) );
+                }
+
+                $self->Unix(-1) unless $self->Unix;
+            }
+        }
+        else {
+            use Carp;
+            Carp::cluck;
+            $RT::Logger->debug(
+                     "Couldn't parse date $args{'Value'} as a $args{'Format'}");
+
+        }
     }
-    elsif ($args{'Format'} =~ /^unknown$/i) {
+    elsif ( $args{'Format'} =~ /^unknown$/i ) {
         require Date::Parse;
-        #Convert it to an ISO format string 
-        
-	my $date = Date::Parse::str2time($args{'Value'});
-        
-	#This date has now been set to a date in the _local_ timezone.
-	#since ISO dates are known to be in GMT (for RT's purposes);
-	
-	$RT::Logger->debug("RT::Date used date::parse to make ".$args{'Value'} . " $date\n");
-        
-	
-	return ($self->Set( Format => 'unix', Value => "$date"));
-    }                                                    
-    else {
-	die "Unknown Date format: ".$args{'Format'}."\n";
+
+        #Convert it to an ISO format string
+
+        my $date = Date::Parse::str2time( $args{'Value'} );
+
+        #This date has now been set to a date in the _local_ timezone.
+        #since ISO dates are known to be in GMT (for RT's purposes);
+
+        $RT::Logger->debug( "RT::Date used date::parse to make "
+                            . $args{'Value'}
+                            . " $date\n" );
+
+        return ( $self->Set( Format => 'unix', Value => "$date" ) );
     }
-    
-    return($self->Unix());
+    else {
+        die "Unknown Date format: " . $args{'Format'} . "\n";
+    }
+
+    return ( $self->Unix() );
 }
 
 # }}}
@@ -316,7 +327,7 @@ sub DurationAsString {
         $s         = int( $duration / $YEAR );
         $time_unit = $self->loc("years");
     }
-    if ($negative) {
+    if (0) { # For now, never display the "AGO" # $negative) {
         return $self->loc( "[_1] [_2] ago", $s, $time_unit );
     }
     else {

@@ -107,7 +107,6 @@ sub NewApacheHandler {
 
 sub NewCGIHandler {
     my %args = (
-        allow_globals => qw//,
         @_
     );
 
@@ -1256,11 +1255,9 @@ Returns an array of results messages.
 =cut
 
 sub ProcessTicketLinks {
-    my %args = (
-        TicketObj => undef,
-        ARGSRef   => undef,
-        @_
-    );
+    my %args = ( TicketObj => undef,
+                 ARGSRef   => undef,
+                 @_ );
 
     my $Ticket  = $args{'TicketObj'};
     my $ARGSRef = $args{'ARGSRef'};
@@ -1276,11 +1273,9 @@ sub ProcessTicketLinks {
 
             push @results,
               "Trying to delete: Base: $base Target: $target  Type $type";
-            my ( $val, $msg ) = $Ticket->DeleteLink(
-                Base   => $base,
-                Type   => $type,
-                Target => $target
-            );
+            my ( $val, $msg ) = $Ticket->DeleteLink( Base   => $base,
+                                                     Type   => $type,
+                                                     Target => $target );
 
             push @results, $msg;
 
@@ -1291,26 +1286,23 @@ sub ProcessTicketLinks {
     my @linktypes = qw( DependsOn MemberOf RefersTo );
 
     foreach my $linktype (@linktypes) {
-
-        for my $luri ( split ( / /, $ARGSRef->{ $Ticket->Id . "-$linktype" } ) )
-        {
-            $luri =~ s/\s*$//;    # Strip trailing whitespace
-            my ( $val, $msg ) = $Ticket->AddLink(
-                Target => $luri,
-                Type   => $linktype
-            );
-            push @results, $msg;
+        if ( $ARGSRef->{ $Ticket->Id . "-$linktype" } ) {
+            for my $luri ( split ( / /, $ARGSRef->{ $Ticket->Id . "-$linktype" } ) ) {
+                $luri =~ s/\s*$//;    # Strip trailing whitespace
+                my ( $val, $msg ) = $Ticket->AddLink( Target => $luri,
+                                                      Type   => $linktype );
+                push @results, $msg;
+            }
         }
+        if ( $ARGSRef->{ "$linktype-" . $Ticket->Id } ) {
 
-        for my $luri ( split ( / /, $ARGSRef->{ "$linktype-" . $Ticket->Id } ) )
-        {
-            my ( $val, $msg ) = $Ticket->AddLink(
-                Base => $luri,
-                Type => $linktype
-            );
+            for my $luri ( split ( / /, $ARGSRef->{ "$linktype-" . $Ticket->Id } ) ) {
+                my ( $val, $msg ) = $Ticket->AddLink( Base => $luri,
+                                                      Type => $linktype );
 
-            push @results, $msg;
-        }
+                push @results, $msg;
+            }
+        } 
     }
 
     #Merge if we need to

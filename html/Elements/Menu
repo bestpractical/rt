@@ -13,8 +13,8 @@
 % my $sep=0;
 % my $accesskey="1";
 % foreach $tab (sort keys %{$toptabs}) {
-% my $current = $current_toptab;
-% my $path = $toptabs->{$tab}->{'path'};
+% my $current = $current_toptab || "";
+% my $path = $toptabs->{$tab}->{'path'} || "";
 % $path =~ s#/index.html$##gi;
 % $current =~ s#/index.html$##gi;
 % if ( $path eq $current) {
@@ -58,7 +58,7 @@ my $basesize=16;
 </%INIT>
 
 <%ARGS>
-$current_toptab => undef
+$current_toptab => ""
 $toptabs => undef
 $level => 0
 </%ARGS>

@@ -47,7 +47,7 @@ unless ($Collapsed) {
 <%PERL>
   my $quoted;
   if ($message->Parent == 0) {
-      if ($ShowHeaders == $Ticket->Id) {
+      if ($ShowHeaders && ($ShowHeaders == $Ticket->Id)) {
 	  $headers = $message->Headers;
       } else {
 	  $headers = $message->NiceHeaders;
@@ -112,7 +112,7 @@ if ($size) {
 <%ARGS>
 $Ticket => undef
 $Transaction => undef
-$ShowHeaders => undef
+$ShowHeaders => 0
 $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
