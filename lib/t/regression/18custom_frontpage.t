@@ -34,6 +34,14 @@ $m->get ( BaseURL.'Prefs/MyRT.html' );
 $m->form_name ('SelectionBox-main');
 $m->field ('main-Available' => ['component-QuickCreate', 'system-My Requests', 'system-My Tickets']);
 $m->click_button (name => 'add');
+
+$m->form_name ('SelectionBox-main');
+$m->field ('main-Selected' => ['component-QuickCreate']);
+$m->click_button (name => 'movedown');
+
+$m->form_name ('SelectionBox-main');
+$m->click_button (name => 'movedown');
+
 $m->form_name ('SelectionBox-main');
 $m->click_button (name => 'submit');
 $m->get ( BaseURL );
