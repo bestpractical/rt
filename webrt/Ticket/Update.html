@@ -50,9 +50,10 @@ Worked: <input size=4 name="UpdateTimeWorked"> minutes</td></tr>
 <i><font size=-2>(Sends a carbon-copy of this update to a comma-delimited list
 of email addresses. Does <b>not</b> change who will recieve future updates.)</font></i>
 </td></tr>
-<tr><td align=right>Bcc:</td><td> <input name="UpdateBcc" size=60></td></tr>
+<tr><td align=right>Bcc:</td><td> <input name="UpdateBcc" size=60><BR>
 <i><font size=-2>(Sends a blind carbon-copy of this update to a comma-delimited list
 of email addresses. Does <b>not</b> change who will recieve future updates.)</font></i>
+</td></tr>
 <tr><td align=right>Attach:</td><td><input name="UpdateAttachment" type="file"></td></tr>
 </table>
 <& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
