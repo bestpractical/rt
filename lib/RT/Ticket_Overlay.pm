@@ -979,7 +979,7 @@ sub UpdateFrom822 {
 
         # If we've been given a number of delresses to del, do it.
                 foreach my $address (@{$ticketargs{'Del'.$type}}) {
-                my ($id, $msg) = $self->DelWatcher( Type => $type, Email => $address);
+                my ($id, $msg) = $self->DeleteWatcher( Type => $type, Email => $address);
                 push (@results, $msg) ;
                 }
 
