@@ -345,27 +345,32 @@ sub Apply {
 
     $RT::Logger->debug("Now applying scrip ".$self->Id . " for transaction ".$args{'TransactionObj'}->id);
 
-    unless ( $self->IsApplicable( TicketObj      => $args{'TicketObj'},
-                                  TransactionObj => $args{'TransactionObj'} )
-      ) {
+    my $ApplicableTransactionObj = $self->IsApplicable( TicketObj      => $args{'TicketObj'},
+                                                        TransactionObj => $args{'TransactionObj'} );
+    unless ( $ApplicableTransactionObj ) {
         return undef;
+    }
+
+    if ( $ApplicableTransactionObj->id != $args{'TransactionObj'}->id ) {
+        $RT::Logger->debug("Found an applicable transaction ".$ApplicableTransactionObj->Id . " in the same batch with transaction ".$args{'TransactionObj'}->id);
     }
 
     #If it's applicable, prepare and commit it
-    $RT::Logger->debug("Now preparing scrip ".$self->Id . " for transaction ".$args{'TransactionObj'}->id);
+    $RT::Logger->debug("Now preparing scrip ".$self->Id . " for transaction ".$ApplicableTransactionObj->id);
     unless ( $self->Prepare( TicketObj      => $args{'TicketObj'},
-                             TransactionObj => $args{'TransactionObj'} )
+                             TransactionObj => $ApplicableTransactionObj )
       ) {
         return undef;
     }
 
-    $RT::Logger->debug("Now commiting scrip ".$self->Id . " for transaction ".$args{'TransactionObj'}->id);
-    unless ( $self->Commit(TicketObj => $args{'TicketObj'},
-                            TransactionObj => $args{'TransactionObj'}) ) {
+    $RT::Logger->debug("Now commiting scrip ".$self->Id . " for transaction ".$ApplicableTransactionObj->id);
+    unless ( $self->Commit( TicketObj => $args{'TicketObj'},
+                            TransactionObj => $ApplicableTransactionObj)
+      ) {
         return undef;
     }
 
-    $RT::Logger->debug("We actually finished scrip ".$self->Id . " for transaction ".$args{'TransactionObj'}->id);
+    $RT::Logger->debug("We actually finished scrip ".$self->Id . " for transaction ".$ApplicableTransactionObj->id);
     return (1);
 
 }
@@ -378,6 +383,16 @@ sub Apply {
 
 Calls the  Condition object\'s IsApplicable method
 
+Upon success, returns the applicable Transaction object.
+Otherwise, undef is returned.
+
+If the Scrip is in the TransactionCreate Stage (the usual case), only test
+the associated Transaction object to see if it is applicable.
+
+For Scrips in the TransactionBatch Stage, test all Transaction objects
+created during the Ticket object's lifetime, and returns the first one
+that is applicable.
+
 =cut
 
 sub IsApplicable {
@@ -389,14 +404,35 @@ sub IsApplicable {
     my $return;
     eval {
 
-        #Load the scrip's Condition object
-       $self->ConditionObj->LoadCondition(
-                                      ScripObj       => $self,
-                                      TicketObj      => $args{'TicketObj'},
-                                      TransactionObj => $args{'TransactionObj'},
-        );
+	my @Transactions;
 
-        $return =  $self->ConditionObj->IsApplicable();
+        if ( $self->Stage eq 'TransactionCreate') {
+	    # Only look at our current Transaction
+	    @Transactions = ( $args{'TransactionObj'} );
+        }
+        elsif ( $self->Stage eq 'TransactionBatch') {
+	    # Look at all Transactions in this Batch
+            @Transactions = @{ $args{'TicketObj'}->TransactionBatch || [] };
+        }
+	else {
+	    $RT::Logger->error( "Unknown Scrip stage:" . $self->Stage );
+	    return (undef);
+	}
+
+	foreach my $TransactionObj ( @Transactions ) {
+	    # Load the scrip's Condition object
+	    $self->ConditionObj->LoadCondition(
+		ScripObj       => $self,
+		TicketObj      => $args{'TicketObj'},
+		TransactionObj => $TransactionObj,
+	    );
+
+            if ( $self->ConditionObj->IsApplicable() ) {
+	        # We found an application Transaction -- return it
+                $return = $TransactionObj;
+                last;
+            }
+	}
     };
     if ($@) {
         $RT::Logger->error( "Scrip IsApplicable " . $self->Id . " died. - " . $@ );
