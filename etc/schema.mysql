@@ -96,13 +96,18 @@ CREATE TABLE Queues (
 )\g
 
 
+# Primarly used by RT::Actions::SendEmail as well as some subclasses
+# to determinate whom to send emails to.  This scheme should work out
+# better than the scheme under RT 1.0, and should suit most users.
+# For more fine grained control, it's possible to create tables as you
+# like and make a new subclass of RT::Actions::SendEmail where the
+# SetRecepients sub is overloaded :)
 
 CREATE TABLE Watchers (
    id int(11) AUTO_INCREMENT PRIMARY KEY,
-   Ticket int(11), # 0 for all
-   Queue int(11), # 0 for all
-	# We might consider adding more power here,
-	# i.e. TransactionType, Scrip, etc
+   Value int(11),
+   Scope varchar(16), # Might be "Queue" and "Ticket" as for now
+                      # ... might be extended to "Keywords", "Owners", etc.
    Email VARCHAR(255),
    Type VARCHAR(16), #Requestor, Cc, Bcc
    Creator INT(11),
