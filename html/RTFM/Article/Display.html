@@ -1,10 +1,16 @@
 <& /RTFM/Elements/Header, Title => $title &>
 <& /RTFM/Article/Elements/Tabs, id => $id, Title => $title &>
-<table>
+  <& /Elements/TitleBoxStart, title => loc('The Basics'), title_class=> 'inverse',  color => "#993333" &>
+<table width="100%">
 <tr>
 <td>Summary</td>
 <td><%$article->Summary%></td>
 </tr>
+</table>
+<& /Elements/TitleBoxEnd &> 
+<br>
+  <& /Elements/TitleBoxStart, title => loc('Custom Fields'), title_class=> 'inverse',  color => "#993333" &>
+<table width="100%">
 % while (my $cf = $cfs->Next) {
 % my $values = $article->CustomFieldValues($cf->Id);
 <tr>
@@ -31,24 +37,60 @@
 %} 
 
 </table>
-<h2>Links</h2>
+<& /Elements/TitleBoxEnd &> 
+<br>
 
-This article refers to:
-<ul>
+    <& /Elements/TitleBoxStart, title => loc('Links'), title_class=> 'inverse',  titleright => '', color=> "#336633" &> 
+    <table width="100%">
+    <tr>
+    <td valign="top">
+
+<&|/l&>Refers to</&>:<BR>
+<UL>
 % my $refersto = $article->RefersTo;
-% while (my $uri = $refersto->Next()) {
-<li><%$uri->TargetURI->URI%></li>
+
+% while (my $link = $refersto->Next) {
+% my $member = $link->TargetURI;
+<LI>
+% if ($link->TargetURI->IsLocal) {
+
+<a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
+% if (UNIVERSAL::can($member->Object, 'Name')) {
+<%$member->Object->Name%>
+% } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
+<%$member->Object->Subject%>
 % }
-</ul>
-This article is referred to by:
-<ul>
+</a>
+% } else {
+<A HREF="<%$member->Resolver->HREF%>"><%$link->Target%></A>
+% }
+%}
+</UL>
+</td>
+<td valign="top">
+<&|/l&>Referred to by</&>:<BR>
+<UL>
 % my $referredtoby = $article->ReferredToBy;
-% while (my $uri = $referredtoby->Next()) {
-<li><%$uri->BaseURI->URI%></li>
+% while (my $link = $referredtoby->Next) {
+% my $member = $link->BaseURI;
+<LI>
+% if ($member->URI->IsLocal) {
+<a href="<%$member->Resolver->HREF%>"><%$member->Object->Id%></a>: 
+% if (UNIVERSAL::can($member->Object, 'Name')) {
+<%$member->Object->Name%>
+% } elsif (UNIVERSAL::can($member->Object, 'Subject')) {
+<%$member->Object->Subject%>
 % }
-</ul>
+</a>
+% } else {
+<A HREF="<%$member->Resolver->HREF%>"><%$link->Base%></A>
+%}
+% }
+</UL>
+</tr>
+</table>
 
-
+<& /Elements/TitleBoxEnd &>
 <%init>
 
 my $article = RT::FM::Article->new($session{'CurrentUser'}); 

@@ -50,10 +50,18 @@ if ($id) {
                                   path => 'RTFM/Article/History.html?id=' . $id,
                               },
 
-                              CustomFields => {
+
+ };
+
+        my $art = RT::FM::Article->new( $session{'CurrentUser'} );
+        $art->Load($id);
+        if ( $art->CurrentUserHasRight('ModifyArticle') ) {
+
+            $tabs->{"this"}->{subtabs}->{'Modify'} = {
                                      title => loc('Modify'),
                                      path => 'RTFM/Article/Edit.html?id=' . $id,
-                              }, };
+            };
+        }
 }
 </%INIT>
 
