@@ -1,8 +1,9 @@
 16 Jun 99
 ---------
+Made the authentication page pass-through any querystring after authentication succeeds
 
 Fixed a bug that caused recent versions of CGI::Cookie to break authentication
-
+Alas, there's another bug there too.
 
 14 Jun 99
 ---------
