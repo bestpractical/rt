@@ -1,9 +1,12 @@
 #$Header$
 
 package RT::Handle;
-use DBIx::SearchBuilder::Handle;
 
-@ISA= qw(DBIx::SearchBuilder::Handle);
+eval "use DBIx::SearchBuilder::Handle::$RT::DatabaseType;
+
+\@ISA= qw(DBIx::SearchBuilder::Handle::$RT::DatabaseType);";
+
+#TODO check for errors here.
 
 =head2 Connect
 

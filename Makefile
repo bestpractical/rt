@@ -41,7 +41,7 @@ RT_PERL_MUX		=	$(RT_BIN_PATH)/rtmux.pl
 RT_MODPERL_HANDLER		=	$(RT_BIN_PATH)/webmux.pl
 
 # RT_FASTCGI_HANDLER is the mason handler script for fcgi
-RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.cgi
+RT_FASTCGI_HANDLER		=	$(RT_BIN_PATH)/mason_handler.fcgi
 
 # The following are the names of the various binaries which make up RT 
 
@@ -49,7 +49,6 @@ RT_ACTION_BIN		=	rt
 RT_QUERY_BIN		=	rtq
 RT_ADMIN_BIN		=	rtadmin
 RT_MAILGATE_BIN		=	rt-mailgate
-RT_CGI_BIN		=	webrt.cgi
 
 # }}}
 
@@ -195,7 +194,7 @@ acls:
 mux-install:
 	cp -rp ./bin/rtmux.pl $(RT_PERL_MUX)
 	cp -rp ./bin/webmux.pl $(RT_MODPERL_HANDLER)
-	cp -rp ./bin/fastcgi_handler.cgi $(RT_FASTCGI_HANDLER)
+	cp -rp ./bin/mason_handler.fcgi $(RT_FASTCGI_HANDLER)
 
 	$(PERL) -p -i.orig -e "s'!!RT_PATH!!'$(RT_PATH)'g;\
 			      	s'!!RT_VERSION!!'$(RT_VERSION)'g;\
@@ -203,7 +202,6 @@ mux-install:
 				s'!!RT_QUERY_BIN!!'$(RT_QUERY_BIN)'g;\
 				s'!!RT_ADMIN_BIN!!'$(RT_ADMIN_BIN)'g;\
 				s'!!RT_MAILGATE_BIN!!'$(RT_MAILGATE_BIN)'g;\
-				s'!!RT_CGI_BIN!!'$(RT_CGI_BIN)'g;\
 				s'!!RT_ETC_PATH!!'$(RT_ETC_PATH)'g;\
 				s'!!RT_LIB_PATH!!'$(RT_LIB_PATH)'g;" \
 					$(RT_PERL_MUX) $(RT_MODPERL_HANDLER) $(RT_FASTCGI_HANDLER)
@@ -220,11 +218,6 @@ mux-links:
 
 	rm -f $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
 	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_MAILGATE_BIN)
-
-	rm -f $(RT_BIN_PATH)/$(RT_CGI_BIN)
-	ln -s $(RT_PERL_MUX) $(RT_BIN_PATH)/$(RT_CGI_BIN)
-
-
 
 
 config-replace:

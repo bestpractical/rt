@@ -24,7 +24,7 @@ use config;
 use Carp;
 
 use RT::Handle;
-$RT::Handle = new RT::Handle;
+$RT::Handle = new RT::Handle($RT::DatabaseType);
 {
 $RT::Handle->Connect();
 }
