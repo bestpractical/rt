@@ -9,22 +9,6 @@
 <h2>Modify global rights for groups</h2>
 
 <TABLE>
-<TR><TD>Pseudogroups</TD></TR>
-% while (my $GroupObj = $PseudoGroups->Next()) {
-	      
-	      <TR ALIGN=RIGHT> 
-		<TD VALIGN=TOP>
-		  <% $GroupObj->Name %>
-		</TD>
-		<TD>
-	    <& /Admin/Elements/SelectRights, PrincipalObj => $GroupObj, 
-                                   PrincipalType => 'Group',
-                                   Scope => 'System' &>
-		</TD>
-	      </TR>
-	
-% }
-
 <TR><TD>Groups</TD></TR>
 
 % while (my $GroupObj = $Groups->Next()) {
@@ -58,13 +42,7 @@
   
   # Find out which groups we want to display ACL selects for.
   my $Groups = new RT::Groups($session{'CurrentUser'});
-  #TODO: limit this to non-pseudogroups
-  $Groups->LimitToReal();
-
-
-  my $PseudoGroups = new RT::Groups($session{'CurrentUser'});
-  #TODO: limit this to non-pseudogroups
-  $PseudoGroups->LimitToPseudo;
+  $Groups->UnLimit;
 
   # }}}
     

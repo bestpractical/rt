@@ -4,29 +4,19 @@
 
 <& /Elements/TitleBoxStart, title => 'Select a group' &>
 
-Pseudogroups:<BR>
-<UL>
-%while ( $Group = $PseudoGroups->Next) {
-<LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name%></a><BR>
-%}
-
-</UL>
 
 Groups:<BR>
 <UL>
 <LI><A HREF="Modify.html?Create=1">Create a new group</A><BR><BR></LI>
-%while ( $Group = $Groups->Next) {
+%while ( my $Group = $Groups->Next) {
 <LI><A HREF="Modify.html?id=<%$Group->id%>"><%$Group->Name%></a><BR>
 %}
 </UL>
 
 <& /Elements/TitleBoxEnd &>
 <%INIT>
-my ($Group);
-my $PseudoGroups = new RT::Groups($session{'CurrentUser'});
-$PseudoGroups->LimitToPseudo;
 my $Groups = new RT::Groups($session{'CurrentUser'});
-$Groups->LimitToReal;
+$Groups->UnLimit;
 
 </%INIT>
 <%ARGS>

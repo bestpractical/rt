@@ -46,7 +46,8 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(16) 'Name'.
   varchar(64) 'Description'.
-  int(11) 'Pseudo'.
+  varchar(255) 'Domain'.
+  varchar(255) 'Instance'.
 
 =cut
 
@@ -58,13 +59,15 @@ sub Create {
     my %args = ( 
                 Name => '',
                 Description => '',
-                Pseudo => '0',
+                Domain => '',
+                Instance => '',
 
 		  @_);
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Description => $args{'Description'},
-                         Pseudo => $args{'Pseudo'},
+                         Domain => $args{'Domain'},
+                         Instance => $args{'Instance'},
 );
 
 }
@@ -116,19 +119,37 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=item Pseudo
+=item Domain
 
-Returns the current value of Pseudo. 
-(In the database, Pseudo is stored as int(11).)
-
-
-
-=item SetPseudo VALUE
+Returns the current value of Domain. 
+(In the database, Domain is stored as varchar(255).)
 
 
-Set Pseudo to VALUE. 
+
+=item SetDomain VALUE
+
+
+Set Domain to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Pseudo will be stored as a int(11).)
+(In the database, Domain will be stored as a varchar(255).)
+
+
+=cut
+
+
+=item Instance
+
+Returns the current value of Instance. 
+(In the database, Instance is stored as varchar(255).)
+
+
+
+=item SetInstance VALUE
+
+
+Set Instance to VALUE. 
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, Instance will be stored as a varchar(255).)
 
 
 =cut
@@ -144,8 +165,10 @@ sub _ClassAccessible {
 		{read => 1, write => 1, type => 'varchar(16)', default => ''},
         Description => 
 		{read => 1, write => 1, type => 'varchar(64)', default => ''},
-        Pseudo => 
-		{read => 1, write => 1, type => 'int(11)', default => '0'},
+        Domain => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
+        Instance => 
+		{read => 1, write => 1, type => 'varchar(255)', default => ''},
 
  }
 };

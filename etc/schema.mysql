@@ -1,3 +1,5 @@
+# {{{ Attachments
+
 CREATE TABLE Attachments (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   TransactionId integer NOT NULL  ,
@@ -12,10 +14,12 @@ CREATE TABLE Attachments (
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-);
-CREATE INDEX Attachments1 ON Attachments (Parent);
-CREATE INDEX Attachments2 ON Attachments (TransactionId);
-CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId);
+) TYPE=InnoDB;
+
+CREATE INDEX Attachments1 ON Attachments (Parent) ;
+CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
+CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
+# }}}
 
 # {{{ Queues
 CREATE TABLE Queues (
@@ -33,8 +37,8 @@ CREATE TABLE Queues (
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
-);
-CREATE UNIQUE INDEX Queues1 ON Queues (Name);
+) TYPE=InnoDB;
+CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
 
 # }}}
 
@@ -52,8 +56,19 @@ CREATE TABLE Links (
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-);
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
+) TYPE=InnoDB;
+CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
+
+# }}}
+
+# {{{ Principals
+
+CREATE TABLE Principals (
+        id INTEGER  AUTO_INCREMENT not null,
+        PrincipalType VARCHAR(16) not null,
+        ObjectId integer, # foreign key to Users or Groups, depending
+        PRIMARY KEY (id)
+) TYPE=InnoDB;
 
 # }}}
 
@@ -63,10 +78,12 @@ CREATE TABLE Groups (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(16) NULL  ,
   Description varchar(64) NULL  ,
-  Pseudo integer NOT NULL DEFAULT 0 ,
+  Domain varchar(255),
+  Instance varchar(255),
   PRIMARY KEY (id)
-);
-CREATE UNIQUE INDEX Groups1 ON Groups (Name);
+) TYPE=InnoDB;
+
+CREATE UNIQUE INDEX Groups1 ON Groups (Name) ;
 
 # }}}
 
@@ -86,7 +103,7 @@ CREATE TABLE Watchers (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 CREATE INDEX Watchers1 ON Watchers (Scope, Value, Type, Owner);
 
 # }}}
@@ -106,7 +123,7 @@ CREATE TABLE ScripConditions (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
 # }}}
 
@@ -125,7 +142,7 @@ CREATE TABLE Transactions (
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 CREATE INDEX Transactions1 ON Transactions (Ticket);
 CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 
@@ -145,39 +162,45 @@ CREATE TABLE Scrips (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
 # }}}
 
 # {{{ ACL
-
 CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  PrincipalId integer NULL  ,
-  PrincipalType varchar(25) NULL  ,
+  PrincipalId integer NULL  , #Foreign key to principals
   RightName varchar(25) NULL  ,
-  RightScope varchar(25) NULL  ,
-  RightAppliesTo integer NULL  ,
+  RightDomain varchar(25) NULL  ,
+  RightInstance integer NULL  ,
   PRIMARY KEY (id)
-);
-CREATE INDEX ACL1 ON ACL (RightScope, PrincipalId);
-CREATE INDEX ACL2 ON ACL (RightScope, RightAppliesTo, RightName, PrincipalType, PrincipalId);
+) TYPE=InnoDB;
+
 
 # }}}
-
 
 # {{{ GroupMembers 
 
 CREATE TABLE GroupMembers (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  GroupId integer NULL  ,
-  UserId integer NULL  ,
+  GroupId integer NULL,
+  MemberId integer NULL,  #Foreign key to Principals
   PRIMARY KEY (id)
-);
-CREATE UNIQUE INDEX GroupMembers1 ON GroupMembers (GroupId, UserId);
+) TYPE=InnoDB;
 
 # }}}
 
+# {{{ GroupMembersCache
+
+create table CachedGroupMembers (
+        id int auto_increment,
+        GroupId int, # foreign key to Principals
+        MemberId int, # foreign key to Principals
+        Via int, #foreign key to g_m_u
+        PRIMARY KEY (id)
+) TYPE=InnoDB;
+
+# }}}
 
 # {{{ Users
 
@@ -218,10 +241,10 @@ CREATE TABLE Users (
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
 
-CREATE UNIQUE INDEX Users1 ON Users (Name);
+CREATE UNIQUE INDEX Users1 ON Users (Name) ;
 CREATE INDEX Users2 ON Users (Name);
 CREATE INDEX Users3 ON Users (id, EmailAddress);
 CREATE INDEX Users4 ON Users (EmailAddress);
@@ -259,13 +282,13 @@ CREATE TABLE Tickets (
   Created DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
-CREATE INDEX Tickets1 ON Tickets (Queue, Status);
-CREATE INDEX Tickets2 ON Tickets (Owner);
-CREATE INDEX Tickets3 ON Tickets (EffectiveId);
-CREATE INDEX Tickets4 ON Tickets (id, Status);
-CREATE INDEX Tickets5 ON Tickets (id, EffectiveId);
+CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
+CREATE INDEX Tickets2 ON Tickets (Owner) ;
+CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
+CREATE INDEX Tickets4 ON Tickets (id, Status) ;
+CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 
 # }}}
 
@@ -282,10 +305,9 @@ CREATE TABLE ScripActions (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
 # }}}
-
 
 # {{{ Templates
 
@@ -303,10 +325,9 @@ CREATE TABLE Templates (
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
 # }}}
-
 
 # {{{ TicketCustomFieldValues 
 
@@ -321,7 +342,7 @@ CREATE TABLE TicketCustomFieldValues (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
 # }}}
 
@@ -340,7 +361,7 @@ CREATE TABLE CustomFields (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
 
 # {{{ CustomFieldValues 
@@ -358,6 +379,6 @@ CREATE TABLE CustomFieldValues (
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
   PRIMARY KEY (id)
-);
+) TYPE=InnoDB;
 
 # }}}

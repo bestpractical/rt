@@ -38,30 +38,17 @@ ok (require RT::Group);
 
 no warnings qw(redefine);
 
-
-use RT::GroupMember;
-use RT::ACE;
-
-
+use RT::GroupMembers;
+use RT::Principals;
+use RT::ACL;
 
 # {{{ sub _Init
-sub _Init  {
-  my $self = shift; 
-  $self->{'table'} = "Groups";
-  return ($self->SUPER::_Init(@_));
-}
-# }}}
-
-# {{{ sub _Accessible 
-sub _Accessible  {
+sub _Init {
     my $self = shift;
-    my %Cols = (
-		Name => 'read/write',
-		Description => 'read/write',
-		Pseudo => 'read'
-	       );
-    return $self->SUPER::_Accessible(@_, %Cols);
+    $self->{'table'} = "Groups";
+    return ( $self->SUPER::_Init(@_) );
 }
+
 # }}}
 
 # {{{ sub Load 
@@ -74,16 +61,16 @@ the "Name" column which is the group's textual name
 
 =cut
 
-sub Load  {
-    my $self = shift;
+sub Load {
+    my $self       = shift;
     my $identifier = shift || return undef;
-    
+
     #if it's an int, load by id. otherwise, load by name.
-    if ($identifier !~ /\D/) {
-	$self->SUPER::LoadById($identifier);
+    if ( $identifier !~ /\D/ ) {
+        $self->SUPER::LoadById($identifier);
     }
     else {
-	$self->LoadByCol("Name",$identifier);
+        $self->LoadByCol( "Name", $identifier );
     }
 }
 
@@ -93,28 +80,58 @@ sub Load  {
 
 =head2 Create
 
-Takes a paramhash with three named arguments: Name, Description and Pseudo.
-Pseudo is used internally by RT for certain special ACL decisions.
+Takes a paramhash with named arguments: Name, Description.
+
+TODO: fill in for 2.2
 
 =cut
 
 sub Create {
     my $self = shift;
-    my %args = ( Name => undef,
-		 Description => undef,
-		 Pseudo => 0,
-		 @_);
-    
-    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	$RT::Logger->warning($self->CurrentUser->Name ." Tried to create a group without permission.");
-	return(0, 'Permission Denied');
+    my %args = (
+        Name        => undef,
+        Description => undef,
+        Domain      => undef,
+        Instance    => undef,
+        @_
+    );
+
+    # TODO: set up acls to deal based on what sort of group is being created
+    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+        $RT::Logger->warning( $self->CurrentUser->Name
+              . " Tried to create a group without permission." );
+        return ( 0, 'Permission Denied' );
     }
-    
-    my $retval = $self->SUPER::Create(Name => $args{'Name'},
-				      Description => $args{'Description'},
-				      Pseudo => $args{'Pseudo'});
-    
-    return ($retval);
+
+    my $id = $self->SUPER::Create(
+        Name        => $args{'Name'},
+        Description => $args{'Description'},
+        Domain      => $args{'Domain'},
+        Instance    => $args{'Instance'}
+    );
+
+    unless ($id) {
+        return ( 0, $self->loc('Could not create group') );
+    }
+
+    # Groups deal with principal ids, rather than user ids.
+    # When creating this user, set up a principal Id for it.
+    my $principal    = RT::Principal->new( $self->CurrentUser );
+    my $principal_id = $principal->Create(
+        PrincipalType => 'Group',
+        ObjectId      => $id
+    );
+
+    # If we couldn't create a principal Id, get the fuck out.
+    unless ($principal_id) {
+        $self->SUPER::Delete();    # We really want to delete this object
+        $self->crit(
+            "Couldn't create a Principal on new user create. Strange thi
+ngs are afoot at the circle K" );
+        return ( 0, $self->loc('Could not create group') );
+    }
+
+    return ( $id, $self->loc("Group created") );
 }
 
 # }}}
@@ -129,12 +146,12 @@ Delete this object
 
 sub Delete {
     my $self = shift;
-    
-    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	return (0, 'Permission Denied');
+
+    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+        return ( 0, 'Permission Denied' );
     }
-    
-    return($self->SUPER::Delete(@_));    
+
+    return ( $self->SUPER::Delete(@_) );
 }
 
 # }}}
@@ -149,56 +166,62 @@ Returns an RT::GroupMembers object of this group's members.
 
 sub MembersObj {
     my $self = shift;
-    unless (defined $self->{'members_obj'}) {
-	use RT::GroupMembers;
-        $self->{'members_obj'} = new RT::GroupMembers($self->CurrentUser);
-	
-	#If we don't have rights, don't include any results
-	$self->{'members_obj'}->LimitToGroup($self->id);
-	
+    unless ( defined $self->{'members_obj'} ) {
+        $self->{'members_obj'} = new RT::GroupMembers( $self->CurrentUser );
+
+        #If we don't have rights, don't include any results
+        $self->{'members_obj'}->LimitToGroup( $self->id );
+
     }
-    return ($self->{'members_obj'});
-    
+    return ( $self->{'members_obj'} );
+
 }
 
 # }}}
 
 # {{{ AddMember
 
-=head2 AddMember
+=head2 AddMember PRINCIPAL_ID
 
-AddMember adds a user to this group.  It takes a user id.
+AddMember adds a principal to this group.  It takes a single principal id.
 Returns a two value array. the first value is true on successful 
 addition or 0 on failure.  The second value is a textual status msg.
+
+R
+
 
 =cut
 
 sub AddMember {
-    my $self = shift;
+    my $self       = shift;
     my $new_member = shift;
 
-    my $new_member_obj = new RT::User($self->CurrentUser);
+    my $new_member_obj = RT::Principal->new( $self->CurrentUser );
     $new_member_obj->Load($new_member);
-    
-    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
+
+    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+
         #User has no permission to be doing this
-        return(0, "Permission Denied");
+        return ( 0, $self->loc("Permission Denied") );
     }
 
-    unless ($new_member_obj->Id) {
-	$RT::Logger->debug("Couldn't find user $new_member");
-	return(0, "Couldn't find user");
-    }	
+    unless ( $new_member_obj->Id ) {
+        $RT::Logger->debug("Couldn't find that principal");
+        return ( 0, $self->loc("Couldn't find that principal") );
+    }
 
-    if ($self->HasMember($new_member_obj->Id)) {
+    if ( $self->HasMember( $new_member_obj->Id ) ) {
+
         #User is already a member of this group. no need to add it
-        return(0, "Group already has member");
+        return ( 0, $self->loc("Group already has member") );
     }
-    
-    my $member_object = new RT::GroupMember($self->CurrentUser);
-    $member_object->Create( UserId => $new_member_obj->Id, 
-			    GroupId => $self->id );
-    return(1, "Member added");
+
+    my $member_object = RT::GroupMember->new( $self->CurrentUser );
+    $member_object->Create(
+        UserId  => $new_member_obj->Id,
+        GroupId => $self->id
+    );
+    return ( 1, "Member added" );
 }
 
 # }}}
@@ -216,23 +239,23 @@ between ACL failure and non membership.
 =cut
 
 sub HasMember {
-    my $self = shift;
+    my $self    = shift;
     my $user_id = shift;
 
     #Try to cons up a member object using "LoadByCols"
 
-    my $member_obj = new RT::GroupMember($self->CurrentUser);
-    $member_obj->LoadByCols( UserId => $user_id, GroupId => $self->id);
+    my $member_obj = new RT::GroupMember( $self->CurrentUser );
+    $member_obj->LoadByCols( UserId => $user_id, GroupId => $self->id );
 
     #If we have a member object
-    if (defined $member_obj->id) {
-        return ($member_obj->id);
+    if ( defined $member_obj->id ) {
+        return ( $member_obj->id );
     }
 
     #If Load returns no objects, we have an undef id. 
     else {
-        return(undef);
-    } 
+        return (undef);
+    }
 }
 
 # }}}
@@ -250,40 +273,46 @@ addition or 0 on failure.  The second value is a textual status msg.
 =cut
 
 sub DeleteMember {
-    my $self = shift;
+    my $self   = shift;
     my $member = shift;
 
-    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
+    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+
         #User has no permission to be doing this
-        return(0,"Permission Denied");
+        return ( 0, "Permission Denied" );
     }
 
-    my $member_user_obj = new RT::User($self->CurrentUser);
+    my $member_user_obj = new RT::User( $self->CurrentUser );
     $member_user_obj->Load($member);
-    
-    unless ($member_user_obj->Id) {
-	$RT::Logger->debug("Couldn't find user $member");
-	return(0, "User not found");
-    }	
 
-    my $member_obj = new RT::GroupMember($self->CurrentUser);
-    unless ($member_obj->LoadByCols ( UserId => $member_user_obj->Id,
-				      GroupId => $self->Id )) {
-	return(0, "Couldn\'t load member");  #couldn\'t load member object
+    unless ( $member_user_obj->Id ) {
+        $RT::Logger->debug("Couldn't find user $member");
+        return ( 0, "User not found" );
     }
-    
+
+    my $member_obj = new RT::GroupMember( $self->CurrentUser );
+    unless (
+        $member_obj->LoadByCols(
+            UserId  => $member_user_obj->Id,
+            GroupId => $self->Id
+        )
+      )
+    {
+        return ( 0, "Couldn\'t load member" );    #couldn\'t load member object
+    }
+
     #If we couldn't load it, return undef.
-    unless ($member_obj->Id()) {
-	return (0, "Group has no such member");
-    }	
-    
+    unless ( $member_obj->Id() ) {
+        return ( 0, "Group has no such member" );
+    }
+
     #Now that we've checked ACLs and sanity, delete the groupmember
     my $val = $member_obj->Delete();
     if ($val) {
-	return ($val, "Member deleted");
+        return ( $val, "Member deleted" );
     }
     else {
-	return (0, "Member not deleted");
+        return ( 0, "Member not deleted" );
     }
 }
 
@@ -301,20 +330,22 @@ RightAppliesTo and RightName are important.
 =cut
 
 sub GrantQueueRight {
-    
+
     my $self = shift;
-    my %args = ( RightScope => 'Queue',
-		 RightName => undef,
-		 RightAppliesTo => undef,
-		 PrincipalType => 'Group',
-		 PrincipalId => $self->Id,
-		 @_);
-   
+    my %args = (
+        RightScope     => 'Queue',
+        RightName      => undef,
+        RightAppliesTo => undef,
+        PrincipalType  => 'Group',
+        PrincipalId    => $self->PrincipalId,
+        @_
+    );
+
     #ACLs get checked in ACE.pm
-    
-    my $ace = new RT::ACE($self->CurrentUser);
-    
-    return ($ace->Create(%args));
+
+    my $ace = new RT::ACE( $self->CurrentUser );
+
+    return ( $ace->Create(%args) );
 }
 
 # }}}
@@ -327,42 +358,42 @@ Grant a system right to this group.
 The only element that's important to set is RightName.
 
 =cut
+
 sub GrantSystemRight {
-    
+
     my $self = shift;
-    my %args = ( RightScope => 'System',
-		 RightName => undef,
-		 RightAppliesTo => 0,
-		 PrincipalType => 'Group',
-		 PrincipalId => $self->Id,
-		 @_);
-    
+    my %args = (
+        RightScope     => 'System',
+        RightName      => undef,
+        RightAppliesTo => 0,
+        PrincipalType  => 'Group',
+        PrincipalId    => $self->PrincipalId,
+        @_
+    );
+
     # ACLS get checked in ACE.pm
-    
-    my $ace = new RT::ACE($self->CurrentUser);
-    return ($ace->Create(%args));
+
+    my $ace = new RT::ACE( $self->CurrentUser );
+    return ( $ace->Create(%args) );
 }
 
-
 # }}}
-
 
 # {{{ sub _Set
 sub _Set {
     my $self = shift;
 
-    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	return (0, 'Permission Denied');
-    }	
+    unless ( $self->CurrentUser->HasSystemRight('AdminGroups') ) {
+        return ( 0, 'Permission Denied' );
+    }
 
-    return ($self->SUPER::_Set(@_));
+    return ( $self->SUPER::_Set(@_) );
 
 }
-# }}}
 
 # }}}
 
+# }}}
 
 1;
-
 

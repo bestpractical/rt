@@ -11,7 +11,7 @@
 
 =head1 NAME
 
-RT::GroupMember
+RT::Principal
 
 
 =head1 SYNOPSIS
@@ -22,7 +22,7 @@ RT::GroupMember
 
 =cut
 
-package RT::GroupMember;
+package RT::Principal;
 use RT::Record; 
 
 
@@ -32,7 +32,7 @@ use vars qw( @ISA );
 sub _Init {
   my $self = shift; 
 
-  $self->Table('GroupMembers');
+  $self->Table('Principals');
   $self->SUPER::_Init(@_);
 }
 
@@ -44,8 +44,8 @@ sub _Init {
 
 Create takes a hash of values and creates a row in the database:
 
-  int(11) 'GroupId'.
-  int(11) 'MemberId'.
+  varchar(16) 'PrincipalType'.
+  int(11) 'ObjectId'.
 
 =cut
 
@@ -55,13 +55,13 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                GroupId => '',
-                MemberId => '',
+                PrincipalType => '',
+                ObjectId => '',
 
 		  @_);
     $self->SUPER::Create(
-                         GroupId => $args{'GroupId'},
-                         MemberId => $args{'MemberId'},
+                         PrincipalType => $args{'PrincipalType'},
+                         ObjectId => $args{'ObjectId'},
 );
 
 }
@@ -77,37 +77,37 @@ Returns the current value of id.
 =cut
 
 
-=item GroupId
+=item PrincipalType
 
-Returns the current value of GroupId. 
-(In the database, GroupId is stored as int(11).)
-
-
-
-=item SetGroupId VALUE
+Returns the current value of PrincipalType. 
+(In the database, PrincipalType is stored as varchar(16).)
 
 
-Set GroupId to VALUE. 
+
+=item SetPrincipalType VALUE
+
+
+Set PrincipalType to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, GroupId will be stored as a int(11).)
+(In the database, PrincipalType will be stored as a varchar(16).)
 
 
 =cut
 
 
-=item MemberId
+=item ObjectId
 
-Returns the current value of MemberId. 
-(In the database, MemberId is stored as int(11).)
-
-
-
-=item SetMemberId VALUE
+Returns the current value of ObjectId. 
+(In the database, ObjectId is stored as int(11).)
 
 
-Set MemberId to VALUE. 
+
+=item SetObjectId VALUE
+
+
+Set ObjectId to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, MemberId will be stored as a int(11).)
+(In the database, ObjectId will be stored as a int(11).)
 
 
 =cut
@@ -119,21 +119,21 @@ sub _ClassAccessible {
      
         id =>
 		{read => 1, type => 'int(11)', default => ''},
-        GroupId => 
-		{read => 1, write => 1, type => 'int(11)', default => ''},
-        MemberId => 
+        PrincipalType => 
+		{read => 1, write => 1, type => 'varchar(16)', default => ''},
+        ObjectId => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
 
  }
 };
 
 
-        eval "require RT::GroupMember_Overlay";
+        eval "require RT::Principal_Overlay";
         if ($@ && $@ !~ /^Can't locate/) {
             die $@;
         };
 
-        eval "require RT::GroupMember_Local";
+        eval "require RT::Principal_Local";
         if ($@ && $@ !~ /^Can't locate/) {
             die $@;
         };
@@ -155,7 +155,7 @@ If you'll be working with perl 5.6.0 or greater, each of these files should begi
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::GroupMember_Overlay, RT::GroupMember_Local
+RT::Principal_Overlay, RT::Principal_Local
 
 =cut
 

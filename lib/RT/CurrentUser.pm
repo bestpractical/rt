@@ -290,15 +290,20 @@ ok ($cu->loc('TEST_STRING') eq "Feche la vache", "Localized TEST_STRING into Fre
 
 sub LanguageHandle {
     my $self = shift;
-    if  ((!defined $self->{'LangHandle'}) || (@_))  {
+    if  ((!defined $self->{'LangHandle'}) || 
+         (!UNIVERSAL::can($self->{'LangHandle'}, 'maketext')) || 
+         (@_))  {
         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
+    }
+    # Fall back to english.
+    unless ($self->{'LangHandle'}) {
+        die "We couldn't get a dictionary. Nye mogu naidti slovar. No puedo encontrar dictionario.";
     }
     return ($self->{'LangHandle'});
 }
 
 sub loc {
     my $self = shift;
-    $RT::Logger->debug("Language handle:".$self->LanguageHandle());
     return($self->LanguageHandle->maketext(@_));
 }
 # }}}

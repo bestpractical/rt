@@ -1,3 +1,4 @@
+die "this schema is not up to date"
 #   column, type, nullability, length, default, database-local
 
 my $gratuitous = {

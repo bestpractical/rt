@@ -7,12 +7,10 @@ my $subtabs = {
                        }
 	};
 
-unless ($GroupObj->Pseudo) {
 $subtabs->{'Members'} = { title => 'Members',
                          path => "Admin/Groups/Members.html?id=".$GroupObj->id };
-}
-</%INIT>
 
+</%INIT>
 <%ARGS>
 $GroupObj => undef
 </%ARGS>

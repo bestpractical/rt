@@ -11,7 +11,7 @@
 
 =head1 NAME
 
-RT::ACE
+RT::CachedGroupMember
 
 
 =head1 SYNOPSIS
@@ -22,7 +22,7 @@ RT::ACE
 
 =cut
 
-package RT::ACE;
+package RT::CachedGroupMember;
 use RT::Record; 
 
 
@@ -32,7 +32,7 @@ use vars qw( @ISA );
 sub _Init {
   my $self = shift; 
 
-  $self->Table('ACL');
+  $self->Table('CachedGroupMembers');
   $self->SUPER::_Init(@_);
 }
 
@@ -44,10 +44,9 @@ sub _Init {
 
 Create takes a hash of values and creates a row in the database:
 
-  int(11) 'PrincipalId'.
-  varchar(25) 'RightName'.
-  varchar(25) 'RightDomain'.
-  int(11) 'RightInstance'.
+  int(11) 'GroupId'.
+  int(11) 'MemberId'.
+  int(11) 'Via'.
 
 =cut
 
@@ -57,17 +56,15 @@ Create takes a hash of values and creates a row in the database:
 sub Create {
     my $self = shift;
     my %args = ( 
-                PrincipalId => '',
-                RightName => '',
-                RightDomain => '',
-                RightInstance => '',
+                GroupId => '',
+                MemberId => '',
+                Via => '',
 
 		  @_);
     $self->SUPER::Create(
-                         PrincipalId => $args{'PrincipalId'},
-                         RightName => $args{'RightName'},
-                         RightDomain => $args{'RightDomain'},
-                         RightInstance => $args{'RightInstance'},
+                         GroupId => $args{'GroupId'},
+                         MemberId => $args{'MemberId'},
+                         Via => $args{'Via'},
 );
 
 }
@@ -83,73 +80,55 @@ Returns the current value of id.
 =cut
 
 
-=item PrincipalId
+=item GroupId
 
-Returns the current value of PrincipalId. 
-(In the database, PrincipalId is stored as int(11).)
-
-
-
-=item SetPrincipalId VALUE
+Returns the current value of GroupId. 
+(In the database, GroupId is stored as int(11).)
 
 
-Set PrincipalId to VALUE. 
+
+=item SetGroupId VALUE
+
+
+Set GroupId to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, PrincipalId will be stored as a int(11).)
+(In the database, GroupId will be stored as a int(11).)
 
 
 =cut
 
 
-=item RightName
+=item MemberId
 
-Returns the current value of RightName. 
-(In the database, RightName is stored as varchar(25).)
-
-
-
-=item SetRightName VALUE
+Returns the current value of MemberId. 
+(In the database, MemberId is stored as int(11).)
 
 
-Set RightName to VALUE. 
+
+=item SetMemberId VALUE
+
+
+Set MemberId to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, RightName will be stored as a varchar(25).)
+(In the database, MemberId will be stored as a int(11).)
 
 
 =cut
 
 
-=item RightDomain
+=item Via
 
-Returns the current value of RightDomain. 
-(In the database, RightDomain is stored as varchar(25).)
-
-
-
-=item SetRightDomain VALUE
+Returns the current value of Via. 
+(In the database, Via is stored as int(11).)
 
 
-Set RightDomain to VALUE. 
+
+=item SetVia VALUE
+
+
+Set Via to VALUE. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, RightDomain will be stored as a varchar(25).)
-
-
-=cut
-
-
-=item RightInstance
-
-Returns the current value of RightInstance. 
-(In the database, RightInstance is stored as int(11).)
-
-
-
-=item SetRightInstance VALUE
-
-
-Set RightInstance to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, RightInstance will be stored as a int(11).)
+(In the database, Via will be stored as a int(11).)
 
 
 =cut
@@ -161,25 +140,23 @@ sub _ClassAccessible {
      
         id =>
 		{read => 1, type => 'int(11)', default => ''},
-        PrincipalId => 
+        GroupId => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
-        RightName => 
-		{read => 1, write => 1, type => 'varchar(25)', default => ''},
-        RightDomain => 
-		{read => 1, write => 1, type => 'varchar(25)', default => ''},
-        RightInstance => 
+        MemberId => 
+		{read => 1, write => 1, type => 'int(11)', default => ''},
+        Via => 
 		{read => 1, write => 1, type => 'int(11)', default => ''},
 
  }
 };
 
 
-        eval "require RT::ACE_Overlay";
+        eval "require RT::CachedGroupMember_Overlay";
         if ($@ && $@ !~ /^Can't locate/) {
             die $@;
         };
 
-        eval "require RT::ACE_Local";
+        eval "require RT::CachedGroupMember_Local";
         if ($@ && $@ !~ /^Can't locate/) {
             die $@;
         };
@@ -201,7 +178,7 @@ If you'll be working with perl 5.6.0 or greater, each of these files should begi
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::ACE_Overlay, RT::ACE_Local
+RT::CachedGroupMember_Overlay, RT::CachedGroupMember_Local
 
 =cut
 

@@ -137,27 +137,22 @@ unless ($LastVersion) {
         {
             Name        => 'Everyone',
             Description => 'Pseudogroup for internal use',
-            Pseudo      => '1',
         },
         {
             Name        => 'Owner',
             Description => 'Pseudogroup for internal use',
-            Pseudo      => '1',
         },
         {
             Name        => 'Requestor',
             Description => 'Pseudogroup for internal use',
-            Pseudo      => '1',
         },
         {
             Name        => 'Cc',
             Description => 'Pseudogroup for internal use',
-            Pseudo      => '1',
         },
         {
             Name        => 'AdminCc',
             Description => 'Pseudogroup for internal use',
-            Pseudo      => '1',
         },
     );
 }
@@ -171,25 +166,22 @@ unless ($LastVersion) {
     @acl = (    #TODO: make this actually take the serial # granted to root.
         {
             PrincipalId    => '1',
-            PrincipalType  => 'User',
             RightName      => 'SuperUser',
-            RightScope     => 'System',
-            RightAppliesTo => '0'
+            RightDomain     => 'System',
+            RightInstance => '0'
         },
         {
             PrincipalId    => '2',
-            PrincipalType  => 'User',
             RightName      => 'SuperUser',
-            RightScope     => 'System',
-            RightAppliesTo => '0'
+            RightDomain     => 'System',
+            RightInstance => '0'
         },
 
         {
             PrincipalId    => '3',
-            PrincipalType  => 'User',
             RightName      => 'SuperUser',
-            RightScope     => 'System',
-            RightAppliesTo => '0'
+            RightDomain     => 'System',
+            RightInstance => '0'
         }
 
     );

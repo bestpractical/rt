@@ -26,6 +26,9 @@ ok(require RT::User);
 
 no warnings qw(redefine);
 
+use RT::Principals;
+
+
 # {{{ sub _Accessible 
 
 sub _Accessible {
@@ -167,6 +170,21 @@ sub Create {
     #	#TODO: Send the user a "welcome message" 
     #}
 
+
+    # Groups deal with principal ids, rather than user ids.
+    # When creating this user, set up a principal Id for it.
+    my $principal = RT::Principal->new($self->CurrentUser);
+    my $principal_id = $principal->Create(PrincipalType => 'User',
+                                ObjectId => $id);
+
+    # If we couldn't create a principal Id, get the fuck out.
+    unless ($principal_id) {
+        $self->SUPER::Delete(); # We really want to delete this object 
+        $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
+        return ( 0, $self->loc('Could not create user') );
+    }
+                                    
+
     return ( $id, $self->loc('User created') );
 }
 
@@ -189,6 +207,20 @@ sub _BootstrapCreate {
     #If the create failed.
     return ( 0, $self->loc('Could not create user') )
       unless ($id);
+
+    # Groups deal with principal ids, rather than user ids.
+    # When creating this user, set up a principal Id for it.
+    my $principal = RT::Principal->new($self->CurrentUser);
+    my $principal_id = $principal->Create(PrincipalType => 'User',
+                                ObjectId => $id);
+
+    # If we couldn't create a principal Id, get the fuck out.
+    unless ($principal_id) {
+        $self->SUPER::Delete(); # We really want to delete this object 
+        $self->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K");
+        return ( 0, $self->loc('Could not create user') );
+    }
+                                    
 
     return ( $id, $self->loc('User created') );
 }
@@ -696,6 +728,53 @@ user will fail. The user will appear in no user listings.
 
 # }}}
 
+# {{{ Principal related routines
+
+=head2 PrincipalObj 
+
+Returns the principal object for this user. returns an empty RT::Principal
+if there's no principal object matching this user. 
+The response is cached. PrincipalObj should never ever change.
+
+=begin testing
+
+ok(my $u = RT::User->new($RT::SystemUser));
+ok($u->Load(1), "Loaded the first user");
+ok($u->PrincipalObj->ObjectId == 1, "user 1 is the first principal");
+ok($u->PrincipalObj->PrincipalType eq 'User' , "Principal 1 is a user, not a group");
+
+=end testing
+
+=cut
+
+
+sub PrincipalObj {
+    my $self = shift;
+    unless ($self->{'PrincipalObj'} && 
+            ($self->{'PrincipalObj'}->ObjectId == $self->Id) &&
+            ($self->{'PrincipalObj'}->PrincipalType eq 'User')) {
+
+            $self->{'PrincipalObj'} = RT::Principal->new($self->CurrentUser);
+            $self->{'PrincipalObj'}->LoadByCols('ObjectId' => $self->Id,
+                                                'PrincipalType' => 'User') ;
+            }
+    return($self->{'PrincipalObj'});
+}
+
+
+=head2 PrincipalId  
+
+Returns this user's PrincipalId
+
+=cut
+
+sub PrincipalId {
+    my $self = shift;
+    return $self->PrincipalObj->Id;
+}
+
+# }}}
+
 # {{{ ACL Related routines
 
 # {{{ GrantQueueRight
@@ -703,7 +782,7 @@ user will fail. The user will appear in no user listings.
 =head2 GrantQueueRight
 
 Grant a queue right to this user.  Takes a paramhash of which the elements
-RightAppliesTo and RightName are important.
+RightInstance and RightName are important.
 
 =cut
 
@@ -711,11 +790,10 @@ sub GrantQueueRight {
 
     my $self = shift;
     my %args = (
-        RightScope     => 'Queue',
+        RightDomain     => 'Queue',
         RightName      => undef,
-        RightAppliesTo => undef,
-        PrincipalType  => 'User',
-        PrincipalId    => $self->Id,
+        RightInstance => undef,
+        PrincipalId    => $self->PrincipalId,
         @_
     );
 
@@ -724,7 +802,7 @@ sub GrantQueueRight {
     require RT::ACE;
 
     #    $RT::Logger->debug("$self ->GrantQueueRight right:". $args{'RightName'} .
-    #		       " applies to queue ".$args{'RightAppliesTo'}."\n");
+    #		       " applies to queue ".$args{'RightInstance'}."\n");
 
     my $ace = new RT::ACE( $self->CurrentUser );
 
@@ -746,11 +824,10 @@ sub GrantSystemRight {
 
     my $self = shift;
     my %args = (
-        RightScope     => 'System',
+        RightDomain     => 'System',
         RightName      => undef,
-        RightAppliesTo => 0,
-        PrincipalType  => 'User',
-        PrincipalId    => $self->Id,
+        RightInstance => 0,
+        PrincipalId    => $self->PrincipalId,
         @_
     );
 
@@ -983,6 +1060,10 @@ sub _HasRight {
         @_
     );
 
+
+    warn "ACL checks don't work right now. Everyone is allowed to do everything.";
+    return(1);
+
     if ( $self->Disabled ) {
         $RT::Logger->debug( "Disabled User:  "
               . $self->Name
@@ -1048,22 +1129,22 @@ sub _HasRight {
     }
 
     my $RightClause = "(RightName = '$args{'Right'}')";
-    my $ScopeClause = "(RightScope = '$args{'Scope'}')";
+    my $ScopeClause = "(RightDomain = '$args{'Scope'}')";
 
     #If an AppliesTo was passed in, we should pay attention to it.
     #otherwise, none is needed
 
-    $ScopeClause = "($ScopeClause AND (RightAppliesTo = $args{'AppliesTo'}))"
+    $ScopeClause = "($ScopeClause AND (RightInstance = $args{'AppliesTo'}))"
       if ( $args{'AppliesTo'} );
 
     # The generic principals clause looks for users with my id
     # and Rights that apply to _everyone_
     my $PrincipalsClause =
-      "((PrincipalType = 'User') AND (PrincipalId = " . $self->Id . "))";
+      "PrincipalId = " . $self->PrincipalId . "";
 
     # If the user is the superuser, grant them the damn right ;)
     my $SuperUserClause =
-"(RightName = 'SuperUser') AND (RightScope = 'System') AND (RightAppliesTo = 0)";
+"(RightName = 'SuperUser') AND (RightDomain = 'System') AND (RightInstance = 0)";
 
     # If we've been passed in an extended principals clause, we should lump it
     # on to the existing principals clause. it'll make life easier
@@ -1073,7 +1154,7 @@ sub _HasRight {
     }
 
     my $GroupPrincipalsClause =
-      "((ACL.PrincipalType = 'Group') "
+      "("
       . "AND (ACL.PrincipalId = Groups.Id) AND (GroupMembers.GroupId = Groups.Id) "
       . " AND (GroupMembers.UserId = "
       . $self->Id . "))";
@@ -1086,28 +1167,24 @@ sub _HasRight {
     #The user is always part of the 'Everyone' Group
     push (
         @MetaPrincipalsSubClauses, "((Groups.Name = 'Everyone') AND 
-                                       (PrincipalType = 'Group') AND 
                                        (Groups.Id = PrincipalId))"
     );
 
     if ( $args{'IsAdminCc'} ) {
         push (
             @MetaPrincipalsSubClauses, "((Groups.Name = 'AdminCc') AND 
-                                       (PrincipalType = 'Group') AND 
                                        (Groups.Id = PrincipalId))"
         );
     }
     if ( $args{'IsCc'} ) {
         push (
             @MetaPrincipalsSubClauses, " ((Groups.Name = 'Cc') AND 
-                                       (PrincipalType = 'Group') AND 
                                        (Groups.Id = PrincipalId))"
         );
     }
     if ( $args{'IsRequestor'} ) {
         push (
             @MetaPrincipalsSubClauses, " ((Groups.Name = 'Requestor') AND 
-                                       (PrincipalType = 'Group') AND 
                                        (Groups.Id = PrincipalId))"
         );
     }

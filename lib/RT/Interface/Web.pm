@@ -84,53 +84,9 @@ sub NewCGIHandler {
 # }}}
 
 
-=head2 SetSessionCookie $r
-
-=cut
-
-
-sub SetSessionCookie {
-    my $r = shift;
-    my %cookies = CGI::Cookie->fetch();
-
-    eval {
-        tie %HTML::Mason::Commands::session, 'Apache::Session::File',
-          ( $cookies{'RT_SID'} ? $cookies{'RT_SID'}->value() : undef ),
-          {
-            Directory     => $RT::MasonSessionDir,
-            LockDirectory => $RT::MasonSessionDir,
-          };
-    };
-
-    if ($@) {
-
-        # If the session is invalid, create a new session.
-        if ( $@ =~ m#^Object does not exist in the data store# ) {
-            tie %HTML::Mason::Commands::session, 'Apache::Session::File', undef,
-              {
-                Directory     => $RT::MasonSessionDir,
-                LockDirectory => $RT::MasonSessionDir,
-              };
-            undef $cookies{'RT_SID'};
-        }
-        else {
-            die "RT Couldn't write to session directory '$RT::MasonSessionDir'. Check that this dir ectory's permissions are correct.";
-        }
-    }
-
-    if ( !$cookies{'RT_SID'} ) {
-        my $cookie = new CGI::Cookie(
-            $r,
-            -name  => 'RT_SID',
-            -value => $HTML::Mason::Commands::session{_session_id},
-            -path  => '/',
-        );
-        $r->header_out('Set-Cookie:', $cookie);
-
-    } 
-}
-
 package HTML::Mason::Commands;
+
+# {{{ SetContentType
 
 =head2 SetContentType TYPE
 
@@ -142,6 +98,34 @@ sub SetContentType {
     my $type = shift;
     $r->content_type($type);
 }
+
+# }}}
+
+# {{{ loc
+
+=head2 loc ARRAY
+
+loc is a nice clean global routine which calls $session{'CurrentUser'}->loc()
+with whatever it's called with. If there is no $session{'CurrentUser'}, 
+it creates a temporary user, so we have something to get a localisation handle
+through
+
+=cut
+
+sub loc {
+
+    if ($session{'CurrentUser'} && 
+        UNIVERSAL::can($session{'CurrentUser'}, loc)){
+        return($session{'CurrentUser'}->loc(@_));
+    }
+    else  {
+        my $u = RT::CurrentUser->new($RT::SystemUser);
+        return ($u->loc(@_));
+    }
+}
+
+# }}}
+
 
 # {{{ sub Abort
 # Error - calls Error and aborts

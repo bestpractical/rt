@@ -1,3 +1,5 @@
+die "This schema is not currently up to date"
+
 CREATE TABLE Attachments (
   id serial NOT NULL  ,
   TransactionId integer NOT NULL  ,

@@ -10,6 +10,7 @@
 
 RT::GroupMember should never be called directly. It should generally
 only be accessed through the helper functions in RT::Group;
+This class does no authentication itself
 
 =head1 DESCRIPTION
 
@@ -31,43 +32,72 @@ ok (require RT::GroupMember);
 no warnings qw(redefine);
 
 
-# {{{ sub _Init
-sub _Init {
-  my $self = shift; 
-  $self->{'table'} = "GroupMembers";
-  return($self->SUPER::_Init(@_));
-}
-# }}}
+# {{{ sub _ClassAccessible 
 
-# {{{ sub _Accessible 
-sub _Accessible  {
-    my $self = shift;
-    my %Cols = (
-		GroupId => 'read',
-		UserId => 'read'
-		);
+sub _ClassAccessible {
+    {
+     
+        id =>
+                {read => 1, type => 'int(11)', default => ''},
+        GroupId => 
+                {read => 1, write => 1, type => 'int(11)', default => ''},
+        MemberId => 
+                {read => 1, write => 1, type => 'int(11)', default => ''},
 
-    return $self->SUPER::_Accessible(@_, %Cols);
-}
+ }
+};
+
 # }}}
 
 # {{{ sub Create
 
-# a helper method for Add
+=head2 Create { Group => undef, Member => undef }
+
+Add a Principal to the group Group.
+if the Principal is a group, automatically inserts all
+members of the principal into the cached members table recursively down.
+
+This routine expects a Group object and a Principal object
+
+=cut
+
 
 sub Create {
     my $self = shift;
-    my %args = ( GroupId => undef,
-		 UserId => undef,
+    my %args = ( Group=> undef,
+		 Member => undef,
 		 @_
 	       );
     
-    unless( $self->CurrentUser->HasSystemRight('ModifyGroups')) {
-	return (0, 'Permission Denied');
+
+    my $id = $self->SUPER::Create(GroupId => $args{'Group'}->Id, MemberId => $args{'Member'}->Id);
+
+    unless ($id) {
+        return (undef);
     }
 
-    return ($self->SUPER::Create(GroupId => $args{'GroupId'},
-				 UserId => $args{'UserId'}))
+    my $cached_member = RT::CachedGroupMember->new($self->CurrentUser);
+    my $cached_id = $cached_member->Create(MemberId => $args{'Member'}->Id,
+                                            GroupId => $args{'Group'}->Id,
+                                            Via => '0');
+
+    my $group  = $args{'Group'}->Id;
+
+    if ($args{'Member'}->IsGroup) {
+        my $group = $args{'Member'}->GroupObj();
+        while (my $member =  $group->Next()) {
+            my $submember = RT::CachedGroupMemmber->new($self->CurrentUser);
+            $submember->Create(MemberId => $member->PrincipalId,
+                               GroupId => $group,
+                                Via => $cached_id);
+
+        }
+
+    }
+
+
+
+    return ($id);
 }
 # }}}
 
@@ -105,31 +135,24 @@ sub Delete {
 
 # }}}
 
-# {{{ sub UserObj
+# {{{ sub PrincipalObj
 
-=head2 UserObj
+=head2 PrincipalObj
 
-Returns an RT::User object for the user specified by $self->UserId
+Returns an RT::Principal object for the Principal specified by $self->PrincipalId
 
 =cut
 
-sub UserObj {
+sub MemberObj {
     my $self = shift;
-    unless (defined ($self->{'user_obj'})) {
-        $self->{'user_obj'} = new RT::User($self->CurrentUser);
-        $self->{'user_obj'}->Load($self->UserId);
+    unless (defined ($self->{'Member_obj'})) {
+        $self->{'Member_obj'} = RT::Principal->new($self->CurrentUser);
+        $self->{'Member_obj'}->Load($self->MemberId);
     }
-    return($self->{'user_obj'});
+    return($self->{'Member_obj'});
 }
 
-# {{{ sub _Set
-sub _Set {
-    my $self = shift;
-    unless ($self->CurrentUser->HasSystemRight('AdminGroups')) {
-	return (0, 'Permission Denied');
-    }
-    return($self->SUPER::_Set(@_));
-}
-# }}}
+# }}
+
 
 1;
