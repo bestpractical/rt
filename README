@@ -214,15 +214,16 @@ Apache
         RT Uses HTML::Mason  You'll need to add a few lines to your
         httpd.conf telling it to use rt's web ui:
 
-        <VirtualHost 216.34.107.130>
-        DocumentRoot /opt/apache/hosted/mason.fsck.com/html
-        ServerName mason.fsck.com
-        PerlRequire /path/to/rt/bin/mason-handler.pl
-        <Location />
-        SetHandler perl-script
-        PerlHandler HTML::Mason
-        </Location>
-        </VirtualHost>
+
+<VirtualHost your.ip.address>
+DocumentRoot /opt/rt/WebRT
+ServerName your.rt.server.hostname
+PerlRequire /opt/rt/bin/webmux.pl
+<Location />
+ SetHandler perl-script
+ PerlHandler HTML::Mason
+</Location>
+</VirtualHost>
 
 
 THE CLI
