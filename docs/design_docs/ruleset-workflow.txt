@@ -1,6 +1,11 @@
+# For an online version, see http://wiki.bestpractical.com/?RulesetWorkflow
+
+_*This is a design document for a work in progress.
+It describes features that do not exist today and may never exist*_
+
 == Text Description
 
-* The user of OrderRequest queue fill in a numeric "CF", called "Price".
+* The user of PurchaseOrder queue fill in a numeric "CF", called "Price".
 * On creation, it needs to create following approvals:
 ** "ManagerApproval" if CF.Price is > 1000
 ** "PresidentApproval" if CF.Price is > 2000
@@ -39,13 +44,19 @@ Note that "Scrips" are now called "Rules".
   UNLESS RulesetLocked $Argument
       DO CreateTicketWithRuleset $Argument
 
+=== RuleAction "CreateTicketWithRuleset"
+
+  GIVEN $Ticket AS CreateTicket(@OtherArguments)
+     DO SetTicketRuleSet $Argument
+     DO RunTicketRuleSet $Argument
+  
 === GlobalRule "AquireLocks"
 
 * AppliesTo: All Objects
 * Condition: OnCreate
 * Action: AquireMyLocks
 
-=== Queue "OrderRequest"
+=== Queue "PurchaseOrder"
 
 * Rule:
 ** Condition: OnCreate
@@ -63,17 +74,17 @@ Note that "Scrips" are now called "Rules".
 * Rule:
 ** Condition: OnCreate 
 ** Condition: CF.Price > 1000
-** Action: TryCreateTicketWithRuleset "Manager"
+** Action: TryCreateTicketWithRuleset "ManagerApproval"
 
 * Rule:
 ** Condition: OnCreate 
 ** Condition: CF.Price > 2000
-** Action: TryCreateTicketWithRuleset "President"
+** Action: TryCreateTicketWithRuleset "PresidentApproval"
 
 * Rule:
 ** Condition: OnCreate 
 ** Condition: "Finance" is not blocked
-** Action: TryCreateTicketWithRuleset "Finance"
+** Action: TryCreateTicketWithRuleset "FinanceApproval"
 
 * Rule:
 ** Condition: OnReject
