@@ -147,9 +147,9 @@ CREATE TABLE Links (
   # fsck.com-rt://instancename/ticket/<id>
 
 
-)\g
+);
 
-CREATE TABLE Templates (	
+CREATE TABLE Templates (
 
   id int(11) AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(120),
