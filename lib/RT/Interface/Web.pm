@@ -74,7 +74,6 @@ sub NewApacheHandler {
 # }}}
 
 package HTML::Mason::Commands;
-
 # {{{ sub Abort
 # Error - calls Error and aborts
 sub Abort {
@@ -183,8 +182,8 @@ sub ProcessSearchQuery {
     if ($args{ARGS}->{'TicketsSortBy'}) {
 	$session{'tickets_sort_by'} = $args{ARGS}->{'TicketsSortBy'};
 	$session{'tickets_sort_order'} = $args{ARGS}->{'TicketsSortOrder'};
-	$session{'tickets'}->OrderBy ( FIELD => $args{ARGS}->{'TicketsSortBy'},
-				       ORDER => $args{ARGS}->{'TicketsSortOrder'});
+	$session{'tickets'}->OrderBy(FIELD => $args{ARGS}->{'TicketsSortBy'},
+				     ORDER => $args{ARGS}->{'TicketsSortOrder'});
     }
     # }}}
     
@@ -278,27 +277,47 @@ sub ProcessSearchQuery {
 
     # }}}   
     # {{{ Limit KeywordSelects
+
     foreach my $KeywordSelectId (
 	map { /^KeywordSelect(\d+)$/; $1 }
         grep { /^KeywordSelect(\d+)$/; }
           keys %{$args{ARGS}}
     ) {
-      my $form = $args{ARGS}->{"KeywordSelect$KeywordSelectId"};
-      my $oper = $args{ARGS}->{"KeywordSelectOp$KeywordSelectId"};
-      foreach my $KeywordId ( ref($form) ? @{ $form } : ( $form ) ) {
-	  if ($KeywordId) {
-	      $session{'tickets'}->LimitKeyword(
-						KEYWORDSELECT => $KeywordSelectId,
-						OPERATOR => $oper,
-						KEYWORD => $KeywordId,
-					       );
-	  }
-      }
-      
+	my $form = $args{ARGS}->{"KeywordSelect$KeywordSelectId"};
+	my $oper = $args{ARGS}->{"KeywordSelectOp$KeywordSelectId"};
+	foreach my $KeywordId ( ref($form) ? @{ $form } : ( $form ) ) {
+	    if ($KeywordId) {
+		
+		my $description = '';
+		my $quote = 1;
+		if ( $KeywordId eq 'NULL' ) {
+		    $quote = 0;
+		    
+		    # Convert the operator to something apropriate for nulls
+		    if ( $oper eq '=' ) {
+			$oper = 'IS';
+		    } elsif ( $oper eq '!=' ) {
+			$oper = 'IS NOT';
+		    }
+		}
+
+		
+		
+		$session{'tickets'}->LimitKeyword(
+						  KEYWORDSELECT => $KeywordSelectId,
+						  OPERATOR => $oper,
+						  QUOTEVALUE => $quote,
+						  KEYWORD => $KeywordId,
+						 );
+
+		
+	    }
+	}
+	
     }
-
+    
     # }}}
-
+    
 }
 
 # }}}

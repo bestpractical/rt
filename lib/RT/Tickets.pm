@@ -1,8 +1,9 @@
 #$Header$
+
 =head1 NAME
 
   RT::Tickets - A collection of Ticket objects
-
+ 
 =head1 SYNOPSIS
 
   use RT::Tickets;
@@ -54,6 +55,7 @@ use RT::Ticket;
 	      Watcher => 'WATCHERFIELD',
 	      LinkedTo => 'LINKFIELD',
               Keyword => 'KEYWORDFIELD'
+
 	    );
 
 # }}}
@@ -703,16 +705,38 @@ sub LimitKeyword {
 		 OPERATOR => '=',
 		 DESCRIPTION => undef,
 		 FIELD => 'Keyword',
+		 QUOTEVALUE => 1,
 		 @_
 	       );
 
     use RT::KeywordSelect;
     my $KeywordSelect = RT::KeywordSelect->new($self->CurrentUser);
     $KeywordSelect->Load($args{KEYWORDSELECT});
-    use RT::Keyword;
-    my $Keyword = RT::Keyword->new($self->CurrentUser);
-    $Keyword->Load($args{KEYWORD});
-    $args{'DESCRIPTION'} ||= $KeywordSelect->Name. " $args{OPERATOR} ". $Keyword->Name;
+    
+
+    # Below, We're checking to see whether the keyword we're searching for
+    # is null or not.
+    # This could probably be rewritten to be easier to read and
+    # understand
+
+    
+    # if we're not looking to compare with a null value
+    if ($ARGS{'KEYWORD'} !~ /^null$/i) {
+	use RT::Keyword;
+	my $Keyword = RT::Keyword->new($self->CurrentUser);
+	$Keyword->Load($args{KEYWORD});
+	$args{'DESCRIPTION'} ||= "Keyword Selection " . $KeywordSelect->Name.  " $args{OPERATOR} ". $Keyword->Name;
+    }
+    #If we are looking to compare with a null value.
+    else {
+	if ($args{'OPERATOR'} =~ /^is$/i) {
+	    $args{'DESCRIPTION'} ||= "Keyword Selection ". $KeywordSelect->Name . " has no value";
+	}
+	elsif ($args{'OPERATOR'} =~ /^is not$/i) {
+	    $args{'DESCRIPTION'} ||= "Keyword Selection ". $KeywordSelect->Name . " has a value";
+	}
+    }
+ 
     
     my $index = $self->_NextIndex;
     %{$self->{'TicketRestrictions'}{$index}} = %args;
@@ -1111,26 +1135,42 @@ sub _ProcessRestrictions {
 	# }}}
 	# {{{ keyword
 	elsif ($TYPES{$restriction->{'FIELD'}} eq 'KEYWORDFIELD') {
-            my $ObjKeywordsAlias = $self->NewAlias('ObjectKeywords');
-            $self->Join(
-                         ALIAS1 => 'main',
-                         FIELD1 => 'id',
-                         ALIAS2 => $ObjKeywordsAlias,
-                         FIELD2 => 'ObjectId'
+            my $ObjKeywordsAlias = $self->Join(
+			TYPE => 'left',
+			ALIAS1 => 'main',
+			FIELD1 => 'id',
+			TABLE2 => 'ObjectKeywords',
+			FIELD2 => 'ObjectId'
                        );
             $self->SUPER::Limit(
-                                 ALIAS => $ObjKeywordsAlias,
-                                 FIELD => 'Keyword',
-                                 VALUE => $restriction->{'KEYWORD'},
-                                 OPERATOR => $restriction->{'OPERATOR'},
-                                 ENTRYAGGREGATOR => 'AND',
+				ALIAS => $ObjKeywordsAlias,
+				FIELD => 'Keyword',
+				OPERATOR => $restriction->{'OPERATOR'},
+				VALUE => $restriction->{'KEYWORD'},
+				QUOTEVALUE => $restriction->{'QUOTEVALUE'},
+				ENTRYAGGREGATOR => 'AND',
                                );
+
+	    #If we're trying to find tickets where the keyword isn't somethng, also check ones where it _IS_ null
+	    if ( $restriction->{'OPERATOR'} eq '!=') {
+	        $self->SUPER::Limit(
+				    ALIAS => $ObjKeywordsAlias,
+				    FIELD => 'Keyword',
+				    OPERATOR => 'IS',
+				    VALUE => 'NULL',
+				    QUOTEVALUE => 0,
+				    ENTRYAGGREGATOR => 'OR',
+				   );
+	      }
+
+
             $self->SUPER::Limit(
-                                 ALIAS => $ObjKeywordsAlias,
-                                 FIELD => 'KeywordSelect',
-                                 VALUE => $restriction->{'KEYWORDSELECT'},
-                                 ENTRYAGGREGATOR => 'AND',
+				ALIAS => $ObjKeywordsAlias,
+				FIELD => 'KeywordSelect',
+				VALUE => $restriction->{'KEYWORDSELECT'},
+				ENTRYAGGREGATOR => 'AND',
                                );
+	    
             $self->SUPER::Limit(
                                  ALIAS => $ObjKeywordsAlias,
                                  FIELD => 'ObjectType',

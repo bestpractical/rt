@@ -1,5 +1,6 @@
 <SELECT NAME=<%$Name%> <%$Size%> <%$Multiple%>>
 <OPTION VALUE="">-</OPTION>
+<OPTION VALUE="NULL">(no value)</OPTION>
 %   foreach my $kid ( keys %{$Descendents} ) {
 <OPTION VALUE="<% $kid %>" 
 %if ($kid == $Default) {
