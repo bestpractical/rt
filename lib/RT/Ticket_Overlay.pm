@@ -2199,7 +2199,11 @@ Takes a hashref with the following attributes:
 If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
 commentl
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content.
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
+
+If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
+They will, however, be prepared and you'll be able to access them through the TransactionObj
+
 
 =cut
 
@@ -2211,6 +2215,7 @@ sub Comment {
                  MIMEObj      => undef,
                  Content      => undef,
                  TimeTaken => 0,
+                 DryRun     => 0, 
                  @_ );
 
     unless (    ( $self->CurrentUserHasRight('CommentOnTicket') )
@@ -2218,8 +2223,16 @@ sub Comment {
         return ( 0, $self->loc("Permission Denied"), undef );
     }
     $args{'NoteType'} = 'Comment';
-    my @results = $self->_RecordNote(%args);
 
+    if ($args{'DryRun'}) {
+        $RT::Handle->BeginTransaction();
+        $args{'CommitScrips'} = 0;
+    }
+
+    my @results = $self->_RecordNote(%args);
+    if ($args{'DryRun'}) {
+        $RT::Handle->Rollback();
+    }
 
     return(@results);
 }
@@ -2233,9 +2246,12 @@ Correspond on this ticket.
 Takes a hashref with the following attributes:
 
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content
+MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
 
 if there's no MIMEObj, Content is used to build a MIME::Entity object
+
+If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
+They will, however, be prepared and you'll be able to access them through the TransactionObj
 
 
 =cut
@@ -2255,10 +2271,21 @@ sub Correspond {
     }
 
     $args{'NoteType'} = 'Correspond'; 
+    if ($args{'DryRun'}) {
+        $RT::Handle->BeginTransaction();
+        $args{'CommitScrips'} = 0;
+    }
+
     my @results = $self->_RecordNote(%args);
+
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
     $self->_SetTold unless ( $self->IsRequestor($self->CurrentUser->id));
+
+    if ($args{'DryRun'}) {
+        $RT::Handle->Rollback();
+    }
+
     return (@results);
 
 }
@@ -3777,6 +3804,12 @@ sub Transactions {
 
 # {{{ sub _NewTransaction
 
+=head2 _NewTransaction  PARAMHASH
+
+Private function to create a new RT::Transaction object for this ticket update
+
+=cut
+
 sub _NewTransaction {
     my $self = shift;
     my %args = (
@@ -3788,7 +3821,6 @@ sub _NewTransaction {
         Field     => undef,
         MIMEObj   => undef,
         ActivateScrips => 1,
-        PrepareScrips => 1,
         CommitScrips => 1,
         @_
     );
@@ -3805,11 +3837,10 @@ sub _NewTransaction {
         OldValue  => $args{'OldValue'},
         MIMEObj   => $args{'MIMEObj'},
         ActivateScrips => $args{'ActivateScrips'},
-        PrepareScrips => $args{'PrepareScrips'},
         CommitScrips => $args{'CommitScrips'},
     );
 
-
+    # Rationalize the object since we may have done things to it during the caching.
     $self->Load($self->Id);
 
     $RT::Logger->warning($msg) unless $transaction;
