@@ -58,7 +58,7 @@ my @status = $queue->StatusArray();
 </%ONCE>
 <%ARGS>
 $Name => undef
-$Default => undef
+$Default => ''
 $SkipDeleted => 0
 $DefaultValue => 1
 $DefaultLabel => "-"

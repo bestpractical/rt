@@ -91,7 +91,7 @@ foreach my $object (@objects) {
 <%ARGS>
 $QueueObj => undef
 $Name => undef
-$Default => undef
+$Default => 0
 $User => undef
 $TicketObj => undef
 $DefaultValue => 1

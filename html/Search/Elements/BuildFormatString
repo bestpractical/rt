@@ -199,16 +199,19 @@ elsif ( $ARGS{"ColDown"} ) {
     }
 }
 
-$Format = "";
+
+my @format_string;
 foreach my $field (@seen) {
     next unless $field;
-    $Format .= ", \n" if $Format;
-    $Format .= "'";
-    $Format .= $field->{Prefix};
-    $Format .= "__" . $field->{Column} . "__" if ( $field->{Column} ne "<blank>" ) ;
-    $Format .= $field->{Suffix};
-    $Format .= "'";
+    my $row = "'" .  $field->{Prefix};
+    $row .= "__" . $field->{Column} . "__" if ( $field->{Column} ne "<blank>" ) ;
+    $row .= $field->{Suffix} . "'";
+    push (@format_string, $row);
 }
+
+$Format = join(",\n", @format_string);
+
+
 return($Format, \@fields, \@seen);
 
 </%init>
