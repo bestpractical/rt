@@ -6,8 +6,7 @@ WriteMakefile(
     'VERSION_FROM' => 'RT.pm', # finds $VERSION
     'PREREQ_PM' => {
                      'DBI'                 => 1.13,
-                     'DBIx::DataSource'    => 0.02,
-                     'DBIx::SearchBuilder' => 0.26,
+                     'DBIx::SearchBuilder' => 0.31,
                      'HTML::Mason'         => 0.896,
                      'Date::Manip'         => 0,
                      'Date::Format'        => 0,

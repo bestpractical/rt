@@ -3,11 +3,16 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-TODO edit password
+<& /Elements/TitleBoxStart, title => 'Change password'  &>
+New password: <input type=password name="NewPass1" size=16>
+Confirm: <input type=password name="NewPass2" size=16>
+<& /Elements/TitleBoxEnd &>
 <BR>
 <& /Elements/TitleBoxStart, title => 'Signature'  &>
 <form method=post>
-<TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $session{'CurrentUser'}->UserObj->Signature %></TEXTAREA><br><BR>
+<TEXTAREA COLS=72 ROWS=4 WRAP=HARD NAME="Signature"><% $session{'CurrentUser'}->UserObj->Signature %></TEXTAREA>
+<br>
+<BR>
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit &>
 	  </form>
@@ -15,15 +20,27 @@ TODO edit password
 
 <%INIT>
 my @results;
+
+if ($NewPass1) {
+    if ($NewPass1 ne $NewPass2) {
+	push (@results, "Passwords did not match.");
+    }	
+    else {
+	my ($val, $msg)=$session{'CurrentUser'}->UserObj->SetPassword($NewPass1);
+	push (@results, "Password: ".$msg);
+    }	
+}
 if ($Signature) {
-	$Signature =~ s/(\r\n|\r)/\n/g;
-	if ($Signature ne $session{'CurrentUser'}->UserObj->Signature) {
-		my ($val, $msg)=$session{'CurrentUser'}->UserObj->SetSignature($Signature);
-		push (@results, "Signature: ".$msg);
-	}
+    $Signature =~ s/(\r\n|\r)/\n/g;
+    if ($Signature ne $session{'CurrentUser'}->UserObj->Signature) {
+	my ($val, $msg)=$session{'CurrentUser'}->UserObj->SetSignature($Signature);
+	push (@results, "Signature: ".$msg);
+    }
 }
 </%INIT>
 
 <%ARGS>
 $Signature => undef
+$NewPass1 => undef
+$NewPass2 => undef
 </%ARGS>
