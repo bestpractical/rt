@@ -1,0 +1,8 @@
+<%INIT>
+$r->content_type('text/html');
+$r->status($Status);
+$m->abort($Status);
+</%INIT>
+<%ARGS>
+$Status => 500
+</%ARGS>

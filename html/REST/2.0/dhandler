@@ -117,9 +117,6 @@ AUTH_WSSE: {
     #	last; # system clock differ by more than one day, oops!
     # }
 
-    delete $INC{'RT/CurrentUser.pm'};
-    require RT::CurrentUser;
-
     require MIME::Base64;
     $auth_nonce = MIME::Base64::decode_base64($auth_nonce);
 
@@ -131,71 +128,41 @@ AUTH_WSSE: {
     $nonce_cache->set( $auth_nonce, 1 );
 }
 
-if ($CurrentUser and $CurrentUser->Id) {
-    # XXX - do proper delegation goes here
-
-    my $path = $m->dhandler_arg;
-    my $type = ucfirst(lc($path));
-    $type =~ s{/.*}{};
-    $type =~ s{s$}{};
-
-    require "RT/${type}s.pm";
-    my $collection = "RT::${type}s"->new($CurrentUser);
-    $collection->UnLimit;
-    my $count = $collection->Count;
-
-    $r->content_type('text/xml; charset=utf-8');
-    my $entries = '';
-
-    my $now = RT::Date->new;
-    $now->SetToNow;
-    my $modified = $now->W3CDTF;
-
-    while (my $entry = $collection->Next) {
-	my %entry = map { $_ => eval { $entry->$_ } || '' }
-	    qw(Id Name Description Content);
-        $entry{Created} = $entry->CreatedObj->W3CDTF;
-        $entry{Created} =~ s/ /T/;
-        $entry{LastUpdated} = $entry->LastUpdatedObj->W3CDTF;
-        $entry{LastUpdated} =~ s/ /T/;
-    
-	$entries .= <<".";
-  <entry>
-    <title mode="escaped">$entry{Name}</title>
-    <link rel="alternate" type="text/html" href="$RT::WebPath/$type/Display.html?id=$entry{Id}"/>
-    <modified>$entry{LastUpdated}</modified>
-    <issued>$entry{Created}</issued>
-    <created>$entry{Created}</created>
-    <id>rt-fsck.com:$RT::rtname/$entry{Id}</id>
-    <summary mode="escaped">$entry{Description}</summary>
-    <content type="text/plain" mode="escaped" xml:base="http://diveintomark.org/archives/2004/04/19/feed-parser-beta-22">
-      <![CDATA[$entry{Content}]]>
-    </content>
-  </entry>
-.
-    }
-    print << ".";
-<?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/css" href="$RT::WebPath/REST/2.0/NoAuth/feed.css"?>
-<feed version="0.3" xmlns="http://purl.org/atom/ns#">
-  <title>\u$type search results</title>
-  <author>
-    <name>$RT::Organization</name>
-    <url>$RT::WebURL</url>
-  </author>
-  <link rel="alternate" type="text/html" href="$RT::WebURL"/>
-  <tagline mode="escaped">$count results found.</tagline>
-  <id>rt-fsck.com://$path</id>
-  <modified>$modified</modified>
-  <generator url="http://www.bestpractical.com/rt/" version="$RT::VERSION">RT</generator>
-  $entries
-</feed>
-.
-}
-else {
-    $r->status(401);
+if (!$CurrentUser or !$CurrentUser->Id) {
+    $m->comp('Error/index', Status => 401);
 }
 
+$session{CurrentUser} = $CurrentUser;
+
+# TODO: Redirect /template to /templates
+
+my $path = $m->dhandler_arg;
+my $type = lc($path);
+$type =~ s{/.*}{};
+$type =~ s{-}{/};
+
+my $class;
+foreach my $key (keys %INC) {
+    $key =~ m{^RTx?(?:/.+)?/($type).pm}i or next;
+    $type = $1;
+    $class = $key;
+    $class =~ s{.pm$}{}i;
+    $class =~ s{/}{::}g;
+    $class->can('UnLimit') or (undef $class, next);
+    last;
+}
+
+if (!$class) {
+    return $m->comp('index') if $path =~ /index|^\W*$/i;
+    return $m->comp('Error/index', Status => 404);
+}
+
+$m->comp(
+    'Search/index', %ARGS,
+    Path => $path,
+    Type => $type,
+    CollectionClass => $class,
+);
 </%INIT>
 <%FLAGS>
 inherit	=> undef

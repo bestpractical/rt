@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/css" href="<% $RT::WebPath %>/REST/2.0/NoAuth/feed.css"?>
+<feed version="0.3" xmlns="http://purl.org/atom/ns#">
+  <title>Search result on <% $Type %></title>
+  <author>
+    <name><% $RT::Organization %></name>
+    <url><% $RT::WebURL %></url>
+  </author>
+  <link rel="alternate" type="text/html" href="<% $RT::WebURL %>"/>
+  <tagline mode="escaped"><% $count %> results found.</tagline>
+  <id>rt-fsck.com://<% $Path %></id>
+  <modified><% $modified %></modified>
+  <generator url="http://www.bestpractical.com/rt/" version="<% $RT::VERSION %>">RT</generator>
+% foreach my $entry (@entries) {
+  <entry>
+    <title mode="escaped"><% $entry->{Name} %></title>
+    <link rel="alternate" type="text/html" href="$RT::WebPath/$Type/Display.html?id=<% $entry->{Id} %>"/>
+    <modified><% $entry->{LastUpdated} %></modified>
+    <issued><% $entry->{Created} %></issued>
+    <created><% $entry->{Created} %></created>
+    <id>rt-fsck.com:$RT::rtname/<% $entry->{Id} %></id>
+    <summary mode="escaped"><% $entry->{Description} %></summary>
+    <content type="text/plain" mode="escaped"><% $entry->{Content} %></content>
+  </entry>
+% }
+</feed>
+<%INIT>
+my $Collection = $CollectionClass->new($session{CurrentUser});
+$Collection->UnLimit;
+my $count = $Collection->Count;
+
+$r->content_type('text/xml');
+
+my $entries = '';
+
+my $now = RT::Date->new;
+$now->SetToNow;
+my $modified = $now->W3CDTF;
+
+my @entries;
+
+while (my $entry = $Collection->Next) {
+    my %entry = map { $_ => eval { $entry->$_ } || '' }
+	qw(Id Name Description Content);
+    $entry{Created} = $entry->CreatedObj->W3CDTF;
+    $entry{Created} =~ s/ /T/;
+    $entry{LastUpdated} = $entry->LastUpdatedObj->W3CDTF;
+    $entry{LastUpdated} =~ s/ /T/;
+    push @entries, \%entry;
+}
+
+</%INIT>
+<%ARGS>
+$Path
+$Type
+$CollectionClass
+</%ARGS>
