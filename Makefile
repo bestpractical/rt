@@ -89,7 +89,7 @@ tag-and-release-baseline:
 #  you want tag-and-release-baseline
 
 tag-and-release:
-	aegis --delta-name $(TAG)
+	aegis --delta-name --overwriting $(TAG)
 	rm -rf /tmp/$(TAG)
 	mkdir /tmp/$(TAG)
 	cd /tmp/$(TAG); \
