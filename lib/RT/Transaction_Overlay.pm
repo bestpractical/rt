@@ -448,22 +448,22 @@ sub Description {
     #If it's a comment, we need to be extra special careful
     if ( $self->__Value('Type') eq 'Comment' ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return ( 0, $self->loc("Permission Denied") );
+            return ( $self->loc("Permission Denied") );
         }
     }
 
     #if they ain't got rights to see, don't let em
     else {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return ( 0, $self->loc("Permission Denied") );
+            return ($self->loc("Permission Denied") );
         }
     }
 
     if ( !defined( $self->Type ) ) {
-        return (0, $self->loc("No transaction type specified"));
+        return ( $self->loc("No transaction type specified"));
     }
 
-    return (1, $self->loc("[_1] by [_2]",$self->BriefDescription , $self->CreatorObj->Name ));
+    return ( $self->loc("[_1] by [_2]",$self->BriefDescription , $self->CreatorObj->Name ));
 }
 
 # }}}
@@ -483,14 +483,14 @@ sub BriefDescription {
     #If it's a comment, we need to be extra special careful
     if ( $self->__Value('Type') eq 'Comment' ) {
         unless ( $self->CurrentUserHasRight('ShowTicketComments') ) {
-            return ( 0, $self->loc("Permission Denied") );
+            return ( $self->loc("Permission Denied") );
         }
     }
 
     #if they ain't got rights to see, don't let em
     else {
         unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-            return ( 0, $self->loc("Permission Denied") );
+            return ( $self->loc("Permission Denied") );
         }
     }
 
