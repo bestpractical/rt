@@ -1,17 +1,36 @@
 RT Todo List
 
-1. Web interface for requestors.
-2. Mail interface for take,give, resolve, etc.
-3. Convert to DBI. (So one could use oracle, mysql, etc.)
-4. Simplify Web interface.
-5. Reporting tool.
-6. "Actions since" command (cli, web)
-7. cleaner cli.
-8. mailgate should be better about mime.
-9. Web interface should let users change their own info. (such as passwd)
-10. Searching on text of requests.
-11. req import tool.
+. Allow CCs on Correspondence
 
-98. rt daemon. (for running interfaces remotely or not setuid)
-99. TK interface
+. Glimpse Searching
+
+. Reporting Scripts
+
+. Change rt to rtm
+
+. Move request display into rtq
+
+. Allow sub-requests.
+
+. Installation should use perl for access granting.
+	Remove mysql.acl, etc.
+
+	
+
+. Web interface for requestors.
+. Convert to DBI. (So one could use oracle, mysql, etc.)
+. Simplify Web interface.
+. "Actions since" command (cli, web)
+. cleaner cli.
+. mailgate should be better about mime.
+. Searching on text of requests.
+
+
+
+RT Wish List
+. rt daemon. (for running interfaces remotely or not setuid)
+	This is actually not terribly hard. almost all of the code needed
+	can be found in the improved mail gateway.
+
+. TK interface
 
