@@ -613,12 +613,45 @@ sub AddScripScope {
 }
 # }}}
 
+# {{{ sub AddKeywordSelect
+
+=head2 AddKeywordSelect
+
+Takes a paramhash of Name, Keyword, Depth and Single.  Adds a new KeywordSelect for 
+this queue with those attributes.
+
+=cut
+
+
+sub AddKeywordSelect {
+    my $self = shift;
+    my %args = ( Keyword => undef,
+		 Depth => undef,
+		 Single => undef,
+		 Name => undef,
+		 @_);
+    
+    #ACLS get handled in KeywordSelect
+    my $NewKeywordSelect = new RT::KeywordSelect($self->CurrentUser);
+    return ($NewKeywordSelect->Create (Keyword => $args{'Keyword'},
+			       Depth => $args{'Depth'},
+			       Name => $args{'Name'},
+			       Single => $args{'Single'},
+			       ObjectType => 'Ticket',
+			       ObjectField => 'Queue',
+			       ObjectValue => $self->Id()
+			      )	);
+}
+
+# }}}
+
 # {{{ sub KeywordSelects
 
 =head2 KeywordSelects
 
 Returns an B<RT::KeywordSelects> object containing the collection of
-B<RT::KeywordSelect> objects which apply to this queue. 
+B<RT::KeywordSelect> objects which apply to this queue. (Both queue specific keyword selects
+and global keyword selects.
 
 =cut
 
@@ -628,27 +661,10 @@ sub KeywordSelects {
 
   use RT::KeywordSelects;
   my $KeywordSelects = new RT::KeywordSelects($self->CurrentUser);
-  # ok, this isn't quite right.  it assumes ObjectField is "Queue" if 
-  # ObjectValue is the current Queue.id, which is currently true, but the
-  # idea is to support additional QueueFields...
-  # SELECT * FROM KeywordSelects WHERE
-  # ObjectType = "Ticket" AND
-  # ( ObjectField = "" OR
-  #   ( ObjectField = "Queue" AND ObjectValue = $self->Queue )
-  # ) 
-  $KeywordSelects->Limit(
-			 FIELD => 'ObjectType',
-			 VALUE => 'Ticket',
-			);
-#  $KeywordSelects->Limit(
-#    FIELD => 'ObjectField',
-#    VALUE => '',
-#    ENTRYAGGREGATOR => 'OR',
-  #  );
-  $KeywordSelects->Limit(FIELD => 'ObjectValue',
-			 VALUE => $self->id,
-			 ENTRYAGGREGATOR => 'OR',
-			);
+
+  $KeywordSelects->LimitToQueue($self->id);
+  $KeywordSelects->IncludeGlobals();
+
   return ($KeywordSelects)
 }
 # }}}

@@ -9,17 +9,22 @@ use RT::Keyword;
 
 @ISA = qw(RT::Record);
 
+# {{{ sub _Init
 sub _Init {
     my $self = shift;
     $self->{'table'} = "KeywordSelects";
     $self->SUPER::_Init(@_);
 }
+# }}}
 
+# {{{ sub _Accessible
 sub _Accessible {
     my $self = shift;
     my %Cols = (
+		Name => 'read/write',
 		Keyword => 'read/write', # link to Keywords.  Can be specified by id
 		Single => 'read/write', # bool (described below)
+
 		Depth => 'read/write', #- If non-zero, limits the descendents to this number of levels deep.
 		ObjectType  => 'read/write', # currently only C<Ticket>
 		ObjectField => 'read/write', #optional, currently only C<Queue>
@@ -27,7 +32,9 @@ sub _Accessible {
 	       );
     return($self->SUPER::_Accessible(@_, %Cols));  
 }
+# }}}
 
+# {{{ POD
 =head1 NAME
 
  RT::KeywordSelect - Manipulate an RT::KeywordSelect record
@@ -40,10 +47,12 @@ sub _Accessible {
   $keyword_select->Create(
     Keyword     => 20,
     ObjectType => 'Ticket',
+    Name       => 'Choices'
   );
 
   my $keyword_select = RT::KeywordSelect->new($CurrentUser);
   $keyword_select->Create(
+    Name        => 'Choices',			  
     Keyword     => 20,
     ObjectType  => 'Ticket',
     ObjectField => 'Queue',
@@ -86,6 +95,10 @@ B<RT::Keyword> as choices.
 Takes a single argument, an RT::CurrentUser object.  Instantiates a new
 (uncreated) RT::KeywordSelect object.
 
+=cut
+# }}}
+
+# {{{ sub Create
 =item Create KEY => VALUE, ...
 
 Takes a list of key/value pairs and creates a the object.  Returns the id of
@@ -93,7 +106,8 @@ the newly created record, or false if there was an error.
 
 Keys are:
 
-Keyword - link to Keywords.  Can be specified by id or Name.
+Keyword - link to Keywords.  Can be specified by id.
+Name - A name for this KeywordSelect
 Single - bool (described above)
 Depth - If non-zero, limits the descendents to this number of levels deep.
 ObjectType - currently only C<Ticket>
@@ -107,6 +121,7 @@ sub Create {
     my %args = ( Keyword => undef,
 		 Single => 1,
 		 Depth => 0,
+		 Name => undef,
 		 ObjectType => undef,
 		 ObjectField => undef,
 		 ObjectValue => undef,
@@ -118,9 +133,14 @@ sub Create {
 	return(undef);
     }
 
+    my $Keyword = new RT::Keyword($self->CurrentUser);
+    $Keyword->Load($args{'Keyword'});
+    $args{'Name'} = $Keyword->Name if  (!$args{'Name'});
+
     #TODO: ACL check here +++
     
-    return($self->SUPER::Create( Keyword => $args{'Keyword'},
+    return($self->SUPER::Create( Name => $args{'Name'},
+				 Keyword => $args{'Keyword'},
 				 Single => $args{'Single'},
 				 Depth => $args{'Depth'},
 				 ObjectType => $args{'ObjectType'},
@@ -129,7 +149,29 @@ sub Create {
 
 
 }
+# }}}
 
+# {{{ sub Delete
+
+=head2 Delete
+
+Delete this keyword select object. Does not currently remove keywords from tickets
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    unless ($self->CurrentUserHasRight('ModifyKeywordSelects')) {
+        $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
+	return (undef);
+    }
+    return($self->SUPER::Delete());
+
+}
+
+
+
+# {{{ sub KeywordObj
 =item KeywordObj
 
 Returns the B<RT::Keyword> referenced by the I<Keyword> field.
@@ -143,7 +185,9 @@ sub KeywordObj {
     $Keyword->Load( $self->Keyword ); #or ?
     return($Keyword);
 } 
+# }}}
 
+# {{{ sub Object
 =item Object
 
 Returns the object (currently only RT::Queue) specified by ObjectField and ObjectValue.
@@ -160,6 +204,74 @@ sub Object {
 	return (undef);
     }
 }
+
+# }}}
+
+# {{{ sub _Set
+
+# does an acl check, then passes off the call
+sub _Set {
+    my $self = shift;
+
+    unless ($self->CurrentUserHasRight('ModifyKeywordSelects')) {
+        $RT::Logger->debug("CurrentUser can't modify KeywordSelects for ".$self->Queue."\n");
+	return (undef);
+    }
+
+    return $self->SUPER::_Set(@_);
+
+}
+# }}}
+
+# {{{ sub CurrentUserHasRight
+
+=head2 CurrentUserHasRight
+
+Helper menthod for HasRight. Presets Principal to CurrentUser then 
+calls HasRight.
+
+=cut
+
+sub CurrentUserHasRight {
+    my $self = shift;
+    my $right = shift;
+    return ($self->HasRight( Principal => $self->CurrentUser->UserObj,
+                             Right => $right ));
+    
+}
+
+# }}}
+
+# {{{ sub HasRight
+
+=head2 HasRight
+
+Takes a param-hash consisting of "Right" and "Principal"  Principal is 
+an RT::User object or an RT::CurrentUser object. "Right" is a textual
+Right string that applies to KeywordSelects
+
+=cut
+
+sub HasRight {
+    my $self = shift;
+    my %args = ( Right => undef,
+                 Principal => undef,
+                 @_ );
+    
+    if ($self->SUPER::_Value('Queue') > 0) {
+        return ( $args{'Principal'}->HasQueueRight(
+                      Right => $args{'Right'},
+                      Queue => $self->SUPER::_Value('Queue'),
+                      Principal => $args{'Principal'}
+                      ) 
+                );
+
+    }
+    else {
+        return( $args{'Principal'}->HasSystemRight( Right => $args{'Right'}) );
+    }
+}
+# }}}
 
 =back
 

@@ -1,23 +1,23 @@
-<& /Elements/Header, title => 'Modify people related to ticket # ' . $TicketObj->id &>
-<& /Ticket/Elements/Tabs, $TicketObj => $TicketObj  &>
+<& /Elements/Header, title => 'Modify people related to ticket # ' . $Ticket->id &>
+<& /Ticket/Elements/Tabs, Ticket => $Ticket  &>
 
 <& /Elements/ListActions, actions => \@results &>
 
 <FORM METHOD=POST>
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$TicketObj->Id%>">
-<& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$TicketObj->Id,   width => "100%" &>
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+<& /Elements/TitleBoxStart, title => 'Modify people related to ticket #'.$Ticket->Id,   width => "100%" &>
 
 <TABLE>
 <TR>
 <TD VALIGN=TOP>
 
 <h3>Owner</h3>
-Owner: <& /Elements/SelectOwner, Name => 'Owner', Default => $TicketObj->OwnerObj->Id &>
+Owner: <& /Elements/SelectOwner, Name => 'Owner', Default => $Ticket->OwnerObj->Id &>
 <h3>New watchers</h3>
 Find people whose<BR>
 <& /Elements/SelectUsers &>
 
-<& Elements/AddWatchers, TicketObj => $TicketObj, UserString => $UserString,
+<& Elements/AddWatchers, Ticket => $Ticket, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField &>
 
 </TD><TD VALIGN=TOP>
@@ -25,13 +25,13 @@ Find people whose<BR>
 (Check box to delete)<br>
 
 Requestors:
-<& Elements/EditWatchers, TicketObj => $TicketObj, Type => 'requestors' &>
+<& Elements/EditWatchers, TicketObj => $Ticket, Type => 'requestors' &>
 
 Cc:
-<& Elements/EditWatchers, TicketObj => $TicketObj, Type => 'cc' &>
+<& Elements/EditWatchers, TicketObj => $Ticket, Type => 'cc' &>
 
 Administrative Cc:
-<& Elements/EditWatchers, TicketObj => $TicketObj, Type => 'admincc' &>
+<& Elements/EditWatchers, TicketObj => $Ticket, Type => 'admincc' &>
 
 </TD>
 </TR>
@@ -52,8 +52,8 @@ my @results;
 # to deal
 my @id = (ref $id eq 'ARRAY') ? @{$id} : ($id);                
 
-my $TicketObj = new RT::Ticket($session{'CurrentUser'});
-$TicketObj->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
+my $Ticket = new RT::Ticket($session{'CurrentUser'});
+$Ticket->Load($id[0]) || $m->comp('/Elements/Error', Why => "Couldn't load ticket '$id'");
 # }}}
 # {{{ Set basic fields 
 my @fields = qw(
@@ -64,8 +64,8 @@ my @fields = qw(
 foreach $field (@fields) {
 my ($code, $msg);
 my $check = "if ((defined \$ARGS{$field}) and 
-                 (\$ARGS{$field} ne \$TicketObj->$field)) {
-                  (\$code, \$msg) = \$TicketObj->Set$field(\$ARGS{'$field'});
+                 (\$ARGS{$field} ne \$Ticket->$field)) {
+                  (\$code, \$msg) = \$Ticket->Set$field(\$ARGS{'$field'});
                   push \@results, \"\$msg\";
                    }";
 
@@ -85,7 +85,7 @@ foreach $key (keys %ARGS) {
     if (($key =~ /^DelWatcher(\d*)$/) and
 	($ARGS{$key})) {
 	$RT::Logger->debug("Deleting watcher $1\n");
-	my ($code, $msg) = $TicketObj->DeleteWatcher($1);
+	my ($code, $msg) = $Ticket->DeleteWatcher($1);
 	
 	push @results, $msg;
     }
@@ -99,7 +99,7 @@ foreach $key (keys %ARGS) {
 	 ($key =~ /^WatcherTypeUser(\d*)$/) ) {
 	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
 	my ($code, $msg) = 
-	  $TicketObj->AddWatcher(Type => $ARGS{$key},
+	  $Ticket->AddWatcher(Type => $ARGS{$key},
 				 Owner => $1);
 	push @results, $msg;
     }

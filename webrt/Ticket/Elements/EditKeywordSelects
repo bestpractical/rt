@@ -1,10 +1,11 @@
+<& /Elements/TitleBoxStart, title => 'Keywords' &>
 <TABLE>
     <TR>
 % while ( my $KeywordSelect = $KeywordSelects->Next ) {
 % my $CurrentKeywords = $TicketObj->KeywordsObj($KeywordSelect->id);	
 %   my $Descendents = $KeywordSelect->KeywordObj->Descendents;
-      <TD>
-	<% $KeywordSelect->KeywordObj->Name %>
+      <TD VALIGN=TOP>
+	<% $KeywordSelect->Name %>
 	<BR>
 	  <INPUT TYPE="hidden" NAME="KeywordSelectMagic<% $KeywordSelect->id %>" VALUE="1">
 	    <SELECT NAME="KeywordSelect<% $KeywordSelect->id %>"
@@ -22,6 +23,7 @@
   
 </TABLE>
 
+<& /Elements/TitleBoxEnd &>
 <%INIT>
 my $KeywordSelects = $TicketObj->QueueObj->KeywordSelects;
 </%INIT>

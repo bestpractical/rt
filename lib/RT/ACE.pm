@@ -42,6 +42,8 @@ use vars qw (%SCOPES
 		
 		ModifyACL => 'Modify this queue\'s ACL',
 		ModifyQueueWatchers => 'Modify the queue watchers',
+                ModifyKeywordSelects => 'Modify keyword selections for this queue',
+
 		
 		CreateTemplate => 'Create email templates for this queue',
 		ModifyTemplate => 'Modify email templates for this queue',
@@ -51,7 +53,6 @@ use vars qw (%SCOPES
 		ShowScrips => 'Display ScripScopes for this queue',
 
 		ShowTicket => 'Show ticket summaries',
-		ShowTicketHistory => 'Show ticket histories',
 		ShowTicketComments => 'Show ticket private commentary',
 
 		CreateTicket => 'Create tickets in this queue',
@@ -60,6 +61,7 @@ use vars qw (%SCOPES
 		OwnTicket => 'Own tickets',
 		ModifyTicket => 'Modify tickets',
 		DeleteTicket => 'Delete tickets'
+
 	       );	
 
 

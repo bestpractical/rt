@@ -1461,6 +1461,7 @@ sub Parents {
 # }}}
 
 # {{{ sub _Links 
+
 sub _Links {
     my $self = shift;
     
@@ -1738,7 +1739,7 @@ sub AddKeyword {
 	#we shouldn't need a loop ehre, but we do it anyway, to try to 
 	# help keep the database clean.
 	while (my $OldKey = $Keywords->Next) {
-	    my $OldValue = $OldKey->Name;
+	    my $OldValue = $OldKey->KeywordObj->Name;
 	    $OldKey->Delete();
 	}	
 	
@@ -1759,7 +1760,7 @@ sub AddKeyword {
 					 KeywordSelect => $KeywordSelectObj->Id );
     
     
-    return ($TransactionId, "Keyword ".$ObjectKeyword->KeywordObj->Name ."added.");    
+    return ($TransactionId, "Keyword ".$ObjectKeyword->KeywordObj->Name ." added.");    
 
 }	
 
@@ -2157,7 +2158,7 @@ transactions on this ticket
 sub Transactions {
     my $self = shift;
     
-    unless ($self->CurrentUserHasRight('ShowTicketHistory')) {
+    unless ($self->CurrentUserHasRight('ShowTicket')) {
 	return (0, "Permission Denied");
     }
     

@@ -328,21 +328,29 @@ sub Description  {
       }
   }
     # Generic:
-    return $self->Field." changed from ".($self->OldValue||"(empty value)")." to ".$self->NewValue." by ".$self->Creator->UserId;
-  }
-
+    return $self->Field." changed from ".($self->OldValue||"(empty value)")." to ".$self->NewValue 
+}
+  
   if ($self->Type eq 'Correspond')    {
     return("Mail sent by ". $self->Creator->UserId);
   }
   
   elsif ($self->Type eq 'Comment')  {
     return( "Comments added by ".$self->Creator->UserId);
+}
+  
+  elsif ($self->Type eq 'Keyword') {
+      if ($self->OldValue eq '') {
+	  return ("Keyword ".$self->NewValue." added.");
+      }
+      elsif ($self->NewValue eq '') {
+	  return ("Keyword ".$self->OldValue." deleted.");
+      }
+      else {
+	return  ("Keyword ".$self->OldValue . " changed to ". $self->NewValue.".");
+    }	
   }
   
-  
-  elsif ($self->Type eq 'queue_id'){
-    return( "Queue changed to ".$self->Data." by ".$self->Creator->UserId);
-  }
   elsif ($self->Type =~ /^(Take|Steal|Untake|Give)$/){
       if ($self->Type eq 'Untake'){
 	  return( "Untaken by ".$self->Creator->UserId);
@@ -365,12 +373,12 @@ sub Description  {
 
 	  return( "Request given to ".$New->UserId." by ". $self->Creator->UserId);
       }
-
+      
       my $New = RT::User->new($self->CurrentUser);
       $New->Load($self->NewValue);
       my $Old = RT::User->new($self->CurrentUser);
       $Old->Load($self->OldValue);
-
+      
       return "Owner changed from ".$New->UserId." to ".$Old->UserId." by ".$self->Creator->UserId;
 
   }
@@ -399,7 +407,8 @@ sub Description  {
       return ($self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
   }	
   else {
-    return($self->Type . " modified by ".$self->Creator->UserId. ". RT Should be more explicit about this!");
+      return ("Generic: ". $self->Type ."/". $self->Field . " changed from " . $self->OldValue . " to ".$self->NewValue."\n");
+      
   }
   
   
@@ -448,7 +457,6 @@ sub IsInbound {
 # }}}
 
 # }}}
-
 
 # {{{ sub _Set
 
@@ -510,7 +518,7 @@ sub _Value  {
     }	
     #if they ain't got rights to see, don't let em
     else {
-	unless ($self->CurrentUserHasRight('ShowTicketHistory')) {
+	unless ($self->CurrentUserHasRight('ShowTicket')) {
 	    return (0, "Permission Denied");
 	}
     }	
@@ -520,6 +528,8 @@ sub _Value  {
 }
 
 # }}}
+
+# {{{ sub CurrentUserHasRight
 
 =head2 CurrentUserHasRight
 
@@ -537,4 +547,5 @@ sub CurrentUserHasRight {
                                               TicketObj => $self->TicketObj));            
 }
 
+# }}}
 1;

@@ -1,15 +1,17 @@
 <TABLE>
 % while ( my $KeywordSelect = $KeywordSelects->Next ) {
     <TR>
-      <TD>
-	<% $KeywordSelect->KeywordObj->Name %><BR>
+      <TD VALIGN=TOP>
+	<% $KeywordSelect->Name %><BR>
       </TD>
-      <TD>
-%   my $TicketDescendents = $KeywordSelect->KeywordObj->TicketDescendents($Ticket->id);
-%   foreach my $kid ( keys %{$TicketDescendents} ) {
-	<B><% $TicketDescendents->{$kid}|n %></B>
-	<BR>
+      <TD VALIGN=TOP>
+	<UL>
+% my $Keywords = $Ticket->KeywordsObj($KeywordSelect->Id);
+% while (my $Keyword = $Keywords->Next) {
+	<li><% $Keyword->KeywordObj->Path |n %></li>
+
 %   }
+	</ul>
       </TD>
     </TR>
 % }

@@ -9,7 +9,8 @@
 
 <TABLE>
 <TR><TD>Queue</TD>
-<TD><& /Elements/SelectNewTicketQueue,  Name => "Queue", Verbose => 'True', Default => $Queue &>
+<TD><% $QueueObj->QueueId %>
+<INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->QueueId%>">
 </TD>
 <TD>Status:
 </TD>
