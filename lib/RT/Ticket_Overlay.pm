@@ -673,7 +673,7 @@ sub Create {
         foreach my $link (
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
         {
-            my ( $wval, $wmsg ) = $self->AddLink(
+            my ( $wval, $wmsg ) = $self->_AddLink(
                 Type                          => $LINKTYPEMAP{$type}->{'Type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
                 Silent                        => 1
@@ -2662,6 +2662,24 @@ sub AddLink {
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
+
+
+    $self->_AddLink(%args);
+}
+
+=head2 _AddLink  
+
+Private non-acled variant of AddLink so that links can be added during create.
+
+=cut
+
+sub _AddLink {
+    my $self = shift;
+    my %args = ( Target => '',
+                 Base   => '',
+                 Type   => '',
+                 Silent => undef,
+                 @_ );
 
     my ($val, $Msg) = $self->SUPER::_AddLink(%args);
 
