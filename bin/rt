@@ -271,9 +271,6 @@ EOUSAGE
 
 # {{{ Validate any options that were passed in. normalize them.
 
-
-
-
 #if a queue was specified
 if ($queue) {
     # make sure that $queue is a valid queue and load it into $queue_obj
@@ -334,7 +331,11 @@ else {
     # {{{ limit on id
 
     foreach $value (@id) {
-	if ($value =~ /^(\d?)\D?(\d*)$/) {
+	if ($value =~ /^(\d+)$/) {
+	    $Tickets->LimitId ( VALUE => $1,
+				OPERATOR => '=');
+	}	
+	elsif ($value =~ /^(\d?)\D?(\d*)$/) {
 	    my $start = $1;
 	    my $end = $2;
 	    $Tickets->LimitId(
@@ -901,7 +902,6 @@ sub ParseDateToISO {
 
 # {{{ sub ParseDateRange
 
-
 =head2 ParseDateRange [RANGE]
 
 Takes a range of dates of the form [<date>][-][<date>] and returns 
@@ -947,8 +947,6 @@ sub ParseDateRange {
     
     
 }
-
-
 
 # }}}
 
@@ -1089,7 +1087,7 @@ sub BuildListingFormat {
 			    title => 'id',
 			    value => '$Ticket->id',
 			  },
-		
+		    
 		    queue => { chars => '8',
 			       justify => 'l',
 			       title => 'Queue',
@@ -1161,8 +1159,7 @@ sub BuildListingFormat {
 		
 		
 		  };
-    
-    
+
     # }}}
     
 
