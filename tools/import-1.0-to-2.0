@@ -76,6 +76,10 @@ exit(0);
 
 sub MigrateQueues {
 
+
+    print "Deleting queue 'general'\n";
+    $RT::Handle->SimpleQuery("DELETE FROM Queues where Name = 'general'");
+
     print "Now adding queues...\n";
 
     # Load the RT1 queues
@@ -302,12 +306,14 @@ sub MigrateAreas {
 
 sub MigrateUsers {
 
+    print "Deleting user'root'\n";
+    $RT::Handle->SimpleQuery("DELETE FROM Users where Name = 'root'");
+
     print "Importing users...\n";
     
     #load the RT1 users
     my $sth = ExecStatement("select user_id, real_name, password, 
-         email, phone, office, comments, admin_rt from users 
-         where user_id != 'root' ");
+         email, phone, office, comments, admin_rt from users"); 
 
     while (my @row = $sth->fetchrow_array()) {
 
@@ -526,7 +532,7 @@ sub MigrateTransactions {
 	} 
 	elsif ( $row->{type} eq 'owner' ) {
 
-	    $trans_args{'Type'} = "Set";
+	    $trans_args{'Type'} = "Owner";
 	    $trans_args{'Field'} ="Owner";
 	    $trans_args{'OldValue'} = $Owner;
 	    $row->{trans_data} ||= 'Nobody';
@@ -542,10 +548,14 @@ sub MigrateTransactions {
 	    if ( $Owner == $RT::Nobody->Id 
 		 && $row->{trans_data} eq $row->{actor} ) {
 		$trans_args{'Type'} = 'Take';
+	    } elsif ( ($Owner == $actor->Id) and 
+		      ($new_user->Id == $RT::Nobody->Id) ) {
+		$trans_args{'Type'} = 'Untake';
 	    } elsif ( $Owner == $actor->Id ) {
-		$trans_args{'Type'} = 'Give'
-	    }
-	    
+		$trans_args{'Type'} = 'Give';
+	    } elsif ( $Owner != $RT::Nobody->Id) {
+		$trans_args{'Type'} = 'Steal';
+	    } 
 	    $Owner = $new_user->Id;
 	    
 	} 
