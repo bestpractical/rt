@@ -506,7 +506,7 @@ else {
 		
 	    $op = ParseBooleanOp($op);
 	    $Tickets->LimitRequestor(VALUE => $val,
-				     OEPRATOR => $op );
+				     OPERATOR => $op );
 	}
 	    
     }
@@ -519,7 +519,7 @@ else {
 	    $op = ParseLikeOp($op);
 	    
 	    $Tickets->LimitSubject(VALUE => $val,
-				   OEPRATOR => $op );
+				   OPERATOR => $op );
 	    }
     }
     
@@ -531,7 +531,7 @@ else {
 	    $op = ParseLikeOp($op);
 	    
 		$Tickets->LimitBody(VALUE => $val,
-				    OEPRATOR => $op );
+				    OPERATOR => $op );
 	}	
 	
     }
