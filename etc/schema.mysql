@@ -101,8 +101,7 @@ CREATE TABLE Attachments (
   Content LONGBLOB,
   Headers BLOB,
   Creator INT(11),
-  LastUpdated DATETIME
-  
+  Created DATETIME
 )\g
 # }}}
 
