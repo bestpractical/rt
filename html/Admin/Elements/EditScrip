@@ -41,7 +41,7 @@
 <&|/l&>Condition</&>:
 </TD>
 <TD>
-<& /Admin/Elements/SelectScripCondition, Name => "Scrip-$id-Condition", Default => $scrip->ConditionObj->Id &><BR>
+<& /Admin/Elements/SelectScripCondition, Name => "Scrip-$id-ScripCondition", Default => $scrip->ConditionObj->Id &><BR>
 </TD>
 </TR>
 <TR>
@@ -49,7 +49,7 @@
 <&|/l&>Custom condition</&>:
 </TD>
 <TD>
-<TEXTAREA COLS=80 ROWS=2 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></TEXTAREA>
+<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomIsApplicableCode"><%$scrip->CustomIsApplicableCode%></TEXTAREA>
 </TD>
 </TR>
 <TR>
@@ -57,7 +57,7 @@
 <&|/l&>Action</&>:
 </TD>
 <TD>
-<& /Admin/Elements/SelectScripAction, Name => "Scrip-$id-Action", Default => $scrip->ActionObj->Id &>
+<& /Admin/Elements/SelectScripAction, Name => "Scrip-$id-ScripAction", Default => $scrip->ActionObj->Id &>
 </TD>
 </TR>
 <TR>
@@ -65,7 +65,7 @@
 <&|/l&>Custom action preparation code</&>:
 </TD>
 <TD>
-<TEXTAREA COLS=80 ROWS=2 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
+<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomPrepareCode"><%$scrip->CustomPrepareCode%></TEXTAREA>
 </TD>
 </TR>
 <TR>
@@ -73,7 +73,7 @@
 <&|/l&>Custom action cleanup code</&>:
 </TD>
 <TD>
-<TEXTAREA COLS=80 ROWS=2 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></TEXTAREA>
+<TEXTAREA COLS=80 ROWS=5 NAME="Scrip-<%$id%>-CustomCommitCode"><%$scrip->CustomCommitCode%></TEXTAREA>
 </TD>
 </TR>
 <TR>
@@ -97,8 +97,8 @@ if ( $id eq 'new' ) {
 
     my ( $retval, $msg ) = $scrip->Create(
             Queue                  => $Queue,
-            ScripAction            => $ARGS{"Scrip-new-Action"},
-            ScripCondition         => $ARGS{"Scrip-new-Condition"},
+            ScripAction            => $ARGS{"Scrip-new-ScripAction"},
+            ScripCondition         => $ARGS{"Scrip-new-ScripCondition"},
             Template               => $ARGS{"Scrip-new-Template"},
             Description            => $ARGS{"Scrip-new-Description"},
             CustomPrepareCode      => $ARGS{"Scrip-new-CustomPrepareCode"},
