@@ -83,7 +83,11 @@ if ($template_id) {
 
 #find a bunch of tickets
 my $tickets = RT::Tickets->new($CurrentUser);
-my $search  = $search->new( TicketsObj => $tickets, Argument => $search_arg );
+my $search  = $search->new(
+    TicketsObj  => $tickets,
+    Argument    => $search_arg,
+    CurrentUser => $CurrentUser
+);
 
 $search->Prepare();
 
@@ -97,7 +101,8 @@ while ( my $ticket = $tickets->Next() ) {
     # perform some more advanced check
     if ($condition) {
         my $condition_obj = $condition->new( TicketObj => $ticket,
-                                             Argument  => $condition_arg );
+                                             Argument  => $condition_arg,
+                                             CurrentUser => $CurrentUser );
 
         # if the condition doesn't apply, get out of here
 
@@ -106,9 +111,12 @@ while ( my $ticket = $tickets->Next() ) {
     }
 
     #prepare our action
-    my $action_obj = $action->new( TicketObj => $ticket,
-				   TemplateObj => $template_obj,
-                                   Argument  => $action_arg );
+    my $action_obj = $action->new(
+        TicketObj   => $ticket,
+        TemplateObj => $template_obj,
+        Argument    => $action_arg,
+        CurrentUser => $CurrentUser
+    );
 
     #if our preparation, move onto the next ticket
     next unless ( $action_obj->Prepare );
