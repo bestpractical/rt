@@ -319,6 +319,7 @@ sub CreateTicket {
     }
 
     my %create_args = (
+        Type            => $ARGS{'Type'} || 'ticket',
         Queue           => $ARGS{'Queue'},
         Owner           => $ARGS{'Owner'},
         InitialPriority => $ARGS{'InitialPriority'},
@@ -362,7 +363,6 @@ sub CreateTicket {
                 Base => $luri,
                 Type => $linktype
             );
-
             push ( @Actions, $msg ) unless ($val);
         }
     }
