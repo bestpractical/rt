@@ -8,7 +8,6 @@ use RT::Record;
 use RT::Link;
 use RT::Links;
 use RT::Date;
-use Carp;
 
 @ISA= qw(RT::Record);
 
@@ -577,7 +576,7 @@ my @args = (Type => 'Requestor',
 	    Id => undef);
 
 
-carp "Ticket::IsWatcher unimplemented";
+$RT::Logger->warn( "Ticket::IsWatcher unimplemented");
 return (0);
 #TODO Implement. this sub should perform an SQL match along the lines of the ACL check
 
@@ -652,7 +651,7 @@ sub ValidateQueue {
   
   #TODO I don't think this should be here. We shouldn't allow anything to have an undef queue,
   if (!$Value) {
-    carp " RT:::Queue::ValidateQueue called with a null value. this isn't ok.";
+    $RT::Logger->warn( " RT:::Queue::ValidateQueue called with a null value. this isn't ok.");
     return (1);
   }
   
@@ -1079,14 +1078,19 @@ sub Members {
 
 =head2 MemberOf
 
-  This returns an RT::Links object which references all the tickets that have 
-this ticket as their base AND are of type 'MemberOf'
+  This returns an RT::Tickets object which references all the tickets that have 
+this ticket as their base AND are of type 'MemberOf' AND are not marked 
+'dead'
 
 =cut
 
 sub MemberOf {
-    my $self = shift;
-    return $self->_Links('Base','MemberOf');
+   my $self = shift;
+
+   my $memberof = new RT::Tickets($self->CurrentUser);
+   $memberof->LimitMemberOf($self->id);
+   $memberof->LimitStatus( OPERATOR => '!=',
+				     VALUE => 'dead');
 }
 
 

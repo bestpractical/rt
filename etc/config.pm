@@ -66,18 +66,9 @@ sub CanonicalizeAddress {
 # get it working.  I really don't want RT to break on such a stupid
 # thing as logging, so I'll leave logging to file as the default.
 
-# There is also one weird problem coming up every now and then, that it
-# searches for some strange "addrlist" and "date" that doesn't exist.  I
-# haven't managed to pinpoint the problem - it's certainly outside RT, and
-# probably outside Log::Dispatch - one hack to get this working is to locate
-# Mail/Field/AddrList.pm and make a symlink from addrlist.pm to AddrList.pm.
-
-# The callback for adding newlines will only work for newer versions of
-# Log::Dispatch.
-
 #    -- Tobix
 
-use Log::Dispatch 1.2;
+use Log::Dispatch 1.6;
 use Log::Dispatch::File;
 use Log::Dispatch::Screen;
 
@@ -297,29 +288,20 @@ $Nobody=2;
 $SIG{__WARN__} = sub {$RT::Logger->log(level=>'warning',message=>$_[0])};
 
 #When we call die, trap it and log->crit with the value of the die.
+
 $SIG{__DIE__}  = sub {
-    if ($^S) {
+    unless ($^S || !defined $^S ) {
 
-	#if we died during an eval, it probably isn't that dangerous.
-	# -tobias
-	
-	$RT::Logger->log(level=>'warning',message=>"died during an eval: $_[0]");
-	  ## die here will lead to the default behaviour; quit the eval scope.
-	die @_;
-    }
+   	 $RT::Logger->crit("$_[0]"); 
+	exit(-1);
+	}
+    else {
+	    #Get out of here if we're in an eval
+	    die $_[0];
 
-  
-    ## If it's not during an eval, log it as a critical error and leave the program.
-    $RT::Logger->log(level=>'crit',message=>$_[0]); 
-    exit(-1);
+	}	
 };
 
 # }}}
 
 1;
-
-
-
-
-
-
