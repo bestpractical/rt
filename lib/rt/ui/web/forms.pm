@@ -469,7 +469,11 @@ sub FormComment{
 	$reply_content= &rt::quote_content($rt::ui::web::FORM{'transaction'},$current_user);
     }    
     print "
-<form action=\"$ScriptURL\" method=\"post\" target=\"summary\">
+<form action=\"$ScriptURL\" method=\"post\" ";
+
+if ($rt::ui::web::frames) { print " target=\"summary\"";
+
+print " >
 <H1>
 Enter your comments below:
 </H1>

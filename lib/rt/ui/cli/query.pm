@@ -1,5 +1,6 @@
 package rt::ui::cli::query;
 
+
 sub activate {
 ($current_user,$tmp)=getpwuid($<);
 ($value, $message)=&rt::initialize($current_user);
@@ -23,7 +24,6 @@ for ($temp=0;$temp<$count;$temp++)
 
     while ($format_string) {
 	($field, $format_string) = split (/\%/, $format_string,2);  
-
 
 	if  ($field =~ /^n(\d*)$/){ 
 	    $length = $1;

@@ -1,12 +1,10 @@
-#!/usr/bin/perl -T
+#!/usr/bin/perl -Tw
 #
 #
 # RT is (c) 1997 Jesse Vincent (jesse@fsck.com)
 
 require "ctime.pl";
-
-@main::ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
-$ENV{'PATH'} = '/bin:/usr/bin';      
+delete @ENV{'IFS', 'CDPATH', 'PATH', 'ENV', 'BASH_ENV'};     
 
 package rt;
 
@@ -18,7 +16,6 @@ require "$rt_dir/etc/config.pm";
 
 
 &initialize();
-
 if ($0 =~ '/rt$') {
   # load rt-cli
   require rt::ui::cli::support;
