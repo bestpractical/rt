@@ -30,7 +30,7 @@ RT::DropSetGIDPermissions();
 my $CurrentUser = GetCurrentUser();
 
 unless ($CurrentUser->Id) {
-	print "No RT user found. Please consult your RT administrator.\n";
+	print loc("No RT user found. Please consult your RT administrator.\n");
 	exit(1);
 }
 
@@ -432,7 +432,7 @@ else {
 		print STDERR "Queue '$val' not found\n";	
 		exit(-1);
 	    }
-	    $RT::Logger->debug ("Limiting queue to $op ".$queue_obj->Name);
+	    $RT::Logger->debug (loc("Limiting queue to [_1] [_2]",$ op, $queue_obj->Name));
 	    $Tickets->LimitQueue(VALUE => $queue_obj->Name,
 				 OPERATOR => $op);
 	}	
@@ -449,13 +449,13 @@ else {
 	    my $user_obj = new RT::User($RT::SystemUser);
 		
 	    unless ($user_obj->Load($val)) {
-		$RT::Logger->debug("User '$val' not found");
-		print STDERR "User '$val' not found\n";	
+		$RT::Logger->debug(loc("User '[_1]' not found", $val));
+		print STDERR loc("User '[_1]' not found\n", $val);	
 		exit(-1);
 	    }
 	    $val = $user_obj->id();
 		
-	    $RT::Logger->debug ("Limiting owner to $op $val");
+	    $RT::Logger->debug (loc("Limiting owner to [_1] [_2]", $op, $val));
 	    $Tickets->LimitOwner(VALUE => "$val",
 				 OPERATOR => "$op");
 	}	

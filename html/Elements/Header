@@ -30,15 +30,14 @@
 <TD ALIGN=RIGHT>
 <font color="#ffffff" size=-2>
 % if ($session{'CurrentUser'} && $session{'CurrentUser'}->Id) {
-<&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b>
-</&>
+<&|/l, $session{'CurrentUser'}->Name &>Signed in as <b>[_1]</b></&>
 <BR>
 [<A class='inverse' HREF="<%$RT::WebPath%>/User/Prefs.html" >Preferences</A>] 
 % unless ($RT::WebExternalAuth) { 
 [<A class='inverse' HREF="<%$RT::WebPath%>/NoAuth/Logout.html">Logout</a>]
 % }
 % } else {
-Not logged in.
+<&|/l&>Not logged in.</&>
 % }
 </font>
 </TD>

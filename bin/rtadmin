@@ -26,9 +26,9 @@ RT::DropSetGIDPermissions();
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 
-unless ( $CurrentUser->Id ) {
-    print "No RT user found. Please consult your RT administrator.\n";
-    exit(1);
+unless ($CurrentUser->Id) {
+        print loc("No RT user found. Please consult your RT administrator.\n");   
+        exit(1);
 }
 
 PickMode();
@@ -858,7 +858,7 @@ sub AdminRights {
             $i++;
         }
         else {
-            print "Could not find group $group\n";
+            print loc("Could not find group [_1].",$group)."\n";
         }
     }
 
@@ -871,7 +871,7 @@ sub AdminRights {
             $i++;
         }
         else {
-            print "Could not find user $user.\n";
+            print loc("Could not find user [_1].",$user)."\n";
         }
     }
 
@@ -879,45 +879,39 @@ sub AdminRights {
 
     foreach my $principal (@principals) {
 
-        # {{{ Delete rights that need deleting
-        foreach my $right ( @{ $args{'revoke-right'} } ) {
-            my $ace = new RT::ACE($CurrentUser);
-            $RT::Logger->debug("Trying to delete a right: $right \n");
-            my ( $val, $msg ) = $ace->LoadByValues(
-                RightName      => $right,
-                RightScope     => $scope,
-                PrincipalType  => $principal->{'type'},
-                PrincipalId    => $principal->{'id'},
-                RightAppliesTo => $appliesto
-            );
+	# {{{ Delete rights that need deleting
+	foreach my $right (@{$args{'revoke-right'}}) {
+	    my $ace = new RT::ACE($CurrentUser);
+	    $RT::Logger->debug(loc("Trying to delete a right: [_1]", $right \n));
+	    my ($val, $msg) = $ace->LoadByValues( RightName => $right,
+						  RightScope => $scope,
+						  PrincipalType => $principal->{'type'},
+						  PrincipalId => $principal->{'id'},
+						  RightAppliesTo => $appliesto);
+	    
+	    unless ($val) {
+		print loc("Right [_1] not found for [_2]  [_3] in scope [_4] ([_5])\n", $right, $principal->{'type'}, $principal->{'id'}, $scope, $appliesto);
+		next;
+	    }	
+	    my ($delval, $delmsg) =$ace->Delete;
+	    print "$delmsg\n";
+	    
+	    
+	}
 
-            unless ($val) {
-                print "Right $right not found for"
-                  . $principal->{'type'} . " "
-                  . $principal->{'id'}
-                  . " in scope $scope ($appliesto)\n";
-                next;
-            }
-            my ( $delval, $delmsg ) = $ace->Delete;
-            print "$delmsg\n";
-
-        }
-
-        # }}}
-
-        # {{{ grant rights that need granting
-        foreach my $right ( @{ $args{'grant-right'} } ) {
-            my $ace = new RT::ACE($CurrentUser);
-            my ( $val, $msg ) = $ace->Create(
-                RightName      => $right,
-                PrincipalType  => $principal->{'type'},
-                PrincipalId    => $principal->{'id'},
-                RightScope     => $scope,
-                RightAppliesTo => $appliesto
-            );
-
-            print $msg . "\n";
-        }
+	# }}}
+	
+	# {{{ grant rights that need granting
+	foreach my $right (@{$args{'grant-right'}}) {
+	    my $ace = new RT::ACE($CurrentUser);
+	    my ($val, $msg) = $ace->Create(RightName => $right,
+					   PrincipalType => $principal->{'type'},
+					   PrincipalId => $principal->{'id'},
+					   RightScope => $scope,
+					   RightAppliesTo => $appliesto);
+	    
+	    print $msg . "\n";
+	}
 
         # }}}
     }

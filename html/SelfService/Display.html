@@ -1,7 +1,7 @@
 %# $Header: /raid/cvsroot/rt/webrt/SelfService/Display.html,v 1.2 2001/11/06 23:07:02 jesse Exp $
 %# Copyright 1996-2001 Jesse Vincent <jesse@fsck.com>
 
-<& /SelfService/Elements/Header, Title => 'Display ticket #'.$Ticket->id &>
+<& /SelfService/Elements/Header, Title => loc('Display ticket #').$Ticket->id &>
 
 
 <& /Elements/ListActions, actions => \@results &>
@@ -9,7 +9,7 @@
 <TABLE>
     <TR>
 	<TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	Ticket Id
+	<&|/l&>Ticket Id</&>
 	</TD>
       <TD>
 	<%$Ticket->Id%>
@@ -17,7 +17,7 @@
       </TR>
     <TR>	
       <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	Requestors
+	<&|/l&>Requestors</&>
 	</TD>
       <TD>
 	<%$Ticket->RequestorAddresses%>
@@ -25,7 +25,7 @@
       </TR>
     <TR>	
       <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	Cc
+	<&|/l&>Cc</&>
 	</TD>
       <TD>
 	<%$Ticket->CcAddresses%>
@@ -34,7 +34,7 @@
 
   <TR>	
       <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	Status
+	<&|/l&>Status</&>
 	</TD>
       <TD>
 	<%$Ticket->Status%>
@@ -43,7 +43,7 @@
 
     <TR>	
       <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	Queue
+	<&|/l&>Queue</&>
 	</TD>
       <TD>
 	<%$Ticket->QueueObj->Name%> (<%$Ticket->QueueObj->Description%>)
@@ -51,7 +51,7 @@
     </TR>
     <TR>	
       <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	Priority
+	<&|/l&>Priority</&>
       </TD>
       <TD>
 	<%$Ticket->Priority %>
@@ -61,7 +61,7 @@
 %  if ($Ticket->TimeWorked) {
    <TR>	
       <TD VALIGN=TOP WIDTH="20%" ALIGN=RIGHT>
-	Worked
+	<&|/l&>Worked</&>
       </TD>
       <TD>
 	<%$Ticket->TimeWorked %> minutes

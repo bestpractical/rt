@@ -76,10 +76,10 @@ sub Create  {
 	my $QueueObj = new RT::Queue($self->CurrentUser);
 	$QueueObj->Load($args{'Queue'});
 	unless ($QueueObj->id()) {
-	    return (0,'Invalid queue');
+	    return (0,loc('Invalid queue'));
 	}
 	unless ($QueueObj->CurrentUserHasRight('ModifyScrips')) {
-	    return (0, 'Permssion Denied');
+	    return (0, $self->loc('Permssion Denied'));
 	}	
     }
 
@@ -89,19 +89,19 @@ sub Create  {
     require RT::ScripAction;
     my $action = new RT::ScripAction($self->CurrentUser);
     $action->Load($args{'ScripAction'});
-    return (0, "Action ".$args{'ScripAction'}." not found") unless $action->Id;
+    return (0, $self->loc("Action [_1] not found", $args{ScripAction})) unless $action->Id;
 
     require RT::Template;
     my $template = new RT::Template($self->CurrentUser);
     $template->Load($args{'Template'});
-    return (0, 'Template not found') unless $template->Id;
+    return (0, $self->loc('Template not found')) unless $template->Id;
 
     require RT::ScripCondition;
     my $condition = new RT::ScripCondition($self->CurrentUser);
     $condition->Load($args{'ScripCondition'});
 
     unless ($condition->Id) {
-	return (0, 'Condition not found');
+	return (0, $self->loc('Condition not found'));
     }	
     
     my $id = $self->SUPER::Create(Queue => $args{'Queue'},
@@ -110,7 +110,7 @@ sub Create  {
 				  Stage => $args{'Stage'},
 				  ScripAction => $action->Id
 				 );
-    return ($id, 'Scrip Created'); 
+    return ($id, $self->loc('Scrip Created')); 
 }
 
 # }}}
@@ -127,7 +127,7 @@ sub Delete {
     my $self = shift;
     
     unless ($self->CurrentUserHasRight('ModifyScrips')) {
-	return (0, 'Permission Denied');
+	return (0, $self->loc('Permission Denied'));
     }
     
     return ($self->SUPER::Delete(@_));
@@ -282,7 +282,7 @@ sub _Set {
     
     unless ($self->CurrentUserHasRight('ModifyScrips')) {
         $RT::Logger->debug("CurrentUser can't modify Scrips for ".$self->Queue."\n");
-	return (0, 'Permission Denied');
+	return (0, $self->loc('Permission Denied'));
     }
     return $self->__Set(@_);
 }

@@ -61,13 +61,13 @@ sub _Set {
         && ( $self->SUPER::_Value('Queue') == 0 ) )
     {
         unless ( $self->CurrentUser->HasSystemRight('ModifyTemplate') ) {
-            return ( 0, 'Permission Denied' );
+            return ( 0, $self->loc('Permission Denied') );
         }
     }
     else {
 
         unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
-            return ( 0, 'Permission Denied' );
+            return ( 0, $self->loc('Permission Denied') );
         }
     }
     return ( $self->SUPER::_Set(@_) );

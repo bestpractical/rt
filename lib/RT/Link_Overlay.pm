@@ -104,15 +104,15 @@ sub Load  {
       $self->LoadByCols( Base => $BaseURI,
 			 Type => $linktype,
 			 Target => $TargetURI
-		       ) || return (0, "Couldn't load link");
+		       ) || return (0, $self->loc("Couldn't load link"));
   }
   
   elsif ($identifier =~ /^\d+$/) {
       $self->LoadById($identifier) ||
-	return (0, "Couldn't load link");
+	return (0, $self->loc("Couldn't load link"));
   }
   else {
-	return (0, "That's not a numerical id");
+	return (0, $self->loc("That's not a numerical id"));
   }
 }
 

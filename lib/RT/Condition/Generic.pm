@@ -137,7 +137,7 @@ sub ApplicableTransTypes  {
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return ("No description for " . ref $self);
+  return (loc("No description for ") . ref $self);
 }
 # }}}
 

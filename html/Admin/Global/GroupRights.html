@@ -1,4 +1,4 @@
-<& /Admin/Elements/Header, Title => 'Modify System ACLS' &>
+<& /Admin/Elements/Header, Title => loc('Modify System ACLS') &>
 <& /Admin/Elements/SystemTabs &>
   
 <& /Elements/ListActions, actions => \@results &>
@@ -6,10 +6,10 @@
       
 
 
-<h2>Modify global rights for groups</h2>
+<h2><&|/l&>Modify global rights for groups</&></h2>
 
 <TABLE>
-<TR><TD>Groups</TD></TR>
+<TR><TD><&|/l&>Groups</&></TD></TR>
 
 % while (my $GroupObj = $Groups->Next()) {
 	      
@@ -27,7 +27,7 @@
 % }
 	
       </TABLE>
-    <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
+    <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
   </FORM>
   
   <%INIT>

@@ -1,0 +1,45 @@
+#!/usr/bin/env perl
+
+use File::Copy;
+
+my $lang = shift || 'zh_tw';
+open SRC, "lib/RT/I18N/$lang.pm" or die $!;
+my (%file, %dict);
+my $out;
+
+while (<SRC>) { $out .= $_; last if /split/ }
+while (<SRC>) { 
+    last if /___/;
+    next if /^#/;
+    chomp;
+    $dict{$_} = substr(<SRC>, 0, -1);
+}
+
+local $/;
+use Regexp::Common;
+
+for (<*/*>, <*/*/*>, <*/*/*/*>, <*/*/*/*/*>, <*/*/*/*/*/*>) {
+    my $r = $_; open _, $_ or die $!; $_ = <_>;
+    while (s!<&\|/[1l].*?&>(.*?)(?:</&>|<&|/[1l]&>)!!sg) {
+	my $u = $1; $u =~ s/\\'/\'/g; $file{$u} .= " $r"
+    }
+    while (s!loc\(($RE{delimited}{-delim=>"'"}{-esc}{-keep})!!s) { my $u = substr($1, 1, -1); $u =~ s/\\'/\'/g; $file{$u} .= " $r" }
+    while (s!loc\(($RE{delimited}{-delim=>'"'}{-esc}{-keep})!!s) { my $u = substr($1, 1, -1); $u =~ s/\\'/\'/g; $file{$u} .= " $r" }
+#    while (s!loc\(\'\s*(.*?)\'!!s) { my $u = $1; $u =~ s/\\'/\'/g; $file{$u} .= " $r" }
+}
+
+delete $file{''};
+foreach (sort keys %file) {
+    $out .= "#$file{$_}\n$_\n$dict{$_}\n";
+}
+
+while (<SRC>) {
+    $out .= "___\n";
+    $out .= $_;
+}
+
+close SRC;
+
+open TARGET, ">lib/RT/I18N/$lang.pm" or die $!;
+print TARGET $out;
+exit;

@@ -1,14 +1,14 @@
 <BR>
 <%$msg%><br>
 
-Add new watchers:<br>
+<&|/l&>Add new watchers:</&><br>
 
 <table>
 % if ($Users) {
 <tr><td>
-Type
+<&|/l&>Type</&>
 </td><td>
-Username
+<&|/l&>Username</&>
 </td></tr>
 % while (my $u = $Users->Next ) {
 <tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-".$u->PrincipalId &></td><td><%$u->Name%> (<%$u->RealName%>)</td></tr>
@@ -16,9 +16,9 @@ Username
 % }
 
 <tr><td>
-Type
+<&|/l&>Type</&>
 </td><td>
-Email
+<&|/l&>Email</&>
 </td></tr>
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail1" &>

@@ -38,6 +38,8 @@ use vars qw (%SCOPES
 
 # Queue rights are the sort of queue rights that can only be granted
 # to real people or groups
+
+# XXX TODO Can't localize these outside of having an object around.
 %QUEUERIGHTS = ( 
 		SeeQueue => 'Can this principal see this queue',
 		AdminQueue => 'Create, delete and modify queues', 
@@ -67,11 +69,12 @@ use vars qw (%SCOPES
 
 
 # System rights are rights granted to the whole system
+# XXX TODO Can't localize these outside of having an object around.
 %SYSTEMRIGHTS = (
         SuperUser => 'Do anything and everything',
 		AdminGroups => 'Create, delete and modify groups',
 	    AdminUsers => 'Create, Delete and Modify users',
-		ModifySelf => 'Modify one\'s own RT account',
+		ModifySelf => "Modify one's own RT account",
 
 		);
 
@@ -129,10 +132,10 @@ sub LoadByValues {
   
   #If we couldn't load it.
   unless ($self->Id) {
-      return (0, "ACE not found");
+      return (0, $self->loc("ACE not found"));
   }
   # if we could
-  return ($self->Id, "ACE Loaded");
+  return ($self->Id, $self->loc("ACE Loaded"));
   
 }
 
@@ -166,7 +169,7 @@ sub Create {
     my $princ_id = $princ_obj->Id();
     
     unless ($princ_id) {
-	return (0, 'Principal '.$args{'PrincipalId'}.' not found.');
+	return (0, $self->loc('Principal [_1] not found.', $args{'PrincipalId'}));
     }
 
     # }}}
@@ -238,8 +241,8 @@ sub Create {
 	return ($id, 'Right Granted');
     }
     else {
-	$RT::Logger->err('System error. right not granted.');
-	return(0, 'System Error. right not granted');
+	$RT::Logger->err(loc('System error. right not granted.'));
+	return(0, $self->loc('System Error. right not granted'));
     }
 }
 
@@ -258,16 +261,16 @@ sub Delete {
     my $self = shift;
     
     unless ($self->CurrentUserHasRight('ModifyACL')) {
-	return (0, 'Permission Denied');
+	return (0, $self->loc('Permission Denied'));
     }	
     
     
     my ($val,$msg) = $self->SUPER::Delete(@_);
     if ($val) {
-	return ($val, 'ACE Deleted');
+	return ($val, $self->loc('ACE Deleted'));
     }	
     else {
-	return (0, 'ACE could not be deleted');
+	return (0, $self->loc('ACE could not be deleted'));
     }
 }
 
@@ -298,7 +301,7 @@ sub _BootstrapRight {
 	return ($id);
     }
     else {
-	$RT::Logger->err('System error. right not granted.');
+	$RT::Logger->err(loc('System error. right not granted.'));
 	return(undef);
     }
     
@@ -411,7 +414,7 @@ sub PrincipalObj {
 
 sub _Set {
   my $self = shift;
-  return (0, "ACEs can only be created and deleted.");
+  return (0, $self->loc("ACEs can only be created and deleted."));
 }
 
 # }}}

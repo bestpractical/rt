@@ -16,10 +16,10 @@ $tickets->OrderBy(FIELD => 'Priority',
 <& /Elements/TitleBoxStart, 
 	title => "<a class='inverse' href=\"$RT::WebPath/Admin/Users/Modify.html?id=".$requestor->id."\">More about $name</a>" &>
 
-Comments about this user:<BR>
-<B><% ($requestor->Comments || "No comment entered about this user") %></B><BR>
+<&|/l&>Comments about this user:</&><BR>
+<B><% ($requestor->Comments || loc("No comment entered about this user")) %></B><BR>
 
-This user's 25 highest priority tickets:<BR>
+<&|/l&>This user's 25 highest priority tickets:</&><BR>
 <UL>
 %while (my $w=$tickets->Next) {
 <LI><%$w->Id%>: <a href="<%$RT::WebPath%>/Ticket/Display.html?id=<%$w->id%>"><%$w->Subject%></a> (<%$w->Status%>)

@@ -3,7 +3,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<& /Elements/TitleBoxStart, title => 'Editing membership for group '.$Group->Name &>
+<& /Elements/TitleBoxStart, title => loc('Editing membership for group [_1]', $Group->Name) &>
 
 <FORM ACTION="<%$RT::WebPath%>/Admin/Groups/Members.html" METHOD=POST>
 <INPUT TYPE=HIDDEN NAME=id VALUE="<%$Group->Id%>">

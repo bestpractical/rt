@@ -57,7 +57,7 @@ sub _Init  {
 # {{{ sub Create
 
 sub Create {
-    return (0, 'Permission Denied');
+    return (0, $self->loc('Permission Denied'));
 }
 
 # }}}
@@ -65,7 +65,7 @@ sub Create {
 # {{{ sub Delete
 
 sub Delete {
-    return (0, 'Permission Denied');
+    return (0, $self->loc('Permission Denied'));
 }
 
 # }}}
@@ -85,7 +85,7 @@ sub UserObj {
 	use RT::User;
 	$self->{'UserObj'} = RT::User->new($self);
 	unless ($self->{'UserObj'}->Load($self->Id)) {
-	    $RT::Logger->err("Couldn't load ".$self->Id. "from the users database.\n");
+	    $RT::Logger->err(loc("Couldn't load [_1] from the users database.\n", $self->Id));
 	}
 	
     }

@@ -252,7 +252,7 @@ sub Create {
     #Can't create a ticket without a queue.
     unless ( defined($QueueObj) ) {
         $RT::Logger->debug("$self No queue given for ticket creation.");
-        return ( 0, 0, 'Could not create ticket. Queue not set' );
+        return ( 0, 0, $self->loc('Could not create ticket. Queue not set') );
     }
 
     #Now that we have a queue, Check the ACLS
@@ -264,8 +264,8 @@ sub Create {
       )
     {
         return ( 0, 0,
-            "No permission to create tickets in the queue '"
-              . $QueueObj->Name . "'." );
+            $self->loc("No permission to create tickets in the queue '[_1]'"
+              , $QueueObj->Name));
     }
 
     #Since we have a queue, we can set queue defaults
@@ -326,7 +326,7 @@ sub Create {
                   . ref( $args{'Owner'} )
                   . ". Defaulting to nobody.\n" );
 
-            push @non_fatal_errors, "Invalid owner. Defaulting to 'nobody'.";
+            push @non_fatal_errors, $self->loc("Invalid owner. Defaulting to 'nobody'.");
         }
         else {
             $RT::Logger->warning( "$self ->Create called with an "
@@ -525,7 +525,7 @@ sub Import {
     #Can't create a ticket without a queue.
     unless ( defined($QueueObj) and $QueueObj->Id ) {
         $RT::Logger->debug("$self No queue given for ticket creation.");
-        return ( 0, 'Could not create ticket. Queue not set' );
+        return ( 0, $self->loc('Could not create ticket. Queue not set') );
     }
 
     #Now that we have a queue, Check the ACLS
@@ -537,8 +537,8 @@ sub Import {
       )
     {
         return ( 0,
-            "No permission to create tickets in the queue '"
-              . $QueueObj->Name . "'." );
+            $self->loc("No permission to create tickets in the queue '[_1]'"
+              , $QueueObj->Name));
     }
 
     # {{{ Deal with setting the owner
@@ -663,8 +663,7 @@ sub Import {
 sub Delete {
     my $self = shift;
     return ( 0,
-        'Deleting this object would violate referential integrity.'
-          . ' That\'s bad.' );
+        $self->loc('Deleting this object would violate referential integrity. That\'s bad.') );
 }
 
 # }}}
@@ -826,7 +825,7 @@ sub AddWatcher {
     # bail
     else {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-            return ( 0, "Permission Denied" );
+            return ( 0, $self->loc("Permission Denied") );
         }
     }
 
@@ -993,7 +992,7 @@ sub DeleteWatcher {
     # and the current user  doesn't have 'ModifyTicket' bail
     else {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-            return ( 0, "Permission Denied" );
+            return ( 0, $self->loc("Permission Denied") );
         }
     }
 
@@ -1331,18 +1330,18 @@ sub SetQueue {
 
     #Redundant. ACL gets checked in _Set;
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     my $NewQueueObj = RT::Queue->new( $self->CurrentUser );
     $NewQueueObj->Load($NewQueue);
 
     unless ( $NewQueueObj->Id() ) {
-        return ( 0, "That queue does not exist" );
+        return ( 0, $self->loc("That queue does not exist") );
     }
 
     if ( $NewQueueObj->Id == $self->QueueObj->Id ) {
-        return ( 0, 'That is the same value' );
+        return ( 0, $self->loc('That is the same value') );
     }
     unless (
         $self->CurrentUser->HasQueueRight(
@@ -1351,7 +1350,7 @@ sub SetQueue {
         )
       )
     {
-        return ( 0, "You may not create requests in that queue." );
+        return ( 0, $self->loc("You may not create requests in that queue.") );
     }
 
     unless (
@@ -1676,7 +1675,7 @@ sub Comment {
     }
 
     unless ( $args{'MIMEObj'} ) {
-        return ( 0, "No correspondence attached" );
+        return ( 0, $self->loc("No correspondence attached") );
     }
 
     # If we've been passed in CcMessageTo and BccMessageTo fields,
@@ -1695,7 +1694,7 @@ sub Comment {
         MIMEObj   => $args{'MIMEObj'}
     );
 
-    return ( $Trans, "The comment has been recorded" );
+    return ( $Trans, $self->loc("The comment has been recorded") );
 }
 
 # }}}
@@ -1725,11 +1724,11 @@ sub Correspond {
     unless ( ( $self->CurrentUserHasRight('ReplyToTicket') )
         or ( $self->CurrentUserHasRight('ModifyTicket') ) )
     {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     unless ( $args{'MIMEObj'} ) {
-        return ( 0, "No correspondence attached" );
+        return ( 0, $self->loc("No correspondence attached") );
     }
 
     # If we've been passed in CcMessageTo and BccMessageTo fields,
@@ -1768,8 +1767,8 @@ sub Correspond {
     }
 
     unless ($Trans) {
-        $RT::Logger->err("$self couldn't init a transaction ($msg)\n");
-        return ( $Trans, "correspondence (probably) not sent",
+        $RT::Logger->err($self->loc("[_1] couldn't init a transaction ([_2])\n", $self, $msg) );
+        return ( $Trans, $self->loc("correspondence (probably) not sent"),
             $args{'MIMEObj'} );
     }
 
@@ -1780,7 +1779,7 @@ sub Correspond {
         $self->_SetTold;
     }
 
-    return ( $Trans, "correspondence sent" );
+    return ( $Trans, $self->loc("correspondence sent") );
 }
 
 # }}}
@@ -1944,7 +1943,7 @@ sub DeleteLink {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target\n");
-        return ( 0, 'Can\'t specifiy both base and target' );
+        return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->Id();
@@ -1954,7 +1953,7 @@ sub DeleteLink {
     }
     else {
         $RT::Logger->debug("$self: Base or Target must be specified\n");
-        return ( 0, 'Either base or target must be specified' );
+        return ( 0, $self->loc('Either base or target must be specified') );
     }
 
     my $link = new RT::Link( $self->CurrentUser );
@@ -1985,7 +1984,7 @@ sub DeleteLink {
     #if it's not a link we can find
     else {
         $RT::Logger->debug("Couldn't find that link\n");
-        return ( 0, "Link not found" );
+        return ( 0, $self->loc("Link not found") );
     }
 }
 
@@ -2010,14 +2009,14 @@ sub AddLink {
     );
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug(
 "$self tried to delete a link. both base and target were specified\n"
         );
-        return ( 0, 'Can\'t specifiy both base and target' );
+        return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->Id();
@@ -2026,12 +2025,12 @@ sub AddLink {
         $args{'Base'} = $self->Id();
     }
     else {
-        return ( 0, 'Either base or target must be specified' );
+        return ( 0, $self->loc('Either base or target must be specified') );
     }
 
     # {{{ We don't want references to ourself
     if ( $args{Base} eq $args{Target} ) {
-        return ( 0, "Can\'t link a ticket to itself" );
+        return ( 0, $self->loc("Can't link a ticket to itself") );
     }
 
     # }}}
@@ -2058,7 +2057,7 @@ sub AddLink {
     );
 
     unless ($linkid) {
-        return ( 0, "Link could not be created" );
+        return ( 0, $self->loc("Link could not be created") );
     }
 
     #Write the transaction
@@ -2106,7 +2105,7 @@ sub MergeInto {
     my $MergeInto = shift;
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     # Load up the new ticket.
@@ -2115,13 +2114,13 @@ sub MergeInto {
 
     # make sure it exists.
     unless ( defined $NewTicket->Id ) {
-        return ( 0, 'New ticket doesn\'t exist' );
+        return ( 0, $self->loc("New ticket doesn't exist") );
     }
 
     # Make sure the current user can modify the new ticket.
     unless ( $NewTicket->CurrentUserHasRight('ModifyTicket') ) {
         $RT::Logger->debug("failed...");
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     $RT::Logger->debug(
@@ -2131,8 +2130,7 @@ sub MergeInto {
               . $NewTicket->Id
               . ' which is itself merged.\n' );
         return ( 0,
-            "Can't merge into a merged ticket. "
-              . "You should never get this error" );
+            $self->loc("Can't merge into a merged ticket. You should never get this error") );
     }
 
     # We use EffectiveId here even though it duplicates information from
@@ -2149,7 +2147,7 @@ sub MergeInto {
     unless ($id_val) {
         $RT::Logger->error(
             "Couldn't set effective ID for " . $self->Id . ": $id_msg" );
-        return ( 0, "Merge failed. Couldn't set EffectiveId" );
+        return ( 0, $self->loc("Merge failed. Couldn't set EffectiveId") );
     }
 
     my ( $status_val, $status_msg ) = $self->__Set(
@@ -2158,8 +2156,7 @@ sub MergeInto {
     );
 
     unless ($status_val) {
-        $RT::Logger->error( "$self couldn't set status to resolved."
-            . "RT's Database may be inconsistent." );
+        $RT::Logger->error( $self->loc("[_1] couldn't set status to resolved. RT's Database may be inconsistent.", $self) );
     }
 
     #make a new link: this ticket is merged into that other ticket.
@@ -2187,7 +2184,7 @@ sub MergeInto {
         );
     }
 
-    return ( $TransactionObj, "Merge Successful" );
+    return ( $TransactionObj, $self->loc("Merge Successful") );
 }
 
 # }}}
@@ -2254,14 +2251,14 @@ sub SetOwner {
     my $Type     = shift || "Give";
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     my $NewOwnerObj = RT::User->new( $self->CurrentUser );
     my $OldOwnerObj = $self->OwnerObj;
 
     if ( !$NewOwnerObj->Load($NewOwner) ) {
-        return ( 0, "That user does not exist" );
+        return ( 0, $self->loc("That user does not exist") );
     }
 
     #If thie ticket has an owner and it's not the current user
@@ -2273,7 +2270,7 @@ sub SetOwner {
         ( $self->CurrentUser->Id ne $self->OwnerObj->Id() ) )
     {    #and it's not us
         return ( 0,
-            "You can only reassign tickets that you own or that are unowned" );
+            $self->loc("You can only reassign tickets that you own or that are unowned") );
     }
 
     #If we've specified a new owner and that user can't modify the ticket
@@ -2375,7 +2372,7 @@ sub Steal {
     my $self = shift;
 
     if ( $self->IsOwner( $self->CurrentUser ) ) {
-        return ( 0, "You already own this ticket" );
+        return ( 0, $self->loc("You already own this ticket") );
     }
     else {
         return ( $self->SetOwner( $self->CurrentUser->Id, 'Steal' ) );
@@ -2428,7 +2425,7 @@ sub SetStatus {
 
     #Check ACL
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, $self->loc('Permission Denied'))
+        return ( 0, $self->loc('Permission Denied') );
     }
 
     my $now = new RT::Date( $self->CurrentUser );
@@ -2644,8 +2641,8 @@ sub AddCustomFieldValue {
         $RT::Logger->debug ("added a custom field value : $value_msg\n");
         unless ($new_value_id) {
             return ( 0,
-                "Could not add new custom field value for ticket. "
-                  . $value_msg );
+                $self->loc("Could not add new custom field value for ticket. [_1] ",
+                  ,$value_msg) );
         }
 
         my $new_value = RT::TicketCustomFieldValue->new( $self->CurrentUser );
@@ -2663,8 +2660,7 @@ sub AddCustomFieldValue {
             OldValue => $old_value,
             NewValue => $new_value->Content
         );
-        return ( 1, "Custom field value changed from $old_value to "
-              . $new_value->Content );
+        return ( 1, $self->loc("Custom field value changed from [_1] to [_2]" , $old_value, $new_value->Content ));
 
     }
 
@@ -2677,7 +2673,7 @@ sub AddCustomFieldValue {
 
         unless ($new_value_id) {
             return ( 0,
-                "Could not add new custom field value for ticket. ");
+                $self->loc("Could not add new custom field value for ticket. "));
         }
 
         my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
@@ -2686,9 +2682,9 @@ sub AddCustomFieldValue {
             NewValue => $args{'Value'}
         );
         unless($TransactionId) {
-            return(0,"Couldn't create a transaction: $Msg");
+            return(0, $self->loc("Couldn't create a transaction: [_1]", $Msg));
         } 
-        return ( 1, "$args{'Value'} added as a value for ". $cf->Name);
+        return ( 1, $self->loc("[_1] added as a value for [_2]",$args{'Value'}, $cf->Name));
     }
 
 }
@@ -2724,7 +2720,7 @@ sub DeleteCustomFieldValue {
     }
 
     unless ( $cf->Id ) {
-        return ( 0, "Custom field not found" );
+        return ( 0, $self->loc("Custom field not found") );
     }
 
 
@@ -2738,10 +2734,10 @@ sub DeleteCustomFieldValue {
             OldValue => $args{'Value'}
         );
         unless($TransactionId) {
-            return(0,"Couldn't create a transaction: $Msg");
+            return(0, $self->loc("Couldn't create a transaction: [_1]", $Msg));
         } 
 
-        return($TransactionId, "'".$args{'Value'}."' is no longer a value for custom field".$cf->Name);
+        return($TransactionId, $self->loc("[_1] is no longer a value for custom field [_2]", $args{'Value'}, $cf->Name));
 }
 
 # }}}
@@ -2765,7 +2761,7 @@ sub SetTold {
     my $timetaken = shift || 0;
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     my $datetold = new RT::Date( $self->CurrentUser );
@@ -2938,7 +2934,7 @@ sub _Set {
     my $self = shift;
 
     unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, "Permission Denied" );
+        return ( 0, $self->loc("Permission Denied") );
     }
 
     my %args = (

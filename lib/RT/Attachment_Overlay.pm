@@ -220,7 +220,7 @@ sub Content {
   } elsif ( $self->ContentEncoding eq 'base64' ) {
       return MIME::Base64::decode_base64($self->_Value('Content'));
   } else {
-      return( "Unknown ContentEncoding ". $self->ContentEncoding);
+      return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
   }
 }
 

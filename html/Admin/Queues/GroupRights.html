@@ -1,4 +1,4 @@
-<& /Admin/Elements/Header, Title => 'Modify group rights for queue '. $QueueObj->Name &>
+<& /Admin/Elements/Header, Title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>
 <& /Admin/Elements/QueueTabs, id => $id &>  
 <& /Elements/ListActions, actions => \@results &>
 
@@ -7,10 +7,10 @@
       
 
 
-<& /Elements/TitleBoxStart, title => 'Modify group rights for queue '.$QueueObj->Name &>
+<& /Elements/TitleBoxStart, title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>
 
 <TABLE>
-<TR><TD>Groups</TD></TR>
+<TR><TD><&|/l&>Groups</&></TD></TR>
 
 % while (my $GroupObj = $Groups->Next()) {
 	      
@@ -32,7 +32,7 @@
       </TABLE>
 
       <& /Elements/TitleBoxEnd &>
-      <& /Elements/Submit, Caption => "Be sure to save your changes", Reset => 1 &>
+      <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
   </FORM>
   
 <%INIT>

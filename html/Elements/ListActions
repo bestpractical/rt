@@ -1,5 +1,5 @@
 % if (@actions ) {
-<& /Elements/TitleBoxStart, title => 'Results' &>
+<& /Elements/TitleBoxStart, title => loc('Results') &>
 <UL>
 % foreach my $action (@actions) {
 % next unless ($action);

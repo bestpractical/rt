@@ -3,7 +3,7 @@ RT <%$RT::VERSION%> from <a href="http://bestpractical.com">Best Practical Solut
 </div>
 % if ($Debug) {
 <HR>
-<b>Time to display: <%time - $m->{'rt_base_time'} %></b>
+<b><&|/l&>Time to display:</&> <%time - $m->{'rt_base_time'} %></b>
 % }
 % if ($Debug >= 2 ) {
 % require Data::Dumper;

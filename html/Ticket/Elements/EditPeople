@@ -3,26 +3,26 @@
 <TR>
 <TD VALIGN=TOP>
 
-<h3>New watchers</h3>
-Find people whose<BR>
+<h3><&|/l&>New watchers</&></h3>
+<&|/l&>Find people whose</&><BR>
 <& /Elements/SelectUsers &>
-<input type=submit name="OnlySearchForPeople" value="Go!">
+<input type=submit name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField &> 
 </TD><TD VALIGN=TOP>
-<h3>Owner</h3>
-Owner: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
-<h3>Current watchers</h3>
-(Check box to delete)<br>
+<h3><&|/l&>Owner</&></h3>
+<&|/l&>Owner:</&> <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
+<h3><&|/l&>Current watchers</&></h3>
+<&|/l&>(Check box to delete)</&><br>
 
-Requestors:
+<&|/l&>Requestors</&>:
 <& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>
 
-Cc:
+<&|/l&>Cc</&>:
 <& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &>
 
-Administrative Cc:
+<&|/l&>Administrative Cc</&>:
 <& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
 
 </TD>

@@ -617,7 +617,7 @@ sub rt_handler {
 
     if ( !$CurrentUser->Id ) {
         print
-"No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\n";
+loc("No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\n");
         return;
     }
 
@@ -727,19 +727,19 @@ sub ActOnPseudoHeaders {
                 $val = $Ticket->Load($args);
                 unless ($val) {
                     $ResultsMessage .=
-                      "ERROR: Couldn't load ticket '$1': $msg.\n"
-                      . "Aborting to avoid unintended ticket modifications.\n"
-                      . "The following commands were not proccessed:\n\n"
+                      loc("ERROR: Couldn't load ticket '[_1]': [_2].\n", $1, $msg);
+                      . loc("Aborting to avoid unintended ticket modifications.\n")
+                      . loc("The following commands were not proccessed:\n\n")
                       . join ( "\n", @actions );
                     return ($ResultsMessage);
                 }
-                $ResultsMessage .= "Ticket " . $Ticket->Id . " loaded\n";
+                $ResultsMessage .= loc("Ticket [_1] loaded\n", $Ticket->Id);
             }
             else {
                 unless ( $Ticket->Id ) {
-                    $ResultsMessage .= "No Ticket specified. Aborting ticket "
-                      . "modifications\n\n"
-                      . "The following commands were not proccessed:\n\n"
+                    $ResultsMessage .= loc("No Ticket specified. Aborting ticket ")
+                      . loc("modifications\n\n")
+                      . loc("The following commands were not proccessed:\n\n")
                       . join ( "\n", @actions );
                     return ($ResultsMessage);
                 }
@@ -800,7 +800,7 @@ sub untaint {
         $val = $1;    # $data now untainted
     }
     else {
-        die "Bad data in $val";    # log this somewhere
+        die loc("Bad data in [_1]", $val);    # log this somewhere
     }
     return ($val);
 }

@@ -81,7 +81,7 @@ sub Load  {
     my $identifier = shift;
     
     if (!$identifier) {
-	return (0, 'Input error');
+	return (0, $self->loc('Input error'));
     }	    
     
     if ($identifier !~ /\D/) {
@@ -98,7 +98,7 @@ sub Load  {
 	
 	$self->{'Template'} = $template;
     }
-    return ($self->Id, 'ScripAction loaded');
+    return (loc('[_1] ScripAction loaded', $self->Id));
 }
 # }}}
 

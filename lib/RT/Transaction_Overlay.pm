@@ -448,7 +448,7 @@ sub _Attach {
         $RT::Logger->error(
 "$self _Attach: We can't attach a mime object if you don't give us one.\n"
         );
-        return ( 0, $self->loc("$self: no attachment specified") );
+        return ( 0, $self->loc("[_1]: no attachment specified", $self) );
     }
 
     my $Attachment = new RT::Attachment( $self->CurrentUser );
