@@ -279,26 +279,14 @@ sub Nobody {
 }
 
 
-=head2 DropSetGIDPermissions
-
-Drops setgid permissions.
-
-=cut
-
-sub DropSetGIDPermissions {
-    # Now that we got the config read in, we have the database 
-    # password and don't need to be setgid
-    # make the effective group the real group
-    $) = $(;
-}
-
-
 =head1 SYNOPSIS
 
 =head1 BUGS
 
-Please report them to rt-3.0-bugs@fsck.com, if you know what's broken and have at least some idea of what needs to be fixed.
-If you're not sure what's going on, report them rt-devel@lists.fsck.com.
+Please report them to rt-bugs@fsck.com, if you know what's broken and have at least 
+some idea of what needs to be fixed.
+
+If you're not sure what's going on, report them rt-devel@lists.bestpractical.com.
 
 =head1 SEE ALSO
 

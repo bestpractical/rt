@@ -45,7 +45,18 @@ use strict;
 
 
 
+my @DefaultHandlerArgs = (
 
+    comp_root => [
+        [ local    => $RT::MasonLocalComponentRoot ],
+        [ standard => $RT::MasonComponentRoot ]
+    ],
+    default_escape_flags => 'h',
+    data_dir             => "$RT::MasonDataDir",
+    allow_globals        => [qw(%session)],
+    autoflush            => 1
+
+);
 
 # {{{ sub NewApacheHandler 
 
@@ -58,22 +69,9 @@ use strict;
 
 sub NewApacheHandler {
     require HTML::Mason::ApacheHandler;
-    my $ah = new HTML::Mason::ApacheHandler( 
-    
-        comp_root                    => [
-            [ local    => $RT::MasonLocalComponentRoot ],
-            [ standard => $RT::MasonComponentRoot ]
-        ],
-        args_method => "CGI",
-        default_escape_flags => 'h',
-        allow_globals        => [qw(%session)],
-        autoflush => 1,
-        @_
-    );
-
-    $ah->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
-    
-    return ($ah);
+    return RT::Interface::Web::NewHandler('HTML::Mason::ApacheHandler',
+                                            args_method => "CGI",
+                                            @_);
 }
 
 # }}}
@@ -87,28 +85,20 @@ sub NewApacheHandler {
 =cut
 
 sub NewCGIHandler {
-    my %args = (
-        @_
-    );
+    return RT::Interface::Web::NewHandler('HTML::Mason::CGIHandler',@_);
+}
 
-    my $handler = HTML::Mason::CGIHandler->new(
-        comp_root                    => [
-            [ local    => $RT::MasonLocalComponentRoot ],
-            [ standard => $RT::MasonComponentRoot ]
-        ],
-        default_escape_flags => 'h',
-        allow_globals        => [qw(%session)],
-        autoflush => 1,
+sub NewHandler {
+    my $class = shift;
+    my $handler = $class->new(
+        @DefaultHandlerArgs,
         @_
     );
   
-
     $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
-
-
-    return ($handler);
-
+    return($handler);
 }
+
 # }}}
 
 

@@ -31,7 +31,6 @@ my $h = &RT::Interface::Web::NewCGIHandler(@RT::MasonParameters);
 require CGI;
 
 RT::Init();
-RT::DropSetGIDPermissions();
 
 my $cgi = CGI->new;
 if ( ( !$h->interp->comp_exists( $cgi->path_info ) )

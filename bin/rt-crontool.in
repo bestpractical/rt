@@ -45,9 +45,6 @@ RT::LoadConfig();
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
 
-#Drop setgid permissions
-RT::DropSetGIDPermissions();
-
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 

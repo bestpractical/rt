@@ -276,8 +276,6 @@ fixperms:
 				$(DESTDIR)/$(MASON_SESSION_PATH)
 # }}}
 
-fixperms-nosetgid: fixperms
-
 # {{{ dirs
 dirs:
 	mkdir -p $(DESTDIR)/$(RT_LOG_PATH)
@@ -315,9 +313,6 @@ test:
 
 regression-install: config-install
 	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)/$(CONFIG_FILE)
-
-regression-nosetgid: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms-nosetgid apachectl
-	$(PERL) lib/t/02regression.t
 
 regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db  testify-pods fixperms apachectl
 	$(PERL) lib/t/02regression.t
@@ -439,52 +434,11 @@ license-tag:
 factory: initialize-database
 	cd lib; $(PERL) ../sbin/factory  $(DB_DATABASE) RT
 
-commit:
-	aegis -build ; aegis -diff ; aegis -test; aegis -develop_end
-
-integrate:
-	aegis -integrate_begin;	aegis -build; aegis -diff; aegis -test ; aegis -integrate_pass
-
-predist: commit tag-and-tar
-
-tag-and-release-baseline:
-	aegis -cp -ind Makefile -output /tmp/Makefile.tagandrelease; \
-	$(MAKE) -f /tmp/Makefile.tagandrelease tag-and-release-never-by-hand
-
-
-# Running this target in a working directory is 
-# WRONG WRONG WRONG.
-# it will tag the current baseline with the version of RT defined 
-# in the currently-being-worked-on makefile. which is wrong.
-#  you want tag-and-release-baseline
-
-tag-and-release-never-by-hand:
-	aegis --delta-name $(TAG)
-	rm -rf /tmp/$(TAG)
-	mkdir /tmp/$(TAG)
-	cd /tmp/$(TAG); \
-		aegis -cp -ind -delta $(TAG) . ;\
-		make reconfigure;\
-		chmod 600 Makefile;\
-		aegis --report --project rt.$(RT_VERSION_MAJOR) \
-		      --page_width 80 \
-		      --page_length 9999 \
-		      --change $(RT_VERSION_MINOR) --output Changelog Change_Log
-
-	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
-	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
-
-
 reconfigure:
 	aclocal -I m4
 	autoconf
 	chmod 755 ./configure
 	./configure
-
-rpm:
-	(cd ..; tar czvf /usr/src/redhat/SOURCES/rt.tar.gz rt)
-	rpm -ba etc/rt.spec
-
 
 start-httpd:
 	$(PERL) bin/standalone_httpd 80 &

@@ -28,6 +28,8 @@ AC_PATH_PROG([PERL], [perl], [not found])
 if test "$PERL" = 'not found'; then
 	AC_MSG_ERROR([cannot use $PACKAGE_NAME without perl])
 fi
+
+
 dnl SPEED_BIN
 AC_ARG_WITH(speedycgi,
 	    AC_HELP_STRING([--with-speedycgi=/path/to/speedy],
@@ -239,7 +241,6 @@ AC_CONFIG_FILES([
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd
  		 bin/mason_handler.svc
- 		 bin/rt-commit-handler
  		 bin/rt-crontool
  		 bin/rt-mailgate
 		 bin/rt
