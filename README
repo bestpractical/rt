@@ -135,13 +135,15 @@ machine.
  
 Add the following lines to /etc/aliases (or your local equivalent) :
 
-rt:         "|/path/to/rt3/bin/rt-mailgate --queue general --action correspond"
-rt-comment: "|/path/to/rt3/bin/rt-mailgate --queue general --action comment"
-                                                   |                |
-                                   <queue-name>----/                |
-                                                                    |
-                      <correspond or comment depending on whether   |
-                      the mail should be resent to the requestor>---/
+rt:         "|/path/to/rt3/bin/rt-mailgate --queue general --action correspond --url http://localhost/"
+rt-comment: "|/path/to/rt3/bin/rt-mailgate --queue general --action comment --url http://localhost/"
+                                                   |                |             |
+                                   <queue-name>----/                |             |
+                                                                    |             |
+                      <correspond or comment depending on whether   |             |
+                      the mail should be resent to the requestor>---/             |
+                                                                                  |
+                                                 <root to the rt web interface>---/
 
 
 
@@ -174,6 +176,10 @@ Apache
         PerlHandler RT::Mason
     </FilesMatch>
     <LocationMatch "/Attachment/">
+        SetHandler perl-script
+        PerlHandler RT::Mason
+    </LocationMatch>
+    <LocationMatch "/REST/">
         SetHandler perl-script
         PerlHandler RT::Mason
     </LocationMatch>

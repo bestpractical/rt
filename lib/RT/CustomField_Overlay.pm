@@ -68,10 +68,11 @@ sub LoadNameAndQueue {
     my $self = shift;
     my %args = (
         Queue => undef,
-        Name  => undef
+        Name  => undef,
+        @_,
     );
 
-    return ( $self->LoadByCols( Name => $args{'Name'}, Queue => {'Queue'} ) );
+    return ( $self->LoadByCols( Name => $args{'Name'}, Queue => $args{'Queue'} ) );
 
 }
 

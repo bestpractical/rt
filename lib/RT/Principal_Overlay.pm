@@ -348,7 +348,9 @@ sub HasRight {
         " AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.ObjectId AND Principals.PrincipalType = 'Group') ";
 
    } 
-    # {{{ If an object is defined, we want to look at rights for that object
+    # {{{ Construct Right Match
+
+    # If an object is defined, we want to look at rights for that object
    
     my @look_at_objects;
     push (@look_at_objects, "ACL.ObjectType = 'RT::System'");
@@ -365,7 +367,7 @@ sub HasRight {
      
     # }}}
 
-    #  {{{ Build that honkin-big SQL query
+    # {{{ Build that honkin-big SQL query
 
     
 

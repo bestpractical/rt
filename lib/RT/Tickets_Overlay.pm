@@ -1,4 +1,3 @@
-
 # BEGIN LICENSE BLOCK
 # 
 # Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
@@ -742,11 +741,8 @@ sub _CustomFieldLimit {
 
 
 # End Helper Functions
-# }}}
 
 # End of SQL Stuff -------------------------------------------------
-
-# }}}
 
 # {{{ Limit the result set based on content
 
@@ -1724,7 +1720,7 @@ sub Next {
 	    #TODO we should be doing this in the where clause.
 	    #but you can't do multiple clauses on the same field just yet :/
 
-	    if ($Ticket->Status eq 'deleted') {
+	    if ($Ticket->__Value('Status') eq 'deleted') {
 		return($self->Next());
 	    }
   	    elsif ($Ticket->CurrentUserHasRight('ShowTicket')) {

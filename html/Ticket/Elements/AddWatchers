@@ -28,7 +28,7 @@
 <&|/l&>Add new watchers</&>:<br>
 
 <table>
-% if ($Users) {
+% if ($Users and $Users->Count) {
 <tr><td>
 <&|/l&>Type</&>
 </td><td>
@@ -39,7 +39,7 @@
 % }
 % }
 
-% if ($Groups->Count) {
+% if ($Groups and $Groups->Count) {
 <tr><td>
 <&|/l&>Type</&>
 </td><td>
@@ -74,6 +74,7 @@
 
 <%INIT>
 my ($msg, $Users, $Groups);
+
 if ($UserString) {
     $Users = RT::Users->new($session{'CurrentUser'});
     $Users->Limit(FIELD => $UserField,
@@ -81,8 +82,13 @@ if ($UserString) {
                  OPERATOR => $UserOp);
      }
 
-$Groups = new RT::Groups($session{'CurrentUser'});
-$Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+if ($GroupString) {
+    $Groups = RT::Groups->new($session{'CurrentUser'});
+    $Groups->Limit(FIELD => 'Domain', OPERATOR => '=', VALUE => 'UserDefined');
+    $Groups->Limit(FIELD => $ARGS{'GroupField'},
+		VALUE => $ARGS{'GroupString'},
+		OPERATOR => $ARGS{'GroupOp'});
+     }
 
 </%INIT>
 

@@ -22,13 +22,39 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<%once>
+my (%cache, $check);
+</%once>
 <%init>
+# checks for inode change time for each callback directory
+my $new_check = join(
+    $;, map { $_->[1] => (stat("$_->[1]/Callbacks"))[10] } $m->interp->resolver->comp_root_array
+) or return;
+
 $Page = $m->callers(1)->path unless ($Page);
-my $path = '/Callbacks/' . $Page . '/' . $_CallbackName . '/*';
-my @callbacks = $m->interp->resolver->glob_path($path);
-# TODO: memoize these callbacks, so we don't have a big perf hit
-foreach my $comp (@callbacks) {
-        next if ($comp =~ /~$/); #skip backup files
+
+my $callbacks;
+if ($new_check eq $check) {
+    $callbacks = $cache{$Page,$_CallbackName};
+}
+else {
+    $check = $new_check;
+}
+
+if (!$callbacks) {
+    my $path = "/Callbacks/*$Page/$_CallbackName";
+    $callbacks = [ $m->interp->resolver->glob_path($path) ];
+
+    # XXX: Legacy code (RTFM et al) support code. To be removed soon.
+    foreach $path ("/Callbacks$Page/*", "/Callbacks$Page/$_CallbackName/*") {
+	push @$callbacks, $m->interp->resolver->glob_path($path);
+    }
+
+    @$callbacks = grep !/^\.|~$/, @$callbacks; #skip backup files
+    $cache{$Page,$_CallbackName} = $callbacks;
+}
+
+foreach my $comp (@$callbacks) {
         $m->comp($comp, %ARGS);
 }
 return(1);

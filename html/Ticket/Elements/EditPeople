@@ -30,9 +30,15 @@
 <&|/l&>Find people whose</&><BR>
 <& /Elements/SelectUsers &>
 <input type=submit name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
+<BR>
+<&|/l&>Find group whose</&><BR>
+<& /Elements/SelectGroups &>
+<input type=submit name="OnlySearchForGroup" value="<&|/l&>Go!</&>">
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
-        UserOp => $UserOp, UserField => $UserField &> 
+        UserOp => $UserOp, UserField => $UserField,
+	GroupString => $GroupString, GroupOp => $GroupOp,
+	GroupField => $GroupField &> 
 </TD><TD VALIGN=TOP>
 <h3><&|/l&>Owner</&></h3>
 <&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
@@ -56,5 +62,8 @@
 $UserField => undef
 $UserOp => undef
 $UserString => undef
+$GroupField => undef
+$GroupOp => undef
+$GroupString => undef
 $Ticket => undef
 </%ARGS>

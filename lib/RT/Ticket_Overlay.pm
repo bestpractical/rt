@@ -398,6 +398,14 @@ sub Create {
 
     # }}}
 
+    # {{{ Dealing with time fields
+
+    $args{'TimeEstimated'} = 0 unless defined $args{'TimeEstimated'};
+    $args{'TimeWorked'}    = 0 unless defined $args{'TimeWorked'};
+    $args{'TimeLeft'}      = 0 unless defined $args{'TimeLeft'};
+
+    # }}}
+
     # {{{ Deal with setting the owner
 
     if ( ref( $args{'Owner'} ) eq 'RT::User' ) {
@@ -598,7 +606,6 @@ sub Create {
     }
 }
 
-# }}}
 
 # }}}
 
