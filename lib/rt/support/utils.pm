@@ -15,7 +15,7 @@ sub untaint {
 
 #
 #can the named user modify the named queue
-sub can_manipulate_request{
+sub can_manipulate_request {
     my ($in_serial_num, $in_user) =@_;
     &req_in($in_serial_num,$in_user);
     if (&can_manipulate_queue($rt::req[$in_serial_num]{'queue_id'},$in_user)) {
@@ -27,7 +27,7 @@ sub can_manipulate_request{
 }
 
 #can the named user display the named queue
-sub can_display_request{
+sub can_display_request {
     my ($in_serial_num, $in_user) =@_;
     &req_in($in_serial_num,$in_user);
     if (&can_display_queue($rt::req[$in_serial_num]{'queue_id'},$in_user)) {
@@ -39,7 +39,7 @@ sub can_display_request{
 }
 
 
-sub can_create_request{
+sub can_create_request {
     my $in_queue = shift;
     my $in_user = shift;
   
@@ -112,7 +112,7 @@ sub is_not_a_requestor{
     }
     
 }
-sub is_owner{
+sub is_owner {
     my($serial_num,$user) =@_;
     if ($req[$serial_num]{'owner'} eq $user) {
 	return(1);
@@ -125,7 +125,7 @@ sub is_owner{
 
 
 #normalize_sn takes care of opersations on reqs which have been merged
-sub normalize_sn{
+sub normalize_sn {
     my ($in_serial_num)=@_;
     my ($effective_sn);
     $effective_sn=&get_effective_sn($in_serial_num);
@@ -303,7 +303,7 @@ sub template_read {
     
     if (! (-f "$rt::template_dir/queues/$in_queue/$in_template")) 
     {
-       	return ("The specified template is missing or inaccessable.\n ($rt::template_dir/queues/$in_queue/$in_template)\n However, the custom content which was supposed to fill the template was:\n %content%");
+       	return ("The specified template is missing or inaccessable.\n ($rt::template_dir/queues/$in_queue/$in_template)\n However, the custom content which was supposed to fill the template was:\n %content% ");
     }
     open(CONTENT, "$rt::template_dir/queues/$in_queue/$in_template"); 
     while (<CONTENT>)
@@ -352,6 +352,7 @@ sub date_parse {
 	$sec = $7;
 	$tz = $8;
     }
+    
     if ($year == -1) {
 	$year = $now_year;
     }
@@ -364,7 +365,9 @@ sub date_parse {
     
     #print "$time: $hours:$sec:$min $month\/$day\/$year\n";
 
-    $time = timelocal($sec, $min, $hours, $day, $month, $year);
+    # timelocal) expects the same kind of values that localtime() generates,
+    # i.e. $month ranges from 0-11 and $year is the real year - 1900.
+    $time = timelocal($sec, $min, $hours, $day, $month - 1, $year - 1900);
 
     #print "$time: $hours:$sec:$min $month\/$day\/$year\n";
     
