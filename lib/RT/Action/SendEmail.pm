@@ -84,7 +84,7 @@ sub Prepare {
 
   }
 
-  # From, Sender and Reply-To
+  # From, RT-Originator (was Sender) and Reply-To
   # $self->{comment} should be set if the comment address is to be used.
   unless ($self->{'Header'}->get('From')) {
       my $friendly_name=$self->{TransactionObject}->Creator->RealName;
@@ -94,9 +94,8 @@ sub Prepare {
 	      or warn "Can't find email address for queue?";
       $self->{'Header'}->add('From', "$friendly_name <$email_address>");
       $self->{'Header'}->add('Reply-To', "$email_address");
-      $self->{'Header'}->add('Sender', $self->{TransactionObject}->Creator->EmailAddress);
-      # Is this one necessary?
-#      $self->{'Header'}->add('X-Sender', $self->{TransactionObject}->Creator->EmailAddress);
+      # Ref Jesse, <20000228222813.W20787@pallas.eruditorum.org>
+      $self->{'Header'}->add('RT-Originator', $self->{TransactionObject}->Creator->EmailAddress);
   }
 
   # This should perhaps be in the templates table. ISO-8859-1 just
