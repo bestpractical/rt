@@ -1,6 +1,10 @@
 <TABLE BORDER=0 width="100%">
 <TR>
-<TD ALIGN=LEFT><font size=+3>History</font></TD>
+<TD ALIGN=LEFT>
+% if ($ShowTitle) {
+<font size=+3>History</font>
+% }
+&nbsp;</TD>
 <TD align=right><font size=-1>Display mode: 
 %  if ($ShowHeaders == $Ticket->Id) {
 [<A HREF="<%$URIFile%>?id=<%$Ticket->id%>">Brief headers</a>]
@@ -35,4 +39,5 @@ $URIFile => 'Display.html'
 $Ticket => undef
 $ShowHeaders => undef
 $Collapsed => undef
+$ShowTitle => 1
 </%ARGS>
