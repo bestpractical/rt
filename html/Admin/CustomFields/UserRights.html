@@ -121,8 +121,8 @@ $object_type));
             next unless ($right);
             my $obj;
 
-            if ($object_type eq 'RT::Class') {
-                $obj = RT::Class->new($session{'CurrentUser'});
+            if ($object_type eq 'RT::CustomField') {
+                $obj = RT::CustomField->new($session{'CurrentUser'});
                 $obj->Load($object_id);
             } else {
                 push (@results, loc("System Error").
