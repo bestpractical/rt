@@ -2425,8 +2425,9 @@ sub SetOwner {
     my $NewOwnerObj = RT::User->new($self->CurrentUser);
     my $OldOwnerObj = $self->OwnerObj;
   
-    if (!$NewOwnerObj->Load($NewOwner)) {
-	return (0, "That user does not exist");
+    $NewOwnerObj->Load($NewOwner);
+    if (!$NewOwnerObj->Id) {
+	    return (0, "That user does not exist");
     }
     
     #If thie ticket has an owner and it's not the current user
@@ -2438,7 +2439,7 @@ sub SetOwner {
     }
     
     #If we've specified a new owner and that user can't modify the ticket
-    elsif (($NewOwnerObj) and 
+    elsif (($NewOwnerObj->Id) and 
 	   (!$NewOwnerObj->HasQueueRight(Right => 'OwnTicket',
 					 QueueObj => $self->QueueObj,
 					 TicketObj => $self))
