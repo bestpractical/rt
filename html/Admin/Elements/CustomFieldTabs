@@ -19,6 +19,9 @@ if ($id) {
                 C => { title => loc('Basics'),
                        path  => "Admin/CustomFields/Modify.html?id=" . $id,
                 },
+                D => { title => loc('Applies To'),
+                       path  => "Admin/CustomFields/Objects.html?id=" . $id,
+                },
 
                 F => { title => loc('Group Rights'),
                        path  => "Admin/CustomFields/GroupRights.html?id="

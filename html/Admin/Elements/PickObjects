@@ -1,0 +1,61 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+% if (@Objects == 0) {
+<P><i><&|/l&>(No objects)</&></i></P>
+% } else {
+<TABLE cellspacing=0 cellpadding=2>
+% my $count;
+% foreach my $Object (@Objects) {
+<TR>
+%   if (!$ReadOnly) {
+  <TD valign="TOP">
+<input type="checkbox"
+name="Object-<%$Object->id%>-CF-<%$id%>"
+value="1" 
+<% $Checked && 'CHECKED' %>
+>
+  </TD>
+%   }
+  <TD valign="TOP">
+% if ($Object->Name) {
+    <b><%$Object->Name%></b><br>
+% } else {
+    <i>(<%loc("no name")%>)</i><br>
+% }
+    <%$Object->Description%>
+  </TD>
+%#  <TD valign="TOP">
+%#    <i><% $CustomFieldObj->FriendlyTypeComposite %></i>
+%#  </TD>
+  </TD>
+</TR>
+% }
+</TABLE>
+% }
+<%ARGS>
+@Objects
+$id
+$ReadOnly => 0
+$Checked => 0
+</%ARGS>

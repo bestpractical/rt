@@ -72,14 +72,7 @@ if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQue
 			   };
   $tabs->{"B"} = { title => loc('New queue'),
   		     	path => "Admin/Queues/Modify.html?Create=1",
-			   };
-  $tabs->{"C1"} = { title => loc('CF: Tickets'),
-  		     	path => "Admin/Queues/CustomFields.html?SubType=RT::Ticket",
-			   };
-  $tabs->{"C2"} = { title => loc('CF: TicketTxns'),
-  		     	path => "Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction",
-			separator => 1,
-			   };
+		 separator => 1, };
 }
 
   # Now let callbacks add their extra tabs
