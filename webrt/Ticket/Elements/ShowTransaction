@@ -10,53 +10,64 @@
 <TD><%$TimeTaken%>&nbsp;</TD>
 <TD ALIGN="RIGHT"><font size=-1><%$titlebar_commands|n%></font></TD>
 </TR>
-% unless ($Collapsed) {
+<%PERL>
 
-%# I had to temporarly move this one because the box grew too wide when a message was too wide.
+unless ($Collapsed) {
+ $attachments->GotoFirstItem;
+ while (my $message=$attachments->Next) {
+     #we don't want to show any empty transactions, unless they have kids
+     next unless ($message->Content || $message->Children->Count);
+     
+    </%PERL>
 
-% $attachments->GotoFirstItem;
-%  while (my $message=$attachments->Next) {
-% #we don't want to show any empty transactions, unless they have kids
-% next unless ($message->Content || $message->Children->Count);
+
+<%PERL>
+  if ($message->Parent == 0) {
+      if ($ShowHeaders == $Ticket->Id) {
+	  $headers = $message->Headers;
+      } else {
+	  $headers = $message->NiceHeaders;
+      }
+  }
+     # 13456 is a random # of about the biggest size we want to see inline text
+     if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
+				    length($message->Content)<13456) {
+
+	 $content = $message->Content;
+
+	 my $wrapper = new Text::Wrapper (columns=>85);
+	 $content = $wrapper->wrap($content);
+	 $content =~ s!(?:^|\b)((?:http|https|ftp|mailto)://[^\s\"\'/]+/[^\s():\"\']+)!<A HREF=\"$1\">$1</A>!g;
+     }
+     else {
+	 $content = "&nbsp;";
+     }
+        
+</%PERL>
 <TR BGCOLOR="<%$rowbgcolor%>">
-<TD BGCOLOR="<%$bgcolor%>">&nbsp;&nbsp;</TD>
-<TD>&nbsp&nbsp;</TD>
-<TD COLSPAN=3 VALIGN=TOP>
-<pre>
-% if ($message->Parent == 0) {
-%if ($ShowHeaders == $Ticket->Id) {
-<%$message->Headers %>
-% } else {
-<%$message->NiceHeaders %>
-%}
-% }
-% # 13456 is a random # of about the biggest size we'd want to see inline text
-%   if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
-%	length($message->Content)<13456) {
-% 	my $wrapper = new Text::Wrapper (columns=>85);
-<% $wrapper->wrap( $message->Content) %>
-%    }  
-% else {
-&nbsp;
-% }
-</PRE>
-</TD>
-<TD VALIGN=TOP ALIGN=RIGHT>
+      <TD BGCOLOR="<%$bgcolor%>">&nbsp;&nbsp;</TD>
+      <TD>&nbsp&nbsp;</TD>
+      <TD COLSPAN=3 VALIGN=TOP>
+	<PRE>
+	 <%$headers%>
+	 <%$content|n%>
+	</PRE>
+      </TD>
+      <TD VALIGN=TOP ALIGN=RIGHT>
+	
 % if ($message->Parent == 0  ) {
-
 <BR>
 % }
 <%PERL>
 my $size = length($message->Content());
 
 if ($size) {
-
-if ($size > 1024) {
+    if ($size > 1024) {
 	$size = int($size/102.4)/10 . "k";
-}
-else {
+    }
+    else {
 	$size = $size ."b";
-}
+    }
 </%PERL>
 <font size=-1><A HREF="Attachment/<%$Transaction->Id%>/<%$message->Id%>/<%$message->Filename%>">Download <%$message->Filename|| '(untitled)'%></a> <% $size %></font>
 % }
@@ -79,7 +90,7 @@ $RowNum => 1
 <%INIT>
 
 
-my ($TimeTaken, $TicketString, $bgcolor, $rowbgcolor);
+my ($TimeTaken, $TicketString, $bgcolor, $rowbgcolor, $headers, $content);
 
 my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
