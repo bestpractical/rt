@@ -5,8 +5,8 @@ package RT::Interface::Email;
 use RT::Ticket;
 # {{{ sub activate 
 sub activate  {
-  my $Action=$ARGV[0];
-  my $Queue=$ARGV[1];
+  my $Queue=$ARGV[0];
+  my $Action=$ARGV[1];
   my $Area = $ARGV[2];
   
   my ($From, $TicketId, $Subject);
