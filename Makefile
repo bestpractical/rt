@@ -9,9 +9,9 @@ PERL			= 	/usr/bin/perl
 RTUSER			=	rt
 RTGROUP			=	rt
 
-RT_VERSION_MAJOR	=	0
-RT_VERSION_MINOR	=	99
-RT_VERSION_PATCH	=	8
+RT_VERSION_MAJOR	=	1
+RT_VERSION_MINOR	=	1
+RT_VERSION_PATCH	=	0pre1
 
 RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 
@@ -19,7 +19,7 @@ RT_VERSION =	$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).$(RT_VERSION_PATCH)
 # RT_PATH is the name of the directory you want make to install RT in
 #
 
-RT_PATH			=	/opt/rt
+RT_PATH			=	/usr/local/rt
 
 #
 # The rest of these paths are all configurable, but you probably don't want to 
