@@ -562,7 +562,7 @@ sub AddMember {
     if ( $new_member_obj->IsGroup &&
          $new_member_obj->Object->HasMemberRecursively($self->PrincipalObj) ) {
 
-        #User is already a member of this group. no need to add it
+        #This group can't be made to be a member of itself
         return ( 0, $self->loc("Groups can't be members of their members"));
     }
 
@@ -661,7 +661,6 @@ sub HasMemberRecursively {
 
 # }}}
 
-
 # {{{ DeleteMember
 
 =head2 DeleteMember PRINCIPAL_ID
@@ -701,7 +700,7 @@ sub DeleteMember {
     my $val = $member_obj->Delete();
 
     if ($val) {
-        #$RT::Logger->debug("Deleted group ".$self->Id." member ". $member_id);
+        $RT::Logger->debug("Deleted group ".$self->Id." member ". $member_id);
      
         return ( $val, $self->loc("Member deleted") );
     }

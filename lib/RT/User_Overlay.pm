@@ -1000,34 +1000,77 @@ ok ($did,"Deleted the group member: $dmsg");
 ok (!$new_user->HasQueueRight( TicketObj => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 
+my $q_as_system = RT::Queue->new($RT::SystemUser);
+$q_as_system->Load(1);
+ok($q_as_system->Id, "Loaded the first queue");
+
+# Create a ticket in the queue
+my $new_tick2 = RT::Ticket->new($RT::SystemUser);
+my ($tick2id, $tickmsg) = $new_tick2->Create(Subject=> 'ACL Test 2', Queue =>$q_as_system->Id);
+ok($tick2id, "Created ticket: $tick2id");
+ok($new_tick2->QueueObj->id eq $q_as_system->Id, "Created a new ticket in queue 1");
+
+
+# Create a subgroup
+my $subgroup = RT::Group->new($RT::SystemUser);
+$subgroup->CreateSystemGroup(Name => 'Subgrouptest');
+ok($subgroup->Id, "Created a new group Ok");
+#Add the subgroup as a subgroup of the group
+my ($said, $samsg) =  $group->AddMember($subgroup->PrincipalId);
+ok ($said, "Added the subgroup as a member of the group");
 # Add the user to a subgroup of the group
 
+my ($usaid, $usamsg) =  $subgroup->AddMember($new_user->PrincipalId);
+ok($usaid,"Added the user to the subgroup");
 # Make sure the user does have the right to modify tickets in the queue
-
+ok ($new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket with subgroup membership");
 # Remove the user from the subgroup
-
+my ($usrid, $usrmsg) =  $subgroup->DeleteMember($new_user->PrincipalId);
+ok($usrid,"removed the user from the group - $usrmsg");
 # Make sure the user doesn't have the right to modify tickets in the queue
+ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
-# Revoke the right for the group
 
 
 # Grant queue admin cc the right to modify ticket in the queue 
+ok(my ($qv,$qm) = $q_as_system->AdminCc->PrincipalObj->GrantQueueRight(ObjectId => $q_as_system->Id, Right => 'ModifyTicket'),"Granted the queue adminccs the right to modify tickets");
+ok($qv, "Granted the right successfully - $qm");
+
 # Add the user as a queue admincc
+ok ((my $add_id, $add_msg) = $q_as_system->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->Id)  , "Added the new user as a queue admincc");
+ok ($add_id, "the user is now a queue admincc - $add_msg");
+
 # Make sure the user does have the right to modify tickets in the queue
+ok ($new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket as an admincc");
+
 # Remove the user from the role  group
+ok ((my $del_id, $del_msg) = $q_as_system->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->Id)  , "Deleted the new user as a queue admincc");
+
 # Make sure the user doesn't have the right to modify tickets in the queue
-# Revoke the right for the role group
+ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 
 
-# Grant queue admin cc the right to modify ticket in the queue 
 # Add the user as a ticket admincc
-# Make sure the user does have the right to modify tickets in the queue
-# Remove the user from the role  group
-# Make sure the user doesn't have the right to modify tickets in the queue
-# Revoke the right for the role group
+ok ((my $uadd_id, $uadd_msg) = $new_tick2->AddWatcher(Type => 'AdminCc', PrincipalId => $new_user->Id)  , "Added the new user as a queue admincc");
+ok ($add_id, "the user is now a queue admincc - $add_msg");
 
+# Make sure the user does have the right to modify tickets in the queue
+ok ($new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket as an admincc");
+
+# Remove the user from the role  group
+ok ((my $del_id, $del_msg) = $new_tick2->DeleteWatcher(Type => 'AdminCc', PrincipalId => $new_user->Id)  , "Deleted the new user as a queue admincc");
+
+# Make sure the user doesn't have the right to modify tickets in the queue
+ok (!$new_user->HasQueueRight( TicketObj => $new_tick2, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
+
+
+# Revoke the right to modify ticket in the queue 
+ok(my ($rqv,$rqm) = $q_as_system->AdminCc->PrincipalObj->RevokeQueueRight(ObjectId => $q_as_system->Id, Right => 'ModifyTicket'),"Revokeed the queue adminccs the right to modify tickets");
+ok($rqv, "Revoked the right successfully - $rqm");
 
 # Grant system admin cc the right to modify ticket 
+
+
 # Add the user as a queue admincc
 # Make sure the user does have the right to modify tickets in the queue
 # Remove the user from the role  group
@@ -1080,7 +1123,7 @@ sub HasQueueRight {
     # {{{ Validate and load up the QueueId
     unless ( ( defined $args{'QueueObj'} ) and ( $args{'QueueObj'}->Id ) ) {
         require Carp;
-        $RT::Logger->debug( Carp::cluck("$self->HasQueueRight Couldn't find a queue id") );
+        $RT::Logger->debug( Carp::cluck("$self->HasQueueRight Couldn't find a queue id for". $args{'QueueObj'}) );
         return undef;
     }
 
@@ -1254,7 +1297,7 @@ if ($queue) {
 
 my $query = "
 SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers  WHERE  
-   (ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') AND ACL.PrincipalId = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '".$self->PrincipalId."' AND
+   (ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') AND Principals.Id = CachedGroupMembers.GroupId AND CachedGroupMembers.MemberId = '".$self->PrincipalId."' AND
     (   ACL.ObjectType = 'System' $or_look_at_queue_rights ) AND 
     (
         (  ACL.PrincipalId = Principals.Id and Principals.ObjectId = Groups.Id AND ACL.PrincipalType = 'Group' AND (Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined')) 

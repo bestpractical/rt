@@ -59,7 +59,7 @@
 <%INIT>
 
 my $Group = new RT::Group($session{'CurrentUser'});
-$Group->Load($id) || Abort('Could not load group');
+$Group->Load($id) || Abort(loc('Could not load group'));
 
 my (@results);
 

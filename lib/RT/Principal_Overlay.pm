@@ -85,6 +85,7 @@ sub GrantQueueRight {
         ObjectId => undef,
         @_
     );
+    $RT::Logger->debug("About to grant the right ".$args{'Right'}. " to ". $self->PrincipalType ." ". $self->Id ." for queue ". $args{'ObjjectId'});
     $self->_GrantRight(%args);
 
 }
@@ -130,13 +131,16 @@ sub _GrantRight {
                 ObjectId => undef,
                 @_);
 
+
+
     #ACL check handled in ACE.pm
     my $ace = RT::ACE->new( $self->CurrentUser );
 
+    $RT::Logger->debug("About to grant the right ".$args{'Right'}. " to ". $self->PrincipalType ." ". $self->Id ." for ".$args{'ObjectType'} . " ". $args{'ObjectId'});
     return ( $ace->Create(RightName => $args{'Right'},
                           ObjectType => $args{'ObjectType'},
                           ObjectId => $args{'ObjectId'},
-                          PrincipalType => $self->PrincipalType,
+                          PrincipalType =>  $self->_GetPrincipalTypeForACL(),
                           PrincipalId => $self->Id
                           ) );
 }
@@ -213,7 +217,7 @@ sub _RevokeRight {
     $ace->LoadByValues( RightName => $args{'Right'},
                         ObjectType => $args{'ObjectType'},
                         ObjectId => $args{'ObjectId'},
-                        PrincipalType => $self->PrincipalType,
+                        PrincipalType => $self->_GetPrincipalTypeForACL(),
                         PrincipalId => $self->Id);
 
 
@@ -229,4 +233,27 @@ sub _RevokeRight {
 
 
 
+# {{{ _GetPrincipalTypeForACL
+
+=head2 _GetPrincipalTypeForACL
+
+Gets the principal type. if it's a user, it's a user. if it's a group and it has a Type, 
+return that. if it has no type, return group.
+
+=cut
+
+sub _GetPrincipalTypeForACL {
+    my $self = shift;
+    my $type;    
+    if ($self->PrincipalType eq 'Group' && $self->Object->Type) {
+        $type = $self->Object->Type;
+    }
+    else {
+        $type = $self->PrincipalType;
+    }
+
+    return($type);
+}
+
+# }}}
 1;

@@ -9,7 +9,8 @@
       
 <TABLE>
         
-%	while (my $UserObj = $Users->Next()) {
+%	while (my $Member = $Users->Next()) {
+% my $UserObj = $Member->MemberObj->Object();
   <TR ALIGN=RIGHT> 
 	<TD VALIGN=TOP>
 	    <% $UserObj->Name %>
@@ -53,8 +54,9 @@ $QueueObj->Load($id) ||
   Abort("Couldn't load queue $id");
 
 # Find out which users we want to display ACL selects for
-my $Users = new RT::Users($session{'CurrentUser'});
-$Users->LimitToPrivileged();
+my $Privileged = RT::Group->new($session{'CurrentUser'});
+$Privileged->LoadSystemInternalGroup('Privileged');
+my $Users = $Privileged->MembersObj();
 
 # }}}
     

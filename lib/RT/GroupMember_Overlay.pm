@@ -32,22 +32,6 @@ ok (require RT::GroupMember);
 no warnings qw(redefine);
 use RT::CachedGroupMembers;
 
-# {{{ sub _ClassAccessible 
-
-sub _ClassAccessible {
-    {
-
-        id => { read => 1, type => 'int(11)', default => '' },
-          GroupId =>
-          { read => 1, write => 1, type => 'int(11)', default => '' },
-          MemberId =>
-          { read => 1, write => 1, type => 'int(11)', default => '' },
-
-    }
-};
-
-# }}}
-
 # {{{ sub Create
 
 =head2 Create { Group => undef, Member => undef }
@@ -70,9 +54,7 @@ sub Create {
 
     unless ($args{'Group'} &&
             UNIVERSAL::isa($args{'Group'}, 'RT::Principal') &&
-            $args{'Group'}->Id
-            
-            ) {
+            $args{'Group'}->Id ) {
 
         $RT::Logger->warning("GroupMember::Create called with a bogus Group arg");
         return (undef);
@@ -85,8 +67,7 @@ sub Create {
 
     unless ($args{'Member'} && 
             UNIVERSAL::isa($args{'Member'}, 'RT::Principal') &&
-            $args{'Member'}->Id
-            ) {
+            $args{'Member'}->Id) {
         $RT::Logger->warning("GroupMember::Create called with a bogus Principal arg");
         return (undef);
     }
@@ -134,6 +115,37 @@ sub Create {
         Via             => '0'
     );
 
+
+    #When adding a member to a group, we need to go back
+    #and popuplate the CachedGroupMembers of all the groups that group is part of .
+
+    my $cgm = RT::CachedGroupMembers->new( $self->CurrentUser );
+
+    # find things which have the current group as a member. 
+    # $group is an RT::Principal for the group.
+    $cgm->LimitToGroupsWithMember( $args{'Group'}->Id );
+
+    while ( my $parent_member = $cgm->Next ) {
+        my $parent_id = $parent_member->MemberId;
+        my $via       = $parent_member->Id;
+        my $group_id  = $parent_member->GroupId;
+
+          my $other_cached_member =
+          RT::CachedGroupMember->new( $self->CurrentUser );
+        my $other_cached_id = $other_cached_member->Create(
+            Member          => $args{'Member'},
+                      Group => $parent_member->GroupObj,
+            ImmediateParent => $parent_member->MemberObj,
+            Via             => $parent_member->Id
+        );
+        unless ($other_cached_id) {
+            $RT::Logger->err( "Couldn't add " . $args{'Member'}
+                  . " as a submember of a supergroup" );
+            $RT::Handle->Rollback();
+            return (undef);
+        }
+    } 
+
     unless ($cached_id) {
         $RT::Handle->Rollback();
         return (undef);
@@ -142,22 +154,6 @@ sub Create {
     $RT::Handle->Commit();
 
     return ($id);
-}
-
-# }}}
-
-# {{{ sub Add
-
-=head2 Add
-
-Takes a paramhash of UserId and GroupId.  makes that user a memeber
-of that group
-
-=cut
-
-sub Add {
-    my $self = shift;
-    return ( $self->Create(@_) );
 }
 
 # }}}
@@ -242,8 +238,7 @@ sub MemberObj {
     return ( $self->{'Member_obj'} );
 }
 
-# }}
-
+# }}}
 
 # {{{ sub GroupObj
 
@@ -262,7 +257,7 @@ sub GroupObj {
     return ( $self->{'Group_obj'} );
 }
 
-# }}
+# }}}
 
 1;
 

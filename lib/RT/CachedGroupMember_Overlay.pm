@@ -3,6 +3,8 @@
 
 no warnings qw(redefine);
 
+# {{{ Create
+
 =item Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
@@ -84,6 +86,10 @@ sub Create {
 
 }
 
+# }}}
+
+# {{{ Delete
+
 =head2 Delete
 
 Deletes the current CachedGroupMember from the group it's in and cascades 
@@ -123,6 +129,44 @@ sub Delete {
 
 }
 
+# }}}
+
+# {{{ GroupObj
+
+=head2 GroupObj  
+
+Returns the RT::Principal object for this group Group
+
+=cut
+
+sub GroupObj {
+    my $self      = shift;
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    $principal->Load( $self->GroupId );
+    return ($principal);
+}
+
+# }}}
+
+# {{{ ImmediateParentObj
+
+=head2 ImmediateParentObj  
+
+Returns the RT::Principal object for this group ImmediateParent
+
+=cut
+
+sub ImmediateParentObj {
+    my $self      = shift;
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    $principal->Load( $self->ImmediateParentId );
+    return ($principal);
+}
+
+# }}}
+
+# {{{ MemberObj
+
 =head2 MemberObj  
 
 Returns the RT::Principal object for this group member
@@ -136,5 +180,5 @@ sub MemberObj {
     return ($principal);
 }
 
-
+# }}}
 1;

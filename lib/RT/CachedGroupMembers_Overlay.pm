@@ -100,4 +100,26 @@ sub LimitToMembersOfGroup {
 }
 # }}}
 
+# {{{ sub LimitToGroupsWithMember
+
+=head2 LimitToGroupsWithMember PRINCIPAL_ID
+
+Takes a Principal Id as its only argument. 
+Limits the current search to groups which contain PRINCIPAL_ID as a member  or submember.
+This function gets used by GroupMember->Create to populate subgroups
+
+=cut
+
+sub LimitToGroupsWithMember {
+    my $self = shift;
+    my $member = shift;
+
+    return ($self->Limit( 
+                         VALUE => $member,
+                         FIELD => 'MemberId',
+                         ENTRYAGGREGATOR => 'OR',
+                         ));
+
+}
+# }}}
 1;
