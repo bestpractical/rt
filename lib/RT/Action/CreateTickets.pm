@@ -845,14 +845,14 @@ sub GetUpdateTemplate {
 	$string .= "$type: ";
 
 	my $mode = $LINKTYPEMAP{$type}->{Mode};
-	my $foo = $LINKTYPEMAP{$type}->{Type};
+	my $method = $LINKTYPEMAP{$type}->{Type};
 
 	my $links;
-	while (my $link = $t->$foo->Next) {
+	while (my $link = $t->$method->Next) {
 	    $links .= ", " if $links;
 
-	    my $method = $mode . "Obj";
-	    my $member = $link->$method;
+	    my $object = $mode . "Obj";
+	    my $member = $link->$object;
 	    $links .= $member->Id if $member;
 	}
 	$string .= $links;
