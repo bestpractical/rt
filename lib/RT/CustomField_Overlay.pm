@@ -493,7 +493,7 @@ sub CurrentUserHasRight {
     my $right = shift;
     # if there's no queue, we want to know about a global right
     if ( ( !defined $self->__Value('Queue') ) || ( $self->__Value('Queue') == 0 ) ) {
-         return $self->CurrentUser->HasRight( Object => $RT::System, Right => '$right'); 
+         return $self->CurrentUser->HasRight( Object => $RT::System, Right => $right); 
     } else {
         return ( $self->QueueObj->CurrentUserHasRight($right) );
     }
