@@ -63,6 +63,9 @@ if ($TicketObj) {
 elsif ($QueueObj) {
         @objects = ($QueueObj);
 } 
+elsif ($cfqueues) {
+	@objects = keys %{$cfqueues};
+}
 else {
         my $Queues = RT::Queues->new($session{CurrentUser});
 	$Queues->UnLimit();
@@ -94,4 +97,5 @@ $User => undef
 $TicketObj => undef
 $DefaultValue => 1
 $DefaultLabel => "-"
+$cfqueues => undef
 </%ARGS>

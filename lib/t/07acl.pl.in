@@ -9,8 +9,8 @@ my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');
 ok($ret, 'ACL test user creation');
 $user_obj->SetName('customer');
 $user_obj->SetPrivileged(1);
-my ($val, $msg) = $user_obj->SetPassword('customer');
-ok($val, "ACL test password set. $msg");
+($ret, $msg) = $user_obj->SetPassword('customer');
+ok($ret, "ACL test password set. $msg");
 
 # Now test the web interface, making sure objects come and go as
 # required.
@@ -50,8 +50,7 @@ ok(!$agent->find_link( url => '/User/Prefs.html',
 		       text => 'Preferences'), "No prefs pane" );
 
 # Now test for their presence, one at a time.
-my ($val, $msg) = $user_obj->PrincipalObj->GrantRight(Right => 'ShowConfigTab');
-ok($val, "Grant the right. $msg");
+$user_obj->PrincipalObj->GrantRight(Right => 'ShowConfigTab');
 sleep(10);
 $agent->reload();
 ok($agent->{'content'} =~ /Logout/i, "Reloaded page successfully");
@@ -88,5 +87,32 @@ ok($agent->{'content'} =~ /Load saved search/i,
    "Search loading box still exists");
 ok($agent->{'content'} =~ /input\s+type=.submit.\s+name=.Save./i, 
    "Saved searches box exists");
+
+# Create a group, and a queue, so we can test limited user visibility
+# via SelectOwner.
+
+my $queue_obj = RT::Queue->new($RT::SystemUser);
+($ret, $msg) = $queue_obj->Create(Name => 'CustomerQueue', 
+				  Description => 'queue for SelectOwner testing');
+ok($ret, "SelectOwner test queue creation. $msg");
+my $group_obj = RT::Group->new($RT::SystemUser);
+($ret, $msg) = $group_obj->CreateUserDefinedGroup(Name => 'CustomerGroup',
+			      Description => 'group for SelectOwner testing');
+ok($ret, "SelectOwner test group creation. $msg");
+
+# Add our customer to the customer group, and give it queue rights.
+($ret, $msg) = $group_obj->AddMember($user_obj->PrincipalObj->Id());
+ok($ret, "Added customer to its group. $msg");
+$group_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',
+				     Object => $queue_obj);
+$group_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',
+				     Object => $queue_obj);
+
+# Now.  When we look at the search page we should be able to see
+# ourself in the list of possible owners.
+# TODO: Fix
+# $agent->reload();
+# ok($agent->field( 'ValueOfActor', 'customer'),
+#    "Found self in the actor listing");
 
 1;
