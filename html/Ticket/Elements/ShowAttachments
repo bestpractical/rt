@@ -63,6 +63,7 @@ my %documents;
 my $transactions = $Ticket->Transactions();
 while (my $trans = $transactions->Next()) {
         my $attachments = $trans->Attachments();
+        $attachments->Columns( qw( Id TransactionId Filename Created Headers ) );
         while (my $attach = $attachments->Next()) {
               next unless ($attach->Filename());
               # most recent at the top

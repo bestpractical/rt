@@ -38,8 +38,6 @@
 unless ($Collapsed) {
  $attachments->GotoFirstItem;
  while (my $message=$attachments->Next) {
-     #we don't want to show any empty transactions, unless they have kids
-     next unless ($message->ContentLength || $message->Children->Count);
 
   my ($headers, $quoted);
       if ($ShowHeaders && ($ShowHeaders == $Ticket->Id)) {
@@ -90,7 +88,7 @@ unless ($Collapsed) {
 <BR>
 % }
 <%PERL>
-my $size = $message->ContentLength;
+my $size = $message->ContentLength or next;
 
 if ($size) {
     if ($size > 1024) {
@@ -160,6 +158,7 @@ if ($Transaction->TimeTaken > 0) {
 	$TimeTaken = $Transaction->TimeTaken." min"
 }
 my $attachments = $Transaction->Attachments;
+$attachments->Columns( qw( Id Filename ContentType Headers Subject ) );
 
 my $titlebar_commands='&nbsp;';
 
