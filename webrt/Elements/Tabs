@@ -38,7 +38,7 @@ my $toptabs = {    A => { title => 'Home',
                            path => 'Ticket/Create.html'
                       },
                     D => { title => 'Administration',
-                           path => 'Admin'
+                           path => 'Admin/'
                          }
                  };
                     

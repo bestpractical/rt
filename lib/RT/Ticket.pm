@@ -223,7 +223,7 @@ sub Create {
     #to own a ticket, scream about it and make them not the owner
     if ((defined ($Owner)) and
 	($Owner->Id != $RT::Nobody->Id) and 
-	(!$self->HasRight(Principal => $Owner, Right => 'OwnTicket'))) {
+	(!$Owner->HasQueueRight( QueueObj => $Queue,  Right => 'OwnTicket'))) {
 	
 	$RT::Logger->warning("$self user ".$Owner->UserId . "(".$Owner->id .") was proposed ".
 			     "as a ticket owner but has no rights to own ".
@@ -545,15 +545,8 @@ sub RequestorsAsString {
 
 =head2 WatchersAsString
 
-WatchersAsString ...
-
-=item B<Takes>
-
-=item I<nothing>
-
-=item B<Returns>
-
-=item String: All Ticket/Queue Watchers.
+B<Takes> I<nothing>
+B<Returns> String: All Ticket/Queue Watchers.
 
 =cut
 
@@ -579,8 +572,8 @@ sub WatchersAsString {
 sub AdminCcAsString {
     my $self=shift;
     return _CleanAddressesAsString ($self->AdminCc->EmailsAsString() . ", " .
-		  $self->QueueObj->AdminCc->EmailsAsString());
-  }
+				    $self->QueueObj->AdminCc->EmailsAsString());
+}
 
 =head2 CcAsString
 
@@ -597,7 +590,7 @@ sub AdminCcAsString {
 sub CcAsString {
     my $self=shift;
     return _CleanAddressesAsString ($self->Cc->EmailsAsString() . ", ".
-		  $self->QueueObj->Cc->EmailsAsString());
+				    $self->QueueObj->Cc->EmailsAsString());
 }
 
 =head2 _CleanAddressesAsString
@@ -634,21 +627,19 @@ Returns this ticket's Requestors as an RT::Watchers object
 =cut
 
 sub Requestors {
-  my $self = shift;
-
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
-    return (0, "Permission Denied");
-  }
-  require RT::Watchers;
-
-  if (! defined ($self->{'Requestors'})) {
+    my $self = shift;
     
-    $self->{'Requestors'} = RT::Watchers->new($self->CurrentUser);
-    $self->{'Requestors'}->LimitToTicket($self->id);
-    $self->{'Requestors'}->LimitToRequestors();
-  }
-  return($self->{'Requestors'});
-  
+    
+  require RT::Watchers;
+    
+    if (! defined ($self->{'Requestors'})) {
+	
+	$self->{'Requestors'} = RT::Watchers->new($self->CurrentUser);
+	$self->{'Requestors'}->LimitToTicket($self->id);
+	$self->{'Requestors'}->LimitToRequestors();
+    }
+    return($self->{'Requestors'});
+    
 }
 
 # }}}
@@ -666,9 +657,6 @@ sub Cc {
   my $self = shift;
 
   
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
-    return (0, "Permission Denied");
-  }
 
   if (! defined ($self->{'Cc'})) {
     require RT::Watchers;
@@ -694,9 +682,6 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 sub AdminCc {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('ShowTicket')) {
-    return (0, "Permission Denied");
-  }
   if (! defined ($self->{'AdminCc'})) {
     require RT::Watchers;
     $self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
@@ -724,23 +709,23 @@ is a ticket watcher. Returns undef otherwise
 =cut
 
 sub IsWatcher {
-my $self = shift;
-
-my @args = (Type => 'Requestor',
-	    User => undef);
-
-
-$RT::Logger->warning( "Ticket::IsWatcher unimplemented");
-return (0);
-#TODO Implement. this sub should perform an SQL match along the lines of the ACL check
-
+    my $self = shift;
+    
+    my @args = (Type => 'Requestor',
+		User => undef);
+    
+    
+    $RT::Logger->warning( "Ticket::IsWatcher unimplemented");
+    return (undef);
+    #TODO Implement. this sub should perform an SQL match along the lines of the ACL check
+    
 }
 # }}}
 
 # {{{ sub IsRequestor
 =head2 IsRequestor
-
-Takes a string. Returns true if the string is a requestor of the current ticket.
+  
+  Takes a string. Returns true if the string is a requestor of the current ticket.
 
 =item Bugs
 
@@ -748,29 +733,30 @@ Should also be able to handle an RT::User object
 
 =cut
 sub IsRequestor {
-  my $self = shift;
-  my $whom = shift;
-
-  my $mail;
-
-  #TODO uncomment the line below and blow away the rest of the sub once IsWatcher is done.
-  #return ($self->IsWatcher(Type => 'Requestor', Id => $whom);
-
-  if (ref $whom eq "Mail::Address") {
-    $mail=$whom->Address;
-  } elsif (ref $whom eq "RT::User") {
-    $mail=$whom->EmailAddress;
-  } elsif (!ref $whom) {
-    $mail=$whom;
+    my $self = shift;
+    my $whom = shift;
+    
+    my $mail;
+    
+    #TODO uncomment the line below and blow away the rest of the sub once IsWatcher is done.
+    #return ($self->IsWatcher(Type => 'Requestor', Id => $whom);
+    
+    if (ref $whom eq "Mail::Address") {
+	$mail=$whom->Address;
+    } elsif (ref $whom eq "RT::User") {
+	$mail=$whom->EmailAddress;
+    } elsif (!ref $whom) {
+	$mail=$whom;
+    }
+    
+    #if the requestors string contains the username
+    if ($self->RequestorsAsString() =~ /$mail/) {
+	$RT::Logger->error("IsRequestor is dangerously broken!\n");
+      return(1);
   }
-  
-  #if the requestors string contains the username
-  if ($self->RequestorsAsString() =~ /$mail/) {
-    return(1);
-  }
-  else {
-    return(undef);
-  }
+    else {
+	return(undef);
+    }
 };
 
 # }}}
@@ -812,6 +798,31 @@ sub IsAdminCc {
 }
 
 # }}}
+
+# {{{ sub IsOwner
+
+=head2 IsOwner
+
+  Takes an RT::User object. Returns true if that user is this ticket's owner.
+returns undef otherwise
+
+=cut
+
+sub IsOwner {
+    my $self = shift;
+    my $person = shift;
+
+
+    #TODO not implemented yet
+    return(undef);
+    if ($person->Id == $self->OwnerObj->id) {
+	return(1);
+    }
+    else {
+	return(undef);
+    }
+}
+
 
 # }}}
 
@@ -894,16 +905,19 @@ Takes nothing. returns this ticket's queue object
 =cut
 
 sub QueueObj {
-  my $self = shift;
-  if (!defined $self->{'queue'})  {
-    require RT::Queue;
-    $self->{'queue'} = RT::Queue->new($self->CurrentUser)
-      or die "RT::Queue->new(". $self->CurrentUser. ") returned false";
-    #We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
-    my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
-
-  }
-  return ($self->{'queue'});
+    my $self = shift;
+    if (!defined $self->{'queue'})  {
+	require RT::Queue;
+	if (!($self->{'queue'} = RT::Queue->new($self->CurrentUser))) {
+	    $RT::Logger->Crit("RT::Queue->new(". $self->CurrentUser. 
+			      ") returned false");
+	    return(undef);
+	}	
+	#We call SUPER::_Value so that we can avoid the ACL decision and some deep recursion
+	my ($result) = $self->{'queue'}->Load($self->SUPER::_Value('Queue'));
+	
+    }
+    return ($self->{'queue'});
 }
 
 
@@ -1635,14 +1649,17 @@ this ticket's owner
 sub OwnerObj {
     my $self = shift;
     
-    #TODO This needs ACLs ++
-    if (!defined ($self->_Value('Owner'))) {return (undef);}
+
+    #If this gets ACLed, we lose on a rights check in User.pm and
+    #get deep recursion. if we need ACLs here, we need
+    #an equiv without ACLs
+    if (!defined ($self->SUPER::_Value('Owner'))) {return (undef);}
     
     #If the owner object ain't loaded yet
     if (! exists $self->{'owner'})  {
 	require RT::User;
 	$self->{'owner'} = new RT::User ($self->CurrentUser);
-	$self->{'owner'}->Load($self->_Value('Owner'));
+	$self->{'owner'}->Load($self->SUPER::_Value('Owner'));
     }
     
     
@@ -1684,8 +1701,10 @@ sub SetOwner {
   my $NewOwner = shift;
   my $Type = shift || "Give";
   my ($NewOwnerObj);
-
-   $RT::Logger->debug("in RT::Ticket->SetOwner()");
+  
+  #TODO: +++ check CurrentUser's ACL here.
+  
+  $RT::Logger->debug("in RT::Ticket->SetOwner()");
   
   $NewOwnerObj = RT::User->new($self->CurrentUser);
   my $OldOwnerObj = $self->OwnerObj;
@@ -1705,7 +1724,7 @@ sub SetOwner {
   #If we've specified a new owner and that user can't modify the ticket
   elsif (($NewOwnerObj) and 
 	 (!$NewOwnerObj->HasQueueRight(Right => 'OwnTickets',
-					QueueObj => $self->QueueObj))
+				       QueueObj => $self->QueueObj))
 	) {
       return (0, "That user may not own requests in that queue");
   }
@@ -1779,10 +1798,7 @@ current user. Even if it's owned by another user.
 sub Steal {
   my $self = shift;
   
-  if (!$self->CurrentUserHasRight('ModifyTicket')){
-      return (0,"Permission Denied");
-  }
-  elsif ($self->OwnerObj->Id eq $self->CurrentUser->Id ) {
+   if ($self->OwnerObj->Id eq $self->CurrentUser->Id ) {
       return (0,"You already own this ticket"); 
   }
   else {
@@ -1814,6 +1830,8 @@ sub SetStatus {
   if ($action eq 'huh?') {
     return (0,"The status '$status' is not valid.");
   }
+
+  #TODO check ACL
 
   my $now = new RT::Date($self->CurrentUser);
   $now->SetToNow();
@@ -2033,8 +2051,10 @@ sub _Set {
 	     );
   #if the user is trying to modify the record
   
-  #Take care of the old value we really don't want to get in an ACL loop. so ask the super::_Value
+  #Take care of the old value we really don't want to get in an ACL loop.
+  # so ask the super::_Value
   my $Old=$self->SUPER::_Value("$args{'Field'}");
+
   #Set the new value
   my ($ret, $msg)=$self->SUPER::_Set(Field => $args{'Field'}, 
 				     Value=> $args{'Value'});
@@ -2152,15 +2172,15 @@ sub HasRight {
 	my %args = ( Right => undef,
 		     Principal => undef,
 	 	     @_);
-
-	unless ((defined $args{'Principal'}) and (ref($args{'Principal'}))) {
-		$RT::Logger->warning("Principal attrib undefined for Ticket::HasRight");
-	}
-       
-	return($args{'Principal'}->HasQueueRight(QueueObj => $self->QueueObj, 
-						  Right => $args{'Right'}));
-	
-	    
+    
+    unless ((defined $args{'Principal'}) and (ref($args{'Principal'}))) {
+	$RT::Logger->warning("Principal attrib undefined for Ticket::HasRight");
+    }
+    
+    return($args{'Principal'}->HasQueueRight(TicketObj => $self,
+					     Right => $args{'Right'}));
+    
+    
 }
 
 # }}}

@@ -235,8 +235,9 @@ Returns a watchers object which contains this ticket's Cc watchers
 sub Cc {
   my $self = shift;
 
-  return (0, "Permission Denied")
-    unless ($self->CurrentUserHasRight('ExploreQueue'));
+#If we ACL this, we lose on ACL checks
+#  return (0, "Permission Denied")
+#    unless ($self->CurrentUserHasRight('ExploreQueue'));
 
 
   if (! defined ($self->{'Cc'})) {
@@ -263,9 +264,11 @@ Returns this ticket's administrative Ccs as an RT::Watchers object
 sub AdminCc {
   my $self = shift;
   
-  unless ($self->CurrentUserHasRight('ExploreQueue')) {
-    return (0, "Permission Denied");
-  }
+#If we ACL this, we lose on ACL checks
+#  unless ($self->CurrentUserHasRight('ExploreQueue')) {
+#    return (0, "Permission Denied");
+#  }
+
   if (! defined ($self->{'AdminCc'})) {
     require RT::Watchers;
     $self->{'AdminCc'} = new RT::Watchers ($self->CurrentUser);
@@ -294,10 +297,11 @@ sub IsWatcher {
     my @args = (Type => 'Cc',
 		User => undef);
     
-    return (0, "Permission Denied")
-      unless ($self->CurrentUserHasRight('ExploreQueue'));
+#If we ACL this, we lose on ACL checks
+#    return (0, "Permission Denied")
+#      unless ($self->CurrentUserHasRight('ExploreQueue'));
     
-    $RT::Logger->warn( "Queue::IsWatcher unimplemented");
+    $RT::Logger->warning( "Queue::IsWatcher unimplemented");
     return (0);
     #TODO Implement. this sub should perform an SQL match along the lines of the ACL check
 

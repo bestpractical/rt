@@ -348,7 +348,7 @@ sub GrantSystemRight {
 
 Takes a paramhash which can contain
 three items:
-    TicketObj => RT::Ticket or QueueObj => RT::Queue
+    TicketObj => RT::Ticket or QueueObj => RT::Queue or Queue => integer
     and Right => 'Right' 
 
 
@@ -367,17 +367,43 @@ sub HasQueueRight {
 		 Right => undef,
 		 @_);
     
-    my ($QueueId);
+    my ($QueueId, $Requestor, $Cc, $AdminCc);
     
-    #Check to make sure that the ticketobj is really a ticketobject	
+
+    if (defined $args{'Queue'}) {
+	$args{'QueueObj'} = new RT::Queue($self->CurrentUser);
+	$args{'QueueObj'}->Load($args{'Queue'});
+    }
+
+
     if (defined $args{'QueueObj'}) {
 	$QueueId = $args{'QueueObj'}->Id;
+	
+	if ($args{'QueueObj'}->IsCc($self)) { #If user is a cc
+	    $IsCc = 1;
+	}
+	if ($args{'QueueObj'}->IsAdminCc($self)) { #If user is an admin cc
+	    $IsAdminCc = 1;
+	}
+	
     } 
     elsif (defined $args{'TicketObj'}) {
-	$QueueId = $args{'TicketObj'}->QueueObj->Id,
-    }
-    elsif (defined $args{'Queue'}) {
-	$QueueId = $args{'Queue'};
+
+	$QueueId = $args{'TicketObj'}->QueueObj->Id;
+	
+	if ($args{'TicketObj'}->IsRequestor($self)) {#user is requestor
+	    $IsRequestor = 1;
+	}	
+	if ($args{'TicketObj'}->IsCc($self)) { #If user is a cc
+	    $IsCc = 1;
+	}
+	if ($args{'TicketObj'}->IsAdminCc($self)) { #If user is an admin cc
+	    $IsAdminCc = 1;
+	}	
+	
+	if ($args{'TicketObj'}->IsOwner($self)) { #If user is an owner
+	    $IsOwner = 1;
+	}
     }
     
     else {
@@ -387,14 +413,24 @@ sub HasQueueRight {
     }
     
     my $retval = $self->_HasRight(Scope => 'Queue',
-				  AppliesTo => "$QueueId",
-				  Right => "$args{'Right'}");
+				  AppliesTo => $QueueId,
+				  Right => $args{'Right'},
+				  IsOwner => $IsOwner,
+				  IsCc => $IsCc,
+				  IsAdminCc => $IsAdminCc,
+				  IsRequestor => $IsRequestor
+				 );
     if (defined $retval) {
 	return ($retval);
     }
     #if they don't have the queue right, see if they have the system right.
     else {
-        $retval = $self->HasSystemRight( Right => "$args{'Right'}");
+        $retval = $self->HasSystemRight( Right => $args{'Right'},
+					 IsOwner => $IsOwner,
+					 IsCc => $IsCc,
+					 IsAdminCc => $IsAdminCc,
+					 IsRequestor => $IsRequestor
+				       );
         return ($retval);
     }
     
@@ -413,7 +449,11 @@ Returns 1 if this user has the listed 'right'. Returns undef if this user doesn'
 
 sub HasSystemRight {
     my $self = shift;
-    my %args = ( Right => 'undef',
+    my %args = ( Right => undef,
+		 IsOwner => undef,
+		 IsCc => undef,
+		 IsAdminCc => undef,
+		 IsRequestor => undef,
 		 @_);
     
     if (!defined $args{'Right'}) {
@@ -422,7 +462,13 @@ sub HasSystemRight {
     }	
     return ( $self->_HasRight ( Scope => 'System',
 				AppliesTo => '0',
-				Right => $args{'Right'})
+				Right => $args{'Right'},
+				IsOwner => $argS{'IsOwner'},
+				IsCc => $args{'IsCc'},
+				IsAdminCc => $args{'IsAdminCc'},
+				IsRequestor => $args{'IsRequestor'},
+				
+			      )
 	   );
     
 }
@@ -460,6 +506,10 @@ sub _HasRight {
     my %args = ( Right => undef,
 		 Scope => undef,
 		 AppliesTo => undef,
+		 IsRequestor => undef,
+		 IsCc => undef,
+		 IsAdminCc => undef,
+		 IsOwner => undef,
 		 ExtendedPrincipals => undef,
 		 @_);
     
@@ -480,6 +530,8 @@ sub _HasRight {
     	return(0)
     }
     elsif (!defined $args{'AppliesTo'}) {
+        use Carp;
+        $RT::Lobber->debug(Carp::confess."\n");
     	$RT::Logger->debug("_HasRight called without an AppliesTo object\n");
     	return(0)
     }
@@ -487,7 +539,7 @@ sub _HasRight {
     #If we've cached a win or loss for this lookup say so
     #TODO Security +++ check to make sure this is complete and right
     
-    if (defined ($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"})) {
+    if (defined($self->{'rights'}{"$args{'Right'}"}{"$args{'Scope'}"}{"$args{'AppliesTo'}"})) {
 	$RT::Logger->debug("Got a cached ACL decision for ". 
 			   $args{'Right'}.$args{'Scope'}.
 			   $args{'AppliesTo'}."\n");	    
@@ -528,9 +580,34 @@ sub _HasRight {
 	" (GroupMembers.UserId = ".$self->Id."))";
     
     
+    # A bunch of magic statements that make the metagroups listed
+    # work. basically, we if the user falls into the right group,
+    # we add the type of ACL check needed
+    if ($args{'IsAdminCc'}) {
+	$GroupPrincipalsClause .= " OR ((Groups.Name = 'AdminCc') AND 
+                                       (PrincipalType = 'Group') AND 
+                                       (Groups.Id = PrincipalId))";
+    }
+    if ($args{'IsCc'}) {
+	$GroupPrincipalsClause .= " OR ((Groups.Name = 'Cc') AND 
+                                       (PrincipalType = 'Group') AND 
+                                       (Groups.Id = PrincipalId))";
+    }
+    if ($args{'IsRequestor'}) {
+	$GroupPrincipalsClause .= " OR ((Groups.Name = 'Requestor') AND 
+                                       (PrincipalType = 'Group') AND 
+                                       (Groups.Id = PrincipalId))";
+    }
+    if ($args{'IsOwner'}) {
+	$GroupPrincipalsClause .= "OR ((Groups.Name = 'Owner') AND 
+                                       (PrincipalType = 'Group') AND 
+                                       (Groups.Id = PrincipalId))";
+    }
+
+
     # This query checks to se whether the user has the right as a member of a
     # group
-    my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers WHERE ".
+    my $query_string_1 = "SELECT COUNT(ACL.id) FROM ACL, GroupMembers, Groups WHERE ".
       " (((($ScopeClause) AND ($RightClause)) OR ($SuperUserClause)) ".
 	" AND ($GroupPrincipalsClause))";    
     
