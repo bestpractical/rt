@@ -265,7 +265,12 @@ sub InitLogging {
 ## Mason).  It will log all problems through the standard logging
 ## mechanism (see above).
 
-$SIG{__WARN__} = sub {$RT::Logger->warning($_[0])};
+$SIG{__WARN__} = sub {
+    # The 'wide character' warnings has to be silenced for now, at least
+    # until HTML::Mason offers a sane way to process both raw output and
+    # unicode strings.
+    $RT::Logger->warning($_[0]) if index($_[0], 'Wide character in ') != 0;
+};
 
 #When we call die, trap it and log->crit with the value of the die.
 

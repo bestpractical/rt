@@ -48,17 +48,13 @@ $Format
 </%ARGS>
 
 <%init>
-use Regexp::Common qw(delimited);
+use Regexp::Common;
 my @Columns;
-#my $quoted = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
-my $justquoted = qr[$RE{delimited}{-delim=>qq{\'\"}}];
-#my $quoted =        $RE{quoted}{-esc};
-my $word = qr [(?:\{|\}|\w|\.)+];
 
-while ($Format =~ /($justquoted|$word)/igx) {
+while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     my $col = $1;
 
-    if ($col =~ /^$RE{quoted}{-esc}$/) {
+    if ($col =~ /^$RE{quoted}$/o) {
         substr($col,0,1) = "";
         substr($col,-1,1) = "";
     }

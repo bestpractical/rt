@@ -47,7 +47,7 @@
 <HTML>
 <HEAD>
 <TITLE><%$Title%></TITLE>
-% if ($Refresh > 0) {
+% if ($Refresh) {
 <META HTTP-EQUIV="REFRESH" CONTENT="<%$Refresh%>">
 % }
 
@@ -88,7 +88,7 @@ ONLOAD="
 % }
 <& /Elements/Callback, %ARGS &>
 % unless ($RT::WebExternalAuth and !$RT::WebFallbackToInternalAuth) {
-| <A  HREF="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL && "?URL=".$URL%>"><&|/l&>Logout</&></a>
+| <A  HREF="<%$RT::WebPath%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
 % }
 <BR>
 <&|/l, "<b>".$session{'CurrentUser'}->Name."</b>" &>Logged in as [_1]</&>

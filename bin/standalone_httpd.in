@@ -117,7 +117,7 @@ sub main_loop {
             my ( $method, $request_uri, $proto, undef ) = split;
 
             #$request_uri =~ s#\\#/#g;
-            $RT::Logger->info("<- $peername: $_");
+            $RT::Logger->info("<- $peername: $_\n");
             my ( $file, undef, $query_string ) =
               ( $request_uri =~ /([^?]*)(\?(.*))?/ );    # split at ?
             #$file =~ s/%([\dA-Fa-f]{2})/chr(hex($1))/eg;  # decode url-escaped entities
