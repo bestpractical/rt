@@ -142,19 +142,24 @@ sub Create {
 
     require RT::ScripAction;
     my $action = new RT::ScripAction( $self->CurrentUser );
-    $action->Load( $args{'ScripAction'} || '0' );
+    if ($args{'ScripAction'}) {
+        $action->Load( $args{'ScripAction'});
+    }
     return ( 0, $self->loc( "Action [_1] not found", $args{'ScripAction'} ) )
       unless $action->Id;
 
     require RT::Template;
     my $template = new RT::Template( $self->CurrentUser );
-    $template->Load( $args{'Template'}||'0' );
+    if ($args{'Template'} ) {
+        $template->Load( $args{'Template'});
+    }
     return ( 0, $self->loc('Template not found') ) unless $template->Id;
 
     require RT::ScripCondition;
     my $condition = new RT::ScripCondition( $self->CurrentUser );
-    $condition->Load( $args{'ScripCondition'}||'0' );
-
+    if ($args{'ScripCondition'} ) {
+        $condition->Load( $args{'ScripCondition'} );
+    }
     unless ( $condition->Id ) {
         return ( 0, $self->loc('Condition not found') );
     }
@@ -256,13 +261,16 @@ Retuns an RT::ScripCondition object with this Scrip's IsApplicable
 
 sub ConditionObj {
     my $self = shift;
-    
-    unless (defined $self->{'ScripConditionObj'})  {
-	require RT::ScripCondition;
-	$self->{'ScripConditionObj'} = RT::ScripCondition->new($self->CurrentUser);
-	$self->{'ScripConditionObj'}->Load($self->ScripCondition);
+
+    unless ( defined $self->{'ScripConditionObj'} ) {
+        require RT::ScripCondition;
+        $self->{'ScripConditionObj'} =
+          RT::ScripCondition->new( $self->CurrentUser );
+        if ( $self->ScripCondition ) {
+            $self->{'ScripConditionObj'}->Load( $self->ScripCondition );
+        }
     }
-    return ($self->{'ScripConditionObj'});
+    return ( $self->{'ScripConditionObj'} );
 }
 
 # }}}

@@ -348,6 +348,11 @@ sub HasRight {
             next unless (UNIVERSAL::can($obj, 'id'));
             my $type = ref($obj);
             my $id = $obj->id;
+
+            unless ($id) {
+                use Carp;
+                $RT::Logger->crit(Carp::cluck("Trying to check $type rights for an unspecified $type"));
+            }
             push @look_at_objects, "(ACL.ObjectType = '$type' AND ACL.ObjectId = '$id')"; 
             }
 

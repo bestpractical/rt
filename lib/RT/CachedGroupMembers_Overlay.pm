@@ -136,8 +136,10 @@ sub LimitToGroupsWithMember {
     my $self = shift;
     my $member = shift;
 
+    
+
     return ($self->Limit( 
-                         VALUE => $member,
+                         VALUE => $member || '0',
                          FIELD => 'MemberId',
                          ENTRYAGGREGATOR => 'OR',
 			            QUOTEVALUE => 0

@@ -322,7 +322,7 @@ sub MemberObj {
     my $self = shift;
     unless ( defined( $self->{'Member_obj'} ) ) {
         $self->{'Member_obj'} = RT::Principal->new( $self->CurrentUser );
-        $self->{'Member_obj'}->Load( $self->MemberId );
+        $self->{'Member_obj'}->Load( $self->MemberId ) if ($self->MemberId);
     }
     return ( $self->{'Member_obj'} );
 }

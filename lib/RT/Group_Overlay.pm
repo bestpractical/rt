@@ -327,8 +327,6 @@ sub LoadSystemInternalGroup {
     my $identifier = shift;
 
         $self->LoadByCols( "Domain" => 'SystemInternal',
-                           "Instance" => '',
-                           "Name" => '',
                            "Type" => $identifier );
 }
 
@@ -350,7 +348,7 @@ Takes a param hash with 2 parameters:
 
 sub LoadTicketRoleGroup {
     my $self       = shift;
-    my %args = (Ticket => undef,
+    my %args = (Ticket => '0',
                 Type => undef,
                 @_);
         $self->LoadByCols( Domain => 'RT::Ticket-Role',
@@ -1006,6 +1004,10 @@ sub HasMember {
     unless (UNIVERSAL::isa($principal,'RT::Principal')) {
         $RT::Logger->crit("Group::HasMember was called with an argument that".
                           "isn't an RT::Principal. It's $principal");
+        return(undef);
+    }
+
+    unless ($principal->Id) {
         return(undef);
     }
 

@@ -88,7 +88,7 @@ sub Create {
                               Via               => $args{'Via'}, );
 
     unless ($id) {
-        $RT::Logger->warn( "Couldn't create "
+        $RT::Logger->warning( "Couldn't create "
                            . $args{'Member'}
                            . " as a cached member of "
                            . $args{'Group'}->Id . " via "
@@ -98,7 +98,7 @@ sub Create {
     if ( $self->__Value('Via') == 0 ) {
         my ( $vid, $vmsg ) = $self->__Set( Field => 'Via', Value => $id );
         unless ($vid) {
-            $RT::Logger->warn( "Due to a via error, couldn't create "
+            $RT::Logger->warning( "Due to a via error, couldn't create "
                                . $args{'Member'}
                                . " as a cached member of "
                                . $args{'Group'}->Id . " via "

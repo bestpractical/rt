@@ -866,6 +866,9 @@ sub IsWatcher {
 
     my $principal = RT::Principal->new($self->CurrentUser);
     $principal->Load($args{'PrincipalId'});
+    unless ($principal->Id) {
+        return (undef);
+    }
 
     return ($group->HasMemberRecursively($principal));
 }

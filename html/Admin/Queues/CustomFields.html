@@ -32,7 +32,8 @@
 <& /Admin/Elements/EditCustomFields, title => $title, %ARGS &>
 <%INIT>
 my $Queue = new RT::Queue($session{'CurrentUser'});
-$Queue->Load($id);
+$Queue->Load($id) || Abort(loc("Couldn't load queue", $id));
+
 my $CustomFields = RT::CustomFields->new($RT::SystemUser);
 $CustomFields->LimitToQueue($Queue->Id);
 my $subtabs = {
