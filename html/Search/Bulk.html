@@ -130,8 +130,10 @@ while (my $Ticket = $session{'tickets'}->Next) {
  </table>
 <& /Elements/TitleBoxEnd &>
 
-
-
+<& /Elements/TitleBoxStart, title => loc('Edit Relationships'), color => "#336633"&>
+<i><&|/l&>Enter tickets or URIs to link tickets to. Seperate multiple entries with spaces.</&></i><br>
+<& /Ticket/Elements/BulkLinks &>
+<& /Elements/TitleBoxEnd &>
 
 <& /Elements/Submit &>
 
@@ -161,6 +163,7 @@ if ($ARGS{'UpdateContent'} &&
 }
 
 #Iterate through each ticket we've been handed
+my @linkresults;
 
 while (my $Ticket = $session{'tickets'}->Next) {
     $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
@@ -171,12 +174,31 @@ while (my $Ticket = $session{'tickets'}->Next) {
     my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
     #Update the watchers
     my @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+
+    #Update the links
+    $ARGS{'id'} = $Ticket;
+    $ARGS{$Ticket->Id.'-MergeInto'} = $ARGS{'Ticket-MergeInto'};
+    $ARGS{$Ticket->Id.'-DependsOn'} = $ARGS{'Ticket-DependsOn'};
+    $ARGS{'DependsOn-'.$Ticket->Id} = $ARGS{'DependsOn-Ticket'};
+    $ARGS{$Ticket->Id.'-MemberOf'} = $ARGS{'Ticket-MemberOf'};
+    $ARGS{'MemberOf-'.$Ticket->Id} = $ARGS{'MemberOf-Ticket'};
+    $ARGS{$Ticket->Id.'-RefersTo'} = $ARGS{'Ticket-RefersTo'};
+    $ARGS{'RefersTo-'.$Ticket->Id} = $ARGS{'RefersTo-Ticket'};
+    @linkresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    delete $ARGS{'id'};
+    delete $ARGS{$Ticket->Id.'-MergeInto'};
+    delete $ARGS{$Ticket->Id.'-DependsOn'};
+    delete $ARGS{'DependsOn-'.$Ticket->Id};
+    delete $ARGS{$Ticket->Id.'-MemberOf'};
+    delete $ARGS{'MemberOf-'.$Ticket->Id};
+    delete $ARGS{$Ticket->Id.'-RefersTo'};
+    delete $ARGS{'RefersTo-'.$Ticket->Id};
     
     my @updateresults; 
     if ($do_comment_reply) {
     ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
    } 
-   my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults);
+   my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults, @linkresults);
     @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
 
     @results = (@results, @tempresults);
