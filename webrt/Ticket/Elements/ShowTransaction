@@ -1,4 +1,4 @@
-      <& /Elements/TitleBoxStart, title => $Transaction->Description, titleright=> "<a href=\"Update.html?id=".$Transaction->Ticket . "QuoteTransaction=".$Transaction->Id."\">[Reply / Comment / Spawn]</a>" &>
+      <& /Elements/TitleBoxStart, title => $Transaction->Description, titleright=> $RT::WebOptions{ExtraTransactionActions}->(Transaction=>$Transaction) . "<a href=\"Update.html?id=".$Transaction->Ticket . "&QuoteTransaction=".$Transaction->Id."\">[Reply / Comment / Spawn]</a>" &>
       
     <TABLE WIDTH="100%">
       <TR>

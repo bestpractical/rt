@@ -2,14 +2,14 @@
 if (defined ($user) && defined ($pass)){
 	#TODO if the password is the user's password
 	$session{'CurrentUser'} = new RT::CurrentUser();
+	$session{'CurrentUserLogin'}=$user;
 	$session{'CurrentUser'}->Load($user);
 
         $m->call_next;
 }
 elsif (defined $session{'CurrentUser'}){
 	$m->call_next;
-}
-else {
+} else {
 $m->comp('/Login.html')
  }
 </%PERL>

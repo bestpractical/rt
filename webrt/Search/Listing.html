@@ -98,7 +98,7 @@ if ($ARGS{'LimitStatus'}) {
 sub _cfg {
   my $args=shift;
   my $key=shift;
-  return $args->{$key} || $RT::SitePolicy{$key};
+  return $args->{$key} || $RT::WebOptions{$key};
 }
 
 
