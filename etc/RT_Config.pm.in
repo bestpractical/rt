@@ -279,6 +279,11 @@ Set($WebImagesURL , $WebURL . "NoAuth/images/");
 
 Set($LogoURL , $WebImagesURL . "rt.jpg");
 
+# WebNoAuthRegex - What portion of RT's URLspace should not require
+# authentication.
+Set($WebNoAuthRegex, qr!^(?:/+NoAuth/|
+                            /+REST/\d+\.\d+/NoAuth/)!x );
+
 # For message boxes, set the entry box width and what type of wrapping
 # to use.
 #
