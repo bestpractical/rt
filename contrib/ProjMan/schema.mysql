@@ -5,7 +5,8 @@
 # ProjMan is built over RT, Copyright 1996-1999 Jesse Reed Vencent <jesse@fsck.com>
 
 # {{{ Ticket extentions (Worktask table)
-CREATE TABLE Worktask (
+CREATE TABLE Worktasks (
+	
 	id int(11) PRIMARY KEY, # References Tickets!
 
 # Time estimates.  If a worktask consists of two subtasks, only the two
@@ -23,7 +24,7 @@ CREATE TABLE Worktask (
 # more delayed:
 
 	CurrTypTimeEst INT,
-	CurrMaxTimeEst INT,
+	CurrMaxTimeEst INT
 
 # If TimeWorked (in the Tickets table) is higher than CurrMaxTimeEst,
 # somebody is either not using this tool properly, or a very bad
