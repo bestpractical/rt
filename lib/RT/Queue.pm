@@ -20,6 +20,11 @@ use RT::Record;
 
 @ISA= qw(RT::Record);
 
+use vars (@STATUS);
+
+@STATUS = qw(new open stalled resolved dead); 
+
+
 # {{{  sub _Init 
 sub _Init  {
     my $self = shift;

@@ -115,6 +115,7 @@ sub Create {
 # }}}
 
 # {{{ sub KeywordObj
+
 =item KeywordObj 
 
 Returns an B<RT::Keyword> object of the Keyword associated with this ObjectKeyword.
@@ -130,6 +131,7 @@ sub KeywordObj {
 # }}}
 
 # {{{ sub KeywordSelectObj
+
 =item KeywordSelectObj 
 
 Returns an B<RT::KeywordSelect> object of the KeywordSelect associated with this ObjectKeyword.
