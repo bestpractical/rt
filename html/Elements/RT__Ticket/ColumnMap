@@ -202,11 +202,11 @@ $COLUMN_MAP = {
         attribute => 'Due',
         value     => sub { 
 	    my $date = $_[0]->DueObj;
-	    my $class;
 	    if ($date && $date->Unix > 0 && $date->Unix < time()) {
-		$class = 'overdue';
+		return '<span class="overdue">' . $date->AgeAsString . '</span>';
+	    } else {
+		return $date->AgeAsString;
 	    }
-	    return '<span class="' . $class . '">' . $date->AgeAsString . '</span>';
 	}
     },
     ResolvedRelative => {
