@@ -418,13 +418,14 @@ Queue Configuration
     &rt::ui::web::select_an_int($rt::queues{$queue_id}{default_final_prio},"final_prio");
     print "</td></tr></table>\n<BR>\n";
 
-    print "<h2>Request owner:</h2>\n";
+    print "<hr><h2>Notification</h2>";
+    print "<h3>Owner</h3>\n";
     print "<input type=\"checkbox\" name=\"m_owner_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_owner_trans});
     print "> Send email notification of each transaction<br>\n";
      
    
-    print "<h2>Queue members:</h2>";
+    print "<h3>Queue members</h3>";
    print "<input type=\"checkbox\" name=\"m_members_trans\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{m_members_trans});
     print ">Send email notification of each transaction<br>\n";
@@ -437,7 +438,7 @@ Queue Configuration
     print "CHECKED" if ($rt::queues{$queue_id}{m_members_comment});
     print ">Send copies of all comments<br>\n";
    
-    print "<h2>Requestors:</h2>"; 
+    print "<h3>Requestors</h3>"; 
   
     print "<i>(requestors will always be sent copies of all correspondence.)</i>\n<br>\n";
   
@@ -454,7 +455,8 @@ Queue Configuration
     print "<input type=\"checkbox\" name=\"allow_user_create\" ";
     print "CHECKED" if ($rt::queues{$queue_id}{allow_user_create});
     print ">Allow non-members to create requests<br>\n";
-
+    
+    print "<hr><H2>Areas</h2>\n";
  
     print "Delete the area <select name=\"delete_area\">
 <option value=\"\">None ";	
