@@ -130,7 +130,7 @@ instruct:
 	@echo "Congratulations. RT has been installed. "
 	@echo "(Now, create a queue, add some users and start resolving requests)"
 
-upgrade: libs-install nondestruct
+upgrade: libs-install config-replace nondestruct
 
 nondestruct: mux-links glimpse fixperms
 
@@ -205,7 +205,9 @@ mux-links: suid-wrapper
 	chmod 4755 $(RT_CGI_PATH)/nph-admin-webrt.cgi
 
 config-replace:
-	 $(PERL) -p -i.bak  -e "\
+	mv $(RT_ETC_PATH)/config.pm $(RT_ETC_PATH)/config.pm.old
+	cp -rp ./etc/config.pm $(RT_ETC_PATH)
+	$(PERL) -p -i -e "\
 	s'!!RT_PATH!!'$(RT_PATH)'g;\
         s'!!RT_TRANSACTIONS_PATH!!'$(RT_TRANSACTIONS_PATH)'g;\
         s'!!RT_TEMPLATE_PATH!!'$(RT_TEMPLATE_PATH)'g;\

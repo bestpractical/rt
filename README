@@ -67,6 +67,7 @@ GENERAL INSTALLATION
 3   Check over /tmp/rt/Makefile
 
 	There are many variables you NEED to customize for your site.
+	Even if you are just upgrading, you must set ALL variables.
 
 4a  FOR A NEW INSTALLATION: (If you don't have RT requests you want to keep)
 

@@ -4,7 +4,8 @@ WARNING:
 
 Since RT 0.9.1, the codebase and database format have undergone incompatible 
 changes.  This version of the installation package does NOT come with an easy
-upgrade path from 0.9.1 or before.  
+upgrade path from 0.9.1 or before.  However, the instructions below should make
+the upgrade possible.
 
 
 This version of RT should be significantly more stable than 0.9.1, but new 
@@ -15,14 +16,17 @@ forward to any comments you may have.
 	jrvincent@wesleyan.edu
 
 
-To upgrade from .9.1 to .9.6:
-	"mysqldump -c -t rt"  -- dump out the data from your old rt database
+To upgrade from .9.1 to a post-.9.4 version :
+	"mysqldump -c -t rt > (YOUR_RT_DUMP_FILE)"  
+	edit (YOUR_RT_DUMP_FILE) to remove the ACL line for "root"
+		(Something like 
+		 grep -v "INSERT INTO users VALUES ('root'" \
+			(YOUR_RT_DUMP_FILE) > (YOUR_RT_DUMP_FILE2)
+		 should do the trick
+	
 	copy your current RT installation to a safe location
+	        "mysqladmin drop rt"    
 	install a fresh copy of RT .9.8, as if for the first time
-	mysql rt < (YOUR_RT_DUMP_FILE)
+	mysql rt < (YOUR_RT_DUMP_FILE2)
 	copy your transaction tree back into place
 	copy rt/etc/templates/queues back into place
-
-To upgrade from any version newer than .9.1:
-	See the README
-
