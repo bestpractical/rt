@@ -46,8 +46,8 @@
 <&|/Elements/TitleBox,
     title => loc($search->Description, $rows),
     title_href => "Search/Results.html".$QueryString,
-    titleright => loc('Customize'),
-    titleright_href => $customize &>
+#    titleright => loc('Customize'),
+#    titleright_href => $customize &>
 <& /Elements/TicketList, %$SearchArg,
         Rows => $rows,
         ShowNavigation => 0
@@ -72,7 +72,7 @@ if ($SavedSearch) {
 }
 else {
     ($search) = RT::System->new($session{'CurrentUser'})->Attributes->Named('Search - '.$Name);
-    unless ($search->Id) {
+    unless ($search && $search->Id) {
 	$m->out ("Predefined search $Name not found");
 	return;
     }

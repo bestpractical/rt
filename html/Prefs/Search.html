@@ -44,12 +44,19 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs, 
-#    current_tab => "Search/Build.html".$QueryString, 
-    Title => $title, %$SearchArg
+<& /User/Elements/Tabs,
+    current_tab => 'Prefs/MyRT.html',
+    Title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
 <a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
+% if ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+<&|/l&>You can also edit the predefined search itself</&>:
+<a href="<% $RT::WebPath.'/Search/Build.html?'.
+	$m->comp('/Elements/QueryString',
+		 LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
+% }
+<br>
 <FORM METHOD="POST" ACTION="Search.html" NAME="BuildQuery">
 <input type=hidden name=name value="<%$ARGS{name}%>">
 <input type=hidden name=referer value="<%$ARGS{referer}%>">
@@ -74,7 +81,7 @@ Abort('No search specified')
 
 my $search = $class->new ($session{'CurrentUser'});
 $search->LoadById ($id);
-$title .= loc ($search->Description, 'N');
+$title .= loc ($search->Description, loc ('"N"'));
 my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg = $user->Preferences($search, $search->Content);
 for (@fields) {

@@ -166,7 +166,6 @@ $self => undef
 </%method>
 
 <%method show>
-<h2><% loc($name) %></h2>
 <FORM METHOD="POST" ACTION="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>">
 <input type="hidden" name="<% $self->{Name} %>-Submit" value="1">
 <& SelectionBox:current, self => $self &>

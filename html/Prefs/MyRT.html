@@ -44,8 +44,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs, 
-    current_toptab => '',
+<& /User/Elements/Tabs,
+    current_tab => 'Prefs/MyRT.html',
     Title => $title
 &>
 
@@ -53,20 +53,34 @@
 
 <& /Elements/ListActions, actions => \@actions &>
 <a href="<% $ARGS{'referer'} %>"><&|/l&>Go back</&></a><br>
+<p>
+<&|/Elements/TitleBox, title => loc('Predefined searches'), bodyclass => "" &>
+<ul>
+<li><a href="<% $RT::WebPath %>/Prefs/Quicksearch.html"><&|/l&>Quick search</&></a></li>
+% for my $search (@sys_searches) {
+<li><a href="<% $RT::WebPath.'/Prefs/Search.html?'.$m->comp('/Elements/QueryString', name => ref($search->[1]).'-'.$search->[1]->Id) %>"><% $search->[0] %></a></li>
+% }
+</ul>
+</&>
+
+<&|/Elements/TitleBox, title => loc('Quick search'), bodyclass => "" &>
+</&>
 
 % for my $pane (@panes) {
+<&|/Elements/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
 <& /Widgets/SelectionBox:show, self => $pane &>
+</&>
 % }
 <%INIT>
 my @actions;
 
-my $title = loc("Customize").' '.loc("My RT");
+my $title = loc("Customize").' '.loc("RT at a glance");
 my $user = $session{'CurrentUser'}->UserObj;
 $ARGS{'referer'} ||= $ENV{'HTTP_REFERER'};
 
 unless (exists $session{'my_rt_portlets'}) {
-    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('My RT');
-    $session{'my_rt_portlets'} = $user->Preferences('My RT', $d_portlets->Content);
+    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
+    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $d_portlets->Content);
 }
 
 my $portlets = $session{'my_rt_portlets'};
@@ -88,11 +102,13 @@ my $groups = RT::Groups->new($session{'CurrentUser'});
 $groups->LimitToUserDefinedGroups;
 $groups->WithMember(PrincipalId => $session{'CurrentUser'}->Id,
                     Recursively => 1);
+my @sys_searches;
 for my $object ($sys, $user, @{$groups->ItemsArrayRef()}) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
 	my ($desc, $search) = @$_;
 	if ($object eq $sys) {
-	    push @items, ["system-$desc", $desc],
+	    push @items, ["system-$desc", $desc];
+	    push @sys_searches, [$desc, $search];
 	}
 	else {
 	    my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
@@ -103,7 +119,7 @@ for my $object ($sys, $user, @{$groups->ItemsArrayRef()}) {
 
 my %item_map = map {$_->[0] => $_->[1]} @items;
 my @panes;
-for my $pane ('main', 'right') {
+for my $pane ('body', 'summary') {
     push @panes,
 	$m->comp ('/Widgets/SelectionBox:new',
 		  Action => 'MyRT.html',
@@ -116,7 +132,7 @@ for my $pane ('main', 'right') {
 				   { type => $1,
 				     name => $2,
 				 }} @{$sel->{Current}}];
-			$user->SetPreferences('My RT', $portlets);
+			$user->SetPreferences('HomepageSettings', $portlets);
 			push @actions, loc ('Preferences saved for [_1].', $pane);
 			delete $session{'my_rt_portlets'};
 
