@@ -93,6 +93,6 @@ $UserField => 'Name'
 $UserOp => '='
 $UserString => undef
 $GroupField => 'Name'
-GroupOp => '='
-GroupString => undef
+$GroupOp => '='
+$GroupString => undef
 </%ARGS>
