@@ -272,15 +272,28 @@ $LocalePath = "!!LOCALE_PATH!!";
 $Nobody=2;
 
 
-#TODO document this
+
+## This is the default handling of warnings and die'ings in the code
+## (including other used modules - maybe except for errors catched by
+## Mason).  It will log all problems through the standard logging
+## mechanism (see above).
+
 $SIG{__WARN__} = sub {$RT::Logger->log(level=>'warning',message=>$_[0])};
 
 #When we call die, trap it and log->crit with the value of the die.
 $SIG{__DIE__}  = sub {
     if ($^S) {
+
+	#if we died during an eval, it probably isn't that dangerous.
+	# -tobias
+	
 	$RT::Logger->log(level=>'warning',message=>"died during an eval: $_[0]");
+	  ## die here will lead to the default behaviour; quit the eval scope.
 	die @_;
     }
+
+  
+    ## If it's not during an eval, log it as a critical error and leave the program.
     $RT::Logger->log(level=>'crit',message=>$_[0]); 
     exit(-1);
 };
