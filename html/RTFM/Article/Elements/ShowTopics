@@ -26,13 +26,20 @@ Topics:
 %   my @path;
 %   my $t = $t->TopicObj;
 %   while ($t->Id) {
-%     unshift @path, $t->Name;
+%     unshift @path, $t;
 %     $t = $t->ParentObj;
 %   }
-%   push @topics, join(" : ", @path);
+%   push @topics, \@path;
 % }
 % for (sort @topics) {
-<li><% $_ %></li>
+<li>
+% for (@{$_}) {
+% if ($_->ParentObj->Id) {
+ : 
+% }
+<a href="<% $RT::WebPath %>/RTFM/Topics.html?class=<% $_->ObjectId %>&id=<% $_->Id %>"><% $_->Name %></a>
+% }
+</li>
 % }
 </ul>
 % } else {

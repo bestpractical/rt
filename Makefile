@@ -50,7 +50,7 @@ RELEASE_DIR		= /home/ftp/pub/rt/release
 
 
 
-upgrade: install-lib install-html install-lexicon
+upgrade: install-lib install-html install-lexicon upgrade-instruct
 install: upgrade initdb
 
 html-install: install-html
@@ -140,3 +140,13 @@ apachectl:
 	/usr/sbin/apachectl start
 
 
+upgrade-instruct:
+	@echo "Congratulations. RT/FM has been upgraded.  However,"
+	@echo "you should update RT/FM's system database objects by running "
+	@echo "   ls etc/upgrade"
+	@echo ""
+	@echo "For each item in that directory whose name is greater than"
+	@echo "your previously installed RT version, run:"
+	@echo "    $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action schema --datadir etc/upgrade/<version>"
+	@echo "    $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action acl --datadir etc/upgrade/<version>"
+	@echo "    $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action insert --datadir etc/upgrade/<version>"

@@ -43,7 +43,17 @@ Upgrade instructions (From an earlier 2.0.x release):
 
 3) Type "make upgrade"
 
-4) stop and start your web server
+4) Type "ls etc/upgrade"; For each item in that directory whose name
+   is greater than your previously installed RT version, run:
+
+            /opt/rt3/sbin/rt-setup-database --action schema \
+                --datadir etc/upgrade/<version>
+            /opt/rt3/sbin/rt-setup-database --action acl \
+                --datadir etc/upgrade/<version>
+            /opt/rt3/sbin/rt-setup-database --action insert \
+                 --datadir etc/upgrade/<version>
+
+5) stop and start your web server
 
 
 Installation instructions:
