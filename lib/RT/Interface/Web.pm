@@ -57,8 +57,8 @@ use strict;
 =cut
 
 sub NewApacheHandler {
-    require HTML::Mason::ApacheHandler;
-    my $ah = new HTML::Mason::ApacheHandler( 
+    $RT::MasonHandlerClass ||= 'HTML::Mason::ApacheHandler';
+    my $ah = $RT::MasonHandlerClass->new( 
     
         comp_root                    => [
             [ local    => $RT::MasonLocalComponentRoot ],

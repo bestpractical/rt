@@ -32,7 +32,8 @@ BEGIN {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-    eval { require Apache2; require Apache::compat }
+    eval { require Apache2; require APR::Table; require MasonX::Apache2Handler; 1 } or
+    eval { require Apache2; require Apache::compat; 1 } or die $@
         if $ENV{'MOD_PERL'} and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:2|1\.9)};
 }
 
@@ -55,12 +56,16 @@ BEGIN {
 	    # warn $@ if $@;
 	    return $r;
 	};
-    }
-    if ($CGI::MOD_PERL) {
 	require HTML::Mason::ApacheHandler;
+        $RT::MasonHandlerClass = 'HTML::Mason::ApacheHandler';
+    }
+    elsif ($CGI::MOD_PERL) {
+	require HTML::Mason::ApacheHandler;
+        $RT::MasonHandlerClass = 'HTML::Mason::ApacheHandler';
     }
     else {
 	require HTML::Mason::CGIHandler;
+        $RT::MasonHandlerClass = 'HTML::Mason::CGIHandler';
     }
 }
 
