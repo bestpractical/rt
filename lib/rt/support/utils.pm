@@ -1,5 +1,7 @@
 package rt;
 
+use Text::Wrapper;
+
 
 sub untaint {
 	my $data = shift;
@@ -83,6 +85,9 @@ sub can_admin_queue {
 }
 sub is_not_a_requestor{
     my($address,$serial_num) =@_;
+    if (($address !~ /\@/) and (exists $users{$address})) {
+      $address=$users{$address}{email}
+    }
     if ($req[$serial_num]{'requestors'} =~ /(^|\s|,)$address(,|\s|\b)/i) {
 	return(0);
     }
@@ -136,31 +141,59 @@ sub quote_content {
     my $current_user = shift;
     my ($trans, $quoted_content, $body, $headers);
     $trans=&rt::transaction_in($transaction,$current_user);
-    ((($body,$headers) =  split (/--- Headers Follow ---\n\n/, $rt::req[$serial_num]{'trans'}[$trans]{'content'},2))) or 
-	(($headers, $body) = split ('\n\n',$lines)) or
-	    $body = $lines;
+
+    $body=$rt::req[$serial_num]{'trans'}[$trans]{'content'};
+
     $quoted_content = "$rt::req[$serial_num]{'trans'}[$trans]{'actor'} wrote ($rt::req[$serial_num]{'trans'}[$trans]{'text_time'}):\n\n";
     
-    $quoted_content .= &rt::prefix_string("> ",$body);
-    return ($quoted_content);
+    # Do we need any preformatting (wrapping, that is) of the message?
+
+    # What's the longest line like?
+    my $max=0;
+    
+    # Remove trailing headers
+    $body =~ s/--- Headers Follow ---\n\n//s;
+
+    # Remove quoted signature.
+    $body =~ s/\n-- (.*)$//s;
+    
+    # Locally generated "spam":
+    $body =~ s/\n-- param start(.*)$//s;
+
+    foreach (split (/\n/,$body)) {
+      $max=length if length>$max;
+    }
+
+    my $wrapper=new Text::Wrapper
+	(
+	 columns => ($max>76 ? 70 : 80), 
+	 body_start => '>   ', 
+	 par_start => '> '
+	);
+
+    $quoted_content=$wrapper->wrap($body);
+
+    # Let's see if we can figure out the users signature...
+    my @entry=getpwnam($current_user);
+    my $home=$entry[7];
+    for my $trythis ("$rt::rt_dir/etc/templates/signatures/$current_user", "$home/.signature", "$home/pc/sign.txt", "$home/pc/sign") {
+	if (-r $trythis) {
+	    open(SIGNATURE, "<$trythis"); 
+	    my $slash=$/;
+	    undef $/;
+	    $signature=<SIGNATURE>;
+	    close(SIGNATURE);
+	    $/=$slash;
+	    $quoted_content .= "\n\n-- \n$signature";
+	    last;
+	}
+    }
+
+    $max=60 if $max<60;
+    $max=70 if $max>78;
+    $max+=2;
+    return ($quoted_content, $max);
 }
-
-#
-# prefix_string quotes a message
-#
-sub prefix_string {
-    
-    my $prefix = shift;
-    my $text = shift;
-    my ($line, $newtext);
-    foreach $line (split (/\n/,$text)) {
-	$newtext .= $prefix . $line . "\n";
-    }
-    
-    return ($newtext)
-    }
-
-
 
 #
 #
