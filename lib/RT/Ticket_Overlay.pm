@@ -3275,8 +3275,14 @@ sub SetStatus {
     }
 
     #Check ACL
-    unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
-        return ( 0, $self->loc('Permission Denied') );
+    if ( $args{Status} eq 'deleted') {
+            unless ($self->CurrentUserHasRight('DeleteTicket')) {
+            return ( 0, $self->loc('Permission Denied') );
+       }
+    } else {
+            unless ($self->CurrentUserHasRight('ModifyTicket')) {
+            return ( 0, $self->loc('Permission Denied') );
+       }
     }
 
     if (!$args{Force} && ($args{'Status'} eq 'resolved') && $self->HasUnresolvedDependencies) {
