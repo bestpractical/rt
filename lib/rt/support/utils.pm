@@ -176,12 +176,18 @@ my ($in_val)=@_;
 sub quote_content {
     my $transaction = shift;
     my $current_user = shift;
-    my ($trans, $quoted_content, $body, $headers);
+    my $answer = shift;
+    my ($trans, $body, $headers);
     $trans=&rt::transaction_in($transaction,$current_user);
 
     $body=$rt::req[$serial_num]{'trans'}[$trans]{'content'};
 
-    $quoted_content = "$rt::req[$serial_num]{'trans'}[$trans]{'actor'} wrote ($rt::req[$serial_num]{'trans'}[$trans]{'text_time'}):\n\n";
+    my $start = "$rt::req[$serial_num]{'trans'}[$trans]{'actor'} wrote ($rt::req[$serial_num]{'trans'}[$trans]{'text_time'}):\n\n";
+
+    if (defined $answer) {
+	# Remind the user that he shouldn't quote all the originating message
+	$start .= "[REMOVE THIS LINE, AND ANY EXCESSIVE LINES BELOW]\n";
+    }
     
     # Do we need any preformatting (wrapping, that is) of the message?
 
@@ -194,21 +200,34 @@ sub quote_content {
     # Remove quoted signature.
     $body =~ s/\n-- (.*)$//s;
     
-    # Locally generated "spam":
+    # Locally generated "spam" (why is this in the 1.1 branch?):
     $body =~ s/\n-- param start(.*)$//s;
 
     foreach (split (/\n/,$body)) {
       $max=length if length>$max;
     }
 
-    my $wrapper=new Text::Wrapper
-	(
-	 columns => ($max>76 ? 70 : 80), 
-	 body_start => '>   ', 
-	 par_start => '> '
-	);
+    if ($max>76) {
+	my $wrapper=new Text::Wrapper
+	    (
+	     columns => 70
+	     body_start => ($max > 150 ? '   ' : ''), 
+	     par_start => ''
+	     );
+	$body=$start . $wrapper->wrap($body);
+    }
 
-    $quoted_content=$wrapper->wrap($body);
+    $body =~ s/^/> /gm;
+
+    # Lets add the reply
+    if (defined $reply) {
+	# Remind the user that he doesn't blindly send an inappropriate autoanswer
+	$body .= "
+
+[REMOVE THIS LINE]
+[REMEMBER TO CHECK THE ANSWER BELOW THOROUGHLY]
+[IS IT REALLY THE RIGHT ANSWER TO THIS QUESTION?]\n$$answer";
+    }
 
     # Let's see if we can figure out the users signature...
     my @entry=getpwnam($current_user);
@@ -221,7 +240,7 @@ sub quote_content {
 	    $signature=<SIGNATURE>;
 	    close(SIGNATURE);
 	    $/=$slash;
-	    $quoted_content .= "\n\n-- \n$signature";
+	    $body .= "\n\n-- \n$signature";
 	    last;
 	}
     }
@@ -229,7 +248,7 @@ sub quote_content {
     $max=60 if $max<60;
     $max=70 if $max>78;
     $max+=2;
-    return ($quoted_content, $max);
+    return ($body, $max);
 }
 
 #
