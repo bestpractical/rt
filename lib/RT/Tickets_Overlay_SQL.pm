@@ -212,7 +212,7 @@ sub _parser {
 
     # State Machine:
 
-    $RT::Logger->debug("We've just found a '$current' called '$val'");
+    #$RT::Logger->debug("We've just found a '$current' called '$val'");
 
     # Parens are highest priority
     if ($current & PAREN) {

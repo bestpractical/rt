@@ -503,7 +503,6 @@ sub __Value {
 sub _CacheConfig {
   {
      'cache_p'        => 1,
-     'fast_update_p'  => 1,
      'cache_for_sec'  => 30,
   }
 }
@@ -513,7 +512,13 @@ sub _CacheConfig {
 sub _BuildTableAttributes {
     my $self = shift;
 
-    my $attributes = $self->_CoreAccessible();
+    my $attributes;
+    if ( UNIVERSAL::can( $self, '_CoreAccessible' ) ) {
+       $attributes = $self->_CoreAccessible();
+    } elsif ( UNIVERSAL::can( $self, '_ClassAccessible' ) ) {
+       $attributes = $self->_ClassAccessible();
+
+    }
 
     foreach my $column (%$attributes) {
         foreach my $attr ( %{ $attributes->{$column} } ) {
