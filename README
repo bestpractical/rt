@@ -52,9 +52,6 @@ o   Perl 5.8.3 or later (http://www.perl.com).
     Perl versions prior to 5.8.3 contain bugs that could result in data
     corruption. We recommend strongly that you use 5.8.3 or newer.
 
-    Perl 5.6.1 is currently deprecated and will be officially desupported
-    in a future release
-
 o   A DB backend; MySQL is recommended ( http://www.mysql.com ) 
         Currently supported:  Mysql 4.0.13 or later. 
                               Postgres 7.2 or later.

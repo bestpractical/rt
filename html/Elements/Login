@@ -91,8 +91,7 @@ href="/NoAuth/Reminder.html">send you a reminder</a>.
 <BR>
 <BR>
 <HR>
-<&|/l, '2003'&>RT is &copy; Copyright 1996-[_1] Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href="http://www.gnu.org/copyleft/gpl.html">Version 2 of the GNU General Public License.</a></&>
-
+<& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $user => ""
 $pass => undef
