@@ -1,26 +1,16 @@
 # $Header$
 
 package RT::Scrips::SendEmail;
+@ISA qw(RT::Scrips::Base);
 
-sub new
-sub Execute {
-	my $self = shifr;
-	my %args = ( Transaction => undef,
-		     Ticket => undef,
-		     Template => undef,
-		     Argument => undef,
-		     Type => undef);
+
+sub Commit {
+  my $self = shift;
+  #send the email
+
 }
 
-
-sub SendMessage {
-my $self = shift;
-my $MIMEObject = shift;
-
-return(1,"Message Sent");
-}
-
-sub ParseTemplate {
-my $self = shift;
-
+sub Prepare {
+  my $self = shift;
+  #perform variable substitution on the template
 }
