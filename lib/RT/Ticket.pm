@@ -2008,17 +2008,17 @@ sub DeleteKeyword {
     #Load up the ObjectKeyword we\'re talking about
     my $ObjectKeyword = new RT::ObjectKeyword($self->CurrentUser);
     $ObjectKeyword->LoadByCols(Keyword => $args{'Keyword'},
-			 KeywordSelect => $args{'KeywordSelect'},
-			 ObjectType => 'Ticket',
-			 ObjectId => $self->id()
-			);
+			       KeywordSelect => $args{'KeywordSelect'},
+			       ObjectType => 'Ticket',
+			       ObjectId => $self->id()
+			      );
     
     #if we can\'t find it, bail
     unless ($ObjectKeyword->id) {
 	$RT::Logger->err("Couldn't find the keyword ".$args{'Keyword'} .
 			 " for keywordselect ". $args{'KeywordSelect'} . 
 			 "for ticket ".$self->id );
-	return (undef, "Couldn't load keyword");
+	return (undef, "Couldn't load keyword while trying to delete it.");
     };
     
     #record transaction here.
