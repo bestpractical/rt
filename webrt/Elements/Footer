@@ -1,2 +1,10 @@
+% if ($Debug) {
+<HR>
+<b>Time to display: <%time - $m->{'rt_base_time'} %></b>
+% }
 </BODY>
 </HTML>
+
+<%ARGS>
+$Debug => 0
+</%ARGS>

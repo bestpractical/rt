@@ -1,7 +1,10 @@
 %# $Header$
-<& /Elements/Footer &>
+<& /Elements/Footer, %ARGS &>
 
 <%INIT>
+
+$m->{'rt_base_time'} = time;
+
 #if it's a noauth file, don't ask for auth.
 if ($m->base_comp->path =~ '^/NoAuth/') {
         $m->call_next();
