@@ -325,6 +325,12 @@ Set($WebExternalAuto , undef);
 
 Set($MaxInlineBody, 13456);
 
+# $MyTicketsLength is the length of the table on the front page.
+# For some people, the default of 10 isn't big enough to get a feel for
+# how much work needs to be done before you get some time off.
+
+Set($MyTicketsLength, 10);
+
 # }}}
 
 # {{{ RT UTF-8 Settings

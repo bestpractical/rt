@@ -69,7 +69,7 @@
 
 
 <%INIT>
-my $rows = 10;
+my $rows = $RT::MyTicketsLength;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
