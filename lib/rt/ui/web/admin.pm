@@ -18,31 +18,47 @@ $result=&take_action();
 return(0);
 }
 
-### subroutines 
+
+
 sub CheckAuth() {
-    local ($name,$pass);
+    my ($name,$pass);
     
-	require rt::database::config;
+    require rt::database::config;	
+    
     $AuthRealm="WebRT for $rt::rtname";
-    if ($ENV{'QUERY_STRING'} eq 'display=Logout') {
-	&WebAuth::AuthForceLogout($AuthRealm);
-	exit(0);
-    }
+    
     
     ($name, $pass)=&WebAuth::AuthCheck($AuthRealm);
     
+    #if the user's password is bad
     if (!(&rt::is_password($name, $pass))) {
-	&WebAuth::AuthForceLogin($AuthRealm);
-	exit(0);    }
-    
-    elsif ($name eq '') {
-	&WebAuth::AuthForceLogin($AuthRealm);
-	exit(0)
-	}
-    else  {
-	$current_user = $name;
-	&WebAuth::Headers_Authenticated();
+      
+      
+      &WebAuth::AuthForceLogin($AuthRealm);
+      exit(0);
     }
+    
+    #if the user isn't even authenticating
+    elsif ($name eq '') {
+      
+      
+      &WebAuth::AuthForceLogin($AuthRealm);
+      exit(0)
+    }
+    
+    #if the user is trying to log out
+    if ($rt::ui::web::FORM{'display'} eq 'Logout') {
+      
+      
+      &WebAuth::AuthForceLogin($AuthRealm);
+      exit(0);
+    }
+    else { #authentication has succeeded
+      $current_user = $name;
+     
+    }
+    
+    
 }
 sub DisplayForm {
   

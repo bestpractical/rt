@@ -43,7 +43,7 @@ sub CheckAuth() {
     #if the user's password is bad
     if (!(&rt::is_password($name, $pass))) {
       
-      &WebAuth::AuthForceLogout($AuthRealm);
+      &WebAuth::AuthForceLogin($AuthRealm);
       exit(0);
     }
     
@@ -58,9 +58,9 @@ sub CheckAuth() {
       &WebAuth::AuthForceLogin($AuthRealm);
       exit(0);
     }
-    else {
+    else { #authentication has succeeded
       $current_user = $name;
-      &WebAuth::Headers_Authenticated();
+     
     }
     
     
@@ -1131,8 +1131,8 @@ Request Tracker's development was initially comissioned by <a href=\"http://www.
 This program is redistributable under the terms of the <b>GNU Public License.</b>
 </font>
 <br>
-Copyright &copy; 1996-1998
-<a href=\"http://www.con.wesleyan.edu/~jesse/jesse.html\">Jesse Vincent</a>.
+Copyright &copy; 1996-1999
+<a href=\"http://www.fsck.com/~jesse/\">Jesse Vincent</a>.
 ";
    
     print "</center>";

@@ -1,118 +1,134 @@
 package WebAuth;
 #$AuthRealm="Default Realm Name";
 require rt::database;
+use CGI::Cookie;
 &rt::connectdb();
 
 sub AuthCheck () {
     my ($AuthRealm) = @_;
-    my ($Scheme, $Hash, $Unhash, $Name, $Pass);
-    if (!$ENV{'HTTP_AUTHORIZATION'}) {
-	&AuthForceLogin($AuthRealm);
-	exit(0);
+    my ($Name, $Pass, $set_user, $set_pass);
+    #lets get the cookies
+    print "HTTP/1.0 200 Ok\n";
+  
+
+
+
+
+# lets set the user/pass cookies
+    if ($rt::ui::web::FORM{'username'} and $rt::ui::web::FORM{'password'}) {
+      $set_user = new CGI::Cookie(-name => 'RT_USERNAME',
+				     -value => "$rt::ui::web::FORM{'username'}",
+				     -expires => '+6M',
+				     -path => "$ENV{'SCRIPT_NAME'}");
+      #works well enough while we're nph-
+      print "Set-Cookie: $set_user\n";
+      
+      $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
+				      -value => "$rt::ui::web::FORM{'password'}",
+				      -expires => '+1h',
+				      -path => "$ENV{'SCRIPT_NAME'}"	    );
+      #works well enough while we're nph-
+      print "Set-Cookie: $set_password\n";
+      
     }
-    ($Scheme, $Hash)= split (/ /,  $ENV{'HTTP_AUTHORIZATION'});
+
+
+ if (!($rt::ui::web::cookies{'RT_PASSWORD'}) or !($rt::ui::web::cookies{'RT_USERNAME'})) {
+
+      $Name = $rt::ui::web::FORM{'username'};
     
-    if ($Scheme ne "Basic") {
-	&AuthFail($AuthRealm, "Wrong Authentication Scheme.  We only support the insanely insecure Basic Authentication type.");
-	exit(0);
+      
+      $Pass = $rt::ui::web::FORM{'password'};
     }
-    $Unhash=&decode_base64 ($Hash);
-    ($Name, $Pass)=split(/:/,$Unhash);
+    
+
+    else {
+
+      $Name = $rt::ui::web::cookies{'RT_USERNAME'}->value;
+    
+      $Pass = $rt::ui::web::cookies{'RT_PASSWORD'}->value;
+    }
+
+    
     return ($Name, $Pass);
-}
+  }
 
 
-sub AuthFail () {
-    local ($AuthRealm, $AuthError) = @_;
-    print "HTTP/1.0 401 Unauthorized -- authentication failed
-WWW-Authenticate: Basic realm=\"$AuthRealm\"
-Content Type: text/plain
 
-Error $AuthError";
-
-
-}
 
 sub AuthForceLogout () {
-    local ($AuthRealm) = @_;
-    print "HTTP/1.0 401 Unauthorized -- authentication failed
-WWW-Authenticate: Basic realm=\"$AuthRealm\"
-Content Type: text/html
+  #this routine is deprecated
 
-<html><head><title>Logged out</title></head><body bgcolor=\"#ffffff\"><center><TABLE WIDTH=\"80%\" border=0 cellpadding=20><TR><TD>You have been logged out of RT.  To log back in, please click <a HREF=\"$rt::ui::web::ScriptURL\"> here.</a>
-</TD></TR></TABLE></center></body></html>
-";
+  return(&AuthForceLogin(@_));
+  
+}
 
-}                           
+
+
 sub AuthForceLogin () {
-    local ($AuthRealm) = @_;
-    print "HTTP/1.0 401 Unauthorized -- authentication failed
-WWW-Authenticate: Basic realm=\"$AuthRealm\"
-Content Type: text/plain
+  local ($AuthRealm) = @_;
+  my ($default_user);
+  
+   # lets set the user/pass cookies
+  
 
-This RT Server requires you to log in with your RT username and password.  If you are unsure of your RT username or password, please seek out your local RT administrator.
+
+  $set_password = new CGI::Cookie(-name => 'RT_PASSWORD',
+				   -value => "",
+				-expires => '-1M',
+				-path => "$ENV{'SCRIPT_NAME'}"	    );
+  #works well enough while we're nph-
+  print "Set-Cookie: $set_password\n";
+
+  &rt::ui::web::header;
+
+  if  ($rt::ui::web::cookies{'RT_USERNAME'}) {
+    $default_user =  $rt::ui::web::cookies{'RT_USERNAME'}->value;
+    
+  }
+  print "
+<CENTER><B><FONT SIZE=\"+4\">No valid RT Credentials found</FONT></B></CENTER>
+  This RT Server requires you to log in with your RT username and password.  If you are unsure of your RT username or password, please seek out your local RT administrator.
+    
+    <FORM ACTION=\"$rt::ui::web::ScriptURL\" METHOD=\"POST\">
+<CENTER>
+      <TABLE><TR><TD COLSPAN=2>
+	$AuthRealm Login:
+	</TD></TR>  
+	  <TR><TD ALIGN=\"RIGHT\">Username:</TD><TD><input name=\"username\" VALUE=\"$default_user\" size=\"20\"></TD></TR>
+	    <TR><TD ALIGN=\"RIGHT\">Password:</TD><TD><input name=\"password\" type=\"password\" size=\"20\"></TD></TR>
+	      <TR><TD COLSPAN=2 ALIGN=\"RIGHT\">
+		
+		<INPUT TYPE=\"SUBMIT\" VALUE=\"Login\"></TD></TR>
+		  </TABLE>
+</CENTER>
+		    </FORM>
+
+</BODY>
 ";
-
+  
+  &rt::ui::web::content_footer;
+  
 }
 
 # return a username if the HTTPd has authenticated for us
 # undefined otherwise
 sub HTTP_AuthAvailable() {
-    # make sure that we are called by the httpd or by the rt-user
+  # make sure that we are called by the httpd or by the rt-user
     if(($EUID == $UID) || ($UID == $http_user)) {
-       return $ENV{'REMOTE_USER'};
-       }
+      return $ENV{'REMOTE_USER'};
+    }
     return undef;
-   }    
+  }    
 
 sub Headers_Authenticated(){
-    local ($Name, $Pass)= @_;
-    print "HTTP/1.0 200 Ok
-";
+  #We simply DO NOT NEED THIS HERE
+  
+  return();   
+  
+  
 }
 
 
-
-
-
-# Base 64 decoder ripped from libwww-perl 5.0.6
-#
-#
-#=head1 COPYRIGHT
-#
-#Copyright 1995, 1996 Gisle Aas.
-#
-#This library is free software; you can redistribute it and/or
-#modify it under the same terms as Perl itself.
-#
-#=head1 AUTHOR
-#
-#Gisle Aas <aas@sn.no>
-#
-#Based on LWP::Base64 written by Martijn Koster <m.koster@nexor.co.uk>
-#and Joerg Reichelt <j.reichelt@nexor.co.uk> and code posted to
-#comp.lang.perl <3pd2lp$6gf@wsinti07.win.tue.nl> by Hans Mulder
-#<hansm@wsinti07.win.tue.nl>
-#
-#=cut                      
-
-sub decode_base64 ()
-{
-    local ($str) = "@_";
-    local ($res, $len) = "";
-    local($^W) = 0; # unpack("u",...) gives bogus warning in 5.00[123]
-
-
-    $str =~ tr|A-Za-z0-9+=/||cd;            # remove non-base64 chars
-    Carp::croak("Base64 decoder requires string length to be a multiple of 4")
-      if length($str) % 4;
-    $str =~ s/=+$//;                        # remove padding
-    $str =~ tr|A-Za-z0-9+/| -_|;            # convert to uuencoded format
-    while ($str =~ /(.{1,60})/gs) {
-        $len = chr(32 + length($1)*3/4); # compute length byte
-        $res .= unpack("u", $len . $1 );    # uudecode
-    }
-    return ($res);
-}
 
 1;

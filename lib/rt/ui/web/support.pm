@@ -97,7 +97,10 @@ sub cgi_vars_in {
                     #but they're not.
 # code between the lines was grabbed from form-mail.pl by MIT's the tech
 # Get the input
-
+    
+    #let's get the cookies
+    use CGI::Cookie;
+    %rt::ui::web::cookies = fetch CGI::Cookie;
 # Split the name-value pairs
     if ($ENV{'CONTENT_LENGTH'}) {
 	read(STDIN, $buffer, $ENV{'CONTENT_LENGTH'});

@@ -32,8 +32,12 @@ o   MySQL 3.20.x, 3.21.x or 3.22.x ( http://www.mysql.com ) -- free
 o   Msql-Mysql-modules ( ftp://ftp.mysql.com/pub/mysql/Contrib ) -- free
 
 	When installing MysqlPerl, it is imperative that you say yes when asked
-	"Do you want to install the MysqlPerl emulation?"
+	"Do you want to install the MysqlPerl emulation?"  Please note
+	that Msql-Mysql-modules requires DBD to be installed to function.
 
+o   CGI::Cookie
+
+	CGI-Cookie is required for web authentication to work.
 
 INSTALL INSTRUCTIONS
 --------------------
@@ -121,8 +125,8 @@ THE WEB UI
 ----------
 
 If you don't already have an http daemon set up, you will probably want
-to start one to handle the CGI interface.  For now, I'd recommend the CERN
-httpd. 
+to start one to handle the CGI interface.  For now, I'd recommend the Apache
+httpd.  Additionally, you'll need a web browser that supports cookies.
 
 CERN:
 	It just works. We even include a sample config file for you
@@ -138,10 +142,7 @@ CERN:
 
 
 Apache 
-	To get Apache working, you'll need to compile a version of the server
-	that allows CGI scripts to perform their own authentication. 
-	Instructions to do so are below. Additionally, you'll want to add 
-	two lines to your httpd.conf:
+	To get Apache working, you'll want to add two lines to your httpd.conf:
 
 	Alias /webrt/ "/path/to/rt/lib/images/"
 	ScriptAlias /rt/ "/path/to/rt/bin/cgi/"
@@ -150,23 +151,10 @@ Apache
         o     you'll find rt at http://host/rt/nph-webrt.cgi and
         o                       http://host/rt/nph-webrt.cgi/frames
 
-	1.2:
-	To pass authentication headers to cgi scripts, comment the following 
-	two lines in util_script.c. (look for them around line 180):
-
-	       else if (!strcasecmp (hdrs[i].key, "Authorization"))
-	           continue;
-
-	1.3:
-	You need to #define SECURITY_HOLE_PASS_AUTHORIZATION in the file 
-	<apache_src_dir>/src/main/util_script.c to allow for RT's 
-	authentication to work properly.
-
 
 Netscape:
-	Netscape's servers don't allow nph-cgi scripts to perform their own 
-	authentication so they don't really work with WebRT. If Netscape 
-	provided source, you could fix this.  Besides, CERN and Apache are free.
+	You're on your own for configuring it, but it should work just fine.
+
 
 THE CLI
 -------
