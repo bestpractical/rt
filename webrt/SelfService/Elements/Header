@@ -13,7 +13,7 @@
 <TABLE BORDER=0 WIDTH=100% CELLSPACING=0 BGCOLOR="#993333">
 <TR VALIGN=TOP>
 <TD WIDTH=32>
-        <IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT">
+        <IMG SRC="<%$RT::LogoURL%>" alt="RT">
 </TD>
 <TD VALIGN=CENTER ALIGN=LEFT>
 <font size=+2 color=#ffffff>

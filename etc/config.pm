@@ -294,6 +294,19 @@ $WebBaseURL = "http://RT::WebBaseURL.not.configured:80";
 
 $WebURL = $WebBaseURL . $WebPath . "/";
 
+
+
+# $WebImagesURL points to the base URL where RT can find its images.
+# If you're running the FastCGI version of the RT web interface,
+# you should make RT's WebRT/html/NoAuth/images directory available on 
+# a static web server and supply that URL as $WebImagesURL.
+
+$WebImagesURL = $WebURL."/NoAuth/images/";
+
+# $RTLogoURL points to the URL of the RT logo displayed in the web UI
+
+$LogoURL = $WebImagesURL."/rt.jpg";
+
 # If $WebExternalAuth is defined, RT will defer to the environment's
 # REMOTE_USER variable.
 

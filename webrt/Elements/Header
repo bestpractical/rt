@@ -16,11 +16,12 @@
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/webrt.css" type="text/css">
 </HEAD>
 <BODY BGCOLOR="<%$BgColor%>">
+% if ($ShowBar) {
 <TABLE BORDER=0 WIDTH=100% CELLSPACING=0 BGCOLOR="#993333">
 <TR VALIGN=TOP>
-<TD><IMG SRC="<%$RT::WebPath%>/rt.jpg" alt="RT"></TD>
+<TD><IMG SRC="<%$RT::LogoURL%>" alt="RT"></TD>
 <TD VALIGN=CENTER ALIGN=LEFT>
-<font size=+2 color=#ffffff>
+<font size=+2 color="#ffffff">
 <B>
 <%$Title%>
 </B>
@@ -43,12 +44,14 @@ Not logged in.
 </TABLE>
 
 <BR>
+% }
 <%ARGS>
 $Title => 'WebRT'
 $Code => undef
 $Refresh => undef
 $Why => undef
 $BgColor => '#ffffff'
+$ShowBar => 1
 </%ARGS>
 <%INIT>
 $Title = "RT/$RT::rtname: ".$Title;
