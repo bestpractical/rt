@@ -1,0 +1,64 @@
+<FORM METHOD=POST>
+<INPUT TYPE=HIDDEN NAME=QueueId VALUE="<%$Queue->id%>">
+
+
+Get the acl for this queue and princtype admincc
+get the acl for this queue and princtype cc
+get the acl for this queue and princtype requestor
+
+get the acl for scope queue/ticket and id this queue
+iterate through it.
+
+
+
+
+For a queue
+
+AdminCc
+
+        rights [del]
+
+CarbonCopy
+
+        rights [del]
+
+Requestor
+
+        rights [del] 
+
+
+User1...Usern
+
+        rights [del]
+
+Find users
+<& /Elements/SelectUsers &>
+
+Grant rights:
+
+<& ../Elements/GrantQueueRightsTo,  
+                              UserString => $UserString,
+                              UserOp => $UserOp, 
+                              UserField => $UserField &>
+
+
+
+<INPUT TYPE=SUBMIT>
+</FORM>
+<%INIT>
+
+if (!defined $QueueId) {
+        &FatalError("No QueueId defined");
+}
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load($QueueId) ||
+        &FatalError("Couldn't load queue $QueueId");
+
+</%INIT>
+
+<%ARGS>
+$QueueId = undef
+$UserString => undef
+$UserOp => undef
+$UserField => undef
+</%ARGS>
