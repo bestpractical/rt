@@ -261,7 +261,7 @@ config-replace:
         s'!!RT_MAIL_ALIAS!!'$(RT_MAIL_ALIAS)'g;\
         s'!!MAIL_PROGRAM!!'$(MAIL_PROGRAM)'g;\
 	s'!!MAIL_OPTIONS!!'$(MAIL_OPTIONS)'g;\
-	s'!!MYSQL_VERISON!!'$(MYSQL_VERSION)'g;\
+	s'!!MYSQL_VERSION!!'$(MYSQL_VERSION)'g;\
 	s'!!GLIMPSE_INDEX!!'$(GLIMPSE_INDEX)'g; " $(RT_CONFIG)
 
 dist:
