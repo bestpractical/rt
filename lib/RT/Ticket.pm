@@ -230,11 +230,15 @@ sub Create {
     
     #Since we have a queue, we can set queue defaults
     #Initial Priority
-    $args{'InitialPriority'} = $QueueObj->InitialPriority 
+
+    # If there's no queue default initial priority and it's not set, set it to 0
+    $args{'InitialPriority'} = ($QueueObj->InitialPriority || 0)
       unless (defined $args{'InitialPriority'});
 	
     #Final priority 
-    $args{'FinalPriority'} = $QueueObj->FinalPriority 
+
+    # If there's no queue default final priority and it's not set, set it to 0
+    $args{'FinalPriority'} = ($QueueObj->FinalPriority  || 0)
       unless (defined $args{'FinalPriority'});
     
     
@@ -2392,7 +2396,8 @@ sub SetOwner {
     #If we've specified a new owner and that user can't modify the ticket
     elsif (($NewOwnerObj) and 
 	   (!$NewOwnerObj->HasQueueRight(Right => 'OwnTicket',
-					 QueueObj => $self->QueueObj))
+					 QueueObj => $self->QueueObj,
+					 TicketObj => $self))
 	  ) {
 	return (0, "That user may not own requests in that queue");
     }
@@ -2444,7 +2449,7 @@ Convenience method to set the owner to 'nobody' if the current user is the owner
 
 sub Untake {
     my $self = shift;
-    return($self->SetOwner($RT::Nobody->UserObj, 'Untake'));
+    return($self->SetOwner($RT::Nobody->UserObj->Id, 'Untake'));
 }
 # }}}
 
